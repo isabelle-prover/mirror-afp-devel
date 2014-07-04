@@ -3771,7 +3771,7 @@ apply (induct_tac m)
  apply (rule allI, rule impI, simp) 
  apply (simp add:polyn_add_n1)
 
-apply (simp add:add_commute[of n])
+apply (simp add:add.commute[of n])
  apply (rule allI, rule impI)
   apply (frule_tac n = "na + n" and f = g in pol_coeff_pre)
   apply (drule_tac a = g in forall_spec, assumption)
@@ -4268,7 +4268,7 @@ apply (rule impI,
  apply (subst polyn_expr_split)
  apply (cut_tac n = "n + j" and c = "ext_cf S j (Suc n, f)" in polyn_Suc,
         simp add:ext_cf_len) 
- apply (subst ext_cf_len, assumption+, simp del:npow_suc add:add_commute[of j],
+ apply (subst ext_cf_len, assumption+, simp del:npow_suc add:add.commute[of j],
        thin_tac "polyn_expr R X (Suc (n + j))
           (Suc (n + j), snd (ext_cf S j (Suc n, f))) =
          polyn_expr R X (n + j) (ext_cf S j (Suc n, f)) \<plusminus>
@@ -4278,7 +4278,7 @@ apply (rule impI,
          X^\<^bsup>R j\<^esup> \<cdot>\<^sub>r polyn_expr R X n (n, f)")
  apply (cut_tac c1 = "(Suc n, f)" and n1 = j in ext_cf_hi[THEN sym], 
         assumption+, 
-        simp del:npow_suc add:add_commute[of j])
+        simp del:npow_suc add:add.commute[of j])
  apply (cut_tac n = n and c = "(Suc n, f)" in polyn_Suc, simp,
         simp del:npow_suc)
  apply (frule_tac c = "(Suc n, f)" and k = n in polyn_mem, simp,
@@ -4300,7 +4300,7 @@ apply (rule impI,
         subst ring_tOp_commute[of "X^\<^bsup>R j\<^esup>"], assumption,
                simp add:pol_coeff_mem,
         subst ring_tOp_assoc, assumption+,
-        subst npMulDistr[of X], assumption, simp add:add_commute[of j])
+        subst npMulDistr[of X], assumption, simp add:add.commute[of j])
 apply simp
 done
        
@@ -4386,15 +4386,15 @@ apply (subst scalar_times_pol_expr, assumption+,
          (fst (ext_cf S (Suc na) (n, f)),
           snd (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))))",
        simp only:ext_cf_len, simp only:fst_conv,
-       simp add:add_commute[of _ n])
+       simp add:add.commute[of _ n])
 apply (subst polyn_add, assumption+,
        cut_tac f = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))" in 
        pol_coeff_split, simp only:sp_cf_len, simp only:ext_cf_len,
-       simp add:add_commute[of _ n], simp add: max_def,
+       simp add:add.commute[of _ n], simp add: max_def,
        frule_tac c = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))"
               in pol_coeff_cartesian,
        simp only:sp_cf_len, simp only:ext_cf_len, 
-               simp add:add_commute[of _ n],
+               simp add:add.commute[of _ n],
        thin_tac "(Suc (n + na),
          snd (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))) =
         sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))",
@@ -4424,7 +4424,7 @@ apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
            (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))))",
        subgoal_tac "snd (add_cf S (n + na, h) (sp_cf S (g (Suc na)) 
        (ext_cf S (Suc na) (n, f)))) (Suc (n + na)) = f n \<cdot>\<^sub>r\<^bsub>S\<^esub> g (Suc na)",
-       simp add:add_commute[of _ n], blast)
+       simp add:add.commute[of _ n], blast)
  apply (subst add_cf_def, simp add:sp_cf_len ext_cf_len,
         subst sp_cf_def, simp add:ext_cf_len,
         subst ext_cf_def, simp add:sliden_def,

@@ -22,8 +22,8 @@ abbreviation preservation :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "pr
   "x preserves p \<equiv> test p \<and> p\<cdot>x\<cdot>p = p\<cdot>x \<and> !p\<cdot>x\<cdot>!p = !p\<cdot>x"
 
 lemma preserves_test_closed: "\<lbrakk>test p; x preserves q\<rbrakk> \<Longrightarrow> p\<cdot>x preserves q"
-  apply (auto, metis mult_assoc test_mult_comm_var)
-  by (metis mult_assoc test_comp_closed_var test_mult_comm_var)
+  apply (auto, metis mult.assoc test_mult_comm_var)
+  by (metis mult.assoc test_comp_closed_var test_mult_comm_var)
 
 lemma conditional_helper1:
   assumes  "test r1" 
@@ -35,13 +35,13 @@ proof -
   have pres: "q\<cdot>(r1\<cdot>y1) = q \<cdot> (r1\<cdot>y1) \<cdot>q"
     by (metis assms preserves_test_closed)
   hence "q\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger> = (q\<cdot>r1\<cdot>y1)\<^sup>\<dagger>\<cdot>q"
-    by (metis assms(2-) test_preserve1 dagger_slide mult_assoc)
+    by (metis assms(2-) test_preserve1 dagger_slide mult.assoc)
   hence "p\<cdot>q\<cdot>x1\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>?B = p\<cdot>q\<cdot>x1\<cdot>(q\<cdot>r1\<cdot>y1)\<^sup>\<dagger>\<cdot>q\<cdot>?B"
-    by (metis assms(2) mult_assoc)
+    by (metis assms(2) mult.assoc)
   also have "... = p\<cdot>q\<cdot>x1\<cdot>(q\<cdot>r1\<cdot>y1)\<^sup>\<dagger>\<cdot>q\<cdot>!r1"
-    by (metis assms(5) mult_assoc weak_distrib_left_var test_comp_mult annil add_zeror test_mult_idem_var)
+    by (metis assms(5) mult.assoc weak_distrib_left_var test_comp_mult annil add_zeror test_mult_idem_var)
   also have "... = p\<cdot>q\<cdot>x1\<cdot>(r1\<cdot>y1)\<^sup>\<dagger>\<cdot>!r1"
-    by (metis pres assms(2) mult_assoc test_preserve)
+    by (metis pres assms(2) mult.assoc test_preserve)
   finally show ?thesis .
 qed 
 
@@ -55,13 +55,13 @@ proof -
   have pres: "!q\<cdot>(r2\<cdot>y2) = !q \<cdot> (r2\<cdot>y2) \<cdot>!q"
     by (metis assms preserves_test_closed)
   hence "!q\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger> = (!q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!q"
-    by (metis assms(2-) test_preserve1[of "!q" "r2\<cdot>y2" "r1\<cdot>y1"] add_commute mult_assoc test_comp_closed_var test_double_comp_var)
+    by (metis assms(2-) test_preserve1[of "!q" "r2\<cdot>y2" "r1\<cdot>y1"] add.commute mult.assoc test_comp_closed_var test_double_comp_var)
   hence "p\<cdot>!q\<cdot>x2\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>?B = p\<cdot>!q\<cdot>x2\<cdot>(!q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!q\<cdot>?B"
-    by (metis assms(4) mult_assoc)
+    by (metis assms(4) mult.assoc)
   also have "... = p\<cdot>!q\<cdot>x2\<cdot>(!q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!q\<cdot>!r2"
-    by (metis assms(5) mult_assoc test_comp_closed_var weak_distrib_left_var test_comp_mult2 test_mult_idem_var add_zerol annil)
+    by (metis assms(5) mult.assoc test_comp_closed_var weak_distrib_left_var test_comp_mult2 test_mult_idem_var add_zerol annil)
   also have "... = p\<cdot>!q\<cdot>x2\<cdot>(r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!r2"
-    by (metis assms(4) mult_assoc pres test_comp_closed_var test_preserve)
+    by (metis assms(4) mult.assoc pres test_comp_closed_var test_preserve)
   finally show ?thesis .
 qed 
 
@@ -70,9 +70,9 @@ lemma cond_distr:
   shows "(p\<cdot>q + !p\<cdot>r)\<cdot>(p\<cdot>x + !p\<cdot>y) = p\<cdot>q\<cdot>x + !p\<cdot>r\<cdot>y" 
 proof -
   have "(p\<cdot>q + !p\<cdot>r)\<cdot>(p\<cdot>x + !p\<cdot>y) = p\<cdot>q\<cdot>p\<cdot>x + p\<cdot>q\<cdot>!p\<cdot>y + !p\<cdot>r\<cdot>p\<cdot>x + !p\<cdot>r\<cdot>!p\<cdot>y"
-    by (metis assms distrib_right' mult_assoc weak_distrib_left_var add_assoc test_comp_closed_var)
+    by (metis assms distrib_right' mult.assoc weak_distrib_left_var add.assoc test_comp_closed_var)
   thus ?thesis
-    by (metis assms mult_assoc test2 test3 test4 annil add_zeror test_comp_closed_var)
+    by (metis assms mult.assoc test2 test3 test4 annil add_zeror test_comp_closed_var)
 qed
 
 theorem conditional: 
@@ -83,10 +83,10 @@ theorem conditional:
       (p\<cdot>q + !p\<cdot>!q)\<cdot>(q\<cdot>x1 + !q\<cdot>x2)\<cdot>((q\<cdot>r1 + !q\<cdot>r2)\<cdot>(q\<cdot>y1 + !q\<cdot>y2))\<^sup>\<dagger>\<cdot>!(q\<cdot>r1 + !q\<cdot>r2)"
 proof - 
   have "p\<cdot>q\<cdot>(x1\<cdot>(r1\<cdot>y1)\<^sup>\<dagger>\<cdot>!r1) = p\<cdot>q\<cdot>x1\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>(q\<cdot>!r1 + !q\<cdot>!r2)" and "!p\<cdot>!q\<cdot>(x2\<cdot>(r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!r2) = !p\<cdot>!q\<cdot>x2\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>(q\<cdot>!r1 + !q\<cdot>!r2)" 
-    apply (metis assms(2,4-) conditional_helper1[of r1 q x1 y1 x2 y2 p] mult_assoc)
-    by (metis assms(3-) conditional_helper2[of r2 q x1 y1 x2 y2 "!p"] mult_assoc)   
+    apply (metis assms(2,4-) conditional_helper1[of r1 q x1 y1 x2 y2 p] mult.assoc)
+    by (metis assms(3-) conditional_helper2[of r2 q x1 y1 x2 y2 "!p"] mult.assoc)   
   moreover have "(p\<cdot>q + !p\<cdot>!q)\<cdot>(p\<cdot>x1\<cdot>(r1\<cdot>y1)\<^sup>\<dagger>\<cdot>!r1 + !p\<cdot>x2\<cdot>(r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!r2) = p\<cdot>q\<cdot>(x1\<cdot>(r1\<cdot>y1)\<^sup>\<dagger>\<cdot>!r1) + !p\<cdot>!q\<cdot>(x2\<cdot>(r2\<cdot>y2)\<^sup>\<dagger>\<cdot>!r2)"
-    by (metis assms(1,4-) cond_distr mult_assoc test_def)
+    by (metis assms(1,4-) cond_distr mult.assoc test_def)
   moreover have "... = (p\<cdot>q\<cdot>x1 + !p\<cdot>!q\<cdot>x2)\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>(q\<cdot>!r1 + !q\<cdot>!r2)"
     by (metis calculation(1) calculation(2) distrib_right')
   moreover have "... = (q\<cdot>p\<cdot>x1 + !q\<cdot>!p\<cdot>x2)\<cdot>(q\<cdot>r1\<cdot>y1 + !q\<cdot>r2\<cdot>y2)\<^sup>\<dagger>\<cdot>(q\<cdot>!r1 + !q\<cdot>!r2)"
@@ -102,9 +102,9 @@ theorem nested_loops:
   shows "(p\<cdot>x\<cdot>(q\<cdot>y)\<^sup>\<dagger>\<cdot>!q)\<^sup>\<dagger>\<cdot>!p = p\<cdot>x\<cdot>((p + q)\<cdot>(q\<cdot>y + !q\<cdot>x))\<^sup>\<dagger>\<cdot>!(p + q) + !p"
 proof -
   have "p\<cdot>x\<cdot>((p + q)\<cdot>(q\<cdot>y + !q\<cdot>x))\<^sup>\<dagger>\<cdot>!(p + q) + !p = p\<cdot>x\<cdot>(q\<cdot>y)\<^sup>\<dagger>\<cdot>(!q\<cdot>p\<cdot>x\<cdot>(q\<cdot>y)\<^sup>\<dagger>)\<^sup>\<dagger>\<cdot>!p\<cdot>!q + !p"
-    by (metis assms test_distrib mult_assoc de_morgan2 dagger_denest2)
+    by (metis assms test_distrib mult.assoc de_morgan2 dagger_denest2)
   thus ?thesis
-    by (metis assms mult_assoc test_comp_closed_var test_mult_comm_var add_commute dagger_slide dagger_unfoldl_distr)
+    by (metis assms mult.assoc test_comp_closed_var test_mult_comm_var add.commute dagger_slide dagger_unfoldl_distr)
 qed
 
 lemma postcomputation:
@@ -112,39 +112,39 @@ lemma postcomputation:
   shows "(p\<cdot>x)\<^sup>\<dagger>\<cdot>!p\<cdot>y = !p\<cdot>y + p\<cdot>(p\<cdot>x\<cdot>(!p\<cdot>y + p))\<^sup>\<dagger>\<cdot>!p"
 proof -
   have "p\<cdot>(p\<cdot>x\<cdot>(!p\<cdot>y + p))\<^sup>\<dagger>\<cdot>!p = p\<cdot>(1 + p\<cdot>x\<cdot>((!p\<cdot>y + p)\<cdot>p\<cdot>x)\<^sup>\<dagger>\<cdot>(!p\<cdot>y + p))\<cdot>!p"
-    by (metis dagger_prod_unfold mult_assoc)
+    by (metis dagger_prod_unfold mult.assoc)
   also have "... = (p + p\<cdot>p\<cdot>x\<cdot>((!p\<cdot>y + p)\<cdot>p\<cdot>x)\<^sup>\<dagger>\<cdot>(!p\<cdot>y + p))\<cdot>!p"
-    by (metis assms mult_assoc weak_distrib_left_var distrib_right' mult_1_left)
+    by (metis assms mult.assoc weak_distrib_left_var distrib_right' mult_1_left)
   also have "... = p\<cdot>!p + p\<cdot>x\<cdot>(!p\<cdot>y\<cdot>p\<cdot>x + p\<cdot>p\<cdot>x)\<^sup>\<dagger>\<cdot>(!p\<cdot>y + p)\<cdot>!p"
-    by (metis assms mult_assoc distrib_right' test_mult_idem_var)
+    by (metis assms mult.assoc distrib_right' test_mult_idem_var)
   also have "... = p\<cdot>!p + p\<cdot>x\<cdot>(!p\<cdot>y\<cdot>p\<cdot>x + p\<cdot>p\<cdot>x)\<^sup>\<dagger>\<cdot>(!p\<cdot>y\<cdot>!p + p\<cdot>!p)"
-    by (metis distrib_right' mult_assoc)
+    by (metis distrib_right' mult.assoc)
   also have "... = p\<cdot>x\<cdot>(!p\<cdot>y\<cdot>!p\<cdot>p\<cdot>x + p\<cdot>x)\<^sup>\<dagger>\<cdot>(!p\<cdot>y)"
     by (metis assms test_comp_mult test_mult_idem_var add_zerol add_zeror)
   also have "... = p\<cdot>x\<cdot>(!p\<cdot>y\<cdot>0 + p\<cdot>x)\<^sup>\<dagger>\<cdot>!p\<cdot>y"
-    by (metis assms mult_assoc test_double_comp_var test_mult_comp annil)
+    by (metis assms mult.assoc test_double_comp_var test_mult_comp annil)
   moreover have "... = p \<cdot>x \<cdot>(p \<cdot>x)\<^sup>\<dagger>\<cdot>(!p \<cdot> y \<cdot> 0 \<cdot>(p \<cdot>x)\<^sup>\<dagger>)\<^sup>\<dagger>\<cdot>!p \<cdot> y"
-    by (metis mult_assoc add_commute dagger_denest2)
+    by (metis mult.assoc add.commute dagger_denest2)
   moreover have "... = p \<cdot>x \<cdot>(p \<cdot>x)\<^sup>\<dagger>\<cdot>!p \<cdot> y \<cdot> (0\<cdot>!p \<cdot> y)\<^sup>\<dagger>"
-    by (metis annil dagger_slide mult_assoc)
+    by (metis annil dagger_slide mult.assoc)
   ultimately have "p\<cdot>(p\<cdot>x\<cdot>(!p\<cdot>y + p))\<^sup>\<dagger>\<cdot>!p = p \<cdot>x \<cdot>(p \<cdot>x)\<^sup>\<dagger>\<cdot>!p \<cdot> y"
     by (metis zero_dagger annil mult_1_right)
   thus "(p\<cdot>x)\<^sup>\<dagger>\<cdot>!p\<cdot>y = !p\<cdot>y + p\<cdot>(p\<cdot>x\<cdot>(!p\<cdot>y + p))\<^sup>\<dagger>\<cdot>!p"
-    by (metis dagger_unfoldl_distr mult_assoc)
+    by (metis dagger_unfoldl_distr mult.assoc)
 qed                      
 
 lemma composition_helper: 
   assumes "test g" "test h" "g\<cdot>y = y\<cdot>g"
   shows "g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h\<cdot>g = g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h"
   apply (subgoal_tac "g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h \<le> (h\<cdot>y)\<^sup>\<dagger>\<cdot>!h\<cdot>g")
-  apply (metis assms(1) test_eq3 mult_assoc)
-  by (metis assms mult_assoc test_mult_comm_var order_refl dagger_simr mult_isor test_comp_closed_var)
+  apply (metis assms(1) test_eq3 mult.assoc)
+  by (metis assms mult.assoc test_mult_comm_var order_refl dagger_simr mult_isor test_comp_closed_var)
 
 theorem composition:
   assumes "test g" "test h" "g\<cdot>y = y\<cdot>g" "!g\<cdot>y = y\<cdot>!g"
   shows "(g\<cdot>x)\<^sup>\<dagger>\<cdot>!g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h = !g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h + g\<cdot>(g\<cdot>x\<cdot>(!g\<cdot>(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h + g))\<^sup>\<dagger>\<cdot>!g"
   apply (subgoal_tac "(h\<cdot>y)\<^sup>\<dagger>\<cdot>!h preserves g")
-  by (metis postcomputation mult_assoc, metis assms composition_helper test_comp_closed_var mult_assoc)  
+  by (metis postcomputation mult.assoc, metis assms composition_helper test_comp_closed_var mult.assoc)  
   
 end
 

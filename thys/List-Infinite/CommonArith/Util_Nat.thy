@@ -66,7 +66,7 @@ lemma gr0_imp_self_le_mult1: "0 < (k::nat) \<Longrightarrow> m \<le> m * k"
 by (drule Suc_leI, drule mult_le_mono[OF order_refl], simp)
 
 lemma gr0_imp_self_le_mult2: "0 < (k::nat) \<Longrightarrow> m \<le> k * m"
-by (subst mult_commute, rule gr0_imp_self_le_mult1)
+by (subst mult.commute, rule gr0_imp_self_le_mult1)
 
 lemma less_imp_Suc_mult_le: "m < n \<Longrightarrow> Suc m * k \<le> n * k"
 by (rule mult_le_mono1, simp)

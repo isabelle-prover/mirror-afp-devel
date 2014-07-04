@@ -121,7 +121,7 @@ apply ((erule disjE)+, erule exE, simp,
        simp del:ant_1)
 apply ((erule disjE)+, (erule exE)+, simp only:ant_1[THEN sym],
        simp del:ant_1 add:a_z_z,
-       (cut_tac a = z and b = za in mult_commute, simp,
+       (cut_tac a = z and b = za in mult.commute, simp,
         cut_tac z = za and z' = z in  times_1_both, assumption+),
        simp)
 apply (erule exE, simp,
@@ -260,7 +260,7 @@ apply (frule_tac a = "ant z" in gt_na_poss[of _ "m"])
  apply (case_tac "z \<le> 0")
  apply (frule_tac k = za in zmult_zless_mono2[of "int 0" "int m"], assumption+)
  apply simp apply (rule zle_zless_trans[of _ "0"], assumption+)
- apply (simp add:mult_commute[of _ "int m"])
+ apply (simp add:mult.commute[of _ "int m"])
 apply (simp only:not_zle) 
  apply (cut_tac z = za in zgt_0_zge_1, assumption+)
  apply (frule_tac j = za and k = "int m" in int_mult_le[of "1"])
@@ -278,7 +278,7 @@ apply (frule_tac x = 0 and y = "ant z" in aless_imp_le)
 done
 
 lemma  zmult_gt_one:"\<lbrakk>2 \<le> m; 0 < xa\<rbrakk> \<Longrightarrow> 1 < int m * xa"
-by (metis ge2_zmult_pos mult_commute)
+by (metis ge2_zmult_pos mult.commute)
 
 lemma zmult_pos:"\<lbrakk> 0 < m; 0 < (a::int)\<rbrakk> \<Longrightarrow> 0 < (int m) * a" 
 by (frule zmult_zless_mono2[of "0" "a" "int m"], simp, simp)
@@ -1076,14 +1076,14 @@ apply ((erule exE)+,
        (erule exE)+, simp add:a_z_z,
        thin_tac "c = ant z", frule sym, thin_tac "zb * z = za", simp)
 apply (subgoal_tac "0 < zb", 
-       cut_tac a = zc and b = zb in mult_commute, simp,
+       cut_tac a = zc and b = zb in mult.commute, simp,
        simp add:pos_zmult_eq_1_iff,
        rule contrapos_pp, simp+,
        cut_tac x = 0 and y = zb in less_linear, simp,
        thin_tac "\<not> 0 < zb",
        erule disjE, simp,
        frule_tac i = 0 and j = z and k = zb in zmult_zless_mono_neg,
-             assumption+, simp add:mult_commute)
+             assumption+, simp add:mult.commute)
 apply (rule contrapos_pp, simp+, thin_tac "a \<noteq> \<infinity> \<and> a \<noteq> - \<infinity>",
        erule disjE, simp, rotate_tac 5, drule sym, 
        simp, simp, rotate_tac 5, drule sym, simp)

@@ -40,7 +40,7 @@ lemma card_subgrp_dvd:
 proof(cases "finite (carrier G)")
   case True
   with assms have "card (rcosets H) * card H = order G" by (metis lagrange)
-  thus ?thesis by (metis dvd_triv_left nat_mult_commute)
+  thus ?thesis by (metis dvd_triv_left mult.commute)
 next
   case False
   hence "order G = 0" unfolding order_def by (metis card_infinite)
@@ -103,7 +103,7 @@ proof -
   from finite_G PG have "finite (rcosets P)" unfolding RCOSETS_def r_coset_def by (metis (lifting) finite.emptyI finite_UN_I finite_insert)
   with orderH' sylow_axioms cardP have "card H'act.fixed_points mod p = card (rcosets P) mod p" unfolding sylow_def sylow_axioms_def by (metis H'act.fixed_point_congruence)
   moreover from finite_G PG order_G cardP  have "card (rcosets P) * p ^ a  = p ^ a * m" by (metis lagrange)
-  with prime_p have "card (rcosets P) = m" by (metis less_nat_zero_code mult_cancel2 mult_is_0 nat_mult_commute order_G zero_less_o_G)
+  with prime_p have "card (rcosets P) = m" by (metis less_nat_zero_code mult_cancel2 mult_is_0 mult.commute order_G zero_less_o_G)
   hence "card (rcosets P) mod p = m mod p" by simp
   moreover from pNotDvdm prime_p have "... \<noteq> 0" by (metis dvd_eq_mod_eq_0)
   ultimately have "card H'act.fixed_points \<noteq> 0" by (metis mod_0)
@@ -229,7 +229,7 @@ proof -
   with order_G Psize have orderEq:"p ^ a * m = card (subgroups_of_size (p ^ a)) * card (conj.stabilizer P)" by (metis num_eq_card_orbit)
   def k \<equiv> "card (rcosets\<^bsub>G\<lparr>carrier := conj.stabilizer P\<rparr>\<^esub> P)"
   with Psize have "k * p ^ a = card (conj.stabilizer P)" by (metis num_sylow_normalizer)
-  with orderEq have "p ^ a * m = card (subgroups_of_size (p ^ a)) * p ^ a * k" by (auto simp:nat_mult_assoc nat_mult_commute)
+  with orderEq have "p ^ a * m = card (subgroups_of_size (p ^ a)) * p ^ a * k" by (auto simp:mult.assoc mult.commute)
   hence "p ^ a * m = p ^ a * card (subgroups_of_size (p ^ a)) * k" by auto
   with pa_not_zero have "m = card (subgroups_of_size (p ^ a)) * k" by auto
   thus ?thesis unfolding dvd_def by simp

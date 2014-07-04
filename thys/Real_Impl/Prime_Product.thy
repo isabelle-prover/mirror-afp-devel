@@ -139,7 +139,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           assume "2 \<le> j" "j < i"
           from prems(6)[OF this] have "\<not> j dvd n" by auto
           thus "\<not> j dvd n div i div i" 
-            by (metis dvd_mult n n'_def nat_mult_assoc nat_mult_commute)
+            by (metis dvd_mult n n'_def mult.assoc mult.commute)
         next
           show "\<not> (\<exists> s. s * s = n div i div i)"
           proof
@@ -208,7 +208,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
               with * have "2 \<le> j" "j < i" by auto
               from prems(6)[OF this] j
               show False unfolding n
-                by (metis dvd_mult n n'_def nat_mult_commute)
+                by (metis dvd_mult n n'_def mult.commute)
             qed
           next
             fix j

@@ -1755,7 +1755,7 @@ proof -
         from Suc(4) have ge: "m2 ! i ! n \<ge> m3 ! i ! n" by (simp del: upt_Suc)
         from times_right_mono[OF z ge] have p23: "?p2 \<ge> ?p3" .
         from compat2[OF plus_gt_left_mono[OF rec] plus_right_mono[OF p23]] have "?s2 + ?p2 \<succ> ?s3 + ?p3" .
-        hence "?p2 + ?s2 \<succ> ?p3 + ?s3" unfolding add_commute[of ?p2] add_commute[of ?p3] .
+        hence "?p2 + ?s2 \<succ> ?p3 + ?s3" unfolding add.commute[of ?p2] add.commute[of ?p3] .
         with sum2 sum3 show ?thesis by simp 
       next
         case True        

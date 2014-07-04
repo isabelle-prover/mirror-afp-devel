@@ -172,13 +172,13 @@ lemma hoare_triple_def_var: "`p\<cdot>c \<le> c\<cdot>q \<longleftrightarrow> p\
   apply (intro iffI antisym)
   apply (rule order_trans[of _ "`c \<cdot> q \<cdot> !q`"])
   apply (rule mult_isor[rule_format])
-  apply (simp add: mult_assoc)+
-  apply (simp add: mult_assoc[symmetric])
+  apply (simp add: mult.assoc)+
+  apply (simp add: mult.assoc[symmetric])
   apply (rule order_trans[of _ "`p\<cdot>c\<cdot>(!q + q)`"])
   apply simp
   apply (simp only: distrib_left add_zerol)
   apply (rule order_trans[of _ "`1 \<cdot> c \<cdot> q`"])
-  apply (simp only: mult_assoc)
+  apply (simp only: mult.assoc)
   apply (rule mult_isor[rule_format])
   by simp_all
 
@@ -199,9 +199,9 @@ lemma hoare_mult [vcg]: "`\<lbrace>p\<rbrace> x \<lbrace>r\<rbrace>` \<Longright
 proof auto
   assume [simp]: "`p \<cdot> x \<le> x \<cdot> r`" and [simp]: "`r \<cdot> y \<le> y \<cdot> q`"
   have "`p \<cdot> (x \<cdot> y) \<le> x \<cdot> r \<cdot> y`"
-    by (auto simp add: mult_assoc[symmetric] intro!: mult_isor[rule_format])
+    by (auto simp add: mult.assoc[symmetric] intro!: mult_isor[rule_format])
   also have "`... \<le> x \<cdot> y \<cdot> q`"
-    by (auto simp add: mult_assoc intro!: mult_isol[rule_format])
+    by (auto simp add: mult.assoc intro!: mult_isol[rule_format])
   finally show "`p \<cdot> (x \<cdot> y) \<le> x \<cdot> y \<cdot> q`" .
 qed
 

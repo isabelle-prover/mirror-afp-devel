@@ -159,9 +159,9 @@ lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
   I\<^sub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
 apply(auto simp:algebra_simps abs_if sgn_if)
  apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
- apply (metis diff_conv_add_uminus add_left_commute dvd_minus_iff minus_add_distrib)
+ apply (metis diff_conv_add_uminus add.left_commute dvd_minus_iff minus_add_distrib)
 apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
-apply (metis diff_conv_add_uminus add_left_commute dvd_minus_iff minus_add_distrib)
+apply (metis diff_conv_add_uminus add.left_commute dvd_minus_iff minus_add_distrib)
 done
 
 

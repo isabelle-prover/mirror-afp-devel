@@ -320,7 +320,7 @@ next
 qed
 
 lemma star_slide1: "(x \<cdot> y)\<^sup>\<star> \<cdot> x \<le> x \<cdot> (y \<cdot> x)\<^sup>\<star>"
-  by (metis eq_iff mult_assoc star_sim1)
+  by (metis eq_iff mult.assoc star_sim1)
 
 lemma "(x \<cdot> y)\<^sup>\<star> \<cdot> x = x \<cdot> (y \<cdot> x)\<^sup>\<star>"
   nitpick [expect=genuine] -- "3-element counterexample"
@@ -454,12 +454,12 @@ oops
 *)
 
 lemma star_denest_var_6 [simp]: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> (x + y)\<^sup>\<star> = (x + y)\<^sup>\<star>"
-  by (metis mult_assoc star_denest star_denest_var_3)
+  by (metis mult.assoc star_denest star_denest_var_3)
 
 lemma star_denest_var_7 [simp]: "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> = (x + y)\<^sup>\<star>"
 proof (rule antisym)
   have "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
-    by (metis mult_isol mult_assoc star_ext)
+    by (metis mult_isol mult.assoc star_ext)
   thus "(x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
     by (metis star_denest star_trans_eq)
   have "1 \<le> (x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
@@ -473,7 +473,7 @@ proof (rule antisym)
 qed
 
 lemma star_denest_var_8 [simp]: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
-  by (metis mult_assoc star_denest_var_2 star_invol)
+  by (metis mult.assoc star_denest_var_2 star_invol)
 
 lemma star_denest_var_9 [simp]: "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
   by (metis star_denest star_denest_var_7)
@@ -498,7 +498,7 @@ lemma church_rosser: "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<st
 proof
   assume "y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
   hence "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> y\<^sup>\<star>"
-    by (metis mult_isol mult_isor mult_assoc)
+    by (metis mult_isol mult_isor mult.assoc)
   also have "... \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
     by (metis eq_refl mult.assoc star_trans_eq)
   also have "1 \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
@@ -799,7 +799,7 @@ lemma dual_kleene_algebra:
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis opp_mult_def distrib_left)
   show "1 \<odot> x = x"
@@ -895,7 +895,7 @@ proof
   also have "(?t + y) \<cdot> x = ?t \<cdot> x + y \<cdot> x"
     by (metis distrib_right)
   moreover have "... \<le> ?t \<cdot> x + ?t + y"
-    by (metis add_iso_var calculation le_less add_assoc)
+    by (metis add_iso_var calculation le_less add.assoc)
   moreover have "... \<le> ?t + y"
     by (metis add_iso_var add_lub_var mult.assoc mult_isol order_refl prod_star_closure star_subdist_var_1)
   hence "y + (?t + y) \<cdot> x \<le> ?t + y"
@@ -961,9 +961,9 @@ proof (rule antisym)
   also have "... = x \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + y \<cdot> y\<^sup>\<star>)"
     by (metis add.commute star_plus_one)
   also have "... = (x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> x\<^sup>\<star> + (x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> y \<cdot> y\<^sup>\<star>"
-    by (metis distrib_left mult_assoc mult_comm)
+    by (metis distrib_left mult.assoc mult_comm)
   also have "... \<le> (x \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star> + (x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> y \<cdot> y\<^sup>\<star>"
-    by (metis star_1l add_iso mult_isol mult_assoc)
+    by (metis star_1l add_iso mult_isol mult.assoc)
   also have "... \<le> (x \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star> + (x \<cdot> y)\<^sup>\<star> \<cdot> y\<^sup>\<star>"
     by (metis add_iso_var conway_c3 mult.assoc mult_comm order_refl prod_star_closure star_subdist_var_1)
   also have "... = (x \<cdot> y)\<^sup>\<star> \<cdot> (x\<^sup>\<star> + y\<^sup>\<star>)"

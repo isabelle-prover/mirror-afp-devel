@@ -31,9 +31,9 @@ text {* We tried to dualise using sublocales, but this causes an infinite loop o
 lemma (in conway_dioid) C11_var: "(x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
 proof -
   have "x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star> + x\<^sup>\<star> \<cdot> y \<cdot> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-    by (metis C12 distrib_left mult_assoc mult_oner)   
+    by (metis C12 distrib_left mult.assoc mult_oner)   
   also have "... = (1 +  x\<^sup>\<star> \<cdot> y \<cdot> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star>) \<cdot> x\<^sup>\<star>"
-    by (metis distrib_right mult_assoc mult_onel)
+    by (metis distrib_right mult.assoc mult_onel)
   finally show ?thesis
     by (metis C11 C12 mult_onel mult_oner)
 qed
@@ -43,7 +43,7 @@ lemma (in conway_dioid) dual_conway_dioid:
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot>(y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -63,14 +63,14 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
 qed
 
 lemma (in strong_conway_dioid) dual_strong_conway_dioid: "class.strong_conway_dioid (op  + ) (op  \<odot> ) 1 0 (op \<le>) (op <) star"
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -90,7 +90,7 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>" 
     by (metis C13)
 qed
@@ -116,9 +116,9 @@ proof-
   have "(x \<cdot> y)\<^sup>\<star> \<cdot> x = x + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<cdot> x"
     by (metis C12 mult_onel distrib_right')
   also have "... = x \<cdot> (1 + (y \<cdot> x)\<^sup>\<star> \<cdot> y \<cdot> x)"
-    by (metis distrib_left mult_assoc mult_oner)
+    by (metis distrib_left mult.assoc mult_oner)
   finally show ?thesis
-    by (metis C12 mult_assoc mult_onel mult_oner)
+    by (metis C12 mult.assoc mult_onel mult_oner)
 qed
 
 lemma powsum_ub: "i \<le> n \<Longrightarrow> x\<^bsup>i\<^esup> \<le> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
@@ -146,9 +146,9 @@ proof -
   hence "x\<^bsup>m\<^esup> \<cdot>  (x\<^bsup>n\<^esup>)\<^sup>\<star> =  x\<^bsup>m\<^esup> \<cdot> (x\<^bsup>n-m\<^esup> \<cdot> x\<^bsup>m\<^esup>)\<^sup>\<star>"
     by (metis (full_types) le_add_diff_inverse2 power_add)
   also have "... = (x\<^bsup>n-m\<^esup> \<cdot> x\<^bsup>m\<^esup>)\<^sup>\<star> \<cdot>  x\<^bsup>m\<^esup>"
-    by (metis (hide_lams, mono_tags) C_slide nat_add_commute power_add)
+    by (metis (hide_lams, mono_tags) C_slide ab_semigroup_add_class.add.commute power_add)
   finally show ?thesis
-    by (metis (full_types) assm le_add_diff_inverse nat_add_commute power_add)
+    by (metis (full_types) assm le_add_diff_inverse ab_semigroup_add_class.add.commute power_add)
 qed
 
 end
@@ -200,12 +200,12 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
     by (metis C13)
   show "x\<^sup>\<star> = power.power 1 op \<odot> x (n + 1)\<^sup>\<star> \<odot> dioid_one_zero.powsum op + op \<odot> 1 0 x 0 n"
     by (metis C14_dual opp_mult_def opp_power_def opp_powsum_def)
-qed (simp_all add:opp_mult_def mult_assoc distrib_left distrib_right')
+qed (simp_all add:opp_mult_def mult.assoc distrib_left distrib_right')
 
 subsection {* Boffa's Axioms *}
 
@@ -224,7 +224,7 @@ lemma (in B1_algebra) B1_algebra:
 proof 
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -244,7 +244,7 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show "x \<odot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
     by (metis R opp_mult_def)
 qed
@@ -254,7 +254,7 @@ lemma (in B2_algebra) B2_algebra:
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left times.opp_mult_def)
   show "x + x = x"
@@ -321,7 +321,7 @@ lemma star_iso: "x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y\<^sup>\<sta
   by (metis less_eq_def star_subdist)
 
 lemma star2: "(1 + x)\<^sup>\<star> = x\<^sup>\<star>"
-  by (metis B21 add_commute less_eq_def star_invol star_subdist) 
+  by (metis B21 add.commute less_eq_def star_invol star_subdist) 
 
 lemma star_unfoldl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
   by (metis add_lub star_1l star_ref)
@@ -340,9 +340,9 @@ proof -
   have "(1 + x \<cdot> x\<^sup>\<star>) \<cdot> (1 + x \<cdot> x\<^sup>\<star>) = 1 \<cdot> (1 + x \<cdot> x\<^sup>\<star>) + x \<cdot> x\<^sup>\<star> \<cdot> (1 + x \<cdot> x\<^sup>\<star>)"
     by (metis distrib_right)
   also have "... = 1 + x \<cdot> x\<^sup>\<star> + (x \<cdot> x\<^sup>\<star> \<cdot> x \<cdot> x\<^sup>\<star>)"
-    by (metis add_assoc' add_idem' distrib_left mult_assoc mult_onel mult_oner)
+    by (metis add_assoc' add_idem' distrib_left mult.assoc mult_onel mult_oner)
   also have "... = 1 + x \<cdot> x\<^sup>\<star>"
-    by (metis add_assoc add_commute distrib_left less_eq_def mult_assoc star_1l star_trans_eq)
+    by (metis add.assoc add.commute distrib_left less_eq_def mult.assoc star_1l star_trans_eq)
   finally show ?thesis
     by (metis B23 add_iso_var add_ub1 distrib_left eq_iff mult_1_right star_plus_one star_unfoldl)
 qed
@@ -352,11 +352,11 @@ proof -
   have "(1 + x\<^sup>\<star> \<cdot> x) \<cdot> (1 + x\<^sup>\<star> \<cdot> x) = 1 \<cdot> (1 + x\<^sup>\<star> \<cdot> x) + x\<^sup>\<star> \<cdot> x \<cdot> (1 + x\<^sup>\<star> \<cdot> x)"
     by (metis distrib_right)
   also have "... = 1 + x\<^sup>\<star> \<cdot> x + (x\<^sup>\<star> \<cdot> x \<cdot> x\<^sup>\<star> \<cdot> x)"
-    by (metis add_assoc add_idem' distrib_left mult_1_left mult_1_right mult_assoc)
+    by (metis add.assoc add_idem' distrib_left mult_1_left mult_1_right mult.assoc)
   also have "... = 1 + x\<^sup>\<star> \<cdot>x"
-    by (metis add_assoc' distrib_left mult_assoc mult_oner distrib_right' star_trans_eq star_unfoldl_eq)
+    by (metis add_assoc' distrib_left mult.assoc mult_oner distrib_right' star_trans_eq star_unfoldl_eq)
   finally show ?thesis
-    by (metis B21 B23 add_commute add_iso_var add_ub1 eq_iff eq_refl mult_1_left distrib_right' star_unfoldl_eq star_unfoldr)
+    by (metis B21 B23 add.commute add_iso_var add_ub1 eq_iff eq_refl mult_1_left distrib_right' star_unfoldl_eq star_unfoldr)
 qed
 
 lemma star_prod_unfold_le: "(x \<cdot> y)\<^sup>\<star> \<le> 1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
@@ -365,11 +365,11 @@ proof -
         1 \<cdot> (1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y) + (x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y) \<cdot> (1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y)"
     by (metis distrib_right')
   also have "... = 1 + x \<cdot>(y \<cdot> x)\<^sup>\<star> \<cdot> y + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<cdot> x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
-    by (metis add_assoc add_ub1 distrib_left less_eq_def mult_1_right mult_assoc mult_onel)
+    by (metis add.assoc add_ub1 distrib_left less_eq_def mult_1_right mult.assoc mult_onel)
   finally have "(1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y) \<cdot> (1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y) = 1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
-    by (metis add_assoc add_assoc' distrib_left distrib_right mult_1_right mult_assoc mult_oner distrib_right' star_trans_eq star_unfoldr_eq)
+    by (metis add.assoc add_assoc' distrib_left distrib_right mult_1_right mult.assoc mult_oner distrib_right' star_trans_eq star_unfoldr_eq)
   moreover have "(x \<cdot> y) \<le> 1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y"
-    by (metis add_ub2 mult_1_left mult_assoc mult_double_iso order_trans star_ref)
+    by (metis add_ub2 mult_1_left mult.assoc mult_double_iso order_trans star_ref)
   ultimately show ?thesis
     by (metis B23 add_lub add_ub1)
 qed
@@ -379,9 +379,9 @@ proof -
   have "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<le> 1 + x \<cdot> (1 + y \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> x) \<cdot> y"
     by (metis add_iso_var mult_double_iso order_refl star_prod_unfold_le)
   also have "... = 1 + x \<cdot> y + x \<cdot> y \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> x \<cdot> y"
-    by (metis add_assoc distrib_left mult_1_left mult_assoc distrib_right')
+    by (metis add.assoc distrib_left mult_1_left mult.assoc distrib_right')
   finally have "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<le> (x \<cdot> y)\<^sup>\<star>"
-    by (metis add_assoc distrib_left mult_1_right mult_assoc star_unfoldl_eq star_unfoldr_eq)
+    by (metis add.assoc distrib_left mult_1_right mult.assoc star_unfoldl_eq star_unfoldr_eq)
   thus ?thesis
     by (metis antisym star_prod_unfold_le)
 qed
@@ -393,9 +393,9 @@ proof -
   also have "... = (x + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y \<cdot> x)"
     by (metis mult_onel distrib_right')
   also have "... = x \<cdot> (1 + (y \<cdot> x)\<^sup>\<star> \<cdot> y \<cdot> x)"
-    by (metis distrib_left mult_assoc mult_oner)
+    by (metis distrib_left mult.assoc mult_oner)
   finally show ?thesis
-    by (metis eq_refl mult_assoc star_unfoldr_eq)
+    by (metis eq_refl mult.assoc star_unfoldr_eq)
 qed
 
 lemma star_slide_var1: "x\<^sup>\<star> \<cdot> x \<le> x \<cdot> x\<^sup>\<star>"
@@ -408,7 +408,7 @@ proof (rule antisym)
   have "x \<cdot> (y \<cdot> x)\<^sup>\<star> = x \<cdot> (1 + y \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> x)"
     by (metis star_prod_unfold)
   also have "... = x + x \<cdot> y \<cdot> (x \<cdot> y)\<^sup>\<star> \<cdot> x"
-    by (metis distrib_left mult_assoc mult_oner)
+    by (metis distrib_left mult.assoc mult_oner)
   also have "... = (1 + x \<cdot> y \<cdot> (x \<cdot> y)\<^sup>\<star>) \<cdot> x"
     by (metis mult_onel distrib_right')
   finally show "x \<cdot> (y \<cdot> x)\<^sup>\<star> \<le> (x \<cdot> y)\<^sup>\<star> \<cdot> x"
@@ -428,7 +428,7 @@ lemma star_subdist_var_2: "x \<cdot> y \<le> (x + y)\<^sup>\<star>"
   by (metis (full_types) add_lub mult_isol_var star_ext star_trans_eq)
 
 lemma star_subdist_var_3: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
-  by (metis add_commute mult_isol_var star_subdist star_trans_eq)
+  by (metis add.commute mult_isol_var star_subdist star_trans_eq)
 
 lemma R_lemma: 
   assumes "x \<cdot> x = x" 
@@ -437,7 +437,7 @@ proof (rule antisym)
   show "1 + x \<le> x\<^sup>\<star>"
     by (metis B21)
   have "(1 + x) \<cdot> (1 + x) = 1 + x"
-    by (metis add_commute add_idem' add_left_commute assms distrib_left mult_onel mult_oner distrib_right')
+    by (metis add.commute add_idem' add.left_commute assms distrib_left mult_onel mult_oner distrib_right')
   thus "x\<^sup>\<star> \<le> 1 + x"
     by (metis B23 order_refl)
 qed
@@ -453,15 +453,15 @@ proof (rule antisym)
   from one_below x_below y_below have "1 + x + y \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
     by (metis add_lub_var)
   moreover have "(x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-    by (metis star_trans_eq star_slide mult_assoc)
+    by (metis star_trans_eq star_slide mult.assoc)
   ultimately show "(x + y)\<^sup>\<star> \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-    by (metis B23 add_assoc' mult_assoc)
+    by (metis B23 add_assoc' mult.assoc)
   show "(x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
-    by (metis (full_types) add_commute mult_isol_var star_invol star_iso star_subdist_var_1 star_trans_eq)
+    by (metis (full_types) add.commute mult_isol_var star_invol star_iso star_subdist_var_1 star_trans_eq)
 qed
 
 lemma star_denest: "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
-  by (metis R_lemma add_commute star_denest_var_0 star_plus_one star_prod_unfold star_slide star_trans_eq)
+  by (metis R_lemma add.commute star_denest_var_0 star_plus_one star_prod_unfold star_slide star_trans_eq)
 
 lemma star_sum_var: "(x + y)\<^sup>\<star>  = (x\<^sup>\<star> + y\<^sup>\<star>)\<^sup>\<star>"
   by (metis star_denest star_invol)
@@ -473,16 +473,16 @@ lemma star_denest_var_2: "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star
   by (metis star_denest star_denest_var)
 
 lemma star_denest_var_3: "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star> \<cdot> (y\<^sup>\<star> \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
-  by (metis B22 add_comm mult_assoc star_denest star_denest_var_2)
+  by (metis B22 add_comm mult.assoc star_denest star_denest_var_2)
 
 lemma star_denest_var_4:  "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star> = (y\<^sup>\<star> \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
   by (metis add_comm star_denest)
 
 lemma star_denest_var_5: "x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star> = y\<^sup>\<star> \<cdot> (x \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
-  by (metis add_commute star_denest_var)
+  by (metis add.commute star_denest_var)
 
 lemma star_denest_var_6: "(x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot> (x + y)\<^sup>\<star>"
-  by (metis mult_assoc star_denest star_denest_var_3)
+  by (metis mult.assoc star_denest star_denest_var_3)
 
 lemma star_denest_var_7: "(x + y)\<^sup>\<star> = (x + y)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
   by (metis star_denest star_denest_var star_denest_var_3 star_denest_var_5 star_slide)
@@ -497,12 +497,12 @@ lemma star_slide_var: "x\<^sup>\<star> \<cdot> x = x \<cdot> x\<^sup>\<star>"
   by (metis mult_1_left mult_oner star_slide)
 
 lemma star_sum_unfold: "(x + y)\<^sup>\<star> = x\<^sup>\<star> + x\<^sup>\<star> \<cdot> y \<cdot> (x + y)\<^sup>\<star>"
-  by (metis distrib_left mult_1_right mult_assoc star_denest_var star_unfoldl_eq) 
+  by (metis distrib_left mult_1_right mult.assoc star_denest_var star_unfoldl_eq) 
 
 lemma troeger: "x\<^sup>\<star> \<cdot> (y \<cdot> ((x + y)\<^sup>\<star> \<cdot> z) + z) = (x + y)\<^sup>\<star> \<cdot> z"
 proof -
   have "x\<^sup>\<star> \<cdot> (y \<cdot> ((x + y)\<^sup>\<star> \<cdot> z) + z) = (x\<^sup>\<star> + x\<^sup>\<star> \<cdot> y \<cdot> (x + y)\<^sup>\<star>) \<cdot> z"
-    by (metis add_comm distrib_left mult_assoc distrib_right')
+    by (metis add_comm distrib_left mult.assoc distrib_right')
   thus ?thesis
     by (metis star_sum_unfold)
 qed
@@ -510,23 +510,23 @@ qed
 lemma meyer_1: "x\<^sup>\<star> = (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star>" 
 proof (rule antisym)
   have "(1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> \<cdot> (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>)"
-    by (metis mult_assoc mult_onel distrib_right')
+    by (metis mult.assoc mult_onel distrib_right')
   also have "... = ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> (x \<cdot> x)\<^sup>\<star> + ((x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>) \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
-    by (metis distrib_left mult_assoc)
+    by (metis distrib_left mult.assoc)
   also have "... = (x \<cdot> x) \<^sup>\<star> \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star> \<cdot> (x \<cdot> x)\<^sup>\<star> + (x \<cdot> x)\<^sup>\<star> \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star> \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (metis combine_common_factor distrib_right)
   also have "... = (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
-    by (metis add_assoc add_idem' mult_assoc star_slide star_trans_eq)
+    by (metis add.assoc add_idem' mult.assoc star_slide star_trans_eq)
   also have "... = 1 + x \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star> + x \<cdot> x \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (metis star_unfoldl_eq)
   also have "... = (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>"
-    by (metis add_comm add_idem' add_left_commute star_unfoldl_eq)
+    by (metis add_comm add_idem' add.left_commute star_unfoldl_eq)
     finally have "(1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> \<cdot> (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (metis mult_1_left distrib_right')
   moreover have "1 + x \<le> (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (metis mult_1_right star_unfoldl_eq subdistl)
   ultimately show "x\<^sup>\<star> \<le> (1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star>"
-    by (metis B23 mult_assoc)
+    by (metis B23 mult.assoc)
 next
   have "(1 + x) \<cdot> (x \<cdot> x)\<^sup>\<star> = (x \<cdot> x)\<^sup>\<star> + x \<cdot> (x \<cdot> x)\<^sup>\<star>"
     by (metis mult_1_left distrib_right')
@@ -538,7 +538,7 @@ lemma star_zero: "0\<^sup>\<star> = 1"
   by (metis add_zeror star2 star_one)
 
 lemma star_subsum: "x\<^sup>\<star> + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
-  by (metis add_assoc add_idem star_slide_var star_unfoldl_eq)
+  by (metis add.assoc add_idem star_slide_var star_unfoldl_eq)
 
 lemma prod_star_closure: "\<lbrakk> x \<le> z\<^sup>\<star>; y \<le> z\<^sup>\<star> \<rbrakk> \<Longrightarrow> x \<cdot> y \<le> z\<^sup>\<star>"
   by (metis mult_isol_var star_trans_eq)
@@ -561,7 +561,7 @@ proof -
   from assms have "x\<^bsup>k \<^esup>\<cdot> (x\<^bsup>n\<^esup>)\<^sup>\<star> = (x\<^bsup>k \<^esup>\<cdot> x\<^bsup>n-k\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>k\<^esup>"
     by (metis (full_types) le_add_diff_inverse2 power_add star_slide)
   with assms show ?thesis 
-    by (metis (full_types) le_add_diff_inverse2 nat_add_commute power_add)
+    by (metis (full_types) le_add_diff_inverse2 ab_semigroup_add_class.add.commute power_add)
 qed
 
 lemma powsum_le_star: "x\<^bsub>m\<^esub>\<^bsup>n\<^esup> \<le> x\<^sup>\<star>"
@@ -596,7 +596,7 @@ lemma aarden_aux:
 proof (induct n)
   case 0
   have "y \<cdot> x + z \<le> y \<cdot> x\<^bsup>(Suc 0)\<^esup>+ z \<cdot> x\<^sup>\<star>"
-    by (metis (mono_tags) One_nat_def add_commute add_iso mult_1_right power_one_right star_plus_one subdistl)
+    by (metis (mono_tags) One_nat_def add.commute add_iso mult_1_right power_one_right star_plus_one subdistl)
   thus ?case
     by (metis assms order_trans)
 next
@@ -604,9 +604,9 @@ next
   have "y \<cdot> x + z \<le> (y \<cdot> x\<^bsup>(Suc n) \<^esup>+ z \<cdot> x\<^sup>\<star>) \<cdot> x + z"
     by (metis Suc add_iso mult_isor)
   also have "... = y \<cdot> x\<^bsup>(Suc n) \<^esup>\<cdot> x + z \<cdot> (x\<^sup>\<star> \<cdot> x + 1)"
-    by (subst distrib_right, metis add_assoc' distrib_left mult_assoc mult_oner)
+    by (subst distrib_right, metis add_assoc' distrib_left mult.assoc mult_oner)
   finally show ?case
-    by (metis add_commute assms mult_assoc order_trans power_Suc2 star_unfoldr_eq)
+    by (metis add.commute assms mult.assoc order_trans power_Suc2 star_unfoldr_eq)
 qed
 
 lemma conway_powerstar1: "(x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n \<^esup>\<cdot> (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>  = (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
@@ -618,21 +618,21 @@ next
   proof -
     assume assm: "n = Suc m"
     have "(x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1 \<^esup>\<cdot> (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1\<^esup>  = (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1\<^esup>"
-      by (subgoal_tac "m + 1 \<le> m + 2", metis mult_assoc star_sum_power_slide, simp)
+      by (subgoal_tac "m + 1 \<le> m + 2", metis mult.assoc star_sum_power_slide, simp)
     also have "...  = (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m+1\<^esup>"
       by (metis star_trans_eq)
     also have "...  =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>(Suc m)+(Suc m)\<^esup>"
-      by (simp add: mult_assoc powsum_prod)
+      by (simp add: mult.assoc powsum_prod)
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ x\<^bsub>m + 2\<^esub>\<^bsup>m\<^esup>)"
       by (metis monoid_add_class.add.left_neutral powsum_split_var3 add_2_eq_Suc')
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>(m + 2)+ 0\<^esub>\<^bsup>m\<^esup>"
       by (metis (hide_lams, no_types) comm_monoid_add_class.add.right_neutral distrib_left)
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+2 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m\<^esup>"
-      by (subst powsum_shift[THEN sym], metis mult_assoc)
+      by (subst powsum_shift[THEN sym], metis mult.assoc)
    also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+  x\<^bsup>m+1\<^esup>) + (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+2 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m\<^esup>"
      by (simp add:powsum2)
    also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+2 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+1\<^esup>"
-     by (metis add_assoc add_commute add_left_commute distrib_left mult_assoc)
+     by (metis add.assoc add.commute add.left_commute distrib_left mult.assoc)
    also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+1\<^esup>"
      by (metis add_idem' distrib_right' star_subsum)
    also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ x\<^bsup>m+1\<^esup>)"
@@ -663,7 +663,7 @@ qed
 theorem powerstar: "x\<^sup>\<star> = (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
 proof (rule antisym) 
   show "x\<^sup>\<star> \<le> (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
-    by (metis conway_powerstar1 conway_powerstar2 mult_assoc B23)
+    by (metis conway_powerstar1 conway_powerstar2 mult.assoc B23)
   have "(x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup> \<le> (x\<^sup>\<star>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
     by (metis mult_isor power_le_star star_iso)
   also have "... = x\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
@@ -833,7 +833,7 @@ sublocale C1r_algebra \<subseteq> dual!: C1l_algebra
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -853,7 +853,7 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
     by (metis C13)
   show "x \<odot> y \<le> y \<odot> z \<Longrightarrow> x\<^sup>\<star> \<odot> y \<le> y \<odot> z\<^sup>\<star>"
@@ -865,7 +865,7 @@ sublocale C2r_algebra \<subseteq> dual!: C2l_algebra
 proof
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -885,7 +885,7 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show "x = y \<odot> x \<Longrightarrow> x = y\<^sup>\<star> \<odot> x"
     by (metis C2r opp_mult_def)
 qed
@@ -895,7 +895,7 @@ sublocale C3r_algebra \<subseteq> dual!: C3l_algebra
 proof 
   fix x y z :: 'a
   show "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -915,7 +915,7 @@ proof
   show "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<odot> y)\<^sup>\<star> \<odot> x\<^sup>\<star>"
     by (metis C11_var opp_mult_def)
   show "(x \<odot> y)\<^sup>\<star> = 1 + x \<odot> (y \<odot> x)\<^sup>\<star> \<odot> y"
-    by (metis C12 mult_assoc opp_mult_def)
+    by (metis C12 mult.assoc opp_mult_def)
   show " x \<odot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<odot> y \<le> y"
     by (metis C3r opp_mult_def)
 qed
@@ -975,7 +975,7 @@ sublocale C3l_algebra \<subseteq> C1l_algebra
 proof 
   fix x y z
   show "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
-      by (metis C11 C12 C3l add_commute add_ub1 eq_refl less_eq_def mult_onel mult_oner)
+      by (metis C11 C12 C3l add.commute add_ub1 eq_refl less_eq_def mult_onel mult_oner)
   show "x \<cdot> y \<le> y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y \<le> y \<cdot> z\<^sup>\<star>"
   proof -
     assume assm: "x \<cdot> y \<le> y \<cdot> z"
@@ -984,19 +984,19 @@ proof
     from assm have "x \<cdot> y \<cdot> z\<^sup>\<star> \<le> y \<cdot> z \<cdot>z\<^sup>\<star>"
       by (metis mult_isor)
     also have "... \<le> y \<cdot> z\<^sup>\<star>"
-      by (metis C12 add_ub2 mult_1_left mult_assoc mult_isol mult_oner)
+      by (metis C12 add_ub2 mult_1_left mult.assoc mult_isol mult_oner)
     finally have "y + x \<cdot> y \<cdot> z\<^sup>\<star> \<le> y \<cdot> z\<^sup>\<star>"
       by (metis add_lub r1)
     thus "x\<^sup>\<star> \<cdot> y \<le> y \<cdot> z\<^sup>\<star>"
-      by (metis k2_var mult_assoc)
+      by (metis k2_var mult.assoc)
   qed
 qed
 
 sublocale C1l_algebra \<subseteq> C2l_algebra
-  by (unfold_locales, metis C12 C3l add_commute add_ub2 distrib_right less_eq_def mult_1_left order_refl)
+  by (unfold_locales, metis C12 C3l add.commute add_ub2 distrib_right less_eq_def mult_1_left order_refl)
 
 sublocale C3r_algebra \<subseteq> C2r_algebra
-  by (unfold_locales, metis C12 C3r add_commute add_ub2 distrib_left less_eq_def mult_1_right order_refl)
+  by (unfold_locales, metis C12 C3r add.commute add_ub2 distrib_left less_eq_def mult_1_right order_refl)
 
 sublocale C2r_algebra \<subseteq> C3r_algebra
   by unfold_locales (metis dual.C3l opp_mult_def)
@@ -1058,7 +1058,7 @@ sublocale K1r_algebra \<subseteq> dual!:K1l_algebra
 proof
   fix x y z :: 'a
   show  "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -1096,7 +1096,7 @@ sublocale K1r_algebra \<subseteq> B2_algebra
   by unfold_locales (metis dual.B21 dual.B22 dual.B23 opp_mult_def)+
 
 sublocale K1l_algebra \<subseteq> C2l_algebra
-  by (unfold_locales, metis less_eq_def mult_1_left mult_assoc star_inductl star_invol star_one star_plus_one star_trans_eq troeger)
+  by (unfold_locales, metis less_eq_def mult_1_left mult.assoc star_inductl star_invol star_one star_plus_one star_trans_eq troeger)
 
 sublocale C2l_algebra \<subseteq> K1l_algebra 
   by (unfold_locales, metis C12 eq_iff mult_1_left mult_1_right, metis C3l)
@@ -1117,7 +1117,7 @@ sublocale K2r_algebra \<subseteq> dual!: K2l_algebra
 proof 
   fix x y z :: 'a
   show  "x \<odot> y \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"
@@ -1193,7 +1193,7 @@ sublocale Sl_algebra \<subseteq> dual!: Sr_algebra
 proof
   fix x y z :: 'a
   show "(x \<odot> y) \<odot> z = x \<odot> (y \<odot> z)"
-    by (metis mult_assoc opp_mult_def)
+    by (metis mult.assoc opp_mult_def)
   show "(x + y) \<odot> z = x \<odot> z + y \<odot> z"
     by (metis distrib_left opp_mult_def)
   show "x + x = x"

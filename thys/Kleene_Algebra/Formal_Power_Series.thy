@@ -93,10 +93,10 @@ text {* This directly shows that formal power series form a
 semilattice with zero. *}
 
 lemma fps_add_assoc: "((f::('a,'b::semigroup_add) fps) + g) + h = f + (g + h)"
-unfolding plus_fps_def by (simp add: add_assoc)
+unfolding plus_fps_def by (simp add: add.assoc)
 
 lemma fps_add_comm [simp]: "(f::('a,'b::ab_semigroup_add) fps) + g = g + f"
-unfolding plus_fps_def by (simp add: add_commute)
+unfolding plus_fps_def by (simp add: add.commute)
 
 lemma fps_add_idem [simp]: "(f::('a,'b::join_semilattice) fps) + f = f"
 unfolding plus_fps_def by simp
@@ -260,11 +260,11 @@ lemma fps_mult_assoc: "(f::('a::type,'b::dioid_one_zero) fps) * (g * h) = (f * g
 proof (rule fps_ext)
   fix n :: "'a list"
   have "(f * (g * h)) $ n = \<Sum>{\<Sum>{f $ (fst p) * g $ (fst q) * h $ (snd q) | q. q \<in> splitset (snd p)} | p. p \<in> splitset n}"
-    by (simp add: fps_mult_image setsum_sum_distl_fun mult_assoc)
+    by (simp add: fps_mult_image setsum_sum_distl_fun mult.assoc)
   also have "... = \<Sum>{\<Sum>{f $ (fst q) * g $ (snd q) * h $ (snd p) | q. q \<in> splitset (fst p)} | p. p \<in> splitset n}"
     by (fact splitset_rearrange)
   finally show "(f * (g * h)) $ n = ((f * g) * h) $ n"
-    by (simp add: fps_mult_image setsum_sum_distr_fun mult_assoc)
+    by (simp add: fps_mult_image setsum_sum_distr_fun mult.assoc)
 qed
 
 
@@ -350,7 +350,7 @@ qed
 
 lemma (in left_kleene_algebra) add_star_eq:
   "x + y \<cdot> y\<^sup>\<star> \<cdot> x = y\<^sup>\<star> \<cdot> x"
-by (metis add_commute mult_onel star2 star_one troeger)
+by (metis add.commute mult_onel star2 star_one troeger)
 
 instantiation fps :: (type,kleene_algebra) kleene_algebra
 begin
@@ -384,7 +384,7 @@ begin
       apply (rule fps_ext)
       apply (case_tac n)
        apply (auto simp add: times_fps_def)
-      apply (simp add: add_star_eq mult_assoc[THEN sym] Setsum_splitlist_nonempty)
+      apply (simp add: add_star_eq mult.assoc[THEN sym] Setsum_splitlist_nonempty)
     done
     thus "1 + f \<cdot> f\<^sup>\<star> \<le> f\<^sup>\<star>"
       by (metis order_refl)
@@ -409,16 +409,16 @@ begin
           apply (induct_tac "y" rule: length_induct)
           apply (case_tac "xs")
            apply (simp add: "2")
-          apply (auto simp add: mult_assoc setsum_distr)
+          apply (auto simp add: mult.assoc setsum_distr)
           apply (rule_tac y="(f $ [])\<^sup>\<star> \<cdot> g $ (a # list @ z)" in order_trans)
            prefer 2
            apply (rule "2")
           apply (auto intro!: mult_isol[rule_format] setsum_less_eqI)
           apply (drule_tac x="za" in spec)
           apply (drule mp)
-           apply (metis append_eq_Cons_conv length_append less_not_refl2 nat_add_commute not_less_eq trans_less_add1)
+           apply (metis append_eq_Cons_conv length_append less_not_refl2 add.commute not_less_eq trans_less_add1)
           apply (drule_tac z="f $ y" in mult_isol[rule_format])
-          apply (auto elim!: order_trans simp add: mult_assoc)
+          apply (auto elim!: order_trans simp add: mult.assoc)
           apply (metis "1" append_Cons append_assoc)
         done
       qed
@@ -451,12 +451,12 @@ begin
            apply (simp add: "2")
           apply (auto intro!: setsum_less_eqI simp add: setsum_distl)
           apply (rule_tac y="g $ x \<cdot> f $ yb \<cdot> f\<^sup>\<star> $ z" in order_trans)
-           apply (simp add: "2" mult_assoc[THEN sym] mult_isor)
+           apply (simp add: "2" mult.assoc[THEN sym] mult_isor)
           apply (rule_tac y="g $ (x @ yb) \<cdot> f\<^sup>\<star> $ z" in order_trans)
            apply (simp add: "1" mult_isor)
           apply (drule_tac x="z" in spec)
           apply (drule mp)
-           apply (metis append_eq_Cons_conv length_append less_not_refl2 nat_add_commute not_less_eq trans_less_add1)
+           apply (metis append_eq_Cons_conv length_append less_not_refl2 add.commute not_less_eq trans_less_add1)
           apply (metis append_assoc)
         done
       qed

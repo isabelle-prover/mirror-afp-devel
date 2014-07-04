@@ -141,7 +141,7 @@ proof -
       by (metis add_Suc le_Suc_ex numeral_2_eq_2)
     moreover have "(n choose 2) = (fact n div fact (n - 2)) div 2"
       using `2 \<le> n` by (simp add: binomial_altdef_nat
-        div_mult2_eq[symmetric] nat_mult_commute numeral_2_eq_2)
+        div_mult2_eq[symmetric] mult.commute numeral_2_eq_2)
     ultimately show ?thesis by (simp add: algebra_simps)
   qed (auto simp: binomial_eq_0)
 qed

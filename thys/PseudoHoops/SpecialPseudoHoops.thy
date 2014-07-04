@@ -282,7 +282,7 @@ lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<
   apply (subst (2) inf_l_def)
   apply (rule_tac y = "((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c)) * ((a \<squnion>1 b) \<sqinter> b)" in order_trans)
   apply (subst (3) inf_l_def)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>1 b \<sqinter> b) = b")
   apply simp
   apply (rule antisym, simp)
@@ -304,7 +304,7 @@ lemma lemma_4_5_v: "(a \<squnion>1 b) l\<rightarrow> c = (a l\<rightarrow> c) \<
   apply (rule_tac y = "((a l\<rightarrow> c) \<sqinter> (b l\<rightarrow> c)) * ((a \<squnion>1 b) \<sqinter> a)" in order_trans)
   apply (subst (3) inf_l_def)
   apply (subst sup1.sup_comute1)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>1 b \<sqinter> a) = a")
   apply simp
   apply (rule antisym, simp)
@@ -333,7 +333,7 @@ lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \
   apply (subst (2) inf_r_def)
   apply (rule_tac y = "((a \<squnion>2 b) \<sqinter> b) * ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c))" in order_trans)
   apply (subst (2) inf_r_def)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>2 b \<sqinter> b) = b")
   apply simp
   apply (rule antisym, simp)
@@ -355,7 +355,7 @@ lemma lemma_4_5_vi: "(a \<squnion>2 b) r\<rightarrow> c = (a r\<rightarrow> c) \
   apply (rule_tac y = "((a \<squnion>2 b) \<sqinter> a) * ((a r\<rightarrow> c) \<sqinter> (b r\<rightarrow> c))" in order_trans)
   apply (subst (2) inf_r_def)
   apply (subst (2) sup2.sup_comute)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subgoal_tac "(a \<squnion>2 b \<sqinter> a) = a")
   apply simp
   apply (rule antisym, simp)
@@ -457,7 +457,7 @@ lemma lemma_4_8_i: "a * (b \<sqinter> c) = (a * b) \<sqinter> (a * c)"
   apply (rule_tac y = "(((a * b) \<sqinter> (a * c)) * (b r\<rightarrow> c)) \<squnion>1 (((a * b) \<sqinter> (a * c)) * (c r\<rightarrow> b))" in order_trans)
   apply (subst sup_times [THEN sym])
   apply (simp add: lemma_4_5 lemma_4_5_ii)
-  apply (simp add: mult_assoc [THEN sym])  
+  apply (simp add: mult.assoc [THEN sym])  
   apply safe
   apply (rule_tac y = "a * b * (b r\<rightarrow> c)" in order_trans)
   apply simp
@@ -481,7 +481,7 @@ lemma lemma_4_8_ii: "(b \<sqinter> c) * a = (b * a) \<sqinter> (c * a)"
   apply (rule_tac y = "((b l\<rightarrow> c) * ((b * a) \<sqinter> (c * a))) \<squnion>1 ((c l\<rightarrow> b) * ((b * a) \<sqinter> (c * a)))" in order_trans)
   apply (subst sup_times_right [THEN sym])
   apply (simp add: lemma_4_5_i)
-  apply (simp add: mult_assoc)  
+  apply (simp add: mult.assoc)  
   apply safe
   apply (rule_tac y = "(b l\<rightarrow> c) * (b * a)" in order_trans)
   apply simp_all
@@ -591,15 +591,15 @@ begin
     apply (rule conjI)
     apply (simp add: left_residual_bl)
     apply (rule conjI)
-    apply (simp add: mult_assoc)
+    apply (simp add: mult.assoc)
     apply (simp add: left_residual_bl)
     apply (simp add: left_residual_bl [THEN sym])
     apply (rule_tac y="(b l\<rightarrow> c) * b" in bounded_lattice.order_trans)
-    apply (simp add: mult_assoc [THEN sym]) 
+    apply (simp add: mult.assoc [THEN sym]) 
     apply (subst inf_l_bl_def [THEN sym])
     apply (subst bounded_lattice.inf_commute)
     apply (subst inf_l_bl_def)
-    apply (subst mult_assoc) 
+    apply (subst mult.assoc) 
     apply (subst left_residual_bl) 
     apply simp
     apply (subst left_residual_bl) 
@@ -618,15 +618,15 @@ begin
     apply (rule conjI)
     apply (simp add: right_residual_bl)
     apply (rule conjI)
-    apply (simp add: mult_assoc)
+    apply (simp add: mult.assoc)
     apply (simp add: right_residual_bl)
     apply (simp add: right_residual_bl [THEN sym])
     apply (rule_tac y="b * (b r\<rightarrow> c)" in bounded_lattice.order_trans)
-    apply (simp add: mult_assoc) 
+    apply (simp add: mult.assoc) 
     apply (subst inf_r_bl_def [THEN sym])
     apply (subst bounded_lattice.inf_commute)
     apply (subst inf_r_bl_def)
-    apply (subst mult_assoc [THEN sym]) 
+    apply (subst mult.assoc [THEN sym]) 
     apply (subst right_residual_bl) 
     apply simp
     apply (subst right_residual_bl) 

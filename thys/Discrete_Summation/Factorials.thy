@@ -36,7 +36,7 @@ next
     by (simp only: hyp) (simp add: algebra_simps)
   also have "\<dots> = ffact (Suc n) a * (a - of_nat (Suc n))" by (simp add: algebra_simps)
   finally have "ffact (Suc (Suc n)) a = ffact (Suc n) a * (a - of_nat (Suc n))" .
-  then show ?case by (simp add: mult_commute)
+  then show ?case by (simp add: mult.commute)
 qed
 
 lemma ffact_add_diff_assoc:

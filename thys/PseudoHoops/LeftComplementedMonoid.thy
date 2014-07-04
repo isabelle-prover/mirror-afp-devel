@@ -50,12 +50,12 @@ subclass semilattice_inf
 
   lemma lcm_B: "((a * b) l\<rightarrow> c) = (a l\<rightarrow> (b l\<rightarrow> c))" 
     apply (rule antisym)
-    apply (simp add: left_residual [THEN sym] mult_assoc)
+    apply (simp add: left_residual [THEN sym] mult.assoc)
     apply (simp add: left_residual)
 
     apply (simp add: left_residual [THEN sym])
     apply (rule_tac y="(b l\<rightarrow> c) * b" in order_trans)
-    apply (simp add: mult_assoc [THEN sym]) 
+    apply (simp add: mult.assoc [THEN sym]) 
     apply (rule mult_right_mono)
     by (simp_all add: left_residual)
   

@@ -39,7 +39,7 @@ proof
   let ?B = "?A div ?np"
 
   from formula have "?np dvd ?A * 2^(?n+1)"
-    by (metis mult_commute dvd_def) 
+    by (metis mult.commute dvd_def) 
   hence             "?np dvd ?A" 
     by (metis coprime_dvd_mult_nat coprime_minus_one_nat power_eq_0_iff zero_neq_numeral)
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
@@ -56,9 +56,9 @@ proof
     with nplarger have "?np*(1+?A+?B) <= ?np*(sigma ?A)"
       by (auto simp only: nat_mult_le_cancel1)
     with bdef have "?np+?A*?np + ?A*1 <= ?np*(sigma ?A)"
-      by (simp only: add_mult_distrib_three mult_commute)
+      by (simp only: add_mult_distrib_three mult.commute)
     hence "?np+?A*(?np + 1) <= ?np*(sigma ?A)" by (simp only:add_mult_distrib2)
-    with nplarger have "2^(?n+1)*?A < ?np*(sigma ?A)" by(simp add:mult_commute)
+    with nplarger have "2^(?n+1)*?A < ?np*(sigma ?A)" by(simp add:mult.commute)
     with formula show "False" by auto
   qed
 

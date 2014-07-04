@@ -101,7 +101,7 @@ lemma wp_fun_mono2: "x \<le> y \<Longrightarrow> wp x p \<le> wp y p"
 
 lemma wp_comp: "wp (x * y) p = wp x (wp y p)"
   apply (simp add: wp_def abs_wpt_def)
-  by (unfold wpt_comp_2 [THEN sym] mult_assoc, simp)
+  by (unfold wpt_comp_2 [THEN sym] mult.assoc, simp)
 
 lemma wp_choice: "wp (x \<sqinter> y) = wp x \<sqinter> wp y"
   apply (simp add: fun_eq_iff wp_def inf_fun_def inf_comp inf_Assertion_def abs_wpt_def)
@@ -122,10 +122,10 @@ lemma wp_omega_least: "(wp x r) \<sqinter> p \<le> r \<Longrightarrow> wp (x ^ \
   apply (rule_tac y = "{\<cdot>r} * \<top> \<sqinter> 1" in order_trans)
   apply simp
   apply (rule_tac y = "x ^ \<omega> * {\<cdot> p } * \<top>" in order_trans, simp)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (rule omega_least)
   apply (drule_tac z = \<top> in le_comp_right)
-  apply (simp add: inf_comp mult_assoc [THEN sym])
+  apply (simp add: inf_comp mult.assoc [THEN sym])
   by (simp add: assertion_prop)
 
 lemma Assertion_wp: "{\<cdot>wp x p} = (x * {\<cdot>p} * \<top>) \<sqinter> 1"
@@ -164,15 +164,15 @@ lemma "hoare1  p S q = hoare p S q"
   proof -
     assume A: "[\<cdot> p ] * S * [\<cdot> - q ] = \<top>"
     have "{\<cdot>p} \<le> {\<cdot>p} * \<top>" by simp
-    also have "... \<le> {\<cdot>p} * \<top> * \<bottom>" by (unfold mult_assoc, simp)
-    also have "... = {\<cdot>p} * [\<cdot> p ] * S * [\<cdot> - q ] * \<bottom>" by (subst A [THEN sym], simp add: mult_assoc)
+    also have "... \<le> {\<cdot>p} * \<top> * \<bottom>" by (unfold mult.assoc, simp)
+    also have "... = {\<cdot>p} * [\<cdot> p ] * S * [\<cdot> - q ] * \<bottom>" by (subst A [THEN sym], simp add: mult.assoc)
     also have "... = {\<cdot>p} * S * [\<cdot> - q ] * \<bottom>" by (simp add: assert_assume)
     also have "... \<le> {\<cdot>p} * S * {\<cdot> q } * \<top>"
-      apply (simp add: mult_assoc)
+      apply (simp add: mult.assoc)
       apply (rule le_comp, rule le_comp)
       apply (simp add: assume_def uminus_Assertion_def)
       by (simp add: neg_assert_def dual_inf dual_comp sup_comp)
-    also have "... \<le> S * {\<cdot> q } * \<top>" by (simp add: mult_assoc)
+    also have "... \<le> S * {\<cdot> q } * \<top>" by (simp add: mult.assoc)
     finally show "{\<cdot>p} \<le> S * {\<cdot> q } * \<top>" .
   next
     assume A: "{\<cdot> p } \<le> S * {\<cdot> q } * \<top>"
@@ -184,10 +184,10 @@ lemma "hoare1  p S q = hoare p S q"
       apply (simp add: dual_comp dual_assume)
       apply (cut_tac x = "{\<cdot>p}" and y = "S * {\<cdot>q} * \<top>" and z = \<top> in le_comp_right)
       apply (rule A)
-      by (simp add: mult_assoc)
+      by (simp add: mult.assoc)
     also have "\<dots> = [\<cdot>p] * S * ({\<cdot>q} * \<top>)"
       apply (subst (2) assume_prop [THEN sym])
-      by (simp_all add: sup_comp mult_assoc)
+      by (simp_all add: sup_comp mult.assoc)
     also have "\<dots> \<le> [\<cdot>p] * S * ({\<cdot>q} * \<top> \<squnion> 1)"
       by (rule le_comp, simp)
     also have "\<dots> = [\<cdot>p] * S * [\<cdot>-q]"
@@ -247,7 +247,7 @@ lemma hoare_refinement: "hoare p S q = ({\<cdot>p} * (post {\<cdot>q}) \<le> S)"
     also have "\<dots> \<le> S * {\<cdot>q} * \<top>" 
       apply (cut_tac x = "{\<cdot>p} * post {\<cdot>q}" and y = S and z = "{\<cdot>q} * \<top>" in le_comp_right)
       apply (simp add: A)
-      by (simp add: mult_assoc)
+      by (simp add: mult.assoc)
     finally show "{\<cdot>p} \<le> S * {\<cdot>q} * \<top>" .
   qed
 
@@ -318,7 +318,7 @@ lemma hoare_while_mbt:
        (\<forall> u . p u \<le> q) \<Longrightarrow> hoare  (p w) (While b do x) (q \<sqinter> -b)"
   apply (unfold while_def)
   apply (rule_tac F = "\<lambda>z. [\<cdot> b ] * x * z \<sqinter> [\<cdot> - b ]" in hoare_fixpoint_mbt)
-  apply (simp add: mult_assoc [THEN sym])
+  apply (simp add: mult.assoc [THEN sym])
   apply (simp add: omega_comp_fix)
   apply (unfold hoare_choice)
   apply safe
@@ -350,7 +350,7 @@ definition
 
 lemma "hoare p S q \<Longrightarrow> datarefin S S1 D D1 \<Longrightarrow> hoare (wp D p) S1 (wp D1 q)"
   apply (simp add: hoare_def datarefin_def)
-  apply (simp add: wp_comp [THEN sym] mult_assoc [THEN sym])
+  apply (simp add: wp_comp [THEN sym] mult.assoc [THEN sym])
   apply (rule_tac y = "wp (D * S) q" in order_trans)
   apply (subst wp_comp)
   apply (rule monoD, simp_all)
@@ -359,14 +359,14 @@ lemma "hoare p S q \<Longrightarrow> datarefin S S1 D D1 \<Longrightarrow> hoare
 lemma "hoare p S q \<Longrightarrow> datarefin ({\<cdot>p} * S) S1 D D1 \<Longrightarrow> hoare (wp D p) S1 (wp D1 q)"
   apply (simp add: hoare_def datarefin_def)
   apply (rule_tac y = "wp (D * {\<cdot>p} * S) q" in order_trans)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subst wp_comp)
   apply (rule monoD, simp_all)
   apply (subst wp_comp)
   apply (unfold wp_assert, simp)
   apply (unfold wp_comp [THEN sym])
   apply (rule wp_fun_mono2)
-  by (simp add: mult_assoc)
+  by (simp add: mult.assoc)
 
 lemma inf_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> x \<sqinter> y \<in> conjunctive"
   apply (subst conjunctive_def, safe)
@@ -398,20 +398,20 @@ lemma while_dual_star: "(While p do (x::'a::mbt_algebra)) = (({\<cdot> p} * x)^\
   apply (rule omega_least)
    proof -
      have "([\<cdot> p] * x * (({\<cdot> p} * x)^\<otimes> * {\<cdot>-p}) \<sqinter> [\<cdot>-p]) = ({\<cdot> p} * x * (({\<cdot> p} * x)^\<otimes> * {\<cdot>-p})) \<squnion> {\<cdot>-p}"
-        apply (unfold mult_assoc)
+        apply (unfold mult.assoc)
         by (cut_tac p = p and x = "(x * (({\<cdot> p } * x)^\<otimes> * {\<cdot> -p }))" and y = 1 in if_Assertion_assumption, simp)
      also have "\<dots> = ({\<cdot> p} * x)^\<otimes> * {\<cdot>-p}"
-        by (simp add: mult_assoc [THEN sym], simp add: dual_star_comp_fix [THEN sym])
+        by (simp add: mult.assoc [THEN sym], simp add: dual_star_comp_fix [THEN sym])
      finally show "[\<cdot> p ] * x * (({\<cdot> p } * x)^\<otimes> * {\<cdot> - p }) \<sqinter> [\<cdot> - p ] \<le> ({\<cdot> p } * x)^\<otimes> * {\<cdot> - p }" by simp
    next
      show "({\<cdot> p } * x)^\<otimes> * {\<cdot> - p } \<le> ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]"
        apply (rule dual_star_least)
        proof -
         have "{\<cdot> p } * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<squnion> {\<cdot> - p } = [\<cdot> p ] * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<sqinter> [\<cdot> - p ]"
-        apply (unfold mult_assoc)
+        apply (unfold mult.assoc)
         by (cut_tac p = p and x = "(x * (([\<cdot>p] * x)^\<omega> * [\<cdot>-p]))" and y = 1 in if_Assertion_assumption, simp)
         also have "... = ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]"
-          apply (simp add: mult_assoc [THEN sym])
+          apply (simp add: mult.assoc [THEN sym])
           by (metis omega_comp_fix)
         finally show "{\<cdot> p } * x * (([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ]) \<squnion> {\<cdot> - p } \<le> ([\<cdot> p ] * x) ^ \<omega> * [\<cdot> - p ] " by simp
      qed

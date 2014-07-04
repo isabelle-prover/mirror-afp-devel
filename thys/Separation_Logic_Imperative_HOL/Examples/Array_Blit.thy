@@ -35,7 +35,7 @@ subsection "Definition"
       = take (Suc len) (drop si lsrc) @ x"
       apply simp
       by (metis Suc.prems(1) add_Suc_right drop_Suc_conv_tl 
-        less_Suc_eq_le nat_add_commute not_less_eq take_Suc_Cons 
+        less_Suc_eq_le add.commute not_less_eq take_Suc_Cons 
         Nat.trans_le_add2)
 
     from Suc.prems show ?case

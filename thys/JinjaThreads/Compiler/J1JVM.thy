@@ -1468,7 +1468,7 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Addr A], loc, length (compE2 a) + 0, None) ([Intg I] @ [Addr A], loc, length (compE2 a) + (length (compE2 i) + 0), None)"
       by(rule AAss_\<tau>ExecrI2)
     also (rtranclp_trans) have "[Intg I] @ [Addr A] = [] @ [Intg I, Addr A]" by simp
-    also note add_assoc[symmetric]
+    also note add.assoc[symmetric]
     also from bisim3[of loc] have "\<tau>Exec_mover_a P t e h ([], loc, 0, None) ([v], loc, length (compE2 e), None)"
       by(auto dest: bisim1Val2D1)
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + 0, None) ([v] @ [Intg I, Addr A], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)"
@@ -1498,7 +1498,7 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Null], loc, length (compE2 a) + 0, None) ([v] @ [Null], loc, length (compE2 a) + (length (compE2 i) + 0), None)"
       by(rule AAss_\<tau>ExecrI2)
     also (rtranclp_trans) have "[v] @ [Null] = [] @ [v, Null]" by simp
-    also note add_assoc[symmetric]
+    also note add.assoc[symmetric]
     also from bisim3[of loc] have "\<tau>Exec_mover_a P t e h ([], loc, 0, None) ([v'], loc, length (compE2 e), None)"
       by(auto dest: bisim1Val2D1)
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [v, Null], loc, length (compE2 a) + length (compE2 i) + 0, None) ([v'] @ [v, Null], loc, length (compE2 a) + length (compE2 i) + length (compE2 e), None)"
@@ -1529,7 +1529,7 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Addr A], loc, length (compE2 a) + 0, None) ([Intg I] @ [Addr A], loc, length (compE2 a) + (length (compE2 i) + 0), None)"
       by(rule AAss_\<tau>ExecrI2)
     also (rtranclp_trans) have "[Intg I] @ [Addr A] = [] @ [Intg I, Addr A]" by simp
-    also note add_assoc[symmetric]
+    also note add.assoc[symmetric]
     also from bisim3[of loc]
     have "\<tau>Exec_mover_a P t e h ([], loc, 0, None) ([v], loc, length (compE2 e), None)"
       by(auto dest: bisim1Val2D1)
@@ -1562,7 +1562,7 @@ next
     hence "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([] @ [Addr A], loc, length (compE2 a) + 0, None) ([Intg I] @ [Addr A], loc, length (compE2 a) + (length (compE2 i) + 0), None)"
       by(rule AAss_\<tau>ExecrI2)
     also (rtranclp_trans) have "[Intg I] @ [Addr A] = [] @ [Intg I, Addr A]" by simp
-    also note add_assoc[symmetric]
+    also note add.assoc[symmetric]
     also from bisim3[of loc] 
     have "\<tau>Exec_mover_a P t e h ([], loc, 0, None) ([v], loc, length (compE2 e), None)"
       by(auto dest: bisim1Val2D1)
@@ -3077,7 +3077,7 @@ next
     hence "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (Throw ad, loc) \<leftrightarrow> ([Addr ad], loc, 8 + length (compE2 e1) + length (compE2 e2), None)"
       by(auto intro: bisim1Sync9)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc ta_upd_simps)(blast intro: tranclp_into_rtranclp)
+    ultimately show ?thesis by(auto simp add: add.assoc ta_upd_simps)(blast intro: tranclp_into_rtranclp)
   next
     case (Synchronized1Throw2Fail a' ad)
     note [simp] = `e2' = Throw ad` `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
@@ -3099,7 +3099,7 @@ next
     hence "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW IllegalMonitorState, loc) \<leftrightarrow> ([Addr a', Addr ad], loc, 7 + length (compE2 e1) + length (compE2 e2), \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) e2')"  by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc ta_upd_simps)(blast intro: tranclp_into_rtranclp)
+    ultimately show ?thesis by(auto simp add: add.assoc ta_upd_simps)(blast intro: tranclp_into_rtranclp)
   next
     case (Synchronized1Throw2Null ad)
     note [simp] = `e2' = Throw ad` `ta = \<epsilon>` `e' = THROW NullPointer` `h' = h` `xs' = xs`
@@ -3121,7 +3121,7 @@ next
     hence "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW NullPointer, loc) \<leftrightarrow> ([Null, Addr ad], loc, 7 + length (compE2 e1) + length (compE2 e2), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) e2')"  by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc)(blast intro: tranclp_into_rtranclp)
+    ultimately show ?thesis by(auto simp add: add.assoc)(blast intro: tranclp_into_rtranclp)
   qed
 next
   case (bisim1Sync5 e1 n e2 V a v xs)
@@ -3193,7 +3193,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad], xs, 8 + length (compE2 e1) + length (compE2 e2), None)"
       by(auto intro: bisim1Sync9)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc eval_nat_numeral ta_upd_simps) blast
+    ultimately show ?thesis by(auto simp add: add.assoc eval_nat_numeral ta_upd_simps) blast
   next
     case (Synchronized1Throw2Fail a')
     note [simp] = `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs`
@@ -3209,7 +3209,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW IllegalMonitorState, xs) \<leftrightarrow> ([Addr a', Addr ad], xs, 7 + length (compE2 e1) + length (compE2 e2), \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc ta_upd_simps) blast
+    ultimately show ?thesis by(auto simp add: add.assoc ta_upd_simps) blast
   next
     case Synchronized1Throw2Null
     note [simp] = `ta = \<epsilon>` `e' = THROW NullPointer` `h' = h` `xs' = xs`
@@ -3225,7 +3225,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW NullPointer, xs) \<leftrightarrow> ([Null, Addr ad], xs, 7 + length (compE2 e1) + length (compE2 e2), \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis by(auto simp add: add_assoc) blast
+    ultimately show ?thesis by(auto simp add: add.assoc) blast
   qed auto 
 next
   case (bisim1Sync8 e1 n e2 V a ad xs)
@@ -3244,7 +3244,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad], xs, 8 + length (compE2 e1) + length (compE2 e2), None)"
       by(auto intro: bisim1Sync9)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis using xsV by(auto simp add: add_assoc eval_nat_numeral ta_upd_simps) blast
+    ultimately show ?thesis using xsV by(auto simp add: add.assoc eval_nat_numeral ta_upd_simps) blast
   next
     case (Synchronized1Throw2Fail a')
     note [simp] = `ta = \<lbrace>UnlockFail\<rightarrow>a'\<rbrace>` `e' = THROW IllegalMonitorState` `h' = h` `xs' = xs` 
@@ -3257,7 +3257,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW IllegalMonitorState, xs) \<leftrightarrow> ([Addr a', Addr ad], xs, ?pc, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis using xsV by(auto simp add: add_assoc ta_upd_simps) blast
+    ultimately show ?thesis using xsV by(auto simp add: add.assoc ta_upd_simps) blast
   next
     case Synchronized1Throw2Null
     note [simp] = `ta = \<epsilon>` `e' = THROW NullPointer` `h' = h` `xs' = xs`
@@ -3270,7 +3270,7 @@ next
     have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (THROW NullPointer, xs) \<leftrightarrow> ([Null, Addr ad], xs, ?pc, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
       by(auto intro: bisim1Sync14)
     moreover have "\<not> \<tau>move1 P h (insync\<^bsub>V\<^esub> (a) Throw ad)" by(auto simp add: \<tau>move1_\<tau>moves1.simps)
-    ultimately show ?thesis using xsV by(auto simp add: add_assoc) blast
+    ultimately show ?thesis using xsV by(auto simp add: add.assoc) blast
   qed auto
 next
   case bisim1Sync9 thus ?case by auto

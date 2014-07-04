@@ -1609,7 +1609,7 @@ apply (simp add: iT_Div_cut_greater)
 apply (subgoal_tac "\<forall>t. t \<le> t div k * k + (k - Suc 0)")
  prefer 2
  apply clarsimp
- apply (simp add: div_mult_cancel add_commute[of _ k])
+ apply (simp add: div_mult_cancel add.commute[of _ k])
  thm le_add_diff Suc_mod_le_divisor
  apply (simp add: le_add_diff Suc_mod_le_divisor)
 apply (rule iffI)

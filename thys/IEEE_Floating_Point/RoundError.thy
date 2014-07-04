@@ -57,7 +57,7 @@ lemma valof_scale_up:
   assumes "e \<noteq> 0"
   shows "valof float_format (s::nat, e + k, f) = 2^k * valof float_format (s, e, f)"
 using assms
-by auto (metis nat_add_commute power_add)
+by auto (metis add.commute power_add)
 
 lemma is_finite_zerosign:
   assumes "is_finite float_format a"
@@ -122,7 +122,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis 
-      by (metis ab add_commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
   qed
 qed
        
@@ -160,7 +160,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis 
-      by (metis ab add_commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
   qed
 qed      
 
@@ -196,7 +196,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis 
-      by (metis ab add_commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
   qed
 qed
 
@@ -232,7 +232,7 @@ proof -
       by (metis True signzero_zero val_zero val_ab)
   next
     case False then show ?thesis 
-      by (metis ab add_commute eq_diff_eq' error_def zerosign_def)
+      by (metis ab add.commute eq_diff_eq' error_def zerosign_def)
   qed
 qed
 

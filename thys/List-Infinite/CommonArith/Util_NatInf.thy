@@ -70,7 +70,7 @@ lemmas iadd_0_right_enat[simp] = add_0_right[where 'a=enat, unfolded zero_enat_d
 lemma ile_add1: "(n::enat) \<le> n + m"
 by (case_tac m, case_tac n, simp_all)
 lemma ile_add2: "(n::enat) \<le> m + n"
-by (simp only: add_commute[of m] ile_add1)
+by (simp only: add.commute[of m] ile_add1)
 
 lemma iadd_iless_mono: "\<lbrakk> (i::enat) < j; k < l \<rbrakk> \<Longrightarrow> i + k < j + l"
 by (case_tac i, case_tac k, case_tac j, case_tac l, simp_all)
@@ -89,7 +89,7 @@ thm add_leD1[no_vars]
 lemma iadd_ileD1: "m + k \<le> (n::enat) \<Longrightarrow> m \<le> n"
 by (case_tac m, case_tac n, case_tac k, simp_all)
 lemma iadd_ileD2: "m + k \<le> (n::enat) \<Longrightarrow> k \<le> n"
-by (rule iadd_ileD1, simp only: add_commute[of m])
+by (rule iadd_ileD1, simp only: add.commute[of m])
 
 
 thm diff_le_mono
@@ -225,7 +225,7 @@ by (rule imult_ile_mono[OF order_refl])
 lemma imult_iless_mono1: "\<lbrakk> (i::enat) < j; 0 < k; k \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> i * k \<le> j * k"
 by (case_tac i, case_tac j, case_tac k, simp_all)
 lemma imult_iless_mono2: "\<lbrakk> (i::enat) < j; 0 < k; k \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> k * i \<le> k * j"
-by (simp only: mult_commute[of k], rule imult_iless_mono1)
+by (simp only: mult.commute[of k], rule imult_iless_mono1)
 
 lemma imod_1: "(enat m) mod eSuc 0 = 0"
 by (simp add: eSuc_enat)
@@ -235,7 +235,7 @@ lemma imod_iadd_self2: "(m + enat n) mod (enat n) = m mod (enat n)"
 by (case_tac m, simp_all)
 
 lemma imod_iadd_self1: "(enat n + m) mod (enat n) = m mod (enat n)"
-by (simp only: add_commute[of _ m] imod_iadd_self2)
+by (simp only: add.commute[of _ m] imod_iadd_self2)
 
 lemma idiv_imod_equality: "(m::enat) div n * n + m mod n + k = m + k"
 by (case_tac m, simp_all) (case_tac n, simp_all)

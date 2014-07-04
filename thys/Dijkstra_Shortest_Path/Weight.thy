@@ -66,7 +66,7 @@ class top_weight = order_top + weight +
 begin
 
 lemma inf_add_left[simp]: "top + a = top"
-  by (metis add_commute inf_add_right)
+  by (metis add.commute inf_add_right)
 
 lemmas [simp] = top_unique less_top[symmetric]
   

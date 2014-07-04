@@ -254,7 +254,7 @@ proof
           with wf_hyp have "\<forall>M. ?acc M \<longrightarrow> ?acc (M + {#x#})" by blast
           moreover from add have "?acc (M0 + K)" by (auto simp: multisets_def)
           ultimately have "?acc ((M0 + K) + {#x#})" by auto
-          then show "?acc (M0 + (K + {#x#}))" by (simp only: add_assoc)
+          then show "?acc (M0 + (K + {#x#}))" by (simp only: add.assoc)
         qed
         then show "?acc N" by (simp only: N)
       qed

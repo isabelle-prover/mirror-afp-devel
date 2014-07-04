@@ -259,7 +259,7 @@ proof -
     by (metis Nat.le_iff_add)
   thus "drop i (take j l) @ drop j l = drop i l"
     by (metis append_take_drop_id diff_add_inverse drop_drop drop_take
-      nat_add_commute)
+      add.commute)
 qed
 
 lemma drop_last_conv[simp]: "l\<noteq>[] \<Longrightarrow> drop (length l - Suc 0) l = [last l]"

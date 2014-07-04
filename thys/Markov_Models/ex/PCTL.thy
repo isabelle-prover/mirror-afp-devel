@@ -931,7 +931,7 @@ next
         using `s \<in> S`
         by (simp add: field_simps setsum.distrib setsum_right_distrib[symmetric] \<tau>_distr setsum_ereal[symmetric]
                     del: setsum_ereal)
-           (simp add: ereal_pos_distrib setsum.distrib ac_simps add_assoc[symmetric])
+           (simp add: ereal_pos_distrib setsum.distrib ac_simps add.assoc[symmetric])
       finally show ?case by simp
     qed }
   then show ?case by auto

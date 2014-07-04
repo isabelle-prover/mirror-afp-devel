@@ -540,7 +540,7 @@ apply(erule impE, arith)
 apply(drule_tac \<tau>s' = "\<tau>s\<^sub>1" in wt_instr_appL)
   apply arith
  apply simp
-apply(fastforce simp add:add_commute intro!: wt_instr_appLx)
+apply(fastforce simp add:add.commute intro!: wt_instr_appLx)
 done
 
 

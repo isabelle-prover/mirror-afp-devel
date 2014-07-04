@@ -159,7 +159,7 @@ proof -
     have "(f \<otimes> (g \<otimes> h)) i j = \<Sum>{f i k1 \<cdot> \<Sum>{g k1 k2 \<cdot> h k2 j |k2. k2 \<in> UNIV} |k1. k1 \<in> UNIV}"
       by (simp only: mat_mult_def)
     also have "... = \<Sum>{\<Sum>{f i k1 \<cdot> g k1 k2 \<cdot> h k2 j |k2. k2 \<in> UNIV} |k1. k1 \<in> UNIV}"
-      by (simp only: fset_to_im setsum_fun_distl finiteuniv mult_assoc)
+      by (simp only: fset_to_im setsum_fun_distl finiteuniv mult.assoc)
     also have "... = \<Sum>{\<Sum>{(f i k1 \<cdot> g k1 k2) \<cdot> h k2 j|k1. k1 \<in> UNIV} |k2. k2 \<in> UNIV}"
       by (rule mat_rearrange, auto simp add: finiteuniv)
     also have "... = \<Sum>{\<Sum>{f i k1 \<cdot> g k1 k2 |k1. k1 \<in> UNIV} \<cdot> h k2 j |k2. k2 \<in> UNIV}"

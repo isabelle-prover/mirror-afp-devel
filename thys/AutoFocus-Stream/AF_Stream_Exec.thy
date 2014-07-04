@@ -193,7 +193,7 @@ lemma f_Exec_N_append[rule_format]:"
   f_Exec_Comp_N trans_fun (a + b) xs c = 
   f_Exec_Comp_N trans_fun b (xs \<up> a) (f_Exec_Comp_N trans_fun a xs c)"
 apply (simp add: f_Exec_Comp_N_def f_Exec_append[symmetric])
-apply (simp add: take_drop add_commute[of b])
+apply (simp add: take_drop add.commute[of b])
 apply (rule subst[of "xs \<down> (a + b) \<down> a" "xs \<down> a" ], simp add: min_eqL)
 apply (subst append_take_drop_id, simp)
 done
@@ -388,7 +388,7 @@ apply (subgoal_tac "n * k + k - Suc 0 < length xs * k")
  prefer 2
  apply (drule Suc_leI[of n])
  apply (drule mult_le_mono1[of _ _ k], simp)
-apply (simp add: f_Exec_Stream_nth add_commute[of k] f_expand_take_mult[symmetric])
+apply (simp add: f_Exec_Stream_nth add.commute[of k] f_expand_take_mult[symmetric])
 done
 corollary f_Exec_Stream_expand_shrink_last_nth_eq_f_Exec_Comp: "
   \<lbrakk> 0 < k; n < length xs \<rbrakk> \<Longrightarrow>

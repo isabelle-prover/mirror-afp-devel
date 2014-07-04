@@ -657,7 +657,7 @@ proof -
     show ?thesis
       apply auto
       apply (erule JVM_CFG.cases, simp_all)
-      by (auto simp: bv_conform_def stks_purge' stkss_purge add_commute)
+      by (auto simp: bv_conform_def stks_purge' stkss_purge add.commute)
   next
     case CmpEq
     with stk_loc_succs sees_M reachable applicable
@@ -2099,7 +2099,7 @@ proof(unfold_locales)
                 else arbitrary)"
           by (auto intro!: ext
                      simp: (* nth_locs *) nth_locss nth_Cons' nth_append rev_nth (* nth_stks *) 
-                           not_less_eq_eq Suc_le_eq less_Suc_eq add_commute
+                           not_less_eq_eq Suc_le_eq less_Suc_eq add.commute
                            min.absorb1 min.absorb2 max.absorb1 max.absorb2)
         from frs' jvm_exec sem_step prog
         have c': "c' = (D,M',0)#c"

@@ -279,7 +279,7 @@ lemma vector_matrix_row:
   fixes x :: "('a::comm_semiring_1)^'m" and A :: "('a^'n^'m)"
   shows "x v* A = (\<Sum> i\<in>UNIV. (x$i) *s (A$i))"
   unfolding vector_matrix_mult_def
-  by (simp add: vec_eq_iff mult_commute)
+  by (simp add: vec_eq_iff mult.commute)
 
 lemma invertible_mult:
   fixes A B :: "real^('n::finite)^'n"

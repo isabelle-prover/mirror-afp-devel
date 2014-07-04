@@ -154,7 +154,7 @@ next
     from `labels c\<^sub>2 l c` have "labels (if (b) c\<^sub>1 else c\<^sub>2) (l + #:c\<^sub>1 + 1) c"
       by(fastforce intro:Labels_CondFalse)
     with `V \<in> lhs c` have "V \<in> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1)"
-      by(fastforce simp:nat_add_commute nat_add_left_commute)
+      by(fastforce simp:add.commute add.left_commute)
     with `V \<notin> Defs (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1)` show False by fastforce
   qed
   from IH[OF this] show ?case .
@@ -275,7 +275,7 @@ next
   from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1). s V = s' V` 
   have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V"
     by auto(drule Labels_CondFalse[of _ _ _ b c\<^sub>1],erule_tac x="V" in allE,
-       auto simp:nat_add_assoc)
+       auto simp:add.assoc)
   from IH[OF this] have "\<forall>V\<in>Defs c\<^sub>2 n. transfer et s V = transfer et s' V" .
   with `c\<^sub>2 \<turnstile> n -et\<rightarrow> n'` show ?case
     apply clarsimp 
@@ -368,7 +368,7 @@ next
   from `\<forall>V\<in>Uses (if (b) c\<^sub>1 else c\<^sub>2) (n \<oplus> #:c\<^sub>1 + 1). s V = s' V`
   have "\<forall>V\<in>Uses c\<^sub>2 n. s V = s' V"
     by auto(drule Labels_CondFalse[of _ _ _ b c\<^sub>1],erule_tac x="V" in allE,
-       auto simp:nat_add_assoc)
+       auto simp:add.assoc)
   from IH[OF this `pred et s`] show ?case .
 next
   case (WCFG_WhileTrue b c')

@@ -11,7 +11,7 @@ imports Main
 begin
 
 lemma divmultassoc: "a div (b*c) * (b*c) = ((a div (b * c)) * b)*(c::nat)"
-  by (rule mult_assoc [symmetric])
+  by (rule mult.assoc [symmetric])
 
 lemma delmod: "(a::nat) mod (b*c) mod c = a mod c"
   by (rule mod_mod_cancel [OF dvd_triv_right])

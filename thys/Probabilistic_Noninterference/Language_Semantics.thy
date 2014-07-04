@@ -1274,7 +1274,7 @@ next
         by (metis (full_types) real_of_nat_def notFinished_WtFT)
         finally have "?L1 * ?L2 \<le> 1 - ?R" .
         thus ?thesis using Local ParT cln sch
-          by (auto simp: real_eq_of_nat pos_divide_le_eq mult_commute)
+          by (auto simp: real_eq_of_nat pos_divide_le_eq mult.commute)
       qed (insert sch ParT Local, auto)
     qed
   qed

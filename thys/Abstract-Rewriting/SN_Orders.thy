@@ -56,7 +56,7 @@ class ordered_ab_semigroup = non_strict_order + ab_semigroup_add + monoid_add +
   assumes plus_left_mono: "x \<ge> y \<Longrightarrow>  x + z \<ge> y + z"
 
 lemma plus_right_mono: "y \<ge> (z :: 'a :: ordered_ab_semigroup) \<Longrightarrow> x + y \<ge> x + z"
-  by (simp add: add_commute[of x], rule plus_left_mono, auto)
+  by (simp add: add.commute[of x], rule plus_left_mono, auto)
 
 class ordered_semiring_0 = ordered_ab_semigroup + semiring_0 +
  assumes times_left_mono: "z \<ge> 0 \<Longrightarrow> x \<ge> y \<Longrightarrow> x * z \<ge> y * z"
@@ -90,7 +90,7 @@ locale one_mono_ordered_semiring_1 = order_pair gt
   and default_gt_zero: "default \<succ> 0"
 begin
 lemma plus_gt_right_mono: "x \<succ> y \<Longrightarrow> a + x \<succ> a + y"
-  unfolding add_commute[of a] by (rule plus_gt_left_mono)
+  unfolding add.commute[of a] by (rule plus_gt_left_mono)
 
 lemma plus_gt_both_mono: "x \<succ> y \<Longrightarrow> a \<succ> b \<Longrightarrow> x + a \<succ> y + b"
   by (rule gt_trans[OF plus_gt_left_mono plus_gt_right_mono])

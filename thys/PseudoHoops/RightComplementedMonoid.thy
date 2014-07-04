@@ -22,7 +22,7 @@ class right_complemented_monoid = right_residuated_pordered_monoid + right_inf +
 
 sublocale right_complemented_monoid < dual!: left_complemented_monoid "\<lambda> a b . b * a" "op \<sqinter>" "op r\<rightarrow>" 1 "op \<le>" "op <"
   apply unfold_locales
-  apply (simp_all add: inf_r_def mult_assoc mult_left_mono)
+  apply (simp_all add: inf_r_def mult.assoc mult_left_mono)
   apply (simp add: right_residual)
   by (simp add: left_divisibility)
 
@@ -71,7 +71,7 @@ context right_complemented_monoid_algebra begin
 subclass right_complemented_monoid
   apply unfold_locales
   apply simp_all
-  apply (simp add: dual_algebra.mult_assoc)
+  apply (simp add: dual_algebra.mult.assoc)
   apply (simp add: dual_algebra.mult_right_mono)
   apply (simp add: dual_algebra.left_residual)
   by (simp add: dual_algebra.right_divisibility)

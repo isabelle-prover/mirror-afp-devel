@@ -152,9 +152,9 @@ by (fastforce simp: iIN_Suc_insert_conv[of 0 n])
 lemma iMODb_Suc_insert_conv: "
   insert (r + m * Suc c) [r, mod m, c] = [r, mod m, Suc c]"
 apply (rule set_eqI)
-apply (simp add: iMODb_iff add_commute[of _ r])
-apply (simp add: add_commute[of m])
-apply (simp add: add_assoc[symmetric])
+apply (simp add: iMODb_iff add.commute[of _ r])
+apply (simp add: add.commute[of m])
+apply (simp add: add.assoc[symmetric])
 apply (rule iffI)
  apply fastforce
 apply (elim conjE)
@@ -476,7 +476,7 @@ apply safe
  thm mod_add_eq_imp_mod_0[THEN iffD1]
  apply (rule mod_add_eq_imp_mod_0[of x, THEN iffD1])
  apply simp
-apply (simp add: mult_commute iMOD_plus_divisor_mult)
+apply (simp add: mult.commute iMOD_plus_divisor_mult)
 done
 corollary iMOD_Suc: "
   x \<in> [r, mod m] \<Longrightarrow> (Suc x \<in> [r, mod m]) = (m = Suc 0)"
@@ -490,7 +490,7 @@ apply safe
  apply (clarsimp simp: iMOD_iff)
  apply (rule mod_add_eq_imp_mod_0[of "x - k" k, THEN iffD1])
  apply simp
-apply (simp add: mult_commute iMOD_minus_divisor_mult)
+apply (simp add: mult.commute iMOD_minus_divisor_mult)
 done
 corollary iMOD_pred: "
   \<lbrakk> x \<in> [r, mod m]; r < x \<rbrakk> \<Longrightarrow> (x - Suc 0 \<in> [r, mod m]) = (m = Suc 0)"
@@ -511,7 +511,7 @@ apply (clarsimp simp: iMODb_iff)
 apply (drule mult_le_mono1[of _ _ m])
 apply (simp add: diff_mult_distrib
   mod_0_div_mult_cancel[THEN iffD1, OF mod_eq_imp_diff_mod_0]
-  add_commute[of r] mult_commute[of c])
+  add.commute[of r] mult.commute[of c])
 done
 lemma iMODb_plus_divisor: "
   \<lbrakk> x \<in> [r, mod m, c]; x < r + m * c \<rbrakk> \<Longrightarrow> x + m \<in> [r, mod m, c]"
@@ -1109,7 +1109,7 @@ lemma iMODb_trans': "
   z \<in> [x, mod m, c]"
 apply (rule iMODb_trans[where c'=c'], assumption+)
 apply (frule iMODb_geD, frule div_le_mono[of x y m])
-apply (simp add: add_commute[of _ c] add_commute[of _ "m*c"])
+apply (simp add: add.commute[of _ c] add.commute[of _ "m*c"])
 apply (drule mult_le_mono[OF le_refl, of _ _ m])
 apply (simp add: add_mult_distrib2 diff_mult_distrib2 mult_div_cancel)
 apply (simp add: iMODb_iff)
@@ -1395,7 +1395,7 @@ lemma iMODb_append_union_Suc: "
 thm insert_absorb[of "r + m * c" "[r, mod m, c] \<union> [ r + m * Suc c, mod m, c']"]
 apply (subst insert_absorb[of "r + m * c" "[r, mod m, c] \<union> [ r + m * Suc c, mod m, c']", symmetric])
  apply (simp add: iT_iff)
-apply (simp del: Un_insert_right add: Un_insert_right[symmetric] add_commute[of m] add_assoc[symmetric] iMODb_Suc_pred_insert_conv)
+apply (simp del: Un_insert_right add: Un_insert_right[symmetric] add.commute[of m] add.assoc[symmetric] iMODb_Suc_pred_insert_conv)
 thm iMODb_append_union[of r m c]
 apply (simp add: iMODb_append_union)
 done
@@ -1411,10 +1411,10 @@ lemma iMODb_inter: "
 apply (rule set_eqI)
 apply (simp add: iMODb_iff)
 apply (simp add: diff_mult_distrib2)
-apply (simp add: mult_commute[of _ "(r' - r) div m"])
+apply (simp add: mult.commute[of _ "(r' - r) div m"])
 thm mod_0_div_mult_cancel[THEN iffD1, OF mod_eq_imp_diff_mod_0]
 apply (simp add: mod_0_div_mult_cancel[THEN iffD1, OF mod_eq_imp_diff_mod_0])
-apply (simp add: add_commute[of _ r])
+apply (simp add: add.commute[of _ r])
 apply fastforce
 done
 
@@ -1478,7 +1478,7 @@ apply (rule set_eqI)
  thm div_mult_cancel
  apply (simp add: div_mult_cancel)
  thm le_add_diff
- apply (subst add_commute)
+ apply (subst add.commute)
  apply (rule le_add_diff)
  thm Suc_mod_le_divisor
  apply (simp add: Suc_mod_le_divisor)
@@ -1505,7 +1505,7 @@ apply (frule_tac Max_ge, assumption)
 apply (cut_tac n=x and k="x div m" and m=m in div_imp_le_less)
 apply clarsimp+
 apply (drule_tac m=x in less_imp_le_pred)
-apply (simp add: add_commute[of m])
+apply (simp add: add.commute[of m])
 apply (simp add: div_le_mono)
 done
 thm setsum.UNION_disjoint
@@ -1892,7 +1892,7 @@ lemma mod_cut_greater_aux_t_less: "
   \<lbrakk> 0 < (m::nat); r \<le> t \<rbrakk> \<Longrightarrow> 
   t < t + m - (t - r) mod m"
 thm less_add_diff
-by (simp add: less_add_diff add_commute)
+by (simp add: less_add_diff add.commute)
 lemma mod_cut_greater_aux_le_x: "
   \<lbrakk> (r::nat) \<le> t; t < x; x mod m = r mod m\<rbrakk> \<Longrightarrow> 
   t + m - (t - r) mod m \<le> x"
@@ -2060,7 +2060,7 @@ apply (case_tac "r mod m = t mod m")
  apply (case_tac "t \<le> x")
   prefer 2
   apply simp
- apply (simp add: diff_mult_distrib2 mult_div_cancel mod_eq_diff_mod_0_conv add_commute[of r])
+ apply (simp add: diff_mult_distrib2 mult_div_cancel mod_eq_diff_mod_0_conv add.commute[of r])
 apply (subgoal_tac "Suc ((t - Suc r) mod m) = (t - r) mod m")
  prefer 2
  thm diff_mod_pred
@@ -2668,10 +2668,10 @@ lemma iMOD_inext_nth_Suc_diff: "
 by (simp add: iMOD_inext_nth del: inext_nth.simps)
 lemma iMOD_inext_nth_diff: "
   ([r, mod m] \<rightarrow> a) - ([r, mod m] \<rightarrow> b) = (a - b) * m"
-by (simp add: iMOD_inext_nth diff_mult_distrib mult_commute[of m])
+by (simp add: iMOD_inext_nth diff_mult_distrib mult.commute[of m])
 lemma iMODb_inext_nth_diff: "\<lbrakk> a \<le> c; b \<le> c \<rbrakk> \<Longrightarrow>
   ([r, mod m, c] \<rightarrow> a) - ([r, mod m, c] \<rightarrow> b) = (a - b) * m"
-by (simp add: iMODb_inext_nth diff_mult_distrib  mult_commute[of m])
+by (simp add: iMODb_inext_nth diff_mult_distrib  mult.commute[of m])
 
 
 

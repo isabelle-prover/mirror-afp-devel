@@ -105,7 +105,7 @@ lemma del_edge_undirected_degree_plus': "finite (edges g) \<Longrightarrow> (v,e
 
 lemma del_edge_undirected_degree_minus[simp]: "finite (edges g) \<Longrightarrow> (v,e,v') \<in> edges g 
     \<Longrightarrow> (v',e,v) \<in> edges g \<Longrightarrow> degree v (del_unEdge v e v' g) =degree v g- (1::nat)" 
-  using del_edge_undirected_degree_plus by (metis add_diff_cancel_left' nat_add_commute);
+  using del_edge_undirected_degree_plus by (metis add_diff_cancel_left' add.commute);
 
 lemma del_edge_undirected_degree_minus'[simp]: "finite (edges g) \<Longrightarrow> (v,e,v') \<in> edges g 
     \<Longrightarrow> (v',e,v) \<in> edges g \<Longrightarrow> degree v' (del_unEdge v e v' g) =degree v' g- (1::nat)"
@@ -1268,7 +1268,7 @@ proof  (cases "even(degree v' G)")
   case True
   hence "?L = num_of_odd_nodes G + (if even (degree v G)\<and> v\<noteq>v' then 2 else 0)" 
     by (metis assms(1) assms(2) assms(3) rem_UnPath_even)
-  thus ?thesis by (metis (mono_tags) True assms(4) nat_add_commute plus_nat.add_0)
+  thus ?thesis by (metis (mono_tags) True assms(4) add.commute plus_nat.add_0)
 next
   case False
   hence "?L = num_of_odd_nodes G + (if odd (degree v G)\<and> v\<noteq>v' then -2 else 0)" 

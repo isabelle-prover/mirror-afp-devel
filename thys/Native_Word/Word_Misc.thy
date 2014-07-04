@@ -136,14 +136,14 @@ lemma sdiv_smod_id: "(a sdiv b) * b + (a smod b) = a"
 proof -
   note [simp] = word_sdiv_def word_smod_def
   have F5: "\<forall>u\<Colon>'a word. - (- u) = u" by (metis word_sint.Rep_inverse' minus_minus wi_hom_neg)
-  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis add_left_commute add_0_right)
+  have F7: "\<forall>v u\<Colon>'a word. u + v = v + u" by(metis add.left_commute add_0_right)
   have F8: "\<forall>(w\<Colon>'a word) (v\<Colon>int) u\<Colon>int. word_of_int u + word_of_int v * w = word_of_int (u + v * sint w)"
     by (metis word_sint.Rep_inverse wi_hom_syms(1) wi_hom_syms(3))
   have "\<exists>u. u = - sint b \<and> word_of_int (sint a mod u + - (- u * (sint a div u))) = a"
-    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add_commute zmod_zdiv_equality)
+    using F5 by (metis minus_minus word_sint.Rep_inverse' mult_minus_left add.commute zmod_zdiv_equality)
   hence "word_of_int (sint a mod - sint b + - (sint b * (sint a div - sint b))) = a" by (metis equation_minus_iff)
   hence "word_of_int (sint a mod - sint b) + word_of_int (- (sint a div - sint b)) * b = a"
-    using F8 by(metis mult_commute mult_minus_left)
+    using F8 by(metis mult.commute mult_minus_left)
   hence eq: "word_of_int (- (sint a div - sint b)) * b + word_of_int (sint a mod - sint b) = a" using F7 by metis
 
   show ?thesis
@@ -168,13 +168,13 @@ proof -
       with a eq show ?thesis by simp
     next
       case False with a show ?thesis
-        by simp (metis wi_hom_add wi_hom_mult add_commute mult_commute word_sint.Rep_inverse add_commute zmod_zdiv_equality)
+        by simp (metis wi_hom_add wi_hom_mult add.commute mult.commute word_sint.Rep_inverse add.commute zmod_zdiv_equality)
     qed
   qed
 qed
 
 lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<and> n < 2 * (m :: nat)"
-by(metis div_less n_not_Suc_n not_leE Suc_1 div_by_0 lessI td_gal_lt One_nat_def Suc_1 comm_semiring_1_class.normalizing_semiring_rules(11) less_nat_zero_code mult_0 nat_mult_commute neq0_conv sdl)
+by(metis div_less n_not_Suc_n not_leE Suc_1 div_by_0 lessI td_gal_lt One_nat_def Suc_1 comm_semiring_1_class.normalizing_semiring_rules(11) less_nat_zero_code mult_0 mult.commute neq0_conv sdl)
 
 lemma word_div_lt_eq_0: 
   fixes x :: "'a :: len word" 
@@ -200,10 +200,10 @@ lemma div_half_nat:
 proof -
   let ?q = "2 * (x div 2 div y)"
   have q: "?q = x div y - x div y mod 2"
-    by(metis div_mult2_eq nat_mult_commute mult_div_cancel)
+    by(metis div_mult2_eq mult.commute mult_div_cancel)
   let ?r = "x - ?q * y"
   have r: "?r = x mod y + x div y mod 2 * y" 
-    by(simp add: q diff_mult_distrib div_mod_equality')(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq nat_add_commute nat_mult_commute)
+    by(simp add: q diff_mult_distrib div_mod_equality')(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq add.commute mult.commute)
   
   show ?thesis
   proof(cases "y \<le> x - ?q * y")
@@ -211,14 +211,14 @@ proof -
     hence "x div y mod 2 \<noteq> 0" unfolding r
       by(metis Divides.mod_div_equality' True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) mult_div_cancel q)
     hence "x div y = ?q + 1" unfolding q
-      by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend nat_add_commute)
+      by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend add.commute)
     moreover hence "x mod y = ?r - y"
       by simp(metis Divides.mod_div_equality' diff_commute diff_diff_left mult_Suc)
     ultimately show ?thesis using True by(simp add: Let_def)
   next
     case False
     hence "x div y mod 2 = 0" unfolding r
-      by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial nat_mult_commute)
+      by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial mult.commute)
     hence "x div y = ?q" unfolding q by simp
     moreover hence "x mod y = ?r" by (metis mod_div_equality') 
     ultimately show ?thesis using False by(simp add: Let_def)
@@ -241,12 +241,12 @@ proof -
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
   
   from n have "2 * (n div 2 div m) < 2 ^ len_of TYPE('a)"
-    by(metis mult_commute div_mult2_eq mult_div_cancel less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
+    by(metis mult.commute div_mult2_eq mult_div_cancel less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
   moreover
   have "2 * (n div 2 div m) * m < 2 ^ len_of TYPE('a)" using n unfolding div_mult2_eq[symmetric]
-    by(subst (2) mult_commute)(simp add: div_mod_equality' diff_mult_distrib mult_div_cancel div_mult2_eq)
+    by(subst (2) mult.commute)(simp add: div_mod_equality' diff_mult_distrib mult_div_cancel div_mult2_eq)
   moreover have "2 * (n div 2 div m) * m \<le> n"
-    by(metis div_mult2_eq div_mult_le nat_mult_assoc nat_mult_commute)
+    by(metis div_mult2_eq div_mult_le mult.assoc mult.commute)
   ultimately
   have r: "x - ?q * y = of_nat (n - ?q' * m)" 
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)" 

@@ -1146,7 +1146,7 @@ proof -
     apply (simp add: int_word_sint sshiftr_div_2n shiftr_int_def)
     apply (erule ds_cases, simp_all)
     apply (subst mod_pos_pos_trivial, simp_all add: aux3)
-    apply (subst mod_pos_geq, simp_all add: aux3 add_commute)
+    apply (subst mod_pos_geq, simp_all add: aux3 add.commute)
     apply (subst mod_pos_pos_trivial, simp_all add: aux3)
 
     apply (rule word_sint.Rep_eqD)

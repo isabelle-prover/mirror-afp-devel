@@ -94,7 +94,7 @@ proof -
     by (subst (asm) euclidean_all_zero_iff[symmetric]) (auto simp: sumH_def)
   ultimately have "sumH > 0" by simp
   have line_fderiv[derivative_intros]: "\<And>t. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at t within {0..1})"
-    unfolding line_def by (subst add_commute)
+    unfolding line_def by (subst add.commute)
       (intro has_derivative_add_const scaleR_left_has_derivative has_derivative_id)
   hence line_deriv: "\<And>t. (line has_vector_derivative H) (at t within {0..1})"
     by (auto simp: has_vector_derivative_def has_derivative_at_within)
@@ -132,7 +132,7 @@ proof -
       apply (auto simp: ac_simps)
       apply (subst fold_commute_apply[where f="(\<lambda>d. op * (H \<bullet> d))" and g="(\<lambda>d. op * (H \<bullet> d))"
         and h="\<lambda>x. (H \<bullet> b) * x" for b])
-      apply (auto simp: mult_commute)
+      apply (auto simp: mult.commute)
       done
     finally have "((\<lambda>t. sumDs k (line t)) has_vector_derivative sumDs (Suc k) (line t))
       (at t within {0..1})" .

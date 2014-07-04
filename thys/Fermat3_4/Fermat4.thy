@@ -27,7 +27,7 @@ proof -
   also with a2_ge_b2 have "\<dots> = a*b + (a^2 - b^2) + b^2 - 2*a*b" by simp
   also with ab_ge_b2 have "\<dots> = (a*b - b^2) + a^2 + b^2 - 2*a*b" by auto
   also have "\<dots> = b*(a-b) + a^2 + b^2 - 2*a*b" 
-    by (simp only: diff_mult_distrib2 power2_eq_square mult_commute)
+    by (simp only: diff_mult_distrib2 power2_eq_square mult.commute)
   finally show ?thesis by arith
 qed
 
@@ -61,7 +61,7 @@ proof -
     have "c*b - c*b = 0" by simp
     with a2cb have "a^2 = c*c + c*b - c*b - b*b" by (simp add: power2_eq_square)
     also have "\<dots> = c*(c+b) - b*(c+b)" 
-      by (simp add: add_mult_distrib2 add_mult_distrib mult_commute)
+      by (simp add: add_mult_distrib2 add_mult_distrib mult.commute)
     finally show ?thesis by (simp only: diff_mult_distrib)
   qed
   have a_nonzero: "a \<noteq> 0"
@@ -424,7 +424,7 @@ proof -
     proof -
       have "?g dvd \<alpha> \<and> ?g dvd \<beta>" by auto
       with albega have "?g dvd \<bar>k\<bar> \<and> ?g dvd \<bar>l\<bar>" 
-        by (simp add: power2_eq_square mult_commute)
+        by (simp add: power2_eq_square mult.commute)
       hence "?g dvd k \<and> ?g dvd l" by simp
       thus ?thesis by (simp add: zgcd_greatest_iff)
     qed
@@ -568,7 +568,7 @@ proof (rule ccontr)
       then obtain p q where "p = b" and "q = a" and "p \<in> zOdd" by simp    
       with ab abc have 
         "p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
-        by (auto simp add: zgcd_commute mult_commute)
+        by (auto simp add: zgcd_commute mult.commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed

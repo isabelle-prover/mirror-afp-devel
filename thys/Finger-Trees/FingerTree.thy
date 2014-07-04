@@ -177,16 +177,16 @@ text {* Auxiliary lemmas *}
 lemma gmn_correct:
   assumes "is_measured_node nd"
   shows "gmn nd = listsum (map snd (nodeToList nd))"
-  by (insert assms, induct nd) (auto simp add: add_assoc)
+  by (insert assms, induct nd) (auto simp add: add.assoc)
 
 lemma gmd_correct:
   assumes "is_measured_digit d"
   shows "gmd d = listsum (map snd (digitToList d))"
-  by (insert assms, cases d, auto simp add: gmn_correct add_assoc)
+  by (insert assms, cases d, auto simp add: gmn_correct add.assoc)
 
 lemma gmft_correct: "is_measured_ftree t 
   \<Longrightarrow> (gmft t) = listsum (map snd (toList t))"
-  by (induct t, auto simp add: ft_invar_def gmd_correct gmn_correct add_assoc)
+  by (induct t, auto simp add: ft_invar_def gmd_correct gmn_correct add.assoc)
 lemma gmft_correct2: "ft_invar t \<Longrightarrow> (gmft t) = listsum (map snd (toList t))"
   by (simp only: ft_invar_def gmft_correct)
 
@@ -1302,7 +1302,7 @@ primrec gmnl:: "('e, 'a::monoid_add) Node list \<Rightarrow> 'a" where
 lemma gmnl_correct:
   assumes "\<forall> x \<in> set xs. is_measured_node x"
   shows  "gmnl xs = listsum (map snd (nlistToList xs))"
-  by (insert assms, induct xs) (auto simp add: add_assoc gmn_correct)
+  by (insert assms, induct xs) (auto simp add: add.assoc gmn_correct)
 
 lemma splitNlist_correct:" \<lbrakk>
   \<And>(a::'a) (b::'a). p a \<Longrightarrow> p (a + b);
@@ -1331,7 +1331,7 @@ next
         by (cases "splitNlist p (i + gmn a) (v # va)", blast)
       note miv = IV2(2)[of "i + gmn a" l1 n1 r1]
       have v2:"p (i + gmn a + gmnl (v # va))" 
-        using IV2(5) by (simp add: add_assoc)
+        using IV2(5) by (simp add: add.assoc)
       note miv2 =  miv[OF _ IV2(1) IV2(3) IV2(1)  v2 v1]
       have v3: "a # l1 = l" "n1 = n" "r1 = r"  using IV2 v1 by auto
       with miv2 have 
@@ -1340,7 +1340,7 @@ next
              v # va = l1 @ n1 # r1"
         by auto
       with v2 v3 show ?thesis
-        by (auto simp add: add_assoc)
+        by (auto simp add: add.assoc)
     qed
   qed
 next
@@ -1354,7 +1354,7 @@ lemma digitToNlist_inv:
   
 lemma gmnl_gmd:
   "is_measured_digit d \<Longrightarrow> gmnl (digitToNlist d) = gmd d"
-  by (cases d, auto simp add: add_assoc)
+  by (cases d, auto simp add: add.assoc)
   
 lemma gmn_gmd: 
   "is_measured_node nd \<Longrightarrow> gmd (nodeToDigit nd) = gmn nd"
@@ -1458,7 +1458,7 @@ proof-
   have 
     v4:"gmd pr + gmft m + gmnl sf = 
         listsum (map snd (digitToList pr @ toList m @ nlistToList sf))"
-    by (auto simp add: gmd_correct gmft_correct gmnl_correct assms add_assoc)
+    by (auto simp add: gmd_correct gmft_correct gmnl_correct assms add.assoc)
   with v3 show ?thesis by simp
 qed
 
@@ -1538,7 +1538,7 @@ next
           "is_leveln_ftree (Suc n) m \<and> is_measured_ftree m"
           "is_leveln_digit n sf \<and> is_measured_digit sf" by simp_all
         from 3 have 
-          v7: "p (i + gmd pr + gmft m + gmd sf)" by (auto simp add: add_assoc)
+          v7: "p (i + gmd pr + gmft m + gmd sf)" by (auto simp add: add.assoc)
         with pr_m_sf_inv 3(4) pr_m_sf_inv(3) case1 False l1xr1  
              splitDigit_inv'[of p "i + gmd pr + gmft m" sf l1 x r1 n] 
         have l1_x_r1_inv: 
@@ -1711,7 +1711,7 @@ next
           "is_leveln_ftree (Suc n) m \<and> is_measured_ftree m"
           "is_leveln_digit n sf \<and> is_measured_digit sf" by simp_all
         from 3(3,6) have 
-          v7: "p (i + gmd pr + gmft m + gmd sf)" by (auto simp add: add_assoc)
+          v7: "p (i + gmd pr + gmft m + gmd sf)" by (auto simp add: add.assoc)
         with pr_m_sf_inv 3(4) pr_m_sf_inv(3) case1 False l1xr1  
              splitDigit_inv[of p "i + gmd pr + gmft m" sf n l1 x r1] 
         have l1_x_r1_inv: 
@@ -1729,7 +1729,7 @@ next
         with l1_x_r1_inv(1,2,3) pr_m_sf_inv v1 v2 have
           ziel2: " \<not> p (i + gmft l)"
           "p (i + gmft l + gmn nd)"
-          by (auto simp add: gmftR_gmnl add_assoc)
+          by (auto simp add: gmftR_gmnl add.assoc)
         from l1_x_r1_inv(3,4,5) v1 v2(2) pr_m_sf_inv have
           ziel3: "is_leveln_ftree n l \<and> is_measured_ftree l \<and>
           is_leveln_ftree n r \<and> is_measured_ftree r \<and> 
@@ -1806,7 +1806,7 @@ next
         have split_point:
           " \<not> p (i + gmft l)"
           "p (i + gmft l + gmn nd)"
-          by (auto simp add: gmftR_gmnl add_assoc)
+          by (auto simp add: gmftR_gmnl add.assoc)
         from l2_x2_r2_list have x_list: 
           "nodeToList x = nlistToList l2 @ nodeToList x2 @ nlistToList r2"
           by (simp add: nodeToDigit_list)

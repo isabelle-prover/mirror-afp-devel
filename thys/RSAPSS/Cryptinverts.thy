@@ -26,22 +26,22 @@ by (metis cong_nat_def dvd_eq_mod_eq_0 Divides.mod_less prime_gt_1_nat)
 lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p = m mod p"
   apply (cases "m mod p = 0")
   apply (simp add: mod_mult_left_eq)
-  apply (simp only: mult_commute [of k "pred p"]
+  apply (simp only: mult.commute [of k "pred p"]
     power_mult mod_mult_right_eq [of "m" "(m^pred p)^k" "p"]
     remainderexp [of "m^pred p" "p" "k", symmetric])
   apply (insert fermat [of p m], auto)
-by (metis Cryptinverts.pred.simps Suc_pred mod_mult_right_eq mult_cancel1 mult_eq_1_iff nat_mult_assoc nat_mult_commute nat_power_eq_Suc_0_iff not_gr0)
+by (metis Cryptinverts.pred.simps Suc_pred mod_mult_right_eq mult_cancel1 mult_eq_1_iff mult.assoc mult.commute nat_power_eq_Suc_0_iff not_gr0)
 
 lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod p = m mod p"
-  apply (simp add: mult_commute [of "k * pred p" "pred q"] mult_assoc [symmetric])
+  apply (simp add: mult.commute [of "k * pred p" "pred q"] mult.assoc [symmetric])
   apply (rule cryptinverts_hilf1 [of "p" "m" "(pred q) * k"])
   apply simp
   done
 
 lemma cryptinverts_hilf3: "prime q \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod q = m mod q"
-  apply (simp only: mult_assoc)
-  apply (simp add: mult_commute [of "pred p" "pred q"])
-  apply (simp only: mult_assoc [symmetric])
+  apply (simp only: mult.assoc)
+  apply (simp add: mult.commute [of "pred p" "pred q"])
+  apply (simp only: mult.assoc [symmetric])
   apply (rule cryptinverts_hilf2)
   apply simp
   done
@@ -53,7 +53,7 @@ lemma cryptinverts_hilf4:
   apply (frule mod_eqD)
   apply (elim exE)
   apply (rule specializedtoprimes1a)
-  apply (simp add: cryptinverts_hilf2 cryptinverts_hilf3 mult_assoc [symmetric])+
+  apply (simp add: cryptinverts_hilf2 cryptinverts_hilf3 mult.assoc [symmetric])+
   done
 
 lemma primmultgreater: fixes p::nat shows "\<lbrakk> prime p; prime q; p \<noteq> 2; q \<noteq> 2\<rbrakk> \<Longrightarrow> 2 < p*q"

@@ -490,7 +490,7 @@ proof -
   from finM have orbits_fin:"finite orbits" by (rule fin_set_imp_fin_orbits)
   hence fin_parts:"finite big_orbits" "finite {N\<in>orbits. card N = 1}" unfolding big_orbits_def by simp+
   from assms have "\<And>N. N \<in> big_orbits \<Longrightarrow> p dvd card N" unfolding big_orbits_def by (auto simp: p_dvd_orbit_size)
-  hence orbit_div:"\<And>N. N \<in> big_orbits \<Longrightarrow> card N = (card N div p) * p" by (metis dvd_mult_div_cancel nat_mult_commute)
+  hence orbit_div:"\<And>N. N \<in> big_orbits \<Longrightarrow> card N = (card N div p) * p" by (metis dvd_mult_div_cancel mult.commute)
   have "card M = card (\<Union> orbits)" unfolding orbits_def by (metis Union_quotient same_orbit_is_equiv)
   also from orbits_fin have "card (\<Union> orbits) = (\<Sum>N\<in>orbits. card N)" unfolding orbits_def
   apply(rule card_Union_disjoint)

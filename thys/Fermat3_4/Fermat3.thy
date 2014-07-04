@@ -63,7 +63,7 @@ next
       with vo have "v^3 \<in> zOdd" and "w^3 \<in> zEven" 
         by (auto simp only: power_preserves_even power_preserves_odd)
       hence "w^3 + v^3 \<in> zOdd" by (simp only: even_plus_odd)
-      with vwx have "x^3 \<in> zOdd" by (simp add: add_commute)
+      with vwx have "x^3 \<in> zOdd" by (simp add: add.commute)
       hence "x \<in> zOdd" by (simp only: power_preserves_odd)
       with vwx show False by (auto simp add: odd_iff_not_even)
     qed

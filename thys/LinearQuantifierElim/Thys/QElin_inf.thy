@@ -167,7 +167,7 @@ next
       then obtain x where "?a < x" "x < ?b" by(metis dense)
       hence " \<forall>y. ?a < y \<and> y \<le> x \<longrightarrow> s < d*y + \<langle>ds,xs\<rangle>"
         using `d<0` by (simp add:field_simps)
-      (metis add_le_cancel_right mult_le_cancel_left order_antisym linear mult_commute xt1(8))
+      (metis add_le_cancel_right mult_le_cancel_left order_antisym linear mult.commute xt1(8))
       hence ?thesis using 1 `?a<x` by auto
     } moreover
     { let ?a = "s - d * r" let ?b = "\<langle>d *\<^sub>s cs + ds,xs\<rangle>"
@@ -178,7 +178,7 @@ next
         assume "?a = ?b"
         thus ?thesis using `d>0` Atom 1
           by(simp add:field_simps iprod_left_add_distrib)
-            (metis add_0_left add_less_cancel_right distrib_left mult_commute mult_strict_left_mono)
+            (metis add_0_left add_less_cancel_right distrib_left mult.commute mult_strict_left_mono)
       next
         assume "?a < ?b"
         { fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"

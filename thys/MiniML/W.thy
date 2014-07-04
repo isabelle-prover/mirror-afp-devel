@@ -77,7 +77,7 @@ lemma new_tv_bound_typ_inst_sch [rule_format (no_asm)]:
   "new_tv n sch --> new_tv (n + (min_new_bound_tv sch)) (bound_typ_inst (%b. TVar (b + n)) sch)"
 apply (induct_tac "sch")
   apply simp
- apply (simp add: add_commute)
+ apply (simp add: add.commute)
 apply (intro strip)
 apply simp
 apply (erule conjE)

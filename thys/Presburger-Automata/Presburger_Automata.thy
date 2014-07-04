@@ -840,7 +840,7 @@ next
           from Cons(7) show "ii < Suc jj" by simp
           from Cons(10) Suc show "j' < length xs" by simp
         qed
-        also from Suc H 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by (simp add: nat_add_commute) 
+        also from Suc H 0 have "\<dots> = (\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii)" by (simp add: add.commute) 
         also have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj) \<and> \<not> tr_lookup T (i + jj) ii)" proof
           assume H': "\<not> tr_lookup T (j + jj) ii \<and> \<not> tr_lookup T (i + jj) ii"
           hence "\<not> tr_lookup T ii (j + jj)" by (auto simp: tr_lookup_def)

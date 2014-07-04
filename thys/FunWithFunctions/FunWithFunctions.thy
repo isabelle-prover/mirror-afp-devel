@@ -177,7 +177,7 @@ proof(rule ccontr)
     have "ifac(j - 1) \<noteq> 0" using `j<i` by(simp add: below0)
     then have "\<bar>ifac (j - 1)\<bar> < (-j) * \<bar>ifac (j - 1)\<bar>" using `j<i`
       mult_le_less_imp_less[OF order_refl[of "abs(ifac(j - 1))"] `1 < -j`]
-      by(simp add:mult_commute)
+      by(simp add:mult.commute)
     hence "abs(ifac(j - 1)) < abs(ifac j)"
       using `1 < -j` by(simp add: ifac_rec[of "j"] abs_mult)
   } note not_wf = this

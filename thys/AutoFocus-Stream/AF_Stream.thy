@@ -377,13 +377,13 @@ lemma f_expand_nth_if: "\<And>n.
 apply (case_tac "k = 0", simp)
 apply (simp, intro conjI impI)
  thm f_expand_nth_mult
- apply (clarsimp simp: f_expand_nth_mult mult_commute[of k])
+ apply (clarsimp simp: f_expand_nth_mult mult.commute[of k])
 apply (induct xs, simp)
 apply (simp add: nth_append append_Cons[symmetric] del: append_Cons)
 apply (intro conjI impI)
  apply (simp add: nth_Cons')
 apply (case_tac "length xs = 0", simp)
-apply (simp add: add_commute[of k] diff_less_conv[symmetric] mod_diff_self2)
+apply (simp add: add.commute[of k] diff_less_conv[symmetric] mod_diff_self2)
 done
 corollary f_expand_nth_mod_eq_0: "
   \<lbrakk> n < length xs * k; n mod k = 0 \<rbrakk> \<Longrightarrow> (xs \<odot>\<^sub>f k) ! n = xs ! (n div k)"
@@ -418,7 +418,7 @@ done
 thm f_expand_take_mult[no_vars]
 lemma f_expand_take_mod: "
   n mod k = 0 \<Longrightarrow> xs \<odot>\<^sub>f k \<down> n = xs \<down> (n div k) \<odot>\<^sub>f k"
-by (clarsimp simp: mult_commute[of k] f_expand_take_mult)
+by (clarsimp simp: mult.commute[of k] f_expand_take_mult)
 
 lemma f_expand_drop_mult: "xs \<odot>\<^sub>f k \<up> (n * k) = (xs \<up> n) \<odot>\<^sub>f k"
 apply (insert arg_cong[OF append_take_drop_id, of "\<lambda>x. x \<odot>\<^sub>f k" n xs])
@@ -430,7 +430,7 @@ done
 
 lemma f_expand_drop_mod: "
   n mod k = 0 \<Longrightarrow> xs \<odot>\<^sub>f k \<up> n = xs \<up> (n div k) \<odot>\<^sub>f k"
-by (clarsimp simp: mult_commute[of k] f_expand_drop_mult)
+by (clarsimp simp: mult.commute[of k] f_expand_drop_mult)
 
 lemma f_expand_take_mult_Suc: "
   \<lbrakk> n < length xs; i < k \<rbrakk> \<Longrightarrow> 
@@ -441,7 +441,7 @@ apply (subgoal_tac "n * k + Suc i \<le> length xs * k")
  apply (drule mult_le_mono1[of "Suc n" _ k])
  apply simp
 apply (clarsimp simp: list_eq_iff min_eqR nth_append f_expand_nth_if min_def nth_Cons')
-apply (simp add: mult_commute[of k] linorder_not_less)
+apply (simp add: mult.commute[of k] linorder_not_less)
 apply (drule_tac n=q in le_neq_implies_less, simp+)
 apply (drule_tac n=q in Suc_leI)
 apply (drule_tac j=q in mult_le_mono1[of _ _ k])
@@ -483,7 +483,7 @@ done
 thm f_expand_take_mod
 lemma i_expand_i_take_mod: "
   n mod k = 0 \<Longrightarrow> f \<odot>\<^sub>i k \<Down> n = f \<Down> (n div k) \<odot>\<^sub>f k"
-by (clarsimp simp: mult_commute[of k] i_expand_i_take_mult)
+by (clarsimp simp: mult.commute[of k] i_expand_i_take_mult)
 
 thm f_expand_drop_mult
 lemma i_expand_i_drop_mult: "(f \<odot>\<^sub>i k) \<Up> (n * k) = (f \<Up> n) \<odot>\<^sub>i k"
@@ -493,13 +493,13 @@ done
 
 lemma i_expand_i_drop_mod: "
   n mod k = 0 \<Longrightarrow> f \<odot>\<^sub>i k \<Up> n = f \<Up> (n div k) \<odot>\<^sub>i k"
-by (clarsimp simp: mult_commute[of k] i_expand_i_drop_mult)
+by (clarsimp simp: mult.commute[of k] i_expand_i_drop_mult)
 
 lemma i_expand_i_take_mult_Suc: "
   i < k \<Longrightarrow> f \<odot>\<^sub>i k \<Down> (n * k + Suc i) = (f \<Down> n) \<odot>\<^sub>f k @ (f n # \<NoMsg>\<^bsup>i\<^esup>)"
 apply (clarsimp simp: list_eq_iff, rename_tac i')
 apply (clarsimp simp: i_expand_nth_if f_expand_nth_if nth_append nth_Cons')
-apply (simp add: linorder_not_less mult_commute[of k])
+apply (simp add: linorder_not_less mult.commute[of k])
 apply (drule_tac n=q in le_neq_implies_less, simp+)
 apply (drule_tac n=q in Suc_leI)
 apply (drule_tac j=q in mult_le_mono1[of _ _ k])
@@ -543,7 +543,7 @@ by (simp add: list_eq_iff Suc_diff_le i_expand_nth_if nth_Cons')
 lemma i_expand_nth_interval_eq_replicate_NoMsg: "
   \<lbrakk> 0 < k; t * k < t1; t1 \<le> t2; t2 \<le> t * k + k \<rbrakk> \<Longrightarrow>
   f \<odot>\<^sub>i k \<Down> t2 \<up> t1 = \<NoMsg>\<^bsup>t2 - t1\<^esup>"
-apply (clarsimp simp: list_eq_iff i_expand_nth_if add_commute[of k])
+apply (clarsimp simp: list_eq_iff i_expand_nth_if add.commute[of k])
 apply (drule_tac i=i and k=t1 in add_less_mono2, simp)
 apply (drule_tac i="t * k" and j=t1 and m=i in trans_less_add1)
 thm less_mod_eq_imp_add_divisor_le
@@ -570,9 +570,9 @@ lemma i_expand_assoc: "f \<odot>\<^sub>i a \<odot>\<^sub>i b = f \<odot>\<^sub>i
 by (fastforce simp: i_expand_def ilist_eq_iff)
 
 lemma f_expand_commute: "xs \<odot>\<^sub>f a \<odot>\<^sub>f b = xs \<odot>\<^sub>f b \<odot>\<^sub>f a"
-by (simp add: f_expand_assoc mult_commute[of b])
+by (simp add: f_expand_assoc mult.commute[of b])
 lemma i_expand_commute: "f \<odot>\<^sub>i a \<odot>\<^sub>i b = f \<odot>\<^sub>i b \<odot>\<^sub>i a"
-by (simp add: i_expand_assoc mult_commute[of b])
+by (simp add: i_expand_assoc mult.commute[of b])
 
 
 
@@ -734,23 +734,23 @@ by (simp add: f_aggregate_take)
 
 lemma f_aggregate_drop_mult: "
   f_aggregate (xs \<up> (n * k)) k ag = f_aggregate xs k ag \<up> n"
-by (simp add: list_eq_iff div_diff_mult_self1 f_aggregate_nth add_mult_distrib add_commute[of "n * k"])
+by (simp add: list_eq_iff div_diff_mult_self1 f_aggregate_nth add_mult_distrib add.commute[of "n * k"])
 lemma f_aggregate_drop_mod: "
   n mod k = 0 \<Longrightarrow> f_aggregate (xs \<up> n) k ag = f_aggregate xs k ag \<up> (n div k)"
-by (clarsimp simp: mult_commute[of k] f_aggregate_drop_mult)
+by (clarsimp simp: mult.commute[of k] f_aggregate_drop_mult)
 
 lemma f_aggregate_assoc: "
   (\<And>xs. length xs mod a = 0 \<Longrightarrow> ag (f_aggregate xs a ag) = ag xs) \<Longrightarrow>
   f_aggregate (f_aggregate xs a ag) b ag = f_aggregate xs (a * b) ag"
 apply (clarsimp simp add: list_eq_iff div_mult2_eq f_aggregate_nth, rename_tac i)
 apply (simp add: take_drop f_aggregate_take_mult[symmetric])
-apply (simp add: add_mult_distrib2 mult_commute[of _ a] f_aggregate_drop_mult[symmetric] mult_assoc[symmetric])
+apply (simp add: add_mult_distrib2 mult.commute[of _ a] f_aggregate_drop_mult[symmetric] mult.assoc[symmetric])
 apply (drule_tac x="(xs \<down> (a * b + a * i * b) \<up> (a * i * b))" in meta_spec)
 apply (subgoal_tac "a * b + a * i * b \<le> length xs")
  prefer 2
  apply (simp add: div_mult2_eq[symmetric])
  apply (drule_tac x=i in less_div_imp_mult_add_divisor_le)
- apply (simp add: mult_assoc[symmetric] mult_commute[of _ a] add_commute[of _ "a * b"])
+ apply (simp add: mult.assoc[symmetric] mult.commute[of _ a] add.commute[of _ "a * b"])
 apply (simp add: min_eqR)
 done
 
@@ -758,7 +758,7 @@ lemma f_aggregate_commute: "
   \<lbrakk> \<And>xs. length xs mod a = 0 \<Longrightarrow> ag (f_aggregate xs a ag) = ag xs;
     \<And>xs. length xs mod b = 0 \<Longrightarrow> ag (f_aggregate xs b ag) = ag xs \<rbrakk> \<Longrightarrow>
   f_aggregate (f_aggregate xs a ag) b ag = f_aggregate (f_aggregate xs b ag) a ag"
-by (simp add: f_aggregate_assoc mult_commute[of _ b])
+by (simp add: f_aggregate_assoc mult.commute[of _ b])
 
 lemma i_aggregate_0[simp]: "i_aggregate f 0 ag = (\<lambda>x. ag [])"
 by (simp add: i_aggregate_def)
@@ -775,7 +775,7 @@ by (simp add: i_aggregate_nth i_take_drop_eq_map)
 lemma i_aggregate_i_append_mod: "
   length xs mod k = 0 \<Longrightarrow>
   i_aggregate (xs \<frown> f) k ag = f_aggregate xs k ag \<frown> i_aggregate f k ag"
-apply (clarsimp simp: ilist_eq_iff i_aggregate_nth i_append_nth f_aggregate_nth mult_commute[of k] diff_mult_distrib, rename_tac i n)
+apply (clarsimp simp: ilist_eq_iff i_aggregate_nth i_append_nth f_aggregate_nth mult.commute[of k] diff_mult_distrib, rename_tac i n)
 apply (drule_tac n=i in Suc_leI)
 apply (drule mult_le_mono1[of _ _ k])
 apply simp
@@ -816,14 +816,14 @@ by (simp add: ilist_eq_iff i_aggregate_nth add_mult_distrib)
 lemma i_aggregate_i_drop_mod: "
   n mod k = 0 \<Longrightarrow>
   i_aggregate (f \<Up> n) k ag = i_aggregate f k ag \<Up> (n div k)"
-by (clarsimp simp: mult_commute[of k] i_aggregate_i_drop_mult ilist_eq_iff)
+by (clarsimp simp: mult.commute[of k] i_aggregate_i_drop_mult ilist_eq_iff)
 
 lemma i_aggregate_assoc: "
   \<lbrakk> 0 < a; 0 < b; 
     \<And>xs. length xs mod a = 0 \<Longrightarrow> ag (f_aggregate xs a ag) = ag xs \<rbrakk> \<Longrightarrow>
   i_aggregate (i_aggregate f a ag) b ag = i_aggregate f (a * b) ag"
 apply (simp add: ilist_eq_iff i_aggregate_nth) 
-apply (simp add: i_aggregate_i_drop_mult[symmetric] i_aggregate_i_take_mult[symmetric] mult_commute[of a] mult_assoc)
+apply (simp add: i_aggregate_i_drop_mult[symmetric] i_aggregate_i_take_mult[symmetric] mult.commute[of a] mult.assoc)
 done
 
 lemma i_aggregate_commute: "
@@ -831,7 +831,7 @@ lemma i_aggregate_commute: "
     \<And>xs. length xs mod a = 0 \<Longrightarrow> ag (f_aggregate xs a ag) = ag xs;
     \<And>xs. length xs mod b = 0 \<Longrightarrow> ag (f_aggregate xs b ag) = ag xs \<rbrakk> \<Longrightarrow>
   i_aggregate (i_aggregate xs a ag) b ag = i_aggregate (i_aggregate xs b ag) a ag"
-by (simp add: i_aggregate_assoc mult_commute[of _ b])
+by (simp add: i_aggregate_assoc mult.commute[of _ b])
 
 
 
@@ -1178,7 +1178,7 @@ lemma f_shrink_assoc: "xs \<div>\<^sub>f a \<div>\<^sub>f b = xs \<div>\<^sub>f 
 by (unfold f_shrink_def, rule f_aggregate_assoc, fold f_shrink_def, rule f_shrink_last_message)
 
 lemma f_shrink_commute: "xs \<div>\<^sub>f a \<div>\<^sub>f b = xs \<div>\<^sub>f b \<div>\<^sub>f a"
-by (simp add: f_shrink_assoc mult_commute[of a])
+by (simp add: f_shrink_assoc mult.commute[of a])
 
 lemma i_shrink_0[simp]: "f \<div>\<^sub>i 0 = (\<lambda>n. \<NoMsg>)"
 by (simp add: i_shrink_defs)
@@ -1258,7 +1258,7 @@ apply (fold f_shrink_def, simp add: f_shrink_last_message)
 done
 
 lemma i_shrink_commute: "f \<div>\<^sub>i a \<div>\<^sub>i b = f \<div>\<^sub>i b \<div>\<^sub>i a"
-by (simp add: i_shrink_assoc mult_commute[of a])
+by (simp add: i_shrink_assoc mult.commute[of a])
 
 
 
@@ -1415,7 +1415,7 @@ apply (subgoal_tac "k + n mod k \<le> n")
  prefer 2
  apply (drule div_le_mono[of _ _ k], drule mult_le_mono1[of _ _ k])
  apply (simp add: div_mult_cancel)
-apply (simp add: mod_diff_self2 add_commute[of k])
+apply (simp add: mod_diff_self2 add.commute[of k])
 done
 
 
@@ -1431,7 +1431,7 @@ done
 
 lemma f_last_message_hold_drop_mod: "
   n mod k = 0 \<Longrightarrow> xs \<up> n \<longmapsto>\<^sub>f k = xs \<longmapsto>\<^sub>f k \<up> n"
-by (clarsimp simp: mult_commute[of k] f_last_message_hold_drop_mult)
+by (clarsimp simp: mult.commute[of k] f_last_message_hold_drop_mult)
 
 lemma f_last_message_hold_idem: "xs \<longmapsto>\<^sub>f k \<longmapsto>\<^sub>f k = xs \<longmapsto>\<^sub>f k"
 apply (case_tac "k = 0", simp)
@@ -1484,12 +1484,12 @@ apply (subgoal_tac "length xs \<le> x - x mod k")
  apply (simp add: div_mult_cancel[symmetric])
 apply (simp add: mod_diff_mult_self1)
 apply (drule_tac j="x - x mod k" and k="x mod k" in add_le_mono1)
-apply (simp add: add_commute[of "m * k"])
+apply (simp add: add.commute[of "m * k"])
 done
 
 lemma i_last_message_hold_i_append_mod: "
   length xs mod k = 0 \<Longrightarrow> (xs \<frown> f) \<longmapsto>\<^sub>i k = (xs \<longmapsto>\<^sub>f k) \<frown> (f \<longmapsto>\<^sub>i k)"
-by (clarsimp simp: mult_commute[of k], rule i_last_message_hold_i_append_mult)
+by (clarsimp simp: mult.commute[of k], rule i_last_message_hold_i_append_mult)
 
 lemma i_last_message_hold_i_take: "f \<Down> n \<longmapsto>\<^sub>f k = (f \<longmapsto>\<^sub>i k) \<Down> n"
 by (simp add: list_eq_iff f_last_message_hold_nth i_last_message_hold_nth div_mult_cancel i_take_drop min_eqR)
@@ -1500,7 +1500,7 @@ by (simp add: ilist_eq_iff i_last_message_hold_nth)
 
 lemma i_last_message_hold_i_drop_mod: "
   n mod k = 0 \<Longrightarrow> f \<Up> n \<longmapsto>\<^sub>i k = f \<longmapsto>\<^sub>i k \<Up> n"
-by (clarsimp simp: mult_commute[of k], rule i_last_message_hold_i_drop_mult)
+by (clarsimp simp: mult.commute[of k], rule i_last_message_hold_i_drop_mult)
 
 lemma i_last_message_hold_idem: "f \<longmapsto>\<^sub>i k \<longmapsto>\<^sub>i k = f \<longmapsto>\<^sub>i k"
 by (simp add: ilist_eq_iff i_last_message_hold_nth mult_div_cancel[symmetric] i_last_message_hold_i_drop_mod[symmetric] i_last_message_hold_i_take[symmetric] last_message_f_last_message_hold)
@@ -1583,7 +1583,7 @@ done
 
 corollary f_shrink_last_nth': "
   n < length xs div k \<Longrightarrow> (xs \<div>\<^bsub>fl\<^esub> k) ! n = xs ! (Suc n * k - Suc 0)"
-by (simp add: f_shrink_last_nth add_commute[of k])
+by (simp add: f_shrink_last_nth add.commute[of k])
 
 lemma f_shrink_last_hd: "
   \<lbrakk> 0 < k; k \<le> length xs \<rbrakk> \<Longrightarrow> hd (xs \<div>\<^bsub>fl\<^esub> k) = xs ! (k - Suc 0)"
@@ -1648,7 +1648,7 @@ lemma f_shrink_last_assoc: "xs \<div>\<^bsub>fl\<^esub> a \<div>\<^bsub>fl\<^esu
 by (unfold f_shrink_last_def, rule f_aggregate_assoc, fold f_shrink_last_def, rule f_shrink_last_last)
 
 lemma f_shrink_last_commute: "xs \<div>\<^bsub>fl\<^esub> a \<div>\<^bsub>fl\<^esub> b = xs \<div>\<^bsub>fl\<^esub> b \<div>\<^bsub>fl\<^esub> a"
-by (simp add: f_shrink_last_assoc mult_commute[of a])
+by (simp add: f_shrink_last_assoc mult.commute[of a])
 
 lemma i_shrink_last_1[simp]: "f \<div>\<^bsub>il\<^esub> Suc 0 = f"
 by (simp add: i_shrink_last_def i_aggregate_1)
@@ -1658,7 +1658,7 @@ lemma i_shrink_last_nth: "0 < k \<Longrightarrow> (f \<div>\<^bsub>il\<^esub> k)
 by (simp add: i_shrink_last_def i_aggregate_nth last_i_take2)
 thm f_shrink_last_nth'
 lemma i_shrink_last_nth': "0 < k \<Longrightarrow> (f \<div>\<^bsub>il\<^esub> k) n =  f (Suc n * k - Suc 0)"
-by (simp add: i_shrink_last_nth add_commute[of k])
+by (simp add: i_shrink_last_nth add.commute[of k])
 
 lemma i_shrink_last_hd: "(f \<div>\<^bsub>il\<^esub> k) 0 = last (f \<Down> k)"
 apply (case_tac "k = 0")
@@ -1706,7 +1706,7 @@ apply (simp add: i_aggregate_assoc f_shrink_last_last[unfolded f_shrink_last_def
 done
 
 lemma i_shrink_last_commute: "f \<div>\<^bsub>il\<^esub> a \<div>\<^bsub>il\<^esub> b = f \<div>\<^bsub>il\<^esub> b \<div>\<^bsub>il\<^esub> a"
-by (simp add: i_shrink_last_assoc mult_commute[of a])
+by (simp add: i_shrink_last_assoc mult.commute[of a])
 
 
 

@@ -34,11 +34,11 @@ lemma minus_order: "-a \<le> -b \<Longrightarrow> b \<le> a"
 
 lemma right_move_to_left: "a + - c \<le> b \<Longrightarrow> a \<le> b + c"  
   apply (drule_tac v = "c" in add_order_preserving_right)
-  by (simp add: add_assoc)
+  by (simp add: add.assoc)
  
 lemma right_move_to_right: "a \<le> b + -c \<Longrightarrow> a + c \<le> b"  
   apply (drule_tac v = "c" in add_order_preserving_right)
-  by (simp add: add_assoc)
+  by (simp add: add.assoc)
  
 
 lemma [simp]: "(a \<sqinter> b) + c = (a + c) \<sqinter> (b + c)"
@@ -64,11 +64,11 @@ lemma [simp]: "(a \<sqinter> b) - c = (a - c) \<sqinter> (b - c)"
 
 lemma left_move_to_left: "-c + a \<le> b \<Longrightarrow> a \<le> c + b"  
   apply (drule_tac u = "c" in add_order_preserving_left)
-  by (simp add: add_assoc [THEN sym])
+  by (simp add: add.assoc [THEN sym])
  
 lemma left_move_to_right: "a \<le> - c + b \<Longrightarrow> c + a \<le> b"  
   apply (drule_tac u = "c" in add_order_preserving_left)
-  by (simp add: add_assoc [THEN sym])
+  by (simp add: add.assoc [THEN sym])
 
 lemma [simp]: "c + (a \<sqinter> b) = (c + a) \<sqinter> (c + b)"
   apply (rule antisym)
@@ -164,14 +164,14 @@ lemma add_pos_left: "0 \<le> a \<Longrightarrow> b \<le> a + b"
   by simp
 
 lemma inf_sup: "a - (a \<sqinter> b) + b = a \<squnion> b"
-  by (simp add: add_assoc sup_commute)
+  by (simp add: add.assoc sup_commute)
 
 lemma inf_sup_2: "b = (a \<sqinter> b) - a + (a \<squnion> b)"
   apply (unfold inf_sup [THEN sym])
   proof -
     fix a b:: 'a
     have "b = (a \<sqinter> b) + (- a + a) + - (a \<sqinter> b) + b" by (simp only: right_minus left_minus add_0_right add_0_left)
-    also have "\<dots> = (a \<sqinter> b) + - a + (a + - (a \<sqinter> b) + b)" by (unfold add_assoc, simp) 
+    also have "\<dots> = (a \<sqinter> b) + - a + (a + - (a \<sqinter> b) + b)" by (unfold add.assoc, simp) 
     also have "\<dots> = (a \<sqinter> b) - a + (a - (a \<sqinter> b) + b)" by simp
     finally show "b = (a \<sqinter> b) - a + (a - (a \<sqinter> b) + b)" .
   qed

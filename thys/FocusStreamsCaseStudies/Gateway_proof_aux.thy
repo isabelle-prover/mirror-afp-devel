@@ -1373,7 +1373,7 @@ assumes "\<forall>j\<le> D. str (t + j + ((i::nat) + k)) = x"
        and "j\<le> D"
 shows      "str (t + i + k + j) = x"
 using assms
-by (metis nat_add_commute nat_add_left_commute)
+by (metis add.commute add.left_commute)
 
 lemma streamValue6:
   assumes "\<forall>j\<le> D. str (t + j + ((i::nat) + k)) = x"

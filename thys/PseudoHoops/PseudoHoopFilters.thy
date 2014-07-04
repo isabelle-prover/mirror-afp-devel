@@ -350,7 +350,7 @@ lemma lemma_3_5_iv_1: "(d1 b c) * (d1 a b) * (d1 b c) \<le> d1 a c"
   apply (rule mult_right_mono)
   apply simp
   apply (simp add: lemma_2_5_14)
-  by (simp add: mult_assoc)
+  by (simp add: mult.assoc)
 
 lemma lemma_3_5_iv_2: "(d2 a b) * (d2 b c) * (d2 a b) \<le> d2 a c"
   apply (simp add: d2_def)
@@ -366,7 +366,7 @@ lemma lemma_3_5_iv_2: "(d2 a b) * (d2 b c) * (d2 a b) \<le> d2 a c"
   apply (rule mult_right_mono)
   apply simp
   apply (simp add: lemma_2_5_15)
-  by (simp add: mult_assoc)
+  by (simp add: mult.assoc)
 
 
 
@@ -707,7 +707,7 @@ lemma normal_filter_union: "H \<in> normalfilters \<Longrightarrow> (H \<union> 
   apply (rule_tac x = "i + 1" in exI)
   apply simp
   apply (erule notE)
-  apply (simp add: mult_assoc [THEN sym])
+  apply (simp add: mult.assoc [THEN sym])
   apply (drule_tac a = x in lemma_3_10_i_ii)
   apply (subgoal_tac "H ** {x} = {x} ** H")
   apply simp
@@ -722,7 +722,7 @@ lemma normal_filter_union: "H \<in> normalfilters \<Longrightarrow> (H \<union> 
   apply simp
   apply (drule_tac x = "xaa * xb" in bspec)
   apply (simp add: filter_i)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (drule_tac x = "ya" in bspec)
   apply (simp add: allpowers_def)
   apply safe
@@ -923,13 +923,13 @@ lemma lemma_3_13 [simp]:
   apply (rule_tac x = x in exI)
   apply simp
   apply (rule_tac x = y in exI)
-  apply (simp add: mult_assoc [THEN sym])
+  apply (simp add: mult.assoc [THEN sym])
   apply (simp add: cong_l lemma_3_8_ii)
   apply safe
   apply (rule_tac x = xa in exI)
   apply simp
   apply (rule_tac x = ya in exI)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (rule_tac y = "a l\<rightarrow> d" in cong_trans)
   apply simp
   apply (simp add: cong_r cong_r_filter)

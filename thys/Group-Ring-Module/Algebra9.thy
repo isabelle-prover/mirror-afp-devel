@@ -2347,7 +2347,7 @@ apply (frule single_addition_pm_mem[of "z" "i" "a" "f" "-m"], assumption+)
  apply (simp add:aug_commute[of "f" "z" "i" "{a}" "(m + n)\<Odot>a\<^bsub>f,i,z\<^esub>" "m\<Odot>a\<^bsub>f,i,z\<^esub>"])
  apply (subst addition_assoc[THEN sym], assumption+)
  apply (subgoal_tac "((- m)\<Odot>a\<^bsub>f,i,z\<^esub>) \<^sub>f+ (m\<Odot>a\<^bsub>f,i,z\<^esub>) = z") apply simp
- apply (simp add:zeroA_def)  apply (simp add:add_commute)
+ apply (simp add:zeroA_def)  apply (simp add:add.commute)
  apply (simp add:fg_elem_single_def)  
  apply (rule fag_single_additionTr4_1[of "f" "z" "i" "a"_ "nat (- m - 1)"], assumption+)
   apply (rule theI') apply (rule ex_ex1I) 
@@ -2418,9 +2418,9 @@ apply (simp add:s_a_p_1)
  apply simp
  apply (subst aug_commute, assumption+)
  apply (case_tac "0 < m", thin_tac "0 < m \<or> m < 0")
- apply (simp add:s_a_p_1, simp add:add_commute)
+ apply (simp add:s_a_p_1, simp add:add.commute)
 apply simp
- apply (simp add:single_addition_neg, simp add:add_commute)
+ apply (simp add:single_addition_neg, simp add:add.commute)
 done
 
 lemma single_inv:"\<lbrakk>commute_bpp f (aug_pm_set z i {(a::'a)}); 
@@ -2577,11 +2577,11 @@ apply (rule aGroup.intro)
 
  apply (simp add:fags_def, simp add:fags_carr_def,
         (erule exE)+, simp)
- apply (simp add:fags_bppTr, simp add:add_assoc)
+ apply (simp add:fags_bppTr, simp add:add.assoc)
 
  apply (simp add:fags_def, simp add:fags_carr_def,
         (erule exE)+, simp)
- apply (simp add:fags_bppTr, simp add:add_commute)
+ apply (simp add:fags_bppTr, simp add:add.commute)
 
  apply (rule Pi_I)
  apply (simp add:fags_def, simp add:fags_carr_def, erule exE, simp)
@@ -2771,7 +2771,7 @@ done
  
 lemma (in aGroup)  agsum_add3mp:"\<lbrakk> a \<in> carrier A; n < 0; 0 < m\<rbrakk> \<Longrightarrow>
                         (n + m)\<triangleright>a\<^bsub>A\<^esub> = n\<triangleright>a\<^bsub>A\<^esub> \<plusminus> (m\<triangleright>a\<^bsub>A\<^esub>)"
-apply (simp add:add_commute)
+apply (simp add:add.commute)
 apply (subst ag_pOp_commute, (simp add:nt_mem0)+)
 apply (simp add:agsum_add3pm)
 done
@@ -2852,7 +2852,7 @@ apply (simp add:sprod_n_a_def)
  apply (simp add:asum_multTr_pp)
  apply (simp add:nat_mult_distrib)
  apply (frule int_mult_le [of "0" "m" "n"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
 done
 
 lemma (in aGroup) asum_multTr_pm:"\<lbrakk>a \<in> carrier A; 0 \<le> m; n < 0\<rbrakk> \<Longrightarrow> 
@@ -2898,7 +2898,7 @@ apply (simp add:sprod_n_a_def)
  apply (frule int_mult_le [of "m" "0" "n"], assumption, simp) 
  apply (case_tac "0 \<le> m * n", simp)
  apply (frule zle_imp_zless_or_eq [of "0" "m * n"])  
- apply (thin_tac "0 \<le> m * n", simp add:zle mult_commute)
+ apply (thin_tac "0 \<le> m * n", simp add:zle mult.commute)
  apply (simp add:ag_inv_zero, simp add:aSum_zero)
 apply simp
  apply (simp add:asum_multTr_mp)

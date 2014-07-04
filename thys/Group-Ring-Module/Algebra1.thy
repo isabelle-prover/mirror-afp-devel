@@ -177,7 +177,7 @@ apply (simp add:order_le_less)
 done
 
 lemma int_mult_le1:"\<lbrakk>i \<le> j; (0::int) \<le> k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
-apply (simp add:mult_commute[of _ "k"])
+apply (simp add:mult.commute[of _ "k"])
 apply (simp add:int_mult_le)
 done
 
@@ -189,13 +189,13 @@ done
 lemma zmult_zle_mono1_neg:"\<lbrakk>(i::int) \<le> j; k \<le> 0\<rbrakk> \<Longrightarrow> j * k \<le> i * k"
 apply (subgoal_tac "0 \<le> - k") prefer 2 apply simp
 apply (frule int_mult_le [of "i" "j" "- k"], assumption+)
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done 
 
 lemma zmult_zless_mono_neg:"\<lbrakk>(i::int) < j; k < 0\<rbrakk> \<Longrightarrow> j * k < i * k"
 apply (subgoal_tac "0 < -k", 
        frule int_mult_mono[of "i" "j" "-k"], assumption+,
-       simp add:mult_commute, simp)
+       simp add:mult.commute, simp)
 done
 
 lemma zmult_neg_neg:"\<lbrakk>i < (0::int); j < 0 \<rbrakk> \<Longrightarrow> 0 < i * j"
@@ -205,7 +205,7 @@ done
 
 lemma zmult_pos_pos:"\<lbrakk>(0::int) < i; 0 < j\<rbrakk> \<Longrightarrow> 0 < i * j"
 apply (frule int_mult_mono[of "0" "i" "j"], assumption+)
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done
 
 lemma zmult_pos_neg:"\<lbrakk>(0::int) < i; j < 0\<rbrakk> \<Longrightarrow> i * j < 0"
@@ -214,7 +214,7 @@ done
 
 lemma zmult_neg_pos:"\<lbrakk>i < (0::int); 0 < j\<rbrakk> \<Longrightarrow> i * j < 0"
 apply (frule int_mult_mono[of "i" "0" "j"], assumption+, 
-       simp add:mult_commute)
+       simp add:mult.commute)
 done
 
 lemma zle:"((z::int) \<le> w) = (\<not> (w < z))" 
@@ -249,7 +249,7 @@ done
 
 lemma zmult_zle_mono_r:"\<lbrakk>i \<le> (j::int); 0 < k\<rbrakk> \<Longrightarrow> i * k \<le> j * k"
 apply (frule zmult_zle_mono[of "i" "j" "k"], assumption)
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done 
 
 lemma pos_zmult_pos:"\<lbrakk> 0 \<le> (a::int); 0 < (b::int)\<rbrakk> \<Longrightarrow> a \<le> a * b"
@@ -259,11 +259,11 @@ apply simp
 done 
 
 lemma pos_mult_l_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> w * j"
-by (metis not_zless pos_zmult_pos order_trans mult_commute)
+by (metis not_zless pos_zmult_pos order_trans mult.commute)
 
 lemma  pos_mult_r_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> j * w"
 apply (frule pos_mult_l_gt[of "w" "i" "j"], assumption+)
-apply (simp add:mult_commute[of "w" "j"])
+apply (simp add:mult.commute[of "w" "j"])
 done
 
 lemma mult_pos_iff:"\<lbrakk>(0::int) < i; 0 \<le> i * j \<rbrakk> \<Longrightarrow> 0 \<le> j" 
@@ -300,7 +300,7 @@ by (rule mult_pos_iff, assumption+)
 
 lemma int_pos_mult_monol:"\<lbrakk> 0 < (m::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> n" 
 apply (rule int_pos_mult_monor, assumption+)
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done
 
 lemma zdiv_positive:"\<lbrakk>(0::int) \<le> a; 0 < b\<rbrakk> \<Longrightarrow> 0 \<le> a div b"
@@ -313,11 +313,11 @@ apply (rule contrapos_pp, simp+)
 done (** zmult_div_mono to rename **)
 
 lemma zdiv_pos_mono_l:"\<lbrakk> (0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done
 
 lemma zdiv_pos_pos_l:"\<lbrakk> (0::int) < w; 0 \<le> z * w\<rbrakk> \<Longrightarrow> 0 \<le> z"
-by (simp add:mult_commute, frule zdiv_pos_mono_r[of "w" "0" "z"], simp, 
+by (simp add:mult.commute, frule zdiv_pos_mono_r[of "w" "0" "z"], simp, 
         assumption)
 
 section "Sets"
@@ -2390,7 +2390,7 @@ done
 lemma an_Suc:"an (Suc n) = an n + 1"
     apply (subst an_1[THEN sym])
     apply (simp del:an_1 add:an_def) 
-    apply (simp del:an_1 add:a_zpz, simp add:add_commute)
+    apply (simp del:an_1 add:a_zpz, simp add:add.commute)
 done
 
 lemma aeq_zeq [iff]: "(ant m = ant n) = (m = n)"
@@ -3177,7 +3177,7 @@ apply (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult,
        simp add:zpos_apos[THEN sym],
        frule_tac a = z and b = b in pos_zmult_pos, assumption+,
-       simp add:mult_commute, simp)
+       simp add:mult.commute, simp)
 done
 
 lemma asprod_amult:"0 < z \<Longrightarrow> z *\<^sub>a x = (ant z) * x"
@@ -4555,7 +4555,7 @@ done
 
 lemma zmult_pos_mono_r:
          "\<lbrakk>(0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done 
 
 lemma an_neq_inf:"an n \<noteq> \<infinity>"

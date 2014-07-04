@@ -2269,7 +2269,7 @@ proof -
   from a have "0 < a^n" 
     by (rule zero_less_power)
   ultimately show ?thesis 
-    by (simp add: pos_le_divide_eq mult_commute)
+    by (simp add: pos_le_divide_eq mult.commute)
 qed
 
 end

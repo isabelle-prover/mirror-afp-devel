@@ -1569,7 +1569,7 @@ proof -
   have "?abba \<le> ?aabb" using assms(4-5)
     by (rule le_le_imp_sum_mult_le_sum_mult)
   have "cost (swapSyms t a b) + ?aabb = cost t + ?abba" using assms(1-3)
-    by (simp add: cost_swapSyms nat_add_assoc [THEN sym])
+    by (simp add: cost_swapSyms add.assoc [THEN sym])
   also have "\<dots> \<le> cost t + ?aabb" using `?abba \<le> ?aabb` by simp
   finally show ?thesis using assms(4-5) by simp
 qed

@@ -41,8 +41,8 @@ qed
 lemma add_mult_distrib_three: "(x::nat)*(a+b+c)=x*a+x*b+x*c" 
 proof -
   have "(x::nat)*(a+b+c) = x*((a+b)+c)" by auto
-  hence "x*(a+b+c) = x*(a+b)+x*c" by (metis add_mult_distrib2 nat_add_commute nat_add_left_commute)
-  thus "x*(a+b+c) = x*a+x*b+x*c" by (metis add_mult_distrib2 nat_add_commute nat_add_left_commute) 
+  hence "x*(a+b+c) = x*(a+b)+x*c" by (metis add_mult_distrib2 add.commute add.left_commute)
+  thus "x*(a+b+c) = x*a+x*b+x*c" by (metis add_mult_distrib2 add.commute add.left_commute) 
 qed
 
 lemma nat_interval_minus_zero: "{0..Suc n} = {0} Un {Suc 0..Suc n}" by auto

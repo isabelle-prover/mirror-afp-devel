@@ -27,13 +27,13 @@ lemma skip_rule: "test p \<Longrightarrow> \<lbrace>p\<rbrace>1\<lbrace>p\<rbrac
   by (simp add: hoare_triple_def)
 
 lemma sequence_rule: "\<lbrace>p\<rbrace>x\<lbrace>q'\<rbrace> \<Longrightarrow> \<lbrace>q'\<rbrace>x'\<lbrace>q\<rbrace> \<Longrightarrow> \<lbrace>p\<rbrace>x\<cdot>x'\<lbrace>q\<rbrace>"
-  by (simp add: hoare_triple_def, metis mult_assoc)
+  by (simp add: hoare_triple_def, metis mult.assoc)
 
 lemma conditional_rule: "\<lbrakk>\<lbrace>p\<cdot>b\<rbrace>x\<lbrace>q\<rbrace>; \<lbrace>p\<cdot>!b\<rbrace>x'\<lbrace>q\<rbrace>; test p; test b\<rbrakk> \<Longrightarrow> \<lbrace>p\<rbrace>b\<cdot>x + !b\<cdot>x'\<lbrace>q\<rbrace>"
-  by (simp add: hoare_triple_def, metis mult_assoc distrib_left distrib_right)
+  by (simp add: hoare_triple_def, metis mult.assoc distrib_left distrib_right)
 
 lemma consequence_rule: "\<lbrakk>test p; p \<le> p'; \<lbrace>p'\<rbrace>x\<lbrace>q'\<rbrace>; q' \<le> q; test q\<rbrakk> \<Longrightarrow> \<lbrace>p\<rbrace>x\<lbrace>q\<rbrace>"
-  by (unfold hoare_triple_def, metis (full_types) mult_assoc test_leq_mult_def_var)
+  by (unfold hoare_triple_def, metis (full_types) mult.assoc test_leq_mult_def_var)
 
 lemma while_rule_var: "\<lbrace>p\<rbrace>x\<lbrace>p\<rbrace> \<Longrightarrow> \<lbrace>p\<rbrace>x\<^sup>\<star>\<lbrace>p\<rbrace>"
   by (metis hoare_triple_def_var star_sim2)
@@ -42,9 +42,9 @@ lemma while_rule: "\<lbrakk>test q; \<lbrace>p\<cdot>q\<rbrace>x\<lbrace>p\<rbra
 proof (unfold hoare_triple_def_var, auto)
   assume assms: "test p" "test q" "p\<cdot>q\<cdot>x \<le> x\<cdot>p"
   hence "q\<cdot>p\<cdot>q\<cdot>x \<le> q\<cdot>x\<cdot>p"
-    by (metis mult_assoc mult_isol)
+    by (metis mult.assoc mult_isol)
   thus "p\<cdot>((q\<cdot>x)\<^sup>\<star>\<cdot>!q) \<le> (q\<cdot>x)\<^sup>\<star>\<cdot>!q\<cdot>(p\<cdot>!q)"
-    by (metis assms(1,2) test_mult_comm_var star_sim2 mult_isor kat_eq3 mult_assoc test2)
+    by (metis assms(1,2) test_mult_comm_var star_sim2 mult_isor kat_eq3 mult.assoc test2)
 qed (metis test_comp_closed_var test_mult_closed)
 
 definition (in kat) while_inv :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _" [64,64,64] 63) where

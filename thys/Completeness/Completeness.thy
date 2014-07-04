@@ -609,7 +609,7 @@ lemma lemma2:
   ==> ? n . P A n & P B n"
   apply (rule exI[of _ "n+m"], rule)
   apply(blast intro!: lemma1)
-  apply(rule subst[OF add_commute]) 
+  apply(rule subst[OF add.commute]) 
   apply(blast intro!: lemma1)
   done
 

@@ -82,7 +82,7 @@ lemma suffix_0 [simp]: "\<sigma>[0..] = \<sigma>"
   by (simp add: suffix_def)
 
 lemma suffix_suffix [simp]: "\<sigma>[n..][m..] = \<sigma>[n+m ..]"
-  by (simp add: suffix_def add_assoc)
+  by (simp add: suffix_def add.assoc)
 
 
 section {* Stuttering Sampling Functions *}

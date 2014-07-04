@@ -505,7 +505,7 @@ qed
 
 lemma Sup_image_eadd2:
   "Y \<noteq> {} \<Longrightarrow> Sup ((\<lambda>y :: enat. y + x) ` Y) = Sup Y + x"
-by(subst (1 2) add_commute)(rule Sup_image_eadd1)
+by(subst (1 2) add.commute)(rule Sup_image_eadd1)
 
 
 lemma mono2mono_eSuc [THEN lfp.mono2mono, cont_intro, simp]:
@@ -710,10 +710,10 @@ lemma enat_add_mono [simp]:
 by(cases y)(case_tac [!] z, simp_all)
 
 lemma enat_add1_eq [simp]: "enat x + y = enat x + z \<longleftrightarrow> y = z"
-by (metis enat_add_mono add_commute neq_iff)
+by (metis enat_add_mono add.commute neq_iff)
 
 lemma enat_add2_eq [simp]: "y + enat x = z + enat x \<longleftrightarrow> y = z"
-by (metis enat_add1_eq add_commute)
+by (metis enat_add1_eq add.commute)
 
 lemma enat_less_enat_plusI: "x < y \<Longrightarrow> enat x < enat y + z"
 by(cases z) simp_all

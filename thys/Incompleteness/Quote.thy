@@ -654,7 +654,7 @@ proof -
             using atoms assms 
             by (auto simp: p_def V_def F_def make_F_def fresh_star_def fresh_finite_insert)
           show "-p = p"  using assms atoms
-            by (simp add: p_def add_assoc perm_self_inverseI fresh_swap fresh_plus_perm)
+            by (simp add: p_def add.assoc perm_self_inverseI fresh_swap fresh_plus_perm)
           show "F \<equiv> make_F V p"
             by (rule F_def)
         qed
@@ -1014,7 +1014,7 @@ proof -
       show "F' \<equiv> make_F V' p'"
         by (rule F'_def)
       show "- p' = p'" using atoms atoms' pinv
-        by (simp add: p'_def add_assoc perm_self_inverseI fresh_swap fresh_plus_perm)
+        by (simp add: p'_def add.assoc perm_self_inverseI fresh_swap fresh_plus_perm)
     qed
   have All2_Zero: "{} \<turnstile> All2 i Zero \<alpha>"
     by auto
@@ -1121,7 +1121,7 @@ proof -
   have subst_i_star: "quote_all p' V' \<turnstile> \<alpha>(i::=Var sn) IMP PfP (ssubst \<lfloor>\<alpha>(i::=Var sn)\<rfloor>V' V' F')"
     apply (rule thin [OF star0])
     using atoms'
-    apply (force simp: V'_def p'_def fresh_swap fresh_plus_perm fresh_at_base_permI add_assoc 
+    apply (force simp: V'_def p'_def fresh_swap fresh_plus_perm fresh_at_base_permI add.assoc 
                        quote_all_perm_eq)
     done
   have "insert (OrdP (Var k)) (quote_all p (Vs-{j}))

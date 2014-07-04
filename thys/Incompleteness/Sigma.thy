@@ -301,7 +301,7 @@ proof (induction n arbitrary: t u rule: less_induct)
       next
         case (Eats t1 t2) thus ?thesis using less.IH [OF _ ijk] less.prems
           by (auto intro!: Sigma_fm_Iff [OF Eats_Subset_Iff]  simp: supp_conv_fresh)
-             (metis nat_add_commute)
+             (metis add.commute)
       qed
   next
     show "Sigma_fm (t IN u)"
@@ -522,7 +522,7 @@ proof (induction n arbitrary: t u rule: less_induct)
     { fix y t u
       have "\<lbrakk>y < n; size t + size u < y; ground t; ground u; \<lbrakk>t\<rbrakk>e = \<lbrakk>u\<rbrakk>e\<rbrakk>
            \<Longrightarrow> {} \<turnstile> t EQ u"
-        by (metis Equality_I less.IH nat_add_commute order_refl)
+        by (metis Equality_I less.IH add.commute order_refl)
     }
     thus "\<lbrakk>t\<rbrakk>e \<^bold>\<in> \<lbrakk>u\<rbrakk>e \<longrightarrow> {} \<turnstile> t IN u" using less.prems
       by (cases u rule: tm.exhaust) (auto simp: Mem_Eats_I1 Mem_Eats_I2 less.IH)

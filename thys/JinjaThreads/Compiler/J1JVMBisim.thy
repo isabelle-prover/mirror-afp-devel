@@ -1200,7 +1200,7 @@ next
   from `length es = length (v # vs)` obtain e es''' where [simp]: "es = e # es'''" by(cases es, auto)
   with `length es = length (v # vs)` have len: "length es''' = length vs" by simp
   from Cons.IH[OF len]
-  show ?case by(simp add: add_assoc append_assoc[symmetric] del: append_assoc)(rule bisims1List2, auto)
+  show ?case by(simp add: add.assoc append_assoc[symmetric] del: append_assoc)(rule bisims1List2, auto)
 qed
 
 lemma bisim1_hext_mono: "\<lbrakk> P,e,h \<turnstile> exs \<leftrightarrow> s; hext h h' \<rbrakk> \<Longrightarrow> P,e,h' \<turnstile> exs \<leftrightarrow> s" (is "PROP ?thesis1")
@@ -1249,7 +1249,7 @@ next
   case (bisims1List2 es es'' xs stk loc pc e v)
   hence "\<And>pc' d. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxEs2 es pc' d) = None"
     by(auto simp add: Cons_eq_append_conv)
-  from this[of "pc' + length (compE2 e)" "Suc d"] show ?case by(auto simp add: add_assoc)
+  from this[of "pc' + length (compE2 e)" "Suc d"] show ?case by(auto simp add: add.assoc)
 next
   case (bisim1BlockThrowSome e xs stk loc pc T v)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e pc' d) = None" by auto
@@ -1257,24 +1257,24 @@ next
 next
   case (bisim1Seq2 e2 stk loc pc e1 xs)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
-  from this[of "Suc (pc' + length (compE2 e1))"] show ?case by(simp add: add_assoc)
+  from this[of "Suc (pc' + length (compE2 e1))"] show ?case by(simp add: add.assoc)
 next
   case (bisim1CondThen e1 stk loc pc e e2 xs)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e1 pc' d) = None" by auto
   note this[of "Suc (pc' + length (compE2 e))"]
   moreover from `P,e1,h \<turnstile> (Throw a,xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>)`
   have "pc < length (compE2 e1)" by(auto dest: bisim1_ThrowD)
-  ultimately show ?case by(simp add: add_assoc match_ex_table_eq_NoneI outside_pcs_compxE2_not_matches_entry)
+  ultimately show ?case by(simp add: add.assoc match_ex_table_eq_NoneI outside_pcs_compxE2_not_matches_entry)
 next
   case (bisim1CondElse e2 stk loc pc e e1 xs)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
   note this[of "Suc (Suc (pc' + (length (compE2 e) + length (compE2 e1))))"]
-  thus ?case by(simp add: add_assoc)
+  thus ?case by(simp add: add.assoc)
 next
   case (bisim1WhileThrow2 e xs stk loc pc c)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e pc' d) = None" by auto
   from this[of "Suc (pc' + (length (compE2 c)))"]
-  show ?case by(simp add: add_assoc)
+  show ?case by(simp add: add.assoc)
 next
   case (bisim1Throw1 e xs stk loc pc)
   thus ?case by(auto dest: bisim_Val_loc_eq_xcp_None)
@@ -1289,14 +1289,14 @@ next
   case (bisim1TryCatchThrow e2 xs stk loc pc e C)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
   from this[of "Suc (Suc (pc' + (length (compE2 e))))"]
-  show ?case by(simp add: add_assoc matches_ex_entry_def)
+  show ?case by(simp add: add.assoc matches_ex_entry_def)
 next
   case bisim1Sync12 thus ?case
     by(auto dest: bisim1_ThrowD simp add: match_ex_table_append eval_nat_numeral, simp add: matches_ex_entry_def)
 next
   case bisim1Sync14 thus ?case
     by(auto dest: bisim1_ThrowD simp add: match_ex_table_append eval_nat_numeral, simp add: matches_ex_entry_def)
-qed(fastforce dest: bisim1_ThrowD simp add: add_assoc[symmetric])+
+qed(fastforce dest: bisim1_ThrowD simp add: add.assoc[symmetric])+
 
 declare match_ex_table_append_not_pcs [simp del]
        match_ex_table_eq_NoneI[simp del]
@@ -1398,13 +1398,13 @@ next
       and e: "\<tau>Exec_mover_a P t e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)" by auto
     from e have "\<tau>Exec_mover_a P t (if (e) e1 else e2) h (stk, xs, Suc (Suc (length (compE2 e) + length (compE2 e1) + pc)), None) ([v], xs, Suc (Suc (length (compE2 e) + length (compE2 e1) + length (compE2 e2))), None)"
       by(rule Cond_\<tau>ExecrI3)
-    with True s show ?thesis by(simp add: add_assoc)
+    with True s show ?thesis by(simp add: add.assoc)
   next
     case False
     with `pc \<le> length (compE2 e2)` have pc: "pc = length (compE2 e2)" by auto
     with `P, e2, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp)`
     have "stk = [v]" "xs = loc" "xcp = None" by(auto dest: bisim1_Val_length_compE2D)
-    with pc show ?thesis by(simp add: add_assoc)
+    with pc show ?thesis by(simp add: add.assoc)
   qed
 next
   case (bisim1While7 c e xs)

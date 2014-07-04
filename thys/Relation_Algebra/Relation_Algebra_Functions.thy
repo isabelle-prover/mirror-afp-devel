@@ -193,7 +193,7 @@ proof (rule antisym)
   show "x ; y \<cdot> z \<le> (x \<cdot> z ; y\<^sup>\<smile>) ; y"
     by (metis maddux_17)
   have "(x \<cdot> z ; y\<^sup>\<smile>) ; y \<le> x ; y \<cdot> (z ; (y\<^sup>\<smile> ; y))"
-    by (metis mult_subdistr_var mult_assoc)
+    by (metis mult_subdistr_var mult.assoc)
   also have "\<dots> \<le> x ; y \<cdot> z ; 1'"
     by (metis `is_p_fun y` inf_absorb2 inf_le1 le_infI le_infI2 mult_subdistl is_p_fun_def)
   finally show "(x \<cdot> z ; y\<^sup>\<smile>) ; y \<le> x ; y \<cdot> z"
@@ -219,7 +219,7 @@ lemma ss423: "is_map x \<Longrightarrow> y ; x \<le> z \<longleftrightarrow> y \
 proof
   assume "is_map x" and "y ; x \<le> z"
   hence "y \<le> y ; x ; x\<^sup>\<smile>"
-    by (metis is_map_def mult_1_right mult_assoc mult_isol is_total_def)
+    by (metis is_map_def mult_1_right mult.assoc mult_isol is_total_def)
   thus "y \<le> z ; x\<^sup>\<smile>"
     by (metis `y ; x \<le> z` mult_isor order_trans)
 next
@@ -227,7 +227,7 @@ next
   hence "y ; x \<le> z ; x\<^sup>\<smile> ; x"
     by (metis mult_isor)
   also have "\<dots> \<le> z ; 1'"
-    by (metis `is_map x` is_map_def mult_assoc mult_isol is_p_fun_def)
+    by (metis `is_map x` is_map_def mult.assoc mult_isol is_p_fun_def)
   finally show "y ; x \<le> z"
     by (metis mult_1_right)
 qed

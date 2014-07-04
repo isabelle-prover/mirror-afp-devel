@@ -412,16 +412,16 @@ proof -
       with i obtain m' where m: "m = m' + length rs - Suc i"
         by atomize_elim (auto intro: exI[of _ "m - (length rs - Suc i)"])
       with i have "\<guillemotleft>rderivs (replicate m as) r\<guillemotright> = \<guillemotleft>rderivs (replicate m' as) (rderivs ?x r)\<guillemotright>"
-       unfolding replicate_add[symmetric] rderivs_append[symmetric] by (simp add: nat_add_commute)
+       unfolding replicate_add[symmetric] rderivs_append[symmetric] by (simp add: add.commute)
       also from cyc have "\<dots> = \<guillemotleft>rderivs (replicate (m' mod (Suc i)) as) (rderivs ?x r)\<guillemotright>" 
         by (elim rderivs_replicate_mod) simp
       also from i have "\<dots> = \<guillemotleft>rderivs (replicate (m' mod (Suc i) + length rs - Suc i) as) r\<guillemotright>" 
-        unfolding rderivs_append[symmetric] replicate_add[symmetric] by (simp add: nat_add_commute)
+        unfolding rderivs_append[symmetric] replicate_add[symmetric] by (simp add: add.commute)
       also from m i have "\<dots> = \<guillemotleft>rderivs (replicate ((m - (length rs - Suc i)) mod (Suc i) + length rs - Suc i) as) r\<guillemotright>"
         by simp
       also have "\<dots> = \<guillemotleft>rderivs (replicate (length rs - Suc (i - (m - (length rs - Suc i)) mod (Suc i))) as) r\<guillemotright>"
         by (subst Suc_diff_le[symmetric])
-          (metis less_Suc_eq_le mod_less_divisor zero_less_Suc, simp add: nat_add_commute)
+          (metis less_Suc_eq_le mod_less_divisor zero_less_Suc, simp add: add.commute)
       finally have "\<exists>j < length rs. \<guillemotleft>rderivs (replicate m as) r\<guillemotright> = \<guillemotleft>rderivs (replicate (length rs - Suc j) as) r\<guillemotright>"
         using i by (metis less_imp_diff_less)
       with * show ?thesis unfolding invar_rderiv_and_add_def by auto

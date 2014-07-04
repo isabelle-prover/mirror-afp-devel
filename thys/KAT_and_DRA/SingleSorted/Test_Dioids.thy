@@ -48,7 +48,7 @@ lemma test_zero[simp]: "t 0 = 0"
   by (metis mult_1_left test_mult_comp test_one)
 
 lemma test_distrib_left: "t x \<cdot> (t y + t z) = (t x \<cdot> t y) + (t x \<cdot> t z)"
-  by (metis add_commute distrib_right' test_de_morgan test_mult)
+  by (metis add.commute distrib_right' test_de_morgan test_mult)
 
 lemma test_distrib_right: "(t x + t y) \<cdot> t z = (t x \<cdot> t z) + (t y \<cdot> t z)"
   by (metis distrib_right')
@@ -60,7 +60,7 @@ lemma test_idem[simp]: "t t x = t x"
   by (metis add_idem' test_de_morgan test_mult_idem)
 
 lemma test_add_closed[simp]: "t (t x + t y) = t x + t y"
-  by (metis add_commute test_de_morgan test_mult)
+  by (metis add.commute test_de_morgan test_mult)
 
 lemma test_mult_comm: "t x \<cdot> t y = t y \<cdot> t x"
   by (metis test_mult test_idem)
@@ -69,10 +69,10 @@ lemma test_add_comm: "t x + t y = t y + t x"
   by (metis add_comm)
 
 lemma test_mult_assoc: "t x \<cdot> (t y \<cdot> t z) = (t x \<cdot> t y) \<cdot> t z"
-  by (metis mult_assoc)
+  by (metis mult.assoc)
 
 lemma test_add_assoc: "t x + (t y + t z) = (t x + t y) + t z" 
-  by (metis add_assoc)
+  by (metis add.assoc)
 
 lemma test_add_comp: "n x + t x = 1"
   by (metis test_de_morgan test_mult_comp test_one mult_1_left)
@@ -81,13 +81,13 @@ lemma "n x \<cdot> t x = 0"
   by (metis test_mult_comp)
 
 lemma test_mult_lb1: "t x \<cdot> t y \<le> t x"
-  by (metis add_commute add_ub1 mult_1_left mult_isor test_add_comp test_de_morgan test_mult)
+  by (metis add.commute add_ub1 mult_1_left mult_isor test_add_comp test_de_morgan test_mult)
 
 lemma test_mult_lb2: "t x \<cdot> t y \<le> t y"
   by (metis test_mult_comm test_mult_lb1)
 
 lemma test_add_lb: "t x \<cdot> (t x + t y) = t x"
-  by (metis add_commute less_eq_def test_distrib_left test_mult_idem test_mult_lb1)
+  by (metis add.commute less_eq_def test_distrib_left test_mult_idem test_mult_lb1)
 
 lemma test_leq_mult_def: "(t x \<le> t y) = (t x \<cdot> t y = t x)"
   by (metis less_eq_def test_add_lb test_mult_comm test_mult_lb1)
@@ -106,7 +106,7 @@ proof (rule antisym)
     by (metis add_lub_var add_ub2 distrib_right' test_add_comm test_add_lb)
 next
   show "(t x + t z) \<cdot> (t y + t z) \<le> t x \<cdot> t y + t z"
-    by (metis add_commute test_add_lb test_de_morgan test_distrib_left test_mult test_mult_lb2)
+    by (metis add.commute test_add_lb test_de_morgan test_distrib_left test_mult test_mult_lb2)
 qed
 
 lemma test_add_distr: "t x + (t y \<cdot> t z) = (t x + t y) \<cdot> (t x + t z)"
@@ -170,7 +170,7 @@ lemma test_mult_idem_var [simp]: "test p \<Longrightarrow> p \<cdot> p = p"
   by (metis test_def test_mult_idem)
 
 lemma test_add_comm_var: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p + q = q + p"
-  by (metis add_commute)
+  by (metis add.commute)
 
 lemma test_mult_comm_var: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p \<cdot> q = q \<cdot> p"
   by (metis test_def test_mult_comm)
@@ -194,10 +194,10 @@ lemma test_absorb2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p \<cdot
   by (metis test_distrib_left_var test_mult_idem_var test_absorb1)
 
 lemma test_absorb3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow>  (p + q) \<cdot> q = q"
-  by (metis add_commute test_absorb2 test_add_closed_var test_mult_comm_var)
+  by (metis add.commute test_absorb2 test_add_closed_var test_mult_comm_var)
 
 lemma test_leq_mult_def_var: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p \<le> q) = (p \<cdot> q = p)"
-  by (metis add_commute less_eq_def test_absorb1 test_absorb2 test_mult_comm_var)
+  by (metis add.commute less_eq_def test_absorb1 test_absorb2 test_mult_comm_var)
 
 lemma test_double_comp_var: "test p \<Longrightarrow> p = !(!p)"
   by (metis test_def)
@@ -206,7 +206,7 @@ lemma test_comp: "test p \<Longrightarrow> \<exists>q. test q \<and> p + q = 1 \
   by (metis test_add_comp test_def test_mult_comp)
 
 lemma test_dist_var: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (test r \<and> r \<cdot> p = r \<cdot> q \<and> r + p = r + q \<longrightarrow> p = q)"
-  by (metis add_commute test_absorb1 test_add_distr_var test_mult_comm_var)
+  by (metis add.commute test_absorb1 test_add_distr_var test_mult_comm_var)
 
 lemma test_comp_uniq: "test p \<Longrightarrow> \<exists>!q. test q \<and> p + q = 1 \<and> p \<cdot> q = 0"
   by (safe, metis test_comp, metis test_dist_var)
@@ -227,7 +227,7 @@ lemma de_morgan1: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> !p + !q = 
   by (metis test_de_morgan test_def)
 
 lemma de_morgan2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> !p \<cdot> !q = !(p + q)"
-  by (metis add_commute add_idem' opp_mult_def test_de_morgan test_double_comp_var test_mult)
+  by (metis add.commute add_idem' opp_mult_def test_de_morgan test_double_comp_var test_mult)
 
 lemma de_morgan3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> !(!p + !q) = p \<cdot> q"
   by (metis de_morgan1 test_double_comp_var test_mult_closed)
@@ -236,10 +236,10 @@ lemma de_morgan4: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> !(!p \<cdo
   by (metis de_morgan2 test_add_closed_var test_def)
 
 lemma test_comp_anti: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p \<le> q) = (!q \<le> !p)"
-  by (metis add_commute de_morgan1 test_double_comp_var test_mult_closed less_eq_def test_leq_mult_def)
+  by (metis add.commute de_morgan1 test_double_comp_var test_mult_closed less_eq_def test_leq_mult_def)
 
 lemma ba_1: "\<lbrakk>test p; test q; test r\<rbrakk> \<Longrightarrow> p + q + !q = r + !r"
-  by (metis add_assoc mult_onel test_absorb1 test_add_comp test_def test_one_var)
+  by (metis add.assoc mult_onel test_absorb1 test_add_comp test_def test_one_var)
 
 lemma ba2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p + p = p + !(q + !q)"
   by (metis add_idem add_zeror ba_1 test_not_one test_one_var)
@@ -248,7 +248,7 @@ lemma ba3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p = (p \<cdot> q)
   by (metis test_distrib_left_var mult_oner test_add_comp test_def)
 
 lemma ba4: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p = (p + !q) \<cdot> (p + q)"
-  by (metis add_commute add_zerol test_add_distr_var test_comp_mult test_def)
+  by (metis add.commute add_zerol test_add_distr_var test_comp_mult test_def)
 
 lemma ba5: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p + q) \<cdot> !p = q \<cdot> !p"
   by (metis distrib_right'  test_comp_mult add_zerol)
@@ -277,7 +277,7 @@ proof auto
 next
   assume "test p" "test q" "test r" "p \<le> r + !q"
   thus "p \<cdot> q \<le> r" 
-    by (metis add_commute mult_isor distrib_right' add_zeror test_comp_mult2 order_trans test_mult_comm_var test_restrictl)
+    by (metis add.commute mult_isor distrib_right' add_zeror test_comp_mult2 order_trans test_mult_comm_var test_restrictl)
 qed
   
 text {*
@@ -304,17 +304,17 @@ lemma "\<lbrakk>test p; test q; x\<cdot>!q = !p\<cdot>x\<cdot>!q\<rbrakk> \<Long
 
 lemma test_eq4: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> x\<cdot>!q = !p\<cdot>x\<cdot>!q \<longleftrightarrow> p\<cdot>x\<cdot>!q = 0"
   apply default
-  apply (metis annil mult_assoc test_comp_mult)
+  apply (metis annil mult.assoc test_comp_mult)
   by (metis add_zerol distrib_right' mult_onel test_comp_add)
 
 lemma test2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>q\<cdot>p = p\<cdot>q"
-  by (metis mult_assoc test_mult_comm_var test_mult_idem_var)
+  by (metis mult.assoc test_mult_comm_var test_mult_idem_var)
 
 lemma test3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>q\<cdot>!p = 0"
   by (metis ba5 test_absorb1 test_comp_mult test_mult_closed)
 
 lemma test4: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> !p\<cdot>q\<cdot>p = 0"
-  by (metis annil ba6 mult_assoc test_mult_comm_var)
+  by (metis annil ba6 mult.assoc test_mult_comm_var)
 
 text {* Nitpick refutes the next two lemmas. *}
 
@@ -325,7 +325,7 @@ lemma comm_add_var: "\<lbrakk>test p; test q; test r; p\<cdot>x = x\<cdot>p; p\<
   (*(* nitpick *)*) oops
 
 lemma comm_mult: "\<lbrakk>test p; test q; q\<cdot>x = x\<cdot>q\<rbrakk> \<Longrightarrow> p\<cdot>q\<cdot>x = q\<cdot>p\<cdot>x"
-  by (metis mult_assoc test_mult_comm_var)
+  by (metis mult.assoc test_mult_comm_var)
 
 lemma de_morgan_var1: "\<lbrakk>test p; test q; test r\<rbrakk> \<Longrightarrow> (!p + q)\<cdot>(p + r) = p\<cdot>q + !p\<cdot>r"
 proof -
@@ -337,13 +337,13 @@ proof -
   also have "... = !p\<cdot>r + q\<cdot>p + p\<cdot>r\<cdot>q + !p\<cdot>r\<cdot>q"
     by (metis add_assoc' test_comp_closed_var test_distrib_right_var test_mult_closed tests)
   also have "... = !p\<cdot>r + p\<cdot>q + p\<cdot>q\<cdot>r + !p\<cdot>r\<cdot>q"
-    by (metis mult_assoc test_mult_comm_var tests)
+    by (metis mult.assoc test_mult_comm_var tests)
   also have "... = !p\<cdot>r\<cdot>1 + !p\<cdot>r\<cdot>q + p\<cdot>q\<cdot>1 + p\<cdot>q\<cdot>r"
-    by (metis add_commute add_left_commute mult_oner)
+    by (metis add.commute add.left_commute mult_oner)
   also have "... = !p\<cdot>r\<cdot>(1 + q) + p\<cdot>q\<cdot>(1 + r)"
     by (metis add_assoc' test_comp_closed_var test_distrib_left_var test_mult_closed test_one_var tests)
   finally show ?thesis
-    by (metis add_commute less_eq_def mult_oner test_ub_var tests(2-3))
+    by (metis add.commute less_eq_def mult_oner test_ub_var tests(2-3))
 qed
 
 lemma de_morgan_var2: "\<lbrakk>test p; test q; test r\<rbrakk> \<Longrightarrow> !(p\<cdot>q + !p\<cdot>r) = (p\<cdot>!q + !p\<cdot>!r)"
@@ -395,13 +395,13 @@ lemma test_eq2: "test p \<Longrightarrow> z \<le> p\<cdot>x + !p\<cdot>y \<longl
 proof auto
   assume assms: "test p" "z \<le> p\<cdot>x + !p\<cdot>y"
   hence "p\<cdot>(p\<cdot>x + !p\<cdot>y) \<le> p\<cdot>x"
-    by (metis add_zeror annil mult_assoc weak_distrib_left_var test_comp_mult test_restrictl)
+    by (metis add_zeror annil mult.assoc weak_distrib_left_var test_comp_mult test_restrictl)
   thus "p\<cdot>z \<le> p\<cdot>x"
     by (metis assms weak_mult_isol order_trans)
 next
   assume assms: "test p" "z \<le> p\<cdot>x + !p\<cdot>y"
   hence "!p\<cdot>(p\<cdot>x + !p\<cdot>y) \<le> !p\<cdot>y"
-    by (metis mult_assoc test_comp_closed_var weak_distrib_left_var add_zerol annil assms(1) ba4 test_zero_var order_refl test_eq1)
+    by (metis mult.assoc test_comp_closed_var weak_distrib_left_var add_zerol annil assms(1) ba4 test_zero_var order_refl test_eq1)
   thus "!p\<cdot>z \<le> !p\<cdot>y"
     by (metis assms test_comp_closed weak_mult_isol order_trans)
 next
@@ -427,17 +427,17 @@ lemma comm_add: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p; p\<cdot>y = y\<cdot>p\<
   by (metis distrib_right' weak_distrib_left_var)
 
 lemma comm_add_var: "\<lbrakk>test p; test q; test r; p\<cdot>x = x\<cdot>p; p\<cdot>y = y\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>(q\<cdot>x + r\<cdot>y) = (q\<cdot>x + r\<cdot>y)\<cdot>p"
-  by (metis comm_add comm_mult mult_assoc)
+  by (metis comm_add comm_mult mult.assoc)
 
 lemma test_distrib: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p + q)\<cdot>(q\<cdot>y + !q\<cdot>x) = q\<cdot>y + !q\<cdot>p\<cdot>x"
 proof -
   assume tests: "test p" "test q"
   hence "(p + q)\<cdot>(q\<cdot>y + !q\<cdot>x) = p\<cdot>q\<cdot>y + p\<cdot>!q\<cdot>x + q\<cdot>q\<cdot>y + q\<cdot>!q\<cdot>x"
-    by (metis add_assoc' distrib_right' mult_assoc weak_distrib_left_var)
+    by (metis add_assoc' distrib_right' mult.assoc weak_distrib_left_var)
   also have "... = p\<cdot>q\<cdot>y + p\<cdot>!q\<cdot>x + q\<cdot>y"
-    by (metis add_commute add_zerol annil test_comp_mult test_mult_idem_var tests(2))
+    by (metis add.commute add_zerol annil test_comp_mult test_mult_idem_var tests(2))
   also have "... = (p + 1)\<cdot>q\<cdot>y + p\<cdot>!q\<cdot>x"
-    by (metis add_commute add_left_commute distrib_right' mult_oner test_mult_comm_var test_one_var tests(2))
+    by (metis add.commute add.left_commute distrib_right' mult_oner test_mult_comm_var test_one_var tests(2))
   finally show ?thesis
     by (metis mult_oner test_absorb3 test_comp_closed_var test_mult_comm_var test_one_var tests(1) tests(2))
 qed
@@ -459,8 +459,8 @@ lemma test_restrictr: "test p \<Longrightarrow> x \<cdot> p \<le> x"
 
 lemma test_eq3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q \<longleftrightarrow> p\<cdot>x \<le> x\<cdot>q"
   apply default
-  apply (metis mult_assoc test_restrictl)
-  by (metis eq_iff mult_assoc mult_isol test_mult_idem_var test_restrictr)
+  apply (metis mult.assoc test_restrictl)
+  by (metis eq_iff mult.assoc mult_isol test_mult_idem_var test_restrictr)
 
 lemma test1: "\<lbrakk>test p; test q; p\<cdot>x\<cdot>!q = 0\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q"
   (* nitpick *) oops
@@ -482,7 +482,7 @@ class dioid_tests_zerol = dioid_one_zerol + pre_dioid_test_zerol
 begin
 
 lemma test1: "\<lbrakk>test p; test q; p\<cdot>x\<cdot>!q = 0\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q"
-  by (metis add_0_left add_commute distrib_left mult_oner test_comp_add)
+  by (metis add_0_left add.commute distrib_left mult_oner test_comp_add)
 
 text {* Nitpick refutes the following five lemmas. *}
 
@@ -502,7 +502,7 @@ lemma "\<lbrakk>test p; test q; x\<cdot>!q = !p\<cdot>x\<cdot>!q\<rbrakk> \<Long
   (* nitpick *) oops
 
 lemma "\<lbrakk>test p; test q; x\<cdot>!q = !p\<cdot>x\<cdot>!q\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q"
-  by (metis annil mult_assoc test1 test_comp_mult)
+  by (metis annil mult.assoc test1 test_comp_mult)
 
 text {* Nitpick refutes the following four lemmas. *}
 
@@ -527,7 +527,7 @@ next
   have "!p\<cdot>x = !p\<cdot>x\<cdot>(p + !p)"
     by (metis assms(1) mult_oner test_comp_add)
   thus "!p\<cdot>x = !p\<cdot>x\<cdot>!p" 
-    by (metis assms distrib_left mult_assoc add_zerol annil test_comp_mult2)
+    by (metis assms distrib_left mult.assoc add_zerol annil test_comp_mult2)
 qed
   
 end
@@ -540,7 +540,7 @@ class dioid_tests = dioid_tests_zerol + dioid_one_zero
 begin
 
 lemma kat_eq1: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x\<cdot>!q = 0) = (p\<cdot>x = p\<cdot>x\<cdot>q)"
-  by (metis annir mult_assoc test1 test_comp_mult)
+  by (metis annir mult.assoc test1 test_comp_mult)
 
 lemma kat_eq2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x\<cdot>!q = 0) = (p\<cdot>x \<le> x\<cdot>q)"
   by (metis kat_eq1 test_eq3)
@@ -555,8 +555,8 @@ lemma "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x\<cdot>!q = 
 
 lemma comm_eq1: "test b \<Longrightarrow> (p\<cdot>b = b\<cdot>p) = (b\<cdot>p\<cdot>!b + !b\<cdot>p\<cdot>b = 0)"
   apply default
-  apply (metis add_0_left annil annir test_double_comp_var test_mult_comp mult_assoc)
-  by (metis add_0_left ba6 de_morgan1 distrib_right' test_double_comp_var kat_eq1 test_one mult_assoc mult_onel no_trivial_inverse test_comp_closed_var test_not_one)
+  apply (metis add_0_left annil annir test_double_comp_var test_mult_comp mult.assoc)
+  by (metis add_0_left ba6 de_morgan1 distrib_right' test_double_comp_var kat_eq1 test_one mult.assoc mult_onel no_trivial_inverse test_comp_closed_var test_not_one)
 
 lemma comm_eq2: "test b \<Longrightarrow> (p\<cdot>!b = !b\<cdot>p) = (b\<cdot>p\<cdot>!b + !b\<cdot>p\<cdot>b = 0)"
   by (metis add_comm comm_eq1 test_comp_closed_var test_double_comp_var)
@@ -566,7 +566,7 @@ lemma comm_eq3: "test b \<Longrightarrow> (p\<cdot>b = b\<cdot>p) = (p\<cdot>!b 
 
 lemma comm_pres: "test p \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>p \<and> !p\<cdot>x = !p\<cdot>x\<cdot>!p \<longleftrightarrow> p\<cdot>x = x\<cdot>p"
   apply (default, metis comm_eq3 kat_eq3)
-  by (metis annil ba6 comm_eq3 mult_assoc test_eq4 test_mult_idem_var)
+  by (metis annil ba6 comm_eq3 mult.assoc test_eq4 test_mult_idem_var)
 
 end
 

@@ -477,7 +477,7 @@ next
         -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_) \<oplus> (#:prog1 + 1)"
         by(fastforce intro:path_CondFalse)
       hence "if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_)"
-        by(simp add:nat_add_assoc)
+        by(simp add:add.assoc)
       from `prog2 \<turnstile> (_Entry_) -as'\<rightarrow>* (_ l'' _)` obtain ax asx
         where "prog2 \<turnstile> (_Entry_) -ax#asx\<rightarrow>* (_ l'' _)"
         by(cases as',auto elim:While_CFG.cases)
@@ -501,7 +501,7 @@ next
         by(fastforce intro:While_CFG.Cons_path simp:valid_edge_def)
       with 
         `if (b) prog1 else prog2 \<turnstile> (_ l _) -as \<oplus>s (#:prog1 + 1)\<rightarrow>* (_Exit_)`
-      show ?thesis by(simp add:nat_add_assoc,blast)
+      show ?thesis by(simp add:add.assoc,blast)
     qed
   qed
 next

@@ -207,7 +207,7 @@ next
     and label:"labels c\<^sub>2 l Skip" by blast
   hence "labels (if (b) c\<^sub>1 else c\<^sub>2) (l + #:c\<^sub>1 + 1) Skip"
     by(fastforce intro:Labels_CondFalse)
-  thus ?case by(fastforce simp:nat_add_assoc id_def)
+  thus ?case by(fastforce simp:add.assoc id_def)
 next
   case WCFG_WhileFalseSkip show ?case by(fastforce intro:Labels_WhileExit)
 next

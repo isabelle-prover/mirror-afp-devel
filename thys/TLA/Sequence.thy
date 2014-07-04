@@ -73,10 +73,10 @@ lemma suffix_second: "second (s |\<^sub>s n) = s (Suc n)"
   by (auto simp add: suffix_def second_def)
 
 lemma suffix_plus: "s |\<^sub>s n |\<^sub>s m = s |\<^sub>s (m + n)"
-  by (simp add: suffix_def nat_add_assoc)
+  by (simp add: suffix_def add.assoc)
 
 lemma suffix_commute: "((s |\<^sub>s n) |\<^sub>s m) = ((s |\<^sub>s m) |\<^sub>s n)"
-  by (simp add: suffix_plus nat_add_commute)
+  by (simp add: suffix_plus add.commute)
 
 lemma suffix_plus_com: "s |\<^sub>s m |\<^sub>s n = s |\<^sub>s (m + n)"
 proof -

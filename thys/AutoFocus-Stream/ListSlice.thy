@@ -129,7 +129,7 @@ apply (case_tac "k = 0")
 apply (induct m)
  apply (simp add: list_slice_Nil)
 apply (simp add: list_slice_def)
-apply (simp add: list_slice_def add_commute[of _ "length ys"] add_assoc[symmetric])
+apply (simp add: list_slice_def add.commute[of _ "length ys"] add.assoc[symmetric])
 done
 
 lemma list_slice_append_mod: "
@@ -137,7 +137,7 @@ lemma list_slice_append_mod: "
   list_slice (xs @ ys) k = list_slice xs k @ list_slice ys k"
 apply clarify
 thm list_slice_append_mult
-apply (simp only: mult_commute[of k] list_slice_append_mult)
+apply (simp only: mult.commute[of k] list_slice_append_mult)
 done
 
 lemma list_slice_div_eq_1[rule_format]: "
@@ -212,7 +212,7 @@ by (simp add: list_slice2_list_slice_nth list_slice_nth_nth)
 lemma list_slice2_nth_nth_eq2: "
   \<lbrakk> m = length xs div k; n < length xs mod k \<rbrakk> \<Longrightarrow> 
   (list_slice2 xs k) ! m ! n = xs ! (m * k + n)"
-by (simp add: mult_commute[of _ k] mult_div_cancel list_slice2_last)
+by (simp add: mult.commute[of _ k] mult_div_cancel list_slice2_last)
 
 lemma list_slice2_nth_nth_rev: "
   n < length xs \<Longrightarrow> (list_slice2 xs k) ! (n div k) ! (n mod k) = xs ! n"
@@ -238,7 +238,7 @@ lemma list_slice2_append_mult: "
 apply (case_tac "k = 0")
  apply (simp add: list_slice2_0)
 apply (clarsimp simp: list_slice2_def list_slice_append_mult)
-apply (simp add: add_commute[of "m * k"] add_mult_distrib)
+apply (simp add: add.commute[of "m * k"] add_mult_distrib)
 done
 
 lemma list_slice2_append_mod: "
@@ -246,7 +246,7 @@ lemma list_slice2_append_mod: "
   list_slice2 (xs @ ys) k = list_slice2 xs k @ list_slice2 ys k"
 apply clarify
 thm list_slice2_append_mult
-apply (simp only: mult_commute[of k] list_slice2_append_mult)
+apply (simp only: mult.commute[of k] list_slice2_append_mult)
 done
 
 
@@ -277,7 +277,7 @@ apply (induct_tac m)
  apply (intro allI impI)
  apply (simp add: in_set_conv_nth div_eq_0_conv' list_slice_less)
 apply clarify
-apply (simp add: add_commute[of k])
+apply (simp add: add.commute[of k])
 apply (subgoal_tac "n * k + k \<le> length xs")
  prefer 2
  thm le_less_div_conv
@@ -327,7 +327,7 @@ lemma ilist_slice_i_append_mod: "
   length xs mod k = 0 \<Longrightarrow> 
   ilist_slice (xs \<frown> f) k = list_slice xs k \<frown> ilist_slice f k"
 apply (simp add: ilist_eq_iff ilist_slice_nth i_append_nth list_slice_length)
-apply (clarsimp simp: mult_commute[of k], rename_tac n i)
+apply (clarsimp simp: mult.commute[of k], rename_tac n i)
 apply (intro conjI impI)
  apply (simp add: list_slice_nth)
  apply (subgoal_tac "k \<le> n * k - i * k")

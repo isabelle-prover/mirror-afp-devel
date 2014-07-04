@@ -553,7 +553,7 @@ proof (cases x)
   assume [simp]: "x = \<one>"
   have "nat_to_bv (Suc (2 * bv_to_nat w) div 2) @ [\<one>] =
       nat_to_bv ((1 + 2 * bv_to_nat w) div 2) @ [\<one>]"
-    by (simp add: add_commute)
+    by (simp add: add.commute)
   also have "... = nat_to_bv (bv_to_nat w) @ [\<one>]"
     by (subst div_add1_eq) simp
   also have "... = norm_unsigned w @ [\<one>]"

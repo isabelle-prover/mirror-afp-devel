@@ -21,7 +21,7 @@ lemma arith_mod_nzero:
          and "0 < i"
   shows "0 < (n * t + i) mod n"
 using assms
-by (metis Divides.mod_less mod_mult_self2 nat_add_commute)
+by (metis Divides.mod_less mod_mult_self2 add.commute)
 
 lemma arith_mult_neq_nzero1:
   fixes i::nat
@@ -42,7 +42,7 @@ lemma arith_mult_neq_nzero2:
          and "0 < i"
   shows "n * t + i \<noteq> n * q"
 using assms
-by (metis arith_mult_neq_nzero1 nat_add_commute) 
+by (metis arith_mult_neq_nzero1 add.commute) 
 
 lemma arith_mult_neq_nzero3:
   fixes i::nat
@@ -63,13 +63,13 @@ by (metis mod_mult_self1_is_0 mult_Suc)
 
 lemma arith_modZero2:
   "Suc (n + (t + n * t)) mod Suc n = 0"
-by (metis add_Suc_right add_Suc_shift mod_mult_self1_is_0 mult_Suc nat_mult_commute)
+by (metis add_Suc_right add_Suc_shift mod_mult_self1_is_0 mult_Suc mult.commute)
 
 lemma arith1:
   assumes h1:"Suc n * t = Suc n * q"
   shows "t = q"
 using assms
-by (metis mult_cancel2 nat_mult_commute neq0_conv zero_less_Suc)
+by (metis mult_cancel2 mult.commute neq0_conv zero_less_Suc)
 
 lemma arith2:
   fixes t n q :: "nat"

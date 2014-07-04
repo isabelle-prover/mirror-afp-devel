@@ -172,7 +172,7 @@ lemma div_mult_mono:
   assumes "a > 0" "a\<le>d"
   shows "a * b div d \<le> b"
 proof -
-  have "a*b div d \<le> b*a div a" using assms div_le_mono2 nat_mult_commute[of a b] by presburger
+  have "a*b div d \<le> b*a div a" using assms div_le_mono2 mult.commute[of a b] by presburger
   thus ?thesis using assms by force
 qed
 
@@ -217,9 +217,9 @@ proof -
     proof (rule card_bij_eq)
       { fix a b assume "a * n div d = b * n div d"
         hence "a * (n div d) = b * (n div d)"
-          using dvd_div_mult[OF `d dvd n`] by (fastforce simp add: nat_mult_commute)
+          using dvd_div_mult[OF `d dvd n`] by (fastforce simp add: mult.commute)
         hence "a = b" using dvd_div_ge_1[OF _ `d dvd n`] `n>0`
-          by (simp add: nat_mult_commute nat_mult_eq_cancel1)
+          by (simp add: mult.commute nat_mult_eq_cancel1)
       } thus "inj_on (\<lambda>a. a*n div d) ?RF" unfolding inj_on_def by blast
       { fix a assume a:"a\<in>?RF"
         hence "a * (n div d) \<ge> 1" using `n>0` dvd_div_ge_1[OF _ `d dvd n`] by simp
@@ -227,7 +227,7 @@ proof -
         have le_n:"a * n div d \<le> n" using div_mult_mono a by simp
         have "gcd (a * n div d) n = n div d * gcd a d"
           using dvd_div_mult_self[OF `d dvd n`]
-          by (simp add: `d dvd n` div_mult_swap nat_mult_commute gcd_mult_distrib_nat)
+          by (simp add: `d dvd n` div_mult_swap mult.commute gcd_mult_distrib_nat)
         hence "n div gcd (a * n div d) n = d*n div (d*(n div d))" using a by simp
         hence "a * n div d \<in> ?F"
           using ge_1 le_n by (fastforce simp add: `d dvd n` dvd_mult_div_cancel)
@@ -412,7 +412,7 @@ proof
     def r \<equiv> "x mod ord a"
     then obtain q where q:"x = q * ord a + r" using mod_eqD by atomize_elim presburger
     hence "y = (a(^)ord a)(^)q \<otimes> a(^)r"
-      using x assms by (simp add: nat_mult_commute nat_pow_mult nat_pow_pow)
+      using x assms by (simp add: mult.commute nat_pow_mult nat_pow_pow)
     hence "y = a(^)r" using assms by (simp add: pow_ord_eq_1)
     have "r < ord a" using ord_ge_1[OF assms] by (simp add: r_def)
     hence "r \<in> {0 .. ord a - 1}" by (force simp: r_def)
@@ -428,7 +428,7 @@ proof -
   def r \<equiv> "k mod ord a"
   then obtain q where q:"k = q*ord a + r" using mod_eqD by atomize_elim presburger
   hence "a(^)k = (a(^)ord a)(^)q \<otimes> a(^)r"
-      using assms by (simp add: nat_mult_commute nat_pow_mult nat_pow_pow)
+      using assms by (simp add: mult.commute nat_pow_mult nat_pow_pow)
   hence "a(^)k = a(^)r" using assms by (simp add: pow_ord_eq_1)
   hence "a(^)r = \<one>" using assms(3) by simp
   have "r < ord a" using ord_ge_1[OF assms(1-2)] by (simp add: r_def)
@@ -451,7 +451,7 @@ lemma ord_pow_dvd_ord_elem :
   shows "ord (a(^)n) = ord a div gcd n (ord a)"
 proof -
   have "(a(^)n) (^) ord a = (a (^) ord a) (^) n"
-    by (simp add: nat_mult_commute nat_pow_pow)
+    by (simp add: mult.commute nat_pow_pow)
   hence "(a(^)n) (^) ord a = \<one>" by (simp add: pow_ord_eq_1)
   obtain q where "n * (ord a div gcd n (ord a)) = ord a * q" by (rule dvd_gcd)
   hence "(a(^)n) (^) (ord a div gcd n (ord a)) = (a (^) ord a)(^)q"  by (simp add : nat_pow_pow)
@@ -489,9 +489,9 @@ proof -
     have dvd_d:"(ord a div gcd n (ord a)) dvd d"
     proof -
       have "ord a div gcd n (ord a) dvd (n div gcd n (ord a)) * d" using prod_eq
-        by (metis dvd_triv_right nat_mult_commute)
+        by (metis dvd_triv_right mult.commute)
       hence "ord a div gcd n (ord a) dvd d * (n div gcd n (ord a))"
-        by (simp add:  nat_mult_commute)
+        by (simp add:  mult.commute)
       thus ?thesis using coprime_dvd_mult_nat[OF cp, of d] by fastforce
     qed
     have "d > 0" using d_elem by simp
@@ -773,7 +773,7 @@ proof -
     proof
       fix x assume "x \<in> {a(^)n | n. n \<in> {1 .. d}}"
       then obtain n where n:"x = a(^)n \<and> n \<in> {1 .. d}" by auto
-      have "x(^)d =(a(^)d)(^)n" using n a ord_a by (simp add:nat_pow_pow nat_mult_commute)
+      have "x(^)d =(a(^)d)(^)n" using n a ord_a by (simp add:nat_pow_pow mult.commute)
       hence "x(^)d = \<one>" using ord_a G.pow_ord_eq_1[OF finite' a] by fastforce
       thus "x \<in> {x \<in> carrier (mult_of R). x(^)d = \<one>}" using G.nat_pow_closed[OF a] n by blast
     qed

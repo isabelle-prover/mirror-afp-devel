@@ -1001,7 +1001,7 @@ proof (rule ccontr)
           ultimately show ?thesis by auto
         qed
       ultimately have "card (T l) = card V * k^l" 
-        using card_partition'[of V ext "k^l"] ` 4 \<le> k ` assms(3) nat_mult_commute nat_one_le_power
+        using card_partition'[of V ext "k^l"] ` 4 \<le> k ` assms(3) mult.commute nat_one_le_power
         by auto
       moreover have "card V=(k * k - k + 1)" 
         using total_v_num[OF friend_assm,of k] k_adj degree_adjacent `finite E` `finite V` 
@@ -1081,7 +1081,7 @@ proof (rule ccontr)
                           case False
                           hence "tl ps\<noteq>[]" 
                             by (metis `length ps = l + 1` add_0_iff add_diff_cancel_left' 
-                              length_0_conv length_tl nat_add_commute)
+                              length_0_conv length_tl add.commute)
                           moreover have "adj_path (hd x) (tl ps @ [last x])"
                             using `adj_path (hd x) (tl x)` `butlast x=ps` `x \<noteq> []`
                             by (metis append_butlast_last_id calculation list.sel(2) tl_append2)
@@ -1137,7 +1137,7 @@ proof (rule ccontr)
                       hence "adjacent (hd x) (last x)" 
                         using `butlast x=ps` `length ps=l+1` 
                         by (metis `x \<noteq> []` append_Nil append_butlast_last_id even_sum_nat 
-                          hd_append2 le_add1 le_antisym length_append nat_add_assoc odd_1_nat)
+                          hd_append2 le_add1 le_antisym length_append add.assoc odd_1_nat)
                       thus ?thesis using adjacent_sym by auto
                     qed
                   moreover have "last (butlast x) = hd x" 
@@ -1193,7 +1193,7 @@ proof (rule ccontr)
               hence "last ps\<in>V" 
                 using adj_path_V[OF `adj_path (hd ps) (tl ps)`] 
                 by (metis butlast.simps(2) butlast_tl diff_add_inverse even_sum_nat list.sel(1,3)
-                  last_ConsL last_in_set last_tl length_butlast nat_add_commute neq_Nil_conv
+                  last_ConsL last_in_set last_tl length_butlast add.commute neq_Nil_conv
                   odd_1_nat set_mp)
               hence "\<exists>n. adjacent (last ps) n \<and> adjacent (hd ps) n"
                 using adj_path_V'[OF `adj_path (hd ps) (tl ps)`] `last ps\<noteq>hd ps`  
@@ -1215,7 +1215,7 @@ proof (rule ccontr)
                     by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def list.sel(1) 
                       last_ConsL length_Suc_conv neq_Nil_conv)
                   hence "tl ps\<noteq>[]" using `length ps=l+1` 
-                    by (metis add_diff_cancel_right' length_splice length_tl nat_add_commute 
+                    by (metis add_diff_cancel_right' length_splice length_tl add.commute 
                       splice_Nil2)
                   ultimately have "adj_path (hd ps) (tl ps @ [last x])"
                     using  adj_path_app[OF `adj_path (hd ps) (tl ps)`,of "last x"]  
@@ -1251,7 +1251,7 @@ proof (rule ccontr)
                   moreover have "hd (butlast x)=hd x" 
                     using `length x=l+2` 
                     by (metis append_butlast_last_id butlast.simps(1) calculation diff_add_inverse 
-                      diff_cancel2 hd_append length_butlast nat_add_commute num.distinct(1) 
+                      diff_cancel2 hd_append length_butlast add.commute num.distinct(1) 
                       one_eq_numeral_iff)
                   hence "adj_path (hd (butlast x)) (tl (butlast x))" 
                     using `adj_path (hd x) (tl x)` by (metis adj_path_butlast butlast_tl)
@@ -1370,7 +1370,7 @@ proof (rule ccontr)
         by (metis comm_monoid_mult_class.mult.left_neutral diff_mult_distrib)
       finally have "card (C (l + 1))=(k-(1::nat))*card(C_star l)+card(T l)" .
       hence "card (C (l+1)) mod (k-(1::nat)) = card(T l) mod (k-(1::nat))" using `k>=4` 
-        by (metis mod_mult_self3 nat_mult_commute)
+        by (metis mod_mult_self3 mult.commute)
       also have "...=((k*k-k+1)*k^l) mod (k-(1::nat))" using T_count by auto
       also have "...=((k-(1::nat))*k+1)*k^l  mod (k-(1::nat))" 
         proof -
@@ -1378,10 +1378,10 @@ proof (rule ccontr)
           thus ?thesis by auto
         qed
       also have "...=1*k^l  mod (k-(1::nat))" 
-        by (metis mod_mult_right_eq mod_mult_self1 nat_add_commute nat_mult_commute)
+        by (metis mod_mult_right_eq mod_mult_self1 add.commute mult.commute)
       also have "...=k^l mod (k-(1::nat))" by auto
       also have "...=(k-(1::nat)+1)^l mod (k-(1::nat))" using `k\<ge>4` by auto
-      also have "...=1^l mod (k-(1::nat))" by (metis mod_add_self2 nat_add_commute power_mod)
+      also have "...=1^l mod (k-(1::nat))" by (metis mod_add_self2 add.commute power_mod)
       also have "...=1 mod (k-(1::nat))" by auto
       also have "...=1" using `k\<ge>4` by auto
       finally show "card (C (l+1)) mod (k-(1::nat)) =1" .
@@ -1390,7 +1390,7 @@ proof (rule ccontr)
     by (metis Suc_eq_plus1 Suc_numeral add_One_commute eq_iff le_diff_conv numeral_le_iff  
       one_le_numeral one_plus_BitM prime_factor_nat semiring_norm(69) semiring_norm(71))
   hence p_minus_1:"p-(1::nat)+1=p" 
-    by (metis add_diff_inverse nat_add_commute not_less_iff_gr_or_eq prime_nat_def)
+    by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq prime_nat_def)
   hence "\<And>l::nat. card (C (l+1)) mod p=1"
     using `\<And>l::nat. card (C (l+1)) mod (k-(1::nat))=1` mod_mod_cancel[OF `p dvd (k-(1::nat))`]
       `prime p`
@@ -1466,7 +1466,7 @@ proof (rule ccontr)
                     hence  "\<exists>x. [(n1-n2) * x = 1] (mod p)" by (metis cong_solve_coprime_nat)
                     then obtain s::nat where "s*(n1-n2) mod p=1" 
                       by (metis `card (C (p-(1::nat))) mod p = 1` cong_nat_def mod_mod_trivial 
-                        nat_mult_commute)
+                        mult.commute)
                     moreover hence "s>0" by (metis mod_0 mult_0 neq0_conv zero_neq_one) 
                     ultimately show ?thesis using that by auto 
                   qed
@@ -1476,7 +1476,7 @@ proof (rule ccontr)
                     rotate_rotate)
                 hence "rotate (s*n1 - s*n2) x= x" 
                   using rotate_diff by auto
-                hence "rotate (s*(n1-n2)) x=x" by (metis diff_mult_distrib nat_mult_commute)
+                hence "rotate (s*(n1-n2)) x=x" by (metis diff_mult_distrib mult.commute)
                 hence "rotate 1 x = x" using `s*(n1-n2) mod p=1` `length x=p` 
                   by (metis rotate_conv_mod) 
                 hence "rotate1 x=x" by auto

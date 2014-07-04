@@ -32,13 +32,13 @@ lemmas div_mult_cancel = div_mod_equality'
 
 lemma mod_0_div_mult_cancel: "(n mod (m::nat) = 0) = (n div m * m = n)"
 apply (insert eq_diff_left_iff[OF mod_le_dividend le0, of n m])
-apply (simp add: mult_commute mult_div_cancel)
+apply (simp add: mult.commute mult_div_cancel)
 done
 
 lemma div_mult_le: "(n::nat) div m * m \<le> n" 
-by (simp add: mult_commute mult_div_cancel)
+by (simp add: mult.commute mult_div_cancel)
 lemma less_div_Suc_mult: "0 < (m::nat) \<Longrightarrow> n < Suc (n div m) * m"
-apply (simp add: mult_commute mult_div_cancel)
+apply (simp add: mult.commute mult_div_cancel)
 apply (rule less_add_diff)
 by (rule mod_less_divisor)
 
@@ -86,7 +86,7 @@ by (insert mod_add[of "n-(a+b)" b m 0], simp)
 lemma mod_sub_eq_mod_swap: "
   \<lbrakk> a \<le> (n::nat); b \<le> n \<rbrakk> \<Longrightarrow> 
   ((n - a) mod m = b mod m) = ((n - b) mod m = a mod m)"
-by (simp add: mod_sub_add add_commute)
+by (simp add: mod_sub_add add.commute)
 
 lemma le_mod_greater_imp_div_less: "
   \<lbrakk> a \<le> (b::nat); a mod m > b mod m \<rbrakk> \<Longrightarrow> a div m < b div m"
@@ -218,7 +218,7 @@ proof -
   also have "\<dots> = (b mod m + m - a mod m) mod m"
     by simp
   also have "\<dots> = (m + b mod m - a mod m) mod m"
-    by (simp only: add_commute)
+    by (simp only: add.commute)
   finally show ?thesis .
 qed
 corollary mod_diff1_eq_if: "
@@ -253,7 +253,7 @@ lemma mod_diff_mult_self1: "
 by (simp add: mod_diff_right_eq)
 lemma mod_diff_mult_self2: "
   m * k \<le> (n::nat) \<Longrightarrow> (n - m * k) mod m = n mod m"
-by (simp only: mult_commute[of m k] mod_diff_mult_self1)
+by (simp only: mult.commute[of m k] mod_diff_mult_self1)
 
 lemma div_diff_self1: "0 < (n::nat) \<Longrightarrow> (m - n) div m = 0"
 by (case_tac "m = 0", simp_all)
@@ -276,12 +276,12 @@ apply (rule iffD1[OF mult_cancel1_gr0[where k=m]], assumption)
 apply (subst diff_mult_distrib2)
 apply (simp only: mult_div_cancel)
 apply (simp only: diff_commute[of _ "k*m"])
-apply (simp only: mult_commute[of m])
+apply (simp only: mult.commute[of m])
 apply (simp only: mod_diff_mult_self1)
 done
 lemma div_diff_mult_self2: "
   (n - m * k) div m = n div m - (k::nat)"
-by (simp only: mult_commute div_diff_mult_self1)
+by (simp only: mult.commute div_diff_mult_self1)
 
 
 
@@ -464,7 +464,7 @@ done
 
 lemma zmult_div_leq_mono:"
   \<lbrakk> (0::int) \<le> x; a \<le> b; 0 < d \<rbrakk> \<Longrightarrow> x * a div d \<le> x * b div d"
-by (metis mult_right_mono zdiv_mono1 mult_commute)
+by (metis mult_right_mono zdiv_mono1 mult.commute)
 
 lemma zmult_div_leq_mono_neg:"
   \<lbrakk> x \<le> (0::int); a \<le> b; 0 < d \<rbrakk> \<Longrightarrow> x * b div d \<le> x * a div d"
@@ -476,7 +476,7 @@ apply (case_tac "b = 0", simp)
 apply (subgoal_tac "b * a \<le> c * a")
  prefer 2 
  apply (simp only: mult_right_mono)
-apply (simp only: mult_commute)
+apply (simp only: mult.commute)
 apply (subgoal_tac "a * b div c \<le> a * c div c")
  prefer 2 
  apply (simp only: zdiv_mono1)
@@ -488,7 +488,7 @@ lemma zmult_div_neg_le:"
 apply (subgoal_tac "b * a \<le> c * a")
  prefer 2 
  apply (simp only: mult_right_mono_neg)
-apply (simp only: mult_commute)
+apply (simp only: mult.commute)
 apply (subgoal_tac "a * b div c \<le> a * c div c")
  prefer 2 
  apply (simp only: zdiv_mono1)
@@ -565,12 +565,12 @@ apply (drule mult_le_mono2[of x _ m])
 apply (simp add: diff_mult_distrib2 mult_div_cancel del: diff_diff_left)
 apply (simp only: le_diff_conv2[of m])
 apply (drule le_diff_imp_le[of "m * x + m"])
-apply (simp only: mult_commute[of _ m])
+apply (simp only: mult.commute[of _ m])
 done
 
 lemma mod_add_eq_imp_mod_0: "
   ((n + k) mod (m::nat) = n mod m) = (k mod m = 0)"
-by (metis add_eq_if mod_add mod_add_self1 mod_self nat_add_commute)
+by (metis add_eq_if mod_add mod_add_self1 mod_self add.commute)
 
 lemma between_imp_mod_between: "
   \<lbrakk> b < (m::nat); m * k + a \<le> n; n \<le> m * k + b \<rbrakk> \<Longrightarrow>
@@ -600,10 +600,10 @@ done
 text {* Some variations of @{term split_div_lemma} *}
 corollary le_less_div_conv: "
   0 < m \<Longrightarrow> (k * m \<le> n \<and> n < Suc k * m) = (n div m = k)"
-by (metis div_mult_le nat_mult_commute split_div_lemma)
+by (metis div_mult_le mult.commute split_div_lemma)
 lemma le_less_imp_div: "
   \<lbrakk> k * m \<le> n; n < Suc k * m \<rbrakk> \<Longrightarrow> n div m = k"
-by (metis gr_implies_not0 mult_eq_if nat_mult_commute neq0_conv split_div_lemma)
+by (metis gr_implies_not0 mult_eq_if mult.commute neq0_conv split_div_lemma)
 lemma div_imp_le_less: "
   \<lbrakk> n div m = k; 0 < m \<rbrakk> \<Longrightarrow> k * m \<le> n \<and> n < Suc k * m"
 by (rule le_less_div_conv[THEN iffD2])
@@ -627,7 +627,7 @@ by (metis add_le_mono2 diff_add_inverse le_add1 le_add_diff_inverse mod_diff1_eq
 corollary mult_divisor_le_mod_ge_imp_ge: "
   \<lbrakk> (m::nat) * k \<le> n; r \<le> n mod m \<rbrakk> \<Longrightarrow> m * k + r \<le> n"
 apply (insert le_mod_add_eq_imp_add_mod_le[of "m * k" n "n mod m" m])
-apply (simp add: add_commute[of "m * k"])
+apply (simp add: add.commute[of "m * k"])
 done
 
 
@@ -671,7 +671,7 @@ lemma mod_mult_eq_imp_mod_eq: "
   (a::nat) mod (m * k) = b mod (m * k) \<Longrightarrow> a mod m = b mod m"
 apply (simp only: mod_mult2_eq)
 apply (drule_tac arg_cong[where f="\<lambda>x. x mod m"])
-apply (simp add: add_commute)
+apply (simp add: add.commute)
 done
 corollary mod_eq_mod_0_imp_mod_eq: "
   \<lbrakk> (a::nat) mod m' = b mod m'; m' mod m = 0 \<rbrakk> 
@@ -710,7 +710,7 @@ proof -
   have x_mod_k_0: "x mod k = 0"
     using as1 by (blast intro: mod_factor_imp_mod_0)
   have "?L * k + x mod k = x mod (k * m)"
-    by (simp only: mod_mult2_eq mult_commute[of _ k])
+    by (simp only: mod_mult2_eq mult.commute[of _ k])
   hence "?L * k = x mod (k * m)"
     using x_mod_k_0 by simp
   hence "?L * k = y * k mod (m * k)"
@@ -809,7 +809,7 @@ proof -
     also have "\<dots> = ((b div m - a div m) * m + (b mod m - a mod m)) div m"
       using as' by simp
     also have "\<dots> = b div m - a div m + (b mod m - a mod m) div m"
-      apply (simp only: add_commute)
+      apply (simp only: add.commute)
       by (simp only: div_mult_self1[OF less_imp_neq[OF m_as, THEN not_sym]])
     finally have b_a_div_s': "(b - a) div m = \<dots>" .
     have "(b mod m - a mod m) div m = 0"
@@ -849,12 +849,12 @@ proof -
       by simp
     also have "\<dots> = ((b div m - a div m - Suc 0) * m
       + (m + b mod m - a mod m) ) div m"
-      by (simp only: add_assoc m_as
+      by (simp only: add.assoc m_as
         diff_add_assoc[of "a mod m" "m + b mod m"]
         trans_le_add1[of "a mod m" m, OF mod_le_divisor])
     also have "\<dots> = b div m - a div m - Suc 0
       + (m + b mod m - a mod m) div m"
-      by (simp only: add_commute div_mult_self1[OF less_imp_neq[OF m_as, THEN not_sym]])
+      by (simp only: add.commute div_mult_self1[OF less_imp_neq[OF m_as, THEN not_sym]])
     finally have b_a_div_s': "(b - a) div m = \<dots>" .
     
     have div_0_s: "(m + b mod m - a mod m) div m = 0"
@@ -910,7 +910,7 @@ by simp
 lemma diff_ge_divisor_imp_sub_mod_less: "
   \<lbrakk> (x::nat) \<le> y; m \<le> y - x; 0 < m \<rbrakk> \<Longrightarrow> x < y - (y - x) mod m"
 apply (simp only: less_diff_conv)
-apply (simp only: le_diff_conv2 add_commute[of m])
+apply (simp only: le_diff_conv2 add.commute[of m])
 apply (rule less_le_trans[of _ "x + m"])
 apply simp_all
 done
@@ -1048,10 +1048,10 @@ done
 lemma div_le_conv: "0 < m \<Longrightarrow> n div m \<le> k = (n \<le> Suc k * m - Suc 0)"
 apply (rule iffI)
  apply (drule mult_le_mono1[of _ _ m])
- apply (simp only: mult_commute[of _ m] mult_div_cancel)
+ apply (simp only: mult.commute[of _ m] mult_div_cancel)
  apply (drule le_diff_conv[THEN iffD1])
  apply (rule le_trans[of _ "m * k + n mod m"], assumption)
- apply (simp add: add_commute[of m])
+ apply (simp add: add.commute[of m])
  apply (simp only: diff_add_assoc[OF Suc_leI])
  apply (rule add_le_mono[OF le_refl])
  apply (rule less_imp_le_pred)

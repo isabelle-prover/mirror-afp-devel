@@ -791,7 +791,7 @@ lemma assumes a: "0\<le>(a::real)"
       case False
       hence "f t \<le> 0" by simp
       from this a have "(f t)*a \<le> 0*a" by (rule mult_right_mono)
-      hence le: "a*f t \<le> 0" by (simp add: mult_commute)
+      hence le: "a*f t \<le> 0" by (simp add: mult.commute)
       hence "pp (\<lambda>t. a*f t) t = 0" 
         by (cases "a*f t<0") (auto simp add: positive_part_def order_le_less ) 
       also from False have "\<dots> = a*pp f t" by (simp add: positive_part_def)

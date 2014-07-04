@@ -41,11 +41,11 @@ by (induct y) simp_all
 
 lemma ordinal_of_nat_times [simp]:
 "ordinal_of_nat x * ordinal_of_nat y = ordinal_of_nat (x * y)"
-by (induct y) (simp_all add: add_commute)
+by (induct y) (simp_all add: add.commute)
 
 lemma ordinal_of_nat_exp [simp]:
 "ordinal_of_nat x ** ordinal_of_nat y = ordinal_of_nat (x ^ y)"
-by (induct y, cases x) (simp_all add: mult_commute)
+by (induct y, cases x) (simp_all add: mult.commute)
 
 lemma oSuc_plus_ordinal_of_nat:
 "oSuc x + ordinal_of_nat n = oSuc (x + ordinal_of_nat n)"

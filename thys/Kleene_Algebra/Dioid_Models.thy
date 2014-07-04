@@ -43,7 +43,7 @@ begin
   proof
     fix X Y Z :: "'a set"
      show "X \<cdot> Y \<cdot> Z = X \<cdot> (Y \<cdot> Z)"
-      by (auto simp add: c_prod_def) (metis mult_assoc)+
+      by (auto simp add: c_prod_def) (metis mult.assoc)+
     show "1 \<cdot> X = X"
       by (simp add: one_set_def c_prod_def)
     show "X \<cdot> 1 = X"

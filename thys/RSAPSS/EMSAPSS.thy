@@ -162,10 +162,10 @@ lemma roundup_positiv: "0 < emBits \<Longrightarrow> 0 < (roundup emBits 160)"
   by (simp add: roundup, safe, simp)
 
 lemma roundup_ge_emBits:" 0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> emBits \<le> (roundup emBits x) * x"
-  apply (simp add: roundup mult_commute)
+  apply (simp add: roundup mult.commute)
   apply (safe)
   apply (simp)
-  apply (simp add: add_commute [of x "x*(emBits div x)" ])
+  apply (simp add: add.commute [of x "x*(emBits div x)" ])
   apply (insert mod_div_equality2 [of x emBits])
   apply (subgoal_tac "emBits mod x < x")
   apply (arith)

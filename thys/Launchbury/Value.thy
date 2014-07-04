@@ -43,7 +43,7 @@ next
   then obtain Y' where Y': "\<And> i. Y (i + n) = Fn \<cdot> (Y' i)" by metis 
 
   have "Y = (\<lambda>m. if m < n then \<bottom> else Fn\<cdot>(Y' (m - n)))"
-      using `\<forall>m. _` Y' by (metis add_diff_inverse nat_add_commute)
+      using `\<forall>m. _` Y' by (metis add_diff_inverse add.commute)
   moreover
   have"chain Y'" using `chain Y`
     by (auto intro!:chainI elim: chainE  simp add: Value.inverts[symmetric] Y'[symmetric] simp del: Value.inverts)

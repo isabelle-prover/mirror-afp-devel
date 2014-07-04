@@ -284,8 +284,8 @@ proof
       let ?k = "i * (1 - j) / (j + i * (1 - j))"
       from right_diff_distrib [of i 1 j] and
           right_diff_distrib [of j 1 i] and
-          mult_commute [of i j] and
-          add_commute [of i j]
+          mult.commute [of i j] and
+          add.commute [of i j]
         have "j + i * (1 - j) = i + j * (1 - i)" by simp
       with `i + j * (1 - i) \<noteq> 0` have "j + i * (1 - j) \<noteq> 0" by simp
       with diff_divide_distrib [of "j + i * (1 - j)" "i * (1 - j)" "j + i * (1 - j)"]
@@ -293,7 +293,7 @@ proof
       with `1 - ?l = i / (i + j * (1 - i))` and
           `j + i * (1 - j) = i + j * (1 - i)` and
           times_divide_eq_left [of _ "i + j * (1 - i)"] and
-          mult_commute [of i j]
+          mult.commute [of i j]
         have "(1 - ?l) * j = (1 - ?k) * i" by simp
       moreover
       { from `1 - ?k = j / (j + i * (1 - j))` and
@@ -313,8 +313,8 @@ proof
           by simp
       with scaleR_right_distrib [of "(1 - ?l)" "j *\<^sub>R c" "(1 - j) *\<^sub>R b"] and
           scaleR_right_distrib [of "(1 - ?k)" "i *\<^sub>R c" "(1 - i) *\<^sub>R a"] and
-          add_assoc [of "?l *\<^sub>R a" "(1 - ?l) *\<^sub>R j *\<^sub>R c" "(1 - ?l) *\<^sub>R (1 - j) *\<^sub>R b"] and
-          add_assoc [of "?k *\<^sub>R b" "(1 - ?k) *\<^sub>R i *\<^sub>R c" "(1 - ?k) *\<^sub>R (1 - i) *\<^sub>R a"]
+          add.assoc [of "?l *\<^sub>R a" "(1 - ?l) *\<^sub>R j *\<^sub>R c" "(1 - ?l) *\<^sub>R (1 - j) *\<^sub>R b"] and
+          add.assoc [of "?k *\<^sub>R b" "(1 - ?k) *\<^sub>R i *\<^sub>R c" "(1 - ?k) *\<^sub>R (1 - i) *\<^sub>R a"]
         have "?l *\<^sub>R a + (1 - ?l) *\<^sub>R (j *\<^sub>R c + (1 - j) *\<^sub>R b) =
             ?k *\<^sub>R b + (1 - ?k) *\<^sub>R (i *\<^sub>R c + (1 - i) *\<^sub>R a)"
           by arith

@@ -39,9 +39,9 @@ next
     also have "... \<longleftrightarrow> (\<exists> y z. x = y@z \<and> |y| \<ge> k \<and> |z| \<ge> k*n \<and> ( |x| = |y| + |z| ))"
       by force
     also have "... \<longleftrightarrow> (\<exists> y z. x = y@z \<and> |y| \<ge> k \<and> |z| \<ge> k*n \<and> ( |x| \<ge> (n + 1) * k ))"
-      by (auto, metis add_mono nat_mult_commute, force)
+      by (auto, metis add_mono mult.commute, force)
     finally show ?thesis
-      by (metis Suc_eq_plus1 hyp(3) nat_mult_commute)
+      by (metis Suc_eq_plus1 hyp(3) mult.commute)
   qed
 qed
 

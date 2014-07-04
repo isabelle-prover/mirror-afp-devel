@@ -146,7 +146,7 @@ proof -
     assume e1: "e = 1"
     from U have "U * ?P^2 = ?A * ?P" by (simp add: power2_eq_square)
     also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
-      by (simp only: qfN_mult2 add_commute mult_1_left)
+      by (simp only: qfN_mult2 add.commute mult_1_left)
     also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2" 
       by (simp only: power_mult_distrib mult_ac)
     finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)" 
@@ -327,7 +327,7 @@ proof -
     assume e1: "e = 1"
     from U have "(P^n)^2*U = A^n*P^n" by (simp add: power2_eq_square mult_ac)
     also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
-      by (simp only: qfN_mult2 add_commute mult_1_left)
+      by (simp only: qfN_mult2 add.commute mult_1_left)
     also with v have "\<dots> = (a*p-e*N*b*q)^2 + (P^n)^2*(N*v^2)" 
       by (simp only: power_mult_distrib mult_ac)
     finally have "(a*p-e*N*b*q)^2 = (P^n)^2*U - (P^n)^2*N*v^2" by simp

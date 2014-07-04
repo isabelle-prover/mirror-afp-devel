@@ -196,10 +196,10 @@ lemma dual_neg_top [simp]: "(x ^ o * \<bottom>) \<squnion> (x * \<top>) = \<top>
    by (rule dual_eq, simp add: dual_comp)
 
 lemma [simp]: "(x * \<top>) * y = x * \<top>" 
-  by (simp add: mult_assoc)
+  by (simp add: mult.assoc)
 
 lemma [simp]: "(x * \<bottom>) * y = x * \<bottom>" 
-  by (simp add: mult_assoc)
+  by (simp add: mult.assoc)
 
 
 lemma gt_one_comp: "1 \<le> x \<Longrightarrow> y \<le> x * y"
@@ -259,11 +259,11 @@ lemma dual_disjunctive: "x \<in> disjunctive \<Longrightarrow> x ^ o \<in> conju
 
 lemma comp_pres_conj: "x \<in> conjunctive \<Longrightarrow> y \<in> conjunctive \<Longrightarrow> x * y \<in> conjunctive"
   apply (subst conjunctive_def, safe)
-  by (simp add: mult_assoc conjunctiveD)
+  by (simp add: mult.assoc conjunctiveD)
 
 lemma comp_pres_disj: "x \<in> disjunctive \<Longrightarrow> y \<in> disjunctive \<Longrightarrow> x * y \<in> disjunctive"
   apply (subst disjunctive_def, safe)
-  by (simp add: mult_assoc disjunctiveD)
+  by (simp add: mult.assoc disjunctiveD)
 
 lemma start_pres_conj: "x \<in> conjunctive \<Longrightarrow> (x ^ *) \<in> conjunctive"
   apply (subst conjunctive_def, safe)
@@ -578,7 +578,7 @@ lemma inf_assertion [simp]: "x \<in> assertion \<Longrightarrow> y \<in> asserti
       by (cut_tac A, cut_tac x = x in dual_assertion_conjunctive, simp_all add: conjunctiveD inf_assoc)
     also have "\<dots> = (((x * \<top>) \<sqinter> (x ^ o)) * (y * \<top>)) \<sqinter> ((x ^ o) *(y ^ o))"
       by (simp add: inf_comp)
-    also have "\<dots> = (x * y * \<top>)  \<sqinter> ((x * y) ^ o)" by (simp add: C mult_assoc dual_comp)
+    also have "\<dots> = (x * y * \<top>)  \<sqinter> ((x * y) ^ o)" by (simp add: C mult.assoc dual_comp)
     finally show "(x * y * \<top>)  \<sqinter> ((x * y) ^ o) = x * y" by simp
   qed
 
@@ -665,7 +665,7 @@ lemma wpt_comp: "(wpt x) * x = x"
   by (cut_tac x = 1 and y = \<top> and z = x in le_comp, simp_all)
 
 lemma wpt_comp_2: "wpt (x * y) = wpt (x * (wpt y))"
-  by (simp add: wpt_def inf_comp mult_assoc)
+  by (simp add: wpt_def inf_comp mult.assoc)
 
 lemma wpt_assertion [simp]: "x \<in> assertion \<Longrightarrow> wpt x = x"
   by (simp add: wpt_def assertion_prop)
@@ -675,7 +675,7 @@ lemma wpt_le_assertion: "x \<in> assertion \<Longrightarrow> x * y = y \<Longrig
   proof -
     assume A: "x \<in> assertion"
     assume B: "x * y = y"
-    have "y * \<top> \<sqinter> 1 = x * (y * \<top>) \<sqinter> 1" by (simp add: B mult_assoc [THEN sym])
+    have "y * \<top> \<sqinter> 1 = x * (y * \<top>) \<sqinter> 1" by (simp add: B mult.assoc [THEN sym])
     also have "\<dots> \<le> x * \<top> \<sqinter> 1" 
       apply simp
       apply (rule_tac y = "x * (y * \<top>)" in order_trans)
@@ -735,7 +735,7 @@ lemma assertion_commute: "x \<in> assertion \<Longrightarrow> y \<in> conjunctiv
   apply (simp add: wpt_def)
   apply (simp add: inf_comp)
   apply (drule_tac x = y and y = "x * \<top>" and z = 1 in conjunctiveD)
-  by (simp add: mult_assoc [THEN sym] assertion_prop)
+  by (simp add: mult.assoc [THEN sym] assertion_prop)
 
 
 lemma wpt_mono: "x \<le> y \<Longrightarrow> wpt x \<le> wpt y"
@@ -745,12 +745,12 @@ lemma wpt_mono: "x \<le> y \<Longrightarrow> wpt x \<le> wpt y"
 
 lemma "a \<in> conjunctive \<Longrightarrow> x * a \<le> a * y \<Longrightarrow> (x ^ \<omega>) * a \<le> a * (y ^ \<omega>)"
   apply (rule omega_least)
-  apply (simp add: mult_assoc [THEN sym])
+  apply (simp add: mult.assoc [THEN sym])
   apply (rule_tac y = "a * y * y ^ \<omega> \<sqinter> a" in order_trans)
   apply (simp)
   apply (rule_tac y = "x * a * y ^ \<omega>" in order_trans, simp_all)
   apply (rule le_comp_right, simp)
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subst (2) omega_fix)
   by (simp add: conjunctiveD)
 
@@ -912,7 +912,7 @@ theorem omega_lfp:
   apply (drule omega_least, simp)
   apply (rule lfp_lowerbound)
   apply (subst (2) omega_fix)
-  by (simp add: inf_comp mult_assoc)
+  by (simp add: inf_comp mult.assoc)
 end
 
 lemma [simp]: "mono (\<lambda> (t::'a::mbt_algebra) . x * t \<sqinter> y)"
@@ -943,7 +943,7 @@ lemma omega_star: "x \<in> conjunctive \<Longrightarrow> x ^ \<omega> = wpt (x ^
   apply (cut_tac x = x and y = 1 and z = "x ^ \<omega> * \<top> \<sqinter> x ^ *" in omega_least)
   apply (simp_all add: conjunctiveD,safe)
   apply  (subst (2) omega_fix)
-  apply (simp add: inf_comp inf_assoc mult_assoc)
+  apply (simp add: inf_comp inf_assoc mult.assoc)
   apply (metis inf.commute inf_assoc inf_le1 star_fix)
   apply (cut_tac x = x and y = \<top> and z = "x ^ *" and u = x and v = 1 in fusion)
   apply (simp add: conjunctiveD)

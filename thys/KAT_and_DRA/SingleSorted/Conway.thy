@@ -43,10 +43,10 @@ lemma dagger_unfoldr_distl: "y\<cdot>x\<^sup>\<dagger> = y + y\<cdot>x\<^sup>\<d
   (* nitpick *) oops
 
 lemma dagger_unfoldr_distr: "x\<^sup>\<dagger>\<cdot>y = y + x\<^sup>\<dagger>\<cdot>x\<cdot>y"
-  by (metis dagger_unfoldr distrib_right' mult_1_left mult_assoc)
+  by (metis dagger_unfoldr distrib_right' mult_1_left mult.assoc)
 
 lemma dagger_annil[simp]: "(x\<cdot>0)\<^sup>\<dagger> = 1 + x\<cdot>0"
-  by (metis annil dagger_unfoldl mult_assoc)
+  by (metis annil dagger_unfoldl mult.assoc)
 
 lemma zero_dagger[simp]: "0\<^sup>\<dagger> = 1"
   by (metis add_0_right annil dagger_annil)
@@ -66,7 +66,7 @@ lemma dagger_iso: "x \<le> y \<Longrightarrow> x\<^sup>\<dagger> \<le> y\<^sup>\
   by (metis dagger_simr mult_1_left mult_1_right)
 
 lemma dagger_slide_var: "x\<cdot>(y\<cdot>x)\<^sup>\<dagger> \<le> (x\<cdot>y)\<^sup>\<dagger>\<cdot>x"
-  by (metis eq_refl dagger_simr mult_assoc)
+  by (metis eq_refl dagger_simr mult.assoc)
 
 text {* Nitpick refutes the next lemma. *}
 
@@ -103,13 +103,13 @@ subclass near_conway_sim_right_zerol_tests
   by (unfold_locales)
 
 lemma dagger_slide: "x\<cdot>(y\<cdot>x)\<^sup>\<dagger> = (x\<cdot>y)\<^sup>\<dagger>\<cdot>x"
-  by (metis add_commute dagger_prod_unfold add_lub_var mult_1_right mult_assoc subdistl dagger_slide_var dagger_unfoldl_distr antisym)
+  by (metis add.commute dagger_prod_unfold add_lub_var mult_1_right mult.assoc subdistl dagger_slide_var dagger_unfoldl_distr antisym)
 
 lemma dagger_denest2: "(x + y)\<^sup>\<dagger> = x\<^sup>\<dagger>\<cdot>(y\<cdot>x\<^sup>\<dagger>)\<^sup>\<dagger>"
   by (metis dagger_denest dagger_slide)
 
 lemma test_preserve: "\<lbrakk>test p; p\<cdot>x\<cdot>p = p\<cdot>x\<rbrakk> \<Longrightarrow> p\<cdot>x\<^sup>\<dagger> = (p\<cdot>x)\<^sup>\<dagger>\<cdot>p"
-proof (rule antisym, metis add_0_right dagger_slide mult_assoc preservation)
+proof (rule antisym, metis add_0_right dagger_slide mult.assoc preservation)
   assume "test p" "p\<cdot>x\<cdot>p = p\<cdot>x"
   hence "x\<cdot>p \<le> x"
     by (metis test_restrictr)
@@ -123,9 +123,9 @@ lemma test_dumb_var: "\<lbrakk>test p; p\<cdot>x\<cdot>p = p\<cdot>x\<rbrakk> \<
 proof - 
   assume assms: "test p" "p\<cdot>x\<cdot>p = p\<cdot>x"
   hence "p\<cdot>(p\<cdot>x + !p\<cdot>y)\<cdot>p = p\<cdot>x"
-    by (metis mult_assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
+    by (metis mult.assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
   moreover have "p\<cdot>(p\<cdot>x + !p\<cdot>y) = p\<cdot>x"
-    by (metis assms mult_assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
+    by (metis assms mult.assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
   ultimately show ?thesis
     by metis
 qed
@@ -136,7 +136,7 @@ proof -
   have "p\<cdot>(p\<cdot>x + !p\<cdot>y)\<^sup>\<dagger>  = (p\<cdot>(p\<cdot>x + !p\<cdot>y))\<^sup>\<dagger>\<cdot>p"
     by (metis assms(1) assms(2) test_dumb_var test_preserve)
   thus ?thesis
-   by (metis assms mult_assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
+   by (metis assms mult.assoc weak_distrib_left_var test_mult_idem_var annil test_comp_mult add_zeror)
 qed
 
 lemma test_preserve2: "\<lbrakk>test p; p\<cdot>x\<cdot>p = p\<cdot>x\<rbrakk> \<Longrightarrow> p\<cdot>(p\<cdot>x + !p\<cdot>y)\<^sup>\<dagger> \<le> x\<^sup>\<dagger>"

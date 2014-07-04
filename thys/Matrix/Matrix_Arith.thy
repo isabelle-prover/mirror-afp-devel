@@ -734,7 +734,7 @@ proof (rule vec_eqI)
   note [simp] = vec_plus_index[OF _ _ i] 
   from vec
   show "vec_plus u (vec_plus v w) ! i = vec_plus (vec_plus u v) w ! i" 
-    by (auto simp: add_assoc)
+    by (auto simp: add.assoc)
 qed (auto intro: vec)
 
 lemma mat_plus_assoc: assumes wf: "mat nr nc m1" "mat nr nc m2" "mat nr nc m3"
@@ -743,7 +743,7 @@ proof (rule mat_eqI)
   fix i j 
   assume "i < nc" "j < nr"
   note [simp] = mat_plus_index[OF _ _ this]
-  show "?l ! i ! j = ?r ! i ! j" using wf by (simp add: add_assoc)
+  show "?l ! i ! j = ?r ! i ! j" using wf by (simp add: add.assoc)
 qed (auto simp: wf)
 end
 
@@ -754,7 +754,7 @@ unfolding vec_plusI_def
 proof (induct x arbitrary: y)
   case (Cons a x)
   thus ?case 
-    by (cases y, auto simp: add_commute) 
+    by (cases y, auto simp: add.commute) 
 qed simp
 
 
@@ -837,9 +837,9 @@ proof (induct v1 arbitrary: v2)
   from Cons(2) obtain y2 w2 where v2: "v2 = Cons y2 w2" and len: "length w1 = length w2" by (cases v2, auto)
   from Cons(1)[OF len] have rec: "scalar_prod (w1 @ [x1]) (w2 @ [x2]) = x1 * x2 + scalar_prod w1 w2" .
   have "scalar_prod ((y1 # w1) @ [x1]) (v2 @ [x2]) = 
-    (y1 * y2 + x1 * x2) + scalar_prod w1 w2" by (simp add: scalar_prod_cons v2 rec add_assoc)
-  also have "\<dots> = (x1 * x2 + y1 * y2) + scalar_prod w1 w2" using add_commute[of "x1 * x2"] by simp
-  also have "\<dots> = x1 * x2 + (scalar_prod (y1 # w1) v2)" by (simp add: add_assoc scalar_prod_cons v2)
+    (y1 * y2 + x1 * x2) + scalar_prod w1 w2" by (simp add: scalar_prod_cons v2 rec add.assoc)
+  also have "\<dots> = (x1 * x2 + y1 * y2) + scalar_prod w1 w2" using add.commute[of "x1 * x2"] by simp
+  also have "\<dots> = x1 * x2 + (scalar_prod (y1 # w1) v2)" by (simp add: add.assoc scalar_prod_cons v2)
   finally show ?case .
 qed (simp add: scalar_prodI_def)
 
@@ -907,11 +907,11 @@ next
       let ?bca = "times (times b c) a"
       have "plus (times (plus (times b c) ?rv) a) (plus (times b ?uc) ?recl) = plus (plus ?bca (times ?rv a)) (plus (times b ?uc) ?recl)" 
         by (simp add: distrib_right)
-      also have "\<dots> = plus (plus ?bca (times ?rv a)) (plus ?recl (times b ?uc))" by (simp add: add_commute)
-      also have "\<dots> = plus ?bca (plus (plus (times ?rv a) ?recl) (times b ?uc))" by (simp add: add_assoc)
+      also have "\<dots> = plus (plus ?bca (times ?rv a)) (plus ?recl (times b ?uc))" by (simp add: add.commute)
+      also have "\<dots> = plus ?bca (plus (plus (times ?rv a) ?recl) (times b ?uc))" by (simp add: add.assoc)
       also have "\<dots> = plus ?bca (plus ?recr (times b ?uc))" by (simp only: rec)
-      also have "\<dots> = plus ?bca (plus (times b ?uc) ?recr)" by (simp add: add_commute)
-      also have "\<dots> = plus (times b (plus (times c a) ?uc)) ?recr" by (simp add: distrib_left mult_assoc add_assoc)
+      also have "\<dots> = plus ?bca (plus (times b ?uc) ?recr)" by (simp add: add.commute)
+      also have "\<dots> = plus (times b (plus (times c a) ?uc)) ?recr" by (simp add: distrib_left mult.assoc add.assoc)
       finally show "plus (times (plus (times b c) ?rv) a) (plus (times b ?uc) ?recl) = plus (times b (plus (times c a) ?uc)) ?recr" .
     qed
   qed
@@ -1009,7 +1009,7 @@ proof (induct nr arbitrary: u v w)
   from Suc obtain b vv where v: "v = b # vv" by (cases v, auto)
   from Suc obtain c ww where w: "w = c # ww" by (cases w, auto)
   from Suc u v w have lu: "length uu = n" and lv: "length vv = n" and lw: "length ww = n" by auto
-  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times a c"] distrib_left add_assoc[symmetric])
+  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add.commute[of _ "times a c"] distrib_left add.assoc[symmetric])
 qed simp
 
 lemma scalar_vec_plus_distrib_left: 
@@ -1025,7 +1025,7 @@ proof (induct nr arbitrary: u v w)
   from Suc obtain b vv where v: "v = b # vv" by (cases v, auto)
   from Suc obtain c ww where w: "w = c # ww" by (cases w, auto)
   from Suc u v w have lu: "length uu = n" and lv: "length vv = n" and lw: "length ww = n" by auto
-  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add_commute[of _ "times b c"] distrib_right add_assoc[symmetric])
+  show ?case by (simp only: u v w, simp, simp only: Suc(1)[OF lu lv lw], simp add: add.commute[of _ "times b c"] distrib_right add.assoc[symmetric])
 qed simp
 
 lemma mat_mult_plus_distrib_right: 
@@ -1109,7 +1109,7 @@ proof (induct nn arbitrary: v i)
   show ?case 
   proof (cases i)
     case 0
-    thus ?thesis using scalar_left_zero unfolding vec0I_def by (simp add: v scalar_prod_cons add_commute)
+    thus ?thesis using scalar_left_zero unfolding vec0I_def by (simp add: v scalar_prod_cons add.commute)
   next
     case (Suc ii)
     thus ?thesis using oSuc lvv v by (auto simp: scalar_prod_cons)
@@ -1128,7 +1128,7 @@ proof (induct nn arbitrary: v i)
   show ?case 
   proof (cases i)
     case 0
-    thus ?thesis using scalar_right_zero unfolding vec0I_def by (simp add: v scalar_prod_cons add_commute)
+    thus ?thesis using scalar_right_zero unfolding vec0I_def by (simp add: v scalar_prod_cons add.commute)
   next
     case (Suc ii)
     thus ?thesis using oSuc lvv v by (auto simp: scalar_prod_cons)

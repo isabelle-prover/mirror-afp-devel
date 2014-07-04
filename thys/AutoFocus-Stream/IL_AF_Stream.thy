@@ -308,7 +308,7 @@ lemma f_join_append: "
 apply (induct ys rule: rev_induct)
  apply (simp add: f_join_Nil)
 apply (simp add: append_assoc[symmetric] f_join_snoc del: append_assoc)
-apply (simp add: iT_Plus_neg_mem_iff add_commute[of "length xs"])
+apply (simp add: iT_Plus_neg_mem_iff add.commute[of "length xs"])
 done
 
 lemma take_f_join_eq1: "
@@ -581,7 +581,7 @@ done
 
 lemma i_join_i_drop: "I \<noteq> {} \<Longrightarrow> f \<Up> n \<Join>\<^sub>i I = f \<Join>\<^sub>i (I \<oplus> n)"
 apply (simp (no_asm) add: ilist_eq_iff)
-apply (simp add: i_join_nth iT_Plus_inext_nth add_commute[of _ n])
+apply (simp add: i_join_nth iT_Plus_inext_nth add.commute[of _ n])
 done
 
 
@@ -913,7 +913,7 @@ apply (case_tac "I = {}")
  apply (simp add: iT_Plus_empty iT_Div_empty i_f_join_empty)
 apply (simp add: i_f_join_def iT_Plus_Max iT_Div_Max)
 apply (simp add: i_last_message_hold_i_take[symmetric] i_shrink_i_take_mult[symmetric])
-apply (simp add: add_commute[of k])
+apply (simp add: add.commute[of k])
 apply (simp add: mod_0_div_mult_cancel[THEN iffD1])
 apply (simp add: f_join_f_shrink_iT_Plus_iT_Div_mod[unfolded One_nat_def])
 done
@@ -953,7 +953,7 @@ apply (subgoal_tac "\<And>x. x + k - Suc 0 \<in> I \<Longrightarrow> x mod k = 0
  prefer 2
  thm mod_add_eq_imp_mod_0[THEN iffD1]
  apply (rule mod_add_eq_imp_mod_0[THEN iffD1, of "k - Suc 0"])
- apply (simp add: add_commute[of k])
+ apply (simp add: add.commute[of k])
 apply (subst iT_Plus_Div_distrib_mod_less)
  apply (clarsimp simp: iT_Plus_neg_mem_iff)
 apply (simp add: iT_Plus_0)
@@ -987,7 +987,7 @@ apply (case_tac "I = {}")
  apply (simp add: iT_Plus_empty iT_Div_empty i_f_join_empty)
 apply (simp add: i_f_join_def)
 apply (simp add: iT_Div_Max)
-apply (simp add: i_last_message_hold_i_take[symmetric] i_shrink_i_take_mult[symmetric] add_commute[of k])
+apply (simp add: i_last_message_hold_i_take[symmetric] i_shrink_i_take_mult[symmetric] add.commute[of k])
 apply (simp add: div_mult_cancel)
 apply (subgoal_tac "k - Suc 0 \<le> Max I")
  prefer 2
@@ -1172,7 +1172,7 @@ apply (rule iffI)
  apply (drule_tac t="t * k" in ispec)
   apply (simp add: iT_Mult_mem_iff2)
  apply (simp add: i_expand_nth_mult)
-apply (fastforce simp: iT_Mult_mem_iff mult_commute[of k] i_expand_nth_mod_eq_0)
+apply (fastforce simp: iT_Mult_mem_iff mult.commute[of k] i_expand_nth_mod_eq_0)
 done
 
 
@@ -1199,7 +1199,7 @@ apply (drule_tac y=x1 in order_le_imp_less_or_eq, erule disjE)
  prefer 2
  apply simp
 apply (drule_tac x=x1 in spec)
-apply (simp add: mult_commute[of k])
+apply (simp add: mult.commute[of k])
 apply (drule Suc_le_lessD)
 thm less_mod_eq_imp_add_divisor_le
 apply (drule_tac y="q * k" and m=k in less_mod_eq_imp_add_divisor_le, simp)
@@ -1255,13 +1255,13 @@ apply (rule iffI)
   apply (subgoal_tac "0 < i mod k")
    prefer 2
    thm between_imp_mod_gr0[OF Suc_le_lessD]
-   apply (simp add: mult_commute[of t])
+   apply (simp add: mult.commute[of t])
    apply (rule between_imp_mod_gr0[OF Suc_le_lessD], simp+)
   apply (rule conjI)
    apply (rule_tac x="t * k + k" in exI)
    apply force
   apply clarify
-  apply (simp add: mult_commute[of t])
+  apply (simp add: mult.commute[of t])
   apply (rule between_imp_mod_gr0[OF Suc_le_lessD], assumption)
   apply simp
  apply clarsimp
@@ -1272,12 +1272,12 @@ apply (rule iffI)
  apply (simp add: mod_0_imp_mod_pred)
  apply (rule conjI, blast)
  apply clarify
- apply (simp add: mult_commute[of t])
+ apply (simp add: mult.commute[of t])
  apply (rule between_imp_mod_gr0[OF Suc_le_lessD], assumption)
  apply simp
 apply (simp add: mod_Suc)
 apply (erule disjE)
- apply (clarsimp simp: mult_commute[of k], rename_tac i)
+ apply (clarsimp simp: mult.commute[of k], rename_tac i)
  apply (subgoal_tac "t < i")
   prefer 2
   apply (rule ccontr)
@@ -1304,7 +1304,7 @@ apply (case_tac "i = Suc (t * k)")
  apply (rule_tac x="Suc (t * k)" in exI)
  apply simp
  apply (case_tac "k = Suc (Suc 0)", simp)
- apply (clarsimp simp: mult_commute[of k], rename_tac q)
+ apply (clarsimp simp: mult.commute[of k], rename_tac q)
  apply (subgoal_tac "Suc (t * k) < t * k + k - Suc 0")
   prefer 2
   apply simp
@@ -1337,10 +1337,10 @@ apply (case_tac "i1 = Suc i")
    apply simp
    thm between_imp_mod_between[of "k - Suc (Suc 0)" k t "Suc 0" i]
    apply (cut_tac b="k - Suc (Suc 0)" and m=k and k=t and a="Suc 0" and n=i in between_imp_mod_between)
-   apply (simp add: mult_commute[of k])+
+   apply (simp add: mult.commute[of k])+
    apply clarsimp+
 apply (rename_tac q)
-apply (simp add: mult_commute[of k])
+apply (simp add: mult.commute[of k])
 apply (subgoal_tac "Suc t \<le> q")
  prefer 2
  apply (rule Suc_leI)
@@ -1349,7 +1349,7 @@ apply (subgoal_tac "Suc t \<le> q")
  apply (rule Suc_le_lessD)
  apply simp
 apply (frule mult_le_mono1[of "Suc t" _ k])
-apply (simp add: add_commute[of k])
+apply (simp add: add.commute[of k])
 apply (intro conjI impI allI)
  apply force
 apply (simp add: linorder_not_less)
@@ -1423,7 +1423,7 @@ apply (rule iffI)
   prefer 2
   apply (rule less_imp_neq)
   apply (rule le_pred_imp_less, simp)
-  apply (simp only: mult_commute[of t k])
+  apply (simp only: mult.commute[of t k])
   apply (rule between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
   apply (simp split del: split_if)+
  apply (elim exE conjE, rename_tac t1)
@@ -1453,7 +1453,7 @@ apply (erule disjE)
  thm le_mod_add_eq_imp_add_mod_le[OF less_imp_le, rule_format, of "t * k" _ "k - Suc 0" k]
  apply (frule_tac a="t * k" and b=t1 and k="k - Suc 0" and m=k 
    in le_mod_add_eq_imp_add_mod_le[OF less_imp_le, rule_format])
-  apply (simp add: add_commute[of "t * k"] mod_pred)
+  apply (simp add: add.commute[of "t * k"] mod_pred)
  apply (rule_tac x=t1 in exI)
  apply simp
 apply (clarsimp, rename_tac t1 t2)
@@ -1477,7 +1477,7 @@ apply (drule_tac y=t1 in order_le_imp_less_or_eq, erule disjE)
   apply (simp add: linorder_not_le)
   apply (drule_tac m=t2 in less_imp_le_pred)
   thm between_imp_mod_le[of "k - Suc (Suc 0)" k t _, OF diff_Suc_less, OF gr_implies_gr0]
-  apply (simp only: mult_commute[of t])
+  apply (simp only: mult.commute[of t])
   apply (frule_tac n=t2 in between_imp_mod_le[of "k - Suc (Suc 0)" k t _, OF diff_Suc_less, OF gr_implies_gr0])
    apply simp+
  apply (drule_tac x=t3 in spec)
@@ -1502,7 +1502,7 @@ apply (case_tac "Suc t1 = t2")
   apply (subgoal_tac "k - Suc 0 - Suc 0 < k")
    prefer 2
    apply simp
-  apply (simp only: mult_commute[of t])
+  apply (simp only: mult.commute[of t])
   thm between_imp_mod_le[of "k - Suc 0 - Suc 0" k t "Suc t1"]
   apply (drule_tac n="Suc t1" in between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
   apply simp_all
@@ -1529,7 +1529,7 @@ apply (drule_tac P="t3 \<le> t2" in meta_mp)
  apply simp
 apply (subgoal_tac "t * k + (k - Suc 0) \<le> t2")
  prefer 2
- apply (simp only: mult_commute[of t])
+ apply (simp only: mult.commute[of t])
  thm mult_divisor_le_mod_ge_imp_ge
  apply (rule mult_divisor_le_mod_ge_imp_ge)
  apply simp_all

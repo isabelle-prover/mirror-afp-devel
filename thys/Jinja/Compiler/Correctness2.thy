@@ -40,7 +40,7 @@ declare drop_drop[simp del]
 lemma [simp]: "P,C,M,pc \<rhd> (is\<^sub>1 @ is\<^sub>2) = (P,C,M,pc \<rhd> is\<^sub>1 \<and> P,C,M,pc + size is\<^sub>1 \<rhd> is\<^sub>2)"
 (*<*)
 apply(simp add:before_def prefixeq_def)
-apply(subst add_commute)
+apply(subst add.commute)
 apply(simp add: drop_drop[symmetric])
 apply fastforce
 done
@@ -406,7 +406,7 @@ next
     using BinOp\<^sub>1.prems IH\<^sub>2 by fastforce
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>2,(w#vs,ls\<^sub>2,C,M,?pc\<^sub>2+1)#frs)"
     using BinOp\<^sub>1 by(cases bop) auto
-  finally show ?case by (auto split: bop.splits simp:add_assoc)
+  finally show ?case by (auto split: bop.splits simp:add.assoc)
 next
   case BinOpThrow\<^sub>1\<^sub>1 thus ?case by(fastforce)
 next
@@ -480,7 +480,7 @@ next
     using FAss\<^sub>1.prems IH\<^sub>2 by fastforce
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>2',(Unit#vs,ls\<^sub>2,C,M,?pc\<^sub>2+2)#frs)"
     using FAss\<^sub>1 by auto
-  finally show ?case using FAss\<^sub>1 by (auto simp:add_assoc)
+  finally show ?case using FAss\<^sub>1 by (auto simp:add.assoc)
 next
   case (FAssNull\<^sub>1 e\<^sub>1 h\<^sub>0 ls\<^sub>0 h\<^sub>1 ls\<^sub>1 e\<^sub>2 w h\<^sub>2 ls\<^sub>2 F D)
   let ?pc\<^sub>1 = "pc + length(compE\<^sub>2 e\<^sub>1)"
@@ -565,7 +565,7 @@ next
         by (fastforce simp del:split_paired_Ex)
       also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None, h\<^sub>3, (v # vs, ls\<^sub>2, C,M,?pc\<^sub>2+1)#frs)"
         using Call\<^sub>1 M'_code M'_in_D by(auto simp: nth_append compMb\<^sub>2_def)
-      finally show ?trans by(simp add:add_assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -658,7 +658,7 @@ next
       note eval\<^sub>1
       also have "P \<turnstile> ?\<sigma>\<^sub>1 -jvm\<rightarrow> (None,h\<^sub>2,(v#vs,ls\<^sub>2,C,M,?pc\<^sub>2)#frs)"
         using val Seq\<^sub>1.prems IH\<^sub>2 by fastforce
-      finally show ?trans by(simp add:add_assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -695,8 +695,8 @@ next
       also have "P \<turnstile> ?\<sigma>\<^sub>1 -jvm\<rightarrow> (None,h\<^sub>2,(v#vs,ls\<^sub>2,C,M,?pc\<^sub>1')#frs)"
         using val CondT\<^sub>1 by(fastforce simp:Int_Un_distrib)
       also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>2,(v#vs,ls\<^sub>2,C,M,?pc\<^sub>2')#frs)"
-        using CondT\<^sub>1 by(auto simp:add_assoc)
-      finally show ?trans by(simp add:add_assoc)
+        using CondT\<^sub>1 by(auto simp:add.assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -734,7 +734,7 @@ next
       note eval\<^sub>1
       also have "P \<turnstile> ?\<sigma>\<^sub>1 -jvm\<rightarrow> (None,h\<^sub>2,(v#vs,ls\<^sub>2,C,M,?pc\<^sub>2')#frs)"
         using val CondF\<^sub>1 by(fastforce simp:Int_Un_distrib)
-      finally show ?trans by(simp add:add_assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -771,10 +771,10 @@ next
             (None,h\<^sub>1,(Bool False#vs,ls\<^sub>1,C,M,?pc)#frs)"
     using WhileF\<^sub>1 by fastforce
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>1,(vs,ls\<^sub>1,C,M,?pc')#frs)"
-    using WhileF\<^sub>1 by (auto simp:add_assoc)
+    using WhileF\<^sub>1 by (auto simp:add.assoc)
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>1,(Unit#vs,ls\<^sub>1,C,M,?pc'+1)#frs)"
     using WhileF\<^sub>1.prems by (auto simp:eval_nat_numeral)
-  finally show ?case by (simp add:add_assoc eval_nat_numeral)
+  finally show ?case by (simp add:add.assoc eval_nat_numeral)
 next
   case (WhileT\<^sub>1 e h\<^sub>0 ls\<^sub>0 h\<^sub>1 ls\<^sub>1 c v\<^sub>1 h\<^sub>2 ls\<^sub>2 e\<^sub>3 h\<^sub>3 ls\<^sub>3)
   let ?pc = "pc + length(compE\<^sub>2 e)"
@@ -796,8 +796,8 @@ next
       assume val: ?val
       note 1
       also have "P \<turnstile> ?\<sigma>\<^sub>2 -jvm\<rightarrow> (None,h\<^sub>3,(v#vs,ls\<^sub>3,C,M,?pc'+3)#frs)"
-        using val WhileT\<^sub>1 by (auto simp add:add_assoc eval_nat_numeral)
-      finally show ?trans by(simp add:add_assoc eval_nat_numeral)
+        using val WhileT\<^sub>1 by (auto simp add:add.assoc eval_nat_numeral)
+      finally show ?trans by(simp add:add.assoc eval_nat_numeral)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -809,7 +809,7 @@ next
         pc\<^sub>2: "pc \<le> pc\<^sub>2 \<and> pc\<^sub>2 < ?pc'+3 \<and>
               \<not> caught P pc\<^sub>2 h\<^sub>3 xa (compxE\<^sub>2 (while (e) c) pc (size vs))" and
         2: "P \<turnstile> ?\<sigma>\<^sub>2 -jvm\<rightarrow> handle P C M xa h\<^sub>3 vs ls\<^sub>3 pc\<^sub>2 frs"
-        using WhileT\<^sub>1.prems by (auto simp:add_assoc eval_nat_numeral)
+        using WhileT\<^sub>1.prems by (auto simp:add.assoc eval_nat_numeral)
       have "?H pc\<^sub>2" using pc\<^sub>2 jvm_trans[OF 1 2] by auto
       thus "\<exists>pc\<^sub>2. ?H pc\<^sub>2" by iprover
     qed
@@ -904,7 +904,7 @@ next
              (None,h\<^sub>1,(v\<^sub>1#vs,ls\<^sub>1,C,M,?pc\<^sub>1)#frs)" using Try\<^sub>1 by auto
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>1,(v\<^sub>1#vs,ls\<^sub>1,C,M,?pc\<^sub>1')#frs)"
     using Try\<^sub>1.prems by auto
-  finally show ?case by (auto simp:add_assoc)
+  finally show ?case by (auto simp:add.assoc)
 next
   case (TryCatch\<^sub>1 e\<^sub>1 h\<^sub>0 ls\<^sub>0 a h\<^sub>1 ls\<^sub>1 D fs Ci i e\<^sub>2 e\<^sub>2' h\<^sub>2 ls\<^sub>2)
   let ?e = "try e\<^sub>1 catch(Ci i) e\<^sub>2"
@@ -954,7 +954,7 @@ next
       assume val: ?val
       note 1 also have "P \<turnstile> ?\<sigma>\<^sub>1 -jvm\<rightarrow> (None,h\<^sub>2,(v#vs,ls\<^sub>2,C,M,?pc\<^sub>2)#frs)"
         using val beforex\<^sub>2 IH\<^sub>2 TryCatch\<^sub>1.prems by auto
-      finally show ?trans by(simp add:add_assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")
@@ -1020,7 +1020,7 @@ next
       note 1
       also have "P \<turnstile> ?\<sigma>\<^sub>1 -jvm\<rightarrow> (None,h\<^sub>2,(rev(ws) @ vs,ls\<^sub>2,C,M,?pc\<^sub>2)#frs)"
         using val IHs Cons\<^sub>1.prems by fastforce
-      finally show ?trans by(simp add:add_assoc)
+      finally show ?trans by(simp add:add.assoc)
     qed
   next
     show ?Err (is "?throw \<longrightarrow> (\<exists>pc\<^sub>2. ?H pc\<^sub>2)")

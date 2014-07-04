@@ -117,7 +117,7 @@ proof
     show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
       by (metis rtc1 add_lub)
     show "x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-      by (metis rtc1 add_commute add_lub less_eq_def mult_isor mult_onel)
+      by (metis rtc1 add.commute add_lub less_eq_def mult_isor mult_onel)
   qed
   show "\<lbrakk> 1 + x \<le> y; y \<cdot> y = y \<rbrakk> \<Longrightarrow> x\<^sup>\<star> \<le> y"
     by (metis rtc2 eq_refl less_eq_def)
@@ -139,7 +139,7 @@ proof unfold_locales
   hence "x \<cdot> (1 + x) = x"
     using distrib_left less_eq_def by simp
   hence "(1 + x) \<cdot> (1 + x) = 1 + x"
-    using add_left_commute distrib_right' by simp
+    using add.left_commute distrib_right' by simp
   thus "x\<^sup>\<star> = 1 + x"
     by (metis R add_assoc' add_idem' one_plus_star)
 qed

@@ -90,7 +90,7 @@ apply (drule_tac x="length xs + i" in spec)
 apply (simp add: i_append_nth)
 apply (case_tac "length xs + i < length ys")
  apply fastforce
-apply (fastforce simp: add_commute[of _ "length xs"])
+apply (fastforce simp: add.commute[of _ "length xs"])
 done
 
 lemma i_append_eq_i_append_conv2: "
@@ -526,7 +526,7 @@ by (simp add: i_append_i_take_if)
 thm List.drop_append
 lemma i_append_i_drop_eq1: "
   n \<le> length xs \<Longrightarrow> (xs \<frown> f) \<Up> n = (xs \<up> n) \<frown> f"
-by (simp add: expand_ilist_eq i_append_nth less_diff_conv add_commute[of _ n])
+by (simp add: expand_ilist_eq i_append_nth less_diff_conv add.commute[of _ n])
 lemma i_append_i_drop_eq2: "
   length xs \<le> n \<Longrightarrow> (xs \<frown> f) \<Up> n = f \<Up> (n - length xs)"
 by (simp add: expand_ilist_eq i_append_nth)
@@ -611,14 +611,14 @@ by (simp add: i_take_def)
 
 thm List.drop_drop
 lemma i_drop_i_drop[simp]: "s \<Up> a \<Up> b = s \<Up> (a + b)"
-by (simp add: i_drop_def add_assoc)
+by (simp add: i_drop_def add.assoc)
 corollary i_drop_Suc: "f \<Up> Suc 0 \<Up> n = f \<Up> Suc n"
 by simp
 
 lemma i_take_commute: "s \<Down> a \<down> b = s \<Down> b \<down> a"
 by (simp add: ac_simps)
 lemma i_drop_commute: "s \<Up> a \<Up> b = s \<Up> b \<Up> a"
-by (simp add: add_commute[of a])
+by (simp add: add.commute[of a])
 
 thm List.drop_tl
 corollary i_drop_tl: "f \<Up> Suc 0 \<Up> n = f \<Up> n \<Up> Suc 0"
@@ -708,7 +708,7 @@ apply (rule iffI)
  apply simp
  apply (clarify, rename_tac x)
  apply (drule_tac x="length xs + x" in spec)
- apply (simp add: less_diff_conv add_commute[of _ "length xs"])
+ apply (simp add: less_diff_conv add.commute[of _ "length xs"])
 apply simp
 done
 lemma i_append_eq_i_append_conv_if: "

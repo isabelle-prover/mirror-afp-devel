@@ -41,7 +41,7 @@ by (simp add: suffix_def)
 
 lemma suffix_suffix [simp]:
   "suffix m (suffix k x) = suffix (k+m) x"
-by (rule ext, simp add: suffix_def add_assoc)
+by (rule ext, simp add: suffix_def add.assoc)
 
 (*
 text {*

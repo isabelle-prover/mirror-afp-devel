@@ -77,7 +77,7 @@ apply(coinduction arbitrary: acc xs rule: enat_coinduct)
 apply(auto simp add: iadd_is_0 epred_iadd1 mult_2 epred_llength ltl_lmirror_aux iadd_Suc_right)
 apply(rule exI conjI refl)+
 apply(simp add: iadd_Suc_right llength_ltl)
-by (metis (hide_lams, no_types) add_commute epred_llength iadd_Suc_right lhd_LCons_ltl llength_LCons)
+by (metis (hide_lams, no_types) add.commute epred_llength iadd_Suc_right lhd_LCons_ltl llength_LCons)
 
 lemma lnull_lmirror [simp]: "lnull (lmirror xs) = lnull xs"
 by(simp add: lmirror_def)

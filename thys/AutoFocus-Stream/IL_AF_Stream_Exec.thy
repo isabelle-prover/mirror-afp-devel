@@ -401,7 +401,7 @@ apply (rule_tac t="input \<odot>\<^sub>i k \<Up> Suc t2 \<Down> i" and s="\<NoMs
  apply (subgoal_tac "t * k < Suc (t2 + i1) \<and> Suc (t2 + i1) < t * k + k", elim conjE)
   prefer 2
   apply (simp add: iIN_iff)
- apply (simp only: mult_commute[of _ k])
+ apply (simp only: mult.commute[of _ k])
  apply (rule between_imp_mod_gr0, assumption+)
 thm f_Exec_State_Idle_replicate_NoMsg_gr0_output
 apply (rule f_Exec_State_Idle_replicate_NoMsg_gr0_output, assumption+)
@@ -675,7 +675,7 @@ apply (rule iffI)
  apply (rule conjI)
   thm i_expand_i_take_mult_Suc
   apply (simp add: add_Suc_right[symmetric] i_expand_i_take_mult_Suc f_Exec_append del: add_Suc_right)
- apply (simp only: i_Exec_Stream_Acc_LocalState_nth i_expand_i_take_mult[symmetric] mult_Suc add_commute[of k])
+ apply (simp only: i_Exec_Stream_Acc_LocalState_nth i_expand_i_take_mult[symmetric] mult_Suc add.commute[of k])
  apply (subgoal_tac "
    \<not> State_Idle localState output_fun trans_fun
        (localState (f_Exec_Comp trans_fun (input \<odot>\<^sub>i k \<Down> (t * k + Suc i)) c))")
@@ -695,8 +695,8 @@ apply (rule iffI)
  apply (elim exE conjE, rename_tac i1)
  thm less_diff_conv[THEN iffD1, rule_format]
  apply (frule_tac i=i1 in less_diff_conv[THEN iffD1, rule_format])
- thm subst[OF add_commute, rule_format]
- apply (drule_tac a=i1 and P="\<lambda>x. (x < k - Suc 0)" in subst[OF add_commute, rule_format])
+ thm subst[OF add.commute, rule_format]
+ apply (drule_tac a=i1 and P="\<lambda>x. (x < k - Suc 0)" in subst[OF add.commute, rule_format])
  apply (frule Suc_less_pred_conv[THEN iffD2])
  apply (simp only: iUntil_def)
  apply (rule_tac t="t * k + Suc (i + i1)" in iexI)
@@ -785,7 +785,7 @@ apply (elim iexE conjE, rename_tac t1 t2)
 apply (subgoal_tac "t1 \<le> t * k + (k - Suc 0)")
  prefer 2
  apply (rule ccontr)
- apply (simp add: i_Exec_Stream_Acc_LocalState_nth i_expand_i_take_mult[symmetric] add_commute[of k])
+ apply (simp add: i_Exec_Stream_Acc_LocalState_nth i_expand_i_take_mult[symmetric] add.commute[of k])
  apply (thin_tac "iAll ?I ?P")
  apply (drule_tac t="t * k + (k - Suc 0)" in ispec)
   apply (simp add: cut_less_mem_iff iT_add iT_iff)
@@ -975,7 +975,7 @@ apply (unfold iUntil_def, erule disjE)
   apply (thin_tac "iAll ?I ?P")
   apply (drule_tac t="t * k + (k - Suc 0)" in ispec)
    apply (simp add: cut_less_mem_iff iT_add iT_iff)
-  apply (simp add: add_commute[of k])
+  apply (simp add: add.commute[of k])
  apply (fastforce simp: iT_add iT_iff)+
 done
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv: "

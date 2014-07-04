@@ -216,7 +216,7 @@ using s rs i proof (induct m arbitrary: steps rs)
     e: "eff (shd (trim (sdrop n rs) s')) s' sl''" and
     s'': "s'' |\<in>| sl''" and t'_def: "t' = mkTree (stl (trim (sdrop n rs) s')) s''" by blast
   have "shd (trim (sdrop n rs) s') \<in> R" by (metis sdrop_fair Suc.prems(2) trim_in_R s')
-  thus ?case using i s'' e s' unfolding sdrop_stl t'_def sdrop_add nat_add_commute[of n]
+  thus ?case using i s'' e s' unfolding sdrop_stl t'_def sdrop_add add.commute[of n]
     trim_alt[OF s' sdrop_fair[OF Suc.prems(2)]]
     by (intro exI[of _ "minWait (sdrop n rs) s' + Suc n"] exI[of _ s'']) (simp add: eff_S)
 qed (auto intro!: exI[of _ 0] exI[of _ s])
@@ -256,11 +256,11 @@ proof -
   moreover have "shd (stl (sdrop (pos rs r - Suc 0) rs)) = shd (sdrop (pos rs r) rs)"
     by (metis Suc_pred gr_implies_not0 m neq0_conv sdrop.simps(2) sdrop_stl)
   ultimately have "pos (stl (trim rs s)) r \<le> pos rs r - Suc (minWait rs s)"
-    using pos[OF rs r] by (auto simp: nat_add_commute trim_alt[OF s rs] intro: pos_least)
+    using pos[OF rs r] by (auto simp: add.commute trim_alt[OF s rs] intro: pos_least)
   moreover
   have "pos rs r \<le> pos (stl (trim rs s)) r + Suc (minWait rs s)"
     using pos[OF sdrop_fair[OF fair_stl[OF rs]] r, of "minWait rs s"]
-    by (auto simp: trim_alt[OF s rs] nat_add_commute intro: pos_least)
+    by (auto simp: trim_alt[OF s rs] add.commute intro: pos_least)
   hence "pos rs r - Suc (minWait rs s) \<le> pos (stl (trim rs s)) r" by linarith
   ultimately show ?thesis by simp
 qed

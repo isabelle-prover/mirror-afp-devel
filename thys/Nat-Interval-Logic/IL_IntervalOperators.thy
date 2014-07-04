@@ -307,7 +307,7 @@ apply (rule iffI)
  apply (rule conjI)
   apply (rule order_trans, assumption)
   apply (simp add: div_mult_cancel)
- apply (simp add: div_mult_cancel add_mult_distrib mult_commute[of k])
+ apply (simp add: div_mult_cancel add_mult_distrib mult.commute[of k])
 apply (erule conjE)
 apply (drule div_le_mono[of _ _ k], drule div_le_mono[of _ _ k])
 apply simp
@@ -321,7 +321,7 @@ lemma iMOD_mult: "[r, mod m ] \<otimes> k = [ r * k, mod m * k ]"
 apply (case_tac "k = 0")
  apply (simp add: iMOD_0 iT_mult_0 iIN_0 iTILL_0)
 apply (clarsimp simp: set_eq_iff iT_Mult_mem_iff iT_iff)
-apply (subst mult_commute[of m k])
+apply (subst mult.commute[of m k])
 thm mod_mult2_eq
 apply (simp add: mod_mult2_eq)
 apply (rule iffI)
@@ -332,7 +332,7 @@ apply (elim conjE)
 apply (subgoal_tac "x mod k = 0")
  prefer 2
  apply (drule_tac arg_cong[where f="\<lambda>x. x mod k"])
- apply (simp add: mult_commute[of k])
+ apply (simp add: mult.commute[of k])
 apply (drule div_le_mono[of _ _ k])
 apply simp
 done
@@ -467,11 +467,11 @@ done
 
 lemma iT_Plus_neg_assoc: "(I \<oplus>- a) \<oplus>- b = I \<oplus>- (a + b)"
 apply (simp add: iT_Plus_neg_def)
-apply (simp add: add_assoc add_commute[of b])
+apply (simp add: add.assoc add.commute[of b])
 done
 
 lemma iT_Plus_neg_commute: "I \<oplus>- a \<oplus>- b = I \<oplus>- b \<oplus>- a"
-by (simp add: iT_Plus_neg_assoc add_commute[of b])
+by (simp add: iT_Plus_neg_assoc add.commute[of b])
 
 lemma iT_Plus_neg_0: "I \<oplus>- 0 = I"
 by (simp add: iT_Plus_neg_image_conv cut_ge_0_all)
@@ -842,8 +842,8 @@ apply (simp add: iT_Minus_image_conv iT_Plus_neg_image_conv iT_Plus_neg_mem_iff 
 apply (rule iffI)
  apply (clarsimp, rename_tac x')
  apply (rule_tac x="k - x' + iMin I + Max (I \<down>\<le> k)" in exI, simp)
- apply (simp add: add_assoc le_add_diff)
- apply (simp add: add_commute[of k] le_add_diff nat_cut_le_finite cut_leI trans_le_add2)
+ apply (simp add: add.assoc le_add_diff)
+ apply (simp add: add.commute[of k] le_add_diff nat_cut_le_finite cut_leI trans_le_add2)
  apply (rule_tac x=x' in exI, simp)
 apply (clarsimp, rename_tac x1 x2)
 apply (rule_tac x=x2 in exI)
@@ -1180,7 +1180,7 @@ lemma iT_Div_mem_iff_Int: "
 thm ex_in_conv[symmetric]
 apply (simp add: ex_in_conv[symmetric] iT_Div_mem_iff iT_iff)
 thm le_less_div_conv
-apply (simp add: le_less_div_conv[symmetric] add_commute[of k])
+apply (simp add: le_less_div_conv[symmetric] add.commute[of k])
 thm  less_eq_le_pred
 apply (subst less_eq_le_pred, simp)
 apply blast
@@ -1283,7 +1283,7 @@ corollary mod_partition_iT_Div_Int2: "
   \<lbrakk> 0 < k; 0 < d; n mod k = 0; d mod k = 0 \<rbrakk> \<Longrightarrow> 
   (A \<inter> [n\<dots>,d - Suc 0]) \<oslash> k =  
   (A \<oslash> k) \<inter> ([n\<dots>,d - Suc 0] \<oslash> k)"
-apply (clarsimp simp: mult_commute[of k])
+apply (clarsimp simp: mult.commute[of k])
 thm mod_partition_iT_Div_Int
 apply (simp add: mod_partition_iT_Div_Int)
 done
@@ -1309,13 +1309,13 @@ lemma iT_Div_assoc:"I \<oslash> a \<oslash> b = I \<oslash> (a * b)"
 by (simp add: iT_Div_def image_image div_mult2_eq)
 
 lemma iT_Div_commute: "I \<oslash> a \<oslash> b = I \<oslash> b \<oslash> a"
-by (simp add: iT_Div_assoc mult_commute[of a])
+by (simp add: iT_Div_assoc mult.commute[of a])
 
 lemma iT_Mult_Div_self: "0 < k \<Longrightarrow> I \<otimes> k \<oslash> k = I"
 by (simp add: iT_Mult_def iT_Div_def image_image)
 lemma iT_Mult_Div: "
   \<lbrakk> 0 < d;  k mod d = 0 \<rbrakk> \<Longrightarrow> I \<otimes> k \<oslash> d = I \<otimes> (k div d)"
-apply (clarsimp simp: mult_commute[of d])
+apply (clarsimp simp: mult.commute[of d])
 apply (simp add: iT_Mult_assoc[symmetric] iT_Mult_Div_self)
 done
 
@@ -1388,7 +1388,7 @@ apply (rule iffI)
  apply (clarsimp simp: div_le_mono)
 apply (rule_tac x="n mod k + k * x" in exI)
 apply simp
-apply (subst add_commute, subst le_diff_conv[symmetric])
+apply (subst add.commute, subst le_diff_conv[symmetric])
 apply (subst mult_div_cancel[symmetric])
 apply simp
 done
@@ -1404,20 +1404,20 @@ apply (rule iffI)
  apply (drule div_le_mono[of _ "n + d" k])
  apply (simp add: div_add1_eq[of n d])
 apply (clarify, rename_tac x)
-apply (simp add: add_assoc[symmetric] div_add1_eq[symmetric])
+apply (simp add: add.assoc[symmetric] div_add1_eq[symmetric])
 apply (frule mult_le_mono1[of "n div k" _ k])
 apply (frule mult_le_mono1[of _ "(n + d) div k" k])
-apply (simp add: mult_commute[of _ k] mult_div_cancel)
+apply (simp add: mult.commute[of _ k] mult_div_cancel)
 apply (simp add: le_diff_conv le_diff_conv2[OF mod_le_dividend])
 apply (drule order_le_less[of _ "(n + d) div k", THEN iffD1], erule disjE)
  apply (rule_tac x="k * x + n mod k" in exI)
- apply (simp add: add_commute[of _ "n mod k"])
+ apply (simp add: add.commute[of _ "n mod k"])
  apply (case_tac "n mod k \<le> (n + d) mod k", simp)
  apply (simp add: linorder_not_le)
  apply (drule_tac m=x in less_imp_le_pred)
  apply (drule_tac i=x and k=k in mult_le_mono2)
  apply (simp add: diff_mult_distrib2 mult_div_cancel)
- apply (subst add_commute[of "n mod k"])
+ apply (subst add.commute[of "n mod k"])
  apply (subst le_diff_conv2[symmetric])
   apply (simp add: trans_le_add1)
  apply (rule order_trans, assumption)
@@ -1429,7 +1429,7 @@ corollary iIN_div_if: "
   0 < k \<Longrightarrow> [n\<dots>,d] \<oslash> k = 
   [n div k\<dots>, d div k + (if n mod k + d mod k < k then 0 else Suc 0)]"
 apply (simp add: iIN_div)
-apply (simp add: iIN_def add_assoc[symmetric] div_add1_eq[symmetric] div_add1_eq2[where a=n])
+apply (simp add: iIN_def add.assoc[symmetric] div_add1_eq[symmetric] div_add1_eq2[where a=n])
 done
 corollary iIN_div_eq1: "
   \<lbrakk> 0 < k; n mod k + d mod k < k \<rbrakk> \<Longrightarrow> 
@@ -1462,21 +1462,21 @@ apply (case_tac "x * k < r")
  apply simp
  apply (drule less_imp_le[of _ r], drule div_le_mono[of _ r k], simp)
 apply (simp add: linorder_not_less linorder_not_le)
-apply (simp add: div_le_conv add_commute[of k])
+apply (simp add: div_le_conv add.commute[of k])
 apply (subst diff_add_assoc, simp)+
 thm div_mult_cancel
 apply (simp add: div_mult_cancel[symmetric] del: add_diff_assoc)
 apply (case_tac "x * k mod m = 0")
  apply clarsimp
  apply (drule sym)
- apply (simp add: mult_commute[of m])
+ apply (simp add: mult.commute[of m])
  apply (blast intro: div_less order_less_le_trans mod_less_divisor)
 apply simp
 apply (intro conjI impI)
    apply (simp add: div_mult_cancel)
   apply (simp add: div_mult_cancel)
-  apply (subst add_commute, subst diff_add_assoc, simp)
-  apply (subst add_commute, subst div_mult_self1, simp)
+  apply (subst add.commute, subst diff_add_assoc, simp)
+  apply (subst add.commute, subst div_mult_self1, simp)
   apply (subst div_less)
    apply (rule order_less_le_trans[of _ m], simp add: less_imp_diff_less)
    apply simp
@@ -1505,7 +1505,7 @@ apply (cut_tac r="r div k" and k=k and m=q in iMOD_mult)
 thm arg_cong[where f="\<lambda>x. x \<oplus> (r mod k)"]
 apply (drule arg_cong[where f="\<lambda>x. x \<oplus> (r mod k)"])
 apply (drule sym)
-apply (simp add: iMOD_add mult_commute[of k])
+apply (simp add: iMOD_add mult.commute[of k])
 thm iT_Plus_Div_distrib_mod_less
 apply (cut_tac I="[r div k, mod q] \<otimes> k" and m=k and n="r mod k" in iT_Plus_Div_distrib_mod_less)
  apply (rule ballI)
@@ -1547,10 +1547,10 @@ apply (induct c)
 apply (rule_tac t="[ r, mod m, Suc c ]" and s="[ r, mod m, c ] \<union> {r + m * c + m}" in subst)
  thm iMODb_append_union_Suc[of r m c 0, symmetric]
  apply (cut_tac c=c and c'=0 and r=r and m=m in iMODb_append_union_Suc[symmetric])
- apply (simp add: iMODb_0 iIN_0 add_commute[of m] add_assoc)
+ apply (simp add: iMODb_0 iIN_0 add.commute[of m] add.assoc)
 apply (subst iT_Div_Un)
 apply (simp add: iT_Div_singleton)
-apply (simp add: add_commute[of m] add_assoc[symmetric])
+apply (simp add: add.commute[of m] add.assoc[symmetric])
 apply (case_tac "(r + m * c) mod k + m mod k < k")
  thm div_add1_eq1
  apply (simp add: div_add1_eq1)
@@ -1588,7 +1588,7 @@ apply (subst iTILL_iT_Div_Int)
   apply (drule mod_eq_mod_0_imp_mod_eq, simp+)
 apply (simp add: iMOD_div iTILL_div)
 apply (simp add: iMOD_iTILL_iMODb_conv div_le_mono)
-apply (clarsimp simp: mult_assoc iMODb_mod_0 iMOD_0)
+apply (clarsimp simp: mult.assoc iMODb_mod_0 iMOD_0)
 done
 
 lemmas iT_div =
@@ -1653,7 +1653,7 @@ apply (frule_tac r'=r' and m'=m' and c'=c' and r=r and k=k and m=m and c=c
 apply (drule arg_cong[where f="Max"])
 apply (simp add: iT_Max iT_Div_Max iT_Div_finite_iff iT_Div_not_empty iT_finite iT_not_empty)
 apply (simp add: div_add1_eq1)
-apply (simp add: mult_commute[of m])
+apply (simp add: mult.commute[of m])
 thm div_mult1_eq[of m c]
 apply (simp add: div_mult1_eq[of c m] div_eq_0_conv)
 apply (subgoal_tac "c \<le> c * (m mod k)")
@@ -1687,7 +1687,7 @@ apply (drule arg_cong[where f="Max"])
 apply (simp add: iT_Max iT_Div_Max iT_Div_finite_iff iT_Div_not_empty iT_finite iT_not_empty)
 thm div_add1_eq
 apply (simp add: div_add1_eq[of r "m * c"])
-apply (simp add: mult_commute[of _ c])
+apply (simp add: mult.commute[of _ c])
 thm div_mult1_eq[of c m k]
 apply (clarsimp simp add: div_mult1_eq[of c m k])
 apply (subgoal_tac "Suc 0 \<le> c * (m mod k) div k", simp)
@@ -1819,7 +1819,7 @@ lemma iT_Mult_cut_less: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>< t = 
     (if t mod k = 0 then (I \<down>< (t div k)) else I \<down>< Suc (t div k)) \<otimes> k"
 apply (case_tac "t mod k = 0")
- apply (clarsimp simp add: mult_commute[of k] iT_Mult_cut_less2)
+ apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_less2)
 apply (clarsimp simp: set_eq_iff iT_Mult_mem_iff cut_less_mem_iff)
 apply (rule conj_cong, simp)+
 apply (subst less_Suc_eq_le)
@@ -1844,7 +1844,7 @@ lemma iT_Mult_cut_ge: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>\<ge> t = 
     (if t mod k = 0 then (I \<down>\<ge> (t div k)) else I \<down>\<ge> Suc (t div k)) \<otimes> k"
 apply (case_tac "t mod k = 0")
- apply (clarsimp simp add: mult_commute[of k] iT_Mult_cut_ge2)
+ apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_ge2)
 apply (clarsimp simp: set_eq_iff iT_Mult_mem_iff cut_ge_mem_iff)
 apply (rule conj_cong, simp)+
 apply (rule iffI)
@@ -1958,7 +1958,7 @@ apply (fastforce simp: le_div_conv)
 done
 lemma iT_Div_cut_greater: "
   0 < k \<Longrightarrow> (I \<oslash> k) \<down>> t = I \<down>> (t * k + (k - Suc 0)) \<oslash> k"
-by (simp add: nat_cut_ge_greater_conv[symmetric] iT_Div_cut_ge add_commute[of k])
+by (simp add: nat_cut_ge_greater_conv[symmetric] iT_Div_cut_ge add.commute[of k])
 
 
 lemma iT_Div_cut_le2: "
@@ -2018,7 +2018,7 @@ apply (case_tac "I = {}")
 apply (case_tac "k = 0")
  apply (simp add: iT_Mult_0 iTILL_0 inext_singleton)
 apply (case_tac "n mod k = 0")
- apply (clarsimp simp: mult_commute[of k] iT_Mult_inext)
+ apply (clarsimp simp: mult.commute[of k] iT_Mult_inext)
 apply (simp add: not_in_inext_fix iT_Mult_mem_iff)
 done
 
@@ -2029,7 +2029,7 @@ apply (case_tac "I = {}")
 apply (case_tac "k = 0")
  apply (simp add: iT_Mult_0 iTILL_0 iprev_singleton)
 apply (case_tac "n mod k = 0")
- apply (clarsimp simp: mult_commute[of k] iT_Mult_iprev)
+ apply (clarsimp simp: mult.commute[of k] iT_Mult_iprev)
 apply (simp add: not_in_iprev_fix iT_Mult_mem_iff)
 done
 
@@ -2114,7 +2114,7 @@ apply (case_tac "n \<in> I")
   apply (simp add: cut_le_mem_iff)
  thm iT_Plus_inext
  apply (simp add: diff_add_assoc del: add_diff_assoc)
- apply (subst add_commute[of k], subst iT_Plus_inext)
+ apply (subst add.commute[of k], subst iT_Plus_inext)
  apply (simp add: cut_le_Min_eq[of I, symmetric])
  apply (fold nat_mirror_def mirror_elem_def)
  apply (simp add: inext_imirror_iprev_conv[OF nat_cut_le_finite])
@@ -2403,7 +2403,7 @@ apply (case_tac "I \<inter> [\<dots>n * d + d - Suc 0] = {}")
 apply (subgoal_tac "Max (I \<inter> [\<dots>n * d + d - Suc 0]) div d \<le> n")
  prefer 2
  thm div_le_conv
- apply (simp add: div_le_conv add_commute[of d] iTILL_iff)
+ apply (simp add: div_le_conv add.commute[of d] iTILL_iff)
 apply (subgoal_tac "\<And>k. k \<le> n \<Longrightarrow> [\<dots>n * d + d - Suc 0] \<inter> [k * d\<dots>,d - Suc 0] = [k * d\<dots>,d - Suc 0]")
  prefer 2
  apply (subst Int_commute)
@@ -2525,7 +2525,7 @@ apply (drule order_le_less[THEN iffD1], erule disjE)
  apply simp
 thm subst[where t=I and s="I \<inter> [\<dots>n * d + d - Suc 0] \<union> I \<inter> [Suc n * d\<dots>,d - Suc 0]"]
 apply (rule_tac t=I and s="I \<inter> [\<dots>n * d + d - Suc 0] \<union> I \<inter> [Suc n * d\<dots>,d - Suc 0]" in subst)
- apply (simp add: Int_Un_distrib[symmetric] add_commute[of d])
+ apply (simp add: Int_Un_distrib[symmetric] add.commute[of d])
  apply (subst iIN_0_iTILL_conv[symmetric])
  apply (simp add: iIN_union)
  apply (rule Int_absorb2)
@@ -2533,7 +2533,7 @@ apply (rule_tac t=I and s="I \<inter> [\<dots>n * d + d - Suc 0] \<union> I \<in
  apply (case_tac "I = {}", simp)
  thm subset_atMost_Max_le_conv
  thm le_less_div_conv
- apply (simp add: subset_atMost_Max_le_conv le_less_div_conv[symmetric] less_eq_le_pred[symmetric] add_commute[of d])
+ apply (simp add: subset_atMost_Max_le_conv le_less_div_conv[symmetric] less_eq_le_pred[symmetric] add.commute[of d])
 thm card_Un_disjoint
 apply (cut_tac A="I \<inter> [\<dots>n * d + d - Suc 0]" and B="I \<inter> [Suc n * d\<dots>,d - Suc 0]" in card_Un_disjoint)
    apply simp
@@ -3336,12 +3336,12 @@ lemma NatMultiples_product_factor_multiple: "
 by (rule NatMultiples_Product)
 lemma NatMultiples_product_multiple_factor: "
   \<lbrakk> a \<in> NatMultiples F; b \<in> F \<rbrakk> \<Longrightarrow> a * b \<in> NatMultiples F"
-by (simp add: mult_commute[of a] NatMultiples_Product)
+by (simp add: mult.commute[of a] NatMultiples_Product)
 lemma NatMultiples_product_multiple: "
   \<lbrakk> a \<in> NatMultiples F; b \<in> NatMultiples F \<rbrakk> \<Longrightarrow> a * b \<in> NatMultiples F"
 apply (induct a rule: NatMultiples.induct)
  apply (simp add: NatMultiples_Product)
-apply (simp add: mult_assoc[of _ _ b] NatMultiples_Product)
+apply (simp add: mult.assoc[of _ _ b] NatMultiples_Product)
 done
 
 
@@ -3517,7 +3517,7 @@ done
 lemma 
   divisor_mod_0_imp_iMOD_in_i_set_mult: "m mod k = 0 \<Longrightarrow> [r, mod m] \<in> i_set_mult k" and
   divisor_mod_0_imp_iMODb_in_i_set_mult: "m mod k = 0 \<Longrightarrow> [r, mod m, c] \<in> i_set_mult k"
-by (clarsimp simp: mult_commute[of k])+
+by (clarsimp simp: mult.commute[of k])+
 
 lemma iMOD_in_i_set_mult__divisor_mod_0_conv: "
   m \<noteq> Suc 0 \<Longrightarrow> ([r, mod m] \<in> i_set_mult k) = (m mod k = 0)"
@@ -3547,10 +3547,10 @@ done
 
 lemma mod_0_imp_i_set_mult_subset: "
   a mod b = 0 \<Longrightarrow> i_set_mult a \<subseteq> i_set_mult b"
-apply (clarsimp simp: mult_commute[of b], rename_tac q)
+apply (clarsimp simp: mult.commute[of b], rename_tac q)
 thm i_set_mult.cases
 apply (rule_tac a=x and k="q * b" in i_set_mult.cases)
-apply (simp_all add: i_set_mult.intros mult_assoc[symmetric])
+apply (simp_all add: i_set_mult.intros mult.assoc[symmetric])
 done
 lemma i_set_mult_subset_imp_mod_0: "
   \<lbrakk> a \<noteq> Suc 0; (i_set_mult a \<subseteq> i_set_mult b) \<rbrakk> \<Longrightarrow> a mod b = 0"
@@ -3595,10 +3595,10 @@ lemma i_set_mod_0_mult_in_i_set_mult: "
   \<lbrakk> I \<in> i_set; m mod k = 0 \<rbrakk> \<Longrightarrow> I \<otimes> m \<in> i_set_mult k"
 apply (case_tac "m = 0")
  apply (simp add: iT_Mult_0 i_set_imp_not_empty i_set_mult.intros)
-apply (clarsimp simp: mult_commute[of k])
+apply (clarsimp simp: mult.commute[of k])
 apply (simp add: i_set_i_set_ind_eq)
 apply (rule_tac a=I in i_set_ind.cases)
-apply (simp_all add: iT_mult mult_assoc[symmetric] i_set_mult.intros)
+apply (simp_all add: iT_mult mult.assoc[symmetric] i_set_mult.intros)
 done
 lemma i_set_self_mult_in_i_set_mult: "
   I \<in> i_set \<Longrightarrow> I \<otimes> k \<in> i_set_mult k"

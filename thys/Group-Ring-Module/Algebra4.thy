@@ -2654,7 +2654,7 @@ apply (induct_tac m)
 apply simp
 apply simp 
 apply (simp add:npMulDistr)
-apply (simp add:add_commute)
+apply (simp add:add.commute)
 done    
 
 
@@ -4093,7 +4093,7 @@ apply simp
         subgoal_tac "x div lev I \<in> carrier Zr", blast)
  apply (simp add:Zr_def Zset_def)
 apply (subgoal_tac "x mod lev I = 0", simp)
- apply (subst mult_commute, assumption)
+ apply (subst mult.commute, assumption)
  apply (subgoal_tac "x mod lev I \<in> I")
  apply (thin_tac "x = lev I * (x div lev I) + x mod lev I")
  apply (frule_tac a = x in pos_mod_conj[of "lev I"])
@@ -6203,11 +6203,11 @@ apply (induct_tac "j", simp)
         simp add:Ring.ring_r_one)
 apply (rule impI, simp)
  apply (subst zdiff)
- apply (simp add:add_commute[of "1"])
+ apply (simp add:add.commute[of "1"])
  apply (cut_tac z = i and w = "int n + 1" in zdiff,
        simp only:minus_add_distrib,
        thin_tac "i - (int n + 1) = i + (- int n + - 1)")
- apply (simp only:add_assoc[THEN sym])
+ apply (simp only:add.assoc[THEN sym])
  apply (simp only:zdiff[THEN sym, of _ "1"])
  apply (cut_tac z = "i + - int n" in nat_diff_distrib[of "1"],
          simp, simp)
@@ -6231,7 +6231,7 @@ apply (rule_tac a = "x^\<^bsup>K (nat (i + (- int n - 1)))\<^esup>" and
  apply (subst Ring.ring_r_one[of K], assumption)
  apply auto
  apply (metis Ring.npClose)
- apply (simp only: uminus_add_conv_diff [symmetric] add_assoc [symmetric])
+ apply (simp only: uminus_add_conv_diff [symmetric] add.assoc [symmetric])
  apply (simp add: algebra_simps nat_diff_distrib Suc_diff_Suc)
  apply (metis Suc_diff_Suc npow_suc zless_nat_eq_int_zless)
 done
@@ -6274,7 +6274,7 @@ apply (cut_tac field_is_ring)
  apply (subst zminus_minus[THEN sym, of "i" "j"],
         subst npow_exp_minusTr2[of "x" "i" "-j"], assumption+)
   apply (simp add:zle, simp add:zless_imp_zle, simp add:npowf_def)
- apply (simp add:add_commute[of "i" "j"],
+ apply (simp add:add.commute[of "i" "j"],
         subst zminus_minus[THEN sym, of "j" "i"],
         subst npow_exp_minusTr2[of "x" "j" "-i"], assumption+)
   apply (simp add:zle, simp add:zless_imp_zle, simp)

@@ -176,7 +176,7 @@ lemma converse_lehmer_weak:
         hence y_q_r:"y = (((a ^ (q*x)) mod p) * ((a ^ r) mod p)) mod p"
           by (simp add: i power_add mod_mult_eq[symmetric])
         have "a ^ (q*x) mod p = (a ^ x mod p) ^ q mod p"
-          by (simp add: power_mod nat_mult_commute power_mult[symmetric])
+          by (simp add: power_mod mult.commute power_mult[symmetric])
         hence y_r:"y = a ^ r mod p" using `p\<ge>2` x by (simp add: cong_nat_def y_q_r)
         have "y \<in> {a ^ i mod p | i. 0 < i \<and> i \<le> x}"
         proof (cases)

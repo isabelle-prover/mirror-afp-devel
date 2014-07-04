@@ -103,7 +103,7 @@ lemma commutative_ps: "(\<forall> a b . a * b = b * a) = ((op l\<rightarrow>) = 
   by (simp add: right_residual [THEN sym])
 
 lemma lemma_2_4_5: "a l\<rightarrow> b \<le> (c l\<rightarrow> a) l\<rightarrow> (c l\<rightarrow> b)"
-  apply (simp add: left_residual [THEN sym] mult_assoc)
+  apply (simp add: left_residual [THEN sym] mult.assoc)
   apply (rule_tac y = "(a l\<rightarrow> b) * a" in order_trans)
   apply (rule mult_left_mono)
   by (simp_all add: left_residual)
@@ -164,9 +164,9 @@ lemma lemma_2_5_13_a: "a \<le> b \<Longrightarrow>  b l\<rightarrow> c \<le> a l
 
 lemma lemma_2_5_14: "(b l\<rightarrow> c) * (a l\<rightarrow> b) \<le> a l\<rightarrow> c"
   apply (simp add: left_residual [THEN sym])
-  apply (simp add: mult_assoc)
+  apply (simp add: mult.assoc)
   apply (subst left_impl_times)
-  apply (subst mult_assoc [THEN sym])
+  apply (subst mult.assoc [THEN sym])
   apply (subst left_residual)
   by (rule dual_algebra.H)
 
@@ -176,7 +176,7 @@ lemma lemma_2_5_16: "(a l\<rightarrow> b) \<le>  (b l\<rightarrow> c) r\<rightar
 
 lemma lemma_2_5_18: "(a l\<rightarrow> b) \<le>  a * c l\<rightarrow> b * c"
   apply (simp add: left_residual  [THEN sym])
-  apply (subst mult_assoc  [THEN sym])
+  apply (subst mult.assoc  [THEN sym])
   apply (rule mult_right_mono)
   apply (subst left_impl_times)
   by (rule H)
@@ -309,13 +309,13 @@ lemma times_set_assoc: "A ** (B ** C) = (A ** B) ** C"
   apply (rule_tac x = xa in bexI)
   apply (rule_tac x = xb in bexI)
   apply simp_all
-  apply (subst mult_assoc)
+  apply (subst mult.assoc)
   apply (rule_tac x = ya in bexI)
   apply simp_all
   apply (rule_tac x = xb in bexI)
   apply simp_all
   apply (rule_tac x = "ya * y" in exI)
-  apply (subst mult_assoc)
+  apply (subst mult.assoc)
   apply simp
   by auto
 

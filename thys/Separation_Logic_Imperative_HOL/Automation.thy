@@ -22,7 +22,7 @@ lemmas assn_aci =
   sup_aci[where 'a=assn] 
   mult.left_ac[where 'a=assn] 
 
-lemmas star_assoc = mult_assoc[where 'a=assn] 
+lemmas star_assoc = mult.assoc[where 'a=assn] 
 lemmas assn_assoc = 
   mult.left_assoc inf_assoc[where 'a=assn] sup_assoc[where 'a=assn] 
 
@@ -45,8 +45,8 @@ lemma ex_assn_move_out[simp]:
   "\<And>P Q. Q \<or>\<^sub>A (\<exists>\<^sub>Ax. P x) = (\<exists>\<^sub>Ax. (Q \<or>\<^sub>A P x))"
   apply -
   apply (simp add: ex_distrib_star)
-  apply (subst mult_commute)
-  apply (subst (2) mult_commute)
+  apply (subst mult.commute)
+  apply (subst (2) mult.commute)
   apply (simp add: ex_distrib_star)
 
   apply (simp add: ex_distrib_and)
@@ -833,7 +833,7 @@ lemma ent_wand_frameI:
   assumes "Q*X \<Longrightarrow>\<^sub>A R"
   shows "P \<Longrightarrow>\<^sub>A S"
   using assms
-  by (metis ent_frame_fwd ent_wandI mult_commute)
+  by (metis ent_frame_fwd ent_wandI mult.commute)
 
 subsubsection {* Manual Frame Inference *}
 

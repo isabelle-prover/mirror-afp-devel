@@ -627,7 +627,7 @@ proof -
     fix a show "p^Suc n dvd a*b \<longrightarrow> p^Suc n dvd a"
     proof (auto)
       assume ppnab: "p*p^n dvd a*b"
-      hence "p dvd a*b" by (auto simp add: dvd_def mult_assoc)
+      hence "p dvd a*b" by (auto simp add: dvd_def mult.assoc)
       with p have "p dvd a \<or> p dvd b" by (rule zprime_zdvd_zmult_general)
       with pb have "p dvd a" by simp
       then obtain k where apk: "a = p*k" by (auto simp add: dvd_def)

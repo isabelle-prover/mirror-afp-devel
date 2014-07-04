@@ -1030,7 +1030,7 @@ by (metis ereal_add_mono order_refl)
 lemma convex_on_ereal_setsum_aux:
   assumes "1-a>0"
   shows "(1 - ereal a) * (ereal (c / (1 - a)) * b) = (ereal c) * b"
-  by (metis mult_assoc mult_commute eq_divide_eq ereal_minus(1) assms
+  by (metis mult.assoc mult.commute eq_divide_eq ereal_minus(1) assms
             one_ereal_def less_le times_ereal.simps(1))
 
 
@@ -1089,7 +1089,7 @@ next
       using a_nonneg a1 insert by blast
     have "f (SUM j : insert i s. a j *\<^sub>R y j) = f ((SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
       using setsum.insert[of s i "% j. a j *\<^sub>R y j", OF `finite s` `i ~: s`]
-      by (auto simp only:add_commute)
+      by (auto simp only:add.commute)
     also have "... = f (((1 - a i) * inverse (1 - a i)) *\<^sub>R (SUM j : s. a j *\<^sub>R y j) + a i *\<^sub>R y i)"
       using i0 by auto
     also have "... = f ((1 - a i) *\<^sub>R (SUM j : s. (a j * inverse (1 - a i)) *\<^sub>R y j) + a i *\<^sub>R y i)"
@@ -1098,14 +1098,14 @@ next
       by (auto simp: divide_inverse)
     also have "... <= (1 - ereal (a i)) * f ((SUM j : s. ?a j *\<^sub>R y j)) + (ereal (a i)) * f (y i)"
       using conv[rule_format, of "y i" "(SUM j : s. ?a j *\<^sub>R y j)" "a i"]
-      using yai(1) asum yai(2) ai1 by (auto simp add:add_commute)
+      using yai(1) asum yai(2) ai1 by (auto simp add:add.commute)
     also have "... <= (1 - ereal (a i)) * (SUM j : s. ereal (?a j) * f (y j)) + (ereal (a i)) * f (y i)"
       using ereal_add_right_mono[OF ereal_mult_left_mono[of _ _ "1 - ereal (a i)",
         OF asum_le less_imp_le[OF i1]], of "(ereal (a i)) * f (y i)"] by simp
     also have "... = (SUM j : s. (1 - ereal (a i)) * (ereal (?a j) * f (y j))) + (ereal (a i)) * f (y i)"
       unfolding ereal_pos_setsum_right_distrib[of "1 - ereal (a i)" "% j. (ereal (?a j)) * f (y j)", OF less_imp_le[OF i1] i2] by auto
     also have "... = (SUM j : s. (ereal (a j)) * f (y j)) + (ereal (a i)) * f (y i)" using i0 convex_on_ereal_setsum_aux by auto
-    also have "... = (ereal (a i)) * f (y i) + (SUM j : s. (ereal (a j)) * f (y j))" by (simp add: add_commute)
+    also have "... = (ereal (a i)) * f (y i) + (SUM j : s. (ereal (a j)) * f (y j))" by (simp add: add.commute)
     also have "... = (SUM j : insert i s. (ereal (a j)) * f (y j))" using insert by auto
     finally have "f (SUM j : insert i s. a j *\<^sub>R y j) <= (SUM j : insert i s. (ereal (a j)) * f (y j))" by simp }
   ultimately show ?case by auto
@@ -1377,7 +1377,7 @@ moreover
     hence "x = (1-v) *\<^sub>R u+v *\<^sub>R y" unfolding v_def using m_def by (simp add: algebra_simps)
     hence "f x <= (1-ereal v) * f u+ereal v * f y"
       using convex_on_ereal_alt_mem[of "UNIV" f y u v] assms convex_UNIV v01
-      by (simp add: convex_UNIV add_commute)
+      by (simp add: convex_UNIV add.commute)
     moreover have "f y < \<infinity>" using m_def y_def unfolding domain_def by auto
     moreover have *: "0 < 1 - ereal v" using v01
       by (metis diff_less_iff(1) ereal_less(2) ereal_minus(1) one_ereal_def)

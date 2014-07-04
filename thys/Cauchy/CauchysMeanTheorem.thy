@@ -402,7 +402,7 @@ proof
     apply (clarsimp simp:field_simps)
     done
   also from l1nez have "\<dots> = \<Sum>:xs / len"
-    apply (subst mult_commute [where a="len"])
+    apply (subst mult.commute [where a="len"])
     apply (drule mult_divide_mult_cancel_left
       [where c="len+1" and a="\<Sum>:xs" and b="len"])
     by (simp add: mult_ac add_ac)

@@ -66,7 +66,7 @@ proof
     apply (rule_tac x="b" in exI)
     apply simp
     apply (rule context_conjI_R)
-     apply (metis rel_dioid.mult_assoc relcompI rtrancl_into_rtrancl rtrancl_refl rtrancl_idemp_self_comp)
+     apply (metis rel_dioid.mult.assoc relcompI rtrancl_into_rtrancl rtrancl_refl rtrancl_idemp_self_comp)
     apply (metis UnE in_mono relcompI rtrancl_refl)
   done
 qed

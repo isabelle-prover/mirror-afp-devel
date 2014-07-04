@@ -1357,7 +1357,7 @@ lemma foldl_set: "foldl (op \<union>) {} l = \<Union>{x. x\<in>set l}"
 lemma (in monoid_mult) foldl_absorb1: "x*foldl (op *) 1 zs = foldl (op *) x zs"
   apply (rule sym)
   apply (rule foldl_A1_eq)
-  apply (auto simp add: mult_assoc)
+  apply (auto simp add: mult.assoc)
 done
 
 text {* Towards an invariant rule for foldl *}
@@ -2554,7 +2554,7 @@ lemma in_set_drop_conv_nth: "x\<in>set (drop n l) \<longleftrightarrow> (\<exist
   apply (clarsimp simp: in_set_conv_nth)
   apply safe
   apply simp
-  apply (metis le_add2 less_diff_conv nat_add_commute)
+  apply (metis le_add2 less_diff_conv add.commute)
   apply (rule_tac x="i-n" in exI)
   apply auto []
   done
@@ -2581,7 +2581,7 @@ proof -
     by (metis Nat.le_iff_add)
   thus "drop i (take j l) @ drop j l = drop i l"
     by (metis append_take_drop_id diff_add_inverse drop_drop drop_take
-      nat_add_commute)
+      add.commute)
 qed
 
 lemma drop_last_conv[simp]: "l\<noteq>[] \<Longrightarrow> drop (length l - Suc 0) l = [last l]"

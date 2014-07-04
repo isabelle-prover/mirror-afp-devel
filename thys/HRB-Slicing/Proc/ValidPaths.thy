@@ -1429,7 +1429,7 @@ proof(atomize_elim)
         from path1 intra1
         have "wfp \<turnstile> (Main, Label l'' \<oplus> (#:c\<^sub>1 + 1)) -as \<oplus>s (#:c\<^sub>1 + 1)\<rightarrow>* 
           (Main, Exit \<oplus> (#:c\<^sub>1 + 1))"
-          by -(rule path_Main_CondFalse,auto simp:add_assoc)
+          by -(rule path_Main_CondFalse,auto simp:add.assoc)
         moreover
         from path2 obtain ax' asx' where [simp]:"as' = ax'#asx'"
           and "sourcenode ax' = (Main,Entry)" and "valid_edge wfp'' ax'"
@@ -1446,7 +1446,7 @@ proof(atomize_elim)
           apply - apply(rule ProcCFG.path.intros)+ apply(rule path_Main_CondFalse)
           by(auto intro:Main Proc_CFG_Entry Proc_CFG_CondFalse simp:valid_edge_def)
         ultimately show ?thesis using intra1 intra2
-          by(fastforce simp:label_incrs_def intra_kind_def add_assoc)
+          by(fastforce simp:label_incrs_def intra_kind_def add.assoc)
       qed
     qed
   next

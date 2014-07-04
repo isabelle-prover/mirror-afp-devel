@@ -974,7 +974,7 @@ apply (        frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange,
         assumption+, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)",
         frule_tac z = "int 0" and z' = "int j" in zless_imp_zle,
         frule_tac i = "int 0" and j = "int j" and k = z in int_mult_le,
-         assumption+, simp add:mult_commute )
+         assumption+, simp add:mult.commute )
  apply assumption
 done
 

@@ -34,7 +34,7 @@ lemma star_sim2: "z \<cdot> x \<le> y \<cdot> z \<Longrightarrow> z \<cdot> x\<^
 proof -
   assume "z \<cdot> x \<le> y \<cdot> z"
   hence "y\<^sup>\<star> \<cdot> z \<cdot> x \<le> y\<^sup>\<star> \<cdot> y \<cdot> z"
-    by (metis distrib_left less_eq_def mult_assoc)
+    by (metis distrib_left less_eq_def mult.assoc)
   also have "... \<le> y\<^sup>\<star> \<cdot> z"
     by (metis (full_types) mult_isor star_1l star_slide_var)
   hence "z + y\<^sup>\<star> \<cdot> z \<cdot> x \<le> y\<^sup>\<star> \<cdot> z"
@@ -67,7 +67,7 @@ proof -
   also have "x\<^sup>\<star> \<cdot> y = y + x\<^sup>\<star> \<cdot> x \<cdot> y"
     by (metis distrib_right mult_onel star_unfoldr_eq)
   thus "x\<^sup>\<star> \<cdot> y = y"
-    by (metis add_0_left add_commute add_ub1 calculation eq_iff star_inductl_eq)
+    by (metis add_0_left add.commute add_ub1 calculation eq_iff star_inductl_eq)
 qed
 
 lemma independence2: "x \<cdot> y = 0 \<Longrightarrow> x \<cdot> y\<^sup>\<star> = x"
@@ -80,7 +80,7 @@ proof
   also have "(?t + y) \<cdot> x = ?t \<cdot> x + y \<cdot> x"
     by (metis distrib_right)
   moreover have "... \<le> ?t \<cdot> x + ?t + y"
-    by (metis add_iso_var calculation le_less add_assoc)
+    by (metis add_iso_var calculation le_less add.assoc)
   moreover have "... \<le> ?t + y"
     by (metis add_iso_var add_lub_var mult.assoc mult_isol order_refl prod_star_closure star_subdist_var_1)
   hence "y + (?t + y) \<cdot> x \<le> ?t + y"

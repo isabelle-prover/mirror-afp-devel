@@ -332,7 +332,7 @@ proof -
             using elim `t \<in> {0..1}`
             by (auto intro!: derivative_eq_intros has_derivative_in_compose[of  "\<lambda>t. ?ij t u" _ _ _ f]
                 has_derivative_in_compose[of  "\<lambda>t. ?i t u" _ _ _ f]
-              simp: linear_f' scaleR_diff_right mult_commute)
+              simp: linear_f' scaleR_diff_right mult.commute)
         } note g' = this
         from elim(1) `i \<noteq> 0` `j \<noteq> 0` `0 < e` have f'ij: "\<And>t. t \<in> {0..1} \<Longrightarrow>
             norm (f' (a + (t * u) *\<^sub>R i + u *\<^sub>R j) i - f' a i - f'' a i ((t * u) *\<^sub>R i + u *\<^sub>R j)) \<le>

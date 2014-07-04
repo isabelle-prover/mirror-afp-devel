@@ -501,13 +501,13 @@ proof
           hence stk_eq:
             "\<forall>i. i \<le> n' \<longrightarrow> state_val s (Stk (length cs') (i + length STr)) =
                            state_val s' (Stk (length cs') (i + length STr))"
-            by (clarsimp, erule_tac x="n' - i" in allE, auto simp: add_commute)
+            by (clarsimp, erule_tac x="n' - i" in allE, auto simp: add.commute)
           from ex_edge obtain C'
             where trg: "targetnode a = (_ (C',M',0)#(C, M, pc)#cs',None _)"
             by (fastforce elim: JVM_CFG.cases)
           with ex_edge stk_eq v_in_def wt
           show ?thesis
-            by (auto elim!: Def.cases) (erule JVM_CFG.cases, auto simp: split_beta add_commute)
+            by (auto elim!: Def.cases) (erule JVM_CFG.cases, auto simp: split_beta add.commute)
         qed
       qed
     next

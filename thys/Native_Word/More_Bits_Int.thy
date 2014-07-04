@@ -612,7 +612,7 @@ next
   moreover from `x < 1 << n` have "x' < 1 << n'"
     by(cases b)(simp_all add: Bit_def shiftl_int_def)
   moreover have "(2 * x' + of_bool b - 2 * 2 ^ n') div 2 = x' + (- (2 ^ n') + of_bool b div 2)"
-    by(simp only: add_diff_eq[symmetric] add_commute div_mult_self2[OF zero_neq_numeral[symmetric]])
+    by(simp only: add_diff_eq[symmetric] add.commute div_mult_self2[OF zero_neq_numeral[symmetric]])
   ultimately show ?case using Suc.IH[of x' n'] Suc.prems
     by(cases b)(simp_all add: Bit_def bin_rest_def shiftl_int_def)
 qed

@@ -373,12 +373,12 @@ end
 lemma permute_self: 
   shows "p \<bullet> p = p"
   unfolding permute_perm_def 
-  by (simp add: add_assoc)
+  by (simp add: add.assoc)
 
 lemma pemute_minus_self:
   shows "- p \<bullet> p = p"
   unfolding permute_perm_def 
-  by (simp add: add_assoc)
+  by (simp add: add.assoc)
 
 
 subsection {* Permutations for functions *}

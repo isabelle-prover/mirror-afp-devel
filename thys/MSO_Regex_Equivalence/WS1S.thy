@@ -112,7 +112,7 @@ lemma less_length_cut_same_Inl:
   p < length (cut_same (any, replicate (length I) False) (stream_enc (w, I)))"
   unfolding cut_same_def length_stake
   by (erule LeastI2_ex[OF ex_Loop_stream_enc ccontr],
-    auto simp: smap2_alt list_eq_iff_nth_eq add_commute dest!: add_diff_inverse split: sum.splits,
+    auto simp: smap2_alt list_eq_iff_nth_eq add.commute dest!: add_diff_inverse split: sum.splits,
     metis)
 
 lemma less_length_cut_same_Inr:
@@ -120,7 +120,7 @@ lemma less_length_cut_same_Inr:
   \<forall>p \<in> P. p < length (cut_same (any, replicate (length I) False) (stream_enc (w, I)))"
   unfolding cut_same_def length_stake
   by (rule ballI, erule LeastI2_ex[OF ex_Loop_stream_enc ccontr],
-    auto simp: smap2_alt list_eq_iff_nth_eq add_commute dest!: add_diff_inverse split: sum.splits,
+    auto simp: smap2_alt list_eq_iff_nth_eq add.commute dest!: add_diff_inverse split: sum.splits,
     metis)
 
 fun enc :: "'a interp \<Rightarrow> ('a \<times> bool list) list set" where

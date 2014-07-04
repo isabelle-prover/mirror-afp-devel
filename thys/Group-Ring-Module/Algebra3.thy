@@ -4103,7 +4103,7 @@ proof -
   apply (simp add:div_if) done
  from q1 and q2 have q3:"(j + i * r) div r = i"
   apply simp done
- from q3 have q4: "(i * r + j) div r = i" apply (simp add:add_commute)
+ from q3 have q4: "(i * r + j) div r = i" apply (simp add:add.commute)
   done
  from p2 and q4 show ?thesis
   apply simp 
@@ -4188,7 +4188,7 @@ apply (frule less_imp_le [of "l" "s * r"])
 apply (frule div_le_mono [of "l" "s * r" "s"]) apply simp
 apply (insert mod_div_equality [THEN sym, of "l" "s"])
 apply (frule sym) apply (thin_tac "r = l div s")
-apply simp apply (simp add:mult_commute [of "r" "s"])
+apply simp apply (simp add:mult.commute [of "r" "s"])
 done
 
 lemma div_Tr3:"\<lbrakk>(0::nat) < r; 0 < s; l < s * r\<rbrakk> \<Longrightarrow> Suc (l div s) \<le> r"
@@ -4228,7 +4228,7 @@ definition
 lemma rtos_hom0:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0)\<rbrakk> \<Longrightarrow>
    i div s < r" 
 apply (frule div_Tr2 [of "r" "s" "i"], assumption+)
-apply (simp add:mult_commute [of "r" "s"])
+apply (simp add:mult.commute [of "r" "s"])
 apply (rule le_less_trans, assumption+) apply simp 
 apply (rule le_less_trans, assumption+) apply simp
 done
@@ -4244,14 +4244,14 @@ apply (frule mod_less_divisor [of "s" "l"])
  apply (frule_tac i = "l mod s" and j = "s - Suc 0" and k = r and l = r in
          mult_le_mono, simp)
  apply (frule_tac i = "l mod s * r" and j = "(s - Suc 0) * r" and k = "l div s" and l = "r - Suc 0" in add_le_mono)
- apply (rule div_Tr2, assumption+, simp add:mult_commute)
+ apply (rule div_Tr2, assumption+, simp add:mult.commute)
  apply (simp add:diff_mult_distrib)
 done
 
 lemma rtos_hom2:"\<lbrakk>(0::nat) < r; (0::nat) < s; l \<le> (r * s - Suc 0)\<rbrakk> \<Longrightarrow> 
  rtos r s l \<le> (r * s - Suc 0)"
 apply (insert  rtos_hom1 [of "r" "s"]) apply simp
-apply (simp add:mult_commute)
+apply (simp add:mult.commute)
 done
 
 lemma rtos_hom3:"\<lbrakk>(0::nat) < r; 0 < s; i \<le> (r * s - Suc 0) \<rbrakk> \<Longrightarrow>
@@ -4259,7 +4259,7 @@ lemma rtos_hom3:"\<lbrakk>(0::nat) < r; 0 < s; i \<le> (r * s - Suc 0) \<rbrakk>
 apply (simp add:rtos_def)
  apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"])
  apply simp apply simp
-apply (auto simp add: div_mult2_eq [symmetric] mult_commute)
+apply (auto simp add: div_mult2_eq [symmetric] mult.commute)
 done
 
 lemma rtos_hom3_1:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0) \<rbrakk> \<Longrightarrow>
@@ -4273,7 +4273,7 @@ done
 lemma rtos_hom5:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r *s - Suc 0); 
 i div s = r - Suc 0 \<rbrakk> \<Longrightarrow> Suc (rtos r s i) div r = Suc (i mod s)"
  apply (frule mult_less_mono2[of "0" "s" "r"],
-        simp only:nat_mult_commute,
+        simp only:mult.commute,
         simp only:mult_0_right)
  apply (frule rfn_tool11 [of "r * s" "i"], assumption+)
  apply (simp add: rtos_def)
@@ -4284,7 +4284,7 @@ lemma rtos_hom7:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0);
 apply (frule rtos_hom0 [of "r" "s" "i"], assumption+)
 apply (simp add: rtos_def) 
 apply (frule mult_less_mono2[of "0" "s" "r"],
-        simp only:nat_mult_commute,
+        simp only:mult.commute,
         simp only:mult_0_right)
 apply (simp add: rfn_tool11 [of "r * s" "i"])
 done
@@ -4312,7 +4312,7 @@ apply (rule allI, rule impI)
  apply (frule le_imp_less_or_eq) 
  apply (thin_tac "l \<le> r * s", simp)
  apply (frule mult_less_mono2[of "0" "s" "r"],
-        simp only:nat_mult_commute,
+        simp only:mult.commute,
         simp only:mult_0_right)
  apply (frule_tac  r = r and s = s and l = l in rtos_hom2, assumption+)
  apply (rule less_le_diff)
@@ -4329,21 +4329,21 @@ apply (simp add:inj_on_def [of _ "{i. i \<le> (r * s)}"])
  apply (rule contrapos_pp, simp+)
  apply (frule not_sym)
  apply (frule mult_less_mono2[of "0" "s" "r"],
-        simp only:nat_mult_commute, simp only:mult_0_right)
+        simp only:mult.commute, simp only:mult_0_right)
  apply (cut_tac x = y and n = "r * s - Suc 0" in Nset_pre, simp+) 
  apply (frule_tac l = y in rtos_hom1[of "r" "s"], assumption+)
  apply (simp only: rtos_rs_Tr1) 
  apply (frule sym, thin_tac "r * s = rtos r s y", simp)
- apply (simp add:mult_commute[of "s" "r"])
+ apply (simp add:mult.commute[of "s" "r"])
  apply (simp add: not_less [symmetric, of "r * s" "r * s - Suc 0"])
 
 apply (frule mult_less_mono2[of "0" "s" "r"],
-       simp only:nat_mult_commute, simp only:mult_0_right,
+       simp only:mult.commute, simp only:mult_0_right,
        cut_tac x = x in Nset_pre[of _ "r * s - Suc 0"], simp+) 
  apply (case_tac "y = r * s")
         apply (simp add: rtos_rs_Tr1)
  apply (frule_tac l = x in rtos_hom1[of "r" "s"], assumption+)       
-       apply (simp add:mult_commute[of "s" "r"])
+       apply (simp add:mult.commute[of "s" "r"])
         apply (simp add: not_less [symmetric, of "r * s" "r * s - Suc 0"])
  
  apply (cut_tac x = y in Nset_pre[of _ "r * s - Suc 0"], simp+)
@@ -4399,7 +4399,7 @@ to prove JHS *}
 
 lemma rfn_tool30:"\<lbrakk>0 < r; 0 < s; l div s * s + s < s * r\<rbrakk> 
                 \<Longrightarrow> Suc (l div s) < r"
-apply (simp add:mult_commute[of "s" "r"])
+apply (simp add:mult.commute[of "s" "r"])
 apply (cut_tac add_mult_distrib[THEN sym, of "l div s" "s" "1"])
       apply (simp only:nat_mult_1)
 apply (thin_tac "l div s * s + s = (l div s + 1) * s")
@@ -4539,12 +4539,12 @@ apply (simp add:image_def)
 apply (auto del:equalityI)
 apply (frule_tac i = xa in mult_le_mono [of _ "r" "s" "s"])
 apply simp
-apply (simp add:mult_commute [of "r" "s"])
+apply (simp add:mult.commute [of "r" "s"])
 apply (frule_tac a = xa in forall_spec, assumption,
        thin_tac "\<forall>i\<le>r. h (i * s) = f i")
 apply (frule sym, thin_tac "h (xa * s) = f xa")
  apply (cut_tac a = xa in mult_mono[of _ r s s], simp, simp, simp, simp) 
- apply (simp only:mult_commute[of r s], blast) 
+ apply (simp only:mult.commute[of r s], blast) 
 done
 
 lemma rfn_compseries_iMTr2:"\<lbrakk>0 < r; 0 < s; xa < s * r \<rbrakk> \<Longrightarrow>
@@ -4582,17 +4582,17 @@ prefer 2 apply simp
 apply (rule subsetI,
        thin_tac "f ` {i. i \<le> r} \<subseteq> h ` {i. i \<le> s * r}")
 apply (frule_tac b = x and f = h and A = "{i. i \<le> (s * r)}" in mem_in_image3,
-       erule bexE) apply (simp add:mult_commute[of "s" "r"])
+       erule bexE) apply (simp add:mult.commute[of "s" "r"])
 apply (simp add:wcsr_rfns_def, (erule conjE)+)
 apply (frule rfn_compseries_iMTr3[of "r" "s" "f" "r" "h"], assumption+,
        simp add:n_in_Nsetn, assumption+, subst image_def, simp)
- apply (case_tac "a = s * r", simp add:mult_commute[of "s" "r"],
+ apply (case_tac "a = s * r", simp add:mult.commute[of "s" "r"],
         cut_tac n_in_Nsetn[of "r"], blast)
- apply (simp add:mult_commute[of "s" "r"])
+ apply (simp add:mult.commute[of "s" "r"])
  apply (frule_tac m = a and n = "r * s" in noteq_le_less, assumption+)
  apply (frule tw_cmpser_is_w_cmpser, frule w_cmpser_is_d_gchain)        
  apply (frule_tac xa = a in rfn_compseries_iMTr2[of "r" "s"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
  apply (erule conjE) 
  apply (frule_tac l = a in divTr5[of "r" "s"], assumption+) 
  apply (frule pos_mult_pos[of "r" "s"], assumption+) 
@@ -4674,7 +4674,7 @@ apply (rule conjI)
 done
  
 lemma rfn_tool20:"\<lbrakk>(0::nat) < m; a = b * m + c; c < m \<rbrakk> \<Longrightarrow>  a mod m = c"
-apply (simp add:add_commute)
+apply (simp add:add.commute)
 done
 
 lemma Suci_mod_s_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i mod s < s - Suc 0\<rbrakk>
@@ -4694,7 +4694,7 @@ lemma (in Group) inter_sgsTr1:"\<lbrakk>0 < r; 0 < s; compseries G r f; compseri
  apply (rule compseriesTr0, assumption+)  
  apply (frule less_imp_le [of "i" "r * s"])
  apply (frule div_Tr1 [of "r" "s" "i"], assumption+) 
- apply (simp add:mult_commute, simp)
+ apply (simp add:mult.commute, simp)
  apply (rule compseriesTr0, simp+) 
 done
 
@@ -4772,7 +4772,7 @@ apply (rule compser_nsg[of r f], simp+)
         simp+,
         cut_tac x = i and y = "Suc i" and z = "r * s" in less_trans,
         simp+,
-        simp add:mult_commute, assumption+,
+        simp add:mult.commute, assumption+,
         simp add:Int_lower1)
  apply (frule_tac m = i in mod_less_divisor [of "s"],
         frule_tac x = "i mod s" in less_le_diff [of _ "s"],
@@ -4805,7 +4805,7 @@ apply (rule_tac i = "i div s" in compser_nsg[of r f], simp+,
        less_trans, assumption, simp,
        thin_tac "Suc i < s * r", simp,
        frule_tac x = i and n = "s * r" in less_le_diff,
-       simp add:mult_commute[of s r], simp+)
+       simp add:mult.commute[of s r], simp+)
 apply (cut_tac a = "i mod s" in rfn_tool11 [of "s"], simp+,
        frule_tac m = i in mod_less_divisor [of "s"],
        frule_tac x = "i mod s" in less_le_diff [of _ "s"], simp,
@@ -4907,14 +4907,14 @@ lemma i_div_s_less:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; Suc (rtos r s 
 i mod s = s - Suc 0; Suc i < s * r \<rbrakk>  \<Longrightarrow> i div s < r - Suc 0"
 apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)
 apply (frule_tac  r = r and s = s and l = i in div_Tr2, assumption+)
- apply (simp add:mult_commute) 
+ apply (simp add:mult.commute) 
 apply (rule contrapos_pp, simp+, 
         subgoal_tac "i div s = r - Suc 0",
         thin_tac "i div s = r - Suc 0")
 apply (simp add:rtos_def,
        subgoal_tac "(s - Suc 0) * r + r = r * s", simp)
  apply (thin_tac "(s - Suc 0) * r + r < r * s")
- apply (simp add:mult_commute, simp add:diff_mult_distrib2)
+ apply (simp add:mult.commute, simp add:diff_mult_distrib2)
 apply simp
 done
 
@@ -4925,7 +4925,7 @@ apply (simp add:rtos_def)
  apply simp
  apply (rule rfn_tool20, assumption+, simp)
  apply (frule_tac r = r and s = s and l = i in div_Tr2, assumption+)
- apply (rule le_less_trans, assumption+, simp add:mult_commute)
+ apply (rule le_less_trans, assumption+, simp add:mult.commute)
  apply (rule le_less_trans, assumption+, simp)
 done
 
@@ -4955,7 +4955,7 @@ apply (simp add:rtos_def)
 apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)
 apply simp
 apply (frule_tac  r = r and s = s and l = i in div_Tr2, assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
 apply (subgoal_tac "i div s < r") 
  apply (rule rfn_tool20, assumption+, simp)
  apply assumption
@@ -4982,7 +4982,7 @@ apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"])
 apply simp
 apply simp
 apply (subst add_Suc_right[THEN sym, of "i mod s * r" "i div s"])
- apply (subst add_commute[of "i mod s * r" "Suc (i div s)"])
+ apply (subst add.commute[of "i mod s * r" "Suc (i div s)"])
  apply (frule Suc_leI[of "i div s" "r - Suc 0"])
  apply (frule le_less_trans[of "Suc (i div s)" "r - Suc 0" "r"], simp)
  apply (subst div_mult_self1 [of "r" "Suc (i div s)" "i mod s"])
@@ -5005,7 +5005,7 @@ lemma rtos_r_s:"\<lbrakk>0 < r; 0 < s\<rbrakk> \<Longrightarrow> rtos r s (r * s
 apply (simp add:rtos_def)
 apply (frule r_s_div_s [of "r" "s"], assumption+)
 apply (frule r_s_mod_s [of "r" "s"], assumption+)
-apply (simp, simp add:diff_mult_distrib, simp add:mult_commute)
+apply (simp, simp add:diff_mult_distrib, simp add:mult.commute)
 done
 
 lemma rtos_rs_1:"\<lbrakk> 0 < r; 0 < s; rtos r s i < r * s;
@@ -5189,9 +5189,9 @@ apply (frule Group.compseriesTr0 [of "G" "r" "f" "Suc (i div s)"], assumption+)
  apply simp 
  apply (frule Group.compser_nsg [of "G" "s" "g" "i mod s"], assumption+, simp)
 apply (subst Suc_rtos_i_mod_r_3 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute, assumption)
+ apply (simp add:mult.commute, assumption)
  apply (subst Suc_rtos_div_r_3 [of "r" "s" "i" ], assumption+)+
- apply (simp add:mult_commute)+
+ apply (simp add:mult.commute)+
  apply (subst Suc_rtos_div_r_3[of "r" "s" "i"], assumption+)
 apply (rule Zassenhaus [of "G" "f (i div s)" "f (Suc (i div s))" "g (i mod s)"
  "g (Suc (i mod s))"], assumption+)
@@ -5206,7 +5206,7 @@ lemma JHS_Tr1_6:" \<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G
               (g (Suc (rtos r s i) div r) \<inter> f (Suc (rtos r s i) mod r))))"
 apply (simp add:cmp_rfn_def)
  apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)
- apply (simp add:mult_commute [of "r" "s"])
+ apply (simp add:mult.commute [of "r" "s"])
  apply (frule Suc_leI [of "i" "s * r"], thin_tac "i < s * r")
 apply (case_tac "\<not> Suc i < s * r", simp)
 
@@ -5214,7 +5214,7 @@ apply (case_tac "\<not> Suc i < s * r", simp)
  apply (thin_tac " Suc i = s * r")
  apply simp
  apply (frule rtos_r_s [of "r" "s"], assumption+) 
- apply (simp add:mult_commute [of "r" "s"])  (* !! ??? *) 
+ apply (simp add:mult.commute [of "r" "s"])  (* !! ??? *) 
 apply simp
 apply (frule mod_less_divisor [of "s" "i"])
 apply (frule less_le_diff [of "i mod s" "s"], thin_tac "i mod s < s")
@@ -5223,16 +5223,16 @@ apply (frule less_le_diff [of "i mod s" "s"], thin_tac "i mod s < s")
  apply (simp add:le_imp_less_or_eq)
  apply (subst div_Tr3_1[of "r" "s" "i"], assumption+, simp)
  apply (subst rtos_hom3 [of "r" "s" "i"], assumption+) 
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
  apply (subst rtos_hom3_1 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
 apply (frule div_Tr3_1 [of "r" "s" "i"], assumption+, simp)
  apply (simp, thin_tac "Suc i div s = Suc (i div s)")
  apply (insert n_less_Suc [of "i div s"])
  apply (frule less_le_trans [of "i div s" "Suc (i div s)" "r - Suc 0"], 
                                                              assumption+)
  apply (subst Suc_rtos_div_r_1 [of "r" "s" "i"], assumption+) 
- apply (simp add:mult_commute[of "s" "r"])+ 
+ apply (simp add:mult.commute[of "s" "r"])+ 
  apply (subst Suc_rtos_mod_r_1 [of "r" "s" "i"], assumption+)
  apply (subst Suc_i_mod_s_0_1 [of "r" "s" "i"], assumption+)
  apply (simp only:Suc_rtos_div_r_1 [of "r" "s" "i"])  
@@ -5250,42 +5250,42 @@ apply (frule noteq_le_less [of "i mod s" "s - Suc 0"], assumption+)
  apply (subst rfn_tool12_1 [THEN sym, of "s" "i"], assumption+)
  apply simp
  apply (subst rtos_hom3 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
  apply (subst rtos_hom3_1 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
 apply (case_tac "i div s = r - Suc 0")
 apply (subst rtos_hom5 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
  apply assumption
  apply (subst rtos_hom7 [of "r" "s" "i"], assumption+)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
  apply (assumption, simp)
 apply (frule JHS_Tr1_3 [of "G" "r" "s" "f" "g" "i"], assumption+,
        simp only:noteq_le_less,  assumption+)
 apply (frule JHS_Tr1_4 [of "G" "r" "s" "f" "g" "i"], assumption+,
        simp only:noteq_le_less, assumption+)
  apply (subst rtos_hom3 [of "r" "s" "i"], assumption+,
-        simp only:mult_commute[of "s" "r"])
+        simp only:mult.commute[of "s" "r"])
  apply (subst rtos_hom5 [of "r" "s" "i"], assumption+,
-        simp only:mult_commute[of "s" "r"],
+        simp only:mult.commute[of "s" "r"],
                simp add:mem_of_Nset) 
 apply (rule isomTr1, assumption+)
  apply (frule Suci_div_s_2[of "r" "s" "i"], assumption+,
-        simp only:mult_commute, assumption)
+        simp only:mult.commute, assumption)
  apply simp 
 apply (frule Suci_div_s_2[of "r" "s" "i"], assumption+,
-       simp only:mult_commute, assumption, simp)
+       simp only:mult.commute, assumption, simp)
 apply (rule JHS_Tr1_2 [of "G" "s" "r" "g" "f" "i mod s"], assumption+)
 apply (frule div_Tr2 [of "r" "s" "i"], assumption+)
  apply (rule le_less_trans [of "i" "s * r - Suc 0" "s * r"], assumption+)
  apply simp
 apply (frule noteq_le_less [of "i div s" "r - Suc 0"], assumption+)
  apply (frule Suci_div_s_2[of "r" "s" "i"], assumption+,
-        simp only:mult_commute[of "s" "r"], assumption, simp)
+        simp only:mult.commute[of "s" "r"], assumption, simp)
 apply (frule JHS_Tr1_5[of "G" "r" "s" "f" "g" "i"], assumption+)
  apply (simp add:noteq_le_less[of "Suc i"], assumption+)
  apply (frule mem_of_Nset[of "i" "s*r - Suc 0"], 
-                        simp add:mult_commute[of "s" "r"])
+                        simp add:mult.commute[of "s" "r"])
  apply (simp add:rtos_hom3 [of "r" "s" "i"])
 done 
 
@@ -5300,17 +5300,17 @@ apply (simp add:Qw_cmpser_def)
  apply (frule_tac l = i in rtos_hom1 [of "r" "s"], assumption+)
  apply (frule_tac x = "rtos r s i" and y = "s * r - Suc 0" and z = "s * r" in
           le_less_trans, simp)
- apply (simp add:mult_commute [of "s" "r"])
+ apply (simp add:mult.commute [of "s" "r"])
 apply (case_tac "Suc (rtos r s i) < r * s", simp)
 prefer 2 apply simp
  apply (frule_tac i = i in rtos_rs_1 [of "r" "s"], assumption+) 
  apply (frule_tac i = i in rtos_rs_i_rs [of "r" "s"], assumption+)
  apply (rule less_le_diff, assumption+)
  apply (simp add:cmp_rfn_def)
- apply (simp add:mult_commute)
+ apply (simp add:mult.commute)
 apply (subst JHS_Tr1_1 [of "G" "r" "s" "f" "g"], assumption+)
 apply (frule JHS_Tr1_1 [of "G" "s" "r" "g" "f"], assumption+)
- apply (simp add:mult_commute [of "r" "s"])
+ apply (simp add:mult.commute [of "r" "s"])
  apply (simp add:Int_commute) 
 apply (frule Group.compseriesTr0 [of "G" "r" "f" "r - Suc 0"], assumption+,
        simp)
@@ -5527,10 +5527,10 @@ apply (frule_tac r = r and s = s and G = G and f = f and g = g in
                    Group.JHS_Tr0, assumption+)
 apply (simp add:wcsr_rfns_def, erule conjE)
 apply (frule_tac length_of_twcmpser [of "G" "E" "r * s - Suc 0" 
-        "cmp_rfn G r f s g"], assumption+, simp add:mult_commute)
+        "cmp_rfn G r f s g"], assumption+, simp add:mult.commute)
 apply (simp add:length_twcmpser_def)
 apply (frule Group.rfn_compseries_iM [of "G" "r" "s" "f" "cmp_rfn G r f s g"], assumption+, rule Group.JHS_Tr0 [of "G" "r" "s" "f" "g"], assumption+)
-apply (simp add:mult_commute [of "s" "r"])
+apply (simp add:mult.commute [of "s" "r"])
 done
 
 lemma J_H_S:"\<lbrakk>Group G; Ugp E; compseries G r f; compseries G s g; 0<r;
@@ -5549,7 +5549,7 @@ apply (frule JHS_1 [of "G" "E" "r" "f" "s" "g"], assumption+,
                                                         assumption+,
         frule Qw_cmpser [of "G" "r * s - Suc 0" "cmp_rfn G s g r f"],
         simp add:pos_mult_pos [of "r" "s"],
-        simp add:mult_commute [of "s" "r"])
+        simp add:mult.commute [of "s" "r"])
 apply (frule isom_gch_units [of "E" "r * s - Suc 0" 
  "Qw_cmpser G (cmp_rfn G r f s g)" "Qw_cmpser G (cmp_rfn G s g r f)" 
                                                "rtos r s"], assumption+)
@@ -5557,7 +5557,7 @@ prefer 2 apply simp
 apply (simp add:Gch_bridge_def)
 apply (rule conjI) apply (rule allI, rule impI) 
  apply (frule_tac l = l in rtos_hom1 [of "r" "s"], assumption+,
-        simp add:mult_commute [of "s" "r"])
+        simp add:mult.commute [of "s" "r"])
 apply (rule rtos_inj, assumption+)
 done 
 

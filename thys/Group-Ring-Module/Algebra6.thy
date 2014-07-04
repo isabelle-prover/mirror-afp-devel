@@ -1112,14 +1112,14 @@ apply (frule low_deg_terms_zero1[THEN sym, of "s_cf R S X p" j])
  apply(frule coeff_nonzero_polyn_nonzero[of "ext_cf S j (s_cf R S X p)"
                                       "fst (ext_cf S j (s_cf R S X p))"],
        simp)
- apply (simp add:ext_cf_len add_commute[of j],
+ apply (simp add:ext_cf_len add.commute[of j],
      thin_tac "(polyn_expr R X (fst (s_cf R S X p) + j) 
          (ext_cf S j (s_cf R S X p)) \<noteq> \<zero>) =
      (\<exists>ja\<le>fst (s_cf R S X p) + j. snd (ext_cf S j (s_cf R S X p)) ja \<noteq> \<zero>\<^bsub>S\<^esub>)")
  apply (cut_tac ext_cf_hi[of "s_cf R S X p" j], simp,
         thin_tac "snd (s_cf R S X p) (fst (s_cf R S X p)) =
         snd (ext_cf S j (s_cf R S X p)) (j + fst (s_cf R S X p))",
-        simp add:add_commute[of _ j])
+        simp add:add.commute[of _ j])
  apply (cut_tac n = "j + fst (s_cf R S X p)" in le_refl, blast)
  apply assumption
 done
@@ -1845,7 +1845,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
           frule_tac c = "(l + n, e)" and d = "ext_cf S (Suc n) (sp_cf S (
            f (Suc n)) (l, u))" in polyn_add1, assumption+,
           simp del:npow_suc add:ext_cf_len sp_cf_len,
-          cut_tac a = l and b = n in add_commute,
+          cut_tac a = l and b = n in add.commute,
           simp del:npow_suc,
          thin_tac "polyn_expr R X (n + l) (n + l, e) \<plusminus>
          polyn_expr R X (Suc (n + l))
@@ -1900,9 +1900,9 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
           d = "ext_cf B (Suc n) (sp_cf B (cmp h f (Suc n)) (l, cmp h u))" in
           PolynRg.polyn_add1[of A B Y])    
    apply (frule_tac c = "(n + l, e)" in cf_h_coeff[of A B Y h], assumption+)
-  apply (simp add:cf_h_pol_coeff[of A B Y h] add_commute, assumption)
+  apply (simp add:cf_h_pol_coeff[of A B Y h] add.commute, assumption)
   apply (simp add:PolynRg.ext_cf_len PolynRg.sp_cf_len)
-  apply (cut_tac a = n and b = l in add_commute, simp)
+  apply (cut_tac a = n and b = l in add.commute, simp)
   (** Now we got 
       polyn_expr A Y (max (l + n) (Suc (l + n)))
            (add_cf B (l + n, cmp h e)
@@ -1938,7 +1938,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
      apply assumption apply (simp add:add_cf_len) 
      apply (simp add:ext_cf_len sp_cf_len)
       apply (simp add:add_cf_len ext_cf_len sp_cf_len)
-      apply (cut_tac a = n and b = l in add_commute, simp,
+      apply (cut_tac a = n and b = l in add.commute, simp,
      thin_tac "pol_coeff B
          (add_cf B (l + n, cmp h e)
            (ext_cf B (Suc n) (sp_cf B (cmp h f (Suc n)) (l, cmp h u))))",
@@ -1992,7 +1992,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
     apply (simp add:PolynRg.add_cf_len) 
     apply (simp add:PolynRg.ext_cf_len)
     apply (simp add:PolynRg.sp_cf_len)
-    apply (cut_tac a = n and b = l in add_commute, simp)
+    apply (cut_tac a = n and b = l in add.commute, simp)
   (* we got 
      \<forall>j\<le>Suc (l + n).
              cmp h g j =
@@ -2870,7 +2870,7 @@ apply (frule ext_cf_pol_coeff[of "s_cf R S X p" n],
         frule deg_mult_pols[of "X^\<^bsup>R n\<^esup>" p], assumption+, (erule conjE)+,
              simp,
       thin_tac "deg_n R S X (X^\<^bsup>R n\<^esup> \<cdot>\<^sub>r p) = deg_n R S X (X^\<^bsup>R n\<^esup>) + deg_n R S X p",
-      simp add:deg_to_X_d, simp add:add_commute[of n],
+      simp add:deg_to_X_d, simp add:add.commute[of n],
       thin_tac "polyn_expr R X (deg_n R S X p + n) 
           (s_cf R S X (c \<cdot>\<^sub>r (X^\<^bsup>R n\<^esup> \<cdot>\<^sub>r p))) = polyn_expr R X (deg_n R S X p + n)
                                       (sp_cf S c (ext_cf S n (s_cf R S X p)))")
@@ -3523,7 +3523,7 @@ apply (frule P_mod_mod[THEN sym, of I p "s_cf R S X p"], assumption+,
 apply (frule P_mod_mod[THEN sym, of I "polyn_expr R X (fst (s_cf R S X p) + 
           m) (ext_cf S m (s_cf R S X p))" "ext_cf S m (s_cf R S X p)"],
        rule polyn_mem, assumption, simp add:ext_cf_def,
-       assumption, simp add:ext_cf_len add_commute, simp,
+       assumption, simp add:ext_cf_len add.commute, simp,
        thin_tac "P_mod R S X I (polyn_expr R X (fst (s_cf R S X p) + m)
         (ext_cf S m (s_cf R S X p))) = (\<forall>j\<le>fst (ext_cf S m (s_cf R S X p)).
          snd (ext_cf S m (s_cf R S X p)) j \<in> I)",
@@ -3543,7 +3543,7 @@ apply (frule s_cf_expr[of p], assumption+, (erule conjE)+,
 apply (frule P_mod_mod[THEN sym, of I "polyn_expr R X (fst (s_cf R S X p) + 
           m) (ext_cf S m (s_cf R S X p))" "ext_cf S m (s_cf R S X p)"],
        rule polyn_mem, assumption, simp add:ext_cf_def,
-       assumption, simp add:ext_cf_len add_commute, simp,
+       assumption, simp add:ext_cf_len add.commute, simp,
        thin_tac "p = polyn_expr R X (fst (s_cf R S X p)) (s_cf R S X p)",
        thin_tac "P_mod R S X I
        (polyn_expr R X (fst (s_cf R S X p) + m) (ext_cf S m (s_cf R S X p)))",
@@ -3555,7 +3555,7 @@ apply (subst P_mod_mod[THEN sym, of I p "s_cf R S X p"], assumption+,
        simp add:ext_cf_len, simp add:ext_cf_def)
 apply (drule_tac x = "m + j" in spec,
        frule_tac i = j and j = "fst (s_cf R S X p)" and k = m and l = m in 
-       add_le_mono, simp, simp only:add_commute[of _ m],
+       add_le_mono, simp, simp only:add.commute[of _ m],
        thin_tac "j \<le> fst (s_cf R S X p)", simp,
        simp add:sliden_def)
 apply simp

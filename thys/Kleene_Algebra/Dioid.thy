@@ -180,7 +180,7 @@ semigroup reduct of a near dioid is a semilattice. Near dioids are
 therefore ordered by the semilattice order. *}
 
 subclass join_semilattice
-by unfold_locales (auto simp add: add_commute add_left_commute)
+by unfold_locales (auto simp add: add.commute add.left_commute)
 
 text {* It follows that multiplication is right-isotone (but not
 necessarily left-isotone). *}
@@ -369,11 +369,11 @@ definition (in times) opp_mult (infixl "\<odot>" 70)
 
 lemma (in semiring_1) dual_semiring_1:
   "class.semiring_1 1 (op \<odot>) (op +) 0"
-by unfold_locales (auto simp add: opp_mult_def mult_assoc distrib_right distrib_left)
+by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 lemma (in dioid_one_zero) dual_dioid_one_zero:
   "class.dioid_one_zero (op +) (op \<odot>) 1 0 (op \<le>) (op <)"
-by unfold_locales (auto simp add: opp_mult_def mult_assoc distrib_right distrib_left)
+by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 subsection {* Selective Near Semirings *}
 

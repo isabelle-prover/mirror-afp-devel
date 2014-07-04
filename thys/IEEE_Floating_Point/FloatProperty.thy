@@ -391,7 +391,7 @@ proof -
   have "\<not>(Isnan a)"  "\<not>(Isnan b)"  "\<not>(Infinity a)" "\<not>(Infinity b)"
     using assms by (auto simp: finite_nan finite_infinity)
   then show "a + b = b + a"
-    by (simp add: float_defs fadd_def plus_float_def add_commute)
+    by (simp add: float_defs fadd_def plus_float_def add.commute)
   then show "Finite (a + b) \<Longrightarrow> (a + b) \<doteq> (b + a)"
     by (metis float_eq)
 qed

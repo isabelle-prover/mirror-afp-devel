@@ -162,7 +162,7 @@ subsection "Correctness"
 
 subsubsection "Auxiliary Lemmas"
 lemma listsum_split: "listsum (l @ (a::'a::monoid_add) # r) = (listsum l) + a + (listsum r)"
-  by (induct l) (auto simp add: add_assoc)
+  by (induct l) (auto simp add: add.assoc)
 
 
 lemma p_linear: "(x::('e, 'a::linorder) Prio) \<le> y \<or> y \<le> x"
