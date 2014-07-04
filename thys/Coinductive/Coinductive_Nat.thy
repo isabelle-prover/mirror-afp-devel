@@ -202,39 +202,13 @@ by(cases n rule: enat_coexhaust) simp_all
 lemma epred_inject: "\<lbrakk> x \<noteq> 0; y \<noteq> 0 \<rbrakk> \<Longrightarrow> epred x = epred y \<longleftrightarrow> x = y"
 by(cases x y rule: enat.exhaust[case_product enat.exhaust])(auto simp add: zero_enat_def)
 
+lemma monotone_fun_eSuc[partial_function_mono]:
+    "monotone (fun_ord (\<lambda>y x. x \<le> y)) (\<lambda>y x. x \<le> y) (\<lambda>f. eSuc (f x))"
+  by (auto simp: monotone_def fun_ord_def)
 
-
-definition enat_unfold :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> enat"
-where "enat_unfold stop next a =
-  (if \<exists>n. stop ((next ^^ n) a)
-   then enat (LEAST n. stop ((next ^^ n) a))
-   else \<infinity>)"
-
-lemma enat_unfold [code, nitpick_simp]:
-  "enat_unfold stop next a =
-  (if stop a then 0 else eSuc (enat_unfold stop next (next a)))"
-  (is "?lhs = ?rhs")
-proof(cases "\<exists>n. stop ((next ^^ n) a)")
-  case True
-  let ?P = "\<lambda>n. stop ((next ^^ n) a)"
-  let ?m = "Least ?P"
-  from True obtain n where n: "?P n" ..
-  hence "?P ?m" by(rule LeastI)
-  show ?thesis
-  proof(cases "stop a")
-    case True
-    thus ?thesis
-      by(auto simp add: enat_unfold_def zero_enat_def intro: Least_equality exI[where x=0])
-  next
-    case False
-    with n obtain n' where n': "n = Suc n'" by(cases n) auto
-    from n have "?lhs = enat ?m" by(auto simp add: enat_unfold_def)
-    also from n have "?m = Suc (LEAST n. ?P (Suc n))"
-      by(rule Least_Suc)(simp add: False)
-    finally show ?thesis using False n n'
-      by(auto simp add: eSuc_enat[symmetric] funpow_swap1 enat_unfold_def)
-  qed
-qed(auto simp add: enat_unfold_def funpow_swap1 elim: allE[where x=0] allE[where x="Suc n" for n])
+partial_function (gfp) enat_unfold :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> enat" where
+  enat_unfold [code, nitpick_simp]:
+  "enat_unfold stop next a = (if stop a then 0 else eSuc (enat_unfold stop next (next a)))"
 
 lemma enat_unfold_stop [simp]: "stop a \<Longrightarrow> enat_unfold stop next a = 0"
 by(simp add: enat_unfold)
