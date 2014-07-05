@@ -514,8 +514,8 @@ next
       apply (rule_tac x = "Const 0" in exI, simp)
       apply (rule_tac x = "Multiplication a (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r))))" in exI)
       apply (rule_tac x = "Negation (Multiplication b (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r)))))" in exI)
-      apply (simp add: algebra_simps not_in_own_radicals)
-      by (metis (hide_lams, no_types) mult_ac(1) eq_diff_eq' radical_sqrt_normal_form_lemma4)
+      apply (simp add: algebra_simps not_in_own_radicals eq_diff_eq' radical_sqrt_normal_form_lemma4)
+      done
     qed
 next
   case (Addition e1 e2)

@@ -721,7 +721,7 @@ proof -
     \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` I (first_coll \<omega>) \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` S (first_coll \<omega>) i) \<bar> hit_colls \<omega>)"
     unfolding cond_prob_def hit by (simp only: conj_ac) (rule sums_divide)
   with H show ?thesis
-    by (simp add: mult_ac)
+    by (simp add: ac_simps)
 qed
 
 subsection {* The probability that the sender hits a collaborateur *}

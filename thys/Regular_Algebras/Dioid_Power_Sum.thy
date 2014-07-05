@@ -71,7 +71,7 @@ proof (induct m)
   case 0 show ?case 
     by (metis add_idem' power_0 powsum_00)
   case (Suc n) show ?case
-    by (auto simp add: powsum2, metis add_assoc' add_idem')
+    by (auto simp add: powsum2)
 qed
 
 lemma powsum_split_var3: "x\<^bsub>0\<^esub>\<^bsup>m+Suc n\<^esup> = x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+ x\<^bsub>0+Suc m\<^esub>\<^bsup>n\<^esup>" 
@@ -113,7 +113,10 @@ lemma powsum_one: "1 \<le> x\<^bsub>0\<^esub>\<^bsup>Suc n\<^esup>"
   by (induct n, metis One_nat_def add_ub1 powsum_01, metis (full_types) Suc_eq_plus1 add_ub1 powsum_split_var1)
 
 lemma powsum_shift1: "x \<cdot> x\<^bsub>m\<^esub>\<^bsup>n\<^esup> = x\<^bsub>m+1\<^esub>\<^bsup>n\<^esup>" 
-  by (induct n, simp_all add:powsum_simps, metis distrib_left)
+  apply (induct n)
+  apply (simp_all add: powsum_simps)
+  apply (metis local.add_left_comm local.distrib_left powsum_def)  
+  done
 
 lemma powsum_shift: "x\<^bsup>k \<^esup>\<cdot> x\<^bsub>m\<^esub>\<^bsup>n\<^esup> = x\<^bsub>k+m\<^esub>\<^bsup>n\<^esup>" 
   by (induct k, simp_all, metis Suc_eq_plus1 mult.assoc powsum_shift1)

@@ -156,7 +156,7 @@ next
         by (simp only: int_relprime_odd_power_divisors)
       then obtain c where c: "c^3 = 2*p" by auto
       from pqx factors_relprime have "zgcd (p^2 + 3*q^2) (2*p) = 1"
-        and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: zgcd_commute mult_ac)
+        and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: zgcd_commute ac_simps)
       with triv3 have "\<exists> d. p^2 + 3*q^2 = d^3"
         by (simp only: int_relprime_odd_power_divisors)
       then obtain d where d: "p^2 + 3*q^2 = d^3" by auto
@@ -198,9 +198,9 @@ next
           ultimately have "2 dvd a+3*b- 2*b" by (rule dvd_diff)
           hence "2 dvd a+b" by arith
           hence "2 dvd (a+b)*((a-b)*b*3)" by (rule dvd_mult2)
-          with ab have qEven: "2 dvd q" by (simp only: mult_ac)
+          with ab have qEven: "2 dvd q" by (simp only: ac_simps)
           from ab2 have "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule dvd_mult2)
-          with ab have "2 dvd p" by (simp only: mult_ac)
+          with ab have "2 dvd p" by (simp only: ac_simps)
           with qEven have "2 dvd zgcd p q" by (simp add: zgcd_greatest_iff)
           with pq_relprime show False by auto
         qed
@@ -400,7 +400,7 @@ next
         qed
         ultimately have "zgcd ((3*3)*(2*r)) (3*r^2 + q^2) = 1" 
           by (simp only: zgcd_zmult_cancel)
-        thus ?thesis by (auto simp add: mult_ac add_ac)
+        thus ?thesis by (auto simp add: ac_simps ac_simps)
       qed
       moreover have rqx: "(18*r)*(q^2 + 3*r^2) = x^3"
       proof -
@@ -419,7 +419,7 @@ next
       with c1 obtain c where c: "3*c^3 = 2*r" 
         by (auto simp add: power_mult_distrib dvd_def)
       from rqx factors_relprime have "zgcd (q^2 + 3*r^2) (18*r) = 1"
-        and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: zgcd_commute mult_ac)
+        and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: zgcd_commute ac_simps)
       with triv3 have "\<exists> d. q^2 + 3*r^2 = d^3" 
         by (simp only: int_relprime_odd_power_divisors)
       then obtain d where d: "q^2 + 3*r^2 = d^3" by auto
@@ -460,9 +460,9 @@ next
           ultimately have "2 dvd a+b+2*b" by (rule dvd_add)
           hence "2 dvd a+3*b" by arith
           hence "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule dvd_mult2)
-          with ab have qEven: "2 dvd q" by (simp only: mult_ac)
+          with ab have qEven: "2 dvd q" by (simp only: ac_simps)
           from ab2 have "2 dvd (a+b)*((a-b)*3*b)" by (rule dvd_mult2)
-          with ab have "2 dvd r" by (simp only: mult_ac)
+          with ab have "2 dvd r" by (simp only: ac_simps)
           with qEven have "2 dvd zgcd q r" by (simp add: zgcd_greatest_iff)
           with qr_relprime have False by auto }
         moreover
@@ -573,7 +573,7 @@ proof (rule ccontr)
     proof - 
       from zgab have "?g^3 dvd z^3" by simp
       hence "?g dvd z" by (simp only: zpower_zdvd_mono)
-      thus ?thesis by (simp only: mult_ac dvd_mult_div_cancel)
+      thus ?thesis by (simp only: ac_simps dvd_mult_div_cancel)
     qed
     moreover have "a^3 + b^3 = ?c^3"
     proof -
@@ -671,7 +671,7 @@ corollary fermat_mult3:
   assumes xyz: "(x::int)^n + y^n = z^n" and n: "3 dvd n"
   shows "x*y*z=0"
 proof -
-  from n obtain m where "n = m*3" by (auto simp only: mult_ac dvd_def)
+  from n obtain m where "n = m*3" by (auto simp only: ac_simps dvd_def)
   with xyz have "(x^m)^3 + (y^m)^3 = (z^m)^3" by (simp only: power_mult)
   hence "(x^m)*(y^m)*(z^m) = 0" by (rule fermat3)
   thus ?thesis by auto

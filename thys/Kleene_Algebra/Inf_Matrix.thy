@@ -36,7 +36,7 @@ definition mat_add :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, 'b
   "(f \<oplus> g)  \<equiv> \<lambda>i j. (f i j) + (g i j)"
 
 lemma mat_add_assoc: "(f \<oplus> g) \<oplus> h =  f \<oplus>  (g \<oplus> h)"
-  by (auto simp add: mat_add_def) (metis (hide_lams) add_assoc' add_comm)
+  by (auto simp add: mat_add_def)
 
 lemma mat_add_comm: "f \<oplus> g = g \<oplus> f"
   by (auto simp add: mat_add_def)

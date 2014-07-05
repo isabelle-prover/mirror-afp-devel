@@ -452,7 +452,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
         moreover
         with nth_i i `i < ws a`
         have "action_obs E i = NormalAction (ReadMem ad' al' v')"
-          by(simp add: action_obs_def lnth_ltake add_ac)
+          by(simp add: action_obs_def lnth_ltake ac_simps)
         ultimately have "\<exists>T. P \<turnstile> ad'@al' : T \<and> P \<turnstile> v' :\<le> T" by(rule less.IH)
         hence "v' \<in> vs_type_all P (ad', al')" by(simp add: vs_type_all.simps)
         thus "v' \<in> w_values P (vs_type_all P) (list_of (ltake (enat i) ?EE'')) (ad', al')"
@@ -828,7 +828,7 @@ proof -
           moreover
           from i_nth i `i < w` w_len
           have "action_obs (?E n') i = NormalAction (ReadMem ad al v)"
-            by(simp add: action_obs_def add_ac less_trans[where y="enat w"] lnth_ltake)
+            by(simp add: action_obs_def ac_simps less_trans[where y="enat w"] lnth_ltake)
           moreover from n'' have "0 < n'" by simp
           ultimately have "\<exists>T. P \<turnstile> ad@al : T \<and> P \<turnstile> v :\<le> T" by(rule Suc.IH)
           hence "v \<in> vs_type_all P (ad, al)" by(simp add: vs_type_all.simps)

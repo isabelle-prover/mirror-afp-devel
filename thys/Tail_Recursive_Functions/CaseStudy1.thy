@@ -464,21 +464,21 @@ next
   assume "l_sort_inv_2 w ws (x # xs, ys, [])"
   thus "l_sort_inv_2 w ws (xs, [], ys @ [x])"
   proof (simp add: l_sort_inv_2_def, subst (asm) l_count_cons, subst l_count_app)
-  qed (simp add: l_count_def add_ac)
+  qed (simp add: l_count_def ac_simps)
 next
   fix x xs ys z zs
   assume "l_sort_inv_2 w ws (x # xs, ys, z # zs)"
   thus "l_sort_inv_2 w ws (xs, [], ys @ x # z # zs)"
   proof (simp add: l_sort_inv_2_def, subst (asm) l_count_cons, subst l_count_app,
    subst l_count_cons)
-  qed (simp add: l_count_def add_ac)
+  qed (simp add: l_count_def ac_simps)
 next
   fix x xs ys z zs
   assume "l_sort_inv_2 w ws (x # xs, ys, z # zs)"
   thus "l_sort_inv_2 w ws (x # xs, ys @ [z], zs)"
   proof (simp add: l_sort_inv_2_def, subst (asm) (2) l_count_cons,
    subst l_count_app)
-  qed (simp add: l_count_def add_ac)
+  qed (simp add: l_count_def ac_simps)
 qed
 
 subsection "Step 10"

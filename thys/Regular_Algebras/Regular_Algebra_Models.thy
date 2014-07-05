@@ -278,9 +278,9 @@ next
     by (metis assms rexp.distinct(1))
   thus "P(t1 +\<^sub>r t2)"
     apply (subst P_def, transfer)
-    apply (rule_tac x="t1' +\<^sub>r t2'" in exI, auto)
-    apply (metis ab_semigroup_add_class.add_ac(1) kleene_algebra_class.dual.add_idem')+
-  done
+    apply (rule_tac x="t1' +\<^sub>r t2'" in exI)
+    apply auto
+    done
 next
   fix t1 t2
   assume "P(t1)" "P(t2)"

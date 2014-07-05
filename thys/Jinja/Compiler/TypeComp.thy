@@ -339,7 +339,7 @@ shows "\<And>pc pc' d. shift pc (compxE\<^sub>2 e pc' d) = compxE\<^sub>2 e (pc'
 and  "\<And>pc pc' d. shift pc (compxEs\<^sub>2 es pc' d) = compxEs\<^sub>2 es (pc' + pc) d"
 (*<*)
 apply(induct e and es)
-apply(auto simp:shift_def add_ac)
+apply(auto simp:shift_def ac_simps)
 done
 (*>*)
 

@@ -705,10 +705,10 @@ next
     by (simp, subst foldl_absorb0[symmetric], rule refl)
 
   { assume "P x"
-    hence ?case by (auto simp del: foldl_Cons simp add: foldl_Cons' IH add_ac)
+    hence ?case by (auto simp del: foldl_Cons simp add: foldl_Cons' IH ac_simps)
   } moreover {
     assume "\<not> P x"
-    hence ?case by (auto simp del: foldl_Cons simp add: foldl_Cons' IH add_ac)
+    hence ?case by (auto simp del: foldl_Cons simp add: foldl_Cons' IH ac_simps)
   }
   ultimately show ?case by blast
 qed

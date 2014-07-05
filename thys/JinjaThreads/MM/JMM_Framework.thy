@@ -3292,7 +3292,7 @@ proof
                 by(rule thread_start_actions_ok_change)
                 
               from w'_writes j j' len len' have "P,llist_of E'' \<turnstile> w' \<le>hb length EE"
-                by(auto simp add: EE_def writes_def min_def add_ac)
+                by(auto simp add: EE_def writes_def min_def ac_simps)
               thus "P,llist_of E' \<turnstile> w' \<le>hb length EE" using tsa'' sim
                 by(rule happens_before_change_prefix)(simp add: w'_len, simp add: EE_def E'_def)
               
@@ -3313,7 +3313,7 @@ proof
                 have "P,llist_of E'' \<turnstile> w'' \<le>hb length EE"
                   by(rule happens_before_change_prefix)(simp add: w''_len, simp add: E'_def EE_def)
                 with w'' adal_w'' j j' len len' have "w'' \<in> writes"
-                  by(auto simp add: writes_def EE_def min_def add_ac split: split_if_asm)
+                  by(auto simp add: writes_def EE_def min_def ac_simps split: split_if_asm)
                 hence "llist_of E'' \<turnstile> w'' \<le>a w'" by(rule w'_maximal)
                 hence "llist_of E' \<turnstile> w'' \<le>a w'" using sim
                   by(rule action_order_change_prefix)(simp_all add: w'_len w''_len)

@@ -83,7 +83,7 @@ begin
     show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<subseteq> x\<^sup>\<star>"
       by (metis join_semilattice_class.add_lub left_near_kleene_algebra_class.star_plus_one left_near_kleene_algebra_class.star_trans_eq left_pre_kleene_algebra_class.star_ext subset_refl)
     show  "1 + y \<cdot> y + x \<subseteq> y \<longrightarrow> x\<^sup>\<star> \<subseteq> y"
-      by (metis ab_semigroup_add_class.add_ac(1) join_semilattice_class.add_comm left_pre_kleene_algebra_class.star_rtc_least)
+      by (metis join_semilattice_class.add_comm join_semilattice_class.add_left_comm left_pre_kleene_algebra_class.star_rtc_least)
   qed
 
 end (* instantiation *)
@@ -112,7 +112,7 @@ proof
   show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<subseteq> x\<^sup>\<star>"
     by (metis left_near_kleene_algebra_class.star_plus_one left_near_kleene_algebra_class.star_trans left_near_kleene_algebra_class.star_trans_eq left_near_kleene_algebra_class.sum_star_closure left_pre_kleene_algebra_class.star_ext)
   show "1 + y \<cdot> y + x \<subseteq> y \<longrightarrow> x\<^sup>\<star> \<subseteq> y"
-    by (metis ab_semigroup_add_class.add_ac(1) join_semilattice_class.add_comm left_pre_kleene_algebra_class.star_rtc_least)
+    by (metis join_semilattice_class.add_lub left_near_kleene_algebra_class.star_iso left_pre_kleene_algebra_class.star_rtc2)
 qed
 
 

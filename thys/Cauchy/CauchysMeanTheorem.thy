@@ -405,7 +405,7 @@ proof
     apply (subst mult.commute [where a="len"])
     apply (drule mult_divide_mult_cancel_left
       [where c="len+1" and a="\<Sum>:xs" and b="len"])
-    by (simp add: mult_ac add_ac)
+    by (simp add: ac_simps ac_simps)
   finally show "mean ((mean xs)#xs) = mean xs" by (simp add: mean)
 qed
 

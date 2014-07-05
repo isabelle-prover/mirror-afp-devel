@@ -159,8 +159,7 @@ next
       moreover
       { assume "suffix i \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<mu>"
         hence \<psi>_suf_i: "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" 
-          by auto (metis ab_semigroup_add_class.add_ac(1) ltln_expand_Until
-            ltln_semantics.simps)
+          by auto (metis ac_simps ltln_expand_Until ltln_semantics.simps)
         from \<nu>_less_i have \<psi>_less_i: "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n ?\<psi>"
         proof(clarify)
           case (goal1 j)

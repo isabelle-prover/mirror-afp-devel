@@ -30,7 +30,8 @@ lemma merge_true_star_ctx: "true * (true * P) = true * P"
   by (simp add: mult.left_ac)
   
 lemmas star_aci = 
-  mult_ac[where 'a=assn] assn_one_left mult_1_right[where 'a=assn]
+  mult.assoc[where 'a=assn] mult.commute[where 'a=assn] mult.left_commute[where 'a=assn]
+  assn_one_left mult_1_right[where 'a=assn]
   merge_true_star merge_true_star_ctx
 
 text {* Move existential quantifiers to the front of assertions *}

@@ -208,7 +208,7 @@ proof -
     and "sqrt (4 * a * b) = a + b \<longleftrightarrow> a = b" by simp+
   with real_sqrt_abs2 [of 2] and real_sqrt_mult [of 4 "a * b"] show
     "sqrt (a * b) \<le> (a + b) / 2"
-    and "sqrt (a * b) = (a + b) / 2 \<longleftrightarrow> a = b" by (simp add: mult_ac)+
+    and "sqrt (a * b) = (a + b) / 2 \<longleftrightarrow> a = b" by (simp add: ac_simps)+
 qed
 
 lemma refl_on_allrel: "refl_on A (A \<times> A)"

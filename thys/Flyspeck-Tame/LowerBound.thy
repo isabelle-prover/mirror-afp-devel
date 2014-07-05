@@ -25,7 +25,7 @@ lemma trans5: "(l::nat) \<le> a1 + a2 + a3 \<Longrightarrow> a2 + a3 = r \<Longr
 by simp
 
 lemma trans6: "(a::nat) = b1 + (b2 + b3) + b4 \<Longrightarrow> b3 = 0 \<Longrightarrow>
-            a = b1 + b2 + b4" by (simp add: add_ac)
+            a = b1 + b2 + b4" by (simp add: ac_simps)
 (*>*)
 
 (* FIXME in Tame: admissibility should be expressed via setsum!
@@ -183,7 +183,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
       + (\<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v * \<d> 3 + quad g v * \<d> 4))
       = (\<Sum>\<^bsub>v \<in> V1\<^esub> (ExcessAt g v
       + tri g v * \<d> 3 + quad g v * \<d> 4))" (*<*)
-      by (simp add: ListSum_add add_ac) (*>*) (* FIXME  also takes too long *)
+      by (simp add: ListSum_add ac_simps) (*>*) (* FIXME  also takes too long *)
     also from pl final tame have "\<dots> = (\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v))"
       by (rule_tac ListSum_eq)
          (fastforce simp add: V1_def V_subset[THEN subsetD] intro: excess_eq1)

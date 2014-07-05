@@ -786,9 +786,9 @@ proof -
           assume nv: "x (rho (?rr + Suc k) pp) \<noteq> v"
           with rrk ih
           have "x (rho (Suc r' + Suc k') pp) \<noteq> x (rho (Suc r' + k') pp)"
-            by (simp add: add_ac)
+            by (simp add: ac_simps)
           hence "x (rho (Suc r' + Suc k') pp) = v" by (rule P3)
-          with rrk nv show False by (simp add: add_ac)
+          with rrk nv show False by (simp add: ac_simps)
         qed
       qed
     qed

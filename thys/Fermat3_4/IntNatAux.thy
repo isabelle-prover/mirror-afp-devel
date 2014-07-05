@@ -118,7 +118,7 @@ proof -
     by (blast dest: zcong_zless_unique)
   hence "x dvd (y-b)" by (simp only: zcong_def)
   then obtain m where "y-b = x*m" by (auto simp add: dvd_def)
-  hence m: "b = y - m*x" by (simp only: mult_ac)
+  hence m: "b = y - m*x" by (simp only: ac_simps)
   show ?thesis
   proof (cases)
     assume "2*\<bar>b\<bar> \<le> x"
@@ -296,7 +296,7 @@ proof -
       with p have "p dvd a \<or> p dvd b" by (rule prime_dvd_mult)
       with pb have "p dvd a" by simp
       then obtain k where apk: "a = p * k" by (auto simp add: dvd_def)
-      with ppnab have "p*p^n dvd p*(k*b)" by (auto simp add: mult_ac)
+      with ppnab have "p*p^n dvd p*(k*b)" by (auto simp add: ac_simps)
       with p1 have "p^n dvd k*b" by (auto dest: dvd_mult_cancel)
       with IH have "p^n dvd k" ..
       with apk show "p*p^n dvd a" by (simp add: mult_dvd_mono)
@@ -418,7 +418,7 @@ proof -
       moreover
       { assume "\<not> p dvd a" 
         moreover from ass pnab have "p^n dvd b*a \<and> prime p"
-          by (auto simp only: mult_ac)
+          by (auto simp only: ac_simps)
         ultimately have "p^n dvd b" by (simp add: prime_power_dvd_cancel_right)
         then obtain B where B: "b = p^n * B" by (auto simp add: dvd_def)
         with ass pn0 have "a*B = (prod ps)^n" by auto
@@ -477,11 +477,11 @@ proof -
   with n1 have k: "\<exists> k. \<bar>a\<bar> = k^n" by (auto dest: int_relprime_power_divisors)
   from ab cb have "zgcd (a*c) b = 1" by (simp only: zgcd_zmult_cancel)
   with abcd have "b*(a*c) = d^n \<and> zgcd b (a*c) = 1" 
-    by (simp add: zgcd_commute mult_ac)
+    by (simp add: zgcd_commute ac_simps)
   with n1 have l: "\<exists> l. \<bar>b\<bar> = l^n" by (auto dest: int_relprime_power_divisors)
   from ac bc have "zgcd (a*b) c = 1" by (simp only: zgcd_zmult_cancel)
   with abcd have "c*(a*b) = d^n \<and> zgcd c (a*b) = 1" 
-    by (simp add: zgcd_commute mult_ac)
+    by (simp add: zgcd_commute ac_simps)
   with n1 have m: "\<exists> m. \<bar>c\<bar> = m^n" by (auto dest: int_relprime_power_divisors)
   from k l m show ?thesis by auto
 qed
@@ -530,13 +530,13 @@ proof -
   moreover
   { from ab cb have "zgcd (a*c) b = 1" by (simp only: zgcd_zmult_cancel)
     with abcd have "b*(a*c) = d^(nat x) \<and> zgcd b (a*c) = 1" 
-      by (simp add: zgcd_commute mult_ac)
+      by (simp add: zgcd_commute ac_simps)
     with x1 odd have "\<exists> l. b = l^(nat x)" 
       by (auto dest: int_relprime_odd_power_divisors) }
   moreover
   { from ac bc have "zgcd (a*b) c = 1" by (simp only: zgcd_zmult_cancel)
     with abcd have "c*(a*b) = d^(nat x) \<and> zgcd c (a*b) = 1" 
-      by (simp add: zgcd_commute mult_ac)
+      by (simp add: zgcd_commute ac_simps)
     with x1 odd have m: "\<exists> m. c = m^(nat x)" 
       by (auto dest: int_relprime_odd_power_divisors) }
   ultimately show ?thesis by auto
@@ -631,7 +631,7 @@ proof -
       with p have "p dvd a \<or> p dvd b" by (rule zprime_zdvd_zmult_general)
       with pb have "p dvd a" by simp
       then obtain k where apk: "a = p*k" by (auto simp add: dvd_def)
-      with ppnab have "p*p^n dvd p*(k*b)" by (auto simp add: mult_ac)
+      with ppnab have "p*p^n dvd p*(k*b)" by (auto simp add: ac_simps)
       with p1 have "p^n dvd k*b" by (auto dest: zdvd_mult_cancel)
       with IH have "p^n dvd k" ..
       with apk show "p*p^n dvd a" by (simp add: mult_dvd_mono)
@@ -644,7 +644,7 @@ lemma zprime_power_zdvd_cancel_left:
   "\<lbrakk> zprime p; \<not> p dvd a; p^n dvd a*b \<rbrakk> \<Longrightarrow> p^n dvd b"
   apply (subgoal_tac "p^n dvd b*a")
   apply (auto dest: zprime_power_zdvd_cancel_right)
-  apply (simp add: mult_ac)
+  apply (simp add: ac_simps)
 done
 
 subsection {* Facts about small powers of integers *}

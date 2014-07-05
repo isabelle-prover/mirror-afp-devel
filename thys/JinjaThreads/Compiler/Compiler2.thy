@@ -129,7 +129,7 @@ declare compE2_0th_neq_Invoke[symmetric, simp]
 
 lemma compxEs2_append [simp]:
   "compxEs2 (es @ es') pc d = compxEs2 es pc d @ compxEs2 es' (length (compEs2 es) + pc) (length es + d)"
-by(induct es arbitrary: pc d)(auto simp add: add_ac)
+by(induct es arbitrary: pc d)(auto simp add: ac_simps)
 
 lemma compxEs2_map_Val [simp]: "compxEs2 (map Val vs) pc d = []"
 by(induct vs arbitrary: d pc) auto

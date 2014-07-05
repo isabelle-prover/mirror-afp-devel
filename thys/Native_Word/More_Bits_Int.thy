@@ -477,7 +477,7 @@ lemma int_shiftr_BIT [simp]: fixes x :: int
 proof -
   show "x >> 0 = x" by (simp add: shiftr_int_def)
   show "x BIT b >> Suc n = x >> n" by (cases b)
-   (simp_all add: shiftr_int_def Bit_def add_ac pos_zdiv_mult_2)
+   (simp_all add: shiftr_int_def Bit_def add.commute pos_zdiv_mult_2)
 qed
 
 lemma bin_last_shiftr: "bin_last (x >> n) \<longleftrightarrow> x !! n"

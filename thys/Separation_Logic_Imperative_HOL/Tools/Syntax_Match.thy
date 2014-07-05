@@ -95,12 +95,12 @@ end
 
 interpretation mult!: ac_operator "op *::'a::ab_semigroup_mult \<Rightarrow> _ \<Rightarrow> _"
   apply unfold_locales
-  apply (simp_all add: mult_ac)
+  apply (simp_all add: ac_simps)
   done
 
 interpretation add!: ac_operator "op +::'a::ab_semigroup_add \<Rightarrow> _ \<Rightarrow> _"
   apply unfold_locales
-  apply (simp_all add: add_ac)
+  apply (simp_all add: ac_simps)
   done
 
 text {* Attention: @{text "conj_assoc"} is in standard simpset, it has to be 

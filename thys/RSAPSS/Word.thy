@@ -606,7 +606,7 @@ proof -
         proof -
           have "nat_to_bv (2 * 2 ^ length ys + (bv_to_nat (rev ys) * 2 + bitval y)) =
             nat_to_bv (2 * (2 ^ length ys + bv_to_nat (rev ys)) + bitval y)"
-            by (simp add: add_ac mult_ac)
+            by (simp add: ac_simps ac_simps)
           also have "... = nat_to_bv (2 * (bv_to_nat (\<one>#rev ys)) + bitval y)"
             by simp
           also have "... = norm_unsigned (\<one>#rev ys) @ [y]"
@@ -1788,7 +1788,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^(length w1 - 1)) * (2 ^ (length w2 - 1))"
-            by (simp add: mult_ac)
+            by (simp add: ac_simps)
           thus "-(((2::int)^(length w1 - Suc 0)) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         next
@@ -1805,7 +1805,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^(length w1 - 1)) * (2 ^ (length w2 - 1))"
-            by (simp add: mult_ac)
+            by (simp add: ac_simps)
           thus "-(((2::int)^(length w1 - Suc 0)) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         qed
@@ -1913,7 +1913,7 @@ proof -
             apply simp
             done
           hence "-?Q \<le> ((2::int)^length w1) * (2 ^ (length w2 - 1))"
-            by (simp add: mult_ac)
+            by (simp add: ac_simps)
           thus "-(((2::int)^length w1) * (2 ^ (length w2 - Suc 0))) \<le> ?Q"
             by simp
         next
@@ -1928,7 +1928,7 @@ proof -
 qed
 
 lemma bv_smult_sym: "bv_smult w1 w2 = bv_smult w2 w1"
-  by (simp add: bv_smult_def mult_ac)
+  by (simp add: bv_smult_def ac_simps)
 
 subsection {* Structural operations *}
 

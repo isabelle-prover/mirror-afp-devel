@@ -234,7 +234,7 @@ proof -
         "\<dots> =
          (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
         ((((x\<^bsub>k\<^esub>^2*y\<^bsub>j\<^esub>^2) + (x\<^bsub>j\<^esub>^2*y\<^bsub>k\<^esub>^2))*2*(inverse 2) - 2*(x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))))"
-        by (auto simp add: distrib_right mult.assoc mult_ac)
+        by (auto simp add: distrib_right mult.assoc ac_simps)
       also have
         "\<dots> =
         (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
@@ -248,7 +248,7 @@ proof -
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2))"
-        by (simp only: power2_diff real_sq_exp, auto simp add: mult_ac)
+        by (simp only: power2_diff real_sq_exp, auto simp add: ac_simps)
       also have "\<dots> \<ge> 0"
       proof -
         {

@@ -148,9 +148,9 @@ proof -
     also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
       by (simp only: qfN_mult2 add.commute mult_1_left)
     also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2" 
-      by (simp only: power_mult_distrib mult_ac)
+      by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)" 
-      by (simp add: mult_ac left_diff_distrib)
+      by (simp add: ac_simps left_diff_distrib)
     hence "?P^2 dvd (a*p - e*N*b*q)^2" by (rule dvdI)
     thus ?thesis by (simp only: zpower_zdvd_mono)
   next
@@ -161,9 +161,9 @@ proof -
     also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
       by (simp only: power2_minus)
     also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2" 
-      by (simp only: power_mult_distrib mult_ac)
+      by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)" 
-      by (simp add: mult_ac left_diff_distrib)
+      by (simp add: ac_simps left_diff_distrib)
     hence "?P^2 dvd (a*p-e*N*b*q)^2" by (rule dvdI)
     thus ?thesis by (simp only: zpower_zdvd_mono)
   qed
@@ -172,11 +172,11 @@ proof -
   have a: "a = p*u + e*N*q*v"
   proof -
     have "(p*u + e*N*q*v)*?P = p*(?P*u) + (e*N*q)*(?P*v)" 
-      by (simp only: distrib_right mult_ac)
+      by (simp only: distrib_right ac_simps)
     also with v u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
       by simp
     also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 have "\<dots> = a*?P" by simp
     finally have "(a-(p*u+e*N*q*v))*?P = 0" by auto
     moreover from ass have "?P \<noteq> 0" by (unfold zprime_def, auto)
@@ -185,10 +185,10 @@ proof -
   moreover have b: "b = p*v-e*q*u"
   proof -
     have "(p*v-e*q*u)*?P = p*(?P*v) - (e*q)*(?P*u)" 
-      by (simp only: left_diff_distrib mult_ac)
+      by (simp only: left_diff_distrib ac_simps)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
     also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 have "\<dots> = b * ?P" by simp
     finally have "(b-(p*v-e*q*u))*?P = 0" by auto
     moreover from ass have "?P \<noteq> 0" by (unfold zprime_def, auto)
@@ -197,10 +197,10 @@ proof -
   moreover have "?A = (u^2 + N*v^2)*?P" 
   proof (cases)
     assume "e=1" 
-    with a and b show ?thesis by (simp add: qfN_mult1 mult_1_left mult_ac)
+    with a and b show ?thesis by (simp add: qfN_mult1 mult_1_left ac_simps)
   next
     assume "\<not> e=1" with e have "e=-1" by simp
-    with a and b show ?thesis by (simp add: qfN_mult2 mult_1_left mult_ac)
+    with a and b show ?thesis by (simp add: qfN_mult2 mult_1_left ac_simps)
   qed
   moreover from e have "\<bar>e\<bar> = 1" .
   ultimately show ?thesis by blast
@@ -229,7 +229,7 @@ lemma qfN_power_div_prime:
 proof -
   from ass have "P dvd A \<and> n>0" by simp
   hence "P^n dvd A^n" by (simp add: zpower_zdvd_mono)
-  then obtain U where U: "A^n = U*P^n" by (auto simp only: dvd_def mult_ac)
+  then obtain U where U: "A^n = U*P^n" by (auto simp only: dvd_def ac_simps)
   have "\<exists> e. P^n dvd b*p + e*a*q \<and> \<bar>e\<bar> = 1"
   proof - 
     have Pn_dvd_prod: "P^n dvd (b*p + a*q)*(b*p - a*q)"
@@ -238,9 +238,9 @@ proof -
       also have "\<dots> = b^2 * p^2 + b^2*N*q^2 - b^2*N*q^2 - a^2*q^2" 
         by (simp add: power_mult_distrib)
       also with ass have "\<dots> = b^2*P^n - q^2*A^n" 
-        by (simp only: mult_ac distrib_right distrib_left)
+        by (simp only: ac_simps distrib_right distrib_left)
       also with U have "\<dots> = (b^2-q^2*U)*P^n" by (simp only: left_diff_distrib)
-      finally show ?thesis by (simp add: mult_ac)
+      finally show ?thesis by (simp add: ac_simps)
     qed
     have "P^n dvd (b*p + a*q) \<or> P^n dvd (b*p - a*q)" 
     proof -
@@ -291,7 +291,7 @@ proof -
           assume "P dvd q"
           hence PdvdNq: "P dvd N*q" by simp
           hence "P dvd N*q*q" by simp
-          hence "P dvd N*q^2" by (simp add: power2_eq_square mult_ac)
+          hence "P dvd N*q^2" by (simp add: power2_eq_square ac_simps)
           with PdvdPn have "P dvd P^n-N*q^2" by (simp only: dvd_diff)
           with ass have "P dvd p*p" by (simp add: power2_eq_square)
           with ass have "P dvd p" by (auto dest: zprime_zdvd_zmult_general)
@@ -325,11 +325,11 @@ proof -
   have "P^n dvd a*p - e*N*b*q"
   proof (cases)
     assume e1: "e = 1"
-    from U have "(P^n)^2*U = A^n*P^n" by (simp add: power2_eq_square mult_ac)
+    from U have "(P^n)^2*U = A^n*P^n" by (simp add: power2_eq_square ac_simps)
     also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
       by (simp only: qfN_mult2 add.commute mult_1_left)
     also with v have "\<dots> = (a*p-e*N*b*q)^2 + (P^n)^2*(N*v^2)" 
-      by (simp only: power_mult_distrib mult_ac)
+      by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = (P^n)^2*U - (P^n)^2*N*v^2" by simp
     also have "\<dots> = (P^n)^2 * (U - N*v^2)" by (simp only: right_diff_distrib)
     finally have "(P^n)^2 dvd (a*p - e*N*b*q)^2" by (rule dvdI)
@@ -342,7 +342,7 @@ proof -
     also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
       by (simp only: power2_minus)
     also with v and ass have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*(P^n)^2" 
-      by (simp only: power_mult_distrib mult_ac)
+      by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = (P^n)^2*U-(P^n)^2*N*v^2" by simp
     also have "\<dots> = (P^n)^2 * (U - N*v^2)" by (simp only: right_diff_distrib)
     finally have "(P^n)^2 dvd (a*p-e*N*b*q)^2" by (rule dvdI)
@@ -353,11 +353,11 @@ proof -
   have a: "a = p*u + e*N*q*v"
   proof -
     from ass have "(p*u + e*N*q*v)*P^n = p*(P^n*u) + (e*N*q)*(P^n*v)" 
-      by (simp only: distrib_right mult_ac)
+      by (simp only: distrib_right ac_simps)
     also with v and u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
       by simp
     also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 and ass have "\<dots> = a*P^n" by simp
     finally have "(a-(p*u+e*N*q*v))*P^n = 0" by auto
     moreover from ass have "P^n \<noteq> 0" 
@@ -367,10 +367,10 @@ proof -
   moreover have b: "b = p*v-e*q*u"
   proof -
     from ass have "(p*v-e*q*u)*P^n = p*(P^n*v) - (e*q)*(P^n*u)" 
-      by (simp only: left_diff_distrib mult_ac)
+      by (simp only: left_diff_distrib ac_simps)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
     also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
-      by (simp add: power2_eq_square distrib_left mult_ac right_diff_distrib)
+      by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 and ass have "\<dots> = b * P^n" by simp
     finally have "(b-(p*v-e*q*u))*P^n = 0" by auto
     moreover from ass have "P^n \<noteq> 0" 
@@ -380,17 +380,17 @@ proof -
   moreover have "A^n = (u^2 + N*v^2)*P^n" 
   proof (cases)
     assume "e=1" 
-    with a and b and ass show ?thesis by (simp add: qfN_mult1 mult_1_left mult_ac)
+    with a and b and ass show ?thesis by (simp add: qfN_mult1 mult_1_left ac_simps)
   next
     assume "\<not> e=1" with e have "e=-1" by simp
-    with a and b and ass show ?thesis by (simp add: qfN_mult2 mult_1_left mult_ac)
+    with a and b and ass show ?thesis by (simp add: qfN_mult2 mult_1_left ac_simps)
   qed
   moreover have "zgcd u v=1" 
   proof -
     let ?g = "zgcd u v"
     have "?g dvd u \<and> ?g dvd v" by auto
     hence "?g dvd u*p + v*(e*N*q) \<and> ?g dvd v*p - u*(e*q)" by simp
-    with a and b have "?g dvd a \<and> ?g dvd b" by (auto simp only: mult_ac)
+    with a and b have "?g dvd a \<and> ?g dvd b" by (auto simp only: ac_simps)
     hence "?g dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass have "?g = 1 \<or> ?g = -1" by simp
     moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
@@ -492,7 +492,7 @@ proof -
           assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
           moreover from gNq have "g dvd 4*(N*q^2)" by (rule dvd_mult)
           ultimately have "g dvd p^2 - 3*(N*q^2) + 4*(N*q^2)" 
-            by (simp only: mult_ac dvd_add)
+            by (simp only: ac_simps dvd_add)
           moreover have "p^2 - 3*(N*q^2)+4*(N*q^2) = p^2 + N*q^2" by arith
           ultimately show ?thesis by simp
         qed
@@ -601,7 +601,7 @@ proof -
       then obtain g where g: "zprime g \<and> g dvd ?h" by blast
       hence gN: "g dvd N" and "g dvd ?a" by (auto simp add: zgcd_greatest_iff)
       hence "g dvd p*p^2 - N*(3*p*q^2)" 
-        by (auto simp only: right_diff_distrib mult_ac)
+        by (auto simp only: right_diff_distrib ac_simps)
       with gN have "g dvd p*p^2 - N*(3*p*q^2) + N*(3*p*q^2)" 
         by (simp only: dvd_add dvd_mult2)
       hence "g dvd p*p^2" by simp
@@ -668,9 +668,9 @@ proof -
       by (simp add: power2_eq_square)
     also have "\<dots> = (a*c-N*b*d)^2 + N*(a*d+b*c)^2" by (rule qfN_mult2)
     also with Q have "\<dots> = (a*c-N*b*d)^2 + N*Q^2*?P^2" 
-      by (simp add: mult_ac power_mult_distrib)
+      by (simp add: ac_simps power_mult_distrib)
     also have "\<dots> \<ge> N*Q^2*?P^2" by (simp add: zero_le_power2)
-    finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: mult_ac)
+    finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: ac_simps)
     have "b^2 = d^2"
     proof (rule ccontr)
       assume "b^2 \<noteq> d^2" 
@@ -689,9 +689,9 @@ proof -
       by (simp add: power2_eq_square)
     also have "\<dots> = (a*c+N*b*d)^2 + N*(a*d-b*c)^2" by (rule qfN_mult1)
     also with Q have "\<dots> = (a*c+N*b*d)^2 + N*Q^2*?P^2" 
-      by (simp add: mult_ac power_mult_distrib)
+      by (simp add: ac_simps power_mult_distrib)
     also have "\<dots> \<ge> N*Q^2*?P^2" by (simp add: zero_le_power2)
-    finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: mult_ac)
+    finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: ac_simps)
     have "b^2 = d^2"
     proof (rule ccontr)
       assume "b^2 \<noteq> d^2" 
@@ -780,7 +780,7 @@ proof -
     ultimately show ?thesis by auto
   qed
   with P1 uve APP ass have "zprime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2 
-    \<and> zgcd u v=1" by (auto simp add: mult_ac)
+    \<and> zgcd u v=1" by (auto simp add: ac_simps)
   hence "\<bar>u\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>v\<bar> = \<bar>2*p*q\<bar>" by (rule qfN_square_prime)
   then obtain f g where f: "u = f*(p^2-N*q^2) \<and> \<bar>f\<bar> = 1" 
     and g: "v = g*(2*p*q) \<and> \<bar>g\<bar> = 1" by (blast dest: abs_eq_impl_unitfactor)
@@ -788,17 +788,17 @@ proof -
     \<and> b = p*g*2*p*q -e*q*f*(p^2-N*q^2)" by auto
   hence ab: "a = f*p*p^2 + -f*N*p*q^2 + 2*e*g*N*p*q^2 
     \<and> b = 2*g*p^2*q - e*f*p^2*q + e*f*N*q*q^2" 
-    by (auto simp add: mult_ac right_diff_distrib power2_eq_square)
+    by (auto simp add: ac_simps right_diff_distrib power2_eq_square)
   from f have f2: "f^2 = 1" by (auto simp add: abs_power2_distrib)
   from g have g2: "g^2 = 1" by (auto simp add: abs_power2_distrib)
   have "e \<noteq> f*g"
   proof (rule ccontr, simp)
     assume efg: "e = f*g"
     with ab g have "a = f*p*p^2+f*N*p*q^2" by (auto simp add: power2_eq_square)
-    hence "a = (f*p)*?P" by (auto simp add: distrib_left mult_ac)
+    hence "a = (f*p)*?P" by (auto simp add: distrib_left ac_simps)
     hence Pa: "?P dvd a" by auto
     from efg f ab have "b = g*p^2*q+g*N*q*q^2" by (auto simp add: power2_eq_square)
-    hence "b = (g*q)*?P" by (auto simp add: distrib_left mult_ac)
+    hence "b = (g*q)*?P" by (auto simp add: distrib_left ac_simps)
     hence "?P dvd b" by auto
     with Pa have "?P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass have "?P dvd 1" by auto
@@ -809,7 +809,7 @@ proof -
   with ab f g have "a = f*p*p^2 - 3*f*N*p*q^2 \<and> b = 3*g*p^2*q - g*N*q*q^2" 
     by (auto simp add: power2_eq_square)
   hence "a = f*(p^3 - 3*N*p*q^2) \<and> b = g*( 3*p^2*q - N*q^3 )" 
-    by (auto simp only: right_diff_distrib mult_ac cube_square)
+    by (auto simp only: right_diff_distrib ac_simps cube_square)
   with f g show ?thesis by (auto simp add: mult_1_left abs_mult)
 qed
 
@@ -835,7 +835,7 @@ proof -
       by (auto simp only: power2_eq_square odd_times_odd even_times_either)
     moreover hence "b^2*3 \<in> zEven" by (simp only: even_times_either)
     ultimately have "b^2*3+a^2 \<in> zOdd" by (auto simp add: even_plus_odd)
-    hence "?A \<in> zOdd" by (simp only: mult_ac add_ac)
+    hence "?A \<in> zOdd" by (simp only: ac_simps ac_simps)
     with even show False by (simp add: odd_iff_not_even)
   qed
   moreover
@@ -919,10 +919,10 @@ proof (rule ccontr, simp)
       assume "\<not> (int n) \<in> zOdd" 
       hence even: "int n \<in> zEven" by (rule not_odd_impl_even)
       hence "(int n)*P \<in> zEven" by (rule even_times_either)
-      with Bn have  "P*int n \<in> zEven \<and> is_qfN (P*int n) 3" by (simp add: mult_ac)
+      with Bn have  "P*int n \<in> zEven \<and> is_qfN (P*int n) 3" by (simp add: ac_simps)
       hence "\<exists> B. P*(int n) = 4*B \<and> is_qfN B 3" by (simp only: qf3_even_general)
       then obtain B where B: "P*(int n) = 4*B \<and> is_qfN B 3" by auto
-      hence "2^2 dvd (int n)*P" by (simp add: mult_ac)
+      hence "2^2 dvd (int n)*P" by (simp add: ac_simps)
       moreover have "\<not> 2 dvd P"
       proof (rule ccontr, simp)
         assume "2 dvd P" 
@@ -990,7 +990,7 @@ next
       by (simp only: zdiff_power2)
     also with abx M have "\<dots> = 
       x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)" 
-      by (simp only: power_mult_distrib distrib_left mult_ac, auto)
+      by (simp only: power_mult_distrib distrib_left ac_simps, auto)
     finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))" 
       by (simp add: power2_eq_square distrib_left right_diff_distrib)
   qed
@@ -1053,7 +1053,7 @@ next
     with ef show ?thesis by simp
   qed
   hence "?g^2 dvd ?C" by (simp add: dvd_def)
-  with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: mult_ac)
+  with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: ac_simps)
   moreover have "zgcd x (?g^2) = 1"
   proof -
     let ?h = "zgcd ?g x"
@@ -1106,7 +1106,7 @@ next
     moreover
     { assume g1: "?g^2 >1" 
       with `w>0` have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
-      with w have "w < y" by (simp add: mult_1_left mult_ac)
+      with w have "w < y" by (simp add: mult_1_left ac_simps)
       with wy have False by auto }
     ultimately show False by blast
   qed
@@ -1215,7 +1215,7 @@ proof -
       - 9*p^3*r*s^2 - 9*p*q^2*r^3 - e*27*p^2*q*s^3 - e*27*q^3*r^2*s" 
       by (simp add: cube_square mult_1_left)
     also with pq rs have "\<dots> = a*c + e*3*b*d" 
-      by (simp only: left_diff_distrib right_diff_distrib mult_ac)
+      by (simp only: left_diff_distrib right_diff_distrib ac_simps)
     finally show ?thesis by auto
   qed
   moreover have "a*d-e*b*c = 3*?t^2*?u - 3*?u^3"
@@ -1230,7 +1230,7 @@ proof -
       + e*9*p^2*q*r*s^2 - 9*p*q^2*r^2*s + e*3*r^3*q^3" 
       by (simp add: cube_square mult_1_left)
     also with pq rs have "\<dots> = a*d-e*b*c" 
-      by (simp only: left_diff_distrib right_diff_distrib mult_ac)
+      by (simp only: left_diff_distrib right_diff_distrib ac_simps)
     finally show ?thesis by auto
   qed
   ultimately show ?thesis by (auto simp only: is_cube_form_def)
@@ -1318,7 +1318,7 @@ next
       from pw have "?p^3*?X^3 = ?w^3" by (simp add: power_mult_distrib)
       also with ass have "\<dots> = a^2+3*b^2" by simp
       also with uve have "\<dots> = (u^2+3*v^2)*(c^2+3*d^2)" by auto
-      also with cdp alphabeta have "\<dots> = ?p^3 * (u^2+3*v^2)" by (simp only: mult_ac)
+      also with cdp alphabeta have "\<dots> = ?p^3 * (u^2+3*v^2)" by (simp only: ac_simps)
       finally have "?p^3*(u^2+3*v^2-?X^3) = 0" by auto
       with p0 show ?thesis by auto
     qed
@@ -1330,7 +1330,7 @@ next
     proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
       fix h::int assume "h dvd c" and "h dvd d" and h: "zprime h"
       hence "h dvd c*u + d*(e*3*v) \<and> h dvd c*v-d*(e*u)" by simp
-      with uve have "h dvd a \<and> h dvd b" by (auto simp only: mult_ac)
+      with uve have "h dvd a \<and> h dvd b" by (auto simp only: ac_simps)
       with ass h show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
     qed
     with pw cdp ass alphabeta show ?thesis 

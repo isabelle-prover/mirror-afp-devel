@@ -4614,10 +4614,10 @@ next
       hence "(\<Sum>i = Suc 0..<m. llength (lnth (LCons (LCons x xs') xss'') i)) =
              (\<Sum>i = Suc 0..<m. llength (lnth (LCons xs' xss'') i))" by(simp)
       also have "eSuc (llength xs') + \<dots> = 1 + (llength (lnth (LCons xs' xss'') 0) + \<dots>)"
-        by(simp add: eSuc_plus_1 add_ac)
+        by(simp add: eSuc_plus_1 ac_simps)
       also note setsum_head_upt_Suc[symmetric, OF `0 < m`]
       finally have "enat (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + enat n'"
-        unfolding eSuc_enat[symmetric] n_eq by(simp add: eSuc_plus_1 add_ac atLeast0LessThan) }
+        unfolding eSuc_enat[symmetric] n_eq by(simp add: eSuc_plus_1 ac_simps atLeast0LessThan) }
     ultimately show ?thesis by blast
   next
     case False
@@ -4869,7 +4869,7 @@ next
   hence "lsublist xs A = lsublist (lappend (ltake (enat n) xs) (ldropn n xs)) A"
     by(simp)
   also note lsublist_lappend_lfinite[where k=n]
-  finally show ?thesis using True by(simp add: min_def add_ac)
+  finally show ?thesis using True by(simp add: min_def ac_simps)
 qed
 
 lemma lsublist_cong:

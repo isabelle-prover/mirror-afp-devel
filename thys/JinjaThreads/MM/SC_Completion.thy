@@ -657,7 +657,7 @@ proof(intro exI conjI)
           unfolding lset_conv_lnth by blast
         moreover hence i_wa_len: "enat (Suc (w + i_wa)) < llength E" by(cases "llength E") auto
         ultimately have wa': "wa = action_obs E (Suc (w + i_wa))"
-          by(simp_all add: lnth_ltake action_obs_def add_ac)
+          by(simp_all add: lnth_ltake action_obs_def ac_simps)
         with write_wa i_wa_len have "Suc (w + i_wa) \<in> write_actions E"
           by(auto intro: write_actions.intros simp add: actions_def)
         from most_recent_write_recent[OF mrw _ this, of "(ad, al)"] adal adal_wa wa'
@@ -853,7 +853,7 @@ proof(rule ta_seq_consist_nthI)
     moreover hence "Suc (ws i + w) < i" (is "?w < _") using i_len 
       by(cases "llength E")(simp_all add: length_list_of_conv_the_enat)
     ultimately have obs_w': "action_obs E ?w = wa" using i_len
-      by(simp add: action_obs_def lnth_ltake less_trans[where y="enat i"] add_ac)
+      by(simp add: action_obs_def lnth_ltake less_trans[where y="enat i"] ac_simps)
     from `?w < i` i_len have "?w \<in> actions E"
       by(simp add: actions_def less_trans[where y="enat i"])
     with `is_write_action wa` obs_w' `(ad, al) \<in> action_loc_aux P wa`

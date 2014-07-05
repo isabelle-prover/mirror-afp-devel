@@ -380,7 +380,7 @@ theorem liftE_substE [simp]:
   apply (induct \<Gamma> arbitrary: k k' and k k' and k k')
   apply simp_all
   apply (case_tac a)
-  apply (simp_all add: add_ac)
+  apply (simp_all add: ac_simps)
   done
 
 lemma liftT_decT [simp]:
@@ -468,14 +468,14 @@ lemma substT_decE [simp]:
   by (induct k arbitrary: i j \<Gamma>) (simp_all add: substE_substE [of _ _ _ _ Top, simplified])
 
 lemma liftE_app [simp]: "\<up>\<^sub>e n k (\<Gamma> @ \<Delta>) = \<up>\<^sub>e n (k + \<parallel>\<Delta>\<parallel>) \<Gamma> @ \<up>\<^sub>e n k \<Delta>"
-  by (induct \<Gamma> arbitrary: k) (simp_all add: add_ac)
+  by (induct \<Gamma> arbitrary: k) (simp_all add: ac_simps)
 
 lemma substE_app [simp]:
   "(\<Gamma> @ \<Delta>)[k \<mapsto>\<^sub>\<tau> T]\<^sub>e = \<Gamma>[k + \<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> T]\<^sub>e @ \<Delta>[k \<mapsto>\<^sub>\<tau> T]\<^sub>e"
-  by (induct \<Gamma>) (simp_all add: add_ac)
+  by (induct \<Gamma>) (simp_all add: ac_simps)
 
 lemma substs_app [simp]: "t[k \<mapsto>\<^sub>s ts @ us] = t[k + \<parallel>us\<parallel> \<mapsto>\<^sub>s ts][k \<mapsto>\<^sub>s us]"
-  by (induct ts arbitrary: t k) (simp_all add: add_ac)
+  by (induct ts arbitrary: t k) (simp_all add: ac_simps)
 
 theorem decE_Nil [simp]: "\<down>\<^sub>e n k [] = []"
   by (induct n) simp_all
@@ -1699,7 +1699,7 @@ lemma type_weaken:
   apply (drule_tac \<Gamma>="\<up>\<^sub>e (Suc 0) 0 \<Delta>' @ B \<Colon> \<Gamma>" in T_Let)
   apply (erule lift_ptyping)
   apply assumption
-  apply (simp add: add_ac)
+  apply (simp add: ac_simps)
   apply (rule T_Rcd)
   apply simp
   apply (rule_tac fTs="\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fTs" in T_Proj)
@@ -1805,7 +1805,7 @@ theorem subst_type: -- {* A.8 *}
   apply (drule_tac \<Gamma>="\<Delta>'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>e @ \<Gamma>" in T_Let)
   apply (erule subst_ptyping)
   apply simp
-  apply (simp add: add_ac)
+  apply (simp add: ac_simps)
   apply simp
   apply (rule T_Rcd)
   apply simp
@@ -1882,7 +1882,7 @@ theorem substT_type: -- {* A.11 *}
   apply (drule_tac \<Gamma>="\<Delta>'[0 \<mapsto>\<^sub>\<tau> P]\<^sub>e @ \<Gamma>" in T_Let)
   apply (erule subst_ptyping)
   apply simp
-  apply (simp add: add_ac)
+  apply (simp add: ac_simps)
   apply (rule T_Rcd)
   apply simp
   apply (rule_tac fTs="fTs[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>r\<^sub>\<tau>" in T_Proj)

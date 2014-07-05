@@ -797,7 +797,7 @@ lemma notEvContainsBothAtoms:
   apply(erule_tac exE)+
   apply(drule_tac x=na in spec) back
   apply(drule_tac x=n in spec) back
-  apply(simp add: add_ac)
+  apply(simp add: ac_simps)
   apply(subgoal_tac "SATAxiom (sequent (f (n+na)))")
   apply(force dest: SATAxiomProofTree)
   apply(force simp add: SATAxiom_def) done

@@ -204,7 +204,7 @@ proof -
     hence p2_ge_q2: "p^2 \<ge> q^2" by (simp only: power_mono)
     from a2cb and b and c have "a^2 = (p^2 + q^2)^2 - (2*p*q)^2" by simp
     also have "\<dots> = (p^2)^2 + (q^2)^2 - 2*(p^2)*(q^2)" 
-      by (auto simp add: nat_power2_add power_mult_distrib mult_ac)
+      by (auto simp add: nat_power2_add power_mult_distrib ac_simps)
     also with p2_ge_q2 have "\<dots> = (p^2 - q^2)^2" by (simp only: nat_power2_diff)
     finally have "a^2 = (p^2 - q^2)^2" by simp
     with two0 show ?thesis by (rule_tac n="2" in nat_power_inject_base)
@@ -307,7 +307,7 @@ proof -
       assume "\<not> b\<ge>0" hence bneg: "b<0" by simp 
       then obtain q where "q = - int m" by simp
       with p aneg bneg absabc mn_rel have "?Q p q" 
-        by (simp add: zgcd_commute mult_ac)
+        by (simp add: zgcd_commute ac_simps)
       thus ?thesis by (rule exI)
     qed
     thus ?thesis by (simp only: exI)
@@ -355,7 +355,7 @@ proof -
   then obtain m where bm: "b = 2*m" by (auto simp only: zEven_def)
   have "\<bar>k\<bar>*\<bar>l\<bar>*\<bar>k^2+l^2\<bar> = m^2"
   proof -  
-    from bm have "4*m^2 = b^2" by (simp only: power2_eq_square mult_ac)
+    from bm have "4*m^2 = b^2" by (simp only: power2_eq_square ac_simps)
     also have "\<dots> = \<bar>b^2\<bar>" by simp
     also with uvabc have "\<dots> = 2*\<bar>v\<bar>*\<bar>\<bar>u\<bar>\<bar>" by (simp add: abs_mult)
     also with klavu have "\<dots> = 2*\<bar>2*k*l\<bar>*\<bar>k^2+l^2\<bar>" by simp
@@ -376,7 +376,7 @@ proof -
     from kl_rel have "zgcd l k = 1" by (simp only: zgcd_commute)
     hence "zgcd (l*l) k = 1" by (simp only: zgcd_zgcd_zmult)
     hence "zgcd (l*l+k*k) k = 1" by simp
-    hence "zgcd (k^2+l^2) k = 1" by (simp only: add_ac power2_eq_square)
+    hence "zgcd (k^2+l^2) k = 1" by (simp only: ac_simps power2_eq_square)
     thus ?thesis by (unfold zgcd_def, auto)
   qed
   ultimately have 
@@ -452,7 +452,7 @@ proof -
     { assume "\<beta> \<in> zOdd"
       with newabc albega0 alphabeta_relprime obtain p q where 
         "q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
-        by (auto simp add: add_ac zgcd_commute)
+        by (auto simp add: ac_simps zgcd_commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
   qed
@@ -527,8 +527,8 @@ proof (rule ccontr)
     proof -
       from zgab have "?g^4 dvd z^4" by simp
       hence "?g dvd z" by (simp only: zpower_zdvd_mono)
-      hence "(z div ?g)*?g = z" by (simp only: mult_ac dvd_mult_div_cancel)
-      with ab show ?thesis by (auto simp only: power2_eq_square mult_ac)
+      hence "(z div ?g)*?g = z" by (simp only: ac_simps dvd_mult_div_cancel)
+      with ab show ?thesis by (auto simp only: power2_eq_square ac_simps)
     qed
     with xyz0 have c0: "?c\<noteq>0" by (auto simp add: power2_eq_square)
     from xyz0 have g0: "?g\<noteq>0" by (simp add: zgcd_def gcd_zero)
@@ -580,7 +580,7 @@ corollary fermat_mult4:
   assumes xyz: "(x::int)^n + y^n = z^n" and n: "4 dvd n"
   shows "x*y*z=0"
 proof -
-  from n obtain m where "n = m*4" by (auto simp only: mult_ac dvd_def)
+  from n obtain m where "n = m*4" by (auto simp only: ac_simps dvd_def)
   with xyz have "(x^m)^4 + (y^m)^4 = (z^m)^4" by (simp only: power_mult)
   hence "(x^m)*(y^m)*(z^m) = 0" by (rule fermat4)
   thus ?thesis by auto

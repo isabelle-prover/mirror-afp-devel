@@ -1352,7 +1352,7 @@ lemma setsum_code [code]:
        case RBT_Mapping2.impl_of rbt of rbt.Empty \<Rightarrow> 0 | _ \<Rightarrow> Code.abort (STR ''setsum RBT_set: corder = None'') (\<lambda>_. setsum g (RBT_set rbt))
      | Some _ \<Rightarrow> RBT_Set2.fold (plus \<circ> g) rbt 0)" (is ?rbt)
 proof -
-  have comm: "comp_fun_commute (\<lambda>x. op + (f x))" by default (auto simp: add_ac)
+  have comm: "comp_fun_commute (\<lambda>x. op + (f x))" by default (auto simp: ac_simps)
 
   show ?Set_Monad using equal.equal_eq[where ?'a='a, OF equal_ceq]
     by(auto simp add: setsum.eq_fold fold_singleton comp_fun_commute.fold_set_fold_remdups[OF comm] o_def simp del: set_simps not_None_eq split: option.split list.split)(auto simp add: o_def List.member_def)
@@ -1362,7 +1362,7 @@ proof -
   thus ?DList
     by(auto simp add: DList_set_def setsum.eq_fold DList_Set.Collect_member o_def comp_fun_commute.fold_set_fold_remdups[OF comm] DList_Set.fold_def distinct_remdups_id simp del: set_simps split: option.split list.split)
 
-  have comm: "comp_fun_commute (\<lambda>x. op + (g x))" by default (auto simp: add_ac)
+  have comm: "comp_fun_commute (\<lambda>x. op + (g x))" by default (auto simp: ac_simps)
   show ?rbt
     apply(auto simp add: RBT_set_def setsum.eq_fold member_conv_keys o_def comp_fun_commute.fold_set_fold_remdups[OF comm] RBT_Set2.fold_def distinct_remdups_id cong: rbt.case_cong split: option.split)
      apply(auto split: rbt.split)

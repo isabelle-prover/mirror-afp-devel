@@ -371,7 +371,7 @@ proof -
   from `i *\<^sub>R ?a' + j *\<^sub>R ?b' + k *\<^sub>R ?c' = 0`
   have "i *\<^sub>R ?a' + k *\<^sub>R ?c' + j *\<^sub>R ?b' = 0"
     and "j *\<^sub>R ?b' + i *\<^sub>R ?a' + k *\<^sub>R ?c' = 0"
-    by (simp_all add: add_ac)
+    by (simp_all add: ac_simps)
   moreover from `i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0`
   have "i \<noteq> 0 \<or> k \<noteq> 0 \<or> j \<noteq> 0" and "j \<noteq> 0 \<or> i \<noteq> 0 \<or> k \<noteq> 0" by auto
   ultimately show "proj2_Col a c b" and "proj2_Col b a c"
@@ -2825,7 +2825,7 @@ proof
       and `?b'' = j *\<^sub>R ?b'`
       and `?c'' = k *\<^sub>R ?c'`
     have "?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c' = 0"
-      by (simp add: mult_ac)
+      by (simp add: ac_simps)
     hence "(?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c')$3 = 0"
       by simp
     hence "?i'' + ?j'' + ?k'' = 0"

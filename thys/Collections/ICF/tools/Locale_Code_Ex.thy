@@ -26,12 +26,12 @@ begin
 
   lemmas "defs" = k_def j_def i_def h_def g.simps f.simps 
 
-  lemma j_alt: "j x y \<equiv> f x + y + x" unfolding j_def by (simp add: add_ac)
+  lemma j_alt: "j x y \<equiv> f x + y + x" unfolding j_def by (simp add: ac_simps)
 
   lemma g_alt:
     "g 0 = a"
     "g (Suc n) = f n + n + a"
-    by (auto simp: add_ac)
+    by (auto simp: ac_simps)
 
 
   definition "c \<equiv> a + b"

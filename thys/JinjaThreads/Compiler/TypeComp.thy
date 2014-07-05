@@ -1054,7 +1054,7 @@ next
   also from `PROP ?P e1 E U A ST` wt1 B1 `\<D> (sync\<^bsub>i\<^esub> (e1) e2) A` lenE lenST `set E \<subseteq> types P`
   have "\<turnstile> compE2 e1, compxE2 e1 0 (size ST) [::] ?\<tau>#?\<tau>s1@[?\<tau>1]"
     by(auto simp add: after_def)
-  finally show ?case using wt1 wt2 wt by(simp add: after_def add_ac shift_Cons_tuple hyperUn_assoc)
+  finally show ?case using wt1 wt2 wt by(simp add: after_def ac_simps shift_Cons_tuple hyperUn_assoc)
 next
   case new thus ?case by(auto simp add:after_def wt_New)
 next

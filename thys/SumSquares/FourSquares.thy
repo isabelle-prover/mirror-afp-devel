@@ -206,21 +206,21 @@ next
         assume evx: "x \<in> zEven"
         hence "x*p \<in> zEven" by (rule even_times_either)
         with ass have ev1234: "a1^2+a2^2 + a3^2+a4^2 \<in> zEven" 
-          by (auto simp add: sum4sq_def mult_ac)
+          by (auto simp add: sum4sq_def ac_simps)
         have "\<exists> b1 b2 b3 b4. sum4sq(b1,b2,b3,b4)=p*x \<and> 
           b1+b2 \<in> zEven \<and> b3+b4 \<in> zEven"
         proof (cases)
           assume ev12: "a1^2+a2^2 \<in> zEven"
           moreover have "2*a1*a2 \<in> zEven" by (auto simp add: zEven_def)
           ultimately have"a1^2+a2^2+2*a1*a2 \<in> zEven" by (rule even_plus_even)
-          hence "(a1+a2)^2 \<in> zEven" by (auto simp add: zadd_power2 add_ac)
+          hence "(a1+a2)^2 \<in> zEven" by (auto simp add: zadd_power2 ac_simps)
           hence tmp: "a1+a2 \<in> zEven" by (auto simp add: power_preserves_even)
           from ev12 ev1234 have "a1^2+a2^2+a3^2+a4^2-(a1^2+a2^2) \<in> zEven" 
             by (simp only: even_minus_even)
           hence "a3^2+a4^2 \<in> zEven" by auto
           moreover have "2*a3*a4 \<in> zEven" by (auto simp add: zEven_def)
           ultimately have"a3^2+a4^2+2*a3*a4 \<in> zEven" by (rule even_plus_even)
-          hence "(a3+a4)^2 \<in> zEven" by (auto simp add: zadd_power2 add_ac)
+          hence "(a3+a4)^2 \<in> zEven" by (auto simp add: zadd_power2 ac_simps)
           hence "a3+a4 \<in> zEven" by (auto simp add: power_preserves_even)
           with tmp ass show ?thesis by blast
         next
@@ -305,7 +305,7 @@ next
         then obtain c2 c4 where c24: "b1-b2 = 2*c2 \<and> b3-b4 = 2*c4"
           by (auto simp add: zEven_def)
         from evx obtain y where y: "x = 2*y" by (auto simp add: zEven_def)
-        hence "4*(p*y) = 2*(p*x)" by (simp add: mult_ac)
+        hence "4*(p*y) = 2*(p*x)" by (simp add: ac_simps)
         also from b have "\<dots> = 2*b1^2 + 2*b2^2 + 2*b3^2 + 2*b4^2"
           by (auto simp only: sum4sq_def)
         also have "\<dots> = (b1 + b2)^2 + (b1 - b2)^2 + (b3 + b4)^2 + (b3 - b4)^2"
@@ -334,7 +334,7 @@ next
             by (auto simp add: zdiff_power2 sum4sq_def 
               distrib_right power_mult_distrib)
           thus "?B = x*(p - 2*(a1*c1+a2*c2+a3*c3+a4*c4) + ?C*x)"
-            by (auto simp add: mult_ac power2_eq_square
+            by (auto simp add: ac_simps power2_eq_square
               distrib_left right_diff_distrib)
         qed
         then obtain y where y: "?B = x * y" by (auto simp add: dvd_def)
@@ -349,25 +349,25 @@ next
             "?A1 = (b1+c1*x)*b1 + (b2+c2*x)*b2 + (b3+c3*x)*b3 + (b4+c4*x)*b4"
             by simp
           also with y have "\<dots> = x*(y + c1*b1 + c2*b2 + c3*b3 + c4*b4)"
-            by (auto simp add: distrib_left power2_eq_square mult_ac)
+            by (auto simp add: distrib_left power2_eq_square ac_simps)
           finally show "x dvd ?A1" by auto
           from bc_def have 
             "?A2 = (b1+c1*x)*b2 - (b2+c2*x)*b1 - (b3+c3*x)*b4 + (b4+c4*x)*b3"
             by simp
           also have "\<dots> = x*(c1*b2 - c2*b1 - c3*b4 + c4*b3)"
-            by (auto simp add: distrib_left right_diff_distrib mult_ac)
+            by (auto simp add: distrib_left right_diff_distrib ac_simps)
           finally show "x dvd ?A2" by auto
           from bc_def have 
             "?A3 = (b1+c1*x)*b3 + (b2+c2*x)*b4 - (b3+c3*x)*b1 - (b4+c4*x)*b2"
             by simp
           also have "\<dots> = x*(c1*b3 + c2*b4 - c3*b1 - c4*b2)"
-            by (auto simp add: distrib_left right_diff_distrib mult_ac)
+            by (auto simp add: distrib_left right_diff_distrib ac_simps)
           finally show "x dvd ?A3" by auto
           from bc_def have 
             "?A4 = (b1+c1*x)*b4 - (b2+c2*x)*b3 + (b3+c3*x)*b2 - (b4+c4*x)*b1"
             by simp
           also have "\<dots> = x*(c1*b4 - c2*b3 + c3*b2 - c4*b1)"
-            by (auto simp add: distrib_left right_diff_distrib mult_ac)
+            by (auto simp add: distrib_left right_diff_distrib ac_simps)
           finally show "x dvd ?A4" by auto
         qed
         then obtain d1 d2 d3 d4 where d: 
@@ -379,7 +379,7 @@ next
         also have "\<dots> = sum4sq(a1,a2,a3,a4)*sum4sq(b1,b2,b3,b4)"
           by (simp only: mult_sum4sq)
         also with y ass have "\<dots> = (p*x)*(x*y)" by (auto simp add: sum4sq_def)
-        also have "\<dots> = x^2*(p*y)" by (simp only: power2_eq_square mult_ac)
+        also have "\<dots> = x^2*(p*y)" by (simp only: power2_eq_square ac_simps)
         finally have "x^2*(?D - p*y) = 0" by (auto simp add: right_diff_distrib)
         with ass have "?D = p*y" by auto
         moreover have y_l_x: "y < x"
@@ -413,7 +413,7 @@ next
               by (auto simp only: zpower_zdvd_mono)
             hence "x^2 dvd a1^2+a2^2+a3^2+a4^2" by (simp only: dvd_add)
             with ass have "x^2 dvd p*x" by (auto simp only: sum4sq_def)
-            hence "x*x dvd x*p" by (simp only: power2_eq_square mult_ac)
+            hence "x*x dvd x*p" by (simp only: power2_eq_square ac_simps)
             with ass have "x dvd p" by (auto dest: zdvd_mult_cancel)
             moreover from ass prp have "x \<ge> 0 \<and> x \<noteq> 1 \<and> x \<noteq> p \<and> zprime p" by simp
             ultimately have "False" by (unfold zprime_def, auto) }

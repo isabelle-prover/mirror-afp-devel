@@ -427,7 +427,7 @@ proof (transfer, unfold Let_def, clarsimp)
       hence ge: "real_of_int (z2 * n1) \<ge> 0" by (metis of_int_0_le_iff)
       have radd: "r_add = sqrt (of_int (z2 * n1 * (z2 * n1) * int b))" 
         unfolding r_add_def z2n1_def using sqrt_sqrt[OF ge] 
-        by (metis ab_semigroup_mult_class.mult_ac(1) of_int_mult real_eq_of_int real_sqrt_mult_distrib2)
+        by (simp add: ac_simps real_eq_of_int real_sqrt_mult_distrib2)
       show ?thesis unfolding radd sqrt_int_floor_pos[OF ge_int] real_eq_of_int using True by simp
     next
       case False

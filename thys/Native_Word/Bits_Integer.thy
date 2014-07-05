@@ -497,7 +497,7 @@ lemma integer_shiftl_code [code]:
   "integer_shiftl x (Code_Numeral.Pos n) = integer_shiftl (Code_Numeral.dup x) (Code_Numeral.sub n num.One)"
   "integer_shiftl 0 (Code_Numeral.Pos n) = 0"
 by(simp_all add: integer_shiftl_def shiftl_integer_def)
-  (transfer, simp, metis ab_semigroup_mult_class.mult_ac(1) comm_semiring_1_class.normalizing_semiring_rules(7) int_shiftl_numeral(1) mult_numeral_1 shiftl_int_def)
+  (transfer, simp, metis ac_simps comm_semiring_1_class.normalizing_semiring_rules(7) int_shiftl_numeral(1) mult_numeral_1 shiftl_int_def)
 
 end
 

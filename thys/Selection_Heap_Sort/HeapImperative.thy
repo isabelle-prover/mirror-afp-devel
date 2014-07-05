@@ -792,8 +792,7 @@ next
              multiset (T v1 l1 r1) + {#v2#} + 
              multiset l2 + {#v#} + multiset r2"
         using `\<not> v1 \<ge> v2` "5_1"(2)
-        by (metis ab_semigroup_add_class.add_ac(1) left.simps 
-            multiset.simps(2) right.simps siftDown.simps(5) val.simps)
+        by (simp add: ac_simps)
       moreover
       have 
         "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
@@ -860,8 +859,7 @@ next
                multiset (T v1 l1 r1) + {#v2#} + multiset l2 + {#v#} + 
                multiset r2"
         using `\<not> v1 \<ge> v2` "5_2"(2)
-        by (metis ab_semigroup_add_class.add_ac(1) left.simps 
-            multiset.simps(2) right.simps siftDown.simps(5) val.simps)
+        by (simp add: ac_simps)
       moreover
       have "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
               multiset (T v1 l1 r1) + {#v#} + multiset l2 + {#v2#} + 
@@ -1121,9 +1119,7 @@ next
            multiset (snd (removeLeaf (T v1 l1 r1))) + 
            {#v#}"
     using `t' = T v (snd (removeLeaf (T v1 l1 r1))) E`
-    by (metis ab_semigroup_add_class.add_ac(1) left.simps 
-        monoid_add_class.add.left_neutral multiset.simps(1) 
-        multiset.simps(2) union_commute)
+    by (simp add: ac_simps)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
           multiset (T v1 l1 r1)"
@@ -1149,9 +1145,7 @@ next
           multiset (snd (removeLeaf (T v1 l1 r1))) + 
           {#v#}"
     using `t' = T v E (snd (removeLeaf (T v1 l1 r1)))`
-    by (metis ab_semigroup_add_class.add_ac(1) left.simps 
-        monoid_add_class.add.left_neutral multiset.simps(1) 
-        multiset.simps(2) union_commute)
+    by (simp add: ac_simps)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
           multiset (T v1 l1 r1)"

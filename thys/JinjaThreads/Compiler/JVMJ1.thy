@@ -1068,7 +1068,7 @@ next
   proof(cases "pc < length (compE2 i)")
     case True
     from exec have exec': "exec_meth_d (compP2 P) (compE2 a @ compE2 i @ compE2 e @ [AStore, Push Unit]) (compxE2 a 0 0 @ shift (length (compE2 a)) (stack_xlift (length [v]) (compxE2 i 0 0) @ shift (length (compE2 i)) (compxE2 e 0 (Suc (Suc 0))))) t h (stk @ [v], loc, length (compE2 a) + pc, xcp) ta h' (stk', loc', pc', xcp')"
-      by(simp add: shift_compxE2 stack_xlift_compxE2 add_ac exec_move_def)
+      by(simp add: shift_compxE2 stack_xlift_compxE2 ac_simps exec_move_def)
     hence "exec_meth_d (compP2 P) (compE2 i @ compE2 e @ [AStore, Push Unit]) (stack_xlift (length [v]) (compxE2 i 0 0) @ shift (length (compE2 i)) (compxE2 e 0 (Suc (Suc 0)))) t h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 a), xcp')"
       by(rule exec_meth_drop_xt) auto
     hence "exec_meth_d (compP2 P) (compE2 i) (stack_xlift (length [v]) (compxE2 i 0 0)) t h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 a), xcp')"
@@ -1256,7 +1256,7 @@ next
     by(simp add: \<tau>move2_iff)
   moreover note `?exec (a\<lfloor>i\<rceil> := e) [] xs (Suc (length (compE2 a) + length (compE2 i) + length (compE2 e))) None stk' loc' pc' xcp'`
   ultimately show ?case
-    by(fastforce elim!: exec_meth.cases simp add: add_ac exec_move_def)
+    by(fastforce elim!: exec_meth.cases simp add: ac_simps exec_move_def)
 next
   case (bisim1ALength a n a' xs stk loc pc xcp)
   note IH = bisim1ALength.IH(2)
@@ -1521,7 +1521,7 @@ next
   moreover have "\<tau>move2 (compP2 P) h [] (e\<bullet>F{D} := e2) (Suc (length (compE2 e) + length (compE2 e2))) None" by(simp add: \<tau>move2_iff)
   moreover note `?exec (e\<bullet>F{D} := e2) [] xs (Suc (length (compE2 e) + length (compE2 e2))) None stk' loc' pc' xcp'`
   ultimately show ?case
-    by(fastforce elim!: exec_meth.cases simp add: add_ac exec_move_def)
+    by(fastforce elim!: exec_meth.cases simp add: ac_simps exec_move_def)
 next
   case (bisim1Call1 obj n obj' xs stk loc pc xcp ps M')
   note IH1 = bisim1Call1.IH(2)
@@ -1966,7 +1966,7 @@ next
   from exec have exec': "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ ?post)
     (compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
     h (stk, loc, length ?pre + pc, xcp) ta h' (stk', loc', pc', xcp')"
-    by(simp add: add_ac eval_nat_numeral shift_compxE2 exec_move_def)
+    by(simp add: ac_simps eval_nat_numeral shift_compxE2 exec_move_def)
   hence pc': "pc' \<ge> length ?pre"
     by(rule exec_meth_drop_xt_pc[where n'=1]) auto
   from exec' have exec'': "exec_meth_d (compP2 P) (compE2 e2 @ ?post) 
@@ -1994,7 +1994,7 @@ next
       have "P, sync\<^bsub>V\<^esub> (e1) e2, h \<turnstile> (insync\<^bsub>V\<^esub> (a) Throw a', loc) \<leftrightarrow> ([Addr a'], loc, 6 + length (compE2 e1) + length (compE2 e2), None)"
         by(rule bisim1Sync7)
       ultimately show ?thesis using exec True pc Some ha' subcls
-        apply(auto elim!: exec_meth.cases simp add: add_ac eval_nat_numeral match_ex_table_append matches_ex_entry_def compP2_def exec_move_def)
+        apply(auto elim!: exec_meth.cases simp add: ac_simps eval_nat_numeral match_ex_table_append matches_ex_entry_def compP2_def exec_move_def)
 
         apply(simp_all only: compxE2_size_convs, auto dest: match_ex_table_shift_pcD match_ex_table_pc_length_compE2)
         apply(fastforce elim!: InSync_\<tau>red1r_xt)
@@ -2055,13 +2055,13 @@ next
     moreover from xsV V have "True,P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>a'\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState,(h, xs)\<rangle>"
       by(rule Unlock1SynchronizedFail[OF TrueI])
     ultimately show ?case using \<tau> \<tau>' exec
-      by(fastforce elim!: exec_meth.cases simp add: is_Ref_def ta_bisim_def add_ac exec_move_def ta_upd_simps)
+      by(fastforce elim!: exec_meth.cases simp add: is_Ref_def ta_bisim_def ac_simps exec_move_def ta_upd_simps)
   next
     assume xsV: "xs ! V = Null"
     have "P,sync\<^bsub>V\<^esub> (e1) e2,h \<turnstile> (THROW NullPointer,xs) \<leftrightarrow> ([Null, v],xs,4 + length (compE2 e1) + length (compE2 e2),\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
       by(rule bisim1Sync12)
     thus ?case using \<tau> \<tau>' exec xsV V
-      by(fastforce elim!: exec_meth.cases intro: Unlock1SynchronizedNull simp add: is_Ref_def ta_bisim_def add_ac exec_move_def)
+      by(fastforce elim!: exec_meth.cases intro: Unlock1SynchronizedNull simp add: is_Ref_def ta_bisim_def ac_simps exec_move_def)
   qed
 next
   case (bisim1Sync6 e1 n e2 V v x)
@@ -2280,7 +2280,7 @@ next
     from exec have exec': "exec_meth_d (compP2 P) (?pre @ compE2 e1 @ ?post)
       (compxE2 e 0 0 @ shift (length ?pre) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 (Suc 0) 0))) t
       h (stk, loc, length ?pre + pc, xcp) ta h' (stk', loc', pc', xcp')"
-      by(simp add: shift_compxE2 add_ac exec_move_def)
+      by(simp add: shift_compxE2 ac_simps exec_move_def)
     hence "exec_meth_d (compP2 P) (compE2 e1 @ ?post) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 (Suc 0) 0)) t
       h (stk, loc, pc, xcp) ta h' (stk', loc', pc' - length ?pre, xcp')"
       by(rule exec_meth_drop_xt) auto
@@ -2325,7 +2325,7 @@ next
   from exec have exec': "exec_meth_d (compP2 P) (?pre @ compE2 e2)
     ((compxE2 e 0 0 @ compxE2 e1 (Suc (length (compE2 e))) 0) @ shift (length ?pre) (compxE2 e2 0 0)) t
     h (stk, loc, length ?pre + pc, xcp) ta h' (stk', loc', pc', xcp')"
-    by(simp add: shift_compxE2 add_ac exec_move_def)
+    by(simp add: shift_compxE2 ac_simps exec_move_def)
   hence "?exec e2 stk loc pc xcp stk' loc' (pc' - length ?pre) xcp'"
     unfolding exec_move_def by(rule exec_meth_drop_xt) auto
   from IH[OF this len _ `P,h \<turnstile> stk [:\<le>] ST` `conf_xcp' (compP2 P) h xcp`] bsok obtain e'' xs''
@@ -2623,7 +2623,7 @@ next
       have "P,try e catch(C' V) e2,h \<turnstile> ({V:Class C'=None; e2}, loc[V := Addr a']) \<leftrightarrow> ([Addr a'], loc, Suc (length (compE2 e)), None)"
         by(rule bisim1TryCatch1)
       ultimately show ?thesis using exec True pc Some ha' subclsThrow
-        apply(auto elim!: exec_meth.cases simp add: add_ac eval_nat_numeral match_ex_table_append matches_ex_entry_def compP2_def exec_move_def cname_of_def)
+        apply(auto elim!: exec_meth.cases simp add: ac_simps eval_nat_numeral match_ex_table_append matches_ex_entry_def compP2_def exec_move_def cname_of_def)
         apply fastforce
         apply(simp_all only: compxE2_size_convs, auto dest: match_ex_table_shift_pcD)
         done

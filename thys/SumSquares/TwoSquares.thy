@@ -138,9 +138,9 @@ proof -
             by (simp only: zdiff_power2)
           also with xy have "\<dots> =
             ?n1*?p - ?n1*(2*x*r) - ?n1*(2*y*s) + ?n1^2*r^2 + ?n1^2*s^2"
-            by (simp only: mult_ac power_mult_distrib)
+            by (simp only: ac_simps power_mult_distrib)
           finally show "?C = ?n1*(?p - 2*x*r - 2*y*s + ?n1*(r^2 + s^2))" 
-            by (simp only: power_mult_distrib distrib_left mult_ac
+            by (simp only: power_mult_distrib distrib_left ac_simps
           left_diff_distrib right_diff_distrib power2_eq_square)
         qed
         then obtain m1 where m1: "?C = ?n1*m1" by (auto simp add: dvd_def)
@@ -161,9 +161,9 @@ proof -
           also from sw hlp have "\<dots> \<le> ?n1^2 + ?n1^2"
             by (auto simp add: power_mono)
           finally have "?n1*m1*4 \<le> ?n1*?n1*2" 
-            by (simp add: power2_eq_square mult_ac)
+            by (simp add: power2_eq_square ac_simps)
           hence "?n1*(2*?n1- 4*m1) \<ge> 0" 
-            by (simp only: right_diff_distrib mult_ac)
+            by (simp only: right_diff_distrib ac_simps)
           hence "?n1*(2*?n1- 4*m1) > -1" by auto
           with contr show False by auto
         qed
@@ -186,7 +186,7 @@ proof -
             by (simp add: eval_nat_numeral field_simps)
           with m1 have 
             "?n1^2*(?p*m1) = ?n1^2*((r*v + s*w + m1)^2 + (r*w - s*v)^2)"
-            by (simp only: mult_ac power2_eq_square, simp add: distrib_left)
+            by (simp only: ac_simps power2_eq_square, simp add: distrib_left)
           hence "?n1^2*(?p*m1 - (r*v+s*w+m1)^2 - (r*w-s*v)^2) = 0"
             by (auto simp add: distrib_left right_diff_distrib)
           moreover from n1pos have "?n1^2 \<noteq> 0" by (simp add: power2_eq_square)
@@ -211,7 +211,7 @@ proof -
             hence "?n1^2 dvd x^2 \<and> ?n1^2 dvd y^2" by (simp add: zpower_zdvd_mono)
             hence "?n1^2 dvd x^2 + y^2" by (simp only: dvd_add)
             with xy have "?n1*?n1 dvd ?n1*?p" 
-              by (simp only: power2_eq_square mult_ac)
+              by (simp only: power2_eq_square ac_simps)
             moreover from n1pos have "?n1 \<noteq> 0" by simp
             ultimately have "?n1 dvd ?p" by (rule zdvd_mult_cancel)
             with n1pos have "?n1 \<ge> 0 \<and> ?n1 dvd ?p" by simp

@@ -688,7 +688,7 @@ proof -
   hence "x mod (m * k) = y mod m * k"
     using as1 by simp
   hence "y mod m * k = k * (x div k mod m) + x mod k" (is "?l1 = ?r1")
-    by (simp only: mult_ac mod_mult2_eq)
+    by (simp only: ac_simps mod_mult2_eq)
   hence "(y mod m * k) mod k = ?r1 mod k"
     by simp
   hence "0 = ?r1 mod k"
@@ -714,7 +714,7 @@ proof -
   hence "?L * k = x mod (k * m)"
     using x_mod_k_0 by simp
   hence "?L * k = y * k mod (m * k)"
-    using as1 by (simp only: mult_ac)
+    using as1 by (simp only: ac_simps)
   hence "?L * k = y mod m * k"
     by (simp only: mult_mod_left)
   thus ?thesis

@@ -163,7 +163,7 @@ lemma linalw:
 proof (clarsimp simp: always_def)
   fix n
   from h1 obtain k where g1: "b = a + k" by (auto simp: le_iff_add)
-  with h2 show "(w |\<^sub>s b |\<^sub>s n) \<Turnstile> A" by (auto simp: always_def suffix_plus add_ac)
+  with h2 show "(w |\<^sub>s b |\<^sub>s n) \<Turnstile> A" by (auto simp: always_def suffix_plus ac_simps)
 qed
 
 subsection "Invariance Under Stuttering"

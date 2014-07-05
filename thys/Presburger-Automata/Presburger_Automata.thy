@@ -3365,7 +3365,7 @@ proof (induct ks xs rule: eval_dioph.induct)
     by simp
   also have "\<dots> = (k * int (f x) + k * int (g x)) + eval_dioph ks (map (\<lambda>x. f x + g x) xs)"
     by (simp add: 1)
-  finally show ?case by (simp add: add_ac distrib_left)
+  finally show ?case by (simp add: ac_simps distrib_left)
 qed simp_all
 
 lemma eval_dioph_div_mult:

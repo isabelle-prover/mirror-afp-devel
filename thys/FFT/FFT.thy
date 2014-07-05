@@ -165,7 +165,7 @@ proof -
     apply (auto simp add: complex_eq_iff)
     done
   also have "... = ((root n ^ n) ^ k - 1) / (root n ^ k - 1)"
-    by (simp add: power_mult [THEN sym] mult_ac)
+    by (simp add: power_mult [THEN sym] ac_simps)
   also have "... = 0"
     by (simp add: root_unity)
   finally show ?thesis .
@@ -194,7 +194,7 @@ proof -
     apply (auto simp add: complex_eq_iff)
     done
   also have "... = (((1 / root n) ^ n) ^ k - 1) / ((1 / root n) ^ k - 1)"
-    by (simp add: power_mult [THEN sym] mult_ac)
+    by (simp add: power_mult [THEN sym] ac_simps)
   also have "... = 0"
     by (simp add: power_divide root_unity)
   finally show ?thesis .
@@ -223,7 +223,7 @@ lemma root_cancel1:
   "root (2 * m) ^ (i * (2 * j)) = root m ^ (i * j)"
 proof -
   have "root (2 * m) ^ (i * (2 * j)) = root (2 * m) ^ (2 * (i * j))"
-    by (simp add: mult_ac)
+    by (simp add: ac_simps)
   also have "... = root m ^ (i * j)"
     by (simp add: root_cancel)
   finally show ?thesis .
@@ -233,7 +233,7 @@ lemma root_cancel2:
   "0 < n ==> root (2 * n) ^ n = - 1"
   txt {* Note the space between @{text "-"} and @{text "1"}. *}
   using root_cancel [where n = 2 and k = 1]
-  by (simp add: complex_eq_iff mult_ac)
+  by (simp add: complex_eq_iff ac_simps)
 
 
 section {* Discrete Fourier Transformation *}
@@ -278,7 +278,7 @@ proof (unfold DFT_def)
     apply (simp add: setsum_right_distrib)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
-    apply (simp add: mult_ac)
+    apply (simp add: ac_simps)
     done
   finally show "?s = ?t" .
 qed
@@ -308,7 +308,7 @@ proof (unfold DFT_def)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
-    apply (simp add: mult_ac)
+    apply (simp add: ac_simps)
     done
   finally show "?s = ?t" .
 qed
@@ -365,7 +365,7 @@ proof (unfold IDFT_def)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
-    apply (simp add: mult_ac)
+    apply (simp add: ac_simps)
     done
   finally show "?s = ?t" .
 qed
@@ -399,7 +399,7 @@ qed
 lemma power_divides_special:
   "(a::'a::field) ~= 0 ==>
   a ^ (i * j) / a ^ (k * i) = (a ^ j / a ^ k) ^ i"
-  by (simp add: nonzero_power_divide power_mult [THEN sym] mult_ac)
+  by (simp add: nonzero_power_divide power_mult [THEN sym] ac_simps)
 
 theorem DFT_inverse:
   assumes i_less: "i < n"

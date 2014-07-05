@@ -40,6 +40,14 @@ class join_semilattice = plus_ord +
   and add_idem [simp]: "x + x = x"
 begin
 
+lemma add_left_comm [simp]:
+  "b + (a + c) = a + (b + c)"
+  unfolding add_assoc' [symmetric] by simp
+
+lemma add_left_idem [simp]:
+  "a + (a + b) = a + b"
+  unfolding add_assoc' [symmetric] by simp
+
 text {* The definition @{term "x \<le> y \<longleftrightarrow> x + y = y"} of the order is
 hidden in class @{class plus_ord}.
 
@@ -119,7 +127,10 @@ class join_semilattice_zero = join_semilattice + zero +
 begin
 
 subclass comm_monoid_add
-  by (unfold_locales, auto, metis add_assoc' add_comm, metis add_comm add_zero_l)
+  apply unfold_locales
+  apply auto
+  apply (metis add_comm add_zero_l)
+  done
 
 lemma zero_least [simp]: "0 \<le> x"
   by (metis add_zero_l less_eq_def)

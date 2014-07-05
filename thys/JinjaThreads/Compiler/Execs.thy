@@ -654,7 +654,7 @@ next
   fix ta h' s' assume "?lhs ta h' s'"
   hence "exec_meth ci (compP2 P) (compE2 e @ compE2 e' @ compE2 e'' @ [AStore, Push Unit])
      (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' 0 (Suc 0) @ compxE2 e'' (length (compE2 e')) (Suc (Suc 0)))) t
-     h (stk, loc, pc, xcp) ta h' s'" by(simp add: exec_move_def shift_compxE2 add_ac)
+     h (stk, loc, pc, xcp) ta h' s'" by(simp add: exec_move_def shift_compxE2 ac_simps)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed
 
@@ -669,7 +669,7 @@ proof -
     by(rule exec_meth_append_xt)
   hence "exec_meth ci (compP2 P) (compE2 e1 @ compE2 e2 @ compE2 e3 @ [AStore, Push Unit]) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 0 (Suc 0) @ shift (length (compE2 e2)) (compxE2 e3 0 (Suc (Suc 0))))) t h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
     by(rule append_exec_meth_xt) auto
-  thus ?thesis by(auto simp add: exec_move_def shift_compxE2 add_ac)
+  thus ?thesis by(auto simp add: exec_move_def shift_compxE2 ac_simps)
 qed
 
 lemma exec_move_AAssI3:
@@ -684,7 +684,7 @@ proof -
   hence "exec_meth ci (compP2 P) ((compE2 e1 @ compE2 e2) @ compE2 e3 @ [AStore, Push Unit]) 
                    ((compxE2 e1 0 0 @ compxE2 e2 (length (compE2 e1)) (Suc 0)) @ shift (length (compE2 e1 @ compE2 e2)) (compxE2 e3 0 (Suc (Suc 0)))) t h (stk @ [v', v], loc, length (compE2 e1 @ compE2 e2) + pc, xcp) ta h' (stk' @ [v', v], loc', length (compE2 e1 @ compE2 e2) + pc', xcp')"
     by(rule append_exec_meth_xt) auto
-  thus ?thesis by(auto simp add: exec_move_def shift_compxE2 add_ac)
+  thus ?thesis by(auto simp add: exec_move_def shift_compxE2 ac_simps)
 qed
 
 lemma exec_move_ALengthI:
@@ -790,7 +790,7 @@ proof(rule ext iffI)+
   hence "exec_meth ci (compP2 P) (compE2 e @ Dup # Store V # MEnter # compE2 e' @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
                    (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' 3 0 @ [(3, 3 + length (compE2 e'), None, 6 + length (compE2 e'), 0)]))
                    t h (stk, loc, pc, xcp) ta h' s'"
-    by(simp add: shift_compxE2 add_ac exec_move_def)
+    by(simp add: shift_compxE2 ac_simps exec_move_def)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_SyncI1)
 
@@ -862,7 +862,7 @@ proof(rule ext iffI)+
   fix ta h' s'
   assume "?lhs ta h' s'"
   hence "exec_meth ci (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) t h (stk, loc, pc, xcp) ta h' s'"
-    by(simp add: exec_move_def shift_compxE2 add_ac)
+    by(simp add: exec_move_def shift_compxE2 ac_simps)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_CondI1)
 
@@ -886,7 +886,7 @@ proof
   let ?E2 = "Goto (1 + int (length (compE2 e2))) # compE2 e2"
   assume ?lhs
   hence "exec_meth ci (compP2 P) (?E1 @ compE2 e1 @ ?E2) (compxE2 e 0 0 @ shift (length ?E1) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 (Suc 0) 0))) t h (stk, loc, length ?E1 + pc, xcp) ta h' (stk', loc', length ?E1 + pc', xcp')"
-    by(simp add: exec_move_def shift_compxE2 add_ac)
+    by(simp add: exec_move_def shift_compxE2 ac_simps)
   thus ?rhs unfolding exec_move_def
     by -(rule exec_meth_take_xt,drule exec_meth_drop_xt,auto simp add: pc)
 qed(rule exec_move_CondI2)
@@ -1005,7 +1005,7 @@ proof
   hence pc: "pc < length (compE2 e')"
     by(fastforce elim!: exec_meth.cases simp add: exec_move_def match_ex_table_append match_ex_entry dest: match_ex_table_pcsD)
   from lhs have "exec_meth ci (compP2 P) ((?E @ compE2 e') @ []) ((compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) @ ?xt) t h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
-    by(simp add: exec_move_def shift_compxE2 add_ac)
+    by(simp add: exec_move_def shift_compxE2 ac_simps)
   thus ?rhs unfolding exec_move_def using pc
     by-(drule exec_meth_drop_xt[OF exec_meth_take_xt'], auto)
 qed(rule exec_move_TryI2)

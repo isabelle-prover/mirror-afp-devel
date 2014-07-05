@@ -128,9 +128,9 @@ begin
     apply (case_tac [!] a) [4]
     apply simp_all
     apply (case_tac [!] b) [3]
-    apply (simp_all add: add_ac)
+    apply (simp_all add: ac_simps)
     apply (case_tac [!] c) [2]
-    apply (simp_all add: add_ac add_right_mono)
+    apply (simp_all add: ac_simps add_right_mono)
     apply (case_tac "(x,y)" rule: less_eq_infty.cases)
     apply (simp_all add: linear)
     done

@@ -124,7 +124,7 @@ by(simp add: shift_def split_def)
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows shift_compxE2: "shift pc (compxE2 e pc' d) = compxE2 e (pc' + pc) d"
   and  shift_compxEs2: "shift pc (compxEs2 es pc' d) = compxEs2 es (pc' + pc) d"
-by(induct e and es arbitrary: pc pc' d and pc pc' d)(auto simp:shift_def add_ac)
+by(induct e and es arbitrary: pc pc' d and pc pc' d)(auto simp:shift_def ac_simps)
 
 lemma compxE2_size_convs [simp]: "n \<noteq> 0 \<Longrightarrow> compxE2 e n d = shift n (compxE2 e 0 d)"
  and compxEs2_size_convs: "n \<noteq> 0 \<Longrightarrow> compxEs2 es n d = shift n (compxEs2 es 0 d)" 

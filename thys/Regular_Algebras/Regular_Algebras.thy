@@ -750,7 +750,7 @@ proof -
   also from assms have unfld:"... = 1 + x\<^bsub>1\<^esub> + \<Sum> { x\<^bsub>i\<^esub> | i. i\<in>(UNIV - {1})}"
     by (metis (lifting, no_types) conway_monoid_one)
   finally show ?thesis
-    by (metis (lifting, no_types) ab_semigroup_add_class.add_ac(1) unfld)
+    by (metis (lifting, no_types) ac_simps unfld)
 qed
 
 lemma boffa_mon_aux1: "{x\<^bsub>i\<cdot>j \<^esub>| i j. i \<in> UNIV \<and> j \<in> UNIV} = {x\<^bsub>i\<^esub> | i. i \<in> UNIV}"
