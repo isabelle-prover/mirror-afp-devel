@@ -1792,7 +1792,7 @@ abstract =
  An early version of this model checker is described in the
  <a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
  with the same title.
-depends-on = Gabow_SCC Promela LTL_to_GBA
+depends-on = Gabow_SCC, Promela, LTL_to_GBA
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
