@@ -82,6 +82,7 @@
 <h3>Data Structures</h3>
 
 <div class="list">
+<a href="entries/Amortized_Complexity.shtml">Amortized_Complexity</a> &nbsp;
 <a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
 <a href="entries/BDD.shtml">BDD</a> &nbsp;
 <a href="entries/BinarySearchTree.shtml">BinarySearchTree</a> &nbsp;

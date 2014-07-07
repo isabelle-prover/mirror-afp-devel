@@ -55,6 +55,13 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-07-07:
+<a href="entries/Amortized_Complexity.shtml">Amortized Complexity Verified</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-06-12:
 <a href="entries/MSO_Regex_Equivalence.shtml">Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</a>
 <br>Author:

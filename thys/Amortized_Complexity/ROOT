@@ -1,0 +1,19 @@
+chapter AFP
+
+session Amortized_Complexity (AFP) = HOL +
+
+  options [timeout = 600]
+
+  theories [document = false]
+    "~~/src/HOL/Library/Sum_of_Squares"
+    "../List-Index/List_Index"
+    "~~/src/HOL/Library/Tree"
+
+  theories
+    Skew_Heap
+    Splay_Tree_Analysis
+    Move_to_Front
+
+  document_files
+    "root.tex"
+    "root.bib"
