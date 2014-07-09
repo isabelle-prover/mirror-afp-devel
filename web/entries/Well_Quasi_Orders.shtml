@@ -33,7 +33,7 @@
         <td class="data" width="80%">Well-Quasi-Orders</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Christian Sternagel (c-sterna /at/ jaist /dot/ ac /dot/ jp)</td></tr>
+        <td class="data">Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-04-13</td></tr>
@@ -64,7 +64,9 @@ The research was funded by the Austrian Science Fund (FWF): J3202.
 [2012-12-19]: New variant of Kruskal's tree theorem for terms (as opposed to
 variadic terms, i.e., trees), plus finite version of the tree theorem as
 corollary.<br>
-[2013-05-16]: Simplified construction of minimal bad sequences.
+[2013-05-16]: Simplified construction of minimal bad sequences.<br>
+[2014-07-09]: Simplified proofs of Higman's lemma and Kruskal's tree theorem,
+based on homogeneous sequences.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
