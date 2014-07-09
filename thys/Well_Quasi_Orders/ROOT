@@ -14,20 +14,13 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
     Minimal_Bad_Sequences
     Least_Enum
     Almost_Full_Relations
-    Dickson_with_Transitivity
     Well_Quasi_Orders
-    Well_Partial_Orders
-    Wpo_Extension
-    Orders
-    Finite_Tree
     Kruskal
-    Wqo_Instances
     Kruskal_Examples
+    Dickson_with_Transitivity
+    Wqo_Instances
     Multiset_Extension
     Wqo_Multiset
-    Kruskal_Terms
-    Kruskal_Finite
-    Wpo_Kruskal_Terms
   document_files
     "root.bib"
     "root.tex"
