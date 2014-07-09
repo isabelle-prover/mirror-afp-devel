@@ -2176,6 +2176,41 @@ abstract = This is a formalization of bounded-deducibility security (BD
  BD security indicates upper bounds for the flow and triggers under
  which these upper bounds are no longer guaranteed.
 
+[Network_Security_Policy_Verification]
+title = Network Security Policy Verification
+author = Cornelius Diekmann <http://www.net.in.tum.de/de/mitarbeiter/diekmann/>
+date = 2014-07-04
+topic = Computer Science/Security
+abstract =
+ We present a unified theory for verifying network security policies.
+ A security policy is represented as directed graph.
+ To check high-level security goals, security invariants over the policy are
+ expressed. We cover monotonic security invariants, i.e. prohibiting more does not harm
+ security. We provide the following contributions for the security invariant theory.
+ <ul>
+ <li>Secure auto-completion of scenario-specific knowledge, which eases usability.</li>
+ <li>Security violations can be repaired by tightening the policy iff the
+  security invariants hold for the deny-all policy.</li>
+ <li>An algorithm to compute a security policy.</li>
+ <li>A formalization of stateful connection semantics in network security mechanisms.</li>
+ <li>An algorithm to compute a secure stateful implementation of a policy.</li>
+ <li>An executable implementation of all the theory.</li>
+ <li>Examples, ranging from an aircraft cabin data network to the analysis
+  of a large real-world firewall.</li>
+ </ul>
+ For a detailed description, see
+ <ul>
+ <li>C. Diekmann, S.-A. Posselt, H. Niedermayer, H. Kinkelin, O. Hanka, and G. Carle.
+  <a href="http://www.net.in.tum.de/pub/diekmann/forte14.pdf">Verifying Security Policies using Host Attributes.</a>
+  In FORTE, 34th IFIP International Conference on Formal Techniques for Distributed Objects,
+  Components and Systems, Berlin, Germany, June 2014.</li>
+ <li>C. Diekmann, L. Hupel, and G. Carle. Directed Security Policies:
+  <a href="http://rvg.web.cse.unsw.edu.au/eptcs/paper.cgi?ESSS2014.3">A Stateful Network Implementation.</a>
+  In J. Pang and Y. Liu, editors, Engineering Safety and Security Systems,
+  volume 150 of Electronic Proceedings in Theoretical Computer Science,
+  pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
+ </ul>
+
 [Abstract_Completeness]
 title = Abstract Completeness
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
