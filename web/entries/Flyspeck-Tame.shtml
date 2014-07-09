@@ -56,7 +56,7 @@ The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Ni
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.
+[2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
 [2014-07-03]: modified constants in def of tameness and Archive according to the final state of the Flyspeck proof.
         </td></tr>
 
