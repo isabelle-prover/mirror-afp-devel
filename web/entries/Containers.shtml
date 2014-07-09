@@ -58,7 +58,8 @@ It even allows to compare complements with non-complements.
 [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
 [2013-09-20]:
 provide generators for canonical type class instantiations
-(revision 159f4401f4a8 by René Thiemann)
+(revision 159f4401f4a8 by René Thiemann)<br>
+[2014-07-08]: add support for going from partial functions to mappings (revision 7a6fc957e8ed)
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
