@@ -249,7 +249,7 @@ code_printing
   (Haskell) "Uint16.Word16" and
   (Scala) "Char"
 | constant Uint16 \<rightharpoonup>
-  (SML_word) "Word16.fromInt" and
+  (SML_word) "Word16.fromLargeInt (IntInf.toLarge _)" and
   (Haskell) "(Prelude.fromInteger _ :: Uint16.Word16)" and
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint16.Word16)" and
   (Scala) "_.charValue"
