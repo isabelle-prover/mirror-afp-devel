@@ -70,16 +70,16 @@ proof -
   have [iff]: "\<And>x y. h {x, y} = Suc 0 \<longleftrightarrow> {x, y} \<in> Y" by (auto simp: h_def Y_def)
 
   have "\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. x \<noteq> y \<longrightarrow> h {x, y} < 2" by (simp add: h_def)
-  from Ramsey2 [OF infinite_UNIV_nat this] obtain B t
-    where "infinite B" and "t < 2"
-    and *: "\<forall>x\<in>B. \<forall>y\<in>B. x \<noteq> y \<longrightarrow> h {x, y} = t" by blast
-  then interpret infinitely_many1 "\<lambda>i. i \<in> B"
+  from Ramsey2 [OF infinite_UNIV_nat this] obtain I c
+    where "infinite I" and "c < 2"
+    and *: "\<forall>x\<in>I. \<forall>y\<in>I. x \<noteq> y \<longrightarrow> h {x, y} = c" by blast
+  then interpret infinitely_many1 "\<lambda>i. i \<in> I"
     by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
 
-  have "t = 0 \<or> t = 1" using `t < 2` by arith
+  have "c = 0 \<or> c = 1" using `c < 2` by arith
   then show ?thesis
   proof
-    assume [simp]: "t = 0"
+    assume [simp]: "c = 0"
     have "\<forall>i j. i < j \<longrightarrow> P (f (enum i)) (f (enum j))"
     proof (intro allI impI)
       fix i j :: nat
@@ -90,7 +90,7 @@ proof -
     qed
     then show ?thesis using enum_less by blast
   next
-    assume [simp]: "t = 1"
+    assume [simp]: "c = 1"
     have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (enum i)) (f (enum j))"
     proof (intro allI impI)
       fix i j :: nat
