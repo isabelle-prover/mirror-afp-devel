@@ -138,6 +138,10 @@ by (induct xs) auto
 lemma nth_last_index[simp]: "x \<in> set xs \<Longrightarrow> xs ! last_index xs x = x"
 by(simp add:last_index_def index_size_conv Let_def rev_nth[symmetric])
 
+lemma index_nth_id:
+  "\<lbrakk> distinct xs;  n < length xs \<rbrakk> \<Longrightarrow> index xs (xs ! n) = n"
+by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
+
 lemma index_eq_index_conv[simp]: "x \<in> set xs \<or> y \<in> set xs \<Longrightarrow>
   (index xs x = index xs y) = (x = y)"
 by (induct xs) auto
@@ -168,6 +172,50 @@ apply(subgoal_tac "set(drop i xs) = set(take (size xs - i) (rev xs))")
  apply(simp add: last_index_def index_take Let_def split:split_if_asm)
 apply (metis rev_drop set_rev)
 done
+
+lemma set_take_if_index: assumes "index xs x < i" and "i \<le> length xs"
+shows "x \<in> set (take i xs)"
+proof -
+  have "index (take i xs @ drop i xs) x < i"
+    using append_take_drop_id[of i xs] assms(1) by simp
+  thus ?thesis using assms(2)
+    by(simp add:index_append del:append_take_drop_id split: if_splits)
+qed
+
+lemma index_take_if_index:
+assumes "index xs x \<le> n" shows "index (take n xs) x = index xs x"
+proof cases
+  assume "x : set(take n xs)" with assms show ?thesis
+    by (metis append_take_drop_id index_append)
+next
+  assume "x \<notin> set(take n xs)" with assms show ?thesis
+   by (metis order_le_less set_take_if_index le_cases length_take min_def size_index_conv take_all)
+qed
+
+lemma index_take_if_set:
+  "x : set(take n xs) \<Longrightarrow> index (take n xs) x = index xs x"
+by (metis index_take index_take_if_index linear)
+
+lemma index_update_if_diff2:
+  "n < length xs \<Longrightarrow> x \<noteq> xs!n \<Longrightarrow> x \<noteq> y \<Longrightarrow> index (xs[n := y]) x = index xs x"
+by(subst (2) id_take_nth_drop[of n xs])
+  (auto simp: upd_conv_take_nth_drop index_append min_def)
+
+lemma set_drop_if_index: "distinct xs \<Longrightarrow> index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
+by (metis in_set_dropD index_nth_id last_index_drop last_index_less_size_conv nth_last_index)
+
+lemma index_swap_if_distinct: assumes "distinct xs" "i < size xs" "j < size xs"
+shows "index (xs[i := xs!j, j := xs!i]) x =
+  (if x = xs!i then j else if x = xs!j then i else index xs x)"
+proof-
+  have "distinct(xs[i := xs!j, j := xs!i])" using assms by simp
+  with assms show ?thesis
+    apply (auto simp: swap_def simp del: distinct_swap)
+    apply (metis index_nth_id list_update_same_conv)
+    apply (metis (erased, hide_lams) index_nth_id length_list_update list_update_swap nth_list_update_eq)
+    apply (metis index_nth_id length_list_update nth_list_update_eq)
+    by (metis index_update_if_diff2 length_list_update nth_list_update)
+qed
 
 
 subsection {* Map with index *}
