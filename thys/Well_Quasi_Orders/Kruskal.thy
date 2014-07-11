@@ -10,20 +10,20 @@ theory Kruskal
 imports Well_Quasi_Orders
 begin
 
-locale kruskal =
+locale kruskal_tree =
   size size for size :: "'a \<Rightarrow> nat" +
   fixes F :: "('b \<times> nat) set"
     and mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a"
     and root :: "'a \<Rightarrow> 'b \<times> nat"
     and args :: "'a \<Rightarrow> 'a list"
-    and terms :: "'a set"
-  assumes size_arg: "t \<in> terms \<Longrightarrow> s \<in> set (args t) \<Longrightarrow> size s < size t"
+    and trees :: "'a set"
+  assumes size_arg: "t \<in> trees \<Longrightarrow> s \<in> set (args t) \<Longrightarrow> size s < size t"
     and root_mk: "(f, length ts) \<in> F \<Longrightarrow> root (mk f ts) = (f, length ts)"
     and args_mk: "(f, length ts) \<in> F \<Longrightarrow> args (mk f ts) = ts"
-    and mk_root_args: "t \<in> terms \<Longrightarrow> mk (fst (root t)) (args t) = t"
-    and terms_root: "t \<in> terms \<Longrightarrow> root t \<in> F"
-    and terms_arity: "t \<in> terms \<Longrightarrow> length (args t) = snd (root t)"
-    and terms_args: "\<And>s. t \<in> terms \<Longrightarrow> s \<in> set (args t) \<Longrightarrow> s \<in> terms"
+    and mk_root_args: "t \<in> trees \<Longrightarrow> mk (fst (root t)) (args t) = t"
+    and trees_root: "t \<in> trees \<Longrightarrow> root t \<in> F"
+    and trees_arity: "t \<in> trees \<Longrightarrow> length (args t) = snd (root t)"
+    and trees_args: "\<And>s. t \<in> trees \<Longrightarrow> s \<in> set (args t) \<Longrightarrow> s \<in> trees"
 begin
 
 lemma mk_inject [iff]:
@@ -59,36 +59,35 @@ lemma reflclp_mono:
 
 inductive emb for P
 where
-  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> terms; t \<in> set ts; (emb P)\<^sup>=\<^sup>= s t\<rbrakk>
+  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> trees; t \<in> set ts; (emb P)\<^sup>=\<^sup>= s t\<rbrakk>
     \<Longrightarrow> emb P s (mk f ts)" |
   list_emb: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; P (f, m) (g, n); length ss = m; length ts = n;
-    \<forall>s \<in> set ss. s \<in> terms; \<forall>t \<in> set ts. t \<in> terms; list_emb (emb P) ss ts\<rbrakk>
+    \<forall>s \<in> set ss. s \<in> trees; \<forall>t \<in> set ts. t \<in> trees; list_emb (emb P) ss ts\<rbrakk>
     \<Longrightarrow> emb P (mk f ss) (mk g ts)"
 monos list_emb_mono  reflclp_mono
 
-lemma almost_full_on_terms:
+lemma almost_full_on_trees:
   assumes "almost_full_on P F"
-  shows "almost_full_on (emb P) terms" (is "almost_full_on ?P ?A")
+  shows "almost_full_on (emb P) trees" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs "\<lambda>s t. size s < size t" ?A
-    by (unfold_locales) (auto simp: wfp_on_size)
+  interpret mbs size ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"
     and min: "\<forall>g. (m, g) \<in> gseq \<longrightarrow> good ?P g" ..
-  then have terms: "\<And>i. m i \<in> terms" by auto
+  then have trees: "\<And>i. m i \<in> trees" by auto
 
   def r \<equiv> "\<lambda>i. root (m i)"
   def a \<equiv> "\<lambda>i. args (m i)"
   def S \<equiv> "\<Union>{set (a i) | i. True}"
 
-  have m: "\<And>i. m i = mk (fst (r i)) (a i)" by (simp add: r_def a_def mk_root_args [OF terms])
+  have m: "\<And>i. m i = mk (fst (r i)) (a i)" by (simp add: r_def a_def mk_root_args [OF trees])
   have lists: "\<forall>i. a i \<in> lists S" by (auto simp: a_def S_def)
   have arity: "\<And>i. length (a i) = snd (r i)"
-    using terms_arity [OF terms] by (auto simp: r_def a_def)
+    using trees_arity [OF trees] by (auto simp: r_def a_def)
   then have sig: "\<And>i. (fst (r i), length (a i)) \<in> F"
-    using terms_root [OF terms] by (auto simp: a_def r_def)
-  have a_terms: "\<And>i. \<forall>t \<in> set (a i). t \<in> terms" by (auto simp: a_def terms_args [OF terms])
+    using trees_root [OF trees] by (auto simp: a_def r_def)
+  have a_trees: "\<And>i. \<forall>t \<in> set (a i). t \<in> trees" by (auto simp: a_def trees_args [OF trees])
 
   have "almost_full_on ?P S"
   proof (rule ccontr)
@@ -124,7 +123,7 @@ proof (rule ccontr)
       { assume "i < n" and "n \<le> j"
         with `i < j` and emb have *: "?P\<^sup>=\<^sup>= (m i) (s (k + (j - n)))" by (auto simp: m'_less m'_geq)
         with args obtain l where "l \<ge> n" and **: "s (k + (j - n)) \<in> set (a l)" by blast
-        from emb.arg [OF sig [of l] _ a_terms [of l] ** *]
+        from emb.arg [OF sig [of l] _ a_trees [of l] ** *]
           have "?P (m i) (m l)" by (simp add: m)
         moreover have "i < l" using `i < n` and `n \<le> l` by auto
         ultimately have False using bad by blast }
@@ -132,12 +131,12 @@ proof (rule ccontr)
     qed
     moreover have "(m, m') \<in> gseq"
     proof -
-      have "m \<in> SEQ ?A" using terms by auto
+      have "m \<in> SEQ ?A" using trees by auto
       moreover have "m' \<in> SEQ ?A"
-        using terms and S and terms_args [OF terms] by (auto simp: m'_def a_def S_def)
+        using trees and S and trees_args [OF trees] by (auto simp: m'_def a_def S_def)
       moreover have "\<forall>i < n. m i = m' i" by (auto simp: m'_less)
       moreover have "size (m' n) < size (m n)"
-        using sk and size_arg [OF terms, unfolded m]
+        using sk and size_arg [OF trees, unfolded m]
         by (auto simp: m m'_geq root_mk [OF sig] args_mk [OF sig])
       ultimately show ?thesis by (auto simp: gseq_def)
     qed
@@ -147,13 +146,13 @@ proof (rule ccontr)
     obtain \<phi> :: "nat \<Rightarrow> nat"
     where less: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j"
       and lemb: "\<And>i j. i < j \<Longrightarrow> list_emb ?P (a (\<phi> i)) (a (\<phi> j))" by blast
-  have roots: "\<And>i. r (\<phi> i) \<in> F" using terms [THEN terms_root] by (auto simp: r_def)
+  have roots: "\<And>i. r (\<phi> i) \<in> F" using trees [THEN trees_root] by (auto simp: r_def)
   then have "r \<circ> \<phi> \<in> SEQ F" by auto
   with assms have "good P (r \<circ> \<phi>)" by (auto simp: almost_full_on_def)
   then obtain i j
     where "i < j" and "P (r (\<phi> i)) (r (\<phi> j))" by auto
   with lemb [OF `i < j`] have "?P (m (\<phi> i)) (m (\<phi> j))"
-    using sig and arity and a_terms by (auto simp: m intro!: emb.list_emb)
+    using sig and arity and a_trees by (auto simp: m intro!: emb.list_emb)
   with less [OF `i < j`] and bad show False by blast
 qed
 
@@ -193,13 +192,13 @@ qed
 
 lemma transp_on_emb:
   assumes "transp_on P F"
-  shows "transp_on (emb P) terms"
+  shows "transp_on (emb P) trees"
   using assms and emb_trans [of P] unfolding transp_on_def by blast
 
 lemma  kruskal:
   assumes "wqo_on P F"
-  shows "wqo_on (emb P) terms"
-  using almost_full_on_terms [of P] and assms by (metis transp_on_emb wqo_on_def)
+  shows "wqo_on (emb P) trees"
+  using almost_full_on_trees [of P] and assms by (metis transp_on_emb wqo_on_def)
 
 end
 

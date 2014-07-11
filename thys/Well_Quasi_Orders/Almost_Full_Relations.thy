@@ -70,16 +70,16 @@ proof -
   have [iff]: "\<And>x y. h {x, y} = Suc 0 \<longleftrightarrow> {x, y} \<in> Y" by (auto simp: h_def Y_def)
 
   have "\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. x \<noteq> y \<longrightarrow> h {x, y} < 2" by (simp add: h_def)
-  from Ramsey2 [OF infinite_UNIV_nat this] obtain B t
-    where "infinite B" and "t < 2"
-    and *: "\<forall>x\<in>B. \<forall>y\<in>B. x \<noteq> y \<longrightarrow> h {x, y} = t" by blast
-  then interpret infinitely_many1 "\<lambda>i. i \<in> B"
+  from Ramsey2 [OF infinite_UNIV_nat this] obtain I c
+    where "infinite I" and "c < 2"
+    and *: "\<forall>x\<in>I. \<forall>y\<in>I. x \<noteq> y \<longrightarrow> h {x, y} = c" by blast
+  then interpret infinitely_many1 "\<lambda>i. i \<in> I"
     by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
 
-  have "t = 0 \<or> t = 1" using `t < 2` by arith
+  have "c = 0 \<or> c = 1" using `c < 2` by arith
   then show ?thesis
   proof
-    assume [simp]: "t = 0"
+    assume [simp]: "c = 0"
     have "\<forall>i j. i < j \<longrightarrow> P (f (enum i)) (f (enum j))"
     proof (intro allI impI)
       fix i j :: nat
@@ -90,7 +90,7 @@ proof -
     qed
     then show ?thesis using enum_less by blast
   next
-    assume [simp]: "t = 1"
+    assume [simp]: "c = 1"
     have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (enum i)) (f (enum j))"
     proof (intro allI impI)
       fix i j :: nat
@@ -386,15 +386,6 @@ proof (rule ccontr)
     unfolding good_def by auto
 qed
 
-lemma wf_length:
-  "wf {(x, y). length x < length y}"
-  unfolding wf_def using length_induct by auto
-
-lemma wfp_on_length:
-  "wfp_on (\<lambda>x y. length x < length y) (lists A)"
-  using wf_length [to_pred, unfolded wfp_on_UNIV [symmetric]]
-    and wfp_on_subset [of "lists A" UNIV] by blast
-
 lemma ne_lists:
   assumes "xs \<noteq> []" and "xs \<in> lists A"
   shows "hd xs \<in> A" and "tl xs \<in> lists A"
@@ -404,8 +395,7 @@ lemma almost_full_on_lists:
   assumes "almost_full_on P A"
   shows "almost_full_on (list_emb P) (lists A)" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs "\<lambda>xs ys. length xs < length ys" ?A
-    by (unfold_locales) (auto simp: wfp_on_length)
+  interpret mbs length ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"
