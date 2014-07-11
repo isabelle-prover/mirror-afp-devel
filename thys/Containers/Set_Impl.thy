@@ -914,51 +914,15 @@ by(rule INF_def)
 lemma SUP_code [code]: "SUPREMUM A f = Sup (f ` A)"
 by(rule SUP_def)
 
-lemma Min_code [code]:
-  fixes xs :: "'a :: linorder list" 
-  and dxs :: "'b :: {ceq, linorder} set_dlist"
-  and rbt :: "'c :: {corder, linorder} set_rbt" shows
-  "Min (Set_Monad (x # xs)) = fold min xs x" (is ?Monad)
-  "Min (DList_set dxs) = 
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Min DList_set: ceq = None'') (\<lambda>_. Min (DList_set dxs))
-                  | Some _ \<Rightarrow> 
-    if DList_Set.null dxs then Code.abort (STR ''Min DList_set: empty set'') (\<lambda>_. Min (DList_set dxs))
-    else DList_Set.fold min (DList_Set.tl dxs) (DList_Set.hd dxs))" (is ?DList)
-  "Min (RBT_set rbt) = 
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Min RBT_set: corder = None'') (\<lambda>_. Min (RBT_set rbt))
-                     | Some _ \<Rightarrow> 
-    if RBT_Set2.is_empty rbt then Code.abort (STR ''Min RBT_set: empty set'') (\<lambda>_. Min (RBT_set rbt))
-    else RBT_Set2.fold1 min rbt)" (is ?rbt)
-proof -
-  show ?Monad by(simp del: set_simps add: Min.set_eq_fold)
-  show ?DList
-    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Min.set_eq_fold simp del: set_simps)
-  show ?rbt
-    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Min.set_eq_fold simp del: set_simps)
-qed
+lift_definition min_sls :: "'a :: linorder semilattice_set" is min by unfold_locales
 
-lemma Max_code [code]:
-  fixes xs :: "'a :: linorder list" 
-  and dxs :: "'b :: {ceq, linorder} set_dlist"
-  and rbt :: "'c :: {corder, linorder} set_rbt" shows
-  "Max (Set_Monad (x # xs)) = fold max xs x" (is ?Monad)
-  "Max (DList_set dxs) = 
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Max DList_set: ceq = None'') (\<lambda>_. Max (DList_set dxs))
-                  | Some _ \<Rightarrow> 
-    if DList_Set.null dxs then Code.abort (STR ''Max DList_set: empty set'') (\<lambda>_. Max (DList_set dxs))
-    else DList_Set.fold max (DList_Set.tl dxs) (DList_Set.hd dxs))" (is ?DList)
-  "Max (RBT_set rbt) = 
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Max RBT_set: corder = None'') (\<lambda>_. Max (RBT_set rbt))
-                     | Some _ \<Rightarrow> 
-    if RBT_Set2.is_empty rbt then Code.abort (STR ''Max RBT_set: empty set'') (\<lambda>_. Max (RBT_set rbt))
-    else RBT_Set2.fold1 max rbt)" (is ?rbt)
-proof -
-  show ?Monad by(simp del: set_simps add: Max.set_eq_fold)
-  show ?DList
-    by(clarsimp simp add: DList_set_def DList_Set.Collect_member split: option.split)(transfer, clarsimp simp add: neq_Nil_conv Max.set_eq_fold simp del: set_simps)
-  show ?rbt
-    by(clarsimp simp add: RBT_set_conv_keys split: option.split)(transfer, drule non_empty_rbt_keys, clarsimp simp add: neq_Nil_conv RBT_Impl_fold1_def Max.set_eq_fold simp del: set_simps)
-qed
+lemma Min_code [code]: "Min A = set_fold1 min_sls A"
+by transfer(simp add: Min_def)
+
+lift_definition max_sls :: "'a :: linorder semilattice_set" is max by unfold_locales
+
+lemma Max_code [code]: "Max A = set_fold1 max_sls A"
+by transfer(simp add: Max_def)
 
 text {*
   We do not implement @{term Ball}, @{term Bex}, and @{term sorted_list_of_set} for @{term Collect_set} using @{term cEnum},
