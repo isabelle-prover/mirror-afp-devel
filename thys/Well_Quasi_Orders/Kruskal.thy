@@ -10,7 +10,7 @@ theory Kruskal
 imports Well_Quasi_Orders
 begin
 
-locale kruskal =
+locale kruskal_tree =
   size size for size :: "'a \<Rightarrow> nat" +
   fixes F :: "('b \<times> nat) set"
     and mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a"
