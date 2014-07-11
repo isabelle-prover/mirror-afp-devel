@@ -397,6 +397,158 @@ structure Set_Complement_Eqs = Named_Thms
 *}
 setup {* Set_Complement_Eqs.setup *}
 
+text {* Various fold operations over sets *}
+
+typedef ('a, 'b) comp_fun_commute = "{f :: 'a \<Rightarrow> 'b \<Rightarrow> 'b. comp_fun_commute f}"
+  morphisms comp_fun_commute_apply Abs_comp_fun_commute
+by(rule exI[where x="\<lambda>_. id"])(simp, unfold_locales, auto)
+
+setup_lifting type_definition_comp_fun_commute
+
+lemma comp_fun_commute_apply' [simp]:
+  "comp_fun_commute (comp_fun_commute_apply f)"
+using comp_fun_commute_apply[of f] by simp
+
+lift_definition set_fold_cfc :: "('a, 'b) comp_fun_commute \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
+
+declare [[code drop: set_fold_cfc]]
+
+lemma set_fold_cfc_code [code]:
+  fixes xs :: "'a :: ceq list" 
+  and dxs :: "'a :: ceq set_dlist"
+  and rbt :: "'b :: corder set_rbt"
+  shows set_fold_cfc_Complement[set_complement_code]:
+  "set_fold_cfc f''' b (Complement A) = Code.abort (STR ''set_fold_cfc not supported on Complement'') (\<lambda>_. set_fold_cfc f''' b (Complement A))"
+  and
+  "set_fold_cfc f''' b (Collect_set P) = Code.abort (STR ''set_fold_cfc not supported on Collect_set'') (\<lambda>_. set_fold_cfc f''' b (Collect_set P))"
+  "set_fold_cfc f b (Set_Monad xs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''set_fold_cfc Set_Monad: ceq = None'') (\<lambda>_. set_fold_cfc f b (Set_Monad xs))
+                 | Some eq \<Rightarrow> List.fold (comp_fun_commute_apply f) (equal_base.list_remdups eq xs) b)"
+  (is ?Set_Monad)
+  "set_fold_cfc f' b (DList_set dxs) =
+  (case ID CEQ('a) of None \<Rightarrow> Code.abort (STR ''set_fold_cfc DList_set: ceq = None'') (\<lambda>_. set_fold_cfc f' b (DList_set dxs))
+                  | Some _ \<Rightarrow> DList_Set.fold (comp_fun_commute_apply f') dxs b)"
+  (is ?DList_set)
+  "set_fold_cfc f'' b (RBT_set rbt) =
+  (case ID CORDER('b) of None \<Rightarrow> Code.abort (STR ''set_fold_cfc RBT_set: corder = None'') (\<lambda>_. set_fold_cfc f'' b (RBT_set rbt))
+                     | Some _ \<Rightarrow> RBT_Set2.fold (comp_fun_commute_apply f'') rbt b)"
+  (is ?RBT_set)
+proof -
+  show ?Set_Monad
+    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfc_def comp_fun_commute.fold_set_fold_remdups)
+  show ?DList_set
+    apply(auto split: option.split simp add: DList_set_def)
+    apply transfer
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_commute.fold_set_fold_remdups distinct_remdups_id)
+    done
+  show ?RBT_set
+    apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
+    apply transfer
+    apply(simp add: comp_fun_commute.fold_set_fold_remdups distinct_remdups_id linorder.distinct_keys[OF ID_corder] ord.is_rbt_rbt_sorted)
+    done
+qed simp_all
+
+typedef ('a, 'b) comp_fun_idem = "{f :: 'a \<Rightarrow> 'b \<Rightarrow> 'b. comp_fun_idem f}"
+  morphisms comp_fun_idem_apply Abs_comp_fun_idem
+by(rule exI[where x="\<lambda>_. id"])(simp, unfold_locales, auto)
+
+setup_lifting type_definition_comp_fun_idem
+
+lemma comp_fun_idem_apply' [simp]:
+  "comp_fun_idem (comp_fun_idem_apply f)"
+using comp_fun_idem_apply[of f] by simp
+
+lift_definition set_fold_cfi :: "('a, 'b) comp_fun_idem \<Rightarrow> 'b \<Rightarrow> 'a set \<Rightarrow> 'b" is "Finite_Set.fold" .
+
+declare [[code drop: set_fold_cfi]]
+
+lemma set_fold_cfi_code [code]:
+  fixes xs :: "'a list" 
+  and dxs :: "'b :: ceq set_dlist"
+  and rbt :: "'c :: corder set_rbt" shows
+  "set_fold_cfi f b (Complement A) = Code.abort (STR ''set_fold_cfi not supported on Complement'') (\<lambda>_. set_fold_cfi f b (Complement A))"
+  "set_fold_cfi f b (Collect_set P) = Code.abort (STR ''set_fold_cfi not supported on Collect_set'') (\<lambda>_. set_fold_cfi f b (Collect_set P))"
+  "set_fold_cfi f b (Set_Monad xs) = List.fold (comp_fun_idem_apply f) xs b"
+  (is ?Set_Monad)
+  "set_fold_cfi f' b (DList_set dxs) =
+  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''set_fold_cfi DList_set: ceq = None'') (\<lambda>_. set_fold_cfi f' b (DList_set dxs))
+                  | Some _ \<Rightarrow> DList_Set.fold (comp_fun_idem_apply f') dxs b)"
+  (is ?DList_set)
+  "set_fold_cfi f'' b (RBT_set rbt) =
+  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''set_fold_cfi RBT_set: corder = None'') (\<lambda>_. set_fold_cfi f'' b (RBT_set rbt))
+                     | Some _ \<Rightarrow> RBT_Set2.fold (comp_fun_idem_apply f'') rbt b)"
+  (is ?RBT_set)
+proof -
+  show ?Set_Monad
+    by(auto split: option.split dest!: Collection_Eq.ID_ceq simp add: set_fold_cfi_def comp_fun_idem.fold_set_fold)
+  show ?DList_set
+    apply(auto split: option.split simp add: DList_set_def)
+    apply transfer
+    apply(auto dest: Collection_Eq.ID_ceq simp add: List.member_def[abs_def] comp_fun_idem.fold_set_fold)
+    done
+  show ?RBT_set
+    apply(auto split: option.split simp add: RBT_set_conv_keys fold_conv_fold_keys)
+    apply transfer
+    apply(simp add: comp_fun_idem.fold_set_fold)
+    done
+qed simp_all
+
+typedef 'a semilattice_set = "{f :: 'a \<Rightarrow> 'a \<Rightarrow> 'a. semilattice_set f}"
+  morphisms semilattice_set_apply Abs_semilattice_set
+proof
+  show "(\<lambda>x y. if x = y then x else undefined) \<in> ?semilattice_set"
+    unfolding mem_Collect_eq by(unfold_locales) simp_all
+qed
+
+setup_lifting type_definition_semilattice_set
+
+lemma semilattice_set_apply' [simp]:
+  "semilattice_set (semilattice_set_apply f)"
+using semilattice_set_apply[of f] by simp
+
+lemma comp_fun_idem_semilattice_set_apply [simp]:
+  "comp_fun_idem (semilattice_set_apply f)"
+proof -
+  interpret semilattice_set "semilattice_set_apply f" by simp
+  show ?thesis by(unfold_locales)(simp_all add: fun_eq_iff left_commute)
+qed 
+
+lift_definition set_fold1 :: "'a semilattice_set \<Rightarrow> 'a set \<Rightarrow> 'a" is "semilattice_set.F" .
+
+lemma (in semilattice_set) F_set_conv_fold:
+  "xs \<noteq> [] \<Longrightarrow> F (set xs) = Finite_Set.fold f (hd xs) (set (tl xs))"
+by(clarsimp simp add: neq_Nil_conv eq_fold)
+
+lemma set_fold1_code [code]:
+  fixes rbt :: "'a :: {corder, lattice} set_rbt"
+  and dxs :: "'b :: {ceq, lattice} set_dlist" shows
+  set_fold1_Complement[set_complement_code]:
+  "set_fold1 f (Complement A) = Code.abort (STR ''set_fold1: Complement'') (\<lambda>_. set_fold1 f (Complement A))"
+  and "set_fold1 f (Collect P) = Code.abort (STR ''set_fold1: Collect'') (\<lambda>_. set_fold1 f (Collect P))"
+  and "set_fold1 f (Set_Monad (x # xs)) = fold (semilattice_set_apply f) xs x" (is "?Set_Monad")
+  and
+  "set_fold1 f' (DList_set dxs) =
+  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''set_fold1 DList_set: ceq = None'') (\<lambda>_. set_fold1 f' (DList_set dxs))
+                  | Some _ \<Rightarrow> if DList_Set.null dxs then Code.abort (STR ''set_fold1 DList_set: empty set'') (\<lambda>_. set_fold1 f' (DList_set dxs))
+                              else DList_Set.fold (semilattice_set_apply f') (DList_Set.tl dxs) (DList_Set.hd dxs))"
+  (is "?DList_set")
+  and
+  "set_fold1 f'' (RBT_set rbt) =
+  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''set_fold1 RBT_set: corder = None'') (\<lambda>_. set_fold1 f'' (RBT_set rbt))
+                     | Some _ \<Rightarrow> if RBT_Set2.is_empty rbt then Code.abort (STR ''set_fold1 RBT_set: empty set'') (\<lambda>_. set_fold1 f'' (RBT_set rbt))
+                                 else RBT_Set2.fold1 (semilattice_set_apply f'') rbt)"
+  (is "?RBT_set")
+proof -
+  show ?Set_Monad
+    by(simp add: set_fold1_def semilattice_set.eq_fold comp_fun_idem.fold_set_fold)
+  show ?DList_set
+    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold comp_fun_idem.fold_set_fold DList_set_def DList_Set.Collect_member split: option.split)(transfer, simp)
+  show ?RBT_set
+    by(simp add: set_fold1_def semilattice_set.F_set_conv_fold comp_fun_idem.fold_set_fold RBT_set_def RBT_Set2.member_conv_keys RBT_Set2.fold1_conv_fold split: option.split)
+qed simp_all
+
+text {* Implementation of set operations *}
+
 lemma Collect_code [code]:
   fixes P :: "'a :: cenum \<Rightarrow> bool" shows
   "Collect P =
@@ -723,96 +875,38 @@ qed
 lemma UNIV_code [code]: "UNIV = - {}"
 by(simp)
 
-lemma Inf_fin_code [code]:
-  fixes rbt :: "'a :: {corder, lattice} set_rbt"
-  and dxs :: "'b :: {ceq, lattice} set_dlist" shows
-  "Inf_fin (Set_Monad (x # xs)) = fold inf xs x"
-  "Inf_fin (DList_set dxs) =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Inf_fin DList_set: ceq = None'') (\<lambda>_. Inf_fin (DList_set dxs))
-                  | Some _ \<Rightarrow> if DList_Set.null dxs then Code.abort (STR ''Inf_fin DList_set: empty set'') (\<lambda>_. Inf_fin (DList_set dxs))
-                              else DList_Set.fold inf (DList_Set.tl dxs) (DList_Set.hd dxs))"
-  "Inf_fin (RBT_set rbt) =
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''Inf_fin RBT_set: corder = None'') (\<lambda>_. Inf_fin (RBT_set rbt))
-                     | Some _ \<Rightarrow> if RBT_Set2.is_empty rbt then Code.abort (STR ''Inf_fin RBT_set: empty set'') (\<lambda>_. Inf_fin (RBT_set rbt))
-                                 else RBT_Set2.fold1 inf rbt)"
-by(simp_all add: Inf_fin.set_eq_fold DList_set_def DList_Set.Inf_fin_member RBT_Set2.Inf_fin_member RBT_set_def del: set_simps split: option.splits)
+lift_definition inf_sls :: "'a :: lattice semilattice_set" is "inf" by unfold_locales
 
-lemma Sup_fin_code [code]:
-  fixes rbt :: "'a :: {corder, lattice} set_rbt"
-  and dxs :: "'b :: {ceq, lattice} set_dlist" shows
-  "Sup_fin (Set_Monad (x # xs)) = fold sup xs x"
-  "Sup_fin (DList_set dxs) =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Sup_fin DList_set: ceq = None'') (\<lambda>_. Sup_fin (DList_set dxs))
-                  | Some _ \<Rightarrow> if DList_Set.null dxs then Code.abort (STR ''Sup_fin DList_set: empty set'') (\<lambda>_. Sup_fin (DList_set dxs))
-                              else DList_Set.fold sup (DList_Set.tl dxs) (DList_Set.hd dxs))"
-  "Sup_fin (RBT_set rbt) =
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''Sup_fin RBT_set: corder = None'') (\<lambda>_. Sup_fin (RBT_set rbt))
-                     | Some _ \<Rightarrow> if RBT_Set2.is_empty rbt then Code.abort (STR ''Sup_fin RBT_set: empty set'') (\<lambda>_. Sup_fin (RBT_set rbt))
-                                 else RBT_Set2.fold1 sup rbt)"
-by(simp_all add: Sup_fin.set_eq_fold DList_set_def DList_Set.Sup_fin_member RBT_Set2.Sup_fin_member RBT_set_def del: set_simps split: option.splits)
+lemma Inf_fin_code [code]: "Inf_fin A = set_fold1 inf_sls A"
+by transfer(simp add: Inf_fin_def)
+
+lift_definition sup_sls :: "'a :: lattice semilattice_set" is "sup" by unfold_locales
+
+lemma Sup_fin_code [code]: "Sup_fin A = set_fold1 sup_sls A"
+by transfer(simp add: Sup_fin_def)
+
+lift_definition inf_cfi :: "('a :: lattice, 'a) comp_fun_idem" is "inf"
+by(rule comp_fun_idem_inf)
 
 lemma Inf_code:
-  fixes xs :: "'a :: complete_lattice list"
-  and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
-  and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  shows Inf_Set_Monad: "Inf (Set_Monad xs) = fold inf xs top"
-  and Inf_DList_set:
-  "Inf (DList_set dxs) =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Inf DList_set: ceq = None'') (\<lambda>_. Inf (DList_set dxs))
-                  | Some _ \<Rightarrow> DList_Set.fold inf dxs top)"
-  and Inf_RBT_set:
-  "Inf (RBT_set rbt) =
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Inf RBT_set: corder = None'') (\<lambda>_. Inf (RBT_set rbt))
-                  | Some _ \<Rightarrow> RBT_Set2.fold inf rbt top)"
-by(auto simp add: DList_set_def RBT_set_def Inf_set_fold Collect_member DList_Set.fold.rep_eq RBT_Set2.member_conv_keys RBT_Set2.keys.rep_eq RBT_Set2.fold_conv_fold_keys split: option.split)
+  fixes A :: "'a :: complete_lattice set" shows
+  "Inf A = (if finite A then set_fold_cfi inf_cfi top A else Code.abort (STR ''Inf: infinite'') (\<lambda>_. Inf A))"
+by transfer(simp add: Inf_fold_inf)
+
+lift_definition sup_cfi :: "('a :: lattice, 'a) comp_fun_idem" is "sup"
+by(rule comp_fun_idem_sup)
 
 lemma Sup_code:
-  fixes xs :: "'a :: complete_lattice list"
-  and dxs :: "'b :: {complete_lattice, ceq} set_dlist"
-  and rbt :: "'c :: {complete_lattice, corder} set_rbt"
-  shows Sup_Set_Monad:
-  "Sup (Set_Monad xs) = fold sup xs bot"
-  and Sup_DList_set:
-  "Sup (DList_set dxs) =
-  (case ID CEQ('b) of None \<Rightarrow> Code.abort (STR ''Sup DList_set: ceq = None'') (\<lambda>_. Sup (DList_set dxs))
-                  | Some _ \<Rightarrow> DList_Set.fold sup dxs bot)"
-  and Sup_RBT_set:
-  "Sup (RBT_set rbt) =
-  (case ID CORDER('c) of None \<Rightarrow> Code.abort (STR ''Sup RBT_set: corder = None'') (\<lambda>_. Sup (RBT_set rbt))
-                  | Some _ \<Rightarrow> RBT_Set2.fold sup rbt bot)"
-by(auto simp add: DList_set_def RBT_set_def Sup_set_fold Collect_member DList_Set.fold.rep_eq RBT_Set2.member_conv_keys RBT_Set2.keys.rep_eq RBT_Set2.fold_conv_fold_keys split: option.split)
+  fixes A :: "'a :: complete_lattice set" shows
+  "Sup A = (if finite A then set_fold_cfi sup_cfi bot A else Code.abort (STR ''Sup: infinite'') (\<lambda>_. Sup A))"
+by transfer(simp add: Sup_fold_sup)
 
-lemmas Inter_code [code] = 
-  Inf_Set_Monad[where ?'a = "_ :: type set"]
-  Inf_DList_set[where ?'b = "_ :: ceq set"]
-  Inf_RBT_set[where ?'c = "_ :: corder set"]
-
-lemmas Union_code [code] =
-  Sup_Set_Monad[where ?'a="_ :: type set"]
-  Sup_DList_set[where ?'b="_ :: ceq set"]
-  Sup_RBT_set[where ?'c="_ :: corder set"]
-
-lemmas Predicate_Inf_code [code] =
-  Inf_Set_Monad[where ?'a = "_ :: type Predicate.pred"]
-  Inf_DList_set[where ?'b = "_ :: ceq Predicate.pred"]
-  -- {* no @{class corder} instance for @{typ "'a Predicate.pred"} yet *}
-(*  Inf_RBT_set[where ?'c = "_ :: corder Predicate.pred"] *)
-
-lemmas Predicate_Sup_code [code] =
-  Sup_Set_Monad[where ?'a = "_ :: type Predicate.pred"]
-  Sup_DList_set[where ?'b = "_ :: ceq Predicate.pred"]
-  -- {* no @{class corder} instance for @{typ "'a Predicate.pred"} yet *}
-(*  Sup_RBT_set[where ?'c = "_ :: corder Predicate.pred"] *)
-
-lemmas Inf_fun_code [code] =
-  Inf_Set_Monad[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-  Inf_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-  Inf_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-
-lemmas Sup_fun_code [code] =
-  Sup_Set_Monad[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-  Sup_DList_set[where ?'b = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-  Sup_RBT_set[where ?'c = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+lemmas Inter_code [code] = Inf_code[where ?'a = "_ :: type set"]
+lemmas Union_code [code] = Sup_code[where ?'a = "_ :: type set"]
+lemmas Predicate_Inf_code [code] = Inf_code[where ?'a = "_ :: type Predicate.pred"]
+lemmas Predicate_Sup_code [code] = Sup_code[where ?'a = "_ :: type Predicate.pred"]
+lemmas Inf_fun_code [code] = Inf_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
+lemmas Sup_fun_code [code] = Sup_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
 
 lemma INF_code [code]: "INFIMUM A f = Inf (f ` A)"
 by(rule INF_def)
@@ -1330,47 +1424,13 @@ by(auto simp add: DList_set_def DList_Set.Collect_member DList_Set.fold_def RBT_
 lemma fold_singleton: "Finite_Set.fold f x {y} = f y x"
 by(fastforce simp add: Finite_Set.fold_def intro: fold_graph.intros elim: fold_graph.cases)
 
+lift_definition setsum_cfc :: "('a \<Rightarrow> 'b :: comm_monoid_add) \<Rightarrow> ('a, 'b) comp_fun_commute"
+is "\<lambda>f :: 'a \<Rightarrow> 'b. plus \<circ> f"
+by(unfold_locales)(simp add: fun_eq_iff add.left_commute)
+
 lemma setsum_code [code]:
-  fixes xs :: "'a :: ceq list" 
-  and dxs :: "'a set_dlist" 
-  and rbt :: "'b :: corder set_rbt" shows
-  "setsum f A = (if finite A then Code.abort (STR ''setsum: finite set'') (\<lambda>_. setsum f A) else 0)"
-  (is ?generic)
-
-  "setsum f (Set_Monad xs) = 
-  (case ID CEQ('a) of None \<Rightarrow> 
-       case xs of [] \<Rightarrow> 0 | [x] \<Rightarrow> f x | _ \<Rightarrow> Code.abort (STR ''setsum Set_Monad: ceq = None'') (\<lambda>_. setsum f (Set_Monad xs))
-     | Some eq \<Rightarrow> fold (plus \<circ> f) (equal_base.list_remdups eq xs) 0)" (is ?Set_Monad)
-
-  "setsum f (DList_set dxs) =
-  (case ID CEQ('a) of None \<Rightarrow>
-       case list_of_dlist dxs of [] \<Rightarrow> 0 | _ \<Rightarrow> Code.abort (STR ''setsum DList_set: ceq = None'') (\<lambda>_. setsum f (DList_set dxs))
-     | Some _ \<Rightarrow> DList_Set.fold (plus \<circ> f) dxs 0)" (is ?DList)
-
-  "setsum g (RBT_set rbt) = 
-  (case ID CORDER('b) of None \<Rightarrow>
-       case RBT_Mapping2.impl_of rbt of rbt.Empty \<Rightarrow> 0 | _ \<Rightarrow> Code.abort (STR ''setsum RBT_set: corder = None'') (\<lambda>_. setsum g (RBT_set rbt))
-     | Some _ \<Rightarrow> RBT_Set2.fold (plus \<circ> g) rbt 0)" (is ?rbt)
-proof -
-  have comm: "comp_fun_commute (\<lambda>x. op + (f x))" by default (auto simp: ac_simps)
-
-  show ?Set_Monad using equal.equal_eq[where ?'a='a, OF equal_ceq]
-    by(auto simp add: setsum.eq_fold fold_singleton comp_fun_commute.fold_set_fold_remdups[OF comm] o_def simp del: set_simps not_None_eq split: option.split list.split)(auto simp add: o_def List.member_def)
-
-  have "ID CEQ('a) \<noteq> None \<Longrightarrow> distinct (list_of_dlist dxs)"
-    by transfer(auto simp add: equal.equal_eq[OF equal_ceq])
-  thus ?DList
-    by(auto simp add: DList_set_def setsum.eq_fold DList_Set.Collect_member o_def comp_fun_commute.fold_set_fold_remdups[OF comm] DList_Set.fold_def distinct_remdups_id simp del: set_simps split: option.split list.split)
-
-  have comm: "comp_fun_commute (\<lambda>x. op + (g x))" by default (auto simp: ac_simps)
-  show ?rbt
-    apply(auto simp add: RBT_set_def setsum.eq_fold member_conv_keys o_def comp_fun_commute.fold_set_fold_remdups[OF comm] RBT_Set2.fold_def distinct_remdups_id cong: rbt.case_cong split: option.split)
-     apply(auto split: rbt.split)
-    apply(simp_all add: RBT_Set2.member_def ord.rbt_lookup.simps[abs_def] RBT_Impl.fold_def distinct_remdups_id RBT_Set2.keys_def RBT_Impl.keys_def fold_map o_def split_def)
-    done
-
-  show ?generic by(simp add: setsum.eq_fold)
-qed
+  "setsum f A = (if finite A then set_fold_cfc (setsum_cfc f) 0 A else 0)"
+by transfer(simp add: setsum.eq_fold)
 
 lemma product_code [code]:
   fixes dxs :: "'a :: ceq set_dlist"
