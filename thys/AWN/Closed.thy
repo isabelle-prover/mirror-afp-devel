@@ -49,14 +49,14 @@ lemma closed_reachable_par_subnet_induct [consumes, case_names init step]:
   qed
 
 lemma reachable_closed_reachable_pnet [elim]:
-  assumes "s \<in> reachable (closed (pnet np any)) TT"
-    shows "s \<in> reachable (pnet np any) TT"
+  assumes "s \<in> reachable (closed (pnet np n)) TT"
+    shows "s \<in> reachable (pnet np n) TT"
   using assms proof (induction rule: reachable.induct)
     fix s s' a
-    assume sr: "s \<in> reachable (pnet np any) TT"
-       and "(s, a, s') \<in> trans (closed (pnet np any))"
-    from this(2) have "(s, a, s') \<in> cnet_sos (trans (pnet np any))" by simp
-    thus "s' \<in> reachable (pnet np any) TT"
+    assume sr: "s \<in> reachable (pnet np n) TT"
+       and "(s, a, s') \<in> trans (closed (pnet np n))"
+    from this(2) have "(s, a, s') \<in> cnet_sos (trans (pnet np n))" by simp
+    thus "s' \<in> reachable (pnet np n) TT"
       by cases (insert sr, auto elim!: reachable_step)
   qed (auto elim: reachable_init)
 
@@ -71,20 +71,20 @@ lemma closed_subnet_net_state [elim]:
   using assms by (metis reachable_closed_reachable_pnet net_par_reachable_is_subnet)
 
 lemma closed_imp_pnet_trans [elim, dest]:
-  assumes "(s, a, s') \<in> trans (closed (pnet np any))"
-    shows "\<exists>a'. (s, a', s') \<in> trans (pnet np any)"
+  assumes "(s, a, s') \<in> trans (closed (pnet np n))"
+    shows "\<exists>a'. (s, a', s') \<in> trans (pnet np n)"
   using assms by (auto elim!: cnet_sos.cases)
 
 lemma reachable_not_in_net_tree_ips [elim]:
-  assumes "s \<in> reachable (closed (pnet np any)) TT"
-      and "i\<notin>net_tree_ips any"
+  assumes "s \<in> reachable (closed (pnet np n)) TT"
+      and "i\<notin>net_tree_ips n"
     shows "netmap s i = None"
   using assms proof induction
     fix s
-    assume "s \<in> init (closed (pnet np any))"
-       and "i \<notin> net_tree_ips any"
+    assume "s \<in> init (closed (pnet np n))"
+       and "i \<notin> net_tree_ips n"
     thus "netmap s i = None"                                     
-    proof (induction any arbitrary: s)
+    proof (induction n arbitrary: s)
       fix ii R s
       assume "s \<in> init (closed (pnet np \<langle>ii; R\<rangle>))"
          and "i \<notin> net_tree_ips \<langle>ii; R\<rangle>"
@@ -112,10 +112,10 @@ lemma reachable_not_in_net_tree_ips [elim]:
     qed
   next
     fix s a s'
-    assume sr: "s \<in> reachable (closed (pnet np any)) TT"
-       and tr: "(s, a, s') \<in> trans (closed (pnet np any))"
-       and IH: "i \<notin> net_tree_ips any \<Longrightarrow> netmap s i = None"
-       and "i \<notin> net_tree_ips any"
+    assume sr: "s \<in> reachable (closed (pnet np n)) TT"
+       and tr: "(s, a, s') \<in> trans (closed (pnet np n))"
+       and IH: "i \<notin> net_tree_ips n \<Longrightarrow> netmap s i = None"
+       and "i \<notin> net_tree_ips n"
     from this(3-4) have "i\<notin>net_ips s" by auto
     with tr have "i\<notin>net_ips s'"
       by simp (erule cnet_sos.cases, (metis net_ips_is_dom_netmap pnet_maintains_dom)+)
@@ -123,10 +123,10 @@ lemma reachable_not_in_net_tree_ips [elim]:
   qed
 
 lemma closed_pnet_aodv_init [elim]:
-  assumes "s \<in> init (closed (pnet np any))"
-      and "i\<in>net_tree_ips any"
+  assumes "s \<in> init (closed (pnet np n))"
+      and "i\<in>net_tree_ips n"
     shows "the (netmap s i) \<in> init (np i)"
-  using assms proof (induction any arbitrary: s)
+  using assms proof (induction n arbitrary: s)
     fix ii R s
     assume "s \<in> init (closed (pnet np \<langle>ii; R\<rangle>))"
        and "i\<in>net_tree_ips \<langle>ii; R\<rangle>"

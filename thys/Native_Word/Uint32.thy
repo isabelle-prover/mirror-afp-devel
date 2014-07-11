@@ -312,7 +312,7 @@ code_printing
   (Scala) "Int" and
   (Eval) "Word32.word"
 | constant Uint32 \<rightharpoonup>
-  (SML) "Word32.fromInt" and
+  (SML) "Word32.fromLargeInt (IntInf.toLarge _)" and
   (Haskell) "(Prelude.fromInteger _ :: Uint32.Word32)" and
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint32.Word32)" and
   (Scala) "_.intValue"

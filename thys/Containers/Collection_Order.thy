@@ -266,7 +266,7 @@ lemma corder_set_code [code]:
   "CORDER('a :: corder set) = (case ID CORDER('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some (cless_eq_set, cless_set))"
 by(clarsimp simp add: corder_set_def ID_Some split: option.split)
 
-
+derive (no) corder Predicate.pred
 
 subsection {* Proper intervals *}
 

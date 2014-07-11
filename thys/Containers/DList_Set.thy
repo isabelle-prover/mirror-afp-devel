@@ -405,30 +405,6 @@ proof -
   ultimately show ?thesis by(transfer)(auto simp add: List.member_def[abs_def])
 qed
 
-context assumes ID_ceq_neq_None: "ID CEQ('a :: {ceq, complete_lattice}) \<noteq> None"
-begin
-
-lemma Inf_member: "Inf (Collect (member (dxs :: 'a set_dlist))) = fold inf dxs top"
-by(transfer)(simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] Inf_set_fold)
-
-lemma Sup_member: "Sup (Collect (member (dxs :: 'a set_dlist))) = fold sup dxs bot"
-by(transfer)(simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] Sup_set_fold)
-
-end
-
-context assumes ID_ceq_neq_None: "ID CEQ('a :: {ceq, lattice}) \<noteq> None"
-begin
-
-lemma Inf_fin_member: 
-  "dxs \<noteq> empty \<Longrightarrow> Inf_fin (Collect (member (dxs :: 'a set_dlist))) = fold inf (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Inf_fin.set_eq_fold simp del: set_simps)
-
-lemma Sup_fin_member: 
-  "dxs \<noteq> empty \<Longrightarrow> Sup_fin (Collect (member (dxs :: 'a set_dlist))) = fold sup (tl dxs) (hd dxs)"
-by transfer(clarsimp simp add: ID_ceq_neq_None equal.equal_eq[OF equal_ceq] List.member_def[abs_def] neq_Nil_conv Sup_fin.set_eq_fold simp del: set_simps)
-
-end
-
 hide_const (open) empty insert remove null member length fold foldr union filter hd tl dlist_all product Id_on
 
 end

@@ -207,6 +207,12 @@ lemma unfoldr_rbt_keys_generator:
   "list.unfoldr rbt_keys_generator (init t) = keys t"
 by transfer(simp add: unfoldr_rbt_keys_generator)
 
+lemma keys_eq_Nil_iff [simp]: "keys rbt = [] \<longleftrightarrow> rbt = empty"
+by transfer(case_tac rbt, simp_all)
+
+lemma fold1_conv_fold: "fold1 f rbt = List.fold f (tl (keys rbt)) (hd (keys rbt))"
+by transfer(simp add: RBT_Impl_fold1_def)
+
 context assumes ID_corder_neq_None: "ID CORDER('a :: corder) \<noteq> None"
 begin
 
@@ -322,14 +328,6 @@ begin
 
 lemma set_linorder2: "class.linorder (cless_eq :: 'a \<Rightarrow> 'a \<Rightarrow> bool) cless"
 using ID_corder_neq_None by(clarsimp)(rule ID_corder)
-
-lemma Inf_fin_member:
-  "(rbt :: 'a set_rbt) \<noteq> RBT_Set2.empty \<Longrightarrow> Inf_fin (Collect (member rbt)) = RBT_Set2.fold1 inf rbt"
-by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Inf_fin.set_eq_fold[symmetric])
-
-lemma Sup_fin_member:
-  "(rbt :: 'a set_rbt) \<noteq> RBT_Set2.empty \<Longrightarrow> Sup_fin (Collect (member rbt)) = RBT_Set2.fold1 sup rbt"
-by(transfer)(clarsimp simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder2] ord.is_rbt_rbt_sorted RBT_Impl_fold1_def neq_Empty_conv, simp add: Sup_fin.set_eq_fold[symmetric])
 
 end
 

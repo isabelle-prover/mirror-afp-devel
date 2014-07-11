@@ -4,73 +4,6 @@ begin
 
 section "List Inversion"
 
-(* FIXME mv List *)
-
-lemma distinct_swap[simp]: "\<lbrakk> i < size xs; j < size xs \<rbrakk> \<Longrightarrow>
-  distinct(xs[i := xs!j, j := xs!i]) = distinct xs"
-apply (simp add: distinct_conv_nth nth_list_update)
-apply safe
-apply metis+
-done
-
-lemma set_swap[simp]:
-  "\<lbrakk> i < size xs; j < size xs \<rbrakk> \<Longrightarrow> set(xs[i := xs!j, j := xs!i]) = set xs"
-by(simp add: set_conv_nth nth_list_update) metis
-
-(*FIXME mv Index *)
-
-declare index_le_size[simp]
-
-lemma index_set_take: assumes "index xs x < i" and "i \<le> length xs"
-shows "x \<in> set (take i xs)"
-proof -
-  have "index (take i xs @ drop i xs) x < i"
-    using append_take_drop_id[of i xs] assms(1) by simp
-  thus ?thesis using assms(2)
-    by(simp add:index_append del:append_take_drop_id split: if_splits)
-qed
-
-lemma index_take_if_index:
-assumes "index xs x \<le> n" shows "index (take n xs) x = index xs x"
-proof cases
-  assume "x : set(take n xs)" with assms show ?thesis
-    by (metis append_take_drop_id index_append)
-next
-  assume "x \<notin> set(take n xs)" with assms show ?thesis
-   by (metis order_le_less index_set_take le_cases length_take min_def size_index_conv take_all)
-qed
-
-lemma index_take_if_set:
-  "x : set(take n xs) \<Longrightarrow> index (take n xs) x = index xs x"
-by (metis index_take index_take_if_index linear)
-
-lemma index_update_diff2[simp]:
-  "n < length xs \<Longrightarrow> x \<noteq> xs!n \<Longrightarrow> x \<noteq> y \<Longrightarrow> index (xs[n := y]) x = index xs x"
-by(subst (2) id_take_nth_drop[of n xs])
-  (auto simp: upd_conv_take_nth_drop index_append min_def)
-
-lemma index_nth_id[simp]:
-  "\<lbrakk> distinct xs;  n < length xs \<rbrakk> \<Longrightarrow> index xs (xs ! n) = n"
-by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
-
-lemma set_drop_index: "distinct xs \<Longrightarrow> index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
-by (metis in_set_dropD index_nth_id last_index_drop last_index_less_size_conv nth_last_index)
-
-lemma index_swap_distinct: assumes "distinct xs" "i < size xs" "j < size xs"
-shows "index (xs[i := xs!j, j := xs!i]) x =
-  (if x = xs!i then j else if x = xs!j then i else index xs x)"
-proof-
-  have "distinct(xs[i := xs!j, j := xs!i])" using assms by simp
-  with assms show ?thesis
-    apply (auto simp: swap_def simp del: distinct_swap)
-    apply (metis index_nth_id list_update_same_conv)
-    apply (metis (erased, hide_lams) index_nth_id length_list_update list_update_swap nth_list_update_eq)
-    apply (metis index_nth_id length_list_update nth_list_update_eq)
-    by (metis index_update_diff2 length_list_update nth_list_update)
-qed
-
-(* end mv *)
-
 abbreviation "dist_perm xs ys \<equiv> distinct xs \<and> distinct ys \<and> set xs = set ys"
 
 definition before_in :: "'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> bool"
@@ -93,7 +26,7 @@ by (metis index_eq_index_conv before_in_def less_asym linorder_neqE_nat)
 lemma no_before_inI[simp]: "x < y in xs \<Longrightarrow> (\<not> y < x in xs) = True"
 by (metis before_in_setD1 not_before_in)
 
-lemma finite_invs[simp]:  "finite(Inv xs ys)"
+lemma finite_Invs[simp]:  "finite(Inv xs ys)"
 apply(rule finite_subset[where B = "set xs \<times> set ys"])
 apply(auto simp add: Inv_def before_in_def)
 apply(metis index_conv_size_if_notin index_less_size_conv less_asym)+
@@ -117,7 +50,7 @@ lemma card_Inv_tri_ineq:
   "dist_perm xs ys \<Longrightarrow> dist_perm ys zs \<Longrightarrow>
   card (Inv xs zs) \<le> card(Inv xs ys) + card (Inv ys zs)"
 using card_mono[OF _ Inv_tri_ineq[of xs ys zs]]
-by auto (metis card_Un_Int finite_invs trans_le_add1)
+by auto (metis card_Un_Int finite_Invs trans_le_add1)
 
 
 definition "mtf x xs =
@@ -162,7 +95,7 @@ lemma index_swapSuc_distinct:
   "distinct xs \<Longrightarrow> Suc n < length xs \<Longrightarrow>
   index (swapSuc n xs) x =
   (if x = xs!n then Suc n else if x = xs!Suc n then n else index xs x)"
-by(auto simp add: swapSuc_def index_swap_distinct)
+by(auto simp add: swapSuc_def index_swap_if_distinct)
 
 lemma set_swapSuc[simp]: "Suc n < size xs \<Longrightarrow> set(swapSuc n xs) = set xs"
 by(auto simp add: swapSuc_def set_conv_nth nth_list_update) metis

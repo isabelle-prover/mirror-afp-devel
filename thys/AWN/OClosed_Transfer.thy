@@ -560,7 +560,8 @@ lemma transfer_tau:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (hypsubst_thin, metis (full_types, lifting) fun_upd_same option.sel) 
+          unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
+                                        metis (full_types, lifting) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, a, s') \<in> trans (np i)` by (rule trans)
 
@@ -773,7 +774,8 @@ lemma transfer_deliver:
       moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
                     `ns' = NodeS ii s' R'` and `ii = i`
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (hypsubst_thin, metis (lifting, full_types) fun_upd_same option.sel)
+          unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
+                                        metis (lifting, full_types) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), deliver d, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using `(s, deliver d, s') \<in> trans (np i)` by (rule trans)
 
@@ -1369,17 +1371,17 @@ lemma transfer_cast:
   qed
 
 lemma transfer_pnet_action:
-  assumes "s \<in> reachable (pnet np any) TT"
-      and "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)"
-      and "wf_net_tree any"
-      and "(s, a, s') \<in> trans (pnet np any)"
-  obtains \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (opnet onp any)"
+  assumes "s \<in> reachable (pnet np n) TT"
+      and "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
+      and "wf_net_tree n"
+      and "(s, a, s') \<in> trans (pnet np n)"
+  obtains \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)"
                   and "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
-                  and "netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
+                  and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
   proof atomize_elim
-    show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (opnet onp any)
+    show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                   \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
-                  \<and> netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
+                  \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
     proof (cases a)
       case node_cast
       with assms(4) show ?thesis
@@ -1412,17 +1414,17 @@ lemma transfer_pnet_action:
   qed
 
 lemma transfer_action_pnet_closed:
-  assumes "(s, a, s') \<in> trans (closed (pnet np any))"
-  obtains a' where "(s, a', s') \<in> trans (pnet np any)"
-               and "\<And>\<sigma> \<zeta> \<sigma>' \<zeta>'. \<lbrakk> ((\<sigma>, \<zeta>), a', (\<sigma>', \<zeta>')) \<in> trans (opnet onp any);
+  assumes "(s, a, s') \<in> trans (closed (pnet np n))"
+  obtains a' where "(s, a', s') \<in> trans (pnet np n)"
+               and "\<And>\<sigma> \<zeta> \<sigma>' \<zeta>'. \<lbrakk> ((\<sigma>, \<zeta>), a', (\<sigma>', \<zeta>')) \<in> trans (opnet onp n);
                                   (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j) \<rbrakk>
-                            \<Longrightarrow> ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))"
+                            \<Longrightarrow> ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
   proof (atomize_elim)
-    from assms have "(s, a, s') \<in> cnet_sos (trans (pnet np any))" by simp
-    thus "\<exists>a'. (s, a', s') \<in> trans (pnet np any)
-                \<and> (\<forall>\<sigma> \<zeta> \<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a', (\<sigma>', \<zeta>')) \<in> trans (opnet onp any)
+    from assms have "(s, a, s') \<in> cnet_sos (trans (pnet np n))" by simp
+    thus "\<exists>a'. (s, a', s') \<in> trans (pnet np n)
+                \<and> (\<forall>\<sigma> \<zeta> \<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a', (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                                \<longrightarrow> (\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
-                               \<longrightarrow> ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any)))"
+                               \<longrightarrow> ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n)))"
     proof cases
       case (cnet_cast R m) thus ?thesis
       by (auto intro!: exI [where x="R:*cast(m)"] dest!: ocnet_cast)
@@ -1430,58 +1432,58 @@ lemma transfer_action_pnet_closed:
   qed
 
 lemma transfer_action:
-  assumes "s \<in> reachable (closed (pnet np any)) TT"
-      and "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)"
-      and "wf_net_tree any"
-      and "(s, a, s') \<in> trans (closed (pnet np any))"
-  obtains \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))"
-                  and "netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
+  assumes "s \<in> reachable (closed (pnet np n)) TT"
+      and "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
+      and "wf_net_tree n"
+      and "(s, a, s') \<in> trans (closed (pnet np n))"
+  obtains \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
+                  and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
   proof atomize_elim
-    from assms(1) have "s \<in> reachable (pnet np any) TT" ..
+    from assms(1) have "s \<in> reachable (pnet np n) TT" ..
     from assms(4)
-      show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))
-                    \<and> netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
+      show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))
+                    \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
         by (cases a)
            ((elim transfer_action_pnet_closed
-                  transfer_pnet_action [OF `s \<in> reachable (pnet np any) TT` assms(2-3)])?,
+                  transfer_pnet_action [OF `s \<in> reachable (pnet np n) TT` assms(2-3)])?,
             (auto intro!: exI)[1])+
   qed
 
 lemma pnet_reachable_transfer':
-  assumes "wf_net_tree any"
-      and "s \<in> reachable (closed (pnet np any)) TT"
-    shows "netgmap sr s \<in> netmask (net_tree_ips any) ` oreachable (oclosed (opnet onp any)) (\<lambda>_ _ _. True) U"
-          (is " _ \<in> ?f ` ?oreachable any")
+  assumes "wf_net_tree n"
+      and "s \<in> reachable (closed (pnet np n)) TT"
+    shows "netgmap sr s \<in> netmask (net_tree_ips n) ` oreachable (oclosed (opnet onp n)) (\<lambda>_ _ _. True) U"
+          (is " _ \<in> ?f ` ?oreachable n")
   using assms(2) proof induction
     fix s
-    assume "s \<in> init (closed (pnet np any))"
-    hence "s \<in> init (pnet np any)" by simp
-    with `wf_net_tree any` have "netgmap sr s \<in> netmask (net_tree_ips any) ` init (opnet onp any)"
+    assume "s \<in> init (closed (pnet np n))"
+    hence "s \<in> init (pnet np n)" by simp
+    with `wf_net_tree n` have "netgmap sr s \<in> netmask (net_tree_ips n) ` init (opnet onp n)"
       by (rule init_pnet_opnet)
-    hence "netgmap sr s \<in> netmask (net_tree_ips any) ` init (oclosed (opnet onp any))"
+    hence "netgmap sr s \<in> netmask (net_tree_ips n) ` init (oclosed (opnet onp n))"
       by simp
-    moreover have "netmask (net_tree_ips any) ` init (oclosed (opnet onp any))
-                                        \<subseteq> netmask (net_tree_ips any) ` ?oreachable any"
+    moreover have "netmask (net_tree_ips n) ` init (oclosed (opnet onp n))
+                                        \<subseteq> netmask (net_tree_ips n) ` ?oreachable n"
       by (intro image_mono subsetI) (rule oreachable_init)
-    ultimately show "netgmap sr s \<in> netmask (net_tree_ips any) ` ?oreachable any"
+    ultimately show "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
       by (rule set_rev_mp)
   next
     fix s a s'
-    assume "s \<in> reachable (closed (pnet np any)) TT"
-       and "netgmap sr s \<in> netmask (net_tree_ips any) ` ?oreachable any"
-       and "(s, a, s') \<in> trans (closed (pnet np any))"
-    from this(2) obtain \<sigma> \<zeta> where "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)"
-                              and "(\<sigma>, \<zeta>) \<in> ?oreachable any"
+    assume "s \<in> reachable (closed (pnet np n)) TT"
+       and "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
+       and "(s, a, s') \<in> trans (closed (pnet np n))"
+    from this(2) obtain \<sigma> \<zeta> where "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
+                              and "(\<sigma>, \<zeta>) \<in> ?oreachable n"
       by clarsimp
-    from `s \<in> reachable (closed (pnet np any)) TT` this(1) `wf_net_tree any`
-         and `(s, a, s') \<in> trans (closed (pnet np any))`
-      obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))"
-                     and "netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
+    from `s \<in> reachable (closed (pnet np n)) TT` this(1) `wf_net_tree n`
+         and `(s, a, s') \<in> trans (closed (pnet np n))`
+      obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
+                     and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
         by (rule transfer_action)
-    from `(\<sigma>, \<zeta>) \<in> ?oreachable any` and this(1) have "(\<sigma>', \<zeta>') \<in> ?oreachable any"
+    from `(\<sigma>, \<zeta>) \<in> ?oreachable n` and this(1) have "(\<sigma>', \<zeta>') \<in> ?oreachable n"
       by (rule oreachable_local) simp
-    with `netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')`
-      show "netgmap sr s' \<in> netmask (net_tree_ips any) ` ?oreachable any" by (rule image_eqI)
+    with `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
+      show "netgmap sr s' \<in> netmask (net_tree_ips n) ` ?oreachable n" by (rule image_eqI)
   qed
 
 definition
@@ -1527,13 +1529,13 @@ lemma not_in_net_ips_fst_init_missing [simp]:
   using assms unfolding initmissing_def by (clarsimp split: option.split)
 
 lemma initmissing_oreachable_netmask [elim]:
-  assumes "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp any)) (\<lambda>_ _ _. True) U"
-          (is "_ \<in> ?oreachable any")
-      and "net_ips s = net_tree_ips any"
-    shows "netgmap sr s \<in> netmask (net_tree_ips any) ` ?oreachable any"
+  assumes "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp n)) (\<lambda>_ _ _. True) U"
+          (is "_ \<in> ?oreachable n")
+      and "net_ips s = net_tree_ips n"
+    shows "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
   proof -
     obtain \<sigma> \<zeta> where "initmissing (netgmap sr s) = (\<sigma>, \<zeta>)" by (metis surj_pair)
-    with assms(1) have "(\<sigma>, \<zeta>) \<in> ?oreachable any" by simp
+    with assms(1) have "(\<sigma>, \<zeta>) \<in> ?oreachable n" by simp
 
     have "netgmap sr s = netmask (net_ips s) (\<sigma>, \<zeta>)"
     proof (intro prod_eqI ext)
@@ -1553,42 +1555,42 @@ lemma initmissing_oreachable_netmask [elim]:
         show "snd (netgmap sr s) = snd (netmask (net_ips s) (\<sigma>, \<zeta>))"
           by simp
     qed
-    with assms(2) have "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)" by simp
-    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable any`
-      have "netmask (net_ips s) (\<sigma>, \<zeta>) \<in> netmask (net_ips s) ` ?oreachable any"
+    with assms(2) have "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)" by simp
+    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable n`
+      have "netmask (net_ips s) (\<sigma>, \<zeta>) \<in> netmask (net_ips s) ` ?oreachable n"
         by (rule imageI)
     ultimately show ?thesis
       by (simp only: assms(2))
   qed
 
 lemma pnet_reachable_transfer:
-  assumes "wf_net_tree any"
-      and "s \<in> reachable (closed (pnet np any)) TT"
-    shows "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp any)) (\<lambda>_ _ _. True) U"
-          (is " _ \<in> ?oreachable any")
+  assumes "wf_net_tree n"
+      and "s \<in> reachable (closed (pnet np n)) TT"
+    shows "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp n)) (\<lambda>_ _ _. True) U"
+          (is " _ \<in> ?oreachable n")
   using assms(2) proof induction
     fix s
-    assume "s \<in> init (closed (pnet np any))"
-    hence "s \<in> init (pnet np any)" by simp
+    assume "s \<in> init (closed (pnet np n))"
+    hence "s \<in> init (pnet np n)" by simp
 
-    from `wf_net_tree any` have "initmissing (netgmap sr s) \<in> init (opnet onp any)"
+    from `wf_net_tree n` have "initmissing (netgmap sr s) \<in> init (opnet onp n)"
     proof (rule init_lifted [THEN set_mp], intro CollectI exI conjI allI)
       show "initmissing (netgmap sr s) = (fst (initmissing (netgmap sr s)), snd (netgmap sr s))"
         by (metis snd_initmissing surjective_pairing)
     next
-      from `s \<in> init (pnet np any)` show "s \<in> init (pnet np any)" ..
+      from `s \<in> init (pnet np n)` show "s \<in> init (pnet np n)" ..
     next
       fix i
-      show "if i \<in> net_tree_ips any
+      show "if i \<in> net_tree_ips n
             then (fst (initmissing (netgmap sr s))) i = the (fst (netgmap sr s) i)
             else (fst (initmissing (netgmap sr s))) i \<in> (fst \<circ> sr) ` init (np i)"
-      proof (cases "i \<in> net_tree_ips any", simp_all only: if_True if_False)
-        assume "i \<in> net_tree_ips any"
-        with `s \<in> init (pnet np any)` have "i \<in> net_ips s" ..
+      proof (cases "i \<in> net_tree_ips n", simp_all only: if_True if_False)
+        assume "i \<in> net_tree_ips n"
+        with `s \<in> init (pnet np n)` have "i \<in> net_ips s" ..
         thus "fst (initmissing (netgmap sr s)) i = the (fst (netgmap sr s) i)" by simp
       next
-        assume "i \<notin> net_tree_ips any"
-        with `s \<in> init (pnet np any)` have "i \<notin> net_ips s" ..
+        assume "i \<notin> net_tree_ips n"
+        with `s \<in> init (pnet np n)` have "i \<notin> net_ips s" ..
         hence "fst (initmissing (netgmap sr s)) i = someinit i" by simp
         moreover have "someinit i \<in> (fst \<circ> sr) ` init (np i)"
         unfolding someinit_def proof (rule someI_ex)
@@ -1598,55 +1600,55 @@ lemma pnet_reachable_transfer:
           by simp
       qed
     qed
-    hence "initmissing (netgmap sr s) \<in> init (oclosed (opnet onp any))" by simp
-    thus "initmissing (netgmap sr s) \<in> ?oreachable any" ..
+    hence "initmissing (netgmap sr s) \<in> init (oclosed (opnet onp n))" by simp
+    thus "initmissing (netgmap sr s) \<in> ?oreachable n" ..
   next
     fix s a s'
-    assume "s \<in> reachable (closed (pnet np any)) TT"
-       and "(s, a, s') \<in> trans (closed (pnet np any))"
-       and "initmissing (netgmap sr s) \<in> ?oreachable any"
-    from this(1) have "s \<in> reachable (pnet np any) TT" ..
-    hence "net_ips s = net_tree_ips any" by (rule pnet_net_ips_net_tree_ips)
-    with `initmissing (netgmap sr s) \<in> ?oreachable any`
-      have "netgmap sr s \<in> netmask (net_tree_ips any) ` ?oreachable any"
+    assume "s \<in> reachable (closed (pnet np n)) TT"
+       and "(s, a, s') \<in> trans (closed (pnet np n))"
+       and "initmissing (netgmap sr s) \<in> ?oreachable n"
+    from this(1) have "s \<in> reachable (pnet np n) TT" ..
+    hence "net_ips s = net_tree_ips n" by (rule pnet_net_ips_net_tree_ips)
+    with `initmissing (netgmap sr s) \<in> ?oreachable n`
+      have "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
         by (rule initmissing_oreachable_netmask)
 
     obtain \<sigma> \<zeta> where "(\<sigma>, \<zeta>) = initmissing (netgmap sr s)" by (metis surj_pair)
-    with `initmissing (netgmap sr s) \<in> ?oreachable any`
-      have "(\<sigma>, \<zeta>) \<in> ?oreachable any" by simp
-    from `(\<sigma>, \<zeta>) = initmissing (netgmap sr s)` and `net_ips s = net_tree_ips any` [symmetric]
-      have "netgmap sr s = netmask (net_tree_ips any) (\<sigma>, \<zeta>)"
+    with `initmissing (netgmap sr s) \<in> ?oreachable n`
+      have "(\<sigma>, \<zeta>) \<in> ?oreachable n" by simp
+    from `(\<sigma>, \<zeta>) = initmissing (netgmap sr s)` and `net_ips s = net_tree_ips n` [symmetric]
+      have "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
         by (clarsimp simp add: netmask_initmissing_netgmap)
 
-    with `s \<in> reachable (closed (pnet np any)) TT`
-      obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))"
-                     and "netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')"
-        using `wf_net_tree any` and `(s, a, s') \<in> trans (closed (pnet np any))`
+    with `s \<in> reachable (closed (pnet np n)) TT`
+      obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
+                     and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
+        using `wf_net_tree n` and `(s, a, s') \<in> trans (closed (pnet np n))`
         by (rule transfer_action)
 
-    from `(\<sigma>, \<zeta>) \<in> ?oreachable any` have "net_ips \<zeta> = net_tree_ips any"
+    from `(\<sigma>, \<zeta>) \<in> ?oreachable n` have "net_ips \<zeta> = net_tree_ips n"
       by (rule opnet_net_ips_net_tree_ips [OF oclosed_oreachable_oreachable])
-    with `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))`
-      have "\<forall>j. j\<notin>net_tree_ips any \<longrightarrow> \<sigma>' j = \<sigma> j"
+    with `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))`
+      have "\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j"
         by (clarsimp elim!: ocomplete_no_change)
     have "initmissing (netgmap sr s') = (\<sigma>', \<zeta>')"
     proof (intro prod_eqI ext)
       fix i
-      from `netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')`
-           `\<forall>j. j\<notin>net_tree_ips any \<longrightarrow> \<sigma>' j = \<sigma> j`
+      from `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
+           `\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j`
            `(\<sigma>, \<zeta>) = initmissing (netgmap sr s)`
-           `net_ips s = net_tree_ips any`
+           `net_ips s = net_tree_ips n`
       show "fst (initmissing (netgmap sr s')) i = fst (\<sigma>', \<zeta>') i"
         unfolding initmissing_def by simp
     next
-      from `netgmap sr s' = netmask (net_tree_ips any) (\<sigma>', \<zeta>')`
+      from `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
         show "snd (initmissing (netgmap sr s')) = snd (\<sigma>', \<zeta>')" by simp
     qed
-    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable any` `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp any))`
-      have "(\<sigma>', \<zeta>') \<in> ?oreachable any"
+    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable n` `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))`
+      have "(\<sigma>', \<zeta>') \<in> ?oreachable n"
         by (rule oreachable_local) (rule TrueI)
 
-    ultimately show "initmissing (netgmap sr s') \<in> ?oreachable any"
+    ultimately show "initmissing (netgmap sr s') \<in> ?oreachable n"
       by simp
   qed
 
@@ -1677,14 +1679,14 @@ lemma netglobal_weakenE [elim]:
   qed
 
 lemma close_opnet:
-  assumes "wf_net_tree any"
-      and "oclosed (opnet onp any) \<Turnstile> (\<lambda>_ _ _. True, U \<rightarrow>) global P"
-    shows "closed (pnet np any) \<TTurnstile> netglobal P"
+  assumes "wf_net_tree n"
+      and "oclosed (opnet onp n) \<Turnstile> (\<lambda>_ _ _. True, U \<rightarrow>) global P"
+    shows "closed (pnet np n) \<TTurnstile> netglobal P"
   unfolding invariant_def proof
     fix s
-    assume "s \<in> reachable (closed (pnet np any)) TT"
+    assume "s \<in> reachable (closed (pnet np n)) TT"
     with assms(1)
-      have "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp any)) (\<lambda>_ _ _. True) U"
+      have "initmissing (netgmap sr s) \<in> oreachable (oclosed (opnet onp n)) (\<lambda>_ _ _. True) U"
         by (rule pnet_reachable_transfer)
     with assms(2) have "global P (initmissing (netgmap sr s))" ..
     thus "netglobal P s" by simp

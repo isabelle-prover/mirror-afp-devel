@@ -250,7 +250,7 @@ code_printing type_constructor uint8 \<rightharpoonup>
   (Haskell) "Uint8.Word8" and
   (Scala) "Byte"
 | constant Uint8 \<rightharpoonup> 
-  (SML) "Word8.fromInt" and
+  (SML) "Word8.fromLargeInt (IntInf.toLarge _)" and
   (Haskell) "(Prelude.fromInteger _ :: Uint8.Word8)" and
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint8.Word8)" and
   (Scala) "_.byteValue"

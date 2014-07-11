@@ -68,29 +68,29 @@ lemma microstep_callE [elim]:
   "\<lbrakk> (call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub> p;  p = \<Gamma>(pn) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by auto
 
-lemma no_microstep_guard: "\<not> (({l}\<langle>f\<rangle> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}\<langle>f\<rangle> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_guard: "\<not> (({l}\<langle>g\<rangle> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}\<langle>g\<rangle> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
 lemma no_microstep_assign: "\<not> ({l}\<lbrakk>f\<rbrakk> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q"
   by (rule notI) (ind_cases "({l}\<lbrakk>f\<rbrakk> p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
-lemma no_microstep_unicast: "\<not> (({l}unicast(fip, fmsg).p \<triangleright> q) \<leadsto>\<^bsub>\<Gamma>\<^esub> r)"
-  by (rule notI) (ind_cases "({l}unicast(fip, fmsg).p \<triangleright> q) \<leadsto>\<^bsub>\<Gamma>\<^esub> r")
+lemma no_microstep_unicast: "\<not> (({l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q) \<leadsto>\<^bsub>\<Gamma>\<^esub> r)"
+  by (rule notI) (ind_cases "({l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q) \<leadsto>\<^bsub>\<Gamma>\<^esub> r")
 
-lemma no_microstep_broadcast: "\<not> (({l}broadcast(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}broadcast(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_broadcast: "\<not> (({l}broadcast(s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}broadcast(s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
-lemma no_microstep_groupcast: "\<not> (({l}groupcast(fips, fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}groupcast(fips, fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_groupcast: "\<not> (({l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
-lemma no_microstep_send: "\<not> (({l}send(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}send(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_send: "\<not> (({l}send(s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}send(s\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
-lemma no_microstep_deliver: "\<not> (({l}deliver(fdata).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}deliver(fdata).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_deliver: "\<not> (({l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
-lemma no_microstep_receive: "\<not> (({l}receive(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  by (rule notI) (ind_cases "({l}receive(fmsg).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
+lemma no_microstep_receive: "\<not> (({l}receive(u\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
+  by (rule notI) (ind_cases "({l}receive(u\<^sub>m\<^sub>s\<^sub>g).p) \<leadsto>\<^bsub>\<Gamma>\<^esub> q")
 
 lemma microstep_call_or_choice [dest]:
   assumes "p \<leadsto>\<^bsub>\<Gamma>\<^esub> q"
@@ -592,16 +592,16 @@ text {*
 function (domintros) dterms
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
   where
-    "dterms \<Gamma> ({l}\<langle>fg\<rangle> p)                  = sterms \<Gamma> p"
-  | "dterms \<Gamma> ({l}\<lbrakk>fa\<rbrakk> p)                  = sterms \<Gamma> p"
-  | "dterms \<Gamma> (p1 \<oplus> p2)                   = dterms \<Gamma> p1 \<union> dterms \<Gamma> p2"
-  | "dterms \<Gamma> ({l}unicast(ip, ms).p \<triangleright> q)  = sterms \<Gamma> p \<union> sterms \<Gamma> q"
-  | "dterms \<Gamma> ({l}broadcast(ms). p)       = sterms \<Gamma> p"
-  | "dterms \<Gamma> ({l}groupcast(ips, ms). p)  = sterms \<Gamma> p"
-  | "dterms \<Gamma> ({l}send(ms).p)             = sterms \<Gamma> p"
-  | "dterms \<Gamma> ({l}deliver(data).p)        = sterms \<Gamma> p"
-  | "dterms \<Gamma> ({l}receive(ms).p)          = sterms \<Gamma> p"
-  | "dterms \<Gamma> (call(pn))                  = dterms \<Gamma> (\<Gamma> pn)"
+    "dterms \<Gamma> ({l}\<langle>g\<rangle> p)                     = sterms \<Gamma> p"
+  | "dterms \<Gamma> ({l}\<lbrakk>u\<rbrakk> p)                     = sterms \<Gamma> p"
+  | "dterms \<Gamma> (p1 \<oplus> p2)                     = dterms \<Gamma> p1 \<union> dterms \<Gamma> p2"
+  | "dterms \<Gamma> ({l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q)  = sterms \<Gamma> p \<union> sterms \<Gamma> q"
+  | "dterms \<Gamma> ({l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p)        = sterms \<Gamma> p"
+  | "dterms \<Gamma> ({l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p)  = sterms \<Gamma> p"
+  | "dterms \<Gamma> ({l}send(s\<^sub>m\<^sub>s\<^sub>g).p)              = sterms \<Gamma> p"
+  | "dterms \<Gamma> ({l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a).p)          = sterms \<Gamma> p"
+  | "dterms \<Gamma> ({l}receive(u\<^sub>m\<^sub>s\<^sub>g).p)           = sterms \<Gamma> p"
+  | "dterms \<Gamma> (call(pn))                     = dterms \<Gamma> (\<Gamma> pn)"
   by pat_completeness auto
 
 lemma dterms_dom_basic [simp]:
@@ -805,17 +805,17 @@ text {*
 function
   ctermsl :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p , 'l) seqp set"
 where
-    "ctermsl ({l}\<langle>g\<rangle> p)                  = insert ({l}\<langle>g\<rangle> p)  (ctermsl p)"
-  | "ctermsl ({l}\<lbrakk>fa\<rbrakk> p)                  = insert ({l}\<lbrakk>fa\<rbrakk> p)  (ctermsl p)"
-  | "ctermsl ({l}unicast(ip, ms). p \<triangleright> q) = insert ({l}unicast(ip, ms). p \<triangleright> q)
+    "ctermsl ({l}\<langle>g\<rangle> p)                     = insert ({l}\<langle>g\<rangle> p)  (ctermsl p)"
+  | "ctermsl ({l}\<lbrakk>u\<rbrakk> p)                     = insert ({l}\<lbrakk>u\<rbrakk> p)  (ctermsl p)"
+  | "ctermsl ({l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q) = insert ({l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q)
                                                                       (ctermsl p \<union> ctermsl q)"
-  | "ctermsl ({l}broadcast(ms). p)       = insert ({l}broadcast(ms). p)      (ctermsl p)"
-  | "ctermsl ({l}groupcast(ips, ms). p)  = insert ({l}groupcast(ips, ms). p) (ctermsl p)"
-  | "ctermsl ({l}send(ms). p)            = insert ({l}send(ms). p)           (ctermsl p)"
-  | "ctermsl ({l}deliver(data). p)       = insert ({l}deliver(data). p)      (ctermsl p)"
-  | "ctermsl ({l}receive(ms). p)         = insert ({l}receive(ms). p)        (ctermsl p)"
-  | "ctermsl (p1 \<oplus> p2)                   = ctermsl p1 \<union> ctermsl p2"
-  | "ctermsl (call(pn))                  = {call(pn)}"
+  | "ctermsl ({l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p)       = insert ({l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p)       (ctermsl p)"
+  | "ctermsl ({l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p)  = insert ({l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p) (ctermsl p)"
+  | "ctermsl ({l}send(s\<^sub>m\<^sub>s\<^sub>g). p)            = insert ({l}send(s\<^sub>m\<^sub>s\<^sub>g). p)            (ctermsl p)"
+  | "ctermsl ({l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p)        = insert ({l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p)        (ctermsl p)"
+  | "ctermsl ({l}receive(u\<^sub>m\<^sub>s\<^sub>g). p)         = insert ({l}receive(u\<^sub>m\<^sub>s\<^sub>g). p)         (ctermsl p)"
+  | "ctermsl (p1 \<oplus> p2)                    = ctermsl p1 \<union> ctermsl p2"
+  | "ctermsl (call(pn))                   = {call(pn)}"
   by pat_completeness auto
   termination by (relation "measure(size)") (auto dest: stermsl_nobigger)
 

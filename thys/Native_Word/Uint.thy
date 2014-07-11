@@ -420,7 +420,7 @@ code_printing
   (OCaml) "Uint.dflt'_size" and
   (Scala) "Uint.dflt'_size"
 | constant Uint \<rightharpoonup>
-  (SML) "Word.fromInt" and
+  (SML) "Word.fromLargeInt (IntInf.toLarge _)" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.fromInt" and
   (Haskell) "(Prelude.fromInteger _ :: Uint.Word)" and

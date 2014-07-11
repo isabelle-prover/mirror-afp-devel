@@ -42,11 +42,11 @@ done
 
 lemma before_conv_take:
   "x : set xs \<Longrightarrow> before x xs = set(take (index xs x) xs)"
-by (auto simp add: before_in_def index_set_take) (metis index_take leI)
+by (auto simp add: before_in_def set_take_if_index index_le_size) (metis index_take leI)
 
 lemma card_before: "distinct xs \<Longrightarrow> x : set xs \<Longrightarrow> card (before x xs) = index xs x"
 using  index_le_size[of xs x]
-by(simp add: before_conv_take distinct_card[OF distinct_take] min_def del: index_le_size)
+by(simp add: before_conv_take distinct_card[OF distinct_take] min_def)
 
 lemma card_subset_before:
   "distinct xs \<Longrightarrow> x : set xs \<Longrightarrow> A \<subseteq> before x xs \<Longrightarrow> card(A) \<le> index xs x"
@@ -133,8 +133,8 @@ by (induction n) simp_all
 lemma dist_s_mtf[simp]: "distinct(s_mtf n)"
 apply(induction n)
 apply (simp)
-apply (auto simp: mtf_def index_take set_drop_index)
-apply (metis set_drop_index index_take less_Suc_eq_le linear)
+apply (auto simp: mtf_def index_take set_drop_if_index)
+apply (metis set_drop_if_index index_take less_Suc_eq_le linear)
 done
 
 lemma set_s_mtf[simp]: "set (s_mtf n) = set init"
