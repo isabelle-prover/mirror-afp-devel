@@ -287,10 +287,10 @@ lemma init_mapstate_Some_aodv_init [elim]:
   qed
 
 lemma reachable_connect_netmap [elim]:
-  assumes "s \<in> reachable (pnet np any) TT"
-      and "(s, connect(i, i'), s') \<in> trans (pnet np any)"
+  assumes "s \<in> reachable (pnet np n) TT"
+      and "(s, connect(i, i'), s') \<in> trans (pnet np n)"
     shows "netmap s' = netmap s"
-  using assms proof (induction any arbitrary: s s')
+  using assms proof (induction n arbitrary: s s')
     fix ii R\<^sub>i s s'
     assume sr: "s \<in> reachable (pnet np \<langle>ii; R\<^sub>i\<rangle>) TT"
        and "(s, connect(i, i'), s') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"
@@ -329,10 +329,10 @@ lemma reachable_connect_netmap [elim]:
   qed
 
 lemma reachable_disconnect_netmap [elim]:
-  assumes "s \<in> reachable (pnet np any) TT"
-      and "(s, disconnect(i, i'), s') \<in> trans (pnet np any)"
+  assumes "s \<in> reachable (pnet np n) TT"
+      and "(s, disconnect(i, i'), s') \<in> trans (pnet np n)"
     shows "netmap s' = netmap s"
-  using assms proof (induction any arbitrary: s s')
+  using assms proof (induction n arbitrary: s s')
     fix ii R\<^sub>i s s'
     assume sr: "s \<in> reachable (pnet np \<langle>ii; R\<^sub>i\<rangle>) TT"
        and "(s, disconnect(i, i'), s') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"

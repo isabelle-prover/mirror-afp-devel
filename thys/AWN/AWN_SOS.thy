@@ -16,14 +16,14 @@ inductive_set
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s \<times> ('s, 'm, 'p, 'l) seqp, 'm seq_action) transition set"
   for \<Gamma> :: "('s, 'm, 'p, 'l) seqp_env"
 where
-    broadcastT: "((\<xi>, {l}broadcast(ms).p),          broadcast (ms \<xi>),         (\<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | groupcastT: "((\<xi>, {l}groupcast(ips, ms).p),     groupcast (ips \<xi>) (ms \<xi>), (\<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | unicastT:   "((\<xi>, {l}unicast(ip, ms).p \<triangleright> q),    unicast (ip \<xi>) (ms \<xi>),    (\<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | notunicastT:"((\<xi>, {l}unicast(ip, ms).p \<triangleright> q),    \<not>unicast (ip \<xi>),          (\<xi>, q)) \<in> seqp_sos \<Gamma>"
-  | sendT:      "((\<xi>, {l}send(ms).p),               send (ms \<xi>),              (\<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | deliverT:   "((\<xi>, {l}deliver(data).p),          deliver (data \<xi>),         (\<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | receiveT:   "((\<xi>, {l}receive(ms).p),            receive msg,       (ms msg \<xi>, p)) \<in> seqp_sos \<Gamma>"
-  | assignT:    "((\<xi>, {l}\<lbrakk>fa\<rbrakk> p),                    \<tau>,                       (fa \<xi>, p)) \<in> seqp_sos \<Gamma>"
+    broadcastT: "((\<xi>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g).p),          broadcast (s\<^sub>m\<^sub>s\<^sub>g \<xi>),         (\<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | groupcastT: "((\<xi>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g).p),    groupcast (s\<^sub>i\<^sub>p\<^sub>s \<xi>) (s\<^sub>m\<^sub>s\<^sub>g \<xi>), (\<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | unicastT:   "((\<xi>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q),   unicast (s\<^sub>i\<^sub>p \<xi>) (s\<^sub>m\<^sub>s\<^sub>g \<xi>),    (\<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | notunicastT:"((\<xi>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q),    \<not>unicast (s\<^sub>i\<^sub>p \<xi>),          (\<xi>, q)) \<in> seqp_sos \<Gamma>"
+  | sendT:      "((\<xi>, {l}send(s\<^sub>m\<^sub>s\<^sub>g).p),               send (s\<^sub>m\<^sub>s\<^sub>g \<xi>),              (\<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | deliverT:   "((\<xi>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a).p),           deliver (s\<^sub>d\<^sub>a\<^sub>t\<^sub>a \<xi>),          (\<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | receiveT:   "((\<xi>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g).p),            receive msg,       (u\<^sub>m\<^sub>s\<^sub>g msg \<xi>, p)) \<in> seqp_sos \<Gamma>"
+  | assignT:    "((\<xi>, {l}\<lbrakk>u\<rbrakk> p),                      \<tau>,                        (u \<xi>, p)) \<in> seqp_sos \<Gamma>"
 
   | callT:      "\<lbrakk> ((\<xi>, \<Gamma> pn), a, (\<xi>', p')) \<in> seqp_sos \<Gamma> \<rbrakk> \<Longrightarrow>
                  ((\<xi>, call(pn)), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>" (* TPB: quite different to Table 1 *)
@@ -38,39 +38,39 @@ inductive_cases
   and seqp_choiceTE [elim]:    "((\<xi>, p1 \<oplus> p2), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
 
 lemma seqp_broadcastTE [elim]:
-  "\<lbrakk>((\<xi>, {l}broadcast(ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
-    \<lbrakk>a = broadcast (ms \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}broadcast(ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
+    \<lbrakk>a = broadcast (s\<^sub>m\<^sub>s\<^sub>g \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_groupcastTE [elim]:
-  "\<lbrakk>((\<xi>, {l}groupcast(dests, ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
-    \<lbrakk>a = groupcast (dests \<xi>) (ms \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}groupcast(dests, ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
+    \<lbrakk>a = groupcast (s\<^sub>i\<^sub>p\<^sub>s \<xi>) (s\<^sub>m\<^sub>s\<^sub>g \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_unicastTE [elim]:
-  "\<lbrakk>((\<xi>, {l}unicast(dest, ms). p \<triangleright> q), a, (\<xi>', r)) \<in> seqp_sos \<Gamma>;
-    \<lbrakk>a = unicast (dest \<xi>) (ms \<xi>); \<xi>' = \<xi>; r = p\<rbrakk> \<Longrightarrow> P;
-    \<lbrakk>a = \<not>unicast (dest \<xi>); \<xi>' = \<xi>; r = q\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}unicast(dest, ms). p \<triangleright> q), a, (\<xi>', r)) \<in> seqp_sos \<Gamma>") simp_all
+  "\<lbrakk>((\<xi>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q), a, (\<xi>', r)) \<in> seqp_sos \<Gamma>;
+    \<lbrakk>a = unicast (s\<^sub>i\<^sub>p \<xi>) (s\<^sub>m\<^sub>s\<^sub>g \<xi>); \<xi>' = \<xi>; r = p\<rbrakk> \<Longrightarrow> P;
+    \<lbrakk>a = \<not>unicast (s\<^sub>i\<^sub>p \<xi>); \<xi>' = \<xi>; r = q\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q), a, (\<xi>', r)) \<in> seqp_sos \<Gamma>") simp_all
 
 lemma seqp_sendTE [elim]:
-  "\<lbrakk>((\<xi>, {l}send(ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
-    \<lbrakk>a = send (ms \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}send(ms). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}send(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
+    \<lbrakk>a = send (s\<^sub>m\<^sub>s\<^sub>g \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}send(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_deliverTE [elim]:
-  "\<lbrakk>((\<xi>, {l}deliver(data). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
-    \<lbrakk>a = deliver (data \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}deliver(data). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
+    \<lbrakk>a = deliver (s\<^sub>d\<^sub>a\<^sub>t\<^sub>a \<xi>); \<xi>' = \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_receiveTE [elim]:
-  "\<lbrakk>((\<xi>, {l}receive(fmsg). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
-    \<And>msg. \<lbrakk>a = receive msg; \<xi>' = fmsg msg \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}receive(fmsg). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>;
+    \<And>msg. \<lbrakk>a = receive msg; \<xi>' = u\<^sub>m\<^sub>s\<^sub>g msg \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g). p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_assignTE [elim]:
-  "\<lbrakk>((\<xi>, {l}\<lbrakk>fas\<rbrakk> p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>; \<lbrakk>a = \<tau>; \<xi>' = fas \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<xi>, {l}\<lbrakk>fas\<rbrakk> p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
+  "\<lbrakk>((\<xi>, {l}\<lbrakk>u\<rbrakk> p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>; \<lbrakk>a = \<tau>; \<xi>' = u \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<xi>, {l}\<lbrakk>u\<rbrakk> p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>") simp
 
 lemma seqp_guardTE [elim]:
   "\<lbrakk>((\<xi>, {l}\<langle>g\<rangle> p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>; \<lbrakk>a = \<tau>; \<xi>' \<in> g \<xi>; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
@@ -186,47 +186,47 @@ inductive_set
   for S :: "('s, 'm seq_action) transition set"
 where
     node_bcast:
-    "(P, broadcast m, P') \<in> S \<Longrightarrow> (NodeS i P R, R:*cast(m), NodeS i P' R) \<in> node_sos S"
+    "(s, broadcast m, s') \<in> S \<Longrightarrow> (NodeS i s R, R:*cast(m), NodeS i s' R) \<in> node_sos S"
   | node_gcast:
-    "(P, groupcast D m, P') \<in> S \<Longrightarrow> (NodeS i P R, (R\<inter>D):*cast(m), NodeS i P' R) \<in> node_sos S"
+    "(s, groupcast D m, s') \<in> S \<Longrightarrow> (NodeS i s R, (R\<inter>D):*cast(m), NodeS i s' R) \<in> node_sos S"
   | node_ucast:
-    "\<lbrakk> (P, unicast d m, P') \<in> S; d\<in>R \<rbrakk> \<Longrightarrow> (NodeS i P R, {d}:*cast(m), NodeS i P' R) \<in> node_sos S"
+    "\<lbrakk> (s, unicast d m, s') \<in> S; d\<in>R \<rbrakk> \<Longrightarrow> (NodeS i s R, {d}:*cast(m), NodeS i s' R) \<in> node_sos S"
   | node_notucast:
-    "\<lbrakk> (P, \<not>unicast d, P') \<in> S; d\<notin>R \<rbrakk> \<Longrightarrow> (NodeS i P R, \<tau>, NodeS i P' R) \<in> node_sos S"
+    "\<lbrakk> (s, \<not>unicast d, s') \<in> S; d\<notin>R \<rbrakk> \<Longrightarrow> (NodeS i s R, \<tau>, NodeS i s' R) \<in> node_sos S"
   | node_deliver:
-    "(P, deliver d, P') \<in> S \<Longrightarrow> (NodeS i P R, i:deliver(d), NodeS i P' R) \<in> node_sos S"
+    "(s, deliver d, s') \<in> S \<Longrightarrow> (NodeS i s R, i:deliver(d), NodeS i s' R) \<in> node_sos S"
   | node_receive:
-    "(P, receive m, P') \<in> S \<Longrightarrow> (NodeS i P R, {i}\<not>{}:arrive(m), NodeS i P' R) \<in> node_sos S"
+    "(s, receive m, s') \<in> S \<Longrightarrow> (NodeS i s R, {i}\<not>{}:arrive(m), NodeS i s' R) \<in> node_sos S"
   | node_tau:
-    "(P, \<tau>, P') \<in> S         \<Longrightarrow> (NodeS i P R, \<tau>, NodeS i P' R) \<in> node_sos S"
+    "(s, \<tau>, s') \<in> S         \<Longrightarrow> (NodeS i s R, \<tau>, NodeS i s' R) \<in> node_sos S"
   | node_arrive:
-    "(NodeS i P R, {}\<not>{i}:arrive(m),  NodeS i P R) \<in> node_sos S"
+    "(NodeS i s R, {}\<not>{i}:arrive(m),  NodeS i s R) \<in> node_sos S"
   | node_connect1:
-    "(NodeS i P R, connect(i, i'),    NodeS i P (R \<union> {i'})) \<in> node_sos S"
+    "(NodeS i s R, connect(i, i'),    NodeS i s (R \<union> {i'})) \<in> node_sos S"
   | node_connect2:
-    "(NodeS i P R, connect(i', i),    NodeS i P (R \<union> {i'})) \<in> node_sos S"
+    "(NodeS i s R, connect(i', i),    NodeS i s (R \<union> {i'})) \<in> node_sos S"
   | node_disconnect1:
-    "(NodeS i P R, disconnect(i, i'), NodeS i P (R - {i'})) \<in> node_sos S"
+    "(NodeS i s R, disconnect(i, i'), NodeS i s (R - {i'})) \<in> node_sos S"
   | node_disconnect2:
-    "(NodeS i P R, disconnect(i', i), NodeS i P (R - {i'})) \<in> node_sos S"
+    "(NodeS i s R, disconnect(i', i), NodeS i s (R - {i'})) \<in> node_sos S"
   | node_connect_other:
-    "\<lbrakk> i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> (NodeS i P R, connect(i', i''), NodeS i P R) \<in> node_sos S"
+    "\<lbrakk> i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> (NodeS i s R, connect(i', i''), NodeS i s R) \<in> node_sos S"
   | node_disconnect_other:
-    "\<lbrakk> i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> (NodeS i P R, disconnect(i', i''), NodeS i P R) \<in> node_sos S"
+    "\<lbrakk> i \<noteq> i'; i \<noteq> i'' \<rbrakk> \<Longrightarrow> (NodeS i s R, disconnect(i', i''), NodeS i s R) \<in> node_sos S"
 
-inductive_cases node_arriveTE:  "(NodeS i P R, ii\<not>ni:arrive(m), NodeS i P' R) \<in> node_sos S"
-            and node_arriveTE': "(NodeS i P R, H\<not>K:arrive(m), s') \<in> node_sos S"
-            and node_castTE:    "(NodeS i P R, RM:*cast(m), NodeS i P' R') \<in> node_sos S"
-            and node_castTE':   "(NodeS i P R, RM:*cast(m), s') \<in> node_sos S"
-            and node_deliverTE: "(NodeS i P R, i:deliver(d), NodeS i P' R) \<in> node_sos S"
+inductive_cases node_arriveTE:  "(NodeS i s R, ii\<not>ni:arrive(m), NodeS i s' R) \<in> node_sos S"
+            and node_arriveTE': "(NodeS i s R, H\<not>K:arrive(m), s') \<in> node_sos S"
+            and node_castTE:    "(NodeS i s R, RM:*cast(m), NodeS i s' R') \<in> node_sos S"
+            and node_castTE':   "(NodeS i s R, RM:*cast(m), s') \<in> node_sos S"
+            and node_deliverTE: "(NodeS i s R, i:deliver(d), NodeS i s' R) \<in> node_sos S"
             and node_deliverTE': "(s, i:deliver(d), s') \<in> node_sos S"
-            and node_deliverTE'': "(NodeS ii P R, i:deliver(d), s') \<in> node_sos S"
-            and node_tauTE:     "(NodeS i P R, \<tau>, NodeS i P' R) \<in> node_sos S"
-            and node_tauTE':    "(NodeS i P R, \<tau>, s') \<in> node_sos S"
-            and node_connectTE: "(NodeS ii P R, connect(i, i'), NodeS ii P' R') \<in> node_sos S"
-            and node_connectTE': "(NodeS ii P R, connect(i, i'), s') \<in> node_sos S"
-            and node_disconnectTE: "(NodeS ii P R, disconnect(i, i'), NodeS ii P' R') \<in> node_sos S"
-            and node_disconnectTE': "(NodeS ii P R, disconnect(i, i'), s') \<in> node_sos S"
+            and node_deliverTE'': "(NodeS ii s R, i:deliver(d), s') \<in> node_sos S"
+            and node_tauTE:     "(NodeS i s R, \<tau>, NodeS i s' R) \<in> node_sos S"
+            and node_tauTE':    "(NodeS i s R, \<tau>, s') \<in> node_sos S"
+            and node_connectTE: "(NodeS ii s R, connect(i, i'), NodeS ii s' R') \<in> node_sos S"
+            and node_connectTE': "(NodeS ii s R, connect(i, i'), s') \<in> node_sos S"
+            and node_disconnectTE: "(NodeS ii s R, disconnect(i, i'), NodeS ii s' R') \<in> node_sos S"
+            and node_disconnectTE': "(NodeS ii s R, disconnect(i, i'), s') \<in> node_sos S"
 
 lemma node_sos_never_newpkt [simp]:
   assumes "(s, a, s') \<in> node_sos S"
@@ -234,7 +234,7 @@ lemma node_sos_never_newpkt [simp]:
   using assms by cases auto
 
 lemma arrives_or_not:
-  assumes "(NodeS i P R, ii\<not>ni:arrive(m), NodeS i' P' R') \<in> node_sos S"
+  assumes "(NodeS i s R, ii\<not>ni:arrive(m), NodeS i' s' R') \<in> node_sos S"
     shows "(ii = {i} \<and> ni = {}) \<or> (ii = {} \<and> ni = {i})"
   using assms by rule simp_all
 
@@ -243,14 +243,14 @@ definition
                    \<Rightarrow> ('s net_state, 'm node_action) automaton"
     ("(\<langle>_ : (_) : _\<rangle>)" [0, 0, 0] 104)
 where
-  "\<langle>i : S : R\<rangle> \<equiv> \<lparr> init = {NodeS i s R|s. s \<in> init S}, trans = node_sos (trans S) \<rparr>"
+  "\<langle>i : np : R\<^sub>i\<rangle> \<equiv> \<lparr> init = {NodeS i s R\<^sub>i|s. s \<in> init np}, trans = node_sos (trans np) \<rparr>"
 
 lemma trans_node_comp:
-  "trans (\<langle>i : S : R\<rangle>) = node_sos (trans S)"
+  "trans (\<langle>i : np : R\<^sub>i\<rangle>) = node_sos (trans np)"
   unfolding node_comp_def by simp
 
 lemma init_node_comp:
-  "init (\<langle>i : S : R\<rangle>) = {NodeS i s R|s. s \<in> init S}"
+  "init (\<langle>i : np : R\<^sub>i\<rangle>) = {NodeS i s R\<^sub>i|s. s \<in> init np}"
   unfolding node_comp_def by simp
 
 lemmas node_comps = trans_node_comp init_node_comp

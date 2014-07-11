@@ -593,7 +593,8 @@ lemma net_ips_netgmap [simp]:
 lemma some_the_fst_netgmap:
   assumes "i \<in> net_ips s"
     shows "Some (the (fst (netgmap sr s) i)) = fst (netgmap sr s) i"
-  using assms by (metis domIff dom_fst_netgmap option.collapse) 
+  using assms by (metis domIff dom_fst_netgmap option.collapse)
+
 
 lemma fst_netgmap_none [simp]:
   assumes "i \<notin> net_ips s"
@@ -763,16 +764,28 @@ lemma fst_netgmap_pair_fst [simp]:
   "fst (netgmap (\<lambda>(p, q). (fst p, snd p, q)) s) = fst (netgmap fst s)"
   by (induction s) auto
 
-text {* Introduce a streamlined alternative to netgmap to simplify certain property
+text {* Introduce streamlined alternatives to netgmap to simplify certain property
         statements and thus make them easier to understand and to present. *}
 
 fun netlift :: "('s \<Rightarrow> 'g \<times> 'l) \<Rightarrow> 's net_state \<Rightarrow> (nat \<Rightarrow> 'g option)"
   where
-    "netlift sr (NodeS i p R) = [i \<mapsto> fst (sr p)]"
+    "netlift sr (NodeS i s R) = [i \<mapsto> fst (sr s)]"
   | "netlift sr (SubnetS s t) = (netlift sr s) ++ (netlift sr t)"
 
 lemma fst_netgmap_netlift:
   "fst (netgmap sr s) = netlift sr s"
   by (induction s) simp_all
+
+fun netliftl :: "('s \<Rightarrow> 'g \<times> 'l) \<Rightarrow> 's net_state \<Rightarrow> 'l net_state"
+  where
+    "netliftl sr (NodeS i s R) = NodeS i (snd (sr s)) R"
+  | "netliftl sr (SubnetS s t) = SubnetS (netliftl sr s) (netliftl sr t)"
+
+lemma snd_netgmap_netliftl:
+  "snd (netgmap sr s) = netliftl sr s"
+  by (induction s) simp_all
+ 
+lemma netgmap_netlift_netliftl: "netgmap sr s = (netlift sr s, netliftl sr s)"
+  by rule (simp_all add: fst_netgmap_netlift snd_netgmap_netliftl)
 
 end

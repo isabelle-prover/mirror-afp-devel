@@ -24,21 +24,21 @@ inductive_set
   and i :: ip
 where
     obroadcastT: "\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}broadcast(ms).p),         broadcast (ms (\<sigma> i)),               (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g).p),        broadcast (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)),              (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
   | ogroupcastT: "\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}groupcast(ips, ms).p),  groupcast (ips (\<sigma> i)) (ms (\<sigma> i)), (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g).p),  groupcast (s\<^sub>i\<^sub>p\<^sub>s (\<sigma> i)) (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)), (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
   | ounicastT:   "\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}unicast(ip, ms).p \<triangleright> q), unicast (ip (\<sigma> i)) (ms (\<sigma> i)),        (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q), unicast (s\<^sub>i\<^sub>p (\<sigma> i)) (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)),    (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
   | onotunicastT:"\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}unicast(ip, ms).p \<triangleright> q), \<not>unicast (ip (\<sigma> i)),                  (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g).p \<triangleright> q), \<not>unicast (s\<^sub>i\<^sub>p (\<sigma> i)),               (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
   | osendT:      "\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}send(ms).p),              send (ms (\<sigma> i)),                    (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}send(s\<^sub>m\<^sub>s\<^sub>g).p),             send (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)),                  (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
   | odeliverT:   "\<sigma>' i = \<sigma> i \<Longrightarrow>
-                  ((\<sigma>, {l}deliver(data).p),         deliver (data (\<sigma> i)),               (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
-  | oreceiveT:   "\<sigma>' i = ms msg (\<sigma> i) \<Longrightarrow>
-                  ((\<sigma>, {l}receive(ms).p),           receive msg,                        (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
-  | oassignT:    "\<sigma>' i = fa (\<sigma> i) \<Longrightarrow>
-                  ((\<sigma>, {l}\<lbrakk>fa\<rbrakk> p),                   \<tau>,                                 (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+                  ((\<sigma>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a).p),         deliver (s\<^sub>d\<^sub>a\<^sub>t\<^sub>a (\<sigma> i)),              (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+  | oreceiveT:   "\<sigma>' i = u\<^sub>m\<^sub>s\<^sub>g msg (\<sigma> i) \<Longrightarrow>
+                  ((\<sigma>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g).p),          receive msg,                       (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
+  | oassignT:    "\<sigma>' i = u (\<sigma> i) \<Longrightarrow>
+                  ((\<sigma>, {l}\<lbrakk>u\<rbrakk> p),                    \<tau>,                                 (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
 
   | ocallT:      "((\<sigma>, \<Gamma> pn), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i \<Longrightarrow>
                   ((\<sigma>, call(pn)), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" (* TPB: quite different to Table 1 *)
@@ -55,39 +55,39 @@ inductive_cases
   and oseq_choiceTE [elim]:    "((\<sigma>, p1 \<oplus> p2), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
 
 lemma oseq_broadcastTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}broadcast(ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
-    \<lbrakk>a = broadcast (ms (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}broadcast(ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
+    \<lbrakk>a = broadcast (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}broadcast(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_groupcastTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}groupcast(dests, ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
-    \<lbrakk>a = groupcast (dests (\<sigma> i)) (ms (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}groupcast(dests, ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
+    \<lbrakk>a = groupcast (s\<^sub>i\<^sub>p\<^sub>s (\<sigma> i)) (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}groupcast(s\<^sub>i\<^sub>p\<^sub>s, s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_unicastTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}unicast(dest, ms). p \<triangleright> q), a, (\<sigma>', r)) \<in> oseqp_sos \<Gamma> i;
-    \<lbrakk>a = unicast (dest (\<sigma> i)) (ms (\<sigma> i)); \<sigma>' i = \<sigma> i; r = p\<rbrakk> \<Longrightarrow> P;
-    \<lbrakk>a = \<not>unicast (dest (\<sigma> i)); \<sigma>' i = \<sigma> i; r = q\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}unicast(dest, ms). p \<triangleright> q), a, (\<sigma>', r)) \<in> oseqp_sos \<Gamma> i") simp_all
+  "\<lbrakk>((\<sigma>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q), a, (\<sigma>', r)) \<in> oseqp_sos \<Gamma> i;
+    \<lbrakk>a = unicast (s\<^sub>i\<^sub>p (\<sigma> i)) (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)); \<sigma>' i = \<sigma> i; r = p\<rbrakk> \<Longrightarrow> P;
+    \<lbrakk>a = \<not>unicast (s\<^sub>i\<^sub>p (\<sigma> i)); \<sigma>' i = \<sigma> i; r = q\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}unicast(s\<^sub>i\<^sub>p, s\<^sub>m\<^sub>s\<^sub>g). p \<triangleright> q), a, (\<sigma>', r)) \<in> oseqp_sos \<Gamma> i") simp_all
 
 lemma oseq_sendTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}send(ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
-    \<lbrakk>a = send (ms (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}send(ms). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}send(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
+    \<lbrakk>a = send (s\<^sub>m\<^sub>s\<^sub>g (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}send(s\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_deliverTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}deliver(data). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
-    \<lbrakk>a = deliver (data (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}deliver(data). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
+    \<lbrakk>a = deliver (s\<^sub>d\<^sub>a\<^sub>t\<^sub>a (\<sigma> i)); \<sigma>' i = \<sigma> i; q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}deliver(s\<^sub>d\<^sub>a\<^sub>t\<^sub>a). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_receiveTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}receive(fmsg). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
-    \<And>msg. \<lbrakk>a = receive msg; \<sigma>' i = fmsg msg (\<sigma> i); q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}receive(fmsg). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i;
+    \<And>msg. \<lbrakk>a = receive msg; \<sigma>' i = u\<^sub>m\<^sub>s\<^sub>g msg (\<sigma> i); q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}receive(u\<^sub>m\<^sub>s\<^sub>g). p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_assignTE [elim]:
-  "\<lbrakk>((\<sigma>, {l}\<lbrakk>fas\<rbrakk> p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i; \<lbrakk>a = \<tau>; \<sigma>' i = fas (\<sigma> i); q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-  by (ind_cases "((\<sigma>, {l}\<lbrakk>fas\<rbrakk> p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
+  "\<lbrakk>((\<sigma>, {l}\<lbrakk>u\<rbrakk> p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i; \<lbrakk>a = \<tau>; \<sigma>' i = u (\<sigma> i); q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by (ind_cases "((\<sigma>, {l}\<lbrakk>u\<rbrakk> p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i") simp
 
 lemma oseq_guardTE [elim]:
   "\<lbrakk>((\<sigma>, {l}\<langle>g\<rangle> p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i; \<lbrakk>a = \<tau>; \<sigma>' i \<in> g (\<sigma> i); q = p\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
@@ -205,7 +205,7 @@ where
   "s \<langle>\<langle>\<^bsub>i\<^esub> t \<equiv> \<lparr> init = extg ` (init s \<times> init t), trans = oparp_sos i (trans s) (trans t) \<rparr>"
 
 lemma opar_comp_def':
-  "s \<langle>\<langle>\<^bsub>i\<^esub> t = \<lparr> init = {(s\<^sub>g, (s\<^sub>l, t\<^sub>l))|s\<^sub>g s\<^sub>l t\<^sub>l. (s\<^sub>g, s\<^sub>l) \<in> init s \<and> t\<^sub>l \<in> init t},
+  "s \<langle>\<langle>\<^bsub>i\<^esub> t = \<lparr> init = {(\<sigma>, (s\<^sub>l, t\<^sub>l))|\<sigma> s\<^sub>l t\<^sub>l. (\<sigma>, s\<^sub>l) \<in> init s \<and> t\<^sub>l \<in> init t},
                 trans = oparp_sos i (trans s) (trans t) \<rparr>"
   unfolding opar_comp_def extg_def image_def by (auto split: split_split)
 
@@ -225,60 +225,60 @@ inductive_set
   for S :: "((ip \<Rightarrow> 's) \<times> 'l, 'm seq_action) transition set"
 where
     onode_bcast:
-    "((\<sigma>, P), broadcast m, (\<sigma>', P')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i P R), R:*cast(m), (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+    "((\<sigma>, s), broadcast m, (\<sigma>', s')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i s R), R:*cast(m), (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
   | onode_gcast:
-    "((\<sigma>, P), groupcast D m, (\<sigma>', P')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i P R), (R\<inter>D):*cast(m), (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+    "((\<sigma>, s), groupcast D m, (\<sigma>', s')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i s R), (R\<inter>D):*cast(m), (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
   | onode_ucast:
-    "\<lbrakk> ((\<sigma>, P), unicast d m, (\<sigma>', P')) \<in> S; d\<in>R \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i P R), {d}:*cast(m), (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+    "\<lbrakk> ((\<sigma>, s), unicast d m, (\<sigma>', s')) \<in> S; d\<in>R \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i s R), {d}:*cast(m), (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
     (* Such assumptions aid later proofs, but they must be justified when transferring results
        to closed systems. *)
-  | onode_notucast: "\<lbrakk> ((\<sigma>, P), \<not>unicast d, (\<sigma>', P')) \<in> S; d\<notin>R; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
-     \<Longrightarrow> ((\<sigma>, NodeS i P R), \<tau>, (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+  | onode_notucast: "\<lbrakk> ((\<sigma>, s), \<not>unicast d, (\<sigma>', s')) \<in> S; d\<notin>R; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
+     \<Longrightarrow> ((\<sigma>, NodeS i s R), \<tau>, (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
-  | onode_deliver: "\<lbrakk> ((\<sigma>, P), deliver d, (\<sigma>', P')) \<in> S; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
-     \<Longrightarrow> ((\<sigma>, NodeS i P R), i:deliver(d), (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+  | onode_deliver: "\<lbrakk> ((\<sigma>, s), deliver d, (\<sigma>', s')) \<in> S; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
+     \<Longrightarrow> ((\<sigma>, NodeS i s R), i:deliver(d), (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
-  | onode_tau: "\<lbrakk> ((\<sigma>, P), \<tau>, (\<sigma>', P')) \<in> S; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
-     \<Longrightarrow> ((\<sigma>, NodeS i P R),   \<tau>, (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+  | onode_tau: "\<lbrakk> ((\<sigma>, s), \<tau>, (\<sigma>', s')) \<in> S; \<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j \<rbrakk>
+     \<Longrightarrow> ((\<sigma>, NodeS i s R),   \<tau>, (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
   | onode_receive:
-    "((\<sigma>, P), receive m, (\<sigma>', P')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i P R), {i}\<not>{}:arrive(m), (\<sigma>', NodeS i P' R)) \<in> onode_sos S"
+    "((\<sigma>, s), receive m, (\<sigma>', s')) \<in> S \<Longrightarrow> ((\<sigma>, NodeS i s R), {i}\<not>{}:arrive(m), (\<sigma>', NodeS i s' R)) \<in> onode_sos S"
 
   | onode_arrive:
-    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i P R), {}\<not>{i}:arrive(m),  (\<sigma>', NodeS i P R)) \<in> onode_sos S"
+    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i s R), {}\<not>{i}:arrive(m),  (\<sigma>', NodeS i s R)) \<in> onode_sos S"
 
   | onode_connect1:
-    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i P R), connect(i, i'),    (\<sigma>', NodeS i P (R \<union> {i'}))) \<in> onode_sos S"
+    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i s R), connect(i, i'),    (\<sigma>', NodeS i s (R \<union> {i'}))) \<in> onode_sos S"
 
   | onode_connect2:
-    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i P R), connect(i', i),    (\<sigma>', NodeS i P (R \<union> {i'}))) \<in> onode_sos S"
+    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i s R), connect(i', i),    (\<sigma>', NodeS i s (R \<union> {i'}))) \<in> onode_sos S"
 
   | onode_disconnect1:
-    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i P R), disconnect(i, i'), (\<sigma>', NodeS i P (R - {i'}))) \<in> onode_sos S"
+    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i s R), disconnect(i, i'), (\<sigma>', NodeS i s (R - {i'}))) \<in> onode_sos S"
 
   | onode_disconnect2:
-    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i P R), disconnect(i', i), (\<sigma>', NodeS i P (R - {i'}))) \<in> onode_sos S"
+    "\<sigma>' i = \<sigma> i \<Longrightarrow> ((\<sigma>, NodeS i s R), disconnect(i', i), (\<sigma>', NodeS i s (R - {i'}))) \<in> onode_sos S"
 
   | onode_connect_other:
-    "\<lbrakk> i \<noteq> i'; i \<noteq> i''; \<sigma>' i = \<sigma> i \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i P R), connect(i', i''),    (\<sigma>', NodeS i P R)) \<in> onode_sos S"
+    "\<lbrakk> i \<noteq> i'; i \<noteq> i''; \<sigma>' i = \<sigma> i \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i s R), connect(i', i''),    (\<sigma>', NodeS i s R)) \<in> onode_sos S"
 
   | onode_disconnect_other:
-    "\<lbrakk> i \<noteq> i'; i \<noteq> i''; \<sigma>' i = \<sigma> i \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i P R), disconnect(i', i''), (\<sigma>', NodeS i P R)) \<in> onode_sos S"
+    "\<lbrakk> i \<noteq> i'; i \<noteq> i''; \<sigma>' i = \<sigma> i \<rbrakk> \<Longrightarrow> ((\<sigma>, NodeS i s R), disconnect(i', i''), (\<sigma>', NodeS i s R)) \<in> onode_sos S"
 
 inductive_cases
-      onode_arriveTE [elim]:     "((\<sigma>, NodeS i P R), ii\<not>ni:arrive(m),   (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_castTE [elim]:       "((\<sigma>, NodeS i P R), RR:*cast(m),        (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_deliverTE [elim]:    "((\<sigma>, NodeS i P R), ii:deliver(d),      (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_connectTE [elim]:    "((\<sigma>, NodeS i P R), connect(ii, ii'),   (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_disconnectTE [elim]: "((\<sigma>, NodeS i P R), disconnect(ii, ii'),(\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_newpktTE [elim]:     "((\<sigma>, NodeS i P R), ii:newpkt(d, di),   (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
-  and onode_tauTE [elim]:        "((\<sigma>, NodeS i P R), \<tau>,                  (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
+      onode_arriveTE [elim]:     "((\<sigma>, NodeS i s R), ii\<not>ni:arrive(m),   (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_castTE [elim]:       "((\<sigma>, NodeS i s R), RR:*cast(m),        (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_deliverTE [elim]:    "((\<sigma>, NodeS i s R), ii:deliver(d),      (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_connectTE [elim]:    "((\<sigma>, NodeS i s R), connect(ii, ii'),   (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_disconnectTE [elim]: "((\<sigma>, NodeS i s R), disconnect(ii, ii'),(\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_newpktTE [elim]:     "((\<sigma>, NodeS i s R), ii:newpkt(d, di),   (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
+  and onode_tauTE [elim]:        "((\<sigma>, NodeS i s R), \<tau>,                  (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
 
 lemma oarrives_or_not:
-  assumes "((\<sigma>, NodeS i P R), ii\<not>ni:arrive(m), (\<sigma>', NodeS i' P' R')) \<in> onode_sos S"
+  assumes "((\<sigma>, NodeS i s R), ii\<not>ni:arrive(m), (\<sigma>', NodeS i' s' R')) \<in> onode_sos S"
     shows "(ii = {i} \<and> ni = {}) \<or> (ii = {} \<and> ni = {i})"
   using assms by rule simp_all
 

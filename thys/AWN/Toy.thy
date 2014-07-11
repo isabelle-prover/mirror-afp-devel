@@ -844,35 +844,35 @@ interpretation toy_openproc_par_qmsg: openproc_parq ptoy optoy id qmsg
 subsection "Final result"
 
 lemma bigger_than_next:
-  assumes "wf_net_tree any"
-  shows "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) any) \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+  assumes "wf_net_tree n"
+  shows "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
         (is "_ \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. ?inv \<sigma> i)")
   proof -
-    from `wf_net_tree any`
-      have proto: "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) any)
-                      \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips any. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+    from `wf_net_tree n`
+      have proto: "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n)
+                      \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
         by (rule toy_openproc_par_qmsg.close_opnet [OF _ ocnet_bigger_than_next])
     show ?thesis
     unfolding invariant_def opnet_sos.opnet_tau1
     proof (rule, simp only: toy_openproc_par_qmsg.netglobalsimp
                             fst_initmissing_netgmap_pair_fst, rule allI)
       fix \<sigma> i
-      assume sr: "\<sigma> \<in> reachable (closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) any)) TT"
-      hence "\<forall>i\<in>net_tree_ips any. ?inv (fst (initmissing (netgmap fst \<sigma>))) i"
+      assume sr: "\<sigma> \<in> reachable (closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n)) TT"
+      hence "\<forall>i\<in>net_tree_ips n. ?inv (fst (initmissing (netgmap fst \<sigma>))) i"
         by - (drule invariantD [OF proto],
               simp only: toy_openproc_par_qmsg.netglobalsimp
                          fst_initmissing_netgmap_pair_fst)
       thus "?inv (fst (initmissing (netgmap fst \<sigma>))) i"
-      proof (cases "i\<in>net_tree_ips any")
-        assume "i\<notin>net_tree_ips any"
-        from sr have "\<sigma> \<in> reachable (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) any) TT" ..
-        hence "net_ips \<sigma> = net_tree_ips any" ..
-        with `i\<notin>net_tree_ips any` have "i\<notin>net_ips \<sigma>" by simp
+      proof (cases "i\<in>net_tree_ips n")
+        assume "i\<notin>net_tree_ips n"
+        from sr have "\<sigma> \<in> reachable (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) TT" ..
+        hence "net_ips \<sigma> = net_tree_ips n" ..
+        with `i\<notin>net_tree_ips n` have "i\<notin>net_ips \<sigma>" by simp
         hence "(fst (initmissing (netgmap fst \<sigma>))) i = toy_init i"
           by simp
         thus ?thesis by simp
       qed metis
     qed
   qed
- 
+
 end

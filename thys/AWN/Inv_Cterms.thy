@@ -189,8 +189,6 @@ attribute_setup ctermsl_cases =   {* Attrib.add_del ctermsl_cases_add ctermsl_ca
 attribute_setup cterms_intros =   {* Attrib.add_del cterms_intros_add cterms_intros_del *}
 setup {* inv_cterms_setup *}
 
-term Product_Type.Pair
-
 declare
   insert_iff [cterms_env]                                                
   Un_insert_right [cterms_env]
