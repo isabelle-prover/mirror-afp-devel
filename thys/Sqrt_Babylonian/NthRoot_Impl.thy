@@ -1,4 +1,4 @@
-(*  Title:       Implementing field extensions of the form Q[sqrt(b)]
+(*  Title:       Computing Square Roots using the Babylonian Method
     Author:      René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  René Thiemann
     License:     LGPL
@@ -25,7 +25,7 @@ header {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports 
-  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+  Sqrt_Babylonian_Auxiliary
   "../Cauchy/CauchysMeanTheorem"
 begin
 
@@ -34,8 +34,6 @@ We implemented algorithms to decide $\sqrt[p]{n} \in \rats$ and to compute $\lfl
 To this end, we use a variant of Newton iteration which works with integer division instead of floating
 point or rational division. To get suitable starting values for the Newton iteration, we also implemented
 a function to approximate logarithms. 
-
-These algorithms will later be necessary to do a prime product factorization (for $p = 3$).
 *}
 
 subsection {* Logarithm *}

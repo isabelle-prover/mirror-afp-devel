@@ -3,10 +3,7 @@ chapter AFP
 session Sqrt_Babylonian (AFP) = Cauchy +
   options [timeout = 600]
   theories 
-    "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
-  theories[document = false]
-    "../Real_Impl/NthRoot_Impl"
-  theories
+    NthRoot_Impl
     Sqrt_Babylonian
   document_files
     "root.bib"
