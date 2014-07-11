@@ -386,15 +386,6 @@ proof (rule ccontr)
     unfolding good_def by auto
 qed
 
-lemma wf_length:
-  "wf {(x, y). length x < length y}"
-  unfolding wf_def using length_induct by auto
-
-lemma wfp_on_length:
-  "wfp_on (\<lambda>x y. length x < length y) (lists A)"
-  using wf_length [to_pred, unfolded wfp_on_UNIV [symmetric]]
-    and wfp_on_subset [of "lists A" UNIV] by blast
-
 lemma ne_lists:
   assumes "xs \<noteq> []" and "xs \<in> lists A"
   shows "hd xs \<in> A" and "tl xs \<in> lists A"
@@ -404,8 +395,7 @@ lemma almost_full_on_lists:
   assumes "almost_full_on P A"
   shows "almost_full_on (list_emb P) (lists A)" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs "\<lambda>xs ys. length xs < length ys" ?A
-    by (unfold_locales) (auto simp: wfp_on_length)
+  interpret mbs length ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"

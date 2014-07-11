@@ -70,8 +70,7 @@ lemma almost_full_on_terms:
   assumes "almost_full_on P F"
   shows "almost_full_on (emb P) terms" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs "\<lambda>s t. size s < size t" ?A
-    by (unfold_locales) (auto simp: wfp_on_size)
+  interpret mbs size ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"

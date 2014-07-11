@@ -45,42 +45,34 @@ checking minimality. The required properties are:
 \item @{term "less"} has to be transitive on @{term "A"}
 \end{itemize}*}
 locale mbs =
-  fixes less :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
-    and A :: "'a set"
-  assumes wfp_on_less: "wfp_on less A"
-    and less_trans: "\<lbrakk>x \<in> A; y \<in> A; z \<in> A; less x y; less y z\<rbrakk> \<Longrightarrow> less x z"
+  size size for size :: "'a \<Rightarrow> nat" +
+  fixes A :: "'a set"
 begin
 
-abbreviation "lesseq \<equiv> less\<^sup>=\<^sup>="
-
-lemma less_induct [consumes 1, case_names IH]:
-  assumes "x \<in> A"
-    and "\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> less y x \<Longrightarrow> P y) \<Longrightarrow> P x"
-  shows "P x"
-  using wfp_on_induct [OF wfp_on_less, of x P] and assms by blast
-
-text {*Since @{term A} is well-founded w.r.t.~the transitive relation @{term P}, whenever
-an element of it satisfies some property, then there is a minimal such element.*}
+text {*
+  Since the @{term size} is a well-founded measure, whenever some element satisfies a property
+  @{term P}, then there is size-minimal such element.
+*}
 lemma minimal:
   assumes "x \<in> A" and "P x"
-  shows "\<exists>y \<in> A. lesseq y x \<and> P y \<and> (\<forall>z \<in> A. less z y \<longrightarrow> \<not> P z)"
+  shows "\<exists>y \<in> A. size y \<le> size x \<and> P y \<and> (\<forall>z \<in> A. size z < size y \<longrightarrow> \<not> P z)"
 using assms
-proof (induction rule: less_induct)
-  case (IH x)
-  show ?case
-  proof (cases "\<forall>y \<in> A. less y x \<longrightarrow> \<not> P y")
+proof (induction x taking: size rule: measure_induct)
+  case (1 x)
+  then show ?case
+  proof (cases "\<forall>y \<in> A. size y < size x \<longrightarrow> \<not> P y")
     case True
-    with IH show ?thesis by blast
+    with 1 show ?thesis by blast
   next
     case False
-    then obtain y where "y \<in> A" and "less y x" and "P y" by blast
-    with IH.IH show ?thesis using `x \<in> A` by (fastforce elim!: less_trans)
+    then obtain y where "y \<in> A" and "size y < size x" and "P y" by blast
+    with "1.IH" show ?thesis by (fastforce elim!: order_trans)
   qed
 qed
 
 lemma less_not_eq [simp]:
-  "x \<in> A \<Longrightarrow> less x y \<Longrightarrow> x = y \<Longrightarrow> False"
-  by (metis minimal)
+  "x \<in> A \<Longrightarrow> size x < size y \<Longrightarrow> x = y \<Longrightarrow> False"
+  by simp
 
 text {*The set of all bad sequences over @{term A}.*}
 definition "BAD P = {f \<in> SEQ A. bad P f}"
@@ -92,32 +84,31 @@ lemma BAD_iff [iff]:
 text {*A partial order on infinite bad sequences.*}
 definition geseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set" where
   "geseq =
-    {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j)))}"
+    {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j)))}"
 
 text {*The strict part of the above order.*}
 definition gseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set" where
-  "gseq = {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j))}"
+  "gseq = {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j))}"
 
 lemma geseq_iff:
   "(f, g) \<in> geseq \<longleftrightarrow>
-    f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j)))"
+    f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j)))"
   by (auto simp: geseq_def)
 
 lemma gseq_iff:
-  "(f, g) \<in> gseq \<longleftrightarrow>
-    f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. less (g i) (f i) \<and> (\<forall>j < i. f j = g j))"
+  "(f, g) \<in> gseq \<longleftrightarrow> f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j))"
   by (auto simp: gseq_def)
 
 lemma geseqE:
   assumes "(f, g) \<in> geseq"
     and "\<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; f = g\<rbrakk> \<Longrightarrow> Q"
-    and "\<And>i. \<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; less (g i) (f i); \<forall>j < i. f j = g j\<rbrakk> \<Longrightarrow> Q"
+    and "\<And>i. \<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; size (g i) < size (f i); \<forall>j < i. f j = g j\<rbrakk> \<Longrightarrow> Q"
   shows "Q"
   using assms by (auto simp: geseq_iff)
 
 lemma gseqE:
   assumes "(f, g) \<in> gseq"
-    and "\<And>i. \<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; less (g i) (f i); \<forall>j < i. f j = g j\<rbrakk> \<Longrightarrow> Q"
+    and "\<And>i. \<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; size (g i) < size (f i); \<forall>j < i. f j = g j\<rbrakk> \<Longrightarrow> Q"
   shows "Q"
   using assms by (auto simp: gseq_iff)
 
@@ -142,10 +133,10 @@ context
 begin
 
 text {*A minimal element (w.r.t.~@{term less}) from a set.*}
-definition "min_elt = (SOME x. x \<in> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B))"
+definition "min_elt = (SOME x. x \<in> B \<and> (\<forall>y \<in> A. size y < size x \<longrightarrow> y \<notin> B))"
 
 lemma min_elt_ex:
-  "\<exists>x. x \<in> B \<and> (\<forall>y \<in> A. less y x \<longrightarrow> y \<notin> B)"
+  "\<exists>x. x \<in> B \<and> (\<forall>y \<in> A. size y < size x \<longrightarrow> y \<notin> B)"
   using subset_A and ne using minimal [of _ "\<lambda>x. x \<in> B"] by auto
 
 lemma min_elt_mem:
@@ -153,7 +144,7 @@ lemma min_elt_mem:
   using someI_ex [OF min_elt_ex] by (auto simp: min_elt_def)
 
 lemma min_elt_minimal:
-  assumes "y \<in> A" and "less y min_elt"
+  assumes "y \<in> A" and "size y < size min_elt"
   shows "y \<notin> B"
   using someI_ex [OF min_elt_ex] and assms by (auto simp: min_elt_def)
 
@@ -263,7 +254,7 @@ lemma lb_lower_bound:
 proof (intro allI impI)
   fix g
   assume "(lb, g) \<in> gseq"
-  then obtain i where "g i \<in> A" and "less (g i) (lb i)"
+  then obtain i where "g i \<in> A" and "size (g i) < size (lb i)"
     and "\<forall>j < i. lb j = g j" by (auto simp: gseq_iff)
   moreover with lb_minimal
     have "g i \<notin> ith (eq_upto (BAD P) lb i) i" by auto
