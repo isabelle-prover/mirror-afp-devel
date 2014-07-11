@@ -715,7 +715,7 @@ abstract =
  the main operation is to split the sequence at the point where a
  <em>monotone predicate</em> over the sum of the left part of the sequence
  becomes true for the first time.
- The implementation follows the paper of Hintze and Paterson.
+ The implementation follows the paper of Hinze and Paterson.
  The code generator can be used to get efficient, verified code.
 
 [FinFun]

@@ -32,7 +32,7 @@
   the main operation is to split the sequence at the point where a 
   {\em monotone predicate} over the sum of the left part of the sequence 
   becomes true for the first time.
-  The implementation follows the paper of Hintze and Paterson\cite{HiPa06}.
+  The implementation follows the paper of Hinze and Paterson\cite{HiPa06}.
   The code generator can be used to get efficient, verified code.
 \end{abstract}
 
@@ -46,12 +46,12 @@
 \input{session}
 
 \section{Related work}
-Finger trees were originally introduced by Hintze and Paterson\cite{HiPa06},
+Finger trees were originally introduced by Hinze and Paterson\cite{HiPa06},
 who give an implementation in Haskell. Our implementation closely follows
 this original implementation.
 
 There is also a machine-checked formalization of 2-3 finger trees in Coq \cite{So07}.
-Like ours, it closely follows the original paper of Hintze and Paterson.
+Like ours, it closely follows the original paper of Hinze and Paterson.
 The main difference is that the Coq-formalization encodes the invariants directly into
 the datatype for finger trees, while we first define the bigger algebraic datatype {\em FingerTreeStruc} 
 along with the predicate {\em ft-invar} that checks the invariant. 
