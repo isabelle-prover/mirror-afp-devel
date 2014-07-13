@@ -5,7 +5,7 @@
 *)
 
 (*
-Copyright 2013 René Thiemann
+Copyright 2009-2014 René Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -24,11 +24,11 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 theory Sqrt_Babylonian
 imports 
-  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
-  "../Real_Impl/NthRoot_Impl"
+  Sqrt_Babylonian_Auxiliary
+  NthRoot_Impl
 begin
 
-section Introduction
+section {*Executable algorithms for square roots*}
 
 text {*
   This theory provides executable algorithms for computing square-roots of numbers which
@@ -52,7 +52,7 @@ text {*
   $a^2 = 4, b^2 = 9$, and $ab = -6$, which results in a possible solution $a = \sqrt 4 = 2, b = - \sqrt 9 = -3$.
 *}
 
-section {* The Babylonian method *}
+subsection {* The Babylonian method *}
 
 text {*
 The Babylonian method for computing $\sqrt n$ iteratively computes 
@@ -63,7 +63,7 @@ until $x_i^2 \approx n$. Note that if $x_0^2 \geq n$, then for all $i$ we have b
 $x_i^2 \geq n$ and $x_i \geq x_{i+1}$. 
 *}
 
-section {* The Babylonian method using integer division *}
+subsection {* The Babylonian method using integer division *}
 text {*
   First, the algorithm is developed for the non-negative integers.
   Here, the division operation $\frac xy$ is replaced by @{term "x div y = \<lfloor>of_int x / of_int y\<rfloor>"}.
@@ -161,7 +161,7 @@ lemma sqrt_int_ceiling_code[code]: "sqrt_int_ceiling x = (if x \<ge> 0 then sqrt
 lemma sqrt_int_ceiling[simp]: "sqrt_int_ceiling x = \<lceil> sqrt (real x) \<rceil>"
   by (simp add: sqrt_int_ceiling_def sqrt_def)
 
-section {* Square roots for the naturals *}
+subsection {* Square roots for the naturals *}
 
 
 definition sqrt_nat :: "nat \<Rightarrow> nat list"
@@ -191,7 +191,7 @@ lemma sqrt_nat_ceiling_code[code]: "sqrt_nat_ceiling x = sqrt_int_ceiling_pos (i
 lemma sqrt_nat_ceiling[simp]: "sqrt_nat_ceiling x = \<lceil> sqrt (real x) \<rceil>"
   unfolding sqrt_nat_ceiling_def by (simp add: sqrt_def)
 
-section {* Square roots for the rationals *}
+subsection {* Square roots for the rationals *}
 
 definition sqrt_rat :: "rat \<Rightarrow> rat list" where
   "sqrt_rat x = root_rat 2 x"
@@ -256,7 +256,7 @@ proof -
   thus ?thesis by auto
 qed
 
-section {* Approximating square roots *}
+subsection {* Approximating square roots *}
 
 text {*
   The difference to the previous algorithms is that now we abort, once the distance is below
@@ -426,7 +426,7 @@ next
   show ?thesis unfolding id using sqrt by auto
 qed
 
-section {* Some tests *}
+subsection {* Some tests *}
 
 text {* Testing executabity and show that sqrt 2 is irrational *}
 lemma "\<not> (\<exists> i :: rat. i * i = 2)"

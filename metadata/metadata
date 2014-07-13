@@ -119,6 +119,9 @@ abstract =
   <p>
   Our results have been used to certify termination proofs which involve
   polynomial interpretations over the reals.
+extra-history =
+  Change history:
+  [2014-07-11]: Moved NthRoot_Impl to Sqrt-Babylonian.
 
 [ShortestPath]
 title = An Axiomatic Characterization of the Single-Source Shortest Path Problem
@@ -1652,20 +1655,20 @@ extra-history =
   [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
 
 [Sqrt_Babylonian]
-title = Computing Square Roots using the Babylonian Method
+title = Computing N-th Roots using the Babylonian Method
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-01-03
 topic = Mathematics/Analysis
 license = LGPL
 abstract =
-  We implement the Babylonian method to compute square roots of numbers.
+  We implement the Babylonian method to compute n-th roots of numbers.
   We provide precise algorithms for naturals, integers and rationals, and
-  offer an approximation algorithm for linear ordered fields. Moreover, there
-  are precise algorithms to compute the floor and the ceiling of the square root
-  of an integer.
+  offer an approximation algorithm for square roots over linear ordered fields. Moreover, there
+  are precise algorithms to compute the floor and the ceiling of n-th roots.
 extra-history =
   Change history:
   [2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
+  [2014-07-11]: Moved NthRoot_Impl from Real-Impl to this entry. 
 
 [Sturm_Sequences]
 title = Sturm's Theorem
