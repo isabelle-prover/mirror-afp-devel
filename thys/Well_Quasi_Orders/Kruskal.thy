@@ -38,19 +38,6 @@ proof -
       and args_mk [OF assms(1)] and args_mk [OF assms(2)] by auto
 qed
 
-lemma wf_size:
-  "wf {(x, y). size x < size y}"
-proof -
-  have "measure size = {(x, y). size x < size y}" by auto
-  moreover have "wf (measure size)" by (rule wf_measure)
-  ultimately show ?thesis by simp
-qed
-
-lemma wfp_on_size:
-  "wfp_on (\<lambda>x y. size x < size y) A"
-  using wf_size [to_pred, unfolded wfp_on_UNIV [symmetric]]
-    and wfp_on_subset [of A UNIV] by blast
-
 (*TODO: move*)
 lemma reflclp_mono:
   assumes "\<And>x y. P x y \<longrightarrow> Q x y"
@@ -64,7 +51,7 @@ where
   list_emb: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; P (f, m) (g, n); length ss = m; length ts = n;
     \<forall>s \<in> set ss. s \<in> trees; \<forall>t \<in> set ts. t \<in> trees; list_emb (emb P) ss ts\<rbrakk>
     \<Longrightarrow> emb P (mk f ss) (mk g ts)"
-monos list_emb_mono  reflclp_mono
+monos list_emb_mono reflclp_mono
 
 lemma almost_full_on_trees:
   assumes "almost_full_on P F"
