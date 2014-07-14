@@ -1,7 +1,5 @@
 theory Kruskal_Examples
-imports
-  Well_Quasi_Orders
-  Kruskal
+imports Kruskal
 begin
 
 datatype 'a tree = Node 'a "'a tree list"
@@ -27,26 +25,27 @@ proof -
   then show ?thesis by auto
 qed
 
-interpretation kruskal_tree: kruskal_tree size "A \<times> UNIV" Node node succs "trees A" for A
+interpretation kruskal_tree_tree!: kruskal_tree size "A \<times> UNIV" Node node succs "trees A" for A
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: trees.cases)
   apply auto
   by (metis less_not_refl not_less_eq size_list_estimation)
 
-thm kruskal_tree.almost_full_on_trees
+thm kruskal_tree_tree.almost_full_on_trees
 
-definition "tree_emb P = kruskal_tree.emb UNIV (prod_le P (\<lambda>_ _. True))"
+definition "tree_emb P = kruskal_tree_tree.emb UNIV (prod_le P (\<lambda>_ _. True))"
 
 lemma wqo_on_trees [intro]:
   assumes "wqo_on P UNIV"
   shows "wqo_on (tree_emb P) UNIV"
-  using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree.kruskal] by (simp add: tree_emb_def)
+  using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree_tree.kruskal]
+  by (simp add: tree_emb_def)
 
-text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
-trees of type @{typ "'a tree"} are well-quasi-ordered by the homeomorphic
-embedding relation.*}
-
+text {*
+If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then trees of type @{typ "'a tree"}
+are well-quasi-ordered by the homeomorphic embedding relation.
+*}
 instantiation tree :: (wqo) wqo
 begin
 definition "s \<le> t \<longleftrightarrow> tree_emb (op \<le>) s t"
@@ -71,7 +70,7 @@ inductive_set gterms for F
 where
   "(f, n) \<in> F \<Longrightarrow> length ts = n \<Longrightarrow> \<forall>s \<in> set ts. s \<in> gterms F \<Longrightarrow> Fun f ts \<in> gterms F"
 
-interpretation kruskal_term: kruskal_tree size F Fun root args "gterms F" for F
+interpretation kruskal_term!: kruskal_tree size F Fun root args "gterms F" for F
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: gterms.cases)
@@ -84,7 +83,7 @@ inductive_set terms
 where
   "\<forall>t \<in> set ts. t \<in> terms \<Longrightarrow> Fun f ts \<in> terms"
 
-interpretation kruskal_variadic: kruskal_tree size UNIV Fun root args terms
+interpretation kruskal_variadic!: kruskal_tree size UNIV Fun root args terms
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: terms.cases)
@@ -131,7 +130,7 @@ lemma [simp]:
   shows "ags (mk p ts) = ts"
   using assms by (induct ts) (auto, case_tac ts, auto)
 
-interpretation kruskal_exp: kruskal_tree size
+interpretation kruskal_exp!: kruskal_tree size
   "{(v x, 0) | x. True} \<union> {(c n, 0) | n. True} \<union> {(p, 2)}"
   mk rt ags exps
 apply (unfold_locales)
@@ -141,7 +140,7 @@ by auto
 
 thm kruskal_exp.almost_full_on_trees
 
-hide_const (open) V C Plus v c p
+hide_const (open) tree_emb V C Plus v c p
 
 end
 
