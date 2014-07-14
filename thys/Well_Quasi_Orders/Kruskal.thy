@@ -38,20 +38,14 @@ proof -
       and args_mk [OF assms(1)] and args_mk [OF assms(2)] by auto
 qed
 
-(*TODO: move*)
-lemma reflclp_mono:
-  assumes "\<And>x y. P x y \<longrightarrow> Q x y"
-  shows "P\<^sup>=\<^sup>= x y \<longrightarrow> Q\<^sup>=\<^sup>= x y"
-  using assms by auto
-
 inductive emb for P
 where
-  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> trees; t \<in> set ts; emb P s t\<rbrakk>
-    \<Longrightarrow> emb P s (mk f ts)" |
-  list_emb: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; P (f, m) (g, n); length ss = m; length ts = n;
-    \<forall>s \<in> set ss. s \<in> trees; \<forall>t \<in> set ts. t \<in> trees; list_emb (emb P) ss ts\<rbrakk>
-    \<Longrightarrow> emb P (mk f ss) (mk g ts)"
-monos list_emb_mono reflclp_mono
+  arg: "\<lbrakk>(f, m) \<in> F; length ts = m; \<forall>t\<in>set ts. t \<in> trees;
+    t \<in> set ts; emb P s t\<rbrakk> \<Longrightarrow> emb P s (mk f ts)" |
+  list_emb: "\<lbrakk>(f, m) \<in> F; (g, n) \<in> F; length ss = m; length ts = n;
+    \<forall>s \<in> set ss. s \<in> trees; \<forall>t \<in> set ts. t \<in> trees;
+    P (f, m) (g, n); list_emb (emb P) ss ts\<rbrakk> \<Longrightarrow> emb P (mk f ss) (mk g ts)"
+  monos list_emb_mono
 
 lemma almost_full_on_trees:
   assumes "almost_full_on P F"
@@ -68,7 +62,8 @@ proof (rule ccontr)
   def a \<equiv> "\<lambda>i. args (m i)"
   def S \<equiv> "\<Union>{set (a i) | i. True}"
 
-  have m: "\<And>i. m i = mk (fst (r i)) (a i)" by (simp add: r_def a_def mk_root_args [OF trees])
+  have m: "\<And>i. m i = mk (fst (r i)) (a i)"
+   by (simp add: r_def a_def mk_root_args [OF trees])
   have lists: "\<forall>i. a i \<in> lists S" by (auto simp: a_def S_def)
   have arity: "\<And>i. length (a i) = snd (r i)"
     using trees_arity [OF trees] by (auto simp: r_def a_def)
