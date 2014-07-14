@@ -1,8 +1,26 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
 \usepackage{isabelle,isabellesym}
 
-\usepackage{amssymb}
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -11,30 +29,31 @@
 \urlstyle{rm}
 \isabellestyle{it}
 
-\title{Rank Nullity Theorem of Linear Algebra}
-\author{Jose Divasón and Jesús Aransay\thanks{This research has been funded by the project MTM2009-
-13842-C02-01 of the Spanish Government, the FET project of the 7th Framework program of the EU 
-``FORMATH'' (n. 243847) and the research grant FPIUR12 of the Universidad de La Rioja.}}
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
 
 \begin{document}
 
+\title{Rank-Nullity Theorem in Linear Algebra}
+\author{By Jose Divas\'on and Jes\'us Aransay\thanks{This research has been funded 
+  by the research grant FPIUR12 of the Universidad de La Rioja.}}
 \maketitle
 
 \begin{abstract}
-
-In this article we present a proof of the result known in Linear Algebra as the ``rank nullity Theorem'',
-which states that, given any linear form $f$ from a finite dimensional vector space $V$ to a 
-vector space $W$, then the dimension of $V$ is equal to the dimension of the kernel of $f$ (which is
-a subspace of $V$) and the dimension of the range of $f$ (which is a subspace of $W$). The proof presented
-here is based on the one given in~\cite{AX97}. It makes use of the HOL-Multivariate-Analysis session of Isabelle,
-and of several of its results and definitions. As a corollary of the previous theorem, and taking advantage 
-of the relationship between linear forms and matrices, we prove that, for every matrix $A$ (which has associated a
-linear form between finite dimensional vector spaces), the sum of its null space 
-and its column space (which is equal to the range of the linear form) is equal 
-to the number of columns of $A$.
-
+In this contribution, we present some formalizations based on the HOL-Multivariate-Analysis session of Isabelle. 
+Firstly, a generalization of several theorems of such library are presented. Secondly, some definitions 
+and proofs involving Linear Algebra and the four fundamental subspaces of a matrix are shown.
+Finally, we present a proof of the result known in Linear Algebra as the ``Rank-Nullity Theorem'', 
+which states that, given any linear map $f$ from a finite dimensional vector space $V$ to a vector space $W$, 
+then the dimension of $V$ is equal to the dimension of the kernel of $f$ (which is a subspace of $V$) and the 
+dimension of the range of $f$ (which is a subspace of $W$). The proof presented here is based on the 
+one given in \cite{AX97}. As a corollary of the previous theorem, 
+and taking advantage of the relationship between linear maps and matrices, we prove that, for every matrix $A$ 
+(which has associated a linear map between finite dimensional vector spaces), 
+the sum of its null space and its column space (which is equal to the range of the linear map) is equal to 
+the number of columns of $A$.
 \end{abstract}
-
 
 \tableofcontents
 
