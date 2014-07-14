@@ -33,12 +33,13 @@ interpretation kruskal_tree_tree!: kruskal_tree size "A \<times> UNIV" Node node
   by (metis less_not_refl not_less_eq size_list_estimation)
 
 thm kruskal_tree_tree.almost_full_on_trees
+thm kruskal_tree_tree.kruskal
 
-definition "tree_emb P = kruskal_tree_tree.emb UNIV (prod_le P (\<lambda>_ _. True))"
+definition "tree_emb A P = kruskal_tree_tree.emb A (prod_le P (\<lambda>_ _. True))"
 
-lemma wqo_on_trees [intro]:
-  assumes "wqo_on P UNIV"
-  shows "wqo_on (tree_emb P) UNIV"
+lemma wqo_on_trees:
+  assumes "wqo_on P A"
+  shows "wqo_on (tree_emb A P) (trees A)"
   using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree_tree.kruskal]
   by (simp add: tree_emb_def)
 
@@ -48,12 +49,13 @@ are well-quasi-ordered by the homeomorphic embedding relation.
 *}
 instantiation tree :: (wqo) wqo
 begin
-definition "s \<le> t \<longleftrightarrow> tree_emb (op \<le>) s t"
+definition "s \<le> t \<longleftrightarrow> tree_emb UNIV (op \<le>) s t"
 definition "(s :: 'a tree) < t \<longleftrightarrow> s \<le> t \<and> \<not> (t \<le> s)"
 
 instance
   by (rule class.wqo.of_class.intro)
-     (auto simp: less_eq_tree_def [abs_def] less_tree_def [abs_def])
+     (auto simp: less_eq_tree_def [abs_def] less_tree_def [abs_def]
+           intro: wqo_on_trees [of _ UNIV, simplified])
 end
 
 datatype ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
@@ -104,7 +106,7 @@ where
 
 fun rt
 where
-  "rt (V x) = (v x, 0)" |
+  "rt (V x) = (v x, 0::nat)" |
   "rt (C n) = (c n, 0)" |
   "rt (Plus a b) = (p, 2)"
 
