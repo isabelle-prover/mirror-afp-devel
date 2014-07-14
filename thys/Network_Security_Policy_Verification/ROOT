@@ -1,0 +1,25 @@
+chapter AFP
+
+session Network_Security_Policy_Verification (AFP) = Collections + 
+  options [timeout = 600]
+  theories [document = false]
+    "Lib/ML_GraphViz_Disable"
+    "Lib/FiniteListGraph_Impl"
+    "Lib/FiniteListGraph"
+    "Lib/Efficient_Distinct"
+    "~~/src/HOL/Lattice/CompleteLattice"
+  theories
+    Network_Security_Policy_Verification
+    TopoS_generateCode
+  theories [document = false]
+    attic
+
+session Network_Security_Policy_Verification_Examples (AFP) = Network_Security_Policy_Verification +
+  theories [document = false]
+    "Examples/Impl_List_Playground_statefulpolicycompliance"
+    "Examples/Example"
+    "Examples/Example_NetModel"
+    "Examples/Example_Forte14"
+    "Examples/I8_SSH_Landscape"
+    "Examples/Impl_List_Playground"
+    "Examples/Impl_List_Playground_ChairNetwork_statefulpolicy_example"

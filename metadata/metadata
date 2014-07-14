@@ -3,7 +3,7 @@ title = Noninterference Security in Communicating Sequential Processes
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2014-05-23
 topic = Computer Science/Security
-abstract = 
+abstract =
   <p>
   An extension of classical noninterference security for deterministic
   state machines, as introduced by Goguen and Meseguer and elegantly
@@ -13,14 +13,14 @@ abstract =
   weaker than) the classical notion in the degenerate deterministic case.
   </p>
   <p>
-  This paper proposes a definition of noninterference security applying 
+  This paper proposes a definition of noninterference security applying
   to Hoare's Communicating Sequential Processes (CSP) in the general case of
-  a possibly intransitive noninterference policy, and proves the 
-  equivalence of this security property to classical noninterference 
+  a possibly intransitive noninterference policy, and proves the
+  equivalence of this security property to classical noninterference
   security for processes representing deterministic state machines.
   </p>
   <p>
-  Furthermore, McCullough's generalized noninterference security is shown 
+  Furthermore, McCullough's generalized noninterference security is shown
   to be weaker than both the proposed notion of CSP noninterference security
   for a generic process, and classical noninterference security for processes
   representing deterministic state machines. This renders CSP noninterference
@@ -361,7 +361,7 @@ abstract =
  The formalization is described in this paper</a>.
 
 [MSO_Regex_Equivalence]
-title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions 
+title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions
 author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 topic = Computer Science/Automata and Formal Languages, Logic
 date = 2014-06-12
@@ -1153,7 +1153,7 @@ abstract = Research in information-flow security aims at developing methods to
   <p>
   We present an Isabelle/HOL formalization of strong security for
   arbitrary security lattices (Sabelfeld and Sands use
-  a two-element security lattice in the original publication). 
+  a two-element security lattice in the original publication).
   The formalization includes
   compositionality proofs for strong security and a soundness proof
   for a security type system that checks strong security for programs
@@ -1183,7 +1183,7 @@ abstract = Research in information-flow security aims at developing methods to
   <p>
   We present an Isabelle/HOL formalization of such a security property
   for controlled declassification, namely WHAT&WHERE-security from
-  "Scheduler-Independent Declassification" by Lux, Mantel, and Perner. 
+  "Scheduler-Independent Declassification" by Lux, Mantel, and Perner.
   The formalization includes
   compositionality proofs for and a soundness proof for a security
   type system that checks for programs in a simple while language with
@@ -1791,7 +1791,7 @@ author = Javier Esparza <https://www7.in.tum.de/~esparza/>,
  René Neumann <mailto:rene.neumann@in.tum.de>,
  Tobias Nipkow <http://www.in.tum.de/~nipkow>,
  Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>,
- Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus> 
+ Jan-Georg Smaus <http://www.irit.fr/~Jan-Georg.Smaus>
 date = 2014-05-28
 topic = Computer Science/Automata and Formal Languages
 abstract =
@@ -2242,6 +2242,41 @@ abstract = This is a formalization of bounded-deducibility security (BD
  BD security indicates upper bounds for the flow and triggers under
  which these upper bounds are no longer guaranteed.
 
+[Network_Security_Policy_Verification]
+title = Network Security Policy Verification
+author = Cornelius Diekmann <http://www.net.in.tum.de/de/mitarbeiter/diekmann/>
+date = 2014-07-04
+topic = Computer Science/Security
+abstract =
+ We present a unified theory for verifying network security policies.
+ A security policy is represented as directed graph.
+ To check high-level security goals, security invariants over the policy are
+ expressed. We cover monotonic security invariants, i.e. prohibiting more does not harm
+ security. We provide the following contributions for the security invariant theory.
+ <ul>
+ <li>Secure auto-completion of scenario-specific knowledge, which eases usability.</li>
+ <li>Security violations can be repaired by tightening the policy iff the
+  security invariants hold for the deny-all policy.</li>
+ <li>An algorithm to compute a security policy.</li>
+ <li>A formalization of stateful connection semantics in network security mechanisms.</li>
+ <li>An algorithm to compute a secure stateful implementation of a policy.</li>
+ <li>An executable implementation of all the theory.</li>
+ <li>Examples, ranging from an aircraft cabin data network to the analysis
+  of a large real-world firewall.</li>
+ </ul>
+ For a detailed description, see
+ <ul>
+ <li>C. Diekmann, S.-A. Posselt, H. Niedermayer, H. Kinkelin, O. Hanka, and G. Carle.
+  <a href="http://www.net.in.tum.de/pub/diekmann/forte14.pdf">Verifying Security Policies using Host Attributes.</a>
+  In FORTE, 34th IFIP International Conference on Formal Techniques for Distributed Objects,
+  Components and Systems, Berlin, Germany, June 2014.</li>
+ <li>C. Diekmann, L. Hupel, and G. Carle. Directed Security Policies:
+  <a href="http://rvg.web.cse.unsw.edu.au/eptcs/paper.cgi?ESSS2014.3">A Stateful Network Implementation.</a>
+  In J. Pang and Y. Liu, editors, Engineering Safety and Security Systems,
+  volume 150 of Electronic Proceedings in Theoretical Computer Science,
+  pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
+ </ul>
+
 [Abstract_Completeness]
 title = Abstract Completeness
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>, Dmitriy Traytel <http://www21.in.tum.de/~traytel>
@@ -2250,3 +2285,9 @@ topic = Logic
 abstract = A formalization of an abstract property of possibly infinite derivation trees (modeled by a codatatype),  representing the core of a proof (in Beth/Hintikka style) of the first-order logic completeness theorem, independent of the concrete syntax or inference rules. This work is described in detail in the IJCAR 2014 publication by the authors.
         The abstract proof can be instantiated for a wide range of Gentzen and tableau systems as well as various flavors of FOL---e.g., with or without predicates, equality, or sorts. Here, we give only a toy example instantiation with classical propositional logic. A more serious instance---many-sorted FOL with equality---is described elsewhere [Blanchette and Popescu, FroCoS 2013].
 
+[Pop_Refinement]
+title = Pop-Refinement
+author = Alessandro Coglio <http://www.kestrel.edu/~coglio>
+date = 2014-07-03
+topic = Computer Science/Refinement
+abstract = Pop-refinement is an approach to stepwise refinement, carried out inside an interactive theorem prover by constructing a monotonically decreasing sequence of predicates over deeply embedded target programs. The sequence starts with a predicate that characterizes the possible implementations, and ends with a predicate that characterizes a unique program in explicit syntactic form. Pop-refinement enables more requirements (e.g. program-level and non-functional) to be captured in the initial specification and preserved through refinement. Security requirements expressed as hyperproperties (i.e. predicates over sets of traces) are always preserved by pop-refinement, unlike the popular notion of refinement as trace set inclusion. Two simple examples in Isabelle/HOL are presented, featuring program-level requirements, non-functional requirements, and hyperproperties.

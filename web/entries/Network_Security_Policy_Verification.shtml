@@ -1,0 +1,141 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">N</font>etwork
+<font class="first">S</font>ecurity
+<font class="first">P</font>olicy
+<font class="first">V</font>erification
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Network Security Policy Verification</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.net.in.tum.de/de/mitarbeiter/diekmann/">Cornelius Diekmann</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-07-04</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We present a unified theory for verifying network security policies.
+A security policy is represented as directed graph.
+To check high-level security goals, security invariants over the policy are
+expressed. We cover monotonic security invariants, i.e. prohibiting more does not harm
+security. We provide the following contributions for the security invariant theory.
+<ul>
+<li>Secure auto-completion of scenario-specific knowledge, which eases usability.</li>
+<li>Security violations can be repaired by tightening the policy iff the
+security invariants hold for the deny-all policy.</li>
+<li>An algorithm to compute a security policy.</li>
+<li>A formalization of stateful connection semantics in network security mechanisms.</li>
+<li>An algorithm to compute a secure stateful implementation of a policy.</li>
+<li>An executable implementation of all the theory.</li>
+<li>Examples, ranging from an aircraft cabin data network to the analysis
+of a large real-world firewall.</li>
+</ul>
+For a detailed description, see
+<ul>
+<li>C. Diekmann, S.-A. Posselt, H. Niedermayer, H. Kinkelin, O. Hanka, and G. Carle.
+<a href="http://www.net.in.tum.de/pub/diekmann/forte14.pdf">Verifying Security Policies using Host Attributes.</a>
+In FORTE, 34th IFIP International Conference on Formal Techniques for Distributed Objects,
+Components and Systems, Berlin, Germany, June 2014.</li>
+<li>C. Diekmann, L. Hupel, and G. Carle. Directed Security Policies:
+<a href="http://rvg.web.cse.unsw.edu.au/eptcs/paper.cgi?ESSS2014.3">A Stateful Network Implementation.</a>
+In J. Pang and Y. Liu, editors, Engineering Safety and Security Systems,
+volume 150 of Electronic Proceedings in Theoretical Computer Science,
+pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
+</ul>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Network_Security_Policy_Verification-AFP,
+  author  = {Cornelius Diekmann},
+  title   = {Network Security Policy Verification},
+  journal = {Archive of Formal Proofs},
+  month   = jul,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/Network_Security_Policy_Verification.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Network_Security_Policy_Verification" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

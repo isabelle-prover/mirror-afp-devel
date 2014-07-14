@@ -59,6 +59,12 @@ Our results have been used to certify termination proofs which involve
 polynomial interpretations over the reals.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2014-07-11]: Moved NthRoot_Impl to Sqrt-Babylonian.
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Real_Impl-AFP,

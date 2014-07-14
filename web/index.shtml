@@ -62,6 +62,20 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 </td></tr>
 
 <tr><td class="entry">
+2014-07-04:
+<a href="entries/Network_Security_Policy_Verification.shtml">Network Security Policy Verification</a>
+<br>Author:
+<a href="http://www.net.in.tum.de/de/mitarbeiter/diekmann/">Cornelius Diekmann</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-07-03:
+<a href="entries/Pop_Refinement.shtml">Pop-Refinement</a>
+<br>Author:
+<a href="http://www.kestrel.edu/~coglio">Alessandro Coglio</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-06-12:
 <a href="entries/MSO_Regex_Equivalence.shtml">Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</a>
 <br>Author:
@@ -490,7 +504,7 @@ Wenda Li
 
 <tr><td class="entry">
 2013-01-03:
-<a href="entries/Sqrt_Babylonian.shtml">Computing Square Roots using the Babylonian Method</a>
+<a href="entries/Sqrt_Babylonian.shtml">Computing N-th Roots using the Babylonian Method</a>
 <br>Author:
 René Thiemann
 </td></tr>

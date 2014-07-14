@@ -179,6 +179,12 @@
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
 
+<h3>Refinement</h3>
+
+<div class="list">
+<a href="entries/Pop_Refinement.shtml">Pop_Refinement</a> &nbsp;
+</div>
+
 <h3>System Description Languages</h3>
 
 <div class="list">
@@ -206,6 +212,7 @@
 <a href="entries/Probabilistic_Noninterference.shtml">Probabilistic_Noninterference</a> &nbsp;
 <a href="entries/HyperCTL.shtml">HyperCTL</a> &nbsp;
 <a href="entries/Bounded_Deducibility_Security.shtml">Bounded_Deducibility_Security</a> &nbsp;
+<a href="entries/Network_Security_Policy_Verification.shtml">Network_Security_Policy_Verification</a> &nbsp;
 </div>
 
 <h2>Logic</h2>
