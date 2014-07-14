@@ -2,7 +2,10 @@ chapter AFP
 
 session "Rank_Nullity_Theorem" (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 600]
+  theories [document = false]
+    "$ISABELLE_HOME/src/HOL/Library/Bit"
   theories
-    Dim_Formula
+    Dim_Formula    
   document_files
+    "root.bib"
     "root.tex"
