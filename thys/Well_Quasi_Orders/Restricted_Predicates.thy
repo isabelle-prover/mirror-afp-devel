@@ -19,18 +19,8 @@ definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
 definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "transp_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
 
-definition
-  mono_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> bool"
-where
-  "mono_on P Q f A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (f x) (f y))"
-
 definition total_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "total_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
-
-lemma mono_onI [Pure.intro]:
-  assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (f x) (f y)"
-  shows "mono_on P Q f A"
-  using assms by (auto simp: mono_on_def)
 
 abbreviation "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
 
@@ -247,13 +237,6 @@ lemma po_on_imp_irreflp_on:
 lemma po_on_imp_transp_on:
   "po_on P A \<Longrightarrow> transp_on P A"
   by (auto simp: po_on_def)
-
-lemma mono_on_irreflp_on:
-  assumes "irreflp_on Q B"
-    and "f ` A \<subseteq> B"
-    and "mono_on P Q f A"
-  shows "irreflp_on P A"
-  using assms by (auto simp: irreflp_on_def mono_on_def)
 
 lemma irreflp_on_subset:
   assumes "A \<subseteq> B" and "irreflp_on P B"
