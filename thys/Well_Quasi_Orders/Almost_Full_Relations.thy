@@ -56,7 +56,9 @@ lemma almost_full_on_mono:
   shows "almost_full_on P A"
   using assms by (metis almost_full_on_def almost_full_on_subset good_def)
 
-text {*Every sequence over elements of an almost-full set has a homogeneous subsequence.*}
+text {*
+  Every sequence over elements of an almost-full set has a homogeneous subsequence.
+*}
 lemma almost_full_on_imp_homogeneous_subseq:
   assumes "almost_full_on P A"
     and "\<forall>i::nat. f i \<in> A"
@@ -105,7 +107,9 @@ proof -
   qed
 qed
 
-text {*Almost full relations do not admit infinite antichains.*}
+text {*
+  Almost full relations do not admit infinite antichains.
+*}
 lemma almost_full_on_imp_no_antichain_on:
   assumes "almost_full_on P A"
   shows "\<not> antichain_on P f A"
@@ -119,8 +123,9 @@ proof
   ultimately show False by blast
 qed
 
-text {*If the image of a function is almost-full then also its
-preimage is almost-full.*}
+text {*
+  If the image of a function is almost-full then also its preimage is almost-full.
+*}
 lemma almost_full_on_map:
   assumes "almost_full_on Q B"
     and "h ` A \<subseteq> B"
@@ -133,7 +138,9 @@ proof
     show "good ?P f" unfolding good_def comp_def by blast
 qed
 
-text {*The homomorphic image of an almost-full set is almost-full.*}
+text {*
+  The homomorphic image of an almost-full set is almost-full.
+*}
 lemma almost_full_on_hom:
   fixes h :: "'a \<Rightarrow> 'b"
   assumes hom: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (h x) (h y)"
@@ -157,7 +164,9 @@ proof
   qed
 qed
 
-text {*The monomorphic preimage of an almost-full set is almost-full.*}
+text {*
+  The monomorphic preimage of an almost-full set is almost-full.
+*}
 lemma almost_full_on_mon:
   assumes mon: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> P x y = Q (h x) (h y)" "bij_betw h A B"
     and af: "almost_full_on Q B"
@@ -179,7 +188,9 @@ proof
   qed
 qed
 
-text {*Every total and well-founded relation is almost-full.*}
+text {*
+  Every total and well-founded relation is almost-full.
+*}
 lemma total_on_and_wfp_on_imp_almost_full_on:
   assumes "total_on P A" and "wfp_on P A"
   shows "almost_full_on P\<^sup>=\<^sup>= A"
@@ -199,7 +210,8 @@ qed
 (*TODO: move to Option.thy of Isabelle/HOL?*)
 subsection {* Adding a Bottom Element to a Set *}
 
-definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000) where
+definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000)
+where
   "A\<^sub>\<bottom> = {None} \<union> Some ` A"
 
 lemma with_bot_iff [iff]:
@@ -282,7 +294,9 @@ lemma not_sum_le_cases:
   shows thesis
   using assms by (cases a b rule: sum.exhaust [case_product sum.exhaust]) auto
 
-text {*When two sets are almost-full, then their disjoint sum is almost-full.*}
+text {*
+  When two sets are almost-full, then their disjoint sum is almost-full.
+*}
 lemma almost_full_on_Plus:
   assumes "almost_full_on P A" and "almost_full_on Q B"
   shows "almost_full_on (sum_le P Q) (A <+> B)" (is "almost_full_on ?P ?A")
@@ -338,7 +352,9 @@ qed
 
 subsection {* Dickson's Lemma for Almost-Full Relations *}
 
-text {*When two sets are almost-full, then their Cartesian product is almost-full.*}
+text {*
+  When two sets are almost-full, then their Cartesian product is almost-full.
+*}
 
 definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
@@ -485,10 +501,12 @@ qed simp
 
 subsection {* Special Case: Finite Sets *}
 
-text {*Every reflexive relation on a finite set is almost-full.*}
+text {*
+  Every reflexive relation on a finite set is almost-full.
+*}
 lemma finite_almost_full_on:
   assumes finite: "finite A"
-  assumes refl: "reflp_on P A"
+    and refl: "reflp_on P A"
   shows "almost_full_on P A"
 proof
   fix f :: "nat \<Rightarrow> 'a"
@@ -537,33 +555,21 @@ qed
 
 subsection {* Further Results *}
 
-text {*Given a quasi-order @{term P}, the following statements are equivalent:
-\begin{enumerate}
-\item @{term P} is almost-full.
-\item @{term P} does neither allow decreasing chains nor antichains.
-\item Every quasi-order extending @{term P} is well-founded.
-\end{enumerate}
-*}
-
-lemma qo_af_imp_wf_and_no_antichain:
-  assumes qo: "qo_on P A"
-    and af: "almost_full_on P A"
-  shows qo_af_imp_wf: "wfp_on (strict P) A"
-    and qo_af_imp_no_antichain: "\<not> (\<exists>f. antichain_on P f A)"
+lemma af_trans_imp_wf:
+  assumes af: "almost_full_on P A"
+    and trans: "transp_on P A"
+  shows "wfp_on (strict P) A"
 proof -
   show "wfp_on (strict P) A"
   proof (unfold wfp_on_def, rule notI)
     assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict P (f (Suc i)) (f i)"
     then obtain f where *: "chain_on ((strict P)\<inverse>\<inverse>) f A" by blast
     from chain_on_transp_on_less [OF this]
-      and transp_on_strict [THEN transp_on_converse, OF qo [THEN qo_on_imp_transp_on]]
+      and transp_on_strict [THEN transp_on_converse, OF trans]
       have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
     with af show False
       using * by (auto simp: almost_full_on_def good_def)
   qed
-next
-  from almost_full_on_imp_no_antichain_on [of P A] and assms
-    show "\<not> (\<exists>f. antichain_on P f A)" by (auto)
 qed
 
 lemma wf_and_no_antichain_imp_qo_extension_wf:
@@ -674,162 +680,6 @@ proof
       with A [of i] show "f i \<in> A \<and> strict Q (f (Suc i)) (f i)" by auto
     qed
     ultimately show False unfolding wfp_on_def by blast  
-  qed
-qed
-
-lemma po_af_imp_wf_and_no_antichain:
-  assumes po: "po_on P A"
-    and af: "almost_full_on (P\<^sup>=\<^sup>=) A"
-  shows po_af_imp_wf: "wfp_on P A"
-    and po_af_imp_no_antichain: "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)"
-proof -
-  show "wfp_on P A"
-  proof (unfold wfp_on_def, rule notI)
-    assume "\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)"
-    then obtain f where A: "\<And>i. f i \<in> A"
-      and *: "chain_on (P\<inverse>\<inverse>) f A" by blast
-    from chain_on_transp_on_less [OF * transp_on_converse [OF po [THEN po_on_imp_transp_on]]]
-      have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)" by blast
-    then have "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
-      using po_on_imp_antisymp_on [OF po] and A
-      and po_on_imp_irreflp_on [OF po]
-      unfolding antisymp_on_def irreflp_on_def
-      by (metis sup2CI)
-    with af show False
-      using * by (auto simp: almost_full_on_def good_def)
-  qed
-next
-  from almost_full_on_imp_no_antichain_on [of "P\<^sup>=\<^sup>=" A] and assms
-    show "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)" by (auto)
-qed
-
-lemma wf_and_no_antichain_imp_po_extension_wf:
-  assumes wf: "wfp_on P A"
-    and anti: "\<not> (\<exists>f. antichain_on (P\<^sup>=\<^sup>=) f A)"
-    and subrel: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y"
-    and po: "po_on Q A"
-  shows "wfp_on Q A"
-proof (rule ccontr)
-  have "transp_on Q A"
-    using po unfolding po_on_def transp_on_def by blast
-  then have *: "transp_on (Q\<inverse>\<inverse>) A" by (rule transp_on_converse)
-  assume "\<not> wfp_on Q A"
-  then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
-    and "\<forall>i. Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
-  then have "chain_on (Q\<inverse>\<inverse>) f A" by auto
-  from chain_on_transp_on_less [OF this *]
-    have "\<And>i j. i < j \<Longrightarrow> Q (f j) (f i)" by blast
-  then have "\<And>i j. i < j \<Longrightarrow> \<not> Q\<^sup>=\<^sup>= (f i) (f j)"
-      using po_on_imp_antisymp_on [OF po] and A
-      and po_on_imp_irreflp_on [OF po]
-      unfolding antisymp_on_def irreflp_on_def
-      by (metis sup2CI)
-  then have *: "\<And>i j. i < j \<Longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
-    using subrel and A by blast
-  show False
-  proof (cases)
-    assume "\<exists>k. \<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i)"
-    then obtain k where "\<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i)" by auto
-    from subchain [of k _ f, OF this] obtain g
-      where "\<And>i j. i < j \<Longrightarrow> g i < g j"
-      and "\<And>i. P\<^sup>=\<^sup>= (f (g (Suc i))) (f (g i))" by auto
-    with * have "\<And>i. P (f (g (Suc i))) (f (g i))"
-    by (metis lessI strict_reflclp_conv)
-    with wf [unfolded wfp_on_def not_ex, THEN spec, of "\<lambda>i. f (g i)"] and A
-      show False by fast
-  next
-    assume "\<not> (\<exists>k. \<forall>i>k. \<exists>j>i. P\<^sup>=\<^sup>= (f j) (f i))"
-    then have "\<forall>k. \<exists>i>k. \<forall>j>i. \<not> P\<^sup>=\<^sup>= (f j) (f i)" by auto
-    from choice [OF this] obtain h
-      where "\<forall>k. h k > k"
-      and **: "\<forall>k. (\<forall>j>h k. \<not> P\<^sup>=\<^sup>= (f j) (f (h k)))" by auto
-    def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
-    have "\<And>i. \<phi> i < \<phi> (Suc i)"
-      using `\<forall>k. h k > k` by (induct_tac i) auto
-    then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
-    then have "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f (\<phi> j)) (f (\<phi> i))"
-      using ** by auto
-    with mono [THEN *]
-      have "\<forall>i j. i < j \<longrightarrow> incomparable (P\<^sup>=\<^sup>=) (f (\<phi> j)) (f (\<phi> i))" by blast
-    moreover have "\<exists>i j. i < j \<and> \<not> incomparable (P\<^sup>=\<^sup>=) (f (\<phi> i)) (f (\<phi> j))"
-      using anti [unfolded not_ex, THEN spec, of "\<lambda>i. f (\<phi> i)"] and A by blast
-    ultimately show False by blast
-  qed
-qed
-
-lemma every_po_extension_wf_imp_af:
-  assumes ext: "\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
-    po_on Q A \<longrightarrow> wfp_on Q A"
-    and "po_on P A"
-  shows "almost_full_on (P\<^sup>=\<^sup>=) A"
-proof
-  from `po_on P A`
-    have irrefl: "irreflp_on P A"
-    and trans: "transp_on P A"
-    by (auto intro: po_on_imp_irreflp_on po_on_imp_transp_on)
-
-  fix f :: "nat \<Rightarrow> 'a"
-  assume "\<forall>i. f i \<in> A"
-  then have A: "\<And>i. f i \<in> A" ..
-  show "good (P\<^sup>=\<^sup>=) f"
-  proof (rule ccontr)
-    assume "\<not> ?thesis"
-    then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)" by (auto simp: good_def)
-    then have *: "\<And>i j. P\<^sup>=\<^sup>= (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_leE)
-  
-    def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
-    def P' \<equiv> "restrict_to P A"
-    def [simp]: Q \<equiv> "(sup P' D)\<^sup>+\<^sup>+"
-
-    have **: "\<And>i j. (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j) \<Longrightarrow> i > j"
-    proof -
-      fix i j
-      assume "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f j)"
-      then show "i > j"
-        apply (induct "f i" "f j" arbitrary: j)
-        apply (insert A, auto dest!: * simp: P'_def)
-        apply (simp only: restrict_to_rtranclp [OF trans])
-        apply (metis (full_types) "*" Suc_n_not_le_n le_trans not_le sup2CI)
-        by (metis (hide_lams, no_types) "*" dual_order.strict_trans less_Suc_eq_le restrict_to_rtranclp trans)
-    qed
-
-    have "irreflp_on Q A"
-    proof
-      fix x
-      assume *: "x \<in> A"
-      show "\<not> Q x x"
-      proof
-        assume "Q x x"
-        then have "(sup P' D)\<^sup>+\<^sup>+ x x" by auto
-        moreover have "(sup P' D)\<^sup>+\<^sup>+ = sup (P'\<^sup>+\<^sup>+) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+)"
-        proof -
-          have "\<And>A B. (A \<union> B)\<^sup>+ = A\<^sup>+ \<union> A\<^sup>* O (B O A\<^sup>*)\<^sup>+" by regexp
-          from this [to_pred] show ?thesis by blast
-        qed
-        ultimately have "sup (P'\<^sup>+\<^sup>+) (P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) x x" by simp
-        then have "(P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) x x"
-          using * and `po_on P A`
-          by (metis P'_def ext irreflp_on_def sup2E wfp_on_imp_irreflp_on wfp_on_restrict_to_tranclp_wfp_on_conv)
-        then obtain b where "P'\<^sup>*\<^sup>* x b" and "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ b x" by blast
-        moreover from `(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ b x` obtain i
-          where [simp]: "b = f i" by (induct) auto
-        ultimately have "((D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ OO P'\<^sup>*\<^sup>*) (f i) (f i)" by auto
-        moreover have "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ OO P'\<^sup>*\<^sup>* = (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+"
-        proof -
-          have "\<And>A B. (A O B\<^sup>*)\<^sup>+ O B\<^sup>* = (A O B\<^sup>*)\<^sup>+" by regexp
-          from this [to_pred] show ?thesis .
-        qed
-        ultimately have "(D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+ (f i) (f i)" by auto
-        with ** show False by blast
-      qed
-    qed
-    moreover have "transp_on Q A" by (auto simp: transp_on_def)
-    ultimately have "po_on Q A" by (auto simp: po_on_def)
-    moreover have "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y" by (auto simp: P'_def)
-    ultimately have "wfp_on Q A"
-        using ext [THEN spec, of Q] by blast
-    moreover have "\<forall>i. Q (f (Suc i)) (f i)" by auto
-    ultimately show False using A unfolding wfp_on_def by blast
   qed
 qed
 

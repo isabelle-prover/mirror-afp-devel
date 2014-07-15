@@ -177,7 +177,7 @@ lemma transp_on_emb:
   shows "transp_on (emb P) trees"
   using assms and emb_trans [of P] unfolding transp_on_def by blast
 
-lemma  kruskal:
+lemma kruskal:
   assumes "wqo_on P F"
   shows "wqo_on (emb P) trees"
   using almost_full_on_trees [of P] and assms by (metis transp_on_emb wqo_on_def)

@@ -54,15 +54,6 @@ lemma reflp_on_reflclp:
   "reflp_on (P\<^sup>=\<^sup>=) A"
   by (auto simp: reflp_on_def)
 
-lemma transp_on_tranclp:
-  assumes "transp_on P A"
-  shows "(\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)\<^sup>+\<^sup>+ a b \<longleftrightarrow> a \<in> A \<and> b \<in> A \<and> P a b"
-  by (rule iffI, induction rule: tranclp.induct) (insert assms, auto simp: transp_on_def)
-
-lemma reflp_on_converse:
-  "reflp_on P A \<Longrightarrow> reflp_on P\<inverse>\<inverse> A"
-  unfolding reflp_on_def by blast
-
 lemma reflp_on_converse_simp [simp]:
   "reflp_on P\<inverse>\<inverse> A \<longleftrightarrow> reflp_on P A"
   by (auto simp: reflp_on_def)
@@ -91,8 +82,9 @@ lemma transp_on_subset:
   "A \<subseteq> B \<Longrightarrow> transp_on P B \<Longrightarrow> transp_on P A"
   by (auto simp: transp_on_def)
 
-definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wfp_on P A \<longleftrightarrow> (\<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i)))"
+definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"
+where
+  "wfp_on P A \<longleftrightarrow> \<not> (\<exists>f. \<forall>i. f i \<in> A \<and> P (f (Suc i)) (f i))"
 
 definition inductive_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "inductive_on P A \<longleftrightarrow> (\<forall>Q. (\<forall>y\<in>A. (\<forall>x\<in>A. P x y \<longrightarrow> Q x) \<longrightarrow> Q y) \<longrightarrow> (\<forall>x\<in>A. Q x))"
@@ -102,9 +94,11 @@ lemma inductive_onI [Pure.intro]:
   shows "inductive_on P A"
   using assms unfolding inductive_on_def by metis
 
-text {*If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q}
-of @{term A} has a minimal element @{term z} w.r.t. @{term P}, i.e., all elements
-that are @{term P}-smaller than @{term z} are not in @{term Q}.*}
+text {*
+  If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q} of @{term A} has a
+  minimal element @{term z} w.r.t. @{term P}, i.e., all elements that are @{term P}-smaller than
+  @{term z} are not in @{term Q}.
+*}
 lemma wfp_on_imp_minimal:
   assumes "wfp_on P A"
   shows "\<forall>Q x. x \<in> Q \<and> Q \<subseteq> A \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q)"
@@ -194,10 +188,7 @@ lemma antisymp_on_reflclp [simp]:
   by (auto simp: antisymp_on_def)
 
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "qo_on P A \<longleftrightarrow> (reflp_on P A \<and> transp_on P A)"
-
-definition orderp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "orderp_on P A \<longleftrightarrow> (antisymp_on P A \<and> reflp_on P A \<and> transp_on P A)"
+  "qo_on P A \<longleftrightarrow> reflp_on P A \<and> transp_on P A"
 
 definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "irreflp_on P A \<longleftrightarrow> (\<forall>a\<in>A. \<not> P a a)"
@@ -292,7 +283,9 @@ lemma qo_on_subset:
   using reflp_on_subset
     and transp_on_subset by blast
 
-text {*Quasi-orders are instances of the @{class preorder} class.*}
+text {*
+  Quasi-orders are instances of the @{class preorder} class.
+*}
 lemma qo_on_UNIV_conv:
   "qo_on P UNIV \<longleftrightarrow> class.preorder P (strict P)" (is "?lhs = ?rhs")
 proof
@@ -320,8 +313,10 @@ lemma wfp_on_iff_minimal:
     and inductive_on_imp_wfp_on [of P A]
     by blast
 
-text {*Every non-empty well-founded set @{term A} has a minimal element, i.e., an
-element that is not greater than any other element.*}
+text {*
+  Every non-empty well-founded set @{term A} has a minimal element, i.e., an element that is not
+  greater than any other element.
+*}
 lemma wfp_on_imp_has_min_elt:
   assumes "wfp_on P A" and "A \<noteq> {}"
   shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> P y x"
@@ -426,10 +421,6 @@ lemma po_on_map:
   using assms and transp_on_map and irreflp_on_map
   unfolding po_on_def by auto
 
-lemma transp_on_imp_transp_on_strict:
-  "transp_on P A \<Longrightarrow> transp_on (strict P) A"
-  unfolding transp_on_def by blast
-
 lemma chain_on_transp_on_less:
   assumes "chain_on P f A" and "transp_on P A" and "i < j"
   shows "P (f i) (f j)"
@@ -449,10 +440,6 @@ next
     ultimately show ?thesis using assms(1, 2) unfolding transp_on_def by blast
   qed
 qed
-
-lemma restrict_to_reflclp:
-  "restrict_to P\<^sup>=\<^sup>= A x y \<Longrightarrow> (restrict_to P A)\<^sup>=\<^sup>= x y"
-  by (auto simp: restrict_to_def)
 
 lemma wfp_on_imp_irreflp_on:
   assumes "wfp_on P A"
@@ -596,7 +583,6 @@ proof (intro ext)
     assume "?r x y" then show "?l x y" by (induct) auto
   qed
 qed
-
 
 (*TODO: move the following 3 lemmas to Transitive_Closure?*)
 lemma stepfun_imp_tranclp:
