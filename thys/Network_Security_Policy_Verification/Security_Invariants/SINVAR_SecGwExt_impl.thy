@@ -80,7 +80,7 @@ text {* Examples*}
   definition example_net_secgw :: "nat list_graph" where
   "example_net_secgw \<equiv> \<lparr> nodesL = [1::nat,2, 3, 8,9, 11,12], 
     edgesL = [(3,8),(8,3),(2,8),(8,1),(1,9),(9,2),(2,9),(9,1), (1,3), (8,11),(8,12), (11,9), (11,3), (11,12)] \<rparr>"
-  value[code] "valid_list_graph example_net_secgw"
+  value "valid_list_graph example_net_secgw"
   
   definition example_conf_secgw where
   "example_conf_secgw \<equiv> ((\<lambda>e. SINVAR_SecGwExt.default_node_properties)
@@ -90,17 +90,17 @@ text {* Examples*}
   export_code sinvar in SML
   definition "test = sinvar \<lparr> nodesL=[1::nat], edgesL=[] \<rparr> (\<lambda>_. SINVAR_SecGwExt.default_node_properties)"
   export_code test in SML
-  value(*[code]*) "sinvar \<lparr> nodesL=[1::nat], edgesL=[] \<rparr> (\<lambda>_. SINVAR_SecGwExt.default_node_properties)"
+  value(**) "sinvar \<lparr> nodesL=[1::nat], edgesL=[] \<rparr> (\<lambda>_. SINVAR_SecGwExt.default_node_properties)"
 
-  value(*[code]*) "sinvar example_net_secgw example_conf_secgw"
-  value(*[code]*) "SecurityGateway_offending_list example_net_secgw example_conf_secgw"
+  value(**) "sinvar example_net_secgw example_conf_secgw"
+  value(**) "SecurityGateway_offending_list example_net_secgw example_conf_secgw"
 
 
   definition example_net_secgw_invalid where
   "example_net_secgw_invalid \<equiv> example_net_secgw\<lparr>edgesL := (3,1)#(11,1)#(11,8)#(1,2)#(edgesL example_net_secgw)\<rparr>"
 
-  value(*[code]*) "sinvar example_net_secgw_invalid example_conf_secgw"
-  value(*[code]*) "SecurityGateway_offending_list example_net_secgw_invalid example_conf_secgw"
+  value(**) "sinvar example_net_secgw_invalid example_conf_secgw"
+  value(**) "SecurityGateway_offending_list example_net_secgw_invalid example_conf_secgw"
 
 
 hide_const (open) NetModel_node_props

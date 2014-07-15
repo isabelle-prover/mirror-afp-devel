@@ -84,7 +84,7 @@ text{*
 Visualization with a violation
 *}
 ML{*
-vizualize_graph @{context} @{theory} @{term "security_invariants"} @{term "policy\<lparr>edgesL := (V ''P1'', V ''CC'')#edgesL policy\<rparr>"};
+vizualize_graph @{context} @{term "security_invariants"} @{term "policy\<lparr>edgesL := (V ''P1'', V ''CC'')#edgesL policy\<rparr>"};
 *}
 
 
@@ -96,14 +96,14 @@ definition "max_policy = generate_valid_topology security_invariants \<lparr>nod
 
 
 text{*calculating the maximum policy*}
-value[code] "max_policy"
+value "max_policy"
 
 
 text{*
 The diff to the maximum policy
 *}
 ML_val{*
-visualize_edges @{context} @{theory} @{term "edgesL policy"} 
+visualize_edges @{context} @{term "edgesL policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "[e \<leftarrow> edgesL max_policy. e \<notin> set (edgesL policy)]"})]; 
 *}
 
@@ -112,7 +112,7 @@ text{*
 Visualizing the maximum policy
 *}
 ML{*
-vizualize_graph @{context} @{theory} @{term "security_invariants"} @{term "policy"};
+vizualize_graph @{context} @{term "security_invariants"} @{term "policy"};
 *}
 
 lemma "all_security_requirements_fulfilled security_invariants policy" by eval
@@ -121,10 +121,10 @@ lemma "all_security_requirements_fulfilled security_invariants max_policy" by ev
 
 subsection{*A stateful implementation*}
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS policy security_invariants"
-value[code] "stateful_policy"
+value "stateful_policy"
 
 ML_val{*
-visualize_edges @{context} @{theory} @{term "flows_fixL stateful_policy"} 
+visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})]; 
 *}
 

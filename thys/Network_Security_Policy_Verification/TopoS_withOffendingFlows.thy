@@ -147,7 +147,7 @@ begin
 
 
   lemma delete_edges_list_union_insert: "delete_edges_list G (f#fs@keep) = delete_edges G ({f} \<union> set fs \<union> set keep)"
-  by (metis List.set.simps(2) Un_assoc delete_edges_list_set insert_is_Un set_union_code)
+  by(simp add: graph_ops delete_edges_list_set)
 
 
 
@@ -365,7 +365,7 @@ begin
           from minimal a_minimal
           have a_keeps_minimal: "\<forall>(e1, e2)\<in>set (a # keeps). 
           \<not> sinvar (add_edge e1 e2 (delete_edges G (set (minimalize_offending_overapprox ff (a # keeps) G nP)))) nP" 
-            by (metis (lifting) False minimalize_offending_overapprox.simps(2) prod_case_beta set_ConsD)
+            using False by fastforce
           from Cons.prems have a_not_in_keeps: "\<forall>x\<in>set ff. x \<notin> set (a#keeps)" by auto
           from Cons.IH[OF a_not_in_keeps ff_in_edges ff_distinct a_keeps_minimal] have IH:
             "\<forall>(e1, e2)\<in>set (minimalize_offending_overapprox ff (a # keeps) G nP).
@@ -944,8 +944,8 @@ end
     definition pow_combine :: "'x set \<Rightarrow> 'x set set \<Rightarrow> 'x set set" where 
       "pow_combine A B \<equiv> (\<Union> X \<in> Pow A. \<Union> Y \<in> B. {X \<union> Y}) \<union> Pow A"
 
-    value[code] "pow_combine {1::int,2} {{5::int, 6}, {8}}"
-    value[code] "pow_combine {1::int,2} {}"
+    value "pow_combine {1::int,2} {{5::int, 6}, {8}}"
+    value "pow_combine {1::int,2} {}"
 
     lemma pow_combine_mono: 
     fixes S :: "'a set set"
@@ -966,7 +966,7 @@ end
       by(auto simp add: pow_combine_def)
 
 
-    value[code] "pow_combine {1::int,2} {{5::int, 6}, {1}} \<subseteq> pow_combine {1::int,2} {{5::int, 6}, {8}}"
+    value "pow_combine {1::int,2} {{5::int, 6}, {1}} \<subseteq> pow_combine {1::int,2} {{5::int, 6}, {8}}"
 
     lemma rule_pow_combine_fixfst_Union: "\<Union> B \<subseteq> \<Union> C \<Longrightarrow> \<Union> pow_combine A B \<subseteq> \<Union> pow_combine A C"
       apply(rule)

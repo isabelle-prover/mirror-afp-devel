@@ -92,9 +92,9 @@ text{* @{const merge} *}
   export_code distinct in Scala
 
 
-  value[code] "distinct [(CHR ''A'')]"
-  value[code] "distinct [''a'', ''b'']"
-  value[code] "distinct [(''a'', ''b'')]" 
-  value[code] "distinct (map fst [(''a'', ''b''), (''a'', ''c'')])"
+  value "distinct [(CHR ''A'')]"
+  value "distinct [''a'', ''b'']"
+  value "distinct [(''a'', ''b'')]" 
+  value "distinct (map fst [(''a'', ''b''), (''a'', ''c'')])"
 
 end

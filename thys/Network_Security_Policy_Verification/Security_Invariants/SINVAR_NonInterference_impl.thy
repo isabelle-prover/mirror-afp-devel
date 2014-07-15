@@ -38,7 +38,9 @@ lemma sinvar_eq_help3: "(let result = remdups (map nP (undirected_reachable G n)
   apply(rule iffI)
    apply(erule disjE)
     apply simp
-   apply (metis List.set.simps(2) empty_set set_eq_subset set_map set_remdups)
+   apply(simp only: set_map[symmetric]) 
+   apply(subst set_remdups[symmetric])
+   apply simp
   apply(case_tac " nP ` set (undirected_reachable G n) = {}")
    apply fast
   apply(case_tac " nP ` set (undirected_reachable G n) = {Unrelated}")
@@ -66,20 +68,20 @@ fun verify_globals :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config
 
 
 
-value[code] "sinvar 
+value "sinvar 
     \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
     (\<lambda>e. SINVAR_NonInterference.default_node_properties)"
-value[code] "sinvar 
+value "sinvar 
     \<lparr> nodesL = [1::nat,2,3,4,8,9,10], edgesL = [(1,2), (2,3), (3,4)] \<rparr>
     ((\<lambda>e. SINVAR_NonInterference.default_node_properties)(1:= Interfering, 2:= Unrelated, 3:= Unrelated, 4:= Unrelated))"
-value[code] "sinvar 
+value "sinvar 
     \<lparr> nodesL = [1::nat,2,3,4,5, 8,9,10], edgesL = [(1,2), (2,3), (3,4), (5,4), (8,9),(9,8)] \<rparr>
     ((\<lambda>e. SINVAR_NonInterference.default_node_properties)(1:= Interfering, 2:= Unrelated, 3:= Unrelated, 4:= Unrelated))"
-value[code] "sinvar 
+value "sinvar 
     \<lparr> nodesL = [1::nat], edgesL = [(1,1)] \<rparr>
     ((\<lambda>e. SINVAR_NonInterference.default_node_properties)(1:= Interfering))"
 
-value[code] "(undirected_reachable \<lparr> nodesL = [1::nat], edgesL = [(1,1)] \<rparr> 1) = []" 
+value "(undirected_reachable \<lparr> nodesL = [1::nat], edgesL = [(1,1)] \<rparr> 1) = []" 
   (* apply(simp add: removeAll_def remdups_def undirected_reachable_def succ_tran_def trancl_list_impl_def trancl_impl_def) *)
 
 
@@ -195,8 +197,8 @@ text {*Example: *}
   definition "example_graph  = \<lparr> nodesL = [1::nat,2,3,4,5, 8,9,10], edgesL = [(1,2), (2,3), (3,4), (5,4), (8,9),(9,8)] \<rparr>"
   definition"example_conf = ((\<lambda>e. SINVAR_NonInterference.default_node_properties)(1:= Interfering, 2:= Unrelated, 3:= Unrelated, 4:= Unrelated, 8:= Unrelated, 9:= Unrelated))"
   
-  value[code] "sinvar example_graph example_conf"
-  value[code] "NonInterference_offending_list example_graph example_conf"
+  value "sinvar example_graph example_conf"
+  value "NonInterference_offending_list example_graph example_conf"
 
 
 

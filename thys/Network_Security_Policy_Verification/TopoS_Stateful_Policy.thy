@@ -98,7 +98,7 @@ begin
 
 
   lemma finite_backflows_state: "finite (backflows (flows_state \<T>))"
-    by(simp add: backflows_def finite_state)
+    using [[simproc add: finite_Collect]] by(simp add: backflows_def finite_state)
 
   lemma E_state_backflows_valid: "fst ` backflows (flows_state \<T>) \<subseteq> (hosts \<T>)"
                          "snd ` backflows (flows_state \<T>) \<subseteq> (hosts \<T>)"

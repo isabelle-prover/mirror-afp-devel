@@ -96,7 +96,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Securit
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
    apply (simp add:graph_ops)
-   apply (simp split: split_split_asm split_split add:prod_case_beta)
+   apply (simp split: split_split_asm split_split)
    apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
    apply(rule conjI)
     apply(simp add: valid_graph_def)
@@ -110,6 +110,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Securit
      apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
     apply(rename_tac membercase)
     apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := SecurityGateway)" in exI, simp)
+    apply(rule_tac x="vertex_1" in exI, simp)
     apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)
    apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := SecurityGateway)" in exI, simp)
    apply(rule_tac x="vertex_1" in exI, simp)

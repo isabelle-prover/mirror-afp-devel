@@ -146,7 +146,7 @@ and verify_globals = verify_globals
    apply (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
     SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
     SecurityInvariant_withOffendingFlows.is_offending_flows_def)
-   apply (simp split: split_split_asm split_split add:prod_case_beta)
+   apply (simp split: split_split_asm split_split)
    apply (simp add:graph_ops)
    apply(clarify)
    apply (metis gr0I le0)
@@ -156,7 +156,7 @@ and verify_globals = verify_globals
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split add:prod_case_beta)
+  apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
    apply(simp add: valid_graph_def)

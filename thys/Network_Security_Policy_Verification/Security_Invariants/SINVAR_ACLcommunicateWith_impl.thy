@@ -104,7 +104,7 @@ text {* Examples*}
                     (2 := AccessList [3])"
 
   lemma "sinvar exampleG examplenP" by eval
-  value[code] "ACLcommunicateWith_offending_list exampleG examplenP"
+  value "ACLcommunicateWith_offending_list exampleG examplenP"
 
   hide_const exampleG examplenP
 

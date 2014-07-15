@@ -37,10 +37,10 @@ definition "reqs = [req1, req2]"
 definition "max_network = generate_valid_topology reqs 
       \<lparr>nodesL = nodesL testGraph, edgesL = List.product (nodesL testGraph) (nodesL testGraph) \<rparr>"
 
-value[code] "max_network"
+value "max_network"
 
-ML {*
-   Graphviz.visualize_graph @{theory} tune_Vstring_format @{term "edgesL max_network"}
+ML{*
+vizualize_graph @{context} @{term "reqs"} @{term "max_network"};
 *}
 
 end

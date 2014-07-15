@@ -11,11 +11,11 @@ sig
 
   (* edges is a term of type ('a \<times> 'a) list *)
   
-  (* @{theory} default_tune_node_format (edges_format \<times> edges)list*)
-  val visualize_graph: theory -> (term -> string -> string) -> term -> int
+  (* @{context} default_tune_node_format (edges_format \<times> edges)list*)
+  val visualize_graph: Proof.context -> (term -> string -> string) -> term -> int
 
-  (* @{theory} default_tune_node_format (edges_format \<times> edges)list*)
-  val visualize_graph_pretty: theory -> (term -> string -> string) -> (string * term) list-> int
+  (* @{context} default_tune_node_format (edges_format \<times> edges)list*)
+  val visualize_graph_pretty: Proof.context -> (term -> string -> string) -> (string * term) list-> int
 
 end
 

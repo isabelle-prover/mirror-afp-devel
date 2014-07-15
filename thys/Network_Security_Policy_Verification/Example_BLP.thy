@@ -10,8 +10,8 @@ definition BLPexample1::"bool" where
 definition BLPexample3::"(vString \<times> vString) list list" where
   "BLPexample3 \<equiv> (nm_offending_flows SINVAR_LIB_BLPbasic) fabNet ((nm_node_props SINVAR_LIB_BLPbasic) sensorProps_NMParams_try3)"
 
-value[code] "BLPexample1"
-value[code] "BLPexample3"
+value "BLPexample1"
+value "BLPexample3"
 
 
 end

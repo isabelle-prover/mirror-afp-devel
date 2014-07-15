@@ -51,7 +51,7 @@ text {* Code examples. *}
   definition valid_graph_example where
   "valid_graph_example \<equiv> \<lparr> nodesL = [1::nat,4,6], edgesL = [(1,4), (1,6), (6,4)] \<rparr>"
 
-  value[code] "valid_list_graph valid_graph_example"
+  value "valid_list_graph valid_graph_example"
 
   definition valid_graph_impl_example where
   "valid_graph_impl_example \<equiv> valid_list_graph valid_graph_example"

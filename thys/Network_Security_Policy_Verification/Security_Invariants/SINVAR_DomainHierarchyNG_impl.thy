@@ -103,7 +103,7 @@ definition example_TUM_net :: "vString list_graph" where
           (TopoS_Vertices.V ''LowerSVR'', TopoS_Vertices.V ''Gateway''),
           (TopoS_Vertices.V ''UpperSRV'', TopoS_Vertices.V ''Gateway'')
         ] \<rparr>"
-value[code] "valid_list_graph example_TUM_net"
+value "valid_list_graph example_TUM_net"
 
 definition example_TUM_config :: "vString \<Rightarrow> domainNameTrust" where
   "example_TUM_config \<equiv> ((\<lambda> e. default_node_properties)
@@ -117,16 +117,16 @@ definition example_TUM_hierarchy :: "domainTree" where
            Department ''AISD'' []
        ])"
 
-value[code] "verify_globals example_TUM_net example_TUM_config example_TUM_hierarchy"
-value[code] "sinvar     example_TUM_net example_TUM_config"
+value "verify_globals example_TUM_net example_TUM_config example_TUM_hierarchy"
+value "sinvar     example_TUM_net example_TUM_config"
 
 definition example_TUM_net_invalid where
 "example_TUM_net_invalid \<equiv> example_TUM_net\<lparr>edgesL :=  
     (TopoS_Vertices.V ''LowerSRV'', TopoS_Vertices.V ''UpperSRV'')#(edgesL example_TUM_net)\<rparr>"
 
-value[code] "verify_globals example_TUM_net_invalid example_TUM_config example_TUM_hierarchy"
-value[code] "sinvar     example_TUM_net_invalid example_TUM_config"
-value[code] "DomainHierarchyNG_offending_list example_TUM_net_invalid example_TUM_config"
+value "verify_globals example_TUM_net_invalid example_TUM_config example_TUM_hierarchy"
+value "sinvar     example_TUM_net_invalid example_TUM_config"
+value "DomainHierarchyNG_offending_list example_TUM_net_invalid example_TUM_config"
 
 
 hide_const (open) NetModel_node_props

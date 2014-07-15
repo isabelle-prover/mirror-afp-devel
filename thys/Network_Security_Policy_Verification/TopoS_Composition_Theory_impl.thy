@@ -170,7 +170,7 @@ subsection{*Accessors*}
         apply(simp add: get_impl_def get_spec_def)
         apply(induction M)
          apply(simp_all)
-        by (metis (lifting, mono_tags) prod_case_beta subset_insertI2)
+        by force
       from set_zip_IFS a show "\<forall> (m_impl, m_spec) \<in> set (zip (get_IFS (get_impl M)) (TopoS_Composition_Theory.get_IFS (get_spec M))).
           SecurityInvariant_complies_formal_def m_impl m_spec"
         apply(simp add: get_IFS_def get_ACS_def
@@ -182,7 +182,7 @@ subsection{*Accessors*}
         apply(simp add: get_impl_def get_spec_def)
         apply(induction M)
          apply(simp_all)
-        by (metis (lifting, mono_tags) prod_case_beta subset_insertI2)
+        by force
       from this a show "\<forall> (m_impl, m_spec) \<in> set (zip (get_ACS (get_impl M)) (TopoS_Composition_Theory.get_ACS (get_spec M))).
         SecurityInvariant_complies_formal_def m_impl m_spec"
         apply(simp add: get_IFS_def get_ACS_def

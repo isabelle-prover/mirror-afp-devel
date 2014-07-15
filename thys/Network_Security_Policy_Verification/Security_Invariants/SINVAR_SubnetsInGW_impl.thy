@@ -85,21 +85,21 @@ definition example_net_sub :: "nat list_graph" where
   (8,11),
   (11,8), (12,8),
   (11,42), (12,42), (8,42)] \<rparr>"
-value[code] "valid_list_graph example_net_sub"
+value "valid_list_graph example_net_sub"
 
 definition example_conf_sub where
 "example_conf_sub \<equiv> ((\<lambda>e. SINVAR_SubnetsInGW.default_node_properties)
   (1 := Member, 2:= Member, 3:= Member, 4:=Member,
    8:=InboundGateway))" 
 
-value[code] "sinvar example_net_sub example_conf_sub"
+value "sinvar example_net_sub example_conf_sub"
 
 
 definition example_net_sub_invalid where
 "example_net_sub_invalid \<equiv> example_net_sub\<lparr>edgesL := (42,4)#(edgesL example_net_sub)\<rparr>"
 
-value[code] "sinvar example_net_sub_invalid example_conf_sub"
-value[code] "SubnetsInGW_offending_list example_net_sub_invalid example_conf_sub"
+value "sinvar example_net_sub_invalid example_conf_sub"
+value "SubnetsInGW_offending_list example_net_sub_invalid example_conf_sub"
 
 
 

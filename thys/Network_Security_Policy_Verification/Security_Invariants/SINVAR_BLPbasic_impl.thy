@@ -88,32 +88,32 @@ subsubsection{* Example *}
                      (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot2''),
                      (TopoS_Vertices.V ''MissionControl2'', TopoS_Vertices.V ''Bot2''),
                      (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot2'')] \<rparr>"
-  value[code] "valid_list_graph fabNet"
+  value "valid_list_graph fabNet"
 
 
   definition sensorProps_try1 :: "vString \<Rightarrow> privacy_level" where
     "sensorProps_try1 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3)"
-  value[code] "BLP_offending_list fabNet sensorProps_try1"
-  value[code] "sinvar fabNet sensorProps_try1"
+  value "BLP_offending_list fabNet sensorProps_try1"
+  value "sinvar fabNet sensorProps_try1"
 
   definition sensorProps_try2 :: "vString \<Rightarrow> privacy_level" where
     "sensorProps_try2 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3, 
                                                        TopoS_Vertices.V ''SensorSink'' := 3)"
-  value[code] "BLP_offending_list fabNet sensorProps_try2"
-  value[code] "sinvar fabNet sensorProps_try2"
+  value "BLP_offending_list fabNet sensorProps_try2"
+  value "sinvar fabNet sensorProps_try2"
 
   definition sensorProps_try3 :: "vString \<Rightarrow> privacy_level" where
     "sensorProps_try3 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3, 
                                                        TopoS_Vertices.V ''SensorSink'' := 3, TopoS_Vertices.V ''Statistics'' := 3)"
-  value[code] "BLP_offending_list fabNet sensorProps_try3"
-  value[code] "sinvar fabNet sensorProps_try3"
+  value "BLP_offending_list fabNet sensorProps_try3"
+  value "sinvar fabNet sensorProps_try3"
 
   text {* Another parameter set for confidential controlling information*}
   definition sensorProps_conf :: "vString \<Rightarrow> privacy_level" where
     "sensorProps_conf \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''MissionControl1'' := 1, TopoS_Vertices.V ''MissionControl2'' := 2,
       TopoS_Vertices.V ''Bot1'' := 1, TopoS_Vertices.V ''Bot2'' := 2 )"
-  value[code] "BLP_offending_list fabNet sensorProps_conf"
-  value[code] "sinvar fabNet sensorProps_conf"
+  value "BLP_offending_list fabNet sensorProps_conf"
+  value "sinvar fabNet sensorProps_conf"
 
 
 text {* Complete example:*}
@@ -124,7 +124,7 @@ text {* Complete example:*}
                                                     TopoS_Vertices.V ''SensorSink'' \<mapsto> 3,
                                                     TopoS_Vertices.V ''Statistics'' \<mapsto> 3],
                                 model_global_properties = () \<rparr>"
-  value[code] "BLP_eval fabNet sensorProps_NMParams_try3"
+  value "BLP_eval fabNet sensorProps_NMParams_try3"
 
 
 export_code SINVAR_LIB_BLPbasic in Scala

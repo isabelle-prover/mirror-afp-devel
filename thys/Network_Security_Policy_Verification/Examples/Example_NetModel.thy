@@ -51,8 +51,8 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
   apply (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
-  apply (simp add:delete_edges_simp2 graph_ops)
-  apply (simp split: split_split_asm split_split add:prod_case_beta)
+  apply (simp add: graph_ops)
+  apply (simp split: split_split_asm split_split)
     apply blast
 
  -- "Uniqueness"
@@ -60,8 +60,8 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
   apply (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
-  apply (simp add:delete_edges_simp2 graph_ops)
-  apply (simp split: split_split_asm split_split add:prod_case_beta)
+  apply (simp add: graph_ops)
+  apply (simp split: split_split_asm split_split)
   -- "proof by counter example: assume False is not the unique default parameter"
   apply(rule_tac x="\<lparr> nodes={vertex_1}, edges = {(vertex_1,vertex_1)} \<rparr>" in exI, simp)
   apply(rule conjI)

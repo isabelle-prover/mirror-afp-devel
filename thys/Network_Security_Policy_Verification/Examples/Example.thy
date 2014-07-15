@@ -31,8 +31,8 @@ subsection {* Network Graph and Security Requirements *}
                                 model_global_properties = () \<rparr>"
 
   text{*Both security requirements fulfilled?*}
-  value[code] "SecurityGateway_eval example_net_secgw NMParams_secgw_1"
-  value[code] "SINVAR_BLPtrusted_impl.BLP_eval example_net_secgw NMParams_blptrusted_1"
+  value "SecurityGateway_eval example_net_secgw NMParams_secgw_1"
+  value "SINVAR_BLPtrusted_impl.BLP_eval example_net_secgw NMParams_blptrusted_1"
 
 
 text{*Add violations!*}
@@ -40,9 +40,9 @@ text{*Add violations!*}
   "example_net_secgw_invalid \<equiv> example_net_secgw\<lparr>edgesL := (1,11)#(11,1)#(11,8)#(1,2)#(edgesL example_net_secgw)\<rparr>"
 
   text{*Security Requirement still fulfilled?*}
-  value[code] "SecurityGateway_eval example_net_secgw_invalid NMParams_secgw_1"
+  value "SecurityGateway_eval example_net_secgw_invalid NMParams_secgw_1"
   text{*Whom to blame?*}
-  value[code] "SecurityGatewayExtended_offending_list example_net_secgw_invalid (SINVAR_SecGwExt_impl.NetModel_node_props NMParams_secgw_1)"
+  value "SecurityGatewayExtended_offending_list example_net_secgw_invalid (SINVAR_SecGwExt_impl.NetModel_node_props NMParams_secgw_1)"
 
   text{*Security Requirement still fulfilled?*}
   value "SINVAR_BLPtrusted_impl.BLP_eval example_net_secgw_invalid NMParams_blptrusted_1"

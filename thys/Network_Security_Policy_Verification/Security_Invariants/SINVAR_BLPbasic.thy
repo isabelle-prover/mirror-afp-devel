@@ -47,7 +47,7 @@ lemma BLP_def_unique: "otherbot \<noteq> 0 \<Longrightarrow>
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split add:prod_case_beta)
+  apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes=set [vertex_1,vertex_2], edges = set [(vertex_1,vertex_2)] \<rparr>" in exI, simp)
   apply(rule conjI)
    apply(simp add: valid_graph_def)

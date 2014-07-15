@@ -30,7 +30,7 @@ subsection{* Some unimportant lemmata *}
       apply(thin_tac "all_security_requirements_fulfilled ?M ?G")
       apply(simp add: valid_graph_def)
       apply(simp add: backflows_def)
-      apply(auto)[1]
+      using [[simproc add: finite_Collect]] apply(auto)[1]
      apply(simp_all)
    done
 
@@ -53,7 +53,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
   text{*trying better*}
 
     text{*First, filtering flows that cause no IFS violations*}
-    (*the edges front of the lsit are more likely to be kept*)
+    (*the edges front of the list are more likely to be kept*)
     fun filter_IFS_no_violations_accu :: "'v::vertex graph \<Rightarrow> 'v SecurityInvariant_configured list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list" where
       "filter_IFS_no_violations_accu G M accu [] = accu" |
       "filter_IFS_no_violations_accu G M accu (e#Es) = (if
@@ -71,7 +71,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     unfolding filter_IFS_no_violations_def
     apply(induct_tac Es)
      apply(simp_all)
-    apply(metis List.set.simps(2) Un_insert_right subset_insertI2)
+    apply force
     done
     lemma filter_IFS_no_violations_accu_correct_induction: "valid_reqs (get_IFS M) \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
             all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = set (accu) \<rparr>) \<Longrightarrow> 
@@ -118,7 +118,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
           by (metis Cons.prems(3) sup.order_iff)
         from this Cons.prems(4)
         have "\<And>ea. ea\<in>E \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>"
-          by (metis List.set.simps(2) Un_insert_left insert_absorb insert_subset)
+          by(simp add: insert_absorb)
         hence validgraph1: "\<And>ea. ea\<in>E - (set (e # accu) \<union> set Es) \<Longrightarrow> 
           valid_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>" by(simp)
 
@@ -266,7 +266,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
        apply(simp add: filter_compliant_stateful_ACS_def)
       apply(induct_tac Es)
        apply(simp_all)
-      apply(metis List.set.simps(2) Un_insert_right subset_insertI2)
+      apply (metis Un_insert_right set_simps(2) set_subset_Cons set_union subset_trans)
       done
     lemma filter_compliant_stateful_ACS_accu_correct_induction: "valid_reqs (get_ACS M) \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
             (set accu) \<union> (set edgesList) \<subseteq> E \<Longrightarrow> 
@@ -406,7 +406,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
                   have f1: "e \<in> E - (set Es \<union> insert a (set accu) \<union> {R \<in> E. R \<in> backflows E})"
                     using h1 by simp
                   have f2: "insert a (set accu) \<subseteq> E"
-                    by (metis List.set.simps(2) `set (a # accu) \<subseteq> E`)
+                    using `set (a # accu) \<subseteq> E` by simp
                   have f3: "e \<in> E"
                     using f1 by fastforce
                   have "E \<union> insert a (set accu) = E"

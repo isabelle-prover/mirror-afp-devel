@@ -95,20 +95,20 @@ lemma "implc_sinvar FilesSrcACL ChairNetwork_empty" by eval
 
 definition "ChairSecurityRequirements = [ConfidentialChairData, PrintingACL, PrintingSink, StudentSubnet, FilesSrcACL]"
 
-value[code] "implc_get_offending_flows ChairSecurityRequirements ChairNetwork_empty"
-value[code] "generate_valid_topology ChairSecurityRequirements ChairNetwork_empty"
+value "implc_get_offending_flows ChairSecurityRequirements ChairNetwork_empty"
+value "generate_valid_topology ChairSecurityRequirements ChairNetwork_empty"
 
-value[code] "List.product (nodesL ChairNetwork_empty) (nodesL ChairNetwork_empty)"
+value "List.product (nodesL ChairNetwork_empty) (nodesL ChairNetwork_empty)"
 
 definition "ChairNetwork = generate_valid_topology ChairSecurityRequirements 
       \<lparr>nodesL = nodesL ChairNetwork_empty, edgesL = List.product (nodesL ChairNetwork_empty) (nodesL ChairNetwork_empty) \<rparr>"
 
 lemma "all_security_requirements_fulfilled ChairSecurityRequirements ChairNetwork" by eval
 
-value[code] "ChairNetwork"
+value "ChairNetwork"
 
 ML_val{*
-vizualize_graph @{context} @{theory} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
+vizualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
 *}
 
 

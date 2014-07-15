@@ -89,7 +89,7 @@ text {* Examples*}
     (8,12),
     (11,12),
     (11,42), (12,42), (3,42)] \<rparr>"
-  value[code] "valid_list_graph example_net_sub"
+  value "valid_list_graph example_net_sub"
   
   definition example_conf_sub where
   "example_conf_sub \<equiv> ((\<lambda>e. SINVAR_Subnets.default_node_properties)
@@ -99,29 +99,29 @@ text {* Examples*}
      12:=BorderRouter 2,
      42 := Unassigned))" 
   
-  value[code] "sinvar example_net_sub example_conf_sub"
+  value "sinvar example_net_sub example_conf_sub"
   
   
   definition example_net_sub_invalid where
   "example_net_sub_invalid \<equiv> example_net_sub\<lparr>edgesL := (42,4)#(3,8)#(11,8)#(edgesL example_net_sub)\<rparr>"
   
-  value[code] "sinvar example_net_sub_invalid example_conf_sub"
-  value[code] "Subnets_offending_list example_net_sub_invalid example_conf_sub"
+  value "sinvar example_net_sub_invalid example_conf_sub"
+  value "Subnets_offending_list example_net_sub_invalid example_conf_sub"
   
 
 
   
-  value[code] "sinvar 
+  value "sinvar 
       \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
       (\<lambda>e. SINVAR_Subnets.default_node_properties)"
-  value[code] "sinvar 
+  value "sinvar 
       \<lparr> nodesL = [1::nat,2,3,4,8,9,11,12], edgesL = [(1,2),(2,3),(3,4), (4,11),(1,11), (8,9),(9,8),(8,12),  (11,12)] \<rparr>
       ((\<lambda>e. SINVAR_Subnets.default_node_properties)(1 := Subnet 1, 2:= Subnet 1, 3:= Subnet 1, 4:=Subnet 1, 11:=BorderRouter 1,
                                     8:=Subnet 2, 9:=Subnet 2, 12:=BorderRouter 2))"
-  value[code] "sinvar 
+  value "sinvar 
       \<lparr> nodesL = [1::nat,2,3,4,8,9,11,12], edgesL = [(1,2),(2,3),(3,4), (4,11),(1,11), (8,9),(9,8),(8,12),  (11,12)] \<rparr>
       ((\<lambda>e. SINVAR_Subnets.default_node_properties)(1 := Subnet 1, 2:= Subnet 1, 3:= Subnet 1, 4:=Subnet 1, 11:=BorderRouter 1))"
-  value[code] "sinvar 
+  value "sinvar 
       \<lparr> nodesL = [1::nat,2,3,4,8,9,10], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
       ((\<lambda>e. SINVAR_Subnets.default_node_properties)(8:=Subnet 8, 9:=Subnet 8))"
   

@@ -35,8 +35,8 @@ definition I8SSHgraph :: "nat list_graph" where
         (21, 19), (17, 19), (14, 20), (15, 17), (13, 1), (11, 17), (2, 0)] \<rparr>" 
 
 
-value[code] "(0, 20) \<in> set (edgesL I8SSHgraph)"
-value[code] "[(s,r) \<leftarrow> (edgesL I8SSHgraph). r = 2]"
+value "(0, 20) \<in> set (edgesL I8SSHgraph)"
+value "[(s,r) \<leftarrow> (edgesL I8SSHgraph). r = 2]"
 
   lemma "valid_list_graph I8SSHgraph" by eval
 
@@ -105,12 +105,12 @@ definition "Subnet1 \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Su
 
 definition "I8Requirements = [ Confidentiality1, Subnet1]"
 
-value[code] "implc_get_offending_flows I8Requirements I8SSHgraph"
+value "implc_get_offending_flows I8Requirements I8SSHgraph"
 
-value[code] "implc_offending_flows PrintingSink I8SSHgraph"
+value "implc_offending_flows PrintingSink I8SSHgraph"
 
 ML{*
-vizualize_graph @{context} @{theory} @{term "I8Requirements"} @{term "I8SSHgraph"};
+vizualize_graph @{context} @{term "I8Requirements"} @{term "I8SSHgraph"};
 *}
 
 lemma "all_security_requirements_fulfilled I8Requirements I8SSHgraph" by eval
@@ -118,14 +118,14 @@ lemma "all_security_requirements_fulfilled I8Requirements I8SSHgraph" by eval
 lemma "set (filter_IFS_no_violations I8SSHgraph I8Requirements) = set (edgesL I8SSHgraph)" by eval
 
 
-value[code] "filter_compliant_stateful_ACS I8SSHgraph I8Requirements"
+value "filter_compliant_stateful_ACS I8SSHgraph I8Requirements"
 
 text{*noBiFlows is the list of flows where not already a bidirectional flows is allowed.
       That is, the list of flows we might wish to be stateful to enhance connectivity. *}
 definition "noBiFlows = [e \<leftarrow> edgesL I8SSHgraph. case e of (s,r) \<Rightarrow> \<not> ((s,r) \<in> set (edgesL I8SSHgraph) \<and> (r,s) \<in> set (edgesL I8SSHgraph)) ]"
 lemma "set noBiFlows = set (filter_compliant_stateful_ACS I8SSHgraph I8Requirements)" by eval
 
-value[code] "generate_valid_stateful_policy_IFSACS I8SSHgraph I8Requirements"
+value "generate_valid_stateful_policy_IFSACS I8SSHgraph I8Requirements"
 
 text{*even the order of the list is preserved!!*}
 lemma "flows_stateL (generate_valid_stateful_policy_IFSACS I8SSHgraph I8Requirements) = noBiFlows" by eval

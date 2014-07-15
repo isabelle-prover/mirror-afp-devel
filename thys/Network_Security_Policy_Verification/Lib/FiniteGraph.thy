@@ -159,7 +159,7 @@ section {*Lemmata*}
 
   -- "finite"
   lemma valid_graph_finite_filterE: "valid_graph G \<Longrightarrow> finite {(e1, e2). (e1, e2) \<in> edges G \<and> P e1 e2}"
-  by(simp add: valid_graph.finiteE)
+  by(simp add: valid_graph.finiteE split_def)
   lemma valid_graph_finite_filterV: "valid_graph G \<Longrightarrow> finite {n. n \<in> nodes G \<and> P n}"
   by(simp add: valid_graph.finiteV)
 
@@ -186,13 +186,13 @@ section {*Lemmata*}
 
   -- "delete edge"
   lemma delete_edge_valid[simp]: "valid_graph G \<Longrightarrow> valid_graph (delete_edge v v' G)"
-  by(auto simp add: delete_edge_def add_node_def valid_graph_def)
+  by(auto simp add: delete_edge_def add_node_def valid_graph_def split_def)
  
   -- "delte edges"
   lemma delete_edges_list_valid[simp]: "valid_graph G \<Longrightarrow> valid_graph (delete_edges_list G E)"
     by(induction E arbitrary: G, simp, force)
   lemma delete_edges_valid[simp]: "valid_graph G \<Longrightarrow> valid_graph (delete_edges G E)"
-  by(auto simp add: delete_edges_def add_node_def valid_graph_def)
+  by(auto simp add: delete_edges_def add_node_def valid_graph_def split_def)
   lemma delete_edges_list_set: "delete_edges_list G E = delete_edges G (set E)"
     apply(induction E arbitrary: G)
      apply(simp_all add: delete_edges_def)
@@ -265,7 +265,7 @@ section {*Lemmata*}
   --"backflows"
   lemma backflows_valid: 
     "valid_graph \<lparr>nodes=N, edges=E\<rparr> \<Longrightarrow> valid_graph \<lparr>nodes=N, edges=backflows E\<rparr>"
-    by(auto simp add: valid_graph_def backflows_def)
+    using [[simproc add: finite_Collect]] by(auto simp add: valid_graph_def backflows_def)
   lemma undirected_backflows: 
     "undirected G = \<lparr> nodes = nodes G, edges = (edges G) \<union> backflows (edges G) \<rparr>"
     by(simp add: backflows_def undirected_def)
@@ -273,7 +273,7 @@ section {*Lemmata*}
     "backflows (backflows E) = E"
     by(simp add: backflows_def)
   lemma backflows_finite: "finite E \<Longrightarrow> finite (backflows E)"
-    by(simp add: backflows_def)
+    using [[simproc add: finite_Collect]] by(simp add: backflows_def) 
   lemma backflows_minus_backflows: "backflows (X - backflows Y) = (backflows X) - Y"
     by(auto simp add: backflows_def)
   lemma backflows_subseteq: "X \<subseteq> Y <-> backflows X \<subseteq> backflows Y"

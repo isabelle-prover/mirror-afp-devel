@@ -240,7 +240,11 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     lemma valid_reqs2: "valid_reqs (m # M) \<Longrightarrow> valid_reqs M"
       by(simp add: valid_reqs_def)
     lemma get_offending_flows_alt1: "get_offending_flows M G = \<Union> {c_offending_flows m G | m. m \<in> set M}"
-      apply(simp add: get_offending_flows_def) by fastforce
+      apply(simp add: get_offending_flows_def)
+      by fastforce
+    lemma get_offending_flows_un: "\<Union> get_offending_flows M G = (\<Union>m\<in>set M. \<Union>c_offending_flows m G)"
+      apply(simp add: get_offending_flows_def)
+      by blast
   
   
     lemma all_security_requirements_fulfilled_mono:
@@ -380,23 +384,163 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
           by (simp add: all_security_requirements_fulfilled_def)
        qed
 
-   (*TODO
-    all offending flows uniquely defined \<Longrightarrow> generate_valid_topology is maximum topology
-   *)
-   (*
-    add generate_valid_topology_max_topo from Composition_Theory_ENF to here!
-   *)
+
   lemma generate_valid_topology_as_set: 
   "generate_valid_topology M G = delete_edges G (\<Union>m \<in> set M. (\<Union> (c_offending_flows m G)))"
    apply(induction M arbitrary: G)
     apply(simp_all add: delete_edges_simp2 generate_valid_topology_nodes) by fastforce
 
-  (*text{*Does it also generate a maximum topology?*}
+  lemma c_offending_flows_subseteq_edges: "configured_SecurityInvariant m \<Longrightarrow> \<Union>c_offending_flows m G \<subseteq> edges G"
+    apply(clarify)
+    apply(simp only: configured_SecurityInvariant.valid_c_offending_flows)
+    apply(thin_tac "configured_SecurityInvariant ?x")
+    by auto
+
+
+  text{*Does it also generate a maximum topology? It does, if the security invariants are in ENF-form. That means, if 
+        all security invariants can be expressed as a predicate over the edges, 
+        @{term "\<exists>P. \<forall>G. c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1,v2))"}*}
   definition max_topo :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> bool" where
     "max_topo M G \<equiv> all_security_requirements_fulfilled M G \<and> (
-      \<forall> (v1, v2) \<in> (nodes G \<times> nodes G) - (edges G). \<not> all_security_requirements_fulfilled M (add_edge v1 v2 G))"*)
+      \<forall> (v1, v2) \<in> (nodes G \<times> nodes G) - (edges G). \<not> all_security_requirements_fulfilled M (add_edge v1 v2 G))"
 
-  (*end TODO*)
+  lemma unique_offending_obtain: 
+    assumes m: "configured_SecurityInvariant m" and unique: "c_offending_flows m G = {F}"
+    obtains P where "F = {(v1, v2) \<in> edges G. \<not> P (v1, v2)}" and "c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1, v2))" and 
+                    "(\<forall>(v1,v2) \<in> edges G - F. P (v1, v2))"
+    proof -
+    assume EX: "(\<And>P. F = {(v1, v2). (v1, v2) \<in> edges G \<and> \<not> P (v1, v2)} \<Longrightarrow> c_sinvar m G = (\<forall>(v1, v2)\<in>edges G. P (v1, v2)) \<Longrightarrow> \<forall>(v1, v2)\<in>edges G - F. P (v1, v2) \<Longrightarrow> thesis)"
+
+    from unique c_offending_flows_subseteq_edges[OF m] have "F \<subseteq> edges G" by force
+    from this obtain P where "F = {e \<in> edges G. \<not> P e}" by (metis double_diff set_diff_eq subset_refl)
+    hence 1: "F = {(v1, v2) \<in> edges G. \<not> P (v1, v2)}" by auto
+
+    from configured_SecurityInvariant.valid_c_offending_flows[OF m] have "c_offending_flows m G =
+          {F. F \<subseteq> edges G \<and> \<not> c_sinvar m G \<and> c_sinvar m (delete_edges G F) \<and> 
+              (\<forall>(e1, e2)\<in>F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))}" .
+
+    from this unique have "\<not> c_sinvar m G" and 2: "c_sinvar m (delete_edges G F)" and 
+                          3: "(\<forall>(e1, e2)\<in>F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))" by auto
+
+    from this `F = {e \<in> edges G. \<not> P e}` have x3: "\<forall> e \<in> edges G - F. P e" by (metis (lifting) mem_Collect_eq set_diff_eq)
+    hence 4: "\<forall>(v1,v2) \<in> edges G - F. P (v1, v2)" by blast
+
+    have "F \<noteq> {}" by (metis assms(1) assms(2) configured_SecurityInvariant.empty_offending_contra insertCI)
+    from this `F = {e \<in> edges G. \<not> P e}` `\<not> c_sinvar m G` have 5: "c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1, v2))"
+      apply(simp add: graph_ops)
+      by(blast)
+
+    from EX[of P] unique 1 x3 5 show ?thesis by fast
+  qed
+
+  lemma enf_offending_flows:
+    assumes vm: "configured_SecurityInvariant m" and enf: "\<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)"
+    shows "\<forall>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})"
+    proof -
+      from vm configured_SecurityInvariant.valid_c_offending_flows have offending_formaldef: "\<And>G.
+      c_offending_flows m G =
+      {F. F \<subseteq> edges G \<and> \<not> c_sinvar m G \<and> c_sinvar m (delete_edges G F) \<and> (\<forall>(e1, e2)\<in>F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))}"
+      by auto
+
+      show "\<forall>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})"
+        apply(rule allI)
+        apply(case_tac "c_sinvar m G")
+         apply(simp add: offending_formaldef) --{*@{term "{}"}*}
+        apply(simp only: offending_formaldef graph_ops enf)
+        apply(simp)
+        apply(rule Set.equalityI)
+         apply(blast)
+        apply(blast)
+        done 
+      qed
+
+ theorem generate_valid_topology_max_topo: "\<lbrakk> valid_reqs M; valid_graph G;
+      \<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)\<rbrakk> \<Longrightarrow> 
+      max_topo M (generate_valid_topology M (fully_connected G))"
+  proof -
+    let ?G="(fully_connected G)"
+    assume validRs: "valid_reqs M"
+    and    validG:       "valid_graph G"
+    and enf: "\<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)"
+
+    obtain V E where VE_prop: "\<lparr> nodes = V, edges = E \<rparr> = generate_valid_topology M ?G" by (metis graph.cases)
+    hence VE_prop_asset:
+      "\<lparr> nodes = V, edges = E \<rparr> = \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<rparr>"
+      by(simp add: fully_connected_def generate_valid_topology_as_set delete_edges_simp2)
+
+    from VE_prop_asset have E_prop: "E =  V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by fast
+    from VE_prop have V_prop: "nodes G =  V"
+      apply(simp add: fully_connected_def) using generate_valid_topology_nodes by (metis graph.select_convs(1))
+    from VE_prop have V_full_prop: "nodes (generate_valid_topology M ?G) = V" by (metis graph.select_convs(1))
+    from VE_prop have E_full_prop: "edges (generate_valid_topology M ?G) = E" by (metis graph.select_convs(2))
+
+    from VE_prop valid_graph_generate_valid_topology[OF fully_connected_valid[OF validG]]
+    have validG_VE: "valid_graph \<lparr> nodes = V, edges = E \<rparr>" by force
+
+    from generate_valid_topology_sound[OF validRs validG_VE] fully_connected_valid[OF validG] have VE_all_valid: 
+      "all_security_requirements_fulfilled M \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<rparr>"
+      by (metis VE_prop VE_prop_asset fully_connected_def generate_valid_topology_sound validRs)
+    hence goal1: "all_security_requirements_fulfilled M (generate_valid_topology M (fully_connected G))" by (metis VE_prop VE_prop_asset)
+
+    from validRs have valid_mD:"\<And>m. m \<in> set M \<Longrightarrow> configured_SecurityInvariant m " 
+      by(simp add: valid_reqs_def)
+
+    from c_offending_flows_subseteq_edges[where G="?G"] have hlp1: "(\<Union>m\<in>set M. \<Union>c_offending_flows m ?G) \<subseteq> V \<times> V"
+      apply(simp add: fully_connected_def V_prop)
+      by (metis (lifting, no_types) UN_least validRs valid_reqs_def)
+    have "\<And>A B. A - (A - B) = B \<inter> A" by fast 
+    from this[of "V \<times> V"] E_prop hlp1 have "V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by force
+
+
+    have "\<forall>(v1, v2) \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G).
+       \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>"
+       unfolding all_security_requirements_fulfilled_def
+       proof(simp, clarify, rename_tac m F a b)
+         fix m F v1 v2
+         assume "m \<in> set M" and "F \<in> c_offending_flows m ?G" and "(v1, v2) \<in> F"
+         from `m \<in> set M` valid_mD have "configured_SecurityInvariant m" by simp
+
+         from enf `m \<in> set M` obtain P where enf_m: "\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)" by blast
+         
+         from `(v1, v2) \<in> F` have "F \<noteq> {}" by auto
+
+         from enf_offending_flows[OF `configured_SecurityInvariant m` `\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)`] have
+          offending: "\<And>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})" by simp
+         from `F \<in> c_offending_flows m ?G` `F \<noteq> {}` have "F = {e \<in> edges ?G. \<not> P e}"
+           apply(subst(asm) offending)
+           by (metis (full_types) empty_iff singleton_iff)
+         from this `(v1, v2) \<in> F`  have "\<not> P (v1, v2)" by simp
+
+         from this enf_m have "\<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" by(simp)
+         thus "\<exists>m\<in>set M. \<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" using `m \<in> set M`
+          apply(rule_tac x="m" in bexI)
+           by simp_all
+         qed
+          
+    from this `V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)` have "\<forall>(v1, v2) \<in> V \<times> V - E.
+         \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
+    hence goal2: "(\<forall>(v1, v2)\<in>nodes (generate_valid_topology M ?G) \<times> nodes (generate_valid_topology M ?G) -
+                edges (generate_valid_topology M ?G).
+        \<not> all_security_requirements_fulfilled M (add_edge v1 v2 (generate_valid_topology M ?G)))"
+    proof(unfold V_full_prop E_full_prop graph_ops)
+      assume a: "\<forall>(v1, v2)\<in>V \<times> V - E. \<not> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E \<union> {(v1, v2)}\<rparr>"
+      have "\<forall>(v1, v2)\<in>V \<times> V - E.  V \<union> {v1, v2} = V" by blast
+      hence "\<forall>(v1, v2)\<in>V \<times> V - E. \<lparr>nodes = V \<union> {v1, v2}, edges = {(v1, v2)} \<union> E\<rparr> = \<lparr>nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by blast
+      from this a show "\<forall>(v1, v2)\<in>V \<times> V - E. \<not> all_security_requirements_fulfilled M \<lparr>nodes = V \<union> {v1, v2}, edges = {(v1, v2)} \<union> E\<rparr>"
+        --"TODO: this should be trivial ..."
+        apply(simp)
+        apply(rule ballI)
+        apply(erule_tac x=x and A="V \<times> V - E" in ballE)
+         prefer 2 apply simp
+        apply(erule_tac x=x and A="V \<times> V - E" in ballE)
+         prefer 2 apply(simp)
+        apply(clarify)
+        by presburger
+    qed
+     
+    from goal1 goal2 show ?thesis
+      unfolding max_topo_def by presburger
+  qed
 
 
 

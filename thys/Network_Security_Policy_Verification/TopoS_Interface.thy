@@ -238,7 +238,8 @@ The details can be looked up in \cite{diekmann2014forte}.
     lemma node_props_eq_node_props_formaldef: "node_props_formaldef = node_props"
      apply(simp add: fun_eq_iff node_props_formaldef_def)
      apply(rule allI)+
-     by (metis (lifting, mono_tags) domD domIff option.simps(4) option.simps(5) the.simps)
+     apply(simp add: option.case_eq_if domIff)
+     done
 
     text{*
       Checking whether a security invariant holds.

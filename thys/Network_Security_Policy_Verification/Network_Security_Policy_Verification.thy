@@ -57,7 +57,7 @@ text{*
 Visualization of the violation (only in interactive mode)
 *}
 ML{*
-vizualize_graph @{context} @{theory} @{term "security_invariants"} @{term "policy"};
+vizualize_graph @{context} @{term "security_invariants"} @{term "policy"};
 *}
 
 
@@ -68,7 +68,7 @@ definition "max_policy = generate_valid_topology security_invariants \<lparr>nod
 
 
 text{*Calculating the maximum policy*}
-value[code] "max_policy"
+value "max_policy"
 lemma "max_policy = \<lparr>nodesL = [1, 2, 3], edgesL = [(1, 1), (1, 2), (1, 3), (2, 2), (3, 1), (3, 2), (3, 3)]\<rparr>" by eval
 
 
@@ -76,7 +76,7 @@ text{*
 Visualizing the maximum policy (only in interactive mode)
 *}
 ML{*
-vizualize_graph @{context} @{theory} @{term "security_invariants"} @{term "max_policy"};
+vizualize_graph @{context} @{term "security_invariants"} @{term "max_policy"};
 *}
 
 text{*Of course, all security invariants hold for the maximum policy. *}
@@ -88,14 +88,14 @@ text{*We generate a stateful policy*}
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS policy security_invariants"
 
 text{*When thinking about it carefully, no flow can be stateful without introducing an information leakage here!*}
-value[code] "stateful_policy"
+value "stateful_policy"
 lemma "stateful_policy = \<lparr>hostsL = [1, 2, 3], flows_fixL = [(1, 2), (2, 2), (2, 3)], flows_stateL = []\<rparr>" by eval
 
 text{*
 Visualizing the stateful policy (only in interactive mode)
 *}
 ML_val{*
-visualize_edges @{context} @{theory} @{term "flows_fixL stateful_policy"} 
+visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})]; 
 *}
 

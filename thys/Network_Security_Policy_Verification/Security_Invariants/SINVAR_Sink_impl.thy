@@ -82,20 +82,20 @@ text {* Examples*}
   definition example_net_sink :: "nat list_graph" where
   "example_net_sink \<equiv> \<lparr> nodesL = [1::nat,2,3, 8, 11,12], 
     edgesL = [(1,8),(1,2), (2,8),(3,8),(4,8), (2,3),(3,2), (11,8),(12,8), (11,12), (1,12)] \<rparr>"
-  value[code] "valid_list_graph example_net_sink"
+  value "valid_list_graph example_net_sink"
   
   definition example_conf_sink where
   "example_conf_sink \<equiv> (\<lambda>e. SINVAR_Sink.default_node_properties)(8:= Sink, 2:= SinkPool, 3:= SinkPool, 4:= SinkPool)" 
   
-  value[code] "sinvar example_net_sink example_conf_sink"
-  value[code] "Sink_offending_list example_net_sink example_conf_sink"
+  value "sinvar example_net_sink example_conf_sink"
+  value "Sink_offending_list example_net_sink example_conf_sink"
 
 
   definition example_net_sink_invalid where
   "example_net_sink_invalid \<equiv> example_net_sink\<lparr>edgesL := (2,1)#(8,11)#(8,2)#(edgesL example_net_sink)\<rparr>"
 
-  value[code] "sinvar example_net_sink_invalid example_conf_sink"
-  value[code] "Sink_offending_list example_net_sink_invalid example_conf_sink"
+  value "sinvar example_net_sink_invalid example_conf_sink"
+  value "Sink_offending_list example_net_sink_invalid example_conf_sink"
 
 
 hide_const (open) NetModel_node_props
