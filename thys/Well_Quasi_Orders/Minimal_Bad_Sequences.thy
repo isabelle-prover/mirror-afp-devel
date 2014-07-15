@@ -48,8 +48,7 @@ text {*
   minimality is to be understood w.r.t.\ @{term size} of an element.
 *}
 locale mbs =
-  size size for size :: "'a \<Rightarrow> nat" +
-  fixes A :: "'a set"
+  fixes A :: "('a :: size) set"
 begin
 
 text {*

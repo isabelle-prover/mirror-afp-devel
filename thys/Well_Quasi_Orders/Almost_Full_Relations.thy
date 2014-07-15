@@ -411,7 +411,7 @@ lemma almost_full_on_lists:
   assumes "almost_full_on P A"
   shows "almost_full_on (list_emb P) (lists A)" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs length ?A .
+  interpret mbs ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"
