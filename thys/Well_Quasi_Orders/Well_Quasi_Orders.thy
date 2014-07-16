@@ -7,9 +7,7 @@
 header {* Well-Quasi-Orders *}
 
 theory Well_Quasi_Orders
-imports
-  Almost_Full_Relations
-  "../Regular-Sets/Regexp_Method"
+imports Almost_Full_Relations
 begin
 
 subsection {* Basic Definitions *}
@@ -51,14 +49,16 @@ lemma wqo_on_subset:
     and transp_on_subset [of A B P]
   unfolding wqo_on_def by blast
 
+
 subsection {* Equivalent Definitions *}
 
-text {*Given a quasi-order @{term P}, the following statements are equivalent:
-\begin{enumerate}
-\item @{term P} is a almost-full.
-\item @{term P} does neither allow decreasing chains nor antichains.
-\item Every quasi-order extending @{term P} is well-founded.
-\end{enumerate}
+text {*
+  Given a quasi-order @{term P}, the following statements are equivalent:
+  \begin{enumerate}
+  \item @{term P} is a almost-full.
+  \item @{term P} does neither allow decreasing chains nor antichains.
+  \item Every quasi-order extending @{term P} is well-founded.
+  \end{enumerate}
 *}
 
 lemma wqo_af_conv:
@@ -70,18 +70,18 @@ lemma wqo_wf_and_no_antichain_conv:
   assumes "qo_on P A"
   shows "wqo_on P A \<longleftrightarrow> wfp_on (strict P) A \<and> \<not> (\<exists>f. antichain_on P f A)"
   unfolding wqo_af_conv [OF assms]
-  using qo_af_imp_wf_and_no_antichain [OF assms]
+  using af_trans_imp_wf [OF _ assms [THEN qo_on_imp_transp_on]]
+    and almost_full_on_imp_no_antichain_on [of P A]
     and wf_and_no_antichain_imp_qo_extension_wf [of P A]
     and every_qo_extension_wf_imp_af [OF _ assms]
     by blast
 
 lemma wqo_extensions_wf_conv:
   assumes "qo_on P A"
-  shows "wqo_on P A \<longleftrightarrow>
-    (\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and>
-    qo_on Q A \<longrightarrow> wfp_on (strict Q) A)"
+  shows "wqo_on P A \<longleftrightarrow> (\<forall>Q. (\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q x y) \<and> qo_on Q A \<longrightarrow> wfp_on (strict Q) A)"
   unfolding wqo_af_conv [OF assms]
-  using qo_af_imp_wf_and_no_antichain [OF assms]
+  using af_trans_imp_wf [OF _ assms [THEN qo_on_imp_transp_on]]
+    and almost_full_on_imp_no_antichain_on [of P A]
     and wf_and_no_antichain_imp_qo_extension_wf [of P A]
     and every_qo_extension_wf_imp_af [OF _ assms]
     by blast
@@ -90,7 +90,9 @@ lemma wqo_on_imp_wfp_on:
   "wqo_on P A \<Longrightarrow> wfp_on (strict P) A"
   by (metis (no_types) wqo_on_imp_qo_on wqo_wf_and_no_antichain_conv)
 
-text {*The homomorphic image of a wqo set is wqo.*}
+text {*
+  The homomorphic image of a wqo set is wqo.
+*}
 lemma wqo_on_hom:
   assumes "transp_on Q (h ` A)"
     and "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
@@ -99,7 +101,9 @@ lemma wqo_on_hom:
   using assms and almost_full_on_hom [of A P Q h]
   unfolding wqo_on_def by blast
 
-text {*The monomorphic preimage of a wqo set is wqo.*}
+text {*
+  The monomorphic preimage of a wqo set is wqo.
+*}
 lemma wqo_on_mon:
   assumes trans: "transp_on P A"
     and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
@@ -109,9 +113,11 @@ lemma wqo_on_mon:
   unfolding wqo_on_def by blast
 
 
-subsection {* A Typeclass for Well-Quasi-Orders *}
+subsection {* A Type Class for Well-Quasi-Orders *}
 
-text {*In a well-quasi-order (wqo) every infinite sequence is good.*}
+text {*
+  In a well-quasi-order (wqo) every infinite sequence is good.
+*}
 class wqo = preorder +
   assumes good: "good (op \<le>) f"
 
@@ -123,9 +129,10 @@ lemma wqo_on_UNIV_class_wqo [intro!]:
   "wqo_on P UNIV \<Longrightarrow> class.wqo P (strict P)"
   by (unfold_locales) (auto simp: wqo_on_def almost_full_on_def, unfold transp_on_def, blast)
 
-text {*The following lemma converts between @{const wqo_on} (for the special
-case that the domain is the universe of a type) and the class predicate
-@{const class.wqo}.*}
+text {*
+  The following lemma converts between @{const wqo_on} (for the special case that the domain is the
+  universe of a type) and the class predicate @{const class.wqo}.
+*}
 lemma wqo_on_UNIV_conv:
   "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)" (is "?lhs = ?rhs")
 proof
@@ -136,7 +143,9 @@ next
     by (auto simp: wqo_on_def almost_full_on_def transp_on_def)
 qed
 
-text {*The strict part of a wqo is well-founded.*}
+text {*
+  The strict part of a wqo is well-founded.
+*}
 lemma (in wqo) "wfP (op <)"
 proof -
   have "class.wqo (op \<le>) (op <)" ..
@@ -165,7 +174,9 @@ lemma wqo_on_option_UNIV [intro]:
   "wqo_on P UNIV \<Longrightarrow> wqo_on (option_le P) UNIV"
   using wqo_on_with_bot [of P UNIV] by simp
 
-text {*When two sets are wqo, then their disjoint sum is wqo.*}
+text {*
+  When two sets are wqo, then their disjoint sum is wqo.
+*}
 lemma wqo_on_Plus:
   assumes "wqo_on P A" and "wqo_on Q B"
   shows "wqo_on (sum_le P Q) (A <+> B)" (is "wqo_on ?P ?A")
@@ -190,8 +201,7 @@ subsection {* Dickson's Lemma *}
 lemma wqo_on_Sigma:
   fixes A1 :: "'a set" and A2 :: "'b set"
   assumes "wqo_on P1 A1" and "wqo_on P2 A2"
-  shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)"
-    (is "wqo_on ?P ?A")
+  shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)" (is "wqo_on ?P ?A")
 proof -
   { from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
     hence "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast }
@@ -228,10 +238,11 @@ lemma wqo_on_list_UNIV [intro]:
   "wqo_on P UNIV \<Longrightarrow> wqo_on (list_emb P) UNIV"
   using wqo_on_lists [of P UNIV] by simp
 
-text {*Every reflexive and transitive relation on a finite set is a wqo.*}
+text {*
+  Every reflexive and transitive relation on a finite set is a wqo.
+*}
 lemma finite_wqo_on:
-  assumes "finite A"
-    and refl: "reflp_on P A" and "transp_on P A"
+  assumes "finite A" and refl: "reflp_on P A" and "transp_on P A"
   shows "wqo_on P A"
   using assms and finite_almost_full_on by (auto simp: wqo_on_def)
 

@@ -25,7 +25,7 @@ proof -
   then show ?thesis by auto
 qed
 
-interpretation kruskal_tree_tree!: kruskal_tree size "A \<times> UNIV" Node node succs "trees A" for A
+interpretation kruskal_tree_tree!: kruskal_tree "A \<times> UNIV" Node node succs "trees A" for A
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: trees.cases)
@@ -72,7 +72,7 @@ inductive_set gterms for F
 where
   "(f, n) \<in> F \<Longrightarrow> length ts = n \<Longrightarrow> \<forall>s \<in> set ts. s \<in> gterms F \<Longrightarrow> Fun f ts \<in> gterms F"
 
-interpretation kruskal_term!: kruskal_tree size F Fun root args "gterms F" for F
+interpretation kruskal_term!: kruskal_tree F Fun root args "gterms F" for F
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: gterms.cases)
@@ -85,7 +85,7 @@ inductive_set terms
 where
   "\<forall>t \<in> set ts. t \<in> terms \<Longrightarrow> Fun f ts \<in> terms"
 
-interpretation kruskal_variadic!: kruskal_tree size UNIV Fun root args terms
+interpretation kruskal_variadic!: kruskal_tree UNIV Fun root args terms
   apply (unfold_locales)
   apply auto
   apply (case_tac [!] t rule: terms.cases)
@@ -132,7 +132,7 @@ lemma [simp]:
   shows "ags (mk p ts) = ts"
   using assms by (induct ts) (auto, case_tac ts, auto)
 
-interpretation kruskal_exp!: kruskal_tree size
+interpretation kruskal_exp!: kruskal_tree
   "{(v x, 0) | x. True} \<union> {(c n, 0) | n. True} \<union> {(p, 2)}"
   mk rt ags exps
 apply (unfold_locales)

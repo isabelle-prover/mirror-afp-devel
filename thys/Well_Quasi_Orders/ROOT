@@ -17,7 +17,6 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
     Well_Quasi_Orders
     Kruskal
     Kruskal_Examples
-    Dickson_with_Transitivity
     Wqo_Instances
     Multiset_Extension
     Wqo_Multiset

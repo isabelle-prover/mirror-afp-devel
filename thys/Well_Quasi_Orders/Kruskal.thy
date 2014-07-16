@@ -11,9 +11,8 @@ imports Well_Quasi_Orders
 begin
 
 locale kruskal_tree =
-  size size for size :: "'a \<Rightarrow> nat" +
   fixes F :: "('b \<times> nat) set"
-    and mk :: "'b \<Rightarrow> 'a list \<Rightarrow> 'a"
+    and mk :: "'b \<Rightarrow> 'a list \<Rightarrow> ('a::size)"
     and root :: "'a \<Rightarrow> 'b \<times> nat"
     and args :: "'a \<Rightarrow> 'a list"
     and trees :: "'a set"
@@ -51,7 +50,7 @@ lemma almost_full_on_trees:
   assumes "almost_full_on P F"
   shows "almost_full_on (emb P) trees" (is "almost_full_on ?P ?A")
 proof (rule ccontr)
-  interpret mbs size ?A .
+  interpret mbs ?A .
   assume "\<not> ?thesis"
   from mbs' [OF this] obtain m
     where bad: "m \<in> BAD ?P"
@@ -177,7 +176,7 @@ lemma transp_on_emb:
   shows "transp_on (emb P) trees"
   using assms and emb_trans [of P] unfolding transp_on_def by blast
 
-lemma  kruskal:
+lemma kruskal:
   assumes "wqo_on P F"
   shows "wqo_on (emb P) trees"
   using almost_full_on_trees [of P] and assms by (metis transp_on_emb wqo_on_def)
