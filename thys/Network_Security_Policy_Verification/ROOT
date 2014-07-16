@@ -13,6 +13,9 @@ session Network_Security_Policy_Verification (AFP) = Collections +
     TopoS_generateCode
   theories [document = false]
     attic
+  document_files
+    "root.bib"
+    "root.tex"
 
 session Network_Security_Policy_Verification_Examples (AFP) = Network_Security_Policy_Verification +
   theories [document = false]
