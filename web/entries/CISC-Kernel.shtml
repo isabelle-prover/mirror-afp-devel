@@ -1,0 +1,130 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">F</font>ormal
+<font class="first">S</font>pecification
+of
+a
+<font class="first">G</font>eneric
+<font class="first">S</font>eparation
+<font class="first">K</font>ernel
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Formal Specification of a Generic Separation Kernel</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Freek Verbeek (Freek /dot/ Verbeek /at/ ou /dot/ nl), Sergey Tverdyshev (stv /at/ sysgo /dot/ com), Oto Havle (oha /at/ sysgo /dot/ com), Holger Blasum (holger /dot/ blasum /at/ sysgo /dot/ com), Bruno Langenstein (langenstein /at/ dfki /dot/ de), Werner Stephan (stephan /at/ dfki /dot/ de), Yakoub Nemouchi (nemouchi /at/ lri /dot/ fr), Abderrahmane Feliachi (Abderrahmane /dot/ FELIACHI /at/ lri /dot/ fr), Burkhart Wolff (wolff /at/ lri /dot/ fr) and Julien Schmaltz (Julien /dot/ Schmaltz /at/ ou /dot/ nl)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-07-18</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+<p>Intransitive noninterference has been a widely studied topic in the last
+few decades. Several well-established methodologies apply interactive
+theorem proving to formulate a noninterference theorem over abstract
+academic models. In joint work with several industrial and academic partners
+throughout Europe, we are helping in the certification process of PikeOS, an
+industrial separation kernel developed at SYSGO. In this process,
+established theories could not be applied. We present a new generic model of
+separation kernels and a new theory of intransitive noninterference. The
+model is rich in detail, making it suitable for formal verification of
+realistic and industrial systems such as PikeOS. Using a refinement-based
+theorem proving approach, we ensure that proofs remain manageable.</p>
+<p>
+This document corresponds to the deliverable D31.1 of the EURO-MILS
+Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{CISC-Kernel-AFP,
+  author  = {Freek Verbeek and Sergey Tverdyshev and Oto Havle and Holger Blasum and Bruno Langenstein and Werner Stephan and Yakoub Nemouchi and Abderrahmane Feliachi and Burkhart Wolff and Julien Schmaltz},
+  title   = {Formal Specification of a Generic Separation Kernel},
+  journal = {Archive of Formal Proofs},
+  month   = jul,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/CISC-Kernel.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="CISC-Kernel" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

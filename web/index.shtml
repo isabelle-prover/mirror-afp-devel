@@ -55,6 +55,22 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-07-18:
+<a href="entries/CISC-Kernel.shtml">Formal Specification of a Generic Separation Kernel</a>
+<br>Author:
+Freek Verbeek,
+Sergey Tverdyshev,
+Oto Havle,
+Holger Blasum,
+Bruno Langenstein,
+Werner Stephan,
+Yakoub Nemouchi,
+Abderrahmane Feliachi,
+Burkhart Wolff and 
+Julien Schmaltz
+</td></tr>
+
+<tr><td class="entry">
 2014-07-13:
 <a href="entries/pGCL.shtml">pGCL for Isabelle</a>
 <br>Author:
