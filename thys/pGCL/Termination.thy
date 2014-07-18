@@ -276,7 +276,7 @@ proof -
     also {
       have "\<And>s. \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * wp body (wp do G \<longrightarrow> body od (\<lambda>s. 1)) s =
         \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * (\<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * wp body (wp do G \<longrightarrow> body od (\<lambda>s. 1)) s)"
-        by(simp only:distrib_left mult_assoc[symmetric] embed_bool_idem embed_bool_cancel)
+        by(simp only:distrib_left mult.assoc[symmetric] embed_bool_idem embed_bool_cancel)
       also have "\<And>s. ... s = \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * wp do G \<longrightarrow> body od (\<lambda>s. 1) s"
         by(simp add:fun_cong[OF wp_loop_unfold[symmetric, where P="\<lambda>s. 1", simplified, OF hb]])
       finally have X: "\<And>s. \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * wp body (wp do G \<longrightarrow> body od (\<lambda>s. 1)) s =
@@ -315,13 +315,13 @@ proof -
 
     from hloop
     have Inflb: "\<And>s. ?k \<le> wp do G \<longrightarrow> body od (\<lambda>s. 1) s"
-      by(auto intro:cInf_lower)
+      by(intro cInf_lower bdd_belowI, auto)
     also from point have "wp do G \<longrightarrow> body od (\<lambda>s. 1) s < 1" by(auto)
     txt {* Thus the least (infimum) probabilty of termination is strictly less than one. *}
     finally have k1: "?k < 1" .
     hence "?k \<le> 1" by(auto)
     moreover from hloop have k0: "0 \<le> ?k"
-      by(auto intro!:cInf_greatest)
+      by(intro cInf_greatest, auto)
     txt {* The infimum is, naturally, a lower bound. *}
     moreover from Inflb have "(\<lambda>s. ?k) \<tturnstile> wp do G \<longrightarrow> body od (\<lambda>s. 1)" by(auto)
     ultimately

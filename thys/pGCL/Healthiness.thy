@@ -372,7 +372,8 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all only:wp_eval)
   from nonempty obtain x where xin: "x \<in> (\<lambda>a. wp (prog a) P s) ` S s" by(blast)
   moreover from sP and healthy
   have "\<forall>x\<in>(\<lambda>a. wp (prog a) P s) ` S s. 0 \<le> x" by(auto)
-  ultimately have "Inf ((\<lambda>a. wp (prog a) P s) ` S s) \<le> x" by(blast intro:cInf_lower)
+  ultimately have "Inf ((\<lambda>a. wp (prog a) P s) ` S s) \<le> x"
+    by(intro cInf_lower bdd_belowI, auto)
   also from xin and healthy and sP and bP have "x \<le> b" by(blast)
   finally show "Inf ((\<lambda>a. wp (prog a) P s) ` S s) \<le> b" .
 
@@ -409,7 +410,7 @@ next
       fix x assume "x \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
       then obtain y where yin: "y \<in> (\<lambda>a. wp (prog a) P s) ` S s" and rwx: "x = c * y" by(auto)
       have "Inf ((\<lambda>a. wp (prog a) P s) ` S s) \<le> y"
-      proof(rule cInf_lower[OF yin])
+      proof(intro cInf_lower[OF yin] bdd_belowI)
         fix z assume zin: "z \<in> (\<lambda>a. wp (prog a) P s) ` S s"
         then obtain a where "a \<in> S s" and "z = wp (prog a) P s" by(auto)
         with sP show "0 \<le> z" by(auto dest:healthy)
@@ -427,12 +428,12 @@ next
     next
       assume cnz: "c \<noteq> 0"
       have "inverse c * ?V \<le> inverse c * ?U"
-      proof(simp add:mult_assoc[symmetric] cnz, rule cInf_greatest)
+      proof(simp add:mult.assoc[symmetric] cnz del:Inf_image_eq, rule cInf_greatest)
         from nonempty show "(\<lambda>a. wp (prog a) P s) ` S s \<noteq> {}" by(auto)
         fix x assume "x \<in> (\<lambda>a. wp (prog a) P s) ` S s"
         then obtain a where ain: "a \<in> S s" and rwx: "x = wp (prog a) P s" by(auto)
         have "Inf (op * c ` (\<lambda>a. wp (prog a) P s) ` S s) \<le> c * x"
-        proof(rule cInf_lower)
+        proof(intro cInf_lower bdd_belowI)
           from ain show "c * x \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
             by(auto simp:rwx)
           fix z assume "z \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
@@ -449,7 +450,7 @@ next
       qed
       with pos have "c * (inverse c * ?V) \<le> c * (inverse c * ?U)"
         by(auto intro:mult_left_mono)
-      with cnz show ?thesis by(simp add:mult_assoc[symmetric])
+      with cnz show ?thesis by(simp add:mult.assoc[symmetric])
     qed
   qed
   also have "... = Inf ((\<lambda>a. c * wp (prog a) P s) ` S s)"
@@ -476,7 +477,7 @@ proof(intro nearly_healthyI unitaryI2 bounded_byI nnegI le_funI, simp_all only:w
     hence "\<forall>x\<in>(\<lambda>a. wlp (prog a) P) ` S s. 0 \<le> x s" by(auto)
     hence "\<forall>y\<in>(\<lambda>a. wlp (prog a) P s) ` S s. 0 \<le> y" by(auto)
   }
-  ultimately have "Inf ((\<lambda>a. wlp (prog a) P s) ` S s) \<le> x" by(blast intro:cInf_lower)
+  ultimately have "Inf ((\<lambda>a. wlp (prog a) P s) ` S s) \<le> x" by(intro cInf_lower bdd_belowI, auto)
   also from xin healthy uP have "x \<le> 1" by(blast)
   finally show "Inf ((\<lambda>a. wlp (prog a) P s) ` S s) \<le> 1" .
 
@@ -730,11 +731,13 @@ lemma wlp_loop_step_unitary:
 proof(intro unitaryI2 nnegI bounded_byI, simp_all add:wp_eval)
   fix s::'s
   from ht uP have utP: "unitary (t P)" by(auto)
-  with hb have "0 \<le> wlp body (t P) s" by(auto)
+  with hb have "unitary (wlp body (t P))" by(auto)
+  hence "0 \<le> wlp body (t P) s" by(auto)
   with uP show "0 \<le> \<guillemotleft> G \<guillemotright> s * wlp body (t P) s + (1 - \<guillemotleft> G \<guillemotright> s) * P s"
     by(auto intro!:add_nonneg_nonneg mult_nonneg_nonneg)
   from ht uP have "bounded_by 1 (t P)" by(auto)
-  with utP hb have "wlp body (t P) s \<le> 1" by(auto)
+  with utP hb have "bounded_by 1 (wlp body (t P))" by(auto)
+  hence "wlp body (t P) s \<le> 1" by(auto)
   with uP have "\<guillemotleft>G\<guillemotright> s * wlp body (t P) s + (1 - \<guillemotleft>G\<guillemotright> s) * P s \<le> \<guillemotleft>G\<guillemotright> s * 1 + (1 - \<guillemotleft>G\<guillemotright> s) * 1"
     by(blast intro:add_mono mult_left_mono)
   also have "... = 1" by(simp)
@@ -799,7 +802,9 @@ proof -
     show "unitary (\<lambda>a. \<guillemotleft> G \<guillemotright> a * wlp body Q a + \<guillemotleft> \<N> G \<guillemotright> a * P a)"
     proof(intro unitaryI2 nnegI bounded_byI)
       fix s::'s
-      from healthy uQ have "0 \<le> wlp body Q s" by(auto)
+      from healthy uQ
+      have "unitary (wlp body Q)" by(auto)
+      hence "0 \<le> wlp body Q s" by(auto)
       with uP show "0 \<le> \<guillemotleft>G\<guillemotright> s * wlp body Q s + \<guillemotleft>\<N> G\<guillemotright> s * P s"
         by(auto intro!:add_nonneg_nonneg mult_nonneg_nonneg)
 
@@ -1059,7 +1064,7 @@ proof -
         with nnc have "\<lambda>s. c * ?X (\<lambda>s. c * P s) (inverse c) s \<tturnstile>
                        \<lambda>s. c * ?Y (\<lambda>s. c * P s) (inverse c) s"
           by(blast intro:mult_left_mono)
-        with nzc show "?Y P c \<tturnstile> ?X P c" by(simp add:mult_assoc[symmetric])
+        with nzc show "?Y P c \<tturnstile> ?X P c" by(simp add:mult.assoc[symmetric])
       qed
     qed
   next

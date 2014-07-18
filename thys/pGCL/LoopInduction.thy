@@ -635,7 +635,7 @@ proof -
         by(auto)
       hence "\<And>j. iterates body G j P s \<le> bound_of P" by(auto)
       hence "\<And>j. iterates body G j P s \<le> Sup ?X"
-        by(blast intro!:cSup_upper)
+        by(intro cSup_upper bdd_aboveI, auto)
     }
     ultimately have "\<And>j. i \<le> j \<Longrightarrow>
                            norm (iterates body G j P s - Sup ?X) \<le>
@@ -756,12 +756,12 @@ proof(rule bd_ctsI)
   proof(rule ext, rule antisym)
     fix s::'s
     show "?Y s \<le> ?X s"
-    proof(rule cSup_least, blast, clarsimp)
+    proof(rule cSup_least, blast, clarify)
       fix i j::nat
-      have "iterates body G i (M j) s \<le> Sup (range (\<lambda>j. iterates body G i (M j) s))"
-        by(blast intro:cSup_upper iB)
-      also have "... \<le> Sup (range (\<lambda>i. Sup (range (\<lambda>j. iterates body G i (M j) s))))"
-        by(blast intro:cSup_upper cSup_least iB)
+      from iB have "iterates body G i (M j) s \<le> Sup (range (\<lambda>j. iterates body G i (M j) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
+      also from iB have "... \<le> Sup (range (\<lambda>i. Sup (range (\<lambda>j. iterates body G i (M j) s))))"
+        by(intro cSup_upper cSup_least bdd_aboveI, (blast intro:cSup_least)+)
       finally show "iterates body G i (M j) s \<le>
                     Sup (range (\<lambda>i. Sup (range (\<lambda>j. iterates body G i (M j) s))))" .
     qed
@@ -769,7 +769,7 @@ proof(rule bd_ctsI)
                 Sup (range (\<lambda>(i, j). iterates body G i (M j) s))"
       by(rule cSup_upper, auto intro:iB)
     thus "?X s \<le> ?Y s"
-      by(auto intro:cSup_least)
+      by(intro cSup_least, blast, clarify, simp del:Sup_image_eq, blast intro:cSup_least)
   qed
   also have "... = (\<lambda>s. Sup (range (\<lambda>j .Sup (range (\<lambda>i. iterates body G i (M j) s)))))"
     (is "?X = ?Y")
@@ -779,14 +779,14 @@ proof(rule bd_ctsI)
                 Sup (range (\<lambda>(i, j). iterates body G i (M j) s))"
       by(rule cSup_upper, auto intro:iB)
     thus "?Y s \<le> ?X s"
-      by(auto intro:cSup_least)
+      by(intro cSup_least, blast, clarify, simp del:Sup_image_eq, blast intro:cSup_least)
     show "?X s \<le> ?Y s"
-    proof(rule cSup_least, blast, clarsimp)
+    proof(rule cSup_least, blast, clarify)
       fix i j::nat
-      have "iterates body G i (M j) s \<le> Sup (range (\<lambda>i. iterates body G i (M j) s))"
-        by(blast intro:cSup_upper iB)
-      also have "... \<le> Sup (range (\<lambda>j. Sup (range (\<lambda>i. iterates body G i (M j) s))))"
-        by(blast intro:cSup_upper cSup_least iB)
+      from iB have "iterates body G i (M j) s \<le> Sup (range (\<lambda>i. iterates body G i (M j) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
+      also from iB have "... \<le> Sup (range (\<lambda>j. Sup (range (\<lambda>i. iterates body G i (M j) s))))"
+        by(intro cSup_upper cSup_least bdd_aboveI, blast, blast intro:cSup_least)
       finally show "iterates body G i (M j) s \<le>
                     Sup (range (\<lambda>j. Sup (range (\<lambda>i. iterates body G i (M j) s))))" .
     qed

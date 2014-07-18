@@ -192,7 +192,7 @@ proof(rule sublinearI, simp add:wp_eval)
   have "a * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') Q s) +
         b * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') R s) \<ominus> c =
         (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus> c"
-    by(simp add:field_simps setsum_right_distrib setsum_addf)
+    by(simp add:field_simps setsum_right_distrib setsum.distrib)
   also have "... \<le>
              (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus>
              (\<Sum>a'\<in>supp (P s). P s a' * c)"
@@ -230,7 +230,7 @@ lemma sublinear_wp_SetDC:
       and hp:  "\<And>s a. a \<in> S s \<Longrightarrow> healthy (wp (p a))"
       and ne:  "\<And>s. S s \<noteq> {}"
   shows "sublinear (wp (SetDC p S))"
-proof(rule sublinearI, simp add:wp_eval, rule cInf_greatest)
+proof(rule sublinearI, simp add:wp_eval del:Inf_image_eq, rule cInf_greatest)
   fix P::"'s \<Rightarrow> real" and Q::"'s \<Rightarrow> real" and s::'s and x y
   and a::real and b::real and c::real
   assume sP: "sound P" and sQ: "sound Q"
@@ -244,10 +244,10 @@ proof(rule sublinearI, simp add:wp_eval, rule cInf_greatest)
 
   from xin hp sP nna
   have "a * Inf ((\<lambda>a. wp (p a) P s) ` S s) \<le> a * wp (p x) P s"
-    by(blast intro:mult_left_mono[OF cInf_lower])
+    by(intro mult_left_mono[OF cInf_lower] bdd_belowI[where m=0], blast+)
   moreover from xin hp sQ nnb
   have "b * Inf ((\<lambda>a. wp (p a) Q s) ` S s) \<le> b * wp (p x) Q s"
-    by(blast intro:mult_left_mono[OF cInf_lower])
+    by(intro mult_left_mono[OF cInf_lower] bdd_belowI[where m=0], blast+)
   ultimately
   have "a * Inf ((\<lambda>a. wp (p a) P s) ` S s) +
         b * Inf ((\<lambda>a. wp (p a) Q s) ` S s) \<ominus> c \<le>

@@ -437,7 +437,7 @@ proof(rule sub_distrib_pconjI, simp add:wp_eval, rule le_funI)
         (\<Sum>a\<in>supp (P s). P s a * wlp (p a) Q s) + (\<Sum>a\<in>supp (P s). P s a * wp (p a) R s) \<ominus> 1"
     by(simp add:exp_conj_def pconj_def)
   also have "... = (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s)) \<ominus> 1"
-    by(simp add: setsum_addf field_simps)
+    by(simp add: setsum.distrib field_simps)
   also from sub
   have "... \<le> (\<Sum>a\<in>supp (P s). P s a * (wlp (p a) Q s + wp (p a) R s)) \<ominus>
               (\<Sum>a\<in>supp (P s). P s a)"
@@ -479,10 +479,12 @@ proof(rule sub_distrib_pconjI, rule le_funI)
   have "\<And>x. x \<in> (\<lambda>a. wlp (p a) P) ` S s \<Longrightarrow> unitary x" by(auto)
   hence "\<And>y. y \<in> (\<lambda>a. wlp (p a) P s) ` S s \<Longrightarrow> 0 \<le> y" by(auto)
   hence "\<And>a. a \<in> S s \<Longrightarrow> wlp (SetDC p S) P s \<le> wlp (p a) P s"
-    unfolding wp_eval by(blast intro:cInf_lower)
-  moreover
-  from uQ hwp have "\<And>a. a \<in> S s \<Longrightarrow> wp (SetDC p S) Q s \<le> wp (p a) Q s"
-    unfolding wp_eval by(blast intro:cInf_lower)
+    unfolding wp_eval by(intro cInf_lower bdd_belowI, auto)
+  moreover {
+    from uQ hwp have "\<And>a. a \<in> S s \<Longrightarrow>  0 \<le> wp (p a) Q s" by(blast)
+    hence "\<And>a. a \<in> S s \<Longrightarrow> wp (SetDC p S) Q s \<le> wp (p a) Q s"
+    unfolding wp_eval by(intro cInf_lower bdd_belowI, auto)
+  }
   ultimately
   have "\<And>a. a \<in> S s \<Longrightarrow> wlp (SetDC p S) P s + wp (SetDC p S) Q s \<ominus> 1 \<le>
                       wlp (p a) P s + wp (p a) Q s \<ominus> 1"

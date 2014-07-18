@@ -45,7 +45,8 @@ where "Inf_exp S = (\<lambda>s. Inf {f s |f. f \<in> S})"
 
 lemma Inf_exp_lower:
   "\<lbrakk> P \<in> S; \<forall>P\<in>S. nneg P \<rbrakk> \<Longrightarrow> Inf_exp S \<le> P"
-  by(auto simp:Inf_exp_def intro:cInf_lower)
+  unfolding Inf_exp_def
+  by(intro le_funI cInf_lower bdd_belowI[where m=0], auto)
   
 lemma Inf_exp_greatest:
   "\<lbrakk> S \<noteq> {}; \<forall>P\<in>S. Q \<le> P \<rbrakk> \<Longrightarrow> Q \<le> Inf_exp S"
@@ -57,7 +58,7 @@ where "Sup_exp S = (if S = {} then \<lambda>s. 0 else (\<lambda>s. Sup {f s |f. 
 lemma Sup_exp_upper:
   "\<lbrakk> P \<in> S; \<forall>P\<in>S. bounded_by b P \<rbrakk> \<Longrightarrow> P \<le> Sup_exp S"
   unfolding Sup_exp_def
-  by(cases "S={}", auto intro!:le_funI[OF cSup_upper])
+  by(cases "S={}", simp_all, intro le_funI cSup_upper bdd_aboveI[where M=b], auto)
 
 lemma Sup_exp_least:
   "\<lbrakk> \<forall>P\<in>S. P \<le> Q; nneg Q \<rbrakk> \<Longrightarrow> Sup_exp S \<le> Q"

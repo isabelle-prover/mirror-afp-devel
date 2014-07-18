@@ -123,7 +123,7 @@ proof
   with assms have "wp a P \<tturnstile> wp b P" and "wp a P \<tturnstile> wp c P"
     by(auto dest:refinesD)
   thus "wp a P \<tturnstile> wp (b \<Sqinter> c) P"
-    by(auto simp:wp_eval intro:min_max.le_infI)
+    by(auto simp:wp_eval intro:min.boundedI)
 qed
 
 lemma DC_mono:
@@ -188,7 +188,7 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
   hence nn_np: "0 \<le> 1 - p s" by(simp)
   show "min (wp a P s) (wp b P s) \<le> p s * wp a P s + (1 - p s) * wp b P s"
   proof(cases "wp a P s \<le> wp b P s",
-      simp_all add:min_max.inf_absorb1 min_max.inf_absorb2)
+      simp_all add:min.absorb1 min.absorb2)
     case True note le = this
     have "wp a P s = (p s + (1 - p s)) * wp a P s" by(simp)
     also have "... = p s * wp a P s + (1 - p s) * wp a P s"
@@ -206,7 +206,7 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
     then have le: "wp b P s \<le> wp a P s" by(simp)
     have "wp b P s = (p s + (1 - p s)) * wp b P s" by(simp)
     also have "... = p s * wp b P s + (1 - p s) * wp b P s"
-      by(simp only: distrib_right)
+      by(simp only:distrib_right)
     also {
       from le and nn_p have "p s * wp b P s \<le> p s * wp a P s"
         by(rule mult_left_mono)
@@ -431,7 +431,7 @@ next
   also assume "b \<sqsubseteq> d"
   also assume "c \<simeq> d" hence "d \<simeq> c" by(simp add:ac_simps)
   finally show "a \<sqsubseteq> c" .
-qed
+qed (* XXX - what's up here? *)
 
 lift_definition
   less_program :: "'a program \<Rightarrow> 'a program \<Rightarrow> bool"

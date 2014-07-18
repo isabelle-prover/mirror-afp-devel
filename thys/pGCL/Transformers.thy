@@ -824,7 +824,8 @@ proof
   fix P::"'s \<Rightarrow> real" and Q::"'s \<Rightarrow> real" and s::'s
   assume sP: "sound P" and sQ: "sound Q"
 
-  with ft have "0 \<le> t P s" and "0 \<le> t Q s" by(auto)
+  with ft have "sound (t P)" "sound (t Q)" by(auto)
+  hence "0 \<le> t P s" and "0 \<le> t Q s" by(auto)
   hence "0 \<le> t P s + t Q s" by(auto)
   hence "... = ...\<ominus> 0" by(simp)
 
@@ -897,7 +898,7 @@ proof -
   hence "(\<Sum>y\<in>{s. G s}.  P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) +
          (\<Sum>y\<in>{s. \<not>G s}. P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) =
          (\<Sum>y\<in>({s. G s} \<union> {s. \<not>G s}). P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s)"
-    by(auto intro: setsum_Un_disjoint[symmetric])
+    by(auto intro: setsum.union_disjoint[symmetric])
   also {
     have "{s. G s} \<union> {s. \<not>G s} = UNIV" by (blast)
     hence "(\<Sum>y\<in>({s. G s} \<union> {s. \<not>G s}). P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> s) =
@@ -922,9 +923,9 @@ proof -
   also {
     have rw1: "(\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
                (\<lambda>x. \<Sum>y\<in>UNIV. if y = x then P y else 0)"
-      by(auto intro!:setsum_cong)
+      by(auto intro!:setsum.cong)
     also from sP have "... \<tturnstile> P"
-      by(cases "finite (UNIV::'s set)", auto simp:setsum_delta)
+      by(cases "finite (UNIV::'s set)", auto simp:setsum.delta)
     finally have leP: "\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft> \<lambda>z. z = y \<guillemotright> x \<tturnstile> P" .
     moreover have "sound (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x)"
     proof(intro soundI2 bounded_byI nnegI setsum_nonneg ballI)
@@ -1060,7 +1061,7 @@ proof
         by(blast intro:mult_left_mono)
       also from nni ht sabPQ
       have "... = t (\<lambda>s. (inverse c * a) * P s + (inverse c * b) * Q s) s"
-        by(simp add:scalingD healthy_scalingD field_simps)
+        by(simp add:scalingD[OF healthy_scalingD, OF ht] algebra_simps)
       finally
       have "(inverse c * a) * t P s + (inverse c * b) * t Q s \<ominus> 1 \<le>
             t (\<lambda>s. (inverse c * a) * P s + (inverse c * b) * Q s) s \<ominus> 1"
@@ -1215,9 +1216,9 @@ lemma additive_delta_split:
 proof -
   have "\<And>x. (\<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
             (\<Sum>y\<in>UNIV. if y = x then P y else 0)"
-    by(auto intro:setsum_cong)
+    by(auto intro:setsum.cong)
   also have "\<And>x. ... x = P x"
-    by(simp add:setsum_delta)
+    by(simp add:setsum.delta)
   finally
   have "t P x = t (\<lambda>x. \<Sum>y\<in>UNIV. P y * \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) x"
     by(simp)
@@ -1259,7 +1260,7 @@ proof -
   have "(\<Sum>y\<in>{s. G s} \<union> {s. \<not> G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) =
         (\<Sum>y\<in>{s.   G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x) +
         (\<Sum>y\<in>{s. \<not> G s}. P y * t \<guillemotleft>\<lambda>z. z = y\<guillemotright> x)"
-    by(auto intro:setsum_Un_disjoint)
+    by(auto intro:setsum.union_disjoint)
   finally show ?thesis .
 qed
 

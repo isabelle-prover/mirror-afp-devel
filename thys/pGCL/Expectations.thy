@@ -88,35 +88,30 @@ where     "bounded P \<equiv> (\<exists>b. bounded_by b P)"
 text {* In the reals, if there exists any upper bound, then there must exist a least upper bound. *}
 
 definition bound_of :: "('a \<Rightarrow> real) \<Rightarrow> real"
-where     "bound_of P \<equiv> THE b. isLub UNIV (P ` UNIV) b"
+where     "bound_of P \<equiv> Sup (P ` UNIV)"
+
+lemma bounded_bdd_above[intro]:
+  assumes bP: "bounded P"
+  shows "bdd_above (range P)"
+proof
+  fix x assume "x \<in> range P"
+  with bP show "x \<le> Inf {b. bounded_by b P}"
+    unfolding bounded_def by(auto intro:cInf_greatest)
+qed
 
 text {* The least upper bound has the usual properties: *}
-
 lemma bound_of_least[intro]:
   assumes bP: "bounded_by b P"
   shows "bound_of P \<le> b"
   unfolding bound_of_def
-proof(rule the1I2)
-  from bP have ub: "isUb UNIV (range P) b" by(blast intro:isUbI setleI)
-  hence "\<exists>x. isLub UNIV (range P) x" by(blast intro:reals_complete)
-  thus "\<exists>!x. isLub UNIV (range P) x" by(blast intro:isLub_unique)
-  fix x assume "isLub UNIV (range P) x"
-  with ub show "x \<le> b" by(blast intro:isLub_le_isUb)
-qed
+  using bP by(intro cSup_least, auto)
 
 lemma bounded_by_bound_of[intro!]:
   fixes P::"'a \<Rightarrow> real"
   assumes bP: "bounded P"
   shows "bounded_by (bound_of P) P"
   unfolding bound_of_def
-proof(rule bounded_byI, rule the1I2)
-  from bP obtain b where "isUb UNIV (range P) b"
-    unfolding bounded_def by(blast intro:isUbI setleI)
-  hence "\<exists>x. isLub UNIV (range P) x" by(blast intro:reals_complete)
-  thus "\<exists>!x. isLub UNIV (range P) x" by(blast intro:isLub_unique)
-  fix x b assume "isLub UNIV (range P) b"
-  thus "P x \<le> b" by(auto dest:isLub_isUb isUbD)
-qed
+  using bP by(intro bounded_byI cSup_upper bounded_bdd_above, auto)
 
 lemma bound_of_greater[intro]:
   "bounded P \<Longrightarrow> P x \<le> bound_of P"
@@ -151,24 +146,13 @@ lemma bounded_by_mono_alt[intro]:
 lemma bound_of_const[simp, intro]:
   "bound_of (\<lambda>x. c) = (c::real)"
   unfolding bound_of_def
-proof (rule the1_equality)
-  show "isLub UNIV (range (\<lambda>x. c)) c"
-    by(blast intro:isLubI2 isUbI setleI setgeI dest:isUbD)
-  thus "\<exists>!b. isLub UNIV (range (\<lambda>x. c)) b"
-    by(blast intro:isLub_unique)
-qed
+  by(intro antisym cSup_least cSup_upper bounded_bdd_above bounded_const, auto)
 
 lemma bound_of_leI:
   assumes "\<And>x. P x \<le> (c::real)"
   shows "bound_of P \<le> c"
   unfolding bound_of_def
-proof(rule the1I2)
-  from assms show "\<exists>!x. isLub UNIV (range P) x"
-    by(blast intro:isUbI setleI reals_complete isLub_unique)
-  fix x
-  from assms show "isLub UNIV (range P) x \<Longrightarrow> x \<le> c"
-    by(blast intro:isLub_le_isUb isUbI setleI)
-qed
+  using assms by(intro cSup_least, auto)
 
 lemma bound_of_mono[intro]:
   "\<lbrakk> P \<le> Q; bounded P; bounded Q \<rbrakk> \<Longrightarrow> bound_of P \<le> bound_of Q"
@@ -206,6 +190,10 @@ lemma nnegD[dest]:
 lemma nnegD2[dest]:
   "nneg P \<Longrightarrow> (\<lambda>s. 0) \<le> P"
   by (blast intro:le_funI)
+
+lemma nneg_bdd_below[intro]:
+  "nneg P \<Longrightarrow> bdd_below (range P)"
+  by(auto)
 
 lemma nneg_const[iff]:
   "nneg (\<lambda>x. c) \<longleftrightarrow> 0 \<le> c"
@@ -611,16 +599,15 @@ lemma pconj_mono:
 
 lemma pconj_nneg[intro,simp]:
   "0 \<le> a .& b"
-  unfolding pconj_def tminus_def
-  by(blast intro:min_max.sup_ge2)
+  unfolding pconj_def tminus_def by(auto)
 
 lemma min_pconj:
   "(min a b) .& (min c d) \<le> min (a .& c) (b .& d)"
   by(cases "a \<le> b",
      (cases "c \<le> d",
-      simp_all add:min_max.inf_absorb1 min_max.inf_absorb2 pconj_mono)[],
+      simp_all add:min.absorb1 min.absorb2 pconj_mono)[],
      (cases "c \<le> d",
-      simp_all add:min_max.inf_absorb1 min_max.inf_absorb2 pconj_mono))
+      simp_all add:min.absorb1 min.absorb2 pconj_mono))
 
 lemma pconj_less_one[simp]:
   "a + b < 1 \<Longrightarrow> a .& b = 0"

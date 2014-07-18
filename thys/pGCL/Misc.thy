@@ -18,7 +18,7 @@ lemma setsum_UNIV:
 proof -
   from complete have "setsum f S = setsum f (UNIV - S) + setsum f S" by(simp)
   also have "... = setsum f UNIV"
-    by(auto intro: setsum_subset_diff[symmetric])
+    by(auto intro: setsum.subset_diff[symmetric])
   finally show ?thesis .
 qed
 
@@ -31,7 +31,7 @@ lemma cInf_mono:
 proof(rule cInf_greatest[OF ne])
   fix b assume bin: "b \<in> B"
   with lower obtain a where ain: "a \<in> A" and le: "a \<le> b" by(auto)
-  from ain bounded have "Inf A \<le> a" by(rule cInf_lower)
+  from ain bounded have "Inf A \<le> a" by(intro cInf_lower bdd_belowI, auto)
   also note le
   finally show "Inf A \<le> b" .
 qed
@@ -43,11 +43,11 @@ lemma max_distrib:
 proof(cases "a \<le> b")
   case True
   moreover with nn have "c * a \<le> c * b" by(auto intro:mult_left_mono)
-  ultimately show ?thesis by(simp add:min_max.sup_absorb2)
+  ultimately show ?thesis by(simp add:max.absorb2)
 next
   case False then have "b \<le> a" by(auto)
   moreover with nn have "c * b \<le> c * a" by(auto intro:mult_left_mono)
-  ultimately show ?thesis by(simp add:min_max.sup_absorb1)
+  ultimately show ?thesis by(simp add:max.absorb1)
 qed
 
 lemma mult_div_mono_left:
@@ -57,7 +57,7 @@ lemma mult_div_mono_left:
   shows "c * a \<le> b"
 proof -
   from nnc inv have "c * a \<le> (c * inverse c) * b"
-    by(auto simp:mult_assoc intro:mult_left_mono)
+    by(auto simp:mult.assoc intro:mult_left_mono)
   also from nzc have "... = b" by(simp)
   finally show "c * a \<le> b" .
 qed
@@ -70,7 +70,7 @@ lemma mult_div_mono_right:
 proof -
   from nzc have "a = (c * inverse c) * a " by(simp)
   also from nnc inv have "(c * inverse c) * a \<le> c * b"
-    by(auto simp:mult_assoc intro:mult_left_mono)
+    by(auto simp:mult.assoc intro:mult_left_mono)
   finally show "a \<le> c * b" .
 qed
 
@@ -86,7 +86,7 @@ next
   case False hence "b \<le> a" by(auto)
   moreover with nnc have "c * b \<le> c * a"
     by(blast intro:mult_left_mono)
-  ultimately show ?thesis by(simp add:min_max.inf_absorb2)
+  ultimately show ?thesis by(simp add:min.absorb2)
 qed
 
 lemma nonempty_witness:
@@ -122,14 +122,14 @@ lemma cSup_add:
   shows "Sup S + c = Sup {x + c |x. x \<in> S}"
 proof(rule antisym)
   from ne bS show "Sup {x + c |x. x \<in> S} \<le> Sup S + c"
-    by(blast intro!:cSup_least add_right_mono cSup_upper)
+    by(auto intro!:cSup_least add_right_mono cSup_upper bdd_aboveI)
 
   have "Sup S \<le> Sup {x + c |x. x \<in> S} - c"                   
   proof(intro cSup_least ne)
     fix x assume xin: "x \<in> S"
     from bS have "\<And>x. x\<in>S \<Longrightarrow> x + c \<le> b + c" by(auto intro:add_right_mono)
-    with xin have "x + c \<le> Sup {x + c |x. x \<in> S}"
-      by(blast intro:cSup_upper)
+    hence "bdd_above {x + c |x. x \<in> S}" by(intro bdd_aboveI, blast)
+    with xin have "x + c \<le> Sup {x + c |x. x \<in> S}" by(auto intro:cSup_upper)
     thus "x \<le> Sup {x + c |x. x \<in> S} - c" by(auto)
   qed
   thus "Sup S + c \<le> Sup {x + c |x. x \<in> S}" by(auto)
@@ -149,25 +149,25 @@ next
   assume cnz: "c \<noteq> 0"
   show ?thesis
   proof(rule antisym)
-    from ne bS nnc show "Sup {c * x |x. x \<in> S} \<le> c * Sup S"
+    from bS have baS: "bdd_above S" by(intro bdd_aboveI, auto)
+    with ne nnc show "Sup {c * x |x. x \<in> S} \<le> c * Sup S"
       by(blast intro!:cSup_least mult_left_mono[OF cSup_upper])
-
     have "Sup S \<le> inverse c * Sup {c * x |x. x \<in> S}"
     proof(intro cSup_least ne)
       fix x assume xin: "x\<in>S"
       moreover from bS nnc have "\<And>x. x\<in>S \<Longrightarrow> c * x \<le> c * b" by(auto intro:mult_left_mono)
       ultimately have "c * x \<le> Sup {c * x |x. x \<in> S}"
-        by(blast intro:cSup_upper)
+        by(auto intro!:cSup_upper bdd_aboveI)
       moreover from nnc have "0 \<le> inverse c" by(auto)
       ultimately have "inverse c * (c * x) \<le> inverse c * Sup {c * x |x. x \<in> S}"
         by(auto intro:mult_left_mono)
       with cnz show "x \<le> inverse c * Sup {c * x |x. x \<in> S}"
-        by(simp add:mult_assoc[symmetric])
+        by(simp add:mult.assoc[symmetric])
     qed
     with nnc have "c * Sup S \<le> c * (inverse c * Sup {c * x |x. x \<in> S})"
       by(auto intro:mult_left_mono)
     with cnz show "c * Sup S \<le> Sup {c * x |x. x \<in> S}"
-      by(simp add:mult_assoc[symmetric])
+      by(simp add:mult.assoc[symmetric])
   qed
 qed
 
@@ -179,12 +179,13 @@ proof -
   let ?T = "uminus ` S"
   from neS have neT: "?T \<noteq> {}" by(auto)
   from bS have bT: "\<forall>x\<in>?T. -B \<le> x" by(auto)
+  hence bbT: "bdd_below ?T" by(intro bdd_belowI, blast)
 
   have "Sup S = - Inf ?T"
   proof(rule antisym)
-    from neT bT
+    from neT bbT
     have "\<And>x. x\<in>S \<Longrightarrow> Inf (uminus ` S) \<le> -x"
-      by(blast intro!: cInf_lower)
+      by(blast intro:cInf_lower)
     hence "\<And>x. x\<in>S \<Longrightarrow> -1 * -x \<le> -1 * Inf (uminus ` S)"
       by(rule mult_left_mono_neg, auto)
     hence lenInf: "\<And>x. x\<in>S \<Longrightarrow> x \<le> - Inf (uminus ` S)"
@@ -197,7 +198,7 @@ proof -
       fix x assume "x \<in> uminus ` S"
       then obtain y where yin: "y \<in> S" and rwx: "x = -y" by(auto)
       from yin bS have "y \<le> Sup S"
-        by(blast intro:cSup_upper)
+        by(intro cSup_upper bdd_belowI, auto)
       hence "-1 * Sup S \<le> -1 * y"
         by(simp add:mult_left_mono_neg)
       with rwx show "- Sup S \<le> x" by(simp)
@@ -207,7 +208,8 @@ proof -
     thus "- Inf ?T \<le> Sup S" by(simp)
   qed
   also {
-    from neT bT have "Inf ?T \<in> closure ?T" by(rule closure_contains_Inf)
+    thm bT
+    from neT bbT have "Inf ?T \<in> closure ?T" by(rule closure_contains_Inf)
     hence "- Inf ?T \<in> uminus ` closure ?T" by(auto)
   }
   also {
@@ -315,7 +317,7 @@ proof -
   hence "setsum f (supp f) = setsum f (UNIV - supp f) + setsum f (supp f)"
     by(simp)
   also have "... = setsum f UNIV"
-    by(simp add:setsum_subset_diff[symmetric])
+    by(simp add:setsum.subset_diff[symmetric])
   finally show ?thesis .
 qed
 
@@ -357,21 +359,18 @@ lemma tminus_left_distrib:
   shows "a * (b \<ominus> c) = a * b \<ominus> a * c"
 proof(cases "b \<le> c")
   case True note le = this
-  hence "a * max (b - c) 0 = 0" by(simp add:min_max.sup_absorb2)
+  hence "a * max (b - c) 0 = 0" by(simp add:max.absorb2)
   also {
     from nna le have "a * b \<le> a * c" by(blast intro:mult_left_mono)
-    hence "0 = max (a * b - a * c) 0"
-      by(simp add:min_max.sup_absorb1)
+    hence "0 = max (a * b - a * c) 0" by(simp add:max.absorb1)
   }
   finally show ?thesis by(simp add:tminus_def)
 next
   case False hence le: "c \<le> b" by(auto)
-  hence "a * max (b - c) 0 = a * (b - c)"
-    by(simp only:min_max.sup_absorb1)
+  hence "a * max (b - c) 0 = a * (b - c)" by(simp only:max.absorb1)
   also {
     from nna le have "a * c \<le> a * b" by(blast intro:mult_left_mono)
-    hence "a * (b - c) = max (a * b - a * c) 0"
-      by(simp add:min_max.sup_absorb1 field_simps)
+    hence "a * (b - c) = max (a * b - a * c) 0" by(simp add:max.absorb1 field_simps)
   }
   finally show ?thesis by(simp add:tminus_def)
 qed
@@ -432,7 +431,7 @@ proof(rule finite_induct)
   also from IH have "... \<le> (f x \<ominus> g x) + (\<Sum>x\<in>F. f x \<ominus> g x)"
     by(rule add_left_mono)
   finally show "?X (insert x F)"
-    by(simp add:setsum_insert[OF fF xniF])
+    by(simp add:setsum.insert[OF fF xniF])
 qed
 
 lemma tminus_nneg[simp,intro]:

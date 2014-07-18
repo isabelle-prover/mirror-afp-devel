@@ -148,11 +148,11 @@ lemma wlp_DC_split:
 
 lemma wp_DC_split_same:
   "\<lbrakk> P \<tturnstile> wp prog Q; P \<tturnstile> wp prog' Q \<rbrakk> \<Longrightarrow> P \<tturnstile> wp (prog \<Sqinter> prog') Q"
-  unfolding wp_eval by(blast intro:min_max.inf_greatest)
+  unfolding wp_eval by(blast intro:min.boundedI)
 
 lemma wlp_DC_split_same:
   "\<lbrakk> P \<tturnstile> wlp prog Q; P \<tturnstile> wlp prog' Q \<rbrakk> \<Longrightarrow> P \<tturnstile> wlp (prog \<Sqinter> prog') Q"
-  unfolding wp_eval by(blast intro:min_max.inf_greatest)
+  unfolding wp_eval by(blast intro:min.boundedI)
 
 lemma SetPC_split:
   fixes f::"'x \<Rightarrow> 'y prog"
@@ -196,14 +196,14 @@ lemma wp_SetDC:
       and ne: "\<And>s. S s \<noteq> {}"
       and sP: "\<And>x. sound (P x)"
   shows "(\<lambda>s. Inf ((\<lambda>x. P x s) ` S s)) \<tturnstile> wp (SetDC f S) Q"
-  using assms by(intro le_funI, simp add:wp_eval, blast intro!:cInf_mono)
+  using assms by(intro le_funI, simp add:wp_eval del:Inf_image_eq, blast intro!:cInf_mono)
 
 lemma wlp_SetDC:
   assumes wp: "\<And>s x. x \<in> S s \<Longrightarrow> P x \<tturnstile> wlp (f x) Q"
       and ne: "\<And>s. S s \<noteq> {}"
       and sP: "\<And>x. sound (P x)"
   shows "(\<lambda>s. Inf ((\<lambda>x. P x s) ` S s)) \<tturnstile> wlp (SetDC f S) Q"
-  using assms by(intro le_funI, simp add:wp_eval, blast intro!:cInf_mono)
+  using assms by(intro le_funI, simp add:wp_eval del:Inf_image_eq, blast intro!:cInf_mono)
 
 lemma wp_Embed:
   "P \<tturnstile> t Q \<Longrightarrow> P \<tturnstile> wp (Embed t) Q"
@@ -237,7 +237,7 @@ and would belong here, had they not already been stated. *}
 text {* The following rules are specialisations of those for general
   transformers, and are easier for the unifier to match. *}
 lemmas wp_strengthen_post=
-  entails_strengthen_post[where t="wp a", standard]
+  entails_strengthen_post[where t="wp a" for a]
 
 lemma wlp_strengthen_post:
   "P \<tturnstile> wlp a Q \<Longrightarrow> nearly_healthy (wlp a) \<Longrightarrow> unitary R \<Longrightarrow> Q \<tturnstile> R \<Longrightarrow> unitary Q \<Longrightarrow>
@@ -245,12 +245,12 @@ lemma wlp_strengthen_post:
   by(blast intro:entails_trans)
 
 lemmas wp_weaken_pre=
-  entails_weaken_pre[where t="wp a", standard]
+  entails_weaken_pre[where t="wp a" for a]
 lemmas wlp_weaken_pre=
-  entails_weaken_pre[where t="wlp a", standard]
+  entails_weaken_pre[where t="wlp a" for a]
 
 lemmas wp_scale=
-  entails_scale[where t="wp a", standard, OF _ well_def_wp_healthy]
+  entails_scale[where t="wp a" for a, OF _ well_def_wp_healthy]
 
 subsection {* Algebraic Decomposition *}
 

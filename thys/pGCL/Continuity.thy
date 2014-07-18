@@ -140,7 +140,7 @@ proof(rule bd_ctsI, rule antisym)
         from mono_transD[OF healthy_monoD, OF ha] sM chain
         show "wp a (M n) s \<le> wp a (M (Suc n)) s" by(auto intro:le_funD)
         from baM show "wp a (M n) s \<le> Sup (range (\<lambda>i. wp a (M i) s))"
-          by(blast intro:cSup_upper)
+          by(intro cSup_upper bdd_aboveI, auto)
 
         fix e::real assume pe: "0 < e"
         from baM have cSup: "Sup (range (\<lambda>i. wp a (M i) s)) \<in> closure (range (\<lambda>i. wp a (M i) s))"
@@ -152,7 +152,7 @@ proof(rule bd_ctsI, rule antisym)
         with dy have "dist (wp a (M i) s) (Sup (range (\<lambda>i. wp a (M i) s))) < e"
           by(simp)
         moreover from baM have "wp a (M i) s \<le> Sup (range (\<lambda>i. wp a (M i) s))"
-          by(blast intro:cSup_upper)
+          by(intro cSup_upper bdd_aboveI, auto)
         ultimately have "Sup (range (\<lambda>i. wp a (M i) s)) \<le> wp a (M i) s + e"
           by(simp add:dist_real_def)
         thus "\<exists>i. Sup (range (\<lambda>i. wp a (M i) s)) \<le> wp a (M i) s + e" by(auto)
@@ -164,7 +164,7 @@ proof(rule bd_ctsI, rule antisym)
         from mono_transD[OF healthy_monoD, OF hb] sM chain
         show "wp b (M n) s \<le> wp b (M (Suc n)) s" by(auto intro:le_funD)
         from bbM show "wp b (M n) s \<le> Sup (range (\<lambda>i. wp b (M i) s))"
-          by(blast intro:cSup_upper)
+          by(intro cSup_upper bdd_aboveI, auto)
 
         fix e::real assume pe: "0 < e"
         from bbM have cSup: "Sup (range (\<lambda>i. wp b (M i) s)) \<in> closure (range (\<lambda>i. wp b (M i) s))"
@@ -176,7 +176,7 @@ proof(rule bd_ctsI, rule antisym)
         with dy have "dist (wp b (M i) s) (Sup (range (\<lambda>i. wp b (M i) s))) < e"
           by(simp)
         moreover from bbM have "wp b (M i) s \<le> Sup (range (\<lambda>i. wp b (M i) s))"
-          by(blast intro:cSup_upper)
+          by(intro cSup_upper bdd_aboveI, auto)
         ultimately have "Sup (range (\<lambda>i. wp b (M i) s)) \<le> wp b (M i) s + e"
           by(simp add:dist_real_def)
         thus "\<exists>i. Sup (range (\<lambda>i. wp b (M i) s)) \<le> wp b (M i) s + e" by(auto)
@@ -184,8 +184,19 @@ proof(rule bd_ctsI, rule antisym)
       ultimately have "(\<lambda>i. min (wp a (M i) s) (wp b (M i) s)) ---->
                        min (Sup (range (\<lambda>i. wp a (M i) s))) (Sup (range (\<lambda>i. wp b (M i) s)))"
         by(rule tendsto_min)
-      hence "min (Sup (range (\<lambda>i. wp a (M i) s))) (Sup (range (\<lambda>i. wp b (M i) s))) \<le>
-             Sup (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s)))"
+      moreover have "bdd_above (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s)))"
+      proof(intro bdd_aboveI, clarsimp)
+        fix i
+        have "min (wp a (M i) s) (wp b (M i) s) \<le> wp a (M i) s" by(auto)
+        also {
+          from ha sM bM have "bounded_by c (wp a (M i))" by(auto)
+          hence "wp a (M i) s \<le>  c" by(auto)
+        }
+        finally show "min (wp a (M i) s) (wp b (M i) s) \<le> c" .
+      qed
+      ultimately
+      have "min (Sup (range (\<lambda>i. wp a (M i) s))) (Sup (range (\<lambda>i. wp b (M i) s))) \<le>
+            Sup (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s)))"
         by(blast intro:LIMSEQ_le_const2 cSup_upper min.mono[OF baM bbM])
     }
     also {
@@ -322,8 +333,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
         by(auto)
       with up show "p s * wp a (M n) s \<le> p s * wp a (M (Suc n)) s"
         by(blast intro:mult_left_mono)
-      show "p s * wp a (M n) s \<le> Sup (range (\<lambda>i. p s * wp a (M i) s))"
-        by(blast intro:cSup_upper baM)
+      from baM show "p s * wp a (M n) s \<le> Sup (range (\<lambda>i. p s * wp a (M i) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
     next
       fix e::real
       assume pe: "0 < e"
@@ -337,8 +348,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       from yin obtain i where "y = p s * wp a (M i) s" by(auto)
       with dy have "dist (p s * wp a (M i) s) (Sup (range (\<lambda>i. p s * wp a (M i) s))) < e"
         by(simp)
-      moreover have "p s * wp a (M i) s \<le> Sup (range (\<lambda>i. p s * wp a (M i) s))"
-        by(blast intro: cSup_upper baM)
+      moreover from baM have "p s * wp a (M i) s \<le> Sup (range (\<lambda>i. p s * wp a (M i) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
       ultimately have "Sup (range (\<lambda>i. p s * wp a (M i) s)) \<le> p s * wp a (M i) s + e"
         by(simp add:dist_real_def)
       thus "\<exists>i. Sup (range (\<lambda>i. p s * wp a (M i) s)) \<le> p s * wp a (M i) s + e" by(auto)
@@ -363,8 +374,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       moreover from up have "0 \<le> 1 - p s" by(auto simp:sign_simps)
       ultimately show "(1 - p s) * wp b (M n) s \<le> (1 - p s) * wp b (M (Suc n)) s"
         by(blast intro:mult_left_mono)
-      show "(1 - p s) * wp b (M n) s \<le> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
-        by(blast intro:cSup_upper bbM)
+      from bbM show "(1 - p s) * wp b (M n) s \<le> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
     next
       fix e::real
       assume pe: "0 < e"
@@ -378,8 +389,9 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       with dy have "dist ((1 - p s) * wp b (M i) s)
                          (Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))) < e"
         by(simp)
-      moreover have "(1 - p s) * wp b (M i) s \<le> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
-        by(blast intro: cSup_upper bbM)
+      moreover from bbM
+      have "(1 - p s) * wp b (M i) s \<le> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
+        by(intro cSup_upper bdd_aboveI, auto)
       ultimately have "Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s)) \<le> (1 - p s) * wp b (M i) s + e"
         by(simp add:dist_real_def)
       thus "\<exists>i. Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s)) \<le> (1 - p s) * wp b (M i) s + e" by(auto)
@@ -388,9 +400,10 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
     from lima limb have "(\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s) ---->
       Sup (range (\<lambda>i. p s * wp a (M i) s)) + Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
       by(rule tendsto_add)
-    moreover have "\<And>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s \<le>
+    moreover from add_mono[OF baM bbM]
+    have "\<And>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s \<le>
                        Sup (range (\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s))"
-      by(blast intro:cSup_upper add_mono[OF baM bbM])
+      by(intro cSup_upper bdd_aboveI, auto)
     ultimately have "Sup (range (\<lambda>i. p s * wp a (M i) s)) +
                      Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s)) \<le>
                      Sup (range (\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s))"
@@ -466,7 +479,7 @@ proof(intro ext, simp add:SetPC_def PC_def)
     by(simp)
   also from fsupp
   have "... = p x * a x ab P s + (\<Sum>x\<in>supp p - {x}. p x * a x ab P s)"
-    by(blast intro:setsum_insert)
+    by(blast intro:setsum.insert)
   also from n1
   have "... = p x * a x ab P s + (1 - p x) * ((\<Sum>x\<in>supp p - {x}. p x * a x ab P s) / (1 - p x))"
     by(simp add:field_simps)
@@ -620,11 +633,11 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
     also {
       from yin yne fsupp
       have "p y + setsum p (supp p - {x,y}) = setsum p (supp p - {x})"
-        by(subst setsum_insert[symmetric], (blast intro!:setsum_cong)+)
+        by(subst setsum.insert[symmetric], (blast intro!:setsum.cong)+)
       moreover
       from xin fsupp
       have "p x + setsum p (supp p - {x}) = setsum p (supp p)"
-        by(subst setsum_insert[symmetric], (blast intro!:setsum_cong)+)
+        by(subst setsum.insert[symmetric], (blast intro!:setsum.cong)+)
       ultimately
       have "p x + p y + setsum p (supp p - {x, y}) = setsum p (supp p)" by(simp)
     }
@@ -713,7 +726,7 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
       also {
         from xin have "insert x (supp p) = supp p" by(auto)
         with fsupp have "p x + (\<Sum>y\<in>supp p - {x}. p y) = setsum p (supp p)"
-          by(simp add:setsum_insert[symmetric])
+          by(simp add:setsum.insert[symmetric])
         also note sump
         finally have "setsum p (supp p - {x}) \<le> 1 - p x" by(auto)
         moreover {
@@ -763,7 +776,7 @@ lemma SetDC_finite_insert:
   assumes fS: "finite S"
       and neS: "S \<noteq> {}"
   shows "SetDC a (\<lambda>_. insert x S) = a x \<Sqinter> SetDC a (\<lambda>_. S)"
-proof(intro ext, simp add:SetDC_def DC_def)
+proof(intro ext, simp add:SetDC_def DC_def del:Inf_image_eq)
   fix ab P s
   from fS have A: "finite (insert (a x ab P s) ((\<lambda>x. a x ab P s) ` S))" 
            and B: "finite (((\<lambda>x. a x ab P s) ` S))" by(auto)
@@ -775,7 +788,7 @@ proof(intro ext, simp add:SetDC_def DC_def)
   also from B D have "... = min (a x ab P s) (Min ((\<lambda>x. a x ab P s) ` S))"
     by(auto intro:Min_insert)
   also from B D have "... = min (a x ab P s) (Inf ((\<lambda>x. a x ab P s) ` S))"
-    by(simp add:cInf_eq_Min)
+    by(simp add:cInf_eq_Min del:Inf_image_eq)
   finally show "Inf (insert (a x ab P s) ((\<lambda>x. a x ab P s) ` S)) =
                 min (a x ab P s) (Inf ((\<lambda>x. a x ab P s) ` S))" .
 qed
@@ -968,7 +981,7 @@ proof(rule bd_cts_trI, rule le_trans_antisym)
         by(simp add:wp_eval)
       also have "\<And>i. ... i \<le>
                  Sup {f s |f. f \<in> {t P |t. t \<in> range ((\<lambda>x. wp (body ;; Embed x \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)) \<circ> M)}}"
-      proof(rule cSup_upper, blast, clarsimp simp:wp_eval)
+      proof(intro cSup_upper bdd_aboveI, blast, clarsimp simp:wp_eval)
         fix i
         from sP have bP: "bounded_by (bound_of P) P" by(auto)
         with sP fM have "sound (M i P)" "bounded_by (bound_of P) (M i P)" by(auto)
