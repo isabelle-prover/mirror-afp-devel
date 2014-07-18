@@ -1,3 +1,18 @@
+[pGCL]
+title = pGCL for Isabelle
+author = David Cock <mailto:david.cock@nicta.com.au>
+date = 2014-07-13
+topic = Computer Science/Programming Languages/Language Definitions
+abstract =
+  <p>pGCL is both a programming language and a specification language that
+  incorporates both probabilistic and nondeterministic choice, in a unified
+  manner. Program verification is by refinement or annotation (or both), using
+  either Hoare triples, or weakest-precondition entailment, in the style of
+  GCL.</p> 
+  <p> This package provides both a shallow embedding of the language
+  primitives, and an annotation and refinement framework. The generated
+  document includes a brief tutorial.</p>
+
 [Noninterference_CSP]
 title = Noninterference Security in Communicating Sequential Processes
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>

@@ -1,0 +1,122 @@
+(*
+ * Copyright (C) 2014 NICTA
+ * All rights reserved.
+ *)
+
+(* Author: David Cock - David.Cock@nicta.com.au *)
+
+(* This file implements a simple verification condition generator
+   (VCG), for probabilistic programs written in pGCL. *)
+
+signature pVCG_sig =
+sig
+        val setup:    theory -> theory;
+        val pVCG_tac: Proof.context -> int -> tactic;
+end;
+
+structure pVCG =
+struct
+
+structure WDRules = Named_Thms
+  (val name = @{binding "wd"}
+   val description = "Theorems to automatically establish well-definedness")
+
+structure CoreWPRules = Named_Thms
+  (val name = @{binding "pwp_core"}
+   val description = "Core probabilistic wp rules, for evaluating primitive terms")
+
+structure UserWPRules = Named_Thms
+  (val name = @{binding "pwp"}
+   val description = "User-supplied probabilistic wp rules")
+
+structure UserWLPRules = Named_Thms
+  (val name = @{binding "pwlp"}
+   val description = "User-supplied probabilistic wlp rules")
+
+val pvcg_trace = Attrib.setup_config_bool @{binding "trace_pvcg"} (K false)
+
+fun trace ctxt str =
+    if Config.get ctxt pvcg_trace then tracing ("pVCG: " ^ str) else {}
+
+fun trace_pre ctxt str T =
+    (trace ctxt str ; T)
+
+(* Match soundness goals on non-schematic expectations *)
+fun m_sound t =
+  case t of
+    @{term "Trueprop"} $ (Const ("Expectations.sound",_) $ Var _) => false
+  | @{term "Trueprop"} $ (Const ("Expectations.unitary",_) $ Var _) => false
+  | @{term "Trueprop"} $ (Const ("Expectations.sound",_) $ _) => true
+  | @{term "Trueprop"} $ (Const ("Expectations.unitary",_) $ _) => true
+  | _ => false
+
+(* Match well-definedness goals on non-schematic expectations *)
+fun m_wd t =
+  case t of
+    @{term "Trueprop"} $ (Const ("WellDefined.well_def",_) $ Var _) => false
+  | @{term "Trueprop"} $ (Const ("WellDefined.well_def",_) $ _) => true
+  | _ => false
+
+val sound_goal_tac =
+  resolve_tac @{thms sound_intros unitary_intros}
+fun maybe_sound_tac ctxt (g,i) =
+  if m_sound g
+  then trace_pre ctxt ("soundness goal " ^
+                   Pretty.string_of (Syntax.pretty_term ctxt g))
+                  (sound_goal_tac i)
+  else no_tac
+fun sound_tac ctxt = SUBGOAL (maybe_sound_tac ctxt)
+
+fun wd_goal_tac ctxt =
+  resolve_tac (WDRules.get ctxt)
+fun maybe_wd_tac ctxt (g,i) =
+  if m_wd g
+  then trace_pre ctxt "well-definedness goal" (wd_goal_tac ctxt i)
+  else no_tac
+fun wd_tac ctxt = SUBGOAL (maybe_wd_tac ctxt)
+
+(* Attempt to solve a side-condition (healthiness or soundness) *)
+fun sidegoal_tac ctxt =
+  REPEAT_ALL_NEW (CHANGED o (wd_tac ctxt ORELSE'
+                  sound_tac ctxt ORELSE'
+                  asm_full_simp_tac ctxt))
+
+fun wp_start ctxt =
+  (rtac @{thm wp_weaken_pre} ORELSE' rtac @{thm wlp_weaken_pre})
+  THEN_ALL_NEW ((sidegoal_tac ctxt) ORELSE' (K all_tac))
+
+fun user_wp_rules ctxt = UserWPRules.get ctxt
+
+fun mod_user_wp_rules ctxt =
+  map (fn thm => thm RS @{thm wp_strengthen_post[OF _ well_def_wp_healthy]})
+                        (user_wp_rules ctxt)
+
+fun user_wlp_rules ctxt = UserWLPRules.get ctxt
+
+fun mod_user_wlp_rules ctxt =
+  map (fn thm => thm RS @{thm wlp_strengthen_post[OF _ well_def_wlp_nearly_healthy]})
+                        (user_wlp_rules ctxt)
+
+fun core_rules ctxt = CoreWPRules.get ctxt
+
+(* Prefer raw user rules, then lifted user rules, then core (safe) rules *)
+fun wp_step ctxt =
+  (trace_pre ctxt "user WP" (resolve_tac (user_wp_rules ctxt)) ORELSE'
+   resolve_tac (mod_user_wp_rules ctxt) ORELSE'
+   resolve_tac (user_wlp_rules ctxt) ORELSE'
+   resolve_tac (mod_user_wlp_rules ctxt) ORELSE'
+   resolve_tac (core_rules ctxt)) THEN_ALL_NEW
+  (sidegoal_tac ctxt ORELSE' K all_tac)
+
+fun pVCG_tac ctxt =
+  (trace_pre ctxt "start" (wp_start ctxt) THEN'
+   REPEAT_ALL_NEW (wp_step ctxt)) THEN_ALL_NEW
+   (TRY o sidegoal_tac ctxt) THEN'
+  (fn _ => trace_pre ctxt "finished" all_tac)
+
+val setup = WDRules.setup #> CoreWPRules.setup #>
+            UserWPRules.setup #> UserWLPRules.setup
+
+end;
+
+structure pVCGInst : pVCG_sig = pVCG;
