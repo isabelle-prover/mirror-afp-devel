@@ -197,6 +197,7 @@
 <h3>Security</h3>
 
 <div class="list">
+<a href="entries/CISC-Kernel.shtml">CISC-Kernel</a> &nbsp;
 <a href="entries/Noninterference_CSP.shtml">Noninterference_CSP</a> &nbsp;
 <a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;

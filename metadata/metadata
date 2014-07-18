@@ -1,3 +1,24 @@
+[CISC-Kernel]
+title = Formal Specification of a Generic Separation Kernel
+author = Freek Verbeek <mailto:Freek.Verbeek@ou.nl>, Sergey Tverdyshev <mailto:stv@sysgo.com>, Oto Havle <mailto:oha@sysgo.com>, Holger Blasum <mailto:holger.blasum@sysgo.com>, Bruno Langenstein <mailto:langenstein@dfki.de>, Werner Stephan <mailto:stephan@dfki.de>, Yakoub Nemouchi <mailto:nemouchi@lri.fr>, Abderrahmane Feliachi <mailto:Abderrahmane.FELIACHI@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Julien Schmaltz <mailto:Julien.Schmaltz@ou.nl>
+date = 2014-07-18
+topic = Computer Science/Security
+abstract =
+  <p>Intransitive noninterference has been a widely studied topic in the last
+  few decades. Several well-established methodologies apply interactive
+  theorem proving to formulate a noninterference theorem over abstract
+  academic models. In joint work with several industrial and academic partners
+  throughout Europe, we are helping in the certification process of PikeOS, an
+  industrial separation kernel developed at SYSGO. In this process,
+  established theories could not be applied. We present a new generic model of
+  separation kernels and a new theory of intransitive noninterference. The
+  model is rich in detail, making it suitable for formal verification of
+  realistic and industrial systems such as PikeOS. Using a refinement-based
+  theorem proving approach, we ensure that proofs remain manageable.</p>
+  <p>
+  This document corresponds to the deliverable D31.1 of the EURO-MILS
+  Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p>
+
 [pGCL]
 title = pGCL for Isabelle
 author = David Cock <mailto:david.cock@nicta.com.au>
