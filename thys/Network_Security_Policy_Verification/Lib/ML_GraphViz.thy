@@ -22,6 +22,7 @@ end
 structure Graphviz: GRAPHVIZ =
 struct
 
+(*if set to false, graphviz will not be run and not pdf will be opened. Include ML_GraphViz_Disable.thy to run in batch mode.*)
 val open_viewer = Unsynchronized.ref true
 
 val default_tune_node_format = (fn _ => I)
@@ -55,10 +56,7 @@ local
         val filePDF = file^".pdf";
         val cmd = (viz^" -o "^filePDF^" -Tpdf "^file^" && "^viewer^" "^filePDF) (*^" && rm "^filePDF*)
       in
-        if !open_viewer then
-          (writeln ("executing: "^cmd); Isabelle_System.bash cmd; ())
-        else
-          ();
+        (writeln ("executing: "^cmd); Isabelle_System.bash cmd; ());
         Isabelle_System.bash ("rm "^file) (*cleanup dot file, PDF file will still exist*)
       end
 
@@ -80,15 +78,18 @@ local
   fun apply_dot_header es =
     "digraph graphname {\n" ^ implode es ^ "}"
 in
-  fun visualize_graph_pretty thy tune_node_format Es =
+  fun visualize_graph_pretty thy tune_node_format Es : int =
     let 
       val evaluated_edges = map (fn (str, t) => (str, evaluate_term thy t)) Es
       val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges tune_node_format #> implode
       val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges
     in
-      apply_dot_header formatted_edges 
-      |> write_to_tmpfile
-      |> paint_graph "xdg-open" "dot"
+      if !open_viewer then (* only run the shell commands if not disabled by open_viewer *)
+        (apply_dot_header formatted_edges
+        |> write_to_tmpfile
+        |> paint_graph "xdg-open" "dot")
+      else
+        (writeln "visualization disabled (Graphviz.open_viewer)"; 0)
     end
   end
 
