@@ -1,6 +1,13 @@
 theory ML_GraphViz
-imports Main
+imports ML_GraphViz_Config
 begin
+
+
+ML_val{*
+  val _ = writeln ("using `"^Graphviz_Platform_Config.executable_pdf_viewer^"` as pdf viewer and `"^
+                   Graphviz_Platform_Config.executable_dot^"` to render graphs.");
+*}
+
 
 ML {*
 signature GRAPHVIZ =
@@ -44,9 +51,11 @@ local
 
   (* viz is graphiz command, e.g. dot
      viewer is a PDF viewer, e.g. xdg-open
-     retuns return code of bash command *)
+     retuns return code of bash command.
+     noticeable side effect: generated pdf file is not deleted (maybe still open in editor)*)
   fun paint_graph (viewer: string) (viz: string) (f: Path.T): int =
     if (Isabelle_System.bash ("which "^viz)) <> 0 then
+      (*TODO: `which` on windows?*)
       error "ML_GraphViz: Graphviz command not found"
     else if (Isabelle_System.bash ("which "^viewer)) <> 0 then
       error "ML_GraphViz: viewer command not found"
@@ -58,6 +67,7 @@ local
       in
         (writeln ("executing: "^cmd); Isabelle_System.bash cmd; ());
         Isabelle_System.bash ("rm "^file) (*cleanup dot file, PDF file will still exist*)
+        (*some pdf viewers do not like it if we delete the pdf file they are currently displaying*)
       end
 
   fun is_valid_char c =
@@ -85,9 +95,11 @@ in
       val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges
     in
       if !open_viewer then (* only run the shell commands if not disabled by open_viewer *)
-        (apply_dot_header formatted_edges
-        |> write_to_tmpfile
-        |> paint_graph "xdg-open" "dot")
+        (
+          apply_dot_header formatted_edges
+          |> write_to_tmpfile
+          |> paint_graph Graphviz_Platform_Config.executable_pdf_viewer Graphviz_Platform_Config.executable_dot
+        )
       else
         (writeln "visualization disabled (Graphviz.open_viewer)"; 0)
     end
