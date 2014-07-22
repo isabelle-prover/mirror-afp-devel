@@ -67,7 +67,7 @@ lemma hmem_hempty [simp]: "\<not> a \<^bold>\<in> 0"
 lemmas hemptyE [elim!] = hmem_hempty [THEN notE]
 
 lemma hmem_hinsert [iff]:
-  "hmem a (hinsert b c) \<longleftrightarrow> a = b \<or> a \<^bold>\<in> c"
+  "hmem a (c \<triangleleft>  b) \<longleftrightarrow> a = b \<or> a \<^bold>\<in> c"
   unfolding hmem_def hinsert_def by simp
 
 lemma hf_ext: "a = b \<longleftrightarrow> (\<forall>x. x \<^bold>\<in> a \<longleftrightarrow> x \<^bold>\<in> b)"
@@ -79,7 +79,7 @@ lemma finite_cases [consumes 1, case_names empty insert]:
 by (induct F rule: finite_induct, simp_all)
 
 lemma hf_cases [cases type: hf, case_names 0 hinsert]:
-  obtains "y = 0" | a b where "y = hinsert a b" and "\<not> a \<^bold>\<in> b"
+  obtains "y = 0" | a b where "y = b \<triangleleft> a" and "\<not> a \<^bold>\<in> b"
 proof -
   have "finite (hfset y)" by (rule finite_hfset)
   thus thesis
@@ -111,7 +111,7 @@ lemma hinsert_iff: "z = y \<triangleleft> x \<longleftrightarrow> (\<forall>u. u
 text{*HF induction*}
 lemma hf_induct [induct type: hf, case_names 0 hinsert]:
   assumes [simp]: "P 0"
-                  "\<And>x y. \<lbrakk>P x; P y; \<not> x \<^bold>\<in> y\<rbrakk> \<Longrightarrow> P (hinsert x y)"
+                  "\<And>x y. \<lbrakk>P x; P y; \<not> x \<^bold>\<in> y\<rbrakk> \<Longrightarrow> P (y \<triangleleft> x)"
   shows "P z"
 proof (induct z rule: wf_induct [where r="measure Rep_hf", OF wf_measure])
   case (1 x) show ?case
@@ -135,7 +135,7 @@ lemma hf_equalityI [intro]: "(\<And>x. x \<^bold>\<in> a \<longleftrightarrow> x
 lemma hinsert_nonempty [simp]: "A \<triangleleft> a \<noteq> 0"
   by (auto simp: hf_ext)
 
-lemma hinsert_commute: "hinsert x (hinsert y z) = hinsert y (hinsert x z)"
+lemma hinsert_commute: "(z \<triangleleft> y) \<triangleleft> x = (z \<triangleleft> x) \<triangleleft> y"
   by (auto simp: hf_ext)
 
 lemma singleton_eq_iff [iff]: "\<lbrace>a\<rbrace> = \<lbrace>b\<rbrace> \<longleftrightarrow> a=b"
@@ -290,7 +290,7 @@ done
 lemma HUnion_hempty [simp]: "\<Squnion> 0 = 0"
   by (simp add: hf_ext)
 
-lemma HUnion_hinsert [simp]: "\<Squnion>(hinsert a A) = a \<squnion> \<Squnion>A"
+lemma HUnion_hinsert [simp]: "\<Squnion>(A \<triangleleft> a) = a \<squnion> \<Squnion>A"
   by (auto simp: hf_ext)
 
 lemma HUnion_hunion [simp]: "\<Squnion>(A \<squnion> B) =  \<Squnion>A \<squnion> \<Squnion>B"
@@ -323,7 +323,7 @@ lemma HInter_hempty [iff]: "\<Sqinter> 0 = 0"
 lemma HInter_iff [simp]: "A\<noteq>0 \<Longrightarrow> hmem x (\<Sqinter> A) \<longleftrightarrow> (\<forall>y. y \<^bold>\<in> A \<longrightarrow> x \<^bold>\<in> y)"
   by (auto simp: HInter_def)
 
-lemma HInter_hinsert [simp]: "A\<noteq>0 \<Longrightarrow> \<Sqinter>(hinsert a A) = a \<sqinter> \<Sqinter>A"
+lemma HInter_hinsert [simp]: "A\<noteq>0 \<Longrightarrow> \<Sqinter>(A \<triangleleft> a) = a \<sqinter> \<Sqinter>A"
   by (auto simp: hf_ext HInter_iff [OF hinsert_nonempty])
 
 subsection{*Set Difference*}
@@ -343,11 +343,11 @@ lemma hdiff_zero [simp]: fixes x :: hf shows "(x - 0) = x"
 lemma zero_hdiff [simp]: fixes x :: hf shows "(0 - x) = 0"
   by blast
 
-lemma hdiff_insert: "A - hinsert a B = A - B - \<lbrace>a\<rbrace>"
+lemma hdiff_insert: "A - (B \<triangleleft> a) = A - B - \<lbrace>a\<rbrace>"
   by blast
 
 lemma hinsert_hdiff_if:
-  "hinsert x A - B = (if x \<^bold>\<in> B then A - B else hinsert x (A - B))"
+  "(A \<triangleleft> x) - B = (if x \<^bold>\<in> B then A - B else (A - B) \<triangleleft> x)"
   by auto
 
 
