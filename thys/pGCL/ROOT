@@ -7,6 +7,6 @@ session pGCL (AFP) = "HOL-Multivariate_Analysis" +
     "Tutorial/Primitives"
 	"Tutorial/LoopExamples"
     "Tutorial/Monty"
-  files
+  document_files
 	"document/root.tex"
 	"document/root.bib"
