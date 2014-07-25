@@ -3,10 +3,10 @@ chapter AFP
 session pGCL (AFP) = "HOL-Multivariate_Analysis" +
   options [timeout = 300]
   theories
-	pGCL
+    pGCL
     "Tutorial/Primitives"
-	"Tutorial/LoopExamples"
+    "Tutorial/LoopExamples"
     "Tutorial/Monty"
   document_files
-	"document/root.tex"
-	"document/root.bib"
+    "root.tex"
+    "root.bib"
