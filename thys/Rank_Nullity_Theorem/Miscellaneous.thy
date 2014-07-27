@@ -163,8 +163,8 @@ next
     have "B \<subseteq> UNIV" by simp
     moreover
     { from `is_basis B` have "UNIV \<subseteq> vec.span B" and "vec.independent B"
-	unfolding is_basis_def
-	by simp+ }
+        unfolding is_basis_def
+        by simp+ }
     ultimately have "card B = vec.dim (UNIV::((real^'n) set))"
       using vec.basis_card_eq_dim [of B UNIV]
       unfolding vec_dim_card

@@ -11,8 +11,8 @@ text{* A graph G=(V,E) consits of a set of vertices V, also called nodes,
        the set of vertices and edges is finite. *}
 
 (* Inspired by
-Title: 	Dijkstra's Shortest Path Algorithm
-Author: 	Benedikt Nordhoff and Peter Lammich
+Title:  Dijkstra's Shortest Path Algorithm
+Author: Benedikt Nordhoff and Peter Lammich
 http://afp.sourceforge.net/entries/Dijkstra_Shortest_Path.shtml
 *)
 
