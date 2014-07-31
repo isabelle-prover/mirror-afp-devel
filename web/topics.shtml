@@ -106,6 +106,7 @@
 <h3>Functional Programming</h3>
 
 <div class="list">
+<a href="entries/Show.shtml">Show</a> &nbsp;
 <a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
