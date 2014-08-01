@@ -49,8 +49,8 @@ end
 instantiation prod :: ("show", "show") "show"
 begin
 
-definition "shows_prec d (p::('a::show \<times> 'b::show)) =
-  shows_paren (shows (fst p) +@+ shows (CHR '','') +@+ shows (snd p))"
+definition "shows_prec d (p :: 'a \<times> 'b) =
+  shows_paren (shows (fst p) +@+ '','' +#+ shows (snd p))"
 
 lemma assoc_prod:
   "shows_prec d (p::('a::show \<times> 'b::show)) r @ s = shows_prec d p (r @ s)"
