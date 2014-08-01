@@ -3,7 +3,7 @@ chapter AFP
 session Real_Impl (AFP) = Sqrt_Babylonian +
   options [timeout = 300]
   theories [document = false]
-    Show_Instances
+    "../Show/Show_Instances"
     "~~/src/HOL/Number_Theory/UniqueFactorization"
   theories
     Real_Impl_Auxiliary
