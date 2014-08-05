@@ -1,5 +1,10 @@
 \begin{thebibliography}{1}
 
+\bibitem{kirby-addition}
+L.~Kirby.
+\newblock Addition and multiplication of sets.
+\newblock {\em Mathematical Logic Quarterly}, 53(1):52--65, 2007.
+
 \bibitem{swierczkowski-finite}
 S.~{\'S}wierczkowski.
 \newblock Finite sets and {G{\"o}del's} incompleteness theorems.

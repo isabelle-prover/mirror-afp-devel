@@ -299,7 +299,7 @@ lemma atom_fresh_abst_dbtm [simp]: "atom i \<sharp> abst_dbtm i n t"
 lemma atom_fresh_abst_dbfm [simp]: "atom i \<sharp> abst_dbfm i n A"
   by (nominal_induct A arbitrary: n rule: dbfm.strong_induct) auto
 
-text{*Nexessary to allow some proofs to go through*}
+text{*Setting up strong induction: "avoiding" for name. Necessary to allow some proofs to go through*}
 nominal_inductive wf_dbfm
   avoids Ex: name
   by (auto simp: fresh_star_def)

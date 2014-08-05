@@ -105,7 +105,7 @@ lemma hempty_iff: "z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in>
   by (simp add: hf_ext)
 
 text{*HF2*}
-lemma hinsert_iff: "z = y \<triangleleft> x \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> y | u=x)"
+lemma hinsert_iff: "z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u = y)"
   by (auto simp: hf_ext)
 
 text{*HF induction*}
