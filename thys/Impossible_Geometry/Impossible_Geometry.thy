@@ -481,42 +481,36 @@ lemma radical_sqrt_normal_form_lemma:
   shows "\<exists>a b. 0 \<le> \<lbrace>r\<rbrace> & \<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> & 
           radicals a \<union> radicals b \<union> radicals r \<subseteq> radicals e & 
           r \<notin> radicals a \<union> radicals b"
+       (is "\<exists>a b. ?concl e a b")
   using assms
 proof (induct e)
   case (Const rat) thus ?case 
     by auto
 next
-  case (Negation e) show ?case
-  proof -
-    obtain a b
-      where a2: "0 \<le> \<lbrace>r\<rbrace> & \<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> & 
-              radicals a \<union> radicals b \<union> radicals r \<subseteq> radicals e & r \<notin> radicals a \<union> radicals b"
-      by (metis Negation radicals.simps(2))
-    hence "\<lbrace>Negation e\<rbrace> = \<lbrace>Negation a\<rbrace> + \<lbrace>Negation b\<rbrace> * sqrt \<lbrace>r\<rbrace>"
-      by simp
-    thus ?case using a2 
-      by (metis radicals.simps(2))
-  qed
+  case (Negation e)
+  obtain a b
+    where a2: "?concl e a b"
+    by (metis Negation radicals.simps(2))
+  hence "\<lbrace>Negation e\<rbrace> = \<lbrace>Negation a\<rbrace> + \<lbrace>Negation b\<rbrace> * sqrt \<lbrace>r\<rbrace>"
+    by simp
+  thus ?case using a2 
+    by (metis radicals.simps(2))
 next
-  case (Inverse e) show ?case
-  proof -
-    obtain a b
-      where "0 \<le> \<lbrace>r\<rbrace> & \<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> & 
-             radicals a \<union> radicals b \<union> radicals r \<subseteq> radicals e & 
-             r \<notin> radicals a \<union> radicals b"
-      by (metis Inverse radicals.simps(3))
-    thus ?case 
-      apply (case_tac "\<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> = \<lbrace>a\<rbrace>")
-      apply simp
-      apply (case_tac "\<lbrace>a\<rbrace> = 0")
-      apply (metis add_0_right divide_zero mult_zero_right)
-      apply (rule_tac x = "Multiplication (Const 1) (Inverse (Multiplication (Const 2) a))"in exI)
-      apply (rule_tac x = "Const 0" in exI, simp)
-      apply (rule_tac x = "Multiplication a (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r))))" in exI)
-      apply (rule_tac x = "Negation (Multiplication b (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r)))))" in exI)
-      apply (simp add: algebra_simps not_in_own_radicals eq_diff_eq' radical_sqrt_normal_form_lemma4)
-      done
-    qed
+  case (Inverse e) 
+  obtain a b
+    where "?concl e a b"
+    by (metis Inverse radicals.simps(3))
+  thus ?case 
+    apply (case_tac "\<lbrace>b\<rbrace> * sqrt \<lbrace>r\<rbrace> = \<lbrace>a\<rbrace>")
+    apply simp
+    apply (case_tac "\<lbrace>a\<rbrace> = 0")
+    apply (metis add_0_right divide_zero mult_zero_right)
+    apply (rule_tac x = "Multiplication (Const 1) (Inverse (Multiplication (Const 2) a))"in exI)
+    apply (rule_tac x = "Const 0" in exI, simp)
+    apply (rule_tac x = "Multiplication a (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r))))" in exI)
+    apply (rule_tac x = "Negation (Multiplication b (Inverse (Addition (Multiplication a a) (Negation (Multiplication (Multiplication b b) r)))))" in exI)
+    apply (simp add: algebra_simps not_in_own_radicals eq_diff_eq' radical_sqrt_normal_form_lemma4)
+    done
 next
   case (Addition e1 e2)
   hence d1: "\<forall>s \<in> radicals e1 \<union> radicals e2. r \<notin> radicals s"
@@ -525,10 +519,8 @@ next
   proof (cases "r: radicals e1 & r : radicals e2")
     case True
     obtain a1 b1 a2 b2
-      where ab: "0 \<le> \<lbrace>r\<rbrace> & \<lbrace>e1\<rbrace> = \<lbrace>a1\<rbrace> + \<lbrace>b1\<rbrace> * sqrt \<lbrace>r\<rbrace> & 
-                 radicals a1 \<union> radicals b1 \<union> radicals r \<subseteq> radicals e1 & r \<notin> radicals a1 \<union> radicals b1"
-      and bb: "0 \<le> \<lbrace>r\<rbrace> & \<lbrace>e2\<rbrace> = \<lbrace>a2\<rbrace> + \<lbrace>b2\<rbrace> * sqrt \<lbrace>r\<rbrace> & 
-                 radicals a2 \<union> radicals b2 \<union> radicals r \<subseteq> radicals e2 & r \<notin> radicals a2 \<union> radicals b2"
+      where ab: "?concl e1 a1 b1"
+        and bb: "?concl e2 a2 b2"
       using Addition.hyps
       by (simp add: d1) (metis True empty_iff)
     thus ?thesis 
@@ -543,9 +535,7 @@ next
     proof (cases "r: radicals e1")
       case True
       obtain a1 b1
-      where "0 \<le> \<lbrace>r\<rbrace>" "\<lbrace>e1\<rbrace> = \<lbrace>a1\<rbrace> + \<lbrace>b1\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-            "radicals a1 \<union> radicals b1 \<union> radicals r \<subseteq> radicals e1" 
-            "r \<notin> radicals a1 \<union> radicals b1"
+      where "0 \<le> \<lbrace>r\<rbrace>" "?concl e1 a1 b1"
         using Addition.hyps
         by (auto simp: d1) (metis True empty_iff)
       thus ?thesis 
@@ -556,9 +546,7 @@ next
     next
       case False
       obtain a2 b2
-        where "0 \<le> \<lbrace>r\<rbrace>" "\<lbrace>e2\<rbrace> = \<lbrace>a2\<rbrace> + \<lbrace>b2\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-                 "radicals a2 \<union> radicals b2 \<union> radicals r \<subseteq> radicals e2" 
-                 "r \<notin> radicals a2 \<union> radicals b2"
+        where "0 \<le> \<lbrace>r\<rbrace>" "?concl e2 a2 b2"
         using Addition d1
         by (metis False Un_iff empty_iff radicals.simps(4))
       thus ?thesis
@@ -574,12 +562,7 @@ next
   proof (cases "r: radicals e1 & r : radicals e2")
     case True
     then obtain a1 b1 a2 b2
-      where "0 \<le> \<lbrace>r\<rbrace>" "\<lbrace>e1\<rbrace> = \<lbrace>a1\<rbrace> + \<lbrace>b1\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-            "radicals a1 \<union> radicals b1 \<union> radicals r \<subseteq> radicals e1" 
-            "r \<notin> radicals a1 \<union> radicals b1"
-            "\<lbrace>e2\<rbrace> = \<lbrace>a2\<rbrace> + \<lbrace>b2\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-            "radicals a2 \<union> radicals b2 \<union> radicals r \<subseteq> radicals e2" 
-            "r \<notin> radicals a2 \<union> radicals b2"
+      where "?concl e1 a1 b1" "?concl e2 a2 b2"
       using Multiplication
       by simp (metis True empty_iff) 
     thus ?thesis 
@@ -593,9 +576,7 @@ next
     proof (cases "r: radicals e1")
       case True
       then obtain a1 b1
-      where "0 \<le> \<lbrace>r\<rbrace>" "\<lbrace>e1\<rbrace> = \<lbrace>a1\<rbrace> + \<lbrace>b1\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-            "radicals a1 \<union> radicals b1 \<union> radicals r \<subseteq> radicals e1" 
-            "r \<notin> radicals a1 \<union> radicals b1"
+      where "?concl e1 a1 b1"
         using Multiplication.hyps Multiplication(4)
         by auto (metis True empty_iff)
       thus ?thesis 
@@ -606,9 +587,7 @@ next
     next
       case False
       then obtain a2 b2
-        where "0 \<le> \<lbrace>r\<rbrace>" "\<lbrace>e2\<rbrace> = \<lbrace>a2\<rbrace> + \<lbrace>b2\<rbrace> * sqrt \<lbrace>r\<rbrace>" 
-                 "radicals a2 \<union> radicals b2 \<union> radicals r \<subseteq> radicals e2" 
-                 "r \<notin> radicals a2 \<union> radicals b2"
+        where "?concl e2 a2 b2"
         using Multiplication.hyps Multiplication(4) Multiplication(5)
         by auto blast
       thus ?thesis 
@@ -953,10 +932,10 @@ qed
 
 lemma radical_sqrt_quadratic_equation:
   assumes a: "a \<in> radical_sqrt" 
-  and b: "b \<in> radical_sqrt"
-  and c: "c \<in> radical_sqrt" 
-  and eq0: "a*x^2+b*x+c =0" 
-  and NotNull: "\<not> (a = 0 & b = 0 & c = 0)"
+      and b: "b \<in> radical_sqrt"
+      and c: "c \<in> radical_sqrt" 
+      and eq0: "a*x^2+b*x+c =0" 
+      and NotNull: "\<not> (a = 0 & b = 0 & c = 0)"
   shows "x \<in> radical_sqrt"
 proof (cases "a=0")
   case True
@@ -999,14 +978,14 @@ qed
 
 lemma radical_sqrt_simultaneous_linear_quadratic:
   assumes a: "a \<in> radical_sqrt" 
-  and b: "b \<in> radical_sqrt" 
-  and c: "c \<in> radical_sqrt" 
-  and d: "d \<in> radical_sqrt"
-  and e: "e \<in> radical_sqrt" 
-  and f: "f \<in> radical_sqrt" 
-  and NotNull: "\<not>(d=0 & e=0 & f=0)" 
-  and eq0: "(x-a)^2 + (y-b)^2 = c" 
-  and eq1: "d*x+e*y = f"
+      and b: "b \<in> radical_sqrt" 
+      and c: "c \<in> radical_sqrt" 
+      and d: "d \<in> radical_sqrt"
+      and e: "e \<in> radical_sqrt" 
+      and f: "f \<in> radical_sqrt" 
+      and NotNull: "\<not>(d=0 & e=0 & f=0)" 
+      and eq0: "(x-a)^2 + (y-b)^2 = c" 
+      and eq1: "d*x+e*y = f"
   shows "x \<in> radical_sqrt & y \<in> radical_sqrt"
 proof (cases "d=0 & e=0")
   case True
@@ -1437,7 +1416,7 @@ proof-
     apply (auto simp add: dvd_def)
     apply (rule_tac x = "(fst p)^2 - 3 * (snd p) ^2" in exI)
     apply (rule_tac [2] x = "(snd p)^2 + 3 * (fst p) * (snd p)" in exI)
-    apply (auto simp add: )
+    apply auto
     done
   moreover have "coprime (fst p) ((snd p)^3)"  "coprime ((fst p)^3) (snd p)"
     using hypsp
