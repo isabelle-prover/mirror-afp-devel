@@ -9,7 +9,7 @@ text{* This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}. *}
 
 subsection "Time"
 
-function t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
+fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t_splay a Leaf = 0" |
 "t_splay a (Node l b r) =
   (if a=b
@@ -27,9 +27,6 @@ function t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
             (if a=c then 0
              else if a < c then if rl = Leaf then 0 else t_splay a rl + 1
                   else if rr = Leaf then 0 else t_splay a rr + 1))"
-by pat_completeness auto
-termination
-by (relation "measure (\<lambda>(_,t). size t)") auto
 
 lemma t_splay_simps[simp]:
   "t_splay a (Node l a r) = 0"
@@ -499,14 +496,8 @@ subsection "Overall analysis"
 
 datatype 'a op\<^sub>s\<^sub>t = Insert 'a | Splay 'a
 
-fun insert_st :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"insert_st a t =  (if t = Leaf then Node Leaf a Leaf
-  else case splay a t of
-    Node l e r \<Rightarrow> if a=e then Node l e r
-      else if a<e then Node l a (Node Leaf e r) else Node (Node l e Leaf) a r)"
-
 fun nxt\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"nxt\<^sub>s\<^sub>t (Insert a) t = insert_st a t" |
+"nxt\<^sub>s\<^sub>t (Insert a) t = Splay_Tree.insert a t" |
 "nxt\<^sub>s\<^sub>t (Splay a) t = splay a t"
 
 fun t\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree \<Rightarrow> real" where
