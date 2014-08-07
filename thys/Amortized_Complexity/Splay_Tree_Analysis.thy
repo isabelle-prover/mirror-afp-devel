@@ -553,7 +553,7 @@ next
         assume "e=a"
         have nneg: "log 2 (1 + real (size s)) \<ge> 0" by simp
         thus ?thesis using `s \<noteq> Leaf` opt `e=a`
-          apply(simp add: field_simps S34.\<Phi>_def) using nneg by arith
+          apply(simp add: field_simps) using nneg by arith
       next
         let ?L = "log 2 (2 + real(size l))"
         assume "e<a" hence "e \<noteq> a" by simp
