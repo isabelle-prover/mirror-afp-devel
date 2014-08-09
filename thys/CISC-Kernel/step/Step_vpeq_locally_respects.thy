@@ -16,7 +16,7 @@ lemma ipc_respects_policy:
   proof(cases stage)
    case PREP
     thus ?thesis
-   	unfolding atomic_step_ipc_def
+    unfolding atomic_step_ipc_def
     using vpeq_refl by simp
    next
     case WAIT
@@ -47,7 +47,7 @@ lemma ipc_respects_policy:
         unfolding vpeq_def vpeq_obj_def vpeq_subj_obj_def vpeq_subj_subj_def vpeq_local_def
         by auto
     qed
-   qed 	
+   qed
 
 lemma ev_signal_respects_policy:
   assumes no: "\<not> Policy.ifp (partition tid) u"

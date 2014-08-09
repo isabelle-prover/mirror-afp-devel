@@ -1,7 +1,7 @@
 header {* \subsection{Theorems on lists} *}
 
 theory List_Theorems
-	imports List 
+  imports List 
 begin
 
 (* Returns the last n elements of list x *)

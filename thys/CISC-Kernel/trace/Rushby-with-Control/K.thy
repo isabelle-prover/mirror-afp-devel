@@ -15,20 +15,20 @@ header {* \section{A generic model for separation kernels}\label{sect:generic}
   The structure of the model is based on locales and refinement:
   \begin{itemize}
   \item locale ``Kernel" defines a highly generic model for a kernel, with execution semantics. 
-	It defines a state transition system with some extensions to the one
-	used in \cite{Rushby1992noninterference}.
-	The transition system defined here stores the currently active
-	domain in the state, and has transitions for explicit
+        It defines a state transition system with some extensions to the one
+        used in \cite{Rushby1992noninterference}.
+        The transition system defined here stores the currently active
+        domain in the state, and has transitions for explicit
         context switches and interrupts and provides a notion of control.
-	As each operation of the system will be split into atomic actions 
-	in our model, only certain sequences of actions will correspond to a run on a
-	real system. Therefore, 
+        As each operation of the system will be split into atomic actions 
+        in our model, only certain sequences of actions will correspond to a run on a
+        real system. Therefore, 
         the function $run$, which applies an execution on a state and computes the resulting
-	new state, is partial and defined for realistic traces only.
-	Later, but not in this locale, we will define a predicate to distinguish 
-	realistic traces from other traces.
-	Security properties are also not part of this locale, but will
-	be introduced in the locales to be described next.
+        new state, is partial and defined for realistic traces only.
+        Later, but not in this locale, we will define a predicate to distinguish 
+        realistic traces from other traces.
+        Security properties are also not part of this locale, but will
+        be introduced in the locales to be described next.
   \item locale ``Separation\_Kernel" extends "Kernel" with constraints concerning non-interference.
         The theorem is only sensical for realistic traces; for unrealistic trace it will hold vacuously.
   \item locale ``Interruptible\_Separation\_Kernel" refines ``Separation\_Kernel" with interruptible action sequences.
@@ -43,7 +43,7 @@ header {* \section{A generic model for separation kernels}\label{sect:generic}
   \subsection{K (Kernel)} *}
 
 theory K
-	imports Main List Set Transitive_Closure List_Theorems Option_Binders
+  imports Main List Set Transitive_Closure List_Theorems Option_Binders
 begin
 
 
@@ -51,11 +51,11 @@ text {*
 The model makes use of the following types:
 \begin{description}
 \item['state\_t] A state  contains information about the resources of the system, 
-		 as well as which domain is currently active.
+                 as well as which domain is currently active.
 We decided that a state does \emph{not} need to include a program stack, as in this model the actions that are executed are modelled separately. 
 \item['dom\_t] A domain is an entity executing actions and making calls to the kernel. 
-	       This type represents the names of all domains.
-	       Later on, we define security policies in terms of domains. 
+               This type represents the names of all domains.
+               Later on, we define security policies in terms of domains. 
 \item['action\_t] Actions of type 'action\_t represent atomic instructions that are executed by the kernel.
 As kernel actions are assumed to be atomic, we assume that after each kernel action an interrupt point can occur.
 \item['action\_t execution] An execution of some domain is the code or the program that is executed by the domain.

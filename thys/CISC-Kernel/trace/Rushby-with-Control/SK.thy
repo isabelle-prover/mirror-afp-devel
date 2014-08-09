@@ -1,7 +1,7 @@
 header {* \subsection{SK (Separation Kernel)\label{sec:sep_kernel}} *}
 
 theory SK
-	imports K
+  imports K
 begin
 
 

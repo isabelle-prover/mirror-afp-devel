@@ -73,8 +73,8 @@ available from the API, but shows how dynamic changes of access rights could be 
 
 definition add_access_right :: "partition_id_t => obj_id_t => mode_t => state_t => state_t" where
   "add_access_right part_id obj_id m s = 
-  	s \<lparr> sp_impl_subj_obj := \<lambda> q q' q''. (part_id = q \<and> obj_id = q' \<and> m = q'') 
-  	 \<or> sp_impl_subj_obj s q q' q''\<rparr>"
+    s \<lparr> sp_impl_subj_obj := \<lambda> q q' q''. (part_id = q \<and> obj_id = q' \<and> m = q'') 
+     \<or> sp_impl_subj_obj s q q' q''\<rparr>"
 
 text {* Add a communication right from one partition to another. In this model, not
 available from the API. *}

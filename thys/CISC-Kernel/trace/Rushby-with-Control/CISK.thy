@@ -1,7 +1,7 @@
 header {*\subsection{CISK (Controlled Interruptible Separation Kernel)}*}
 
 theory CISK
-	imports ISK
+  imports ISK
 begin
 
 text {*

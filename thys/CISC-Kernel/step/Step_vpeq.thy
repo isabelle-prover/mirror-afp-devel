@@ -27,7 +27,7 @@ definition vpeq_subj_obj :: "partition_id_t \<Rightarrow> state_t \<Rightarrow> 
    \<forall> ob m p1 .
      (Policy.sp_spec_subj_obj u ob m \<longrightarrow> sp_impl_subj_obj s u ob m = sp_impl_subj_obj t u ob m) 
    \<and> (Policy.sp_spec_subj_obj p1 ob PROVIDE \<and> (Policy.sp_spec_subj_obj u ob READ \<or> Policy.sp_spec_subj_obj u ob WRITE) \<longrightarrow>
-   	 sp_impl_subj_obj s p1 ob PROVIDE = sp_impl_subj_obj t p1 ob PROVIDE)"
+         sp_impl_subj_obj s p1 ob PROVIDE = sp_impl_subj_obj t p1 ob PROVIDE)"
    
 
 definition vpeq_local :: "partition_id_t \<Rightarrow> state_t \<Rightarrow> state_t \<Rightarrow> bool" where

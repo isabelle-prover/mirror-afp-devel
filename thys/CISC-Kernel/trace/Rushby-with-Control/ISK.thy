@@ -3,7 +3,7 @@ header {*
 *}
 
 theory ISK
-	imports SK
+  imports SK
 begin
 
 
