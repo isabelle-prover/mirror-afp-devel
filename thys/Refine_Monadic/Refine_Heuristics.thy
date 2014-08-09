@@ -77,7 +77,6 @@ structure Refine_dref_type = struct
     val failed_t_str = Pretty.string_of 
       (Syntax.pretty_term (Config.put show_types true ctxt) failed_t);
     val msg = "Failed to resolve refinement goal \n  " ^ failed_t_str;
-    (*val _ = Output.urgent_message (msg);*)
     val _ = if Config.get ctxt tracing then Output.tracing msg else ();
     in () end;
     
