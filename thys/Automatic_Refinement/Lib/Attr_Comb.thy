@@ -74,11 +74,11 @@ ML {*
       ^ Display.string_of_thm_without_context thm))
 
     fun TRACE_ATTR msg a cxt = let
-      val _ = tracing (msg ^ "\n" ^ PolyML.makestring cxt)
+      val _ = tracing (msg ^ "\n" ^ @{make_string} cxt)
       val r = a cxt handle ATTR_EXC m => (
         tracing ("EXC "^m^"("^msg^")"); 
         raise ATTR_EXC m)
-      val _ = tracing ("YIELDS (" ^ msg ^ ") " ^ PolyML.makestring r)
+      val _ = tracing ("YIELDS (" ^ msg ^ ") " ^ @{make_string} r)
     in r end
   
     fun IGNORE_THM a = a #> apsnd (K NONE)
@@ -95,12 +95,12 @@ ML {*
     fun RS_attr thm = 
       Thm.rule_attribute (fn _ => fn thm' => (
         thm' RS thm handle (exc as THM _) => 
-          raise ATTR_EXC ("RS_attr: "^PolyML.makestring exc)))
+          raise ATTR_EXC ("RS_attr: " ^ @{make_string} exc)))
 
     fun RSm_attr thm = 
       Thm.rule_attribute (fn _ => fn thm' => (
         thm' RSm thm handle (exc as THM _) => 
-          raise ATTR_EXC ("RSm_attr: "^PolyML.makestring exc)))
+          raise ATTR_EXC ("RSm_attr: " ^ @{make_string} exc)))
 
   end
 *}

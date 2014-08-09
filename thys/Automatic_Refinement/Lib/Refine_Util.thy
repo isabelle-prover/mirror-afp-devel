@@ -509,14 +509,14 @@ ML {*
 
     fun abs_def ctxt = Local_Defs.meta_rewrite_rule ctxt #> Drule.abs_def
 
-    fun trace_conv ct = (tracing (PolyML.makestring ct); Conv.all_conv ct);
+    fun trace_conv ct = (tracing (@{make_string} ct); Conv.all_conv ct);
 
     fun monitor_conv msg conv ct = let
-      val _ = tracing (msg ^ " (gets): " ^ PolyML.makestring ct);
+      val _ = tracing (msg ^ " (gets): " ^ @{make_string} ct);
       val res = conv ct 
-        handle exc => (tracing (msg ^ " (raises): " ^ PolyML.makestring exc);
+        handle exc => (tracing (msg ^ " (raises): " ^ @{make_string} exc);
           reraise exc)
-      val _ = tracing (msg ^ " (yields): " ^ PolyML.makestring res);
+      val _ = tracing (msg ^ " (yields): " ^ @{make_string} res);
     in res end
 
     fun monitor_conv' msg conv ctxt ct = monitor_conv msg (conv ctxt) ct

@@ -246,10 +246,10 @@ fun extract_concrete_fun _ [] concl =
         | SOME [t] => t
         | SOME (t::_) => (
           warning ("concrete_definition: Pattern has multiple holes, taking "
-            ^ "first one: " ^ PolyML.makestring pat
+            ^ "first one: " ^ @{make_string} pat
           ); t)
         | _ => (warning ("concrete_definition: Ignoring invalid pattern " 
-             ^ PolyML.makestring pat);
+             ^ @{make_string} pat);
              extract_concrete_fun thy pats concl)
     )
 

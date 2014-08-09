@@ -75,9 +75,9 @@ local
       |> map #1
   
     (*
-    val _ = tracing ("tvars: " ^ PolyML.makestring tvars)
-    val _ = tracing ("vtvars: " ^ PolyML.makestring vtvars)
-    val _ = tracing ("unused_tvars: " ^ PolyML.makestring unused_tvars)
+    val _ = tracing ("tvars: " ^ @{make_string} tvars)
+    val _ = tracing ("vtvars: " ^ @{make_string} vtvars)
+    val _ = tracing ("unused_tvars: " ^ @{make_string} unused_tvars)
     *)
   
     fun 

@@ -418,12 +418,12 @@ ML {*
 
           ) ct
 
-          (*val _ = tracing ("ANNOT: " ^ PolyML.makestring thm)*)
+          (*val _ = tracing ("ANNOT: " ^ @{make_string} thm)*)
           val thm = (fconv_rule (rhs_conv cnv ctxt)) thm
           val thm = case try (fconv_rule (rhs_conv cnv ctxt)) thm of
             NONE => (warn (); thm)
           | SOME thm => thm
-          (*val _ = tracing ("RES: " ^ PolyML.makestring thm)*)
+          (*val _ = tracing ("RES: " ^ @{make_string} thm)*)
 
         in
           (SOME (ps,(f,R)),thm)

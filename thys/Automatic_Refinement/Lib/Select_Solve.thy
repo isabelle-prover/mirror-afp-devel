@@ -93,7 +93,7 @@ structure Select_Solve :SELECT_SOLVE = struct
     (* Extract first subgoal *)
     val (P,Q) = Thm.dest_implies (cprop_of st)
 
-    (*val _ = "Extracted: " ^ PolyML.makestring P |> tracing*)
+    (*val _ = "Extracted: " ^ @{make_string} P |> tracing*)
 
     (* Prepare tag *)
     local 
@@ -126,7 +126,7 @@ structure Select_Solve :SELECT_SOLVE = struct
       |> Conjunction.curry_balanced 2
       |> Thm.elim_implies tag_thm
 
-    (*val _ = "New proof state: " ^ PolyML.makestring st' |> tracing*)
+    (*val _ = "New proof state: " ^ @{make_string} st' |> tracing*)
 
     (*val _ = print_tac "New state" st'*)
 
@@ -138,8 +138,8 @@ structure Select_Solve :SELECT_SOLVE = struct
         SOME (A,_) => (
           A aconvc cprop_of thA
             orelse (
-              (*tracing (PolyML.makestring (term_of A));
-              tracing (PolyML.makestring (prop_of thA));*)
+              (*tracing (@{make_string} (term_of A));
+              tracing (@{make_string} (prop_of thA));*)
               raise CTERM ("implies_elim: No aconv",[A,cprop_of thA])
             );
           Thm.elim_implies thA thAB
@@ -152,7 +152,7 @@ structure Select_Solve :SELECT_SOLVE = struct
       val thm = Conjunction.uncurry_balanced n st'
         |> Goal.conclude
         |> Conv.fconv_rule (Thm.beta_conversion true)
-      (*val _ = "Proved: " ^ PolyML.makestring thm |> tracing*)
+      (*val _ = "Proved: " ^ @{make_string} thm |> tracing*)
     in
       if n=0 then 
         let

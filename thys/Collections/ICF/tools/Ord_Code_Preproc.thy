@@ -38,9 +38,9 @@ ML {*
       fun trace_ft ft thy thms = if !trace_enabled then let
         val res = ft thy thms;
         val (m1,m2) = case res of NONE => ("NF: ","")
-        | SOME thms => ("Preproc: REW: "," --> " ^ PolyML.makestring thms);
+        | SOME thms => ("Preproc: REW: "," --> " ^ @{make_string} thms);
 
-        val _ = tracing (m1 ^ PolyML.makestring thms ^ m2);
+        val _ = tracing (m1 ^ @{make_string} thms ^ m2);
       in res end
       else ft thy thms;
 
@@ -52,8 +52,8 @@ ML {*
         val process' = fold (fn (_,name,tr) => fn thm => let
             val thm' = tr thy thm;
             val _ = if !trace_enabled andalso not (Thm.eq_thm (thm,thm')) then
-              tracing ("Preproc "^name^": "^PolyML.makestring thm ^ " --> " ^
-                PolyML.makestring thm')
+              tracing ("Preproc "^name^": " ^ @{make_string} thm ^ " --> " ^
+                @{make_string} thm')
             else ();
           in thm' end
         ) trs;

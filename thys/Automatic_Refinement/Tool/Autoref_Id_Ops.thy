@@ -365,7 +365,7 @@ ML {*
               val concl = Logic.concl_of_goal (prop_of st) i
               val _ = case concl of
                   @{mpat "Trueprop (ID_OP ?lhs _ _)"} =>
-                    tracing ("ID_TAG: " ^ PolyML.makestring lhs) 
+                    tracing ("ID_TAG: " ^ @{make_string} lhs) 
                 | _ => tracing "ID_TAG: LHS???"
 
               val _ = Pretty.block [
