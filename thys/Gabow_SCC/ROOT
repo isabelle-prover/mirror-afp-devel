@@ -1,6 +1,6 @@
 chapter AFP
 
-session Gabow_SCC (AFP) in "." = CAVA_Automata +
+session Gabow_SCC (AFP) = CAVA_Automata +
   options [timeout = 600]
   theories
     Gabow_Skeleton

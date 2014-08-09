@@ -1,13 +1,13 @@
 chapter AFP
 
 session "CAVA_Base" (AFP) in "CAVA_Base" = "Collections" +
-    options [document = false, timeout=600]
-    theories
-      "../../Datatype_Order_Generator/Derive"
-      "CAVA_Base"
-      "All_Of_CAVA_Base"
+  options [document = false, timeout = 600]
+  theories
+    "../../Datatype_Order_Generator/Derive"
+    "CAVA_Base"
+    "All_Of_CAVA_Base"
 
-session "CAVA_Automata" (AFP) in "." = "CAVA_Base" +
+session "CAVA_Automata" (AFP) = "CAVA_Base" +
   options [timeout = 1200]
   theories
     Digraph
@@ -15,7 +15,7 @@ session "CAVA_Automata" (AFP) in "." = "CAVA_Base" +
     Lasso
     Digraph_Impl
     Automata_Impl
-  theories [document =false]
+  theories [document = false]
     All_Of_CAVA_Automata
   document_files
     "root.tex"
