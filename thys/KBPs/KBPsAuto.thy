@@ -441,7 +441,7 @@ lemma mkAutoEC_ec:
    apply (auto simp add: mkAutoEC_def jviewInit)[1]
   apply simp
   apply (subst mkAutoEC_def)
-  apply (auto iff: Let_def jviewIncr dest: jkbpC_prefix_closed)
+  apply (auto iff: Let_def jviewIncr)
   done
 (*>*)
 

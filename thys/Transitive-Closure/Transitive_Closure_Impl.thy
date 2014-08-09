@@ -79,7 +79,7 @@ proof (induct n arbitrary: b)
 next
   case (Suc n)
   show ?case 
-  proof (simp add: relpow.simps relcomp_unfold Suc) 
+  proof (simp add: relcomp_unfold Suc) 
     show "(\<exists> y. (\<exists> f. f 0 = a \<and> f n = y \<and> (\<forall> i < n. (f i, f (Suc i)) \<in> R)) \<and> (y,b) \<in> R) = (\<exists> f. f 0 = a \<and> f (Suc n) = b \<and> (\<forall>i < Suc n. (f i, f (Suc i)) \<in> R))" (is "?l = ?r")
     proof
       assume ?l

@@ -10,12 +10,6 @@ imports Extra "~~/src/HOL/Library/While_Combinator"
 begin
 
 
-lemma map_id[simp]: "map id = id"
-  apply (rule ext)
-  apply (induct_tac x)
-  apply simp_all
-  done
-
 text{* Partition a list with respect to an equivalence relation. *}
 
 text{* First up: split a list according to a relation. *}
