@@ -54,7 +54,7 @@ struct
                 (Const (@{const_name Finite_Set.card}, _) $ s') $ _)
               => Pattern.matches thy (s',s)
           | _ => 
-              let val _ = Output.urgent_message ("Warning: invalid theorem in " ^
+              let val _ = warning ("Invalid theorem in " ^
                           "sturm_card_eq_substs: \n" ^ Pretty.string_of (
                             Syntax.pretty_term ctxt (concl_of thm)));
                in false
@@ -113,7 +113,7 @@ struct
             Const (@{const_name Trueprop}, _) $ (Const (@{const_name HOL.eq}, _) $ prop' $ _)
               => Pattern.matches thy (prop',prop)
           | _ => 
-              let val _ = Output.urgent_message ("Warning: invalid theorem in " ^
+              let val _ = warning ("Invalid theorem in " ^
                           "sturm_prop_substs: \n" ^ Pretty.string_of (
                             Syntax.pretty_term ctxt (concl_of thm)));
                in false
