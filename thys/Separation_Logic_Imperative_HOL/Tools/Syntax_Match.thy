@@ -40,7 +40,7 @@ structure Syntax_Match = struct
     val (_,[pat,obj]) = strip_comb redex;
 
     fun fo_matches po = (Pattern.first_order_match 
-      thy po (Vartab.empty, Vartab.empty); true) handle _ => false;
+      thy po (Vartab.empty, Vartab.empty); true) handle Pattern.MATCH => false;
   in
     if fo_matches (pat,obj) then NONE else SOME fo_nomatch_thm
   end
