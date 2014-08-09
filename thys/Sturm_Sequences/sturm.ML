@@ -65,7 +65,7 @@ struct
     end;
 
   fun sturm_card_eq_instantiate_tac ctxt _ thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
+    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm  (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -79,6 +79,7 @@ struct
                   in case n of
                      NONE => Seq.empty
                    | SOME n => 
+                       (* FIXME fragile term as string composition *)
                        let val n' = (if ty = @{typ nat} then "" else "%_. ") ^ Int.toString (HOLogic.dest_nat n)
                        in  Seq.single (Rule_Insts.read_instantiate ctxt [(idxname, n')] [] thm)
                        end
@@ -88,7 +89,7 @@ struct
     
 
   fun sturm_card_eq_tac ctxt i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
+    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -124,7 +125,7 @@ struct
     end;
 
   fun sturm_prop_tac ctxt i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
+    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                  | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -139,7 +140,7 @@ struct
     end;
 
   fun sturm_main_tac ctxt keep_goal i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm
+    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                | _  => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -157,18 +158,17 @@ struct
         ) ORELSE (if keep_goal then all_tac else no_tac)) thm
     end;
 
-    fun convert_meta_spec_tac ctxt i thm =
-      let val prem = term_of (cprem_of thm i)
-          val frees = Term.add_frees prem []
+    fun convert_meta_spec_tac ctxt = SUBGOAL (fn (goal, i) =>
+      let val frees = Term.add_frees goal []  (* FIXME !? *)
       in case frees of
-           [_] => let val prem' = Logic.close_form prem
-                    val goal = Logic.mk_implies (prem', prem)
-                    val rule = Goal.prove ctxt [] [] goal (fn _ => 
+           [_] => let
+                    val goal' = Logic.close_form goal
+                    val rule = Goal.prove ctxt [] [] (Logic.mk_implies (goal', goal)) (fn _ =>
                                    dtac @{thm sturm_meta_spec} i THEN atac i)
-                in  rtac rule i thm
+                in  rtac rule i
                 end
-         | _ => Seq.empty
-      end
+         | _ => no_tac
+      end)
 
     fun sturm_tac ctxt keep_goal = SELECT_GOAL
        (prune_params_tac ctxt
