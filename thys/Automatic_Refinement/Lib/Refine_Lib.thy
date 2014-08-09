@@ -15,5 +15,4 @@ imports
 begin
   ML_file "Cond_Rewr_Conv.ML"
   ML_file "Revert_Abbrev.ML"
-  ML_file "item_net.ML"
 end
