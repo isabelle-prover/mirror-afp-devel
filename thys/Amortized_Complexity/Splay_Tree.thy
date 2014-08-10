@@ -88,7 +88,7 @@ lemma splay_simps[simp]:
   "splay a (Node l a r) = Node l a r"
   "a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)"
   "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r"
-  "a<b \<Longrightarrow> a<c \<Longrightarrow> splay a (Node (Node Leaf c lr) b r) = Node Leaf c (Node lr b r)"
+  "a<b \<Longrightarrow> a\<le>c \<Longrightarrow> splay a (Node (Node Leaf c lr) b r) = Node Leaf c (Node lr b r)"
   "a<b \<Longrightarrow> a<c \<Longrightarrow> splay a ll = Node lll u llr
    \<Longrightarrow> splay a (Node (Node ll c lr) b r) = Node lll u (Node llr c (Node lr b r))"
   "a<b \<Longrightarrow> c<a \<Longrightarrow> splay a (Node (Node ll c Leaf) b r) = Node ll c (Node Leaf b r)"
@@ -99,7 +99,7 @@ lemma splay_simps[simp]:
   "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a rl = Node rll u rlr
    \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node l b rll) u (Node rlr c rr)"
   "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a (Node l b (Node Leaf c rr)) = Node (Node l b Leaf) c rr"
-  "b<a \<Longrightarrow> c<a \<Longrightarrow> splay a (Node l b (Node rl c Leaf)) = Node (Node l b rl) c Leaf"
+  "b<a \<Longrightarrow> c\<le>a \<Longrightarrow> splay a (Node l b (Node rl c Leaf)) = Node (Node l b rl) c Leaf"
   "b<a \<Longrightarrow> c<a \<Longrightarrow> splay a rr = Node rrl u rrr
    \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node (Node l b rl) c rrl) u rrr"
 by auto
@@ -458,16 +458,18 @@ next
 qed
 
 
-subsection "Function @{text isin}"
+subsection "Is-in Test"
 
-definition "isin a t =
-  (case t of Leaf \<Rightarrow> False
-   | _ \<Rightarrow> (case splay a t of Node _ x _ \<Rightarrow> x = a))"
+text{* To test if an element @{text a} is in @{text t}, first perform
+@{term"splay a t"}, then check if the root is @{text a}. One could
+put this into one function that returns both a new tree and the test result. *}
 
-lemma isin_iff_set: "bst t \<Longrightarrow> isin a t \<longleftrightarrow> a \<in> set_tree t"
-by(auto simp add: isin_def splay_to_root split: tree.split)
+(* FIXME mv *)
+definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
+"is_root a t = (case t of Leaf \<Rightarrow> False | Node _ x _ \<Rightarrow> x = a)"
 
-hide_const (open) isin
+lemma is_root_splay: "bst t \<Longrightarrow> is_root a (splay a t) \<longleftrightarrow> a \<in> set_tree t"
+by(auto simp add: is_root_def splay_to_root split: tree.split)
 
 
 subsection "Function @{text insert}"
@@ -517,6 +519,17 @@ lemma splay_max_code: "splay_max t = (case t of
               Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr)))"
 by(auto simp: neq_Leaf_iff split: tree.split)
 
+lemma size_splay_max: "size(splay_max t) = size t"
+apply(induction t rule: splay_max.induct)
+   apply(simp)
+  apply(simp)
+ apply fastforce
+apply(clarsimp split: tree.split)
+done
+
+lemma size_if_splay_max: "splay_max t = Node l u r \<Longrightarrow> size t = size l + size r + 1"
+by (metis One_nat_def size_splay_max tree.size(4))
+
 lemma set_splay_max: "set_tree(splay_max t) = set_tree t"
 apply(induction t rule: splay_max.induct)
    apply(simp)
@@ -540,6 +553,69 @@ qed auto
 lemma splay_max_Leaf: "splay_max t = Node l a r \<Longrightarrow> r = Leaf"
 by(induction t arbitrary: l rule: splay_max.induct)
   (auto split: tree.splits)
+
+text{* For sanity purposes only: *}
+
+lemma splay_max_eq_splay:
+  "bst t \<Longrightarrow> \<forall>x \<in> set_tree t. x \<le> a \<Longrightarrow> splay_max t = splay a t"
+proof(induction a t rule: splay.induct)
+  case 1 thus ?case by simp
+next
+  case (2 a l b r)
+  have "b = a \<or> b < a" using "2.prems"(2) by auto
+  thus ?case
+  proof
+    assume [simp]: "b = a"
+    have "r = Leaf"
+      apply(rule ccontr)
+      using  "2.prems" by (auto simp: ball_Un neq_Leaf_iff)
+    thus ?thesis by simp
+  next
+    assume "b < a"
+    hence "a \<noteq> b" by simp
+    show ?thesis
+    proof(cases r)
+      case Leaf thus ?thesis using `b<a` by(auto)
+    next
+      case (Node rl c rr)[simp]
+      have "c = a \<or> c< a" using "2.prems" by auto
+      thus ?thesis
+      proof
+        assume [simp]: "c = a"
+        have "rr = Leaf"
+          apply(rule ccontr)
+          using  "2.prems" by (auto simp: ball_Un neq_Leaf_iff)
+        thus ?thesis using `b<a` by simp
+      next
+        assume "c < a"
+        hence "a \<noteq> c" by simp
+        show ?thesis
+        proof cases
+          assume "rr = Leaf" thus ?thesis using `b<a` `c<a` by(auto)
+        next
+          assume "rr \<noteq> Leaf"
+          then obtain rrl u rrr where [simp]: "rr = Node rrl u rrr"
+            by (auto simp: neq_Leaf_iff)
+          hence "splay a rr \<noteq> Leaf" by simp
+          then obtain rrl' u' rrr' where [simp]: "splay a rr = Node rrl' u' rrr'"
+            by (metis tree.exhaust)
+          from "2.IH"(4)[OF `a\<noteq>b` _ Node `a\<noteq>c` _ `rr \<noteq> Leaf`] "2.prems"
+          show ?thesis using `b<a` `c<a` by (auto split: tree.split)
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma splay_max_eq_splay_ex: assumes "bst t" shows "\<exists>a. splay_max t = splay a t"
+proof(cases t)
+  case Leaf thus ?thesis by simp
+next
+  case Node
+  hence "splay_max t = splay (Max(set_tree t)) t"
+    using assms by (auto simp: splay_max_eq_splay)
+  thus ?thesis by auto
+qed
 
 
 subsection "Function @{text delete}"
