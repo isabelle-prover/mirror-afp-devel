@@ -16,4 +16,6 @@ session SIFUM_Type_Systems (AFP) = HOL +
     Language 
     TypeSystem 
     LocallySoundModeUse
-  document_files "root.bib" "root.tex"
+  document_files
+    "root.bib"
+    "root.tex"

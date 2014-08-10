@@ -8,7 +8,9 @@ session Promela (AFP) = LTL_to_GBA +
   theories
     Promela
     PromelaLTL
-  theories [document=false]
+  theories [document = false]
     All_Of_Promela
-  document_files 
-    "root.tex" "intro.tex" "root.bib"
+  document_files
+    "root.tex"
+    "intro.tex"
+    "root.bib"

@@ -4,4 +4,6 @@ session "Bounded_Deducibility_Security" (AFP) = HOL +
   options [timeout = 600]
   theories
     Bounded_Deducibility_Security
-  document_files "root.tex" "intro.tex"
+  document_files
+    "root.tex"
+    "intro.tex"

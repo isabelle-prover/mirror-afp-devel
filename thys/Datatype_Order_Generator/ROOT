@@ -2,7 +2,7 @@ chapter AFP
 
 session Datatype_Order_Generator (AFP) = "HOL-Library" +
   options [timeout = 600]
-  theories [document=false]
+  theories [document = false]
     "../Collections/Lib/HashCode"
   theories
     Derive
