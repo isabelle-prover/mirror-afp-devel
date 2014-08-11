@@ -14,10 +14,10 @@ structure Graphviz_Platform_Config: GRAPHVIZ_PLATFORM_CONFIG =
 struct
   (*Change your system config here*)
   val (executable_dot: string, executable_pdf_viewer: string) = (
-            case getenv "ISABELLE_PLATFORM_FAMILY" of 
-                   "linux" => ("dot", getenv "PDF_VIEWER") (*tested, works*)
-                 | "macos" => ("dot", getenv "PDF_VIEWER") (*tested, works*)
-                 | "windows" => (warning "GRAPHVIZ_PLATFORM_CONFIG: never tested on windows"; ("dot", getenv "PDF_VIEWER"))
+            case getenv "ISABELLE_PLATFORM_FAMILY" of
+                  "linux" => ("dot", getenv "PDF_VIEWER") (*tested on ubuntu 14.04, graphviz 2.36*)
+                 | "macos" => ("dot", getenv "PDF_VIEWER")
+                 | "windows" => ("dot", getenv "PDF_VIEWER") (*tested with graphviz-2.38.msi, works, needed to add the bin directory to $PATH manually*)
                  | _ => raise Fail "$ISABELLE_PLATFORM_FAMILY: cannot determine operating system"
             );
   

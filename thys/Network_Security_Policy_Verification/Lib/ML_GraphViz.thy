@@ -37,7 +37,7 @@ val default_tune_node_format = (fn _ => I)
 fun write_to_tmpfile (t: string): Path.T = 
   let 
     val p = Isabelle_System.create_tmp_path "graphviz" "graph_tmp.dot"
-    val p_str = File.platform_path p
+    val p_str = File.shell_path p
   in
     writeln ("using tmpfile " ^ p_str); File.write p (t^"\n"); p
   end
@@ -61,10 +61,15 @@ local
       error "ML_GraphViz: viewer command not found"
     else
       let
-        val file = (File.platform_path f)
+        val file = (File.shell_path (Path.base f)) (*absolute path: (File.shell_path f)*)
         val filePDF = file^".pdf";
         val cmd = (viz^" -o "^filePDF^" -Tpdf "^file^" && "^viewer^" "^filePDF) (*^" && rm "^filePDF*)
       in
+        (*First cd to the temp directory, then only call the commands with relative paths. 
+          This is a Windows workaround if the Windows (not cygwin) version of graphviz is installed:
+            It does not understand paths such as /tmp/isabelle/.., it wants C:\tmp\..
+          Hence, we cd to the tmp directory and only use relative filenames henceforth.*)
+        (writeln ("cding to "^(File.shell_path (Path.dir f))); File.cd (Path.dir f));
         (writeln ("executing: "^cmd); Isabelle_System.bash cmd; ());
         Isabelle_System.bash ("rm "^file) (*cleanup dot file, PDF file will still exist*)
         (*some pdf viewers do not like it if we delete the pdf file they are currently displaying*)
