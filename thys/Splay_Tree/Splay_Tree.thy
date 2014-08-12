@@ -1,5 +1,5 @@
 theory Splay_Tree
-imports Complex_Main "~~/src/HOL/Library/Tree"
+imports "~~/src/HOL/Library/Tree"
 begin
 
 section "Splay Tree"
@@ -7,6 +7,7 @@ section "Splay Tree"
 text{* Splay trees were invented by Sleator and
 Tarjan~\cite{SleatorT-JACM85}. *}
 
+text{* This compensates for an incompleteness of the partial order prover: *}
 setup {*
 let
 

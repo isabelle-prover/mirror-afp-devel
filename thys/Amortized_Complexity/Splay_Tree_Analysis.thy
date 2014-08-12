@@ -1,5 +1,8 @@
 theory Splay_Tree_Analysis
-imports Splay_Tree Amor "~~/src/HOL/Library/Sum_of_Squares"
+imports
+  "../Splay_Tree/Splay_Tree"
+  Amor
+  "~~/src/HOL/Library/Sum_of_Squares"
 begin
 
 section "Splay Tree Analysis"

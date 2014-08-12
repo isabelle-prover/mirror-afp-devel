@@ -1,0 +1,12 @@
+chapter AFP
+
+(* Session name, add to AFP group, list base session: *)
+session Splay_Tree (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Tree"
+  theories
+    Splay_Tree
+  document_files
+    "root.bib"
+    "root.tex"
