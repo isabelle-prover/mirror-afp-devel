@@ -1,16 +1,11 @@
-theory Skew_Heap
-imports Complex_Main Amor "~~/src/HOL/Library/Tree"
+theory Skew_Heap_Analysis
+imports "../Skew_Heap/Skew_Heap" Amor
 begin
 
-section "Skew Heap"
+section{* Amortized Analysis of Skew Heaps *}
 
-text{* Skew heaps were invented by Sleator and Tarjan~\cite{SleatorT-SIAM86}
-but the proof is a simplified version of the one by Kaldewaij and
+text{* The following proof is a simplified version of the one by Kaldewaij and
 Schoenmakers~\cite{KaldewaijS-IPL91}. *}
-
-subsection "Datatype"
-
-type_synonym 'a heap = "'a tree"
 
 fun rheavy :: "'a heap \<Rightarrow> bool" where
 "rheavy(Node l _ r) = (size l < size r)"
@@ -51,41 +46,6 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection "Meld"
-
-function meld :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"meld Leaf h = h" |
-"meld h Leaf = h" |
-"meld (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2 then Node (meld (Node l2 a2 r2) r1) a1 l1
-    else Node (meld (Node l1 a1 r1) r2) a2 l2)" 
-by pat_completeness auto
-termination
-by (relation "measure (\<lambda>(x, y). size x + size y)") auto
-
-lemma meld_code: "meld h1 h2 =
-  (case h1 of
-   Leaf \<Rightarrow> h2 |
-   Node l1 a1 r1 \<Rightarrow> (case h2 of
-     Leaf \<Rightarrow> h1 |
-     Node l2 a2 r2 \<Rightarrow> 
-       (if a1 \<le> a2
-        then Node (meld h2 r1) a1 l1
-        else Node (meld h1 r2) a2 l2)))"
-by(auto split: tree.split)
-
-function meld2 :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"meld2 Leaf Leaf = Leaf" |
-"meld2 Leaf (Node l2 a2 r2) = Node (meld2 r2 Leaf) a2 l2" |
-"meld2 (Node l1 a1 r1) Leaf = Node (meld2 r1 Leaf) a1 l1" |
-"meld2 (Node l1 a1 r1) (Node l2 a2 r2) =
-   (if a1 \<le> a2
-    then Node (meld2 (Node l2 a2 r2) r1) a1 l1
-    else Node (meld2 (Node l1 a1 r1) r2) a2 l2)"
-by pat_completeness auto
-termination
-by (relation "measure (\<lambda>(x, y). size x + size y)") auto
-
 function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
 "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d Leaf h = 1" |
 "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h Leaf = 1" |
@@ -104,12 +64,6 @@ function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 :: "'a::linorder heap \<Rightarrow> 
 by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
-
-lemma size_meld[simp]: "size(meld t1 t2) = size t1 + size t2"
-by(induction t1 t2 rule: meld.induct) auto
-
-lemma size_meld2[simp]: "size(meld2 t1 t2) = size t1 + size t2"
-by(induction t1 t2 rule: meld2.induct) auto
 
 
 subsection "Amortized Analysis"
@@ -161,8 +115,8 @@ qed
 datatype 'a op\<^sub>p\<^sub>q = Insert 'a | Delmin
 
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"nxt\<^sub>p\<^sub>q (Insert a) h = meld (Node Leaf a Leaf) h" |
-"nxt\<^sub>p\<^sub>q Delmin h = (case h of Leaf \<Rightarrow> Leaf | Node t1 a t2 \<Rightarrow> meld t1 t2)"
+"nxt\<^sub>p\<^sub>q (Insert a) h = Skew_Heap.insert a h" |
+"nxt\<^sub>p\<^sub>q Delmin h = del_min h"
 
 fun t\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> nat" where
 "t\<^sub>p\<^sub>q (Insert a) h = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h + 1" |
@@ -189,7 +143,7 @@ next
   proof (cases f)
    case (Insert a)
    thus ?thesis using a_meld_ub[of "Node Leaf a Leaf" "s"]
-     by (simp add: numeral_eq_Suc)
+     by (simp add: numeral_eq_Suc insert_def)
   next
     case Delmin
     thus ?thesis

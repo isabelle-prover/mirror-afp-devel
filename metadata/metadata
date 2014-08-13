@@ -743,6 +743,20 @@ abstract =
  The amortized complexity of splay trees is analyzed in the AFP entry
  <a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
 
+[Skew_Heap]
+title = Skew Heap
+author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+date = 2014-08-13
+topic = Computer Science/Data Structures
+abstract =
+ Skew heaps are an amazingly simple and lightweight implementation of
+ priority queues. They were invented by Sleator and Tarjan [SIAM 1986]
+ and have logarithmic amortized complexity. This entry provides executable
+ and verified functional skew heaps.
+ <p>
+ The amortized complexity of skew heaps is analyzed in the AFP entry
+ <a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+
 [Binomial-Queues]
 title = Functional Binomial Queues
 author = René Neumann <mailto:neumannr@in.tum.de>
