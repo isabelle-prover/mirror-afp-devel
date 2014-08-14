@@ -26,46 +26,54 @@ begin
 
 subsection {* Introduction *}
 
-text {*The show-generator registers itself at the derive-manager for the class @{class show}. To be
-more precise, it automatically generates the functions @{const shows_prec} and @{const shows_list}
-for some data type @{text dtyp} and proves the following instantiation.
-\begin{itemize}
-\item @{text "instantiation dtyp :: (show, ..., show) show"}
-\end{itemize}
-All the non-recursive types that are used in the data type must have a similar instantiation. For
-recursive type-dependencies this is automatically generated.
+text {*
+  The show-generator registers itself at the derive-manager for the class @{class show}. To be more
+  precise, it automatically generates the functions @{const shows_prec} and @{const shows_list} for
+  some data type @{text dtyp} and proves the following instantiation.
+  \begin{itemize}
+  \item @{text "instantiation dtyp :: (show, ..., show) show"}
+  \end{itemize}
+  All the non-recursive types that are used in the data type must have a similar instantiation. For
+  recursive type-dependencies this is automatically generated.
 
-For example, for the data type @{text "datatype tree = Leaf nat | Node (tree list)"} we require that
-@{text nat} is already in @{class show}, whereas for type @{typ "'a list"} nothing is required,
-since it is used recursively.
+  For example, for the data type @{text "datatype tree = Leaf nat | Node (tree list)"} we require
+  that @{text nat} is already in @{class show}, whereas for type @{typ "'a list"} nothing is
+  required, since it is used recursively.
 
-However, if we define @{text "datatype tree = Leaf (nat list) | Node tree tree"} then also
-@{typ "'a list"} must provide a @{class show} instance.*}
+  However, if we define @{text "datatype tree = Leaf (nat list) | Node tree tree"} then also
+  @{typ "'a list"} must provide a @{class show} instance.
+*}
 
 subsection {* Implementation Notes *}
 
-text {*The generator uses the recursors from the data type package to define the show function.
-Constructors are displayed by their short names and arguments are separated by blanks and surrounded
-by parenthesis.
+text {*
+  The generator uses the recursors from the data type package to define the show function.
+  Constructors are displayed by their short names and arguments are separated by blanks and
+  surrounded by parenthesis.
 
-The associativity is proven using the induction theorem from the data type package.*}
+  The associativity is proven using the induction theorem from the data type package.
+*}
 
 subsection {* Features and Limitations *}
 
-text {*The show-generator has been developed mainly for data types without explicit mutual
-recursion. For mutual recursive data types -- like @{text "datatype a = C b and b = D a a"} -- only
-for the first mentioned data type -- here @{text a} -- instantiations of the @{class show}  are
-derived.
+text {*
+  The show-generator has been developed mainly for data types without explicit mutual recursion. For
+  mutual recursive data types -- like @{text "datatype a = C b and b = D a a"} -- only for the first
+  mentioned data type -- here @{text a} -- instantiations of the @{class show} are derived.
 
-Indirect recursion like in @{text "datatype tree = Leaf nat | Node (tree list)"} should work without
-problems.*}
+  Indirect recursion like in @{text "datatype tree = Leaf nat | Node (tree list)"} should work
+  without problems.
+*}
 
 subsection {* Installing the Generator *}
 
-definition shows_sep_paren :: "shows \<Rightarrow> shows" where
+definition shows_sep_paren :: "shows \<Rightarrow> shows"
+where
   "shows_sep_paren s = ('' ('' +#+ s +@+ shows '')'')"
 
-text {*The four crucial properties which are used to ensure associativity.*}
+text {*
+  The four crucial properties which are used to ensure associativity.
+*}
 lemma append_assoc_trans:
   assumes "\<And>r s. b r @ s = b (r @ s)"
   shows "(op @ a +@+ b) r @ s = (op @ a +@+ b) (r @ s)"
@@ -87,4 +95,5 @@ ML_file "show_generator.ML"
 setup {* Show_Generator.setup *}
 
 end
+
 
