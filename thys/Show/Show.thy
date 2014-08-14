@@ -23,13 +23,19 @@ imports Main
 keywords "standard_shows_list" :: thy_decl
 begin
 
-text {*A type class similar to Haskell's \texttt{Show} class, allowing for constant-time
-concatenation of ``strings'' using function composition.*}
+text {*
+  A type class similar to Haskell's \texttt{Show} class, allowing for constant-time concatenation of
+  @{type string}s using function composition.
+*}
+
 type_synonym
   "shows" = "string \<Rightarrow> string"
 
-text {*Convert a string to a show-function that simply prepends the string unchanged.*}
-definition shows_string :: "string \<Rightarrow> shows" where
+text {*
+  Convert a string to a show-function that simply prepends the string unchanged.
+*}
+definition shows_string :: "string \<Rightarrow> shows"
+where
   "shows_string = op @"
 
 class "show" =
@@ -39,23 +45,31 @@ class "show" =
     "shows_prec d x r @ s = shows_prec d x (r @ s)"
     "shows_list xs r @ s = shows_list xs (r @ s)"
 begin
-abbreviation "shows" :: "'a \<Rightarrow> shows" where
+
+abbreviation "shows" :: "'a \<Rightarrow> shows"
+where
   "shows x \<equiv> shows_prec 0 x"
 
-abbreviation "show" :: "'a \<Rightarrow> string" where
+abbreviation "show" :: "'a \<Rightarrow> string"
+where
   "show x \<equiv> shows x ''''"
+
 end
 
-abbreviation shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr "+#+" 10) where
+abbreviation shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr "+#+" 10)
+where
   "s +#+ p \<equiv> shows_string s \<circ> p"
 
-abbreviation (input) shows_append :: "shows \<Rightarrow> shows \<Rightarrow> shows" (infixr "+@+" 10) where
+abbreviation (input) shows_append :: "shows \<Rightarrow> shows \<Rightarrow> shows" (infixr "+@+" 10)
+where
   "s +@+ p \<equiv> s \<circ> p"
 
-definition shows_between :: "shows \<Rightarrow> shows \<Rightarrow> shows \<Rightarrow> shows" where
+definition shows_between :: "shows \<Rightarrow> shows \<Rightarrow> shows \<Rightarrow> shows"
+where
   "shows_between l p r = (l +@+ p +@+ r)"
 
-fun shows_sep :: "('a \<Rightarrow> shows) \<Rightarrow> shows \<Rightarrow> 'a list \<Rightarrow> shows" where
+fun shows_sep :: "('a \<Rightarrow> shows) \<Rightarrow> shows \<Rightarrow> 'a list \<Rightarrow> shows"
+where
   "shows_sep s sep [] = shows_string ''''" |
   "shows_sep s sep [x] = s x" |
   "shows_sep s sep (x#xs) = (s x +@+ sep +@+ shows_sep s sep xs)"
@@ -92,7 +106,8 @@ lemma shows_list_gen_assoc [simp]:
   shows "shows_list_gen elt e l sep r xs s @ t = shows_list_gen elt e l sep r xs (s @ t)"
   using assms by (cases xs) (simp_all add: shows_list_gen_def)
 
-definition shows_list_aux :: "('a \<Rightarrow> shows) \<Rightarrow> 'a list \<Rightarrow> shows" where
+definition shows_list_aux :: "('a \<Rightarrow> shows) \<Rightarrow> 'a list \<Rightarrow> shows"
+where
   "shows_list_aux s xs = shows_list_gen s ''[]'' ''['' '', '' '']'' xs"
 
 lemma assoc_elt:
@@ -130,7 +145,9 @@ let
      
       val ((c, _), rhs) = Syntax.check_term lthy shows_list_eq |> Logic.dest_equals |>> dest_Free;
       val ((_, (_, def_thm')), lthy') =
-        Local_Theory.define ((Binding.name c, NoSyn), ((Binding.name (c ^ "_def"), @{attributes [code]}), rhs)) lthy
+        Local_Theory.define
+          ((Binding.name c, NoSyn), ((Binding.name (c ^ "_def"), @{attributes [code]}), rhs))
+          lthy
       val def_thm =
         Proof_Context.theory_of lthy'
         |> Proof_Context.init_global
@@ -156,10 +173,14 @@ end
 
 instantiation char :: "show"
 begin
+
 definition "shows_prec d (c::char) = op # c"
+
 definition "shows_list (cs::string) = shows_string cs"
+
 instance
   by (intro_classes,unfold shows_prec_char_def shows_list_char_def shows_string_def, simp) auto
+
 end
 
 instantiation list :: ("show") "show"
@@ -172,28 +193,35 @@ lemma assoc_list:
   by (simp add: shows_prec_list_def)
 
 standard_shows_list assoc_list
+
 end
 
-definition shows_nl where "shows_nl = shows (Char Nibble0 NibbleA)"
-definition shows_space where "shows_space = shows (CHR '' '')"
+definition "shows_nl = shows ''\<newline>''"
 
-definition shows_paren :: "shows \<Rightarrow> shows" where
+definition "shows_space = shows (CHR '' '')"
+
+definition shows_paren :: "shows \<Rightarrow> shows"
+where
   "shows_paren p = (shows (CHR ''('') +@+ p +@+ shows (CHR '')''))"
 
 lemmas show_defs =
   shows_prec_char_def shows_nl_def shows_space_def
   shows_string_def shows_between_def shows_paren_def
 
-definition shows_lines :: "'a::show list \<Rightarrow> shows" where
+definition shows_lines :: "'a::show list \<Rightarrow> shows"
+where
   "shows_lines = shows_sep shows shows_nl"
 
-definition shows_many :: "'a::show list \<Rightarrow> shows" where
+definition shows_many :: "'a::show list \<Rightarrow> shows"
+where
   "shows_many = shows_sep shows id"
 
-definition shows_words :: "'a::show list \<Rightarrow> shows" where
+definition shows_words :: "'a::show list \<Rightarrow> shows"
+where
   "shows_words = shows_sep shows shows_space"
 
-fun shows_map :: "('a \<Rightarrow> shows) \<Rightarrow> 'a list \<Rightarrow> shows" where
+fun shows_map :: "('a \<Rightarrow> shows) \<Rightarrow> 'a list \<Rightarrow> shows"
+where
   "shows_map s [] = id" |
   "shows_map s (x # xs) = (s x +@+ shows_map s xs)"
 
@@ -225,7 +253,8 @@ lemma shows_map_assoc [simp]:
   shows "shows_map elt xs r @ s = shows_map elt xs (r @ s)"
   using assms by (induct xs) auto
 
-fun shows_concat :: "shows list \<Rightarrow> shows" where
+fun shows_concat :: "shows list \<Rightarrow> shows"
+where
   "shows_concat [] = id" |
   "shows_concat (s # ss) = (s +@+ shows_concat ss)"
 
@@ -248,11 +277,15 @@ lemma shows_list_gen_cong [fundef_cong]:
   shows "shows_list_gen f e l sep r xs = shows_list_gen g e l sep r ys"
   using shows_sep_cong [of xs ys f g] assms by (cases xs) (auto simp: shows_list_gen_def)
 
-definition shows_quote :: "shows \<Rightarrow> shows" where
+definition shows_quote :: "shows \<Rightarrow> shows"
+where
   "shows_quote s = shows_between (shows (Char Nibble2 Nibble7)) s (shows (Char Nibble2 Nibble7))"
 
-text {*Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to
-the formalized class.*}
+text {*
+  Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to the
+  formalized class.
+*}
 code_reserved Haskell "Show"
 
 end
+
