@@ -21,7 +21,7 @@ sig
   val mk_shows_idx : theory -> Datatype_Aux.info -> (int -> term) * (term * int * int) list;
   (*creates the shows_list function*)
   val mk_shows_list : typ -> term;
-  (*creates and registers show-functions for datatype*)
+  (*creates and registers show-functions for datatypes*)
   val derive : string -> string -> theory -> theory
   (*registers in derive-manager*)
   val setup : theory -> theory
