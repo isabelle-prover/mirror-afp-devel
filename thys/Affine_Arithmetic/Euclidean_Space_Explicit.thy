@@ -20,32 +20,12 @@ subsection {* Conversion for Explicit Representation *}
 
 lemma scaleR_real_1: "scaleR x 1 = x" by simp
 
-ML {*
-structure Euclidean_Basis = Named_Thms
-(
-  val name = @{binding euclidean_Basis}
-  val description = "simplification rules for Basis of Euclidean Space"
-)
-*}
-setup {* Euclidean_Basis.setup *}
-
-ML {*
-structure Euclidean_Outer = Named_Thms
-(
-  val name = @{binding euclidean_Outer}
-  val description = "simplification rules for rewriting of Euclidean Space as return value"
-)
-*}
-setup {* Euclidean_Outer.setup *}
-
-ML {*
-structure Euclidean_Inner = Named_Thms
-(
-  val name = @{binding euclidean_Inner}
-  val description = "simplification rules for rewriting of Euclidean Space as argument"
-)
-*}
-setup {* Euclidean_Inner.setup *}
+named_theorems euclidean_Basis
+  "simplification rules for Basis of Euclidean Space"
+named_theorems euclidean_Outer
+  "simplification rules for rewriting of Euclidean Space as return value"
+named_theorems euclidean_Inner
+  "simplification rules for rewriting of Euclidean Space as argument"
 
 declare simp_thms[euclidean_Basis, euclidean_Inner, euclidean_Outer]
 lemmas [euclidean_Basis] =
@@ -78,9 +58,15 @@ lemmas [euclidean_Inner] = plus_prod_def scaleR_prod_def fst_conv snd_conv
 
 ML {*
 
-fun Basis_simps ctxt = (put_simpset (HOL_basic_ss) ctxt) addsimps (Euclidean_Basis.get ctxt)
-fun Outer_simps ctxt = (put_simpset (HOL_basic_ss) ctxt) addsimps (Euclidean_Outer.get ctxt)
-fun Inner_simps ctxt = (put_simpset (HOL_basic_ss) ctxt) addsimps (Euclidean_Inner.get ctxt)
+fun Basis_simps ctxt =
+  (put_simpset (HOL_basic_ss) ctxt)
+    addsimps (Named_Theorems.get ctxt @{named_theorems euclidean_Basis})
+fun Outer_simps ctxt =
+  (put_simpset (HOL_basic_ss) ctxt)
+    addsimps (Named_Theorems.get ctxt @{named_theorems euclidean_Outer})
+fun Inner_simps ctxt =
+  (put_simpset (HOL_basic_ss) ctxt)
+    addsimps (Named_Theorems.get ctxt @{named_theorems euclidean_Inner})
 
 fun rewrite_outer_eucl ctxt =
   Conv.top_sweep_conv
