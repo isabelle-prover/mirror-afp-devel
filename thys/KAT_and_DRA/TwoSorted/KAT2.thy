@@ -17,6 +17,8 @@ text {*
 
 syntax "_kat" :: "'a \<Rightarrow> 'a" ("`_`")
 
+named_theorems kat_hom "KAT test homomorphism rules"
+
 ML {*
 val kat_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
 
@@ -30,19 +32,14 @@ fun map_ast_variables ast =
   | (Ast.Appl []) => Ast.Appl []
   | (Ast.Appl (f :: xs)) => Ast.Appl (f :: map map_ast_variables xs)
 
-structure KATHomRules = Named_Thms
-  (val name = @{binding "kat_hom"}
-   val description = "KAT test homomorphism rules")
-
 fun kat_hom_tac ctxt n =
   let
-    val rev_rules = map (fn thm => thm RS @{thm sym}) (KATHomRules.get ctxt)
+    val rev_rules =
+      map (fn thm => thm RS @{thm sym}) (Named_Theorems.get ctxt @{named_theorems kat_hom})
   in
     asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps rev_rules) n
   end
 *}
-
-setup {* KATHomRules.setup *}
 
 method_setup kat_hom = {*
 Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (kat_hom_tac ctxt 1)))
@@ -54,18 +51,15 @@ let
 in [(@{syntax_const "_kat"}, kat_tr)] end
 *}
 
+named_theorems vcg "verification condition generator rules"
 ML {*
-structure VCGRules = Named_Thms
-  (val name = @{binding "vcg"}
-   val description = "verification condition generator rules")
-
 fun vcg_tac ctxt n =
   let
     fun vcg' [] = no_tac
       | vcg' (r :: rs) = rtac r n ORELSE vcg' rs;
   in REPEAT (CHANGED
        (kat_hom_tac ctxt n
-        THEN REPEAT (vcg' (VCGRules.get ctxt))
+        THEN REPEAT (vcg' (rev (Named_Theorems.get ctxt @{named_theorems vcg})))
         THEN kat_hom_tac ctxt n
         THEN TRY (rtac @{thm order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
   end
@@ -74,8 +68,6 @@ fun vcg_tac ctxt n =
 method_setup vcg = {*
 Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (vcg_tac ctxt 1)))
 *}
-
-setup {* VCGRules.setup *}
 
 locale dioid_tests =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dioid_one_zerol"
@@ -92,8 +84,6 @@ notation test ("\<iota>")
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
-
-ML_val {* map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context}) *}
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)
@@ -133,8 +123,6 @@ notation test ("\<iota>")
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
-
-ML_val {* map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context}) *}
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)
