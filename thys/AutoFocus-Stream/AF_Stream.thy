@@ -119,15 +119,9 @@ lemma is_Msg_message_af_conv2: "is_Msg m = (m \<noteq> \<NoMsg>)"
 by (unfold is_Msg_def, case_tac m, simp+)
 
 
-text {* Collection for definitions for is\_NoMsg. *}
-ML {* 
-structure is_NoMsg_defs = Named_Thms
-(
-  val name = @{binding is_NoMsg_defs}
-  val description = "is_NoMsg_defs rules"
-)
-*}
-setup is_NoMsg_defs.setup
+text {* Collection for definitions for @{text is_NoMsg}. *}
+
+named_theorems is_NoMsg_defs
 
 declare 
   is_NoMsg_tuple_def[is_NoMsg_defs]
