@@ -7,14 +7,7 @@ theory Summation_Conversion
 imports Factorials Summation
 begin
 
-ML {*
-structure Summation = Named_Thms(
-  val name = @{binding summation}
-  val description = "rules for solving summation problems"
-)
-*}
-
-setup Summation.setup
+named_theorems summation "rules for solving summation problems"
 
 declare
   \<Sigma>_const [summation] \<Sigma>_add [summation]
@@ -112,7 +105,7 @@ fun conv ctxt =
     val ctxt1 =
       ctxt
       |> put_simpset HOL_basic_ss
-      |> fold Simplifier.add_simp (Summation.get ctxt)
+      |> fold Simplifier.add_simp (Named_Theorems.get ctxt @{named_theorems summation})
     val ctxt2 =
       ctxt
       |> put_simpset HOL_basic_ss
