@@ -78,19 +78,11 @@ lemmas pr_rec = PrimRec1_PrimRec2_PrimRec3.prim_rec
 
 ML_file "Utils.ML"
 
-ML {*
-structure PRec = Named_Thms
-(
-  val name = @{binding prec}
-  val description = "fact for prec method"
-)
-*}
-
-setup PRec.setup
+named_theorems prec
 
 method_setup prec0 = {*
   Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
-    HEADGOAL (prec0_tac ctxt (facts @ PRec.get ctxt))))
+    HEADGOAL (prec0_tac ctxt (facts @ Named_Theorems.get ctxt @{named_theorems prec}))))
 *} "apply primitive recursive functions"
 
 
@@ -469,7 +461,7 @@ fun prec_tac ctxt facts i =
 
 method_setup prec = {*
   Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
-    HEADGOAL (prec_tac ctxt (facts @ PRec.get ctxt))))
+    HEADGOAL (prec_tac ctxt (facts @ Named_Theorems.get ctxt @{named_theorems prec}))))
 *} "apply primitive recursive functions"
 
 
