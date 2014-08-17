@@ -307,6 +307,11 @@ lemma fi_rule:
 
 subsection {* ML-setup *}
 
+named_theorems sep_dflt_simps "Seplogic: Default simplification rules for automated solvers"
+named_theorems sep_eintros "Seplogic: Intro rules for entailment solver"
+named_theorems sep_heap_rules "Seplogic: VCG heap rules"
+named_theorems sep_decon_rules "Seplogic: VCG deconstruct rules"
+
 ML {*
 infix 1 THEN_IGNORE_NEWGOALS
 
@@ -503,18 +508,13 @@ structure Seplogic_Auto = struct
   (*     Default Simplifications     *)
   (***********************************)
 
-  structure dflt_simps = Named_Thms
-    ( val name = @{binding "sep_dflt_simps"}
-      val description = "Seplogic: " ^
-        "Default simplification rules for automated solvers" );
-
   (* Default simplification. MUST contain assertion normalization!
     Tactic must not fail! *)
   fun dflt_tac ctxt = asm_full_simp_tac
     (put_simpset HOL_ss ctxt
       addsimprocs [assn_simproc] 
       addsimps @{thms norm_assertion_simps}
-      addsimps dflt_simps.get ctxt
+      addsimps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
       |> fold Splitter.del_split @{thms split_if_asm split_if}
     );
 
@@ -567,11 +567,6 @@ structure Seplogic_Auto = struct
   (*       Entailment Solver         *)
   (***********************************)
 
-  structure eintros = Named_Thms
-    ( val name = @{binding "sep_eintros"}
-      val description = "Seplogic: " ^
-        "Intro rules for entailment solver" );
-
   (* Extract existential quantifiers from entailment goal *)
   fun extract_ex_tac i st = let
     fun count_ex (Const (@{const_name Assertions.entails},_)$_$c) = 
@@ -602,7 +597,8 @@ structure Seplogic_Auto = struct
       THEN' resolve_tac @{thms entails_solve_finalize};
   in
     preprocess_entails_tac
-    THEN' (TRY o REPEAT_ALL_NEW (match_tac (eintros.get ctxt)))
+    THEN' (TRY o
+      REPEAT_ALL_NEW (match_tac (rev (Named_Theorems.get ctxt @{named_theorems sep_eintros}))))
     THEN_ALL_NEW (dflt_tac ctxt THEN' 
       TRY o (match_tac @{thms ent_triv} 
         ORELSE' resolve_tac @{thms ent_refl}
@@ -614,24 +610,14 @@ structure Seplogic_Auto = struct
   (* Verification Condition Generator*)
   (***********************************)
 
-  structure heap_rules = Named_Thms
-    ( val name = @{binding "sep_heap_rules"}
-      val description = "Seplogic: " ^
-        "VCG heap rules" );
-
-  structure decon_rules = Named_Thms
-    ( val name = @{binding "sep_decon_rules"}
-      val description = "Seplogic: " ^
-        "VCG deconstruct rules" );
-
   fun heap_rule_tac ctxt h_thms = 
     resolve_tac h_thms ORELSE' (
     rtac @{thm fi_rule} THEN' (resolve_tac h_thms THEN_IGNORE_NEWGOALS
     frame_inference_tac ctxt));
 
   fun vcg_step_tac ctxt = let
-    val h_thms = heap_rules.get ctxt;
-    val d_thms = decon_rules.get ctxt;
+    val h_thms = rev (Named_Theorems.get ctxt @{named_theorems sep_heap_rules});
+    val d_thms = rev (Named_Theorems.get ctxt @{named_theorems sep_decon_rules});
     val heap_rule_tac = heap_rule_tac ctxt h_thms
 
     (* Apply consequence rule if postcondition is not a schematic var *)
@@ -682,28 +668,28 @@ structure Seplogic_Auto = struct
 
   val dflt_simps_modifiers = [
     Args.$$$ "dflt_simps" -- Scan.option Args.add -- Args.colon 
-      >> K ((I,dflt_simps.add):Method.modifier),
+      >> K ((I, Named_Theorems.add @{named_theorems sep_dflt_simps}):Method.modifier),
     Args.$$$ "dflt_simps" -- Scan.option Args.del -- Args.colon 
-      >> K ((I,dflt_simps.del):Method.modifier)
+      >> K ((I, Named_Theorems.del @{named_theorems sep_dflt_simps}):Method.modifier)
   ];
   val heap_modifiers = [
     Args.$$$ "heap" -- Scan.option Args.add -- Args.colon 
-      >> K ((I,heap_rules.add):Method.modifier),
+      >> K ((I, Named_Theorems.add @{named_theorems sep_heap_rules}):Method.modifier),
     Args.$$$ "heap" -- Scan.option Args.del -- Args.colon 
-      >> K ((I,heap_rules.del):Method.modifier)
+      >> K ((I, Named_Theorems.del @{named_theorems sep_heap_rules}):Method.modifier)
   ];
   val decon_modifiers = [
     Args.$$$ "decon" -- Scan.option Args.add -- Args.colon 
-      >> K ((I,decon_rules.add):Method.modifier),
+      >> K ((I, Named_Theorems.add @{named_theorems sep_decon_rules}):Method.modifier),
     Args.$$$ "decon" -- Scan.option Args.del -- Args.colon 
-      >> K ((I,decon_rules.del):Method.modifier)
+      >> K ((I, Named_Theorems.del @{named_theorems sep_decon_rules}):Method.modifier)
   ];
 
   val eintros_modifiers = [
     Args.$$$ "eintros" -- Scan.option Args.add -- Args.colon 
-      >> K ((I,eintros.add):Method.modifier),
+      >> K ((I, Named_Theorems.add @{named_theorems sep_eintros}):Method.modifier),
     Args.$$$ "eintros" -- Scan.option Args.del -- Args.colon 
-      >> K ((I,eintros.del):Method.modifier)
+      >> K ((I, Named_Theorems.del @{named_theorems sep_eintros}):Method.modifier)
   ];
 
 
@@ -735,7 +721,7 @@ method_setup heap_rule = {*
   Attrib.thms >>
   (fn thms => fn ctxt => SIMPLE_METHOD' ( 
     let
-      val thms = case thms of [] => Seplogic_Auto.heap_rules.get ctxt
+      val thms = case thms of [] => rev (Named_Theorems.get ctxt @{named_theorems sep_heap_rules})
         | _ => thms
     in
       CHANGED o Seplogic_Auto.heap_rule_tac ctxt thms
@@ -761,11 +747,6 @@ method_setup sep_auto =
       ((not nopre) andalso (not plain)) 
       ((not nopost) andalso (not plain)) ctxt
   )) *} "Seplogic: Automatic solver"
-
-setup {* Seplogic_Auto.dflt_simps.setup *}
-setup {* Seplogic_Auto.heap_rules.setup *}
-setup {* Seplogic_Auto.decon_rules.setup *}
-setup {* Seplogic_Auto.eintros.setup *}
 
 lemmas [sep_dflt_simps] = split
 

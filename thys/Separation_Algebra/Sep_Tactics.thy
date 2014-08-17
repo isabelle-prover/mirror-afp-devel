@@ -55,13 +55,7 @@ method_setup "sep_rule" = {*
 
 section {* Cancellation of Common Conjuncts via Elimination Rules *}
 
-ML {*
-  structure SepCancel_Rules = Named_Thms (
-    val name = @{binding "sep_cancel"};
-    val description = "sep_cancel rules";
-  );
-*}
-setup SepCancel_Rules.setup
+named_theorems sep_cancel
 
 text {*
   The basic @{text sep_cancel_tac} is minimal. It only eliminates
@@ -98,13 +92,13 @@ ML {*
       sep_cancel_smart_tac ctxt (FIRST' ([atac] @ etacs));
 
   val sep_cancel_syntax = Method.sections [
-    Args.add -- Args.colon >> K (I, SepCancel_Rules.add)] >> K ();
+    Args.add -- Args.colon >> K (I, Named_Theorems.add @{named_theorems sep_cancel})] >> K ();
 *}
 
 method_setup sep_cancel = {*
   sep_cancel_syntax >> (fn _ => fn ctxt =>
     let
-      val etacs = map etac (SepCancel_Rules.get ctxt);
+      val etacs = map etac (rev (Named_Theorems.get ctxt @{named_theorems sep_cancel}));
     in
       SIMPLE_METHOD' (sep_cancel_smart_tac_rules ctxt etacs)
     end)
@@ -117,7 +111,7 @@ text {*
 method_setup sep_cancel_blast = {*
   sep_cancel_syntax >> (fn _ => fn ctxt =>
     let
-      val rules = SepCancel_Rules.get ctxt;
+      val rules = rev (Named_Theorems.get ctxt @{named_theorems sep_cancel});
       val tac = Blast.depth_tac (ctxt addIs rules) 10;
     in
       SIMPLE_METHOD' (sep_cancel_smart_tac ctxt tac)
