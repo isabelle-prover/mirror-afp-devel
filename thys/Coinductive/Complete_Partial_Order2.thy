@@ -397,17 +397,12 @@ where
 
 subsubsection {* Theorem collection @{text cont_intro} *}
 
+named_theorems cont_intro "continuity and admissibility intro rules"
 ML {*
-structure Cont_Intro_Rules = Named_Thms
-(
-  val name = @{binding cont_intro}
-  val description = "continuity and admissibility intro rules"
-)
-
 (* apply cont_intro rules as intro and try to solve 
    the remaining of the emerging subgoals with simp *)
 fun cont_intro_tac ctxt =
-  REPEAT_ALL_NEW (resolve_tac (Cont_Intro_Rules.get ctxt))
+  REPEAT_ALL_NEW (resolve_tac (rev (Named_Theorems.get ctxt @{named_theorems cont_intro})))
   THEN_ALL_NEW (simp_tac ctxt)
 
 fun cont_intro_simproc ctxt ct =
@@ -432,7 +427,6 @@ fun cont_intro_simproc ctxt ct =
   handle THM _ => NONE 
   | TYPE _ => NONE
 *}
-setup Cont_Intro_Rules.setup
 
 simproc_setup "cont_intro"
   ( "ccpo.admissible lub ord P"
