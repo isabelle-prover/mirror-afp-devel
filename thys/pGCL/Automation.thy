@@ -14,9 +14,16 @@ text {* This theory serves as a container for automated reasoning
   tactics for pGCL, implemented in ML.  At present, there is a basic
   verification condition generator (VCG). *}
 
-ML_file "pVCG.ML"
+named_theorems wd
+  "theorems to automatically establish well-definedness"
+named_theorems pwp_core
+  "core probabilistic wp rules, for evaluating primitive terms"
+named_theorems pwp
+  "user-supplied probabilistic wp rules"
+named_theorems pwlp
+  "user-supplied probabilistic wlp rules"
 
-setup pVCG.setup
+ML_file "pVCG.ML"
 
 method_setup pvcg =
   {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (pVCG.pVCG_tac ctxt)) *}
