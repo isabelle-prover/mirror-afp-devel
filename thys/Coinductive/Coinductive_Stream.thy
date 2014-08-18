@@ -19,8 +19,6 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-declare stream.corec [code]
-
 text {* congruence rule *}
 
 declare stream.map_cong [cong]
@@ -30,17 +28,12 @@ text {* lemmas about generated constants *}
 lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
 
-lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] stream.map_id)
+declare stream.map_ident[simp]
 
 lemma smap_eq_SCons_conv:
   "smap f xs = y ## ys \<longleftrightarrow> 
   (\<exists>x xs'. xs = x ## xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
-
-lemma smap_id: 
-  "smap id = id"
-by(simp add: fun_eq_iff stream.map_id)
 
 lemma smap_unfold_stream:
   "smap f (unfold_stream SHD STL b) = unfold_stream (f \<circ> SHD) STL b"
@@ -66,16 +59,14 @@ by(coinduction arbitrary: xs) simp_all
 lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
 by(cases xs) simp_all
 
-lemmas shd_in_sset [simp] = shd_sset
+declare stream.set_sel(1)[simp]
 
 lemma sset_stl: "sset (stl xs) \<subseteq> sset xs"
 by(cases xs) auto
 
-lemmas in_sset_stlD = stl_sset
-
 text {* induction rules *}
 
-theorems stream_set_induct = sset_induct1
+theorems stream_set_induct = sset_induct
 
 subsection {* Lemmas about operations from @{theory Stream} *}
 
@@ -179,7 +170,8 @@ proof(intro set_eqI iffI)
   fix x
   assume "x \<in> ?lhs"
   thus "x \<in> ?rhs"
-    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)(auto dest: in_sset_stlD)
+    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)
+      (auto dest: stream.set_sel(2))
 next
   fix x
   assume "x \<in> ?rhs"

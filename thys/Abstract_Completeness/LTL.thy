@@ -339,10 +339,10 @@ using assms by coinduct (auto elim: alw.cases dest: ev_alw_impl intro: ev.intros
 lemma ev_holds_sset:
 "ev (holds P) xs \<longleftrightarrow> (\<exists> x \<in> sset xs. P x)" (is "?L \<longleftrightarrow> ?R")
 proof safe
-  assume ?L thus ?R by induct (metis holds.simps shd_sset, metis stl_sset)
+  assume ?L thus ?R by induct (metis holds.simps stream.set_sel(1), metis stl_sset)
 next
   fix x assume "x \<in> sset xs" "P x"
-  thus ?L by (induct rule: sset_induct1) (simp_all add: ev.base ev.step)
+  thus ?L by (induct rule: sset_induct) (simp_all add: ev.base ev.step)
 qed
 
 (* LTL as a program logic: *)
