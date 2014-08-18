@@ -49,7 +49,7 @@ by(coinduction arbitrary: b) auto
 lemma smap_corec_stream:
   "smap f (corec_stream SHD endORmore STL_end STL_more b) =
    corec_stream (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
-by(coinduction arbitrary: b rule: stream.strong_coinduct) auto
+by(coinduction arbitrary: b rule: stream.coinduct_strong) auto
 
 lemma unfold_stream_ltl_unroll:
   "unfold_stream SHD STL (STL b) = unfold_stream (SHD \<circ> STL) STL b"
@@ -165,7 +165,7 @@ by(coinduction arbitrary: x) auto
 lemma llist_of_stream_corec_stream [simp]:
   "llist_of_stream (corec_stream SHD endORmore STL_more STL_end x) =
    corec_llist (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
-by(coinduction arbitrary: x rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: x rule: llist.coinduct_strong) auto
 
 lemma LCons_llist_of_stream [simp]: "LCons x (llist_of_stream xs) = llist_of_stream (x ## xs)"
 by(rule sym)(simp add: llist_of_stream_def)

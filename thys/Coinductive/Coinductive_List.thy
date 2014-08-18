@@ -119,7 +119,7 @@ by(coinduction arbitrary: b) auto
 lemma lmap_corec_llist:
   "lmap f (corec_llist IS_LNIL LHD endORmore TTL_end TTL_more b) =
    corec_llist IS_LNIL (f \<circ> LHD) endORmore (lmap f \<circ> TTL_end) TTL_more b"
-by(coinduction arbitrary: b rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: b rule: llist.coinduct_strong) auto
 
 lemma unfold_llist_ltl_unroll:
   "unfold_llist IS_LNIL LHD LTL (LTL b) = unfold_llist (IS_LNIL \<circ> LTL) (LHD \<circ> LTL) LTL b"
@@ -410,11 +410,11 @@ lemma shows lappend_lnull1: "lnull xs \<Longrightarrow> lappend xs ys = ys"
 unfolding lnull_def by simp_all
 
 lemma lappend_assoc: "lappend (lappend xs ys) zs = lappend xs (lappend ys zs)"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: xs rule: llist.coinduct_strong) auto
 
 lemma lmap_lappend_distrib: 
   "lmap f (lappend xs ys) = lappend (lmap f xs) (lmap f ys)"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: xs rule: llist.coinduct_strong) auto
 
 lemma lappend_snocL1_conv_LCons2: 
   "lappend (lappend xs (LCons y LNil)) ys = lappend xs (LCons y ys)"
@@ -1513,11 +1513,11 @@ by(coinduction arbitrary: n xs)(auto intro!: exI simp add: llength_ltl epred_le_
 
 lemma ltake_lappend2: 
   "llength xs \<le> n \<Longrightarrow> ltake n (lappend xs ys) = lappend xs (ltake (n - llength xs) ys)"
-by(coinduction arbitrary: n xs rule: llist.strong_coinduct)(auto intro!: exI simp add: llength_ltl epred_le_epredI ltl_ltake)
+by(coinduction arbitrary: n xs rule: llist.coinduct_strong)(auto intro!: exI simp add: llength_ltl epred_le_epredI ltl_ltake)
 
 lemma ltake_lappend:
   "ltake n (lappend xs ys) = lappend (ltake n xs) (ltake (n - llength xs) ys)"
-by(coinduction arbitrary: n xs ys rule: llist.strong_coinduct)(auto intro!: exI simp add: llength_ltl ltl_ltake)
+by(coinduction arbitrary: n xs ys rule: llist.coinduct_strong)(auto intro!: exI simp add: llength_ltl ltl_ltake)
 
 lemma take_list_of:
   assumes "lfinite xs"
@@ -1770,7 +1770,7 @@ lemma in_lset_ldropD: "x \<in> lset (ldrop n xs) \<Longrightarrow> x \<in> lset 
 using lset_ldrop_subset[of n xs] by(auto)
 
 lemma lappend_ltake_ldrop: "lappend (ltake n xs) (ldrop n xs) = xs"
-by(coinduction arbitrary: n xs rule: llist.strong_coinduct)
+by(coinduction arbitrary: n xs rule: llist.coinduct_strong)
   (auto simp add: ldrop_ltl ltl_ltake intro!: arg_cong2[where f=lappend])
 
 lemma ldropn_lappend:
@@ -1808,7 +1808,7 @@ by(cases n)(cases "llength xs", simp_all add: ldropn_lappend not_less ldrop_enat
 
 lemma ltake_plus_conv_lappend:
   "ltake (n + m) xs = lappend (ltake n xs) (ltake m (ldrop n xs))"
-by(coinduction arbitrary: n m xs rule: llist.strong_coinduct)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
+by(coinduction arbitrary: n m xs rule: llist.coinduct_strong)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
 
 lemma ldropn_eq_LConsD:
   "ldropn n xs = LCons y ys \<Longrightarrow> enat n < llength xs"
@@ -2484,7 +2484,7 @@ by(cases xs ys rule: llist.exhaust[case_product llist.exhaust]) auto
 lemma lzip_lappend:
   "llength xs = llength us
   \<Longrightarrow> lzip (lappend xs ys) (lappend us vs) = lappend (lzip xs us) (lzip ys vs)"
-by(coinduction arbitrary: xs ys us vs rule: llist.strong_coinduct)(auto 4 6 simp add: llength_ltl)
+by(coinduction arbitrary: xs ys us vs rule: llist.coinduct_strong)(auto 4 6 simp add: llength_ltl)
 
 lemma llength_lzip [simp]:
   "llength (lzip xs ys) = min (llength xs) (llength ys)"
@@ -2806,13 +2806,13 @@ by(induct xs)(simp_all)
 
 lemma lappend_ltakeWhile_ldropWhile [simp]:
   "lappend (ltakeWhile P xs) (ldropWhile P xs) = xs"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct)(auto 4 4 simp add: not_lnull_conv lset_lnull intro: ccontr)
+by(coinduction arbitrary: xs rule: llist.coinduct_strong)(auto 4 4 simp add: not_lnull_conv lset_lnull intro: ccontr)
 
 lemma ltakeWhile_lappend:
   "ltakeWhile P (lappend xs ys) =
   (if \<exists>x\<in>lset xs. \<not> P x then ltakeWhile P xs
    else lappend xs (ltakeWhile P ys))"
-proof(coinduction arbitrary: xs rule: llist.strong_coinduct)
+proof(coinduction arbitrary: xs rule: llist.coinduct_strong)
   case (Eq_llist xs)
   have ?lnull by(auto simp add: lset_lnull)
   moreover have ?LCons
@@ -2881,7 +2881,7 @@ by(induct rule: lset_induct) simp_all
 lemma ltakeWhile_lappend2:
   "lset xs \<subseteq> {x. P x}
   \<Longrightarrow> ltakeWhile P (lappend xs ys) = lappend xs (ltakeWhile P ys)"
-by(coinduction arbitrary: xs ys rule: llist.strong_coinduct)(auto 4 4 simp add: not_lnull_conv lappend_lnull1)
+by(coinduction arbitrary: xs ys rule: llist.coinduct_strong)(auto 4 4 simp add: not_lnull_conv lappend_lnull1)
 
 lemma ltakeWhile_cong [cong, fundef_cong]:
   assumes xs: "xs = ys"

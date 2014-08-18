@@ -71,7 +71,7 @@ using assms by induct (auto intro: reach.intros, metis reach.Step snd_conv valid
 lemma reachNT_stateO_aux:
 assumes "reachNT s"
 shows "s = istate \<or> (\<exists>sh a ou. reach sh \<and> step sh a = (ou,s) \<and> \<not>T (Trans sh a ou s))"
-using assms by induct (clarsimp, metis BD_Security.reachNT_reach trans.sel_exhaust)
+using assms by induct (clarsimp, metis BD_Security.reachNT_reach trans.exhaust_sel)
 
 lemma reachNT_state_cases[cases set,consumes 1, case_names init step]:
 assumes "reachNT s"
@@ -97,7 +97,7 @@ lemma holdsIstate_invarNT:
 assumes h: "holdsIstate Inv" and i: "invarNT Inv" and a: "reachNT s"
 shows "Inv s"
 using a using h i unfolding holdsIstate_def invarNT_def
-by (induct rule: reachNT.induct) (metis i invarNT_def trans.sel_exhaust)+
+by (induct rule: reachNT.induct) (metis i invarNT_def trans.exhaust_sel)+
 
 (* BD security: *)
 definition secure :: bool where
@@ -259,7 +259,7 @@ shows "exit s v"
 proof-
   let ?K = "\<lambda> s. reachNT s \<and> K s"
   show ?thesis using assms by (intro exit_coind[of ?K])
-  (metis BD_Security.reachNT_reach IO_Automaton.validTrans reachNT.Step trans.sel_exhaust)+
+  (metis BD_Security.reachNT_reach IO_Automaton.validTrans reachNT.Step trans.exhaust_sel)+
 qed
 
 (* intro rule for more elaborate checks: *)
@@ -270,7 +270,7 @@ shows "exit s v"
 proof-
   let ?K = "\<lambda> s. reachNT s \<and> K s"
   show ?thesis using assms unfolding invarNT_def noVal_def apply(intro exit_coind[of ?K])
-  by metis (metis IO_Automaton.validTrans reachNT.Step trans.sel_exhaust)
+  by metis (metis IO_Automaton.validTrans reachNT.Step trans.exhaust_sel)
 qed
 
 (* Binary version of the invariant: *)
@@ -301,7 +301,7 @@ shows "exit s v"
 proof-
   let ?K = "\<lambda> s. reachNT s \<and> K s v"
   show ?thesis using assms by (intro exit_coind[of ?K])
-  (metis BD_Security.reachNT_reach IO_Automaton.validTrans reachNT.Step trans.sel_exhaust)+
+  (metis BD_Security.reachNT_reach IO_Automaton.validTrans reachNT.Step trans.exhaust_sel)+
 qed
 
 lemma exitI2_noVal2:
@@ -311,7 +311,7 @@ shows "exit s v"
 proof-
   let ?K = "\<lambda> s. reachNT s \<and> K s v"
   show ?thesis using assms unfolding invarNT_def noVal2_def
-  by (intro exit_coind[of ?K]) (metis IO_Automaton.validTrans reachNT.Step trans.sel_exhaust)+
+  by (intro exit_coind[of ?K]) (metis IO_Automaton.validTrans reachNT.Step trans.exhaust_sel)+
 qed
 
 (* end binary version *)

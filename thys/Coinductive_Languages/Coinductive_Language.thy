@@ -175,7 +175,7 @@ theorem Times_ZeroR[simp]: "Times r Zero = Zero"
   by (coinduction arbitrary: r) auto
 
 theorem Times_OneL[simp]: "Times One r = r"
-  by (coinduction arbitrary: r rule: language.strong_coinduct) (simp add: rel_fun_def)
+  by (coinduction arbitrary: r rule: language.coinduct_strong) (simp add: rel_fun_def)
 
 theorem Times_OneR[simp]: "Times r One = r"
   by (coinduction arbitrary: r) simp
@@ -232,10 +232,10 @@ lemma \<dd>_Star[simp]: "\<dd> (Star r) = (\<lambda>a. Times (\<dd> r a) (Star r
     (auto simp add: Star_def StarLR_Times[symmetric])
 
 lemma Star_Zero[simp]: "Star Zero = One"
-  by (coinduction rule: language.strong_coinduct) auto
+  by (coinduction rule: language.coinduct_strong) auto
 
 lemma Star_One[simp]: "Star One = One"
-  by (coinduction rule: language.strong_coinduct) auto
+  by (coinduction rule: language.coinduct_strong) auto
 
 lemma Star_unfoldL: "Star r = Plus One (Times r (Star r))"
   by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) auto

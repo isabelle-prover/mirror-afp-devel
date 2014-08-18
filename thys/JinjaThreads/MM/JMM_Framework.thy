@@ -182,7 +182,7 @@ proof(intro equalityI subsetI)
     have "lmap (\<lambda>(tls, s', tta, s''). tta) (lfilter (\<lambda>(tls, s', (t, ta), s''). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (llist_of_tllist E'')) = 
           lfilter (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<noteq> []) (lconcat (lappend (lmap (\<lambda>(tls, s, tl, s'). llist_of (tls @ [tl])) (llist_of_tllist E'')) (LCons (?tail E'') LNil)))"
       (is "?lhs \<sigma> E'' = ?rhs \<sigma> E''")
-    proof(coinduction arbitrary: \<sigma> E'' rule: llist.strong_coinduct)
+    proof(coinduction arbitrary: \<sigma> E'' rule: llist.coinduct_strong)
       case (Eq_llist \<sigma> E'')
       have ?lnull
         by(cases "lfinite (llist_of_tllist E'')")(fastforce split: sum.split_asm simp add: split_beta lset_lconcat_lfinite lappend_inf mthr.silent_move2_def dest: mthr.\<tau>Runs_table2_silentsD[OF Eq_llist] mthr.\<tau>Runs_table2_terminal_silentsD[OF Eq_llist] mthr.\<tau>Runs_table2_terminal_inf_stepD[OF Eq_llist] m\<tau>move_silentD inf_step_silentD silent_moves2_silentD split: sum.split_asm)+

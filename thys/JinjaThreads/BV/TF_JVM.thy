@@ -325,7 +325,7 @@ theorem (in start_context) exec_pres_type:
 
 (*>*)
 
-declare option.weak_case_cong[cong]
+declare option.case_cong_weak[cong]
 declare option.splits[split]
 declare is_type_array[simp]
 

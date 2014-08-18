@@ -152,7 +152,7 @@ lemma corec_llist_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_LNIL LHD endORmore LTL_end LTL_more b
   show "?lhs IS_LNIL LHD endORmore LTL_end LTL_more b = ?rhs IS_LNIL LHD endORmore LTL_end LTL_more b"
-    by(coinduction arbitrary: b rule: llist.strong_coinduct)
+    by(coinduction arbitrary: b rule: llist.coinduct_strong)
       (auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient_lmap_Abs_Rep[OF q2])
 qed
 

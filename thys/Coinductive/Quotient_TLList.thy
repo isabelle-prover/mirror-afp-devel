@@ -244,7 +244,7 @@ lemma corec_tllist_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_TNIL TNIL THD endORmore TTL_end TTL_more b
   show "?lhs IS_TNIL TNIL THD endORmore TTL_end TTL_more b = ?rhs IS_TNIL TNIL THD endORmore TTL_end TTL_more b"
-    by(coinduction arbitrary: b rule: tllist.strong_coinduct)(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_tmap_Abs_Rep[OF q3 q2])
+    by(coinduction arbitrary: b rule: tllist.coinduct_strong)(auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient3_abs_rep[OF q3] Quotient3_tmap_Abs_Rep[OF q3 q2])
 qed
 
 end
