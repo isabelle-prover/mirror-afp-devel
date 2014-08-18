@@ -139,8 +139,7 @@ theorem llist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> lset xs" and "\<And>xs. \<not> lnull xs \<Longrightarrow> P (lhd xs) xs"
   and "\<And>xs y. \<lbrakk>\<not> lnull xs; y \<in> lset (ltl xs); P y (ltl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
-using assms
-by (induct x xs rule: llist.set_induct) (fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
+using assms by(induct)(fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
 
 
 text {* Setup for quickcheck *}

@@ -145,14 +145,10 @@ lemma TNil_eq_unfold_tllist [simp]:
   "TNil b = unfold_tllist IS_TNIL TNIL THD TTL a \<longleftrightarrow> IS_TNIL a \<and> b = TNIL a"
 by(auto simp add: unfold_tllist.code)
 
-lemma is_TNil_tmap [simp]: "is_TNil (tmap f g xs) \<longleftrightarrow> is_TNil xs"
-by(cases xs) simp_all
-
 lemma tmap_is_TNil: "is_TNil xs \<Longrightarrow> tmap f g xs = TNil (g (terminal xs))"
 by(clarsimp simp add: is_TNil_def)
 
-lemma thd_tmap [simp]: "\<not> is_TNil xs \<Longrightarrow> thd (tmap f g xs) = f (thd xs)"
-by(cases xs) simp_all
+declare tllist.map_sel(2)[simp]
 
 lemma ttl_tmap [simp]: "ttl (tmap f g xs) = tmap f g (ttl xs)"
 by(cases xs) simp_all
@@ -165,8 +161,7 @@ lemma TNil_eq_tmap_conv:
   "TNil y = tmap f g xs \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
 by(cases xs) auto
 
-lemma thd_in_tset [simp]: "\<not> is_TNil xs \<Longrightarrow> thd xs \<in> tset xs"
-by(cases xs) simp_all
+declare tllist.set_sel(2)[simp]
 
 lemma tset_ttl: "tset (ttl xs) \<subseteq> tset xs"
 by(cases xs) auto
@@ -174,74 +169,17 @@ by(cases xs) auto
 lemma in_tset_ttlD: "x \<in> tset (ttl xs) \<Longrightarrow> x \<in> tset xs"
 using tset_ttl[of xs] by auto
 
-lemma case_tllist_def':
-"case_tllist tnil tcons xs = (case dtor_tllist xs of Inl z \<Rightarrow> tnil z | Inr (y, ys) \<Rightarrow> tcons y ys)"
-apply (case_tac xs)
-by auto (auto simp add: TNil_def TCons_def tllist.dtor_ctor BNF_Comp.id_bnf_comp_def)
-
 theorem tllist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> tset xs" and "\<And>xs. \<not> is_TNil xs \<Longrightarrow> P (thd xs) xs"
   and "\<And>xs y. \<lbrakk>\<not> is_TNil xs; y \<in> tset (ttl xs); P y (ttl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
-proof -
-  have "\<forall>x\<in>tset xs. P x xs"
-    apply(rule tllist.dtor_set1_induct)
-    using assms
-    apply(auto simp add: thd_def ttl_def set2_pre_tllist_def set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
-     apply(rename_tac b h t)
-     apply(erule_tac x="b" in meta_allE)
-     apply(erule meta_impE)
-      apply(case_tac b)
-       apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
-     apply(case_tac b)
-     apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
-    apply(rename_tac b xa h t)
-    apply(rotate_tac -2)
-    apply(erule_tac x="b" in meta_allE)
-    apply(erule_tac x="xa" in meta_allE)
-    apply(erule meta_impE)
-     apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps)
-    apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-    done
-  with `x \<in> tset xs` show ?thesis by blast
-qed
+using assms by(induct)(fastforce simp del: tllist.disc(2) iff: tllist.disc(2), auto)
 
 theorem set2_tllist_induct[consumes 1, case_names find step]:
   assumes "x \<in> set2_tllist xs" and "\<And>xs. is_TNil xs \<Longrightarrow> P (terminal xs) xs"
   and "\<And>xs y. \<lbrakk>\<not> is_TNil xs; y \<in> set2_tllist (ttl xs); P y (ttl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
-proof -
-  have "\<forall>x\<in>set2_tllist xs. P x xs"
-    apply(rule tllist.dtor_set2_induct)
-    using assms
-    apply(auto simp add: is_TNil_def thd_def ttl_def terminal_def set2_pre_tllist_def
-      set3_pre_tllist_def set1_pre_tllist_def fsts_def snds_def case_tllist_def' collect_def
-      sum_set_simps sum.set_map split: sum.splits)
-     apply(rename_tac b y)
-     apply(case_tac b)
-      apply(simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-      apply(erule_tac x="b" in meta_allE)
-      apply(erule meta_impE)
-       apply fastforce
-      apply(simp add: tllist.dtor_ctor BNF_Comp.id_bnf_comp_def)
-     apply(simp add: TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-     apply(rename_tac b xa h t)
-    apply(rotate_tac -2)
-    apply(erule_tac x="b" in meta_allE)
-    apply(erule_tac x="xa" in meta_allE)
-    apply(erule meta_impE)
-     apply(case_tac b)
-      apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-     apply(clarsimp simp add: TNil_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-    apply(case_tac b)
-    apply(simp_all add: TNil_def TCons_def tllist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-    done
-  with `x \<in> set2_tllist xs` show ?thesis by blast
-qed
+using assms by(induct)(fastforce simp del: tllist.disc(1) iff: tllist.disc(1), auto)
 
 
 subsection {* Connection with @{typ "'a llist"} *}
