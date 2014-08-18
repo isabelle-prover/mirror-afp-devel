@@ -64,14 +64,6 @@ declare llist.map_cong [cong]
 
 text {* Code generator setup *}
 
-lemma corec_llist_code [code]:
-  "corec_llist IS_LNIL LHD endORmore LTL_end LTL_more b =
-  (if IS_LNIL b then LNil
-   else LCons (LHD b)
-     (if endORmore b then LTL_end b
-      else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
-by(rule llist.expand) simp_all
-
 lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
 by(coinduction arbitrary: x) auto
 
@@ -80,30 +72,22 @@ text {* lemmas about generated constants *}
 lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> xs \<noteq> LNil \<and> lhd xs = y \<and> ltl xs = ys"
 by auto
 
-lemma lnull_lmap [simp]: "lnull (lmap f xs) \<longleftrightarrow> lnull xs"
-by(cases xs) simp_all
-
 lemma
   shows LNil_eq_lmap: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
   and lmap_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
 by(cases xs,simp_all)+
 
-lemma [simp]:
-  shows lhd_lmap: "\<not> lnull xs \<Longrightarrow> lhd (lmap f xs) = f (lhd xs)"
-  and ltl_lmap: "ltl (lmap f xs) = lmap f (ltl xs)"
-by(cases xs, simp_all)+
+declare llist.map_sel(1)[simp]
 
-lemma lmap_ident [simp]: "lmap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] llist.map_id)
+lemma ltl_lmap[simp]: "ltl (lmap f xs) = lmap f (ltl xs)"
+by(cases xs, simp_all)
+
+declare llist.map_ident[simp]
 
 lemma lmap_eq_LCons_conv:
   "lmap f xs = LCons y ys \<longleftrightarrow> 
   (\<exists>x xs'. xs = LCons x xs' \<and> y = f x \<and> ys = lmap f xs')"
 by(cases xs)(auto)
-
-lemma lmap_id: 
-  "lmap id = id"
-by(simp add: fun_eq_iff llist.map_id)
 
 lemma lmap_conv_unfold_llist:
   "lmap f = unfold_llist (\<lambda>xs. xs = LNil) (f \<circ> lhd) ltl" (is "?lhs = ?rhs")
@@ -141,8 +125,7 @@ by(coinduction arbitrary: xs) simp_all
 lemma lset_eq_empty [simp]: "lset xs = {} \<longleftrightarrow> lnull xs"
 by(cases xs) simp_all
 
-lemma lhd_in_lset [simp]: "\<not> lnull xs \<Longrightarrow> lhd xs \<in> lset xs"
-by(cases xs) auto
+declare llist.set_sel(1)[simp]
 
 lemma lset_ltl: "lset (ltl xs) \<subseteq> lset xs"
 by(cases xs) auto
@@ -150,39 +133,14 @@ by(cases xs) auto
 lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
-lemma case_llist_def':
-"case_llist lnil lcons xs = (case dtor_llist xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
-apply (case_tac xs)
-by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor BNF_Comp.id_bnf_comp_def)
-
 text {* induction rules *}
-
+ 
 theorem llist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> lset xs" and "\<And>xs. \<not> lnull xs \<Longrightarrow> P (lhd xs) xs"
   and "\<And>xs y. \<lbrakk>\<not> lnull xs; y \<in> lset (ltl xs); P y (ltl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
-proof -
-  have "\<forall>x\<in>lset xs. P x xs"
-    apply(rule llist.dtor_set_induct)
-    using assms
-    apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def case_llist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
-     apply(rename_tac b h t)
-     apply(erule_tac x="b" in meta_allE)
-     apply(erule meta_impE)
-      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
-     apply(case_tac b)
-     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
-    apply(rotate_tac -2)
-    apply(rename_tac b xa h t)
-    apply(erule_tac x="b" in meta_allE)
-    apply(erule_tac x="xa" in meta_allE)
-    apply(erule meta_impE)
-     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
-    apply(case_tac b)
-    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-    done
-  with `x \<in> lset xs` show ?thesis by blast
-qed
+using assms
+by (induct x xs rule: llist.set_induct) (fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
 
 
 text {* Setup for quickcheck *}
@@ -2675,11 +2633,11 @@ by(coinduction arbitrary: xs ys) auto
 
 lemma lzip_lmap1:
   "lzip (lmap f xs) ys = lmap (\<lambda>(x, y). (f x, y)) (lzip xs ys)"
-by(subst (4) lmap_ident[symmetric])(simp only: lzip_lmap)
+by(subst (4) llist.map_ident[symmetric])(simp only: lzip_lmap)
 
 lemma lzip_lmap2: 
   "lzip xs (lmap f ys) = lmap (\<lambda>(x, y). (x, f y)) (lzip xs ys)"
-by(subst (1) lmap_ident[symmetric])(simp only: lzip_lmap)
+by(subst (1) llist.map_ident[symmetric])(simp only: lzip_lmap)
 
 lemma lmap_fst_lzip_conv_ltake: 
   "lmap fst (lzip xs ys) = ltake (min (llength xs) (llength ys)) xs"

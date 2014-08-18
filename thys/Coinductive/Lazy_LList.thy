@@ -70,7 +70,7 @@ lemma corec_llist_Lazy_llist [code]:
      else Some (LHD b,
        if endORmore b then LTL_end b
        else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
-by(subst corec_llist_code) simp
+by(subst llist.corec_code) simp
 
 declare [[code drop: unfold_llist]]
 

@@ -186,7 +186,7 @@ next
   thus "x \<in> ?lhs"
   proof(induct)
     case (shd xs)
-    thus ?case using lhd_in_lset[of "llist_of_stream xs"] by simp
+    thus ?case using llist.set_sel(1)[of "llist_of_stream xs"] by simp
   next
     case stl 
     thus ?case

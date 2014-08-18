@@ -30,7 +30,7 @@ lemma id_preserve [quot_preserve]:
 functor lmap: lmap
    by (simp_all add: fun_eq_iff id_def llist.map_comp)
 
-declare lmap_id [id_simps]
+declare llist.map_id0 [id_simps]
 
 lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
   by (rule reflpI) (auto simp add: llist_all2_conv_all_lnth elim: reflpE)
@@ -58,7 +58,7 @@ qed
 
 lemma Quotient_lmap_Abs_Rep:
   "Quotient3 R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
-  by (drule abs_o_rep) (simp add: lmap_id llist.map_comp)
+  by (drule abs_o_rep) (simp add: llist.map_id0 llist.map_comp)
 
 lemma llist_all2_rel:
   assumes "Quotient3 R Abs Rep"
