@@ -904,13 +904,6 @@ lemma set3_pre_tllist_transfer [transfer_rule]:
   "(rel_pre_tllist A B C ===> rel_set C) set3_pre_tllist set3_pre_tllist"
 by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set3_pre_tllist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
 
-lemma dtor_tllist_transfer [transfer_rule]:
-  "(tllist_all2 A B ===> rel_pre_tllist A B (tllist_all2 A B)) dtor_tllist dtor_tllist"
-apply(rule rel_funI)
-apply(erule tllist_all2_cases)
-apply(auto simp add: rel_pre_tllist_def vimage2p_def BNF_Comp.id_bnf_comp_def rel_sum_def TNil_def TCons_def tllist.dtor_ctor split: sum.split)
-done
-
 lemma TNil_transfer2 [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"
 by auto
 declare TNil_transfer [transfer_rule]
