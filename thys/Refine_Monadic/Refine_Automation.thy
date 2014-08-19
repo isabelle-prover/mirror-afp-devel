@@ -30,7 +30,7 @@ signature REFINE_AUTOMATION = sig
   val prepare_code_thms_cmd: string list -> thm -> local_theory -> local_theory
 
   val define_concrete_fun: extraction list option -> binding -> 
-    Args.src list -> indexname list -> thm ->
+    Token.src list -> indexname list -> thm ->
     cterm list -> local_theory -> local_theory
   
 
