@@ -3,6 +3,8 @@ header {* Circus syntax *}
 
 theory Circus_Syntax
 imports Denotational_Semantics
+keywords "alphabet" "state" "channel" "nameset" "chanset" "schema" "action" and
+  "circus_process" :: thy_decl
 begin
 
 abbreviation list_select::"['r \<Rightarrow> 'a list] \<Rightarrow> ('r \<Rightarrow> 'a)" where
@@ -53,14 +55,14 @@ parse_translation {*
 
         fun get_selector x =
           let val c = Consts.intern (Proof_Context.consts_of ctxt) x
-          in 
-                if member (op =) av x then SOME (Const ("Circus_Syntax.list_select", dummyT) $ (Syntax.const c)) else 
+          in
+                if member (op =) av x then SOME (Const ("Circus_Syntax.list_select", dummyT) $ (Syntax.const c)) else
                   if member (op =) sv x then SOME (Syntax.const c) else NONE end;
 
         fun get_update x =
           let val c = Consts.intern (Proof_Context.consts_of ctxt) x
-          in 
-                if member (op =) av x then SOME (Const ("Circus_Syntax.list_update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else 
+          in
+                if member (op =) av x then SOME (Const ("Circus_Syntax.list_update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else
                   if member (op =) sv x then SOME (Const ("Circus_Syntax.update_const", dummyT) $ (Syntax.const (c^Record.updateN))) else NONE end;
 
         fun print text =  (fn x => let val _ = writeln text; in x end);
@@ -75,7 +77,7 @@ parse_translation {*
                     SOME y =>
                       (case get_selector y of SOME c => c $ Bound i | NONE => t)
                   | NONE => t))
-          | tr i (t as (Const ("_synt_assign", _) $ Free (x, _) $ r)) = 
+          | tr i (t as (Const ("_synt_assign", _) $ Free (x, _) $ r)) =
               (case get_update x of
                 SOME c =>  c $ (tr i r) $ (Const ("Product_Type.Pair", dummyT) $ Bound (i + 1) $ Bound i)
               | NONE => t)
@@ -118,7 +120,7 @@ fun add_datatype (params, binding) constr_specs thy =
     val constrs = map #1 constr_specs ~~ map constr (constr_names ~~ map #2 constr_specs);
    in ((dt_name, constrs), thy') end;
 
-fun define_channels (params, binding) typesyn channels thy =                  
+fun define_channels (params, binding) typesyn channels thy =
   case typesyn of
   NONE =>
   let
@@ -135,18 +137,18 @@ fun define_channels (params, binding) typesyn channels thy =
     val ev_equ = Free (fun_name, T --> T --> HOLogic.boolT);
 
     val eqs = map_product (fn (_, (c, n)) => (fn (_, (c1,n1)) =>
-      let 
+      let
         val t = Term.list_comb (c, replicate n dummy);
         val t1 = Term.list_comb (c1, replicate n1 dummy);
       in (if c = c1 then mk_eq ((ev_equ $ t $ t1), @{term True}) else mk_eq ((ev_equ $ t $ t1), @{term False})) end)) constrs constrs;
 
   fun case_tac x ctxt = rtac (Drule.instantiate' [] [SOME x] (#exhaust (Datatype.the_info (Proof_Context.theory_of ctxt) dt_name)));
 
-  fun proof ctxt = (Class.intro_classes_tac [] THEN 
-                      Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} => 
+  fun proof ctxt = (Class.intro_classes_tac [] THEN
+                      Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} =>
                                         (case_tac x ctxt) 1
                                             THEN auto_tac ctxt') ctxt 1 THEN
-                      Subgoal.FOCUS (fn {context = ctxt', params = [(_, x), (_, y)], ...} => 
+                      Subgoal.FOCUS (fn {context = ctxt', params = [(_, x), (_, y)], ...} =>
                                         ((case_tac x ctxt) THEN_ALL_NEW (case_tac y ctxt)) 1
                                             THEN auto_tac ctxt') ctxt 1);
 
@@ -214,7 +216,7 @@ fun define_nameset binding (rec_binding, alphabet) (ns_binding, names) thy  =
                                           $ (Abs ("_", dummyT, (Const("Circus_Syntax.list_select", dummyT) $ y) $ (Bound 1))))
                              else Abs ("A", dummyT, x $ (Abs ("_", dummyT, y $ (Bound 1))))) updates' selectors';
     val base_name = Binding.name_of ns_binding;
-    fun comp [a] = a $ (Bound 1) $ (Bound 0) 
+    fun comp [a] = a $ (Bound 1) $ (Bound 0)
       | comp (a::l) = a $ (Bound 1) $ (comp l);
     val nameset_eq = mk_eq ((Free (base_name, dummyT)), (Abs ("_", dummyT, (Abs ("_", dummyT, comp formulas)))));
   in
@@ -228,10 +230,10 @@ fun define_nameset binding (rec_binding, alphabet) (ns_binding, names) thy  =
 
 fun define_schema binding (ex_binding, expr) (alph_bind, alpha, state) thy =
   let
-      val fields_names = (map (fn (x, T) => (Binding.name_of x, T)) (alpha @ state));      
+      val fields_names = (map (fn (x, T) => (Binding.name_of x, T)) (alpha @ state));
       val alpha' = (map (fn (x, T) => (Binding.name_of x, T)) alpha);
       val state' = (map (fn (x, T) => (Binding.name_of x, T)) state);
-      val all_selectors = get_fields (Record.get_info thy (Sign.full_name thy alph_bind)) thy      
+      val all_selectors = get_fields (Record.get_info thy (Sign.full_name thy alph_bind)) thy
       val base_name = Binding.name_of ex_binding;
       val ctxt = Proof_Context.init_global thy;
       val term =
@@ -338,8 +340,37 @@ fun gen_circus_process prep_constraint prep_typ
 fun circus_process x = gen_circus_process (K I) Syntax.check_typ x;
 fun circus_process_cmd x = gen_circus_process (apsnd o Typedecl.read_constraint) Syntax.read_typ x;
 
-circus_process_fn := circus_process_cmd;
 
+local
+
+val fields =
+  @{keyword "["} |-- Parse.enum1 "," (Parse.binding -- (@{keyword "::"} |-- Parse.!!! Parse.typ))
+    --| @{keyword  "]"};
+
+val constrs =
+  (@{keyword  "["} |-- Parse.enum1 "," (Parse.binding -- Scan.option Parse.typ) --| @{keyword  "]"}) >> pair NONE
+  || Parse.typ >> (fn b => (SOME b, []));
+
+val names =
+  @{keyword "["} |-- Parse.enum1 "," Parse.name --| @{keyword  "]"};
+
+in
+
+val _ =
+  Outer_Syntax.command @{command_spec "circus_process"} "Circus process specification"
+    ((Parse.type_args_constrained -- Parse.binding --| @{keyword  "="}) --
+      Scan.optional (@{keyword "alphabet"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --
+      Scan.optional (@{keyword "state"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --
+      Scan.optional (@{keyword "channel"} |-- Parse.!!! (@{keyword  "="} |-- constrs)) (NONE, []) --
+      Scan.repeat (@{keyword "nameset"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- names)) --
+      Scan.repeat (@{keyword "chanset"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- names)) --
+      Scan.repeat ((@{keyword "schema"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- (Parse.term >> pair true))) ||
+                   (@{keyword "action"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- (Parse.term >> pair false)))) --
+      (Parse.where_ |-- Parse.!!! Parse.term)
+        >> (fn (((((((a, b), c), d), e), f), g), h) =>
+          Toplevel.theory (circus_process_cmd a b c d e f g h)));
+
+end;
 *}
 
 end

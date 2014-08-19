@@ -73,10 +73,9 @@ fun create_vcs ctxt i =
                THEN
                TRY (REPEAT_ALL_NEW (ematch_tac [@{thm disjE}]) i)
                THEN
-               (PARALLEL_GOALS (ALLGOALS
+               PARALLEL_ALLGOALS
                  (fn i => simp_only main_simp_thms ctxt i
-                  THEN TRY (REPEAT_ALL_NEW (ematch_tac [@{thm disjE}]) i))
-               )), all_tac)
+                  THEN TRY (REPEAT_ALL_NEW (ematch_tac [@{thm disjE}]) i)), all_tac)
   end
 
 fun try_invs ctxt =
@@ -108,21 +107,20 @@ fun simp_all ctxt =
   let val ctxt' =
         ctxt |> fold Splitter.add_split [@{thm split_if_asm}]
   in
-    (PARALLEL_GOALS o ALLGOALS o shallow_simp) ctxt
+    PARALLEL_ALLGOALS (shallow_simp ctxt)
     THEN
-    TRY ((CHANGED_PROP (PARALLEL_GOALS (ALLGOALS
-           (asm_full_simp_tac ctxt' THEN' (try_final ctxt))))))
+    TRY (CHANGED_PROP (PARALLEL_ALLGOALS (asm_full_simp_tac ctxt' THEN' try_final ctxt)))
   end
 
 fun intro_and_invs ctxt i =
   let val cterms_intros = rev (Named_Theorems.get ctxt @{named_theorems cterms_intros}) in
     match_tac cterms_intros i
-    THEN (PARALLEL_GOALS (ALLGOALS (try_invs ctxt)))
+    THEN PARALLEL_ALLGOALS (try_invs ctxt)
   end
 
 fun process_vcs ctxt _ =
   ALLGOALS (create_vcs ctxt ORELSE' (SOLVED' (clarsimp_tac ctxt)))
-  THEN (PARALLEL_GOALS (ALLGOALS (TRY o (each ctxt))))
+  THEN PARALLEL_ALLGOALS (TRY o each ctxt)
 *}
 
 method_setup inv_cterms = {*

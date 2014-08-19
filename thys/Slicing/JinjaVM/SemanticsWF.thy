@@ -458,8 +458,8 @@ proof -
     unfolding wt_method_def apply (cases "is ! pc")
     using [[simproc del: list_to_set_comprehension]]
     apply (cases "is ! pc")
-    apply (tactic {* PARALLEL_GOALS
-      (ALLGOALS (Clasimp.fast_force_tac (@{context} addSDs @{thms list_all2_lengthD}))) *})
+    apply (tactic {* PARALLEL_ALLGOALS
+      (Clasimp.fast_force_tac (@{context} addSDs @{thms list_all2_lengthD})) *})
     done
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
