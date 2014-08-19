@@ -617,7 +617,7 @@ by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_S
 
 code_printing
   constant "integer_of_uint32" \<rightharpoonup>
-  (SML) "Word32.toInt _ : IntInf.int" and
+  (SML) "IntInf.fromLarge (Word32.toLargeInt _) : IntInf.int" and
   (Haskell) "Prelude.toInteger"
 | constant "integer_of_uint32_signed" \<rightharpoonup>
   (OCaml) "Big'_int.big'_int'_of'_int32" and
