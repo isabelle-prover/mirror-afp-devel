@@ -19,28 +19,28 @@ val circus_process_fn =
 local
 
 val fields =
-  Parse.$$$ "[" |-- Parse.enum1 "," (Parse.binding -- (Parse.$$$ "::" |-- Parse.!!! Parse.typ))
-    --| Parse.$$$ "]";
+  @{keyword "["} |-- Parse.enum1 "," (Parse.binding -- (@{keyword "::"} |-- Parse.!!! Parse.typ))
+    --| @{keyword  "]"};
 
 val constrs =
-  (Parse.$$$ "[" |-- Parse.enum1 "," (Parse.binding -- Scan.option Parse.typ) --| Parse.$$$ "]") >> pair NONE
+  (@{keyword  "["} |-- Parse.enum1 "," (Parse.binding -- Scan.option Parse.typ) --| @{keyword  "]"}) >> pair NONE
   || Parse.typ >> (fn b => (SOME b, []));
   
 val names =
-   Parse.$$$ "[" |-- Parse.enum1 "," Parse.name --| Parse.$$$ "]";
+  @{keyword "["} |-- Parse.enum1 "," Parse.name --| @{keyword  "]"};
 
 in
 
 val _ =
   Outer_Syntax.command @{command_spec "circus_process"} "Circus process specification"
-    ((Parse.type_args_constrained -- Parse.binding --| Parse.$$$ "=") --
-      Scan.optional (@{keyword "alphabet"} |-- Parse.!!! (Parse.$$$ "=" |-- fields)) [] --
-      Scan.optional (@{keyword "state"} |-- Parse.!!! (Parse.$$$ "=" |-- fields)) [] --
-      Scan.optional (@{keyword "channel"} |-- Parse.!!! (Parse.$$$ "=" |-- constrs)) (NONE, []) --
-      Scan.repeat (@{keyword "nameset"} |-- Parse.!!! ((Parse.binding --| Parse.$$$ "=") -- names)) --
-      Scan.repeat (@{keyword "chanset"} |-- Parse.!!! ((Parse.binding --| Parse.$$$ "=") -- names)) --
-      Scan.repeat ((@{keyword "schema"} |-- Parse.!!! ((Parse.binding --| Parse.$$$ "=") -- (Parse.term >> pair true))) ||
-                   (@{keyword "action"} |-- Parse.!!! ((Parse.binding --| Parse.$$$ "=") -- (Parse.term >> pair false)))) --
+    ((Parse.type_args_constrained -- Parse.binding --| @{keyword  "="}) --
+      Scan.optional (@{keyword "alphabet"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --
+      Scan.optional (@{keyword "state"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --
+      Scan.optional (@{keyword "channel"} |-- Parse.!!! (@{keyword  "="} |-- constrs)) (NONE, []) --
+      Scan.repeat (@{keyword "nameset"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- names)) --
+      Scan.repeat (@{keyword "chanset"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- names)) --
+      Scan.repeat ((@{keyword "schema"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- (Parse.term >> pair true))) ||
+                   (@{keyword "action"} |-- Parse.!!! ((Parse.binding --| @{keyword "="}) -- (Parse.term >> pair false)))) --
       (Parse.where_ |-- Parse.!!! Parse.term)
         >> (fn (((((((a, b), c), d), e), f), g), h) =>
           Toplevel.theory (fn thy => ! circus_process_fn a b c d e f g h thy)));
