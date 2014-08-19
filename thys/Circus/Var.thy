@@ -1,7 +1,7 @@
 header {* UTP variables *}
 
 theory Var
-imports Commands
+imports Main
 begin
 
 text {* UTP variables are characterized by two functions, $select$ and $update$. 
