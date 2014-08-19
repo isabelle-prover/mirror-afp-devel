@@ -101,7 +101,7 @@ proof -
   have as: "set as = ?Ds \<union> ?Ls \<union> ?Us" (is "_ = ?S")
   proof -
     { fix x assume "x \<in> set as"
-      hence "x \<in> ?S" using hd by (cases x)(auto split:list.splits) }
+      hence "x \<in> ?S" using hd by (cases x rule: atom.exhaust)(auto split:list.splits) }
     moreover
     { fix x assume "x \<in> ?S"
       hence "x \<in> set as" by auto }
