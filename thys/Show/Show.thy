@@ -167,7 +167,7 @@ in
   Outer_Syntax.command @{command_spec "standard_shows_list"} 
     "use standard way to extend shows to shows_list, requires associativity lemma as parameter"
     (*standard way: "shows_list = shows_list_aux shows"*)
-    (Parse_Spec.xthm >> (fn thm_name => Toplevel.local_theory NONE (define_shows_list thm_name)))
+    (Parse.xthm >> (fn thm_name => Toplevel.local_theory NONE (define_shows_list thm_name)))
 end
 *}
 

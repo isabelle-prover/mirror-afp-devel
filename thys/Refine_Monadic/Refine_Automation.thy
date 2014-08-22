@@ -423,9 +423,9 @@ ML {* Outer_Syntax.local_theory
   @{command_spec "concrete_definition"} 
   "Define function from refinement theorem" 
   (Parse.binding 
-    -- Parse_Spec.opt_attribs
+    -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
-    --| @{keyword "uses"} -- Parse_Spec.xthm
+    --| @{keyword "uses"} -- Parse.xthm
     -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
@@ -481,7 +481,7 @@ ML {*
     Outer_Syntax.local_theory 
     @{command_spec "prepare_code_thms"} 
     "Refinement framework: Prepare theorems for code generation" 
-    (modes -- Parse_Spec.xthms1
+    (modes -- Parse.xthms1
       >> (fn (modes,raw_thms) => fn lthy => let
         val thms = Attrib.eval_thms lthy raw_thms
       in
