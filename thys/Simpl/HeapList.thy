@@ -118,7 +118,7 @@ theorem notin_List_update[simp]:
  "\<And>p. q \<notin> set ps \<Longrightarrow> List p (h(q := y)) ps = List p h ps"
 apply(induct ps)
 apply simp
-apply(clarsimp simp add:fun_upd_apply)
+apply clarsimp
 done
 
 lemma List_upd_same_lemma: "\<And>p.  p \<noteq> Null \<Longrightarrow> \<not> List p (h(p := p)) ps"
