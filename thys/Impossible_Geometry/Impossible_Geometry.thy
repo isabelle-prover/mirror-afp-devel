@@ -755,32 +755,16 @@ proof -
     using notEmpty radical_sqrt_normal_form [of e]
     by blast
   let ?E = "{x. \<exists> ex. (\<lbrace>ex\<rbrace> = x) & ((radicals ex) \<subseteq> (radicals e)) & (r \<notin> (radicals ex))}"
-  have "n \<in> Nats \<longrightarrow> (\<lbrace>Const (rat_of_nat (n::nat))\<rbrace> = n) & (radicals (Const (rat_of_nat (n))) \<subseteq> (radicals e)) & (r \<notin> radicals (Const (rat_of_nat (n))))"
-    by (metis empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) real_eq_of_nat translation.simps(1)) 
-  hence NatsE: "Nats \<subseteq> ?E" 
-    apply auto
-    apply (metis Nats_cases empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) translation.simps(1))
-    by (metis Nats_cases empty_iff empty_subsetI of_rat_of_nat_eq radicals.simps(1) translation.simps(1))
+  have NatsE: "Nats \<subseteq> ?E" 
+    by (force elim: Nats_cases intro: exI[of _ "Const (rat_of_nat n)" for n])
   have negE: "\<forall>x \<in> ?E. -x \<in> ?E" 
-    using hypsruv
-    apply auto
-    apply (rule_tac x = "Negation ex" in exI)
-    by auto
+    using hypsruv by (force intro: exI[of _ "Negation ex" for ex])
   have invE: "\<forall>x \<in> ?E. x \<noteq> 0 --> 1/x \<in> ?E" 
-    using hypsruv
-    apply auto
-    apply (rule_tac x = "Inverse ex" in exI)
-    by auto
+    using hypsruv by (force intro: exI[of _ "Inverse ex" for ex])
   have addE: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x+y \<in> ?E"
-    using hypsruv
-    apply auto
-    apply (rule_tac x = "Addition exa ex" in exI)
-    by auto
+    using hypsruv by (force intro: exI[of _ "Addition ex1 ex2" for ex1 ex2])
   have multE: "\<forall>x \<in> ?E. \<forall>y \<in> ?E. x*y \<in> ?E"
-    using hypsruv
-    apply auto
-    apply (rule_tac x = "Multiplication exa ex" in exI)
-    by auto
+    using hypsruv by (force intro: exI[of _ "Multiplication ex1 ex2" for ex1 ex2])
   obtain ra rb rc
     where hypsra: "a = of_rat ra"
       and hypsrb: "b = of_rat rb"
@@ -789,14 +773,8 @@ proof -
     by (metis Rats_cases a b c)
   have "a \<in> ?E & b \<in> ?E & c \<in> ?E & \<lbrace>u\<rbrace> \<in> ?E & \<lbrace>v\<rbrace> \<in> ?E & \<lbrace>r\<rbrace> \<in> ?E & \<lbrace>r\<rbrace> \<ge> 0 & \<lbrace>e\<rbrace> = \<lbrace>u\<rbrace> + \<lbrace>v\<rbrace> * sqrt \<lbrace>r\<rbrace>"
     using a b c notEmpty hypsruv hypsra hypsrb hypsrc
-    apply auto
-    apply (rule_tac x = "Const ra" in exI)
-    apply auto
-    apply (rule_tac x = "Const rb" in exI)
-    apply auto
-    apply (rule_tac x = "Const rc" in exI)
-    by auto
- with eq0 hypsruv NatsE negE invE addE multE 
+    by (auto intro: exI[of _ "Const x" for x])
+  with eq0 hypsruv NatsE negE invE addE multE 
       cubic_root_radical_sqrt_steplemma_sqrt [of "?E" a b c"\<lbrace>e\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>" "\<lbrace>r\<rbrace>"]
    obtain w where "w \<in> ?E & (w^3 + a * w^2 + b * w + c = 0)"
      by auto 
