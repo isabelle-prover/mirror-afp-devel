@@ -43,7 +43,7 @@ abstract =
   incorporates both probabilistic and nondeterministic choice, in a unified
   manner. Program verification is by refinement or annotation (or both), using
   either Hoare triples, or weakest-precondition entailment, in the style of
-  GCL.</p> 
+  GCL.</p>
   <p> This package provides both a shallow embedding of the language
   primitives, and an annotation and refinement framework. The generated
   document includes a brief tutorial.</p>
@@ -1197,7 +1197,7 @@ abstract = We formalize a wide variety of Volpano/Smith-style  noninterference
 
 [SIFUM_Type_Systems]
 title = A Formalization of Assumptions and Guarantees for Compositional Noninterference
-author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@schoepe.org>
+author = Sylvia Grewe <mailto:grewe@cs.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Daniel Schoepe <mailto:daniel@schoepe.org>
 date = 2014-04-23
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
 abstract = Research in information-flow security aims at developing methods to
@@ -1219,7 +1219,7 @@ abstract = Research in information-flow security aims at developing methods to
 
 [Strong_Security]
 title = A Formalization of Strong Security
-author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
+author = Sylvia Grewe <mailto:grewe@cs.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
 date = 2014-04-23
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
 abstract = Research in information-flow security aims at developing methods to
@@ -1245,7 +1245,7 @@ abstract = Research in information-flow security aims at developing methods to
 
 [WHATandWHERE_Security]
 title = A Formalization of Declassification with WHAT-and-WHERE-Security
-author = Sylvia Grewe <mailto:grewe@mais.informatik.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
+author = Sylvia Grewe <mailto:grewe@cs.tu-darmstadt.de>, Alexander Lux <mailto:lux@mais.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Jens Sauer <mailto:sauer@mais.informatik.tu-darmstadt.de>
 date = 2014-04-23
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
 abstract = Research in information-flow security aims at developing methods to
@@ -1748,7 +1748,7 @@ abstract =
 extra-history =
   Change history:
   [2013-10-16]: Added algorithms to compute floor and ceiling of sqrt of integers.
-  [2014-07-11]: Moved NthRoot_Impl from Real-Impl to this entry. 
+  [2014-07-11]: Moved NthRoot_Impl from Real-Impl to this entry.
 
 [Sturm_Sequences]
 title = Sturm's Theorem
