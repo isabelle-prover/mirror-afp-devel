@@ -3623,9 +3623,9 @@ val argP = Args.name --| @{keyword "="} -- Args.name
 val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 
-val vcg_simp_modifiers: Method.modifier parser list =
-  [Args.add -- Args.colon >> K (I,vcg_simp_add),
-   Args.del -- Args.colon >> K (I,vcg_simp_del)];
+val vcg_simp_modifiers =
+  [Args.add -- Args.colon >> K (Method.modifier vcg_simp_add @{here}),
+   Args.del -- Args.colon >> K (Method.modifier vcg_simp_del @{here})];
 
 fun gen_simp_method tac =
   Scan.lift (argsP >> (fn args => args @ default_args)) --|

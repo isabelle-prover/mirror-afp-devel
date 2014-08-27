@@ -668,28 +668,28 @@ structure Seplogic_Auto = struct
 
   val dflt_simps_modifiers = [
     Args.$$$ "dflt_simps" -- Scan.option Args.add -- Args.colon 
-      >> K ((I, Named_Theorems.add @{named_theorems sep_dflt_simps}):Method.modifier),
+      >> K (Method.modifier (Named_Theorems.add @{named_theorems sep_dflt_simps}) @{here}),
     Args.$$$ "dflt_simps" -- Scan.option Args.del -- Args.colon 
-      >> K ((I, Named_Theorems.del @{named_theorems sep_dflt_simps}):Method.modifier)
+      >> K (Method.modifier (Named_Theorems.del @{named_theorems sep_dflt_simps}) @{here})
   ];
   val heap_modifiers = [
     Args.$$$ "heap" -- Scan.option Args.add -- Args.colon 
-      >> K ((I, Named_Theorems.add @{named_theorems sep_heap_rules}):Method.modifier),
+      >> K (Method.modifier (Named_Theorems.add @{named_theorems sep_heap_rules}) @{here}),
     Args.$$$ "heap" -- Scan.option Args.del -- Args.colon 
-      >> K ((I, Named_Theorems.del @{named_theorems sep_heap_rules}):Method.modifier)
+      >> K (Method.modifier (Named_Theorems.del @{named_theorems sep_heap_rules}) @{here})
   ];
   val decon_modifiers = [
     Args.$$$ "decon" -- Scan.option Args.add -- Args.colon 
-      >> K ((I, Named_Theorems.add @{named_theorems sep_decon_rules}):Method.modifier),
+      >> K (Method.modifier (Named_Theorems.add @{named_theorems sep_decon_rules}) @{here}),
     Args.$$$ "decon" -- Scan.option Args.del -- Args.colon 
-      >> K ((I, Named_Theorems.del @{named_theorems sep_decon_rules}):Method.modifier)
+      >> K (Method.modifier (Named_Theorems.del @{named_theorems sep_decon_rules}) @{here})
   ];
 
   val eintros_modifiers = [
     Args.$$$ "eintros" -- Scan.option Args.add -- Args.colon 
-      >> K ((I, Named_Theorems.add @{named_theorems sep_eintros}):Method.modifier),
+      >> K (Method.modifier (Named_Theorems.add @{named_theorems sep_eintros}) @{here}),
     Args.$$$ "eintros" -- Scan.option Args.del -- Args.colon 
-      >> K ((I, Named_Theorems.del @{named_theorems sep_eintros}):Method.modifier)
+      >> K (Method.modifier (Named_Theorems.del @{named_theorems sep_eintros}) @{here})
   ];
 
 
