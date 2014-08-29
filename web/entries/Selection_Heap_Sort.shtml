@@ -123,7 +123,10 @@ techniques.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-02-18.tar.gz">afp-<!--#echo var="name" -->-2014-02-18.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -106,7 +106,10 @@ use of an implementation of group actions and their properties.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-01-29.tar.gz">afp-<!--#echo var="name" -->-2014-01-29.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
