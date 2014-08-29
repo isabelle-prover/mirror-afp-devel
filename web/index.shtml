@@ -50,6 +50,20 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-08-29:
+<a href="entries/VectorSpace.shtml">Vector Spaces</a>
+<br>Author:
+Holden Lee
+</td></tr>
+
+<tr><td class="entry">
+2014-08-29:
+<a href="entries/Special_Function_Bounds.shtml">Real-Valued Special Functions: Upper and Lower Bounds</a>
+<br>Author:
+<a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-08-13:
 <a href="entries/Skew_Heap.shtml">Skew Heap</a>
 <br>Author:

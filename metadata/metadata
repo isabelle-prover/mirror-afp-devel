@@ -2371,3 +2371,17 @@ author = Alessandro Coglio <http://www.kestrel.edu/~coglio>
 date = 2014-07-03
 topic = Computer Science/Refinement
 abstract = Pop-refinement is an approach to stepwise refinement, carried out inside an interactive theorem prover by constructing a monotonically decreasing sequence of predicates over deeply embedded target programs. The sequence starts with a predicate that characterizes the possible implementations, and ends with a predicate that characterizes a unique program in explicit syntactic form. Pop-refinement enables more requirements (e.g. program-level and non-functional) to be captured in the initial specification and preserved through refinement. Security requirements expressed as hyperproperties (i.e. predicates over sets of traces) are always preserved by pop-refinement, unlike the popular notion of refinement as trace set inclusion. Two simple examples in Isabelle/HOL are presented, featuring program-level requirements, non-functional requirements, and hyperproperties.
+
+[VectorSpace]
+title = Vector Spaces
+author = Holden Lee <mailto:holdenl@princeton.edu>
+date = 2014-08-29
+topic = Mathematics/Algebra
+abstract = This formalisation of basic linear algebra is based completely on locales, building off HOL-Algebra. It includes basic definitions: linear combinations, span, linear independence; linear transformations; interpretation of function spaces as vector spaces; the direct sum of vector spaces, sum of subspaces; the replacement theorem; existence of bases in finite-dimensional; vector spaces, definition of dimension; the rank-nullity theorem. Some concepts are actually defined and proved for modules as they also apply there. Infinite-dimensional vector spaces are supported, but dimension is only supported for finite-dimensional vector spaces. The proofs are standard; the proofs of the replacement theorem and rank-nullity theorem roughly follow the presentation in Linear Algebra by Friedberg, Insel, and Spence. The rank-nullity theorem generalises the existing development in the Archive of Formal Proof (originally using type classes, now using a mix of type classes and locales).
+
+[Special_Function_Bounds]
+title = Real-Valued Special Functions: Upper and Lower Bounds
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+date = 2014-08-29
+topic = Mathematics/Analysis
+abstract = This development proves upper and lower bounds for several familiar real-valued functions. For sin, cos, exp and sqrt, it defines and verifies infinite families of upper and lower bounds, mostly based on Taylor series expansions. For arctan, ln and exp, it verifies a finite collection of upper and lower bounds, originally obtained from the functions' continued fraction expansions using the computer algebra system Maple. A common theme in these proofs is to take the difference between a function and its approximation, which should be zero at one point, and then consider the sign of the derivative. The immediate purpose of this development is to verify axioms used by MetiTarski, an automatic theorem prover for real-valued special functions. Crucial to MetiTarski's operation is the provision of upper and lower bounds for each function of interest.
