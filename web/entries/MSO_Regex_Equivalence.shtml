@@ -127,7 +127,10 @@ The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pub
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-06-12.tar.gz">afp-<!--#echo var="name" -->-2014-06-12.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

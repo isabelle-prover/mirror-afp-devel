@@ -102,6 +102,7 @@ We formalise a functional implementation of the FFT algorithm over the complex n
   </tr>
     <tr><td class="links">Older releases:
 <ul>
+<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
 <li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
 <li>Isabelle 2013: <a href="../release/afp-<!--#echo var="name" -->-2013-02-16.tar.gz">afp-<!--#echo var="name" -->-2013-02-16.tar.gz</a></li>
 <li>Isabelle 2012: <a href="../release/afp-<!--#echo var="name" -->-2012-05-24.tar.gz">afp-<!--#echo var="name" -->-2012-05-24.tar.gz</a></li>

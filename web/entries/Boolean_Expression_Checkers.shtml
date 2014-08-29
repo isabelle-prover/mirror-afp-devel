@@ -105,7 +105,10 @@ the checkers operate on binary decision trees and are reasonably efficient
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-06-08.tar.gz">afp-<!--#echo var="name" -->-2014-06-08.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
