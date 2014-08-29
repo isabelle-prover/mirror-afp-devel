@@ -168,6 +168,7 @@ Simpl
 Skew_Heap
 Slicing
 Sort_Encodings
+Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
 Statecharts
@@ -185,6 +186,7 @@ Transitive-Closure-II
 Tree-Automata
 Tycon
 Valuation
+VectorSpace
 Verified-Prover
 VolpanoSmith
 Well_Quasi_Orders
