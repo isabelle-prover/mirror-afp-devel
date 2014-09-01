@@ -2,7 +2,7 @@ signature HASH_GENERATOR =
 sig 
   (* creates the hash function (possible bounded by some parameter) *)
   (*                          dtyp_info                *)
-  val mk_hash : theory -> Datatype_Aux.info -> term;
+  val mk_hash : theory -> Old_Datatype_Aux.info -> term;
   
   (* creates and registers hash-functions for datatype *)
   val derive : string -> string -> theory -> theory
@@ -14,7 +14,8 @@ end
 
 structure Hash_Generator : HASH_GENERATOR =
 struct
-open Datatype_Aux; open Datatype; open Derive_Aux;
+
+open Derive_Aux
 
 val max_int = 2147483648 (* 2 ^^ 31 *)
 
@@ -47,7 +48,7 @@ fun mk_hash thy info =
     val ty_name = info |> #descr |> hd |> snd |> #1
     val cons_hash = create_factor ty_name
     val mk_num = HOLogic.mk_number @{typ hashcode}
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val rec_names = #rec_names info
     val mk_free_i = mk_free_tysubst_i typ_subst
     fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
@@ -67,7 +68,7 @@ fun mk_hash thy info =
               let
                 val mult = mk_num (cons_hash cname idx i (j+1))
               in @{term "op * :: hashcode => hashcode => hashcode"} $ mult $ t end
-            fun hash_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
+            fun hash_of_dty (i,Old_Datatype_Aux.DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
               | hash_of_dty (i,_) = 
                   let
                     val xi = x i
@@ -85,7 +86,7 @@ fun mk_hash thy info =
     val rec_args = map #1 nrec_args
     fun mk_rec i = 
       let
-        val ty = typ_of (DtRec i)
+        val ty = typ_of (Old_Datatype_Aux.DtRec i)
         val rec_ty = map type_of rec_args @ [ty] ---> @{typ hashcode}
         val rec_name = nth rec_names i
         val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
@@ -100,9 +101,9 @@ fun derive dtyp_name _ thy =
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating hashcode for datatype " ^ base_name)
     val sort = @{sort hashable}
-    val info = Datatype.the_info thy tyco
+    val info = Old_Datatype_Data.the_info thy tyco
     val vs_of_sort = 
-      let val i = Datatype.the_spec thy tyco |> #1 
+      let val i = Old_Datatype_Data.the_spec thy tyco |> #1 
       in fn sort => map (fn (n,_) => (n, sort)) i end
     val vs = vs_of_sort sort
     val hash_rhs = mk_hash thy info

@@ -18,7 +18,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 signature SHOW_GENERATOR = 
 sig 
   (*creates the shows function (ignores precedence)*)
-  val mk_shows_idx : theory -> Datatype_Aux.info -> (int -> term) * (term * int * int) list;
+  val mk_shows_idx : theory -> Old_Datatype_Aux.info -> (int -> term) * (term * int * int) list;
   (*creates the shows_list function*)
   val mk_shows_list : typ -> term;
   (*creates and registers show-functions for datatypes*)
@@ -29,9 +29,8 @@ end
 
 structure Show_Generator : SHOW_GENERATOR =
 struct
-open Datatype_Aux;
-open Datatype;
-open Derive_Aux;
+
+open Derive_Aux
 
 val shows_prec_name = @{const_name "shows_prec"}
 
@@ -50,7 +49,7 @@ fun mk_shows_idx thy info =
     val typ_subst = typ_subst_for_sort thy info sort 
     val descr = #descr info
     fun mk_shows s = append $ HOLogic.mk_string s
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val rec_names = #rec_names info
     val mk_free_i = mk_free_tysubst_i typ_subst
     fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
@@ -67,7 +66,8 @@ fun mk_shows_idx thy info =
               | combine_dts C e ((_, c) :: ics) = 
                   combine_dts (fn e' => C (@{term "op +@+"} $ e $ e')) c ics
             fun parenthise t = @{term shows_sep_paren} $ t
-            fun shows_of_dty (i, DtRec j) = res_var (j, rec_idx i dtysi) |> parenthise
+            fun shows_of_dty (i, Old_Datatype_Aux.DtRec j) =
+                  res_var (j, rec_idx i dtysi) |> parenthise
               | shows_of_dty (i, _) = 
                   let
                     val xi = x i
@@ -85,7 +85,7 @@ fun mk_shows_idx thy info =
     val rec_args = map #1 nrec_args
     fun mk_rec i = 
       let
-        val ty = typ_of (DtRec i)
+        val ty = typ_of (Old_Datatype_Aux.DtRec i)
         val rec_ty = map type_of rec_args @ [ty] ---> shows_ty
         val rec_name = nth rec_names i
         val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
@@ -124,7 +124,7 @@ fun mk_assoc_thm_trm thy info =
         [x, r_var, s_var])
     end)
 
-fun simps_of_info (info : Datatype_Aux.info) = #rec_rewrites info
+fun simps_of_info (info : Old_Datatype_Aux.info) = #rec_rewrites info
 
 fun mk_assoc_thm thy info =
   let 
@@ -144,7 +144,7 @@ fun mk_assoc_thm thy info =
           | sub_case_tac (dty :: pdtys) ihs =
               let
                 (*for recursive arguments, use IH, otherwise use thm from shows_class*)
-                val (thm, ihs') = (case dty of DtRec _ => (hd ihs, tl ihs) | _ => (@{thm assoc(1)}, ihs))
+                val (thm, ihs') = (case dty of Old_Datatype_Aux.DtRec _ => (hd ihs, tl ihs) | _ => (@{thm assoc(1)}, ihs))
               in
                 (*handle separator*)
                 rtac (case pdtys of [] => @{thm shows_sep_paren_final} | _ => @{thm shows_sep_paren}) 1
@@ -170,9 +170,9 @@ fun derive dtyp_name _ thy =
     val tyco = dtyp_name
     val base_name = Long_Name.base_name tyco
     val _ = Output.writeln ("creating show-functions for data type " ^ base_name)
-    val info = Datatype.the_info thy tyco
+    val info = Old_Datatype_Data.the_info thy tyco
     val vs =
-      let val i = Datatype.the_spec thy tyco |> fst
+      let val i = Old_Datatype_Data.the_spec thy tyco |> fst
       in map (fn (n, _) => (n, sort)) i end
     val shows_rhs = fst (mk_shows_idx thy info) 0
     val shows_prec_rhs = lambda  (Free ("p", nat_ty)) shows_rhs

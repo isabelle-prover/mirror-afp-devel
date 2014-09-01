@@ -62,7 +62,7 @@ setup {*
         val _ = writeln ("proving that datatype " ^ base_name ^ " is countable")
         val sort = @{sort countable}
         val vs = 
-          let val i = Datatype.the_spec thy dtyp_name |> #1 
+          let val i = Old_Datatype_Data.the_spec thy dtyp_name |> #1 
           in map (fn (n,_) => (n, sort)) i end
         val thy' = Class.instantiation ([dtyp_name],vs,sort) thy
           |> Class.prove_instantiation_exit (fn ctxt => countable_tac ctxt 1)

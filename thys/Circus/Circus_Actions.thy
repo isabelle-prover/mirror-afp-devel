@@ -1,7 +1,7 @@
 header {* Circus actions *}
 
 theory Circus_Actions
-imports HOLCF CSP_Processes
+imports "~~/src/HOL/HOLCF/HOLCF" CSP_Processes
 begin
 
 text {* In this section, we introduce definitions for Circus actions with 

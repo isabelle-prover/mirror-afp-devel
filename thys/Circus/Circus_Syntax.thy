@@ -112,10 +112,10 @@ fun mk_eq (l, r) = HOLogic.Trueprop $ ((HOLogic.eq_const dummyT) $ l $ r)
 fun add_datatype (params, binding) constr_specs thy =
   let
     val ([dt_name], thy') = thy
-      |> Datatype.add_datatype {strict = true, quiet = true}
+      |> Old_Datatype.add_datatype {strict = true, quiet = true}
         [((binding, params, NoSyn), constr_specs)];
     val constr_names =
-      map fst (the_single (map (#3 o snd) (#descr (Datatype_Data.the_info thy' dt_name))));
+      map fst (the_single (map (#3 o snd) (#descr (Old_Datatype_Data.the_info thy' dt_name))));
     fun constr (c, Ts) = (Const (c, dummyT), length Ts);
     val constrs = map #1 constr_specs ~~ map constr (constr_names ~~ map #2 constr_specs);
    in ((dt_name, constrs), thy') end;
@@ -142,7 +142,8 @@ fun define_channels (params, binding) typesyn channels thy =
         val t1 = Term.list_comb (c1, replicate n1 dummy);
       in (if c = c1 then mk_eq ((ev_equ $ t $ t1), @{term True}) else mk_eq ((ev_equ $ t $ t1), @{term False})) end)) constrs constrs;
 
-  fun case_tac x ctxt = rtac (Drule.instantiate' [] [SOME x] (#exhaust (Datatype.the_info (Proof_Context.theory_of ctxt) dt_name)));
+  fun case_tac x ctxt =
+    rtac (Drule.instantiate' [] [SOME x] (#exhaust (Old_Datatype_Data.the_info (Proof_Context.theory_of ctxt) dt_name)));
 
   fun proof ctxt = (Class.intro_classes_tac [] THEN
                       Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} =>

@@ -25,7 +25,7 @@ sig
   val mk_infos: string list -> thm list -> thm list -> thm list -> thm list -> (string * info) list
 
   datatype user_data = UserData of
-    {dts      : Datatype.spec list,
+    {dts      : Old_Datatype.spec list,
      cn_names : string list,
      cn_tys   : (string * string) list,
      bn_funs  : (binding * typ * mixfix) list,
@@ -34,7 +34,7 @@ sig
 
   datatype raw_dt_info = RawDtInfo of
     {raw_dt_names         : string list,
-     raw_dts              : Datatype.spec list,
+     raw_dts              : Old_Datatype.spec list,
      raw_tys              : typ list,
      raw_ty_args          : (string * sort) list,
      raw_cns_info         : cns_info list,
@@ -111,7 +111,7 @@ end
 
 
 datatype user_data = UserData of
-  {dts      : Datatype.spec list,
+  {dts      : Old_Datatype.spec list,
    cn_names : string list,
    cn_tys   : (string * string) list,
    bn_funs  : (binding * typ * mixfix) list,
@@ -120,7 +120,7 @@ datatype user_data = UserData of
 
 datatype raw_dt_info = RawDtInfo of
   {raw_dt_names         : string list,
-   raw_dts              : Datatype.spec list,
+   raw_dts              : Old_Datatype.spec list,
    raw_tys              : typ list,
    raw_ty_args          : (string * sort) list,
    raw_cns_info         : cns_info list,

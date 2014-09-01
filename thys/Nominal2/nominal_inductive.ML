@@ -369,7 +369,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
         val strong_ind_thms = Goal.prove ctxt [] ind_prems' ind_concl' 
         (prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms intr_concls_args) 
           |> singleton (Proof_Context.export ctxt ctxt_outside)
-          |> Datatype_Aux.split_conj_thm
+          |> Old_Datatype_Aux.split_conj_thm
           |> map (fn thm => thm RS normalise)
           |> map (asm_full_simplify (put_simpset HOL_basic_ss ctxt
               addsimps @{thms permute_zero induct_rulify})) 

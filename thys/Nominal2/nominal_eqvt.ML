@@ -108,7 +108,7 @@ fun raw_equivariance ctxt preds raw_induct intrs =
   in
     Goal.prove ctxt' [] [] goal
       (fn {context, ...} => eqvt_rel_tac context pred_names pi raw_induct' intrs' 1)
-      |> Datatype_Aux.split_conj_thm
+      |> Old_Datatype_Aux.split_conj_thm
       |> Proof_Context.export ctxt' ctxt
       |> map (fn th => th RS mp)
       |> map zero_var_indexes

@@ -22,7 +22,7 @@ structure Corder_Generator : CORDER_GENERATOR =
 struct
 open Containers_Generator; 
 open Derive_Aux;
-open Datatype; 
+open Old_Datatype; 
 open Order_Generator;
 
 fun mk_none_corder ty =
@@ -51,7 +51,7 @@ fun mk_linorder_thm dtyp_name lthy =
 
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating orders for datatype " ^ base_name)
-    val info = Datatype.the_info thy tyco  
+    val info = Old_Datatype_Data.the_info thy tyco  
     val sort = @{sort linorder}
     val less_term = mk_less_idx thy info sort |> fst |> (fn x => x 0)
     val ty = Term.fastype_of less_term |> Term.dest_Type |> snd |> hd
@@ -117,7 +117,7 @@ fun derive_some_corder dtyp_name thy = let
     val base_name = Long_Name.base_name dtyp_name
     
     val _ = writeln ("creating corder for datatype " ^ base_name)
-    val info = Datatype.the_info thy dtyp_name
+    val info = Old_Datatype_Data.the_info thy dtyp_name
     val sort = @{sort linorder}
     val less = mk_less_idx thy info sort |> fst |> (fn x => x 0)
     val comp_ty = Term.fastype_of less
@@ -126,7 +126,7 @@ fun derive_some_corder dtyp_name thy = let
     val y = Free ("y",ty)
     val less_eq = lambda x (lambda y (HOLogic.mk_disj (less $ x $ y, HOLogic.mk_eq (x,y))))
     val vs_of_sort = 
-      let val i = Datatype.the_spec thy dtyp_name |> #1 
+      let val i = Old_Datatype_Data.the_spec thy dtyp_name |> #1 
       in fn sort => map (fn (n,_) => (n, sort)) i end
     val vs = vs_of_sort sort
     val linorder_thm = mk_linorder_thm dtyp_name (Proof_Context.init_global thy)

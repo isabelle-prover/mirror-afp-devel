@@ -3952,7 +3952,7 @@ by (metis Image_mono order_refl rev_finite_subset)
 
 
 
-subsection {* @{text "option"}-Datatype *}
+subsection {* @{text "option"} Datatype *}
 lemma le_some_optE: "\<lbrakk>Some m\<le>x; !!m'. \<lbrakk>x=Some m'; m\<le>m'\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by (cases x) auto
 

@@ -162,7 +162,7 @@ fun mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause =
 (* produces the introduction rule for an alpha rule *)
 fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bclauses = 
   let
-    val arg_names = Datatype_Prop.make_tnames arg_tys
+    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val arg_names' = Name.variant_list arg_names arg_names
     val args = map Free (arg_names ~~ arg_tys)
     val args' = map Free (arg_names' ~~ arg_tys)
@@ -205,7 +205,7 @@ fun mk_alpha_bn lthy alpha_map alpha_bn_map bn_args is_rec (args, args') bclause
 
 fun mk_alpha_bn_intro lthy bn_trm alpha_map alpha_bn_map (bn_args, (constr, _, arg_tys, is_rec)) bclauses =
   let
-    val arg_names = Datatype_Prop.make_tnames arg_tys
+    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val arg_names' = Name.variant_list arg_names arg_names
     val args = map Free (arg_names ~~ arg_tys)
     val args' = map Free (arg_names' ~~ arg_tys)
@@ -319,8 +319,8 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
     |> singleton (Proof_Context.export ctxt' ctxt)
-    |> Datatype_Aux.split_conj_thm
-    |> map Datatype_Aux.split_conj_thm
+    |> Old_Datatype_Aux.split_conj_thm
+    |> map Old_Datatype_Aux.split_conj_thm
     |> flat
     |> filter_out (is_true o concl_of)
     |> map zero_var_indexes
@@ -365,9 +365,9 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
     |> singleton (Proof_Context.export ctxt' ctxt)
-    |> Datatype_Aux.split_conj_thm
+    |> Old_Datatype_Aux.split_conj_thm
     |> map (fn th => th RS mp) 
-    |> map Datatype_Aux.split_conj_thm
+    |> map Old_Datatype_Aux.split_conj_thm
     |> flat
     |> filter_out (is_true o concl_of)
     |> map zero_var_indexes
@@ -644,7 +644,7 @@ fun raw_prove_bn_imp_tac alpha_result ctxt =
     let
       val AlphaResult {alpha_names, alpha_intros, ...} = alpha_result 
 
-      val prems' = flat (map Datatype_Aux.split_conj_thm prems)
+      val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
       val prems'' = map (transform_prem1 context alpha_names) prems'
     in
       HEADGOAL 
@@ -797,7 +797,7 @@ fun raw_prove_perm_bn_tac alpha_result simps ctxt =
   SUBPROOF (fn {prems, context, ...} => 
     let
       val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, ...} = alpha_result 
-      val prems' = flat (map Datatype_Aux.split_conj_thm prems)
+      val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
       val prems'' = map (transform_prem1 context (alpha_names @ alpha_bn_names)) prems'
     in
       HEADGOAL 

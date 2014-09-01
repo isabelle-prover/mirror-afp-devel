@@ -6,30 +6,30 @@ sig
         second the index number 
   *)
   (*                          dtyp_info            order   idx        *)
-  val mk_less_idx : theory -> Datatype_Aux.info -> sort -> (int -> term) * (term * int * int) list;
+  val mk_less_idx : theory -> Old_Datatype_Aux.info -> sort -> (int -> term) * (term * int * int) list;
 
   (* given an idx, x, and y, it creates x <= y *)
   (*                             dtyp_info            order   idx     x       y   *)
-  val mk_less_eq_idx : theory -> Datatype_Aux.info -> sort -> (int -> term -> term -> term);
+  val mk_less_eq_idx : theory -> Old_Datatype_Aux.info -> sort -> (int -> term -> term -> term);
 
   (* proves the transitivity theorems (for \<le> and < ) *)
-  val mk_transitivity_thms : theory -> Datatype_Aux.info -> thm * thm;
+  val mk_transitivity_thms : theory -> Old_Datatype_Aux.info -> thm * thm;
 
   (* proves the theorem (x < y) = (x \<le> y \<and> \<not> y \<le> x) *)
-  val mk_less_le_not_le_thm : theory -> Datatype_Aux.info -> thm
+  val mk_less_le_not_le_thm : theory -> Old_Datatype_Aux.info -> thm
 
   (* proves the theorem (x \<le> x) *)
-  val mk_le_refl_thm : theory -> Datatype_Aux.info -> thm
+  val mk_le_refl_thm : theory -> Old_Datatype_Aux.info -> thm
 
   (* proves the theorem (x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y) *)
   (* takes as input the transitivity thm for < and the less_le_not_le thm *)
-  val mk_antisym_thm : theory -> Datatype_Aux.info -> thm -> thm -> thm
+  val mk_antisym_thm : theory -> Old_Datatype_Aux.info -> thm -> thm -> thm
 
   (* proves the theorem (x \<le> y \<or> y \<le> x) *)
-  val mk_linear_thm : theory -> Datatype_Aux.info -> thm
+  val mk_linear_thm : theory -> Old_Datatype_Aux.info -> thm
 
   (* proves all four theorems which are required for orders: trans, refl, antisym, less_le_not_le *)
-  val mk_order_thms : theory -> Datatype_Aux.info -> thm list
+  val mk_order_thms : theory -> Old_Datatype_Aux.info -> thm list
 
   (* creates and registers (0 = ord, 1 = order, 2 = linear-order) for datatype *)
   val derive : int -> string -> string -> theory -> theory
@@ -42,7 +42,8 @@ end
 
 structure Order_Generator : ORDER_GENERATOR =
 struct
-open Datatype_Aux; open Datatype; open Derive_Aux;
+
+open Derive_Aux
 
 val less_name = @{const_name "Orderings.less"}
 
@@ -53,19 +54,19 @@ fun mk_less_idx thy info sort =
   let 
     val typ_subst = typ_subst_for_sort thy info sort 
     val descr = #descr info
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val rec_names = #rec_names info
     val mk_free_i = mk_free_tysubst_i typ_subst
     fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
     fun mk_rhss (idx,(ty_name,_,cons)) = 
       let 
-        val ty = typ_of (DtRec idx) 
-        val linfo = the_info thy ty_name
+        val ty = typ_of (Old_Datatype_Aux.DtRec idx) 
+        val linfo = Old_Datatype_Data.the_info thy ty_name
         val case_name = #case_name linfo
         fun mk_rhs (i,(_,dtysi)) = 
           let 
             val lvars = map_index (fn (i,dty) => mk_free_i "x_" i (typ_of dty)) dtysi
-            fun res_var (i,oc) = mk_free_i "res_" oc (typ_of (DtRec i) --> @{typ bool});
+            fun res_var (i,oc) = mk_free_i "res_" oc (typ_of (Old_Datatype_Aux.DtRec i) --> @{typ bool});
             val res_vars = dt_number_recs dtysi
                      |> snd 
                      |> map res_var
@@ -77,7 +78,7 @@ fun mk_less_idx thy info sort =
                 fun combine_dts [] = @{term False}
                   | combine_dts ((_,c) :: []) = c
                   | combine_dts ((i,c) :: ics) = HOLogic.mk_disj (c, HOLogic.mk_conj (HOLogic.mk_eq (x i, y i), combine_dts ics))
-                fun less_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysj) $ y i
+                fun less_of_dty (i,Old_Datatype_Aux.DtRec j) = res_var (j,rec_idx i dtysj) $ y i
                   | less_of_dty (i,_) = 
                       let
                         val xi = x i
@@ -103,7 +104,7 @@ fun mk_less_idx thy info sort =
     val rec_args = map #1 nrec_args
     fun mk_rec i = 
       let 
-        val ty = typ_of (DtRec i)
+        val ty = typ_of (Old_Datatype_Aux.DtRec i)
         val rec_ty = map type_of rec_args @ [ty,ty] ---> @{typ bool}
         val rec_name = nth rec_names i
         val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
@@ -155,7 +156,7 @@ fun mk_less_disj mk_less px py dtys =
 
 fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info @ #distinct info
 
-fun mk_transitivity_thms thy (info : Datatype_Aux.info) = 
+fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) = 
   let 
     val ctxt = Proof_Context.init_global thy
     (* first prove transitivity of < *)
@@ -164,8 +165,8 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
     val (mk_rec,nrec_args) = mk_less_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
     val descr = #descr info
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
-    fun mk_less_term (DtRec i) = mk_rec i
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
+    fun mk_less_term (Old_Datatype_Aux.DtRec i) = mk_rec i
       | mk_less_term dty =
           let 
             val ty = typ_of dty
@@ -176,7 +177,7 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
     fun ind_case_tac ctxt i hyps [xy,yz] params_x [y,z] = 
       let 
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
-        val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
+        val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> Old_Datatype_Data.the_info thy
         fun solve_with_tac ctxt thms =
           let
             val simp_ctxt =
@@ -216,7 +217,7 @@ fun mk_transitivity_thms thy (info : Datatype_Aux.info) =
                             fun case_tac_disj ctxt disj tac = 
                               mk_case_tac ctxt [] (@{thm disjE} OF [disj]) (fn (ctxt,ii,hyps,_) => tac ii ctxt (List.last hyps))
                             fun yz_case_tac ctxt = case_tac_disj ctxt yz
-                            val rec_type = (fn DtRec _ => true | _ => false) dty
+                            val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
                             fun xy_tac ii ctxt hyp_xy = 
                               if ii = 1 (* right branch, px = py and pxs < pys *) 
                               then 
@@ -329,7 +330,7 @@ fun mk_less_le_not_le_thm thy info =
                 val disj2_thm = Goal.prove ctxt [] [] disj2 (K (Method.insert_tac [xy] 1 THEN blast_tac ctxt 1))
                 fun case_tac_disj disj tac = 
                   mk_case_tac ctxt [] (@{thm disjE} OF [disj]) (fn (ctxt,ii,hyps,_) => tac ii ctxt (List.last hyps))
-                val rec_type = (fn DtRec _ => true | _ => false) dty
+                val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
                 fun xy_tac ii ctxt hyp_xy = 
                   if ii = 1 
                   then (* right branch, px = py and \<not> px < py and pxs < pys *) 
@@ -439,7 +440,7 @@ fun mk_linear_thm thy info =
                 val less = mk_less dty
                 val x_eq_y = HOLogic.mk_eq (px,py)
                 val disj_trm = HOLogic.mk_disj (x_eq_y,HOLogic.mk_disj(less px py, less py px)) |> HOLogic.mk_Trueprop
-                val rec_type = (fn DtRec _ => true | _ => false) dty
+                val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
                 val disj_thm' = if rec_type then hd ihyps else @{thm linear_cases}
                 val disj_tac = rtac disj_thm' 1 
                 val disj_thm = Goal.prove ctxt [] [] disj_trm (K (disj_tac))
@@ -489,9 +490,9 @@ fun derive kind dtyp_name _ thy =
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating orders for datatype " ^ base_name)
     val sort = @{sort ord}
-    val info = Datatype.the_info thy tyco
+    val info = Old_Datatype_Data.the_info thy tyco
     val vs_of_sort = 
-      let val i = Datatype.the_spec thy tyco |> #1 
+      let val i = Old_Datatype_Data.the_spec thy tyco |> #1 
       in fn sort => map (fn (n,_) => (n, sort)) i end
     val vs = vs_of_sort sort
     val less_rhs = mk_less_idx thy info sort |> fst |> (fn x => x 0)

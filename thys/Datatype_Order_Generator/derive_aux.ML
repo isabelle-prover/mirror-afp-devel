@@ -42,7 +42,7 @@ sig
       (Proof.context -> int -> thm list -> thm list -> term list -> term list -> tactic) -> thm
 
 (* delivers a typ substitution which constrains all free type variables in datatype by sort *)
-  val typ_subst_for_sort : theory -> Datatype_Aux.info -> sort -> typ -> typ
+  val typ_subst_for_sort : theory -> Old_Datatype_Aux.info -> sort -> typ -> typ
 
 (* delivers a full type from a type name by instantiating the type-variables of that
    type with different variables of a given sort, also returns the chosen variables 
@@ -50,7 +50,7 @@ sig
   val typ_and_vs_of_typname : theory -> string -> sort -> typ * (string * sort) list
 
 (* identity and number recursive occurrences of datatypes *)
-  val dt_number_recs : Datatype.dtyp list -> int * (int * int) list
+  val dt_number_recs : Old_Datatype_Aux.dtyp list -> int * (int * int) list
 
 (* like print_tac, but is turned off by default to not exceed tracing limit *)
   val my_print_tac : Proof.context -> string -> tactic 
@@ -60,16 +60,16 @@ sig
    It is assumed that if the constructors are different, then the goal is proven by some
    standard tactic, whereas for same constructors, one has to provide a tactic *)
   val mk_binary_thm :  
-    (theory -> Datatype_Aux.info -> sort -> 'a -> (term list * term list) list) -> (* mk_prop_trm *)
-    (theory -> Datatype_Aux.info -> sort -> (int -> term) * ('b * int * int) list) -> (* mk_bin_idx *)
+    (theory -> Old_Datatype_Aux.info -> sort -> 'a -> (term list * term list) list) -> (* mk_prop_trm *)
+    (theory -> Old_Datatype_Aux.info -> sort -> (int -> term) * ('b * int * int) list) -> (* mk_bin_idx *)
     string -> (* bin_const_name *)
     theory -> 
-    Datatype_Aux.info -> 
+    Old_Datatype_Aux.info -> 
     'a -> (* property_generator *)
     sort -> 
     (* same_constructor_tac *)
     (Proof.context -> thm list -> thm list -> thm -> (Proof.context -> thm list -> tactic) -> int -> term list -> 
-     term list -> string * Datatype_Aux.dtyp list -> (Datatype.dtyp -> term -> term -> term) -> tactic) 
+     term list -> string * Old_Datatype_Aux.dtyp list -> (Old_Datatype_Aux.dtyp -> term -> term -> term) -> tactic) 
     -> thm
 
   val mk_case_tac : Proof.context ->
@@ -83,7 +83,7 @@ sig
 
 (* delivers "x_i" of corresponding datatype of idx-th type for datatype *)
 (*                                                 idx    i *)
-  val mk_xs : theory -> Datatype_Aux.info -> sort -> int -> int -> term
+  val mk_xs : theory -> Old_Datatype_Aux.info -> sort -> int -> int -> term
 
 (* create Some t *)
   val mk_Some : term -> term
@@ -102,7 +102,6 @@ end
 
 structure Derive_Aux : DERIVE_AUX =
 struct
-open Datatype_Aux; open Datatype;
 
 val printing = false
 fun my_print_tac ctxt = if printing then print_tac ctxt else (fn _ => Seq.single) 
@@ -195,7 +194,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
 
 fun typ_subst_for_sort thy info sort =
   let 
-    val spec = the_spec thy (#descr info |> hd |> (fn (_,(dty_name,_,_)) => dty_name))
+    val spec = Old_Datatype_Data.the_spec thy (#descr info |> hd |> (fn (_,(dty_name,_,_)) => dty_name))
     val typ_subst = Term.typ_subst_atomic (spec |> fst |> map (fn (n,s) => (TFree (n,s), TFree (n,sort)))) 
   in typ_subst end
 
@@ -212,12 +211,12 @@ end
 fun dt_number_recs dtys = 
   let 
     fun dtrecs [] j = (j,[]) 
-      | dtrecs (DtTFree _ :: dtys) j = dtrecs dtys j
-      | dtrecs (DtRec i :: dtys) j = 
+      | dtrecs (Old_Datatype_Aux.DtTFree _ :: dtys) j = dtrecs dtys j
+      | dtrecs (Old_Datatype_Aux.DtRec i :: dtys) j = 
           let 
             val (j',ijs) = dtrecs dtys (j+1)
           in (j',(i,j) :: ijs) end
-      | dtrecs (DtType (_,dtys1) :: dtys2) j = 
+      | dtrecs (Old_Datatype_Aux.DtType (_,dtys1) :: dtys2) j = 
           let 
             val (j',ijs) = dtrecs dtys1 j
             val (j'',ijs') = dtrecs dtys2 j'
@@ -247,10 +246,10 @@ fun mk_xs thy info sort idx i =
   let 
     val descr = #descr info
     val typ_subst = typ_subst_for_sort thy info sort
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val mk_free_i = mk_free_tysubst_i typ_subst
   in 
-    mk_free_i ("x_" ^ string_of_int idx ^ "_") i (typ_of (DtRec idx))
+    mk_free_i ("x_" ^ string_of_int idx ^ "_") i (typ_of (Old_Datatype_Aux.DtRec idx))
   end
 
 fun prop_trm_to_major_imp prop =
@@ -283,15 +282,15 @@ val my_simp_set =
     delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd)
     addsimps @{thms HOL.simp_thms})
 
-fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Datatype_Aux.info) prop_gen sort same_constructor_tac = 
+fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype_Aux.info) prop_gen sort same_constructor_tac = 
   let 
     fun bin_const ty = Const (bin_const_name, ty --> ty --> @{typ bool})
     val prop_props = mk_prop_trm thy info sort prop_gen
     val (mk_rec,nrec_args) = mk_bin_idx thy info sort
     val typ_subst = typ_subst_for_sort thy info sort
     val descr = #descr info
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
-    fun mk_binary_term (DtRec i) = mk_rec i
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
+    fun mk_binary_term (Old_Datatype_Aux.DtRec i) = mk_rec i
       | mk_binary_term dty =
           let 
             val ty = typ_of dty
@@ -303,7 +302,7 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Datatype_Aux
       let 
         val y = hd ys
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
-        val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> the_info thy
+        val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name) |> Old_Datatype_Data.the_info thy
         fun solve_with_tac ctxt thms =
           let val simp_ctxt =
             (ctxt

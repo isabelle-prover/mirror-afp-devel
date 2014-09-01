@@ -236,7 +236,7 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
     Goal.prove ctxt' [] [] goals
       (K (HEADGOAL (rtac qinduct THEN_ALL_NEW tac)))
     |> singleton (Proof_Context.export ctxt' ctxt)
-    |> Datatype_Aux.split_conj_thm
+    |> Old_Datatype_Aux.split_conj_thm
     |> map zero_var_indexes
   end
 
