@@ -25,42 +25,50 @@ begin
   
 subsection {* Without Nested Recursion *}
 
-(* datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree" *)
+(* datatype_new 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree" *)
+
 derive "show" bintree
 
 subsection {* Using Other Datatypes *}
 
-(* datatype nat_list_list = NNil | CCons "nat list" nat_list_list *)
+(* datatype_new nat_list_list = NNil | CCons "nat list" nat_list_list *)
+
 derive "show" nat_list_list
 
 subsection {* Explicit Mutual Recursion *}
 
 (*
-datatype 'a mtree = MEmpty | MNode 'a "'a mtree_list"
-and 'a mtree_list = MNil | MCons "'a mtree" "'a mtree_list"
+datatype_new
+  'a mtree = MEmpty | MNode 'a "'a mtree_list" and
+  'a mtree_list = MNil | MCons "'a mtree" "'a mtree_list"
 *)
+
 derive "show" mtree
 
 subsection {* Implicit mutual recursion *}
 
-(* 
-datatype 'a tree = Empty | Node 'a "'a tree list" 
-datatype 'a ttree = TEmpty | TNode 'a "'a ttree list tree" *)
+(*  datatype_new 'a tree = Empty | Node 'a "'a tree list"  *)
 
 derive "show" tree
+
+(* datatype_new 'a ttree = TEmpty | TNode 'a "'a ttree list tree" *)
+
 derive "show" ttree
 
 subsection {* Examples from IsaFoR *}
 
+(* datatype_new ('f,'v) "term" = Var 'v | Fun 'f "('f,'v) term list" *)
+
+derive "show" "term"
+
 (*
-datatype ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
-datatype ('f, 'l) lab =
+datatype_new ('f, 'l) lab =
   Lab "('f, 'l) lab" 'l |
   FunLab "('f, 'l) lab" "('f, 'l) lab list" |
   UnLab 'f |
-  Sharp "('f, 'l) lab" *)
+  Sharp "('f, 'l) lab"
+*)
 
-derive "show" "term"
 derive "show" lab
 
 subsection {* A Complex Datatype *}
