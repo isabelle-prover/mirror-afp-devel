@@ -1,5 +1,5 @@
 (*  Title:       Executable Transitive Closures of Finite Relations
-    Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
+    Author:      Christian Sternagel <c.sternagel@gmail.com>
                  René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
