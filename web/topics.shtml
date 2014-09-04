@@ -71,6 +71,7 @@
 <a href="entries/Transitive-Closure-II.shtml">Transitive-Closure-II</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
+<a href="entries/Gauss_Jordan.shtml">Gauss_Jordan</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -88,6 +89,7 @@
 <a href="entries/BinarySearchTree.shtml">BinarySearchTree</a> &nbsp;
 <a href="entries/Splay_Tree.shtml">Splay_Tree</a> &nbsp;
 <a href="entries/Skew_Heap.shtml">Skew_Heap</a> &nbsp;
+<a href="entries/Priority_Queue_Braun.shtml">Priority_Queue_Braun</a> &nbsp;
 <a href="entries/Binomial-Queues.shtml">Binomial-Queues</a> &nbsp;
 <a href="entries/Binomial-Heaps.shtml">Binomial-Heaps</a> &nbsp;
 <a href="entries/Finger-Trees.shtml">Finger-Trees</a> &nbsp;
@@ -271,6 +273,7 @@
 <a href="entries/Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a> &nbsp;
 <a href="entries/Relation_Algebra.shtml">Relation_Algebra</a> &nbsp;
 <a href="entries/Secondary_Sylow.shtml">Secondary_Sylow</a> &nbsp;
+<a href="entries/VectorSpace.shtml">VectorSpace</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
@@ -285,6 +288,7 @@
 <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 <a href="entries/Sqrt_Babylonian.shtml">Sqrt_Babylonian</a> &nbsp;
 <a href="entries/Sturm_Sequences.shtml">Sturm_Sequences</a> &nbsp;
+<a href="entries/Special_Function_Bounds.shtml">Special_Function_Bounds</a> &nbsp;
 </div>
 
 <h3>Probability Theory</h3>

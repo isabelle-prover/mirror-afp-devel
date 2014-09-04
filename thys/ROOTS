@@ -62,6 +62,7 @@ FunWithFunctions
 FunWithTilings
 Functional-Automata
 Gabow_SCC
+Gauss_Jordan
 Gauss-Jordan-Elim-Fun
 GenClock
 General-Triangle
@@ -132,6 +133,7 @@ Pop_Refinement
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Priority_Queue_Braun
 Probabilistic_Noninterference
 Program-Conflict-Analysis
 Promela
@@ -168,6 +170,7 @@ Simpl
 Skew_Heap
 Slicing
 Sort_Encodings
+Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
 Statecharts
@@ -185,6 +188,7 @@ Transitive-Closure-II
 Tree-Automata
 Tycon
 Valuation
+VectorSpace
 Verified-Prover
 VolpanoSmith
 Well_Quasi_Orders

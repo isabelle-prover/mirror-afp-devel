@@ -55,6 +55,35 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-09-04:
+<a href="entries/Priority_Queue_Braun.shtml">Priority Queues Based on Braun Trees</a>
+<br>Author:
+<a href="http://in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-09-03:
+<a href="entries/Gauss_Jordan.shtml">Gauss-Jordan Algorithm and Its Applications</a>
+<br>Author:
+<a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a> and 
+<a href="http://www.unirioja.es/cu/jearansa">Jesús Aransay</a>
+</td></tr>
+
+<tr><td class="entry">
+2014-08-29:
+<a href="entries/VectorSpace.shtml">Vector Spaces</a>
+<br>Author:
+Holden Lee
+</td></tr>
+
+<tr><td class="entry">
+2014-08-29:
+<a href="entries/Special_Function_Bounds.shtml">Real-Valued Special Functions: Upper and Lower Bounds</a>
+<br>Author:
+<a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-08-13:
 <a href="entries/Skew_Heap.shtml">Skew Heap</a>
 <br>Author:

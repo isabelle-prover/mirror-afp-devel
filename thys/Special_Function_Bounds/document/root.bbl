@@ -1,9 +1,14 @@
 \begin{thebibliography}{1}
 
-\bibitem{kirby-addition}
-L.~Kirby.
-\newblock Addition and multiplication of sets.
-\newblock {\em Mathematical Logic Quarterly}, 53(1):52--65, 2007.
+\bibitem{boolos-provability}
+G.~S. Boolos.
+\newblock {\em The Logic of Provability}.
+\newblock Cambridge University Press, 1993.
+
+\bibitem{goedel-I}
+S.~Feferman et~al., editors.
+\newblock {\em {Kurt G\"odel}: Collected Works}, volume~I.
+\newblock Oxford University Press, 1986.
 
 \bibitem{swierczkowski-finite}
 S.~{\'S}wierczkowski.
