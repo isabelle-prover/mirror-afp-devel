@@ -47,37 +47,6 @@ where
     new' = filter (\<lambda> n. \<not> (memb n have')) maybe
       in relpow_impl succ un memb new' have' m))"
 
-text {*
-  Before we can prove what @{const relpow_impl} computes, we need the following
-  auxiliary lemma that makes all elements in a sequence $a \mathrel{R} \ldots \mathrel{R} b$ 
-  of length $n$ accessible.
-*}
-
-lemma relpow_fun_conv:
-  "((a,b) \<in> R ^^ n) = (\<exists>f. f 0 = a \<and> f n = b \<and> (\<forall>i < n. (f i, f (Suc i)) \<in> R))"
-proof (induct n arbitrary: b)
-  case 0
-  show ?case by auto
-next
-  case (Suc n)
-  show ?case 
-  proof (simp add: relcomp_unfold Suc) 
-    show "(\<exists> y. (\<exists> f. f 0 = a \<and> f n = y \<and> (\<forall> i < n. (f i, f (Suc i)) \<in> R)) \<and> (y,b) \<in> R) = (\<exists> f. f 0 = a \<and> f (Suc n) = b \<and> (\<forall>i < Suc n. (f i, f (Suc i)) \<in> R))" (is "?l = ?r")
-    proof
-      assume ?l
-      then obtain c f where a: "f 0 = a" and c: "f n = c" and R: "\<And> i. i < n \<Longrightarrow> (f i, f (Suc i)) \<in> R" and cb: "(c,b) \<in> R" by auto
-      let ?g = "\<lambda> m. if m = Suc n then b else f m"
-      show ?r
-        by (rule exI[of _ ?g], simp add: a c cb R)
-    next
-      assume ?r
-      then obtain f where a: "f 0 = a" and b: "b = f (Suc n)" and R: "\<And> i. i < Suc n \<Longrightarrow> (f i, f (Suc i)) \<in> R" by auto
-      show ?l
-        by (rule exI[of _ "f n"], rule conjI, rule exI[of _ f], insert a b R, auto)
-    qed
-  qed
-qed
-
 text {* Moreover we need to know that the provided union, membership, \ldots{}
 operations behave correctly *}
 
