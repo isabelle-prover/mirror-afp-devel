@@ -6,3 +6,7 @@ session Open_Induction (AFP) = "HOL-Library" +
     "../Well_Quasi_Orders/Restricted_Predicates"
   theories
     Open_Induction
+  document_files
+    "root.tex"
+    "root.bib"
+
