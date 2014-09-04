@@ -179,7 +179,7 @@ let
   val raw_exhaust_thms = map #exhaust dtinfos
   val raw_size_trms = map HOLogic.size_const raw_tys
   val raw_size_thms = these (Option.map ((fn ths => drop (length ths div 2) ths) o fst o snd)
-    (BNF_LFP_Size.lookup_size lthy1 (hd raw_full_dt_names')))
+    (BNF_LFP_Size.size_of lthy1 (hd raw_full_dt_names')))
 
   val raw_result = RawDtInfo 
     {raw_dt_names = raw_full_dt_names',
