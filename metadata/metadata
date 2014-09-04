@@ -1,6 +1,6 @@
 [Show]
 title = Haskell's Show-Class in Isabelle/HOL
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-07-29
 topic = Computer Science/Functional Programming
 license = LGPL
@@ -586,10 +586,13 @@ abstract = This document contains formal correctness proofs of modern SAT solver
 title = Executable Transitive Closures of Finite Relations
 topic = Computer Science/Algorithms
 date = 2011-03-14
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
 depends-on = Collections, Abstract-Rewriting
+extra-history =
+  Change history:
+  [2014-09-04] added example simprocs in Finite_Transitive_Closure_Simprocs
 
 [Transitive-Closure-II]
 title = Executable Transitive Closures
