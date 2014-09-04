@@ -13,22 +13,17 @@ lemma disj_union_card:
   assumes uni: "C = A' \<union> B'" and disj: "A' \<inter> B' = {}"
     and f: "bij_betw f A A'" and g: "bij_betw g B B'" and fin_A: "finite A" and fin_B: "finite B"
   shows "cardf C (card A + card B)"
-proof - 
-  from assms show ?thesis
-    apply (unfold bij_betw_def, auto)
-    apply (subst Finite_Set.card_Un_disjoint)
-    apply auto
-    by (subst card_image, auto)+
-qed
+using assms
+  by (auto simp add: bij_betw_def card_image Finite_Set.card_Un_disjoint)
+
 
 
 lemma inv_implies_bij:
   "inverses A B f f' \<Longrightarrow> bij_betw f A B"
   apply (unfold bij_betw_def, auto)
   apply (metis inj_on_inverseI)
-  apply (unfold image_def, auto)
-  by (rename_tac x, rule_tac x="f' x" in bexI, auto)
-
+  apply force
+  done
 
 lemma update_nth:
   "\<And>n. (n<length l \<Longrightarrow> (l[n:=a])!i = (if i = n then a else l!i))"
@@ -40,27 +35,24 @@ lemma listsum_equiv:
   apply (induct l)
   by auto
 
-
-
 lemma listsum_update:
   fixes i and l::"int list" and x
   assumes i:"i<length l"
   shows "listsum (l[i:=x]) = (listsum l) - (l!i) +  x"
 using i proof (induct l arbitrary: i)
   case Nil
-  from Nil.prems show ?case by auto
+  then show ?case by auto
 next
   case (Cons a l)
-  thm Cons
   show ?case
   proof (cases i)
     case 0
     from Cons.prems "0" show ?thesis by auto
   next
     case (Suc j)
-    from Suc have 1: "listsum ((a # l)[i := x]) = a + listsum ( l[i - 1 := x])"
+    then have "listsum ((a # l)[i := x]) = a + listsum ( l[i - 1 := x])"
       by auto
-    moreover from Suc have 2: "listsum (a # l) - ((a # l) ! i) + x = a + listsum  l -  (l ! (i - 1)) + x"
+    moreover from Suc have "listsum (a # l) - ((a # l) ! i) + x = a + listsum  l -  (l ! (i - 1)) + x"
       by auto
     moreover from Suc Cons.hyps Cons.prems have 3: "listsum ( l[i - 1 := x]) = listsum  l -  (l ! (i - 1)) + x" 
       by (intro Cons.hyps[where ?i = "i - 1"], auto)
@@ -76,10 +68,10 @@ proof -
   show ?thesis
   proof (cases l)
     case Nil
-    from Nil assms show ?thesis by auto
+    with assms show ?thesis by auto
   next
     case (Cons a xs)
-    show ?thesis apply (subst Cons)+ by auto
+    then show ?thesis by auto
   qed
 qed 
 
@@ -91,49 +83,28 @@ proof -
   show ?thesis
   proof (cases l)
     case Nil
-    from Nil assms show ?thesis by auto
+    with assms show ?thesis by auto
   next
     case (Cons a xs)
-    show ?thesis apply (subst Cons)+ by auto
+    then show ?thesis by auto
   qed
 qed
 
 lemma cons_prop:
-  fixes l P a
-  assumes "\<forall>i<length l. P (l!i)" and "P a"
-  shows "\<And>i. i<length l + 1 \<Longrightarrow> P ((a#l)!i)"
-proof - 
-  fix i
-  assume 1: " i<length l + 1"
-  from 1 show "?thesis i" using assms 
-    by (subst List.nth_Cons', auto)
-qed
+  assumes "\<forall>i<length l. P (l!i)" "P a" "i<length l + 1"
+  shows "P ((a#l)!i)"
+using assms 
+  by (subst List.nth_Cons', auto)
 
 lemma tl_prop:
-  fixes l P
-  assumes l: "length l \<ge> 1" and P: "\<forall>i<length l. P (l!i)"
-  shows "\<And>i. i<length l - 1 \<Longrightarrow> P ((tl l)!i)"
-proof - 
-  fix i
-  assume 1: " i<length l - 1"
-  from l have 2: "\<And>j. (j<length l - 1\<Longrightarrow> (tl l)!j = l! (j + 1))"
-    apply (cases l)
-    by auto
-  from 1 show "?thesis i" using assms 
-    by (subst 2, auto)
-qed
+  assumes "\<forall>i<length l. P (l!i)"  "i<length l - 1"
+  shows "P ((tl l)!i)"
+using assms nth_tl by force
 
-  
 lemma update_prop:
-  fixes l P a j
-  assumes P: "\<forall>i<length l. P (l!i)" and j: "j<length l" and a: "P a"
-  shows "\<And>i. i<length l \<Longrightarrow> P ((l[j:=a])!i)"
-proof - 
-  fix i
-  assume 1: " i<length l"
-  from 1 show "?thesis i" using assms 
-    by (subst update_nth, auto)
-qed
+  assumes "\<forall>i<length l. P (l!i)"  "P a"  "i<length l"
+  shows "P ((l[j:=a])!i)"
+by (metis assms nth_list_update_eq nth_list_update_neq)
 
 lemma listsum_gt:
   fixes l::"int list" 
@@ -141,17 +112,15 @@ lemma listsum_gt:
   shows "listsum l \<ge> x * length l"
 proof -
   from 1 have "listsum (map (\<lambda>j. x) l) \<le> listsum (map id l)"
-    apply (intro List.listsum_mono, auto)
-    by (metis in_set_conv_nth)
+    by (metis id_def in_set_conv_nth listsum_mono)
   moreover have "listsum (map (\<lambda>j. x) l) = x * length l"
-    apply (induct l, auto)
-    by (auto simp add: Int.int_distrib)
+    by (induct l, auto simp add: Int.int_distrib)
   moreover have "listsum (map id l) = listsum l" by auto
   ultimately show ?thesis by auto
 qed
 
 lemma lt_listsum:
-  fixes l::"int list" and i
+  fixes l::"int list" 
   assumes 1:"i<length l" and 2:"\<forall>i<length l. l!i\<ge>0"
   shows "l!i \<le> listsum l"
 proof -
@@ -186,8 +155,8 @@ proof -
     apply (unfold Avector_def, auto)
     apply (intro cons_prop[where ?P = "\<lambda>x. x\<ge>0"], auto)
     apply (intro tl_prop[where ?P = "\<lambda>x. x\<ge>0"], auto)
-    apply (subst listsum_drop, auto)
-    by (subst (4) cons_tail, auto)
+    apply (simp add: listsum_drop)
+    by (metis One_nat_def cons_tail)
   moreover have g: "bij_betw ?g ?B ?B'" using assms
     apply (intro inv_implies_bij[where ?f'="(\<lambda> l. list_update l 0 (l ! 0 - 1))"], auto)
     apply (unfold Avector_def, auto)
@@ -210,19 +179,13 @@ proof -
     apply (intro finite_subset[where ?A = "?B" and ?B = "Avectors {x. 0 \<le> x \<and> x \<le> N - 1} (m)"], 
       auto)
     apply (unfold Avectors_def Avector_def, auto)[1]
-    apply (rename_tac l i, subgoal_tac " l ! i \<le>listsum l")
-    apply auto[1]
-    apply (intro lt_listsum, auto)
-(*this part is really silly, it rewrites \<le>N-1 as <N but I don't want it to!*)
-    apply (subgoal_tac "finite (Avectors {x. 0 \<le> x \<and> x \<le> N - 1} (m))")
-    apply auto[1]
-    by (intro fin) 
+    apply (metis lt_listsum zle_diff1_eq)
+    by (simp add: Avectors_card)
   ultimately show ?thesis 
     by (intro disj_union_card, auto)
 qed
 
 lemma ways_sum:
-  fixes N m::nat
   assumes m: "m\<ge>1"
   shows "cardf {l::int list. Avector l {x. x\<ge>0} m \<and> listsum l = N} (binomial (N + m - 1) N)"
     (is "cardf (?A m N) (binomial (N + m - 1) N)")
@@ -242,16 +205,14 @@ using m proof (induct "N + m - 1" arbitrary: N m)
   show "cardf {l::int list. Avector l {x. x\<ge>0} m \<and> listsum l = N} (binomial (N + m - 1) N)"
   proof -
     from 0 "0.prems" have "m=1 \<and> N=0" by auto
-    from this 0 "0.prems"  show ?thesis
-      apply safe
-      apply (unfold Avector_def)
-      by (simp,subst 2, simp)+
+    with 0 "0.prems"  show ?thesis
+      by (auto simp add: Avector_def 2)
   qed
 next
   case (Suc k)
-  from Suc.prems have c: "cardf {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l = int N}
-    (card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
-      card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)})"
+  from Suc.prems have c: "cardf {l. Avector l {x::int. x\<ge>0} m \<and> listsum l = int N}
+         (card {l. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
+          card {l. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)})"
     by (rule ways_sum_rec)
   
 -- "Now basically just use the induction hypothesis, however we have to be careful about boundary
@@ -261,8 +222,8 @@ cases."
     (binomial (N + (m - 1) - 1) N)"
   proof (cases "m = 1")
     case True
-    moreover from Suc.hyps True have "N\<ge>1" by auto
-    ultimately show ?thesis 
+    with Suc.hyps have "N\<ge>1" by auto
+    with True show ?thesis 
       by (unfold Avector_def, subst binomial_eq_0, auto)
   next
     case False
@@ -305,7 +266,7 @@ cases."
   from c Suc have add_card: "(card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
       card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)}) = (binomial (N + m - 1) N)"
     apply (subst c1 c2)+
-    apply (auto split:split_if)
+    apply (auto)
     by (subst (3) choose_reduce_nat, auto)
   
   thus ?case using c by auto

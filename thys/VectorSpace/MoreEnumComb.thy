@@ -6,7 +6,6 @@ imports Main
 begin
 
 
-(*theorem n_subsets: "finite A \<Longrightarrow> card {B. B \<subseteq> A \<and> card B = k} = (card A choose k)"*)
 
 (*
 lemma binom_choose:
@@ -127,8 +126,6 @@ fun sep:: "'a \<Rightarrow> 'a list list \<Rightarrow> 'a list" where
   "sep y [] = []"
   | "sep y [x] = x"
   | "sep y (x#xs) = ((x @ [y]) @ sep y xs)"
-
-thm sep.simps
 
 (*alternative - use replicate?*)
 fun count_vector:: "bool list \<Rightarrow> nat list" where

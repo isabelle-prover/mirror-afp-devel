@@ -1197,14 +1197,9 @@ independent. *}
   from C'_li C'_gen C cim have C'_basis: "im.basis  (T`C)" 
     by (unfold im.basis_def, auto)
   have C_card_im: "card C = (vectorspace.dim K (W.vs imT))"
-  proof - 
-    from C'fin C'_card C'_basis have "vectorspace.dim K (W.vs imT) = card ?C'" 
-      apply (intro im.dim_basis) 
-       by auto
-    from C'_card this show ?thesis by auto
-  qed
-  from finA Abasis have A_card_ker: "ker.dim = card A" by (rule ker.dim_basis)
-  from C_card_im A_card_ker cardEq show ?thesis by auto
+    using C'_basis C'_card(2) C'fin im.dim_basis by auto
+  from finA Abasis have  "ker.dim = card A" by (rule ker.dim_basis)
+  with C_card_im cardEq show ?thesis by auto
 qed
 
 
