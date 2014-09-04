@@ -286,12 +286,10 @@ proof -
   from assms have 12: "lincomb (\<lambda>w. \<ominus>\<^bsub>K\<^esub>(inv\<^bsub>K\<^esub> (a v)) \<otimes>\<^bsub>K\<^esub> a w) (A-{v}) = 
     (\<ominus>\<^bsub>K\<^esub> (inv\<^bsub>K\<^esub> (a v))) \<odot>\<^bsub>V\<^esub> lincomb a (A-{v})" 
     by (intro lincomb_smult, auto)
-  from 6 12 show 13: "v=lincomb (\<lambda>w. \<ominus>\<^bsub>K\<^esub>(inv\<^bsub>K\<^esub> (a v)) \<otimes>\<^bsub>K\<^esub> a w) (A-{v})" by auto
-  from 13 assms show 14 : "v\<in> span (A-{v})" 
-    apply (unfold span_def, auto) 
-    apply (rule_tac x="(\<lambda>w. \<ominus>\<^bsub>K\<^esub>(inv\<^bsub>K\<^esub> (a v)) \<otimes>\<^bsub>K\<^esub> a w)" in exI) 
-    apply (drule Pi_implies_Pi2)
-    by (auto simp add: Pi_simp ring_subset_carrier)
+  from 6 12 show "v=lincomb (\<lambda>w. \<ominus>\<^bsub>K\<^esub>(inv\<^bsub>K\<^esub> (a v)) \<otimes>\<^bsub>K\<^esub> a w) (A-{v})" by auto
+  with assms show "v\<in> span (A-{v})" 
+    unfolding span_def 
+    by (force simp add: 11 ring_subset_carrier)
 qed
 
 text {*The map $(S\to K)\mapsto V$ given by $(a_v)_{v\in S}\mapsto \sum_{v\in S} a_v v$ is linear.*}
@@ -831,7 +829,6 @@ qed
 text {*$\beta$ is a basis iff for all $v\in V$, there exists a unique $(a_v)_{v\in S}$ such that
 $\sum_{v\in S} a_v v=v$.*}
 lemma (in vectorspace) basis_criterion:
-  fixes A
   assumes A_fin: "finite A" and AinC: "A\<subseteq>carrier V"
   shows "basis A <-> (\<forall>v. v\<in> carrier V \<longrightarrow>(\<exists>! a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v))"
 proof -
@@ -844,18 +841,16 @@ proof -
     from v have "\<not>(\<exists> a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v) \<or>  (\<exists> a b. 
       a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v \<and> b\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb b A = v 
       \<and> a\<noteq>b)" by metis
-    from this show ?thesis
-    proof (rule disjE)
+    then show ?thesis
+    proof
       assume a: "\<not>(\<exists> a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v)"
-      from A_fin AinC have 1: "\<And>a. a\<in>A \<rightarrow> carrier K \<Longrightarrow> lincomb a A = lincomb (restrict a A) A" 
-        apply (unfold lincomb_def restrict_def)
-        apply (drule Pi_implies_Pi2)
-        by (simp cong: finsum_cong add: ring_subset_carrier Pi_simp)
-      have 2: "\<And>a. a\<in>A \<rightarrow> carrier K \<Longrightarrow> restrict a A\<in> A\<rightarrow>\<^sub>E carrier K" by auto
-      from a 1 2 have 3: "\<not>(\<exists> a.  a\<in>A \<rightarrow> carrier K \<and> lincomb a A = v)" by algebra
-      from 3 A_fin AinC have 4: "v\<notin>span A" 
-        by (subst finite_span, auto)
-      from 4 AinC v show "\<not>(basis A)" by (unfold basis_def, auto)
+      from A_fin AinC have "\<And>a. a\<in>A \<rightarrow> carrier K \<Longrightarrow> lincomb a A = lincomb (restrict a A) A" 
+        unfolding lincomb_def restrict_def
+        by (simp cong: finsum_cong add: ring_subset_carrier coeff_in_ring)
+      with a have "\<not>(\<exists> a.  a\<in>A \<rightarrow> carrier K \<and> lincomb a A = v)" by auto
+      with A_fin AinC have "v\<notin>span A"
+        using finite_in_span by blast 
+      with AinC v show "\<not>(basis A)" by (unfold basis_def, auto)
     next
       assume a2: "(\<exists> a b. 
         a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v \<and> b\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb b A = v 
@@ -874,12 +869,7 @@ proof -
         by auto (*uses M.minus_other_side*)
       from A_fin AinC a_fun b_fun ab vinC have a_b:
       "LinearCombinations.module.lincomb V (\<lambda>x. if x \<in> A then a x \<ominus>\<^bsub>K\<^esub> b x else undefined) A = \<zero>\<^bsub>V\<^esub>"
-        apply (subst refl)
-        apply (drule Pi_implies_Pi2)+
-        apply (simp cong: lincomb_cong add: Pi_simp)
-        apply (unfold Pi2_def)
-        apply (subst lincomb_diff)
-            by (simp_all add: minus_eq r_neg) 
+        by (simp cong: lincomb_cong add: coeff_in_ring lincomb_diff)
       from A_fin AinC ab w v nz a_b have "lin_dep A"
         apply (intro lin_dep_crit[where ?A="A" and ?a="?c" and ?v="w"])
              apply (auto simp add: PiE_def)
@@ -912,7 +902,7 @@ proof -
         from a_fun A_fin AinC lc_a have 
           lc_a_res: "LinearCombinations.module.lincomb V (restrict a A) A = \<zero>\<^bsub>V\<^esub>"
           apply (unfold lincomb_def restrict_def)
-          by (drule Pi_implies_Pi2, simp cong: finsum_cong add: Pi_simp ring_subset_carrier)
+          by (simp cong: finsum_cong2 add: coeff_in_ring ring_subset_carrier)
         from a_fun a_res lc_a_res zero b1 have "restrict a A = ?z" by auto
         from this show "\<forall>v\<in>A. a v = \<zero>\<^bsub>K\<^esub>" 
           apply (unfold restrict_def)
@@ -1143,14 +1133,13 @@ independent. *}
       CinC (*C in carrier*)
       f (*inverse to T*) 
       c'lc (*lc c' = 0*)
-    have T_lc_0: "T (V.module.lincomb ?c C) = \<zero>\<^bsub>W\<^esub>"
+    have "T (V.module.lincomb ?c C) = \<zero>\<^bsub>W\<^esub>"
       apply (unfold V.module.lincomb_def W.module.lincomb_def)
       apply (subst hom_sum, auto)
-      apply (drule Pi_implies_Pi2)+
-      apply (auto cong: finsum_cong simp add: T_smult ring_subset_carrier Pi_simp)
+      apply (simp cong: finsum_cong add: ring_subset_carrier coeff_in_ring)
       apply (subst finsum_reindex[where ?f="\<lambda>w. c' w \<odot>\<^bsub>W\<^esub> w" and ?h="T" and ?A="C", THEN sym])
-         by (auto simp add: Pi_simp)
-    from f c'fun cvnz v' T_lc_0 show False
+         by auto
+    with f c'fun cvnz v' show False
       by (intro lc_in_ker[where ?D="C" and ?d="?c" and ?v="?f v'"], auto)
   qed
   have C'_gen: "im.gen_set ?C'"
@@ -1178,13 +1167,12 @@ independent. *}
           apply (subst V.module.lincomb_union, simp_all) (*Break up the union A\<union>C*)
           apply (unfold lincomb_def V.module.lincomb_def)
           apply (subst hom_sum, auto) (*Take T inside the sum over A*)
-          apply (drule Pi_implies_Pi2)+
-          apply (simp add:  Pi_simp subsetD
+          apply (simp add: subsetD coeff_in_ring
             hom_sum (*Take T inside the sum over C*)
             T_ker (*all terms become 0 because the vectors are in the kernel.*)
             ) 
           apply (subst finsum_reindex[where ?h="T" and ?f="\<lambda>v. ?a' v\<odot>\<^bsub>W\<^esub> v"], auto)
-           by (auto cong: finsum_cong simp add:  Pi_simp ring_subset_carrier)
+           by (auto cong: finsum_cong simp add: coeff_in_ring ring_subset_carrier)
         from a_fun f have a'_fun: "?a'\<in>?C' \<rightarrow> carrier K" by auto
         from C'fin CinC this w_eq_T_v a'_fun Tv show "w \<in> LinearCombinations.module.span K W (T ` C)" 
           by (subst finite_span, auto)

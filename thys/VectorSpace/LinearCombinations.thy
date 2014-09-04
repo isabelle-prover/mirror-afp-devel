@@ -14,8 +14,7 @@ text {*The following are helpful in certain simplifications (esp. congruence rul
 use leads to looping. *}
 lemma (in ring) coeff_in_ring:
   "\<lbrakk>a\<in>A\<rightarrow>carrier R; x\<in>A\<rbrakk> \<Longrightarrow> a x \<in>carrier R"
-by (metis Pi_mem)
-(* or: rule Pi_mem2 *)
+by (rule Pi_mem)
 
 lemma (in ring) coeff_in_ring2:
   "\<lbrakk> x\<in>A;a\<in>A\<rightarrow>carrier R\<rbrakk> \<Longrightarrow> a x \<in>carrier R"
@@ -24,34 +23,13 @@ by (metis Pi_mem)
 lemma ring_subset_carrier:
   "\<lbrakk>x \<in>A; A\<subseteq>carrier R\<rbrakk> \<Longrightarrow> x \<in>carrier R"
 by auto
-text {*A hack to not cause an infinite loop with $\to$ simplification. *}
-definition Pi2::"('a set) \<Rightarrow> ('b set) \<Rightarrow> ('a\<Rightarrow>'b) set"
-  where "Pi2 A B = A \<rightarrow> B"
-
-lemma Pi_implies_Pi2:
-  "a \<in> A\<rightarrow>B \<Longrightarrow> a \<in> Pi2 A B"
-by (unfold Pi2_def, auto)
-
-
-lemma Pi_mem_Pi2:
-  "\<lbrakk>a\<in>Pi2 S T; x\<in>S\<rbrakk> \<Longrightarrow> a x \<in>T"
-by (unfold Pi2_def, rule Pi_mem2)
-
-lemma Pi_mem_Pi2_sub1:
-  "\<lbrakk>a\<in>Pi2 S T; x\<in>A; A\<subseteq>S\<rbrakk> \<Longrightarrow> a x \<in>T"
-by (unfold Pi2_def, auto intro: Pi_mem2)
-
-lemma Pi_mem_Pi2_sub2:
-  "\<lbrakk>a\<in>Pi2 S T; x\<in>S; T\<subseteq>U\<rbrakk> \<Longrightarrow> a x \<in>U"
-by (unfold Pi2_def, auto intro: Pi_mem2)
 
 lemma disj_if:
   "\<lbrakk>A\<inter>B={}; x\<in> B\<rbrakk> \<Longrightarrow> (if x\<in>A then f x else g x) = g x"
 by auto
 
 
-lemmas Pi_simp = Pi_mem_Pi2 Pi_mem_Pi2_sub1 Pi_mem_Pi2_sub2
-lemmas (in module) sum_simp = Pi_simp ring_subset_carrier
+lemmas (in module) sum_simp = ring_subset_carrier
 
 subsection {* Linear combinations*}
 text {*A linear combination is $\sum_{v\in A} a_v v$. $(a_v)_{v\in S}$ is a function 
@@ -85,28 +63,19 @@ by (intro finprod_cong, auto)
 lemmas (in abelian_monoid) finsum_cong2 = add.finprod_cong2
 
 lemma (in module) lincomb_cong:
-  fixes a b A B
   assumes h1: "finite (A)"  and h2: "A=B" and h3: "A \<subseteq> carrier M" 
     and h4: "\<And>v. v\<in>A \<Longrightarrow> a v = b v" and h5: "b\<in> B\<rightarrow>carrier R"
   shows "lincomb a A = lincomb b B"
-proof - 
-  from assms show ?thesis
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)+
-    by (simp cong: finsum_cong2 add: h2 Pi_simp ring_subset_carrier)
-qed
+using assms
+    by (simp cong: finsum_cong2 add: lincomb_def summands_valid ring_subset_carrier)
 
 lemma (in module) lincomb_union:
   fixes a A B 
   assumes h1: "finite (A\<union> B)"  and h3: "A\<union>B \<subseteq> carrier M" 
     and h4: "A\<inter>B={}" and h5: "a\<in>(A\<union>B\<rightarrow>carrier R)"
   shows "lincomb a (A\<union>B) = lincomb a A \<oplus>\<^bsub>M\<^esub> lincomb a B"
-proof - 
-  from assms show ?thesis
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)
-    by (simp cong: finsum_cong2 add: finsum_Un_disjoint Pi_simp ring_subset_carrier)
-qed
+using assms
+  by (auto cong: finsum_cong2 simp add: lincomb_def finsum_Un_disjoint summands_valid ring_subset_carrier)
 
 text {*This is useful as a simp rule sometimes, for combining linear combinations.*}
 lemma (in module) lincomb_union2:
@@ -115,12 +84,9 @@ lemma (in module) lincomb_union2:
     and h4: "A\<inter>B={}" and h5: "a\<in>A\<rightarrow>carrier R" and h6: "b\<in>B\<rightarrow>carrier R"
   shows "lincomb a A \<oplus>\<^bsub>M\<^esub> lincomb b B = lincomb (\<lambda>v. if (v\<in>A) then a v else b v) (A\<union>B)"
     (is "lincomb a A \<oplus>\<^bsub>M\<^esub> lincomb b B = lincomb ?c (A\<union>B)")
-proof - 
-  from assms show ?thesis
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)+
-    by (simp cong: finsum_cong2 add: finsum_Un_disjoint Pi_simp ring_subset_carrier disj_if)
-qed
+using assms
+  by (auto cong: finsum_cong2 
+        simp add: lincomb_def finsum_Un_disjoint summands_valid ring_subset_carrier disj_if)
 
 lemma (in module) lincomb_del2:
   fixes S a v
@@ -138,39 +104,27 @@ qed
 lemma (in module) lincomb_insert:
   fixes S a v
   assumes h1: "finite S" and h2: "S\<subseteq> carrier M" and h3: "a\<in>(S\<union>{v}\<rightarrow>carrier R)" and h4:"v\<notin>S" and 
-h5:"v\<in> carrier M"  (*and h6:"a v\<in>carrier R"*)
+h5:"v\<in> carrier M"
   shows "lincomb a (S\<union>{v}) = ((a v) \<odot>\<^bsub>M\<^esub> v) \<oplus>\<^bsub>M\<^esub> lincomb a S"
-proof - 
-  have 1: "S\<union>{v}={v}\<union>S" by auto
-  from assms show ?thesis
-    apply (subst 1)
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)+
-    by (simp cong: finsum_cong2 add: finsum_Un_disjoint Pi_simp ring_subset_carrier disj_if)
-qed
+using assms
+  by (auto cong: finsum_cong2 
+        simp add: lincomb_def finsum_Un_disjoint summands_valid ring_subset_carrier disj_if)
 
 lemma (in module) lincomb_elim_if [simp]:
   fixes b c S
   assumes h0:"finite S" and h1: "S \<subseteq> carrier M" and h2: "\<And>v. v\<in>S\<Longrightarrow> \<not>P v" and h3: "c\<in>S\<rightarrow>carrier R"
   shows "lincomb (\<lambda>w. if P w then b w else c w) S = lincomb c S"
-proof -
-  from assms show ?thesis
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)+
-    by (simp cong: finsum_cong2 add: finsum_Un_disjoint Pi_simp ring_subset_carrier disj_if)
-qed
+using assms
+  by (auto cong: finsum_cong2 
+        simp add: lincomb_def finsum_Un_disjoint summands_valid ring_subset_carrier disj_if)
 
 lemma (in module) lincomb_smult:
   fixes A c
   assumes h1: "finite A" and h2: "A\<subseteq>carrier M"  and h3: "a\<in>A\<rightarrow>carrier R" and h4: "c\<in>carrier R"
   shows "lincomb (\<lambda>w. c\<otimes>\<^bsub>R\<^esub> a w) A = c\<odot>\<^bsub>M\<^esub> (lincomb a A)"
-proof - 
-  from assms show ?thesis
-    apply (unfold lincomb_def)
-    apply (drule Pi_implies_Pi2)+
-    by (simp cong: finsum_cong2 add: finsum_Un_disjoint finsum_smult Pi_simp ring_subset_carrier disj_if
-smult_assoc1 coeff_in_ring)
-qed
+using assms
+  by (auto cong: finsum_cong2 
+        simp add: lincomb_def finsum_Un_disjoint finsum_smult ring_subset_carrier disj_if smult_assoc1 coeff_in_ring)
 
 subsection {*Linear dependence and independence.*}
 text {*A set $S$ in a module/vectorspace is linearly dependent if there is a finite set $A \subseteq S$
@@ -605,23 +559,19 @@ proof -
   from a_fun b_fun A_fin AinC
   have 1: "LinearCombinations.module.lincomb M (?a\<oplus>\<^bsub>(LinearCombinations.ring.func_space R A)\<^esub> ?b) A
     = LinearCombinations.module.lincomb M (\<lambda>x.  a x \<oplus>\<^bsub>R\<^esub> b x) A"
-    apply (unfold func_space_def, auto)
-    apply (drule Pi_implies_Pi2)+ (*flag the premises so they are treated differently.*)
-    by (simp_all (no_asm_simp)  add: R.minus_closed sum_simp cong: lincomb_cong)
+    by (auto simp add: func_space_def Pi_iff restrict_apply' cong: lincomb_cong)
   from a_fun b_fun A_fin AinC
   have 2: "LinearCombinations.module.lincomb M ?a A \<oplus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M ?b A = LinearCombinations.module.lincomb M a A \<oplus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M b A"
-    apply (subst refl) (*hack to get it to put the premises down*)
-    apply (drule Pi_implies_Pi2)+ (*flag the premises so they are treated differently.*)
-    by (simp_all (no_asm_simp) add: sum_simp cong: lincomb_cong)
+    by (simp_all add: sum_simp cong: lincomb_cong)
   from a_fun b_fun have ainC: "?a\<in>carrier (LinearCombinations.ring.func_space R A)" 
     and binC: "?b\<in>carrier (LinearCombinations.ring.func_space R A)" by (unfold func_space_def, auto)
-  from ainC binC have lc_sum: "LinearCombinations.module.lincomb M (?a\<oplus>\<^bsub>(LinearCombinations.ring.func_space R A)\<^esub> ?b) A
+  from ainC binC have "LinearCombinations.module.lincomb M (?a\<oplus>\<^bsub>(LinearCombinations.ring.func_space R A)\<^esub> ?b) A
     = LinearCombinations.module.lincomb M ?a A \<oplus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M ?b A"  
-    by (simp_all cong: lincomb_cong add: mh.f_add func_space_def)
-  from 1 2 lc_sum show ?thesis by auto
+    by (simp cong: lincomb_cong)
+  with 1 2 show ?thesis by auto
 qed
 
 text {*The negative of a function is just pointwise negation.*}
@@ -664,15 +614,12 @@ proof -
   have 2: "LinearCombinations.module.lincomb M ?a A \<ominus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M ?b A = LinearCombinations.module.lincomb M a A \<ominus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M b A"
-    apply (subst refl) (*hack to get it to put the premises down*)
-    apply (drule Pi_implies_Pi2)+ (*flag the premises so they are treated differently.*)
-    by (simp_all (no_asm_simp) 
-      add: R.minus_closed sum_simp cong: lincomb_cong)
-  from ainC binC have lc_sum: "LinearCombinations.module.lincomb M (?a\<ominus>\<^bsub>(LinearCombinations.ring.func_space R A)\<^esub> ?b) A
+    by (simp cong: lincomb_cong)
+  from ainC binC have "LinearCombinations.module.lincomb M (?a\<ominus>\<^bsub>(LinearCombinations.ring.func_space R A)\<^esub> ?b) A
     = LinearCombinations.module.lincomb M ?a A \<ominus>\<^bsub>M\<^esub> 
       LinearCombinations.module.lincomb M ?b A"  
-    by (simp_all cong: lincomb_cong add: mh.f_add func_space_def)
-  from 1 2 lc_sum show ?thesis by auto
+    by (simp cong: lincomb_cong)
+  with 1 2 show ?thesis by auto
 qed
 
 text {*The union of nested submodules is a submodule. We will use this to show that span of any
@@ -785,7 +732,8 @@ proof -
     apply simp
     apply (intro foldD_not_depend[where ?B="A"])
          apply (unfold submodule_def LCD_def, auto)
-     by (drule Pi_implies_Pi2, simp_all add: a_ac Pi_mem_Pi2_sub2 ring_subset_carrier)+
+    apply (meson M.add.m_lcomm PiE subsetCE)+
+    done
 qed
 
 lemma (in module) lincomb_not_depend:
@@ -797,11 +745,8 @@ proof -
   have 3: "N=carrier (md N)" by auto
   have 4: "(smult M ) = (smult (md N))" by auto 
   from h1 h2 h3 h4 have "(\<Oplus>\<^bsub>(md N)\<^esub>v\<in>A. a v \<odot>\<^bsub>M\<^esub> v) = (\<Oplus>\<^bsub>M\<^esub>v\<in>A. a v \<odot>\<^bsub>M\<^esub> v)"
-    apply (intro finsum_not_depend, auto)
-    apply (subst 3)
-    apply (subst 4)
-    apply (intro N.smult_closed)
-     by (drule Pi_implies_Pi2, auto simp add: Pi_simp)
+    apply (intro finsum_not_depend)
+    using N.summands_valid by auto
   from this show ?thesis by (unfold lincomb_def N.lincomb_def, simp)
 qed
 
@@ -908,12 +853,10 @@ proof -
     show ?case by auto
   next
     case (insert a A)
-    from insert.prems insert.hyps have 1: "(\<Oplus>\<^bsub>N\<^esub>a\<in>insert a A. f (g a)) = f (g a) \<oplus>\<^bsub>N\<^esub> (\<Oplus>\<^bsub>N\<^esub>a\<in>A. f (g a))"  
+    then have "(\<Oplus>\<^bsub>N\<^esub>a\<in>insert a A. f (g a)) = f (g a) \<oplus>\<^bsub>N\<^esub> (\<Oplus>\<^bsub>N\<^esub>a\<in>A. f (g a))"  
       by (intro finsum_insert, auto)
-      (*apply (intro T_im, metis Pi_mem)
-      done*)
-    from insert.prems insert.hyps 1 show ?case
-      by (simp add: finsum_insert)
+    with insert.prems insert.hyps show ?case
+      by simp
   qed
 qed
 
