@@ -757,6 +757,16 @@ abstract =
  The amortized complexity of skew heaps is analyzed in the AFP entry
  <a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
 
+[Priority_Queue_Braun]
+title = Priority Queues Based on Braun Trees
+author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+date = 2014-09-04
+topic = Computer Science/Data Structures
+abstract =
+  This theory implements priority queues via Braun trees. Insertion
+  and deletion take logarithmic time and preserve the balanced nature
+  of Braun trees.
+
 [Binomial-Queues]
 title = Functional Binomial Queues
 author = René Neumann <mailto:neumannr@in.tum.de>

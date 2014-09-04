@@ -133,6 +133,7 @@ Pop_Refinement
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Priority_Queue_Braun
 Probabilistic_Noninterference
 Program-Conflict-Analysis
 Promela
