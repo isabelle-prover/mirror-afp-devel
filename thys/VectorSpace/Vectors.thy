@@ -22,15 +22,19 @@ definition Avectors::"['a set, nat] \<Rightarrow> 'a list set"
   where "Avectors A n = 
         {l. ((length l = n) \<and> (\<forall> i. i<n \<longrightarrow> l ! i \<in> A))}"
 
+lemma Avector_lists: "Avector l A n \<longleftrightarrow> length l = n \<and> l \<in> lists A"
+  by (auto simp: Avector_def) (metis in_set_conv_nth)
+
+lemma Avector_0 [simp]: "Avector l A 0 \<longleftrightarrow> l=[]"
+  by (auto simp: Avector_def)
+
+lemma Avector_Suc [simp]: "Avector l A (Suc n) \<longleftrightarrow> (\<exists>x xs. l = x#xs \<and> x \<in> A \<and> Avector xs A n)"
+  by (cases l) (auto simp add: Avector_lists)
+
 lemma Avector_cons:
-  fixes l a n A
   assumes "Avector l A n" "a\<in>A"
   shows "Avector (a#l) A (n + 1)"
-proof-
-  from assms show ?thesis 
-    apply (unfold Avector_def, auto)
-    by (metis less_Suc_eq_0_disj nth_Cons_0 nth_Cons_Suc)  
-qed
+  by (simp add: assms)
 
 (*with dependent types this would be Vector A n \<Rightarrow> ({..<n} \<Rightarrow> A)*)
 definition vec_to_func ::"'a list \<Rightarrow> (nat \<Rightarrow> 'a)" where
@@ -111,7 +115,6 @@ definition combinations::"nat \<Rightarrow> nat \<Rightarrow> nat list set"
 *)
 
 lemma Avectors_card: 
-  fixes A
   assumes A_fin: "finite A"
   shows "finite (Avectors A n) \<and> card (Avectors A n) = (card A) ^ n"
 proof -
@@ -124,9 +127,7 @@ proof -
     apply (insert fin card func_vec_inverses)
     apply (intro bijection_proof(1)[where ?A="Avectors A n" and ?B="{..<n} \<rightarrow>\<^sub>E A"
       and ?f="vec_to_func" and ?g="func_to_vec n"])
-    apply auto
-    apply fast
-    apply fast
+    apply (simp add: func_vec_inverses)
     by blast
 qed
   

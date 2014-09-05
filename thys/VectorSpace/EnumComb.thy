@@ -186,90 +186,98 @@ proof -
 qed
 
 lemma ways_sum:
-  assumes m: "m\<ge>1"
   shows "cardf {l::int list. Avector l {x. x\<ge>0} m \<and> listsum l = N} (binomial (N + m - 1) N)"
     (is "cardf (?A m N) (binomial (N + m - 1) N)")
-using m proof (induct "N + m - 1" arbitrary: N m)
--- "In the base case, the only solution is $[0]$."
-  case 0
-  have 0: "0 = N + m - 1 " by fact
-  have 1: "\<And>l::int list. length l = Suc 0 \<and> listsum l = 0 \<Longrightarrow> l = [0]"
-  proof -
-    fix l::"int list"
-    assume "length l = Suc 0 \<and> listsum l = 0"
-    thus "?thesis l"
-      by (cases l, auto)
-  qed
-  hence 2: "{l::int list. length l = Suc 0 \<and> 0 \<le> l ! 0 \<and> listsum l = 0}= {[0]}"
-    by auto
-  show "cardf {l::int list. Avector l {x. x\<ge>0} m \<and> listsum l = N} (binomial (N + m - 1) N)"
-  proof -
-    from 0 "0.prems" have "m=1 \<and> N=0" by auto
-    with 0 "0.prems"  show ?thesis
-      by (auto simp add: Avector_def 2)
-  qed
+proof (cases m)
+  case 0 then show ?thesis
+    by (cases N) (auto simp: cong: conj_cong)
 next
-  case (Suc k)
-  from Suc.prems have c: "cardf {l. Avector l {x::int. x\<ge>0} m \<and> listsum l = int N}
-         (card {l. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
-          card {l. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)})"
-    by (rule ways_sum_rec)
-  
--- "Now basically just use the induction hypothesis, however we have to be careful about boundary
-cases."  
-  
-  have c1: "card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} = 
-    (binomial (N + (m - 1) - 1) N)"
-  proof (cases "m = 1")
-    case True
-    with Suc.hyps have "N\<ge>1" by auto
-    with True show ?thesis 
-      by (unfold Avector_def, subst binomial_eq_0, auto)
+  case (Suc m')
+    have m: "m\<ge>1"
+    by (simp add: Suc)
+    then show ?thesis
+    proof (induct "N + m - 1" arbitrary: N m)
+      case 0 -- "In the base case, the only solution is $[0]$."
+      have 0: "0 = N + m - 1 " by fact
+      have 1: "\<And>l::int list. length l = Suc 0 \<and> listsum l = 0 \<Longrightarrow> l = [0]"
+      proof -
+        fix l::"int list"
+        assume "length l = Suc 0 \<and> listsum l = 0"
+        thus "?thesis l"
+          by (cases l, auto)
+      qed
+      hence 2: "{l::int list. length l = Suc 0 \<and> 0 \<le> l ! 0 \<and> listsum l = 0}= {[0]}"
+        by auto
+      show "cardf {l::int list. Avector l {x. x\<ge>0} m \<and> listsum l = N} (binomial (N + m - 1) N)"
+      proof -
+        from 0 "0.prems" have "m=1 \<and> N=0" by auto
+        with 0 "0.prems"  show ?thesis
+          by (auto simp add: Avector_def 2)
+      qed
   next
-    case False
-    thus ?thesis using Suc
-      by (intro Suc.hyps(1)[THEN conjunct2], auto)
-  qed
-
-  from Suc have c2: "card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N) - 1} = 
-    (if N>0 then (binomial ((N - 1) + m - 1) (N - 1)) else 0)"
-  proof -
-    have int_sub: "N>0 \<Longrightarrow> int N - 1 = int (N - 1) " by auto
-
-    from Suc have "N>0 \<Longrightarrow>
-      card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  int N - 1} = 
-      (binomial ((N - 1) + m - 1) (N - 1))"
-      apply (subst int_sub, simp)
-(*card {l. Avector l {x. 0 \<le> x} m \<and> listsum l = int N - 1} = N - 1 + m - 1 choose (N - 1)*)
-      by (intro Suc.hyps(1)[THEN conjunct2], auto)
-
-    moreover have "card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  - 1} = 0" 
-    proof - 
-      have show_empty: "\<And>A. A={} \<Longrightarrow> card A = 0" by auto
-      {
-        fix l::"int list" and m::nat
-        assume asm: "length l = m \<and> (\<forall>i<m. 0 \<le> l ! i) \<and> listsum l = - 1"
-        hence "listsum l \<ge>0 * int (length l)"
-          by (intro listsum_gt, auto)
-        hence "False" using asm by auto
-      }
-      hence "{l::int list. length l = m \<and> (\<forall>i<m. 0 \<le> l ! i) \<and> listsum l = - 1} = {}" by auto
-      hence "{l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  - 1} = {}" 
-        by (unfold Avector_def, auto)
-      thus ?thesis by (rule show_empty)
-    qed
+    case (Suc k)
+    from Suc.prems have c: "cardf {l. Avector l {x::int. x\<ge>0} m \<and> listsum l = int N}
+           (card {l. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
+            card {l. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)})"
+      by (rule ways_sum_rec)
     
-    ultimately show ?thesis 
-      by (unfold Avector_def, auto)
+  -- "Now basically just use the induction hypothesis, however we have to be careful about boundary
+  cases."  
+    
+    have c1: "card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} = 
+      (binomial (N + (m - 1) - 1) N)"
+    proof (cases "m = 1")
+      case True
+      with Suc.hyps have "N\<ge>1" by auto
+      with True show ?thesis 
+        by (unfold Avector_def, subst binomial_eq_0, auto)
+    next
+      case False
+      thus ?thesis using Suc
+        by (intro Suc.hyps(1)[THEN conjunct2], auto)
+    qed
+  
+    from Suc have c2: "card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N) - 1} = 
+      (if N>0 then (binomial ((N - 1) + m - 1) (N - 1)) else 0)"
+    proof -
+      have int_sub: "N>0 \<Longrightarrow> int N - 1 = int (N - 1) " by auto
+  
+      from Suc have "N>0 \<Longrightarrow>
+        card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  int N - 1} = 
+        (binomial ((N - 1) + m - 1) (N - 1))"
+        apply (subst int_sub, simp)
+  (*card {l. Avector l {x. 0 \<le> x} m \<and> listsum l = int N - 1} = N - 1 + m - 1 choose (N - 1)*)
+        by (intro Suc.hyps(1)[THEN conjunct2], auto)
+  
+      moreover have "card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  - 1} = 0" 
+      proof - 
+        have show_empty: "\<And>A. A={} \<Longrightarrow> card A = 0" by auto
+        {
+          fix l::"int list" and m::nat
+          assume asm: "length l = m \<and> (\<forall>i<m. 0 \<le> l ! i) \<and> listsum l = - 1"
+          hence "listsum l \<ge>0 * int (length l)"
+            by (intro listsum_gt, auto)
+          hence "False" using asm by auto
+        }
+        hence "{l::int list. length l = m \<and> (\<forall>i<m. 0 \<le> l ! i) \<and> listsum l = - 1} = {}" by auto
+        hence "{l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  - 1} = {}" 
+          by (unfold Avector_def, auto)
+        thus ?thesis by (rule show_empty)
+      qed
+      
+      ultimately show ?thesis 
+        by (unfold Avector_def, auto)
+    qed
+  
+    from c Suc have add_card: "(card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
+        card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)}) = (binomial (N + m - 1) N)"
+      apply (subst c1 c2)+
+      apply (auto)
+      by (subst (3) choose_reduce_nat, auto)
+    
+    thus ?case using c by auto
   qed
 
-  from c Suc have add_card: "(card {l::int list. Avector l {x::int. x\<ge>0} (m - 1) \<and> listsum l =  int N} + 
-      card {l::int list. Avector l {x::int. x\<ge>0} m \<and> listsum l =  (int N - 1)}) = (binomial (N + m - 1) N)"
-    apply (subst c1 c2)+
-    apply (auto)
-    by (subst (3) choose_reduce_nat, auto)
-  
-  thus ?case using c by auto
 qed
 
 end
