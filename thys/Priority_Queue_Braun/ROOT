@@ -1,0 +1,15 @@
+chapter AFP
+
+session Priority_Queue_Braun (AFP) = HOL +
+
+  options [timeout = 600]
+
+  theories [document = false]
+  "~~/src/HOL/Library/Tree"
+  "~~/src/HOL/Library/Multiset"
+
+  theories
+    Priority_Queue_Braun
+  document_files
+    "root.tex"
+    "root.bib"

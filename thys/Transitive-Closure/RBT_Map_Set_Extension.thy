@@ -1,93 +1,86 @@
 (*  Title:       Executable Transitive Closures of Finite Relations
-    Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
+    Author:      Christian Sternagel <c.sternagel@gmail.com>
                  René Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
 *)
 
-(*
-Copyright 2011 Christian Sternagel, René Thiemann
-
-This file is part of IsaFoR/CeTA.
-
-IsaFoR/CeTA is free software: you can redistribute it and/or modify it under the
-terms of the GNU Lesser General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
-
-IsaFoR/CeTA is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
-*)
-
-header {* Accessing values via keys *}
+header \<open>Accessing Values via Keys\<close>
 
 theory RBT_Map_Set_Extension
-imports "../Collections/ICF/impl/RBTMapImpl" 
+imports
+  "../Collections/ICF/impl/RBTMapImpl" 
   "../Collections/ICF/impl/RBTSetImpl"
   "../Matrix/Utility"
 begin
 
-text {*
-\label{rbt ext}
+text \<open>
   We provide two extensions of the red black tree implementation.
 
-  The first extension provides two convenience methods on sets which are
-  represented by red black trees: a check on subsets and the big union operator. 
+  The first extension provides two convenience methods on sets which are represented by red black
+  trees: a check on subsets and the big union operator. 
 
-  The second extension is to provide two operations @{term elem_list_to_rm} and
-  @{term rm_set_lookup} which can be used to index a set of values via keys.
-  More precisely, given a list of values of type @{typ "'v"} and a key function
-  of type @{typ "'v => 'k"}, @{term elem_list_to_rm} will generate a map of type
-  @{typ "'k => 'v set"}.  Then with @{term rs_set_lookup} we can efficiently
-  access all values which match a given key.
-*}
+  The second extension is to provide two operations @{term elem_list_to_rm} and @{term
+  rm_set_lookup} which can be used to index a set of values via keys. More precisely, given a list
+  of values of type @{typ "'v"} and a key function of type @{typ "'v => 'k"}, @{term
+  elem_list_to_rm} will generate a map of type @{typ "'k => 'v set"}. Then with @{term
+  rs_set_lookup} we can efficiently access all values which match a given key.
+\<close>
 
-subsection {* Subset and Union *}
+subsection \<open>Subset and Union\<close>
 
-text {* For the subset operation $r \subseteq s$ we provide two implementations.
-The first one (@{term rs_subset}) traverses over $r$ and then performs
-membership tests $\in s$. Its complexity is ${\cal O}(|r| \cdot log (|s|))$. The
-second one (@{term rs_subset_list}) generates sorted lists for both $r$ and $s$
-and then linearly checks the subset condition. Its complexity is ${\cal O}(|r| +
-|s|)$. *}
+text \<open>
+  For the subset operation @{term "r \<subseteq> s"} we provide two implementations. The first one (@{term
+  rs_subset}) traverses over @{term r} and then performs membership tests @{text "\<in> s"}. Its
+  complexity is ${\cal O}(|r| \cdot log (|s|))$. The second one (@{term rs_subset_list}) generates
+  sorted lists for both @{term r} and @{term s} and then linearly checks the subset condition. Its
+  complexity is ${\cal O}(|r| + |s|)$.
+\<close>
 
-text {* As union operator we use the standard fold function. Note that the order
-of the union is important so that new sets are added to the big union. *}
+text \<open>
+  As union operator we use the standard fold function. Note that the order of the union is important
+  so that new sets are added to the big union.
+\<close>
 
 (* perhaps there is a smarter way to use two iterates at the same time, however,
   when writing this theory this feature was not detected in the RBTSetImpl theory *)
 definition rs_subset :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
-  where "rs_subset as bs \<equiv> rs.iteratei as (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False) (\<lambda> a _. if rs.memb a bs then None else Some a) None"
+where
+  "rs_subset as bs = rs.iteratei
+    as
+    (\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False)
+    (\<lambda> a _. if rs.memb a bs then None else Some a)
+    None"
 
-lemma rs_subset[simp]: "(rs_subset as bs = None) = (rs.\<alpha> as \<subseteq> rs.\<alpha> bs)"
+lemma rs_subset [simp]:
+  "rs_subset as bs = None \<longleftrightarrow> rs.\<alpha> as \<subseteq> rs.\<alpha> bs"
 proof -
   let ?abort = "\<lambda> maybe. case maybe of None \<Rightarrow> True | Some _ \<Rightarrow> False"
-  let ?I = "\<lambda> aas maybe. (maybe = None) = (\<forall> a. a \<in> rs.\<alpha> as - aas \<longrightarrow> a \<in> rs.\<alpha> bs)"
+  let ?I = "\<lambda> aas maybe. maybe = None \<longleftrightarrow> (\<forall> a. a \<in> rs.\<alpha> as - aas \<longrightarrow> a \<in> rs.\<alpha> bs)"
   let ?it = "rs_subset as bs"
   have "?I {} ?it \<or> (\<exists> it \<subseteq> rs.\<alpha> as. it \<noteq> {} \<and> \<not> ?abort ?it \<and> ?I it ?it)"
     unfolding rs_subset_def
-    by (rule rs.iteratei_rule_P[where I="?I"]) (auto simp: rs.correct)
-  thus ?thesis by auto
+    by (rule rs.iteratei_rule_P [where I="?I"]) (auto simp: rs.correct)
+  then show ?thesis by auto
 qed
     
 definition rs_subset_list :: "('a :: linorder) rs \<Rightarrow> 'a rs \<Rightarrow> 'a option"
-  where "rs_subset_list as bs \<equiv> sorted_list_subset (rs.to_sorted_list as)
-  (rs.to_sorted_list bs)"
+where
+  "rs_subset_list as bs = sorted_list_subset (rs.to_sorted_list as) (rs.to_sorted_list bs)"
 
-lemma rs_subset_list[simp]: "(rs_subset_list as bs = None) = (rs.\<alpha> as \<subseteq> rs.\<alpha> bs)"
+lemma rs_subset_list [simp]:
+  "rs_subset_list as bs = None \<longleftrightarrow> rs.\<alpha> as \<subseteq> rs.\<alpha> bs"
   unfolding rs_subset_list_def
     sorted_list_subset[OF rs.to_sorted_list_correct(3)[OF rs.invar, of as]
     rs.to_sorted_list_correct(3)[OF rs.invar, of bs]]
   by (simp add: rs.to_sorted_list_correct)
 
-definition rs_Union :: "('q :: linorder)rs list \<Rightarrow> 'q rs"
-where "rs_Union \<equiv> foldl rs.union (rs.empty ())"
+definition rs_Union :: "('q :: linorder) rs list \<Rightarrow> 'q rs"
+where
+  "rs_Union = foldl rs.union (rs.empty ())"
 
-lemma rs_Union[simp]: "rs.\<alpha> (rs_Union qs) = \<Union> (rs.\<alpha> ` set qs)"
+lemma rs_Union [simp]:
+  "rs.\<alpha> (rs_Union qs) = \<Union> (rs.\<alpha> ` set qs)"
 proof -
   { 
     fix start
@@ -98,53 +91,51 @@ proof -
     by (auto simp: rs.correct)
 qed
 
-subsection {* Grouping values via keys *}
+subsection \<open>Grouping Values via Keys\<close>
  
-text {*
-  The functions to produce the index (@{term elem_list_to_rm}) and the lookup function
-  (@{term rm_set_lookup})
-  are straight-forward, however it requires some tedious reasoning that they perform
+text \<open>
+  The functions to produce the index (@{term elem_list_to_rm}) and the lookup function (@{term
+  rm_set_lookup}) are straight-forward, however it requires some tedious reasoning that they perform
   as they should.
-*} 
+\<close>
+fun elem_list_to_rm :: "('d \<Rightarrow> 'k :: linorder) \<Rightarrow> 'd list \<Rightarrow> ('k, 'd list) rm"
+where
+  "elem_list_to_rm key [] = rm.empty ()" |
+  "elem_list_to_rm key (d # ds) =
+    (let
+      rm = elem_list_to_rm key ds;
+      k = key d
+    in
+      (case rm.\<alpha> rm k of
+        None \<Rightarrow> rm.update_dj k [d] rm
+      | Some data \<Rightarrow> rm.update k (d # data) rm))"
 
+definition "rm_set_lookup rm = (\<lambda> a. (case rm.\<alpha> rm a of None \<Rightarrow> [] | Some rules \<Rightarrow> rules))"
 
-fun elem_list_to_rm :: "('d \<Rightarrow> 'k :: linorder) \<Rightarrow> 'd list \<Rightarrow> ('k,'d list)rm"
-  where "elem_list_to_rm key [] = rm.empty ()"
-      | "elem_list_to_rm key (d # ds) = (
-              let rm = elem_list_to_rm key ds;
-                  k = key d
-                  in case rm.\<alpha> rm k of
-                        None \<Rightarrow> rm.update_dj k [d] rm
-                     | Some data \<Rightarrow> rm.update k (d # data) rm
-         )"
-
-definition rm_set_lookup where "rm_set_lookup rm \<equiv> \<lambda> a. 
-  (case rm.\<alpha> rm a of None \<Rightarrow> [] | Some rules \<Rightarrow> rules)"
-
-
-lemma rm_to_list_empty[simp]:
+lemma rm_to_list_empty [simp]:
   "rm.to_list (rm.empty ()) = []" 
 proof -
   have "map_of (rm.to_list (rm.empty ())) = Map.empty" 
     by (simp add: rm.correct)
-  moreover have map_of_empty_iff: "\<And>l. map_of l = Map.empty \<longleftrightarrow> l=[]"
+  moreover have map_of_empty_iff: "\<And>l. map_of l = Map.empty \<longleftrightarrow> l = []"
     by (case_tac l) auto
   ultimately show ?thesis by metis
 qed
 
 locale rm_set = 
-  fixes rm :: "('k :: linorder,'d list)rm"
-  and   key :: "'d \<Rightarrow> 'k"
-  and   data :: "'d set"
+  fixes rm :: "('k :: linorder, 'd list) rm"
+    and key :: "'d \<Rightarrow> 'k"
+    and data :: "'d set"
   assumes rm_set_lookup: "\<And> k. set (rm_set_lookup rm k) = {d \<in> data. key d = k}"
 begin
 
-lemma data_lookup: "data = \<Union> {set (rm_set_lookup rm k) | k. True}" (is "_ = ?R")
+lemma data_lookup:
+  "data = \<Union> {set (rm_set_lookup rm k) | k. True}" (is "_ = ?R")
 proof -
   { 
     fix d
     assume d: "d \<in> data"
-    hence d: "d \<in> {d' \<in> data. key d' = key d}" by auto
+    then have d: "d \<in> {d' \<in> data. key d' = key d}" by auto
     have "d \<in> ?R"
       by (rule UnionI[OF _ d], rule CollectI, rule exI[of _ "key d"], unfold rm_set_lookup[of "key d"], simp)
   }
@@ -158,7 +149,8 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-lemma finite_data: "finite data"
+lemma finite_data:
+  "finite data"
   unfolding data_lookup
 proof
   show "finite {set (rm_set_lookup rm k) | k. True}" (is "finite ?L")
@@ -178,20 +170,20 @@ proof
       show "ds \<in> ?K" 
       proof (cases "rm.\<alpha> rm fn")
         case None
-        thus ?thesis unfolding ds by auto
+        then show ?thesis unfolding ds by auto
       next
         case (Some rules)
         from Some have fn: "fn \<in> Map.dom ?rmset" by auto
         have "ds \<in> ?N"
           unfolding ds
           by (rule, rule refl, rule, rule refl, rule fn)
-        thus ?thesis by auto
+        then show ?thesis by auto
       qed
     qed
   qed
 qed (force simp: rm_set_lookup_def)
-end
 
+end
 
 interpretation elem_list_to_rm: rm_set "elem_list_to_rm key ds" key "set ds"
 proof
@@ -199,7 +191,7 @@ proof
   show "set (rm_set_lookup (elem_list_to_rm key ds) k) = {d \<in> set ds. key d = k}"
   proof (induct ds arbitrary: k)
     case Nil
-    thus ?case unfolding rm_set_lookup_def 
+    then show ?case unfolding rm_set_lookup_def 
       by (simp add: rm.correct)
   next
     case (Cons d ds k)
@@ -224,10 +216,10 @@ proof
       {
         fix da
         assume "da \<in> ?r1 \<union> ?r2"
-        hence "da \<in> ?l"
+        then have "da \<in> ?l"
         proof
           assume "da \<in> ?r2"
-          hence da: "da = d" and k: "key d = k" by auto
+          then have da: "da = d" and k: "key d = k" by auto
           show ?thesis unfolding da k by auto
         next
           assume "da \<in> ?r1"
@@ -250,7 +242,7 @@ proof
         proof (cases "k = key d")
           case True
           with rm da have da: "da = d" by auto
-          thus ?thesis using True by auto
+          then show ?thesis using True by auto
         next
           case False
           with rm have "rm.\<alpha> (?el ds) k = Some das" by auto
@@ -259,7 +251,7 @@ proof
         qed
       }
       ultimately have "?l = ?r1 \<union> ?r2" by blast
-      thus ?thesis unfolding l r .
+      then show ?thesis unfolding l r .
     next
       case (Some das)
       from Some ind[of "key d"] have das: "{da \<in> set ds. key da = key d} = set das"
@@ -275,10 +267,10 @@ proof
       {
         fix da
         assume "da \<in> ?r1 \<union> ?r2"
-        hence "da \<in> ?l"
+        then have "da \<in> ?l"
         proof
           assume "da \<in> ?r2"
-          hence da: "da = d" and k: "key d = k" by auto
+          then have da: "da = d" and k: "key d = k" by auto
           show ?thesis unfolding da k by auto
         next
           assume "da \<in> ?r1"
@@ -291,7 +283,7 @@ proof
             show ?thesis using das' das da unfolding True by simp
           next
             case False
-            thus ?thesis using das' da rm by auto
+            then show ?thesis using das' da rm by auto
           qed
         qed
       } 
@@ -306,11 +298,11 @@ proof
         proof (cases "k = key d")
           case True
           with rm da das have da: "da \<in> set (d # das)" by auto
-          hence "da = d \<or> da \<in> set das" by auto
-          hence k: "key da = k" 
+          then have "da = d \<or> da \<in> set das" by auto
+          then have k: "key da = k" 
           proof
             assume "da = d"
-            thus ?thesis using True by simp
+            then show ?thesis using True by simp
           next
             assume "da \<in> set das"
             with das True show ?thesis by auto
@@ -324,11 +316,9 @@ proof
         qed
       }
       ultimately have "?l = ?r1 \<union> ?r2" by blast
-      thus ?thesis unfolding l r .
+      then show ?thesis unfolding l r .
     qed
   qed
 qed
-
-
 
 end
