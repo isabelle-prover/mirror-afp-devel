@@ -81,7 +81,7 @@ qed
 
 locale co begin
 
-free_constructors (no_code) case_enat for
+free_constructors (plugins del: code) case_enat for
     "0::enat"
   | eSuc epred
 where
