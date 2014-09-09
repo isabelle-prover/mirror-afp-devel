@@ -138,9 +138,8 @@ text{*The statement of the ``rank nullity theorem for linear algebra'', as
   traditional one found in the literature. The theorem is also named 
   ``fundamental theorem of linear algebra'' in some texts (for instance,
   in~\cite{GO10}).*}
-  
-  
-context linear_between_finite_dimensional_vector_spaces
+
+context linear_first_finite_dimensional_vector_space
 begin
 
 theorem rank_nullity_theorem:
@@ -319,7 +318,7 @@ subsection{*The rank nullity theorem for matrices*}
 
 text{*The proof of the theorem for matrices 
   is direct, as a consequence of the ``rank nullity theorem''.*}
-  
+
 lemma rank_nullity_theorem_matrices:
   fixes A::"'a::{field}^'cols::{finite, wellorder}^'rows"
   shows "ncols A = vec.dim (null_space A) + vec.dim (col_space A)"
@@ -328,10 +327,8 @@ show ?thesis
   apply (subst (1 2) matrix_of_matrix_vector_mul [of A, symmetric])
   unfolding null_space_eq_ker[OF matrix_vector_mul_linear]
   unfolding col_space_eq_range [OF matrix_vector_mul_linear]
-  using linear_between_finite_dimensional_vector_spaces.rank_nullity_theorem
-    [OF matrix_vector_mul_linear_between_finite_dimensional_vector_spaces, of A]
-  by (metis col_space_eq' ncols_def vec.dim_UNIV vec.dimension_def vec_dim_card)
+  using vec.rank_nullity_theorem
+  by (metis col_space_eq' ncols_def vec.dim_UNIV vec.dimension_def vec_dim_card) 
 qed
-
 
 end

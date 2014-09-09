@@ -158,8 +158,8 @@ EOF
 fi
 
 # send email to maintainer if there was a problem
-if [ "$FAILURE" != "0" ]; then
-  FAIL=`tail -4 $LOG | head -1`
+FAIL=`tail -5 $LOG | head -1`
+if [[ "$FAIL" == Unfinished* ]]; then
   # cut "Unfinished session(s): "
   FAIL="${FAIL:22}"
   echo "`date`, $HOST, $AFP_VER [afp: $AFP_HG_ID, isa: $ISABELLE_VER]: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
