@@ -48,7 +48,7 @@ fun define_singleton_type
     val tac = rtac UNIV_witness 1
     val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
-    Typedef.add_typedef_global typ set opt_morphs tac thy
+    Typedef.add_typedef_global false typ set opt_morphs tac thy
   end    
 
 (******************************************************************************)
