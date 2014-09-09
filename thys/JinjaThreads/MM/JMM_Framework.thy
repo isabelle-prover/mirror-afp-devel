@@ -2318,11 +2318,11 @@ proof -
         hence take_r_eq: "ltake (enat r) E = ltake (enat r) ?E_sc"
           by(rule ltake_eq_ltake_antimono)(simp add: `?P ?r`)
         
-        from eq_r_n nth_drop'[OF r_n, symmetric]
+        from eq_r_n Cons_nth_drop_Suc[OF r_n, symmetric]
         have "drop r_n \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<noteq> []" by(auto simp add: eq_upto_seq_inconsist_simps)
         hence r_n': "r_n < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by simp
         hence eq_r_n: "\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n \<approx> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! r_n"
-          using eq_r_n nth_drop'[OF r_n, symmetric] nth_drop'[OF r_n', symmetric]
+          using eq_r_n Cons_nth_drop_Suc[OF r_n, symmetric] Cons_nth_drop_Suc[OF r_n', symmetric]
           by(simp add: eq_upto_seq_inconsist_simps split: action.split_asm obs_event.split_asm split_if_asm)
         obtain tid_eq: "action_tid E r = action_tid ?E_sc r" 
           and obs_eq: "action_obs E r \<approx> action_obs ?E_sc r"

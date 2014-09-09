@@ -42,7 +42,7 @@ begin
       assume A: "Suc n \<le> length l"
       hence B: "length l - Suc n < length l" by simp
       from A have [simp]: "Suc (length l - Suc n) = length l - n" by simp
-      from nth_drop'[OF B, simplified] have 
+      from Cons_nth_drop_Suc[OF B, simplified] have 
         "drop (length l - Suc n) l = l!(length l - Suc n)#drop (length l - n) l" 
         by simp
     } note drop_aux=this

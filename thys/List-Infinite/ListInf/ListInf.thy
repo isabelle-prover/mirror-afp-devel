@@ -628,7 +628,7 @@ thm List.nth_via_drop
 lemma nth_via_i_drop: "(f \<Up> n) 0 = x \<Longrightarrow> f n = x"
 by simp
 
-thm List.drop_Suc_conv_tl
+thm List.Cons_nth_drop_Suc
 lemma i_drop_Suc_conv_tl: "[f n] \<frown> (f \<Up> Suc n) = f \<Up> n"
 by (simp add: expand_ilist_eq i_append_nth)
 
@@ -1262,12 +1262,12 @@ apply (case_tac a)
 apply (simp add: take_Suc_conv_app_nth i_take_Suc_conv_app_nth)+
 done
 
-thm drop_Suc_conv_tl
+thm Cons_nth_drop_Suc
 lemma gdrop_eSuc_conv_tl: "
   enat n < glength a \<Longrightarrow> a !\<^sub>g n #\<^sub>g a \<up>\<^sub>g enat (Suc n) = a \<up>\<^sub>g enat n"
 apply (unfold glength_def gdrop_def gappend_def gnth_def gCons_def)
 apply (case_tac a)
-apply (simp add: drop_Suc_conv_tl i_drop_Suc_conv_tl)+
+apply (simp add: Cons_nth_drop_Suc i_drop_Suc_conv_tl)+
 done
 
 thm length_take

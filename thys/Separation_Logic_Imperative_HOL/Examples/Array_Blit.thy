@@ -34,7 +34,7 @@ subsection "Definition"
     have [simp]: "\<And>x. lsrc ! si # take len (drop (Suc si) lsrc) @ x
       = take (Suc len) (drop si lsrc) @ x"
       apply simp
-      by (metis Suc.prems(1) add_Suc_right drop_Suc_conv_tl 
+      by (metis Suc.prems(1) add_Suc_right Cons_nth_drop_Suc
         less_Suc_eq_le add.commute not_less_eq take_Suc_Cons 
         Nat.trans_le_add2)
 

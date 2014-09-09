@@ -54,7 +54,7 @@ proof(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\
       using `i \<le> length l` i c by -(rule 1, auto)
     also from `i \<le> length l` i
     have "drop (length l - i) l = (l ! (length l - i)) # drop (length l - (i - 1)) l"
-      by(subst nth_drop'[symmetric])(simp_all, metis Suc_eq_plus1_left add_diff_assoc)
+      by(subst Cons_nth_drop_Suc[symmetric])(simp_all, metis Suc_eq_plus1_left add_diff_assoc)
     hence "foldli (drop (length l - (i - 1)) l) c f (f (l ! (length l - i)) \<sigma>) = foldli (drop (length l - i) l) c f \<sigma>"
       using c by simp
     finally show ?thesis .
@@ -467,7 +467,7 @@ next
   obtain xs where a [simp]: "a = Array xs" by(cases a)
   from inv have [simp]: "bounded_hashcode_nat (length xs) k < length xs"
     by(simp add: ahm_invar_aux_def bounded_hashcode_nat_bounds)
-  have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: nth_drop')
+  have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: Cons_nth_drop_Suc)
   from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
     by(auto elim: ahm_invar_auxE)
   hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"
@@ -605,7 +605,7 @@ proof -
 
     from inv have [simp]: "bounded_hashcode_nat (length xs) k < length xs"
       by(simp add: ahm_invar_aux_def bounded_hashcode_nat_bounds)
-    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: nth_drop')
+    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: Cons_nth_drop_Suc)
     from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
       by(auto elim: ahm_invar_auxE)
     hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"
@@ -679,7 +679,7 @@ proof -
       by(simp add: ahm_invar_aux_def bounded_hashcode_nat_bounds)
     from inv have "distinct (map fst (array_get a ?h))" by(auto elim: ahm_invar_auxE)
     moreover
-    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: nth_drop')
+    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: Cons_nth_drop_Suc)
     from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
       by(auto elim: ahm_invar_auxE)
     hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"

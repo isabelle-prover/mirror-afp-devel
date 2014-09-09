@@ -197,7 +197,7 @@ using assms proof(induct al arbitrary: n1 n2 j1 j2 rule: rev_induct)
     case Left note n1 = Left
     hence j1: "j1 < f (al ! n1)" using snoc by auto
     obtain al' where al: "al = (take n1 al) @ ((al ! n1) # al')"
-    using n1 by (metis append_take_drop_id nth_drop')
+    using n1 by (metis append_take_drop_id Cons_nth_drop_Suc)
     have "j1 < lsum f ((al ! n1) # al')" using pos j1 unfolding lsum_def by simp
     hence "lsum f (take n1 al) + j1 < lsum f (take n1 al) + lsum f ((al ! n1) # al')" by simp
     also have "... = lsum f al" unfolding lsum_append[THEN sym] using al by simp
@@ -224,7 +224,7 @@ using assms proof(induct al arbitrary: n1 n2 j1 j2 rule: rev_induct)
       case Left note n2 = Left
       hence j2: "j2 < f (al ! n2)" using snoc by auto
       obtain al' where al: "al = (take n2 al) @ ((al ! n2) # al')"
-      using n2 by (metis append_take_drop_id nth_drop')
+      using n2 by (metis append_take_drop_id Cons_nth_drop_Suc)
       have "j2 < lsum f ((al ! n2) # al')" using pos j2 unfolding lsum_def by simp
       hence "lsum f (take n2 al) + j2 < lsum f (take n2 al) + lsum f ((al ! n2) # al')" by simp
       also have "... = lsum f al" unfolding lsum_append[THEN sym] using al by simp

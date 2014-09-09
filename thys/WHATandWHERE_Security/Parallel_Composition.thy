@@ -150,7 +150,7 @@ next
   from ISassump obtain Rc' where Rc'assump: 
     "SdlHPPB d PP Rc' \<and> ([c],[c]) \<in> Rc'"
     by (metis append_Nil drop_Nil neq0_conv not_Cons_self 
-      nth_append_length nth_drop' zero_less_Suc)
+      nth_append_length Cons_nth_drop_Suc zero_less_Suc)
  
   def Rc \<equiv> "{(V',V''). (V',V'') \<in> Rc' \<and> set (PPV V') \<subseteq> set (PPc c)
     \<and> set (PPV V'') \<subseteq> set (PPc c)}"
@@ -161,8 +161,7 @@ next
 
   from nocommonPP have "Domain RV \<inter> Domain Rc \<subseteq> {[]}"
     by (simp add: RV_def Rc_def, auto,
-      metis Int_absorb2 Int_mono inf_commute inf_idem le_bot nocommonPP 
-      order_eq_refl unique_V_uneq)
+      metis Int_mono inf_commute inf_idem le_bot nocommonPP unique_V_uneq)
 
   with commonArefl_subset_commonDomain
   have Areflassump1: "Arefl RV \<inter> Arefl Rc \<subseteq> {[]}"

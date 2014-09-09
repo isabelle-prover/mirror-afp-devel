@@ -701,7 +701,7 @@ next
   obtain xs where a [simp]: "a = Array xs" by(cases a)
   from inv and bhc have [simp]: "bhc (length xs) k < length xs"
       by (force simp add: ahm_invar_aux_def)
-  have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: nth_drop')
+  have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: Cons_nth_drop_Suc)
   from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
     by(auto elim: ahm_invar_auxE)
   hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"
@@ -1110,7 +1110,7 @@ proof (intro fun_relI, clarsimp)
     from inv have [simp]: "bhc (length xs) k < length xs"
         using bhc_range by simp
     have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs"
-        by(simp add: nth_drop')
+        by(simp add: Cons_nth_drop_Suc)
     from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
         by (force dest: ahm_invar_auxD)
     hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"
@@ -1320,7 +1320,7 @@ proof (intro fun_relI, clarsimp)
 
     from bhc_range have [simp]: "bhc (length xs) k < length xs" by simp
     moreover
-    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: nth_drop')
+    have xs: "xs = take ?h xs @ (xs ! ?h) # drop (Suc ?h) xs" by(simp add: Cons_nth_drop_Suc)
     from inv have "n = array_foldl (\<lambda>_ n kvs. n + length kvs) 0 a"
       by(auto elim: ahm_invar_auxE)
     hence "n = foldl ?f 0 (take ?h xs) + length (xs ! ?h) + foldl ?f 0 (drop (Suc ?h) xs)"

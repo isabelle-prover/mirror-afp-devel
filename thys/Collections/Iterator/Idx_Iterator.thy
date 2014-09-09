@@ -40,7 +40,7 @@ proof-
     assume A: "Suc n \<le> length l"
     hence B: "length l - Suc n < length l" by simp
     from A have [simp]: "Suc (length l - Suc n) = length l - n" by simp
-    from nth_drop'[OF B, simplified] have 
+    from Cons_nth_drop_Suc[OF B, simplified] have 
       "drop (length l - Suc n) l = l!(length l - Suc n)#drop (length l - n) l" 
       by simp
   } note drop_aux=this
@@ -92,7 +92,7 @@ proof(induct get\<equiv>"op ! :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\
       using `i \<le> length l` i c by -(rule 1, auto)
     also from `i \<le> length l` i
     have "drop (length l - i) l = (l ! (length l - i)) # drop (length l - (i - 1)) l"
-      apply (subst nth_drop'[symmetric])
+      apply (subst Cons_nth_drop_Suc[symmetric])
       apply simp_all
       done
     hence "foldli (drop (length l - (i - 1)) l) c f (f (l ! (length l - i)) \<sigma>) = foldli (drop (length l - i) l) c f \<sigma>"

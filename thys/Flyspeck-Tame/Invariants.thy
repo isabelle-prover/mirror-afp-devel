@@ -2473,7 +2473,8 @@ lemma incrIndexList_less_eq:
 apply (subgoal_tac "increasing ls") apply (thin_tac "incrIndexList ls m nmax") apply (rule increasing1) apply simp
 apply (subgoal_tac "ls = take n ls @ ls!n # [] @ ls!(Suc n) # drop (Suc (Suc n)) ls") apply assumption
 apply simp apply (subgoal_tac "n < | ls|") apply (rotate_tac -1) apply (drule id_take_nth_drop)
-apply (subgoal_tac "drop (Suc n) ls = ls ! Suc n # drop (Suc (Suc n)) ls") apply simp apply (drule drop_Suc_conv_tl) by auto
+apply (subgoal_tac "drop (Suc n) ls = ls ! Suc n # drop (Suc (Suc n)) ls") apply simp apply (drule Cons_nth_drop_Suc)
+by auto
 
 lemma incrIndexList_less:
  "incrIndexList ls m nmax \<Longrightarrow> Suc n < |ls| \<Longrightarrow> ls!n \<noteq> ls!Suc n\<Longrightarrow> ls!n < ls!Suc n"
