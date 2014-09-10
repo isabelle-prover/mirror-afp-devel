@@ -9,7 +9,7 @@ begin
 
 subsection {* Defining tree and properties of heap *}
 
-datatype 'a Tree = "E" | "T" 'a "'a Tree" "'a Tree"
+datatype_new 'a Tree = "E" | "T" 'a "'a Tree" "'a Tree"
 
 text{*With {\em E} is represented empty tree and with {\em T\ \ \ 'a\ \ \ 'a
   Tree\ \ \ 'a Tree} is represented a node whose root element is of
