@@ -24,7 +24,7 @@ Here below is a naive tail-recursive definition of such function:
 \null
 *}
 
-datatype 'a bintree = Leaf | Branch 'a "'a bintree" "'a bintree"
+datatype_new 'a bintree = Leaf | Branch 'a "'a bintree" "'a bintree"
 
 function (sequential) t_ins_naive ::
  "bool \<Rightarrow> 'a::linorder \<Rightarrow> 'a bintree list \<Rightarrow> 'a bintree"
