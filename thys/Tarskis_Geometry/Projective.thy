@@ -526,7 +526,7 @@ proof -
   show "i = j" by simp
 qed
 
-datatype proj2_line = P2L proj2
+datatype_new proj2_line = P2L proj2
 
 definition L2P :: "proj2_line \<Rightarrow> proj2" where
   "L2P l \<equiv> case l of P2L p \<Rightarrow> p"
