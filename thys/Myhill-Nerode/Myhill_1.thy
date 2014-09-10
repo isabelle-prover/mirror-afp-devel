@@ -47,7 +47,7 @@ subsection {* Equational systems *}
 
 text {* The two kinds of terms in the rhs of equations. *}
 
-datatype 'a trm = 
+datatype_new 'a trm = 
    Lam "'a rexp"            (* Lambda-marker *)
  | Trn "'a lang" "'a rexp"     (* Transition *)
 
