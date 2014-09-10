@@ -940,7 +940,7 @@ subsection {* Generalised lists as combination of finite and infinite lists *}
 
 subsubsection {* Basic definitions *}
 
-datatype 'a glist = FL "'a list" | IL "'a ilist"
+datatype_new 'a glist = FL "'a list" | IL "'a ilist"
 
 thm list.simps
 term nth
