@@ -1018,7 +1018,7 @@ qed
 subsection {* Approximating Expressions *}
 text {*\label{sec:affineexpr}*}
 
-datatype 'a realarith
+datatype_new 'a realarith
   = Add "'a realarith" "'a realarith"
   | Minus "'a realarith"
   | Mult "'a realarith" "'a realarith"
@@ -1026,7 +1026,7 @@ datatype 'a realarith
   | Var nat 'a
   | Num real
 
-datatype ('a, 'b) euclarith
+datatype_new ('a, 'b) euclarith
   = AddE "('a, 'b) euclarith" "('a, 'b) euclarith"
   | ScaleR "'a realarith" 'b
 
