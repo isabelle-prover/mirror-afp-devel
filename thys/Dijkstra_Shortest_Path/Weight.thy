@@ -81,7 +81,8 @@ text {*
   We provide a standard way to add an infinity element to any type.
 *}
 
-datatype 'a infty = Infty | Num 'a
+datatype_new 'a infty = Infty | Num 'a
+
 primrec val where "val (Num d) = d"
 
 lemma num_val_iff[simp]: "e\<noteq>Infty \<Longrightarrow> Num (val e) = e" by (cases e) auto
