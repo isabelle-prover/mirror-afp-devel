@@ -321,9 +321,9 @@ right subtrees and @{term w} caches the sum of the weights of @{term t\<^sub>1} 
 @{term t\<^sub>2}. Prefix code trees are polymorphic on the symbol datatype~@{typ 'a}.
 *}
 
-datatype 'a tree =
-Leaf nat 'a |
-InnerNode nat "('a tree)" "('a tree)"
+datatype_new 'a tree =
+  Leaf nat 'a
+| InnerNode nat "('a tree)" "('a tree)"
 
 subsection {* Forest Datatype *}
 
