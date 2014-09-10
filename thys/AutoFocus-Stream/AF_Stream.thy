@@ -15,7 +15,7 @@ subsection {* Basic definitions *}
 
 subsubsection {* Time-synchronous streams *}
 
-datatype 
+datatype_new
   'a message_af = NoMsg | Msg 'a
 notation (latex)
   NoMsg  ("\<NoMsg>") and
