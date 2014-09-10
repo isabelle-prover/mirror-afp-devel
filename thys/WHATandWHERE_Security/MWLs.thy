@@ -13,20 +13,20 @@ begin
 
 --"SYNTAX"
 
-datatype ('exp, 'id) MWLsCom 
+datatype_new ('exp, 'id) MWLsCom
   = Skip "nat" ("skip\<^bsub>_\<^esub>" [50] 70)
-  | Assign "'id" "nat" "'exp" 
+  | Assign "'id" "nat" "'exp"
        ("_:=\<^bsub>_\<^esub> _" [70,50,70] 70)
 
-  | Seq "('exp, 'id) MWLsCom" 
-         "('exp, 'id) MWLsCom" 
+  | Seq "('exp, 'id) MWLsCom"
+         "('exp, 'id) MWLsCom"
        ("_;_" [61,60] 60)
- 
-  | If_Else "nat" "'exp" "('exp, 'id) MWLsCom" 
+
+  | If_Else "nat" "'exp" "('exp, 'id) MWLsCom"
          "('exp, 'id) MWLsCom"
        ("if\<^bsub>_\<^esub> _ then _ else _ fi" [50,80,79,79] 70)
 
-  | While_Do "nat" "'exp" "('exp, 'id) MWLsCom" 
+  | While_Do "nat" "'exp" "('exp, 'id) MWLsCom"
        ("while\<^bsub>_\<^esub> _ do _ od" [50,80,79] 70)
 
   | Spawn "nat" "(('exp, 'id) MWLsCom) list"
@@ -67,7 +67,7 @@ where
 "unique_PPV V = distinct (PPV V)"
 
 lemma PPc_nonempt: "PPc c \<noteq> []"
-  by (induct, simp_all)
+  by (induct c) auto
 
 lemma unique_c_uneq: "set (PPc c) \<inter> set (PPc c') = {} \<Longrightarrow> c \<noteq> c'"
   by (insert PPc_nonempt, force)
@@ -75,7 +75,7 @@ lemma unique_c_uneq: "set (PPc c) \<inter> set (PPc c') = {} \<Longrightarrow> c
 lemma V_nonempt_PPV_nonempt: "V \<noteq> [] \<Longrightarrow> PPV V \<noteq> []"
   by (auto, induct V, simp_all, insert PPc_nonempt, force)
 
-lemma unique_V_uneq: 
+lemma unique_V_uneq:
 "\<lbrakk>V \<noteq> []; V' \<noteq> []; set (PPV V) \<inter> set (PPV V') = {}\<rbrakk> \<Longrightarrow> V \<noteq> V'"
   by (auto, induct V, simp_all, insert V_nonempt_PPV_nonempt, auto)
 
@@ -84,15 +84,15 @@ lemma PPc_in_PPV: "c \<in> set V \<Longrightarrow> set (PPc c) \<subseteq> set (
 
 lemma listindices_aux: "i < length V \<Longrightarrow> (V!i) \<in> set V"
   by (metis nth_mem)
-  
-lemma PPc_in_PPV_version: 
+
+lemma PPc_in_PPV_version:
   "i < length V \<Longrightarrow> set (PPc (V!i)) \<subseteq> set (PPV V)"
   by (rule PPc_in_PPV, erule listindices_aux)
 
 lemma uniPPV_uniPPc: "unique_PPV V \<Longrightarrow> (\<forall>i < length V. unique_PPc (V!i))"
   by (auto, simp add: unique_PPV_def, induct V,
     auto simp add: unique_PPc_def,
-    metis in_set_conv_nth length_Suc_conv set_ConsD)    
+    metis in_set_conv_nth length_Suc_conv set_ConsD)
 
 --"SEMANTICS"
 
@@ -103,25 +103,25 @@ begin
 
 -- "steps semantics, set of deterministic steps from commands to program states"
 inductive_set
-MWLsSteps_det :: 
+MWLsSteps_det ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TLSteps"
-and MWLslocSteps_det' :: 
+and MWLslocSteps_det' ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TLSteps_curry"
 ("(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0,0] 81)
 where
 "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>c2,m2\<rangle> \<equiv> ((c1,m1),\<alpha>,(c2,m2)) \<in> MWLsSteps_det" |
 skip: "\<langle>skip\<^bsub>\<iota>\<^esub>,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>None,m\<rangle>" |
-assign: "(E e m) = v \<Longrightarrow> 
+assign: "(E e m) = v \<Longrightarrow>
   \<langle>x :=\<^bsub>\<iota>\<^esub> e,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>None,m(x := v)\<rangle>" |
-seq1: "\<langle>c1,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m'\<rangle> \<Longrightarrow> 
+seq1: "\<langle>c1,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m'\<rangle> \<Longrightarrow>
   \<langle>c1;c2,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c2,m'\<rangle>" |
-seq2: "\<langle>c1,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c1',m'\<rangle> \<Longrightarrow> 
+seq2: "\<langle>c1,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some c1',m'\<rangle> \<Longrightarrow>
   \<langle>c1;c2,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>Some (c1';c2),m'\<rangle>" |
-iftrue: "BMap (E b m) = True \<Longrightarrow> 
+iftrue: "BMap (E b m) = True \<Longrightarrow>
   \<langle>if\<^bsub>\<iota>\<^esub> b then c1 else c2 fi,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>Some c1,m\<rangle>" |
-iffalse: "BMap (E b m) = False \<Longrightarrow> 
+iffalse: "BMap (E b m) = False \<Longrightarrow>
   \<langle>if\<^bsub>\<iota>\<^esub> b then c1 else c2 fi,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>Some c2,m\<rangle>" |
-whiletrue: "BMap (E b m) = True \<Longrightarrow> 
+whiletrue: "BMap (E b m) = True \<Longrightarrow>
   \<langle>while\<^bsub>\<iota>\<^esub> b do c od,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>Some (c;(while\<^bsub>\<iota>\<^esub> b do c od)),m\<rangle>" |
 whilefalse: "BMap (E b m) = False \<Longrightarrow>
   \<langle>while\<^bsub>\<iota>\<^esub> b do c od,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>None,m\<rangle>" |
@@ -137,9 +137,9 @@ inductive_cases MWLsSteps_det_cases:
 
 -- "non-deterministic, possibilistic system step (added for intuition, not used in the proofs)"
 inductive_set
-MWLsSteps_ndet :: 
+MWLsSteps_ndet ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TPSteps"
-and MWLsSteps_ndet' :: 
+and MWLsSteps_ndet' ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TPSteps_curry"
 ("(1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0] 81)
 where
@@ -152,18 +152,18 @@ stepthreadi2: "\<langle>ci,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle
 
 --"lemma about existence and uniqueness of next memory of a step"
 lemma nextmem_exists_and_unique:
-"\<exists>m' p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle> 
+"\<exists>m' p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>
   \<and> (\<forall>m''. (\<exists>p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m''\<rangle>) \<longrightarrow> m'' = m')"
-  by (induct, auto, metis MWLsSteps_det.skip MWLsSteps_det_cases(1),
+  by (induct c, auto, metis MWLsSteps_det.skip MWLsSteps_det_cases(1),
     metis MWLsSteps_det_cases(2) MWLsSteps_det.assign,
-    metis (no_types) MWLsSteps_det.seq1 MWLsSteps_det.seq2 
+    metis (no_types) MWLsSteps_det.seq1 MWLsSteps_det.seq2
     MWLsSteps_det_cases(3) not_Some_eq,
-    metis MWLsSteps_det.iffalse MWLsSteps_det.iftrue 
+    metis MWLsSteps_det.iffalse MWLsSteps_det.iftrue
     MWLsSteps_det_cases(4),
-    metis MWLsSteps_det.whilefalse MWLsSteps_det.whiletrue 
+    metis MWLsSteps_det.whilefalse MWLsSteps_det.whiletrue
     MWLsSteps_det_cases(5),
     metis MWLsSteps_det.spawn MWLsSteps_det_cases(6))
-  
+
 lemma PPsc_of_step:
 "\<lbrakk> \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>; \<exists>c'. p = Some c' \<rbrakk>
   \<Longrightarrow> set (PPc (the p)) \<subseteq> set (PPc c)"
