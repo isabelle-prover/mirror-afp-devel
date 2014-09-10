@@ -12,7 +12,7 @@ begin
 
 subsection {* Preliminary datatype for ordinals *}
 
-datatype ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
+datatype_new ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
 
 text {* subterm ordering on ord0 *}
 
@@ -351,8 +351,7 @@ lemma oZero_least: "oZero \<le> x"
  apply (induct_tac z, simp, atomize)
  apply (rule ord0_less_imp_le)
  apply (rule ord0_le_less_trans)
-  apply (erule spec)
- apply (rule less_ord0_LimI)
+ apply (auto simp: less_ord0_LimI)
 done
 
 lemma oStrictLimit_ub: "f n < oStrictLimit f"
