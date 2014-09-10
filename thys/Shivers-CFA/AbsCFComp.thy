@@ -365,7 +365,7 @@ apply (rule arg_cong [of _ _ "\<lambda>x. fst (sum_to_tup\<cdot>(fix\<cdot>x))"]
 apply (simp)
 apply (simp only: discr_app undiscr_Discr)
 apply (rule cfun_eqI, rule cfun_eqI, simp)
-apply (case_tac xa, case_tac a, simp)
+apply (case_tac xa, rename_tac a, case_tac a, simp)
 apply (case_tac aa rule:a_fstate_case, simp_all add: Un_commute_helper)
 apply (case_tac b rule:prod_cases4)
 apply (case_tac aa)
