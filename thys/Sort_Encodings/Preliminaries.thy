@@ -9,7 +9,7 @@ subsection {* Miscelanea *}
 
 text{* A fixed countable universe for interpreting countable models:  *}
 
-datatype univ = UU nat
+datatype_new univ = UU nat
 
 lemma infinite_univ[simp]: "infinite (UNIV :: univ set)"
 unfolding infinite_iff_card_of_nat card_of_ordLeq[symmetric]
@@ -320,7 +320,7 @@ subsection{* Variables *}
 
 text{* The type of variables: *}
 
-datatype var = Variable nat
+datatype_new var = Variable nat
 
 lemma card_of_var: "|UNIV::var set| =o natLeq"
 proof-

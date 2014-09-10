@@ -8,7 +8,7 @@ subsection{* The tag translation *}
 
 text{* The extension of the function symbols with type tags and type witnesses: *}
 
-datatype ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
+datatype_new ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
 
 
 context ProblemIkTpart
@@ -113,7 +113,7 @@ lemma wt_t[simp]: "Ik.wt T \<Longrightarrow> TE.wt (tT T)"
 by (cases T, auto simp add: list_all_iff)
 
 lemma wtL_tL[simp]: "Ik.wtL l \<Longrightarrow> TE.wtL (tL l)"
-apply(cases l) apply(case_tac [!] atm)
+apply(cases l) apply (rename_tac [!] atm) apply(case_tac [!] atm)
 by (auto simp add: list_all_iff)
 
 lemma wtC_tC[simp]: "Ik.wtC c \<Longrightarrow> TE.wtC (tC c)"
@@ -214,7 +214,7 @@ lemma map_t_int[simp]: "map (TE.int \<xi> \<circ> tT) Tl = map (Ik.int \<xi>) Tl
 unfolding list_eq_iff list_all_iff by auto
 
 lemma tL_satL[simp]: "TE.satL \<xi> (tL l) \<longleftrightarrow> Ik.satL \<xi> l"
-apply(cases l) apply(case_tac [!] atm) by auto
+apply(cases l) apply (rename_tac [!] atm) apply(case_tac [!] atm) by auto
 
 lemma tC_satC[simp]: "TE.satC \<xi> (tC c) \<longleftrightarrow> Ik.satC \<xi> c"
 unfolding TE.satC_def Ik.satC_def tC_def by (induct c, auto)
@@ -598,7 +598,7 @@ qed
 lemma satL_tL[simp]:
 assumes l: "Ik.Ik.wtL l" and \<xi>: "Ik.wtE \<xi>"
 shows "TE.satL (eenv \<xi>) (tL l) \<longleftrightarrow> Ik.satL \<xi> l"
-using assms apply(cases l) by (case_tac [!] atm) (auto simp add: intP_def)
+using assms apply(cases l) apply (rename_tac [!] atm) by (case_tac [!] atm) (auto simp add: intP_def)
 
 lemma satC_tC[simp]:
 assumes l: "Ik.Ik.wtC c" and \<xi>: "Ik.wtE \<xi>"
@@ -675,7 +675,7 @@ lemma nvT_t[simp]: "\<not> unprot \<sigma> \<Longrightarrow> (\<forall> x \<in> 
 apply(induct T) by auto
 
 lemma nvL_tL[simp]: "\<not> unprot \<sigma> \<Longrightarrow> (\<forall> x \<in> TE.nvL (tL l). tpOfV x \<noteq> \<sigma>)"
-apply(cases l) apply(case_tac [!] atm) by auto (metis (full_types) nvT_t)+
+apply(cases l) apply(rename_tac [!] atm) apply(case_tac [!] atm) by auto (metis nvT_t)+
 
 lemma nvC_tC[simp]: "\<not> unprot \<sigma> \<Longrightarrow> (\<forall> x \<in> TE.nvC (tC c). tpOfV x \<noteq> \<sigma>)"
 unfolding tC_def TE.nvC_def apply (induct c)
@@ -687,7 +687,7 @@ by (induct T, auto)
 
 lemma tpL_nvT_tL[simp]:
 "unprot (tpOfV x) \<Longrightarrow> x \<in> TE.nvL (tL l) \<longleftrightarrow> x \<in> TE.nvL l"
-by (cases l, case_tac [!] atm, auto)
+by (cases l, rename_tac [!] atm, case_tac [!] atm, auto)
 
 lemma unprot_nvC_tC[simp]:
 "unprot (tpOfV x) \<Longrightarrow> x \<in> TE.nvC (tC c) \<longleftrightarrow> x \<in> TE.nvC c"
