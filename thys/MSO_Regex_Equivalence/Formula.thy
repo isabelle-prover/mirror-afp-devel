@@ -18,7 +18,7 @@ abbreviation "enc_atom I n a \<equiv> (a, enc_atom_bool I n)"
 
 subsection {* Syntax and Semantics of MSO *}
 
-datatype 'a formula =
+datatype_new 'a formula =
   FQ 'a nat
 | FLess nat nat
 | FIn nat nat
@@ -57,7 +57,6 @@ datatype_new 'a atom =
   | AQ nat 'a
   | Arbitrary_Except nat bool
   | Arbitrary_Except2 nat nat
-datatype_compat atom
 derive linorder atom
 
 fun wf_atom where
