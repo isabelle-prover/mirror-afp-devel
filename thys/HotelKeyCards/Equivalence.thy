@@ -143,11 +143,13 @@ apply simp
 apply(erule reach_cong)
 apply (simp add: fun_eq_iff)
 
+apply(rename_tac guest room key)
 apply(drule_tac g = guest and r = room in check_in)
 apply simp
 apply(erule reach_cong)
 apply (simp add: fun_eq_iff)
 
+apply(rename_tac guest room key1 key2)
 apply(drule_tac g = guest and r = room in enter_room) apply simp apply simp
 apply(erule reach_cong)
 apply (fastforce simp add: fun_eq_iff)
