@@ -1356,6 +1356,7 @@ apply (rule impI)
 apply (rule ballI)
 apply (rotate_tac 11)
 apply (erule_tac x="k" in allE)
+apply (rename_tac dag1 ref dag2 k pa)
 apply (subgoal_tac "k <= var ref")
 prefer 2
 apply  (subgoal_tac "ref = p")

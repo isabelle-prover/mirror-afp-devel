@@ -32,7 +32,7 @@ theory BinDag
 imports "../Simpl/Simpl_Heap"
 begin
 
-datatype dag = Tip | Node dag ref dag
+datatype_new dag = Tip | Node dag ref dag
 
 lemma [simp]: "Node lt a rt \<noteq> lt"
   by (induct lt) auto

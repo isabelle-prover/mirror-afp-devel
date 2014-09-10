@@ -46,7 +46,7 @@ fun isLeaf :: "dag \<Rightarrow> bool" where
 | "isLeaf (Node (Node l v\<^sub>1 r) v\<^sub>2 Tip) = False"
 | "isLeaf (Node Tip v\<^sub>1 (Node l v\<^sub>2 r)) = False"
 
-datatype bdt = Zero | One | Bdt_Node bdt nat bdt
+datatype_new bdt = Zero | One | Bdt_Node bdt nat bdt
 
 fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option" where
 "bdt_fn Tip = (\<lambda>bdtvar . None)"
