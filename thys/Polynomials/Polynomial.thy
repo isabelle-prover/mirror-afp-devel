@@ -34,7 +34,7 @@ begin
 subsection {*
 Polynomials represented as trees
 *}
-datatype ('v,'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
+datatype_new ('v,'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
 
 type_synonym ('v,'a)assign = "'v \<Rightarrow> 'a"
 
@@ -699,7 +699,7 @@ text {*
   evaluation is preserved by poly\_of
 *}
 lemma poly_of: "eval_poly \<alpha> (poly_of p) = eval_tpoly \<alpha> p"
-by (induct p, (simp add: zero_poly_def one_poly_def)+)
+by (induct p rule: poly_of.induct, (simp add: zero_poly_def one_poly_def)+)
 
 text {*
   poly\_of only generates polynomials that satisfy the invariant
