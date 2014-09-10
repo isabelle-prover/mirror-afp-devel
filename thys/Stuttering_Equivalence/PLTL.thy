@@ -19,7 +19,7 @@ text {*
   formulas are evaluated.
 *}
 
-datatype 'a pltl =
+datatype_new 'a pltl =
     "false"
   | "atom" "'a \<Rightarrow> bool"
   | "implies" "'a pltl" "'a pltl"
