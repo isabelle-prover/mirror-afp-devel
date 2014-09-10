@@ -26,7 +26,7 @@ model their semantics. The (abstract and concrete)
 syntax of our programming is defined as a recursive datatype:
 *}
 
-datatype com = Do "(state \<Rightarrow> state set)"
+datatype_new com = Do "(state \<Rightarrow> state set)"
              | Semi  com com            ("_; _"  [60, 60] 10)
              | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
              | While bexp com           ("WHILE _ DO _"  60)

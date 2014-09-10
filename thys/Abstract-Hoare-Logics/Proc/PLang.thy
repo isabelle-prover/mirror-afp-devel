@@ -13,7 +13,7 @@ typedecl state
 
 type_synonym bexp = "state \<Rightarrow> bool"
 
-datatype com = Do "(state \<Rightarrow> state set)"
+datatype_new com = Do "(state \<Rightarrow> state set)"
                     | Semi  com com            ("_; _"  [60, 60] 10)
                     | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
                     | While bexp com           ("WHILE _ DO _"  60)

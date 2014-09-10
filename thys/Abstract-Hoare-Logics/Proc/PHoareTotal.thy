@@ -160,6 +160,7 @@ apply (simp)
 apply(induct_tac c)
      apply (rule strengthen_pre[OF _ thoare.Do])
      apply blast
+    apply(rename_tac com1 com2)
     apply(rule_tac Q = "\<lambda>z s. z -com1\<rightarrow>s & com2\<down>s" in thoare.Semi)
      apply(erule thoare.Conseq)
      apply fast
