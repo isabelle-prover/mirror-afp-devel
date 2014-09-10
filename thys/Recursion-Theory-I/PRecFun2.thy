@@ -195,7 +195,7 @@ qed
 
 subsection {* The scheme datatype *}
 
-datatype PrimScheme = Base_zero | Base_suc | Base_fst | Base_snd
+datatype_new PrimScheme = Base_zero | Base_suc | Base_fst | Base_snd
                       | Comp_op PrimScheme PrimScheme
                       | Pair_op PrimScheme PrimScheme
                       | Rec_op PrimScheme PrimScheme
