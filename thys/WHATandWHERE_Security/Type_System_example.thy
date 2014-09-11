@@ -142,7 +142,7 @@ lemma substexp_substmem:
 "ExprEval e'<Var x\\e> m = ExprEval e' (m(x := ExprEval e m))
   \<and> ExprEvalL (SubstL elist (Var x) e) m
   = ExprEvalL elist (m(x := ExprEval e m))"
-by (induct_tac e' and elist, simp_all)
+by (induct_tac e' and elist rule: ExprEval.induct ExprEvalL.induct, simp_all)
 
 
 --"another auxiliary lemma for locale interpretation (lemma 8 in original paper)"
