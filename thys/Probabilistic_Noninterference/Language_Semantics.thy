@@ -442,7 +442,7 @@ qed
 
 subsection {* Syntax *}
 
-datatype ('test, 'atom, 'choice) cmd =
+datatype_new ('test, 'atom, 'choice) cmd =
   Done
 | Atm "'atom"
 | Seq "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd" ("_ ;; _"  [60, 61] 60)
@@ -450,21 +450,6 @@ datatype ('test, 'atom, 'choice) cmd =
 | Ch 'choice "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd"
 | Par "('test, 'atom, 'choice) cmd list"
 | ParT "('test, 'atom, 'choice) cmd list"
-
-lemma cmd_induct[induct type: cmd, case_names Done Atm Seq While Ch Par ParT]:
-assumes Done: "phi Done"
-and Atm: "\<And> atm. phi (Atm atm)"
-and Seq: "\<And> c1 c2. \<lbrakk>phi c1; phi c2\<rbrakk> \<Longrightarrow> phi (c1 ;; c2)"
-and While: "\<And> tst c. phi c \<Longrightarrow> phi (While tst c)"
-and Ch: "\<And> ch c1 c2. \<lbrakk>phi c1; phi c2\<rbrakk> \<Longrightarrow> phi (Ch ch c1 c2)"
-and Par: "\<And> cl. (\<And> c. c \<in> set cl \<Longrightarrow> phi c) \<Longrightarrow> phi (Par cl)"
-and ParT: "\<And> cl. (\<And> c. c \<in> set cl \<Longrightarrow> phi c) \<Longrightarrow> phi (ParT cl)"
-shows "phi c"
-proof-
-  let ?phil = "%cl. \<forall> c \<in> set cl. phi c"
-  show ?thesis apply(induct rule: cmd.inducts(1)[of _ ?phil ?phil])
-  using assms by auto
-qed
 
 (* Commands containing no while loops: *)
 fun noWhile where
@@ -1577,7 +1562,7 @@ qed auto
 lemma proper_cont[simp]:
 assumes "proper c" and "i < brn c"
 shows "proper (cont c s i)"
-using assms proof(induct c arbitrary: i s rule: cmd_induct)
+using assms proof(induct c arbitrary: i s rule: cmd.induct)
   case (Ch ch c1 c2)
   thus ?case by (cases i) auto
 next

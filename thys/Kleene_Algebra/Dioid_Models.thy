@@ -460,7 +460,7 @@ subsection {* Path Models without the Empty Path *}
 text {* We now build a model of paths that does not include the empty
 path and therefore leads to a simpler complex product. *}
 
-datatype 'a ppath = Node 'a | Cons 'a "'a ppath"
+datatype_new 'a ppath = Node 'a | Cons 'a "'a ppath"
 
 primrec pp_first :: "'a ppath \<Rightarrow> 'a" where
   "pp_first (Node x)   = x"
@@ -628,7 +628,7 @@ numbers extended by minus infinity. The operation of addition is
 maximum, the operation of multiplication is addition, the additive
 unit is minus infinity and the multiplicative unit is zero. *}
 
-datatype mreal = mreal real | MInfty  -- "minus infinity"
+datatype_new mreal = mreal real | MInfty  -- "minus infinity"
 
 fun mreal_max where
   "mreal_max (mreal x) (mreal y) = mreal (max x y)"
@@ -706,7 +706,7 @@ text {* The min-plus dioid is also known as {\em tropical
 semiring}. Here we need to add a positive infinity to the real
 numbers. The procedere follows that of max-plus semirings.  *}
 
-datatype preal = preal real | PInfty  -- "plus infinity"
+datatype_new preal = preal real | PInfty  -- "plus infinity"
 
 fun preal_min where
   "preal_min (preal x) (preal y) = preal (min x y)"
@@ -777,7 +777,7 @@ text {* Variants of min-plus and max-plus semirings can easily be
 obtained. Here we formalise the min-plus semiring over the natural
 numbers as an example. *}
 
-datatype pnat = pnat nat | PInfty  -- "plus infinity"
+datatype_new pnat = pnat nat | PInfty  -- "plus infinity"
 
 fun pnat_min where
   "pnat_min (pnat x) (pnat y) = pnat (min x y)"

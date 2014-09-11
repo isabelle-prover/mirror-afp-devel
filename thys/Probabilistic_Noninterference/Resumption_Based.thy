@@ -1127,7 +1127,7 @@ by (metis gfp_lemma2 mono_Retr)
 lemma Sbis_fix:
 "Sretr Sbis = Sbis"
 unfolding Sbis_def
-by (metis def_gfp_unfold mono_Retr)
+by (metis def_gfp_unfold mono_Retr(1))
 
 lemma Sbis_mC_C:
 assumes "c \<approx>s d" and "s \<approx> t"
@@ -1138,14 +1138,14 @@ lemma Sbis_coind:
 assumes "theta \<le> Sretr (theta Un Sbis)"
 shows "theta \<le> Sbis"
 using assms unfolding Sbis_def
-by (metis Sbis_def assms def_coinduct mono_Retr)
+by (metis Sbis_def assms def_coinduct mono_Retr(1))
 
 lemma Sbis_raw_coind:
 assumes "theta \<le> Sretr theta"
 shows "theta \<le> Sbis"
 proof-
   have "Sretr theta \<subseteq> Sretr (theta Un Sbis)"
-  by (metis Un_upper1 monoD mono_Retr)
+  by (metis Un_upper1 monoD mono_Retr(1))
   hence "theta \<subseteq> Sretr (theta Un Sbis)" using assms by blast
   thus ?thesis using Sbis_coind by blast
 qed
@@ -1423,7 +1423,7 @@ by (metis gfp_lemma2 mono_Retr)
 lemma ZObis_fix:
 "ZOretr ZObis = ZObis"
 unfolding ZObis_def
-by (metis def_gfp_unfold mono_Retr)
+by (metis def_gfp_unfold mono_Retr(2))
 
 lemma ZObis_mC_ZOC:
 assumes "c \<approx>01 d" and "s \<approx> t"
@@ -1434,7 +1434,7 @@ lemma ZObis_coind:
 assumes "theta \<le> ZOretr (theta Un ZObis)"
 shows "theta \<le> ZObis"
 using assms unfolding ZObis_def
-by (metis ZObis_def assms def_coinduct mono_Retr)
+by (metis ZObis_def assms def_coinduct mono_Retr(2))
 
 lemma ZObis_raw_coind:
 assumes "theta \<le> ZOretr theta"

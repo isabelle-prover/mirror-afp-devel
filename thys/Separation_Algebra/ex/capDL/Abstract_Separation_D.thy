@@ -53,7 +53,7 @@ lemma map_add_restrict_comm:
    These are both taken from the cdl_state.
  *)
 
-datatype sep_state = SepState cdl_heap cdl_ghost_state
+datatype_new sep_state = SepState cdl_heap cdl_ghost_state
 
 (* Functions to get the heap and the ghost_state from the sep_state. *)
 primrec sep_heap :: "sep_state \<Rightarrow> cdl_heap"

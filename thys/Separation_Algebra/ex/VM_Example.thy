@@ -27,7 +27,7 @@ text {*
   only capable of one at a time.
 *}
 
-datatype ('p,'v,'value,'r) vm_sep_state
+datatype_new ('p,'v,'value,'r) vm_sep_state
   = VMSepState "((('p \<times> 'v) \<rightharpoonup> 'value) \<times> 'r set)"
 
 instantiation vm_sep_state :: (type, type, type, type) sep_algebra

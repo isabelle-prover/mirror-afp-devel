@@ -98,12 +98,12 @@ text{* Our data universe  consists in the concrete class diagram just of node's,
 and implicitly of the class object. Each class implies the existence of a class
 type defined for the corresponding object representations as follows: *}
 
-datatype type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n = mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid          (* the oid to the person itself *)
+datatype_new type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n = mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid          (* the oid to the person itself *)
                             "int option" (* the attribute "salary" or null *)
                             "oid option" (* the attribute "boss" or null *)
 
 
-datatype type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y = mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid          (* the oid to the oclany itself *)
+datatype_new type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y = mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid          (* the oid to the oclany itself *)
                             "(int option \<times> oid option) option"
                                          (* the extensions to "person"; used to denote 
                                             objects of actual type "person" casted to "oclany"; 
@@ -114,7 +114,7 @@ text{* Now, we construct a concrete ``universe of OclAny types'' by injection in
 sum type containing the class types. This type of OclAny will be used as instance
 for all respective type-variables. *}
 
-datatype \<AA> = in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n | in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y
+datatype_new \<AA> = in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n | in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y
 
 text{* Having fixed the object universe, we can introduce type synonyms that exactly correspond
 to OCL types. Again, we exploit that our representation of OCL is a ``shallow embedding'' with a

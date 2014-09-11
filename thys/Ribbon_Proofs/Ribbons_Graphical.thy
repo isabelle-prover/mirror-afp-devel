@@ -256,5 +256,4 @@ inductive_cases coms_choice_inv: "coms_com (Choose_dia G H) c"
 inductive_cases coms_loop_inv: "coms_com (Loop_dia G) c"
 inductive_cases coms_main_inv: "coms_dia G c"
 
-
 end

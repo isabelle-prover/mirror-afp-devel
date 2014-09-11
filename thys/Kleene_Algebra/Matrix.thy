@@ -39,9 +39,9 @@ matrices, and (ii)~in the definition of operations, e.g., matrix
 multiplication, we impose weaker sort requirements on the element
 type. *}
 
-datatype ('a,'m,'n) matrix = Matrix "'m atMost \<Rightarrow> 'n atMost \<Rightarrow> 'a"
+datatype_new ('a,'m,'n) matrix = Matrix "'m atMost \<Rightarrow> 'n atMost \<Rightarrow> 'a"
 
-datatype ('a,'m) sqmatrix = SqMatrix "'m atMost \<Rightarrow> 'm atMost \<Rightarrow> 'a"
+datatype_new ('a,'m) sqmatrix = SqMatrix "'m atMost \<Rightarrow> 'm atMost \<Rightarrow> 'a"
 
 fun sqmatrix_of_matrix where
   "sqmatrix_of_matrix (Matrix A) = SqMatrix A"

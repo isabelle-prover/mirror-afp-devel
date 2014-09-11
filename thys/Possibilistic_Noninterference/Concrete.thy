@@ -41,7 +41,7 @@ We instatiate the following notions, kept generic so far:
 \end{itemize}
 *}
 
-datatype level = Lo | Hi
+datatype_new level = Lo | Hi
 
 lemma [simp]: "\<And> l. l \<noteq> Hi \<longleftrightarrow> l = Lo" and 
       [simp]: "\<And> l. Hi \<noteq> l \<longleftrightarrow> Lo = l" and 
@@ -73,10 +73,10 @@ end
 lemma sup_eq_Lo[simp]: "sup a b = Lo \<longleftrightarrow> a = Lo \<and> b = Lo"
   by (auto simp: sup_level)
 
-datatype var = h | h' | l | l'
-datatype exp = Ct nat | Var var | Plus exp exp | Minus exp exp
-datatype test = Tr | Eq exp exp | Gt exp exp | Non test
-datatype atom = Assign var exp
+datatype_new var = h | h' | l | l'
+datatype_new exp = Ct nat | Var var | Plus exp exp | Minus exp exp
+datatype_new test = Tr | Eq exp exp | Gt exp exp | Non test
+datatype_new atom = Assign var exp
 type_synonym state = "var \<Rightarrow> nat"
  
 syntax
