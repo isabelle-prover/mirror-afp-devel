@@ -135,7 +135,7 @@ definition ulp :: "format \<Rightarrow> representation \<Rightarrow> real" where
 "ulp x a = valof x (0, exponent a, 1) - valof x (0, exponent a, 0)"
 
 (*Enumerated type for rounding modes*)
-datatype roundmode = To_nearest | float_To_zero | To_pinfinity | To_ninfinity
+datatype_new roundmode = To_nearest | float_To_zero | To_pinfinity | To_ninfinity
 
 (*Characterization of best approximation from a set of abstract values*)
 definition is_closest 
@@ -309,7 +309,7 @@ definition fneg :: "format \<Rightarrow> roundmode \<Rightarrow> representation 
 "fneg x m a = (1 - sign a, exponent a, fraction a )"
 
 (*Comparison*)
-datatype ccode = Gt | Lt | Eq | Und 
+datatype_new ccode = Gt | Lt | Eq | Und 
 
 subsection{*Comparison operation *}
 definition fcompare :: "format \<Rightarrow> representation \<Rightarrow> representation \<Rightarrow> ccode" where

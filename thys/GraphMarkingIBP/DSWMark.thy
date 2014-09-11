@@ -17,7 +17,7 @@ We use a new locale which fixes the initial values of the variables $\mathit{lef
 $\mathit{atom}$ in $\mathit{left0}$, $\mathit{right0}$, and $\mathit{atom0}$ respectively.
 *}
 
-datatype Index = none | some
+datatype_new Index = none | some
 
 locale classical = node +
   fixes left0  :: "'node \<Rightarrow> 'node"

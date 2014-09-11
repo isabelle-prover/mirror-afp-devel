@@ -34,7 +34,7 @@ lemma int_nat_two_exp: "2 ^ k = int (2 ^ k)"
 
 subsection {* Bits *}
 
-datatype bit =
+datatype_new bit =
     Zero ("\<zero>")
   | One ("\<one>")
 

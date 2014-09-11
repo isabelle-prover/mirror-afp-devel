@@ -24,7 +24,7 @@ no unmarked sucessors it is removed from $X$.
 The algorithm terminates when $X$ is empty.  
 *}
 
-datatype I = init | loop | final
+datatype_new I = init | loop | final
 
 declare I.split [split]
 

@@ -17,7 +17,7 @@ lemma [code_unfold]:
   shows "literal el clause = List.member clause literal"
   by (auto simp add: member_def)
 
-datatype ExtendedBool = TRUE | FALSE | UNDEF
+datatype_new ExtendedBool = TRUE | FALSE | UNDEF
 
 record State = 
   -- {* Satisfiability flag: UNDEF, TRUE or FALSE *}

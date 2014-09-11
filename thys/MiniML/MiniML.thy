@@ -10,7 +10,7 @@ imports Generalize
 begin
 
 -- "expressions"
-datatype
+datatype_new
   expr = Var nat | Abs expr | App expr expr | LET expr expr
 
 -- "type inference rules"

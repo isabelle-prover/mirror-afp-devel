@@ -14,7 +14,7 @@ section {* Formal Proof *}
 
 subsection {* Definition of the set of Points *}
 
-datatype point = Point real real
+datatype_new point = Point real real
 
 definition points_def:
   "points = {M. \<exists> x \<in> \<real>. \<exists> y \<in> \<real>. (M = Point x y)}"
@@ -257,7 +257,7 @@ negation of an expression or the inverse of an expression or the
 addition of two expressions or the multiplication of two expressions
 or the square root of an expression. *}
 
-datatype expr = Const rat | Negation expr | Inverse expr | Addition expr expr | Multiplication expr expr | Sqrt expr
+datatype_new expr = Const rat | Negation expr | Inverse expr | Addition expr expr | Multiplication expr expr | Sqrt expr
 
 text {* The function @{term "translation"} translates a given
 expression into its equivalent real. *}

@@ -31,7 +31,7 @@ text {* Note that we also provide a least fixpoint operator.
   of polymorphism and of different return types. *}
 
 text {* In the following datatype, \isa{Mu b f a} encodes the least $n$ such that $b(f^n(a))$. *}
-datatype 'a bexp = 
+datatype_new 'a bexp = 
   BConst bool
 | Less "'a aexp" "'a aexp"
 | Eq "'a aexp" "'a aexp"

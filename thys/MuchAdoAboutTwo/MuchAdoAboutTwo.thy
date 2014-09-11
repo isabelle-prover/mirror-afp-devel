@@ -16,7 +16,7 @@ begin
 text {*
 
 Due to Donald E. Knuth, it is known for some time that certain sorting
-functions for lists of arbitrary types can be proved correct only by showing
+functions for lists of arbitrary types can be proved correct by only showing
 that they are correct for boolean lists (\cite{KnuthSortingAndSearching},
 see also \cite{LogicalAbstractionsInHaskell}).
 This reduction idea, i.e. reducing a proof for an arbitrary type to a proof for a fixed type with a fixed number of values, has also instances in other
@@ -204,7 +204,7 @@ With the final theorem, it suffices to show that @{text candidate} behaves like
 @{text canditate} is semantically equivalent to @{text scanl1}.
  *}
 
-datatype three = Zero | One | Two
+datatype_new three = Zero | One | Two
 
 
 
