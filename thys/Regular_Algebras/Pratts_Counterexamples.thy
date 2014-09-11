@@ -13,13 +13,13 @@ begin
 text {* We create two regular algebra models due to Pratt~\cite{Pratt} which are used to
         distinguish K1 algebras from K1l and K1r algebras. *}
 
-datatype pratt1 = 
+datatype_new pratt1 = 
   P1Bot ("\<bottom>\<^sub>1") |
   P1Nat nat ("[_]\<^sub>1") | 
   P1Infty ("\<infinity>\<^sub>1") |
   P1Top ("\<top>\<^sub>1")
 
-datatype pratt2 = 
+datatype_new pratt2 = 
   P2Bot ("\<bottom>\<^sub>2") |
   P2Nat nat ("[_]\<^sub>2") | 
   P2Infty ("\<infinity>\<^sub>2") |

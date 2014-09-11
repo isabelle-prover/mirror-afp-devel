@@ -26,7 +26,7 @@ Shivers also restricts the values in a call expression: No constant maybe be use
 *}
 
 datatype_new prim = Plus label | If label label
-datatype lambda = Lambda label "var list" call
+old_datatype lambda = Lambda label "var list" call
      and call = App label val "val list"
               | Let label "(var \<times> lambda) list" call
      and val = L lambda | R label var | C label int | P prim

@@ -18,7 +18,7 @@ text {* Note that this datatype is necessarily an overapproximation of
   declarations. So, we shall impose well-formedness in a separate definition. 
   *}
   
-datatype assertion_gadget =
+datatype_new assertion_gadget =
   Rib "assertion"
 | Exists_dia "string" "diagram"
 and command_gadget = 

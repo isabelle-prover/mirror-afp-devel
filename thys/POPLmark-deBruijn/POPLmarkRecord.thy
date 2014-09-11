@@ -27,7 +27,7 @@ representing record types.
 
 type_synonym name = string
 
-datatype type =
+old_datatype type =
     TVar nat
   | Top
   | Fun type type    (infixr "\<rightarrow>" 200)
@@ -69,9 +69,9 @@ record pattern. Due to the encoding of variables using de Bruijn indices,
 a variable pattern only consists of a type.
 *}
 
-datatype pat = PVar type | PRcd "(name \<times> pat) list"
+old_datatype pat = PVar type | PRcd "(name \<times> pat) list"
 
-datatype trm =
+old_datatype trm =
     Var nat
   | Abs type trm   ("(3\<lambda>:_./ _)" [0, 10] 10)
   | TAbs type trm  ("(3\<lambda><:_./ _)" [0, 10] 10)

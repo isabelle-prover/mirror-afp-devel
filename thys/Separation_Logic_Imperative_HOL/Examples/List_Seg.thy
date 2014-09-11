@@ -15,7 +15,7 @@ text {*
 setup {* Sign.add_const_constraint 
   (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a\<Colon>type ref"}) *}
 
-datatype 'a node = Node "'a" "'a node ref option"
+old_datatype 'a node = Node "'a" "'a node ref option"
 
 setup {* Sign.add_const_constraint 
   (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a\<Colon>heap ref"}) *}
