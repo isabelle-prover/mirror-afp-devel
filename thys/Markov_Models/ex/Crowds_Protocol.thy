@@ -15,7 +15,7 @@ lemma fun_if_distrib:
 
 subsection {* Definition of the Crowds-Protocol *}
 
-datatype 'a state = Start | Init 'a | Mix 'a | End
+datatype_new 'a state = Start | Init 'a | Mix 'a | End
 
 lemma inj_Mix[simp]: "inj_on Mix A"
   by (auto intro: inj_onI)

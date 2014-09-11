@@ -144,7 +144,7 @@ section {* pCTL model checking*}
 
 subsection {* Syntax *}
 
-datatype realrel = LessEqual | Less | Greater | GreaterEqual | Equal
+datatype_new realrel = LessEqual | Less | Greater | GreaterEqual | Equal
 
 primrec inrealrel where
 "inrealrel LessEqual r q    \<longleftrightarrow> q \<le> r" |
@@ -153,7 +153,7 @@ primrec inrealrel where
 "inrealrel GreaterEqual r q \<longleftrightarrow> q \<ge> r" |
 "inrealrel Equal r q        \<longleftrightarrow> q = r"
 
-datatype 's sform = "true"
+datatype_new 's sform = "true"
                   | "Label" "'s set"
                   | "Neg" "'s sform"
                   | "And" "'s sform" "'s sform"

@@ -7,7 +7,7 @@ section {* Security types *}
 subsection {* Security definitions *}
 
 
-datatype secLevel = Low | High
+datatype_new secLevel = Low | High
 
 type_synonym typeEnv = "vname \<rightharpoonup> secLevel"
 

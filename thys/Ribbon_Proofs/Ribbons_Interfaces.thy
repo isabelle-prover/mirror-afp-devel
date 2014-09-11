@@ -17,7 +17,7 @@ text {* Interfaces are the top and bottom boundaries through which diagrams
 
 subsection {* Syntax of interfaces *}
 
-datatype conc_interface =
+datatype_new conc_interface =
   Ribbon_conc "assertion"
 | HComp_int_conc "conc_interface" "conc_interface" (infix "\<otimes>\<^sub>c" 50)
 | Emp_int_conc ("\<epsilon>\<^sub>c")

@@ -333,7 +333,7 @@ and method names.*}
 
 type_synonym Fun = "Class \<times> Method"
 
-datatype Prim =
+datatype_new Prim =
   IntPrim int
 | UnPrim "Val \<Rightarrow> Val" Var 
 | BinPrim "Val \<Rightarrow> Val \<Rightarrow> Val" Var Var
@@ -341,7 +341,7 @@ datatype Prim =
 | ConsPrim Var Var
 | CallPrim Fun "Var list"
 
-datatype Expr = 
+datatype_new Expr = 
   PrimE Prim
 | LetE Var Prim Expr
 | CondE Var Expr Expr

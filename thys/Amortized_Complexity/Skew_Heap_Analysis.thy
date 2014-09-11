@@ -112,7 +112,7 @@ proof -
   finally show ?thesis by(simp add: real_of_nat_Suc)
 qed
 
-datatype 'a op\<^sub>p\<^sub>q = Insert 'a | Delmin
+datatype_new 'a op\<^sub>p\<^sub>q = Insert 'a | Delmin
 
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "nxt\<^sub>p\<^sub>q (Insert a) h = Skew_Heap.insert a h" |

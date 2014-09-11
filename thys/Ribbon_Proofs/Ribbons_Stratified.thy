@@ -11,7 +11,7 @@ text {* We define the syntax of stratified diagrams. We give proof rules
 
 subsection {* Syntax of stratified diagrams *}
 
-datatype sdiagram = SDiagram "(cell \<times> interface) list" 
+datatype_new sdiagram = SDiagram "(cell \<times> interface) list" 
 and cell = 
   Filler "interface"
 | Basic "interface" "command" "interface"

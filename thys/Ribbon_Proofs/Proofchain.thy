@@ -10,7 +10,7 @@ text {* An (@{typ 'a}, @{typ 'c}) chain is a sequence of alternating
   sort of command. Proof chains are useful for stating the SMain proof rule,
   and for conducting the proof of soundness. *}
 
-datatype ('a,'c) chain = 
+datatype_new ('a,'c) chain = 
   cNil "'a"                         ("\<lbrace> _ \<rbrace>")
 | cCons "'a" "'c" "('a,'c) chain"   ("\<lbrace> _ \<rbrace> \<cdot> _ \<cdot> _" [0,0,0] 60) 
 
