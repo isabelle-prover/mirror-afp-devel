@@ -8,7 +8,7 @@ subsection {* Type Environments*}
 text{*Some basic properties of our variable environments.*}
 
 (* We use a wrapped map and an error element *)
-datatype 'a environment = 
+datatype_new 'a environment = 
   Env "(string ~=> 'a)"
 | Malformed
 

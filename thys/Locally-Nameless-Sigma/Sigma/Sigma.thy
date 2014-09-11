@@ -79,20 +79,22 @@ qed
 
 subsection {* Object-terms in Locally Nameless representation notation, beta-reduction and substitution *}
 
-datatype type = Object "Label -~> (type \<times> type)"
+datatype_new type = Object "Label -~> (type \<times> type)"
 
-datatype bVariable = Self nat | Param nat
+datatype_new bVariable = Self nat | Param nat
 type_synonym fVariable = string
 (* each binder introduces 2 variables: self and parameter *)
 (* thus to each deBruijn index (nat) correspond 2 variables of the same depth *)
 
 subsubsection {* Enriched Sigma datatype of objects *}
-datatype sterm =
+datatype_new sterm =
   Bvar bVariable             (* bound variable -- as deBruijn index *)
 | Fvar fVariable             (* free variable *)
 | Obj "Label -~> sterm" type (* An object maps labels to terms and has a type *)
 | Call sterm Label sterm     (* Call a l b calls method l on object a with param b *)
 | Upd sterm Label sterm      (* Upd a l b updates method l of object a with body b *)
+
+datatype_compat sterm
 
 primrec applyPropOnOption:: "(sterm \<Rightarrow> bool) \<Rightarrow> sterm option \<Rightarrow> bool" where
 f1:  "applyPropOnOption P None  = True" |
@@ -117,7 +119,7 @@ proof -
     fix t :: sterm and f' :: "Label -~> sterm" and l :: Label
     def foobar \<equiv> "f' l" 
     from assms show "P1 t \<and> applyPropOnOption P1 foobar"
-    proof (induct_tac t and foobar, auto)
+    proof (induct_tac t and foobar rule: compat_sterm.induct compat_sterm_option.induct, auto)
       fix f :: "Label -~> sterm" and T :: type
       assume "\<And>x. applyPropOnOption P1 (f x)"
       with a_f `P3 empty` have "P3 f"
@@ -218,7 +220,7 @@ definition closed :: "sterm \<Rightarrow> bool" where
 
 (* finiteness of FV *)
 lemma finite_FV_FVoption: "finite (FV t) \<and> finite (FVoption s)"
-by(induct _ t _ s rule: sterm.induct, simp_all)
+by(induct _ t _ s rule: compat_sterm_sterm_option.induct, simp_all)
 
 (* for infiniteness of string sets see
     List.infinite_UNIV_listI *)
@@ -416,10 +418,11 @@ lemma pred_sopenoption_lem:
 lemma sopen_FV[rule_format]:
   "\<forall>n s p. FV ({n \<rightarrow> [s,p]} t) \<subseteq> FV t \<union> FV s \<union> FV p"
 proof -
+  fix u
   have
     "(\<forall>n s p. FV ({n \<rightarrow> [s,p]} t) \<subseteq> FV t \<union> FV s \<union> FV p)
     &(\<forall>n s p. FVoption (sopen_option n s p u) \<subseteq> FVoption u \<union> FV s \<union> FV p)"
-    by (rule sterm.induct, simp_all split: bVariable.split, blast+)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split, blast+)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -428,6 +431,7 @@ lemma sopen_commute[rule_format]:
      \<longrightarrow> {n \<rightarrow> [Fvar s', Fvar p']} {k \<rightarrow> [Fvar s, Fvar p]} t 
          = {k \<rightarrow> [Fvar s, Fvar p]} {n \<rightarrow> [Fvar s', Fvar p']} t"
 proof -
+  fix u
   have
     "(\<forall>n k s p s' p'. n \<noteq> k
       \<longrightarrow> {n \<rightarrow> [Fvar s', Fvar p']} {k \<rightarrow> [Fvar s, Fvar p]} t 
@@ -436,7 +440,7 @@ proof -
       \<longrightarrow> sopen_option n (Fvar s') (Fvar p') (sopen_option k (Fvar s) (Fvar p) u) 
           = sopen_option k (Fvar s) (Fvar p)
              (sopen_option n (Fvar s') (Fvar p') u))"
-    by (rule sterm.induct, simp_all split: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -452,11 +456,12 @@ proof -
       "(case b of Self i \<Rightarrow> if n = i then Fvar s else Bvar b
                | Param i \<Rightarrow> if n = i then Fvar p else Bvar b) = t"
     hence "Fvar s = t \<or> Fvar p = t \<or> Bvar b = t"
-      by (cases b, auto, (case_tac "n = nat", auto)+)
+      by (cases b, auto, (rename_tac nat, case_tac "n = nat", auto)+)
   }
   note cT = this
 
 (* induction *)
+  fix u
   have
     "(\<forall>n s p t'. {n \<rightarrow> [Fvar s, Fvar p]} t = {n \<rightarrow> [Fvar s, Fvar p]} t'
       \<longrightarrow> s \<notin> FV t \<longrightarrow> s \<notin> FV t' \<longrightarrow> p \<notin> FV t \<longrightarrow> p \<notin> FV t' \<longrightarrow> s \<noteq> p
@@ -466,7 +471,7 @@ proof -
       \<longrightarrow> s \<notin> FVoption u \<longrightarrow> s \<notin> FVoption u' 
       \<longrightarrow> p \<notin> FVoption u \<longrightarrow> p \<notin> FVoption u' \<longrightarrow> s \<noteq> p
       \<longrightarrow> u = u')"
-  proof (induct _ t _ u rule: sterm.induct)
+  proof (induct _ t _ u rule: compat_sterm_sterm_option.induct)
     case (Bvar b) thus ?case
     proof (auto)
       fix s p n t
@@ -484,7 +489,7 @@ proof -
             "(case b' of Self i \<Rightarrow> if n = i then Fvar s else Bvar b'
                       | Param i \<Rightarrow> if n = i then Fvar p else Bvar b') = Fvar s"
           with `s \<noteq> p` have "b' = Self n"
-            by (cases b', auto, (case_tac "n = nat", auto)+)
+            by (cases b', auto, (rename_tac nat, case_tac "n = nat", auto)+)
         }note fvS = this
         assume eq_s: "Fvar s = {n \<rightarrow> [Fvar s,Fvar p]} t"
         with sym[OF this] `s \<notin> FV t` `s \<noteq> p` fvS
@@ -500,7 +505,7 @@ proof -
             "(case b' of Self i \<Rightarrow> if n = i then Fvar s else Bvar b'
                       | Param i \<Rightarrow> if n = i then Fvar p else Bvar b') = Fvar p"
           with `s \<noteq> p` have "b' = Param n"
-            by (cases b', auto, (case_tac "n = nat", auto)+)
+            by (cases b', auto, (rename_tac nat, case_tac "n = nat", auto)+)
         }note fvP = this
         assume eq_p: "Fvar p = {n \<rightarrow> [Fvar s,Fvar p]} t"
         with sym[OF this] `p \<notin> FV t` `s \<noteq> p` fvP
@@ -700,7 +705,7 @@ proof -
     "(\<forall>n s p. s \<notin> FV t \<longrightarrow> p \<notin> FV t \<longrightarrow> {n \<leftarrow> [s,p]} t = t)
     &(\<forall>n s p. s \<notin> FVoption u \<longrightarrow> p \<notin> FVoption u 
        \<longrightarrow> sclose_option n s p u = u)"
-  proof (induct _ t _ u rule: sterm.induct, auto simp: bVariable.split)
+  proof (induct _ t _ u rule: compat_sterm_sterm_option.induct, auto simp: bVariable.split)
     (* Obj *)
     fix f n s p
     assume 
@@ -733,7 +738,7 @@ proof -
   have
     "(\<forall>n s p. FV ({n \<leftarrow> [s,p]} t) = FV t - {s} - {p})
     &(\<forall>n s p. FVoption (sclose_option n s p u) = FVoption u - {s} - {p})"
-    by (rule sterm.induct, simp_all split: bVariable.split, blast+)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split, blast+)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -781,7 +786,7 @@ proof -
   have 
     "(\<forall>s sa. sa \<notin> FV t \<longrightarrow> [sa \<rightarrow> s] t = t)
     &(\<forall>s sa. sa \<notin> FVoption u \<longrightarrow> ssubst_option sa s u = u)"
-  proof (induct _ t _ u rule: sterm.induct, auto)
+  proof (induct _ t _ u rule: compat_sterm_sterm_option.induct, auto)
     fix s sa f
     assume 
       sa:     "\<forall>l\<in>dom f. sa \<notin> FVoption (f l)" and
@@ -806,7 +811,7 @@ proof -
     &(\<forall>s p sa pa. s \<noteq> p \<longrightarrow> s \<notin> FV pa \<longrightarrow> p \<notin> FV sa 
        \<longrightarrow> ssubst_option s sa (ssubst_option p pa u) 
            = ssubst_option p pa (ssubst_option s sa u))"
-    by (rule sterm.induct, simp_all split: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -816,7 +821,7 @@ proof -
   have
     "(\<forall>x s. FV ([x \<rightarrow> s] t) \<subseteq> FV s \<union> (FV t - {x}))
     &(\<forall>x s. FVoption (ssubst_option x s u) \<subseteq> FV s \<union> (FVoption u - {x}))"
-    by (rule sterm.induct, simp_all split: bVariable.split, blast+)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split, blast+)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -927,7 +932,7 @@ proof -
        \<longrightarrow> sopen_option n s p u 
            = ssubst_option sa s (ssubst_option pa p 
               (sopen_option n (Fvar sa) (Fvar pa) u)))"
-  proof (induct _ t _ u rule: sterm.induct)
+  proof (induct _ t _ u rule: compat_sterm_sterm_option.induct)
     case Bvar thus ?case by (simp split: bVariable.split)
   next
     case Fvar thus ?case by simp
@@ -1079,7 +1084,7 @@ proof -
       \<longrightarrow> {n \<rightarrow> [s',p']} {n \<rightarrow> [s,p]} t = {n \<rightarrow> [s,p]} t)
     &(\<forall>s p s' p' n. lc s \<longrightarrow> lc p 
       \<longrightarrow> sopen_option n s' p' (sopen_option n s p u) = sopen_option n s p u)"
-    by (rule sterm.induct, auto simp: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, auto simp: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -1096,7 +1101,7 @@ proof -
        \<longrightarrow> pa \<notin> FV s \<longrightarrow> pa \<notin> FV p
        \<longrightarrow> sopen_option n s p (sclose_option k sa pa u) 
            = sclose_option k sa pa (sopen_option n s p u))"
-    by (rule sterm.induct, simp_all split: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -1109,7 +1114,7 @@ proof -
        \<longrightarrow> {n \<leftarrow> [s,p]} {n \<rightarrow> [Fvar s, Fvar p]} t = t)
     &(\<forall>n s p. s \<notin> FVoption u \<longrightarrow> p \<notin> FVoption u \<longrightarrow> s \<noteq> p
        \<longrightarrow> sclose_option n s p (sopen_option n (Fvar s) (Fvar p) u) = u)"
-  proof (induct _ t _ u rule: sterm.induct, simp_all split: bVariable.split, auto)
+  proof (induct _ t _ u rule: compat_sterm_sterm_option.induct, simp_all split: bVariable.split, auto)
     (* Obj *)
     fix f n s p
     assume 
@@ -1243,7 +1248,7 @@ proof -
     &(\<forall>n s p t'. lc t' 
        \<longrightarrow> ssubst_option x t' (sopen_option n s p u) 
            = sopen_option n ([x \<rightarrow> t']s) ([x \<rightarrow> t']p) (ssubst_option x t' u))"
-    by (rule sterm.induct, simp_all split: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
@@ -1434,7 +1439,7 @@ proof -
     &(\<forall>x n s p t'. s \<notin> FV t' \<longrightarrow> p \<notin> FV t' \<longrightarrow> x \<noteq> s \<longrightarrow> x \<noteq> p 
        \<longrightarrow> ssubst_option x t' (sclose_option n s p u) 
            = sclose_option n s p (ssubst_option x t' u))"
-    by (rule sterm.induct, simp_all split: bVariable.split)
+    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split)
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
