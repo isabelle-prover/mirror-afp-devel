@@ -21,7 +21,7 @@ where
 | "typeof (Intg i) = Some Integer"
 | "typeof (Addr a) = None"
 
-datatype addr_loc =
+datatype_new addr_loc =
     CField cname vname
   | ACell nat
 

@@ -10,7 +10,7 @@ imports
   FWLiftingSem
 begin
 
-datatype status = 
+datatype_new status = 
   PreStart
 | Running
 | Finished

@@ -56,7 +56,7 @@ by(auto simp add: ta_bisim_def elim!: List.list_all2_mono nta_bisim_mono intro: 
 
 lemma nta_bisim_flip [flip_simps]:
   "nta_bisim (\<lambda>t. flip (bisim t)) = flip (nta_bisim bisim)"
-by(auto simp add: fun_eq_iff flip_simps nta_bisim_def case_new_thread_action_def[symmetric] split: new_thread_action.splits)
+by(rule ext)(case_tac x, auto simp add: flip_simps)
 
 lemma ta_bisim_flip [flip_simps]:
   "ta_bisim (\<lambda>t. flip (bisim t)) = flip (ta_bisim bisim)"

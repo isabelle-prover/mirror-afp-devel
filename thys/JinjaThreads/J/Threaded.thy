@@ -176,7 +176,7 @@ by(induct xs)(auto simp add: Cons_eq_map_conv)
 lemma fixes e :: "('a,'b,'addr) exp" and es :: "('a,'b,'addr) exp list"
   shows not_contains_insync_sync_ok: "\<not> contains_insync e \<Longrightarrow> sync_ok e"
   and not_contains_insyncs_sync_oks: "\<not> contains_insyncs es \<Longrightarrow> sync_oks es"
-by(induct e and es)(auto)
+by(induct e and es rule: sync_ok.induct sync_oks.induct)(auto)
 
 lemma expr_locks_sync_ok: "(\<And>ad. expr_locks e ad = 0) \<Longrightarrow> sync_ok e"
   and expr_lockss_sync_oks: "(\<And>ad. expr_lockss es ad = 0) \<Longrightarrow> sync_oks es"

@@ -23,7 +23,7 @@ type_synonym fields = "(char, (cname, addr val) lm) tm"
 type_synonym array_cells = "(nat, addr val) rbt"
 type_synonym array_fields = "(vname, addr val) lm"
 
-datatype heapobj
+datatype_new heapobj
   = Obj cname fields                    -- "class instance with class name and fields"
   | Arr ty nat array_fields array_cells                 -- "element type, size, fields and cell contents"
 

@@ -424,7 +424,7 @@ by(induct vs) simp_all
 lemma assumes nfin: "\<not> final e'"
  shows inline_call_\<tau>move0_inv: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<tau>move0 P h (inline_call e' e) = \<tau>move0 P h e'"
   and inline_calls_\<tau>moves0_inv: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<tau>moves0 P h (inline_calls e' es) = \<tau>move0 P h e'"
-apply(induct e and es)
+apply(induct e and es rule: \<tau>move0.induct \<tau>moves0.induct)
 apply(insert nfin)
 apply simp_all
 apply auto
@@ -785,7 +785,7 @@ by(rule \<tau>red0r_fv_subset[OF wwf])(rule tranclp_into_rtranclp)
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_callD: "call e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move0 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves0_callsD: "calls es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves0 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
-apply(induct e and es)
+apply(induct e and es rule: call.induct calls.induct)
 apply(auto split: split_if_asm simp add: is_vals_conv)
 apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done

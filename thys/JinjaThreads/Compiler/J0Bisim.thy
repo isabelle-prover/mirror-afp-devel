@@ -12,7 +12,7 @@ theory J0Bisim imports
   "../Common/ExternalCallWF"
 begin
 
-inductive  wf_state :: "'addr expr \<times> 'addr expr list \<Rightarrow> bool"
+inductive wf_state :: "'addr expr \<times> 'addr expr list \<Rightarrow> bool"
   where
   "\<lbrakk> fvs (e # es) = {}; \<forall>e \<in> set es. is_call e \<rbrakk>
    \<Longrightarrow> wf_state (e, es)"
@@ -146,7 +146,7 @@ lemma red_inline_call_red:
   and
   "calls Es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> P,t \<turnstile> \<langle>inline_calls e Es, (h, x)\<rangle> [-ta\<rightarrow>] \<langle>inline_calls e' Es, (h', x)\<rangle>"
   (is "_ \<Longrightarrow> ?concls Es x")
-proof(induct E and Es arbitrary: x and x)
+proof(induct E and Es arbitrary: x and x rule: call.induct calls.induct)
   case (Call obj M pns x)
   note IHobj = `\<And>x. call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl obj x`
   note IHpns = `\<And>x. calls pns = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls pns x`
@@ -196,7 +196,7 @@ lemma
   "\<lbrakk> calls es = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> 
   \<Longrightarrow> P,t \<turnstile> \<langle>es, s\<rangle> [-\<epsilon>\<rightarrow>] \<langle>inline_calls (blocks (this # pns) (Class D # Us) (Addr a # vs) body) es, s\<rangle>"
   (is "_ \<Longrightarrow> _ \<Longrightarrow> ?reds es s")
-proof(induct e and es arbitrary: s and s)
+proof(induct e and es arbitrary: s and s rule: call.induct calls.induct)
   case (Call obj M' params s)
   note IHObj = `\<And>s. \<lbrakk>call obj = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red obj s`
   note IHParams = `\<And>s. \<lbrakk> calls params = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?reds params s`
@@ -234,7 +234,7 @@ lemma red_inline_call_red':
   and   "\<lbrakk> calls Es = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_calls ee Es, (h, x)\<rangle> [-ta\<rightarrow>] \<langle>Es', (h', x')\<rangle> \<rbrakk> 
          \<Longrightarrow> \<exists>ee'. Es' = inline_calls ee' Es \<and> P,t \<turnstile> \<langle>ee, (h, empty)\<rangle> -ta\<rightarrow> \<langle>ee', (h', empty)\<rangle> \<and> x = x'"
   (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?concls Es Es' x x'")
-proof(induct E and Es arbitrary: E' x x' and Es' x x')
+proof(induct E and Es arbitrary: E' x x' and Es' x x' rule: call.induct calls.induct)
   case new thus ?case by simp
 next
   case (newArray T exp E' x x')

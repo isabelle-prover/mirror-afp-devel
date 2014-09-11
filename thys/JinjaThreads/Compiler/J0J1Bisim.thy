@@ -110,12 +110,12 @@ by(simp add: hidden_def)
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows fv_B_unmod: "\<lbrakk> V \<notin> fv e; \<B> e n; V < n \<rbrakk> \<Longrightarrow> unmod e V"
   and fvs_Bs_unmods: "\<lbrakk> V \<notin> fvs es; \<B>s es n; V < n \<rbrakk> \<Longrightarrow> unmods es V"
-by(induct e and es arbitrary: n and n) auto
+by(induct e and es arbitrary: n and n rule: unmod.induct unmods.induct) auto
 
 lemma assumes fin: "final e'"
   shows unmod_inline_call: "unmod (inline_call e' e) V \<longleftrightarrow> unmod e V"
   and unmods_inline_calls: "unmods (inline_calls e' es) V \<longleftrightarrow> unmods es V"
-apply(induct e and es)
+apply(induct e and es rule: unmod.induct unmods.induct)
 apply(insert fin)
 apply(auto simp add: is_vals_conv)
 done
@@ -519,7 +519,7 @@ qed(auto)
 lemma fixes e :: "('a,'b,'addr) exp" and es :: "('a,'b,'addr) exp list"
   shows inline_call_max_vars: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> max_vars (inline_call e' e) \<le> max_vars e + max_vars e'"
   and inline_calls_max_varss: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> max_varss (inline_calls e' es) \<le> max_varss es + max_vars e'"
-by(induct e and es)(auto)
+by(induct e and es rule: call.induct calls.induct)(auto)
 
 lemma assumes "final E" "bisim VS E E' xs"
   shows inline_call_compE1: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs e) = compE1 Vs (inline_call E e)"
@@ -624,7 +624,7 @@ by(auto simp add: hyperset_defs)
 
 lemma A_inline_call: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A> e \<sqsubseteq> \<A> (inline_call e' e)"
   and As_inline_calls: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow>  \<A>s es \<sqsubseteq> \<A>s (inline_calls e' es)"
-proof(induct e and es)
+proof(induct e and es rule: call.induct calls.induct)
   case (Call obj M params)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
   with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
@@ -652,7 +652,7 @@ qed(fastforce intro: sqUn_lem sqUn_lem2)+
 lemma assumes "final e'"
   shows defass_inline_call: "\<lbrakk> call e = \<lfloor>aMvs\<rfloor>; \<D> e A \<rbrakk> \<Longrightarrow> \<D> (inline_call e' e) A"
   and defasss_inline_calls: "\<lbrakk> calls es = \<lfloor>aMvs\<rfloor>; \<D>s es A \<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' es) A"
-proof(induct e and es arbitrary: A and A)
+proof(induct e and es arbitrary: A and A rule: call.induct calls.induct)
   case (Call obj M params A)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
   with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
@@ -717,7 +717,7 @@ lemma [simp]:
   fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move1_compP: "\<tau>move1 (compP f P) h e = \<tau>move1 P h e"
   and \<tau>moves1_compP: "\<tau>moves1 (compP f P) h es = \<tau>moves1 P h es"
-by(induct e and es) auto
+by(induct e and es rule: \<tau>move1.induct \<tau>moves1.induct) auto
 
 lemma \<tau>Move1_compP [simp]: "\<tau>Move1 (compP f P) = \<tau>Move1 P"
 by(intro ext) auto
@@ -775,7 +775,7 @@ lemma [simp]:
   fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_compP: "\<tau>move0 (compP f P) h e = \<tau>move0 P h e"
   and \<tau>moves0_compP: "\<tau>moves0 (compP f P) h es = \<tau>moves0 P h es"
-by(induct e and es) auto
+by(induct e and es rule: \<tau>move0.induct \<tau>moves0.induct) auto
 
 lemma \<tau>Move0_compP [simp]: "\<tau>Move0 (compP f P) = \<tau>Move0 P"
 by(intro ext) auto

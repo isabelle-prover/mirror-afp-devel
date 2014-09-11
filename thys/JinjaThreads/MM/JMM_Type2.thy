@@ -13,7 +13,7 @@ begin
 
 section {* Definitions *}
 
-datatype addr = Address htype nat   -- "heap type and sequence number"
+datatype_new addr = Address htype nat   -- "heap type and sequence number"
 
 lemma rec_addr_conv_case_addr [simp]: "rec_addr = case_addr"
 by(auto intro!: ext split: addr.split)

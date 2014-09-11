@@ -9,7 +9,7 @@ imports
   "../Common/BinOp"
 begin
 
-datatype ('a,'b,'addr) exp
+datatype_new (dead 'a, dead 'b, dead 'addr) exp
   = new cname      -- "class instance creation"
   | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
   | Cast ty "('a,'b,'addr) exp"      -- "type cast"
@@ -269,7 +269,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp"
   and es :: "('a, 'b, 'addr) exp list"
   shows contains_insync_conv: "(contains_insync e \<longleftrightarrow> (\<exists>ad. expr_locks e ad > 0))"
     and contains_insyncs_conv: "(contains_insyncs es \<longleftrightarrow> (\<exists>ad. expr_lockss es ad > 0))"
-by(induct e and es)(auto)
+by(induct e and es rule: expr_locks.induct expr_lockss.induct)(auto)
 
 lemma contains_insyncs_map_Val [simp]: "\<not> contains_insyncs (map Val vs)"
 by(induct vs) auto

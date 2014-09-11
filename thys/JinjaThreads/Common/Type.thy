@@ -119,7 +119,7 @@ by(simp_all add: identifier_name_defs)
 lemmas synth_method_names_neq [simp] = synth_method_names_neq_aux synth_method_names_neq_aux[symmetric]
 
 -- "types"
-datatype ty
+datatype_new ty
   = Void          -- "type of statements"
   | Boolean
   | Integer
@@ -156,7 +156,7 @@ where
   "the_Array (T\<lfloor>\<rceil>) = T"
 
 
-datatype htype =
+datatype_new htype =
   Class_type "cname"
 | Array_type "ty" "nat"
 

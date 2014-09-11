@@ -287,7 +287,7 @@ lemma \<tau>move2_iff: "\<tau>move2 P h stk e pc xcp \<longleftrightarrow> pc < 
 proof -
   have rhs1lhs1: "\<lbrakk> \<tau>instr P h stk (compE2 e ! pc); pc < length (compE2 e) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e pc None"
     and rhs2lhs2: "\<lbrakk> \<tau>instr P h stk (compEs2 es ! pc); pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> \<tau>moves2 P h stk es pc None"
-    apply(induct e and es arbitrary: pc and pc)
+    apply(induct e and es arbitrary: pc and pc rule: compE2.induct compEs2.induct)
     apply(force intro: \<tau>move2_\<tau>moves2.intros \<tau>move2_intros' simp add: nth_append nth_Cons' not_less_eq split: split_if_asm)+
     done
 

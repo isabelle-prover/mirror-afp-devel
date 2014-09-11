@@ -145,7 +145,7 @@ by(induct n Ts body rule: blocks1.induct)(auto intro!: ext)
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows compE2_not_Return: "Return \<notin> set (compE2 e)"
   and compEs2_not_Return: "Return \<notin> set (compEs2 es)"
-by(induct e and es)(auto)
+by(induct e and es rule: compE2.induct compEs2.induct)(auto)
 
 primrec max_stack :: "'addr expr1 \<Rightarrow> nat"
   and max_stacks :: "'addr expr1 list \<Rightarrow> nat"

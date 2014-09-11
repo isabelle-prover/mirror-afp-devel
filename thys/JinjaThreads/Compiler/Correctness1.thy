@@ -194,7 +194,7 @@ apply(clarsimp simp add: sim_move01_def sim_moves01_def \<tau>reds1r_map_Val \<t
  apply(clarify)
  apply(split split_if)
  apply(rule conjI)
-  apply(simp del: call_calls.simps call1_calls1.simps)
+  apply(simp del: call.simps calls.simps call1.simps calls1.simps)
   apply(fastforce simp add: sim_move01_def sim_moves01_def \<tau>red1r_Val \<tau>red1t_Val \<tau>reds1r_map_Val_Throw intro: Call_\<tau>red1r_param Call1Params split: split_if_asm)
  apply(fastforce split: split_if_asm simp add: is_vals_conv \<tau>reds1r_map_Val \<tau>reds1r_map_Val_Throw)
 apply(rule conjI, fastforce)

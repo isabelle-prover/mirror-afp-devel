@@ -463,8 +463,9 @@ inductive_cases bisim1_cases:
 
 lemma bisim1_refl: "P,e,h \<turnstile> (e, xs) \<leftrightarrow> ([], xs, 0, None)"
   and bisims1_refl: "P,es,h \<turnstile> (es, xs) [\<leftrightarrow>] ([], xs, 0, None)"
-apply(induct e and es)
+apply(induct e and es rule: call.induct calls.induct)
 apply(auto intro: bisim1_bisims1.intros simp add: nat_fun_sum_eq_conv)
+apply(rename_tac option a)
 apply(case_tac option)
 apply(auto intro: bisim1_bisims1.intros split: split_if_asm)
 done
@@ -980,8 +981,9 @@ where
 
 lemma bisim1'_refl: "P,e,n,h \<turnstile>' (e,xs) \<leftrightarrow> ([],xs,0,None)"
   and bisims1'_refl: "P,es,n,h \<turnstile>' (es,xs) [\<leftrightarrow>] ([],xs,0,None)"
-apply(induct e and es arbitrary: n xs and n xs)
+apply(induct e and es arbitrary: n xs and n xs rule: call.induct calls.induct)
 apply(auto intro: bisim1'_bisims1'.intros simp add: nat_fun_sum_eq_conv)
+apply(rename_tac option a b c)
 apply(case_tac option)
 apply(auto intro: bisim1'_bisims1'.intros simp add: fun_eq_iff split: split_if_asm)
 done

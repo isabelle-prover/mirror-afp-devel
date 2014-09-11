@@ -10,7 +10,7 @@ imports
   "../Framework/FWState"
 begin
 
-datatype ('addr,'thread_id) obs_event =
+datatype_new ('addr,'thread_id) obs_event =
     ExternalCall 'addr mname "'addr val list" "'addr val"
   | ReadMem 'addr addr_loc "'addr val"
   | WriteMem 'addr addr_loc "'addr val"

@@ -159,14 +159,14 @@ qed (auto simp add:hyperset_defs)
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows D_None [iff]: "\<D> e None"
   and Ds_None [iff]: "\<D>s es None"
-by(induct e and es)(simp_all)
+by(induct e and es rule: \<D>.induct \<D>s.induct)(simp_all)
 
 declare Un_ac [simp]
 
 lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   shows D_index_compE1: "\<lbrakk> A \<subseteq> set Vs; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<D> e \<lfloor>A\<rfloor> \<Longrightarrow> \<D> (compE1 Vs e) \<lfloor>index Vs ` A\<rfloor>"
   and Ds_index_compEs1: "\<lbrakk> A \<subseteq> set Vs; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<D>s es \<lfloor>A\<rfloor> \<Longrightarrow> \<D>s (compEs1 Vs es) \<lfloor>index Vs ` A\<rfloor>"
-proof(induct e and es arbitrary: A Vs and A Vs)
+proof(induct e and es arbitrary: A Vs and A Vs rule: \<D>.induct \<D>s.induct)
   case (BinOp e1 bop e2)
   hence IH1: "\<D> (compE1 Vs e1) \<lfloor>index Vs ` A\<rfloor>" by simp
   show ?case
@@ -418,7 +418,7 @@ apply simp
 apply(rule wf_prog_compPI)
  prefer 2 apply assumption
 apply(case_tac m)
-apply(simp add:wf_mdecl_def wf_J1_mdecl_def wf_J_mdecl)
+apply(simp add:wf_mdecl_def)
 apply(clarify)
 apply(frule WT_fv)
 apply(fastforce intro!: compE1_pres_wt D_compE1' \<B> syncvars_compE1)

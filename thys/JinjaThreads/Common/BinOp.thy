@@ -9,7 +9,7 @@ imports
   WellForm
 begin
 
-datatype bop =  -- "names of binary operations"
+datatype_new bop =  -- "names of binary operations"
     Eq
   | NotEq
   | LessThan

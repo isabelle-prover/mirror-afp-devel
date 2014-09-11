@@ -214,6 +214,7 @@ lemma [iff]: "distinct_fst (classes (compP f P)) = distinct_fst (classes P)"
 (*<*)
 apply(cases P)
 apply(simp add:distinct_fst_def compP_def compC_def)
+apply(rename_tac list)
 apply(induct_tac list)
 apply (auto simp:image_iff)
 done
