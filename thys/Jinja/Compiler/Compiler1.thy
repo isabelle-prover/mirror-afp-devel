@@ -46,7 +46,7 @@ lemma comp_final: "final e \<Longrightarrow> compE\<^sub>1 Vs e = fin\<^sub>1 e"
 lemma [simp]:
       "\<And>Vs. max_vars (compE\<^sub>1 Vs e) = max_vars e"
 and "\<And>Vs. max_varss (compEs\<^sub>1 Vs es) = max_varss es"
-(*<*)by (induct e and es) simp_all(*>*)
+(*<*)by (induct e and es rule: max_vars.induct max_varss.induct) simp_all(*>*)
 
 
 text{* Compiling programs: *}

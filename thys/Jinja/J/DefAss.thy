@@ -115,7 +115,7 @@ lemma D_append[iff]: "\<And>A. \<D>s (es @ es') A = (\<D>s es A \<and> \<D>s es'
 lemma A_fv: "\<And>A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fv e"
 and  "\<And>A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fvs es"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: \<A>.induct \<A>s.induct)
 apply (simp_all add:hyperset_defs)
 apply blast+
 done
@@ -132,7 +132,7 @@ lemma diff_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<ominus> b \<sqsubseteq
 lemma D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> (e::'a exp) A'"
 and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s (es::'a exp list) A'"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: \<D>.induct \<D>s.induct)
 apply simp
 apply simp
 apply simp

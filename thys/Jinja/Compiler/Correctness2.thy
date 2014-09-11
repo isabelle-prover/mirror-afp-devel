@@ -88,7 +88,7 @@ lemma pcs_subset:
 shows "\<And>pc d. pcs(compxE\<^sub>2 e pc d) \<subseteq> {pc..<pc+size(compE\<^sub>2 e)}"
 and "\<And>pc d. pcs(compxEs\<^sub>2 es pc d) \<subseteq> {pc..<pc+size(compEs\<^sub>2 es)}"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
 apply (simp_all add:pcs_def)
 apply (fastforce split:bop.splits)+
 done
