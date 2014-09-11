@@ -44,7 +44,7 @@ definition
 
 subsubsection {* Expressions *}
 
-old_datatype exp = 
+datatype exp = 
     Var "varName"
   | FieldProj "exp" "varName"              
   | MethodInvk "exp" "methodName" "exp list"
