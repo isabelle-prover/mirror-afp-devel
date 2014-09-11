@@ -10,7 +10,7 @@ declare iprod_assoc[simp]
 
 subsection{*Syntax*}
 
-datatype atom =
+datatype_new atom =
   Le int "int list" | Dvd int int "int list" | NDvd int int "int list"
 
 fun divisor :: "atom \<Rightarrow> int" where
@@ -87,10 +87,13 @@ where "subst i ks \<equiv> map\<^bsub>fm\<^esub> (asubst i ks)"
 
 lemma IZ_asubst: "I\<^sub>Z (asubst i ks a) xs = I\<^sub>Z a ((i + \<langle>ks,xs\<rangle>) # xs)"
 apply (cases a)
+apply (rename_tac list)
 apply (case_tac list)
 apply (simp_all add:algebra_simps iprod_left_add_distrib)
+apply (rename_tac list)
 apply (case_tac list)
 apply (simp_all add:algebra_simps iprod_left_add_distrib)
+apply (rename_tac list)
 apply (case_tac list)
 apply (simp_all add:algebra_simps iprod_left_add_distrib)
 done

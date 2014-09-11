@@ -12,7 +12,7 @@ subsection{*Basics*}
 
 subsubsection{*Syntax and Semantics*}
 
-datatype atom = Less real "real list" | Eq real "real list"
+datatype_new atom = Less real "real list" | Eq real "real list"
 
 fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less r rs) = True" |
@@ -294,7 +294,8 @@ lemma LBex:
 apply(induct f)
 apply simp
 apply simp
-apply (case_tac a)
+apply(rename_tac a)
+apply(case_tac a)
 apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+
 done
@@ -306,6 +307,7 @@ lemma UBex:
 apply(induct f)
 apply simp
 apply simp
+apply(rename_tac a)
 apply(case_tac a)
 apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+

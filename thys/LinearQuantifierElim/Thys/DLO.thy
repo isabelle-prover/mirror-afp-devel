@@ -29,7 +29,7 @@ next
   thus "\<exists>s. s < r" ..
 qed
 
-datatype atom = Less nat nat | Eq nat nat
+datatype_new atom = Less nat nat | Eq nat nat
 
 fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less i j) = True" |
@@ -130,6 +130,7 @@ lemma I_subst:
  "qfree f \<Longrightarrow> DLO.I (subst f k) xs = DLO.I f (xs!k # xs)"
 apply(induct f)
 apply(simp_all)
+apply(rename_tac a)
 apply(case_tac a)
 apply(simp_all add:nth.simps split:nat.splits)
 done
