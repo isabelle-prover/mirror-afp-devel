@@ -37,7 +37,7 @@ equivalent to our original syntactic story.
 
 *}
 
-datatype db =
+datatype_new db =
     DBVar var
   | DBApp db db
   | DBAbsN db

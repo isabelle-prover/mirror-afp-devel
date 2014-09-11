@@ -31,9 +31,9 @@ text {*
 We represent faces by (distinct) lists of vertices and a face type.
 *}
 
-datatype facetype = Final | Nonfinal
+datatype_new facetype = Final | Nonfinal
 
-datatype face = Face "(vertex list)"  facetype
+datatype_new face = Face "(vertex list)"  facetype
 
 consts final :: "'a \<Rightarrow> bool"
 consts type :: "'a \<Rightarrow> facetype"
@@ -114,7 +114,7 @@ abbreviation
 
 subsection {* Graphs *}
 
-datatype graph = Graph "(face list)" "nat" "face list list" "nat list"
+datatype_new graph = Graph "(face list)" "nat" "face list list" "nat list"
 
 primrec faces :: "graph \<Rightarrow> face list" where
   "faces (Graph fs n f h) = fs"

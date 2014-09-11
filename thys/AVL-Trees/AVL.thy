@@ -20,7 +20,7 @@ text {*
 
 subsection {* AVL tree type definition *}
 
-datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
+datatype_new 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 subsection {* Invariants and auxiliary functions *}
 

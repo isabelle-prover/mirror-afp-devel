@@ -33,7 +33,7 @@ text {*
   simplifies the correctness proofs.
 *}
 
-datatype 'a tree\<^sub>0 = ET\<^sub>0 |  MKT\<^sub>0 'a "'a tree\<^sub>0" "'a tree\<^sub>0"
+datatype_new 'a tree\<^sub>0 = ET\<^sub>0 |  MKT\<^sub>0 'a "'a tree\<^sub>0" "'a tree\<^sub>0"
 
 subsubsection {* Auxiliary functions *}
 
@@ -218,7 +218,7 @@ theorem is_ord_insrt:
 
 subsection {* Step 2: Binary and AVL trees with height information *}
 
-datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
+datatype_new 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 
 subsubsection {* Auxiliary functions *}

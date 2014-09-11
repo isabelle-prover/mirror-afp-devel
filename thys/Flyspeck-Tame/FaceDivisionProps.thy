@@ -2239,6 +2239,7 @@ apply(simp add:pre_split_face_def)
 apply(induct f)
 apply(simp add:edges_conv_Edges Edges_Cons)
 apply clarify
+apply(rename_tac list)
 apply(case_tac "between list u v = []")
  apply simp
  apply(drule (4) is_nextElem_between_empty')
