@@ -28,8 +28,8 @@ lemma funsignature_abbrevE[elim]:
                         (SigDom S f) = A ; (SigCod S f) = B ; Signature S\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
 by (simp add: funsignature_abbrev_def)
 
-datatype ('t,'f) Expression = ExprVar ("Vx") | ExprApp 'f "('t,'f) Expression" ("_ E@ _")
-datatype ('t,'f) Language = Type 't ("\<turnstile> _ Type") | Term 't "('t,'f) Expression" 't ("Vx : _ \<turnstile> _ : _") | 
+datatype_new ('t,'f) Expression = ExprVar ("Vx") | ExprApp 'f "('t,'f) Expression" ("_ E@ _")
+datatype_new ('t,'f) Language = Type 't ("\<turnstile> _ Type") | Term 't "('t,'f) Expression" 't ("Vx : _ \<turnstile> _ : _") | 
                             Equation 't "('t,'f) Expression" "('t,'f) Expression" 't ("Vx : _ \<turnstile> _\<equiv>_ : _")
 
 inductive
@@ -71,7 +71,7 @@ proof(induct e)
 qed
 
 (*An interpretation is an object, a morphism or a boolean*)
-datatype ('o,'m) IType = IObj 'o | IMor 'm | IBool bool
+datatype_new ('o,'m) IType = IObj 'o | IMor 'm | IBool bool
 
 record ('t,'f,'o,'m) Interpretation = 
   ISignature :: "('t,'f) Signature" ("iS\<index>")

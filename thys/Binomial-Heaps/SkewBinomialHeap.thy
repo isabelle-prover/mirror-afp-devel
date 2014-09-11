@@ -22,13 +22,13 @@ text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
     \end{enumerate}
 
   In this theory, we combine Steps~2 and 3, i.e. we first implement skew binomial
-  queues, and then bootstrap them. The bootstrapping implicitely introduces a 
+  queues, and then bootstrap them. The bootstrapping implicitly introduces a 
   global root, such that we also get a constant time findMin operation.
 *}
 
 subsection "Datatype"
 
-datatype ('e, 'a) SkewBinomialTree = 
+datatype_new ('e, 'a) SkewBinomialTree = 
   Node 'e "'a::linorder" nat "('e , 'a) SkewBinomialTree list"
 
 type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
@@ -309,7 +309,7 @@ text {* The invariant for trees implies heap order. *}
 lemma tree_invar_heap_ordered: 
   "tree_invar (t ::('e, 'a::linorder) SkewBinomialTree) \<Longrightarrow> heap_ordered t"
 proof(cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof(induct nat arbitrary: t e a list, simp)
     case goal1
     from goal1(2,3) obtain t1 e1 a1 ts1 t2 e2 a2 ts2 e' a' where 
@@ -1172,7 +1172,7 @@ qed
 
 lemma invar_children': "tree_invar t \<Longrightarrow> queue_invar (children t)"
 proof(cases t)
-  case goal1
+  case (goal1 e a nat list)
   hence inv: "tree_invar (Node e a nat list)" by simp
   from goal1 invar_children[OF inv] show ?case by simp
 qed
@@ -1301,7 +1301,7 @@ qed
 lemma children_rank_less: 
   "tree_invar t \<Longrightarrow> \<forall>t' \<in> set (children t). rank t' < rank t"
 proof (cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof (induct nat arbitrary: t e a list, simp) 
     case goal1
     from goal1 obtain e1 a1 ts1 e2 a2 ts2 e' a' where 
@@ -1341,7 +1341,7 @@ qed
 lemma strong_rev_children: 
   "tree_invar t \<Longrightarrow> invar (rev [t \<leftarrow> children t. 0 < rank t])"
 proof (cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof (induct "nat" arbitrary: t e a list, simp add: invar_def)
     case goal1 thus ?case
     proof (cases "nat")
@@ -1729,7 +1729,7 @@ text {* We manually specialize the binomial tree to contain elements, that, in,
 *}
 
 
-datatype ('e, 'a) BsSkewBinomialTree = 
+datatype_new ('e, 'a) BsSkewBinomialTree = 
   BsNode "('e, 'a::linorder) BsSkewElem"
         nat "('e , 'a) BsSkewBinomialTree list"
 and
@@ -2362,6 +2362,7 @@ theorem bs_deleteMin_correct:
   apply (case_tac [!] h)
   apply (simp_all add: bs_empty_def)
   apply (case_tac [!] b)
+  apply (rename_tac [!] list)
   apply (case_tac [!] list)
   apply (simp_all del: elem_invar.simps deleteMin'.simps add: deleteMin_correct')
   done

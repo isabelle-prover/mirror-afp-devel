@@ -45,7 +45,7 @@ type_synonym name = string
 text {* Expressions are built out of
 constants, variables, doubling operations, and addition operations. *}
 
-datatype expr = Const nat | Var name | Double expr | Add expr expr
+datatype_new expr = Const nat | Var name | Double expr | Add expr expr
 
 text {* A program consists of
 a list of parameter variables and a body expression. *}

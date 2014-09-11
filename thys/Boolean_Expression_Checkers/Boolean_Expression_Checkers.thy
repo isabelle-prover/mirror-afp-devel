@@ -14,7 +14,7 @@ subsection {* Boolean Expressions *}
 text{* This is the interface to the tautology checker. If you have your own
 type of boolean expressions you need to translate into this type first. *}
 
-datatype 'a bool_expr =
+datatype_new 'a bool_expr =
   Const_bool_expr bool |
   Atom_bool_expr 'a |
   Neg_bool_expr "'a bool_expr" |
@@ -35,7 +35,7 @@ primrec val_bool_expr :: "'a bool_expr \<Rightarrow> ('a \<Rightarrow> bool) \<R
 
 subsection{* Binary Decision Trees *}
 
-datatype 'a ifex = Trueif | Falseif | IF 'a "'a ifex" "'a ifex"
+datatype_new 'a ifex = Trueif | Falseif | IF 'a "'a ifex" "'a ifex"
 
 fun val_ifex :: "'a ifex \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
 "val_ifex Trueif s = True" |

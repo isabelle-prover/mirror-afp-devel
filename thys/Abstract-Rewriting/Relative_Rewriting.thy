@@ -620,7 +620,7 @@ proof
   show False by simp
 qed
 
-datatype SN_rel_ext_type = top_s | top_ns | normal_s | normal_ns
+datatype_new SN_rel_ext_type = top_s | top_ns | normal_s | normal_ns
 
 fun SN_rel_ext_step :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> SN_rel_ext_type \<Rightarrow> 'a rel" where
   "SN_rel_ext_step P Pw R Rw top_s = P"

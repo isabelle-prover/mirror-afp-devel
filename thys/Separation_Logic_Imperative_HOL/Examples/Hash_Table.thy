@@ -7,7 +7,7 @@ subsection {* Datatype *}
 
 subsubsection {* Definition *}
 
-datatype ('k, 'v) hashtable = HashTable "('k \<times> 'v) list array" nat
+datatype_new ('k, 'v) hashtable = HashTable "('k \<times> 'v) list array" nat
 
 primrec the_array :: "('k, 'v) hashtable \<Rightarrow> ('k \<times> 'v) list array" where
   "the_array (HashTable a _) = a"

@@ -9,7 +9,7 @@ typedecl client
   -- {*A non-empty set of clients*}
 typedecl data
   -- {*Data contained in requests*}
-datatype request = 
+datatype_new request = 
   -- {*A request is composed of a sender and data*}
   Req client data
 
@@ -19,7 +19,7 @@ definition request_snd :: "request \<Rightarrow> client"
 type_synonym hist = "request list" 
   -- {*Type of histories of requests.*}
 
-datatype ALM_action = 
+datatype_new ALM_action = 
   -- {*The actions of the ALM automaton*}
   Invoke client "request" 
   | Commit client nat "hist"
@@ -28,7 +28,7 @@ datatype ALM_action =
   | Linearize nat "hist"
   | Abort nat
 
-datatype phase = Sleep | Pending | Ready | Aborted
+datatype_new phase = Sleep | Pending | Ready | Aborted
   -- {*Executions phases of a client*}
 
 definition linearizations :: "request set \<Rightarrow> hist set"

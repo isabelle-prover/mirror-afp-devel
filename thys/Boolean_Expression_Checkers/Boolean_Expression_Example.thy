@@ -7,7 +7,7 @@ section{* Example *}
 text {* Example usage of checkers. We have our own type of boolean expressions
 with its own evaluation function: *}
 
-datatype 'a bexp =
+datatype_new 'a bexp =
   Const bool |
   Atom 'a |
   Neg "'a bexp" |

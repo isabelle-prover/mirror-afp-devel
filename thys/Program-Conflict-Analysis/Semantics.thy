@@ -20,7 +20,7 @@ type_synonym 'n conf = "('n list) multiset"
 text {*
   A step is labeled according to the executed edge. Additionally, we introduce a label for a procedure return step, that has no corresponding edge. 
 *}
-datatype ('p,'ba) label = LBase 'ba | LCall 'p | LRet | LSpawn 'p
+datatype_new ('p,'ba) label = LBase 'ba | LCall 'p | LRet | LSpawn 'p
 
 subsection {* Monitors *}
 text {*

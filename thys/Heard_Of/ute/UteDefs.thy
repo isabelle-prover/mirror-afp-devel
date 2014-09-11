@@ -63,7 +63,7 @@ record 'val pstate =
 
 text {* Possible messages sent during the execution of the algorithm. *}
 
-datatype 'val msg =
+datatype_new 'val msg =
    Val "'val"
  | Vote "'val option"
 

@@ -172,7 +172,7 @@ text {*
 *}
 
 subsubsection "Lifted step datatype"
-datatype 'a el_step = LOC 'a | ENV 'a
+datatype_new 'a el_step = LOC 'a | ENV 'a
 
 definition
   "loc w == filter (\<lambda>e. case e of LOC a \<Rightarrow> True | ENV a \<Rightarrow> False) w"
