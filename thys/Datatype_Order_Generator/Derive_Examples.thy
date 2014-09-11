@@ -107,10 +107,12 @@ The following datatype has nested indirect recursion, mutual recursion and
 uses other datatypes.
 *}
 
-datatype ('a, 'b) complex = 
+datatype_new ('a, 'b) complex = 
   C1 nat "'a ttree" |
   C2 "('a, 'b) complex list tree tree" 'b "('a, 'b) complex" "('a, 'b) complex2 ttree list"
 and ('a, 'b) complex2 = D1 "('a, 'b) complex ttree"
+
+datatype_compat complex complex2
 
 derive linorder complex
 derive hashable complex
