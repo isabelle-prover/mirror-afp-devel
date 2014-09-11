@@ -2,7 +2,7 @@ theory Kruskal_Examples
 imports Kruskal
 begin
 
-datatype 'a tree = Node 'a "'a tree list"
+datatype_new 'a tree = Node 'a "'a tree list"
 
 fun node
 where
@@ -19,9 +19,9 @@ where
 lemma [simp]:
   "trees UNIV = UNIV"
 proof -
-  { fix t :: "'a tree" and ts :: "'a tree list"
-    have "t \<in> trees UNIV" and "\<forall>s \<in> set ts. s \<in> trees UNIV"
-      by (induct t and ts) (auto intro: trees.intros) }
+  { fix t :: "'a tree"
+    have "t \<in> trees UNIV"
+      by (induct t) (auto intro: trees.intros) }
   then show ?thesis by auto
 qed
 
@@ -58,7 +58,7 @@ instance
            intro: wqo_on_trees [of _ UNIV, simplified])
 end
 
-datatype ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
+datatype_new ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
 
 fun root
 where
@@ -94,9 +94,9 @@ interpretation kruskal_variadic!: kruskal_tree UNIV Fun root args terms
 
 thm kruskal_variadic.almost_full_on_trees
 
-datatype 'a exp = V 'a | C nat | Plus "'a exp" "'a exp"
+datatype_new 'a exp = V 'a | C nat | Plus "'a exp" "'a exp"
 
-datatype 'a symb = v 'a | c nat | p
+datatype_new 'a symb = v 'a | c nat | p
 
 fun mk
 where
@@ -145,4 +145,3 @@ thm kruskal_exp.almost_full_on_trees
 hide_const (open) tree_emb V C Plus v c p
 
 end
-
