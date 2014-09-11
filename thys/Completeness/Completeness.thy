@@ -337,8 +337,10 @@ lemma containsPropagates: "!!f.
   apply (case_tac aa, simp)
   apply(case_tac ba)
     apply(simp add: subsFAtom_def)
-   apply(case_tac signs) apply(simp add: subsFConj_def) apply force apply(simp add: subsFConj_def) 
-  apply(case_tac signs) apply(simp add: subsFAll_def Let_def) apply(simp add: subsFAll_def Let_def) 
+   apply(rename_tac signs a b)
+   apply(case_tac signs) apply(simp add: subsFConj_def) apply force apply(simp add: subsFConj_def)
+  apply(rename_tac signs a)
+  apply(case_tac signs) apply(simp add: subsFAll_def Let_def) apply(simp add: subsFAll_def Let_def)
   done
 
 
@@ -636,8 +638,10 @@ lemma atomsPropagate: "[| branch subs gamma f |]
   apply(case_tac ba, auto)
     apply(simp add: subsFAtom_def atoms_def)
    apply(simp add: subsFConj_def atoms_def)
+   apply(rename_tac signs a b)
    apply(case_tac signs) apply force apply force
   apply(simp add: subsFAll_def atoms_def)
+  apply(rename_tac signs a)
   apply(case_tac signs) apply(force simp: Let_def) apply force
   done
 

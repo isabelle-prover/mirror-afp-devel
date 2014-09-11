@@ -6,7 +6,7 @@ begin
 
 subsection "Variables"
 
-datatype vbl = X nat
+datatype_new vbl = X nat
   -- "FIXME there's a lot of stuff about this datatype that is
   really just a lifting from nat (what else could it be). Makes me
   wonder whether things wouldn't be clearer is we just identified vbls
@@ -42,8 +42,10 @@ lemma inj_nextX: "inj nextX"
 
 lemma ind': "P zeroX ==> (! v . P v --> P (nextX v)) ==> P v'"
   apply (case_tac v', simp)
+  apply(rename_tac nat)
   apply(induct_tac nat)
    apply(simp add: zeroX_def)
+  apply(rename_tac n)
   apply (drule_tac x="X n" in spec, simp)
   done
 
@@ -120,9 +122,9 @@ lemmas vblsimps = vblcase_zeroX vblcase_nextX zeroX_nextX
 
 subsection "Predicates"
 
-datatype predicate = Predicate nat
+datatype_new predicate = Predicate nat
 
-datatype signs = Pos | Neg
+datatype_new signs = Pos | Neg
 
 lemma signsE: "\<lbrakk> signs = Neg \<Longrightarrow> P; signs = Pos \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   apply(cases signs, auto) done
@@ -148,7 +150,7 @@ where
 
 subsection "Formulas"
 
-datatype formula =
+datatype_new formula =
     FAtom signs predicate "(vbl list)"
   | FConj signs formula formula
   | FAll  signs formula  
@@ -364,7 +366,7 @@ lemma evalF_FNot: "!!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
 lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrightarrow> (evalF M f A = evalF M g A)"
   apply(induct A)
     apply (force simp:equalOn_def cong: map_cong, clarify) apply simp apply(drule_tac equalOn_UnD) apply force
-  apply clarify apply simp apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
+  apply clarify apply simp apply(rename_tac signs A f g) apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
   apply(rule_tac f = "sign signs" in arg_cong) apply(force intro: equalOn_vblcaseI')
   done
     -- "FIXME tricky to automate cong args convincingly?"
@@ -376,6 +378,7 @@ lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o th
    apply(simp del: o_apply)
   apply(intro allI)
   apply(simp del: o_apply)
+  apply(rename_tac signs phi0 phi theta)
   apply(rule_tac f="sign signs" in arg_cong) 
   apply(rule ball_cong) apply rule
   apply(rule_tac f="sign signs" in arg_cong)
