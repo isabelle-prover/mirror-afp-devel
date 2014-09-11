@@ -582,6 +582,7 @@ apply (simp_all)
 apply (unfold new_tv_def)
 apply (simp (no_asm) add: free_tv_subst dom_def cod_def)
 apply (intro strip)
+apply (rename_tac nat m)
 apply (case_tac "S nat = TVar nat")
 apply simp
 apply (drule_tac x = "m" in spec)
@@ -635,6 +636,7 @@ lemma new_tv_not_free_tv [simp]:
 lemma fresh_variable_types [simp]: "!!t::typ. ? n. (new_tv n t)"
 apply (unfold new_tv_def)
 apply (induct_tac t)
+apply (rename_tac nat)
 apply (rule_tac x = "Suc nat" in exI)
 apply (simp (no_asm_simp))
 apply (erule exE)+
@@ -647,8 +649,10 @@ lemma fresh_variable_type_schemes [simp]:
   "!!sch::type_scheme. ? n. (new_tv n sch)"
 apply (unfold new_tv_def)
 apply (induct_tac sch)
+apply (rename_tac nat)
 apply (rule_tac x = "Suc nat" in exI)
 apply (simp (no_asm))
+apply (rename_tac nat)
 apply (rule_tac x = "Suc nat" in exI)
 apply (simp (no_asm))
 apply (erule exE)+

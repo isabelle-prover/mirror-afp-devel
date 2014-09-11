@@ -81,6 +81,7 @@ apply (rule exI)
 apply (rule ballI)
 apply (rule sym)
 apply simp
+apply (rename_tac type_scheme1 type_scheme2 t)
 apply simp
 apply (drule mk_scheme_Fun)
 apply (erule exE)+
