@@ -39,10 +39,12 @@ text {*
 The datatypes of terms and formulae in {\em de Bruijn notation}
 are defined as follows:
 *}
+  
+datatype_new (plugins del: size) 'a "term" =
+    Var nat
+  | App 'a "'a term list"
 
-datatype 'a "term" = Var nat | App 'a "'a term list"
-
-datatype ('a, 'b) form =
+datatype_new (plugins del: size) ('a, 'b) form =
     FF
   | TT
   | Pred 'b "'a term list"
@@ -60,7 +62,22 @@ In applications @{text "App a ts"} and predicates
 @{text "Pred a ts"}, the length of @{text "ts"} is considered
 to be a part of the function or predicate name, so @{text "App a [t]"}
 and @{text "App a [t,u]"} refer to different functions.
+
+The size of a formula is used later for wellfounded induction. The
+default implementation provided by the datatype package is not quite
+what we need, so here is an alternative version:
 *}
+
+primrec size_form :: "('a, 'b) form \<Rightarrow> nat" where
+  "size_form FF = 0"
+| "size_form TT = 0"
+| "size_form (Pred _ _) = 0"
+| "size_form (And phi psi) = size_form phi + size_form psi + 1"
+| "size_form (Or phi psi) = size_form phi + size_form psi + 1"
+| "size_form (Impl phi psi) = size_form phi + size_form psi + 1"
+| "size_form (Neg phi) = size_form phi + 1"
+| "size_form (Forall phi) = size_form phi + 1"
+| "size_form (Exists phi) = size_form phi + 1"
 
 
 subsection {* Closed terms and formulae *}
@@ -97,7 +114,7 @@ where
 theorem closedt_mono: assumes le: "i \<le> j"
   shows "closedt i (t::'a term) \<Longrightarrow> closedt j t"
   and "closedts i (ts::'a term list) \<Longrightarrow> closedts j ts" using le
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: closedt.induct closedts.induct) simp_all
 
 
 subsection {* Substitution *}
@@ -143,12 +160,12 @@ where
 theorem lift_closed [simp]:
   "closedt 0 (t::'a term) \<Longrightarrow> closedt 0 (liftt t)"
   "closedts 0 (ts::'a term list) \<Longrightarrow> closedts 0 (liftts ts)"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: closedt.induct closedts.induct) simp_all
 
 theorem subst_closedt [simp]: assumes u: "closedt 0 u"
   shows "closedt (Suc i) t \<Longrightarrow> closedt i (t[u/i])"
   and "closedts (Suc i) ts \<Longrightarrow> closedts i (ts[u/i])" using u
-  apply (induct t and ts)
+  apply (induct t and ts rule: closedt.induct closedts.induct)
   apply simp_all
   apply (rule impI)
   apply (rule closedt_mono(1) [of 0])
@@ -159,9 +176,9 @@ theorem subst_closed [simp]:
   "closedt 0 t \<Longrightarrow> closed (Suc i) p \<Longrightarrow> closed i (p[t/i])"
   by (induct p arbitrary: i t) simp_all
 
-theorem subst_size [simp]: "size (subst p t i) = size p"
-  by (induct p arbitrary: i t) simp_all
-
+theorem subst_size_form [simp]: "size_form (subst p t i) = size_form p"
+  by (induct p arbitrary: i t) auto
+  
 
 subsection {* Parameters *}
 
@@ -227,7 +244,7 @@ where
 theorem psubstt_closed [simp]:
   "closedt i (psubstt f t) = closedt i t"
   "closedts i (psubstts f ts) = closedts i ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: closedt.induct closedts.induct) simp_all
 
 theorem psubst_closed [simp]:
   "closed i (psubst f p) = closed i p"
@@ -236,12 +253,12 @@ theorem psubst_closed [simp]:
 theorem psubstt_subst [simp]:
   "psubstt f (substt t u i) = substt (psubstt f t) (psubstt f u) i"
   "psubstts f (substts ts u i) = substts (psubstts f ts) (psubstt f u) i"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: psubstt.induct psubstts.induct) simp_all
 
 theorem psubstt_lift [simp]:
   "psubstt f (liftt t) = liftt (psubstt f t)"
   "psubstts f (liftts ts) = liftts (psubstts f ts)"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: psubstt.induct psubstts.induct) simp_all
 
 theorem psubst_subst [simp]:
   "psubst f (subst P t i) = subst (psubst f P) (psubstt f t) i"
@@ -250,14 +267,14 @@ theorem psubst_subst [simp]:
 theorem psubstt_upd [simp]:
   "x \<notin> paramst (t::'a term) \<Longrightarrow> psubstt (f(x:=y)) t = psubstt f t"
   "x \<notin> paramsts (ts::'a term list) \<Longrightarrow> psubstts (f(x:=y)) ts = psubstts f ts"
-  by (induct t and ts) (auto split add: sum.split)
+  by (induct t and ts rule: psubstt.induct psubstts.induct) (auto split add: sum.split)
 
 theorem psubst_upd [simp]: "x \<notin> params P \<Longrightarrow> psubst (f(x:=y)) P = psubst f P"
   by (induct P) (simp_all del: fun_upd_apply)
 
 theorem psubstt_id [simp]: "psubstt (%x. x) (t::'a term) = t"
   "psubstts (%x. x) (ts::'a term list) = ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: psubstt.induct psubstts.induct) simp_all
 
 theorem psubst_id [simp]: "psubst (%x. x) = (%p. p)"
   apply (rule ext)
@@ -268,7 +285,7 @@ theorem psubst_id [simp]: "psubst (%x. x) = (%p. p)"
 theorem psubstt_image [simp]:
   "paramst (psubstt f t) = f ` paramst t"
   "paramsts (psubstts f ts) = f ` paramsts ts"
-  by (induct t and ts) (simp_all add: image_Un)
+  by (induct t and ts rule: paramst.induct paramsts.induct) (simp_all add: image_Un)
 
 theorem psubst_image [simp]: "params (psubst f p) = f ` params p"
   by (induct p) (simp_all add: image_Un)
@@ -350,12 +367,12 @@ The following substitution lemmas relate substitution and evaluation functions:
 theorem subst_lemma' [simp]:
   "evalt e f (substt t u i) = evalt (e\<langle>i:evalt e f u\<rangle>) f t"
   "evalts e f (substts ts u i) = evalts (e\<langle>i:evalt e f u\<rangle>) f ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
 
 theorem lift_lemma [simp]:
   "evalt (e\<langle>0:z\<rangle>) f (liftt t) = evalt e f t"
   "evalts (e\<langle>0:z\<rangle>) f (liftts ts) = evalts e f ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
 
 theorem subst_lemma [simp]:
   "\<And>e i t. eval e f g (subst a t i) = eval (e\<langle>i:evalt e f t\<rangle>) f g a"
@@ -364,7 +381,7 @@ theorem subst_lemma [simp]:
 theorem upd_lemma' [simp]:
   "n \<notin> paramst t \<Longrightarrow> evalt e (f(n:=x)) t = evalt e f t"
   "n \<notin> paramsts ts \<Longrightarrow> evalts e (f(n:=x)) ts = evalts e f ts"
-  by (induct t and ts) auto
+  by (induct t and ts rule: evalt.induct evalts.induct) auto
 
 theorem upd_lemma [simp]:
   "n \<notin> params p \<Longrightarrow> eval e (f(n:=x)) g p = eval e f g p"
@@ -1302,7 +1319,7 @@ for trees once and for all. In applications, we then only have to write
 functions for converting between trees and concrete datatypes.
 *}
 
-datatype btree = Leaf nat | Branch btree btree
+datatype_new btree = Leaf nat | Branch btree btree
 
 function
   diag_btree :: "nat \<Rightarrow> btree"
@@ -1380,7 +1397,7 @@ where
 theorem term_btree: assumes du: "\<And>x. d (u x) = x"
   shows "term_of_btree d (btree_of_term u t) = t"
   and "term_list_of_btree d (btree_of_term_list u ts) = ts"
-  by (induct t and ts) (simp_all add: du)
+  by (induct t and ts rule: btree_of_term.induct btree_of_term_list.induct) (simp_all add: du)
 
 definition
   diag_term :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a term" where
@@ -1565,7 +1582,7 @@ theorem is_chain_extend: "is_chain (extend S C f)"
 
 theorem finite_paramst [simp]: "finite (paramst (t :: 'a term))"
   "finite (paramsts (ts :: 'a term list))"
-  by (induct t and ts) (simp_all split add: sum.split)
+  by (induct t and ts rule: paramst.induct paramsts.induct) (simp_all split add: sum.split)
 
 theorem finite_params [simp]: "finite (params p)"
   by (induct p) simp_all
@@ -1732,7 +1749,7 @@ but without variables. We also define functions for converting between
 closed terms and Herbrand terms.
 *}
 
-datatype 'a hterm = HApp 'a "'a hterm list"
+datatype_new 'a hterm = HApp 'a "'a hterm list"
 
 primrec
   term_of_hterm :: "'a hterm \<Rightarrow> 'a term"
@@ -1745,17 +1762,17 @@ where
 theorem herbrand_evalt [simp]:
   "closedt 0 t \<Longrightarrow> term_of_hterm (evalt e HApp t) = t"
   "closedts 0 ts \<Longrightarrow> terms_of_hterms (evalts e HApp ts) = ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: closedt.induct closedts.induct) simp_all
 
 theorem herbrand_evalt' [simp]:
   "evalt e HApp (term_of_hterm ht) = ht"
   "evalts e HApp (terms_of_hterms hts) = hts"
-  by (induct ht and hts) simp_all
+  by (induct ht and hts rule: term_of_hterm.induct terms_of_hterms.induct) simp_all
 
 theorem closed_hterm [simp]:
   "closedt 0 (term_of_hterm (ht::'a hterm))"
   "closedts 0 (terms_of_hterms (hts::'a hterm list))"
-  by (induct ht and hts) simp_all
+  by (induct ht and hts rule: term_of_hterm.induct terms_of_hterms.induct) simp_all
 
 theorem measure_size_eq [simp]: "((x, y) \<in> measure f) = (f x < f y)"
   by (simp add: measure_def inv_image_def)
@@ -1775,7 +1792,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
   (Neg p \<in> H \<longrightarrow> closed 0 p \<longrightarrow>
     eval e HApp (\<lambda>a ts. Pred a (terms_of_hterms ts) \<in> H) (Neg p))"
   apply (unfold hintikka_def)
-  apply (rule_tac r="measure size" and a=p in wf_induct)
+  apply (rule_tac r="measure size_form" and a=p in wf_induct)
   apply (simp (no_asm))
   apply (case_tac x)
   apply hypsubst
@@ -1857,6 +1874,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct2, drule conjunct2,
     drule conjunct1)
+  apply (rename_tac form z)
   apply (erule_tac x="subst form (term_of_hterm z) 0" in allE)
   apply simp
   apply (rule impI)+
@@ -1868,6 +1886,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct2)
   apply (erule allE, erule impE, assumption, erule exE)
+  apply (rename_tac form t)
   apply (erule_tac x="subst form t 0" in allE)
   apply fastforce
   apply hypsubst
@@ -1881,6 +1900,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct1)
   apply (erule allE, erule impE, assumption, erule exE)
+  apply (rename_tac form t)
   apply (erule_tac x="subst form t 0" in allE)
   apply fastforce
   apply (rule impI allI)+
@@ -1890,6 +1910,7 @@ theorem hintikka_model: "hintikka H \<Longrightarrow>
     drule conjunct2, drule conjunct2,
     drule conjunct2, drule conjunct2,
     drule conjunct2, drule conjunct1)
+  apply (rename_tac form z)
   apply (erule_tac x="subst form (term_of_hterm z) 0" in allE)
   apply simp
   done
@@ -2395,7 +2416,7 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
 theorem doublep_evalt [simp]:
   "evalt e f (psubstt (\<lambda>n::nat. 2 * n) t) = evalt e (\<lambda>n. f (2*n)) t"
   "evalts e f (psubstts (\<lambda>n::nat. 2 * n) ts) = evalts e (\<lambda>n. f (2*n)) ts"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
 
 theorem doublep_eval: "\<And>e. eval e f g (psubst (\<lambda>n::nat. 2 * n) p) =
   eval e (\<lambda>n. f (2*n)) g p"
