@@ -38,9 +38,6 @@ text {*
   and then interprets this locale with the prefix {\em FingerTree}.
   This makes all definitions visible outside the locale, with
   qualified names. Inside the locale, however, one can use unqualified names.
-
-  As the datatype package does not (yet) support locales, we have to define the
-  recursive datatypes for finger trees outside the locale.
 *}
 
 subsection "Datatype definition"
@@ -51,19 +48,19 @@ text {*
   Nodes: Non empty 2-3 trees, with all elements stored within the leafs plus a 
   cached annotation 
   *}
-datatype ('e,'a) Node = Tip 'e 'a |
+datatype_new ('e,'a) Node = Tip 'e 'a |
   Node2 'a "('e,'a) Node" "('e,'a) Node" | 
   Node3 'a "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
   text {* Digit: one to four ordered Nodes *}
-datatype ('e,'a) Digit = One "('e,'a) Node" |
+datatype_new ('e,'a) Digit = One "('e,'a) Node" |
    Two "('e,'a) Node" "('e,'a) Node" |
    Three "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" |
    Four "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
   text {* FingerTreeStruc: 
     The empty tree, a single node or some nodes and a deeper tree*}
-datatype ('e, 'a) FingerTreeStruc = 
+datatype_new ('e, 'a) FingerTreeStruc = 
   Empty |
   Single "('e,'a) Node" |
   Deep 'a "('e,'a) Digit" "('e,'a) FingerTreeStruc" "('e,'a) Digit"
@@ -1941,7 +1938,7 @@ qed
 
 subsubsection {* Folding *}
 
-primrec foldl_node :: "('s \<Rightarrow> 'e \<times> 'a \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> ('e,'a) Node \<Rightarrow> 's" where
+fun foldl_node :: "('s \<Rightarrow> 'e \<times> 'a \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> ('e,'a) Node \<Rightarrow> 's" where
   "foldl_node f \<sigma> (Tip e a) = f \<sigma> (e,a)"|
   "foldl_node f \<sigma> (Node2 _ a b) = foldl_node f (foldl_node f \<sigma> a) b"|
   "foldl_node f \<sigma> (Node3 _ a b c) = 
@@ -2660,4 +2657,3 @@ text {*
 *}
 
 end
-
