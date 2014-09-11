@@ -61,11 +61,11 @@ typedecl thread_id_t
 typedecl page_t -- {* physical address of a memory page *}
 typedecl filep_t -- {* name of file provider *}
 
-datatype obj_id_t =
+datatype_new obj_id_t =
    PAGE page_t
  | FILEP filep_t 
 
-datatype mode_t =
+datatype_new mode_t =
    READ -- {* The subject has right to read from the memory page, from the files served by a file provider. *}
  | WRITE -- {* The subject has right to write to the memory page, from the files served by a file provider. *}
  | PROVIDE -- {* The subject has right serve as the file provider. This mode is not used for memory pages or ports. *}

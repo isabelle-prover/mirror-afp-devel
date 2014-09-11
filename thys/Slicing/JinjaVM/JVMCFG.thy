@@ -478,7 +478,7 @@ to execute). If the second parameter is not None, we are at an intermediate stat
 where the target of the instruction is determined (the second callstack)
 and the flag is set to whether an exception is thrown or not.
 *}
-datatype j_node =
+datatype_new j_node =
    Entry  ("'('_Entry'_')")
  | Node "callstack" "(callstack \<times> bool) option" ("'('_ _,_ '_')")
 

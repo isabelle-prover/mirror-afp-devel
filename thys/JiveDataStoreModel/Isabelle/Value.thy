@@ -34,7 +34,7 @@ text {* The definition of the datatype @{text Value}. Values can be of the Java 
 boolean, int, short and byte. Additionally, they can be an object reference,
 an array reference or the value null. *}
 
-datatype Value = boolV  JavaBoolean
+datatype_new Value = boolV  JavaBoolean
                | intgV  JavaInt  
                | shortV JavaShort
                | byteV  JavaByte

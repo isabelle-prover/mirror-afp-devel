@@ -94,7 +94,7 @@ type_synonym rdom_t = "thread_id_t"
 text {* The output function returns the contents of all memory accessible
   to the subject. The action argument of the output function is ignored. *}
 
-datatype visible_obj_t = VALUE obj_t | EXCEPTION
+datatype_new visible_obj_t = VALUE obj_t | EXCEPTION
 type_synonym routput_t = "page_t \<Rightarrow> visible_obj_t"
 
 definition routput_f :: "rstate_t \<Rightarrow> raction_t \<Rightarrow> routput_t" where

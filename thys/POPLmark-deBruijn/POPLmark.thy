@@ -23,7 +23,7 @@ text {*
 The types of System \fsub{} are represented by the following datatype:
 *}
 
-datatype type =
+datatype_new type =
     TVar nat
   | Top
   | Fun type type    (infixr "\<rightarrow>" 200)
@@ -36,7 +36,7 @@ where the @{term i}th element @{term "\<Gamma>\<langle>i\<rangle>"} corresponds 
 with index @{term i}.
 *}
 
-datatype binding = VarB type | TVarB type
+datatype_new binding = VarB type | TVarB type
 type_synonym env = "binding list"
 
 text {*
@@ -66,7 +66,7 @@ text {*
 The following datatype represents the terms of System \fsub{}:
 *}
 
-datatype trm =
+datatype_new trm =
     Var nat
   | Abs type trm   ("(3\<lambda>:_./ _)" [0, 10] 10)
   | TAbs type trm  ("(3\<lambda><:_./ _)" [0, 10] 10)
@@ -476,8 +476,8 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_TVar)
   apply (simp split add: nat.split_asm)
+  apply (rename_tac nat \<Delta> T nata)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> nat - Suc 0")
-  apply (rename_tac nata)
   apply (subgoal_tac "nat - Suc \<parallel>\<Delta>\<parallel> = nata")
   apply (simp (no_asm_simp))
   apply arith

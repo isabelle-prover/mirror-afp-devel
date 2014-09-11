@@ -15,7 +15,7 @@ verification. It defines the attributes of the classes and various functions
 on them.
 *}
 
-datatype AttId = CounterImpl'value | UndoCounter'save
+datatype_new AttId = CounterImpl'value | UndoCounter'save
   | Dummy'dummy | Counter'dummy
 
 text {* The last two entries are only added to demonstrate what is to happen with attributes of
@@ -122,7 +122,7 @@ There is only one such datatype because only objects of concrete classes can be
 created at run-time,
 thus only instance fields of concrete classes can occupy memory.  *}
 
-  datatype CAttId = CounterImpl'CounterImpl'value | UndoCounter'CounterImpl'value
+  datatype_new CAttId = CounterImpl'CounterImpl'value | UndoCounter'CounterImpl'value
   | UndoCounter'UndoCounter'save 
   | CounterImpl'Counter'dummy | UndoCounter'Counter'dummy
 

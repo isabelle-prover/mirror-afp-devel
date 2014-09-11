@@ -23,7 +23,7 @@ type_synonym 'a istream = "nat \<Rightarrow> 'a list"
 type_synonym 'a iustream = "nat \<Rightarrow> 'a"
 
 -- "FOCUS stream (general)"
-datatype 'a stream = 
+datatype_new 'a stream = 
           FinT "'a fstream" -- "finite timed streams"
         | FinU "'a list" -- "finite untimed streams"
         | InfT "'a istream" -- "infinite timed streams"

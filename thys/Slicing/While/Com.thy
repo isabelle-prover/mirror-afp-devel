@@ -7,7 +7,7 @@ section {* Variables and Values *}
 
 type_synonym vname = string -- "names for variables"
 
-datatype val
+datatype_new val
   = Bool bool      -- "Boolean value"
   | Intg int       -- "integer value" 
 
@@ -16,9 +16,9 @@ abbreviation "false == Bool False"
 
 section {* Expressions and Commands*}
 
-datatype bop = Eq | And | Less | Add | Sub     -- "names of binary operations"
+datatype_new bop = Eq | And | Less | Add | Sub     -- "names of binary operations"
 
-datatype expr
+datatype_new expr
   = Val val                                          -- "value"
   | Var vname                                        -- "local variable"
   | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  -- "binary operation"
@@ -33,7 +33,7 @@ where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^su
   | "binop bop v\<^sub>1 v\<^sub>2                = None"
 
 
-datatype cmd
+datatype_new cmd
   = Skip
   | LAss vname expr        ("_:=_" [70,70] 70)  -- "local assignment"
   | Seq cmd cmd            ("_;;/ _" [61,60] 60)

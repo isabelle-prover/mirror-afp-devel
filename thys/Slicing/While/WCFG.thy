@@ -4,7 +4,7 @@ theory WCFG imports Com "../Basic/BasicDefs" begin
 
 subsection{* CFG nodes *}
 
-datatype w_node = Node nat ("'('_ _ '_')")
+datatype_new w_node = Node nat ("'('_ _ '_')")
   | Entry ("'('_Entry'_')")
   | Exit ("'('_Exit'_')") 
 

@@ -19,19 +19,19 @@ record ECall_Info =
    coord :: Coordinates
    speed :: CollisionSpeed
 
-datatype GatewayStatus = 
+datatype_new GatewayStatus = 
     init_state
   | call
   | connection_ok
   | sending_data
   | voice_com
 
-datatype reqType = init | send
+datatype_new reqType = init | send
 
-datatype stopType = stop_vc
+datatype_new stopType = stop_vc
 
-datatype vcType = vc_com
+datatype_new vcType = vc_com
 
-datatype aType = sc_ack
+datatype_new aType = sc_ack
 
 end

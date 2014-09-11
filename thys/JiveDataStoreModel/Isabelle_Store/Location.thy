@@ -14,7 +14,7 @@ text {* A storage location can be a field of an object, a static field,
  the length of an array, or the contents of an array.  
 *}
 
-datatype Location = objLoc    CAttId ObjectId     --{* field in object *} 
+datatype_new Location = objLoc    CAttId ObjectId     --{* field in object *} 
                   | staticLoc AttId               --{* static field in concrete class *}
                   | arrLenLoc Arraytype ObjectId   --{* length of an array *}
                   | arrLoc    Arraytype ObjectId nat --{* contents of an array *}

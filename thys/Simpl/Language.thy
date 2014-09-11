@@ -39,7 +39,7 @@ as sets of states.
 type_synonym 's bexp = "'s set"
 type_synonym 's assn = "'s set"
 
-datatype ('s, 'p, 'f) com =
+datatype_new (dead 's, 'p, 'f) com =
     Skip
   | Basic "'s \<Rightarrow> 's"
   | Spec "('s \<times> 's) set"
