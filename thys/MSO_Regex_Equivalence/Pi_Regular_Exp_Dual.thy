@@ -9,7 +9,7 @@ begin
 (*>*)
 subsection {* Syntax of regular expressions *}
 
-datatype_new 'a rexp_dual =
+datatype 'a rexp_dual =
   CoZero (co: bool) |
   CoOne (co: bool) |
   CoAtom (co: bool) 'a |

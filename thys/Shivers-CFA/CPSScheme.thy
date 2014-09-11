@@ -25,7 +25,7 @@ Shivers' language has as the set of basic values integers plus a special value f
 Shivers also restricts the values in a call expression: No constant maybe be used as the called value, and no primitive operation may occur as an argument. This restriction is dropped here and just leads to runtime errors when evaluating the program.
 *}
 
-datatype_new prim = Plus label | If label label
+datatype prim = Plus label | If label label
 old_datatype lambda = Lambda label "var list" call
      and call = App label val "val list"
               | Let label "(var \<times> lambda) list" call

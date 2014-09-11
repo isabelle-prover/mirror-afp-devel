@@ -10,7 +10,7 @@ begin
 (*>*)
 subsection {* Syntax of regular expressions *}
 
-datatype_new 'a rexp =
+datatype 'a rexp =
   Zero |
   Full |
   One |

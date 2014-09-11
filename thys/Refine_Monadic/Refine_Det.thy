@@ -12,7 +12,7 @@ text {*
 *}
 (* TODO: Library/Quickcheck_Types.thy:flat_complete_lattice provides
   an isomorphic contruction. *)
-datatype_new 'a dres = 
+datatype 'a dres = 
   dSUCCEEDi   -- "No result"
 | dFAILi      -- "Failure"
 | dRETURN 'a  -- "Regular result"

@@ -442,7 +442,7 @@ qed
 
 subsection {* Syntax *}
 
-datatype_new ('test, 'atom, 'choice) cmd =
+datatype ('test, 'atom, 'choice) cmd =
   Done
 | Atm "'atom"
 | Seq "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd" ("_ ;; _"  [60, 61] 60)

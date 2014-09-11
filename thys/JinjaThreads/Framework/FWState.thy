@@ -11,21 +11,21 @@ imports
   "../Basic/Auxiliary"
 begin
 
-datatype_new lock_action =
+datatype lock_action =
     Lock
   | Unlock
   | UnlockFail
   | ReleaseAcquire
 
-datatype_new ('t,'x,'m) new_thread_action =
+datatype ('t,'x,'m) new_thread_action =
     NewThread 't 'x 'm
   | ThreadExists 't bool
 
-datatype_new 't conditional_action = 
+datatype 't conditional_action = 
     Join 't
   | Yield
 
-datatype_new ('t, 'w) wait_set_action =
+datatype ('t, 'w) wait_set_action =
     Suspend 'w
   | Notify 'w
   | NotifyAll 'w
@@ -33,7 +33,7 @@ datatype_new ('t, 'w) wait_set_action =
   | Notified
   | WokenUp
 
-datatype_new 't interrupt_action 
+datatype 't interrupt_action 
   = IsInterrupted 't bool
   | Interrupt 't
   | ClearInterrupt 't
@@ -148,7 +148,7 @@ text {*
 
 class obs_action
 
-datatype_new ('l,'t,'x,'m,'w,'o) thread_action' 
+datatype ('l,'t,'x,'m,'w,'o) thread_action' 
   = LockAction "lock_action \<times> 'l"
   | NewThreadAction "('t,'x,'m) new_thread_action"
   | ConditionalAction "'t conditional_action"
@@ -271,11 +271,11 @@ hide_const (open)
   thread_action'_to_thread_action
 hide_type (open) thread_action'
 
-datatype_new wake_up_status =
+datatype wake_up_status =
   WSNotified
 | WSWokenUp
 
-datatype_new 'w wait_set_status =
+datatype 'w wait_set_status =
   InWS 'w
 | PostWS wake_up_status
 
@@ -442,7 +442,7 @@ by(cases ta) simp
 
 text {* Actions for thread start/finish *}
 
-datatype_new 'o action =
+datatype 'o action =
     NormalAction 'o
   | InitialThreadAction
   | ThreadFinishAction

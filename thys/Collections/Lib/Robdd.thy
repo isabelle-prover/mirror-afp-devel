@@ -15,7 +15,7 @@ type_synonym node_id = nat
 type_synonym var = nat
 type_synonym assigment = "var \<Rightarrow> bool"
 
-datatype_new robdd = robdd_leaf bool | robdd_var node_id robdd var robdd 
+datatype robdd = robdd_leaf bool | robdd_var node_id robdd var robdd 
 abbreviation "robdd_zero \<equiv> robdd_leaf False"
 abbreviation "robdd_one \<equiv> robdd_leaf True"
 

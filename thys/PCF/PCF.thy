@@ -31,7 +31,7 @@ names drawn from the naturals:
 
 type_synonym var = nat
 
-datatype_new expr =
+datatype expr =
     Var var
   | App expr expr
   | AbsN var expr (* non-strict fns *)
@@ -676,7 +676,7 @@ We need three-element vectors.
 
 *}
 
-datatype_new Three = One | Two | Three
+datatype Three = One | Two | Three
 
 text{*
 

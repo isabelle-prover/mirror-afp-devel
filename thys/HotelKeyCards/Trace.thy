@@ -19,7 +19,7 @@ similar to Paulson's inductive protocol model~\cite{Paulson-JCS98}.
 The events are:
 *}
 
-datatype_new event =
+datatype event =
   Check_in guest room card | Enter guest room card | Exit guest room
 
 text{* Instead of a state, we have a trace, i.e.\ list of events, and

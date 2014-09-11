@@ -22,7 +22,7 @@ type_synonym 'm mdecl' = "mname \<times> ty list \<times> ty \<times> 'm option"
 type_synonym 'm "class" = "cname \<times> fdecl list \<times> 'm mdecl' list"       -- "class = superclass, fields, methods"
 type_synonym 'm cdecl = "cname \<times> 'm class"  -- "class declaration"
 
-datatype_new
+datatype
   'm prog = Program "'m cdecl list" 
 
 translations

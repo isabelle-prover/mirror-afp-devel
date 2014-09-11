@@ -133,7 +133,7 @@ done
 declare [[code drop: Mapping.tabulate]]
 declare tabulate_fold [code]
 
-datatype_new mapping_impl = Mapping_IMPL
+datatype mapping_impl = Mapping_IMPL
 declare
   mapping_impl.eq.simps [code del]
   mapping_impl.rec [code del]

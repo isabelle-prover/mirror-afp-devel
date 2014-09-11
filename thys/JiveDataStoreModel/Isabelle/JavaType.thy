@@ -25,11 +25,11 @@ type of the @{text ArrT} type constructor. This will yield infinitely many
 types.
 *}
 
-datatype_new Arraytype = BoolAT | IntgAT | ShortAT | ByteAT
+datatype Arraytype = BoolAT | IntgAT | ShortAT | ByteAT
                   | CClassAT CTypeId | AClassAT ATypeId
                   | InterfaceAT ITypeId
 
-datatype_new Javatype = BoolT | IntgT | ShortT | ByteT | NullT | ArrT Arraytype
+datatype Javatype = BoolT | IntgT | ShortT | ByteT | NullT | ArrT Arraytype
                   | CClassT CTypeId | AClassT ATypeId
                   | InterfaceT ITypeId
 

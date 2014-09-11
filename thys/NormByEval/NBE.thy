@@ -19,7 +19,7 @@ type_synonym cname = int
 
 text{* ML terms: *}
 
-datatype_new ml =
+datatype ml =
  -- "ML"
   C_ML cname ("C\<^sub>M\<^sub>L") (* ref to compiled code *)
 | V_ML ml_vname ("V\<^sub>M\<^sub>L")
@@ -34,7 +34,7 @@ datatype_new ml =
 
 text{* Lambda-terms: *}
 
-datatype_new tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
+datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
             | "term" ml   -- {*ML function \texttt{term}*}
 
 text {* The following locale captures type conventions for variables.

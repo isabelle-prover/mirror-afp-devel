@@ -65,7 +65,7 @@ text {*
   Possible messages sent during the execution of the algorithm.
 *}
 
-datatype_new 'val msg =
+datatype 'val msg =
   ValStamp "'val" "nat"
 | Vote "'val"
 | Ack

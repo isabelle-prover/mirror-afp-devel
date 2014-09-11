@@ -6,7 +6,7 @@ begin
 
 subsection {* Syntax and Semantics *}
 
-datatype_new bexp = TT | FF | V nat | Not bexp | And bexp bexp | Or bexp bexp
+datatype bexp = TT | FF | V nat | Not bexp | And bexp bexp | Or bexp bexp
 
 type_synonym state = "bitset"
 
@@ -18,7 +18,7 @@ fun bval :: "bexp \<Rightarrow> state \<Rightarrow> bool" where
 "bval (And b\<^sub>1 b\<^sub>2) s = (bval b\<^sub>1 s & bval b\<^sub>2 s)" |
 "bval (Or b\<^sub>1 b\<^sub>2) s = (bval b\<^sub>1 s | bval b\<^sub>2 s)"
 
-datatype_new instr =
+datatype instr =
   AssI "nat list" "bexp list" |
   TestI bexp int |
   ChoiceI "(bexp * int) list" |
@@ -89,7 +89,7 @@ fun nexts :: "bprog \<Rightarrow> config \<Rightarrow> config list" where
 
 declare nexts.simps [simp del]
 
-datatype_new
+datatype
   com = SKIP
       | Assign "nat list" "bexp list"    
       | Seq    com  com         

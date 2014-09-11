@@ -62,7 +62,7 @@ definition
   is_alph :: "nat \<Rightarrow> bool list \<Rightarrow> bool" where
   "is_alph n = (\<lambda>w. length w = n)"
 
-datatype_new 'a bdd = Leaf 'a | Branch "'a bdd" "'a bdd"
+datatype 'a bdd = Leaf 'a | Branch "'a bdd" "'a bdd"
 
 primrec bddh :: "nat \<Rightarrow> 'a bdd \<Rightarrow> bool"
 where
@@ -4266,7 +4266,7 @@ qed
 
 section {* Presburger Arithmetic *}
 
-datatype_new pf =
+datatype pf =
     Eq "int list" int
   | Le "int list" int
   | And pf pf

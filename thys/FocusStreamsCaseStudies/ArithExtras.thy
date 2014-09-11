@@ -11,7 +11,7 @@ theory ArithExtras
 imports Main 
 begin 
 
-datatype_new natInf = Fin nat 
+datatype natInf = Fin nat 
                 | Infty                     ("\<infinity>")
 primrec
 nat2inat :: "nat list \<Rightarrow> natInf list"

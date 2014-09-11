@@ -23,7 +23,7 @@ text {*
 The types of System \fsub{} are represented by the following datatype:
 *}
 
-datatype_new type =
+datatype type =
     TVar nat
   | Top
   | Fun type type    (infixr "\<rightarrow>" 200)
@@ -36,7 +36,7 @@ where the @{term i}th element @{term "\<Gamma>\<langle>i\<rangle>"} corresponds 
 with index @{term i}.
 *}
 
-datatype_new binding = VarB type | TVarB type
+datatype binding = VarB type | TVarB type
 type_synonym env = "binding list"
 
 text {*
@@ -66,7 +66,7 @@ text {*
 The following datatype represents the terms of System \fsub{}:
 *}
 
-datatype_new trm =
+datatype trm =
     Var nat
   | Abs type trm   ("(3\<lambda>:_./ _)" [0, 10] 10)
   | TAbs type trm  ("(3\<lambda><:_./ _)" [0, 10] 10)

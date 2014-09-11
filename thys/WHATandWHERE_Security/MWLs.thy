@@ -13,7 +13,7 @@ begin
 
 --"SYNTAX"
 
-datatype_new ('exp, 'id) MWLsCom
+datatype ('exp, 'id) MWLsCom
   = Skip "nat" ("skip\<^bsub>_\<^esub>" [50] 70)
   | Assign "'id" "nat" "'exp"
        ("_:=\<^bsub>_\<^esub> _" [70,50,70] 70)

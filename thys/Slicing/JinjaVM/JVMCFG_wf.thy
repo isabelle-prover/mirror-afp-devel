@@ -6,8 +6,8 @@ text {*
 
 subsection {* Variables and Values *}
 
-datatype_new jinja_var = HeapVar "addr" | Stk "nat" "nat" | Loc "nat" "nat"
-datatype_new jinja_val = Object "obj option" | Primitive "val"
+datatype jinja_var = HeapVar "addr" | Stk "nat" "nat" | Loc "nat" "nat"
+datatype jinja_val = Object "obj option" | Primitive "val"
 
 fun state_val :: "state \<Rightarrow> jinja_var \<Rightarrow> jinja_val"
 where

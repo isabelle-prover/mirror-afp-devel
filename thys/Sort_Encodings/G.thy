@@ -8,11 +8,11 @@ subsection{* The guard translation *}
 
 text{* The extension of the function symbols with type witnesses: *}
 
-datatype_new ('fsym,'tp) efsym = Oldf 'fsym | Wit 'tp
+datatype ('fsym,'tp) efsym = Oldf 'fsym | Wit 'tp
 
 text{* The extension of the predicate symbols with type guards: *}
 
-datatype_new ('psym,'tp) epsym = Oldp 'psym | Guard 'tp
+datatype ('psym,'tp) epsym = Oldp 'psym | Guard 'tp
 
 text{* Extension of the partitioned infinitely augmented problem
 for dealing with guards: *}

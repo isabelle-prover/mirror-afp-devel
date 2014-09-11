@@ -124,7 +124,7 @@ text {* {\ldots} and further to regular languages. For the sake of
 simplicity we just copy in the axiomatisation of regular expressions
 by Krauss and Nipkow~\cite{krauss12regular}. *}
 
-datatype_new 'a rexp =
+datatype 'a rexp =
   Zero
 | One
 | Atom 'a

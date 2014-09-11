@@ -28,7 +28,7 @@ text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
 
 subsection "Datatype"
 
-datatype_new ('e, 'a) SkewBinomialTree = 
+datatype ('e, 'a) SkewBinomialTree = 
   Node 'e "'a::linorder" nat "('e , 'a) SkewBinomialTree list"
 
 type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
@@ -1729,7 +1729,7 @@ text {* We manually specialize the binomial tree to contain elements, that, in,
 *}
 
 
-datatype_new ('e, 'a) BsSkewBinomialTree = 
+datatype ('e, 'a) BsSkewBinomialTree = 
   BsNode "('e, 'a::linorder) BsSkewElem"
         nat "('e , 'a) BsSkewBinomialTree list"
 and

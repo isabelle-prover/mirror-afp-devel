@@ -140,7 +140,7 @@ Some new techniques are needed when formalising results about modal calculi.  A 
 
 The first of these is easy; instead of indexing formulae by a single type variable, we index on a pair of type variables, one which contains the propositional connectives, and one which contains the modal operators:
 *}
-datatype_new ('a, 'b) form = At "nat"
+datatype ('a, 'b) form = At "nat"
                                  | Compound "'a" "('a, 'b) form list"
                                  | Modal "'b" "('a, 'b) form list"
                                  | ff
@@ -148,7 +148,7 @@ datatype_new ('a, 'b) form = At "nat"
 datatype_compat form
 
 (*<*)
-datatype_new ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
 type_synonym ('a,'b) rule = "('a,'b) sequent list * ('a,'b) sequent"
 
@@ -2234,8 +2234,8 @@ qed
 
 
 
-datatype_new C = con
-datatype_new BD = BOX ("\<box>")| DIAMOND ("\<diamond>")
+datatype C = con
+datatype BD = BOX ("\<box>")| DIAMOND ("\<diamond>")
 
 type_synonym CDBD_form = "(C,BD) form"
 

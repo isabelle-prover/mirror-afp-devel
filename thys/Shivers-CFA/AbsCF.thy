@@ -34,7 +34,7 @@ The abstract variable environment is a partial map to sets in Shivers' dissertat
 type_synonym 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])
 type_synonym 'c a_closure = "lambda \<times> 'c \<abenv>" ("_ \<aclosure>" [1000])
 
-datatype_new 'c proc ("_ \<aproc>" [1000])
+datatype 'c proc ("_ \<aproc>" [1000])
   = PC "'c \<aclosure>"
   | PP prim
   | AStop

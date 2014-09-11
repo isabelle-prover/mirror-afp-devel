@@ -18,7 +18,7 @@ theory BasicDefs imports AuxLemmas begin
 
 subsection{* Edge kinds *}
 
-datatype_new 'state edge_kind = Update "'state \<Rightarrow> 'state"           ("\<Up>_")
+datatype 'state edge_kind = Update "'state \<Rightarrow> 'state"           ("\<Up>_")
                           | Predicate "'state \<Rightarrow> bool"      ("'(_')\<^sub>\<surd>")
 
 

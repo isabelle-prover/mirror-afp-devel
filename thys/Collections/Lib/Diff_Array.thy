@@ -5,7 +5,7 @@ theory Diff_Array imports
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-datatype_new 'a array = Array "'a list"
+datatype 'a array = Array "'a list"
 
 subsection {* primitive operations *}
 

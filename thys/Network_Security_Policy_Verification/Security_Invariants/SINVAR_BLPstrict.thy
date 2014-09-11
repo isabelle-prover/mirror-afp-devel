@@ -8,7 +8,7 @@ text{* All unclassified data sources must be labeled, default assumption: all is
 Warning: This is considered here an access control strategy.
 By default, everything is secret and one explicitly prohibits sending to non-secret hosts.*}
 
-datatype_new security_clearance = Unclassified | Confidential | Secret
+datatype security_clearance = Unclassified | Confidential | Secret
 
 (*total order*)
 instantiation security_clearance :: linorder

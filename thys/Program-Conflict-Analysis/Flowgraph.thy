@@ -24,7 +24,7 @@ text {*
 
 subsection "Definitions"
   
-datatype_new ('p,'ba) edgeAnnot = Base 'ba | Call 'p | Spawn 'p
+datatype ('p,'ba) edgeAnnot = Base 'ba | Call 'p | Spawn 'p
 type_synonym ('n,'p,'ba) edge = "('n \<times> ('p,'ba) edgeAnnot \<times> 'n)"
 
 record ('n,'p,'ba,'m) flowgraph_rec =

@@ -29,7 +29,7 @@ next
   thus "\<exists>s. s < r" ..
 qed
 
-datatype_new atom = Less nat nat | Eq nat nat
+datatype atom = Less nat nat | Eq nat nat
 
 fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less i j) = True" |

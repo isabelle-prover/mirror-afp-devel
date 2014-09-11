@@ -35,7 +35,7 @@ text {*
 subsection "Definitions"
 
 subsubsection "Monoid"
-datatype_new ('e, 'a) LP = Infty | LP 'e 'a
+datatype ('e, 'a) LP = Infty | LP 'e 'a
 
 fun p_unwrap :: "('e,'a) LP \<Rightarrow> ('e \<times> 'a)" where
   "p_unwrap (LP e a) = (e , a)"

@@ -12,14 +12,14 @@ text {* To model concurrency, each system call is split into several atomic step
         represented by an ``interrupt point" (which corresponds to the value of the program counter
         saved by the system when a thread is interrupted). *}
 
-datatype_new ipc_direction_t = SEND | RECV
-datatype_new ipc_stage_t = PREP | WAIT | BUF page_t
+datatype ipc_direction_t = SEND | RECV
+datatype ipc_stage_t = PREP | WAIT | BUF page_t
 
-datatype_new ev_consume_t = EV_CONSUME_ALL | EV_CONSUME_ONE
-datatype_new ev_wait_stage_t = EV_PREP | EV_WAIT | EV_FINISH
-datatype_new ev_signal_stage_t = EV_SIGNAL_PREP | EV_SIGNAL_FINISH
+datatype ev_consume_t = EV_CONSUME_ALL | EV_CONSUME_ONE
+datatype ev_wait_stage_t = EV_PREP | EV_WAIT | EV_FINISH
+datatype ev_signal_stage_t = EV_SIGNAL_PREP | EV_SIGNAL_FINISH
 
-datatype_new int_point_t =
+datatype int_point_t =
    SK_IPC ipc_direction_t ipc_stage_t thread_id_t page_t -- {* The thread is executing a sending / receiving IPC. *}
  | SK_EV_WAIT ev_wait_stage_t ev_consume_t -- {* The thread is waiting for an event. *}
  | SK_EV_SIGNAL ev_signal_stage_t thread_id_t -- {* The thread is sending an event. *}

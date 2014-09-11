@@ -30,12 +30,12 @@ where
 
 type_synonym word = nat  (* should really be machine words *)
 
-datatype_new loc =
+datatype loc =
   Name name
 | Var V
 
 text {* Local expressions *}
-datatype_new local_expr =
+datatype local_expr =
   Loc loc
 | Gid
 | Lid
@@ -44,13 +44,13 @@ datatype_new local_expr =
 | eNot local_expr              ("\<not>*")
 
 text {* Basic statements *}
-datatype_new basic_stmt =
+datatype basic_stmt =
   Assign loc local_expr
 | Read loc local_expr
 | Write local_expr local_expr
 
 text {* Statements *}
-datatype_new stmt =
+datatype stmt =
   Basic basic_stmt
 | Seq stmt stmt (infixl ";;" 50)
 | Local name stmt

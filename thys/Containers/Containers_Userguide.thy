@@ -80,7 +80,7 @@ text {*
 *}
 
 type_synonym vname = string
-datatype_new expr = Var vname | Lit int | Add expr expr
+datatype expr = Var vname | Lit int | Add expr expr
 fun vars :: "expr \<Rightarrow> vname set" where
   "vars (Var v) = {v}"
 | "vars (Lit i) = {}"
@@ -92,7 +92,7 @@ text {*
   To illustrate how to deal with type variables, we will use the following variant where variable names are polymorphic:
 *}
 
-datatype_new 'a expr' = Var' 'a | Lit' int | Add' "'a expr'" "'a expr'"
+datatype 'a expr' = Var' 'a | Lit' int | Add' "'a expr'" "'a expr'"
 fun vars' ::  "'a expr' \<Rightarrow> 'a set" where
   "vars' (Var' v) = {v}"
 | "vars' (Lit' i) = {}"
@@ -157,7 +157,7 @@ text {*
 
 derive (eq) ceq expr
 
-datatype_new example = Example
+datatype example = Example
 derive (no) ceq example
 
 text {*
@@ -1040,7 +1040,7 @@ text {*
 declare set_complement_code[code del]
 code_datatype Collect_set DList_set RBT_set Set_Monad
 (*<*)
-datatype_new minimal_sorts = Minimal_Sorts bool
+datatype minimal_sorts = Minimal_Sorts bool
 derive (eq) ceq minimal_sorts
 derive (no) corder minimal_sorts
 derive (monad) set_impl minimal_sorts

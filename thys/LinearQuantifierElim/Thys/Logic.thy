@@ -12,7 +12,7 @@ using de Bruijn notation. The syntax is parametric in the type of atoms. *}
 
 declare Let_def[simp]
 
-datatype_new 'a fm =
+datatype 'a fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
 

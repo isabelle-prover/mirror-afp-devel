@@ -9,7 +9,7 @@ subsection{* Extension policies *}
 
 text{* Extension policy: copy, true or false extension: *}
 
-datatype_new epol = Cext | Text | Fext
+datatype epol = Cext | Text | Fext
 
 text{* Problem with infinite knowledge and predicate-extension policy: *}
 

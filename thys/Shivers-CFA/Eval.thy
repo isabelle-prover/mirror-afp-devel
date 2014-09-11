@@ -22,7 +22,7 @@ text {*
 The set of semantic values consist of the integers, closures, primitive operations and a special value @{text Stop}. This is passed as an argument to the program and represents the terminal continuation. When this value occurs in the first position of a call, the program terminates.
 *}
 
-datatype_new d = DI int
+datatype d = DI int
            | DC closure
            | DP prim
            | Stop

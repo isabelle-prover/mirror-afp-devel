@@ -14,7 +14,7 @@ subsection {* Definitions *}
 
 subsubsection {* Data space for two Integer-Variables *}                  
 
-datatype_new d = V0 int
+datatype d = V0 int
              | V1 int
 
 primrec

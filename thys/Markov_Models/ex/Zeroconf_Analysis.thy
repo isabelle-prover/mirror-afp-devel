@@ -13,7 +13,7 @@ locale Zeroconf_Analysis =
   assumes p: "0 < p" "p < 1" and q: "0 < q" "q < 1"
   assumes r: "0 \<le> r" and e: "0 \<le> e"
 
-datatype_new zc_state = start 
+datatype zc_state = start 
                   | probe nat
                   | ok
                   | error

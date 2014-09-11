@@ -159,8 +159,8 @@ text {*
   The original specification uses the type @{typ "32 word"}.
 *}
 
-datatype_new val = Bool bool | Word "32 word"
-datatype_new expr = Lit val | LT expr expr | IF expr expr expr
+datatype val = Bool bool | Word "32 word"
+datatype expr = Lit val | LT expr expr | IF expr expr expr
 
 abbreviation (input) word :: "32 word \<Rightarrow> expr" where "word i \<equiv> Lit (Word i)"
 abbreviation (input) bool :: "bool \<Rightarrow> expr" where "bool i \<equiv> Lit (Bool i)"

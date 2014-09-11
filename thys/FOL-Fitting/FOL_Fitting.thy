@@ -40,11 +40,11 @@ The datatypes of terms and formulae in {\em de Bruijn notation}
 are defined as follows:
 *}
   
-datatype_new (plugins del: size) 'a "term" =
+datatype (plugins del: size) 'a "term" =
     Var nat
   | App 'a "'a term list"
 
-datatype_new (plugins del: size) ('a, 'b) form =
+datatype (plugins del: size) ('a, 'b) form =
     FF
   | TT
   | Pred 'b "'a term list"
@@ -1319,7 +1319,7 @@ for trees once and for all. In applications, we then only have to write
 functions for converting between trees and concrete datatypes.
 *}
 
-datatype_new btree = Leaf nat | Branch btree btree
+datatype btree = Leaf nat | Branch btree btree
 
 function
   diag_btree :: "nat \<Rightarrow> btree"
@@ -1749,7 +1749,7 @@ but without variables. We also define functions for converting between
 closed terms and Herbrand terms.
 *}
 
-datatype_new 'a hterm = HApp 'a "'a hterm list"
+datatype 'a hterm = HApp 'a "'a hterm list"
 
 primrec
   term_of_hterm :: "'a hterm \<Rightarrow> 'a term"

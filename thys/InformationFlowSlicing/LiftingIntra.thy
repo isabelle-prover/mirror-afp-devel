@@ -16,7 +16,7 @@ subsection {* Liftings *}
 
 subsubsection {* The datatypes *}
 
-datatype_new 'node LDCFG_node = Node 'node
+datatype 'node LDCFG_node = Node 'node
   | NewEntry
   | NewExit
 

@@ -9,14 +9,14 @@ subsection{*SecurityInvariant DomainHierarchyNG*}
 subsubsection {* Datatype Domain Hierarchy *}
 
   text{* A fully qualified domain name for an entity in a tree-like hierarchy *}
-    datatype_new domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
+    datatype domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
                                Leaf --"leaf of the tree, end of all domainNames"
     
     text {*Example: the CoffeeMachine of I8 *}
     value "''i8''--''CoffeeMachine''--Leaf"
 
   text{* A tree strucuture to represent the general hierarchy, i.e. possible domainNameDepts*}
-    datatype_new domainTree = Department 
+    datatype domainTree = Department 
         "string"  --"division"
         "domainTree list"  --"sub divisions"
 
@@ -328,7 +328,7 @@ subsubsection {* Datatype Domain Hierarchy *}
     
 
 
-  datatype_new domainName = DN domainNameDept | Unassigned
+  datatype domainName = DN domainNameDept | Unassigned
 
 
   subsubsection {*Makeing it a complete Lattice*}
@@ -434,7 +434,7 @@ subsubsection {* Datatype Domain Hierarchy *}
 (*TRUST*)
 
 
-  datatype_new domainNameTrust = DN "(domainNameDept \<times> nat)" | Unassigned
+  datatype domainNameTrust = DN "(domainNameDept \<times> nat)" | Unassigned
 
     (*transitivity only if trustA \<ge> trust C*)
     fun leq_domainNameTrust :: "domainNameTrust \<Rightarrow> domainNameTrust \<Rightarrow> bool" (infixr "\<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t" 65)  where 

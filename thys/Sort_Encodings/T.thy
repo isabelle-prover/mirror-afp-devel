@@ -8,7 +8,7 @@ subsection{* The tag translation *}
 
 text{* The extension of the function symbols with type tags and type witnesses: *}
 
-datatype_new ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
+datatype ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
 
 
 context ProblemIkTpart

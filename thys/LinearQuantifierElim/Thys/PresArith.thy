@@ -10,7 +10,7 @@ declare iprod_assoc[simp]
 
 subsection{*Syntax*}
 
-datatype_new atom =
+datatype atom =
   Le int "int list" | Dvd int int "int list" | NDvd int int "int list"
 
 fun divisor :: "atom \<Rightarrow> int" where

@@ -6,11 +6,11 @@ theory AWN_Term_Graph
 imports AWN_Cterms
 begin
 
-datatype_new ('p, 'l) node =
+datatype ('p, 'l) node =
     RootNode 'p
   | InternalNode 'l
 
-datatype_new ('p, 'l) link =
+datatype ('p, 'l) link =
     ILink "('p, 'l) node" "('p, 'l) node"
   | ELink "('p, 'l) node" "('p, 'l) node"
 

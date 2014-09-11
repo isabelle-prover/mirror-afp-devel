@@ -11,19 +11,19 @@ theory DataDependenciesConcreteValues
   imports Main
 begin
 
-datatype_new CSet = sA1| sA2| sA3| sA4| sA5| sA6| sA7| sA8| sA9|
+datatype CSet = sA1| sA2| sA3| sA4| sA5| sA6| sA7| sA8| sA9|
                sA11| sA12| sA21| sA22| sA23|  sA31| sA32| sA41| sA42|
                sA71| sA72| sA81| sA82| sA91| sA92| sA93|
                sS1| sS2| sS3| sS4| sS5| sS6| sS7| sS8| sS9| sS10| sS11|
                sS12 |sS13| sS14| sS15| sS1opt | sS4opt | sS7opt | sS11opt
 
-datatype_new chanID = data1| data2| data3| data4| data5| data6| data7| 
+datatype chanID = data1| data2| data3| data4| data5| data6| data7| 
 data8| data9| data10| data11| data12| data13| data14| data15| 
 data16| data17| data18| data19| data20| data21| data22| data23| data24
 
-datatype_new varID = stA1 | stA2 | stA4 | stA6
+datatype varID = stA1 | stA2 | stA4 | stA6
 
-datatype_new AbstrLevelsID = level0 | level1 | level2 | level3
+datatype AbstrLevelsID = level0 | level1 | level2 | level3
 
 --"function IN maps component ID to the set of its input channels"
 fun IN ::  "CSet \<Rightarrow> chanID set"

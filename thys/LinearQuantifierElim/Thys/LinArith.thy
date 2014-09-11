@@ -12,7 +12,7 @@ subsection{*Basics*}
 
 subsubsection{*Syntax and Semantics*}
 
-datatype_new atom = Less real "real list" | Eq real "real list"
+datatype atom = Less real "real list" | Eq real "real list"
 
 fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less r rs) = True" |

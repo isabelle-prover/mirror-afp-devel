@@ -8,7 +8,7 @@ begin
 
 --"When interpreting, we have to instantiate the type for domains. As an example, we take a type containing 'low' and 'high' as domains."
 
-datatype_new Dom = low | high
+datatype Dom = low | high
 
 instantiation Dom :: order
 begin

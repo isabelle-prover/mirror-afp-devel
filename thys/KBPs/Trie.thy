@@ -34,7 +34,7 @@ lemma map_of_update_with:
 
 text {* definitions for tries *}
 
-datatype_new ('key, 'val) trie = Trie "'val option" "('key \<times> ('key, 'val) trie) list"
+datatype ('key, 'val) trie = Trie "'val option" "('key \<times> ('key, 'val) trie) list"
 
 abbreviation
   trie_empty :: "('key, 'val) trie"

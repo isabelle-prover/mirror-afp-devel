@@ -6,7 +6,7 @@ begin
 
 subsection {* Basic Definitions *}
 
-datatype_new comp_res = LESS | EQUAL | GREATER
+datatype comp_res = LESS | EQUAL | GREATER
 
 consts i_comp_res :: interface
 abbreviation "comp_res_rel \<equiv> Id :: (comp_res \<times> _) set"

@@ -1438,7 +1438,7 @@ subsection {* Gabow's Datastructure *}
 
 subsubsection {* Definition and Invariant *}
 
-datatype_new node_state = STACK nat | DONE
+datatype node_state = STACK nat | DONE
 
 type_synonym 'v oGS = "'v \<rightharpoonup> node_state"
 

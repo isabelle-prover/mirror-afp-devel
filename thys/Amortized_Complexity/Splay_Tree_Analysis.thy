@@ -569,7 +569,7 @@ fun t_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
     if x=a then case l of Leaf \<Rightarrow> 0 | _ \<Rightarrow> t_splay_max l
     else 0)"
 
-datatype_new 'a op\<^sub>s\<^sub>t = Splay 'a | Insert 'a | Delete 'a
+datatype 'a op\<^sub>s\<^sub>t = Splay 'a | Insert 'a | Delete 'a
 
 fun nxt\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "nxt\<^sub>s\<^sub>t (Splay a) t = splay a t" |

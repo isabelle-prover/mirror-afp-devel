@@ -18,7 +18,7 @@ text {* We prove correctness of operations on
 section {* Tree Definition *}
 (*============================================================*)
 
-datatype_new 'a Tree = Tip | T "'a Tree" 'a "'a Tree"
+datatype 'a Tree = Tip | T "'a Tree" 'a "'a Tree"
 
 primrec
   setOf :: "'a Tree => 'a set" 

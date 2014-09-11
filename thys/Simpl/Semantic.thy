@@ -33,7 +33,7 @@ notation
 restrict_map  ("_|\<^bsub>_\<^esub>" [90, 91] 90)
 
 
-datatype_new ('s,'f) xstate = Normal 's | Abrupt 's | Fault 'f | Stuck
+datatype ('s,'f) xstate = Normal 's | Abrupt 's | Fault 'f | Stuck
 
 definition isAbr::"('s,'f) xstate \<Rightarrow> bool"
   where "isAbr S = (\<exists>s. S=Abrupt s)"

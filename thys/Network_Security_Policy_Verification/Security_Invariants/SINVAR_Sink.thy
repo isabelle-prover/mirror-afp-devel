@@ -4,7 +4,7 @@ begin
 
 subsection {* SecurityInvariant Sink (IFS)*}
 
-datatype_new node_config = Sink | SinkPool | Unassigned
+datatype node_config = Sink | SinkPool | Unassigned
 
 definition default_node_properties :: "node_config"
   where  "default_node_properties = Unassigned"

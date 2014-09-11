@@ -123,7 +123,7 @@ text {*
 *}
 
 
-datatype_new 'a nres = FAILi | RES "'a set"
+datatype 'a nres = FAILi | RES "'a set"
 text {*
   @{text FAILi} is only an internal notation, that should not be exposed to 
   the user.

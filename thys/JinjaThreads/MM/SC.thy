@@ -20,7 +20,7 @@ type_synonym
 type_synonym
   cells = "addr val list"
 
-datatype_new heapobj
+datatype heapobj
   = Obj cname fields
     -- "class instance with class name and fields"
 

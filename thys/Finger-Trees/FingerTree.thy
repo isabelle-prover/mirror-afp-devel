@@ -48,19 +48,19 @@ text {*
   Nodes: Non empty 2-3 trees, with all elements stored within the leafs plus a 
   cached annotation 
   *}
-datatype_new ('e,'a) Node = Tip 'e 'a |
+datatype ('e,'a) Node = Tip 'e 'a |
   Node2 'a "('e,'a) Node" "('e,'a) Node" | 
   Node3 'a "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
   text {* Digit: one to four ordered Nodes *}
-datatype_new ('e,'a) Digit = One "('e,'a) Node" |
+datatype ('e,'a) Digit = One "('e,'a) Node" |
    Two "('e,'a) Node" "('e,'a) Node" |
    Three "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" |
    Four "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
   text {* FingerTreeStruc: 
     The empty tree, a single node or some nodes and a deeper tree*}
-datatype_new ('e, 'a) FingerTreeStruc = 
+datatype ('e, 'a) FingerTreeStruc = 
   Empty |
   Single "('e,'a) Node" |
   Deep 'a "('e,'a) Digit" "('e,'a) FingerTreeStruc" "('e,'a) Digit"

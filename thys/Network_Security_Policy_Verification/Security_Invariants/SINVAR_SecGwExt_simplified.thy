@@ -14,7 +14,7 @@ Rather than maintaining this file, just delete it!
 subsection {* SecurityInvariant SecurityGatewayExtended simplified*}
 text {* A simplified version for demonstration purposes. Do not use in real world *}
 
-datatype_new secgw_member = SecurityGateway | SecurityGatewayIN | DomainMember | Unassigned
+datatype secgw_member = SecurityGateway | SecurityGatewayIN | DomainMember | Unassigned
 
 definition default_node_properties :: "secgw_member"
   where  "default_node_properties \<equiv> Unassigned"

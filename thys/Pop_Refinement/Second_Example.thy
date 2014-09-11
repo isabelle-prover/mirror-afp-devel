@@ -124,7 +124,7 @@ type_synonym name = string
 text {* Expressions are built out of
 constants, variables, and addition operations. *}
 
-datatype_new expr = Const nat | Var name | Add expr expr
+datatype expr = Const nat | Var name | Add expr expr
 
 text {* Statements are built out of
 deterministic assignments,
@@ -132,7 +132,7 @@ non-deterministic assignments,
 conditionals,
 and sequencing. *}
 
-datatype_new stmt =
+datatype stmt =
   Assign name expr |
   Random name |
   IfEq expr expr stmt stmt |

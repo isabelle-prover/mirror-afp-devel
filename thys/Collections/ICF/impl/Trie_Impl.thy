@@ -9,7 +9,7 @@ begin
 
 subsection {* Type definition and primitive operations *}
 
-datatype_new ('key, 'val) trie = Trie "'val option" "('key \<times> ('key, 'val) trie) list"
+datatype ('key, 'val) trie = Trie "'val option" "('key \<times> ('key, 'val) trie) list"
 
 lemma trie_induct [case_names Trie, induct type]:
   "(\<And>vo kvs. (\<And>k t. (k, t) \<in> set kvs \<Longrightarrow> P t) \<Longrightarrow> P (Trie vo kvs)) \<Longrightarrow> P t"

@@ -17,7 +17,7 @@ We must be careful when restricting sequents to single succedents.  If we have s
 Rather than taking this route, we instead restrict to single formulae in the succedents of sequents.  This raises its own problems, since now how does one represent the empty succedent?  We introduce a dummy formula \texttt{Em}, which will stand for the empty formula:
 *}
 
-datatype_new 'a form = At "nat"
+datatype 'a form = At "nat"
                         | Compound "'a" "'a form list"
                         | ff
                         | Em
@@ -28,7 +28,7 @@ abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
 abbreviation multiset_empty ("\<Empt>" 75) where
   "\<Empt> \<equiv> {#}"
 
-datatype_new 'a sequent = Sequent "('a form) multiset" "('a form)" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype 'a sequent = Sequent "('a form) multiset" "('a form)" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite
@@ -1020,7 +1020,7 @@ qed
 
 
 
-datatype_new cdi = con | dis | imp
+datatype cdi = con | dis | imp
 
 type_synonym cdi_form = "cdi form"
 

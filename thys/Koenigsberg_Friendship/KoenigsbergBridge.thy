@@ -112,10 +112,10 @@ qed
 section{*Specific case of the Konigsberg Bridge Problem*}
 
 (*to denote the four landmasses*)
-datatype_new kon_node = a | b | c | d
+datatype kon_node = a | b | c | d
 
 (*to denote the seven bridges*)
-datatype_new kon_bridge = ab1 | ab2 | ac1 | ac2 | ad1 | bd1 | cd1 
+datatype kon_bridge = ab1 | ab2 | ac1 | ac2 | ad1 | bd1 | cd1 
 
 definition kon_graph :: "(kon_node,kon_bridge) graph" where
   "kon_graph\<equiv>\<lparr>nodes={a,b,c,d}, 

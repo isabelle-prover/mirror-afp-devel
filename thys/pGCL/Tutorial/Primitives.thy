@@ -17,7 +17,7 @@ subsection {* The Basics *}
 text {* Imagine flipping a pair of fair coins: @{term a} and @{term b}. Using a record type for the
 state allows a number of syntactic niceties, which we describe shortly: *}
 
-datatype_new coin = Heads | Tails
+datatype coin = Heads | Tails
 
 record coins =
   a :: coin

@@ -8,7 +8,7 @@ subsubsection{*Indistinguishability relations*}
 
 text{*We have the usual two security types.*}
 
-datatype_new TP = low | high
+datatype TP = low | high
 
 text{*Global contexts assigns security types to program
 variables and field names.*}

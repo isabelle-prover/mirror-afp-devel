@@ -6,7 +6,7 @@ begin
 
 section {* Toy instantiation: Propositional Logic *}
 
-datatype_new fmla = Atom nat | Neg fmla | Conj fmla fmla
+datatype fmla = Atom nat | Neg fmla | Conj fmla fmla
 
 primrec max_depth where
   "max_depth (Atom _) = 0"
@@ -82,7 +82,7 @@ proof (intro equalityI subsetI UNIV_I)
   qed
 qed
 
-datatype_new rule = Idle | Ax nat | NegL fmla | NegR fmla | ConjL fmla fmla | ConjR fmla fmla
+datatype rule = Idle | Ax nat | NegL fmla | NegR fmla | ConjL fmla fmla | ConjR fmla fmla
 
 abbreviation "mkRules f \<equiv> smap f fmlas"
 abbreviation "mkRulePairs f \<equiv> smap (split f) (sproduct fmlas fmlas)"

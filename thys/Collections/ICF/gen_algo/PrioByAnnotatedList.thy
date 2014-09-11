@@ -25,7 +25,7 @@ text {*
 
 subsection "Definitions"
 subsubsection "Monoid"
-datatype_new ('e, 'a) Prio = Infty | Prio 'e 'a
+datatype ('e, 'a) Prio = Infty | Prio 'e 'a
 
 fun p_unwrap :: "('e,'a) Prio \<Rightarrow> ('e \<times> 'a)" where
 "p_unwrap (Prio e a) = (e , a)"

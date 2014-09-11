@@ -8,7 +8,7 @@ text{*An access control list strategy that says that hosts must only transitivel
 text{*Warning: this transitive model has exponential computational complexity*}
 
 
-datatype_new 'v access_list = AccessList "'v list"
+datatype 'v access_list = AccessList "'v list"
 
 definition default_node_properties :: "'v access_list"
   where  "default_node_properties \<equiv> AccessList []"

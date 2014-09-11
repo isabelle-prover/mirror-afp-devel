@@ -47,8 +47,8 @@ text {*
 
 (* Workaround for bug in Haskell-code generator: Type variables have to be 
   lower-case *)
-(* datatype_new ('Q,'L) ta_rule = RULE 'Q 'L "'Q list" ("_ \<rightarrow> _ _") *)
-datatype_new ('q,'l) ta_rule = RULE 'q 'l "'q list" ("_ \<rightarrow> _ _")
+(* datatype ('Q,'L) ta_rule = RULE 'Q 'L "'Q list" ("_ \<rightarrow> _ _") *)
+datatype ('q,'l) ta_rule = RULE 'q 'l "'q list" ("_ \<rightarrow> _ _")
 
 record ('Q,'L) tree_automaton_rec =
   ta_initial :: "'Q set"
@@ -709,7 +709,7 @@ qed
 
 text "The union-algorithm may wrap the states of the first and second automaton 
       in order to make them disjoint"
-datatype_new ('q1,'q2) ustate_wrapper = USW1 'q1 | USW2 'q2 
+datatype ('q1,'q2) ustate_wrapper = USW1 'q1 | USW2 'q2 
 
 lemma usw_disjoint[simp]: 
   "USW1 ` X \<inter> USW2 ` Y = {}"

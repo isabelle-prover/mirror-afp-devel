@@ -7,7 +7,7 @@ type_synonym literal = "nat \<times> bool"
 type_synonym clause = "literal set"
 type_synonym cnf = "clause set"
 
-datatype_new bexp
+datatype bexp
   = Var nat
   | not bexp
   | Or bexp bexp (infixl "or" 110)

@@ -27,11 +27,11 @@ typedecl Addr
 
 text{*A reference is either null or an address.*}
 
-datatype_new Ref = Nullref | Loc Addr
+datatype Ref = Nullref | Loc Addr
 
 text{* Values are either integer numbers or references.*}
 
-datatype_new Val = RVal Ref | IVal int
+datatype Val = RVal Ref | IVal int
 
 text{*The type of (instruction) labels is fixed, since the operational
 semantics increments the program counter after each instruction.*}
@@ -48,7 +48,7 @@ instruction @{text "binop f"} whose semantics is to invoke @{text "f"}
 on the two topmost values on the operand stack and replace them with
 the result.  Similarly for @{text "unop f"}. *}
 
-datatype_new Instr =
+datatype Instr =
   const Val
 | dup
 | pop

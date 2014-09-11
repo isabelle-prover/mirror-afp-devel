@@ -204,7 +204,7 @@ With the final theorem, it suffices to show that @{text candidate} behaves like
 @{text canditate} is semantically equivalent to @{text scanl1}.
  *}
 
-datatype_new three = Zero | One | Two
+datatype three = Zero | One | Two
 
 
 

@@ -27,7 +27,7 @@ type_synonym cdl_cnode_index = nat
 type_synonym cdl_cap_ref = "cdl_object_id \<times> cdl_cnode_index"
 
 (* The possible access-control rights that exist in the system. *)
-datatype_new cdl_right = AllowRead | AllowWrite | AllowGrant
+datatype cdl_right = AllowRead | AllowWrite | AllowGrant
 
 
 (*
@@ -43,7 +43,7 @@ datatype_new cdl_right = AllowRead | AllowWrite | AllowGrant
  * This is a simplified, cut-down version of this datatype for 
  * demonstration purposes.
  *)
-datatype_new cdl_cap =
+datatype cdl_cap =
     NullCap
   | EndpointCap cdl_object_id "cdl_right set"
   | CNodeCap cdl_object_id
@@ -76,7 +76,7 @@ record cdl_cnode =
  *
  * Again, a simplified version of the real datatype.
  *)
-datatype_new cdl_object =
+datatype cdl_object =
     Endpoint
   | Tcb cdl_tcb
   | CNode cdl_cnode
@@ -119,7 +119,7 @@ record cdl_state =
 
 
 (* Kernel objects types. *)
-datatype_new cdl_object_type =
+datatype cdl_object_type =
     EndpointType
   | TcbType
   | CNodeType

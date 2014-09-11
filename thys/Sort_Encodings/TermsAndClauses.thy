@@ -9,19 +9,19 @@ for the latter, the signature will fix a variable typing. *}
 
 text{* Terms: *}
 
-datatype_new 'fsym trm =
+datatype 'fsym trm =
   Var var |
   Fn 'fsym "'fsym trm list"
 
 text{* Atomic formulas (atoms): *}
 
-datatype_new ('fsym, 'psym) atm =
+datatype ('fsym, 'psym) atm =
   Eq "'fsym trm" "'fsym trm" |
   Pr 'psym "'fsym trm list"
 
 text{* Literals: *}
 
-datatype_new ('fsym, 'psym) lit =
+datatype ('fsym, 'psym) lit =
   Pos "('fsym, 'psym) atm" |
   Neg "('fsym, 'psym) atm"
 

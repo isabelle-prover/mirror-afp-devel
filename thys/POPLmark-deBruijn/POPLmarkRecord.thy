@@ -37,7 +37,7 @@ old_datatype type =
 type_synonym fldT = "name \<times> type"
 type_synonym rcdT = "(name \<times> type) list"
 
-datatype_new binding = VarB type | TVarB type
+datatype binding = VarB type | TVarB type
 
 type_synonym env = "binding list"
 

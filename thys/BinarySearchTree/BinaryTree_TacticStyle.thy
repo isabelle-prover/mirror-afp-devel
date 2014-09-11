@@ -17,7 +17,7 @@ text {* This example theory illustrates automated proofs of correctness
 section {* Definition of a sorted binary tree *}
 (*============================================================*)
 
-datatype_new tree = Tip | Nd tree nat tree
+datatype tree = Tip | Nd tree nat tree
 
 primrec set_of :: "tree => nat set"
 -- {* The set of nodes stored in a tree. *}

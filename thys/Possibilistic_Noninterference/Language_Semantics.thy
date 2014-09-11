@@ -5,7 +5,7 @@ theory Language_Semantics imports Interface begin
 
 subsection {* Syntax and operational semantics *}
 
-datatype_new ('test,'atom) com = 
+datatype ('test,'atom) com = 
   Atm 'atom | 
   Seq "('test,'atom) com" "('test,'atom) com" 
     ("_ ;; _"  [60, 61] 60) |

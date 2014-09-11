@@ -79,15 +79,15 @@ qed
 
 subsection {* Object-terms in Locally Nameless representation notation, beta-reduction and substitution *}
 
-datatype_new type = Object "Label -~> (type \<times> type)"
+datatype type = Object "Label -~> (type \<times> type)"
 
-datatype_new bVariable = Self nat | Param nat
+datatype bVariable = Self nat | Param nat
 type_synonym fVariable = string
 (* each binder introduces 2 variables: self and parameter *)
 (* thus to each deBruijn index (nat) correspond 2 variables of the same depth *)
 
 subsubsection {* Enriched Sigma datatype of objects *}
-datatype_new sterm =
+datatype sterm =
   Bvar bVariable             (* bound variable -- as deBruijn index *)
 | Fvar fVariable             (* free variable *)
 | Obj "Label -~> sterm" type (* An object maps labels to terms and has a type *)

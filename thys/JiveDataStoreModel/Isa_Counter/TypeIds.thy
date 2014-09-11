@@ -26,11 +26,11 @@ The datatype CTypeId must contain a constructor called \texttt{Object} because s
 proofs in the Subtype theory rely on it.
 *}
 
-datatype_new CTypeId = CounterImpl | UndoCounter 
+datatype CTypeId = CounterImpl | UndoCounter 
                  | Object | Exception | ClassCastException | NullPointerException
   -- {* The last line contains the classes that exist in every program by default. *}
-datatype_new ITypeId = Counter
-datatype_new ATypeId = Dummy
+datatype ITypeId = Counter
+datatype ATypeId = Dummy
   -- {* we cannot have an empty type. *}
 
 text {* 

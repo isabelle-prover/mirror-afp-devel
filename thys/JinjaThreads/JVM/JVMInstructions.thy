@@ -10,7 +10,7 @@ imports
   "../Common/BinOp"
 begin
 
-datatype_new 'addr instr 
+datatype 'addr instr 
   = Load nat                  -- "load from local variable"
   | Store nat                 -- "store into local variable"
   | Push "'addr val"          -- "push a value (constant)"

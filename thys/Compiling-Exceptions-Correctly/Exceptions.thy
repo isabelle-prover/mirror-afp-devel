@@ -10,7 +10,7 @@ begin
 
 subsection{*The source language*}
 
-datatype_new expr = Val int | Add expr expr | Throw | Catch expr expr
+datatype expr = Val int | Add expr expr | Throw | Catch expr expr
 
 primrec eval :: "expr \<Rightarrow> int option"
 where
@@ -24,10 +24,10 @@ where
 
 subsection{*The target language*}
 
-datatype_new instr =
+datatype instr =
   Push int | ADD | THROW | Mark nat | Unmark | Label nat | Jump nat
 
-datatype_new item = VAL int | HAN nat
+datatype item = VAL int | HAN nat
 
 type_synonym code = "instr list"
 type_synonym stack = "item list"

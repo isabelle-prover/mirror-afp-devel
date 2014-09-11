@@ -9,7 +9,7 @@ begin
 --"SYNTAX"
 
 -- "Commands for the multi-threaded while language with fork (to instantiate 'com)"
-datatype_new ('exp, 'id) MWLfCom 
+datatype ('exp, 'id) MWLfCom 
   = Skip ("skip")
   | Assign "'id" "'exp" 
        ("_:=_" [70,70] 70)

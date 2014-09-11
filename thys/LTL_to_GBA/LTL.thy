@@ -9,7 +9,7 @@ subsection "LTL formulas"
 
 subsubsection {* Syntax *}
 
-datatype_new
+datatype
  'a ltl = LTLTrue      
        | LTLFalse      
        | LTLProp 'a    
@@ -62,7 +62,7 @@ text {* In this section, we provide a formulation of LTL with
   explicit syntactic sugar deeply embedded. This formalization
   serves as a reference semantics.
 *}
-datatype_new
+datatype
  'a ltlc = LTLcTrue 
          | LTLcFalse
          | LTLcProp 'a  
@@ -877,7 +877,7 @@ text{*
 *}
 
 
-datatype_new
+datatype
   'a ltln = LTLnTrue  
        | LTLnFalse    
        | LTLnProp 'a    

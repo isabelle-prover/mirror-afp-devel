@@ -22,7 +22,7 @@ where
   "eval_bool e \<tau> = (eval_word e \<tau> \<noteq> 0)"
 
 text {* Abstraction level: none, equality abstraction, or adversarial abstraction *}
-datatype_new abs_level = No_Abst | Eq_Abst | Adv_Abst
+datatype abs_level = No_Abst | Eq_Abst | Adv_Abst
 
 text {* The rules of Figure 4, plus two additional rules 
   for adversarial abstraction (Fig 7b) *}

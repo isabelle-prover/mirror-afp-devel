@@ -38,7 +38,7 @@ derive linorder prod
 
 subsection "Without nested recursion"
 
-datatype_new 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree"
+datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree"
 
 derive linorder bintree
 derive hashable bintree
@@ -46,7 +46,7 @@ derive countable bintree
 
 subsection "Using other datatypes"
 
-datatype_new nat_list_list = NNil | CCons "nat list" nat_list_list
+datatype nat_list_list = NNil | CCons "nat list" nat_list_list
 
 derive linorder nat_list_list
 derive hashable nat_list_list
@@ -54,7 +54,7 @@ derive countable nat_list_list
 
 subsection "Explicit mutual recursion"
 
-datatype_new
+datatype
   'a mtree = MEmpty | MNode 'a "'a mtree_list" and
   'a mtree_list = MNil | MCons "'a mtree" "'a mtree_list"
 
@@ -64,7 +64,7 @@ derive countable mtree
 
 subsection "Implicit mutual recursion"
 
-datatype_new 'a tree = Empty | Node 'a "'a tree list"
+datatype 'a tree = Empty | Node 'a "'a tree list"
 
 datatype_compat tree
 
@@ -72,7 +72,7 @@ derive linorder tree
 derive hashable tree
 derive countable tree
 
-datatype_new 'a ttree = TEmpty | TNode 'a "'a ttree list tree"
+datatype 'a ttree = TEmpty | TNode 'a "'a ttree list tree"
 
 datatype_compat ttree
 
@@ -82,11 +82,11 @@ derive countable ttree
 
 subsection "Examples from IsaFoR"
 
-datatype_new ('f,'v) "term" = Var 'v | Fun 'f "('f,'v) term list"
+datatype ('f,'v) "term" = Var 'v | Fun 'f "('f,'v) term list"
 
 datatype_compat "term"
 
-datatype_new ('f, 'l) lab =
+datatype ('f, 'l) lab =
   Lab "('f, 'l) lab" 'l
 | FunLab "('f, 'l) lab" "('f, 'l) lab list"
 | UnLab 'f
@@ -107,7 +107,7 @@ The following datatype has nested indirect recursion, mutual recursion and
 uses other datatypes.
 *}
 
-datatype_new ('a, 'b) complex = 
+datatype ('a, 'b) complex = 
   C1 nat "'a ttree" |
   C2 "('a, 'b) complex list tree tree" 'b "('a, 'b) complex" "('a, 'b) complex2 ttree list"
 and ('a, 'b) complex2 = D1 "('a, 'b) complex ttree"

@@ -11,7 +11,7 @@ subsection{* Preliminaries *}
 
 text {* Transitions *}
 
-datatype_new ('state,'act,'out) trans =
+datatype ('state,'act,'out) trans =
 Trans (srcOf: 'state) (actOf: 'act) (outOf: 'out) (tgtOf: 'state)
 
 

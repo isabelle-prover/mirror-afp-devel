@@ -9,7 +9,7 @@ imports
   "../Common/BinOp"
 begin
 
-datatype_new (dead 'a, dead 'b, dead 'addr) exp
+datatype (dead 'a, dead 'b, dead 'addr) exp
   = new cname      -- "class instance creation"
   | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
   | Cast ty "('a,'b,'addr) exp"      -- "type cast"

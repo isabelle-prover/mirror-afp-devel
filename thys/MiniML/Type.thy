@@ -11,10 +11,10 @@ imports Maybe
 begin
 
 -- "type expressions"
-datatype_new "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
+datatype "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
 
 -- "type schemata"
-datatype_new type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr "=->" 70)
+datatype type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr "=->" 70)
 
 -- "embedding types into type schemata"
 primrec mk_scheme :: "typ => type_scheme" where

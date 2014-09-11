@@ -9,7 +9,7 @@ theory Expr
 imports "Update"
 begin
 
-datatype_new ('s,'e)expr = true
+datatype ('s,'e)expr = true
                         | In 's
                         | En 'e
                         | NOT "('s,'e)expr"
@@ -41,7 +41,7 @@ primrec
 
 (* atomar propositions for Sequential Automata, will be necessary for CTL-interpretation *)
 
-datatype_new ('s, 'e, dead 'd)atomar =
+datatype ('s, 'e, dead 'd)atomar =
                           TRUE
                           | FALSE
                           | IN 's

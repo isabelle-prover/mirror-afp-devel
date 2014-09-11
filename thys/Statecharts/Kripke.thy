@@ -65,7 +65,7 @@ definition
              (nat => 's) set" where
   "Paths M S == { p . S = p (0::nat) \<and> (ALL i. (p i, p (i+1)) \<in> (StepRel M))}"
 
-datatype_new ('s,'a) ctl =  Atom "'a"
+datatype ('s,'a) ctl =  Atom "'a"
                           | AND "('s,'a) ctl" "('s,'a) ctl"
                           | OR  "('s,'a) ctl" "('s,'a) ctl"
                           | IMPLIES "('s,'a) ctl" "('s,'a) ctl"

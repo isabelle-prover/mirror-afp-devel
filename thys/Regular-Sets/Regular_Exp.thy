@@ -6,7 +6,7 @@ theory Regular_Exp
 imports Regular_Set
 begin
 
-datatype_new (atoms: 'a) rexp =
+datatype (atoms: 'a) rexp =
   is_Zero: Zero |
   is_One: One |
   Atom 'a |

@@ -19,7 +19,7 @@ In this paper, we give an overview of some results about invertibility in sequen
 A \textit{formula} is either a propositional variable, the constant $\bot$, or a connective applied to a list of formulae.  We thus have a type variable indexing formulae, where the type variable will be a set of connectives.  In the usual way, we index propositional variables by use of natural numbers.  So, formulae are given by the datatype:
 *}
 
-datatype_new 'a form = At "nat"
+datatype 'a form = At "nat"
                         | Compound "'a" "'a form list"
                         | ff
 
@@ -34,7 +34,7 @@ text{*
    --------------------------------------------
    -------------------------------------------- *)
 (* Try a small example with conjunction and disjunction *)
-datatype_new Gp = con | dis | imp
+datatype Gp = con | dis | imp
 type_synonym Gp_form = "Gp form"
 
 abbreviation con_form (infixl "\<and>*" 80) where
@@ -57,7 +57,7 @@ abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
 abbreviation multiset_empty ("\<Empt>" 75) where
   "\<Empt> \<equiv> {#}"
 
-datatype_new 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite

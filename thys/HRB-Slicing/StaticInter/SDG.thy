@@ -4,7 +4,7 @@ theory SDG imports CFGExit_wf Postdomination begin
 
 subsection {* The nodes of the SDG *}
 
-datatype_new 'node SDG_node = 
+datatype 'node SDG_node = 
     CFG_node 'node
   | Formal_in  "'node \<times> nat"
   | Formal_out "'node \<times> nat"

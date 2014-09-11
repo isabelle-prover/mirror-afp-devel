@@ -40,7 +40,7 @@ qed
 
 subsection {* Definition of the Gossip-Broadcast *}
 
-datatype_new state = listening | sending | sleeping
+datatype state = listening | sending | sleeping
 
 lemma state_UNIV: "UNIV = {listening, sending, sleeping}"
   by (auto intro: state.exhaust)

@@ -9,9 +9,9 @@ theory Expr
 imports "../Common/Exceptions"
 begin
 
-datatype_new bop = Eq | Add     -- "names of binary operations"
+datatype bop = Eq | Add     -- "names of binary operations"
 
-datatype_new 'a exp
+datatype 'a exp
   = new cname      -- "class instance creation"
   | Cast cname "('a exp)"      -- "type cast"
   | Val val      -- "value"

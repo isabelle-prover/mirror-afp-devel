@@ -348,7 +348,7 @@ definition red_dfs where
   "
 
 
-datatype_new 'v blue_witness = 
+datatype 'v blue_witness = 
   NO_CYC                    -- {* No cycle detected *}
 | REACH "'v" "'v list"      -- {* Path from current start node to node on 
   stack, path contains accepting node. *}

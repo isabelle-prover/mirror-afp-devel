@@ -55,7 +55,7 @@ text {*
   predicates to distinguish types of messages.
 *}
 
-datatype_new 'val msg =
+datatype 'val msg =
   Val 'val
 | ValVote 'val "'val option"
 | Null  -- {* dummy message in case nothing needs to be sent *}

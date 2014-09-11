@@ -55,7 +55,7 @@ The other types used in our semantics functions have not changed.
 type_synonym benv = "label \<rightharpoonup> contour"
 type_synonym closure = "lambda \<times> benv"
 
-datatype_new d = DI int
+datatype d = DI int
            | DC closure
            | DP prim
            | Stop

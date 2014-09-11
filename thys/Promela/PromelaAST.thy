@@ -17,7 +17,7 @@ local_setup {*
   Local_Theory.map_naming (Name_Space.mandatory_path "AST")
 *} 
 
-datatype_new binOp = 
+datatype binOp = 
                  BinOpAdd
                | BinOpSub
                | BinOpMul
@@ -37,12 +37,12 @@ datatype_new binOp =
                | BinOpAnd
                | BinOpOr
 
-datatype_new unOp = 
+datatype unOp = 
                 UnOpComp
               | UnOpMinus
               | UnOpNeg
 
-datatype_new expr = 
+datatype expr = 
                 ExprBinOp binOp (*left*) expr (*right*) expr
               | ExprUnOp unOp expr
               | ExprCond (*cond*) expr (*exprTrue*) expr (*exprFalse*) expr
@@ -73,13 +73,13 @@ datatype_new expr =
                | RecvArgEval expr
                | RecvArgConst integer
 
-datatype_new range = 
+datatype range = 
                 RangeFromTo (*var*) varRef
                             (*from*) expr
                              (*to*)  expr
                | RangeIn (*var*) varRef (*inside*) varRef
 
-datatype_new varType = 
+datatype varType = 
                    VarTypeBit
                  | VarTypeBool
                  | VarTypeByte
@@ -91,7 +91,7 @@ datatype_new varType =
                  | VarTypeUnsigned
                  | VarTypeCustom String.literal
 
-datatype_new varDecl = 
+datatype varDecl = 
                    VarDeclNum  (*name*) String.literal
                                (*size*) "integer option"
                                (*init*) "expr option"
@@ -106,13 +106,13 @@ datatype_new varDecl =
                                 (*init*) "String.literal option"
 
 
-datatype_new decl = 
+datatype decl = 
                  Decl (*vis*) "bool option"
                      (*sort*) varType
                      (*decl*) "varDecl list"
 
 
-datatype_new stmnt = 
+datatype stmnt = 
                  StmntIf "(step list) list"
                | StmntDo "(step list) list"
                | StmntFor range "step list"
@@ -147,7 +147,7 @@ datatype_new stmnt =
            | StepXR "varRef list"
            | StepXS "varRef list"
 
-datatype_new module = 
+datatype module = 
                   ProcType (*active*) "(integer option) option"
                            (*name*)   String.literal
                            (*decls*)  "decl list"

@@ -14,7 +14,7 @@ text{*Muli-level security being treated in Section
 \ref{sec:HuntSands}, we restrict our attention in the present section
 to the two-point security lattice.*}
 
-datatype_new TP = low | high
+datatype TP = low | high
 
 text{*A global context assigns a security type to each program
 variable.*}

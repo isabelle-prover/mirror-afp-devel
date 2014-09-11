@@ -96,7 +96,7 @@ by simp
 
 section {* An example for multiple-sort atoms *}
 
-datatype_new ty =
+datatype ty =
   TVar string
 | Fun ty ty ("_ \<rightarrow> _")
 

@@ -11,7 +11,7 @@ begin
 
 type_synonym bv = "bit list"
 
-datatype_new HEX = x0 | x1 | x2 | x3 | x4 | x5 | x6 | x7 | x8 | x9 | xA | xB | xC | xD | xE | xF
+datatype HEX = x0 | x1 | x2 | x3 | x4 | x5 | x6 | x7 | x8 | x9 | xA | xB | xC | xD | xE | xF
 
 definition
   bvxor: "bvxor a b = bv_mapzip (op bitxor) a b"

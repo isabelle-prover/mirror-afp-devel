@@ -12,7 +12,7 @@ begin
 
 subsection {* Preliminary datatype for ordinals *}
 
-datatype_new ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
+datatype ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
 
 text {* subterm ordering on ord0 *}
 

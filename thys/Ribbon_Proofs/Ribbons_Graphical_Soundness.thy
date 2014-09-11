@@ -28,7 +28,7 @@ text {* When extracting a proofchain from a diagram, we need to keep track
   proofstate, defined below, maps a node to ``Top'' if it hasn't been
   processed and ``Bot'' if it has. *}
 
-datatype_new topbot = Top | Bot
+datatype topbot = Top | Bot
 
 type_synonym proofstate = "node \<rightharpoonup>\<^sub>f topbot"
 

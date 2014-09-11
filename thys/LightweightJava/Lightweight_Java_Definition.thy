@@ -19,26 +19,26 @@ type_synonym "meth" = "string"
 type_synonym "var" = "string"
 type_synonym "dcl" = "string"
 type_synonym "oid" = "nat"
-datatype_new "fqn" =
+datatype "fqn" =
    fqn_def "dcl"
 
-datatype_new "cl" =
+datatype "cl" =
    cl_object
  | cl_fqn "fqn"
 
-datatype_new "x" =
+datatype "x" =
    x_var "var"
  | x_this
 
-datatype_new "vd" =
+datatype "vd" =
    vd_def "cl" "var"
 
 type_synonym "X" = "x list"
-datatype_new "ctx" =
+datatype "ctx" =
    ctx_def
 
 type_synonym "vds" = "vd list"
-datatype_new "s" =
+datatype "s" =
    s_block "s list"
  | s_ass "var" "x"
  | s_read "var" "x" "f"
@@ -47,29 +47,29 @@ datatype_new "s" =
  | s_new "var" "ctx" "cl"
  | s_call "var" "x" "meth" "X"
 
-datatype_new "meth_sig" =
+datatype "meth_sig" =
    meth_sig_def "cl" "meth" "vds"
 
-datatype_new "meth_body" =
+datatype "meth_body" =
    meth_body_def "s list" "x"
 
-datatype_new "fd" =
+datatype "fd" =
    fd_def "cl" "f"
 
-datatype_new "meth_def" =
+datatype "meth_def" =
    meth_def_def "meth_sig" "meth_body"
 
 type_synonym "fds" = "fd list"
 type_synonym "meth_defs" = "meth_def list"
-datatype_new "cld" =
+datatype "cld" =
    cld_def "dcl" "cl" "fds" "meth_defs"
 
 type_synonym "ctxcld" = "(ctx \<times> cld)"
-datatype_new "ty" =
+datatype "ty" =
    ty_top
  | ty_def "ctx" "dcl"
 
-datatype_new "v" =
+datatype "v" =
    v_null
  | v_oid "oid"
 
@@ -80,7 +80,7 @@ type_synonym "ty_opt" = "ty option"
 type_synonym "tys" = "ty list"
 type_synonym "L" = "x \<rightharpoonup> v"
 type_synonym "H" = "oid \<rightharpoonup> (ty \<times> (f \<rightharpoonup> v))"
-datatype_new "Exception" =
+datatype "Exception" =
    ex_npe
 
 type_synonym "P" = "clds"
@@ -89,18 +89,18 @@ type_synonym "nn" = "nat"
 type_synonym "ctxclds_opt" = "ctxclds option"
 type_synonym "fs_opt" = "fs option"
 type_synonym "meths" = "meth list"
-datatype_new "ty_opt_bot" =
+datatype "ty_opt_bot" =
    ty_opt_bot_opt "ty_opt"
  | ty_opt_bot_bot
 
 type_synonym "meth_def_opt" = "meth_def option"
 type_synonym "ctxmeth_def_opt" = "(ctx \<times> meth_def) option"
-datatype_new "mty" =
+datatype "mty" =
    mty_def "tys" "ty"
 
 type_synonym "\<Gamma>" = "x \<rightharpoonup> ty"
 type_synonym "v_opt" = "v option"
-datatype_new "config" =
+datatype "config" =
    config_normal "P" "L" "H" "s list"
  | config_ex "P" "L" "H" "Exception"
 

@@ -8,7 +8,7 @@ begin
 
 subsection {* Type definition and projections *}
 
-datatype_new ('a, 'b) bintree = Node "'a" "'b" "('a, 'b) bintree list"
+datatype ('a, 'b) bintree = Node "'a" "'b" "('a, 'b) bintree list"
 
 primrec priority :: "('a, 'b) bintree \<Rightarrow> 'a" where
   "priority (Node a _ _) = a"

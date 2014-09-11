@@ -25,10 +25,10 @@ text{*The inverse of a symmetric key is itself; that of a public key
 definition symKeys :: "key set" where
   "symKeys == {K. invKey K = K}"
 
-datatype_new  --{*We only allow for any number of friendly agents*}
+datatype  --{*We only allow for any number of friendly agents*}
   agent = Friend nat
 
-datatype_new
+datatype
      msg = Agent  agent     --{*Agent names*}
          | Number nat       --{*Ordinary integers, timestamps, ...*}
          | Nonce  nat       --{*Unguessable nonces*}

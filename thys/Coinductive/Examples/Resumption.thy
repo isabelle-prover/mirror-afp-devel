@@ -249,7 +249,7 @@ lemmas resumption_splits = resumption_split resumption_split_asm
 
 text {* corecursion operator *}
 
-datatype_new (dead 'a, dead 'b, dead 'c, dead 'd, dead 'e) resumption_corec =
+datatype (dead 'a, dead 'b, dead 'c, dead 'd, dead 'e) resumption_corec =
     Terminal_corec 'a
   | Linear_corec 'b 'e
   | Branch_corec 'c "'d \<Rightarrow> 'e"

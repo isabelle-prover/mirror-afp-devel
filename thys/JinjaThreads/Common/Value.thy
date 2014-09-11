@@ -15,7 +15,7 @@ begin
 
 type_synonym word32 = "32 word"
 
-datatype_new 'addr val
+datatype 'addr val
   = Unit          -- "dummy result value of void expressions"
   | Null          -- "null reference"
   | Bool bool     -- "Boolean value"

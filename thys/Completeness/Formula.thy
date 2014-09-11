@@ -6,7 +6,7 @@ begin
 
 subsection "Variables"
 
-datatype_new vbl = X nat
+datatype vbl = X nat
   -- "FIXME there's a lot of stuff about this datatype that is
   really just a lifting from nat (what else could it be). Makes me
   wonder whether things wouldn't be clearer is we just identified vbls
@@ -122,9 +122,9 @@ lemmas vblsimps = vblcase_zeroX vblcase_nextX zeroX_nextX
 
 subsection "Predicates"
 
-datatype_new predicate = Predicate nat
+datatype predicate = Predicate nat
 
-datatype_new signs = Pos | Neg
+datatype signs = Pos | Neg
 
 lemma signsE: "\<lbrakk> signs = Neg \<Longrightarrow> P; signs = Pos \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   apply(cases signs, auto) done
@@ -150,7 +150,7 @@ where
 
 subsection "Formulas"
 
-datatype_new formula =
+datatype formula =
     FAtom signs predicate "(vbl list)"
   | FConj signs formula formula
   | FAll  signs formula  

@@ -18,7 +18,7 @@ abbreviation "enc_atom I n a \<equiv> (a, enc_atom_bool I n)"
 
 subsection {* Syntax and Semantics of MSO *}
 
-datatype_new 'a formula =
+datatype 'a formula =
   FQ 'a nat
 | FLess nat nat
 | FIn nat nat
@@ -52,7 +52,7 @@ definition "\<sigma> = (\<lambda>\<Sigma> n. concat (map (\<lambda>bs. map (\<la
 definition "\<pi> = (\<lambda>(a, bs). (a, tl bs))"
 definition "\<epsilon> = (\<lambda>\<Sigma> (a::'a, bs). if a \<in> set \<Sigma> then [(a, True # bs), (a, False # bs)] else [])"
 
-datatype_new 'a atom =
+datatype 'a atom =
     Singleton 'a "bool list"
   | AQ nat 'a
   | Arbitrary_Except nat bool

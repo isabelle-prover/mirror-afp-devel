@@ -1844,7 +1844,7 @@ hide_const (open) insert_monad union_monad
 
 subsection {* Type class instantiations *}
 
-datatype_new set_impl = Set_IMPL
+datatype set_impl = Set_IMPL
 declare
   set_impl.eq.simps [code del]
   set_impl.size [code del]

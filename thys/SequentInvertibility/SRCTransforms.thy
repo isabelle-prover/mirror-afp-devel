@@ -7,11 +7,11 @@ theory SRCTransforms
 imports "~~/src/HOL/Library/Multiset"
 begin
 
-datatype_new 'a form = At "nat"
+datatype 'a form = At "nat"
                  | Compound "'a" "'a form list"
                  | ff
 
-datatype_new 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
 abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
    "\<LM> A \<RM> \<equiv> {# A #}"

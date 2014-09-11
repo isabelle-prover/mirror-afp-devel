@@ -95,7 +95,7 @@ end
 
 subsection {* Semantics of external calls *}
 
-datatype_new 'addr extCallRet = 
+datatype 'addr extCallRet = 
     RetVal "'addr val"
   | RetExc 'addr
   | RetStaySame

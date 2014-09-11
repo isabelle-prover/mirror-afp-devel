@@ -223,7 +223,7 @@ end
 
 subsection "Stack with multipop"
 
-datatype_new 'a op\<^sub>s\<^sub>t\<^sub>k = Push 'a | Pop nat
+datatype 'a op\<^sub>s\<^sub>t\<^sub>k = Push 'a | Pop nat
 
 fun nxt\<^sub>s\<^sub>t\<^sub>k :: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "nxt\<^sub>s\<^sub>t\<^sub>k (Push x) xs = x # xs" |
@@ -254,7 +254,7 @@ subsection "Queue"
 
 text{* See, for example, the book by Okasaki~\cite{Okasaki}. *}
 
-datatype_new 'a op\<^sub>q = Enq 'a | Deq
+datatype 'a op\<^sub>q = Enq 'a | Deq
 
 type_synonym 'a queue = "'a list * 'a list"
 
@@ -321,7 +321,7 @@ qed
 
 subsection "Dynamic tables: insert and delete"
 
-datatype_new op\<^sub>t\<^sub>b = Ins | Del
+datatype op\<^sub>t\<^sub>b = Ins | Del
 
 fun nxt\<^sub>t\<^sub>b :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
 "nxt\<^sub>t\<^sub>b Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |

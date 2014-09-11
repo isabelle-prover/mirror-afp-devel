@@ -16,7 +16,7 @@ text{*
   the running example of Lamports original TLA paper \cite{Lamport94}.
 *}
 
-datatype_new pcount = a | b | g
+datatype pcount = a | b | g
 
 locale Firstprogram =
   fixes x :: "state \<Rightarrow> nat"

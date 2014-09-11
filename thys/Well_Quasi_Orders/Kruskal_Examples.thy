@@ -2,7 +2,7 @@ theory Kruskal_Examples
 imports Kruskal
 begin
 
-datatype_new 'a tree = Node 'a "'a tree list"
+datatype 'a tree = Node 'a "'a tree list"
 
 fun node
 where
@@ -58,7 +58,7 @@ instance
            intro: wqo_on_trees [of _ UNIV, simplified])
 end
 
-datatype_new ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
+datatype ('f, 'v) "term" = Var 'v | Fun 'f "('f, 'v) term list"
 
 fun root
 where
@@ -94,9 +94,9 @@ interpretation kruskal_variadic!: kruskal_tree UNIV Fun root args terms
 
 thm kruskal_variadic.almost_full_on_trees
 
-datatype_new 'a exp = V 'a | C nat | Plus "'a exp" "'a exp"
+datatype 'a exp = V 'a | C nat | Plus "'a exp" "'a exp"
 
-datatype_new 'a symb = v 'a | c nat | p
+datatype 'a symb = v 'a | c nat | p
 
 fun mk
 where

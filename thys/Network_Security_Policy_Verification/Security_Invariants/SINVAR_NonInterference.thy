@@ -4,7 +4,7 @@ begin
 
 subsection {* SecurityInvariant NonInterference *}
 
-datatype_new node_config = Interfering | Unrelated
+datatype node_config = Interfering | Unrelated
 
 definition default_node_properties :: "node_config"
   where  "default_node_properties = Interfering"

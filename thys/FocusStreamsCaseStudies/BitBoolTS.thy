@@ -11,7 +11,7 @@ theory BitBoolTS
 imports Main stream
 begin
 
-datatype_new bit = Zero | One
+datatype bit = Zero | One
 
 primrec 
    negation :: "bit \<Rightarrow> bit"

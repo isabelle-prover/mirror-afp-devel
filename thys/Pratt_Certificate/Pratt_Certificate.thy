@@ -18,7 +18,7 @@ text {*
   We represent these predicates with the following datatype:
 *}
 
-datatype_new pratt = Prime nat | Triple nat nat nat
+datatype pratt = Prime nat | Triple nat nat nat
 
 text {*
   Pratt describes an inference system consisting of the axiom $(p, a, 1)$

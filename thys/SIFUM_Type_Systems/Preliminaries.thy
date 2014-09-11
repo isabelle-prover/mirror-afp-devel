@@ -8,10 +8,10 @@ imports Main "~~/src/HOL/Library/Lattice_Syntax"
 begin
 
 text {* Possible modes for variables: *}
-datatype_new Mode = AsmNoRead | AsmNoWrite | GuarNoRead | GuarNoWrite
+datatype Mode = AsmNoRead | AsmNoWrite | GuarNoRead | GuarNoWrite
 
 text {* We consider a two-element security lattice: *}
-datatype_new Sec = High | Low
+datatype Sec = High | Low
 
 notation
   less_eq  (infix "\<sqsubseteq>" 50) and

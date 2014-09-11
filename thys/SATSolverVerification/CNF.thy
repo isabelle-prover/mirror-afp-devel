@@ -17,7 +17,7 @@ subsection{* Syntax *}
 (*------------------------------------------------------------------*)
 subsubsection{* Basic datatypes *}
 type_synonym Variable  = nat
-datatype_new Literal = Pos Variable | Neg Variable
+datatype Literal = Pos Variable | Neg Variable
 type_synonym Clause = "Literal list"
 type_synonym Formula = "Clause list"
 

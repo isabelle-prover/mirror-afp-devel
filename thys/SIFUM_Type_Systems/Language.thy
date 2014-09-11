@@ -10,10 +10,10 @@ begin
 
 subsection {* Syntax *}
 
-datatype_new 'var ModeUpd = Acq "'var" Mode (infix "+=\<^sub>m" 75)
+datatype 'var ModeUpd = Acq "'var" Mode (infix "+=\<^sub>m" 75)
   | Rel "'var" Mode (infix "-=\<^sub>m" 75)
 
-datatype_new ('var, 'aexp, 'bexp) Stmt = Assign "'var" "'aexp" (infix "\<leftarrow>" 130)
+datatype ('var, 'aexp, 'bexp) Stmt = Assign "'var" "'aexp" (infix "\<leftarrow>" 130)
   | Skip
   | ModeDecl "('var, 'aexp, 'bexp) Stmt" "'var ModeUpd" ("_@[_]" [0, 0] 150)
   | Seq "('var, 'aexp, 'bexp) Stmt" "('var, 'aexp, 'bexp) Stmt" (infixr ";;" 150)

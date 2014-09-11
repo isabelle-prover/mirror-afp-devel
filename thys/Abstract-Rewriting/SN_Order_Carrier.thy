@@ -276,7 +276,7 @@ qed (auto simp: field_simps power_strict_mono)
 subsection {* The arctic semiring over the integers *}
 text {* plus is interpreted as max, times is interpreted as plus, 0 is -infinity, 1 is 0 *}
 
-datatype_new arctic = MinInfty | Num_arc int
+datatype arctic = MinInfty | Num_arc int
 
 
 instantiation arctic :: ord
@@ -481,7 +481,7 @@ subsection {* The arctic semiring over an arbitrary archimedean field *}
 
 text {* completely analogous to the integers, where one has to use delta-orderings *}
 
-datatype_new 'a arctic_delta = MinInfty_delta | Num_arc_delta 'a
+datatype 'a arctic_delta = MinInfty_delta | Num_arc_delta 'a
 
 instantiation arctic_delta :: (ord) ord
 begin

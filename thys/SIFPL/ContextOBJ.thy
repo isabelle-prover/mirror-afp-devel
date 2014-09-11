@@ -5,7 +5,7 @@ subsection{*Contextual closure*}
 
 text{*\label{sec:contextObj}We first define contexts with multiple holes.*}
 
-datatype_new CtxtProg =
+datatype CtxtProg =
   Ctxt_Here
 | Ctxt_Skip
 | Ctxt_Assign Var Expr

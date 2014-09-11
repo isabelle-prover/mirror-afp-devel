@@ -9,7 +9,7 @@ imports
 begin
 (*>*)
 
-datatype_new 'a mrexp2 =
+datatype 'a mrexp2 =
   Zero2 |
   One2 |
   Atom2 (fin: bool) 'a |

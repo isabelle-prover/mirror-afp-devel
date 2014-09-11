@@ -11,7 +11,7 @@ begin
 
 declare Let_def[simp]
 
-datatype_new 'a mrexp3 =
+datatype 'a mrexp3 =
   Zero3 |
   One3 |
   Atom3 bool 'a |

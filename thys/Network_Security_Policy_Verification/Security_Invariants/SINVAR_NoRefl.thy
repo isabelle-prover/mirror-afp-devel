@@ -11,7 +11,7 @@ text {* This can be used to effectively lift hosts to roles.
         Otherwise, communication between hosts of the same role (group) is prohibited. 
         Useful in conjunction with the security gateway. *}
 
-datatype_new node_config = NoRefl | Refl 
+datatype node_config = NoRefl | Refl 
 
 definition default_node_properties :: "node_config"
   where  "default_node_properties = NoRefl"

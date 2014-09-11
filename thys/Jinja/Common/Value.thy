@@ -9,7 +9,7 @@ theory Value imports TypeRel begin
 
 type_synonym addr = nat
 
-datatype_new val
+datatype val
   = Unit        -- "dummy result value of void expressions"
   | Null        -- "null reference"
   | Bool bool   -- "Boolean value"

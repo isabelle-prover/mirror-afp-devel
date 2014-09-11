@@ -5,7 +5,7 @@ begin
 subsection {* SecurityInvariant SecurityGatewayExtended*}
 text {* Like SecurityGateway but SecurityGatewayIN and AccessibleMember are accessible from outside world *}
 
-datatype_new secgw_member = SecurityGateway | SecurityGatewayIN | DomainMember  | AccessibleMember | Unassigned
+datatype secgw_member = SecurityGateway | SecurityGatewayIN | DomainMember  | AccessibleMember | Unassigned
 
 definition default_node_properties :: "secgw_member"
   where  "default_node_properties \<equiv> Unassigned"

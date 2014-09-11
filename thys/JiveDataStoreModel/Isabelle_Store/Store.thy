@@ -14,7 +14,7 @@ subsection {* New *}
 text {* The store provides a uniform interface to allocate new objects and
 new arrays. The constructors of this datatype distinguish both cases.
  *}
-datatype_new New = new_instance CTypeId    --{* New object, can only be of a concrete class type *} 
+datatype New = new_instance CTypeId    --{* New object, can only be of a concrete class type *} 
              | new_array Arraytype nat --{* New array with given size*}
 
 text {* The discriminator @{text "isNewArr"} can be used to distinguish both 

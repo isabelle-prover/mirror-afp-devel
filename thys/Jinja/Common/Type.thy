@@ -21,7 +21,7 @@ where
   "this \<equiv> ''this''"
 
 -- "types"
-datatype_new ty
+datatype ty
   = Void          -- "type of statements"
   | Boolean
   | Integer

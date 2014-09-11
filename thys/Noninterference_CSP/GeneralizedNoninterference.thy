@@ -68,7 +68,7 @@ processes, amended in accordance with the previous considerations.
 \null
 *}
 
-datatype_new g_level = High | Low
+datatype g_level = High | Low
 
 definition g_secure :: "'a process \<Rightarrow> ('a \<Rightarrow> g_level) \<Rightarrow> bool" where
 "g_secure P L \<equiv> \<forall>xs x. xs @ [x] \<in> traces P \<and> L x = High \<longrightarrow>
@@ -262,9 +262,9 @@ The remainder of this section is dedicated to the construction of such counterex
 \null
 *}
 
-datatype_new g_state = Even | Odd
+datatype g_state = Even | Odd
 
-datatype_new g_action = Any | Count
+datatype g_action = Any | Count
 
 primrec g_step :: "g_state \<Rightarrow> g_action \<Rightarrow> g_state" where
 "g_step s Any = (case s of Even \<Rightarrow> Odd | Odd \<Rightarrow> Even)" |

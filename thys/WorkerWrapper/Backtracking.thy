@@ -30,7 +30,7 @@ define the syntax for our language using a HOL datatype:
 
 *}
 
-datatype_new expr = const nat | add expr expr | disj expr expr | fail
+datatype expr = const nat | add expr expr | disj expr expr | fail
 (*<*)
 
 lemma case_expr_cont[cont2cont]:

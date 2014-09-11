@@ -9,7 +9,7 @@ type_synonym pred = nat
 
 type_synonym var = nat
 
-datatype_new form = 
+datatype form = 
   PAtom pred "var list"
   | NAtom pred "var list"
   | FConj form form

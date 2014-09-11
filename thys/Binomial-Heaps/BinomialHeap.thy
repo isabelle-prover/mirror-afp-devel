@@ -7,7 +7,7 @@ begin
 subsection {* Datatype Definition *}
 
 text {* Binomial heaps are lists of binomial trees. *}
-datatype_new ('e, 'a) BinomialTree = 
+datatype ('e, 'a) BinomialTree = 
   Node 'e "'a::linorder" nat "('e , 'a) BinomialTree list"
 type_synonym ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
 

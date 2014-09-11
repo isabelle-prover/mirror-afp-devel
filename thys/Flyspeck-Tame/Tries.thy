@@ -62,7 +62,7 @@ by(induct al, auto)
 
 subsection {* Tries *}
 
-datatype_new ('a,'v)tries = Tries  "'v list"  "('a * ('a,'v)tries)list"
+datatype ('a,'v)tries = Tries  "'v list"  "('a * ('a,'v)tries)list"
 
 primrec "values" :: "('a,'v)tries \<Rightarrow> 'v list" where
   "values(Tries vs al) = vs"

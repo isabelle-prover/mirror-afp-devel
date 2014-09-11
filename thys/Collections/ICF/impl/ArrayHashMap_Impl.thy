@@ -75,7 +75,7 @@ text {*
   This speeds up rehashing because we then do not have to go through the abstract operations.
 *}
 
-datatype_new ('key, 'val) hashmap =
+datatype ('key, 'val) hashmap =
   HashMap "('key \<times> 'val) list array" "nat"
 
 subsection {* Operations *}

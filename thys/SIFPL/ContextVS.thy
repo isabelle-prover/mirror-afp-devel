@@ -11,7 +11,7 @@ secure program can be substituted and which itself employs only
 text{*Contexts are {\bf IMP} programs with (multiple) designated holes
 (represented by constructor $\mathit{Ctxt\_Here}$).*}
 
-datatype_new CtxtProg =
+datatype CtxtProg =
   Ctxt_Hole
 | Ctxt_Skip
 | Ctxt_Assign Var Expr

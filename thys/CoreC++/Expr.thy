@@ -12,9 +12,9 @@ theory Expr imports Value begin
 section {* The expressions *}
 
 
-datatype_new bop = Eq | Add     -- "names of binary operations"
+datatype bop = Eq | Add     -- "names of binary operations"
 
-datatype_new expr
+datatype expr
   = new cname            -- "class instance creation"
   | Cast cname expr      -- "dynamic type cast"
   | StatCast cname expr  -- "static type cast"        
