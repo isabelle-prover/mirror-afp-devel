@@ -6,11 +6,11 @@ theory Late_Semantics1
   imports Late_Semantics
 begin
 
-rep_datatype InputS BoundOutputS
+old_rep_datatype InputS BoundOutputS
 apply(auto simp add: subject.inject)
 by(induct_tac subject rule: subject.induct) auto
 
-rep_datatype OutputR TauR
+old_rep_datatype OutputR TauR
 apply(auto simp add: freeRes.inject)
 by(induct_tac freeRes rule: freeRes.induct) auto
 
