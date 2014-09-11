@@ -386,7 +386,7 @@ begin
           "list_all ls_invar (List.map (faccs' H) ts)" (is ?T2)
   proof -
     have "?T1 \<and> ?T2"
-      apply (induct rule: tree.induct)
+      apply (induct rule: compat_tree_tree_list.induct)
       apply (auto simp add: ll_set_xy.image_filter_correct hta_lookup_f_correct)
       done
     thus ?T1 ?T2 by auto
@@ -402,7 +402,7 @@ begin
        = List.map (faccs (ls_\<alpha> (hta_\<delta> H))) ts" (is ?T2)
   proof -
     have "?T1 \<and> ?T2"
-    proof (induct rule: tree.induct)
+    proof (induct rule: compat_tree_tree_list.induct)
       case (NODE f ts)
       let ?\<delta> = "(ls_\<alpha> (hta_\<delta> H))"
       have "faccs ?\<delta> (NODE f ts) = (

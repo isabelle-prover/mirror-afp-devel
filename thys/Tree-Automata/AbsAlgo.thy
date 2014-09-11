@@ -60,7 +60,7 @@ lemma faccs_correct_aux:
 proof -
   have "(\<forall>q. q\<in>faccs \<delta> n = accs \<delta> n q) 
         \<and> (map (faccs \<delta>) ts = map (\<lambda>t. { q . accs \<delta> t q}) ts)"
-  proof (induct rule: tree.induct)
+  proof (induct rule: compat_tree_tree_list.induct)
     case (NODE f ts)
     thus ?case
       apply (intro allI iffI)

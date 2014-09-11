@@ -12,6 +12,8 @@ text {*
   This theory defines trees as nodes with a label and a list of subtrees.
 *}
 
-datatype 'l tree = NODE 'l "'l tree list"
+datatype_new 'l tree = NODE 'l "'l tree list"
+
+datatype_compat tree
 
 end

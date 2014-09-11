@@ -47,8 +47,8 @@ text {*
 
 (* Workaround for bug in Haskell-code generator: Type variables have to be 
   lower-case *)
-(* datatype ('Q,'L) ta_rule = RULE 'Q 'L "'Q list" ("_ \<rightarrow> _ _") *)
-datatype ('q,'l) ta_rule = RULE 'q 'l "'q list" ("_ \<rightarrow> _ _")
+(* datatype_new ('Q,'L) ta_rule = RULE 'Q 'L "'Q list" ("_ \<rightarrow> _ _") *)
+datatype_new ('q,'l) ta_rule = RULE 'q 'l "'q list" ("_ \<rightarrow> _ _")
 
 record ('Q,'L) tree_automaton_rec =
   ta_initial :: "'Q set"
@@ -459,8 +459,8 @@ proof (induct arbitrary: \<delta> q rule: accs.induct[case_names step])
     apply (auto dest: \<delta>_statesI) [2]
     apply (subgoal_tac "q\<in>\<delta>_states \<delta>")
     apply (unfold inj_on_def) [1]
-    apply blast
-    apply (blast intro: \<delta>_statesI)
+    apply (metis \<delta>_statesI(1) contra_subsetD)
+    apply (fastforce intro: \<delta>_statesI(1) dest: inj_onD)
     done
   show ?case proof (rule accs.intros[OF R])
     fix i 
@@ -472,6 +472,7 @@ proof (induct arbitrary: \<delta> q rule: accs.induct[case_names step])
       apply auto
       apply (case_tac x)
       apply (auto)
+      apply (rename_tac list)
       apply (subgoal_tac "list!i \<in> \<delta>_states \<delta>")
       apply blast
       apply (auto dest!: \<delta>_statesI(2))
@@ -708,7 +709,7 @@ qed
 
 text "The union-algorithm may wrap the states of the first and second automaton 
       in order to make them disjoint"
-datatype ('q1,'q2) ustate_wrapper = USW1 'q1 | USW2 'q2 
+datatype_new ('q1,'q2) ustate_wrapper = USW1 'q1 | USW2 'q2 
 
 lemma usw_disjoint[simp]: 
   "USW1 ` X \<inter> USW2 ` Y = {}"
