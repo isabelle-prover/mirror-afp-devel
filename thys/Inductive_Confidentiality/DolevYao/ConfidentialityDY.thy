@@ -121,6 +121,7 @@ apply simp
 txt{*Notes*}
 apply (rule impI)
 apply simp
+apply (rename_tac agent msg)
 apply (case_tac "agent\<notin>bad") 
 apply simp apply blast
 apply simp
@@ -156,6 +157,7 @@ apply simp
 txt{*Notes*}
 apply (rule impI)
 apply (simp del: initState_Spy)
+apply (rename_tac agent msg)
 apply (case_tac "agent\<notin>bad")
 apply (simp del: initState_Spy)
 apply blast

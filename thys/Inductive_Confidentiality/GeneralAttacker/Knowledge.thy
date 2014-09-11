@@ -1,6 +1,6 @@
 header{*Study on knowledge equivalence --- results to relate the knowledge of an agent to that of another's*}
 
-theory  Knowledge
+theory Knowledge
 imports NS_Public_Bad_GA
 begin
 
