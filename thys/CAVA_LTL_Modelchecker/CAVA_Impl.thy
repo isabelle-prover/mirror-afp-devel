@@ -169,7 +169,7 @@ qed
 
 text {* We define a function that chooses between the possible conversion 
   algorithms. (Currently there is only one) *}
-datatype config_l2b = CFG_L2B_GERTHS
+datatype_new config_l2b = CFG_L2B_GERTHS
 
 definition "ltl_to_gba_code cfg 
   \<equiv> case cfg of CFG_L2B_GERTHS \<Rightarrow> gerth_ltl_to_gba_code"
@@ -316,7 +316,7 @@ qed
 text {* We define a function that chooses between the emptiness check 
   algorithms *}
 
-datatype config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS
+datatype_new config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS
 
 definition find_ce_code where "find_ce_code cfg \<equiv> case cfg of 
   CFG_CE_SCC_GABOW \<Rightarrow> gabow_find_ce_code

@@ -6,7 +6,7 @@ begin
 
 subsection {* Syntax and Semantics *}
 
-datatype bexp = TT | FF | V nat | Not bexp | And bexp bexp | Or bexp bexp
+datatype_new bexp = TT | FF | V nat | Not bexp | And bexp bexp | Or bexp bexp
 
 type_synonym state = "bitset"
 
@@ -18,7 +18,7 @@ fun bval :: "bexp \<Rightarrow> state \<Rightarrow> bool" where
 "bval (And b\<^sub>1 b\<^sub>2) s = (bval b\<^sub>1 s & bval b\<^sub>2 s)" |
 "bval (Or b\<^sub>1 b\<^sub>2) s = (bval b\<^sub>1 s | bval b\<^sub>2 s)"
 
-datatype instr =
+datatype_new instr =
   AssI "nat list" "bexp list" |
   TestI bexp int |
   ChoiceI "(bexp * int) list" |
@@ -89,7 +89,7 @@ fun nexts :: "bprog \<Rightarrow> config \<Rightarrow> config list" where
 
 declare nexts.simps [simp del]
 
-datatype
+datatype_new
   com = SKIP
       | Assign "nat list" "bexp list"    
       | Seq    com  com         
@@ -283,11 +283,13 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (frule (2) C.IH(1), auto) []
     apply (auto simp: pc_bound_def) []
     apply (frule (2) C.IH(2), auto) []
+    apply (rename_tac bexp int)
     apply (subgoal_tac "int \<in> offsets_is (list_of_array ins)")
     apply (blast intro: aux2)
     apply (auto simp: offsets_is_def) []
     apply (rule_tac x="TestI bexp int" in bexI, auto simp: array_idx_in_set) []
 
+    apply (rename_tac list)
     apply (clarsimp split: split_if_asm simp add: Let_def)
     apply (elim disjE conjE, auto) []
     apply (frule (1) C.IH(3), auto) []
@@ -298,6 +300,7 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (auto simp: offsets_is_def) []
     apply (rule_tac x="ChoiceI list" in bexI, auto simp: array_idx_in_set) []
 
+    apply (rename_tac int)
     apply (simp split: split_if_asm add: Let_def)
     apply (frule (1) C.IH(4), auto) []
     apply (subgoal_tac "int \<in> offsets_is (list_of_array ins)")

@@ -29,7 +29,7 @@ text {*
   This preprocessing phase also tries to detect certain static errors and will bail out with an exception if such is encountered.
  *}
 
-datatype binOp = BinOpAdd
+datatype_new binOp = BinOpAdd
                | BinOpSub
                | BinOpMul
                | BinOpDiv
@@ -43,10 +43,10 @@ datatype binOp = BinOpAdd
                | BinOpAnd
                | BinOpOr
 
-datatype unOp = UnOpMinus
+datatype_new unOp = UnOpMinus
               | UnOpNeg
 
-datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
+datatype_new expr = ExprBinOp binOp (*left*) expr (*right*) expr
               | ExprUnOp unOp expr
               | ExprCond (*cond*) expr (*exprTrue*) expr (*exprFalse*) expr
               | ExprLen chanRef
@@ -67,11 +67,11 @@ datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
                | RecvArgConst integer
                | RecvArgMConst integer String.literal
 
-datatype varType = VTBounded integer integer
+datatype_new varType = VTBounded integer integer
                  | VTChan
 
 text {* Variable declarations at the beginning of a proctype or at global level. *}
-datatype varDecl = VarDeclNum (*bounds*) integer integer
+datatype_new varDecl = VarDeclNum (*bounds*) integer integer
                               (*name*) String.literal
                               (*size*) "integer option"
                               (*init*) "expr option"
@@ -80,16 +80,16 @@ datatype varDecl = VarDeclNum (*bounds*) integer integer
                                (*capacityTypes*) "(integer * varType list) option"
 
 text {* Variable declarations during a proctype. *}
-datatype procVarDecl = ProcVarDeclNum  (*bounds*) integer integer
+datatype_new procVarDecl = ProcVarDeclNum  (*bounds*) integer integer
                                        (*name*) String.literal
                                        (*size*) "integer option"
                                        (*init*) "expr option"
                      | ProcVarDeclChan (*name*) String.literal
                                        (*size*) "integer option"
 
-datatype procArg = ProcArg varType String.literal
+datatype_new procArg = ProcArg varType String.literal
 
-datatype stmnt = StmntIf "(step list) list"
+datatype_new stmnt = StmntIf "(step list) list"
                | StmntDo "(step list) list"
                | StmntAtomic "step list"
                | StmntSeq "step list"
@@ -110,7 +110,7 @@ datatype stmnt = StmntIf "(step list) list"
            | StepDecl "procVarDecl list"
            | StepSkip
 
-datatype proc = ProcType (*active*) "(integer option) option"
+datatype_new proc = ProcType (*active*) "(integer option) option"
                            (*name*)   String.literal
                            (*args*)  "procArg list"
                            (*decls*) "varDecl list"
@@ -801,7 +801,7 @@ text {*
   The states of the system do not carry any information.
 *}
 
-datatype edgeCond = ECElse 
+datatype_new edgeCond = ECElse 
                   | ECTrue
                   | ECFalse 
                   | ECExpr expr 
@@ -809,7 +809,7 @@ datatype edgeCond = ECElse
                   | ECSend chanRef
                   | ECRecv chanRef "recvArg list" bool (* sorted *)
 
-datatype edgeEffect = EEEnd 
+datatype_new edgeEffect = EEEnd 
                     | EEId 
                     | EEGoto
                     | EEAssert expr 
@@ -819,8 +819,8 @@ datatype edgeEffect = EEEnd
                     | EESend chanRef "expr list" bool (*sorted*)
                     | EERecv chanRef "recvArg list" bool (*sorted*) bool (*remove*)
 
-datatype edgeIndex = Index nat | LabelJump String.literal "nat option"
-datatype edgeAtomic = NonAtomic | Atomic | InAtomic
+datatype_new edgeIndex = Index nat | LabelJump String.literal "nat option"
+datatype_new edgeAtomic = NonAtomic | Atomic | InAtomic
 
 record edge = 
   cond   :: edgeCond
@@ -837,10 +837,10 @@ definition inAtomic :: "edge \<Rightarrow> bool" where
 
 subsection {* State *}
 
-datatype variable = Var varType integer
+datatype_new variable = Var varType integer
                   | VArray varType nat "integer iarray"
 
-datatype channel = Channel integer "varType list" "integer list list"
+datatype_new channel = Channel integer "varType list" "integer list list"
                  | HSChannel "varType list" (* handshake channel *)
                  | InvChannel (* Invalid / closed channel *)
 

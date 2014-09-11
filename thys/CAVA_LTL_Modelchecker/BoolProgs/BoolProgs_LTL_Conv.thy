@@ -17,7 +17,7 @@ fun b2l :: "bexp \<Rightarrow> nat ltlc" where
 
 end
 
-datatype
+datatype_new
   propc = CProp string | FProp "string * integer"
 
 context begin interpretation LTL_Syntax .

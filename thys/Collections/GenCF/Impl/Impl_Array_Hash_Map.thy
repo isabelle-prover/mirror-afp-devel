@@ -16,7 +16,7 @@ subsection {* Type definition and primitive operations *}
 definition load_factor :: nat -- "in percent"
   where "load_factor = 75"
 
-datatype ('key, 'val) hashmap =
+datatype_new ('key, 'val) hashmap =
   HashMap "('key,'val) list_map array" "nat"
 
 subsection {* Operations *}

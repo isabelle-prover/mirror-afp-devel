@@ -132,6 +132,7 @@ lemma pi_ahm[proper_it]:
   apply (rule proper_it'I)
   apply (case_tac "impl_of s")
   apply simp
+  apply (rename_tac array nat)
   apply (case_tac array)
   apply simp
   by (intro icf_proper_iteratorI)

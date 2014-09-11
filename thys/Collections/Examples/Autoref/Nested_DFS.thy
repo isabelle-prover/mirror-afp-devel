@@ -296,7 +296,7 @@ text {*
   \item[@{text "pr"}] path from current node to @{text "v"}
   \end{description}
 *}
-datatype 'v blue_witness = 
+datatype_new 'v blue_witness = 
   NO_CYC
 | REACH "'v" "'v list" "'v" "'v list"
 | CIRC "'v" "'v list" "'v list"
