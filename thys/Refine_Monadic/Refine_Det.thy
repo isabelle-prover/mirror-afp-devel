@@ -104,15 +104,14 @@ begin
         apply (case_tac x) 
           apply force 
           apply force
-          apply (subgoal_tac "dRETURN a \<le> dRETURN aa \<and> dRETURN a \<le> dRETURN b")
-            apply auto []
-            apply blast
+          apply (metis less_eq_dres.simps(4))
         apply force
 
         apply (case_tac x) [] 
           apply force
           apply force
           apply auto []
+          apply (rename_tac aa)
           apply (subgoal_tac "(THE x. dRETURN x \<in> A) = aa")
           apply force
           apply force
@@ -120,6 +119,7 @@ begin
     apply (case_tac x)
     apply (auto simp add: Sup_dres_def) [3]
     apply (case_tac xa, simp_all) [] 
+    apply (rename_tac aa)
     apply (subgoal_tac "(THE x. dRETURN x \<in> A) = aa")
     apply force
     apply force
@@ -129,9 +129,7 @@ begin
       apply (case_tac x, force+) []
 
       apply (case_tac x, force, force) []
-      apply (subgoal_tac "dRETURN aa \<le> dRETURN a \<and> dRETURN b \<le> dRETURN a")
-        apply auto []
-        apply blast
+      apply (metis Refine_Det.less_eq_dres.simps(4))
 
       apply force
 
