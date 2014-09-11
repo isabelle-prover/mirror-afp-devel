@@ -19,14 +19,14 @@ definition this :: vname where
   "this \<equiv> ''this''"
 
 -- "types"
-datatype ty
+datatype_new ty
   = Void          -- "type of statements"
   | Boolean
   | Integer
   | NT            -- "null type"
   | Class cname   -- "class type"
 
-datatype base  -- "superclass"
+datatype_new base  -- "superclass"
   = Repeats cname  -- "repeated (nonvirtual) inheritance"
   | Shares cname   -- "shared (virtual) inheritance"
 

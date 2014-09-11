@@ -15,7 +15,7 @@ type_synonym addr = nat
 type_synonym path = "cname list"            -- "Path-component in subobjects"
 type_synonym reference = "addr \<times> path"
 
-datatype val
+datatype_new val
   = Unit           -- "dummy result value of void expressions"
   | Null           -- "null reference"
   | Bool bool      -- "Boolean value"

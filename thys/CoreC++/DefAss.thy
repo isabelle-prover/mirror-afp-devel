@@ -108,7 +108,7 @@ by (induct es type:list) (auto simp:hyperUn_assoc)
 lemma A_fv: "\<And>A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fv e"
 and  "\<And>A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fvs es"
 
-apply(induct e and es)
+apply(induct e and es rule: \<A>.induct \<A>s.induct)
 apply (simp_all add:hyperset_defs)
 apply blast+
 done
@@ -125,7 +125,7 @@ by(simp add:hyperset_defs) blast
 lemma D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> (e::expr) A'"
 and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s (es::expr list) A'"
 
-apply(induct e and es)
+apply(induct e and es rule: \<D>.induct \<D>s.induct)
 apply simp
 apply simp
 apply simp
