@@ -9,7 +9,7 @@ subsection {* Examples *}
 
 subsubsection {* Finite types *}
 
-datatype ('a, 'b) foo = Foo 'a | Bar 'a 'b | FooBar 'a 'b "'a + 'b" | Stop
+datatype_new ('a, 'b) foo = Foo 'a | Bar 'a 'b | FooBar 'a 'b "'a + 'b" | Stop
 
 lemma inj_foo [simp]: 
   "inj Foo" 
@@ -44,7 +44,7 @@ by(simp add: card_foo_def UNIV_foo Let_def card_simps)
 end
 
 
-datatype ('a, 'b) bar 
+datatype_new ('a, 'b) bar 
   = Bar1 
   | Bar2 "'a \<Rightarrow> 'b"
   | Bar3 "('a, 'b) foo" "'a \<Rightarrow> char \<Rightarrow> 'b \<Rightarrow> 'a" "('a \<times> 'b) option" 
@@ -91,7 +91,7 @@ end
 
 subsection {* Infinite types *}
 
-datatype 'a tree = Leaf | Node 'a "'a tree" "'a tree"
+datatype_new 'a tree = Leaf | Node 'a "'a tree" "'a tree"
 
 lemma inj_expr [simp]:
   "inj Node"

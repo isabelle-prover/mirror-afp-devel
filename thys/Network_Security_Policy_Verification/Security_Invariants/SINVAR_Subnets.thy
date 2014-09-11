@@ -4,7 +4,7 @@ begin
 
 subsection {* SecurityInvariant Subnets *}
 
-datatype subnets = Subnet nat | BorderRouter nat | Unassigned
+datatype_new subnets = Subnet nat | BorderRouter nat | Unassigned
 
 definition default_node_properties :: "subnets"
   where  "default_node_properties \<equiv> Unassigned"

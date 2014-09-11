@@ -5,7 +5,7 @@ subsection{*Contextual closure*}
 
 text{*\label{sec:contextObj}We first define contexts with multiple holes.*}
 
-datatype CtxtProg =
+datatype_new CtxtProg =
   Ctxt_Here
 | Ctxt_Skip
 | Ctxt_Assign Var Expr
@@ -247,6 +247,7 @@ lemma Expr_lemma2[rule_format]:
 apply (induct e)
 (*VarE*)
 apply (simp add: noLowDPs_def) apply clarsimp
+  apply (rename_tac Var l)
   apply (erule_tac x=Var in allE, erule impE, assumption)
   apply (erule_tac x=Var in allE, erule impE, assumption)
   apply (erule_tac x=l in allE, erule mp, assumption)
@@ -282,7 +283,7 @@ apply (induct e)
 apply (simp add: noLowDPs_def) apply clarsimp
   apply (rule, clarsimp) apply (simp add: Dom_def)
   apply (rule, rule, clarsimp)
-    apply (rule, clarsimp) apply (erule_tac x=Var in allE, clarsimp) apply (simp add: Dom_def)
+    apply (rule, clarsimp) apply (rename_tac Var la) apply (erule_tac x=Var in allE, clarsimp) apply (simp add: Dom_def)
     apply clarsimp  apply (erule_tac x=l in allE, clarsimp) apply (erule_tac x=fa in allE, clarsimp)
      apply (simp add: Dom_def)
   apply clarsimp apply (erule_tac x=ll in allE, clarsimp) apply (erule_tac x=fa in allE, clarsimp) apply (simp add: Dom_def)
@@ -406,7 +407,7 @@ apply clarsimp
     apply (simp (no_asm_simp) add: twiddleStore_def)
     apply rule
     apply (simp add: LOW_def) apply clarsimp 
-      apply (rule, clarsimp) apply (subgoal_tac "Expr_low Expr") apply (simp add: Expr_low_def)
+      apply (rule, clarsimp) apply (rename_tac Expr x) apply (subgoal_tac "Expr_low Expr") apply (simp add: Expr_low_def)
                              apply (erule Expr_lemma1) apply assumption+ apply fast 
       apply clarsimp apply (simp add: twiddleStore_def) 
 (*New*)
@@ -476,12 +477,14 @@ apply clarsimp
   apply (simp add: twiddleStore_def)
   apply clarsimp apply (simp add: update_def, clarsimp)
   apply (simp add: twiddleHeap_def, clarsimp)
-  apply (rotate_tac 4, erule_tac x=Var2 in allE, simp add: LOW_def) apply clarsimp
+  apply (rotate_tac 4, rename_tac Var2 x53 l C Flds v la Ca Fldsa va x, erule_tac x=Var2 in allE,
+    simp add: LOW_def) apply clarsimp
   apply (erule twiddleVal.cases) apply clarsimp prefer 2 apply clarsimp apply clarsimp
   apply (erule_tac x=l1 in allE)
   apply (erule_tac x=l2 in allE)
   apply clarsimp apply (simp add: twiddleObj_def) 
 (*Put*)
+ apply (rename_tac Var Field Expr)
  apply (erule thin_rl, clarsimp)
   apply (rotate_tac -1, erule thin_rl)
   apply (erule Sem_eval_cases)
@@ -497,7 +500,7 @@ apply clarsimp
   apply clarsimp 
   apply rule apply (rotate_tac -1, erule thin_rl) apply (simp add: Dom_def) apply fast 
   apply rule apply (rotate_tac -1, erule thin_rl) apply (simp add: Dom_def) apply fast 
-  apply clarsimp 
+  apply clarsimp
   apply rule apply clarsimp
     apply rule apply clarsimp apply (erule_tac x=lb in allE, erule_tac x=ll in allE, clarsimp) 
       apply (simp add: twiddleObj_def)
@@ -523,6 +526,7 @@ apply clarsimp
          apply (rotate_tac -1, erule_tac x=l1 in allE)
          apply (rotate_tac -1, erule_tac x=lb in allE, clarsimp)
 (*Ctxt_Comp*)
+apply (rename_tac CtxtProg1 CtxtProg2)
 apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases) apply clarsimp 
   apply (subgoal_tac "\<exists> \<gamma> . (ad,bd) \<equiv>\<^sub>\<gamma> (ae,be) \<and> Pbij_extends \<gamma> \<beta>")
   prefer 2
@@ -557,6 +561,7 @@ apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases) apply c
            apply (rotate_tac -1, erule_tac x=X in allE, clarsimp)  apply (simp add: LOW_def, clarsimp)
         apply (rule, rule) prefer 2 apply (rule Pbij_extends_transitive) prefer 2 apply assumption apply assumption apply assumption
 (*Ctxt_If*)
+apply (rename_tac BExpr CtxtProg1 CtxtProg2)
 apply clarsimp 
   apply (subgoal_tac "evalB BExpr a = evalB BExpr ab")
   prefer 2 apply (erule thin_rl) apply (rotate_tac -1, erule thin_rl)
@@ -595,6 +600,7 @@ apply clarsimp
            apply (rotate_tac -1, erule_tac x=\<beta> in allE, clarsimp)
            apply (rotate_tac -1, erule_tac x=X in allE, clarsimp) apply (simp add: LOW_def)
 (*Ctxt_While*)
+apply (rename_tac BExpr CtxtProg)
 apply clarsimp 
   apply (subgoal_tac "evalB BExpr a = evalB BExpr ab")
   prefer 2 apply (erule thin_rl) apply (rotate_tac -1, erule thin_rl)

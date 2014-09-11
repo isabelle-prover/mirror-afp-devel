@@ -30,7 +30,7 @@ text {*
   messages (@{typ 'm}), process names (@{typ 'p}),and labels (@{typ 'l}).
 *}
 
-datatype ('s, 'm, 'p, 'l) seqp =
+datatype_new (dead 's, dead 'm, dead 'p, dead 'l) seqp =
     GUARD "'l" "'s \<Rightarrow> 's set" "('s, 'm, 'p, 'l) seqp"
   | ASSIGN "'l" "'s \<Rightarrow> 's" "('s, 'm, 'p, 'l) seqp"
   | CHOICE "('s, 'm, 'p, 'l) seqp" "('s, 'm, 'p, 'l) seqp"
@@ -238,7 +238,7 @@ class tau =
 
 subsubsection "Sequential Actions (and related predicates)"
 
-datatype 'm seq_action =
+datatype_new 'm seq_action =
     broadcast 'm
   | groupcast "ip set" 'm
   | unicast ip 'm
@@ -344,7 +344,7 @@ type_synonym ('s, 'm, 'p, 'l) seqp_env = "'p \<Rightarrow> ('s, 'm, 'p, 'l) seqp
 
 subsubsection "Node Actions (and related predicates)"
 
-datatype 'm node_action =
+datatype_new 'm node_action =
     node_cast "ip set" 'm             ("_:*cast'(_')"       [200, 200] 200)                                                 
   | node_deliver ip data              ("_:deliver'(_')"     [200, 200] 200)
   | node_arrive "ip set" "ip set" 'm  ("_\<not>_:arrive'(_')"    [200, 200, 200] 200)
@@ -408,14 +408,14 @@ lemma castmsg_simps[simp]:
 
 subsection "Networks"
 
-datatype net_tree =
+datatype_new net_tree =
     Node ip "ip set"          ("\<langle>_; _\<rangle>")
   | Subnet net_tree net_tree  (infixl "\<parallel>" 90)
 
 declare net_tree.induct [[induct del]]
 lemmas net_tree_induct [induct type: net_tree] = net_tree.induct [rename_abs i R p1 p2]
 
-datatype 's net_state =
+datatype_new 's net_state =
     NodeS ip 's "ip set"
   | SubnetS "'s net_state" "'s net_state"
 

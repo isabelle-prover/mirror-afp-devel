@@ -96,11 +96,11 @@ region or have gone past it.
 
 type_synonym digit = "5 sat"
 
-datatype Agent = Robot
-datatype EnvAct = Stay | MoveRight
-datatype ObsError = Left | On | Right
-datatype Proposition = Halted | InGoal
-datatype RobotAct = NOP | Halt
+datatype_new Agent = Robot
+datatype_new EnvAct = Stay | MoveRight
+datatype_new ObsError = Left | On | Right
+datatype_new Proposition = Halted | InGoal
+datatype_new RobotAct = NOP | Halt
 
 type_synonym Halted = bool
 type_synonym Pos = digit

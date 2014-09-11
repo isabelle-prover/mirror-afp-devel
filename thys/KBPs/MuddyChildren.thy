@@ -95,10 +95,10 @@ children. We discuss this further in \S\ref{sec:kbps-muddychildren}.
 *}
 (*<*)
 
-datatype Agent = Child0 | Child1 | Child2
-datatype Proposition = Dirty Agent
+datatype_new Agent = Child0 | Child1 | Child2
+datatype_new Proposition = Dirty Agent
 
-datatype ChildAct = SayIKnow | SayNothing
+datatype_new ChildAct = SayIKnow | SayNothing
 
 lemma Agent_univ: "(UNIV :: Agent set) = {Child0, Child1, Child2}"
   unfolding UNIV_def

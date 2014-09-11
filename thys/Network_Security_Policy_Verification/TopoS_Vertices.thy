@@ -61,7 +61,7 @@ instance proof(intro_classes) qed(simp add: vertex_1_char_def  vertex_2_char_def
 end
 value "vertex_1::char"
 
-datatype vString = V string
+datatype_new vString = V string
 value "V ''AA''"
 instantiation vString::vertex
 begin

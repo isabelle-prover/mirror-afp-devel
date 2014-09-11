@@ -4,7 +4,7 @@ begin
 
 subsection {* SecurityInvariant SubnetsInGW *}
 
-datatype subnets = Member | InboundGateway | Unassigned
+datatype_new subnets = Member | InboundGateway | Unassigned
 
 definition default_node_properties :: "subnets"
   where  "default_node_properties \<equiv> Unassigned"

@@ -78,9 +78,9 @@ typedecl Location
 text{*References are either null or a location. Values are either
 integers or references.*}
 
-datatype Ref = Nullref | Loc Location
+datatype_new Ref = Nullref | Loc Location
 
-datatype Val = RVal Ref | IVal int 
+datatype_new Val = RVal Ref | IVal int 
 
 text{*The heap is a finite map from locations to objects. Objects have
 a dynamic class and a field map.*}
@@ -100,12 +100,12 @@ type_synonym State = "Store \<times> Heap"
 
 text{*Arithmetic and boolean expressions are as before.*}
 
-datatype Expr = 
+datatype_new Expr = 
     varE Var 
   | valE Val
   | opE "Val \<Rightarrow> Val \<Rightarrow> Val" Expr Expr
 
-datatype BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
+datatype_new BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
 
 text{*The same applies to their semantics.*}
 
@@ -123,7 +123,7 @@ text{*The category of commands is extended by instructions for
 allocating a fresh object, obtaining a value from a field and assigning
 a value to a field.*}
 
-datatype OBJ =
+datatype_new OBJ =
     Skip 
   | Assign Var Expr
   | New Var Class

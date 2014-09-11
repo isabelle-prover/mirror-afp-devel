@@ -9,14 +9,14 @@ subsection{*SecurityInvariant DomainHierarchyNG*}
 subsubsection {* Datatype Domain Hierarchy *}
 
   text{* A fully qualified domain name for an entity in a tree-like hierarchy *}
-    datatype domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
+    datatype_new domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
                                Leaf --"leaf of the tree, end of all domainNames"
     
     text {*Example: the CoffeeMachine of I8 *}
     value "''i8''--''CoffeeMachine''--Leaf"
 
   text{* A tree strucuture to represent the general hierarchy, i.e. possible domainNameDepts*}
-    datatype domainTree = Department 
+    datatype_new domainTree = Department 
         "string"  --"division"
         "domainTree list"  --"sub divisions"
 
@@ -328,7 +328,7 @@ subsubsection {* Datatype Domain Hierarchy *}
     
 
 
-  datatype domainName = DN domainNameDept | Unassigned
+  datatype_new domainName = DN domainNameDept | Unassigned
 
 
   subsubsection {*Makeing it a complete Lattice*}
@@ -434,7 +434,7 @@ subsubsection {* Datatype Domain Hierarchy *}
 (*TRUST*)
 
 
-  datatype domainNameTrust = DN "(domainNameDept \<times> nat)" | Unassigned
+  datatype_new domainNameTrust = DN "(domainNameDept \<times> nat)" | Unassigned
 
     (*transitivity only if trustA \<ge> trust C*)
     fun leq_domainNameTrust :: "domainNameTrust \<Rightarrow> domainNameTrust \<Rightarrow> bool" (infixr "\<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t" 65)  where 
@@ -444,6 +444,7 @@ subsubsection {* Datatype Domain Hierarchy *}
 
     lemma leq_domainNameTrust_refl: "x \<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t x"
       apply(case_tac x)
+       apply(rename_tac prod)
        apply(case_tac prod)
        apply(simp add: chop_not_decrease_hierarchy)
       by(simp)
@@ -556,6 +557,7 @@ subsubsection {*ENF*}
     apply(rule conjI)
      apply(simp add: valid_graph_def)
     apply(case_tac otherbot)
+     apply(rename_tac prod)
      apply(case_tac prod)
      apply(rename_tac dn trustlevel)
      apply(clarify)

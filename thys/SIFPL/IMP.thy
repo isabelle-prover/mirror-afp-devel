@@ -26,18 +26,18 @@ functions over values. Similarly, boolean expressions are built up
 from arithmetic expressions using binary boolean operators which are 
 modeled as functions of the ambient logic HOL.*}
 
-datatype Expr =
+datatype_new Expr =
    varE Var
  | valE Val
  | opE "Val \<Rightarrow> Val \<Rightarrow> Val" Expr Expr
 
-datatype BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
+datatype_new BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
 
 text{*Commands are the usual ones for an imperative language, plus the
 command $\mathit{Call}$ which stands for the invocation of a single
 (unnamed, parameterless) procedure.*}
 
-datatype IMP =
+datatype_new IMP =
     Skip 
   | Assign Var Expr
   | Comp IMP IMP

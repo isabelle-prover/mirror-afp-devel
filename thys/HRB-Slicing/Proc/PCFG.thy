@@ -5,7 +5,7 @@ theory PCFG imports ProcState begin
 definition Main :: "pname"
   where "Main = ''Main''"
 
-datatype label = Label nat | Entry | Exit
+datatype_new label = Label nat | Entry | Exit
 
 subsection{* The CFG for every procedure *}
 
@@ -64,7 +64,7 @@ subsubsection {* The edges of the procedure CFG *}
 text {* Control flow information in this language is the node, to which we return
   after the calles procedure is finished. *}
 
-datatype p_edge_kind = 
+datatype_new p_edge_kind = 
   IEdge "(vname,val,pname \<times> label,pname) edge_kind"
 | CEdge "pname \<times> expr list \<times> vname list"
 

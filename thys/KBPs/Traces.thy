@@ -21,7 +21,7 @@ knowledge-based programs in \S\ref{sec:kbps-theory-kbps-semantics}.
 
 *}
 
-datatype 's Trace = tInit "'s"
+datatype_new 's Trace = tInit "'s"
                   | tStep "'s Trace" "'s" (infixl "\<leadsto>" 65)
 
 fun tFirst :: "'s Trace \<Rightarrow> 's" where

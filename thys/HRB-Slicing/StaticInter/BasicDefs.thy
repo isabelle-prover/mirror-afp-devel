@@ -122,7 +122,7 @@ text {* A state is a call stack of tuples, which consists of:
   of the return parameter values to the underlying stack frame. See the funtions 
   @{text transfer} and @{text pred} in locale @{text CFG}. *}
 
-datatype ('var,'val,'ret,'pname) edge_kind =
+datatype_new (dead 'var, dead 'val, dead 'ret, dead 'pname) edge_kind =
     UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")
   | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^sub>\<surd>")
   | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" "'pname"  

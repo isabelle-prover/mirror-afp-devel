@@ -27,7 +27,7 @@ by the type @{typ "'a"} of agents and @{typ "'p"} of propositions.
 
 *}
 
-datatype ('a, 'p) Kform
+datatype_new ('a, 'p) Kform
   = Kprop "'p"
   | Knot "('a, 'p) Kform"
   | Kand "('a, 'p) Kform" "('a, 'p) Kform"

@@ -31,7 +31,7 @@ abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
 abbreviation multiset_empty ("\<Empt>" 75) where
   "\<Empt> \<equiv> {#}"
 
-datatype sequent = Sequent "form multiset" "form multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype_new sequent = Sequent "form multiset" "form multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
 
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation

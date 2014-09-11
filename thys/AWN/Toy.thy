@@ -12,7 +12,7 @@ begin
 
 subsection "Messages used in the protocol"
 
-datatype msg =
+datatype_new msg =
     Pkt data ip
   | Newpkt data ip
 
@@ -114,7 +114,7 @@ lemma is_msg_inv_msg [simp]:
   unfolding is_msg_defs
   by (cases "msg \<xi>", clarsimp+)+
 
-datatype pseqp =
+datatype_new pseqp =
     PToy
 
 fun nat_of_seqp :: "pseqp \<Rightarrow> nat"

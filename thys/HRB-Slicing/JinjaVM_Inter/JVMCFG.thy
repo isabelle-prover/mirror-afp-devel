@@ -39,8 +39,8 @@ lemma wf_jvmprog_is_wf: "wf_jvm_prog (PROG P)"
 subsubsection {* Interprocedural CFG *}
 
 type_synonym jvm_method = "wf_jvmprog \<times> cname \<times> mname"
-datatype var = Heap | Local "nat" | Stack "nat" | Exception
-datatype val = Hp "heap" | Value "Value.val"
+datatype_new var = Heap | Local "nat" | Stack "nat" | Exception
+datatype_new val = Hp "heap" | Value "Value.val"
 
 type_synonym state = "var \<rightharpoonup> val"
 
@@ -68,7 +68,7 @@ abbreviation stkAt :: "state \<Rightarrow> nat \<Rightarrow> Value.val"
 abbreviation locAt :: "state \<Rightarrow> nat \<Rightarrow> Value.val"
   where "locAt s n \<equiv> the_Value (the (s (Local n)))"
 
-datatype nodeType = Enter | Normal | Return | Exceptional "pc option" "nodeType"
+datatype_new nodeType = Enter | Normal | Return | Exceptional "pc option" "nodeType"
 type_synonym cfg_node = "cname \<times> mname \<times> pc option \<times> nodeType"
 
 type_synonym

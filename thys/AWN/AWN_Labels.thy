@@ -236,7 +236,7 @@ where
   | "labelmap lf ({l}receive(fmsg). p)           = {lf l}receive(fmsg). (labelmap lf p)"
   | "labelmap lf (call(fargs))                   = call(fargs)"
 
-datatype 'pn label =
+datatype_new 'pn label =
     LABEL 'pn int  ("_-:_" [1000, 1000] 999)
 
 instantiation "label" :: (ord) ord

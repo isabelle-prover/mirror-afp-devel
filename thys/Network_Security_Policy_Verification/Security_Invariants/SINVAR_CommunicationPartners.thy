@@ -16,7 +16,7 @@ Idea of this securityinvariant:
 
   TL;DR: An access control list determines who can access a master node.
 *}
-datatype 'v node_config = DontCare | Care | Master "'v list"
+datatype_new 'v node_config = DontCare | Care | Master "'v list"
 
 definition default_node_properties :: "'v node_config"
   where  "default_node_properties = DontCare"
