@@ -3,7 +3,7 @@ chapter AFP
 session Abstract_Completeness (AFP) = "HOL" +
   theories [document = false]
     "LTL"
-    "~~/src/HOL/BNF_Examples/Stream"
+    "~~/src/HOL/Datatype_Examples/Stream"
     "../Collections/ICF/tools/Locale_Code"
     "~~/src/HOL/Library/Code_Target_Nat"
   theories

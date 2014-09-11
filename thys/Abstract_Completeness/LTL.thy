@@ -1,6 +1,6 @@
 (* An abstract completeness theorem *)
 theory LTL
-imports "~~/src/HOL/BNF_Examples/Stream" "~~/src/HOL/Library/Prefix_Order"
+imports "~~/src/HOL/Datatype_Examples/Stream" "~~/src/HOL/Library/Prefix_Order"
 begin
 
 section{* Preliminaries *}
