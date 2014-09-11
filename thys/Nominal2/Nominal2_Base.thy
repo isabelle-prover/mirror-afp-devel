@@ -21,9 +21,9 @@ text {* A simple implementation for atom_sorts is strings. *}
 text {* To deal with Church-like binding we use trees of  
   strings as sorts. *}
 
-datatype atom_sort = Sort "string" "atom_sort list"
+datatype_new atom_sort = Sort "string" "atom_sort list"
 
-datatype atom = Atom atom_sort nat
+datatype_new atom = Atom atom_sort nat
 
 
 text {* Basic projection function. *}
