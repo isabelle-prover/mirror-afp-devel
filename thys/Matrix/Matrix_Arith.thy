@@ -825,7 +825,7 @@ where "mat_mult \<equiv> mat_multI zero plus times"
 lemma scalar_prod: "scalar_prod v1 v2 = listsum (map (\<lambda>(x,y). x * y) (zip v1 v2))" 
 proof -
   obtain z where z: "zip v1 v2 = z" by auto
-  show ?thesis unfolding scalar_prodI_def listsum_def z 
+  show ?thesis unfolding scalar_prodI_def z 
     by (induct z, auto)
 qed
 
