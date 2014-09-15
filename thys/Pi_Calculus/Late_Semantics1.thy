@@ -6,12 +6,16 @@ theory Late_Semantics1
   imports Late_Semantics
 begin
 
-old_rep_datatype InputS BoundOutputS
-apply(auto simp add: subject.inject)
-by(induct_tac subject rule: subject.induct) auto
+free_constructors case_subject for
+  InputS
+| BoundOutputS
+by(auto simp add: subject.inject)
+  (metis Rep_subject_inverse subject.constr_rep(1,2) subject_Rep.exhaust)
 
-old_rep_datatype OutputR TauR
-apply(auto simp add: freeRes.inject)
-by(induct_tac freeRes rule: freeRes.induct) auto
+free_constructors case_freeRes for
+  OutputR
+| TauR
+by(auto simp add: freeRes.inject)
+  (metis Abs_freeRes_cases Abs_freeRes_inverse freeRes.constr_rep(1,2) freeRes_Rep.exhaust)
 
 end
