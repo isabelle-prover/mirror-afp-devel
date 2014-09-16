@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Cayley_Hamilton" (AFP) = "HOL-Multivariate_Analysis" +
+  description {* Cayley_Hamilton *}
+  options [show_question_marks = false, timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Polynomial"
+  theories
+    Cayley_Hamilton
+  document_files
+    "root.bib"
+    "root.tex"

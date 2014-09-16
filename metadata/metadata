@@ -2306,6 +2306,17 @@ topic = Mathematics/Algebra
 depends-on = Secondary_Sylow
 abstract = This submission contains theories that lead to a formalization of the proof of the Jordan-Hölder theorem about composition series of finite groups. The theories formalize the notions of isomorphism classes of groups, simple groups, normal series, composition series, maximal normal subgroups. Furthermore, they provide proofs of the second isomorphism theorem for groups, the characterization theorem for maximal normal subgroups as well as many useful lemmas about normal subgroups and factor groups. The proof is inspired by course notes of Stuart Rankin.
 
+[Cayley_Hamilton]
+title = The Cayley-Hamilton Theorem
+author = Stephan Adelsberger <http://nm.wu.ac.at/nm/sadelsbe>,
+         Stefan Hetzl <http://www.logic.at/people/hetzl/>,
+         Florian Pollak <mailto:florian.pollak@gmail.com>
+date = 2014-09-15
+topic = Mathematics/Algebra
+abstract =
+ This document contains a proof of the Cayley-Hamilton theorem
+ based on the development of matrices in HOL/Multivariate Analysis. 
+
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
 author = Andrei Popescu <http://www21.in.tum.de/~popescua>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
