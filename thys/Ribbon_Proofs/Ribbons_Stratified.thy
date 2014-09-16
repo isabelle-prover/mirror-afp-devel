@@ -11,13 +11,16 @@ text {* We define the syntax of stratified diagrams. We give proof rules
 
 subsection {* Syntax of stratified diagrams *}
 
-old_datatype sdiagram = SDiagram "(cell \<times> interface) list" 
+datatype sdiagram = SDiagram "(cell \<times> interface) list" 
 and cell = 
   Filler "interface"
 | Basic "interface" "command" "interface"
 | Exists_sdia "string" "sdiagram"
 | Choose_sdia "interface" "sdiagram" "sdiagram" "interface"
 | Loop_sdia "interface" "sdiagram" "interface"
+
+datatype_compat sdiagram cell
+
 type_synonym row = "cell \<times> interface"
 
 text {* Extracting the command from a stratified diagram. *}
@@ -54,7 +57,8 @@ lemma wr_sdia_is_wr_com:
   and "(\<Union>\<rho> \<in> set \<rho>s. wr_cell (fst \<rho>)) 
     = wr_com (foldr (op ;;) (map (\<lambda>(\<gamma>,F). com_cell \<gamma>) \<rho>s) Skip)"
   and "wr_cell (fst \<rho>) = wr_com (com_cell (fst \<rho>))"
-apply (induct D and \<gamma> and \<rho>s and \<rho> rule: sdiagram_cell.inducts)
+apply (induct D and \<gamma> and \<rho>s and \<rho> rule: compat_sdiagram.induct compat_cell.induct
+  compat_cell_interface_prod_list.induct compat_cell_interface_prod.induct)
 apply (auto simp add: wr_com_skip wr_com_choose
   wr_com_loop wr_com_seq split_def o_def)
 done

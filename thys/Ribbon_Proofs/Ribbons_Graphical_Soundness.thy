@@ -550,7 +550,7 @@ next
       apply (unfold conj_commute, intro conjI, rule v_notin_S)
       apply (subgoal_tac 
         "v \<in> fset (ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V)")
-      apply (simp add: fmember.rep_eq)
+      apply simp
       apply (unfold filter_fset, simp, unfold conj_commute)
       apply (intro conjI ballI notI)
       apply (insert v_in_V, simp)
@@ -683,7 +683,7 @@ next
         then obtain i where 
           "i < length \<pi>" "0 < length \<pi>" "\<pi>!i = Inl v"  "\<pi>!0 = Inr e"
         by (metis Cons Inr in_set_conv_nth length_pos_if_in_set nth_Cons_0)
-        from lins(3)[OF this] show "False" by (auto simp add: fmember.rep_eq a)
+        from lins(3)[OF this] show "False" by (auto simp add: a)
       qed
 
       have "ws |\<inter>| (initials G) = {||}"
@@ -715,7 +715,7 @@ next
         apply (insert Suc.prems(1))
         apply (unfold G'_def G_def initials_def)
         apply (unfold less_eq_fset.rep_eq S'_def E'_def V'_def)
-        apply (auto simp add: fmember.rep_eq)
+        apply auto
         done
       next
         from Suc.prems(2) have "wf_dia (Graph V \<Lambda> E)" 
@@ -768,7 +768,7 @@ next
       have terms_same: "terminals G = terminals G'"
       apply (unfold G'_def G_def terminals_def edges.simps vertices.simps)
       apply (unfold E'_def V'_def)
-      apply (fold fset_cong, auto simp add: fmember.rep_eq e_in_E vs_def)
+      apply (fold fset_cong, auto simp add: e_in_E vs_def)
       done
 
       have 1: "fdom [ fst3 e |=> Bot ] |\<inter>| 
@@ -776,7 +776,7 @@ next
         \<oplus> [ S - fst3 e |=> Bot ]) = {||}"
       apply (unfold fdom_union fdom_make_fmap)
       apply (fold fset_cong)
-      apply (auto simp add: fmember.rep_eq)
+      apply auto
       apply (metis in_mono less_eq_fset.rep_eq vs_def vs_in_S)
       done
 
@@ -805,7 +805,7 @@ next
         apply (unfold fmap_add_commute[OF 1])
         apply (fold fmap_add_assoc)
         apply (unfold make_fmap_union)
-        apply (auto simp add: fmember.rep_eq fdom_union fdom_make_fmap e_in_E)[1]
+        apply (auto simp add: fdom_union fdom_make_fmap e_in_E)[1]
         apply simp
         apply (unfold fmap_add_assoc)
         apply (unfold make_fmap_union)  
@@ -1109,7 +1109,7 @@ next
         apply simp
         apply (intro ballI)
         apply (subgoal_tac "v |\<in>| fdom \<sigma>")
-        apply (unfold lookup_union1, auto simp add: fmember.rep_eq)
+        apply (unfold lookup_union1, auto)
         apply (subgoal_tac "v |\<notin>| fdom \<sigma>")
         apply (unfold lookup_union2)
         apply (metis lookup_make_fmap topbot.simps(3))
