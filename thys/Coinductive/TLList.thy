@@ -827,20 +827,6 @@ using tset_conv_tnth[of xs] by auto
 
 subsection {* Setup for Lifting/Transfer *}
 
-context
-begin
-interpretation lifting_syntax .
-
-(* FIXME: move to Main *)
-
-lemma OO_transfer [transfer_rule]:
-  assumes [transfer_rule]: "bi_total B"
-  shows "((A ===> B ===> op =) ===> (B ===> C ===> op =) ===> A ===> C ===> op =) op OO op OO"
-unfolding OO_def[abs_def]
-by transfer_prover
-
-end
-
 subsubsection {* Relator and predicator properties *}
 
 abbreviation "tllist_all == pred_tllist"
