@@ -112,11 +112,11 @@ fun mk_eq (l, r) = HOLogic.Trueprop $ ((HOLogic.eq_const dummyT) $ l $ r)
 fun add_datatype (params, binding) constr_specs thy =
   let
     val ([dt_name], thy') = thy
-      |> BNF_LFP_Compat.add_datatype BNF_LFP_Compat.Keep_Nesting
+      |> BNF_LFP_Compat.add_datatype [BNF_LFP_Compat.Keep_Nesting]
         [((binding, params, NoSyn), constr_specs)];
     val constr_names =
       map fst (the_single (map (#3 o snd)
-        (#descr (BNF_LFP_Compat.the_info thy' BNF_LFP_Compat.Keep_Nesting dt_name))));
+        (#descr (BNF_LFP_Compat.the_info thy' [BNF_LFP_Compat.Keep_Nesting] dt_name))));
     fun constr (c, Ts) = (Const (c, dummyT), length Ts);
     val constrs = map #1 constr_specs ~~ map constr (constr_names ~~ map #2 constr_specs);
    in ((dt_name, constrs), thy') end;
@@ -145,7 +145,7 @@ fun define_channels (params, binding) typesyn channels thy =
 
   fun case_tac x ctxt =
     rtac (Drule.instantiate' [] [SOME x]
-      (#exhaust (BNF_LFP_Compat.the_info (Proof_Context.theory_of ctxt) BNF_LFP_Compat.Keep_Nesting dt_name)));
+      (#exhaust (BNF_LFP_Compat.the_info (Proof_Context.theory_of ctxt) [BNF_LFP_Compat.Keep_Nesting] dt_name)));
 
   fun proof ctxt = (Class.intro_classes_tac [] THEN
                       Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} =>

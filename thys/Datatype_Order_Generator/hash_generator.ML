@@ -101,7 +101,7 @@ fun derive dtyp_name _ thy =
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating hashcode for datatype " ^ base_name)
     val sort = @{sort hashable}
-    val info = BNF_LFP_Compat.the_info thy BNF_LFP_Compat.Unfold_Nesting tyco
+    val info = BNF_LFP_Compat.the_info thy [] tyco
     val vs_of_sort =
       let val i = BNF_LFP_Compat.the_spec thy tyco |> #1
       in fn sort => map (fn (n,_) => (n, sort)) i end

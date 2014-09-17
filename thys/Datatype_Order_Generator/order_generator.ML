@@ -61,7 +61,7 @@ fun mk_less_idx thy info sort =
     fun mk_rhss (idx,(ty_name,_,cons)) =
       let
         val ty = typ_of (Old_Datatype_Aux.DtRec idx)
-        val linfo = BNF_LFP_Compat.the_info thy BNF_LFP_Compat.Unfold_Nesting ty_name
+        val linfo = BNF_LFP_Compat.the_info thy [] ty_name
         val case_name = #case_name linfo
         fun mk_rhs (i,(_,dtysi)) =
           let
@@ -178,7 +178,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
       let
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name)
-          |> BNF_LFP_Compat.the_info thy BNF_LFP_Compat.Unfold_Nesting
+          |> BNF_LFP_Compat.the_info thy []
         fun solve_with_tac ctxt thms =
           let
             val simp_ctxt =
@@ -491,7 +491,7 @@ fun derive kind dtyp_name _ thy =
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating orders for datatype " ^ base_name)
     val sort = @{sort ord}
-    val info = BNF_LFP_Compat.the_info thy BNF_LFP_Compat.Unfold_Nesting tyco
+    val info = BNF_LFP_Compat.the_info thy [] tyco
     val vs_of_sort =
       let val i = BNF_LFP_Compat.the_spec thy tyco |> #1
       in fn sort => map (fn (n,_) => (n, sort)) i end

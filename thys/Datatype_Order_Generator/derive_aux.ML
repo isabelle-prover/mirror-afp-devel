@@ -303,7 +303,7 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype
         val y = hd ys
         val (j,idx) = nth nrec_args i |> (fn (_,j,idx) => (j,idx))
         val linfo = nth descr idx |> (fn (_,(ty_name,_,_)) => ty_name)
-          |> BNF_LFP_Compat.the_info thy BNF_LFP_Compat.Unfold_Nesting
+          |> BNF_LFP_Compat.the_info thy []
         fun solve_with_tac ctxt thms =
           let val simp_ctxt =
             (ctxt
