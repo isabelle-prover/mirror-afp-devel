@@ -17,10 +17,10 @@ by(induction k) auto
 lemma potential:
 fixes t :: "nat \<Rightarrow> 'a::linordered_ab_group_add" and p :: "nat \<Rightarrow> 'a"
 assumes p0: "p 0 = 0" and ppos: "\<And>n. p n \<ge> 0"
-and ub: "\<And>n. t n + p(Suc n) - p n \<le> u n"
+and ub: "\<And>n. t n + p(n+1) - p n \<le> u n"
 shows "(\<Sum>i<n. t i) \<le> (\<Sum>i<n. u i)"
 proof-
-  let ?a = "\<lambda>n. t n + p(Suc n) - p n"
+  let ?a = "\<lambda>n. t n + p(n+1) - p n"
   have 1: "(\<Sum>i<n. t i) = (\<Sum>i<n. ?a i) - p(n)"
     by(induction n) (simp_all add: p0)
   thus ?thesis
@@ -124,8 +124,20 @@ fun s_mtf :: "nat \<Rightarrow> 'a list" where
 definition t_mtf :: "nat \<Rightarrow> int" where
 "t_mtf n = index (s_mtf n) (q n) + 1"
 
+definition T_mtf :: "nat \<Rightarrow> int" where
+"T_mtf n = (\<Sum>i<n. t_mtf i)"
+
+definition c_off :: "nat \<Rightarrow> int" where
+"c_off n = index (s_off n) (q n) + 1"
+
+definition p_off :: "nat \<Rightarrow> int" where
+"p_off n = size(sw_off n)"
+
 definition t_off :: "nat \<Rightarrow> int" where
-"t_off n = index (s_off n) (q n) + 1 + size(sw_off n)"
+"t_off n = c_off n + p_off n"
+
+definition T_off :: "nat \<Rightarrow> int" where
+"T_off n = (\<Sum>i<n. t_off i)"
 
 lemma length_s_mtf[simp]: "length(s_mtf n) = length init"
 by (induction n) simp_all
@@ -152,7 +164,7 @@ by(simp add: Phi_def)
 lemma phi_pos: "Phi n \<ge> 0"
 by(simp add: Phi_def)
 
-lemma mtf_ub: "t_mtf n + Phi (Suc n) - Phi n \<le> 2 * t_off n"
+lemma mtf_ub: "t_mtf n + Phi (n+1) - Phi n \<le> 2 * c_off n - 1 + p_off n"
 proof -
   let ?xs = "s_off n" let ?ys = "s_mtf n" let ?x = "q n"
   let ?xs' = "foldr swapSuc (sw_off n) ?xs" let ?ys' = "mtf ?x ?ys"
@@ -189,7 +201,7 @@ proof -
     finally show ?thesis by(simp add: t_mtf_def Let_def)
   qed
   show ?thesis using xin phi_diff card_subset_before[of "s_off n" "q n" "?bb"]
-    by(simp add: t_mtf t_off_def Let_def)
+    by(simp add: t_mtf c_off_def p_off_def Let_def)
   next
     assume notin: "?x \<notin> set ?ys"
     have "int (card (Inv ?xs' ?ys)) - card (Inv ?xs ?ys) \<le> card(Inv ?xs ?xs')"
@@ -198,17 +210,65 @@ proof -
       by(simp add: card_Inv_sym)
     also have "\<dots> \<le> size(sw_off n)"
       by(simp add: card_Inv_foldr_swapSuc sw_off_size dperm_inv)
-    finally show ?thesis using notin by(simp add: t_mtf_def t_off_def Phi_def)
+    finally show ?thesis using notin
+      by(simp add: t_mtf_def c_off_def p_off_def Phi_def)
   qed
 qed
 
-theorem t_mtf_t_off: "(\<Sum>i<n. t_mtf i) \<le> 2*(\<Sum>i<n. t_off i)"
+text{* We ignore free exchanges because they are not necessary in an offline algorithm: *}
+
+theorem Sleator_Tarjan: "T_mtf n \<le> (\<Sum>i<n. 2*c_off i + p_off i) - n"
 proof-
-  have "(\<Sum>i<n. t_mtf i) \<le> (\<Sum>i<n. 2*t_off i)"
+  have "(\<Sum>i<n. t_mtf i) \<le> (\<Sum>i<n. 2*c_off i - 1 + p_off i)"
     by(rule potential[where p=Phi,OF phi0 phi_pos mtf_ub])
-  also have "\<dots> = 2*(\<Sum>i<n. t_off i)"
-    by (metis setsum_right_distrib)
+  also have "\<dots> = (\<Sum>i<n. (2*c_off i + p_off i) - 1)"
+    by (simp add: diff_add_eq)
+  also have "\<dots> = (\<Sum>i<n. 2*c_off i + p_off i) - n"
+    by(simp add: sumr_diff_mult_const2[symmetric])
+  finally show ?thesis by(simp add: T_mtf_def)
+qed
+
+lemma T_off_nneg: "0 \<le> (T_off n)"
+by(auto simp add: setsum_nonneg T_off_def t_off_def c_off_def p_off_def)
+
+lemma T_mtf_ub: "\<forall>i<n. q i \<in> set init \<Longrightarrow> (T_mtf n) \<le> n * size init"
+proof(induction n)
+  case 0 show ?case by(simp add: T_mtf_def)
+next
+  case (Suc n)  thus ?case
+    using index_less_size_conv[of "s_mtf n" "q n"]
+      by(simp add: T_mtf_def t_mtf_def less_Suc_eq del: index_less)
+qed
+
+corollary MTF_competitive: assumes "init \<noteq> []" and "\<forall>i<n. q i \<in> set init"
+shows "T_mtf n \<le> (2 - 1/(size init)) * T_off n"
+proof cases
+  assume 0: "real(T_off n) \<le> n * (size init)"
+  have "T_mtf n \<le> 2 * T_off n - n"
+  proof -
+    have "T_mtf n \<le> (\<Sum>i<n. 2*c_off i + p_off i) - n" by(rule Sleator_Tarjan)
+    also have "(\<Sum>i<n. 2*c_off i + p_off i) \<le> (\<Sum>i<n. 2*(c_off i + p_off i))"
+      by(rule setsum_mono) (simp add: p_off_def)
+    also have "\<dots> \<le> 2 * T_off n" by (simp add: setsum_right_distrib T_off_def t_off_def)
+    finally show ?thesis by simp
+  qed
+  hence "real(T_mtf n) \<le> 2 * real(T_off n) - n" by linarith
+  also have "\<dots> = 2 * real(T_off n) - (n * size init) / size init"
+    using assms(1) by simp
+  also have "\<dots> \<le> 2 * real(T_off n) - T_off n / size init"
+    by(rule diff_left_mono[OF  divide_right_mono[OF 0]]) simp
+  also have "\<dots> = (2 - 1 / size init) * T_off n" by algebra
   finally show ?thesis .
+next
+  assume 0: "\<not> real(T_off n) \<le> n * (size init)"
+  have "2 - 1 / size init \<ge> 1" using assms(1)
+    by (auto simp add: field_simps neq_Nil_conv)
+  have "real (T_mtf n) \<le> n * size init" using T_mtf_ub[OF assms(2)] by linarith
+  also have "\<dots> < real(T_off n)" using 0 by linarith
+  also have "\<dots> \<le> (2 - 1 / size init) * T_off n" using assms(1) T_off_nneg[of n]
+    by(auto simp add: mult_le_cancel_right1 field_simps neq_Nil_conv
+        simp del: real_of_int_setsum)
+  finally show ?thesis by linarith
 qed
 
 end
