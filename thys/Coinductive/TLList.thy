@@ -72,47 +72,6 @@ declare
 
 subsection {* Code generator setup *}
 
-text {* Setup for quickcheck *}
-
-quickcheck_generator tllist constructors: "TNil :: _ \<Rightarrow> ('a, 'b) tllist", "TCons :: _ \<Rightarrow> _ \<Rightarrow> ('a, 'b) tllist"
-
-instantiation tllist :: (narrowing, narrowing) narrowing begin
-
-context includes integer.lifting begin
-
-function narrowing_tllist
-where
-  "narrowing_tllist n = Quickcheck_Narrowing.sum
-    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons TNil) narrowing)
-    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons TCons) narrowing) narrowing_tllist)
-    n"
-by pat_completeness auto
-termination by (relation "measure nat_of_integer") (simp_all, transfer, simp)
-
-instance ..
-end
-end
-
-declare [[code drop: "partial_term_of :: (_, _) tllist itself => _"]]
-
-lemma partial_term_of_tllist_code [code]:
-  fixes tytok :: "('a :: partial_term_of, 'b :: partial_term_of) tllist itself" shows
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
-   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE(('a, 'b) tllist))"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 [b]) \<equiv>
-   Code_Evaluation.App
-     (Code_Evaluation.Const (STR ''TLList.tllist.TNil'') (Typerep.typerep TYPE('b \<Rightarrow> ('a, 'b) tllist)))
-     (partial_term_of TYPE('b) b)"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
-   Code_Evaluation.App
-     (Code_Evaluation.App
-        (Code_Evaluation.Const
-           (STR ''TLList.tllist.TCons'')
-           (Typerep.typerep TYPE('a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist)))
-        (partial_term_of TYPE('a) head))
-     (partial_term_of TYPE(('a, 'b) tllist) tail)"
-by-(rule partial_term_of_anything)+
-
 text {* Test quickcheck setup *}
 
 lemma "xs = TNil x"

@@ -141,45 +141,6 @@ theorem llist_set_induct[consumes 1, case_names find step]:
   shows "P x xs"
 using assms by(induct)(fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
 
-
-text {* Setup for quickcheck *}
-
-quickcheck_generator llist constructors: LNil, LCons
-
-instantiation llist :: (narrowing) narrowing begin
-
-context includes integer.lifting begin
-
-function narrowing_llist where
-  "narrowing_llist n = Quickcheck_Narrowing.sum
-    (Quickcheck_Narrowing.cons LNil)
-    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons LCons) narrowing) narrowing_llist)
-    n"
-by pat_completeness simp
-termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
-
-instance ..
-end
-end
-
-declare [[code drop: "partial_term_of :: _ llist itself => _"]]
-
-lemma partial_term_of_llist_code [code]:
-  fixes tytok :: "'a :: partial_term_of llist itself" shows
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
-   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE('a llist))"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 []) \<equiv>
-   Code_Evaluation.Const (STR ''Coinductive_List.llist.LNil'') (Typerep.typerep TYPE('a llist))"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
-   Code_Evaluation.App
-     (Code_Evaluation.App
-        (Code_Evaluation.Const
-           (STR ''Coinductive_List.llist.LCons'')
-           (Typerep.typerep TYPE('a \<Rightarrow> 'a llist \<Rightarrow> 'a llist)))
-        (partial_term_of TYPE('a) head))
-     (partial_term_of TYPE('a llist) tail)"
-by-(rule partial_term_of_anything)+
-
 text {* Test quickcheck setup *}
 
 lemma "\<And>xs. xs = LNil"
