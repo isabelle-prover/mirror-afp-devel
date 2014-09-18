@@ -4,7 +4,7 @@
 header {* Manual construction of a resumption codatatype *}
 
 theory Resumption imports 
-  Main 
+  "~~/src/HOL/Library/Old_Datatype"
 begin
 
 text {*

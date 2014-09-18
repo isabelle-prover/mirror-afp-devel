@@ -4,6 +4,7 @@
 session "Nominal2" (AFP) = HOL +
   options [document = false]
   theories
+    "~~/src/HOL/Library/Old_Datatype"
     "Nominal2"
     "Atoms"
     "Eqvt"

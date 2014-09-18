@@ -5,7 +5,7 @@
     Nominal Isabelle. 
 *)
 theory Nominal2_Base
-imports Main 
+imports "~~/src/HOL/Library/Old_Datatype"
         "~~/src/HOL/Library/Infinite_Set"
         "~~/src/HOL/Quotient_Examples/FSet"
         "~~/src/HOL/Library/FinFun"

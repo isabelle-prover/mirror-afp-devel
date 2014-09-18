@@ -22,7 +22,6 @@ structure Corder_Generator : CORDER_GENERATOR =
 struct
 open Containers_Generator; 
 open Derive_Aux;
-open Old_Datatype; 
 open Order_Generator;
 
 fun mk_none_corder ty =
