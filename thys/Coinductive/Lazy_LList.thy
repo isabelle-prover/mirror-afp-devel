@@ -26,7 +26,22 @@ code_datatype Lazy_llist
 
 declare -- {* Restore consistency in code equations between @{const partial_term_of} and @{const narrowing} for @{typ "'a llist"} *}
    [[code drop: "partial_term_of :: _ llist itself => _"]]
-   partial_term_of_llist_code [code]
+
+lemma partial_term_of_llist_code [code]:
+  fixes tytok :: "'a :: partial_term_of llist itself" shows
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
+   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE('a llist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 []) \<equiv>
+   Code_Evaluation.Const (STR ''Coinductive_List.llist.LNil'') (Typerep.typerep TYPE('a llist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.App
+        (Code_Evaluation.Const
+           (STR ''Coinductive_List.llist.LCons'')
+           (Typerep.typerep TYPE('a \<Rightarrow> 'a llist \<Rightarrow> 'a llist)))
+        (partial_term_of TYPE('a) head))
+     (partial_term_of TYPE('a llist) tail)"
+by-(rule partial_term_of_anything)+
 
 declare option.splits [split]
 
