@@ -2,7 +2,7 @@
 *)
 
 theory Basis
-imports Main
+imports "~~/src/HOL/Library/Old_Datatype"
 begin
 
 
