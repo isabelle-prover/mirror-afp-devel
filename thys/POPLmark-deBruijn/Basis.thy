@@ -2,9 +2,8 @@
 *)
 
 theory Basis
-imports "~~/src/HOL/Library/Old_Datatype"
+imports Main
 begin
-
 
 section {* General Utilities *}
 
