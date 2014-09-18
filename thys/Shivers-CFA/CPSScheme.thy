@@ -1,7 +1,7 @@
 header "Syntax"
 
 theory CPSScheme
-  imports "~~/src/HOL/Library/Old_Datatype"
+  imports Main
 begin
 
 text {*
@@ -26,12 +26,22 @@ Shivers also restricts the values in a call expression: No constant maybe be use
 *}
 
 datatype prim = Plus label | If label label
-old_datatype lambda = Lambda label "var list" call
+datatype lambda = Lambda label "var list" call
      and call = App label val "val list"
               | Let label "(var \<times> lambda) list" call
      and val = L lambda | R label var | C label int | P prim
 
+datatype_compat lambda call val
+
 type_synonym prog = lambda
+
+lemmas mutual_lambda_call_var_inducts =
+  compat_lambda.induct
+  compat_call.induct
+  compat_val.induct
+  compat_val_list.induct
+  compat_nat_char_list_prod_lambda_prod_list.induct
+  compat_nat_char_list_prod_lambda_prod.induct
 
 text {*
 Three example programs. These were generated using the Haskell implementation
