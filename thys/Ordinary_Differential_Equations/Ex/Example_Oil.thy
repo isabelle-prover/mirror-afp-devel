@@ -38,8 +38,8 @@ interpretation oil!: aform_approximate_ivp
 
 definition "rough_optns = default_optns
     \<lparr> precision := 50,
-      tolerance := FloatR 1 -3,
-      stepsize  := FloatR 1 -9,
+      tolerance := FloatR 1 (- 3),
+      stepsize  := FloatR 1 (- 9),
       result_fun := ivls_result 20 110,
       iterations := 20,
       widening_mod := 20,

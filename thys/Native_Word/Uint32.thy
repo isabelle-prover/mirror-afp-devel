@@ -657,13 +657,13 @@ definition test_uint32 where
     , 0x5A OR 0x36
     , 0x5A XOR 0x36
     , NOT 0x5A
-    , 5 + 6, -5 + 6, -6 + 5, -5 + -6, 0xFFFFFFFFF + 1
+    , 5 + 6, -5 + 6, -6 + 5, -5 + (- 6), 0xFFFFFFFFF + 1
     , 5 - 3, 3 - 5
     , 5 * 3, -5 * 3, -5 * -4, 0x12345678 * 0x87654321
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit -5 32 True, set_bit -5 32 False
+    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
+    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , 1 << 2, -1 << 3, 1 << 32, 1 << 0
     , 100 >> 3, -100 >> 3, 100 >> 32, -100 >> 32
     , 100 >>> 3, -100 >>> 3, 100 >>> 32, -100 >>> 32] :: uint32 list)

@@ -63,7 +63,7 @@ value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix ([[1,0,0,0,0
 value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix ([[1,-2,1,-3,0],[3,-6,2,-7,0]])::rat^5^2))"
 value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix ([[1,0,0,1,1],[1,0,1,1,1]])::bit^5^2))"
 value "(reduced_row_echelon_form_upt_k (list_of_list_to_matrix ([[1,0,8],[0,1,9],[0,0,0]])::real^3^3)) 3"
-value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 1,Complex 1 -1, Complex 0 0],[Complex 2 -1,Complex 1 3, Complex 7 3]]::complex^3^2))"
+value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 1,Complex 1 (- 1), Complex 0 0],[Complex 2 (- 1),Complex 1 3, Complex 7 3]]::complex^3^2))"
 value "DIM(real^5)"
 value "vec.dimension (TYPE(bit)) (TYPE(5))"
 value "vec.dimension (TYPE(real)) (TYPE(2))"
@@ -76,7 +76,7 @@ value "col_rank (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1
 value "vec.dim (col_space (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4))"
 value "rank (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4)"
 value "vec.dim (null_space (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4))"
-value "rank (list_of_list_to_matrix [[Complex 1 1,Complex 1 -1, Complex 0 0],[Complex 2 -1,Complex 1 3, Complex 7 3]]::complex^3^2)"
+value "rank (list_of_list_to_matrix [[Complex 1 1,Complex 1 (- 1), Complex 0 0],[Complex 2 (- 1),Complex 1 3, Complex 7 3]]::complex^3^2)"
 
 subsubsection{*Inverse of a matrix*}
 text{*Examples on computing the inverse of matrices*}
@@ -91,7 +91,7 @@ value "let A=(list_of_list_to_matrix [[1,1,2,4,5,9,8],[3,0,8,4,5,0,8],[3,2,0,4,5
                     in matrix_to_list_of_list (the (inverse_matrix A))"
 value "let A=(list_of_list_to_matrix [[1,1,1,1,1,1,1],[2,2,2,2,2,2,2],[3,2,0,4,5,9,8], [3,2,8,0,5,9,8] ,[3,2,8,4,0,9,8] ,[3,2,8,4,5,0,8], [3,2,8,4,5,9,0]]::real^7^7)
                     in (inverse_matrix A)"
-value "let A=(list_of_list_to_matrix [[Complex 1 1,Complex 1 -1, Complex 0 0],[Complex 1 1,Complex 1 -1, Complex 8 0],[Complex 2 -1,Complex 1 3, Complex 7 3]]::complex^3^3)
+value "let A=(list_of_list_to_matrix [[Complex 1 1,Complex 1 (- 1), Complex 0 0],[Complex 1 1,Complex 1 (- 1), Complex 8 0],[Complex 2 (- 1),Complex 1 3, Complex 7 3]]::complex^3^3)
                     in matrix_to_list_of_list (the (inverse_matrix A))"
 
 

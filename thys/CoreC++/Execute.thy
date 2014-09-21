@@ -1118,7 +1118,7 @@ values [expected "{Some (Intg 12)}"]
     \<turnstile> \<langle>(''a'' := Val(Intg 3));;(''b'' := Val(Intg 4));;(''mult'' := Val(Intg 0));;
        (''V'' := Val(Intg 1));;
        while (Var ''V'' \<guillemotleft>Eq\<guillemotright> Val(Intg 1))((''mult'' := Var ''mult'' \<guillemotleft>Add\<guillemotright> Var ''b'');;
-         (''a'' := Var ''a'' \<guillemotleft>Add\<guillemotright> Val(Intg -1));;
+         (''a'' := Var ''a'' \<guillemotleft>Add\<guillemotright> Val(Intg (- 1)));;
          (''V'' := (if(Var ''a'' \<guillemotleft>Eq\<guillemotright> Val(Intg 0)) Val(Intg 0) else Val(Intg 1)))),
        (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 

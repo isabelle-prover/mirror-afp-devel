@@ -799,8 +799,8 @@ definition "test_uint \<equiv> let
     @ (if dflt_size > 4 then
       [ 5 div 3, -5 div 3, -5 div -3, 5 div -3
       , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-      , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-      , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit -5 dflt_size True, set_bit -5 dflt_size False
+      , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
+      , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit (- 5) dflt_size True, set_bit (- 5) dflt_size False
       , 1 << 2, -1 << 3, 1 << dflt_size, 1 << 0
       , 31 >> 3, -1 >> 3, 31 >> dflt_size, -1 >> dflt_size
       , 15 >>> 2, -1 >>> 3, 15 >>> dflt_size, -1 >>> dflt_size]

@@ -78,8 +78,8 @@ value "rank_iarray (IArray[IArray[1::real,0,1],IArray[1,1,0],IArray[0,1,1]])"
 value "rank_iarray (IArray[IArray[1::bit,0,1],IArray[1,1,0],IArray[0,1,1]])"
 
 text{*Examples on computing the Gauss Jordan algorithm.*}
-value "iarray_of_iarray_to_list_of_list (matrix_to_iarray (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 1,Complex 1 -1, Complex 0 0],[Complex 2 -1,Complex 1 3, Complex 7 3]]::complex^3^2)))"
-value "iarray_of_iarray_to_list_of_list (Gauss_Jordan_iarrays(IArray[IArray[Complex 1 1,Complex 1 -1,Complex 0 0],IArray[Complex 2 -1,Complex 1 3,Complex 7 3]]))"
+value "iarray_of_iarray_to_list_of_list (matrix_to_iarray (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 1,Complex 1 (- 1), Complex 0 0],[Complex 2 (- 1),Complex 1 3, Complex 7 3]]::complex^3^2)))"
+value "iarray_of_iarray_to_list_of_list (Gauss_Jordan_iarrays(IArray[IArray[Complex 1 1,Complex 1 (- 1),Complex 0 0],IArray[Complex 2 (- 1),Complex 1 3,Complex 7 3]]))"
 
 subsubsection{*Inverse of a matrix*}
 text{*Examples on inverting matrices*}

@@ -29,8 +29,8 @@ interpretation exp_ivp!: aform_approximate_ivp
 
 definition "exp_optns = default_optns
     \<lparr> precision := 40,
-      tolerance := FloatR 1 -9,
-      stepsize  := FloatR 1 -6,
+      tolerance := FloatR 1 (- 9),
+      stepsize  := FloatR 1 (- 6),
       result_fun := ivls_result 23 1,
       iterations := 40,
       widening_mod := 10,

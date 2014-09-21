@@ -28,12 +28,12 @@ interpretation e1!: aform_approximate_ivp
 
 definition "e1_optns = default_optns
     \<lparr> precision := 30,
-      tolerance := FloatR 1 -4,
-      stepsize  := FloatR 1 -5,
+      tolerance := FloatR 1 (- 4),
+      stepsize  := FloatR 1 (- 5),
       result_fun := ivls_result 23 4,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
-definition "e1test = (\<lambda>_::unit. euler_series_result (uncurry_options e1) (uncurry_options e1_d) e1_optns 0 (aform_of_point (Floatreal 0, FloatR 23 -5)) (2 ^ 7))"
+definition "e1test = (\<lambda>_::unit. euler_series_result (uncurry_options e1) (uncurry_options e1_d) e1_optns 0 (aform_of_point (Floatreal 0, FloatR 23 (- 5))) (2 ^ 7))"
 
 lemma e1test_result: "e1test () =
   Some (FloatR 128 (- 5),

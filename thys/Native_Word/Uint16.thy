@@ -533,8 +533,8 @@ definition test_uint16 where
     , 5 * 3, -5 * 3, -5 * -4, 0x1234 * 0x8765
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit -5 32 True, set_bit -5 32 False
+    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
+    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , 1 << 2, -1 << 3, 1 << 16, 1 << 0
     , 100 >> 3, -100 >> 3, 100 >> 16, -100 >> 16
     , 100 >>> 3, -100 >>> 3, 100 >>> 16, -100 >>> 16] :: uint16 list)

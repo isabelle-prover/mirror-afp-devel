@@ -553,9 +553,9 @@ definition "ivls_result p m = (apsnd (summarize_enclosure p m o snd)) o snd"
 definition "default_optns =
     \<lparr>
     precision = 53,
-    tolerance = FloatR 1 -8,
-    stepsize  = FloatR 1 -8,
-    min_stepsize = FloatR 1 -8,
+    tolerance = FloatR 1 (- 8),
+    stepsize  = FloatR 1 (- 8),
+    min_stepsize = FloatR 1 (- 8),
     iterations = 40,
     halve_stepsizes = 10,
     widening_mod = 40,

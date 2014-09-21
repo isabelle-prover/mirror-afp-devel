@@ -1353,7 +1353,7 @@ proof -
   hence greatest_k_eq_minus_1: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1" using a_eq_minus_1 by blast
   have "(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A) = -1"
   proof (rule Greatest'_equality)
-    show "\<not> is_zero_row_upt_k -1 (Suc k) A" 
+    show "\<not> is_zero_row_upt_k (- 1) (Suc k) A" 
       using Greatest'I_ex greatest_k_eq_minus_1 is_zero_row_upt_k_le not_zero_m by force
     show "\<And>y. \<not> is_zero_row_upt_k y (Suc k) A \<Longrightarrow> y \<le> -1" using Greatest_is_minus_1 by fast
   qed
