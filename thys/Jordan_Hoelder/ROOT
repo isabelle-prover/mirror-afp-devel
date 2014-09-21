@@ -1,0 +1,11 @@
+chapter AFP
+
+session Jordan_Hoelder (AFP) = "HOL-Algebra" +
+  options [timeout = 600]
+  theories [document = false]
+    "../Secondary_Sylow/SndSylow"
+  theories
+    JordanHolder
+  document_files
+    "root.tex"
+    "root.bib"

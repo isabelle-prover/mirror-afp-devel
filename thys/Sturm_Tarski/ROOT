@@ -1,0 +1,11 @@
+chapter AFP
+
+session Sturm_Tarski (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Poly_Deriv"
+  theories
+    Sturm_Tarski
+  document_files
+    "root.tex"
+    "root.bib"

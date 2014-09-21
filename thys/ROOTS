@@ -23,6 +23,7 @@ Category2
 Cauchy
 CAVA_Automata
 CAVA_LTL_Modelchecker
+Cayley_Hamilton
 Circus
 CISC-Kernel
 ClockSynchInst
@@ -87,6 +88,7 @@ Integration
 Jinja
 JinjaThreads
 JiveDataStoreModel
+Jordan_Hoelder
 KAT_and_DRA
 KBPs
 Kleene_Algebra
@@ -177,6 +179,7 @@ Statecharts
 Stream-Fusion
 Strong_Security
 Sturm_Sequences
+Sturm_Tarski
 Stuttering_Equivalence
 SumSquares
 TLA

@@ -1,0 +1,56 @@
+% $Id: root.tex,v 1.2 2007-11-12 21:00:45 nipkow Exp $
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb} 
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Sturm-Tarski Theorem}
+\author{Wenda Li}
+\maketitle
+
+\begin{abstract}
+  We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem): \[\sum_{x \in (a,b),P(x)=0} {\rm sign}(Q(x)) = {\rm Var}({\rm SRemS}(P,P'Q;a,b))\] 
+  where $a<b$ are elements of $\mathbb{R} \cup \{-\infty,\infty\}$ that are not roots of $P$, with $P,Q \in \mathbb{R}[x]$. Note, 
+  the usual Sturm theorem is an instance of the Sturm-Tarski theorem with $Q=1$. The proof is based on \cite{Basu:2006:ARA:1197095} and Cyril Cohen's work in Coq \cite{cohen_phd}. With the Sturm-Tarki theorem, it is possible further prove a quantifier elimination procedure for real closed field as Cyril Cohen does in Coq.
+\end{abstract}
+
+%\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

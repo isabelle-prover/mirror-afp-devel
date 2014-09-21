@@ -1777,6 +1777,13 @@ abstract = Sturm's Theorem states that polynomial sequences with certain
   P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
   &#8712; &#8477;”.
 
+[Sturm_Tarski]
+title = The Sturm-Tarski Theorem
+author = Wenda Li <mailto:wl302@cam.ac.uk>
+date = 2014-09-19
+topic = Mathematics/Analysis
+abstract = We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem), which generalizes Sturm's theorem. Sturm's theorem is usually used as a way to count distinct real roots, while the Sturm-Tarksi theorem forms the basis for Tarski's classic quantifier elimination for real closed field.
+
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -2300,6 +2307,25 @@ abstract = These theories extend the existing proof of the first Sylow theorem
 		state propositions about the number of Sylow p-subgroups of a group
 		and the fact that they are conjugate to each other. The proofs make
 		use of an implementation of group actions and their properties.
+
+[Jordan_Hoelder]
+title = The Jordan-Hölder Theorem
+author = Jakob von Raumer <mailto:jakob.raumer@student.kit.edu>
+date = 2014-09-09
+topic = Mathematics/Algebra
+depends-on = Secondary_Sylow
+abstract = This submission contains theories that lead to a formalization of the proof of the Jordan-Hölder theorem about composition series of finite groups. The theories formalize the notions of isomorphism classes of groups, simple groups, normal series, composition series, maximal normal subgroups. Furthermore, they provide proofs of the second isomorphism theorem for groups, the characterization theorem for maximal normal subgroups as well as many useful lemmas about normal subgroups and factor groups. The proof is inspired by course notes of Stuart Rankin.
+
+[Cayley_Hamilton]
+title = The Cayley-Hamilton Theorem
+author = Stephan Adelsberger <http://nm.wu.ac.at/nm/sadelsbe>,
+         Stefan Hetzl <http://www.logic.at/people/hetzl/>,
+         Florian Pollak <mailto:florian.pollak@gmail.com>
+date = 2014-09-15
+topic = Mathematics/Algebra
+abstract =
+ This document contains a proof of the Cayley-Hamilton theorem
+ based on the development of matrices in HOL/Multivariate Analysis. 
 
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
