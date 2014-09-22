@@ -66,8 +66,6 @@ termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
 
 
-subsection "Amortized Analysis"
-
 fun \<Phi> :: "'a heap \<Rightarrow> nat" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + (if size l < size r then 1 else 0)"
