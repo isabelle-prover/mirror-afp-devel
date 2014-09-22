@@ -44,32 +44,32 @@ subsection "Function @{text splay}"
 
 fun splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay a Leaf = Leaf" |
-"splay a (Node l b r) =
-  (if a=b
-   then Node l b r
-   else if a < b
+"splay a (Node l c r) =
+  (if a=c
+   then Node l c r
+   else if a < c
         then case l of
-          Leaf \<Rightarrow> Node l b r |
-          Node ll c lr \<Rightarrow>
-            (if a=c then Node ll a (Node lr b r)
-             else if a < c
-                  then if ll = Leaf then Node ll c (Node lr b r)
+          Leaf \<Rightarrow> Node l c r |
+          Node ll b lr \<Rightarrow>
+            (if a=b then Node ll a (Node lr c r)
+             else if a < b
+                  then if ll = Leaf then Node ll b (Node lr c r)
                        else case splay a ll of
-                         Node lll u llr \<Rightarrow> Node lll u (Node llr c (Node lr b r))
-                  else if lr = Leaf then Node ll c (Node lr b r)
+                         Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r))
+                  else if lr = Leaf then Node ll b (Node lr c r)
                        else case splay a lr of
-                         Node lrl u lrr \<Rightarrow> Node (Node ll c lrl) u (Node lrr b r))
+                         Node lrl u lrr \<Rightarrow> Node (Node ll b lrl) u (Node lrr c r))
         else case r of
-          Leaf \<Rightarrow> Node l b r |
-          Node rl c rr \<Rightarrow>
-            (if a=c then Node (Node l b rl) a rr
-             else if a < c
-                  then if rl = Leaf then Node (Node l b rl) c rr
+          Leaf \<Rightarrow> Node l c r |
+          Node rl b rr \<Rightarrow>
+            (if a=b then Node (Node l c rl) a rr
+             else if a < b
+                  then if rl = Leaf then Node (Node l c rl) b rr
                        else case splay a rl of
-                         Node rll u rlr \<Rightarrow> Node (Node l b rll) u (Node rlr c rr)
-                  else if rr=Leaf then Node (Node l b rl) c rr
+                         Node rll u rlr \<Rightarrow> Node (Node l c rll) u (Node rlr b rr)
+                  else if rr=Leaf then Node (Node l c rl) b rr
                        else case splay a rr of
-                         Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr))"
+                         Node rrl u rrr \<Rightarrow> Node (Node (Node l c rl) b rrl) u rrr))"
 
 value "splay (5::int) (Node (Node A 5 B) 10 C)"
 value "splay (5::int) (Node (Node (Node A 5 B) 10 C) 15 D)"
@@ -89,20 +89,20 @@ lemma splay_simps[simp]:
   "splay a (Node l a r) = Node l a r"
   "a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)"
   "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r"
-  "a<b \<Longrightarrow> a\<le>c \<Longrightarrow> splay a (Node (Node Leaf c lr) b r) = Node Leaf c (Node lr b r)"
-  "a<b \<Longrightarrow> a<c \<Longrightarrow> splay a ll = Node lll u llr
-   \<Longrightarrow> splay a (Node (Node ll c lr) b r) = Node lll u (Node llr c (Node lr b r))"
-  "a<b \<Longrightarrow> c<a \<Longrightarrow> splay a (Node (Node ll c Leaf) b r) = Node ll c (Node Leaf b r)"
-  "a<b \<Longrightarrow> c<a \<Longrightarrow> splay a lr = Node lrl u lrr
-   \<Longrightarrow> splay a (Node (Node ll c lr) b r) = Node (Node ll c lrl) u (Node lrr b r)"
+  "a<c \<Longrightarrow> a\<le>b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)"
+  "a<c \<Longrightarrow> a<b \<Longrightarrow> splay a ll = Node lll u llr
+   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node lll u (Node llr b (Node lr c r))"
+  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a (Node (Node ll b Leaf) c r) = Node ll b (Node Leaf c r)"
+  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a lr = Node lrl u lrr
+   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node (Node ll b lrl) u (Node lrr c r)"
   "b<a \<Longrightarrow> splay a (Node l b (Node rl a rr)) = Node (Node l b rl) a rr"
   "b<a \<Longrightarrow> splay a (Node l b Leaf) = Node l b Leaf"
-  "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a rl = Node rll u rlr
-   \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node l b rll) u (Node rlr c rr)"
-  "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a (Node l b (Node Leaf c rr)) = Node (Node l b Leaf) c rr"
-  "b<a \<Longrightarrow> c\<le>a \<Longrightarrow> splay a (Node l b (Node rl c Leaf)) = Node (Node l b rl) c Leaf"
-  "b<a \<Longrightarrow> c<a \<Longrightarrow> splay a rr = Node rrl u rrr
-   \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node (Node l b rl) c rrl) u rrr"
+  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a rl = Node rll u rlr
+   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node l c rll) u (Node rlr b rr)"
+  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a (Node l c (Node Leaf b rr)) = Node (Node l c Leaf) b rr"
+  "c<a \<Longrightarrow> b\<le>a \<Longrightarrow> splay a (Node l c (Node rl b Leaf)) = Node (Node l c rl) b Leaf"
+  "c<a \<Longrightarrow> b<a \<Longrightarrow> splay a rr = Node rrl u rrr
+   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node (Node l c rl) b rrl) u rrr"
 by auto
 
 declare splay.simps(2)[simp del]
