@@ -176,8 +176,7 @@ qed
 fun t_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 "t_splay_max Leaf = 0" |
 "t_splay_max (Node l b Leaf) = 0" |
-"t_splay_max (Node l b (Node rl c Leaf)) = 0" |
-"t_splay_max (Node l b (Node rl c rr)) = t_splay_max rr + 1"
+"t_splay_max (Node l b (Node rl c rr)) = (if rr=Leaf then 0 else t_splay_max rr + 1)"
 
 
 subsection "Analysis of splay"
@@ -383,32 +382,35 @@ next
   thus ?case using one_le_log_cancel_iff[of 2 "size1 l + 1"]
     by (simp add: Am_def del: one_le_log_cancel_iff)
 next
-  case (3 l b rl c)
-  thus ?case
-    using one_le_log_cancel_iff[of 2 "1 + size1 rl"]
-      one_le_log_cancel_iff[of 2 "1 + size1 l + size1 rl"]
-      log_le_cancel_iff[of 2 "size1 l + size1 rl" "1 + size1 l + size1 rl"]
-    by (auto simp: real_of_nat_Suc Am_def field_simps
-      simp del: log_le_cancel_iff one_le_log_cancel_iff)
-next
-  case (4 l b rl c rrl d rrr)
-  let ?R = "Node rrl d rrr"
-  obtain l' u r' where sp: "splay_max ?R = Node l' u r'"
-    using splay_max_Leaf_iff tree.exhaust by blast
-  hence 1: "size rrl + size rrr = size l' + size r'"
-    using size_splay_max[of ?R] by(simp)
-  let ?C = "Node rl c ?R"  let ?B = "Node l b ?C"
-  let ?B' = "Node l b rl"  let ?C' = "Node ?B' c l'"
-  have "Am ?B = Am ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?R - \<phi> ?C + 1" using "4.prems" sp 1
-    by(auto simp add: Am_def real_of_nat_Suc)
-  also have "\<dots> \<le> 3 * (\<phi> ?R - 1) + \<phi> ?B' + \<phi> ?C' - \<phi> ?R - \<phi> ?C + 1"
-    using 4 by auto
-  also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 2" by simp
-  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?C' - 2" by simp
-  also have "\<dots> \<le> 2 * \<phi> ?B + \<phi> ?C' - 3"
-    using add_log_log1[of "size1 ?B'" "size1 ?R"] by(simp add: real_of_nat_Suc)
-  also have "\<dots> \<le> 3 * \<phi> ?B - 3" using 1 by simp
-  finally show ?case by simp
+  case (3 l b rl c rr)
+  show ?case
+  proof cases
+    assume "rr = Leaf"
+    thus ?thesis
+      using one_le_log_cancel_iff[of 2 "1 + size1 rl"]
+        one_le_log_cancel_iff[of 2 "1 + size1 l + size1 rl"]
+        log_le_cancel_iff[of 2 "size1 l + size1 rl" "1 + size1 l + size1 rl"]
+     by (auto simp: real_of_nat_Suc Am_def field_simps
+           simp del: log_le_cancel_iff one_le_log_cancel_iff)
+  next
+    assume "rr \<noteq> Leaf"
+    then obtain l' u r' where sp: "splay_max rr = Node l' u r'"
+      using splay_max_Leaf_iff tree.exhaust by blast
+    hence 1: "size rr = size l' + size r' + 1"
+      using size_splay_max[of rr,symmetric] by(simp)
+    let ?C = "Node rl c rr"  let ?B = "Node l b ?C"
+    let ?B' = "Node l b rl"  let ?C' = "Node ?B' c l'"
+    have "Am ?B = Am rr + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1" using "3.prems" sp 1
+      by(auto simp add: Am_def real_of_nat_Suc)
+    also have "\<dots> \<le> 3 * (\<phi> rr - 1) + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1"
+      using 3 `rr \<noteq> Leaf` by auto
+    also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 2" by simp
+    also have "\<dots> \<le> \<phi> rr + \<phi> ?B' + \<phi> ?C' - 2" by simp
+    also have "\<dots> \<le> 2 * \<phi> ?B + \<phi> ?C' - 3"
+      using add_log_log1[of "size1 ?B'" "size1 rr"] by(simp add: real_of_nat_Suc)
+    also have "\<dots> \<le> 3 * \<phi> ?B - 3" using 1 by simp
+    finally show ?case by simp
+  qed
 qed
 
 lemma Am_ub3: assumes "bst t" shows "Am t \<le> 3 * \<phi> t"
@@ -537,7 +539,7 @@ next
     case (Delete a)[simp]
     show ?thesis
     proof (cases s)
-      case Leaf thus ?thesis by(simp)
+      case Leaf thus ?thesis by(simp add: delete_def)
     next
       case (Node ls x rs)[simp]
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
@@ -553,7 +555,7 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis
-          using opt apply(simp add: field_simps real_of_nat_Suc)
+          using opt apply(simp add: delete_def field_simps real_of_nat_Suc)
           using `?lslr \<ge> 0` by arith
       next
         case True[simp]
@@ -562,7 +564,7 @@ next
           case Leaf
           have 1: "log 2 (2 + real (size r)) \<ge> 0" by(simp)
           show ?thesis
-            using Leaf opt apply(simp add: field_simps real_of_nat_Suc)
+            using Leaf opt apply(simp add: delete_def field_simps real_of_nat_Suc)
             using 1 `?lslr \<ge> 0` by arith
         next
           case (Node ll y lr)
@@ -582,7 +584,8 @@ next
           have 4: "log 2 (2 + (real(size ll) + real(size lr))) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: field_simps real_of_nat_Suc) using 4 `\<Phi> r' \<ge> 0` by arith
+            apply(simp add: delete_def field_simps real_of_nat_Suc)
+            using 4 `\<Phi> r' \<ge> 0` by arith
         qed
       qed
     qed

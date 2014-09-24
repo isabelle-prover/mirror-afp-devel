@@ -418,28 +418,37 @@ proof(induction t rule: splay_max.induct)
 next
   case 2 thus ?case by (simp add: Am_def)
 next
-  case (3 l b rl c)
+(*  case (3 l b rl c)
   thus ?case
     using nl2[of 1 "size1 rl" "size1 l"] log_le_cancel_iff[of \<alpha> 2 "2 + real(size rl)"]
     by (auto simp: real_of_nat_Suc Am_def \<phi>_def log_divide field_simps
       simp del: log_le_cancel_iff)
-next
-  case (4 l b rl c rrl d rrr)
-  let ?rr = "Node rrl d rrr"
-  obtain l' u r' where sp: "splay_max ?rr = Node l' u r'"
-    using splay_max_Leaf_iff tree.exhaust by blast
-  hence 1: "real(size rrl) + real(size rrr) = real(size l') + real(size r')"
-    using size_splay_max[of ?rr] by(simp)
-  let ?l = "real (size1 l)" let ?rl = "real (size1 rl)"
-  let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
-  have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l + ?rl) + \<beta> * log \<alpha> (?l' + ?l + ?rl) \<le>
-        \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?rl + ?r') + log \<alpha> (?l' + ?rl + ?r' + ?l)" (is "?L\<le>?R")
-  proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
-    show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?r' ?l' ?rl ?l]
-    by(simp add: powr_add add.commute add.left_commute mult.commute[of \<beta>] powr_powr[symmetric])
+next*)
+  case (3 l b rl c rr)
+  show ?case
+  proof cases
+    assume "rr = Leaf"
+    thus ?thesis
+      using nl2[of 1 "size1 rl" "size1 l"] log_le_cancel_iff[of \<alpha> 2 "2 + real(size rl)"]
+      by(auto simp: real_of_nat_Suc Am_def \<phi>_def log_divide field_simps
+           simp del: log_le_cancel_iff)
+  next
+    assume "rr \<noteq> Leaf"
+    then obtain l' u r' where sp: "splay_max rr = Node l' u r'"
+      using splay_max_Leaf_iff tree.exhaust by blast
+    hence 1: "size rr = size l' + size r' + 1"
+      using size_splay_max[of rr] by(simp)
+    let ?l = "real (size1 l)" let ?rl = "real (size1 rl)"
+    let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
+    have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l + ?rl) + \<beta> * log \<alpha> (?l' + ?l + ?rl) \<le>
+      \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?rl + ?r') + log \<alpha> (?l' + ?rl + ?r' + ?l)" (is "?L\<le>?R")
+    proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
+      show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?r' ?l' ?rl ?l]
+        by(simp add: powr_add add.commute add.left_commute mult.commute[of \<beta>] powr_powr[symmetric])
+    qed
+    thus ?case using 3 sp 1 `rr \<noteq> Leaf`
+      by(auto simp add: Am_simp3' real_of_nat_Suc \<phi>_def log_divide algebra_simps)
   qed
-  thus ?case using 4 sp 1
-    by(auto simp add: Am_simp3' real_of_nat_Suc \<phi>_def log_divide algebra_simps)
 qed
 
 lemma Am_ub3: assumes "bst t" shows "Am t \<le> log \<alpha> (size1 t)"
@@ -678,7 +687,7 @@ next
     case (Delete a)[simp]
     show ?thesis
     proof (cases s)
-      case Leaf thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
+      case Leaf thus ?thesis by(simp add: delete_def S34.\<phi>_def log4_log2)
     next
       case (Node ls x rs)[simp]
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
@@ -694,7 +703,8 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis
-        using opt apply(simp add: field_simps) using `?lslr \<ge> 0` by arith
+          using opt apply(simp add: delete_def field_simps)
+          using `?lslr \<ge> 0` by arith
       next
         case True[simp]
         show ?thesis
@@ -702,7 +712,7 @@ next
           case Leaf
           have "S34.\<phi> Leaf r \<ge> 0" by(simp add: S34.\<phi>_def)
           thus ?thesis
-            using Leaf opt apply(simp add: field_simps)
+            using Leaf opt apply(simp add: delete_def field_simps)
             using `?lslr \<ge> 0` by arith
         next
           case (Node ll y lr)
@@ -722,7 +732,7 @@ next
           have 4: "log 2 (2 + (real(size ll) + real(size lr))) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: field_simps) using 4 `S34.\<Phi> r' \<ge> 0` by arith
+            apply(simp add: delete_def field_simps) using 4 `S34.\<Phi> r' \<ge> 0` by arith
         qed
       qed
     qed
