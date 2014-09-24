@@ -254,7 +254,7 @@ next
   case (2 a l b r)
   let ?r = "real (size1 r)" let ?l = "real (size1 l)"
   have a: "a : insert b (set_tree l Un set_tree r)" using "2.prems"(2)
-    by (metis Node_notin_subtrees_if set_tree_Node2)
+    by (metis Node_notin_subtrees_if tree.set(2))
   show ?case
   proof cases
     assume "a=b"
