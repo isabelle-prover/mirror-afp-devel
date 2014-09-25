@@ -621,8 +621,8 @@ qed
 subsection "Function @{text delete}"
 
 definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"delete a t = (case splay a t of Leaf \<Rightarrow> Leaf |
-  Node l x r \<Rightarrow>
+"delete a t = (if t=Leaf then Leaf
+  else case splay a t of Node l x r \<Rightarrow>
     if x=a
     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
     else Node l x r)"
