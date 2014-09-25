@@ -1774,13 +1774,6 @@ abstract = Sturm's Theorem states that polynomial sequences with certain
   P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
   &#8712; &#8477;”.
 
-[Sturm_Tarski]
-title = The Sturm-Tarski Theorem
-author = Wenda Li <mailto:wl302@cam.ac.uk>
-date = 2014-09-19
-topic = Mathematics/Analysis
-abstract = We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem), which generalizes Sturm's theorem. Sturm's theorem is usually used as a way to count distinct real roots, while the Sturm-Tarksi theorem forms the basis for Tarski's classic quantifier elimination for real closed field.
-
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -2322,7 +2315,7 @@ date = 2014-09-15
 topic = Mathematics/Algebra
 abstract =
  This document contains a proof of the Cayley-Hamilton theorem
- based on the development of matrices in HOL/Multivariate Analysis. 
+ based on the development of matrices in HOL/Multivariate Analysis.
 
 [Probabilistic_Noninterference]
 title = Probabilistic Noninterference
@@ -2428,3 +2421,10 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <htt
 topic = Computer Science/Algorithms
 date = 2014-09-03
 abstract = The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.
+
+[Imperative_Insertion_Sort]
+title = Imperative Insertion Sort
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>
+date = 2014-09-25
+topic = Computer Science/Algorithms
+abstract = The insertion sort algorithm of Cormen et al. (Introduction to Algorithms) is expressed in Imperative HOL and proved to be correct and terminating. For this purpose we also provide a theory about imperative loop constructs with accompanying induction/invariant rules for proving partial and total correctness. Furthermore, the formalized algorithm is fit for code generation.
