@@ -179,11 +179,10 @@ fun t_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
 "t_splay_max (Node l b (Node rl c Leaf)) = 0" |
 "t_splay_max (Node l b (Node rl c rr)) = t_splay_max rr + 1"
 
-definition "size1(t::'a tree) = size t + 1"
-declare size1_def[simp]
-
 
 subsection "Analysis of splay"
+
+declare size1_def[simp]
 
 locale Splay_Analysis =
 fixes \<alpha> :: real and \<beta> :: real

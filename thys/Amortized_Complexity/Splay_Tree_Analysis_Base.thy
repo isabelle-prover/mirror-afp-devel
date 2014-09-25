@@ -4,18 +4,7 @@ begin
 
 section "Splay Tree Analysis Basics"
 
-(* FIXME mv *)
-
-text{* Function @{text size1} counts the number of Leaves. *}
-
-definition "size1(t::'a tree) = size t + 1"
 declare size1_def[simp]
-
-lemma size1_simps[simp]:
-  "size1 Leaf = 1"
-  "size1(Node l x r) = size1 l + size1 r"
-by simp_all
-
 
 abbreviation "\<phi> t == log 2 (size1 t)"
 
