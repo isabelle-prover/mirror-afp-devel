@@ -27,46 +27,46 @@ qed
 subsection "Time"
 
 fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_splay a Leaf = 0" |
+"t_splay a Leaf = 1" |
 "t_splay a (Node l b r) =
   (if a=b
-   then 0
+   then 1
    else if a < b
         then case l of
-          Leaf \<Rightarrow> 0 |
+          Leaf \<Rightarrow> 1 |
           Node ll c lr \<Rightarrow>
-            (if a=c then 0
-             else if a < c then if ll = Leaf then 0 else t_splay a ll + 1
-                  else if lr = Leaf then 0 else t_splay a lr + 1)
+            (if a=c then 1
+             else if a < c then if ll = Leaf then 1 else t_splay a ll + 1
+                  else if lr = Leaf then 1 else t_splay a lr + 1)
         else case r of
-          Leaf \<Rightarrow> 0 |
+          Leaf \<Rightarrow> 1 |
           Node rl c rr \<Rightarrow>
-            (if a=c then 0
-             else if a < c then if rl = Leaf then 0 else t_splay a rl + 1
-                  else if rr = Leaf then 0 else t_splay a rr + 1))"
+            (if a=c then 1
+             else if a < c then if rl = Leaf then 1 else t_splay a rl + 1
+                  else if rr = Leaf then 1 else t_splay a rr + 1))"
 
 lemma t_splay_simps[simp]:
-  "t_splay a (Node l a r) = 0"
-  "a<b \<Longrightarrow> t_splay a (Node Leaf b r) = 0"
-  "a<b \<Longrightarrow> t_splay a (Node (Node ll a lr) b r) = 0"
+  "t_splay a (Node l a r) = 1"
+  "a<b \<Longrightarrow> t_splay a (Node Leaf b r) = 1"
+  "a<b \<Longrightarrow> t_splay a (Node (Node ll a lr) b r) = 1"
   "a<b \<Longrightarrow> a<c \<Longrightarrow> t_splay a (Node (Node ll c lr) b r) =
-   (if ll = Leaf then 0 else t_splay a ll + 1)"
+   (if ll = Leaf then 1 else t_splay a ll + 1)"
   "a<b \<Longrightarrow> c<a \<Longrightarrow> t_splay a (Node (Node ll c lr) b r) =
-   (if lr = Leaf then 0 else t_splay a lr + 1)"
-  "b<a \<Longrightarrow> t_splay a (Node l b Leaf) = 0"
-  "b<a \<Longrightarrow> t_splay a (Node l b (Node rl a rr)) = 0"
+   (if lr = Leaf then 1 else t_splay a lr + 1)"
+  "b<a \<Longrightarrow> t_splay a (Node l b Leaf) = 1"
+  "b<a \<Longrightarrow> t_splay a (Node l b (Node rl a rr)) = 1"
   "b<a \<Longrightarrow> a<c \<Longrightarrow> t_splay a (Node l b (Node rl c rr)) =
-  (if rl=Leaf then 0 else t_splay a rl + 1)"
+  (if rl=Leaf then 1 else t_splay a rl + 1)"
   "b<a \<Longrightarrow> c<a \<Longrightarrow> t_splay a (Node l b (Node rl c rr)) =
-  (if rr=Leaf then 0 else t_splay a rr + 1)"
+  (if rr=Leaf then 1 else t_splay a rr + 1)"
 by auto
 
 declare t_splay.simps(2)[simp del]
 
 fun t_splay_max :: "'a::linorder tree \<Rightarrow> nat" where
-"t_splay_max Leaf = 0" |
-"t_splay_max (Node l b Leaf) = 0" |
-"t_splay_max (Node l b (Node rl c rr)) = (if rr=Leaf then 0 else t_splay_max rr + 1)"
+"t_splay_max Leaf = 1" |
+"t_splay_max (Node l b Leaf) = 1" |
+"t_splay_max (Node l b (Node rl c rr)) = (if rr=Leaf then 1 else t_splay_max rr + 1)"
 
 definition t_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t_delete a t = (if t = Leaf then 0 else t_splay a t + (case splay a t of

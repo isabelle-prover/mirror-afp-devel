@@ -42,13 +42,13 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 definition A :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
 "A a t = t_splay a t + \<Phi>(splay a t) - \<Phi> t"
 
-lemma A_simps[simp]: "A a (Node l a r) = 0"
- "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> lr r - \<phi> lr ll"
- "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> rl l - \<phi> rr rl"
+lemma A_simps[simp]: "A a (Node l a r) = 1"
+ "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> lr r - \<phi> lr ll + 1"
+ "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> rl l - \<phi> rr rl + 1"
 by(auto simp add: A_def \<phi>_def algebra_simps real_of_nat_Suc)
 
 lemma A_ub: "\<lbrakk> bst t; Node la a ra : subtrees t \<rbrakk>
-  \<Longrightarrow> A a t \<le> log \<alpha> ((size1 t)/(size1 la + size1 ra))"
+  \<Longrightarrow> A a t \<le> log \<alpha> ((size1 t)/(size1 la + size1 ra)) + 1"
 proof(induction a t rule: splay.induct)
   case 1 thus ?case by simp
 next
@@ -181,17 +181,17 @@ qed
 
 
 lemma A_ub2: assumes "bst t" "a : set_tree t"
-shows "A a t \<le> log \<alpha> ((size1 t)/2)"
+shows "A a t \<le> log \<alpha> ((size1 t)/2) + 1"
 proof -
   from assms(2) obtain la ra where N: "Node la a ra : subtrees t"
     by (metis set_treeE)
-  let ?T = "(size1 t)/(size1 la + size1 ra)"
-  have "A a t \<le> log \<alpha> ?T" by(rule A_ub[OF assms(1) N])
-  also have "\<dots> \<le> log \<alpha> ((size1 t)/2)" by(simp add: field_simps)
+  have "A a t \<le> log \<alpha> ((size1 t)/(size1 la + size1 ra)) + 1"
+    by(rule A_ub[OF assms(1) N])
+  also have "\<dots> \<le> log \<alpha> ((size1 t)/2) + 1" by(simp add: field_simps)
   finally show ?thesis by simp
 qed
 
-lemma A_ub3: assumes "bst t" shows "A a t \<le> log \<alpha> (size1 t)"
+lemma A_ub3: assumes "bst t" shows "A a t \<le> log \<alpha> (size1 t) + 1"
 proof cases
   assume "t = Leaf" thus ?thesis by(simp add: A_def)
 next
@@ -213,7 +213,7 @@ lemma Am_simp3': "\<lbrakk> c<b; bst rr; rr \<noteq> Leaf\<rbrakk> \<Longrightar
    Am rr + \<phi> rrl (Node l c rl) + \<phi> l rl - \<phi> rl rr - \<phi> rrl rrr + 1)"
 by(auto simp: Am_def \<phi>_def size_if_splay_max algebra_simps real_of_nat_Suc neq_Leaf_iff split: tree.split)
 
-lemma Am_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> Am t \<le> log \<alpha> ((size1 t)/2)"
+lemma Am_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> Am t \<le> log \<alpha> ((size1 t)/2) + 1"
 proof(induction t rule: splay_max.induct)
   case 1 thus ?case by (simp)
 next
@@ -246,7 +246,7 @@ next
   qed
 qed
 
-lemma Am_ub3: assumes "bst t" shows "Am t \<le> log \<alpha> (size1 t)"
+lemma Am_ub3: assumes "bst t" shows "Am t \<le> log \<alpha> (size1 t) + 1"
 proof cases
   assume "t = Leaf" thus ?thesis by(simp add: Am_def)
 next
@@ -351,18 +351,18 @@ qed
 declare log_base_root[simp] real_of_nat_Suc[simp]
 
 lemma A34_ub: assumes "bst t"
-shows "S34.A a t \<le> (3/2) * log 2 (size1 t)"
+shows "S34.A a t \<le> (3/2) * log 2 (size1 t) + 1"
 proof -
-  have "S34.A a t \<le> log (root 3 4) (size1 t)" by(rule S34.A_ub3[OF assms])
-  also have "\<dots> = (3/2) * log 2 (size t + 1)" by(simp add: log4_log2)
+  have "S34.A a t \<le> log (root 3 4) (size1 t) + 1" by(rule S34.A_ub3[OF assms])
+  also have "\<dots> = (3/2) * log 2 (size t + 1) + 1" by(simp add: log4_log2)
   finally show ?thesis by simp
 qed
 
 lemma Am34_ub: assumes "bst t"
-shows "S34.Am t \<le> (3/2) * log 2 (size1 t)"
+shows "S34.Am t \<le> (3/2) * log 2 (size1 t) + 1"
 proof -
-  have "S34.Am t \<le> log (root 3 4) (size1 t)" by(rule S34.Am_ub3[OF assms])
-  also have "\<dots> = (3/2) * log 2 (size1 t)" by(simp add: log4_log2)
+  have "S34.Am t \<le> log (root 3 4) (size1 t) + 1" by(rule S34.Am_ub3[OF assms])
+  also have "\<dots> = (3/2) * log 2 (size1 t) + 1" by(simp add: log4_log2)
   finally show ?thesis by simp
 qed
 
@@ -372,9 +372,9 @@ interpretation ST: amor
 where init = Leaf and nxt = nxt\<^sub>s\<^sub>t and inv = bst
 and t = t\<^sub>s\<^sub>t and \<Phi> = S34.\<Phi>
 and U = "\<lambda>f t. case f of
-  Splay _ \<Rightarrow> (3/2) * log 2 (size1 t) |
-  Insert _ \<Rightarrow> 2 * log 2 (size1 t) + 1/2 |
-  Delete _ \<Rightarrow> 3 * log 2 (size1 t)"
+  Splay _ \<Rightarrow> (3/2) * log 2 (size1 t) + 1 |
+  Insert _ \<Rightarrow> 2 * log 2 (size1 t) + 3/2 |
+  Delete _ \<Rightarrow> 3 * log 2 (size1 t) + 2"
 proof
   case goal1 show ?case by simp
 next
@@ -413,7 +413,7 @@ next
       let ?t = "real(t_splay a s)"
       let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> s"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
-      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s))"
+      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
         using S34.A_ub3[OF goal5, simplified S34.A_def, of a]
         by (simp add: log4_log2)
       from less_linear[of e a]
@@ -428,7 +428,7 @@ next
         assume "e<a" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?L / 2 + ?LR / 2"
           using  `s \<noteq> Leaf` `e<a` by(simp add: S34.\<phi>_def log4_log2)
-        also have "?t + ?Plr - ?Ps \<le> log 2 ?slr"
+        also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a s,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
         also have "?L/2 \<le> log 2 ?slr / 2" by(simp)
@@ -445,7 +445,7 @@ next
         assume "a<e" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?R / 2 + ?LR / 2"
           using  `s \<noteq> Leaf` `a<e` by(simp add: S34.\<phi>_def log4_log2)
-        also have "?t + ?Plr - ?Ps \<le> log 2 ?slr"
+        also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
           using opt size_splay[of a s,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
         also have "?R/2 \<le> log 2 ?slr / 2" by(simp)
@@ -473,7 +473,7 @@ next
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
       let ?lslr = "log 2 (2 + (real (size ls) + real (size rs)))"
       have "?lslr \<ge> 0" by simp
-      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s))"
+      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
         using S34.A_ub3[OF goal5, simplified S34.A_def, of a]
         by (simp add: log4_log2 field_simps)
       show ?thesis
@@ -497,10 +497,12 @@ next
             using splay_max_Leaf_iff tree.exhaust by blast
           have "bst l" using bst_splay[OF goal5, of a] by simp
           have "S34.\<Phi> r' \<ge> 0" apply (induction r') by (auto simp add: S34.\<phi>_def)
-          have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l  \<le> 3/2 * log 2 (real (size1 l))"
+          have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
+            \<le> 3/2 * log 2 (real (size1 l)) + 1"
             using S34.Am_ub3[OF `bst l`, simplified S34.Am_def]
             by (simp add: log4_log2 field_simps Node)
-          have 1: "log 4 (2+(real(size l')+real(size r))) \<le> log 4 (2+(real(size l)+real(size r)))"
+          have 1: "log 4 (2+(real(size l')+real(size r))) \<le>
+            log 4 (2+(real(size l)+real(size r)))"
             using size_splay_max[of l] Node by simp
           have 2: "log 4 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
           have 3: "S34.\<phi> l' r \<le> S34.\<phi> l' r' + S34.\<phi> l r"
