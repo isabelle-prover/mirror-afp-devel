@@ -72,6 +72,7 @@
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 <a href="entries/Gauss_Jordan.shtml">Gauss_Jordan</a> &nbsp;
+<a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -290,7 +291,6 @@
 <a href="entries/Polynomials.shtml">Polynomials</a> &nbsp;
 <a href="entries/Sqrt_Babylonian.shtml">Sqrt_Babylonian</a> &nbsp;
 <a href="entries/Sturm_Sequences.shtml">Sturm_Sequences</a> &nbsp;
-<a href="entries/Sturm_Tarski.shtml">Sturm_Tarski</a> &nbsp;
 <a href="entries/Special_Function_Bounds.shtml">Special_Function_Bounds</a> &nbsp;
 </div>
 

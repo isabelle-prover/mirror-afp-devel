@@ -1,0 +1,10 @@
+chapter AFP
+
+session Imperative_Insertion_Sort (AFP) = "HOL-Imperative_HOL" +
+  theories [document = false]
+    "~~/src/HOL/Library/Multiset"
+  theories
+    Imperative_Loops
+    Imperative_Insertion_Sort
+  document_files
+    "root.tex"
