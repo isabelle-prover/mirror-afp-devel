@@ -238,13 +238,13 @@ proof -
         qed
         hence "1 + int((nat m1) - 1) = m1" by arith
         with qf1pm1 have Qm1: "?Q ((nat m1) - 1)" by auto
-        then obtain m where tmp: "m = (nat m1) - 1 \<and> ?Q m" by auto
-        moreover have "m<n"
+        then obtain mm where tmp: "mm = (nat m1) - 1 \<and> ?Q mm" by auto
+        moreover have "mm<n"
         proof -
-          from tmp mn m1pos have "int m < int n" by arith
+          from tmp mn m1pos have "int mm < int n" by arith
           thus ?thesis by arith
         qed
-        moreover with IH have "1 + int m < ?p" by auto
+        moreover with IH have "1 + int mm < ?p" by auto
         ultimately show "\<exists> m. m<n \<and> \<not> (1 + int m < ?p \<longrightarrow> \<not> ?Q m)" by auto
       qed
       moreover from tn tpos t_l_p have "1 + int tn < ?p \<and> tn = nat t- 1" 
