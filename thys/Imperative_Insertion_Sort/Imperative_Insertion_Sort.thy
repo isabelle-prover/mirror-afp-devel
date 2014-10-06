@@ -467,7 +467,6 @@ next
        (metis One_nat_def effect_bindI effect_insertion_sort effect_lengthI insertion_sort_alt_def sort_upto_def)
 qed
 
-(*FIXME: generated code does not compile due to missing parenthesis around do-blocks*)
 export_code insertion_sort in Haskell
 
 end
