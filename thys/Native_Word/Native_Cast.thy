@@ -125,7 +125,7 @@ code_printing
   (Haskell) "(Prelude.fromIntegral _ :: Uint32.Word32)" and
   (Scala) "((_).toInt & 0xFF)"
 | constant uint32_of_uint16 \<rightharpoonup>
-  (SML) "Word32.fromLarge (Word16.toLarge _)" and
+  (SML_word) "Word32.fromLarge (Word16.toLarge _)" and
   (Haskell) "(Prelude.fromIntegral _ :: Uint32.Word32)" and
   (Scala) "(_).toInt"
 
@@ -158,36 +158,5 @@ by transfer simp
 lemma uint32_of_uint16_code [code]:
   "uint32_of_uint16 x = Abs_uint32' (ucast (Rep_uint16' x))"
 by transfer simp
-
-section {* Tests *}
-
-definition test_casts :: bool
-where "test_casts \<longleftrightarrow>
-  map uint8_of_char [CHR ''a'', Char Nibble0 Nibble0, Char NibbleF NibbleF] = [97, 0, 255] \<and>
-  map char_of_uint8 [65, 0, 255] = [CHR ''A'', Char Nibble0 Nibble0, Char NibbleF NibbleF] \<and>
-  map uint8_of_uint32 [10, 0, 0xFE, 0xFFFFFFFF] = [10, 0, 0xFE, 0xFF] \<and>
-  map uint32_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF]"
-
-definition test_casts' :: bool
-where "test_casts' \<longleftrightarrow>
-  map uint8_of_uint16 [10, 0, 0xFE, 0xFFFF] = [10, 0, 0xFE, 0xFF] \<and>
-  map uint16_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF] \<and>
-  map uint16_of_uint32 [10, 0, 0xFFFE, 0xFFFFFFFF] = [10, 0, 0xFFFE, 0xFFFF] \<and>
-  map uint32_of_uint16 [10, 0, 0xFFFF] = [10, 0, 0xFFFF]"
-
-export_code test_casts checking SML Haskell? Scala
-export_code test_casts' checking Haskell? Scala
-
-notepad begin
-have test_casts by eval
-have test_casts by normalization
-have test_casts by code_simp
-have test_casts' by normalization
-have test_casts' by code_simp
-end
-ML {* val true = @{code test_casts} *}
-
-hide_const test_casts test_casts'
-hide_fact test_casts_def test_casts'_def
 
 end

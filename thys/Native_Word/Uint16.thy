@@ -184,19 +184,19 @@ text {* Scala provides unsigned 16-bit numbers as Char. *}
 code_printing code_module Uint16 \<rightharpoonup> (Scala)
 {*object Uint16 {
 
-def set_bit(x: Char, n: BigInt, b: Boolean) : Char =
+def set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
   if (b)
     (x | (1.toChar << n.intValue)).toChar
   else
     (x & (1.toChar << n.intValue).unary_~).toChar
 
-def shiftl(x: Char, n: BigInt) : Char = (x << n.intValue).toChar
+def shiftl(x: scala.Char, n: BigInt) : scala.Char = (x << n.intValue).toChar
 
-def shiftr(x: Char, n: BigInt) : Char = (x >>> n.intValue).toChar
+def shiftr(x: scala.Char, n: BigInt) : scala.Char = (x >>> n.intValue).toChar
 
-def shiftr_signed(x: Char, n: BigInt) : Char = (x.toShort >> n.intValue).toChar
+def shiftr_signed(x: scala.Char, n: BigInt) : scala.Char = (x.toShort >> n.intValue).toChar
 
-def test_bit(x: Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
+def test_bit(x: scala.Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
 
 } /* object Uint16 */*}
 code_reserved Scala Uint16
@@ -247,7 +247,7 @@ code_printing
   type_constructor uint16 \<rightharpoonup>
   (SML_word) "Word16.word" and
   (Haskell) "Uint16.Word16" and
-  (Scala) "Char"
+  (Scala) "scala.Char"
 | constant Uint16 \<rightharpoonup>
   (SML_word) "Word16.fromLargeInt (IntInf.toLarge _)" and
   (Haskell) "(Prelude.fromInteger _ :: Uint16.Word16)" and
@@ -519,76 +519,6 @@ lemmas partial_term_of_uint16 [code] = partial_term_of_code
 instance ..
 end
 
-section {* Tests *}
-
-definition test_uint16 where
-  "test_uint16 \<longleftrightarrow>
-  (([ 0x10001, -1, -65535, 0xFFFF, 0x1234
-    , 0x5A AND 0x36
-    , 0x5A OR 0x36
-    , 0x5A XOR 0x36
-    , NOT 0x5A
-    , 5 + 6, -5 + 6, -6 + 5, -5 + -6, 0xFFFF + 1
-    , 5 - 3, 3 - 5
-    , 5 * 3, -5 * 3, -5 * -4, 0x1234 * 0x8765
-    , 5 div 3, -5 div 3, -5 div -3, 5 div -3
-    , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
-    , 1 << 2, -1 << 3, 1 << 16, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 16, -100 >> 16
-    , 100 >>> 3, -100 >>> 3, 100 >>> 16, -100 >>> 16] :: uint16 list)
-   =
-    [ 1, 65535, 1, 65535, 4660
-    , 18
-    , 126
-    , 108
-    , 65445
-    , 11, 1, 65535, 65525, 0
-    , 2, 65534
-    , 15, 65521, 20, 39556
-    , 1, 21843, 0, 0
-    , 2, 2, 65531, 5
-    , 21, 65535, 4, 65529
-    , 5, 5, 65531, 65531
-    , 4, 65528, 0, 1
-    , 12, 8179, 0, 0
-    , 12, 65523, 0, 65535]) \<and>
-  ([ (0x5 :: uint16) = 0x5, (0x5 :: uint16) = 0x6
-   , (0x5 :: uint16) < 0x5, (0x5 :: uint16) < 0x6, (-5 :: uint16) < 6, (6 :: uint16) < -5
-   , (0x5 :: uint16) \<le> 0x5, (0x5 :: uint16) \<le> 0x4, (-5 :: uint16) \<le> 6, (6 :: uint16) \<le> -5 
-   , (0x7FFF :: uint16) < 0x8000, (0xFFFF :: uint16) < 0, (0x8000 :: uint16) < 0x7FFF
-   , (0x7FFF :: uint16) !! 0, (0x7FFF :: uint16) !! 15, (0x8000 :: uint16) !! 15, (0x8000 :: uint16) !! 16
-   ]
-  =
-   [ True, False
-   , False, True, False, True
-   , True, False, False, True
-   , True, False, False
-   , True, False, True, False
-   ]) \<and>
-  ([integer_of_uint16 0, integer_of_uint16 0x7FFF, integer_of_uint16 0x8000, integer_of_uint16 0xAAAA]
-  =
-   [0, 0x7FFF, 0x8000, 0xAAAA])"
-
-export_code test_uint16 checking Haskell? Scala
-export_code test_uint16 in SML_word
-
-notepad begin
-have test_uint16 by code_simp
-have test_uint16 by normalization
-end
-
-lemma "(x :: uint16) AND x = x OR x"
-quickcheck[narrowing, expect=no_counterexample]
-by transfer simp
-
-lemma "(f :: uint16 \<Rightarrow> unit) = g"
-quickcheck[narrowing, size=3, expect=no_counterexample]
-by(simp add: fun_eq_iff)
-
-hide_const (open) test_uint16
-hide_fact test_uint16_def
 no_notation sshiftr_uint16 (infixl ">>>" 55)
 
 end
