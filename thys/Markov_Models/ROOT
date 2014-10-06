@@ -7,12 +7,12 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Monad_Syntax"
   theories
-    Discrete_Markov_Kernel
     Discrete_Time_Markov_Chain
     "ex/PCTL"
     "ex/Zeroconf_Analysis"
     "ex/Gossip_Broadcast"
     "ex/Crowds_Protocol"
+    "Markov_Decision_Process"
   document_files
     "root.bib"
     "root.tex"

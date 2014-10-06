@@ -6,13 +6,6 @@ theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
 begin
 
-lemma fun_if_distrib:
-  "card (if P then A else B) = (if P then card A else card B)"
-  "real (if P then x else y) = (if P then real x else real y)"
-  "(if P then a else b) * c = (if P then a * c else b * c)"
-  "(if P then a else b) / c = (if P then a / c else b / c)"
-  by auto
-
 subsection {* Definition of the Crowds-Protocol *}
 
 datatype 'a state = Start | Init 'a | Mix 'a | End
@@ -23,1076 +16,896 @@ lemma inj_Mix[simp]: "inj_on Mix A"
 lemma inj_Init[simp]: "inj_on Init A"
   by (auto intro: inj_onI)
 
-locale Crowds_Protocol =
-  fixes jondos :: "'a set" and colls :: "'a set" and p_f :: real and init :: "'a \<Rightarrow> real"
-  assumes jondos_non_empty: "jondos \<noteq> {}" and finite_jondos[simp]: "finite jondos"
-  assumes colls_smaller: "colls \<subset> jondos" and colls_non_empty: "colls \<noteq> {}"
-  assumes p_f: "0 < p_f" "p_f < 1"
-  assumes init_nonneg: "\<And>j. j \<in> jondos \<Longrightarrow> 0 \<le> init j"
-  assumes init_distr: "(\<Sum>j\<in>jondos. init j) = 1"
-  assumes init_coll: "\<And>j. j \<in> colls \<Longrightarrow> init j = 0"
-begin
-
-definition jondo_of :: "'a state \<Rightarrow> 'a" where
-  "jondo_of = (\<lambda>Init j \<Rightarrow> j | Mix j \<Rightarrow> j | _ \<Rightarrow> SOME j. j\<in>jondos)"
-
-lemma finite_colls[simp]: "finite colls"
-  using colls_smaller finite_jondos by (blast intro: finite_subset)
-
-definition
-  "valid_states = { Start } \<union> Init ` (jondos - colls) \<union> Mix ` jondos \<union> { End }"
+lemma distinct_state_image[simp]:
+  "Start \<notin> Mix ` A" "Init j \<notin> Mix ` A" "End \<notin> Mix ` A" "Mix j \<in> Mix ` A \<longleftrightarrow> j \<in> A"
+  "Start \<notin> Init ` A" "Mix j \<notin> Init ` A" "End \<notin> Init ` A" "Init j \<in> Init ` A \<longleftrightarrow> j \<in> A"
+  by auto
 
 lemma Init_cut_Mix[simp]:
-  "Init ` (jondos - colls) \<inter> Mix ` jondos = {}"
+  "Init ` H \<inter> Mix ` J = {}"
   by auto
 
-lemma setsum_init_colls[simp]: "setsum init colls = 0"
-  by (auto intro: setsum.neutral init_coll)
+abbreviation "Jondo B \<equiv> Init`B \<union> Mix`B" 
 
-lemma setsum_init_jondos_m_colls[simp]: "setsum init (jondos - colls) = 1"
-  using colls_smaller by (simp add: setsum_diff init_distr)
+locale Crowds_Protocol =
+  fixes J :: "'a set" and C :: "'a set" and p_f :: real and p_i :: "'a \<Rightarrow> real"
+  assumes J_not_empty: "J \<noteq> {}" and finite_J[simp]: "finite J"
+  assumes C_smaller: "C \<subset> J" and C_non_empty: "C \<noteq> {}"
+  assumes p_f: "0 < p_f" "p_f < 1"
+  assumes p_i_nonneg: "\<And>j. j \<in> J \<Longrightarrow> 0 \<le> p_i j"
+  assumes p_i_distr: "(\<Sum>j\<in>J. p_i j) = 1"
+  assumes p_i_C: "\<And>j. j \<in> C \<Longrightarrow> p_i j = 0"
+begin
 
-lemma setsum_valid_states[simp]:
-  fixes f :: "'a state \<Rightarrow> real"
-  shows "(\<Sum>s\<in>valid_states. f s) = f Start + f End +
-  (\<Sum>j\<in>jondos - colls. f (Init j)) + (\<Sum>j\<in>jondos. f (Mix j))"
-  by (simp add: valid_states_def image_iff setsum.reindex setsum_Un)
+abbreviation H :: "'a set" where
+  "H \<equiv> J - C"
 
-lemma valid_statesE:
-  assumes "s \<in> valid_states"
-  obtains (Start) "s = Start" | (End) "s = End"
-        | (Mix) j where "j \<in> jondos" "s = Mix j"
-        | (Init) j where "j \<in> jondos" "s = Init j"
-  using assms by (auto simp: valid_states_def)
+definition "p_j = 1 / card J"
 
-lemma Start_not_Mix[simp]: "Start \<notin> Mix ` A"
-  by auto
+definition "p_H = card H / card J"
 
-lemma End_not_Mix[simp]: "End \<notin> Mix ` A"
-  by auto
-
-lemma Start_not_Init[simp]: "Start \<notin> Init ` A"
-  by auto
-
-lemma End_not_Init[simp]: "End \<notin> Init ` A"
-  by auto
-
-lemma Start_valid_state[iff]: "Start \<in> valid_states"
-  by (auto simp: valid_states_def)
-
-lemma End_valid_state[iff]: "End \<in> valid_states"
-  by (auto simp: valid_states_def)
-
-lemma Mix_in_valid_state[iff]: "Mix j \<in> valid_states \<longleftrightarrow> j \<in> jondos"
-  by (auto simp: valid_states_def inj_image_mem_iff)
-
-lemma Init_in_valid_state[iff]: "Init j \<in> valid_states \<longleftrightarrow> j \<in> jondos - colls"
-  by (auto simp: valid_states_def inj_image_mem_iff)
-
-lemma possible_jondo:
-  obtains j where "j \<in> jondos" "j \<notin> colls" "init j \<noteq> 0"
-proof (atomize_elim, rule ccontr)
-  assume "\<not> (\<exists>j. j \<in> jondos \<and> j \<notin> colls \<and> init j \<noteq> 0)"
-  with init_coll have "\<forall>j\<in>jondos. init j = 0"
-    by auto
-  then have "(\<Sum>j\<in>jondos. init j) = 0"
-    by (rule setsum.neutral)
-  with init_distr show False
-    by simp
-qed
-
-definition "J = 1 / card jondos"
-definition "H = card (jondos - colls) / card jondos"
-
-lemma colls_le_jondos[simp]: "card colls < card jondos"
-  using colls_smaller
-  by (intro psubset_card_mono) auto
-
-lemma H: "0 < H" "H < 1"
-  using jondos_non_empty colls_smaller colls_non_empty
-  by (simp_all add: H_def card_Diff_subset card_mono real_of_nat_diff
-                    field_simps zero_less_divide_iff card_gt_0_iff)
-
-lemma H_pf_0: "0 < H * p_f"
-  using p_f H by (simp add: zero_less_mult_iff)
-
-lemma H_pf_1: "H * p_f < 1"
-proof -
-  have "H * p_f < 1 * 1"
-    using H p_f by (intro mult_strict_mono) auto
-  then show "H * p_f < 1" by simp
-qed
-
-lemma J_pos: "0 < J"
-  unfolding J_def using jondos_non_empty by auto
-
-lemma H_compl: "1 - H = real (card colls) / real (card jondos)"
-  using colls_non_empty jondos_non_empty colls_smaller
-  by (simp add: H_def card_Diff_subset card_mono real_of_nat_diff divide_eq_eq field_simps)
-
-lemma H_eq2: "card (jondos - colls) * J = H"
-  unfolding J_def H_def by simp
-
-definition next_step :: "'a state \<Rightarrow> 'a state \<Rightarrow> real" where
-  "next_step s t = (case (s, t) of (Start, Init j) \<Rightarrow> init j
-                                 | (Init j, Mix j') \<Rightarrow> J
-                                 | (Mix j, Mix j') \<Rightarrow> p_f * J
+definition next_prob :: "'a state \<Rightarrow> 'a state \<Rightarrow> real" where
+  "next_prob s t = (case (s, t) of (Start, Init j) \<Rightarrow> if j \<in> H then p_i j else 0
+                                 | (Init j, Mix j') \<Rightarrow> if j' \<in> J then p_j else 0
+                                 | (Mix j, Mix j') \<Rightarrow> if j' \<in> J then p_f * p_j else 0
                                  | (Mix j, End) \<Rightarrow> 1 - p_f
                                  | (End, End) \<Rightarrow> 1
                                  | _ \<Rightarrow> 0)"
 
-lemma next_step_to_Start_eq_0[simp]: "next_step s' Start = 0"
-  by (cases s') (auto simp: next_step_def)
+definition "N s = embed_pmf (next_prob s)"
 
-lemma next_step_to_Init[simp]: "next_step s (Init j) =
-    (case s of Start \<Rightarrow> init j | _ \<Rightarrow> 0)"
-  by (cases s) (auto simp: next_step_def)
+interpretation MC_syntax N .
 
-lemma next_step_to_Mix[simp]: "next_step s (Mix j) =
-    (case s of Init j \<Rightarrow> J | Mix j \<Rightarrow> p_f * J | _ \<Rightarrow> 0)"
-  by (cases s) (auto simp: next_step_def)
+abbreviation "\<PP> \<equiv> T Start"
 
-lemma next_step_to_End[simp]: "next_step s End =
-    (case s of Mix j \<Rightarrow> 1 - p_f | End \<Rightarrow> 1 | _ \<Rightarrow> 0)"
-  by (cases s) (auto simp: next_step_def)
+abbreviation "E s \<equiv> set_pmf (N s)"
 
-lemma next_step_neq_0_cases:
-  "next_step s s' \<noteq> 0 \<longleftrightarrow>
-    (s = Start \<longrightarrow> (\<exists>j. s' = Init j \<and> init j \<noteq> 0)) \<and>
-    (s \<in> range Init \<longrightarrow> s' \<in> range Mix) \<and>
-    (s \<in> range Mix \<longrightarrow> s' = End \<or> s' \<in> range Mix) \<and>
-    (s = End \<longrightarrow> s' = End)"
-  using p_f jondos_non_empty
-  by (cases s) (auto split: state.split simp: J_def next_step_def)
+lemma finite_C[simp]: "finite C"
+  using C_smaller finite_J by (blast intro: finite_subset)
 
-lemma next_step_from_End[simp]: "next_step End s = 0 \<longleftrightarrow> s \<noteq> End"
-  by (cases s) auto
+lemma setsum_p_i_C[simp]: "setsum p_i C = 0"
+  by (auto intro: setsum.neutral p_i_C)
 
-lemma next_step_Mix_MixI: "\<exists>j. s = Mix j \<Longrightarrow> \<exists>j. s' = Mix j \<Longrightarrow> next_step s s' = p_f * J"
-  by (cases s) auto
+lemma setsum_p_i_H[simp]: "setsum p_i H = 1"
+  using C_smaller by (simp add: setsum_diff p_i_distr)
 
-lemma measurable_jondo_of[measurable]:
-  "jondo_of \<in> measurable (count_space valid_states) (count_space jondos)"
-  using jondos_non_empty
-  by (auto simp: measurable_count_space jondo_of_def intro!: someI_ex[of "\<lambda>j. j\<in>jondos"]
-              elim!: valid_statesE)
-
-lemma measurable_jondos_eq[measurable]:
-  assumes f[measurable]: "f \<in> measurable M (count_space jondos)"
-  assumes g[measurable]: "g \<in> measurable M (count_space jondos)"
-  shows "{x\<in>space M. f x = g x} \<in> sets M"
-proof -
-  from measurable_space[OF f] measurable_space[OF g]
-  have "{x\<in>space M. f x = g x} = {x\<in>space M. \<exists>j\<in>jondos. f x = j \<and> g x = j}"
+lemma possible_jondo:
+  obtains j where "j \<in> J" "j \<notin> C" "p_i j \<noteq> 0"
+proof (atomize_elim, rule ccontr)
+  assume "\<not> (\<exists>j. j \<in> J \<and> j \<notin> C \<and> p_i j \<noteq> 0)"
+  with p_i_C have "\<forall>j\<in>J. p_i j = 0"
     by auto
-  also have "{x\<in>space M. \<exists>j\<in>jondos. f x = j \<and> g x = j} \<in> sets M" by measurable
-  finally show ?thesis .
+  with p_i_distr show False
+    by simp
 qed
 
-end
+lemma C_le_J[simp]: "card C < card J"
+  using C_smaller
+  by (intro psubset_card_mono) auto
 
-subsection {* The Crowds-Protocol forms a DTMC *}
+lemma p_H: "0 < p_H" "p_H < 1"
+  using J_not_empty C_smaller C_non_empty
+  by (simp_all add: p_H_def card_Diff_subset card_mono real_of_nat_diff
+                    field_simps zero_less_divide_iff card_gt_0_iff)
 
-sublocale Crowds_Protocol \<subseteq> Discrete_Time_Markov_Chain valid_states next_step Start
-proof
-  show "finite valid_states" "Start \<in> valid_states"
-    by (auto simp: valid_states_def)
-next
-  fix s s' assume "s \<in> valid_states" "s' \<in> valid_states" then show "0 \<le> next_step s s'"
-    using p_f init_nonneg
-    by (auto simp: valid_states_def J_def intro!: divide_nonneg_nonneg)
-next
-  fix s assume "s \<in> valid_states" then show "(\<Sum>s'\<in>valid_states. next_step s s') = 1"
-    using p_f jondos_non_empty init_distr colls_smaller
-    by (simp add: setsum_diff real_eq_of_nat[symmetric] J_def
-             split: split_if_asm state.split)
+lemma p_H_p_f_pos: "0 < p_H * p_f"
+  using p_f p_H by (simp add: zero_less_mult_iff)
+
+lemma p_H_p_f_less_1: "p_H * p_f < 1"
+proof -
+  have "p_H * p_f < 1 * 1"
+    using p_H p_f by (intro mult_strict_mono) auto
+  then show "p_H * p_f < 1" by simp
 qed
 
-context Crowds_Protocol
-begin
+lemma p_j_pos: "0 < p_j"
+  unfolding p_j_def using J_not_empty by auto
 
-abbreviation "\<PP> \<equiv> paths Start"
+lemma H_compl: "1 - p_H = real (card C) / real (card J)"
+  using C_non_empty J_not_empty C_smaller
+  by (simp add: p_H_def card_Diff_subset card_mono real_of_nat_diff divide_eq_eq field_simps)
 
-lemma E_Start: "E Start = {Init j | j. j \<in> jondos - colls \<and> init j \<noteq> 0 }"
-  by (intro E_eqI) (auto intro: init_coll simp: next_step_neq_0_cases)
+lemma H_compl2: "1 - p_H = card C * p_j"
+  unfolding H_compl p_j_def by simp
 
-lemma E_Init: "j \<in> jondos - colls \<Longrightarrow> E (Init j) = {Mix j | j. j \<in> jondos }"
-  using J_pos colls_smaller by (intro E_eqI) (auto simp: next_step_neq_0_cases)
+lemma H_eq2: "card H * p_j = p_H"
+  unfolding p_j_def p_H_def by simp
 
-lemma E_Mix: "j \<in> jondos \<Longrightarrow> E (Mix j) = {Mix j | j. j \<in> jondos } \<union> {End}"
-  using J_pos by (intro E_eqI) (auto simp: next_step_neq_0_cases)
+lemma pmf_next_pmf[simp]: "pmf (N s) t = next_prob s t"
+  unfolding N_def
+proof (rule pmf_embed_pmf)
+  show "\<And>x. 0 \<le> next_prob s x"
+    using p_j_pos p_f by (auto simp: next_prob_def intro: p_i_nonneg split: state.split)
+  show "(\<integral>\<^sup>+ x. ereal (next_prob s x) \<partial>count_space UNIV) = 1"
+    using p_f J_not_empty
+    by (subst nn_integral_count_space'[where A="Init`H \<union> Mix`J \<union> {End}"])
+       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint
+                   p_i_distr p_j_def real_of_nat_def[symmetric]
+             split: state.split)
+qed
+
+lemma next_prob_Start[simp]: "next_prob Start (Init j) = (if j \<in> H then p_i j else 0)"
+  by (auto simp: next_prob_def)
+
+lemma next_prob_to_Init[simp]: "j \<in> H \<Longrightarrow> next_prob s (Init j) =
+    (case s of Start \<Rightarrow> p_i j | _ \<Rightarrow> 0)"
+  by (cases s) (auto simp: next_prob_def)
+
+lemma next_prob_to_Mix[simp]: "j \<in> J \<Longrightarrow> next_prob s (Mix j) =
+    (case s of Init j \<Rightarrow> p_j | Mix j \<Rightarrow> p_f * p_j | _ \<Rightarrow> 0)"
+  by (cases s) (auto simp: next_prob_def)
+
+lemma next_prob_to_End[simp]: "next_prob s End =
+    (case s of Mix j \<Rightarrow> 1 - p_f | End \<Rightarrow> 1 | _ \<Rightarrow> 0)"
+  by (cases s) (auto simp: next_prob_def)
+
+lemma next_prob_from_End[simp]: "next_prob End s = 0 \<longleftrightarrow> s \<noteq> End"
+  by (cases s) (auto simp: next_prob_def)
+
+lemma next_prob_Mix_MixI: "\<exists>j. s = Mix j \<Longrightarrow> \<exists>j\<in>J. s' = Mix j \<Longrightarrow> next_prob s s' = p_f * p_j"
+  by (cases s) auto
+
+
+lemma E_Start: "E Start = {Init j | j. j \<in> H \<and> p_i j \<noteq> 0 }"
+  using p_i_C by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+
+lemma E_Init: "E (Init j) = {Mix j | j. j \<in> J }"
+  using p_j_pos C_smaller by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+
+lemma E_Mix: "E (Mix j) = {Mix j | j. j \<in> J } \<union> {End}"
+  using p_j_pos p_f by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
 
 lemma E_End: "E End = {End}"
-  by (intro E_eqI) (auto simp: next_step_neq_0_cases)
-  
+  by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+
+lemma enabled_End:
+  "enabled End \<omega> \<longleftrightarrow> \<omega> = sconst End"
+proof safe
+  assume "enabled End \<omega>" then show "\<omega> = sconst End"
+  proof (coinduction arbitrary: \<omega>)
+    case Eq_stream then show ?case
+      by (auto simp: enabled.simps[of _ \<omega>] E_End)
+  qed
+next
+  show "enabled End (sconst End)"
+    by coinduction (simp add: E_End)
+qed
+
+lemma AE_End: "(AE \<omega> in T End. P \<omega>) \<longleftrightarrow> P (sconst End)"
+proof -
+  have "(AE \<omega> in T End. P \<omega>) \<longleftrightarrow> (AE \<omega> in T End. P \<omega> \<and> \<omega> = sconst End)"
+    using AE_T_enabled[of End] by (simp add: enabled_End)
+  also have "\<dots> = (AE \<omega> in T End. P (sconst End) \<and> \<omega> = sconst End)"
+    by (simp add: enabled_End del: AE_conj_iff cong: rev_conj_cong)
+  also have "\<dots> = (AE \<omega> in T End. P (sconst End))"
+    using AE_T_enabled[of End] by (simp add: enabled_End)
+  finally show ?thesis
+    by simp
+qed
+
+lemma emeasure_Init_eq_Mix:
+  assumes [measurable]: "Measurable.pred S P"
+  assumes AE_End: "AE x in T End. \<not> P (End ## x)"
+  shows "emeasure (T (Init j)) {x\<in>space (T (Init j)). P x} =
+    emeasure (T (Mix j)) {x\<in>space (T (Mix j)). P x} / p_f"
+proof -
+  have *: "{Mix j | j. j \<in> J } = Mix ` J"
+    by auto
+  show ?thesis
+    using emeasure_eq_0_AE[OF AE_End] p_f
+    apply (subst (1 2) emeasure_Collect_T)
+    apply simp
+    apply (subst (1 2) nn_integral_measure_pmf_finite)
+    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_ereal_left_distrib[symmetric]
+                      ereal_times_divide_eq[symmetric] emeasure_nonneg)
+    done
+qed
+
 text {*
 
-What is the probability that the server sees a specific (including the initiator) as sender.
+What is the probability that the server sees a specific jondo (including the initiator) as sender.
 
 *}
 
-definition "len \<omega> = (LEAST n :: nat. \<omega> n = End) - 2"
-definition "first_jondo (\<omega> :: nat \<Rightarrow> 'a state) = jondo_of (\<omega> 0)"
-definition "last_jondo (\<omega> :: nat \<Rightarrow> 'a state) = jondo_of (\<omega> (Suc (len \<omega>)))"
+definition visit :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a state stream \<Rightarrow> bool" where
+  "visit I L = Init`(I \<inter> H) \<cdot> (HLD (Mix`J) suntil (Mix`(L \<inter> J) \<cdot> HLD {End}))"
 
-lemma measurable_len[measurable]: "len \<in> measurable S_seq (count_space UNIV)"
-  unfolding len_def[abs_def] by simp
+lemma visit_unique1:
+  "visit I1 L1 \<omega> \<Longrightarrow> visit I2 L2 \<omega> \<Longrightarrow> I1 \<inter> I2 \<noteq> {}"
+  using assms by (auto simp: visit_def HLD_iff)
 
-lemma measurable_last_jondo[measurable]: "last_jondo \<in> measurable S_seq (count_space jondos)"
-  unfolding last_jondo_def[abs_def] by measurable
-
-lemma measurable_first_jondo[measurable]: "first_jondo \<in> measurable S_seq (count_space jondos)"
-  unfolding first_jondo_def[abs_def] by measurable
-
-definition "term \<omega> \<longleftrightarrow>
-  \<omega> \<in> UNIV \<rightarrow> valid_states \<and>
-  \<omega> 0 \<in> Init ` (jondos - colls) \<and>
-  (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos) \<and>
-  (\<forall>i>len \<omega>. \<omega> (Suc i) = End)"
-
-lemma term_imp_len:
-  assumes "term \<omega>"
-  shows "i \<le> len \<omega> \<Longrightarrow> \<omega> (Suc i) \<in> Mix ` jondos"
-    and "\<omega> 0 \<in> Init ` (jondos - colls)"
-    and "i > len \<omega> \<Longrightarrow> \<omega> (Suc i) = End"
-  using assms by (auto simp: term_def)
-
-lemma len_eq:
-  "term \<omega> \<Longrightarrow> \<exists>j. \<omega> (Suc n) = Mix j \<Longrightarrow> \<omega> (Suc (Suc n)) = End \<Longrightarrow> len \<omega> = n"
-  by (rule ccontr) (auto simp add: term_def neq_iff intro: Suc_leI)
-
-lemma le_lenI[intro]:
-  "term \<omega> \<Longrightarrow> \<omega> (Suc i) \<noteq> End \<Longrightarrow> i \<le> len \<omega>"
-  unfolding term_def by (rule ccontr) auto
-
-lemma last_jondo_eq_iff:
-  assumes "term \<omega>"
-  shows "last_jondo \<omega> = j \<longleftrightarrow> \<omega> (Suc (len \<omega>)) = Mix j"
-  unfolding last_jondo_def using `term \<omega>`
-  by (auto simp: term_def jondo_of_def)
-
-lemma AE_terminating: "AE \<omega> in paths Start. \<exists>n. \<omega> n = End"
+lemma visit_unique2:
+  assumes "visit I1 L1 \<omega>" "visit I2 L2 \<omega>"
+  shows "L1 \<inter> L2 \<noteq> {}"
 proof -
-  from possible_jondo guess j . note j = this
-  then have End_reachable_Start: "End \<in> reachable (valid_states - {End}) Start"
-    by (rule_tac reachable.step[OF reachable.step[OF reachable.start], of "Init j" _ "Mix j"])
-       (auto simp: E_Start E_Init E_Mix)
-
-  have "AE \<omega> in paths Start. case_nat Start \<omega> \<in> until valid_states {End}"
-  proof (subst AE_until_iff_reachable, safe)
-    fix s assume *: "reachable (valid_states - {End}) s \<inter> {End} = {}"
-    assume "s \<in> reachable (valid_states - {End}) Start"
-    then have s: "s \<in> valid_states" by auto
-    then show False
-    proof (cases rule: valid_statesE)
-      case (Init i)
-      moreover with j s have "End \<in> reachable (valid_states - {End}) (Init i)"
-        by (rule_tac reachable.step[OF reachable.start, of "Mix j"])
-           (auto simp: E_Start E_Init E_Mix)
-      ultimately show False
-        using * by auto
-    qed (insert End_reachable_Start * E_End E_Mix, auto intro: reachable.intros)
+  let ?U = "\<lambda>L \<omega>. (HLD (Mix`J) suntil ((Mix`(L\<inter>J)) \<cdot> HLD {End})) \<omega>"
+  have "?U L1 (stl \<omega>)" "?U L2 (stl \<omega>)"
+    using assms by (auto simp: visit_def)
+  then show "L1 \<inter> L2 \<noteq> {}"
+  proof (induction "stl \<omega>" arbitrary: \<omega> rule: suntil_induct_strong)
+    case base then show ?case
+      by (auto simp add: suntil.simps[of _ _ "stl (stl \<omega>)"] suntil.simps[of _ _ "stl \<omega>"] HLD_iff)
   next
-    assume "reachable (valid_states - {End}) Start \<inter> {End} = {}"
-    with End_reachable_Start show False by auto
-  qed (auto simp: next_step_neq_0_cases)
-  then show ?thesis
-    by eventually_elim (auto elim: untilE)
-qed
-
-subsection {* A Crowds-Protocol run terminates almost surely *}
-
-lemma AE_term: "AE \<omega> in \<PP>. term \<omega>"
-  using AE_terminating AE_all_enabled[OF Start_valid_state] AE_space
-  apply eventually_elim
-proof (safe intro!: term_def[THEN iffD2])
-  fix \<omega> n assume \<omega>: "\<omega> \<in> space \<PP>" and "\<omega> n = End"
-    and not_zero: "\<forall>i. \<omega> i \<in> E (case_nat Start \<omega> i)"
-  from not_zero[THEN spec, of 0] not_zero[THEN spec, of 1]
-  have "\<omega> 0 \<in> range Init" "\<omega> 1 \<in> range Mix"
-    by (auto simp: E_Start E_Init)
-  moreover have \<omega>: "\<forall>i. \<omega> i \<in> valid_states"
-    using \<omega> by (auto simp: space_PiM Pi_iff)
-  ultimately have \<omega>0: "\<omega> 0 \<in> Init`(jondos - colls)" and \<omega>1: "\<omega> 1 \<in> Mix`jondos"
-    apply (simp_all add: valid_states_def image_iff)
-    apply (metis state.simps(4,10,12))
-    apply (metis state.simps(2,6,10,14))
-    done
-
-  show "\<omega> 0 \<in> Init`(jondos - colls)" by fact
-
-  from `\<omega> n = End` have len:
-    "\<omega> (Suc (Suc (len \<omega>))) = End \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<noteq> End)"
-    unfolding len_def
-  proof (rule LeastI2_wellorder)
-    fix i assume "\<omega> i = End" "\<forall>j. \<omega> j = End \<longrightarrow> i \<le> j"
-    moreover
-    then have "i \<noteq> 0 \<and> i \<noteq> 1"
-      using \<omega>0 \<omega>1 by (intro notI conjI) auto
-    then have "2 \<le> i"
-      by simp
-    then have "Suc (Suc (i - 2)) = i"
-      by simp
-    ultimately show "\<omega> (Suc (Suc (i - 2))) = End \<and> (\<forall>j\<le>i - 2. \<omega> (Suc j) \<noteq> End)"
-      by auto
-  qed
-
-  { fix i :: nat
-    { fix j have "\<omega> j = End \<Longrightarrow> \<omega> (Suc j) = End"
-        using not_zero[THEN spec, of "Suc j"] by (simp add: E_End) }
-    note * = this
-    assume "len \<omega> < i" with len show "\<omega> (Suc i) = End"
-      by (induct i) (auto simp: less_Suc_eq intro: *) }
-  note tail = this
-
-  { fix i assume "i \<le> len \<omega>"
-    then show "\<omega> (Suc i) \<in> Mix ` jondos"
-    proof (induct i)
-      case (Suc n)
-      moreover then obtain j where "\<omega> (Suc n) = Mix j" "j \<in> jondos" by auto
-      moreover note not_zero[THEN spec, of "Suc (Suc n)"] len p_f \<omega>[THEN spec, of "Suc (Suc n)"]
-      ultimately show ?case
-        by (auto simp add: E_Mix split: state.split_asm)
-    qed (insert \<omega>1, simp) }
-qed auto
-
-lemma prob_sums_len:
-  assumes P[measurable]: "\<And>n. {\<omega>\<in>space S_seq. P \<omega>} \<in> sets S_seq"
-  shows "(\<lambda>n. \<P>(\<omega> in \<PP>. len \<omega> = n \<and> P \<omega>)) sums \<P>(\<omega> in \<PP>. P \<omega>)"
-  using AE_term by (intro prob_sums) auto
-
-lemma prob_sums_cyl_init:
-  fixes S
-  assumes S: "\<And>n i. S n i \<subseteq> jondos" and I: "I \<subseteq> jondos - colls"
-  shows "(\<lambda>n. (\<Sum>j\<in>I. init j) * (\<Prod>i\<le>n. card (S n i) * J) * (p_f)^n * (1 - p_f)) sums
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` I \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i))"
-proof -
-  let ?P = "\<lambda>\<omega>. \<omega> 0 \<in> Init ` I \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i)"
-  have "(\<lambda>n. \<P>(\<omega> in \<PP>. len \<omega> = n \<and> ?P \<omega>)) sums \<P>(\<omega> in \<PP>. ?P \<omega>)"
-    by (rule prob_sums_len) simp
-  moreover
-  { fix n
-    let ?A = "\<lambda>0 \<Rightarrow> Init`I | Suc i \<Rightarrow> if i \<le> n then Mix`(S n i) else {End}"
-    let ?p = "\<lambda>0 \<Rightarrow> init \<circ> jondo_of | Suc 0 \<Rightarrow> \<lambda>j. J | Suc (Suc i) \<Rightarrow> \<lambda>j. if i < n then J * p_f else 1 - p_f"
-
-    have [simp]: "\<And>f a b. (\<Prod>x\<in>{Suc a ..< Suc b}. f x) = (\<Prod>x\<in>{a ..< b}. f (Suc x))"
-      "{.. n} = insert 0 {Suc 0..<Suc n}"
-      unfolding image_Suc_atLeastLessThan[symmetric] by (subst setprod.reindex) auto
-
-    have "\<P>(\<omega> in \<PP>. len \<omega> = n \<and> ?P \<omega>) = \<P>(\<omega> in \<PP>. (\<forall>i<Suc (Suc (Suc n)). \<omega> i \<in> ?A i))"
-      apply (rule prob_eq_AE)
-      using AE_term
-      apply eventually_elim
-    proof (intro iffI conjI allI impI)
-      fix \<omega> assume "term \<omega>" and \<omega>: "\<forall>i<Suc (Suc (Suc n)). \<omega> i \<in> ?A i"
-      show "\<omega> 0 \<in> Init ` I" using \<omega>[THEN spec, of 0] by auto
-      show "len \<omega> = n"
-        using `term \<omega>` \<omega>[THEN spec, of "Suc n"] \<omega>[THEN spec, of "Suc (Suc n)"]
-        by (intro len_eq) auto
-      { fix i assume "i \<le> len \<omega>" with `len \<omega> = n` show "\<omega> (Suc i) \<in> Mix ` S (len \<omega>) i"
-          using \<omega>[THEN spec, of "Suc i"] by (auto simp: inj_image_mem_iff) }
+    case step
+    show ?case
+    proof cases
+      assume "((Mix`(L2\<inter>J)) \<cdot> HLD {End}) (stl \<omega>)"
+      with step.hyps show ?thesis
+        by (auto simp: inj_Mix HLD_iff elim: suntil.cases)
     next
-      fix \<omega> i assume \<omega>: "term \<omega>" "len \<omega> = n \<and> ?P \<omega>" "i <Suc (Suc (Suc n))"
-      then have "i \<le> len \<omega> \<Longrightarrow> \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i" by auto
-      with \<omega> show "\<omega> i \<in> ?A i" by (auto split: nat.split)
-    qed auto
-    also have "\<dots> = (\<Prod>i<Suc (Suc (Suc n)). (\<Sum>a\<in>?A i. ?p i a))"
-      using S I by (intro independent_cylinder) (auto simp: jondo_of_def split: nat.split)
-    also have "\<dots> = (\<Prod>i\<in>{0, Suc 0} \<union> {Suc (Suc 0) ..< Suc (Suc n)} \<union> {Suc (Suc n)}. (\<Sum>a\<in>?A i. ?p i a))"
-      by (intro setprod.cong) auto
-    also have "\<dots> = (\<Sum>j\<in>I. init j) * (\<Prod>i\<le>n. card (S n i) * J) * (p_f)^n * (1 - p_f)"
-      by (simp_all add: card_image setsum.reindex jondo_of_def real_eq_of_nat setprod.distrib setprod_constant)
-    finally have "\<P>(\<omega> in \<PP>. len \<omega> = n \<and> ?P \<omega>) = \<dots>" . }
-  ultimately show ?thesis by simp
+      assume "\<not> ((Mix`(L2\<inter>J)) \<cdot> HLD {End}) (stl \<omega>)"
+      with step.prems have "?U L2 (stl (stl \<omega>))"
+        by (auto elim: suntil.cases)
+      then show ?thesis
+        by (rule step.hyps(4)[OF refl])
+    qed
+  qed
 qed
 
-lemma prob_sums_cyl:
-  fixes S assumes S: "\<And>n i. S n i \<subseteq> jondos"
-  shows "(\<lambda>n. (\<Prod>i\<le>n. card (S n i) * J) * (p_f)^n * (1 - p_f)) sums
-    \<P>(\<omega> in \<PP>. (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i))"
+lemma visit_imp_in_H: "visit {i} J \<omega> \<Longrightarrow> i \<in> H"
+  by (auto simp: visit_def HLD_iff)
+
+lemma emeasure_visit:
+  assumes I: "I \<subseteq> H" and L: "L \<subseteq> J"
+  shows "emeasure \<PP> {\<omega>\<in>space \<PP>. visit I L \<omega>} = (\<Sum>i\<in>I. p_i i) * (card L * p_j)"
 proof -
-  have "\<P>(\<omega> in \<PP>. (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i)) =
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` (jondos - colls) \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` S (len \<omega>) i))"
-    using AE_term
-    by (intro prob_eq_AE, elim AE_mp) (auto simp add: term_def)
-  with prob_sums_cyl_init[of S, OF S subset_refl]
-  show ?thesis
-    by simp
+  let ?J = "HLD (Mix`J)" and ?E = "(Mix`L) \<cdot> HLD {End}"
+  let ?\<phi> = "?J aand not ?E"
+  let ?P = "\<lambda>x P. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>}"
+
+  have [intro]: "finite L"
+    using finite_J `L \<subseteq> J` by (blast intro: finite_subset)
+  have [simp, intro]: "finite I"
+    using finite_J `I \<subseteq> H` by (blast intro: finite_subset)
+
+  { fix j assume j: "j \<in> H"
+    have "?P (Mix j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f)"
+    proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl])
+      fix s assume s: "s \<in> Mix ` J"
+      then have "?P s ?E = (\<integral>\<^sup>+x. ereal (1 - p_f) * indicator (Mix`L) x \<partial>N s)"
+        by (auto simp add: emeasure_HLD_nxt emeasure_HLD AE_measure_pmf_iff emeasure_pmf_single
+                 split: state.split split_indicator simp del: space_T nxt.simps
+                 intro!: nn_integral_cong_AE)
+      also have "\<dots> = ereal (1 - p_f) * emeasure (N s) (Mix`L)"
+        using p_f by (intro nn_integral_cmult_indicator) auto
+      also have "\<dots> = ereal ((1 - p_f) * card L * p_j * p_f)"
+        using s assms by (subst emeasure_measure_pmf_finite) (auto simp: setsum.reindex subset_eq real_of_nat_def)
+      finally show "?P s ?E = p_f * p_j * (1 - p_f) * card L"
+        by simp
+    next
+      fix s show "AE \<omega> in T s. (?\<phi> aand nxt ?E) \<omega> \<longleftrightarrow> (Mix`J \<cdot> ?E) \<omega>"
+        "AE \<omega> in T s. (?\<phi> aand nxt ?\<phi>) \<omega> \<longleftrightarrow> (Mix`J \<cdot> ?\<phi>) \<omega>"
+        by (auto simp add: HLD_iff)
+    qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def real_of_nat_def)
+    then have "?P (Init j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f) / p_f"
+      by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s])
+    then have "?P (Init j) (?J suntil ?E) = p_j * card L"
+      using p_f by simp }
+  note J_suntil_E = this
+
+  have "?P Start (visit I L) = (\<integral>\<^sup>+x. ?P x (?J suntil ?E) * indicator (Init`I) x \<partial>N Start)"
+    unfolding visit_def using I L by (subst emeasure_HLD_nxt) (auto simp: Int_absorb2)
+  also have "\<dots> = (\<integral>\<^sup>+x. ereal (p_j * card L) * indicator (Init`I) x \<partial>N Start)"
+    using I J_suntil_E by (intro nn_integral_cong mult_indicator_cong) auto
+  also have "\<dots> = ereal ((\<Sum>i\<in>I. p_i i) * card L * p_j)"
+    using p_j_pos assms
+    by (subst nn_integral_cmult_indicator)
+       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq)
+  finally show ?thesis by simp
 qed
 
-lemma (in prob_space) prob_setsum:
-  assumes [simp, intro]: "finite I"
-  assumes P: "\<And>n. n \<in> I \<Longrightarrow> {x\<in>space M. P n x} \<in> events"
-  assumes Q: "{x\<in>space M. Q x} \<in> events"
-  assumes ae: "AE x in M. (\<forall>n\<in>I. P n x \<longrightarrow> Q x) \<and> (Q x \<longrightarrow> (\<exists>!n\<in>I. P n x))"
-  shows "\<P>(x in M. Q x) = (\<Sum>n\<in>I. \<P>(x in M. P n x))"
-proof -
-  from ae[THEN AE_E_prob] guess S . note S = this
-  then have disj: "disjoint_family_on (\<lambda>n. {x\<in>space M. P n x} \<inter> S) I"
-    by (auto simp: disjoint_family_on_def)
-  from S have ae_S:
-    "AE x in M. x \<in> {x\<in>space M. Q x} \<longleftrightarrow> x \<in> (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
-    "\<And>n. n \<in> I \<Longrightarrow> AE x in M. x \<in> {x\<in>space M. P n x} \<longleftrightarrow> x \<in> {x\<in>space M. P n x} \<inter> S"
-    using ae by (auto dest!: AE_prob_1)
-  from ae_S have *:
-    "\<P>(x in M. Q x) = prob (\<Union>n\<in>I. {x\<in>space M. P n x} \<inter> S)"
-    using P Q S by (intro finite_measure_eq_AE) (auto intro!: sets.Int)
-  from ae_S have **:
-    "\<And>n. n \<in> I \<Longrightarrow> \<P>(x in M. P n x) = prob ({x\<in>space M. P n x} \<inter> S)"
-    using P Q S by (intro finite_measure_eq_AE) auto
-  show ?thesis
-    using S P disj
-    by (auto simp add: * ** simp del: UN_simps intro!: finite_measure_finite_Union)
-qed
+lemma measurable_visit[measurable]: "Measurable.pred S (visit I L)"
+  by (simp add: visit_def)
+
+lemma AE_visit: "AE \<omega> in \<PP>. visit H J \<omega>"
+proof (rule T.AE_I_eq_1)
+  show "emeasure \<PP> {\<omega>\<in>space \<PP>. visit H J \<omega>} = 1"
+    using J_not_empty by (subst emeasure_visit ) (simp_all add: p_j_def)
+qed simp
 
 subsection {* Server gets no information *}
 
-lemma server_view1:
-  assumes j: "j : jondos"
-  shows "\<P>(\<omega> in \<PP>. last_jondo \<omega> = j) = J"
-proof -
-  let ?S = "% n i. if n = (i::nat) then {j} else jondos"
-
-  have "\<P>(\<omega> in \<PP>. last_jondo \<omega> = j) = \<P>(\<omega> in \<PP>. (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
-    using AE_term
-    by (intro prob_eq_AE) (auto simp: last_jondo_eq_iff term_imp_len)
-  moreover have "(\<lambda>n. (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums \<dots>"
-    using j by (intro prob_sums_cyl) auto
-  moreover have "(\<lambda>n. p_f ^ n * (1 - p_f) * J) sums ((1 / (1 - p_f)) * (1 - p_f) * J)"
-    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
-  ultimately show "\<P>(\<omega> in \<PP>. last_jondo \<omega> = j) = J"
-    using jondos_non_empty p_f
-    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def)
-qed
+lemma server_view1: "j \<in> J \<Longrightarrow> \<P>(\<omega> in \<PP>. visit H {j} \<omega>) = p_j"
+  unfolding measure_def by (subst emeasure_visit) simp_all
 
 lemma server_view_indep:
-  assumes l: "l \<in> jondos" and i: "i \<in> jondos - colls"
-  shows "\<P>(\<omega> in \<PP>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i) =
-    \<P>(\<omega> in \<PP>. last_jondo \<omega> = l) * \<P>(\<omega> in \<PP>. first_jondo \<omega> = i)"
+  "L \<subseteq> J \<Longrightarrow> I \<subseteq> H \<Longrightarrow> \<P>(\<omega> in \<PP>. visit I L \<omega>) = \<P>(\<omega> in \<PP>. visit H L \<omega>) * \<P>(\<omega> in \<PP>. visit I J \<omega>)"
+  unfolding measure_def by (subst (1 2 3) emeasure_visit) (auto simp: p_j_def)
+
+lemma server_view: "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} {j} \<omega>) = p_j"
+  using finite_J
+proof (subst T.prob_setsum[where I="H" and P="\<lambda>j. visit {j} {j}"])
+  show "(\<Sum>j\<in>H. \<P>(\<omega> in \<PP>. visit {j} {j} \<omega>)) = p_j"
+    by (auto simp: measure_def emeasure_visit setsum_left_distrib[symmetric] simp del: space_T sets_T)
+  show "AE x in \<PP>. (\<forall>n\<in>H. visit {n} {n} x \<longrightarrow> (\<exists>j\<in>H. visit {j} {j} x)) \<and>
+                ((\<exists>j\<in>H. visit {j} {j} x) \<longrightarrow> (\<exists>!n. n \<in> H \<and> visit {n} {n} x))"
+    by (auto dest: visit_unique1)
+qed simp_all
+
+subsection {* Probability that collaborators gain information *}
+
+definition "hit_C = Init`H \<cdot> ev (HLD (Mix`C))"
+definition "before_C B = (HLD (Jondo H)) suntil ((Jondo (B \<inter> H)) \<cdot> HLD (Mix ` C))"
+
+lemma measurable_hit_C[measurable]: "Measurable.pred S hit_C"
+  by (simp add: hit_C_def)
+
+lemma measurable_before_C[measurable]: "Measurable.pred S (before_C B)"
+  by (simp add: before_C_def)
+
+lemma before_C:
+  assumes \<omega>: "enabled Start \<omega>"
+  shows "before_C B \<omega> \<longleftrightarrow>
+    ((Init`H \<cdot> (HLD (Mix`H) suntil (Mix`(B \<inter> H) \<cdot> HLD (Mix`C)))) or (Init`(B \<inter> H) \<cdot> HLD (Mix`C))) \<omega>"
 proof -
-  let ?S = "\<lambda>n i :: nat. if n = i then {l} else jondos"
-  have 1: "
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i)) =
-    \<P>(\<omega> in \<PP>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i)"
-    using AE_term
-    apply (intro prob_eq_AE)
-    apply (elim AE_mp)
-    apply (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len first_jondo_def jondo_of_def
-            dest!: term_imp_len(2)
-             intro!: AE_I2)
-    done
-  have 2: "(\<lambda>n. init i * p_f ^ n * (1 - p_f) * J) sums (init i * (1 / (1 - p_f)) * (1 - p_f) * J)"
-    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
-  have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
-    using l i by (intro prob_sums_cyl_init) auto
-  also have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) =
-    (\<lambda>n. init i * p_f ^ n * (1 - p_f) * J)"
-    using jondos_non_empty p_f
-    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
-  finally have *: "\<P>(\<omega> in \<PP>. last_jondo \<omega> = l \<and> first_jondo \<omega> = i) = init i * J"
-    unfolding 1 using jondos_non_empty p_f 2
-    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
-
-  let ?S = "\<lambda>n i :: nat. if n = i then {l} else jondos"
-  have 1: "
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos)) =
-    \<P>(\<omega> in \<PP>. first_jondo \<omega> = i)"
-    using AE_term
-    apply (intro prob_eq_AE)
-    apply (elim AE_mp)
-    apply (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len first_jondo_def jondo_of_def
-            dest!: term_imp_len(2)
-             intro!: AE_I2)
-    done
-  have 2: "(\<lambda>n. init i * p_f ^ n * (1 - p_f)) sums (init i * (1 / (1 - p_f)) * (1 - p_f))"
-    using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
-  have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card jondos * J) * (p_f)^n * (1 - p_f)) sums
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` jondos))"
-    using l i by (intro prob_sums_cyl_init) auto
-  also have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i\<le>n. card jondos * J) * (p_f)^n * (1 - p_f)) =
-    (\<lambda>n. init i * p_f ^ n * (1 - p_f))"
-    using jondos_non_empty p_f
-    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
-  finally have **: "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i) = init i"
-    unfolding 1 using jondos_non_empty p_f 2
-    by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) 
-  
-  from server_view1[OF l] * ** i show ?thesis by simp
-qed
-
-lemma server_view:
-  shows "\<P>(\<omega> in \<PP>. last_jondo \<omega> = first_jondo \<omega>) = J"
-proof -
-  let ?P = "\<lambda>j. \<P>(\<omega> in \<PP>. \<omega> 0 = Init j \<and> last_jondo \<omega> = j)"
-
-  have "\<P>(\<omega> in \<PP>. last_jondo \<omega> = first_jondo \<omega>) = (\<Sum>j\<in>jondos-colls. ?P j)"
-  proof (rule prob_setsum)
-    show "AE \<omega> in \<PP>. (\<forall>j\<in>jondos - colls. \<omega> 0 = Init j \<and> last_jondo \<omega> = j \<longrightarrow> last_jondo \<omega> = first_jondo \<omega>) \<and>
-               (last_jondo \<omega> = first_jondo \<omega> \<longrightarrow> (\<exists>!j. j \<in> jondos - colls \<and> \<omega> 0 = Init j \<and> last_jondo \<omega> = j))"
-      using AE_term
-      by (elim AE_mp)
-         (auto simp: last_jondo_eq_iff first_jondo_def jondo_of_def intro!: AE_I2 dest: term_imp_len)
-  qed auto
-  moreover
-  { fix j assume j: "j \<in> jondos - colls"
-    let "?S n i" = "if n = (i::nat) then {j} else jondos"
-    have "?P j = \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {j} \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (len \<omega>) i))"
-      using AE_term
-      by (intro prob_eq_AE)
-         (auto simp: all_conj_distrib iff_conv_conj_imp last_jondo_eq_iff term_imp_len)
-    moreover have "(\<lambda>n. (\<Sum>j\<in>{j}. init j) * (\<Prod>i\<le>n. card (?S n i) * J) * (p_f)^n * (1 - p_f)) sums \<dots>"
-      using j by (intro prob_sums_cyl_init) auto
-    moreover have "(\<lambda>n. init j * p_f ^ n * (1 - p_f) * J) sums (init j * (1 / (1 - p_f)) * (1 - p_f) * J)"
-      using p_f by (intro sums_mult sums_mult2 geometric_sums) auto
-    ultimately have "?P j = init j * J"
-      using jondos_non_empty p_f
-      by (simp add: lessThan_Suc_atMost[symmetric] lessThan_Suc setprod_constant sums_iff J_def) }
-  ultimately
-  show ?thesis
-    by (simp add: setsum_left_distrib[symmetric])
-qed
-
-definition "hit_colls \<omega> \<longleftrightarrow> (\<exists>n::nat. \<omega> n \<in> Mix ` colls)"
-definition "first_coll \<omega> = (LEAST n::nat. \<omega> n \<in> Mix ` colls) - 1"
-definition "last_ncoll \<omega> = jondo_of (\<omega> (first_coll \<omega>))"
-
-lemma measurable_hit_colls[measurable]: "hit_colls \<in> measurable S_seq (count_space UNIV)"
-  unfolding hit_colls_def[abs_def] by simp
-
-lemma measurable_first_coll[measurable]: "first_coll \<in> measurable S_seq (count_space UNIV)"
-  unfolding first_coll_def[abs_def] by simp
-
-lemma measurable_last_ncoll[measurable]: "last_ncoll \<in> measurable S_seq (count_space jondos)"
-  unfolding last_ncoll_def[abs_def] by simp
-
-lemma hit_colls_eq:
-  assumes "term \<omega>"
-  shows "hit_colls \<omega> \<longleftrightarrow> (\<exists>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` colls)"
-proof
-  assume "hit_colls \<omega>"
-then guess n unfolding hit_colls_def .. note n = this
-  with `term \<omega>` have "n \<noteq> 0"
-    by (intro notI) (auto simp add: term_def)
-  with `term \<omega>` n show "\<exists>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` colls"
-    by (intro exI[of _ "n - 1"])
-       (auto simp: term_def gr0_conv_Suc)
-qed (auto simp: hit_colls_def)
-
-lemma first_collI2: "\<And>\<omega> i. i < first_coll \<omega> \<Longrightarrow> \<omega> (Suc i) \<notin> Mix`colls"
-  by (simp add: first_coll_def less_diff_conv) (rule not_less_Least)
-
-lemma first_collI:
-  assumes "term \<omega>" and h: "hit_colls \<omega>"
-  shows "\<omega> (Suc (first_coll \<omega>)) \<in> Mix ` colls"
-  using h unfolding first_coll_def hit_colls_def
-proof (rule LeastI2_ex)
-  fix i assume "\<omega> i \<in> Mix ` colls"
-  moreover with `term \<omega>` have "i \<noteq> 0"
-    by (intro notI) (auto simp add: term_def)
-  ultimately show "\<omega> (Suc (i - 1)) \<in> Mix ` colls"
-    by auto
-qed
-
-lemma first_coll_le_len[intro]:
-  assumes [intro]: "term \<omega>" and "hit_colls \<omega>"
-  shows "first_coll \<omega> \<le> len \<omega>"
-proof -
-  from assms obtain n
-    where n: "n \<le> len \<omega>" "\<omega> (Suc n) \<in> Mix ` colls"
-    by (auto simp: hit_colls_eq)
-  from this(2) show ?thesis
-    unfolding first_coll_def
-    apply (rule LeastI2_wellorder)
-    apply (insert n)
-    apply auto
-    done
-qed
-
-lemma first_collI3:
-  assumes "term \<omega>" "hit_colls \<omega>" "i < first_coll \<omega>"
-  shows "\<omega> (Suc i) \<in> Mix`(jondos - colls)"
-  using first_coll_le_len[OF `term \<omega>` `hit_colls \<omega>`] `i < first_coll \<omega>`
-    first_collI2[OF `i < first_coll \<omega>`] term_imp_len(1)[OF `term \<omega>`, of i]
-  by auto
-
-lemma first_collI4: "term \<omega> \<Longrightarrow> hit_colls \<omega> \<Longrightarrow> last_ncoll \<omega> \<in> jondos - colls"
-  using first_collI3[of \<omega> "first_coll \<omega> - 1"]
-  by (cases "first_coll \<omega>") (auto simp: last_ncoll_def jondo_of_def dest!: term_imp_len)
-
-subsection {* The probability to hit a collaborateur *}
-
-lemma hit: "\<P>(\<omega> in \<PP>. hit_colls \<omega>) = (1 - H) / (1 - H * p_f)"
-  (is "?HIT = _")
-proof -
-  have "p_f * H \<noteq> 1"
-    using H_pf_1 by (simp add: ac_simps)
-  have "?HIT = 1 - \<P>(\<omega> in \<PP>. \<not> hit_colls \<omega>)"
-    by (subst prob_neg) simp_all
-  moreover have "\<P>(\<omega> in \<PP>. \<not> hit_colls \<omega>) =
-    \<P>(\<omega> in \<PP>. \<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` (jondos - colls))"
-    using AE_term colls_smaller
-    by (intro prob_eq_AE, elim AE_mp)
-       (auto simp add: hit_colls_eq image_set_diff term_imp_len intro!: AE_I2)
-  moreover have "(\<lambda>n. (\<Prod>i\<le>n. card (jondos - colls) * J) * p_f^n * (1 - p_f)) sums \<dots>"
-    by (rule prob_sums_cyl) auto
-  moreover have "\<And>n. (\<Prod>i\<le>n. card (jondos - colls) * J) * p_f^n * (1 - p_f) =
-    (H * p_f)^n * (H * (1 - p_f))"
-    by (simp add: setprod_constant power_divide power_mult_distrib field_simps H_def J_def)
-  moreover have "\<dots> sums (1 / (1 - H * p_f) * (H * (1 - p_f)))"
-    using H_pf_0 H_pf_1
-    by (intro sums_mult2 sums_divide geometric_sums) simp
-  ultimately have "?HIT = 1 - (H * (1 - p_f) / (1 - H * p_f))"
-    by (simp add: sums_iff)
-  also have "\<dots> = (1 - H) / (1 - H * p_f)"
-    by (simp add: field_simps diff_divide_distrib eq_divide_eq) fact
-  finally show ?thesis .
-qed
-
-lemma hit_prob_sums_cyl:
-  fixes S
-  assumes S: "\<And>n i. S n i \<subseteq> jondos - colls" and I: "\<And>n. I n \<subseteq> jondos - colls"
-  shows "(\<lambda>n. (\<Sum>j\<in>I n. init j) * (\<Prod>i<n. card (S n i) * J * p_f) * (1 - H * p_f)) sums
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` I (first_coll \<omega>) \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` S (first_coll \<omega>) i) \<bar> hit_colls \<omega>)"
-proof -
-  have "(\<lambda>n. \<P>(\<omega> in \<PP>. first_coll \<omega> = n \<and> \<omega> 0 \<in> Init ` (I n) \<and> (\<forall>i<n. \<omega> (Suc i) \<in> Mix ` S n i) \<and> hit_colls \<omega>))
-    sums \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` (I (first_coll \<omega>)) \<and>
-                   (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` S (first_coll \<omega>) i) \<and> hit_colls \<omega>)"
-    (is "?P sums ?C")
-    by (rule prob_sums) auto
-  moreover
-  { fix n :: nat
-    def T \<equiv> "\<lambda>l i. if l < n     then {}
-              else if i < n     then S n i
-              else if i = n     then colls
-                                else jondos"
-
-    have cards: "\<And>l. n \<le> l \<Longrightarrow> {..l} \<inter> - {x. x < n} \<inter> - {n} = {n<..l}"
-        "\<And>l. n \<le> l \<Longrightarrow> {..l} \<inter> {x. x < n} = {..< n}"
-      by auto
-
-    have "?P n = \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` (I n) \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` T (len \<omega>) i))"
-      using AE_term
-    proof (intro prob_eq_AE, elim AE_mp, intro AE_I2 impI allI conjI iffI)
-      fix \<omega> i assume "term \<omega>" "i \<le> len \<omega>"
-        and coll: "first_coll \<omega> = n \<and> \<omega> 0 \<in> Init ` (I n) \<and> (\<forall>i<n. \<omega> (Suc i) \<in> Mix ` S n i) \<and> hit_colls \<omega>"
-      then show "\<omega> (Suc i) \<in> Mix ` T (len \<omega>) i"
-        by (auto simp: T_def not_le[symmetric] intro: first_collI term_imp_len)
+  { fix \<omega> s assume "((HLD (Jondo H)) suntil (Jondo (B \<inter> H) \<cdot> HLD (Mix ` C))) \<omega>"
+      "enabled s \<omega>" "s \<in> Jondo H"
+    then have "(HLD (Mix ` H) suntil (Mix ` (B \<inter> H) \<cdot> (HLD (Mix ` C)))) \<omega>"
+    proof (induction arbitrary: s)
+      case (base \<omega>) then show ?case
+        by (auto simp: HLD_iff enabled.simps[of _ \<omega>] E_Init E_Mix intro!: suntil.intros(1))
     next
-      fix \<omega> assume "\<omega> 0 \<in> Init ` (I n) \<and> (\<forall>i\<le>len \<omega>. \<omega> (Suc i) \<in> Mix ` T (len \<omega>) i)" and "term \<omega>"
-      then have "n \<le> len \<omega>" and T: "\<And>i. i \<le> len \<omega> \<Longrightarrow> \<omega> (Suc i) \<in> Mix ` T (len \<omega>) i"
-        by (auto simp add: T_def not_less[symmetric])
-      with T[of n] show "hit_colls \<omega>"
-        by (auto simp add: T_def hit_colls_def)
-      { fix i assume "i < n" then show "\<omega> (Suc i) \<in> Mix ` S n i"
-          using T[of i] `n \<le> len \<omega>` by (auto simp: T_def) }
-      have "\<omega> (Suc n) \<in> Mix ` colls"
-        using T[of n] `n \<le> len \<omega>`
-        by (auto simp: T_def)
-      with first_collI2[of n \<omega>] have "first_coll \<omega> \<le> n"
-        by (metis not_less)
-      moreover have "n \<le> first_coll \<omega>"
-        using T[of "first_coll \<omega>"] S[of n "first_coll \<omega>"]
-        using first_collI[OF `term \<omega>` `hit_colls \<omega>`] `n \<le> len \<omega>`
-        by (auto simp: not_less[symmetric] T_def split: split_if_asm)
-      ultimately show "first_coll \<omega> = n" by simp
-    qed auto
-    moreover have "(\<lambda>l. (\<Sum>i\<in>I n. init i) * (\<Prod>i\<le>l. card (T l i) * J) * (p_f)^l * (1 - p_f)) sums \<dots>"
-      using I[of n] S colls_non_empty colls_smaller by (intro prob_sums_cyl_init) (auto simp: T_def)
-    moreover have "\<And>l. (\<Sum>i\<in>I n. init i) * (\<Prod>i\<le>l. card (T l i) * J) * (p_f)^l * (1 - p_f) =
-      (if n \<le> l then (\<Sum>i\<in>I n. init i) * (1 - H) * p_f^l * (1 - p_f) * (\<Prod>i<n. card (S n i) * J) else 0)"
-      (is "\<And>l. _ = (if n \<le> l then ?p l else 0)")
-      using jondos_non_empty p_f colls_smaller unfolding H_compl
-      by (simp add: J_def T_def H_def setprod_dividef fun_if_distrib setprod.If_cases
-                    setprod_constant power_divide power_mult_distrib power_diff eq_divide_eq cards)
-    ultimately have "(\<lambda>l. if n \<le> l then ?p l else 0) sums ?P n"
-      by simp
-    from sums_split_initial_segment[OF this, of n]
-    have "(\<lambda>l. ?p (l + n)) sums ?P n" by simp
-    moreover have "(\<lambda>l. ?p (l + n)) sums ((\<Sum>i\<in>I n. init i) * (1 - H) * (1 / (1 - p_f) * p_f ^ n) *
-      (1 - p_f) * (\<Prod>i<n. card (S n i) * J))"
-      unfolding power_add using p_f
-      by (intro sums_mult sums_mult2 geometric_sums) simp
-    ultimately have "?P n = (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f)"
-      using p_f jondos_non_empty H by (simp add: sums_iff power_mult_distrib setprod.distrib setprod_constant) }
-  ultimately have "(\<lambda>n. (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f)) sums ?C"
-    by simp
-  then have "(\<lambda>n. (\<Sum>i\<in>I n. init i) * (1 - H) * (\<Prod>i<n. card (S n i) * J * p_f) / ((1 - H) / (1 - H * p_f))) sums
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` I (first_coll \<omega>) \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` S (first_coll \<omega>) i) \<bar> hit_colls \<omega>)"
-    unfolding cond_prob_def hit by (simp only: conj_ac) (rule sums_divide)
-  with H show ?thesis
-    by (simp add: ac_simps)
+      case (step \<omega>) from step.prems step.hyps step.IH[of "shd \<omega>"] show ?case
+        by (auto simp: HLD_iff enabled.simps[of _ \<omega>] E_Init E_Mix
+                       suntil.simps[of _ _ \<omega>] enabled_End suntil_sconst)
+    qed }
+  note this[of "stl \<omega>" "shd \<omega>"]
+  moreover
+  { fix \<omega> s assume "(HLD (Mix ` H) suntil (Mix ` (B \<inter> H) \<cdot> (HLD (Mix ` C)))) \<omega>"
+      "enabled s \<omega>" "s \<in> Jondo H"
+    then have "((HLD (Jondo H)) suntil ((Jondo (B \<inter> H)) \<cdot> HLD (Mix ` C))) \<omega>"
+    proof (induction arbitrary: s)
+      case (step \<omega>) from step.prems step.hyps step.IH[of "shd \<omega>"] show ?case
+        by (auto simp: HLD_iff enabled.simps[of _ \<omega>] E_Init E_Mix
+                       suntil.simps[of _ _ \<omega>] enabled_End suntil_sconst)
+    qed (auto intro: suntil.intros simp: HLD_iff) }
+  note this[of "stl \<omega>" "shd \<omega>"]
+  ultimately show ?thesis
+    using assms
+    using `enabled Start \<omega>`
+    unfolding before_C_def suntil.simps[of _ _ \<omega>] enabled.simps[of _ \<omega>]
+    by (auto simp: E_Start HLD_iff)
 qed
 
-subsection {* The probability that the sender hits a collaborateur *}
+lemma before_C_unique:
+  assumes \<omega>: "before_C I1 \<omega>" "before_C I2 \<omega>" shows "I1 \<inter> I2 \<noteq> {}"
+  using \<omega> unfolding before_C_def
+proof induction
+  case (base \<omega>) then show ?case
+    by (auto simp add: suntil.simps[of _ _ \<omega>] suntil.simps[of _ _ "stl \<omega>"] HLD_iff)
+next
+  case (step \<omega>) then show ?case
+    by (auto simp add: suntil.simps[of _ _ \<omega>] suntil.simps[of _ _ "stl \<omega>"] HLD_iff)
+qed
 
-lemma P_first_jondo_last_ncoll:
-  assumes l: "l \<in> jondos - colls" and i: "i \<in> jondos - colls"
-  shows "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<bar> hit_colls \<omega> ) =
-    init i * (J * p_f + (if i = l then 1 - H * p_f else 0))"
-  (is "?P = _")
+lemma hit_C_imp_before_C:
+  assumes "enabled Start \<omega>" "hit_C \<omega>" shows "before_C H \<omega>"
 proof -
-  let "?S n k" = "if n = Suc k then {l} else jondos - colls"
-  let "?I n" = "if (n::nat) = 0 then {i} \<inter> {l} else {i}"
-  have [simp]: "\<And>n. {..<Suc n} \<inter> - {n} = {..<n}" by auto
-  have "?P = \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` ?I (first_coll \<omega>) \<and>
-        (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (first_coll \<omega>) i) \<bar> hit_colls \<omega>)"
-  proof (rule cond_prob_eq_AE)
-    show "AE \<omega> in \<PP>. hit_colls \<omega> \<longrightarrow>
-      (first_jondo \<omega> = i \<and> last_ncoll \<omega> = l) =
-      (\<omega> 0 \<in> Init ` ?I (first_coll \<omega>) \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` ?S (first_coll \<omega>) i))"
-      using AE_term
-    proof (elim AE_mp, safe intro!: AE_I2)
-      fix \<omega> assume \<omega>: "term \<omega>" "hit_colls \<omega>"
-      then show "\<omega> 0 \<in> Init ` (if first_coll \<omega> = 0 then {first_jondo \<omega>} \<inter> {last_ncoll \<omega>} else {first_jondo \<omega>})"
-        by (auto simp add: first_jondo_def last_ncoll_def term_def jondo_of_def)
-      fix i assume "i < first_coll \<omega>"
-      then have "i \<le> len \<omega>" using first_coll_le_len[OF \<omega>] by simp
-      from \<omega> first_collI2[OF `i < first_coll \<omega>`] term_imp_len(1)[OF \<omega>(1) this]
-      show "\<omega> (Suc i) \<in> Mix ` (if first_coll \<omega> = Suc i then {last_ncoll \<omega>} else jondos - colls)"
-        by (auto simp: image_set_diff last_ncoll_def jondo_of_def)
-    next
-      fix \<omega> j assume j: "j \<in> (if first_coll \<omega> = 0 then {i} \<inter> {l} else {i})"
-      then have [simp]: "j = i" by (cases "first_coll \<omega>") auto
-      assume \<omega>: "term \<omega>" "hit_colls \<omega>" "\<omega> 0 = Init j"
-      then show "first_jondo \<omega> = i"
-        by (simp add: first_jondo_def jondo_of_def)
-      assume "\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` (if first_coll \<omega> = Suc i then {l} else jondos - colls)"
-      with j \<omega> show "last_ncoll \<omega> = l"
-        by (cases "first_coll \<omega>") (auto simp: last_ncoll_def jondo_of_def)
+  let ?X = "Init`H \<union> Mix`H"
+  { fix \<omega> s assume "ev (HLD (Mix`C)) \<omega>" "s\<in>?X" "enabled s \<omega>"
+    then have "((HLD (Jondo H)) suntil (?X \<cdot> HLD (Mix ` C))) (s ## \<omega>)"
+    proof (induction arbitrary: s rule: ev_induct_strong)
+      case (step \<omega> s) from step.IH[of "shd \<omega>"] step.prems step.hyps show ?case
+        by (auto simp: enabled.simps[of _ \<omega>] suntil_Stream E_Init E_Mix HLD_iff
+          enabled_End ev_sconst)
+    qed (auto simp: suntil_Stream) }
+  from this[of "stl \<omega>" "shd \<omega>"] assms show ?thesis
+    by (auto simp: before_C_def hit_C_def enabled.simps[of _ \<omega>] E_Start)
+qed
+
+lemma before_C_single:
+  assumes "before_C I \<omega>" shows "\<exists>i\<in>I \<inter> H. before_C {i} \<omega>"
+  using assms unfolding before_C_def by induction (auto simp: HLD_iff intro: suntil.intros)
+
+lemma before_C_imp_in_H: "before_C {i} \<omega> \<Longrightarrow> i \<in> H"
+  by (auto dest: before_C_single)
+
+subsection {* The probability that the sender hits a collaborator *}
+
+lemma Pr_hit_C: "\<P>(\<omega> in \<PP>. hit_C \<omega>) = (1 - p_H) / (1 - p_H * p_f)"
+proof -
+  let ?P = "\<lambda>x P. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>}"
+  let ?M = "HLD (Mix ` C)" and ?I = "Init`H" and ?J = "Mix`H"
+  let ?\<phi> = "(HLD ?J) aand not ?M"
+
+  { fix s assume s: "s \<in> Jondo J"
+    have "AE \<omega> in T s. ev ?M \<omega> \<longleftrightarrow> (HLD ?J suntil ?M) \<omega>"
+      using AE_T_enabled
+    proof eventually_elim
+      fix \<omega> assume \<omega>: "enabled s \<omega>"
+      show "ev ?M \<omega> \<longleftrightarrow> (HLD ?J suntil ?M) \<omega>"
+      proof
+        assume "ev ?M \<omega>"
+        from this \<omega> s show "(HLD ?J suntil ?M) \<omega>"
+        proof (induct arbitrary: s rule: ev_induct_strong) 
+          case (step \<omega>) then show ?case
+            by (auto simp: HLD_iff enabled.simps[of _ \<omega>] suntil.simps[of _ _ \<omega>] E_End E_Init E_Mix
+                           enabled_End ev_sconst)
+        qed (auto simp: HLD_iff E_Init intro: suntil.intros)
+      qed (rule ev_suntil)
+    qed }
+  note ev_eq_suntil = this
+
+  have "?P Start hit_C = (\<integral>\<^sup>+x. ?P x (ev ?M) * indicator ?I x \<partial>N Start)"
+    unfolding hit_C_def by (rule emeasure_HLD_nxt) measurable
+  also have "\<dots> = (\<integral>\<^sup>+x. ereal ((1 - p_H) / (1 - p_f * p_H)) * indicator ?I x \<partial>N Start)"
+  proof (intro nn_integral_cong mult_indicator_cong)
+    fix x assume "x \<in> ?I"
+    { fix j assume j: "j \<in> H"
+      with ev_eq_suntil[of "Mix j"] have "?P (Mix j) (ev ?M) = ?P (Mix j) ((HLD ?J) suntil ?M)"
+        by (intro emeasure_eq_AE) auto
+      also have "\<dots> = (((1 - p_H) * p_f)) / (1 - p_H * p_f)"
+      proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl p_H_p_f_less_1])
+        show "Mix j \<in> Mix`H"
+          using j by auto
+      next
+        fix s assume s: "s \<in> Mix ` H"
+        then show 
+          "AE \<omega> in T s. (?\<phi> aand nxt (HLD (Mix ` C))) \<omega> \<longleftrightarrow> (Mix ` H \<cdot> HLD (Mix ` C)) \<omega>"
+          by (auto simp add: AE_T_iff E_Mix E_End)
+        from s show
+          "AE \<omega> in T s. (?\<phi> aand nxt ?\<phi>) \<omega> \<longleftrightarrow> (Mix ` H \<cdot> ?\<phi>) \<omega>"
+          by (auto simp add: AE_T_iff E_Mix)
+        from s C_smaller show "?P s ?M = ereal ((1 - p_H) * p_f)"
+          by (subst emeasure_HLD)
+             (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl
+                             real_of_nat_def[symmetric])
+        from s show "emeasure (N s) (Mix`H) = p_H * p_f"
+          by (auto simp: emeasure_measure_pmf_finite setsum.reindex real_of_nat_def[symmetric] H_eq2)
+      qed auto
+      finally have "?P (Init j) (ev ?M) = (1 - p_H) / (1 - p_H * p_f)"
+        using p_f by (subst emeasure_Init_eq_Mix) (auto simp: ev_Stream AE_End ev_sconst HLD_iff) }
+    then show "?P x (ev ?M) = (1 - p_H) / (1 - p_f * p_H)"
+      using `x \<in> ?I` by auto
+  qed
+  also have "\<dots> = ereal ((1 - p_H) / (1 - p_H * p_f))"
+    using p_j_pos assms p_H p_H_p_f_less_1
+    by (subst nn_integral_cmult_indicator)
+       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq mult_ac
+             intro!: divide_nonneg_nonneg)
+  finally show ?thesis
+    by (simp add: measure_def)
+qed
+
+lemma before_C_imp_hit_C:
+  assumes "enabled Start \<omega>" "before_C B \<omega>"
+  shows "hit_C \<omega>"
+proof -
+  { fix \<omega> j assume "((HLD (Jondo H)) suntil (Jondo (B \<inter> H) \<cdot> HLD (Mix ` C))) \<omega>"
+      "j \<in> H" "enabled (Mix j) \<omega>"
+    then have "ev (HLD (Mix`C)) \<omega>"
+    proof (induction arbitrary: j rule: suntil_induct_strong)
+      case (step \<omega>) then show ?case
+        by (auto simp: enabled.simps[of _ \<omega>] E_Mix enabled_End ev_sconst suntil_sconst HLD_iff)
+    qed auto }
+  from this[of "stl (stl \<omega>)"] assms show "hit_C \<omega>"
+    by (force simp: before_C_def hit_C_def E_Start HLD_iff E_Init
+      enabled.simps[of _ \<omega>] ev.simps[of _ \<omega>] suntil.simps[of _ _ \<omega>]
+      enabled.simps[of _ "stl \<omega>"] ev.simps[of _ "stl \<omega>"] suntil.simps[of _ _ "stl \<omega>"])
+qed
+
+lemma Pr_visit_before_C:
+  assumes L: "L \<subseteq> H" and I: "I \<subseteq> H"
+  shows "\<P>(\<omega> in \<PP>. visit I J \<omega> \<and> before_C L \<omega> \<bar> hit_C \<omega> ) =
+    (\<Sum>i\<in>I. p_i i) * card L * p_j * p_f + (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H * p_f)"
+proof -
+  let ?M = "Mix`H"
+  let ?P = "\<lambda>x P. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>}"
+  let ?V = "(visit I J aand before_C L) aand hit_C"
+  let ?U = "HLD ?M suntil (Mix`L \<cdot> HLD (Mix`C))"
+  let ?L = "HLD (Mix`C)"
+
+  have [simp, intro]: "finite I" "finite L"
+    using L I by (auto dest: finite_subset)
+
+  have "?P Start ?V = ?P Start ((Init`I \<cdot> ?U) or (Init`(I \<inter> L) \<cdot> ?L))"
+  proof (rule emeasure_Collect_eq_AE)
+    show "AE \<omega> in \<PP>. ?V \<omega> \<longleftrightarrow> ((Init`I \<cdot> ?U) or (Init`(I \<inter> L) \<cdot> ?L)) \<omega>"
+      using AE_T_enabled AE_visit
+    proof eventually_elim
+      case elim then show ?case
+        using before_C_imp_hit_C[of \<omega> "L"]  before_C[of \<omega> "L"] I L
+        by (auto simp: visit_def HLD_iff Int_absorb2)
     qed
+    show "Measurable.pred \<PP> ((Init`I \<cdot> ?U) or (Init`(I \<inter> L) \<cdot> ?L))"
+      by measurable
+  qed measurable
+  also have "\<dots> = ?P Start (Init`I \<cdot> ?U) + ?P Start (Init`(I \<inter> L) \<cdot> ?L)"
+    using L I
+    apply (subst plus_emeasure)
+    apply (auto intro!: arg_cong2[where f=emeasure])
+    apply (subst (asm) suntil.simps)
+    apply (auto simp add: HLD_iff[abs_def] elim: suntil.cases)
+    done
+  also have "?P Start (Init`(I \<inter> L) \<cdot> ?L) = (\<Sum>i\<in>I\<inter>L. p_i i * (1 - p_H))"
+    using L I C_smaller p_j_pos
+    apply (subst emeasure_HLD_nxt emeasure_HLD, simp)+
+    apply (subst nn_integral_indicator_finite)
+    apply (auto simp: emeasure_measure_pmf_finite setsum.reindex next_prob_def setsum.If_cases
+                      real_of_nat_def[symmetric] Int_absorb2 H_compl2
+                intro!: setsum.cong setsum_nonneg)
+    done
+  also have "?P Start (Init`I \<cdot> ?U) = (\<Sum>i\<in>I. ?P (Init i) ?U * p_i i)"
+    using I
+    by (subst emeasure_HLD_nxt, simp)
+       (auto simp: nn_integral_indicator_finite emeasure_nonneg setsum.reindex
+                   emeasure_measure_pmf_finite
+             intro!: setsum.cong[OF refl])
+  also have "\<dots> = (\<Sum>i\<in>I. ereal (p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)) * p_i i)"
+  proof (intro setsum.cong refl arg_cong2[where f="op *"])
+    fix i assume "i \<in> I"
+    with I have i: "i \<in> H"
+      by auto
+    have "?P (Mix i) ?U = (p_f * p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f))"
+      unfolding before_C_def
+    proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl, where X="?M"])
+      show "Mix i \<in> ?M"
+        using i by auto
+    next
+      fix s assume "s \<in> ?M"
+      with p_f p_j_pos L C_smaller[THEN less_imp_le]
+      show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ereal (p_f * p_f * (1 - p_H) * p_j * card L)"
+        apply (simp add: emeasure_HLD emeasure_HLD_nxt del: nxt.simps space_T)
+        apply (subst nn_integral_measure_pmf_support[of "Mix`L"])
+        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex
+                              real_of_nat_def[symmetric] H_compl p_j_def)
+        done
+    next
+      fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ereal (p_H * p_f)"
+        by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2 real_of_nat_def[symmetric])
+    qed (insert L, auto simp: AE_T_iff p_H_p_f_less_1 E_Mix)
+    then show "?P (Init i) ?U = p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)"
+      by (subst emeasure_Init_eq_Mix) (auto simp: AE_End suntil_Stream)
+  qed
+  finally have *: "\<P>(\<omega> in T Start. ?V \<omega>) =
+      (p_f * (1 - p_H) * p_j * (card L) / (1 - p_H * p_f)) * (\<Sum>i\<in>I. p_i i) +
+      (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H)"
+    by (simp add: mult_ac measure_def setsum_left_distrib[symmetric] setsum_right_distrib[symmetric]
+                  setsum_divide_distrib[symmetric])
+  show ?thesis
+    unfolding cond_prob_def Pr_hit_C *
+    using *
+    using p_f p_H p_j_pos p_H_p_f_less_1 by (simp add: divide_simps) (simp add: field_simps)
+qed
+
+lemma Pr_visit_eq_before_C:
+  "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} J \<omega> \<and> before_C {j} \<omega> \<bar> hit_C \<omega> ) = 1 - (p_H - p_j) * p_f"
+proof -
+  let ?V = "\<lambda>j. visit {j} J aand before_C {j}" and ?H = "hit_C"
+  let ?J = "H"
+  have "\<P>(\<omega> in \<PP>. (\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>) = (\<Sum>j\<in>?J. \<P>(\<omega> in \<PP>. (?V j aand ?H) \<omega>))"
+  proof (rule T.prob_setsum)
+    show "AE \<omega> in \<PP>. (\<forall>j\<in>?J. (?V j aand ?H) \<omega> \<longrightarrow> ((\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>)) \<and>
+      (((\<exists>j\<in>?J. ?V j \<omega>) \<and> ?H \<omega>) \<longrightarrow> (\<exists>!j. j\<in>?J \<and> (?V j aand ?H) \<omega>))"
+      by (auto intro!: AE_I2 dest: visit_unique1)
   qed auto
-  also have "(\<lambda>n. (\<Sum>j\<in>?I n. init j) * (\<Prod>i<n. card (?S n i) * J * p_f) * (1 - H * p_f)) sums \<dots>"
-    using i l by (intro hit_prob_sums_cyl) auto
-  finally have "(\<lambda>n. (\<Sum>j\<in>?I n. init j) * (\<Prod>i<n. card (?S n i) * J * p_f) * (1 - H * p_f)) sums ?P" .
-  from sums_split_initial_segment[OF this, of 1]
-  have "(\<lambda>n. init i * (\<Prod>i<Suc n. if n = i then J * p_f else H * p_f) * (1 - H * p_f)) sums
-    (?P - (if i = l then init i * (1 - H * p_f) else 0))"
-    by (auto simp: fun_if_distrib H_def J_def cong: if_cong)
-  moreover have "\<And>n. init i * (\<Prod>i<Suc n. if n = i then J * p_f else H * p_f) * (1 - H * p_f) =
-    init i * J * p_f * (H*p_f)^n * (1 - H * p_f)"
-    by (simp add: setprod.If_cases setprod_constant)
-  moreover have "\<dots> sums (init i * J * p_f * (1 / (1 - H*p_f)) * (1 - H * p_f))"
-    using H_pf_1 H_pf_0 by (intro sums_mult sums_mult2 geometric_sums) auto
-  ultimately have "?P - (if i = l then init i * (1 - H * p_f) else 0) = init i * J * p_f"
-    using H_pf_1 by (simp add: sums_iff)
-  then show "?P = init i * (J * p_f + (if i = l then 1 - H * p_f else 0))"
+  then have "\<P>(\<omega> in \<PP>. (\<exists>j\<in>?J. ?V j \<omega>) \<bar> ?H \<omega>) = (\<Sum>j\<in>?J. \<P>(\<omega> in \<PP>. ?V j \<omega> \<bar> ?H \<omega>))"
+    by (simp add: cond_prob_def setsum_divide_distrib)
+  also have "\<dots> = p_j * p_f + (1 - p_H * p_f)"
+    by (simp add: Pr_visit_before_C setsum_left_distrib[symmetric] setsum.distrib)
+  finally show ?thesis
     by (simp add: field_simps)
 qed
 
-lemma P_first_jondo_eq_last_ncoll:
-  "\<P>(\<omega> in \<PP>. first_jondo \<omega> = last_ncoll \<omega> \<bar> hit_colls \<omega> ) = 1 - (H - J) * p_f"
-proof -
-  have "\<P>(\<omega> in \<PP>. first_jondo \<omega> = last_ncoll \<omega> \<and> hit_colls \<omega> )
-    = (\<Sum>i\<in>jondos - colls. \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<and> hit_colls \<omega> ))"
-  proof (rule prob_setsum)
-    show "finite (jondos - colls)" by auto
-  next
-    fix i assume "i \<in> jondos - colls"
-    show "{\<omega> \<in> space \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<and> hit_colls \<omega>} \<in> sets \<PP>"
-      by (intro sets.sets_Collect sets.sets_Collect_finite_Ex) auto
-  next
-    { fix \<omega> :: "nat \<Rightarrow> _" assume \<omega>: "\<omega> \<in> UNIV \<rightarrow> valid_states"
-      { fix i
-        from \<omega> have "\<omega> i \<in> valid_states" by auto
-        with jondos_non_empty have "jondo_of (\<omega> i) \<in> jondos"
-          by (auto simp: Pi_iff jondo_of_def intro!: someI_ex[of "\<lambda>j. j \<in> jondos"] split: state.split) }
-      from this[of 0] this[of "first_coll \<omega>"]
-      have "first_jondo \<omega> = last_ncoll \<omega> \<longleftrightarrow> (\<exists>j\<in>jondos. first_jondo \<omega> = j \<and> last_ncoll \<omega> = j)"
-        unfolding first_jondo_def last_ncoll_def by auto }
-    then have "{\<omega> \<in> space \<PP>. (first_jondo \<omega> = last_ncoll \<omega>) \<and> hit_colls \<omega>} 
-      = {\<omega> \<in> space \<PP>. (\<exists>j\<in>jondos. first_jondo \<omega> = j \<and> last_ncoll \<omega> = j) \<and> hit_colls \<omega>}"
-      using measurable_space[OF measurable_last_ncoll] by auto
-    also have "\<dots> \<in> sets \<PP>"
-      by (intro sets.sets_Collect sets.sets_Collect_finite_Ex) auto
-    finally show "{\<omega> \<in> space \<PP>. (first_jondo \<omega> = last_ncoll \<omega>) \<and> hit_colls \<omega>} \<in> sets \<PP>" .
-  next
-    show "AE \<omega> in \<PP>. (\<forall>i\<in>jondos - colls.
-                   first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<and> hit_colls \<omega> \<longrightarrow>
-                   first_jondo \<omega> = last_ncoll \<omega> \<and> hit_colls \<omega>) \<and>
-               (first_jondo \<omega> = last_ncoll \<omega> \<and> hit_colls \<omega> \<longrightarrow>
-                (\<exists>!i. i \<in> jondos - colls \<and> first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<and> hit_colls \<omega>)) "
-      using AE_term
-      by eventually_elim (auto simp: term_def first_jondo_def jondo_of_def)
-  qed
-  then have "\<P>(\<omega> in \<PP>. first_jondo \<omega> = last_ncoll \<omega> \<bar> hit_colls \<omega> )
-    = (\<Sum>i\<in>jondos - colls. \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = i \<bar> hit_colls \<omega> ))"
-    unfolding cond_prob_def setsum_divide_distrib[symmetric] by simp
-  also have "\<dots> = J * p_f + 1 - H * p_f"
-    by (simp add: P_first_jondo_last_ncoll setsum_left_distrib[symmetric])
-  finally show ?thesis by (simp add: field_simps)
-qed
-
 lemma probably_innocent:
-  assumes approx: "1 / (2 * (H - J)) \<le> p_f" and "H \<noteq> J"
-  shows "\<P>(\<omega> in \<PP>. first_jondo \<omega> = last_ncoll \<omega> \<bar> hit_colls \<omega> ) \<le> 1 / 2"
-  unfolding P_first_jondo_eq_last_ncoll
+  assumes approx: "1 / (2 * (p_H - p_j)) \<le> p_f" and "p_H \<noteq> p_j"
+  shows "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} J \<omega> \<and> before_C {j} \<omega> \<bar> hit_C \<omega> ) \<le> 1 / 2"
+  unfolding Pr_visit_eq_before_C
 proof -
   have [simp]: "\<And>n :: nat. 1 \<le> real n \<longleftrightarrow> 1 \<le> n" by auto
-  have "0 \<le> J" unfolding J_def by auto
-  then have "1 * J \<le> H"
-    unfolding H_eq2[symmetric] using colls_smaller
+  have "0 \<le> p_j" unfolding p_j_def by auto
+  then have "1 * p_j \<le> p_H"
+    unfolding H_eq2[symmetric] using C_smaller
     by (intro mult_mono) (auto simp: Suc_le_eq card_Diff_subset not_le)
-  with `H \<noteq> J` have "J < H" by auto
-  with approx show "1 - (H - J) * p_f \<le> 1 / 2"
+  with `p_H \<noteq> p_j` have "p_j < p_H" by auto
+  with approx show "1 - (p_H - p_j) * p_f \<le> 1 / 2"
     by (auto simp add: field_simps divide_le_eq split: split_if_asm)
 qed
 
-lemma P_last_ncoll:
-  assumes l: "l \<in> jondos - colls"
-  shows "\<P>(\<omega> in \<PP>. last_ncoll \<omega> = l \<bar> hit_colls \<omega> ) = J * p_f + init l * (1 - H * p_f)"
+lemma Pr_before_C:
+  assumes L: "L \<subseteq> H"
+  shows "\<P>(\<omega> in \<PP>. before_C L \<omega> \<bar> hit_C \<omega> ) =
+    card L * p_j * p_f + (\<Sum>l\<in>L. p_i l) * (1 - p_H * p_f)"
 proof -
-  have "\<P>(\<omega> in \<PP>. last_ncoll \<omega> = l \<and> hit_colls \<omega>)
-    = (\<Sum>i\<in>jondos - colls. \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<and> hit_colls \<omega>))"
-    apply (rule prob_setsum)
-    using AE_term
-    apply auto
-    apply (auto intro!: AE_I2 simp: term_def jondo_of_def first_jondo_def)
-    done
-  then have "\<P>(\<omega> in \<PP>. last_ncoll \<omega> = l \<bar> hit_colls \<omega>)
-    = (\<Sum>i\<in>jondos - colls. \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<bar> hit_colls \<omega>))"
-    unfolding cond_prob_def setsum_divide_distrib[symmetric] by simp
-  also have "\<dots> = (\<Sum>i\<in>jondos - colls. init i * J * p_f + (if i = l then init i * (1 - H * p_f) else 0))"
-    using l by (auto intro!: setsum.cong simp add: P_first_jondo_last_ncoll field_simps)
-  also have "\<dots> = J * p_f + init l * (1 - H * p_f)"
-    using l by (simp add: setsum.distrib setsum_left_distrib[symmetric] setsum.If_cases)
+  have "\<P>(\<omega> in \<PP>. before_C L \<omega> \<bar> hit_C \<omega> ) =
+    \<P>(\<omega> in \<PP>. visit H J \<omega> \<and> before_C L \<omega> \<bar> hit_C \<omega> )"
+    using AE_visit by (auto intro!: T.cond_prob_eq_AE)
+  also have "\<dots> = card L * p_j * p_f + (\<Sum>i\<in>L. p_i i) * (1 - p_H * p_f)"
+    using L by (subst Pr_visit_before_C[OF L order_refl]) (auto simp: Int_absorb1)
   finally show ?thesis .
 qed
 
-lemma P_first_jondo:
-  assumes i: "i \<in> jondos - colls"
-  shows "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<bar> hit_colls \<omega> ) = init i"
+lemma P_visit:
+  assumes I: "I \<subseteq> H"
+  shows "\<P>(\<omega> in \<PP>. visit I J \<omega> \<bar> hit_C \<omega> ) = (\<Sum>i\<in>I. p_i i)"
 proof -
-  have "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<bar> hit_colls \<omega> ) =
-    \<P>(\<omega> in \<PP>. \<omega> 0 \<in> Init ` {i} \<and> (\<forall>i<first_coll \<omega>. \<omega> (Suc i) \<in> Mix ` (jondos - colls)) \<bar> hit_colls \<omega>)"
-    using AE_term i
-    apply (intro cond_prob_eq_AE)
-    apply auto
-    apply (auto intro!: AE_I2 dest: term_imp_len simp: first_collI3 jondo_of_def first_jondo_def)
-    done
-  moreover have "(\<lambda>n. (\<Sum>j\<in>{i}. init j) * (\<Prod>i<n. card (jondos - colls) * J * p_f) * (1 - H * p_f)) sums \<dots>"
-    using i by (intro hit_prob_sums_cyl) auto
-  ultimately have "(\<lambda>n. init i * (H * p_f)^n * (1 - H * p_f)) sums \<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<bar> hit_colls \<omega> )"
-    by (simp add: sums_iff H_def J_def setprod_constant)
-  moreover have "(\<lambda>n. init i * (H * p_f)^n * (1 - H * p_f)) sums (init i * (1/(1 - H*p_f)) * (1 - H*p_f))"
-    using H_pf_0 H_pf_1 by (intro sums_mult sums_mult2 geometric_sums) simp
-  ultimately show ?thesis
-    using H_pf_1 by (simp add: sums_iff)
+  have "\<P>(\<omega> in \<PP>. visit I J \<omega> \<bar> hit_C \<omega> ) =
+    \<P>(\<omega> in \<PP>. visit I J \<omega> \<and> before_C H \<omega> \<bar> hit_C \<omega> )"
+  proof (rule T.cond_prob_eq_AE)
+    show "AE x in \<PP>. hit_C x \<longrightarrow>
+                visit I J x = (visit I J x \<and> before_C H x)"
+      using AE_T_enabled by eventually_elim (auto intro: hit_C_imp_before_C)
+  qed auto
+  also have "\<dots> = setsum p_i I"
+    using I by (subst Pr_visit_before_C[OF order_refl]) (auto simp: Int_absorb2 field_simps p_H_def p_j_def)
+  finally show ?thesis .
 qed
 
-subsection {* Probability space of hitting runs *}
+subsection {* Probability space of hitting a collaborator *}
 
-definition "C = uniform_measure \<PP> {\<omega>\<in>space \<PP>. hit_colls \<omega>}"
+definition "hC = uniform_measure \<PP> {\<omega>\<in>space \<PP>. hit_C \<omega>}"
 
-lemma emeasure_hit_colls_not_0: "emeasure \<PP> {\<omega> \<in> space \<PP>. hit_colls \<omega>} \<noteq> 0"
-  using H H_pf_1 unfolding hit emeasure_eq_measure by auto
+lemma emeasure_hit_C_not_0: "emeasure \<PP> {\<omega> \<in> space \<PP>. hit_C \<omega>} \<noteq> 0"
+  using p_H p_H_p_f_less_1 unfolding Pr_hit_C T.emeasure_eq_measure by auto
 
-lemma measurable_C[measurable (raw)]:
-  "A \<in> sets S_seq \<Longrightarrow> A \<in> sets C"
-  "f \<in> measurable M S_seq \<Longrightarrow> f \<in> measurable M C"
-  "g \<in> measurable S_seq M \<Longrightarrow> g \<in> measurable C M"
-  "A \<inter> space S_seq \<in> sets S_seq \<Longrightarrow> A \<inter> space C \<in> sets S_seq"
-  unfolding C_def uniform_measure_def
+lemma measurable_hC[measurable (raw)]:
+  "A \<in> sets S \<Longrightarrow> A \<in> sets hC"
+  "f \<in> measurable M S \<Longrightarrow> f \<in> measurable M hC"
+  "g \<in> measurable S M \<Longrightarrow> g \<in> measurable hC M"
+  "A \<inter> space S \<in> sets S \<Longrightarrow> A \<inter> space hC \<in> sets S"
+  unfolding hC_def uniform_measure_def
   by simp_all
 
 lemma vimage_Int_space_C[simp]:
-  "f -` {x} \<inter> space C = {\<omega>\<in>space S_seq. f \<omega> = x}"
-  by (auto simp: C_def)
+  "f -` {x} \<inter> space hC = {\<omega>\<in>space S. f \<omega> = x}"
+  by (auto simp: hC_def)
 
-end
-
-sublocale Crowds_Protocol \<subseteq> C!: information_space C 2
+sublocale hC!: information_space hC 2
 proof -
-  interpret C!: prob_space C
-    unfolding C_def
-    using emeasure_hit_colls_not_0
+  interpret hC!: prob_space hC
+    unfolding hC_def
+    using emeasure_hit_C_not_0
     by (intro prob_space_uniform_measure) auto
-  show "information_space C 2"
+  show "information_space hC 2"
     by default simp
 qed
 
-context Crowds_Protocol
-begin
-
 abbreviation
   mutual_information_Pow_CP ("\<I>'(_ ; _')") where
-  "\<I>(X ; Y) \<equiv> C.mutual_information 2 (count_space (X`space C)) (count_space (Y`space C)) X Y"
+  "\<I>(X ; Y) \<equiv> hC.mutual_information 2 (count_space (X`space hC)) (count_space (Y`space hC)) X Y"
 
 lemma simple_functionI:
-  assumes "finite (f`(UNIV \<rightarrow> valid_states))"
-  assumes [measurable]: "\<And>x. {\<omega>\<in>space S_seq. f \<omega> = x} \<in> sets S_seq"
-  shows "simple_function C f"
-  using assms unfolding simple_function_def C_def
-  by (simp add: vimage_def space_PiM PiE_def)
+  assumes "finite (range f)"
+  assumes [measurable]: "\<And>x. {\<omega>\<in>space S. f \<omega> = x} \<in> sets S"
+  shows "simple_function hC f"
+  using assms unfolding simple_function_def hC_def
+  by (simp add: vimage_def space_stream_space)
 
-subsection {* Estimate the information to the collaborateurs *}
+subsection {* Estimate the information to the collaborators *}
 
-lemma measure_C[simp]:
-  assumes A[measurable]: "A \<in> sets S_seq"
-  shows "measure C A = \<P>(\<omega> in \<PP>. \<omega> \<in> A \<bar> hit_colls \<omega> )"
-  unfolding C_def cond_prob_def
-  using emeasure_hit_colls_not_0 A
-  by (subst measure_uniform_measure) (simp_all add: emeasure_eq_measure Int_def conj_ac)
+lemma measure_hC[simp]:
+  assumes A[measurable]: "A \<in> sets S"
+  shows "measure hC A = \<P>(\<omega> in \<PP>. \<omega> \<in> A \<bar> hit_C \<omega> )"
+  unfolding hC_def cond_prob_def
+  using emeasure_hit_C_not_0 A
+  by (subst measure_uniform_measure) (simp_all add: T.emeasure_eq_measure Int_def conj_ac)
+
+subsubsection {* Setup random variables for mutual information *}
+
+definition "first_J \<omega> = (THE i. visit {i} J \<omega>)"
+
+lemma first_J_eq:
+  "visit {i} J \<omega> \<Longrightarrow> first_J \<omega> = i"
+  unfolding first_J_def by (intro the_equality) (auto dest: visit_unique1)
+
+lemma AE_first_J:
+  "AE \<omega> in \<PP>. visit {i} J \<omega> \<longleftrightarrow> first_J \<omega> = i"
+  using AE_visit
+proof eventually_elim
+  fix \<omega> assume "visit H J \<omega>"
+  then obtain j where "visit {j} J \<omega>" "j \<in> H"
+    by (auto simp: visit_def HLD_iff)
+  then show "visit {i} J \<omega> \<longleftrightarrow> first_J \<omega> = i"
+    by (auto dest: visit_unique1 first_J_eq)
+qed
+
+lemma measurbale_first_J[measurable]: "first_J \<in> measurable S (count_space UNIV)"
+  unfolding first_J_def[abs_def]
+  by (intro measurable_THE[where I=H])
+     (auto dest: visit_imp_in_H visit_unique1 intro: countable_finite)
+
+definition "last_H \<omega> = (THE i. before_C {i} \<omega>)"
+
+lemma measurbale_last_H[measurable]: "last_H \<in> measurable S (count_space UNIV)"
+  unfolding last_H_def[abs_def]
+  by (intro measurable_THE[where I=H])
+     (auto dest: before_C_single before_C_unique intro: countable_finite)
+
+lemma last_H_eq:
+  "before_C {i} \<omega> \<Longrightarrow> last_H \<omega> = i"
+  unfolding last_H_def by (intro the_equality) (auto dest: before_C_unique)
+
+lemma last_H:
+  assumes "enabled Start \<omega>" "hit_C \<omega>"
+  shows "before_C {last_H \<omega>} \<omega>" "last_H \<omega> \<in> H"
+  by (metis before_C_single hit_C_imp_before_C last_H_eq Int_iff assms)+
+
+lemma AE_last_H:
+  "AE \<omega> in \<PP>. hit_C \<omega> \<longrightarrow> before_C {i} \<omega> \<longleftrightarrow> last_H \<omega> = i"
+  using AE_T_enabled
+proof eventually_elim
+  fix \<omega> assume "enabled Start \<omega>" then show "hit_C \<omega> \<longrightarrow> before_C {i} \<omega> = (last_H \<omega> = i)"
+    by (auto dest: last_H last_H_eq)
+qed
 
 lemma information_flow:
-  defines "h \<equiv> real (card (jondos - colls))"
-  assumes init_uniform: "\<And>i. i \<in> jondos - colls \<Longrightarrow> init i = 1 / card (jondos - colls)"
-  shows "\<I>(first_jondo ; last_ncoll) \<le> (1 - (h - 1) * J * p_f) * log 2 h"
+  defines "h \<equiv> real (card H)"
+  assumes init_uniform: "\<And>i. i \<in> H \<Longrightarrow> p_i i = 1 / h"
+  shows "\<I>(first_J ; last_H) \<le> (1 - (h - 1) * p_j * p_f) * log 2 h"
 proof -
-  let "?il i l" = "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<bar> hit_colls \<omega> )"
-  let "?i i" = "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<bar> hit_colls \<omega> )"
-  let "?l l" = "\<P>(\<omega> in \<PP>. last_ncoll \<omega> = l \<bar> hit_colls \<omega> )"
+  let ?il = "\<lambda>i l. \<P>(\<omega> in \<PP>. visit {i} J \<omega> \<and> before_C {l} \<omega> \<bar> hit_C \<omega> )"
+  let ?i = "\<lambda>i. \<P>(\<omega> in \<PP>. visit {i} J \<omega> \<bar> hit_C \<omega> )"
+  let ?l = "\<lambda>l. \<P>(\<omega> in \<PP>. before_C {l} \<omega> \<bar> hit_C \<omega> )"
 
-  from init_uniform have init_H: "\<And>i. i \<in> jondos - colls \<Longrightarrow> init i = J / H"
-    by (simp add: J_def H_def)
+  from init_uniform have init_H: "\<And>i. i \<in> H \<Longrightarrow> p_i i = p_j / p_H"
+    by (simp add: p_j_def p_H_def h_def)
 
-  from h_def have "1/h = J/H" "h = H / J" "H = h * J"
-    by (auto simp: H_def J_def field_simps)
-  from colls_smaller have h_pos: "0 < h"
+  from h_def have "1/h = p_j/p_H" "h = p_H / p_j" "p_H = h * p_j"
+    by (auto simp: p_H_def p_j_def field_simps)
+  from C_smaller have h_pos: "0 < h"
     by (auto simp add: card_gt_0_iff h_def)
 
-  let ?s = "(h - 1) * J"
+  let ?s = "(h - 1) * p_j"
   let ?f = "?s * p_f"
 
-  from psubset_card_mono[OF _ colls_smaller]
-  have "1 \<le> card jondos - card colls"
-    by (simp del: colls_le_jondos)
+  from psubset_card_mono[OF _ C_smaller]
+  have "1 \<le> card J - card C"
+    by (simp del: C_le_J)
   then have "1 \<le> h"
-    using colls_smaller
+    using C_smaller
     by (simp add: h_def card_Diff_subset real_of_nat_diff card_mono field_simps
-             del: colls_le_jondos)
+             del: C_le_J)
 
-  have J_pos: "0 < J"
-    unfolding J_def using colls_smaller by (auto simp add: card_gt_0_iff)
-
-  have log_le_0: "?f * log 2 (H * p_f) \<le> ?f * log 2 1"
-    using H_pf_1 H_pf_0 J_pos p_f `1 \<le> h`
+  have log_le_0: "?f * log 2 (p_H * p_f) \<le> ?f * log 2 1"
+    using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f `1 \<le> h`
     by (intro mult_left_mono log_le mult_nonneg_nonneg) auto
 
-  have "(h - 1) * J < 1"
-    using `1 \<le> h` colls_smaller
-    by (auto simp: h_def J_def divide_less_eq card_Diff_subset real_of_nat_diff card_mono)
-  then have 1: "(h - 1) * J * p_f < 1 * 1"
+  have "(h - 1) * p_j < 1"
+    using `1 \<le> h` C_smaller
+    by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset real_of_nat_diff card_mono)
+  then have 1: "(h - 1) * p_j * p_f < 1 * 1"
     using p_f by (intro mult_strict_mono) auto
 
-  have sf_fj:
-    "simple_function C first_jondo"
-  proof (rule simple_functionI)
-    have "first_jondo ` (UNIV \<rightarrow> valid_states) \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
-      by (auto simp: first_jondo_def Pi_iff jondo_of_def elim!: allE[of _ 0] valid_statesE)
-    then show "finite (first_jondo ` (UNIV \<rightarrow> valid_states))"
-      by (rule finite_subset) auto
-  qed (auto simp: first_jondo_def)
+  { fix \<omega> have "first_J \<omega> \<in> H \<or> first_J \<omega> = (THE x. False)"
+      apply (cases "\<forall>i. \<not> visit {i} J \<omega>")
+      apply (simp add: first_J_def)
+      apply (auto dest: visit_imp_in_H first_J_eq)
+      done }
+  then have range_fj: "range first_J \<subseteq> H \<union> {THE x. False}"
+    by auto
 
-  have sd_fj:
-    "simple_distributed C first_jondo ?i"
-    apply (rule C.simple_distributedI[OF sf_fj])
-    apply (subst measure_C)
-    apply simp
-    apply (auto simp: first_jondo_def C_def vimage_def cond_prob_def Int_def conj_ac)
+  have sf_fj: "simple_function hC first_J"
+    by (rule simple_functionI) (auto intro: finite_subset[OF range_fj])
+
+  have sd_fj: "simple_distributed hC first_J ?i"
+    apply (rule hC.simple_distributedI[OF sf_fj])
+    apply (subst measure_hC)
+    apply (auto intro!: T.cond_prob_eq_AE)
+    apply (auto simp: space_stream_space)
+    using AE_first_J
+    apply eventually_elim
+    apply auto
     done
 
-  have sf_lnc: "simple_function C last_ncoll"
-  proof (rule simple_functionI)
-    have "last_ncoll ` (UNIV \<rightarrow> valid_states) \<subseteq> jondos \<union> {jondo_of Start, jondo_of End}"
-      apply (auto simp: last_ncoll_def Pi_iff jondo_of_def)
-      apply (erule_tac x="first_coll xa" in allE)
-      apply (auto elim!: valid_statesE)
-      done
-    then show "finite (last_ncoll ` (UNIV \<rightarrow> valid_states))"
-      by (rule finite_subset) auto
-  qed auto
+  { fix \<omega> have "last_H \<omega> \<in> H \<or> last_H \<omega> = (THE x. False)"
+      apply (cases "\<forall>i. \<not> before_C {i} \<omega>")
+      apply (simp add: last_H_def)
+      apply (auto dest: before_C_imp_in_H last_H_eq)
+      done }
+  then have range_lnc: "range last_H \<subseteq> H \<union> {THE x. False}"
+    by auto
 
-  have sd_lnc:
-    "simple_distributed C last_ncoll ?l"
-    apply (rule C.simple_distributedI[OF sf_lnc])
-    apply (subst measure_C)
-    apply simp
-    apply (auto simp: C_def vimage_def cond_prob_def cong: conj_cong)
+  have sf_lnc: "simple_function hC last_H"
+    by (rule simple_functionI) (auto intro: finite_subset[OF range_lnc])
+
+  have sd_lnc: "simple_distributed hC last_H ?l"
+    apply (rule hC.simple_distributedI[OF sf_lnc])
+    apply (subst measure_hC)
+    apply (auto intro!: T.cond_prob_eq_AE)
+    apply (auto simp: space_stream_space)
+    using AE_last_H
+    apply eventually_elim
+    apply auto
     done
 
-  have sd_fj_lnc:
-    "simple_distributed C (\<lambda>\<omega>. (first_jondo \<omega>, last_ncoll \<omega>)) (\<lambda>(i, l). ?il i l)"
-    apply (rule C.simple_distributedI)
+  have sd_fj_lnc: "simple_distributed hC (\<lambda>\<omega>. (first_J \<omega>, last_H \<omega>)) (\<lambda>(i, l). ?il i l)"
+    apply (rule hC.simple_distributedI)
     apply (rule simple_function_Pair[OF sf_fj sf_lnc])
-    apply (subst measure_C)
-    apply (auto simp add: image_iff)
-    apply (auto simp: first_jondo_def C_def vimage_def cond_prob_def)
+    apply (subst measure_hC)
+    apply (auto intro!: T.cond_prob_eq_AE)
+    apply (auto simp: space_stream_space)
+    using AE_last_H AE_first_J
+    apply eventually_elim
+    apply auto
     done
 
-  let "?inner i" = "\<Sum>l\<in>jondos - colls. ?il i l * log 2 (?il i l / (?i i * ?l l))"
-  { fix i assume i: "i \<in> jondos - colls"
-    with h_pos have card_idx: "real_of_nat (card ((jondos - colls) - {i})) = H / J - 1"
-      by (auto simp add: J_def H_def real_eq_of_nat[symmetric] h_def)
+  def c \<equiv> "SOME j. j \<in> C"
+  have c: "c \<in> C"
+    using C_non_empty unfolding ex_in_conv[symmetric] c_def by (rule someI_ex)
 
-    have neq0: "J \<noteq> 0" "H \<noteq> 0"
-      unfolding J_def H_def
-      using colls_smaller i by auto
+  let ?inner = "\<lambda>i. \<Sum>l\<in>H. ?il i l * log 2 (?il i l / (?i i * ?l l))"
+  { fix i assume i: "i \<in> H"
+    with h_pos have card_idx: "real_of_nat (card (H - {i})) = p_H / p_j - 1"
+      by (auto simp add: p_j_def p_H_def real_eq_of_nat[symmetric] h_def)
+
+    have neq0: "p_j \<noteq> 0" "p_H \<noteq> 0"
+      unfolding p_j_def p_H_def
+      using C_smaller i by auto
 
     from i have "?inner i =
-      (\<Sum>l\<in>(jondos - colls) - {i}. ?il i l * log 2 (?il i l / (?i i * ?l l))) +
+      (\<Sum>l\<in>H - {i}. ?il i l * log 2 (?il i l / (?i i * ?l l))) +
       ?il i i * log 2 (?il i i / (?i i * ?l i))"
       by (simp add: setsum_diff)
     also have "\<dots> =
-      (\<Sum>l\<in>(jondos - colls) - {i}. J/H * J * p_f * log 2 (J * p_f / (J * p_f + J/H * (1 - H * p_f)))) +
-      J/H * (J * p_f + (1 - H * p_f)) * log 2 ((J * p_f + (1 - H * p_f)) / (J * p_f + J/H * (1 - H * p_f)))"
-      using i
-      apply (auto simp add: P_first_jondo_last_ncoll P_first_jondo init_H P_last_ncoll simp del: setsum_constant)
-      apply (intro setsum.cong)
-      apply auto
+      (\<Sum>l\<in>H - {i}. p_j/p_H * p_j * p_f * log 2 (p_j * p_f / (p_j * p_f + p_j/p_H * (1 - p_H * p_f)))) +
+      p_j/p_H * (p_j * p_f + (1 - p_H * p_f)) * log 2 ((p_j * p_f + (1 - p_H * p_f)) / (p_j * p_f + p_j/p_H * (1 - p_H * p_f)))"
+      using i p_f p_j_pos p_H
+      apply (simp add: Pr_visit_before_C P_visit init_H Pr_before_C
+                  del: setsum_constant)
+      apply (simp add: divide_simps distrib_left)
+      apply (intro arg_cong2[where f="op*"] refl arg_cong2[where f=log])
+      apply (auto simp: field_simps)
       done
-    also have "\<dots> = (?f * log 2 (h * J * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h"
-      using neq0 p_f by (simp add: card_idx field_simps `H = h * J`)
-    finally have "?inner i = (?f * log 2 (h * J * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h" . }
-  then have "(\<Sum>i\<in>jondos - colls. ?inner i) = ?f * log 2 (h * J * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
+    also have "\<dots> = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h"
+      using neq0 p_f by (simp add: card_idx field_simps `p_H = h * p_j`)
+    finally have "?inner i = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h" . }
+  then have "(\<Sum>i\<in>H. ?inner i) = ?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
     using h_pos by (simp add: h_def[symmetric] real_eq_of_nat[symmetric])
-  also have "\<dots> = ?f * log 2 (H * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
-    by (simp add: `h = H / J`)
+  also have "\<dots> = ?f * log 2 (p_H * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
+    by (simp add: `h = p_H / p_j`)
   also have "\<dots> \<le> (1 - ?f) * log 2 ((1 - ?f) * h)"
     using log_le_0 by simp
   also have "\<dots> \<le> (1 - ?f) * log 2 h"
-    using h_pos `1 \<le> h` 1 `0 < J` p_f
+    using h_pos `1 \<le> h` 1 p_j_pos p_f
     by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg) auto
-  finally have "(\<Sum>i\<in>jondos - colls. ?inner i) \<le> (1 - ?f) * log 2 h" .
-  also have "(\<Sum>i\<in>jondos - colls. ?inner i) =
-      (\<Sum>(i, l)\<in>(first_jondo`space S_seq) \<times> (last_ncoll`space S_seq). ?il i l * log 2 (?il i l / (?i i * ?l l)))"
+  finally have "(\<Sum>i\<in>H. ?inner i) \<le> (1 - ?f) * log 2 h" .
+  also have "(\<Sum>i\<in>H. ?inner i) =
+      (\<Sum>(i, l)\<in>(first_J`space S) \<times> (last_H`space S). ?il i l * log 2 (?il i l / (?i i * ?l l)))"
     unfolding setsum.cartesian_product
   proof (safe intro!: setsum.mono_neutral_cong_left del: DiffE DiffI)
-    show "finite ((first_jondo ` space S_seq) \<times> (last_ncoll ` space S_seq))"
-      using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
+    show "finite ((first_J ` space S) \<times> (last_H ` space S))"
+      using sf_fj sf_lnc by (auto simp add: hC_def dest!: simple_functionD(1))
   next
-    fix i assume "i \<in> jondos - colls"
-    then show "i \<in> first_jondo ` space S_seq" "i \<in> last_ncoll ` space S_seq"
-      by (auto simp: space_PiM image_iff C_def last_ncoll_def first_jondo_def jondo_of_def intro!: bexI[of _ "\<lambda>_. Mix i"])
+    fix i assume "i \<in> H"
+    then have "visit {i} J (Init i ## Mix i ## sconst End)"
+      "before_C {i} (Init i ## Mix c ## sconst End)"
+      by (auto simp: before_C_def visit_def suntil_Stream HLD_iff c)
+    then show "i \<in> first_J ` space S" "i \<in> last_H ` space S"
+      by (auto simp: space_stream_space image_iff eq_commute dest!: first_J_eq last_H_eq)
   next
-    fix i l assume "(i, l) \<in> first_jondo ` space S_seq \<times> last_ncoll ` space S_seq - (jondos - colls) \<times> (jondos - colls)"
-    then have "i \<notin> jondos - colls \<or> l \<notin> jondos - colls"
+    fix i l assume "(i, l) \<in> first_J ` space S \<times> last_H ` space S - H \<times> H"
+    then have H: "i \<notin> H \<or> l \<notin> H"
       by auto
-    then have "\<P>(\<omega> in \<PP>. first_jondo \<omega> = i \<and> last_ncoll \<omega> = l \<and> hit_colls \<omega>) = 0"
-      using AE_term
-      apply (intro prob_eq_0_AE)
-      apply (elim AE_mp)
-      by (auto intro!: AE_I2 dest: term_imp_len first_collI4
-        simp: first_jondo_def jondo_of_def)
+    have "\<P>(\<omega> in \<PP>. (visit {i} J \<omega> \<and> before_C {l} \<omega>) \<and> hit_C \<omega>) = 0"
+      using H by (intro T.prob_eq_0_AE) (auto dest: visit_imp_in_H before_C_imp_in_H)
     then show "?il i l * log 2 (?il i l / (?i i * ?l l)) = 0"
       by (simp add: cond_prob_def)
   qed
-  also have "\<dots> = \<I>(first_jondo ; last_ncoll)"
+  also have "\<dots> = \<I>(first_J ; last_H)"
     unfolding setsum.cartesian_product
-    apply (subst C.mutual_information_simple_distributed[OF sd_fj sd_lnc sd_fj_lnc])
-    apply (simp add: C_def)
+    apply (subst hC.mutual_information_simple_distributed[OF sd_fj sd_lnc sd_fj_lnc])
+    apply (simp add: hC_def)
   proof (safe intro!: setsum.mono_neutral_right imageI)
-    show "finite ((first_jondo ` space S_seq) \<times> (last_ncoll ` space S_seq))"
-      using sf_fj sf_lnc by (auto simp add: C_def dest!: simple_functionD(1))
+    show "finite ((first_J ` space S) \<times> (last_H ` space S))"
+      using sf_fj sf_lnc by (auto simp add: hC_def dest!: simple_functionD(1))
   next
-    fix i l assume "(first_jondo i, last_ncoll l) \<notin> (\<lambda>x. (first_jondo x, last_ncoll x)) ` space S_seq"
-    then have "{\<omega> \<in> space S_seq. first_jondo \<omega> = first_jondo i \<and> last_ncoll \<omega> = last_ncoll l \<and> hit_colls \<omega>} = {}"
-      by (auto simp: image_iff)
-    then have "?il (first_jondo i) (last_ncoll l) = 0"
-      by (simp add: cond_prob_def del: Collect_empty_eq)
-    then show "?il (first_jondo i) (last_ncoll l) *
-      log 2 (?il (first_jondo i) (last_ncoll l) / (?i (first_jondo i) * ?l (last_ncoll l))) = 0"
-      by simp
+    fix i l assume "(first_J i, last_H l) \<notin> (\<lambda>x. (first_J x, last_H x)) ` space S"
+    moreover
+    { fix i l assume "i \<in> H" "l \<in> H"
+      then have "visit {i} J (Init i ## Mix l ## Mix c ## sconst End)"
+        "before_C {l} (Init i ## Mix l ## Mix c ## sconst End)"
+        using c C_smaller by (auto simp: before_C_def visit_def HLD_iff suntil_Stream)
+      then have "first_J (Init i ## Mix l ## Mix c ## sconst End) = i"
+        "last_H (Init i ## Mix l ## Mix c ## sconst End) = l"
+        by (auto intro!: first_J_eq last_H_eq) }
+    note this[of "first_J i" "last_H l"]
+    ultimately have "(first_J i, last_H l) \<notin> H\<times>H"
+      by (auto simp: space_stream_space image_iff eq_commute) metis
+    then have "\<P>(\<omega> in \<PP>. (visit {first_J i} J \<omega> \<and> before_C {last_H l} \<omega>) \<and> hit_C \<omega>) = 0"
+      by (intro T.prob_eq_0_AE) (auto dest: visit_imp_in_H before_C_imp_in_H)
+    then show "?il (first_J i) (last_H l) *
+      log 2 (?il (first_J i) (last_H l) / (?i (first_J i) * ?l (last_H l))) = 0"
+      by (simp add: cond_prob_def)
   qed
   finally show ?thesis by simp
 qed

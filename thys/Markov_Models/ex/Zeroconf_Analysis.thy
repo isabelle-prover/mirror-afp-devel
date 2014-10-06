@@ -8,81 +8,84 @@ begin
 
 subsection {* Definition of a ZeroConf allocation run *}
 
-locale Zeroconf_Analysis =
-  fixes N :: nat and p q r e :: real
-  assumes p: "0 < p" "p < 1" and q: "0 < q" "q < 1"
-  assumes r: "0 \<le> r" and e: "0 \<le> e"
-
 datatype zc_state = start 
                   | probe nat
                   | ok
                   | error
 
-context Zeroconf_Analysis
+lemma inj_probe: "inj_on probe X"
+  by (simp add: inj_on_def)
+
+instance zc_state :: countable
+proof
+  have "countable ({start, ok, error} \<union> probe`UNIV)"
+    by auto
+  also have "{start, ok, error} \<union> probe`UNIV = UNIV"
+    using zc_state.nchotomy by auto
+  finally show "\<exists>f::zc_state \<Rightarrow> nat. inj f"
+    using inj_on_to_nat_on[of "UNIV :: zc_state set"] by auto
+qed
+
+locale Zeroconf_Analysis =
+  fixes N :: nat and p q r e :: real
+  assumes p: "0 < p" "p < 1" and q: "0 < q" "q < 1"
+  assumes r: "0 \<le> r" and e: "0 \<le> e"
 begin
 
-definition "S = probe ` {.. N} \<union> ({start} \<union> {ok} \<union> {error})"
+interpretation pmf_as_function .
 
-primrec \<tau> where
-  "\<tau> start     = (\<lambda>_. 0) (probe 0 := q, ok := 1 - q)"
-| "\<tau> (probe n) = (if n < N then (\<lambda>_. 0) (probe (Suc n) := p, start := 1 - p) 
-                           else (\<lambda>_. 0) (error := p, start := 1 - p))"
-| "\<tau> ok        = (\<lambda>_. 0) (ok := 1)"
-| "\<tau> error     = (\<lambda>_. 0) (error := 1)"
+abbreviation "states == probe ` {.. N} \<union> ({start} \<union> {ok} \<union> {error})"
 
-primrec \<rho> where
+lift_definition \<tau> :: "zc_state \<Rightarrow> zc_state pmf" is
+  "\<lambda>start   \<Rightarrow> ((\<lambda>_. 0) (probe 0 := q, ok := 1 - q))
+  | probe n \<Rightarrow> if n < N then (\<lambda>_. 0) (probe (Suc n) := p, start := 1 - p) 
+                           else (\<lambda>_. 0) (error := p, start := 1 - p)
+  | ok      \<Rightarrow> ((\<lambda>_. 0) (ok := 1))
+  | error   \<Rightarrow> ((\<lambda>_. 0) (error := 1))"
+  using q p
+  by (auto split: zc_state.splits split_if_asm simp: setsum.If_cases
+           intro!: nn_integral_count_space'[where A="states", THEN trans])
+
+primrec \<rho> :: "zc_state \<Rightarrow> zc_state \<Rightarrow> real" where
   "\<rho> start     = (\<lambda>_. 0) (probe 0 := r, ok := r * (N + 1))"
 | "\<rho> (probe n) = (if n < N then (\<lambda>_. 0) (probe (Suc n) := r) else (\<lambda>_. 0) (error := e))"
 | "\<rho> ok        = (\<lambda>_. 0) (ok := 0)"
 | "\<rho> error     = (\<lambda>_. 0) (error := 0)"
 
-lemma inj_probe: "inj_on probe X"
-  by (simp add: inj_on_def)
+lemma \<rho>_nonneg'[simp]: "0 \<le> \<rho> s t"
+  using r e by (cases s) auto
 
-lemma setsum_S:
-  "(\<Sum>s\<in>S. f s) = f start + (\<Sum>p\<le>N. f (probe p)) + f ok + f error"
-  unfolding S_def
-  by (subst setsum.union_disjoint) (auto simp: inj_probe setsum.reindex field_simps)
-
-lemma SE:
-  assumes "s \<in> S"
-  obtains n where "n \<le> N" "s = probe n" | "s = start" | "s = ok" | "s = error"
-  using assms unfolding S_def by blast
-
-lemma SI[intro!, simp]:
-  "start \<in> S"
-  "ok \<in> S"
-  "error \<in> S"
-  "n \<le> N \<Longrightarrow> probe n \<in> S"
-  by (auto simp: S_def)
-
-end
+sublocale MC_with_rewards \<tau> \<rho> "\<lambda>s. 0"
+  proof qed (simp_all add: pair_measure_countable)
 
 subsection {* The allocation run is a rewarded DTMC *}
 
-sublocale Zeroconf_Analysis \<subseteq> Rewarded_DTMC S start \<tau> \<rho> "\<lambda>s. 0"
-  proof
-  qed (insert p q r e,
-       auto simp add: S_def \<rho>_def setsum_S setsum.If_cases field_simps elim!: SE)
-
-lemma if_mult:
-  "\<And>P a b c. (if P then a else b) * c =  (if P then a * c else b * c)"
-  "\<And>P a b c. c * (if P then a else b) =  (if P then c * a else c * b)"
-  by auto
-
-context Zeroconf_Analysis
-begin
+abbreviation "E s \<equiv> set_pmf (\<tau> s)"
 
 lemma E_start_iff[simp]: "E start = {probe 0, ok}"
-  using q by (auto simp: E_iff dest!: E_D)
+  using q unfolding set_eq_iff set_pmf_iff by transfer simp
 
 lemma E_probe_iff[simp]:
-    "n \<le> N \<Longrightarrow> E (probe n) = (if n < N then {start, probe (Suc n)} else {start, error})"
-  using q p by (auto simp: E_iff dest!: E_D)
+  "E (probe n) = (if n < N then {start, probe (Suc n)} else {start, error})"
+  using p q unfolding set_eq_iff set_pmf_iff by transfer simp
 
-lemma E_ok_iff[simp]: "E ok = {ok}" by (auto simp: E_iff dest!: E_D)
+lemma E_ok_iff[simp]: "E ok = {ok}"
+  unfolding set_eq_iff set_pmf_iff by transfer simp
 
-lemma E_error_iff[simp]: "E error = {error}" by (auto simp: E_iff dest!: E_D)
+lemma enabled_ok: "enabled ok \<omega> \<longleftrightarrow> \<omega> = sconst ok"
+  by (simp add: enabled_iff_sconst)
+
+lemma E_error_iff[simp]: "E error = {error}"
+  unfolding set_eq_iff set_pmf_iff by transfer simp
+
+lemma finite_E[intro, simp]: "finite (E s)"
+  by (cases s) auto
+
+lemma E_closed: "s \<in> states \<Longrightarrow> E s \<subseteq> states"
+  by (auto split: split_if_asm)
+
+lemma enabled_error: "enabled error \<omega> \<longleftrightarrow> \<omega> = sconst error"
+  by (simp add: enabled_iff_sconst)
 
 lemma pos_neg_q_pn: "0 < 1 - q * (1 - p^Suc N)"
 proof -
@@ -93,116 +96,143 @@ proof -
   then show ?thesis by simp
 qed
 
+lemma to_error: assumes "n \<le> N" shows "(probe n, error) \<in> (Sigma UNIV E)\<^sup>*"
+  using `n \<le> N`
+proof (induction rule: inc_induct)
+  case (step n') then show ?case
+    by (intro rtrancl_trans[OF r_into_rtrancl step.IH]) auto
+qed auto
+
 subsection {* Probability of a erroneous allocation *}
 
-definition "P_err s = \<P>(\<omega> in paths s. case_nat s \<omega> \<in> until S {error})"
+definition "P_err s = \<P>(\<omega> in T s. ev (HLD {error}) (s ## \<omega>))"
 
-lemma P_err_ok: "P_err ok = 0"
-proof -
-  have "reachable (S - {error}) ok \<subseteq> {ok}"
-    by (rule reachable_closed) auto
-  then show "P_err ok = 0"
-    unfolding P_err_def 
-    by (subst prob_Collect_eq_0) (auto simp add: AE_nuntil_iff_not_reachable simp del: case_nat_until_iff)
-qed
+lemma P_err: 
+  defines "p_start == (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
+  defines "p_probe == (\<lambda>n. p ^ Suc (N - n) + (1 - p^Suc (N - n)) * p_start)"
+  assumes s: "s \<in> states - {ok, error}"
+  shows "P_err s = (case s of ok \<Rightarrow> 0 | error \<Rightarrow> 1 | probe n \<Rightarrow> p_probe n | start \<Rightarrow> p_start)"
+    (is "\<dots> = ?E s")
+  using s
+proof (rule unique_les)
+  have [arith]: "0 \<le> p * (q * p ^ N)"
+    using p q by simp
+  have p_eq: "p_start = p_probe 0 * q"
+    "\<And>n. n < N \<Longrightarrow> p_probe n = p_start * (1 - p) + p_probe (Suc n) * p"
+    "p_probe N = p + p_start * (1 - p)"
+    using p q
+    by (auto simp: p_probe_def p_start_def power_Suc[symmetric] Suc_diff_Suc divide_simps
+             simp del: power_Suc)
+       (auto simp: field_simps)
+  fix s assume s: "s \<in> states - {ok, error}"
+  then show "?E s = (\<integral>t. ?E t \<partial>\<tau> s) + 0"
+    using p q
+    by (subst integral_measure_pmf[of states])
+       (auto split: zc_state.splits split_if_asm intro: p_eq
+             simp: setsum_clauses setsum.reindex inj_probe \<tau>.rep_eq
+                   setsum.If_cases if_distrib[where f="\<lambda>x. a * x" for a])
+  show "\<exists>t\<in>{ok, error}. (s, t) \<in> (Sigma UNIV E)\<^sup>*"
+    using s to_error by auto
+  from s show "P_err s = integral\<^sup>L (measure_pmf (\<tau> s)) P_err + 0"
+    unfolding P_err_def[abs_def] by (subst prob_T) (auto simp: ev_Stream)
+next
+  fix s assume "s \<in> {ok, error}" then show "P_err s = ?E s"
+    by (auto intro!: T.prob_eq_0_AE T.prob_Collect_eq_1[THEN iffD2]
+             simp: P_err_def AE_sconst ev_sconst HLD_iff ev_Stream T.prob_space
+             simp del: space_T sets_T )
+qed (auto intro!: integrable_measure_pmf_finite split: split_if_asm)
 
-lemma P_err_error[simp]: "P_err error = 1"
-  by (simp add: P_err_def)
-
-lemma P_err_sum': "s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> P_err s = (\<Sum>t\<in>S. \<tau> s t * P_err t)"
-  unfolding P_err_def
-  by (subst prob_eq_sum)
-     (auto intro!: setsum.cong arg_cong2[where f="op *"] arg_cong2[where f=measure] simp: space_PiM PiE_def)
-
-lemma P_err_sum: "s \<in> S \<Longrightarrow> 
-    P_err s = \<tau> s start * P_err start + \<tau> s error + (\<Sum>p\<le>N. \<tau> s (probe p) * P_err (probe p))"
-  using P_err_ok by (cases "s = error") (simp_all add: P_err_sum'[of s] setsum_S)
-
-lemma P_err_last[simp]: "P_err (probe N) = p + (1 - p) * P_err start"
-  by (subst P_err_sum) simp_all
-
-lemma P_err_start[simp]: "P_err start = q * P_err (probe 0)"
-  by (subst P_err_sum) (simp_all add: if_mult setsum.If_cases)
-
-lemma P_err_probe: "n \<le> N \<Longrightarrow> P_err (probe (N - n)) = p ^ Suc n + (1 - p^Suc n) * P_err start"
-proof (induct n)
-  case (Suc n)
-  then have "P_err (probe (N - Suc n)) =
-    p * (p ^ Suc n + (1 - p^Suc n) * P_err start) + (1 - p) * P_err start"
-    by (subst P_err_sum) (simp_all add: Suc_diff_Suc if_mult setsum.If_cases)
-  also have "\<dots> = p^Suc (Suc n) + (1 - p^Suc (Suc n)) * P_err start"
-    by (simp add: field_simps)
-  finally show ?case .
-qed simp
-
-lemma prob_until_error: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
-  using P_err_probe[of N] pos_neg_q_pn by (simp add: field_simps del: power_Suc)
+lemma P_err_start: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
+  by (simp add: P_err)
 
 subsection {* An allocation run terminates almost surely *}
 
-lemma reachable_probe_error:
-  "n \<le> N \<Longrightarrow> error \<in> reachable (S - {error, ok}) (probe n)"
-proof (induct rule: inc_induct)
-  case (step n) 
-  then show ?case by (intro reachable_step_rev[of _ _ "probe (Suc n)" "probe n"]) auto
-qed (auto intro!: reachable.start)
+lemma states_closed:
+  assumes "s \<in> states"
+  assumes "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
+  shows "t \<in> states"
+  using assms(2,1) by induction (auto split: split_if_asm)
 
-lemma reachable_start_error:
-  "error \<in> reachable (S - {error, ok}) start"
-  by (rule reachable_step_rev) (auto intro: reachable_probe_error)
+lemma finite_reached:
+  assumes s: "s \<in> states" shows "finite ((SIGMA s:UNIV. E s - {error, ok})\<^sup>* `` {s})"
+  using states_closed[OF s]
+  by (rule_tac finite_subset[of _ states]) auto
 
 lemma AE_reaches_error_or_ok:
-  assumes "s \<in> S"
-  shows "AE \<omega> in paths s. case_nat s \<omega> \<in> until S {error, ok}"
-  apply (subst AE_until_iff_reachable[OF `s \<in> S` finite_Diff, OF finite_S])
-proof (intro disjCI conjI `s\<in>S` ballI)
-  fix t assume "t \<in> reachable (S - {error, ok}) s \<union> {s} - {error, ok}"
-  with `s \<in> S` have "t \<in> S - {error, ok}" by auto
-  with `s \<in> S` have "t \<in> {start} \<union> (probe ` {..N})" by (auto simp: S_def)
-  with reachable_probe_error reachable_start_error
-  have "error \<in> reachable (S - {error, ok}) t" by auto
-  then show "reachable (S - {error, ok}) t \<inter> {error, ok} \<noteq> {}" by auto
-qed auto
+  assumes s: "s \<in> states"
+  shows "AE \<omega> in T s. ev (HLD {error, ok}) \<omega>"
+proof (rule AE_T_ev_HLD)
+  { fix t assume t: "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
+    with states_closed[OF s t] to_error show "\<exists>t'\<in>{error, ok}. (t, t') \<in> (Sigma UNIV E)\<^sup>*"
+      by auto }
+qed (rule finite_reached[OF s])
 
 subsection {* Expected runtime of an allocation run *}
 
-definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} (case_nat s \<omega>) \<partial>paths s)"
+definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} s \<omega> \<partial>T s)"
+
+lemma R_finite:
+  assumes s: "s \<in> states"
+  shows "R s \<noteq> \<infinity>"
+  unfolding R_def
+proof (rule nn_integral_reward_until_finite)
+  { fix t assume "(s, t) \<in> (Sigma (- {error, ok}) E)\<^sup>*" from this s have "t \<in> states"
+      by induction (auto split: split_if_asm) } 
+  then have "(Sigma (- {error, ok}) E)\<^sup>* `` {s} \<subseteq> states"
+    by auto
+  then show "finite ((Sigma (- {error, ok}) E)\<^sup>* `` {s})"
+    by (auto dest: finite_subset)
+qed (auto simp: AE_reaches_error_or_ok[OF s])
+
+lemma R_nonneg: "0 \<le> R t"
+  by (simp add: R_def nn_integral_nonneg)
 
 lemma cost_from_start:
-  "(R start::ereal) =
+  "R start =
     (q * (r + p^Suc N * e + r * p * (1 - p^N) / (1 - p)) + (1 - q) * (r * Suc N)) /
     (1 - q + q * p^Suc N)"
 proof -
-  have "\<forall>s\<in>S. \<exists>r. R s = ereal r"
-    unfolding R_def
-    using nn_integral_reward_until_finite[OF _ AE_reaches_error_or_ok] by auto
-  from bchoice[OF this] obtain R' where R': "\<And>s. s\<in>S \<Longrightarrow> R s = ereal (R' s)" by auto
+  have "\<forall>s\<in>states. \<exists>r. R s = ereal r"
+    using R_nonneg R_finite
+    apply (intro ballI exI)
+    apply (rule ereal_real'[symmetric])+
+    apply simp
+    done
+  from bchoice[OF this] obtain R' where R': "\<And>s. s\<in>states \<Longrightarrow> R s = ereal (R' s)" by auto
 
-  have R_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
-    R s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R s'))"
-    using R' unfolding R_def
-    by (subst nn_integral_reward_until_real[OF _ _ AE_reaches_error_or_ok]) simp_all
-       
-  then have R'_sum: "\<And>s. s \<in> S \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
-    R' s = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s s' + R' s'))"
+  { fix s have "s \<in> states \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
+      R s = (\<Sum>s'\<in>states. pmf (\<tau> s) s' * (\<rho> s s' + R s'))"
+      using T.emeasure_space_1 E_closed[of s]
+      unfolding R_def
+      apply (simp add: nn_integral_T[of _ s] nn_integral_add[of _ "T t" for t] reward_until_nonneg 
+          nn_integral_measure_pmf_support[of states] nn_integral_nonneg)
+      apply (subst nn_integral_measure_pmf_support[of states])
+      apply (simp_all add: nn_integral_nonneg subset_eq field_simps)
+      done }
+  then have R'_sum: "\<And>s. s \<in> states \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
+    R' s = (\<Sum>s'\<in>states. pmf (\<tau> s) s' * (\<rho> s s' + R' s'))"
     using R' by simp
 
-  have "R ok = 0" "R error = 0"
-    unfolding R_def by (simp_all add: reward_until_case_nat_0)
+  have "R ok = 0 \<and> R error = 0"
+    unfolding R_def by (subst (1 2) reward_until_unfold[abs_def]) simp
   with R' have R'_ok: "R' ok = 0" and R'_error: "R' error = 0"
     by simp_all
 
   then have R'_start: "R' start = q * (r + R' (probe 0)) + (1 - q) * (r * (N + 1))"
     by (subst R'_sum)
-       (simp_all add: setsum_S field_simps setsum.distrib if_mult setsum.If_cases)
+       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
+                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
 
   have R'_probe: "\<And>n. n < N \<Longrightarrow> R' (probe n) = p * R' (probe (Suc n)) + p * r + (1 - p) * R' start"
     using R'_error
     by (subst R'_sum)
-       (simp_all add: setsum_S setsum.distrib field_simps if_mult setsum.If_cases)
+       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
+                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
 
   have R'_N: "R' (probe N) = p * e + (1 - p) * R' start"
-    using R'_error by (subst R'_sum) (simp_all add: setsum_S field_simps)
+    using R'_error by (subst R'_sum)
+       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
+                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
 
   { fix n
     assume "n \<le> N"
@@ -233,13 +263,11 @@ qed
 
 end
 
-interpretation ZC: Zeroconf_Analysis 2 "16 / 65024 :: real" "0.01" "0.002" "3600"
-  apply default
-  apply auto
-  done
+interpretation ZC!: Zeroconf_Analysis 2 "16 / 65024 :: real" "0.01" "0.002" "3600"
+  by default auto
 
 lemma "ZC.P_err start \<le> 1 / 10^12"
-  unfolding ZC.prob_until_error by (simp add: power_one_over[symmetric])
+  unfolding ZC.P_err_start by (simp add: power_one_over[symmetric])
 
 lemma "ZC.R start \<le> 0.007"
   unfolding ZC.cost_from_start by (simp add: power_one_over[symmetric])
