@@ -36,7 +36,11 @@ definition
       (*Insert a[j] into the sorted subarray a[1 .. j - 1].*)
       key \<leftarrow> a.(j);
       i \<leftarrow> ref j;
-      while (do {i' \<leftarrow> ! i; x \<leftarrow> a.(i' - 1); return (i' > 0 \<and> x > key)}) (do {
+      while (do {
+        i' \<leftarrow> ! i;
+        if i' > 0 then do {x \<leftarrow> a.(i' - 1); return (x > key)}
+        else return False})
+      (do {
         i' \<leftarrow> ! i;
         x \<leftarrow> a.(i' - 1);
         a.(i') \<leftarrow> x;
@@ -51,7 +55,7 @@ text \<open>
   The following definitions decompose the nested loops of the algorithm into more manageable chunks.
 \<close>
 definition "shiftr_p a (key\<Colon>'a\<Colon>{heap, linorder}) i =
-  (do {i' \<leftarrow> ! i; x \<leftarrow> a.(i' - 1); return (i' > 0 \<and> x > key)})"
+  (do {i' \<leftarrow> ! i; if i' > 0 then do {x \<leftarrow> a.(i' - 1); return (x > key)} else return False})"
 
 definition "shiftr_f a i = do {
   i' \<leftarrow> ! i;
@@ -124,7 +128,7 @@ next
     have "?i h' > 0" and
     key: "Array.get h' a ! (?i h' - 1) > key"
     by (auto dest!: ro_shiftr_p.success_cond_effect)
-       (auto simp: shiftr_p_def elim!: effect_elims)
+       (auto simp: shiftr_p_def elim!: effect_elims effect_ifE)
   from effect_shiftr_f [OF \<open>effect (shiftr_f a i) h' h'' u\<close>]
     have [simp]: "?i h'' = ?i h' - 1"
     "Array.get h'' a = list_update (Array.get h' a) (?i h') (Array.get h' a ! (?i h' - 1))"
@@ -306,7 +310,7 @@ proof -
     case (step h h' r)
     then show ?case
       by (auto dest!: effect_shiftr_f ro_shiftr_p.success_cond_effect simp: length_def)
-         (auto simp: shiftr_p_def elim!: effect_elims)
+         (auto simp: shiftr_p_def elim!: effect_elims effect_ifE)
   qed fact
 qed
 
