@@ -4,7 +4,7 @@ header {* WS1S *}
 
 (*<*)
 theory WS1S
-imports Formula Pi_Regular_Operators "~~/src/HOL/Datatype_Examples/Stream"
+imports Formula Pi_Regular_Operators "~~/src/HOL/Library/Stream"
 begin
 (*>*)
 

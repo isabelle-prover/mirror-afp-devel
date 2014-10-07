@@ -5,7 +5,7 @@ header {* Infinite lists as a codatatype *}
 
 theory Coinductive_Stream
 imports
-  "~~/src/HOL/Datatype_Examples/Stream"
+  "~~/src/HOL/Library/Stream"
   Coinductive_List
 begin
 

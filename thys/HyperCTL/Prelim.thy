@@ -2,7 +2,7 @@ header {* Preliminaries *}
 
 (*<*)
 theory Prelim
-imports "~~/src/HOL/Datatype_Examples/Stream"
+imports "~~/src/HOL/Library/Stream"
 begin
 (*>*)
 
