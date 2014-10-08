@@ -84,7 +84,6 @@
 <h3>Data Structures</h3>
 
 <div class="list">
-<a href="entries/XML.shtml">XML</a> &nbsp;
 <a href="entries/Amortized_Complexity.shtml">Amortized_Complexity</a> &nbsp;
 <a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
 <a href="entries/BDD.shtml">BDD</a> &nbsp;
@@ -107,6 +106,7 @@
 <a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a> &nbsp;
 <a href="entries/IEEE_Floating_Point.shtml">IEEE_Floating_Point</a> &nbsp;
 <a href="entries/Native_Word.shtml">Native_Word</a> &nbsp;
+<a href="entries/XML.shtml">XML</a> &nbsp;
 </div>
 
 <h3>Functional Programming</h3>
@@ -114,11 +114,11 @@
 <div class="list">
 <a href="entries/Show.shtml">Show</a> &nbsp;
 <a href="entries/Certification_Monads.shtml">Certification_Monads</a> &nbsp;
-<a href="entries/XML.shtml">XML</a> &nbsp;
 <a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 <a href="entries/Tycon.shtml">Tycon</a> &nbsp;
+<a href="entries/XML.shtml">XML</a> &nbsp;
 <a href="entries/Tail_Recursive_Functions.shtml">Tail_Recursive_Functions</a> &nbsp;
 </div>
 
@@ -171,6 +171,7 @@
 <a href="entries/KAT_and_DRA.shtml">KAT_and_DRA</a> &nbsp;
 <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp;
 <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
+<a href="entries/RefinementReactive.shtml">RefinementReactive</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
 <a href="entries/TLA.shtml">TLA</a> &nbsp;
 <a href="entries/Ribbon_Proofs.shtml">Ribbon_Proofs</a> &nbsp;
