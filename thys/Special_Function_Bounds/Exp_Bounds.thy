@@ -68,13 +68,13 @@ proof -
     apply (rule power_mono [OF 1])
     apply (simp add: field_simps)
     using assms
-    apply (sos_cert "((R<1 + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + (((A<0 * R<1) * (R<50/13 * [1]^2)) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
+    apply (sos "((R<1 + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + (((A<0 * R<1) * (R<50/13 * [1]^2)) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
     done
   also have "... = inverse (exp x)"
     by (metis exp_minus mult_exp_exp power2_eq_square real_sum_of_halves)
   finally have 2: "(-(x^3) + 6*x^2 - 24*x + 48)^2 / 2304 \<le> inverse (exp x)" .
   have "6 * x\<^sup>2 - x ^ 3 - 24 * x + 48 \<noteq> 0" using assms
-    by (sos_cert "((R<1 + (([~400/13] * A=0) + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
+    by (sos "((R<1 + (([~400/13] * A=0) + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
   then show ?thesis
     using Fields.linordered_field_class.le_imp_inverse_le [OF 2]
     by simp
@@ -96,13 +96,13 @@ proof -
     apply (rule power_mono [OF 1])
     apply (simp add: field_simps)
     using assms
-    apply (sos_cert "((R<1 + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + (((A<0 * R<1) * (R<25/1024 * [1]^2)) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
+    apply (sos "((R<1 + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + (((A<0 * R<1) * (R<25/1024 * [1]^2)) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
     done
   also have "... = inverse (exp x)"
     by (simp add: exp_real_of_nat_mult [symmetric] exp_minus [symmetric])
   finally have 2: "(-(x^3) + 12*x^2 - 96*x + 384)^4 / 21743271936 \<le> inverse (exp x)" .
   have "12 * x\<^sup>2 - x ^ 3 - 96 * x + 384 \<noteq> 0" using assms
-    by (sos_cert "((R<1 + (([~25/32] * A=0) + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
+    by (sos "((R<1 + (([~25/32] * A=0) + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
   then show ?thesis
     using Fields.linordered_field_class.le_imp_inverse_le [OF 2]
     by simp
@@ -115,10 +115,10 @@ definition exp_cf2 :: "real \<Rightarrow> real"
   where "exp_cf2 \<equiv> \<lambda>x. (x^2 + 6*x + 12) / (x^2 - 6*x + 12)"
 
 lemma denom_cf2_pos: fixes x::real shows "x\<^sup>2 - 6 * x + 12 > 0"
-  by (sos_cert "((R<1 + ((R<1 * ((R<5 * [~3/10*x + 1]^2) + (R<1/20 * [x]^2))) + ((A<=0 * R<1) * (R<1/2 * [1]^2)))))")
+  by (sos "((R<1 + ((R<1 * ((R<5 * [~3/10*x + 1]^2) + (R<1/20 * [x]^2))) + ((A<=0 * R<1) * (R<1/2 * [1]^2)))))")
 
 lemma numer_cf2_pos: fixes x::real shows "x\<^sup>2 + 6 * x + 12 > 0"
-  by (sos_cert "((R<1 + ((R<1 * ((R<5 * [3/10*x + 1]^2) + (R<1/20 * [x]^2))) + ((A<=0 * R<1) * (R<1/2 * [1]^2)))))")
+  by (sos "((R<1 + ((R<1 * ((R<5 * [3/10*x + 1]^2) + (R<1/20 * [x]^2))) + ((A<=0 * R<1) * (R<1/2 * [1]^2)))))")
 
 lemma exp_cf2_pos: "exp_cf2 x > 0"
   unfolding exp_cf2_def
@@ -129,7 +129,7 @@ definition diff_delta_lnexp_cf2 :: "real \<Rightarrow> real"
 
 lemma d_delta_lnexp_cf2_nonpos: "diff_delta_lnexp_cf2 x \<le> 0"
 unfolding diff_delta_lnexp_cf2_def
-by (sos_cert "(((R<1 + ((R<1 * ((R<5/4 * [~3/40*x^2 + 1]^2) + (R<11/1280 * [x^2]^2))) +
+by (sos "(((R<1 + ((R<1 * ((R<5/4 * [~3/40*x^2 + 1]^2) + (R<11/1280 * [x^2]^2))) +
       ((A<1 * R<1) * (R<1/64 * [1]^2))))) & ((R<1 + ((R<1 * ((R<5/4 * [~3/40*x^2 + 1]^2) + (R<11/1280 * [x^2]^2))) + ((A<1 * R<1) * (R<1/64 * [1]^2))))))")
 
 lemma d_delta_lnexp_cf2:
@@ -201,7 +201,7 @@ done
 
 lemma numer_cf3_mono: "y \<le> x \<Longrightarrow> numer_cf3 y \<le> numer_cf3 x"
   unfolding numer_cf3_def
-  by (sos_cert "(((A<0 * R<1) + ((A<=0 * R<1) * ((R<60 * [1/10*x + 1/10*y + 1]^2) +
+  by (sos "(((A<0 * R<1) + ((A<=0 * R<1) * ((R<60 * [1/10*x + 1/10*y + 1]^2) +
                 ((R<2/5 * [x + ~1/4*y]^2) + (R<3/8 * [y]^2))))))")
 
 text{*Upper bound for non-negative x*}
@@ -273,7 +273,7 @@ definition exp_cf4 :: "real \<Rightarrow> real"
 
 lemma numer_cf4_pos: fixes x::real shows "numer_cf4 x > 0"
 unfolding numer_cf4_def
-by (sos_cert "((R<1 + ((R<1 * ((R<4469/256 * [1135/71504*x^2 + 4725/17876*x + 1]^2) + ((R<3728645/18305024 * [536265/2982916*x^2 + x]^2) + (R<106265/24436047872 * [x^2]^2)))) + ((A<=0 * R<1) * (R<45/4096 * [1]^2)))))")
+by (sos "((R<1 + ((R<1 * ((R<4469/256 * [1135/71504*x^2 + 4725/17876*x + 1]^2) + ((R<3728645/18305024 * [536265/2982916*x^2 + x]^2) + (R<106265/24436047872 * [x^2]^2)))) + ((A<=0 * R<1) * (R<45/4096 * [1]^2)))))")
 
 lemma exp_cf4_pos: "exp_cf4 x > 0"
   unfolding exp_cf4_def
@@ -368,7 +368,7 @@ lemma numer_cf5_deriv:
 
 lemma numer_cf5_deriv_pos: "numer_cf5_deriv x \<ge> 0"
   unfolding numer_cf5_deriv_def
-  by (sos_cert "((R<1 + ((R<1 * ((R<185533/8192 * [73459/5937056*x^2 + 43050/185533*x + 1]^2) + ((R<4641265253/24318181376 * [700850925/4641265253*x^2 + x]^2) + (R<38142496079/38933754831437824 * [x^2]^2)))) + ((A<0 * R<1) * (R<205/131072 * [1]^2)))))")
+  by (sos "((R<1 + ((R<1 * ((R<185533/8192 * [73459/5937056*x^2 + 43050/185533*x + 1]^2) + ((R<4641265253/24318181376 * [700850925/4641265253*x^2 + x]^2) + (R<38142496079/38933754831437824 * [x^2]^2)))) + ((A<0 * R<1) * (R<205/131072 * [1]^2)))))")
 
 lemma numer_cf5_mono: "y \<le> x \<Longrightarrow> numer_cf5 y \<le> numer_cf5 x"
   by (auto intro: DERIV_nonneg_imp_nondecreasing numer_cf5_deriv numer_cf5_deriv_pos)

@@ -277,7 +277,7 @@ lemmas root_simps = mult_root_eq_root mult_root_eq_root2 powr_inverse_numeral
 
 lemma nl31: "\<lbrakk> (l'::real) \<ge> 1; r' \<ge> 1; lr \<ge> 1; r \<ge> 1 \<rbrakk> \<Longrightarrow>
   4 * (l' + r') * (lr + r) \<le> (l' + lr + r' + r)^2"
-by (sos_cert "(((A<0 * R<1) + (R<1 * (R<1 * [r + ~1*l' + lr + ~1*r']^2))))")
+by (sos "(((A<0 * R<1) + (R<1 * (R<1 * [r + ~1*l' + lr + ~1*r']^2))))")
 
 lemma nl32: assumes "(l'::real) \<ge> 1" "r' \<ge> 1" "lr \<ge> 1" "r \<ge> 1"
 shows "4 * (l' + r') * (lr + r) * (lr + r' + r) \<le> (l' + lr + r' + r)^3"
@@ -303,7 +303,7 @@ qed
 
 lemma nl41: assumes "(l'::real) \<ge> 1" "r' \<ge> 1" "ll \<ge> 1" "r \<ge> 1"
 shows "4 * (l' + ll) * (r' + r) \<le> (l' + ll + r' + r)^2"
-using assms by (sos_cert "(((A<0 * R<1) + (R<1 * (R<1 * [r + ~1*l' + ~1*ll + r']^2))))")
+using assms by (sos "(((A<0 * R<1) + (R<1 * (R<1 * [r + ~1*l' + ~1*ll + r']^2))))")
 
 lemma nl42: assumes "(l'::real) \<ge> 1" "r' \<ge> 1" "ll \<ge> 1" "r \<ge> 1"
 shows "4 * (l' + r') * (l' + ll) * (r' + r) \<le> (l' + ll + r' + r)^3"
