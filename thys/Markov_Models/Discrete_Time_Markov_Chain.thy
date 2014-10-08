@@ -2,7 +2,7 @@ theory Discrete_Time_Markov_Chain
   imports
     Probability
     "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
-    "$AFP/Coinductive/Coinductive_Nat"
+    "../Coinductive/Coinductive_Nat"
 begin
 
 lemma emeasure_measure_pmf_finite:
