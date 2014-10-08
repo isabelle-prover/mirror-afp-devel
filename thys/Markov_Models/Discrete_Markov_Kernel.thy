@@ -585,7 +585,7 @@ proof -
     by (auto intro!: nn_integral_cong split: split_indicator)
   also have "((\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>'. \<not> P (comb_seq i \<omega> \<omega>')} \<omega>' \<partial>(paths (case_nat s \<omega> i))) \<partial>paths s) = 0) \<longleftrightarrow>
     (AE \<omega> in paths s. (\<integral>\<^sup>+\<omega>'. indicator {\<omega>'. \<not> P (comb_seq i \<omega> \<omega>')} \<omega>' \<partial>(paths (case_nat s \<omega> i))) = 0)"
-    by (subst nn_integral_0_iff_AE) (simp, simp add: eq_iff nn_integral_nonneg)
+    by (simp add: nn_integral_0_iff_AE)
   also have "\<dots> \<longleftrightarrow> (AE \<omega> in paths s. AE \<omega>' in paths (case_nat s \<omega> i). P (comb_seq i \<omega> \<omega>'))"
     by (intro AE_cong) (simp add: AE_iff_nn_integral)
   finally show ?thesis .
