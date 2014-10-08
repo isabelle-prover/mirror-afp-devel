@@ -4,8 +4,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Int"
     "~~/src/HOL/Library/Code_Char"
-    "~~/src/HOL/Codegenerator_Test/Code_Test"
-
+    "~~/src/HOL/Library/Code_Test"
   theories
     More_Bits_Int
     Bits_Integer
@@ -35,7 +34,6 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Native_Word_Test_SMLNJ2
   theories
     Uint_Userguide
-
   document_files
     "root.tex"
     "root.bib"
