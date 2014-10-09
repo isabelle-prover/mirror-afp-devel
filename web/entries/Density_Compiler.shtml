@@ -48,7 +48,7 @@ for
         <td class="abstract">
 
 
-Bhat et al. [TACAS 2013] developed an inductive compiler that computes
+<a href="http://dx.doi.org/10.1007/978-3-642-36742-7_35">Bhat et al. [TACAS 2013]</a> developed an inductive compiler that computes
 density functions for probability spaces described by programs in a
 probabilistic functional language. In this work, we implement such a
 compiler for a modified version of this language within the theorem prover
