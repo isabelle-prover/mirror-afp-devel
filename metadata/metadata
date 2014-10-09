@@ -1818,6 +1818,26 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
   ZeroConf and an analysis of the anonymity of the Crowds protocol.
   <a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 
+[Density_Compiler]
+title = A Verified Compiler for Probability Density Functions
+author = Manuel Eberl <http://www.in.tum.de/~eberlm>, Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2014-10-09
+topic = Mathematics/Probability Theory, Computer Science/Programming Languages/Compiling
+abstract =
+  Bhat et al. [TACAS 2013] developed an inductive compiler that computes
+  density functions for probability spaces described by programs in a
+  probabilistic functional language. In this work, we implement such a
+  compiler for a modified version of this language within the theorem prover
+  Isabelle and give a formal proof of its soundness w.r.t. the semantics of
+  the source and target language.  Together with Isabelle's code generation
+  for inductive predicates, this yields a fully verified, executable density
+  compiler. The proof is done in two steps: First, an abstract compiler
+  working with abstract functions modelled directly in the theorem prover's
+  logic is defined and proved sound.  Then, this compiler is refined to a
+  concrete version that returns a target-language expression.
+  <p>
+  A detailed presentation of this work can be found in the first author's master's thesis.
+
 [CAVA_Automata]
 title = The CAVA Automata Library
 author = Peter Lammich <http://www21.in.tum.de/~lammich>

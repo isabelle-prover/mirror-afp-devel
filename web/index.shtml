@@ -50,6 +50,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-10-09:
+<a href="entries/Density_Compiler.shtml">A Verified Compiler for Probability Density Functions</a>
+<br>Author:
+<a href="http://www.in.tum.de/~eberlm">Manuel Eberl</a>,
+<a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a> and 
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-10-08:
 <a href="entries/RefinementReactive.shtml">Formalization of Refinement Calculus for Reactive Systems</a>
 <br>Author:

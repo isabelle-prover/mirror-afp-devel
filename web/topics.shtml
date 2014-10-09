@@ -178,6 +178,7 @@
 
 <strong>Compiling:</strong>&nbsp;<a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
 <a href="entries/NormByEval.shtml">NormByEval</a> &nbsp;
+<a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
 
 <strong>Static Analysis:</strong>&nbsp;<a href="entries/RIPEMD-160-SPARK.shtml">RIPEMD-160-SPARK</a> &nbsp;
 <a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
@@ -302,6 +303,7 @@
 
 <div class="list">
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
+<a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
 <a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
 </div>
 

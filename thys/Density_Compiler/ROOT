@@ -1,0 +1,18 @@
+chapter AFP
+
+session Density_Compiler (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Monad_Syntax"
+    Interval_Integral
+  theories
+    Poisson
+    Lebesgue_Integral_Substitution
+    Measure_Embeddings
+    Giry_Monad
+    PDF_Misc
+    PDF_Transformations
+    PDF_Compiler
+  document_files
+    "root.bib"
+    "root.tex"

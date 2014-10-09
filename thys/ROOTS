@@ -42,6 +42,7 @@ DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
 Decreasing-Diagrams
+Density_Compiler
 Depth-First-Search
 Dijkstra_Shortest_Path
 Discrete_Summation
