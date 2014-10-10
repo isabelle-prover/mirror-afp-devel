@@ -27,7 +27,7 @@ where
        else (M * ((rsa_crypt M (Suc e div 2) n) ^ 2 mod n)) mod n)"
 
 lemma div_2_times_2: "(if (even m) then  (m div 2 * 2 = m) else (m div 2 * 2 = m - 1))"
-  by (simp add: even_iff_mod_2_eq_zero dvd_eq_mod_eq_0 mult.commute mult_div_cancel)
+  by (simp add: even_def dvd_eq_mod_eq_0 mult.commute mult_div_cancel)
 
 theorem cryptcorrect: "n \<noteq> 0 \<Longrightarrow> n \<noteq> 1 \<Longrightarrow> rsa_crypt M e n = M^e mod n"
   by (induct M e n rule: rsa_crypt.induct) 
