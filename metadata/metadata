@@ -17,7 +17,7 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 date = 2014-10-03
 topic = Computer Science/Functional Programming
 depends-on = Show, Partial_Function_MR
-abstract = This entry provides several monads intended for the development of stand-alone certifiers via code generation from Isabelle/HOL. More specifically, there are three flavors of error monads (the sum type, for the case where all monadic functions are total; an instance of the former, the so called check monad, yielding either success without any further information or an error message; as well as a variant of the sum type that accommodates partial functions by providing an explicit bottom element) and a parser monad built on top. All of this monads are heavily used in the IsaFoR/CeTA project which thus provides many examples of their usage. 
+abstract = This entry provides several monads intended for the development of stand-alone certifiers via code generation from Isabelle/HOL. More specifically, there are three flavors of error monads (the sum type, for the case where all monadic functions are total; an instance of the former, the so called check monad, yielding either success without any further information or an error message; as well as a variant of the sum type that accommodates partial functions by providing an explicit bottom element) and a parser monad built on top. All of this monads are heavily used in the IsaFoR/CeTA project which thus provides many examples of their usage.
 
 [CISC-Kernel]
 title = Formal Specification of a Generic Separation Kernel
@@ -1393,16 +1393,16 @@ title = Formalization of Refinement Calculus for Reactive Systems
 author = Viorel Preoteasa <mailto:viorel.preoteasa@aalto.fi>
 date = 2014-10-08
 topic = Computer Science/Programming Languages/Logics
-abstract = 
+abstract =
  We present a formalization of refinement calculus for reactive systems.
- Refinement calculus is based on monotonic predicate transformers 
- (monotonic functions from sets of post-states to sets of pre-states), 
+ Refinement calculus is based on monotonic predicate transformers
+ (monotonic functions from sets of post-states to sets of pre-states),
  and it is a powerful formalism for reasoning about imperative programs.
  We model reactive systems as monotonic property transformers
  that transform sets of output infinite sequences into sets of input
- infinite sequences. Within this semantics we can model 
+ infinite sequences. Within this semantics we can model
  refinement of reactive systems, (unbounded) angelic and
- demonic nondeterminism, sequential composition, and 
+ demonic nondeterminism, sequential composition, and
  other semantic properties. We can model systems that may
  fail for some inputs, and we can model compatibility of systems.
  We can specify systems that have liveness properties using
@@ -2236,7 +2236,7 @@ abstract =
  an interface (fit for code generation) that allows for communication between
  verified programs formalized in Isabelle/HOL and the outside world via XML.
  This library was developed as part of the IsaFoR/CeTA project
- to which we refer for examples of its usage. 
+ to which we refer for examples of its usage.
 
 [HereditarilyFinite]
 title = The Hereditarily Finite Sets
@@ -2492,3 +2492,10 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>
 date = 2014-09-25
 topic = Computer Science/Algorithms
 abstract = The insertion sort algorithm of Cormen et al. (Introduction to Algorithms) is expressed in Imperative HOL and proved to be correct and terminating. For this purpose we also provide a theory about imperative loop constructs with accompanying induction/invariant rules for proving partial and total correctness. Furthermore, the formalized algorithm is fit for code generation.
+
+[Stream_Fusion_Code]
+title = Stream Fusion in HOL with Code Generation
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+date = 2014-10-10
+topic = Computer Science/Functional Programming
+abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://afp.sourceforge.net/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
