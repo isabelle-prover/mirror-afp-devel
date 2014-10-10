@@ -12,7 +12,7 @@ imports
   "../Partial_Function_MR/Partial_Function_MR"
 begin
 
-datatype_new ('e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a
+datatype ('e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a
 
 
 subsection \<open>Setup for Partial Functions\<close>

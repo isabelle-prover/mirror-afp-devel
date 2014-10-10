@@ -11,12 +11,12 @@ imports
   "~~/src/HOL/Library/Char_ord"
 begin
 
-datatype_new xml =
+datatype xml =
   -- {* node-name, attributes, child-nodes *}
   XML string "(string \<times> string) list" "xml list" |
   XML_text string
 
-datatype_new xmldoc =
+datatype xmldoc =
   -- {* header, body *}
   XMLDOC "string list" (root_node: xml)
 
