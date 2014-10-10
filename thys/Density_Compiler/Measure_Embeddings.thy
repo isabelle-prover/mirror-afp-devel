@@ -13,6 +13,13 @@ theory Measure_Embeddings
 imports Probability Density_Predicates PDF_Misc
 begin
 
+lemma vimage_algebra_cong: 
+  assumes "X = Y"
+  assumes "\<And>x. x \<in> Y \<Longrightarrow> f x = g x"
+  assumes "sets M = sets N"
+  shows "vimage_algebra X f M = vimage_algebra Y g N"
+  by (auto simp: vimage_algebra_def assms simple_image intro!: arg_cong2[where f=sigma])
+
 definition embed_measure :: "'a measure \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b measure" where
   "embed_measure M f = measure_of (f ` space M) {f ` A |A. A \<in> sets M} 
                            (\<lambda>A. emeasure M (f -` A \<inter> space M))"
@@ -40,11 +47,62 @@ next
   ultimately show "(\<Union>i. A i) \<in> {f ` A |A. A \<in> sets M}" by blast
 qed (auto dest: sets.sets_into_space)
 
+lemma the_inv_into_vimage:
+  "inj_on f X \<Longrightarrow> A \<subseteq> X \<Longrightarrow> the_inv_into X f -` A \<inter> (f`X) = f ` A"
+  by (auto simp: the_inv_into_f_f)
+
+lemma sets_embed_eq_vimage_algebra:
+  assumes "inj_on f (space M)"
+  shows "sets (embed_measure M f) = sets (vimage_algebra (f`space M) (the_inv_into (space M) f) M)"
+  by (auto simp: sets_embed_measure'[OF assms] Pi_iff the_inv_into_f_f assms sets_vimage_algebra2 simple_image
+           dest: sets.sets_into_space
+           intro!: image_cong the_inv_into_vimage[symmetric])
+
+lemma emeasure_sigma[simp]: "emeasure (sigma \<Omega> A) = (\<lambda>_. 0)"
+  unfolding measure_of_def emeasure_def
+  by (subst Abs_measure_inverse)
+     (auto simp: measure_space_def sigma_algebra_trivial sigma_algebra_sigma_sets
+                 positive_def countably_additive_def)
+
+lemma vimage_algebra_Sup_sigma:
+  assumes [simp]: "MM \<noteq> {}" and "\<And>M. M \<in> MM \<Longrightarrow> f \<in> X \<rightarrow> space M"
+  shows "vimage_algebra X f (Sup_sigma MM) = Sup_sigma (vimage_algebra X f ` MM)"
+proof (rule measure_eqI)
+  show "sets (vimage_algebra X f (Sup_sigma MM)) = sets (Sup_sigma (vimage_algebra X f ` MM))"
+    apply (intro antisym[of "sets A" for A] sets_image_in_sets sets_Sup_in_sets)
+    apply (subst space_Sup_sigma)
+    using assms
+    apply simp
+    apply (rule measurable_Sup_sigma2)
+    apply simp
+    apply (rule measurable_Sup_sigma1)
+    apply (rule imageI)
+    apply assumption
+    apply (rule measurable_vimage_algebra1)
+    apply fact
+    apply auto []
+    apply simp
+    apply (auto simp: sets_vimage_algebra2 assms(2))
+    apply (rule in_vimage_algebra)
+    apply (rule in_Sup_sigma)
+    apply assumption +
+    done
+qed (simp add: vimage_algebra_def Sup_sigma_def)
+
+lemma vimage_algebra_vimage_algebra:
+  assumes "f \<in> X \<rightarrow> Y" "g \<in> Y \<rightarrow> space M"
+  shows "vimage_algebra X f (vimage_algebra Y g M) = vimage_algebra X (\<lambda>x. g (f x)) M" (is "?L = ?R")  
+proof (rule measure_eqI)
+  have fg: "(\<lambda>x. g (f x)) \<in> X \<rightarrow> space M" "\<And>A. f -` g -` A \<inter> f -` Y \<inter> X = (\<lambda>x. g (f x)) -` A \<inter> X"
+    using assms by auto
+  show "sets ?L = sets ?R"
+    by (simp add: sets_vimage_algebra2 assms fg simple_image image_comp comp_def del: ex_simps)
+qed (simp add: vimage_algebra_def Sup_sigma_def)
+
 lemma sets_embed_measure:
   assumes inj: "inj f" 
   shows "sets (embed_measure M f) = {f ` A |A. A \<in> sets M}"
   using assms by (subst sets_embed_measure') (auto intro!: inj_onI dest: injD)
-
 
 lemma in_sets_embed_measure: "A \<in> sets M \<Longrightarrow> f ` A \<in> sets (embed_measure M f)"
   unfolding embed_measure_def
@@ -193,45 +251,50 @@ proof
   ultimately show "A = B" by (rule measure_eqI)
 qed simp
 
+lemma the_inv_into_in_Pi: "inj_on f A \<Longrightarrow> the_inv_into A f \<in> f ` A \<rightarrow> A"
+  by (auto simp: the_inv_into_f_f)
+
+lemma map_prod_image: "map_prod f g ` (A \<times> B) = (f`A) \<times> (g`B)"
+  using map_prod_surj_on[OF refl refl] .
+
+lemma map_prod_vimage: "map_prod f g -` (A \<times> B) = (f-`A) \<times> (g-`B)"
+  by auto
+
 lemma embed_measure_prod:
-  assumes f: "inj f" and g: "inj g" and "sigma_finite_measure M" "sigma_finite_measure N"
+  assumes f: "inj f" and g: "inj g" and [simp]: "sigma_finite_measure M" "sigma_finite_measure N"
   shows "embed_measure M f \<Otimes>\<^sub>M embed_measure N g = embed_measure (M \<Otimes>\<^sub>M N) (\<lambda>(x, y). (f x, g y))"
- proof (rule pair_measure_eqI)
-  have fg: "inj (\<lambda>(x, y). (f x, g y))"
+    (is "?L = _")
+  unfolding map_prod_def[symmetric]
+proof (rule pair_measure_eqI)
+  have fg[simp]: "\<And>A. inj_on (map_prod f g) A" "\<And>A. inj_on f A" "\<And>A. inj_on g A"
     using f g by (auto simp: inj_on_def)
-  have fg_space: "(\<lambda>(x, y). (f x, g y)) \<in> (space M \<times> space N) \<rightarrow> (f`space M \<times> g`space N)"
-    by auto
-  let ?A = "{a \<times> b |a b. a \<in> op ` f ` sets M \<and> b \<in> op ` g ` sets N}"
-  have A_space: "?A \<subseteq> Pow (f ` space M \<times> g ` space N)"
-    by (auto dest: sets.sets_into_space)
-  have fg_vimage: "\<And>A B. (\<lambda>(x, y). (f x, g y)) -` (f ` A \<times> g ` B) = A \<times> B"
-    by (auto simp: inj_eq[OF g] inj_eq[OF f])
-  have eq1: "((\<lambda>X. (\<lambda>(x, y). (f x, g y)) -` X \<inter> space M \<times> space N) `
-    {a \<times> b |a b. a \<in> op ` f ` sets M \<and> b \<in> op ` g ` sets N}) = {a \<times> b |a b. a \<in> sets M \<and> b \<in> sets N}"
-    apply (auto simp: fg_vimage image_Collect)
-     apply (rule_tac x=xa in exI, rule_tac x=xb in exI, simp add: Int_absorb2 Sigma_mono sets.sets_into_space)
-    apply (rule_tac x="f`a \<times> g`b" in exI)
-    apply (simp add: fg_vimage Int_absorb2 Sigma_mono sets.sets_into_space)
-    apply (rule_tac x="f`a" in exI, rule_tac x="g`b" in exI, simp add: Int_absorb2 Sigma_mono sets.sets_into_space)
+  
+  show sets: "sets ?L = sets (embed_measure (M \<Otimes>\<^sub>M N) (map_prod f g))"
+    unfolding map_prod_def[symmetric]
+    apply (simp add: sets_pair_eq_sets_fst_snd sets_embed_eq_vimage_algebra
+      cong: vimage_algebra_cong)
+    apply (subst vimage_algebra_Sup_sigma)
+    apply (simp_all add: space_pair_measure[symmetric])
+    apply (auto simp add: the_inv_into_f_f
+                simp del: map_prod_simp
+                del: prod_fun_imageE) []
+    apply (subst (1 2 3 4 ) vimage_algebra_vimage_algebra)
+    apply (simp_all add: the_inv_into_in_Pi Pi_iff[of snd] Pi_iff[of fst] space_pair_measure)
+    apply (simp_all add: Pi_iff[of snd] Pi_iff[of fst] the_inv_into_in_Pi vimage_algebra_vimage_algebra
+       space_pair_measure[symmetric] map_prod_image[symmetric])
+    apply (intro arg_cong[where f=sets] arg_cong[where f=Sup_sigma] arg_cong2[where f=insert] vimage_algebra_cong)
+    apply (auto simp: map_prod_image the_inv_into_f_f
+                simp del: map_prod_simp del: prod_fun_imageE)
+    apply (simp_all add: the_inv_into_f_f space_pair_measure)
     done
-  show sets: "sets (embed_measure M f \<Otimes>\<^sub>M embed_measure N g) =
-                 sets (embed_measure (M \<Otimes>\<^sub>M N) (\<lambda>(x, y). (f x, g y)))"
-    using sigma_sets_vimage[OF fg_space A_space]
-    apply (simp add: image_comp comp_def sets_pair_measure sets_embed_measure_alt f g fg
-                      space_embed_measure eq1)
-    apply (subst image_cong[where g=id, OF refl])
-    apply (frule sigma_sets_into_sp[OF A_space])
-    apply (auto simp: image_iff Bex_def subset_eq)
-    apply (erule_tac x="(a, b)" in ballE)
-    apply auto
-    done
+
   fix A B assume AB: "A \<in> sets (embed_measure M f)" "B \<in> sets (embed_measure N g)"
-  have "(\<lambda>(x, y). (f x, g y)) -` (A \<times> B) = f -` A \<times> g -` B" by auto
-  with AB show "emeasure (embed_measure M f) A * emeasure (embed_measure N g) B =
-                     emeasure (embed_measure (M \<Otimes>\<^sub>M N) (\<lambda>(x, y). (f x, g y))) (A \<times> B)"
-    using assms fg 
-    by (auto simp: emeasure_embed_measure sets[symmetric] space_pair_measure times_Int_times
-                   sigma_finite_measure.emeasure_pair_measure_Times[symmetric])
+  moreover have "f -` A \<times> g -` B \<inter> space (M \<Otimes>\<^sub>M N) = (f -` A \<inter> space M) \<times> (g -` B \<inter> space N)"
+    by (auto simp: space_pair_measure)
+  ultimately show "emeasure (embed_measure M f) A * emeasure (embed_measure N g) B =
+                     emeasure (embed_measure (M \<Otimes>\<^sub>M N) (map_prod f g)) (A \<times> B)"
+    by (simp add: map_prod_vimage sets[symmetric] emeasure_embed_measure
+                  sigma_finite_measure.emeasure_pair_measure_Times)
 qed (insert assms, simp_all add: sigma_finite_embed_measure)
 
 lemma density_embed_measure:

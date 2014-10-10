@@ -48,7 +48,7 @@ lemma distr_uminus_real:
   assumes "has_density M lborel (f :: real \<Rightarrow> ereal)"
   shows "has_density (distr M borel uminus) lborel (\<lambda>x. f (- x))"
 proof-
-  from assms have "has_density (distr M borel (op * -1)) lborel 
+  from assms have "has_density (distr M borel (op * (- 1))) lborel 
                        (\<lambda>x. f (x / -1) * ereal (inverse (abs (-1))))"
     by (intro distr_mult_real) simp_all
   also have "op * (-1) = (uminus :: real \<Rightarrow> real)" by (intro ext) simp
@@ -176,7 +176,7 @@ proof (rule has_subprob_densityI)
   next
     fix i :: nat 
     from subprob_space have "emeasure (distr M lborel h) {-real i..real i} \<le> 1"
-      by (intro subprob_space.measure_le_1) (auto dest: has_subprob_densityD)
+      by (intro subprob_space.subprob_measure_le_1) (auto dest: has_subprob_densityD)
     thus "emeasure (distr M lborel h) {- real i..real i} \<noteq> \<infinity>" by auto
   next
     fix X :: "real set" assume "X \<in> range (\<lambda>(a,b). {a..b})"

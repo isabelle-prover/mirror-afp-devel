@@ -510,7 +510,7 @@ proof (cases "a < b")
     by (subst emeasure_distr) (simp_all add: emeasure_density Mf Mh measurable_sets_borel[OF Mh])
   also note A
   also have "emeasure (distr (density lborel f) lborel h) {a..b} \<le> 1"
-    by (rule subprob_space.measure_le_1) (rule prob')
+    by (rule subprob_space.subprob_measure_le_1) (rule prob')
   hence "emeasure (distr (density lborel f) lborel h) {a..b} \<noteq> \<infinity>" by auto
   with assms have "(\<integral>\<^sup>+x. f x * indicator {g a..g b} x \<partial>lborel) = 
                       (\<integral>\<^sup>+x. f (g x) * g' x * indicator {a..b} x \<partial>lborel)"

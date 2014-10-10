@@ -267,7 +267,7 @@ lemma sets_return_val: "sets (return_val x) = sets (stock_measure (val_type x))"
     by (simp add: return_val_def)
 
 lemma measurable_return_val[simp]:
-    "return_val \<in> measurable (stock_measure t) (kernel_space (stock_measure t))"
+    "return_val \<in> measurable (stock_measure t) (subprob_algebra (stock_measure t))"
   unfolding return_val_def[abs_def]
   apply (subst measurable_cong)
   apply (subst (asm) space_stock_measure, subst type_universe_type, assumption, rule refl)
@@ -300,7 +300,7 @@ proof-
 qed
 
 lemma bind_return_val'':
-  assumes "f \<in> measurable (stock_measure (val_type x)) (kernel_space M)"
+  assumes "f \<in> measurable (stock_measure (val_type x)) (subprob_algebra M)"
   shows "return_val x \<guillemotright>= f = f x"
 unfolding return_val_def by (subst bind_return[OF assms]) simp_all
 
