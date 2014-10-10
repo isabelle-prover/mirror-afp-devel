@@ -24,6 +24,7 @@ Cauchy
 CAVA_Automata
 CAVA_LTL_Modelchecker
 Cayley_Hamilton
+Certification_Monads
 Circus
 CISC-Kernel
 ClockSynchInst
@@ -41,6 +42,7 @@ DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
 Decreasing-Diagrams
+Density_Compiler
 Depth-First-Search
 Dijkstra_Shortest_Path
 Discrete_Summation
@@ -149,6 +151,7 @@ Random_Graph_Subgraph_Threshold
 Rank_Nullity_Theorem
 Real_Impl
 Recursion-Theory-I
+RefinementReactive
 Refine_Monadic
 Regex_Equivalence
 Regular_Algebras
@@ -198,3 +201,4 @@ VolpanoSmith
 Well_Quasi_Orders
 WHATandWHERE_Security
 WorkerWrapper
+XML
