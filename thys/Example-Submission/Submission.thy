@@ -27,7 +27,7 @@ text {*
   \item A short name that will become the directory name of the
   submission.
   \item The Isabelle theories: a tar.gz file with the theory files,
-  ROOT.ML, and a README file or document directory. 
+  a ROOT file, and a document directory. 
   The theories should work with the current release of Isabelle. 
   Each theory file should include a header comment like the one 
   in this theory.
@@ -75,36 +75,24 @@ Example-Submission/
         root.tex
         root.bib
     config
-    IsaMakefile
-    ROOT.ML
-    README.html
+    ROOT
     Submission.thy
 \end{verbatim}
 
 The document directory contains the {\LaTeX} master file
-\texttt{root.tex} and the bibliography \texttt{root.bib}. Your
-submission should contain this {\LaTeX} setup or a \texttt{README.html}
-(or both) with title, abstract, author, and any further documentation
-you wish to provide. We encourage {\LaTeX} style documentation over
-\texttt{README.html}.
+\texttt{root.tex} and the bibliography \texttt{root.bib}. 
+The {\LaTeX} part of your
+submission should contain title, abstract, author, and any
+further documentation
+you wish to provide. 
 
 The file \texttt{config} contains maintenance information. This is
 optional. If you do not submit one, we will create one for you.
 
-The \texttt{IsaMakefile} tells the automated build scripts how to test
-your Isabelle theories. For a usual setup you only need to copy the
-version from this example and adjust the variable
-\texttt{SESSION-NAME}. If you need support with this, please contact
-us or ask on the \texttt{isabelle-users} mailing list.
-
-\texttt{ROOT.ML} controls which theories should be loaded. If you have
+\texttt{ROOT} controls which theories should be loaded. If you have
 one main theory that depends on all the others, you only need to
-include this one. You can also use \texttt{ROOT.ML} to control the
-order in which theories are read. If you would like to build on other
-entries in the archive, which we encourage, you can use the
-\texttt{add\_path} command in \texttt{ROOT.ML} to add the directory of
-the other entry to the theory search path. See the \texttt{ROOT.ML} of
-this submission for an example.
+include this one. You can also use the \texttt{ROOT} file to control the
+order in which theories are read. 
 
 The file \texttt{Submission.thy} is the Isabelle theory containing
 this text. A usual submission has more than one theory file. You can
