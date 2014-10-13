@@ -2495,7 +2495,7 @@ abstract = The insertion sort algorithm of Cormen et al. (Introduction to Algori
 
 [Stream_Fusion_Code]
 title = Stream Fusion in HOL with Code Generation
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
 date = 2014-10-10
 topic = Computer Science/Functional Programming
 abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://afp.sourceforge.net/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]

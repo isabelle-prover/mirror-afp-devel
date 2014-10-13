@@ -39,7 +39,7 @@ with
         <td class="data" width="80%">Stream Fusion in HOL with Code Generation</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a></td></tr>
+        <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and Alexandra Maximova (amaximov /at/ student /dot/ ethz /dot/ ch)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2014-10-10</td></tr>
@@ -53,7 +53,7 @@ Stream Fusion is a system for removing intermediate list data structures from fu
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Stream_Fusion_Code-AFP,
-  author  = {Andreas Lochbihler},
+  author  = {Andreas Lochbihler and Alexandra Maximova},
   title   = {Stream Fusion in HOL with Code Generation},
   journal = {Archive of Formal Proofs},
   month   = oct,
