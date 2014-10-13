@@ -18,7 +18,7 @@ done
 
 section {* The type of generators for finite lists *}
 
-datatype_new ('a, 's) step = Done | is_Skip: Skip 's | is_Yield: Yield 'a 's
+datatype ('a, 's) step = Done | is_Skip: Skip 's | is_Yield: Yield 'a 's
 
 type_synonym ('a, 's) raw_generator = "'s \<Rightarrow> ('a,'s) step"
 
@@ -1034,7 +1034,7 @@ by(simp only: unstream_concat_trans_gen append_Nil)
 
 subsection {* @{const splice} *}
 
-datatype_new ('a, 'b) splice_state = Left 'a 'b | Right 'a 'b | Left_only 'a | Right_only 'b
+datatype ('a, 'b) splice_state = Left 'a 'b | Right 'a 'b | Left_only 'a | Right_only 'b
 
 fun splice_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('a, 'sh) raw_generator \<Rightarrow> ('a, ('sg, 'sh) splice_state) raw_generator"
 where

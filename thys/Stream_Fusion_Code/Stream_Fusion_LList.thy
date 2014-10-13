@@ -766,7 +766,7 @@ lemma lunstream_append_raw:
   fixes g h sh gh defines [simp]: "gh \<equiv> append_raw g h sh"
   assumes "productive g"
   shows "lunstream gh (Inl sg) = lappend (lunstream g sg) (lunstream h sh)"
-proof(coinduction arbitrary: sg rule: llist.strong_coinduct)
+proof(coinduction arbitrary: sg rule: llist.coinduct_strong)
   case (Eq_llist sg)
   { fix sh'
     have "lprefix (lunstream gh (Inr sh')) (lunstream h sh')"
