@@ -417,7 +417,7 @@ proof (induct "card E" arbitrary: G rule: less_induct)
       and "n1\<noteq>n2" unfolding num_of_odd_nodes_def odd_nodes_set_def 
     proof - 
       have "\<forall>S. card S=2 \<longrightarrow> (\<exists>n1 n2. n1\<in>S\<and>n2\<in>S\<and>n1\<noteq>n2)" 
-        by (metis card_eq_0_iff equals0I even_card' even_numeral_nat zero_neq_numeral)
+        by (metis card_eq_0_iff equals0I even_card' even_numeral zero_neq_numeral)
       then obtain t1 t2
           where "t1\<in>{v \<in> nodes G. odd (degree v G)}" "t2\<in>{v \<in> nodes G. odd (degree v G)}" "t1\<noteq>t2"
         using `num_of_odd_nodes G = 2` unfolding num_of_odd_nodes_def odd_nodes_set_def

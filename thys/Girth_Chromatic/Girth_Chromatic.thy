@@ -369,7 +369,7 @@ proof -
       by (simp add: powr_realpow power_real_of_nat binomial_le_pow del: real_of_nat_power)
     also have "\<dots> = n powr ?nr n * (1 - p n) powr (?nr n * (?nr n - 1) / 2)"
       by (cases "even (?nr n - 1)")
-        (auto simp add: n_choose_2_nat even_iff_2_dvd [symmetric] real_of_nat_div)
+        (auto simp add: n_choose_2_nat even_def [symmetric] real_of_nat_div)
     also have "\<dots> = n powr ?nr n * ((1 - p n) powr ((?nr n - 1) / 2)) powr ?nr n"
       by (auto simp: powr_powr algebra_simps)
     also have "\<dots> \<le> (n * exp (- p n * (?nr n - 1) / 2)) powr ?nr n"

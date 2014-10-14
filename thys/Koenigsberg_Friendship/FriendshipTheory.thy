@@ -67,7 +67,7 @@ proof (induct "card A"  arbitrary:A rule:less_induct)
       moreover have "card {x, f x} = 2" using `f x\<noteq>x` by auto
       ultimately show ?case using B `finite A` 
         by (metis (full_types) Diff_subset `card B < card A` ` finite B ` card_Diff_subset 
-            double_diff even_difference_nat even_numeral_nat less_SucI not_less_eq subset_refl)
+            double_diff even_difference_nat even_numeral less_SucI not_less_eq subset_refl)
     qed
   ultimately show ?case by metis
 qed

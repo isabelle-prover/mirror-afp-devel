@@ -41,7 +41,7 @@ lemma exp_lower_taylor_3_cubed:
 proof -
   have "(1 + x/3 + (1/2)*(x/3)^2 + (1/6)*(x/3)^3 + (1/24)*(x/3)^4 + (1/120)*(x/3)^5) ^ 3
         \<le> exp (x/3) ^ 3"
-    by (metis power_mono_odd odd_numeral_nat exp_lower_taylor_3)
+    by (metis power_mono_odd odd_numeral exp_lower_taylor_3)
  also have "... = exp x"
    by (simp add: exp_real_of_nat_mult [symmetric])
  finally show ?thesis .
