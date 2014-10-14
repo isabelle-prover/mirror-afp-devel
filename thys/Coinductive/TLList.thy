@@ -120,7 +120,7 @@ lemma TNil_eq_tmap_conv:
   "TNil y = tmap f g xs \<longleftrightarrow> (\<exists>y'. xs = TNil y' \<and> g y' = y)"
 by(cases xs) auto
 
-declare tllist.set_sel(2)[simp]
+declare tllist.set_sel(1)[simp]
 
 lemma tset_ttl: "tset (ttl xs) \<subseteq> tset xs"
 by(cases xs) auto
@@ -269,7 +269,7 @@ proof(intro set_eqI iffI)
   fix x
   assume "x \<in> ?lhs"
   thus "x \<in> ?rhs"
-    by(induct "llist_of_tllist xs" arbitrary: xs rule: llist_set_induct)(auto dest: in_tset_ttlD)
+    by(induct "llist_of_tllist xs" arbitrary: xs rule: llist_set_induct)(auto simp: tllist.set_sel(2))
 next
   fix x
   assume "x \<in> ?rhs"
