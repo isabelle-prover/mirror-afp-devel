@@ -1297,9 +1297,8 @@ proof-
   hence "2 dvd (fst p)^3"
     using l8
     by (auto simp add: dvd_def)
-  hence two_dvd_fst: "2 dvd (fst p)"
-    apply (auto simp add: dvd_def power_def)
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(7) even_equiv_def odd_pow power3_eq_cube)
+  hence two_dvd_fst: "2 dvd fst p"
+    by (auto dest: two_is_prime simp add: numeral_3_eq_3 ac_simps)
   hence "8 dvd (fst p)^3"
     by (auto simp add: dvd_def power_def)
   hence "8 dvd ((snd p)^3) * 2" 
@@ -1307,9 +1306,8 @@ proof-
     by auto
   hence "2 dvd (snd p)^3"
     by (auto simp add: dvd_def)
-  hence two_dvd_snd: "2 dvd (snd p)"
-    apply (auto simp add: dvd_def power_def)
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(7) even_equiv_def odd_pow power3_eq_cube)
+  then have two_dvd_snd: "2 dvd snd p"
+    by (auto dest: two_is_prime simp add: numeral_3_eq_3 ac_simps)
   thus ?thesis 
     using hypsp
     apply (auto simp add: dvd_def)

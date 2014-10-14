@@ -475,8 +475,8 @@ lemma (in valid_unMultigraph) del_UnEdge_even:
 proof -
   have "degree v (del_unEdge v w v' G) + 1=degree v G" 
     using del_edge_undirected_degree_plus corres by (metis assms)
-  hence "odd (degree v (del_unEdge v w v' G)) = even (degree v G)" 
-    by (metis (full_types) odd_1_nat odd_add)
+  from this [symmetric] have "odd (degree v (del_unEdge v w v' G)) = even (degree v G)"
+    by simp
   moreover have "v\<in>nodes (del_unEdge v w v' G)" by (metis E_validD(1) assms(1) del_UnEdge_node)
   ultimately show ?thesis unfolding odd_nodes_set_def by auto
 qed

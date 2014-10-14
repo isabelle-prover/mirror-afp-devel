@@ -743,7 +743,7 @@ next
   moreover have "poly q x\<noteq>0\<Longrightarrow> simpleL=sign (poly q x)"
     proof -
       assume "poly q x\<noteq>0"
-      hence "odd (1 - order x q)" by (metis diff_zero odd_1_nat order_root)
+      hence "odd (1 - order x q)" by (metis diff_zero odd_one order_root)
       moreover have "pderiv p * q \<noteq> 0" by (metis False `pderiv p \<noteq> 0` no_zero_divisors)
       moreover have "sign_r_pos q x = (poly q x > 0)" 
         using sign_r_pos_rec[OF False] `poly q x\<noteq>0` by auto 
