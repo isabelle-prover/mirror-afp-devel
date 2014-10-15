@@ -964,9 +964,9 @@ date = 2014-10-13
 license = LGPL
 abstract =
   We implemented a command that can be used to easily generate
-  elements of a restricted type <tt>{ x :: 'a. P x}</tt>,
+  elements of a restricted type <tt>{x :: 'a. P x}</tt>,
   provided the definition is of the form
-  <tt>f ys = (if check ys then Some(generate ys :: 'a)\ else\ None} (where
+  <tt>f ys = (if check ys then Some(generate ys :: 'a) else None}</tt> (where
   <tt>ys</tt> is a list of variables <tt>y1 ... yn</tt> and
   <tt>check ys ==> P(generate ys)</tt> can be proved.
   <p>
