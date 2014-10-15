@@ -451,6 +451,19 @@ lemma monotone_applyI:
   "monotone orda ordb F \<Longrightarrow> monotone (fun_ord orda) ordb (\<lambda>f. F (f x))"
 by(rule monotoneI)(auto simp add: fun_ord_def dest: monotoneD)
 
+lemma monotone_if_fun [partial_function_mono]:
+  "\<lbrakk> monotone (fun_ord orda) (fun_ord ordb) F; monotone (fun_ord orda) (fun_ord ordb) G \<rbrakk>
+  \<Longrightarrow> monotone (fun_ord orda) (fun_ord ordb) (\<lambda>f n. if c n then F f n else G f n)"
+by(simp add: monotone_def fun_ord_def)
+
+lemma monotone_fun_apply_fun [partial_function_mono]: 
+  "monotone (fun_ord (fun_ord ord)) (fun_ord ord) (\<lambda>f n. f t (g n))"
+by(rule monotoneI)(simp add: fun_ord_def)
+
+lemma monotone_fun_ord_apply: 
+  "monotone orda (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. monotone orda ordb (\<lambda>y. f y x))"
+by(auto simp add: monotone_def fun_ord_def)
+
 context preorder begin
 
 lemma transp_le [simp, cont_intro]: "transp op \<le>"
@@ -541,9 +554,15 @@ by(simp add: mcont_def monotone_applyI cont_applyI)
 lemma mcont_if [cont_intro, simp]:
   "\<lbrakk> mcont luba orda lubb ordb (\<lambda>x. f x); mcont luba orda lubb ordb (\<lambda>x. g x) \<rbrakk>
   \<Longrightarrow> mcont luba orda lubb ordb (\<lambda>x. if c then f x else g x)"
-by(simp add: mcont_def cont_if if_mono)
+by(simp add: mcont_def cont_if)
 
+lemma cont_fun_lub_apply: 
+  "cont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. cont luba orda lubb ordb (\<lambda>y. f y x))"
+by(simp add: cont_def fun_lub_def fun_eq_iff)(auto simp add: image_def)
 
+lemma mcont_fun_lub_apply: 
+  "mcont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. mcont luba orda lubb ordb (\<lambda>y. f y x))"
+by(auto simp add: monotone_fun_ord_apply cont_fun_lub_apply mcont_def)
 
 context ccpo begin
 
