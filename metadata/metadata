@@ -956,6 +956,28 @@ date = 2014-02-18
 license = LGPL
 abstract = We provide a wrapper around the partial-function command that supports mutual recursion.
 
+[Lifting_Definition_Option]
+title = Lifting Definition Option
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Computer Science/Functional Programming
+date = 2014-10-13
+license = LGPL
+abstract =
+  We implemented a command that can be used to easily generate
+  elements of a restricted type <tt>{ x :: 'a. P x}</tt>,
+  provided the definition is of the form
+  <tt>f ys = (if check ys then Some(generate ys :: 'a)\ else\ None} (where
+  <tt>ys</tt> is a list of variables <tt>y1 ... yn</tt> and
+  <tt>check ys ==> P(generate ys)</tt> can be proved.
+  <p>
+  In principle, such a definition is also directly possible using the
+  <tt>lift_definition</tt> command. However, then this definition will not be
+  suitable for code-generation. To this end, we automated a more complex
+  construction of Joachim Breitner which is amenable for code-generation, and
+  where the test <tt>check ys</tt> will only be performed once.  In the
+  automation, one auxiliary type is created, and Isabelle's lifting- and
+  transfer-package is invoked several times.
+
 [Coinductive]
 title = Coinductive
 topic = Computer Science/Functional Programming
