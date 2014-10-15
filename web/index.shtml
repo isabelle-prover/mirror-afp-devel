@@ -55,10 +55,18 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2014-10-13:
+<a href="entries/Lifting_Definition_Option.shtml">Lifting Definition Option</a>
+<br>Author:
+René Thiemann
+</td></tr>
+
+<tr><td class="entry">
 2014-10-10:
 <a href="entries/Stream_Fusion_Code.shtml">Stream Fusion in HOL with Code Generation</a>
 <br>Author:
-<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and 
+Alexandra Maximova
 </td></tr>
 
 <tr><td class="entry">

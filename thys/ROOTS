@@ -105,6 +105,7 @@ LightweightJava
 LinearQuantifierElim
 List-Index
 List-Infinite
+Lifting_Definition_Option
 Locally-Nameless-Sigma
 Lower_Semicontinuous
 LTL_to_GBA
