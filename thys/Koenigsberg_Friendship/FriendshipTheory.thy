@@ -65,9 +65,8 @@ proof (induct "card A"  arbitrary:A rule:less_induct)
       ultimately have "even (card B)" by (metis (full_types) less.hyps)
       moreover have "{x,f x}\<subseteq>A" using `f x\<in>A` `x\<in>A` by auto
       moreover have "card {x, f x} = 2" using `f x\<noteq>x` by auto
-      ultimately show ?case using B `finite A` 
-        by (metis (full_types) Diff_subset `card B < card A` ` finite B ` card_Diff_subset 
-            double_diff even_difference_nat even_numeral less_SucI not_less_eq subset_refl)
+      ultimately show ?case using B `finite A` card_mono [of A "{x, f x}"] 
+        by (simp add: card_Diff_subset)
     qed
   ultimately show ?case by metis
 qed
