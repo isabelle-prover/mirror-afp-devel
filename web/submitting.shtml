@@ -44,7 +44,8 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
         document directory. The theories should work with the current
         release of <a href="http://isabelle.in.tum.de/">Isabelle</a>.
     <li>A notice whether you license your submission under BSD 
-        or LGPL if accepted.</li>
+        or LGPL if accepted. For LGPL submissions, please include the
+        header "License: LGPL" in each file.</li>
     </ul>
 
     <p>The submission must build with the current Isabelle release version.
