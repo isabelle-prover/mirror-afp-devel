@@ -292,7 +292,7 @@ lemma measurable_ev[measurable]:
   unfolding ev_def
   by (coinduction rule: measurable_lfp) (auto simp: Order_Continuity.continuous_def)
 
-lemma measurable_holds [measurable]: "Measurable.pred (stream_space (count_space UNIV)) (holds P)"
+lemma measurable_holds [measurable]: "Measurable.pred M P \<Longrightarrow> Measurable.pred (stream_space M) (holds P)"
   unfolding holds.simps[abs_def]
   by (rule measurable_compose[OF measurable_shd]) simp
 
@@ -435,7 +435,7 @@ lemma holds_eq2[simp]: "holds (\<lambda>y. y = x) = HLD {x}"
 lemma not_holds_eq[simp]: "holds (- op = x) = not (HLD {x})"
   by rule (auto simp: HLD_iff)
 
-lemma measurable_hld[measurable]: "Measurable.pred (stream_space (count_space UNIV)) (HLD t)"
+lemma measurable_hld[measurable]: assumes [measurable]: "t \<in> sets M" shows "Measurable.pred (stream_space M) (HLD t)"
   unfolding HLD_def by measurable
 
 text {* Strong until *}
@@ -763,6 +763,9 @@ lemma measurable_until:
   unfolding UNTIL_def
   by (coinduction rule: measurable_gfp) (simp_all add: down_continuous_def fun_eq_iff)
 
+lemma [measurable (raw)]: "X \<in> sets (count_space UNIV)"
+  by auto
+
 lemma finite_nat_iff_bounded_le: "finite P \<longleftrightarrow> (\<exists>m::nat. \<forall>n\<ge>m. n \<notin> P)"
   using infinite_nat_iff_unbounded_le[of P] by auto
 
@@ -1089,6 +1092,11 @@ Markov chain with discrete time steps and discrete state space.
 
 *}
 
+lemma measurable_suntil[measurable]:
+  assumes [measurable]: "Measurable.pred (stream_space M) Q" "Measurable.pred (stream_space M) P"
+  shows "Measurable.pred (stream_space M) (Q suntil P)"
+  unfolding suntil_def by (coinduction rule: measurable_lfp) (auto simp: Order_Continuity.continuous_def)
+
 locale MC_syntax =
   fixes K :: "'s \<Rightarrow> 's pmf"
 begin
@@ -1326,11 +1334,6 @@ proof -
   finally show ?thesis .
 qed
 
-lemma measurable_suntil[measurable]:
-  assumes [measurable]: "Measurable.pred S Q" "Measurable.pred S P"
-  shows "Measurable.pred S (Q suntil P)"
-  unfolding suntil_def by (coinduction rule: measurable_lfp) (auto simp: Order_Continuity.continuous_def)
-
 lemma mult_eq_1:
   fixes a b :: "'a :: {ordered_semiring, comm_monoid_mult}"
   shows "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> b \<le> 1 \<Longrightarrow> a * b = 1 \<longleftrightarrow> (a = 1 \<and> b = 1)"
@@ -1413,7 +1416,12 @@ proof -
             by (intro suntil.step[of _ \<omega>]) (auto simp: never_stl)
         qed }
       then have "?M x (\<lambda>\<omega>. never \<omega>) \<le> ?M x (\<lambda>\<omega>. ?until \<omega>)"
-        by (auto intro!: emeasure_mono_AE)
+        apply (intro emeasure_mono_AE)
+        defer
+        apply measurable []
+        apply (rule UNIV_I)
+        apply measurable
+        done
       also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * ?M t (\<lambda>\<omega>. (not (HLD {t'}) aand never) \<omega>)"
         by (intro emeasure_suntil_HLD) simp
       also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (\<integral>\<^sup>+y. ?M y (\<lambda>\<omega>. y \<noteq> t' \<and> never (y ## \<omega>)) \<partial>K t)"
@@ -1612,6 +1620,7 @@ lemma measurable_hitting_time[measurable]: "hitting_time X \<in> measurable S (c
   apply (rule exI[of _ "HLD X"])
   apply (subst hitting_time.simps[abs_def])
   apply simp
+  apply measurable
   done
 
 lemma hitting_time_eq_0: "hitting_time X \<omega> = 0 \<longleftrightarrow> HLD X \<omega>"
@@ -1924,7 +1933,6 @@ proof -
   also have "\<dots> = (SUP i. \<Sum>j<i. emeasure (T s) {\<omega>\<in>space (T s). ?L j \<omega>})"
     apply (intro SUP_cong[OF refl] setsum_emeasure[symmetric] image_subset_iff[THEN iffD2] ballI)
     apply measurable
-    apply simp
     apply (auto simp: disjoint_family_on_def inj)
     done
   also have "\<dots> = (\<Sum>i. emeasure (T s) {\<omega>\<in>space (T s). ?L i \<omega>})"
