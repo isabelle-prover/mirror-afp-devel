@@ -94,6 +94,6 @@ begin
     folded hs_to_ol_def] 
 
 
-  export_code hs_to_ol in SML_imp
+  export_code hs_to_ol checking SML_imp
 
 end

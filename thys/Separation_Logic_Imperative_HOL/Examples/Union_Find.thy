@@ -505,9 +505,9 @@ lemma uf_union_rule[sep_heap_rules]: "\<lbrakk>i\<in>Domain R; j\<in> Domain R\<
   done
 
 
-export_code uf_init uf_cmp uf_union in SML_imp
+export_code uf_init uf_cmp uf_union checking SML_imp
 
-export_code uf_init uf_cmp uf_union in Scala_imp
+export_code uf_init uf_cmp uf_union checking Scala_imp
 
 (*
 ML_val {*
