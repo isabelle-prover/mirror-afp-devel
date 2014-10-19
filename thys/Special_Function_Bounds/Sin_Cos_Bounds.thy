@@ -112,7 +112,7 @@ next
     have xn: "x ^ (n - Suc 0) * x = x ^ n"
       by (metis Suc_pred mult.commute not_gr0 power_Suc)
     have m1: "odd n \<Longrightarrow> (-1 :: real) ^ ((n - Suc 0) div 2) = - ((-1) ^ (Suc n div 2))"
-      by (auto simp: odd_Suc_mult_two_ex)
+      by (cases n) simp_all
     show ?thesis using Suc False
       apply (simp add: cospoly_Suc [of "Suc n"] sinpoly_def)
       apply (intro derivative_eq_intros | simp)+
