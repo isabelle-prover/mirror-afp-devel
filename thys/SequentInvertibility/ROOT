@@ -8,7 +8,5 @@ session SequentInvertibility (AFP) = "HOL-Nominal" +
     SequentInvertibility
   document_files
     "llncs.cls"
-    "proof.sty"
     "root.bib"
     "root.tex"
-    "stmaryrd.dtx"
