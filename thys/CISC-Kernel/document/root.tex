@@ -253,7 +253,7 @@ for a separation kernel in a Common Criteria certification process \cite{Heitmey
 (which kernel and which EAL is not clear). Martin et al. proved separation 
 properties over the MASK kernel \cite{Martin:2000:FCM:786768.786973} and Shapiro and Weber verified correctness 
 of the EROS confinement mechanism \cite{Shapiro:2000:VEC:882494.884422}. Klein provides an excellent overview of 
-OS’s for which such properties have been verified \cite{SKIPaper11}. Thirdly, INI definitions 
+OS's for which such properties have been verified \cite{SKIPaper11}. Thirdly, INI definitions 
 can be built upon either state-based automata, trace-based models, or process 
 algebraic models \cite{SKIPaper12}. We do not focus on the latter, as our approach is not 
 based on process algebra.
@@ -262,20 +262,20 @@ Transitive NI was first introduced by Goguen and Meseguer in 1982 \cite{SKIPaper
 been the topic of heavy research since. Goguen and Meseguer tried to 
 extend their definition with an unless construct to allow such policies \cite{SKIPaper14}. 
 This construct, however, did not capture the notion of INI \cite{SKIPaper15}. The first 
-commonly accepted definition of INI is Rushby’s purging-based definition 
+commonly accepted definition of INI is Rushby's purging-based definition 
 IP-secure \cite{rushby92}. IP- security has been applied to, e.g., smartcards \cite{SKIPaper16} and OS 
-kernel extensions \cite{SKIPaper17}. To the best of our knowledge, Rushby’s definition has 
-not been applied in a certification context. Rushby’s definition has been 
+kernel extensions \cite{SKIPaper17}. To the best of our knowledge, Rushby's definition has 
+not been applied in a certification context. Rushby's definition has been 
 subject to heavy scrutiny \cite{SKIPaper18}, \cite{VanDerMeyden:2007:IIN:2393847.2393869} and a vast array of modifications have 
 been proposed.
 
 Roscoe and Goldsmith provide CSP-based definitions of NI for the transitive and 
 the intransitive case, here dubbed as lazy and mixed independence. The latter 
-one is more restrictive than Rushby’s IP-security. Their critique on IP-secure, 
+one is more restrictive than Rushby's IP-security. Their critique on IP-secure, 
 however, is not universally accepted \cite{SKIPaper19}.
  Greve at al. provided the GWV framework 
 developed in ACL2 \cite{SKIPaper7}. Their definition is a non-inductive version of 
-noninterference similar to Rushby’s step consistency. GWV has been used on 
+noninterference similar to Rushby's step consistency. GWV has been used on 
 various industrial systems. The exact relation between GWV and (I)P-secure, 
 i.e., whether they are of equal strength, is still open.
 The second property, 
@@ -293,20 +293,20 @@ His definition can be regarded as a ``non-deterministic version'' of IP-secure.
 Engelhardt et al. defined nTA-secure, the non-deterministic version of 
 TA-security.
 Finally, some notions of INI consider models that are in a sense 
-richer than similar counterparts. Leslie extends Rushby’s notion of IP-security 
+richer than similar counterparts. Leslie extends Rushby's notion of IP-security 
 for a model in which the security policy is Dynamic. Eggert et al. defined 
-i-secure, an extension of IP-secure. Their model extends Rushby’s model 
+i-secure, an extension of IP-secure. Their model extends Rushby's model 
 (Mealy machines) with Local security policies. Murray et al. extends Von Oheimb 
 definition of noninfluence to apply to a model that 
 does not assume a static mapping of actions to domains. 
 This makes
- it applicable to OS’s, as in such a setting such a mapping does not 
+ it applicable to OS's, as in such a setting such a mapping does not 
 exist \cite{Murray_MBGK_12}. NI-OS has been applied to the seL4 separation kernel 
 \cite{Murray_MBGK_12}, \cite{Klein:2009:SFV:1629575.1629596}.
  
 Most definitions have an associated methodology. Various methodologies are 
 based on unwinding \cite{SKIPaper14}. This breaks down the proof of NI into smaller 
-proof obligations (PO’s). These PO’s can be checked by some manual proof 
+proof obligations (PO's). These PO's can be checked by some manual proof 
 \cite{rushby92}, \cite{SKIPaper32}, model checking \cite{SKIPaper21} or dedicated 
 algorithms \cite{SKIPaper20}. The methodology of 
 Murray et al. is a combination of unwinding, automated deduction and manual
@@ -325,7 +325,7 @@ is necessary.
 
 
 Our ultimate goal --- certification of PikeOS --- is very similar to the work done 
-on seL4 \cite{Murray_MBGK_12}–\cite{SKIPaper30}. There are two reasons why their 
+on seL4 \cite{Murray_MBGK_12}--\cite{SKIPaper30}. There are two reasons why their 
 approach is not directly applicable to PikeOS. First, seL4 has been developed 
 from scratch. A Haskell specification serves as the medium for the implementation 
 as well as the system model for the kernel \cite{Elphinstone:2007:TPV:1361397.1361417}. 
@@ -344,7 +344,7 @@ was addressed \cite{DBLP:journals/jar/DaumDW09}.
 % DO NOT INCLUDE DIRECTLY.
 %Recently, Barthe et al. [3] presented a formalisation of isolation for an idealised model of 
 %a hypervisor, and its unwinding conditions. Like ours, their definition is based on von 
-%Oheimb’s noninfluence [21]. As in traditional formalisations of noninterference, in their 
+%Oheimb's noninfluence [21]. As in traditional formalisations of noninterference, in their 
 %formulation actions are intrinsically linked to domains, and so it cannot reason about 
 %information leaks through scheduling decisions.
 %INTEGRITY-178B is a real-time operating system for which an isolation proof has been 
@@ -354,15 +354,15 @@ was addressed \cite{DBLP:journals/jar/DaumDW09}.
 %which is the entity that executes next. Unlike ours, it is defined only for deterministic 
 %systems. The exact relationship between GWVr2 and our conditions deserves further study.
 %Our formulation of information flow security is descendant from traditional ipurge-based 
-%formulations of intransitive noninterference (starting with Haigh and Young’s [10]). Van 
+%formulations of intransitive noninterference (starting with Haigh and Young's [10]). Van 
 %der Meyden [19] argues that ipurge-based formulations of intransitive noninterference are 
 %too weak for certain intransitive policies, and proposes a number of stronger definitions. 
-%He shows that Rushby’s unwinding conditions [16] are sufficient for some of these alternatives. 
-%Given the similarity of our unwinding conditions to Rushby’s, we wonder whether our existing
-%unwinding conditions may be sufficient to prove analogues of van der Meyden’s definitions.
+%He shows that Rushby's unwinding conditions [16] are sufficient for some of these alternatives. 
+%Given the similarity of our unwinding conditions to Rushby's, we wonder whether our existing
+%unwinding conditions may be sufficient to prove analogues of van der Meyden's definitions.
 %Others have presented noninterference conditions for systems with scheduling components. 
 %One recent example is van der Meyden and Zhang [20], who consider systems that run in 
-%lock-step with a scheduling component that controls which domain’s actions are currently 
+%lock-step with a scheduling component that controls which domain's actions are currently 
 %enabled. Their security condition for the scheduler requires that the actions of the High 
 %domain cannot affect scheduling decisions. Our formulation, in contrast, has the scheduler 
 %update a component of the system state that determines the currently running domain. This 
@@ -375,27 +375,27 @@ was addressed \cite{DBLP:journals/jar/DaumDW09}.
 %size is around 2,500 lines of Isabelle/HOL, and whose implementation that refines this 
 %specification is around 8,500 lines of C.
 
-%[1] T. Amtoft and A. Banerjee. Information flow analysis in logical form. In SAS ’04, volume 3148 of LNCS, pages 33–36. Springer-Verlag, 2004.
-%[2]T. Amtoft and A. Banerjee. Verification condition generation for conditional information flow. In FMSE ’07, pages 2–11. ACM, 2007.
-%[3]G. Barthe, G. Betarte, J. Campo, and C. Luna. Formally verifying isolation and availability in an idealized model of virtualization. In M. Butler and W. Schulte, editors, 17th FM, volume 6664 of LNCS, pages 231–245. Springer-Verlag, 2011. 
-%[4]N. Benton. Simple relational correctness proofs for static analyses and program transformations. In POPL 2004, pages 14–25. ACM, 2004.
-%[5]L. Beringer. Relational decomposition. In 2nd ITP, volume 6898 of LNCS, pages 39–54. Springer-Verlag, 2011.
-%[6]D. Cock, G. Klein, and T. Sewell. Secure microkernels, state monads and scalable refinement. In 21st TPHOLs, volume 5170 of LNCS, pages 167–182, Aug 2008. 
+%[1] T. Amtoft and A. Banerjee. Information flow analysis in logical form. In SAS '04, volume 3148 of LNCS, pages 33--36. Springer-Verlag, 2004.
+%[2]T. Amtoft and A. Banerjee. Verification condition generation for conditional information flow. In FMSE '07, pages 2--11. ACM, 2007.
+%[3]G. Barthe, G. Betarte, J. Campo, and C. Luna. Formally verifying isolation and availability in an idealized model of virtualization. In M. Butler and W. Schulte, editors, 17th FM, volume 6664 of LNCS, pages 231--245. Springer-Verlag, 2011. 
+%[4]N. Benton. Simple relational correctness proofs for static analyses and program transformations. In POPL 2004, pages 14--25. ACM, 2004.
+%[5]L. Beringer. Relational decomposition. In 2nd ITP, volume 6898 of LNCS, pages 39--54. Springer-Verlag, 2011.
+%[6]D. Cock, G. Klein, and T. Sewell. Secure microkernels, state monads and scalable refinement. In 21st TPHOLs, volume 5170 of LNCS, pages 167--182, Aug 2008. 
 %[7]W.-P. de Roever and K. Engelhardt. Data Refinement: Model-Oriented Proof Methods and their Comparison. Cambridge University Press, 1998.
-%[8]J. Goguen and J. Meseguer. Security policies and security models. In IEEE Symp. Security & Privacy, pages 11–20, Oakland, California, USA, Apr 1982. IEEE.
-%[9]D. A. Greve. Information security modeling and analysis. In D. S. Hardin, editor, Design and Verification of Microprocessor Systems for High-Assurance Applications, pages 249–300. Springer-Verlag, 2010.
-%[10]J. T. Haigh and W. D. Young. Extending the noninterference version of MLS for SAT. Trans. Softw. Engin., 13:141–150, Feb 1987.
-%[11]G. Klein, K. Elphinstone, G. Heiser, J. Andronick, D. Cock, P. Derrin, D. Elkaduwe, K. Engelhardt, R. Kolanski, M. Norrish, T. Sewell, H. Tuch, and S. Winwood. seL4: Formal verification of an OS kernel. In 22nd SOSP, pages 207–220. ACM, 2009. 
-%[12]G. Klein, T. Murray, P. Gammie, T. Sewell, and S. Winwood. Provable security: How feasible is it? In 13th HotOS, pages 28–32, Napa, CA, USA, May 2011. USENIX.
+%[8]J. Goguen and J. Meseguer. Security policies and security models. In IEEE Symp. Security & Privacy, pages 11--20, Oakland, California, USA, Apr 1982. IEEE.
+%[9]D. A. Greve. Information security modeling and analysis. In D. S. Hardin, editor, Design and Verification of Microprocessor Systems for High-Assurance Applications, pages 249--300. Springer-Verlag, 2010.
+%[10]J. T. Haigh and W. D. Young. Extending the noninterference version of MLS for SAT. Trans. Softw. Engin., 13:141--150, Feb 1987.
+%[11]G. Klein, K. Elphinstone, G. Heiser, J. Andronick, D. Cock, P. Derrin, D. Elkaduwe, K. Engelhardt, R. Kolanski, M. Norrish, T. Sewell, H. Tuch, and S. Winwood. seL4: Formal verification of an OS kernel. In 22nd SOSP, pages 207--220. ACM, 2009. 
+%[12]G. Klein, T. Murray, P. Gammie, T. Sewell, and S. Winwood. Provable security: How feasible is it? In 13th HotOS, pages 28--32, Napa, CA, USA, May 2011. USENIX.
 %[13]D. Matichuk and T. Murray. Extensible specifications for automatic re-use of specifications and proofs. In 10th SEFM, Oct 2012.
-%[14]T. Nipkow, L. Paulson, and M. Wenzel. Isabelle/HOL — A Proof Assistant for Higher-Order Logic, volume 2283 of LNCS. Springer-Verlag, 2002.
-%[15]R. J. Richards. Modeling and security analysis of a commercial real-time operating system kernel. In D. S. Hardin, editor, Design and Verification of Microprocessor Systems for High-Assurance Applications, pages 301–322. Springer-Verlag, 2010. 
+%[14]T. Nipkow, L. Paulson, and M. Wenzel. Isabelle/HOL --- A Proof Assistant for Higher-Order Logic, volume 2283 of LNCS. Springer-Verlag, 2002.
+%[15]R. J. Richards. Modeling and security analysis of a commercial real-time operating system kernel. In D. S. Hardin, editor, Design and Verification of Microprocessor Systems for High-Assurance Applications, pages 301--322. Springer-Verlag, 2010. 
 %[16]J. Rushby. Noninterference, transitivity, and channel-control security policies. Technical Report CSL-92-02, SRI International, Dec 1992.
-%[17]T. Sewell, S. Winwood, P. Gammie, T. Murray, J. Andronick, and G. Klein. seL4 enforces integrity. In 2nd ITP, volume 6898 of LNCS, pages 325–340, Nijmegen, The Netherlands, Aug 2011. Springer-Verlag.
-%[18]T. Terauchi and A. Aiken. Secure information flow as a safety problem. In SAS ’05, volume 3672 of LNCS, pages 352–367. Springer-Verlag, 2005.
-%[19]R. van der Meyden. What, indeed, is intransitive noninterference? In 12th ESORICS, volume 4734 of LNCS, pages 235–250. Springer-Verlag, 2007.
-%[20]R. van der Meyden and C. Zhang. Information flow in systems with schedulers. In 21st CSF, pages 301–312. IEEE, Jun 2008.
-%[21]D. von Oheimb. Information flow control revisited: Noninfluence = noninterference + nonleakage. In 9th ESORICS, volume 3193 of LNCS, pages 225–243, 2004.
+%[17]T. Sewell, S. Winwood, P. Gammie, T. Murray, J. Andronick, and G. Klein. seL4 enforces integrity. In 2nd ITP, volume 6898 of LNCS, pages 325--340, Nijmegen, The Netherlands, Aug 2011. Springer-Verlag.
+%[18]T. Terauchi and A. Aiken. Secure information flow as a safety problem. In SAS '05, volume 3672 of LNCS, pages 352--367. Springer-Verlag, 2005.
+%[19]R. van der Meyden. What, indeed, is intransitive noninterference? In 12th ESORICS, volume 4734 of LNCS, pages 235--250. Springer-Verlag, 2007.
+%[20]R. van der Meyden and C. Zhang. Information flow in systems with schedulers. In 21st CSF, pages 301--312. IEEE, Jun 2008.
+%[21]D. von Oheimb. Information flow control revisited: Noninfluence = noninterference + nonleakage. In 9th ESORICS, volume 3193 of LNCS, pages 225--243, 2004.
 
 \section{Conclusion}
 
@@ -409,7 +409,7 @@ In the ongoing EURO-MILS project, we will extend this generic theory in order ma
 sufficiently rich to be instantiated with a realistic functional model of PikeOS.
 
 \subsubsection{Acknowledgement.}This work corresponds to the formal deliverable D31.1 
-of the Euro-MILS project funded  by the European Union’s Programme \[FP7/2007-2013\] 
+of the Euro-MILS project funded  by the European Union's Programme \[FP7/2007-2013\] 
 under grant agreement number ICT-318353.
 
 % optional bibliography
