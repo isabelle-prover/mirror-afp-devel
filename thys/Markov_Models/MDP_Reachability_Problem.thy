@@ -2,6 +2,19 @@ theory MDP_Reachability_Problem
   imports Markov_Decision_Process
 begin
 
+lemma (in finite_measure) ereal_integral_real:
+  assumes [measurable]: "f \<in> borel_measurable M" 
+  assumes ae: "AE x in M. 0 \<le> f x" "AE x in M. f x \<le> ereal B"
+  shows "ereal (\<integral>x. real (f x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
+proof (subst nn_integral_eq_integral[symmetric])
+  show "integrable M (\<lambda>x. real (f x))"
+    using ae by (intro integrable_const_bound[where B=B]) (auto simp: real_le_ereal_iff)
+  show "AE x in M. 0 \<le> real (f x)"
+    using ae by (auto simp: real_of_ereal_pos)
+  show "(\<integral>\<^sup>+ x. ereal (real (f x)) \<partial>M) = integral\<^sup>N M f"
+    using ae by (intro nn_integral_cong_AE) (auto simp: ereal_real)
+qed
+
 lemma (in MC_syntax) AE_not_suntil_coinduct [consumes 1, case_names \<psi> \<phi>]:
   assumes "P s"
   assumes \<psi>: "\<And>s. P s \<Longrightarrow> s \<notin> \<psi>"
@@ -82,84 +95,6 @@ begin
 lemma [measurable]:
   "S \<in> sets (count_space UNIV)" "S1 \<in> sets (count_space UNIV)" "S2 \<in> sets (count_space UNIV)"
   by auto
-
-definition F_sup :: "('s \<Rightarrow> ereal) \<Rightarrow> 's \<Rightarrow> ereal" where
-  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>D else 0)"
-
-lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrightarrow> F_sup f s = F_sup g s"
-  using K_closed[of s]
-  by (auto simp: F_sup_def AE_measure_pmf_iff subset_eq
-              intro!: SUP_cong nn_integral_cong_AE)
-
-lemma continuous_F_sup: "Order_Continuity.continuous F_sup"
-  unfolding Order_Continuity.continuous_def fun_eq_iff F_sup_def[abs_def]
-  by (auto simp:  SUP_apply[abs_def] nn_integral_monotone_convergence_SUP intro: SUP_commute)
-
-lemma mono_F_sup: "mono F_sup"
-  by (intro continuous_mono continuous_F_sup)
-
-lemma F_sup_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_sup F s"
-  by (auto simp: F_sup_def intro!: SUP_upper2 nn_integral_nonneg intro: arb_actI)
-
-lemma lfp_F_sup_iterate: "lfp F_sup = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
-proof -
-  { have "(SUP i. (F_sup ^^ i) \<bottom>) = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
-    proof (rule SUP_eq)
-      fix i show "\<exists>j\<in>UNIV. (F_sup ^^ i) \<bottom> \<le> (F_sup ^^ j) (\<lambda>x\<in>S. 0)"
-        by (intro bexI[of _ i] funpow_mono mono_F_sup) auto
-      have *: "(\<lambda>x\<in>S. 0) \<le> F_sup \<bottom>"
-        using K_wf by (auto simp: F_sup_def le_fun_def) (blast intro: SUP_upper2 nn_integral_nonneg)
-      show "\<exists>j\<in>UNIV. (F_sup ^^ i) (\<lambda>x\<in>S. 0) \<le> (F_sup ^^ j) \<bottom>"
-        by (auto intro!: exI[of _ "Suc i"] funpow_mono mono_F_sup  *
-                 simp del: funpow.simps simp add: funpow_Suc_right F_sup_nonneg le_funI)
-    qed }
-  then show ?thesis
-    by (auto simp: continuous_lfp continuous_F_sup)
-qed
-
-lemma lfp_F_sup: "lfp F_sup = (\<lambda>s\<in>S. P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)))"
-proof -
-  { fix s assume "s \<in> S" let ?F = "\<lambda>P. HLD S2 or (HLD S1 aand nxt P)"
-    have "P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)) = (\<Squnion>i. P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s ## \<omega>)))"
-    proof (simp add: suntil_def, rule P_sup_lfp)
-      show "op ## s \<in> measurable St St"
-        by simp
-      (* This proof should work automatically *)
-      fix P assume P: "Measurable.pred St P"
-      show "Measurable.pred St (HLD S2 or (HLD S1 aand (\<lambda>\<omega>. P (stl \<omega>))))"
-        by (intro pred_intros_logic measurable_compose[OF _ P] measurable_compose[OF measurable_shd]) auto
-    qed (auto simp: Order_Continuity.continuous_def)
-    also have "\<dots> = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0) s)"
-    proof (rule SUP_cong)
-      fix i from `s \<in> S` show "P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s##\<omega>)) = (F_sup ^^ i) (\<lambda>x\<in>S. 0) s"
-      proof (induct i arbitrary: s) 
-        case (Suc n) show ?case
-        proof (subst P_sup_iterate)
-          (* This proof should work automatically *)
-          show "Measurable.pred St (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## \<omega>))"
-            apply (intro measurable_compose[OF measurable_Stream[OF measurable_const measurable_ident_sets[OF refl]] measurable_predpow])
-            apply simp
-            apply (simp add: bot_fun_def[abs_def])
-            apply (intro pred_intros_logic measurable_compose[OF measurable_stl]  measurable_compose[OF measurable_shd])
-            apply auto
-            done
-        next
-          show "(\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## t ## \<omega>)) \<partial>D) =
-            (F_sup ^^ Suc n) (\<lambda>x\<in>S. 0) s"
-            unfolding funpow.simps comp_def
-            using S1 S2 `s \<in> S`
-            by (subst F_sup_cong[OF Suc(1)[symmetric]])
-               (auto simp add: F_sup_def measure_pmf.emeasure_space_1[simplified] K_wf subset_eq)
-        qed
-      qed simp
-    qed simp
-    finally have "lfp F_sup s = P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>))"
-      by (simp add: lfp_F_sup_iterate) }
-  moreover have "\<And>s. s \<notin> S \<Longrightarrow> lfp F_sup s = undefined"
-    by (subst lfp_unfold[OF mono_F_sup]) (auto simp add: F_sup_def)
-  ultimately show ?thesis
-    by auto
-qed
 
 definition
   "v = (\<lambda>cfg\<in>valid_cfg. emeasure (T cfg) {x\<in>space St. (HLD S1 suntil HLD S2) (state cfg ## x)})"
@@ -261,9 +196,6 @@ definition "p = (\<lambda>s\<in>S. P_sup s (\<lambda>\<omega>. (HLD S1 suntil HL
 lemma p_eq_SUP_v: "s \<in> S \<Longrightarrow> p s = (SUP cfg : cfg_on s. v cfg)"
   by (auto simp add: p_def v_def P_sup_def T.emeasure_eq_measure intro: valid_cfgI intro!: SUP_cong)
 
-lemma p_eq_F_sup: "p = lfp F_sup"
-  unfolding p_def lfp_F_sup ..
-
 lemma v_le_p: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> p (state cfg)"
   by (subst p_eq_SUP_v) (auto intro!: SUP_upper dest: valid_cfgD valid_cfg_state_in_S)
 
@@ -295,6 +227,85 @@ lemma p_S2[simp]: "s \<in> S2 \<Longrightarrow> p s = 1"
 
 lemma p_nS12: "s \<in> S \<Longrightarrow> s \<notin> S1 \<Longrightarrow> s \<notin> S2 \<Longrightarrow> p s = 0"
   by (auto simp: p_eq_SUP_v v_nS12[OF valid_cfgI])
+
+
+definition F_sup :: "('s \<Rightarrow> ereal) \<Rightarrow> 's \<Rightarrow> ereal" where
+  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>D else 0)"
+
+lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrightarrow> F_sup f s = F_sup g s"
+  using K_closed[of s]
+  by (auto simp: F_sup_def AE_measure_pmf_iff subset_eq
+              intro!: SUP_cong nn_integral_cong_AE)
+
+lemma continuous_F_sup: "Order_Continuity.continuous F_sup"
+  unfolding Order_Continuity.continuous_def fun_eq_iff F_sup_def[abs_def]
+  by (auto simp:  SUP_apply[abs_def] nn_integral_monotone_convergence_SUP intro: SUP_commute)
+
+lemma mono_F_sup: "mono F_sup"
+  by (intro continuous_mono continuous_F_sup)
+
+lemma F_sup_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_sup F s"
+  by (auto simp: F_sup_def intro!: SUP_upper2 nn_integral_nonneg intro: arb_actI)
+
+lemma lfp_F_sup_iterate: "lfp F_sup = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
+proof -
+  { have "(SUP i. (F_sup ^^ i) \<bottom>) = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
+    proof (rule SUP_eq)
+      fix i show "\<exists>j\<in>UNIV. (F_sup ^^ i) \<bottom> \<le> (F_sup ^^ j) (\<lambda>x\<in>S. 0)"
+        by (intro bexI[of _ i] funpow_mono mono_F_sup) auto
+      have *: "(\<lambda>x\<in>S. 0) \<le> F_sup \<bottom>"
+        using K_wf by (auto simp: F_sup_def le_fun_def) (blast intro: SUP_upper2 nn_integral_nonneg)
+      show "\<exists>j\<in>UNIV. (F_sup ^^ i) (\<lambda>x\<in>S. 0) \<le> (F_sup ^^ j) \<bottom>"
+        by (auto intro!: exI[of _ "Suc i"] funpow_mono mono_F_sup  *
+                 simp del: funpow.simps simp add: funpow_Suc_right F_sup_nonneg le_funI)
+    qed }
+  then show ?thesis
+    by (auto simp: continuous_lfp continuous_F_sup)
+qed
+
+lemma p_eq_lfp_F_sup: "p = lfp F_sup"
+proof -
+  { fix s assume "s \<in> S" let ?F = "\<lambda>P. HLD S2 or (HLD S1 aand nxt P)"
+    have "P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)) = (\<Squnion>i. P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s ## \<omega>)))"
+    proof (simp add: suntil_def, rule P_sup_lfp)
+      show "op ## s \<in> measurable St St"
+        by simp
+      (* This proof should work automatically *)
+      fix P assume P: "Measurable.pred St P"
+      show "Measurable.pred St (HLD S2 or (HLD S1 aand (\<lambda>\<omega>. P (stl \<omega>))))"
+        by (intro pred_intros_logic measurable_compose[OF _ P] measurable_compose[OF measurable_shd]) auto
+    qed (auto simp: Order_Continuity.continuous_def)
+    also have "\<dots> = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0) s)"
+    proof (rule SUP_cong)
+      fix i from `s \<in> S` show "P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s##\<omega>)) = (F_sup ^^ i) (\<lambda>x\<in>S. 0) s"
+      proof (induct i arbitrary: s) 
+        case (Suc n) show ?case
+        proof (subst P_sup_iterate)
+          (* This proof should work automatically *)
+          show "Measurable.pred St (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## \<omega>))"
+            apply (intro measurable_compose[OF measurable_Stream[OF measurable_const measurable_ident_sets[OF refl]] measurable_predpow])
+            apply simp
+            apply (simp add: bot_fun_def[abs_def])
+            apply (intro pred_intros_logic measurable_compose[OF measurable_stl]  measurable_compose[OF measurable_shd])
+            apply auto
+            done
+        next
+          show "(\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## t ## \<omega>)) \<partial>D) =
+            (F_sup ^^ Suc n) (\<lambda>x\<in>S. 0) s"
+            unfolding funpow.simps comp_def
+            using S1 S2 `s \<in> S`
+            by (subst F_sup_cong[OF Suc(1)[symmetric]])
+               (auto simp add: F_sup_def measure_pmf.emeasure_space_1[simplified] K_wf subset_eq)
+        qed
+      qed simp
+    qed simp
+    finally have "lfp F_sup s = P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>))"
+      by (simp add: lfp_F_sup_iterate) }
+  moreover have "\<And>s. s \<notin> S \<Longrightarrow> lfp F_sup s = undefined"
+    by (subst lfp_unfold[OF mono_F_sup]) (auto simp add: F_sup_def)
+  ultimately show ?thesis
+    by (auto simp: p_def)
+qed
 
 definition "S\<^sub>e = {s\<in>S. p s = 0}"
 
@@ -704,19 +715,6 @@ proof -
   qed simp
 qed
 
-lemma (in finite_measure) ereal_integral_real:
-  assumes [measurable]: "f \<in> borel_measurable M" 
-  assumes ae: "AE x in M. 0 \<le> f x" "AE x in M. f x \<le> ereal B"
-  shows "ereal (\<integral>x. real (f x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
-proof (subst nn_integral_eq_integral[symmetric])
-  show "integrable M (\<lambda>x. real (f x))"
-    using ae by (intro integrable_const_bound[where B=B]) (auto simp: real_le_ereal_iff)
-  show "AE x in M. 0 \<le> real (f x)"
-    using ae by (auto simp: real_of_ereal_pos)
-  show "(\<integral>\<^sup>+ x. ereal (real (f x)) \<partial>M) = integral\<^sup>N M f"
-    using ae by (intro nn_integral_cong_AE) (auto simp: ereal_real)
-qed
-
 lemma F_v_memoryless:
   obtains ct where "ct \<in> Pi\<^sub>E S K" "v\<circ>simple ct = F_sup (v\<circ>simple ct)"
 proof atomize_elim
@@ -1051,7 +1049,7 @@ proof -
   have "p = v\<circ>simple ct"
   proof (rule antisym)
     show "p \<le> v\<circ>simple ct"
-      unfolding p_eq_F_sup by (rule lfp_lowerbound) (metis order_refl eq)
+      unfolding p_eq_lfp_F_sup by (rule lfp_lowerbound) (metis order_refl eq)
     show "v\<circ>simple ct \<le> p"
     proof (rule le_funI)
       fix s show "(v\<circ>simple ct) s \<le> p s"
@@ -1062,6 +1060,157 @@ proof -
   with ct_PiE that show thesis by auto
 qed
 
+definition "n = (\<lambda>s\<in>S. P_inf s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)))"
+
+lemma n_eq_INF_v: "s \<in> S \<Longrightarrow> n s = (\<Sqinter>cfg\<in>cfg_on s. v cfg)"
+  by (auto simp add: n_def v_def P_inf_def T.emeasure_eq_measure valid_cfgI intro!: INF_cong)
+
+lemma n_le_v: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarrow> n s \<le> v cfg"
+  by (subst n_eq_INF_v) (blast intro!: INF_lower)+
+
+lemma n_eq_1_imp: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarrow> n s = 1 \<Longrightarrow> v cfg = 1"
+  using n_le_v[of s cfg] v_le_1[of cfg] by (auto intro: antisym valid_cfgI)
+
+lemma n_eq_1_iff: "s \<in> S \<Longrightarrow> n s = 1 \<longleftrightarrow> (\<forall>cfg\<in>cfg_on s. v cfg = 1)"
+  apply rule
+  apply (metis n_eq_1_imp)
+  apply (auto simp: n_eq_INF_v intro!: INF_eqI)
+  done
+
+lemma n_le_1: "s \<in> S \<Longrightarrow> n s \<le> 1"
+  by (auto simp: n_eq_INF_v intro!: INF_lower2[OF simple_cfg_on[of arb_act]] v_le_1)
+
+lemma n_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> n s"
+  by (auto simp: n_eq_INF_v intro!: v_nonneg INF_greatest valid_cfgI)
+
+lemma n_undefined[simp]: "s \<notin> S \<Longrightarrow> n s = undefined"
+  by (simp add: n_def)
+
+lemma n_not_inf[simp]: "s \<in> S \<Longrightarrow> n s \<noteq> \<infinity>" "s \<in> S \<Longrightarrow> n s \<noteq> -\<infinity>"
+  using n_nonneg[of s] n_le_1[of s] by auto
+
+lemma n_S1: "s \<in> S1 \<Longrightarrow> n s = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. n t \<partial>D)"
+  using S1 S1_S2 unfolding n_def
+  apply auto
+  apply (subst P_inf_iterate)
+  apply (auto intro!: nn_integral_cong_AE INF_cong intro: set_pmf_closed
+              simp: AE_measure_pmf_iff suntil_Stream set_eq_iff)
+  done
+
+lemma n_S2[simp]: "s \<in> S2 \<Longrightarrow> n s = 1"
+  using S2 by (auto simp add: n_eq_INF_v valid_cfgI)
+
+lemma n_nS12: "s \<in> S \<Longrightarrow> s \<notin> S1 \<Longrightarrow> s \<notin> S2 \<Longrightarrow> n s = 0"
+  by (auto simp add: n_eq_INF_v valid_cfgI)
+
+definition F_inf :: "('s \<Rightarrow> ereal) \<Rightarrow> ('s \<Rightarrow> ereal)" where
+  "F_inf f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. f t \<partial>D) else 0)"
+
+lemma F_inf_n: "F_inf n = n"
+  by (simp add: F_inf_def n_nS12 n_S1 fun_eq_iff)
+
+lemma F_inf_nS[simp]: "s \<notin> S \<Longrightarrow> F_inf f s = undefined"
+  by (simp add: F_inf_def)
+
+lemma mono_F_inf: "mono F_inf"
+  by (auto intro!: INF_superset_mono nn_integral_mono simp: mono_def F_inf_def le_fun_def)
+
+lemma F_inf_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_inf F s"
+  by (auto simp: F_inf_def intro!: INF_greatest nn_integral_nonneg intro: arb_actI)
+
+lemma S1_nS2: "s \<in> S1 \<Longrightarrow> s \<notin> S2"
+  using S1_S2 by auto
+
+lemma n_eq_lfp_G: "n = lfp F_inf"
+proof (intro antisym lfp_lowerbound le_funI)
+  fix s let ?I = "\<lambda>D. (\<integral>\<^sup>+t. lfp F_inf t \<partial>measure_pmf D)"
+  def ct \<equiv> "\<lambda>s. SOME D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D)"
+  { fix s assume s: "s \<in> S"
+    then have "finite (?I ` K s)"
+      by (auto intro: K_finite)
+    with s obtain D where "D \<in> K s" "(\<integral>\<^sup>+t. lfp F_inf t \<partial>D) = Min (?I ` K s)"
+      by (auto simp: K_wf dest!: Min_in)
+    note this(2)
+    also have "\<dots> = (INF D : K s. ?I D)"
+      using s K_wf by (subst Min_Inf) (auto intro: K_finite)
+    also have "s \<in> S1 \<Longrightarrow> \<dots> = lfp F_inf s"
+      using s S1_S2 by (subst (3) lfp_unfold[OF mono_F_inf]) (auto simp add: F_inf_def)
+    finally have "\<exists>D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D)"
+      using `D \<in> K s` by auto
+    then have "ct s \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I (ct s))"
+      unfolding ct_def by (rule someI_ex)
+    then have "ct s \<in> K s" "s \<in> S1 \<Longrightarrow> lfp F_inf s = ?I (ct s)"
+      by auto }
+  note ct = this
+  then have Pi_ct: "ct \<in> Pi S K"
+    by auto
+  then have valid_ct[simp]: "\<And>s. s \<in> S \<Longrightarrow> simple ct s \<in> valid_cfg"
+    by simp
+  let ?F = "\<lambda>P. HLD S2 or (HLD S1 aand nxt P)"
+  def P \<equiv> "\<lambda>s n. emeasure (T (simple ct s)) {x\<in>space (T (simple ct s)). (?F ^^ n) (\<lambda>x. False) (s ## x)}"
+  { assume "s \<in> S"
+    with S1 have [simp, measurable]: "s \<in> S" by auto
+    then have "n s \<le> v (simple ct s)"
+      by (intro n_le_v) (auto intro: simple_cfg_on[OF Pi_ct])
+    also have "\<dots> = emeasure (T (simple ct s)) {x\<in>space (T (simple ct s)). lfp ?F (s ## x)}"
+      using S1_S2
+      by (simp add: v_eq[OF simple_valid_cfg[OF Pi_ct `s\<in>S`]])
+         (simp add: suntil_lfp space_T[symmetric, of "simple ct s"] del: space_T)
+    also have "\<dots> = (\<Squnion>n. P s n)" unfolding P_def
+      apply (rule emeasure_lfp2[where P="\<lambda>M. \<exists>s. M = T (simple ct s)" and M="T (simple ct s)"])
+      apply (intro exI[of _ s] refl)
+      apply (auto simp: continuous_def) []
+      apply auto []
+    proof safe
+      fix A s assume "\<And>N. \<exists>s. N = T (simple ct s) \<Longrightarrow> Measurable.pred N A"
+      then have "\<And>s. Measurable.pred (T (simple ct s)) A"
+        by metis
+      then have "\<And>s. Measurable.pred St A"
+        by simp
+      then show "Measurable.pred (T (simple ct s)) (\<lambda>xs. HLD S2 xs \<or> HLD S1 xs \<and> nxt A xs)"
+        by simp
+    qed
+    also have "\<dots> \<le> lfp F_inf s"
+    proof (intro SUP_least)
+      fix n from `s\<in>S` show "P s n \<le> lfp F_inf s"
+      proof (induct n arbitrary: s)
+        case 0 with S1 show ?case
+          by (subst lfp_unfold[OF mono_F_inf]) (auto simp: P_def intro: F_inf_nonneg)
+      next
+        case (Suc n)
+        
+        show ?case
+        proof cases
+          assume "s \<in> S1" with S1_S2 S1 have s[simp]: "s \<notin> S2" "s \<in> S" "s \<in> S1" by auto
+          have "P s (Suc n) = (\<integral>\<^sup>+t. P t n \<partial>ct s)"
+            unfolding P_def space_T
+            apply (subst emeasure_Collect_T)
+            apply (rule measurable_compose[OF measurable_Stream[OF measurable_const measurable_ident_sets[OF refl]]])
+            apply (measurable, assumption)
+            apply (auto simp: K_cfg_def map_pmf.rep_eq nn_integral_distr
+                        intro!: nn_integral_cong)
+            done
+          also have "\<dots> \<le> (\<integral>\<^sup>+t. lfp F_inf t \<partial>ct s)"
+            using Pi_closed[OF Pi_ct `s \<in> S`]
+            by (auto intro!: nn_integral_mono_AE Suc simp: AE_measure_pmf_iff)
+          also have "\<dots> = lfp F_inf s"
+            by (intro ct(2)[symmetric]) auto
+          finally show ?thesis .
+        next
+          assume "s \<notin> S1" with S2 `s \<in> S` show ?case
+            using T.emeasure_space_1[of "simple ct s"]
+            by (subst lfp_unfold[OF mono_F_inf]) (auto simp: F_inf_def P_def)
+        qed
+      qed
+    qed
+    finally have "n s \<le> lfp F_inf s" . }
+  moreover have "s \<notin> S \<Longrightarrow> n s \<le> lfp F_inf s"
+    by (subst lfp_unfold[OF mono_F_inf]) (simp add: n_def F_inf_def)
+  ultimately show "n s \<le> lfp F_inf s"
+    by blast
+qed (simp add: F_inf_n)
+
 end
 
 end
+

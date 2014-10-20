@@ -635,11 +635,47 @@ proof -
     by (subst SUP_emeasure_incseq) auto
 qed
 
+lemma emeasure_Collect_distr:
+  assumes X[measurable]: "X \<in> measurable M N" "Measurable.pred N P"
+  shows "emeasure (distr M N X) {x\<in>space N. P x} = emeasure M {x\<in>space M. P (X x)}"
+  by (subst emeasure_distr)
+     (auto intro!: arg_cong2[where f=emeasure] X(1)[THEN measurable_space])
+
 lemma measurable_predpow[measurable]:
   assumes "Measurable.pred M T"
   assumes "\<And>Q. Measurable.pred M Q \<Longrightarrow> Measurable.pred M (R Q)"
   shows "Measurable.pred M ((R ^^ n) T)"
   by (induct n) (auto intro: assms)
+
+lemma emeasure_lfp2[consumes 1, case_names cont f measurable]:
+  assumes "P M"
+  assumes cont: "Order_Continuity.continuous F"
+  assumes f: "\<And>M. P M \<Longrightarrow> f \<in> measurable M' M"
+  assumes *: "\<And>M A. P M \<Longrightarrow> (\<And>N. P N \<Longrightarrow> Measurable.pred N A) \<Longrightarrow> Measurable.pred M (F A)"
+  shows "emeasure M' {x\<in>space M'. lfp F (f x)} = (SUP i. emeasure M' {x\<in>space M'. (F ^^ i) (\<lambda>x. False) (f x)})"
+proof (subst (1 2) emeasure_Collect_distr[symmetric, where X=f])
+  show "f \<in> measurable M' M"  "f \<in> measurable M' M"
+    using f[OF `P M`] by auto
+  { fix i show "Measurable.pred M ((F ^^ i) (\<lambda>x. False))"
+    using `P M` by (induction i arbitrary: M) (auto intro!: *) }
+  show "Measurable.pred M (lfp F)"
+    using `P M` cont * by (rule measurable_lfp[of P])
+
+  have "emeasure (distr M' M f) {x \<in> space (distr M' M f). lfp F x} =
+    (\<Squnion>i. emeasure (distr M' M f) {x \<in> space (distr M' M f). (F ^^ i) (\<lambda>x. False) x})"
+    using `P M`
+  proof (coinduction arbitrary: M rule: emeasure_lfp)
+    case (measurable A N) then have "\<And>N. P N \<Longrightarrow> Measurable.pred (distr M' N f) A"
+      by metis
+    then have "\<And>N. P N \<Longrightarrow> Measurable.pred N A"
+      by simp
+    with `P N`[THEN *] show ?case
+      by auto
+  qed fact
+  then show "emeasure (distr M' M f) {x \<in> space M. lfp F x} =
+    (\<Squnion>i. emeasure (distr M' M f) {x \<in> space M. (F ^^ i) (\<lambda>x. False) x})"
+   by simp
+qed
 
 lemma (in prob_space) indep_eventsI_indep_vars:
   assumes indep: "indep_vars N X I"
@@ -1061,12 +1097,6 @@ qed (auto intro: ereal_add_mono SUP_upper)
 
 lemma ereal_mult_divide: fixes a b :: ereal shows "0 < b \<Longrightarrow> b < \<infinity> \<Longrightarrow> b * (a / b) = a"
   by (cases a b rule: ereal2_cases) auto
-
-lemma emeasure_Collect_distr:
-  assumes X[measurable]: "X \<in> measurable M N" "Measurable.pred N P"
-  shows "emeasure (distr M N X) {x\<in>space N. P x} = emeasure M {x\<in>space M. P (X x)}"
-  by (subst emeasure_distr)
-     (auto intro!: arg_cong2[where f=emeasure] X(1)[THEN measurable_space])
 
 lemma nn_integral_monotone_convergence_SUP:
   assumes f: "incseq f" and [measurable]: "\<And>i. f i \<in> borel_measurable M"

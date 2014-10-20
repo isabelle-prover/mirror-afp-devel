@@ -6,6 +6,18 @@ theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain
 begin
 
+lemma funpow_increasing:
+  fixes f :: "'a \<Rightarrow> ('a::complete_lattice)"
+  assumes "m \<le> n" "mono f"
+  shows "(f ^^ n) \<top> \<le> (f ^^ m) \<top>"
+proof -
+  have "(f ^^ n) \<top> = (f ^^ m) ((f ^^ (n - m)) \<top>)"
+    using funpow_add[of m "n - m" f] `m \<le> n` by (simp add: comp_def)
+  also have "\<dots> \<le> (f ^^ m) \<top>"
+    using `mono f` by (rule funpow_mono) simp
+  finally show ?thesis .
+qed
+
 lemma (in prob_space) nn_integral_le_const:
   "(AE x in M. f x \<le> c) \<Longrightarrow> 0 \<le> c \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>M) \<le> c"
   using nn_integral_mono_AE[of f "\<lambda>x. c" M] emeasure_space_1 by simp
@@ -169,6 +181,8 @@ locale Markov_Decision_Process =
   assumes K_wf: "\<And>s. K s \<noteq> {}"
 begin
 
+definition "E = (SIGMA s:UNIV. \<Union>D\<in>K s. set_pmf D)"
+
 coinductive cfg_onp :: "'s \<Rightarrow> 's cfg \<Rightarrow> bool" where
   "\<And>s. state cfg = s \<Longrightarrow> action cfg \<in> K s \<Longrightarrow> (\<And>t. t \<in> action cfg \<Longrightarrow> cfg_onp t (cont cfg t)) \<Longrightarrow>
     cfg_onp s cfg"
@@ -221,6 +235,12 @@ lemma space_T[simp]: "space (T cfg) = space St"
   by (simp add: T_def)
 
 lemma sets_T[simp]: "sets (T cfg) = sets St"
+  by (simp add: T_def)
+
+lemma measurable_T1[simp]: "measurable (T cfg) N = measurable St N"
+  by (simp add: T_def)
+
+lemma measurable_T2[simp]: "measurable N (T cfg) = measurable N St"
   by (simp add: T_def)
 
 lemma nn_integral_T:
@@ -372,6 +392,58 @@ proof -
   finally show ?thesis .
 qed
 
+definition "P_sup s P = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) {x\<in>space St. P x})"
+
+lemma P_sup_eq_E_sup:
+  assumes [measurable]: "Measurable.pred St P"
+  shows "P_sup s P = E_sup s (indicator {x\<in>space St. P x})"
+  by (auto simp add: P_sup_def E_sup_def intro!: SUP_cong nn_integral_cong)
+
+lemma P_sup_True[simp]: "P_sup t (\<lambda>\<omega>. True) = 1"
+  using T.emeasure_space_1
+  by (auto simp add: P_sup_def SUP_constant)
+
+lemma P_sup_False[simp]: "P_sup t (\<lambda>\<omega>. False) = 0"
+  by (auto simp add: P_sup_def SUP_constant)
+
+lemma P_sup_SUP: 
+  fixes P :: "nat \<Rightarrow> 's stream \<Rightarrow> bool"
+  assumes "mono P" and P[measurable]: "\<And>i. Measurable.pred St (P i)"
+  shows "P_sup s (\<lambda>x. \<exists>i. P i x) = (\<Squnion>i. P_sup s (P i))"
+proof -
+  have "P_sup s (\<lambda>x. \<Squnion>i. P i x) = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) (\<Union>i. {x\<in>space St. P i x}))"
+    by (auto simp: P_sup_def intro!: SUP_cong arg_cong2[where f=emeasure])
+  also have "\<dots> = (\<Squnion>cfg\<in>cfg_on s. \<Squnion>i. emeasure (T cfg) {x\<in>space St. P i x})"
+    using `mono P` by (auto intro!: SUP_cong SUP_emeasure_incseq[symmetric] simp: mono_def le_fun_def)
+  also have "\<dots> = (\<Squnion>i. P_sup s (P i))"
+    by (subst SUP_commute) (simp add: P_sup_def)
+  finally show ?thesis
+    by simp
+qed
+
+lemma P_sup_lfp:
+  assumes Q: "Order_Continuity.continuous Q"
+  assumes f: "f \<in> measurable St M"
+  assumes Q_m: "\<And>P. Measurable.pred M P \<Longrightarrow> Measurable.pred M (Q P)"
+  shows "P_sup s (\<lambda>x. lfp Q (f x)) = (\<Squnion>i. P_sup s (\<lambda>x. (Q ^^ i) \<bottom> (f x)))"
+  unfolding Order_Continuity.continuous_lfp[OF Q]
+  apply simp
+proof (rule P_sup_SUP)
+  fix i show "Measurable.pred St (\<lambda>x. (Q ^^ i) \<bottom> (f x))"
+    apply (intro measurable_compose[OF f])
+    by (induct i) (auto intro!: Q_m)
+qed (intro mono_funpow continuous_mono[OF Q] mono_compose[where f=f])
+
+lemma P_sup_iterate:
+  assumes [measurable]: "Measurable.pred St P"
+  shows "P_sup s P = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>D)"
+proof -
+  have [simp]: "\<And>x s. indicator {x \<in> space St. P x} (x ## s) = indicator {s \<in> space St. P (x ## s)} s"
+    by (auto simp: space_stream_space split: split_indicator)
+  show ?thesis
+    using E_sup_iterate[of "indicator {x\<in>space St. P x}" s] by (auto simp: P_sup_eq_E_sup)
+qed
+
 definition "E_inf s f = (\<Sqinter>cfg\<in>cfg_on s. \<integral>\<^sup>+x. f x \<partial>T cfg)"
 
 lemma E_inf_nonneg: "0 \<le> E_inf s f"
@@ -443,55 +515,60 @@ proof -
   finally show ?thesis .
 qed
 
-definition "P_sup s P = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) {x\<in>space St. P x})"
 definition "P_inf s P = (\<Sqinter>cfg\<in>cfg_on s. emeasure (T cfg) {x\<in>space St. P x})"
 
-definition "E = (SIGMA s:UNIV. \<Union>D\<in>K s. set_pmf D)"
+lemma P_inf_eq_E_inf:
+  assumes [measurable]: "Measurable.pred St P"
+  shows "P_inf s P = E_inf s (indicator {x\<in>space St. P x})"
+  by (auto simp add: P_inf_def E_inf_def intro!: SUP_cong nn_integral_cong)
 
-lemma P_sup_True[simp]: "P_sup t (\<lambda>\<omega>. True) = 1"
+lemma P_inf_True[simp]: "P_inf t (\<lambda>\<omega>. True) = 1"
   using T.emeasure_space_1
-  by (auto simp add: P_sup_def SUP_constant)
+  by (auto simp add: P_inf_def SUP_constant)
 
-lemma P_sup_False[simp]: "P_sup t (\<lambda>\<omega>. False) = 0"
-  by (auto simp add: P_sup_def SUP_constant)
+lemma P_inf_False[simp]: "P_inf t (\<lambda>\<omega>. False) = 0"
+  by (auto simp add: P_inf_def SUP_constant)
 
-lemma P_sup_SUP: 
+lemma P_inf_INF: 
   fixes P :: "nat \<Rightarrow> 's stream \<Rightarrow> bool"
-  assumes "mono P" and P[measurable]: "\<And>i. Measurable.pred St (P i)"
-  shows "P_sup s (\<lambda>x. \<exists>i. P i x) = (\<Squnion>i. P_sup s (P i))"
+  assumes "decseq P" and P[measurable]: "\<And>i. Measurable.pred St (P i)"
+  shows "P_inf s (\<lambda>x. \<forall>i. P i x) = (\<Sqinter>i. P_inf s (P i))"
 proof -
-  have "P_sup s (\<lambda>x. \<Squnion>i. P i x) = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) (\<Union>i. {x\<in>space St. P i x}))"
-    by (auto simp: P_sup_def intro!: SUP_cong arg_cong2[where f=emeasure])
-  also have "\<dots> = (\<Squnion>cfg\<in>cfg_on s. \<Squnion>i. emeasure (T cfg) {x\<in>space St. P i x})"
-    using `mono P` by (auto intro!: SUP_cong SUP_emeasure_incseq[symmetric] simp: mono_def le_fun_def)
-  also have "\<dots> = (\<Squnion>i. P_sup s (P i))"
-    by (subst SUP_commute) (simp add: P_sup_def)
+  have "P_inf s (\<lambda>x. \<Sqinter>i. P i x) = (\<Sqinter>cfg\<in>cfg_on s. emeasure (T cfg) (\<Inter>i. {x\<in>space St. P i x}))"
+    by (auto simp: P_inf_def intro!: INF_cong arg_cong2[where f=emeasure])
+  also have "\<dots> = (\<Sqinter>cfg\<in>cfg_on s. \<Sqinter>i. emeasure (T cfg) {x\<in>space St. P i x})"
+    using `decseq P` by (auto intro!: INF_cong INF_emeasure_decseq[symmetric] simp: decseq_def le_fun_def)
+  also have "\<dots> = (\<Sqinter>i. P_inf s (P i))"
+    by (subst INF_commute) (simp add: P_inf_def)
   finally show ?thesis
-    unfolding SUP_apply[abs_def] by simp
+    by simp
 qed
 
-lemma P_sup_lfp:
-  assumes Q: "Order_Continuity.continuous Q"
+lemma P_inf_lfp:
+  assumes Q: "Order_Continuity.down_continuous Q"
   assumes f: "f \<in> measurable St M"
   assumes Q_m: "\<And>P. Measurable.pred M P \<Longrightarrow> Measurable.pred M (Q P)"
-  shows "P_sup s (\<lambda>x. lfp Q (f x)) = (\<Squnion>i. P_sup s (\<lambda>x. (Q ^^ i) \<bottom> (f x)))"
-  unfolding Order_Continuity.continuous_lfp[OF Q]
+  shows "P_inf s (\<lambda>x. gfp Q (f x)) = (\<Sqinter>i. P_inf s (\<lambda>x. (Q ^^ i) \<top> (f x)))"
+  unfolding Order_Continuity.down_continuous_gfp[OF Q]
   apply simp
-proof (rule P_sup_SUP)
-  fix i show "Measurable.pred St (\<lambda>x. (Q ^^ i) \<bottom> (f x))"
+proof (rule P_inf_INF)
+  fix i show "Measurable.pred St (\<lambda>x. (Q ^^ i) \<top> (f x))"
     apply (intro measurable_compose[OF f])
     by (induct i) (auto intro!: Q_m)
-qed (intro mono_funpow continuous_mono[OF Q] mono_compose[where f=f])
+next
+  show "decseq (\<lambda>i x. (Q ^^ i) \<top> (f x))"
+    using down_continuous_mono[OF Q, THEN funpow_increasing[rotated]]
+    unfolding decseq_def le_fun_def by auto
+qed
 
-lemma P_sup_iterate:
+lemma P_inf_iterate:
   assumes [measurable]: "Measurable.pred St P"
-  shows "P_sup s P = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>D)"
+  shows "P_inf s P = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. P_inf t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>D)"
 proof -
   have [simp]: "\<And>x s. indicator {x \<in> space St. P x} (x ## s) = indicator {s \<in> space St. P (x ## s)} s"
     by (auto simp: space_stream_space split: split_indicator)
   show ?thesis
-    using E_sup_iterate[of "indicator {x\<in>space St. P x}" s]
-    by (auto simp add: P_sup_def E_sup_def intro!: SUP_cong nn_integral_cong)
+    using E_inf_iterate[of "indicator {x\<in>space St. P x}" s] by (auto simp: P_inf_eq_E_inf)
 qed
 
 end
