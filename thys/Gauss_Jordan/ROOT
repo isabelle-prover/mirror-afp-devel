@@ -10,6 +10,6 @@ session Gauss_Jordan (AFP) = "HOL-Multivariate_Analysis" +
     Code_Generation_IArrays_SML
     Code_Generation_IArrays_Haskell
   document_files
-  	"root.bib"
-	"root.tex"
+    "root.bib"
+    "root.tex"
 
