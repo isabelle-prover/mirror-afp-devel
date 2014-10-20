@@ -22,10 +22,10 @@
 \begin{tikzpicture}
 \draw (0,0) node (a) {} -- (6,0) node (b) {}
  -- (intersection cs:
-	first line ={(a) -- (45:1cm)},
-	second line ={(b) -- ($(b) + (120:1cm)$) }) node (c) {} -- cycle;
-\draw (a) +(8mm,0) arc (0:45:8mm);	
-\draw (b) +(-8mm,0) arc (180:120:8mm);	
+  first line ={(a) -- (45:1cm)},
+  second line ={(b) -- ($(b) + (120:1cm)$) }) node (c) {} -- cycle;
+\draw (a) +(8mm,0) arc (0:45:8mm);  
+\draw (b) +(-8mm,0) arc (180:120:8mm);  
 \draw ($(c) + (225:8mm)$) arc (225:300:8mm);
 \node at ($(a) + (20:5mm)$) {$a$};
 \node at ($(b) + (150:5mm)$) {$b$};
