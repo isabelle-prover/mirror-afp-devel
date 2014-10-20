@@ -3,7 +3,7 @@
   Authors: Manuel Eberl
 
   Defines measure embeddings with injective functions, i.e. lifting a measure on some values 
-  to a measure on “tagged” values (e.g. embed_measure M Inl lifts a measure on values 'a to a 
+  to a measure on "tagged" values (e.g. embed_measure M Inl lifts a measure on values 'a to a 
   measure on the left part of the sum type 'a + 'b)
 *)
 
