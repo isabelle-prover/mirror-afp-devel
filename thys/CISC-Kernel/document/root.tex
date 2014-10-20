@@ -69,33 +69,7 @@ This document corresponds to the deliverable D31.1 of the EURO-MILS Project
 % see advice obtained at Isabelle users mailing list 16 Oct 2013
 \renewcommand{\isamarkupheader}[1]{#1}
 
-
-% further packages required for unusual symbols (see also
-% isabellesym.sty), use only when needed
-
-%\usepackage{amssymb}
-  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
-  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
-  %\<triangleq>, \<yen>, \<lozenge>
 \usepackage{MnSymbol}
-
-
-%\usepackage[greek,english]{babel}
-  %option greek for \<euro>
-  %option english (default language) for \<guillemotleft>, \<guillemotright>
-
-%\usepackage[latin1]{inputenc}
-  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
-  %\<threesuperior>, \<threequarters>, \<degree>
-
-%\usepackage[only,bigsqcap]{stmaryrd}
-  %for \<Sqinter>
-
-%\usepackage{eufrak}
-  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
-
-%\usepackage{textcomp}
-  %for \<cent>, \<currency>
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -298,11 +272,13 @@ been proposed.
 Roscoe and Goldsmith provide CSP-based definitions of NI for the transitive and 
 the intransitive case, here dubbed as lazy and mixed independence. The latter 
 one is more restrictive than Rushby’s IP-security. Their critique on IP-secure, 
-however, is not universally accepted \cite{SKIPaper19}. Greve at al. provided the GWV framework 
+however, is not universally accepted \cite{SKIPaper19}.
+ Greve at al. provided the GWV framework 
 developed in ACL2 \cite{SKIPaper7}. Their definition is a non-inductive version of 
 noninterference similar to Rushby’s step consistency. GWV has been used on 
 various industrial systems. The exact relation between GWV and (I)P-secure, 
-i.e., whether they are of equal strength, is still open.The second property, 
+i.e., whether they are of equal strength, is still open.
+The second property, 
 Declassification, means whether the definition allows assignments in the form 
 of $l := \texttt{declassify}(h)$ (where we use Sabelfelds \cite{SKIPaper6} notation for 
 high and low variables). Information flows from $h$ to $l$, but only after it has 
@@ -315,16 +291,19 @@ To deal with concurrency, definitions of NI have been proposed for
 Non-Deterministic automata. Von Oheimb defined noninfluence for such systems. 
 His definition can be regarded as a ``non-deterministic version'' of IP-secure. 
 Engelhardt et al. defined nTA-secure, the non-deterministic version of 
-TA-security.Finally, some notions of INI consider models that are in a sense 
+TA-security.
+Finally, some notions of INI consider models that are in a sense 
 richer than similar counterparts. Leslie extends Rushby’s notion of IP-security 
 for a model in which the security policy is Dynamic. Eggert et al. defined 
 i-secure, an extension of IP-secure. Their model extends Rushby’s model 
 (Mealy machines) with Local security policies. Murray et al. extends Von Oheimb 
 definition of noninfluence to apply to a model that 
 does not assume a static mapping of actions to domains. 
-This makes it applicable to OS’s, as in such a setting such a mapping does not 
+This makes
+ it applicable to OS’s, as in such a setting such a mapping does not 
 exist \cite{Murray_MBGK_12}. NI-OS has been applied to the seL4 separation kernel 
-\cite{Murray_MBGK_12}, \cite{Klein:2009:SFV:1629575.1629596}. 
+\cite{Murray_MBGK_12}, \cite{Klein:2009:SFV:1629575.1629596}.
+ 
 Most definitions have an associated methodology. Various methodologies are 
 based on unwinding \cite{SKIPaper14}. This breaks down the proof of NI into smaller 
 proof obligations (PO’s). These PO’s can be checked by some manual proof 
@@ -332,15 +311,18 @@ proof obligations (PO’s). These PO’s can be checked by some manual proof
 algorithms \cite{SKIPaper20}. The methodology of 
 Murray et al. is a combination of unwinding, automated deduction and manual
 proofs. Some definitions are undecidable 
-and have no suitable unwinding.
+and have no suitable unwinding.
 
-We are aiming to provide a methodology for INI based on a model that is richer 
+
+
+We are aiming to provide a methodology for INI based on a model that is richer 
 in detail than Mealy machines. This places our contribution next to other works 
 that aim to extend IP-security \cite{SKIPaper25}, \cite{SKIPaper31} in Figure 2. Similar to those 
 approaches, we take IP-security as a starting point. We add kernel control 
 mechanisms, interrupts and context switches. Ideally, we would simply prove 
 IP-security over CISK. We argue that this is impossible and that a rephrasing 
-is necessary.
+is necessary.
+
 
 Our ultimate goal --- certification of PikeOS --- is very similar to the work done 
 on seL4 \cite{Murray_MBGK_12}–\cite{SKIPaper30}. There are two reasons why their 
