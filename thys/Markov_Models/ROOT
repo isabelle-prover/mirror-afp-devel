@@ -10,12 +10,13 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "../Coinductive/Coinductive"
   theories
     Discrete_Time_Markov_Chain
+    "Markov_Decision_Process"
+    "MDP_Reachability_Problem"
     "ex/PCTL"
     "ex/Zeroconf_Analysis"
     "ex/Gossip_Broadcast"
     "ex/Crowds_Protocol"
-    "Markov_Decision_Process"
-    "MDP_Reachability_Problem"
+    "ex/MDP_RP_Certification"
   document_files
     "root.bib"
     "root.tex"
