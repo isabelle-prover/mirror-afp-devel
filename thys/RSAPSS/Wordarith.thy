@@ -310,6 +310,7 @@ proof -
         from p have "~ 2 dvd p" using primerew and a by auto
         moreover from q have "~2 dvd q" using primerew and b by auto
         ultimately have "~2 dvd p*q" by (simp add: odd_mul_odd)
+        then have "odd ((2 :: nat) ^ x)" by (simp only: c) simp
         moreover have "(2::nat) dvd 2^x"
         proof (cases "x=0")
           assume "x=0" then have "(2::nat)^x=1" by simp
@@ -318,8 +319,7 @@ proof -
           assume "x~=0" then have "0<x" by simp
           then show ?thesis using two_dvd_exp by simp
         qed
-        ultimately have "2^x ~= p*q" by auto
-        then show ?thesis using c by simp
+        ultimately show ?thesis by simp
       qed
     qed
   qed

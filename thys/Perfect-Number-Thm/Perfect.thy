@@ -17,8 +17,7 @@ proof
   let ?A = "m div 2^?n"
   let ?np = "(2::nat)^(?n+1) - 1"
 
-  from even have "2 dvd m" by (simp add: even_def) 
-  with m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
+  from even m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
 
   from m0 have  "2^?n dvd m" by (rule power_exponent_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 

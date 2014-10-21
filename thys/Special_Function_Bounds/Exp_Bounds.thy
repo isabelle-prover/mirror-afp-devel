@@ -50,7 +50,12 @@ qed
 lemma exp_lower_taylor_2:
   fixes x::real
   shows "1 + x + (1/2)*x^2 + (1/6)*x^3 \<le> exp x"
-  by (rule order_trans [OF _ exp_lower_taylor_even [of 4]]) (auto simp: numeral_eq_Suc)
+proof -
+  have "even (4::nat)" by simp
+  then have "(\<Sum>m<4. x ^ m / real (fact m)) \<le> exp x"
+    by (rule exp_lower_taylor_even)
+  then show ?thesis by (auto simp add: numeral_eq_Suc)
+qed
 
 lemma exp_upper_bound_case_3:
   fixes x::real

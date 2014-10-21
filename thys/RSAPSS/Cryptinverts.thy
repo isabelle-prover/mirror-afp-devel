@@ -79,7 +79,7 @@ lemma cryptinverts: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; m < n;
   apply (insert cryptcorrect [of "p*q" m e])
   apply (insert primmultgreater2 [of p q])
   apply (simp add: prime_nat_def)
-  apply (simp add: remainderexp [of "m^e" "p*q" d] power_mult [symmetric])
+  apply (simp add: cryptcorrect remainderexp [of "m^e" "p*q" d] power_mult [symmetric])
   done
 
 end
