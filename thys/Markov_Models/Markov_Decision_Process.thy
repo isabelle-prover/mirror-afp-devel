@@ -587,8 +587,14 @@ lemma action_closed: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longright
 lemma set_pmf_closed: "s \<in> S \<Longrightarrow> D \<in> K s \<Longrightarrow> t \<in> D \<Longrightarrow> t \<in> S"
   using K_closed by auto
 
+lemma Pi_closed: "ct \<in> Pi S K \<Longrightarrow> s \<in> S \<Longrightarrow> t \<in> ct s \<Longrightarrow> t \<in> S"
+  using set_pmf_closed by auto
+
 lemma E_closed: "s \<in> S \<Longrightarrow> (s, t) \<in> E \<Longrightarrow> t \<in> S"
   using K_closed by (auto simp: E_def)
+
+lemma set_pmf_finite: "s \<in> S \<Longrightarrow> D \<in> K s \<Longrightarrow> finite D"
+  using K_closed by (intro finite_subset[OF _ S_finite]) auto
 
 definition "valid_cfg = (\<Union>s\<in>S. cfg_on s)"
 
@@ -626,9 +632,6 @@ lemma action_simple[simp]: "s \<in> S \<Longrightarrow> action (simple ct s) = c
 
 lemma simple_valid_cfg_iff: "ct \<in> Pi S K \<Longrightarrow> simple ct s \<in> valid_cfg \<longleftrightarrow> s \<in> S"
   using cfg_onD_state[of "simple ct s"] by (auto simp add: valid_cfg_def intro!: bexI[of _ s])
-
-lemma Pi_closed: "ct \<in> Pi S K \<Longrightarrow> s \<in> S \<Longrightarrow> t \<in> ct s \<Longrightarrow> t \<in> S"
-  using set_pmf_closed by auto
 
 end
 

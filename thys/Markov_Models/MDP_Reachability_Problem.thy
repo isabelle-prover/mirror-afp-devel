@@ -228,6 +228,26 @@ lemma p_S2[simp]: "s \<in> S2 \<Longrightarrow> p s = 1"
 lemma p_nS12: "s \<in> S \<Longrightarrow> s \<notin> S1 \<Longrightarrow> s \<notin> S2 \<Longrightarrow> p s = 0"
   by (auto simp: p_eq_SUP_v v_nS12[OF valid_cfgI])
 
+lemma p_pos: 
+  assumes "(s, t) \<in> (SIGMA s:S1. \<Union>D\<in>K s. set_pmf D)\<^sup>*" "t \<in> S2" shows "0 < p s"
+using assms proof (induction rule: converse_rtrancl_induct)
+  case (step s t')
+  then obtain D where "s \<in> S1" "D \<in> K s" "t' \<in> D" "0 < p t'"
+    by auto
+  with S1 set_pmf_closed[of s D] have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
+    by auto
+  from `t' \<in> D` `0 < p t'` have "0 < pmf D t' * p t'"
+    by (auto simp add: ereal_zero_less_0_iff pmf_positive)
+  also have "\<dots> \<le> (\<integral>\<^sup>+t. p t' * indicator {t'} t\<partial>D)"
+    using in_S[OF `t' \<in> D`]
+    by (subst nn_integral_cmult_indicator)
+       (auto intro!: ereal_0_le_mult p_nonneg simp: ac_simps emeasure_pmf_single)
+  also have "\<dots> \<le> (\<integral>\<^sup>+t. p t \<partial>D)"
+    by (auto intro!: nn_integral_mono_AE p_nonneg split: split_indicator simp: in_S AE_measure_pmf_iff)
+  also have "\<dots> \<le> p s"
+    using `s \<in> S1` `D \<in> K s` by (auto intro: SUP_upper simp add: p_S1)
+  finally show ?case .
+qed simp
 
 definition F_sup :: "('s \<Rightarrow> ereal) \<Rightarrow> 's \<Rightarrow> ereal" where
   "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>D else 0)"
@@ -1086,6 +1106,9 @@ lemma n_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> n s"
 lemma n_undefined[simp]: "s \<notin> S \<Longrightarrow> n s = undefined"
   by (simp add: n_def)
 
+lemma n_eq_0: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarrow> v cfg = 0 \<Longrightarrow> n s = 0"
+  using n_le_v[of s cfg] n_nonneg[of s] by auto
+
 lemma n_not_inf[simp]: "s \<in> S \<Longrightarrow> n s \<noteq> \<infinity>" "s \<in> S \<Longrightarrow> n s \<noteq> -\<infinity>"
   using n_nonneg[of s] n_le_1[of s] by auto
 
@@ -1102,6 +1125,38 @@ lemma n_S2[simp]: "s \<in> S2 \<Longrightarrow> n s = 1"
 
 lemma n_nS12: "s \<in> S \<Longrightarrow> s \<notin> S1 \<Longrightarrow> s \<notin> S2 \<Longrightarrow> n s = 0"
   by (auto simp add: n_eq_INF_v valid_cfgI)
+
+lemma n_pos:
+  assumes "P s" "s \<in> S1" "wf R"
+  assumes cont: "\<And>s D. P s \<Longrightarrow> s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> \<exists>w\<in>D. ((w, s) \<in> R \<and> w \<in> S1 \<and> P w) \<or> 0 < n w"
+  shows "0 < n s"
+  using `wf R` `P s` `s\<in>S1`
+proof (induction s)
+  case (less s)
+  with S1 have [simp]: "s \<in> S" by auto
+  let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+t. n t \<partial>D"
+  have "0 < Min (?I`K s)"
+  proof (safe intro!: Min_grI)
+    fix D assume [simp]: "D \<in> K s"
+    from cont[OF `P s` `s \<in> S1` `D \<in> K s`]
+    obtain w where w: "w \<in> D" "0 < n w"
+      by (force intro: less.IH)
+    have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
+      using set_pmf_closed[OF `s \<in> S` `D \<in> K s`] by auto
+    from w have "0 < pmf D w * n w"
+      by (simp add: ereal_zero_less_0_iff pmf_positive)
+    also have "\<dots> = (\<integral>\<^sup>+t. n w * indicator {w} t \<partial>D)"
+      by (subst nn_integral_cmult_indicator)
+         (auto intro!: n_nonneg simp: ac_simps emeasure_pmf_single in_S `w \<in> D`)
+    also have "\<dots> \<le> (\<integral>\<^sup>+t. n t \<partial>D)"
+      by (intro nn_integral_mono_AE) (auto split: split_indicator intro: n_nonneg simp: AE_measure_pmf_iff in_S)
+    finally show "0 < (\<integral>\<^sup>+t. n t \<partial>D)" .
+  qed (insert K_wf K_finite `s\<in>S`, auto)
+  also have "\<dots> = n s"
+    unfolding n_S1[OF `s \<in> S1`] INF_def
+    using K_wf K_finite `s\<in>S` by (intro Min_Inf) auto
+  finally show "0 < n s" .
+qed
 
 definition F_inf :: "('s \<Rightarrow> ereal) \<Rightarrow> ('s \<Rightarrow> ereal)" where
   "F_inf f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. f t \<partial>D) else 0)"
@@ -1121,7 +1176,7 @@ lemma F_inf_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_inf F s"
 lemma S1_nS2: "s \<in> S1 \<Longrightarrow> s \<notin> S2"
   using S1_S2 by auto
 
-lemma n_eq_lfp_G: "n = lfp F_inf"
+lemma n_eq_lfp_F_inf: "n = lfp F_inf"
 proof (intro antisym lfp_lowerbound le_funI)
   fix s let ?I = "\<lambda>D. (\<integral>\<^sup>+t. lfp F_inf t \<partial>measure_pmf D)"
   def ct \<equiv> "\<lambda>s. SOME D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D)"
@@ -1209,6 +1264,205 @@ proof (intro antisym lfp_lowerbound le_funI)
   ultimately show "n s \<le> lfp F_inf s"
     by blast
 qed (simp add: F_inf_n)
+
+
+lemma real_n: "s \<in> S \<Longrightarrow> ereal (real (n s)) = n s"
+  by (cases "n s") simp_all
+
+lemma real_p: "s \<in> S \<Longrightarrow> ereal (real (p s)) = p s"
+  by (cases "p s") simp_all
+
+lemma p_ub:
+  fixes x
+  assumes "s \<in> S"
+  assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> (\<Sum>t\<in>S. pmf D t * x t) \<le> x s"
+  assumes solution_0: "\<And>s. s \<in> S \<Longrightarrow> p s = 0 \<Longrightarrow> x s = 0"
+  assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
+  shows "real (p s) \<le> x s" (is "?y s \<le> _")
+proof -
+  let ?p = "\<lambda>s. real (p s)"
+  from p_v_memoryless obtain sc where "sc \<in> Pi\<^sub>E S K" and p_eq: "p = v \<circ> simple sc"
+    by auto
+  then have sch: "\<And>s. s \<in> S \<Longrightarrow> sc s \<in> K s" and sc_Pi: "sc \<in> Pi S K"
+    by (auto simp: PiE_iff)
+
+  interpret sc!: MC_syntax sc .
+
+  def N \<equiv> "{s\<in>S. p s = 0} \<union> S2"
+  { fix s assume "s \<in> S" "s \<notin> N"
+    with p_nS12 have "s \<in> S1"
+      by (auto simp add: N_def) }
+  note N = this
+
+  have N_S: "N \<subseteq> S"
+    using S2 by (auto simp: N_def)
+  
+  show ?thesis
+  proof cases
+    assume "s \<in> S - N"
+    then show ?thesis
+    proof (rule mono_les)
+      show "(\<Union>x\<in>S - N. sc x) \<subseteq> S - N \<union> N"
+        using Pi_closed[OF sc_Pi] by auto
+      show "finite ((\<lambda>s. ?p s - x s) ` (S - N \<union> N))"
+        using N_S by (intro finite_imageI finite_subset[OF _ S_finite]) auto
+    next
+      fix s assume "s \<in> N" then show "?p s \<le> x s"
+        by (auto simp: N_def solution_S2 solution_0)
+    next
+      fix s assume s: "s \<in> S - N"
+      then show "integrable (sc s) x" "integrable (sc s) ?p"
+        by (auto intro!: integrable_measure_pmf_finite set_pmf_finite sch)
+      
+      from s have "s \<in> S1" "s \<in> S"
+        using p_nS12[of s] by (auto simp: N_def)
+      then show "?p s \<le> (\<integral> t. ?p t \<partial>sc s) + 0"
+        unfolding p_eq using real_v_integral_eq[of "simple sc s"] by (simp add: v_S1 sc_Pi)
+      show "(\<integral> t. x t \<partial>sc s) + 0 \<le> x s"
+        using solution[OF `s \<in> S1` sch[OF `s \<in> S`]]
+        by (subst integral_measure_pmf[where A=S])
+           (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
+
+      def X \<equiv> "SIGMA x:UNIV. sc x"
+      show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
+      proof (rule ccontr)
+        assume "\<not> ?thesis"
+        then have *: "\<forall>t\<in>N. (s, t) \<notin> X\<^sup>*"
+          by auto
+        with `s\<in>S` have "v (simple sc s) = 0"
+        proof (coinduction arbitrary: s rule: v_eq_0_coinduct)
+          case (valid t) with sch show ?case
+            by auto
+        next
+          case (nS2 s) then show ?case
+            by (auto simp: N_def)
+        next
+          case (cont cfg s)
+          then have "(s, state cfg) \<in> X\<^sup>*"
+            by (auto simp: X_def set_K_cfg)
+          with cont show ?case
+            by (auto simp: set_K_cfg intro!: exI intro: Pi_closed[OF sc_Pi])
+               (blast intro: rtrancl_trans)
+        qed
+        then have "p s = 0"
+          unfolding p_eq by simp
+        with `s\<in>S` have "s\<in>N"
+          by (auto simp: N_def)
+        with * show False
+          by auto
+      qed
+    qed
+  next
+    assume "s \<notin> S - N" with `s \<in> S` show "?p s \<le> x s"
+      by (auto simp: N_def solution_0 solution_S2)
+  qed
+qed
+
+lemma n_lb:
+  fixes x
+  assumes "s \<in> S"
+  assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> x s \<le> (\<Sum>t\<in>S. pmf D t * x t)"
+  assumes solution_n0: "\<And>s. s \<in> S \<Longrightarrow> n s = 0 \<Longrightarrow> x s = 0"
+  assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
+  shows "x s \<le> real (n s)" (is "_ \<le> ?y s")
+proof -
+  let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+x. n x \<partial>D"
+  { fix s assume "s \<in> S1"
+    with S1 S1_S2 have "n s = (\<Sqinter>D\<in>K s. ?I D)"
+      by (subst n_eq_lfp_F_inf, subst lfp_unfold[OF mono_F_inf])
+         (auto simp add: F_inf_def n_eq_lfp_F_inf)
+    moreover have "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+x. n x \<partial>D) = Min (?I`K s)"
+      unfolding INF_def using `s \<in> S1` S1 K_wf
+      by (intro cInf_eq_Min finite_imageI K_finite) auto
+    moreover have "Min (?I`K s) \<in> ?I`K s"
+      using `s \<in> S1` S1 K_wf by (intro Min_in finite_imageI K_finite) auto
+    ultimately have "\<exists>D\<in>K s. (\<integral>\<^sup>+x. n x \<partial>D) = n s"
+      by auto }
+  then have "\<And>s. s \<in> S \<Longrightarrow> \<exists>D\<in>K s. s \<in> S1 \<longrightarrow> (\<integral>\<^sup>+x. n x \<partial>D) = n s"
+    using K_wf by auto
+  then obtain sc where sch: "\<And>s. s \<in> S \<Longrightarrow> sc s \<in> K s"
+    and n_sc: "\<And>s. s \<in> S1 \<Longrightarrow> (\<integral>\<^sup>+x. n x \<partial>sc s) = n s"
+    by (metis S1 subsetD)
+  then have sc_Pi: "sc \<in> Pi S K"
+    by auto
+
+  def N \<equiv> "{s\<in>S. n s = 0} \<union> S2"
+  with S2 have N_S: "N \<subseteq> S"
+    by auto
+  { fix s assume "s \<in> S" "s \<notin> N"
+    with n_nS12 have "s \<in> S1"
+      by (auto simp add: N_def) }
+  note N = this
+
+  let ?n = "\<lambda>s. real (n s)"
+  show ?thesis
+  proof cases
+    assume "s \<in> S - N"
+    then show ?thesis
+    proof (rule mono_les)
+      show "(\<Union>x\<in>S - N. sc x) \<subseteq> S - N \<union> N"
+        using Pi_closed[OF sc_Pi] by auto
+      show "finite ((\<lambda>s. x s - ?n s) ` (S - N \<union> N))"
+        using N_S by (intro finite_imageI finite_subset[OF _ S_finite]) auto
+    next
+      fix s assume "s \<in> N" then show "x s \<le> ?n s"
+        by (auto simp: N_def solution_S2 solution_n0)
+    next
+      fix s assume s: "s \<in> S - N"
+      then show "integrable (sc s) x" "integrable (sc s) ?n"
+        by (auto intro!: integrable_measure_pmf_finite set_pmf_finite sch)
+      
+      from s have "s \<in> S1" "s \<in> S"
+        using n_nS12[of s] by (auto simp: N_def)
+      then have "(\<integral> t. ?n t \<partial>sc s) = ?n s"
+        apply (subst n_sc[symmetric, of s])
+        apply simp_all
+        apply (subst integral_eq_nn_integral)
+        apply (auto simp: Pi_closed[OF sc_Pi] AE_measure_pmf_iff 
+                    intro!: n_nonneg real_of_ereal_pos arg_cong[where f=real] nn_integral_cong_AE real_n)
+        done
+      then show "(\<integral> t. ?n t \<partial>sc s) + 0 \<le> ?n s"
+        by simp
+
+      show "x s \<le> (\<integral> t. x t \<partial>sc s) + 0"
+        using solution[OF `s \<in> S1` sch[OF `s \<in> S`]]
+        by (subst integral_measure_pmf[where A=S])
+           (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
+
+      def X \<equiv> "SIGMA x:UNIV. sc x"
+      show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
+      proof (rule ccontr)
+        assume "\<not> ?thesis"
+        then have *: "\<forall>t\<in>N. (s, t) \<notin> X\<^sup>*"
+          by auto
+        with `s\<in>S` have "v (simple sc s) = 0"
+        proof (coinduction arbitrary: s rule: v_eq_0_coinduct)
+          case (valid t) with sch show ?case
+            by auto
+        next
+          case (nS2 s) then show ?case
+            by (auto simp: N_def)
+        next
+          case (cont cfg s)
+          then have "(s, state cfg) \<in> X\<^sup>*"
+            by (auto simp: X_def set_K_cfg)
+          with cont show ?case
+            by (auto simp: set_K_cfg intro!: exI intro: Pi_closed[OF sc_Pi])
+               (blast intro: rtrancl_trans)
+        qed
+        from n_eq_0[OF `s \<in> S` simple_cfg_on this] have "n s = 0"
+          by (auto simp: sc_Pi)
+        with `s\<in>S` have "s\<in>N"
+          by (auto simp: N_def)
+        with * show False
+          by auto
+      qed
+    qed
+  next
+    assume "s \<notin> S - N" with `s \<in> S` show "x s \<le> ?n s"
+      by (auto simp: N_def solution_n0 solution_S2)
+  qed
+qed
 
 end
 
