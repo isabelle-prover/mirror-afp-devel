@@ -14,21 +14,21 @@ subsection "Sequential Processes"
 type_synonym ip = nat
 type_synonym data = nat
 
-text {*
+text \<open>
   Most of AWN is independent of the type of messages, but the closed layer turns
   newpkt actions into the arrival of newpkt messages. We use a type class to maintain
   some abstraction (and independence from the definition of particular protocols).
-*}
+\<close>
 
 class msg =
   fixes newpkt :: "data \<times> ip \<Rightarrow> 'a"
     and eq_newpkt :: "'a \<Rightarrow> bool"
   assumes eq_newpkt_eq [simp]: "eq_newpkt (newpkt (d, i))"
 
-text {*
+text \<open>
   Sequential process terms abstract over the types of data states (@{typ 's}),
   messages (@{typ 'm}), process names (@{typ 'p}),and labels (@{typ 'l}).
-*}
+\<close>
 
 datatype (dead 's, dead 'm, dead 'p, dead 'l) seqp =
     GUARD "'l" "'s \<Rightarrow> 's set" "('s, 'm, 'p, 'l) seqp"
@@ -167,7 +167,7 @@ lemma seqp_congs:
   "\<And>l pn. call(pn) = call(pn)"
   by auto
 
-text {* Remove data expressions from process terms. *}
+text \<open>Remove data expressions from process terms.\<close>
 
 fun seqp_skeleton :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> (unit, unit, 'p, 'l) seqp"
 where
@@ -182,7 +182,7 @@ where
   | "seqp_skeleton ({l}receive(_). p)        = {l}receive(\<lambda>_ _. ()). (seqp_skeleton p)"
   | "seqp_skeleton (call(pn))                = call(pn)"
 
-text {* Calculate the subterms of a term. *}
+text \<open>Calculate the subterms of a term.\<close>
 
 fun subterms :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
 where
@@ -227,11 +227,11 @@ lemma deriv_in_subterms [elim, dest]:
 
 subsection "Actions"
 
-text {*
+text \<open>
   There are two sorts of @{text \<tau>} actions in AWN: one at the level of individual processes
   (within nodes), and one at the network level (outside nodes). We define a class so that
   we can ignore this distinction whenever it is not critical.
-*}
+\<close>
 
 class tau =
   fixes tau :: "'a" ("\<tau>")
@@ -501,7 +501,7 @@ lemma netmap_add_disjoint [elim]:
     moreover with assms(2) have "i \<notin> dom(netmap s2)" by (auto simp add: net_ips_is_dom_netmap)
     ultimately have "the (netmap s1 i) = the ((netmap s1 ++ netmap s2) i)"
       by (simp add: map_add_dom_app_simps)
-    with assms(1) and `i\<in>net_ips s1` show "the (netmap s1 i) = \<sigma> i" by simp
+    with assms(1) and \<open>i\<in>net_ips s1\<close> show "the (netmap s1 i) = \<sigma> i" by simp
   qed
 
 lemma netmap_add_disjoint2 [elim]:
@@ -644,20 +644,20 @@ lemma netgmap_netmask_subnets [elim]:
             = fst (netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, snd (netgmap sr (SubnetS s1 s2)))) i"
     proof (elim disjE)
       assume "i \<in> net_tree_ips n1"
-      with `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-           `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
+      with \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+           \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
         show ?thesis
           by (cases "netgmap sr s1", cases "netgmap sr s2", clarsimp)
              (metis (lifting, mono_tags) map_add_Some_iff)
     next
       assume "i \<in> net_tree_ips n2"
-      with `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
+      with \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
         show ?thesis
           by simp (metis (lifting, mono_tags) fst_conv map_add_find_right)
     next
       assume "i\<notin>net_tree_ips n1 \<union> net_tree_ips n2"
-      with `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-           `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
+      with \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+           \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
         show ?thesis
           by simp (metis (lifting, mono_tags) fst_conv)
     qed
@@ -682,21 +682,21 @@ lemma netgmap_subnet_split1:
     proof (rule ext, simp, intro conjI impI)
       fix i
       assume "i\<in>net_tree_ips n1"
-      with `net_tree_ips n1 \<inter> net_tree_ips n2 = {}` have "i\<notin>net_tree_ips n2"
+      with \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close> have "i\<notin>net_tree_ips n2"
         by auto
       from assms(1) [simplified prod_eq_iff]
         have "(fst (netgmap sr s1) ++ fst (netgmap sr s2)) i =
                  (if i \<in> net_tree_ips n1 \<or> i \<in> net_tree_ips n2 then Some (\<sigma> i) else None)"
           by simp
-      also from `i\<notin>net_tree_ips n2` and `net_ips s2 = net_tree_ips n2`
+      also from \<open>i\<notin>net_tree_ips n2\<close> and \<open>net_ips s2 = net_tree_ips n2\<close>
         have "(fst (netgmap sr s1) ++ fst (netgmap sr s2)) i = fst (netgmap sr s1) i"
           by (metis dom_fst_netgmap map_add_dom_app_simps(3))
       finally show "fst (netgmap sr s1) i = Some (\<sigma> i)"
-        using `i\<in>net_tree_ips n1` by simp
+        using \<open>i\<in>net_tree_ips n1\<close> by simp
     next
       fix i
       assume "i \<notin> net_tree_ips n1"
-      with `net_ips s1 = net_tree_ips n1` have "i \<notin> net_ips s1" by simp
+      with \<open>net_ips s1 = net_tree_ips n1\<close> have "i \<notin> net_ips s1" by simp
       thus "fst (netgmap sr s1) i = None" by simp
     qed
   qed simp
@@ -715,15 +715,15 @@ lemma netgmap_subnet_split2:
         have "(fst (netgmap sr s1) ++ fst (netgmap sr s2)) i =
                  (if i \<in> net_tree_ips n1 \<or> i \<in> net_tree_ips n2 then Some (\<sigma> i) else None)"
           by simp
-      also from `i\<in>net_tree_ips n2` and `net_ips s2 = net_tree_ips n2`
+      also from \<open>i\<in>net_tree_ips n2\<close> and \<open>net_ips s2 = net_tree_ips n2\<close>
         have "(fst (netgmap sr s1) ++ fst (netgmap sr s2)) i = fst (netgmap sr s2) i"
           by (metis dom_fst_netgmap map_add_dom_app_simps(1))
       finally show "fst (netgmap sr s2) i = Some (\<sigma> i)"
-        using `i\<in>net_tree_ips n2` by simp
+        using \<open>i\<in>net_tree_ips n2\<close> by simp
     next
       fix i
       assume "i \<notin> net_tree_ips n2"
-      with `net_ips s2 = net_tree_ips n2` have "i \<notin> net_ips s2" by simp
+      with \<open>net_ips s2 = net_tree_ips n2\<close> have "i \<notin> net_ips s2" by simp
       thus "fst (netgmap sr s2) i = None" by simp
     qed
   qed simp
@@ -764,8 +764,8 @@ lemma fst_netgmap_pair_fst [simp]:
   "fst (netgmap (\<lambda>(p, q). (fst p, snd p, q)) s) = fst (netgmap fst s)"
   by (induction s) auto
 
-text {* Introduce streamlined alternatives to netgmap to simplify certain property
-        statements and thus make them easier to understand and to present. *}
+text \<open>Introduce streamlined alternatives to netgmap to simplify certain property
+        statements and thus make them easier to understand and to present.\<close>
 
 fun netlift :: "('s \<Rightarrow> 'g \<times> 'l) \<Rightarrow> 's net_state \<Rightarrow> (nat \<Rightarrow> 'g option)"
   where

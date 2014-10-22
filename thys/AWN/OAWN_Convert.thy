@@ -72,7 +72,7 @@ lemma oseqp_sos_resp_local_steps [intro!, simp]:
          and "\<forall>j\<in>{i}. \<zeta> j = \<sigma> j"
       hence "((\<zeta>, {l}broadcast(ms).p), broadcast (ms (\<sigma> i)), (\<sigma>', p)) \<in> oseqp_sos \<Gamma> i"
         by (metis obroadcastT singleton_iff)
-      with `\<forall>j\<in>{i}. \<zeta> j = \<sigma> j` show "\<exists>\<zeta>'. (\<forall>j\<in>{i}. \<zeta>' j = \<sigma>' j) \<and>
+      with \<open>\<forall>j\<in>{i}. \<zeta> j = \<sigma> j\<close> show "\<exists>\<zeta>'. (\<forall>j\<in>{i}. \<zeta>' j = \<sigma>' j) \<and>
             ((\<zeta>, {l}broadcast(ms).p), broadcast (ms (\<sigma> i)), (\<zeta>', p)) \<in> oseqp_sos \<Gamma> i"
         by blast
     next
@@ -154,7 +154,7 @@ lemma oseq_step_is_seq_step:
     hence "\<sigma>' i = \<xi>" by simp
     have "((\<xi>, {l}broadcast(ms).p), broadcast (ms \<xi>), (\<xi>, p)) \<in> seqp_sos \<Gamma>"
       by auto
-    with `\<sigma> i = \<xi>` and `\<sigma>' i = \<xi>` show "\<exists>\<xi>'. \<sigma>' i = \<xi>'
+    with \<open>\<sigma> i = \<xi>\<close> and \<open>\<sigma>' i = \<xi>\<close> show "\<exists>\<xi>'. \<sigma>' i = \<xi>'
              \<and> ((\<xi>, {l}broadcast(ms).p), broadcast (ms (\<sigma> i)), (\<xi>', p)) \<in> seqp_sos \<Gamma>"
        by clarsimp
   next
@@ -163,7 +163,7 @@ lemma oseq_step_is_seq_step:
        and "\<sigma> i = \<xi>"
     have "((\<xi>, {l}receive(fmsg).p), receive msg, (fmsg msg \<xi>, p)) \<in> seqp_sos \<Gamma>"
       by auto
-    with `\<sigma>' i = fmsg msg (\<sigma> i)` and `\<sigma> i = \<xi>`
+    with \<open>\<sigma>' i = fmsg msg (\<sigma> i)\<close> and \<open>\<sigma> i = \<xi>\<close>
       show "\<exists>\<xi>'. \<sigma>' i = \<xi>' \<and> ((\<xi>, {l}receive(fmsg).p), receive msg, (\<xi>', p)) \<in> seqp_sos \<Gamma>"
          by clarsimp
   qed (simp_all, (metis assignT choiceT1 choiceT2 groupcastT guardT
@@ -178,11 +178,11 @@ lemma reachable_oseq_seqp_sos:
   using assms(1) proof (induction rule: reachable_pair_induct)
     fix \<sigma> p
     assume "(\<sigma>, p) \<in> init OA"
-    with `initiali i (init OA) (init A)` obtain \<xi> where "\<sigma> i = \<xi>"
+    with \<open>initiali i (init OA) (init A)\<close> obtain \<xi> where "\<sigma> i = \<xi>"
                                                     and "(\<xi>, p) \<in> init A"
       by auto
-    from `(\<xi>, p) \<in> init A` have "(\<xi>, p) \<in> reachable A I" ..
-    with `\<sigma> i = \<xi>` show "\<exists>\<xi>. \<sigma> i = \<xi> \<and> (\<xi>, p) \<in> reachable A I"
+    from \<open>(\<xi>, p) \<in> init A\<close> have "(\<xi>, p) \<in> reachable A I" ..
+    with \<open>\<sigma> i = \<xi>\<close> show "\<exists>\<xi>. \<sigma> i = \<xi> \<and> (\<xi>, p) \<in> reachable A I"
       by auto
   next
     fix \<sigma> p \<sigma>' p' a
@@ -194,13 +194,13 @@ lemma reachable_oseq_seqp_sos:
                        and cr: "(\<xi>, p) \<in> reachable A I"
       by clarsimp
     from otr and spo have "((\<sigma>, p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by simp
-    with `\<sigma> i = \<xi>` obtain \<xi>' where "\<sigma>' i = \<xi>'"
+    with \<open>\<sigma> i = \<xi>\<close> obtain \<xi>' where "\<sigma>' i = \<xi>'"
                                and "((\<xi>, p), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>"
         by (auto dest!: oseq_step_is_seq_step)
     from this(2) and sp have ctr: "((\<xi>, p), a, (\<xi>', p')) \<in> trans A" by simp
-    from `(\<xi>, p) \<in> reachable A I` and ctr and `I a`
+    from \<open>(\<xi>, p) \<in> reachable A I\<close> and ctr and \<open>I a\<close>
       have "(\<xi>', p') \<in> reachable A I" ..
-    with `\<sigma>' i = \<xi>'` show "\<exists>\<xi>. \<sigma>' i = \<xi> \<and> (\<xi>, p') \<in> reachable A I"
+    with \<open>\<sigma>' i = \<xi>'\<close> show "\<exists>\<xi>. \<sigma>' i = \<xi> \<and> (\<xi>, p') \<in> reachable A I"
       by blast
   qed
 
@@ -213,10 +213,10 @@ lemma reachable_oseq_seqp_sos':
   using assms
   by - (cases s, auto dest: reachable_oseq_seqp_sos)
 
-text {*
+text \<open>
   Any invariant shown in the (simpler) closed semantics can be transferred to an invariant in
   the open semantics.
-*}
+\<close>
 
 theorem open_seq_invariant [intro]:
   assumes "A \<TTurnstile> (I \<rightarrow>) P"
@@ -229,11 +229,11 @@ theorem open_seq_invariant [intro]:
       proof (rule invariant_arbitraryI)
         fix s                                      
         assume "s \<in> reachable OA I"
-        with `initiali i (init OA) (init A)` obtain \<xi> where "(fst s) i = \<xi>"
+        with \<open>initiali i (init OA) (init A)\<close> obtain \<xi> where "(fst s) i = \<xi>"
                                                         and "(\<xi>, snd s) \<in> reachable A I"
           by (auto dest: reachable_oseq_seqp_sos' [OF _ _ spo sp])
-        with `A \<TTurnstile> (I \<rightarrow>) P` have "P (\<xi>, snd s)" by auto
-        with `(fst s) i = \<xi>` show "seql i P s" by auto
+        with \<open>A \<TTurnstile> (I \<rightarrow>) P\<close> have "P (\<xi>, snd s)" by auto
+        with \<open>(fst s) i = \<xi>\<close> show "seql i P s" by auto
       qed
     moreover from spo have "subreachable OA (other ANY {i}) {i}" ..
     ultimately show ?thesis
@@ -289,16 +289,16 @@ theorem open_seq_step_invariant [intro]:
       assume or: "(\<sigma>, p) \<in> reachable OA I"
          and otr: "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans OA"
          and "I a"
-      from or `initiali i (init OA) (init A)` spo sp obtain \<xi> where "\<sigma> i = \<xi>"
+      from or \<open>initiali i (init OA) (init A)\<close> spo sp obtain \<xi> where "\<sigma> i = \<xi>"
                                                              and cr: "(\<xi>, p) \<in> reachable A I"
         by - (drule(3) reachable_oseq_seqp_sos', auto)
       from otr and spo have "((\<sigma>, p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by simp
-      with `\<sigma> i = \<xi>` obtain \<xi>' where "\<sigma>' i = \<xi>'"
+      with \<open>\<sigma> i = \<xi>\<close> obtain \<xi>' where "\<sigma>' i = \<xi>'"
                                  and ctr: "((\<xi>, p), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>"
         by (auto dest!: oseq_step_is_seq_step)
       with sp have "((\<xi>, p), a, (\<xi>', p')) \<in> trans A" by simp
-      with `A \<TTurnstile>\<^sub>A (I \<rightarrow>) P` cr have "P ((\<xi>, p), a, (\<xi>', p'))" using `I a` ..
-      with `\<sigma> i = \<xi>` and `\<sigma>' i = \<xi>'` have "P ((\<sigma> i, p), a, (\<sigma>' i, p'))" by simp
+      with \<open>A \<TTurnstile>\<^sub>A (I \<rightarrow>) P\<close> cr have "P ((\<xi>, p), a, (\<xi>', p'))" using \<open>I a\<close> ..
+      with \<open>\<sigma> i = \<xi>\<close> and \<open>\<sigma>' i = \<xi>'\<close> have "P ((\<sigma> i, p), a, (\<sigma>' i, p'))" by simp
       thus "seqll i P ((\<sigma>, p), a, (\<sigma>', p'))" ..
     qed
     moreover from spo have "local_steps (trans OA) {i}" by simp

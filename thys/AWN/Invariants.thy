@@ -11,11 +11,11 @@ begin
 
 subsection Reachability
 
-text {*
+text \<open>
   A state is `reachable' under @{term I} if either it is the initial state, or it is the
   destination of a transition whose action satisfies @{term I} from a reachable state.
   The `standard' definition of reachability is recovered by setting @{term I} to @{term TT}.
-*}
+\<close>
 
 inductive_set reachable
   for A :: "('s, 'a) automaton"
@@ -46,10 +46,10 @@ lemma reachable_pair_induct [consumes, case_names init step]:
                               and "(\<xi>, p) \<in> reachable A I"
       by (metis pair_collapse)
     note this(2)
-    moreover from IH and `s = (\<xi>, p)` have "P \<xi> p" .
-    moreover from tr and `s = (\<xi>, p)` have "((\<xi>, p), a, (\<xi>', p')) \<in> trans A" by simp
+    moreover from IH and \<open>s = (\<xi>, p)\<close> have "P \<xi> p" .
+    moreover from tr and \<open>s = (\<xi>, p)\<close> have "((\<xi>, p), a, (\<xi>', p')) \<in> trans A" by simp
     ultimately show "P \<xi>' p'"
-      using `I a` by (rule assms(3))
+      using \<open>I a\<close> by (rule assms(3))
   qed
 
 lemma reachable_weakenE [elim]:
@@ -66,8 +66,8 @@ lemma reachable_weakenE [elim]:
        and "s \<in> reachable A Q"
        and "(s, a, s') \<in> trans A"
        and "P a"
-    from `P a` have "Q a" by (rule PQ)
-    with `s \<in> reachable A Q` and `(s, a, s') \<in> trans A` show "s' \<in> reachable A Q" ..
+    from \<open>P a\<close> have "Q a" by (rule PQ)
+    with \<open>s \<in> reachable A Q\<close> and \<open>(s, a, s') \<in> trans A\<close> show "s' \<in> reachable A Q" ..
   qed
 
 lemma reachable_weaken_TT [elim]:
@@ -85,7 +85,7 @@ lemma init_empty_reachable_empty:
     proof (induction rule: reachable.induct)
       fix s
       assume "s \<in> init A"
-      with `init A = {}` show False by simp
+      with \<open>init A = {}\<close> show False by simp
     qed
   qed
 
@@ -170,9 +170,9 @@ lemma invariant_weakenE [elim]:
     assume "s \<in> reachable A QI"
        and "(s, a, s') \<in> trans A"
        and "QI a"
-    from `QI a` have "PI a" by (rule QIPI)
-    from `s \<in> reachable A QI` and QIPI have "s \<in> reachable A PI" ..
-    hence "s' \<in> reachable A PI" using `(s, a, s') \<in> trans A` and `PI a` ..
+    from \<open>QI a\<close> have "PI a" by (rule QIPI)
+    from \<open>s \<in> reachable A QI\<close> and QIPI have "s \<in> reachable A PI" ..
+    hence "s' \<in> reachable A PI" using \<open>(s, a, s') \<in> trans A\<close> and \<open>PI a\<close> ..
     with invP have "P s'" ..
     thus "Q s'" by (rule PQ)
   qed
@@ -248,9 +248,9 @@ lemma step_invariant_weakenE [elim!]:
     assume "s \<in> reachable A QI"
        and "(s, a, s') \<in> trans A"
        and "QI a"
-    from `QI a` have "PI a" by (rule QIPI)
-    from `s \<in> reachable A QI` have "s \<in> reachable A PI" using QIPI ..
-    with invP have "P (s, a, s')" using `(s, a, s') \<in> trans A` `PI a` ..
+    from \<open>QI a\<close> have "PI a" by (rule QIPI)
+    from \<open>s \<in> reachable A QI\<close> have "s \<in> reachable A PI" using QIPI ..
+    with invP have "P (s, a, s')" using \<open>(s, a, s') \<in> trans A\<close> \<open>PI a\<close> ..
     thus "Q (s, a, s')" by (rule PQ)
   qed
 
@@ -267,8 +267,8 @@ lemma step_invariant_weaken_with_invariantE [elim]:
     hence "s' \<in> reachable A I" ..
     with pinv have "P s'" ..
     from pinv and sr have "P s" ..
-    from qinv sr tr `I a` have "Q (s, a, s')" ..
-    with `P s` and `P s'` show "R (s, a, s')" using `I a` by (rule wr)
+    from qinv sr tr \<open>I a\<close> have "Q (s, a, s')" ..
+    with \<open>P s\<close> and \<open>P s'\<close> show "R (s, a, s')" using \<open>I a\<close> by (rule wr)
   qed
 
 lemma step_to_invariantI:
@@ -290,8 +290,8 @@ lemma step_to_invariantI:
        and "I a"
       show "P s'"
     proof -
-      from sinv and `s\<in>reachable A I` and `(s, a, s')\<in>trans A` and `I a` have "Q (s, a, s')" ..
-      with `s\<in>reachable A I` and `P s` show "P s'" using `I a` by (rule step)
+      from sinv and \<open>s\<in>reachable A I\<close> and \<open>(s, a, s')\<in>trans A\<close> and \<open>I a\<close> have "Q (s, a, s')" ..
+      with \<open>s\<in>reachable A I\<close> and \<open>P s\<close> show "P s'" using \<open>I a\<close> by (rule step)
     qed
   qed
 

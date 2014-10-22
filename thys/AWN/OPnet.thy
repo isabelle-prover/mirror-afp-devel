@@ -9,9 +9,9 @@ theory OPnet
 imports OAWN_SOS OInvariants
 begin
 
-text {*
+text \<open>
   These lemmas mostly concern the preservation of node structure by @{term opnet_sos} transitions.
-*}
+\<close>
 
 lemma opnet_maintains_dom:
   assumes "((\<sigma>, ns), a, (\<sigma>', ns')) \<in> trans (opnet np p)"

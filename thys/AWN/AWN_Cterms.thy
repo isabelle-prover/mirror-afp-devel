@@ -11,11 +11,11 @@ begin
 
 subsection "Microsteps "
 
-text {*
+text \<open>
   We distinguish microsteps from `external' transitions (observable or not). Here, they are
   a kind of `hypothetical computation', since, unlike @{text \<tau>}-transitions, they do not make
   choices but rather `compute' which choices are possible.
-*}
+\<close>
 
 inductive
   microstep :: "('s, 'm, 'p, 'l) seqp_env
@@ -109,7 +109,7 @@ lemmas no_microstep [intro,simp] =
 
 subsection "Wellformed process specifications "
 
-text {*
+text \<open>
   A process specification @{text \<Gamma>} is wellformed if its @{term "microstep \<Gamma>"} relation is
   free of loops and infinite chains.
 
@@ -123,7 +123,7 @@ text {*
     @{term "\<Gamma>\<^sub>3(p3) = call(p4)"}
     @{term "\<Gamma>\<^sub>3(p4) = call(p5)"}
     \ldots
-*}
+\<close>
 
 definition
   wellformed :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> bool"
@@ -133,10 +133,10 @@ where
 lemma wellformed_defP: "wellformed \<Gamma> = wfP (\<lambda>q p. p \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
   unfolding wellformed_def wfP_def by simp
 
-text {*
+text \<open>
   The induction rule for @{term "wellformed \<Gamma>"} is stronger than @{thm seqp.induct} because
   the case for @{term "call(pn)"} can be shown with the assumption on @{term "\<Gamma> pn"}.
-*}
+\<close>
 
 lemma wellformed_induct
   [consumes 1, case_names ASSIGN CHOICE CALL GUARD UCAST BCAST GCAST SEND DELIVER RECEIVE,
@@ -158,21 +158,21 @@ lemma wellformed_induct
     fix p1 p2
     assume "\<And>q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub> q \<Longrightarrow> P q"
     then obtain "P p1" and "P p2" by (auto intro!: microstep.intros)
-    thus "P (p1 \<oplus> p2)" by (rule CHOICE [OF `wellformed \<Gamma>`])
+    thus "P (p1 \<oplus> p2)" by (rule CHOICE [OF \<open>wellformed \<Gamma>\<close>])
   next
     fix pn
     assume "\<And>q. (call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub> q \<Longrightarrow> P q"
     hence "P (\<Gamma> pn)" by (auto intro!: microstep.intros)
-    thus "P (call(pn))" by (rule CALL [OF `wellformed \<Gamma>`])
+    thus "P (call(pn))" by (rule CALL [OF \<open>wellformed \<Gamma>\<close>])
   qed (auto intro: assms)
 
 subsection "Start terms (sterms) "
 
-text {*
+text \<open>
   Formulate sets of local subterms from which an action is directly possible. Since the
   process specification @{term "\<Gamma>"} is not considered, only choice terms @{term "p1 \<oplus> p2"}
   are traversed, and not @{term "call(p)"} terms.
-*}
+\<close>
 
 fun stermsl :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p , 'l) seqp set"
 where
@@ -270,20 +270,20 @@ theorem wf_no_direct_calls[intro]:
         hence "not_call q" using no_calls [of pn]
           unfolding not_call_def by auto
 
-        from hasnext [OF `q \<in> A`] obtain q' where "q \<leadsto>\<^bsub>\<Gamma>\<^esub> q'" by auto
-        moreover from  `q \<in> stermsl (\<Gamma> pn)` `not_call q` have "\<not> (q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')"
+        from hasnext [OF \<open>q \<in> A\<close>] obtain q' where "q \<leadsto>\<^bsub>\<Gamma>\<^esub> q'" by auto
+        moreover from  \<open>q \<in> stermsl (\<Gamma> pn)\<close> \<open>not_call q\<close> have "\<not> (q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')"
           by (rule nocall_stermsl_max)
         ultimately show "False" by simp
       qed (auto dest: hasnext)
     qed
   qed
 
-subsection "Start terms "
+subsection "Start terms"
 
-text {*
+text \<open>
   The start terms are those terms, relative to a wellformed process specification @{text \<Gamma>},
   from which transitions can occur directly.
-*}
+\<close>
 
 function (domintros, sequential) sterms
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
@@ -379,7 +379,7 @@ lemma sterms_not_empty:
   assumes "wellformed \<Gamma>"
     shows "sterms \<Gamma> p \<noteq> {}"
   using assms
-  by (induct p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) simp_all
+  by (induct p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) simp_all
 
 lemma sterms_sterms [simp]:
   assumes "wellformed \<Gamma>"
@@ -390,7 +390,7 @@ lemma sterms_stermsl:
   assumes "ps \<in> sterms \<Gamma> p"
       and "wellformed \<Gamma>"
     shows "ps \<in> stermsl p \<or> (\<exists>pn. ps \<in> stermsl (\<Gamma> pn))"
-  using assms by (induction p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) auto
+  using assms by (induction p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 lemma stermsl_sterms [elim]:
   assumes "q \<in> stermsl p"
@@ -422,19 +422,19 @@ lemma no_microsteps_sterms_refl:
   proof (cases p)
     fix p1 p2
     assume "p = p1 \<oplus> p2"
-    from `wellformed \<Gamma>` have "p1 \<oplus> p2 \<notin> sterms \<Gamma> (p1 \<oplus> p2)" by simp
+    from \<open>wellformed \<Gamma>\<close> have "p1 \<oplus> p2 \<notin> sterms \<Gamma> (p1 \<oplus> p2)" by simp
     hence "sterms \<Gamma> (p1 \<oplus> p2) \<noteq> {p1 \<oplus> p2}" by auto
     moreover have "\<exists>q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub> q" by auto
     ultimately show ?thesis
-      using `p = p1 \<oplus> p2` by simp
+      using \<open>p = p1 \<oplus> p2\<close> by simp
   next
     fix pn
     assume "p = call(pn)"
-    from `wellformed \<Gamma>` have "call(pn) \<notin> sterms \<Gamma> (call(pn))" by simp
+    from \<open>wellformed \<Gamma>\<close> have "call(pn) \<notin> sterms \<Gamma> (call(pn))" by simp
     hence "sterms \<Gamma> (call(pn)) \<noteq> {call(pn)}" by auto
     moreover have "\<exists>q. (call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub> q" by auto
     ultimately show ?thesis
-      using `p = call(pn)` by simp
+      using \<open>p = call(pn)\<close> by simp
   qed simp_all
 
 lemma sterms_maximal [elim]:
@@ -468,7 +468,7 @@ lemma microstep_rtranscl_singleton [simp]:
       from this(1) have "p' = p"
       proof (rule converse_rtranclpE)
         fix q assume "p \<leadsto>\<^bsub>\<Gamma>\<^esub> q"
-        with `not_call p` and `not_choice p` have False
+        with \<open>not_call p\<close> and \<open>not_choice p\<close> have False
           by (cases p) auto
         thus "p' = p" ..
       qed simp
@@ -476,7 +476,7 @@ lemma microstep_rtranscl_singleton [simp]:
     next
       assume "p' \<in> {p}"
       hence "p' = p" ..
-      with `not_call p` and `not_choice p` show "p' \<in> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
+      with \<open>not_call p\<close> and \<open>not_choice p\<close> show "p' \<in> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
         by (cases p) simp_all
     qed
   qed
@@ -485,7 +485,7 @@ theorem sterms_maximal_microstep:
   assumes "wellformed \<Gamma>"
     shows "sterms \<Gamma> p = {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> \<not>(\<exists>q'. q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')}"
   proof
-    from `wellformed \<Gamma>` have "sterms \<Gamma> p \<subseteq> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
+    from \<open>wellformed \<Gamma>\<close> have "sterms \<Gamma> p \<subseteq> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
     proof induction
      fix p1 p2
      assume IH1: "sterms \<Gamma> p1 \<subseteq> {q. p1 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
@@ -498,7 +498,7 @@ theorem sterms_maximal_microstep:
        moreover have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub> p1" ..
        ultimately have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* p'"
          by - (rule converse_rtranclp_into_rtranclp)
-       moreover from `wellformed \<Gamma>` and `p' \<in> sterms \<Gamma> p1` have "sterms \<Gamma> p' = {p'}" ..
+       moreover from \<open>wellformed \<Gamma>\<close> and \<open>p' \<in> sterms \<Gamma> p1\<close> have "sterms \<Gamma> p' = {p'}" ..
        ultimately show "p' \<in> {q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
          by simp
      qed
@@ -510,11 +510,11 @@ theorem sterms_maximal_microstep:
        moreover have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub> p2" ..
        ultimately have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* p'"
          by - (rule converse_rtranclp_into_rtranclp)
-       with `sterms \<Gamma> p' = {p'}` show "p' \<in> {q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
+       with \<open>sterms \<Gamma> p' = {p'}\<close> show "p' \<in> {q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
          by simp
      qed
      ultimately show "sterms \<Gamma> (p1 \<oplus> p2) \<subseteq> {q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
-       using `wellformed \<Gamma>` by simp
+       using \<open>wellformed \<Gamma>\<close> by simp
     next
       fix pn
       assume IH: "sterms \<Gamma> (\<Gamma> pn) \<subseteq> {q. \<Gamma> pn \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
@@ -522,20 +522,20 @@ theorem sterms_maximal_microstep:
       proof
         fix p'
         assume "p' \<in> sterms \<Gamma> (call(pn))"
-        with `wellformed \<Gamma>` have "p' \<in> sterms \<Gamma> (\<Gamma> pn)" by simp
+        with \<open>wellformed \<Gamma>\<close> have "p' \<in> sterms \<Gamma> (\<Gamma> pn)" by simp
         with IH have "\<Gamma> pn \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* p'" and "sterms \<Gamma> p' = {p'}" by auto
         note this(1)
         moreover have "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub> \<Gamma> pn" by simp
         ultimately have "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* p'"
           by - (rule converse_rtranclp_into_rtranclp)
-        with `sterms \<Gamma> p' = {p'}` show "p' \<in> {q. (call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
+        with \<open>sterms \<Gamma> p' = {p'}\<close> show "p' \<in> {q. (call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}}"
           by simp
       qed
     qed simp_all
-    with `wellformed \<Gamma>` show "sterms \<Gamma> p \<subseteq> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> \<not>(\<exists>q'. q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')}"
+    with \<open>wellformed \<Gamma>\<close> show "sterms \<Gamma> p \<subseteq> {q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> \<not>(\<exists>q'. q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')}"
       by (simp only: no_microsteps_sterms_refl)
   next
-    from `wellformed \<Gamma>` have "{q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}} \<subseteq> sterms \<Gamma> p"
+    from \<open>wellformed \<Gamma>\<close> have "{q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}} \<subseteq> sterms \<Gamma> p"
     proof (induction)
       fix p1 p2
       assume IH1: "{q. p1 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> sterms \<Gamma> q = {q}} \<subseteq> sterms \<Gamma> p1"
@@ -545,19 +545,19 @@ theorem sterms_maximal_microstep:
         fix q'
         assume "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
            and "sterms \<Gamma> q' = {q'}"
-        with `wellformed \<Gamma>` have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>+ q'"          
+        with \<open>wellformed \<Gamma>\<close> have "(p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>+ q'"          
           by (auto dest!: rtranclpD sterms_no_choice)
         hence "p1 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q' \<or> p2 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
           by (auto dest: tranclpD)
         thus "q' \<in> sterms \<Gamma> (p1 \<oplus> p2)"
         proof
           assume "p1 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
-          with IH1 and `sterms \<Gamma> q' = {q'}` have "q' \<in> sterms \<Gamma> p1" by auto
-          with `wellformed \<Gamma>` show ?thesis by auto
+          with IH1 and \<open>sterms \<Gamma> q' = {q'}\<close> have "q' \<in> sterms \<Gamma> p1" by auto
+          with \<open>wellformed \<Gamma>\<close> show ?thesis by auto
         next
           assume "p2 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
-          with IH2 and `sterms \<Gamma> q' = {q'}` have "q' \<in> sterms \<Gamma> p2" by auto
-          with `wellformed \<Gamma>` show ?thesis by auto
+          with IH2 and \<open>sterms \<Gamma> q' = {q'}\<close> have "q' \<in> sterms \<Gamma> p2" by auto
+          with \<open>wellformed \<Gamma>\<close> show ?thesis by auto
         qed
       qed
     next
@@ -568,26 +568,26 @@ theorem sterms_maximal_microstep:
         fix q'
         assume "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
            and "sterms \<Gamma> q' = {q'}"
-        with `wellformed \<Gamma>` have "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>+ q'"
+        with \<open>wellformed \<Gamma>\<close> have "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>+ q'"
           by (auto dest!: rtranclpD sterms_no_call)
         moreover have "(call(pn)) \<leadsto>\<^bsub>\<Gamma>\<^esub> \<Gamma> pn" ..
         ultimately have "\<Gamma> pn \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q'"
           by (auto dest!: tranclpD)
-        with `sterms \<Gamma> q' = {q'}` and IH have "q' \<in> sterms \<Gamma> (\<Gamma> pn)" by auto
-        with `wellformed \<Gamma>` show "q' \<in> sterms \<Gamma> (call(pn))" by simp
+        with \<open>sterms \<Gamma> q' = {q'}\<close> and IH have "q' \<in> sterms \<Gamma> (\<Gamma> pn)" by auto
+        with \<open>wellformed \<Gamma>\<close> show "q' \<in> sterms \<Gamma> (call(pn))" by simp
       qed
     qed simp_all
-    with `wellformed \<Gamma>` show "{q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> \<not>(\<exists>q'. q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')} \<subseteq> sterms \<Gamma> p"
+    with \<open>wellformed \<Gamma>\<close> show "{q. p \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* q \<and> \<not>(\<exists>q'. q \<leadsto>\<^bsub>\<Gamma>\<^esub> q')} \<subseteq> sterms \<Gamma> p"
     by (simp only: no_microsteps_sterms_refl)
   qed
 
 subsection "Derivative terms "
 
-text {*
+text \<open>
   The derivatives of a term are those @{term sterm}s potentially reachable by taking a
   transition, relative to a wellformed process specification @{text \<Gamma>}. These terms
   overapproximate the reachable sterms, since the truth of guards is not considered.
-*}
+\<close>
 
 function (domintros) dterms
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
@@ -621,7 +621,7 @@ lemma dterms_termination:
   proof -
     have dterms_rel': "dterms_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: dterms_rel.simps elim: microstep.cases)
-    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    from \<open>wellformed(\<Gamma>)\<close> have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       unfolding wellformed_def by (simp add: wf_acc_iff)
     hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
     hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
@@ -696,29 +696,29 @@ lemma dterms_subterms:
       by auto
     hence "p1 \<in> subterms (\<Gamma> pn)" and "p2 \<in> subterms (\<Gamma> pn)"
       by auto
-    from `q \<in> dterms \<Gamma> (p1 \<oplus> p2)` wf have "q \<in> dterms \<Gamma> p1 \<or> q \<in> dterms \<Gamma> p2"
+    from \<open>q \<in> dterms \<Gamma> (p1 \<oplus> p2)\<close> wf have "q \<in> dterms \<Gamma> p1 \<or> q \<in> dterms \<Gamma> p2"
       by auto
     thus "\<exists>pn. q \<in> subterms (\<Gamma> pn)"
       proof
         assume "q \<in> dterms \<Gamma> p1"
-        with `p1 \<in> subterms (\<Gamma> pn)` show ?thesis
+        with \<open>p1 \<in> subterms (\<Gamma> pn)\<close> show ?thesis
           by (auto intro: IH1)
       next
         assume "q \<in> dterms \<Gamma> p2"
-        with `p2 \<in> subterms (\<Gamma> pn)` show ?thesis
+        with \<open>p2 \<in> subterms (\<Gamma> pn)\<close> show ?thesis
           by (auto intro: IH2)
       qed
   qed auto
 
-text {*
+text \<open>
   Note that the converse of @{thm dterms_subterms} is not true because @{term dterm}s are an
   over-approximation; i.e., we cannot show, in general, that guards return a non-empty set
   of post-states.
-*}
+\<close>
 
 subsection "Control terms "
 
-text {*
+text \<open>
   The control terms of a process specification @{term \<Gamma>} are those subterms from which
   transitions are directly possible. We can omit @{term "call(pn)"} terms, since
   the root terms of all processes are considered, and also @{term "p1 \<oplus> p2"} terms
@@ -727,7 +727,7 @@ text {*
 
   It will be shown that only the control terms, rather than all subterms, need be
   considered in invariant proofs.
-*}
+\<close>
 
 inductive_set
   cterms :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
@@ -742,8 +742,8 @@ lemma cterms_not_choice [simp]:
     shows "not_choice p"
   using assms
   proof (cases p)
-    case CHOICE from `p \<in> cterms \<Gamma>` show ?thesis
-      using `wellformed \<Gamma>` by cases simp_all
+    case CHOICE from \<open>p \<in> cterms \<Gamma>\<close> show ?thesis
+      using \<open>wellformed \<Gamma>\<close> by cases simp_all
   qed simp_all
 
 lemma cterms_no_choice [simp]:
@@ -757,8 +757,8 @@ lemma cterms_not_call [simp]:
     shows "not_call p"
   using assms
   proof (cases p)
-    case CALL from `p \<in> cterms \<Gamma>` show ?thesis
-      using `wellformed \<Gamma>` by cases simp_all
+    case CALL from \<open>p \<in> cterms \<Gamma>\<close> show ?thesis
+      using \<open>wellformed \<Gamma>\<close> by cases simp_all
   qed simp_all
 
 lemma cterms_no_call [simp]:
@@ -794,13 +794,13 @@ lemma derivs_in_cterms [simp]:
 
 subsection "Local control terms"
 
-text {*
+text \<open>
   We introduce a `local' version of @{term cterms} that does not step through calls and,
   thus, that is defined independently of a process specification @{term \<Gamma>}.
   This allows an alternative, terminating characterisation of cterms as a set of
   subterms. Including @{term "call(pn)"}s in the set makes for a simpler relation with
   @{term "stermsl"}, even if they must be filtered out for the desired characterisation.
-*}
+\<close>
 
 function
   ctermsl :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p , 'l) seqp set"
@@ -845,10 +845,10 @@ lemma ctermsl_trans [elim]:
       hence "r \<in> ctermsl p1 \<or> r \<in> ctermsl p2"
       proof (rule disj_forward)
         assume "q \<in> ctermsl p1"
-        thus "r \<in> ctermsl p1" using `r \<in> ctermsl q` by (rule CHOICE.IH)
+        thus "r \<in> ctermsl p1" using \<open>r \<in> ctermsl q\<close> by (rule CHOICE.IH)
       next
         assume "q \<in> ctermsl p2"
-        thus "r \<in> ctermsl p2" using `r \<in> ctermsl q` by (rule CHOICE.IH)
+        thus "r \<in> ctermsl p2" using \<open>r \<in> ctermsl q\<close> by (rule CHOICE.IH)
       qed
       thus "r \<in> ctermsl (p1 \<oplus> p2)" by simp
     qed auto
@@ -903,13 +903,13 @@ lemma dterms_ctermsl [intro]:
       and "wellformed \<Gamma>"
     shows "q \<in> ctermsl p \<or> (\<exists>pn. q \<in> ctermsl (\<Gamma> pn))"
   using assms(1-2)
-  proof (induction p rule: dterms_pinduct [OF `wellformed \<Gamma>`])
+  proof (induction p rule: dterms_pinduct [OF \<open>wellformed \<Gamma>\<close>])
     fix \<Gamma> l fg p
     assume "q \<in> dterms \<Gamma> ({l}\<langle>fg\<rangle> p)"
        and "wellformed \<Gamma>"
     hence "q \<in> sterms \<Gamma> p" by simp
     hence "q \<in> stermsl p \<or> (\<exists>pn. q \<in> stermsl (\<Gamma> pn))"
-      using `wellformed \<Gamma>`  by (rule sterms_stermsl)
+      using \<open>wellformed \<Gamma>\<close>  by (rule sterms_stermsl)
     thus "q \<in> ctermsl ({l}\<langle>fg\<rangle> p) \<or> (\<exists>pn. q \<in> ctermsl (\<Gamma> pn))"
     proof
       assume "q \<in> stermsl p"
@@ -950,10 +950,10 @@ lemma ctermsl_cterms [elim]:
 
 subsection "Local deriviative terms"
 
-text {*
+text \<open>
   We define local @{term "dterm"}s for use in the theorem that relates @{term "cterms"}
   and sets of @{term "ctermsl"}.
-*}
+\<close>
 
 function dtermsl
   :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> ('s, 'm, 'p, 'l) seqp set"
@@ -1023,13 +1023,13 @@ lemma call_dtermsl_empty [elim]:
 
 subsection "More properties of control terms"
 
-text {*
+text \<open>
   We now show an alternative definition of @{term "cterms"} based on sets of local control
   terms. While the original definition has convenient induction and simplification rules,
   useful for proving properties like cterms\_includes\_sterms\_of\_seq\_reachable, this
   definition makes it easier to systematically generate the set of control terms of a
   process specification.
-*}
+\<close>
 
 theorem cterms_def':
   assumes wfg: "wellformed \<Gamma>"
@@ -1045,7 +1045,7 @@ theorem cterms_def':
       then obtain pn' where "p \<in> stermsl (\<Gamma> pn')" using wfg
         by (blast dest: sterms_stermsl_heads)
       hence "p \<in> ctermsl (\<Gamma> pn')" ..
-      moreover from `p \<in> sterms \<Gamma> (\<Gamma> pn)` wfg have "not_call p" by simp
+      moreover from \<open>p \<in> sterms \<Gamma> (\<Gamma> pn)\<close> wfg have "not_call p" by simp
       ultimately show "p \<in> ?ctermsl_set" by auto
     next
       fix pp p
@@ -1057,12 +1057,12 @@ theorem cterms_def':
       hence "\<exists>pn. p \<in> ctermsl (\<Gamma> pn)"
         proof
           assume "p \<in> ctermsl pp"
-          from `pp \<in> cterms \<Gamma>` and IH obtain pn' where "pp \<in> ctermsl (\<Gamma> pn')"
+          from \<open>pp \<in> cterms \<Gamma>\<close> and IH obtain pn' where "pp \<in> ctermsl (\<Gamma> pn')"
             by auto
-          with `p \<in> ctermsl pp` have "p \<in> ctermsl (\<Gamma> pn')" by auto
+          with \<open>p \<in> ctermsl pp\<close> have "p \<in> ctermsl (\<Gamma> pn')" by auto
           thus "\<exists>pn. p \<in> ctermsl (\<Gamma> pn)" ..
         qed -
-      moreover from `p \<in> dterms \<Gamma> pp` wfg have "not_call p" by simp
+      moreover from \<open>p \<in> dterms \<Gamma> pp\<close> wfg have "not_call p" by simp
       ultimately show "p \<in> ?ctermsl_set" by auto
     qed
   next
@@ -1074,21 +1074,21 @@ theorem cterms_def':
     thus "p \<in> cterms \<Gamma>"
     proof
       assume "p \<in> stermsl (\<Gamma> pn)"
-      hence "p \<in> sterms \<Gamma> (\<Gamma> pn)" using `not_call p` wfg ..
+      hence "p \<in> sterms \<Gamma> (\<Gamma> pn)" using \<open>not_call p\<close> wfg ..
       thus "p \<in> cterms \<Gamma>" ..
     next
       assume "\<exists>p'\<in>dtermsl (\<Gamma> pn). p \<in> ctermsl p'"
       then obtain p' where p'1: "p' \<in> dtermsl (\<Gamma> pn)"
                        and p'2: "p \<in> ctermsl p'" ..
-      from p'2 and `not_call p` have "not_call p'" ..
+      from p'2 and \<open>not_call p\<close> have "not_call p'" ..
       from p'1 obtain ps where ps1: "ps \<in> stermsl (\<Gamma> pn)"
                            and ps2: "p' \<in> dtermsl ps"
         by (blast dest: dtermsl_add_stermsl_beforeD)
       from ps2 have "not_call ps" ..
       with ps1 have "ps \<in> cterms \<Gamma>" using wfg by auto
-      with `p' \<in> dtermsl ps` and `not_call p'` have "p' \<in> cterms \<Gamma>" using wfg by auto
+      with \<open>p' \<in> dtermsl ps\<close> and \<open>not_call p'\<close> have "p' \<in> cterms \<Gamma>" using wfg by auto
       hence "sterms \<Gamma> p' \<subseteq> cterms \<Gamma>" using wfg by auto
-      with `p \<in> ctermsl p'` `not_call p` show "p \<in> cterms \<Gamma>" using wfg ..
+      with \<open>p \<in> ctermsl p'\<close> \<open>not_call p\<close> show "p \<in> cterms \<Gamma>" using wfg ..
     qed
   qed
 
@@ -1110,7 +1110,7 @@ lemma subterms_in_cterms [elim]:
       and "not_call p"
       and "not_choice p"
     shows "p \<in> cterms \<Gamma>"
-  using assms unfolding cterms_subterms [OF `wellformed \<Gamma>`] by auto
+  using assms unfolding cterms_subterms [OF \<open>wellformed \<Gamma>\<close>] by auto
 
 lemma subterms_stermsl_ctermsl:
   assumes "q \<in> subterms p"
@@ -1126,13 +1126,13 @@ lemma subterms_stermsl_ctermsl:
     from * have "q \<in> {p1 \<oplus> p2} \<union> subterms p1 \<union> subterms p2" by simp
     thus "r \<in> ctermsl (p1 \<oplus> p2)"
     proof (elim UnE)
-      assume "q \<in> {p1 \<oplus> p2}" with `r \<in> stermsl q` show ?thesis
+      assume "q \<in> {p1 \<oplus> p2}" with \<open>r \<in> stermsl q\<close> show ?thesis
       by simp (metis stermsl_ctermsl)
     next
-      assume "q \<in> subterms p1" hence "r \<in> ctermsl p1" using `r \<in> stermsl q` by (rule IH1)
+      assume "q \<in> subterms p1" hence "r \<in> ctermsl p1" using \<open>r \<in> stermsl q\<close> by (rule IH1)
       thus ?thesis by simp
     next
-      assume "q \<in> subterms p2" hence "r \<in> ctermsl p2" using `r \<in> stermsl q` by (rule IH2)
+      assume "q \<in> subterms p2" hence "r \<in> ctermsl p2" using \<open>r \<in> stermsl q\<close> by (rule IH2)
       thus ?thesis by simp
     qed
   qed auto
@@ -1157,7 +1157,7 @@ lemma subterms_sterms_cterms:
     moreover from * have "p2 \<in> subterms (\<Gamma> pn)" by auto
       hence "sterms \<Gamma> p2 \<subseteq> cterms \<Gamma>" by (rule IH2)
     ultimately show "sterms \<Gamma> (p1 \<oplus> p2 ) \<subseteq> cterms \<Gamma>" using wf by simp
-  qed (auto elim!: subterms_in_cterms [OF `wellformed \<Gamma>`])
+  qed (auto elim!: subterms_in_cterms [OF \<open>wellformed \<Gamma>\<close>])
 
 lemma subterms_sterms_in_cterms:
   assumes "wellformed \<Gamma>"
@@ -1165,6 +1165,6 @@ lemma subterms_sterms_in_cterms:
       and "q \<in> sterms \<Gamma> p"
     shows "q \<in> cterms \<Gamma>"
   using assms
-  by (auto dest!: subterms_sterms_cterms [OF `wellformed \<Gamma>`])
+  by (auto dest!: subterms_sterms_cterms [OF \<open>wellformed \<Gamma>\<close>])
 
 end

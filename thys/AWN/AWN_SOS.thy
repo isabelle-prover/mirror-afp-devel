@@ -387,7 +387,7 @@ lemma pnet_never_newpkt':
     show "\<forall>i d di. a \<noteq> i:newpkt(d, di)"
     proof (intro allI)
       fix i d di
-      from `(s, a, s') \<in> trans (pnet np (n1 \<parallel> n2))`
+      from \<open>(s, a, s') \<in> trans (pnet np (n1 \<parallel> n2))\<close>
         have "(s, a, s') \<in> pnet_sos (trans (pnet np n1)) (trans (pnet np n2))"
           by simp
       thus "a \<noteq> i:newpkt(d, di)"

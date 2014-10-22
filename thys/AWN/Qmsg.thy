@@ -9,7 +9,7 @@ theory Qmsg
 imports AWN_SOS_Labels AWN_Invariants
 begin
 
-text {* Define the queue process *}
+text \<open>Define the queue process\<close>
 
 fun \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G :: "(('m::msg) list, 'm, unit, unit label) seqp_env"
 where

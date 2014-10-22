@@ -9,7 +9,7 @@ theory Inv_Cterms
 imports AWN_Labels
 begin
 
-text {*
+text \<open>
   This tactic tries to solve a goal by reducing it to a problem over (local) cterms (using
   one of the cterms\_intros intro rules); expanding those to consider all process names (using
   one of the ctermsl\_cases destruction rules); simplifying each (using the
@@ -39,7 +39,7 @@ text {*
         seq\_step\_invariant\_ctermsI [OF aodv\_wf aodv\_control\_within aodv\_simple\_labels, cterms\_intros]
   \end{enumerate}
 
-*}
+\<close>
 
 lemma has_ctermsl: "p \<in> ctermsl \<Gamma> \<Longrightarrow> p \<in> ctermsl \<Gamma>" .
 
@@ -51,7 +51,7 @@ named_theorems cterms_intros "introduction rules from cterms"
 named_theorems cterms_invs "invariants to try to apply at each vc"
 named_theorems cterms_final "elimination rules to try on each vc after simplification"
 
-ML {*
+ML \<open>
 fun simp_only thms ctxt =
   asm_full_simp_tac
      (ctxt |> Raw_Simplifier.clear_simpset |> fold Simplifier.add_simp thms)
@@ -121,9 +121,9 @@ fun intro_and_invs ctxt i =
 fun process_vcs ctxt _ =
   ALLGOALS (create_vcs ctxt ORELSE' (SOLVED' (clarsimp_tac ctxt)))
   THEN PARALLEL_ALLGOALS (TRY o each ctxt)
-*}
+\<close>
 
-method_setup inv_cterms = {*
+method_setup inv_cterms = \<open>
   let
     val intro_onlyN = "intro_only"
     val vcs_onlyN = "vcs_only"
@@ -146,7 +146,7 @@ method_setup inv_cterms = {*
        :: Simplifier.simp_modifiers)
       >> (fn tac => SIMPLE_METHOD' o tac))
   end
-*} "solve invariants by considering all (interesting) control terms"
+\<close> "solve invariants by considering all (interesting) control terms"
 
 declare
   insert_iff [cterms_env]                                                

@@ -32,11 +32,11 @@ lemma oreachable_par_subnet_induct [consumes, case_names init other local]:
                                 and "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) S U"
       by (metis net_par_oreachable_is_subnet pair_collapse)
     note this(2)
-    moreover from tr and `st = (\<sigma>, SubnetS s t)`
+    moreover from tr and \<open>st = (\<sigma>, SubnetS s t)\<close>
       have "((\<sigma>, SubnetS s t), a, (\<sigma>', SubnetS s' t')) \<in> trans (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2))" by simp
-    moreover from `S (fst st) (fst (\<sigma>', SubnetS s' t')) a` and `st = (\<sigma>, SubnetS s t)`
+    moreover from \<open>S (fst st) (fst (\<sigma>', SubnetS s' t')) a\<close> and \<open>st = (\<sigma>, SubnetS s t)\<close>
       have "S \<sigma> \<sigma>' a" by simp
-    moreover from IH and `st = (\<sigma>, SubnetS s t)` have "P \<sigma> s t" .
+    moreover from IH and \<open>st = (\<sigma>, SubnetS s t)\<close> have "P \<sigma> s t" .
     ultimately show "P \<sigma>' s' t'" by (rule local)
   next
     fix st \<sigma>' s t
@@ -48,8 +48,8 @@ lemma oreachable_par_subnet_induct [consumes, case_names init other local]:
                               and "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) S U"
       by (metis pair_collapse)
     note this(2)
-    moreover from `U (fst st) \<sigma>'` and `st = (\<sigma>, SubnetS s t)` have "U \<sigma> \<sigma>'" by simp
-    moreover from IH and `st = (\<sigma>, SubnetS s t)` have "P \<sigma> s t" .
+    moreover from \<open>U (fst st) \<sigma>'\<close> and \<open>st = (\<sigma>, SubnetS s t)\<close> have "U \<sigma> \<sigma>'" by simp
+    moreover from IH and \<open>st = (\<sigma>, SubnetS s t)\<close> have "P \<sigma> s t" .
     ultimately show "P \<sigma>' s t" by (rule other)
   qed
 
@@ -75,10 +75,10 @@ lemma other_net_tree_ips_par_left:
         hence "j\<in>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2)" by simp
         with ineq have "\<sigma>' j = \<sigma> j" ..
         thus "U (\<sigma> j) (\<sigma>' j)"
-          by simp (rule `\<And>\<xi>. U \<xi> \<xi>`)
+          by simp (rule \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)
       next
         assume "j\<notin>net_tree_ips p\<^sub>2"
-        with `j\<notin>net_tree_ips p\<^sub>1` have "j\<notin>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2)" by simp
+        with \<open>j\<notin>net_tree_ips p\<^sub>1\<close> have "j\<notin>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2)" by simp
         with outU show "U (\<sigma> j) (\<sigma>' j)" by simp
       qed
     qed
@@ -91,7 +91,7 @@ lemma other_net_tree_ips_par_right:
   proof -
     from assms(1) have "other U (net_tree_ips (p\<^sub>2 \<parallel> p\<^sub>1)) \<sigma> \<sigma>'"
       by (subst net_tree_ips_commute)
-    thus ?thesis using `\<And>\<xi>. U \<xi> \<xi>`
+    thus ?thesis using \<open>\<And>\<xi>. U \<xi> \<xi>\<close>
       by (rule other_net_tree_ips_par_left)
   qed
 
@@ -150,19 +150,19 @@ lemma opnet_sync_action_subnet_oreachable:
 
     have "(\<sigma>', s) \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
     proof -
-      from `?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'` and `\<And>\<xi>. U \<xi> \<xi>` have "?U p\<^sub>1 \<sigma> \<sigma>'"
+      from \<open>?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> have "?U p\<^sub>1 \<sigma> \<sigma>'"
         by (rule other_net_tree_ips_par_left)
       with IHs show ?thesis by - (erule(1) oreachable_other')
     qed
 
     moreover have "(\<sigma>', t) \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
     proof -
-      from `?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'` and `\<And>\<xi>. U \<xi> \<xi>` have "?U p\<^sub>2 \<sigma> \<sigma>'"
+      from \<open>?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> have "?U p\<^sub>2 \<sigma> \<sigma>'"
         by (rule other_net_tree_ips_par_right)
       with IHt show ?thesis by - (erule(1) oreachable_other')
     qed
 
-    ultimately show ?case using `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}` by simp
+    ultimately show ?case using \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close> by simp
   next
     case (local \<sigma> s t \<sigma>' s' t' a)
     hence stor: "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) (?S (p\<^sub>1 \<parallel> p\<^sub>2)) (?U (p\<^sub>1 \<parallel> p\<^sub>2))"
@@ -180,12 +180,12 @@ lemma opnet_sync_action_subnet_oreachable:
       assume "a = (H \<union> H')\<not>(K \<union> K'):arrive(m)"
          and str: "((\<sigma>, s), H\<not>K:arrive(m), (\<sigma>', s')) \<in> trans (opnet onp p\<^sub>1)"
          and ttr: "((\<sigma>, t), H'\<not>K':arrive(m), (\<sigma>', t')) \<in> trans (opnet onp p\<^sub>2)"
-      from this(1) and `oarrivemsg I \<sigma> a` have "I \<sigma> m" by simp
+      from this(1) and \<open>oarrivemsg I \<sigma> a\<close> have "I \<sigma> m" by simp
 
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `I \<sigma> m` tor ttr
+      moreover from \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -198,7 +198,7 @@ lemma opnet_sync_action_subnet_oreachable:
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `I \<sigma> m` tor ttr
+      moreover from \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -211,7 +211,7 @@ lemma opnet_sync_action_subnet_oreachable:
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `I \<sigma> m` tor ttr
+      moreover from \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -244,13 +244,13 @@ lemma opnet_sync_action_subnet_oreachable:
 
       from sor str have "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_invariantD [OF act1], simp_all)
-      moreover with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+      moreover with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
         have "\<forall>j. j\<in>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
       moreover from sor str have "\<forall>j\<in>net_tree_ips p\<^sub>1. U (\<sigma> j) (\<sigma>' j)"
         by - (drule(1) ostep_invariantD [OF act1], simp_all)
       ultimately have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
-        using tor `t' = t` by (clarsimp elim!: oreachable_other')
-                              (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+        using tor \<open>t' = t\<close> by (clarsimp elim!: oreachable_other')
+                              (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
 
       moreover from sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
@@ -263,13 +263,13 @@ lemma opnet_sync_action_subnet_oreachable:
 
       from tor ttr have "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_invariantD [OF act2], simp_all)
-      moreover with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+      moreover with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
         have "\<forall>j. j\<in>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
       moreover from tor ttr have "\<forall>j\<in>net_tree_ips p\<^sub>2. U (\<sigma> j) (\<sigma>' j)"
         by - (drule(1) ostep_invariantD [OF act2], simp_all)
       ultimately have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
-        using sor `s' = s` by (clarsimp elim!: oreachable_other')
-                              (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+        using sor \<open>s' = s\<close> by (clarsimp elim!: oreachable_other')
+                              (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
 
       moreover from tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
@@ -281,13 +281,13 @@ lemma opnet_sync_action_subnet_oreachable:
 
       from sor str have "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_invariantD [OF act1], simp_all)
-      moreover with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+      moreover with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
         have "\<forall>j. j\<in>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
       moreover from sor str have "\<forall>j\<in>net_tree_ips p\<^sub>1. U (\<sigma> j) (\<sigma>' j)"
         by - (drule(1) ostep_invariantD [OF act1], simp_all)
       ultimately have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
-        using tor `t' = t` by (clarsimp elim!: oreachable_other')
-                              (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+        using tor \<open>t' = t\<close> by (clarsimp elim!: oreachable_other')
+                              (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
 
       moreover from sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
@@ -299,27 +299,27 @@ lemma opnet_sync_action_subnet_oreachable:
 
       from tor ttr have "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_invariantD [OF act2], simp_all)
-      moreover with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+      moreover with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
         have "\<forall>j. j\<in>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
       moreover from tor ttr have "\<forall>j\<in>net_tree_ips p\<^sub>2. U (\<sigma> j) (\<sigma>' j)"
         by - (drule(1) ostep_invariantD [OF act2], simp_all)
       ultimately have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
-        using sor `s' = s` by (clarsimp elim!: oreachable_other')
-                              (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+        using sor \<open>s' = s\<close> by (clarsimp elim!: oreachable_other')
+                              (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
 
       moreover from tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
     qed
-    with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}` show ?case by simp
+    with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close> show ?case by simp
   qed
 
-text {*
+text \<open>
   `Splitting' reachability is trivial when there are no assumptions on interleavings, but
   this is useless for showing non-trivial properties, since the interleaving steps can do
   anything at all. This lemma is too weak.
-*}
+\<close>
 
 lemma subnet_oreachable_true_true:
   assumes "(\<sigma>, SubnetS s\<^sub>1 s\<^sub>2) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) (\<lambda>_ _ _. True) (\<lambda>_ _. True)"
@@ -370,13 +370,13 @@ lemma subnet_oreachable_true_true:
          "(\<sigma>, s\<^sub>2) \<in> ?oreachable p\<^sub>2" by auto
   qed
 
-text {*
+text \<open>
   It may also be tempting to try splitting from the assumption
   @{term "(\<sigma>, SubnetS s\<^sub>1 s\<^sub>2) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) (\<lambda>_ _ _. True) (\<lambda>_ _. False)"},
   where the environment step would be trivially true (since the assumption is false), but the
   lemma cannot be shown when only one side acts, since it must guarantee the assumption for
   the other side.
-*}
+\<close>
 
 lemma lift_opnet_sync_action:
   assumes "\<And>\<xi>. U \<xi> \<xi>"
@@ -440,9 +440,9 @@ lemma lift_opnet_sync_action:
         obtain sor: "(\<sigma>, s) \<in> oreachable (opnet onp p\<^sub>1) ?I (?U p\<^sub>1)"
            and tor: "(\<sigma>, t) \<in> oreachable (opnet onp p\<^sub>2) ?I (?U p\<^sub>2)"
            and "net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}"
-          by - (drule opnet_sync_action_subnet_oreachable [OF _ `\<And>\<xi>. U \<xi> \<xi>`], auto)
+          by - (drule opnet_sync_action_subnet_oreachable [OF _ \<open>\<And>\<xi>. U \<xi> \<xi>\<close>], auto)
 
-      from * and `((\<sigma>, st), a, (\<sigma>', st')) \<in> trans (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2))` and `st = SubnetS s t`
+      from * and \<open>((\<sigma>, st), a, (\<sigma>', st')) \<in> trans (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2))\<close> and \<open>st = SubnetS s t\<close>
         obtain s' t' where "st' = SubnetS s' t'"
                        and "((\<sigma>, SubnetS s t), a, (\<sigma>', SubnetS s' t'))
                               \<in> opnet_sos (trans (opnet onp p\<^sub>1)) (trans (opnet onp p\<^sub>2))"
@@ -463,7 +463,7 @@ lemma lift_opnet_sync_action:
         moreover with tor and ttr have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv2])
         ultimately show ?thesis
-          using `a = R:*cast(m)` by auto
+          using \<open>a = R:*cast(m)\<close> by auto
       next
         fix R m H K
         assume "a = R:*cast(m)" 
@@ -474,19 +474,19 @@ lemma lift_opnet_sync_action:
         moreover with sor and str have "\<forall>i\<in>net_tree_ips p\<^sub>1. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv1])
         ultimately show ?thesis
-          using `a = R:*cast(m)` by auto
+          using \<open>a = R:*cast(m)\<close> by auto
       next
         fix H K m H' K'
         assume "a = (H \<union> H')\<not>(K \<union> K'):arrive(m)"
            and str: "((\<sigma>, s), H\<not>K:arrive(m), (\<sigma>', s')) \<in> trans (opnet onp p\<^sub>1)"
            and ttr: "((\<sigma>, t), H'\<not>K':arrive(m), (\<sigma>', t')) \<in> trans (opnet onp p\<^sub>2)"
-        from this(1) and `oarrivemsg I \<sigma> a` have "I \<sigma> m" by simp
+        from this(1) and \<open>oarrivemsg I \<sigma> a\<close> have "I \<sigma> m" by simp
         with sor and str have "\<forall>i\<in>net_tree_ips p\<^sub>1. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv1])
-        moreover from tor and ttr and `I \<sigma> m` have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
+        moreover from tor and ttr and \<open>I \<sigma> m\<close> have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv2])
         ultimately show ?thesis
-          using `a = (H \<union> H')\<not>(K \<union> K'):arrive(m)` by auto
+          using \<open>a = (H \<union> H')\<not>(K \<union> K'):arrive(m)\<close> by auto
       next
         fix i d
         assume "a = i:deliver(d)"
@@ -494,7 +494,7 @@ lemma lift_opnet_sync_action:
         with sor have "((\<forall>i\<in>net_tree_ips p\<^sub>1. U (\<sigma> i) (\<sigma>' i))
                        \<and> (\<forall>i. i\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' i = \<sigma> i))"
           by (auto dest!: ostep_invariantD [OF inv1])
-        with `a = i:deliver(d)` and `\<And>\<xi>. U \<xi> \<xi>` show ?thesis
+        with \<open>a = i:deliver(d)\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> show ?thesis
           by auto
       next
         fix i d
@@ -503,7 +503,7 @@ lemma lift_opnet_sync_action:
         with tor have "((\<forall>i\<in>net_tree_ips p\<^sub>2. U (\<sigma> i) (\<sigma>' i))
                        \<and> (\<forall>i. i\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' i = \<sigma> i))"
           by (auto dest!: ostep_invariantD [OF inv2])
-        with `a = i:deliver(d)` and `\<And>\<xi>. U \<xi> \<xi>` show ?thesis
+        with \<open>a = i:deliver(d)\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> show ?thesis
           by auto
       next
         assume "a = \<tau>"
@@ -511,7 +511,7 @@ lemma lift_opnet_sync_action:
         with sor have "((\<forall>i\<in>net_tree_ips p\<^sub>1. U (\<sigma> i) (\<sigma>' i))
                        \<and> (\<forall>i. i\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' i = \<sigma> i))"
           by (auto dest!: ostep_invariantD [OF inv1])
-        with `a = \<tau>` and `\<And>\<xi>. U \<xi> \<xi>` show ?thesis
+        with \<open>a = \<tau>\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> show ?thesis
           by auto
       next
         assume "a = \<tau>"
@@ -519,7 +519,7 @@ lemma lift_opnet_sync_action:
         with tor have "((\<forall>i\<in>net_tree_ips p\<^sub>2. U (\<sigma> i) (\<sigma>' i))
                        \<and> (\<forall>i. i\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' i = \<sigma> i))"
           by (auto dest!: ostep_invariantD [OF inv2])
-        with `a = \<tau>` and `\<And>\<xi>. U \<xi> \<xi>` show ?thesis
+        with \<open>a = \<tau>\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> show ?thesis
           by auto
       next
         fix i i'
@@ -531,7 +531,7 @@ lemma lift_opnet_sync_action:
         moreover from tor and ttr have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv2])
         ultimately show ?thesis
-          using `a = connect(i, i')` by auto
+          using \<open>a = connect(i, i')\<close> by auto
       next
         fix i i'
         assume "a = disconnect(i, i')"
@@ -542,7 +542,7 @@ lemma lift_opnet_sync_action:
         moreover from tor and ttr have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
           by (auto dest: ostep_invariantD [OF inv2])
         ultimately show ?thesis
-          using `a = disconnect(i, i')` by auto
+          using \<open>a = disconnect(i, i')\<close> by auto
       qed
       thus "?inv (net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2)) ((\<sigma>, st), a, (\<sigma>', st'))" by simp
     qed
@@ -590,19 +590,19 @@ theorem subnet_oreachable:
 
     have "(\<sigma>', s) \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
     proof -
-      from `?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'` and `\<And>\<xi>. U \<xi> \<xi>` have "?U p\<^sub>1 \<sigma> \<sigma>'"
+      from \<open>?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> have "?U p\<^sub>1 \<sigma> \<sigma>'"
         by (rule other_net_tree_ips_par_left)
       with IHs show ?thesis by - (erule(1) oreachable_other')
     qed
 
     moreover have "(\<sigma>', t) \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
     proof -
-      from `?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'` and `\<And>\<xi>. U \<xi> \<xi>` have "?U p\<^sub>2 \<sigma> \<sigma>'"
+      from \<open>?U (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>'\<close> and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> have "?U p\<^sub>2 \<sigma> \<sigma>'"
         by (rule other_net_tree_ips_par_right)
       with IHt show ?thesis by - (erule(1) oreachable_other')
     qed
 
-    ultimately show ?case using `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}` by simp
+    ultimately show ?case using \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close> by simp
   next
     case (local \<sigma> s t \<sigma>' s' t' a)
     hence stor: "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) (?S (p\<^sub>1 \<parallel> p\<^sub>2)) (?U (p\<^sub>1 \<parallel> p\<^sub>2))"
@@ -621,7 +621,7 @@ theorem subnet_oreachable:
                                              \<and> (\<forall>i. i\<notin>net_tree_ips p \<longrightarrow> \<sigma>' i = \<sigma> i))))"
       by (rule lift_opnet_sync_action [OF assms(3-6)])
 
-    from `?S (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>' a` have "\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
+    from \<open>?S (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>' a\<close> have "\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
                                 and "oarrivemsg I \<sigma> a"
       by (auto elim!: otherwithE)
     from tr have "((\<sigma>, SubnetS s t), a, (\<sigma>', SubnetS s' t'))
@@ -633,19 +633,19 @@ theorem subnet_oreachable:
       assume "a = (H \<union> H')\<not>(K \<union> K'):arrive(m)"
          and str: "((\<sigma>, s), H\<not>K:arrive(m), (\<sigma>', s')) \<in> trans (opnet onp p\<^sub>1)"
          and ttr: "((\<sigma>, t), H'\<not>K':arrive(m), (\<sigma>', t')) \<in> trans (opnet onp p\<^sub>2)"
-      from this(1) and `?S (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>' a` have "I \<sigma> m" by auto
+      from this(1) and \<open>?S (p\<^sub>1 \<parallel> p\<^sub>2) \<sigma> \<sigma>' a\<close> have "I \<sigma> m" by auto
 
       with sor str have "\<forall>i\<in>net_tree_ips p\<^sub>1. S (\<sigma> i) (\<sigma>' i)"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
-      moreover from `I \<sigma> m` tor ttr have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
+      moreover from \<open>I \<sigma> m\<close> tor ttr have "\<forall>i\<in>net_tree_ips p\<^sub>2. S (\<sigma> i) (\<sigma>' i)"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       ultimately have "\<forall>i. S (\<sigma> i) (\<sigma>' i)"
-        using `\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)` by auto
+        using \<open>\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close> by auto
 
-      with `I \<sigma> m` sor str
+      with \<open>I \<sigma> m\<close> sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `\<forall>i. S (\<sigma> i) (\<sigma>' i)` `I \<sigma> m` tor ttr
+      moreover from \<open>\<forall>i. S (\<sigma> i) (\<sigma>' i)\<close> \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -656,12 +656,12 @@ theorem subnet_oreachable:
       from sor str have "I \<sigma> m"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       with sor str tor ttr have "\<forall>i. S (\<sigma> i) (\<sigma>' i)"
-        using `\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)`
+        using \<open>\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close>
         by (fastforce dest!: ostep_arrive_invariantD [OF act] ostep_arrive_invariantD [OF act])
-      with `I \<sigma> m` sor str
+      with \<open>I \<sigma> m\<close> sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `\<forall>i. S (\<sigma> i) (\<sigma>' i)` `I \<sigma> m` tor ttr
+      moreover from \<open>\<forall>i. S (\<sigma> i) (\<sigma>' i)\<close> \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -672,12 +672,12 @@ theorem subnet_oreachable:
       from tor ttr have "I \<sigma> m"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       with sor str tor ttr have "\<forall>i. S (\<sigma> i) (\<sigma>' i)"
-        using `\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)`
+        using \<open>\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close>
         by (fastforce dest!: ostep_arrive_invariantD [OF act] ostep_arrive_invariantD [OF act])
-      with `I \<sigma> m` sor str
+      with \<open>I \<sigma> m\<close> sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `\<forall>i. S (\<sigma> i) (\<sigma>' i)` `I \<sigma> m` tor ttr
+      moreover from \<open>\<forall>i. S (\<sigma> i) (\<sigma>' i)\<close> \<open>I \<sigma> m\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -686,12 +686,12 @@ theorem subnet_oreachable:
       assume str: "((\<sigma>, s), connect(i, i'), (\<sigma>', s')) \<in> trans (opnet onp p\<^sub>1)"
          and ttr: "((\<sigma>, t), connect(i, i'), (\<sigma>', t')) \<in> trans (opnet onp p\<^sub>2)"
       with sor tor have "\<forall>i. S (\<sigma> i) (\<sigma>' i)"
-        using `\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)`
+        using \<open>\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close>
         by (fastforce dest!: ostep_arrive_invariantD [OF act] ostep_arrive_invariantD [OF act])
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `\<forall>i. S (\<sigma> i) (\<sigma>' i)` tor ttr
+      moreover from \<open>\<forall>i. S (\<sigma> i) (\<sigma>' i)\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -700,12 +700,12 @@ theorem subnet_oreachable:
       assume str: "((\<sigma>, s), disconnect(i, i'), (\<sigma>', s')) \<in> trans (opnet onp p\<^sub>1)"
          and ttr: "((\<sigma>, t), disconnect(i, i'), (\<sigma>', t')) \<in> trans (opnet onp p\<^sub>2)"
       with sor tor have "\<forall>i. S (\<sigma> i) (\<sigma>' i)"
-        using `\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)`
+        using \<open>\<forall>j. j \<notin> net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2) \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close>
         by (fastforce dest!: ostep_arrive_invariantD [OF act] ostep_arrive_invariantD [OF act])
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
-      moreover from `\<forall>i. S (\<sigma> i) (\<sigma>' i)` tor ttr
+      moreover from \<open>\<forall>i. S (\<sigma> i) (\<sigma>' i)\<close> tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
       ultimately show ?thesis ..
@@ -716,21 +716,21 @@ theorem subnet_oreachable:
       from sor str have "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       hence "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
-         by (auto intro: `\<And>\<xi>. S \<xi> \<xi>`)
+         by (auto intro: \<open>\<And>\<xi>. S \<xi> \<xi>\<close>)
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
 
       moreover have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
       proof -
-        from `\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j` and `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+        from \<open>\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j\<close> and \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
           have "\<forall>j. j\<in>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
         moreover from sor str have "\<forall>j\<in>net_tree_ips p\<^sub>1. U (\<sigma> j) (\<sigma>' j)"
           by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
         ultimately show ?thesis
-          using tor `t' = t` `\<forall>j. j \<notin> net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j`
+          using tor \<open>t' = t\<close> \<open>\<forall>j. j \<notin> net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j\<close>
           by (clarsimp elim!: oreachable_other')
-             (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+             (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
       qed
       ultimately show ?thesis ..
     next
@@ -740,21 +740,21 @@ theorem subnet_oreachable:
       from tor ttr have "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       hence "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
-         by (auto intro: `\<And>\<xi>. S \<xi> \<xi>`)
+         by (auto intro: \<open>\<And>\<xi>. S \<xi> \<xi>\<close>)
       with tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
 
       moreover have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
       proof -
-        from `\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j` and `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+        from \<open>\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j\<close> and \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
           have "\<forall>j. j\<in>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
         moreover from tor ttr have "\<forall>j\<in>net_tree_ips p\<^sub>2. U (\<sigma> j) (\<sigma>' j)"
           by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
         ultimately show ?thesis
-          using sor `s' = s` `\<forall>j. j \<notin> net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j`
+          using sor \<open>s' = s\<close> \<open>\<forall>j. j \<notin> net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j\<close>
           by (clarsimp elim!: oreachable_other')
-             (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+             (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
       qed
       ultimately show ?thesis by - (rule conjI)
     next
@@ -763,21 +763,21 @@ theorem subnet_oreachable:
       from tor ttr have "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       hence "\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
-         by (auto intro: `\<And>\<xi>. S \<xi> \<xi>`)
+         by (auto intro: \<open>\<And>\<xi>. S \<xi> \<xi>\<close>)
       with tor ttr
         have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
           by - (erule(1) oreachable_local, auto)
 
       moreover have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
       proof -
-        from `\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j` and `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+        from \<open>\<forall>j. j\<notin>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j\<close> and \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
           have "\<forall>j. j\<in>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
         moreover from tor ttr have "\<forall>j\<in>net_tree_ips p\<^sub>2. U (\<sigma> j) (\<sigma>' j)"
           by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
         ultimately show ?thesis
-          using sor `s' = s` `\<forall>j. j \<notin> net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j`
+          using sor \<open>s' = s\<close> \<open>\<forall>j. j \<notin> net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j\<close>
           by (clarsimp elim!: oreachable_other')
-             (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+             (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
       qed
       ultimately show ?thesis by - (rule conjI)
     next
@@ -786,25 +786,25 @@ theorem subnet_oreachable:
       from sor str have "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j"
         by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
       hence "\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
-         by (auto intro: `\<And>\<xi>. S \<xi> \<xi>`)
+         by (auto intro: \<open>\<And>\<xi>. S \<xi> \<xi>\<close>)
       with sor str
         have "(\<sigma>', s') \<in> oreachable (opnet onp p\<^sub>1) (?S p\<^sub>1) (?U p\<^sub>1)"
           by - (erule(1) oreachable_local, auto)
 
       moreover have "(\<sigma>', t') \<in> oreachable (opnet onp p\<^sub>2) (?S p\<^sub>2) (?U p\<^sub>2)"
       proof -
-        from `\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j` and `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}`
+        from \<open>\<forall>j. j\<notin>net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j\<close> and \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close>
           have "\<forall>j. j\<in>net_tree_ips p\<^sub>2 \<longrightarrow> \<sigma>' j = \<sigma> j" by auto
         moreover from sor str have "\<forall>j\<in>net_tree_ips p\<^sub>1. U (\<sigma> j) (\<sigma>' j)"
           by - (drule(1) ostep_arrive_invariantD [OF act], simp_all)
         ultimately show ?thesis
-          using tor `t' = t` `\<forall>j. j \<notin> net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j`
+          using tor \<open>t' = t\<close> \<open>\<forall>j. j \<notin> net_tree_ips p\<^sub>1 \<longrightarrow> \<sigma>' j = \<sigma> j\<close>
           by (clarsimp elim!: oreachable_other')
-             (metis otherI `\<And>\<xi>. U \<xi> \<xi>`)+
+             (metis otherI \<open>\<And>\<xi>. U \<xi> \<xi>\<close>)+
       qed
       ultimately show ?thesis ..
     qed
-    with `net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}` show ?case by simp
+    with \<open>net_tree_ips p\<^sub>1 \<inter> net_tree_ips p\<^sub>2 = {}\<close> show ?case by simp
   qed
 
 lemmas subnet_oreachable1 [dest] = subnet_oreachable [THEN conjunct1, rotated 1]
@@ -855,7 +855,7 @@ corollary pnet_lift:
       moreover from tor have "\<forall>i\<in>net_tree_ips p\<^sub>2. P i \<sigma>"
         by (auto dest: oinvariantD [OF ih2])
       ultimately have "\<forall>i\<in>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2). P i \<sigma>" by auto
-      with `pq = (\<sigma>, SubnetS s t)` show "global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2). P i \<sigma>) pq" by simp
+      with \<open>pq = (\<sigma>, SubnetS s t)\<close> show "global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips (p\<^sub>1 \<parallel> p\<^sub>2). P i \<sigma>) pq" by simp
     qed
   qed
 

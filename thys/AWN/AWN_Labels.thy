@@ -11,11 +11,11 @@ begin
 
 subsection "Labels "
 
-text {*
+text \<open>
   Labels serve two main purposes. They allow the substitution of @{term sterm}s in
   @{term invariant} proofs. They also allow the strengthening (control state dependent)
   of invariants.
-*}
+\<close>
 
 function (domintros) labels
   :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('s, 'm, 'p, 'l) seqp \<Rightarrow> 'l set"
@@ -50,7 +50,7 @@ lemma labels_termination:
   proof -
     have labels_rel': "labels_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: labels_rel.simps intro: microstep.intros elim: microstep.cases)
-    from `wellformed(\<Gamma>)` have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
+    from \<open>wellformed(\<Gamma>)\<close> have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       unfolding wellformed_def by (simp add: wf_acc_iff)
     hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
     hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
@@ -68,7 +68,7 @@ lemma labels_not_empty:
     fixes \<Gamma> p
   assumes "wellformed \<Gamma>"
     shows "labels \<Gamma> p \<noteq> {}"
-   by (induct p rule: labels_pinduct [OF `wellformed \<Gamma>`]) simp_all
+   by (induct p rule: labels_pinduct [OF \<open>wellformed \<Gamma>\<close>]) simp_all
 
 lemma has_label [dest]:
     fixes \<Gamma> p
@@ -108,7 +108,7 @@ lemma simple_labelsI [intro]:
   shows "simple_labels \<Gamma>"
   using assms unfolding simple_labels_def by auto
 
-text {*
+text \<open>
   The @{term "simple_labels \<Gamma>"} property is necessary to transfer results shown over the
   @{term "cterms"} of a process specification @{term "\<Gamma>"} to the reachable actions of
   that process.
@@ -136,7 +136,7 @@ text {*
   pastings" of process terms, giving rise, conceptually, to an infinite tree structure. But this
   prejudices the alternative view that process calls are used as "join points" of "process threads",
   in complement to the "fork points" of the @{term "p1 \<oplus> p2"} operator.
-*}
+\<close>
 
 lemma simple_labels_in_sterms:
     fixes \<Gamma> l p
@@ -146,7 +146,7 @@ lemma simple_labels_in_sterms:
       and "l\<in>labels \<Gamma> p"
     shows "\<forall>p'\<in>sterms \<Gamma> p. l\<in>labels \<Gamma> p'"
   using assms
-  proof (induct p rule: labels_pinduct [OF `wellformed \<Gamma>`])
+  proof (induct p rule: labels_pinduct [OF \<open>wellformed \<Gamma>\<close>])
     fix \<Gamma> p1 p2
     assume sl: "simple_labels \<Gamma>"
        and wf: "wellformed \<Gamma>"
@@ -178,7 +178,7 @@ lemma labels_in_sterms:
       and "l\<in>labels \<Gamma> p"
     shows "\<exists>p'\<in>sterms \<Gamma> p. l\<in>labels \<Gamma> p'"
   using assms
-  by (induct p rule: labels_pinduct [OF `wellformed \<Gamma>`]) (auto intro: Un_iff)
+  by (induct p rule: labels_pinduct [OF \<open>wellformed \<Gamma>\<close>]) (auto intro: Un_iff)
 
 lemma labels_sterms_labels:
     fixes \<Gamma> p p' l
@@ -187,7 +187,7 @@ lemma labels_sterms_labels:
       and "l \<in> labels \<Gamma> p'"
     shows "l \<in> labels \<Gamma> p"
   using assms
-  by (induct p rule: labels_pinduct [OF `wellformed \<Gamma>`]) auto
+  by (induct p rule: labels_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 primrec labelfrom :: "int \<Rightarrow> int \<Rightarrow> ('s, 'm, 'p, 'a) seqp \<Rightarrow> int \<times> ('s, 'm, 'p, int) seqp"
 where

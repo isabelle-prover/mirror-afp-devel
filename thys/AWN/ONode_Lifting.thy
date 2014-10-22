@@ -29,7 +29,7 @@ lemma node_net_state':
     from this(1-2)
       have "(\<sigma>', NodeS i \<zeta> R) \<in> oreachable (\<langle>i : T : R\<^sub>i\<rangle>\<^sub>o) S U"
         by - (erule(1) oreachable_other')
-    with `snd s = NodeS i \<zeta> R` show "\<exists>\<sigma> \<zeta> R. (\<sigma>', snd s) = (\<sigma>, NodeS i \<zeta> R)" by simp
+    with \<open>snd s = NodeS i \<zeta> R\<close> show "\<exists>\<sigma> \<zeta> R. (\<sigma>', snd s) = (\<sigma>, NodeS i \<zeta> R)" by simp
   next
     fix s a s'
     assume rt: "s \<in> oreachable (\<langle>i : T : R\<^sub>i\<rangle>\<^sub>o) S U"
@@ -41,7 +41,7 @@ lemma node_net_state':
        by (simp add: onode_comps)
      then obtain \<sigma>' \<zeta>' R' where "s' = (\<sigma>', NodeS i \<zeta>' R')"
        using onode_sos_dest_is_net_state' by metis
-     with tr `s = (\<sigma>, NodeS i \<zeta> R)` show "\<exists>\<sigma> \<zeta> R. s' = (\<sigma>, NodeS i \<zeta> R)"
+     with tr \<open>s = (\<sigma>, NodeS i \<zeta> R)\<close> show "\<exists>\<sigma> \<zeta> R. s' = (\<sigma>, NodeS i \<zeta> R)"
        by simp
   qed
 
@@ -83,9 +83,9 @@ lemma nodemap_induct' [consumes, case_names init other local]:
     assume "s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)"
     hence "s \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
       by (rule oreachable_init)
-    with `s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)` obtain \<sigma> \<zeta> where "s = (\<sigma>, NodeS ii \<zeta> R\<^sub>i)"
+    with \<open>s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)\<close> obtain \<sigma> \<zeta> where "s = (\<sigma>, NodeS ii \<zeta> R\<^sub>i)"
       using node_net_state by (simp add: onode_comps) metis
-    with `s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)` and init show "P s" by simp
+    with \<open>s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)\<close> and init show "P s" by simp
   next
     fix s a \<sigma>'
     assume sr: "s \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
@@ -93,7 +93,7 @@ lemma nodemap_induct' [consumes, case_names init other local]:
        and "P s"
     from sr obtain \<sigma> \<zeta> R where "s = (\<sigma>, NodeS ii \<zeta> R)"
       using node_net_state' by metis
-    with sr `U (fst s) \<sigma>'` `P s` show "P (\<sigma>', snd s)"
+    with sr \<open>U (fst s) \<sigma>'\<close> \<open>P s\<close> show "P (\<sigma>', snd s)"
     by simp (metis other)
   next
     fix s a s'
@@ -105,12 +105,12 @@ lemma nodemap_induct' [consumes, case_names init other local]:
       by - (erule(2) oreachable_local)
     then obtain \<sigma>' \<zeta>' R' where [simp]: "s' = (\<sigma>', NodeS ii \<zeta>' R')"
       using node_net_state' by metis
-    from sr and `P s` obtain \<sigma> \<zeta> R
+    from sr and \<open>P s\<close> obtain \<sigma> \<zeta> R
       where [simp]: "s = (\<sigma>, NodeS ii \<zeta> R)"
         and A1: "(\<sigma>, NodeS ii \<zeta> R) \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
         and A4: "P (\<sigma>, NodeS ii \<zeta> R)"
       using node_net_state' by metis
-    with tr and `S (fst s) (fst s') a`
+    with tr and \<open>S (fst s) (fst s') a\<close>
       have A2: "((\<sigma>, NodeS ii \<zeta> R), a, (\<sigma>', NodeS ii \<zeta>' R')) \<in> trans (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)"
        and A3: "S \<sigma> \<sigma>' a" by simp_all
     from A1 A2 A3 A4 have "P (\<sigma>', NodeS ii \<zeta>' R')" by (rule local)
@@ -133,7 +133,7 @@ lemma nodemap_induct [consumes, case_names init step]:
     assume a1: "(\<sigma>, NodeS ii \<zeta> R) \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)"
     hence "R = R\<^sub>i" by (simp add: init_onode_comp)
     with a1 have "(\<sigma>, NodeS ii \<zeta> R\<^sub>i) \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)" by simp
-    with init and `R = R\<^sub>i` show "P \<sigma> \<zeta> R" by simp
+    with init and \<open>R = R\<^sub>i\<close> show "P \<sigma> \<zeta> R" by simp
   next
     fix st a \<sigma>' \<zeta>' R'
     assume "st \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
@@ -144,11 +144,11 @@ lemma nodemap_induct [consumes, case_names init step]:
                                 and "(\<sigma>, NodeS ii \<zeta> R) \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
       by (metis node_net_state')
     note this(2)
-    moreover from tr and `st = (\<sigma>, NodeS ii \<zeta> R)`
+    moreover from tr and \<open>st = (\<sigma>, NodeS ii \<zeta> R)\<close>
       have "((\<sigma>, NodeS ii \<zeta> R), a, (\<sigma>', NodeS ii \<zeta>' R')) \<in> trans (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)" by simp
-    moreover from `S (fst st) (fst (\<sigma>', NodeS ii \<zeta>' R')) a` and `st = (\<sigma>, NodeS ii \<zeta> R)`
+    moreover from \<open>S (fst st) (fst (\<sigma>', NodeS ii \<zeta>' R')) a\<close> and \<open>st = (\<sigma>, NodeS ii \<zeta> R)\<close>
       have "S \<sigma> \<sigma>' a" by simp
-    moreover from IH and `st = (\<sigma>, NodeS ii \<zeta> R)` have "P \<sigma> \<zeta> R" .
+    moreover from IH and \<open>st = (\<sigma>, NodeS ii \<zeta> R)\<close> have "P \<sigma> \<zeta> R" .
     ultimately show "P \<sigma>' \<zeta>' R'" by (rule local)
   next
     fix st \<sigma>' \<zeta> R
@@ -160,8 +160,8 @@ lemma nodemap_induct [consumes, case_names init step]:
                               and "(\<sigma>, NodeS ii \<zeta> R) \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
       by (metis surjective_pairing)
     note this(2)
-    moreover from `U (fst st) \<sigma>'` and `st = (\<sigma>, NodeS ii \<zeta> R)` have "U \<sigma> \<sigma>'" by simp
-    moreover from IH and `st = (\<sigma>, NodeS ii \<zeta> R)` have "P \<sigma> \<zeta> R" .
+    moreover from \<open>U (fst st) \<sigma>'\<close> and \<open>st = (\<sigma>, NodeS ii \<zeta> R)\<close> have "U \<sigma> \<sigma>'" by simp
+    moreover from IH and \<open>st = (\<sigma>, NodeS ii \<zeta> R)\<close> have "P \<sigma> \<zeta> R" .
     ultimately show "P \<sigma>' \<zeta> R" by (rule other)
   qed
 
@@ -237,37 +237,37 @@ lemma node_proc_reachable [dest]:
         case (onode_arrive m)
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_connect1
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_connect2
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_connect_other
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_disconnect1
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_disconnect2
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       next
         case onode_disconnect_other
         hence "\<zeta>' = \<zeta>" and "\<sigma>' ii = \<sigma> ii" by auto
         from this(2) have "other U {ii} \<sigma> \<sigma>'" by (rule *)
-        with ih and `\<zeta>' = \<zeta>` show ?thesis by auto
+        with ih and \<open>\<zeta>' = \<zeta>\<close> show ?thesis by auto
       qed
     qed
   qed
@@ -326,49 +326,49 @@ lemma node_lift_step [intro]:
       fix m \<zeta>'
       assume "a = R:*cast(m)"
          and tr': "((\<sigma>, \<zeta>), broadcast m, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (broadcast m)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (broadcast m)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix D m \<zeta>'
       assume "a = (R \<inter> D):*cast(m)"
          and tr': "((\<sigma>, \<zeta>), groupcast D m, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (groupcast D m)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (groupcast D m)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix d m \<zeta>'
       assume "a = {d}:*cast(m)"
          and tr': "((\<sigma>, \<zeta>), unicast d m, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (unicast d m)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (unicast d m)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix d \<zeta>'
       assume "a = \<tau>"
          and tr': "((\<sigma>, \<zeta>), \<not>unicast d, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (\<not>unicast d)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (\<not>unicast d)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix d \<zeta>'
       assume "a = i:deliver(d)"
          and tr': "((\<sigma>, \<zeta>), deliver d, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (deliver d)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (deliver d)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix \<zeta>'
       assume "a = \<tau>"
          and tr': "((\<sigma>, \<zeta>), \<tau>, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' \<tau>"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' \<tau>"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
       fix m \<zeta>'
       assume "a = {i}\<not>{}:arrive(m)"
          and tr': "((\<sigma>, \<zeta>), receive m, (\<sigma>', \<zeta>')) \<in> trans T"
-      from this(1) and `?S \<sigma> \<sigma>' a` have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (receive m)"
+      from this(1) and \<open>?S \<sigma> \<sigma>' a\<close> have "otherwith S {i} (orecvmsg I) \<sigma> \<sigma>' (receive m)"
         by (auto elim!: otherwithE)
       with or tr' show ?thesis by (rule ostep_invariantD [OF pinv, simplified])
     next
@@ -454,7 +454,7 @@ lemma node_lift_anycast [intro]:
       by (rule node_proc_reachable [OF _ assms(2)])
     moreover from tr have "((\<sigma>, NodeS i \<zeta> R), a, (\<sigma>', s')) \<in> onode_sos (trans T)"
       by (simp add: onode_comps)
-    ultimately show "castmsg (Q \<sigma> \<sigma>') a" using `?S \<sigma> \<sigma>' a`
+    ultimately show "castmsg (Q \<sigma> \<sigma>') a" using \<open>?S \<sigma> \<sigma>' a\<close>
       by - (erule onode_sos.cases, auto elim!: otherwithE dest!: ostep_invariantD [OF pinv])
   qed
 
