@@ -7,7 +7,7 @@
 header "Definition of rsacrypt"
 
 theory Crypt
-imports Mod "~~/src/HOL/Parity"
+imports Main Mod
 begin
 
 text {* 

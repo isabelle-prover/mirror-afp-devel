@@ -6,7 +6,7 @@
 header {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
-imports IntNatAux Parity
+imports Main IntNatAux
 begin
 
 text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
