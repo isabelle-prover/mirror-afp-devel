@@ -14,8 +14,6 @@ datatype (atoms: 'a) rexp =
   Times "('a rexp)" "('a rexp)" |
   Star "('a rexp)"
 
-datatype_compat rexp
-
 primrec lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
 "lang One = {[]}" |

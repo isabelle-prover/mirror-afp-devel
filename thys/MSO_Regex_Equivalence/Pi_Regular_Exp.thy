@@ -21,7 +21,6 @@ datatype 'a rexp =
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)" |
   Pr "('a rexp)"
-datatype_compat rexp
 derive linorder rexp
 
 text {* Lifting constructors to lists *}

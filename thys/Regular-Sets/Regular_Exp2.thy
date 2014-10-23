@@ -16,8 +16,6 @@ datatype (atoms: 'a) rexp =
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)"
 
-datatype_compat rexp
-
 context
 fixes S :: "'a set"
 begin

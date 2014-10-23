@@ -27,8 +27,6 @@ where
 | "nul (Atom3 _ _) = False"
 | "nul (Star3 _ _) = True"
 
-datatype_compat mrexp3
-
 primrec final3 where
   "final3 Zero3 = False"
 | "final3 One3 = False"

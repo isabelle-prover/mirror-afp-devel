@@ -17,7 +17,6 @@ datatype 'a rexp_dual =
   CoTimes (co: bool) "'a rexp_dual" "'a rexp_dual" |
   CoStar (co: bool) "'a rexp_dual" |
   CoPr (co: bool) "'a rexp_dual"
-datatype_compat rexp_dual
 derive linorder rexp_dual
 
 abbreviation "CoPLUS_dual b \<equiv> rexp_of_list (CoPlus b) (CoZero b)"
