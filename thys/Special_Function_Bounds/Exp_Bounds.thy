@@ -71,7 +71,7 @@ proof -
     by (simp add: field_simps power2_eq_square power3_eq_cube)
   also have "... \<le> (exp (-x/2))^2"
     apply (rule power_mono [OF 1])
-    apply (simp add: field_simps)
+    apply (simp add: algebra_simps)
     using assms
     apply (sos "((R<1 + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + (((A<0 * R<1) * (R<50/13 * [1]^2)) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
     done
@@ -96,10 +96,10 @@ proof -
     by (rule exp_lower_taylor_2)
   finally have 1: "(1/384)*(-(x^3) + 12*x^2 - 96*x + 384) \<le> exp (-x/4)" .
   have "(-(x^3) + 12*x^2 - 96*x + 384)^4 / 21743271936 = ((1/384)*(-(x^3) + 12*x^2 - 96*x + 384))^4"
-    by (simp add: field_simps) (simp add: algebra_simps  power_eq_if)
+    by (simp add: divide_simps)
   also have "... \<le> (exp (-x/4))^4"
     apply (rule power_mono [OF 1])
-    apply (simp add: field_simps)
+    apply (simp add: algebra_simps)
     using assms
     apply (sos "((R<1 + ((R<1 * ((R<1777/32 * [~539/3554*x + 1]^2) + (R<907/227456 * [x]^2))) + (((A<0 * R<1) * (R<25/1024 * [1]^2)) + ((A<=0 * R<1) * ((R<49/32 * [~2/49*x + 1]^2) + (R<45/1568 * [x]^2)))))))")
     done
