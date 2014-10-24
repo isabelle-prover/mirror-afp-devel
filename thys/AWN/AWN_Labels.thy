@@ -222,20 +222,6 @@ where
        (nn', {n}receive(fmsg). p'))"
  | "labelfrom n nn (call(fargs)) = (nn - 1, call(fargs))"
 
-primrec labelmap :: "('a \<Rightarrow> 'b) \<Rightarrow> ('s, 'm, 'p, 'a) seqp \<Rightarrow> ('s, 'm, 'p, 'b) seqp"
-where
-    "labelmap lf ({l}\<langle>f\<rangle> p)                      = {lf l}\<langle>f\<rangle> (labelmap lf p)"
-  | "labelmap lf ({l}\<lbrakk>f\<rbrakk> p)                      = {lf l}\<lbrakk>f\<rbrakk> (labelmap lf p)"
-  | "labelmap lf (p \<oplus> q)                        = (labelmap lf p) \<oplus> (labelmap lf q)"
-  | "labelmap lf ({l}unicast(fip, fmsg). p \<triangleright> q)
-                    = {(lf l)}unicast(fip, fmsg). (labelmap lf p) \<triangleright> (labelmap lf q)"
-  | "labelmap lf ({l}broadcast(fmsg). p)         = {lf l}broadcast(fmsg). (labelmap lf p)"
-  | "labelmap lf ({l}groupcast(fipset, fmsg). p) = {lf l}groupcast(fipset, fmsg). (labelmap lf p)"
-  | "labelmap lf ({l}send(fmsg). p)              = {lf l}send(fmsg). (labelmap lf p)"
-  | "labelmap lf ({l}deliver(fdata). p)          = {lf l}deliver(fdata). (labelmap lf p)"
-  | "labelmap lf ({l}receive(fmsg). p)           = {lf l}receive(fmsg). (labelmap lf p)"
-  | "labelmap lf (call(fargs))                   = call(fargs)"
-
 datatype 'pn label =
     LABEL 'pn int  ("_-:_" [1000, 1000] 999)
 

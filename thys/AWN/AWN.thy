@@ -30,7 +30,7 @@ text \<open>
   messages (@{typ 'm}), process names (@{typ 'p}),and labels (@{typ 'l}).
 \<close>
 
-datatype (dead 's, dead 'm, dead 'p, dead 'l) seqp =
+datatype (dead 's, dead 'm, dead 'p, 'l) seqp =
     GUARD "'l" "'s \<Rightarrow> 's set" "('s, 'm, 'p, 'l) seqp"
   | ASSIGN "'l" "'s \<Rightarrow> 's" "('s, 'm, 'p, 'l) seqp"
   | CHOICE "('s, 'm, 'p, 'l) seqp" "('s, 'm, 'p, 'l) seqp"
@@ -41,6 +41,7 @@ datatype (dead 's, dead 'm, dead 'p, dead 'l) seqp =
   | DELIVER "'l" "'s \<Rightarrow> data" "('s, 'm, 'p, 'l) seqp"
   | RECEIVE "'l" "'m \<Rightarrow> 's \<Rightarrow> 's" "('s, 'm, 'p, 'l) seqp"
   | CALL 'p
+  for map: labelmap
 
 syntax
   "_guard"    :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"

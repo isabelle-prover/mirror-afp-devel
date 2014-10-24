@@ -12,9 +12,11 @@ using de Bruijn notation. The syntax is parametric in the type of atoms. *}
 
 declare Let_def[simp]
 
-datatype 'a fm =
+datatype (atoms: 'a) fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
+
+notation map_fm ("map\<^bsub>fm\<^esub>")
 
 abbreviation Imp where "Imp \<phi>\<^sub>1 \<phi>\<^sub>2 \<equiv> Or (Neg \<phi>\<^sub>1) \<phi>\<^sub>2"
 abbreviation AllQ where "AllQ \<phi> \<equiv> Neg(ExQ(Neg \<phi>))"
@@ -40,26 +42,7 @@ definition list_disj :: "'a fm list \<Rightarrow> 'a fm" where
 
 abbreviation "Disj is f \<equiv> list_disj (map f is)"
 
-fun atoms :: "'a fm \<Rightarrow> 'a set" where
-"atoms TrueF = {}" |
-"atoms FalseF = {}" |
-"atoms (Atom a) = {a}" |
-"atoms (And \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms \<phi>\<^sub>1 \<union> atoms \<phi>\<^sub>2" |
-"atoms (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = atoms \<phi>\<^sub>1 \<union> atoms \<phi>\<^sub>2" |
-"atoms (Neg \<phi>) = atoms \<phi>" |
-"atoms (ExQ \<phi>) = atoms \<phi>"
-
-fun map_fm :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("map\<^bsub>fm\<^esub>") where
-"map\<^bsub>fm\<^esub> h TrueF = TrueF" |
-"map\<^bsub>fm\<^esub> h FalseF = FalseF" |
-"map\<^bsub>fm\<^esub> h (Atom a) = Atom(h a)" |
-"map\<^bsub>fm\<^esub> h (And \<phi>\<^sub>1 \<phi>\<^sub>2) = And (map\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
-"map\<^bsub>fm\<^esub> h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = Or (map\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
-"map\<^bsub>fm\<^esub> h (Neg \<phi>) = Neg (map\<^bsub>fm\<^esub> h \<phi>)" |
-"map\<^bsub>fm\<^esub> h (ExQ \<phi>) = ExQ (map\<^bsub>fm\<^esub> h \<phi>)"
-
-lemma atoms_map_fm[simp]: "atoms(map\<^bsub>fm\<^esub> f \<phi>) = f ` atoms \<phi>"
-by(induct \<phi>) auto
+lemmas atoms_map_fm[simp] = fm.set_map
 
 fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("amap\<^bsub>fm\<^esub>") where
 "amap\<^bsub>fm\<^esub> h TrueF = TrueF" |

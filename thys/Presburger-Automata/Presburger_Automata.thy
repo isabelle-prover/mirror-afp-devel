@@ -62,7 +62,7 @@ definition
   is_alph :: "nat \<Rightarrow> bool list \<Rightarrow> bool" where
   "is_alph n = (\<lambda>w. length w = n)"
 
-datatype 'a bdd = Leaf 'a | Branch "'a bdd" "'a bdd"
+datatype 'a bdd = Leaf 'a | Branch "'a bdd" "'a bdd" for map: bdd_map
 
 primrec bddh :: "nat \<Rightarrow> 'a bdd \<Rightarrow> bool"
 where
@@ -90,10 +90,7 @@ proof (induct bdd arbitrary: n m)
   qed
 qed simp
 
-primrec bdd_all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a bdd \<Rightarrow> bool"
-where
-  "bdd_all P (Leaf v) = P v"
-| "bdd_all P (Branch l r) = (bdd_all P l \<and> bdd_all P r)"
+abbreviation "bdd_all \<equiv> pred_bdd"
 
 fun bdd_lookup :: "'a bdd \<Rightarrow> bool list \<Rightarrow> 'a"
 where
@@ -127,11 +124,6 @@ lemma bdd_all_bdd_lookup_iff: "bddh n bdd \<Longrightarrow> bdd_all P bdd = (\<f
     qed
     with Branch k show ?case by auto
   qed
-
-primrec bdd_map :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a bdd \<Rightarrow> 'b bdd"
-where
-  "bdd_map f (Leaf a) = Leaf (f a)"
-| "bdd_map f (Branch l r) = Branch (bdd_map f l) (bdd_map f r)"
 
 lemma bdd_all_bdd_map:
   assumes "bdd_all P bdd"

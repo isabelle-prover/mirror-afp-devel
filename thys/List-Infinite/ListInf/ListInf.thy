@@ -940,10 +940,7 @@ subsection {* Generalised lists as combination of finite and infinite lists *}
 
 subsubsection {* Basic definitions *}
 
-datatype 'a glist = FL "'a list" | IL "'a ilist"
-
-thm list.simps
-term nth
+datatype (gset: 'a) glist = FL "'a list" | IL "'a ilist" for map: gmap
 
 definition
   glength :: "'a glist \<Rightarrow> enat"
@@ -964,12 +961,6 @@ where
     FL xs \<Rightarrow> (case b of FL ys \<Rightarrow> FL (xs @ ys) | IL f \<Rightarrow> IL (xs \<frown> f)) |
     IL f  \<Rightarrow> IL f"
 definition
-  gmap    :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a glist \<Rightarrow> 'b glist"
-where
-  "gmap f a \<equiv> case a of
-    FL xs \<Rightarrow> FL (map f xs) |
-    IL g  \<Rightarrow> IL (f \<circ> g)"
-definition
   gtake   :: "enat \<Rightarrow> 'a glist \<Rightarrow> 'a glist"
 where
   "gtake n a \<equiv> case n of
@@ -985,12 +976,6 @@ where
       FL xs \<Rightarrow> FL (xs \<up> m) |
       IL f  \<Rightarrow> IL (f \<Up> m)) |
     \<infinity> \<Rightarrow> FL []"
-definition
-  gset    :: "'a glist \<Rightarrow> 'a set"
-where
-  "gset a \<equiv> case a of
-    FL xs \<Rightarrow> set xs |
-    IL f  \<Rightarrow> range f"
 definition
   gnth    :: "'a glist \<Rightarrow> nat \<Rightarrow> 'a"             (infixl "!\<^sub>g" 100)
 where
@@ -1024,7 +1009,7 @@ lemma gappend_glength[simp]: "glength (a @\<^sub>g b) = glength a + glength b"
 by (unfold gappend_def, case_tac a, case_tac b, simp+)
 
 lemma gmap_glength[simp]: "glength (gmap f a) = glength a"
-by (unfold gmap_def, case_tac a, simp+)
+by (case_tac a, simp+)
 
 lemma glength_0_conv[simp]: "(glength a = 0) = (a = FL [])"
 by (unfold glength_def, case_tac a, simp+)
@@ -1104,24 +1089,19 @@ by fastforce
 subsubsection {* @{text gmap} *}
 
 lemma gmap_gappend[simp]: "gmap f (a @\<^sub>g b) = gmap f a @\<^sub>g gmap f b"
-by (unfold gappend_def gmap_def, induct a, induct b, simp+)
+by (unfold gappend_def, induct a, induct b, simp+)
 
 thm map_map
-lemma gmap_gmap[simp]: "gmap f (gmap g a) = gmap (f \<circ> g) a"
-apply (case_tac a)
-apply (simp add: gmap_def expand_ilist_eq)+
-done
+lemmas gmap_gmap[simp] = glist.map_comp
 
 thm map_eq_conv
 lemma gmap_eq_conv[simp]: "(gmap f a = gmap g a) = (\<forall>x\<in>gset a. f x = g x)"
 apply (case_tac a)
-apply (simp add: gmap_def gset_def o_eq_conv)+
+apply (simp add: o_eq_conv)+
 done
 
 thm map_cong
-lemma gmap_cong: "
-  \<lbrakk> a = b; \<And>x. x \<in> gset b \<Longrightarrow> f x = g x \<rbrakk> \<Longrightarrow> gmap f a = gmap g b"
-by simp
+lemmas gmap_cong = glist.map_cong
 
 thm map_is_Nil_conv
 lemma gmap_is_Nil_conv: "(gmap f a = FL []) = (a = FL [])"
@@ -1139,23 +1119,22 @@ thm set_append
 lemma gset_gappend[simp]: "
   gset (a @\<^sub>g b) = 
   (case a of FL a' \<Rightarrow> set a' \<union> gset b | IL a'  \<Rightarrow> range a')"
-by (unfold gset_def gappend_def, case_tac a, case_tac b, simp+)
+by (unfold gappend_def, case_tac a, case_tac b, simp+)
 lemma gset_gappend_if: "
   gset (a @\<^sub>g b) = 
   (if glength a < \<infinity> then gset a \<union> gset b else gset a)"
-by (unfold gset_def gappend_def, case_tac a, case_tac b, simp+)
+by (unfold gappend_def, case_tac a, case_tac b, simp+)
 
 thm set_empty
 lemma gset_empty[simp]: "(gset a = {}) = (a = FL [])"
-by (unfold gset_def, case_tac a, simp+)
+by (case_tac a, simp+)
 
 thm set_map
-lemma gset_gmap[simp]: "gset (gmap f a) = f ` gset a"
-by (unfold gset_def gmap_def, case_tac a, simp+)
+lemmas gset_gmap[simp] = glist.set_map
 
 thm card_length
 lemma icard_glength: "icard (gset a) \<le> glength a"
-apply (unfold icard_def gset_def glength_def)
+apply (unfold icard_def glength_def)
 apply (case_tac a)
 apply (simp add: card_length)+
 done
@@ -1188,11 +1167,11 @@ by (simp add: gnth_gappend)
 
 thm nth_map
 lemma gmap_gnth[simp]: "enat n < glength a \<Longrightarrow> gmap f a !\<^sub>g n = f (a !\<^sub>g n)"
-by (unfold gmap_def gnth_def, case_tac a, simp+)
+by (unfold gnth_def, case_tac a, simp+)
 
 thm in_set_conv_nth
 lemma in_gset_cong_gnth: "(x \<in> gset a) = (\<exists>i. enat i < glength a \<and> a !\<^sub>g i = x)"
-apply (unfold gset_def gnth_def, case_tac a)
+apply (unfold gnth_def, case_tac a)
 apply (fastforce simp: in_set_conv_nth)+
 done
 

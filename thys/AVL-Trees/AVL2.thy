@@ -33,17 +33,13 @@ text {*
   simplifies the correctness proofs.
 *}
 
-datatype 'a tree\<^sub>0 = ET\<^sub>0 |  MKT\<^sub>0 'a "'a tree\<^sub>0" "'a tree\<^sub>0"
+datatype (set_of: 'a) tree\<^sub>0 = ET\<^sub>0 |  MKT\<^sub>0 'a "'a tree\<^sub>0" "'a tree\<^sub>0"
 
 subsubsection {* Auxiliary functions *}
 
 primrec height :: "'a tree\<^sub>0 \<Rightarrow> nat" where
   "height ET\<^sub>0 = 0"
   | "height (MKT\<^sub>0 n l r) = 1 + max (height l) (height r)"
-
-primrec set_of :: "'a tree\<^sub>0 \<Rightarrow> 'a set"  where
-  "set_of ET\<^sub>0 = {}"
-  | "set_of (MKT\<^sub>0 n l r) = insert n (set_of l \<union> set_of r)"
 
 primrec is_ord :: "('a::preorder) tree\<^sub>0 \<Rightarrow> bool" where
   "is_ord ET\<^sub>0 = True"
