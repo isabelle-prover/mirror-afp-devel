@@ -1033,7 +1033,7 @@ proof
 
     have "\<And>s. (inverse c * a) * P s + (inverse c * b) * Q s =
               inverse c * (a * P s + b * Q s)"
-      by(simp add:field_simps)
+      by(simp add: divide_simps)
     with sabPQ and nni
     have si: "sound (\<lambda>s. (inverse c * a) * P s + (inverse c * b) * Q s)"
       by(auto intro:sc_sound)
@@ -1054,7 +1054,7 @@ proof
       by(simp add:distrib_left tminus_left_distrib)
     also {
       have X: "\<And>s. (inverse c * a) * t P s + (inverse c * b) * t Q s =
-                   inverse c * (a * t P s + b * t Q s)" by(simp add:field_simps)
+                   inverse c * (a * t P s + b * t Q s)" by(simp add: divide_simps)
       also from nni and notm
       have "inverse c * (a * t P s + b * t Q s) \<le>
             inverse c * (t (\<lambda>s. a * P s + b * Q s) s)"

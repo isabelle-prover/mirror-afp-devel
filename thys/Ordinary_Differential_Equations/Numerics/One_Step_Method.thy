@@ -339,7 +339,7 @@ next
   finally
   have "dist (x t (Suc j)) (grid_function (discrete_evolution \<psi>) x0 t (Suc j))
     \<le> B / L * (exp (L * (t (Suc j) - t 0) + 1) - 1) *
-    max_stepsize j ^ p" by (simp add: field_simps)
+    max_stepsize j ^ p" by (simp add: algebra_simps field_simps)
   also have "... \<le> B / L * (exp (L * (t (Suc j) - t 0) + 1) - 1) *
     max_stepsize (Suc j) ^ p"
     using `B\<ge>0``L\<ge>0` max_stepsize_nonneg

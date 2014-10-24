@@ -605,7 +605,7 @@ proof (cases mc)
     show ?case
     proof (cases "c * d = 0")
       case False
-      thus ?thesis by (simp add: nd Cons, simp only: field_simps)
+      thus ?thesis by (simp add: nd Cons field_simps)
     next
       case True
       let ?l = "c * (d * (eval_monom \<alpha> m * eval_monom \<alpha> n))"

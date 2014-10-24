@@ -193,13 +193,13 @@ next
       by simp
     also have
       "\<dots> = x/n + (1+(1/n)- 1)*\<Sum>:xs + \<Sum>:(x#xs)"
-      by (subst mult_1_left [symmetric, of "\<Sum>:xs"], simp only: field_simps)
+      by (subst mult_1_left [symmetric, of "\<Sum>:xs"]) (simp add: field_simps)
     also have
       "\<dots> = x/n + (1/n)*\<Sum>:xs + \<Sum>:(x#xs)"
       by simp
     also have
-      "\<dots> = (1/n)*\<Sum>:(x#xs) + 1*\<Sum>:(x#xs)" by(simp add:field_simps)
-    finally show ?thesis by (simp only: field_simps)
+      "\<dots> = (1/n)*\<Sum>:(x#xs) + 1*\<Sum>:(x#xs)" by(simp add: divide_simps)
+    finally show ?thesis by (simp add: field_simps)
   qed
 qed
 
