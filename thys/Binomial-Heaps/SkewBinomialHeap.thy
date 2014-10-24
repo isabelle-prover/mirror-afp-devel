@@ -26,26 +26,15 @@ text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
   global root, such that we also get a constant time findMin operation.
 *}
 
-subsection "Datatype"
-
-datatype ('e, 'a) SkewBinomialTree = 
-  Node 'e "'a::linorder" nat "('e , 'a) SkewBinomialTree list"
-
-type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
-
 locale SkewBinomialHeapStruc_loc
 begin
 
-text {* Projections  *}
-primrec val  :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> 'e" where
-  "val (Node e a r ts) = e"
-primrec prio :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> 'a" where
-  "prio (Node e a r ts) = a"
-primrec rank :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> nat" where
-  "rank (Node e a r ts) = r"
-primrec children :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> 
-  ('e, 'a) SkewBinomialQueue" where
-  "children (Node e a r ts) = ts"
+subsection "Datatype"
+
+datatype ('e, 'a) SkewBinomialTree = 
+  Node (val: 'e) (prio: "'a::linorder") (rank: nat) (children: "('e , 'a) SkewBinomialTree list")
+
+type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
 
 subsubsection "Abstraction to Multisets"
 text {* Returns a multiset with all (element, priority) pairs from a queue *}
@@ -457,13 +446,13 @@ theorem tree_height_estimate_lower:
 
 lemma size_mset_tree_upper: "tree_invar t \<Longrightarrow> 
   size (tree_to_multiset t) \<le> (2::nat)^(Suc (rank t)) - (1::nat)"
-  apply (cases t) 
-  by (simp only: tree_rank_estimate_upper rank.simps) 
+  apply (cases t)
+  by (simp only: tree_rank_estimate_upper SkewBinomialTree.sel(3)) 
 
 lemma size_mset_tree_lower: "tree_invar t \<Longrightarrow> 
   size (tree_to_multiset t) \<ge> (2::nat)^(rank t)"
   apply (cases t) 
-  by (simp only: tree_rank_estimate_lower rank.simps) 
+  by (simp only: tree_rank_estimate_lower SkewBinomialTree.sel(3)) 
 
 
 lemma invar_butlast: "invar (bq @ [t]) \<Longrightarrow> invar bq"
@@ -1212,7 +1201,7 @@ qed
 
 lemma mset_children: "queue_to_multiset (children t) = 
   tree_to_multiset t - {# (val t, prio t) #}"
-  by(cases t, auto simp add: diff_cancel)
+  by(cases t, auto)
 
 lemma mset_insertList: 
   "\<lbrakk>\<forall>t \<in> set ts. rank t = 0 \<and> children t = [] ; queue_invar q\<rbrakk> \<Longrightarrow> 
@@ -1721,6 +1710,10 @@ qed
 
 
 
+
+locale Bootstrapped
+begin
+
 subsubsection "Datatype"
 text {* We manually specialize the binomial tree to contain elements, that, in, 
   turn, may contain trees.
@@ -1730,20 +1723,14 @@ text {* We manually specialize the binomial tree to contain elements, that, in,
 
 
 datatype ('e, 'a) BsSkewBinomialTree = 
-  BsNode "('e, 'a::linorder) BsSkewElem"
-        nat "('e , 'a) BsSkewBinomialTree list"
+  BsNode (val: "('e, 'a::linorder) BsSkewElem")
+        (rank: nat) (children: "('e , 'a) BsSkewBinomialTree list")
 and
 ('e,'a) BsSkewElem =
-  Element 'e 'a "('e,'a) BsSkewBinomialTree list"
+  Element 'e (eprio: 'a) "('e,'a) BsSkewBinomialTree list"
 
 type_synonym ('e,'a) BsSkewHeap = "unit + ('e,'a) BsSkewElem"
 type_synonym ('e,'a) BsSkewBinomialQueue = "('e,'a) BsSkewBinomialTree list"
-
-
-
-
-locale Bootstrapped
-begin
 
 subsubsection "Specialization Boilerplate"
 text {*
@@ -1753,12 +1740,9 @@ text {*
   and re-using the correctness lemmas proven there.
 *}
 
-text {* Priority of element *}
-primrec eprio where "eprio (Element e a q) = a"
-
 text {* Mapping to original binomial trees and queues*}
 fun bsmapt where
-  "bsmapt (BsNode e r q) = Node e (eprio e) r (map bsmapt q)"
+  "bsmapt (BsNode e r q) = SkewBinomialHeapStruc.Node e (eprio e) r (map bsmapt q)"
 
 abbreviation bsmap where
   "bsmap q == map bsmapt q"
@@ -1775,16 +1759,8 @@ abbreviation "queue_to_multiset_aux q
 
 
 text {* Now starts the re-implementation of the functions*}
-primrec val  :: "('e, 'a::linorder) BsSkewBinomialTree \<Rightarrow> ('e,'a) BsSkewElem" 
-  where
-  "val (BsNode e r ts) = e"
 primrec prio :: "('e, 'a::linorder) BsSkewBinomialTree \<Rightarrow> 'a" where
   "prio (BsNode e r ts) = eprio e"
-primrec rank :: "('e, 'a::linorder) BsSkewBinomialTree \<Rightarrow> nat" where
-  "rank (BsNode e r ts) = r"
-primrec children :: "('e, 'a::linorder) BsSkewBinomialTree \<Rightarrow> 
-  ('e, 'a) BsSkewBinomialQueue" where
-  "children (BsNode e r ts) = ts"
 
 lemma proj_xlate:
   "val t = SkewBinomialHeapStruc.val (bsmapt t)"
@@ -2377,7 +2353,7 @@ subsection "Hiding the Invariant"
 
 subsubsection "Datatype"
 typedef ('e, 'a) SkewBinomialHeap =
-  "{q :: ('e,'a::linorder) BsSkewHeap. BsSkewBinomialHeapStruc.bs_invar q }"
+  "{q :: ('e,'a::linorder) BsSkewBinomialHeapStruc.BsSkewHeap. BsSkewBinomialHeapStruc.bs_invar q }"
   apply (rule_tac x="BsSkewBinomialHeapStruc.bs_empty" in exI)
   apply (auto)
   done

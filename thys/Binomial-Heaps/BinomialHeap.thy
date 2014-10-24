@@ -4,28 +4,15 @@ theory BinomialHeap
 imports Main "~~/src/HOL/Library/Multiset"
 begin
 
+locale BinomialHeapStruc_loc
+begin
+
 subsection {* Datatype Definition *}
 
 text {* Binomial heaps are lists of binomial trees. *}
 datatype ('e, 'a) BinomialTree = 
-  Node 'e "'a::linorder" nat "('e , 'a) BinomialTree list"
+  Node (val: 'e) (prio: "'a::linorder") (rank: nat) (children: "('e , 'a) BinomialTree list")
 type_synonym ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
-
-locale BinomialHeapStruc_loc
-begin
-
-subsubsection "Auxiliary Definitions"
-
-text {* Projections *}
-primrec val  :: "('e, 'a::linorder) BinomialTree \<Rightarrow> 'e" where
-  "val (Node e a r ts) = e"
-primrec prio :: "('e, 'a::linorder) BinomialTree \<Rightarrow> 'a" where
-  "prio (Node e a r ts) = a"
-primrec rank :: "('e, 'a::linorder) BinomialTree \<Rightarrow> nat" where
-  "rank (Node e a r ts) = r"
-primrec children :: 
-  "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTree list" where
-  "children (Node e a r ts) = ts"
 
 text {* Combine two binomial trees (of rank $r$) to one (of rank $r+1$). *}
 fun  link :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTree \<Rightarrow> 
@@ -299,7 +286,7 @@ qed*)
 lemma size_mset_tree: "tree_invar t \<Longrightarrow> 
   size (tree_to_multiset t) = (2::nat)^(rank t)"
   apply (cases t)
-  by (simp only: tree_rank_estimate rank.simps) 
+  by (simp only: tree_rank_estimate BinomialTree.sel(3)) 
 
 
 lemma invar_butlast: "invar (bq @ [t]) \<Longrightarrow> invar bq"
@@ -1061,7 +1048,7 @@ interpretation BinomialHeapStruc: BinomialHeapStruc_loc .
 subsection "Hiding the Invariant"
 subsubsection "Datatype"
 typedef ('e, 'a) BinomialHeap =
-  "{q :: ('e,'a::linorder) BinomialQueue_inv. BinomialHeapStruc.invar q }"
+  "{q :: ('e,'a::linorder) BinomialHeapStruc.BinomialQueue_inv. BinomialHeapStruc.invar q }"
   apply (rule_tac x="Nil" in exI)
   apply auto
   done
