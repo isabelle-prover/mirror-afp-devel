@@ -39,8 +39,9 @@ proof
 
   from formula have "?np dvd ?A * 2^(?n+1)"
     by (metis mult.commute dvd_def) 
-  hence             "?np dvd ?A" 
-    by (metis coprime_dvd_mult_nat coprime_minus_one_nat power_eq_0_iff zero_neq_numeral)
+  then have "?np dvd ?A"
+    using coprime_minus_one_nat [of "2 ^ (exponent 2 m + 1)"]
+    by (auto intro: coprime_dvd_mult_nat) 
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
 

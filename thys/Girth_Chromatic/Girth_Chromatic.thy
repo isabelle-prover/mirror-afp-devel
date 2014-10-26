@@ -71,8 +71,8 @@ lemma sets_eq: "sets P = Pow (Pow S_edges)" by (simp add: P_def sets_point_measu
 lemma emeasure_eq:
   "emeasure P A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
   using finite_edges p_prob
-  by (simp add: P_def space_point_measure emeasure_point_measure_finite zero_le_mult_iff
-                zero_le_power_iff sets_point_measure emeasure_notin_sets)
+  by (simp add: P_def space_point_measure emeasure_point_measure_finite 
+    sets_point_measure emeasure_notin_sets)
 
 lemma integrable_P[intro, simp]: "integrable P (f::_ \<Rightarrow> real)"
   using finite_edges by (simp add: integrable_point_measure_finite P_def)
@@ -727,7 +727,7 @@ proof -
     by (auto intro!: ereal_divide_right_mono)
   also have "\<dots> \<le> chromatic_number H" using uverts_H T1 by (intro chromatic_lb) auto
   finally have T3: "l < chromatic_number H"
-    by (simp add: ereal_of_enat_less_iff del: ereal_of_enat_simps)
+    by (simp del: ereal_of_enat_simps)
 
   from T1 T2 T3 show ?thesis by fast
 qed

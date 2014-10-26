@@ -18,8 +18,7 @@ text{*@{text exp_lower_taylor_1} is the theorem @{thm Transcendental.exp_ge_add_
 text{*All even approximants are lower bounds.*}
 lemma exp_lower_taylor_even: "even n \<Longrightarrow> (\<Sum>m<n. (x ^ m) / real (fact m)) \<le> exp x"
   using Maclaurin_exp_le [of x n]
-  by (auto simp add: zero_le_divide_iff)
-     (metis exp_ge_zero zero_le_mult_iff zero_le_power_iff)
+  by (auto simp add: zero_le_even_power)
 
 lemma exp_upper_taylor_even:
   assumes n: "even n"
@@ -228,7 +227,7 @@ theorem exp_cf3_upper_bound_pos: "0 \<le> x \<Longrightarrow> numer_cf3 (-x) > 0
   by auto (metis exp_le_cancel_iff exp_ln_iff)
 
 corollary "0 \<le> x \<Longrightarrow> x \<le> 4.64 \<Longrightarrow> exp x \<le> exp_cf3 x"
-  by (metis minus_divide_left numer_cf3_pos neg_le_iff_le exp_cf3_upper_bound_pos)
+  by (metis numer_cf3_pos neg_le_iff_le exp_cf3_upper_bound_pos)
 
 
 text{*Lower bound for negative x, provided @{term"exp_cf3 x > 0"}]*}
@@ -399,7 +398,7 @@ theorem exp_cf5_upper_bound_pos: "0 \<le> x \<Longrightarrow> numer_cf5 (-x) > 0
   by auto (metis exp_le_cancel_iff exp_ln_iff)
 
 corollary "0 \<le> x \<Longrightarrow> x \<le> 7.293 \<Longrightarrow> exp x \<le> exp_cf5 x"
-  by (metis minus_divide_left neg_le_iff_le numer_cf5_pos exp_cf5_upper_bound_pos)
+  by (metis neg_le_iff_le numer_cf5_pos exp_cf5_upper_bound_pos)
 
 text{*Lower bound for negative x, provided @{term"exp_cf5 x > 0"}]*}
 lemma ln_exp_cf5_lower_bound_neg:
@@ -567,7 +566,7 @@ theorem exp_cf7_upper_bound_pos: "0 \<le> x \<Longrightarrow> numer_cf7 (-x) > 0
   by auto (metis exp_le_cancel_iff exp_ln_iff)
 
 corollary "0 \<le> x \<Longrightarrow> x \<le> 9.943 \<Longrightarrow> exp x \<le> exp_cf7 x"
-  by (metis minus_divide_left neg_le_iff_le numer_cf7_pos exp_cf7_upper_bound_pos)
+  by (metis neg_le_iff_le numer_cf7_pos exp_cf7_upper_bound_pos)
 
 text{*Lower bound for negative x, provided @{term"exp_cf7 x > 0"}]*}
 lemma ln_exp_cf7_lower_bound_neg:

@@ -871,12 +871,14 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
     next
       case False
       hence "poly max_rp a > 0"
-        unfolding max_rp_def poly_power using  `poly max_rp a\<noteq>0`  
-        by (metis (erased, hide_lams) "1.prems"(2) `poly p max_r = 0` poly_power_n_eq power_eq_0_iff
-          power_one_right zero_less_power_eq)
+        unfolding max_rp_def poly_power
+        using `poly max_rp a \<noteq> 0` "1.prems" `poly p max_r = 0`
+        zero_le_even_power [of _ "a - max_r"] 
+        by (auto simp add: le_less)
       moreover have "poly max_rp b > 0"
-        unfolding max_rp_def poly_power using `poly max_rp b \<noteq> 0`
-        by (metis False max_rp_def poly_power power_eq_0_iff zero_less_power_eq)
+        unfolding max_rp_def poly_power
+        using `poly max_rp b \<noteq> 0` False max_rp_def poly_power zero_le_even_power [of _ "b - max_r"]
+        by (auto simp add: le_less)
       ultimately have "?R=cross p' a b"
         unfolding p' mult.commute cross_def using variation_mult_pos
         by auto
@@ -1489,5 +1491,5 @@ theorem sturm_R:
   shows "card {x. poly p x=0} =  changes_R_smods p (pderiv p)"
 using sturm_tarski_R[OF `p\<noteq>0`,of 1,unfolded taq_def] by force
 
-
 end
+

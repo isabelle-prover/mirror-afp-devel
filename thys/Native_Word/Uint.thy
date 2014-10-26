@@ -559,14 +559,13 @@ definition wivs_overflow_uint :: uint
   where "wivs_overflow_uint \<equiv> 1 << (dflt_size - 1)"
 
 (* TODO: Move to Word *)
-lemma dflt_size_word_pow_ne_zero[simp]:
-  "(2\<Colon>('a::len) word) ^ (len_of TYPE('a) - Suc (0\<Colon>nat)) \<noteq> 0"
-proof -
-  have "len_of (TYPE('a)\<Colon>'a itself) - Numeral1 \<noteq> len_of (TYPE('a)\<Colon>'a itself)"
-    by (metis Suc_pred len_gt_0 n_not_Suc_n numeral_1_eq_Suc_0)
-  thus "2 ^ (len_of (TYPE('a)\<Colon>'a itself) - Suc 0) \<noteq> (0\<Colon>'a word)"
-    by (metis diff_less_Suc nat_neq_iff not_less_eq numeral_1_eq_Suc_0 
-      power_eq_0_iff unat_0 unat_p2 zero_neq_numeral)
+lemma dflt_size_word_pow_ne_zero [simp]:
+  "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) \<noteq> 0"
+proof
+  assume "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) = 0"
+  then have "unat ((2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0)) = unat 0"
+    by simp
+  then show False by (simp add: unat_p2)
 qed
 
 lemma uint_divmod_code [code]:

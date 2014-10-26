@@ -485,13 +485,11 @@ proof (induct "card E" arbitrary: G rule: less_induct)
       have all_even:"\<forall>n\<in>nodes (del_unEdge n1 w n2 G). even(degree n (del_unEdge n1 w n2 G))"
         proof -
           have "even (degree n1 (del_unEdge n1 w n2 G))" 
-            using `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G`
-            by (metis  del_edge_undirected_degree_minus even_num_iff n1(2) odd_pos 
-              valid_unMultigraph.corres)
+            using `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` n1
+            by (auto simp add: valid_unMultigraph.corres) 
           moreover have "even (degree n2 (del_unEdge n1 w n2 G))" 
-            using  `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` 
-            by (metis del_edge_undirected_degree_minus' even_num_iff n2(2) odd_pos 
-              valid_unMultigraph.corres)
+            using  `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` n2
+            by (auto simp add: valid_unMultigraph.corres)
           moreover have  "\<And>n. n \<in> nodes (del_unEdge n1 w n2 G) \<Longrightarrow> n \<noteq> n1 \<Longrightarrow> n \<noteq> n2 \<Longrightarrow> 
               even (degree n (del_unEdge n1 w n2 G))" 
             using valid_unMultigraph.degree_frame[OF `valid_unMultigraph G`,

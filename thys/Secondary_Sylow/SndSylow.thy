@@ -231,8 +231,9 @@ proof -
   with Psize have "k * p ^ a = card (conj.stabilizer P)" by (metis num_sylow_normalizer)
   with orderEq have "p ^ a * m = card (subgroups_of_size (p ^ a)) * p ^ a * k" by (auto simp:mult.assoc mult.commute)
   hence "p ^ a * m = p ^ a * card (subgroups_of_size (p ^ a)) * k" by auto
-  with pa_not_zero have "m = card (subgroups_of_size (p ^ a)) * k" by auto
-  thus ?thesis unfolding dvd_def by simp
+  then have "m = card (subgroups_of_size (p ^ a)) * k"
+    using pa_not_zero by auto
+  then show ?thesis ..
 qed
 
 text {*We can restrict this locale to refer to a subgroup of order at

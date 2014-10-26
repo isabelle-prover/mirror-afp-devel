@@ -1298,7 +1298,7 @@ proof-
     using l8
     by (auto simp add: dvd_def)
   hence two_dvd_fst: "2 dvd fst p"
-    by (auto dest: two_is_prime simp add: numeral_3_eq_3 ac_simps)
+    by auto
   hence "8 dvd (fst p)^3"
     by (auto simp add: dvd_def power_def)
   hence "8 dvd ((snd p)^3) * 2" 
@@ -1307,12 +1307,9 @@ proof-
   hence "2 dvd (snd p)^3"
     by (auto simp add: dvd_def)
   then have two_dvd_snd: "2 dvd snd p"
-    by (auto dest: two_is_prime simp add: numeral_3_eq_3 ac_simps)
+    by auto
   thus ?thesis 
-    using hypsp
-    apply (auto simp add: dvd_def)
-    by (metis gcd_greatest_int one_less_numeral_iff rel_simps(9) 
-              two_dvd_fst two_dvd_snd zdvd_not_zless zero_less_one)
+    using hypsp gcd_greatest_int two_dvd_fst by fastforce 
 qed
 
 

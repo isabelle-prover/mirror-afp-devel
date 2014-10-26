@@ -279,8 +279,6 @@ next
   finally show ?case .
 qed  
 
-lemma [simp]: "rev_path (rev_path ps)= ps" unfolding rev_path_def by (induct ps,auto)
-
 lemma rem_unPath_graph [simp]: 
     "rem_unPath (rev_path ps) G=rem_unPath ps G"
 proof -
@@ -1004,7 +1002,7 @@ next
             by (metis (mono_tags) Cons.prems(3) Nat.add_0_right is_trail.simps(2) x)
         next
           case False
-          thus ?thesis by (metis (mono_tags) add_0_iff)
+          then show ?thesis by auto
         qed    
       finally have "num_of_odd_nodes (rem_unPath (x#xs) G)=
                         num_of_odd_nodes G+(if even(degree v G) \<and> v\<noteq>v' then 2 else 0)" .
@@ -1111,7 +1109,7 @@ next
                 monoid_add_class.add.right_neutral x)
         next
           case False
-          thus ?thesis by (metis (mono_tags) add_0_iff)
+          then show ?thesis by auto
         qed    
       finally have "num_of_odd_nodes (rem_unPath (x#xs) G)=
                         num_of_odd_nodes G+(if odd(degree v G) \<and> v\<noteq>v' then -2 else 0)" .
@@ -1151,12 +1149,10 @@ next
                 rem_UnPath_parity_others x
             by auto
           hence "even (degree x1 G)" by (metis parity_x1_x3(1))
-          thus ?thesis 
-            by (metis (hide_lams, mono_tags) Cons.prems(3)  is_trail.simps(2)  
-                monoid_add_class.add.right_neutral x)
+          with Cons.prems(3) x show ?thesis by auto
         next
           case False
-          thus ?thesis by (metis (mono_tags) add_0_iff)
+          then show ?thesis by auto
         qed   
       finally have "num_of_odd_nodes (rem_unPath (x#xs) G)=
                         num_of_odd_nodes G+(if odd(degree v G) \<and> v\<noteq>v' then -2 else 0)" .
@@ -1268,7 +1264,7 @@ proof  (cases "even(degree v' G)")
   case True
   hence "?L = num_of_odd_nodes G + (if even (degree v G)\<and> v\<noteq>v' then 2 else 0)" 
     by (metis assms(1) assms(2) assms(3) rem_UnPath_even)
-  thus ?thesis by (metis (mono_tags) True assms(4) add.commute plus_nat.add_0)
+  with assms show ?thesis by auto  
 next
   case False
   hence "?L = num_of_odd_nodes G + (if odd (degree v G)\<and> v\<noteq>v' then -2 else 0)" 
@@ -1821,7 +1817,7 @@ proof -
           moreover have "(x1,x2,x3)\<in>edges (del_unEdge v w v' G)" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
           ultimately have "(x1,x2,x3)\<in>edges G1" 
-            using G1 G2 `nodes G1 \<inter> nodes G2={}` `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)` 
+            using G1 G2 `nodes G1 \<inter> nodes G2={}` `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)`
             by (metis (full_types) IntI Un_iff  bex_empty   valid_G2' valid_graph.E_validD(1) )
           moreover have "valid_graph.is_path (del_unEdge v w v' G) x3 xs v" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)

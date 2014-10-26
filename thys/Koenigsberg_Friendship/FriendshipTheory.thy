@@ -716,8 +716,8 @@ next
       ultimately show "card {ps'. ext ps ps'}=k" by (metis `card qs = k` card_image)
     qed
   moreover have "\<forall>ps1 ps2. ps1\<noteq>ps2 \<longrightarrow> {n. ext ps1 n} \<inter> {n. ext ps2 n}={}" using ext by auto
-  moreover have "finite {ps. length ps = n \<and> adj_path v ps}" 
-    by (metis Suc.hyps assms(4) card_infinite nat_less_le power_eq_0_iff)
+  moreover have "finite {ps. length ps = n \<and> adj_path v ps}"
+    using Suc.hyps assms by (auto intro: card_ge_0_finite)
   ultimately have "card (\<Union>v\<in>{ps. length ps = n \<and> adj_path v ps}. {n. ext v n}) 
       = k * card {ps. length ps = n \<and> adj_path v ps}" 
     using card_partition'[of "{ps. length ps = n \<and> adj_path v ps}" ext k] `k>0` by auto 
@@ -1608,4 +1608,4 @@ proof -
   ultimately show ?thesis by force
 qed
 
-end  
+end
