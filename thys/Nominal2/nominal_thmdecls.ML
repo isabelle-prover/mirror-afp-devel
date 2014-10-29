@@ -62,7 +62,6 @@ sig
   val eqvt_del: attribute
   val eqvt_raw_add: attribute
   val eqvt_raw_del: attribute
-  val setup: theory -> theory
   val get_eqvts_thms: Proof.context -> thm list
   val get_eqvts_raw_thms: Proof.context -> thm list
   val eqvt_transform: Proof.context -> thm -> thm
@@ -90,6 +89,11 @@ structure EqvtRawData = Generic_Data
 
 val eqvts = Item_Net.content o EqvtData.get
 val eqvts_raw = map snd o Termtab.dest o EqvtRawData.get
+
+val _ =
+  Theory.setup
+   (Global_Theory.add_thms_dynamic (@{binding "eqvts"}, eqvts) #>
+    Global_Theory.add_thms_dynamic (@{binding "eqvts_raw"}, eqvts_raw))
 
 val get_eqvts_thms = eqvts o Context.Proof
 val get_eqvts_raw_thms = eqvts_raw o Context.Proof
@@ -310,15 +314,11 @@ fun eqvt_add_or_del eqvt_fn raw_fn =
 val eqvt_add = eqvt_add_or_del add_thm add_raw_thm
 val eqvt_del = eqvt_add_or_del del_thm del_raw_thm
 
-
-(** setup function **)
-
-val setup =
-  Attrib.setup @{binding "eqvt"} (Attrib.add_del eqvt_add eqvt_del)
-    "Declaration of equivariance lemmas - they will automatically be brought into the form ?p \<bullet> c \<equiv> c" #>
-  Attrib.setup @{binding "eqvt_raw"} (Attrib.add_del eqvt_raw_add eqvt_raw_del)
-    "Declaration of raw equivariance lemmas - no transformation is performed" #>
-  Global_Theory.add_thms_dynamic (@{binding "eqvts"}, eqvts) #>
-  Global_Theory.add_thms_dynamic (@{binding "eqvts_raw"}, eqvts_raw)
+val _ =
+  Theory.setup
+   (Attrib.setup @{binding "eqvt"} (Attrib.add_del eqvt_add eqvt_del)
+      "Declaration of equivariance lemmas - they will automatically be brought into the form ?p \<bullet> c \<equiv> c" #>
+    Attrib.setup @{binding "eqvt_raw"} (Attrib.add_del eqvt_raw_add eqvt_raw_del)
+      "Declaration of raw equivariance lemmas - no transformation is performed")
 
 end;

@@ -771,7 +771,6 @@ subsection {* Eqvt infrastructure *}
 text {* Setup of the theorem attributes @{text eqvt} and @{text eqvt_raw}. *}
 
 ML_file "nominal_thmdecls.ML"
-setup "Nominal_ThmDecls.setup"
 
 
 lemmas [eqvt] =

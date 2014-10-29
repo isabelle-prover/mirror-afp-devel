@@ -64,7 +64,6 @@ sig
   val vcg: (Proof.context -> Proof.method) context_parser
   val vcg_step: (Proof.context -> Proof.method) context_parser
   val hoare_rule: (Proof.context -> Proof.method) context_parser
-  val setup: theory -> theory
 end;
 
 structure Hoare: HOARE =
@@ -3642,10 +3641,10 @@ val vcg_step = gen_simp_method hoare_step_tac;
 
 (* setup theory *)
 
-val setup =
-  Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
-    "declaration of Simplifier rule for vcg"
- (*#> add_wp_tacs initial_wp_tacs*)
-
+val _ =
+  Theory.setup
+    (Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
+      "declaration of Simplifier rule for vcg")
+   (*#> add_wp_tacs initial_wp_tacs*)
 
 end;
