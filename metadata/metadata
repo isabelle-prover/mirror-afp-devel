@@ -2095,7 +2095,8 @@ abstract =
  book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
  The values of the constants in the definition of tameness are identical to
  those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
- The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
+ The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
+ the <a href="http://www.in.tum.de/~nipkow/pubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
 extra-history =
   Change history:
   [2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
