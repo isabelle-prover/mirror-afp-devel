@@ -11,7 +11,6 @@ imports
 begin
 
 ML_file "stream_fusion.ML"
-setup {* Stream_Fusion.setup *}
 
 simproc_setup stream_fusion ("f x") = {* K Stream_Fusion.fusion_simproc *}
 declare [[simproc del: stream_fusion]]

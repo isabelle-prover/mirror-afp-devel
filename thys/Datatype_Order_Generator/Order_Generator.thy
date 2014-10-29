@@ -104,8 +104,4 @@ lemma linear_cases: "(x :: 'a :: linorder) = y \<or> x < y \<or> y < x" by auto
 
 ML_file "order_generator.ML" 
 
-setup {*
-  Order_Generator.setup
-*}
-
 end

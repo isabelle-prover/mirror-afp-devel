@@ -23,8 +23,6 @@ sig
   val mk_shows_list : typ -> term;
   (*creates and registers show-functions for datatypes*)
   val derive : string -> string -> theory -> theory
-  (*registers in derive-manager*)
-  val setup : theory -> theory
 end
 
 structure Show_Generator : SHOW_GENERATOR =
@@ -201,6 +199,8 @@ fun derive dtyp_name _ thy =
   
   in thy' end
 
-val setup = Derive_Manager.register_derive "show" "derives a show function for a datatype" derive
+val _ =
+  Theory.setup
+    (Derive_Manager.register_derive "show" "derives a show function for a datatype" derive)
 
 end
