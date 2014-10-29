@@ -33,10 +33,6 @@ sig
 
   (* creates and registers (0 = ord, 1 = order, 2 = linear-order) for datatype *)
   val derive : int -> string -> string -> theory -> theory
-
-  (* registeres method in Derive-Manager *)
-  val setup : theory -> theory
-
 end
 
 
@@ -555,9 +551,10 @@ fun derive kind dtyp_name _ thy =
 
   in thy''' end
 
-val setup =
-  Derive_Manager.register_derive "ord" "derives ord for a datatype" (derive 0) #>
-  Derive_Manager.register_derive "order" "derives an order for a datatype" (derive 1) #>
-  Derive_Manager.register_derive "linorder" "derives a linear order for a datatype" (derive 2)
+val _ =
+  Theory.setup
+   (Derive_Manager.register_derive "ord" "derives ord for a datatype" (derive 0) #>
+    Derive_Manager.register_derive "order" "derives an order for a datatype" (derive 1) #>
+    Derive_Manager.register_derive "linorder" "derives a linear order for a datatype" (derive 2))
 
 end

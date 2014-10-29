@@ -92,7 +92,5 @@ lemma shows_sep_paren_final:
 
 ML_file "show_generator.ML"
 
-setup {* Show_Generator.setup *}
-
 end
 

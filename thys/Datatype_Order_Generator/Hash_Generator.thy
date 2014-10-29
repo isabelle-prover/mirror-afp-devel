@@ -73,8 +73,4 @@ lemma hash_mod_lemma: "1 < (n :: nat) \<Longrightarrow> x mod n < n" by auto
 
 ML_file "hash_generator.ML"
 
-setup {*
-  Hash_Generator.setup
-*}
-
 end

@@ -6,10 +6,6 @@ sig
 
   (* creates and registers hash-functions for datatype *)
   val derive : string -> string -> theory -> theory
-
-  (* registers in derive-manager *)
-  val setup : theory -> theory
-
 end
 
 structure Hash_Generator : HASH_GENERATOR =
@@ -129,6 +125,8 @@ fun derive dtyp_name _ thy =
 
   in thy' end
 
-val setup = Derive_Manager.register_derive "hashable" "derives a hash function for a datatype" derive
+val _ =
+  Theory.setup
+    (Derive_Manager.register_derive "hashable" "derives a hash function for a datatype" derive)
 
 end
