@@ -1,6 +1,16 @@
 chapter AFP
 
 session AODV (AFP) = AWN +
+  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom,
+                 all variants. *}
+  options [ document_graph ]
+  theories
+    All
+  document_files
+    "root.bib"
+    "root.tex"
+
+session AODV_BASIC (AFP) = AWN +
   description {* Mechanized invariant proof of AODV (RFC3561) loop freedom. *}
   options [ document_graph ]
   theories
@@ -20,9 +30,6 @@ session AODV (AFP) = AWN +
     Global_Invariants
 
     Aodv_Loop_Freedom
-  document_files
-    "root.bib"
-    "root.tex"
 
 session AODV_A_NORREQID (AFP) = AWN +
   description {* Invariant proof of AODV variant: Skipping the RREQ ID *}
