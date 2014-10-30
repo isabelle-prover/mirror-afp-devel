@@ -9,6 +9,7 @@ session AODV (AFP) = AWN +
   document_files
     "root.bib"
     "root.tex"
+    "mathpartir.sty"
 
 session AODV_BASIC (AFP) = AWN +
   description {* Mechanized invariant proof of AODV (RFC3561) loop freedom. *}
