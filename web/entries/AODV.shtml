@@ -1,0 +1,134 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">L</font>oop
+freedom
+of
+the
+(untimed)
+<font class="first">A</font>ODV
+routing
+protocol
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Loop freedom of the (untimed) AODV routing protocol</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.tbrk.org/">Timothy Bourke</a> and <a href="http://www.hoefner-online.de/">Peter Höfner</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2014-10-23</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+<p>
+The Ad hoc On-demand Distance Vector (AODV) routing protocol allows
+the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh
+Network (WMN) to know where to forward data packets. Such a protocol
+is ‘loop free’ if it never leads to routing decisions that forward
+packets in circles.
+<p>
+This development mechanises an existing pen-and-paper proof of loop
+freedom of AODV. The protocol is modelled in the Algebra of
+Wireless Networks (AWN), which is the subject of an earlier paper
+and AFP mechanization. The proof relies on a novel compositional
+approach for lifting invariants to networks of nodes.
+</p><p>
+We exploit the mechanization to analyse several variants of AODV and
+show that Isabelle/HOL can re-establish most proof obligations
+automatically and identify exactly the steps that are no longer valid.
+</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{AODV-AFP,
+  author  = {Timothy Bourke and Peter Höfner},
+  title   = {Loop freedom of the (untimed) AODV routing protocol},
+  journal = {Archive of Formal Proofs},
+  month   = oct,
+  year    = 2014,
+  note    = {\url{http://afp.sf.net/entries/AODV.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="AODV" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
