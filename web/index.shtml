@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-10-23:
+<a href="entries/AODV.shtml">Loop freedom of the (untimed) AODV routing protocol</a>
+<br>Author:
+<a href="http://www.tbrk.org/">Timothy Bourke</a> and 
+<a href="http://www.hoefner-online.de/">Peter Höfner</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-10-13:
 <a href="entries/Lifting_Definition_Option.shtml">Lifting Definition Option</a>
 <br>Author:

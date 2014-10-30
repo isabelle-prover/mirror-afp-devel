@@ -1,3 +1,28 @@
+[AODV]
+title = Loop freedom of the (untimed) AODV routing protocol
+author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>
+date = 2014-10-23
+topic = Computer Science/Process Calculi
+abstract =
+ <p>
+ The Ad hoc On-demand Distance Vector (AODV) routing protocol allows
+ the nodes in a Mobile Ad hoc Network (MANET) or a Wireless Mesh
+ Network (WMN) to know where to forward data packets. Such a protocol
+ is ‘loop free’ if it never leads to routing decisions that forward
+ packets in circles.
+ <p>
+ This development mechanises an existing pen-and-paper proof of loop
+ freedom of AODV. The protocol is modelled in the Algebra of
+ Wireless Networks (AWN), which is the subject of an earlier paper
+ and AFP mechanization. The proof relies on a novel compositional
+ approach for lifting invariants to networks of nodes.
+ </p><p>
+ We exploit the mechanization to analyse several variants of AODV and
+ show that Isabelle/HOL can re-establish most proof obligations
+ automatically and identify exactly the steps that are no longer valid.
+ </p>
+
+
 [Show]
 title = Haskell's Show-Class in Isabelle/HOL
 author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
