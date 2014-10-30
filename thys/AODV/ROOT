@@ -1,0 +1,131 @@
+chapter AFP
+
+session AODV (AFP) = AWN +
+  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom. *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    Aodv_Data
+    Aodv_Message
+    Aodv
+    Aodv_Predicates
+
+    Fresher
+    Loop_Freedom
+
+    Seq_Invariants
+
+    Quality_Increases
+    OAodv
+    Global_Invariants
+
+    Aodv_Loop_Freedom
+  document_files
+    "root.bib"
+    "root.tex"
+
+session AODV_A_NORREQID (AFP) = AWN +
+  description {* Invariant proof of AODV variant: Skipping the RREQ ID *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    "variants/a_norreqid/A_Aodv_Data"
+    "variants/a_norreqid/A_Aodv_Message"
+    "variants/a_norreqid/A_Aodv"
+    "variants/a_norreqid/A_Aodv_Predicates"
+
+    "variants/a_norreqid/A_Fresher"
+    "variants/a_norreqid/A_Loop_Freedom"
+
+    "variants/a_norreqid/A_Seq_Invariants"
+
+    "variants/a_norreqid/A_Quality_Increases"
+    "variants/a_norreqid/A_OAodv"
+    "variants/a_norreqid/A_Global_Invariants"
+
+    "variants/a_norreqid/A_Aodv_Loop_Freedom"
+
+session AODV_B_FWDRREPS (AFP) = AWN +
+  description {* Invariant proof of AODV variant: Forwarding the Route Reply *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    "variants/b_fwdrreps/B_Aodv_Data"
+    "variants/b_fwdrreps/B_Aodv_Message"
+    "variants/b_fwdrreps/B_Aodv"
+    "variants/b_fwdrreps/B_Aodv_Predicates"
+
+    "variants/b_fwdrreps/B_Fresher"
+    "variants/b_fwdrreps/B_Loop_Freedom"
+
+    "variants/b_fwdrreps/B_Seq_Invariants"
+
+    "variants/b_fwdrreps/B_Quality_Increases"
+    "variants/b_fwdrreps/B_OAodv"
+    "variants/b_fwdrreps/B_Global_Invariants"
+
+    "variants/b_fwdrreps/B_Aodv_Loop_Freedom"
+
+session AODV_C_GTOBCAST (AFP) = AWN +
+  description {* Invariant proof of AODV variant: From Groupcast to Broadcast *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    "variants/c_gtobcast/C_Aodv_Data"
+    "variants/c_gtobcast/C_Aodv_Message"
+    "variants/c_gtobcast/C_Aodv"
+    "variants/c_gtobcast/C_Aodv_Predicates"
+
+    "variants/c_gtobcast/C_Fresher"
+    "variants/c_gtobcast/C_Loop_Freedom"
+
+    "variants/c_gtobcast/C_Seq_Invariants"
+
+    "variants/c_gtobcast/C_Quality_Increases"
+    "variants/c_gtobcast/C_OAodv"
+    "variants/c_gtobcast/C_Global_Invariants"
+
+    "variants/c_gtobcast/C_Aodv_Loop_Freedom"
+
+session AODV_D_FWDRREQS (AFP) = AWN +
+  description {* Invariant proof of AODV variant: Forwarding the Route Request *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    "variants/d_fwdrreqs/D_Aodv_Data"
+    "variants/d_fwdrreqs/D_Aodv_Message"
+    "variants/d_fwdrreqs/D_Aodv"
+    "variants/d_fwdrreqs/D_Aodv_Predicates"
+
+    "variants/d_fwdrreqs/D_Fresher"
+    "variants/d_fwdrreqs/D_Loop_Freedom"
+
+    "variants/d_fwdrreqs/D_Seq_Invariants"
+
+    "variants/d_fwdrreqs/D_Quality_Increases"
+    "variants/d_fwdrreqs/D_OAodv"
+    "variants/d_fwdrreqs/D_Global_Invariants"
+
+    "variants/d_fwdrreqs/D_Aodv_Loop_Freedom"
+
+session AODV_E_ALL_ABCD (AFP) = AWN +
+  description {* Invariant proof of AODV variant: Combine Four Variants *}
+  options [ document_graph ]
+  theories
+    Aodv_Basic
+    "variants/e_all_abcd/E_Aodv_Data"
+    "variants/e_all_abcd/E_Aodv_Message"
+    "variants/e_all_abcd/E_Aodv"
+    "variants/e_all_abcd/E_Aodv_Predicates"
+
+    "variants/e_all_abcd/E_Fresher"
+    "variants/e_all_abcd/E_Loop_Freedom"
+
+    "variants/e_all_abcd/E_Seq_Invariants"
+
+    "variants/e_all_abcd/E_Quality_Increases"
+    "variants/e_all_abcd/E_OAodv"
+    "variants/e_all_abcd/E_Global_Invariants"
+
+    "variants/e_all_abcd/E_Aodv_Loop_Freedom"
+
