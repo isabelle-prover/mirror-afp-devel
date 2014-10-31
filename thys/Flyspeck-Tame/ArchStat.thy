@@ -63,7 +63,6 @@ definition count where
   Some(t,n,f) \<Rightarrow> Some(avgmax(stat_of_tries t),n,f))"
 
 
-ML "Toplevel.timing := true"
 (* (total number of entries, number of leaves, max number of enries per leaf),
    total number of graphs, number of final graphs
 *)
