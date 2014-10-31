@@ -115,7 +115,7 @@ fun transfer_tac ctxt i = Transfer.gen_frees_tac [] ctxt i
 
 fun add_split thms = Context.proof_map (Simplifier.map_ss (fold Splitter.add_split thms))
 
-val debug_out = if false then Output.urgent_message else (K ())
+val debug_out = if false then writeln else (K ())
 
 fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =   
   let 
