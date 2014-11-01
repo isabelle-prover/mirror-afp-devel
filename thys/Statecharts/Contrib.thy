@@ -193,7 +193,7 @@ apply auto
 done
 
 lemma ran_override [simp]:
-  "(dom A \<inter> dom B) = {} \<Longrightarrow> ran (A ++ B) = (ran A) \<union> (ran B)";
+  "(dom A \<inter> dom B) = {} \<Longrightarrow> ran (A ++ B) = (ran A) \<union> (ran B)"
 apply (unfold Int_def ran_def)
 apply (simp add: map_add_Some_iff)
 apply auto
@@ -204,7 +204,7 @@ lemma chg_map_new [simp]:
 by (unfold chg_map_def, auto)
 
 lemma chg_map_upd [simp]:
-  "m a = Some b \<Longrightarrow> chg_map f a m = m(a|->f b)";
+  "m a = Some b \<Longrightarrow> chg_map f a m = m(a|->f b)"
 by (unfold chg_map_def, auto)
 
 lemma ran_override_chg_map:

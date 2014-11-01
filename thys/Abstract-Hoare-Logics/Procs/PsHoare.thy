@@ -88,7 +88,7 @@ induction on @{term n} in the @{term CALL} case.*}
 apply(subgoal_tac "\<forall>n. C |\<Turnstile>_n D")
 apply(unfold valid_defs exec_iff_execn[THEN eq_reflection])
  apply fast
-apply(erule hoare.induct);
+apply(erule hoare.induct)
       apply simp
      apply simp
      apply fast
@@ -122,11 +122,11 @@ definition MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn
   [simp]: "MGT c = (\<lambda>z s. z = s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma strengthen_pre:
- "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C\<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> C\<turnstile> {P'}c{Q}";
+ "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C\<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> C\<turnstile> {P'}c{Q}"
 by(rule hoare.Conseq, assumption, blast)
 
 lemma MGT_implies_complete:
-  "{} \<tturnstile> {MGT c} \<Longrightarrow> \<Turnstile> {P}c{Q} \<Longrightarrow> {} \<turnstile> {P}c{Q::state assn}";
+  "{} \<tturnstile> {MGT c} \<Longrightarrow> \<Turnstile> {P}c{Q} \<Longrightarrow> {} \<turnstile> {P}c{Q::state assn}"
 apply(unfold MGT_def)
 apply (erule hoare.Conseq)
 apply(simp add: valid_defs)
@@ -187,11 +187,11 @@ apply(unfold MGT_def)
 apply(fast intro: hoare.Asm)
 done
 
-theorem Complete: "\<Turnstile> {P}c{Q}  \<Longrightarrow>  {} \<turnstile> {P}c{Q::state assn}";
+theorem Complete: "\<Turnstile> {P}c{Q}  \<Longrightarrow>  {} \<turnstile> {P}c{Q::state assn}"
 apply(rule MGT_implies_complete)
  prefer 2
  apply assumption
-apply (rule MGT_lemma);
+apply (rule MGT_lemma)
 apply(rule allI)
 apply(unfold MGT_def)
 apply(rule hoare.ConjE[OF MGT_CALL])

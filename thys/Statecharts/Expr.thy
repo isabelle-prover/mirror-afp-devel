@@ -216,12 +216,12 @@ lemma target_Target [simp]:
   "t \<in> T \<Longrightarrow> target t \<in> Target T"
 by (unfold Target_def, auto)
 
-lemma Source_union : "Source s \<union> Source t = Source (s \<union> t)";
+lemma Source_union : "Source s \<union> Source t = Source (s \<union> t)"
 apply (unfold Source_def)
-apply auto;
+apply auto
 done
 
-lemma Target_union : "Target s \<union> Target t = Target (s \<union> t)";
+lemma Target_union : "Target s \<union> Target t = Target (s \<union> t)"
 apply (unfold Target_def)
 apply auto
 done

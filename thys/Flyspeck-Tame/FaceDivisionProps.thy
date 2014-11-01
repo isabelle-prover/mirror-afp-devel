@@ -2295,14 +2295,14 @@ done
 lemma edges_split_face1: "pre_split_face f u v vs \<Longrightarrow>
  \<E>(fst(split_face f u v vs)) =
  Edges(v # rev vs @ [u]) \<union> Edges(u # between (vertices f) u v @ [v])"
-apply(simp add: edges_conv_Edges split_face_distinct1');
+apply(simp add: edges_conv_Edges split_face_distinct1')
 apply(auto simp add:split_face_def Edges_Cons Edges_append)
 done
 
 lemma edges_split_face2: "pre_split_face f u v vs \<Longrightarrow>
  \<E>(snd(split_face f u v vs)) =
  Edges(u # vs @ [v]) \<union> Edges(v # between (vertices f) v u @ [u])"
-apply(simp add: edges_conv_Edges split_face_distinct2');
+apply(simp add: edges_conv_Edges split_face_distinct2')
 apply(auto simp add:split_face_def Edges_Cons Edges_append)
 done
 

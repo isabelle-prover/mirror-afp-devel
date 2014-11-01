@@ -215,7 +215,7 @@ lemma Rep_hierauto_tuple:
 by (unfold SAs_def HAEvents_def CompFun_def HAInitValue_def, simp)
 
 lemma Rep_hierauto_select: 
-  "(HAInitValue HA, SAs HA, HAEvents HA, CompFun HA): hierauto";
+  "(HAInitValue HA, SAs HA, HAEvents HA, CompFun HA): hierauto"
 by (rule Rep_hierauto_tuple [THEN subst], rule Rep_hierauto)
 
 lemma HierAuto_select [simp]: 
@@ -285,7 +285,7 @@ done
 subsubsection {* @{text "MutuallyDistinct"} *}
 
 lemma MutuallyDistinct_Single [simp]:
-  "MutuallyDistinct {SA}";
+  "MutuallyDistinct {SA}"
 by (unfold MutuallyDistinct_def, auto)
 
 lemma MutuallyDistinct_EmptySet [simp]:
@@ -294,13 +294,13 @@ by (unfold MutuallyDistinct_def, auto)
 
 lemma MutuallyDistinct_Insert:
   "\<lbrakk> MutuallyDistinct S; (States A) \<inter>  (\<Union> B \<in> S. States B) = {} \<rbrakk>
-  \<Longrightarrow> MutuallyDistinct (insert A S)";
+  \<Longrightarrow> MutuallyDistinct (insert A S)"
 by (unfold MutuallyDistinct_def, safe, fast+)
 
 lemma MutuallyDistinct_Union:
   "\<lbrakk> MutuallyDistinct A; MutuallyDistinct B;
   (\<Union> C \<in> A. States C) \<inter> (\<Union> C \<in> B. States C) = {} \<rbrakk>
-  \<Longrightarrow> MutuallyDistinct (A \<union> B)";
+  \<Longrightarrow> MutuallyDistinct (A \<union> B)"
 by (unfold MutuallyDistinct_def, safe, blast+)
 
 lemma MutuallyDistinct_HA [simp]:
@@ -313,7 +313,7 @@ done
 subsubsection {* @{text "RootEx"} *}
 
 lemma RootEx_Root [simp]:
-  "RootEx F G \<Longrightarrow> Root F G \<in> F";
+  "RootEx F G \<Longrightarrow> Root F G \<in> F"
 apply (unfold RootEx_def Root_def)
 apply (erule ex1E)
 apply (erule conjE)
@@ -583,18 +583,18 @@ apply auto
 done
 
 lemma HAInitState_HAInitStates [simp]:
-  "HAInitState A \<in> HAInitStates A";
+  "HAInitState A \<in> HAInitStates A"
 by (unfold HAInitStates_def HAInitState_def, auto)
 
 
 lemma CompFun_HAInitStates_HAStates [simp]:
- "\<lbrakk> S \<in> HAStates A; SA \<in> the (CompFun A S) \<rbrakk> \<Longrightarrow> (InitState SA) \<in> HAInitStates A";
+ "\<lbrakk> S \<in> HAStates A; SA \<in> the (CompFun A S) \<rbrakk> \<Longrightarrow> (InitState SA) \<in> HAInitStates A"
 apply (unfold HAInitStates_def)
 apply auto
 done
 
 lemma CompFun_HAInitState_HAInitStates [simp]:
- "\<lbrakk> SA \<in> the (CompFun A (HAInitState A)) \<rbrakk> \<Longrightarrow> (InitState SA) \<in> HAInitStates A";
+ "\<lbrakk> SA \<in> the (CompFun A (HAInitState A)) \<rbrakk> \<Longrightarrow> (InitState SA) \<in> HAInitStates A"
 apply (unfold HAInitStates_def)
 apply auto
 apply (rule_tac x=SA in bexI)
@@ -696,7 +696,7 @@ lemma ChiRel_HAStates_Self [simp]:
 by( unfold ChiRel_def, auto)
 
 lemma HAStates_Chi_NoCycles:
-  "\<lbrakk> s \<in> HAStates a; t \<in> HAStates a; s \<in> Chi a t \<rbrakk> \<Longrightarrow> t \<notin> Chi a s";
+  "\<lbrakk> s \<in> HAStates a; t \<in> HAStates a; s \<in> Chi a t \<rbrakk> \<Longrightarrow> t \<notin> Chi a s"
 apply (unfold Chi_def restrict_def)
 apply auto
 apply (cut_tac HA=a in NoCycles_HA)
@@ -707,7 +707,7 @@ done
 
 lemma HAStates_Chi_NoCycles_trans:
  "\<lbrakk> s \<in> HAStates a; t \<in> HAStates a; u \<in> HAStates a;
-    t \<in> Chi a s; u \<in> Chi a t \<rbrakk> \<Longrightarrow> s \<notin> Chi a u";
+    t \<in> Chi a s; u \<in> Chi a t \<rbrakk> \<Longrightarrow> s \<notin> Chi a u"
 apply (unfold Chi_def restrict_def)
 apply auto
 apply (cut_tac HA=a in NoCycles_HA)
@@ -1479,7 +1479,7 @@ apply (simp add:InitConf_HAInitState_HARoot)
 done
 
 lemma HAInitState_CompFun_InitConf [simp]:
- "[|SA \<in> the (CompFun A  (HAInitState A)) |] ==> (InitState SA) \<in> InitConf A";
+ "[|SA \<in> the (CompFun A  (HAInitState A)) |] ==> (InitState SA) \<in> InitConf A"
 apply (unfold InitConf_def HAStates_def)
 apply auto
 apply (rule rtrancl_Int)
@@ -1495,7 +1495,7 @@ apply auto
 done
 
 lemma InitState_CompFun_InitConf:
- "[| S \<in> HAStates A; SA \<in> the (CompFun A S); S \<in> InitConf A |] ==> (InitState SA) \<in> InitConf A";
+ "[| S \<in> HAStates A; SA \<in> the (CompFun A S); S \<in> InitConf A |] ==> (InitState SA) \<in> InitConf A"
 apply (unfold InitConf_def)
 apply auto
 apply (rule_tac b=S in rtrancl_into_rtrancl)

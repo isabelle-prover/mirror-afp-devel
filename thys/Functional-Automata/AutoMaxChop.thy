@@ -18,7 +18,7 @@ definition
 "auto_chop A = chop (%xs. auto_split A (start A) ([],xs) [] xs)"
 
 
-lemma delta_snoc: "delta A (xs@[y]) q = next A y (delta A xs q)";
+lemma delta_snoc: "delta A (xs@[y]) q = next A y (delta A xs q)"
 by simp
 
 lemma auto_split_lemma:

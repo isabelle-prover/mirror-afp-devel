@@ -70,7 +70,7 @@ apply auto
 done
 
 lemma EmptyMap_Root [simp]:
- "Root {SA} (EmptyMap (States SA)) = SA";
+ "Root {SA} (EmptyMap (States SA)) = SA"
 by (unfold Root_def, auto)
 
 lemma EmptyMap_RootEx [simp]:
@@ -157,7 +157,7 @@ by (unfold FAddSA_def Let_def, auto)
 lemma FAddSA_States_dom [simp]:
   "S \<in> (States SA) \<Longrightarrow>  
    (dom ((F::('a ~=> (('a,'b,'d)seqauto) set)) [f+] 
-        (S,(SA::('a,'b,'d)seqauto)))) = (dom F)";
+        (S,(SA::('a,'b,'d)seqauto)))) = (dom F)"
 by (unfold FAddSA_def Let_def, auto)
 
 lemma FAddSA_dom_insert_dom_disjunct [simp]:
@@ -426,13 +426,13 @@ lemma FAddSA_HierAuto_insert [simp]:
     HierAuto (HAInitValue HA)                  
              (insert SA (SAs HA))              
              (HAEvents HA \<union> SAEvents SA)      
-             (CompFun HA [f+] (S,SA))";
+             (CompFun HA [f+] (S,SA))"
 apply (unfold HAStates_def)
 apply (rule FAddSA_HierAuto)
 apply auto
 done
 
-subsection "Constructing a PseudoHA"; 
+subsection "Constructing a PseudoHA" 
 
 definition
   PseudoHA :: "[('s,'e,'d)seqauto,'d data] => ('s,'e,'d)hierauto" where
@@ -440,11 +440,11 @@ definition
 
 lemma PseudoHA_SAs [simp]:
   "SAs (PseudoHA SA D) = {SA}"
-by (unfold PseudoHA_def SAs_def, simp add: Abs_hierauto_inverse);
+by (unfold PseudoHA_def SAs_def, simp add: Abs_hierauto_inverse)
 
 lemma PseudoHA_Events [simp]:
   "HAEvents (PseudoHA SA D) = SAEvents SA"
-by (unfold PseudoHA_def HAEvents_def, simp add: Abs_hierauto_inverse);
+by (unfold PseudoHA_def HAEvents_def, simp add: Abs_hierauto_inverse)
  
 lemma PseudoHA_CompFun [simp]:
   "CompFun (PseudoHA SA D) = EmptyMap (States SA)"
@@ -1008,10 +1008,10 @@ apply (rule rtrancl_into_rtrancl)
 apply auto
 done
 
-subsection "Theorems for Calculating Wellformedness of HA";
+subsection "Theorems for Calculating Wellformedness of HA"
 
 lemma PseudoHA_HAStates_IFF:
- "(States SA) = X  \<Longrightarrow> (HAStates (PseudoHA SA D)) = X";
+ "(States SA) = X  \<Longrightarrow> (HAStates (PseudoHA SA D)) = X"
 apply simp
 done
 

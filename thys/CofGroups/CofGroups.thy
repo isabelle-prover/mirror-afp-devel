@@ -5,7 +5,7 @@
 
 theory CofGroups
 imports Main "~~/src/HOL/Library/Nat_Bijection"
-begin;
+begin
 
 section {* Introduction *}
 
@@ -81,7 +81,7 @@ is acts well with respect to the group operations, use it to define
 construction, and show the basic properties of @{term Ex2}.  Finally
 in Section \ref {sect:concl} we quickly show that all the work in the
 section before it combines to show that @{term Ex2} is a cofinitary
-group. *};
+group. *}
 
 
 
@@ -128,7 +128,7 @@ locale CofinitaryGroup =
     id_com : "id \<in> dom" and
     mult_closed : "f \<in> dom \<and> g \<in> dom \<Longrightarrow> f \<circ> g \<in> dom" and
     inv_closed : "f \<in> dom \<Longrightarrow> inv f \<in> dom" and
-    cofinitary : "f \<in> dom \<and> f \<noteq> id \<Longrightarrow> finite (Fix f)";
+    cofinitary : "f \<in> dom \<and> f \<noteq> id \<Longrightarrow> finite (Fix f)"
 
 
 
@@ -142,9 +142,9 @@ upOne}, translation up by 1 and proof some of its basic properties.
 
 definition upOne :: "int \<Rightarrow> int"
 where
-"upOne n = n + 1";
+"upOne n = n + 1"
 
-declare upOne_def [simp] -- "automated tools can use the definition";
+declare upOne_def [simp] -- "automated tools can use the definition"
 
 text {* First we show that this function is a bijection.  This is done
 in the usual two parts; we show it is injective by showing from the
@@ -153,17 +153,17 @@ numbers are equal.  Then we show it is surjective by finding the
 number that maps to a given number. *}
 
 lemma inj_upOne: "inj upOne" 
-by (rule Fun.injI, simp);
+by (rule Fun.injI, simp)
 
 lemma surj_upOne: "surj upOne"
 proof (unfold Fun.surj_def, rule)
   fix k::int
   show "\<exists>m. k = upOne m"
-    by (rule exI[of "\<lambda>l. k = upOne l" "k - 1"], simp);
-qed;
+    by (rule exI[of "\<lambda>l. k = upOne l" "k - 1"], simp)
+qed
 
 theorem bij_upOne: "bij upOne"
-by (unfold bij_def, rule conjI [OF inj_upOne surj_upOne]);
+by (unfold bij_def, rule conjI [OF inj_upOne surj_upOne])
 
 
 text {* Now we show that the set of fixed points of @{term upOne}
@@ -175,17 +175,17 @@ points is empty. *}
 lemma no_fix_upOne: "upOne n \<noteq> n"
 proof (rule notI)
   assume "upOne n = n"
-  with upOne_def have "n+1 = n" by simp;
-  thus False by auto;
-qed;
+  with upOne_def have "n+1 = n" by simp
+  thus False by auto
+qed
 
 theorem "Fix upOne = {}"
 proof -
   from Fix_def[of upOne]
-  have "Fix upOne = {n . upOne n = n}" by auto;
-  with no_fix_upOne have "Fix upOne = {n . False}" by auto;
-  with Set.empty_def show "Fix upOne = {}" by auto;
-qed;
+  have "Fix upOne = {n . upOne n = n}" by auto
+  with no_fix_upOne have "Fix upOne = {n . False}" by auto
+  with Set.empty_def show "Fix upOne = {}" by auto
+qed
 
 text {* Finally we derive the equation for the inverse of @{term
 upOne}.  The rule we use references @{text Hilbert_Choice} since the @{term
@@ -195,18 +195,18 @@ defined using Hilbert's choice operator. *}
 lemma inv_upOne_eq: "(inv upOne) (n::int) = n - 1"
 proof -
   fix "n" :: int
-  have "((inv upOne) \<circ> upOne) (n - 1) = (inv upOne) n" by simp;
+  have "((inv upOne) \<circ> upOne) (n - 1) = (inv upOne) n" by simp
   with inj_upOne and Hilbert_Choice.inv_o_cancel
-    show "(inv upOne) n = n - 1" by auto;
-qed;
+    show "(inv upOne) n = n - 1" by auto
+qed
 
 
 text {* We can also show this quickly using Hilbert\_Choice.inv\_f\_eq
 properly instantiated : @{thm Hilbert_Choice.inv_f_eq[of upOne "n - 1"
-n, OF inj_upOne]}. *};
+n, OF inj_upOne]}. *}
 
-lemma "(inv upOne) n = n - 1";
-by (rule Hilbert_Choice.inv_f_eq[of upOne "n - 1" n, OF inj_upOne], simp);
+lemma "(inv upOne) n = n - 1"
+by (rule Hilbert_Choice.inv_f_eq[of upOne "n - 1" n, OF inj_upOne], simp)
 
 
 
@@ -226,27 +226,27 @@ definition requires the group to be a subset of @{term S_inf} *}
 inductive_set Ex1 :: "(int \<Rightarrow> int) set" where
 base_func: "upOne \<in> Ex1" |
 comp_func: "f \<in> Ex1 \<Longrightarrow> (upOne \<circ> f) \<in> Ex1" |
-comp_inv : "f \<in> Ex1 \<Longrightarrow> ((inv upOne) \<circ> f) \<in> Ex1";
+comp_inv : "f \<in> Ex1 \<Longrightarrow> ((inv upOne) \<circ> f) \<in> Ex1"
 
 text {* We start by showing a \emph{normal form} for elements in this
 set. *}
 
-lemma Ex1_Normal_form_part1: "f \<in> Ex1 \<Longrightarrow> \<exists>k. \<forall> n. f(n) = n + k";
-proof (rule Ex1.induct [of "f"], blast); 
+lemma Ex1_Normal_form_part1: "f \<in> Ex1 \<Longrightarrow> \<exists>k. \<forall> n. f(n) = n + k"
+proof (rule Ex1.induct [of "f"], blast) 
     -- "blast takes care of the first goal which is formal noise"
-  assume "f \<in> Ex1";
-  have "\<forall>n. upOne n = n + 1" by simp;
-  with HOL.exI show "\<exists>k. \<forall>n. upOne n = n + k" by auto;
+  assume "f \<in> Ex1"
+  have "\<forall>n. upOne n = n + 1" by simp
+  with HOL.exI show "\<exists>k. \<forall>n. upOne n = n + k" by auto
 next
   fix fa:: "int => int"
   assume fa_k: "\<exists>k. \<forall>n. fa n = n + k"
-  thus "\<exists>k. \<forall>n. (upOne \<circ> fa) n = n + k" by auto;
+  thus "\<exists>k. \<forall>n. (upOne \<circ> fa) n = n + k" by auto
 next
   fix fa :: "int \<Rightarrow> int"
   assume fa_k: "\<exists>k. \<forall>n. fa n = n + k"
-  from inv_upOne_eq have "\<forall>n. (inv upOne) n = n - 1" by auto;
-  with fa_k show "\<exists>k. \<forall>n. (inv upOne \<circ> fa) n = n + k" by auto;
-qed;
+  from inv_upOne_eq have "\<forall>n. (inv upOne) n = n - 1" by auto
+  with fa_k show "\<exists>k. \<forall>n. (inv upOne \<circ> fa) n = n + k" by auto
+qed
 
 text {* Now we'll show the other direction.  Then we apply rule @{text
 int_induct} which allows us to do the induction by first showing it
@@ -265,88 +265,88 @@ statement of the theorem, we match the theorem against @{text "?P k"} thereby
 defining the predicate @{text "?P"}. *}
 
 lemma Ex1_Normal_form_part2: 
-  "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k");
+  "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k")
 proof (rule int_induct [of "?P" 1])
-  show "\<forall>f. (\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1";
+  show "\<forall>f. (\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1"
   proof
     fix f:: "int \<Rightarrow> int"
-    show "(\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1";
+    show "(\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1"
     proof
       assume "\<forall>n. f n = n + 1"
-      hence "\<forall>n. f n = upOne n" by auto;
+      hence "\<forall>n. f n = upOne n" by auto
       with fun_eq_iff[of f upOne,THEN sym] 
-         have "f = upOne" by auto; 
-      with Ex1.base_func show "f \<in> Ex1" by auto;
+         have "f = upOne" by auto 
+      with Ex1.base_func show "f \<in> Ex1" by auto
     qed
-  qed;
+  qed
 next
   fix i::int
   assume "1 \<le> i"
   assume induct_hyp: "\<forall>f. (\<forall>n. f n = n + i) \<longrightarrow> f \<in> Ex1"
-  show "\<forall>f. (\<forall>n. f n = n + (i + 1)) \<longrightarrow> f \<in> Ex1";
+  show "\<forall>f. (\<forall>n. f n = n + (i + 1)) \<longrightarrow> f \<in> Ex1"
   proof
     fix f:: "int \<Rightarrow> int"
     show "(\<forall>n. f n = n + (i + 1)) \<longrightarrow> f \<in> Ex1"
     proof
       assume f_eq: "\<forall>n. f n = n + (i + 1)"
-      let ?h = "\<lambda>n. n + i";
-      from induct_hyp have h_Ex1: "?h \<in> Ex1" by auto;
-      from  f_eq have "\<forall>n. f n = upOne (?h n)" by (unfold upOne_def,auto);;
-      hence "\<forall>n. f n = (upOne \<circ> ?h) n" by auto;
+      let ?h = "\<lambda>n. n + i"
+      from induct_hyp have h_Ex1: "?h \<in> Ex1" by auto
+      from  f_eq have "\<forall>n. f n = upOne (?h n)" by (unfold upOne_def,auto)
+      hence "\<forall>n. f n = (upOne \<circ> ?h) n" by auto
       with fun_eq_iff[THEN sym, of f "upOne \<circ> ?h"] 
-         have "f = upOne \<circ> ?h" by auto;
-      with h_Ex1 and Ex1.comp_func[of ?h] show "f \<in> Ex1" by auto;
-    qed;
-  qed;
-next;
+         have "f = upOne \<circ> ?h" by auto
+      with h_Ex1 and Ex1.comp_func[of ?h] show "f \<in> Ex1" by auto
+    qed
+  qed
+next
   fix i::int
   assume "i \<le> 1"
   assume induct_hyp: "\<forall>f. (\<forall>n. f n = n + i) \<longrightarrow> f \<in> Ex1"
-  show "\<forall>f. (\<forall>n. f n = n + (i - 1)) \<longrightarrow> f \<in> Ex1";
+  show "\<forall>f. (\<forall>n. f n = n + (i - 1)) \<longrightarrow> f \<in> Ex1"
   proof
     fix f:: "int \<Rightarrow> int"
     show "(\<forall>n. f n = n + (i - 1)) \<longrightarrow> f \<in> Ex1"
     proof
       assume f_eq: "\<forall>n. f n = n + (i - 1)"
-      let ?h = "\<lambda>n. n + i";
-      from  induct_hyp have h_Ex1: "?h \<in> Ex1" by auto;
+      let ?h = "\<lambda>n. n + i"
+      from  induct_hyp have h_Ex1: "?h \<in> Ex1" by auto
       from inv_upOne_eq and f_eq 
-        have "\<forall>n. f n = (inv upOne) (?h n)" by auto;
-      hence "\<forall>n. f n = (inv upOne \<circ> ?h) n" by auto;
+        have "\<forall>n. f n = (inv upOne) (?h n)" by auto
+      hence "\<forall>n. f n = (inv upOne \<circ> ?h) n" by auto
       with fun_eq_iff[THEN sym, of f "inv upOne \<circ> ?h"] 
-         have "f = inv upOne \<circ> ?h" by auto;
-      with h_Ex1 and Ex1.comp_inv[of ?h] show "f \<in> Ex1" by auto;
-    qed;
-  qed;
-qed;
+         have "f = inv upOne \<circ> ?h" by auto
+      with h_Ex1 and Ex1.comp_inv[of ?h] show "f \<in> Ex1" by auto
+    qed
+  qed
+qed
 
 text {* Combining the two directions we get the normal form
 theorem. *}
 
-theorem Ex1_Normal_form: "(f \<in> Ex1) = (\<exists>k. \<forall>n. f(n) = n + k)";
+theorem Ex1_Normal_form: "(f \<in> Ex1) = (\<exists>k. \<forall>n. f(n) = n + k)"
 proof
   assume "f \<in> Ex1"
   with Ex1_Normal_form_part1 [of f]
-    show "(\<exists>k. \<forall>n. f(n) = n + k)" by auto;
-next;
+    show "(\<exists>k. \<forall>n. f(n) = n + k)" by auto
+next
   assume "\<exists>k. \<forall>n. f(n) = n + k"
   with Ex1_Normal_form_part2
-    show "f \<in> Ex1" by auto;
-qed;
+    show "f \<in> Ex1" by auto
+qed
 
 
 
-section {* All Elements Cofinitary Bijections. *};
+section {* All Elements Cofinitary Bijections. *}
 
 text {* \label {sect:Ex1CofBij} We now show all elements in @{term
 Ex1} are bijections, Theorem @{term all_bij}, and have no fixed
 points, Theorem @{term no_fixed_pt}. *}
 
 theorem all_bij: "f \<in> Ex1 \<Longrightarrow> bij f"
-proof (unfold bij_def);
+proof (unfold bij_def)
   assume "f \<in> Ex1"
   with Ex1_Normal_form
-    obtain k where f_eq:"\<forall>n. f n = n + k" by auto;
+    obtain k where f_eq:"\<forall>n. f n = n + k" by auto
 
   show "inj f \<and> surj f"
   proof (rule conjI)
@@ -354,43 +354,43 @@ proof (unfold bij_def);
     proof (rule injI)
       fix n m
       assume "f n = f m"
-      with f_eq have "n + k = m + k" by auto;
-      thus "n = m" by auto;
-    qed;
-  next;
+      with f_eq have "n + k = m + k" by auto
+      thus "n = m" by auto
+    qed
+  next
 
     show SURJ: "surj f"
     proof (unfold Fun.surj_def, rule allI)
       fix n
-      from f_eq have "n = f (n - k)" by auto;
-      thus "\<exists>m. n = f m" by (rule exI);
-    qed;
-  qed;
-qed;
+      from f_eq have "n = f (n - k)" by auto
+      thus "\<exists>m. n = f m" by (rule exI)
+    qed
+  qed
+qed
 
 theorem no_fixed_pt: 
   assumes f_Ex1: "f \<in> Ex1"
   and f_not_id: "f \<noteq> id"
-  shows "Fix f = {}";
+  shows "Fix f = {}"
 proof -
     -- "we start by proving an easy general fact"
   have f_eq_then_id: "(\<forall>n. f(n) = n) \<Longrightarrow> f = id"
   proof -
     assume f_prop : "\<forall>n. f(n) = n"
-    have "(f x = id x) = (f x = x)" by simp;
-    hence "(\<forall>x. (f x = id x)) = (\<forall>x. (f x = x))" by simp;
-    with fun_eq_iff[THEN sym, of f id] and f_prop show "f = id" by auto;
-  qed;
-  from f_Ex1 and Ex1_Normal_form have "\<exists>k. \<forall>n. f(n) = n + k" by auto;
-  then obtain k where k_prop: "\<forall>n. f(n) = n + k" ..;
-  hence "k = 0 \<Longrightarrow> \<forall>n. f(n) = n" by auto;
-  with f_eq_then_id and f_not_id have "k \<noteq> 0" by auto;
-  with k_prop have "\<forall>n. f(n) \<noteq> n" by auto;
+    have "(f x = id x) = (f x = x)" by simp
+    hence "(\<forall>x. (f x = id x)) = (\<forall>x. (f x = x))" by simp
+    with fun_eq_iff[THEN sym, of f id] and f_prop show "f = id" by auto
+  qed
+  from f_Ex1 and Ex1_Normal_form have "\<exists>k. \<forall>n. f(n) = n + k" by auto
+  then obtain k where k_prop: "\<forall>n. f(n) = n + k" ..
+  hence "k = 0 \<Longrightarrow> \<forall>n. f(n) = n" by auto
+  with f_eq_then_id and f_not_id have "k \<noteq> 0" by auto
+  with k_prop have "\<forall>n. f(n) \<noteq> n" by auto
   moreover
-  from Fix_def[of f] have "Fix f = {n . f(n) = n}" by auto;
-  ultimately have "Fix f = {n. False}" by auto;
-  with Set.empty_def show "Fix f = {}" by auto;
-qed;
+  from Fix_def[of f] have "Fix f = {n . f(n) = n}" by auto
+  ultimately have "Fix f = {n. False}" by auto
+  with Set.empty_def show "Fix f = {}" by auto
+qed
 
 
 
@@ -403,137 +403,137 @@ easily obtain the corresponding results for the group on the natural
 numbers. *}
 
 theorem closed_comp: "f \<in> Ex1 \<and> g \<in> Ex1 \<Longrightarrow> f \<circ> g \<in> Ex1"
-proof (rule Ex1.induct [of f], blast);
-  assume "f \<in> Ex1 \<and> g \<in> Ex1";
-  with Ex1.comp_func[of g] show "upOne \<circ> g \<in> Ex1" by auto;
+proof (rule Ex1.induct [of f], blast)
+  assume "f \<in> Ex1 \<and> g \<in> Ex1"
+  with Ex1.comp_func[of g] show "upOne \<circ> g \<in> Ex1" by auto
 next
   fix fa
   assume "fa \<circ> g \<in> Ex1"
   with Ex1.comp_func [of "fa \<circ> g"]
     and Fun.o_assoc [of "upOne" "fa" "g"]
-    show "upOne \<circ> fa \<circ> g \<in> Ex1" by auto;
+    show "upOne \<circ> fa \<circ> g \<in> Ex1" by auto
 next
   fix fa
   assume "fa \<circ> g \<in> Ex1"
   with Ex1.comp_inv [of "fa \<circ> g"]
     and Fun.o_assoc [of "inv upOne" "fa" "g"]
-    show "(inv upOne) \<circ> fa \<circ> g \<in> Ex1" by auto;
-qed;
+    show "(inv upOne) \<circ> fa \<circ> g \<in> Ex1" by auto
+qed
 
 text {* Now we show the set is closed under inverses.  This is
 done by an induction on the definition of @{term Ex1} only using
 the normal form theorem and rewriting of expressions. *}
 
 theorem closed_inv: "f \<in> Ex1 \<Longrightarrow> inv f \<in> Ex1"
-proof (rule Ex1.induct [of "f"], blast);
+proof (rule Ex1.induct [of "f"], blast)
   assume "f \<in> Ex1"
   show "inv upOne \<in> Ex1" (is "?right \<in> Ex1")
   proof -
     let ?left  = "inv upOne \<circ> (inv upOne \<circ> upOne)"
     {
-      from Ex1.comp_inv and Ex1.base_func have "?left \<in> Ex1" by auto;
+      from Ex1.comp_inv and Ex1.base_func have "?left \<in> Ex1" by auto
     }
     moreover
     {
-      from bij_upOne and bij_is_inj have "inj upOne" by auto;
-      hence "inv upOne \<circ> upOne = id" by auto;
-      hence "?left = ?right" by auto;
+      from bij_upOne and bij_is_inj have "inj upOne" by auto
+      hence "inv upOne \<circ> upOne = id" by auto
+      hence "?left = ?right" by auto
     }
     ultimately
-    show ?thesis by auto;
-  qed;
+    show ?thesis by auto
+  qed
 next
   fix f
-  assume f_Ex1: "f \<in> Ex1";
+  assume f_Ex1: "f \<in> Ex1"
   from f_Ex1 and Ex1_Normal_form
-  obtain k where f_eq: "\<forall>n. f n = n + k" by auto;
+  obtain k where f_eq: "\<forall>n. f n = n + k" by auto
 
   show "inv (upOne \<circ> f) \<in> Ex1"
   proof -
     let ?ic = "inv (upOne \<circ> f)"
-    let ?ci = "inv f \<circ> inv upOne";
+    let ?ci = "inv f \<circ> inv upOne"
     {
       -- "first we get an expression for @{term ?ci}"
       {
-        from all_bij and f_Ex1 have "bij f" by auto;
-        with bij_is_inj have inj_f: "inj f" by auto;
+        from all_bij and f_Ex1 have "bij f" by auto
+        with bij_is_inj have inj_f: "inj f" by auto
         have "\<forall>n. inv f n = n - k"
         proof
           fix n
-          from f_eq have "f (n - k) = n"; by auto;
+          from f_eq have "f (n - k) = n" by auto
           with inv_f_eq[of f "n-k" "n"] and inj_f 
-          show "inv f n = n-k"; by auto;
-        qed;
+          show "inv f n = n-k" by auto
+        qed
         with inv_upOne_eq 
-        have "\<forall>n. ?ci n = n - k - 1" by auto;
-        hence "\<forall>n. ?ci n = n + (-1 - k)" by arith;
+        have "\<forall>n. ?ci n = n - k - 1" by auto
+        hence "\<forall>n. ?ci n = n + (-1 - k)" by arith
       }
-      moreover;
+      moreover
       -- "then we check that this implies @{term ?ci} is"
-      -- "a member of @{term Ex1}";
+      -- "a member of @{term Ex1}"
       {
         from Ex1_Normal_form_part2[of "-1 - k"]
-        have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
+        have "(\<forall>f. ((\<forall>n. f n = n + (-1 - k)) \<longrightarrow> f \<in> Ex1))" by auto
       }
       ultimately 
-      have "?ci \<in> Ex1"; by auto;
+      have "?ci \<in> Ex1" by auto
     }
     moreover
     {
-      from f_Ex1 all_bij have "bij f" by auto;
+      from f_Ex1 all_bij have "bij f" by auto
       with bij_upOne and o_inv_distrib[THEN sym]
-      have "?ci = ?ic" by auto;
+      have "?ci = ?ic" by auto
     }
-    ultimately show ?thesis by auto;
-  qed;
-next;
+    ultimately show ?thesis by auto
+  qed
+next
   fix f
-  assume f_Ex1: "f \<in> Ex1";
+  assume f_Ex1: "f \<in> Ex1"
   with Ex1_Normal_form
-    obtain k where f_eq: "\<forall>n. f n = n + k" by auto;
+    obtain k where f_eq: "\<forall>n. f n = n + k" by auto
 
   show "inv (inv upOne \<circ> f) \<in> Ex1"
   proof -
     let ?ic = "inv (inv upOne \<circ> f)"
     let ?c = "inv f \<circ> upOne"
     {
-      from all_bij and f_Ex1 have "bij f" by auto;
-      with bij_is_inj have inj_f: "inj f" by auto;
+      from all_bij and f_Ex1 have "bij f" by auto
+      with bij_is_inj have inj_f: "inj f" by auto
       have "\<forall>n. inv f n = n - k"
       proof
         fix n
-        from f_eq have "f (n - k) = n"; by auto;
+        from f_eq have "f (n - k) = n" by auto
         with inv_f_eq[of f "n-k" "n"] and inj_f 
-        show "inv f n = n-k"; by auto;
-      qed;
+        show "inv f n = n-k" by auto
+      qed
       with upOne_def
-      have "\<forall>n. (inv f \<circ> upOne) n = n - k + 1" by auto;
-      hence "\<forall>n. (inv f \<circ> upOne) n = n + (1 - k)" by arith;
+      have "\<forall>n. (inv f \<circ> upOne) n = n - k + 1" by auto
+      hence "\<forall>n. (inv f \<circ> upOne) n = n + (1 - k)" by arith
       moreover
       from Ex1_Normal_form_part2[of "1 - k"]
-      have "(\<forall>f. ((\<forall>n. f n = n + (1 - k)) \<longrightarrow> f \<in> Ex1))" by auto;
+      have "(\<forall>f. ((\<forall>n. f n = n + (1 - k)) \<longrightarrow> f \<in> Ex1))" by auto
       ultimately
-      have "?c \<in> Ex1"; by auto;
+      have "?c \<in> Ex1" by auto
     }
     moreover
     {
-      from f_Ex1 all_bij and bij_is_inj have "bij f" by auto;
+      from f_Ex1 all_bij and bij_is_inj have "bij f" by auto
       moreover
-      from bij_upOne and bij_imp_bij_inv have "bij (inv upOne)" by auto;
+      from bij_upOne and bij_imp_bij_inv have "bij (inv upOne)" by auto
       moreover
-      note o_inv_distrib[THEN sym];
+      note o_inv_distrib[THEN sym]
       ultimately
-      have "inv f \<circ> inv (inv upOne) = inv (inv upOne \<circ> f)" by auto;
+      have "inv f \<circ> inv (inv upOne) = inv (inv upOne \<circ> f)" by auto
       moreover
       from bij_upOne and inv_inv_eq 
-        have "inv (inv upOne) = upOne" by auto;
+        have "inv (inv upOne) = upOne" by auto
       ultimately
-      have "?c = ?ic" by auto;
+      have "?c = ?ic" by auto
     }
     ultimately
-    show ?thesis by auto;
-  qed;
-qed;
+    show ?thesis by auto
+  qed
+qed
 
 
 
@@ -555,54 +555,54 @@ conjugate a function with a bijection the fixed points get mapped
 over. *}
 
 theorem conj_fix_pt: "\<And>f::('a \<Rightarrow> 'b). \<And>g::('b \<Rightarrow> 'b). (bij f) 
-  \<Longrightarrow> ((inv f)`(Fix g)) = Fix ((inv f) \<circ> g \<circ> f)";
+  \<Longrightarrow> ((inv f)`(Fix g)) = Fix ((inv f) \<circ> g \<circ> f)"
 proof -
   fix f::"'a \<Rightarrow> 'b"
   assume bij_f: "bij f"
-  with bij_def have inj_f: "inj f" by auto;
+  with bij_def have inj_f: "inj f" by auto
   fix g::"'b\<Rightarrow>'b"
-  show "((inv f)`(Fix g)) = Fix ((inv f) \<circ> g \<circ> f)";
+  show "((inv f)`(Fix g)) = Fix ((inv f) \<circ> g \<circ> f)"
   thm set_eq_subset[of "(inv f)`(Fix g)" "Fix((inv f) \<circ> g \<circ> f)"]
   proof 
     show "(inv f)`(Fix g) \<subseteq> Fix ((inv f) \<circ> g \<circ> f)"
     proof
       fix x
       assume "x \<in> (inv f)`(Fix g)"
-      with image_def have "\<exists>y \<in> Fix g. x = (inv f) y" by auto;
-      from this obtain y where y_prop: "y \<in> Fix g \<and> x = (inv f) y" by auto;
-      hence "x = (inv f) y" ..;
-      hence "f x = (f \<circ> inv f) y" by auto;
-      with bij_f and bij_f_o_inf_f[of f] have f_x_y: "f x = y" by auto;
-      from y_prop have "y \<in> Fix g" ..;
-      with Fix_def[of g] have "g y = y" by auto;
-      with f_x_y have "g (f x) = f x" by auto;
-      hence "(inv f) (g (f x)) = inv f (f x)" by auto;
-      with inv_f_f and inj_f have "(inv f) (g (f x)) = x" by auto;
-      hence "((inv f) \<circ> g \<circ> f) x = x" by auto;
+      with image_def have "\<exists>y \<in> Fix g. x = (inv f) y" by auto
+      from this obtain y where y_prop: "y \<in> Fix g \<and> x = (inv f) y" by auto
+      hence "x = (inv f) y" ..
+      hence "f x = (f \<circ> inv f) y" by auto
+      with bij_f and bij_f_o_inf_f[of f] have f_x_y: "f x = y" by auto
+      from y_prop have "y \<in> Fix g" ..
+      with Fix_def[of g] have "g y = y" by auto
+      with f_x_y have "g (f x) = f x" by auto
+      hence "(inv f) (g (f x)) = inv f (f x)" by auto
+      with inv_f_f and inj_f have "(inv f) (g (f x)) = x" by auto
+      hence "((inv f) \<circ> g \<circ> f) x = x" by auto
       with Fix_def[of "inv f \<circ> g \<circ> f"] 
-        show "x \<in> Fix ((inv f) \<circ> g \<circ> f)" by auto;
-    qed;
+        show "x \<in> Fix ((inv f) \<circ> g \<circ> f)" by auto
+    qed
   next
     show "Fix (inv f \<circ> g \<circ> f) \<subseteq> (inv f)`(Fix g)"
     proof
       fix x
       assume "x \<in> Fix (inv f \<circ> g \<circ> f)"
       with Fix_def[of "inv f \<circ> g \<circ> f"] 
-        have x_fix: "(inv f \<circ> g \<circ> f) x = x" by auto;
-      hence "(inv f) (g(f(x))) = x" by auto;
-      hence "\<exists>y. (inv f) y = x" by auto;
-      from this obtain y where x_inf_f_y: "x = (inv f) y" by auto;
-      with x_fix have "(inv f \<circ> g \<circ> f)((inv f) y) = (inv f) y" by auto;
-      hence "(f \<circ> inv f \<circ> g \<circ> f \<circ> inv f) (y) = (f \<circ> inv f)(y)" by auto;
+        have x_fix: "(inv f \<circ> g \<circ> f) x = x" by auto
+      hence "(inv f) (g(f(x))) = x" by auto
+      hence "\<exists>y. (inv f) y = x" by auto
+      from this obtain y where x_inf_f_y: "x = (inv f) y" by auto
+      with x_fix have "(inv f \<circ> g \<circ> f)((inv f) y) = (inv f) y" by auto
+      hence "(f \<circ> inv f \<circ> g \<circ> f \<circ> inv f) (y) = (f \<circ> inv f)(y)" by auto
       with o_assoc 
-        have "((f \<circ> inv f) \<circ> g \<circ> (f \<circ> inv f)) y = (f \<circ> inv f)y" by auto;
+        have "((f \<circ> inv f) \<circ> g \<circ> (f \<circ> inv f)) y = (f \<circ> inv f)y" by auto
       with bij_f and bij_f_o_inf_f[of f]
-        have "g y = y" by auto;
-      with Fix_def[of g] have "y \<in> Fix g" by auto;
-      with x_inf_f_y show "x \<in> (inv f)`(Fix g)" by auto;
+        have "g y = y" by auto
+      with Fix_def[of g] have "y \<in> Fix g" by auto
+      with x_inf_f_y show "x \<in> (inv f)`(Fix g)" by auto
     qed
-  qed;
-qed;
+  qed
+qed
 
 section {* Bijections on $\mathbb{N}$ *}
 
@@ -614,9 +614,9 @@ ni_bij}, and show its basic properties.
 
 definition CONJ :: "(int \<Rightarrow> int) \<Rightarrow> (nat \<Rightarrow> nat)"
 where
-"CONJ f = (inv ni_bij) \<circ> f \<circ> ni_bij";
+"CONJ f = (inv ni_bij) \<circ> f \<circ> ni_bij"
 
-declare CONJ_def [simp] -- "automated tools can use the definition";
+declare CONJ_def [simp] -- "automated tools can use the definition"
 
 text {* We quickly check that this function is of the right type, and
 then show three of its properties that are very useful in showing
@@ -625,15 +625,15 @@ then show three of its properties that are very useful in showing
 lemma type_CONJ: "f \<in> Ex1 \<Longrightarrow> (inv ni_bij) \<circ> f \<circ> ni_bij \<in> S_inf"
 proof -
   assume f_Ex1: "f \<in> Ex1"
-  with all_bij have "bij f" by auto;
+  with all_bij have "bij f" by auto
   with bij_int_decode and bij_comp 
-    have bij_f_nibij: "bij (f \<circ> ni_bij)" by auto;
-  with bij_int_decode and bij_imp_bij_inv have "bij (inv ni_bij)" by auto;
+    have bij_f_nibij: "bij (f \<circ> ni_bij)" by auto
+  with bij_int_decode and bij_imp_bij_inv have "bij (inv ni_bij)" by auto
   with bij_f_nibij and bij_comp[of  "f \<circ> ni_bij" "inv ni_bij"] 
     and o_assoc[of "inv ni_bij" "f" "ni_bij"]
-    have "bij ((inv ni_bij) \<circ> f \<circ> ni_bij)" by auto;
-  with S_inf_def show "((inv ni_bij) \<circ> f \<circ> ni_bij) \<in> S_inf"; by auto;
-qed;
+    have "bij ((inv ni_bij) \<circ> f \<circ> ni_bij)" by auto
+  with S_inf_def show "((inv ni_bij) \<circ> f \<circ> ni_bij) \<in> S_inf" by auto
+qed
 
 
 lemma inv_CONJ: 
@@ -641,100 +641,100 @@ lemma inv_CONJ:
   shows "inv (CONJ f) = CONJ (inv f)" (is "?left = ?right")
 proof -
   have st1: "?left = inv ((inv ni_bij) \<circ> f \<circ> ni_bij)" 
-    using CONJ_def by auto;
+    using CONJ_def by auto
   from bij_int_decode and bij_imp_bij_inv 
-    have inv_ni_bij_bij: "bij (inv ni_bij)" by auto;
-  with bij_f and bij_comp have "bij (inv ni_bij \<circ> f)" by auto;
+    have inv_ni_bij_bij: "bij (inv ni_bij)" by auto
+  with bij_f and bij_comp have "bij (inv ni_bij \<circ> f)" by auto
   with o_inv_distrib[of "inv ni_bij \<circ> f" ni_bij] and bij_int_decode
   have "inv ((inv ni_bij) \<circ> f \<circ>  ni_bij) = 
-    (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto;
+    (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto
   with st1 have st2: "?left =
-    (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto;
+    (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto
   from inv_ni_bij_bij and `bij f` and o_inv_distrib
-    have h1: "inv (inv ni_bij \<circ> f) = inv f \<circ> inv (inv (ni_bij))" by auto;
+    have h1: "inv (inv ni_bij \<circ> f) = inv f \<circ> inv (inv (ni_bij))" by auto
   from bij_int_decode and inv_inv_eq[of ni_bij] 
-    have "inv (inv ni_bij) = ni_bij" by auto;
-  with st2 and h1 have "?left = (inv ni_bij \<circ> (inv f \<circ> ( ni_bij)))" by auto;
-  with o_assoc have "?left = inv ni_bij \<circ> inv f \<circ> ni_bij" by auto;
-  with CONJ_def[of "inv f"] show ?thesis by auto;
-qed;
+    have "inv (inv ni_bij) = ni_bij" by auto
+  with st2 and h1 have "?left = (inv ni_bij \<circ> (inv f \<circ> ( ni_bij)))" by auto
+  with o_assoc have "?left = inv ni_bij \<circ> inv f \<circ> ni_bij" by auto
+  with CONJ_def[of "inv f"] show ?thesis by auto
+qed
 
 lemma comp_CONJ:
   "CONJ (f \<circ> g) = (CONJ f) \<circ> (CONJ g)" (is "?left = ?right")
-proof -;
-  from bij_int_decode have "surj ni_bij" unfolding bij_def by auto;
-  then have "ni_bij \<circ> (inv ni_bij) = id" unfolding surj_iff by auto;
+proof -
+  from bij_int_decode have "surj ni_bij" unfolding bij_def by auto
+  then have "ni_bij \<circ> (inv ni_bij) = id" unfolding surj_iff by auto
   moreover
-  have "?left = (inv ni_bij) \<circ> (f \<circ> g) \<circ> ni_bij" by simp;
-  hence "?left = (inv ni_bij) \<circ> ((f \<circ> id) \<circ> g) \<circ> ni_bij" by simp;
+  have "?left = (inv ni_bij) \<circ> (f \<circ> g) \<circ> ni_bij" by simp
+  hence "?left = (inv ni_bij) \<circ> ((f \<circ> id) \<circ> g) \<circ> ni_bij" by simp
   ultimately
   have "?left = 
     (inv ni_bij) \<circ> ((f \<circ> (ni_bij \<circ> (inv ni_bij))) \<circ> g) \<circ> ni_bij" 
-    by auto;
+    by auto
       -- "a simple computation using only associativity"
       -- "completes the proof"
-  thus "?left = ?right" by (auto simp add: o_assoc);
-qed;
+  thus "?left = ?right" by (auto simp add: o_assoc)
+qed
 
-lemma id_CONJ: "CONJ id = id";
+lemma id_CONJ: "CONJ id = id"
 proof (unfold CONJ_def)
-  from bij_int_decode have "inj ni_bij" using bij_def by auto;
-  hence "inv ni_bij \<circ> ni_bij = id" by auto;
-  thus "(inv ni_bij \<circ> id) \<circ> ni_bij = id" by auto;
-qed;
+  from bij_int_decode have "inj ni_bij" using bij_def by auto
+  hence "inv ni_bij \<circ> ni_bij = id" by auto
+  thus "(inv ni_bij \<circ> id) \<circ> ni_bij = id" by auto
+qed
 
 text {* We now define the group we are interested in, and show the
 basic facts that together will show this is a cofinitary group. *}
 
 definition Ex2 :: "(nat \<Rightarrow> nat) set"
 where
-"Ex2 = CONJ`Ex1";
+"Ex2 = CONJ`Ex1"
 
 theorem mem_Ex2_rule: "f \<in> Ex2 = (\<exists>g. (g \<in> Ex1 \<and> f = CONJ g))"
 proof
   assume "f \<in> Ex2"
-  hence "f \<in> CONJ`Ex1" using Ex2_def by auto;
-  from this obtain "g" where "g \<in> Ex1 \<and> f = CONJ g" by blast;
-  thus "\<exists>g. (g \<in> Ex1 \<and> f = CONJ g)" by auto;
-next;
+  hence "f \<in> CONJ`Ex1" using Ex2_def by auto
+  from this obtain "g" where "g \<in> Ex1 \<and> f = CONJ g" by blast
+  thus "\<exists>g. (g \<in> Ex1 \<and> f = CONJ g)" by auto
+next
   assume "\<exists>g. (g \<in> Ex1 \<and> f = CONJ g)"
-  with Ex2_def show "f \<in> Ex2" by auto;
-qed;
+  with Ex2_def show "f \<in> Ex2" by auto
+qed
 
 theorem Ex2_cofinitary:
   assumes f_Ex2: "f \<in> Ex2"
   and f_nid: "f \<noteq> id"
-  shows "Fix f = {}";
+  shows "Fix f = {}"
 proof -
   from f_Ex2 and mem_Ex2_rule
-  obtain g where g_Ex1: "g \<in> Ex1" and f_cg: "f = CONJ g" by auto;
-  with id_CONJ and f_nid have "g \<noteq> id" by auto;
-  with g_Ex1 and no_fixed_pt[of g] have fg_empty: "Fix g = {}" by auto;
+  obtain g where g_Ex1: "g \<in> Ex1" and f_cg: "f = CONJ g" by auto
+  with id_CONJ and f_nid have "g \<noteq> id" by auto
+  with g_Ex1 and no_fixed_pt[of g] have fg_empty: "Fix g = {}" by auto
   from conj_fix_pt[of ni_bij g] and bij_int_decode
-  have "(inv ni_bij)`(Fix g) = Fix(CONJ g)" by auto;
-  with fg_empty have "{} = Fix (CONJ g)" by auto;
-  with f_cg show "Fix f = {}" by auto;
-qed;
+  have "(inv ni_bij)`(Fix g) = Fix(CONJ g)" by auto
+  with fg_empty have "{} = Fix (CONJ g)" by auto
+  with f_cg show "Fix f = {}" by auto
+qed
   
 
 lemma id_Ex2: "id \<in> Ex2"
 proof -
-  from Ex1_Normal_form_part2[of "0"] have "id \<in> Ex1" by auto;
-  with id_CONJ and Ex2_def and mem_Ex2_rule show ?thesis by auto;
-qed;
+  from Ex1_Normal_form_part2[of "0"] have "id \<in> Ex1" by auto
+  with id_CONJ and Ex2_def and mem_Ex2_rule show ?thesis by auto
+qed
 
 
 lemma inv_Ex2: "f \<in> Ex2 \<Longrightarrow> (inv f) \<in> Ex2"
 proof -
   assume "f \<in> Ex2"
-  with mem_Ex2_rule obtain "g" where "g \<in> Ex1" and "f = CONJ g"; by auto;
-  with closed_inv have "inv g \<in> Ex1" by auto;
-  from `f = CONJ g` have if_iCg: "inv f = inv (CONJ g)" by auto;
-  from all_bij and `g \<in> Ex1` have "bij g" by auto;
-  with if_iCg and inv_CONJ have "inv f = CONJ (inv g)" by auto;
-  from `g \<in> Ex1` and "closed_inv" have "inv g \<in> Ex1" by auto;
-  with `inv f = CONJ (inv g)` and mem_Ex2_rule show "inv f \<in> Ex2" by auto;
-qed;
+  with mem_Ex2_rule obtain "g" where "g \<in> Ex1" and "f = CONJ g" by auto
+  with closed_inv have "inv g \<in> Ex1" by auto
+  from `f = CONJ g` have if_iCg: "inv f = inv (CONJ g)" by auto
+  from all_bij and `g \<in> Ex1` have "bij g" by auto
+  with if_iCg and inv_CONJ have "inv f = CONJ (inv g)" by auto
+  from `g \<in> Ex1` and "closed_inv" have "inv g \<in> Ex1" by auto
+  with `inv f = CONJ (inv g)` and mem_Ex2_rule show "inv f \<in> Ex2" by auto
+qed
 
 lemma comp_Ex2:
   assumes f_Ex2: "f \<in> Ex2" and
@@ -743,19 +743,19 @@ lemma comp_Ex2:
 proof -
   from f_Ex2 obtain f_1 
     where f_1_Ex1: "f_1 \<in> Ex1" and "f = CONJ f_1" 
-    using mem_Ex2_rule by auto;
+    using mem_Ex2_rule by auto
   moreover
   from g_Ex2 obtain g_1 
     where g_1_Ex1: "g_1 \<in> Ex1" and "g = CONJ g_1" 
-    using mem_Ex2_rule by auto;
+    using mem_Ex2_rule by auto
   ultimately
-  have "f \<circ> g = (CONJ f_1) \<circ> (CONJ g_1)" by auto;
-  hence "f \<circ> g = CONJ (f_1 \<circ> g_1)" using comp_CONJ by auto;
+  have "f \<circ> g = (CONJ f_1) \<circ> (CONJ g_1)" by auto
+  hence "f \<circ> g = CONJ (f_1 \<circ> g_1)" using comp_CONJ by auto
   moreover
-  have "f_1 \<circ> g_1 \<in> Ex1" using closed_comp and f_1_Ex1 and g_1_Ex1 by auto;
+  have "f_1 \<circ> g_1 \<in> Ex1" using closed_comp and f_1_Ex1 and g_1_Ex1 by auto
   ultimately
-  show "f \<circ> g \<in> Ex2" using mem_Ex2_rule by auto;
-qed;
+  show "f \<circ> g \<in> Ex2" using mem_Ex2_rule by auto
+qed
 
 
 
@@ -766,30 +766,30 @@ clearly shown @{term Ex2} to be a cofinitary group.  The formalization
 also shows this, we just have to refer to the correct theorems proved
 above. *}
 
-interpretation CofinitaryGroup Ex2;
-proof;
+interpretation CofinitaryGroup Ex2
+proof
   show "Ex2 \<subseteq> S_inf"
-  proof;
+  proof
     fix f
     assume "f \<in> Ex2"
-    with mem_Ex2_rule obtain g where "g \<in> Ex1" and "f = CONJ g" by auto;
-    with type_CONJ show "f \<in> S_inf" by auto;
-  qed;
+    with mem_Ex2_rule obtain g where "g \<in> Ex1" and "f = CONJ g" by auto
+    with type_CONJ show "f \<in> S_inf" by auto
+  qed
 next
-  from id_Ex2 show "id \<in> Ex2" .;
+  from id_Ex2 show "id \<in> Ex2" .
 next
   fix f g
   assume "f \<in> Ex2 \<and> g \<in> Ex2"
-  with comp_Ex2 show "f \<circ> g \<in> Ex2"; by auto;
+  with comp_Ex2 show "f \<circ> g \<in> Ex2" by auto
 next
   fix f
   assume "f \<in> Ex2"
-  with inv_Ex2 show "inv f \<in> Ex2" by auto;
-next;
+  with inv_Ex2 show "inv f \<in> Ex2" by auto
+next
   fix f
   assume "f \<in> Ex2 \<and> f \<noteq> id"
-  with Ex2_cofinitary have "Fix f = {}" by auto;
-  thus "finite (Fix f)" using finite_def by auto;
-qed;
+  with Ex2_cofinitary have "Fix f = {}" by auto
+  thus "finite (Fix f)" using finite_def by auto
+qed
 
-end;
+end

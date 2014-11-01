@@ -290,28 +290,28 @@ apply simp
 done
 
 lemma States_Root_CTRL:
-  "States Root_CTRL = Root_CTRL_States";
+  "States Root_CTRL = Root_CTRL_States"
 apply (simp add: Root_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_Root_CTRL) 
 done
 
 lemma Init_State_Root_CTRL:
-  "InitState Root_CTRL = Root_CTRL_Init";
+  "InitState Root_CTRL = Root_CTRL_Init"
 apply (simp add: Root_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_Root_CTRL) 
 done
 
 lemma Labels_Root_CTRL:
-  "Labels Root_CTRL = Root_CTRL_Labels";
+  "Labels Root_CTRL = Root_CTRL_Labels"
 apply (simp add: Root_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_Root_CTRL)
 done
 
 lemma Delta_Root_CTRL:
-  "Delta Root_CTRL = Root_CTRL_Delta";
+  "Delta Root_CTRL = Root_CTRL_Delta"
 apply (simp add: Root_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_Root_CTRL)
@@ -334,28 +334,28 @@ apply simp
 done
 
 lemma States_CDPlayer_CTRL:
-  "States CDPlayer_CTRL = CDPlayer_CTRL_States";
+  "States CDPlayer_CTRL = CDPlayer_CTRL_States"
 apply (simp add: CDPlayer_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_CDPlayer_CTRL) 
 done
 
 lemma Init_State_CDPlayer_CTRL:
-  "InitState CDPlayer_CTRL = CDPlayer_CTRL_Init";
+  "InitState CDPlayer_CTRL = CDPlayer_CTRL_Init"
 apply (simp add: CDPlayer_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_CDPlayer_CTRL) 
 done
 
 lemma Labels_CDPlayer_CTRL:
-  "Labels CDPlayer_CTRL = CDPlayer_CTRL_Labels";
+  "Labels CDPlayer_CTRL = CDPlayer_CTRL_Labels"
 apply (simp add: CDPlayer_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_CDPlayer_CTRL)
 done
 
 lemma Delta_CDPlayer_CTRL:
-  "Delta CDPlayer_CTRL = CDPlayer_CTRL_Delta";
+  "Delta CDPlayer_CTRL = CDPlayer_CTRL_Delta"
 apply (simp add: CDPlayer_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_CDPlayer_CTRL)
@@ -378,28 +378,28 @@ apply simp
 done
 
 lemma States_AudioPlayer_CTRL:
-  "States AudioPlayer_CTRL = AudioPlayer_CTRL_States";
+  "States AudioPlayer_CTRL = AudioPlayer_CTRL_States"
 apply (simp add: AudioPlayer_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_AudioPlayer_CTRL) 
 done
 
 lemma Init_State_AudioPlayer_CTRL:
-  "InitState AudioPlayer_CTRL = AudioPlayer_CTRL_Init";
+  "InitState AudioPlayer_CTRL = AudioPlayer_CTRL_Init"
 apply (simp add: AudioPlayer_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_AudioPlayer_CTRL) 
 done
 
 lemma Labels_AudioPlayer_CTRL:
-  "Labels AudioPlayer_CTRL = AudioPlayer_CTRL_Labels";
+  "Labels AudioPlayer_CTRL = AudioPlayer_CTRL_Labels"
 apply (simp add: AudioPlayer_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_AudioPlayer_CTRL)
 done
 
 lemma Delta_AudioPlayer_CTRL:
-  "Delta AudioPlayer_CTRL = AudioPlayer_CTRL_Delta";
+  "Delta AudioPlayer_CTRL = AudioPlayer_CTRL_Delta"
 apply (simp add: AudioPlayer_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_AudioPlayer_CTRL)
@@ -422,28 +422,28 @@ apply simp
 done
 
 lemma States_On_CTRL:
-  "States On_CTRL = On_CTRL_States";
+  "States On_CTRL = On_CTRL_States"
 apply (simp add: On_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_On_CTRL) 
 done
 
 lemma Init_State_On_CTRL:
-  "InitState On_CTRL = On_CTRL_Init";
+  "InitState On_CTRL = On_CTRL_Init"
 apply (simp add: On_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_On_CTRL) 
 done
 
 lemma Labels_On_CTRL:
-  "Labels On_CTRL = On_CTRL_Labels";
+  "Labels On_CTRL = On_CTRL_Labels"
 apply (simp add: On_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_On_CTRL)
 done
 
 lemma Delta_On_CTRL:
-  "Delta On_CTRL = On_CTRL_Delta";
+  "Delta On_CTRL = On_CTRL_Delta"
 apply (simp add: On_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_On_CTRL)
@@ -466,28 +466,28 @@ apply simp
 done
 
 lemma States_TunerMode_CTRL:
-  "States TunerMode_CTRL = TunerMode_CTRL_States";
+  "States TunerMode_CTRL = TunerMode_CTRL_States"
 apply (simp add: TunerMode_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_TunerMode_CTRL) 
 done
 
 lemma Init_State_TunerMode_CTRL:
-  "InitState TunerMode_CTRL = TunerMode_CTRL_Init";
+  "InitState TunerMode_CTRL = TunerMode_CTRL_Init"
 apply (simp add: TunerMode_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_TunerMode_CTRL) 
 done
 
 lemma Labels_TunerMode_CTRL:
-  "Labels TunerMode_CTRL = TunerMode_CTRL_Labels";
+  "Labels TunerMode_CTRL = TunerMode_CTRL_Labels"
 apply (simp add: TunerMode_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_TunerMode_CTRL)
 done
 
 lemma Delta_TunerMode_CTRL:
-  "Delta TunerMode_CTRL = TunerMode_CTRL_Delta";
+  "Delta TunerMode_CTRL = TunerMode_CTRL_Delta"
 apply (simp add: TunerMode_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_TunerMode_CTRL)
@@ -510,28 +510,28 @@ apply simp
 done
 
 lemma States_CDMode_CTRL:
-  "States CDMode_CTRL = CDMode_CTRL_States";
+  "States CDMode_CTRL = CDMode_CTRL_States"
 apply (simp add: CDMode_CTRL_def)
 apply (unfold States_def)
 apply (simp add: Abs_seqauto_inverse check_CDMode_CTRL) 
 done
 
 lemma Init_State_CDMode_CTRL:
-  "InitState CDMode_CTRL = CDMode_CTRL_Init";
+  "InitState CDMode_CTRL = CDMode_CTRL_Init"
 apply (simp add: CDMode_CTRL_def)
 apply (unfold InitState_def)
 apply (simp add: Abs_seqauto_inverse check_CDMode_CTRL) 
 done
 
 lemma Labels_CDMode_CTRL:
-  "Labels CDMode_CTRL = CDMode_CTRL_Labels";
+  "Labels CDMode_CTRL = CDMode_CTRL_Labels"
 apply (simp add: CDMode_CTRL_def)
 apply (unfold Labels_def)
 apply (simp add: Abs_seqauto_inverse check_CDMode_CTRL)
 done
 
 lemma Delta_CDMode_CTRL:
-  "Delta CDMode_CTRL = CDMode_CTRL_Delta";
+  "Delta CDMode_CTRL = CDMode_CTRL_Delta"
 apply (simp add: CDMode_CTRL_def)
 apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_CDMode_CTRL)
@@ -619,7 +619,7 @@ apply (wellformed CarAudioSystemthms_5)+
 done
 
 schematic_lemma EventsCarAudioSystem:
- "HAEvents CarAudioSystem = ?X";
+ "HAEvents CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done

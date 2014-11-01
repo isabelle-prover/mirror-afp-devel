@@ -122,7 +122,7 @@ done
 (*>*)
 
 lemma list_update_le_cong:
-  "\<lbrakk> i<size xs; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; x \<sqsubseteq>\<^sub>r y \<rbrakk> \<Longrightarrow> xs[i:=x] [\<sqsubseteq>\<^bsub>r\<^esub>] ys[i:=y]";
+  "\<lbrakk> i<size xs; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; x \<sqsubseteq>\<^sub>r y \<rbrakk> \<Longrightarrow> xs[i:=x] [\<sqsubseteq>\<^bsub>r\<^esub>] ys[i:=y]"
 (*<*)
 apply (unfold unfold_lesub_list)
 apply (unfold Listn.le_def)
@@ -245,14 +245,14 @@ done
 (*>*)
 
 lemma Cons_in_list_Suc [iff]:
-  "(x#xs \<in> list (Suc n) A) = (x\<in>A \<and> xs \<in> list n A)";
+  "(x#xs \<in> list (Suc n) A) = (x\<in>A \<and> xs \<in> list n A)"
 (*<*)
 apply (simp add: in_list_Suc_iff)
 done 
 (*>*)
 
 lemma list_not_empty:
-  "\<exists>a. a\<in>A \<Longrightarrow> \<exists>xs. xs \<in> list n A";
+  "\<exists>a. a\<in>A \<Longrightarrow> \<exists>xs. xs \<in> list n A"
 (*<*)
 apply (induct "n")
  apply simp

@@ -105,7 +105,7 @@ lemma del_edge_undirected_degree_plus': "finite (edges g) \<Longrightarrow> (v,e
 
 lemma del_edge_undirected_degree_minus[simp]: "finite (edges g) \<Longrightarrow> (v,e,v') \<in> edges g 
     \<Longrightarrow> (v',e,v) \<in> edges g \<Longrightarrow> degree v (del_unEdge v e v' g) =degree v g- (1::nat)" 
-  using del_edge_undirected_degree_plus by (metis add_diff_cancel_left' add.commute);
+  using del_edge_undirected_degree_plus by (metis add_diff_cancel_left' add.commute)
 
 lemma del_edge_undirected_degree_minus'[simp]: "finite (edges g) \<Longrightarrow> (v,e,v') \<in> edges g 
     \<Longrightarrow> (v',e,v) \<in> edges g \<Longrightarrow> degree v' (del_unEdge v e v' g) =degree v' g- (1::nat)"

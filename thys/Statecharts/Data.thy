@@ -18,7 +18,7 @@ definition
                (\<forall> i \<in> {n. n < (PartNum D)}. (L!i) \<in> (PartDom D i)))"
 
 lemma Data_EmptySet: 
-    "([@ t. True], Abs_dataspace [UNIV])\<in> { (L,D) | L D. Data L D }";
+    "([@ t. True], Abs_dataspace [UNIV])\<in> { (L,D) | L D. Data L D }"
 apply (unfold Data_def PartDom_def)
 apply auto
 apply (subst Abs_dataspace_inverse)
@@ -51,11 +51,11 @@ definition
  "DataPart d n = (DataValue d) ! n"
 
 lemma Rep_data_tuple:
-  "Rep_data D = (DataValue D, DataSpace D)";
+  "Rep_data D = (DataValue D, DataSpace D)"
 by (unfold DataValue_def DataSpace_def, simp)
 
 lemma Rep_data_select: 
-  "(DataValue D, DataSpace D) \<in> data";
+  "(DataValue D, DataSpace D) \<in> data"
 apply (subst Rep_data_tuple [THEN sym])
 apply (rule Rep_data)
 done
@@ -76,14 +76,14 @@ done
 
 lemma DataValue_PartDom [simp]:
   "i < PartNum (Data.DataSpace D) \<Longrightarrow>
-   DataValue D ! i \<in> PartDom (Data.DataSpace D) i";
+   DataValue D ! i \<in> PartDom (Data.DataSpace D) i"
 apply (cut_tac D=D in Data_select)
 apply (unfold Data_def)
 apply auto
 done 
 
 lemma DataPart_PartDom [simp]:
-  "i < PartNum (Data.DataSpace d) \<longrightarrow> (d !P! i) \<in> ((Data.DataSpace d) !D! i)";
+  "i < PartNum (Data.DataSpace d) \<longrightarrow> (d !P! i) \<in> ((Data.DataSpace d) !D! i)"
 apply (unfold DataPart_def)
 apply auto
 done
@@ -97,7 +97,7 @@ definition
                     (L!i) \<noteq> None \<longrightarrow> the (L!i) \<in> (PartDom D i))"
 
 lemma PData_EmptySet:
-    "([Some (@ t. True)], Abs_dataspace [UNIV]) \<in> { (L,D) | L D. PData L D }";
+    "([Some (@ t. True)], Abs_dataspace [UNIV]) \<in> { (L,D) | L D. PData L D }"
 apply (unfold PData_def PartDom_def)
 apply auto
 apply (subst Abs_dataspace_inverse)
@@ -166,7 +166,7 @@ apply (simp)
 done
 
 lemma Rep_pdata_select:
-  "(PDataValue D, PDataSpace D) \<in> pdata";
+  "(PDataValue D, PDataSpace D) \<in> pdata"
 apply (subst Rep_pdata_tuple [THEN sym])
 apply (rule Rep_pdata)
 done
@@ -210,13 +210,13 @@ done
 subsubsection {* @{text "Data2PData"} *}
 
 lemma PData_Data2PData [simp]:
-  "PData (map Some (DataValue D)) (Data.DataSpace D)";
+  "PData (map Some (DataValue D)) (Data.DataSpace D)"
 apply (unfold PData_def)
 apply auto
 done
 
 lemma pdata_Data2PData [simp]:
-  "(map Some (DataValue D), Data.DataSpace D) \<in> pdata";
+  "(map Some (DataValue D), Data.DataSpace D) \<in> pdata"
 apply (unfold pdata_def)
 apply auto
 done
@@ -232,7 +232,7 @@ apply auto
 done
 
 lemma PDataValue_Data2PData_DataValue [simp]:
-     "(map the (PDataValue (Data2PData D))) = DataValue D";
+     "(map the (PDataValue (Data2PData D))) = DataValue D"
 apply (unfold DataValue_def PDataValue_def Data2PData_def Let_def)
 apply auto
 apply (cut_tac D=D in Rep_data_tuple)
@@ -281,7 +281,7 @@ done
 
 lemma data_DataOverride:
  "((PDataSpace P) = (Data.DataSpace Q)) \<Longrightarrow>
-   (map OptionOverride (zip (PDataValue P) (Data.DataValue Q)), Data.DataSpace Q) \<in> data";
+   (map OptionOverride (zip (PDataValue P) (Data.DataValue Q)), Data.DataSpace Q) \<in> data"
 apply (unfold data_def)
 apply auto
 apply (rule Data_DataOverride)
@@ -329,13 +329,13 @@ apply auto
 done
 
 lemma None_OptionOverride [simp]:
-   "(fst P) = None \<Longrightarrow> OptionOverride P = (snd P)";
+   "(fst P) = None \<Longrightarrow> OptionOverride P = (snd P)"
 apply (unfold OptionOverride_def)
 apply auto
 done
 
 lemma Some_OptionOverride [simp]:
-   "(fst P) \<noteq> None \<Longrightarrow> OptionOverride P = the (fst P)";
+   "(fst P) \<noteq> None \<Longrightarrow> OptionOverride P = the (fst P)"
 apply (unfold OptionOverride_def)
 apply auto
 done

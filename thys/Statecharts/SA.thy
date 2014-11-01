@@ -71,7 +71,7 @@ lemma SeqAuto_select:
 by (cut_tac SA=SA in Rep_seqauto_select, unfold seqauto_def, auto)
 
 lemma neq_States [simp]:
-  "States SA \<noteq> {}";
+  "States SA \<noteq> {}"
 apply (cut_tac Rep_seqauto_select)
 apply auto
 apply (unfold seqauto_def SeqAuto_def)
@@ -79,7 +79,7 @@ apply auto
 done
 
 lemma SA_States_disjunct :
- "(States A) \<inter> (States A') = {} \<Longrightarrow> A' \<noteq> A";
+ "(States A) \<inter> (States A') = {} \<Longrightarrow> A' \<noteq> A"
 by auto
 
 lemma SA_States_disjunct2 : 
@@ -102,7 +102,7 @@ apply auto
 done
 
 lemma finite_States [simp]:
-  "finite (States A)";
+  "finite (States A)"
 apply (cut_tac Rep_seqauto_select) 
 apply (unfold seqauto_def SeqAuto_def)
 apply auto
@@ -116,7 +116,7 @@ apply auto
 done
 
 lemma InitState_States [simp]:
-  "InitState A \<in> States A";
+  "InitState A \<in> States A"
 apply (cut_tac Rep_seqauto_select)
 apply (unfold seqauto_def SeqAuto_def)
 apply auto
@@ -133,7 +133,7 @@ apply auto
 done
 
 lemma SeqAuto_EmptySet_SAEvents [simp]:
- "(SAEvents (Abs_seqauto ({@x. True}, (@x. True), {}, {}))) = {}";
+ "(SAEvents (Abs_seqauto ({@x. True}, (@x. True), {}, {}))) = {}"
 apply (unfold SAEvents_def Delta_def) 
 apply simp
 apply (subst Abs_seqauto_inverse)
@@ -143,7 +143,7 @@ apply auto
 done
 
 lemma Label_Delta_subset [simp]:
-  "(Label (Delta SA)) \<subseteq> Labels SA";
+  "(Label (Delta SA)) \<subseteq> Labels SA"
 apply (unfold Label_def label_def)
 apply auto
 apply (cut_tac SA=SA in SeqAuto_select)
@@ -152,7 +152,7 @@ apply auto
 done
 
 lemma Target_SAs_Delta_States:
-  "Target (UNION (SAs HA) Delta) \<subseteq> UNION (SAs HA) States";
+  "Target (UNION (SAs HA) Delta) \<subseteq> UNION (SAs HA) States"
 apply (unfold image_def Target_def target_def)
 apply auto
 apply (rename_tac SA Source Trigger Guard Action Update Target)
@@ -162,7 +162,7 @@ apply auto
 done
 
 lemma States_Int_not_mem:
- "(UNION F States Int States SA) = {} \<Longrightarrow> SA \<notin> F";
+ "(UNION F States Int States SA) = {} \<Longrightarrow> SA \<notin> F"
 apply (unfold Int_def)
 apply auto
 apply (subgoal_tac "\<exists> S. S \<in> States SA")

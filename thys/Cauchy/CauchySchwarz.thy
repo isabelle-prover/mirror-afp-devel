@@ -55,7 +55,7 @@ text {* We now define a vector type to be a tuple of (function,
 length). Where the function is of type @{typ "nat\<Rightarrow>real"}. We also
 define some accessor functions and appropriate notation. *}
 
-type_synonym vector = "(nat\<Rightarrow>real) * nat";
+type_synonym vector = "(nat\<Rightarrow>real) * nat"
 
 definition
   ith :: "vector \<Rightarrow> nat \<Rightarrow> real" ("((_)\<^bsub>_\<^esub>)" [80,100] 100) where
