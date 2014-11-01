@@ -922,15 +922,12 @@ ML {*
                     pretty_constraint ctxt c
                   ] |> Pretty.string_of |> tracing
 
-                  val old = !Pattern.unify_trace_failure_default (* Argh! *)
-                  val _ = Pattern.unify_trace_failure_default := true
                   val rl = mk_CONSTRAINT_rl thy c 
                      |> Drule.zero_var_indexes
                   val res = (SOLVED' (rtac rl 
                       THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac net)))
                     ) i st
                     |> Seq.pull |> is_some
-                  val _ = Pattern.unify_trace_failure_default := old
 
                   val _ = (if res then Pretty.str "OK" else Pretty.str "ERR")
                     |> Pretty.string_of |> tracing
