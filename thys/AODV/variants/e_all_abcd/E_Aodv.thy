@@ -32,7 +32,6 @@ record state =
   osn    :: "sqn"
   sip    :: "ip"
   handled:: "bool"
-text_raw \<open>}%endsnip}\<close>
 
 abbreviation aodv_init :: "ip \<Rightarrow> state"
 where "aodv_init i \<equiv> \<lparr>
