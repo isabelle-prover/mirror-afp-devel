@@ -4,7 +4,7 @@
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
-header {* Cauchy's Mean Theorem *}
+chapter {* Cauchy's Mean Theorem *}
 
 theory CauchysMeanTheorem
 imports Complex_Main

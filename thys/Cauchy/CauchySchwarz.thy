@@ -3,7 +3,7 @@
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
-header {* The Cauchy-Schwarz Inequality *}
+chapter {* The Cauchy-Schwarz Inequality *}
 
 theory CauchySchwarz
 imports Complex_Main
