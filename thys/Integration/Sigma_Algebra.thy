@@ -7,7 +7,7 @@ Changes for Accordance to Joe Hurd's conventions
 and additions by Stefan Richter 2002
 *)
 
-header {* Sigma algebras *}
+subsection {* Sigma algebras \label{sec:sigma} *}
 
 theory Sigma_Algebra imports Main begin
 

@@ -21,7 +21,6 @@
 
 \hyphenation{Isabelle}
 
-\renewcommand{\isamarkupheader}[1] {\markright{THEORY~\isabellecontext}}
 \date{15th May 2003}
 \parindent 0pt\parskip 0.5ex
 
@@ -53,15 +52,9 @@
 \pagestyle{headings}
 \input{intro}
 \input{Sigma_Algebra}  
-\subsection{Monotone convergence}
-\label{sec:monconv}
 \input{MonConv}
-\subsection{Measure spaces}
-\label{sec:measure-spaces}
 \input{Measure}
 \newpage
-\section{Real-valued random variables}
-\label{sec:realrandvar}
 \input{RealRandVar}
 \chapter{Integration}
 \label{cha:integration}
@@ -72,11 +65,7 @@ integral is defined and its characteristics are shown in
 doing so, we first look at implementation alternatives that did not
 work out. 
 
-\section{Two approaches that failed}
-\label{sec:two-approaches-that}
 \input{Failure}
-\section{The three-step approach}
-\label{sec:stepwise-approach}
 \input{Integral}
 \input{outro} 
 \begin{flushleft}
