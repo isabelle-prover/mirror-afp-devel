@@ -1,4 +1,4 @@
-header {* \isaheader{Instantiate CFG locales with Proc CFG} *}
+section {* Instantiate CFG locales with Proc CFG *}
 
 theory Interpretation imports WellFormProgs "../StaticInter/CFGExit" begin
 

@@ -1,4 +1,4 @@
-header {* \isaheader{Definition of the CFG} *}
+section {* Definition of the CFG *}
 
 theory PCFG imports ProcState begin
 

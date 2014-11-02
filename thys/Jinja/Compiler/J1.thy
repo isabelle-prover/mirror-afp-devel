@@ -3,8 +3,9 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \chapter{Compilation}\label{cha:comp}
-          \isaheader{An Intermediate Language} *}
+chapter {* Compilation \label{cha:comp} *}
+
+section {* An Intermediate Language *}
 
 theory J1 imports "../J/BigStep" begin
 

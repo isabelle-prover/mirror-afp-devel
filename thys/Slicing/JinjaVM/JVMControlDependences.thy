@@ -1,4 +1,4 @@
-header {* \isaheader{Instantiating the control dependences} *}
+section {* Instantiating the control dependences *}
 
 theory JVMControlDependences imports
   JVMPostdomination

@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Program Compilation} *}
+section {* Program Compilation *}
 
 theory PCompiler
 imports "../Common/WellForm"
@@ -207,7 +207,7 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 (*<*)by(simp add:field_def)(*>*)
 
 
-section{*Invariance of @{term wf_prog} under compilation *}
+subsection{*Invariance of @{term wf_prog} under compilation *}
 
 lemma [iff]: "distinct_fst (compP f P) = distinct_fst P"
 (*<*)

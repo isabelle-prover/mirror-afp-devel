@@ -1,4 +1,4 @@
-header {* \isaheader{SDG} *}
+section {* SDG *}
 
 theory SDG imports CFGExit_wf Postdomination begin
 

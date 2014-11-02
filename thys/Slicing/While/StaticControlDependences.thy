@@ -1,4 +1,4 @@
-header {* \isaheader{Interpretations of the various static control dependences} *}
+section {* Interpretations of the various static control dependences *}
 
 theory StaticControlDependences imports 
   AdditionalLemmas 

@@ -1,8 +1,6 @@
 theory JVMInterpretation imports JVMCFG "../Basic/CFGExit" begin
 
-text {*
-\isaheader{Instatiation of the @{text CFG} locale}
-*}
+section {* Instatiation of the @{text CFG} locale *}
 
 abbreviation sourcenode :: "j_edge \<Rightarrow> j_node"
   where "sourcenode e \<equiv> fst e"

@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Weak well-formedness of Jinja programs} *}
+section {* Weak well-formedness of Jinja programs *}
 
 theory WWellForm imports "../Common/WellForm" Expr begin
 

@@ -1,4 +1,4 @@
-header {* \isaheader{Dynamic Standard Control Dependence} *}
+section {* Dynamic Standard Control Dependence *}
 
 theory DynStandardControlDependence imports Postdomination begin
 

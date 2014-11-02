@@ -1,14 +1,12 @@
-header {*
-\isachapter{Equivalence of the CFG and Jinja} 
-*}
+chapter {* Equivalence of the CFG and Jinja *}
 
 theory SemanticsWF imports JVMInterpretation "../Basic/SemanticsCFG" begin
 
 declare rev_nth [simp add]
 
-text {*
-\isaheader{State updates}
+section {* State updates *}
 
+text {*
 The following abbreviations update the stack and the local variables (in the representation
 as used in the CFG) according to a @{text "frame list"} as it is used in Jinja's
 state representation.
@@ -925,9 +923,7 @@ proof -
 qed
 
 
-text {*
-\isaheader{CFG simulates Jinja's semantics}
-*}
+section {* CFG simulates Jinja's semantics *}
 
 subsection {* Definitions *}
 

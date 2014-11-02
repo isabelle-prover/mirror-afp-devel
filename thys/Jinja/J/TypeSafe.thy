@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Type Safety Proof} *}
+section {* Type Safety Proof *}
 
 theory TypeSafe
 imports Progress JWellForm

@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Correctness of Stage 2} *}
+section {* Correctness of Stage 2 *}
 
 theory Correctness2
 imports "~~/src/HOL/Library/Sublist" Compiler2
@@ -78,7 +78,7 @@ done
 (*>*)
 
 
-section{* Exception tables *}
+subsection{* Exception tables *}
 
 definition pcs :: "ex_table \<Rightarrow> nat set"
 where

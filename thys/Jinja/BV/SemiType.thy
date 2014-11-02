@@ -4,7 +4,7 @@
     Copyright   2000 TUM
 *)
 
-header {* \isaheader{The Jinja Type System as a Semilattice} *}
+section {* The Jinja Type System as a Semilattice *}
 
 theory SemiType
 imports "../Common/WellForm" "../DFA/Semilattices"

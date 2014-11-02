@@ -1,4 +1,4 @@
-header {* \isaheader{Information Flow for While} *}
+section {* Information Flow for While *}
 
 theory NonInterferenceWhile imports
   SemanticsWellFormed

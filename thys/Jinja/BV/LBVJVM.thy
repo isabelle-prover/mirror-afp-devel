@@ -4,7 +4,7 @@
     Copyright   2000 TUM
 *)
 
-header {* \isaheader{LBV for the JVM}\label{sec:JVM} *}
+section {* LBV for the JVM \label{sec:JVM} *}
 
 theory LBVJVM
 imports "../DFA/Abstract_BV" TF_JVM

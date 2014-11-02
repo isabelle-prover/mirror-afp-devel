@@ -1,4 +1,4 @@
-header {* \isaheader{Static data dependence} *}
+section {* Static data dependence *}
 
 theory DataDependence imports "../Basic/DynDataDependence" begin
 

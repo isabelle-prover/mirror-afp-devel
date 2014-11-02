@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Objects and the Heap} *}
+section {* Objects and the Heap *}
 
 theory Objects imports TypeRel Value begin
 
@@ -94,7 +94,7 @@ lemma typeof_lit_is_type:
  (*<*)by (induct v) (auto simp:is_type_def)(*>*)
 
 
-section {* Heap extension @{text"\<unlhd>"} *}
+subsection {* Heap extension @{text"\<unlhd>"} *}
 
 lemma hextI: "\<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs')) \<Longrightarrow> h \<unlhd> h'"
 (*<*)

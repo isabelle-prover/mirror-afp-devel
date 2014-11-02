@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Relations between Jinja Types} *}
+section {* Relations between Jinja Types *}
 
 theory TypeRel imports 
   "~~/src/HOL/Library/Transitive_Closure_Table"

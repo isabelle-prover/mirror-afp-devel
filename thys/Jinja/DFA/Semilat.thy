@@ -5,10 +5,9 @@
 Semilattices.
 *)
 
-header {* 
-  \chapter{Bytecode Verifier}\label{cha:bv}
-  \isaheader{Semilattices} 
-*}
+chapter {* Bytecode Verifier \label{cha:bv} *}
+
+section {* Semilattices *}
 
 theory Semilat
 imports Main "~~/src/HOL/Library/While_Combinator"

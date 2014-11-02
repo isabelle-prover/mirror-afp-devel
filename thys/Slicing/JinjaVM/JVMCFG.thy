@@ -1,10 +1,8 @@
-header {*
-\isachapter{A Control Flow Graph for Jinja Byte Code}
+(* This work was done by Denis Lohner (denis.lohner@kit.edu). *)
 
-  This work was done by Denis Lohner (denis.lohner@kit.edu).
+chapter {* A Control Flow Graph for Jinja Byte Code *}
 
-\isaheader{Formalizing the CFG}
-*}
+section {* Formalizing the CFG *}
 
 theory JVMCFG imports "../Basic/BasicDefs" "../../Jinja/BV/BVExample" begin
 
@@ -466,7 +464,7 @@ lemma f2c_append [simp]:
   by (simp add: framestack_to_callstack_def)
 
 
-section {* CFG construction *}
+subsection {* CFG construction *}
 
 subsection {* Datatypes *}
 

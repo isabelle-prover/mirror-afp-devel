@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Expressions} *}
+section {* Expressions *}
 
 theory Expr
 imports "../Common/Exceptions"

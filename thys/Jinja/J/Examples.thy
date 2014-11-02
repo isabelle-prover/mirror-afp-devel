@@ -4,7 +4,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Example Expressions} *}
+section {* Example Expressions *}
 
 theory Examples imports Expr begin
 

@@ -1,4 +1,4 @@
-header {* \isaheader{Equivalence} *}
+section {* Equivalence *}
 
 theory WEquivalence imports Semantics WCFG begin
 

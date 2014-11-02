@@ -1,4 +1,4 @@
-header {* \isaheader{Distance of Paths} *}
+section {* Distance of Paths *}
 
 theory Distance imports CFG begin
 

@@ -1,7 +1,6 @@
-header {*
-\isachapter{A Control Flow Graph for Jinja Byte Code}
-\isaheader{Formalizing the CFG}
-*}
+chapter {* A Control Flow Graph for Jinja Byte Code *}
+
+section {* Formalizing the CFG *}
 
 theory JVMCFG imports "../StaticInter/BasicDefs" "../../Jinja/BV/BVExample" begin
 

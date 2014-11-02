@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Preservation of Well-Typedness} *}
+section {* Preservation of Well-Typedness *}
 
 theory TypeComp
 imports Compiler "../BV/BVSpec"

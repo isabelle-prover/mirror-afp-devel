@@ -1,5 +1,6 @@
-header {* \isachapter{Instantiating the Framework with a simple While-Language using procedures}
-  \isaheader{Commands} *}
+chapter {* Instantiating the Framework with a simple While-Language using procedures *}
+
+section {* Commands *}
 
 theory Com imports "../StaticInter/BasicDefs" begin
 

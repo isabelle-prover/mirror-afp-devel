@@ -1,4 +1,4 @@
-header {* \isaheader{The fundamental property of slicing} *}
+section {* The fundamental property of slicing *}
 
 theory FundamentalProperty imports WeakSimulation SemanticsCFG begin
 

@@ -1,5 +1,8 @@
-header {* \isachapter{Static Intraprocedural Slicing}
+chapter {* Static Intraprocedural Slicing *}
 
+theory Distance imports "../Basic/CFG" begin
+
+text {*
   Static Slicing analyses a CFG prior to execution. Whereas dynamic
   slicing can provide better results for certain inputs (i.e.\ trace and
   initial state), static slicing is more conservative but provides
@@ -23,10 +26,9 @@ header {* \isachapter{Static Intraprocedural Slicing}
   weak control and weak order dependence. The correctness proof for
   slicing is independent of the control dependence used, it bases only
   on one property every control dependence definition hass to fulfill.
-  
-  \isaheader{Distance of Paths} *}
+*}
 
-theory Distance imports "../Basic/CFG" begin
+section {* Distance of Paths *}
 
 context CFG begin
 

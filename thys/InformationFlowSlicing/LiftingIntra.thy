@@ -1,4 +1,4 @@
-header {* \isaheader{Framework Graph Lifting for Noninterference} *}
+section {* Framework Graph Lifting for Noninterference *}
 
 theory LiftingIntra 
   imports NonInterferenceIntra "../Slicing/StaticIntra/CDepInstantiations" 

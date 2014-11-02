@@ -1,8 +1,6 @@
 theory JVMCFG_wf imports JVMInterpretation "../Basic/CFGExit_wf" begin
 
-text {*
-\isaheader{Instantiation of the @{text "CFG_wf"} locale}
-*}
+section {* Instantiation of the @{text "CFG_wf"} locale *}
 
 subsection {* Variables and Values *}
 

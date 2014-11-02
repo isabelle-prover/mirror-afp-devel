@@ -3,7 +3,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Jinja Values} *}
+section {* Jinja Values *}
 
 theory Value imports TypeRel begin
 

@@ -4,14 +4,13 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* 
-  \chapter{Jinja Virtual Machine}\label{cha:jvm}
-  \isaheader{State of the JVM} 
-*}
+chapter {* Jinja Virtual Machine \label{cha:jvm} *}
+
+section {* State of the JVM *}
 
 theory JVMState imports "../Common/Objects" begin
 
-section {* Frame Stack *}
+subsection {* Frame Stack *}
 
 type_synonym 
   pc = nat
@@ -24,7 +23,7 @@ type_synonym
   -- "parameter types"
   -- "program counter within frame"
 
-section {* Runtime State *}
+subsection {* Runtime State *}
 
 type_synonym
   jvm_state = "addr option \<times> heap \<times> frame list"  

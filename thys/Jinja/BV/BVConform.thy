@@ -6,7 +6,7 @@
 The invariant for the type safety proof.
 *)
 
-header {* \isaheader{BV Type Safety Invariant} *}
+section {* BV Type Safety Invariant *}
 
 theory BVConform
 imports BVSpec "../JVM/JVMExec" "../Common/Conform"
@@ -74,7 +74,7 @@ notation (xsymbols)
 
 
 
-section {* Values and @{text "\<top>"} *}
+subsection {* Values and @{text "\<top>"} *}
 
 lemma confT_Err [iff]: "P,h \<turnstile> x :\<le>\<^sub>\<top> Err" 
   by (simp add: confT_def)
@@ -95,7 +95,7 @@ lemma confT_widen [intro?, trans]:
   by (cases T', auto intro: conf_widen)
 
 
-section {* Stack and Registers *}
+subsection {* Stack and Registers *}
 
 lemmas confTs_Cons1 [iff] = list_all2_Cons1 [of "confT P h"] for P h
 
@@ -131,7 +131,7 @@ lemma confTs_Err [iff]:
   by (induct n) auto
 
   
-section {* correct-frames *}
+subsection {* correct-frames *}
 
 lemmas [simp del] = fun_upd_apply
 

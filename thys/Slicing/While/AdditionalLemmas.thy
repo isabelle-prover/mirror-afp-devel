@@ -1,4 +1,4 @@
-header {* \isaheader{Lemmas for the control dependences} *}
+section {* Lemmas for the control dependences *}
 
 theory AdditionalLemmas imports WellFormed
 begin

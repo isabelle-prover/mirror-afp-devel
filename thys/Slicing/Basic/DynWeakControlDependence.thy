@@ -1,4 +1,4 @@
-header {* \isaheader{Dynamic Weak Control Dependence} *}
+section {* Dynamic Weak Control Dependence *}
 
 theory DynWeakControlDependence imports Postdomination begin
 

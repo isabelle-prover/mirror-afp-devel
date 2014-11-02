@@ -1,4 +1,4 @@
-header {* \isaheader{Relations between control dependences} *}
+section {* Relations between control dependences *}
 
 theory ControlDependenceRelations 
   imports WeakOrderDependence StandardControlDependence 

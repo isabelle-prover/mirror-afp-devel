@@ -1,4 +1,4 @@
-header {* \isaheader{Horwitz-Reps-Binkley Slice} *}
+section {* Horwitz-Reps-Binkley Slice *}
 
 theory HRBSlice imports SDG begin
 

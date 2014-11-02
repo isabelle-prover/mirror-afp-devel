@@ -1,4 +1,4 @@
-header {* \isaheader{HRB Slicing guarantees IFC Noninterference} *}
+section {* HRB Slicing guarantees IFC Noninterference *}
 
 theory NonInterferenceInter 
   imports "../HRB-Slicing/StaticInter/FundamentalProperty"

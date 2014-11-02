@@ -1,4 +1,4 @@
-header {* \isaheader{Static backward slice} *}
+section {* Static backward slice *}
 
 theory Slice imports SCDObservable Distance begin
 

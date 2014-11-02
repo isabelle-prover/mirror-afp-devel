@@ -3,13 +3,13 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Correctness of Stage 1} *}
+section {* Correctness of Stage 1 *}
 
 theory Correctness1
 imports J1WellForm Compiler1
 begin
 
-section{*Correctness of program compilation *}
+subsection{*Correctness of program compilation *}
 
 primrec unmod :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
   and unmods :: "expr\<^sub>1 list \<Rightarrow> nat \<Rightarrow> bool" where

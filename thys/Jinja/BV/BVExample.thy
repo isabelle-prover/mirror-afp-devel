@@ -3,7 +3,7 @@
     Author:     Gerwin Klein
 *)
 
-header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
+section {* Example Welltypings \label{sec:BVExample} *}
 
 theory BVExample
 imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
@@ -11,14 +11,14 @@ imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
 begin
 
 text {*
-  This theory shows type correctness of the example program in section 
+  This theory shows type correctness of the example program in subsection 
   \ref{sec:JVMListExample} (p. \pageref{sec:JVMListExample}) by
   explicitly providing a welltyping. It also shows that the start
   state of the program conforms to the welltyping; hence type safe
   execution is guaranteed.
 *}
 
-section "Setup"
+subsection "Setup"
 
 lemma distinct_classes':
   "list_name \<noteq> test_name"
@@ -182,7 +182,7 @@ lemma [simp]: "fields E test_name = []"
 lemmas [simp] = is_class_def
 
 
-section "Program structure"
+subsection "Program structure"
 
 text {*
   The program is structurally wellformed:
@@ -229,7 +229,7 @@ proof -
 qed
 (*>*)
 
-section "Welltypings"
+subsection "Welltypings"
 text {*
   We show welltypings of the methods @{term append_name} in class @{term list_name}, 
   and @{term makelist_name} in class @{term test_name}:
@@ -451,7 +451,7 @@ lemma wf_prog:
 (*>*)
 
 
-section "Conformance"
+subsection "Conformance"
 text {* Execution of the program will be typesafe, because its
   start state conforms to the welltyping: *}
 
@@ -464,7 +464,7 @@ lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 (*>*)
 
 
-section "Example for code generation: inferring method types"
+subsection "Example for code generation: inferring method types"
 
 definition test_kil :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
              ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^sub>i' err list"

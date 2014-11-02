@@ -1,4 +1,4 @@
-header {* \isaheader{Static Standard Control Dependence} *}
+section {* Static Standard Control Dependence *}
 
 theory StandardControlDependence imports 
   "../Basic/Postdomination" 

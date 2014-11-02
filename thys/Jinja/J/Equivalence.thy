@@ -3,11 +3,11 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Equivalence of Big Step and Small Step Semantics} *}
+section {* Equivalence of Big Step and Small Step Semantics *}
 
 theory Equivalence imports BigStep SmallStep WWellForm begin
 
-section{*Small steps simulate big step*}
+subsection{*Small steps simulate big step*}
 
 subsubsection "Cast"
 

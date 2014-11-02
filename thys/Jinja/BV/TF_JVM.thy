@@ -4,7 +4,7 @@
     Copyright   2000 TUM
 *)
 
-header {* \isaheader{The Typing Framework for the JVM}\label{sec:JVM} *}
+section {* The Typing Framework for the JVM \label{sec:JVM} *}
 
 theory TF_JVM
 imports "../DFA/Typing_Framework_err" EffectMono BVSpec
@@ -45,7 +45,7 @@ locale start_context = JVM_sl +
 
 
 
-section {* Connecting JVM and Framework *}
+subsection {* Connecting JVM and Framework *}
 
 
 lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^sub>r xt is" 

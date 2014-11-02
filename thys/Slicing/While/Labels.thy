@@ -1,4 +1,4 @@
-header {* \isaheader{Labels} *}
+section {* Labels *}
 
 theory Labels imports Com begin
 

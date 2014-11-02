@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Definite assignment} *}
+section {* Definite assignment *}
 
 theory DefAss imports BigStep begin
 

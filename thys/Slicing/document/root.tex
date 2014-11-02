@@ -15,14 +15,7 @@
 \urlstyle{rm}
 \isabellestyle{it}
 
-\newcommand{\isachapter}[1]
-{\markright{\isabellecontext}\chapter{#1}}
-
-\newcommand{\isaheader}[1]
-{\markright{\isabellecontext}\section{#1}}
-\renewcommand{\isamarkupheader}[1]{#1}
-\renewcommand{\isamarkupsection}[1]{\subsection{#1}}
-
+\renewcommand{\setisabellecontext}[1]{\markright{#1}}
 
 \begin{document}
 

@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Program State} *}
+section {* Program State *}
 
 theory State imports "../Common/Exceptions" begin
 

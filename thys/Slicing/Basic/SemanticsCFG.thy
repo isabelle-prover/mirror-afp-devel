@@ -1,4 +1,4 @@
-header {* \isaheader{CFG and semantics conform} *}
+section {* CFG and semantics conform *}
 
 theory SemanticsCFG imports CFG begin
 

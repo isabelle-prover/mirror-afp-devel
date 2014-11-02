@@ -1,5 +1,4 @@
-header {* \isaheader{Lemmas concerning paths to instantiate locale
-  Postdomination} *}
+section {* Lemmas concerning paths to instantiate locale Postdomination *}
 
 theory ValidPaths imports WellFormed "../StaticInter/Postdomination" begin
 

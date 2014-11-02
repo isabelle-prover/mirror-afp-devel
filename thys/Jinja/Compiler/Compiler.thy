@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Combining Stages 1 and 2} *}
+section {* Combining Stages 1 and 2 *}
 
 theory Compiler
 imports Correctness1 Correctness2

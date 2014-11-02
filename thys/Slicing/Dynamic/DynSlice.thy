@@ -1,4 +1,4 @@
-header {* \isaheader{Dynamic Backward Slice} *}
+section {* Dynamic Backward Slice *}
 
 theory DynSlice imports DependentLiveVariables BitVector "../Basic/SemanticsCFG" begin
 

@@ -1,4 +1,4 @@
-header {* \isaheader{Slicing guarantees IFC Noninterference} *}
+section {* Slicing guarantees IFC Noninterference *}
 
 theory NonInterferenceIntra imports 
   "../Slicing/StaticIntra/Slice" 

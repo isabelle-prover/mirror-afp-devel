@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Runtime Well-typedness} *}
+section {* Runtime Well-typedness *}
 
 theory WellTypeRT
 imports WellType

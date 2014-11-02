@@ -1,5 +1,8 @@
-header {* \isachapter{The Framework}
+chapter {* The Framework *}
 
+theory BasicDefs imports AuxLemmas begin
+
+text {*
   As slicing is a program analysis that can be completely based on the
   information given in the CFG, we want to provide a framework which
   allows us to formalize and prove properties of slicing regardless of
@@ -22,10 +25,9 @@ header {* \isachapter{The Framework}
   $(n_1,s_1)$ to $(n_1',s_1')$, this tuple simulates a 
   tuple $(n_2,s_2)$ which is the result of making an
   observable move in the sliced graph beginning in $(n_2',s_2')$.  
+*}
 
-  \isaheader{Basic Definitions} *}
-
-theory BasicDefs imports AuxLemmas begin
+section {* Basic Definitions *}
 
 fun fun_upds :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<Rightarrow> 'b)"
 where "fun_upds f [] ys = f"

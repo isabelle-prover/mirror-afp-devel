@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Compilation Stage 1} *}
+section {* Compilation Stage 1 *}
 
 theory Compiler1 imports PCompiler J1 Hidden begin
 
