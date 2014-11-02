@@ -1,4 +1,4 @@
-header {* Definition *}
+chapter {* Definition *}
 
 theory %invisible Definition
 imports Main

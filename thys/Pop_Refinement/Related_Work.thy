@@ -1,4 +1,4 @@
-header {* Related Work *}
+chapter {* Related Work *}
 
 theory %invisible Related_Work
 imports Main
