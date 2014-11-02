@@ -9,13 +9,13 @@ The prefix order of llists.
 Safety and liveness.
 *)
 
-header{* More on llists *}
+section{* More on llists *}
 
 theory LList2
 imports "../Coinductive/Coinductive_List"
 begin
 
-section{*Preliminaries*}
+subsection{*Preliminaries*}
 
 notation
   LCons  (infixr "##" 65) and
@@ -28,7 +28,7 @@ translations
 
 lemmas llistE = llist.exhaust
 
-section{*Finite and infinite llists over an alphabet*}
+subsection{*Finite and infinite llists over an alphabet*}
 
 inductive_set
   finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<star>)" [1000] 999)
@@ -60,7 +60,7 @@ notation (xsymbols)
   fpslsts ("(_\<^sup>\<clubsuit>)" [1000] 999) and
   poslsts ("(_\<^sup>\<spadesuit>)" [1000] 999)
 
-subsection{*Facts about all llists*}
+subsubsection{*Facts about all llists*}
 
 lemma alllsts_UNIV [iff]:
   "s \<in> UNIV\<^sup>\<infinity>"
@@ -94,7 +94,7 @@ lemma LConsE [iff]: "x##xs \<in> A\<^sup>\<infinity> = (x\<in>A \<and> xs \<in> 
   by (auto elim: alllsts.cases)
 
 
-subsection{*Facts about non-empty (positive) llists*}
+subsubsection{*Facts about non-empty (positive) llists*}
 
 lemma poslsts_iff [iff]:
   "(s \<in> A\<^sup>\<spadesuit>) = (s \<in> A\<^sup>\<infinity> \<and> s \<noteq> LNil)"
@@ -111,7 +111,7 @@ lemma poslsts_mono:
   "A \<subseteq> B \<Longrightarrow> A\<^sup>\<spadesuit> \<subseteq> B\<^sup>\<spadesuit>"
   by (auto dest: alllsts_mono)
 
-subsection{*Facts about finite llists*}
+subsubsection{*Facts about finite llists*}
 
 lemma finlsts_empty [simp]: "{}\<^sup>\<star> = {LNil}"
   by (auto elim: finlsts.cases)
@@ -204,7 +204,7 @@ lemma finlsts_rec_LCons_def:
   by (auto simp: finlsts_rec_LCons)
 
 
-subsection{*Facts about non-empty (positive) finite llists*}
+subsubsection{*Facts about non-empty (positive) finite llists*}
 
 lemma fpslsts_iff [iff]:
   "(s \<in> A\<^sup>\<clubsuit>) = (s \<in> A\<^sup>\<star> \<and> s \<noteq> LNil)"
@@ -228,7 +228,7 @@ proof-
 qed
 
 
-subsection{*Facts about infinite llists*}
+subsubsection{*Facts about infinite llists*}
 
 lemma inflstsI [intro]:
   "\<lbrakk> x \<in> A\<^sup>\<infinity>; x \<in> UNIV\<^sup>\<star> \<Longrightarrow> False \<rbrakk> \<Longrightarrow> x \<in> A\<^sup>\<omega>"
@@ -287,9 +287,9 @@ lemma notinf_fin [iff]: "(x \<notin> UNIV\<^sup>\<omega>) = (x \<in> UNIV\<^sup>
   by auto
 
 
-section{*Lappend*}
+subsection{*Lappend*}
 
-subsection{*Simplification*}
+subsubsection{*Simplification*}
 
 lemma lapp_inf [simp]:
   assumes "s \<in> A\<^sup>\<omega>"
@@ -309,7 +309,7 @@ lemma same_lappend_eq [iff]:
  "r \<in> A\<^sup>\<star> \<Longrightarrow> (r @@ s = r @@ t) = (s = t)"
   by (erule finlsts.induct) simp+
 
-subsection{*Typing rules*}
+subsubsection{*Typing rules*}
 
 lemma lappT: 
   assumes sllist: "s \<in> A\<^sup>\<infinity>"
@@ -411,7 +411,7 @@ next
   assume ?R thus ?L by (auto dest: finsubsetall intro: lappT)
 qed
 
-section{*Length, indexing, prefixes, and suffixes of llists*}
+subsection{*Length, indexing, prefixes, and suffixes of llists*}
 
 primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
 where
@@ -803,7 +803,7 @@ next
 qed
 
 
-section{*The constant llist *}
+subsection{*The constant llist *}
 
 definition lconst :: "'a \<Rightarrow> 'a llist" where
   "lconst a \<equiv> iterates (\<lambda>x. x) a"
@@ -849,7 +849,7 @@ next assume lconst: "lconst a \<in> UNIV\<^sup>\<star>"
 qed
 
 
-section{*The prefix order of llists*}
+subsection{*The prefix order of llists*}
 
 instantiation llist :: (type) order
 begin
@@ -923,7 +923,7 @@ instance by default
 end
 
 
-subsection{*Typing rules*}
+subsubsection{*Typing rules*}
 
 lemma llist_le_finT [simp]:
  "r\<le>s \<Longrightarrow> s \<in> A\<^sup>\<star> \<Longrightarrow> r \<in> A\<^sup>\<star>"
@@ -948,7 +948,7 @@ lemma llist_less_finT [iff]:
   by (auto simp: less_le)
 
 
-subsection{*More simplification rules*}
+subsubsection{*More simplification rules*}
 
 lemma LNil_less_LCons [iff]: "LNil < a ## t"
   by (simp add: less_le)
@@ -1007,7 +1007,7 @@ next
 qed
 
 
-subsection{*Finite prefixes and infinite suffixes*}
+subsubsection{*Finite prefixes and infinite suffixes*}
 
 definition finpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
 where "finpref A s \<equiv> {r. r \<in> A\<^sup>\<star> \<and> r \<le> s}"
@@ -1200,7 +1200,7 @@ lemma pfinpref_iff [iff]:
   "(x \<in> pfinpref A s) = (x \<in> finpref A s \<and> x \<noteq> LNil)"
   by (auto simp: pfinpref_def)
 
-section{* Safety and Liveness *}
+subsection{* Safety and Liveness *}
 
 definition infsafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
 where "infsafety A P \<equiv> \<forall> t \<in> A\<^sup>\<omega>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
