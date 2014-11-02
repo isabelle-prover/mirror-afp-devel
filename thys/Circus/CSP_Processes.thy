@@ -219,7 +219,7 @@ apply (rule CSP_is_R[OF C, simplified Healthy_def])
 apply (simp add: Healthy_def, subst R_idem2, auto)
 done
 
-lemma rd_ind_wait: "(R(\<not>(P \<^isup>f\<^isub>f) \<turnstile> (P \<^isup>t\<^isub>f)))
+lemma rd_ind_wait: "(R(\<not>(P \<^sup>f\<^sub>f) \<turnstile> (P \<^sup>t\<^sub>f)))
                         = (R((\<not>(\<lambda> (A, A'). P (A, A'\<lparr>ok := False\<rparr>))) 
                                   \<turnstile> (\<lambda> (A, A'). P (A, A'\<lparr>ok := True\<rparr>))))"
 apply (auto simp: design_defs rp_defs fun_eq_iff split: cond_splits)
@@ -385,7 +385,7 @@ done
 
 lemma CSP_is_rd:
   assumes A: "is_CSP_process P"
-  shows "P = (R (\<not>(P \<^isup>f\<^isub>f) \<turnstile> (P \<^isup>t\<^isub>f)))"
+  shows "P = (R (\<not>(P \<^sup>f\<^sub>f) \<turnstile> (P \<^sup>t\<^sub>f)))"
   apply (subst rd_ind_wait)
   apply (subst rd_H1)
   apply (subst rd_H1_H2)
