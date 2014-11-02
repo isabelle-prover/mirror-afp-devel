@@ -4,13 +4,13 @@
     License:    LGPL
 *)
 
-header {* The topology of llists *}
+section {* The topology of llists *}
 
 theory LList_Topology
 imports Topology "../Lazy-Lists-II/LList2"
 begin
 
-section{*The topology of all llists*}
+subsection{*The topology of all llists*}
 
 text{*
   This theory introduces the topologies of all llists, of infinite
@@ -205,7 +205,7 @@ proof-
     by auto
 qed
 
-section{*The topology of infinite llists*}
+subsection{*The topology of infinite llists*}
 
 definition
   itop :: "'a set \<Rightarrow> 'a llist top" where
@@ -502,7 +502,7 @@ proof-
     by auto
 qed
 
-section{*The topology of non-empty llists*}
+subsection{*The topology of non-empty llists*}
 
 definition
   ptop :: "'a set \<Rightarrow> 'a llist top" where

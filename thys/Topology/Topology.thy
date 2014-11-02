@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* A bit of general topology *}
+section {* A bit of general topology *}
 
 theory Topology
 imports "~~/src/HOL/Library/FuncSet"
@@ -23,7 +23,7 @@ text{*
 text{*We use the theory on ``Pi and Function Sets'' by Florian
 Kammueller and Lawrence C Paulson.*}
 
-section{*Preliminaries*}
+subsection{*Preliminaries*}
 
 lemma seteqI:
   "\<lbrakk> \<And>x. x\<in>A \<Longrightarrow> x\<in>B; \<And>x. x\<in>B \<Longrightarrow> x\<in>A \<rbrakk> \<Longrightarrow> A = B"
@@ -50,7 +50,7 @@ lemma funcset_comp:
   "\<lbrakk> f : A \<rightarrow> B; g : B \<rightarrow> C \<rbrakk> \<Longrightarrow> g \<circ> f : A \<rightarrow> C"
   by (auto intro!: funcsetI dest!: funcset_mem)
 
-section{*Definition*}
+subsection{*Definition*}
 
 text{*A topology is defined by a set of sets (the open sets)
 that is closed under finite intersections and infinite unions.*}
@@ -435,7 +435,7 @@ lemma ordertop_topology [iff]:
   "topology (order_top X)"
   by (auto simp: order_top_def)
 
-section{*Neighbourhoods*}
+subsection{*Neighbourhoods*}
 
 definition
   nhd :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set set"  ( "nhds\<index>") where
@@ -520,7 +520,7 @@ proof
 qed
 
 
-section{*Closed sets*}
+subsection{*Closed sets*}
 
 text{* A set is closed if its complement is open. *}
 
@@ -616,7 +616,7 @@ proof-
 qed
   
 
-section{*Core, closure, and frontier of a set*}
+subsection{*Core, closure, and frontier of a set*}
 
 definition
   cor :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("core\<index>") where
@@ -631,7 +631,7 @@ definition
   "frt T s = clsr T s - cor T s"
 
 
-subsection{* Core *}
+subsubsection{* Core *}
 
 lemma (in carrier) coreI:
   "\<lbrakk>m open; m \<subseteq> s; x \<in> m \<rbrakk> \<Longrightarrow> x \<in> core s"
@@ -691,7 +691,7 @@ lemma (in carrier) core_nhds_iff:
   "U \<subseteq> carrier \<Longrightarrow> (x \<in> core U) = (U \<in> nhds x)"
   by (auto intro: core_nhds nhds_core)  
 
-subsection{* Closure *}
+subsubsection{* Closure *}
 
 lemma (in carrier) closureI [intro]:
 "(\<And>c. \<lbrakk>c closed; a \<subseteq> c\<rbrakk> \<Longrightarrow> x \<in> c) \<Longrightarrow> x \<in> closure a"
@@ -751,7 +751,7 @@ lemma (in topology) closure_Un [simp]:
   by (rule, blast) (auto simp: clsr_def)
 
 
-subsection{*Frontier*}
+subsubsection{*Frontier*}
 
 lemma (in carrier) frontierI:
   "\<lbrakk>x \<in> closure s; x \<in> core s \<Longrightarrow> False\<rbrakk> \<Longrightarrow> x \<in> frontier s"
@@ -804,7 +804,7 @@ proof -
 qed
 
 
-subsection{*Adherent points*}
+subsubsection{*Adherent points*}
 
 definition
   adhs :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"     (infix "adh\<index>" 50) where
@@ -878,7 +878,7 @@ lemma (in carrier) adh_closure_iff:
   by (auto dest: adh_imp_closure closure_imp_adh)
 
 
-section{*More about closure and core*}
+subsection{*More about closure and core*}
 
 lemma (in topology) closure_complement [simp]:
   shows  "closure (carrier - A) = carrier - core A"
@@ -948,7 +948,7 @@ proof auto
   with minter show "False" by auto
 qed
 
-section{*Dense sets*}
+subsection{*Dense sets*}
 
 definition
   is_densein :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "densein\<index>" 50) where
@@ -1013,7 +1013,7 @@ proof-
 qed
 
 
-section{*Continuous functions*}
+subsection{*Continuous functions*}
 
 
 definition
@@ -1221,7 +1221,7 @@ proof -
   show ?thesis by (auto del: S.Int_open intro!: continuousI)
 qed
 
-section{*Filters*}
+subsection{*Filters*}
 
 definition
   fbas :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("fbase\<index>") where
@@ -1527,7 +1527,7 @@ proof-
     by (rule R)
 qed
 
-section {* Convergence *}
+subsection {* Convergence *}
 
 
 definition
@@ -1652,9 +1652,9 @@ proof-
 qed
 
 
-section{* Separation *}
+subsection{* Separation *}
 
-subsection{* T0 spaces *}
+subsubsection{* T0 spaces *}
 
 locale T0 = topology +
   assumes T0: "\<forall> x \<in> carrier. \<forall> y \<in> carrier. x \<noteq> y \<longrightarrow>
@@ -1679,7 +1679,7 @@ lemma (in T0) T0_neqE [elim]:
   using T0 points x_neq_y
   by (auto intro: R1 R2)
 
-subsection{* T1 spaces *}
+subsubsection{* T1 spaces *}
 
 locale T1 = T0 +
   assumes DT01: "\<forall> x \<in> carrier. \<forall> y \<in> carrier. x \<noteq> y \<longrightarrow>
@@ -1749,7 +1749,7 @@ next
   thus ?case by simp
 qed
 
-subsection{* T2 spaces (Hausdorff spaces) *}
+subsubsection{* T2 spaces (Hausdorff spaces) *}
 
 locale T2 = T1 +
   assumes T2: "\<forall> x \<in> carrier. \<forall> y \<in> carrier. x \<noteq> y
@@ -1962,7 +1962,7 @@ proof -
   show ?thesis by (auto simp: limites_def intro: fimage_converges)
 qed
 
-subsection{*T3 axiom and regular spaces*}
+subsubsection{*T3 axiom and regular spaces*}
 
 
 locale T3 = topology +
@@ -1997,7 +1997,7 @@ next
 qed
 
 
-subsection{* T4 axiom and normal spaces *} 
+subsubsection{* T4 axiom and normal spaces *} 
 
 locale T4 = topology +
   assumes T4: "\<forall> A B. A closed \<and> A \<subseteq> carrier \<and> B closed \<and> B \<subseteq> carrier \<and>
@@ -2039,7 +2039,7 @@ qed
 
 (*
 
-section{*Compactness*}
+subsection{*Compactness*}
 
 definition
   covers :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ covering\<index>" [50] 50) where
