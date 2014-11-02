@@ -1,4 +1,4 @@
-header {* Sine and Cosine Upper and Lower Bounds *}
+chapter {* Sine and Cosine Upper and Lower Bounds *}
 
 theory Sin_Cos_Bounds
 imports Bounds_Lemmas

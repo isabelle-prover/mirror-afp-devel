@@ -1,4 +1,4 @@
-header{*Gödel's Second Incompleteness Theorem*}
+chapter{*Gödel's Second Incompleteness Theorem*}
 
 theory Goedel_II
 imports Goedel_I Quote 

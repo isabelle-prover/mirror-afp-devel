@@ -1,4 +1,4 @@
-header{*The Hereditarily Finite Sets*}
+chapter{*The Hereditarily Finite Sets*}
 
 theory HF imports "~~/src/HOL/Library/Nat_Bijection"
 begin

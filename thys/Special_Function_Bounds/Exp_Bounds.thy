@@ -1,4 +1,4 @@
-header {* Exp Upper and Lower Bounds *}
+chapter {* Exp Upper and Lower Bounds *}
 
 theory Exp_Bounds
 imports Bounds_Lemmas

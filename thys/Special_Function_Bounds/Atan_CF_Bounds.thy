@@ -1,4 +1,4 @@
-header {* Arctan Upper and Lower Bounds *}
+chapter {* Arctan Upper and Lower Bounds *}
 
 theory Atan_CF_Bounds
 imports Bounds_Lemmas  

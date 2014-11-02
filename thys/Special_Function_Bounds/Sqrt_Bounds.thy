@@ -1,4 +1,4 @@
-header {* Square Root Upper and Lower Bounds *}
+chapter {* Square Root Upper and Lower Bounds *}
 
 theory Sqrt_Bounds
 imports Bounds_Lemmas

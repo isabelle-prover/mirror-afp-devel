@@ -1,4 +1,4 @@
-header{*Formalizing Provability*}
+chapter{*Formalizing Provability*}
 
 theory Pf_Predicates
 imports Coding_Predicates

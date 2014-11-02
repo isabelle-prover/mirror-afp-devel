@@ -1,4 +1,4 @@
-header{*Syntax of Terms and Formulas using Nominal Logic*}
+chapter{*Syntax of Terms and Formulas using Nominal Logic*}
 
 theory SyntaxN
 imports "../Nominal2/Nominal2" "../HereditarilyFinite/OrdArith"

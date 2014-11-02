@@ -1,4 +1,4 @@
-header{*De Bruijn Syntax, Quotations, Codes, V-Codes*}
+chapter{*De Bruijn Syntax, Quotations, Codes, V-Codes*}
 
 theory Coding
 imports SyntaxN

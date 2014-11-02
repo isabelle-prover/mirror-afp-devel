@@ -1,4 +1,4 @@
-header {*Predicates for Terms, Formulas and Substitution*}
+chapter {*Predicates for Terms, Formulas and Substitution*}
 
 theory Coding_Predicates
 imports Coding Sigma

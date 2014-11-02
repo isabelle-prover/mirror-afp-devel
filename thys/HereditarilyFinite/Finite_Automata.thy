@@ -1,4 +1,4 @@
-header{*An Application: Finite Automata*}
+chapter{*An Application: Finite Automata*}
 
 theory Finite_Automata imports Ordinal
 begin

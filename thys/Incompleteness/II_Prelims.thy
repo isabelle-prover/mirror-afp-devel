@@ -1,4 +1,4 @@
-header{*Syntactic Preliminaries for the Second Incompleteness Theorem*}
+chapter{*Syntactic Preliminaries for the Second Incompleteness Theorem*}
 
 theory II_Prelims
 imports Pf_Predicates

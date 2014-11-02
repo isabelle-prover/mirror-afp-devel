@@ -1,4 +1,4 @@
-header{*V-Sets, Epsilon Closure, Ranks*}
+chapter{*V-Sets, Epsilon Closure, Ranks*}
 
 theory Rank imports Ordinal
 begin

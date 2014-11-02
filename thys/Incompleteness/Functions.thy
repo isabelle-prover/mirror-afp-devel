@@ -1,4 +1,4 @@
-header{*Uniqueness Results: Syntactic Relations are Functions*}
+chapter{*Uniqueness Results: Syntactic Relations are Functions*}
 
 theory Functions
 imports Coding_Predicates
