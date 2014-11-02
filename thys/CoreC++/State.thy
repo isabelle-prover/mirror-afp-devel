@@ -3,8 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Program State} *}
+section {* Program State *}
 
 theory State imports Exceptions begin
 

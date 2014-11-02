@@ -5,13 +5,12 @@
    Based on the Jinja theory J/SmallStep.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Small Step Semantics} *}
+section {* Small Step Semantics *}
 
 theory SmallStep imports Syntax State begin
 
 
-section {* Some pre-definitions *}
+subsection {* Some pre-definitions *}
 
 fun blocks :: "vname list \<times> ty list \<times> val list \<times> expr \<Rightarrow> expr"
 where
@@ -41,7 +40,7 @@ definition assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool" where
   "assigned V e  \<equiv>  \<exists>v e'. e = (V:= Val v;; e')"
 
 
-section {* The rules *}
+subsection {* The rules *}
 
 inductive_set
   red  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
@@ -273,7 +272,7 @@ and reds_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langl
 by (induct rule: red_reds.inducts) auto
 
 
-section{* The reflexive transitive closure *}
+subsection{* The reflexive transitive closure *}
 
 definition Red :: "prog \<Rightarrow> env \<Rightarrow> ((expr \<times> state) \<times> (expr \<times> state)) set"
   where "Red P E = {((e,s),e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>}"
@@ -333,7 +332,7 @@ lemma steps_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<l
 by(induct rule:rtrancl_induct2,auto intro:reds_length)
 
 
-section{*Some easy lemmas*}
+subsection{*Some easy lemmas*}
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 by(blast elim: reds.cases)

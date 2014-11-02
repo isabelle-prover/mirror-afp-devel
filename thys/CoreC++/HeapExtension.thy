@@ -11,14 +11,13 @@
       J/WellTypeRT.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Heap Extension} *}
+section {* Heap Extension *}
 
 theory HeapExtension
 imports Progress
 begin
 
-section {* The Heap Extension *}
+subsection {* The Heap Extension *}
 
 definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50) where
   "h \<unlhd> h'  \<equiv>  \<forall>a C S. h a = Some(C,S) \<longrightarrow> (\<exists>S'. h' a = Some(C,S'))"
@@ -66,7 +65,7 @@ done
 
 
 
-section {* @{text"\<unlhd>"} and preallocated *}
+subsection {* @{text"\<unlhd>"} and preallocated *}
 
 lemma preallocated_hext:
   "\<lbrakk> preallocated h; h \<unlhd> h' \<rbrakk> \<Longrightarrow> preallocated h'"
@@ -78,7 +77,7 @@ lemmas preallocated_new  = preallocated_hext [OF _ hext_new]
 
 
 
-section {* @{text"\<unlhd>"} in Small- and BigStep *}
+subsection {* @{text"\<unlhd>"} in Small- and BigStep *}
 
 lemma red_hext_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
   and reds_hext_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
@@ -137,7 +136,7 @@ qed (auto elim!: hext_trans)
 
 
 
-section {* @{text"\<unlhd>"} and conformance *}
+subsection {* @{text"\<unlhd>"} and conformance *}
 
 lemma conf_hext: "h \<unlhd> h' \<Longrightarrow> P,h \<turnstile> v :\<le> T \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
 by(cases T)(induct v,auto dest: hext_objD split:split_if_asm)+
@@ -227,7 +226,7 @@ done
 
 
 
-section {* @{text"\<unlhd>"} in the runtime type system *}
+subsection {* @{text"\<unlhd>"} in the runtime type system *}
 
 lemma hext_typeof_mono: "\<lbrakk> h \<unlhd> h'; P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<rbrakk> \<Longrightarrow> P \<turnstile> typeof\<^bsub>h'\<^esub> v = Some T"
 

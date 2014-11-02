@@ -5,15 +5,14 @@
     Based on the Jinja theory J/TypeSafe.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Type Safety Proof} *}
+section {* Type Safety Proof *}
 
 theory TypeSafe
 imports HeapExtension CWellForm
 begin
 
 
-section{*Basic preservation lemmas*}
+subsection{*Basic preservation lemmas*}
 
 lemma assumes wf:"wwf_prog P" and casts:"P \<turnstile> T casts v to v'"
   and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'" and leq:"P \<turnstile> T' \<le> T"
@@ -314,7 +313,7 @@ by(fastforce intro:reds_preserves_hconf reds_preserves_lconf
 
 
 
-section "Subject reduction"
+subsection "Subject reduction"
 
 lemma wt_blocks:
  "\<And>E. \<lbrakk> length Vs = length Ts; length vs = length Ts;
@@ -1298,7 +1297,7 @@ corollary subjects_reduction:
 by(cases s, cases s', fastforce dest:subjects_reduction2)
 
 
-section {* Lifting to @{text"\<rightarrow>*"} *}
+subsection {* Lifting to @{text"\<rightarrow>*"} *}
 
 text{* Now all these preservation lemmas are first lifted to the transitive
 closure \dots *}
@@ -1493,7 +1492,7 @@ next
 qed
   
 
-section {* Lifting to @{text"\<Rightarrow>"} *}
+subsection {* Lifting to @{text"\<Rightarrow>"} *}
 
 text{* \dots and now to the big step semantics, just for fun. *}
 
@@ -1529,7 +1528,7 @@ using wf
            dest!:steps_preserves_types[OF wf])
 
 
-section {*The final polish*}
+subsection {*The final polish*}
 
 text{* The above preservation lemmas are now combined and packed nicely. *}
 

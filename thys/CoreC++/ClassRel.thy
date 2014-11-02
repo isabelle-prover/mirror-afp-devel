@@ -6,8 +6,7 @@
     Based on the Jinja theory Common/TypeRel.thy by Tobias Nipkow
 *)
 
-
-header {* \isaheader{The subclass relation} *}
+section {* The subclass relation *}
 
 theory ClassRel imports Decl begin
 

@@ -5,13 +5,12 @@
    Based on the Jinja theory Common/Objects.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Objects and the Heap} *}
+section {* Objects and the Heap *}
 
 theory Objects imports SubObj begin
 
 
-section{* Objects *}
+subsection{* Objects *}
 
 type_synonym
   subo = "(path \<times> (vname \<rightharpoonup> val))"     -- "subobjects realized on the heap"
@@ -55,7 +54,7 @@ definition blank :: "prog \<Rightarrow> cname \<Rightarrow> obj" where
 lemma [simp]: "obj_ty (C,S) = Class C"
   by (simp add: obj_ty_def)
 
-section{* Heap *}
+subsection{* Heap *}
 
 type_synonym heap  = "addr \<rightharpoonup> obj"
 

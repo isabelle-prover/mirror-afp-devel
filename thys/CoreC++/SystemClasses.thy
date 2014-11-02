@@ -3,7 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* \isaheader{System Classes} *}
+section {* System Classes *}
 
 theory SystemClasses imports Exceptions begin
 

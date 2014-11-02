@@ -3,7 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* \isaheader{Auxiliary Definitions} *}
+section {* Auxiliary Definitions *}
 
 theory Auxiliary
 imports Main "~~/src/HOL/Library/While_Combinator"
@@ -111,7 +111,7 @@ by (auto dest:set2list_prop simp:set2list_def)
 
 
 
-section {*@{text distinct_fst}*}
+subsection {*@{text distinct_fst}*}
  
 definition distinct_fst :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "distinct_fst  \<equiv>  distinct \<circ> map fst"
@@ -137,7 +137,7 @@ lemma map_of_SomeI:
 by (induct kxs) (auto simp:fun_upd_apply)
 
 
-section {* Using @{term list_all2} for relations *}
+subsection {* Using @{term list_all2} for relations *}
 
 definition fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool" where
   "fun_of S \<equiv> \<lambda>x y. (x,y) \<in> S"

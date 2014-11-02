@@ -4,8 +4,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Weak well-formedness of CoreC++ programs} *}
+section {* Weak well-formedness of CoreC++ programs *}
 
 theory WWellForm imports WellForm Expr begin
 

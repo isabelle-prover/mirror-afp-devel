@@ -6,8 +6,7 @@
     Extracted from the Jinja theory J/Expr.thy by Tobias Nipkow
 *)
 
-
-header {* \isaheader{Syntax} *}
+section {* Syntax *}
 
 theory Syntax imports Exceptions begin
 

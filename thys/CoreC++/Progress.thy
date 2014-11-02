@@ -6,13 +6,12 @@
     Based on the Jinja theory J/Progress.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Progress of Small Step Semantics} *}
+section {* Progress of Small Step Semantics *}
 
 theory Progress imports Equivalence DefAss Conform begin
 
 
-section {* Some pre-definitions *}
+subsection {* Some pre-definitions *}
 
 lemma final_refE:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
@@ -206,7 +205,7 @@ lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
   WTrtNil WTrtCons, consumes 1]
 
 
-section{* The theorem @{text"progress"} *}
+subsection{* The theorem @{text"progress"} *}
 
 
 lemma mdc_leq_dyn_type:

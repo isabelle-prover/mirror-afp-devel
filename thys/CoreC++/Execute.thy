@@ -3,8 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Code generation for Semantics and Type System} *}
+section {* Code generation for Semantics and Type System *}
 
 theory Execute
 imports BigStep WellType
@@ -12,7 +11,7 @@ imports BigStep WellType
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-section{* General redefinitions *}
+subsection{* General redefinitions *}
 
 inductive app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
@@ -131,7 +130,7 @@ qed
 (*>*)
 
 
-section{* Code generation *}
+subsection{* Code generation *}
 
 lemma subclsRp_code [code_pred_intro]:
   "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"

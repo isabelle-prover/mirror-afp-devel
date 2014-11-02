@@ -3,8 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Program annotation} *}
+section {* Program annotation *}
 
 theory Annotate imports WellType begin
 

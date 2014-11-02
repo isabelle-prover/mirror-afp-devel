@@ -5,13 +5,12 @@
     Based on the Jinja theory J/WellTypeRT.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Runtime Well-typedness} *}
+section {* Runtime Well-typedness *}
 
 theory WellTypeRT imports WellType begin
 
 
-section {* Run time types *}
+subsection {* Run time types *}
 
 primrec typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" ("_ \<turnstile> typeof\<^bsub>_\<^esub>") where
   "P \<turnstile> typeof\<^bsub>h\<^esub> Unit     = Some Void"
@@ -44,7 +43,7 @@ lemma typeof_Class_Subo:
 \<exists>a Cs D S. v = Ref(a,Cs) \<and> h a = Some(D,S) \<and> Subobjs P D Cs \<and> last Cs = C"
 by(induct v,auto split:split_if_asm)
 
-section {* The rules *}
+subsection {* The rules *}
 
 inductive
   WTrt :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
@@ -155,7 +154,7 @@ lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
   and WTrt_inducts = WTrt_WTrts.inducts [split_format (complete)]
 
 
-section{*Easy consequences*}
+subsection{*Easy consequences*}
 
 inductive_simps [iff]:
   "P,E,h \<turnstile> [] [:] Ts"
@@ -200,7 +199,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> throw e : T"
 
 
-section{*Some interesting lemmas*}
+subsection{*Some interesting lemmas*}
 
 
 lemma WTrts_Val[simp]:
