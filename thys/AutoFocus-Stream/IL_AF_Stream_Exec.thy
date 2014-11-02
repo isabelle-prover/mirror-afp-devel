@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* \textsc{AutoFocus} message stream processing and temporal logic on intervals *}
+section {* \textsc{AutoFocus} message stream processing and temporal logic on intervals *}
 
 theory IL_AF_Stream_Exec
 imports Main IL_AF_Stream AF_Stream_Exec

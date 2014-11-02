@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Set operations with results of type enat *}
+section {* Set operations with results of type enat *}
 
 theory InfiniteSet2
 imports SetInterval2

@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* \textsc{AutoFocus} message streams *}
+section {* \textsc{AutoFocus} message streams *}
 
 theory AF_Stream
 imports ListSlice 

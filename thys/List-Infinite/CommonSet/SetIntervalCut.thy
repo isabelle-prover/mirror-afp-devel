@@ -4,7 +4,7 @@
 *)
 
 (* header {* Cutting @{term linorder} and @{term nat} sets *} *)
-header {* Cutting linearly ordered and natural sets *}
+section {* Cutting linearly ordered and natural sets *}
 
 theory SetIntervalCut
 imports SetInterval2

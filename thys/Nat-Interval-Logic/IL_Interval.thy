@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Intervals and operations for temporal logic declarations *}
+section {* Intervals and operations for temporal logic declarations *}
 
 theory IL_Interval
 imports 

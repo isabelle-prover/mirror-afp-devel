@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Additional definitions and results for lists *}
+section {* Additional definitions and results for lists *}
 
 theory ListInf
 imports List2 "../CommonSet/InfiniteSet2"

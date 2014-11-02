@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Sets of natural numbers *}
+section {* Sets of natural numbers *}
 
 theory SetInterval2
 imports 

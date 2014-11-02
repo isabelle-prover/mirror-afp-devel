@@ -4,7 +4,7 @@
 *)
 
 
-header {* Order and linear order: min and max *}
+section {* Order and linear order: min and max *}
 
 theory Util_MinMax
 imports Main

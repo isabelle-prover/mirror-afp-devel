@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Temporal logic operators on natural intervals *}
+section {* Temporal logic operators on natural intervals *}
 
 theory IL_TemporalOperators
 imports IL_IntervalOperators
