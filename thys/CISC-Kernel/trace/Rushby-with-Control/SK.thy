@@ -1,4 +1,4 @@
-header {* \subsection{SK (Separation Kernel)\label{sec:sep_kernel}} *}
+subsection {* SK (Separation Kernel) \label{sec:sep_kernel} *}
 
 theory SK
   imports K

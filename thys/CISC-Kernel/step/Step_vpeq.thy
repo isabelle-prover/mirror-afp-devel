@@ -1,4 +1,4 @@
-header {* \subsection{The view-partitioning equivalence relation}*}
+subsection {* The view-partitioning equivalence relation *}
 
 theory Step_vpeq
   imports Step Step_invariants

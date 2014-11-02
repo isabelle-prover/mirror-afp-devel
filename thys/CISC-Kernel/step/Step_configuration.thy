@@ -1,5 +1,10 @@
-header{* \section{Instantiation by a separation kernel with concrete actions}\label{sect:instantiation}
+section {* Instantiation by a separation kernel with concrete actions \label{sect:instantiation} *}
 
+theory Step_configuration
+  imports Main
+begin
+
+text {*
 {\em In the previous section, no concrete actions for the step function were given.
 The foremost point we want to make by this instantiation is to show 
 that we can instantiate the CISK model of the previous section with 
@@ -39,11 +44,9 @@ The instantiation provides infrastructure for such an
 invariant on the relation of a dynamic policy to 
 a static policy, and shows how the invariant is 
 maintained, without modeling any API for an open/close operation.}
+*}
 
-\subsection{Model of a separation kernel configuration}  *}
-theory Step_configuration
-  imports Main
-begin
+subsection {* Model of a separation kernel configuration *}
 
 subsubsection {* Type definitions *}
 

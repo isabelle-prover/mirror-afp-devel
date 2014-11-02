@@ -1,4 +1,4 @@
-header {* \subsection{Separation kernel model}\label{sect:separation_kernel_model} *}
+subsection {* Separation kernel model \label{sect:separation_kernel_model} *}
 
 theory Separation_kernel_model
   imports "../../step/Step"

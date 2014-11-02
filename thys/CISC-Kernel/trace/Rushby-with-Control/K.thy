@@ -1,5 +1,10 @@
-header {* \section{A generic model for separation kernels}\label{sect:generic} 
+section {* A generic model for separation kernels \label{sect:generic} *}
 
+theory K
+  imports Main List Set Transitive_Closure List_Theorems Option_Binders
+begin
+
+text {*
 {\em
   This section defines a detailed generic model of separation kernels
   called CISK (Controlled Interruptible Separation Kernel).  It
@@ -39,13 +44,9 @@ header {* \section{A generic model for separation kernels}\label{sect:generic}
         to manage aborting of action sequences.
   \end{itemize}
   }
+*}
   
-  \subsection{K (Kernel)} *}
-
-theory K
-  imports Main List Set Transitive_Closure List_Theorems Option_Binders
-begin
-
+subsection {* K (Kernel) *}
 
 text {*
 The model makes use of the following types:

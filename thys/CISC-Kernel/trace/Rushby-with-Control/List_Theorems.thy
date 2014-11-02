@@ -1,4 +1,4 @@
-header {* \subsection{Theorems on lists} *}
+subsection {* Theorems on lists *}
 
 theory List_Theorems
   imports List 
