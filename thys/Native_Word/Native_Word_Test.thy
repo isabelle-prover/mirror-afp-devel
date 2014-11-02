@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Test cases *}
+chapter {* Test cases *}
 
 theory Native_Word_Test imports
   Uint32 Uint16 Uint8 Uint Native_Cast

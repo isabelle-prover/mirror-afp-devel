@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* More about words *}
+chapter {* More about words *}
 
 theory Word_Misc imports
   "~~/src/HOL/Word/Word"

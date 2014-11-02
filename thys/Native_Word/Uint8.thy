@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of 8 bits *}
+chapter {* Unsigned words of 8 bits *}
 
 theory Uint8 imports
   Word_Misc

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Conversions between unsigned words and between char *}
+chapter {* Conversions between unsigned words and between char *}
 
 theory Native_Cast imports
   "~~/src/HOL/Library/Code_Char"

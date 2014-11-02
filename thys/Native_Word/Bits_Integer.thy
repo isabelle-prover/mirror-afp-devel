@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Bit operations for target language integers *}
+chapter {* Bit operations for target language integers *}
 
 theory Bits_Integer imports
   More_Bits_Int

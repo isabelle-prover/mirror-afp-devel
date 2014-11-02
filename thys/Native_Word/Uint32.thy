@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of 32 bits *}
+chapter {* Unsigned words of 32 bits *}
 
 theory Uint32 imports
   Word_Misc

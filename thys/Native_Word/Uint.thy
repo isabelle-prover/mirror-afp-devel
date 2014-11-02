@@ -3,7 +3,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of default size *}
+chapter {* Unsigned words of default size *}
 
 theory Uint imports
   "Word_Misc"

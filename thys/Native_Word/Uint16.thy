@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of 16 bits *}
+chapter {* Unsigned words of 16 bits *}
 
 theory Uint16 imports
   Word_Misc
