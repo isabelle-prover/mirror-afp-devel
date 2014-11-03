@@ -4,7 +4,7 @@ theory NonInterferenceInter
   imports "../HRB-Slicing/StaticInter/FundamentalProperty"
 begin
 
-section {* Assumptions of this Approach *}
+subsection {* Assumptions of this Approach *}
 
 text {*
 Classical IFC noninterference, a special case of a noninterference
@@ -177,7 +177,7 @@ lemma not_High_Low: "V \<notin> H \<Longrightarrow> V \<in> L"
   by fastforce
 
 
-section {* Low Equivalence *}
+subsection {* Low Equivalence *}
 
 text {*
 In classical noninterference, an external observer can only see public values,
@@ -268,7 +268,7 @@ proof
 qed
 
 
-section {* The Correctness Proofs *}
+subsection {* The Correctness Proofs *}
 
 text {*
 In the following, we present two correctness proofs that slicing
