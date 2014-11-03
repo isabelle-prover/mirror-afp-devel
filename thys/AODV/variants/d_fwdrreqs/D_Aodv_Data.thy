@@ -6,7 +6,7 @@
 header "Predicates and functions used in the AODV model"
 
 theory D_Aodv_Data
-imports "../../Aodv_Basic"
+imports D_Fwdrreqs
 begin
 
 subsection "Sequence Numbers"

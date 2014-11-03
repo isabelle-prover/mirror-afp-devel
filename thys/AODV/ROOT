@@ -1,8 +1,8 @@
 chapter AFP
 
 session AODV (AFP) = AWN +
-  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom,
-                 all variants. *}
+  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom:
+                 all variants *}
   options [ document_graph ]
   theories
     All
@@ -12,7 +12,7 @@ session AODV (AFP) = AWN +
     "mathpartir.sty"
 
 session AODV_BASIC (AFP) = AWN +
-  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom. *}
+  description {* Mechanized invariant proof of AODV (RFC3561) loop freedom *}
   options [ document_graph ]
   theories
     Aodv_Basic
@@ -37,6 +37,7 @@ session AODV_A_NORREQID (AFP) = AWN +
   options [ document_graph ]
   theories
     Aodv_Basic
+    "variants/a_norreqid/A_Norreqid"
     "variants/a_norreqid/A_Aodv_Data"
     "variants/a_norreqid/A_Aodv_Message"
     "variants/a_norreqid/A_Aodv"
@@ -58,6 +59,7 @@ session AODV_B_FWDRREPS (AFP) = AWN +
   options [ document_graph ]
   theories
     Aodv_Basic
+    "variants/b_fwdrreps/B_Fwdrreps"
     "variants/b_fwdrreps/B_Aodv_Data"
     "variants/b_fwdrreps/B_Aodv_Message"
     "variants/b_fwdrreps/B_Aodv"
@@ -79,6 +81,7 @@ session AODV_C_GTOBCAST (AFP) = AWN +
   options [ document_graph ]
   theories
     Aodv_Basic
+    "variants/c_gtobcast/C_Gtobcast"
     "variants/c_gtobcast/C_Aodv_Data"
     "variants/c_gtobcast/C_Aodv_Message"
     "variants/c_gtobcast/C_Aodv"
@@ -100,6 +103,7 @@ session AODV_D_FWDRREQS (AFP) = AWN +
   options [ document_graph ]
   theories
     Aodv_Basic
+    "variants/d_fwdrreqs/D_Fwdrreqs"
     "variants/d_fwdrreqs/D_Aodv_Data"
     "variants/d_fwdrreqs/D_Aodv_Message"
     "variants/d_fwdrreqs/D_Aodv"
@@ -121,6 +125,7 @@ session AODV_E_ALL_ABCD (AFP) = AWN +
   options [ document_graph ]
   theories
     Aodv_Basic
+    "variants/e_all_abcd/E_All_ABCD"
     "variants/e_all_abcd/E_Aodv_Data"
     "variants/e_all_abcd/E_Aodv_Message"
     "variants/e_all_abcd/E_Aodv"

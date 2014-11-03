@@ -7,7 +7,7 @@
 header "Predicates and functions used in the AODV model"
 
 theory C_Aodv_Data
-imports "../../Aodv_Basic"
+imports C_Gtobcast
 begin
 
 subsection "Sequence Numbers"

@@ -6,7 +6,7 @@
 header "AODV protocol messages"
 
 theory B_Aodv_Message
-imports "../../Aodv_Basic"
+imports B_Fwdrreps
 begin
 
 datatype msg =

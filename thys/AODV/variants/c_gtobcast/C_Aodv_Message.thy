@@ -7,7 +7,7 @@
 header "AODV protocol messages"
 
 theory C_Aodv_Message
-imports "../../Aodv_Basic"
+imports C_Gtobcast
 begin
 
 datatype msg =

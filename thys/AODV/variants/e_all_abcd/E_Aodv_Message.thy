@@ -7,7 +7,7 @@
 header "AODV protocol messages"
 
 theory E_Aodv_Message
-imports "../../Aodv_Basic"
+imports E_All_ABCD
 begin
 
 datatype msg =

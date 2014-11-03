@@ -7,7 +7,7 @@
 header "Predicates and functions used in the AODV model"
 
 theory A_Aodv_Data
-imports "../../Aodv_Basic"
+imports A_Norreqid
 begin
 
 subsection "Sequence Numbers"

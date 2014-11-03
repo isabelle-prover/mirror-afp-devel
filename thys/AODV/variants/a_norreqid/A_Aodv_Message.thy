@@ -7,7 +7,7 @@
 header "AODV protocol messages"
 
 theory A_Aodv_Message
-imports "../../Aodv_Basic"
+imports A_Norreqid
 begin
 
 datatype msg =
