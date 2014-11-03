@@ -1,7 +1,7 @@
 (* Author : Peter Chapman *)
 (* License: LGPL *)
 (*<*)
-header "Multisuccedent Sequents"
+section "Multisuccedent Sequents"
 
 theory MultiSequents
 imports "~~/src/HOL/Library/Multiset"

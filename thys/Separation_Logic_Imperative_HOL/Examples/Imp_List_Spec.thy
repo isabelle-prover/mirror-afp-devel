@@ -1,4 +1,4 @@
-header {* Interface for Lists *}
+section {* Interface for Lists *}
 theory Imp_List_Spec
 imports "../Sep_Main"
 begin

@@ -1,4 +1,4 @@
-header{* Tag-Based Encodings *}
+section{* Tag-Based Encodings *}
 theory T 
 imports T_G_Prelim
 begin

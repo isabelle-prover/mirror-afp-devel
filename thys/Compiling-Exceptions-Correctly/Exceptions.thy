@@ -2,7 +2,7 @@
     Copyright   2004 TU Muenchen
 *)
 
-header {* Compiling exception handling *}
+section {* Compiling exception handling *}
 
 theory Exceptions
 imports Main

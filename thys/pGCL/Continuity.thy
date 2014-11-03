@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Continuity *}
+section {* Continuity *}
 
 theory Continuity imports Healthiness begin
 

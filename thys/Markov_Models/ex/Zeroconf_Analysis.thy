@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Formalizing the IPv4-address allocation in ZeroConf *}
+section {* Formalizing the IPv4-address allocation in ZeroConf *}
 
 theory Zeroconf_Analysis
   imports "../Discrete_Time_Markov_Chain"

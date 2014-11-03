@@ -4,7 +4,7 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-header {* Pratt's Counterexamples *}
+section {* Pratt's Counterexamples *}
 
 theory Pratts_Counterexamples
   imports Regular_Algebras

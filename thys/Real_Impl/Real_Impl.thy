@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-header {* A representation of real numbers via triples *}
+section {* A representation of real numbers via triples *}
 
 theory Real_Impl
 imports 

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Examples using Statespaces *}
+section {* Examples using Statespaces *}
 
 theory VcgExSP imports "../HeapList" "../Vcg" begin
 

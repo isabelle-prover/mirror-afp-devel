@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Two sorted Kleene Algebra with Tests *}
+section {* Two sorted Kleene Algebra with Tests *}
 
 theory KAT2
   imports "../../Kleene_Algebra/Kleene_Algebra"

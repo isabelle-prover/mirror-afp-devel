@@ -1,4 +1,4 @@
-header{* Classes and properties of graphs *}
+section{* Classes and properties of graphs *}
 
 theory Ugraph_Properties
 imports

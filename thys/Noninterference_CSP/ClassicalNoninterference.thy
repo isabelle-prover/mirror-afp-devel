@@ -5,7 +5,7 @@
                  pasquale dot noce dot lavoro at gmail dot com
 *)
 
-header "CSP noninterference vs. classical noninterference"
+section "CSP noninterference vs. classical noninterference"
 
 theory ClassicalNoninterference
 imports CSPNoninterference

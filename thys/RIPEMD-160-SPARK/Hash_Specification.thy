@@ -1,4 +1,4 @@
-header "Verification of $hash$"
+section "Verification of $hash$"
 theory Hash_Specification
 imports Hash_Declaration Global_Specification
 

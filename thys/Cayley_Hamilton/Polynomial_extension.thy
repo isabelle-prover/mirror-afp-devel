@@ -1,4 +1,4 @@
-header {* Polynomials\label{sec.poly.ext} *}
+section {* Polynomials\label{sec.poly.ext} *}
 
 theory Polynomial_extension
 imports

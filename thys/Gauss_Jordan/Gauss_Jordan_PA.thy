@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form*}
+section{*Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form*}
 
 theory Gauss_Jordan_PA
 imports

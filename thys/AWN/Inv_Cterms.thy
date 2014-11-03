@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "A custom tactic for showing invariants via control terms"
+section "A custom tactic for showing invariants via control terms"
 
 theory Inv_Cterms
 imports AWN_Labels

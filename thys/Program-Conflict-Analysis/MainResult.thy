@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Main Result"
+section "Main Result"
 theory MainResult
 imports ConstraintSystems
 begin

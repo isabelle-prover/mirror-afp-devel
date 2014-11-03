@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *)
 (*>*)
-header {* Steam Boiler System: Verification *}
+section {* Steam Boiler System: Verification *}
 
 theory  SteamBoiler_proof 
 imports SteamBoiler

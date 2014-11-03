@@ -1,4 +1,4 @@
-header "Abstract Syntax Tree"
+section "Abstract Syntax Tree"
 theory PromelaAST
 imports Main
 begin

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for parallel compositions with QMSG"
+section "Lifting rules for parallel compositions with QMSG"
 
 theory Qmsg_Lifting
 imports Qmsg OAWN_SOS Inv_Cterms OAWN_Invariants

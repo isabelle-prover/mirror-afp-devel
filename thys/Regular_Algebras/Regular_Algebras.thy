@@ -4,7 +4,7 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-header {* Regular Algebras *}
+section {* Regular Algebras *}
 
 theory Regular_Algebras
   imports Dioid_Power_Sum "../Kleene_Algebra/Finite_Suprema" "../Kleene_Algebra/Kleene_Algebra"

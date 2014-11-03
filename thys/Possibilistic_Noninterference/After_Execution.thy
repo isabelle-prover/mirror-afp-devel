@@ -1,4 +1,4 @@
-header {* After-execution security *} 
+section {* After-execution security *} 
 
 theory After_Execution
 imports During_Execution

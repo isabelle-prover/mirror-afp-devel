@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Partitoned Data Spaces for Statecharts *}
+section {* Partitoned Data Spaces for Statecharts *}
 theory DataSpace
 imports Contrib
 begin

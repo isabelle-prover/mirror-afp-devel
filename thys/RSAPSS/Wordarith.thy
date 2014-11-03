@@ -4,7 +4,7 @@
 *)
 
 
-header "Extensions to the Word theory required for PSS"
+section "Extensions to the Word theory required for PSS"
 
 theory Wordarith
 imports WordOperations "~~/src/HOL/Number_Theory/Primes"

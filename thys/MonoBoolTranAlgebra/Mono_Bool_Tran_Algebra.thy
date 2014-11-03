@@ -1,4 +1,4 @@
-header {* Algebra of Monotonic Boolean Transformers *}
+section {* Algebra of Monotonic Boolean Transformers *}
 
 theory  Mono_Bool_Tran_Algebra
 imports Mono_Bool_Tran

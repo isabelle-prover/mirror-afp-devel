@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Generic invariants on sequential AWN processes"
+section "Generic invariants on sequential AWN processes"
 
 theory AWN_Invariants
 imports Invariants AWN_SOS AWN_Labels

@@ -1,4 +1,4 @@
-header "Setup of Environment for CAVA Model Checker"
+section "Setup of Environment for CAVA Model Checker"
 theory CAVA_Base
   imports 
   "../../Collections/ICF/CollectionsV1"  (*-- {* Compatibility with ICF 1.0 *}*)

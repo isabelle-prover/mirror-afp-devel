@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Open reachability and invariance"
+section "Open reachability and invariance"
 
 theory OInvariants
 imports Invariants

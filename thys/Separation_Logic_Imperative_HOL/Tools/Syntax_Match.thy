@@ -1,4 +1,4 @@
-header {* Syntactic Matching in the Simplifier *}
+section {* Syntactic Matching in the Simplifier *}
 theory Syntax_Match
 imports Main
 begin

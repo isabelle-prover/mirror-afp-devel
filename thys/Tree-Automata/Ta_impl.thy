@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Executable Implementation of Tree Automata"
+section "Executable Implementation of Tree Automata"
 theory Ta_impl
 imports 
   Main

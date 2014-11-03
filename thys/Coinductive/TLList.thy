@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Terminated coinductive lists and their operations *}
+section {* Terminated coinductive lists and their operations *}
 
 theory TLList imports
   Coinductive_List

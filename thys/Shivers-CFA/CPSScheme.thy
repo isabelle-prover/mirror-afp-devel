@@ -1,4 +1,4 @@
-header "Syntax"
+section "Syntax"
 
 theory CPSScheme
   imports Main

@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>Parsing and Printing XML Documents\<close>
+section \<open>Parsing and Printing XML Documents\<close>
 
 theory Xml
 imports

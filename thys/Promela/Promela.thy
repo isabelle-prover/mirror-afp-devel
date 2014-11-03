@@ -1,4 +1,4 @@
-header "Formalization of Promela semantics"
+section "Formalization of Promela semantics"
 theory Promela
 imports 
   PromelaDatastructures

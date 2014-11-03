@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Automata based scanner"
+section "Automata based scanner"
 
 theory AutoMaxChop
 imports DA MaxChop

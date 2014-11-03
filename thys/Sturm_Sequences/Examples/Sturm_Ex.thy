@@ -1,4 +1,4 @@
-header {* Example usage of the ``sturm'' method *}
+section {* Example usage of the ``sturm'' method *}
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Ex
 imports "../Sturm"

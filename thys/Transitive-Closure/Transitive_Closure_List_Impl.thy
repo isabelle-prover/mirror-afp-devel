@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header {* Closure Computation using Lists *}
+section {* Closure Computation using Lists *}
 
 theory Transitive_Closure_List_Impl
 imports Transitive_Closure_Impl

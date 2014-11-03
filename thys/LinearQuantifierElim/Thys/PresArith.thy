@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Presburger arithmetic *}
+section{* Presburger arithmetic *}
 
 theory PresArith
 imports GCD QE "~~/src/HOL/Library/ListVector"

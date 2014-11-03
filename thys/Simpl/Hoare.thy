@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Auxiliary Definitions/Lemmas to Facilitate Hoare Logic *}
+section {* Auxiliary Definitions/Lemmas to Facilitate Hoare Logic *}
 theory Hoare imports HoarePartial HoareTotal begin
 
 

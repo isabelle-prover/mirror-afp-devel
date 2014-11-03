@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header "Examples for Procedures as Parameters using Statespaces"
+section "Examples for Procedures as Parameters using Statespaces"
 theory ProcParExSP imports "../Vcg" begin
 
 

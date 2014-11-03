@@ -1,4 +1,4 @@
-header{*Perfect Number Theorem*}
+section{*Perfect Number Theorem*}
 
 theory Perfect
 imports Sigma

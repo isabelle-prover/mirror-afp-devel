@@ -8,7 +8,7 @@
     see the file Changelog for a list of changes
 *)
 
-header {* AVL Trees in 2 Stages *}
+section {* AVL Trees in 2 Stages *}
 
 theory AVL2
 imports Main

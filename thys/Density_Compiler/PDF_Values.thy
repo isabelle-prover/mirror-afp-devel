@@ -7,7 +7,7 @@
   to PDF values are provided.
 *)
 
-header {* Source Language Values *}
+section {* Source Language Values *}
 
 theory PDF_Values
 imports Giry_Monad Density_Predicates Measure_Embeddings PDF_Misc

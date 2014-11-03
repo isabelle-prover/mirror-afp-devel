@@ -1,4 +1,4 @@
-header {* Exception-Aware Relational Framework *}
+section {* Exception-Aware Relational Framework *}
 theory Run
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
 begin

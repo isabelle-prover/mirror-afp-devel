@@ -6,7 +6,7 @@
 (* After Isabelle 2012, some of these theorems
 may be moved to the Isabelle repository *)
 
-header "Miscellaneous results"
+section "Miscellaneous results"
 
 theory Miscellany
 imports

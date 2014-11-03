@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Semantics of Hierarchical Automata *}
+section {* Semantics of Hierarchical Automata *}
 theory HASem
 imports HA
 begin

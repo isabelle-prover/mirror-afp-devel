@@ -1,4 +1,4 @@
-header{* Syntax of Terms and Clauses *}
+section{* Syntax of Terms and Clauses *}
 theory TermsAndClauses
 imports Preliminaries
 begin

@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
 (*>*)
-header {* Auxiliary Theory ListExtras.thy*}
+section {* Auxiliary Theory ListExtras.thy*}
 
 theory ListExtras 
 imports Main

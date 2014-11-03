@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Instantiation of the order type classes for lazy lists *}
+section {* Instantiation of the order type classes for lazy lists *}
 theory Coinductive_List_Prefix imports
   Coinductive_List
   "~~/src/HOL/Library/Prefix_Order"

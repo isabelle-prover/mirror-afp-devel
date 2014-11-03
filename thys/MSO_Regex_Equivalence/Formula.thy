@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Monadic Second-Order Logic Formulas *}
+section {* Monadic Second-Order Logic Formulas *}
 
 (*<*)
 theory Formula

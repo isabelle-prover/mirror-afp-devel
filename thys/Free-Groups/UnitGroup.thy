@@ -1,4 +1,4 @@
-header {* The Unit Group *}
+section {* The Unit Group *}
 
 theory "UnitGroup"
 imports

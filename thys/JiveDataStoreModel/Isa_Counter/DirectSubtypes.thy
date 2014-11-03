@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header {* The Direct Subtype Relation of Java Types *}
+section {* The Direct Subtype Relation of Java Types *}
 
 theory DirectSubtypes
 imports "../Isabelle/JavaType"

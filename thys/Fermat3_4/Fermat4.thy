@@ -3,7 +3,7 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
+section {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
 imports Main IntNatAux

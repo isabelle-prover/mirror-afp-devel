@@ -7,7 +7,7 @@
    This could probably be weakened somehow.
 *)
 
-header {* Integration by Substition *}
+section {* Integration by Substition *}
 
 theory Lebesgue_Integral_Substitution
 imports PDF_Misc Interval_Integral

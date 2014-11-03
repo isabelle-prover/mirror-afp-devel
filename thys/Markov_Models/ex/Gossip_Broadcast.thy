@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Formalization of the Gossip-Broadcast *}
+section {* Formalization of the Gossip-Broadcast *}
 
 theory Gossip_Broadcast
   imports "../Discrete_Time_Markov_Chain"

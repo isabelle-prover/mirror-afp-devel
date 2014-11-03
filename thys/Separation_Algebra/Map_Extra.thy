@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header {* More properties of maps plus map disjuction. *}
+section {* More properties of maps plus map disjuction. *}
 
 theory Map_Extra
   imports Main

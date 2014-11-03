@@ -2,7 +2,7 @@
     Author:     Wenda Li <wl302@cam.ac.uk>
 *)
 
-header "Sturm-Tarski Theorem"
+section "Sturm-Tarski Theorem"
 
 theory Sturm_Tarski imports
   Complex_Main 

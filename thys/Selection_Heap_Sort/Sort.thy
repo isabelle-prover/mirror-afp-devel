@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Locale Sort  *}
+section {* Locale Sort  *}
 
 theory Sort
 imports Main 

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Well-Defined Programs. *}
+section {* Well-Defined Programs. *}
 
 theory WellDefined imports
   Healthiness

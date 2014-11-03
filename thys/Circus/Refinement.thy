@@ -1,4 +1,4 @@
-header {* Refinement and Simulation *}
+section {* Refinement and Simulation *}
 
 theory Refinement
 imports Denotational_Semantics Circus_Syntax 

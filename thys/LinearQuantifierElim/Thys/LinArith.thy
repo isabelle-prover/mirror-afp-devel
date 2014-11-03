@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Linear real arithmetic *}
+section{* Linear real arithmetic *}
 
 theory LinArith
 imports QE "~~/src/HOL/Library/ListVector" Complex_Main

@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* DPC0 standard library *}
+section {* DPC0 standard library *}
 
 theory DPC0Library imports DPC0Expressions Vcg begin
 

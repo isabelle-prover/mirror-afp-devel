@@ -1,4 +1,4 @@
-header {* Simple While Language with probabilistic choice and parallel execution *}
+section {* Simple While Language with probabilistic choice and parallel execution *}
 
 theory Language_Semantics
 imports Interface

@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-header {* The Hamming stream defined as a least fixpoint *}
+section {* The Hamming stream defined as a least fixpoint *}
 
 theory Hamming_Stream imports
   "../Coinductive_List"

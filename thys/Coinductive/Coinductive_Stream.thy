@@ -1,7 +1,7 @@
 (*  Title:      HOL/Library/Coinductive_Stream.thy
     Author:     Peter Gammie and Andreas Lochbihler
 *)
-header {* Infinite lists as a codatatype *}
+section {* Infinite lists as a codatatype *}
 
 theory Coinductive_Stream
 imports

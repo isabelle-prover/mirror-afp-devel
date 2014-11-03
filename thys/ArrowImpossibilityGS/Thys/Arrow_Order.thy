@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header "Arrow's Theorem for Strict Linear Orders"
+section "Arrow's Theorem for Strict Linear Orders"
 
 theory Arrow_Order imports Main "~~/src/HOL/Library/FuncSet"
 begin

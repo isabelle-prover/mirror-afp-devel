@@ -6,7 +6,7 @@
   that describes a density function on the corresponding measure space.
 *)
 
-header {* Concrete PDF Compiler *}
+section {* Concrete PDF Compiler *}
 
 theory PDF_Compiler
 imports PDF_Compiler_Pred PDF_Target_Density_Contexts

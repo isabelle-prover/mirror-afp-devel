@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Discrete-Time Markov Chain *}
+section {* Discrete-Time Markov Chain *}
 
 theory Discrete_Time_Markov_Chain
   imports

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Semantics of the Algebra of Wireless Networks"
+section "Semantics of the Algebra of Wireless Networks"
 
 theory AWN_SOS
 imports TransitionSystems AWN

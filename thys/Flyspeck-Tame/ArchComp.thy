@@ -1,6 +1,6 @@
 (*  Author:  Tobias Nipkow  *)
 
-header "Comparing Enumeration and Archive"
+section "Comparing Enumeration and Archive"
 
 theory ArchComp
 imports ArchCompProps "~~/src/HOL/Library/Code_Target_Numeral"

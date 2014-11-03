@@ -1,4 +1,4 @@
-header {* Syntax and proof rules for stratified diagrams *}
+section {* Syntax and proof rules for stratified diagrams *}
 
 theory Ribbons_Stratified imports 
   Ribbons_Interfaces

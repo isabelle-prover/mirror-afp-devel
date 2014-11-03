@@ -3,7 +3,7 @@
     License: LGPL
 *)
 
-header {* Categories *}
+section {* Categories *}
 
 theory Cat
 imports "~~/src/HOL/Library/FuncSet"

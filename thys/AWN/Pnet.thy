@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lemmas for partial networks"
+section "Lemmas for partial networks"
 
 theory Pnet
 imports AWN_SOS Invariants

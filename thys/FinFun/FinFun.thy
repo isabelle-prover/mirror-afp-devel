@@ -8,7 +8,7 @@ version instead.
 
 (* Author: Andreas Lochbihler, Uni Karlsruhe *)
 
-header {* Almost everywhere constant functions *}
+section {* Almost everywhere constant functions *}
 
 theory FinFun
 imports Card_Univ

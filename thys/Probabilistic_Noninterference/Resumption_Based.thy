@@ -1,4 +1,4 @@
-header {* Resumption-Based Noninterference *}
+section {* Resumption-Based Noninterference *}
 
 theory Resumption_Based
 imports Language_Semantics

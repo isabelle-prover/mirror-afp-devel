@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Transition systems (automata)"
+section "Transition systems (automata)"
 
 theory TransitionSystems
 imports Main

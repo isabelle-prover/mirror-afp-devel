@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Exporting code to SML and Haskell*}
+section{*Exporting code to SML and Haskell*}
 
 theory Code_Generation_IArrays
 imports

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lemmas for closed networks"
+section "Lemmas for closed networks"
 
 theory Closed
 imports Pnet

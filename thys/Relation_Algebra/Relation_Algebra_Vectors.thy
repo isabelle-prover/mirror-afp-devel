@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Vectors *}
+section {* Vectors *}
 
 theory Relation_Algebra_Vectors
   imports Relation_Algebra

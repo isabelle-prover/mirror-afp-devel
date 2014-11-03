@@ -1,6 +1,6 @@
 (*Author: Giuliano Losa *)
 
-header {* The ALM Automata specification*}
+section {* The ALM Automata specification*}
 theory ALM
 imports "~~/src/HOL/HOLCF/IOA/meta_theory/IOA" LCP
 begin

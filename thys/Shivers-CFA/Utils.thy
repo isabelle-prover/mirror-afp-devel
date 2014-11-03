@@ -1,4 +1,4 @@
-header {* General utility lemmas *}
+section {* General utility lemmas *}
 theory Utils imports Main
 begin
 

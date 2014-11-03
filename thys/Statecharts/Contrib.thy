@@ -3,7 +3,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Contributions to the Standard Library of HOL *}
+section {* Contributions to the Standard Library of HOL *}
 
 theory Contrib
 imports Main

@@ -1,5 +1,5 @@
 (* Author: Stefan Merz *)
-header {* $\omega$-words *}
+section {* $\omega$-words *}
 theory Words
 imports "~~/src/HOL/Library/Infinite_Set"
 begin

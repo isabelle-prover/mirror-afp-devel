@@ -1,4 +1,4 @@
-header {* Resumption monad transformer *}
+section {* Resumption monad transformer *}
 
 theory Resumption_Transformer
 imports Monad_Plus

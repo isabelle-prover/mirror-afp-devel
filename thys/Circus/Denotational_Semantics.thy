@@ -1,4 +1,4 @@
-header {* Denotational semantics of Circus actions *}
+section {* Denotational semantics of Circus actions *}
 
 theory Denotational_Semantics 
 imports Circus_Actions Var_list

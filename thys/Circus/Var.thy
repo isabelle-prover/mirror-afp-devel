@@ -1,4 +1,4 @@
-header {* UTP variables *}
+section {* UTP variables *}
 
 theory Var
 imports Main

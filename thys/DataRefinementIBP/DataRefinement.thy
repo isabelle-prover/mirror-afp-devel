@@ -1,4 +1,4 @@
-header {* Data Refinement of Diagrams *}
+section {* Data Refinement of Diagrams *}
 
 theory DataRefinement
 imports Diagram

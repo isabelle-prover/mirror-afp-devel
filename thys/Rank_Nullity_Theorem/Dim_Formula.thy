@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header "Rank Nullity Theorem of Linear Algebra"
+section "Rank Nullity Theorem of Linear Algebra"
 
 theory Dim_Formula
   imports Fundamental_Subspaces

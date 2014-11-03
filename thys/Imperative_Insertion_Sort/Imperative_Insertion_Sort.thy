@@ -2,7 +2,7 @@
     Author:     Christian Sternagel
 *)
 
-header \<open>Insertion Sort\<close>
+section \<open>Insertion Sort\<close>
 
 theory Imperative_Insertion_Sort
 imports

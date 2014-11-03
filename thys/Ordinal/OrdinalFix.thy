@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Fixed-points *}
+section {* Fixed-points *}
 
 theory OrdinalFix
 imports OrdinalInverse

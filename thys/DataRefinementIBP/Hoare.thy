@@ -1,4 +1,4 @@
-header {* Hoare Triples  *}
+section {* Hoare Triples  *}
 
 theory Hoare
 imports Statements

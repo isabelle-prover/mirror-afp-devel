@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Tree Automata"
+section "Tree Automata"
 theory Ta
 imports Main "../Automatic_Refinement/Lib/Misc" Tree
 begin

@@ -1,4 +1,4 @@
-header "Sequents"
+section "Sequents"
 
 theory Sequents
 imports Formula

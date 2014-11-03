@@ -1,4 +1,4 @@
-header {* Basic theory of vector spaces, using locales *}
+section {* Basic theory of vector spaces, using locales *}
 
 theory VectorSpace
 imports Main

@@ -1,4 +1,4 @@
-header {* Implementing Graphs by Maps *}
+section {* Implementing Graphs by Maps *}
 theory GraphByMap
 imports 
   GraphSpec 

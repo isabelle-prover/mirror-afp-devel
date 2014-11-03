@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Label Expressions *}
+section {* Label Expressions *}
 theory Expr
 imports "Update"
 begin

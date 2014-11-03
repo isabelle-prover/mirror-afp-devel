@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Reflexive Transitive Closure *}
+section {* Reflexive Transitive Closure *}
 
 theory Relation_Algebra_RTC
   imports Relation_Algebra

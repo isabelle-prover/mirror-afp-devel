@@ -5,7 +5,7 @@
 Confluence of beta for ASP, based on the equally named file in HOL/Proofs/Lambda.
 *)
 
-header {* Parallel reduction *}
+section {* Parallel reduction *}
 
 theory ParRed imports "~~/src/HOL/Proofs/Lambda/Commutation" Sigma begin
 

@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "EMSA-PSS encoding and decoding operation" 
+section "EMSA-PSS encoding and decoding operation" 
 
 theory EMSAPSS 
 imports SHA1 Wordarith

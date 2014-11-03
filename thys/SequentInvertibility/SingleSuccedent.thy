@@ -1,7 +1,7 @@
 (*<*)
 (*  Author : Peter Chapman *)
 (* License: LGPL *)
-header "Single Succedent"
+section "Single Succedent"
 
 theory SingleSuccedent
 imports "~~/src/HOL/Library/Multiset"

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* General Lemmas on BDD Abstractions*}
+section {* General Lemmas on BDD Abstractions*}
 
 theory General imports BinDag begin
 

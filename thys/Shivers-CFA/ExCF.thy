@@ -1,4 +1,4 @@
-header "Exact nonstandard semantics"
+section "Exact nonstandard semantics"
 
 theory ExCF
   imports HOLCF HOLCFUtils CPSScheme Utils

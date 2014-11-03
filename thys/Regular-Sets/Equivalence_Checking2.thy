@@ -1,4 +1,4 @@
-header {* Deciding Equivalence of Extended Regular Expressions *}
+section {* Deciding Equivalence of Extended Regular Expressions *}
 
 theory Equivalence_Checking2
 imports Regular_Exp2 "~~/src/HOL/Library/While_Combinator"

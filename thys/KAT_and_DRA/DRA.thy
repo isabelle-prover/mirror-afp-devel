@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Demonic Refinement Algebras *}
+section {* Demonic Refinement Algebras *}
 
 theory DRA
   imports DRA_Base

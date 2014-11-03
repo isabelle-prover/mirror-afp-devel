@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Gauss Jordan algorithm over abstract matrices*}
+section{*Gauss Jordan algorithm over abstract matrices*}
 
 theory Gauss_Jordan
 imports

@@ -4,7 +4,7 @@
    Maintainer:  Ralph Romanos <ralph.romanos at student.ecp.fr>
 *)
 
-header {* Proving the impossibility of trisecting an angle and doubling the cube *}
+section {* Proving the impossibility of trisecting an angle and doubling the cube *}
 
 theory Impossible_Geometry 
 imports Complex_Main

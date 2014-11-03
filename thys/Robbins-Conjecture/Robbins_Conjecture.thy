@@ -1,4 +1,4 @@
-header {* Robbins Conjecture *}
+section {* Robbins Conjecture *}
 
 theory Robbins_Conjecture
 imports Main

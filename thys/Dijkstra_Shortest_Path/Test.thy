@@ -1,4 +1,4 @@
-header {* Performance Test *}
+section {* Performance Test *}
 theory Test
   imports Dijkstra_Impl_Adet
 begin

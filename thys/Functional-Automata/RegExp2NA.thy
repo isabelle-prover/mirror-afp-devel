@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "From regular expressions directly to nondeterministic automata"
+section "From regular expressions directly to nondeterministic automata"
 
 theory RegExp2NA
 imports "../Regular-Sets/Regular_Exp" NA

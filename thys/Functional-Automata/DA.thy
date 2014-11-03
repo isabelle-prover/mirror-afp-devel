@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Deterministic automata"
+section "Deterministic automata"
 
 theory DA
 imports AutoProj

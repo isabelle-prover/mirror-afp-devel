@@ -1,7 +1,7 @@
 (* Author:     Tobias Nipkow
 *)
 
-header{* Tame Properties *}
+section{* Tame Properties *}
 
 theory TameProps
 imports Tame RTranCl

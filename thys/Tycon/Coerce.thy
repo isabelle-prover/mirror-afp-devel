@@ -1,4 +1,4 @@
-header {* Coercion Operator *}
+section {* Coercion Operator *}
 
 theory Coerce
 imports HOLCF

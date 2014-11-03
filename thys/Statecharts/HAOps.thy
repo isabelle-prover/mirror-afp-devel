@@ -3,7 +3,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Constructing Hierarchical Automata *}
+section {* Constructing Hierarchical Automata *}
 theory HAOps
 imports HA
 begin

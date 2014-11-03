@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header "Further Plane Graph Properties"
+section "Further Plane Graph Properties"
 
 theory PlaneProps
 imports Invariants

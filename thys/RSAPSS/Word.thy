@@ -1,7 +1,7 @@
 (*  Author:     Sebastian Skalberg, TU Muenchen
 *)
 
-header {* Binary Words *}
+section {* Binary Words *}
 
 theory Word
 imports Main

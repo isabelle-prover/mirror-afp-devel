@@ -6,7 +6,7 @@
     License:     LGPL
 *)
 
-header {* {\tt FJSound}: Type Soundness *}
+section {* {\tt FJSound}: Type Soundness *}
 
 theory FJSound imports FJAux
 begin 

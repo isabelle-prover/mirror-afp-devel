@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "Generalizing type schemes with respect to a context"
+section "Generalizing type schemes with respect to a context"
 
 theory Generalize
 imports Instance

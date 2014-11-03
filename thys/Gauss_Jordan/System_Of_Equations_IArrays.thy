@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Solving systems of equations using the Gauss Jordan algorithm over nested IArrays*}
+section{*Solving systems of equations using the Gauss Jordan algorithm over nested IArrays*}
 
 theory System_Of_Equations_IArrays
 imports 

@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header \<open>A Generic Work-List Algorithm\<close>
+section \<open>A Generic Work-List Algorithm\<close>
 
 theory Transitive_Closure_Impl
 imports Main

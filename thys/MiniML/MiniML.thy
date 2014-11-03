@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "MiniML with type inference rules"
+section "MiniML with type inference rules"
 
 theory MiniML
 imports Generalize

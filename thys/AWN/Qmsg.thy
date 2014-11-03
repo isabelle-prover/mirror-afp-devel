@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Model the standard queuing model"
+section "Model the standard queuing model"
 
 theory Qmsg
 imports AWN_SOS_Labels AWN_Invariants

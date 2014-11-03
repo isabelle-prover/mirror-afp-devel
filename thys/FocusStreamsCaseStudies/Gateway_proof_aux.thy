@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-header {*Gateway: Verification*}
+section {*Gateway: Verification*}
 
 theory Gateway_proof_aux 
 imports Gateway BitBoolTS

@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-header {* Logical relations for definability in PCF *}
+section {* Logical relations for definability in PCF *}
 (*<*)
 
 theory PCF

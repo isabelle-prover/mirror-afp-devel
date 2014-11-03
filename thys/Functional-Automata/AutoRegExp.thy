@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Combining automata and regular expressions"
+section "Combining automata and regular expressions"
 
 theory AutoRegExp
 imports Automata RegExp2NA RegExp2NAe

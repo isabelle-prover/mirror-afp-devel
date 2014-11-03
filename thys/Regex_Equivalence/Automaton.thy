@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header "Regular Expressions Equivalence Framework"
+section "Regular Expressions Equivalence Framework"
 
 (*<*)
 theory Automaton

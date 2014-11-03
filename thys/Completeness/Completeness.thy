@@ -1,4 +1,4 @@
-header "Completeness"
+section "Completeness"
 
 theory Completeness
 imports Tree Sequents

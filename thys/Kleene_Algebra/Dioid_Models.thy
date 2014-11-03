@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Models of Dioids *}
+section {* Models of Dioids *}
 
 theory Dioid_Models
 imports Dioid Real

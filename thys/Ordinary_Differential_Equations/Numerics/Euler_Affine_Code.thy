@@ -1,4 +1,4 @@
-header {* Euler Method on Affine Forms: Code *}
+section {* Euler Method on Affine Forms: Code *}
 theory Euler_Affine_Code
 imports
   Print

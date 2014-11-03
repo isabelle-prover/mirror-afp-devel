@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Nondeterministic automata with epsilon transitions"
+section "Nondeterministic automata with epsilon transitions"
 
 theory NAe
 imports NA

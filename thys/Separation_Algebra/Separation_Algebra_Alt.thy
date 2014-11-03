@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Abstract Separation Logic, Alternative Definition"
+section "Abstract Separation Logic, Alternative Definition"
 
 theory Separation_Algebra_Alt
 imports Main

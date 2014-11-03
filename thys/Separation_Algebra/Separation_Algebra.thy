@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Abstract Separation Algebra"
+section "Abstract Separation Algebra"
 
 theory Separation_Algebra
 imports Main

@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* Refining a Buffer Specification *}
+section {* Refining a Buffer Specification *}
 
 theory Buffer
 imports State

@@ -3,7 +3,7 @@
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
-header {* Interactive Convergence Algorithms (ICA) *}
+section {* Interactive Convergence Algorithms (ICA) *}
 
 theory ICAInstance imports Complex_Main begin
 

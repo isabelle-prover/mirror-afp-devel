@@ -1,4 +1,4 @@
-header{*Theory of Cryptographic Keys for Security Protocols against the General Attacker*}
+section{*Theory of Cryptographic Keys for Security Protocols against the General Attacker*}
 
 theory PublicGA imports EventGA begin
 

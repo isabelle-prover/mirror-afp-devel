@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Gauss Jordan algorithm over nested IArrays*}
+section{*Gauss Jordan algorithm over nested IArrays*}
 
 theory Gauss_Jordan_IArrays
 imports

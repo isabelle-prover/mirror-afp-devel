@@ -5,7 +5,7 @@
 
 (* After Isabelle 2012, this may be moved to ~~/src/HOL/Library *)
 
-header "Roots of real quadratics"
+section "Roots of real quadratics"
 
 theory Quadratic_Discriminant
 imports Complex_Main

@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header "Case Study: Verification of Properties"
+section "Case Study: Verification of Properties"
  
 theory DataDependenciesCaseStudy
   imports DataDependencies

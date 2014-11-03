@@ -1,4 +1,4 @@
-header {*  Marking Using a Stack  *}
+section {*  Marking Using a Stack  *}
 
 theory StackMark
 imports SetMark "../DataRefinementIBP/DataRefinement"

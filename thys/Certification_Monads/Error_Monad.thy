@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>The Sum Type as Error Monad\<close>
+section \<open>The Sum Type as Error Monad\<close>
 
 theory Error_Monad
 imports

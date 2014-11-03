@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header {* CNF *}
+section {* CNF *}
 theory CNF
 imports MoreList
 begin

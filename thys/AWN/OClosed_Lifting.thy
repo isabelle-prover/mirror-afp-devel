@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for (open) closed networks"
+section "Lifting rules for (open) closed networks"
 
 theory OClosed_Lifting
 imports OPnet_Lifting

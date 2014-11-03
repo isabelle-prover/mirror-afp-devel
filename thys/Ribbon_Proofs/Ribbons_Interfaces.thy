@@ -1,4 +1,4 @@
-header {* Ribbon proof interfaces *}
+section {* Ribbon proof interfaces *}
 
 theory Ribbons_Interfaces imports
   Ribbons_Basic

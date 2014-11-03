@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header {* The Formalization of JML Operators *}
+section {* The Formalization of JML Operators *}
 
 theory JML imports "../Isabelle_Store/StoreProperties" begin
 

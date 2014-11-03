@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Pre-Conway Algebra *}
+section {* Pre-Conway Algebra *}
 
 theory Conway
   imports "../DRA_Base" Test_Dioids

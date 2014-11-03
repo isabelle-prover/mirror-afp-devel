@@ -3,7 +3,7 @@
     Maintainer:  Tobias Nipkow
 *)
 
-header "Hoare Logics for While"
+section "Hoare Logics for While"
 
 theory Lang imports Main begin
 

@@ -1,4 +1,4 @@
-header{* End Results in Locale-Free Form *}
+section{* End Results in Locale-Free Form *}
 theory Encodings
 imports G T E
 begin

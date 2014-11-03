@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Defining data structure and \\
+section {* Defining data structure and \\
           key function remove\_max *}
 
 theory RemoveMax

@@ -6,7 +6,7 @@
   on the corresponding measure spaces.
 *)
 
-header {* Abstract PDF Compiler *}
+section {* Abstract PDF Compiler *}
 
 theory PDF_Compiler_Pred
 imports PDF_Semantics PDF_Density_Contexts PDF_Transformations Density_Predicates

@@ -1,4 +1,4 @@
-header{* The First Monotonicity Calculus  *}
+section{* The First Monotonicity Calculus  *}
 theory Mcalc
 imports Mono
 begin

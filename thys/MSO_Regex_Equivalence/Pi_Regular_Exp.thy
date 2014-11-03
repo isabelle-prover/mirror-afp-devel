@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* $\Pi$-Extended Regular Expressions *}
+section {* $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp

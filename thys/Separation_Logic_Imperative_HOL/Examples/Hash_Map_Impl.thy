@@ -1,4 +1,4 @@
-header "Hash-Maps (Interface Instantiations)"
+section "Hash-Maps (Interface Instantiations)"
 theory Hash_Map_Impl
 imports Imp_Map_Spec Hash_Map
 begin

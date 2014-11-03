@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Category"
+section "Category"
 
 theory Category
 imports "~~/src/HOL/Library/FuncSet"

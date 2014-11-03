@@ -4,7 +4,7 @@
 *)
 
 
-header {* Much Ado about Two *}
+section {* Much Ado about Two *}
 
 (*<*)
 theory MuchAdoAboutTwo

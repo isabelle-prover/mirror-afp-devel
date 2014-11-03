@@ -2,7 +2,7 @@
 (* AUTHOR : Peter Chapman  *)
 (* License: LGPL *)
 
-header "Modal Sequents"
+section "Modal Sequents"
 
 theory ModalSequents
 imports "~~/src/HOL/Library/Multiset"

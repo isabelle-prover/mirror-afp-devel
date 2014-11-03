@@ -1,4 +1,4 @@
-header {* Union-Find Data-Structure *}
+section {* Union-Find Data-Structure *}
 theory Union_Find
 imports 
   "../Sep_Main" 

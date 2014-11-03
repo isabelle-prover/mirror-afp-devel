@@ -1,4 +1,4 @@
-header  {* Syntax tree helpers *}
+section  {* Syntax tree helpers *}
 
 theory CPSUtils
 imports CPSScheme

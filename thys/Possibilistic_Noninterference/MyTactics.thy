@@ -1,4 +1,4 @@
-header {* Some tactics *}
+section {* Some tactics *}
 
 (* author: Andrei Popescu *)
 

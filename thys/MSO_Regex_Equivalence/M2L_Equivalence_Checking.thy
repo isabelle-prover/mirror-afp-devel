@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Deciding Equivalence of M2L Formulas *}
+section {* Deciding Equivalence of M2L Formulas *}
 
 (*<*)
 theory M2L_Equivalence_Checking

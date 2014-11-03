@@ -1,4 +1,4 @@
-header {* Cancelation of words of generators and their inverses *}
+section {* Cancelation of words of generators and their inverses *}
 
 theory Cancelation
 imports

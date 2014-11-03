@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header{* Subdividing a Face *}
+section{* Subdividing a Face *}
 
 theory FaceDivision
 imports Graph

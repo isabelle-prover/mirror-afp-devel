@@ -1,4 +1,4 @@
-header{* Reactive processes *}
+section{* Reactive processes *}
 
 theory Reactive_Processes
 imports Designs "~~/src/HOL/Library/Sublist"

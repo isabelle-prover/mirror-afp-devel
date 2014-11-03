@@ -8,7 +8,7 @@ of an object as a finite map of labels to fields in
 a datatype.
 *)
 
-header {* Finite maps with axclasses *}
+section {* Finite maps with axclasses *}
 
 theory FMap imports ListPre begin
 

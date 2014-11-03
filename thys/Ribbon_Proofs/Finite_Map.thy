@@ -1,4 +1,4 @@
-header {* Finite partial functions *}
+section {* Finite partial functions *}
 
 theory Finite_Map imports
   Main

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Class for modular arithmetic*}
+section{*Class for modular arithmetic*}
 
 theory Mod_Type
 imports

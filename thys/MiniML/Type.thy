@@ -4,7 +4,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "MiniML-types and type substitutions"
+section "MiniML-types and type substitutions"
 
 theory Type
 imports Maybe

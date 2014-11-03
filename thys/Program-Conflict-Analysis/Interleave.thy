@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "List Interleaving Operator"
+section "List Interleaving Operator"
 theory Interleave
 imports Main "~~/src/HOL/Library/Permutation" Misc
 begin

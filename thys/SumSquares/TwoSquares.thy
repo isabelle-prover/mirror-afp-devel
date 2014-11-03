@@ -2,7 +2,7 @@
     Author:     Roelof Oosterhuis, 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Sums of two squares *}
+section {* Sums of two squares *}
 
 theory TwoSquares
 imports "../Fermat3_4/IntNatAux" "~~/src/HOL/Old_Number_Theory/Euler"

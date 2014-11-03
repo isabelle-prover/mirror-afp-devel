@@ -1,4 +1,4 @@
-header {* Additions to Imperative/HOL *}
+section {* Additions to Imperative/HOL *}
 theory Imperative_HOL_Add
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL" 
 begin 

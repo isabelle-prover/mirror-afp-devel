@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {*Proof of Procedure ShareReduceRepList*}
+section {*Proof of Procedure ShareReduceRepList*}
 theory ShareReduceRepListProof imports ShareRepProof begin
 
 lemma (in ShareReduceRepList_impl) ShareReduceRepList_modifies:

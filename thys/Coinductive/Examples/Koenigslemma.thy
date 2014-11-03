@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-header {* Example: Koenig's lemma *}
+section {* Example: Koenig's lemma *}
 
 theory Koenigslemma imports 
   "../Coinductive_List"

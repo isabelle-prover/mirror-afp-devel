@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-header {* Code generator setup to implement terminated lazy lists lazily *}
+section {* Code generator setup to implement terminated lazy lists lazily *}
 
 theory Lazy_TLList imports
   TLList

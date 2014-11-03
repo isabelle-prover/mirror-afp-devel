@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Utility Functions and Lemmas *}
+section {* Utility Functions and Lemmas *}
 
 theory Utility
 imports Main

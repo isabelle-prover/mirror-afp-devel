@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for (open) partial networks"
+section "Lifting rules for (open) partial networks"
 
 theory OPnet_Lifting
 imports ONode_Lifting OAWN_SOS OPnet

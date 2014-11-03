@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "The Algebra of pGCL"
+section "The Algebra of pGCL"
 
 theory Algebra imports WellDefined begin
 

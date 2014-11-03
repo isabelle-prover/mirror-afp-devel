@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Matrices *}
+section {* Matrices *}
 
 theory Matrix
 imports "~~/src/HOL/Word/Word" Dioid

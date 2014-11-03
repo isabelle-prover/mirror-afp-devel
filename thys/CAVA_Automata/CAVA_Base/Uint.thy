@@ -1,4 +1,4 @@
-header {* Unsigned words of default size *}
+section {* Unsigned words of default size *}
 
 (* Based on Lochbihler's Uint32.thy *)
 

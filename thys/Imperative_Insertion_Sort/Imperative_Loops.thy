@@ -2,7 +2,7 @@
     Author:     Christian Sternagel
 *)
 
-header \<open>Looping Constructs for Imperative HOL\<close>
+section \<open>Looping Constructs for Imperative HOL\<close>
 
 theory Imperative_Loops
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"

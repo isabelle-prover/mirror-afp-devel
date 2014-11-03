@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Expectation Transformers"
+section "Expectation Transformers"
 
 theory Transformers imports Expectations begin
 

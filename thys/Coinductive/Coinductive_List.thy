@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* Coinductive lists and their operations *}
+section {* Coinductive lists and their operations *}
 
 theory Coinductive_List
 imports

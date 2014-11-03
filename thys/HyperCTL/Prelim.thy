@@ -1,4 +1,4 @@
-header {* Preliminaries *}
+section {* Preliminaries *}
 
 (*<*)
 theory Prelim

@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Example Specification for a Car Audio System *}
+section {* Example Specification for a Car Audio System *}
 
 theory CarAudioSystem
 imports "HAKripke" "HAOps"

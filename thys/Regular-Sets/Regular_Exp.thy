@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow *)
 
-header "Regular expressions"
+section "Regular expressions"
 
 theory Regular_Exp
 imports Regular_Set

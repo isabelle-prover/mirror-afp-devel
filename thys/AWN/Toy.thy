@@ -4,7 +4,7 @@
     Author:      Peter Höfner
 *)
 
-header "Simple toy example"
+section "Simple toy example"
 
 theory Toy
 imports Main AWN_Main Qmsg_Lifting

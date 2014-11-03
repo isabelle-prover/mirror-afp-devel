@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>A Sum Type with Bottom Element\<close>
+section \<open>A Sum Type with Bottom Element\<close>
 
 theory Strict_Sum
 imports

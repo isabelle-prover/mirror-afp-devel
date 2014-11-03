@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>XML Transformers for Extracting Data from XML Nodes\<close>
+section \<open>XML Transformers for Extracting Data from XML Nodes\<close>
 
 theory Xmlt
 imports

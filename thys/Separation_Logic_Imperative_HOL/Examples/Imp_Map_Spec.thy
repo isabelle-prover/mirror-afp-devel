@@ -1,4 +1,4 @@
-header {* Interface for Maps *}
+section {* Interface for Maps *}
 theory Imp_Map_Spec
 imports "../Sep_Main"
 begin

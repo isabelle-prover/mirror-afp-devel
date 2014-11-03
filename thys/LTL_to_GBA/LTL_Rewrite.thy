@@ -1,4 +1,4 @@
-header {* Rewriting LTL formulas *}
+section {* Rewriting LTL formulas *}
 (* Author: Alexander Schimpf *)
 theory LTL_Rewrite
 imports 

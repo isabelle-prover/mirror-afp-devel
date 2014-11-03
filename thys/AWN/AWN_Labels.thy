@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Labelling sequential processes"
+section "Labelling sequential processes"
 
 theory AWN_Labels
 imports AWN AWN_Cterms

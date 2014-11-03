@@ -1,4 +1,4 @@
-header {* IO Automaton *}
+section {* IO Automaton *}
 
 (*<*)
 theory IO_Automaton

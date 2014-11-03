@@ -1,4 +1,4 @@
-header {* The direct sum of modules. *}
+section {* The direct sum of modules. *}
 
 theory SumSpaces
 imports Main

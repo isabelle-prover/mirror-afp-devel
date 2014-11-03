@@ -1,4 +1,4 @@
-header {* Noninterference \`{a} la Goguen and Meseguer *}
+section {* Noninterference \`{a} la Goguen and Meseguer *}
 
 (*<*)
 theory Noninterference

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Healthiness *}
+section {* Healthiness *}
 
 theory Healthiness imports Embedding begin
 

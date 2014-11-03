@@ -1,4 +1,4 @@
-header{* One-Step Methods *}
+section{* One-Step Methods *}
 theory One_Step_Method
 imports
   "../IVP/Initial_Value_Problem"

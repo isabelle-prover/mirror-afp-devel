@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Finite Suprema *}
+section {* Finite Suprema *}
 
 theory Finite_Suprema
 imports Dioid

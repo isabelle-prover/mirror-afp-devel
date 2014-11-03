@@ -1,4 +1,4 @@
-header {* Error monad *}
+section {* Error monad *}
 
 theory Error_Monad
 imports Monad_Plus

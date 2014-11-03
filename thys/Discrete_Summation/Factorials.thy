@@ -1,7 +1,7 @@
 
 (* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen *)
 
-header {* Falling factorials *}
+section {* Falling factorials *}
 
 theory Factorials
 imports Complex_Main Stirling

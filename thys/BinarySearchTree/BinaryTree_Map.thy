@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Mostly Isar-style Reasoning for Binary Tree Operations *}
+section {* Mostly Isar-style Reasoning for Binary Tree Operations *}
 theory BinaryTree_Map imports BinaryTree begin
 
 text {* We prove correctness of map operations

@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "Correctness and completeness of type inference algorithm W"
+section "Correctness and completeness of type inference algorithm W"
 
 theory W
 imports MiniML

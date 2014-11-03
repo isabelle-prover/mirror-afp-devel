@@ -1,4 +1,4 @@
-header {* Linear Temporal Logic *}
+section {* Linear Temporal Logic *}
 (* Author: Alexander Schimpf *)
 theory LTL
 imports 

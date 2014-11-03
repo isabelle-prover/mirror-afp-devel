@@ -1,4 +1,4 @@
-header{* Guard-Based Encodings  *}
+section{* Guard-Based Encodings  *}
 theory G
 imports T_G_Prelim Mcalc2C
 begin

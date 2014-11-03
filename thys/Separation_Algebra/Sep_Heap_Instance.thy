@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Standard Heaps as an Instance of Separation Algebra"
+section "Standard Heaps as an Instance of Separation Algebra"
 
 theory Sep_Heap_Instance
 imports Separation_Algebra

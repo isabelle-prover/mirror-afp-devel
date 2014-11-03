@@ -1,4 +1,4 @@
-header "Hash-Sets"
+section "Hash-Sets"
 theory Hash_Set_Impl
 imports Imp_Set_Spec Hash_Map_Impl
 begin

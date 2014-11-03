@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Operational Semantics"
+section "Operational Semantics"
 theory Semantics
 imports Main Flowgraph "~~/src/HOL/Library/Multiset" LTS Interleave ThreadTracking
 begin

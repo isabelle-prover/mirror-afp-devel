@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Multiset Extension of Orders (as Binary Predicates) *}
+section {* Multiset Extension of Orders (as Binary Predicates) *}
 
 (*TODO: move theory (and maybe rename)*)
 

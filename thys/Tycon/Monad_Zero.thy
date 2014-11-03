@@ -1,4 +1,4 @@
-header {* Monad-Zero Class *}
+section {* Monad-Zero Class *}
 
 theory Monad_Zero
 imports Monad

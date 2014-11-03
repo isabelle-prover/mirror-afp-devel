@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Enumerations of Well-Ordered Sets in Increasing Order *}
+section {* Enumerations of Well-Ordered Sets in Increasing Order *}
 
 theory Least_Enum
 imports Main

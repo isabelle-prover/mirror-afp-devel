@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-header {* Executable algorithms for $p$-th roots *}
+section {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports 

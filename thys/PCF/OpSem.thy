@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-header {* Logical relations for computational adequacy *}
+section {* Logical relations for computational adequacy *}
 (*<*)
 
 theory OpSem

@@ -1,4 +1,4 @@
-header {* Address Graph  *}
+section {* Address Graph  *}
 
 theory Graph
 imports Main

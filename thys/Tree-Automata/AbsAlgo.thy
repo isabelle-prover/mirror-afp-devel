@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Abstract Tree Automata Algorithms"
+section "Abstract Tree Automata Algorithms"
 theory AbsAlgo
 imports 
   Ta 

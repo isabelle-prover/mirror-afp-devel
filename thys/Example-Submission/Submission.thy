@@ -3,7 +3,7 @@
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
 
-header "An Example Submission"
+section "An Example Submission"
 
 theory Submission 
   imports Main 

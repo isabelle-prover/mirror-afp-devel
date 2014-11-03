@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Elementary Operations over matrices*}
+section{*Elementary Operations over matrices*}
 
 theory Elementary_Operations
 imports 

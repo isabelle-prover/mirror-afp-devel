@@ -1,4 +1,4 @@
-header {* Well-formedness of KPL kernels *}
+section {* Well-formedness of KPL kernels *}
 
 theory KPL_wellformedness imports 
   KPL_syntax

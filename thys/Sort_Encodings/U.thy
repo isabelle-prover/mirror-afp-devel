@@ -1,4 +1,4 @@
-header{* Untyped (Unsorted) First-Order Logic *}
+section{* Untyped (Unsorted) First-Order Logic *}
 theory U
 imports TermsAndClauses
 begin

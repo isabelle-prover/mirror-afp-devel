@@ -1,4 +1,4 @@
-header {* Monotonic Boolean Transformers *}
+section {* Monotonic Boolean Transformers *}
 
 theory Mono_Bool_Tran
 imports

@@ -1,4 +1,4 @@
-header {* Examples *}
+section {* Examples *}
 theory Affine_Approximation_Ex
 imports
   Affine_Code

@@ -3,7 +3,7 @@
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
 
-header {* Miscellanneous Definitions and Lemmas *}
+section {* Miscellanneous Definitions and Lemmas *}
 
 theory Misc
 imports Main "~~/src/HOL/Library/Multiset" "~~/src/HOL/Library/Sublist_Order"

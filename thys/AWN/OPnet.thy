@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lemmas for open partial networks"
+section "Lemmas for open partial networks"
 
 theory OPnet
 imports OAWN_SOS OInvariants

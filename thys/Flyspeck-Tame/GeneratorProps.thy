@@ -1,6 +1,6 @@
 (*  Author:  Tobias Nipkow  *)
 
-header "Properties of Tame Graph Enumeration (1)"
+section "Properties of Tame Graph Enumeration (1)"
 
 theory GeneratorProps
 imports Plane1Props Generator TameProps LowerBound

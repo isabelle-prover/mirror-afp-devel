@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Hoare Logic for Total Correctness *}
+section {* Hoare Logic for Total Correctness *}
 
 theory HoareTotalDef imports HoarePartialDef Termination begin 
 

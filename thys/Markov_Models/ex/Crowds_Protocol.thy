@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Formalization of the Crowds-Protocol *}
+section {* Formalization of the Crowds-Protocol *}
 
 theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"

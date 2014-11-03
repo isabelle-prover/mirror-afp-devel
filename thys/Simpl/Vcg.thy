@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Facilitating the Hoare Logic *}
+section {* Facilitating the Hoare Logic *}
 theory Vcg
 imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
 keywords "procedures" "hoarestate" :: thy_decl

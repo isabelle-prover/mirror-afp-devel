@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header "Data refinement of representation of a file"
+section "Data refinement of representation of a file"
 theory FileRefinement imports Main CArrays ResizableArrays begin
 
 text {*

@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Infinite Matrices *}
+section {* Infinite Matrices *}
 
 theory Inf_Matrix
 imports Finite_Suprema

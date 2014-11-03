@@ -1,4 +1,4 @@
-header {* Execution rules for groups *}
+section {* Execution rules for groups *}
 
 theory KPL_execution_group imports 
   KPL_execution_thread

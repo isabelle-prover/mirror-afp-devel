@@ -1,4 +1,4 @@
-header {* Graphs *}
+section {* Graphs *}
 theory Graph
 imports Main
 begin

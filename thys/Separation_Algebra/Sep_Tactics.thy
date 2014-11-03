@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Separation Logic Tactics"
+section "Separation Logic Tactics"
 
 theory Sep_Tactics
 imports Separation_Algebra

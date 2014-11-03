@@ -2,7 +2,7 @@
    Title:  Theory AdvKnowledge.thy
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
-header {*Knowledge of Keys and Secrets *}
+section {*Knowledge of Keys and Secrets *}
 
 theory KnowledgeKeysSecrets
 imports CompLocalSecrets 

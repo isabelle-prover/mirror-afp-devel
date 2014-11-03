@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Generating Show-Functions for Data Types *}
+section {* Generating Show-Functions for Data Types *}
 
 theory Show_Generator
 imports

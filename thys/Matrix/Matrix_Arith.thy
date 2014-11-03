@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Basic Operations on Matrices *}
+section {* Basic Operations on Matrices *}
 
 theory Matrix_Arith
 imports

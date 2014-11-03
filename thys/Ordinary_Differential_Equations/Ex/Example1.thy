@@ -1,4 +1,4 @@
-header {* Examples *}
+section {* Examples *}
 theory Example1
 imports
   "../Numerics/Euler_Affine"

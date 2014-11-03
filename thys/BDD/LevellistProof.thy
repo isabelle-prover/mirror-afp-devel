@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Proof of Procedure Levellist *}
+section {* Proof of Procedure Levellist *}
 theory LevellistProof imports ProcedureSpecs "../Simpl/HeapList" begin
 
 hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip

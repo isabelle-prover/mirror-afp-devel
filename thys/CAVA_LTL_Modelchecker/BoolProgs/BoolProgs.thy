@@ -1,4 +1,4 @@
-header {* Boolean Programs *}
+section {* Boolean Programs *}
 theory BoolProgs
 imports 
   "../../CAVA_Automata/CAVA_Base/CAVA_Base"

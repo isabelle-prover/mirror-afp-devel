@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer
 *)
 
-header {* Enumerating Patches *}
+section {* Enumerating Patches *}
 
 theory Enumerator
 imports Graph IArray_Syntax

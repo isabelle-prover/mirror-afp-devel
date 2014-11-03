@@ -1,6 +1,6 @@
 (*Author: Giuliano Losa *)
 
-header {* Definition and properties of the longest common postfix of a set of lists *}
+section {* Definition and properties of the longest common postfix of a set of lists *}
 
 theory LCP
 imports Main "~~/src/HOL/Library/Sublist"

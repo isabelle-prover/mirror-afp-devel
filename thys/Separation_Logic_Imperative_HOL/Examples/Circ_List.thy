@@ -1,4 +1,4 @@
-header {* Circular Singly Linked Lists *}
+section {* Circular Singly Linked Lists *}
 theory Circ_List
 imports List_Seg Imp_List_Spec
 begin

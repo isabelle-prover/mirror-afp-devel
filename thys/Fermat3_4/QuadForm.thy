@@ -3,7 +3,7 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-header {* The quadratic form $x^2 + Ny^2$ *}
+section {* The quadratic form $x^2 + Ny^2$ *}
 
 theory QuadForm
 imports 

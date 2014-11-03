@@ -1,4 +1,4 @@
-header{*Theory of Agents and Messages for Security Protocols against the General Attacker*}
+section{*Theory of Agents and Messages for Security Protocols against the General Attacker*}
 
 theory MessageGA imports Main begin
 

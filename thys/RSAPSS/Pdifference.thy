@@ -3,7 +3,7 @@
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
-header "Positive differences"
+section "Positive differences"
 
 theory Pdifference
 imports "~~/src/HOL/Number_Theory/Primes" Mod

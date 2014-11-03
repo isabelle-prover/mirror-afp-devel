@@ -1,4 +1,4 @@
-header{*Network Security Policy Verification*}
+section{*Network Security Policy Verification*}
 theory Network_Security_Policy_Verification
 imports
   TopoS_Interface

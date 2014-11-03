@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Normalized Paths"
+section "Normalized Paths"
 theory Normalization
 imports Main ThreadTracking Semantics ConsInterleave
 begin

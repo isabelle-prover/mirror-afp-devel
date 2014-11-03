@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "Instances of type schemes"
+section "Instances of type schemes"
 
 theory Instance
 imports Type

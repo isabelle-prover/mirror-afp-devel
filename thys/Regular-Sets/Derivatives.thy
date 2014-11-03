@@ -1,4 +1,4 @@
-header "Derivatives of regular expressions"
+section "Derivatives of regular expressions"
 
 (* Author: Christian Urban *)
 

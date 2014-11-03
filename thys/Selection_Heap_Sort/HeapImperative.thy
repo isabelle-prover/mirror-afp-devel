@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Verification of Imperative Heap Sort *}
+section {* Verification of Imperative Heap Sort *}
 
 theory HeapImperative
 imports Heap

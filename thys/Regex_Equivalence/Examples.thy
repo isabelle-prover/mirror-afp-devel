@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header {* Some Tests *}
+section {* Some Tests *}
 
 (*<*)
 theory Examples

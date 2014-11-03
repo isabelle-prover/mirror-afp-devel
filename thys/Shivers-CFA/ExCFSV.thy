@@ -1,4 +1,4 @@
-header {* The exact call cache is a map *}
+section {* The exact call cache is a map *}
 
 theory ExCFSV
 imports ExCF

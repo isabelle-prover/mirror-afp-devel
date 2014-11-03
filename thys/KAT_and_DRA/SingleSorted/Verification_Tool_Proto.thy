@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Verification Tool Prototype  *}
+section {* Verification Tool Prototype  *}
 
 theory Verification_Tool_Proto
   imports KAT_Models HoareLogic

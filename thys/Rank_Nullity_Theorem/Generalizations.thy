@@ -4,7 +4,7 @@
     Author: Jesús Aransay <jesus-maria.aransay at unirioja.es>
   *)
 
-header{*Generalizations*}
+section{*Generalizations*}
 
 theory Generalizations
 imports

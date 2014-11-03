@@ -1,4 +1,4 @@
-header {* Proof of Sturm's Theorem *}
+section {* Proof of Sturm's Theorem *}
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Theorem
 imports "~~/src/HOL/Library/Poly_Deriv" "Lib/Sturm_Library"

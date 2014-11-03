@@ -4,7 +4,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Leammata for modular arithmetic"
+section "Leammata for modular arithmetic"
 
 theory Mod
 imports Main

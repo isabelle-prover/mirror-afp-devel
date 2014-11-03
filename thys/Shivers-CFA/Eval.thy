@@ -1,4 +1,4 @@
-header "Standard semantics"
+section "Standard semantics"
 
 theory Eval
   imports HOLCF HOLCFUtils CPSScheme

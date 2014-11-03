@@ -1,4 +1,4 @@
-header "Verification of $k_r$"
+section "Verification of $k_r$"
 theory K_R_Spark_Specification
 imports K_R_Spark_Declaration Global_Specification
 

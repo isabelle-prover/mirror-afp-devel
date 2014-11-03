@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Definition of the function lmirror *}
+section {* Definition of the function lmirror *}
 
 theory LMirror imports "../Coinductive_List" begin
 

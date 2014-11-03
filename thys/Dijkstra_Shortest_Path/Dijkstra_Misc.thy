@@ -1,4 +1,4 @@
-header {* Miscellaneous Lemmas *}
+section {* Miscellaneous Lemmas *}
 theory Dijkstra_Misc
 imports Main
 begin

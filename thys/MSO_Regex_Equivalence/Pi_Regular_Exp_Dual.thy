@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* $\Pi$-Extended Dual Regular Expressions *}
+section {* $\Pi$-Extended Dual Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp_Dual

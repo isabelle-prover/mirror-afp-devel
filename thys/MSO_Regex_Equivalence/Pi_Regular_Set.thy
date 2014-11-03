@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Alex Krauss, Dmitriy Traytel  *)
 
-header "Regular Sets"
+section "Regular Sets"
 
 (*<*)
 theory Pi_Regular_Set

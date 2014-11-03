@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* Verification of DPLL based SAT solvers. *}
+section{* Verification of DPLL based SAT solvers. *}
 theory SatSolverVerification
 imports CNF Trail
 begin

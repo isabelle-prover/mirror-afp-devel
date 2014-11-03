@@ -1,4 +1,4 @@
-header {* Implementation *}
+section {* Implementation *}
 theory Affine_Code
 imports
   Affine_Approximation

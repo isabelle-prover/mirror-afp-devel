@@ -1,4 +1,4 @@
-header {* Circus variables *}
+section {* Circus variables *}
 
 theory Var_list
 imports Main

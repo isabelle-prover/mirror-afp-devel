@@ -8,7 +8,7 @@
   Auxiliary lemmas
 *)
 
-header {* {\tt FJAux}: Auxiliary Lemmas *}
+section {* {\tt FJAux}: Auxiliary Lemmas *}
 
 theory FJAux imports FJDefs
 begin 

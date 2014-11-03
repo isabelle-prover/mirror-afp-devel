@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "The Category of Sets"
+section "The Category of Sets"
 
 theory SetCat
 imports Functors Universe

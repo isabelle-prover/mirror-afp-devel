@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Alex Krauss  *)
 
-header "Regular sets"
+section "Regular sets"
 
 theory Regular_Set
 imports Main

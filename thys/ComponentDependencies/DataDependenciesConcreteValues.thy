@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header "Case Study: Definitions"
+section "Case Study: Definitions"
  
 theory DataDependenciesConcreteValues
   imports Main

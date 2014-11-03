@@ -4,7 +4,7 @@
 List lemmata and other general stuff as preparation for ASP.
 *)
 
-header {* List features *}
+section {* List features *}
 
 theory ListPre
 imports Main

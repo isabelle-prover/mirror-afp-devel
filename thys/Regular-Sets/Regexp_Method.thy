@@ -1,4 +1,4 @@
-header {* Proving Relation (In)equalities via Regular Expressions *}
+section {* Proving Relation (In)equalities via Regular Expressions *}
 
 theory Regexp_Method
 imports Equivalence_Checking Relation_Interpretation

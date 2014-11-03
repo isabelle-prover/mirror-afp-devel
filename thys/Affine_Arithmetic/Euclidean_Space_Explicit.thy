@@ -1,4 +1,4 @@
-header {* Euclidean Space: Explicit Representation *}
+section {* Euclidean Space: Explicit Representation *}
 theory Euclidean_Space_Explicit
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"

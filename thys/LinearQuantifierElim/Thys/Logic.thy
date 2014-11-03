@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Logic *}
+section{* Logic *}
 
 theory Logic
 imports Main "~~/src/HOL/Library/FuncSet"

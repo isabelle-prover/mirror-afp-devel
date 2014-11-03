@@ -3,7 +3,7 @@
     Maintainer: Yasuhiko Minamide <minamide at cs.tsukuba.ac.jp>
 *)
 
-header "Depth-First Search"
+section "Depth-First Search"
 
 theory DFS
 imports Main

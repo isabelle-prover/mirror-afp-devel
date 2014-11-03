@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{*  Trail datatype definition and its properties *}
+section{*  Trail datatype definition and its properties *}
 
 theory Trail
 imports MoreList

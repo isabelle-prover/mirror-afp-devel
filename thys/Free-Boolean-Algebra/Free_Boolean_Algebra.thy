@@ -2,7 +2,7 @@
     Author:     Brian Huffman, Portland State University
 *)
 
-header {* Free Boolean algebras *}
+section {* Free Boolean algebras *}
 
 theory Free_Boolean_Algebra
 imports Main

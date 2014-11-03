@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Serialization of real numbers in Haskell*}
+section{*Serialization of real numbers in Haskell*}
 
 theory Code_Real_Approx_By_Float_Haskell
 imports "~~/src/HOL/Library/Code_Real_Approx_By_Float"

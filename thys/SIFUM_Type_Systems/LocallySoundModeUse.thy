@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Type System for Ensuring Locally Sound Use of Modes *}
+section {* Type System for Ensuring Locally Sound Use of Modes *}
 
 theory LocallySoundModeUse
 imports Main Security Language

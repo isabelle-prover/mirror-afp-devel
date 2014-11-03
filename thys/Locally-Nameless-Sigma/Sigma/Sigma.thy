@@ -1,4 +1,4 @@
-header {* Locally Nameless representation of basic Sigma calculus enriched with formal parameter *}
+section {* Locally Nameless representation of basic Sigma calculus enriched with formal parameter *}
 
 theory Sigma
 imports "../preliminary/FMap"

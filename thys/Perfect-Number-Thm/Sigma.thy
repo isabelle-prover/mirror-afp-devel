@@ -1,4 +1,4 @@
-header{*Sum of divisors function*}
+section{*Sum of divisors function*}
 
 theory Sigma
 imports PerfectBasics "~~/src/HOL/Library/Infinite_Set"

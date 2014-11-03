@@ -5,7 +5,7 @@
 
 (* After Isabelle 2012, this may be moved to ~~/src/HOL/Algebra *)
 
-header "Right group actions"
+section "Right group actions"
 
 theory Action
   imports "~~/src/HOL/Algebra/Group"

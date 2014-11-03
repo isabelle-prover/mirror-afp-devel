@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Generic functions and lemmas"
+section "Generic functions and lemmas"
 
 theory Lib
 imports Main

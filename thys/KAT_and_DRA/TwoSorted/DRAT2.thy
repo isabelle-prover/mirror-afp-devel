@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Two sorted Demonic Refinement Algebras *}
+section {* Two sorted Demonic Refinement Algebras *}
 
 theory DRAT2
   imports "../DRA"

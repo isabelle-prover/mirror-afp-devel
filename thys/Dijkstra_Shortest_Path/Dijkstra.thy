@@ -1,4 +1,4 @@
-header {* Dijkstra's Algorithm *}
+section {* Dijkstra's Algorithm *}
 theory Dijkstra
   imports 
   Graph 

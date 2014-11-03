@@ -1,4 +1,4 @@
-header{*Inductive Study of Confidentiality against the General Attacker*}
+section{*Inductive Study of Confidentiality against the General Attacker*}
 
 theory  ConfidentialityGA imports NS_Public_Bad_GA begin
 

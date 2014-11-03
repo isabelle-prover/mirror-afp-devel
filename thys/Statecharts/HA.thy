@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Syntax of Hierarchical Automata *}
+section {* Syntax of Hierarchical Automata *}
 theory HA
 imports "SA"
 begin

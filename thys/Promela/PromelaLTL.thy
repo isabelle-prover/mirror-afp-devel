@@ -1,4 +1,4 @@
-header "LTL integration"
+section "LTL integration"
 theory PromelaLTL
 imports
   "Promela"

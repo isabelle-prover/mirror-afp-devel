@@ -1,4 +1,4 @@
-header{* Modular and Distributive Lattices *}
+section{* Modular and Distributive Lattices *}
 
 (*
     Author: Viorel Preoteasa

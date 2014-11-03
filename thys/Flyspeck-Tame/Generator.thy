@@ -1,6 +1,6 @@
 (*  Author: Gertrud Bauer, Tobias Nipkow *)
 
-header {* Enumeration of Tame Plane Graphs *}
+section {* Enumeration of Tame Plane Graphs *}
 
 theory Generator
 imports Plane1 Tame

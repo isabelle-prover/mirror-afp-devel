@@ -1,4 +1,4 @@
-header {* Normalizing Derivative *}
+section {* Normalizing Derivative *}
 
 theory NDerivative
 imports

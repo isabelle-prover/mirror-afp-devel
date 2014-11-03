@@ -3,7 +3,7 @@
   Authors: Manuel Eberl
 *)
 
-header {* Density Predicates *}
+section {* Density Predicates *}
 
 theory Density_Predicates
 imports Probability PDF_Misc

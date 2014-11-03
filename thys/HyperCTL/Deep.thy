@@ -1,4 +1,4 @@
-header {* Deep representation of HyperCTL* -- syntax and semantics *}
+section {* Deep representation of HyperCTL* -- syntax and semantics *}
 
 (*<*)
 theory Deep

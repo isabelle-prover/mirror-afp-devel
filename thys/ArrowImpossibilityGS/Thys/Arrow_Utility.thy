@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2002  *)
 
-header "Arrow's Theorem for Utility Functions"
+section "Arrow's Theorem for Utility Functions"
 
 theory Arrow_Utility imports Complex_Main
 begin

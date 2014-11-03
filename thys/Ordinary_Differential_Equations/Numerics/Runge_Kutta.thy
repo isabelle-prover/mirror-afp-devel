@@ -1,4 +1,4 @@
-header{* Runge-Kutta methods*}
+section{* Runge-Kutta methods*}
 theory Runge_Kutta
 imports
   One_Step_Method

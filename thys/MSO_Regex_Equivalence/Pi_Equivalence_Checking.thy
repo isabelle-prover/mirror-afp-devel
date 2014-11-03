@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
+section {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Equivalence_Checking

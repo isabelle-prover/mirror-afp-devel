@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Data Space Assignments *}
+section {* Data Space Assignments *}
 theory Data
 imports DataSpace
 begin

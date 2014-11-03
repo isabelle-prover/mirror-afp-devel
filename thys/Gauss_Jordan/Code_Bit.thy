@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Code Generation for Bits*}
+section{*Code Generation for Bits*}
 
 theory Code_Bit
 imports "$ISABELLE_HOME/src/HOL/Library/Bit"

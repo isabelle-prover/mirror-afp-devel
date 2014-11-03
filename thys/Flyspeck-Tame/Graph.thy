@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header {* Graph *}
+section {* Graph *}
 
 theory Graph
 imports Rotation

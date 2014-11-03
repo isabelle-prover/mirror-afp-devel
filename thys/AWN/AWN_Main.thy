@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Import all AWN-related theories"
+section "Import all AWN-related theories"
 
 theory AWN_Main
 imports AWN_SOS AWN_SOS_Labels OAWN_SOS_Labels AWN_Invariants

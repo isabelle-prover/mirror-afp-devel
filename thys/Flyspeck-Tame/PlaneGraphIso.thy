@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-header{* Isomorphisms Between Plane Graphs *}
+section{* Isomorphisms Between Plane Graphs *}
 
 theory PlaneGraphIso
 imports Main Quasi_Order

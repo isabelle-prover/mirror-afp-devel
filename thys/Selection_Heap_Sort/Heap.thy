@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Verification of Heap Sort *}
+section {* Verification of Heap Sort *}
 
 theory Heap
 imports RemoveMax

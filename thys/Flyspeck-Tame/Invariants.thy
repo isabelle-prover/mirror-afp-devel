@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header{* Invariants of (Plane) Graphs *}
+section{* Invariants of (Plane) Graphs *}
 
 theory Invariants
 imports FaceDivisionProps

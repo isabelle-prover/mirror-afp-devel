@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Open semantics of the Algebra of Wireless Networks"
+section "Open semantics of the Algebra of Wireless Networks"
 
 theory OAWN_SOS
 imports TransitionSystems AWN

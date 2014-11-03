@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Ordinal Induction *}
+section {* Ordinal Induction *}
 
 theory OrdinalInduct
 imports OrdinalDef

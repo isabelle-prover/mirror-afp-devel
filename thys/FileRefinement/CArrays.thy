@@ -1,4 +1,4 @@
-header "Arrays without bounds"
+section "Arrays without bounds"
 theory CArrays imports Main begin
 
 text {* For these arrays there is no

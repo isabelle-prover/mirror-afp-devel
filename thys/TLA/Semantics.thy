@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* Semantics *} 
+section {* Semantics *} 
 
 theory Semantics
 imports Sequence Intensional

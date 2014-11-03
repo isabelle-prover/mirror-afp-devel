@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-header {* FlexRay: Types*} 
+section {* FlexRay: Types*} 
 
 
 theory FR_types 

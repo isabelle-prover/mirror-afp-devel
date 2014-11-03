@@ -8,7 +8,7 @@
     see the file Changelog for a list of changes
 *)
 
-header "AVL Trees"
+section "AVL Trees"
 
 theory AVL
 imports Main

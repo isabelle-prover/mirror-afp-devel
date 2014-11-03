@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Transformation Theorem for while Loops *}
+section {* Transformation Theorem for while Loops *}
 
 theory FolkTheorem
   imports Conway KAT DRAT

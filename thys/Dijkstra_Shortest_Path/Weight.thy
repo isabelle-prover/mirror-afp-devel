@@ -1,4 +1,4 @@
-header "Weights for Dijkstra's Algorithm"
+section "Weights for Dijkstra's Algorithm"
 theory Weight
 imports Complex_Main
 begin

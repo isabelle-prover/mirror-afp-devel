@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Direct Products *}
+section {* Direct Products *}
 
 theory Relation_Algebra_Direct_Products
   imports Relation_Algebra_Functions

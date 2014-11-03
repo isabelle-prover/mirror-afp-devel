@@ -4,7 +4,7 @@
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
 
-header "Disk Paxos Algorithm Specification"
+section "Disk Paxos Algorithm Specification"
 
 theory DiskPaxos_Model imports Main begin
 

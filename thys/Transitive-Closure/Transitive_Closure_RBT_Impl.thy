@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header \<open>Closure Computation via Red Black Trees\<close>
+section \<open>Closure Computation via Red Black Trees\<close>
 
 theory Transitive_Closure_RBT_Impl
 imports

@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header "Summation Over Lists"
+section "Summation Over Lists"
 
 theory ListSum
 imports ListAux

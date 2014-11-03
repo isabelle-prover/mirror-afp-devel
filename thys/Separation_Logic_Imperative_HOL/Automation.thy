@@ -1,4 +1,4 @@
-header {* Automation *}
+section {* Automation *}
 theory Automation
 imports Hoare_Triple (*"../Lib/Refine_Util"*)
 begin

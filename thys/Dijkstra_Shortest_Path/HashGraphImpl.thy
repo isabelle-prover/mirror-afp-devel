@@ -1,4 +1,4 @@
-header {* Graphs by Hashmaps *}
+section {* Graphs by Hashmaps *}
 theory HashGraphImpl
 imports 
   GraphByMap 

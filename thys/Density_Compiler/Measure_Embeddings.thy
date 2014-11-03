@@ -7,7 +7,7 @@
   measure on the left part of the sum type 'a + 'b)
 *)
 
-header {* Embed Measure Spaces with a Function *}
+section {* Embed Measure Spaces with a Function *}
 
 theory Measure_Embeddings
 imports Probability Density_Predicates PDF_Misc

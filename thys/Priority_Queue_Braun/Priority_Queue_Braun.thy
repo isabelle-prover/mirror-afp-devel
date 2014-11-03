@@ -1,4 +1,4 @@
-header "Priority Queues Based on Braun Trees"
+section "Priority Queues Based on Braun Trees"
 
 theory Priority_Queue_Braun
 imports

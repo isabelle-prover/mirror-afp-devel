@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Determinism *}
+section {* Determinism *}
 
 theory Determinism imports WellDefined begin
 

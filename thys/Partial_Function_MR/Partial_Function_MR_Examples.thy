@@ -1,6 +1,6 @@
 (* Author: Rene Thiemann, License: LGPL *)
 
-header {*Examples*}
+section {*Examples*}
 theory Partial_Function_MR_Examples
 imports 
   Partial_Function_MR

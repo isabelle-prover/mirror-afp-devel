@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Update-Functions on Data Spaces *}
+section {* Update-Functions on Data Spaces *}
 theory Update
 imports Data
 begin

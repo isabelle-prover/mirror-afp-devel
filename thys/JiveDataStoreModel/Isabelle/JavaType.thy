@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Java-Type *}
+section {* Java-Type *}
  
 theory JavaType imports "../Isa_Counter/TypeIds"
 begin

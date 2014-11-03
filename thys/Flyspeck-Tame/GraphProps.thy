@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header{* Properties of Graph Utilities *}
+section{* Properties of Graph Utilities *}
 
 theory GraphProps
 imports Graph

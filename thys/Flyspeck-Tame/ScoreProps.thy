@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header {* Properties of Lower Bound Machinery *}
+section {* Properties of Lower Bound Machinery *}
 
 theory ScoreProps
 imports ListSum TameEnum PlaneProps TameProps

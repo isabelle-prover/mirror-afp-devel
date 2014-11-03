@@ -1,4 +1,4 @@
-header {* Interface for Sets *}
+section {* Interface for Sets *}
 theory Imp_Set_Spec
 imports "../Sep_Main"
 begin

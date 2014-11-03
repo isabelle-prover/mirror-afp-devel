@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header {* Framework Instantiations using Marked Regular Expressions *}
+section {* Framework Instantiations using Marked Regular Expressions *}
 
 (*<*)
 theory Position_Autos

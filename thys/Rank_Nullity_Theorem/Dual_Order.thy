@@ -5,7 +5,7 @@
 *)
 
 
-header "Dual Order"
+section "Dual Order"
 
 theory Dual_Order
   imports Main

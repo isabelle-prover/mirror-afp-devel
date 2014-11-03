@@ -1,4 +1,4 @@
-header {* The abstract semantics is computable *}
+section {* The abstract semantics is computable *}
 
 theory AbsCFComp
 imports AbsCF Computability FixTransform CPSUtils MapSets

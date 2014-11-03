@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Generating linear orders for datatypes *}
+section {* Generating linear orders for datatypes *}
 
 theory Order_Generator
 imports Derive_Manager

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Terms of the Algebra for Wireless Networks"
+section "Terms of the Algebra for Wireless Networks"
 
 theory AWN
 imports Lib

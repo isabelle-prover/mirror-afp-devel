@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Examples for Total Correctness *}
+section {* Examples for Total Correctness *}
 
 theory VcgExTotal imports "../HeapList" "../Vcg" begin
 

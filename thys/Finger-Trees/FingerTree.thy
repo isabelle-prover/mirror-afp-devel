@@ -1,4 +1,4 @@
-header "2-3 Finger Trees" 
+section "2-3 Finger Trees" 
 
 theory FingerTree
 imports Main

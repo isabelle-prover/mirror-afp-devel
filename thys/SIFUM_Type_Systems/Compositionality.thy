@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Compositionality Proof for SIFUM-Security Property *}
+section {* Compositionality Proof for SIFUM-Security Property *}
 
 theory Compositionality
 imports Main Security

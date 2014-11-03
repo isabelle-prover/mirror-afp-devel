@@ -1,4 +1,4 @@
-header {* Soundness for graphical diagrams *}
+section {* Soundness for graphical diagrams *}
 
 theory Ribbons_Graphical_Soundness imports 
   Ribbons_Graphical 

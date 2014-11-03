@@ -3,7 +3,7 @@
   Authors: Manuel Eberl
 *)
 
-header {* Density Contexts *}
+section {* Density Contexts *}
 
 theory PDF_Density_Contexts
 imports PDF_Semantics

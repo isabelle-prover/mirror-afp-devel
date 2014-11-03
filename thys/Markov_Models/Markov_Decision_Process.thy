@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Markov Decision Processes *}
+section {* Markov Decision Processes *}
 
 theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain

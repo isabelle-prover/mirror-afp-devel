@@ -1,4 +1,4 @@
-header "Hash-Tables"
+section "Hash-Tables"
 theory Hash_Table
   imports "../../Collections/Lib/HashCode" "../Sep_Main"
 begin

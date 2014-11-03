@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for (open) nodes"
+section "Lifting rules for (open) nodes"
 
 theory ONode_Lifting
 imports AWN OAWN_SOS OInvariants

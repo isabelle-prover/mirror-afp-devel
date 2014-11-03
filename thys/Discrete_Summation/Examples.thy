@@ -1,7 +1,7 @@
 
 (* Author: Florian Haftmann, TU Muenchen *)
 
-header {* Simple examples *}
+section {* Simple examples *}
 
 theory Examples
 imports Summation_Conversion

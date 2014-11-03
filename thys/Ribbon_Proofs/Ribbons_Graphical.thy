@@ -1,4 +1,4 @@
-header {* Syntax and proof rules for graphical diagrams *}
+section {* Syntax and proof rules for graphical diagrams *}
 
 theory Ribbons_Graphical imports 
   Ribbons_Interfaces

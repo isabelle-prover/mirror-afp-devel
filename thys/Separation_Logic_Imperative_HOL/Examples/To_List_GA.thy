@@ -1,4 +1,4 @@
-header {* Generic Algorithm to Convert Sets to Lists *}
+section {* Generic Algorithm to Convert Sets to Lists *}
 theory To_List_GA
 imports Imp_Set_Spec Imp_List_Spec Hash_Set_Impl Open_List
 begin

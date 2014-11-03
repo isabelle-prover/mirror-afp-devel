@@ -1,4 +1,4 @@
-header {* Linear Combinations *}
+section {* Linear Combinations *}
 
 theory LinearCombinations
 imports Main

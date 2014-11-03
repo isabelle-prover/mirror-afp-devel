@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Functions *}
+section {* Functions *}
 
 theory Relation_Algebra_Functions
   imports Relation_Algebra_Vectors Relation_Algebra_Tests

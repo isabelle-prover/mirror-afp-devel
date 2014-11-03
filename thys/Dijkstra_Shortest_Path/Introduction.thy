@@ -3,7 +3,7 @@
             Peter Lammich <lammich at in.tum.de>
     Maintainer: lammich@in.tum.de
 *)
-header "Introduction and Overview"
+section "Introduction and Overview"
 
 (*<*)
 theory Introduction 

@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header {* Transitive Closure of Successor List Function *}
+section {* Transitive Closure of Successor List Function *}
 
 theory RTranCl
 imports Main

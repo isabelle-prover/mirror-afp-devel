@@ -1,4 +1,4 @@
-header {* Execution rules for kernels *}
+section {* Execution rules for kernels *}
 
 theory KPL_execution_kernel imports 
   KPL_execution_group

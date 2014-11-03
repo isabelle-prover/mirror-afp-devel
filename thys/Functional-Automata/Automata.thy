@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Conversions between automata"
+section "Conversions between automata"
 
 theory Automata
 imports DA NAe

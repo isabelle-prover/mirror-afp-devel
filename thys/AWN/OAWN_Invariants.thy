@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Generic open invariants on sequential AWN processes"
+section "Generic open invariants on sequential AWN processes"
 
 theory OAWN_Invariants
 imports Invariants OInvariants

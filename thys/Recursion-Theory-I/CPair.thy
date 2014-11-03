@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Cantor pairing function *}
+section {* Cantor pairing function *}
 
 theory CPair
 imports Main

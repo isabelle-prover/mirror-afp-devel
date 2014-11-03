@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Transfer open results onto closed models"
+section "Transfer open results onto closed models"
 
 theory OClosed_Transfer
 imports Closed OClosed_Lifting

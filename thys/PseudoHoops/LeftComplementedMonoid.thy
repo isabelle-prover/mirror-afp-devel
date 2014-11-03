@@ -1,4 +1,4 @@
-header{* Left Complemented Monoid *}
+section{* Left Complemented Monoid *}
 
 theory LeftComplementedMonoid
   imports Operations "../LatticeProperties/Lattice_Prop"

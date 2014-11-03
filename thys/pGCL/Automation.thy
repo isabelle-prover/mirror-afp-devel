@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Automated Reasoning"
+section "Automated Reasoning"
 
 theory Automation imports StructuredReasoning
 begin

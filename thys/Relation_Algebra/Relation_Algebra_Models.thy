@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Models of Relation Algebra *}
+section {* Models of Relation Algebra *}
 
 theory Relation_Algebra_Models
   imports Relation_Algebra "../Kleene_Algebra/Inf_Matrix"

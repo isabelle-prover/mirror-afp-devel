@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Models of Action Algebras *}
+section {* Models of Action Algebras *}
 
 theory Action_Algebra_Models
 imports Action_Algebra Kleene_Algebra_Models

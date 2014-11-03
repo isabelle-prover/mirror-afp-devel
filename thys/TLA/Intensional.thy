@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* Representing Intensional Logic  *}
+section {* Representing Intensional Logic  *}
 
 theory Intensional 
 imports Main

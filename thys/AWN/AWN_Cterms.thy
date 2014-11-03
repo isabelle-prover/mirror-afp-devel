@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Control terms and well-definedness of sequential processes"
+section "Control terms and well-definedness of sequential processes"
 
 theory AWN_Cterms
 imports AWN

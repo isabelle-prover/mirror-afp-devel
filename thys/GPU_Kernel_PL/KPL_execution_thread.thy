@@ -1,4 +1,4 @@
-header {* Execution rules for threads *}
+section {* Execution rules for threads *}
 
 theory KPL_execution_thread imports 
   KPL_state

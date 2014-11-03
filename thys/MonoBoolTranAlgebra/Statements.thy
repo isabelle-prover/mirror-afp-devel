@@ -1,4 +1,4 @@
-header {* Program statements, Hoare and refinement rules *}
+section {* Program statements, Hoare and refinement rules *}
 
 theory Statements
 imports Assertion_Algebra

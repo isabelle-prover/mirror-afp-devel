@@ -8,7 +8,7 @@ Datatype of events; function "spies"; freshness
     stores are visible to him
 *)
 
-header{*Theory of Events for Security Protocols against Dolev-Yao*}
+section{*Theory of Events for Security Protocols against Dolev-Yao*}
 
 theory Event imports Message begin
 

@@ -5,7 +5,7 @@
 *)
 
 
-header {* Kripke Structures and CTL *}
+section {* Kripke Structures and CTL *}
 theory Kripke
 imports Main
 begin

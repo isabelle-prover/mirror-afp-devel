@@ -1,4 +1,4 @@
-header {* Directed Graphs *}
+section {* Directed Graphs *}
 (* Author: Peter Lammich *)
 theory Digraph
   imports 

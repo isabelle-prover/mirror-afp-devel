@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Trace Space equal to Markov Processes *}
+section {* Trace Space equal to Markov Processes *}
 
 theory Trace_Space_Equals_Markov_Processes
   imports Discrete_Time_Markov_Chain

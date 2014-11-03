@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Formalisation of complete partial orders, continuity and admissibility *}
+section {* Formalisation of complete partial orders, continuity and admissibility *}
 
 theory Complete_Partial_Order2 imports 
   Main

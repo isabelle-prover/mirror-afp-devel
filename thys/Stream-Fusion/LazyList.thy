@@ -1,4 +1,4 @@
-header {* Lazy Lists *}
+section {* Lazy Lists *}
 
 theory LazyList
 imports HOLCF "~~/src/HOL/HOLCF/Library/Int_Discrete"

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Structured Reasoning"
+section "Structured Reasoning"
 
 theory StructuredReasoning imports Algebra begin
 

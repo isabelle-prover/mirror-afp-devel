@@ -1,4 +1,4 @@
-header {* Compasitionality of the during-execution security notions *} 
+section {* Compasitionality of the during-execution security notions *} 
 
 theory Compositionality imports During_Execution begin
 

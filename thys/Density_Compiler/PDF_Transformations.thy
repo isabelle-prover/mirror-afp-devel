@@ -5,7 +5,7 @@
   Provides lemmas for transformations of measure spaces with a density.
 *)
 
-header {* Measure Space Transformations *}
+section {* Measure Space Transformations *}
 
 theory PDF_Transformations
 imports Density_Predicates Lebesgue_Integral_Substitution PDF_Misc

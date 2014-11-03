@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header{*Rank of a matrix*}
+section{*Rank of a matrix*}
 
 theory Rank
 imports 

@@ -3,7 +3,7 @@
     Maintainer:  Tobias Nipkow
 *)
 
-header "Hoare Logics for 1 Procedure"
+section "Hoare Logics for 1 Procedure"
 
 theory PLang imports Main begin
 

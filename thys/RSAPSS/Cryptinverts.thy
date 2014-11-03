@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Correctness proof for RSA"
+section "Correctness proof for RSA"
 
 theory Cryptinverts
 imports  Crypt Productdivides  "~~/src/HOL/Number_Theory/Residues" 

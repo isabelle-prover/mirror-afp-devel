@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Generic scanner"
+section "Generic scanner"
 
 theory MaxChop
 imports MaxPrefix

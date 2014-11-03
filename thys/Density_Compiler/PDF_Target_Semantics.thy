@@ -5,7 +5,7 @@
   The semantics of the target language.
 *)
 
-header {* Target Language Syntax and Semantics *}
+section {* Target Language Syntax and Semantics *}
 
 theory PDF_Target_Semantics
 imports PDF_Semantics

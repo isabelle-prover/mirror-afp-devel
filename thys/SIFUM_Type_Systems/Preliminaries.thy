@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Preliminaries *}
+section {* Preliminaries *}
 theory Preliminaries
 imports Main "~~/src/HOL/Library/Lattice_Syntax"
 begin

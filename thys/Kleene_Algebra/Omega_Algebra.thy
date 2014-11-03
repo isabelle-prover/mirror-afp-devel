@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Omega Algebras *}
+section {* Omega Algebras *}
 
 theory Omega_Algebra
 imports Kleene_Algebra

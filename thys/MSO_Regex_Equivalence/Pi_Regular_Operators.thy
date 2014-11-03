@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header "Some Useful Regular Operators"
+section "Some Useful Regular Operators"
 
 (*<*)
 theory Pi_Regular_Operators

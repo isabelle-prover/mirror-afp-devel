@@ -4,7 +4,7 @@ http://code.google.com/p/flyspeck/source/browse/trunk/text_formalization/tame/ta
 by Thomas Hales. Modulo a few inessential rearrangements.
 *)
 
-header{* Tameness *}
+section{* Tameness *}
 
 theory Tame
 imports Graph ListSum

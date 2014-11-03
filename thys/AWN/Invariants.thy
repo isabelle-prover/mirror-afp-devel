@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Reachability and Invariance"
+section "Reachability and Invariance"
 
 theory Invariants
 imports Lib TransitionSystems

@@ -1,7 +1,7 @@
 
 (* Author: Florian Haftmann, TU Muenchen *)
 
-header {* A barebone conversion for discrete summation *}
+section {* A barebone conversion for discrete summation *}
 
 theory Summation_Conversion
 imports Factorials Summation

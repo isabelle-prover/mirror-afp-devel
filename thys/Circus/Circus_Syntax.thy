@@ -1,5 +1,5 @@
 
-header {* Circus syntax *}
+section {* Circus syntax *}
 
 theory Circus_Syntax
 imports Denotational_Semantics

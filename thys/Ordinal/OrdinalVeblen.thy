@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Veblen Hierarchies *}
+section {* Veblen Hierarchies *}
 
 theory OrdinalVeblen
 imports OrdinalOmega

@@ -1,5 +1,5 @@
 
-header {*  Generalization of Deutsch-Schorr-Waite Algorithm  *}
+section {*  Generalization of Deutsch-Schorr-Waite Algorithm  *}
 
 theory LinkMark
 imports StackMark

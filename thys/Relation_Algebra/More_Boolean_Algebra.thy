@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* (More) Boolean Algebra *}
+section {* (More) Boolean Algebra *}
 
 theory More_Boolean_Algebra
   imports Main

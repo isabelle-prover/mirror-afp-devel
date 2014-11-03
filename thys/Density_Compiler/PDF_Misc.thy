@@ -8,7 +8,7 @@
   should be included in HOL-Probability.
 *)
 
-header {* Auxiliary Measures *}
+section {* Auxiliary Measures *}
 
 theory PDF_Misc
 imports Interval_Integral

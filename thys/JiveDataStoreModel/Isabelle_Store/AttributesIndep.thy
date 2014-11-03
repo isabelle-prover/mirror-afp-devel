@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header {* Program-Independent Lemmas on Attributes *}
+section {* Program-Independent Lemmas on Attributes *}
 
 theory AttributesIndep
 imports "../Isa_Counter_Store/Attributes"

@@ -1,4 +1,4 @@
-header {* Automata *}
+section {* Automata *}
 (* Author: Peter Lammich *)
 theory Automata
 imports Digraph

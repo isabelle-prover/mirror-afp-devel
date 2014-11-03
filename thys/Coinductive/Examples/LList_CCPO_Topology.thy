@@ -3,7 +3,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-header {* A CCPO topology on lazy lists with examples *}
+section {* A CCPO topology on lazy lists with examples *}
 
 theory LList_CCPO_Topology imports
   CCPO_Topology

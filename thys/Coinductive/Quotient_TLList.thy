@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Setup for Isabelle's quotient package for terminated lazy lists *}
+section {* Setup for Isabelle's quotient package for terminated lazy lists *}
 
 theory Quotient_TLList imports
   TLList

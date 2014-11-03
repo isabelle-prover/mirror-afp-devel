@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-header {* Relating direct and continuation semantics *}
+section {* Relating direct and continuation semantics *}
 (*<*)
 theory Continuations
 imports

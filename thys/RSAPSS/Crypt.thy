@@ -4,7 +4,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Definition of rsacrypt"
+section "Definition of rsacrypt"
 
 theory Crypt
 imports Main Mod

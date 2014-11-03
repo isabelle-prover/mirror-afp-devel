@@ -1,7 +1,7 @@
 (*  Author:      Andreas Lochbihler
     Maintainer:  Andreas Lochbihler
 *)
-header {* Manual construction of a resumption codatatype *}
+section {* Manual construction of a resumption codatatype *}
 
 theory Resumption imports 
   "~~/src/HOL/Library/Old_Datatype"

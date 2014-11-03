@@ -1,4 +1,4 @@
-header "Verification of $f$"
+section "Verification of $f$"
 theory F_Spark_Specification
 imports F_Spark_Declaration Global_Specification
 

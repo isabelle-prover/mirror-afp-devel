@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Computably enumerable sets of natural numbers *}
+section {* Computably enumerable sets of natural numbers *}
 
 theory RecEnSet
 imports PRecList PRecFun2 PRecFinSet PRecUnGr

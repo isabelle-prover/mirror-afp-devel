@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-header {* FlexRay: Verification *}
+section {* FlexRay: Verification *}
 
 theory  FR_proof
 imports FR

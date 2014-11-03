@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* WS1S *}
+section {* WS1S *}
 
 (*<*)
 theory WS1S

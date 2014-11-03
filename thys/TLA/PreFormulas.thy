@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header "Reasoning about PreFormulas"
+section "Reasoning about PreFormulas"
 
 theory PreFormulas  
 imports Semantics

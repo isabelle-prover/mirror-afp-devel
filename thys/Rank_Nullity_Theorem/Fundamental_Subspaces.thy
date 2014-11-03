@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header{*Fundamental Subspaces*}
+section{*Fundamental Subspaces*}
 
 theory Fundamental_Subspaces
 imports 

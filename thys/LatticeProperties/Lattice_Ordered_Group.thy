@@ -1,4 +1,4 @@
-header{* Lattice Orderd Groups *}
+section{* Lattice Orderd Groups *}
 
 (*
     Author: Viorel Preoteasa

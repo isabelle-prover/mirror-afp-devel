@@ -1,4 +1,4 @@
-header "Graph Interface"
+section "Graph Interface"
 theory GraphSpec
 imports Main Graph 
   "../Collections/ICF/Collections" 

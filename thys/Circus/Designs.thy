@@ -1,4 +1,4 @@
-header{* Designs *}
+section{* Designs *}
 
 theory Designs
 imports Relations

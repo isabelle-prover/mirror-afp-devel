@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header{*Properties of Face Division*}
+section{*Properties of Face Division*}
 
 theory FaceDivisionProps
 imports Plane EnumeratorProps

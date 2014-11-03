@@ -1,7 +1,7 @@
 (*<*)
 (* Author: Dmitriy Traytel *)
 
-header {* A Codatatype of Formal Languages *}
+section {* A Codatatype of Formal Languages *}
 
 theory Coinductive_Language
 imports Main

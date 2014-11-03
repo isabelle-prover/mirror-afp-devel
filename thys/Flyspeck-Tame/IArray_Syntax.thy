@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header {* Syntax for operations on immutable arrays *}
+section {* Syntax for operations on immutable arrays *}
 
 theory IArray_Syntax
 imports Main "~~/src/HOL/Library/IArray"

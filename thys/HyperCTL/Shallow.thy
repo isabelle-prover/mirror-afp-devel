@@ -1,4 +1,4 @@
-header {* Shallow embedding of HyperCTL* *}
+section {* Shallow embedding of HyperCTL* *}
 
 (*<*)
 theory Shallow

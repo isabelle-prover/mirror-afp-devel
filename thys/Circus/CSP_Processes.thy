@@ -1,4 +1,4 @@
-header {* CSP processes *}
+section {* CSP processes *}
 
 theory CSP_Processes
 imports Reactive_Processes

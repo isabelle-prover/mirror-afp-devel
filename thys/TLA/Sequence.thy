@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* (Infinite) Sequences *} 
+section {* (Infinite) Sequences *} 
 
 theory Sequence
 imports Main

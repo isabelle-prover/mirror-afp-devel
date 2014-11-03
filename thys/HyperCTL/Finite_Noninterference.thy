@@ -1,4 +1,4 @@
-header {* Noninterference for models with finitely many users, commands and outputs *}
+section {* Noninterference for models with finitely many users, commands and outputs *}
 
 (*<*)
 theory Finite_Noninterference

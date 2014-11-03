@@ -1,4 +1,4 @@
-header "Binomial Heaps"
+section "Binomial Heaps"
 
 theory BinomialHeap
 imports Main "~~/src/HOL/Library/Multiset"

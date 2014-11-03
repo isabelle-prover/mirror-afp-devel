@@ -1,4 +1,4 @@
-header "Base"
+section "Base"
 
 theory Base
 imports PermutationLemmas

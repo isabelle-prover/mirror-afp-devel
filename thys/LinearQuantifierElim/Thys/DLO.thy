@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header "DLO"
+section "DLO"
 
 theory DLO
 imports QE Complex_Main

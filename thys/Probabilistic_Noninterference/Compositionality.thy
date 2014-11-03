@@ -1,4 +1,4 @@
-header {* Compositionality of Resumption-Based Noninterference *}
+section {* Compositionality of Resumption-Based Noninterference *}
 
 theory Compositionality
 imports Resumption_Based

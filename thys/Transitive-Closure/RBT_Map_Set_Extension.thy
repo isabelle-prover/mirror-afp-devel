@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-header \<open>Accessing Values via Keys\<close>
+section \<open>Accessing Values via Keys\<close>
 
 theory RBT_Map_Set_Extension
 imports

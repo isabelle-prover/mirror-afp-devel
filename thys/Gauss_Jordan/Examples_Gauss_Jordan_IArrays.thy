@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of computations over matrices represented as nested IArrays*}
+section{*Examples of computations over matrices represented as nested IArrays*}
 
 theory Examples_Gauss_Jordan_IArrays
 imports

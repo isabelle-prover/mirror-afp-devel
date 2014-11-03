@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-header {* Combining All Completeness Proofs *}
+section {* Combining All Completeness Proofs *}
 
 theory Completeness
 imports ArchCompProps ArchComp

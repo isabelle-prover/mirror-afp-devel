@@ -1,4 +1,4 @@
-header {* HOLCF Utility lemmas *}
+section {* HOLCF Utility lemmas *}
 theory HOLCFUtils
 imports HOLCF
 begin

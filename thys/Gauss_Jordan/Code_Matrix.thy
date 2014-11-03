@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Code generation for vectors and matrices*}
+section{*Code generation for vectors and matrices*}
 
 theory Code_Matrix
 imports 

@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Omega *}
+section {* Omega *}
 
 theory OrdinalOmega
 imports OrdinalFix

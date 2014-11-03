@@ -1,4 +1,4 @@
-header{* Simplification Lemmas for Lattices *}
+section{* Simplification Lemmas for Lattices *}
 
 (*
     Author: Viorel Preoteasa

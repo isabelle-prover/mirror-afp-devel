@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Transfer standard invariants into open invariants"
+section "Transfer standard invariants into open invariants"
 
 theory OAWN_Convert
 imports AWN_SOS_Labels AWN_Invariants

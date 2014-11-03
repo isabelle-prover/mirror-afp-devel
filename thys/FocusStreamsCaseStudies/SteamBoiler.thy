@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header {* Steam Boiler System: Specification *}
+section {* Steam Boiler System: Specification *}
 
 theory  SteamBoiler 
 imports stream BitBoolTS

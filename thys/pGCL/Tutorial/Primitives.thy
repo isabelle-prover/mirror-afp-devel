@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Language Primitives"
+section "Language Primitives"
 
 theory Primitives imports "../pGCL" begin
 

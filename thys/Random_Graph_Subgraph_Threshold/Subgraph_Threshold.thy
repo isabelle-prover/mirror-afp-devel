@@ -1,4 +1,4 @@
-header{* The subgraph threshold theorem *}
+section{* The subgraph threshold theorem *}
 
 theory Subgraph_Threshold
 imports

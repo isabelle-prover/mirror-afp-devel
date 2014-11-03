@@ -1,4 +1,4 @@
-header {* Optimizations for Code Integer *}
+section {* Optimizations for Code Integer *}
 theory Optimize_Integer
 imports
   Complex_Main

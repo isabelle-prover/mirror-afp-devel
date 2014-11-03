@@ -1,4 +1,4 @@
-header "Skew Binomial Heaps"
+section "Skew Binomial Heaps"
 
 theory SkewBinomialHeap
 imports Main "~~/src/HOL/Library/Multiset"

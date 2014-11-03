@@ -1,4 +1,4 @@
-header {* Bit Block Transfer and Other Array Optimizations *}
+section {* Bit Block Transfer and Other Array Optimizations *}
 theory Array_Blit
 imports 
   "../Sep_Main" 

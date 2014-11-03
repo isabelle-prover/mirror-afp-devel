@@ -1,4 +1,4 @@
-header "Splay Tree Analysis"
+section "Splay Tree Analysis"
 
 theory Splay_Tree_Analysis
 imports

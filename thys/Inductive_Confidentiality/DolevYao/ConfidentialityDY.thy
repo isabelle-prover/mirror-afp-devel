@@ -1,4 +1,4 @@
-header{*Inductive Study of Confidentiality against Dolev-Yao*}
+section{*Inductive Study of Confidentiality against Dolev-Yao*}
 
 theory ConfidentialityDY imports NS_Public_Bad begin
 

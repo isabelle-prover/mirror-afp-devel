@@ -1,4 +1,4 @@
-header {* Isomorphisms of Free Groups *}
+section {* Isomorphisms of Free Groups *}
 
 theory "Isomorphisms"
 imports

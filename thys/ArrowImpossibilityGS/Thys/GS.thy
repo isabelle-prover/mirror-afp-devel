@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, 2008
 *)
 
-header "The Gibbard-Satterthwaite Theorem"
+section "The Gibbard-Satterthwaite Theorem"
 
 theory GS imports Arrow_Order
 begin

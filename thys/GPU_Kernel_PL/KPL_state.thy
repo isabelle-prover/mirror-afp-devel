@@ -1,4 +1,4 @@
-header {* Thread, group and kernel states *}
+section {* Thread, group and kernel states *}
 
 theory KPL_state imports 
   KPL_syntax

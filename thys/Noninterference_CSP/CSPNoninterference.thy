@@ -5,7 +5,7 @@
                  pasquale dot noce dot lavoro at gmail dot com
 *)
 
-header "Noninterference in CSP"
+section "Noninterference in CSP"
 
 theory CSPNoninterference
 imports Main

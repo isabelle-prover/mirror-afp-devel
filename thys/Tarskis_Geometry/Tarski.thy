@@ -3,7 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-header "Tarski's geometry"
+section "Tarski's geometry"
 
 theory Tarski
   imports Complex_Main Miscellany Metric

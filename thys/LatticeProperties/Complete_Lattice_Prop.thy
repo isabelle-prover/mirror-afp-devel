@@ -1,4 +1,4 @@
-header {* Fixpoints and Complete Lattices *}
+section {* Fixpoints and Complete Lattices *}
 
 (*
     Author: Viorel Preoteasa

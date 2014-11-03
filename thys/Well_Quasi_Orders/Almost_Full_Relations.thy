@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Almost-Full Relations *}
+section {* Almost-Full Relations *}
 
 theory Almost_Full_Relations
 imports

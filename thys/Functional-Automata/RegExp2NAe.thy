@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "From regular expressions to nondeterministic automata with epsilon"
+section "From regular expressions to nondeterministic automata with epsilon"
 
 theory RegExp2NAe
 imports "../Regular-Sets/Regular_Exp" NAe

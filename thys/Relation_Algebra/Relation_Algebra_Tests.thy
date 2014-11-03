@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Tests *}
+section {* Tests *}
 
 theory Relation_Algebra_Tests
   imports Relation_Algebra

@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Definition of Ordinals *}
+section {* Definition of Ordinals *}
 
 theory OrdinalDef
 imports Main

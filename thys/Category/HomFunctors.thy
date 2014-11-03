@@ -5,7 +5,7 @@
 Define homfunctors, prove that they are functors.
 *)
 
-header HomFunctors
+section HomFunctors
 
 theory HomFunctors
 imports SetCat Functors

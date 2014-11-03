@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Quantifier elimination *}
+section{* Quantifier elimination *}
 
 theory QE
 imports Logic

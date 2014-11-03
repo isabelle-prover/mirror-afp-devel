@@ -1,4 +1,4 @@
-header{* Pseudo-Hoops *}
+section{* Pseudo-Hoops *}
 
 theory PseudoHoops
 imports RightComplementedMonoid

@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Countable datatypes *}
+section {* Countable datatypes *}
 
 theory Countable_Generator
 imports "~~/src/HOL/Library/Countable"

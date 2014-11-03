@@ -3,7 +3,7 @@
     License: LGPL
 *)
 
-header {* {{\sf Set}} is a Category *}
+section {* {{\sf Set}} is a Category *}
 
 theory SetCat
 imports Cat

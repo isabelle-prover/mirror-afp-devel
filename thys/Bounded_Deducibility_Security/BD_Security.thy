@@ -1,4 +1,4 @@
-header {* BD Security *}
+section {* BD Security *}
 
 (*<*)
 theory BD_Security

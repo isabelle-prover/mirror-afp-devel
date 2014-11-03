@@ -1,4 +1,4 @@
-header {* Stutter Invariance of next-free LTL Formula *}
+section {* Stutter Invariance of next-free LTL Formula *}
 theory LTL_Stutter
 imports LTL "../Stuttering_Equivalence/PLTL"
 begin

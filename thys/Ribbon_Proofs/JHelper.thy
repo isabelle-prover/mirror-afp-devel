@@ -1,4 +1,4 @@
-header {* General purpose definitions and lemmas *}
+section {* General purpose definitions and lemmas *}
 
 theory JHelper imports
   Main

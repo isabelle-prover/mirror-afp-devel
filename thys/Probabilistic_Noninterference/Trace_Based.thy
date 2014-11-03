@@ -1,4 +1,4 @@
-header{* Trace-Based Noninterference *}
+section{* Trace-Based Noninterference *}
 
 theory Trace_Based
   imports Resumption_Based

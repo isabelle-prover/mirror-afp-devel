@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Extended natural numbers as a codatatype *}
+section {* Extended natural numbers as a codatatype *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"

@@ -1,4 +1,4 @@
-header {* Circus actions *}
+section {* Circus actions *}
 
 theory Circus_Actions
 imports "~~/src/HOL/HOLCF/HOLCF" CSP_Processes

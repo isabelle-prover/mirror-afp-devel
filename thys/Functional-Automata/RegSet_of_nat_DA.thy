@@ -11,7 +11,7 @@ regexp as d i j 0 = (if i=j then Union (Star Empty) (atoms d i j as)
                         else atoms d i j as
 *)
 
-header "From deterministic automata to regular sets"
+section "From deterministic automata to regular sets"
 
 theory RegSet_of_nat_DA
 imports "../Regular-Sets/Regular_Set" DA

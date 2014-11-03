@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Location *}
+section {* Location *}
 
 theory Location
 imports AttributesIndep "../Isabelle/Value"

@@ -1,7 +1,7 @@
 (*  Title:       Lazy_LList.thy
     Author:      Andreas Lochbihler
 *)
-header {* Code generator setup to implement lazy lists lazily *}
+section {* Code generator setup to implement lazy lists lazily *}
 
 theory Lazy_LList imports
   Coinductive_List

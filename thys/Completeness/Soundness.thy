@@ -1,4 +1,4 @@
-header "Soundness"
+section "Soundness"
 
 theory Soundness imports Completeness begin
 

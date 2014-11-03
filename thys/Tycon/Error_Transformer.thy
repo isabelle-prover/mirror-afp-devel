@@ -1,4 +1,4 @@
-header {* Error monad transformer *}
+section {* Error monad transformer *}
 
 theory Error_Transformer
 imports Error_Monad

@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Primitive recursive functions *}
+section {* Primitive recursive functions *}
 
 theory PRecFun imports CPair
 begin

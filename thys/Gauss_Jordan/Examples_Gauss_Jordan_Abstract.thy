@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of computations over abstract matrices*}
+section{*Examples of computations over abstract matrices*}
 
 theory Examples_Gauss_Jordan_Abstract
 imports 

@@ -2,7 +2,7 @@
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
     Copyright   1996  University of Cambridge*)
 
-header{*Theory of Cryptographic Keys for Security Protocols against Dolev-Yao*}
+section{*Theory of Cryptographic Keys for Security Protocols against Dolev-Yao*}
 
 theory Public
 imports Event

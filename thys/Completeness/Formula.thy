@@ -1,4 +1,4 @@
-header "Formula"
+section "Formula"
 
 theory Formula
 imports Base

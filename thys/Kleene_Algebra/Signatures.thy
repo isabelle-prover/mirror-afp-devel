@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Signatures *}
+section {* Signatures *}
 
 theory Signatures
 imports Main

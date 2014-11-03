@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "RSS-PSS encoding and decoding operation" 
+section "RSS-PSS encoding and decoding operation" 
 
 theory RSAPSS
 imports EMSAPSS Cryptinverts
