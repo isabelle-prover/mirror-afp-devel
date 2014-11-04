@@ -335,7 +335,7 @@ qed
 subsection {* Single Instructions *}
 
 text {*
-  In this subsection we prove for each single (welltyped) instruction
+  In this section we prove for each single (welltyped) instruction
   that the state after execution of the instruction still conforms.
   Since we have already handled exceptions above, we can now assume that
   no exception occurs in this step.

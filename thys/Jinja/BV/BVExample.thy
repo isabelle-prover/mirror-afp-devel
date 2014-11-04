@@ -11,7 +11,7 @@ imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
 begin
 
 text {*
-  This theory shows type correctness of the example program in subsection 
+  This theory shows type correctness of the example program in section 
   \ref{sec:JVMListExample} (p. \pageref{sec:JVMListExample}) by
   explicitly providing a welltyping. It also shows that the start
   state of the program conforms to the welltyping; hence type safe
