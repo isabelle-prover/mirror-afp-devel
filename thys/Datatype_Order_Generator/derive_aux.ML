@@ -93,7 +93,9 @@ sig
 
   val mk_solve_with_tac : thm list -> tactic -> tactic
 
-  val define_overloaded : string * term -> local_theory -> thm * local_theory
+  val define_overloaded : (string * term) -> local_theory -> thm * local_theory
+
+  val define_overloaded_generic : (Attrib.binding * term) -> local_theory -> thm * local_theory
 
   val mk_def : typ -> string -> term -> term
 
@@ -225,16 +227,19 @@ fun dt_number_recs dtys =
 end
 
 (* code copied from HOL/SPARK/TOOLS *)
-fun define_overloaded (def_name, eq) lthy =
+fun define_overloaded_generic (binding,eq) lthy =
   let
     val ((c, _), rhs) = eq |> Syntax.check_term lthy |>
       Logic.dest_equals |>> dest_Free;
     val ((_, (_, thm)), lthy') = Local_Theory.define
-      ((Binding.name c, NoSyn), ((Binding.name def_name, @{attributes [code]}), rhs)) lthy
+      ((Binding.name c, NoSyn), (binding, rhs)) lthy
     val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy');
     val thm' = singleton (Proof_Context.export lthy' ctxt_thy) thm
   in (thm', lthy')
 end
+
+fun define_overloaded (name,eq) = define_overloaded_generic ((Binding.name name, @{attributes [code]}),eq)
+
 
 fun mk_def T c rhs = Logic.mk_equals (Const (c, T), rhs)
 
