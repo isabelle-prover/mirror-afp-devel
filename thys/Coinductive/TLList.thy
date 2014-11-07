@@ -249,11 +249,11 @@ interpretation lifting_syntax .
 
 lemma TNil_transfer [transfer_rule]:
   "(B ===> pcr_tllist A B) (Pair LNil) TNil"
-by(auto simp add: pcr_tllist_def cr_tllist_def intro!: rel_funI relcomppI)
+by(force simp add: pcr_tllist_def cr_tllist_def)
 
 lemma TCons_transfer [transfer_rule]:
   "(A ===> pcr_tllist A B ===> pcr_tllist A B) (apfst \<circ> LCons) TCons"
-by(auto 4 3 intro!: rel_funI relcomppI simp add: pcr_tllist_def rel_prod_def llist_all2_LCons1 cr_tllist_def)
+by(force simp add: pcr_tllist_def llist_all2_LCons1 cr_tllist_def)
 
 lemma tmap_tllist_of_llist:
   "tmap f g (tllist_of_llist b xs) = tllist_of_llist (g b) (lmap f xs)"
@@ -261,7 +261,7 @@ by(coinduction arbitrary: xs)(auto simp add: tmap_is_TNil)
 
 lemma tmap_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_tllist op = op = ===> pcr_tllist op = op =) (map_prod \<circ> lmap) tmap"
-by(auto intro!: rel_funI simp add: cr_tllist_def tllist.pcr_cr_eq tmap_tllist_of_llist)
+by(force simp add: cr_tllist_def tllist.pcr_cr_eq tmap_tllist_of_llist)
 
 lemma lset_llist_of_tllist [simp]:
   "lset (llist_of_tllist xs) = tset xs" (is "?lhs = ?rhs")
@@ -302,7 +302,7 @@ by(auto simp add: cr_tllist_def tllist.pcr_cr_eq)
 
 lemma ttl_transfer [transfer_rule]:
   "(pcr_tllist A B ===> pcr_tllist A B) (apfst ltl) ttl"
-by(auto simp add: pcr_tllist_def cr_tllist_def rel_prod_def intro!: rel_funI relcomppI intro: llist_all2_ltlI)
+by(force simp add: pcr_tllist_def cr_tllist_def intro: llist_all2_ltlI)
 
 lemma llist_of_tllist_transfer [transfer_rule]:
   "(pcr_tllist op = B ===> op =) fst llist_of_tllist"
@@ -415,7 +415,7 @@ by(simp add: terminal_tinfinite)
 
 lemma terminal_transfer [transfer_rule]:
   "(pcr_tllist A op = ===> op =) (\<lambda>(xs, b). if lfinite xs then b else undefined) terminal"
-by(auto simp add: cr_tllist_def pcr_tllist_def terminal_tllist_of_llist intro!: rel_funI dest: llist_all2_lfiniteD)
+by(force simp add: cr_tllist_def pcr_tllist_def terminal_tllist_of_llist dest: llist_all2_lfiniteD)
 
 lemma terminal_tmap [simp]: "tfinite xs \<Longrightarrow> terminal (tmap f g xs) = g (terminal xs)"
 by(induct rule: tfinite_induct) simp_all
@@ -839,15 +839,15 @@ interpretation lifting_syntax .
 
 lemma set1_pre_tllist_transfer [transfer_rule]:
   "(rel_pre_tllist A B C ===> rel_set A) set1_pre_tllist set1_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set1_pre_tllist_def rel_set_def collect_def sum_set_defs rel_sum_def fsts_def split: sum.split_asm)
+by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set1_pre_tllist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma set2_pre_tllist_transfer [transfer_rule]:
   "(rel_pre_tllist A B C ===> rel_set B) set2_pre_tllist set2_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set2_pre_tllist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set2_pre_tllist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma set3_pre_tllist_transfer [transfer_rule]:
   "(rel_pre_tllist A B C ===> rel_set C) set3_pre_tllist set3_pre_tllist"
-by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set3_pre_tllist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_tllist_def vimage2p_def rel_fun_def set3_pre_tllist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma TNil_transfer2 [transfer_rule]: "(B ===> tllist_all2 A B) TNil TNil"
 by auto

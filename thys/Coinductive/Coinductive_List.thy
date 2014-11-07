@@ -5097,11 +5097,11 @@ interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set1_pre_llist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set B) set2_pre_llist set2_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set2_pre_llist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"
 by simp

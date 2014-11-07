@@ -463,7 +463,7 @@ val exi_zero = @{lemma "P (0::perm) ==> (? x. P x)" by auto}
 
 fun cases_tac intros ctxt =
   let
-    val prod_simps = @{thms split_conv prod_alpha_def rel_prod_def}
+    val prod_simps = @{thms split_conv prod_alpha_def rel_prod_conv}
 
     val unbound_tac = REPEAT o (etac @{thm conjE}) THEN' atac  
 
@@ -504,7 +504,7 @@ fun prem_bound_tac pred_names alpha_eqvt ctxt =
         in
           resolve_tac prems' 1
         end) ctxt
-    val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_def alphas}
+    val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_conv alphas}
   in
     EVERY' 
       [ etac exi_neg,
@@ -556,7 +556,7 @@ val perm_inst_tac =
 
 fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt = 
   let
-    val prod_simps = @{thms split_conv alphas permute_prod.simps prod_alpha_def rel_prod_def}
+    val prod_simps = @{thms split_conv alphas permute_prod.simps prod_alpha_def rel_prod_conv}
   in
     resolve_tac intros
     THEN_ALL_NEW (asm_simp_tac (put_simpset HOL_basic_ss ctxt) THEN' 
@@ -706,7 +706,7 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
     val props = (alpha_trms @ alpha_bn_trms) ~~ (map mk_prop (alpha_tys @ alpha_bn_tys)) 
   
     val simpset =
-      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def rel_prod_def 
+      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def rel_prod_conv 
       permute_prod_def prod.case prod.rec})
 
     val tac = (TRY o REPEAT o etac @{thm exE}) THEN' asm_full_simp_tac simpset
@@ -720,7 +720,7 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
 fun raw_constr_rsp_tac ctxt alpha_intros simps = 
   let
     val pre_simpset = put_simpset HOL_ss ctxt addsimps @{thms rel_fun_def}
-    val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def rel_prod_def 
+    val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def rel_prod_conv 
       prod_fv.simps fresh_star_zero permute_zero prod.case} @ simps
   in
     asm_full_simp_tac pre_simpset

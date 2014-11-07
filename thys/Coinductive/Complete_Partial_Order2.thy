@@ -1372,7 +1372,7 @@ lemma mcont_case_prod_iff [simp]:
      class.preorder ordb (mk_less ordb); lub_singleton lubb \<rbrakk>
   \<Longrightarrow> mcont (prod_lub luba lubb) (rel_prod orda ordb) lub leq (case_prod f) \<longleftrightarrow>
    (\<forall>x. mcont lubb ordb lub leq (\<lambda>y. f x y)) \<and> (\<forall>y. mcont luba orda lub leq (\<lambda>x. f x y))"
-unfolding mcont_def by(auto simp add: monotone_case_prod_iff cont_case_prod_iff)
+unfolding mcont_def by(auto simp add: cont_case_prod_iff)
 
 end
 
@@ -1690,7 +1690,7 @@ proof -
         by(subst ab.fixp_unfold)(auto simp add: f g dest: monotoneD[OF g])
     qed(auto intro: b.ccpo_Sup_least chain_empty)
     ultimately show "?ord (?rhs1, ?rhs2) ?lhs"
-      by(simp add: rel_prod_def split_beta)
+      by(simp add: rel_prod_conv split_beta)
   qed
   finally show ?thesis by simp
 qed
@@ -1738,7 +1738,7 @@ by(auto intro!: mcontI monotoneI contI simp add: prod_lub_def)
 lemma mcont2mcont_fst [cont_intro, simp]:
   "mcont lub ord (prod_lub luba lubb) (rel_prod orda ordb) t
   \<Longrightarrow> mcont lub ord luba orda (\<lambda>x. fst (t x))"
-by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_def split_beta prod_lub_def image_image)
+by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_sel split_beta prod_lub_def image_image)
 
 lemma monotone_snd: "monotone (rel_prod orda ordb) ordb snd"
 by(auto intro: monotoneI)
@@ -1749,6 +1749,6 @@ by(auto intro!: mcontI monotoneI contI simp add: prod_lub_def)
 lemma mcont2mcont_snd [cont_intro, simp]:
   "mcont lub ord (prod_lub luba lubb) (rel_prod orda ordb) t
   \<Longrightarrow> mcont lub ord lubb ordb (\<lambda>x. snd (t x))"
-by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_def split_beta prod_lub_def image_image)
+by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_sel split_beta prod_lub_def image_image)
 
 end
