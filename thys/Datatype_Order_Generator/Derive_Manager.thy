@@ -26,8 +26,8 @@ section {* Derive manager *}
 
 theory Derive_Manager
 imports Main
-keywords "print_derives" :: diag
-   and   "derive" :: thy_decl
+keywords "print_derives" "print_local_derives" :: diag
+   and   "derive" "local_derive" :: thy_decl
 begin
 
 ML_file "derive_aux.ML" 
