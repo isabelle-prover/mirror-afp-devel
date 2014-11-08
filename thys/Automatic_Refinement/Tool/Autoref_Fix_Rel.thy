@@ -700,7 +700,7 @@ ML {*
           val t2 = Logic.incr_indexes ([],idx1+1) t2
           val idx2 = Term.maxidx_of_term t2
         in
-          can (Pattern.unify thy (t1,t2)) (Envir.empty idx2)
+          can (Pattern.unify (Context.Theory thy) (t1,t2)) (Envir.empty idx2)
         end
 
       fun analyze_possible_problems ctxt (f,R) = let

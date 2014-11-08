@@ -132,7 +132,7 @@ ML {*
                in (maxidx + tidx,t) end)
 
         fun unifies (idx,t) 
-          = can (Pattern.unify thy (t,concl)) (Envir.empty idx)
+          = can (Pattern.unify (Context.Theory thy) (t,concl)) (Envir.empty idx)
 
         val candidates = filter unifies pre_candidates |> map #2
       in
