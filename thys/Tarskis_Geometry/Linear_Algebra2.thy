@@ -6,7 +6,7 @@
 (* After Isabelle 2012, some of these theorems
 may be moved to the Isabelle repository *)
 
-header "Linear algebra"
+section "Linear algebra"
 
 theory Linear_Algebra2
 imports Miscellany

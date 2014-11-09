@@ -1,4 +1,4 @@
-header{* End Results in Locale-Free Form *}
+section{* End Results in Locale-Free Form *}
 theory Encodings
 imports G T E
 begin
@@ -324,6 +324,5 @@ proof-
              GE_arOf_def GE_resOf_def GE_\<Phi>_def])
   done
 qed
-
 
 end

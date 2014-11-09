@@ -82,9 +82,9 @@ proof
   from \<phi>surj show img_subset:"\<phi> ` H \<subseteq> carrier F" unfolding iso_def bij_betw_def by auto
 next
   fix f f'
-	assume h:"f \<in> \<phi> ` H" and h':"f' \<in> \<phi> ` H"
-	with \<phi>surj obtain g g' where g:"g \<in> H" "f = \<phi> g" and g':"g' \<in> H" "f' = \<phi> g'" by auto
-	hence "g \<otimes>\<^bsub>G\<^esub> g' \<in> H" by (metis m_closed)
+  assume h:"f \<in> \<phi> ` H" and h':"f' \<in> \<phi> ` H"
+  with \<phi>surj obtain g g' where g:"g \<in> H" "f = \<phi> g" and g':"g' \<in> H" "f' = \<phi> g'" by auto
+  hence "g \<otimes>\<^bsub>G\<^esub> g' \<in> H" by (metis m_closed)
   hence "\<phi> (g \<otimes>\<^bsub>G\<^esub> g') \<in> \<phi> ` H" by simp
   with g g' \<phi> show "f \<otimes>\<^bsub>F\<^esub> f' \<in> \<phi> ` H"  using group_hom.hom_mult by fastforce
 next

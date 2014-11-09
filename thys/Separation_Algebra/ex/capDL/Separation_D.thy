@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Defining some separation logic maps-to predicates on top of the instantiation."
+section "Defining some separation logic maps-to predicates on top of the instantiation."
 
 theory Separation_D
 imports Abstract_Separation_D

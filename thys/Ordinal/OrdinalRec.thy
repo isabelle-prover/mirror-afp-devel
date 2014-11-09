@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Recursive Definitions *}
+section {* Recursive Definitions *}
 
 theory OrdinalRec
 imports OrdinalCont

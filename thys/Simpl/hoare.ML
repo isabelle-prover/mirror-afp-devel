@@ -64,7 +64,6 @@ sig
   val vcg: (Proof.context -> Proof.method) context_parser
   val vcg_step: (Proof.context -> Proof.method) context_parser
   val hoare_rule: (Proof.context -> Proof.method) context_parser
-  val setup: theory -> theory
 end;
 
 structure Hoare: HOARE =
@@ -926,7 +925,6 @@ fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 
 fun check_procedures_definition procs thy =
     let
-        val _ = Theory.requires thy (Context.theory_name @{theory Hoare}) "Hoare definitions";
         val ctxt = Proof_Context.init_global thy;
 
         fun already_defined name =
@@ -1829,7 +1827,7 @@ fun assertion_simp_tac ctxt state_kind thms i =
 fun string_eq_simp_tac ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt
     addsimps (@{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms}));
+      @ @{thms list.distinct} @ @{thms simp_thms}));
     
 
 
@@ -3229,7 +3227,7 @@ val ss =
     (@{theory_context Fun}
     addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
       :: @{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms})
+      @ @{thms list.distinct} @ @{thms simp_thms})
     addsimprocs [Record.simproc, StateFun.lazy_conj_simproc]
     |> fold Simplifier.add_cong @{thms block_conj_cong});
 
@@ -3369,7 +3367,7 @@ val state_fun_update_ss =
   simpset_of (put_simpset HOL_basic_ss @{context}
     addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
       @ @{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms} @ K_fun_convs)
+      @ @{thms list.distinct} @ @{thms simp_thms} @ K_fun_convs)
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
     |> Simplifier.add_cong @{thm imp_cong} (* K_fun_congs  FIXME: Stefan fragen*)
     |> Splitter.add_split @{thm split_if});
@@ -3623,9 +3621,9 @@ val argP = Args.name --| @{keyword "="} -- Args.name
 val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 
-val vcg_simp_modifiers: Method.modifier parser list =
-  [Args.add -- Args.colon >> K (I,vcg_simp_add),
-   Args.del -- Args.colon >> K (I,vcg_simp_del)];
+val vcg_simp_modifiers =
+  [Args.add -- Args.colon >> K (Method.modifier vcg_simp_add @{here}),
+   Args.del -- Args.colon >> K (Method.modifier vcg_simp_del @{here})];
 
 fun gen_simp_method tac =
   Scan.lift (argsP >> (fn args => args @ default_args)) --|
@@ -3642,10 +3640,10 @@ val vcg_step = gen_simp_method hoare_step_tac;
 
 (* setup theory *)
 
-val setup =
-  Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
-    "declaration of Simplifier rule for vcg"
- (*#> add_wp_tacs initial_wp_tacs*)
-
+val _ =
+  Theory.setup
+    (Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
+      "declaration of Simplifier rule for vcg")
+   (*#> add_wp_tacs initial_wp_tacs*)
 
 end;

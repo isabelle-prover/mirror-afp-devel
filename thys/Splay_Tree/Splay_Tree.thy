@@ -44,32 +44,32 @@ subsection "Function @{text splay}"
 
 fun splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay a Leaf = Leaf" |
-"splay a (Node l b r) =
-  (if a=b
-   then Node l b r
-   else if a < b
+"splay a (Node l c r) =
+  (if a=c
+   then Node l c r
+   else if a < c
         then case l of
-          Leaf \<Rightarrow> Node l b r |
-          Node ll c lr \<Rightarrow>
-            (if a=c then Node ll a (Node lr b r)
-             else if a < c
-                  then if ll = Leaf then Node ll c (Node lr b r)
+          Leaf \<Rightarrow> Node l c r |
+          Node ll b lr \<Rightarrow>
+            (if a=b then Node ll a (Node lr c r)
+             else if a < b
+                  then if ll = Leaf then Node ll b (Node lr c r)
                        else case splay a ll of
-                         Node lll u llr \<Rightarrow> Node lll u (Node llr c (Node lr b r))
-                  else if lr = Leaf then Node ll c (Node lr b r)
+                         Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r))
+                  else if lr = Leaf then Node ll b (Node lr c r)
                        else case splay a lr of
-                         Node lrl u lrr \<Rightarrow> Node (Node ll c lrl) u (Node lrr b r))
+                         Node lrl u lrr \<Rightarrow> Node (Node ll b lrl) u (Node lrr c r))
         else case r of
-          Leaf \<Rightarrow> Node l b r |
-          Node rl c rr \<Rightarrow>
-            (if a=c then Node (Node l b rl) a rr
-             else if a < c
-                  then if rl = Leaf then Node (Node l b rl) c rr
+          Leaf \<Rightarrow> Node l c r |
+          Node rl b rr \<Rightarrow>
+            (if a=b then Node (Node l c rl) a rr
+             else if a < b
+                  then if rl = Leaf then Node (Node l c rl) b rr
                        else case splay a rl of
-                         Node rll u rlr \<Rightarrow> Node (Node l b rll) u (Node rlr c rr)
-                  else if rr=Leaf then Node (Node l b rl) c rr
+                         Node rll u rlr \<Rightarrow> Node (Node l c rll) u (Node rlr b rr)
+                  else if rr=Leaf then Node (Node l c rl) b rr
                        else case splay a rr of
-                         Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr))"
+                         Node rrl u rrr \<Rightarrow> Node (Node (Node l c rl) b rrl) u rrr))"
 
 value "splay (5::int) (Node (Node A 5 B) 10 C)"
 value "splay (5::int) (Node (Node (Node A 5 B) 10 C) 15 D)"
@@ -89,20 +89,20 @@ lemma splay_simps[simp]:
   "splay a (Node l a r) = Node l a r"
   "a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)"
   "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r"
-  "a<b \<Longrightarrow> a\<le>c \<Longrightarrow> splay a (Node (Node Leaf c lr) b r) = Node Leaf c (Node lr b r)"
-  "a<b \<Longrightarrow> a<c \<Longrightarrow> splay a ll = Node lll u llr
-   \<Longrightarrow> splay a (Node (Node ll c lr) b r) = Node lll u (Node llr c (Node lr b r))"
-  "a<b \<Longrightarrow> c<a \<Longrightarrow> splay a (Node (Node ll c Leaf) b r) = Node ll c (Node Leaf b r)"
-  "a<b \<Longrightarrow> c<a \<Longrightarrow> splay a lr = Node lrl u lrr
-   \<Longrightarrow> splay a (Node (Node ll c lr) b r) = Node (Node ll c lrl) u (Node lrr b r)"
+  "a<c \<Longrightarrow> a\<le>b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)"
+  "a<c \<Longrightarrow> a<b \<Longrightarrow> splay a ll = Node lll u llr
+   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node lll u (Node llr b (Node lr c r))"
+  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a (Node (Node ll b Leaf) c r) = Node ll b (Node Leaf c r)"
+  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a lr = Node lrl u lrr
+   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node (Node ll b lrl) u (Node lrr c r)"
   "b<a \<Longrightarrow> splay a (Node l b (Node rl a rr)) = Node (Node l b rl) a rr"
   "b<a \<Longrightarrow> splay a (Node l b Leaf) = Node l b Leaf"
-  "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a rl = Node rll u rlr
-   \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node l b rll) u (Node rlr c rr)"
-  "b<a \<Longrightarrow> a<c \<Longrightarrow> splay a (Node l b (Node Leaf c rr)) = Node (Node l b Leaf) c rr"
-  "b<a \<Longrightarrow> c\<le>a \<Longrightarrow> splay a (Node l b (Node rl c Leaf)) = Node (Node l b rl) c Leaf"
-  "b<a \<Longrightarrow> c<a \<Longrightarrow> splay a rr = Node rrl u rrr
-   \<Longrightarrow> splay a (Node l b (Node rl c rr)) = Node (Node (Node l b rl) c rrl) u rrr"
+  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a rl = Node rll u rlr
+   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node l c rll) u (Node rlr b rr)"
+  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a (Node l c (Node Leaf b rr)) = Node (Node l c Leaf) b rr"
+  "c<a \<Longrightarrow> b\<le>a \<Longrightarrow> splay a (Node l c (Node rl b Leaf)) = Node (Node l c rl) b Leaf"
+  "c<a \<Longrightarrow> b<a \<Longrightarrow> splay a rr = Node rrl u rrr
+   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node (Node l c rl) b rrl) u rrr"
 by auto
 
 declare splay.simps(2)[simp del]
@@ -501,9 +501,10 @@ subsection "Function @{text splay_max}"
 fun splay_max :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "splay_max Leaf = Leaf" |
 "splay_max (Node l b Leaf) = Node l b Leaf" |
-"splay_max (Node l b (Node rl c Leaf)) = Node (Node l b rl) c Leaf" |
-"splay_max (Node l b (Node rl c rr)) = (case splay_max rr of
-   Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr)"
+"splay_max (Node l b (Node rl c rr)) =
+  (if rr = Leaf then Node (Node l b rl) c Leaf
+   else case splay_max rr of
+     Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr)"
 
 lemma splay_max_Leaf_iff[simp]: "(splay_max t = Leaf) = (t = Leaf)"
 apply(induction t rule: splay_max.induct)
@@ -522,9 +523,8 @@ by(auto simp: neq_Leaf_iff split: tree.split)
 
 lemma size_splay_max: "size(splay_max t) = size t"
 apply(induction t rule: splay_max.induct)
-   apply(simp)
   apply(simp)
- apply fastforce
+ apply(simp)
 apply(clarsimp split: tree.split)
 done
 
@@ -535,25 +535,24 @@ lemma set_splay_max: "set_tree(splay_max t) = set_tree t"
 apply(induction t rule: splay_max.induct)
    apply(simp)
   apply(simp)
- apply fastforce
-apply(clarsimp split: tree.split)
-by blast
+apply(force split: tree.split)
+done
 
 lemma bst_splay_max: "bst t \<Longrightarrow> bst (splay_max t)"
 proof(induction t rule: splay_max.induct)
-  case (4 l b rl c rrl d rrr)
+  case (3 l b rl c rr)
   { fix rrl' d' rrr'
-    have "splay_max (Node rrl d rrr) = Node rrl' d' rrr'
+    have "splay_max rr = Node rrl' d' rrr'
        \<Longrightarrow> !x : set_tree(Node rrl' d' rrr'). c < x" 
-      using "4.prems" set_splay_max[of "Node rrl d rrr"]
+      using "3.prems" set_splay_max[of rr]
       by (clarsimp split: tree.split simp: ball_Un)
   }
-  with 4 show ?case by (fastforce split: tree.split simp: ball_Un)
+  with 3 show ?case by (fastforce split: tree.split simp: ball_Un)
 qed auto
 
 lemma splay_max_Leaf: "splay_max t = Node l a r \<Longrightarrow> r = Leaf"
 by(induction t arbitrary: l rule: splay_max.induct)
-  (auto split: tree.splits)
+  (auto split: tree.splits if_splits)
 
 text{* For sanity purposes only: *}
 
@@ -621,13 +620,11 @@ qed
 
 subsection "Function @{text delete}"
 
-fun delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"delete a Leaf = Leaf" |
-"delete a t = (case splay a t of
-  Node l x r \<Rightarrow>
+definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"delete a t = (if t=Leaf then Leaf
+  else case splay a t of Node l x r \<Rightarrow>
     if x=a
-    then case l of Leaf \<Rightarrow> r
-         | _ \<Rightarrow> case splay_max l of Node l' m _ \<Rightarrow> Node l' m r
+    then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
     else Node l x r)"
 
 hide_const (open) delete
@@ -635,7 +632,7 @@ hide_const (open) delete
 lemma set_delete: assumes "bst t"
 shows "set_tree (Splay_Tree.delete a t) = set_tree t - {a}"
 proof(cases t)
-  case Leaf thus ?thesis by(simp)
+  case Leaf thus ?thesis by(simp add: delete_def)
 next
   case (Node l x r)
   obtain l' x' r' where sp[simp]: "splay a (Node l x r) = Node l' x' r'"
@@ -648,7 +645,7 @@ next
       assume "l' = Leaf"
       thus ?thesis
         using Node assms set_splay[of a "Node l x r"] bst_splay[of "Node l x r" a]
-        by(simp split: tree.split prod.split)(fastforce)
+        by(simp add: delete_def split: tree.split prod.split)(fastforce)
     next
       assume "l' \<noteq> Leaf"
       moreover then obtain l'' m r'' where "splay_max l' = Node l'' m r''"
@@ -658,18 +655,18 @@ next
       ultimately show ?thesis
         using Node assms set_splay[of a "Node l x r"] bst_splay[of "Node l x r" a]
           splay_max_Leaf[of l' l'' m r''] set_splay_max[of l']
-        by(clarsimp split: tree.split) auto
+        by(clarsimp simp: delete_def split: tree.split) auto
     qed
   next
     assume "x' \<noteq> a"
     thus ?thesis using Node assms set_splay[of a "Node l x r"] splay_to_root[OF _ sp]
-      by simp
+      by (simp add: delete_def)
   qed
 qed
 
 lemma bst_delete: assumes "bst t" shows "bst (Splay_Tree.delete a t)"
 proof(cases t)
-  case Leaf thus ?thesis by(simp)
+  case Leaf thus ?thesis by(simp add: delete_def)
 next
   case (Node l x r)
   obtain l' x' r' where sp[simp]: "splay a (Node l x r) = Node l' x' r'"
@@ -681,18 +678,19 @@ next
     proof cases
       assume "l' = Leaf"
       thus ?thesis using Node assms bst_splay[of "Node l x r" a]
-        by(simp split: tree.split prod.split)
+        by(simp add: delete_def split: tree.split prod.split)
     next
       assume "l' \<noteq> Leaf"
       thus ?thesis
         using Node assms set_splay[of a "Node l x r"] bst_splay[of "Node l x r" a]
           bst_splay_max[of l'] set_splay_max[of l']
-        by(clarsimp split: tree.split) (metis (no_types) insertE insertI1 less_trans)
+        by(clarsimp simp: delete_def split: tree.split)
+          (metis (no_types) insertI1 less_trans)
     qed
   next
     assume "x' \<noteq> a"
     thus ?thesis using Node assms bst_splay[of "Node l x r" a]
-      by(auto split: tree.split prod.split)
+      by(auto simp: delete_def split: tree.split prod.split)
   qed
 qed
 

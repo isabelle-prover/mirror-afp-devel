@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Extended natural numbers as a codatatype *}
+section {* Extended natural numbers as a codatatype *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"
@@ -81,7 +81,7 @@ qed
 
 locale co begin
 
-free_constructors (no_code) case_enat for
+free_constructors (plugins del: code) case_enat for
     "0::enat"
   | eSuc epred
 where

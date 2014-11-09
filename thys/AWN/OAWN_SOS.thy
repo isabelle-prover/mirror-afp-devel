@@ -3,16 +3,16 @@
     Author:      Timothy Bourke
 *)
 
-header "Open semantics of the Algebra of Wireless Networks"
+section "Open semantics of the Algebra of Wireless Networks"
 
 theory OAWN_SOS
 imports TransitionSystems AWN
 begin
 
-text {*
+text \<open>
   These are variants of the SOS rules that work against a mixed global/local context, where
   the global context is represented by a function @{term \<sigma>} mapping ip addresses to states.
-*}
+\<close>
 
 subsection "Open structural operational semantics for sequential process expressions "
 

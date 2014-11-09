@@ -1,4 +1,4 @@
-header {* \isaheader{Static Weak Control Dependence} *}
+section {* Static Weak Control Dependence *}
 
 theory WeakControlDependence imports 
   "../Basic/Postdomination" 

@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Lemmata for modular arithmetic with primes"
+section "Lemmata for modular arithmetic with primes"
 
 theory Productdivides
 imports Pdifference

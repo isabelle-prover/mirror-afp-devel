@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Tactic-Style Reasoning for Binary Tree Operations *}
+section {* Tactic-Style Reasoning for Binary Tree Operations *}
 theory BinaryTree_TacticStyle imports Main begin
 
 text {* This example theory illustrates automated proofs of correctness

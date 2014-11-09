@@ -1,4 +1,4 @@
-header {* Lift monad *}
+section {* Lift monad *}
 
 theory Lift_Monad
 imports Monad

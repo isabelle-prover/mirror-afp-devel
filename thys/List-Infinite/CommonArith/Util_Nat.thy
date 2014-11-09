@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Results for natural arithmetics *}
+section {* Results for natural arithmetics *}
 
 theory Util_Nat
 imports Main

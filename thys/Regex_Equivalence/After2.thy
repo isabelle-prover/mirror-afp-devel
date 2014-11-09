@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header {* Linear Time Optimization for ``Mark After Atom'' *}
+section {* Linear Time Optimization for ``Mark After Atom'' *}
 
 (*<*)
 theory After2
@@ -9,7 +9,7 @@ imports
 begin
 (*>*)
 
-datatype_new 'a mrexp2 =
+datatype 'a mrexp2 =
   Zero2 |
   One2 |
   Atom2 (fin: bool) 'a |
@@ -23,8 +23,6 @@ where
 | "nul One2 = True"
 | "nul (Atom2 _ _) = False"
 | "nul (Star2 _ _) = True"
-
-datatype_compat mrexp2
 
 primrec mrexps2 :: "'a rexp \<Rightarrow> ('a mrexp2) set" where
   "mrexps2 Zero = {Zero2}"

@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Semantics of Hierarchical Automata *}
+section {* Semantics of Hierarchical Automata *}
 theory HASem
 imports HA
 begin
@@ -354,7 +354,7 @@ done
 subsubsection {* @{text "StepStatus"} *}
 
 lemma StepStatus_empty:
-   "Abs_status (HA ST, Conf ST, {}, U !!! (Value ST)) = StepStatus ST {} U";
+   "Abs_status (HA ST, Conf ST, {}, U !!! (Value ST)) = StepStatus ST {} U"
 apply (unfold StepStatus_def Let_def)
 apply auto
 apply (subst Rep_status_tuple)
@@ -364,13 +364,13 @@ apply auto
 done
 
 lemma status_empty_eventset [simp]:
-      "(HA ST, Conf ST, {}, U !!! (Value ST)) \<in> status";
+      "(HA ST, Conf ST, {}, U !!! (Value ST)) \<in> status"
 apply (unfold status_def Status_def)
 apply auto
 done
 
 lemma HA_StepStatus_emptyTS [simp]:
-  "HA (StepStatus ST {} U) = HA ST";
+  "HA (StepStatus ST {} U) = HA ST"
 apply (subst StepStatus_empty [THEN sym])
 apply (unfold HA_def)
 apply auto
@@ -401,7 +401,7 @@ apply auto
 done
 
 lemma finite_HPT [simp]:
-  "TS \<in> HPT ST \<Longrightarrow> finite TS";
+  "TS \<in> HPT ST \<Longrightarrow> finite TS"
 by (unfold HPT_def, auto)
 
 subsubsection {* @{text "PUpdate"} *}
@@ -704,7 +704,7 @@ done
 subsubsection {* @{text "StepActEvents"} *}
 
 lemma StepActEvent_empty [simp]:
-  "StepActEvent {} = {}";
+  "StepActEvent {} = {}"
 by (unfold StepActEvent_def, auto)
 
 lemma StepActEvent_HAEvents:
@@ -717,7 +717,7 @@ done
 subsubsection {* @{text "UniqueSucStates"} *}
 
 lemma UniqueSucStates_Status [simp]:
-  "UniqueSucStates (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)";
+  "UniqueSucStates (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)"
 apply (cut_tac Rep_status_select)
 apply (unfold status_def Status_def IsConfSet_def)
 apply auto
@@ -726,7 +726,7 @@ done
 subsubsection {* @{text "RootState"} *}
 
 lemma RootExSem_Status [simp]:
-  "RootExSem (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)";
+  "RootExSem (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)"
 apply (cut_tac Rep_status_select)
 apply (unfold status_def Status_def IsConfSet_def)
 apply auto

@@ -1,6 +1,6 @@
 (*Author: Giuliano Losa *)
 
-header {* Proof that the composition of two instances of the ALM automaton behaves like a single instance of the ALM automaton*}
+section {* Proof that the composition of two instances of the ALM automaton behaves like a single instance of the ALM automaton*}
 
 theory CompositionCorrectness
 imports ALM

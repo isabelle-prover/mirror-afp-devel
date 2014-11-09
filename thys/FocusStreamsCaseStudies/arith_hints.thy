@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *)
 (*>*)
-header {* Auxiliary arithmetic lemmas *}
+section {* Auxiliary arithmetic lemmas *}
 
 theory arith_hints
 imports Main

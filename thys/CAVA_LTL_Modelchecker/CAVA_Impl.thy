@@ -1,4 +1,4 @@
-header {* Actual Implementation of the CAVA Model Checker *}
+section {* Actual Implementation of the CAVA Model Checker *}
 theory CAVA_Impl
 imports
   "CAVA_Abstract"

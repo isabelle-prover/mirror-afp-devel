@@ -1,4 +1,4 @@
-header {* Matrices\label{sec.mat} *}
+section {* Matrices\label{sec.mat} *}
 
 theory Matrices
 imports

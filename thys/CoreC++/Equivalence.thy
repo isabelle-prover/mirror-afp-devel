@@ -6,13 +6,12 @@
     Based on the Jinja theory J/Equivalence.thy by Tobias Nipkow
 *)
 
-
-header {* \isaheader{Equivalence of Big Step and Small Step Semantics} *}
+section {* Equivalence of Big Step and Small Step Semantics *}
 
 theory Equivalence imports BigStep SmallStep WWellForm begin
 
 
-section{* Some casts-lemmas *}
+subsection{* Some casts-lemmas *}
 
 lemma assumes wf:"wf_prog wf_md P"
 shows casts_casts:
@@ -254,7 +253,7 @@ qed (auto intro:casts_casts wf)
   
 
 
-section{*Small steps simulate big step*}
+subsection{*Small steps simulate big step*}
 
 subsection {*Cast*}
 
@@ -1650,7 +1649,7 @@ qed
 
 
 
-section{*Big steps simulates small step*}
+subsection{*Big steps simulates small step*}
 
 
 text {* The big step equivalent of @{text RedWhile}: *} 
@@ -2823,7 +2822,7 @@ next
 qed
 
 
-section {*Equivalence*}
+subsection {*Equivalence*}
 
 text{* And now, the crowning achievement: *}
 

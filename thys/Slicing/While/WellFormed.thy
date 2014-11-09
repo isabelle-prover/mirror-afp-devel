@@ -1,4 +1,4 @@
-header {* \isaheader{General well-formedness of While CFG} *}
+section {* General well-formedness of While CFG *}
 
 theory WellFormed imports 
   Interpretation 

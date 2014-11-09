@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Trees"
+section "Trees"
 theory Tree
 imports Main
 begin
@@ -13,5 +13,7 @@ text {*
 *}
 
 datatype 'l tree = NODE 'l "'l tree list"
+
+datatype_compat tree
 
 end

@@ -1,4 +1,4 @@
-header{* Initial Value Problems *}
+section{* Initial Value Problems *}
 theory Initial_Value_Problem
 imports Bounded_Continuous_Function
 begin

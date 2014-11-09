@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header "Arrow's Theorem for Strict Linear Orders"
+section "Arrow's Theorem for Strict Linear Orders"
 
 theory Arrow_Order imports Main "~~/src/HOL/Library/FuncSet"
 begin
@@ -9,7 +9,7 @@ text{* This theory formalizes the third proof due to
 Geanakoplos~\cite{Geanakoplos05}.  Preferences are modeled as strict
 linear orderings. The set of alternatives need not be finite.
 
-Individuals are assumed to be finite but are not a priory identified with an
+Individuals are assumed to be finite but are not a priori identified with an
 initial segment of the naturals. In retrospect this generality appears
 gratuitous and complicates some of the low-level reasoning where we use a
 bijection with such an initial segment.  *}

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* Coinductive lists and their operations *}
+section {* Coinductive lists and their operations *}
 
 theory Coinductive_List
 imports
@@ -64,14 +64,6 @@ declare llist.map_cong [cong]
 
 text {* Code generator setup *}
 
-lemma corec_llist_code [code]:
-  "corec_llist IS_LNIL LHD endORmore LTL_end LTL_more b =
-  (if IS_LNIL b then LNil
-   else LCons (LHD b)
-     (if endORmore b then LTL_end b
-      else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
-by(rule llist.expand) simp_all
-
 lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
 by(coinduction arbitrary: x) auto
 
@@ -80,30 +72,22 @@ text {* lemmas about generated constants *}
 lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> xs \<noteq> LNil \<and> lhd xs = y \<and> ltl xs = ys"
 by auto
 
-lemma lnull_lmap [simp]: "lnull (lmap f xs) \<longleftrightarrow> lnull xs"
-by(cases xs) simp_all
-
 lemma
   shows LNil_eq_lmap: "LNil = lmap f xs \<longleftrightarrow> xs = LNil"
   and lmap_eq_LNil: "lmap f xs = LNil \<longleftrightarrow> xs = LNil"
 by(cases xs,simp_all)+
 
-lemma [simp]:
-  shows lhd_lmap: "\<not> lnull xs \<Longrightarrow> lhd (lmap f xs) = f (lhd xs)"
-  and ltl_lmap: "ltl (lmap f xs) = lmap f (ltl xs)"
-by(cases xs, simp_all)+
+declare llist.map_sel(1)[simp]
 
-lemma lmap_ident [simp]: "lmap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] llist.map_id)
+lemma ltl_lmap[simp]: "ltl (lmap f xs) = lmap f (ltl xs)"
+by(cases xs, simp_all)
+
+declare llist.map_ident[simp]
 
 lemma lmap_eq_LCons_conv:
   "lmap f xs = LCons y ys \<longleftrightarrow> 
   (\<exists>x xs'. xs = LCons x xs' \<and> y = f x \<and> ys = lmap f xs')"
 by(cases xs)(auto)
-
-lemma lmap_id: 
-  "lmap id = id"
-by(simp add: fun_eq_iff llist.map_id)
 
 lemma lmap_conv_unfold_llist:
   "lmap f = unfold_llist (\<lambda>xs. xs = LNil) (f \<circ> lhd) ltl" (is "?lhs = ?rhs")
@@ -119,7 +103,7 @@ by(coinduction arbitrary: b) auto
 lemma lmap_corec_llist:
   "lmap f (corec_llist IS_LNIL LHD endORmore TTL_end TTL_more b) =
    corec_llist IS_LNIL (f \<circ> LHD) endORmore (lmap f \<circ> TTL_end) TTL_more b"
-by(coinduction arbitrary: b rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: b rule: llist.coinduct_strong) auto
 
 lemma unfold_llist_ltl_unroll:
   "unfold_llist IS_LNIL LHD LTL (LTL b) = unfold_llist (IS_LNIL \<circ> LTL) (LHD \<circ> LTL) LTL b"
@@ -141,8 +125,7 @@ by(coinduction arbitrary: xs) simp_all
 lemma lset_eq_empty [simp]: "lset xs = {} \<longleftrightarrow> lnull xs"
 by(cases xs) simp_all
 
-lemma lhd_in_lset [simp]: "\<not> lnull xs \<Longrightarrow> lhd xs \<in> lset xs"
-by(cases xs) auto
+declare llist.set_sel(1)[simp]
 
 lemma lset_ltl: "lset (ltl xs) \<subseteq> lset xs"
 by(cases xs) auto
@@ -150,78 +133,13 @@ by(cases xs) auto
 lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
-lemma case_llist_def':
-"case_llist lnil lcons xs = (case dtor_llist xs of Inl _ \<Rightarrow> lnil | Inr (y, ys) \<Rightarrow> lcons y ys)"
-apply (case_tac xs)
-by auto (auto simp add: LNil_def LCons_def llist.dtor_ctor BNF_Comp.id_bnf_comp_def)
-
 text {* induction rules *}
-
+ 
 theorem llist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> lset xs" and "\<And>xs. \<not> lnull xs \<Longrightarrow> P (lhd xs) xs"
   and "\<And>xs y. \<lbrakk>\<not> lnull xs; y \<in> lset (ltl xs); P y (ltl xs)\<rbrakk> \<Longrightarrow> P y xs"
   shows "P x xs"
-proof -
-  have "\<forall>x\<in>lset xs. P x xs"
-    apply(rule llist.dtor_set_induct)
-    using assms
-    apply(auto simp add: lhd_def ltl_def set2_pre_llist_def set1_pre_llist_def fsts_def snds_def case_llist_def' collect_def sum_set_simps sum.set_map split: sum.splits)
-     apply(rename_tac b h t)
-     apply(erule_tac x="b" in meta_allE)
-     apply(erule meta_impE)
-      apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
-     apply(case_tac b)
-     apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)[2]
-    apply(rotate_tac -2)
-    apply(rename_tac b xa h t)
-    apply(erule_tac x="b" in meta_allE)
-    apply(erule_tac x="xa" in meta_allE)
-    apply(erule meta_impE)
-     apply(clarsimp simp add: LNil_def llist.dtor_ctor sum_set_simps lnull_def BNF_Comp.id_bnf_comp_def)
-    apply(case_tac b)
-    apply(simp_all add: LNil_def LCons_def llist.dtor_ctor sum_set_simps BNF_Comp.id_bnf_comp_def)
-    done
-  with `x \<in> lset xs` show ?thesis by blast
-qed
-
-
-text {* Setup for quickcheck *}
-
-quickcheck_generator llist constructors: LNil, LCons
-
-instantiation llist :: (narrowing) narrowing begin
-
-context includes integer.lifting begin
-
-function narrowing_llist where
-  "narrowing_llist n = Quickcheck_Narrowing.sum
-    (Quickcheck_Narrowing.cons LNil)
-    (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.apply (Quickcheck_Narrowing.cons LCons) narrowing) narrowing_llist)
-    n"
-by pat_completeness simp
-termination by(relation "measure nat_of_integer")(simp_all, transfer, simp)
-
-instance ..
-end
-end
-
-declare [[code drop: "partial_term_of :: _ llist itself => _"]]
-
-lemma partial_term_of_llist_code [code]:
-  fixes tytok :: "'a :: partial_term_of llist itself" shows
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
-   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE('a llist))"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 []) \<equiv>
-   Code_Evaluation.Const (STR ''Coinductive_List.llist.LNil'') (Typerep.typerep TYPE('a llist))"
-  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
-   Code_Evaluation.App
-     (Code_Evaluation.App
-        (Code_Evaluation.Const
-           (STR ''Coinductive_List.llist.LCons'')
-           (Typerep.typerep TYPE('a \<Rightarrow> 'a llist \<Rightarrow> 'a llist)))
-        (partial_term_of TYPE('a) head))
-     (partial_term_of TYPE('a llist) tail)"
-by-(rule partial_term_of_anything)+
+using assms by(induct)(fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
 
 text {* Test quickcheck setup *}
 
@@ -410,11 +328,11 @@ lemma shows lappend_lnull1: "lnull xs \<Longrightarrow> lappend xs ys = ys"
 unfolding lnull_def by simp_all
 
 lemma lappend_assoc: "lappend (lappend xs ys) zs = lappend xs (lappend ys zs)"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: xs rule: llist.coinduct_strong) auto
 
 lemma lmap_lappend_distrib: 
   "lmap f (lappend xs ys) = lappend (lmap f xs) (lmap f ys)"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: xs rule: llist.coinduct_strong) auto
 
 lemma lappend_snocL1_conv_LCons2: 
   "lappend (lappend xs (LCons y LNil)) ys = lappend xs (LCons y ys)"
@@ -788,6 +706,12 @@ interpretation llist!: partial_function_definitions "op \<sqsubseteq>" lSup
 by(rule llist_partial_function_definitions)(simp)
 
 abbreviation "mono_llist \<equiv> monotone (fun_ord op \<sqsubseteq>) op \<sqsubseteq>"
+
+interpretation llist_lift!: partial_function_definitions "fun_ord lprefix" "fun_lub lSup"
+  where "fun_lub lSup {} \<equiv> \<lambda>_. LNil"
+by(rule llist_partial_function_definitions[THEN partial_function_lift])(simp)
+
+abbreviation "mono_llist_lift \<equiv> monotone (fun_ord (fun_ord lprefix)) (fun_ord lprefix)"
 
 lemma lprefixes_chain:
   "Complete_Partial_Order.chain op \<sqsubseteq> {ys. lprefix ys xs}"
@@ -1513,11 +1437,11 @@ by(coinduction arbitrary: n xs)(auto intro!: exI simp add: llength_ltl epred_le_
 
 lemma ltake_lappend2: 
   "llength xs \<le> n \<Longrightarrow> ltake n (lappend xs ys) = lappend xs (ltake (n - llength xs) ys)"
-by(coinduction arbitrary: n xs rule: llist.strong_coinduct)(auto intro!: exI simp add: llength_ltl epred_le_epredI ltl_ltake)
+by(coinduction arbitrary: n xs rule: llist.coinduct_strong)(auto intro!: exI simp add: llength_ltl epred_le_epredI ltl_ltake)
 
 lemma ltake_lappend:
   "ltake n (lappend xs ys) = lappend (ltake n xs) (ltake (n - llength xs) ys)"
-by(coinduction arbitrary: n xs ys rule: llist.strong_coinduct)(auto intro!: exI simp add: llength_ltl ltl_ltake)
+by(coinduction arbitrary: n xs ys rule: llist.coinduct_strong)(auto intro!: exI simp add: llength_ltl ltl_ltake)
 
 lemma take_list_of:
   assumes "lfinite xs"
@@ -1667,11 +1591,44 @@ by(simp_all add: ldrop.simps split: co.enat.split)
 lemma ldrop_lnull: "lnull xs \<Longrightarrow> ldrop n xs = LNil"
 by(simp add: lnull_def)
 
+lemma fixes f F
+  defines "F \<equiv> \<lambda>ldropn xs. case xs of LNil \<Rightarrow> \<lambda>_. LNil | LCons x xs \<Rightarrow> \<lambda>n. if n = 0 then LCons x xs else ldropn xs (n - 1)"
+  shows ldrop_conv_fixp: "(\<lambda>xs n. ldropn n xs) \<equiv> ccpo.fixp (fun_lub (fun_lub lSup)) (fun_ord (fun_ord lprefix)) (\<lambda>ldrop. F ldrop)" (is "?lhs \<equiv> ?rhs")
+  and ldrop_mono: "\<And>xs. mono_llist_lift (\<lambda>ldrop. F ldrop xs)" (is "PROP ?mono")
+proof(intro eq_reflection ext)
+  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  fix n xs
+  show "?lhs xs n = ?rhs xs n"
+    by(induction n arbitrary: xs)
+      (subst llist_lift.mono_body_fixp[OF mono], simp add: F_def split: llist.split)+
+qed
+
+lemma ldropn_fixp_case_conv: 
+  "(\<lambda>xs. case xs of LNil \<Rightarrow> \<lambda>_. LNil | LCons x xs \<Rightarrow> \<lambda>n. if n = 0 then LCons x xs else f xs (n - 1)) =
+   (\<lambda>xs n. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> if n = 0 then LCons x xs else f xs (n - 1))"
+by(auto simp add: fun_eq_iff split: llist.split)
+
+lemma monotone_ldropn_aux: "monotone lprefix (fun_ord lprefix) (\<lambda>xs n. ldropn n xs)"
+by(rule llist_lift.fixp_preserves_mono1[OF ldrop_mono ldrop_conv_fixp])
+  (simp add: ldropn_fixp_case_conv monotone_fun_ord_apply)
+
+lemma mono2mono_ldropn[THEN llist.mono2mono, cont_intro, simp]:
+  shows monotone_ldropn': "monotone lprefix lprefix (\<lambda>xs. ldropn n xs)"
+using monotone_ldropn_aux by(auto simp add: monotone_def fun_ord_def)
+
+lemma mcont_ldropn_aux: "mcont lSup lprefix (fun_lub lSup) (fun_ord lprefix) (\<lambda>xs n. ldropn n xs)"
+by(rule llist_lift.fixp_preserves_mcont1[OF ldrop_mono ldrop_conv_fixp])
+  (simp add: ldropn_fixp_case_conv mcont_fun_lub_apply)
+
+lemma mcont2mcont_ldropn [THEN llist.mcont2mcont, cont_intro, simp]:
+  shows mcont_ldropn: "mcont lSup lprefix lSup lprefix (ldropn n)"
+using mcont_ldropn_aux by(auto simp add: mcont_fun_lub_apply)
+
 lemma monotone_enat_cocase [cont_intro, simp]:
-  assumes mono: "\<And>n. monotone op \<le> ord (\<lambda>n. f n (eSuc n))"
-  and a: "\<And>n. ord a (f n (eSuc n))" "ord a a"
-  shows "monotone op \<le> ord (\<lambda>n. case n of 0 \<Rightarrow> a | eSuc n' \<Rightarrow> f n' n)"
-by(rule lfp.monotone_if_bot[where bot=a and bound=0 and f="\<lambda>n. f (epred n) n"])(auto simp add: neq_zero_conv_eSuc eSuc_le_iff monotoneD[OF mono] a)
+  "\<lbrakk> \<And>n. monotone op \<le> ord (\<lambda>n. f n (eSuc n));
+    \<And>n. ord a (f n (eSuc n)); ord a a \<rbrakk>
+  \<Longrightarrow> monotone op \<le> ord (\<lambda>n. case n of 0 \<Rightarrow> a | eSuc n' \<Rightarrow> f n' n)"
+by(rule monotone_enat_le_case)
 
 lemma monotone_ldrop: "monotone (rel_prod op = op \<sqsubseteq>) op \<sqsubseteq> (split ldrop)"
 by(rule llist.fixp_preserves_mono2[OF ldrop.mono ldrop_def]) simp
@@ -1770,7 +1727,7 @@ lemma in_lset_ldropD: "x \<in> lset (ldrop n xs) \<Longrightarrow> x \<in> lset 
 using lset_ldrop_subset[of n xs] by(auto)
 
 lemma lappend_ltake_ldrop: "lappend (ltake n xs) (ldrop n xs) = xs"
-by(coinduction arbitrary: n xs rule: llist.strong_coinduct)
+by(coinduction arbitrary: n xs rule: llist.coinduct_strong)
   (auto simp add: ldrop_ltl ltl_ltake intro!: arg_cong2[where f=lappend])
 
 lemma ldropn_lappend:
@@ -1808,7 +1765,7 @@ by(cases n)(cases "llength xs", simp_all add: ldropn_lappend not_less ldrop_enat
 
 lemma ltake_plus_conv_lappend:
   "ltake (n + m) xs = lappend (ltake n xs) (ltake m (ldrop n xs))"
-by(coinduction arbitrary: n m xs rule: llist.strong_coinduct)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
+by(coinduction arbitrary: n m xs rule: llist.coinduct_strong)(auto intro!: exI simp add: iadd_is_0 ltl_ltake epred_iadd1 ldrop_ltl)
 
 lemma ldropn_eq_LConsD:
   "ldropn n xs = LCons y ys \<Longrightarrow> enat n < llength xs"
@@ -2484,7 +2441,7 @@ by(cases xs ys rule: llist.exhaust[case_product llist.exhaust]) auto
 lemma lzip_lappend:
   "llength xs = llength us
   \<Longrightarrow> lzip (lappend xs ys) (lappend us vs) = lappend (lzip xs us) (lzip ys vs)"
-by(coinduction arbitrary: xs ys us vs rule: llist.strong_coinduct)(auto 4 6 simp add: llength_ltl)
+by(coinduction arbitrary: xs ys us vs rule: llist.coinduct_strong)(auto 4 6 simp add: llength_ltl)
 
 lemma llength_lzip [simp]:
   "llength (lzip xs ys) = min (llength xs) (llength ys)"
@@ -2675,11 +2632,11 @@ by(coinduction arbitrary: xs ys) auto
 
 lemma lzip_lmap1:
   "lzip (lmap f xs) ys = lmap (\<lambda>(x, y). (f x, y)) (lzip xs ys)"
-by(subst (4) lmap_ident[symmetric])(simp only: lzip_lmap)
+by(subst (4) llist.map_ident[symmetric])(simp only: lzip_lmap)
 
 lemma lzip_lmap2: 
   "lzip xs (lmap f ys) = lmap (\<lambda>(x, y). (x, f y)) (lzip xs ys)"
-by(subst (1) lmap_ident[symmetric])(simp only: lzip_lmap)
+by(subst (1) llist.map_ident[symmetric])(simp only: lzip_lmap)
 
 lemma lmap_fst_lzip_conv_ltake: 
   "lmap fst (lzip xs ys) = ltake (min (llength xs) (llength ys)) xs"
@@ -2706,6 +2663,32 @@ lemma ldropWhile_simps [simp, code]:
   shows ldropWhile_LNil: "ldropWhile P LNil = LNil"
   and ldropWhile_LCons: "ldropWhile P (LCons x xs) = (if P x then ldropWhile P xs else LCons x xs)"
 by(simp_all add: ldropWhile.simps)
+
+lemma fixes f F P
+  defines "F \<equiv> \<lambda>ltakeWhile xs. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> if P x then LCons x (ltakeWhile xs) else LNil"
+  shows ltakeWhile_conv_fixp: "ltakeWhile P \<equiv> ccpo.fixp (fun_lub lSup) (fun_ord lprefix) F" (is "?lhs \<equiv> ?rhs")
+  and ltakeWhile_mono: "\<And>xs. mono_llist (\<lambda>ltakeWhile. F ltakeWhile xs)" (is "PROP ?mono")
+proof(intro eq_reflection ext)
+  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  fix xs
+  show "?lhs xs = ?rhs xs"
+  proof(coinduction arbitrary: xs)
+    case Eq_llist
+    show ?case by(subst (1 3 4) llist.mono_body_fixp[OF mono])(auto simp add: F_def split: llist.split prod.split co.enat.split)
+  qed
+qed
+
+lemma mono2mono_ltakeWhile[THEN llist.mono2mono, cont_intro, simp]:
+  shows monotone_ltakeWhile: "monotone lprefix lprefix (ltakeWhile P)"
+by(rule llist.fixp_preserves_mono1[OF ltakeWhile_mono ltakeWhile_conv_fixp]) simp
+
+lemma mcont2mcont_ltakeWhile [THEN llist.mcont2mcont, cont_intro, simp]:
+  shows mcont_ltakeWhile: "mcont lSup lprefix lSup lprefix (ltakeWhile P)"
+by(rule llist.fixp_preserves_mcont1[OF ltakeWhile_mono ltakeWhile_conv_fixp]) simp
+
+lemma mono_llist_ltakeWhile [partial_function_mono]:
+  "mono_llist F \<Longrightarrow> mono_llist (\<lambda>f. ltakeWhile P (F f))"
+by(rule mono2mono_ltakeWhile)
 
 lemma mono2mono_ldropWhile [THEN llist.mono2mono, cont_intro, simp]:
   shows monotone_ldropWhile: "monotone op \<sqsubseteq> op \<sqsubseteq> (ldropWhile P)"
@@ -2806,13 +2789,13 @@ by(induct xs)(simp_all)
 
 lemma lappend_ltakeWhile_ldropWhile [simp]:
   "lappend (ltakeWhile P xs) (ldropWhile P xs) = xs"
-by(coinduction arbitrary: xs rule: llist.strong_coinduct)(auto 4 4 simp add: not_lnull_conv lset_lnull intro: ccontr)
+by(coinduction arbitrary: xs rule: llist.coinduct_strong)(auto 4 4 simp add: not_lnull_conv lset_lnull intro: ccontr)
 
 lemma ltakeWhile_lappend:
   "ltakeWhile P (lappend xs ys) =
   (if \<exists>x\<in>lset xs. \<not> P x then ltakeWhile P xs
    else lappend xs (ltakeWhile P ys))"
-proof(coinduction arbitrary: xs rule: llist.strong_coinduct)
+proof(coinduction arbitrary: xs rule: llist.coinduct_strong)
   case (Eq_llist xs)
   have ?lnull by(auto simp add: lset_lnull)
   moreover have ?LCons
@@ -2881,7 +2864,7 @@ by(induct rule: lset_induct) simp_all
 lemma ltakeWhile_lappend2:
   "lset xs \<subseteq> {x. P x}
   \<Longrightarrow> ltakeWhile P (lappend xs ys) = lappend xs (ltakeWhile P ys)"
-by(coinduction arbitrary: xs ys rule: llist.strong_coinduct)(auto 4 4 simp add: not_lnull_conv lappend_lnull1)
+by(coinduction arbitrary: xs ys rule: llist.coinduct_strong)(auto 4 4 simp add: not_lnull_conv lappend_lnull1)
 
 lemma ltakeWhile_cong [cong, fundef_cong]:
   assumes xs: "xs = ys"
@@ -5114,18 +5097,11 @@ interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set1_pre_llist_def rel_set_def collect_def sum_set_defs fsts_def rel_sum_def split: sum.split_asm)
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set1_pre_llist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma set2_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set B) set2_pre_llist set2_pre_llist"
-by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set2_pre_llist_def rel_set_def collect_def sum_set_defs snds_def rel_sum_def split: sum.split_asm)
-
-lemma dtor_llist_transfer [transfer_rule]:
-  "(llist_all2 A ===> rel_pre_llist A (llist_all2 A)) dtor_llist dtor_llist"
-apply(rule rel_funI)
-apply(erule llist_all2_cases)
-apply(auto simp add: rel_pre_llist_def vimage2p_def BNF_Comp.id_bnf_comp_def rel_sum_def LNil_def LCons_def llist.dtor_ctor split: sum.split)
-done
+by(auto simp add: rel_pre_llist_def vimage2p_def rel_fun_def set2_pre_llist_def rel_set_def collect_def sum_set_defs prod_set_defs elim: rel_sum.cases split: sum.split_asm)
 
 lemma LNil_transfer [transfer_rule]: "llist_all2 P LNil LNil"
 by simp

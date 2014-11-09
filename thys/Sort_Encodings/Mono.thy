@@ -1,4 +1,4 @@
-header{* Monotonicity *}
+section{* Monotonicity *}
 theory Mono imports CM begin
 
 

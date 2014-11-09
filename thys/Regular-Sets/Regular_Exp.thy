@@ -1,20 +1,18 @@
 (*  Author: Tobias Nipkow *)
 
-header "Regular expressions"
+section "Regular expressions"
 
 theory Regular_Exp
 imports Regular_Set
 begin
 
-datatype_new (atoms: 'a) rexp =
+datatype (atoms: 'a) rexp =
   is_Zero: Zero |
   is_One: One |
   Atom 'a |
   Plus "('a rexp)" "('a rexp)" |
   Times "('a rexp)" "('a rexp)" |
   Star "('a rexp)"
-
-datatype_compat rexp
 
 primrec lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |

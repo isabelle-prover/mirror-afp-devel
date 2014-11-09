@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Formal Power Series *}
+section {* Formal Power Series *}
 
 theory Formal_Power_Series
 imports Finite_Suprema Kleene_Algebra

@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
+section {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Equivalence_Checking
@@ -8,10 +8,10 @@ imports Pi_Regular_Exp "~~/src/HOL/Library/While_Combinator" List_More
 begin
 (*>*)
 
-lemma image2p_in_rel: "BNF_GFP.image2p f g (in_rel R) =  in_rel (map_prod f g ` R)"
+lemma image2p_in_rel: "BNF_Greatest_Fixpoint.image2p f g (in_rel R) =  in_rel (map_prod f g ` R)"
   unfolding image2p_def fun_eq_iff by auto
 
-lemma image2p_apply: "BNF_GFP.image2p f g R x y = (\<exists>x' y'. R x' y' \<and> f x' = x \<and> g y' = y)"
+lemma image2p_apply: "BNF_Greatest_Fixpoint.image2p f g R x y = (\<exists>x' y'. R x' y' \<and> f x' = x \<and> g y' = y)"
   unfolding image2p_def fun_eq_iff by auto
 
 lemma rtrancl_fold_product:
@@ -84,7 +84,7 @@ lemma L_deltas[simp]: "\<lbrakk>wf_word n w; wf_state s\<rbrakk> \<Longrightarro
 
 definition progression (infix "\<rightarrow>" 60) where 
   "R \<rightarrow> S = (\<forall>s1 s2. R s1 s2 \<longrightarrow> wf_state s1 \<and> wf_state s2 \<and> final s1 = final s2 \<and>
-     (\<forall>x \<in> set (\<sigma> n). BNF_GFP.image2p post post S (post (delta x s1)) (post (delta x s2))))"
+     (\<forall>x \<in> set (\<sigma> n). BNF_Greatest_Fixpoint.image2p post post S (post (delta x s1)) (post (delta x s2))))"
 
 lemma SUPR_progression[intro!]: "\<forall>n. \<exists>m. X n \<rightarrow> Y m \<Longrightarrow> (SUP n. X n) \<rightarrow> (SUP n. Y n)"
   unfolding progression_def image2p_def by fastforce

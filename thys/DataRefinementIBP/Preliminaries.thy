@@ -1,4 +1,4 @@
-header {*  Preliminaries  *}
+section {*  Preliminaries  *}
 
 theory Preliminaries
 imports Main "../LatticeProperties/Complete_Lattice_Prop" 

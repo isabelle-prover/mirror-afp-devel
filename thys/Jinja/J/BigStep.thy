@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Big Step Semantics} *}
+section {* Big Step Semantics *}
 
 theory BigStep imports Expr State begin
 

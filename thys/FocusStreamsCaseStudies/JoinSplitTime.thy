@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
- header {* Changing time granularity of the streams  *} 
+ section {* Changing time granularity of the streams  *} 
 
 theory JoinSplitTime
 imports stream arith_hints

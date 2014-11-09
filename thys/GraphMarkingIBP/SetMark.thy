@@ -1,5 +1,5 @@
 
-header {*  Marking Using a Set  *}
+section {*  Marking Using a Set  *}
 
 theory SetMark
 imports Graph "../DataRefinementIBP/DataRefinement"

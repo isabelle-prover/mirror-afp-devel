@@ -4,7 +4,7 @@
     Author:      Peter Höfner
 *)
 
-header "Simple toy example"
+section "Simple toy example"
 
 theory Toy
 imports Main AWN_Main Qmsg_Lifting
@@ -221,7 +221,7 @@ lemma toy_simple_labels [simp]: "simple_labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y"
 lemma \<sigma>\<^sub>T\<^sub>O\<^sub>Y_labels [simp]: "(\<xi>, p) \<in> \<sigma>\<^sub>T\<^sub>O\<^sub>Y i \<Longrightarrow>  labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p = {PToy-:0}"
   unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def by simp
 
-text {* By default, we no longer let the simplifier descend into process terms. *}
+text \<open>By default, we no longer let the simplifier descend into process terms.\<close>
 
 declare seqp_congs [cong]
 
@@ -343,7 +343,7 @@ lemma nhip_eq_i:
        and "l \<in> {PToy-:2..PToy-:8}"
     from this(1-3) have "nhip \<xi> = ip \<xi>"
       by - (drule invariantD [OF nhip_eq_ip], auto)
-    moreover with `(\<xi>, p) \<in> reachable (ptoy i) TT` and `l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p` have "ip \<xi> = i"
+    moreover with \<open>(\<xi>, p) \<in> reachable (ptoy i) TT\<close> and \<open>l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p\<close> have "ip \<xi> = i"
       by (auto dest: invariantD [OF ip_constant])
     ultimately show "nhip \<xi> = i"
       by simp
@@ -394,9 +394,9 @@ lemma oreceived_msg_inv:
        and "l = PToy-:1"
        and "other Q {i} \<sigma> \<sigma>'"
     from this(1-2) have "P \<sigma> (msg (\<sigma> i))" ..
-    hence "P \<sigma>' (msg (\<sigma> i))" using `other Q {i} \<sigma> \<sigma>'`
+    hence "P \<sigma>' (msg (\<sigma> i))" using \<open>other Q {i} \<sigma> \<sigma>'\<close>
       by (rule other)
-    moreover from `other Q {i} \<sigma> \<sigma>'` have "\<sigma>' i = \<sigma> i" ..
+    moreover from \<open>other Q {i} \<sigma> \<sigma>'\<close> have "\<sigma>' i = \<sigma> i" ..
     ultimately show "P \<sigma>' (msg (\<sigma>' i))" by simp
   next
     fix \<sigma> \<sigma>' msg
@@ -407,7 +407,7 @@ lemma oreceived_msg_inv:
     from this(1) have "P (\<sigma>(i := \<sigma> i\<lparr>msg := msg\<rparr>)) msg" by (rule local)
     thus "P \<sigma>' msg"
     proof (rule other)
-      from `\<sigma>' i = \<sigma> i\<lparr>msg := msg\<rparr>` and `\<forall>j. j\<noteq>i \<longrightarrow> Q (\<sigma> j) (\<sigma>' j)`
+      from \<open>\<sigma>' i = \<sigma> i\<lparr>msg := msg\<rparr>\<close> and \<open>\<forall>j. j\<noteq>i \<longrightarrow> Q (\<sigma> j) (\<sigma>' j)\<close>
         show "other Q {i} (\<sigma>(i := \<sigma> i\<lparr>msg := msg\<rparr>)) \<sigma>'"
           by - (rule otherI, auto)
     qed
@@ -420,11 +420,11 @@ lemma msg_num_ok_other_nos_increase [elim]:
   proof (cases m)
     fix num sip
     assume "m = Pkt num sip"
-    with `msg_num_ok \<sigma> m` have "num \<le> no (\<sigma> sip)" by simp
-    also from `other nos_increase {i} \<sigma> \<sigma>'` have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
+    with \<open>msg_num_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sip)" by simp
+    also from \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
       by (rule otherE) (metis eq_iff nos_increaseD)
     finally have "num \<le> no (\<sigma>' sip)" .
-    with `m = Pkt num sip` show ?thesis
+    with \<open>m = Pkt num sip\<close> show ?thesis
       by simp
   qed simp
 
@@ -435,11 +435,11 @@ lemma msg_num_ok_no_leq_no [simp, elim]:
   using assms(1) proof (cases m)
     fix num sip
     assume "m = Pkt num sip"
-    with `msg_num_ok \<sigma> m` have "num \<le> no (\<sigma> sip)" by simp
-    also from `\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)` have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
+    with \<open>msg_num_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sip)" by simp
+    also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
       by simp
     finally have "num \<le> no (\<sigma>' sip)" .
-    with `m = Pkt num sip` show ?thesis
+    with \<open>m = Pkt num sip\<close> show ?thesis
       by simp
   qed (simp add: assms(1))
 
@@ -488,8 +488,8 @@ lemma is_pkt_handler_num_leq_no:
          and "num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
       have "num (\<sigma> i) \<le> no (\<sigma>' (sip (\<sigma> i)))"
       proof -
-        note `num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))`
-        also from `\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)` have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))"
+        note \<open>num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))\<close>
+        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))"
           by auto
         finally show ?thesis .
       qed
@@ -506,13 +506,13 @@ lemma is_pkt_handler_num_leq_no:
       show "num (\<sigma>' i) \<le> no (\<sigma>' (sip (\<sigma>' i)))"      
       proof (cases "sip (\<sigma> i) = i")
         assume "sip (\<sigma> i) = i"
-        with * `\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i`
+        with * \<open>\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i\<close>
         show ?thesis by simp
       next
         assume "sip (\<sigma> i) \<noteq> i"
-        with `\<forall>j. j \<notin> {i} \<longrightarrow> nos_increase (\<sigma> j) (\<sigma>' j)`
+        with \<open>\<forall>j. j \<notin> {i} \<longrightarrow> nos_increase (\<sigma> j) (\<sigma>' j)\<close>
           have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))" by simp
-        with * `\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i`
+        with * \<open>\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i\<close>
         show ?thesis by simp
       qed
     next
@@ -524,18 +524,18 @@ lemma is_pkt_handler_num_leq_no:
       proof (cases "msg (\<sigma> i)")
         fix num' sip'
         assume "msg (\<sigma> i) = Pkt num' sip'"
-        with `\<sigma>' i \<in> is_pkt (\<sigma> i)` obtain "num (\<sigma>' i) = num'"
+        with \<open>\<sigma>' i \<in> is_pkt (\<sigma> i)\<close> obtain "num (\<sigma>' i) = num'"
                                       and "sip (\<sigma>' i) = sip'"
           unfolding is_pkt_def by auto
-        with `msg (\<sigma> i) = Pkt num' sip'` and `msg_num_ok \<sigma> (msg (\<sigma> i))`
+        with \<open>msg (\<sigma> i) = Pkt num' sip'\<close> and \<open>msg_num_ok \<sigma> (msg (\<sigma> i))\<close>
           have "num (\<sigma>' i) \<le> no (\<sigma> (sip (\<sigma>' i)))"
             by simp
-        also from `\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)` have "no (\<sigma> (sip (\<sigma>' i))) \<le> no (\<sigma>' (sip (\<sigma>' i)))" ..
+        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sip (\<sigma>' i))) \<le> no (\<sigma>' (sip (\<sigma>' i)))" ..
         finally show ?thesis .
       next
         fix num' sip'
         assume "msg (\<sigma> i) = Newpkt num' sip'"
-        with `\<sigma>' i \<in> is_pkt (\<sigma> i)` have False
+        with \<open>\<sigma>' i \<in> is_pkt (\<sigma> i)\<close> have False
           unfolding is_pkt_def by simp
         thus ?thesis ..
       qed
@@ -569,7 +569,7 @@ lemma oseq_bigger_than_next:
       assume "no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))"
          and "\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)"
       note this(1)
-      also from `\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)` have "no (\<sigma> (nhip (\<sigma> i))) \<le> no (\<sigma>' (nhip (\<sigma> i)))"
+      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> (nhip (\<sigma> i))) \<le> no (\<sigma>' (nhip (\<sigma> i)))"
         by auto
       finally have "no (\<sigma> i) \<le> no (\<sigma>' (nhip (\<sigma> i)))" ..
     } note * = this
@@ -598,15 +598,15 @@ lemma oseq_bigger_than_next:
       show "no (\<sigma>' i) \<le> no (\<sigma>' (nhip (\<sigma>' i)))"
       proof (cases "nhip (\<sigma>' i) = i")
         assume "nhip (\<sigma>' i) = i"
-        with `no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))` show ?thesis
+        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))\<close> show ?thesis
           by simp
       next
         assume "nhip (\<sigma>' i) \<noteq> i"
-        moreover from `other nos_increase {i} \<sigma> \<sigma>'` [THEN other_localD] have "\<sigma>' i = \<sigma> i"
+        moreover from \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> [THEN other_localD] have "\<sigma>' i = \<sigma> i"
           by simp
         ultimately have "no (\<sigma> (nhip (\<sigma> i))) \<le> no (\<sigma>' (nhip (\<sigma>' i)))"
-          using `other nos_increase {i} \<sigma> \<sigma>'` and `\<sigma>' i = \<sigma> i` by (auto)
-        with `no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))` and `\<sigma>' i = \<sigma> i` show ?thesis
+          using \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> and \<open>\<sigma>' i = \<sigma> i\<close> by (auto)
+        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))\<close> and \<open>\<sigma>' i = \<sigma> i\<close> show ?thesis
           by simp
       qed
     next
@@ -616,7 +616,7 @@ lemma oseq_bigger_than_next:
          and "\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)"
       from this(1-2) have "no (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
         by (rule le_trans)
-      also from `\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)`
+      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close>
         have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))"
           by auto
       finally show "no (\<sigma> i) \<le> no (\<sigma>' (sip (\<sigma> i)))" ..
@@ -652,7 +652,7 @@ lemma opar_bigger_than_next:
     proof (cases m, simp only: msg_num_ok_Pkt)
       fix num' sip'
       assume "num' \<le> no (\<sigma> sip')"
-      also from `\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)` have "no (\<sigma> sip') \<le> no (\<sigma>' sip')"
+      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> sip') \<le> no (\<sigma>' sip')"
         by simp
       finally show "num' \<le> no (\<sigma>' sip')" .
     qed simp
@@ -791,7 +791,7 @@ interpretation toy_openproc: openproc ptoy optoy id
       from this(3) have "((\<sigma>, q), a, (\<sigma>', q')) \<in> trans (optoy i)"
         by simp (rule open_seqp_action [OF toy_wf])
 
-      with `s = (\<sigma> i, q)` and `s' = (\<sigma>' i, q')`
+      with \<open>s = (\<sigma> i, q)\<close> and \<open>s' = (\<sigma>' i, q')\<close>
         show "((\<sigma>, snd (id s)), a, (\<sigma>', snd (id s'))) \<in> trans (optoy i)"
           by simp
     qed
@@ -848,7 +848,7 @@ lemma bigger_than_next:
   shows "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
         (is "_ \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. ?inv \<sigma> i)")
   proof -
-    from `wf_net_tree n`
+    from \<open>wf_net_tree n\<close>
       have proto: "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n)
                       \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
         by (rule toy_openproc_par_qmsg.close_opnet [OF _ ocnet_bigger_than_next])
@@ -867,7 +867,7 @@ lemma bigger_than_next:
         assume "i\<notin>net_tree_ips n"
         from sr have "\<sigma> \<in> reachable (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) TT" ..
         hence "net_ips \<sigma> = net_tree_ips n" ..
-        with `i\<notin>net_tree_ips n` have "i\<notin>net_ips \<sigma>" by simp
+        with \<open>i\<notin>net_tree_ips n\<close> have "i\<notin>net_ips \<sigma>" by simp
         hence "(fst (initmissing (netgmap fst \<sigma>))) i = toy_init i"
           by simp
         thus ?thesis by simp

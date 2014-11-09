@@ -1,4 +1,4 @@
-header {* Instantiation of the SDG locale *}
+section {* Instantiation of the SDG locale *}
 
 theory ProcSDG imports ValidPaths "../StaticInter/SDG" begin
 

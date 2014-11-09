@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Verification Tool Prototype  *}
+section {* Verification Tool Prototype  *}
 
 theory Verification_Tool_Proto
   imports KAT_Models HoareLogic
@@ -102,29 +102,21 @@ lemma hoare_seq: "\<lbrace>assert p\<rbrace>x\<lbrace>assert q'\<rbrace> \<Longr
 text {*
   We write a simple tactic for verification condition generation.
 *}
+
+named_theorems hoare_simp "simplification rules for the hoare tactic"
+named_theorems hoare_rule "extra Hoare Rules"
+
 ML {*
-
-structure HoareSimpRules = Named_Thms
-  (val name = @{binding "hoare_simp"}
-   val description = "Simplification rules for the hoare tactic")
-
-structure HoareRules = Named_Thms
-  (val name = @{binding "hoare_rule"}
-   val description = "Extra Hoare Rules")
-
 fun hoare_step_tac ctxt n =
   rtac @{thm hoare_assignment} n THEN TRY (rtac @{thm subset_refl} n)
   ORELSE (rtac @{thm hoare_while_inv} n THEN asm_full_simp_tac ( ctxt) 1)
-  ORELSE (FIRST' (map (fn thm => rtac thm) (HoareRules.get ctxt)) n)
+  ORELSE (FIRST'
+    (map (fn thm => rtac thm) (rev (Named_Theorems.get ctxt @{named_theorems hoare_rule}))) n)
 
-val hoare_tac = Subgoal.FOCUS (fn {context, ...} =>
-  REPEAT (hoare_step_tac context 1)
-  THEN auto_tac ((fn ss => ss addsimps HoareSimpRules.get context) context))
-
+val hoare_tac = Subgoal.FOCUS (fn {context = ctxt, ...} =>
+  REPEAT (hoare_step_tac ctxt 1)
+  THEN auto_tac ((fn ss => ss addsimps Named_Theorems.get ctxt @{named_theorems hoare_simp}) ctxt))
 *}
-
-setup {* HoareSimpRules.setup *}
-setup {* HoareRules.setup *}
 
 declare hoare_seq [hoare_rule]
 

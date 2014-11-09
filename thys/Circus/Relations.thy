@@ -1,4 +1,4 @@
-header{* Predicates and relations *}
+section{* Predicates and relations *}
 
 theory Relations
 imports Var

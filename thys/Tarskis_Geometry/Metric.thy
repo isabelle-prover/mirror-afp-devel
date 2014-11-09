@@ -3,7 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-header "Metric and semimetric spaces"
+section "Metric and semimetric spaces"
 
 theory Metric
 imports "~~/src/HOL/Multivariate_Analysis/Euclidean_Space"

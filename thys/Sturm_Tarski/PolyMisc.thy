@@ -34,7 +34,7 @@ proof (cases "q=0 \<or> degree p=0")
 next
   case False
   hence "q\<noteq>0" and "degree p\<noteq>0" by auto
-  obtain k where k:"smult c q = p*k" using assms dvd_def by auto 
+  obtain k where k:"smult c q = p*k" using assms by (blast elim: dvdE)  
   hence "k\<noteq>0" by (metis False assms(3) mult_zero_right smult_eq_0_iff)
   hence deg_eq:"degree q=degree p + degree k"
     using degree_mult_eq monic k unfolding lead_coeff_def
@@ -494,5 +494,4 @@ proof -
 qed
         
 end
-
 

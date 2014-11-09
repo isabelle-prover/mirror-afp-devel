@@ -1,4 +1,4 @@
-header {* Binary tree monad *}
+section {* Binary tree monad *}
 
 theory Binary_Tree_Monad
 imports Monad

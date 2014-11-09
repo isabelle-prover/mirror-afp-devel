@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Jinja types} *}
+section {* Jinja types *}
 
 theory Type imports Auxiliary begin
 

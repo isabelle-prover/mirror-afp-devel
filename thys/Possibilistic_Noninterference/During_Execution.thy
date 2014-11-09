@@ -1,4 +1,4 @@
-header {* During-execution security *} 
+section {* During-execution security *} 
 
 theory During_Execution 
 imports Bisim Language_Semantics begin

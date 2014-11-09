@@ -1,4 +1,4 @@
-header {* The Ping Pong lemma *}
+section {* The Ping Pong lemma *}
 
 theory "PingPongLemma"
 imports

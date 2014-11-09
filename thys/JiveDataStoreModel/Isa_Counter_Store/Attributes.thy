@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Attributes *}
+section {* Attributes *}
 
 theory Attributes
 imports "../Isabelle/Subtype"

@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Store *}
+section {* Store *}
 
 theory Store
 imports Location

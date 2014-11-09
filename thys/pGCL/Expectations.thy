@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Expectations"
+section "Expectations"
 
 theory Expectations imports Misc begin
 

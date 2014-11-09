@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header "Properties of Tame Graph Enumeration (2)"
+section "Properties of Tame Graph Enumeration (2)"
 
 theory TameEnumProps
 imports GeneratorProps

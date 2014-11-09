@@ -6,8 +6,7 @@
     Extracted from the Jinja theory Common/TypeRel.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{The subtype relation} *}
+section {* The subtype relation *}
 
 theory TypeRel imports SubObj begin
 

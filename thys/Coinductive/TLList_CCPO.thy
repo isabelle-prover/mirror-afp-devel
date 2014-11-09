@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Ccpo structure for terminated lazy lists *}
+section {* Ccpo structure for terminated lazy lists *}
 
 theory TLList_CCPO imports TLList begin
 

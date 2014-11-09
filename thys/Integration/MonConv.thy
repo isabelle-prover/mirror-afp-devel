@@ -1,4 +1,4 @@
-header {*Monotone Convergence*}
+subsection {* Monotone Convergence \label{sec:monconv} *}
 
 theory MonConv
 imports Complex_Main

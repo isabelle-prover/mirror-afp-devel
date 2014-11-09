@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header "Inter-/Intracomponent dependencies"
+section "Inter-/Intracomponent dependencies"
  
 theory DataDependencies
   imports DataDependenciesConcreteValues

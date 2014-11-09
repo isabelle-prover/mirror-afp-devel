@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* The function which is universal for primitive recursive functions of one variable *}
+section {* The function which is universal for primitive recursive functions of one variable *}
 
 theory PRecUnGr
 imports PRecFun2 PRecList

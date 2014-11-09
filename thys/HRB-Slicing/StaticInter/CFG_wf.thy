@@ -1,4 +1,4 @@
-header {* \isaheader{CFG well-formedness} *}
+section {* CFG well-formedness *}
 
 theory CFG_wf imports CFG begin
 

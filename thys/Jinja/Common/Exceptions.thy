@@ -4,7 +4,7 @@
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Exceptions} *}
+section {* Exceptions *}
 
 theory Exceptions imports Objects begin
 
@@ -41,7 +41,7 @@ where
   "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (C,fs)"
 
 
-section "System exceptions"
+subsection "System exceptions"
 
 lemma [simp]: "NullPointer \<in> sys_xcpts \<and> OutOfMemory \<in> sys_xcpts \<and> ClassCast \<in> sys_xcpts"
 (*<*)by(simp add: sys_xcpts_def)(*>*)
@@ -52,7 +52,7 @@ lemma sys_xcpts_cases [consumes 1, cases set]:
 (*<*)by (auto simp add: sys_xcpts_def)(*>*)
 
 
-section "@{term preallocated}"
+subsection "@{term preallocated}"
 
 lemma preallocated_dom [simp]: 
   "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> addr_of_sys_xcpt C \<in> dom h"

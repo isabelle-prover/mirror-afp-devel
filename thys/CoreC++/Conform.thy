@@ -5,7 +5,7 @@
     Based on the Jinja theory Common/Conform.thy by David von Oheimb and Tobias Nipkow
 *)
 
-header {* \isaheader{Conformance Relations for Proofs} *}
+section {* Conformance Relations for Proofs *}
 
 theory Conform
 imports Exceptions WellTypeRT
@@ -45,7 +45,7 @@ abbreviation
   "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 
-section{* Value conformance @{text":\<le>"} *}
+subsection{* Value conformance @{text":\<le>"} *}
 
 lemma conf_Null [simp]: "P,h \<turnstile> Null :\<le> T  =  P \<turnstile> NT \<le> T"
 by(cases T) simp_all
@@ -122,7 +122,7 @@ lemma conf_NT [iff]: "P,h \<turnstile> v :\<le> NT = (v = Null)"
 by fastforce
 
 
-section{* Value list conformance @{text"[:\<le>]"} *}
+subsection{* Value list conformance @{text"[:\<le>]"} *}
 
 lemma confs_rev: "P,h \<turnstile> rev s [:\<le>] t = (P,h \<turnstile> s [:\<le>] rev t)"
 
@@ -139,7 +139,7 @@ lemma confs_Cons2: "P,h \<turnstile> xs [:\<le>] y#ys = (\<exists>z zs. xs = z#z
 by (rule list_all2_Cons2)
 
 
-section{* Field conformance @{text"(:\<le>)"} *}
+subsection{* Field conformance @{text"(:\<le>)"} *}
 
 
 lemma fconf_init_fields: 
@@ -156,7 +156,7 @@ done
 
 
 
-section{* Heap conformance *}
+subsection{* Heap conformance *}
 
 lemma hconfD: "\<lbrakk> P \<turnstile> h \<surd>; h a = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile> obj \<surd>"
 
@@ -180,7 +180,7 @@ done
 
 
 
-section {*Local variable conformance*}
+subsection {*Local variable conformance*}
 
 lemma lconf_upd:
   "\<lbrakk> P,h \<turnstile> l (:\<le>)\<^sub>w E; P,h \<turnstile> v :\<le> T; E V = Some T \<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>)\<^sub>w E"
@@ -197,12 +197,12 @@ lemma lconf_upd2: "\<lbrakk>P,h \<turnstile> l (:\<le>)\<^sub>w E; P,h \<turnsti
 by(simp add:lconf_def)
 
 
-section{* Environment conformance *}
+subsection{* Environment conformance *}
 
 definition envconf :: "prog \<Rightarrow> env \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51,51] 50) where
   "P \<turnstile> E \<surd> \<equiv> \<forall>V T. E V = Some T \<longrightarrow> is_type P T"
 
-section{* Type conformance *}
+subsection{* Type conformance *}
 
 primrec
   type_conf :: "prog \<Rightarrow> env \<Rightarrow> heap \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"

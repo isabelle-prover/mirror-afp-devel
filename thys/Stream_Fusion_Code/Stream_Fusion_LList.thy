@@ -31,98 +31,6 @@ text {*
   have to lift the fusion equation to the first kind, too.
 *}
 
-(* To be moved to Complete_Partial_Order2 *)
-
-lemma monotone_if_fun [partial_function_mono]:
-  "\<lbrakk> monotone (fun_ord orda) (fun_ord ordb) F; monotone (fun_ord orda) (fun_ord ordb) G \<rbrakk>
-  \<Longrightarrow> monotone (fun_ord orda) (fun_ord ordb) (\<lambda>f n. if c n then F f n else G f n)"
-by(simp add: monotone_def fun_ord_def)
-
-lemma monotone_fun_apply_fun [partial_function_mono]: 
-  "monotone (fun_ord (fun_ord ord)) (fun_ord ord) (\<lambda>f n. f t (g n))"
-by(rule monotoneI)(simp add: fun_ord_def)
-
-lemma monotone_fun_ord_apply: 
-  "monotone orda (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. monotone orda ordb (\<lambda>y. f y x))"
-by(auto simp add: monotone_def fun_ord_def)
-
-lemma cont_fun_lub_apply: 
-  "cont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. cont luba orda lubb ordb (\<lambda>y. f y x))"
-by(simp add: cont_def fun_lub_def fun_eq_iff)(auto simp add: image_def)
-
-lemma mcont_fun_lub_apply: 
-  "mcont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. mcont luba orda lubb ordb (\<lambda>y. f y x))"
-by(auto simp add: monotone_fun_ord_apply cont_fun_lub_apply mcont_def)
-
-(* To be moved to Coinductive_List *)
-
-interpretation llist_lift!: partial_function_definitions "fun_ord lprefix" "fun_lub lSup"
-  where "fun_lub lSup {} \<equiv> \<lambda>_. LNil"
-by(rule llist_partial_function_definitions[THEN partial_function_lift])(simp)
-
-abbreviation "mono_llist_lift \<equiv> monotone (fun_ord (fun_ord lprefix)) (fun_ord lprefix)"
-
-lemma fixes f F
-  defines "F \<equiv> \<lambda>ldropn xs. case xs of LNil \<Rightarrow> \<lambda>_. LNil | LCons x xs \<Rightarrow> \<lambda>n. if n = 0 then LCons x xs else ldropn xs (n - 1)"
-  shows ldrop_conv_fixp: "(\<lambda>xs n. ldropn n xs) \<equiv> ccpo.fixp (fun_lub (fun_lub lSup)) (fun_ord (fun_ord lprefix)) (\<lambda>ldrop. F ldrop)" (is "?lhs \<equiv> ?rhs")
-  and ldrop_mono: "\<And>xs. mono_llist_lift (\<lambda>ldrop. F ldrop xs)" (is "PROP ?mono")
-proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
-  fix n xs
-  show "?lhs xs n = ?rhs xs n"
-    by(induction n arbitrary: xs)
-      (subst llist_lift.mono_body_fixp[OF mono], simp add: F_def split: llist.split)+
-qed
-
-lemma ldropn_fixp_case_conv: 
-  "(\<lambda>xs. case xs of LNil \<Rightarrow> \<lambda>_. LNil | LCons x xs \<Rightarrow> \<lambda>n. if n = 0 then LCons x xs else f xs (n - 1)) =
-   (\<lambda>xs n. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> if n = 0 then LCons x xs else f xs (n - 1))"
-by(auto simp add: fun_eq_iff split: llist.split)
-
-lemma monotone_ldropn_aux: "monotone lprefix (fun_ord lprefix) (\<lambda>xs n. ldropn n xs)"
-by(rule llist_lift.fixp_preserves_mono1[OF ldrop_mono ldrop_conv_fixp])
-  (simp add: ldropn_fixp_case_conv monotone_fun_ord_apply)
-
-lemma mono2mono_ldropn[THEN llist.mono2mono, cont_intro, simp]:
-  shows monotone_ldropn': "monotone lprefix lprefix (\<lambda>xs. ldropn n xs)"
-using monotone_ldropn_aux by(auto simp add: monotone_def fun_ord_def)
-
-lemma mcont_ldropn_aux: "mcont lSup lprefix (fun_lub lSup) (fun_ord lprefix) (\<lambda>xs n. ldropn n xs)"
-by(rule llist_lift.fixp_preserves_mcont1[OF ldrop_mono ldrop_conv_fixp])
-  (simp add: ldropn_fixp_case_conv mcont_fun_lub_apply)
-
-lemma mcont2mcont_ldropn [THEN llist.mcont2mcont, cont_intro, simp]:
-  shows mcont_ldropn: "mcont lSup lprefix lSup lprefix (ldropn n)"
-using mcont_ldropn_aux by(auto simp add: mcont_fun_lub_apply)
-
-
-lemma fixes f F P
-  defines "F \<equiv> \<lambda>ltakeWhile xs. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> if P x then LCons x (ltakeWhile xs) else LNil"
-  shows ltakeWhile_conv_fixp: "ltakeWhile P \<equiv> ccpo.fixp (fun_lub lSup) (fun_ord lprefix) F" (is "?lhs \<equiv> ?rhs")
-  and ltakeWhile_mono: "\<And>xs. mono_llist (\<lambda>ltakeWhile. F ltakeWhile xs)" (is "PROP ?mono")
-proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
-  fix xs
-  show "?lhs xs = ?rhs xs"
-  proof(coinduction arbitrary: xs)
-    case Eq_llist
-    show ?case by(subst (1 3 4) llist.mono_body_fixp[OF mono])(auto simp add: F_def split: llist.split prod.split co.enat.split)
-  qed
-qed
-
-lemma mono2mono_ltakeWhile[THEN llist.mono2mono, cont_intro, simp]:
-  shows monotone_ltakeWhile: "monotone lprefix lprefix (ltakeWhile P)"
-by(rule llist.fixp_preserves_mono1[OF ltakeWhile_mono ltakeWhile_conv_fixp]) simp
-
-lemma mcont2mcont_ltakeWhile [THEN llist.mcont2mcont, cont_intro, simp]:
-  shows mcont_ltakeWhile: "mcont lSup lprefix lSup lprefix (ltakeWhile P)"
-by(rule llist.fixp_preserves_mcont1[OF ltakeWhile_mono ltakeWhile_conv_fixp]) simp
-
-lemma [partial_function_mono]: "mono_llist F \<Longrightarrow> mono_llist (\<lambda>f. ltakeWhile P (F f))"
-by(rule mono2mono_ltakeWhile)
-
-(* Move end *)
-
 type_synonym ('a, 's) lgenerator = "'s \<Rightarrow> ('a, 's) step"
 
 inductive_set productive_on :: "('a, 's) lgenerator \<Rightarrow> 's set"
@@ -766,7 +674,7 @@ lemma lunstream_append_raw:
   fixes g h sh gh defines [simp]: "gh \<equiv> append_raw g h sh"
   assumes "productive g"
   shows "lunstream gh (Inl sg) = lappend (lunstream g sg) (lunstream h sh)"
-proof(coinduction arbitrary: sg rule: llist.strong_coinduct)
+proof(coinduction arbitrary: sg rule: llist.coinduct_strong)
   case (Eq_llist sg)
   { fix sh'
     have "lprefix (lunstream gh (Inr sh')) (lunstream h sh')"

@@ -1,4 +1,4 @@
-header {*\subsection{Atomic step locally respects the information flow policy}*}
+subsection {* Atomic step locally respects the information flow policy *}
 
 theory Step_vpeq_locally_respects
   imports Step Step_invariants Step_vpeq

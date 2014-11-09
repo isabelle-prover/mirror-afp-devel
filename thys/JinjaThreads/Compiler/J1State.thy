@@ -249,7 +249,7 @@ by(cases va) auto
 
 lemma B_inline_call: "\<lbrakk> \<B> e n; \<And>n. \<B> e' n \<rbrakk> \<Longrightarrow> \<B> (inline_call e' e) n"
   and Bs_inline_calls: "\<lbrakk> \<B>s es n; \<And>n. \<B> e' n \<rbrakk> \<Longrightarrow> \<B>s (inline_calls e' es) n"
-by(induct e and es arbitrary: n and n) auto
+by(induct e and es arbitrary: n and n rule: call.induct calls.induct) auto
 
 lemma syncvarss_append [simp]: "syncvarss (es @ es') \<longleftrightarrow> syncvarss es \<and> syncvarss es'"
 by(induct es) auto
@@ -303,11 +303,11 @@ by(induct vs) simp_all
 lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows call1_imp_call: "call1 e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> call e = \<lfloor>aMvs\<rfloor>"
   and calls1_imp_calls: "calls1 es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> calls es = \<lfloor>aMvs\<rfloor>"
-by(induct e and es) auto
+by(induct e and es rule: call1.induct calls1.induct) auto
 
 lemma max_vars_inline_call: "max_vars (inline_call e' e) \<le> max_vars e + max_vars e'"
   and max_varss_inline_calls: "max_varss (inline_calls e' es) \<le> max_varss es + max_vars e'"
-by(induct e and es) auto
+by(induct e and es rule: call1.induct calls1.induct) auto
 
 lemmas inline_call_max_vars1 = max_vars_inline_call
 lemmas inline_calls_max_varss1 = max_varss_inline_calls

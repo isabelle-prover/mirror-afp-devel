@@ -1,4 +1,4 @@
-header {* \isaheader{Auxiliary lemmas} *}
+section {* Auxiliary lemmas *}
 
 theory AuxLemmas imports Main begin
 

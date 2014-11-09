@@ -1,4 +1,4 @@
-header{*The Needham-Schroeder Public-Key Protocol against Dolev-Yao --- with Gets event, hence with Reception rule*}
+section{*The Needham-Schroeder Public-Key Protocol against Dolev-Yao --- with Gets event, hence with Reception rule*}
 
 theory NS_Public_Bad imports Public begin
 

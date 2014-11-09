@@ -1,4 +1,4 @@
-header{*Pseudo-Coding: Section 7 Material*}
+chapter{*Pseudo-Coding: Section 7 Material*}
 
 theory Pseudo_Coding 
 imports II_Prelims

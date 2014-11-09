@@ -80,7 +80,7 @@ by(auto simp add: Inv_def before_in_mtf not_before_in dest: before_in_setD1)
 
 lemma set_mtf[simp]: "set(mtf x xs) = set xs"
 by(simp add: mtf_def)
-  (metis append_take_drop_id drop_Suc_conv_tl index_less le_refl Un_insert_right nth_index set_append set_simps(2))
+  (metis append_take_drop_id Cons_nth_drop_Suc index_less le_refl Un_insert_right nth_index set_append set_simps(2))
 
 lemma length_mtf[simp]: "size (mtf x xs) = size xs"
 by (auto simp add: mtf_def min_def) (metis index_less_size_conv leD)

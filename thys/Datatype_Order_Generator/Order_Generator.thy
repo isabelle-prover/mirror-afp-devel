@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Generating linear orders for datatypes *}
+section {* Generating linear orders for datatypes *}
 
 theory Order_Generator
 imports Derive_Manager
@@ -103,9 +103,5 @@ subsection "Installing the generator"
 lemma linear_cases: "(x :: 'a :: linorder) = y \<or> x < y \<or> y < x" by auto
 
 ML_file "order_generator.ML" 
-
-setup {*
-  Order_Generator.setup
-*}
 
 end

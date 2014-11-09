@@ -5,8 +5,7 @@
     Based on the Jinja theory Common/WellForm.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Generic Well-formedness of programs} *}
+section {* Generic Well-formedness of programs *}
 
 theory WellForm
 imports SystemClasses TypeRel WellType
@@ -50,7 +49,7 @@ definition wf_prog :: "wf_mdecl_test \<Rightarrow> prog \<Rightarrow> bool" wher
 
 
 
-section{* Well-formedness lemmas *}
+subsection{* Well-formedness lemmas *}
 
 lemma class_wf: 
   "\<lbrakk>class P C = Some c; wf_prog wf_md P\<rbrakk> \<Longrightarrow> wf_cdecl wf_md P (C,c)"
@@ -84,7 +83,7 @@ qed
 
 
 
-section{* Well-formedness subclass lemmas *}
+subsection{* Well-formedness subclass lemmas *}
 
 lemma subcls1_wfD:
   "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> (D,C) \<notin> (subcls1 P)\<^sup>+"
@@ -177,7 +176,7 @@ qed
 
 
 
-section{* Well-formedness leq\_path lemmas *}
+subsection{* Well-formedness leq\_path lemmas *}
 
 lemma last_leq_path:
 assumes leq:"P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds" and wf:"wf_prog wf_md P"
@@ -275,7 +274,7 @@ by (induct rule:rtrancl_induct,auto intro:Subobjs_Base elim!:leq_path1.cases,
 
 
 
-section{* Lemmas concerning Subobjs *}
+subsection{* Lemmas concerning Subobjs *}
 
 lemma Subobj_last_isClass:"\<lbrakk>wf_prog wf_md P; Subobjs P C Cs\<rbrakk> \<Longrightarrow> is_class P (last Cs)"
 
@@ -675,7 +674,7 @@ qed
  
 
 
-section{* Well-formedness and appendPath *}
+subsection{* Well-formedness and appendPath *}
 
 
 lemma appendPath1:
@@ -759,7 +758,7 @@ lemma Subobjs_appendPath:
 by(fastforce elim:appendPath2 appendPath1 simp:appendPath_def)
 
 
-section{* Path and program size *}
+subsection{* Path and program size *}
 
 lemma assumes subo:"Subobjs P C Cs" and wf:"wf_prog wf_md P"
   shows path_contains_classes:"\<forall>C' \<in> set Cs. is_class P C'"
@@ -898,7 +897,7 @@ by (subgoal_tac "{Cs. Subobjs P C Cs} =
   auto intro:path_finite_leq path_length)
 
 
-section{* Well-formedness and Path *}
+subsection{* Well-formedness and Path *}
 
 lemma path_via_reverse:
   assumes path_via:"P \<turnstile> Path C to D via Cs" and wf:"wf_prog wf_md P"
@@ -1316,7 +1315,7 @@ qed
 
 
 
-section{* Well-formedness and member lookup *}
+subsection{* Well-formedness and member lookup *}
 
 lemma has_path_has:
 "\<lbrakk>P \<turnstile> Path D to C via Ds; P \<turnstile> C has M = (Ts,T,m) via Cs; wf_prog wf_md P\<rbrakk> 
@@ -1792,7 +1791,7 @@ by (simp add: image_def SystemClasses_def wf_syscls_def sys_xcpts_def
           NullPointerC_def ClassCastC_def OutOfMemoryC_def,force intro:conjI)
 
 
-section{* Well formedness and widen *}
+subsection{* Well formedness and widen *}
 
 lemma Class_widen: "\<lbrakk>P \<turnstile> Class C \<le> T; wf_prog wf_md P; is_class P C\<rbrakk>  
   \<Longrightarrow>  \<exists>D. T = Class D \<and> P \<turnstile> Path C to D unique"
@@ -1821,7 +1820,7 @@ done
 
 
 
-section{* Well formedness and well typing *}
+subsection{* Well formedness and well typing *}
 
 lemma assumes wf:"wf_prog wf_md P" 
 shows WT_determ: "P,E \<turnstile> e :: T \<Longrightarrow> (\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> T = T')"

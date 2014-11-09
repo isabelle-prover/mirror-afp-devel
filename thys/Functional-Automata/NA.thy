@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Nondeterministic automata"
+section "Nondeterministic automata"
 
 theory NA
 imports AutoProj

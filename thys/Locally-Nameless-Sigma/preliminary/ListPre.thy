@@ -4,7 +4,7 @@
 List lemmata and other general stuff as preparation for ASP.
 *)
 
-header {* List features *}
+section {* List features *}
 
 theory ListPre
 imports Main
@@ -16,8 +16,7 @@ lemma drop_lem[rule_format]:
   shows "l!n = g!n"
 proof -
   from assms(2-3) have "n < length l" by simp
-  from 
-    drop_Suc_conv_tl[OF this] drop_Suc_conv_tl[OF assms(3)] assms(1) 
+  from Cons_nth_drop_Suc[OF this] Cons_nth_drop_Suc[OF assms(3)] assms(1) 
   have "l!n # drop (Suc n) l = g!n # drop (Suc n) g" by simp
   thus ?thesis by simp
 qed

@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Relation Algebra *}
+section {* Relation Algebra *}
 
 theory Relation_Algebra
   imports More_Boolean_Algebra "../Kleene_Algebra/Kleene_Algebra"

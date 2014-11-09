@@ -4,7 +4,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Processing of message streams *}
+section {* Processing of message streams *}
 
 theory AF_Stream_Exec
 imports AF_Stream "../List-Infinite/ListInf/ListInf_Prefix" "../List-Infinite/CommonSet/SetIntervalStep"
@@ -594,8 +594,8 @@ lemma f_Exec_Stream_Init_drop:"
     (f_Exec_Comp trans_fun (xs \<down> n) c)"
 apply (case_tac n, simp)
 apply (simp add: f_Exec_Stream_Init_eq_f_Exec_Stream_Cons f_Exec_Stream_drop)
-thm take_Suc_conv_app_nth drop_Suc_conv_tl[symmetric]
-apply (simp add: take_Suc_conv_app_nth f_Exec_append drop_Suc_conv_tl[symmetric])
+thm take_Suc_conv_app_nth Cons_nth_drop_Suc[symmetric]
+apply (simp add: take_Suc_conv_app_nth f_Exec_append Cons_nth_drop_Suc[symmetric])
 done
 lemma f_Exec_Stream_Init_drop_geq_not_valid:"
   length xs \<le> n \<Longrightarrow>

@@ -1,4 +1,4 @@
-header{*Basics needed*}
+section{*Basics needed*}
 
 theory PerfectBasics
 imports Main "~~/src/HOL/Number_Theory/Primes" "~~/src/HOL/Algebra/Exponent"

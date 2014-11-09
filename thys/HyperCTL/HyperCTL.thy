@@ -1,5 +1,5 @@
 (*<*)
-header {* Hyper CTL* *}
+section {* Hyper CTL* *}
 theory HyperCTL
 imports Finite_Noninterference
 begin

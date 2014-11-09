@@ -235,10 +235,10 @@ text {*
   For our data type @{typ expr}, derive does everything!
 *}
 (*<*)end(*>*)
-(*<*);(*>*)
+(*<*)(*>*)
 derive linorder expr
 derive (linorder) corder expr
-(*<*);(*>*)
+(*<*)(*>*)
 
 text {*
   In general, the pattern for type constructors without parameters looks as follows:

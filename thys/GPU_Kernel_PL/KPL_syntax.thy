@@ -1,4 +1,4 @@
-header {* Syntax of KPL *}
+section {* Syntax of KPL *}
 
 theory KPL_syntax imports 
   Misc

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Paths and Lists in the Heap *}
+section {* Paths and Lists in the Heap *}
 theory HeapList
 imports Simpl_Heap
 begin
@@ -118,7 +118,7 @@ theorem notin_List_update[simp]:
  "\<And>p. q \<notin> set ps \<Longrightarrow> List p (h(q := y)) ps = List p h ps"
 apply(induct ps)
 apply simp
-apply(clarsimp simp add:fun_upd_apply)
+apply clarsimp
 done
 
 lemma List_upd_same_lemma: "\<And>p.  p \<noteq> Null \<Longrightarrow> \<not> List p (h(p := p)) ps"

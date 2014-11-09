@@ -4,7 +4,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Example Expressions} *}
+section {* Example Expressions *}
 
 theory Examples imports Expr begin
 
@@ -21,7 +21,7 @@ where
   [(''mult'',[Integer,Integer],Integer,[''i'',''j''],
    if (Var ''i'' \<guillemotleft>Eq\<guillemotright> Val(Intg 0)) (Val(Intg 0))
    else Var ''j'' \<guillemotleft>Add\<guillemotright>
-       Var this \<bullet> ''mult''([Var ''i'' \<guillemotleft>Add\<guillemotright> Val(Intg -1),Var ''j'']))
+       Var this \<bullet> ''mult''([Var ''i'' \<guillemotleft>Add\<guillemotright> Val(Intg (- 1)),Var ''j'']))
   ])"
 
 
@@ -85,7 +85,7 @@ where
 
 definition mb_mult_block:: "expr"
 where
-  "mb_mult_block == ''temp'':=(Var ''temp'' \<guillemotleft>Add\<guillemotright> Var ''i'');;''j'':=(Var ''j'' \<guillemotleft>Add\<guillemotright> Val (Intg -1))"
+  "mb_mult_block == ''temp'':=(Var ''temp'' \<guillemotleft>Add\<guillemotright> Var ''i'');;''j'':=(Var ''j'' \<guillemotleft>Add\<guillemotright> Val (Intg (- 1)))"
 
 definition mb_mult:: "expr"
 where

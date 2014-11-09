@@ -3,7 +3,7 @@
     Maintainer:  Tobias Nipkow
 *)
 
-header "Hoare Logics for Mutually Recursive Procedure"
+section "Hoare Logics for Mutually Recursive Procedure"
 
 theory PsLang imports Main begin
 

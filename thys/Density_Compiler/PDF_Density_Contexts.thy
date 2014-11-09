@@ -3,7 +3,7 @@
   Authors: Manuel Eberl
 *)
 
-header {* Density Contexts *}
+section {* Density Contexts *}
 
 theory PDF_Density_Contexts
 imports PDF_Semantics
@@ -831,7 +831,7 @@ qed (insert disjoint, auto simp: shift_var_set_def)
 
 lemma dens_ctxt_measure_insert:
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
-  assumes meas_M: "M \<in> measurable (state_measure (V\<union>V') \<Gamma>) (kernel_space (stock_measure t))"
+  assumes meas_M: "M \<in> measurable (state_measure (V\<union>V') \<Gamma>) (subprob_algebra (stock_measure t))"
   assumes meas_f[measurable]: "split f \<in> borel_measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
   assumes has_dens: "\<And>\<rho>. \<rho> \<in> space (state_measure (V\<union>V') \<Gamma>) \<Longrightarrow> 
                          has_subprob_density (M \<rho>) (stock_measure t) (f \<rho>)"
@@ -855,7 +855,7 @@ proof (intro measure_eqI)
                      space_PiM PiE_eq_empty_iff)
   have meas_N_eq: "measurable ?N = measurable (state_measure (V\<union>V') \<Gamma>)"
     by (intro ext measurable_cong_sets) (auto simp: dens_ctxt_measure_def state_measure'_def)
-  have meas_M': "M \<in> measurable ?N (kernel_space (stock_measure t))"
+  have meas_M': "M \<in> measurable ?N (subprob_algebra (stock_measure t))"
     by (subst meas_N_eq) (rule meas_M)
   have meas_N': "\<And>R. measurable (?N \<Otimes>\<^sub>M R) = measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M R)"
     by (intro ext measurable_cong_sets[OF _ refl] sets_pair_measure_cong) 
@@ -864,10 +864,10 @@ proof (intro measure_eqI)
     by (intro ext measurable_cong_sets sets_kernel[OF meas_M']) simp_all
   have meas_rhs: "\<And>M. measurable M ?rhs = measurable M ?R"
     by (intro ext measurable_cong_sets) (simp_all add: dens_ctxt_measure_def state_measure'_def)
-  have kernel_space_rhs: "kernel_space ?rhs = kernel_space (state_measure (shift_var_set (V\<union>V')) ?\<Gamma>')"
-    unfolding dens_ctxt_measure_def state_measure'_def by (intro kernel_space_cong) auto
+  have subprob_algebra_rhs: "subprob_algebra ?rhs = subprob_algebra (state_measure (shift_var_set (V\<union>V')) ?\<Gamma>')"
+    unfolding dens_ctxt_measure_def state_measure'_def by (intro subprob_algebra_cong) auto
   have nonempty': "\<And>\<rho>. \<rho> \<in> space ?N \<Longrightarrow> space (M \<rho>) \<noteq> {}" 
-    by (rule subprob_space.not_empty) 
+    by (rule subprob_space.subprob_not_empty) 
        (auto dest: has_subprob_densityD has_dens simp: space_dens_ctxt_measure)
   have merge_in_space: "\<And>x. x \<in> space (state_measure V \<Gamma>) \<Longrightarrow>
                               merge V V' (x, \<rho>) \<in> space (dens_ctxt_measure \<Y> \<rho>)"
@@ -1032,7 +1032,7 @@ lemma dens_ctxt_measure_bind_const:
   assumes "\<rho> \<in> space (state_measure V' \<Gamma>)" "subprob_space N"
   shows "dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (\<lambda>_. N) = density N (\<lambda>_. branch_prob \<Y> \<rho>)" (is "?M1 = ?M2")
 proof (rule measure_eqI)
-  have [simp]: "sets ?M1 = sets N" by (auto simp: space_kernel_space assms)
+  have [simp]: "sets ?M1 = sets N" by (auto simp: space_subprob_algebra assms)
   thus "sets ?M1 = sets ?M2" by simp
   fix X assume X: "X \<in> sets ?M1"
   with assms have "emeasure ?M1 X = emeasure N X * branch_prob \<Y> \<rho>"
@@ -1075,7 +1075,7 @@ lemma expr_sem_op_eq_distr:
              distr (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
 proof-
   from assms(1) obtain t where t1: "\<Gamma> \<turnstile> e : t" and t2: "op_type oper t = Some t'" by auto
-  let ?N = "stock_measure t" and ?R = "kernel_space (stock_measure t')"
+  let ?N = "stock_measure t" and ?R = "subprob_algebra (stock_measure t')"
 
   {
     fix x assume "x \<in> space (stock_measure t)"
@@ -1085,7 +1085,7 @@ proof-
       unfolding return_val_def by (subst op_sem_val_type) (simp_all add: t2)
   } note return_op_sem = this
 
-  from assms and t1 have M_e: "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable M (kernel_space (stock_measure t))"
+  from assms and t1 have M_e: "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable M (subprob_algebra (stock_measure t))"
     by (simp add: M_def measurable_dens_ctxt_measure_eq measurable_expr_sem)
   from return_op_sem 
     have M_cong: "(\<lambda>x. return_val (op_sem oper x)) \<in> measurable ?N ?R \<longleftrightarrow> 

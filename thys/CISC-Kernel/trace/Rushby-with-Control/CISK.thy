@@ -1,4 +1,4 @@
-header {*\subsection{CISK (Controlled Interruptible Separation Kernel)}*}
+subsection {* CISK (Controlled Interruptible Separation Kernel) *}
 
 theory CISK
   imports ISK

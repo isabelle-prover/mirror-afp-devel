@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of 8 bits *}
+chapter {* Unsigned words of 8 bits *}
 
 theory Uint8 imports
   Word_Misc
@@ -536,7 +536,7 @@ by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_S
 
 code_printing
   constant "integer_of_uint8" \<rightharpoonup>
-  (SML) "Word8.toInt _ : IntInf.int" and
+  (SML) "IntInf.fromLarge (Word8.toLargeInt _)" and
   (Haskell) "Prelude.toInteger"
 | constant "integer_of_uint8_signed" \<rightharpoonup>
   (Scala) "BigInt"
@@ -566,86 +566,6 @@ lemmas partial_term_of_uint8 [code] = partial_term_of_code
 instance ..
 end
 
-section {* Tests *}
-
-definition test_uint8 where
-  "test_uint8 \<longleftrightarrow> 
-  (([ 0x101, -1, -255, 0xFF, 0x12
-    , 0x5A AND 0x36
-    , 0x5A OR 0x36
-    , 0x5A XOR 0x36
-    , NOT 0x5A
-    , 5 + 6, -5 + 6, -6 + 5, -5 + -6, 0xFF + 1
-    , 5 - 3, 3 - 5
-    , 5 * 3, -5 * 3, -5 * -4, 0x12 * 0x87
-    , 5 div 3, -5 div 3, -5 div -3, 5 div -3
-    , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit -5 32 True, set_bit -5 32 False
-    , 1 << 2, -1 << 3, 1 << 8, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 8, -100 >> 8
-    , 100 >>> 3, -100 >>> 3, 100 >>> 8, -100 >>> 8] :: uint8 list)
-   =
-    [ 1, 255, 1, 255, 18
-    , 18
-    , 126
-    , 108
-    , 165
-    , 11, 1, 255, 245, 0
-    , 2, 254
-    , 15, 241, 20, 126
-    , 1, 83, 0, 0
-    , 2, 2, 251, 5
-    , 21, 255, 4, 249
-    , 5, 5, 251, 251
-    , 4, 248, 0, 1
-    , 12, 19, 0, 0
-    , 12, 243, 0, 255]) \<and>
-  ([ (0x5 :: uint8) = 0x5, (0x5 :: uint8) = 0x6
-   , (0x5 :: uint8) < 0x5, (0x5 :: uint8) < 0x6, (-5 :: uint8) < 6, (6 :: uint8) < -5
-   , (0x5 :: uint8) \<le> 0x5, (0x5 :: uint8) \<le> 0x4, (-5 :: uint8) \<le> 6, (6 :: uint8) \<le> -5 
-   , (0x7F :: uint8) < 0x80, (0xFF :: uint8) < 0, (0x80 :: uint8) < 0x7F
-   , (0x7F :: uint8) !! 0, (0x7F :: uint8) !! 7, (0x80 :: uint8) !! 7, (0x80 :: uint8) !! 8
-   ]
-  =
-   [ True, False
-   , False, True, False, True
-   , True, False, False, True
-   , True, False, False
-   , True, False, True, False
-   ]) \<and>
-  ([integer_of_uint8 0, integer_of_uint8 0x7F, integer_of_uint8 0x80, integer_of_uint8 0xAA]
-  =
-   [0, 0x7F, 0x80, 0xAA])"
-
-export_code test_uint8 checking SML Haskell? Scala
-
-notepad begin
-have test_uint8 by eval
-have test_uint8 by code_simp
-have test_uint8 by normalization
-end
-ML_val {* val true = @{code test_uint8} *}
-
-definition test_uint8' :: uint8
-where "test_uint8' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
-ML {* val 0wx12 = @{code test_uint8'} *}
-
-lemma "x AND y = x OR (y :: uint8)"
-quickcheck[random, expect=counterexample]
-quickcheck[exhaustive, expect=counterexample]
-oops
-
-lemma "(x :: uint8) AND x = x OR x"
-quickcheck[narrowing, expect=no_counterexample]
-by transfer simp
-
-lemma "(f :: uint8 \<Rightarrow> unit) = g"
-quickcheck[narrowing, size=3, expect=no_counterexample]
-by(simp add: fun_eq_iff)
-
-hide_const test_uint8 test_uint8'
-hide_fact test_uint8_def test_uint8'_def
 no_notation sshiftr_uint8 (infixl ">>>" 55)
 
 end

@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Type System for Ensuring SIFUM-Security of Commands *}
+section {* Type System for Ensuring SIFUM-Security of Commands *}
 
 theory TypeSystem
 imports Main Preliminaries Security Language Compositionality

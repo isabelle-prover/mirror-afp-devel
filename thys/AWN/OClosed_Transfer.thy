@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Transfer open results onto closed models"
+section "Transfer open results onto closed models"
 
 theory OClosed_Transfer
 imports Closed OClosed_Lifting
@@ -50,7 +50,7 @@ lemma init_pnet_fst_sr_netgmap:
       by (rule init_pnet_p_NodeS)
     ultimately have "s \<in> init (np ii)"
       by (clarsimp simp: node_comps)
-    with `i \<in> net_ips (NodeS ii s R\<^sub>i)`
+    with \<open>i \<in> net_ips (NodeS ii s R\<^sub>i)\<close>
       show "the (fst (netgmap sr (NodeS ii s R\<^sub>i)) i) \<in> (fst \<circ> sr) ` init (np i)"
         by clarsimp
   next
@@ -70,30 +70,30 @@ lemma init_pnet_fst_sr_netgmap:
                                 and "s1 \<in> init (pnet np p1)"
                                 and "s2 \<in> init (pnet np p2)"
       by (rule init_pnet_p_SubnetS)
-    from this(1) and `wf_net_tree p` have "wf_net_tree p1"
+    from this(1) and \<open>wf_net_tree p\<close> have "wf_net_tree p1"
                                       and "wf_net_tree p2"
                                       and "net_tree_ips p1 \<inter> net_tree_ips p2 = {}"
       by auto
-    from `i \<in> net_ips (SubnetS s1 s2)` have "i \<in> net_ips s1 \<or> i \<in> net_ips s2"
+    from \<open>i \<in> net_ips (SubnetS s1 s2)\<close> have "i \<in> net_ips s1 \<or> i \<in> net_ips s2"
       by simp
     thus "the (fst (netgmap sr (SubnetS s1 s2)) i) \<in> (fst \<circ> sr) ` init (np i)"
     proof
       assume "i \<in> net_ips s1"
       hence "i \<notin> net_ips s2"
       proof -
-        from `s1 \<in> init (pnet np p1)` and `i \<in> net_ips s1` have "i\<in>net_tree_ips p1" ..
-        with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "i\<notin>net_tree_ips p2" by auto
-        with `s2 \<in> init (pnet np p2)` show ?thesis ..
+        from \<open>s1 \<in> init (pnet np p1)\<close> and \<open>i \<in> net_ips s1\<close> have "i\<in>net_tree_ips p1" ..
+        with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "i\<notin>net_tree_ips p2" by auto
+        with \<open>s2 \<in> init (pnet np p2)\<close> show ?thesis ..
       qed
-      moreover from `s1 \<in> init (pnet np p1)`  `i \<in> net_ips s1` and `wf_net_tree p1`
+      moreover from \<open>s1 \<in> init (pnet np p1)\<close>  \<open>i \<in> net_ips s1\<close> and \<open>wf_net_tree p1\<close>
         have "the (fst (netgmap sr s1) i) \<in> (fst \<circ> sr) ` init (np i)"
           by (rule IH1)
       ultimately show ?thesis by simp
     next
       assume "i \<in> net_ips s2"
-      moreover with `s2 \<in> init (pnet np p2)` have "the (fst (netgmap sr s2) i) \<in> (fst \<circ> sr) ` init (np i)"
-        using `wf_net_tree p2` by (rule IH2)
-      moreover from `s2 \<in> init (pnet np p2)` and `i \<in> net_ips s2` have "i\<in>net_tree_ips p2" ..
+      moreover with \<open>s2 \<in> init (pnet np p2)\<close> have "the (fst (netgmap sr s2) i) \<in> (fst \<circ> sr) ` init (np i)"
+        using \<open>wf_net_tree p2\<close> by (rule IH2)
+      moreover from \<open>s2 \<in> init (pnet np p2)\<close> and \<open>i \<in> net_ips s2\<close> have "i\<in>net_tree_ips p2" ..
       ultimately show ?thesis by simp
     qed
   qed
@@ -143,8 +143,8 @@ lemma init_lifted:
       proof -
         { fix i
           assume "i \<in> net_tree_ips p1"
-          with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "i \<notin> net_tree_ips p2" by auto
-          with `s2 \<in> init (pnet np p2)` have "i \<notin> net_ips s2" ..
+          with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "i \<notin> net_tree_ips p2" by auto
+          with \<open>s2 \<in> init (pnet np p2)\<close> have "i \<notin> net_ips s2" ..
           hence "the ((fst (netgmap sr s1) ++ fst (netgmap sr s2)) i) = the (fst (netgmap sr s1) i)"
             by simp
         }
@@ -154,28 +154,28 @@ lemma init_lifted:
           have "\<sigma> i \<in> (fst \<circ> sr) ` init (np i)"
           proof (cases "i \<in> net_tree_ips p2")
             assume "i \<notin> net_tree_ips p2"
-            with `i \<notin> net_tree_ips p1` and \<sigma>_desc show ?thesis
+            with \<open>i \<notin> net_tree_ips p1\<close> and \<sigma>_desc show ?thesis
               by simp
           next
             assume "i \<in> net_tree_ips p2"
-            with `s2 \<in> init (pnet np p2)` have "i \<in> net_ips s2" ..
-            with `s2 \<in> init (pnet np p2)` have "the (fst (netgmap sr s2) i) \<in> (fst \<circ> sr) ` init (np i)"
-              using `wf_net_tree p2` by (rule init_pnet_fst_sr_netgmap)
-            with `i\<in>net_tree_ips p2` and `i\<in>net_ips s2` show ?thesis
+            with \<open>s2 \<in> init (pnet np p2)\<close> have "i \<in> net_ips s2" ..
+            with \<open>s2 \<in> init (pnet np p2)\<close> have "the (fst (netgmap sr s2) i) \<in> (fst \<circ> sr) ` init (np i)"
+              using \<open>wf_net_tree p2\<close> by (rule init_pnet_fst_sr_netgmap)
+            with \<open>i\<in>net_tree_ips p2\<close> and \<open>i\<in>net_ips s2\<close> show ?thesis
               using \<sigma>_desc by simp
           qed
         }
         ultimately show ?thesis
-          using `s1 \<in> init (pnet np p1)` and \<sigma>_desc by auto
+          using \<open>s1 \<in> init (pnet np p1)\<close> and \<sigma>_desc by auto
       qed
       hence "(\<sigma>, snd (netgmap sr s1)) \<in> init (opnet onp p1)"
-        by (rule set_mp [OF IH1 [OF `wf_net_tree p1`]])
+        by (rule set_mp [OF IH1 [OF \<open>wf_net_tree p1\<close>]])
 
       have "(\<sigma>, snd (netgmap sr s2)) \<in> ?S2"
       proof -
         { fix i
           assume "i \<in> net_tree_ips p2"
-          with `s2 \<in> init (pnet np p2)` have "i \<in> net_ips s2" ..
+          with \<open>s2 \<in> init (pnet np p2)\<close> have "i \<in> net_ips s2" ..
           hence "the ((fst (netgmap sr s1) ++ fst (netgmap sr s2)) i) = the (fst (netgmap sr s2) i)"
             by simp
         }
@@ -185,29 +185,29 @@ lemma init_lifted:
           have "\<sigma> i \<in> (fst \<circ> sr) ` init (np i)"
           proof (cases "i \<in> net_tree_ips p1")
             assume "i \<notin> net_tree_ips p1"
-            with `i \<notin> net_tree_ips p2` and \<sigma>_desc show ?thesis
+            with \<open>i \<notin> net_tree_ips p2\<close> and \<sigma>_desc show ?thesis
               by simp
           next
             assume "i \<in> net_tree_ips p1"
-            with `s1 \<in> init (pnet np p1)` have "i \<in> net_ips s1" ..
-            with `s1 \<in> init (pnet np p1)` have "the (fst (netgmap sr s1) i) \<in> (fst \<circ> sr) ` init (np i)"
-              using `wf_net_tree p1` by (rule init_pnet_fst_sr_netgmap)
-            moreover from `s2 \<in> init (pnet np p2)` and `i \<notin> net_tree_ips p2` have "i\<notin>net_ips s2" ..
+            with \<open>s1 \<in> init (pnet np p1)\<close> have "i \<in> net_ips s1" ..
+            with \<open>s1 \<in> init (pnet np p1)\<close> have "the (fst (netgmap sr s1) i) \<in> (fst \<circ> sr) ` init (np i)"
+              using \<open>wf_net_tree p1\<close> by (rule init_pnet_fst_sr_netgmap)
+            moreover from \<open>s2 \<in> init (pnet np p2)\<close> and \<open>i \<notin> net_tree_ips p2\<close> have "i\<notin>net_ips s2" ..
             ultimately show ?thesis
-              using `i\<in>net_tree_ips p1` `i\<in>net_ips s1` and `i\<notin>net_tree_ips p2` \<sigma>_desc by simp
+              using \<open>i\<in>net_tree_ips p1\<close> \<open>i\<in>net_ips s1\<close> and \<open>i\<notin>net_tree_ips p2\<close> \<sigma>_desc by simp
           qed
         }
         ultimately show ?thesis
-          using `s2 \<in> init (pnet np p2)` and \<sigma>_desc by auto
+          using \<open>s2 \<in> init (pnet np p2)\<close> and \<sigma>_desc by auto
       qed
       hence "(\<sigma>, snd (netgmap sr s2)) \<in> init (opnet onp p2)"
-        by (rule set_mp [OF IH2 [OF `wf_net_tree p2`]])
+        by (rule set_mp [OF IH2 [OF \<open>wf_net_tree p2\<close>]])
 
-      with `(\<sigma>, snd (netgmap sr s1)) \<in> init (opnet onp p1)`
+      with \<open>(\<sigma>, snd (netgmap sr s1)) \<in> init (opnet onp p1)\<close>
         show "(\<sigma>, snd (netgmap sr (SubnetS s1 s2))) \<in> init (opnet onp (p1 \<parallel> p2))"
-        using `net_tree_ips p1 \<inter> net_tree_ips p2 = {}`
-              `net_ips s1 = net_tree_ips p1`
-              `net_ips s2 = net_tree_ips p2` by simp
+        using \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close>
+              \<open>net_ips s1 = net_tree_ips p1\<close>
+              \<open>net_ips s2 = net_tree_ips p2\<close> by simp
     qed
   qed
 
@@ -216,7 +216,7 @@ lemma init_pnet_opnet [elim]:
       and "s \<in> init (pnet np p)"
     shows "netgmap sr s \<in> netmask (net_tree_ips p) ` init (opnet onp p)"
   proof -
-    from `wf_net_tree p`
+    from \<open>wf_net_tree p\<close>
       have "{ (\<sigma>, snd (netgmap sr s)) |\<sigma> s. s \<in> init (pnet np p)
                               \<and> (\<forall>i. if i\<in>net_tree_ips p then \<sigma> i = the (fst (netgmap sr s) i)
                                      else \<sigma> i \<in> (fst o sr) ` init (np i)) } \<subseteq> init (opnet onp p)"
@@ -230,7 +230,7 @@ lemma init_pnet_opnet [elim]:
         from init_notempty have "\<exists>s. s \<in> (fst \<circ> sr) ` init (np i)" by auto
         hence "(SOME x. x \<in> (fst \<circ> sr) ` init (np i)) \<in> (fst \<circ> sr) ` init (np i)" ..
       }
-      with `s \<in> init (pnet np p)` and init_notempty
+      with \<open>s \<in> init (pnet np p)\<close> and init_notempty
         have "(\<lambda>i. if i \<in> net_tree_ips p
                    then the (fst (netgmap sr s) i)
                    else SOME x. x \<in> (fst \<circ> sr) ` init (np i), snd (netgmap sr s)) \<in> ?S"
@@ -241,14 +241,14 @@ lemma init_pnet_opnet [elim]:
         show "fst (netgmap sr s) i = fst (netmask (net_tree_ips p) ?s) i"
         proof (cases "i \<in> net_tree_ips p")
           assume "i \<in> net_tree_ips p"
-          with `s\<in>init (pnet np p)` have "i\<in>net_ips s" ..
+          with \<open>s\<in>init (pnet np p)\<close> have "i\<in>net_ips s" ..
           hence "Some (the (fst (netgmap sr s) i)) = fst (netgmap sr s) i"
             by (rule some_the_fst_netgmap)
-          with `i\<in>net_tree_ips p` show ?thesis
+          with \<open>i\<in>net_tree_ips p\<close> show ?thesis
             by simp
         next
           assume "i \<notin> net_tree_ips p"
-          moreover with `s\<in>init (pnet np p)` have "i\<notin>net_ips s" ..
+          moreover with \<open>s\<in>init (pnet np p)\<close> have "i\<notin>net_ips s" ..
           ultimately show ?thesis
             by simp
         qed
@@ -285,8 +285,8 @@ lemma transfer_connect:
         ultimately have "((\<sigma>, NodeS ni (snd (sr s)) R), connect(i, i'), (\<sigma>, NodeS ni (snd (sr s)) R'))
                                                                       \<in> onode_sos (trans (onp ii))"
           by - (rule node_connectTE', auto intro!: onode_sos.intros [simplified])
-        with `ns = NodeS ni s R` `ns' = NodeS ni s' R'` `s' = s`
-             and `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)`
+        with \<open>ns = NodeS ni s R\<close> \<open>ns' = NodeS ni s' R'\<close> \<open>s' = s\<close>
+             and \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close>
           show "((\<sigma>, snd (netgmap sr ns)), connect(i, i'), (\<sigma>, snd (netgmap sr ns'))) \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)
                 \<and> netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, snd (netgmap sr ns'))"
             by (simp add: onode_comps)
@@ -319,58 +319,58 @@ lemma transfer_connect:
         from this(1) and nm have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)"
           by simp
 
-        from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1" and "wf_net_tree n2"
+        from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1" and "wf_net_tree n2"
                                       and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-        from sr `s = SubnetS s1 s2` have "s1 \<in> reachable (pnet np n1) TT" by (metis subnet_reachable(1))
+        from sr \<open>s = SubnetS s1 s2\<close> have "s1 \<in> reachable (pnet np n1) TT" by (metis subnet_reachable(1))
         hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
 
-        from sr `s = SubnetS s1 s2` have "s2 \<in> reachable (pnet np n2) TT" by (metis subnet_reachable(2))
+        from sr \<open>s = SubnetS s1 s2\<close> have "s2 \<in> reachable (pnet np n2) TT" by (metis subnet_reachable(2))
         hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
 
-        from nm `s = SubnetS s1 s2`
+        from nm \<open>s = SubnetS s1 s2\<close>
           have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)" by simp
         hence "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
-          using `net_tree_ips n1 \<inter> net_tree_ips n2 = {}` `net_ips s1 = net_tree_ips n1`
-                and `net_ips s2 = net_tree_ips n2` by (rule netgmap_subnet_split1)
-        with `(s1, connect(i, i'), s1') \<in> trans (pnet np n1)`
-         and `s1 \<in> reachable (pnet np n1) TT`
+          using \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close> \<open>net_ips s1 = net_tree_ips n1\<close>
+                and \<open>net_ips s2 = net_tree_ips n2\<close> by (rule netgmap_subnet_split1)
+        with \<open>(s1, connect(i, i'), s1') \<in> trans (pnet np n1)\<close>
+         and \<open>s1 \<in> reachable (pnet np n1) TT\<close>
          have "((\<sigma>, snd (netgmap sr s1)), connect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
           and "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))"
-           using `wf_net_tree n1` unfolding atomize_conj by (rule IH1)
+           using \<open>wf_net_tree n1\<close> unfolding atomize_conj by (rule IH1)
 
-        from `netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)`
-             `net_ips s1 = net_tree_ips n1` and `net_ips s2 = net_tree_ips n2`
+        from \<open>netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)\<close>
+             \<open>net_ips s1 = net_tree_ips n1\<close> and \<open>net_ips s2 = net_tree_ips n2\<close>
           have "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
             by (rule netgmap_subnet_split2)
-        with `(s2, connect(i, i'), s2') \<in> trans (pnet np n2)`
-         and `s2 \<in> reachable (pnet np n2) TT`
+        with \<open>(s2, connect(i, i'), s2') \<in> trans (pnet np n2)\<close>
+         and \<open>s2 \<in> reachable (pnet np n2) TT\<close>
          have "((\<sigma>, snd (netgmap sr s2)), connect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
           and "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))"
-           using `wf_net_tree n2` unfolding atomize_conj by (rule IH2)
+           using \<open>wf_net_tree n2\<close> unfolding atomize_conj by (rule IH2)
 
         have "((\<sigma>, snd (netgmap sr s)), connect(i, i'), (\<sigma>, snd (netgmap sr s')))
                                          \<in> trans (opnet onp (n1 \<parallel> n2))"
         proof -
-          from `((\<sigma>, snd (netgmap sr s1)), connect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)`
-           and `((\<sigma>, snd (netgmap sr s2)), connect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)`
+          from \<open>((\<sigma>, snd (netgmap sr s1)), connect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)\<close>
+           and \<open>((\<sigma>, snd (netgmap sr s2)), connect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)\<close>
             have "((\<sigma>, SubnetS (snd (netgmap sr s1)) (snd (netgmap sr s2))), connect(i, i'),
                    (\<sigma>, SubnetS (snd (netgmap sr s1')) (snd (netgmap sr s2'))))
                                            \<in> opnet_sos (trans (opnet onp n1)) (trans (opnet onp n2))"
               by (rule opnet_connect)
-          with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` show ?thesis by simp
+          with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> show ?thesis by simp
         qed
 
-        moreover from `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))`
-                      `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))`
-                      `s' = SubnetS s1' s2'`
+        moreover from \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))\<close>
+                      \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))\<close>
+                      \<open>s' = SubnetS s1' s2'\<close>
           have "netgmap sr s' = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, snd (netgmap sr s'))" ..
 
         ultimately show "((\<sigma>, snd (netgmap sr s)), connect(i, i'), (\<sigma>, snd (netgmap sr s')))
                                                                 \<in> trans (opnet onp (n1 \<parallel> n2))
                          \<and> netgmap sr s' = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, snd (netgmap sr s'))" ..
       qed
-    moreover from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)` have "\<zeta> = snd (netgmap sr s)" by simp
+    moreover from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close> have "\<zeta> = snd (netgmap sr s)" by simp
     ultimately show " \<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), connect(i, i'), (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                               \<and> (\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                               \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')" by auto
@@ -401,8 +401,8 @@ lemma transfer_disconnect:
         ultimately have "((\<sigma>, NodeS ni (snd (sr s)) R), disconnect(i, i'), (\<sigma>, NodeS ni (snd (sr s)) R'))
                                                                       \<in> onode_sos (trans (onp ii))"
           by - (rule node_disconnectTE', auto intro!: onode_sos.intros [simplified])
-        with `ns = NodeS ni s R` `ns' = NodeS ni s' R'` `s' = s`
-             and `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)`
+        with \<open>ns = NodeS ni s R\<close> \<open>ns' = NodeS ni s' R'\<close> \<open>s' = s\<close>
+             and \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close>
           show "((\<sigma>, snd (netgmap sr ns)), disconnect(i, i'), (\<sigma>, snd (netgmap sr ns'))) \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)
                 \<and> netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, snd (netgmap sr ns'))"
             by (simp add: onode_comps)
@@ -435,58 +435,58 @@ lemma transfer_disconnect:
         from this(1) and nm have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)"
           by simp
 
-        from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1" and "wf_net_tree n2"
+        from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1" and "wf_net_tree n2"
                                       and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-        from sr `s = SubnetS s1 s2` have "s1 \<in> reachable (pnet np n1) TT" by (metis subnet_reachable(1))
+        from sr \<open>s = SubnetS s1 s2\<close> have "s1 \<in> reachable (pnet np n1) TT" by (metis subnet_reachable(1))
         hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
 
-        from sr `s = SubnetS s1 s2` have "s2 \<in> reachable (pnet np n2) TT" by (metis subnet_reachable(2))
+        from sr \<open>s = SubnetS s1 s2\<close> have "s2 \<in> reachable (pnet np n2) TT" by (metis subnet_reachable(2))
         hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
 
-        from nm `s = SubnetS s1 s2`
+        from nm \<open>s = SubnetS s1 s2\<close>
           have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)" by simp
         hence "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
-          using `net_tree_ips n1 \<inter> net_tree_ips n2 = {}` `net_ips s1 = net_tree_ips n1`
-                and `net_ips s2 = net_tree_ips n2` by (rule netgmap_subnet_split1)
-        with `(s1, disconnect(i, i'), s1') \<in> trans (pnet np n1)`
-         and `s1 \<in> reachable (pnet np n1) TT`
+          using \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close> \<open>net_ips s1 = net_tree_ips n1\<close>
+                and \<open>net_ips s2 = net_tree_ips n2\<close> by (rule netgmap_subnet_split1)
+        with \<open>(s1, disconnect(i, i'), s1') \<in> trans (pnet np n1)\<close>
+         and \<open>s1 \<in> reachable (pnet np n1) TT\<close>
          have "((\<sigma>, snd (netgmap sr s1)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
           and "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))"
-           using `wf_net_tree n1` unfolding atomize_conj by (rule IH1)
+           using \<open>wf_net_tree n1\<close> unfolding atomize_conj by (rule IH1)
 
-        from `netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)`
-             `net_ips s1 = net_tree_ips n1` and `net_ips s2 = net_tree_ips n2`
+        from \<open>netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)\<close>
+             \<open>net_ips s1 = net_tree_ips n1\<close> and \<open>net_ips s2 = net_tree_ips n2\<close>
           have "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
             by (rule netgmap_subnet_split2)
-        with `(s2, disconnect(i, i'), s2') \<in> trans (pnet np n2)`
-         and `s2 \<in> reachable (pnet np n2) TT`
+        with \<open>(s2, disconnect(i, i'), s2') \<in> trans (pnet np n2)\<close>
+         and \<open>s2 \<in> reachable (pnet np n2) TT\<close>
          have "((\<sigma>, snd (netgmap sr s2)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
           and "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))"
-           using `wf_net_tree n2` unfolding atomize_conj by (rule IH2)
+           using \<open>wf_net_tree n2\<close> unfolding atomize_conj by (rule IH2)
 
         have "((\<sigma>, snd (netgmap sr s)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s')))
                                          \<in> trans (opnet onp (n1 \<parallel> n2))"
         proof -
-          from `((\<sigma>, snd (netgmap sr s1)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)`
-           and `((\<sigma>, snd (netgmap sr s2)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)`
+          from \<open>((\<sigma>, snd (netgmap sr s1)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s1'))) \<in> trans (opnet onp n1)\<close>
+           and \<open>((\<sigma>, snd (netgmap sr s2)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s2'))) \<in> trans (opnet onp n2)\<close>
             have "((\<sigma>, SubnetS (snd (netgmap sr s1)) (snd (netgmap sr s2))), disconnect(i, i'),
                    (\<sigma>, SubnetS (snd (netgmap sr s1')) (snd (netgmap sr s2'))))
                                            \<in> opnet_sos (trans (opnet onp n1)) (trans (opnet onp n2))"
               by (rule opnet_disconnect)
-          with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` show ?thesis by simp
+          with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> show ?thesis by simp
         qed
 
-        moreover from `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))`
-                      `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))`
-                      `s' = SubnetS s1' s2'`
+        moreover from \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1'))\<close>
+                      \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2'))\<close>
+                      \<open>s' = SubnetS s1' s2'\<close>
           have "netgmap sr s' = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, snd (netgmap sr s'))" ..
 
         ultimately show "((\<sigma>, snd (netgmap sr s)), disconnect(i, i'), (\<sigma>, snd (netgmap sr s')))
                                                                 \<in> trans (opnet onp (n1 \<parallel> n2))
                          \<and> netgmap sr s' = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, snd (netgmap sr s'))" ..
       qed
-    moreover from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)` have "\<zeta> = snd (netgmap sr s)" by simp
+    moreover from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close> have "\<zeta> = snd (netgmap sr s)" by simp
     ultimately show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), disconnect(i, i'), (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                               \<and> (\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                               \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')" by auto
@@ -507,23 +507,23 @@ lemma transfer_tau:
       by (metis pnet_tau_single_node)
     from this(2) have "\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j"
       by (clarsimp intro!: netmap_is_fst_netgmap')
-    from `(s, \<tau>, s') \<in> trans (pnet np n)` have "net_ips s' = net_ips s"
+    from \<open>(s, \<tau>, s') \<in> trans (pnet np n)\<close> have "net_ips s' = net_ips s"
       by (rule pnet_maintains_dom [THEN sym])
     def \<sigma>' \<equiv> "\<lambda>j. if j = i then the (fst (netgmap sr s') i) else \<sigma> j"
-    from `\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j`
-         and `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close>
+         and \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j"
         unfolding \<sigma>'_def by clarsimp
 
     from assms(2) have "net_ips s = net_tree_ips n"
       by (rule pnet_net_ips_net_tree_ips)
 
-    from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<zeta> = snd (netgmap sr s)" by simp
 
-    from `\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j` `i \<in> net_ips s`
-         `net_ips s = net_tree_ips n` `net_ips s' = net_ips s`
-         `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close> \<open>i \<in> net_ips s\<close>
+         \<open>net_ips s = net_tree_ips n\<close> \<open>net_ips s' = net_ips s\<close>
+         \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
         unfolding \<sigma>'_def by - (rule ext, clarsimp)
 
@@ -532,7 +532,7 @@ lemma transfer_tau:
 
     with assms(1, 3)
       have "((\<sigma>, snd (netgmap sr s)), \<tau>, (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
-        using assms(2,4) `i\<in>net_ips s` and `net_ip_action np \<tau> i n s s'`
+        using assms(2,4) \<open>i\<in>net_ips s\<close> and \<open>net_ip_action np \<tau> i n s s'\<close>
     proof (induction n arbitrary: s s' \<zeta>)
       fix ii R\<^sub>i ns ns' \<zeta>
       assume "(ns, \<tau>, ns') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"
@@ -545,7 +545,7 @@ lemma transfer_tau:
       moreover with nsr obtain s s' R R' where "ns  = NodeS ii s R"
                                            and "ns' = NodeS ii s' R'"
          by (metis net_node_reachable_is_node node_tauTE')
-      moreover from `i \<in> net_ips ns` and `ns  = NodeS ii s R` have "ii = i" by simp
+      moreover from \<open>i \<in> net_ips ns\<close> and \<open>ns  = NodeS ii s R\<close> have "ii = i" by simp
       ultimately have ntr: "(NodeS i s R, \<tau>, NodeS i s' R') \<in> node_sos (trans (np i))"
         by simp
       hence "R' = R" by (metis net_state.inject(1) node_tauTE')
@@ -554,23 +554,23 @@ lemma transfer_tau:
                           and "(\<exists>d. a = \<not>unicast d \<and> d\<notin>R) \<or> (a = \<tau>)"
         by (rule node_tauTE') auto
 
-      from `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)` `ns  = NodeS ii s R` and `ii = i`
+      from \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close> \<open>ns  = NodeS ii s R\<close> and \<open>ii = i\<close>
         have "\<sigma> i = fst (sr s)" by simp (metis map_upd_Some_unfold)
 
-      moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
-                    `ns' = NodeS ii s' R'` and `ii = i`
+      moreover from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+                    \<open>ns' = NodeS ii s' R'\<close> and \<open>ii = i\<close>
         have "\<sigma>' i = fst (sr s')"
           unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
                                         metis (full_types, lifting) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
-        using `(s, a, s') \<in> trans (np i)` by (rule trans)
+        using \<open>(s, a, s') \<in> trans (np i)\<close> by (rule trans)
 
-      from `(\<exists>d. a = \<not>unicast d \<and> d\<notin>R) \<or> (a = \<tau>)` `\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j` `R'=R`
-           and `((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)`
+      from \<open>(\<exists>d. a = \<not>unicast d \<and> d\<notin>R) \<or> (a = \<tau>)\<close> \<open>\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j\<close> \<open>R'=R\<close>
+           and \<open>((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)\<close>
         have "((\<sigma>, NodeS i (snd (sr s)) R), \<tau>, (\<sigma>', NodeS i (snd (sr s')) R')) \<in> onode_sos (trans (onp i))"
           by (metis onode_sos.onode_notucast onode_sos.onode_tau)
 
-      with `ns  = NodeS ii s R` `ns' = NodeS ii s' R'` `ii = i`
+      with \<open>ns  = NodeS ii s R\<close> \<open>ns' = NodeS ii s' R'\<close> \<open>ii = i\<close>
         show "((\<sigma>, snd (netgmap sr ns)), \<tau>, (\<sigma>', snd (netgmap sr ns'))) \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)"
           by (simp add: onode_comps)
     next
@@ -604,104 +604,104 @@ lemma transfer_tau:
         by (rule partial_tauTE) auto
       from this(1) and nm have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)"
         by simp
-      from `s' = SubnetS s1' s2'` and nm'
+      from \<open>s' = SubnetS s1' s2'\<close> and nm'
         have "netgmap sr (SubnetS s1' s2') = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>', snd (netgmap sr s'))"
           by simp
 
-      from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1"
+      from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1"
                                     and "wf_net_tree n2"
                                     and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s1 \<in> reachable (pnet np n1) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s1 \<in> reachable (pnet np n1) TT"
         by (rule subnet_reachable(1))
       hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s2 \<in> reachable (pnet np n2) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s2 \<in> reachable (pnet np n2) TT"
         by (rule subnet_reachable(2))
       hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
           by (rule netgmap_subnet_split1)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
           by (rule netgmap_subnet_split2)
 
-      from `i\<in>net_ips s` and `s = SubnetS s1 s2` have "i\<in>net_ips s1 \<or> i\<in>net_ips s2" by auto
+      from \<open>i\<in>net_ips s\<close> and \<open>s = SubnetS s1 s2\<close> have "i\<in>net_ips s1 \<or> i\<in>net_ips s2" by auto
         thus "((\<sigma>, snd (netgmap sr s)), \<tau>, (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp (n1 \<parallel> n2))"
       proof
         assume "i\<in>net_ips s1"
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `net_ip_action np \<tau> i (n1 \<parallel> n2) s s'`
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>net_ip_action np \<tau> i (n1 \<parallel> n2) s s'\<close>
           have "(s1, \<tau>, s1') \<in> trans (pnet np n1)"
            and "net_ip_action np \<tau> i n1 s1 s1'"
            and "s2' = s2" by simp_all
 
-        from `net_ips s1 = net_tree_ips n1` and `(s1, \<tau>, s1') \<in> trans (pnet np n1)`
+        from \<open>net_ips s1 = net_tree_ips n1\<close> and \<open>(s1, \<tau>, s1') \<in> trans (pnet np n1)\<close>
           have "net_ips s1' = net_tree_ips n1" by (metis pnet_maintains_dom)
 
-        from nm' [simplified `s' = SubnetS s1' s2'` `s2' = s2`]
-                        `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-                        `net_ips s1' = net_tree_ips n1`
-                        `net_ips s2 = net_tree_ips n2`
+        from nm' [simplified \<open>s' = SubnetS s1' s2'\<close> \<open>s2' = s2\<close>]
+                        \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+                        \<open>net_ips s1' = net_tree_ips n1\<close>
+                        \<open>net_ips s2 = net_tree_ips n2\<close>
           have "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))"
             by (rule netgmap_subnet_split1)
 
-        from `(s1, \<tau>, s1') \<in> trans (pnet np n1)`
-             `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-             `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))`
-             `s1 \<in> reachable (pnet np n1) TT`
-             `wf_net_tree n1`
-             `i\<in>net_ips s1`
-             `net_ip_action np \<tau> i n1 s1 s1'`
+        from \<open>(s1, \<tau>, s1') \<in> trans (pnet np n1)\<close>
+             \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+             \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))\<close>
+             \<open>s1 \<in> reachable (pnet np n1) TT\<close>
+             \<open>wf_net_tree n1\<close>
+             \<open>i\<in>net_ips s1\<close>
+             \<open>net_ip_action np \<tau> i n1 s1 s1'\<close>
           have "((\<sigma>, snd (netgmap sr s1)), \<tau>, (\<sigma>', snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
              by (rule IH1)
 
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `s2' = s2` show ?thesis
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>s2' = s2\<close> show ?thesis
           by (simp del: step_node_tau) (erule opnet_tau1)
       next
         assume "i\<in>net_ips s2"
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `net_ip_action np \<tau> i (n1 \<parallel> n2) s s'`
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>net_ip_action np \<tau> i (n1 \<parallel> n2) s s'\<close>
           have "(s2, \<tau>, s2') \<in> trans (pnet np n2)"
            and "net_ip_action np \<tau> i n2 s2 s2'"
            and "s1' = s1" by simp_all
 
-        from `net_ips s2 = net_tree_ips n2` and `(s2, \<tau>, s2') \<in> trans (pnet np n2)`
+        from \<open>net_ips s2 = net_tree_ips n2\<close> and \<open>(s2, \<tau>, s2') \<in> trans (pnet np n2)\<close>
           have "net_ips s2' = net_tree_ips n2" by (metis pnet_maintains_dom)
 
-        from nm' [simplified `s' = SubnetS s1' s2'` `s1' = s1`]
-                        `net_ips s1 = net_tree_ips n1`
-                        `net_ips s2' = net_tree_ips n2`
+        from nm' [simplified \<open>s' = SubnetS s1' s2'\<close> \<open>s1' = s1\<close>]
+                        \<open>net_ips s1 = net_tree_ips n1\<close>
+                        \<open>net_ips s2' = net_tree_ips n2\<close>
           have "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))"
             by (rule netgmap_subnet_split2)
 
-        from `(s2, \<tau>, s2') \<in> trans (pnet np n2)`
-             `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
-             `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))`
-             `s2 \<in> reachable (pnet np n2) TT`
-             `wf_net_tree n2`
-             `i\<in>net_ips s2`
-             `net_ip_action np \<tau> i n2 s2 s2'`
+        from \<open>(s2, \<tau>, s2') \<in> trans (pnet np n2)\<close>
+             \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
+             \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))\<close>
+             \<open>s2 \<in> reachable (pnet np n2) TT\<close>
+             \<open>wf_net_tree n2\<close>
+             \<open>i\<in>net_ips s2\<close>
+             \<open>net_ip_action np \<tau> i n2 s2 s2'\<close>
           have "((\<sigma>, snd (netgmap sr s2)), \<tau>, (\<sigma>', snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
              by (rule IH2)
 
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `s1' = s1` show ?thesis
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>s1' = s1\<close> show ?thesis
           by (simp del: step_node_tau) (erule opnet_tau2)
       qed
     qed
-    with `\<zeta> = snd (netgmap sr s)` have "((\<sigma>, \<zeta>), \<tau>, (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
+    with \<open>\<zeta> = snd (netgmap sr s)\<close> have "((\<sigma>, \<zeta>), \<tau>, (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
       by simp
-    moreover from `\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j` `i \<in> net_ips s` `\<zeta> = snd (netgmap sr s)`
+    moreover from \<open>\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j\<close> \<open>i \<in> net_ips s\<close> \<open>\<zeta> = snd (netgmap sr s)\<close>
       have "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j" by (metis net_ips_netgmap)
     ultimately have "((\<sigma>, \<zeta>), \<tau>, (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)
                      \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                      \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
-      using `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))` by simp
+      using \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))\<close> by simp
     thus "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), \<tau>, (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                   \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                   \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')" by auto
@@ -722,23 +722,23 @@ lemma transfer_deliver:
       by (metis delivered_to_net_ips pnet_deliver_single_node)
     from this(2) have "\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j"
       by (clarsimp intro!: netmap_is_fst_netgmap')
-    from `(s, i:deliver(d), s') \<in> trans (pnet np n)` have "net_ips s' = net_ips s"
+    from \<open>(s, i:deliver(d), s') \<in> trans (pnet np n)\<close> have "net_ips s' = net_ips s"
       by (rule pnet_maintains_dom [THEN sym])
     def \<sigma>' \<equiv> "\<lambda>j. if j = i then the (fst (netgmap sr s') i) else \<sigma> j"
-    from `\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j`
-         and `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close>
+         and \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j"
         unfolding \<sigma>'_def by clarsimp
 
     from assms(2) have "net_ips s = net_tree_ips n"
       by (rule pnet_net_ips_net_tree_ips)
 
-    from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<zeta> = snd (netgmap sr s)" by simp
 
-    from `\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j` `i \<in> net_ips s`
-         `net_ips s = net_tree_ips n` `net_ips s' = net_ips s`
-         `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close> \<open>i \<in> net_ips s\<close>
+         \<open>net_ips s = net_tree_ips n\<close> \<open>net_ips s' = net_ips s\<close>
+         \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
         unfolding \<sigma>'_def by - (rule ext, clarsimp)
 
@@ -747,7 +747,7 @@ lemma transfer_deliver:
 
     with assms(1, 3)
       have "((\<sigma>, snd (netgmap sr s)), i:deliver(d), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
-        using assms(2,4) `i\<in>net_ips s` and `net_ip_action np (i:deliver(d)) i n s s'`
+        using assms(2,4) \<open>i\<in>net_ips s\<close> and \<open>net_ip_action np (i:deliver(d)) i n s s'\<close>
     proof (induction n arbitrary: s s' \<zeta>)
       fix ii R\<^sub>i ns ns' \<zeta>
       assume "(ns, i:deliver(d), ns') \<in> trans (pnet np \<langle>ii; R\<^sub>i\<rangle>)"
@@ -760,7 +760,7 @@ lemma transfer_deliver:
       moreover with nsr obtain s s' R R' where "ns  = NodeS ii s R"
                                            and "ns' = NodeS ii s' R'"
          by (metis net_node_reachable_is_node node_sos_dest)
-      moreover from `i \<in> net_ips ns` and `ns  = NodeS ii s R` have "ii = i" by simp
+      moreover from \<open>i \<in> net_ips ns\<close> and \<open>ns  = NodeS ii s R\<close> have "ii = i" by simp
       ultimately have ntr: "(NodeS i s R, i:deliver(d), NodeS i s' R') \<in> node_sos (trans (np i))"
         by simp
       hence "R' = R" by (metis net_state.inject(1) node_deliverTE')
@@ -768,23 +768,23 @@ lemma transfer_deliver:
       from ntr have "(s, deliver d, s') \<in> trans (np i)"
         by (rule node_deliverTE') simp
 
-      from `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)` `ns  = NodeS ii s R` and `ii = i`
+      from \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close> \<open>ns  = NodeS ii s R\<close> and \<open>ii = i\<close>
         have "\<sigma> i = fst (sr s)" by simp (metis map_upd_Some_unfold)
 
-      moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
-                    `ns' = NodeS ii s' R'` and `ii = i`
+      moreover from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+                    \<open>ns' = NodeS ii s' R'\<close> and \<open>ii = i\<close>
         have "\<sigma>' i = fst (sr s')"
           unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
                                         metis (lifting, full_types) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), deliver d, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
-        using `(s, deliver d, s') \<in> trans (np i)` by (rule trans)
+        using \<open>(s, deliver d, s') \<in> trans (np i)\<close> by (rule trans)
 
-      with `\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j` `R'=R`
+      with \<open>\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j\<close> \<open>R'=R\<close>
         have "((\<sigma>, NodeS i (snd (sr s)) R), i:deliver(d), (\<sigma>', NodeS i (snd (sr s')) R'))
                                                                       \<in> onode_sos (trans (onp i))"
           by (metis onode_sos.onode_deliver)
 
-      with `ns  = NodeS ii s R` `ns' = NodeS ii s' R'` `ii = i`
+      with \<open>ns  = NodeS ii s R\<close> \<open>ns' = NodeS ii s' R'\<close> \<open>ii = i\<close>
         show "((\<sigma>, snd (netgmap sr ns)), i:deliver(d), (\<sigma>', snd (netgmap sr ns'))) \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)"
           by (simp add: onode_comps)
     next
@@ -818,104 +818,104 @@ lemma transfer_deliver:
         by (rule partial_deliverTE) auto
       from this(1) and nm have "netgmap sr (SubnetS s1 s2) = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>, \<zeta>)"
         by simp
-      from `s' = SubnetS s1' s2'` and nm'
+      from \<open>s' = SubnetS s1' s2'\<close> and nm'
         have "netgmap sr (SubnetS s1' s2') = netmask (net_tree_ips (n1 \<parallel> n2)) (\<sigma>', snd (netgmap sr s'))"
           by simp
 
-      from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1"
+      from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1"
                                     and "wf_net_tree n2"
                                     and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s1 \<in> reachable (pnet np n1) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s1 \<in> reachable (pnet np n1) TT"
         by (rule subnet_reachable(1))
       hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s2 \<in> reachable (pnet np n2) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s2 \<in> reachable (pnet np n2) TT"
         by (rule subnet_reachable(2))
       hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
           by (rule netgmap_subnet_split1)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
           by (rule netgmap_subnet_split2)
 
-      from `i\<in>net_ips s` and `s = SubnetS s1 s2` have "i\<in>net_ips s1 \<or> i\<in>net_ips s2" by auto
+      from \<open>i\<in>net_ips s\<close> and \<open>s = SubnetS s1 s2\<close> have "i\<in>net_ips s1 \<or> i\<in>net_ips s2" by auto
         thus "((\<sigma>, snd (netgmap sr s)), i:deliver(d), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp (n1 \<parallel> n2))"
       proof
         assume "i\<in>net_ips s1"
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `net_ip_action np (i:deliver(d)) i (n1 \<parallel> n2) s s'`
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>net_ip_action np (i:deliver(d)) i (n1 \<parallel> n2) s s'\<close>
           have "(s1, i:deliver(d), s1') \<in> trans (pnet np n1)"
            and "net_ip_action np (i:deliver(d)) i n1 s1 s1'"
            and "s2' = s2" by simp_all
 
-        from `net_ips s1 = net_tree_ips n1` and `(s1, i:deliver(d), s1') \<in> trans (pnet np n1)`
+        from \<open>net_ips s1 = net_tree_ips n1\<close> and \<open>(s1, i:deliver(d), s1') \<in> trans (pnet np n1)\<close>
           have "net_ips s1' = net_tree_ips n1" by (metis pnet_maintains_dom)
 
-        from nm' [simplified `s' = SubnetS s1' s2'` `s2' = s2`]
-                        `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-                        `net_ips s1' = net_tree_ips n1`
-                        `net_ips s2 = net_tree_ips n2`
+        from nm' [simplified \<open>s' = SubnetS s1' s2'\<close> \<open>s2' = s2\<close>]
+                        \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+                        \<open>net_ips s1' = net_tree_ips n1\<close>
+                        \<open>net_ips s2 = net_tree_ips n2\<close>
           have "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))"
             by (rule netgmap_subnet_split1)
 
-        from `(s1, i:deliver(d), s1') \<in> trans (pnet np n1)`
-             `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-             `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))`
-             `s1 \<in> reachable (pnet np n1) TT`
-             `wf_net_tree n1`
-             `i\<in>net_ips s1`
-             `net_ip_action np (i:deliver(d)) i n1 s1 s1'`
+        from \<open>(s1, i:deliver(d), s1') \<in> trans (pnet np n1)\<close>
+             \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+             \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))\<close>
+             \<open>s1 \<in> reachable (pnet np n1) TT\<close>
+             \<open>wf_net_tree n1\<close>
+             \<open>i\<in>net_ips s1\<close>
+             \<open>net_ip_action np (i:deliver(d)) i n1 s1 s1'\<close>
           have "((\<sigma>, snd (netgmap sr s1)), i:deliver(d), (\<sigma>', snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
              by (rule IH1)
 
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `s2' = s2` show ?thesis
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>s2' = s2\<close> show ?thesis
           by simp (erule opnet_deliver1)
       next
         assume "i\<in>net_ips s2"
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `net_ip_action np (i:deliver(d)) i (n1 \<parallel> n2) s s'`
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>net_ip_action np (i:deliver(d)) i (n1 \<parallel> n2) s s'\<close>
           have "(s2, i:deliver(d), s2') \<in> trans (pnet np n2)"
            and "net_ip_action np (i:deliver(d)) i n2 s2 s2'"
            and "s1' = s1" by simp_all
 
-        from `net_ips s2 = net_tree_ips n2` and `(s2, i:deliver(d), s2') \<in> trans (pnet np n2)`
+        from \<open>net_ips s2 = net_tree_ips n2\<close> and \<open>(s2, i:deliver(d), s2') \<in> trans (pnet np n2)\<close>
           have "net_ips s2' = net_tree_ips n2" by (metis pnet_maintains_dom)
 
-        from nm' [simplified `s' = SubnetS s1' s2'` `s1' = s1`]
-                        `net_ips s1 = net_tree_ips n1`
-                        `net_ips s2' = net_tree_ips n2`
+        from nm' [simplified \<open>s' = SubnetS s1' s2'\<close> \<open>s1' = s1\<close>]
+                        \<open>net_ips s1 = net_tree_ips n1\<close>
+                        \<open>net_ips s2' = net_tree_ips n2\<close>
           have "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))"
             by (rule netgmap_subnet_split2)
 
-        from `(s2, i:deliver(d), s2') \<in> trans (pnet np n2)`
-             `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
-             `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))`
-             `s2 \<in> reachable (pnet np n2) TT`
-             `wf_net_tree n2`
-             `i\<in>net_ips s2`
-             `net_ip_action np (i:deliver(d)) i n2 s2 s2'`
+        from \<open>(s2, i:deliver(d), s2') \<in> trans (pnet np n2)\<close>
+             \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
+             \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))\<close>
+             \<open>s2 \<in> reachable (pnet np n2) TT\<close>
+             \<open>wf_net_tree n2\<close>
+             \<open>i\<in>net_ips s2\<close>
+             \<open>net_ip_action np (i:deliver(d)) i n2 s2 s2'\<close>
           have "((\<sigma>, snd (netgmap sr s2)), i:deliver(d), (\<sigma>', snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
              by (rule IH2)
 
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `s1' = s1` show ?thesis
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>s1' = s1\<close> show ?thesis
           by simp (erule opnet_deliver2)
       qed
     qed
-    with `\<zeta> = snd (netgmap sr s)` have "((\<sigma>, \<zeta>), i:deliver(d), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
+    with \<open>\<zeta> = snd (netgmap sr s)\<close> have "((\<sigma>, \<zeta>), i:deliver(d), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
       by simp
-    moreover from `\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j` `i \<in> net_ips s` `\<zeta> = snd (netgmap sr s)`
+    moreover from \<open>\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j\<close> \<open>i \<in> net_ips s\<close> \<open>\<zeta> = snd (netgmap sr s)\<close>
       have "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j" by (metis net_ips_netgmap)
     ultimately have "((\<sigma>, \<zeta>), i:deliver(d), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)
                      \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                      \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
-      using `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))` by simp
+      using \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))\<close> by simp
     thus "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), i:deliver(d), (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                   \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                   \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')" by auto
@@ -934,15 +934,15 @@ lemma transfer_arrive':
     with assms(1) have "net_ips s' = net_tree_ips n"
       by (metis pnet_maintains_dom)
 
-    from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<zeta> = snd (netgmap sr s)" by simp
 
-    from `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
+    from \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')\<close>
       have "\<zeta>' = snd (netgmap sr s')"
        and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
          by simp_all
 
-    from assms(1-3) `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))` assms(5)
+    from assms(1-3) \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))\<close> assms(5)
       have "((\<sigma>, snd (netgmap sr s)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
       proof (induction n arbitrary: s s' \<zeta> H K)
         fix ii R\<^sub>i ns ns' \<zeta> H K
@@ -963,18 +963,18 @@ lemma transfer_arrive':
           assume "(s, receive m, s') \<in> trans (np ii)"
              and "H = {ii}"
              and "K = {}"
-          from `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)` and `ns  = NodeS ii s R`
+          from \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close> and \<open>ns  = NodeS ii s R\<close>
             have "\<sigma> ii = fst (sr s)"
               by simp (metis map_upd_Some_unfold)
-          moreover from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
-                        and `ns' = NodeS ii s' R`
+          moreover from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+                        and \<open>ns' = NodeS ii s' R\<close>
             have "\<sigma>' ii = fst (sr s')" by simp (metis map_upd_Some_unfold)
           ultimately have "((\<sigma>, snd (sr s)), receive m, (\<sigma>', snd (sr s'))) \<in> trans (onp ii)"
-            using `(s, receive m, s') \<in> trans (np ii)` by (rule trans)
+            using \<open>(s, receive m, s') \<in> trans (np ii)\<close> by (rule trans)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), {ii}\<not>{}:arrive(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_receive)
-          with `H={ii}` and `K={}`
+          with \<open>H={ii}\<close> and \<open>K={}\<close>
             show "((\<sigma>, NodeS ii (snd (sr s)) R), H\<not>K:arrive(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
               by simp
@@ -982,19 +982,19 @@ lemma transfer_arrive':
           assume "H = {}"
              and "s = s'"
              and "K = {ii}"
-          from `s = s'` `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
-                        `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)`
-                        `ns = NodeS ii s R` and `ns' = NodeS ii s' R`
+          from \<open>s = s'\<close> \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+                        \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close>
+                        \<open>ns = NodeS ii s R\<close> and \<open>ns' = NodeS ii s' R\<close>
             have "\<sigma>' ii = \<sigma> ii" by simp (metis option.sel)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), {}\<not>{ii}:arrive(m), (\<sigma>', NodeS ii (snd (sr s)) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_arrive)
-          with `H={}` `K={ii}` and `s = s'`
+          with \<open>H={}\<close> \<open>K={ii}\<close> and \<open>s = s'\<close>
             show "((\<sigma>, NodeS ii (snd (sr s)) R), H\<not>K:arrive(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
               by simp
         qed
-      with `ns = NodeS ii s R` `ns' = NodeS ii s' R`
+      with \<open>ns = NodeS ii s R\<close> \<open>ns' = NodeS ii s' R\<close>
         show "((\<sigma>, snd (netgmap sr ns)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr ns')))
                                                              \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)"
           by (simp add: onode_comps)
@@ -1033,64 +1033,64 @@ lemma transfer_arrive':
            and "H = H1 \<union> H2"
            and "K = K1 \<union> K2"
 
-        from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1"
+        from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1"
                                       and "wf_net_tree n2"
                                       and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-        from sr [simplified `s = SubnetS s1 s2`] have "s1 \<in> reachable (pnet np n1) TT"
+        from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s1 \<in> reachable (pnet np n1) TT"
           by (rule subnet_reachable(1))
         hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
         with tr1 have "net_ips s1' = net_tree_ips n1" by (metis pnet_maintains_dom)
 
-        from sr [simplified `s = SubnetS s1 s2`] have "s2 \<in> reachable (pnet np n2) TT"
+        from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s2 \<in> reachable (pnet np n2) TT"
           by (rule subnet_reachable(2))
         hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
         with tr2 have "net_ips s2' = net_tree_ips n2" by (metis pnet_maintains_dom)
 
-        from `(s1, H1\<not>K1:arrive(m), s1') \<in> trans (pnet np n1)`
-             `s1 \<in> reachable (pnet np n1) TT`
+        from \<open>(s1, H1\<not>K1:arrive(m), s1') \<in> trans (pnet np n1)\<close>
+             \<open>s1 \<in> reachable (pnet np n1) TT\<close>
           have "((\<sigma>, snd (netgmap sr s1)), H1\<not>K1:arrive(m), (\<sigma>', snd (netgmap sr s1')))
                                                                             \<in> trans (opnet onp n1)"
-          proof (rule IH1 [OF _ _ _ _ `wf_net_tree n1`])
-            from nm [simplified `s = SubnetS s1 s2`]
-                 `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-                 `net_ips s1 = net_tree_ips n1`
-                 `net_ips s2 = net_tree_ips n2` 
+          proof (rule IH1 [OF _ _ _ _ \<open>wf_net_tree n1\<close>])
+            from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+                 \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+                 \<open>net_ips s1 = net_tree_ips n1\<close>
+                 \<open>net_ips s2 = net_tree_ips n2\<close> 
               show "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
                 by (rule netgmap_subnet_split1)
           next
-            from nm' [simplified `s' = SubnetS s1' s2'`]
-                 `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-                 `net_ips s1' = net_tree_ips n1`
-                 `net_ips s2' = net_tree_ips n2` 
+            from nm' [simplified \<open>s' = SubnetS s1' s2'\<close>]
+                 \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+                 \<open>net_ips s1' = net_tree_ips n1\<close>
+                 \<open>net_ips s2' = net_tree_ips n2\<close> 
               show "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))"
                 by (rule netgmap_subnet_split1)
           qed
 
-        moreover from `(s2, H2\<not>K2:arrive(m), s2') \<in> trans (pnet np n2)`
-                      `s2 \<in> reachable (pnet np n2) TT`
+        moreover from \<open>(s2, H2\<not>K2:arrive(m), s2') \<in> trans (pnet np n2)\<close>
+                      \<open>s2 \<in> reachable (pnet np n2) TT\<close>
           have "((\<sigma>, snd (netgmap sr s2)), H2\<not>K2:arrive(m), (\<sigma>', snd (netgmap sr s2')))
                                                                             \<in> trans (opnet onp n2)"
-          proof (rule IH2 [OF _ _ _ _ `wf_net_tree n2`])
-            from nm [simplified `s = SubnetS s1 s2`]
-                 `net_ips s1 = net_tree_ips n1`
-                 `net_ips s2 = net_tree_ips n2` 
+          proof (rule IH2 [OF _ _ _ _ \<open>wf_net_tree n2\<close>])
+            from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+                 \<open>net_ips s1 = net_tree_ips n1\<close>
+                 \<open>net_ips s2 = net_tree_ips n2\<close> 
               show "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
                 by (rule netgmap_subnet_split2)
           next
-            from nm' [simplified `s' = SubnetS s1' s2'`]
-                 `net_ips s1' = net_tree_ips n1`
-                 `net_ips s2' = net_tree_ips n2` 
+            from nm' [simplified \<open>s' = SubnetS s1' s2'\<close>]
+                 \<open>net_ips s1' = net_tree_ips n1\<close>
+                 \<open>net_ips s2' = net_tree_ips n2\<close> 
               show "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))"
                 by (rule netgmap_subnet_split2)
           qed
         ultimately show "((\<sigma>, snd (netgmap sr s)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr s')))
                                                                      \<in> trans (opnet onp (n1 \<parallel> n2))"
-          using `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` `H = H1 \<union> H2` `K = K1 \<union> K2`
+          using \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> \<open>H = H1 \<union> H2\<close> \<open>K = K1 \<union> K2\<close>
             by simp (rule opnet_sos.opnet_arrive)
       qed
     qed
-    with `\<zeta> = snd (netgmap sr s)` and `\<zeta>' = snd (netgmap sr s')`
+    with \<open>\<zeta> = snd (netgmap sr s)\<close> and \<open>\<zeta>' = snd (netgmap sr s')\<close>
       show "((\<sigma>, \<zeta>), H\<not>K:arrive(m), (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)"
         by simp
   qed
@@ -1113,19 +1113,19 @@ lemma transfer_arrive:
 
     have "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
     proof (rule prod_eqI)
-      from `net_ips s' = net_tree_ips n`
+      from \<open>net_ips s' = net_tree_ips n\<close>
         show "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
           unfolding \<sigma>'_def by - (rule ext, clarsimp)
     qed simp
 
     moreover with assms(1-3)
     have "((\<sigma>, \<zeta>), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
-      using `wf_net_tree n` by (rule transfer_arrive')
+      using \<open>wf_net_tree n\<close> by (rule transfer_arrive')
 
     moreover have "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
     proof -
       have "\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j" unfolding \<sigma>'_def by simp
-      with assms(3) and `net_ips s = net_tree_ips n`
+      with assms(3) and \<open>net_ips s = net_tree_ips n\<close>
         show ?thesis
           by clarsimp (metis (mono_tags) net_ips_netgmap snd_conv)
     qed
@@ -1151,19 +1151,19 @@ lemma transfer_cast:
       by (metis pnet_maintains_dom)
     have "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
     proof (rule prod_eqI)
-      from `net_ips s' = net_tree_ips n`
+      from \<open>net_ips s' = net_tree_ips n\<close>
         show "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
       unfolding \<sigma>'_def by - (rule ext, clarsimp simp add: some_the_fst_netgmap)
     qed simp
 
-    from `net_ips s' = net_tree_ips n` and `net_ips s = net_tree_ips n` 
+    from \<open>net_ips s' = net_tree_ips n\<close> and \<open>net_ips s = net_tree_ips n\<close> 
       have "\<forall>j. j\<notin>net_ips (snd (netgmap sr s)) \<longrightarrow> \<sigma>' j = \<sigma> j"
         unfolding \<sigma>'_def by simp
 
-    from `netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)`
+    from \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<zeta> = snd (netgmap sr s)" by simp
 
-    from assms(1-3) `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))` assms(4)
+    from assms(1-3) \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))\<close> assms(4)
       have "((\<sigma>, snd (netgmap sr s)), mR:*cast(m), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
       proof (induction n arbitrary: s s' \<zeta> mR)
         fix ii R\<^sub>i ns ns' \<zeta> mR
@@ -1179,39 +1179,39 @@ lemma transfer_cast:
         ultimately have "(NodeS ii s R, mR:*cast(m), NodeS ii s' R) \<in> node_sos (trans (np ii))"
           by simp
 
-        from `netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)` and `ns  = NodeS ii s R`
+        from \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close> and \<open>ns  = NodeS ii s R\<close>
           have "\<sigma> ii = fst (sr s)"
             by simp (metis map_upd_Some_unfold)
-        from `netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))`
-             and `ns' = NodeS ii s' R`
+        from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+             and \<open>ns' = NodeS ii s' R\<close>
           have "\<sigma>' ii = fst (sr s')" by simp (metis map_upd_Some_unfold)
 
-        from `(NodeS ii s R, mR:*cast(m), NodeS ii s' R) \<in> node_sos (trans (np ii))`
+        from \<open>(NodeS ii s R, mR:*cast(m), NodeS ii s' R) \<in> node_sos (trans (np ii))\<close>
           have "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
         proof (rule node_castTE)
           assume "(s, broadcast m, s') \<in> trans (np ii)"
              and "R = mR"
-          from `\<sigma> ii = fst (sr s)` `\<sigma>' ii = fst (sr s')` and this(1)
+          from \<open>\<sigma> ii = fst (sr s)\<close> \<open>\<sigma>' ii = fst (sr s')\<close> and this(1)
             have "((\<sigma>, snd (sr s)), broadcast m, (\<sigma>', snd (sr s'))) \<in> trans (onp ii)"
               by (rule trans)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), R:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_bcast)
-          with `R=mR` show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
+          with \<open>R=mR\<close> show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
               by simp
         next
           fix D
           assume "(s, groupcast D m, s') \<in> trans (np ii)"
              and "mR = R \<inter> D"
-          from `\<sigma> ii = fst (sr s)` `\<sigma>' ii = fst (sr s')` and this(1)
+          from \<open>\<sigma> ii = fst (sr s)\<close> \<open>\<sigma>' ii = fst (sr s')\<close> and this(1)
             have "((\<sigma>, snd (sr s)), groupcast D m, (\<sigma>', snd (sr s'))) \<in> trans (onp ii)"
               by (rule trans)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), (R \<inter> D):*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_gcast)
-          with `mR = R \<inter> D` show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
+          with \<open>mR = R \<inter> D\<close> show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
               by simp
         next
@@ -1219,17 +1219,17 @@ lemma transfer_cast:
           assume "(s, unicast d m, s') \<in> trans (np ii)"
              and "d \<in> R"
              and "mR = {d}"
-          from `\<sigma> ii = fst (sr s)` `\<sigma>' ii = fst (sr s')` and this(1)
+          from \<open>\<sigma> ii = fst (sr s)\<close> \<open>\<sigma>' ii = fst (sr s')\<close> and this(1)
             have "((\<sigma>, snd (sr s)), unicast d m, (\<sigma>', snd (sr s'))) \<in> trans (onp ii)"
               by (rule trans)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), {d}:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
-            using `d\<in>R` by (rule onode_ucast)
-          with `mR={d}` show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
+            using \<open>d\<in>R\<close> by (rule onode_ucast)
+          with \<open>mR={d}\<close> show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by simp
         qed
-      with `ns = NodeS ii s R` `ns' = NodeS ii s' R`
+      with \<open>ns = NodeS ii s R\<close> \<open>ns' = NodeS ii s' R\<close>
         show "((\<sigma>, snd (netgmap sr ns)), mR:*cast(m), (\<sigma>', snd (netgmap sr ns')))
                                                              \<in> trans (opnet onp \<langle>ii; R\<^sub>i\<rangle>)"
           by (simp add: onode_comps)
@@ -1267,43 +1267,43 @@ lemma transfer_cast:
                                   \<and> (s2, mR:*cast(m), s2') \<in> trans (pnet np n2))"
           by (rule partial_castTE) metis+
 
-      from `wf_net_tree (n1 \<parallel> n2)` have "wf_net_tree n1"
+      from \<open>wf_net_tree (n1 \<parallel> n2)\<close> have "wf_net_tree n1"
                                     and "wf_net_tree n2"
                                     and "net_tree_ips n1 \<inter> net_tree_ips n2 = {}" by auto
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s1 \<in> reachable (pnet np n1) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s1 \<in> reachable (pnet np n1) TT"
         by (rule subnet_reachable(1))
       hence "net_ips s1 = net_tree_ips n1" by (rule pnet_net_ips_net_tree_ips)
       with trtr have "net_ips s1' = net_tree_ips n1" by (metis pnet_maintains_dom)
 
-      from sr [simplified `s = SubnetS s1 s2`] have "s2 \<in> reachable (pnet np n2) TT"
+      from sr [simplified \<open>s = SubnetS s1 s2\<close>] have "s2 \<in> reachable (pnet np n2) TT"
         by (rule subnet_reachable(2))
       hence "net_ips s2 = net_tree_ips n2" by (rule pnet_net_ips_net_tree_ips)
       with trtr have "net_ips s2' = net_tree_ips n2" by (metis pnet_maintains_dom)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))"
           by (rule netgmap_subnet_split1)
 
-      from nm' [simplified `s' = SubnetS s1' s2'`]
-           `net_tree_ips n1 \<inter> net_tree_ips n2 = {}`
-           `net_ips s1' = net_tree_ips n1`
-           `net_ips s2' = net_tree_ips n2` 
+      from nm' [simplified \<open>s' = SubnetS s1' s2'\<close>]
+           \<open>net_tree_ips n1 \<inter> net_tree_ips n2 = {}\<close>
+           \<open>net_ips s1' = net_tree_ips n1\<close>
+           \<open>net_ips s2' = net_tree_ips n2\<close> 
         have "netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))"
           by (rule netgmap_subnet_split1)
 
-      from nm [simplified `s = SubnetS s1 s2`]
-           `net_ips s1 = net_tree_ips n1`
-           `net_ips s2 = net_tree_ips n2` 
+      from nm [simplified \<open>s = SubnetS s1 s2\<close>]
+           \<open>net_ips s1 = net_tree_ips n1\<close>
+           \<open>net_ips s2 = net_tree_ips n2\<close> 
         have "netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))"
           by (rule netgmap_subnet_split2)
 
-      from nm' [simplified `s' = SubnetS s1' s2'`]
-           `net_ips s1' = net_tree_ips n1`
-           `net_ips s2' = net_tree_ips n2` 
+      from nm' [simplified \<open>s' = SubnetS s1' s2'\<close>]
+           \<open>net_ips s1' = net_tree_ips n1\<close>
+           \<open>net_ips s2' = net_tree_ips n2\<close> 
         have "netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))"
           by (rule netgmap_subnet_split2)
 
@@ -1312,58 +1312,58 @@ lemma transfer_cast:
       proof (elim disjE conjE)
         assume "(s1, mR:*cast(m), s1') \<in> trans (pnet np n1)"
            and "(s2, H\<not>K:arrive(m), s2') \<in> trans (pnet np n2)"
-        from `(s1, mR:*cast(m), s1') \<in> trans (pnet np n1)`
-             `s1 \<in> reachable (pnet np n1) TT`
-             `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-             `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))`
-             `wf_net_tree n1`
+        from \<open>(s1, mR:*cast(m), s1') \<in> trans (pnet np n1)\<close>
+             \<open>s1 \<in> reachable (pnet np n1) TT\<close>
+             \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+             \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))\<close>
+             \<open>wf_net_tree n1\<close>
           have "((\<sigma>, snd (netgmap sr s1)), mR:*cast(m), (\<sigma>', snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
             by (rule IH1)
 
-        moreover from `(s2, H\<not>K:arrive(m), s2') \<in> trans (pnet np n2)`
-             `s2 \<in> reachable (pnet np n2) TT`
-             `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
-             `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))`
-             `wf_net_tree n2`
+        moreover from \<open>(s2, H\<not>K:arrive(m), s2') \<in> trans (pnet np n2)\<close>
+             \<open>s2 \<in> reachable (pnet np n2) TT\<close>
+             \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
+             \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))\<close>
+             \<open>wf_net_tree n2\<close>
           have "((\<sigma>, snd (netgmap sr s2)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
             by (rule transfer_arrive')
 
         ultimately have "((\<sigma>, SubnetS (snd (netgmap sr s1)) (snd (netgmap sr s2))), mR:*cast(m),
                           (\<sigma>', SubnetS (snd (netgmap sr s1')) (snd (netgmap sr s2'))))
                              \<in> opnet_sos (trans (opnet onp n1)) (trans (opnet onp n2))"
-          using `H \<subseteq> mR` and `K \<inter> mR = {}` by (rule opnet_sos.intros(1))
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` show ?thesis by simp
+          using \<open>H \<subseteq> mR\<close> and \<open>K \<inter> mR = {}\<close> by (rule opnet_sos.intros(1))
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> show ?thesis by simp
       next
         assume "(s1, H\<not>K:arrive(m), s1') \<in> trans (pnet np n1)"
            and "(s2, mR:*cast(m), s2') \<in> trans (pnet np n2)"
-        from `(s1, H\<not>K:arrive(m), s1') \<in> trans (pnet np n1)`
-             `s1 \<in> reachable (pnet np n1) TT`
-             `netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))`
-             `netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))`
-             `wf_net_tree n1`
+        from \<open>(s1, H\<not>K:arrive(m), s1') \<in> trans (pnet np n1)\<close>
+             \<open>s1 \<in> reachable (pnet np n1) TT\<close>
+             \<open>netgmap sr s1 = netmask (net_tree_ips n1) (\<sigma>, snd (netgmap sr s1))\<close>
+             \<open>netgmap sr s1' = netmask (net_tree_ips n1) (\<sigma>', snd (netgmap sr s1'))\<close>
+             \<open>wf_net_tree n1\<close>
           have "((\<sigma>, snd (netgmap sr s1)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr s1'))) \<in> trans (opnet onp n1)"
             by (rule transfer_arrive')
 
-        moreover from `(s2, mR:*cast(m), s2') \<in> trans (pnet np n2)`
-             `s2 \<in> reachable (pnet np n2) TT`
-             `netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))`
-             `netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))`
-             `wf_net_tree n2`
+        moreover from \<open>(s2, mR:*cast(m), s2') \<in> trans (pnet np n2)\<close>
+             \<open>s2 \<in> reachable (pnet np n2) TT\<close>
+             \<open>netgmap sr s2 = netmask (net_tree_ips n2) (\<sigma>, snd (netgmap sr s2))\<close>
+             \<open>netgmap sr s2' = netmask (net_tree_ips n2) (\<sigma>', snd (netgmap sr s2'))\<close>
+             \<open>wf_net_tree n2\<close>
           have "((\<sigma>, snd (netgmap sr s2)), mR:*cast(m), (\<sigma>', snd (netgmap sr s2'))) \<in> trans (opnet onp n2)"
             by (rule IH2)
 
         ultimately have "((\<sigma>, SubnetS (snd (netgmap sr s1)) (snd (netgmap sr s2))), mR:*cast(m),
                           (\<sigma>', SubnetS (snd (netgmap sr s1')) (snd (netgmap sr s2'))))
                              \<in> opnet_sos (trans (opnet onp n1)) (trans (opnet onp n2))"
-          using `H \<subseteq> mR` and `K \<inter> mR = {}` by (rule opnet_sos.intros(2))
-        with `s = SubnetS s1 s2` `s' = SubnetS s1' s2'` show ?thesis by simp
+          using \<open>H \<subseteq> mR\<close> and \<open>K \<inter> mR = {}\<close> by (rule opnet_sos.intros(2))
+        with \<open>s = SubnetS s1 s2\<close> \<open>s' = SubnetS s1' s2'\<close> show ?thesis by simp
       qed
     qed
-    with `\<zeta> = snd (netgmap sr s)` have "((\<sigma>, \<zeta>), mR:*cast(m), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
+    with \<open>\<zeta> = snd (netgmap sr s)\<close> have "((\<sigma>, \<zeta>), mR:*cast(m), (\<sigma>', snd (netgmap sr s'))) \<in> trans (opnet onp n)"
       by simp
-    moreover from `\<forall>j. j\<notin>net_ips (snd (netgmap sr s)) \<longrightarrow> \<sigma>' j = \<sigma> j` `\<zeta> = snd (netgmap sr s)`
+    moreover from \<open>\<forall>j. j\<notin>net_ips (snd (netgmap sr s)) \<longrightarrow> \<sigma>' j = \<sigma> j\<close> \<open>\<zeta> = snd (netgmap sr s)\<close>
       have "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j" by simp
-    moreover note `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))`
+    moreover note \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))\<close>
     ultimately show "\<exists>\<sigma>' \<zeta>'. ((\<sigma>, \<zeta>), mR:*cast(m), (\<sigma>', \<zeta>')) \<in> trans (opnet onp n)
                            \<and> (\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j)
                            \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
@@ -1445,7 +1445,7 @@ lemma transfer_action:
                     \<and> netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
         by (cases a)
            ((elim transfer_action_pnet_closed
-                  transfer_pnet_action [OF `s \<in> reachable (pnet np n) TT` assms(2-3)])?,
+                  transfer_pnet_action [OF \<open>s \<in> reachable (pnet np n) TT\<close> assms(2-3)])?,
             (auto intro!: exI)[1])+
   qed
 
@@ -1458,7 +1458,7 @@ lemma pnet_reachable_transfer':
     fix s
     assume "s \<in> init (closed (pnet np n))"
     hence "s \<in> init (pnet np n)" by simp
-    with `wf_net_tree n` have "netgmap sr s \<in> netmask (net_tree_ips n) ` init (opnet onp n)"
+    with \<open>wf_net_tree n\<close> have "netgmap sr s \<in> netmask (net_tree_ips n) ` init (opnet onp n)"
       by (rule init_pnet_opnet)
     hence "netgmap sr s \<in> netmask (net_tree_ips n) ` init (oclosed (opnet onp n))"
       by simp
@@ -1475,14 +1475,14 @@ lemma pnet_reachable_transfer':
     from this(2) obtain \<sigma> \<zeta> where "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
                               and "(\<sigma>, \<zeta>) \<in> ?oreachable n"
       by clarsimp
-    from `s \<in> reachable (closed (pnet np n)) TT` this(1) `wf_net_tree n`
-         and `(s, a, s') \<in> trans (closed (pnet np n))`
+    from \<open>s \<in> reachable (closed (pnet np n)) TT\<close> this(1) \<open>wf_net_tree n\<close>
+         and \<open>(s, a, s') \<in> trans (closed (pnet np n))\<close>
       obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
                      and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
         by (rule transfer_action)
-    from `(\<sigma>, \<zeta>) \<in> ?oreachable n` and this(1) have "(\<sigma>', \<zeta>') \<in> ?oreachable n"
+    from \<open>(\<sigma>, \<zeta>) \<in> ?oreachable n\<close> and this(1) have "(\<sigma>', \<zeta>') \<in> ?oreachable n"
       by (rule oreachable_local) simp
-    with `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
+    with \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')\<close>
       show "netgmap sr s' \<in> netmask (net_tree_ips n) ` ?oreachable n" by (rule image_eqI)
   qed
 
@@ -1545,18 +1545,18 @@ lemma initmissing_oreachable_netmask [elim]:
         assume "i\<in>net_ips s"
         hence "fst (initmissing (netgmap sr s)) i = the (fst (netgmap sr s) i)"
           by (rule in_net_ips_fst_init_missing)
-        moreover from `i\<in>net_ips s` have "Some (the (fst (netgmap sr s) i)) = fst (netgmap sr s) i"
+        moreover from \<open>i\<in>net_ips s\<close> have "Some (the (fst (netgmap sr s) i)) = fst (netgmap sr s) i"
           by (rule some_the_fst_netgmap)
         ultimately show ?thesis
-          using `initmissing (netgmap sr s) = (\<sigma>, \<zeta>)` by simp
+          using \<open>initmissing (netgmap sr s) = (\<sigma>, \<zeta>)\<close> by simp
       qed simp
     next
-      from `initmissing (netgmap sr s) = (\<sigma>, \<zeta>)`
+      from \<open>initmissing (netgmap sr s) = (\<sigma>, \<zeta>)\<close>
         show "snd (netgmap sr s) = snd (netmask (net_ips s) (\<sigma>, \<zeta>))"
           by simp
     qed
     with assms(2) have "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)" by simp
-    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable n`
+    moreover from \<open>(\<sigma>, \<zeta>) \<in> ?oreachable n\<close>
       have "netmask (net_ips s) (\<sigma>, \<zeta>) \<in> netmask (net_ips s) ` ?oreachable n"
         by (rule imageI)
     ultimately show ?thesis
@@ -1573,12 +1573,12 @@ lemma pnet_reachable_transfer:
     assume "s \<in> init (closed (pnet np n))"
     hence "s \<in> init (pnet np n)" by simp
 
-    from `wf_net_tree n` have "initmissing (netgmap sr s) \<in> init (opnet onp n)"
+    from \<open>wf_net_tree n\<close> have "initmissing (netgmap sr s) \<in> init (opnet onp n)"
     proof (rule init_lifted [THEN set_mp], intro CollectI exI conjI allI)
       show "initmissing (netgmap sr s) = (fst (initmissing (netgmap sr s)), snd (netgmap sr s))"
         by (metis snd_initmissing surjective_pairing)
     next
-      from `s \<in> init (pnet np n)` show "s \<in> init (pnet np n)" ..
+      from \<open>s \<in> init (pnet np n)\<close> show "s \<in> init (pnet np n)" ..
     next
       fix i
       show "if i \<in> net_tree_ips n
@@ -1586,11 +1586,11 @@ lemma pnet_reachable_transfer:
             else (fst (initmissing (netgmap sr s))) i \<in> (fst \<circ> sr) ` init (np i)"
       proof (cases "i \<in> net_tree_ips n", simp_all only: if_True if_False)
         assume "i \<in> net_tree_ips n"
-        with `s \<in> init (pnet np n)` have "i \<in> net_ips s" ..
+        with \<open>s \<in> init (pnet np n)\<close> have "i \<in> net_ips s" ..
         thus "fst (initmissing (netgmap sr s)) i = the (fst (netgmap sr s) i)" by simp
       next
         assume "i \<notin> net_tree_ips n"
-        with `s \<in> init (pnet np n)` have "i \<notin> net_ips s" ..
+        with \<open>s \<in> init (pnet np n)\<close> have "i \<notin> net_ips s" ..
         hence "fst (initmissing (netgmap sr s)) i = someinit i" by simp
         moreover have "someinit i \<in> (fst \<circ> sr) ` init (np i)"
         unfolding someinit_def proof (rule someI_ex)
@@ -1609,42 +1609,42 @@ lemma pnet_reachable_transfer:
        and "initmissing (netgmap sr s) \<in> ?oreachable n"
     from this(1) have "s \<in> reachable (pnet np n) TT" ..
     hence "net_ips s = net_tree_ips n" by (rule pnet_net_ips_net_tree_ips)
-    with `initmissing (netgmap sr s) \<in> ?oreachable n`
+    with \<open>initmissing (netgmap sr s) \<in> ?oreachable n\<close>
       have "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
         by (rule initmissing_oreachable_netmask)
 
     obtain \<sigma> \<zeta> where "(\<sigma>, \<zeta>) = initmissing (netgmap sr s)" by (metis surj_pair)
-    with `initmissing (netgmap sr s) \<in> ?oreachable n`
+    with \<open>initmissing (netgmap sr s) \<in> ?oreachable n\<close>
       have "(\<sigma>, \<zeta>) \<in> ?oreachable n" by simp
-    from `(\<sigma>, \<zeta>) = initmissing (netgmap sr s)` and `net_ips s = net_tree_ips n` [symmetric]
+    from \<open>(\<sigma>, \<zeta>) = initmissing (netgmap sr s)\<close> and \<open>net_ips s = net_tree_ips n\<close> [symmetric]
       have "netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)"
         by (clarsimp simp add: netmask_initmissing_netgmap)
 
-    with `s \<in> reachable (closed (pnet np n)) TT`
+    with \<open>s \<in> reachable (closed (pnet np n)) TT\<close>
       obtain \<sigma>' \<zeta>' where "((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))"
                      and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
-        using `wf_net_tree n` and `(s, a, s') \<in> trans (closed (pnet np n))`
+        using \<open>wf_net_tree n\<close> and \<open>(s, a, s') \<in> trans (closed (pnet np n))\<close>
         by (rule transfer_action)
 
-    from `(\<sigma>, \<zeta>) \<in> ?oreachable n` have "net_ips \<zeta> = net_tree_ips n"
+    from \<open>(\<sigma>, \<zeta>) \<in> ?oreachable n\<close> have "net_ips \<zeta> = net_tree_ips n"
       by (rule opnet_net_ips_net_tree_ips [OF oclosed_oreachable_oreachable])
-    with `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))`
+    with \<open>((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))\<close>
       have "\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j"
         by (clarsimp elim!: ocomplete_no_change)
     have "initmissing (netgmap sr s') = (\<sigma>', \<zeta>')"
     proof (intro prod_eqI ext)
       fix i
-      from `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
-           `\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j`
-           `(\<sigma>, \<zeta>) = initmissing (netgmap sr s)`
-           `net_ips s = net_tree_ips n`
+      from \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')\<close>
+           \<open>\<forall>j. j\<notin>net_tree_ips n \<longrightarrow> \<sigma>' j = \<sigma> j\<close>
+           \<open>(\<sigma>, \<zeta>) = initmissing (netgmap sr s)\<close>
+           \<open>net_ips s = net_tree_ips n\<close>
       show "fst (initmissing (netgmap sr s')) i = fst (\<sigma>', \<zeta>') i"
         unfolding initmissing_def by simp
     next
-      from `netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')`
+      from \<open>netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')\<close>
         show "snd (initmissing (netgmap sr s')) = snd (\<sigma>', \<zeta>')" by simp
     qed
-    moreover from `(\<sigma>, \<zeta>) \<in> ?oreachable n` `((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))`
+    moreover from \<open>(\<sigma>, \<zeta>) \<in> ?oreachable n\<close> \<open>((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>')) \<in> trans (oclosed (opnet onp n))\<close>
       have "(\<sigma>', \<zeta>') \<in> ?oreachable n"
         by (rule oreachable_local) (rule TrueI)
 
@@ -1722,13 +1722,13 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
         by auto
       from this(5) have "\<forall>j. j \<noteq> i \<longrightarrow> \<sigma> j \<in> (fst \<circ> sr) ` init (np j)"
         by auto
-      with `p \<in> init (np i)` and `\<sigma> i = fst (sr p)` have "(\<sigma>, snd (sr p)) \<in> init (onp i)"
+      with \<open>p \<in> init (np i)\<close> and \<open>\<sigma> i = fst (sr p)\<close> have "(\<sigma>, snd (sr p)) \<in> init (onp i)"
         by - (rule init [THEN set_mp], auto)
-      with `lq\<in> init qp` have "((\<sigma>, snd (sr p)), lq) \<in> init (onp i) \<times> init qp"
+      with \<open>lq\<in> init qp\<close> have "((\<sigma>, snd (sr p)), lq) \<in> init (onp i) \<times> init qp"
         by simp
       hence "(\<sigma>, (snd (sr p), lq)) \<in> extg ` (init (onp i) \<times> init qp)"
         by (rule rev_image_eqI) simp
-      with `s = (\<sigma>, (snd (sr p), lq))` show "s \<in> init (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
+      with \<open>s = (\<sigma>, (snd (sr p), lq))\<close> show "s \<in> init (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
         by simp
     qed
   next
@@ -1741,23 +1741,23 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
                             and "\<sigma> i  = fst (sr p)"
                             and "\<sigma>' i = fst (sr p')"
       by (clarsimp split: split_split_asm)
-    from this(1-2) and `(s, a, s') \<in> trans (np i \<langle>\<langle> qp)`
+    from this(1-2) and \<open>(s, a, s') \<in> trans (np i \<langle>\<langle> qp)\<close>
       have "((p, q), a, (p', q')) \<in> parp_sos (trans (np i)) (trans qp)" by simp
     hence "((\<sigma>, (snd (sr p), q)), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
     proof cases
       assume "q' = q"
          and "(p, a, p') \<in> trans (np i)"
          and "\<And>m. a \<noteq> receive m"
-      from `\<sigma> i = fst (sr p)` and `\<sigma>' i = fst (sr p')` this(2)
+      from \<open>\<sigma> i = fst (sr p)\<close> and \<open>\<sigma>' i = fst (sr p')\<close> this(2)
         have "((\<sigma>, snd (sr p)), a, (\<sigma>', snd (sr p'))) \<in> trans (onp i)" by (rule trans)
-      with `q' = q` and `\<And>m. a \<noteq> receive m`
+      with \<open>q' = q\<close> and \<open>\<And>m. a \<noteq> receive m\<close>
         show "((\<sigma>, snd (sr p), q), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
           by (auto elim!: oparleft)
     next
       assume "p' = p"
          and "(q, a, q') \<in> trans qp"
          and "\<And>m. a \<noteq> send m"
-      with `\<sigma> i = fst (sr p)` and `\<sigma>' i = fst (sr p')`
+      with \<open>\<sigma> i = fst (sr p)\<close> and \<open>\<sigma>' i = fst (sr p')\<close>
         show "((\<sigma>, snd (sr p), q), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
           by (auto elim!: oparright)
     next
@@ -1765,14 +1765,14 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
       assume "a = \<tau>"
          and "(p, receive m, p') \<in> trans (np i)"
          and "(q, send m, q') \<in> trans qp"
-      from `\<sigma> i = fst (sr p)` and `\<sigma>' i = fst (sr p')` this(2)
+      from \<open>\<sigma> i = fst (sr p)\<close> and \<open>\<sigma>' i = fst (sr p')\<close> this(2)
         have "((\<sigma>, snd (sr p)), receive m, (\<sigma>', snd (sr p'))) \<in> trans (onp i)"
           by (rule trans)
-      with `(q, send m, q') \<in> trans qp` and `a = \<tau>`
+      with \<open>(q, send m, q') \<in> trans qp\<close> and \<open>a = \<tau>\<close>
         show "((\<sigma>, snd (sr p), q), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
           by (simp del: step_seq_tau) (rule oparboth)
     qed
-    with `s = (p, q)` `s' = (p', q')`
+    with \<open>s = (p, q)\<close> \<open>s' = (p', q')\<close>
       show "((\<sigma>, snd ((\<lambda>(p, q). (fst (sr p), (snd (sr p), q))) s)), a,
                  (\<sigma>', snd ((\<lambda>(p, q). (fst (sr p), (snd (sr p), q))) s'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"
         by simp

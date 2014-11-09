@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* A simple illustrative example  *}
+section {* A simple illustrative example  *}
 
 theory Even
 imports State 

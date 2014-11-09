@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header "Data refinement of representation of a file"
+section "Data refinement of representation of a file"
 theory FileRefinement imports Main CArrays ResizableArrays begin
 
 text {*
@@ -352,7 +352,7 @@ apply (case_tac "index div blockSize ~= byteIndex div blockSize", simp_all)
 apply force
 apply (subgoal_tac "index mod blockSize ~= byteIndex mod blockSize")
 apply (case_tac "nextFreeBlock cfile1 = Suc (index div blockSize)")
-apply (subgoal_tac "~ index < fileSize cfile1");
+apply (subgoal_tac "~ index < fileSize cfile1")
 apply (simp add: lastBlockInvariant_def)
 apply auto
 apply (simp add: unallocatedBlocksInvariant_def)

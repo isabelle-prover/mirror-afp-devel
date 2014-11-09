@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Program annotation} *}
+section {* Program annotation *}
 
 theory Annotate imports WellType begin
 

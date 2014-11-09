@@ -1,4 +1,4 @@
-header {* \isaheader{Observable Sets of Nodes} *}
+section {* Observable Sets of Nodes *}
 
 theory Observable imports "../Basic/CFG" begin
 

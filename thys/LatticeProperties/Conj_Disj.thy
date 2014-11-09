@@ -1,4 +1,4 @@
-header {* Conjunctive and Disjunctive Functions *}
+section {* Conjunctive and Disjunctive Functions *}
 
 (*
     Author: Viorel Preoteasa

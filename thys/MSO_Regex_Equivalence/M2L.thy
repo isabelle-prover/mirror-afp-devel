@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* M2L *}
+section {* M2L *}
 
 (*<*)
 theory M2L

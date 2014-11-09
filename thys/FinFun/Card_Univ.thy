@@ -8,7 +8,7 @@ version instead.
 
 (* Author: Andreas Lochbihler, KIT *)
 
-header {* A type class for computing the cardinality of a type's universe *}
+section {* A type class for computing the cardinality of a type's universe *}
 
 theory Card_Univ imports Main begin
 

@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header {* Various Algorithms for Regular Expression Equivalence *}
+section {* Various Algorithms for Regular Expression Equivalence *}
 
 (*<*)
 theory Regex_Equivalence

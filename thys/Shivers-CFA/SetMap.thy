@@ -1,4 +1,4 @@
-header {* Set-valued maps *}
+section {* Set-valued maps *}
 theory SetMap
   imports Main
 begin

@@ -1,4 +1,4 @@
-header "Hash-Sets"
+section "Hash-Sets"
 theory Hash_Set_Impl
 imports Imp_Set_Spec Hash_Map_Impl
 begin
@@ -145,6 +145,6 @@ interpretation hs!: imp_set_iterate
 
 export_code hs_new hs_memb hs_ins hs_delete hs_isEmpty hs_size 
   hs_it_init hs_it_has_next hs_it_next
-  in SML_imp
+  checking SML_imp
 
 end

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Bases of the four fundamental subspaces over IArrays*}
+section{*Bases of the four fundamental subspaces over IArrays*}
 
 theory Bases_Of_Fundamental_Subspaces_IArrays
 imports 

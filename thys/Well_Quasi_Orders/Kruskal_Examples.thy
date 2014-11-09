@@ -19,9 +19,9 @@ where
 lemma [simp]:
   "trees UNIV = UNIV"
 proof -
-  { fix t :: "'a tree" and ts :: "'a tree list"
-    have "t \<in> trees UNIV" and "\<forall>s \<in> set ts. s \<in> trees UNIV"
-      by (induct t and ts) (auto intro: trees.intros) }
+  { fix t :: "'a tree"
+    have "t \<in> trees UNIV"
+      by (induct t) (auto intro: trees.intros) }
   then show ?thesis by auto
 qed
 
@@ -145,4 +145,3 @@ thm kruskal_exp.almost_full_on_trees
 hide_const (open) tree_emb V C Plus v c p
 
 end
-

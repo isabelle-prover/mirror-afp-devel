@@ -5,7 +5,7 @@
     License:     LGPL
 *)
  
-header {* Value *}
+section {* Value *}
 
 theory Value imports Subtype begin
 

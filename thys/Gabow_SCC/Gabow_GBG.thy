@@ -423,7 +423,7 @@ begin
     moreover have "v\<in>last p'" 
       using `v\<in>p!i` `i<length p` 
       unfolding p'_def collapse_aux_def
-      by (metis UnionI append_Nil drop_Suc_conv_tl in_set_conv_decomp last_snoc)
+      by (metis UnionI append_Nil Cons_nth_drop_Suc in_set_conv_decomp last_snoc)
     ultimately have "vE p' D pE' \<inter> last p' \<times> last p' \<noteq> {}" 
       unfolding p'_def pE'_def by (auto simp: E)
     
@@ -481,7 +481,7 @@ begin
     moreover have "v\<in>last p'" 
       using `v\<in>p!i` `i<length p` 
       unfolding p'_def collapse_aux_def
-      by (metis UnionI append_Nil drop_Suc_conv_tl in_set_conv_decomp last_snoc)
+      by (metis UnionI append_Nil Cons_nth_drop_Suc in_set_conv_decomp last_snoc)
     ultimately have "vE' \<inter> last p' \<times> last p' \<noteq> {}" 
       unfolding vE'_alt by (auto)
     

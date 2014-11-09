@@ -1,4 +1,4 @@
-header {* Many-Typed (Many-Sorted) First-Order Logic *}
+section {* Many-Typed (Many-Sorted) First-Order Logic *}
 theory Sig imports Preliminaries
 begin
 

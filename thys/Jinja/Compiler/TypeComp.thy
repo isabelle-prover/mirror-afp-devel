@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Preservation of Well-Typedness} *}
+section {* Preservation of Well-Typedness *}
 
 theory TypeComp
 imports Compiler "../BV/BVSpec"
@@ -143,7 +143,7 @@ lemma (in TC1) compT_sizes[simp]:
 shows "\<And>E A ST. size(compT E A ST e) = size(compE\<^sub>2 e) - 1"
 and "\<And>E A ST. size(compTs E A ST es) = size(compEs\<^sub>2 es)"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compE\<^sub>2.induct compEs\<^sub>2.induct)
 apply(auto split:bop.splits nat_diff_split)
 done
 (*>*)
@@ -151,7 +151,7 @@ done
 
 lemma (in TC1) [simp]: "\<And>ST E. \<lfloor>\<tau>\<rfloor> \<notin> set (compT E None ST e)"
 and [simp]: "\<And>ST E. \<lfloor>\<tau>\<rfloor> \<notin> set (compTs E None ST es)"
-(*<*)by(induct e and es) (simp_all add:after_def)(*>*)
+(*<*)by(induct e and es rule: compT.induct compTs.induct) (simp_all add:after_def)(*>*)
 
 
 lemma (in TC0) pair_eq_ty\<^sub>i'_conv:
@@ -178,7 +178,7 @@ and
  "\<And>E A ST\<^sub>0. \<lbrakk> \<lfloor>(ST,LT)\<rfloor> \<in> set(compTs E A ST\<^sub>0 es); \<B>s es (size E) \<rbrakk>
                \<Longrightarrow> P \<turnstile> \<lfloor>(ST,LT)\<rfloor> \<le>' ty\<^sub>i' ST E A"
 (*<*)
-proof(induct e and es)
+proof(induct e and es rule: compT.induct compTs.induct)
   case FAss thus ?case by(fastforce simp:hyperset_defs elim!:sup_state_opt_trans)
 next
   case BinOp thus ?case
@@ -256,7 +256,7 @@ and "\<And>E Ts A ST.
     size ST + max_stacks es \<le> mxs; size E + max_varss es \<le> mxl \<rbrakk>
   \<Longrightarrow> OK ` set(compTs E A ST es) \<subseteq> states P mxs mxl"
 (*<*)(is "\<And>E Ts A ST. PROP ?Ps es E Ts A ST")
-proof(induct e and es)
+proof(induct e and es rule: compT.induct compTs.induct)
   case new thus ?case by(simp)
 next
   case (Cast C e) thus ?case by (auto simp:after_in_states[OF wf])
@@ -338,7 +338,7 @@ lemma shift_compxE\<^sub>2:
 shows "\<And>pc pc' d. shift pc (compxE\<^sub>2 e pc' d) = compxE\<^sub>2 e (pc' + pc) d"
 and  "\<And>pc pc' d. shift pc (compxEs\<^sub>2 es pc' d) = compxEs\<^sub>2 es (pc' + pc) d"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
 apply(auto simp:shift_def ac_simps)
 done
 (*>*)
@@ -389,7 +389,7 @@ lemma relevant_entries_shift [simp]:
   "relevant_entries P i (pc+n) (shift n xt) = shift n (relevant_entries P i pc xt)"
 (*<*)
   apply (induct xt)
-  apply (unfold relevant_entries_def shift_def) 
+  apply (unfold relevant_entries_def shift_def)
    apply simp
   apply (auto simp add: is_relevant_entry_def)
   done
@@ -814,7 +814,7 @@ and
  "\<And>E A ST\<^sub>0. \<lfloor>(ST,LT)\<rfloor> \<in> set(compTs E A ST\<^sub>0 es) \<Longrightarrow> 
   size ST\<^sub>0 \<le> size ST \<and> drop (size ST - size ST\<^sub>0) ST = ST\<^sub>0"
 (*<*)
-proof(induct e and es)
+proof(induct e and es rule: compT.induct compTs.induct)
   case (FAss e\<^sub>1 F D e\<^sub>2)
   moreover {
     let ?ST\<^sub>0 = "ty E e\<^sub>1 # ST\<^sub>0"
@@ -905,7 +905,7 @@ and "\<And>E Ts A ST.
        last \<tau>s = ty\<^sub>i' (rev Ts @ ST) E (A \<squnion> \<A>s es)"
 (*<*)
 (is "\<And>E Ts A ST. PROP ?Ps es E Ts A ST")
-proof(induct e and es)
+proof(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
   case (TryCatch e\<^sub>1 C i e\<^sub>2)
   hence [simp]: "i = size E" by simp
   have wt\<^sub>1: "P,E \<turnstile>\<^sub>1 e\<^sub>1 :: T" and wt\<^sub>2: "P,E@[Class C] \<turnstile>\<^sub>1 e\<^sub>2 :: T"

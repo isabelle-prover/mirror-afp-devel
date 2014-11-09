@@ -2,7 +2,7 @@
   Author: Peter Lammich
   Inspired by Rene Neumann's DFS-Framework and Nested DFS formalization
 **)
-header {* Nested DFS using Standard Invariants Approach *}
+section {* Nested DFS using Standard Invariants Approach *}
 theory NDFS_SI
 imports 
   "../../CAVA_Automata/Automata_Impl"

@@ -12,7 +12,7 @@ begin
 
 type_synonym ('val) operation = "'val list \<Rightarrow> 'val"
 
-datatype ('id, 'val) Expr =
+datatype (dead 'id, dead 'val) Expr =
 Const "'val" |
 Var "'id" |
 Op "'val operation" "(('id, 'val) Expr) list"

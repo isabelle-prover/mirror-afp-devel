@@ -1,4 +1,4 @@
-header {* Fixed point transformations *}
+section {* Fixed point transformations *}
 
 theory FixTransform
 imports HOLCF

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lemmas for closed networks"
+section "Lemmas for closed networks"
 
 theory Closed
 imports Pnet
@@ -41,11 +41,11 @@ lemma closed_reachable_par_subnet_induct [consumes, case_names init step]:
                               and "SubnetS s t \<in> reachable (closed (pnet np (p1 \<parallel> p2))) I"
       by (metis complete_net_reachable_is_subnet)
     note this(2)
-    moreover from IH and `st = SubnetS s t` have "P s t" .
-    moreover from tr and `st = SubnetS s t`
+    moreover from IH and \<open>st = SubnetS s t\<close> have "P s t" .
+    moreover from tr and \<open>st = SubnetS s t\<close>
       have "(SubnetS s t, a, SubnetS s' t') \<in> trans (closed (pnet np (p1 \<parallel> p2)))" by simp
     ultimately show "P s' t'"
-      using `I a` by (rule assms(3))
+      using \<open>I a\<close> by (rule assms(3))
   qed
 
 lemma reachable_closed_reachable_pnet [elim]:
@@ -89,7 +89,7 @@ lemma reachable_not_in_net_tree_ips [elim]:
       assume "s \<in> init (closed (pnet np \<langle>ii; R\<rangle>))"
          and "i \<notin> net_tree_ips \<langle>ii; R\<rangle>"
       from this(2) have "i \<noteq> ii" by simp
-      moreover from `s \<in> init (closed (pnet np \<langle>ii; R\<rangle>))` obtain p where "s = NodeS ii p R"
+      moreover from \<open>s \<in> init (closed (pnet np \<langle>ii; R\<rangle>))\<close> obtain p where "s = NodeS ii p R"
         by simp (metis pnet.simps(1) pnet_node_init')
       ultimately show "netmap s i = None" by simp
     next
@@ -103,12 +103,12 @@ lemma reachable_not_in_net_tree_ips [elim]:
       from this(3) obtain s1 s2 where "s = SubnetS s1 s2"
                                   and "s1 \<in> init (closed (pnet np p1))"
                                   and "s2 \<in> init (closed (pnet np p2))" by simp metis
-      moreover from `i \<notin> net_tree_ips (p1 \<parallel> p2)` have "i \<notin> net_tree_ips p1"
+      moreover from \<open>i \<notin> net_tree_ips (p1 \<parallel> p2)\<close> have "i \<notin> net_tree_ips p1"
                                                   and "i \<notin> net_tree_ips p2" by auto
       ultimately have "netmap s1 i = None"
                   and "netmap s2 i = None"
         using IH1 IH2 by auto
-      with `s = SubnetS s1 s2` show "netmap s i = None" by simp
+      with \<open>s = SubnetS s1 s2\<close> show "netmap s i = None" by simp
     qed
   next
     fix s a s'
@@ -133,8 +133,8 @@ lemma closed_pnet_aodv_init [elim]:
     hence "s \<in> init (pnet np \<langle>i; R\<rangle>)" by simp
     then obtain p where "s = NodeS i p R"
                     and "p \<in> init (np i)" ..
-    with `s = NodeS i p R` have "netmap s = [i \<mapsto> p]" by simp
-    with `p \<in> init (np i)` show "the (netmap s i) \<in> init (np i)" by simp
+    with \<open>s = NodeS i p R\<close> have "netmap s = [i \<mapsto> p]" by simp
+    with \<open>p \<in> init (np i)\<close> show "the (netmap s i) \<in> init (np i)" by simp
   next
     fix p1 p2 s
     assume IH1: "\<And>s. s \<in> init (closed (pnet np p1)) \<Longrightarrow>
@@ -149,28 +149,28 @@ lemma closed_pnet_aodv_init [elim]:
       by auto
     from this(2) have "net_tree_ips p1 = net_ips s1"
       by (clarsimp dest!: pnet_init_net_ips_net_tree_ips)
-    from `s2 \<in> init (closed (pnet np p2))` have "net_tree_ips p2 = net_ips s2"
+    from \<open>s2 \<in> init (closed (pnet np p2))\<close> have "net_tree_ips p2 = net_ips s2"
       by (clarsimp dest!: pnet_init_net_ips_net_tree_ips)
     show "the (netmap s i) \<in> init (np i)"
     proof (cases "i\<in>net_tree_ips p2")
       assume "i\<in>net_tree_ips p2"
-      with `s2 \<in> init (closed (pnet np p2))` have "the (netmap s2 i) \<in> init (np i)"
+      with \<open>s2 \<in> init (closed (pnet np p2))\<close> have "the (netmap s2 i) \<in> init (np i)"
         by (rule IH2)
-      moreover from `i\<in>net_tree_ips p2` and `net_tree_ips p2 = net_ips s2`
+      moreover from \<open>i\<in>net_tree_ips p2\<close> and \<open>net_tree_ips p2 = net_ips s2\<close>
         have "i\<in>net_ips s2" by simp
       ultimately show ?thesis
-        using `s = SubnetS s1 s2` by (auto simp add: net_ips_is_dom_netmap)
+        using \<open>s = SubnetS s1 s2\<close> by (auto simp add: net_ips_is_dom_netmap)
     next
       assume "i\<notin>net_tree_ips p2"
-      with `i\<in>net_tree_ips (p1 \<parallel> p2)` have "i\<in>net_tree_ips p1" by simp
-      with `s1 \<in> init (closed (pnet np p1))` have "the (netmap s1 i) \<in> init (np i)"
+      with \<open>i\<in>net_tree_ips (p1 \<parallel> p2)\<close> have "i\<in>net_tree_ips p1" by simp
+      with \<open>s1 \<in> init (closed (pnet np p1))\<close> have "the (netmap s1 i) \<in> init (np i)"
         by (rule IH1)
-      moreover from `i\<in>net_tree_ips p1` and `net_tree_ips p1 = net_ips s1`
+      moreover from \<open>i\<in>net_tree_ips p1\<close> and \<open>net_tree_ips p1 = net_ips s1\<close>
         have "i\<in>net_ips s1" by simp
-      moreover from `i\<notin>net_tree_ips p2` and `net_tree_ips p2 = net_ips s2`
+      moreover from \<open>i\<notin>net_tree_ips p2\<close> and \<open>net_tree_ips p2 = net_ips s2\<close>
         have "i\<notin>net_ips s2" by simp
       ultimately show ?thesis
-        using `s = SubnetS s1 s2`
+        using \<open>s = SubnetS s1 s2\<close>
         by (simp add: map_add_dom_app_simps net_ips_is_dom_netmap)
     qed
   qed

@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Relations between Jinja Types} *}
+section {* Relations between Jinja Types *}
 
 theory TypeRel imports 
   "~~/src/HOL/Library/Transitive_Closure_Table"
@@ -170,7 +170,7 @@ where
 | sees_methods_rec:
  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D sees_methods Mm;
     Mm' = Mm ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> C sees_methods Mm'";
+  \<Longrightarrow> P \<turnstile> C sees_methods Mm'"
 
 lemma sees_methods_fun:
 assumes 1: "P \<turnstile> C sees_methods Mm"

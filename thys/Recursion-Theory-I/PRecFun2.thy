@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Primitive recursive functions of one variable *}
+section {* Primitive recursive functions of one variable *}
 
 theory PRecFun2
 imports PRecFun

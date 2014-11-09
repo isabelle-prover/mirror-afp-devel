@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Miscellaneous*}
+section{*Miscellaneous*}
 
 theory Miscellaneous
 imports 

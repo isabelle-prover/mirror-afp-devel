@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Models for Demonic Refinement Algebra with Tests *}
+section {* Models for Demonic Refinement Algebra with Tests *}
 
 theory DRA_Models
   imports DRAT Test_Dioids

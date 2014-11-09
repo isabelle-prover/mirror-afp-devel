@@ -1,12 +1,12 @@
 (* Author: Tobias Nipkow *)
 
-header "Extended Regular Expressions"
+section "Extended Regular Expressions"
 
 theory Regular_Exp2
 imports Regular_Set
 begin
 
-datatype_new (atoms: 'a) rexp =
+datatype (atoms: 'a) rexp =
   is_Zero: Zero |
   is_One: One |
   Atom 'a |
@@ -15,8 +15,6 @@ datatype_new (atoms: 'a) rexp =
   Star "('a rexp)" |
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)"
-
-datatype_compat rexp
 
 context
 fixes S :: "'a set"

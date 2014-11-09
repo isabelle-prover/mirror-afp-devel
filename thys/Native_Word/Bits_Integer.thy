@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Bit operations for target language integers *}
+chapter {* Bit operations for target language integers *}
 
 theory Bits_Integer imports
   More_Bits_Int
@@ -865,11 +865,11 @@ section {* Test code generator setup *}
 
 definition bit_integer_test :: "bool" where
   "bit_integer_test =
-  (([ -1 AND 3, 1 AND -3, 3 AND 5, -3 AND -5
-    , -3 OR 1, 1 OR -3, 3 OR 5, -3 OR -5
-    , NOT 1, NOT -3
-    , -1 XOR 3, 1 XOR -3, 3 XOR 5, -5 XOR -3
-    , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
+  (([ -1 AND 3, 1 AND -3, 3 AND 5, -3 AND (- 5)
+    , -3 OR 1, 1 OR -3, 3 OR 5, -3 OR (- 5)
+    , NOT 1, NOT (- 3)
+    , -1 XOR 3, 1 XOR (- 3), 3 XOR 5, -5 XOR (- 3)
+    , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , 1 << 2, -1 << 3
     , 100 >> 3, -100 >> 3] :: integer list)
   = [ 3, 1, 1, -7

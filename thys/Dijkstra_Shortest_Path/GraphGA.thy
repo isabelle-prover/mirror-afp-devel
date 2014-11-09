@@ -1,4 +1,4 @@
-header {* Generic Algorithms for Graphs *}
+section {* Generic Algorithms for Graphs *}
 theory GraphGA
 imports 
   GraphSpec 

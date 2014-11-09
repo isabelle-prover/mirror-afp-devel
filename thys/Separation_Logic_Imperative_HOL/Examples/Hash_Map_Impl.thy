@@ -1,4 +1,4 @@
-header "Hash-Maps (Interface Instantiations)"
+section "Hash-Maps (Interface Instantiations)"
 theory Hash_Map_Impl
 imports Imp_Map_Spec Hash_Map
 begin
@@ -79,6 +79,6 @@ lemma hm_iterate'_impl:
 
 export_code hm_new hm_lookup hm_update hm_delete hm_isEmpty hm_size 
   hm_it_init hm_it_has_next hm_it_next
-  in SML_imp
+  checking SML_imp
 
 end

@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Kleene Algebras *}
+section {* Kleene Algebras *}
 
 theory Kleene_Algebra
 imports Dioid

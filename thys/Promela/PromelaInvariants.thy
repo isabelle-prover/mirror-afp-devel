@@ -1,4 +1,4 @@
-header "Invariants for Promela data structures"
+section "Invariants for Promela data structures"
 theory PromelaInvariants
 imports PromelaDatastructures
 begin

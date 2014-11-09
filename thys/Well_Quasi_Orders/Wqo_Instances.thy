@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Instances of Well-Quasi-Orders *}
+section {* Instances of Well-Quasi-Orders *}
 
 theory Wqo_Instances
 imports Kruskal

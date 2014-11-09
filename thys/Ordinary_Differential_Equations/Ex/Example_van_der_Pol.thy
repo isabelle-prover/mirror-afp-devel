@@ -41,26 +41,26 @@ definition "vanderpoltest =
   (poincare_distance_d (uncurry_options vanderpol) (uncurry_options vanderpol_d)
     \<lparr>
     precision = 30,
-    tolerance = FloatR 1 -5,
-    stepsize  = FloatR 1 -6,
-    min_stepsize = FloatR 1 -7,
+    tolerance = FloatR 1 (- 5),
+    stepsize  = FloatR 1 (- 6),
+    min_stepsize = FloatR 1 (- 7),
     iterations = 40,
     halve_stepsizes = 10,
     widening_mod = 40,
-    max_tdev_thres = FloatR 1 -3,
-    presplit_summary_tolerance = FloatR 1 -1,
+    max_tdev_thres = FloatR 1 (- 3),
+    presplit_summary_tolerance = FloatR 1 (- 1),
     collect_mod = 30,
-    collect_granularity = FloatR 1 -4,
-    override_section = (\<lambda>b y i s. if snd i > FloatR 149 -6 then ((0, 1), FloatR 149 -6) else
-      if snd i = FloatR 149 -6 \<and> snd s = FloatR 149 -6 then (0, 0) else (b, y)),
+    collect_granularity = FloatR 1 (- 4),
+    override_section = (\<lambda>b y i s. if snd i > FloatR 149 (- 6) then ((0, 1), FloatR 149 (- 6)) else
+      if snd i = FloatR 149 (- 6) \<and> snd s = FloatR 149 (- 6) then (0, 0) else (b, y)),
     global_section = (\<lambda>X. None),
     stop_iteration = (\<lambda>X. False),
     printing_fun = (\<lambda>_ _. print_aform),
     result_fun = ivls_result 20 40
   \<rparr>)"
 
-text {* @{term "vanderpoltest [aform_of_ivl (FloatR 5  -2, FloatR 146 -6) (FloatR 49 -5, FloatR 149 -6)]"}
+text {* @{term "vanderpoltest [aform_of_ivl (FloatR 5 (- 2), FloatR 146 (- 6)) (FloatR 49 (- 5), FloatR 149 (- 6))]"}
   proves a stable limit-cycle. *}
-value "vanderpoltest [aform_of_ivl (FloatR 5  -2, FloatR 146 -6) (FloatR 49 -5, FloatR 149 -6)]"
+value "vanderpoltest [aform_of_ivl (FloatR 5 (- 2), FloatR 146 (- 6)) (FloatR 49 (- 5), FloatR 149 (- 6))]"
 
 end

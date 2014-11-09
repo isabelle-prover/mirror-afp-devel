@@ -6,7 +6,7 @@
   target language
 *)
 
-header {* Concrete Density Contexts *}
+section {* Concrete Density Contexts *}
 
 theory PDF_Target_Density_Contexts
 imports PDF_Density_Contexts PDF_Target_Semantics

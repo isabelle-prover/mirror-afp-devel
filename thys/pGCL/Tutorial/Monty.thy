@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "The Monty Hall Problem"
+section "The Monty Hall Problem"
 
 theory Monty imports "../pGCL" begin
 

@@ -1,4 +1,4 @@
-header {* \isaheader{Well-formedness of programs} *}
+section {* Well-formedness of programs *}
 
 theory WellFormProgs imports PCFG begin
 

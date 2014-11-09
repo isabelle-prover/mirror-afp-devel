@@ -444,6 +444,7 @@ subsubsection {* Datatype Domain Hierarchy *}
 
     lemma leq_domainNameTrust_refl: "x \<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t x"
       apply(case_tac x)
+       apply(rename_tac prod)
        apply(case_tac prod)
        apply(simp add: chop_not_decrease_hierarchy)
       by(simp)
@@ -556,6 +557,7 @@ subsubsection {*ENF*}
     apply(rule conjI)
      apply(simp add: valid_graph_def)
     apply(case_tac otherbot)
+     apply(rename_tac prod)
      apply(case_tac prod)
      apply(rename_tac dn trustlevel)
      apply(clarify)

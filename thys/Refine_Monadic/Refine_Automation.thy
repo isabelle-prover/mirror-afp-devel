@@ -30,7 +30,7 @@ signature REFINE_AUTOMATION = sig
   val prepare_code_thms_cmd: string list -> thm -> local_theory -> local_theory
 
   val define_concrete_fun: extraction list option -> binding -> 
-    Args.src list -> indexname list -> thm ->
+    Token.src list -> indexname list -> thm ->
     cterm list -> local_theory -> local_theory
   
 
@@ -354,16 +354,16 @@ end;
 
     val rec_modifiers = [
       Args.$$$ "rec" -- Scan.option Args.add -- Args.colon 
-        >> K ((I,rec_thms.add):Method.modifier),
+        >> K (Method.modifier rec_thms.add @{here}),
       Args.$$$ "rec" -- Scan.option Args.del -- Args.colon 
-        >> K ((I,rec_thms.del):Method.modifier)
+        >> K (Method.modifier rec_thms.del @{here})
     ];
 
     val solve_modifiers = [
       Args.$$$ "solve" -- Scan.option Args.add -- Args.colon 
-        >> K ((I,solve_thms.add):Method.modifier),
+        >> K (Method.modifier solve_thms.add @{here}),
       Args.$$$ "solve" -- Scan.option Args.del -- Args.colon 
-        >> K ((I,solve_thms.del):Method.modifier)
+        >> K (Method.modifier solve_thms.del @{here})
     ];
 
     val vc_solve_modifiers = 
@@ -423,9 +423,9 @@ ML {* Outer_Syntax.local_theory
   @{command_spec "concrete_definition"} 
   "Define function from refinement theorem" 
   (Parse.binding 
-    -- Parse_Spec.opt_attribs
+    -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
-    --| @{keyword "uses"} -- Parse_Spec.xthm
+    --| @{keyword "uses"} -- Parse.xthm
     -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
@@ -481,7 +481,7 @@ ML {*
     Outer_Syntax.local_theory 
     @{command_spec "prepare_code_thms"} 
     "Refinement framework: Prepare theorems for code generation" 
-    (modes -- Parse_Spec.xthms1
+    (modes -- Parse.xthms1
       >> (fn (modes,raw_thms) => fn lthy => let
         val thms = Attrib.eval_thms lthy raw_thms
       in

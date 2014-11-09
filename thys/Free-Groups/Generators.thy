@@ -1,4 +1,4 @@
-header {* Generators *}
+section {* Generators *}
 
 theory "Generators"
 imports

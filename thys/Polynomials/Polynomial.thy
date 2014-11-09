@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Polynomials *}
+section {* Polynomials *}
 
 theory Polynomial
 imports 
@@ -605,7 +605,7 @@ proof (cases mc)
     show ?case
     proof (cases "c * d = 0")
       case False
-      thus ?thesis by (simp add: nd Cons, simp only: field_simps)
+      thus ?thesis by (simp add: nd Cons field_simps)
     next
       case True
       let ?l = "c * (d * (eval_monom \<alpha> m * eval_monom \<alpha> n))"
@@ -699,7 +699,7 @@ text {*
   evaluation is preserved by poly\_of
 *}
 lemma poly_of: "eval_poly \<alpha> (poly_of p) = eval_tpoly \<alpha> p"
-by (induct p, (simp add: zero_poly_def one_poly_def)+)
+by (induct p rule: poly_of.induct, (simp add: zero_poly_def one_poly_def)+)
 
 text {*
   poly\_of only generates polynomials that satisfy the invariant

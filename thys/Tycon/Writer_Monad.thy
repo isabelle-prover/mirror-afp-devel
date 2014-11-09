@@ -1,4 +1,4 @@
-header {* Writer monad *}
+section {* Writer monad *}
 
 theory Writer_Monad
 imports Monad

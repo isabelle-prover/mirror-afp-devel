@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Dioids *}
+section {* Dioids *}
 
 theory Dioid
 imports Signatures

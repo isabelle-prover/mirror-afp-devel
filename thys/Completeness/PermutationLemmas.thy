@@ -1,4 +1,4 @@
-header "Permutation Lemmas"
+section "Permutation Lemmas"
 
 theory PermutationLemmas
 imports "~~/src/HOL/Library/Permutation" "~~/src/HOL/Library/Multiset"

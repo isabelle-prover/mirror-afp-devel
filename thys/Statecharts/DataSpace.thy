@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Partitoned Data Spaces for Statecharts *}
+section {* Partitoned Data Spaces for Statecharts *}
 theory DataSpace
 imports Contrib
 begin
@@ -55,7 +55,7 @@ apply auto
 done
 
 lemma UNIV_dataspace [simp]: 
-  "[UNIV] \<in> dataspace";
+  "[UNIV] \<in> dataspace"
 by (unfold dataspace_def, auto)
 
 lemma Inl_Inr_DataSpace [simp]:
@@ -89,7 +89,7 @@ apply auto
 done
 
 lemma InlInr_InlInl_Inr_dataspace [simp]:
-  "[Part UNIV (Inl o Inr), Part UNIV (Inl o Inl), Part UNIV Inr] : dataspace";
+  "[Part UNIV (Inl o Inr), Part UNIV (Inl o Inl), Part UNIV Inr] : dataspace"
 by (unfold dataspace_def, auto)
 
 subsubsection {* @{text "PartNum"} *}
@@ -97,7 +97,7 @@ subsubsection {* @{text "PartNum"} *}
 lemma PartDom_PartNum_distinct: 
       "\<lbrakk> i < PartNum d; j < PartNum d;        
          i \<noteq> j; p \<in>  (d !D! i) \<rbrakk> \<Longrightarrow>
-         p \<notin> (d !D! j)";
+         p \<notin> (d !D! j)"
 apply auto
 apply (cut_tac L=d in DataSpace_select)
 apply (unfold DataSpace_def) 
@@ -113,7 +113,7 @@ done
 lemma PartDom_PartNum_distinct2: 
       "\<lbrakk> i < PartNum d; j < PartNum d;       
          i \<noteq> j; p \<in>  (d !D! j) \<rbrakk> \<Longrightarrow>
-        p \<notin> (d !D! i)";
+        p \<notin> (d !D! i)"
 apply auto
 apply (cut_tac L=d in DataSpace_select)
 apply (unfold DataSpace_def) 
@@ -127,7 +127,7 @@ apply auto
 done
 
 lemma PartNum_length [simp]: 
-  "(DataSpace L) \<Longrightarrow> (PartNum (Abs_dataspace L) = (length L))";
+  "(DataSpace L) \<Longrightarrow> (PartNum (Abs_dataspace L) = (length L))"
 apply (unfold PartNum_def)
 apply auto
 apply (subst Abs_dataspace_inverse)

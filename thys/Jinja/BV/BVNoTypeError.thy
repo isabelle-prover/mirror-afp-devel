@@ -4,7 +4,7 @@
     Copyright   GPL
 *)
 
-header {* \isaheader{Welltyped Programs produce no Type Errors} *}
+section {* Welltyped Programs produce no Type Errors *}
 
 theory BVNoTypeError
 imports "../JVM/JVMDefensive" BVSpecTypeSafe

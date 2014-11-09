@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header "Partial Derivatives-like Normalization"
+section "Partial Derivatives-like Normalization"
 
 (*<*)
 theory PNormalization

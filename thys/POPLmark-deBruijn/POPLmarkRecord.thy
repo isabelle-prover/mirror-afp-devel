@@ -300,13 +300,15 @@ lemma liftT_liftT [simp]:
   "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> (m + n) i T"
   "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n j (\<up>\<^sub>r\<^sub>\<tau> m i rT) = \<up>\<^sub>r\<^sub>\<tau> (m + n) i rT"
   "i \<le> j \<Longrightarrow> j \<le> i + m \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n j (\<up>\<^sub>f\<^sub>\<tau> m i fT) = \<up>\<^sub>f\<^sub>\<tau> (m + n) i fT"
-  by (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n) simp_all
+  by (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n
+    rule: liftT.induct liftrT.induct liftfT.induct) simp_all
 
 lemma liftT_liftT' [simp]:
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>\<tau> n j (\<up>\<^sub>\<tau> m i T) = \<up>\<^sub>\<tau> m i (\<up>\<^sub>\<tau> n (j - m) T)"
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n j (\<up>\<^sub>r\<^sub>\<tau> m i rT) = \<up>\<^sub>r\<^sub>\<tau> m i (\<up>\<^sub>r\<^sub>\<tau> n (j - m) rT)"
   "i + m \<le> j \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n j (\<up>\<^sub>f\<^sub>\<tau> m i fT) = \<up>\<^sub>f\<^sub>\<tau> m i (\<up>\<^sub>f\<^sub>\<tau> n (j - m) fT)"
-  apply (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n)
+  apply (induct T and rT and fT arbitrary: i j m n and i j m n and i j m n
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
   apply arith
   apply (subgoal_tac "Suc j - m = Suc (j - m)")
@@ -316,41 +318,45 @@ lemma liftT_liftT' [simp]:
 
 lemma lift_size [simp]:
   "size (\<up>\<^sub>\<tau> n k T) = size T"
-  "size_list (size_prod (size_list size_char) size) (\<up>\<^sub>r\<^sub>\<tau> n k rT) =
-     size_list (size_prod (size_list size_char) size) rT"
-  "size_prod (size_list size_char) size (\<up>\<^sub>f\<^sub>\<tau> n k fT) =
-     size_prod (size_list size_char) size fT"
-  by (induct T and rT and fT arbitrary: k and k and k) simp_all
+  "size_list (size_prod (\<lambda>x. 0) size) (\<up>\<^sub>r\<^sub>\<tau> n k rT) = size_list (size_prod (\<lambda>x. 0) size) rT"
+  "size_prod (\<lambda>x. 0) size (\<up>\<^sub>f\<^sub>\<tau> n k fT) = size_prod (\<lambda>x. 0) size fT"
+  by (induct T and rT and fT arbitrary: k and k and k
+    rule: liftT.induct liftrT.induct liftfT.induct) simp_all
 
 lemma liftT0 [simp]:
   "\<up>\<^sub>\<tau> 0 i T = T"
   "\<up>\<^sub>r\<^sub>\<tau> 0 i rT = rT"
   "\<up>\<^sub>f\<^sub>\<tau> 0 i fT = fT"
-  by (induct T and rT and fT arbitrary: i and i and i) simp_all
+  by (induct T and rT and fT arbitrary: i and i and i
+    rule: liftT.induct liftrT.induct liftfT.induct) simp_all
 
 lemma liftp0 [simp]:
   "\<up>\<^sub>p 0 i p = p"
   "\<up>\<^sub>r\<^sub>p 0 i fs = fs"
   "\<up>\<^sub>f\<^sub>p 0 i f = f"
-  by (induct p and fs and f arbitrary: i and i and i) simp_all
+  by (induct p and fs and f arbitrary: i and i and i
+    rule: liftp.induct liftrp.induct liftfp.induct) simp_all
 
 lemma lift0 [simp]:
   "\<up> 0 i t = t"
   "\<up>\<^sub>r 0 i fs = fs"
   "\<up>\<^sub>f 0 i f = f"
-  by (induct t and fs and f arbitrary: i and i and i) simp_all
+  by (induct t and fs and f arbitrary: i and i and i
+    rule: lift.induct liftr.induct liftf.induct) simp_all
 
 theorem substT_liftT [simp]:
   "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>\<tau> n k T)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> (n - 1) k T"
   "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>r\<^sub>\<tau> n k rT)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> = \<up>\<^sub>r\<^sub>\<tau> (n - 1) k rT"
   "k \<le> k' \<Longrightarrow> k' < k + n \<Longrightarrow> (\<up>\<^sub>f\<^sub>\<tau> n k fT)[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau> = \<up>\<^sub>f\<^sub>\<tau> (n - 1) k fT"
-  by (induct T and rT and fT arbitrary: k k' and k k' and k k') simp_all
+  by (induct T and rT and fT arbitrary: k k' and k k' and k k'
+    rule: liftT.induct liftrT.induct liftfT.induct) simp_all
 
 theorem liftT_substT [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k (T[k' \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n k T[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n k rT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n k fT[k' + n \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
+  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
   done
 
@@ -361,7 +367,8 @@ theorem liftT_substT' [simp]:
      \<up>\<^sub>r\<^sub>\<tau> n k (rT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (k + 1) rT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>r\<^sub>\<tau>"
   "k' < k \<Longrightarrow>
      \<up>\<^sub>f\<^sub>\<tau> n k (fT[k' \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (k + 1) fT[k' \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n (k - k') U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
+  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
   apply arith
   done
@@ -370,7 +377,8 @@ lemma liftT_substT_Top [simp]:
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>\<tau> n k' (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>) = \<up>\<^sub>\<tau> n (Suc k') T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>r\<^sub>\<tau> n k' (rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>) = \<up>\<^sub>r\<^sub>\<tau> n (Suc k') rT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>"
   "k \<le> k' \<Longrightarrow> \<up>\<^sub>f\<^sub>\<tau> n k' (fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>) = \<up>\<^sub>f\<^sub>\<tau> n (Suc k') fT[k \<mapsto>\<^sub>\<tau> Top]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: k k' and k k' and k k')
+  apply (induct T and rT and fT arbitrary: k k' and k k' and k k'
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
   apply arith
   done
@@ -391,7 +399,8 @@ lemma liftT_substT_strange:
   "\<up>\<^sub>\<tau> n k T[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> n (Suc k) T[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>\<tau>"
   "\<up>\<^sub>r\<^sub>\<tau> n k rT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau> = \<up>\<^sub>r\<^sub>\<tau> n (Suc k) rT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>r\<^sub>\<tau>"
   "\<up>\<^sub>f\<^sub>\<tau> n k fT[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau> = \<up>\<^sub>f\<^sub>\<tau> n (Suc k) fT[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: n k and n k and n k)
+  apply (induct T and rT and fT arbitrary: n k and n k and n k
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
   apply (thin_tac "\<And>x. PROP ?P x")
   apply (drule_tac x=n in meta_spec)
@@ -403,19 +412,21 @@ lemma liftp_liftp [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>p n' k' (\<up>\<^sub>p n k p) = \<up>\<^sub>p (n + n') k p"
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>r\<^sub>p n' k' (\<up>\<^sub>r\<^sub>p n k rp) = \<up>\<^sub>r\<^sub>p (n + n') k rp"
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>f\<^sub>p n' k' (\<up>\<^sub>f\<^sub>p n k fp) = \<up>\<^sub>f\<^sub>p (n + n') k fp"
-  by (induct p and rp and fp arbitrary: k k' and k k' and k k') simp_all
+  by (induct p and rp and fp arbitrary: k k' and k k' and k k'
+    rule: liftp.induct liftrp.induct liftfp.induct) simp_all
 
 lemma liftp_psize[simp]:
   "\<parallel>\<up>\<^sub>p n k p\<parallel>\<^sub>p = \<parallel>p\<parallel>\<^sub>p"
   "\<parallel>\<up>\<^sub>r\<^sub>p n k fs\<parallel>\<^sub>r = \<parallel>fs\<parallel>\<^sub>r"
   "\<parallel>\<up>\<^sub>f\<^sub>p n k f\<parallel>\<^sub>f = \<parallel>f\<parallel>\<^sub>f"
-  by (induct p and fs and f) simp_all
+  by (induct p and fs and f rule: liftp.induct liftrp.induct liftfp.induct) simp_all
 
 lemma lift_lift [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up> n' k' (\<up> n k t) = \<up> (n + n') k t"
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>r n' k' (\<up>\<^sub>r n k fs) = \<up>\<^sub>r (n + n') k fs"
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>f n' k' (\<up>\<^sub>f n k f) = \<up>\<^sub>f (n + n') k f"
- by (induct t and fs and f arbitrary: k k' and k k' and k k') simp_all
+ by (induct t and fs and f arbitrary: k k' and k k' and k k'
+   rule: lift.induct liftr.induct liftf.induct) simp_all
 
 lemma liftE_liftE [simp]:
   "k \<le> k' \<Longrightarrow> k' \<le> k + n \<Longrightarrow> \<up>\<^sub>e n' k' (\<up>\<^sub>e n k \<Gamma>) = \<up>\<^sub>e (n + n') k \<Gamma>"
@@ -440,7 +451,8 @@ lemma substT_substT:
      rT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>r\<^sub>\<tau> = rT[i \<mapsto>\<^sub>\<tau> U]\<^sub>r\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>r\<^sub>\<tau>"
   "i \<le> j \<Longrightarrow>
      fT[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>f\<^sub>\<tau> = fT[i \<mapsto>\<^sub>\<tau> U]\<^sub>f\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>f\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V)
+  apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V
+    rule: liftT.induct liftrT.induct liftfT.induct)
   apply (simp_all add: diff_Suc split add: nat.split)
   apply (thin_tac "\<And>x. PROP ?P x")
   apply (drule_tac x="Suc i" in meta_spec)
@@ -734,7 +746,9 @@ theorem wf_subst:
      \<forall>(l, T) \<in> set rT. \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow>
      \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd fT[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
-  apply (induct T and rT and fT arbitrary: \<Delta> and \<Delta> and \<Delta>)
+  apply (induct T and rT and fT arbitrary: \<Delta> and \<Delta> and \<Delta>
+    rule: liftT.induct liftrT.induct liftfT.induct)
+  apply (rename_tac nat \<Delta>)
   apply simp_all
   apply (rule conjI)
   apply (rule impI)
@@ -758,6 +772,7 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_arrow)
   apply simp+
+  apply (rename_tac type1 type2 \<Delta>)
   apply (erule well_formed_cases)
   apply (rule wf_all)
   apply simp
@@ -866,7 +881,9 @@ lemma subtype_refl: -- {* A.1 *}
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<forall>(l::name, T)\<in>set fTs. \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<longrightarrow> \<Gamma> \<turnstile> T <: T"
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f snd (fT::fldT) \<Longrightarrow> \<Gamma> \<turnstile> snd fT <: snd fT"
-  by (induct T and fTs and fT arbitrary: \<Gamma> and \<Gamma> and \<Gamma>, simp_all add: split_paired_all, simp_all)
+  by (induct T and fTs and fT arbitrary: \<Gamma> and \<Gamma> and \<Gamma>
+    rule: liftT.induct liftrT.induct liftfT.induct,
+    simp_all add: split_paired_all, simp_all)
     (blast intro: subtyping.intros wf_Nil wf_TVarB bexpI intro!: ballpI
        elim: well_formed_cases ballpE elim!: bexpE)+
 
@@ -959,16 +976,8 @@ lemma subtype_weaken': -- {* A.2 *}
   done
 
 lemma fieldT_size [simp]:
-  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (size_prod (size_list size_char) size) fs)"
-  apply (induct fs arbitrary: a T rule: list.induct)
-  apply simp
-  apply simp
-  apply (erule disjE)
-  apply auto
-  apply (drule_tac x=aa in meta_spec)
-  apply (drule_tac x=T in meta_spec)
-  apply simp
-  done
+  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (size_list (size_prod (\<lambda>x. 0) size) fs)"
+  by (induct fs arbitrary: a T rule: list.induct) fastforce+
 
 lemma subtype_trans: -- {* A.3 *}
   "\<Gamma> \<turnstile> S <: Q \<Longrightarrow> \<Gamma> \<turnstile> Q <: T \<Longrightarrow> \<Gamma> \<turnstile> S <: T"

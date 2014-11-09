@@ -1,4 +1,4 @@
-header {* \isaheader{Program Dependence Graph} *}
+section {* Program Dependence Graph *}
 
 theory PDG imports 
   DataDependence 

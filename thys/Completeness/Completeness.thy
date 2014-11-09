@@ -1,4 +1,4 @@
-header "Completeness"
+section "Completeness"
 
 theory Completeness
 imports Tree Sequents
@@ -146,7 +146,7 @@ lemma subs_def2:
                                in  (case A of 
                                         FAtom z P vs  => subsFAtom (atoms gamma) nAs z P vs 
                                       | FConj z A0 A1 => subsFConj (atoms gamma) nAs z A0 A1 
-                                      | FAll  z A     => subsFAll  (atoms gamma) nAs n z A (freeVarsFL (sequent gamma))))";
+                                      | FAll  z A     => subsFAll  (atoms gamma) nAs n z A (freeVarsFL (sequent gamma))))"
   apply(simp add: subs_def Let_def nforms_def atoms_def split_beta split: list.split)
   done
 
@@ -337,8 +337,10 @@ lemma containsPropagates: "!!f.
   apply (case_tac aa, simp)
   apply(case_tac ba)
     apply(simp add: subsFAtom_def)
-   apply(case_tac signs) apply(simp add: subsFConj_def) apply force apply(simp add: subsFConj_def) 
-  apply(case_tac signs) apply(simp add: subsFAll_def Let_def) apply(simp add: subsFAll_def Let_def) 
+   apply(rename_tac signs a b)
+   apply(case_tac signs) apply(simp add: subsFConj_def) apply force apply(simp add: subsFConj_def)
+  apply(rename_tac signs a)
+  apply(case_tac signs) apply(simp add: subsFAll_def Let_def) apply(simp add: subsFAll_def Let_def)
   done
 
 
@@ -600,7 +602,7 @@ subsection "EV contains: lemmas (temporal related)"
  ******)
 
 lemma lemma1: "[| P A n ; !A n. P A n --> P A (Suc n) |]
-   ==> P A (n + m)";
+   ==> P A (n + m)"
   apply (induct m, simp, simp)
   done
 
@@ -636,8 +638,10 @@ lemma atomsPropagate: "[| branch subs gamma f |]
   apply(case_tac ba, auto)
     apply(simp add: subsFAtom_def atoms_def)
    apply(simp add: subsFConj_def atoms_def)
+   apply(rename_tac signs a b)
    apply(case_tac signs) apply force apply force
   apply(simp add: subsFAll_def atoms_def)
+  apply(rename_tac signs a)
   apply(case_tac signs) apply(force simp: Let_def) apply force
   done
 
@@ -655,13 +659,13 @@ lemma evContainsEx0_allRepeats:
 lemma evContainsEx0_allInstances:
   "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n));
      EV (contains f (0,FAll Neg A)) |]
-  ==> EV (contains f (0,instanceF (X i) A))";
+  ==> EV (contains f (0,instanceF (X i) A))"
   apply(blast dest!: evContainsEx0_allRepeats intro!: evContainsEx_instance)
   done
 
 subsection "pseq: creates initial pseq"
     
-lemma containsPSeq0D: "branch subs (pseq fs) f \<Longrightarrow> contains f (i,A) 0 \<Longrightarrow> i=0";
+lemma containsPSeq0D: "branch subs (pseq fs) f \<Longrightarrow> contains f (i,A) 0 \<Longrightarrow> i=0"
   apply(drule branch0)
   apply (simp add: pseq_def contains_def, blast)
   done
@@ -686,7 +690,7 @@ subsection "EV contains: contain any (i,FEx y) means contain all (i,FEx y)"
 
 lemma claim: "(A | B | C) = (~C --> ~B --> A)" by auto
 
-lemma natPredCases: "(!n. P n) | (~P 0) | (? n . P n & ~ P (Suc n))";
+lemma natPredCases: "(!n. P n) | (~P 0) | (? n . P n & ~ P (Suc n))"
   apply(rule claim[THEN iffD2])
   apply(intro impI) apply simp
   apply rule apply(induct_tac n) apply auto
@@ -706,7 +710,7 @@ lemma notTerminalSucNotTerminal: "\<lbrakk> \<not> terminal subs (f (Suc n)); br
 lemma evContainsExSuc_containsEx:
   "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
      EV (contains f (Suc i,FAll Neg body)) |]
-  ==> EV (contains f (i,FAll Neg body))";
+  ==> EV (contains f (i,FAll Neg body))"
   apply(cut_tac P="%n. ~ contains f (Suc i,FAll Neg body) n" in natPredCases)
   apply simp apply(erule disjE)
   apply(simp add: EV_def)
@@ -767,7 +771,7 @@ lemma atomsInSequentI[rule_format]: "  (z,P,vs) : set (fst ps) -->
 lemma evContainsAtom1: 
   "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
      EV (contains f (i,FAtom z P vs)) |]
-  ==> ? n . (z,P,vs) : set (fst (f n))";
+  ==> ? n . (z,P,vs) : set (fst (f n))"
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) apply(rule_tac x="Suc n" in exI)
   apply(simp add: subs_def2) apply clarify apply(simp add: subs_def2 Let_def)
@@ -822,7 +826,7 @@ lemma map_X_map_counterAssign: "map X (map (inv obj) (map counterAssign xs)) = x
   apply(simp add: inv_obj_obj)
   done
       
-lemma objectsCounterModel: "objects (counterModel f) =  { z . ? i . z = obj i }";
+lemma objectsCounterModel: "objects (counterModel f) =  { z . ? i . z = obj i }"
   apply(simp add: objects_def counterModel_def)
   apply(simp add: Abs_counterModel_inverse)
   apply(simp add: counterM_def) 
@@ -833,7 +837,7 @@ lemma inCounterM: "counterAssign v : objects (counterModel f)"
   apply(simp add: objectsCounterModel) 
   by blast
 
-lemma counterAssign_eqI[rule_format]: "x : objects (counterModel f) --> z = X (inv obj x) --> counterAssign z = x";
+lemma counterAssign_eqI[rule_format]: "x : objects (counterModel f) --> z = X (inv obj x) --> counterAssign z = x"
   apply(force simp: objectsCounterModel inj_obj) done
 
 lemma evalPCounterModel: "M = counterModel f ==> evalP M = counterEvalP f"

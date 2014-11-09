@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Hoare Logic for Partial Correctness *}
+section {* Hoare Logic for Partial Correctness *}
 theory HoarePartialDef imports Semantic begin
 
 type_synonym ('s,'p) quadruple = "('s assn \<times> 'p \<times> 's assn \<times> 's assn)"

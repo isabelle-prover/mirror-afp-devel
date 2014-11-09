@@ -1,4 +1,4 @@
-header{* Reactive processes *}
+section{* Reactive processes *}
 
 theory Reactive_Processes
 imports Designs "~~/src/HOL/Library/Sublist"
@@ -192,13 +192,13 @@ definition "diff_tr s1 s2 = ((tr s1) - (tr s2))"
 definition spec :: "[bool, bool, ('\<theta>,'\<sigma>) relation_rp] \<Rightarrow> ('\<theta>,'\<sigma>) relation_rp"
 where "spec b b' P \<equiv> \<lambda> (A, A'). P (A\<lparr>wait := b'\<rparr>, A'\<lparr>ok := b\<rparr>)"
 
-abbreviation Speciftt ("_\<^isup>t\<^isub>t") where "(P)\<^isup>t\<^isub>t \<equiv> spec True True P"
+abbreviation Speciftt ("_\<^sup>t\<^sub>t") where "(P)\<^sup>t\<^sub>t \<equiv> spec True True P"
 
-abbreviation Specifff ("_\<^isup>f\<^isub>f") where "(P)\<^isup>f\<^isub>f \<equiv> spec False False P"
+abbreviation Specifff ("_\<^sup>f\<^sub>f") where "(P)\<^sup>f\<^sub>f \<equiv> spec False False P"
 
-abbreviation Speciftf ("_\<^isup>t\<^isub>f") where "(P)\<^isup>t\<^isub>f \<equiv> spec True False P"
+abbreviation Speciftf ("_\<^sup>t\<^sub>f") where "(P)\<^sup>t\<^sub>f \<equiv> spec True False P"
 
-abbreviation Specifft ("_\<^isup>f\<^isub>t") where "(P)\<^isup>f\<^isub>t \<equiv> spec False True P"
+abbreviation Specifft ("_\<^sup>f\<^sub>t") where "(P)\<^sup>f\<^sub>t \<equiv> spec False True P"
 
 definition R1::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
 where "R1 (P)  \<equiv>  \<lambda>(A, A'). (P (A, A')) \<and> (tr A \<le> tr A')"

@@ -3,15 +3,14 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Definition of Subobjects} *}
+section {* Definition of Subobjects *}
 
 theory SubObj
 imports ClassRel
 begin
 
 
-section {* General definitions *}
+subsection {* General definitions *}
 
 type_synonym
   subobj = "cname  \<times> path"
@@ -30,7 +29,7 @@ lemma ldc_tuple [simp]: "ldc (C,Cs) = last Cs"
 by(simp add:ldc_def)
 
 
-section {* Subobjects according to Rossie-Friedman *}
+subsection {* Subobjects according to Rossie-Friedman *}
 
 fun is_subobj :: "prog \<Rightarrow> subobj \<Rightarrow> bool" -- "legal subobject to class hierarchie" where
   "is_subobj P (C, []) \<longleftrightarrow> False"
@@ -330,7 +329,7 @@ qed
 
 
 
-section {* Subobject handling and lemmas *}
+subsection {* Subobject handling and lemmas *}
 
 text{* Subobjects consisting of repeated inheritance relations only: *}
 
@@ -595,7 +594,7 @@ by (auto elim:Subobjs.induct SubobjsR_isSubobj
 
 
 
-section {* Paths *}
+subsection {* Paths *}
 
 
 subsection {* Appending paths *}
@@ -685,7 +684,7 @@ by(erule leq_pathSh)simp
 
 
 
-section{* Member lookups *}
+subsection{* Member lookups *}
 
 definition FieldDecls :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set" where
   "FieldDecls P C F \<equiv> 

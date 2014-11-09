@@ -186,14 +186,14 @@ done
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows compE2_jump_ok [intro!]: "jump_ok (compE2 e) n (Suc n')"
   and compEs2_jump_ok [intro!]: "jump_ok (compEs2 es) n (Suc n')"
-apply(induct e and es arbitrary: n n' and n n')
+apply(induct e and es arbitrary: n n' and n n' rule: compE2.induct compEs2.induct)
 apply(auto split: bop.split)
 done
 
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows compE1_Goto_not_same: "\<lbrakk> compE2 e ! pc = Goto i; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
   and compEs2_Goto_not_same: "\<lbrakk> compEs2 es ! pc = Goto i; pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
-apply(induct e and es arbitrary: pc i and pc i)
+apply(induct e and es arbitrary: pc i and pc i rule: compE2.induct compEs2.induct)
 apply(auto simp add: nth_Cons nth_append split: split_if_asm bop.split_asm nat.splits)
 apply fastforce+
 done

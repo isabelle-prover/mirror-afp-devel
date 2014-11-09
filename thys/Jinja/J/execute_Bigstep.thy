@@ -3,7 +3,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Code Generation For BigStep} *}
+section {* Code Generation For BigStep *}
 
 theory execute_Bigstep
 imports

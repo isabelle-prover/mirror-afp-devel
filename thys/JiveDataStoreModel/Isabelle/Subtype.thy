@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Widening the Direct Subtype Relation *}
+section {* Widening the Direct Subtype Relation *}
 
 theory Subtype
 imports "../Isa_Counter/DirectSubtypes"

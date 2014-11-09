@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with the formalization. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header "Decreasing Diagrams"
+section "Decreasing Diagrams"
 
 
 theory Decreasing_Diagrams imports "~~/src/HOL/Library/Multiset" "../Abstract-Rewriting/Abstract_Rewriting" begin
@@ -1075,14 +1075,12 @@ lemma newman: assumes "WCR ars" and "SN ars" shows "CR ars"  proof -
     from A obtain \<tau> \<sigma> where ts: "{\<tau>,\<sigma>} \<subseteq> seq lrs" and l1: "length (snd \<tau>) = 1" and l2: "length (snd \<sigma>) = 1" and P: "P = (\<tau>,\<sigma>)"
      and p: "fst \<tau> = fst \<sigma>" unfolding local_peak_def peak_def by auto
 
-    from l1 obtain \<beta> b where 1: "snd \<tau> = [(\<beta>,b)]"
-      by (metis drop_1_Cons drop_eq_Nil impossible_Cons order_refl pair_collapse remdups_adj.cases)
+    from l1 obtain \<beta> b where 1: "snd \<tau> = [(\<beta>,b)]" by(auto simp add: length_Suc_conv)
     from this obtain a where tau: "\<tau> = (a,[(\<beta>,b)])" by (metis surjective_pairing)
     hence alb: "(a,\<beta>,b) \<in> lrs" using ts by (metis fst_conv insert_subset seq_tail1(2) snd_conv)
     have ab: "(a,b) \<in> ars" and a_eq: "a = \<beta>" using alb unfolding lab_eq by auto
 
-    from l2 obtain \<alpha> c where 2: "snd \<sigma> = [(\<alpha>,c)]"
-      by (metis PairE drop_1_Cons drop_eq_Nil impossible_Cons le_numeral_extra(4) remdups_adj.cases)
+    from l2 obtain \<alpha> c where 2: "snd \<sigma> = [(\<alpha>,c)]" by(auto simp add: length_Suc_conv)
     hence sigma: "\<sigma> = (a,[(\<alpha>,c)])" using ts by (metis fst_conv p pair_collapse tau)
     hence alc: "(a,\<alpha>,c) \<in> lrs" using ts by (metis fst_conv insert_subset seq_tail1(2) snd_conv)
     hence ac: "(a,c) \<in> ars" and a_eq: "a = \<alpha>" using alb unfolding lab_eq by auto

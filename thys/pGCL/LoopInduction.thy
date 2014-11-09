@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Continuity and Induction for Loops*}
+section {* Continuity and Induction for Loops*}
 
 theory LoopInduction imports Healthiness Continuity begin
 

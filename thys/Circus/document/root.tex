@@ -9,28 +9,8 @@
 %\usepackage[isasymonly]{hol-ocl-isar}
 \usepackage{hol-ocl-isar}
 
-% further packages required for unusual symbols (see also
-% isabellesym.sty), use only when needed
-
 \usepackage{amsmath}
 \usepackage{amssymb}
-  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
-  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
-  %\<triangleq>, \<yen>, \<lozenge>
-
-%\usepackage[greek,english]{babel}
-  %option greek for \<euro>
-  %option english (default language) for \<guillemotleft>, \<guillemotright>
-
-%\usepackage[only,bigsqcap,llparenthesis,rrparenthesis]{stmaryrd}
-  %for \<Sqinter>
-
-%\usepackage{eufrak}
-  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
-
-%\usepackage{textcomp}
-  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
-  %\<currency>
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -41,9 +21,6 @@
 % urls in roman style, theory text in math-similar italics
 \urlstyle{rm}
 %\isabellestyle{it}
-
-% for uniform font size
-%\renewcommand{\isastyle}{\isastyleminor}
 
 \newcommand{\bgtt}{\bgroup\isabellestyle{default}\isabellestyle{tt}\isastyle%
 \newcommand{\isacharverbatimopen}{\isamath{\langle\!\langle}}%
@@ -404,38 +381,38 @@ $
     \mathsf{Process} & %
     \mathsf{::=} & \mathsf{\textbf{circusprocess}\ Tpar^*\ name\ \textbf{=}\ PParagraph^*\ \textbf{where}\  Action} \
     \\ %
-	\mathsf{PParagraph} & %
+    \mathsf{PParagraph} & %
     \mathsf{::=} & \mathsf{AlphabetP }\ \mathsf{|}\ \mathsf{StateP }\ \mathsf{|}\ \mathsf{ ChannelP }\ \mathsf{|}\ \mathsf{ NamesetP }\ \mathsf{|}\ \mathsf{ ChansetP }\ \mathsf{|}\ \mathsf{ SchemaP }\ \\%
 & \mathsf{|}\ & \mathsf{ ActionP} \
     \\ %
-	\mathsf{AlphabetP} & %
+    \mathsf{AlphabetP} & %
     \mathsf{::=} & \mathsf{\textbf{alphabet}\ \textbf{[ }\ vardecl^+\  \textbf{] }} \
     \\ %
-	\mathsf{vardecl} & %
+    \mathsf{vardecl} & %
     \mathsf{::=} & \mathsf{name::type} \
     \\ %
-	\mathsf{StateP} & %
+    \mathsf{StateP} & %
     \mathsf{::=} & \mathsf{\textbf{state}\ \textbf{[ }\ vardecl^+\  \textbf{] }} \
     \\ %
-	\mathsf{ChannelP} & %
+    \mathsf{ChannelP} & %
     \mathsf{::=} & \mathsf{\textbf{channel}\ \textbf{[ }\ chandecl^+\  \textbf{] }} \
     \\ %
-	\mathsf{chandecl} & %
+    \mathsf{chandecl} & %
     \mathsf{::=} & \mathsf{name\ }\ \mathsf{|}\ \mathsf{\ name\ type} \
     \\ %
-	\mathsf{NamesetP} & %
+    \mathsf{NamesetP} & %
     \mathsf{::=} & \mathsf{\textbf{nameset}\ name\ \textbf{=\ [ }\ name^+\  \textbf{] }} \
     \\ %
-	\mathsf{ChansetP} & %
+    \mathsf{ChansetP} & %
     \mathsf{::=} & \mathsf{\textbf{chanset}\ name\ \textbf{=\ [ }\ name^+\  \textbf{] }} \
     \\ %
-	\mathsf{SchemaP} & %
+    \mathsf{SchemaP} & %
     \mathsf{::=} & \mathsf{\textbf{schema}\ name\ \textbf{=\ }\ SchemaExpression} \
     \\ %
-	\mathsf{ActionP} & %
+    \mathsf{ActionP} & %
     \mathsf{::=} & \mathsf{\textbf{action}\ name\ \textbf{=\ }\ Action} \
     \\ %
-	\mathsf{Action} & %
+    \mathsf{Action} & %
     \mathsf{::=} & \mathsf{\textbf{Skip} }\ \mathsf{|}\ \mathsf{ \textbf{Stop} }\ \mathsf{|}\ \mathsf{ Action\ ; Action }\ \mathsf{|}\ \mathsf{ Action\ \square\ Action }\ \mathsf{|}\ \mathsf{ Action\ \sqcap\ Action} \
 \\ %
     & \mathsf{|} & \mathsf{Action\ \backslash\ chansetN}\ \mathsf{|}\ \mathsf{var := expr}\ \mathsf{|}\ \mathsf{guard\ \&\ Action}\ \mathsf{|}\ \mathsf{comm\ \rightarrow\ Action}

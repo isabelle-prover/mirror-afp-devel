@@ -1,4 +1,4 @@
-header{*Theory of Events for Security Protocols against the General Attacker*}
+section{*Theory of Events for Security Protocols against the General Attacker*}
 
 theory EventGA imports MessageGA begin
 

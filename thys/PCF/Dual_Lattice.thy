@@ -3,7 +3,7 @@
                 More modifications by Brian Huffman
 *)
 
-header {* Lattice operations on dually-ordered types *}
+section {* Lattice operations on dually-ordered types *}
 
 theory Dual_Lattice
 imports Main

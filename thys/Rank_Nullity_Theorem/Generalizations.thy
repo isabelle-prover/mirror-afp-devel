@@ -4,7 +4,7 @@
     Author: Jesús Aransay <jesus-maria.aransay at unirioja.es>
   *)
 
-header{*Generalizations*}
+section{*Generalizations*}
 
 theory Generalizations
 imports
@@ -1098,9 +1098,15 @@ lemma maximal_independent_subset:
   "\<exists>B. B\<subseteq> V \<and> independent B \<and> V \<subseteq> span B"
   by (metis maximal_independent_subset_extend[of "{}"]
     empty_subsetI independent_empty)
-  
-definition "dim V = (SOME n. \<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> card B = n)"
+end
 
+context vector_space
+begin  
+definition "dim V = (SOME n. \<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> card B = n)"
+end
+
+context finite_dimensional_vector_space
+begin
 lemma basis_exists:
   "\<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> (card B = dim V)"
   unfolding dim_def some_eq_ex[of "\<lambda>n. \<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> (card B = n)"]
@@ -2452,6 +2458,20 @@ qed
 
 (*Finally, some interesting theorems and interpretations that don't appear in any file of the 
   library.*)
+
+locale linear_first_finite_dimensional_vector_space =
+  l: linear scaleB scaleC f +
+  B: finite_dimensional_vector_space scaleB BasisB + 
+  C: vector_space scaleC 
+  for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
+  and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) 
+  and BasisB :: "('b set)"
+  and f :: "('b=>'c)"  
+
+context linear_between_finite_dimensional_vector_spaces
+begin
+  sublocale lblf: linear_first_finite_dimensional_vector_space by unfold_locales
+end
   
 lemma vec_dim_card: "vec.dim (UNIV::('a::{field}^'n) set) = CARD ('n)"
 proof -

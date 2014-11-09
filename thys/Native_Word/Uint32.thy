@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of 32 bits *}
+chapter {* Unsigned words of 32 bits *}
 
 theory Uint32 imports
   Word_Misc
@@ -617,7 +617,7 @@ by transfer(auto simp add: word_ao_nth uint_and_mask_or_full mask_numeral mask_S
 
 code_printing
   constant "integer_of_uint32" \<rightharpoonup>
-  (SML) "Word32.toInt _ : IntInf.int" and
+  (SML) "IntInf.fromLarge (Word32.toLargeInt _) : IntInf.int" and
   (Haskell) "Prelude.toInteger"
 | constant "integer_of_uint32_signed" \<rightharpoonup>
   (OCaml) "Big'_int.big'_int'_of'_int32" and
@@ -648,85 +648,6 @@ lemmas partial_term_of_uint32 [code] = partial_term_of_code
 instance ..
 end
 
-section {* Tests *}
-
-definition test_uint32 where
-  "test_uint32 \<longleftrightarrow>
-  (([ 0x100000001, -1, -4294967291, 0xFFFFFFFF, 0x12345678
-    , 0x5A AND 0x36
-    , 0x5A OR 0x36
-    , 0x5A XOR 0x36
-    , NOT 0x5A
-    , 5 + 6, -5 + 6, -6 + 5, -5 + -6, 0xFFFFFFFFF + 1
-    , 5 - 3, 3 - 5
-    , 5 * 3, -5 * 3, -5 * -4, 0x12345678 * 0x87654321
-    , 5 div 3, -5 div 3, -5 div -3, 5 div -3
-    , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-    , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-    , set_bit 5 32 True, set_bit 5 32 False, set_bit -5 32 True, set_bit -5 32 False
-    , 1 << 2, -1 << 3, 1 << 32, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 32, -100 >> 32
-    , 100 >>> 3, -100 >>> 3, 100 >>> 32, -100 >>> 32] :: uint32 list)
-   =
-    [ 1, 4294967295, 5, 4294967295, 305419896
-    , 18
-    , 126
-    , 108
-    , 4294967205
-    , 11, 1, 4294967295, 4294967285, 0
-    , 2, 4294967294
-    , 15, 4294967281, 20, 1891143032
-    , 1, 1431655763, 0, 0
-    , 2, 2, 4294967291, 5 
-    , 21, 4294967295, 4, 4294967289
-    , 5, 5, 4294967291, 4294967291
-    , 4, 4294967288, 0, 1
-    , 12, 536870899, 0, 0
-    , 12, 4294967283, 0, 4294967295]) \<and>
-  ([ (0x5 :: uint32) = 0x5, (0x5 :: uint32) = 0x6
-   , (0x5 :: uint32) < 0x5, (0x5 :: uint32) < 0x6, (-5 :: uint32) < 6, (6 :: uint32) < -5
-   , (0x5 :: uint32) \<le> 0x5, (0x5 :: uint32) \<le> 0x4, (-5 :: uint32) \<le> 6, (6 :: uint32) \<le> -5 
-   , (0x7FFFFFFF :: uint32) < 0x80000000, (0xFFFFFFFF :: uint32) < 0, (0x80000000 :: uint32) < 0x7FFFFFFF
-   , (0x7FFFFFFF :: uint32) !! 0, (0x7FFFFFFF :: uint32) !! 31, (0x80000000 :: uint32) !! 31, (0x80000000 :: uint32) !! 32
-   ]
-  =
-   [ True, False
-   , False, True, False, True
-   , True, False, False, True
-   , True, False, False
-   , True, False, True, False
-   ]) \<and>
-  ([integer_of_uint32 0, integer_of_uint32 0x7FFFFFFF, integer_of_uint32 0x80000000, integer_of_uint32 0xAAAAAAAA]
-  =
-   [0, 0x7FFFFFFF, 0x80000000, 0xAAAAAAAA])"
-
-export_code test_uint32 checking SML Haskell? OCaml? Scala
-
-notepad begin
-have test_uint32 by eval
-have test_uint32 by code_simp
-have test_uint32 by normalization
-end
-
-definition test_uint32' :: uint32 
-where "test_uint32' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
-ML {* val 0wx12 = @{code test_uint32'} *}
-
-lemma "x AND y = x OR (y :: uint32)"
-quickcheck[random, expect=counterexample]
-quickcheck[exhaustive, expect=counterexample]
-oops
-
-lemma "(x :: uint32) AND x = x OR x"
-quickcheck[narrowing, expect=no_counterexample]
-by transfer simp
-
-lemma "(f :: uint32 \<Rightarrow> unit) = g"
-quickcheck[narrowing, size=3, expect=no_counterexample]
-by(simp add: fun_eq_iff)
-
-hide_const test_uint32 test_uint32'
-hide_fact test_uint32_def test_uint32'_def
 no_notation sshiftr_uint32 (infixl ">>>" 55)
 
 end

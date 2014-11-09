@@ -1,4 +1,4 @@
-header {* Euclidean Space: Executability *}
+section {* Euclidean Space: Executability *}
 theory Executable_Euclidean_Space
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"

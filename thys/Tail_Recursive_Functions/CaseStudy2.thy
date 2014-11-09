@@ -3,7 +3,7 @@
                  (pasquale dot noce at arjowiggins-it dot com)
 *)
 
-header "Case study 2"
+section "Case study 2"
 
 theory CaseStudy2
 imports Main "~~/src/HOL/Library/Multiset"

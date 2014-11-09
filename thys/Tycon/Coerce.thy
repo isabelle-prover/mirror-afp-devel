@@ -1,4 +1,4 @@
-header {* Coercion Operator *}
+section {* Coercion Operator *}
 
 theory Coerce
 imports HOLCF
@@ -159,19 +159,10 @@ types with other applications of @{text coerce} at simpler types. *}
 
 text {* The safest rewrite rules for @{text coerce} are given the
 @{text "[simp]"} attribute. For other rules that do not belong in the
-global simpset, we use the @{text Named_Thms} facility to set up a
-dynamic theorem list called @{text coerce_simp}, which will collect
-additional rules for simplifying coercions. \medskip *}
+global simpset, we use dynamic theorem list called @{text coerce_simp},
+which will collect additional rules for simplifying coercions. \medskip *}
 
-ML {*
-structure CoerceSimpData = Named_Thms
-(
-  val name = @{binding coerce_simp}
-  val description = "rule for simplifying coercions"
-)
-*}
-
-setup CoerceSimpData.setup
+named_theorems coerce_simp "rule for simplifying coercions"
 
 text {* The @{text coerce} function commutes with data constructors
 for various HOLCF datatypes. \medskip *}

@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* Transition system of Nieuwenhuis, Oliveras and Tinelli. *}
+section{* Transition system of Nieuwenhuis, Oliveras and Tinelli. *}
 theory NieuwenhuisOliverasTinelli
 imports SatSolverVerification
 begin

@@ -1,4 +1,4 @@
-header {* Dyadic Rational Representation of Real *}
+section {* Dyadic Rational Representation of Real *}
 theory Float_Real
 imports
   "~~/src/HOL/Library/Float"

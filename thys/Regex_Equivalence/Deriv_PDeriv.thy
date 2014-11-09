@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header "Connection Between Derivatives and Partial Derivatives"
+section "Connection Between Derivatives and Partial Derivatives"
 
 (*<*)
 theory Deriv_PDeriv

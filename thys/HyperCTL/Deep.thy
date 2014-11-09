@@ -1,4 +1,4 @@
-header {* Deep representation of HyperCTL* -- syntax and semantics *}
+section {* Deep representation of HyperCTL* -- syntax and semantics *}
 
 (*<*)
 theory Deep
@@ -8,11 +8,11 @@ begin
 
 subsection{* Path variables and environments *}
 
-datatype_new pvar = Pvariable (natOf : nat)
+datatype pvar = Pvariable (natOf : nat)
 
 text {* Deeply embedded (syntactic) formulas *}
 
-datatype_new 'aprop dfmla =
+datatype 'aprop dfmla =
   Atom 'aprop pvar |
   Fls | Neg "'aprop dfmla" | Dis "'aprop dfmla" "'aprop dfmla" |
   Next "'aprop dfmla" | Until "'aprop dfmla" "'aprop dfmla" |

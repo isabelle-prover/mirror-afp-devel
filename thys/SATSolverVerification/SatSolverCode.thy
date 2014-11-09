@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* Functional implementation of a SAT solver with Two Watch literal propagation. *}
+section{* Functional implementation of a SAT solver with Two Watch literal propagation. *}
 theory SatSolverCode
 imports SatSolverVerification "~~/src/HOL/Library/Code_Target_Numeral"
 begin

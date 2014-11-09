@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Store Properties *}
+section {* Store Properties *}
 
 theory StoreProperties
 imports Store

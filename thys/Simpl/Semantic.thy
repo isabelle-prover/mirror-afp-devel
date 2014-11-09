@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Big-Step Semantics for Simpl *}
+section {* Big-Step Semantics for Simpl *}
 theory Semantic imports Language begin
 
 notation
@@ -1555,16 +1555,13 @@ lemma execn_to_execn_subseteq_guards: "\<And>c s t n. \<lbrakk>c \<subseteq>\<^s
             (isFault t \<longrightarrow> isFault t') \<and> (\<not> isFault t' \<longrightarrow> t'=t)"
 proof (induct c')
   case Skip thus ?case 
-    by (fastforce dest: subseteq_guardsD intro: execn.intros 
-         elim: execn_elim_cases)
+    by (fastforce dest: subseteq_guardsD elim: execn_elim_cases)
 next
   case Basic thus ?case 
-    by (fastforce dest: subseteq_guardsD intro: execn.intros 
-         elim: execn_elim_cases)
+    by (fastforce dest: subseteq_guardsD elim: execn_elim_cases)
 next
   case Spec thus ?case 
-    by (fastforce dest: subseteq_guardsD intro: execn.intros 
-         elim: execn_elim_cases)
+    by (fastforce dest: subseteq_guardsD elim: execn_elim_cases)
 next
   case (Seq c1' c2')
   have "c \<subseteq>\<^sub>g Seq c1' c2'" by fact
@@ -1749,8 +1746,7 @@ next
   show ?case .
 next
   case Call thus ?case 
-    by (fastforce dest: subseteq_guardsD intro: execn.intros 
-         elim: execn_elim_cases)
+    by (fastforce dest: subseteq_guardsD elim: execn_elim_cases)
 next
   case (DynCom C') 
   have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
@@ -1783,7 +1779,7 @@ next
     from exec [simplified c Normal] 
     have "\<Gamma>\<turnstile>\<langle>C s',Normal s'\<rangle> =n\<Rightarrow> t"
       by cases
-    from DynCom.hyps [OF C_C' [rule_format] this] obtain t' where
+    from DynCom.hyps C_C' [rule_format] this obtain t' where
       "\<Gamma>\<turnstile>\<langle>C' s',Normal s'\<rangle> =n\<Rightarrow> t'"
       "isFault t \<longrightarrow> isFault t'" 
       "\<not> isFault t' \<longrightarrow> t' = t"
@@ -4008,9 +4004,9 @@ next
     assume exec_f: "\<Gamma>\<turnstile>\<langle>the (f1 s \<inter>\<^sub>g f2 s),Normal s\<rangle> =n\<Rightarrow> t"
     from f_defined obtain f where "(f1 s \<inter>\<^sub>g f2 s) = Some f"
       by auto
-    with DynCom.hyps [OF this] exec_f c2 noFault
+    with DynCom.hyps this exec_f c2 noFault
     show ?thesis
-      by (auto intro: execn.intros)
+      using execn.DynCom by fastforce
   qed
 next
   case Guard thus ?case 
@@ -4018,7 +4014,7 @@ next
         simp add: inter_guards_Guard)
 next
   case Throw thus ?case
-    by (fastforce elim: execn_Normal_elim_cases intro: execn.intros 
+    by (fastforce elim: execn_Normal_elim_cases 
         simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
@@ -4269,7 +4265,7 @@ next
     assume exec_F: "\<Gamma>\<turnstile>\<langle>the (f1 s \<inter>\<^sub>g f2 s),Normal s\<rangle> =n\<Rightarrow> Fault f"
     from F_defined obtain F where "(f1 s \<inter>\<^sub>g f2 s) = Some F"
       by auto
-    with DynCom.hyps [OF this] exec_F c2 
+    with DynCom.hyps this exec_F c2 
     show ?thesis
       by (fastforce intro: execn.intros)
   qed

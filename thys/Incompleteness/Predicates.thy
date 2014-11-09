@@ -1,4 +1,4 @@
-header{*Basic Predicates*}
+chapter{*Basic Predicates*}
 
 theory Predicates
 imports SyntaxN

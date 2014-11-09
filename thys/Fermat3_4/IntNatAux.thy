@@ -3,7 +3,7 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Powers, prime numbers and divisibility *}
+section {* Powers, prime numbers and divisibility *}
 
 theory IntNatAux
 imports 

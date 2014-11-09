@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel, ported by Tobias Nipkow *)
 
-header {* Finiteness of Derivatives Modulo ACI *}
+section {* Finiteness of Derivatives Modulo ACI *}
 
 (*<*)
 (* split into Norm and Fin theories *)

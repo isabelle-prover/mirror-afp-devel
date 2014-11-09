@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* User guide for native words *}
+chapter {* User guide for native words *}
 
 (*<*)
 theory Uint_Userguide imports

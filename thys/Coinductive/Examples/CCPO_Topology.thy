@@ -2,7 +2,7 @@
     Author:      Johannes Hölzl, TU Munich
 *)
 
-header {* CCPO topologies *}
+section {* CCPO topologies *}
 
 theory CCPO_Topology
 imports

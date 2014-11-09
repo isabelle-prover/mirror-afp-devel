@@ -1,4 +1,4 @@
-header {* Refinement to Efficient Code *}
+section {* Refinement to Efficient Code *}
 (*
   Author: Peter Lammich
   Inspired by previous version of Alexander Schimpf.

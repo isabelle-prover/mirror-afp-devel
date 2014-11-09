@@ -3,7 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-header "Real Euclidean space and Tarski's axioms"
+section "Real Euclidean space and Tarski's axioms"
 
 theory Euclid_Tarski
 imports Tarski

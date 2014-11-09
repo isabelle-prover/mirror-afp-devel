@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Flowgraphs"
+section "Flowgraphs"
 theory Flowgraph
 imports Main Misc
 begin

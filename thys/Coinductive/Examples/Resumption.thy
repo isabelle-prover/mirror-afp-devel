@@ -1,10 +1,10 @@
 (*  Author:      Andreas Lochbihler
     Maintainer:  Andreas Lochbihler
 *)
-header {* Manual construction of a resumption codatatype *}
+section {* Manual construction of a resumption codatatype *}
 
 theory Resumption imports 
-  Main 
+  "~~/src/HOL/Library/Old_Datatype"
 begin
 
 text {*
@@ -19,26 +19,26 @@ codatatype ('a,'b,'c,'d) resumption =
 
 *}
 
-subsection {* Auxiliary definitions and lemmata similar to @{theory Datatype} *}
+subsection {* Auxiliary definitions and lemmata similar to @{theory Old_Datatype} *}
 
-lemma Lim_mono: "(\<And>d. rs d \<subseteq> rs' d) \<Longrightarrow> Datatype.Lim rs \<subseteq> Datatype.Lim rs'"
+lemma Lim_mono: "(\<And>d. rs d \<subseteq> rs' d) \<Longrightarrow> Old_Datatype.Lim rs \<subseteq> Old_Datatype.Lim rs'"
 by(simp add: Lim_def) blast
 
-lemma Lim_UN1:  "Datatype.Lim (\<lambda>x. \<Union>y. f x y) = (\<Union>y. Datatype.Lim (\<lambda>x. f x y))"
-by(simp add: Datatype.Lim_def) blast
+lemma Lim_UN1:  "Old_Datatype.Lim (\<lambda>x. \<Union>y. f x y) = (\<Union>y. Old_Datatype.Lim (\<lambda>x. f x y))"
+by(simp add: Old_Datatype.Lim_def) blast
 
 text {*
-  Inverse for @{term "Datatype.Lim"} like @{term "Datatype.Split"} and @{term "Datatype.Case"}
-  for @{term "Datatype.Scons"} and @{term "In0"}/@{term "In1"}
+  Inverse for @{term "Old_Datatype.Lim"} like @{term "Old_Datatype.Split"} and @{term "Old_Datatype.Case"}
+  for @{term "Old_Datatype.Scons"} and @{term "In0"}/@{term "In1"}
 *}
 
-definition DTBranch :: "(('b \<Rightarrow> ('a, 'b) Datatype.dtree) \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) Datatype.dtree \<Rightarrow> 'c"
-where "DTBranch f M = (THE u. \<exists>x. M = Datatype.Lim x \<and> u = f x)"
+definition DTBranch :: "(('b \<Rightarrow> ('a, 'b) Old_Datatype.dtree) \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) Old_Datatype.dtree \<Rightarrow> 'c"
+where "DTBranch f M = (THE u. \<exists>x. M = Old_Datatype.Lim x \<and> u = f x)"
 
-lemma DTBranch_Lim [simp]: "DTBranch f (Datatype.Lim M) = f M"
+lemma DTBranch_Lim [simp]: "DTBranch f (Old_Datatype.Lim M) = f M"
 by(auto simp add: DTBranch_def dest: Lim_inject)
 
-text {* Lemmas for @{term Datatype.ntrunc} and @{term "Datatype.Lim"} *}
+text {* Lemmas for @{term Old_Datatype.ntrunc} and @{term "Old_Datatype.Lim"} *}
 
 lemma ndepth_Push_Node_Inl_aux:
      "case_nat (Inl n) f k = Inr 0 \<Longrightarrow> Suc (LEAST x. f x = Inr 0) <= k"
@@ -55,7 +55,7 @@ apply(rule Least_equality)
 apply(auto elim: LeastI intro: ndepth_Push_Node_Inl_aux)
 done
 
-lemma ntrunc_Lim [simp]: "ntrunc (Suc k) (Datatype.Lim rs) = Datatype.Lim (\<lambda>x. ntrunc k (rs x))"
+lemma ntrunc_Lim [simp]: "ntrunc (Suc k) (Old_Datatype.Lim rs) = Old_Datatype.Lim (\<lambda>x. ntrunc k (rs x))"
 unfolding Lim_def ntrunc_def
 apply(rule equalityI)
 apply clarify
@@ -66,23 +66,23 @@ subsection {* Definition for the codatatype universe *}
 
 text {* Constructors *}
 
-definition TERMINAL :: "'a \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree"
-where "TERMINAL a = In0 (Datatype.Leaf (Inr (Inr a)))"
+definition TERMINAL :: "'a \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree"
+where "TERMINAL a = In0 (Old_Datatype.Leaf (Inr (Inr a)))"
 
-definition LINEAR :: "'b \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree"
-  where "LINEAR b r = In1 (In0 (Scons (Datatype.Leaf (Inr (Inl b))) r))"
+definition LINEAR :: "'b \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree"
+  where "LINEAR b r = In1 (In0 (Scons (Old_Datatype.Leaf (Inr (Inl b))) r))"
 
-definition BRANCH :: "'c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree"
- where "BRANCH c rs = In1 (In1 (Scons (Datatype.Leaf (Inl c)) (Datatype.Lim rs)))"
+definition BRANCH :: "'c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree) \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree"
+ where "BRANCH c rs = In1 (In1 (Scons (Old_Datatype.Leaf (Inl c)) (Old_Datatype.Lim rs)))"
 
 text {* case operator *}
 
-definition case_RESUMPTION :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> (('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c + 'b + 'a, 'd) Datatype.dtree \<Rightarrow> 'e"
+definition case_RESUMPTION :: "('a \<Rightarrow> 'e) \<Rightarrow> ('b \<Rightarrow> (('c + 'b + 'a, 'd) Old_Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c \<Rightarrow> ('d \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree) \<Rightarrow> 'e) \<Rightarrow> ('c + 'b + 'a, 'd) Old_Datatype.dtree \<Rightarrow> 'e"
 where 
   "case_RESUMPTION t l br =
-   Datatype.Case (t o inv (Datatype.Leaf o Inr o Inr))
-                 (Datatype.Case (Datatype.Split (\<lambda>x. l (inv (Datatype.Leaf o Inr o Inl) x)))
-                                (Datatype.Split (\<lambda>x. DTBranch (br (inv (Datatype.Leaf o Inl) x)))))"
+   Old_Datatype.Case (t o inv (Old_Datatype.Leaf o Inr o Inr))
+                 (Old_Datatype.Case (Old_Datatype.Split (\<lambda>x. l (inv (Old_Datatype.Leaf o Inr o Inl) x)))
+                                (Old_Datatype.Split (\<lambda>x. DTBranch (br (inv (Old_Datatype.Leaf o Inl) x)))))"
 
 lemma [iff]:
   shows TERMINAL_not_LINEAR: "TERMINAL a \<noteq> LINEAR b r"
@@ -123,7 +123,7 @@ by (simp add: BRANCH_def Lim_UN1 In1_UN1 In0_UN1 Scons_UN1_y)
 
 text {* The codatatype universe *}
 
-coinductive_set resumption :: "('c + 'b + 'a, 'd) Datatype.dtree set"
+coinductive_set resumption :: "('c + 'b + 'a, 'd) Old_Datatype.dtree set"
 where
 resumption_TERMINAL:
   "TERMINAL a \<in> resumption"
@@ -134,7 +134,7 @@ resumption_TERMINAL:
 
 subsection {* Definition of the codatatype as a type *}
 
-typedef ('a,'b,'c,'d) resumption = "resumption :: ('c + 'b + 'a, 'd) Datatype.dtree set"
+typedef ('a,'b,'c,'d) resumption = "resumption :: ('c + 'b + 'a, 'd) Old_Datatype.dtree set"
 proof
   show "TERMINAL undefined \<in> ?resumption" by(blast intro: resumption.intros)
 qed
@@ -249,13 +249,13 @@ lemmas resumption_splits = resumption_split resumption_split_asm
 
 text {* corecursion operator *}
 
-datatype ('a,'b,'c,'d,'e) resumption_corec =
+datatype (dead 'a, dead 'b, dead 'c, dead 'd, dead 'e) resumption_corec =
     Terminal_corec 'a
   | Linear_corec 'b 'e
   | Branch_corec 'c "'d \<Rightarrow> 'e"
   | Resumption_corec "('a, 'b, 'c, 'd) resumption"
 
-primrec RESUMPTION_corec_aux :: "nat \<Rightarrow> ('e \<Rightarrow> ('a,'b,'c,'d,'e) resumption_corec) \<Rightarrow> 'e \<Rightarrow> ('c + 'b + 'a,'d) Datatype.dtree"
+primrec RESUMPTION_corec_aux :: "nat \<Rightarrow> ('e \<Rightarrow> ('a,'b,'c,'d,'e) resumption_corec) \<Rightarrow> 'e \<Rightarrow> ('c + 'b + 'a,'d) Old_Datatype.dtree"
 where
   "RESUMPTION_corec_aux 0 f e = {}"
 | "RESUMPTION_corec_aux (Suc n) f e =
@@ -264,7 +264,7 @@ where
             | Branch_corec c es \<Rightarrow> BRANCH c (\<lambda>d. RESUMPTION_corec_aux n f (es d))
             | Resumption_corec r \<Rightarrow> Rep_resumption r)"
 
-definition RESUMPTION_corec :: "('e \<Rightarrow> ('a,'b,'c,'d,'e) resumption_corec) \<Rightarrow> 'e \<Rightarrow> ('c + 'b + 'a,'d) Datatype.dtree"
+definition RESUMPTION_corec :: "('e \<Rightarrow> ('a,'b,'c,'d,'e) resumption_corec) \<Rightarrow> 'e \<Rightarrow> ('c + 'b + 'a,'d) Old_Datatype.dtree"
 where
   "RESUMPTION_corec f e = (\<Union>n. RESUMPTION_corec_aux n f e)"
 
@@ -328,7 +328,7 @@ done
 
 text {* Equality as greatest fixpoint *}
 
-coinductive Eq_RESUMPTION :: "('c+'b+'a, 'd) Datatype.dtree \<Rightarrow> ('c+'b+'a, 'd) Datatype.dtree \<Rightarrow> bool"
+coinductive Eq_RESUMPTION :: "('c+'b+'a, 'd) Old_Datatype.dtree \<Rightarrow> ('c+'b+'a, 'd) Old_Datatype.dtree \<Rightarrow> bool"
 where
   EqTERMINAL: "Eq_RESUMPTION (TERMINAL a) (TERMINAL a)"
 | EqLINEAR: "Eq_RESUMPTION r r' \<Longrightarrow> Eq_RESUMPTION (LINEAR b r) (LINEAR b r')"
@@ -357,7 +357,7 @@ proof(induct k arbitrary: r r' rule: less_induct)
       apply(rename_tac k', case_tac k', simp)
       apply(rename_tac k'', case_tac k'', simp)
       apply(rename_tac k''', case_tac k''', simp_all)
-      apply(rule arg_cong[where f=Datatype.Lim])
+      apply(rule arg_cong[where f=Old_Datatype.Lim])
       apply(rule ext)
       apply(simp add: IH)
       done

@@ -1,14 +1,7 @@
 chapter AFP
 
-session VectorSpace (AFP) = HOL +
+session VectorSpace (AFP) = "HOL-Algebra" +
   options [timeout = 600]
-  theories [document = false]
-        "~~/src/HOL/Library/FuncSet"
-	"~~/src/HOL/Algebra/Coset"
-	"~~/src/HOL/Algebra/Module"
-	"~~/src/HOL/Algebra/Ring"
-	"~~/src/HOL/Algebra/UnivPoly"
-	"~~/src/HOL/Number_Theory/Binomial"
   theories
         VectorSpace
   document_files

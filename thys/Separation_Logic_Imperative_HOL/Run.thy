@@ -1,4 +1,4 @@
-header {* Exception-Aware Relational Framework *}
+section {* Exception-Aware Relational Framework *}
 theory Run
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
 begin
@@ -114,12 +114,7 @@ lemma run_exn:
 
 subsubsection {* Elimination Rules for Basic Combinators *}
 
-ML {* structure Run_Elims = Named_Thms(
-  val name = @{binding "run_elims"}
-  val description = "elemination rules for run"
-) *}
-
-setup Run_Elims.setup
+named_theorems run_elims "elemination rules for run"
 
 lemma runE[run_elims]:
   assumes "run (f \<guillemotright>= g) \<sigma> \<sigma>'' r"

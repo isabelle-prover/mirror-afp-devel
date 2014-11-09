@@ -25,7 +25,7 @@ abstract =
 
 [Show]
 title = Haskell's Show-Class in Isabelle/HOL
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-07-29
 topic = Computer Science/Functional Programming
 license = LGPL
@@ -618,10 +618,13 @@ abstract = This document contains formal correctness proofs of modern SAT solver
 title = Executable Transitive Closures of Finite Relations
 topic = Computer Science/Algorithms
 date = 2011-03-14
-author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
 depends-on = Collections, Abstract-Rewriting
+extra-history =
+  Change history:
+  [2014-09-04] added example simprocs in Finite_Transitive_Closure_Simprocs
 
 [Transitive-Closure-II]
 title = Executable Transitive Closures
@@ -727,6 +730,7 @@ title = Amortized Complexity Verified
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2014-07-07
 topic = Computer Science/Data Structures
+depends-on = Splay_Tree, Skew_Heap
 abstract =
   A framework for the analysis of the amortized complexity of (functional)
   data structures is formalized in Isabelle/HOL and applied to a number of
@@ -2116,7 +2120,8 @@ abstract =
  book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
  The values of the constants in the definition of tameness are identical to
  those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
- The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof.
+ The <a href="http://www.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
+ the <a href="http://www.in.tum.de/~nipkow/pubs/itp11/">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.
 extra-history =
   Change history:
   [2010-11-02]: modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
@@ -2269,6 +2274,9 @@ extra-history =
   [2014-03-31]:
         added words of default size in the target language (by Peter Lammich)
         (revision 25caf5065833)
+  [2014-10-06]:
+        proper test setup with compilation and execution of tests in all target languages
+        (revision 5d7a1c9ae047)
 
 [XML]
 title = XML

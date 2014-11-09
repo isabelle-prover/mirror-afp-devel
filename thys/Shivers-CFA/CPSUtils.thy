@@ -1,4 +1,4 @@
-header  {* Syntax tree helpers *}
+section  {* Syntax tree helpers *}
 
 theory CPSUtils
 imports CPSScheme
@@ -95,7 +95,7 @@ where "vals (Lambda _ vs c) = valsC c"
     | "valsV (P prim) = {P prim}"
     | "valsV (C l v) = {C l v}"
 
-lemma 
+lemma
   fixes list2 :: "(var \<times> lambda) list" and t :: "var\<times>lambda"
   shows lambdas1: "Lambda l vs c \<in> lambdas x \<Longrightarrow> c \<in> calls x"
   and "Lambda l vs c \<in> lambdasC y \<Longrightarrow> c \<in> callsC y"
@@ -103,7 +103,7 @@ lemma
   and "\<forall>z\<in> set list. Lambda l vs c \<in> lambdasV z \<longrightarrow> c \<in> callsV z"
   and "\<forall>x\<in> set list2. Lambda l vs c \<in> lambdas (snd x) \<longrightarrow> c \<in> calls (snd x)"
   and "Lambda l vs c \<in> lambdas (snd t) \<Longrightarrow> c \<in> calls (snd t)"
-apply (induct rule:lambda_call_val.inducts)
+apply (induct rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (case_tac c, auto)[1]
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
@@ -116,7 +116,7 @@ lemma
   and "\<forall>z\<in> set list. Lambda l vs c \<in> lambdasV z \<longrightarrow> l \<in> labelsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Lambda l vs c \<in> lambdas (snd x) \<longrightarrow> l \<in> labels (snd x)"
   and "Lambda l vs c \<in> lambdas (snd (t:: var\<times>lambda)) \<Longrightarrow> l \<in> labels (snd t)"
-apply (induct rule:lambda_call_val.inducts)
+apply (induct rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
 done
@@ -128,7 +128,7 @@ lemma
   and "\<forall>z\<in> set list. Lambda l vs c \<in> lambdasV z \<longrightarrow> set vs \<subseteq> varsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Lambda l vs c \<in> lambdas (snd x) \<longrightarrow> set vs \<subseteq> vars (snd x)"
   and "Lambda l vs c \<in> lambdas (snd (t:: var\<times>lambda)) \<Longrightarrow> set vs \<subseteq> vars (snd t)"
-apply (induct x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((aa, ba), bb)" in ballE)
 apply (rule_tac x="((aa, ba), bb)" in bexI, auto)
@@ -141,7 +141,7 @@ lemma
   and "\<forall>z\<in> set list. App l d ds \<in> callsV z \<longrightarrow> d \<in> valsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . App l d ds \<in> calls (snd x) \<longrightarrow> d \<in> vals (snd x)"
   and "App l d ds \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> d \<in> vals (snd t)"
-apply (induct  x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (case_tac d, auto)
 apply (erule_tac x="((a, b), ba)" in ballE)
@@ -155,7 +155,7 @@ lemma
   and "\<forall>z\<in> set list. App l d ds \<in> callsV z \<longrightarrow> set ds \<subseteq> valsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . App l d ds \<in> calls (snd x) \<longrightarrow> set ds \<subseteq> vals (snd x)"
   and "App l d ds \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> set ds \<subseteq> vals (snd t)"
-apply (induct  x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct  x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (case_tac x, auto)
 apply (erule_tac x="((a, b), ba)" in ballE)
@@ -169,7 +169,7 @@ lemma
   and "\<forall>z\<in> set list. Let l binds c' \<in> callsV z \<longrightarrow> l \<in> labelsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Let l binds c' \<in> calls (snd x) \<longrightarrow> l \<in> labels (snd x)"
   and "Let l binds c' \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> l \<in> labels (snd t)"
-apply (induct x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((a, b), ba)" in ballE)
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
@@ -182,7 +182,7 @@ lemma
   and "\<forall>z\<in> set list. Let l binds c' \<in> callsV z \<longrightarrow> c' \<in> callsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Let l binds c' \<in> calls (snd x) \<longrightarrow> c' \<in> calls (snd x)"
   and "Let l binds c' \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> c' \<in> calls (snd t)"
-apply (induct x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (case_tac c', auto)
 apply (erule_tac x="((a, b), ba)" in ballE)
@@ -196,7 +196,7 @@ lemma
   and "\<forall>z\<in> set list. Let l binds c' \<in> callsV z \<longrightarrow> fst ` set binds \<subseteq> varsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Let l binds c' \<in> calls (snd x) \<longrightarrow> fst ` set binds \<subseteq> vars (snd x)"
   and "Let l binds c' \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> fst ` set binds \<subseteq> vars (snd t)"
-apply (induct x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((ab, bc), bd)" in ballE)
 apply (rule_tac x="((ab, bc), bd)" in bexI, auto)
@@ -209,7 +209,7 @@ lemma
   and "\<forall>z\<in> set list. Let l binds c' \<in> callsV z \<longrightarrow> snd ` set binds \<subseteq> lambdasV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Let l binds c' \<in> calls (snd x) \<longrightarrow> snd ` set binds \<subseteq> lambdas (snd x)"
   and "Let l binds c' \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> snd ` set binds \<subseteq> lambdas (snd t)"
-apply (induct x and y and z and list and list2 and t rule:lambda_call_val.inducts)
+apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
 apply (case_tac ba, auto)
@@ -224,7 +224,7 @@ shows vals1: "P prim \<in> vals p \<Longrightarrow> prim \<in> prims p"
   and "\<forall>z\<in> set list. P prim \<in> valsV z \<longrightarrow> prim \<in> primsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . P prim \<in> vals (snd x) \<longrightarrow> prim \<in> prims (snd x)"
   and "P prim \<in> vals (snd (t:: var\<times>lambda)) \<Longrightarrow> prim \<in> prims (snd t)"
-apply (induct rule:lambda_call_val.inducts)
+apply (induct rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((a, b), ba)" in ballE)
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
@@ -237,7 +237,7 @@ shows vals2: "R l var \<in> vals p \<Longrightarrow> var \<in> vars p"
   and "\<forall>z\<in> set list. R l var \<in> valsV z \<longrightarrow> var \<in> varsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . R l var \<in> vals (snd x) \<longrightarrow> var \<in> vars (snd x)"
   and "R l var \<in> vals (snd (t:: var\<times>lambda)) \<Longrightarrow> var \<in> vars (snd t)"
-apply (induct rule:lambda_call_val.inducts)
+apply (induct rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((a, b), ba)" in ballE)
 apply (rule_tac x="((a, b), ba)" in bexI, auto)
@@ -250,7 +250,7 @@ shows vals3: "L l \<in> vals p \<Longrightarrow> l \<in> lambdas p"
   and "\<forall>z\<in> set list. L l \<in> valsV z \<longrightarrow> l \<in> lambdasV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . L l \<in> vals (snd x) \<longrightarrow> l \<in> lambdas (snd x)"
   and "L l \<in> vals (snd (t:: var\<times>lambda)) \<Longrightarrow> l \<in> lambdas (snd t)"
-apply (induct rule:lambda_call_val.inducts)
+apply (induct rule:mutual_lambda_call_var_inducts)
 apply auto
 apply (erule_tac x="((a, b), ba)" in ballE)
 apply (rule_tac x="((a, b), ba)" in bexI, auto)

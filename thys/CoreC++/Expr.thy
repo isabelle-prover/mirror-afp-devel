@@ -4,12 +4,11 @@
     Based on the Jinja theory J/Expr.thy by Tobias Nipkow 
 *)
 
-
-header {* \isaheader{Expressions} *}
+section {* Expressions *}
 
 theory Expr imports Value begin
 
-section {* The expressions *}
+subsection {* The expressions *}
 
 
 datatype bop = Eq | Add     -- "names of binary operations"
@@ -67,7 +66,7 @@ lemma binop_not_ref[simp]:
 by(cases bop)auto
 
 
-section{*Free Variables*} 
+subsection{*Free Variables*} 
 
 primrec
   fv  :: "expr      \<Rightarrow> vname set"

@@ -1,4 +1,4 @@
-header {*Preliminaries*}
+subsection {* Measure spaces \label{sec:measure-spaces} *}
 
 theory Measure
 imports Sigma_Algebra MonConv

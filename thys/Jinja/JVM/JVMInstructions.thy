@@ -4,7 +4,7 @@
     Copyright   2000 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Instructions of the JVM} *}
+section {* Instructions of the JVM *}
 
 
 theory JVMInstructions imports JVMState begin

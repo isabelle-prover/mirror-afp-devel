@@ -1,4 +1,4 @@
-header {* \isaheader{Dynamic data dependence} *}
+section {* Dynamic data dependence *}
 
 theory DynDataDependence imports CFG_wf begin
 

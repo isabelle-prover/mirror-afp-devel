@@ -3,7 +3,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Unsigned words of default size *}
+chapter {* Unsigned words of default size *}
 
 theory Uint imports
   "Word_Misc"
@@ -413,7 +413,7 @@ code_printing
   (Eval) "*** \"Error: Machine dependent type\" ***" and
   (Quickcheck) "Word.word" 
 | constant dflt_size_integer \<rightharpoonup>
-  (SML) "Word.wordSize" and
+  (SML) "(IntInf.fromLarge (Int.toLarge Word.wordSize))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.wordSize" and
   (Haskell) "Uint.dflt'_size" and
@@ -559,14 +559,13 @@ definition wivs_overflow_uint :: uint
   where "wivs_overflow_uint \<equiv> 1 << (dflt_size - 1)"
 
 (* TODO: Move to Word *)
-lemma dflt_size_word_pow_ne_zero[simp]:
-  "(2\<Colon>('a::len) word) ^ (len_of TYPE('a) - Suc (0\<Colon>nat)) \<noteq> 0"
-proof -
-  have "len_of (TYPE('a)\<Colon>'a itself) - Numeral1 \<noteq> len_of (TYPE('a)\<Colon>'a itself)"
-    by (metis Suc_pred len_gt_0 n_not_Suc_n numeral_1_eq_Suc_0)
-  thus "2 ^ (len_of (TYPE('a)\<Colon>'a itself) - Suc 0) \<noteq> (0\<Colon>'a word)"
-    by (metis diff_less_Suc nat_neq_iff not_less_eq numeral_1_eq_Suc_0 
-      power_eq_0_iff unat_0 unat_p2 zero_neq_numeral)
+lemma dflt_size_word_pow_ne_zero [simp]:
+  "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) \<noteq> 0"
+proof
+  assume "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) = 0"
+  then have "unat ((2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0)) = unat 0"
+    by simp
+  then show False by (simp add: unat_p2)
 qed
 
 lemma uint_divmod_code [code]:
@@ -783,95 +782,6 @@ lemmas partial_term_of_uint [code] = partial_term_of_code
 instance ..
 end
 
-section {* Tests *}
-definition "test_uint \<equiv> let 
-  test_list1 = (let
-      HS = uint_of_int ((2^(dflt_size - 1)))
-    in
-      ([ HS+HS+1, -1, -HS - HS + 5, HS + (HS - 1), 0x12
-      , 0x5A AND 0x36
-      , 0x5A OR 0x36
-      , 0x5A XOR 0x36
-      , NOT 0x5A
-      , 5 + 6, -5 + 6, -6 + 5, -5 + -6, HS + (HS - 1) + 1
-      , 5 - 3, 3 - 5
-      , 5 * 3, -5 * 3, -5 * -4, 0x12345678 * 0x87654321]
-    @ (if dflt_size > 4 then
-      [ 5 div 3, -5 div 3, -5 div -3, 5 div -3
-      , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
-      , set_bit 5 4 True, set_bit -5 2 True, set_bit 5 0 False, set_bit -5 1 False
-      , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit -5 dflt_size True, set_bit -5 dflt_size False
-      , 1 << 2, -1 << 3, 1 << dflt_size, 1 << 0
-      , 31 >> 3, -1 >> 3, 31 >> dflt_size, -1 >> dflt_size
-      , 15 >>> 2, -1 >>> 3, 15 >>> dflt_size, -1 >>> dflt_size]
-    else []) :: uint list));
-  
-  test_list2 = (let 
-      S=wivs_shift 
-    in 
-      ([ 1, -1, -S + 5, S - 1, 0x12
-      , 0x5A AND 0x36
-      , 0x5A OR 0x36
-      , 0x5A XOR 0x36
-      , NOT 0x5A
-      , 5 + 6, -5 + 6, -6 + 5, -5 + -6, 0
-      , 5 - 3, 3 - 5
-      , 5 * 3, -5 * 3, -5 * -4, 0x12345678 * 0x87654321]
-    @ (if dflt_size > 4 then
-      [ 5 div 3, (S - 5) div 3, (S - 5) div (S - 3), 5 div (S - 3)
-      , 5 mod 3, (S - 5) mod 3, (S - 5) mod (S - 3), 5 mod (S - 3)
-      , set_bit 5 4 True, -1, set_bit 5 0 False, -7
-      , 5, 5, -5, -5
-      , 4, -8, 0, 1
-      , 3, (S >> 3) - 1, 0, 0
-      , 3, (S>>1) + (S >> 1) - 1, 0, -1] 
-    else []) :: int list));
-
-
-  test_list_c1 = (let
-      HS = uint_of_int ((2^(dflt_size - 1)))
-    in
-  [  (0x5 :: uint) = 0x5, (0x5 :: uint) = 0x6
-   , (0x5 :: uint) < 0x5, (0x5 :: uint) < 0x6, (-5 :: uint) < 6, (6 :: uint) < -5
-   , (0x5 :: uint) \<le> 0x5, (0x5 :: uint) \<le> 0x4, (-5 :: uint) \<le> 6, (6 :: uint) \<le> -5 
-   , (HS - 1) < HS, (HS + HS - 1) < 0, HS < HS - 1
-   , (HS - 1) !! 0, (HS - 1 :: uint) !! (dflt_size - 1), (HS :: uint) !! (dflt_size - 1), (HS :: uint) !! dflt_size
-   ]);
-
-  test_list_c2 =
-   [ True, False
-   , False, dflt_size\<ge>2, dflt_size=3, dflt_size\<noteq>3
-   , True, False, dflt_size=3, dflt_size\<noteq>3
-   , True, False, False
-   , dflt_size\<noteq>1, False, True, False
-   ]
-in
-  test_list1 = map uint_of_int test_list2
-\<and> test_list_c1 = test_list_c2
-
-"
-
-export_code test_uint checking SML Haskell? OCaml? Scala
-
-lemma "test_uint"
-quickcheck[exhaustive, expect=no_counterexample]
-oops -- "FIXME: prove correctness of test by reflective means (not yet supported)"
-
-lemma "x AND y = x OR (y :: uint)"
-quickcheck[random, expect=counterexample]
-quickcheck[exhaustive, expect=counterexample]
-oops
-
-lemma "(x :: uint) AND x = x OR x"
-quickcheck[narrowing, expect=no_counterexample]
-by transfer simp
-
-lemma "(f :: uint \<Rightarrow> unit) = g"
-quickcheck[narrowing, size=3, expect=no_counterexample]
-by(simp add: fun_eq_iff)
-
-hide_const test_uint
-hide_fact test_uint_def
 no_notation sshiftr_uint (infixl ">>>" 55)
 
 end

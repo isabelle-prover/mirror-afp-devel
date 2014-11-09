@@ -5,7 +5,6 @@ theory Basis
 imports Main
 begin
 
-
 section {* General Utilities *}
 
 text {*

@@ -1,4 +1,4 @@
-header {* Cancelation of words of generators and their inverses *}
+section {* Cancelation of words of generators and their inverses *}
 
 theory Cancelation
 imports
@@ -143,7 +143,7 @@ proof-
   hence "canceling (x ! i) (x ! Suc i)"
     and "y = (take i x) @ (drop (Suc (Suc i)) x)"
     and "x = (take i x) @ x ! i # x ! Suc i # (drop (Suc (Suc i)) x)"
-    unfolding cancel_at_def and cancels_to_1_at_def by (auto simp add: drop_Suc_conv_tl)
+    unfolding cancel_at_def and cancels_to_1_at_def by (auto simp add: Cons_nth_drop_Suc)
   with a show thesis by blast
 qed
 
@@ -203,7 +203,7 @@ proof-
     by simp
   also from `Suc (Suc i) < length l`
   have "\<dots> = take i l @ drop (Suc (Suc i)) l"
-    by (simp add: drop_Suc_conv_tl)
+    by (simp add: Cons_nth_drop_Suc)
   also from `cancels_to_1_at i l a` have "\<dots> = a"
     by (simp add: cancels_to_1_at_def cancel_at_def)
   finally show "a = b" by(rule sym)

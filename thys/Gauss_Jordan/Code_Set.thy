@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header "Code set"
+section "Code set"
 
 theory Code_Set
 imports

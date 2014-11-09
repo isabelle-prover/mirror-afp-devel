@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Alex Krauss  *)
 
-header "Regular sets"
+section "Regular sets"
 
 theory Regular_Set
 imports Main
@@ -299,6 +299,76 @@ lemma in_fold_Deriv: "v \<in> fold Deriv w L \<longleftrightarrow> w @ v \<in> L
 
 lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
   by (induct w arbitrary: L) simp_all
+
+
+subsection {* Shuffle product *}
+
+fun shuffle where
+  "shuffle [] ys = {ys}"
+| "shuffle xs [] = {xs}"
+| "shuffle (x # xs) (y # ys) =
+    {x # w | w . w \<in> shuffle xs (y # ys)} \<union>
+    {y # w | w . w \<in> shuffle (x # xs) ys}"
+
+lemma shuffle_empty2[simp]: "shuffle xs [] = {xs}"
+  by (cases xs) auto
+
+lemma Nil_in_shuffle[simp]: "[] \<in> shuffle xs ys \<longleftrightarrow> xs = [] \<and> ys = []"
+  by (induct xs ys rule: shuffle.induct) auto
+
+definition Shuffle (infixr "\<parallel>" 80) where
+  "Shuffle A B = \<Union>{shuffle xs ys | xs ys. xs \<in> A \<and> ys \<in> B}"
+
+lemma shuffleE:
+  "zs \<in> shuffle xs ys \<Longrightarrow>
+    (zs = xs \<Longrightarrow> ys = [] \<Longrightarrow> P) \<Longrightarrow>
+    (zs = ys \<Longrightarrow> xs = [] \<Longrightarrow> P) \<Longrightarrow>
+    (\<And>x xs' z zs'. xs = x # xs' \<Longrightarrow> zs = z # zs' \<Longrightarrow> x = z \<Longrightarrow> zs' \<in> shuffle xs' ys \<Longrightarrow> P) \<Longrightarrow>
+    (\<And>y ys' z zs'. ys = y # ys' \<Longrightarrow> zs = z # zs' \<Longrightarrow> y = z \<Longrightarrow> zs' \<in> shuffle xs ys' \<Longrightarrow> P) \<Longrightarrow> P"
+  by (induct xs ys rule: shuffle.induct) auto
+
+lemma Cons_in_shuffle_iff:
+  "z # zs \<in> shuffle xs ys \<longleftrightarrow>
+    (xs \<noteq> [] \<and> hd xs = z \<and> zs \<in> shuffle (tl xs) ys \<or>
+     ys \<noteq> [] \<and> hd ys = z \<and> zs \<in> shuffle xs (tl ys))"
+  by (induct xs ys rule: shuffle.induct) auto
+
+lemma Deriv_Shuffle[simp]:
+  "Deriv a (A \<parallel> B) = Deriv a A \<parallel> B \<union> A \<parallel> Deriv a B"
+  unfolding Shuffle_def Deriv_def by (fastforce simp: Cons_in_shuffle_iff neq_Nil_conv)
+
+lemma shuffle_subset_lists:
+  assumes "A \<subseteq> lists S" "B \<subseteq> lists S"
+  shows "A \<parallel> B \<subseteq> lists S"
+unfolding Shuffle_def proof safe
+  fix x and zs xs ys :: "'a list"
+  assume zs: "zs \<in> shuffle xs ys" "x \<in> set zs" and "xs \<in> A" "ys \<in> B"
+  with assms have "xs \<in> lists S" "ys \<in> lists S" by auto
+  with zs show "x \<in> S" by (induct xs ys arbitrary: zs rule: shuffle.induct) auto
+qed
+
+lemma Nil_in_Shuffle[simp]: "[] \<in> A \<parallel> B \<longleftrightarrow> [] \<in> A \<and> [] \<in> B"
+  unfolding Shuffle_def by force
+
+lemma shuffle_Un_distrib:
+shows "A \<parallel> (B \<union> C) = A \<parallel> B \<union> A \<parallel> C"
+and   "A \<parallel> (B \<union> C) = A \<parallel> B \<union> A \<parallel> C"
+unfolding Shuffle_def by fast+
+
+lemma shuffle_UNION_distrib:
+shows "A \<parallel> UNION I M = UNION I (%i. A \<parallel> M i)"
+and   "UNION I M \<parallel> A = UNION I (%i. M i \<parallel> A)"
+unfolding Shuffle_def by fast+
+
+lemma Shuffle_empty[simp]:
+  "A \<parallel> {} = {}"
+  "{} \<parallel> B = {}"
+  unfolding Shuffle_def by auto
+
+lemma Shuffle_eps[simp]:
+  "A \<parallel> {[]} = A"
+  "{[]} \<parallel> B = B"
+  unfolding Shuffle_def by auto
 
 
 subsection {* Arden's Lemma *}

@@ -1,4 +1,4 @@
-header {* Future Work *}
+chapter {* Future Work *}
 
 theory %invisible Future_Work
 imports Main

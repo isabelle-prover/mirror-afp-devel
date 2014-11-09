@@ -1,4 +1,4 @@
-header "Hash-Maps"
+section "Hash-Maps"
 theory Hash_Map
   imports Hash_Table
 begin

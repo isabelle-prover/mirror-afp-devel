@@ -3,7 +3,7 @@
                  (pasquale dot noce at arjowiggins-it dot com)
 *)
 
-header "Case study 1"
+section "Case study 1"
 
 theory CaseStudy1
 imports Main

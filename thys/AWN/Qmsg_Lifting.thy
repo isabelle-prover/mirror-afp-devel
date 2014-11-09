@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for parallel compositions with QMSG"
+section "Lifting rules for parallel compositions with QMSG"
 
 theory Qmsg_Lifting
 imports Qmsg OAWN_SOS Inv_Cterms OAWN_Invariants
@@ -35,14 +35,14 @@ lemma qmsg_no_change_on_send_or_receive:
     proof
       assume "((\<sigma>, p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
          and "\<And>m. a \<noteq> receive m"
-      with `a \<noteq> \<tau>` show "\<sigma>' i = \<sigma> i"
+      with \<open>a \<noteq> \<tau>\<close> show "\<sigma>' i = \<sigma> i"
         by - (drule oseq_no_change_on_send, cases a, auto)
     next
       assume "(q, a, q') \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G"
          and "\<sigma>' i = \<sigma> i"
         thus "\<sigma>' i = \<sigma> i" by simp
     next
-      assume "a = \<tau>" with `a \<noteq> \<tau>` show ?thesis by auto
+      assume "a = \<tau>" with \<open>a \<noteq> \<tau>\<close> show ?thesis by auto
     qed
   qed
 
@@ -98,13 +98,13 @@ lemma par_qmsg_oreachable:
                          and "(ms, q) \<in> init qmsg"
       by (clarsimp simp del: \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps)
     from this(2) have "(\<sigma>, p) \<in> oreachable A ?owS (other U {i})" ..
-    moreover from `(ms, q) \<in> init qmsg` have "(ms, q) \<in> reachable qmsg (recvmsg (R \<sigma>))" ..
-    moreover from `(ms, q) \<in> init qmsg` have "ms = []"
+    moreover from \<open>(ms, q) \<in> init qmsg\<close> have "(ms, q) \<in> reachable qmsg (recvmsg (R \<sigma>))" ..
+    moreover from \<open>(ms, q) \<in> init qmsg\<close> have "ms = []"
         unfolding \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_def by simp
     ultimately show "(\<sigma>, fst pq) \<in> oreachable A ?owS (other U {i})
                      \<and> snd pq \<in> reachable qmsg (recvmsg (R \<sigma>))
                      \<and> (\<forall>m\<in>set (fst (snd pq)). R \<sigma> m)"
-      using `pq = (p, (ms, q))` by simp
+      using \<open>pq = (p, (ms, q))\<close> by simp
   next
     note \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps [simp del]
     case (other \<sigma> pq \<sigma>')
@@ -113,17 +113,17 @@ lemma par_qmsg_oreachable:
       and qr: "snd pq \<in> reachable qmsg (recvmsg (R \<sigma>))"
       and "\<forall>m\<in>set (fst (snd pq)). R \<sigma> m"
       by simp_all
-    from `other U {i} \<sigma> \<sigma>'` and ustutter have "\<forall>j. U (\<sigma> j) (\<sigma>' j)"
+    from \<open>other U {i} \<sigma> \<sigma>'\<close> and ustutter have "\<forall>j. U (\<sigma> j) (\<sigma>' j)"
         by (clarsimp elim!: otherE) metis
-    from `other U {i} \<sigma> \<sigma>'`
-     and `(\<sigma>, fst pq) \<in> oreachable A ?owS (other U {i})`
+    from \<open>other U {i} \<sigma> \<sigma>'\<close>
+     and \<open>(\<sigma>, fst pq) \<in> oreachable A ?owS (other U {i})\<close>
       have "(\<sigma>', fst pq) \<in> oreachable A ?owS (other U {i})"
         by - (rule oreachable_other')
     moreover have "\<forall>m\<in>set (fst (snd pq)). R \<sigma>' m"
     proof
       fix m assume "m \<in> set (fst (snd pq))"
-      with `\<forall>m\<in>set (fst (snd pq)). R \<sigma> m` have "R \<sigma> m" ..
-      with `\<forall>j. U (\<sigma> j) (\<sigma>' j)` show "R \<sigma>' m" by (rule upreservesq)
+      with \<open>\<forall>m\<in>set (fst (snd pq)). R \<sigma> m\<close> have "R \<sigma> m" ..
+      with \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> show "R \<sigma>' m" by (rule upreservesq)
     qed
     moreover from qr have "snd pq \<in> reachable qmsg (recvmsg (R \<sigma>'))"
     proof
@@ -132,7 +132,7 @@ lemma par_qmsg_oreachable:
       thus "recvmsg (R \<sigma>') a"
       proof (rule recvmsgE [where R=R])
         fix m assume "R \<sigma> m"
-        with `\<forall>j. U (\<sigma> j) (\<sigma>' j)` show "R \<sigma>' m" by (rule upreservesq)
+        with \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> show "R \<sigma>' m" by (rule upreservesq)
       qed
     qed
     ultimately show ?case using qr by simp
@@ -150,11 +150,11 @@ lemma par_qmsg_oreachable:
         and "?owS \<sigma> \<sigma>' a"
       by (simp_all del: \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps)
 
-    from `?owS \<sigma> \<sigma>' a` have "\<forall>j. j\<noteq>i \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
+    from \<open>?owS \<sigma> \<sigma>' a\<close> have "\<forall>j. j\<noteq>i \<longrightarrow> S (\<sigma> j) (\<sigma>' j)"
       by (clarsimp dest!: otherwith_syncD)
     with sgivesu have "\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)" by simp
 
-    from `?owS \<sigma> \<sigma>' a` have "orecvmsg R \<sigma> a" by (rule otherwithE)
+    from \<open>?owS \<sigma> \<sigma>' a\<close> have "orecvmsg R \<sigma> a" by (rule otherwithE)
     hence "recvmsg (R \<sigma>) a" ..
 
     from pqtr have "(\<sigma>', p') \<in> oreachable A ?owS (other U {i})
@@ -165,19 +165,19 @@ lemma par_qmsg_oreachable:
          and "\<And>m. a \<noteq> receive m"
          and "(ms', q') = (ms, q)"
       from this(1) have ptr: "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A" by simp
-      with pinv por and `?owS \<sigma> \<sigma>' a` have "U (\<sigma> i) (\<sigma>' i)"
+      with pinv por and \<open>?owS \<sigma> \<sigma>' a\<close> have "U (\<sigma> i) (\<sigma>' i)"
         by (auto dest!: ostep_invariantD)
-      with `\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)` have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
+      with \<open>\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)\<close> have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
 
       hence recvmsg': "\<And>a. recvmsg (R \<sigma>) a \<Longrightarrow> recvmsg (R \<sigma>') a"
         by (auto elim!: recvmsgE [where R=R] upreservesq)
 
-      from por ptr `?owS \<sigma> \<sigma>' a` have "(\<sigma>', p') \<in> oreachable A ?owS (other U {i})"
+      from por ptr \<open>?owS \<sigma> \<sigma>' a\<close> have "(\<sigma>', p') \<in> oreachable A ?owS (other U {i})"
         by - (rule oreachable_local')
 
       moreover have "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>'))"
       proof -
-        from qr and `(ms', q') = (ms, q)`
+        from qr and \<open>(ms', q') = (ms, q)\<close>
           have "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>))" by simp
         thus ?thesis by (rule reachable_weakenE) (erule recvmsg')
       qed
@@ -186,9 +186,9 @@ lemma par_qmsg_oreachable:
       proof
         fix m
         assume "m\<in>set ms'"
-        with `(ms', q') = (ms, q)` have "m\<in>set ms" by simp
-        with `\<forall>m\<in>set ms. R \<sigma> m` have "R \<sigma> m" ..
-        with `\<forall>j. U (\<sigma> j) (\<sigma>' j)` show "R \<sigma>' m"
+        with \<open>(ms', q') = (ms, q)\<close> have "m\<in>set ms" by simp
+        with \<open>\<forall>m\<in>set ms. R \<sigma> m\<close> have "R \<sigma> m" ..
+        with \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> show "R \<sigma>' m"
           by (rule upreservesq)
       qed
 
@@ -202,22 +202,22 @@ lemma par_qmsg_oreachable:
          and "p' = p"
          and "\<sigma>' i = \<sigma> i"
 
-      from this(4) and `\<And>\<xi>. U \<xi> \<xi>` have "U (\<sigma> i) (\<sigma>' i)" by simp
-      with `\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)` have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
+      from this(4) and \<open>\<And>\<xi>. U \<xi> \<xi>\<close> have "U (\<sigma> i) (\<sigma>' i)" by simp
+      with \<open>\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)\<close> have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
 
       hence recvmsg': "\<And>a. recvmsg (R \<sigma>) a \<Longrightarrow> recvmsg (R \<sigma>') a"
         by (auto elim!: recvmsgE [where R=R] upreservesq)
 
       from qtr have tqtr: "((ms, q), a, (ms', q')) \<in> trans qmsg" by simp
 
-      from `\<forall>j. U (\<sigma> j) (\<sigma>' j)` and  `\<sigma>' i = \<sigma> i` have "other U {i} \<sigma> \<sigma>'" by auto
-      with por and `p' = p`
+      from \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> and  \<open>\<sigma>' i = \<sigma> i\<close> have "other U {i} \<sigma> \<sigma>'" by auto
+      with por and \<open>p' = p\<close>
         have "(\<sigma>', p') \<in> oreachable A ?owS (other U {i})"
           by (auto dest: oreachable_other)
 
       moreover have "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>'))"
       proof (rule reachable_weakenE [where P="recvmsg (R \<sigma>)"])
-        from qr tqtr `recvmsg (R \<sigma>) a` show "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>))" ..
+        from qr tqtr \<open>recvmsg (R \<sigma>) a\<close> show "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>))" ..
       qed (rule recvmsg')
 
       moreover have "\<forall>m\<in>set ms'. R \<sigma>' m"
@@ -230,9 +230,9 @@ lemma par_qmsg_oreachable:
             thus ?thesis using tqtr
               by (auto dest!: step_invariantD [OF qmsg_queue_contents])
           qed
-        ultimately have "R \<sigma> m" using `\<forall>m\<in>set ms. R \<sigma> m` and `orecvmsg R \<sigma> a` 
+        ultimately have "R \<sigma> m" using \<open>\<forall>m\<in>set ms. R \<sigma> m\<close> and \<open>orecvmsg R \<sigma> a\<close> 
           by (cases a) auto
-        with `\<forall>j. U (\<sigma> j) (\<sigma>' j)` show "R \<sigma>' m"
+        with \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> show "R \<sigma>' m"
           by (rule upreservesq)
       qed
 
@@ -251,19 +251,19 @@ lemma par_qmsg_oreachable:
       from qr have "(ms, q) \<in> reachable qmsg TT" ..
       with qtr have "m \<in> set ms"
         by (auto dest!: step_invariantD [OF qmsg_send_from_queue])
-      with `\<forall>m\<in>set ms. R \<sigma> m` have "R \<sigma> m" ..
+      with \<open>\<forall>m\<in>set ms. R \<sigma> m\<close> have "R \<sigma> m" ..
       hence "orecvmsg R \<sigma> (receive m)" by simp
 
-      with `\<forall>j. j\<noteq>i \<longrightarrow> S (\<sigma> j) (\<sigma>' j)` have "?owS \<sigma> \<sigma>' (receive m)"
+      with \<open>\<forall>j. j\<noteq>i \<longrightarrow> S (\<sigma> j) (\<sigma>' j)\<close> have "?owS \<sigma> \<sigma>' (receive m)"
         by (auto intro!: otherwithI)
       with pinv por ptr have "U (\<sigma> i) (\<sigma>' i)"
         by (auto dest!: ostep_invariantD)
-      with `\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)` have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
+      with \<open>\<forall>j. j\<noteq>i \<longrightarrow> U (\<sigma> j) (\<sigma>' j)\<close> have "\<forall>j. U (\<sigma> j) (\<sigma>' j)" by auto
       hence recvmsg': "\<And>a. recvmsg (R \<sigma>) a \<Longrightarrow> recvmsg (R \<sigma>') a"
         by (auto elim!: recvmsgE [where R=R] upreservesq)
 
       from por ptr have "(\<sigma>', p') \<in> oreachable A ?owS (other U {i})"
-        using `?owS \<sigma> \<sigma>' (receive m)` by - (erule(1) oreachable_local, simp)
+        using \<open>?owS \<sigma> \<sigma>' (receive m)\<close> by - (erule(1) oreachable_local, simp)
 
       moreover have "(ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>'))"
       proof (rule reachable_weakenE [where P="recvmsg (R \<sigma>)"])
@@ -281,8 +281,8 @@ lemma par_qmsg_oreachable:
             thus ?thesis using qtr
               by (auto dest!: step_invariantD [OF qmsg_queue_contents])
           qed
-        ultimately have "R \<sigma> m" using `\<forall>m\<in>set ms. R \<sigma> m` by auto
-        with `\<forall>j. U (\<sigma> j) (\<sigma>' j)` show "R \<sigma>' m"
+        ultimately have "R \<sigma> m" using \<open>\<forall>m\<in>set ms. R \<sigma> m\<close> by auto
+        with \<open>\<forall>j. U (\<sigma> j) (\<sigma>' j)\<close> show "R \<sigma>' m"
           by (rule upreservesq)
       qed
 
@@ -290,7 +290,7 @@ lemma par_qmsg_oreachable:
                      \<and> (ms', q') \<in> reachable qmsg (recvmsg (R \<sigma>'))
                      \<and> (\<forall>m\<in>set ms'. R \<sigma>' m)" by simp
     qed
-    with `pq = (p, (ms, q))` and `pq' = (p', (ms', q'))` show ?case
+    with \<open>pq = (p, (ms, q))\<close> and \<open>pq' = (p', (ms', q'))\<close> show ?case
       by (simp_all del: \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps)
   qed
 
@@ -369,35 +369,35 @@ lemma lift_step_into_qmsg:
              "(\<forall>m\<in>set msgs. R \<sigma> m)"
        by (auto dest: par_qmsg_oreachable [OF _ self_sync ustutter sgivesu]
                 elim!: upreservesq)
-    from otr `\<zeta> = (s, (msgs, q))` `\<zeta>' = (s', (msgs', q'))`
+    from otr \<open>\<zeta> = (s, (msgs, q))\<close> \<open>\<zeta>' = (s', (msgs', q'))\<close>
       have "((\<sigma>, (s, (msgs, q))), a, (\<sigma>', (s', (msgs', q'))))
               \<in> oparp_sos i (trans A) (seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G)"
         by simp
     hence "globala P ((\<sigma>, s), a, (\<sigma>', s'))"
     proof
       assume "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A"
-      with `(\<sigma>, s) \<in> oreachable A ?owS ?U`
+      with \<open>(\<sigma>, s) \<in> oreachable A ?owS ?U\<close>
         show "globala P ((\<sigma>, s), a, (\<sigma>', s'))"
-          using `?owS \<sigma> \<sigma>' a` by (rule ostep_invariantD [OF inv])
+          using \<open>?owS \<sigma> \<sigma>' a\<close> by (rule ostep_invariantD [OF inv])
     next
       assume "((msgs, q), a, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G"
          and "\<And>m. a \<noteq> send m"
          and "\<sigma>' i = \<sigma> i"
       from this(3) and ustutter have "U (\<sigma> i) (\<sigma>' i)" by simp
-      with `?owS \<sigma> \<sigma>' a` and sgivesu have "\<forall>j. U (\<sigma> j) (\<sigma>' j)"
+      with \<open>?owS \<sigma> \<sigma>' a\<close> and sgivesu have "\<forall>j. U (\<sigma> j) (\<sigma>' j)"
         by (clarsimp dest!: otherwith_syncD) metis
       moreover have "(\<exists>m. a = receive m) \<or> (a = \<tau>)"
       proof -
-        from `(msgs, q) \<in> reachable qmsg (recvmsg (R \<sigma>))`
+        from \<open>(msgs, q) \<in> reachable qmsg (recvmsg (R \<sigma>))\<close>
           have "(msgs, q) \<in> reachable qmsg TT" ..
-        moreover from `((msgs, q), a, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G`
+        moreover from \<open>((msgs, q), a, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G\<close>
           have "((msgs, q), a, (msgs', q')) \<in> trans qmsg" by simp
         ultimately show ?thesis
-          using `\<And>m. a \<noteq> send m`
+          using \<open>\<And>m. a \<noteq> send m\<close>
           by (auto dest!: step_invariantD [OF qmsg_send_receive_or_tau])
       qed
       ultimately show "globala P ((\<sigma>, s), a, (\<sigma>', s'))"
-        using `\<sigma>' i = \<sigma> i`
+        using \<open>\<sigma>' i = \<sigma> i\<close>
         by simp (metis receive_right recv_stutter step_seq_tau)
     next
       fix m
@@ -405,26 +405,26 @@ lemma lift_step_into_qmsg:
          and "((\<sigma>, s), receive m, (\<sigma>', s')) \<in> trans A"
          and "((msgs, q), send m, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G"
 
-      from `(msgs, q) \<in> reachable qmsg (recvmsg (R \<sigma>))`
+      from \<open>(msgs, q) \<in> reachable qmsg (recvmsg (R \<sigma>))\<close>
         have "(msgs, q) \<in> reachable qmsg TT" ..
-      moreover from `((msgs, q), send m, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G`
+      moreover from \<open>((msgs, q), send m, (msgs', q')) \<in> seqp_sos \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G\<close>
         have "((msgs, q), send m, (msgs', q')) \<in> trans qmsg" by simp
       ultimately have "m\<in>set msgs"
         by (auto dest!: step_invariantD [OF qmsg_send_from_queue])
 
-      with `\<forall>m\<in>set msgs. R \<sigma> m` have "R \<sigma> m" ..
-      with `?owS \<sigma> \<sigma>' a` have "?owS \<sigma> \<sigma>' (receive m)"
+      with \<open>\<forall>m\<in>set msgs. R \<sigma> m\<close> have "R \<sigma> m" ..
+      with \<open>?owS \<sigma> \<sigma>' a\<close> have "?owS \<sigma> \<sigma>' (receive m)"
           by (auto dest!: otherwith_syncD)
 
-      with `((\<sigma>, s), receive m, (\<sigma>', s')) \<in> trans A`
+      with \<open>((\<sigma>, s), receive m, (\<sigma>', s')) \<in> trans A\<close>
         have "globala P ((\<sigma>, s), receive m, (\<sigma>', s'))"
-          using `(\<sigma>, s) \<in> oreachable A ?owS ?U`
+          using \<open>(\<sigma>, s) \<in> oreachable A ?owS ?U\<close>
           by - (rule ostep_invariantD [OF inv])
       hence "P (\<sigma>, receive m, \<sigma>')" by simp
       hence "P (\<sigma>, \<tau>, \<sigma>')" by (rule receive_right)
-      with `a = \<tau>` show "globala P ((\<sigma>, s), a, (\<sigma>', s'))" by simp
+      with \<open>a = \<tau>\<close> show "globala P ((\<sigma>, s), a, (\<sigma>', s'))" by simp
     qed
-    with `\<zeta> = (s, (msgs, q))` and `\<zeta>' = (s', (msgs', q'))` show "globala P ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>'))"
+    with \<open>\<zeta> = (s, (msgs, q))\<close> and \<open>\<zeta>' = (s', (msgs', q'))\<close> show "globala P ((\<sigma>, \<zeta>), a, (\<sigma>', \<zeta>'))"
       by simp
   qed
 

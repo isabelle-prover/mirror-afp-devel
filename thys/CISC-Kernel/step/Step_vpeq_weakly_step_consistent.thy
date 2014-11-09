@@ -1,4 +1,4 @@
-header {*\subsection{Weak step consistency}*}
+subsection {* Weak step consistency *}
 
 theory Step_vpeq_weakly_step_consistent
   imports Step Step_invariants Step_vpeq

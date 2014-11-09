@@ -1,4 +1,4 @@
-header "Formula"
+section "Formula"
 
 theory Formula
 imports Base
@@ -42,8 +42,10 @@ lemma inj_nextX: "inj nextX"
 
 lemma ind': "P zeroX ==> (! v . P v --> P (nextX v)) ==> P v'"
   apply (case_tac v', simp)
+  apply(rename_tac nat)
   apply(induct_tac nat)
    apply(simp add: zeroX_def)
+  apply(rename_tac n)
   apply (drule_tac x="X n" in spec, simp)
   done
 
@@ -364,7 +366,7 @@ lemma evalF_FNot: "!!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
 lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrightarrow> (evalF M f A = evalF M g A)"
   apply(induct A)
     apply (force simp:equalOn_def cong: map_cong, clarify) apply simp apply(drule_tac equalOn_UnD) apply force
-  apply clarify apply simp apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
+  apply clarify apply simp apply(rename_tac signs A f g) apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
   apply(rule_tac f = "sign signs" in arg_cong) apply(force intro: equalOn_vblcaseI')
   done
     -- "FIXME tricky to automate cong args convincingly?"
@@ -376,6 +378,7 @@ lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o th
    apply(simp del: o_apply)
   apply(intro allI)
   apply(simp del: o_apply)
+  apply(rename_tac signs phi0 phi theta)
   apply(rule_tac f="sign signs" in arg_cong) 
   apply(rule ball_cong) apply rule
   apply(rule_tac f="sign signs" in arg_cong)

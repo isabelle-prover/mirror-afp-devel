@@ -3,15 +3,14 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Definite assignment} *}
+section {* Definite assignment *}
 
 theory DefAss
 imports BigStep
 begin
 
 
-section {*Hypersets*}
+subsection {*Hypersets*}
 
 type_synonym hyperset = "vname set option"
 
@@ -55,7 +54,7 @@ lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfl
 by(simp add:hyperset_defs)
 
 
-section {*Definite assignment*}
+subsection {*Definite assignment*}
 
 primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>s :: "expr list \<Rightarrow> hyperset" where
 "\<A> (new C) = \<lfloor>{}\<rfloor>" |
@@ -108,7 +107,7 @@ by (induct es type:list) (auto simp:hyperUn_assoc)
 lemma A_fv: "\<And>A. \<A> e = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fv e"
 and  "\<And>A. \<A>s es = \<lfloor>A\<rfloor> \<Longrightarrow> A \<subseteq> fvs es"
 
-apply(induct e and es)
+apply(induct e and es rule: \<A>.induct \<A>s.induct)
 apply (simp_all add:hyperset_defs)
 apply blast+
 done
@@ -125,7 +124,7 @@ by(simp add:hyperset_defs) blast
 lemma D_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D> e A \<Longrightarrow> \<D> (e::expr) A'"
 and Ds_mono: "\<And>A A'. A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A \<Longrightarrow> \<D>s (es::expr list) A'"
 
-apply(induct e and es)
+apply(induct e and es rule: \<D>.induct \<D>s.induct)
 apply simp
 apply simp
 apply simp

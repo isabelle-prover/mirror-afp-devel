@@ -257,6 +257,7 @@ apply rule
   apply (simp add: twiddleStore_def)
     apply (rule, rule) 
     apply (case_tac "s x")
+    apply (rename_tac Var Ref)
     apply clarsimp apply (case_tac Ref) 
       apply clarsimp apply (rule twiddleVal_Null) 
       apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -269,6 +270,7 @@ apply rule
   apply clarsimp 
       apply (simp add: twiddleObj_def) apply (drule mkId4b) apply clarsimp
         apply (case_tac v, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def) 
@@ -1381,6 +1383,7 @@ apply rule
       apply clarsimp 
     apply clarsimp
     apply (case_tac "a xa")
+    apply (rename_tac Ref)
     apply clarsimp apply (case_tac Ref) 
       apply clarsimp apply (rule twiddleVal_Null) 
       apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1395,6 +1398,7 @@ apply rule
       apply (simp add: twiddleObj_def) 
         apply clarsimp 
         apply (case_tac v, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1426,6 +1430,7 @@ apply rule
     apply (rename_tac s h l xa)
     apply (case_tac "x=xa", clarsimp) apply clarsimp
     apply (case_tac "s xa")
+    apply (rename_tac Ref)
     apply clarsimp apply (case_tac Ref) 
       apply clarsimp apply (rule twiddleVal_Null) 
       apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1443,6 +1448,7 @@ apply rule
       apply (rename_tac C F)
       apply (simp add: twiddleObj_def) apply clarsimp
         apply (case_tac v, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1473,6 +1479,7 @@ apply rule
     apply (rename_tac s h l C Flds v xa)
     apply (case_tac "x=xa", clarsimp) apply clarsimp
     apply (case_tac "s xa")
+    apply (rename_tac Ref)
     apply clarsimp apply (case_tac Ref) 
       apply clarsimp apply (rule twiddleVal_Null) 
       apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1487,6 +1494,7 @@ apply rule
     apply (rename_tac D F)
       apply (simp add: twiddleObj_def) apply clarsimp
         apply (case_tac va, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1525,6 +1533,7 @@ apply rule
     apply (simp add: twiddleStore_def)
     apply (rule, rule) 
     apply (case_tac "fst s xa")
+    apply (rename_tac Ref)
     apply clarsimp apply (case_tac Ref) 
       apply clarsimp apply (rule twiddleVal_Null) 
       apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1545,6 +1554,7 @@ apply rule
         (*f\<noteq>fa*)
         apply clarsimp 
         apply (case_tac v, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)
@@ -1554,6 +1564,7 @@ apply rule
       apply (simp add: twiddleObj_def) 
         apply clarsimp
         apply (case_tac v, clarsimp)
+        apply (rename_tac Ref)
         apply (case_tac Ref, clarsimp)
         apply (rule twiddleVal_Null)
         apply clarsimp apply (rule twiddleVal_Loc) apply (rule mkId4) apply (simp add: noLowDPs_def)

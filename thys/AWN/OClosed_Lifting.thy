@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Lifting rules for (open) closed networks"
+section "Lifting rules for (open) closed networks"
 
 theory OClosed_Lifting
 imports OPnet_Lifting
@@ -50,7 +50,7 @@ lemma oclosed_oreachable_inclosed:
          and tr: "((\<sigma>, \<zeta>), {i}\<not>K:arrive(msg_class.newpkt (d, di)), (\<sigma>', \<zeta>')) \<in> trans (opnet np p)"
          and "\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
       from this(3) have "\<forall>j. j \<notin> net_tree_ips p \<longrightarrow> \<sigma>' j = \<sigma> j"
-        using `net_ips \<zeta> = net_tree_ips p` by auto
+        using \<open>net_ips \<zeta> = net_tree_ips p\<close> by auto
       hence "otherwith (op=) (net_tree_ips p) inoclosed \<sigma> \<sigma>' ({i}\<not>K:arrive(msg_class.newpkt (d, di)))"
         by auto
       with zor tr show ?thesis
@@ -60,11 +60,11 @@ lemma oclosed_oreachable_inclosed:
          and tr: "((\<sigma>, \<zeta>), \<tau>, (\<sigma>', \<zeta>')) \<in> trans (opnet np p)"
          and "\<forall>j. j \<notin> net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
       from this(3) have "\<forall>j. j \<notin> net_tree_ips p \<longrightarrow> \<sigma>' j = \<sigma> j"
-        using `net_ips \<zeta> = net_tree_ips p` by auto
+        using \<open>net_ips \<zeta> = net_tree_ips p\<close> by auto
       hence "otherwith (op=) (net_tree_ips p) inoclosed \<sigma> \<sigma>' \<tau>"
         by auto
       with zor tr show ?thesis by - (rule oreachable_local')
-    qed (insert `net_ips \<zeta> = net_tree_ips p`,
+    qed (insert \<open>net_ips \<zeta> = net_tree_ips p\<close>,
          auto elim!: oreachable_local' [OF zor])
   qed
 

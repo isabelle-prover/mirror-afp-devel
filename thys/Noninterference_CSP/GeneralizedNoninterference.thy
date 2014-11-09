@@ -5,7 +5,7 @@
                  pasquale dot noce dot lavoro at gmail dot com
 *)
 
-header "CSP noninterference vs. generalized noninterference"
+section "CSP noninterference vs. generalized noninterference"
 
 theory GeneralizedNoninterference
 imports ClassicalNoninterference

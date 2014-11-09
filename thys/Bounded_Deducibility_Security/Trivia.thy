@@ -1,4 +1,4 @@
-header {* Trivia *}
+section {* Trivia *}
 
 (*<*)
 theory Trivia

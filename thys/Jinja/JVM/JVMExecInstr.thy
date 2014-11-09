@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{JVM Instruction Semantics} *}
+section {* JVM Instruction Semantics *}
 
 theory JVMExecInstr
 imports JVMInstructions JVMState "../Common/Exceptions"

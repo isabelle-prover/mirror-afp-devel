@@ -1,4 +1,4 @@
-header {* \isaheader{Return and their corresponding call nodes} *}
+section {* Return and their corresponding call nodes *}
 
 theory ReturnAndCallNodes imports CFG begin
 

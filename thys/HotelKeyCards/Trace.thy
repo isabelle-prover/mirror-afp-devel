@@ -20,7 +20,7 @@ The events are:
 *}
 
 datatype event =
-   Check_in guest room card | Enter guest room card | Exit guest room
+  Check_in guest room card | Enter guest room card | Exit guest room
 
 text{* Instead of a state, we have a trace, i.e.\ list of events, and
 extract the state from the trace: *}
@@ -212,6 +212,7 @@ apply(hypsubst_thin)
 apply(erule rev_mp)+
 apply(induct_tac s\<^sub>3)
 apply(auto split:event.split)
+apply(rename_tac guest ba)
 apply(subgoal_tac "(b, ba)
         \<notin> cards ((list @ Enter g r (a, b) # s\<^sub>2) @ Check_in g r (a, b) # s\<^sub>1)
            guest")

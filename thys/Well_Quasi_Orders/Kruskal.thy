@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Kruskal's Tree Theorem *}
+section {* Kruskal's Tree Theorem *}
 
 theory Kruskal
 imports Well_Quasi_Orders

@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Monitor Consistent Interleaving"
+section "Monitor Consistent Interleaving"
 theory ConsInterleave
 imports Interleave Misc
 begin

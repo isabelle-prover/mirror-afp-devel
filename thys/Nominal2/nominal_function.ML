@@ -27,9 +27,6 @@ sig
     (Attrib.binding * string) list ->  Nominal_Function_Common.nominal_function_config ->
     bool -> local_theory -> Proof.state
 
-  val setup : theory -> theory
-  val get_congs : Proof.context -> thm list
-
   val get_info : Proof.context -> term -> nominal_info
 end
 
@@ -106,10 +103,10 @@ fun nominal_check_defs ctxt fixes eqs =
 val simp_attribs = map (Attrib.internal o K)
   [Simplifier.simp_add,
    Code.add_default_eqn_attribute,
-   Nitpick_Simps.add]
+   Named_Theorems.add @{named_theorems nitpick_simp}]
 
 val psimp_attribs = map (Attrib.internal o K)
-  [Nitpick_Psimps.add]
+  [Named_Theorems.add @{named_theorems nitpick_psimp}]
 
 fun mk_defname fixes = fixes |> map (fst o fst) |> space_implode "_"
 
@@ -224,31 +221,6 @@ val nominal_function =
   gen_nominal_function false Specification.check_spec (Type_Infer.anyT @{sort type})
 fun nominal_function_cmd a b c int = 
   gen_nominal_function int Specification.read_spec "_::type" a b c
-
-
-fun add_case_cong n thy =
-  let
-    val cong = #case_cong (Datatype.the_info thy n)
-      |> safe_mk_meta_eq
-  in
-    Context.theory_map
-      (Function_Ctx_Tree.map_function_congs (Thm.add_thm cong)) thy
-  end
-
-val setup_case_cong = Datatype.interpretation (K (fold add_case_cong))
-
-
-
-(* setup *)
-
-val setup =
-  Attrib.setup @{binding fundef_cong}
-    (Attrib.add_del Function_Ctx_Tree.cong_add Function_Ctx_Tree.cong_del)
-    "declaration of congruence rule for function definitions"
-  #> setup_case_cong
-  #> Function_Common.Termination_Simps.setup
-
-val get_congs = Function_Ctx_Tree.get_function_congs
 
 fun get_info ctxt t = Item_Net.retrieve (get_function ctxt) t
   |> the_single |> snd

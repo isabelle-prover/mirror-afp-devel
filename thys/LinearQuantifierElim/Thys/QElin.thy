@@ -161,7 +161,7 @@ lemma
 by(simp add:qesimps)
 
 lemma
- "qe_FM(ExQ (And (Atom(Less 0 [1])) (Atom(Less -1 [-1])))) = Atom(Less -1 [])"
+ "qe_FM(ExQ (And (Atom(Less 0 [1])) (Atom(Less (- 1) [-1])))) = Atom(Less (- 1) [])"
 by(simp add:qesimps)
 
 end

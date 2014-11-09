@@ -97,4 +97,3 @@ locale addr_base =
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
 
 end
-

@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header "A Proof System for TLA* "
+section "A Proof System for TLA* "
 
 theory Rules 
 imports PreFormulas  

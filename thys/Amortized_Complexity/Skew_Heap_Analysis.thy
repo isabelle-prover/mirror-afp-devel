@@ -27,23 +27,23 @@ fun D where
 lemma Gexp: "2 ^ G h \<le> size h + 1"
 by (induction h) auto
 
-corollary Glog: "G h \<le> log 2 (size h + 1)"
+corollary Glog: "G h \<le> log 2 (size1 h)"
 proof -
   have "G h = log 2 (2 ^ G h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ G h) \<le> log 2 (size h + 1)"
     by(simp del: G.simps) (metis Gexp Suc_eq_plus1)
-  finally show ?thesis .
+  finally show ?thesis by(simp add: size1_def)
 qed
 
 lemma Dexp: "2 ^ D h \<le> size h + 1"
 by (induction h) auto
 
-corollary Dlog: "D h \<le> log 2 (size h + 1)"
+corollary Dlog: "D h \<le> log 2 (size1 h)"
 proof -
   have "D h = log 2 (2 ^ D h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ D h) \<le> log 2 (size h + 1)"
     by(simp del: D.simps) (metis Dexp Suc_eq_plus1)
-  finally show ?thesis .
+  finally show ?thesis by(simp add: size1_def)
 qed
 
 function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
@@ -65,8 +65,6 @@ by pat_completeness auto
 termination
 by (relation "measure (\<lambda>(x, y). size x + size y)") auto
 
-
-subsection "Amortized Analysis"
 
 fun \<Phi> :: "'a heap \<Rightarrow> nat" where
 "\<Phi> Leaf = 0" |
@@ -97,18 +95,18 @@ done
 
 lemma a_meld_ub:
   "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + \<Phi>(meld t1 t2) - \<Phi> t1 - \<Phi> t2 \<le>
-   3 * log 2 (size t1 + size t2 + 2) + 1" (is "?l \<le> _")
+   3 * log 2 (size1 t1 + size1 t2) + 1" (is "?l \<le> _")
 proof -
   have "?l \<le> G(meld t1 t2) + D t1 + D t2 + 1" using amor_le[of t1 t2] by arith
   also have "\<dots> = real(G(meld t1 t2)) + D t1 + D t2 + 1" by simp
   also have "\<dots> = real(G(meld t1 t2)) + (real(D t1) + D t2) + 1" by simp
-  also have "D t1 \<le> log 2 (size t1 + 1)" by(rule Dlog)
-  also have "D t2 \<le> log 2 (size t2 + 1)" by(rule Dlog)
-  also have "G (meld t1 t2) \<le> log 2 (size(meld t1 t2) + 1)" by(rule Glog)
-  also have "size(meld t1 t2) = size t1 + size t2" by simp
-  also have "log 2 (size t1 + size t2 + 1) \<le> log 2 (size t1 + size t2 + 2)" by simp
-  also have "log 2 (size t1 + 1) + log 2 (size t2 + 1) \<le> 2 * log 2 (real(size t1 + 1) + (size t2 + 1))"
-    by(rule plus_log_le_2log_plus) auto
+  also have "D t1 \<le> log 2 (size1 t1)" by(rule Dlog)
+  also have "D t2 \<le> log 2 (size1 t2)" by(rule Dlog)
+  also have "G (meld t1 t2) \<le> log 2 (size1(meld t1 t2))" by(rule Glog)
+  also have "size1(meld t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_def)
+  also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_def)
+  also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
+    by(rule plus_log_le_2log_plus) (auto simp: size1_def)
   finally show ?thesis by(simp add: real_of_nat_Suc)
 qed
 
@@ -128,7 +126,7 @@ where init = "Leaf" and nxt = nxt\<^sub>p\<^sub>q
 and inv = "\<lambda>_. True"
 and t = t\<^sub>p\<^sub>q and \<Phi> = \<Phi>
 and U = "\<lambda>f h. case f of
-  Insert _ \<Rightarrow> 3 * log 2 (size h + 3) + 2 | Delmin \<Rightarrow> 3 * log 2 (size h + 3) + 4"
+  Insert _ \<Rightarrow> 3 * log 2 (size1 h + 2) + 2 | Delmin \<Rightarrow> 3 * log 2 (size1 h + 2) + 4"
 proof
   case goal1 show ?case by auto
 next
@@ -154,7 +152,7 @@ next
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
       from Delmin Node show ?thesis using a_meld_ub[of t1 t2]
-        by (simp add: real_of_nat_Suc)
+        by (simp add: real_of_nat_Suc size1_def)
     qed
   qed
 qed

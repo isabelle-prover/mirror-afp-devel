@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Equivalence between Separation Algebra Formulations"
+section "Equivalence between Separation Algebra Formulations"
 
 theory Sep_Eq
 imports Separation_Algebra Separation_Algebra_Alt

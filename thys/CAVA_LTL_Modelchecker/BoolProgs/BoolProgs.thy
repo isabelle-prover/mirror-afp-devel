@@ -1,4 +1,4 @@
-header {* Boolean Programs *}
+section {* Boolean Programs *}
 theory BoolProgs
 imports 
   "../../CAVA_Automata/CAVA_Base/CAVA_Base"
@@ -283,11 +283,13 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (frule (2) C.IH(1), auto) []
     apply (auto simp: pc_bound_def) []
     apply (frule (2) C.IH(2), auto) []
+    apply (rename_tac bexp int)
     apply (subgoal_tac "int \<in> offsets_is (list_of_array ins)")
     apply (blast intro: aux2)
     apply (auto simp: offsets_is_def) []
     apply (rule_tac x="TestI bexp int" in bexI, auto simp: array_idx_in_set) []
 
+    apply (rename_tac list)
     apply (clarsimp split: split_if_asm simp add: Let_def)
     apply (elim disjE conjE, auto) []
     apply (frule (1) C.IH(3), auto) []
@@ -298,6 +300,7 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (auto simp: offsets_is_def) []
     apply (rule_tac x="ChoiceI list" in bexI, auto simp: array_idx_in_set) []
 
+    apply (rename_tac int)
     apply (simp split: split_if_asm add: Let_def)
     apply (frule (1) C.IH(4), auto) []
     apply (subgoal_tac "int \<in> offsets_is (list_of_array ins)")

@@ -476,8 +476,8 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_TVar)
   apply (simp split add: nat.split_asm)
+  apply (rename_tac nat \<Delta> T nata)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> nat - Suc 0")
-  apply (rename_tac nata)
   apply (subgoal_tac "nat - Suc \<parallel>\<Delta>\<parallel> = nata")
   apply (simp (no_asm_simp))
   apply arith

@@ -1,31 +1,18 @@
-header "Binomial Heaps"
+section "Binomial Heaps"
 
 theory BinomialHeap
 imports Main "~~/src/HOL/Library/Multiset"
+begin
+
+locale BinomialHeapStruc_loc
 begin
 
 subsection {* Datatype Definition *}
 
 text {* Binomial heaps are lists of binomial trees. *}
 datatype ('e, 'a) BinomialTree = 
-  Node 'e "'a::linorder" nat "('e , 'a) BinomialTree list"
+  Node (val: 'e) (prio: "'a::linorder") (rank: nat) (children: "('e , 'a) BinomialTree list")
 type_synonym ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
-
-locale BinomialHeapStruc_loc
-begin
-
-subsubsection "Auxiliary Definitions"
-
-text {* Projections *}
-primrec val  :: "('e, 'a::linorder) BinomialTree \<Rightarrow> 'e" where
-  "val (Node e a r ts) = e"
-primrec prio :: "('e, 'a::linorder) BinomialTree \<Rightarrow> 'a" where
-  "prio (Node e a r ts) = a"
-primrec rank :: "('e, 'a::linorder) BinomialTree \<Rightarrow> nat" where
-  "rank (Node e a r ts) = r"
-primrec children :: 
-  "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTree list" where
-  "children (Node e a r ts) = ts"
 
 text {* Combine two binomial trees (of rank $r$) to one (of rank $r+1$). *}
 fun  link :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTree \<Rightarrow> 
@@ -205,7 +192,7 @@ fun heap_ordered :: "('e, 'a::linorder) BinomialTree \<Rightarrow> bool" where
 text {* The invariant for trees implies heap order. *}
 lemma tree_invar_heap_ordered: "tree_invar t \<Longrightarrow> heap_ordered t"
 proof (cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof (induct nat arbitrary: t e a list, simp)
     case goal1
     from goal1 obtain t1 e1 a1 ts1 t2 e2 a2 ts2 where 
@@ -299,7 +286,7 @@ qed*)
 lemma size_mset_tree: "tree_invar t \<Longrightarrow> 
   size (tree_to_multiset t) = (2::nat)^(rank t)"
   apply (cases t)
-  by (simp only: tree_rank_estimate rank.simps) 
+  by (simp only: tree_rank_estimate BinomialTree.sel(3)) 
 
 
 lemma invar_butlast: "invar (bq @ [t]) \<Longrightarrow> invar bq"
@@ -900,7 +887,7 @@ qed
 lemma children_rank_less: 
   "tree_invar t \<Longrightarrow> \<forall>t' \<in> set (children t). rank t' < rank t"
 proof (cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof (induct nat arbitrary: t e a list, simp) 
     case goal1
     from goal1 obtain e1 a1 ts1 e2 a2 ts2 where 
@@ -921,7 +908,7 @@ qed
 lemma strong_rev_children: "tree_invar t \<Longrightarrow> invar (rev (children t))"
   unfolding invar_def
 proof (cases t)
-  case goal1 thus ?case
+  case (goal1 e a nat list) thus ?case
   proof (induct "nat" arbitrary: t e a list, simp)
     case goal1
     from goal1 obtain e1 a1 ts1 e2 a2 ts2 where 
@@ -1009,8 +996,8 @@ qed
 lemma children_mset: "queue_to_multiset (children t) = 
   tree_to_multiset t - {# (val t, prio t) #}"
 proof (cases t)
-  case goal1
-  thus ?case by (induct list, simp add: diff_cancel, simp)
+  case (goal1 e a nat list)
+  thus ?case by (induct list, simp_all)
 qed
 
 lemma deleteMin_mset: "\<lbrakk>queue_invar q; q \<noteq> Nil\<rbrakk> \<Longrightarrow> 
@@ -1061,7 +1048,7 @@ interpretation BinomialHeapStruc: BinomialHeapStruc_loc .
 subsection "Hiding the Invariant"
 subsubsection "Datatype"
 typedef ('e, 'a) BinomialHeap =
-  "{q :: ('e,'a::linorder) BinomialQueue_inv. BinomialHeapStruc.invar q }"
+  "{q :: ('e,'a::linorder) BinomialHeapStruc.BinomialQueue_inv. BinomialHeapStruc.invar q }"
   apply (rule_tac x="Nil" in exI)
   apply auto
   done

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Loops"
+section "Loops"
 
 theory LoopExamples imports "../pGCL" begin
 

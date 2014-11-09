@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Code Generation from IArrays to Haskell*}
+section{*Code Generation from IArrays to Haskell*}
 
 theory IArray_Haskell
   imports IArray_Addenda

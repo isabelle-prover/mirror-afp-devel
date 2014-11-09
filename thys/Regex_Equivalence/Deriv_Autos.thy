@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header "Framework Instantiations using (Partial) Derivatives"
+section "Framework Instantiations using (Partial) Derivatives"
 
 (*<*)
 theory Deriv_Autos

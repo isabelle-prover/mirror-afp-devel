@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Derivatives of $\Pi$-Extended Regular Expressions *}
+section {* Derivatives of $\Pi$-Extended Regular Expressions *}
 (*<*)
 theory Pi_Derivatives
 imports Pi_Regular_Exp

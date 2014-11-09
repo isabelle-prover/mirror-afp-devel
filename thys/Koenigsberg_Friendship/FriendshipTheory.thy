@@ -65,9 +65,8 @@ proof (induct "card A"  arbitrary:A rule:less_induct)
       ultimately have "even (card B)" by (metis (full_types) less.hyps)
       moreover have "{x,f x}\<subseteq>A" using `f x\<in>A` `x\<in>A` by auto
       moreover have "card {x, f x} = 2" using `f x\<noteq>x` by auto
-      ultimately show ?case using B `finite A` 
-        by (metis (full_types) Diff_subset `card B < card A` ` finite B ` card_Diff_subset 
-            double_diff even_difference_nat even_numeral_nat less_SucI not_less_eq subset_refl)
+      ultimately show ?case using B `finite A` card_mono [of A "{x, f x}"] 
+        by (simp add: card_Diff_subset)
     qed
   ultimately show ?case by metis
 qed
@@ -717,8 +716,8 @@ next
       ultimately show "card {ps'. ext ps ps'}=k" by (metis `card qs = k` card_image)
     qed
   moreover have "\<forall>ps1 ps2. ps1\<noteq>ps2 \<longrightarrow> {n. ext ps1 n} \<inter> {n. ext ps2 n}={}" using ext by auto
-  moreover have "finite {ps. length ps = n \<and> adj_path v ps}" 
-    by (metis Suc.hyps assms(4) card_infinite nat_less_le power_eq_0_iff)
+  moreover have "finite {ps. length ps = n \<and> adj_path v ps}"
+    using Suc.hyps assms by (auto intro: card_ge_0_finite)
   ultimately have "card (\<Union>v\<in>{ps. length ps = n \<and> adj_path v ps}. {n. ext v n}) 
       = k * card {ps. length ps = n \<and> adj_path v ps}" 
     using card_partition'[of "{ps. length ps = n \<and> adj_path v ps}" ext k] `k>0` by auto 
@@ -1135,9 +1134,8 @@ proof (rule ccontr)
                       hence "adjacent (last ps) (last x)" using `butlast x=ps` by auto
                       hence "adjacent (hd ps) (last x)" using `last ps=hd ps` by auto
                       hence "adjacent (hd x) (last x)" 
-                        using `butlast x=ps` `length ps=l+1` 
-                        by (metis `x \<noteq> []` append_Nil append_butlast_last_id even_sum_nat 
-                          hd_append2 le_add1 le_antisym length_append add.assoc odd_1_nat)
+                        using `butlast x=ps` `length ps=l+1`
+                        by (cases x)  auto
                       thus ?thesis using adjacent_sym by auto
                     qed
                   moreover have "last (butlast x) = hd x" 
@@ -1191,10 +1189,8 @@ proof (rule ccontr)
                   "x=app ps"
                 using T C_star by auto
               hence "last ps\<in>V" 
-                using adj_path_V[OF `adj_path (hd ps) (tl ps)`] 
-                by (metis butlast.simps(2) butlast_tl diff_add_inverse even_sum_nat list.sel(1,3)
-                  last_ConsL last_in_set last_tl length_butlast add.commute neq_Nil_conv
-                  odd_1_nat set_mp)
+                using adj_path_V[OF `adj_path (hd ps) (tl ps)`]
+                by (cases ps) auto
               hence "\<exists>n. adjacent (last ps) n \<and> adjacent (hd ps) n"
                 using adj_path_V'[OF `adj_path (hd ps) (tl ps)`] `last ps\<noteq>hd ps`  
                   friend_assm[of "last ps" "hd ps"]
@@ -1203,9 +1199,8 @@ proof (rule ccontr)
                 using app `x=app ps` by auto
               ultimately have "adjacent (last ps) (last x)" and "adjacent (hd ps) (last x)"
                 using someI_ex by (metis (lifting))+ 
-              have "hd x=hd ps" using `x=app ps` `length ps=l+1` app 
-                by (metis butlast.simps(1) comm_semiring_1_class.normalizing_semiring_rules(24) 
-                  diff_add_inverse even_sum_nat hd_append2 length_butlast odd_1_nat)
+              have "hd x=hd ps" using `x=app ps` `length ps=l+1` app
+                by (cases ps) auto
               have "length x = l + 2" using `x=app ps` `length ps=l+1` app by auto
               moreover have "adj_path (hd x) (tl x)" 
                 proof -
@@ -1222,7 +1217,7 @@ proof (rule ccontr)
                       `adjacent (last ps) (last x)`  
                     by auto
                   moreover have "tl ps @ [last x]=tl x" 
-                    using `x=app ps` app 
+                    using `x=app ps` app
                     by (metis ` last x = (SOME n. adjacent (last ps) n \<and> adjacent (hd ps) n) ` 
                       ` tl ps \<noteq> [] ` list.sel(2) tl_append2)
                   ultimately show ?thesis using `hd x=hd ps` by auto
@@ -1613,4 +1608,4 @@ proof -
   ultimately show ?thesis by force
 qed
 
-end  
+end

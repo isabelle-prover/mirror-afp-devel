@@ -10,7 +10,7 @@ version instead.
 =============================================================================
 *)
 
-header {*
+section {*
   Predicates modelled as FinFuns
 *}
 

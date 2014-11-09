@@ -1,4 +1,4 @@
-header {* LTL to GBA translation *}
+section {* LTL to GBA translation *}
 (*
   Author: Alexander Schimpf
     Modified by Peter Lammich

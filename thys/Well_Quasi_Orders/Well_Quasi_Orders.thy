@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Well-Quasi-Orders *}
+section {* Well-Quasi-Orders *}
 
 theory Well_Quasi_Orders
 imports Almost_Full_Relations

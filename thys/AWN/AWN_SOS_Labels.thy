@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Configure the inv-cterms tactic for sequential processes"
+section "Configure the inv-cterms tactic for sequential processes"
 
 theory AWN_SOS_Labels
 imports AWN_SOS Inv_Cterms

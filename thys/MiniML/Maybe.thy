@@ -4,7 +4,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "Universal error monad"
+section "Universal error monad"
 
 theory Maybe
 imports Main

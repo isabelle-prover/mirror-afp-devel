@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* User Guide \label{sec:UserGuide}*}
+section {* User Guide \label{sec:UserGuide}*}
 (*<*)
 theory UserGuide 
 imports HeapList Vcg

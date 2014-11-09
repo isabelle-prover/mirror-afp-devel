@@ -124,7 +124,8 @@ by(simp add: shift_def split_def)
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows shift_compxE2: "shift pc (compxE2 e pc' d) = compxE2 e (pc' + pc) d"
   and  shift_compxEs2: "shift pc (compxEs2 es pc' d) = compxEs2 es (pc' + pc) d"
-by(induct e and es arbitrary: pc pc' d and pc pc' d)(auto simp:shift_def ac_simps)
+by(induct e and es arbitrary: pc pc' d and pc pc' d rule: compE2.induct compEs2.induct)
+  (auto simp:shift_def ac_simps)
 
 lemma compxE2_size_convs [simp]: "n \<noteq> 0 \<Longrightarrow> compxE2 e n d = shift n (compxE2 e 0 d)"
  and compxEs2_size_convs: "n \<noteq> 0 \<Longrightarrow> compxEs2 es n d = shift n (compxEs2 es 0 d)" 
@@ -192,7 +193,7 @@ by(simp add: stack_xlift_def split_def)
 lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows stack_xlift_compxE2: "stack_xlift n (compxE2 e pc d) = compxE2 e pc (n + d)"
   and stack_xlift_compxEs2: "stack_xlift n (compxEs2 es pc d) = compxEs2 es pc (n + d)"
-by(induct e and es arbitrary: d pc and d pc)
+by(induct e and es arbitrary: d pc and d pc rule: compE2.induct compEs2.induct)
   (auto simp add: shift_compxE2 simp del: compxE2_size_convs)
 
 lemma compxE2_stack_xlift_convs [simp]: "d > 0 \<Longrightarrow> compxE2 e pc d = stack_xlift d (compxE2 e pc 0)"

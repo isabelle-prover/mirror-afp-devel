@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-header {* Code generator setup to implement terminated lazy lists lazily *}
+section {* Code generator setup to implement terminated lazy lists lazily *}
 
 theory Lazy_TLList imports
   TLList
@@ -26,7 +26,24 @@ code_datatype Lazy_tllist
 
 declare -- {* Restore consistency in code equations between @{const partial_term_of} and @{const narrowing} for @{typ "('a, 'b) tllist"} *}
    [[code drop: "partial_term_of :: (_, _) tllist itself => _"]]
-   partial_term_of_tllist_code [code]
+
+lemma partial_term_of_tllist_code [code]:
+  fixes tytok :: "('a :: partial_term_of, 'b :: partial_term_of) tllist itself" shows
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
+   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE(('a, 'b) tllist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 [b]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.Const (STR ''TLList.tllist.TNil'') (Typerep.typerep TYPE('b \<Rightarrow> ('a, 'b) tllist)))
+     (partial_term_of TYPE('b) b)"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.App
+        (Code_Evaluation.Const
+           (STR ''TLList.tllist.TCons'')
+           (Typerep.typerep TYPE('a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist)))
+        (partial_term_of TYPE('a) head))
+     (partial_term_of TYPE(('a, 'b) tllist) tail)"
+by-(rule partial_term_of_anything)+
 
 declare Lazy_tllist_def [simp]
 declare sum.splits [split]

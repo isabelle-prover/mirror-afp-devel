@@ -5,7 +5,7 @@
     Based on the Jinja theory Common/Decl.thy by David von Oheimb
 *)
 
-header {* \isaheader{Class Declarations and Programs} *}
+section {* Class Declarations and Programs *}
 
 theory Decl imports Expr begin
 

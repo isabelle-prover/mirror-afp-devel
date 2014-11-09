@@ -1,4 +1,4 @@
-header{*The Needham-Schroeder Public-Key Protocol against the General Attacker*}
+section{*The Needham-Schroeder Public-Key Protocol against the General Attacker*}
 
 theory NS_Public_Bad_GA imports PublicGA begin
 

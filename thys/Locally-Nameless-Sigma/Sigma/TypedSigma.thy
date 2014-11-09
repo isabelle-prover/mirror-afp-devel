@@ -2,7 +2,7 @@
     Author:     Florian Kammuller and Henry Sudhof, 2006
 *)
 
-header {* First Order Types for Sigma terms *}
+section {* First Order Types for Sigma terms *}
 
 theory TypedSigma imports "../preliminary/Environments" Sigma begin
 

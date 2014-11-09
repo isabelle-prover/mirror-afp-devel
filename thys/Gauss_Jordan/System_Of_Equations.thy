@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Solving systems of equations using the Gauss Jordan algorithm*}
+section{*Solving systems of equations using the Gauss Jordan algorithm*}
 
 theory System_Of_Equations
 imports

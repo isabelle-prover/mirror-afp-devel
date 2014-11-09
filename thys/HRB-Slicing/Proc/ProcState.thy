@@ -1,4 +1,4 @@
-header {* \isaheader{The state} *}
+section {* The state *}
 
 theory ProcState imports Com begin
 

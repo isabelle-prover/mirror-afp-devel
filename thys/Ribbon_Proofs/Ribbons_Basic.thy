@@ -1,4 +1,4 @@
-header {* Assertions, commands, and separation logic proof rules *}
+section {* Assertions, commands, and separation logic proof rules *}
 
 theory Ribbons_Basic imports 
   Main 

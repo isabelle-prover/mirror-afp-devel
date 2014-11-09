@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Tree Automata"
+section "Tree Automata"
 theory Ta
 imports Main "../Automatic_Refinement/Lib/Misc" Tree
 begin
@@ -459,8 +459,8 @@ proof (induct arbitrary: \<delta> q rule: accs.induct[case_names step])
     apply (auto dest: \<delta>_statesI) [2]
     apply (subgoal_tac "q\<in>\<delta>_states \<delta>")
     apply (unfold inj_on_def) [1]
-    apply blast
-    apply (blast intro: \<delta>_statesI)
+    apply (metis \<delta>_statesI(1) contra_subsetD)
+    apply (fastforce intro: \<delta>_statesI(1) dest: inj_onD)
     done
   show ?case proof (rule accs.intros[OF R])
     fix i 
@@ -472,6 +472,7 @@ proof (induct arbitrary: \<delta> q rule: accs.induct[case_names step])
       apply auto
       apply (case_tac x)
       apply (auto)
+      apply (rename_tac list)
       apply (subgoal_tac "list!i \<in> \<delta>_states \<delta>")
       apply blast
       apply (auto dest!: \<delta>_statesI(2))

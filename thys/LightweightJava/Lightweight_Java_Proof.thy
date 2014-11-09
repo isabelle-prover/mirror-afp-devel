@@ -72,7 +72,7 @@ lemma wf_stmt_in_G':
     (L x' = None \<and> (\<forall>x\<in>set y_cl_var_var'_v_list. (\<lambda>(y, cl, var, var', v). L (x_var var') = None) x)
     \<and> (\<forall>x\<in>dom \<Gamma>. wf_object P H (L x) (\<Gamma> x)) \<and> (\<forall>s\<in>set ss. wf_stmt P \<Gamma> s) \<longrightarrow>
        (\<forall>s\<in>set ss. wf_stmt P ((\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)))(x' \<mapsto> ty)) s))"
-apply(rule s.induct)
+apply(rule tr_s_f_tr_ss_f.induct)
 
 apply(clarsimp, erule wf_stmtE, simp_all, simp add: wf_blockI)
 
@@ -359,7 +359,7 @@ lemma fmdip_to_mip[rule_format]:
   "find_meth_def_in_path_f path m = Some ctxmd \<longrightarrow> m \<in> set (methods_in_path_f (map snd path))"
 apply(induct path) apply(simp) apply(clarsimp simp add: class_methods_f_def split: option.splits cld.splits)
 apply(rename_tac aa bb)
-apply(case_tac aa) apply(case_tac meth_sig) apply(clarsimp) apply(frule find_md_m_match') apply(clarsimp)
+apply(case_tac aa) apply(rename_tac meth_sig meth_body) apply(case_tac meth_sig) apply(clarsimp) apply(frule find_md_m_match') apply(clarsimp)
 apply(frule find_meth_def_in_list_mem) apply(frule m_image_eq) apply(assumption)
 done
 
@@ -384,7 +384,7 @@ apply(drule wf_cld_from_lu) apply(simp) apply(erule wf_classE) apply(erule wf_cl
 apply(subgoal_tac "m \<in> snd ` set meth_def_meth_list")
  apply(clarsimp) apply(rename_tac md_m m) apply(drule_tac x = "(md_m, m)" in bspec, simp)+ apply(clarsimp split: option.splits)
  apply(case_tac ctx') apply(clarsimp)
- apply(case_tac md_m) apply(case_tac meth_sig) apply(rename_tac ms mb_m cl_r_m m vds_m) apply(clarsimp simp add: method_name_f_def)
+ apply(case_tac md_m) apply(rename_tac meth_sig meth_body) apply(case_tac meth_sig) apply(rename_tac ms mb_m cl_r_m m vds_m) apply(clarsimp simp add: method_name_f_def)
  apply(erule_tac Q = "tys' = tys \<longrightarrow> ty_r' \<noteq> ty_r" in contrapos_pp) apply(clarsimp)
  apply(clarsimp simp add: methods_f_def find_path_f_def superclass_name_f_def split: option.splits split_if_asm)
  apply(frule fmdip_to_mip) apply(clarsimp) apply(rename_tac m mty mty') apply(drule_tac x = "(m, mty, mty')" in bspec, simp)+
@@ -415,7 +415,7 @@ apply(erule disjE)
  apply(frule find_cld_name_eq) apply(frule_tac ctx = a in find_cld_name_eq)
  apply(clarsimp simp add: class_name_f_def split: cld.splits)
 apply(case_tac b) apply(rename_tac dcl' cl' fds' mds')
-apply(clarsimp simp add: superclass_name_f_def) apply(case_tac cl') apply(simp) apply(case_tac fqn) apply(rename_tac dcl'') apply(clarsimp)
+apply(clarsimp simp add: superclass_name_f_def) apply(case_tac cl') apply(simp) apply(rename_tac fqn) apply(case_tac fqn) apply(rename_tac dcl'') apply(clarsimp)
 apply(clarsimp split: option.splits)
 apply(subgoal_tac "\<forall>aa b ab bb. (a = ab \<and> cld_def dcl' (cl_fqn (fqn_def dcl'')) fds' mds' = bb \<and> aa = ab \<and> b = bb)
                       \<longrightarrow> (\<forall>suffix. find_path_rec_f P ab (case bb of cld_def dcl cl fds mds \<Rightarrow> cl) (path @ [(ab, bb)]) = Some (path @ (ab, bb) # suffix) \<longrightarrow>
@@ -459,8 +459,9 @@ apply(subgoal_tac "(\<exists>prefix' suffix'. find_path_rec_f P ab (case bb of c
  apply(rule)
   apply(clarsimp simp add: find_meth_def_f_def) apply(subgoal_tac "\<exists>path'. find_path_f P a (cl_fqn (fqn_def dcl')) = Some path'")
    apply(case_tac b) apply(clarsimp simp add: find_path_f_def superclass_name_f_def split: split_if_asm option.splits)
+   apply(rename_tac meth_body cl list_char1 list_vd ty list_ty list_char2 cla list_fd list_md list_p1 path')
    apply(frule_tac path = path' in path_append) apply(rename_tac ag ah) apply(frule_tac path = ag in path_append) apply(clarify)
-   apply(frule_tac suffix = path''a and suffix' = path''b and prefix' = "[(ac, cld_def list1a cla list2a list3)]" in fpr_same_suffix[rule_format], force)
+   apply(frule_tac suffix = path''a and suffix' = path''b and prefix' = "[(ac, cld_def list_char2 cla list_fd list_md)]" in fpr_same_suffix[rule_format], force)
    apply(simp) apply(clarify) apply(clarsimp simp add: class_methods_f_def split: option.splits)
   apply(clarsimp simp add: find_path_f_def superclass_name_f_def split: option.splits split_if_asm)
   apply(frule_tac path' = "(path @ [(a, cld_def dcl' (cl_fqn (fqn_def dcl'')) fds' mds'), (ac, b)])" in path_append) apply(clarsimp)
@@ -606,6 +607,7 @@ apply(erule disjE)
  apply(clarsimp simp del: fmdip_cons simp add: class_name_f_def split: cld.splits)
  apply(frule find_cld_name_eq) apply(frule_tac ctx = a in find_cld_name_eq)
  apply(clarsimp simp del: fmdip_cons simp add: class_name_f_def split: cld.splits)
+ apply (rename_tac list1 cl list2 list3)
  apply(frule_tac path = "prefix' @ suffix'" in path_append) apply(clarsimp simp del: fmdip_cons)
  apply(frule_tac prefix = "path @ [(ab, cld_def list1 cl list2 list3)]" and suffix = path'' and
                  prefix' = "prefix' @ [(ab, cld_def list1 cl list2 list3)]" and suffix' = path''a in fpr_same_suffix[rule_format])
@@ -698,6 +700,7 @@ apply(erule disjE)
  apply(clarsimp simp add: class_name_f_def split: cld.splits)
  apply(frule find_cld_name_eq) apply(frule_tac ctx = a in find_cld_name_eq)
  apply(clarsimp simp add: class_name_f_def split: cld.splits)
+ apply(rename_tac list1 cl list2 list3)
  apply(frule_tac path = "prefix' @ suffix'" in path_append) apply(clarsimp)
  apply(frule_tac prefix = "path @ [(ab, cld_def list1 cl list2 list3)]" and suffix = path'' and
                  prefix' = "prefix' @ [(ab, cld_def list1 cl list2 list3)]" and suffix' = path''a in fpr_same_suffix[rule_format])
@@ -1155,7 +1158,7 @@ lemma s_induct':
   "\<lbrakk>\<And>ss. \<forall>s\<in>set ss. P s \<Longrightarrow> P (s_block ss); \<And>list x. P (s_ass list x); \<And>list1 x list2. P (s_read list1 x list2); \<And>x1 list x2. P (s_write x1 list x2);
     \<And>x1 x2 s1 s2. \<lbrakk>P s1; P s2\<rbrakk> \<Longrightarrow> P (s_if x1 x2 s1 s2); \<And>list1 x list2 list3. P (s_call list1 x list2 list3); \<And>list ctx cl. P (s_new list ctx cl)\<rbrakk>
          \<Longrightarrow> P s"
-apply(cut_tac s.induct[of "\<lambda>ss. (\<forall>s\<in>set ss. P s)" P]) apply(simp_all) apply(force) done
+by (metis s.induct)
 
 lemma wf_tr_stmt_in_G':
   "\<forall>s'. distinct (map (\<lambda>(cl, var, ty). var) cl_var_ty_list)
@@ -1343,6 +1346,7 @@ apply(clarsimp)
 apply(erule disjE)
  apply(clarify)
  apply(clarsimp simp add: class_name_f_def split: cld.splits)
+ apply(rename_tac list1 cl list2 list3)
  apply(case_tac fqn) apply(clarsimp) apply(frule find_cld_name_eq)
  apply(clarsimp simp add: class_name_f_def split: cld.splits)
  apply(frule_tac suffix = path'' and prefix' = " prefix' @ [(a, cld_def list1 cl list2 list3)]" in fpr_same_suffix') apply(simp) apply(simp)
@@ -1366,6 +1370,7 @@ apply(frule fpr_mem_has_path) apply(simp) apply(clarsimp simp del: find_path_rec
 apply(frule_tac path = path_d and m = m and mty = "mty_def tys ty_r" and path' = suffix' in mty_preservation')
 apply(simp add: class_name_f_def find_path_f_def)+
 apply(clarsimp simp add: mtype_f_def split: option.splits split_if_asm meth_def.splits meth_sig.splits)
+apply(rename_tac meth_body a b c d e f g)
 apply(case_tac meth_body) apply(simp) apply(clarsimp simp add: lift_opts_ft_length)
 apply(clarsimp simp add: find_meth_def_f_def split: option.splits)
 apply(frule find_md_m_match[rule_format]) apply(assumption)
@@ -1465,7 +1470,8 @@ apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
 apply(frule type_to_val, simp) apply(clarify) apply(frule r_var_assignI) apply(force)
 -- "field read"
 apply(clarsimp, erule wf_stmtE, simp_all, clarsimp)
-apply(erule wf_varstateE) apply(drule_tac x = xa in bspec, simp add: domI)
+apply(erule wf_varstateE)
+apply(drule_tac x = x in bspec, simp add: domI)
 apply(erule wf_objectE) apply(clarsimp) apply(frule r_field_read_npeI) apply(force)
 apply(clarsimp) apply(erule_tac ?a3.0 = "Some ty" in sty_option.cases) apply(clarsimp split: option.splits)
 apply(erule wf_heapE) apply(drule_tac x = oid in bspec, simp add: domI) apply(clarsimp)
@@ -1798,7 +1804,7 @@ apply(subgoal_tac "x_var var \<in> dom \<Gamma>")
   apply(clarsimp)
  (* wf of non-translated statements *)
  apply(cut_tac L = L and x' = x' and y_cl_var_var'_v_list = y_cl_var_var'_v_list and \<Gamma> = \<Gamma> and P = P and H = H and
-               s = s and y_ty_list = y_ty_list and ty = "ty_def ctx dcl" and ss = ss in wf_stmt_in_G')
+               y_ty_list = y_ty_list and ty = "ty_def ctx dcl" and ss = ss in wf_stmt_in_G')
  apply(clarsimp)
 
 apply(erule wf_objectE) apply(force) apply(force)

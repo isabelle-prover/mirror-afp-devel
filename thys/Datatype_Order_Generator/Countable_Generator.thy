@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Countable datatypes *}
+section {* Countable datatypes *}
 
 theory Countable_Generator
 imports "~~/src/HOL/Library/Countable"
@@ -62,7 +62,7 @@ setup {*
         val _ = writeln ("proving that datatype " ^ base_name ^ " is countable")
         val sort = @{sort countable}
         val vs = 
-          let val i = Datatype.the_spec thy dtyp_name |> #1 
+          let val i = BNF_LFP_Compat.the_spec thy dtyp_name |> #1 
           in map (fn (n,_) => (n, sort)) i end
         val thy' = Class.instantiation ([dtyp_name],vs,sort) thy
           |> Class.prove_instantiation_exit (fn ctxt => countable_tac ctxt 1)

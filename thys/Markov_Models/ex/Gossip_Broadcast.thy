@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-header {* Formalization of the Gossip-Broadcast *}
+section {* Formalization of the Gossip-Broadcast *}
 
 theory Gossip_Broadcast
   imports "../Discrete_Time_Markov_Chain"
@@ -38,9 +38,13 @@ next
     using insert by (simp add: setsum_left_distrib)
 qed
 
+interpretation pmf_as_function .
+
 subsection {* Definition of the Gossip-Broadcast *}
 
 datatype state = listening | sending | sleeping
+
+type_synonym sys_state = "(nat \<times> nat) \<Rightarrow> state"
 
 lemma state_UNIV: "UNIV = {listening, sending, sleeping}"
   by (auto intro: state.exhaust)
@@ -51,19 +55,20 @@ locale gossip_broadcast =
   assumes p: "0 < p" "p < 1"
 begin
 
-definition
+definition states :: "sys_state set" where
   "states = ({..< size} \<times> {..< size}) \<rightarrow>\<^sub>E {listening, sending, sleeping}"
 
-definition "start = (\<lambda>x\<in>{..< size}\<times>{..< size}. listening)((0, 0) := sending)"
+definition start :: sys_state where
+  "start = (\<lambda>x\<in>{..< size}\<times>{..< size}. listening)((0, 0) := sending)"
 
-definition
+definition neighbour_sending where
   "neighbour_sending s = (\<lambda>(x,y).
     (x > 0 \<and> s (x - 1, y) = sending) \<or>
     (x < size \<and> s (x + 1, y) = sending) \<or>
     (y > 0 \<and> s (x, y - 1) = sending) \<or>
     (y < size \<and> s (x, y + 1) = sending))"
 
-definition node_trans :: "((nat \<times> nat) \<Rightarrow> state) \<Rightarrow> (nat \<times> nat) \<Rightarrow> state \<Rightarrow> state \<Rightarrow> real" where
+definition node_trans :: "sys_state \<Rightarrow> (nat \<times> nat) \<Rightarrow> state \<Rightarrow> state \<Rightarrow> real" where
 "node_trans g x s = (case s of
   listening \<Rightarrow> (if neighbour_sending g x
     then (\<lambda>_.0) (sending := p, sleeping := 1 - p)
@@ -71,33 +76,29 @@ definition node_trans :: "((nat \<times> nat) \<Rightarrow> state) \<Rightarrow>
 | sending   \<Rightarrow> (\<lambda>_.0) (sleeping := 1)
 | sleeping  \<Rightarrow> (\<lambda>_.0) (sleeping := 1))"
 
-definition "proto_trans s s' =
-  (\<Prod>x\<in>{..< size}\<times>{..< size}. node_trans s x (s x) (s' x))"
-
-lemma node_trans_sum_eq_1:
+lemma node_trans_sum_eq_1[simp]:
   "node_trans g x s' listening + (node_trans g x s' sending + node_trans g x s' sleeping) = 1"
   by (simp add: node_trans_def split: state.split)
+
+lift_definition proto_trans :: "sys_state \<Rightarrow> sys_state pmf" is
+  "\<lambda>s s'. if s' \<in> states then (\<Prod>x\<in>{..< size}\<times>{..< size}. node_trans s x (s x) (s' x)) else 0"
+proof
+  let ?f = "\<lambda>s s'. if s' \<in> states then (\<Prod>x\<in>{..< size}\<times>{..< size}. node_trans s x (s x) (s' x)) else 0"
+  fix s show "\<forall>t. 0 \<le> ?f s t"
+    using p by (auto intro!: setprod_nonneg simp: node_trans_def split: state.split)
+  show "(\<integral>\<^sup>+t. ?f s t \<partial>count_space UNIV) = 1"
+  proof (subst nn_integral_count_space'[of states])
+    show "(\<Sum>t\<in>states. ereal (?f s t)) = 1"
+      unfolding states_def by (simp, subst setsum_folded_product) simp_all
+    show "finite states"
+      by (auto simp: states_def intro!: finite_PiE)
+  qed (insert p, auto simp:  intro!: setprod_nonneg simp: node_trans_def split: state.split)
+qed
 
 end
 
 subsection {* The Gossip-Broadcast forms a DTMC *}
 
-sublocale gossip_broadcast \<subseteq> Discrete_Time_Markov_Chain states proto_trans start
-proof
-  show "finite states"
-    by (simp add: states_def finite_PiE)
-  show "start \<in> states"
-    using size by (auto simp: PiE_def extensional_def start_def states_def)
-next
-  fix s s' assume "s \<in> states" "s' \<in> states"
-  with p show "0 \<le> proto_trans s s'"
-    unfolding proto_trans_def node_trans_def
-    by (auto intro!: setprod_nonneg split: state.split)
-next
-  fix s assume "s \<in> states"
-  show "(\<Sum>s'\<in>states. proto_trans s s') = 1"
-    unfolding proto_trans_def states_def
-    by (subst setsum_folded_product) (simp_all add: node_trans_sum_eq_1)
-qed
+sublocale gossip_broadcast \<subseteq> MC_syntax proto_trans .
 
 end

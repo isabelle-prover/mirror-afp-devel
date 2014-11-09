@@ -1,4 +1,4 @@
-header "Data structures as used in Promela"
+section "Data structures as used in Promela"
 theory PromelaDatastructures
 imports
   "../CAVA_Automata/CAVA_Base/CAVA_Base"

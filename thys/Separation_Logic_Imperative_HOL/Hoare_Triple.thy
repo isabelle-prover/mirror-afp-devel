@@ -1,4 +1,4 @@
-header {* Hoare-Triples *}
+section {* Hoare-Triples *}
 theory Hoare_Triple
 imports Run Assertions
 begin

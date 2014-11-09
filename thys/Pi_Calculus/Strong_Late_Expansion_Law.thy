@@ -1107,7 +1107,7 @@ proof(induct rule: simCases)
 next
   case(Free \<alpha> R')
   have "R \<longmapsto>\<alpha> \<prec> R'" by fact
-  with Exp Phnf Qhnf have "P \<parallel> Q \<longmapsto>\<alpha> \<prec> R'"  by(cases \<alpha>, auto simp add: expandTrans)
+  with Exp Phnf Qhnf have "P \<parallel> Q \<longmapsto>\<alpha> \<prec> R'" by(cases \<alpha>, auto simp add: expandTrans)
   moreover from Id have "(R', R') \<in> Rel" by blast
   ultimately show ?case by blast
 qed

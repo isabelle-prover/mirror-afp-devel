@@ -5,7 +5,7 @@
     Maintainer:  Stephan Adelsberger <sadelsbe /at/ wu /dot/ ac /dot/ at>
 *)
 
-header {* The Cayley-Hamilton theorem\label{sec.ch} *}
+section {* The Cayley-Hamilton theorem\label{sec.ch} *}
 
 theory Cayley_Hamilton
 imports

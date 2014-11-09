@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Compilation Stage 2} *}
+section {* Compilation Stage 2 *}
 
 theory Compiler2
 imports PCompiler J1 "../JVM/JVMExec"

@@ -1,4 +1,4 @@
-header {* Maybe monad *}
+section {* Maybe monad *}
 
 theory Maybe_Monad
 imports Monad_Zero_Plus

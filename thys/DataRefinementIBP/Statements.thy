@@ -1,4 +1,4 @@
-header {*Program Statements as Predicate Transformers*}
+section {*Program Statements as Predicate Transformers*}
 
 theory Statements
 imports Preliminaries

@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-header {* Comparing Enumeration and Archive *}
+section {* Comparing Enumeration and Archive *}
 
 theory ArchCompAux
 imports TameEnum Tries Arch Worklist

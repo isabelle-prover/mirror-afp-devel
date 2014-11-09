@@ -1,4 +1,4 @@
-header {* The type-erasure translation from many-typed to untyped FOL *}
+section {* The type-erasure translation from many-typed to untyped FOL *}
 theory E imports Mono CU
 begin
 

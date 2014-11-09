@@ -5,7 +5,7 @@
 
 *)
 
-header {* \isaheader{The JVM Type System as Semilattice} *}
+section {* The JVM Type System as Semilattice *}
 
 theory JVM_SemiType imports SemiType begin
 
@@ -69,7 +69,7 @@ notation (xsymbols)
   sup_loc  ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
 
 
-section "Unfolding"
+subsection "Unfolding"
 
 lemma JVM_states_unfold: 
   "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) <*>
@@ -114,7 +114,7 @@ lemma err_le_unfold [iff]:
 (*<*) by (simp add: Err.le_def lesub_def) (*>*)
   
 
-section {* Semilattice *}
+subsection {* Semilattice *}
 
 lemma order_sup_state_opt [intro, simp]: 
   "wf_prog wf_mb P \<Longrightarrow> order (sup_state_opt P)"   
@@ -134,7 +134,7 @@ lemma acc_JVM [intro]:
 (*<*) by (unfold JVM_le_unfold) blast (*>*)
 
 
-section {* Widening with @{text "\<top>"} *}
+subsection {* Widening with @{text "\<top>"} *}
 
 lemma subtype_refl[iff]: "subtype P t t" (*<*) by (simp add: fun_of_def) (*>*)
 
@@ -180,7 +180,7 @@ lemma sup_ty_opt_trans [intro?, trans]:
            split: err.splits) (*>*)
 
 
-section "Stack and Registers"
+subsection "Stack and Registers"
 
 lemma stk_convert:
   "P \<turnstile> ST [\<le>] ST' = Listn.le (subtype P) ST ST'"
@@ -207,7 +207,7 @@ lemma sup_loc_trans [intro?, trans]:
 (*<*) by (rule list_all2_trans, rule sup_ty_opt_trans) (*>*)
 
 
-section "State Type"
+subsection "State Type"
 
 lemma sup_state_conv [iff]:
   "P \<turnstile> (ST,LT) \<le>\<^sub>i (ST',LT') = (P \<turnstile> ST [\<le>] ST' \<and> P \<turnstile> LT [\<le>\<^sub>\<top>] LT')"

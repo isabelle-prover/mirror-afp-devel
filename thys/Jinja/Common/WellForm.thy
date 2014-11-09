@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Generic Well-formedness of programs} *}
+section {* Generic Well-formedness of programs *}
 
 theory WellForm imports TypeRel SystemClasses begin
 

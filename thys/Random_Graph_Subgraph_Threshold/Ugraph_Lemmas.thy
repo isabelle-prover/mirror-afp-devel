@@ -1,4 +1,4 @@
-header{* Lemmas about undirected graphs *}
+section{* Lemmas about undirected graphs *}
 
 theory Ugraph_Lemmas
 imports

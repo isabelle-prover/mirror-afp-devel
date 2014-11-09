@@ -1,4 +1,4 @@
-header {* \isaheader{The weak simulation} *}
+section {* The weak simulation *}
 
 theory WeakSimulation imports Slice begin
 

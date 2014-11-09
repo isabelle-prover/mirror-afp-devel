@@ -1,4 +1,4 @@
-header{* Preliminaries *}
+section{* Preliminaries *}
 theory Preliminaries
 imports "~~/src/HOL/Cardinals/Cardinals"
         "~~/src/HOL/Library/Countable_Set_Type"

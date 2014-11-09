@@ -1,4 +1,4 @@
-header {* General Lemmas for Proving Function Inequalities *}
+chapter {* General Lemmas for Proving Function Inequalities *}
 
 theory Bounds_Lemmas
 imports Complex_Main

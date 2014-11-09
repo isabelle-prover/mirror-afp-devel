@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-header {* Example: Koenig's lemma *}
+section {* Example: Koenig's lemma *}
 
 theory Koenigslemma imports 
   "../Coinductive_List"
@@ -203,7 +203,7 @@ proof(intro bexI conjI)
   note lset = this
 
   show "n \<in> lset (f (n, ns))"
-    using lhd_in_lset[OF f_simps(1), of n ns] by(simp del: lhd_in_lset)
+    using llist.set_sel(1)[OF f_simps(1), of n ns] by(simp del: llist.set_sel(1))
 
   show "\<not> lfinite (f (n, ns))"
   proof

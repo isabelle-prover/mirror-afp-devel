@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Binary Predicates Restricted to Elements of a Given Set *}
+section {* Binary Predicates Restricted to Elements of a Given Set *}
 
 theory Restricted_Predicates
 imports Main

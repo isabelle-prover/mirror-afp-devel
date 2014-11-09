@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Definition of the SIFUM-Security Property *}
+section {* Definition of the SIFUM-Security Property *}
 
 theory Security
 imports Main Preliminaries

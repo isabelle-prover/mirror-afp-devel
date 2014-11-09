@@ -4,7 +4,7 @@
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{System Classes} *}
+section {* System Classes *}
 
 theory SystemClasses
 imports Decl Exceptions

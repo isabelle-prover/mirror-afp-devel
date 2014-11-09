@@ -1,7 +1,7 @@
 
 (* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen *)
 
-header {* Stirling numbers of first and second kind *}
+section {* Stirling numbers of first and second kind *}
 
 theory Stirling
 imports Main

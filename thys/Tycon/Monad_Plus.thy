@@ -1,4 +1,4 @@
-header {* Monad-Plus Class *}
+section {* Monad-Plus Class *}
 
 theory Monad_Plus
 imports Monad

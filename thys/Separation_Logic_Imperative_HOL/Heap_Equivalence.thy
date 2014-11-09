@@ -1,5 +1,5 @@
 *** Obsolete ***
-header {* Equivalence Relation on Heaps *}
+section {* Equivalence Relation on Heaps *}
 
 theory Heap_Equivalence
 imports Imperative_HOL_Add

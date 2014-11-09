@@ -1,7 +1,6 @@
-header {*
-\isachapter{Standard and Weak Control Dependence} 
-\isaheader{A type for well-formed programs}
-*}
+chapter {* Standard and Weak Control Dependence *}
+
+section {* A type for well-formed programs *}
 
 theory JVMPostdomination imports JVMInterpretation "../Basic/Postdomination" begin
 
@@ -355,9 +354,7 @@ abbreviation lift_to_cfg_wf_prog :: "(jvmprog \<Rightarrow> 'a) \<Rightarrow> (c
   ("_\<^bsub>CFG\<^esub>")
   where "f\<^bsub>CFG\<^esub> \<equiv> (\<lambda>P. f (Rep_cfg_wf_prog P))"
 
-text {*
-\isaheader{Interpretation of the @{text Postdomination} locale}
-*}
+section {* Interpretation of the @{text Postdomination} locale *}
 
 interpretation JVM_CFG_Postdomination:
   Postdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> prog" "Entry" "(_Exit_)"
@@ -399,9 +396,7 @@ next
 qed
 
 
-text {*
-\isaheader{Interpretation of the @{text StrongPostdomination} locale}
-*}
+section {* Interpretation of the @{text StrongPostdomination} locale *}
 
 subsection {* Some helpfull lemmas *}
 

@@ -1,4 +1,4 @@
-header {* Lazy list monad *}
+section {* Lazy list monad *}
 
 theory Lazy_List_Monad
 imports Monad_Zero_Plus

@@ -32,7 +32,7 @@ next
     then obtain i where "i < min (length xs) (length ys)"
       and "take i xs = take i ys" and nth: "xs ! i < ys ! i" by blast
     hence "xs = take i xs @ xs ! i # drop (Suc i) xs" "ys = take i xs @ ys ! i # drop (Suc i) ys"
-      by -(subst append_take_drop_id[symmetric, of _ i], simp_all add: drop_Suc_conv_tl)
+      by -(subst append_take_drop_id[symmetric, of _ i], simp_all add: Cons_nth_drop_Suc)
     with nth show ?thesis unfolding lexordp_iff by blast
   qed
 qed

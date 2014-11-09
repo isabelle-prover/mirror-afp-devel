@@ -48,7 +48,7 @@ fun define_singleton_type
     val tac = rtac UNIV_witness 1
     val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
-    Typedef.add_typedef_global typ set opt_morphs tac thy
+    Typedef.add_typedef_global false typ set opt_morphs tac thy
   end    
 
 (******************************************************************************)
@@ -168,8 +168,8 @@ fun add_fixdefs
     val cont_thm =
       let
         val prop = mk_trp (mk_cont functional)
-        val rules = Cont2ContData.get (Proof_Context.init_global thy)
-        val tac = REPEAT_ALL_NEW (match_tac rules) 1
+        val rules = Named_Theorems.get (Proof_Context.init_global thy) @{named_theorems cont2cont}
+        val tac = REPEAT_ALL_NEW (match_tac (rev rules)) 1
       in
         Goal.prove_global thy [] [] prop (K tac)
       end

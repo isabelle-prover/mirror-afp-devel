@@ -157,14 +157,14 @@ let
   val raw_bclauses = rawify_bclauses dts_env cnstrs_env bn_fun_full_env bclauses 
 
   val (raw_full_dt_names', thy1) = 
-    Datatype.add_datatype Datatype.default_config raw_dts thy
+    Old_Datatype.add_datatype Old_Datatype_Aux.default_config raw_dts thy
 
   val lthy1 = Named_Target.theory_init thy1
 
-  val dtinfos = map (Datatype.the_info (Proof_Context.theory_of lthy1)) raw_full_dt_names' 
+  val dtinfos = map (Old_Datatype_Data.the_info (Proof_Context.theory_of lthy1)) raw_full_dt_names' 
   val {descr, ...} = hd dtinfos
 
-  val raw_tys = Datatype_Aux.get_rec_types descr
+  val raw_tys = Old_Datatype_Aux.get_rec_types descr
   val raw_ty_args = hd raw_tys
     |> snd o dest_Type
     |> map dest_TFree 
@@ -179,7 +179,7 @@ let
   val raw_exhaust_thms = map #exhaust dtinfos
   val raw_size_trms = map HOLogic.size_const raw_tys
   val raw_size_thms = these (Option.map ((fn ths => drop (length ths div 2) ths) o fst o snd)
-    (BNF_LFP_Size.lookup_size lthy1 (hd raw_full_dt_names')))
+    (BNF_LFP_Size.size_of lthy1 (hd raw_full_dt_names')))
 
   val raw_result = RawDtInfo 
     {raw_dt_names = raw_full_dt_names',
@@ -398,7 +398,7 @@ let
   val qperm_bns = map #qconst qperm_bns_info
 
   val _ = trace_msg (K "Lifting of theorems...")  
-  val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def rel_prod_def
+  val eq_iff_simps = @{thms alphas permute_prod.simps prod_fv.simps prod_alpha_def rel_prod_sel
     prod.case} 
 
   val ([ qdistincts, qeq_iffs, qfv_defs, qbn_defs, qperm_simps, qfv_qbn_eqvts, 
@@ -548,7 +548,7 @@ let
     ((tname, tvs, mx), constrs |> map (fn (c, atys, mx', _) => (c, map snd atys, mx')))
 
   val (dts, spec_ctxt) = 
-    Datatype.read_specs (map prep_spec dt_strs) thy
+    Old_Datatype.read_specs (map prep_spec dt_strs) thy
  
   fun augment ((tname, tvs, mx), constrs) =
     ((tname, map (apsnd (augment_sort thy)) tvs, mx), 
@@ -740,6 +740,5 @@ val _ = Outer_Syntax.local_theory @{command_spec "nominal_datatype"}
   "declaration of nominal datatypes" 
     (main_parser >> nominal_datatype2_cmd)
 *}
-
 
 end

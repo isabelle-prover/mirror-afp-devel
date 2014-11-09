@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Linear real arithmetic *}
+section{* Linear real arithmetic *}
 
 theory LinArith
 imports QE "~~/src/HOL/Library/ListVector" Complex_Main
@@ -294,7 +294,8 @@ lemma LBex:
 apply(induct f)
 apply simp
 apply simp
-apply (case_tac a)
+apply(rename_tac a)
+apply(case_tac a)
 apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+
 done
@@ -306,6 +307,7 @@ lemma UBex:
 apply(induct f)
 apply simp
 apply simp
+apply(rename_tac a)
 apply(case_tac a)
 apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits)
 apply fastforce+

@@ -1,7 +1,7 @@
-header {* Circus actions *}
+section {* Circus actions *}
 
 theory Circus_Actions
-imports HOLCF CSP_Processes
+imports "~~/src/HOL/HOLCF/HOLCF" CSP_Processes
 begin
 
 text {* In this section, we introduce definitions for Circus actions with 
@@ -51,14 +51,14 @@ text {* In the following, Circus actions are proved to be an instance of the $Co
 
 lemma relation_of_spec_f_f: 
 "\<forall>a b. (relation_of y \<longrightarrow> relation_of x) (a, b) \<Longrightarrow>
-           (relation_of y)\<^isup>f\<^isub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
-                      (relation_of x)\<^isup>f\<^isub>f (a\<lparr>tr := []\<rparr>, b)"
+           (relation_of y)\<^sup>f\<^sub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
+                      (relation_of x)\<^sup>f\<^sub>f (a\<lparr>tr := []\<rparr>, b)"
 by (auto simp: spec_def)
 
 lemma relation_of_spec_t_f: 
 "\<forall>a b. (relation_of y \<longrightarrow> relation_of x) (a, b) \<Longrightarrow>
-           (relation_of y)\<^isup>t\<^isub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
-                     (relation_of x)\<^isup>t\<^isub>f (a\<lparr>tr := []\<rparr>, b)"
+           (relation_of y)\<^sup>t\<^sub>f (a\<lparr>tr := []\<rparr>, b) \<Longrightarrow>
+                     (relation_of x)\<^sup>t\<^sub>f (a\<lparr>tr := []\<rparr>, b)"
 by (auto simp: spec_def)
 
 instantiation "action"::(ev_eq, type) below

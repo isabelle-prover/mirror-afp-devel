@@ -1,4 +1,4 @@
-header {* Functor Class *}
+section {* Functor Class *}
 
 theory Functor
 imports TypeApp Coerce

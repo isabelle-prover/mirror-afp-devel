@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Conformance Relations for Type Soundness Proofs} *}
+section {* Conformance Relations for Type Soundness Proofs *}
 
 theory Conform
 imports Exceptions
@@ -37,7 +37,7 @@ abbreviation
   "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 
-section{* Value conformance @{text":\<le>"} *}
+subsection{* Value conformance @{text":\<le>"} *}
 
 lemma conf_Null [simp]: "P,h \<turnstile> Null :\<le> T  =  P \<turnstile> NT \<le> T"
 (*<*)
@@ -110,7 +110,7 @@ done
 (*>*)
 
 
-section{* Value list conformance @{text"[:\<le>]"} *}
+subsection{* Value list conformance @{text"[:\<le>]"} *}
 
 lemma confs_widens [trans]: "\<lbrakk>P,h \<turnstile> vs [:\<le>] Ts; P \<turnstile> Ts [\<le>] Ts'\<rbrakk> \<Longrightarrow> P,h \<turnstile> vs [:\<le>] Ts'"
 (*<*)
@@ -148,7 +148,7 @@ lemma confs_Cons2: "P,h \<turnstile> xs [:\<le>] y#ys = (\<exists>z zs. xs = z#z
 (*<*)by (rule list_all2_Cons2)(*>*)
 
 
-section "Object conformance"
+subsection "Object conformance"
 
 lemma oconf_hext: "P,h \<turnstile> obj \<surd> \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> obj \<surd>"
 (*<*)
@@ -178,7 +178,7 @@ lemmas oconf_new = oconf_hext [OF _ hext_new]
 lemmas oconf_upd_obj = oconf_hext [OF _ hext_upd_obj]
 (*>*)
 
-section "Heap conformance"
+subsection "Heap conformance"
 
 lemma hconfD: "\<lbrakk> P \<turnstile> h \<surd>; h a = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile> obj \<surd>"
 (*<*)
@@ -194,7 +194,7 @@ lemma hconf_upd_obj: "\<lbrakk> P \<turnstile> h\<surd>; h a = Some(C,fs); P,h \
 (*<*)by (unfold hconf_def) (auto intro: oconf_upd_obj preallocated_upd_obj)(*>*)
 
 
-section "Local variable conformance"
+subsection "Local variable conformance"
 
 lemma lconf_hext: "\<lbrakk> P,h \<turnstile> l (:\<le>) E; h \<unlhd> h' \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l (:\<le>) E"
 (*<*)

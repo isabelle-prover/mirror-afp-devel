@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* Isar-style Reasoning for Binary Tree Operations *}
+section {* Isar-style Reasoning for Binary Tree Operations *}
 theory BinaryTree imports Main begin
 
 text {* We prove correctness of operations on 

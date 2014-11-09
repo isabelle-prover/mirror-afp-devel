@@ -1,4 +1,4 @@
-header {* Deciding Regular Expression Equivalence *}
+section {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
 imports

@@ -1,4 +1,4 @@
-header {* \subsection{Link implementation to CISK: the specific separation kernel is an interpretation of the generic model.\label{sect:link_to_CISK}} *}
+subsection {* Link implementation to CISK: the specific separation kernel is an interpretation of the generic model.\label{sect:link_to_CISK} *}
 
 theory Link_separation_kernel_model_to_CISK
   imports Separation_kernel_model         

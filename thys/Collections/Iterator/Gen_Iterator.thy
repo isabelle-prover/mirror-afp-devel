@@ -245,7 +245,7 @@ end
     by (rule det_fold_sorted_map)
 
 lemma set_to_sorted_list_by_tsl[autoref_rules]:
-  assumes "MINOR_PRIO_TAG -11"
+  assumes "MINOR_PRIO_TAG (- 11)"
   assumes SV: "PREFER single_valued Rk"
   assumes TSL: "SIDE_GEN_ALGO (is_set_to_sorted_list R Rk Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), set_to_sorted_list R) 
@@ -268,7 +268,7 @@ proof (intro fun_relI nres_relI)
 qed
 
 lemma set_to_list_by_tsl[autoref_rules]:
-  assumes "MINOR_PRIO_TAG -10"
+  assumes "MINOR_PRIO_TAG (- 10)"
   assumes SV: "PREFER single_valued Rk"
   assumes TSL: "SIDE_GEN_ALGO (is_set_to_list Rk Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), set_to_sorted_list (\<lambda>_ _. True)) 
@@ -277,7 +277,7 @@ lemma set_to_list_by_tsl[autoref_rules]:
   by (rule set_to_sorted_list_by_tsl[OF PRIO_TAGI])
 
 lemma map_to_sorted_list_by_tsl[autoref_rules]:
-  assumes "MINOR_PRIO_TAG -11"
+  assumes "MINOR_PRIO_TAG (- 11)"
   assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
   assumes TSL: "SIDE_GEN_ALGO (is_map_to_sorted_list R Rk Rv Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), map_to_sorted_list R) 
@@ -301,7 +301,7 @@ proof (intro fun_relI nres_relI)
 qed
 
 lemma map_to_list_by_tsl[autoref_rules]:
-  assumes "MINOR_PRIO_TAG -10"
+  assumes "MINOR_PRIO_TAG (- 10)"
   assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
   assumes TSL: "SIDE_GEN_ALGO (is_map_to_list Rk Rv Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), map_to_sorted_list (\<lambda>_ _. True)) 

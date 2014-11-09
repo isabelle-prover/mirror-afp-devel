@@ -3,8 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Code generation for Semantics and Type System} *}
+section {* Code generation for Semantics and Type System *}
 
 theory Execute
 imports BigStep WellType
@@ -12,7 +11,7 @@ imports BigStep WellType
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-section{* General redefinitions *}
+subsection{* General redefinitions *}
 
 inductive app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
@@ -131,7 +130,7 @@ qed
 (*>*)
 
 
-section{* Code generation *}
+subsection{* Code generation *}
 
 lemma subclsRp_code [code_pred_intro]:
   "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
@@ -1118,7 +1117,7 @@ values [expected "{Some (Intg 12)}"]
     \<turnstile> \<langle>(''a'' := Val(Intg 3));;(''b'' := Val(Intg 4));;(''mult'' := Val(Intg 0));;
        (''V'' := Val(Intg 1));;
        while (Var ''V'' \<guillemotleft>Eq\<guillemotright> Val(Intg 1))((''mult'' := Var ''mult'' \<guillemotleft>Add\<guillemotright> Var ''b'');;
-         (''a'' := Var ''a'' \<guillemotleft>Add\<guillemotright> Val(Intg -1));;
+         (''a'' := Var ''a'' \<guillemotleft>Add\<guillemotright> Val(Intg (- 1)));;
          (''V'' := (if(Var ''a'' \<guillemotleft>Eq\<guillemotright> Val(Intg 0)) Val(Intg 0) else Val(Intg 1)))),
        (empty,empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 

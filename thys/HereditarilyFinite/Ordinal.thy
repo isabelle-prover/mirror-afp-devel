@@ -1,4 +1,4 @@
-header{*Relations, Families, Ordinals*}
+chapter{*Relations, Families, Ordinals*}
 
 theory Ordinal imports HF
 begin

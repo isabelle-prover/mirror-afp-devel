@@ -1,4 +1,4 @@
-header {* Boolean Algebra of Assertions *}
+section {* Boolean Algebra of Assertions *}
 
 theory  Assertion_Algebra
 imports Mono_Bool_Tran_Algebra

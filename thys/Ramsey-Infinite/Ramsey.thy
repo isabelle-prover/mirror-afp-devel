@@ -1,5 +1,5 @@
 
-header "Ramsey's Theorem"
+section "Ramsey's Theorem"
 
 theory Ramsey
 imports Main "~~/src/HOL/Library/Infinite_Set"

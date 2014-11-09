@@ -1,4 +1,4 @@
-header {* Bounded Continuous Functions *}
+section {* Bounded Continuous Functions *}
 theory Bounded_Continuous_Function
 imports "../ODE_Auxiliarities"
 begin

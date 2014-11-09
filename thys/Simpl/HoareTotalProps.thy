@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Properties of Total Correctness Hoare Logic *}
+section {* Properties of Total Correctness Hoare Logic *}
 
 theory HoareTotalProps imports SmallStep HoareTotalDef HoarePartialProps begin
 

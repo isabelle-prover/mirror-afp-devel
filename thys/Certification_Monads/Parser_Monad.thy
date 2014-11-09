@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>Monadic Parser Combinators\<close>
+section \<open>Monadic Parser Combinators\<close>
 
 theory Parser_Monad
 imports

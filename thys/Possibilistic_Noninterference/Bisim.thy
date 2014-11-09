@@ -1,4 +1,4 @@
-header "Bisimilarity, abstractly"
+section "Bisimilarity, abstractly"
 
 theory Bisim 
 imports Interface

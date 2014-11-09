@@ -1,4 +1,4 @@
-header {* \isaheader{Observable sets w.r.t.\ standard control dependence} *}
+section {* Observable sets w.r.t.\ standard control dependence *}
 
 theory SCDObservable imports Observable HRBSlice begin
 

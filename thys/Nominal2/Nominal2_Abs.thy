@@ -1050,7 +1050,6 @@ where
 lemma [quot_respect]:
   shows "((R1 ===> op =) ===> (R2 ===> op =) ===> rel_prod R1 R2 ===> op =) prod_fv prod_fv"
   unfolding rel_fun_def
-  unfolding rel_prod_def
   by auto
 
 lemma [quot_preserve]:
@@ -1067,7 +1066,7 @@ lemma [mono]:
 lemma [eqvt]: 
   shows "p \<bullet> prod_alpha A B x y = prod_alpha (p \<bullet> A) (p \<bullet> B) (p \<bullet> x) (p \<bullet> y)"
   unfolding prod_alpha_def
-  unfolding rel_prod_def
+  unfolding rel_prod_conv
   by (perm_simp) (rule refl)
 
 lemma [eqvt]: 

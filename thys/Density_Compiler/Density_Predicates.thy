@@ -3,10 +3,10 @@
   Authors: Manuel Eberl
 *)
 
-header {* Density Predicates *}
+section {* Density Predicates *}
 
 theory Density_Predicates
-imports Probability PDF_Misc Giry_Monad
+imports Probability PDF_Misc
 begin
 
 subsection {* Probability Densities *}
@@ -119,7 +119,7 @@ definition "has_subprob_density M N f \<equiv> has_density M N f \<and> subprob_
 
 (* TODO: Move *)
 lemma subprob_space_density_not_empty: "subprob_space (density M f) \<Longrightarrow> space M \<noteq> {}"
-  by (subst space_density[symmetric], subst subprob_space.not_empty, assumption) simp
+  by (subst space_density[symmetric], subst subprob_space.subprob_not_empty, assumption) simp
 
 lemma has_subprob_densityI:
   "\<lbrakk>f \<in> borel_measurable N; \<And>x. x \<in> space N \<Longrightarrow> f x \<ge> 0; M = density N f; subprob_space M\<rbrakk> \<Longrightarrow> 
@@ -224,7 +224,7 @@ subsection {* Density in the Giry monad *}
 
 lemma emeasure_bind_density:
   assumes "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
-          "f \<in> measurable M (kernel_space N)" "X \<in> sets N"
+          "f \<in> measurable M (subprob_algebra N)" "X \<in> sets N"
   shows "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
 proof-
   from assms have "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. emeasure (f x) X \<partial>M"
@@ -238,7 +238,7 @@ lemma bind_density:
   assumes "sigma_finite_measure M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
-          "f \<in> measurable M (kernel_space N)"
+          "f \<in> measurable M (subprob_algebra N)"
   shows "(M \<guillemotright>= f) = density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (rule measure_eqI)
   interpret sfN: sigma_finite_measure N by fact
@@ -270,7 +270,7 @@ lemma bind_has_density:
   assumes "sigma_finite_measure M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
-          "f \<in> measurable M (kernel_space N)"
+          "f \<in> measurable M (subprob_algebra N)"
   shows "has_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof
   interpret sigma_finite_measure M by fact
@@ -289,7 +289,7 @@ lemma bind_has_density':
       and not_empty: "space M \<noteq> {}" and dens_M: "has_density M N \<delta>M" 
       and dens_f: "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) R (\<delta>f x)" 
       and M\<delta>f: "split \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)"
-      and Mf: "f \<in> measurable N (kernel_space R)"
+      and Mf: "f \<in> measurable N (subprob_algebra R)"
   shows "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof-
   from dens_M have M_M: "measurable M = measurable N"
@@ -317,7 +317,7 @@ lemma bind_has_subprob_density:
   assumes "subprob_space M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
-          "f \<in> measurable M (kernel_space N)"
+          "f \<in> measurable M (subprob_algebra N)"
   shows "has_subprob_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (unfold has_subprob_density_def, intro conjI)
   from assms show "has_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
@@ -328,10 +328,10 @@ qed
 lemma bind_has_subprob_density':
   assumes "has_subprob_density M N \<delta>M" "space R \<noteq> {}" "sigma_finite_measure R"
           "\<And>x. x \<in> space M \<Longrightarrow> has_subprob_density (f x) R (\<delta>f x)" 
-          "split \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)" "f \<in> measurable N (kernel_space R)"
+          "split \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)" "f \<in> measurable N (subprob_algebra R)"
   shows "has_subprob_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof (unfold has_subprob_density_def, intro conjI)
-  from assms(1) have "space M \<noteq> {}" by (intro subprob_space.not_empty has_subprob_densityD)
+  from assms(1) have "space M \<noteq> {}" by (intro subprob_space.subprob_not_empty has_subprob_densityD)
   with assms show "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
     by (intro bind_has_density' has_densityI) 
        (auto simp: subprob_space_imp_sigma_finite dest: has_subprob_densityD)
@@ -385,7 +385,7 @@ proof (cases "f x > 0")
   from assms have "f x = emeasure M {x}"
     by (intro emeasure_count_space_density_singleton[symmetric]) 
        (auto simp: has_subprob_density_def)
-  also have "... \<le> 1" by (rule measure_le_1)
+  also have "... \<le> 1" by (rule subprob_measure_le_1)
   finally show ?thesis .
 qed (auto simp: not_less intro: order.trans[of _ 0 1])
 

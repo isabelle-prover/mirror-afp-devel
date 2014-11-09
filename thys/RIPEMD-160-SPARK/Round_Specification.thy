@@ -1,4 +1,4 @@
-header "Verification of $round$"
+section "Verification of $round$"
 theory Round_Specification
 imports Global_Specification Round_Declaration
 

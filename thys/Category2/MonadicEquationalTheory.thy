@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Monadic Equational Theory"
+section "Monadic Equational Theory"
 
 theory MonadicEquationalTheory
 imports Category Universe

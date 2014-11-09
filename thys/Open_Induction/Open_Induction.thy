@@ -5,7 +5,7 @@
     License:    LGPL
 *)
 
-header {* Open Induction *}
+section {* Open Induction *}
 
 theory Open_Induction
 imports

@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Results for natural arithmetics with infinity *}
+section {* Results for natural arithmetics with infinity *}
 
 theory Util_NatInf
 imports "~~/src/HOL/Library/Extended_Nat"

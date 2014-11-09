@@ -1,4 +1,4 @@
-header{* Some Classes of Pseudo-Hoops *}
+section{* Some Classes of Pseudo-Hoops *}
 
 theory SpecialPseudoHoops
 imports PseudoHoopFilters PseudoWaisbergAlgebra

@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Results for division and modulo operators on integers *}
+section {* Results for division and modulo operators on integers *}
 
 theory Util_Div
 imports Util_Nat

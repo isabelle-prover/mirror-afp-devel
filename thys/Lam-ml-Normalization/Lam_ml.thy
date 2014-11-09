@@ -1,4 +1,4 @@
-header {* Introduction *}
+section {* Introduction *}
 (*<*) 
 theory Lam_ml
 imports Nominal "~~/src/HOL/Library/LaTeXsugar"

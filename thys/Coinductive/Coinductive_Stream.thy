@@ -1,11 +1,11 @@
 (*  Title:      HOL/Library/Coinductive_Stream.thy
     Author:     Peter Gammie and Andreas Lochbihler
 *)
-header {* Infinite lists as a codatatype *}
+section {* Infinite lists as a codatatype *}
 
 theory Coinductive_Stream
 imports
-  "~~/src/HOL/BNF_Examples/Stream"
+  "~~/src/HOL/Library/Stream"
   Coinductive_List
 begin
 
@@ -19,8 +19,6 @@ text {*
   The following setup should be done by the BNF package.
 *}
 
-declare stream.corec [code]
-
 text {* congruence rule *}
 
 declare stream.map_cong [cong]
@@ -30,17 +28,12 @@ text {* lemmas about generated constants *}
 lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
 
-lemma smap_ident [simp]: "smap (\<lambda>x. x) xs = xs"
-by(simp only: id_def[symmetric] stream.map_id)
+declare stream.map_ident[simp]
 
 lemma smap_eq_SCons_conv:
   "smap f xs = y ## ys \<longleftrightarrow> 
   (\<exists>x xs'. xs = x ## xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
-
-lemma smap_id: 
-  "smap id = id"
-by(simp add: fun_eq_iff stream.map_id)
 
 lemma smap_unfold_stream:
   "smap f (unfold_stream SHD STL b) = unfold_stream (f \<circ> SHD) STL b"
@@ -49,7 +42,7 @@ by(coinduction arbitrary: b) auto
 lemma smap_corec_stream:
   "smap f (corec_stream SHD endORmore STL_end STL_more b) =
    corec_stream (f \<circ> SHD) endORmore (smap f \<circ> STL_end) STL_more b"
-by(coinduction arbitrary: b rule: stream.strong_coinduct) auto
+by(coinduction arbitrary: b rule: stream.coinduct_strong) auto
 
 lemma unfold_stream_ltl_unroll:
   "unfold_stream SHD STL (STL b) = unfold_stream (SHD \<circ> STL) STL b"
@@ -66,16 +59,14 @@ by(coinduction arbitrary: xs) simp_all
 lemma sset_neq_empty [simp]: "sset xs \<noteq> {}"
 by(cases xs) simp_all
 
-lemmas shd_in_sset [simp] = shd_sset
+declare stream.set_sel(1)[simp]
 
 lemma sset_stl: "sset (stl xs) \<subseteq> sset xs"
 by(cases xs) auto
 
-lemmas in_sset_stlD = stl_sset
-
 text {* induction rules *}
 
-theorems stream_set_induct = sset_induct1
+theorems stream_set_induct = sset_induct
 
 subsection {* Lemmas about operations from @{theory Stream} *}
 
@@ -165,7 +156,7 @@ by(coinduction arbitrary: x) auto
 lemma llist_of_stream_corec_stream [simp]:
   "llist_of_stream (corec_stream SHD endORmore STL_more STL_end x) =
    corec_llist (\<lambda>_. False) SHD endORmore (llist_of_stream \<circ> STL_more) STL_end x"
-by(coinduction arbitrary: x rule: llist.strong_coinduct) auto
+by(coinduction arbitrary: x rule: llist.coinduct_strong) auto
 
 lemma LCons_llist_of_stream [simp]: "LCons x (llist_of_stream xs) = llist_of_stream (x ## xs)"
 by(rule sym)(simp add: llist_of_stream_def)
@@ -179,14 +170,15 @@ proof(intro set_eqI iffI)
   fix x
   assume "x \<in> ?lhs"
   thus "x \<in> ?rhs"
-    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)(auto dest: in_sset_stlD)
+    by(induct "llist_of_stream xs" arbitrary: xs rule: llist_set_induct)
+      (auto dest: stream.set_sel(2))
 next
   fix x
   assume "x \<in> ?rhs"
   thus "x \<in> ?lhs"
   proof(induct)
     case (shd xs)
-    thus ?case using lhd_in_lset[of "llist_of_stream xs"] by simp
+    thus ?case using llist.set_sel(1)[of "llist_of_stream xs"] by simp
   next
     case stl 
     thus ?case

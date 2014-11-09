@@ -1641,7 +1641,7 @@ next
         have "call1 (obj'\<bullet>M'(ps)) \<noteq> None \<Longrightarrow> Val v\<bullet>M'(ps) = obj'\<bullet>M'(ps) \<and> loc = xs"
           by(auto split: split_if_asm)
         ultimately show ?thesis using red \<tau> pc xcp stk Ta call iec
-          apply(auto simp del: call1_calls1.simps)
+          apply(auto simp del: call1.simps calls1.simps)
           apply(rule exI conjI|assumption|erule rtranclp.rtrancl_into_rtrancl rtranclp_into_tranclp1|drule (1) sees_method_fun|clarsimp)+
           done
       qed
@@ -1766,8 +1766,8 @@ next
       moreover from vs call have "call1 (Val v\<bullet>M'(ps')) \<noteq> None \<Longrightarrow> ps' = map Val vs \<and> loc = xs"
           by(auto split: split_if_asm simp add: is_vals_conv)
       ultimately show ?thesis using reds \<tau> pc Ta call
-        apply(auto simp del: split_paired_Ex call1_calls1.simps split: split_if_asm simp add: map_eq_append_conv)
-        apply(auto 4 4 simp del: split_paired_Ex call1_calls1.simps intro: rtranclp.rtrancl_into_rtrancl[OF Call_\<tau>red1r_param] rtranclp_into_tranclp1[OF Call_\<tau>red1r_param])[3]
+        apply(auto simp del: split_paired_Ex call1.simps calls1.simps split: split_if_asm simp add: map_eq_append_conv)
+        apply(auto 4 4 simp del: split_paired_Ex call1.simps calls1.simps intro: rtranclp.rtrancl_into_rtrancl[OF Call_\<tau>red1r_param] rtranclp_into_tranclp1[OF Call_\<tau>red1r_param])[3]
         apply((assumption|rule exI conjI|erule Call_\<tau>red1r_param|simp add: map_eq_append_conv)+)
         done
     qed

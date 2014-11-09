@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Open reachability and invariance"
+section "Open reachability and invariance"
 
 theory OInvariants
 imports Invariants
@@ -11,7 +11,7 @@ begin
 
 subsection "Open reachability"
 
-text {*
+text \<open>
   By convention, the states of an open automaton are pairs. The first component is considered
   to be the global state and the second is the local state.
 
@@ -19,7 +19,7 @@ text {*
   is the destination of a transition---where the global components satisfy @{term S}---from an
   open reachable state, or it is the destination of an interleaved environment step where the
   global components satisfy @{term U}.
-*}
+\<close>
 
 inductive_set oreachable
   :: "('g \<times> 'l, 'a) automaton
@@ -48,8 +48,8 @@ lemma oreachable_other' [elim]:
       and "U \<sigma> \<sigma>'"
     shows "(\<sigma>', p) \<in> oreachable A S U"
   proof -
-    from `U \<sigma> \<sigma>'` have "U (fst (\<sigma>, p)) \<sigma>'" by simp
-    with `(\<sigma>, p) \<in> oreachable A S U` have "(\<sigma>', snd (\<sigma>, p)) \<in> oreachable A S U"
+    from \<open>U \<sigma> \<sigma>'\<close> have "U (fst (\<sigma>, p)) \<sigma>'" by simp
+    with \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "(\<sigma>', snd (\<sigma>, p)) \<in> oreachable A S U"
       by (rule oreachable_other)
     thus "(\<sigma>', p) \<in> oreachable A S U" by simp
   qed
@@ -74,10 +74,10 @@ lemma oreachable_pair_induct [consumes, case_names init other local]:
                               and "(\<sigma>, p) \<in> oreachable A S U"
       by (metis surjective_pairing)
     note this(2)
-    moreover from IH and `s = (\<sigma>, p)` have "P \<sigma> p" .
-    moreover from `U (fst s) \<sigma>'` and `s = (\<sigma>, p)` have "U \<sigma> \<sigma>'" by simp
+    moreover from IH and \<open>s = (\<sigma>, p)\<close> have "P \<sigma> p" .
+    moreover from \<open>U (fst s) \<sigma>'\<close> and \<open>s = (\<sigma>, p)\<close> have "U \<sigma> \<sigma>'" by simp
     ultimately have "P \<sigma>' p" by (rule assms(3))
-    with `s = (\<sigma>, p)` show "P \<sigma>' (snd s)" by simp
+    with \<open>s = (\<sigma>, p)\<close> show "P \<sigma>' (snd s)" by simp
   next
     fix s a \<sigma>' p'
     assume "s \<in> oreachable A S U"
@@ -88,9 +88,9 @@ lemma oreachable_pair_induct [consumes, case_names init other local]:
                               and "(\<sigma>, p) \<in> oreachable A S U"
       by (metis surjective_pairing)
     note this(2)
-    moreover from IH `s = (\<sigma>, p)` have "P \<sigma> p" .
-    moreover from tr and `s = (\<sigma>, p)` have "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A" by simp
-    moreover from `S (fst s) (fst (\<sigma>', p')) a` and `s = (\<sigma>, p)` have "S \<sigma> \<sigma>' a" by simp
+    moreover from IH \<open>s = (\<sigma>, p)\<close> have "P \<sigma> p" .
+    moreover from tr and \<open>s = (\<sigma>, p)\<close> have "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A" by simp
+    moreover from \<open>S (fst s) (fst (\<sigma>', p')) a\<close> and \<open>s = (\<sigma>, p)\<close> have "S \<sigma> \<sigma>' a" by simp
     ultimately show "P \<sigma>' p'" by (rule assms(4))
   qed
 
@@ -108,14 +108,14 @@ lemma oreachable_weakenE [elim]:
     assume "s \<in> oreachable A QS QU"
        and "(s, a, s') \<in> trans A"
        and "PS (fst s) (fst s') a"
-    from `PS (fst s) (fst s') a` have "QS (fst s) (fst s') a" by (rule PSQS)
-    with `s \<in> oreachable A QS QU` and `(s, a, s') \<in> trans A` show "s' \<in> oreachable A QS QU" ..
+    from \<open>PS (fst s) (fst s') a\<close> have "QS (fst s) (fst s') a" by (rule PSQS)
+    with \<open>s \<in> oreachable A QS QU\<close> and \<open>(s, a, s') \<in> trans A\<close> show "s' \<in> oreachable A QS QU" ..
   next
     fix s g'
     assume "s \<in> oreachable A QS QU"
        and "PU (fst s) g'"
-    from `PU (fst s) g'` have "QU (fst s) g'" by (rule PUQU)
-    with `s \<in> oreachable A QS QU` show "(g', snd s) \<in> oreachable A QS QU" ..
+    from \<open>PU (fst s) g'\<close> have "QU (fst s) g'" by (rule PUQU)
+    with \<open>s \<in> oreachable A QS QU\<close> show "(g', snd s) \<in> oreachable A QS QU" ..
   qed
 
 definition
@@ -235,8 +235,8 @@ lemma oinvariant_weakenE [elim!]:
        and "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
        and "QS \<sigma> \<sigma>' a"
     from this(3) have "PS \<sigma> \<sigma>' a" by (rule QSPS)
-    from `(\<sigma>, p) \<in> oreachable A QS QU` and QSPS QUPU have "(\<sigma>, p) \<in> oreachable A PS PU" ..
-    hence "(\<sigma>', p') \<in> oreachable A PS PU" using `((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A` and `PS \<sigma> \<sigma>' a` ..
+    from \<open>(\<sigma>, p) \<in> oreachable A QS QU\<close> and QSPS QUPU have "(\<sigma>, p) \<in> oreachable A PS PU" ..
+    hence "(\<sigma>', p') \<in> oreachable A PS PU" using \<open>((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A\<close> and \<open>PS \<sigma> \<sigma>' a\<close> ..
     with invP have "P (\<sigma>', p')" ..
     thus "Q (\<sigma>', p')" by (rule PQ)
   next
@@ -244,9 +244,9 @@ lemma oinvariant_weakenE [elim!]:
     assume "(\<sigma>, p) \<in> oreachable A QS QU"
        and "Q (\<sigma>, p)"
        and "QU \<sigma> \<sigma>'"
-    from `QU \<sigma> \<sigma>'` have "PU \<sigma> \<sigma>'" by (rule QUPU)
-    from `(\<sigma>, p) \<in> oreachable A QS QU` and QSPS QUPU have "(\<sigma>, p) \<in> oreachable A PS PU" ..
-    hence "(\<sigma>', p) \<in> oreachable A PS PU" using `PU \<sigma> \<sigma>'` ..
+    from \<open>QU \<sigma> \<sigma>'\<close> have "PU \<sigma> \<sigma>'" by (rule QUPU)
+    from \<open>(\<sigma>, p) \<in> oreachable A QS QU\<close> and QSPS QUPU have "(\<sigma>, p) \<in> oreachable A PS PU" ..
+    hence "(\<sigma>', p) \<in> oreachable A PS PU" using \<open>PU \<sigma> \<sigma>'\<close> ..
     with invP have "P (\<sigma>', p)" ..
     thus "Q (\<sigma>', p)" by (rule PQ)
   qed
@@ -258,10 +258,10 @@ lemma oinvariant_weakenD [dest]:
       and weakenU: "\<And>s s'. U s s' \<Longrightarrow> U' s s'"
     shows "P (\<sigma>, p)"
   proof -
-    from `(\<sigma>, p) \<in> oreachable A S U` have "(\<sigma>, p) \<in> oreachable A S' U'"
+    from \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "(\<sigma>, p) \<in> oreachable A S' U'"
       by (rule oreachable_weakenE)
          (erule weakenS, erule weakenU)
-    with `A \<Turnstile> (S', U' \<rightarrow>) P` show "P (\<sigma>, p)" ..
+    with \<open>A \<Turnstile> (S', U' \<rightarrow>) P\<close> show "P (\<sigma>, p)" ..
   qed
 
 lemma close_open_invariant:
@@ -343,17 +343,17 @@ lemma subreachableI [intro]:
       then obtain \<zeta> where "\<forall>j\<in>J. \<zeta> j = (fst s) j"
                       and "(\<zeta>, snd s) \<in> reachable A I" by auto
 
-      from `(s, a, s') \<in> trans A` have "((fst s, snd s), a, (fst s', snd s')) \<in> trans A"
+      from \<open>(s, a, s') \<in> trans A\<close> have "((fst s, snd s), a, (fst s', snd s')) \<in> trans A"
         by simp
-      with `local_steps (trans A) J` obtain \<zeta>' where "\<forall>j\<in>J. \<zeta>' j = (fst s') j"
+      with \<open>local_steps (trans A) J\<close> obtain \<zeta>' where "\<forall>j\<in>J. \<zeta>' j = (fst s') j"
                                                  and "((\<zeta>, snd s), a, (\<zeta>', snd s')) \<in> trans A"
-        using `\<forall>j\<in>J. \<zeta> j = (fst s) j` by - (drule(2) local_stepsE, clarsimp)
-      from `(\<zeta>, snd s) \<in> reachable A I`
-       and `((\<zeta>, snd s), a, (\<zeta>', snd s')) \<in> trans A`
-       and `I a`
+        using \<open>\<forall>j\<in>J. \<zeta> j = (fst s) j\<close> by - (drule(2) local_stepsE, clarsimp)
+      from \<open>(\<zeta>, snd s) \<in> reachable A I\<close>
+       and \<open>((\<zeta>, snd s), a, (\<zeta>', snd s')) \<in> trans A\<close>
+       and \<open>I a\<close>
        have "(\<zeta>', snd s') \<in> reachable A I" ..
 
-      with `\<forall>j\<in>J. \<zeta>' j = (fst s') j`
+      with \<open>\<forall>j\<in>J. \<zeta>' j = (fst s') j\<close>
         show "\<exists>\<sigma>. (\<forall>j\<in>J. \<sigma> j = (fst s') j) \<and> (\<sigma>, snd s') \<in> reachable A I" by auto
     next
       fix s \<sigma>'
@@ -361,11 +361,11 @@ lemma subreachableI [intro]:
          and "U (fst s) \<sigma>'"
       then obtain \<sigma> where "\<forall>j\<in>J. \<sigma> j = (fst s) j"
                       and "(\<sigma>, snd s) \<in> reachable A I" by auto
-      from `other_steps U J` and `U (fst s) \<sigma>'` have "\<forall>j\<in>J. \<sigma>' j = (fst s) j"
+      from \<open>other_steps U J\<close> and \<open>U (fst s) \<sigma>'\<close> have "\<forall>j\<in>J. \<sigma>' j = (fst s) j"
         by - (erule(1) other_stepsE)
-      with `\<forall>j\<in>J. \<sigma> j = (fst s) j` have "\<forall>j\<in>J. \<sigma> j = \<sigma>' j"
+      with \<open>\<forall>j\<in>J. \<sigma> j = (fst s) j\<close> have "\<forall>j\<in>J. \<sigma> j = \<sigma>' j"
         by clarsimp
-      with `(\<sigma>, snd s) \<in> reachable A I`
+      with \<open>(\<sigma>, snd s) \<in> reachable A I\<close>
        show "\<exists>\<sigma>. (\<forall>j\<in>J. \<sigma> j = fst (\<sigma>', snd s) j) \<and> (\<sigma>, snd (\<sigma>', snd s)) \<in> reachable A I"
          by auto
     qed
@@ -389,10 +389,10 @@ lemma subreachable_otherE [elim]:
       and "U \<sigma> \<sigma>'"
     shows "\<exists>\<zeta>'. (\<forall>j\<in>J. \<zeta>' j = \<sigma>' j) \<and> (\<zeta>', l) \<in> reachable A I"
   proof -
-    from `(\<sigma>, l) \<in> oreachable A (\<lambda>s s'. I) U` and `U \<sigma> \<sigma>'`
+    from \<open>(\<sigma>, l) \<in> oreachable A (\<lambda>s s'. I) U\<close> and \<open>U \<sigma> \<sigma>'\<close>
       have "(\<sigma>', l) \<in> oreachable A (\<lambda>s s'. I) U"
       by - (rule oreachable_other')
-    with `subreachable A U J` show ?thesis
+    with \<open>subreachable A U J\<close> show ?thesis
       by auto
   qed
 
@@ -405,7 +405,7 @@ lemma open_closed_invariant:
   proof (rule, simp_all only: act_def)
     fix s
     assume "s \<in> init A"
-    with `A \<TTurnstile> (I \<rightarrow>) P` show "P s" ..
+    with \<open>A \<TTurnstile> (I \<rightarrow>) P\<close> show "P s" ..
   next
     fix s a s'
     assume "s \<in> oreachable A (\<lambda>_ _. I) U"
@@ -414,25 +414,25 @@ lemma open_closed_invariant:
        and "I a"
     hence "s' \<in> oreachable A (\<lambda>_ _. I) U"
       by (metis oreachable_local)
-    with `subreachable A U J` obtain \<sigma>'
+    with \<open>subreachable A U J\<close> obtain \<sigma>'
       where "\<forall>j\<in>J. \<sigma>' j = (fst s') j"
         and "(\<sigma>', snd s') \<in> reachable A I"
         by (metis subreachableE)
-    from `A \<TTurnstile> (I \<rightarrow>) P` and `(\<sigma>', snd s') \<in> reachable A I` have "P (\<sigma>', snd s')" ..
-    with `\<forall>j\<in>J. \<sigma>' j = (fst s') j` show "P s'"
+    from \<open>A \<TTurnstile> (I \<rightarrow>) P\<close> and \<open>(\<sigma>', snd s') \<in> reachable A I\<close> have "P (\<sigma>', snd s')" ..
+    with \<open>\<forall>j\<in>J. \<sigma>' j = (fst s') j\<close> show "P s'"
       by (metis localp pair_collapse)
   next
     fix g g' l
     assume or: "(g, l) \<in> oreachable A (\<lambda>s s'. I) U"
        and "U g g'"
        and "P (g, l)"
-    from `subreachable A U J` and or and `U g g'`
+    from \<open>subreachable A U J\<close> and or and \<open>U g g'\<close>
       obtain gg' where "\<forall>j\<in>J. gg' j = g' j"
                    and "(gg', l) \<in> reachable A I"
         by (auto dest!: subreachable_otherE)
-    from `A \<TTurnstile> (I \<rightarrow>) P` and `(gg', l) \<in> reachable A I`
+    from \<open>A \<TTurnstile> (I \<rightarrow>) P\<close> and \<open>(gg', l) \<in> reachable A I\<close>
       have "P (gg', l)" ..
-    with `\<forall>j\<in>J. gg' j = g' j` show "P (g', l)"
+    with \<open>\<forall>j\<in>J. gg' j = g' j\<close> show "P (g', l)"
       by (rule localp)
   qed
 
@@ -491,9 +491,9 @@ lemma ostep_invariant_weakenE [elim!]:
     assume "(\<sigma>, s) \<in> oreachable A QS QU"
        and "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A"
        and "QS \<sigma> \<sigma>' a"
-    from `QS \<sigma> \<sigma>' a` have "PS \<sigma> \<sigma>' a" by (rule QSPS)
-    from `(\<sigma>, s) \<in> oreachable A QS QU` have "(\<sigma>, s) \<in> oreachable A PS PU" using QSPS QUPU ..
-    with invP have "P ((\<sigma>, s), a, (\<sigma>', s'))" using `((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A` `PS \<sigma> \<sigma>' a` ..
+    from \<open>QS \<sigma> \<sigma>' a\<close> have "PS \<sigma> \<sigma>' a" by (rule QSPS)
+    from \<open>(\<sigma>, s) \<in> oreachable A QS QU\<close> have "(\<sigma>, s) \<in> oreachable A PS PU" using QSPS QUPU ..
+    with invP have "P ((\<sigma>, s), a, (\<sigma>', s'))" using \<open>((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A\<close> \<open>PS \<sigma> \<sigma>' a\<close> ..
     thus "Q ((\<sigma>, s), a, (\<sigma>', s'))" by (rule PQ)
   qed
 
@@ -511,8 +511,8 @@ lemma ostep_invariant_weaken_with_invariantE [elim]:
     hence "(\<sigma>', s') \<in> oreachable A S U" ..
     with pinv have "P (\<sigma>', s')" ..
     from pinv and sr have "P (\<sigma>, s)" ..
-    from qinv sr tr `S \<sigma> \<sigma>' a` have "Q ((\<sigma>, s), a, (\<sigma>', s'))" ..
-    with `P (\<sigma>, s)` and `P (\<sigma>', s')` show "R ((\<sigma>, s), a, (\<sigma>', s'))" using `S \<sigma> \<sigma>' a` by (rule wr)
+    from qinv sr tr \<open>S \<sigma> \<sigma>' a\<close> have "Q ((\<sigma>, s), a, (\<sigma>', s'))" ..
+    with \<open>P (\<sigma>, s)\<close> and \<open>P (\<sigma>', s')\<close> show "R ((\<sigma>, s), a, (\<sigma>', s'))" using \<open>S \<sigma> \<sigma>' a\<close> by (rule wr)
   qed
 
 lemma ostep_to_invariantI:
@@ -535,10 +535,10 @@ lemma ostep_to_invariantI:
        and "S \<sigma> \<sigma>' a"
       show "P (\<sigma>', s')"
     proof -
-      from sinv and `(\<sigma>, s)\<in>oreachable A S U` and `((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A` and `S \<sigma> \<sigma>' a`
+      from sinv and \<open>(\<sigma>, s)\<in>oreachable A S U\<close> and \<open>((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A\<close> and \<open>S \<sigma> \<sigma>' a\<close>
         have "Q ((\<sigma>, s), a, (\<sigma>', s'))" ..
-      with `(\<sigma>, s)\<in>oreachable A S U` and `P (\<sigma>, s)` show "P (\<sigma>', s')"
-        using `S \<sigma> \<sigma>' a` by (rule local)
+      with \<open>(\<sigma>, s)\<in>oreachable A S U\<close> and \<open>P (\<sigma>, s)\<close> show "P (\<sigma>', s')"
+        using \<open>S \<sigma> \<sigma>' a\<close> by (rule local)
     qed
   next
     fix \<sigma> \<sigma>' l
@@ -561,23 +561,23 @@ lemma open_closed_step_invariant:
     assume or: "(\<sigma>, s) \<in> oreachable A (act I) U"
        and tr: "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans A"
        and "act I \<sigma> \<sigma>' a"
-    from `act I \<sigma> \<sigma>' a` have "I a" ..
-    from `local_steps (trans A) J` and `other_steps U J` have "subreachable A U J" ..
+    from \<open>act I \<sigma> \<sigma>' a\<close> have "I a" ..
+    from \<open>local_steps (trans A) J\<close> and \<open>other_steps U J\<close> have "subreachable A U J" ..
     then obtain \<zeta> where "\<forall>j\<in>J. \<zeta> j = \<sigma> j"
                     and "(\<zeta>, s) \<in> reachable A I"
       using or unfolding act_def
         by (auto dest!: subreachableE_pair)
 
-     from `local_steps (trans A) J` and tr and `\<forall>j\<in>J. \<zeta> j = \<sigma> j`
+     from \<open>local_steps (trans A) J\<close> and tr and \<open>\<forall>j\<in>J. \<zeta> j = \<sigma> j\<close>
        obtain \<zeta>' where "\<forall>j\<in>J. \<zeta>' j = \<sigma>' j"
                    and "((\<zeta>, s), a, (\<zeta>', s')) \<in> trans A"
        by auto
 
-    from `A \<TTurnstile>\<^sub>A (I \<rightarrow>) P` and `(\<zeta>, s) \<in> reachable A I`
-                          and `((\<zeta>, s), a, (\<zeta>', s')) \<in> trans A`
-                          and `I a`
+    from \<open>A \<TTurnstile>\<^sub>A (I \<rightarrow>) P\<close> and \<open>(\<zeta>, s) \<in> reachable A I\<close>
+                          and \<open>((\<zeta>, s), a, (\<zeta>', s')) \<in> trans A\<close>
+                          and \<open>I a\<close>
       have "P ((\<zeta>, s), a, (\<zeta>', s'))" ..
-    with `\<forall>j\<in>J. \<zeta> j = \<sigma> j` and `\<forall>j\<in>J. \<zeta>' j = \<sigma>' j` show "P ((\<sigma>, s), a, (\<sigma>', s'))"
+    with \<open>\<forall>j\<in>J. \<zeta> j = \<sigma> j\<close> and \<open>\<forall>j\<in>J. \<zeta>' j = \<sigma>' j\<close> show "P ((\<sigma>, s), a, (\<sigma>', s'))"
       by (rule localp)
   qed
 
@@ -588,7 +588,7 @@ lemma oinvariant_step_anyact:
 
 subsection "Standard assumption predicates "
 
-text {* otherwith *}
+text \<open>otherwith\<close>
 
 definition otherwith :: "('s \<Rightarrow> 's \<Rightarrow> bool)
                           \<Rightarrow> 'i set
@@ -638,7 +638,7 @@ lemma all_but_eq [dest]:
     shows "\<sigma> = \<sigma>'"
   using assms by - (rule ext, metis)
 
-text {* other *}
+text \<open>other\<close>
 
 definition other :: "('s \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 'i set \<Rightarrow> ('i \<Rightarrow> 's) \<Rightarrow> ('i \<Rightarrow> 's) \<Rightarrow> bool"
 where "other P I \<sigma> \<sigma>' \<equiv> \<forall>i. if i\<in>I then \<sigma>' i = \<sigma> i else P (\<sigma> i) (\<sigma>' i)"

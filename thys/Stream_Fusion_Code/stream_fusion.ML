@@ -21,7 +21,6 @@ sig
   val fusion_conv: Proof.context -> conv
   val fusion_simproc: Proof.context -> cterm -> thm option
   val trace: bool Config.T
-  val setup: theory -> theory
 end;
 
 structure Stream_Fusion : STREAM_FUSION = 
@@ -64,8 +63,6 @@ structure Fusion_Rules = Generic_Data
      unstream = Library.merge (op =) (u, u')}
 );
 
-
-val content = Item_Net.content o #rules o Fusion_Rules.get;
 
 val get_rules = Item_Net.content o #rules o Fusion_Rules.get o Context.Proof;
 val get_conspats = Item_Net.content o #conspats o Fusion_Rules.get o Context.Proof;
@@ -148,9 +145,12 @@ fun del_unstream c = Fusion_Rules.map (map_unstream (remove (op =) c))
 val fusion_add = Thm.declaration_attribute add_fusion_rule;
 val fusion_del = Thm.declaration_attribute del_fusion_rule;
 
-val fusion_attribute = Attrib.add_del fusion_add fusion_del
-
-val name = @{binding "stream_fusion"};
+val _ =
+  Theory.setup
+   (Attrib.setup @{binding "stream_fusion"} (Attrib.add_del fusion_add fusion_del)
+      "declaration of a rule for stream fusion" #>
+    Global_Theory.add_thms_dynamic
+      (@{binding "stream_fusion"}, Item_Net.content o #rules o Fusion_Rules.get));
 
 val trace = Attrib.setup_config_bool @{binding "stream_fusion_trace"} (K false)
 
@@ -179,10 +179,6 @@ fun fusion_simproc ctxt ct =
       end
     else NONE
   end
-
-val setup =
-  Attrib.setup name fusion_attribute "declaration of a rule for stream fusion"
-  #> Global_Theory.add_thms_dynamic (name, content)
 
 end;
 

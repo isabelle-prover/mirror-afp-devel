@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt
 *)
 
-header  {* Extensions to the Word theory required for SHA1 *}
+section  {* Extensions to the Word theory required for SHA1 *}
 
 theory WordOperations
 imports Word

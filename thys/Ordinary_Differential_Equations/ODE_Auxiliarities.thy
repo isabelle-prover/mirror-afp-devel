@@ -1,4 +1,4 @@
-header {* Auxiliary Lemmas *}
+section {* Auxiliary Lemmas *}
 theory ODE_Auxiliarities
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"

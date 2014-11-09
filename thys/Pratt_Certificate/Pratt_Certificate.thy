@@ -190,12 +190,6 @@ text {*
   @{term [display] "Prime p # build_fpc p a (p - 1) qs @ rs"}
 *}
 
-
-definition "listprod \<equiv> \<lambda>xs. foldr (op *) xs 1"
-
-lemma listprod_Nil[simp]: "listprod [] = 1" by (simp add: listprod_def)
-lemma listprod_Cons[simp]: "listprod (x # xs) = x * listprod xs" by (simp add: listprod_def)
-
 text {*
   The following lemma shows that @{text "build_fpc"} extends a certificate that
   satisfies the preconditions described before to a correct certificate.

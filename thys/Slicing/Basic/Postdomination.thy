@@ -1,4 +1,4 @@
-header {* \isaheader{Postdomination} *}
+section {* Postdomination *}
 
 theory Postdomination imports CFGExit begin
 

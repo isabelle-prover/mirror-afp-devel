@@ -1,9 +1,7 @@
 chapter AFP
 
-session Sturm_Sequences (AFP) = HOL +
+session Sturm_Sequences (AFP) = "HOL-Library" +
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Library/Poly_Deriv"
   theories
     "Lib/Sturm_Library_Document"
     "Lib/Misc_Polynomial"

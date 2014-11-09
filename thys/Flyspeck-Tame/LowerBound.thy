@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer  *)
 
-header {* Correctness of Lower Bound for Final Graphs *}
+section {* Correctness of Lower Bound for Final Graphs *}
 
 theory LowerBound
 imports PlaneProps ScoreProps

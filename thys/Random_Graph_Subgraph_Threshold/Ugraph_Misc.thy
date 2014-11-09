@@ -1,4 +1,4 @@
-header{* Miscellaneous and contributed lemmas *}
+section{* Miscellaneous and contributed lemmas *}
 
 theory Ugraph_Misc
 imports

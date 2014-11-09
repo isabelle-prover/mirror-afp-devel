@@ -1,7 +1,7 @@
 (*  Gauss-Jordan elimination for matrices represented as functions
     Author: Tobias Nipkow
 *)
-header {* Gauss-Jordan elimination algorithm *}
+section {* Gauss-Jordan elimination algorithm *}
 theory Gauss_Jordan_Elim_Fun
 imports Main
 begin

@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Stepping through sets of natural numbers *}
+section {* Stepping through sets of natural numbers *}
 
 theory SetIntervalStep
 imports SetIntervalCut

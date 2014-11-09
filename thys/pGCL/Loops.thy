@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* The Loop Rules *}
+section {* The Loop Rules *}
 
 theory Loops imports WellDefined begin
 

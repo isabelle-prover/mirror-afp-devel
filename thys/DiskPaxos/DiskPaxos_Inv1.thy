@@ -4,7 +4,7 @@
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
 
-header "Proof of Disk Paxos' Invariant"
+section "Proof of Disk Paxos' Invariant"
 
 theory DiskPaxos_Inv1 imports DiskPaxos_Model begin
 

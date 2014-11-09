@@ -1,4 +1,4 @@
-header {* \isaheader{Instantiate well-formedness locales with Proc CFG} *}
+section {* Instantiate well-formedness locales with Proc CFG *}
 
 theory WellFormed imports Interpretation Labels "../StaticInter/CFGExit_wf" begin
 

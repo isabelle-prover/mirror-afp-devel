@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Functor"
+section "Functor"
 
 theory Functors
 imports Category

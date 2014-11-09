@@ -1,5 +1,8 @@
-header {* \isachapter{The Framework}
+chapter {* The Framework *}
 
+theory BasicDefs imports AuxLemmas begin
+
+text {*
   As slicing is a program analysis that can be completely based on the
   information given in the CFG, we want to provide a framework which
   allows us to formalize and prove properties of slicing regardless of
@@ -11,10 +14,9 @@ header {* \isachapter{The Framework}
   basis for static intraprocedural slicing as well as for dynamic slicing, 
   if in the dynamic case all method calls are inlined (i.e., abstract CFG 
   paths conform to traces).
+*}
 
-  \isaheader{Basic Definitions} *}
-
-theory BasicDefs imports AuxLemmas begin
+section {* Basic Definitions *}
 
 subsection{* Edge kinds *}
 

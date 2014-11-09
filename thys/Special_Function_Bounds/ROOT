@@ -1,11 +1,8 @@
 chapter AFP
 
-session Special_Function_Bounds (AFP) = HOL +
+session Special_Function_Bounds (AFP) = Sturm_Sequences +
   description {* Special_Function_Bounds *}
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Library/Sum_of_Squares"
-    "$AFP/Sturm_Sequences/Sturm"
   theories
     Atan_CF_Bounds
     Bounds_Lemmas

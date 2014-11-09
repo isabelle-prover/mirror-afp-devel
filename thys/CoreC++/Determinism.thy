@@ -3,13 +3,13 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* \isaheader{Determinism Proof} *}
+section {* Determinism Proof *}
 
 theory Determinism
 imports TypeSafe
 begin
 
-section{* Some lemmas *}
+subsection{* Some lemmas *}
 
 lemma maps_nth:
   "\<lbrakk>(E(xs [\<mapsto>] ys)) x = Some y; length xs = length ys; distinct xs\<rbrakk> 
@@ -249,7 +249,7 @@ lemma map_Val_throw_eq:"map Val vs @ throw ex # es = map Val ws @ throw ex' # es
   done
 
 
-section {* The proof *}
+subsection {* The proof *}
 
 lemma deterministic_big_step:
 assumes wf:"wf_C_prog P"

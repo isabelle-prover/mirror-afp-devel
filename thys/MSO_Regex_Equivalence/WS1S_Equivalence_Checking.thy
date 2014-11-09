@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Deciding Equivalence of WS1S Formulas *}
+section {* Deciding Equivalence of WS1S Formulas *}
 
 (*<*)
 theory WS1S_Equivalence_Checking

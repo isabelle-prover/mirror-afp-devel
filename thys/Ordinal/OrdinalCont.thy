@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Continuity *}
+section {* Continuity *}
 
 theory OrdinalCont
 imports OrdinalInduct

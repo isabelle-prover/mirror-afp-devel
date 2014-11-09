@@ -1,4 +1,4 @@
-header {* \isaheader{Instantiate CFG locale with While CFG} *}
+section {* Instantiate CFG locale with While CFG *}
 
 theory Interpretation imports 
   WCFG 

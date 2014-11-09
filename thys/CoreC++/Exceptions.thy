@@ -3,12 +3,11 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-
-header {* \isaheader{Exceptions} *}
+section {* Exceptions *}
 
 theory Exceptions imports Objects begin
 
-section {* Exceptions *}
+subsection {* Exceptions *}
 
 
 definition NullPointer :: cname where 

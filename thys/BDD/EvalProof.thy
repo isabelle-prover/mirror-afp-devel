@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Proof of Procedure Eval *}
+section {* Proof of Procedure Eval *}
 theory EvalProof imports ProcedureSpecs begin
 
 lemma (in Eval_impl) Eval_modifies:

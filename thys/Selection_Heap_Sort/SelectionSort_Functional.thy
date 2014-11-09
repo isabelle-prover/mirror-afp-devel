@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Verification of functional Selection Sort *}
+section {* Verification of functional Selection Sort *}
 
 theory SelectionSort_Functional
 imports RemoveMax

@@ -5,15 +5,14 @@
     Based on the Jinja theory J/BigStep.thy by Tobias Nipkow
 *)
 
-
-header {* \isaheader{Big Step Semantics} *}
+section {* Big Step Semantics *}
 
 theory BigStep
 imports Syntax State
 begin
 
 
-section {* The rules *}
+subsection {* The rules *}
 
 inductive
   eval :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
@@ -260,7 +259,7 @@ inductive_cases evals_cases [cases set]:
 
 
 
-section {*Final expressions*}
+subsection {*Final expressions*}
 
 definition final :: "expr \<Rightarrow> bool" where
   "final e  \<equiv>  (\<exists>v. e = Val v) \<or> (\<exists>r. e = Throw r)"

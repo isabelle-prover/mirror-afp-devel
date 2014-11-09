@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* The Simpl Syntax *}
+section {* The Simpl Syntax *}
 
 theory Language imports "~~/src/HOL/Library/Old_Recdef" begin
 
@@ -39,7 +39,7 @@ as sets of states.
 type_synonym 's bexp = "'s set"
 type_synonym 's assn = "'s set"
 
-datatype ('s, 'p, 'f) com =
+datatype (dead 's, 'p, 'f) com =
     Skip
   | Basic "'s \<Rightarrow> 's"
   | Spec "('s \<times> 's) set"

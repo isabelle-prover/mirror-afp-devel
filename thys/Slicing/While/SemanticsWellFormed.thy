@@ -1,4 +1,4 @@
-header {* \isaheader{Semantic well-formedness of While CFG} *}
+section {* Semantic well-formedness of While CFG *}
 
 theory SemanticsWellFormed 
   imports WellFormed WEquivalence "../Basic/SemanticsCFG" 

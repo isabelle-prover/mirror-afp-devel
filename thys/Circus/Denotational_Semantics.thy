@@ -1,4 +1,4 @@
-header {* Denotational semantics of Circus actions *}
+section {* Denotational semantics of Circus actions *}
 
 theory Denotational_Semantics 
 imports Circus_Actions Var_list
@@ -375,19 +375,19 @@ subsection {* External choice *}
 
 definition
 Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "[+]" 18)
-where "P [+] Q \<equiv> action_of(R((\<not>((relation_of P)\<^isup>f\<^isub>f) \<and> \<not>((relation_of Q)\<^isup>f\<^isub>f)) \<turnstile>
-                                             (((relation_of P)\<^isup>t\<^isub>f \<and> ((relation_of Q)\<^isup>t\<^isub>f))
+where "P [+] Q \<equiv> action_of(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
+                                             (((relation_of P)\<^sup>t\<^sub>f \<and> ((relation_of Q)\<^sup>t\<^sub>f))
                                                 \<triangleleft> \<lambda>(A, A'). tr A = tr A' \<and> wait A' \<triangleright>
-                                              ((relation_of P)\<^isup>t\<^isub>f \<or> ((relation_of Q)\<^isup>t\<^isub>f)))))"
+                                              ((relation_of P)\<^sup>t\<^sub>f \<or> ((relation_of Q)\<^sup>t\<^sub>f)))))"
 
 notation(xsymbol)
   Det (infixl "\<box>" 18)
 
 lemma Det_is_action: 
-"(R((\<not>((relation_of P)\<^isup>f\<^isub>f) \<and> \<not>((relation_of Q)\<^isup>f\<^isub>f)) \<turnstile>
-           (((relation_of P)\<^isup>t\<^isub>f \<and> ((relation_of Q)\<^isup>t\<^isub>f))
+"(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
+           (((relation_of P)\<^sup>t\<^sub>f \<and> ((relation_of Q)\<^sup>t\<^sub>f))
               \<triangleleft> \<lambda>(A, A'). tr A = tr A' \<and> wait A' \<triangleright>
-            ((relation_of P)\<^isup>t\<^isub>f \<or> ((relation_of Q)\<^isup>t\<^isub>f))))) \<in> {p. is_CSP_process p}"
+            ((relation_of P)\<^sup>t\<^sub>f \<or> ((relation_of Q)\<^sup>t\<^sub>f))))) \<in> {p. is_CSP_process p}"
 apply (simp add: spec_def)
 apply (rule rd_is_CSP)
 apply (auto)
@@ -396,10 +396,10 @@ done
 lemmas Det_is_CSP = Det_is_action[simplified]
 
 lemma relation_of_Det:
-"relation_of (P \<box> Q) = (R((\<not>((relation_of P)\<^isup>f\<^isub>f) \<and> \<not>((relation_of Q)\<^isup>f\<^isub>f)) \<turnstile>
-                                          (((relation_of P)\<^isup>t\<^isub>f \<and> ((relation_of Q)\<^isup>t\<^isub>f))
+"relation_of (P \<box> Q) = (R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
+                                          (((relation_of P)\<^sup>t\<^sub>f \<and> ((relation_of Q)\<^sup>t\<^sub>f))
                                              \<triangleleft> \<lambda>(A, A'). tr A = tr A' \<and> wait A' \<triangleright>
-                                           ((relation_of P)\<^isup>t\<^isub>f \<or> ((relation_of Q)\<^isup>t\<^isub>f)))))"
+                                           ((relation_of P)\<^sup>t\<^sub>f \<or> ((relation_of Q)\<^sup>t\<^sub>f)))))"
 apply (unfold Det_def)
 apply (rule action_of_inverse)
 apply (rule Det_is_action)
@@ -538,24 +538,24 @@ definition  Par::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow>
                     ('\<sigma>  \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> '\<theta> set \<Rightarrow> ('\<sigma>  \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 
                     ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" ("_ \<lbrakk> _ | _ | _ \<rbrakk> _") where
 "A1 \<lbrakk> ns1 | cs | ns2 \<rbrakk> A2 \<equiv> (action_of (R ((\<lambda> (S, S'). 
- \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^isup>f\<^isub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
+ \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
  \<and> (spec False (wait S) (relation_of A2) ;; (\<lambda> (S, _). tr2 = (tr S))) (S, S')
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs))) \<and>
  \<not> (\<exists> tr1 tr2. (spec False (wait S) (relation_of A1);;(\<lambda>(S, _). tr1 = tr S)) (S, S')
- \<and> ((relation_of A2)\<^isup>f\<^isub>f ;; (\<lambda>(S, S'). tr2 = (tr S))) (S, S') 
+ \<and> ((relation_of A2)\<^sup>f\<^sub>f ;; (\<lambda>(S, S'). tr2 = (tr S))) (S, S') 
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs)))) \<turnstile> 
-   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^isup>t\<^isub>f (A, s1)
- \<and> ((relation_of A2)\<^isup>t\<^isub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S'))))))"
+   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^sup>t\<^sub>f (A, s1)
+ \<and> ((relation_of A2)\<^sup>t\<^sub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S'))))))"
 
 lemma Par_is_action: "(R ((\<lambda> (S, S'). 
- \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^isup>f\<^isub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
+ \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
  \<and> (spec False (wait S) (relation_of A2) ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S')
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs))) \<and>
  \<not> (\<exists> tr1 tr2. (spec False (wait S) (relation_of A1);;(\<lambda>(S, _). tr1 = tr S)) (S, S')
- \<and> ((relation_of A2)\<^isup>f\<^isub>f ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S') 
+ \<and> ((relation_of A2)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S') 
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs)))) \<turnstile> 
-   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^isup>t\<^isub>f (A, s1)
- \<and> ((relation_of A2)\<^isup>t\<^isub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S'))))) \<in> {p. is_CSP_process p}"
+   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^sup>t\<^sub>f (A, s1)
+ \<and> ((relation_of A2)\<^sup>t\<^sub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S'))))) \<in> {p. is_CSP_process p}"
 apply (simp)
 apply (rule rd_is_CSP)
 apply (blast)
@@ -565,14 +565,14 @@ lemmas Par_is_CSP = Par_is_action[simplified]
 
 lemma relation_of_Par:
 "relation_of (A1 \<lbrakk> ns1 | cs | ns2 \<rbrakk> A2) = (R ((\<lambda> (S, S'). 
- \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^isup>f\<^isub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
+ \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
  \<and> (spec False (wait S) (relation_of A2) ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S') 
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs))) \<and>
  \<not> (\<exists> tr1 tr2. (spec False (wait S) (relation_of A1);;(\<lambda>(S, _). tr1 = tr S)) (S, S') 
- \<and> ((relation_of A2)\<^isup>f\<^isub>f ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S') 
+ \<and> ((relation_of A2)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr2 = (tr S))) (S, S') 
  \<and> ((tr_filter tr1 cs) = (tr_filter tr2 cs)))) \<turnstile> 
-   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^isup>t\<^isub>f (A, s1)
- \<and> ((relation_of A2)\<^isup>t\<^isub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S')))))"
+   (\<lambda> (S, S'). (\<exists> s1 s2. ((\<lambda> (A, A'). (relation_of A1)\<^sup>t\<^sub>f (A, s1)
+ \<and> ((relation_of A2)\<^sup>t\<^sub>f (A, s2)));; M_par s1 ns1 s2 ns2 cs) (S, S')))))"
 apply (unfold Par_def)
 apply (rule action_of_inverse)
 apply (rule Par_is_action)
@@ -768,21 +768,21 @@ done
 subsection {* Guarded action *}
 
 definition Guard::"'\<sigma> predicate \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" ("_ `&` _")
-where "g `&` P \<equiv> action_of(R (((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^isup>f\<^isub>f)) \<turnstile> 
-                             (((g o more o fst) \<and> ((relation_of P)\<^isup>t\<^isub>f)) \<or> 
+where "g `&` P \<equiv> action_of(R (((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^sup>f\<^sub>f)) \<turnstile> 
+                             (((g o more o fst) \<and> ((relation_of P)\<^sup>t\<^sub>f)) \<or> 
                          ((\<not>(g o more o fst)) \<and> (\<lambda> (A, A'). tr A' = tr A \<and> wait A')))))"
 
 lemma Guard_is_action: 
-"(R ( ((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^isup>f\<^isub>f)) \<turnstile> 
-                (((g o more o fst) \<and> ((relation_of P)\<^isup>t\<^isub>f)) \<or> 
+"(R ( ((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^sup>f\<^sub>f)) \<turnstile> 
+                (((g o more o fst) \<and> ((relation_of P)\<^sup>t\<^sub>f)) \<or> 
                  ((\<not>(g o more o fst)) \<and> (\<lambda> (A, A'). tr A' = tr A \<and> wait A'))))) \<in> {p. is_CSP_process p}"
   by (auto simp add: spec_def intro: rd_is_CSP)
 
 lemmas Guard_is_CSP = Guard_is_action[simplified]
 
 lemma relation_of_Guard:
-"relation_of (g `&` P) = (R (((g o more o fst) \<longrightarrow>  \<not> ((relation_of P)\<^isup>f\<^isub>f)) \<turnstile> 
-                             (((g o more o fst) \<and> ((relation_of P)\<^isup>t\<^isub>f)) \<or>
+"relation_of (g `&` P) = (R (((g o more o fst) \<longrightarrow>  \<not> ((relation_of P)\<^sup>f\<^sub>f)) \<turnstile> 
+                             (((g o more o fst) \<and> ((relation_of P)\<^sup>t\<^sub>f)) \<or>
                           ((\<not>(g o more o fst)) \<and> (\<lambda> (A, A'). tr A' = tr A \<and> wait A')))))"
   apply (unfold Guard_def)
   apply (subst action_of_inverse)

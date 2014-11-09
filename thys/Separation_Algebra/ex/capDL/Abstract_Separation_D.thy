@@ -3,7 +3,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Instantiating capDL as a separation algebra."
+section "Instantiating capDL as a separation algebra."
 
 theory Abstract_Separation_D
 imports "../../Sep_Tactics" Types_D "../../Map_Extra"

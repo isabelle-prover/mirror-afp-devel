@@ -25,7 +25,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
-header {* Terminating Programs *}
+section {* Terminating Programs *}
 
 theory Termination imports Semantic begin
 
@@ -610,7 +610,7 @@ next
   case Call thus ?case by simp
 next
   case DynCom thus ?case 
-    by (cases s) (auto intro: terminates.intros elim: terminates_Normal_elim_cases)
+    by (cases s) (auto intro: terminates.intros rangeI elim: terminates_Normal_elim_cases)
 next
   case Guard thus ?case 
     by (cases s) (auto intro: terminates.intros elim: terminates_Normal_elim_cases)
@@ -765,7 +765,7 @@ next
   case Call thus ?case by simp
 next
   case DynCom thus ?case 
-     by (cases s) (auto elim: terminates_Normal_elim_cases intro: terminates.intros)
+     by (cases s) (auto elim: terminates_Normal_elim_cases intro: terminates.intros rangeI)
 next
   case Guard 
   thus ?case
@@ -1026,8 +1026,9 @@ next
     from Normal termi
     have "\<Gamma>\<turnstile>f1 s'\<down> (Normal s')"
       by (auto elim: terminates_Normal_elim_cases)
-    from DynCom.hyps [OF f this] 
-    have "\<Gamma>\<turnstile>f\<down> (Normal s')" .
+    from DynCom.hyps f this 
+    have "\<Gamma>\<turnstile>f\<down> (Normal s')"
+      by blast
     with c f Normal
     show ?thesis
       by (auto intro: terminates.intros)
@@ -1768,8 +1769,9 @@ next
     c: "c = DynCom C" and
     C_C': "\<forall>s. C s \<subseteq>\<^sub>g C' s"
     by blast
-  from DynCom.hyps [OF termi_C' C_C' [rule_format] noFault_C']
-  have "\<Gamma>\<turnstile>C s \<down> Normal s" .
+  from DynCom.hyps termi_C' C_C' [rule_format] noFault_C'
+  have "\<Gamma>\<turnstile>C s \<down> Normal s"
+    by fast
   with c show ?case
     by (auto intro: terminates.intros)
 next 

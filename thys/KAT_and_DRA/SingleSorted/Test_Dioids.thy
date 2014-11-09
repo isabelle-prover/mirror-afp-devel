@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Test Dioids *}
+section {* Test Dioids *}
 
 theory Test_Dioids
   imports "../../Kleene_Algebra/Dioid"

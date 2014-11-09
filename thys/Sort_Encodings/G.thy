@@ -1,4 +1,4 @@
-header{* Guard-Based Encodings  *}
+section{* Guard-Based Encodings  *}
 theory G
 imports T_G_Prelim Mcalc2C
 begin
@@ -751,7 +751,7 @@ next
   proof(cases "l' \<in> glitOfC c")
     case True then obtain l where l: "l \<in> set c" and l': "l' \<in> glitOfL l"
     unfolding glitOfC_def by auto
-    then obtain x1 where "l' = grdLit x1" using l' by (cases l) auto
+    then obtain x1 where "l' = grdLit x1" using l' by (cases l rule: lit.exhaust) auto
     hence "GE.nv2L l' = {}" by simp
     thus ?thesis using x by simp
   next

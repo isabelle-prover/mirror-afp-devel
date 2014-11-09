@@ -27,8 +27,8 @@ interpretation e3: aform_approximate_ivp "uncurry_options e3" "uncurry_options e
 
 definition "e3_optns = default_optns
     \<lparr> precision := 30,
-      tolerance := FloatR 1 -4,
-      stepsize  := FloatR 1 -8,
+      tolerance := FloatR 1 (- 4),
+      stepsize  := FloatR 1 (- 8),
       result_fun := ivls_result 23 1,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 

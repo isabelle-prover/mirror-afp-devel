@@ -40,7 +40,7 @@ lemma bts_dfs_rev_distinct:
 lemma bt_dfs_comp:
   "bt_dfs (f \<circ> g) t = map f (bt_dfs g t)"
   "bts_dfs (f \<circ> g) ts = map f (bts_dfs g ts)"
-  by (induct t and ts) simp_all
+  by (induct t and ts rule: bt_dfs.induct bts_dfs.induct) simp_all
 
 lemma bt_dfs_comp_distinct:
   "distinct (bt_dfs (f \<circ> g) t) \<Longrightarrow> distinct (bt_dfs g t)"
@@ -150,7 +150,7 @@ lemma bt_augment_simp:
   "bt_augment t q = PQ.push (val t) (priority t) (fold bt_augment (children t) q)"
   by (cases t) (simp_all add: bts_augment)
 
-declare bt_augment_bts_augment.simps [simp del]
+declare bt_augment.simps [simp del] bts_augment.simps [simp del]
 
 fun pqueue :: "('a::linorder, 'b) binqueue \<Rightarrow> ('b, 'a) PQ.pq" where
   Empty: "pqueue [] = PQ.empty"
@@ -160,7 +160,7 @@ fun pqueue :: "('a::linorder, 'b) binqueue \<Rightarrow> ('b, 'a) PQ.pq" where
 lemma bt_augment_v_subset:
   "set |q| \<subseteq> set |bt_augment t q|"
   "set |q| \<subseteq> set |bts_augment ts q|"
-  by (induct t and ts arbitrary: q and q) auto
+  by (induct t and ts arbitrary: q and q rule: bt_augment.induct bts_augment.induct) auto
 
 lemma bt_augment_v_in:
   "v \<in> set |q| \<Longrightarrow> v \<in> set |bt_augment t q|"
@@ -172,7 +172,7 @@ lemma bt_augment_v_union:
     set |bt_augment t q| \<union> set |bt_augment r q|"
   "set |bts_augment ts (bt_augment r q)| =
     set |bts_augment ts q| \<union> set |bt_augment r q|"
-proof (induct t and ts arbitrary: q r and q r)
+proof (induct t and ts arbitrary: q r and q r rule: bt_augment.induct bts_augment.induct)
   case Nil_bintree
     from bt_augment_v_subset[of q] show ?case by auto
 qed auto
@@ -180,7 +180,7 @@ qed auto
 lemma bt_val_augment:
   shows "set (bt_dfs val t) \<union> set |q| = set |bt_augment t q|"
   and   "set (bts_dfs val ts) \<union> set |q| = set |bts_augment ts q|"
-proof (induct t and ts)
+proof (induct t and ts rule: bt_augment.induct bts_augment.induct)
   case (Cons_bintree r rs)
   have "set |bts_augment rs (bt_augment r q)| =
     set |bts_augment rs q| \<union> set |bt_augment r q|" 
@@ -212,7 +212,7 @@ lemma bts_augment_v_union:
     set |bt_augment t q| \<union> set |bts_augment rs q|"
   "set |bts_augment ts (bts_augment rs q)| =
     set |bts_augment ts q| \<union> set |bts_augment rs q|"
-proof (induct t and ts arbitrary: q rs and q rs)
+proof (induct t and ts arbitrary: q rs and q rs rule: bt_augment.induct bts_augment.induct)
   case Nil_bintree
   from bt_augment_v_subset[of q] show ?case by auto
   
@@ -362,7 +362,7 @@ qed simp_all
 lemma bt_augment_alist_subset:
   "set (PQ.alist_of q) \<subseteq> set (PQ.alist_of (bt_augment t q))"
   "set (PQ.alist_of q) \<subseteq> set (PQ.alist_of (bts_augment ts q))"
-proof (induct t and ts arbitrary: q and q)
+proof (induct t and ts arbitrary: q and q rule: bt_augment.induct bts_augment.induct)
   case (Node a v rs)
   show ?case using Node[of q] by (auto simp add: bt_augment_simp set_insort)
 qed auto
@@ -382,7 +382,7 @@ lemma bt_augment_alist_union:
    set (bts_dfs val (r # ts)) \<inter> set |q| = {} \<Longrightarrow> 
    set (PQ.alist_of (bts_augment ts (bt_augment r q))) =
      set (PQ.alist_of (bts_augment ts q)) \<union> set (PQ.alist_of (bt_augment r q))"
-proof (induct t and ts arbitrary: q r and q r)
+proof (induct t and ts arbitrary: q r and q r rule: bt_augment.induct bts_augment.induct)
   case Nil_bintree 
   from bt_augment_alist_subset[of q] show ?case by auto
 next
@@ -423,7 +423,7 @@ lemma bt_alist_augment:
    set (bts_dfs val ts) \<inter> set |q| = {} \<Longrightarrow> 
    set (bts_dfs alist ts) \<union> set (PQ.alist_of q) =
      set (PQ.alist_of (bts_augment ts q))"
-proof (induct t and ts)
+proof (induct t and ts rule: bt_augment.induct bts_augment.induct)
   case Nil_bintree then show ?case by simp
 next
   case (Node a v rs)

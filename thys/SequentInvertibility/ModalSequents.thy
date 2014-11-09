@@ -2,7 +2,7 @@
 (* AUTHOR : Peter Chapman  *)
 (* License: LGPL *)
 
-header "Modal Sequents"
+section "Modal Sequents"
 
 theory ModalSequents
 imports "~~/src/HOL/Library/Multiset"
@@ -144,6 +144,8 @@ datatype ('a, 'b) form = At "nat"
                                  | Compound "'a" "('a, 'b) form list"
                                  | Modal "'b" "('a, 'b) form list"
                                  | ff
+
+datatype_compat form
 
 (*<*)
 datatype ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
@@ -493,9 +495,8 @@ using assms nonEmpty_image[where \<Gamma>=\<Gamma>] modaliseMultiset_def[where \
 
 lemma mset_extend:
 shows "mset (extend S c) = mset S + mset c"
-using mset.simps extend_def apply (cases S) apply (cases c) apply auto
-apply (drule_tac x="multiset1 \<Rightarrow>* multiset2" in meta_spec) 
-apply (drule_tac x="multiset1a \<Rightarrow>* multiset2a" in meta_spec) by (auto simp add:union_ac)
+using mset.simps extend_def apply (cases S) apply (cases c)
+by (auto simp add: union_ac extend_def)
 
 lemma mset_extend_size:
 assumes "\<not> (\<Gamma> = \<Empt> \<and> \<Delta> = \<Empt>)"
@@ -649,7 +650,8 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
-     apply (auto simp add:mset.simps)
+     apply (rename_tac multiset1 multiset2)
+     apply auto
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover
@@ -673,6 +675,7 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
+     apply (rename_tac multiset1 multiset2)
      apply (auto simp add:mset.simps)
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
@@ -883,7 +886,8 @@ qed
 
 lemma modal_neq:
 fixes A :: "('a,'b) form" and ps :: "('a,'b) form list"
-shows "A \<noteq> Modal M [A]" and "ps \<noteq> [Modal M ps]" by (induct A and ps) auto
+shows "A \<noteq> Modal M [A]" and "ps \<noteq> [Modal M ps]"
+by (induct A and ps rule: compat_form.induct compat_form_list.induct) auto
 
 lemma p_e_non_empty: 
  "r \<in> p_e R M N \<Longrightarrow> fst r \<noteq> []"

@@ -1,4 +1,4 @@
-header {* Concrete example *}
+section {* Concrete example *}
 
 theory Refinement_Example
 imports Refinement

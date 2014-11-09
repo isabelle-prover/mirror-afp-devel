@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* Transition system of Krsti\' c and Goel. *}
+section{* Transition system of Krsti\' c and Goel. *}
 theory KrsticGoel
 imports SatSolverVerification
 begin

@@ -1,4 +1,4 @@
-header {* Word Problem for Context-Free Grammars  *}
+section {* Word Problem for Context-Free Grammars  *}
 (*<*)
 theory CFG_Examples
 imports Coinductive_Language

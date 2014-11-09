@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt
 *)
 
-header  "Formal definition of the secure hash algorithm"
+section  "Formal definition of the secure hash algorithm"
 
 theory SHA1
 imports SHA1Padding

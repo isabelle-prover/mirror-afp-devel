@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{BV Type Safety Proof}\label{sec:BVSpecTypeSafe} *}
+section {* BV Type Safety Proof \label{sec:BVSpecTypeSafe} *}
 
 theory BVSpecTypeSafe
 imports BVConform
@@ -15,7 +15,7 @@ text {*
   verifier only admits type safe programs.  
 *}
 
-section {* Preliminaries *}
+subsection {* Preliminaries *}
 
 text {*
   Simp and intro setup for the type safety proof:
@@ -25,7 +25,7 @@ lemmas defs1 = correct_state_def conf_f_def wt_instr_def eff_def norm_eff_def ap
 lemmas widen_rules [intro] = conf_widen confT_widen confs_widens confTs_widen
 
   
-section {* Exception Handling *}
+subsection {* Exception Handling *}
 
 
 text {*
@@ -332,7 +332,7 @@ qed
 (*>*)
 
 
-section {* Single Instructions *}
+subsection {* Single Instructions *}
 
 text {*
   In this section we prove for each single (welltyped) instruction
@@ -993,7 +993,7 @@ apply (rule Throw_correct, assumption+)
 done
 (*>*)
 
-section {* Main *}
+subsection {* Main *}
 
 lemma correct_state_impl_Some_method:
   "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> 

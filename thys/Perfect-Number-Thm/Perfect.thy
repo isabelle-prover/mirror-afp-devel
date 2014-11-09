@@ -1,4 +1,4 @@
-header{*Perfect Number Theorem*}
+section{*Perfect Number Theorem*}
 
 theory Perfect
 imports Sigma
@@ -17,8 +17,7 @@ proof
   let ?A = "m div 2^?n"
   let ?np = "(2::nat)^(?n+1) - 1"
 
-  from even have "2 dvd m" by (simp add: even_iff_2_dvd) 
-  with m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
+  from even m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
 
   from m0 have  "2^?n dvd m" by (rule power_exponent_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 
@@ -40,8 +39,9 @@ proof
 
   from formula have "?np dvd ?A * 2^(?n+1)"
     by (metis mult.commute dvd_def) 
-  hence             "?np dvd ?A" 
-    by (metis coprime_dvd_mult_nat coprime_minus_one_nat power_eq_0_iff zero_neq_numeral)
+  then have "?np dvd ?A"
+    using coprime_minus_one_nat [of "2 ^ (exponent 2 m + 1)"]
+    by (auto intro: coprime_dvd_mult_nat) 
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
 

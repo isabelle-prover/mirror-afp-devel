@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Arithmetic operators on natural intervals *}
+section {* Arithmetic operators on natural intervals *}
 
 theory IL_IntervalOperators
 imports IL_Interval

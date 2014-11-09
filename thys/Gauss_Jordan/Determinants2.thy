@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Computing determinants of matrices using the Gauss Jordan algorithm*}
+section{*Computing determinants of matrices using the Gauss Jordan algorithm*}
 
 theory Determinants2
 imports

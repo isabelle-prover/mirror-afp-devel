@@ -1,4 +1,4 @@
-header {* State monad transformer *}
+section {* State monad transformer *}
 
 theory State_Transformer
 imports Monad_Zero_Plus

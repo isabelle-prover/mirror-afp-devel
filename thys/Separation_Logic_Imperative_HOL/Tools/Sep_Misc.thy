@@ -1,4 +1,4 @@
-header {* Miscellaneous Lemmas *}
+section {* Miscellaneous Lemmas *}
 theory Sep_Misc
 imports Main "../../Automatic_Refinement/Lib/Misc"
 begin

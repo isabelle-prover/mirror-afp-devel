@@ -3,7 +3,7 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Correctness proof for RSA"
+section "Correctness proof for RSA"
 
 theory Cryptinverts
 imports  Crypt Productdivides  "~~/src/HOL/Number_Theory/Residues" 
@@ -30,7 +30,7 @@ lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p
     power_mult mod_mult_right_eq [of "m" "(m^pred p)^k" "p"]
     remainderexp [of "m^pred p" "p" "k", symmetric])
   apply (insert fermat [of p m], auto)
-by (metis Cryptinverts.pred.simps Suc_pred mod_mult_right_eq mult_cancel1 mult_eq_1_iff mult.assoc mult.commute nat_power_eq_Suc_0_iff not_gr0)
+  by (metis Cryptinverts.pred.simps(2) One_nat_def Suc_lessD Suc_pred mod_mult_right_eq monoid_mult_class.mult.right_neutral power_Suc_0 prime_gt_1_nat)
 
 lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod p = m mod p"
   apply (simp add: mult.commute [of "k * pred p" "pred q"] mult.assoc [symmetric])
@@ -39,12 +39,7 @@ lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred 
   done
 
 lemma cryptinverts_hilf3: "prime q \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod q = m mod q"
-  apply (simp only: mult.assoc)
-  apply (simp add: mult.commute [of "pred p" "pred q"])
-  apply (simp only: mult.assoc [symmetric])
-  apply (rule cryptinverts_hilf2)
-  apply simp
-  done
+  by (fact cryptinverts_hilf1)
 
 lemma cryptinverts_hilf4:
     "\<lbrakk>prime p; prime q; p \<noteq> q; m < p*q; x mod ((pred p)*(pred q)) = 1\<rbrakk> \<Longrightarrow> m^x mod (p*q) = m"
@@ -79,7 +74,7 @@ lemma cryptinverts: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; m < n;
   apply (insert cryptcorrect [of "p*q" m e])
   apply (insert primmultgreater2 [of p q])
   apply (simp add: prime_nat_def)
-  apply (simp add: remainderexp [of "m^e" "p*q" d] power_mult [symmetric])
+  apply (simp add: cryptcorrect remainderexp [of "m^e" "p*q" d] power_mult [symmetric])
   done
 
 end

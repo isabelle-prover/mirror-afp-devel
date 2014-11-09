@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-header {* A unique representation of real numbers via triples *}
+section {* A unique representation of real numbers via triples *}
 theory Real_Unique_Impl
 imports 
   Prime_Product
@@ -354,6 +354,6 @@ value "\<lfloor>324 * sqrt 7 + 0.001\<rfloor>"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) = 324 * sqrt 7 + 0.001"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) > 324 * sqrt 7 + 0.001"
 value "show_real (101.1 * (sqrt 18 + 6 * sqrt 0.5))"
-value "(sqrt 0.1 \<in> \<rat>, sqrt -0.09 \<in> \<rat>)"
+value "(sqrt 0.1 \<in> \<rat>, sqrt (- 0.09) \<in> \<rat>)"
 
 end

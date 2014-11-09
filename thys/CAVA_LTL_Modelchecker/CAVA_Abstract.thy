@@ -1,4 +1,4 @@
-header {* Abstract Model-Checker *}
+section {* Abstract Model-Checker *}
 theory CAVA_Abstract
 imports 
   "../CAVA_Automata/CAVA_Base/CAVA_Base"

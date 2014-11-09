@@ -1,4 +1,4 @@
-header {* Singly Linked List Segments *}
+section {* Singly Linked List Segments *}
 theory List_Seg
 imports "../Sep_Main"
 begin

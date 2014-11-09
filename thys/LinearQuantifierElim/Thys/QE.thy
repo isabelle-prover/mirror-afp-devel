@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header{* Quantifier elimination *}
+section{* Quantifier elimination *}
 
 theory QE
 imports Logic
@@ -289,7 +289,7 @@ proof -
       apply (metis subst\<^sub>0)
       done
   qed
-qed;
+qed
 
 definition "lift_dnfeq_qe = lift_dnf_qe \<circ> lift_eq_qe"
 

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "Induction"
+section "Induction"
 
 theory Induction
   imports Expectations Transformers Conditionally_Complete_Lattices

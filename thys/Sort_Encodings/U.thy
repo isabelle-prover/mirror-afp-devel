@@ -1,4 +1,4 @@
-header{* Untyped (Unsorted) First-Order Logic *}
+section{* Untyped (Unsorted) First-Order Logic *}
 theory U
 imports TermsAndClauses
 begin
@@ -34,8 +34,7 @@ and Fn:
 shows "\<phi> T"
 proof-
   have "wt T \<longrightarrow> \<phi> T"
-  apply(rule trm.inducts(1)[of _ "list_all (\<lambda> T. wt T \<longrightarrow> \<phi> T)"])
-  using Var Fn apply simp_all unfolding list_all_iff by auto
+  apply (induct T) using Var Fn by (auto simp: list_all_iff)
   thus ?thesis using T by auto
 qed
 

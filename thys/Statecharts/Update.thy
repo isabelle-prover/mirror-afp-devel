@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-header {* Update-Functions on Data Spaces *}
+section {* Update-Functions on Data Spaces *}
 theory Update
 imports Data
 begin
@@ -16,7 +16,7 @@ definition
   "Update U = (\<forall> d. Data.DataSpace d = DataSpace (U d))"
 
 lemma Update_EmptySet: 
- "(% d. d) \<in> { L | L. Update L}"; 
+ "(% d. d) \<in> { L | L. Update L}" 
 by (unfold Update_def, auto)
 
 definition
@@ -55,15 +55,15 @@ done
 subsubsection {* @{text "DefaultUpdate"} *}
 
 lemma Update_DefaultUpdate [simp]:
-   "Update (\<lambda> D. D)";
+   "Update (\<lambda> D. D)"
 by (unfold Update_def, auto)
 
 lemma update_DefaultUpdate [simp]:
-   "(\<lambda> D. D) \<in> update";
+   "(\<lambda> D. D) \<in> update"
 by (unfold update_def, auto)
 
 lemma DataSpace_UpdateApply [simp]:
-   "Data.DataSpace (U !!! D) = Data.DataSpace D";
+   "Data.DataSpace (U !!! D) = Data.DataSpace D"
 by (unfold UpdateApply_def, auto)
 
 subsection {* Partial update-functions *}
@@ -73,7 +73,7 @@ definition
   "PUpdate U = (\<forall> d. Data.DataSpace d = PDataSpace (U d))"
 
 lemma PUpdate_EmptySet:
- "(% d. Data2PData d) \<in> { L | L. PUpdate L}"; 
+ "(% d. Data2PData d) \<in> { L | L. PUpdate L}" 
 by (unfold PUpdate_def, auto)
 
 definition "pupdate = { L | (L::(('d data) => ('d pdata))). PUpdate L}"
@@ -95,14 +95,14 @@ definition
 subsubsection {* Basic lemmas *}
 
 lemma PUpdate_select:
-   "PUpdate (Rep_pupdate U)";
+   "PUpdate (Rep_pupdate U)"
 apply (cut_tac x=U in Rep_pupdate)
 apply (unfold pupdate_def)
 apply auto
 done
 
 lemma DataSpace_PDataSpace_PUpdate [simp]:
-   "PDataSpace (Rep_pupdate U DP) = Data.DataSpace DP";
+   "PDataSpace (Rep_pupdate U DP) = Data.DataSpace DP"
 apply (cut_tac U=U in PUpdate_select)
 apply (unfold PUpdate_def)
 apply auto
@@ -111,11 +111,11 @@ done
 subsubsection {* @{text "Data2PData"} *}
 
 lemma  PUpdate_Data2PData [simp]: 
-   "PUpdate Data2PData";
+   "PUpdate Data2PData"
 by (unfold PUpdate_def, auto)
 
 lemma pupdate_Data2PData  [simp]:
-   "Data2PData \<in> pupdate";
+   "Data2PData \<in> pupdate"
 by (unfold pupdate_def, auto)
 
 subsubsection {* @{text "PUpdate"} *}

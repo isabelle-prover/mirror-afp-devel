@@ -1,4 +1,4 @@
-header{* Syntax of Terms and Clauses *}
+section{* Syntax of Terms and Clauses *}
 theory TermsAndClauses
 imports Preliminaries
 begin
@@ -34,15 +34,10 @@ text{* Problems: *}
 type_synonym ('fsym, 'psym) prob = "('fsym, 'psym) cls set"
 
 lemma trm_induct[case_names Var Fn, induct type: trm]:
-assumes Var: "\<And> x. \<phi> (Var x)"
-and Fn: "\<And> f Tl. list_all \<phi> Tl \<Longrightarrow> \<phi> (Fn f Tl)"
+assumes "\<And> x. \<phi> (Var x)"
+and "\<And> f Tl. list_all \<phi> Tl \<Longrightarrow> \<phi> (Fn f Tl)"
 shows "\<phi> T"
-proof-
-  {fix Tl have "\<phi> T \<and> list_all \<phi> Tl"
-   apply(induct rule: trm.induct) using assms by auto
-  }
-  thus ?thesis by simp
-qed
+using assms unfolding list_all_iff by (rule trm.induct) metis
 
 fun vars where
 "vars (Var x) = {x}"
@@ -226,7 +221,5 @@ using finite_varsL unfolding varsC_def by (induct c, auto)
 
 lemma finite_varsPB: "finite \<Phi> \<Longrightarrow> finite (varsPB \<Phi>)"
 using finite_varsC unfolding varsPB_def by (auto intro!: finite_Union)
-
-
 
 end

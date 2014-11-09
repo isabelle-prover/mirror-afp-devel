@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* Representing state in TLA*  *}
+section {* Representing state in TLA*  *}
 
 theory State 
 imports Liveness 

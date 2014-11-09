@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Thread Tracking"
+section "Thread Tracking"
 theory ThreadTracking
 imports Main "~~/src/HOL/Library/Multiset" LTS Misc
 begin

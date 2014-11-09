@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-header {* Executable algorithms for $p$-th roots *}
+section {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
 imports 
@@ -276,8 +276,8 @@ lemma iteration_mono_less: assumes x: "x \<ge> 0"
 proof -
   let ?sx = "(n div x ^ pm + x * int pm) div int p"
   from xn have xn_le: "x ^ p \<ge> n" by auto
-  from xn x n have x0: "x > 0" 
-    by (metis neq_iff not_less p0 power_eq_0_iff)
+  from xn x n have x0: "x > 0"
+    using not_le p by fastforce
   from p have xp: "x ^ p = x * x ^ pm" by auto
   have "n div x ^ pm * x ^ pm \<le> n" unfolding mod_div_equality_int
     using transfer_nat_int_function_closures x n
@@ -901,7 +901,7 @@ proof -
       note rm = rm[unfolded this]
       hence "y \<in> set (root_nat p x)"
         unfolding root_nat_def p root_int_def using p0 p yx
-        by (cases p, auto)
+        by auto
     }
     moreover
     {

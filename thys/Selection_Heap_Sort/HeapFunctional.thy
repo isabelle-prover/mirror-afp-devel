@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-header {* Verification of Functional Heap Sort *}
+section {* Verification of Functional Heap Sort *}
 
 theory HeapFunctional
 imports Heap

@@ -4,7 +4,7 @@
 *)
 
 
-header "Message Padding for SHA1"
+section "Message Padding for SHA1"
 
 theory SHA1Padding
 imports WordOperations

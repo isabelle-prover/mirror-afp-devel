@@ -1,4 +1,4 @@
-header "2-3 Finger Trees" 
+section "2-3 Finger Trees" 
 
 theory FingerTree
 imports Main
@@ -38,9 +38,6 @@ text {*
   and then interprets this locale with the prefix {\em FingerTree}.
   This makes all definitions visible outside the locale, with
   qualified names. Inside the locale, however, one can use unqualified names.
-
-  As the datatype package does not (yet) support locales, we have to define the
-  recursive datatypes for finger trees outside the locale.
 *}
 
 subsection "Datatype definition"
@@ -1941,7 +1938,7 @@ qed
 
 subsubsection {* Folding *}
 
-primrec foldl_node :: "('s \<Rightarrow> 'e \<times> 'a \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> ('e,'a) Node \<Rightarrow> 's" where
+fun foldl_node :: "('s \<Rightarrow> 'e \<times> 'a \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> ('e,'a) Node \<Rightarrow> 's" where
   "foldl_node f \<sigma> (Tip e a) = f \<sigma> (e,a)"|
   "foldl_node f \<sigma> (Node2 _ a b) = foldl_node f (foldl_node f \<sigma> a) b"|
   "foldl_node f \<sigma> (Node3 _ a b c) = 
@@ -2660,4 +2657,3 @@ text {*
 *}
 
 end
-

@@ -1,4 +1,4 @@
-header {* Syntactic Criteria *}
+section {* Syntactic Criteria *}
 theory Syntactic_Criteria
   imports Compositionality
 begin

@@ -4,7 +4,7 @@
 *)
 
 
-header {* Basis for Demonic Refinement Algebras  *}
+section {* Basis for Demonic Refinement Algebras  *}
 
 theory DRA_Base
   imports "../Kleene_Algebra/Kleene_Algebra"

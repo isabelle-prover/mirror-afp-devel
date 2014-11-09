@@ -1,4 +1,4 @@
-header {*Real-Valued Random Variables*}
+section {* Real-Valued random variables \label{sec:realrandvar} *}
 
 theory RealRandVar
 imports Measure "~~/src/HOL/Library/Countable"

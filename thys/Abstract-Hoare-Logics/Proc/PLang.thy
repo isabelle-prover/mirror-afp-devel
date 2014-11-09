@@ -3,7 +3,7 @@
     Maintainer:  Tobias Nipkow
 *)
 
-header "Hoare Logics for 1 Procedure"
+section "Hoare Logics for 1 Procedure"
 
 theory PLang imports Main begin
 
@@ -14,12 +14,12 @@ typedecl state
 type_synonym bexp = "state \<Rightarrow> bool"
 
 datatype com = Do "(state \<Rightarrow> state set)"
-                    | Semi  com com            ("_; _"  [60, 60] 10)
-                    | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
-                    | While bexp com           ("WHILE _ DO _"  60)
-                    | CALL
-                    | Local "(state \<Rightarrow> state)" com "(state \<Rightarrow> state \<Rightarrow> state)"
-                      ("LOCAL _; _; _" [0,0,60] 60)
+             | Semi  com com            ("_; _"  [60, 60] 10)
+             | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
+             | While bexp com           ("WHILE _ DO _"  60)
+             | CALL
+             | Local "(state \<Rightarrow> state)" com "(state \<Rightarrow> state \<Rightarrow> state)"
+               ("LOCAL _; _; _" [0,0,60] 60)
 
 text{*\noindent There is only one parameterless procedure in the program. Hence
 @{term CALL} does not even need to mention the procedure name. There

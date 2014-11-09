@@ -1,4 +1,4 @@
-header {* Linear Temporal Logic *}
+section {* Linear Temporal Logic *}
 (* Author: Alexander Schimpf *)
 theory LTL
 imports 
@@ -9,7 +9,7 @@ subsection "LTL formulas"
 
 subsubsection {* Syntax *}
 
-datatype
+datatype (plugins del: size)
  'a ltl = LTLTrue      
        | LTLFalse      
        | LTLProp 'a    
@@ -19,6 +19,26 @@ datatype
        | LTLNext "'a ltl"      
        | LTLUntil "'a ltl" "'a ltl"
        | LTLRelease "'a ltl" "'a ltl"
+
+instantiation ltl :: (type) size
+begin
+
+text {* The new datatype package would give a size of 1 to
+  @{const LTLProp}, which breaks some of the proofs below. *}
+primrec size_ltl :: "'a ltl \<Rightarrow> nat" where
+    "size LTLTrue = 0"
+  | "size LTLFalse = 0"
+  | "size (LTLProp _) = 0"
+  | "size (LTLNeg \<phi>) = size \<phi> + 1"
+  | "size (LTLAnd \<phi> \<psi>) = size \<phi> + size \<psi> + 1"
+  | "size (LTLOr \<phi> \<psi>) = size \<phi> + size \<psi> + 1"
+  | "size (LTLNext \<phi>) = size \<phi> + 1"
+  | "size (LTLUntil \<phi> \<psi>) = size \<phi> + size \<psi> + 1"
+  | "size (LTLRelease \<phi> \<psi>) = size \<phi> + size \<psi> + 1"
+
+instance ..
+
+end
 
 text {* The following locale defines syntactic sugar for 
   parsing and printing LTL formulas in Isabelle *}

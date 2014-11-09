@@ -3,7 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-header "The hyperbolic plane and Tarski's axioms"
+section "The hyperbolic plane and Tarski's axioms"
 
 theory Hyperbolic_Tarski
 imports Euclid_Tarski

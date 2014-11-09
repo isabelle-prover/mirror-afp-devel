@@ -3,7 +3,7 @@
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
 
-header {* Miscellanneous Definitions and Lemmas *}
+section {* Miscellanneous Definitions and Lemmas *}
 
 theory Misc
 imports Main "~~/src/HOL/Library/Multiset" "~~/src/HOL/Library/Sublist_Order"
@@ -173,7 +173,7 @@ subsubsection {* Union, difference and intersection *}
   lemma mset_left_cancel_union: "\<lbrakk>a :# A+B; ~(a :# A)\<rbrakk> \<Longrightarrow> a:#B"
     by (simp)
   
-  lemmas mset_cancel_union = mset_right_cancel_union mset_left_cancel_union;
+  lemmas mset_cancel_union = mset_right_cancel_union mset_left_cancel_union
 
   lemma mset_right_cancel_elem: "\<lbrakk>a :# A+{#b#}; a~=b\<rbrakk> \<Longrightarrow> a:#A"
     apply(subgoal_tac "~(a :# {#b#})")
@@ -185,7 +185,7 @@ subsubsection {* Union, difference and intersection *}
     apply(auto)
   done
 
-  lemmas mset_cancel_elem = mset_right_cancel_elem mset_left_cancel_elem;
+  lemmas mset_cancel_elem = mset_right_cancel_elem mset_left_cancel_elem
 
   lemma mset_diff_cancel1elem[simp]: "~(a :# B) \<Longrightarrow> {#a#}-B = {#a#}" proof -
     assume A: "~(a :# B)"

@@ -10,28 +10,11 @@
 
 signature pVCG_sig =
 sig
-        val setup:    theory -> theory;
         val pVCG_tac: Proof.context -> int -> tactic;
 end;
 
 structure pVCG =
 struct
-
-structure WDRules = Named_Thms
-  (val name = @{binding "wd"}
-   val description = "Theorems to automatically establish well-definedness")
-
-structure CoreWPRules = Named_Thms
-  (val name = @{binding "pwp_core"}
-   val description = "Core probabilistic wp rules, for evaluating primitive terms")
-
-structure UserWPRules = Named_Thms
-  (val name = @{binding "pwp"}
-   val description = "User-supplied probabilistic wp rules")
-
-structure UserWLPRules = Named_Thms
-  (val name = @{binding "pwlp"}
-   val description = "User-supplied probabilistic wlp rules")
 
 val pvcg_trace = Attrib.setup_config_bool @{binding "trace_pvcg"} (K false)
 
@@ -68,7 +51,7 @@ fun maybe_sound_tac ctxt (g,i) =
 fun sound_tac ctxt = SUBGOAL (maybe_sound_tac ctxt)
 
 fun wd_goal_tac ctxt =
-  resolve_tac (WDRules.get ctxt)
+  resolve_tac (rev (Named_Theorems.get ctxt @{named_theorems wd}))
 fun maybe_wd_tac ctxt (g,i) =
   if m_wd g
   then trace_pre ctxt "well-definedness goal" (wd_goal_tac ctxt i)
@@ -85,19 +68,19 @@ fun wp_start ctxt =
   (rtac @{thm wp_weaken_pre} ORELSE' rtac @{thm wlp_weaken_pre})
   THEN_ALL_NEW ((sidegoal_tac ctxt) ORELSE' (K all_tac))
 
-fun user_wp_rules ctxt = UserWPRules.get ctxt
+fun user_wp_rules ctxt = rev (Named_Theorems.get ctxt @{named_theorems pwp})
 
 fun mod_user_wp_rules ctxt =
   map (fn thm => thm RS @{thm wp_strengthen_post[OF _ well_def_wp_healthy]})
                         (user_wp_rules ctxt)
 
-fun user_wlp_rules ctxt = UserWLPRules.get ctxt
+fun user_wlp_rules ctxt = rev (Named_Theorems.get ctxt @{named_theorems pwlp})
 
 fun mod_user_wlp_rules ctxt =
   map (fn thm => thm RS @{thm wlp_strengthen_post[OF _ well_def_wlp_nearly_healthy]})
                         (user_wlp_rules ctxt)
 
-fun core_rules ctxt = CoreWPRules.get ctxt
+fun core_rules ctxt = rev (Named_Theorems.get ctxt @{named_theorems pwp_core})
 
 (* Prefer raw user rules, then lifted user rules, then core (safe) rules *)
 fun wp_step ctxt =
@@ -113,9 +96,6 @@ fun pVCG_tac ctxt =
    REPEAT_ALL_NEW (wp_step ctxt)) THEN_ALL_NEW
    (TRY o sidegoal_tac ctxt) THEN'
   (fn _ => trace_pre ctxt "finished" all_tac)
-
-val setup = WDRules.setup #> CoreWPRules.setup #>
-            UserWPRules.setup #> UserWLPRules.setup
 
 end;
 

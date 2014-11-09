@@ -1,4 +1,4 @@
-header {* \subsection{Preconditions and invariants for the atomic step}\label{sect:step_invariants} *}
+subsection {* Preconditions and invariants for the atomic step \label{sect:step_invariants} *}
 
 theory Step_invariants
   imports Step

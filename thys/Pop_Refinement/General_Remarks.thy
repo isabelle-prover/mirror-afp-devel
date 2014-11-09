@@ -1,4 +1,4 @@
-header {* General Remarks *}
+chapter {* General Remarks *}
 
 theory %invisible General_Remarks
 imports Main

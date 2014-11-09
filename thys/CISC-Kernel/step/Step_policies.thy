@@ -1,5 +1,5 @@
-header {*\subsection{Formulation of a subject-subject communication policy and an information flow 
-policy, and showing both can be derived from subject-object configuration data}*}
+subsection {* Formulation of a subject-subject communication policy and an information flow 
+policy, and showing both can be derived from subject-object configuration data *}
 
 theory Step_policies
   imports Step_configuration

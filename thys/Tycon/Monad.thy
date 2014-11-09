@@ -1,4 +1,4 @@
-header {* Monad Class *}
+section {* Monad Class *}
 
 theory Monad
 imports Functor

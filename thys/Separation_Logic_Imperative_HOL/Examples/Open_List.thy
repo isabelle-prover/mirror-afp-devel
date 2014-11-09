@@ -1,4 +1,4 @@
-header {* Open Singly Linked Lists *}
+section {* Open Singly Linked Lists *}
 theory Open_List
 imports List_Seg Imp_List_Spec
 begin

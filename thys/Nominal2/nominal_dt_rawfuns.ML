@@ -199,7 +199,7 @@ fun mk_fv_bn_rhs lthy fv_map fv_bn_map bn_args args bclause =
 
 fun mk_fv_eq lthy fv_map fv_bn_map (constr, ty, arg_tys, _) bclauses = 
   let
-    val arg_names = Datatype_Prop.make_tnames arg_tys
+    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val args = map Free (arg_names ~~ arg_tys)
     val fv = lookup fv_map ty
     val lhs = fv $ list_comb (constr, args)
@@ -211,7 +211,7 @@ fun mk_fv_eq lthy fv_map fv_bn_map (constr, ty, arg_tys, _) bclauses =
 
 fun mk_fv_bn_eq lthy bn_trm fv_map fv_bn_map (bn_args, (constr, _, arg_tys, _)) bclauses =
   let
-    val arg_names = Datatype_Prop.make_tnames arg_tys
+    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val args = map Free (arg_names ~~ arg_tys)
     val fv_bn = lookup fv_bn_map bn_trm
     val lhs = fv_bn $ list_comb (constr, args)
@@ -287,7 +287,7 @@ fun mk_perm_bn_eq_rhs p perm_bn_map bn_args (i, arg) =
 fun mk_perm_bn_eq lthy bn_trm perm_bn_map bn_args (constr, _, arg_tys, _) =
   let
     val p = Free ("p", @{typ perm})
-    val arg_names = Datatype_Prop.make_tnames arg_tys
+    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val args = map Free (arg_names ~~ arg_tys)
     val perm_bn = lookup perm_bn_map bn_trm
     val lhs = perm_bn $ p $ list_comb (constr, args)
@@ -347,7 +347,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
 fun prove_permute_zero induct perm_defs perm_fns ctxt =
   let
     val perm_types = map (body_type o fastype_of) perm_fns
-    val perm_indnames = Datatype_Prop.make_tnames perm_types
+    val perm_indnames = Old_Datatype_Prop.make_tnames perm_types
   
     fun single_goal ((perm_fn, T), x) =
       HOLogic.mk_eq (perm_fn $ @{term "0::perm"} $ Free (x, T), Free (x, T))
@@ -358,11 +358,11 @@ fun prove_permute_zero induct perm_defs perm_fns ctxt =
 
     val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_zero} :: perm_defs)
 
-    val tac = (Datatype_Aux.ind_tac induct perm_indnames 
+    val tac = (Old_Datatype_Aux.ind_tac induct perm_indnames 
                THEN_ALL_NEW asm_simp_tac simpset) 1
   in
     Goal.prove ctxt perm_indnames [] goals (K tac)
-    |> Datatype_Aux.split_conj_thm
+    |> Old_Datatype_Aux.split_conj_thm
   end
 
 
@@ -371,7 +371,7 @@ fun prove_permute_plus induct perm_defs perm_fns ctxt =
     val p = Free ("p", @{typ perm})
     val q = Free ("q", @{typ perm})
     val perm_types = map (body_type o fastype_of) perm_fns
-    val perm_indnames = Datatype_Prop.make_tnames perm_types
+    val perm_indnames = Old_Datatype_Prop.make_tnames perm_types
   
     fun single_goal ((perm_fn, T), x) = HOLogic.mk_eq 
       (perm_fn $ (mk_plus p q) $ Free (x, T), perm_fn $ p $ (perm_fn $ q $ Free (x, T)))
@@ -383,11 +383,11 @@ fun prove_permute_plus induct perm_defs perm_fns ctxt =
     (* FIXME proper goal context *)
     val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_plus} :: perm_defs)
 
-    val tac = (Datatype_Aux.ind_tac induct perm_indnames
+    val tac = (Old_Datatype_Aux.ind_tac induct perm_indnames
                THEN_ALL_NEW asm_simp_tac simpset) 1
   in
     Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals (K tac)
-    |> Datatype_Aux.split_conj_thm 
+    |> Old_Datatype_Aux.split_conj_thm 
   end
 
 
@@ -403,7 +403,7 @@ fun mk_perm_eq ty_perm_assoc cnstr =
       fastype_of cnstr
       |> strip_type
 
-    val arg_names = Name.variant_list ["p"] (Datatype_Prop.make_tnames arg_tys)
+    val arg_names = Name.variant_list ["p"] (Old_Datatype_Prop.make_tnames arg_tys)
     val args = map Free (arg_names ~~ arg_tys)
 
     val lhs = lookup_perm p (ty, list_comb (cnstr, args))
@@ -442,7 +442,7 @@ fun define_raw_perms raw_dt_info lthy =
       lthy
       |> Local_Theory.exit_global
       |> Class.instantiation (raw_dt_names, raw_ty_args, @{sort pt}) 
-      |> Primrec.add_primrec perm_fn_binds perm_eqs
+      |> BNF_LFP_Compat.add_primrec perm_fn_binds perm_eqs
     
     val perm_zero_thms = prove_permute_zero raw_induct_thm perm_eq_thms perm_funs lthy'
     val perm_plus_thms = prove_permute_plus raw_induct_thm perm_eq_thms perm_funs lthy'  
@@ -491,7 +491,7 @@ fun raw_prove_eqvt consts ind_thms simps ctxt =
         |> map fastype_of
         |> map domain_type 
       val (arg_names, ctxt'') = 
-        Variable.variant_fixes (Datatype_Prop.make_tnames arg_tys) ctxt'
+        Variable.variant_fixes (Old_Datatype_Prop.make_tnames arg_tys) ctxt'
       val args = map Free (arg_names ~~ arg_tys)
       val goals = map2 (mk_eqvt_goal p) consts args
       val insts = map (single o SOME) arg_names

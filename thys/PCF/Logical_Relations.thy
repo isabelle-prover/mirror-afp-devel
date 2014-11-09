@@ -2,7 +2,7 @@
     Author:     Peter Gammie
 *)
 
-header {* Pitts's method for solving recursive domain predicates *}
+section {* Pitts's method for solving recursive domain predicates *}
 (*<*)
 
 theory Logical_Relations

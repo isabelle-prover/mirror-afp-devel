@@ -4,10 +4,10 @@
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 
-header "Definition of rsacrypt"
+section "Definition of rsacrypt"
 
 theory Crypt
-imports Mod
+imports Main Mod
 begin
 
 text {* 
@@ -15,22 +15,26 @@ text {*
   exponentiation. An proof, that this function calculates RSA is also given
 *}
 
-definition
-  even :: "nat \<Rightarrow> bool" where
-  "even n \<longleftrightarrow> 2 dvd n"
-
-fun rsa_crypt :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
+definition rsa_crypt :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
 where
-  "rsa_crypt M 0 n = 1"
-| "rsa_crypt M (Suc e) n = (if even (Suc e)
-       then (rsa_crypt M (Suc e div 2) n) ^ 2 mod n
-       else (M * ((rsa_crypt M (Suc e div 2) n) ^ 2 mod n)) mod n)"
+  cryptcorrect: "rsa_crypt M e n = M ^ e mod n"
 
-lemma div_2_times_2: "(if (even m) then  (m div 2 * 2 = m) else (m div 2 * 2 = m - 1))"
-  by (simp add: even_def dvd_eq_mod_eq_0 mult.commute mult_div_cancel)
-
-theorem cryptcorrect: "n \<noteq> 0 \<Longrightarrow> n \<noteq> 1 \<Longrightarrow> rsa_crypt M e n = M^e mod n"
-  by (induct M e n rule: rsa_crypt.induct) 
-    (auto simp add: power_mult [symmetric] div_2_times_2 remainderexp timesmod1)
+lemma rsa_crypt_code [code]:
+  "rsa_crypt M e n = (if e = 0 then 1 mod n
+    else if even e then rsa_crypt M (e div 2) n ^ 2 mod n
+    else (M * rsa_crypt M (e div 2) n ^ 2 mod n) mod n)"
+proof -
+  { fix m
+    have "(M ^ m mod n)\<^sup>2 mod n = (M ^ m)\<^sup>2 mod n"
+      by (simp add: power_mod)
+    then have "(M mod n) * ((M ^ m mod n)\<^sup>2 mod n) = (M mod n) * ((M ^ m)\<^sup>2 mod n)"
+      by simp
+    have "M * (M ^ m mod n)\<^sup>2 mod n = M * (M ^ m)\<^sup>2 mod n"
+      by (metis mod_mult_right_eq power_mod)
+  }
+  then show ?thesis
+    by (auto simp add: cryptcorrect power_even_eq remainderexp elim!: evenE oddE)
+qed
 
 end
+

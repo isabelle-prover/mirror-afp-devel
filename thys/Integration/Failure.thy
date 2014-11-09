@@ -1,3 +1,5 @@
+section {* Two approaches that failed \label{sec:two-approaches-that} *}
+
 (*<*) theory Failure imports RealRandVar begin (*>*)
 
 text{*
@@ -8,11 +10,11 @@ following two alternative approaches back up my experience that this
 almost never pays in formalization. The theory that seems most complex
 at first sight is often the one that is closest to formal reasoning
 and deliberately avoids ``hand-waving''.
+*}
 
+subsection {* A closed expression \label{sec:closed-expression} *}
 
-\subsection{A closed expression}
-\label{sec:closed-expression}
-
+text {*
   In contrast, Billingsley's definition \cite[p.~172]{Billingsley86} is
   strikingly short. For nonnegative measurable functions $f$:
 
@@ -68,11 +70,12 @@ and deliberately avoids ``hand-waving''.
   proofs in the textbook stems from a severely informal style that
   assumes ample background knowledge. Formalizing all this knowledge
   started to become overwhelming when the idea of a contrarian approach
-  emerged.   
+  emerged.
+*}
 
-  \subsection{A one-step inductive definition}
-  \label{sec:one-step}
-  
+subsection {* A one-step inductive definition \label{sec:one-step} *}
+
+text {*  
   This idea was sparked by the following note: ``(\ldots) the integral
   is uniquely determined by certain simple properties it is natural to
   require of it'' \cite[p.~175]{Billingsley86}. Billingsley goes on

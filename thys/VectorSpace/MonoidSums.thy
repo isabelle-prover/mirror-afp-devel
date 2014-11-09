@@ -1,4 +1,4 @@
-header {* Sums in monoids*}
+section {* Sums in monoids*}
 
 theory MonoidSums
 

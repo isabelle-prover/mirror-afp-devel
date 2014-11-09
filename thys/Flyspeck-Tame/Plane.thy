@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer
 *)
 
-header{* Plane Graph Enumeration *}
+section{* Plane Graph Enumeration *}
 
 theory Plane
 imports Enumerator FaceDivision RTranCl

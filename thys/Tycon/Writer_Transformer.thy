@@ -1,4 +1,4 @@
-header {* Writer monad transformer *}
+section {* Writer monad transformer *}
 
 theory Writer_Transformer
 imports Writer_Monad

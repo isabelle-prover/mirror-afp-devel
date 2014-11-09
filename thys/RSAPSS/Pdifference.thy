@@ -3,7 +3,7 @@
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
-header "Positive differences"
+section "Positive differences"
 
 theory Pdifference
 imports "~~/src/HOL/Number_Theory/Primes" Mod
@@ -52,22 +52,24 @@ lemma diff_add_assoc2: "a \<le> c \<Longrightarrow> c - (c - a + b) = (c - c + (
 lemma diff_add_diff: "x \<le> b \<Longrightarrow> (b::nat) - x + y - b = y - x"
   by (induct b) auto
 
-lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow> pdifference a b mod p = 0"
-  apply auto
-   apply (drule mod_eqD [simplified], auto)
-   apply (subst mod_div_equality' [of b])
-   apply (subst diff_add_assoc2)
-    apply (subst mult.commute, subst mult_div_cancel)
-    apply simp+
-   apply (subst diff_mult_distrib [symmetric])
-   apply simp
-  apply (drule mod_eqD [simplified], auto)
-  apply (subst mod_div_equality' [of b])
-  apply (subst diff_add_diff)
-   apply (subst mult.commute, subst mult_div_cancel, auto)
-  apply (subst diff_mult_distrib [symmetric])
-  apply simp
-  done
+lemma equalmodstrick2:
+  assumes "a mod p = b mod p"
+  shows "pdifference a b mod p = 0"
+proof -
+  { fix a b
+    assume *: "a mod p = b mod p"
+    have "a - b = a div p * p + a mod p - b div p * p - b mod p"
+      by simp
+    also have "\<dots> = a div p * p - b div p * p"
+      using * by (simp only:)
+    also have "\<dots> = (a div p - b div p) * p"
+      by (simp add: diff_mult_distrib)
+    finally have "(a - b) mod p = 0"
+      by simp
+  }
+  from this [OF assms] this [OF assms [symmetric]]
+  show ?thesis by simp
+qed
 
 lemma primekeyrewrite:
   fixes p::nat shows "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
@@ -78,26 +80,22 @@ lemma primekeyrewrite:
 lemma multzero: "\<lbrakk>0 < m mod p; m*a = 0\<rbrakk> \<Longrightarrow> (a::nat) = 0"
   by auto
 
-lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0; prime P\<rbrakk>
-    \<Longrightarrow> A mod P = (B::nat) mod P"
-  apply (drule equalmodstrick2)
-  apply (rule equalmodstrick1)
-  apply (rule multzero, simp)
-  apply (subst mult_mod_right)
-  apply (subst timesdistributesoverpdifference)
-  apply simp
-  apply (rule conjI, rule impI, simp)
-   apply (subst diff_mult_distrib2 [symmetric])
-   apply (simp add: dvd_eq_mod_eq_0 [symmetric])
-   apply (rule primekeyrewrite, simp)
-    apply (subst diff_mult_distrib2)
-    apply (simp add: dvd_eq_mod_eq_0)+
-  apply (rule impI, simp)
-  apply (subst diff_mult_distrib2 [symmetric])
-  apply (simp add: dvd_eq_mod_eq_0 [symmetric])
-  apply (rule disjI2)
-  apply (rule primekeyrewrite)
-    apply (simp add: dvd_eq_mod_eq_0 diff_mult_distrib2)+
-  done
+lemma primekeytrick:
+  fixes A B :: nat
+  assumes "(M * A) mod P = (M * B) mod P"
+  assumes "M mod P \<noteq> 0" and "prime P"
+  shows "A mod P = B mod P"
+proof -
+  from assms have "M > 0"
+    by (auto intro: ccontr)
+  from assms have *: "\<And>q. P dvd M * q \<Longrightarrow> P dvd q"
+    using primekeyrewrite [of P M] unfolding dvd_eq_mod_eq_0 [symmetric] by blast 
+  from equalmodstrick2 [OF assms(1)] `M > 0` show ?thesis
+    apply -
+    apply (rule equalmodstrick1)
+    apply (auto intro: * dvdI simp add: dvd_eq_mod_eq_0 [symmetric] diff_mult_distrib2 [symmetric])
+    done
+qed
 
 end
+

@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Small Step Semantics} *}
+section {* Small Step Semantics *}
 
 theory SmallStep
 imports Expr State

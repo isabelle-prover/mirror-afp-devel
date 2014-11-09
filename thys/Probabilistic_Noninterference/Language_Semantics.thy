@@ -1,4 +1,4 @@
-header {* Simple While Language with probabilistic choice and parallel execution *}
+section {* Simple While Language with probabilistic choice and parallel execution *}
 
 theory Language_Semantics
 imports Interface
@@ -197,7 +197,7 @@ using assms proof(induct al arbitrary: n1 n2 j1 j2 rule: rev_induct)
     case Left note n1 = Left
     hence j1: "j1 < f (al ! n1)" using snoc by auto
     obtain al' where al: "al = (take n1 al) @ ((al ! n1) # al')"
-    using n1 by (metis append_take_drop_id nth_drop')
+    using n1 by (metis append_take_drop_id Cons_nth_drop_Suc)
     have "j1 < lsum f ((al ! n1) # al')" using pos j1 unfolding lsum_def by simp
     hence "lsum f (take n1 al) + j1 < lsum f (take n1 al) + lsum f ((al ! n1) # al')" by simp
     also have "... = lsum f al" unfolding lsum_append[THEN sym] using al by simp
@@ -224,7 +224,7 @@ using assms proof(induct al arbitrary: n1 n2 j1 j2 rule: rev_induct)
       case Left note n2 = Left
       hence j2: "j2 < f (al ! n2)" using snoc by auto
       obtain al' where al: "al = (take n2 al) @ ((al ! n2) # al')"
-      using n2 by (metis append_take_drop_id nth_drop')
+      using n2 by (metis append_take_drop_id Cons_nth_drop_Suc)
       have "j2 < lsum f ((al ! n2) # al')" using pos j2 unfolding lsum_def by simp
       hence "lsum f (take n2 al) + j2 < lsum f (take n2 al) + lsum f ((al ! n2) # al')" by simp
       also have "... = lsum f al" unfolding lsum_append[THEN sym] using al by simp
@@ -450,21 +450,6 @@ datatype ('test, 'atom, 'choice) cmd =
 | Ch 'choice "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd"
 | Par "('test, 'atom, 'choice) cmd list"
 | ParT "('test, 'atom, 'choice) cmd list"
-
-lemma cmd_induct[induct type: cmd, case_names Done Atm Seq While Ch Par ParT]:
-assumes Done: "phi Done"
-and Atm: "\<And> atm. phi (Atm atm)"
-and Seq: "\<And> c1 c2. \<lbrakk>phi c1; phi c2\<rbrakk> \<Longrightarrow> phi (c1 ;; c2)"
-and While: "\<And> tst c. phi c \<Longrightarrow> phi (While tst c)"
-and Ch: "\<And> ch c1 c2. \<lbrakk>phi c1; phi c2\<rbrakk> \<Longrightarrow> phi (Ch ch c1 c2)"
-and Par: "\<And> cl. (\<And> c. c \<in> set cl \<Longrightarrow> phi c) \<Longrightarrow> phi (Par cl)"
-and ParT: "\<And> cl. (\<And> c. c \<in> set cl \<Longrightarrow> phi c) \<Longrightarrow> phi (ParT cl)"
-shows "phi c"
-proof-
-  let ?phil = "%cl. \<forall> c \<in> set cl. phi c"
-  show ?thesis apply(induct rule: cmd.inducts(1)[of _ ?phil ?phil])
-  using assms by auto
-qed
 
 (* Commands containing no while loops: *)
 fun noWhile where
@@ -1577,7 +1562,7 @@ qed auto
 lemma proper_cont[simp]:
 assumes "proper c" and "i < brn c"
 shows "proper (cont c s i)"
-using assms proof(induct c arbitrary: i s rule: cmd_induct)
+using assms proof(induct c arbitrary: i s rule: cmd.induct)
   case (Ch ch c1 c2)
   thus ?case by (cases i) auto
 next

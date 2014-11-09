@@ -1,4 +1,4 @@
-header {* The ``sturm'' proof method *}
+section {* The ``sturm'' proof method *}
 
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Method

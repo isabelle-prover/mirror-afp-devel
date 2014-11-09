@@ -5,8 +5,7 @@
    Based on the Jinja theory Common/Value.thy by David von Oheimb and Tobias Nipkow 
 *)
 
-
-header {* \isaheader{CoreC++ values} *}
+section {* CoreC++ values *}
 
 theory Value imports Type begin
 

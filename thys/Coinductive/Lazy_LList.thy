@@ -1,7 +1,7 @@
 (*  Title:       Lazy_LList.thy
     Author:      Andreas Lochbihler
 *)
-header {* Code generator setup to implement lazy lists lazily *}
+section {* Code generator setup to implement lazy lists lazily *}
 
 theory Lazy_LList imports
   Coinductive_List
@@ -26,7 +26,22 @@ code_datatype Lazy_llist
 
 declare -- {* Restore consistency in code equations between @{const partial_term_of} and @{const narrowing} for @{typ "'a llist"} *}
    [[code drop: "partial_term_of :: _ llist itself => _"]]
-   partial_term_of_llist_code [code]
+
+lemma partial_term_of_llist_code [code]:
+  fixes tytok :: "'a :: partial_term_of llist itself" shows
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_variable p tt) \<equiv>
+   Code_Evaluation.Free (STR ''_'') (Typerep.typerep TYPE('a llist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 0 []) \<equiv>
+   Code_Evaluation.Const (STR ''Coinductive_List.llist.LNil'') (Typerep.typerep TYPE('a llist))"
+  "partial_term_of tytok (Quickcheck_Narrowing.Narrowing_constructor 1 [head, tail]) \<equiv>
+   Code_Evaluation.App
+     (Code_Evaluation.App
+        (Code_Evaluation.Const
+           (STR ''Coinductive_List.llist.LCons'')
+           (Typerep.typerep TYPE('a \<Rightarrow> 'a llist \<Rightarrow> 'a llist)))
+        (partial_term_of TYPE('a) head))
+     (partial_term_of TYPE('a llist) tail)"
+by-(rule partial_term_of_anything)+
 
 declare option.splits [split]
 
@@ -70,7 +85,7 @@ lemma corec_llist_Lazy_llist [code]:
      else Some (LHD b,
        if endORmore b then LTL_end b
        else corec_llist IS_LNIL LHD endORmore LTL_end LTL_more (LTL_more b)))"
-by(subst corec_llist_code) simp
+by(subst llist.corec_code) simp
 
 declare [[code drop: unfold_llist]]
 

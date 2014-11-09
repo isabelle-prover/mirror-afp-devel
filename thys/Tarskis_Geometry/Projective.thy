@@ -3,7 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-header "Projective geometry"
+section "Projective geometry"
 
 theory Projective
   imports Linear_Algebra2

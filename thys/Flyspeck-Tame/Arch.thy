@@ -1,6 +1,6 @@
 (* Author: Tobias Nipkow *)
 
-header {* Archive *}
+section {* Archive *}
 
 theory Arch
 imports Main "~~/src/HOL/Library/Code_Target_Numeral"

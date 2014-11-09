@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header {* Neglectable Final Graphs *}
+section {* Neglectable Final Graphs *}
 
 theory TameEnum
 imports Generator

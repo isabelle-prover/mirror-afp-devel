@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header "Example: Quicksort on Heap Lists"
+section "Example: Quicksort on Heap Lists"
 
 theory Quicksort
 imports "../Vcg" "../HeapList" "~~/src/HOL/Library/Permutation"

@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-header{* Properties of Patch Enumeration*}
+section{* Properties of Patch Enumeration*}
 
 theory EnumeratorProps
 imports Enumerator GraphProps

@@ -1,4 +1,4 @@
-header {* Implementation of Dijkstra's-Algorithm using Automatic Determinization *}
+section {* Implementation of Dijkstra's-Algorithm using Automatic Determinization *}
 theory Dijkstra_Impl_Adet
 imports 
   Dijkstra 

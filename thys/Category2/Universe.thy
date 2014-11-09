@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Universe"
+section "Universe"
 
 theory Universe
 imports "~~/src/HOL/ZF/MainZF"

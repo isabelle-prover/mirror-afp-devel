@@ -1,4 +1,4 @@
-header {* Sets of maps *}
+section {* Sets of maps *}
 theory MapSets
 imports SetMap Utils
 begin

@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Definition of the function lmirror *}
+section {* Definition of the function lmirror *}
 
 theory LMirror imports "../Coinductive_List" begin
 
@@ -93,7 +93,7 @@ lemma ltl_lmirror [simp]:
 by(clarsimp simp add: not_lnull_conv)
 
 lemma lmap_lmirror_aux: "lmap f (lmirror_aux acc xs) = lmirror_aux (lmap f acc) (lmap f xs)"
-by(coinduction arbitrary: acc xs rule: llist.strong_coinduct)(auto 4 3 simp add: lhd_lmirror_aux ltl_lmirror_aux)
+by(coinduction arbitrary: acc xs rule: llist.coinduct_strong)(auto 4 3 simp add: lhd_lmirror_aux ltl_lmirror_aux)
 
 lemma lmap_lmirror: "lmap f (lmirror xs) = lmirror (lmap f xs)"
 by(simp add: lmirror_def lmap_lmirror_aux)

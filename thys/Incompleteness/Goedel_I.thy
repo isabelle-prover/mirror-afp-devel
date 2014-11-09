@@ -1,4 +1,4 @@
-header {* Section 6 Material and Gödel's First Incompleteness Theorem*}
+chapter {* Section 6 Material and Gödel's First Incompleteness Theorem*}
 
 theory Goedel_I
 imports Pf_Predicates Functions

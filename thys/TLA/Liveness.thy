@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header "Liveness"
+section "Liveness"
 
 theory Liveness
 imports Rules

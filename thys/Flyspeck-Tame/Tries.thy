@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-header "Tries (List Version)"
+section "Tries (List Version)"
 
 theory Tries
 imports Maps

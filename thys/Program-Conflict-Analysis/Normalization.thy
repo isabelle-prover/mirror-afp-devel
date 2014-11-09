@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Normalized Paths"
+section "Normalized Paths"
 theory Normalization
 imports Main ThreadTracking Semantics ConsInterleave
 begin
@@ -1241,7 +1241,7 @@ proof -
         from ntrp_add_context_s[OF SPLIT(1), of cb] I(8) have "((s, ca + cb), e, sh, cah + cb) \<in> ntrp fg" by auto
         also have "((sh,cah+cb),w',(s',ca'+cb'))\<in>trcl (ntrp fg)" proof (rule I(3))
           from ntrp_mon_s[OF SPLIT(1)] I(2,4,7,8) show 1: "mon_c fg ({#sh#} + cah) \<inter> (mon_c fg cb \<union> mon_ww fg wb) = {}"
-            by (cases e) (case_tac a, simp add: cil_\<alpha>n_cons_helper, fastforce simp add: cil_\<alpha>n_cons_helper)+ (* FIXME: Ughly apply-script style proof *)
+            by (cases e) (rename_tac a, case_tac a, simp add: cil_\<alpha>n_cons_helper, fastforce simp add: cil_\<alpha>n_cons_helper)+ (* FIXME: Ughly apply-script style proof *)
           from I(8) 1 show "mon_c fg cb \<inter> (mon_c fg ({#sh#} + cah) \<union> mon_ww fg (map le_rem_s w1')) = {}" by auto
         qed (auto simp add: I(4,6) SPLIT(2)) 
         finally show ?case .

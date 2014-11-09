@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Acquisition Histories"
+section "Acquisition Histories"
 theory AcquisitionHistory
 imports ConsInterleave
 begin

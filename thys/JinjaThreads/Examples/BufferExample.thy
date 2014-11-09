@@ -34,7 +34,7 @@ where
     [(STR ''constructor'', [Integer], Void, \<lfloor>([STR ''size''],
       (STR ''buffer'' := newA (Class Object)\<lfloor>Var (STR ''size'')\<rceil>);;
       (STR ''front'' := Val (Intg 0));;
-      (STR ''back'' := Val (Intg -1));;
+      (STR ''back'' := Val (Intg (- 1)));;
       (Var this\<bullet>(STR ''size''){STR []} := Val (Intg 0)))\<rfloor>),
      (STR ''empty'', [], Boolean, \<lfloor>([], sync(Var this) (Var (STR ''size'') \<guillemotleft>Eq\<guillemotright> Val (Intg 0)))\<rfloor>),
      (STR ''full'', [], Boolean, \<lfloor>([],

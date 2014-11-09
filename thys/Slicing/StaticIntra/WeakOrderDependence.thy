@@ -1,4 +1,4 @@
-header {* \isaheader{Weak Order Dependence} *}
+section {* Weak Order Dependence *}
 
 theory WeakOrderDependence imports "../Basic/CFG" DataDependence begin
 

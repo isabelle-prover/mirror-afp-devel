@@ -1,4 +1,4 @@
-header {* Second Example *}
+chapter {* Second Example *}
 
 theory %invisible Second_Example
 imports Main

@@ -1,4 +1,4 @@
-header {* \isaheader{Instantiate framework with control dependences} *}
+section {* Instantiate framework with control dependences *}
 
 theory CDepInstantiations imports 
   Slice 

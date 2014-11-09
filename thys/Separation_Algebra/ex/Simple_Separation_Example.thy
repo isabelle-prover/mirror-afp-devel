@@ -4,7 +4,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Example from HOL/Hoare/Separation"
+section "Example from HOL/Hoare/Separation"
 
 theory Simple_Separation_Example
   imports "~~/src/HOL/Hoare/Hoare_Logic_Abort" "../Sep_Heap_Instance"

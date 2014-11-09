@@ -1,4 +1,4 @@
-header {* \subsection{Separation kernel state and atomic step function} *}
+subsection {* Separation kernel state and atomic step function *}
 
 theory Step
   imports Step_policies

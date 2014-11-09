@@ -5,7 +5,7 @@
 Functors: Define functors and prove a trivial example.
 *)
 
-header {* Functors *}
+section {* Functors *}
 
 theory Functors
 imports Cat

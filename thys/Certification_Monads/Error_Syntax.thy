@@ -2,7 +2,7 @@
    Author:   Christian Sternagel
 *)
 
-header \<open>Try-Catch and Error-Update Notation for Arbitrary Types\<close>
+section \<open>Try-Catch and Error-Update Notation for Arbitrary Types\<close>
 
 theory Error_Syntax
 imports

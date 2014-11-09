@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Finite sets *}
+section {* Finite sets *}
 
 theory PRecFinSet
 imports PRecFun

@@ -1,4 +1,4 @@
-header {* Proof chains *}
+section {* Proof chains *}
 
 theory Proofchain imports
   JHelper  

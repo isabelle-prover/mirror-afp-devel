@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header "Initial Normalization of the Input"
+section "Initial Normalization of the Input"
 
 (*<*)
 theory Init_Normalization

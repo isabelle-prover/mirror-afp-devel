@@ -4,7 +4,7 @@
                 Rafal Kolanski <rafal.kolanski at nicta.com.au>
 *)
 
-header "Separation Algebra for Virtual Memory"
+section "Separation Algebra for Virtual Memory"
 
 theory VM_Example
 imports "../Sep_Tactics" "../Map_Extra"

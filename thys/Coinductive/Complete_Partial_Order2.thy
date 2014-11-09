@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Formalisation of complete partial orders, continuity and admissibility *}
+section {* Formalisation of complete partial orders, continuity and admissibility *}
 
 theory Complete_Partial_Order2 imports 
   Main
@@ -397,17 +397,12 @@ where
 
 subsubsection {* Theorem collection @{text cont_intro} *}
 
+named_theorems cont_intro "continuity and admissibility intro rules"
 ML {*
-structure Cont_Intro_Rules = Named_Thms
-(
-  val name = @{binding cont_intro}
-  val description = "continuity and admissibility intro rules"
-)
-
 (* apply cont_intro rules as intro and try to solve 
    the remaining of the emerging subgoals with simp *)
 fun cont_intro_tac ctxt =
-  REPEAT_ALL_NEW (resolve_tac (Cont_Intro_Rules.get ctxt))
+  REPEAT_ALL_NEW (resolve_tac (rev (Named_Theorems.get ctxt @{named_theorems cont_intro})))
   THEN_ALL_NEW (simp_tac ctxt)
 
 fun cont_intro_simproc ctxt ct =
@@ -432,7 +427,6 @@ fun cont_intro_simproc ctxt ct =
   handle THM _ => NONE 
   | TYPE _ => NONE
 *}
-setup Cont_Intro_Rules.setup
 
 simproc_setup "cont_intro"
   ( "ccpo.admissible lub ord P"
@@ -456,6 +450,19 @@ by(simp add: monotone_def)
 lemma monotone_applyI:
   "monotone orda ordb F \<Longrightarrow> monotone (fun_ord orda) ordb (\<lambda>f. F (f x))"
 by(rule monotoneI)(auto simp add: fun_ord_def dest: monotoneD)
+
+lemma monotone_if_fun [partial_function_mono]:
+  "\<lbrakk> monotone (fun_ord orda) (fun_ord ordb) F; monotone (fun_ord orda) (fun_ord ordb) G \<rbrakk>
+  \<Longrightarrow> monotone (fun_ord orda) (fun_ord ordb) (\<lambda>f n. if c n then F f n else G f n)"
+by(simp add: monotone_def fun_ord_def)
+
+lemma monotone_fun_apply_fun [partial_function_mono]: 
+  "monotone (fun_ord (fun_ord ord)) (fun_ord ord) (\<lambda>f n. f t (g n))"
+by(rule monotoneI)(simp add: fun_ord_def)
+
+lemma monotone_fun_ord_apply: 
+  "monotone orda (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. monotone orda ordb (\<lambda>y. f y x))"
+by(auto simp add: monotone_def fun_ord_def)
 
 context preorder begin
 
@@ -547,9 +554,15 @@ by(simp add: mcont_def monotone_applyI cont_applyI)
 lemma mcont_if [cont_intro, simp]:
   "\<lbrakk> mcont luba orda lubb ordb (\<lambda>x. f x); mcont luba orda lubb ordb (\<lambda>x. g x) \<rbrakk>
   \<Longrightarrow> mcont luba orda lubb ordb (\<lambda>x. if c then f x else g x)"
-by(simp add: mcont_def cont_if if_mono)
+by(simp add: mcont_def cont_if)
 
+lemma cont_fun_lub_apply: 
+  "cont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. cont luba orda lubb ordb (\<lambda>y. f y x))"
+by(simp add: cont_def fun_lub_def fun_eq_iff)(auto simp add: image_def)
 
+lemma mcont_fun_lub_apply: 
+  "mcont luba orda (fun_lub lubb) (fun_ord ordb) f \<longleftrightarrow> (\<forall>x. mcont luba orda lubb ordb (\<lambda>y. f y x))"
+by(auto simp add: monotone_fun_ord_apply cont_fun_lub_apply mcont_def)
 
 context ccpo begin
 
@@ -1359,7 +1372,7 @@ lemma mcont_case_prod_iff [simp]:
      class.preorder ordb (mk_less ordb); lub_singleton lubb \<rbrakk>
   \<Longrightarrow> mcont (prod_lub luba lubb) (rel_prod orda ordb) lub leq (case_prod f) \<longleftrightarrow>
    (\<forall>x. mcont lubb ordb lub leq (\<lambda>y. f x y)) \<and> (\<forall>y. mcont luba orda lub leq (\<lambda>x. f x y))"
-unfolding mcont_def by(auto simp add: monotone_case_prod_iff cont_case_prod_iff)
+unfolding mcont_def by(auto simp add: cont_case_prod_iff)
 
 end
 
@@ -1677,7 +1690,7 @@ proof -
         by(subst ab.fixp_unfold)(auto simp add: f g dest: monotoneD[OF g])
     qed(auto intro: b.ccpo_Sup_least chain_empty)
     ultimately show "?ord (?rhs1, ?rhs2) ?lhs"
-      by(simp add: rel_prod_def split_beta)
+      by(simp add: rel_prod_conv split_beta)
   qed
   finally show ?thesis by simp
 qed
@@ -1725,7 +1738,7 @@ by(auto intro!: mcontI monotoneI contI simp add: prod_lub_def)
 lemma mcont2mcont_fst [cont_intro, simp]:
   "mcont lub ord (prod_lub luba lubb) (rel_prod orda ordb) t
   \<Longrightarrow> mcont lub ord luba orda (\<lambda>x. fst (t x))"
-by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_def split_beta prod_lub_def image_image)
+by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_sel split_beta prod_lub_def image_image)
 
 lemma monotone_snd: "monotone (rel_prod orda ordb) ordb snd"
 by(auto intro: monotoneI)
@@ -1736,6 +1749,6 @@ by(auto intro!: mcontI monotoneI contI simp add: prod_lub_def)
 lemma mcont2mcont_snd [cont_intro, simp]:
   "mcont lub ord (prod_lub luba lubb) (rel_prod orda ordb) t
   \<Longrightarrow> mcont lub ord lubb ordb (\<lambda>x. snd (t x))"
-by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_def split_beta prod_lub_def image_image)
+by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_sel split_beta prod_lub_def image_image)
 
 end

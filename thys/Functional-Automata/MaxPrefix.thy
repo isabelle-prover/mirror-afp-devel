@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Maximal prefix"
+section "Maximal prefix"
 
 theory MaxPrefix
 imports "~~/src/HOL/Library/Sublist"

@@ -99,8 +99,8 @@ We specified the following components: \emph{ControlSystem} (general requirement
 \emph{SteamBoiler}, \emph{Converter}, and \emph{Controller}. 
 We present here the following \isah theories for this system:
 \begin{itemize*} 
-	\item \ist{SteamBoiler.thy} --  specifications of the system components, 
-	\item \ist{SteamBoiler\_proof} --  proof of refinement relation between the requirements and the architecture specifications.
+  \item \ist{SteamBoiler.thy} --  specifications of the system components, 
+  \item \ist{SteamBoiler\_proof} --  proof of refinement relation between the requirements and the architecture specifications.
 \end{itemize*}
 %
 The specification \emph{ControlSystem} describes  
@@ -223,9 +223,9 @@ The system architecture consists of the following components,
 which describe the \fr components accordingly to the \fr standard~\cite{FlexRayProt}: 
 %
 \begin{itemize*}
-	\item \emph{FlexRay} (general requirements specification), 
-	\item \emph{FlexRayArch} (system architecture),   
-	\item \emph{FlexRayArchitecture} 
+  \item \emph{FlexRay} (general requirements specification), 
+  \item \emph{FlexRayArch} (system architecture),   
+  \item \emph{FlexRayArchitecture} 
 (guarantee part of the system architecture), 
   \item \emph{Cable}, 
   \item \emph{Controller}, 
@@ -237,8 +237,8 @@ We present the following \isah theories in this case study:
 %
 \begin{itemize*}
   \item \ist{FR\_types.thy} -- datatype definitions, 
-	\item \ist{FR.thy} --  specifications of the system components and auxiliary functions and predicates, 
-	\item \ist{FR\_proof} --   proof of refinement relation between the requirements and the architecture specifications.
+  \item \ist{FR.thy} --  specifications of the system components and auxiliary functions and predicates, 
+  \item \ist{FR\_proof} --   proof of refinement relation between the requirements and the architecture specifications.
 \end{itemize*}
 %
 The type \emph{Frame} that describes a \fr frame 
@@ -253,9 +253,9 @@ in which this node should be sending a frame with the corresponding identifier
 %
 \[
 \begin{array}{lcl}
-	\ntype Message & = & msg~(message\_id: \Nat, ftcdata : Data) \\
-	\ntype Frame  & = & frm~(slot : \Nat, data : Data) \\
-	\ntype Config & = & conf~(schedule: \nfst{\Nat}, cycleLength: \Nat )
+  \ntype Message & = & msg~(message\_id: \Nat, ftcdata : Data) \\
+  \ntype Frame  & = & frm~(slot : \Nat, data : Data) \\
+  \ntype Config & = & conf~(schedule: \nfst{\Nat}, cycleLength: \Nat )
 \end{array}
 \]
 %
@@ -283,11 +283,11 @@ The guarantee-part of \emph{FlexRayArch} is represented by the specification
   
 {\footnotesize
 \begin{spec}{\spc{FlexRayArch} \fconsts}{td}
-\InOut{return_1 ,..., return_n : Frame}{store_1 ,..., store_n : Frame ;	get_1 ,..., get_n : \Nat}
+\InOut{return_1 ,..., return_n : Frame}{store_1 ,..., store_n : Frame ; get_1 ,..., get_n : \Nat}
 \begin{array}{ll}
 \uasm 
  &\forall i \in [1..n]: \msg{1}{return_i}\\
- &	DisjointSchedules(c_1 ,\dots, c_n)\\
+ &  DisjointSchedules(c_1 ,\dots, c_n)\\
  & IdenticCycleLength(c_1 ,\dots, c_n) \\
 \ugar
  & (store_1 ,\dots, store_n, get_1 ,\dots, get_n) := \\
@@ -336,13 +336,13 @@ and \emph{Identic\-Cycle\-Length} (all bus configurations have the equal length 
 also the \fr component receives in every time interval at most one message from each node 
 (via channels $return_i$, $1 \le i \le n$), then
 \begin{itemize}
-	\item 
-	the frame transmission by \fr must be correct in terms of the predicate 
-	\emph{FrameTransmission}: if the time $t$ is equal modulo the length of the cycle (\fr communication round) 
+  \item 
+  the frame transmission by \fr must be correct in terms of the predicate 
+  \emph{FrameTransmission}: if the time $t$ is equal modulo the length of the cycle (\fr communication round) 
 to the element of the scheduler table of the node $k$, then this and only this node 
 can send a data atn the $t$th time interval;
-	\item 
-	\fr component sends in every time interval at most one message to each node 
+  \item 
+  \fr component sends in every time interval at most one message to each node 
  via channels $get_i$ and $store_i$, $1 \le i \le n$).
 \end{itemize}
 %
@@ -391,24 +391,24 @@ These data are restored
  in the internal buffer of the gateway  and should  
  be resent to the ESC and 
  the voice communication will be established, assuming that
-	there is no connection fails.  
+  there is no connection fails.  
 The system description consists of the following specifications: 
 \begin{itemize*}
-	\item \emph{GatewaySystem} (gateway system architecture), 
-	\item \emph{GatewaySystemReq} (gateway system requirements), 
-	\item \emph{ServiceCenter} (Emergency Service Center),
-	\item \emph{Gateway} (gateway architecture), 
-	\item \emph{GatewayReq} (gateway requirements),
-	\item \emph{Sample} (the main  component describing its logic), 
-	\item \emph{Delay} (the  component   modelling the communication delay), and
-	\item \emph{Loss} (the  component modelling the communication loss).  
+  \item \emph{GatewaySystem} (gateway system architecture), 
+  \item \emph{GatewaySystemReq} (gateway system requirements), 
+  \item \emph{ServiceCenter} (Emergency Service Center),
+  \item \emph{Gateway} (gateway architecture), 
+  \item \emph{GatewayReq} (gateway requirements),
+  \item \emph{Sample} (the main  component describing its logic), 
+  \item \emph{Delay} (the  component   modelling the communication delay), and
+  \item \emph{Loss} (the  component modelling the communication loss).  
 \end{itemize*}
 %  
 We present the following \isah theories in this case study:
 \begin{itemize*}
   \item \ist{Gateway\_types.thy} --  datatype definitions, 
-	\item \ist{Gateway.thy} --  specifications of the system components, 
-	\item \ist{Gateway\_proof} --  proofs of refinement relations between the requirements and the architecture specifications (for the components \emph{Gateway} and \emph{GatewaySystem}).
+  \item \ist{Gateway.thy} --  specifications of the system components, 
+  \item \ist{Gateway\_proof} --  proofs of refinement relations between the requirements and the architecture specifications (for the components \emph{Gateway} and \emph{GatewaySystem}).
 \end{itemize*}
 %
 The datatype \emph{ECall\_Info} represents a tuple, 
@@ -421,11 +421,11 @@ The datatype \emph{GatewayStatus} represents the status (internal state) of the 
   \\
   \ntype CollisionSpeed &=& \Nat
   \\
-	\ntype ECall\_Info &=& ecall(coord \in Coordinates, speed \in CollisionSpeed)
-	\\
-	\ntype GatewayStatus &=& 
-	\{~ init\_state,~ call,~ connection\_ok,\\
-	&& ~ ~sending\_data,~ voice\_com ~\}
+  \ntype ECall\_Info &=& ecall(coord \in Coordinates, speed \in CollisionSpeed)
+  \\
+  \ntype GatewayStatus &=& 
+  \{~ init\_state,~ call,~ connection\_ok,\\
+  && ~ ~sending\_data,~ voice\_com ~\}
 \end{array}
 \]
 To specify the automotive gateway we will use a number of datatypes 
@@ -450,18 +450,18 @@ The specification \emph{GatewaySystemReq} specifies the requirements for the com
 Assuming that the input streams \emph{req} and \emph{stop} can contain at every time interval at most one message, and assuming that the stream \emph{lose} contains at every time interval exactly one message. 
 If 
 \begin{itemize*}
-	\item 
-	at any time interval $t$ the gateway system is in the initial state, 
-	\item
-	at time interval $t+1$ the signal about crash comes at first time 
-	(more precise, the command to initiate the call to the ESC,
-	\item 
-	after $3+m$ time intervals the command to send the crash data comes at first time,
-	\item 
-	the gateway system has received until the time interval $t+2$ the crash data,  
-	\item 
-	there is no connection fails from the time interval $t$ until the time interval $t + 4 + k + 2d$,
-	\end{itemize*}
+  \item 
+  at any time interval $t$ the gateway system is in the initial state, 
+  \item
+  at time interval $t+1$ the signal about crash comes at first time 
+  (more precise, the command to initiate the call to the ESC,
+  \item 
+  after $3+m$ time intervals the command to send the crash data comes at first time,
+  \item 
+  the gateway system has received until the time interval $t+2$ the crash data,  
+  \item 
+  there is no connection fails from the time interval $t$ until the time interval $t + 4 + k + 2d$,
+  \end{itemize*}
 %
 then at time interval $t + 4 + k + 2d$ the voice communication is established.
 
@@ -474,26 +474,26 @@ attempt to establish the voice communication with the driver or a passenger of t
 if there is no connection failure, after $d$ time intervals the voice communication will be started. 
 
 We specify the gateway requirements (\emph{GatewayReq}) as follows: 
-	\begin{enumerate}
-	\item 
-	%1
-	If at time $t$ the gateway is in the initial state $init\_state$, and it gets 
-	the command to establish the connection with the central station, and also there is no 
-	environment connection problems during the next 2 time intervals, 
-	it establishes the connection at the time interval $t+2$. 
-	\item 
-	%2
-	If at time $t$  the gateway has establish the connection, 
-	and it gets the command to send the ECall data to the central station, and also there is no 
-	environment connection problems during the next $d+1$ time intervals, 
-	then it sends the last corresponding data. 
+  \begin{enumerate}
+  \item 
+  %1
+  If at time $t$ the gateway is in the initial state $init\_state$, and it gets 
+  the command to establish the connection with the central station, and also there is no 
+  environment connection problems during the next 2 time intervals, 
+  it establishes the connection at the time interval $t+2$. 
+  \item 
+  %2
+  If at time $t$  the gateway has establish the connection, 
+  and it gets the command to send the ECall data to the central station, and also there is no 
+  environment connection problems during the next $d+1$ time intervals, 
+  then it sends the last corresponding data. 
         The central station becomes these date at the time $t+d$.
-	% 
-	\item 
-	%3
-	If the gateway becomes the acknowledgment from the central station 
-	that it has receives the sent ECall data, and also there is no 
-	environment connection problems, then the voice communication is started.
+  % 
+  \item 
+  %3
+  If the gateway becomes the acknowledgment from the central station 
+  that it has receives the sent ECall data, and also there is no 
+  environment connection problems, then the voice communication is started.
   \end{enumerate}
  %
  The specification of the gateway architecture, \emph{Gateway}, is parameterised one: 
@@ -533,7 +533,7 @@ from a ECall application of a vehicle
  these data will be resent to the ESC. 
  After that this component waits to the acknowledgment from the ESC. 
  If the acknowledgment is received, the voice communication will be established, assuming that
-	there is no connection fails.
+  there is no connection fails.
 
 For the component \emph{Sample} we have the assumption, that the 
 streams $req$, $a1$, and $stop$ can contain at every time interval at most one message, 
@@ -546,11 +546,11 @@ and an expression which says how the local variable
   
   
  \begin{figure}[h]
-	\begin{center}
-		\includegraphics[scale=0.6]{fig/gatewayTSTD.pdf}
-	\end{center}
-	\caption{Timed state transition diagram for the component Sample}
-	\label{fig:gateway_std}
+  \begin{center}
+    \includegraphics[scale=0.6]{fig/gatewayTSTD.pdf}
+  \end{center}
+  \caption{Timed state transition diagram for the component Sample}
+  \label{fig:gateway_std}
 \end{figure} 
 
 

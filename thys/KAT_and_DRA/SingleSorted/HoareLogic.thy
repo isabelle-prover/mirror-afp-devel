@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Hoare Logic *}
+section {* Hoare Logic *}
 
 theory HoareLogic
   imports KAT

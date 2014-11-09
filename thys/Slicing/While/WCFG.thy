@@ -1,4 +1,4 @@
-header {* \isaheader{CFG} *}
+section {* CFG *}
 
 theory WCFG imports Com "../Basic/BasicDefs" begin
 

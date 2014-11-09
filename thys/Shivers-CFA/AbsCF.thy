@@ -1,4 +1,4 @@
-header "Abstract nonstandard semantics"
+section "Abstract nonstandard semantics"
 
 theory AbsCF
   imports HOLCF HOLCFUtils CPSScheme Utils SetMap

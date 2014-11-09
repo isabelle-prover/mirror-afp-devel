@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header "Constraint Systems"
+section "Constraint Systems"
 theory ConstraintSystems
 imports Main AcquisitionHistory Normalization
 begin

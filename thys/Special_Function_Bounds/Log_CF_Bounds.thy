@@ -1,4 +1,4 @@
-header {* Log Upper and Lower Bounds *}
+chapter {* Log Upper and Lower Bounds *}
 
 theory Log_CF_Bounds
 imports Bounds_Lemmas

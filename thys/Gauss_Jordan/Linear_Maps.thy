@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header{*Linear Maps*}
+section{*Linear Maps*}
 
 theory Linear_Maps
 imports

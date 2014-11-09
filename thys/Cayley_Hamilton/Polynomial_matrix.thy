@@ -1,4 +1,4 @@
-header {* Matrices of Polynomials\label{sec.mat.poly} *}
+section {* Matrices of Polynomials\label{sec.mat.poly} *}
 
 theory Polynomial_matrix
 imports

@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Convenience results for set quantifiers *}
+section {* Convenience results for set quantifiers *}
 
 theory Util_Set
 imports Main

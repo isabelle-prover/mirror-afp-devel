@@ -24,7 +24,7 @@ abbreviation "DFLT_PRIO_TAG \<equiv> PRIO_TAG 0 0"
 text {* Some standard tags *}
 abbreviation "PRIO_TAG_OPTIMIZATION \<equiv> MINOR_PRIO_TAG 10"
   -- "Optimized version of an algorithm, with additional side-conditions"
-abbreviation "PRIO_TAG_GEN_ALGO \<equiv> MINOR_PRIO_TAG -10"
+abbreviation "PRIO_TAG_GEN_ALGO \<equiv> MINOR_PRIO_TAG (- 10)"
   -- "Generic algorithm, considered to be less efficient than default algorithm"
 
 
@@ -700,7 +700,7 @@ ML {*
           val t2 = Logic.incr_indexes ([],idx1+1) t2
           val idx2 = Term.maxidx_of_term t2
         in
-          can (Pattern.unify thy (t1,t2)) (Envir.empty idx2)
+          can (Pattern.unify (Context.Theory thy) (t1,t2)) (Envir.empty idx2)
         end
 
       fun analyze_possible_problems ctxt (f,R) = let
@@ -922,15 +922,12 @@ ML {*
                     pretty_constraint ctxt c
                   ] |> Pretty.string_of |> tracing
 
-                  val old = !Pattern.unify_trace_failure_default (* Argh! *)
-                  val _ = Pattern.unify_trace_failure_default := true
                   val rl = mk_CONSTRAINT_rl thy c 
                      |> Drule.zero_var_indexes
                   val res = (SOLVED' (rtac rl 
                       THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac net)))
                     ) i st
                     |> Seq.pull |> is_some
-                  val _ = Pattern.unify_trace_failure_default := old
 
                   val _ = (if res then Pretty.str "OK" else Pretty.str "ERR")
                     |> Pretty.string_of |> tracing

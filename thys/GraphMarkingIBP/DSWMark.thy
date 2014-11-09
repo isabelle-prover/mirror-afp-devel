@@ -1,4 +1,4 @@
-header {* Deutsch-Schorr-Waite Marking Algorithm *}
+section {* Deutsch-Schorr-Waite Marking Algorithm *}
 
 theory DSWMark
 imports LinkMark

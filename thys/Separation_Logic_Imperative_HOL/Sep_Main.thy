@@ -1,4 +1,4 @@
-header {* Separation Logic Framework Entrypoint *}
+section {* Separation Logic Framework Entrypoint *}
 theory Sep_Main
 imports Automation
 begin

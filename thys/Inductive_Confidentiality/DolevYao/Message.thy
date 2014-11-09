@@ -6,7 +6,7 @@ Datatypes of agents and messages;
 Inductive relations "parts", "analz" and "synth"
 *)
 
-header{*Theory of Agents and Messages for Security Protocols against Dolev-Yao*}
+section{*Theory of Agents and Messages for Security Protocols against Dolev-Yao*}
 
 theory Message
 imports Main

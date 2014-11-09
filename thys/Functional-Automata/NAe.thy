@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Nondeterministic automata with epsilon transitions"
+section "Nondeterministic automata with epsilon transitions"
 
 theory NAe
 imports NA
@@ -38,7 +38,7 @@ apply(rule steps_epsclosure[THEN equalityE])
 apply blast
 done
 
-lemma epsclosure_steps: "steps A w O (eps A)^* = steps A w";
+lemma epsclosure_steps: "steps A w O (eps A)^* = steps A w"
 apply(induct w)
  apply simp
 apply(simp add:O_assoc)

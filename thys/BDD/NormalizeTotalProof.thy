@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Proof of Procedure Normalize *}
+section {* Proof of Procedure Normalize *}
 theory NormalizeTotalProof imports LevellistProof ShareReduceRepListProof 
                         RepointProof begin
 

@@ -297,10 +297,10 @@ lemma divisor_hd_coeff1_neq0:
 apply (case_tac a)
 
 apply simp
-apply(case_tac list) apply simp apply(simp split:split_if_asm)
+apply(rename_tac list) apply(case_tac list) apply simp apply(simp split:split_if_asm)
 
 apply simp
-apply(case_tac list) apply simp
+apply(rename_tac list)apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
 apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
@@ -310,7 +310,7 @@ apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
 apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 
 apply simp
-apply(case_tac list) apply simp
+apply(rename_tac list) apply(case_tac list) apply simp
 apply(clarsimp split:split_if_asm)
 apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")

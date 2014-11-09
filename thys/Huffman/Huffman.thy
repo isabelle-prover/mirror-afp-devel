@@ -322,8 +322,8 @@ right subtrees and @{term w} caches the sum of the weights of @{term t\<^sub>1} 
 *}
 
 datatype 'a tree =
-Leaf nat 'a |
-InnerNode nat "('a tree)" "('a tree)"
+  Leaf nat 'a
+| InnerNode nat "('a tree)" "('a tree)"
 
 subsection {* Forest Datatype *}
 

@@ -1,4 +1,4 @@
-header "Weights for Dijkstra's Algorithm"
+section "Weights for Dijkstra's Algorithm"
 theory Weight
 imports Complex_Main
 begin
@@ -82,6 +82,7 @@ text {*
 *}
 
 datatype 'a infty = Infty | Num 'a
+
 primrec val where "val (Num d) = d"
 
 lemma num_val_iff[simp]: "e\<noteq>Infty \<Longrightarrow> Num (val e) = e" by (cases e) auto

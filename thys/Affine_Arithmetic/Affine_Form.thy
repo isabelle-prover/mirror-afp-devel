@@ -1,4 +1,4 @@
-header {* Affine Form *}
+section {* Affine Form *}
 theory Affine_Form
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"

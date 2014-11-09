@@ -62,6 +62,7 @@ lemma low_EvalB[rule_format]:
   (\<forall> s t . s \<approx> t \<longrightarrow> evalB b s = evalB b t)"
 (*<*)
 apply (induct b)
+apply (rename_tac Expr1 Expr2)
 apply clarsimp
 apply (subgoal_tac "evalE Expr1 s = evalE Expr1 t")
 prefer 2 apply (rule low_Eval) apply fast apply assumption
@@ -241,9 +242,11 @@ apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases) apply c
   apply (simp add: LOW_def) 
            apply (erule_tac x=ma in allE, clarsimp)
 (*Ctxt_If*)
-apply clarsimp 
+apply (rename_tac BExpr u v)
+apply clarsimp
   apply (subgoal_tac "evalB BExpr s = evalB BExpr ss")
   prefer 2 apply (erule thin_rl, case_tac BExpr, clarsimp)
+           apply (rename_tac Expr1 Expr2)
            apply (subgoal_tac "evalE Expr1 s = evalE Expr1 ss", clarsimp)
            apply (subgoal_tac "evalE Expr2 s = evalE Expr2 ss", clarsimp)
            apply (rule low_Eval) apply (simp add: LOW_def) apply fast apply clarsimp
@@ -255,9 +258,11 @@ apply clarsimp
   apply (simp add: LOW_def) 
            apply (erule_tac x=na in allE, clarsimp)
 (*Ctxt_While*)
+apply (rename_tac BExpr CtxtProg)
 apply clarsimp 
   apply (subgoal_tac "evalB BExpr s = evalB BExpr ss")
   prefer 2 apply (erule thin_rl, case_tac BExpr, clarsimp)
+           apply (rename_tac Expr1 Expr2)
            apply (subgoal_tac "evalE Expr1 s = evalE Expr1 ss", clarsimp)
            apply (subgoal_tac "evalE Expr2 s = evalE Expr2 ss", clarsimp)
            apply (rule low_Eval) apply (simp add: LOW_def) apply fast apply clarsimp

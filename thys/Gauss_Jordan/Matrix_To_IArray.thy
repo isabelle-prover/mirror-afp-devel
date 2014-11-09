@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Matrices as nested IArrays*}
+section{*Matrices as nested IArrays*}
 
 theory Matrix_To_IArray
 imports 

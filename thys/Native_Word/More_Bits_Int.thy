@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-header {* More bit operations on integers *}
+chapter {* More bit operations on integers *}
 
 theory More_Bits_Int
 imports

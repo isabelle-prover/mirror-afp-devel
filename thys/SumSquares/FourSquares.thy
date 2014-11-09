@@ -2,7 +2,7 @@
     Author:     Roelof Oosterhuis, 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Lagrange's four-square theorem *}
+section {* Lagrange's four-square theorem *}
 
 theory FourSquares
 imports "../Fermat3_4/IntNatAux" "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity"

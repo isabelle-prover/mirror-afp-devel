@@ -1,4 +1,4 @@
-header {* Approximation with Affine Forms *}
+section {* Approximation with Affine Forms *}
 theory Affine_Approximation
 imports
   "~~/src/HOL/Library/Code_Target_Numeral"

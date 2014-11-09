@@ -8,10 +8,10 @@
   should be included in HOL-Probability.
 *)
 
-header {* Auxiliary Measures *}
+section {* Auxiliary Measures *}
 
 theory PDF_Misc
-imports Giry_Monad Interval_Integral
+imports Interval_Integral
 begin
 
 subsection {* Null measure *}
@@ -31,7 +31,7 @@ lemma emeasure_null_measure[simp]: "emeasure (null_measure M) X = 0"
 
 lemma subprob_space_null_measure_iff:
     "subprob_space (null_measure M) \<longleftrightarrow> space M \<noteq> {}"
-  by (auto intro!: subprob_spaceI dest: subprob_space.not_empty)
+  by (auto intro!: subprob_spaceI dest: subprob_space.subprob_not_empty)
 
 lemma null_measure_eq_density: "null_measure M = density M (\<lambda>_. 0)"
   by (intro measure_eqI) (simp_all add: emeasure_density)

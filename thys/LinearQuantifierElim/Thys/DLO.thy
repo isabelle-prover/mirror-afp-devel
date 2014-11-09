@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-header "DLO"
+section "DLO"
 
 theory DLO
 imports QE Complex_Main
@@ -130,6 +130,7 @@ lemma I_subst:
  "qfree f \<Longrightarrow> DLO.I (subst f k) xs = DLO.I f (xs!k # xs)"
 apply(induct f)
 apply(simp_all)
+apply(rename_tac a)
 apply(case_tac a)
 apply(simp_all add:nth.simps split:nat.splits)
 done

@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Abstract Tree Automata Algorithms"
+section "Abstract Tree Automata Algorithms"
 theory AbsAlgo
 imports 
   Ta 
@@ -60,7 +60,7 @@ lemma faccs_correct_aux:
 proof -
   have "(\<forall>q. q\<in>faccs \<delta> n = accs \<delta> n q) 
         \<and> (map (faccs \<delta>) ts = map (\<lambda>t. { q . accs \<delta> t q}) ts)"
-  proof (induct rule: tree.induct)
+  proof (induct rule: compat_tree_tree_list.induct)
     case (NODE f ts)
     thus ?case
       apply (intro allI iffI)

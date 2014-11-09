@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Sublinearity *}
+section {* Sublinearity *}
 
 theory Sublinearity imports Embedding Healthiness LoopInduction begin
 

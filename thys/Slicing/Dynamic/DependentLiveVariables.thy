@@ -1,4 +1,4 @@
-header {*\isaheader{Dependent Live Variables} *}
+section {* Dependent Live Variables *}
 
 theory DependentLiveVariables imports DynPDG begin
 

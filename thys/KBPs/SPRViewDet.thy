@@ -1799,6 +1799,7 @@ proof
         apply (case_tac t'b)
          apply (simp add: tObsC_def)
         apply clarsimp
+        apply (rename_tac Trace State)
         apply (rule_tac x=Trace in exI)
         apply (auto dest: spr_jview_tObsC simp: tObsC_def)[1]
        apply (simp add: spr_jview_def)
@@ -1813,6 +1814,7 @@ proof
        apply (case_tac t'a)
         apply (simp add: tObsC_def)
        apply clarsimp
+       apply (rename_tac Trace State)
        apply (rule_tac x="Trace" in exI)
        apply (drule spr_jview_prefix_closed)
        apply (auto dest: spr_jview_tObsC simp: tObsC_def)[1]

@@ -4,7 +4,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Additional definitions and results for lists *}
+section {* Additional definitions and results for lists *}
 
 theory List2
 imports "../CommonSet/SetIntervalCut"

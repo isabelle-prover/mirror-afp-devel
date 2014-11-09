@@ -1,4 +1,4 @@
-header {* Type Application *}
+section {* Type Application *}
 
 theory TypeApp
 imports HOLCF

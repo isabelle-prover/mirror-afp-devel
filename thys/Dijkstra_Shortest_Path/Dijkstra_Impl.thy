@@ -1,4 +1,4 @@
-header {* Implementation of Dijkstra's-Algorithm using the ICF *}
+section {* Implementation of Dijkstra's-Algorithm using the ICF *}
 theory Dijkstra_Impl
 imports 
   Dijkstra 

@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header {* Miscellaneous Mathematics *}
+section {* Miscellaneous Mathematics *}
 
 theory Misc imports Real Multivariate_Analysis begin
 

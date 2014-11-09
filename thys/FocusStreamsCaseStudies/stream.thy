@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header "FOCUS streams: operators and lemmas"
+section "FOCUS streams: operators and lemmas"
  
 theory stream
   imports ListExtras ArithExtras

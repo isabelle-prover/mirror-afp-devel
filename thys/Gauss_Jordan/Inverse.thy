@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Inverse of a matrix using the Gauss Jordan algorithm*}
+section{*Inverse of a matrix using the Gauss Jordan algorithm*}
 
 theory Inverse
 imports

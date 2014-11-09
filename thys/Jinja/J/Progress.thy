@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Progress of Small Step Semantics} *}
+section {* Progress of Small Step Semantics *}
 
 theory Progress
 imports Equivalence WellTypeRT DefAss "../Common/Conform"

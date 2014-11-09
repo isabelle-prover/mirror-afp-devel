@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>A Special Error Monad for Certification with Informative Error Messages\<close>
+section \<open>A Special Error Monad for Certification with Informative Error Messages\<close>
 
 theory Check_Monad
 imports Error_Monad

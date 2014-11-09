@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Auxiliary Definitions/Lemmas to Facilitate Hoare Logic *}
+section {* Auxiliary Definitions/Lemmas to Facilitate Hoare Logic *}
 theory Hoare imports HoarePartial HoareTotal begin
 
 
@@ -229,7 +229,7 @@ lemma conjE_simp: "(P \<and> Q \<Longrightarrow> PROP R) \<equiv> (P \<Longright
 lemma CollectInt_iff: "{s. P s} \<inter> {s. Q s} = {s. P s \<and> Q s}"
   by auto
 
-lemma Compl_Collect:"-(Collect b) = {x. \<not>(b x)}";
+lemma Compl_Collect:"-(Collect b) = {x. \<not>(b x)}"
   by fastforce
 
 lemma Collect_False: "{s. False} = {}"

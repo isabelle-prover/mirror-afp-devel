@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-header {* Kleene Algebra with Tests *}
+section {* Kleene Algebra with Tests *}
 
 theory KAT
   imports "../DRA_Base" Test_Dioids

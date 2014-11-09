@@ -1,4 +1,4 @@
-header {* Collecting Statistics about Algorithms *}
+section {* Collecting Statistics about Algorithms *}
 theory Statistics
 imports Main
 begin

@@ -1,14 +1,12 @@
-header {*
-\isachapter{Equivalence of the CFG and Jinja} 
-*}
+chapter {* Equivalence of the CFG and Jinja *}
 
 theory SemanticsWF imports JVMInterpretation "../Basic/SemanticsCFG" begin
 
 declare rev_nth [simp add]
 
-text {*
-\isaheader{State updates}
+section {* State updates *}
 
+text {*
 The following abbreviations update the stack and the local variables (in the representation
 as used in the CFG) according to a @{text "frame list"} as it is used in Jinja's
 state representation.
@@ -458,8 +456,8 @@ proof -
     unfolding wt_method_def apply (cases "is ! pc")
     using [[simproc del: list_to_set_comprehension]]
     apply (cases "is ! pc")
-    apply (tactic {* PARALLEL_GOALS
-      (ALLGOALS (Clasimp.fast_force_tac (@{context} addSDs @{thms list_all2_lengthD}))) *})
+    apply (tactic {* PARALLEL_ALLGOALS
+      (Clasimp.fast_force_tac (@{context} addSDs @{thms list_all2_lengthD})) *})
     done
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
@@ -925,9 +923,7 @@ proof -
 qed
 
 
-text {*
-\isaheader{CFG simulates Jinja's semantics}
-*}
+section {* CFG simulates Jinja's semantics *}
 
 subsection {* Definitions *}
 

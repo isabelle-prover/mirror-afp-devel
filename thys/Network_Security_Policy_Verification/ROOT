@@ -13,11 +13,6 @@ session Network_Security_Policy_Verification (AFP) = Collections +
     TopoS_generateCode
   theories [document = false]
     attic
-  document_files
-    "root.bib"
-    "root.tex"
-
-session Network_Security_Policy_Verification_Examples (AFP) = Network_Security_Policy_Verification +
   theories [document = false]
     "Examples/Impl_List_Playground_statefulpolicycompliance"
     "Examples/Example"
@@ -26,3 +21,6 @@ session Network_Security_Policy_Verification_Examples (AFP) = Network_Security_P
     "Examples/I8_SSH_Landscape"
     "Examples/Impl_List_Playground"
     "Examples/Impl_List_Playground_ChairNetwork_statefulpolicy_example"
+  document_files
+    "root.bib"
+    "root.tex"

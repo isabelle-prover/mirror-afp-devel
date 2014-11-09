@@ -1,4 +1,4 @@
-header{*Attic*}
+section{*Attic*}
 theory attic
 imports Main "Lib/FiniteGraph"
 begin

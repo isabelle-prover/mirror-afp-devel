@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Multiset Extension Preserves Well-Quasi-Orders *}
+section {* Multiset Extension Preserves Well-Quasi-Orders *}
 
 theory Wqo_Multiset
 imports

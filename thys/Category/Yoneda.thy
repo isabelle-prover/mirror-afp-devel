@@ -3,7 +3,7 @@
     License: LGPL
 *)
 
-header {* Yonedas Lemma *}
+section {* Yonedas Lemma *}
 
 theory Yoneda
 imports HomFunctors NatTrans

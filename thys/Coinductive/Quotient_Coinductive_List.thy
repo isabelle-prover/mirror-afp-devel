@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-header {* Setup for Isabelle's quotient package for lazy lists *}
+section {* Setup for Isabelle's quotient package for lazy lists *}
 
 theory Quotient_Coinductive_List imports
   "~~/src/HOL/Library/Quotient_List"
@@ -30,7 +30,7 @@ lemma id_preserve [quot_preserve]:
 functor lmap: lmap
    by (simp_all add: fun_eq_iff id_def llist.map_comp)
 
-declare lmap_id [id_simps]
+declare llist.map_id0 [id_simps]
 
 lemma reflp_llist_all2: "reflp R \<Longrightarrow> reflp (llist_all2 R)"
   by (rule reflpI) (auto simp add: llist_all2_conv_all_lnth elim: reflpE)
@@ -58,7 +58,7 @@ qed
 
 lemma Quotient_lmap_Abs_Rep:
   "Quotient3 R Abs Rep \<Longrightarrow> lmap Abs (lmap Rep a) = a"
-  by (drule abs_o_rep) (simp add: lmap_id llist.map_comp)
+  by (drule abs_o_rep) (simp add: llist.map_id0 llist.map_comp)
 
 lemma llist_all2_rel:
   assumes "Quotient3 R Abs Rep"
@@ -152,7 +152,7 @@ lemma corec_llist_preserve [quot_preserve]:
 proof(intro ext)
   fix IS_LNIL LHD endORmore LTL_end LTL_more b
   show "?lhs IS_LNIL LHD endORmore LTL_end LTL_more b = ?rhs IS_LNIL LHD endORmore LTL_end LTL_more b"
-    by(coinduction arbitrary: b rule: llist.strong_coinduct)
+    by(coinduction arbitrary: b rule: llist.coinduct_strong)
       (auto simp add: Quotient3_abs_rep[OF q1] Quotient3_abs_rep[OF q2] Quotient_lmap_Abs_Rep[OF q2])
 qed
 

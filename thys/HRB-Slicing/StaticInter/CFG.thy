@@ -1,4 +1,4 @@
-header {* \isaheader{CFG} *}
+section {* CFG *}
 
 theory CFG imports BasicDefs begin
 

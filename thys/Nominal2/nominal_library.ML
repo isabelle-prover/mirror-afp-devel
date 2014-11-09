@@ -86,7 +86,7 @@ sig
   (* datatype operations *)
   type cns_info = (term * typ * typ list * bool list) list
 
-  val all_dtyp_constrs_types: Datatype_Aux.descr -> cns_info list
+  val all_dtyp_constrs_types: Old_Datatype_Aux.descr -> cns_info list
 
   (* tactics for function package *)
   val size_ss: simpset
@@ -333,10 +333,10 @@ fun all_dtyp_constrs_types descr =
   let
     fun aux ((ty_name, vs), (cname, args)) =
       let
-        val vs_tys = map (Datatype_Aux.typ_of_dtyp descr) vs
+        val vs_tys = map (Old_Datatype_Aux.typ_of_dtyp descr) vs
         val ty = Type (ty_name, vs_tys)
-        val arg_tys = map (Datatype_Aux.typ_of_dtyp descr) args
-        val is_rec = map Datatype_Aux.is_rec_type args
+        val arg_tys = map (Old_Datatype_Aux.typ_of_dtyp descr) args
+        val is_rec = map Old_Datatype_Aux.is_rec_type args
       in
         (Const (cname, arg_tys ---> ty), ty, arg_tys, is_rec)
       end

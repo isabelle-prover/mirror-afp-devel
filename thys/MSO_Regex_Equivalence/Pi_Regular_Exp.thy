@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* $\Pi$-Extended Regular Expressions *}
+section {* $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp
@@ -10,7 +10,7 @@ begin
 (*>*)
 subsection {* Syntax of regular expressions *}
 
-datatype_new 'a rexp =
+datatype 'a rexp =
   Zero |
   Full |
   One |
@@ -21,7 +21,6 @@ datatype_new 'a rexp =
   Not "('a rexp)" |
   Inter "('a rexp)" "('a rexp)" |
   Pr "('a rexp)"
-datatype_compat rexp
 derive linorder rexp
 
 text {* Lifting constructors to lists *}

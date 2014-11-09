@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Reduced row echelon form*}
+section{*Reduced row echelon form*}
 
 theory Rref
 imports

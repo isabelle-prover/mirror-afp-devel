@@ -1,4 +1,4 @@
-header {* Basic lemmas about functions *}
+section {* Basic lemmas about functions *}
 
 theory FunctionLemmas
 

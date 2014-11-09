@@ -1,4 +1,4 @@
-header {* Circular Singly Linked Lists *}
+section {* Circular Singly Linked Lists *}
 theory Circ_List
 imports List_Seg Imp_List_Spec
 begin
@@ -238,7 +238,7 @@ lemma "<emp> test <\<lambda>r. \<up>(r=test_result) * true>"
   apply (sep_auto)
   done
   
-export_code test in SML_imp
+export_code test checking SML_imp
 
 ML_val {*
   val res = @{code test} ();

@@ -3,7 +3,7 @@
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
-header {* Fault-tolerant Midpoint algorithm *}
+section {* Fault-tolerant Midpoint algorithm *}
 
 theory LynchInstance imports Complex_Main begin
 

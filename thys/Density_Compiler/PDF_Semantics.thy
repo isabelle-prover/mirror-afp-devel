@@ -21,13 +21,13 @@ definition bernoulli :: "val \<Rightarrow> val measure" where
   "bernoulli = (\<lambda> RealVal p \<Rightarrow> density (count_space (range BoolVal)) 
                                    (\<lambda>BoolVal b \<Rightarrow> bernoulli_density p b))"
 
-lemma measurable_kernel_space_density:
+lemma measurable_subprob_algebra_density:
   assumes "sigma_finite_measure N"
   assumes "space N \<noteq> {}"
   assumes [measurable]: "split f \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
   assumes "\<And>x. x \<in> space M \<Longrightarrow> (\<integral>\<^sup>+y. f x y \<partial>N) \<le> 1"
-  shows "(\<lambda>x. density N (f x)) \<in> measurable M (kernel_space N)"
-proof (rule measurable_kernel_space)
+  shows "(\<lambda>x. density N (f x)) \<in> measurable M (subprob_algebra N)"
+proof (rule measurable_subprob_algebra)
   fix x assume "x \<in> space M"
   with assms show "subprob_space (density N (f x))"
     by (intro subprob_spaceI) (auto simp: emeasure_density_space)
@@ -47,7 +47,7 @@ lemma measurable_bernoulli_density[measurable]:
   unfolding bernoulli_density_def[abs_def] by measurable
 
 lemma measurable_bernoulli[measurable]:
-  "bernoulli \<in> measurable (embed_measure lborel RealVal) (kernel_space (count_space (range BoolVal)))"
+  "bernoulli \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range BoolVal)))"
 proof (subst measurable_cong)
   fix p assume "p \<in> space (embed_measure lborel RealVal)"
   thus "bernoulli p = density (count_space (range BoolVal)) 
@@ -57,8 +57,8 @@ proof (subst measurable_cong)
 next
   show "(\<lambda>p. density (count_space (range BoolVal)) 
                  (bernoulli_density (extract_real p) \<circ> extract_bool))
-           \<in> measurable (embed_measure lborel RealVal) (kernel_space (count_space (range BoolVal)))"
-  proof (rule measurable_kernel_space_density)
+           \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range BoolVal)))"
+  proof (rule measurable_subprob_algebra_density)
     show "(\<lambda>(p, b). (bernoulli_density (extract_real p) \<circ> extract_bool) b)
               \<in> borel_measurable (embed_measure lborel RealVal \<Otimes>\<^sub>M count_space (range BoolVal))"
        unfolding o_def by measurable
@@ -108,7 +108,7 @@ definition uniform_real :: "val \<Rightarrow> val measure" where
 
 lemma measurable_uniform_int[measurable]:
   "uniform_int \<in> measurable (embed_measure (count_space (range IntVal \<times> range IntVal))
-                              (split PairVal)) (kernel_space (count_space (range IntVal)))"
+                              (split PairVal)) (subprob_algebra (count_space (range IntVal)))"
     (is "_ \<in> ?M")
 proof (subst measurable_cong)
   fix x assume "x \<in> space (embed_measure (count_space (range IntVal\<times>range IntVal)) (split PairVal))"
@@ -121,7 +121,7 @@ next
   let ?f = "\<lambda>x. density (count_space (range IntVal))
                             (\<lambda>y. uniform_int_density (extract_int_pair x) (extract_int y))"
   show "?f \<in> ?M"
-  proof (rule measurable_kernel_space_density)
+  proof (rule measurable_subprob_algebra_density)
     fix x assume "x \<in> space (embed_measure (count_space (range IntVal \<times> range IntVal)) (split PairVal))"
     then obtain l u where [simp]: "x = <|IntVal l, IntVal u|>" by (auto simp: space_embed_measure)
     show "(\<integral>\<^sup>+y. uniform_int_density (extract_int_pair x) (extract_int y) 
@@ -159,7 +159,7 @@ lemma density_cong':
 lemma measurable_uniform_real[measurable]:
   "uniform_real \<in> measurable (embed_measure (embed_measure lborel RealVal \<Otimes>\<^sub>M
                      embed_measure lborel RealVal) (split PairVal)) 
-                  (kernel_space (embed_measure lborel RealVal))" (is "_ \<in> measurable ?M ?N")
+                  (subprob_algebra (embed_measure lborel RealVal))" (is "_ \<in> measurable ?M ?N")
 proof (subst measurable_cong)
   fix x assume "x \<in> space ?M"
   then obtain l u where [simp]: "x = <|RealVal l, RealVal u|>" 
@@ -173,7 +173,7 @@ next
   let ?f = "\<lambda>x. density (embed_measure lborel RealVal)
                             (\<lambda>y. uniform_real_density (extract_real_pair x) (extract_real y))"
   show "?f \<in> measurable ?M ?N"
-  proof (rule measurable_kernel_space_density)
+  proof (rule measurable_subprob_algebra_density)
     fix x assume "x \<in> space ?M"
     then obtain l u where [simp]: "x = <|RealVal l, RealVal u|>" 
       by (auto simp: space_embed_measure space_pair_measure)
@@ -227,7 +227,7 @@ definition gaussian :: "val \<Rightarrow> val measure" where
 
 lemma measurable_gaussian[measurable]:
   "gaussian \<in> measurable (embed_measure (embed_measure lborel RealVal \<Otimes>\<^sub>M embed_measure lborel RealVal)
-                              (\<lambda>(a, b). <|a , b|>)) (kernel_space (embed_measure lborel RealVal))"
+                              (\<lambda>(a, b). <|a , b|>)) (subprob_algebra (embed_measure lborel RealVal))"
     (is "gaussian \<in> measurable ?M ?N")
 proof (subst measurable_cong)
   fix x assume "x \<in> space ?M"
@@ -241,7 +241,7 @@ next
   let ?f = "(\<lambda>w. density (embed_measure lborel RealVal)
                     (\<lambda>y. gaussian_density (extract_real_pair w) (extract_real y)))"
   show "?f \<in> measurable ?M ?N"
-  proof (rule measurable_kernel_space_density)
+  proof (rule measurable_subprob_algebra_density)
     fix x assume "x \<in> space ?M"
     then obtain \<mu> \<sigma> where [simp]: "x = <|RealVal \<mu>, RealVal \<sigma>|>" 
       by (auto simp: space_embed_measure space_pair_measure)
@@ -281,8 +281,8 @@ definition poisson :: "val \<Rightarrow> val measure" where
                     (\<lambda> IntVal k \<Rightarrow> poisson_density' rate k))"
 
 lemma measurable_poisson[measurable]:
-  "poisson \<in> measurable (embed_measure lborel RealVal) (kernel_space (count_space (range IntVal)))"
-      (is "_ \<in> measurable ?M (kernel_space ?N)")
+  "poisson \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range IntVal)))"
+      (is "_ \<in> measurable ?M (subprob_algebra ?N)")
 proof (subst measurable_cong)
   let ?f = "\<lambda>rate k. if rate \<ge> 0 then poisson_density rate (extract_int k) else 0"
   fix rate' assume "rate' \<in> space ?M"
@@ -293,8 +293,8 @@ proof (subst measurable_cong)
 next
   let ?f = "\<lambda>rate k. if rate \<ge> 0 then poisson_density rate (extract_int k) else 0"
   show "(\<lambda>rate. density (count_space (range IntVal)) (?f (extract_real rate))) \<in>
-            measurable (embed_measure lborel RealVal) (kernel_space (count_space (range IntVal)))"
-  proof (rule measurable_kernel_space_density)
+            measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range IntVal)))"
+  proof (rule measurable_subprob_algebra_density)
     show "(\<lambda>(x, y). ?f (extract_real x) y) \<in> 
               borel_measurable (embed_measure lborel RealVal \<Otimes>\<^sub>M count_space (range IntVal))"
       by (subst measurable_split_conv, rule measurable_If', simp, simp,
@@ -403,7 +403,7 @@ lemma space_dist_measure[simp]:
 
 lemma measurable_dist_measure[measurable]:
     "dist_measure d \<in> measurable (stock_measure (dist_param_type d)) 
-                                 (kernel_space (stock_measure (dist_result_type d)))"
+                                 (subprob_algebra (stock_measure (dist_result_type d)))"
   by (cases d) simp_all
 
 primrec dist_dens :: "pdf_dist \<Rightarrow> val \<Rightarrow> val \<Rightarrow> ereal" where
@@ -771,7 +771,7 @@ proof-
   also have A: "(\<lambda>w. return ?R <|\<sigma> x, w|>) = return ?R \<circ> split PairVal \<circ> (\<lambda>w. (\<sigma> x, w))"
     by (intro ext) simp
   have \<sigma>x: "\<sigma> x \<in> space (stock_measure (val_type (\<sigma> x)))" by (simp add:)
-  have "(\<lambda>w. return ?R <|\<sigma> x, w|>) \<in> measurable (stock_measure (val_type (\<sigma> y))) (kernel_space ?R)"
+  have "(\<lambda>w. return ?R <|\<sigma> x, w|>) \<in> measurable (stock_measure (val_type (\<sigma> y))) (subprob_algebra ?R)"
     by (subst A, intro measurable_comp)
        (rule measurable_Pair1', rule \<sigma>x, rule measurable_embed_measure2, 
         simp_all add: return_measurable inj_PairVal)
@@ -1060,7 +1060,7 @@ lemma subset_shift_var_set:
 lemma measurable_expr_sem:
   assumes "\<Gamma> \<turnstile> e : t" and "free_vars e \<subseteq> V"
   shows "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable (state_measure V \<Gamma>) 
-                                         (kernel_space (stock_measure t))"
+                                         (subprob_algebra (stock_measure t))"
 using assms
 proof (induction arbitrary: V rule: expr_typing.induct)
   case (et_var \<Gamma> x)
@@ -1070,7 +1070,7 @@ proof (induction arbitrary: V rule: expr_typing.induct)
 next
   case (et_val \<Gamma> v)
   thus ?case by (auto intro!: measurable_const subprob_space_return 
-                      simp: space_kernel_space return_val_def)
+                      simp: space_subprob_algebra return_val_def)
 next
   case (et_let \<Gamma> e1 t1 e2 t2 V)
     have A: "(\<lambda>v. stock_measure (case_nat t1 \<Gamma> v)) = 
@@ -1103,13 +1103,13 @@ next
 next
   case (et_if \<Gamma> b e1 t e2 V)
   let ?M = "\<lambda>e t. (\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> 
-                      measurable (state_measure V \<Gamma>) (kernel_space (stock_measure t))"
+                      measurable (state_measure V \<Gamma>) (subprob_algebra (stock_measure t))"
   from et_if.prems have A[measurable]: "?M b BOOL" "?M e1 t" "?M e2 t" by (intro et_if.IH, simp)+
   show ?case by (subst expr_sem.simps, rule measurable_bind[OF A(1)]) simp_all
 next
   case (et_fail \<Gamma> t V)
   show ?case
-    by (auto intro!: measurable_kernel_space subprob_spaceI simp:)
+    by (auto intro!: measurable_subprob_algebra subprob_spaceI simp:)
 qed
 
 
@@ -1240,8 +1240,8 @@ next
   from et_if.prems and et_if.hyps have "space (expr_sem \<sigma> b) = type_universe BOOL"
     by (intro space_expr_sem) (auto simp: state_measure_var_type)
   hence [simp]: "val_type (expr_sem_rf \<sigma> b) = BOOL" by (simp add: A return_val_def)
-  have B: "return_val (expr_sem_rf \<sigma> e1) \<in> space (kernel_space (stock_measure t))"
-          "return_val (expr_sem_rf \<sigma> e2) \<in> space (kernel_space (stock_measure t))"
+  have B: "return_val (expr_sem_rf \<sigma> e1) \<in> space (subprob_algebra (stock_measure t))"
+          "return_val (expr_sem_rf \<sigma> e2) \<in> space (subprob_algebra (stock_measure t))"
     using et_if.hyps and et_if.prems 
     by ((subst A[symmetric], intro measurable_space[OF measurable_expr_sem], auto) [])+
   thus ?case by (simp only: expr_sem.simps A, subst bind_return_val'') (auto intro!: measurable_If)
@@ -1454,7 +1454,7 @@ proof-
                        return_val (expr_sem_rf f \<sigma>) \<guillemotright>= (\<lambda>v. expr_sem (\<sigma>(x := v)) e)" (is "_ = ?M")
     by (auto simp: expr_sem_rf_sound)
   also have "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<circ> (\<lambda>(\<sigma>,v). \<sigma>(x := v)) \<circ> (\<lambda>v. (\<sigma>,v)) \<in> 
-                 measurable (stock_measure ((\<Gamma>(x := t')) x)) (kernel_space (stock_measure t))"
+                 measurable (stock_measure ((\<Gamma>(x := t')) x)) (subprob_algebra (stock_measure t))"
     apply (intro measurable_comp, rule measurable_Pair1', rule assms)
     apply (subst fun_upd_same, unfold state_measure_def)
     apply (rule measurable_add_dim', subst stock_measure_context_upd[symmetric])
@@ -1462,7 +1462,7 @@ proof-
                               simp del: fun_upd_apply)
     done                   
   hence "(\<lambda>v. expr_sem (\<sigma>(x := v)) e) \<in> 
-                 measurable (stock_measure ((\<Gamma>(x := t')) x)) (kernel_space (stock_measure t))"
+                 measurable (stock_measure ((\<Gamma>(x := t')) x)) (subprob_algebra (stock_measure t))"
     by (simp add: o_def)
   with assms have "?M = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e"
     unfolding return_val_def 

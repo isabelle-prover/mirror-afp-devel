@@ -3,13 +3,13 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Correctness of Stage 1} *}
+section {* Correctness of Stage 1 *}
 
 theory Correctness1
 imports J1WellForm Compiler1
 begin
 
-section{*Correctness of program compilation *}
+subsection{*Correctness of program compilation *}
 
 primrec unmod :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
   and unmods :: "expr\<^sub>1 list \<Rightarrow> nat \<Rightarrow> bool" where
@@ -35,7 +35,7 @@ primrec unmod :: "expr\<^sub>1 \<Rightarrow> nat \<Rightarrow> bool"
 lemma hidden_unmod: "\<And>Vs. hidden Vs i \<Longrightarrow> unmod (compE\<^sub>1 Vs e) i" and
  "\<And>Vs. hidden Vs i \<Longrightarrow> unmods (compEs\<^sub>1 Vs es) i"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
 apply (simp_all add:hidden_inacc)
 apply(auto simp add:hidden_def)
 done
@@ -468,7 +468,7 @@ and  "\<And>Vs Ts Us.
   \<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> es [::] Us; size Ts = size Vs \<rbrakk>
   \<Longrightarrow> compP f P,Ts \<turnstile>\<^sub>1 compEs\<^sub>1 Vs es [::] Us"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)
 apply clarsimp
 apply(fastforce)
 apply clarsimp
@@ -493,7 +493,7 @@ text{*\noindent and the correct block numbering: *}
 
 lemma \<B>: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B> (compE\<^sub>1 Vs e) n"
 and \<B>s: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B>s (compEs\<^sub>1 Vs es) n"
-(*<*)by(induct e and es) simp_all(*>*)
+(*<*)by(induct e and es rule: \<B>.induct \<B>s.induct) simp_all(*>*)
 
 text{* The main complication is preservation of definite assignment
 @{term"\<D>"}. *}
@@ -508,14 +508,14 @@ by(auto simp:image_def)
 lemma A_compE\<^sub>1_None[simp]:
       "\<And>Vs. \<A> e = None \<Longrightarrow> \<A> (compE\<^sub>1 Vs e) = None"
 and "\<And>Vs. \<A>s es = None \<Longrightarrow> \<A>s (compEs\<^sub>1 Vs es) = None"
-(*<*)by(induct e and es)(auto simp:hyperset_defs)(*>*)
+(*<*)by(induct e and es rule: compE\<^sub>1.induct compEs\<^sub>1.induct)(auto simp:hyperset_defs)(*>*)
 
 
 lemma A_compE\<^sub>1:
       "\<And>A Vs. \<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE\<^sub>1 Vs e) = \<lfloor>last_index Vs ` A\<rfloor>"
 and "\<And>A Vs. \<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs\<^sub>1 Vs es) = \<lfloor>last_index Vs ` A\<rfloor>"
 (*<*)
-proof(induct e and es)
+proof(induct e and es rule: fv.induct fvs.induct)
   case (Block V' T e)
   hence "fv e \<subseteq> set (Vs@[V'])" by fastforce
   moreover obtain B where "\<A> e = \<lfloor>B\<rfloor>"
@@ -572,7 +572,7 @@ qed (auto simp add:hyperset_defs)
 
 
 lemma D_None[iff]: "\<D> (e::'a exp) None" and [iff]: "\<D>s (es::'a exp list) None"
-(*<*)by(induct e and es)(simp_all)(*>*)
+(*<*)by(induct e and es rule: \<D>.induct \<D>s.induct)(simp_all)(*>*)
 
 
 lemma D_last_index_compE\<^sub>1:
@@ -581,7 +581,7 @@ lemma D_last_index_compE\<^sub>1:
 and "\<And>A Vs. \<lbrakk> A \<subseteq> set Vs; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow>
                 \<D>s es \<lfloor>A\<rfloor> \<Longrightarrow> \<D>s (compEs\<^sub>1 Vs es) \<lfloor>last_index Vs ` A\<rfloor>"
 (*<*)
-proof(induct e and es)
+proof(induct e and es rule: \<D>.induct \<D>s.induct)
   case (BinOp e\<^sub>1 bop e\<^sub>2)
   hence IH\<^sub>1: "\<D> (compE\<^sub>1 Vs e\<^sub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case

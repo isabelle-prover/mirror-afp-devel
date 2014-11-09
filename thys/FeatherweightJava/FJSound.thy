@@ -6,7 +6,7 @@
     License:     LGPL
 *)
 
-header {* {\tt FJSound}: Type Soundness *}
+section {* {\tt FJSound}: Type Soundness *}
 
 theory FJSound imports FJAux
 begin 
@@ -226,8 +226,8 @@ proof -
           e0_typ: "CT;\<Gamma>1 \<turnstile> (ds/xs)e0 : C'" and sub': "CT \<turnstile> C' <: C0" by auto
       from t_invk asms obtain Cs' where
           es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
-      have subst_e: "(ds/xs)(MethodInvk e0 m es) = MethodInvk ((ds/xs)e0) m ([ds/xs]es)" 
-        by(auto simp add:substs_subst_list1_subst_list2.simps subst_list1_eq_map_substs)
+      have subst_e: "(ds/xs)(MethodInvk e0 m es) = MethodInvk ((ds/xs)e0) m ([ds/xs]es)"
+        by(auto simp add: subst_list1_eq_map_substs)
       from 
         e0_typ
         A_1_1[OF sub' ct_ok mtyp] 
@@ -254,7 +254,7 @@ proof -
       from t_new asms obtain Cs' where
         es_typ: "CT;\<Gamma>1 \<turnstile>+ [ds/xs]es : Cs'" and subs': "CT \<turnstile>+ Cs' <: Cs" by auto
       have subst_e: "(ds/xs)(New C es) = New C ([ds/xs]es)" 
-        by(auto simp add:substs_subst_list1_subst_list2.simps subst_list2_eq_map_substs)
+        by(auto simp add: subst_list2_eq_map_substs)
       from es_typ subtypings_trans[OF subs' subs] flds subst_e len vdts
       have "CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C" by(auto simp add:typings_typing.intros)
       moreover have "CT \<turnstile> C <: C" by(simp add:subtyping.intros)

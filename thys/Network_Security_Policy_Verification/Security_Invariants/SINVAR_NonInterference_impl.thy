@@ -107,30 +107,7 @@ definition "NonInterference_eval G P = (valid_list_graph G \<and>
 lemma sinvar_correct: "valid_list_graph G \<Longrightarrow> SINVAR_NonInterference.sinvar (list_graph_to_graph G) nP = sinvar G nP"
    apply(simp add: sinvar_list_eq_set)
    apply(rule all_nodes_list_I)
-   apply(simp add: fun_eq_iff)
-   apply(clarify)
-   apply(rename_tac x)
-   proof -
-    fix x :: 'a
-    have f1: "\<And>e_x1 e_x2. - insert (e_x1\<Colon>'a) (List.coset e_x2) = set e_x2 - {e_x1}"
-      by (metis compl_coset insert_code(2) set_removeAll)
-    hence f2: "\<And>e_x1 e_x e_x2. e_x1 ` (- insert (e_x\<Colon>'a) (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected e_x2) e_x))) = set (map e_x1 (removeAll e_x (FiniteListGraph.succ_tran (FiniteListGraph.undirected e_x2) e_x))\<Colon>node_config list)"
-      by (metis SINVAR_NonInterference_impl.undirected_reachable_def sinvar_eq_help1 set_removeAll)
-    have f3: "\<And>e_x2 e_x1. - insert (e_x2\<Colon>'a) (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected e_x1) e_x2)) = SINVAR_NonInterference.undirected_reachable (list_graph_to_graph e_x1) e_x2"
-      using f1 by (metis SINVAR_NonInterference.undirected_reachable_def succ_tran_correct undirected_correct)
-    have "\<not> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated} \<and> \<not> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated} \<or> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated} \<and> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated}"
-      by metis
-    moreover
-    { assume "nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated} \<and> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated}"
-      hence "(nP x = Interfering \<longrightarrow> nP ` SINVAR_NonInterference.undirected_reachable (list_graph_to_graph G) x \<subseteq> {Unrelated}) = (nP x = Interfering \<longrightarrow> nP ` set (SINVAR_NonInterference_impl.undirected_reachable G x) \<subseteq> {Unrelated})"
-        using f2 f3 by (metis SINVAR_NonInterference_impl.undirected_reachable_def image_set) }
-    moreover
-    { assume "\<not> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated} \<and> \<not> nP ` (- insert x (List.coset (FiniteListGraph.succ_tran (FiniteListGraph.undirected G) x))) \<subseteq> {Unrelated}"
-      hence "(nP x = Interfering \<longrightarrow> nP ` SINVAR_NonInterference.undirected_reachable (list_graph_to_graph G) x \<subseteq> {Unrelated}) = (nP x = Interfering \<longrightarrow> nP ` set (SINVAR_NonInterference_impl.undirected_reachable G x) \<subseteq> {Unrelated})"
-        using f2 f3 by (metis SINVAR_NonInterference_impl.undirected_reachable_def image_set) }
-    ultimately show "(nP x = Interfering \<longrightarrow> nP ` SINVAR_NonInterference.undirected_reachable (list_graph_to_graph G) x \<subseteq> {Unrelated}) = (nP x = Interfering \<longrightarrow> nP ` set (SINVAR_NonInterference_impl.undirected_reachable G x) \<subseteq> {Unrelated})"
-      by metis
-  qed
+   by (simp add: SINVAR_NonInterference.undirected_reachable_def succ_tran_correct undirected_correct undirected_reachable_def)
 
 
 

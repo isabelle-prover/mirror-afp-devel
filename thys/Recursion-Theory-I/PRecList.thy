@@ -3,7 +3,7 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-header {* Primitive recursive coding of lists of natural numbers *}
+section {* Primitive recursive coding of lists of natural numbers *}
 
 theory PRecList
 imports PRecFun

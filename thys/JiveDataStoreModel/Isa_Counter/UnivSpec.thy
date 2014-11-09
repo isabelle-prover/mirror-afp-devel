@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* The Universal Specification *}
+section {* The Universal Specification *}
 
 theory UnivSpec imports "../Isabelle/JML"  begin
 

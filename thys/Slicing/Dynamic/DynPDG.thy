@@ -1,5 +1,6 @@
-header {*  \isachapter{Dynamic Slicing} 
-  \isaheader{Dynamic Program Dependence Graph} *}
+chapter {* Dynamic Slicing *}
+
+section {* Dynamic Program Dependence Graph *}
 
 theory DynPDG imports 
   "../Basic/DynDataDependence" 

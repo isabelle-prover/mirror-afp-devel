@@ -1,4 +1,4 @@
-header {* Square Root Upper and Lower Bounds *}
+chapter {* Square Root Upper and Lower Bounds *}
 
 theory Sqrt_Bounds
 imports Bounds_Lemmas
@@ -19,12 +19,12 @@ using assms
 proof (induction n)
   case 0 show ?case
     apply (simp add: power2_eq_square)
-    apply (sos_cert "(((A<0 * R<1) + (R<1 * (R<1 * [~1*x + 1]^2))))")
+    apply (sos "(((A<0 * R<1) + (R<1 * (R<1 * [~1*x + 1]^2))))")
     done
 next
   case (Suc n)
   have xy: "\<And>y. \<lbrakk>x \<le> y * y; y \<noteq> 0\<rbrakk> \<Longrightarrow> x * (2 * (y * y)) \<le> x * x + y * (y * (y * y))"
-    by (sos_cert "(((((A<0 * A<1) * R<1) + ((A<0 * R<1) * (R<1 * [~1*y^2 + x]^2)))) &
+    by (sos "(((((A<0 * A<1) * R<1) + ((A<0 * R<1) * (R<1 * [~1*y^2 + x]^2)))) &
                    ((((A<0 * A<1) * R<1) + ((A<0 * R<1) * (R<1 * [~1*y^2 + x]^2)))))")
   show ?case using Suc
     by (auto simp: power2_eq_square algebra_simps divide_simps xy)

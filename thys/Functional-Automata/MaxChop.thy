@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Generic scanner"
+section "Generic scanner"
 
 theory MaxChop
 imports MaxPrefix
@@ -53,7 +53,7 @@ lemma reducing_maxsplit: "reducing(%qs. maxsplit P ([],qs) [] qs)"
 by (simp add: reducing_def maxsplit_eq)
 
 lemma is_maxsplitter_reducing:
- "is_maxsplitter P splitf ==> reducing splitf";
+ "is_maxsplitter P splitf ==> reducing splitf"
 by(simp add:is_maxsplitter_def reducing_def)
 
 lemma chop_concat[rule_format]: "is_maxsplitter P splitf ==>

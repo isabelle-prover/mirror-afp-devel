@@ -122,9 +122,9 @@ lemma inheritedIncLevelEq[rule_format, symmetric]: "inherited subs P --> P A = P
 lemma inheritedInsertEq[rule_format, symmetric]: "inherited subs P --> ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A)"
   by (auto simp add: inherited_def)
 
-lemmas inheritedUnD = iffD1[OF inheritedUnEq];
+lemmas inheritedUnD = iffD1[OF inheritedUnEq]
 
-lemmas inheritedInsertD = inheritedInsertEq[THEN iffD1];
+lemmas inheritedInsertD = inheritedInsertEq[THEN iffD1]
 
 lemmas inheritedIncLevelD = inheritedIncLevelEq[THEN iffD1]
 
@@ -190,7 +190,7 @@ lemma boundedByInsert: "boundedBy N (insert (n,delta) B)     = (n < N & boundedB
 lemma boundedByUn: "boundedBy N (A Un B) = (boundedBy N A & boundedBy N B)"
   by(auto simp add: boundedBy_def)
 
-lemma boundedByIncLevel': "boundedBy (Suc N) (incLevel ` A) = boundedBy N A";
+lemma boundedByIncLevel': "boundedBy (Suc N) (incLevel ` A) = boundedBy N A"
   by(auto simp add: incLevel_def boundedBy_def)
 
 lemma boundedByAdd1: "boundedBy N B \<Longrightarrow> boundedBy (N+M) B"
@@ -212,7 +212,7 @@ lemma boundedBy0: "boundedBy 0 A = (A = {})"
 lemma boundedBySuc': "boundedBy N A \<Longrightarrow> boundedBy (Suc N) A"
   by (auto simp add: boundedBy_def)
 
-lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( \<exists>m . n = Suc m & boundedBy m (tree subs gamma))";
+lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( \<exists>m . n = Suc m & boundedBy m (tree subs gamma))"
   apply(cases n)
    apply(force simp add: boundedBy0 tree0)
   apply(force simp add: treeEquation [of _ gamma] incLevel_def boundedBy_def)
@@ -274,7 +274,7 @@ definition
 lemma foundedD: "founded subs P (tree subs delta) ==> terminal subs delta ==> P delta"
   by(simp add: treeEquation [of _ delta] founded_def)
 
-lemma foundedMono: "[| founded subs P A; \<forall>x. P x --> Q x |] ==> founded subs Q A";
+lemma foundedMono: "[| founded subs P A; \<forall>x. P x --> Q x |] ==> founded subs Q A"
   by (auto simp: founded_def)
 
 lemma foundedSubs: "founded subs P (tree subs Gamma) \<Longrightarrow> sigma \<in> subs Gamma \<Longrightarrow> founded subs P (tree subs sigma)"
@@ -292,10 +292,10 @@ subsection "Inherited Properties- founded"
 lemma foundedInsert[rule_format]: "~ terminal subs delta --> founded subs P (insert (n,delta) B) = (founded subs P B)"
   apply(simp add: terminal_def founded_def) done
 
-lemma foundedUn: "(founded subs P (A Un B)) = (founded subs P A & founded subs P B)";
+lemma foundedUn: "(founded subs P (A Un B)) = (founded subs P A & founded subs P B)"
   apply(simp add: founded_def) by force
 
-lemma foundedIncLevel: "founded subs P (incLevel ` A) = (founded subs P A)";
+lemma foundedIncLevel: "founded subs P (incLevel ` A) = (founded subs P A)"
   apply (simp add: founded_def incLevel_def, auto) done
 
 lemma foundedEmpty: "founded subs P {}"
@@ -311,10 +311,10 @@ subsection "Inherited Properties- finite"
 
 lemmas finiteInsert = finite_insert
 
-lemma finiteUn: "finite (A Un B) = (finite A & finite B)";
+lemma finiteUn: "finite (A Un B) = (finite A & finite B)"
   apply simp done
 
-lemma finiteIncLevel: "finite (incLevel ` A) = finite A";
+lemma finiteIncLevel: "finite (incLevel ` A) = finite A"
   apply (insert injIncLevel, rule)
    apply(frule finite_imageD)
     apply (blast intro: subset_inj_on, assumption)

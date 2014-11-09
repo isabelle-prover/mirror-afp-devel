@@ -1,4 +1,4 @@
-header {* Compositional Reasoning *}
+section {* Compositional Reasoning *}
 
 (*<*)
 theory Compositional_Reasoning

@@ -1,4 +1,4 @@
-header {* \isaheader{Interpretations of the various dynamic control dependences} *}
+section {* Interpretations of the various dynamic control dependences *}
 
 theory DynamicControlDependences imports AdditionalLemmas "../Dynamic/DynPDG" begin
 

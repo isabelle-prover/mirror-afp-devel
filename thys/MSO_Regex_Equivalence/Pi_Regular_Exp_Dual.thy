@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* $\Pi$-Extended Dual Regular Expressions *}
+section {* $\Pi$-Extended Dual Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp_Dual
@@ -9,7 +9,7 @@ begin
 (*>*)
 subsection {* Syntax of regular expressions *}
 
-datatype_new 'a rexp_dual =
+datatype 'a rexp_dual =
   CoZero (co: bool) |
   CoOne (co: bool) |
   CoAtom (co: bool) 'a |
@@ -17,7 +17,6 @@ datatype_new 'a rexp_dual =
   CoTimes (co: bool) "'a rexp_dual" "'a rexp_dual" |
   CoStar (co: bool) "'a rexp_dual" |
   CoPr (co: bool) "'a rexp_dual"
-datatype_compat rexp_dual
 derive linorder rexp_dual
 
 abbreviation "CoPLUS_dual b \<equiv> rexp_of_list (CoPlus b) (CoZero b)"

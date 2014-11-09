@@ -2,7 +2,7 @@
 
     Stefan Richter 2002 *)
 
-header {*The Lebesgue Integral*}
+section {* The three-step approach \label{sec:stepwise-approach} *}
 
 theory Integral
 imports RealRandVar
@@ -13,10 +13,11 @@ text {*Having learnt from my failures, we take the safe and clean way
   introduction. In three steps, we fix the integral for elementary
   (``step-'')functions, for limits of these, and finally for
   differences between such limits. 
-  
-  \subsection{Simple functions}
-  \label{sec:simple-fun}
+*}
 
+subsection {* Simple functions \label{sec:simple-fun} *}
+
+text {*
   A simple function is a finite sum of characteristic functions, each
   multiplied with a nonnegative constant. These functions must be
   parametrized by measurable sets. Note that to check this condition,
@@ -817,8 +818,11 @@ proof (cases)
     by (simp add: setsum_rv)
   ultimately show ?thesis 
     by simp
-qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)text{*\subsection {Nonnegative Functions}
+qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)
 
+subsection {* Nonnegative Functions *}
+
+text {*
   \label{nnfis}There is one more important fact about @{text sfis}, easily the
   hardest one to see. It is about the relationship with monotone
   convergence and paves the way for a sensible definition of @{text
@@ -1474,12 +1478,15 @@ proof cases
     also from base have "(\<lambda>n. u n t)---->f t" by (simp add: realfun_mon_conv_iff real_mon_conv)
     ultimately have "0 \<le> f t" by (simp add: LIMSEQ_le_const)
   } thus ?thesis by (simp add: nonnegative_def)
-qed(*>*)(*>*)text{*\subsection{Integrable Functions}
-    
-    Before we take the final step of defining integrability and the
-    integral operator, we should first clarify what kind of functions we
-    are able to integrate up to now. It is easy to see that all nonnegative integrable
-    functions are random variables. *} 
+qed(*>*)(*>*)
+
+subsection {* Integrable Functions *}
+
+text{*    
+  Before we take the final step of defining integrability and the
+  integral operator, we should first clarify what kind of functions we
+  are able to integrate up to now. It is easy to see that all nonnegative integrable
+  functions are random variables. *} 
 
 lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f:(*>*) "a \<in> nnfis f M"
   shows nnfis_rv: "f \<in> rv M" (*<*)using f

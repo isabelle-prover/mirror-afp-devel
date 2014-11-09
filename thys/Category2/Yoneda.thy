@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Yoneda"
+section "Yoneda"
 
 theory Yoneda
 imports NatTrans SetCat

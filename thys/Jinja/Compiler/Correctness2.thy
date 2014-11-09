@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-header {* \isaheader{Correctness of Stage 2} *}
+section {* Correctness of Stage 2 *}
 
 theory Correctness2
 imports "~~/src/HOL/Library/Sublist" Compiler2
@@ -78,7 +78,7 @@ done
 (*>*)
 
 
-section{* Exception tables *}
+subsection{* Exception tables *}
 
 definition pcs :: "ex_table \<Rightarrow> nat set"
 where
@@ -88,7 +88,7 @@ lemma pcs_subset:
 shows "\<And>pc d. pcs(compxE\<^sub>2 e pc d) \<subseteq> {pc..<pc+size(compE\<^sub>2 e)}"
 and "\<And>pc d. pcs(compxEs\<^sub>2 es pc d) \<subseteq> {pc..<pc+size(compEs\<^sub>2 es)}"
 (*<*)
-apply(induct e and es)
+apply(induct e and es rule: compxE\<^sub>2.induct compxEs\<^sub>2.induct)
 apply (simp_all add:pcs_def)
 apply (fastforce split:bop.splits)+
 done

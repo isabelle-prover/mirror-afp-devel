@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* \textsc{AutoFocus} message streams and temporal logic on intervals *}
+section {* \textsc{AutoFocus} message streams and temporal logic on intervals *}
 
 theory IL_AF_Stream
 imports Main "../Nat-Interval-Logic/IL_TemporalOperators" AF_Stream

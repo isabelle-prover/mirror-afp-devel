@@ -47,7 +47,7 @@ where
 
 lemma el_loc_okI: "\<lbrakk> \<not> contains_insync e; syncvars e; \<B> e n \<rbrakk> \<Longrightarrow> el_loc_ok e xs"
   and els_loc_okI: "\<lbrakk> \<not> contains_insyncs es; syncvarss es; \<B>s es n \<rbrakk> \<Longrightarrow> els_loc_ok es xs"
-by(induct e and es arbitrary: xs n and xs n)(auto intro: fv_B_unmod)
+by(induct e and es arbitrary: xs n and xs n rule: el_loc_ok.induct els_loc_ok.induct)(auto intro: fv_B_unmod)
 
 lemma el_loc_ok_compE1: "\<lbrakk> \<not> contains_insync e; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> el_loc_ok (compE1 Vs e) xs"
   and els_loc_ok_compEs1: "\<lbrakk> \<not> contains_insyncs es; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> els_loc_ok (compEs1 Vs es) xs"
@@ -57,11 +57,11 @@ lemma shows el_loc_ok_not_contains_insync_local_change:
   "\<lbrakk> \<not> contains_insync e; el_loc_ok e xs \<rbrakk> \<Longrightarrow> el_loc_ok e xs'"
   and els_loc_ok_not_contains_insyncs_local_change:
   "\<lbrakk> \<not> contains_insyncs es; els_loc_ok es xs \<rbrakk> \<Longrightarrow> els_loc_ok es xs'"
-by(induct e and es arbitrary: xs xs' and xs xs')(fastforce)+
+by(induct e and es arbitrary: xs xs' and xs xs' rule: el_loc_ok.induct els_loc_ok.induct)(fastforce)+
 
 lemma el_loc_ok_update: "\<lbrakk> \<B> e n; V < n \<rbrakk> \<Longrightarrow> el_loc_ok e (xs[V := v]) = el_loc_ok e xs"
   and els_loc_ok_update: "\<lbrakk> \<B>s es n; V < n \<rbrakk> \<Longrightarrow> els_loc_ok es (xs[V := v]) = els_loc_ok es xs"
-apply(induct e and es arbitrary: n xs and n xs) 
+apply(induct e and es arbitrary: n xs and n xs rule: el_loc_ok.induct els_loc_ok.induct) 
 apply(auto simp add: list_update_swap)
 done
 
@@ -94,7 +94,7 @@ by(induct n Ts e rule: blocks1.induct) auto
 lemma assumes fin: "final e'"
   shows el_loc_ok_inline_call: "el_loc_ok e xs \<Longrightarrow> el_loc_ok (inline_call e' e) xs"
   and els_loc_ok_inline_calls: "els_loc_ok es xs \<Longrightarrow> els_loc_ok (inline_calls e' es) xs"
-apply(induct e and es arbitrary: xs and xs)
+apply(induct e and es arbitrary: xs and xs rule: el_loc_ok.induct els_loc_ok.induct)
 apply(insert fin)
 apply(auto simp add: unmod_inline_call)
 done
@@ -102,7 +102,7 @@ done
 lemma assumes "sync_ok e'"
   shows sync_ok_inline_call: "sync_ok e \<Longrightarrow> sync_ok (inline_call e' e)"
   and sync_oks_inline_calls: "sync_oks es \<Longrightarrow> sync_oks (inline_calls e' es)"
-apply(induct e and es)
+apply(induct e and es rule: sync_ok.induct sync_oks.induct)
 apply(insert `sync_ok e'`)
 apply auto
 done
@@ -123,7 +123,7 @@ lemma assumes "final e'"
   "expr_locks (inline_call e' e) = expr_locks e"
   and expr_lockss_inline_calls_final:
   "expr_lockss (inline_calls e' es) = expr_lockss es"
-apply(induct e and es)
+apply(induct e and es rule: expr_locks.induct expr_lockss.induct)
 apply(insert `final e'`)
 apply(auto simp add: is_vals_conv intro: ext)
 done

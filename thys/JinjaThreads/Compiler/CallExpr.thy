@@ -11,7 +11,7 @@ theory CallExpr imports
   "../J/Expr"
 begin
 
-primrec inline_call :: "('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp"
+fun inline_call :: "('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp"
   and inline_calls :: "('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp list \<Rightarrow> ('a,'b,'addr) exp list"
 where
   "inline_call f (new C) = new C"
@@ -73,8 +73,7 @@ by(induct vs) auto
 
 lemma  fixes E :: "('a,'b, 'addr) exp" and Es :: "('a,'b, 'addr) exp list"
   shows inline_call_eq_Throw [dest]: "inline_call e E = Throw a \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> e = Throw a \<or> e = addr a"
-  and True
-by(induct E and Es)(fastforce split:split_if_asm)+
+by(induct E rule: exp.induct)(fastforce split:split_if_asm)+
 
 lemma Throw_eq_inline_call_eq [dest]:
   "inline_call e E = Throw a \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> Throw a = e \<or> addr a = e"
@@ -103,7 +102,7 @@ declare option.split [split del] split_if_asm [split]  split_if [split del]
 lemma call_inline_call [simp]:
   "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> call (inline_call {v:T=vo; e'} e) = call e'"
   "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> calls (inline_calls {v:T=vo;e'} es) = call e'"
-apply(induct e and es)
+apply(induct e and es rule: call.induct calls.induct)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
@@ -136,13 +135,13 @@ declare option.split [split] split_if [split] split_if_asm [split del]
 
 lemma fv_inline_call: "fv (inline_call e' e) \<subseteq> fv e \<union> fv e'"
   and fvs_inline_calls: "fvs (inline_calls e' es) \<subseteq> fvs es \<union> fv e'"
-by(induct e and es)(fastforce split: split_if_asm)+
+by(induct e and es rule: call.induct calls.induct)(fastforce split: split_if_asm)+
 
 lemma contains_insync_inline_call_conv:
   "contains_insync (inline_call e e') \<longleftrightarrow> contains_insync e \<and> call e' \<noteq> None \<or> contains_insync e'"
   and contains_insyncs_inline_calls_conv:
   "contains_insyncs (inline_calls e es') \<longleftrightarrow> contains_insync e \<and> calls es' \<noteq> None \<or> contains_insyncs es'"
-by(induct e' and es')(auto split: split_if_asm simp add: is_vals_conv)
+by(induct e' and es' rule: call.induct calls.induct)(auto split: split_if_asm simp add: is_vals_conv)
 
 lemma contains_insync_inline_call [simp]:
   "call e' = \<lfloor>aMvs\<rfloor> \<Longrightarrow> contains_insync (inline_call e e') \<longleftrightarrow> contains_insync e \<or> contains_insync e'"

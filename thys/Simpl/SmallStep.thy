@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-header {* Small-Step Semantics and Infinite Computations*}
+section {* Small-Step Semantics and Infinite Computations*}
 
 theory SmallStep imports Termination
 begin

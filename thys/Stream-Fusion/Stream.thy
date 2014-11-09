@@ -1,4 +1,4 @@
-header {* Stream Iterators *}
+section {* Stream Iterators *}
 
 theory Stream
 imports LazyList

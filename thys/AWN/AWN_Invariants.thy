@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Generic invariants on sequential AWN processes"
+section "Generic invariants on sequential AWN processes"
 
 theory AWN_Invariants
 imports Invariants AWN_SOS AWN_Labels
@@ -11,11 +11,11 @@ begin
 
 subsection "Invariants via labelled control terms"
 
-text {*
+text \<open>
   Used to state that the initial control-state of an automaton appears within a process
   specification @{text \<Gamma>}, meaning that its transitions, and those of its subterms, are
   subsumed by those of @{text \<Gamma>}.
-*}
+\<close>
 
 definition
   control_within :: "('s, 'm, 'p, 'l) seqp_env \<Rightarrow> ('z \<times> ('s, 'm, 'p, 'l) seqp) set \<Rightarrow> bool"
@@ -55,19 +55,19 @@ lemma seqp_sos_subterms:
                       \<exists>pn. p' \<in> subterms (\<Gamma> pn)"
        and "\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)"
        and "((\<xi>, p1 \<oplus> p2), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>"
-    from `\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)` obtain pn
+    from \<open>\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)\<close> obtain pn
                                             where "p1 \<in> subterms (\<Gamma> pn)"
                                               and "p2 \<in> subterms (\<Gamma> pn)" by auto
-    from `((\<xi>, p1 \<oplus> p2), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>`
+    from \<open>((\<xi>, p1 \<oplus> p2), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>\<close>
       have "((\<xi>, p1), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>
             \<or> ((\<xi>, p2), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>" by auto
     thus "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
     proof
       assume "((\<xi>, p1), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>"
-      with `p1 \<in> subterms (\<Gamma> pn)` show ?thesis by (auto intro: IH1)
+      with \<open>p1 \<in> subterms (\<Gamma> pn)\<close> show ?thesis by (auto intro: IH1)
     next
       assume "((\<xi>, p2), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>"
-      with `p2 \<in> subterms (\<Gamma> pn)` show ?thesis by (auto intro: IH2)
+      with \<open>p2 \<in> subterms (\<Gamma> pn)\<close> show ?thesis by (auto intro: IH2)
     qed
   qed auto
 
@@ -81,7 +81,7 @@ lemma reachable_subterms:
   proof (induct rule: reachable_pair_induct)
     fix \<xi> p
     assume "(\<xi>, p) \<in> init A"
-    with `control_within \<Gamma> (init A)` show "\<exists>pn. p \<in> subterms (\<Gamma> pn)" ..
+    with \<open>control_within \<Gamma> (init A)\<close> show "\<exists>pn. p \<in> subterms (\<Gamma> pn)" ..
   next
     fix \<xi> p a \<xi>' p'
     assume "(\<xi>, p) \<in> reachable A I"
@@ -90,7 +90,7 @@ lemma reachable_subterms:
        and "I a"
     moreover from this(3) and assms(3) have "((\<xi>, p), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>" by simp
     ultimately show "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
-    using `wellformed \<Gamma>`
+    using \<open>wellformed \<Gamma>\<close>
       by (auto elim: seqp_sos_subterms)
   qed
 
@@ -134,8 +134,8 @@ lemma onl_invariantI [intro]:
        and "onl \<Gamma> P (\<xi>, p)"
        and tr: "((\<xi>, p), a, (\<xi>', p')) \<in> trans A"
        and "I a"
-    from `onl \<Gamma> P (\<xi>, p)` have "\<forall>l\<in>labels \<Gamma> p. P (\<xi>, l)" ..
-    with rp tr `I a` have "\<forall>l'\<in>labels \<Gamma> p'. P (\<xi>', l')" by (auto elim: step)
+    from \<open>onl \<Gamma> P (\<xi>, p)\<close> have "\<forall>l\<in>labels \<Gamma> p. P (\<xi>, l)" ..
+    with rp tr \<open>I a\<close> have "\<forall>l'\<in>labels \<Gamma> p'. P (\<xi>', l')" by (auto elim: step)
     thus "onl \<Gamma> P (\<xi>', p')" ..
   qed
 
@@ -164,7 +164,7 @@ lemma onl_invariant_sterms:
       and "l\<in>labels \<Gamma> p'"
     shows "P (\<xi>, l)"
   proof -
-    from wf `p'\<in>sterms \<Gamma> p` `l\<in>labels \<Gamma> p'` have "l\<in>labels \<Gamma> p"
+    from wf \<open>p'\<in>sterms \<Gamma> p\<close> \<open>l\<in>labels \<Gamma> p'\<close> have "l\<in>labels \<Gamma> p"
       by (rule labels_sterms_labels)
     with il rp show "P (\<xi>, l)" ..
   qed
@@ -178,7 +178,7 @@ lemma onl_invariant_sterms_weaken:
       and weaken: "\<And>a. I' a \<Longrightarrow> I a"
     shows "P (\<xi>, l)"
   proof -
-    from `(\<xi>, p) \<in> reachable A I'` have "(\<xi>, p) \<in> reachable A I"
+    from \<open>(\<xi>, p) \<in> reachable A I'\<close> have "(\<xi>, p) \<in> reachable A I"
       by (rule reachable_weakenE)
          (erule weaken)
     with assms(1-2) show ?thesis using assms(4-5) by (rule onl_invariant_sterms)
@@ -197,14 +197,14 @@ lemma trans_from_sterms:
   assumes "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
       and "wellformed \<Gamma>"
     shows "\<exists>p'\<in>sterms \<Gamma> p. ((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
-  using assms by (induction p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) auto
+  using assms by (induction p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 lemma trans_from_sterms':
   assumes "((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
       and "wellformed \<Gamma>"
       and "p' \<in> sterms \<Gamma> p"
     shows "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
-  using assms by (induction p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) auto
+  using assms by (induction p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 lemma trans_to_dterms:
   assumes "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
@@ -227,9 +227,9 @@ theorem cterms_includes_sterms_of_seq_reachable:
       fix \<xi> p q
       assume "(\<xi>, p) \<in> init A"
          and "q \<in> sterms \<Gamma> p"
-      from `control_within \<Gamma> (init A)` and `(\<xi>, p) \<in> init A`
+      from \<open>control_within \<Gamma> (init A)\<close> and \<open>(\<xi>, p) \<in> init A\<close>
         obtain pn where "p \<in> subterms (\<Gamma> pn)" by auto
-      with `wellformed \<Gamma>` show "q \<in> cterms \<Gamma>" using `q\<in>sterms \<Gamma> p`
+      with \<open>wellformed \<Gamma>\<close> show "q \<in> cterms \<Gamma>" using \<open>q\<in>sterms \<Gamma> p\<close>
         by (rule subterms_sterms_in_cterms)
     next
       fix p \<xi> a \<xi>' q x
@@ -237,13 +237,13 @@ theorem cterms_includes_sterms_of_seq_reachable:
          and IH: "\<And>x. x \<in> sterms \<Gamma> p \<Longrightarrow> x \<in> cterms \<Gamma>"
          and "((\<xi>, p), a, (\<xi>', q)) \<in> trans A"
          and "x \<in> sterms \<Gamma> q"
-      from this(3) and `trans A = seqp_sos \<Gamma>` have "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
-      from this and `wellformed \<Gamma>` obtain ps
+      from this(3) and \<open>trans A = seqp_sos \<Gamma>\<close> have "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
+      from this and \<open>wellformed \<Gamma>\<close> obtain ps
         where ps: "ps \<in> sterms \<Gamma> p"
           and step: "((\<xi>, ps), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
         by (rule trans_from_sterms [THEN bexE])
       from ps have "ps \<in> cterms \<Gamma>" by (rule IH)
-      moreover from step `wellformed \<Gamma>` `x \<in> sterms \<Gamma> q` have "x \<in> dterms \<Gamma> ps"
+      moreover from step \<open>wellformed \<Gamma>\<close> \<open>x \<in> sterms \<Gamma> q\<close> have "x \<in> dterms \<Gamma> ps"
         by (rule trans_to_dterms [rule_format])
       ultimately show "x \<in> cterms \<Gamma>" by (rule ctermsDI)
     qed
@@ -297,10 +297,10 @@ lemma seq_invariant_ctermI:
        and tr: "((\<xi>, p), a, (\<xi>', q)) \<in> trans A"
        and A6: "l' \<in> labels \<Gamma> q"
        and "I a"
-     from this(3) and `trans A = seqp_sos \<Gamma>` have tr': "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
+     from this(3) and \<open>trans A = seqp_sos \<Gamma>\<close> have tr': "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
      show "P (\<xi>', l')"
     proof -
-      from sr and tr and `I a` have A7: "(\<xi>', q) \<in> reachable A I" ..
+      from sr and tr and \<open>I a\<close> have A7: "(\<xi>', q) \<in> reachable A I" ..
       from tr' obtain p' where "p' \<in> sterms \<Gamma> p"
                            and "((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
         by (blast dest: trans_from_sterms [OF _ wf])
@@ -308,18 +308,18 @@ lemma seq_invariant_ctermI:
         by (rule seq_reachable_in_cterms)
       from labels_not_empty [OF wf] obtain ll where A2: "ll\<in>labels \<Gamma> p'"
           by blast
-      with `p'\<in>sterms \<Gamma> p` have "ll\<in>labels \<Gamma> p"
+      with \<open>p'\<in>sterms \<Gamma> p\<close> have "ll\<in>labels \<Gamma> p"
         by (rule labels_sterms_labels [OF wf])
       with pl have A3: "P (\<xi>, ll)" by simp
-      from `((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>` and sp
+      from \<open>((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>\<close> and sp
         have A5: "((\<xi>, p'), a, (\<xi>', q)) \<in> trans A" by simp
       with sp have A4: "((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
-      from sr `p'\<in>sterms \<Gamma> p`
+      from sr \<open>p'\<in>sterms \<Gamma> p\<close>
         obtain pp where A7: "(\<xi>, pp)\<in>reachable A I"
                     and A8: "p'\<in>sterms \<Gamma> pp"
         by auto
-      from sr tr `I a` have A9: "(\<xi>', q) \<in> reachable A I" ..
-      from A1 A2 A3 A4 A5 A6 A7 A8 A9 `I a` show ?thesis by (rule step)
+      from sr tr \<open>I a\<close> have A9: "(\<xi>', q) \<in> reachable A I" ..
+      from A1 A2 A3 A4 A5 A6 A7 A8 A9 \<open>I a\<close> show ?thesis by (rule step)
     qed
   qed
 
@@ -470,8 +470,8 @@ lemma onll_step_to_invariantI [intro]:
     proof -
       from lp obtain l where "l\<in>labels \<Gamma> p" and "P (\<xi>, l)"
         using labels_not_empty [OF wf] by auto
-      from sinv sr tr `I a` this(1) lp' have "Q ((\<xi>, l), a, (\<xi>', l'))" ..
-      with sr `l\<in>labels \<Gamma> p` `P (\<xi>, l)` show "P (\<xi>', l')" using `I a` by (rule step)
+      from sinv sr tr \<open>I a\<close> this(1) lp' have "Q ((\<xi>, l), a, (\<xi>', l'))" ..
+      with sr \<open>l\<in>labels \<Gamma> p\<close> \<open>P (\<xi>, l)\<close> show "P (\<xi>', l')" using \<open>I a\<close> by (rule step)
     qed
   qed
 
@@ -486,9 +486,9 @@ lemma onll_step_invariant_sterms:
       and "l\<in>labels \<Gamma> p'"
     shows "P ((\<xi>, l), a, (\<xi>', l'))"
   proof -
-    from wf `p'\<in>sterms \<Gamma> p` `l\<in>labels \<Gamma> p'` have "l\<in>labels \<Gamma> p"
+    from wf \<open>p'\<in>sterms \<Gamma> p\<close> \<open>l\<in>labels \<Gamma> p'\<close> have "l\<in>labels \<Gamma> p"
       by (rule labels_sterms_labels)
-    with si sr sos `I a` show "P ((\<xi>, l), a, (\<xi>', l'))" using `l'\<in>labels \<Gamma> q` ..
+    with si sr sos \<open>I a\<close> show "P ((\<xi>, l), a, (\<xi>', l'))" using \<open>l'\<in>labels \<Gamma> q\<close> ..
   qed
 
 lemma seq_step_invariant_sterms:
@@ -504,10 +504,10 @@ lemma seq_step_invariant_sterms:
   proof
     from tr and sp have "((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>" by simp
     hence "((\<xi>, p), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>"
-      using wf `p'\<in>sterms \<Gamma> p` by  (rule trans_from_sterms')
+      using wf \<open>p'\<in>sterms \<Gamma> p\<close> by  (rule trans_from_sterms')
     with sp have trp: "((\<xi>, p), a, (\<xi>', q)) \<in> trans A" by simp
     fix l assume "l \<in> labels \<Gamma> p'"
-    with wf inv sr trp `I a` `l'\<in>labels \<Gamma> q` `p'\<in>sterms \<Gamma> p`
+    with wf inv sr trp \<open>I a\<close> \<open>l'\<in>labels \<Gamma> q\<close> \<open>p'\<in>sterms \<Gamma> p\<close>
       show "P ((\<xi>, l), a, (\<xi>', l'))" by (rule onll_step_invariant_sterms)
   qed
 
@@ -523,11 +523,11 @@ lemma seq_step_invariant_sterms_weaken:
       and weaken: "\<And>a. I' a \<Longrightarrow> I a"
     shows "\<forall>l\<in>labels \<Gamma> p'. P ((\<xi>, l), a, (\<xi>', l'))"
   proof -
-    from `I' a` have "I a" by (rule weaken)
-    from `(\<xi>, p) \<in> reachable A I'` have Ir: "(\<xi>, p) \<in> reachable A I"
+    from \<open>I' a\<close> have "I a" by (rule weaken)
+    from \<open>(\<xi>, p) \<in> reachable A I'\<close> have Ir: "(\<xi>, p) \<in> reachable A I"
         by (rule reachable_weakenE) (erule weaken)
     with assms(1-4) show ?thesis
-      using `((\<xi>, p'), a, (\<xi>', q)) \<in> trans A` `I a` and `p'\<in>sterms \<Gamma> p`
+      using \<open>((\<xi>, p'), a, (\<xi>', q)) \<in> trans A\<close> \<open>I a\<close> and \<open>p'\<in>sterms \<Gamma> p\<close>
       by (rule seq_step_invariant_sterms)
   qed
 
@@ -583,18 +583,18 @@ lemma seq_step_invariant_ctermI [intro]:
       by (blast dest: trans_from_sterms [OF _ wf])
     from wf cw sp sr this(1) have A1: "p'\<in>cterms \<Gamma>"
       by (rule seq_reachable_in_cterms)
-    from `((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>` and sp
+    from \<open>((\<xi>, p'), a, (\<xi>', q)) \<in> seqp_sos \<Gamma>\<close> and sp
       have A4: "((\<xi>, p'), a, (\<xi>', q)) \<in> trans A" by simp
-    from sr `p'\<in>sterms \<Gamma> p` obtain pp where A6: "(\<xi>, pp)\<in>reachable A I"
+    from sr \<open>p'\<in>sterms \<Gamma> p\<close> obtain pp where A6: "(\<xi>, pp)\<in>reachable A I"
                                         and A7: "p'\<in>sterms \<Gamma> pp"
       by auto
-    from sr tr `I a` have A8: "(\<xi>', q)\<in>reachable A I" ..
+    from sr tr \<open>I a\<close> have A8: "(\<xi>', q)\<in>reachable A I" ..
     from wf cw sp sr have "\<exists>pn. p \<in> subterms (\<Gamma> pn)"
       by (rule reachable_subterms)
     with sl wf have "\<forall>p'\<in>sterms \<Gamma> p. l \<in> labels \<Gamma> p'"
       using pl by (rule simple_labels_in_sterms)
-    with `p' \<in> sterms \<Gamma> p` have "l \<in> labels \<Gamma> p'" by simp
-    with A1 show "P ((\<xi>, l), a, (\<xi>', l'))" using A3 A4 A5 A6 A7 A8 `I a`
+    with \<open>p' \<in> sterms \<Gamma> p\<close> have "l \<in> labels \<Gamma> p'" by simp
+    with A1 show "P ((\<xi>, l), a, (\<xi>', l'))" using A3 A4 A5 A6 A7 A8 \<open>I a\<close>
       by (rule step)
   qed
 

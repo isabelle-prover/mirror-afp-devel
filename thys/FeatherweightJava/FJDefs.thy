@@ -6,7 +6,7 @@
     License:     LGPL
 *)
 
-header {* {\tt FJDefs}: Basic Definitions *}
+section {* {\tt FJDefs}: Basic Definitions *}
 
 theory FJDefs
 imports Main

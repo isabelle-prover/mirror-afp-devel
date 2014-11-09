@@ -1,7 +1,7 @@
 (*<*)
 (* Author : Peter Chapman *)
 (* License: LGPL *)
-header "Rule Set Transformations"
+section "Rule Set Transformations"
  
 theory SRCTransforms
 imports "~~/src/HOL/Library/Multiset"

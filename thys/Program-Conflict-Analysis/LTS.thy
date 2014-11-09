@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-header {* Labeled transition systems *}
+section {* Labeled transition systems *}
 theory LTS
 imports Main
 begin

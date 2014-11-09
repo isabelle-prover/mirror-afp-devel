@@ -3,15 +3,15 @@
     Author:      Timothy Bourke
 *)
 
-header "Lemmas for partial networks"
+section "Lemmas for partial networks"
 
 theory Pnet
 imports AWN_SOS Invariants
 begin
 
-text {*
+text \<open>
   These lemmas mostly concern the preservation of node structure by @{term pnet_sos} transitions.
-*}
+\<close>
 
 lemma pnet_maintains_dom:
   assumes "(s, a, s') \<in> trans (pnet np p)"
@@ -55,7 +55,7 @@ lemma pnet_net_ips_net_tree_ips [elim]:
       from this(1-2) have "net_ips s1 = net_tree_ips p1"
                       and "net_ips s2 = net_tree_ips p2"
         using IH1 IH2 by auto
-      with `s = SubnetS s1 s2` show "net_ips s = net_tree_ips (p1 \<parallel> p2)" by auto
+      with \<open>s = SubnetS s1 s2\<close> show "net_ips s = net_tree_ips (p1 \<parallel> p2)" by auto
     qed
   next
     fix s a s'
@@ -63,7 +63,7 @@ lemma pnet_net_ips_net_tree_ips [elim]:
        and "net_ips s = net_tree_ips p"
     from this(1) have "net_ips s = net_ips s'"
       by (rule pnet_maintains_dom)
-    with `net_ips s = net_tree_ips p` show "net_ips s' = net_tree_ips p"
+    with \<open>net_ips s = net_tree_ips p\<close> show "net_ips s' = net_tree_ips p"
       by simp
   qed
 
@@ -144,11 +144,11 @@ lemma reachable_par_subnet_induct [consumes, case_names init step]:
                               and str: "SubnetS s t \<in> reachable (pnet np (p1 \<parallel> p2)) I"
       by (metis net_par_reachable_is_subnet)
     note this(2)
-    moreover from IH and `st = SubnetS s t` have "P s t" .
-    moreover from `st = SubnetS s t` and tr
+    moreover from IH and \<open>st = SubnetS s t\<close> have "P s t" .
+    moreover from \<open>st = SubnetS s t\<close> and tr
       have "(SubnetS s t, a, SubnetS s' t') \<in> trans (pnet np (p1 \<parallel> p2))" by simp
     ultimately show "P s' t'"
-      using `I a` by (rule step)
+      using \<open>I a\<close> by (rule step)
   qed
 
 lemma subnet_reachable:
@@ -224,18 +224,18 @@ lemma delivered_to_net_ips:
          and "s' = SubnetS s1' s2"
          and tr: "(s1, i:deliver(d), s1') \<in> trans (pnet np p1)"
       from sr have "s1 \<in> reachable (pnet np p1) TT"
-        by (auto simp only: `s = SubnetS s1 s2` elim: subnet_reachable)
+        by (auto simp only: \<open>s = SubnetS s1 s2\<close> elim: subnet_reachable)
       hence "i \<in> net_ips s1" using tr by (rule IH1)
-      thus "i \<in> net_ips s" by (simp add: `s = SubnetS s1 s2`)
+      thus "i \<in> net_ips s" by (simp add: \<open>s = SubnetS s1 s2\<close>)
     next
       fix s2 s2' s1
       assume "s = SubnetS s1 s2"
          and "s' = SubnetS s1 s2'"
          and tr: "(s2, i:deliver(d), s2') \<in> trans (pnet np p2)"
       from sr have "s2 \<in> reachable (pnet np p2) TT"
-        by (auto simp only: `s = SubnetS s1 s2` elim: subnet_reachable)
+        by (auto simp only: \<open>s = SubnetS s1 s2\<close> elim: subnet_reachable)
       hence "i \<in> net_ips s2" using tr by (rule IH2)
-      thus "i \<in> net_ips s" by (simp add: `s = SubnetS s1 s2`)
+      thus "i \<in> net_ips s" by (simp add: \<open>s = SubnetS s1 s2\<close>)
     qed
   qed
 
@@ -245,7 +245,7 @@ lemma wf_net_tree_net_ips_disjoint [elim]:
       and "s2 \<in> reachable (pnet np p2) S"
     shows "net_ips s1 \<inter> net_ips s2 = {}"
   proof -
-    from `wf_net_tree (p1 \<parallel> p2)` have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}" by auto
+    from \<open>wf_net_tree (p1 \<parallel> p2)\<close> have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}" by auto
     moreover from assms(2) have "net_ips s1 = net_tree_ips p1" ..
     moreover from assms(3) have "net_ips s2 = net_tree_ips p2" ..
     ultimately show ?thesis by simp
@@ -261,10 +261,10 @@ lemma init_mapstate_Some_aodv_init [elim]:
        and "netmap s i = Some v"
     from this(1) obtain ns where "s = NodeS ii ns R"
                              and "ns \<in> init (np ii)" ..
-    moreover from this(1) and `netmap s i = Some v` have "i = ii"
+    moreover from this(1) and \<open>netmap s i = Some v\<close> have "i = ii"
       by simp (metis domI domIff)
     ultimately show "v \<in> init (np i)"
-      using `netmap s i = Some v` by simp
+      using \<open>netmap s i = Some v\<close> by simp
   next
     fix p1 p2 s
     assume IH1: "\<And>s. s \<in> init (pnet np p1) \<Longrightarrow> netmap s i = Some v \<Longrightarrow> v \<in> init (np i)"
@@ -274,15 +274,15 @@ lemma init_mapstate_Some_aodv_init [elim]:
     from this(3) obtain s1 s2 where "s = SubnetS s1 s2"
                                 and "s1 \<in> init (pnet np p1)"
                                 and "s2 \<in> init (pnet np p2)" by auto
-    from this(1) and `netmap s i = Some v`
+    from this(1) and \<open>netmap s i = Some v\<close>
       have "netmap s1 i = Some v \<or> netmap s2 i = Some v" by auto
     thus "v \<in> init (np i)"
     proof
       assume "netmap s1 i = Some v"
-      with `s1 \<in> init (pnet np p1)` show ?thesis by (rule IH1)
+      with \<open>s1 \<in> init (pnet np p1)\<close> show ?thesis by (rule IH1)
     next
       assume "netmap s2 i = Some v"
-      with `s2 \<in> init (pnet np p2)` show ?thesis by (rule IH2)
+      with \<open>s2 \<in> init (pnet np p2)\<close> show ?thesis by (rule IH2)
     qed
   qed
 
@@ -324,7 +324,7 @@ lemma reachable_connect_netmap [elim]:
     from sr1 tr1 have "netmap s1' = netmap s1" by (rule IH1)
     moreover from sr2 tr2 have "netmap s2' = netmap s2" by (rule IH2)
     ultimately show "netmap s' = netmap s"
-      using `s = SubnetS s1 s2` and `s' = SubnetS s1' s2'` by simp
+      using \<open>s = SubnetS s1 s2\<close> and \<open>s' = SubnetS s1' s2'\<close> by simp
     qed simp_all
   qed
 
@@ -366,7 +366,7 @@ lemma reachable_disconnect_netmap [elim]:
     from sr1 tr1 have "netmap s1' = netmap s1" by (rule IH1)
     moreover from sr2 tr2 have "netmap s2' = netmap s2" by (rule IH2)
     ultimately show "netmap s' = netmap s"
-      using `s = SubnetS s1 s2` and `s' = SubnetS s1' s2'` by simp
+      using \<open>s = SubnetS s1 s2\<close> and \<open>s' = SubnetS s1' s2'\<close> by simp
     qed simp_all
   qed
 
@@ -415,7 +415,7 @@ lemma pnet_tau_single_node [elim]:
        and sr: "s \<in> reachable (pnet np (p1 \<parallel> p2)) TT"
        and "wf_net_tree (p1 \<parallel> p2)"
        and tr: "(s, \<tau>, s') \<in> trans (pnet np (p1 \<parallel> p2))"
-    from `wf_net_tree (p1 \<parallel> p2)` have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}"
+    from \<open>wf_net_tree (p1 \<parallel> p2)\<close> have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}"
                                   and "wf_net_tree p1" 
                                   and "wf_net_tree p2" by auto
     from tr have "(s, \<tau>, s') \<in> pnet_sos (trans (pnet np p1)) (trans (pnet np p2))" by simp
@@ -429,15 +429,15 @@ lemma pnet_tau_single_node [elim]:
       from sr have sr1: "s1 \<in> reachable (pnet np p1) TT"
                and "s2 \<in> reachable (pnet np p2) TT"
         by (simp_all only: subs) (erule subnet_reachable)+
-      with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
+      with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
         by (metis net_ips_is_dom_netmap pnet_net_ips_net_tree_ips)
-      from `wf_net_tree p1` sr1 tr1 obtain i where "i\<in>dom(netmap s1)"
+      from \<open>wf_net_tree p1\<close> sr1 tr1 obtain i where "i\<in>dom(netmap s1)"
                                                and *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s1' j = netmap s1 j"
                                                and "net_ip_action np \<tau> i p1 s1 s1'"
           by (auto simp add: net_ips_is_dom_netmap dest!: IH1)
-      from this(1) and `dom(netmap s1) \<inter> dom(netmap s2) = {}` have "i\<notin>dom(netmap s2)"
+      from this(1) and \<open>dom(netmap s1) \<inter> dom(netmap s2) = {}\<close> have "i\<notin>dom(netmap s2)"
         by auto
-      with subs subs' tr1 `net_ip_action np \<tau> i p1 s1 s1'` have "net_ip_action np \<tau> i (p1 \<parallel> p2) s s'"
+      with subs subs' tr1 \<open>net_ip_action np \<tau> i p1 s1 s1'\<close> have "net_ip_action np \<tau> i (p1 \<parallel> p2) s s'"
         by (simp add: net_ips_is_dom_netmap)
       moreover have "\<forall>j. j \<noteq> i \<longrightarrow> (netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
       proof (intro allI impI)
@@ -447,7 +447,7 @@ lemma pnet_tau_single_node [elim]:
         thus "(netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
           by (metis (hide_lams, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
       qed
-      ultimately show ?thesis using `i\<in>dom(netmap s1)` subs subs'
+      ultimately show ?thesis using \<open>i\<in>dom(netmap s1)\<close> subs subs'
         by (auto simp add: net_ips_is_dom_netmap)
     next
       fix s2 s2' s1
@@ -457,15 +457,15 @@ lemma pnet_tau_single_node [elim]:
       from sr have "s1 \<in> reachable (pnet np p1) TT"
                and sr2: "s2 \<in> reachable (pnet np p2) TT"
         by (simp_all only: subs) (erule subnet_reachable)+
-      with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
+      with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
         by (metis net_ips_is_dom_netmap pnet_net_ips_net_tree_ips)
-      from `wf_net_tree p2` sr2 tr2 obtain i where "i\<in>dom(netmap s2)"
+      from \<open>wf_net_tree p2\<close> sr2 tr2 obtain i where "i\<in>dom(netmap s2)"
                                                and *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s2' j = netmap s2 j"
                                                and "net_ip_action np \<tau> i p2 s2 s2'"
           by (auto simp add: net_ips_is_dom_netmap dest!: IH2)
-      from this(1) and `dom(netmap s1) \<inter> dom(netmap s2) = {}` have "i\<notin>dom(netmap s1)"
+      from this(1) and \<open>dom(netmap s1) \<inter> dom(netmap s2) = {}\<close> have "i\<notin>dom(netmap s1)"
         by auto
-      with subs subs' tr2 `net_ip_action np \<tau> i p2 s2 s2'` have "net_ip_action np \<tau> i (p1 \<parallel> p2) s s'"
+      with subs subs' tr2 \<open>net_ip_action np \<tau> i p2 s2 s2'\<close> have "net_ip_action np \<tau> i (p1 \<parallel> p2) s s'"
         by (simp add: net_ips_is_dom_netmap)
       moreover have "\<forall>j. j \<noteq> i \<longrightarrow> (netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
       proof (intro allI impI)
@@ -475,7 +475,7 @@ lemma pnet_tau_single_node [elim]:
         thus "(netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
           by (metis (hide_lams, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
       qed
-      ultimately show ?thesis using `i\<in>dom(netmap s2)` subs subs'
+      ultimately show ?thesis using \<open>i\<in>dom(netmap s2)\<close> subs subs'
         by (clarsimp simp add: net_ips_is_dom_netmap)
            (metis domI dom_map_add map_add_find_right)
     qed simp_all
@@ -517,7 +517,7 @@ lemma pnet_deliver_single_node [elim]:
        and sr: "s \<in> reachable (pnet np (p1 \<parallel> p2)) TT"
        and "wf_net_tree (p1 \<parallel> p2)"
        and tr: "(s, i:deliver(d), s') \<in> trans (pnet np (p1 \<parallel> p2))"
-    from `wf_net_tree (p1 \<parallel> p2)` have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}"
+    from \<open>wf_net_tree (p1 \<parallel> p2)\<close> have "net_tree_ips p1 \<inter> net_tree_ips p2 = {}"
                                   and "wf_net_tree p1" 
                                   and "wf_net_tree p2" by auto
     from tr have "(s, i:deliver(d), s') \<in> pnet_sos (trans (pnet np p1)) (trans (pnet np p2))" by simp
@@ -531,15 +531,15 @@ lemma pnet_deliver_single_node [elim]:
       from sr have sr1: "s1 \<in> reachable (pnet np p1) TT"
                and "s2 \<in> reachable (pnet np p2) TT"
         by (simp_all only: subs) (erule subnet_reachable)+
-      with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
+      with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
         by (metis net_ips_is_dom_netmap pnet_net_ips_net_tree_ips)
       moreover from sr1 tr1 have "i \<in> net_ips s1" by (rule delivered_to_net_ips)
       ultimately have "i\<notin>dom(netmap s2)" by (auto simp add: net_ips_is_dom_netmap)
 
-      from `wf_net_tree p1` sr1 tr1 have *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s1' j = netmap s1 j"
+      from \<open>wf_net_tree p1\<close> sr1 tr1 have *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s1' j = netmap s1 j"
                                      and "net_ip_action np (i:deliver(d)) i p1 s1 s1'"
           by (auto dest!: IH1)
-      from subs subs' tr1 this(2) `i\<notin>dom(netmap s2)`
+      from subs subs' tr1 this(2) \<open>i\<notin>dom(netmap s2)\<close>
         have "net_ip_action np (i:deliver(d)) i (p1 \<parallel> p2) s s'"
           by (simp add: net_ips_is_dom_netmap)
       moreover have "\<forall>j. j \<noteq> i \<longrightarrow> (netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
@@ -550,7 +550,7 @@ lemma pnet_deliver_single_node [elim]:
         thus "(netmap s1' ++ netmap s2) j = (netmap s1 ++ netmap s2) j"
           by (metis (hide_lams, mono_tags) map_add_dom_app_simps(1) map_add_dom_app_simps(3))
       qed
-      ultimately show ?thesis using `i\<in>net_ips s1` subs subs' by auto
+      ultimately show ?thesis using \<open>i\<in>net_ips s1\<close> subs subs' by auto
     next
       fix s2 s2' s1
       assume subs: "s = SubnetS s1 s2"
@@ -559,15 +559,15 @@ lemma pnet_deliver_single_node [elim]:
       from sr have "s1 \<in> reachable (pnet np p1) TT"
                and sr2: "s2 \<in> reachable (pnet np p2) TT"
         by (simp_all only: subs) (erule subnet_reachable)+
-      with `net_tree_ips p1 \<inter> net_tree_ips p2 = {}` have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
+      with \<open>net_tree_ips p1 \<inter> net_tree_ips p2 = {}\<close> have "dom(netmap s1) \<inter> dom(netmap s2) = {}"
         by (metis net_ips_is_dom_netmap pnet_net_ips_net_tree_ips)
       moreover from sr2 tr2 have "i \<in> net_ips s2" by (rule delivered_to_net_ips)
       ultimately have "i\<notin>dom(netmap s1)" by (auto simp add: net_ips_is_dom_netmap)
 
-      from `wf_net_tree p2` sr2 tr2 have *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s2' j = netmap s2 j"
+      from \<open>wf_net_tree p2\<close> sr2 tr2 have *: "\<forall>j. j \<noteq> i \<longrightarrow> netmap s2' j = netmap s2 j"
                                      and "net_ip_action np (i:deliver(d)) i p2 s2 s2'"
           by (auto dest!: IH2)
-      from subs subs' tr2 this(2) `i\<notin>dom(netmap s1)`
+      from subs subs' tr2 this(2) \<open>i\<notin>dom(netmap s1)\<close>
         have "net_ip_action np (i:deliver(d)) i (p1 \<parallel> p2) s s'"
           by (simp add: net_ips_is_dom_netmap)
       moreover have "\<forall>j. j \<noteq> i \<longrightarrow> (netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
@@ -578,7 +578,7 @@ lemma pnet_deliver_single_node [elim]:
         thus "(netmap s1 ++ netmap s2') j = (netmap s1 ++ netmap s2) j"
           by (metis (hide_lams, mono_tags) domD map_add_Some_iff map_add_dom_app_simps(3))
       qed
-      ultimately show ?thesis using `i\<in>net_ips s2` subs subs' by auto
+      ultimately show ?thesis using \<open>i\<in>net_ips s2\<close> subs subs' by auto
     qed simp_all
   qed
 

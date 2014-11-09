@@ -2,7 +2,7 @@
 Author: Alexander Katovsky
 *)
 
-header "Natural Transformation"
+section "Natural Transformation"
 
 theory NatTrans
 imports Functors

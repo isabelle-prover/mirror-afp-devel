@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Configure the inv-cterms tactic for open sequential processes"
+section "Configure the inv-cterms tactic for open sequential processes"
 
 theory OAWN_SOS_Labels
 imports OAWN_SOS Inv_Cterms

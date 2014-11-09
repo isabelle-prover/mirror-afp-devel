@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-header "A Shallow Embedding of pGCL in HOL"
+section "A Shallow Embedding of pGCL in HOL"
 
 theory Embedding imports Misc Induction begin
 

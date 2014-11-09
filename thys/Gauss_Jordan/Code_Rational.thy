@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Code Generation for rational numbers in Haskell*}
+section{*Code Generation for rational numbers in Haskell*}
 
 theory Code_Rational
 imports

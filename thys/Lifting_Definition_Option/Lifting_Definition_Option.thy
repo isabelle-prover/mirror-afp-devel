@@ -27,6 +27,30 @@ imports
 keywords "lift_definition_option" :: thy_decl
 begin
 
+ML {*
+  (* add another ML-antiquotation in the style of ~~/src/Pure/ML/ml_antiquotations.ML,
+     namely @{map_tuple n} = fn f => fn (x1, .., xn) => (f x1, ..., f xn).
+     It can be used to avoid constructions like let [x1,...,xn] = map f [y1,...,yn] where
+     a warning about non-exhaustive patterns is raised. This can now be written as
+     let (x1,...,xn) = @{map_tuple n} f (y1,...,yn) *)
+let 
+  (* code copied from ml_antiquotations *)
+  val parameter = Parse.position Parse.nat >> (fn (n, pos) =>
+    if n > 1 then n else error ("Bad parameter: " ^ string_of_int n ^ Position.here pos));
+
+  fun indices n = map string_of_int (1 upto n);
+  val tuple = enclose "(" ")" o commas;
+  fun tuple_vars x n = tuple (map (fn a => x ^ a) (indices n));
+
+in
+
+Theory.setup
+ (ML_Antiquotation.value @{binding map_tuple}
+    (Scan.lift parameter >> (fn n =>
+      "(fn f => fn " ^ tuple_vars "x" n ^ " => " ^ tuple_vars "f x" n ^ ")")))
+end
+*}
+
 lemma restrict_condI: assumes "a \<Longrightarrow> P b"
   shows "(if a then (b, True)
         else (c, False))

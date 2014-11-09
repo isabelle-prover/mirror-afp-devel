@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* BasicDPLL *}
+section{* BasicDPLL *}
 theory BasicDPLL
 imports SatSolverVerification
 begin

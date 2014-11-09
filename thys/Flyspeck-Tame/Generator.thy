@@ -1,7 +1,6 @@
-(*  Author:     Gertrud Bauer, Tobias Nipkow
-*)
+(*  Author: Gertrud Bauer, Tobias Nipkow *)
 
-header {* Enumeration of Tame Plane Graphs *}
+section {* Enumeration of Tame Plane Graphs *}
 
 theory Generator
 imports Plane1 Tame
@@ -49,7 +48,7 @@ definition deleteAround :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<t
  "deleteAround g v ps \<equiv>
       let fs = facesAt g v;
       ws = \<Squnion>\<^bsub>f\<in>fs\<^esub> if |vertices f| = 4 then [f\<bullet>v, f\<^bsup>2\<^esup>\<bullet>v] else [f\<bullet>v] in
-      removeKeyList ws ps"  (*<*)
+      removeKeyList ws ps"
 text{* Implementation: *}
 lemma [code]: "deleteAround g v ps =
       (let vs = (\<lambda>f. let n = f\<bullet>v
@@ -72,7 +71,7 @@ definition ExcessNotAt :: "graph \<Rightarrow> vertex option \<Rightarrow> nat" 
  "ExcessNotAt g v_opt \<equiv>
      let ps = ExcessTable g (vertices g) in
      case v_opt of None \<Rightarrow>  ExcessNotAtRec ps g
-      | Some v \<Rightarrow> ExcessNotAtRec (deleteAround g v ps) g" (*<*)
+      | Some v \<Rightarrow> ExcessNotAtRec (deleteAround g v ps) g"
 
 definition squanderLowerBound :: "graph \<Rightarrow> nat" where
  "squanderLowerBound g \<equiv>  faceSquanderLowerBound g + ExcessNotAt g None"

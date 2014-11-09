@@ -8,7 +8,7 @@
     see the file Changelog for a list of changes
 *)
 
-header "AVL Trees"
+section "AVL Trees"
 
 theory AVL
 imports Main
@@ -20,13 +20,9 @@ text {*
 
 subsection {* AVL tree type definition *}
 
-datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
+datatype (set_of: 'a) tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 subsection {* Invariants and auxiliary functions *}
-
-primrec set_of :: "'a tree \<Rightarrow> 'a set" where
-"set_of ET = {}" |
-"set_of (MKT n l r h) = Set.insert n (set_of l \<union> set_of r)"
 
 primrec height :: "'a tree \<Rightarrow> nat" where
 "height ET = 0" |
@@ -525,9 +521,9 @@ proof(cases t rule:delete_root_cases)
   moreover from MKT_MKT assms(1) have "set_of (delete_root t) = set_of ?t'" 
     by (simp split:prod.split del:mkt_bal_r.simps)
   moreover from MKT_MKT assms have "(set_of t) - {n} = set_of l \<union> set_of r" 
-    by (metis Diff_insert_absorb UnE avl_dist2 set_of.simps(2) tree.inject)
+    by (metis Diff_insert_absorb UnE avl_dist2 tree.set(2) tree.inject)
   ultimately show ?thesis using MKT_MKT assms(1)
-    by (simp del: delete_root.simps set_of.simps)
+    by (simp del: delete_root.simps)
 qed auto
 
 text{* Correctness of @{const delete}: *}

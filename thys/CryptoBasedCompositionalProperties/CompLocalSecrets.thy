@@ -2,7 +2,7 @@
    Title:  Theory  CompLocalSecrets.thy
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
-header {*Local Secrets of a component *}
+section {*Local Secrets of a component *}
 
 theory CompLocalSecrets
 imports Secrecy 

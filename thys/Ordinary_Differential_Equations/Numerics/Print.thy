@@ -1,4 +1,4 @@
-header {* Target Language debug messages *}
+section {* Target Language debug messages *}
 theory Print
 imports
   "../../Affine_Arithmetic/Executable_Euclidean_Space"

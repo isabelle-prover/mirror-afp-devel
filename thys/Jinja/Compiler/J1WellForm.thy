@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Well-Formedness of Intermediate Language} *}
+section {* Well-Formedness of Intermediate Language *}
 
 theory J1WellForm
 imports "../J/JWellForm" J1

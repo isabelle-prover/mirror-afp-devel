@@ -3,17 +3,16 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
+section {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
-imports IntNatAux Parity
+imports Main IntNatAux
 begin
 
 text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
 
-lemma even_eq_two_dvd: "even (r::nat) = (2 dvd r)" by presburger
-
-lemma nat_power2_add: "((a::nat)+b)^2 = a^2 + b^2 + 2*a*b" by algebra
+lemma nat_power2_add: "((a::nat)+b)^2 = a^2 + b^2 + 2*a*b"
+  by (fact power2_sum)
 (* 
 NB: this lemma is quite slow, maybe use more steps *)
 lemma nat_power2_diff: "a \<ge> (b::nat) \<Longrightarrow> (a-b)^2 = a^2 + b^2 - 2*a*b"
@@ -90,23 +89,21 @@ proof -
     with cancelb2 have "?g^2 = gcd (b^2) (c^2-b^2+b^2)" by simp
     hence "?g^2 = gcd (b^2) (c^2-b^2)" by simp
     with a2cb have "?g^2 dvd a^2" by (simp only: gcd_dvd2)
-    hence "?g dvd a \<and> ?g dvd b" by (simp add: nat_power_dvd_mono gcd_dvd1)
+    hence "?g dvd a \<and> ?g dvd b" by simp
     hence "?g dvd gcd a b" by (simp only: gcd_greatest)
     with ab_relprime show ?thesis by auto
   qed
   have p2: "prime 2" by (rule two_is_prime)
   have factors_odd: "odd (c-b) \<and> odd (c+b)"
   proof (auto simp only: ccontr)
-    assume "even (c-b)" hence "2 dvd c-b" by (simp only: even_eq_two_dvd)
+    assume "even (c-b)" 
     with a2factor have "2 dvd a^2" by (simp only: dvd_mult2)
     with p2 have "2 dvd a" by (rule prime_dvd_power)
-    hence "even a" by (simp only: even_eq_two_dvd)
     with aodd show False by simp
   next
-    assume "even (c+b)" hence "2 dvd c+b" by (simp only: even_eq_two_dvd)
+    assume "even (c+b)"
     with a2factor have "2 dvd a^2" by (simp only: dvd_mult)
     with p2 have "2 dvd a" by (rule prime_dvd_power)
-    hence "even a" by (simp only: even_eq_two_dvd)
     with aodd show False by simp
   qed
   have cb1: "c-b + (c+b) = 2*c" 
@@ -145,8 +142,8 @@ proof -
     thus ?thesis
     proof (auto)
       assume "?g = 2" hence "2 dvd ?g" by simp
-      hence "2 dvd c-b" by (simp add: gcd_dvd1)
-      with factors_odd show False by (simp add: even_eq_two_dvd)
+      hence "2 dvd c-b" by simp
+      with factors_odd show False by simp
     qed
   qed
   from a2factor have "(c-b)*(c+b) = a^2" and "(2::nat) >1"  by auto
@@ -161,12 +158,10 @@ proof -
   proof (auto dest: ccontr)
     assume "even r" hence "2 dvd r"by presburger
     with r have  "2 dvd (c-b)" by (simp only: power2_eq_square dvd_mult)
-    hence "even (c-b)" by (simp only: even_eq_two_dvd)
     with factors_odd show False by auto
   next
     assume "even s" hence "2 dvd s" by presburger
     with s have "2 dvd (c+b)" by (simp only: power2_eq_square dvd_mult)
-    hence "even (c+b)" by (simp only: even_eq_two_dvd)
     with factors_odd show False by auto
   qed
   obtain m where m: "m = s-r" by simp
@@ -177,8 +172,7 @@ proof -
   proof (rule ccontr)
     assume "odd m" with rs_odd and m2 show False by presburger 
   qed
-  hence "2 dvd m" by (simp only: even_eq_two_dvd)
-  then obtain q where "m = 2*q" by (auto simp add: dvd_def)
+  then obtain q where "m = 2*q" ..
   with m2 have q: "s = r + 2*q" by simp
   obtain p where p: "p = r+q" by simp
   have c: "c = p^2 + q^2"
@@ -212,9 +206,9 @@ proof -
   moreover have "gcd p q=1"
   proof -
     let ?k = "gcd p q"
-    have "?k dvd p \<and> ?k dvd q" by (simp add: gcd_dvd1 gcd_dvd2)
+    have "?k dvd p \<and> ?k dvd q" by simp
     with b and a have "?k dvd a \<and> ?k dvd b" 
-      by (simp add: dvd_mult power2_eq_square dvd_diff)
+      by (simp add: power2_eq_square)
     hence "?k dvd gcd a b" by (simp only: gcd_greatest)
     with ab_relprime show ?thesis by auto
   qed
@@ -230,7 +224,7 @@ proof -
   let ?a = "nat\<bar>a\<bar>"
   let ?b = "nat\<bar>b\<bar>"
   let ?c = "nat\<bar>c\<bar>"
-  have ab2_pos: "a^2 \<ge> 0 \<and> b^2 \<ge> 0" by (simp add: zero_le_power2)
+  have ab2_pos: "a^2 \<ge> 0 \<and> b^2 \<ge> 0" by simp
   hence "nat(a^2) + nat(b^2) = nat(a^2 + b^2)" by (simp only: nat_add_distrib)
   with abc have "nat(a^2) + nat(b^2) = nat(c^2)" 
     by (auto simp add: power2_eq_square abs_power2_distrib)
@@ -398,7 +392,7 @@ proof -
   qed
   moreover have gamma2: "k^2 + l^2 = \<gamma>^2"
   proof -
-    have "k^2 \<ge> 0 \<and> l^2 \<ge> 0" by (simp add: zero_le_power2)
+    have "k^2 \<ge> 0 \<and> l^2 \<ge> 0" by simp
     with albega show ?thesis by auto
   qed
   ultimately have newabc: "\<alpha>^4 + \<beta>^4 = \<gamma>^2" by auto 
@@ -465,7 +459,7 @@ proof -
     also have "\<dots> < u^2 + v^2" 
     proof -
       from uv0 have v2non0: "0 \<noteq> v^2" 
-        by (auto simp add: power2_eq_square zero_le_power2)
+        by simp
       have "0 \<le> v^2" by (rule zero_le_power2)
       with v2non0 have "0 < v^2" by (auto simp add: less_le)
       thus ?thesis by auto

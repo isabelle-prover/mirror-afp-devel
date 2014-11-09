@@ -1,4 +1,4 @@
-header {* Deciding Regular Expression Equivalence (2) *}
+section {* Deciding Regular Expression Equivalence (2) *}
 
 theory pEquivalence_Checking
 imports Equivalence_Checking Derivatives

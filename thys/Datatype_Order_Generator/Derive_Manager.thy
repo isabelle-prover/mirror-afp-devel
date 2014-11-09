@@ -22,12 +22,12 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Derive manager *}
+section {* Derive manager *}
 
 theory Derive_Manager
 imports Main
-keywords "print_derives" :: diag
-   and   "derive" :: thy_decl
+keywords "print_derives" "print_local_derives" :: diag
+   and   "derive" "local_derive" :: thy_decl
 begin
 
 ML_file "derive_aux.ML" 

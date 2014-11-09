@@ -5,7 +5,7 @@
 
 (* Authors: David Cock - David.Cock@nicta.com.au, Thomas Sewell - Thomas.Sewell@nicta.com.au *)
 
-header "Loop Termination"
+section "Loop Termination"
  
 theory Termination imports Embedding StructuredReasoning Loops begin
 

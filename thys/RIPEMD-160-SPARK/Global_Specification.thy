@@ -1,4 +1,4 @@
-header "Global Specifications"
+section "Global Specifications"
 theory Global_Specification
 imports RMD
 

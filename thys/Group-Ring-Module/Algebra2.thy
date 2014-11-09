@@ -918,7 +918,7 @@ apply intro_locales
  
  apply (simp add:carr_ODnods[THEN sym])
  apply (frule_tac A = X and B = S and C = "carrier ODnods" in subset_trans,
-        assumption+);
+        assumption+)
 apply (frule_tac d = x and m = xa and X = X in 
         Torder.segment_minimum_minimum[of ODnods], assumption+,
         simp add:Int_commute, 
@@ -1977,7 +1977,7 @@ apply (metis Order.Iod_carrier [OF Order_axioms])
  apply (rule subsetI)
  apply (frule_tac b = x in Order.ord_isom_surj[of 
          "Iod D (segment (Iod D W1) t)" "Iod D (segment (Iod D W2) (g t))" 
-         "restrict g (carrier (Iod D (segment (Iod D W1) t)))"]); 
+         "restrict g (carrier (Iod D (segment (Iod D W1) t)))"]) 
 apply assumption
 apply (metis Order.Iod_carrier [OF Order_axioms])
 apply (metis Order.Iod_carrier [OF Order_axioms] Order.segment_free [OF Order_axioms])

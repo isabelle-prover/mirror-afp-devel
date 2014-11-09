@@ -115,7 +115,7 @@ fun transfer_tac ctxt i = Transfer.gen_frees_tac [] ctxt i
 
 fun add_split thms = Context.proof_map (Simplifier.map_ss (fold Splitter.add_split thms))
 
-val debug_out = if false then Output.urgent_message else (K ())
+val debug_out = if false then writeln else (K ())
 
 fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =   
   let 
@@ -222,7 +222,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> bool_ty) $ lam
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
         val tac = rtac ex_thm 1 THEN blast_tac lthy 1
-        val (info,lthy) = Typedef.add_typedef 
+        val conceal = false
+        val (info,lthy) = Typedef.add_typedef conceal
           (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix) 
           (t_fresh collect) 
           NONE tac lthy
@@ -253,10 +254,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val mapping = ty_vars ~~ restr_arg_tys
       val tyI = typ_subst_atomic mapping
       val tI = subst_atomic_types mapping
-      val [restr_c_ty, restr_ty, base_ty, pair_ty] = map tyI 
-          [restr_c_ty, restr_ty, base_ty, pair_ty]
-      val [b, P, wit, abs, base] = map tI
-          [b, P, wit, abs, base]
+      val (restr_c_ty, restr_ty, base_ty, pair_ty) = @{map_tuple 4} tyI 
+          (restr_c_ty, restr_ty, base_ty, pair_ty)
+      val (b, P, wit, abs, base) = @{map_tuple 5} tI
+          (b, P, wit, abs, base)
 
       (* lift_definition restricted_cond_bool :: "restricted_cond \<Rightarrow> bool" is snd . *)
       val restr_c_bool_name = restr_c_name ^ "_bool"

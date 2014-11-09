@@ -1,4 +1,4 @@
-header{*Addition, Sequences and their Concatenation*}
+chapter{*Addition, Sequences and their Concatenation*}
 
 theory OrdArith imports Rank
 begin

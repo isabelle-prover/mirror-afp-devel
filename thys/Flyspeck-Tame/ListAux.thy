@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header {* Basic Functions Old and New *}
+section {* Basic Functions Old and New *}
 
 theory ListAux
 imports Main

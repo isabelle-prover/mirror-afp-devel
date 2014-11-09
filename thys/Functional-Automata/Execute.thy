@@ -1,6 +1,6 @@
 (*  Author:    Lukas Bulwahn, TUM 2011 *)
 
-header {* Executing Automata and membership of Regular Expressions  *}
+section {* Executing Automata and membership of Regular Expressions  *}
 
 theory Execute
 imports AutoRegExp

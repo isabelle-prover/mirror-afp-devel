@@ -1,4 +1,4 @@
-header {* The abstract semantics is correct *}
+section {* The abstract semantics is correct *}
 
 theory AbsCFCorrect
   imports AbsCF ExCF "~~/src/Tools/Adhoc_Overloading"

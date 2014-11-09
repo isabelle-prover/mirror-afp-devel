@@ -3,7 +3,7 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-header{* MoreList *}
+section{* MoreList *}
 
 theory MoreList
 imports Main "~~/src/HOL/Library/Multiset"

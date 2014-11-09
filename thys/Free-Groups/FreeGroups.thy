@@ -1,4 +1,4 @@
-header {* The Free Group *}
+section {* The Free Group *}
 
 theory "FreeGroups"
 imports

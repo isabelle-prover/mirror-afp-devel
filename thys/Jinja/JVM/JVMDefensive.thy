@@ -3,7 +3,7 @@
     Copyright   GPL
 *)
 
-header {* \isaheader{A Defensive JVM} *}
+section {* A Defensive JVM *}
 
 theory JVMDefensive
 imports JVMExec "../Common/Conform"

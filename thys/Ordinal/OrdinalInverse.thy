@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-header {* Inverse Functions *}
+section {* Inverse Functions *}
 
 theory OrdinalInverse
 imports OrdinalArith

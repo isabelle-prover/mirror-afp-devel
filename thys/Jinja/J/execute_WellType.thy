@@ -3,7 +3,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Code Generation For WellType} *}
+section {* Code Generation For WellType *}
 
 theory execute_WellType
 imports

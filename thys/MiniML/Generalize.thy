@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "Generalizing type schemes with respect to a context"
+section "Generalizing type schemes with respect to a context"
 
 theory Generalize
 imports Instance
@@ -46,15 +46,7 @@ lemma free_tv_gen_cons [simp]:
 
 lemma bound_tv_gen [simp]: 
   "bound_tv (gen A t1) = (free_tv t1) - (free_tv A)"
-apply (induct t1)
-apply (simp (no_asm))
-apply (case_tac "nat : free_tv A")
-apply (simp (no_asm_simp))
-apply (simp (no_asm_simp))
-apply fast
-apply (simp (no_asm_simp))
-apply fast
-done
+  by (induct t1) auto
 
 lemma new_tv_compatible_gen: "new_tv n t \<Longrightarrow> new_tv n (gen A t)"
   by (induct t) auto
@@ -71,6 +63,7 @@ lemma gen_subst_commutes [rule_format]:
       --> gen ($ S A) ($ S t) = $ S (gen A t)"
 apply (induct t)
  apply (intro strip)
+ apply (rename_tac nat)
  apply (case_tac "nat : (free_tv A) ")
   apply (simp (no_asm_simp))
  apply simp
@@ -119,6 +112,7 @@ apply (hypsubst)
 apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
 apply (induct t)
 apply (simp (no_asm))
+apply (rename_tac nat S)
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))
 apply (simp (no_asm_simp))

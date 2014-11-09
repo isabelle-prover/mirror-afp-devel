@@ -2,7 +2,7 @@
     Author:     Roelof Oosterhuis, 2007  Rijksuniversiteit Groningen
 *)
 
-header {* Fermat's last theorem, case $n=3$ *}
+section {* Fermat's last theorem, case $n=3$ *}
 
 theory Fermat3
 imports QuadForm

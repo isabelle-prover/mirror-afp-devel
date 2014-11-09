@@ -1,4 +1,4 @@
-header {* Sigma-Formulas and Theorem 2.5 *}
+chapter {* Sigma-Formulas and Theorem 2.5 *}
 
 theory Sigma
 imports Predicates

@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-header "Theory ArithExtras.thy"
+section "Theory ArithExtras.thy"
 
 theory ArithExtras 
 imports Main 

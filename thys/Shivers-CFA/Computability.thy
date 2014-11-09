@@ -1,4 +1,4 @@
-header {* Generic Computability *}
+section {* Generic Computability *}
 
 theory Computability
 imports HOLCF HOLCFUtils

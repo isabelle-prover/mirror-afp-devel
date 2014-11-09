@@ -4,7 +4,7 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-header {* Variants of Regular Algebra *}
+section {* Variants of Regular Algebra *}
 
 theory Regular_Algebra_Variants
   imports Regular_Algebras Pratts_Counterexamples

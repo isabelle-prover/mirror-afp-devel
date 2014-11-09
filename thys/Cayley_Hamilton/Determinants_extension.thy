@@ -1,4 +1,4 @@
-header {* Determinants\label{sec.det.ext} *}
+section {* Determinants\label{sec.det.ext} *}
 
 theory Determinants_extension
 imports

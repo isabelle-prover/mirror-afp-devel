@@ -112,10 +112,10 @@ qed
 section{*Specific case of the Konigsberg Bridge Problem*}
 
 (*to denote the four landmasses*)
-datatype kon_node = a|b|c|d
+datatype kon_node = a | b | c | d
 
 (*to denote the seven bridges*)
-datatype kon_bridge = ab1|ab2|ac1|ac2|ad1|bd1|cd1 
+datatype kon_bridge = ab1 | ab2 | ac1 | ac2 | ad1 | bd1 | cd1 
 
 definition kon_graph :: "(kon_node,kon_bridge) graph" where
   "kon_graph\<equiv>\<lparr>nodes={a,b,c,d}, 
@@ -417,7 +417,7 @@ proof (induct "card E" arbitrary: G rule: less_induct)
       and "n1\<noteq>n2" unfolding num_of_odd_nodes_def odd_nodes_set_def 
     proof - 
       have "\<forall>S. card S=2 \<longrightarrow> (\<exists>n1 n2. n1\<in>S\<and>n2\<in>S\<and>n1\<noteq>n2)" 
-        by (metis card_eq_0_iff equals0I even_card' even_numeral_nat zero_neq_numeral)
+        by (metis card_eq_0_iff equals0I even_card' even_numeral zero_neq_numeral)
       then obtain t1 t2
           where "t1\<in>{v \<in> nodes G. odd (degree v G)}" "t2\<in>{v \<in> nodes G. odd (degree v G)}" "t1\<noteq>t2"
         using `num_of_odd_nodes G = 2` unfolding num_of_odd_nodes_def odd_nodes_set_def
@@ -485,13 +485,11 @@ proof (induct "card E" arbitrary: G rule: less_induct)
       have all_even:"\<forall>n\<in>nodes (del_unEdge n1 w n2 G). even(degree n (del_unEdge n1 w n2 G))"
         proof -
           have "even (degree n1 (del_unEdge n1 w n2 G))" 
-            using `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G`
-            by (metis  del_edge_undirected_degree_minus even_num_iff n1(2) odd_pos 
-              valid_unMultigraph.corres)
+            using `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` n1
+            by (auto simp add: valid_unMultigraph.corres) 
           moreover have "even (degree n2 (del_unEdge n1 w n2 G))" 
-            using  `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` 
-            by (metis del_edge_undirected_degree_minus' even_num_iff n2(2) odd_pos 
-              valid_unMultigraph.corres)
+            using  `(n1, w, v') \<in> edges G` `finite (edges G)` `v' = n2` `valid_unMultigraph G` n2
+            by (auto simp add: valid_unMultigraph.corres)
           moreover have  "\<And>n. n \<in> nodes (del_unEdge n1 w n2 G) \<Longrightarrow> n \<noteq> n1 \<Longrightarrow> n \<noteq> n2 \<Longrightarrow> 
               even (degree n (del_unEdge n1 w n2 G))" 
             using valid_unMultigraph.degree_frame[OF `valid_unMultigraph G`,

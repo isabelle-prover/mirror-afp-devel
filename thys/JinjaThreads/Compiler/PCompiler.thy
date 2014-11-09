@@ -214,6 +214,7 @@ lemma [iff]: "distinct_fst (classes (compP f P)) = distinct_fst (classes P)"
 (*<*)
 apply(cases P)
 apply(simp add:distinct_fst_def compP_def compC_def)
+apply(rename_tac list)
 apply(induct_tac list)
 apply (auto simp:image_iff)
 done
@@ -293,7 +294,7 @@ proof -
   moreover
   { fix m
     assume mset': "m \<in> set ms'"
-    then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m, auto)
+    obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
     with ms' obtain body where mf: "body' = map_option (f C M Ts' T') body"
       and mset: "(M, Ts', T', body) \<in> set ms" using mset'
       by(clarsimp simp add: image_iff compM_def)
@@ -362,7 +363,7 @@ proof -
   moreover
   { fix m
     assume mset': "m \<in> set ms'"
-    then obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
+    obtain M Ts' T' body' where m: "m = (M, Ts', T', body')" by(cases m)
     hence mset: "(M, Ts', T', map_option (f C M Ts' T') body') \<in> set (map (compM (f C)) ms')" using mset'
       by(auto simp add: image_iff compM_def intro: rev_bexI)
     moreover from wf xsrc mset x have "compP f P \<turnstile> C sees M:Ts'\<rightarrow>T' = map_option (f C M Ts' T') body' in C"

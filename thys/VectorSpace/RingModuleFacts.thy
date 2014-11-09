@@ -1,4 +1,4 @@
-header {* Basic facts about rings and modules *}
+section {* Basic facts about rings and modules *}
 
 theory RingModuleFacts
 imports Main

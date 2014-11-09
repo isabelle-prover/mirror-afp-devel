@@ -5,7 +5,7 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-header {* Lamport's Inc example  *}
+section {* Lamport's Inc example  *}
 
 theory Inc
 imports State   

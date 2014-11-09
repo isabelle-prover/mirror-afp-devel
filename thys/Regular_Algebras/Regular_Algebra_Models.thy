@@ -4,7 +4,7 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-header {* Models of Regular Algebra *}
+section {* Models of Regular Algebra *}
 
 theory Regular_Algebra_Models
   imports Regular_Algebras "../Kleene_Algebra/Kleene_Algebra_Models"

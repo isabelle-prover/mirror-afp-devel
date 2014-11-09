@@ -2,7 +2,7 @@
     Copyright   1998 TUM
 *)
 
-header "Conversions between automata"
+section "Conversions between automata"
 
 theory Automata
 imports DA NAe
@@ -33,7 +33,7 @@ done
 (*** Direct equivalence of NAe and DA ***)
 
 lemma espclosure_DA_delta_is_steps:
- "!!Q. (eps A)^* `` (DA.delta (nae2da A) w Q) = steps A w `` Q";
+ "!!Q. (eps A)^* `` (DA.delta (nae2da A) w Q) = steps A w `` Q"
 apply (induct w)
  apply(simp)
 apply (simp add: step_def nae2da_def)

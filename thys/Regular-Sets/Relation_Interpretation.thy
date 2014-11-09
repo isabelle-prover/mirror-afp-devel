@@ -1,4 +1,4 @@
-header {* Regular Expressions as Homogeneous Binary Relations *}
+section {* Regular Expressions as Homogeneous Binary Relations *}
 
 theory Relation_Interpretation
 imports Regular_Exp

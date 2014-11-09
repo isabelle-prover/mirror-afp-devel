@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-header {* Monadic Second-Order Logic Formulas *}
+section {* Monadic Second-Order Logic Formulas *}
 
 (*<*)
 theory Formula
@@ -52,12 +52,11 @@ definition "\<sigma> = (\<lambda>\<Sigma> n. concat (map (\<lambda>bs. map (\<la
 definition "\<pi> = (\<lambda>(a, bs). (a, tl bs))"
 definition "\<epsilon> = (\<lambda>\<Sigma> (a::'a, bs). if a \<in> set \<Sigma> then [(a, True # bs), (a, False # bs)] else [])"
 
-datatype_new 'a atom =
+datatype 'a atom =
     Singleton 'a "bool list"
   | AQ nat 'a
   | Arbitrary_Except nat bool
   | Arbitrary_Except2 nat nat
-datatype_compat atom
 derive linorder atom
 
 fun wf_atom where

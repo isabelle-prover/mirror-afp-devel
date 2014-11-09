@@ -5,7 +5,7 @@
 Define natural transformation, prove that the identity arrow function is one.
 *)
 
-header {* Natural Transformations *}
+section {* Natural Transformations *}
 
 theory NatTrans
 imports Functors

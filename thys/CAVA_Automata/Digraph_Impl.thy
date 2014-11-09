@@ -1,4 +1,4 @@
-header {* Implementing Graphs *}
+section {* Implementing Graphs *}
 (* Author: Peter Lammich *)
 theory Digraph_Impl
 imports Digraph

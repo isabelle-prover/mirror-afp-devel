@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
+section {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
 
 theory NZM
 imports "../Abstract-Rewriting/SN_Order_Carrier" Polynomial

@@ -1,4 +1,4 @@
-header "Specification of RIPEMD-160"
+section "Specification of RIPEMD-160"
 theory RMD
 imports "~~/src/HOL/Word/Word"
 begin

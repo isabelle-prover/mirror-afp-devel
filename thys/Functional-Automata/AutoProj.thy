@@ -7,7 +7,7 @@ Otherwise we could have `acceps A == fin A o delta A (start A)'
 and use foldl instead of foldl2.
 *)
 
-header "Projection functions for automata"
+section "Projection functions for automata"
 
 theory AutoProj
 imports Main

@@ -26,7 +26,7 @@ open Nominal_Function_Common
 val simp_attribs = map (Attrib.internal o K)
   [Simplifier.simp_add,
    Code.add_default_eqn_attribute,
-   Nitpick_Simps.add]
+   Named_Theorems.add @{named_theorems nitpick_simp}]
 
 val eqvt_attrib =  Attrib.internal (K Nominal_ThmDecls.eqvt_add)
 

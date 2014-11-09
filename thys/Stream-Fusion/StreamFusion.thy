@@ -1,4 +1,4 @@
-header {* Stream Fusion *}
+section {* Stream Fusion *}
 
 theory StreamFusion
 imports Stream

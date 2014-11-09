@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-header {* Hash functions *}
+section {* Hash functions *}
 
 theory Hash_Generator
 imports "../Collections/Lib/HashCode"
@@ -72,9 +72,5 @@ subsection "Installing the generator"
 lemma hash_mod_lemma: "1 < (n :: nat) \<Longrightarrow> x mod n < n" by auto
 
 ML_file "hash_generator.ML"
-
-setup {*
-  Hash_Generator.setup
-*}
 
 end

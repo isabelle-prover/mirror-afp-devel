@@ -67,7 +67,6 @@ sig
   val quote_tr: Proof.context -> string -> term -> term
   val raise_tr': Proof.context -> term list -> term
   val raise_tr: Proof.context -> term list -> term
-  val setup: theory -> theory
   val switch_tr': Proof.context -> term list -> term
   val update_comp: Proof.context -> string list -> bool -> bool -> xstring -> term -> term -> term
   val use_call_tr': bool Config.T
@@ -768,8 +767,7 @@ in
 end;
 (* FIXME: make guard function a parameter of all parse-translations that need it.*)
 
-val setup =
-  Context.theory_map (Hoare.install_generate_guard mk_guard);
+val _ = Theory.setup (Context.theory_map (Hoare.install_generate_guard mk_guard));
 
 
 fun mk_singleton_guard f g =

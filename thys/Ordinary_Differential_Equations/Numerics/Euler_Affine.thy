@@ -1,4 +1,4 @@
-header {* Euler method on Affine Forms *}
+section {* Euler method on Affine Forms *}
 theory Euler_Affine
 imports
   "~~/src/HOL/Decision_Procs/Dense_Linear_Order"

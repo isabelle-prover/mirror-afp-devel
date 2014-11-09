@@ -1,6 +1,4 @@
-header {*
-  \subsection{ISK (Interruptible Separation Kernel)}
-*}
+subsection {* ISK (Interruptible Separation Kernel) *}
 
 theory ISK
   imports SK

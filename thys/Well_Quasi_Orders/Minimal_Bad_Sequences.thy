@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-header {* Constructing Minimal Bad Sequences *}
+section {* Constructing Minimal Bad Sequences *}
 
 theory Minimal_Bad_Sequences
 imports Restricted_Predicates

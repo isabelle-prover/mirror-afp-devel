@@ -3,7 +3,7 @@
     Author:      Timothy Bourke
 *)
 
-header "Generic open invariants on sequential AWN processes"
+section "Generic open invariants on sequential AWN processes"
 
 theory OAWN_Invariants
 imports Invariants OInvariants
@@ -29,19 +29,19 @@ lemma oseqp_sos_subterms:
                       \<exists>pn. p' \<in> subterms (\<Gamma> pn)"
        and "\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)"
        and "((\<sigma>, p1 \<oplus> p2), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
-    from `\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)` obtain pn
+    from \<open>\<exists>pn. p1 \<oplus> p2 \<in> subterms (\<Gamma> pn)\<close> obtain pn
                                             where "p1 \<in> subterms (\<Gamma> pn)"
                                               and "p2 \<in> subterms (\<Gamma> pn)" by auto
-    from `((\<sigma>, p1 \<oplus> p2), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i`
+    from \<open>((\<sigma>, p1 \<oplus> p2), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i\<close>
       have "((\<sigma>, p1), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i
             \<or> ((\<sigma>, p2), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by auto
     thus "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
     proof
       assume "((\<sigma>, p1), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
-      with `p1 \<in> subterms (\<Gamma> pn)` show ?thesis by (auto intro: IH1)
+      with \<open>p1 \<in> subterms (\<Gamma> pn)\<close> show ?thesis by (auto intro: IH1)
     next
       assume "((\<sigma>, p2), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
-      with `p2 \<in> subterms (\<Gamma> pn)` show ?thesis by (auto intro: IH2)
+      with \<open>p2 \<in> subterms (\<Gamma> pn)\<close> show ?thesis by (auto intro: IH2)
     qed
   qed auto
 
@@ -55,17 +55,17 @@ lemma oreachable_subterms:
   proof (induct rule: oreachable_pair_induct)
     fix \<sigma> p
     assume "(\<sigma>, p) \<in> init A"
-    with `control_within \<Gamma> (init A)` show "\<exists>pn. p \<in> subterms (\<Gamma> pn)" ..
+    with \<open>control_within \<Gamma> (init A)\<close> show "\<exists>pn. p \<in> subterms (\<Gamma> pn)" ..
   next
     fix \<sigma> p a \<sigma>' p'
     assume "(\<sigma>, p) \<in> oreachable A S U"
        and "\<exists>pn. p \<in> subterms (\<Gamma> pn)"
        and "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
        and "S \<sigma> \<sigma>' a"
-    moreover from this(3) and `trans A = oseqp_sos \<Gamma> i`
+    moreover from this(3) and \<open>trans A = oseqp_sos \<Gamma> i\<close>
       have "((\<sigma>, p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by simp
     ultimately show "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
-    using `wellformed \<Gamma>`
+    using \<open>wellformed \<Gamma>\<close>
       by (auto elim: oseqp_sos_subterms)
   qed
 
@@ -92,17 +92,17 @@ lemma onl_oinvariantI [intro]:
        and "onl \<Gamma> P (\<sigma>, p)"
        and tr: "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
        and "S \<sigma> \<sigma>' a"
-    from `onl \<Gamma> P (\<sigma>, p)` have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)" ..
-    with rp tr `S \<sigma> \<sigma>' a` have "\<forall>l'\<in>labels \<Gamma> p'. P (\<sigma>', l')" by (auto elim: step)
+    from \<open>onl \<Gamma> P (\<sigma>, p)\<close> have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)" ..
+    with rp tr \<open>S \<sigma> \<sigma>' a\<close> have "\<forall>l'\<in>labels \<Gamma> p'. P (\<sigma>', l')" by (auto elim: step)
     thus "onl \<Gamma> P (\<sigma>', p')" ..
   next
     fix \<sigma> \<sigma>' p
     assume "(\<sigma>, p) \<in> oreachable A S U"
        and "onl \<Gamma> P (\<sigma>, p)"
        and "U \<sigma> \<sigma>'"
-    from `onl \<Gamma> P (\<sigma>, p)` have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)" by auto
-    with `(\<sigma>, p) \<in> oreachable A S U` have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>', l)"
-        using `U \<sigma> \<sigma>'` by (rule other)
+    from \<open>onl \<Gamma> P (\<sigma>, p)\<close> have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)" by auto
+    with \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "\<forall>l\<in>labels \<Gamma> p. P (\<sigma>', l)"
+        using \<open>U \<sigma> \<sigma>'\<close> by (rule other)
     thus "onl \<Gamma> P (\<sigma>', p)" by auto
   qed
 
@@ -126,9 +126,9 @@ lemma global_oinvariantI [intro]:
        and "(\<lambda>(\<sigma>, _). P \<sigma>) (\<sigma>, p)"
        and tr: "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
        and "S \<sigma> \<sigma>' a"
-    from `(\<lambda>(\<sigma>, _). P \<sigma>) (\<sigma>, p)` have "P \<sigma>" by simp
+    from \<open>(\<lambda>(\<sigma>, _). P \<sigma>) (\<sigma>, p)\<close> have "P \<sigma>" by simp
     with rp have "P \<sigma>'"
-      using tr `S \<sigma> \<sigma>' a` by (rule step)
+      using tr \<open>S \<sigma> \<sigma>' a\<close> by (rule step)
     thus "(\<lambda>(\<sigma>, _). P \<sigma>) (\<sigma>', p')" by simp
   next
     fix \<sigma> \<sigma>' p
@@ -154,11 +154,11 @@ lemma onl_oinvariant_weakenD [dest]:
       and weakenU: "\<And>s s'. U s s' \<Longrightarrow> U' s s'"
     shows "P (\<sigma>, l)"
   proof -
-    from `(\<sigma>, p) \<in> oreachable A S U` have "(\<sigma>, p) \<in> oreachable A S' U'"
+    from \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "(\<sigma>, p) \<in> oreachable A S' U'"
       by (rule oreachable_weakenE)
          (erule weakenS, erule weakenU)
-    with `A \<Turnstile> (S', U' \<rightarrow>) onl \<Gamma> P` show "P (\<sigma>, l)"
-      using `l \<in> labels \<Gamma> p` ..
+    with \<open>A \<Turnstile> (S', U' \<rightarrow>) onl \<Gamma> P\<close> show "P (\<sigma>, l)"
+      using \<open>l \<in> labels \<Gamma> p\<close> ..
   qed
 
 lemma onl_oinvariant_initD [dest]:
@@ -179,7 +179,7 @@ lemma onl_oinvariant_sterms:
       and "l\<in>labels \<Gamma> p'"
     shows "P (\<sigma>, l)"
   proof -
-    from wf `p'\<in>sterms \<Gamma> p` `l\<in>labels \<Gamma> p'` have "l\<in>labels \<Gamma> p"
+    from wf \<open>p'\<in>sterms \<Gamma> p\<close> \<open>l\<in>labels \<Gamma> p'\<close> have "l\<in>labels \<Gamma> p"
       by (rule labels_sterms_labels)
     with il rp show "P (\<sigma>, l)" ..
   qed
@@ -194,7 +194,7 @@ lemma onl_oinvariant_sterms_weaken:
       and weakenU: "\<And>\<sigma> \<sigma>'. U \<sigma> \<sigma>' \<Longrightarrow> U' \<sigma> \<sigma>'"
     shows "P (\<sigma>, l)"
   proof -
-    from `(\<sigma>, p) \<in> oreachable A S U` have "(\<sigma>, p) \<in> oreachable A S' U'"
+    from \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "(\<sigma>, p) \<in> oreachable A S' U'"
       by (rule oreachable_weakenE)
          (erule weakenS, erule weakenU)
     with assms(1-2) show ?thesis using assms(4-5)
@@ -205,14 +205,14 @@ lemma otrans_from_sterms:
   assumes "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
       and "wellformed \<Gamma>"
     shows "\<exists>p'\<in>sterms \<Gamma> p. ((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
-  using assms by (induction p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) auto
+  using assms by (induction p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 lemma otrans_from_sterms':
   assumes "((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
       and "wellformed \<Gamma>"
       and "p' \<in> sterms \<Gamma> p"
     shows "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
-  using assms by (induction p rule: sterms_pinduct [OF `wellformed \<Gamma>`]) auto
+  using assms by (induction p rule: sterms_pinduct [OF \<open>wellformed \<Gamma>\<close>]) auto
 
 lemma otrans_to_dterms:
   assumes "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
@@ -235,9 +235,9 @@ theorem cterms_includes_sterms_of_oseq_reachable:
       fix \<sigma> p q
       assume "(\<sigma>, p) \<in> init A"
          and "q \<in> sterms \<Gamma> p"
-      from `control_within \<Gamma> (init A)` and `(\<sigma>, p) \<in> init A`
+      from \<open>control_within \<Gamma> (init A)\<close> and \<open>(\<sigma>, p) \<in> init A\<close>
         obtain pn where "p \<in> subterms (\<Gamma> pn)" by auto
-      with `wellformed \<Gamma>` show "q \<in> cterms \<Gamma>" using `q\<in>sterms \<Gamma> p`
+      with \<open>wellformed \<Gamma>\<close> show "q \<in> cterms \<Gamma>" using \<open>q\<in>sterms \<Gamma> p\<close>
         by (rule subterms_sterms_in_cterms)
     next
       fix p \<sigma> a \<sigma>' q x
@@ -245,14 +245,14 @@ theorem cterms_includes_sterms_of_oseq_reachable:
          and IH: "\<And>x. x \<in> sterms \<Gamma> p \<Longrightarrow> x \<in> cterms \<Gamma>"
          and "((\<sigma>, p), a, (\<sigma>', q)) \<in> trans A"
          and "x \<in> sterms \<Gamma> q"
-      from this(3) and `trans A = oseqp_sos \<Gamma> i`
+      from this(3) and \<open>trans A = oseqp_sos \<Gamma> i\<close>
         have step: "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i" by simp
-      from step `wellformed \<Gamma>` obtain ps
+      from step \<open>wellformed \<Gamma>\<close> obtain ps
         where ps: "ps \<in> sterms \<Gamma> p"
           and step': "((\<sigma>, ps), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
         by (rule otrans_from_sterms [THEN bexE])
       from ps have "ps \<in> cterms \<Gamma>" by (rule IH)
-      moreover from step' `wellformed \<Gamma>` `x \<in> sterms \<Gamma> q` have "x \<in> dterms \<Gamma> ps"
+      moreover from step' \<open>wellformed \<Gamma>\<close> \<open>x \<in> sterms \<Gamma> q\<close> have "x \<in> dterms \<Gamma> ps"
         by (rule otrans_to_dterms [rule_format])
       ultimately show "x \<in> cterms \<Gamma>" by (rule ctermsDI)
     qed
@@ -313,7 +313,7 @@ lemma oseq_invariant_ctermI:
        and "S \<sigma> \<sigma>' a"
       thus "P (\<sigma>', l')"
     proof -
-      from sr and tr and `S \<sigma> \<sigma>' a` have A7: "(\<sigma>', q) \<in> oreachable A S U"
+      from sr and tr and \<open>S \<sigma> \<sigma>' a\<close> have A7: "(\<sigma>', q) \<in> oreachable A S U"
         by - (rule oreachable_local')
       from tr and sp have tr': "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i" by simp
       then obtain p' where "p' \<in> sterms \<Gamma> p"
@@ -323,18 +323,18 @@ lemma oseq_invariant_ctermI:
         by (rule oseq_reachable_in_cterms)
       from labels_not_empty [OF wf] obtain ll where A2: "ll\<in>labels \<Gamma> p'"
           by blast
-      with `p'\<in>sterms \<Gamma> p` have "ll\<in>labels \<Gamma> p"
+      with \<open>p'\<in>sterms \<Gamma> p\<close> have "ll\<in>labels \<Gamma> p"
         by (rule labels_sterms_labels [OF wf])
       with pl have A3: "P (\<sigma>, ll)" by simp
-      from sr `p'\<in>sterms \<Gamma> p`
+      from sr \<open>p'\<in>sterms \<Gamma> p\<close>
         obtain pp where A7: "(\<sigma>, pp)\<in>oreachable A S U"
                     and A8: "p'\<in>sterms \<Gamma> pp"
         by auto
-      from sr tr `S \<sigma> \<sigma>' a` have A9: "(\<sigma>', q)\<in>oreachable A S U"
+      from sr tr \<open>S \<sigma> \<sigma>' a\<close> have A9: "(\<sigma>', q)\<in>oreachable A S U"
         by - (rule oreachable_local')
-      from sp and `((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i`
+      from sp and \<open>((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i\<close>
         have A5: "((\<sigma>, p'), a, (\<sigma>', q)) \<in> trans A" by simp
-      from A1 A2 A3 A4 A5 A6 A7 A8 A9 `S \<sigma> \<sigma>' a` show ?thesis by (rule local)
+      from A1 A2 A3 A4 A5 A6 A7 A8 A9 \<open>S \<sigma> \<sigma>' a\<close> show ?thesis by (rule local)
     qed
   next
     fix \<sigma> \<sigma>' p l
@@ -345,9 +345,9 @@ lemma oseq_invariant_ctermI:
     proof
       fix l
       assume "l\<in>labels \<Gamma> p"
-      with `\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)` have "P (\<sigma>, l)" ..
-      with sr and `l\<in>labels \<Gamma> p`
-        show "P (\<sigma>', l)" using `U \<sigma> \<sigma>'` by (rule other)
+      with \<open>\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)\<close> have "P (\<sigma>, l)" ..
+      with sr and \<open>l\<in>labels \<Gamma> p\<close>
+        show "P (\<sigma>', l)" using \<open>U \<sigma> \<sigma>'\<close> by (rule other)
     qed
   qed
 
@@ -461,11 +461,11 @@ lemma onll_ostep_invariant_weakenD [dest]:
       and weakenU: "\<And>s s'. U s s' \<Longrightarrow> U' s s'"
     shows "\<forall>l\<in>labels \<Gamma> p. \<forall>l'\<in>labels \<Gamma> p'. P ((\<sigma>, l), a, (\<sigma>', l'))"
   proof -
-    from `(\<sigma>, p) \<in> oreachable A S U` have "(\<sigma>, p) \<in> oreachable A S' U'"
+    from \<open>(\<sigma>, p) \<in> oreachable A S U\<close> have "(\<sigma>, p) \<in> oreachable A S' U'"
       by (rule oreachable_weakenE)
          (erule weakenS, erule weakenU)
-    with `A \<Turnstile>\<^sub>A (S', U' \<rightarrow>) onll \<Gamma> P` show ?thesis
-      using `((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A` and `S' \<sigma> \<sigma>' a` ..
+    with \<open>A \<Turnstile>\<^sub>A (S', U' \<rightarrow>) onll \<Gamma> P\<close> show ?thesis
+      using \<open>((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A\<close> and \<open>S' \<sigma> \<sigma>' a\<close> ..
   qed
 
 lemma onll_ostep_to_invariantI [intro]:
@@ -499,8 +499,8 @@ lemma onll_ostep_to_invariantI [intro]:
     proof -
       from lp obtain l where "l\<in>labels \<Gamma> p" and "P (\<sigma>, l)"
         using labels_not_empty [OF wf] by auto
-      from sinv sr tr `S \<sigma> \<sigma>' a` this(1) lp' have "Q ((\<sigma>, l), a, (\<sigma>', l'))" ..
-      with sr `l\<in>labels \<Gamma> p` `P (\<sigma>, l)` show "P (\<sigma>', l')" using `S \<sigma> \<sigma>' a` by (rule local)
+      from sinv sr tr \<open>S \<sigma> \<sigma>' a\<close> this(1) lp' have "Q ((\<sigma>, l), a, (\<sigma>', l'))" ..
+      with sr \<open>l\<in>labels \<Gamma> p\<close> \<open>P (\<sigma>, l)\<close> show "P (\<sigma>', l')" using \<open>S \<sigma> \<sigma>' a\<close> by (rule local)
     qed
   next
     fix \<sigma> \<sigma>' p l
@@ -511,9 +511,9 @@ lemma onll_ostep_to_invariantI [intro]:
     proof
       fix l
       assume "l\<in>labels \<Gamma> p"
-      with `\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)` have "P (\<sigma>, l)" ..
-      with `(\<sigma>, p) \<in> oreachable A S U` and `l\<in>labels \<Gamma> p`
-      show "P (\<sigma>', l)" using `U \<sigma> \<sigma>'` by (rule other)
+      with \<open>\<forall>l\<in>labels \<Gamma> p. P (\<sigma>, l)\<close> have "P (\<sigma>, l)" ..
+      with \<open>(\<sigma>, p) \<in> oreachable A S U\<close> and \<open>l\<in>labels \<Gamma> p\<close>
+      show "P (\<sigma>', l)" using \<open>U \<sigma> \<sigma>'\<close> by (rule other)
     qed
   qed
 
@@ -528,9 +528,9 @@ lemma onll_ostep_invariant_sterms:
       and "l\<in>labels \<Gamma> p'"
     shows "P ((\<sigma>, l), a, (\<sigma>', l'))"
   proof -
-    from wf `p'\<in>sterms \<Gamma> p` `l\<in>labels \<Gamma> p'` have "l\<in>labels \<Gamma> p"
+    from wf \<open>p'\<in>sterms \<Gamma> p\<close> \<open>l\<in>labels \<Gamma> p'\<close> have "l\<in>labels \<Gamma> p"
       by (rule labels_sterms_labels)
-    with si sr sos `S \<sigma> \<sigma>' a` show "P ((\<sigma>, l), a, (\<sigma>', l'))" using `l'\<in>labels \<Gamma> q` ..
+    with si sr sos \<open>S \<sigma> \<sigma>' a\<close> show "P ((\<sigma>, l), a, (\<sigma>', l'))" using \<open>l'\<in>labels \<Gamma> q\<close> ..
   qed
 
 lemma oseq_step_invariant_sterms:
@@ -546,10 +546,10 @@ lemma oseq_step_invariant_sterms:
   proof
     from assms(3, 6) have "((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i" by simp
     hence "((\<sigma>, p), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
-      using wf `p'\<in>sterms \<Gamma> p`  by (rule otrans_from_sterms')
+      using wf \<open>p'\<in>sterms \<Gamma> p\<close>  by (rule otrans_from_sterms')
     with assms(3) have trp: "((\<sigma>, p), a, (\<sigma>', q)) \<in> trans A" by simp
     fix l assume "l \<in> labels \<Gamma> p'"
-    with wf inv sr trp `S \<sigma> \<sigma>' a` `l'\<in>labels \<Gamma> q` `p'\<in>sterms \<Gamma> p`
+    with wf inv sr trp \<open>S \<sigma> \<sigma>' a\<close> \<open>l'\<in>labels \<Gamma> q\<close> \<open>p'\<in>sterms \<Gamma> p\<close>
       show "P ((\<sigma>, l), a, (\<sigma>', l'))"
         by - (erule(7) onll_ostep_invariant_sterms)
   qed
@@ -567,13 +567,13 @@ lemma oseq_step_invariant_sterms_weaken:
       and weakenU: "\<And>\<sigma> \<sigma>'. U' \<sigma> \<sigma>' \<Longrightarrow> U \<sigma> \<sigma>'"
     shows "\<forall>l\<in>labels \<Gamma> p'. P ((\<sigma>, l), a, (\<sigma>', l'))"
   proof -
-    from `S' \<sigma> \<sigma>' a` have "S \<sigma> \<sigma>' a" by (rule weakenS)
-    from `(\<sigma>, p) \<in> oreachable A S' U'`
+    from \<open>S' \<sigma> \<sigma>' a\<close> have "S \<sigma> \<sigma>' a" by (rule weakenS)
+    from \<open>(\<sigma>, p) \<in> oreachable A S' U'\<close>
       have Ir: "(\<sigma>, p) \<in> oreachable A S U"
         by (rule oreachable_weakenE)
            (erule weakenS, erule weakenU)
     with assms(1-4) show ?thesis
-      using tr `S \<sigma> \<sigma>' a` `p'\<in>sterms \<Gamma> p`
+      using tr \<open>S \<sigma> \<sigma>' a\<close> \<open>p'\<in>sterms \<Gamma> p\<close>
       by (rule oseq_step_invariant_sterms)
   qed
 
@@ -616,20 +616,20 @@ lemma oseq_step_invariant_ctermI [intro]:
                      and A3: "((\<sigma>, p'), a, (\<sigma>', q)) \<in> oseqp_sos \<Gamma> i"
       by (blast dest: otrans_from_sterms [OF _ wf])
     from this(2) and sp have A4: "((\<sigma>, p'), a, (\<sigma>', q)) \<in> trans A" by simp
-    from wf cw sp sr `p'\<in>sterms \<Gamma> p` have A1: "p'\<in>cterms \<Gamma>"
+    from wf cw sp sr \<open>p'\<in>sterms \<Gamma> p\<close> have A1: "p'\<in>cterms \<Gamma>"
       by (rule oseq_reachable_in_cterms)
-    from sr `p'\<in>sterms \<Gamma> p`
+    from sr \<open>p'\<in>sterms \<Gamma> p\<close>
       obtain pp where A6: "(\<sigma>, pp)\<in>oreachable A S U"
                   and A7: "p'\<in>sterms \<Gamma> pp"
       by auto
-    from sr tr `S \<sigma> \<sigma>' a` have A8: "(\<sigma>', q)\<in>oreachable A S U"
+    from sr tr \<open>S \<sigma> \<sigma>' a\<close> have A8: "(\<sigma>', q)\<in>oreachable A S U"
       by - (erule(2) oreachable_local')
     from wf cw sp sr have "\<exists>pn. p \<in> subterms (\<Gamma> pn)"
       by (rule oreachable_subterms)           
     with sl wf have "\<forall>p'\<in>sterms \<Gamma> p. l \<in> labels \<Gamma> p'"
       using pl by (rule simple_labels_in_sterms)
-    with `p' \<in> sterms \<Gamma> p` have "l \<in> labels \<Gamma> p'" by simp
-    with A1 show "P ((\<sigma>, l), a, (\<sigma>', l'))" using A3 A4 A5 A6 A7 A8 `S \<sigma> \<sigma>' a`
+    with \<open>p' \<in> sterms \<Gamma> p\<close> have "l \<in> labels \<Gamma> p'" by simp
+    with A1 show "P ((\<sigma>, l), a, (\<sigma>', l'))" using A3 A4 A5 A6 A7 A8 \<open>S \<sigma> \<sigma>' a\<close>
       by (rule local)
   qed
 
@@ -717,7 +717,7 @@ lemma open_seqp_action [elim]:
          and "((\<sigma> i, ps), a, (\<sigma>' i, p')) \<in> seqp_sos \<Gamma>"
       with assms(1) have "((\<sigma>, ps), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
         by (cases ps) auto
-      with assms(1) `ps \<in> sterms \<Gamma> (call(p))` have "((\<sigma>, \<Gamma> p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
+      with assms(1) \<open>ps \<in> sterms \<Gamma> (call(p))\<close> have "((\<sigma>, \<Gamma> p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i"
         by - (rule otrans_from_sterms', simp_all)
       thus "((\<sigma>, call(p)), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by auto
     qed auto

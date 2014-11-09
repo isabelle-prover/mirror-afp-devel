@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header{*IArrays Addenda*}
+section{*IArrays Addenda*}
 
 theory IArray_Addenda
   imports 

@@ -132,7 +132,7 @@ lemma map2set_to_list[autoref_ga_rules]:
 text {* Transfering also non-basic operations results in specializations
   of map-algorithms to also be used for sets *}
 lemma map2set_union[autoref_rules_raw]:
-  assumes "MINOR_PRIO_TAG -9"
+  assumes "MINOR_PRIO_TAG (- 9)"
   assumes "GEN_OP u op ++ (\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R)"
   shows "(u,op \<union>)\<in>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R\<rightarrow>\<langle>Rk\<rangle>map2set_rel R"
   using assms

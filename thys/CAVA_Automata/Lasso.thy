@@ -1,4 +1,4 @@
-header {* Lassos *}
+section {* Lassos *}
 (* Author: Peter Lammich *)
 theory Lasso
 imports "Automata"

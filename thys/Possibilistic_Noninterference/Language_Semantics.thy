@@ -1,4 +1,4 @@
-header {* The programming language and its semantics *} 
+section {* The programming language and its semantics *} 
 
 theory Language_Semantics imports Interface begin
 

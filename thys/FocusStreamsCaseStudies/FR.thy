@@ -4,7 +4,7 @@
    Author:    Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-header {* FlexRay: Specification *}
+section {* FlexRay: Specification *}
 
 theory  FR 
 imports FR_types

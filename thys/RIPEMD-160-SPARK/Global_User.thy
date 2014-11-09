@@ -1,4 +1,4 @@
-header "Arrays in SPARK vs Lists in Isabelle"
+section "Arrays in SPARK vs Lists in Isabelle"
 theory Global_User
 imports Main
 begin

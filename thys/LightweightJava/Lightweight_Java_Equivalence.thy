@@ -163,6 +163,7 @@ lemma [simp]: "(find_type P ctx cl ty_opt) = (find_type_f P ctx cl = ty_opt)"
 apply(rule)
  apply(force elim: find_type.cases split: fqn.splits)
 apply(case_tac cl) apply(force intro: ft_objI)
+apply(rename_tac fqn)
 apply(case_tac fqn) apply(clarsimp)
 apply(split option.splits) apply(rule)
  apply(force intro: ft_nullI)
@@ -846,7 +847,7 @@ lemma tr_ss_map:
 apply(induct s_s'_list) by auto
 
 lemma tr_f_to_rel: "\<forall>s'. tr_s_f T s = s' \<longrightarrow> tr_s T s s'"
-apply(induct s)
+apply(induct s rule: tr_s_f.induct)
 apply(simp)
 apply(clarsimp) apply(rule tr_s_var_assignI)
 apply(clarsimp simp add: tr_x_def tr_var_def split: option.splits)
@@ -856,7 +857,7 @@ apply(clarsimp simp add: tr_x_def tr_var_def split: option.splits)
 apply(simp add: tr_x_def)
 apply(clarsimp) apply(rule tr_s_field_writeI)
 apply(simp add: tr_x_def) apply(simp add: tr_x_def)
-apply(clarsimp simp only: tr_s_f_tr_ss_f.simps) apply(rule tr_s_ifI)
+apply(clarsimp simp only: tr_s_f.simps) apply(rule tr_s_ifI)
 apply(simp only: tr_x_def) apply(simp only: tr_x_def) apply(simp) apply(simp)
 apply(clarsimp) apply(rule tr_s_newI)
 apply(clarsimp simp add: tr_x_def tr_var_def split: option.splits)

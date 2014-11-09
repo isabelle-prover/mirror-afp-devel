@@ -1,4 +1,4 @@
-header {* \isaheader{Semantics} *}
+section {* Semantics *}
 
 theory Semantics imports Labels Com begin
 

@@ -1,4 +1,4 @@
-header{*Quotations of the Free Variables*}
+chapter{*Quotations of the Free Variables*}
 
 theory Quote
 imports Pseudo_Coding

@@ -3,7 +3,7 @@
    Copyright  1996 TU Muenchen
 *)
 
-header "MiniML with type inference rules"
+section "MiniML with type inference rules"
 
 theory MiniML
 imports Generalize
@@ -176,6 +176,7 @@ apply (hypsubst)
 apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
 apply (induct_tac t)
 apply (simp (no_asm))
+apply (rename_tac nat)
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))
 apply (subgoal_tac "n <= n + nat")

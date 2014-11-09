@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-header {* Language for Instantiating the SIFUM-Security Property *}
+section {* Language for Instantiating the SIFUM-Security Property *}
 
 theory Language
 imports Main Preliminaries

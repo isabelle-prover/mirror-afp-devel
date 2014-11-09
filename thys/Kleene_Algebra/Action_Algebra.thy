@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-header {* Action Algebras *}
+section {* Action Algebras *}
 
 theory Action_Algebra
 imports Kleene_Algebra

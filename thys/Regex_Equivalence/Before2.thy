@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-header {* Linear Time Optimization for ``Mark Before Atom'' (for a Fixed Alphabet) *}
+section {* Linear Time Optimization for ``Mark Before Atom'' (for a Fixed Alphabet) *}
 
 (*<*)
 theory Before2
@@ -11,7 +11,7 @@ begin
 
 declare Let_def[simp]
 
-datatype_new 'a mrexp3 =
+datatype 'a mrexp3 =
   Zero3 |
   One3 |
   Atom3 bool 'a |
@@ -26,8 +26,6 @@ where
 | "fin1 (Atom3 m a) = (if m then {a} else {})"
 | "nul (Atom3 _ _) = False"
 | "nul (Star3 _ _) = True"
-
-datatype_compat mrexp3
 
 primrec final3 where
   "final3 Zero3 = False"

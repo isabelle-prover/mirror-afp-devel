@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-header {* TypeIds *}
+section {* TypeIds *}
 
 theory TypeIds imports Main begin
 

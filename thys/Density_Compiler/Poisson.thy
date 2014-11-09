@@ -3,7 +3,7 @@
   Author: Manuel Eberl
 *)
 
-header {* Poisson Distribution *}
+section {* Poisson Distribution *}
 
 theory Poisson
 imports Probability PDF_Misc

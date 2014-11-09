@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-header {* Prefices on finite and infinite lists *}
+section {* Prefices on finite and infinite lists *}
 
 theory ListInf_Prefix
 imports "~~/src/HOL/Library/Sublist" ListInf

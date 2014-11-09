@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Inverse of a matrix using the Gauss Jordan algorithm over nested IArrays*}
+section{*Inverse of a matrix using the Gauss Jordan algorithm over nested IArrays*}
 
 theory Inverse_IArrays
 imports 

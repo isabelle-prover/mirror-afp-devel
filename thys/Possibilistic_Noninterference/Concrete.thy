@@ -1,4 +1,4 @@
-header {* Concrete setting *}
+section {* Concrete setting *}
 
 theory Concrete 
 imports Syntactic_Criteria After_Execution

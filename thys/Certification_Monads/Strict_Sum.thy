@@ -3,7 +3,7 @@
    Author:    René Thiemann
 *)
 
-header \<open>A Sum Type with Bottom Element\<close>
+section \<open>A Sum Type with Bottom Element\<close>
 
 theory Strict_Sum
 imports
@@ -12,7 +12,7 @@ imports
   "../Partial_Function_MR/Partial_Function_MR"
 begin
 
-datatype_new ('e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a
+datatype (dead 'e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a for map: sum_bot_map
 
 
 subsection \<open>Setup for Partial Functions\<close>
@@ -171,20 +171,6 @@ lemma [code]:
 
 subsection \<open>Connection to @{theory Partial_Function_MR}\<close>
 
-fun sum_bot_map :: "('a \<Rightarrow> 'b) \<Rightarrow> 'e +\<^sub>\<bottom> 'a \<Rightarrow> 'e +\<^sub>\<bottom> 'b"
-where
-  "sum_bot_map f Bottom = Bottom " |
-  "sum_bot_map f (Left e) = Left e" |
-  "sum_bot_map f (Right a) = Right (f a)"
-
-lemma sum_bot_map_comp:
-  "sum_bot_map f (sum_bot_map g h) = sum_bot_map (f \<circ> g) h"
-  by (cases h) simp_all
-
-lemma sum_bot_map_id:
-  "sum_bot_map (\<lambda> x. x) h = h"
-  by (cases h) simp_all
-
 lemma sum_bot_map_mono [partial_function_mono]:
   assumes mf: "mono_sum_bot B"
   shows "mono_sum_bot (\<lambda>f. sum_bot_map h (B f))"
@@ -203,8 +189,8 @@ Partial_Function_MR.init
       list_comb (Const (@{const_name sum_bot_map}, t_to_sTs ---> mtT --> msT), t_to_ss) $ mt)
   (fn (commonTs, argTs) => Type (@{type_name sum_bot}, commonTs @ argTs))
   (fn mT => Term.dest_Type mT |> #2 |> (fn [err, res] => ([err], [res]))) 
-  @{thms sum_bot_map_comp} 
-  @{thms sum_bot_map_id}
+  @{thms sum_bot.map_comp} 
+  @{thms sum_bot.map_ident}
 \<close>
 
 end

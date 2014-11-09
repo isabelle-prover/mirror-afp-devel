@@ -1,4 +1,4 @@
-header {* Implementing Automata *}
+section {* Implementing Automata *}
 (* Author: Peter Lammich *)
 theory Automata_Impl
 imports Digraph_Impl Automata

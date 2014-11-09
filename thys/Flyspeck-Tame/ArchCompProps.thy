@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-header "Completeness of Archive Test"
+section "Completeness of Archive Test"
 
 theory ArchCompProps
 imports TameEnumProps ArchCompAux

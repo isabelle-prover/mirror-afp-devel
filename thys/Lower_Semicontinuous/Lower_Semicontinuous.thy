@@ -2,7 +2,7 @@
     Author:    Bogdan Grechuk, University of Edinburgh
 *)
 
-header {* Lower semicontinuous functions *}
+section {* Lower semicontinuous functions *}
 
 theory Lower_Semicontinuous
 imports Multivariate_Analysis

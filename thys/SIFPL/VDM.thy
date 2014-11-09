@@ -495,6 +495,7 @@ apply clarsimp
   apply (rule VDMComp) apply assumption+ apply (simp add: SSpec_def Sem_def, clarsimp) 
   apply rule apply (rule SemComp) apply assumption+ apply simp
 apply clarsimp
+apply (rename_tac BExpr c)
 apply (rule VDMConseq)
   apply (erule VDMWhile) 
     prefer 3 apply (subgoal_tac "\<forall>s t. SSpec (While BExpr c) s t \<and> \<not> evalB BExpr t \<longrightarrow> SSpec (While BExpr c) s t", assumption)
@@ -504,7 +505,8 @@ apply (rule VDMConseq)
 apply clarsimp
 apply (rule VDMConseq)
   apply (rule VDMIff) apply assumption+ apply (simp add: SSpec_def Sem_def, clarsimp)
-  apply (erule thin_rl, erule thin_rl) 
+  apply (erule thin_rl, erule thin_rl)
+  apply (rename_tac BExpr c1 c2 s t)
   apply (case_tac "evalB BExpr s")
   apply clarsimp apply (rule, rule SemTrue) apply assumption+ 
   apply clarsimp apply (rule, rule SemFalse) apply (assumption, assumption)

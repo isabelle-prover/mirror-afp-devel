@@ -20,10 +20,9 @@ end
 
 structure Ceq_Generator : CEQ_GENERATOR = 
 struct
-open Datatype_Aux; 
-open Datatype; 
-open Derive_Aux;
-open Containers_Generator;
+
+open Derive_Aux
+open Containers_Generator
 
 fun mk_some_eq ty = mk_Some (HOLogic.eq_const ty)
 
@@ -41,9 +40,9 @@ fun mk_free_tysubst_i typ_subst x i ty = Free (x ^ string_of_int i, ty |> typ_su
 fun mk_eq_list thy info sort = let
     val typ_subst = typ_subst_for_sort thy info sort 
     val descr = #descr info
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val non_rec_dtys = descr |> map (#3 o snd) |> List.concat |> map snd |> List.concat
-      |> filter (fn Datatype.DtRec _ => false | _ => true) |> distinct (op =)
+      |> filter (fn Old_Datatype_Aux.DtRec _ => false | _ => true) |> distinct (op =)
     val eq_list = map_index (fn (i,dty) => 
       let val ty = typ_of dty
           val name = "eq_" ^ string_of_int i
@@ -55,19 +54,20 @@ fun mk_eq_idx eqs thy info sort =
   let 
     val typ_subst = typ_subst_for_sort thy info sort 
     val descr = #descr info
-    fun typ_of dty = typ_of_dtyp descr dty |> typ_subst
+    fun typ_of dty = Old_Datatype_Aux.typ_of_dtyp descr dty |> typ_subst
     val rec_names = #rec_names info
     val mk_free_i = mk_free_tysubst_i typ_subst
     fun rec_idx i dtys = dt_number_recs (take i dtys) |> fst
     fun mk_rhss (idx,(ty_name,_,cons)) = 
       let 
-        val ty = typ_of (DtRec idx) 
-        val linfo = the_info thy ty_name
+        val ty = typ_of (Old_Datatype_Aux.DtRec idx) 
+        val linfo = Old_Datatype_Data.the_info thy ty_name
         val case_name = #case_name linfo
         fun mk_rhs (i,(_,dtysi)) = 
           let 
             val lvars = map_index (fn (i,dty) => mk_free_i "x_" i (typ_of dty)) dtysi
-            fun res_var (i,oc) = mk_free_i "res_" oc (typ_of (DtRec i) --> @{typ bool});
+            fun res_var (i,oc) =
+              mk_free_i "res_" oc (typ_of (Old_Datatype_Aux.DtRec i) --> @{typ bool});
             val res_vars = dt_number_recs dtysi
                      |> snd 
                      |> map res_var
@@ -79,7 +79,7 @@ fun mk_eq_idx eqs thy info sort =
                 fun combine_dts [] = @{term True}
                   | combine_dts ((_,c) :: []) = c
                   | combine_dts ((_,c) :: ics) = HOLogic.mk_conj (c, combine_dts ics)
-                fun eq_of_dty (i,DtRec j) = res_var (j,rec_idx i dtysj) $ y i
+                fun eq_of_dty (i,Old_Datatype_Aux.DtRec j) = res_var (j,rec_idx i dtysj) $ y i
                   | eq_of_dty (i,dty) = 
                       let
                         val xi = x i
@@ -104,7 +104,7 @@ fun mk_eq_idx eqs thy info sort =
     val rec_args = map #1 nrec_args
     fun mk_rec i = 
       let 
-        val ty = typ_of (DtRec i)
+        val ty = typ_of (Old_Datatype_Aux.DtRec i)
         val rec_ty = map type_of rec_args @ [ty,ty] ---> @{typ bool}
         val rec_name = nth rec_names i
         val rhs = list_comb (Const (rec_name, rec_ty), rec_args)
@@ -212,9 +212,9 @@ fun derive_ceq_ceq dtyp_name thy =
     val base_name = Long_Name.base_name tyco
     val _ = writeln ("creating equality for datatype " ^ base_name)
     val sort = @{sort ceq}
-    val info = Datatype.the_info thy tyco
+    val info = Old_Datatype_Data.the_info thy tyco
     val vs_of_sort =
-      let val i = Datatype.the_spec thy tyco |> #1
+      let val i = Old_Datatype_Data.the_spec thy tyco |> #1
       in fn sort => map (fn (n,_) => (n, sort)) i end
     val vs = vs_of_sort sort
     val (ceq_eq_thm, ceq_rhs, eq_vars) = mk_ceq_thm thy info
@@ -258,7 +258,7 @@ fun derive_ceq_ceq dtyp_name thy =
       end) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class ceq")
     val typ_subst = typ_subst_for_sort thy info sort 
-    val main_ty = typ_of_dtyp (#descr info) (DtRec 0) |> typ_subst
+    val main_ty = Old_Datatype_Aux.typ_of_dtyp (#descr info) (Old_Datatype_Aux.DtRec 0) |> typ_subst
     val param_tys = dest_Type main_ty |> snd   
     fun mk_is_ceq ty = mk_is_c_dots ty @{const_name is_ceq}
     val main_is_ceq = mk_is_ceq main_ty

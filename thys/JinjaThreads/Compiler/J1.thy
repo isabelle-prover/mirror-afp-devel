@@ -681,7 +681,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   "call1 e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move1 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves1_not_calls1:
   "calls1 es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves1 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
-apply(induct e and es)
+apply(induct e and es rule: call1.induct calls1.induct)
 apply(auto split: split_if_asm simp add: is_vals_conv)
 apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done

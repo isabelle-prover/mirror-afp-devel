@@ -6,7 +6,6 @@ session MSO_Regex_Equivalence (AFP) = "HOL-Library" +
     "../Datatype_Order_Generator/Order_Generator"
     "../List-Index/List_Index"
     List_More
-    "~~/src/HOL/BNF_Examples/Stream"
     "~~/src/Tools/Permanent_Interpretation"
   theories
     Pi_Regular_Set
