@@ -2616,7 +2616,7 @@ fun while_annotate_tac ctxt inv i st =
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateWhile;
  in  ((trace_tac ctxt ("annotating While with: "^ Syntax.string_of_term ctxt lifted_inv ))
        THEN
-       compose_tac (false,annotate,1) i) st
+       compose_tac ctxt (false,annotate,1) i) st
  end;
 
 fun cond_annotate_tac ctxt inv mode (_,i) st =
@@ -2629,7 +2629,7 @@ fun cond_annotate_tac ctxt inv mode (_,i) st =
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateCond;
   in  ((trace_tac ctxt ("annotating Cond with: "^ Syntax.string_of_term ctxt lifted_inv ))
        THEN
-       compose_tac (false,annotate,5) i) st
+       compose_tac ctxt (false,annotate,5) i) st
  end;
 
 fun basic_while_tac ctxt state_kind cont_tac tac mode i =
@@ -2691,7 +2691,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
       o strip_comb o #2 o dest_hoare) (List.last (prems_of WhileG));
     val WhileGInst = cterm_instantiate [(cterm invVar, cterm J)] WhileG;
   in ((trace_tac ctxt ("WhileAnnoG, adding guards to invariant: "^ Syntax.string_of_term ctxt J))
-      THEN compose_tac (false,WhileGInst,1) i) st
+      THEN compose_tac ctxt (false,WhileGInst,1) i) st
   end
   handle TERM _ => no_tac st
        | Bind   => no_tac st
@@ -3284,7 +3284,7 @@ fun ex_tac ctxt vs st =
         val (_$x) = HOLogic.dest_Trueprop (Logic.strip_assums_concl (hd (prems_of rule)));
         val cx = cterm_of thy (head_of x);
         val inst_rule = cterm_instantiate [(cx,cterm_of thy inst)] rule;
-      in (compose_tac (false,inst_rule,nprems_of exI) i st) end;
+      in (compose_tac ctxt (false,inst_rule,nprems_of exI) i st) end;
 
 
   in EVERY [REPEAT_DETERM_N (length vs) (etac exE 1),
