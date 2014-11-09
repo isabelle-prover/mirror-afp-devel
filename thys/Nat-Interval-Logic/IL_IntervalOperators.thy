@@ -1095,9 +1095,10 @@ by (rule strict_mono_on_imp_inj_on[OF iMOD_div_right_strict_mono_on])
 lemma iMOD_mult_div_right_inj_on: "
   inj_on (\<lambda>x. x div (k::nat)) [r, mod (k * m)]"
 apply (case_tac "k * m = 0")
- apply (simp del: mult_is_0 add: iMOD_0 iIN_0)
+ apply (simp del: mult_is_0 mult_eq_0_iff add: iMOD_0 iIN_0)
 apply (simp add: iMOD_div_right_inj_on)
 done
+
 lemma iMOD_mult_div_right_inj_on2: "
   m mod k = 0 \<Longrightarrow> inj_on (\<lambda>x. x div k) [r, mod m]"
 by (clarsimp simp add: iMOD_mult_div_right_inj_on)
