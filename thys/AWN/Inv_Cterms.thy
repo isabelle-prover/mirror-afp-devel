@@ -69,13 +69,13 @@ fun create_vcs ctxt i =
       val ctermsl_cases = rev (Named_Theorems.get ctxt @{named_theorems ctermsl_cases})
   in
     dtac @{thm has_ctermsl} i
-    THEN_ELSE (dmatch_tac ctermsl_cases i
+    THEN_ELSE (dmatch_tac ctxt ctermsl_cases i
                THEN
-               TRY (REPEAT_ALL_NEW (ematch_tac [@{thm disjE}]) i)
+               TRY (REPEAT_ALL_NEW (ematch_tac ctxt [@{thm disjE}]) i)
                THEN
                PARALLEL_ALLGOALS
                  (fn i => simp_only main_simp_thms ctxt i
-                  THEN TRY (REPEAT_ALL_NEW (ematch_tac [@{thm disjE}]) i)), all_tac)
+                  THEN TRY (REPEAT_ALL_NEW (ematch_tac ctxt [@{thm disjE}]) i)), all_tac)
   end
 
 fun try_invs ctxt =
@@ -93,10 +93,10 @@ fun try_final ctxt =
   end
 
 fun each ctxt =
-  (EVERY' ((ematch_tac (rev (Named_Theorems.get ctxt @{named_theorems cterms_elimders})) ::
+  (EVERY' ((ematch_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cterms_elimders})) ::
     replicate 2 assume_tac))
    THEN' simp_only @{thms labels_psimps} ctxt
-   THEN' (ematch_tac (rev (Named_Theorems.get ctxt @{named_theorems cterms_seqte}))
+   THEN' (ematch_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cterms_seqte}))
      THEN_ALL_NEW
        (fn j => simp_only [@{thm mem_Collect_eq}] ctxt j
                   THEN REPEAT (etac @{thm exE} j)
@@ -114,7 +114,7 @@ fun simp_all ctxt =
 
 fun intro_and_invs ctxt i =
   let val cterms_intros = rev (Named_Theorems.get ctxt @{named_theorems cterms_intros}) in
-    match_tac cterms_intros i
+    match_tac ctxt cterms_intros i
     THEN PARALLEL_ALLGOALS (try_invs ctxt)
   end
 
