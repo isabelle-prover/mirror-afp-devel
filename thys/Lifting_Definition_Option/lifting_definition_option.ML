@@ -24,8 +24,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 signature LIFTING_DEFINITION_OPTION =
 sig
   val lift_def_opt:
-    (binding * string option * mixfix) * term -> tactic -> local_theory -> local_theory
+    (binding * string option * mixfix) * term -> (Proof.context -> tactic) ->
     (*         type                      rhs  *)
+      local_theory -> local_theory
 end
 
 structure Lifting_Definition_Option: LIFTING_DEFINITION_OPTION =
@@ -36,9 +37,9 @@ val typ_to_string = YXML.string_of_body o Term_XML.Encode.typ;
 
 fun tactic_state_to_lthy tactic state =
     Proof.global_terminal_proof 
-      ((Method.Basic (SIMPLE_METHOD o K tactic), Position.no_range), NONE) state
+      ((Method.Basic (SIMPLE_METHOD o tactic), Position.no_range), NONE) state
 
-fun lift_def_ml (binding, mx) ty rhs (tactic : tactic) =
+fun lift_def_ml (binding, mx) ty rhs tactic =
     Lifting_Def.lift_def_cmd
       ((binding, SOME (typ_to_string ty), mx), term_to_string rhs, [])
   #> tactic_state_to_lthy tactic
@@ -117,7 +118,8 @@ fun add_split thms = Context.proof_map (Simplifier.map_ss (fold Splitter.add_spl
 
 val debug_out = if false then writeln else (K ())
 
-fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =   
+fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
+  Runtime.exn_trace (fn () =>
   let 
       val lthy = lthy1
       val ((fin_bind, SOME fin_ty, fin_mixfix), lthy) = yield_singleton Proof_Context.read_vars raw_var lthy
@@ -221,7 +223,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val lam_ty = Term.fastype_of lam
         val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> bool_ty) $ lam
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
-        val tac = rtac ex_thm 1 THEN blast_tac lthy 1
+        fun tac ctxt = rtac ex_thm 1 THEN blast_tac ctxt 1
         val conceal = false
         val (info,lthy) = Typedef.add_typedef conceal
           (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix) 
@@ -263,7 +265,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val restr_c_bool_name = restr_c_name ^ "_bool"
       val restr_c_bool_ty = restr_c_ty --> bool_ty
       val rhs = Const (@{const_name snd}, pair_ty --> bool_ty)
-      val lthy = lift_def_ml (Binding.name restr_c_bool_name, mixfix) restr_c_bool_ty rhs all_tac lthy
+      val lthy =
+        lift_def_ml (Binding.name restr_c_bool_name, mixfix) restr_c_bool_ty rhs (K all_tac) lthy
       val _ = debug_out ("step 5: created lift_definition for " ^ restr_c_bool_name)
 
       (* lift_definition restricted_cond_restrict :: "restricted_cond \<Rightarrow> restricted" is 
@@ -275,12 +278,12 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val lam = lambda b (lambda c (mk_if c b wit))
       val lam_ty = Term.fastype_of lam
       val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> base_ty) $ lam
-      val tac = Subgoal.FOCUS (fn focus =>            
-             mk_case_tac lthy [[SOME (#params focus |> hd |> snd |> term_of)]] @{thm prod.exhaust}
-             (fn (lthy, prems2, _) => 
+      fun tac ctxt = Subgoal.FOCUS (fn focus =>            
+             mk_case_tac ctxt [[SOME (#params focus |> hd |> snd |> term_of)]] @{thm prod.exhaust}
+             (fn (ctxt, prems2, _) => 
                 Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1 
-              THEN auto_tac lthy)
-           ) lthy 1
+              THEN auto_tac ctxt)
+           ) ctxt 1
       val lthy = lift_def_ml (binding,mixfix) restr_c_restr_ty caset tac lthy
       val _ = debug_out ("step 6: created lift_definition for " ^ restr_c_restr_name)
 
@@ -302,10 +305,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
 
       fun after_qed check_thm lthy = let
-          val tac = unfold_tac lthy @{thms simplify_cond}
+          fun tac ctxt = unfold_tac ctxt @{thms simplify_cond}
             THEN rtac @{thm restrict_condI} 1
             THEN Method.insert_tac (hd check_thm) 1 
-            THEN blast_tac lthy 1
+            THEN blast_tac ctxt 1
           val ty = impl_tys ---> restr_c_ty
           val lthy = lift_def_ml (binding,mixfix) ty rhs tac lthy
           val _ = debug_out ("step 7: created lift_definition for " ^ restr_c_name)
@@ -383,7 +386,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         end      
       val state = Proof.theorem NONE after_qed [[(crucial_prop, [])]] lthy
   in state
-  end
+  end)
 
 fun lift_def_opt args tac lthy = lift_def_opt_main args lthy 
   |> tactic_state_to_lthy tac
