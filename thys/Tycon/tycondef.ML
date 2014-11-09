@@ -45,7 +45,7 @@ fun define_singleton_type
   let
     val set = @{term "UNIV :: unit set"}
     val opt_morphs = NONE
-    val tac = rtac UNIV_witness 1
+    fun tac _ = rtac UNIV_witness 1
     val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
     Typedef.add_typedef_global false typ set opt_morphs tac thy
