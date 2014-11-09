@@ -21,6 +21,7 @@ $logfile=$ARGV[1];
 $report=$ARGV[2];
 
 $FAIL="FAIL";
+$FAIL_N="FAIL (new)";
 $OK="ok";
 
 #read ROOTS file
@@ -52,6 +53,7 @@ while (<IN>) {
   chop;
   ($name, $f) = split /[:]/;
   $old_sessions{$name} = 1;
+  $old_status{$name} = $f;
   $old_ok{$name} = ($f =~ /$OK/);
 }
 close IN;
@@ -63,29 +65,32 @@ rename ($report, $report.".old");
 open (OUT,">$report") || die "could not open [$report] for writing.";
 foreach $s (@sessions) {
   chomp($s);
-  $status = $finished{$s} ? $OK : $FAIL;
-  print OUT "$s: $status\n";
+  if ($finished{$s}) {
+    $new_status{$s} = $OK;
+  } elsif (!$old_sessions{$s} or $old_status{$s} eq " $FAIL_N") {
+    $new_status{$s} = $FAIL_N;
+  } else {
+    $new_status{$s} = $FAIL;
+  }
+  print OUT "$s: $new_status{$s}\n";
 }
 close OUT;
 
 # output diff
 foreach $t (keys %old_sessions) {
-  $old_status = $old_ok{$t} ? $OK : $FAIL;
-  $new_status = $finished{$t} ? $OK : $FAIL;
   if (!($t ~~ @sessions)) {
-    print "[$t] was removed. Last status was $old_status.\n";
+    print "[$t] was removed. Last status was $old_status{$t}.\n";
   }
   elsif ($old_ok{$t} != $finished{$t}) {
-    print "[$t] changed from $old_status to $new_status.\n";
+    print "[$t] changed from $old_status{$t} to $new_status{$t}.\n";
   }
   elsif (!$finished{$t}) {
-    print "[$t] is still on $new_status.\n";
+    print "[$t] is still on $new_status{$t}.\n";
   }
 }
 
 foreach $t (@sessions) {
   if (!$old_sessions{$t}) {
-    $new_status = $finished{$t} ? $OK : $FAIL;
-    print "[$t] is new. Status is $new_status.\n";
+    print "[$t] is new. Status is $new_status{$t}.\n";
   }
 }
