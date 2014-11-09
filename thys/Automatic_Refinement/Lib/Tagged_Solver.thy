@@ -127,12 +127,12 @@ ML {*
       in solvers end
 
     fun notrace_tac_of_solver ctxt (thms,_,_,tac) = 
-      match_tac thms THEN' tac ctxt
+      match_tac ctxt thms THEN' tac ctxt
 
     fun trace_tac_of_solver ctxt (thms,name,_,tac) i st = 
       let
         val _ = tracing ("Trying solver " ^ name)
-        val r = match_tac thms i st
+        val r = match_tac ctxt thms i st
       in
         case Seq.pull r of 
           NONE => (tracing "  No trigger"; Seq.empty)

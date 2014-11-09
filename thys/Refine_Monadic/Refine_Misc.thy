@@ -40,7 +40,7 @@ structure Refine_Misc = struct
     *)
     fun mono_prover_tac ctxt = REPEAT_ALL_NEW (FIRST' [
       Method.assm_tac ctxt,
-      match_tac (refine_mono.get ctxt),
+      match_tac ctxt (refine_mono.get ctxt),
       solve_le_tac ctxt
     ]);
 

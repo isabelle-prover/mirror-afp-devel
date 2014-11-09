@@ -497,7 +497,7 @@ ML {*
       val thm = mk_const_intf_thm thy c I
 
       val st = cprop_of thm |> Goal.init
-      val has_t = SOLVED' (match_tac typ_thms) 1 st |> Seq.pull |> is_some
+      val has_t = SOLVED' (match_tac ctxt typ_thms) 1 st |> Seq.pull |> is_some
     in
       if has_t then context
       else (

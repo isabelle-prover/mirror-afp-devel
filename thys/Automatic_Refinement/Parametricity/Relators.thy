@@ -304,7 +304,7 @@ declaration {*
     @{thms relprop_triggers} 
     @{binding relator_props_solver}
     "Additional relator peoperties solver"
-    (fn ctxt => (REPEAT_ALL_NEW (match_tac (relator_props.get ctxt))))
+    (fn ctxt => (REPEAT_ALL_NEW (match_tac ctxt (relator_props.get ctxt))))
 *}
 
 declaration {*

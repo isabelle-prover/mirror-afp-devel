@@ -71,7 +71,7 @@ subsection {* Setup *}
       in
         REPEAT_ALL_NEW (FIRST' [
           eq_assume_tac,
-          (*match_tac thms,*)
+          (*match_tac ctxt thms,*)
           SOLVED' (Tagged_Solver.solve_tac ctxt)]) 
            (* TODO: Get rid of refine_post! Use tagged_solver instead *)
       end;

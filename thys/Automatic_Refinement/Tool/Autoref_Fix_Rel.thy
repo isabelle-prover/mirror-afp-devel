@@ -586,7 +586,7 @@ ML {*
 
     fun solve_tyrel_tac ctxt = let
       fun mk_tac rl = rtac @{thm TYREL_RES} 
-        THEN' match_tac [rl RS @{thm DOMAIN_OF_TYREL}]
+        THEN' match_tac ctxt [rl RS @{thm DOMAIN_OF_TYREL}]
         THEN' rtac rl
 
       val tac = FIRST' (map mk_tac (tyrel_rules.get ctxt))

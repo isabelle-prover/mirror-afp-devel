@@ -568,7 +568,7 @@ structure Seplogic_Auto = struct
   (***********************************)
 
   (* Extract existential quantifiers from entailment goal *)
-  fun extract_ex_tac i st = let
+  fun extract_ex_tac ctxt i st = let
     fun count_ex (Const (@{const_name Assertions.entails},_)$_$c) = 
       count_ex c RS @{thm HOL.mp}
     | count_ex (Const (@{const_name Assertions.ex_assn},_)$Abs (_,_,t))
@@ -578,7 +578,7 @@ structure Seplogic_Auto = struct
     val concl = Logic.concl_of_goal (prop_of st) i |> HOLogic.dest_Trueprop;
     val thm = count_ex concl;
   in
-    (TRY o REPEAT_ALL_NEW (match_tac @{thms ent_ex_preI}) THEN'
+    (TRY o REPEAT_ALL_NEW (match_tac ctxt @{thms ent_ex_preI}) THEN'
      rtac thm) i st
   end;
 
@@ -587,7 +587,7 @@ structure Seplogic_Auto = struct
   fun solve_entails_tac ctxt = let
     val preprocess_entails_tac = 
       dflt_tac ctxt 
-      THEN' extract_ex_tac
+      THEN' extract_ex_tac ctxt
       THEN' simp_tac 
         (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
 
@@ -598,9 +598,9 @@ structure Seplogic_Auto = struct
   in
     preprocess_entails_tac
     THEN' (TRY o
-      REPEAT_ALL_NEW (match_tac (rev (Named_Theorems.get ctxt @{named_theorems sep_eintros}))))
+      REPEAT_ALL_NEW (match_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems sep_eintros}))))
     THEN_ALL_NEW (dflt_tac ctxt THEN' 
-      TRY o (match_tac @{thms ent_triv} 
+      TRY o (match_tac ctxt @{thms ent_triv} 
         ORELSE' resolve_tac @{thms ent_refl}
         ORELSE' match_entails_tac))
   end;
@@ -647,11 +647,11 @@ structure Seplogic_Auto = struct
   fun sep_autosolve_tac do_pre do_post ctxt = let
     val pre_tacs = [
       CHANGED o clarsimp_tac ctxt,
-      CHANGED o REPEAT_ALL_NEW (match_tac @{thms ballI allI impI conjI})
+      CHANGED o REPEAT_ALL_NEW (match_tac ctxt @{thms ballI allI impI conjI})
     ];
     val main_tacs = [
-      match_tac @{thms is_hoare_triple} THEN' CHANGED o vcg_tac ctxt,
-      match_tac @{thms is_entails} THEN' CHANGED o solve_entails_tac ctxt
+      match_tac ctxt @{thms is_hoare_triple} THEN' CHANGED o vcg_tac ctxt,
+      match_tac ctxt @{thms is_entails} THEN' CHANGED o solve_entails_tac ctxt
     ];
     val post_tacs = [SELECT_GOAL (auto_tac ctxt)];
     val tacs = (if do_pre then pre_tacs else [])

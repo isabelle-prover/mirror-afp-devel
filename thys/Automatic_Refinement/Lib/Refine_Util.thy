@@ -69,7 +69,7 @@ ML {*
     val fo_resolve_tac: thm list -> Proof.context -> tactic'
     val rprems_tac: Proof.context -> tactic'
     val rprem_tac: int -> Proof.context -> tactic'
-    val elim_all_tac: thm list -> tactic
+    val elim_all_tac: Proof.context -> thm list -> tactic
 
     val prefer_tac: int -> tactic
 
@@ -353,7 +353,7 @@ ML {*
       end
       );
 
-    fun elim_all_tac thms = ALLGOALS (REPEAT_ALL_NEW (ematch_tac thms))
+    fun elim_all_tac ctxt thms = ALLGOALS (REPEAT_ALL_NEW (ematch_tac ctxt thms))
 
     fun prefer_tac i = defer_tac i THEN PRIMITIVE (Thm.permute_prems 0 ~1)
 
@@ -677,7 +677,7 @@ ML {*
         ) 
         "Resolve with premises"
       #> Method.setup @{binding elim_all}
-         (Attrib.thms >> (fn thms => fn _ => SIMPLE_METHOD (elim_all_tac thms)))
+         (Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD (elim_all_tac ctxt thms)))
          "repeteadly apply elimination rules to all subgoals"
       #> Method.setup @{binding subst_tac} eqsubst_inst_meth
            "single-step substitution (dynamic instantiation)"

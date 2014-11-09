@@ -189,8 +189,8 @@ ML {*
 
     local
       open Autoref_Tacticals
-      fun trans_rule_tac net = resolve_from_net_tac net 
-        THEN_ALL_NEW (TRY o match_tac [@{thm PRIO_TAGI}])
+      fun trans_rule_tac ctxt net = resolve_from_net_tac net 
+        THEN_ALL_NEW (TRY o match_tac ctxt [@{thm PRIO_TAGI}])
 
     in
       (* Do not even attempt to solve side conditions *)
@@ -200,7 +200,7 @@ ML {*
         (
           COND'' is_defer_cond 
             (K no_tac)
-            (atac ORELSE' trans_rule_tac net)
+            (atac ORELSE' trans_rule_tac ctxt net)
         )
       end
 
@@ -214,7 +214,7 @@ ML {*
           (
             atac
             ORELSE'
-            (trans_rule_tac net 
+            (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 
                 COND'' is_prefer_cond
                   (TRY o DETERM o SOLVED' s_tac)
@@ -233,7 +233,7 @@ ML {*
           (
             atac
             ORELSE'
-            (trans_rule_tac net 
+            (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 
                 COND'' is_prefer_cond
                   (DETERM o SOLVED' s_tac)
