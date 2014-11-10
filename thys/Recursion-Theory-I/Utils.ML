@@ -65,4 +65,4 @@ fun pr_comp_tac ctxt = SUBGOAL (fn (t, i) =>
 
 fun prec0_tac ctxt facts i =
   Method.insert_tac facts i THEN
-  REPEAT (assume_tac i ORELSE pr_comp_tac ctxt i)
+  REPEAT (assume_tac ctxt i ORELSE pr_comp_tac ctxt i)

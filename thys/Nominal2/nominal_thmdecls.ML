@@ -213,7 +213,7 @@ fun tac ctxt thm thm' =
   let
     val ss_thms = @{thms "permute_minus_cancel"(2)}
   in
-    EVERY' [rtac @{thm "iffI"}, dtac @{thm "permute_boolE"}, rtac thm, atac,
+    EVERY' [rtac @{thm "iffI"}, dtac @{thm "permute_boolE"}, rtac thm, assume_tac ctxt,
       rtac @{thm "permute_boolI"}, dtac thm', 
       full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss_thms)]
   end

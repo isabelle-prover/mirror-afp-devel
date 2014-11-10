@@ -329,7 +329,7 @@ fun define_map_functions
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
            REPEAT (etac @{thm conjE} 1),
-           REPEAT (resolve_tac (deflation_rules @ prems) 1 ORELSE atac 1)])
+           REPEAT (resolve_tac (deflation_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
     fun conjuncts [] _ = []
       | conjuncts (n::[]) thm = [(n, thm)]
@@ -648,7 +648,7 @@ fun domain_isomorphism
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps map_ID_simps) 1,
            REPEAT (etac @{thm conjE} 1),
-           REPEAT (resolve_tac (isodefl_rules @ prems) 1 ORELSE atac 1)])
+           REPEAT (resolve_tac (isodefl_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
     val isodefl_binds = map (Binding.prefix_name "isodefl_") dbinds
     val isodefl_attr = @{attributes [domain_isodefl]}
@@ -731,12 +731,12 @@ fun domain_isomorphism
       let
         val n = Free ("n", natT)
         val goal = mk_eqs (mk_lub (lambda n (take_const $ n)), mk_ID lhsT)
-        val tac =
+        fun tac ctxt =
             EVERY
             [rtac @{thm trans} 1, rtac map_ID_thm 2,
              cut_facts_tac [lub_take_lemma] 1,
-             REPEAT (etac @{thm Pair_inject} 1), atac 1]
-        val lub_take_thm = Goal.prove_global thy [] [] goal (K tac)
+             REPEAT (etac @{thm Pair_inject} 1), assume_tac ctxt 1]
+        val lub_take_thm = Goal.prove_global thy [] [] goal (tac o #context)
       in
         add_qualified_thm "lub_take" (dbind, lub_take_thm) thy
       end

@@ -187,7 +187,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
             (K (Method.insert_tac [some_thm] 1
               THEN unfold_tac lthy [Thm.symmetric wit_thm]
               THEN rtac @{thm CollectE} 1
-              THEN atac 1 THEN atac 1
+              THEN assume_tac lthy 1 THEN assume_tac lthy 1
               ))
           val _ = debug_out "step 2: proved that witness satisfies invariant"
         in wit_thm end
@@ -370,7 +370,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
             |> (fn thm => thm OF [inverse_thm, def_thm', some_thm])  
           val eq_thm = Goal.prove lthy (map fst xs) [] eq (fn {context = ctxt, ...} =>
              rtac pre_thm 1
-           THEN atac 1
+           THEN assume_tac ctxt 1
            THEN transfer_tac ctxt 1
            THEN rtac @{thm snd_if} 1)
           val eq_binding = Binding.name (r_of_name)

@@ -342,10 +342,11 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
           |> snd o Rule_Cases.strict_mutual_rule ctxt'
           |> atomize_concl ctxt'
 
-    fun tac thm = rtac (Drule.gen_all thm) THEN_ALL_NEW atac
+    fun tac ctxt thm = rtac (Drule.gen_all thm) THEN_ALL_NEW assume_tac ctxt
   in
     Goal.prove ctxt' (flat arg_namess) [] goal
-      (fn {context, ...} => HEADGOAL (DETERM o (rtac induct_thm) THEN' RANGE (map tac eqvts_thms)))
+      (fn {context = ctxt'', ...} =>
+        HEADGOAL (DETERM o (rtac induct_thm) THEN' RANGE (map (tac ctxt'') eqvts_thms)))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> split_conj_thm
     |> map (fn th => th RS mp)

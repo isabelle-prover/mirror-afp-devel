@@ -270,7 +270,7 @@ begin
             in
               SIMPLE_METHOD' (
                 RPT (
-                  (atac 
+                  (assume_tac ctxt 
                     ORELSE' net_tac net2 ctxt
                     ORELSE' asm_tac)
                 ) 

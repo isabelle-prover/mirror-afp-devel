@@ -200,7 +200,7 @@ ML {*
         (
           COND'' is_defer_cond 
             (K no_tac)
-            (atac ORELSE' trans_rule_tac ctxt net)
+            (assume_tac ctxt ORELSE' trans_rule_tac ctxt net)
         )
       end
 
@@ -212,7 +212,7 @@ ML {*
         COND'' is_defer_cond 
           (SOLVED' s_tac)
           (
-            atac
+            assume_tac ctxt
             ORELSE'
             (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 
@@ -231,7 +231,7 @@ ML {*
         COND'' is_defer_cond 
           (SOLVED' s_tac)
           (
-            atac
+            assume_tac ctxt
             ORELSE'
             (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 

@@ -354,7 +354,7 @@ in
 
   (* Derived Tactics *)
 
-  fun sep_atac ctxt = sep_assm_tac ctxt atac;
+  fun sep_atac ctxt = sep_assm_tac ctxt (assume_tac ctxt);
 
   (* Substitution *)
   fun sep_subst_tac ctxt occs thms =

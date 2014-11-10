@@ -449,7 +449,7 @@ ML {*
       val ss = Config.get ctxt cfg_ss_id_op
       val step_tac = 
         FIRST' [
-          atac,
+          assume_tac ctxt,
           id_tagged,
           rtac @{thm ID_is_tagged_OP} THEN_ELSE' (
             rtac @{thm ID_tagged_OP_no_annot} THEN' id_typ,
@@ -638,7 +638,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     val ind_net = rel_indirect.get ctxt |> Tactic.build_net
   in
     IF_EXGOAL (
-      atac
+      assume_tac ctxt
       ORELSE'
       Indep_Vars.indep_tac
       ORELSE' resolve_from_net_tac ind_net

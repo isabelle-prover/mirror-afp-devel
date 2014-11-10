@@ -559,7 +559,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
   let
     fun aux_tac prem bclauses =
       case (get_all_binders bclauses) of
-        [] => EVERY' [rtac prem, atac]
+        [] => EVERY' [rtac prem, assume_tac ctxt]
       | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>  
           let
             val parms = map (term_of o snd) params

@@ -166,7 +166,8 @@ next
     apply (intro strip)
     apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, assumption, erule impE, assumption) 
     apply (erule conjE)
-    apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, erule_tac [2] notE impE, tactic "assume_tac 2")
+    apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, erule_tac [2] notE impE,
+      tactic "assume_tac @{context} 2")
     apply (simp only: new_tv_def)
     apply (simp (no_asm_simp))
     apply (drule W_var_ge)+
@@ -312,7 +313,7 @@ apply (drule le_refl [THEN le_SucI, THEN new_scheme_list_le])
 apply (drule sym)
 apply (erule allE)+
 apply (erule impE)
-apply (erule_tac [2] notE impE, tactic "assume_tac 2")
+apply (erule_tac [2] notE impE, tactic "assume_tac @{context} 2")
 apply (simp (no_asm_simp))
 apply assumption
 (* case App e1 e2 *)

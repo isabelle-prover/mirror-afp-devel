@@ -452,7 +452,7 @@ fun map_thm_tac ctxt tac thm =
   in
     EVERY [cut_facts_tac [thm] 1, etac rev_mp 1, 
       REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac monos)),
-      REPEAT_DETERM (rtac impI 1 THEN (atac 1 ORELSE tac))]
+      REPEAT_DETERM (rtac impI 1 THEN (assume_tac ctxt 1 ORELSE tac))]
   end
 
 fun map_thm ctxt f tac thm =

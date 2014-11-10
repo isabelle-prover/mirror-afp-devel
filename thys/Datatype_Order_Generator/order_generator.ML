@@ -526,9 +526,9 @@ fun derive kind dtyp_name _ thy =
             my_print_tac ctxt "after less" THEN
             rtac refl 1 THEN
             my_print_tac ctxt "after refl" THEN
-            rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
+            rtac trans_eq 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after trans" THEN
-            rtac antisym 1 THEN atac 1 THEN atac 1
+            rtac antisym 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1
           val thy'' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class order")
         in thy'' end

@@ -89,7 +89,7 @@ ML {*
     end;
 
   fun sep_cancel_smart_tac_rules ctxt etacs =
-      sep_cancel_smart_tac ctxt (FIRST' ([atac] @ etacs));
+      sep_cancel_smart_tac ctxt (FIRST' ([assume_tac ctxt] @ etacs));
 
   val sep_cancel_syntax = Method.sections [
     Args.add -- Args.colon >>

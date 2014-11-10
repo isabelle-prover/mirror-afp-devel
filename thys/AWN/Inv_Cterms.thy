@@ -80,21 +80,21 @@ fun create_vcs ctxt i =
 
 fun try_invs ctxt =
   let val inv_thms = rev (Named_Theorems.get ctxt @{named_theorems cterms_invs})
-      fun fapp thm = TRY o (EVERY' (ftac thm :: replicate (Thm.nprems_of thm - 1) assume_tac))
+      fun fapp thm = TRY o (EVERY' (ftac thm :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt)))
   in
     EVERY' (map fapp inv_thms)
   end
 
 fun try_final ctxt =
   let val final_thms = rev (Named_Theorems.get ctxt @{named_theorems cterms_final})
-      fun eapp thm = EVERY' (etac thm :: replicate (Thm.nprems_of thm - 1) assume_tac)
+      fun eapp thm = EVERY' (etac thm :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt))
   in
     TRY o (FIRST' (map eapp final_thms))
   end
 
 fun each ctxt =
   (EVERY' ((ematch_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cterms_elimders})) ::
-    replicate 2 assume_tac))
+    replicate 2 (assume_tac ctxt)))
    THEN' simp_only @{thms labels_psimps} ctxt
    THEN' (ematch_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cterms_seqte}))
      THEN_ALL_NEW

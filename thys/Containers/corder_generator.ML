@@ -73,9 +73,9 @@ fun mk_linorder_thm dtyp_name lthy =
             my_print_tac ctxt "after less" THEN
             rtac refl 1 THEN
             my_print_tac ctxt "after refl" THEN
-            rtac trans_eq 1 THEN atac 1 THEN atac 1 THEN
+            rtac trans_eq 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after trans" THEN
-            rtac antisym 1 THEN atac 1 THEN atac 1 THEN
+            rtac antisym 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after antisym" THEN
             rtac linear 1
           val thm = Goal.prove lthy [] [] 

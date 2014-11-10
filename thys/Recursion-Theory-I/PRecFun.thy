@@ -456,7 +456,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
 fun prec_tac ctxt facts i =
   Method.insert_tac facts i THEN
   REPEAT (resolve_tac [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
-    assume_tac i ORELSE if_comp_tac ctxt i)
+    assume_tac ctxt i ORELSE if_comp_tac ctxt i)
 *}
 
 method_setup prec = {*

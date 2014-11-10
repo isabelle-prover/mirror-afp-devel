@@ -465,7 +465,7 @@ fun cases_tac intros ctxt =
   let
     val prod_simps = @{thms split_conv prod_alpha_def rel_prod_conv}
 
-    val unbound_tac = REPEAT o (etac @{thm conjE}) THEN' atac  
+    val unbound_tac = REPEAT o (etac @{thm conjE}) THEN' assume_tac ctxt  
 
     val bound_tac = 
       EVERY' [ rtac exi_zero, 
@@ -526,7 +526,9 @@ fun raw_prove_sym ctxt alpha_result alpha_eqvt =
 
     fun tac ctxt = 
       resolve_tac alpha_intros THEN_ALL_NEW 
-      FIRST' [atac, rtac @{thm sym} THEN' atac, prem_bound_tac alpha_names alpha_eqvt ctxt]
+      FIRST' [assume_tac ctxt,
+        rtac @{thm sym} THEN' assume_tac ctxt,
+        prem_bound_tac alpha_names alpha_eqvt ctxt]
   in
     alpha_prove alpha_trms (alpha_trms ~~ props) alpha_raw_induct tac ctxt 
   end
@@ -565,7 +567,7 @@ fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
           etac @{thm exE},
           perm_inst_tac ctxt, 
           resolve_tac @{thms alpha_trans_eqvt},
-          atac,
+          assume_tac ctxt,
           aatac pred_names ctxt, 
           eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
           asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ])

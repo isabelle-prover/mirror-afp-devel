@@ -164,7 +164,7 @@ struct
            [_] => let
                     val goal' = Logic.close_form goal
                     val rule = Goal.prove ctxt [] [] (Logic.mk_implies (goal', goal)) (fn _ =>
-                                   dtac @{thm sturm_meta_spec} i THEN atac i)
+                                   dtac @{thm sturm_meta_spec} i THEN assume_tac ctxt i)
                 in  rtac rule i
                 end
          | _ => no_tac
