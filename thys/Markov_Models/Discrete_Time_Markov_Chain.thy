@@ -9,6 +9,419 @@ theory Discrete_Time_Markov_Chain
     "../Coinductive/Coinductive_Nat"
 begin
 
+subsection {* Auxiliary Lemmas *}
+
+lemma emeasure_single_in_space: "emeasure M {x} \<noteq> 0 \<Longrightarrow> x \<in> space M"
+  using emeasure_notin_sets[of "{x}" M] by (auto dest: sets.sets_into_space)
+
+declare alw.cases[elim]
+declare ev.intros[intro]
+
+lemma ev_induct_strong[consumes 1, case_names base step]:
+  "ev \<phi> x \<Longrightarrow> (\<And>xs. \<phi> xs \<Longrightarrow> P xs) \<Longrightarrow> (\<And>xs. ev \<phi> (stl xs) \<Longrightarrow> \<not> \<phi> xs \<Longrightarrow> P (stl xs) \<Longrightarrow> P xs) \<Longrightarrow> P x"
+  by (induct rule: ev.induct) auto
+
+lemma alw_coinduct[consumes 1, case_names alw stl]:
+  "X x \<Longrightarrow> (\<And>x. X x \<Longrightarrow> \<phi> x) \<Longrightarrow> (\<And>x. X x \<Longrightarrow> \<not> alw \<phi> (stl x) \<Longrightarrow> X (stl x)) \<Longrightarrow> alw \<phi> x"
+  using alw.coinduct[of X x \<phi>] by auto
+
+lemma streams_iff_snth: "s \<in> streams X \<longleftrightarrow> (\<forall>n. s !! n \<in> X)"
+  by (force simp: streams_iff_sset sset_range)
+
+definition "HLD s = holds (\<lambda>x. x \<in> s)"
+
+abbreviation HLD_nxt (infixr "\<cdot>" 65) where
+  "s \<cdot> P \<equiv> HLD s aand nxt P"
+
+lemma HLD_iff: "HLD s \<omega> \<longleftrightarrow> shd \<omega> \<in> s"
+  by (simp add: HLD_def)
+
+lemma HLD_Stream[simp]: "HLD X (x ## \<omega>) \<longleftrightarrow> x \<in> X"
+  by (simp add: HLD_iff)
+
+lemma subprob_measurableD:
+  assumes N: "N \<in> measurable M (subprob_algebra S)" and x: "x \<in> space M"
+  shows "space (N x) = space S"
+    and "sets (N x) = sets S"
+    and "measurable (N x) K = measurable S K"
+    and "measurable K (N x) = measurable K S"
+  using measurable_space[OF N x]
+  by (auto simp: space_subprob_algebra intro!: measurable_cong_sets dest: sets_eq_imp_space_eq)
+
+lemma emeasure_le_0: "emeasure M A \<le> 0 \<longleftrightarrow> emeasure M A = 0"
+  using emeasure_nonneg[of M A] by auto
+
+lemma (in -) pmf_le_1: "pmf M x \<le> 1"
+  by (simp add: pmf.rep_eq)
+
+lemma (in -) measurable_measure_pmf[measurable]:
+  "(\<lambda>x. measure_pmf (M x)) \<in> measurable (count_space UNIV) (subprob_algebra (count_space UNIV))"
+  by (auto simp: space_subprob_algebra intro!: prob_space_imp_subprob_space) unfold_locales
+
+lemma (in -) nn_integral_count_space_indicator:
+  assumes "NO_MATCH (X::'a set) (UNIV::'a set)"
+  shows "(\<integral>\<^sup>+x. f x \<partial>count_space X) = (\<integral>\<^sup>+x. f x * indicator X x \<partial>count_space UNIV)"
+  by (simp add: nn_integral_restrict_space[symmetric] restrict_count_space)
+
+lemma (in -) measure_eqI_countable:
+  assumes [simp]: "sets M = UNIV" "sets N = UNIV"
+  assumes ae: "AE x in M. x \<in> \<Omega>" "AE x in N. x \<in> \<Omega>" and [simp]: "countable \<Omega>"
+  assumes eq: "\<And>x. x \<in> \<Omega> \<Longrightarrow> emeasure M {x} = emeasure N {x}"
+  shows "M = N"
+proof (rule measure_eqI)
+  fix A
+  have "emeasure N A = emeasure N {x\<in>\<Omega>. x \<in> A}"
+    using ae by (intro emeasure_eq_AE) auto
+  also have "\<dots> = (\<integral>\<^sup>+x. emeasure N {x} \<partial>count_space {x\<in>\<Omega>. x \<in> A})"
+    by (intro emeasure_countable_singleton) auto
+  also have "\<dots> = (\<integral>\<^sup>+x. emeasure M {x} \<partial>count_space {x\<in>\<Omega>. x \<in> A})"
+    by (intro nn_integral_cong eq[symmetric]) auto
+  also have "\<dots> = emeasure M {x\<in>\<Omega>. x \<in> A}"
+    by (intro emeasure_countable_singleton[symmetric]) auto
+  also have "\<dots> = emeasure M A"
+    using ae by (intro emeasure_eq_AE) auto
+  finally show "emeasure M A = emeasure N A" ..
+qed simp
+
+
+
+lemma (in -) integrable_real_mult_indicator:
+  fixes f :: "'a \<Rightarrow> real"
+  shows "A \<in> sets M \<Longrightarrow> integrable M f \<Longrightarrow> integrable M (\<lambda>x. f x * indicator A x)"
+  using integrable_mult_indicator[of A M f] by (simp add: mult_ac)
+
+lemma sets_UNIV [measurable (raw)]: "A \<in> sets (count_space UNIV)"
+  by simp
+
+lemma eSuc_Inf: "eSuc (Inf A) = Inf (eSuc ` A)"
+proof -
+  { assume "A \<noteq> {}"
+    then obtain a where "a \<in> A" by blast
+    then have "eSuc (LEAST a. a \<in> A) = (LEAST a. a \<in> eSuc ` A)"
+    proof (rule LeastI2_wellorder)
+      fix a assume "a \<in> A" and b: "\<forall>b. b \<in> A \<longrightarrow> a \<le> b"
+      then have a: "eSuc a \<in> eSuc ` A"
+        by auto
+      then show "eSuc a = (LEAST a. a \<in> eSuc ` A)"
+        by (rule LeastI2_wellorder) (metis (full_types) b a antisym eSuc_le_iff imageE)
+    qed }
+  then show ?thesis
+    by (simp add: Inf_enat_def)
+qed
+
+lemma nn_integral_measurable_subprob_algebra2:
+  assumes f[measurable]: "(\<lambda>(x, y). f x y) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" and [simp]: "\<And>x y. 0 \<le> f x y"
+  assumes N[measurable]: "L \<in> measurable M (subprob_algebra N)"
+  shows "(\<lambda>x. integral\<^sup>N (L x) (f x)) \<in> borel_measurable M"
+proof -
+  have "(\<lambda>x. integral\<^sup>N (distr (L x) (M \<Otimes>\<^sub>M N) (\<lambda>y. (x, y))) (\<lambda>(x, y). f x y)) \<in> borel_measurable M"
+    apply (rule measurable_compose[OF _ nn_integral_measurable_subprob_algebra])
+    apply (rule measurable_distr2)
+    apply measurable
+    apply (simp split: prod.split)
+    done
+  then show "(\<lambda>x. integral\<^sup>N (L x) (f x)) \<in> borel_measurable M"
+    apply (rule measurable_cong[THEN iffD1, rotated])
+    apply (subst nn_integral_distr)
+    apply measurable
+    apply (rule subprob_measurableD(2)[OF N], assumption)
+    apply measurable
+    done
+qed
+
+lemma emeasure_measurable_subprob_algebra2:
+  assumes A[measurable]: "(SIGMA x:space M. A x) \<in> sets (M \<Otimes>\<^sub>M N)"
+  assumes L[measurable]: "L \<in> measurable M (subprob_algebra N)"
+  shows "(\<lambda>x. emeasure (L x) (A x)) \<in> borel_measurable M"
+proof -
+  { fix x assume "x \<in> space M"
+    then have "Pair x -` Sigma (space M) A = A x"
+      by auto
+    with sets_Pair1[OF A, of x] have "A x \<in> sets N"
+      by auto }
+  note ** = this
+
+  have *: "\<And>x. fst x \<in> space M \<Longrightarrow> snd x \<in> A (fst x) \<longleftrightarrow> x \<in> (SIGMA x:space M. A x)"
+    by (auto simp: fun_eq_iff)
+  have "(\<lambda>(x, y). indicator (A x) y::ereal) \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
+    apply measurable
+    apply (subst measurable_cong)
+    apply (rule *)
+    apply (auto simp: space_pair_measure)
+    done
+  then have "(\<lambda>x. integral\<^sup>N (L x) (indicator (A x))) \<in> borel_measurable M"
+    by (intro nn_integral_measurable_subprob_algebra2[where N=N] ereal_indicator_nonneg L)
+  then show "(\<lambda>x. emeasure (L x) (A x)) \<in> borel_measurable M"
+    apply (rule measurable_cong[THEN iffD1, rotated])
+    apply (rule nn_integral_indicator)
+    apply (simp add: subprob_measurableD[OF L] **)
+    done
+qed
+
+lemma measure_measurable_subprob_algebra2:
+  assumes A[measurable]: "(SIGMA x:space M. A x) \<in> sets (M \<Otimes>\<^sub>M N)"
+  assumes L[measurable]: "L \<in> measurable M (subprob_algebra N)"
+  shows "(\<lambda>x. measure (L x) (A x)) \<in> borel_measurable M"
+  unfolding measure_def
+  by (intro borel_measurable_real_of_ereal emeasure_measurable_subprob_algebra2[OF assms])
+
+lemma distr_bind:
+  assumes N: "N \<in> measurable M (subprob_algebra K)" "space M \<noteq> {}"
+  assumes f: "f \<in> measurable K R"
+  shows "distr (M \<guillemotright>= N) R f = (M \<guillemotright>= (\<lambda>x. distr (N x) R f))"
+  unfolding bind_nonempty''[OF N]
+  apply (subst bind_nonempty''[OF measurable_compose[OF N(1) measurable_distr] N(2)])
+  apply (rule f)
+  apply (simp add: join_distr_distr[OF _ f, symmetric])
+  apply (subst distr_distr[OF measurable_distr, OF f N(1)])
+  apply (simp add: comp_def)
+  done
+
+lemma bind_distr:
+  assumes f[measurable]: "f \<in> measurable M X"
+  assumes N[measurable]: "N \<in> measurable X (subprob_algebra K)" and "space M \<noteq> {}"
+  shows "(distr M X f \<guillemotright>= N) = (M \<guillemotright>= (\<lambda>x. N (f x)))"
+proof -
+  have "space X \<noteq> {}" "space M \<noteq> {}"
+    using `space M \<noteq> {}` f[THEN measurable_space] by auto
+  then show ?thesis
+    by (simp add: bind_nonempty''[where N=K] distr_distr comp_def)
+qed
+
+lemma measurable_shift[measurable]: 
+  assumes f: "f \<in> measurable N (stream_space M)"
+  assumes [measurable]: "g \<in> measurable N (stream_space M)"
+  shows "(\<lambda>x. stake n (f x) @- g x) \<in> measurable N (stream_space M)"
+  using f by (induction n arbitrary: f) simp_all
+
+inductive ev_at :: "('a stream \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a stream \<Rightarrow> bool" for P :: "'a stream \<Rightarrow> bool" where
+  base: "P \<omega> \<Longrightarrow> ev_at P 0 \<omega>"
+| step:"\<not> P \<omega> \<Longrightarrow> ev_at P n (stl \<omega>) \<Longrightarrow> ev_at P (Suc n) \<omega>"
+
+inductive_simps ev_at_0[simp]: "ev_at P 0 \<omega>"
+inductive_simps ev_at_Suc[simp]: "ev_at P (Suc n) \<omega>"
+
+lemma ev_at_imp_snth: "ev_at P n \<omega> \<Longrightarrow> P (sdrop n \<omega>)"
+  by (induction n arbitrary: \<omega>) auto
+
+lemma ev_at_HLD_imp_snth: "ev_at (HLD X) n \<omega> \<Longrightarrow> \<omega> !! n \<in> X"
+  by (auto dest!: ev_at_imp_snth simp: HLD_iff)
+
+lemma ev_at_HLD_single_imp_snth: "ev_at (HLD {x}) n \<omega> \<Longrightarrow> \<omega> !! n = x"
+  by (drule ev_at_HLD_imp_snth) simp
+
+lemma ev_at_unique: "ev_at P n \<omega> \<Longrightarrow> ev_at P m \<omega> \<Longrightarrow> n = m"
+proof (induction arbitrary: m rule: ev_at.induct)
+  case (base \<omega>) then show ?case
+    by (simp add: ev_at.simps[of _ _ \<omega>])
+next
+  case (step \<omega> n) from step.prems step.hyps step.IH[of "m - 1"] show ?case
+    by (auto simp add: ev_at.simps[of _ _ \<omega>])
+qed
+
+lemma ev_iff_ev_at: "ev P \<omega> \<longleftrightarrow> (\<exists>n. ev_at P n \<omega>)"
+proof
+  assume "ev P \<omega>" then show "\<exists>n. ev_at P n \<omega>"
+    by (induction rule: ev_induct_strong) (auto intro: ev_at.intros)
+next
+  assume "\<exists>n. ev_at P n \<omega>"
+  then obtain n where "ev_at P n \<omega>"
+    by auto
+  then show "ev P \<omega>"
+    by induction auto
+qed
+
+lemma ev_iff_ev_at_unqiue: "ev P \<omega> \<longleftrightarrow> (\<exists>!n. ev_at P n \<omega>)"
+  by (auto intro: ev_at_unique simp: ev_iff_ev_at)
+
+lemma measurable_ev_at[measurable]:
+  assumes [measurable]: "Measurable.pred (stream_space M) P"
+  shows "Measurable.pred (stream_space M) (ev_at P n)"
+  by (induction n) auto
+
+lemma pred_stream_const1[measurable (raw)]:
+  "f \<in> measurable M (count_space UNIV) \<Longrightarrow> Measurable.pred M (\<lambda>x. f x = c)"
+  by (intro pred_eq_const1[where N="count_space UNIV"]) (auto )
+
+lemma pred_stream_const2[measurable (raw)]:
+  "f \<in> measurable M (count_space UNIV) \<Longrightarrow> Measurable.pred M (\<lambda>x. c = f x)"
+  by (intro pred_eq_const2[where N="count_space UNIV"]) (auto )
+
+lemma ereal_of_enat_Sup:
+  assumes "A \<noteq> {}" shows "ereal_of_enat (Sup A) = (\<Squnion>a\<in>A. ereal_of_enat a)"
+proof (intro antisym mono_Sup)
+  show "ereal_of_enat (Sup A) \<le> (\<Squnion>a\<in>A. ereal_of_enat a)"
+  proof cases
+    assume "finite A"
+    with `A \<noteq> {}` obtain a where "a \<in> A" "ereal_of_enat (Sup A) = ereal_of_enat a"
+      using Max_in[of A] by (auto simp: Sup_enat_def simp del: Max_in)
+    then show ?thesis
+      by (auto intro: SUP_upper)
+  next
+    assume "infinite A"
+    have [simp]: "(\<Squnion>a\<in>A. ereal_of_enat a) = \<top>"
+      unfolding SUP_eq_top_iff
+    proof safe
+      fix x :: ereal assume "x < \<top>"
+      then obtain n :: nat where "x < n"
+        using less_PInf_Ex_of_nat top_ereal_def by auto
+      obtain a where "a \<in> A - enat ` {.. n}"
+        by (metis `infinite A` all_not_in_conv finite_Diff2 finite_atMost finite_imageI infinite_imp_nonempty)
+      then have "a \<in> A" "ereal n \<le> ereal_of_enat a"
+        by (auto simp: image_iff Ball_def)
+           (metis enat_iless enat_ord_simps(1) ereal_of_enat_less_iff ereal_of_enat_simps(1) less_le not_less)
+      with `x < n` show "\<exists>i\<in>A. x < ereal_of_enat i"
+        by (auto intro!: bexI[of _ a])
+    qed
+    show ?thesis
+      by simp
+  qed
+qed (simp add: mono_def)
+
+lemma mcont_ereal_of_enat: "mcont Sup (op \<le>) Sup op \<le> ereal_of_enat"
+  by (auto intro!: mcontI monotoneI contI ereal_of_enat_Sup)
+
+lemma mcont2mcont_ereal_of_enat[cont_intro]:
+  "mcont lub ord Sup op \<le> f \<Longrightarrow> mcont lub ord Sup op \<le> (\<lambda>x. ereal_of_enat (f x))"
+  by (auto intro: ccpo.mcont2mcont[OF complete_lattice_ccpo'] mcont_ereal_of_enat)
+
+lemma alw_HLD_iff_streams: "alw (HLD X) \<omega> \<longleftrightarrow> \<omega> \<in> streams X"
+proof
+  assume "alw (HLD X) \<omega>" then show "\<omega> \<in> streams X"
+  proof (coinduction arbitrary: \<omega>)
+    case (streams \<omega>) then show ?case by (cases \<omega>) auto
+  qed
+next
+  assume "\<omega> \<in> streams X" then show "alw (HLD X) \<omega>"
+  proof (coinduction arbitrary: \<omega>)
+    case (alw \<omega>) then show ?case by (cases \<omega>) auto
+  qed
+qed
+
+lemma not_HLD: "not (HLD X) = HLD (- X)"
+  by (auto simp: HLD_iff)
+
+lemma power_series_tendsto_at_left:
+  assumes nonneg: "\<And>i. 0 \<le> f i" and summable: "\<And>z. 0 \<le> z \<Longrightarrow> z < 1 \<Longrightarrow> summable (\<lambda>n. f n * z^n)"
+  shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) ---> (\<Sum>n. ereal (f n))) (at_left (1::real))"
+proof (intro tendsto_at_left_sequentially)
+  show "0 < (1::real)" by simp
+  fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S ----> 1" "incseq S"
+  then have S_nonneg: "\<And>i. 0 \<le> S i" by (auto intro: less_imp_le)
+
+  have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) ----> (\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV)"
+  proof (rule nn_integral_LIMSEQ)
+    show "incseq (\<lambda>i n. ereal (f n * S i^n))"
+      using S by (auto intro!: mult_mono power_mono nonneg simp: incseq_def le_fun_def less_imp_le)
+    fix n have "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n * 1^n)"
+      by (intro tendsto_intros lim_ereal[THEN iffD2] S)
+    then show "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n)"
+      by simp
+  qed (auto simp: S_nonneg intro!: mult_nonneg_nonneg nonneg)
+  also have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) = (\<lambda>i. \<Sum>n. f n * S i^n)"
+    by (subst nn_integral_count_space_nat)
+       (intro ext suminf_ereal mult_nonneg_nonneg nonneg S_nonneg ereal_less_eq(5)[THEN iffD2]
+              zero_le_power suminf_ereal_finite summable S)+
+  also have "(\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV) = (\<Sum>n. ereal (f n))"
+    by (simp add: nn_integral_count_space_nat nonneg)
+  finally show "(\<lambda>n. ereal (\<Sum>na. f na * S n ^ na)) ----> (\<Sum>n. ereal (f n))" .
+qed
+
+lemma ereal_right_mult_cong: 
+  fixes a b c d :: ereal
+  shows "c = d \<Longrightarrow> (d \<noteq> 0 \<Longrightarrow> a = b) \<Longrightarrow> c * a = d * b"
+  by (cases "d = 0") simp_all
+
+lemma summable_power_series:
+  fixes z :: real
+  assumes le_1: "\<And>i. f i \<le> 1" and nonneg: "\<And>i. 0 \<le> f i" and z: "0 \<le> z" "z < 1"
+  shows "summable (\<lambda>i. f i * z^i)"
+proof (rule summable_comparison_test[OF _ summable_geometric])
+  show "norm z < 1" using z by (auto simp: less_imp_le)
+  show "\<And>n. \<exists>N. \<forall>na\<ge>N. norm (f na * z ^ na) \<le> z ^ na"
+    using z by (auto intro!: exI[of _ 0] mult_left_le_one_le simp: abs_mult nonneg power_abs less_imp_le le_1)
+qed
+
+(* very special *)
+lemma eventually_at_left_1: "(\<And>z::real. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> P z) \<Longrightarrow> eventually P (at_left 1)"
+  by (subst eventually_at_left[of 0]) (auto intro: exI[of _ 0])
+
+lemma (in complete_lattice) Inf_eq:
+  "(\<And>a. a \<in> A \<Longrightarrow> \<exists>b\<in>B. b \<le> a) \<Longrightarrow> (\<And>b. b \<in> B \<Longrightarrow> \<exists>a\<in>A. a \<le> b) \<Longrightarrow>  Inf A = Inf B"
+  by (intro antisym Inf_greatest) (blast intro: Inf_lower2 dest: assms)+
+
+lemma (in subprob_space) measure_le_1: "measure M X \<le> 1"
+  using subprob_measure_le_1[of X] by (simp add: emeasure_eq_measure)
+
+lemma (in subprob_space) measure_bind:
+  assumes f: "f \<in> measurable M (subprob_algebra N)" and X: "X \<in> sets N"
+  shows "measure (M \<guillemotright>= f) X = \<integral>x. measure (f x) X \<partial>M"
+proof -
+  interpret Mf: subprob_space "M \<guillemotright>= f"
+    by (rule subprob_space_bind[OF _ f]) unfold_locales
+
+  { fix x assume "x \<in> space M"
+    from f[THEN measurable_space, OF this] interpret subprob_space "f x"
+      by (simp add: space_subprob_algebra)
+    have "emeasure (f x) X = ereal (measure (f x) X)" "measure (f x) X \<le> 1"
+      by (auto simp: emeasure_eq_measure measure_le_1) }
+  note this[simp]
+
+  have "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. emeasure (f x) X \<partial>M"
+    using subprob_not_empty f X by (rule emeasure_bind)
+  also have "\<dots> = \<integral>\<^sup>+x. ereal (measure (f x) X) \<partial>M"
+    by (intro nn_integral_cong) simp
+  also have "\<dots> = \<integral>x. measure (f x) X \<partial>M"
+    by (intro nn_integral_eq_integral integrable_const_bound[where B=1]
+              measure_measurable_subprob_algebra2[OF _ f] pair_measureI X)
+       (auto simp: measure_nonneg)
+  finally show ?thesis
+    by (simp add: Mf.emeasure_eq_measure)
+qed
+
+lemma subprob_space_return: 
+  assumes "space M \<noteq> {}" shows "subprob_space (return M x)"
+proof
+  show "emeasure (return M x) (space (return M x)) \<le> 1"
+    by (subst emeasure_return) (auto split: split_indicator)
+qed (simp, fact)
+
+lemma measure_return: assumes X: "X \<in> sets M" shows "measure (return M x) X = indicator X x"
+  unfolding measure_def emeasure_return[OF X, of x] by (simp split: split_indicator)
+
+(* generic *)
+
+lemma one_not_le_zero_ereal[simp]: "\<not> (1 \<le> (0::ereal))"
+  by (simp add: one_ereal_def zero_ereal_def)
+
+lemma disjCI2: "(\<not> Q \<Longrightarrow> P) \<Longrightarrow> Q \<or> P"
+  by blast
+
+lemma mult_left_le:
+  "(c::_::linordered_semidom) \<le> 1 \<Longrightarrow> 0 \<le> a \<Longrightarrow> a * c \<le> a"
+  using mult_left_mono[of c 1 a] by simp
+
+lemma mult_le_one: 
+  "a \<le> (1::_::linordered_semidom) \<Longrightarrow> 0 \<le> b \<Longrightarrow> b \<le> 1 \<Longrightarrow> a * b \<le> 1"
+  using mult_mono[of a 1 b 1] by simp
+
+lemma Lim_within_LIMSEQ:
+  fixes a :: "'a::first_countable_topology"
+  assumes "\<forall>S. (\<forall>n. S n \<noteq> a \<and> S n \<in> T) \<and> S ----> a \<longrightarrow> (\<lambda>n. X (S n)) ----> L"
+  shows "(X ---> L) (at a within T)"
+  using assms unfolding tendsto_def [where l=L]
+  by (simp add: sequentially_imp_eventually_within)
+
+
+lemma (in -) indicator_eq_0_iff: "indicator A x = (0::'a::zero_neq_one) \<longleftrightarrow> x \<notin> A"
+  by (auto split: split_indicator)
+
+lemma (in -) inverse_nonneg_iff: "0 \<le> inverse (x :: ereal) \<longleftrightarrow> 0 \<le> x \<or> x = -\<infinity>"
+  by (cases x) auto
+
+lemma ereal_of_enat_eSuc[simp]: "ereal_of_enat (eSuc x) = 1 + ereal_of_enat x"
+  by (cases x) (auto simp: eSuc_enat)
+
 lemma emeasure_measure_pmf_finite:
   "finite S \<Longrightarrow> emeasure (measure_pmf M) S = (\<Sum>s\<in>S. pmf M s)"
   by (subst emeasure_eq_setsum_singleton) (auto simp: emeasure_pmf_single)
@@ -154,17 +567,6 @@ lemma emeasure_Collect_eq_AE:
   "AE x in M. P x \<longleftrightarrow> Q x \<Longrightarrow> Measurable.pred M Q \<Longrightarrow> Measurable.pred M P \<Longrightarrow>
    emeasure M {x\<in>space M. P x} = emeasure M {x\<in>space M. Q x}"
    by (intro emeasure_eq_AE) auto
-
-definition "HLD s = holds (\<lambda>x. x \<in> s)"
-
-abbreviation HLD_nxt (infixr "\<cdot>" 65) where
-  "s \<cdot> P \<equiv> HLD s aand nxt P"
-
-lemma HLD_iff: "HLD s \<omega> \<longleftrightarrow> shd \<omega> \<in> s"
-  by (simp add: HLD_def)
-
-lemma HLD_Stream[simp]: "HLD X (x ## \<omega>) \<longleftrightarrow> x \<in> X"
-  by (simp add: HLD_iff)
 
 lemma measurable_lfp[consumes 1, case_names continuity step]:
   assumes "P M"
@@ -312,17 +714,6 @@ lemma streamsE: "s \<in> streams A \<Longrightarrow> (shd s \<in> A \<Longrighta
 lemma Stream_image: "x ## y \<in> (op ## x') ` Y \<longleftrightarrow> x = x' \<and> y \<in> Y"
   by auto
 
-lemma ev_induct_strong[consumes 1, case_names base step]:
-  "ev \<phi> x \<Longrightarrow> (\<And>xs. \<phi> xs \<Longrightarrow> P xs) \<Longrightarrow> (\<And>xs. ev \<phi> (stl xs) \<Longrightarrow> \<not> \<phi> xs \<Longrightarrow> P (stl xs) \<Longrightarrow> P xs) \<Longrightarrow> P x"
-  by (induct rule: ev.induct) auto
-
-lemma alw_coinduct[consumes 1, case_names alw stl]:
-  "X x \<Longrightarrow> (\<And>x. X x \<Longrightarrow> \<phi> x) \<Longrightarrow> (\<And>x. X x \<Longrightarrow> \<not> alw \<phi> (stl x) \<Longrightarrow> X (stl x)) \<Longrightarrow> alw \<phi> x"
-  using alw.coinduct[of X x \<phi>] by auto
-
-declare alw.cases[elim]
-declare ev.intros[intro]
-
 lemma ev_Stream: "ev P (x ## s) \<longleftrightarrow> P (x ## s) \<or> ev P s"
   by (auto elim: ev.cases)
 
@@ -441,6 +832,90 @@ lemma not_holds_eq[simp]: "holds (- op = x) = not (HLD {x})"
 
 lemma measurable_hld[measurable]: assumes [measurable]: "t \<in> sets M" shows "Measurable.pred (stream_space M) (HLD t)"
   unfolding HLD_def by measurable
+
+partial_function (lfp) scount :: "'s set \<Rightarrow> 's stream \<Rightarrow> enat" where
+  "scount X \<omega> = (if HLD X \<omega> then eSuc (scount X (stl \<omega>)) else scount X (stl \<omega>))"
+
+lemma scount_simps:
+  "HLD X \<omega> \<Longrightarrow> scount X \<omega> = eSuc (scount X (stl \<omega>))"
+  "\<not> HLD X \<omega> \<Longrightarrow> scount X \<omega> = scount X (stl \<omega>)"
+  using scount.simps[of X \<omega>] by auto
+
+lemma scount_eq_0I: "alw (not (HLD X)) \<omega> \<Longrightarrow> scount X \<omega> = 0"
+  by (induct arbitrary: \<omega> rule: scount.fixp_induct)
+     (auto simp: bot_enat_def intro!: admissible_all admissible_imp admissible_eq_mcontI mcont_const)
+
+lemma scount_eq_0D: "scount X \<omega> = 0 \<Longrightarrow> alw (not (HLD X)) \<omega>"
+proof (induction rule: alw.coinduct)
+  case (alw \<omega>) with scount.simps[of X \<omega>] show ?case
+    by (simp split: split_if_asm)
+qed
+
+lemma scount_eq_0_iff: "scount X \<omega> = 0 \<longleftrightarrow> alw (not (HLD X)) \<omega>"
+  by (metis scount_eq_0D scount_eq_0I)
+
+lemma
+  assumes "ev (alw (not (HLD X))) \<omega>"
+  shows scount_eq_card: "scount X \<omega> = card {i. \<omega> !! i \<in> X}"
+    and ev_alw_not_HLD_finite: "finite {i. \<omega> !! i \<in> X}"
+  using assms
+proof (induction \<omega>)
+  case (step \<omega>)
+  have eq: "{i. \<omega> !! i \<in> X} = (if HLD X \<omega> then {0} else {}) \<union> (Suc ` {i. stl \<omega> !! i \<in> X})"
+    apply (intro set_eqI)
+    apply (case_tac x)
+    apply (auto simp: image_iff HLD_iff)
+    done
+  { case 1 show ?case
+      using step unfolding eq by (auto simp: scount_simps card_image Zero_notin_Suc eSuc_enat) }
+  { case 2 show ?case
+      using step unfolding eq by auto }
+next
+   case (base \<omega>)
+   then have [simp]: "{i. \<omega> !! i \<in> X} = {}"
+     by (simp add: not_HLD alw_HLD_iff_streams streams_iff_snth)
+   { case 1 show ?case using base by (simp add: scount_eq_0I enat_0) }
+   { case 2 show ?case by simp }
+qed
+
+lemma scount_finite: "ev (alw (not (HLD X))) \<omega> \<Longrightarrow> scount X \<omega> < \<infinity>"
+  using scount_eq_card[of X \<omega>] by auto
+
+lemma scount_infinite: 
+  "alw (ev (HLD X)) \<omega> \<Longrightarrow> scount X \<omega> = \<infinity>"
+proof (coinduction arbitrary: \<omega> rule: enat_coinduct)
+  case (Eq_enat \<omega>)
+  then have "ev (HLD X) \<omega>" "alw (ev (HLD X)) \<omega>"
+    by auto
+  then show ?case
+    by (induction rule: ev_induct_strong) (auto simp add: scount_simps)
+qed
+
+lemma scount_infinite_iff: "scount X \<omega> = \<infinity> \<longleftrightarrow> alw (ev (HLD X)) \<omega>"
+  by (metis enat_ord_simps(4) not_alw_not scount_finite scount_infinite)
+
+lemma scount_eq:
+  "scount X \<omega> = (if alw (ev (HLD X)) \<omega> then \<infinity> else card {i. \<omega> !! i \<in> X})"
+  by (auto simp: scount_infinite_iff scount_eq_card not_alw_iff not_ev_iff) 
+
+lemma scount_eq_emeasure: "scount X \<omega> = emeasure (count_space UNIV) {i. \<omega> !! i \<in> X}"
+proof cases
+  assume "alw (ev (HLD X)) \<omega>"
+  moreover then have "infinite {i. \<omega> !! i \<in> X}"
+    using infinite_iff_alw_ev[of "\<lambda>x. x \<in> X" \<omega>] by (simp add: holds.simps[abs_def] HLD_iff[abs_def])
+  ultimately show ?thesis
+    by (simp add: scount_infinite_iff)
+next
+  assume "\<not> alw (ev (HLD X)) \<omega>"
+  moreover then have "finite {i. \<omega> !! i \<in> X}"
+    using infinite_iff_alw_ev[of "\<lambda>x. x \<in> X" \<omega>] by (simp add: holds.simps[abs_def] HLD_iff[abs_def])
+  ultimately show ?thesis
+    by (simp add: not_alw_iff not_ev_iff scount_eq_card)
+qed
+
+lemma measurable_scount[measurable]: 
+  assumes [measurable]: "X \<in> sets M" shows "scount X \<in> measurable (stream_space M) (count_space UNIV)"
+  unfolding scount_eq[abs_def] by measurable
 
 text {* Strong until *}
 
@@ -1120,6 +1595,414 @@ qed
 lemma some_in_iff: "(SOME x. x \<in> A) \<in> A \<longleftrightarrow> A \<noteq> {}"
   by (metis someI_ex ex_in_conv)
 
+lemma all_le_Suc_split: "(\<forall>i\<le>Suc n. P i) \<longleftrightarrow> (P 0 \<and> (\<forall>i\<le>n. P (Suc i)))"
+  by (metis Suc_le_mono less_eq_nat.simps(1) not0_implies_Suc)
+
+lemma measure_le_0: "measure M X \<le> 0 \<longleftrightarrow> measure M X = 0"
+  using measure_nonneg[of M X] by auto
+
+
+lemma (in finite_measure) countable_support: (* replace version in pmf *)
+  "countable {x. measure M {x} \<noteq> 0}"
+proof cases
+  assume "measure M (space M) = 0"
+  with bounded_measure measure_le_0 have "{x. measure M {x} \<noteq> 0} = {}"
+    by auto
+  then show ?thesis
+    by simp
+next
+  let ?M = "measure M (space M)" and ?m = "\<lambda>x. measure M {x}"
+  assume "?M \<noteq> 0"
+  then have *: "{x. ?m x \<noteq> 0} = (\<Union>n. {x. ?M / Suc n < ?m x})"
+    using reals_Archimedean[of "?m x / ?M" for x]
+    by (auto simp: field_simps not_le[symmetric] measure_nonneg divide_le_0_iff measure_le_0)
+  have **: "\<And>n. finite {x. ?M / Suc n < ?m x}"
+  proof (rule ccontr)
+    fix n assume "infinite {x. ?M / Suc n < ?m x}" (is "infinite ?X")
+    then obtain X where "finite X" "card X = Suc (Suc n)" "X \<subseteq> ?X"
+      by (metis infinite_arbitrarily_large)
+    from this(3) have *: "\<And>x. x \<in> X \<Longrightarrow> ?M / Suc n \<le> ?m x" 
+      by auto
+    { fix x assume "x \<in> X"
+      from `?M \<noteq> 0` *[OF this] have "?m x \<noteq> 0" by (auto simp: field_simps measure_le_0)
+      then have "{x} \<in> sets M" by (auto dest: measure_notin_sets) }
+    note singleton_sets = this
+    have "?M < (\<Sum>x\<in>X. ?M / Suc n)"
+      using `?M \<noteq> 0` 
+      by (simp add: `card X = Suc (Suc n)` real_eq_of_nat[symmetric] real_of_nat_Suc field_simps less_le measure_nonneg)
+    also have "\<dots> \<le> (\<Sum>x\<in>X. ?m x)"
+      by (rule setsum_mono) fact
+    also have "\<dots> = measure M (\<Union>x\<in>X. {x})"
+      using singleton_sets `finite X`
+      by (intro finite_measure_finite_Union[symmetric]) (auto simp: disjoint_family_on_def)
+    finally have "?M < measure M (\<Union>x\<in>X. {x})" .
+    moreover have "measure M (\<Union>x\<in>X. {x}) \<le> ?M"
+      using singleton_sets[THEN sets.sets_into_space] by (intro finite_measure_mono) auto
+    ultimately show False by simp
+  qed
+  show ?thesis
+    unfolding * by (intro countable_UN countableI_type countable_finite[OF **])
+qed
+
+lemma (in finite_measure) AE_support_countable:
+  assumes [simp]: "sets M = UNIV"
+  shows "(AE x in M. measure M {x} \<noteq> 0) \<longleftrightarrow> (\<exists>S. countable S \<and> (AE x in M. x \<in> S))"
+proof
+  assume "\<exists>S. countable S \<and> (AE x in M. x \<in> S)"
+  then obtain S where S[intro]: "countable S" and ae: "AE x in M. x \<in> S"
+    by auto
+  then have "emeasure M (\<Union>x\<in>{x\<in>S. emeasure M {x} \<noteq> 0}. {x}) = 
+    (\<integral>\<^sup>+ x. emeasure M {x} * indicator {x\<in>S. emeasure M {x} \<noteq> 0} x \<partial>count_space UNIV)"
+    by (subst emeasure_UN_countable)
+       (auto simp: disjoint_family_on_def nn_integral_restrict_space[symmetric] restrict_count_space)
+  also have "\<dots> = (\<integral>\<^sup>+ x. emeasure M {x} * indicator S x \<partial>count_space UNIV)"
+    by (auto intro!: nn_integral_cong split: split_indicator)
+  also have "\<dots> = emeasure M (\<Union>x\<in>S. {x})"
+    by (subst emeasure_UN_countable)
+       (auto simp: disjoint_family_on_def nn_integral_restrict_space[symmetric] restrict_count_space)
+  also have "\<dots> = emeasure M (space M)"
+    using ae by (intro emeasure_eq_AE) auto
+  finally have "emeasure M {x \<in> space M. x\<in>S \<and> emeasure M {x} \<noteq> 0} = emeasure M (space M)"
+    by (simp add: emeasure_single_in_space cong: rev_conj_cong)
+  with finite_measure_compl[of "{x \<in> space M. x\<in>S \<and> emeasure M {x} \<noteq> 0}"]
+  have "AE x in M. x \<in> S \<and> emeasure M {x} \<noteq> 0"
+    by (intro AE_I[OF order_refl]) (auto simp: emeasure_eq_measure set_diff_eq cong: conj_cong)
+  then show "AE x in M. measure M {x} \<noteq> 0"
+    by (auto simp: emeasure_eq_measure)
+qed (auto intro!: exI[of _ "{x. measure M {x} \<noteq> 0}"] countable_support)
+
+lemma ereal_indicator_le_0: "(indicator S x::ereal) \<le> 0 \<longleftrightarrow> x \<notin> S"
+  by (auto split: split_indicator simp: one_ereal_def)
+
+lemma nn_integral_bind:
+  assumes f: "f \<in> borel_measurable B" "\<And>x. 0 \<le> f x"
+  assumes N: "N \<in> measurable M (subprob_algebra B)"
+  shows "(\<integral>\<^sup>+x. f x \<partial>(M \<guillemotright>= N)) = (\<integral>\<^sup>+x. \<integral>\<^sup>+y. f y \<partial>N x \<partial>M)"
+proof cases
+  assume M: "space M \<noteq> {}" show ?thesis
+    unfolding bind_nonempty''[OF N M] nn_integral_join[OF f sets_distr]
+    by (rule nn_integral_distr[OF N nn_integral_measurable_subprob_algebra[OF f]])
+qed (simp add: bind_empty space_empty[of M] nn_integral_count_space)
+
+lemma (in prob_space) prob_space_bind: 
+  assumes ae: "AE x in M. prob_space (N x)"
+    and N[measurable]: "N \<in> measurable M (subprob_algebra S)"
+  shows "prob_space (M \<guillemotright>= N)"
+proof
+  have "emeasure (M \<guillemotright>= N) (space (M \<guillemotright>= N)) = (\<integral>\<^sup>+x. emeasure (N x) (space (N x)) \<partial>M)"
+    by (subst emeasure_bind[where N=S])
+       (auto simp: not_empty space_bind[OF N] subprob_measurableD[OF N] intro!: nn_integral_cong)
+  also have "\<dots> = (\<integral>\<^sup>+x. 1 \<partial>M)"
+    using ae by (intro nn_integral_cong_AE, eventually_elim) (rule prob_space.emeasure_space_1)
+  finally show "emeasure (M \<guillemotright>= N) (space (M \<guillemotright>= N)) = 1"
+    by (simp add: emeasure_space_1)
+qed
+
+lemma AE_bind:
+  assumes P[measurable]: "Measurable.pred B P"
+  assumes N[measurable]: "N \<in> measurable M (subprob_algebra B)"
+  shows "(AE x in M \<guillemotright>= N. P x) \<longleftrightarrow> (AE x in M. AE y in N x. P y)"
+proof cases
+  assume M: "space M = {}" show ?thesis
+    unfolding bind_empty[OF M] unfolding space_empty[OF M] by (simp add: AE_count_space)
+next
+  assume M: "space M \<noteq> {}"
+  have *: "(\<integral>\<^sup>+x. indicator {x. \<not> P x} x \<partial>(M \<guillemotright>= N)) = (\<integral>\<^sup>+x. indicator {x\<in>space B. \<not> P x} x \<partial>(M \<guillemotright>= N))"
+    by (intro nn_integral_cong) (simp add: space_bind[OF N M] split: split_indicator)
+
+  have "(AE x in M \<guillemotright>= N. P x) \<longleftrightarrow> (\<integral>\<^sup>+ x. integral\<^sup>N (N x) (indicator {x \<in> space B. \<not> P x}) \<partial>M) = 0"
+    by (simp add: AE_iff_nn_integral sets_bind[OF N M] space_bind[OF N M] * nn_integral_bind[where B=B]
+             del: nn_integral_indicator)
+  also have "\<dots> = (AE x in M. AE y in N x. P y)"
+    apply (subst nn_integral_0_iff_AE)
+    apply (rule measurable_compose[OF N nn_integral_measurable_subprob_algebra])
+    apply measurable
+    apply (intro eventually_subst AE_I2)
+    apply simp
+    apply (subst nn_integral_0_iff_AE)
+    apply (simp add: subprob_measurableD(3)[OF N])
+    apply (auto simp add: ereal_indicator_le_0 subprob_measurableD(1)[OF N] intro!: eventually_subst)
+    done
+  finally show ?thesis .
+qed
+
+lemma measure_eqI_restrict_generator:
+  assumes E: "Int_stable E" "E \<subseteq> Pow \<Omega>" "\<And>X. X \<in> E \<Longrightarrow> emeasure M X = emeasure N X"
+  assumes sets_eq: "sets M = sets N" and \<Omega>: "\<Omega> \<in> sets M"
+  assumes "sets (restrict_space M \<Omega>) = sigma_sets \<Omega> E"
+  assumes "sets (restrict_space N \<Omega>) = sigma_sets \<Omega> E" 
+  assumes ae: "AE x in M. x \<in> \<Omega>" "AE x in N. x \<in> \<Omega>"
+  assumes A: "countable A" "A \<noteq> {}" "A \<subseteq> E" "\<Union>A = \<Omega>" "\<And>a. a \<in> A \<Longrightarrow> emeasure M a \<noteq> \<infinity>"
+  shows "M = N"
+proof (rule measure_eqI)
+  fix X assume X: "X \<in> sets M"
+  then have "emeasure M X = emeasure (restrict_space M \<Omega>) (X \<inter> \<Omega>)"
+    using ae \<Omega> by (auto simp add: emeasure_restrict_space intro!: emeasure_eq_AE)
+  also have "restrict_space M \<Omega> = restrict_space N \<Omega>"
+  proof (rule measure_eqI_generator_eq)
+    fix X assume "X \<in> E"
+    then show "emeasure (restrict_space M \<Omega>) X = emeasure (restrict_space N \<Omega>) X"
+      using E \<Omega> by (subst (1 2) emeasure_restrict_space) (auto simp: sets_eq sets_eq[THEN sets_eq_imp_space_eq])
+  next
+    show "range (from_nat_into A) \<subseteq> E" "(\<Union>i. from_nat_into A i) = \<Omega>"
+      unfolding Sup_image_eq[symmetric, where f="from_nat_into A"] using A by auto
+  next
+    fix i
+    have "emeasure (restrict_space M \<Omega>) (from_nat_into A i) = emeasure M (from_nat_into A i)"
+      using A \<Omega> by (subst emeasure_restrict_space)
+                   (auto simp: sets_eq sets_eq[THEN sets_eq_imp_space_eq] intro: from_nat_into)
+    with A show "emeasure (restrict_space M \<Omega>) (from_nat_into A i) \<noteq> \<infinity>"
+      by (auto intro: from_nat_into)
+  qed fact+
+  also have "emeasure (restrict_space N \<Omega>) (X \<inter> \<Omega>) = emeasure N X"
+    using X ae \<Omega> by (auto simp add: emeasure_restrict_space sets_eq intro!: emeasure_eq_AE)
+  finally show "emeasure M X = emeasure N X" .
+qed fact
+
+lemma (in prob_space) emeasure_eq_1_AE:
+  "S \<in> sets M \<Longrightarrow> AE x in M. x \<in> S \<Longrightarrow> emeasure M S = 1"
+  by (subst emeasure_eq_AE[where B="space M"]) (auto simp: emeasure_space_1)
+
+lemma streams_mono2: "S \<subseteq> T \<Longrightarrow> streams S \<subseteq> streams T"
+  by (auto intro: streams_mono)
+
+lemma emeasure_sigma: "emeasure (sigma \<Omega> A) X = 0"
+  unfolding measure_of_def emeasure_def
+  by (subst Abs_measure_inverse)
+     (auto simp: measure_space_def positive_def countably_additive_def
+           intro!: sigma_algebra_sigma_sets sigma_algebra_trivial)
+
+lemma vimage_algebra_vimage_algebra_eq:
+  assumes *: "f \<in> X \<rightarrow> Y" "g \<in> Y \<rightarrow> space M"
+  shows "vimage_algebra X f (vimage_algebra Y g M) = vimage_algebra X (\<lambda>x. g (f x)) M"
+  (is "?VV = ?V")
+proof (rule measure_eqI)
+  have "(\<lambda>x. g (f x)) \<in> X \<rightarrow> space M" "\<And>A. A \<inter> f -` Y \<inter> X = A \<inter> X"
+    using * by auto
+  with * show "sets ?VV = sets ?V"
+    by (simp add: sets_vimage_algebra2 ex_simps[symmetric] vimage_comp comp_def del: ex_simps)
+qed (simp add: vimage_algebra_def emeasure_sigma)
+
+lemma sets_vimage_Sup_eq:
+  assumes *: "M \<noteq> {}" "\<And>m. m \<in> M \<Longrightarrow> f \<in> X \<rightarrow> space m"
+  shows "sets (vimage_algebra X f (Sup_sigma M)) = sets (\<Squnion>\<^sub>\<sigma> m \<in> M. vimage_algebra X f m)"
+  (is "?IS = ?SI")
+proof
+  show "?IS \<subseteq> ?SI"
+    by (intro sets_image_in_sets measurable_Sup_sigma2 measurable_Sup_sigma1)
+       (auto simp: space_Sup_sigma measurable_vimage_algebra1 *)
+  { fix m assume "m \<in> M"
+    moreover then have "f \<in> X \<rightarrow> space (Sup_sigma M)" "f \<in> X \<rightarrow> space m"
+      using * by (auto simp: space_Sup_sigma)
+    ultimately have "f \<in> measurable (vimage_algebra X f (Sup_sigma M)) m"
+      by (auto simp add: measurable_def sets_vimage_algebra2 intro: in_Sup_sigma) }
+  then show "?SI \<subseteq> ?IS"
+    by (auto intro!: sets_image_in_sets sets_Sup_in_sets del: subsetI simp: *)
+qed
+
+lemma restrict_space_eq_vimage_algebra:
+  "\<Omega> \<subseteq> space M \<Longrightarrow> sets (restrict_space M \<Omega>) = sets (vimage_algebra \<Omega> (\<lambda>x. x) M)"
+  unfolding restrict_space_def
+  apply (subst sets_measure_of)
+  apply (auto simp add: image_subset_iff dest: sets.sets_into_space) []
+  apply (auto simp add: sets_vimage_algebra intro!: arg_cong2[where f=sigma_sets])
+  done
+
+lemma vimage_algebra_cong: "sets M = sets N \<Longrightarrow> sets (vimage_algebra X f M) = sets (vimage_algebra X f N)"
+  by (simp add: sets_vimage_algebra)
+
+lemma SUP_sigma_cong: 
+  assumes *: "\<And>i. i \<in> I \<Longrightarrow> sets (M i) = sets (N i)" shows "sets (\<Squnion>\<^sub>\<sigma> i\<in>I. M i) = sets (\<Squnion>\<^sub>\<sigma> i\<in>I. N i)"
+  using * sets_eq_imp_space_eq[OF *] by (simp add: Sup_sigma_def)
+
+lemma snth_in: "s \<in> streams X \<Longrightarrow> s !! n \<in> X"
+  by (force simp: streams_iff_sset sset_range)
+
+lemma to_stream_in_streams: "to_stream X \<in> streams S \<longleftrightarrow> (\<forall>n. X n \<in> S)"
+  by (simp add: to_stream_def streams_iff_snth)
+
+
+lemma in_streams: "stl s \<in> streams S \<Longrightarrow> shd s \<in> S \<Longrightarrow> s \<in> streams S"
+  by (cases s) auto
+
+lemma sets_stream_space_in_sets:
+  assumes space: "space N = streams (space M)"
+  assumes sets: "\<And>i. (\<lambda>x. x !! i) \<in> measurable N M"
+  shows "sets (stream_space M) \<subseteq> sets N"
+  unfolding stream_space_def sets_distr
+  by (auto intro!: sets_image_in_sets measurable_Sup_sigma2 measurable_vimage_algebra2 del: subsetI equalityI 
+           simp add: sets_PiM_eq_proj snth_in space sets cong: measurable_cong_sets)
+
+lemma sets_stream_space_eq: "sets (stream_space M) =
+    sets (\<Squnion>\<^sub>\<sigma> i\<in>UNIV. vimage_algebra (streams (space M)) (\<lambda>s. s !! i) M)"
+  by (auto intro!: sets_stream_space_in_sets sets_Sup_in_sets sets_image_in_sets
+                   measurable_Sup_sigma1  snth_in measurable_vimage_algebra1 del: subsetI
+           simp: space_Sup_sigma space_stream_space)
+
+lemma sets_restrict_stream_space:
+  assumes S[measurable]: "S \<in> sets M"
+  shows "sets (restrict_space (stream_space M) (streams S)) = sets (stream_space (restrict_space M S))"
+  using  S[THEN sets.sets_into_space]
+  apply (subst restrict_space_eq_vimage_algebra)
+  apply (simp add: space_stream_space streams_mono2)
+  apply (subst vimage_algebra_cong[OF sets_stream_space_eq])
+  apply (subst sets_stream_space_eq)
+  apply (subst sets_vimage_Sup_eq)
+  apply simp
+  apply (auto intro: streams_mono) []
+  apply (simp add: image_image space_restrict_space)
+  apply (intro SUP_sigma_cong)
+  apply (simp add: vimage_algebra_cong[OF restrict_space_eq_vimage_algebra])
+  apply (subst (1 2) vimage_algebra_vimage_algebra_eq)
+  apply (auto simp: streams_mono snth_in)
+  done
+
+primrec sstart :: "'a set \<Rightarrow> 'a list \<Rightarrow> 'a stream set" where
+  "sstart S [] = streams S"
+| [simp del]: "sstart S (x # xs) = op ## x ` sstart S xs"
+
+lemma in_sstart[simp]: "s \<in> sstart S (x # xs) \<longleftrightarrow> shd s = x \<and> stl s \<in> sstart S xs"
+  by (cases s) (auto simp: sstart.simps(2))
+
+lemma sstart_in_streams: "xs \<in> lists S \<Longrightarrow> sstart S xs \<subseteq> streams S"
+  by (induction xs) (auto simp: sstart.simps(2))
+
+lemma sstart_eq: "x \<in> streams S \<Longrightarrow> x \<in> sstart S xs = (\<forall>i<length xs. x !! i = xs ! i)"
+  by (induction xs arbitrary: x) (auto simp: nth_Cons streams_stl split: nat.splits)
+
+lemma sstart_sets: "sstart S xs \<in> sets (stream_space (count_space UNIV))"
+proof (induction xs)
+  case (Cons x xs)
+  note Cons[measurable]
+  have "sstart S (x # xs) =
+    {s\<in>space (stream_space (count_space UNIV)). shd s = x \<and> stl s \<in> sstart S xs}"
+    by (simp add: set_eq_iff space_stream_space)
+  also have "\<dots> \<in> sets (stream_space (count_space UNIV))"
+    by measurable
+  finally show ?case .
+qed (simp add: streams_sets)
+
+lemma sets_stream_space_sstart:
+  assumes S[simp]: "countable S"
+  shows "sets (stream_space (count_space S)) = sets (sigma (streams S) (sstart S`lists S \<union> {{}}))"
+proof
+  have [simp]: "sstart S ` lists S \<subseteq> Pow (streams S)"
+    by (simp add: image_subset_iff sstart_in_streams)
+
+  let ?S = "sigma (streams S) (sstart S ` lists S \<union> {{}})"
+  { fix i a assume "a \<in> S"
+    { fix x have "(x !! i = a \<and> x \<in> streams S) \<longleftrightarrow> (\<exists>xs\<in>lists S. length xs = i \<and> x \<in> sstart S (xs @ [a]))"
+      proof (induction i arbitrary: x)
+        case (Suc i) from this[of "stl x"] show ?case
+          by (simp add: length_Suc_conv Bex_def ex_simps[symmetric] del: ex_simps)
+             (metis stream.collapse streams_Stream)
+      qed (insert `a \<in> S`, auto intro: streams_stl in_streams) }
+    then have "(\<lambda>x. x !! i) -` {a} \<inter> streams S = (\<Union>xs\<in>{xs\<in>lists S. length xs = i}. sstart S (xs @ [a]))"
+      by (auto simp add: set_eq_iff)
+    also have "\<dots> \<in> sets ?S"
+      using `a\<in>S` by (intro sets.countable_UN') (auto intro!: sigma_sets.Basic image_eqI)
+    finally have " (\<lambda>x. x !! i) -` {a} \<inter> streams S \<in> sets ?S" . }
+  then show "sets (stream_space (count_space S)) \<subseteq> sets (sigma (streams S) (sstart S`lists S \<union> {{}}))"
+    by (intro sets_stream_space_in_sets) (auto simp: measurable_count_space_eq_countable snth_in)
+
+  have "sigma_sets (space (stream_space (count_space S))) (sstart S`lists S \<union> {{}}) \<subseteq> sets (stream_space (count_space S))"
+  proof (safe intro!: sets.sigma_sets_subset)
+    fix xs assume "\<forall>x\<in>set xs. x \<in> S"
+    then have "sstart S xs = {x\<in>space (stream_space (count_space S)). \<forall>i<length xs. x !! i = xs ! i}"
+      by (induction xs)
+         (auto simp: space_stream_space nth_Cons split: nat.split intro: in_streams streams_stl)
+    also have "\<dots> \<in> sets (stream_space (count_space S))"
+      by measurable
+    finally show "sstart S xs \<in> sets (stream_space (count_space S))" .
+  qed
+  then show "sets (sigma (streams S) (sstart S`lists S \<union> {{}})) \<subseteq> sets (stream_space (count_space S))"
+    by (simp add: space_stream_space)
+qed
+
+lemma Int_stable_sstart: "Int_stable (sstart S`lists S \<union> {{}})"
+proof -
+  { fix xs ys assume "xs \<in> lists S" "ys \<in> lists S"
+    then have "sstart S xs \<inter> sstart S ys \<in> sstart S ` lists S \<union> {{}}"
+    proof (induction xs ys rule: list_induct2')
+      case (4 x xs y ys)
+      show ?case
+      proof cases
+        assume "x = y"
+        then have "sstart S (x # xs) \<inter> sstart S (y # ys) = op ## x ` (sstart S xs \<inter> sstart S ys)"
+          by (auto simp: image_iff intro!: stream.collapse[symmetric])
+        also have "\<dots> \<in> sstart S ` lists S \<union> {{}}"
+          using 4 by (auto simp: sstart.simps(2)[symmetric] del: in_listsD)
+        finally show ?case .
+      qed auto
+    qed (simp_all add: sstart_in_streams inf.absorb1 inf.absorb2 image_eqI[where x="[]"]) }
+  then show ?thesis
+    by (auto simp: Int_stable_def)
+qed
+
+lemma stream_space_eq_sstart:
+  assumes S[simp]: "countable S"
+  assumes P: "prob_space M" "prob_space N"
+  assumes ae: "AE x in M. x \<in> streams S" "AE x in N. x \<in> streams S"
+  assumes sets_M: "sets M = sets (stream_space (count_space UNIV))"
+  assumes sets_N: "sets N = sets (stream_space (count_space UNIV))"
+  assumes *: "\<And>xs. xs \<noteq> [] \<Longrightarrow> xs \<in> lists S \<Longrightarrow> emeasure M (sstart S xs) = emeasure N (sstart S xs)"
+  shows "M = N"
+proof (rule measure_eqI_restrict_generator[OF Int_stable_sstart])
+  have [simp]: "sstart S ` lists S \<subseteq> Pow (streams S)"
+    by (simp add: image_subset_iff sstart_in_streams)
+
+  interpret M: prob_space M by fact
+
+  show "sstart S ` lists S \<union> {{}} \<subseteq> Pow (streams S)"
+    by (auto dest: sstart_in_streams del: in_listsD)
+
+  { fix M :: "'a stream measure" assume M: "sets M = sets (stream_space (count_space UNIV))"
+    have "sets (restrict_space M (streams S)) = sigma_sets (streams S) (sstart S ` lists S \<union> {{}})"
+      apply (simp add: sets_eq_imp_space_eq[OF M] space_stream_space restrict_space_eq_vimage_algebra
+        vimage_algebra_cong[OF M])
+      apply (simp add: sets_eq_imp_space_eq[OF M] space_stream_space restrict_space_eq_vimage_algebra[symmetric])
+      apply (simp add: sets_restrict_stream_space restrict_count_space sets_stream_space_sstart)
+      done }
+  from this[OF sets_M] this[OF sets_N]
+  show "sets (restrict_space M (streams S)) = sigma_sets (streams S) (sstart S ` lists S \<union> {{}})"
+       "sets (restrict_space N (streams S)) = sigma_sets (streams S) (sstart S ` lists S \<union> {{}})"
+    by auto
+  show "{streams S} \<subseteq> sstart S ` lists S \<union> {{}}"
+    "\<Union>{streams S} = streams S" "\<And>s. s \<in> {streams S} \<Longrightarrow> emeasure M s \<noteq> \<infinity>"
+    using M.emeasure_space_1 space_stream_space[of "count_space S"] sets_eq_imp_space_eq[OF sets_M]
+    by (auto simp add: image_eqI[where x="[]"])
+  show "sets M = sets N"
+    by (simp add: sets_M sets_N)
+next
+  fix X assume "X \<in> sstart S ` lists S \<union> {{}}"
+  then obtain xs where "X = {} \<or> (xs \<in> lists S \<and> X = sstart S xs)"
+    by auto
+  moreover have "emeasure M (streams S) = 1"
+    using ae by (intro prob_space.emeasure_eq_1_AE[OF P(1)]) (auto simp: sets_M streams_sets)
+  moreover have "emeasure N (streams S) = 1"
+    using ae by (intro prob_space.emeasure_eq_1_AE[OF P(2)]) (auto simp: sets_N streams_sets)
+  ultimately show "emeasure M X = emeasure N X"
+    using P[THEN prob_space.emeasure_space_1]
+    by (cases "xs = []") (auto simp: * space_stream_space del: in_listsD)
+qed (auto simp: * ae sets_M del: in_listsD intro!: streams_sets)
+
+lemma measure_density_const:
+  "A \<in> sets M \<Longrightarrow> 0 \<le> c \<Longrightarrow> c \<noteq> \<infinity> \<Longrightarrow> measure (density M (\<lambda>_. c)) A = real c * measure M A"
+  by (auto simp: emeasure_density_const measure_def)
+
+lemma (in prob_space) measure_uniform_measure_eq_cond_prob:
+  assumes [measurable]: "Measurable.pred M P" "Measurable.pred M Q"
+  shows "\<P>(x in uniform_measure M {x\<in>space M. Q x}. P x) = \<P>(x in M. P x \<bar> Q x)"
+proof cases
+  assume Q: "measure M {x\<in>space M. Q x} = 0"
+  then have "AE x in M. \<not> Q x"
+    by (simp add: prob_eq_0)
+  then have "AE x in M. indicator {x\<in>space M. Q x} x / ereal 0 = 0"
+    by (auto split: split_indicator)
+  from density_cong[OF _ _ this] show ?thesis
+    by (simp add: uniform_measure_def emeasure_eq_measure cond_prob_def Q measure_density_const)
+qed (auto simp add: emeasure_eq_measure cond_prob_def intro!: arg_cong[where f=prob])
+
 text {*
 
 Markov chain with discrete time steps and discrete state space.
@@ -1130,6 +2013,193 @@ lemma measurable_suntil[measurable]:
   assumes [measurable]: "Measurable.pred (stream_space M) Q" "Measurable.pred (stream_space M) P"
   shows "Measurable.pred (stream_space M) (Q suntil P)"
   unfolding suntil_def by (coinduction rule: measurable_lfp) (auto simp: Order_Continuity.continuous_def)
+
+
+context
+begin
+
+interpretation pmf_as_function .
+
+lemma pmf_eqI: "(\<And>i. pmf M i = pmf N i) \<Longrightarrow> M = N"
+  by transfer auto
+
+lemma pmf_eq_iff: "M = N \<longleftrightarrow> (\<forall>i. pmf M i = pmf N i)"
+  by (auto intro: pmf_eqI)
+
+end
+
+context
+begin
+
+interpretation pmf_as_measure .
+
+lift_definition join_pmf :: "'a pmf pmf \<Rightarrow> 'a pmf" is "\<lambda>M. measure_pmf M \<guillemotright>= measure_pmf"
+proof (intro conjI)
+  fix M :: "'a pmf pmf"
+
+  have *: "measure_pmf \<in> measurable (measure_pmf M) (subprob_algebra (count_space UNIV))"
+    using measurable_measure_pmf[of "\<lambda>x. x"] by simp
+  
+  interpret bind: prob_space "measure_pmf M \<guillemotright>= measure_pmf"
+    apply (rule measure_pmf.prob_space_bind[OF _ *])
+    apply (auto intro!: AE_I2)
+    apply unfold_locales
+    done
+  show "prob_space (measure_pmf M \<guillemotright>= measure_pmf)"
+    by intro_locales
+  show "sets (measure_pmf M \<guillemotright>= measure_pmf) = UNIV"
+    by (subst sets_bind[OF *]) auto
+  have "AE x in measure_pmf M \<guillemotright>= measure_pmf. emeasure (measure_pmf M \<guillemotright>= measure_pmf) {x} \<noteq> 0"
+    by (auto simp add: AE_bind[OF _ *] AE_measure_pmf_iff emeasure_bind[OF _ *]
+        nn_integral_0_iff_AE measure_pmf.emeasure_eq_measure measure_le_0 set_pmf_iff pmf.rep_eq)
+  then show "AE x in measure_pmf M \<guillemotright>= measure_pmf. measure (measure_pmf M \<guillemotright>= measure_pmf) {x} \<noteq> 0"
+    unfolding bind.emeasure_eq_measure by simp
+qed
+
+lemma pmf_join: "pmf (join_pmf N) i = (\<integral>M. pmf M i \<partial>measure_pmf N)"
+proof (transfer fixing: N i)
+  interpret N: subprob_space "measure_pmf N"
+    by (rule prob_space_imp_subprob_space) intro_locales
+  show "measure (measure_pmf N \<guillemotright>= measure_pmf) {i} = integral\<^sup>L (measure_pmf N) (\<lambda>M. measure M {i})"
+    using measurable_measure_pmf[of "\<lambda>x. x"]
+    by (intro N.measure_bind[where N="count_space UNIV"]) auto
+qed (auto simp: Transfer.Rel_def rel_fun_def cr_pmf_def)
+
+end
+
+lemma sets_measure_pmf_count_space: "sets (measure_pmf M) = sets (count_space UNIV)"
+  by simp
+
+definition "bind_pmf M f = join_pmf (map_pmf f M)"
+
+lemma (in pmf_as_measure) bind_transfer[transfer_rule]:
+  "rel_fun pmf_as_measure.cr_pmf (rel_fun (rel_fun op = pmf_as_measure.cr_pmf) pmf_as_measure.cr_pmf) op \<guillemotright>= bind_pmf"
+proof (auto simp: pmf_as_measure.cr_pmf_def rel_fun_def bind_pmf_def join_pmf.rep_eq map_pmf.rep_eq)
+  fix M f and g :: "'a \<Rightarrow> 'b pmf" assume "\<forall>x. f x = measure_pmf (g x)"
+  then have f: "f = (\<lambda>x. measure_pmf (g x))"
+    by auto
+  show "measure_pmf M \<guillemotright>= f = distr (measure_pmf M) (count_space UNIV) g \<guillemotright>= measure_pmf"
+    unfolding f by (subst bind_distr[OF _ measurable_measure_pmf]) auto
+qed
+
+lemma pmf_bind: "pmf (bind_pmf N f) i = (\<integral>x. pmf (f x) i \<partial>measure_pmf N)"
+  by (auto intro!: integral_distr simp: bind_pmf_def pmf_join map_pmf.rep_eq)
+
+lemma return_sets_cong: "sets M = sets N \<Longrightarrow> return M = return N"
+  by (auto dest: sets_eq_imp_space_eq simp: fun_eq_iff return_def)
+
+lemma integral_return:
+  fixes g :: "_ \<Rightarrow> 'a :: {banach, second_countable_topology}"
+  assumes "x \<in> space M" "g \<in> borel_measurable M"
+  shows "(\<integral>a. g a \<partial>return M x) = g x"
+proof-
+  interpret prob_space "return M x" by (rule prob_space_return[OF `x \<in> space M`])
+  have "(\<integral>a. g a \<partial>return M x) = (\<integral>a. g x \<partial>return M x)" using assms
+    by (intro integral_cong_AE) (auto simp: AE_return)
+  then show ?thesis
+    using prob_space by simp
+qed
+
+lemma integral_pmf_restrict:
+  "(f::'a \<Rightarrow> 'b::{banach, second_countable_topology}) \<in> borel_measurable (count_space UNIV) \<Longrightarrow>
+    (\<integral>x. f x \<partial>measure_pmf M) = (\<integral>x. f x \<partial>restrict_space M M)"
+  by (auto intro!: integral_cong_AE simp add: integral_restrict_space AE_measure_pmf_iff)
+
+lemma sets_restrict_space_cong: "sets M = sets N \<Longrightarrow> sets (restrict_space M \<Omega>) = sets (restrict_space N \<Omega>)"
+  by (simp add: sets_restrict_space)
+
+context
+begin
+
+interpretation pmf_as_measure .
+
+lift_definition return_pmf :: "'a \<Rightarrow> 'a pmf" is "return (count_space UNIV)"
+  by (auto intro!: prob_space_return simp: AE_return measure_return)
+
+lemma join_return_pmf: "join_pmf (return_pmf M) = M"
+  by (simp add: integral_return pmf_eq_iff pmf_join return_pmf.rep_eq)
+
+lemma map_return_pmf: "map_pmf f (return_pmf x) = return_pmf (f x)"
+  by transfer (simp add: distr_return)
+
+lemma bind_return_pmf: "bind_pmf (return_pmf x) f = f x"
+  unfolding bind_pmf_def map_return_pmf join_return_pmf ..
+
+lemma bind_return_pmf': "bind_pmf N return_pmf = N"
+proof (transfer, clarify)
+  fix N :: "'a measure" assume "sets N = UNIV" then show "N \<guillemotright>= return (count_space UNIV) = N"
+    by (subst return_sets_cong[where N=N]) (simp_all add: bind_return')
+qed
+
+lemma bind_return_pmf'': "bind_pmf N (\<lambda>x. return_pmf (f x)) = map_pmf f N"
+proof (transfer, clarify)
+  fix N :: "'b measure" and f :: "'b \<Rightarrow> 'a" assume "prob_space N" "sets N = UNIV"
+  then show "N \<guillemotright>= (\<lambda>x. return (count_space UNIV) (f x)) = distr N (count_space UNIV) f"
+    by (subst bind_return_distr[symmetric])
+       (auto simp: prob_space.not_empty measurable_def comp_def)
+qed
+
+lemma bind_assoc_pmf: "bind_pmf (bind_pmf A B) C = bind_pmf A (\<lambda>x. bind_pmf (B x) C)"
+  by transfer
+     (auto intro!: bind_assoc[where N="count_space UNIV" and R="count_space UNIV"]
+           simp: measurable_def space_subprob_algebra prob_space_imp_subprob_space)
+
+lemma bind_commute_pmf: "bind_pmf A (\<lambda>x. bind_pmf B (C x)) = bind_pmf B (\<lambda>y. bind_pmf A (\<lambda>x. C x y))"
+  unfolding pmf_eq_iff pmf_bind
+proof
+  fix i
+  interpret B: prob_space "restrict_space B B"
+    by (intro prob_space_restrict_space measure_pmf.emeasure_eq_1_AE)
+       (auto simp: AE_measure_pmf_iff)
+  interpret A: prob_space "restrict_space A A"
+    by (intro prob_space_restrict_space measure_pmf.emeasure_eq_1_AE)
+       (auto simp: AE_measure_pmf_iff)
+
+  interpret AB: pair_prob_space "restrict_space A A" "restrict_space B B"
+    by unfold_locales
+
+  have "(\<integral> x. \<integral> y. pmf (C x y) i \<partial>B \<partial>A) = (\<integral> x. (\<integral> y. pmf (C x y) i \<partial>restrict_space B B) \<partial>A)"
+    by (rule integral_cong) (auto intro!: integral_pmf_restrict)
+  also have "\<dots> = (\<integral> x. (\<integral> y. pmf (C x y) i \<partial>restrict_space B B) \<partial>restrict_space A A)"
+    apply (intro integral_pmf_restrict B.borel_measurable_lebesgue_integral)
+    apply (auto simp: measurable_split_conv)
+    apply (subst measurable_cong_sets)
+    apply (rule sets_pair_measure_cong sets_restrict_space_cong sets_measure_pmf_count_space refl)+
+    apply (simp add: restrict_count_space)
+    apply (rule measurable_compose_countable'[OF _ measurable_snd])
+    apply (rule measurable_compose[OF measurable_fst])
+    apply (auto intro: countable_set_pmf)
+    done
+  also have "\<dots> = (\<integral> y. \<integral> x. pmf (C x y) i \<partial>restrict_space A A \<partial>restrict_space B B)"
+    apply (rule AB.Fubini_integral[symmetric])
+    apply (auto intro!: AB.integrable_const_bound[where B=1] simp: pmf_nonneg pmf_le_1)
+    apply (auto simp: measurable_split_conv)
+    apply (subst measurable_cong_sets)
+    apply (rule sets_pair_measure_cong sets_restrict_space_cong sets_measure_pmf_count_space refl)+
+    apply (simp add: restrict_count_space)
+    apply (rule measurable_compose_countable'[OF _ measurable_snd])
+    apply (rule measurable_compose[OF measurable_fst])
+    apply (auto intro: countable_set_pmf)
+    done
+  also have "\<dots> = (\<integral> y. \<integral> x. pmf (C x y) i \<partial>restrict_space A A \<partial>B)"
+    apply (intro integral_pmf_restrict[symmetric] A.borel_measurable_lebesgue_integral)
+    apply (auto simp: measurable_split_conv)
+    apply (subst measurable_cong_sets)
+    apply (rule sets_pair_measure_cong sets_restrict_space_cong sets_measure_pmf_count_space refl)+
+    apply (simp add: restrict_count_space)
+    apply (rule measurable_compose_countable'[OF _ measurable_snd])
+    apply (rule measurable_compose[OF measurable_fst])
+    apply (auto intro: countable_set_pmf)
+    done
+  also have "\<dots> = (\<integral> y. \<integral> x. pmf (C x y) i \<partial>A \<partial>B)"
+    by (rule integral_cong) (auto intro!: integral_pmf_restrict[symmetric])
+  finally show "(\<integral> x. \<integral> y. pmf (C x y) i \<partial>B \<partial>A) = (\<integral> y. \<integral> x. pmf (C x y) i \<partial>A \<partial>B)" .
+qed
+
+lemma measure_pmf_bind: "measure_pmf (bind_pmf M f) = (measure_pmf M \<guillemotright>= (\<lambda>x. measure_pmf (f x)))"
+  by transfer simp
+
+end
 
 locale MC_syntax =
   fixes K :: "'s \<Rightarrow> 's pmf"
@@ -2119,6 +3189,160 @@ lemma SUP_ereal_add_right:
   shows "I \<noteq> {} \<Longrightarrow> (\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i) \<Longrightarrow> 0 \<le> c \<Longrightarrow> (\<Squnion>i\<in>I. c + f i) = c + SUPREMUM I f"
   using SUP_ereal_add_left[of I f c] by (simp add: add_ac)
 
+lemma (in MC_syntax) T_subprob: "T \<in> measurable (measure_pmf I) (subprob_algebra S)"
+  by (auto intro!: space_bind simp: space_subprob_algebra) unfold_locales
+
+context MC_syntax
+begin
+
+text {* Markov chain with initial distribution @{term_type "I::'s pmf"}: *}
+
+definition T' :: "'s pmf \<Rightarrow> 's stream measure" where
+  "T' I = bind I (\<lambda>s. distr (T s) S (op ## s))"
+
+lemma distr_Stream_subprob:
+  "(\<lambda>s. distr (T s) S (op ## s)) \<in> measurable (measure_pmf I) (subprob_algebra S)"
+  apply (intro measurable_distr2[OF _ T_subprob])
+  apply (subst measurable_cong_sets[where M'="count_space UNIV \<Otimes>\<^sub>M S" and N'=S])
+  apply (rule sets_pair_measure_cong)
+  apply auto
+  done
+
+lemma sets_T': "sets (T' I) = sets S"
+  by (simp add: T'_def sets_bind[OF distr_Stream_subprob])
+
+lemma prob_space_T': "prob_space (T' I)"
+  unfolding T'_def
+proof (rule measure_pmf.prob_space_bind)
+  show "AE s in I. prob_space (distr (T s) S (op ## s))"
+    by (intro AE_measure_pmf_iff[THEN iffD2] ballI T.prob_space_distr) simp
+qed (rule distr_Stream_subprob)
+
+lemma AE_T':
+  assumes [measurable]: "Measurable.pred S P"
+  shows "(AE x in T' I. P x) \<longleftrightarrow> (\<forall>s\<in>I. AE x in T s. P (s ## x))"
+  unfolding T'_def by (simp add: AE_bind[OF _ distr_Stream_subprob] AE_measure_pmf_iff AE_distr_iff)
+
+lemma emeasure_T':
+  assumes [measurable]: "X \<in> sets S"
+  shows "emeasure (T' I) X = (\<integral>\<^sup>+s. emeasure (T s) {\<omega>\<in>space S. s ## \<omega> \<in> X} \<partial>I)"
+  unfolding T'_def
+  by (simp add: emeasure_bind[OF _ distr_Stream_subprob] emeasure_distr vimage_def Int_def conj_ac)
+
+lemma prob_T':
+  assumes [measurable]: "Measurable.pred S P"
+  shows "\<P>(x in T' I. P x) = (\<integral>s. \<P>(x in T s. P (s ## x)) \<partial>I)"
+proof -
+  interpret T': prob_space "T' I" by (rule prob_space_T')
+  show ?thesis
+    using emeasure_T'[of "{x\<in>space (T' I). P x}" I]
+    unfolding T'.emeasure_eq_measure T.emeasure_eq_measure sets_eq_imp_space_eq[OF sets_T']
+    apply simp
+    apply (subst (asm) nn_integral_eq_integral)
+    apply (auto intro!: measure_pmf.integrable_const_bound[where B=1] integral_cong arg_cong2[where f=measure]
+                simp: AE_measure_pmf measure_nonneg space_stream_space)
+    done
+qed
+
+lemma T_eq_T': "T s = T' (K s)"
+proof (rule measure_eqI)
+  fix X assume X: "X \<in> sets (T s)"
+  then have [measurable]: "X \<in> sets S"
+    by simp
+  have X_eq: "X = {x\<in>space (T s). x \<in> X}"
+    using sets.sets_into_space[OF X] by auto
+  show "emeasure (T s) X = emeasure (T' (K s)) X"
+    apply (subst X_eq)
+    apply (subst emeasure_Collect_T, simp)
+    apply (subst emeasure_T', simp)
+    apply simp
+    done
+qed (simp add: sets_T')
+
+end
+
+lemma (in MC_syntax) T_eq_bind: "T s = (measure_pmf (K s) \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t)))"
+  by (subst T_eq_T') (simp add: T'_def)
+
+declare (in MC_syntax) T_subprob[measurable]
+
+lemma (in MC_syntax) T_split:
+  "T s = (T s \<guillemotright>= (\<lambda>\<omega>. distr (T ((s ## \<omega>) !! n)) S (\<lambda>\<omega>'. stake n \<omega> @- \<omega>')))"
+proof (induction n arbitrary: s)
+  case 0 then show ?case
+    apply (simp add: distr_cong[OF refl sets_T[symmetric, of s] refl])
+    apply (subst bind_const')
+    apply unfold_locales
+    ..
+next
+  case (Suc n)
+  let ?K = "measure_pmf (K s)" and ?m = "\<lambda>n \<omega> \<omega>'. stake n \<omega> @- \<omega>'"
+  note sets_stream_space_cong[simp]
+
+  have "T s = (?K \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t)))"
+    by (rule T_eq_bind)
+  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. distr (T t \<guillemotright>= (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>))) S (op ## t)))"
+    unfolding Suc[symmetric] ..
+  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. T t \<guillemotright>= (\<lambda>\<omega>. distr (distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>)) S (op ## t))))"
+    by (simp add: distr_bind[where K=S, OF measurable_distr2[where M=S]] space_stream_space)
+  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. T t \<guillemotright>= (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m (Suc n) (t ## \<omega>)))))"
+    by (simp add: distr_distr space_stream_space comp_def)
+  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t) \<guillemotright>= (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>))))"
+    by (simp add: space_stream_space bind_distr[OF _ measurable_distr2[where M=S]] del: stake.simps)
+  also have "\<dots> = (T s \<guillemotright>= (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>)))"
+    unfolding T_eq_bind[of s]
+    apply (subst bind_assoc[OF measurable_distr2[where M=S] measurable_distr2[where M=S], OF _ T_subprob])
+    apply (simp_all add: space_stream_space del: stake.simps)
+    apply measurable
+    apply (rule sets_pair_measure_cong[OF _ refl])
+    apply auto
+    done
+  finally show ?case
+    by simp
+qed
+
+lemma (in MC_syntax) nn_integral_T_split:
+  assumes f[measurable]: "f \<in> borel_measurable S" "\<And>x. 0 \<le> f x"
+  shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s) = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (stake n \<omega> @- \<omega>') \<partial>T ((s ## \<omega>) !! n)) \<partial>T s)"
+  apply (subst T_split[of s n])
+  apply (subst nn_integral_bind[OF f measurable_distr2[where M=S]])
+  apply measurable
+  apply (rule sets_stream_space_cong)
+  apply simp
+  apply (subst nn_integral_distr)
+  apply (simp_all add: space_stream_space)
+  done
+
+lemma (in MC_syntax) emeasure_T_split:
+  assumes P[measurable]: "Measurable.pred S P"
+  shows "emeasure (T s) {\<omega>\<in>space (T s). P \<omega>} =
+      (\<integral>\<^sup>+\<omega>. emeasure (T ((s ## \<omega>) !! n)) {\<omega>'\<in>space (T ((s ## \<omega>) !! n)). P (stake n \<omega> @- \<omega>')} \<partial>T s)"
+  apply (subst T_split[of s n])
+  apply (subst emeasure_bind[OF _ measurable_distr2[where M=S]])
+  apply (simp_all add: )
+  apply (simp add: space_stream_space)
+  apply measurable
+  apply (rule sets_stream_space_cong)
+  apply simp
+  apply (subst emeasure_distr)
+  apply simp_all
+  apply (simp_all add: space_stream_space)
+  done
+
+lemma SIGMA_Collect_eq: "(SIGMA x:space M. {y\<in>space N. P x y}) = {x\<in>space (M \<Otimes>\<^sub>M N). P (fst x) (snd x)}"
+  by (auto simp: space_pair_measure)
+
+lemma (in MC_syntax) prob_T_split:
+  assumes P[measurable]: "Measurable.pred S P"
+  shows "\<P>(\<omega> in T s. P \<omega>) = (\<integral>\<omega>. \<P>(\<omega>' in T ((s ## \<omega>) !! n). P (stake n \<omega> @- \<omega>')) \<partial>T s)"
+  unfolding T.emeasure_eq_measure[symmetric] ereal.inject[symmetric] emeasure_T_split[OF P, of s n]
+  apply (auto intro!: nn_integral_eq_integral T.integrable_const_bound[where B=1]
+                      measure_measurable_subprob_algebra2[where N=S]
+              simp: measure_nonneg T.emeasure_eq_measure SIGMA_Collect_eq)
+  apply (rule measurable_compose[OF _ T_subprob])
+  apply simp
+  done
+
 locale MC_with_rewards = MC_syntax K for K :: "'s \<Rightarrow> 's pmf" +
   fixes \<iota> :: "'s \<Rightarrow> 's \<Rightarrow> ereal" and \<rho> :: "'s \<Rightarrow> ereal"
   assumes \<iota>_nonneg: "\<And>s t. 0 \<le> \<iota> s t" and \<rho>_nonneg: "\<And>s. 0 \<le> \<rho> s"
@@ -2200,9 +3424,6 @@ lemma hitting_time_simps[simp]:
   shows "shd \<omega> \<in> H \<Longrightarrow> hitting_time H \<omega> = 0"
     and "shd \<omega> \<notin> H \<Longrightarrow> hitting_time H \<omega> = eSuc (hitting_time H (stl \<omega>))"
   using hitting_time_Stream[of H "shd \<omega>" "stl \<omega>"] by auto
-
-lemma ereal_of_enat_eSuc[simp]: "ereal_of_enat (eSuc x) = 1 + ereal_of_enat x"
-  by (cases x) (auto simp: eSuc_enat)
 
 lemma nn_integral_reward_until_finite:
   assumes [simp]: "finite ((SIGMA x:- H. K x)\<^sup>* `` {s})" (is "finite (?R `` {s})")
@@ -2316,6 +3537,869 @@ proof -
   finally show ?thesis
     by simp
 qed
+
+(* hitting_time should be part of the Stream library, call if sfirst  *)
+lemma (in MC_syntax) hitting_time_eq_Inf: "hitting_time X \<omega> = Inf {enat i | i. \<omega> !! i \<in> X}"
+proof (rule antisym)
+  show "hitting_time X \<omega> \<le> \<Sqinter>{enat i |i. \<omega> !! i \<in> X}"
+  proof (safe intro!: Inf_greatest)
+    fix \<omega> i assume "\<omega> !! i \<in> X" then show "hitting_time X \<omega> \<le> enat i"
+    proof (induction i arbitrary: \<omega>)
+      case (Suc i) then show ?case
+       by (auto simp add: hitting_time.simps[of X \<omega>] HLD_iff eSuc_enat[symmetric])
+    qed (auto simp: HLD_iff)
+  qed
+  show "\<Sqinter>{enat i |i. \<omega> !! i \<in> X} \<le> hitting_time X \<omega>"
+  proof (induction arbitrary: \<omega> rule: hitting_time.fixp_induct)
+    case (3 f)
+    have "{enat i |i. \<omega> !! i \<in> X} = (if HLD X \<omega> then {0} else {}) \<union> eSuc ` {enat i |i. stl \<omega> !! i \<in> X}"
+      by (cases \<omega>) (force simp add: Stream_snth enat_0 eSuc_enat gr0_conv_Suc split: nat.splits)
+    with 3[of "stl \<omega>"] show ?case
+      by (auto simp: inf.absorb1 eSuc_Inf[symmetric] simp del: Inf_image_eq)
+  qed simp_all
+qed
+
+lemma snth_Stream: "(x ## s) !! Suc i = s !! i"
+  by simp
+
+lemma map_pmf_comp: "map_pmf f (map_pmf g M) = map_pmf (\<lambda>x. f (g x)) M"
+  using map_pmf_compose[of f g] by (simp add: comp_def)
+
+lemma set_map_pmf: "set_pmf (map_pmf f M) = f`set_pmf M"
+  using pmf_set_map[of f] by (auto simp: comp_def fun_eq_iff)
+
+abbreviation (in MC_syntax) accessible :: "('s \<times> 's) set" where
+  "accessible \<equiv> (SIGMA s:UNIV. K s)\<^sup>*"
+
+lemma (in MC_syntax) countable_accessible: "countable X \<Longrightarrow> countable (accessible `` X)"
+  apply (rule countable_Image)
+  apply (rule countable_reachable)
+  apply assumption
+  done
+
+lemma integrable_pmf: "integrable (count_space X) (pmf M)"
+proof -
+  have " (\<integral>\<^sup>+ x. pmf M x \<partial>count_space X) = (\<integral>\<^sup>+ x. pmf M x \<partial>count_space (M \<inter> X))"
+    by (auto simp add: nn_integral_count_space_indicator set_pmf_iff intro!: nn_integral_cong split: split_indicator)
+  then have "integrable (count_space X) (pmf M) = integrable (count_space (M \<inter> X)) (pmf M)"
+    by (simp add: integrable_iff_bounded pmf_nonneg)
+  then show ?thesis
+    by (simp add: pmf.rep_eq measure_pmf.integrable_measure countable_set_pmf disjoint_family_on_def)
+qed
+
+lemma integral_pmf: "(\<integral>x. pmf M x \<partial>count_space X) = measure M X"
+proof -
+  have "(\<integral>x. pmf M x \<partial>count_space X) = (\<integral>\<^sup>+x. pmf M x \<partial>count_space X)"
+    by (simp add: pmf_nonneg integrable_pmf nn_integral_eq_integral)
+  also have "\<dots> = (\<integral>\<^sup>+x. emeasure M {x} \<partial>count_space (X \<inter> M))"
+    by (auto intro!: nn_integral_cong_AE split: split_indicator
+             simp: pmf.rep_eq measure_pmf.emeasure_eq_measure nn_integral_count_space_indicator
+                   AE_count_space set_pmf_iff)
+  also have "\<dots> = emeasure M (X \<inter> M)"
+    by (rule emeasure_countable_singleton[symmetric]) (auto intro: countable_set_pmf)
+  also have "\<dots> = emeasure M X"
+    by (auto intro!: emeasure_eq_AE simp: AE_measure_pmf_iff)
+  finally show ?thesis
+    by (simp add: measure_pmf.emeasure_eq_measure)
+qed
+
+lemma (in -) ev_at_shift:
+  "ev_at (HLD X) i (stake (Suc i) \<omega> @- \<omega>' :: 's stream) \<longleftrightarrow> ev_at (HLD X) i \<omega>"
+  by (induction i arbitrary: \<omega>) (auto simp: HLD_iff)
+
+lemma atMost_Suc_insert_0: "{.. Suc n} = insert 0 (Suc ` {.. n})"
+  apply (auto simp: image_iff Ball_def)
+  apply (case_tac x)
+  apply auto
+  done
+
+lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
+  by (metis int_cases)
+
+lemma nat_abs_int_diff: "nat \<bar>int a - int b\<bar> = (if a \<le> b then b - a else a - b)"
+  by auto
+
+lemma nat_int_add: "nat (int a + int b) = a + b"
+  by auto
+
+lemma measurable_szip:
+  "(\<lambda>(\<omega>1, \<omega>2). szip \<omega>1 \<omega>2) \<in> measurable (stream_space M \<Otimes>\<^sub>M stream_space N) (stream_space (M \<Otimes>\<^sub>M N))"
+proof (rule measurable_stream_space2)
+  fix n
+  have "(\<lambda>x. (case x of (\<omega>1, \<omega>2) \<Rightarrow> szip \<omega>1 \<omega>2) !! n) = (\<lambda>(\<omega>1, \<omega>2). (\<omega>1 !! n, \<omega>2 !! n))"
+    by auto
+  also have "\<dots> \<in> measurable (stream_space M \<Otimes>\<^sub>M stream_space N) (M \<Otimes>\<^sub>M N)"
+    by measurable
+  finally show "(\<lambda>x. (case x of (\<omega>1, \<omega>2) \<Rightarrow> szip \<omega>1 \<omega>2) !! n) \<in> measurable (stream_space M \<Otimes>\<^sub>M stream_space N) (M \<Otimes>\<^sub>M N)"
+    .
+qed
+
+definition "pair_pmf A B = bind_pmf A (\<lambda>x. bind_pmf B (\<lambda>y. return_pmf (x, y)))"
+
+lemma restrict_space_measurable:
+  assumes X: "X \<noteq> {}" "X \<in> sets K"
+  assumes N: "N \<in> measurable M (subprob_algebra K)"
+  shows "(\<lambda>x. restrict_space (N x) X) \<in> measurable M (subprob_algebra (restrict_space K X))"
+proof (rule measurable_subprob_algebra)
+  fix a assume a: "a \<in> space M"
+  from N[THEN measurable_space, OF this]
+  have "subprob_space (N a)" and [simp]: "sets (N a) = sets K" "space (N a) = space K"
+    by (auto simp add: space_subprob_algebra dest: sets_eq_imp_space_eq)
+  then interpret subprob_space "N a"
+    by simp
+  show "subprob_space (restrict_space (N a) X)"
+  proof
+    show "space (restrict_space (N a) X) \<noteq> {}"
+      using X by (auto simp add: space_restrict_space)
+    show "emeasure (restrict_space (N a) X) (space (restrict_space (N a) X)) \<le> 1"
+      using X by (simp add: emeasure_restrict_space space_restrict_space subprob_measure_le_1)
+  qed
+  show "sets (restrict_space (N a) X) = sets (restrict_space K X)"
+    by (intro sets_restrict_space_cong) fact
+next
+  fix A assume A: "A \<in> sets (restrict_space K X)"
+  show "(\<lambda>a. emeasure (restrict_space (N a) X) A) \<in> borel_measurable M"
+  proof (subst measurable_cong)
+    fix a assume "a \<in> space M"
+    from N[THEN measurable_space, OF this]
+    have [simp]: "sets (N a) = sets K" "space (N a) = space K"
+      by (auto simp add: space_subprob_algebra dest: sets_eq_imp_space_eq)
+    show "emeasure (restrict_space (N a) X) A = emeasure (N a) (A \<inter> X)"
+      using X A by (subst emeasure_restrict_space) (auto simp add: sets_restrict_space ac_simps)
+  next
+    show "(\<lambda>w. emeasure (N w) (A \<inter> X)) \<in> borel_measurable M"
+      using A X
+      by (intro measurable_compose[OF N measurable_emeasure_subprob_algebra])
+         (auto simp: sets_restrict_space)
+  qed
+qed
+
+lemma restrict_space_bind:
+  assumes N: "N \<in> measurable M (subprob_algebra K)"
+  assumes "space M \<noteq> {}"
+  assumes X[simp]: "X \<in> sets K" "X \<noteq> {}"
+  shows "restrict_space (bind M N) X = bind M (\<lambda>x. restrict_space (N x) X)"
+proof (rule measure_eqI)
+  fix A assume "A \<in> sets (restrict_space (M \<guillemotright>= N) X)"
+  with X have "A \<in> sets K" "A \<subseteq> X"
+    by (auto simp: sets_restrict_space sets_bind[OF assms(1,2)])
+  then show "emeasure (restrict_space (M \<guillemotright>= N) X) A = emeasure (M \<guillemotright>= (\<lambda>x. restrict_space (N x) X)) A"
+    using assms
+    apply (subst emeasure_restrict_space)
+    apply (simp_all add: space_bind[OF assms(1,2)] sets_bind[OF assms(1,2)] emeasure_bind[OF assms(2,1)])
+    apply (subst emeasure_bind[OF _ restrict_space_measurable[OF _ _ N]])
+    apply (auto simp: sets_restrict_space emeasure_restrict_space space_subprob_algebra
+                intro!: nn_integral_cong dest!: measurable_space)
+    done
+qed (simp add: sets_restrict_space sets_bind[OF assms(1,2)] sets_bind[OF restrict_space_measurable[OF assms(4,3,1)] assms(2)])
+
+lemma return_restrict_space:
+  "\<Omega> \<in> sets M \<Longrightarrow> return (restrict_space M \<Omega>) x = restrict_space (return M x) \<Omega>"
+  by (auto intro!: measure_eqI simp: sets_restrict_space emeasure_restrict_space)
+
+lemma return_cong: "sets A = sets B \<Longrightarrow> return A x = return B x"
+  by (auto simp add: return_def dest: sets_eq_imp_space_eq)
+
+context MC_syntax
+begin
+
+definition "rT x = restrict_space (T x) {\<omega>. enabled x \<omega>}"
+
+lemma space_rT: "\<omega> \<in> space (rT x) \<longleftrightarrow> enabled x \<omega>"
+  by (auto simp: rT_def space_restrict_space space_stream_space)
+
+lemma Collect_enabled_S[measurable]: "Collect (enabled x) \<in> sets S"
+proof -
+  have "Collect (enabled x) = {\<omega>\<in>space S. enabled x \<omega>}"
+    by (auto simp: space_stream_space)
+  then show ?thesis
+    by simp
+qed
+   
+lemma space_rT_in_S: "space (rT x) \<in> sets S"
+  by (simp add: rT_def space_restrict_space)
+
+lemma sets_rT: "A \<in> sets (rT x) \<longleftrightarrow> A \<in> sets S \<and> A \<subseteq> {\<omega>. enabled x \<omega>}"
+  by (auto simp: rT_def sets_restrict_space space_stream_space)
+
+lemma prob_space_rT: "prob_space (rT x)"
+  unfolding rT_def by (auto intro!: prob_space_restrict_space T.emeasure_eq_1_AE AE_T_enabled)
+
+primcorec force_enabled where
+  "force_enabled x \<omega> =
+    (let y = if shd \<omega> \<in> K x then shd \<omega> else (SOME y. y \<in> K x) in y ## force_enabled y (stl \<omega>))"
+
+lemma force_enabled_in_set_pmf[simp, intro]: "shd (force_enabled x \<omega>) \<in> K x"
+  by (auto simp: some_in_iff set_pmf_not_empty)
+
+lemma enabled_force_enabled: "enabled x (force_enabled x \<omega>)"
+  by (coinduction arbitrary: x \<omega>) (auto simp: some_in_iff set_pmf_not_empty)
+  
+lemma force_enabled: "enabled x \<omega> \<Longrightarrow> force_enabled x \<omega> = \<omega>"
+  by (coinduction arbitrary: x \<omega>) (auto elim: enabled.cases)
+
+lemma Ex_enabled: "\<exists>\<omega>. enabled x \<omega>"
+  by (rule exI[of _ "force_enabled x undefined"] enabled_force_enabled)+
+
+lemma measurable_force_enabled: "force_enabled x \<in> measurable S S"
+proof (rule measurable_stream_space2)
+  fix n show "(\<lambda>\<omega>. force_enabled x \<omega> !! n) \<in> measurable S (count_space UNIV)"
+  proof (induction n arbitrary: x)
+    case (Suc n) show ?case
+      apply simp
+      apply (rule measurable_compose_countable'[OF measurable_compose[OF measurable_stl Suc], where I="set_pmf (K x)"])
+      apply (rule measurable_compose[OF measurable_shd])
+      apply (auto simp: countable_set_pmf some_in_iff set_pmf_not_empty)
+      done
+  qed (auto intro!: measurable_compose[OF measurable_shd])
+qed
+
+lemma measurable_force_enabled2[measurable]: "force_enabled x \<in> measurable S (rT x)"
+  unfolding rT_def 
+  by (rule measurable_restrict_space2)
+     (auto intro: measurable_force_enabled enabled_force_enabled)
+
+lemma space_rT_not_empty[simp]: "space (rT x) \<noteq> {}"
+  by (simp add: rT_def space_restrict_space Ex_enabled)
+
+lemma T_eq_bind': "T x = do { y <- measure_pmf (K x) ; \<omega> <- T y ; return S (y ## \<omega>) }"
+  apply (subst T_eq_bind)
+  apply (subst bind_return_distr[symmetric])
+  apply (simp_all add: space_stream_space comp_def)
+  done
+
+lemma rT_eq_bind: "rT x = do { y <- measure_pmf (K x) ; \<omega> <- rT y ; return (rT x) (y ## \<omega>) }"
+  unfolding rT_def
+  apply (subst T_eq_bind)
+  apply (subst restrict_space_bind[where K=S])
+  apply (rule measurable_distr2[where M=S])
+  apply measurable
+  apply (intro sets_pair_measure_cong)
+  apply (auto simp del: measurable_pmf_measure1
+              simp add: Ex_enabled return_restrict_space intro!: bind_cong )
+  apply (subst restrict_space_bind[symmetric, where K=S])
+  apply (auto simp add: Ex_enabled space_restrict_space return_cong[OF sets_T]
+              intro!:  measurable_restrict_space1 measurable_compose[OF _ return_measurable]
+              arg_cong2[where f=restrict_space])
+  apply (subst bind_return_distr[unfolded comp_def])
+  apply (simp add: space_restrict_space Ex_enabled)
+  apply (simp add: measurable_restrict_space1)
+  apply (rule measure_eqI)
+  apply simp
+  apply (subst (1 2) emeasure_distr)
+  apply (auto simp: measurable_restrict_space1)
+  apply (subst emeasure_restrict_space)
+  apply (auto simp: space_restrict_space intro!: emeasure_eq_AE)
+  using AE_T_enabled
+  apply eventually_elim
+  apply (simp add: space_stream_space)
+  apply (rule sets_Int_pred)
+  apply auto
+  apply (simp add: space_stream_space)
+  done
+
+lemma snth_rT: "(\<lambda>x. x !! n) \<in> measurable (rT x) (count_space (accessible `` {x}))"
+proof -
+  have "\<And>\<omega>. enabled x \<omega> \<Longrightarrow> (x, \<omega> !! n) \<in> accessible"
+  proof (induction n arbitrary: x)
+    case (Suc n) from Suc.prems Suc.IH[of "shd \<omega>" "stl \<omega>"] show ?case
+      by (auto simp: enabled.simps[of x \<omega>] intro: rtrancl_trans)
+  qed (auto elim: enabled.cases)
+  moreover
+  { fix X :: "'s set"
+    have [measurable]: "X \<in> count_space UNIV" by simp
+    have *: "(\<lambda>x. x !! n) -` X \<inter> space (rT x) =  {\<omega>\<in>space S. \<omega> !! n \<in> X \<and> enabled x \<omega>}"
+      by (auto simp: space_stream_space space_rT)
+    have "(\<lambda>x. x !! n) -` X \<inter> space (rT x) \<in> sets S"
+      unfolding * by measurable }
+  ultimately show ?thesis
+    by (auto simp: measurable_def space_rT sets_rT)
+qed
+
+lemma T_bisim:
+  assumes "\<And>x. prob_space (M x)"
+  assumes sets_M [simp]: "\<And>x. sets (M x) = sets S"
+  assumes M_eq: "\<And>x. M x = (measure_pmf (K x) \<guillemotright>= (\<lambda>s. distr (M s) S (op ## s)))"
+  shows "T = M"
+proof (intro ext stream_space_eq_sstart)
+  interpret M: prob_space "M x" for x by fact
+  have *:
+    "\<And>x. (\<lambda>s. distr (M s) (stream_space (count_space UNIV)) (op ## s)) \<in> measurable (measure_pmf (K x)) (subprob_algebra S)"
+    apply (intro measurable_distr2[where M=S])
+    apply (auto simp: measurable_split_conv space_subprob_algebra
+                intro!: measurable_Stream measurable_compose[OF measurable_fst])
+    apply unfold_locales
+    done
+
+  fix x
+  show "prob_space (T x)" "prob_space (M x)" by unfold_locales
+  show "sets (M x) = sets S" "sets (T x) = sets S" by auto
+  def \<Omega> \<equiv> "accessible `` {x}"
+
+  have [simp]: "\<And>x. space (M x) = space S"
+    using sets_M by (rule sets_eq_imp_space_eq)
+
+  { fix xs have "sstart \<Omega> xs \<in> sets S"
+    proof (induction xs)
+      case (Cons x xs)
+      note this[measurable]
+      have "sstart \<Omega> (x # xs) = {\<omega>\<in>space S. \<omega> \<in> sstart \<Omega> (x # xs)}" by (auto simp: space_stream_space)
+      also have "\<dots> \<in> sets S"
+        unfolding in_sstart by measurable
+      finally show ?case .
+    qed (auto intro!: streams_sets) }
+  note sstart_in_S = this [measurable] 
+
+  show "countable \<Omega>"
+    by (auto intro: countable_accessible simp: \<Omega>_def)
+  have x[simp]: "x \<in> \<Omega>"
+    by (auto simp: \<Omega>_def)
+
+  note streams_sets[measurable]
+
+  { fix n y assume "y \<in> \<Omega>"
+    then have "(x, y) \<in> accessible" by (simp add: \<Omega>_def)
+    then have "AE \<omega> in T y. \<omega> \<in> streams \<Omega>"
+    proof induction
+      case (step y z) then show ?case
+        by (subst (asm) AE_T_iff) (auto simp: streams_Stream)
+    qed (insert AE_T_reachable, simp add: alw_HLD_iff_streams \<Omega>_def) }
+  note AE_T = this[simp]
+  then show "AE xa in T x. xa \<in> streams \<Omega>"
+    by simp
+
+  { fix n x assume "x \<in> \<Omega>" then have "AE \<omega> in M x. \<omega> !! n \<in> \<Omega>"
+    proof (induction n arbitrary: x)
+      case 0 then show ?case
+        apply (subst M_eq)
+        apply (subst AE_bind[OF _ *])
+        apply (force intro!: measurable_compose[OF measurable_shd] AE_distr_iff[THEN iffD2] predE
+                    intro: rtrancl_into_rtrancl
+                    simp: AE_measure_pmf_iff AE_distr_iff \<Omega>_def)+
+        done
+    next
+      case (Suc n) then show ?case
+        apply (subst M_eq)
+        apply (subst AE_bind[OF _ *])
+        apply (auto intro!: measurable_compose[OF measurable_snth]
+                            measurable_compose[OF measurable_stl] AE_distr_iff[THEN iffD2] predE
+                    intro: rtrancl_into_rtrancl
+                    simp: AE_measure_pmf_iff AE_distr_iff \<Omega>_def)+
+        done
+    qed }
+  then have AE_M: "\<And>x. x \<in> \<Omega> \<Longrightarrow> AE xa in M x. xa \<in> streams \<Omega>"
+    by (auto simp: streams_iff_snth AE_all_countable)
+  then show "AE xa in M x. xa \<in> streams \<Omega>" by simp
+
+  have \<Omega>_trans: "\<And>x y. x \<in> \<Omega> \<Longrightarrow> y \<in> K x \<Longrightarrow> y \<in> \<Omega>"
+    by (auto simp: \<Omega>_def intro: rtrancl_trans)
+
+  fix xs
+  from `x \<in> \<Omega>` show "emeasure (T x) (sstart \<Omega> xs) = emeasure (M x) (sstart \<Omega> xs)"
+  proof (induction xs arbitrary: x)
+    case Nil with AE_M[of x] AE_T[of x] show ?case
+      by (cases "streams (accessible `` {x}) \<in> sets S")
+         (simp_all add: T.emeasure_eq_1_AE M.emeasure_eq_1_AE emeasure_notin_sets)
+  next
+    case (Cons a xs)
+    then have "emeasure (T x) {\<omega>\<in>space (T x). \<omega> \<in> sstart \<Omega> (a # xs)} =
+      (\<integral>\<^sup>+y. emeasure (M y) (sstart \<Omega> xs) * indicator {a} y \<partial>K x)"
+      by (subst emeasure_Collect_T)
+         (auto intro!: nn_integral_cong_AE
+               simp: space_stream_space AE_measure_pmf_iff \<Omega>_trans split: split_indicator)
+    also have "\<dots> = emeasure (M x) {\<omega>\<in>space (M x). \<omega> \<in> sstart \<Omega> (a # xs)}"
+      apply (subst M_eq[of x])
+      apply (auto intro!: nn_integral_cong arg_cong2[where f=emeasure]
+                  simp add: emeasure_bind[OF _ *] emeasure_distr split: split_indicator)
+      apply (auto simp: space_stream_space)
+      done
+    finally show ?case
+      by (simp add: space_stream_space del: in_sstart)
+  qed
+qed
+
+lemma T_subprob'[measurable]: "T \<in> measurable (count_space UNIV) (subprob_algebra S)"
+  by (auto intro!: space_bind simp: space_subprob_algebra) unfold_locales
+
+lemma T_subprob''[simp]: "T a \<in> space (subprob_algebra S)"
+  using measurable_space[OF T_subprob', of a] by simp
+
+
+end
+
+lemma (in pair_prob_space) pair_measure_eq_bind:
+  "(M1 \<Otimes>\<^sub>M M2) = (M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. return (M1 \<Otimes>\<^sub>M M2) (x, y))))"
+proof (rule measure_eqI)
+  have ps_M2: "prob_space M2" by unfold_locales
+  note return_measurable[measurable]
+  have 1: "(\<lambda>x. M2 \<guillemotright>= (\<lambda>y. return (M1 \<Otimes>\<^sub>M M2) (x, y))) \<in> measurable M1 (subprob_algebra (M1 \<Otimes>\<^sub>M M2))"
+    by (auto simp add: space_subprob_algebra ps_M2
+             intro!: measurable_bind[where N=M2] measurable_const prob_space_imp_subprob_space)
+  show "sets (M1 \<Otimes>\<^sub>M M2) = sets (M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. return (M1 \<Otimes>\<^sub>M M2) (x, y))))"
+    by (simp add: M1.not_empty sets_bind[OF 1])
+  fix A assume [measurable]: "A \<in> sets (M1 \<Otimes>\<^sub>M M2)"
+  show "emeasure (M1 \<Otimes>\<^sub>M M2) A = emeasure (M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. return (M1 \<Otimes>\<^sub>M M2) (x, y)))) A"
+    by (auto simp: M2.emeasure_pair_measure emeasure_bind[OF _ 1] M1.not_empty
+                          emeasure_bind[where N="M1 \<Otimes>\<^sub>M M2"] M2.not_empty
+             intro!: nn_integral_cong)
+qed
+
+declare return_measurable[measurable]
+
+lemma (in pair_prob_space) bind_rotate:
+  assumes C[measurable]: "(\<lambda>(x, y). C x y) \<in> measurable (M1 \<Otimes>\<^sub>M M2) (subprob_algebra N)"
+  shows "(M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. C x y))) = (M2 \<guillemotright>= (\<lambda>y. M1 \<guillemotright>= (\<lambda>x. C x y)))"
+proof - 
+  interpret swap: pair_prob_space M2 M1 by unfold_locales
+  note measurable_bind[where N="M2", measurable]
+  note measurable_bind[where N="M1", measurable]
+  have [simp]: "M1 \<in> space (subprob_algebra M1)" "M2 \<in> space (subprob_algebra M2)"
+    by (auto simp: space_subprob_algebra) unfold_locales
+  have "(M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. C x y))) = 
+    (M1 \<guillemotright>= (\<lambda>x. M2 \<guillemotright>= (\<lambda>y. return (M1 \<Otimes>\<^sub>M M2) (x, y)))) \<guillemotright>= (\<lambda>(x, y). C x y)"
+    by (auto intro!: bind_cong simp: bind_return[where N=N] space_pair_measure bind_assoc[where N="M1 \<Otimes>\<^sub>M M2" and R=N])
+  also have "\<dots> = (distr (M2 \<Otimes>\<^sub>M M1) (M1 \<Otimes>\<^sub>M M2) (\<lambda>(x, y). (y, x))) \<guillemotright>= (\<lambda>(x, y). C x y)"
+    unfolding pair_measure_eq_bind[symmetric] distr_pair_swap[symmetric] ..
+  also have "\<dots> = (M2 \<guillemotright>= (\<lambda>x. M1 \<guillemotright>= (\<lambda>y. return (M2 \<Otimes>\<^sub>M M1) (x, y)))) \<guillemotright>= (\<lambda>(y, x). C x y)"
+    unfolding swap.pair_measure_eq_bind[symmetric]
+    by (auto simp add: space_pair_measure M1.not_empty M2.not_empty bind_distr[OF _ C] intro!: bind_cong)
+  also have "\<dots> = (M2 \<guillemotright>= (\<lambda>y. M1 \<guillemotright>= (\<lambda>x. C x y)))"
+    by (auto intro!: bind_cong simp: bind_return[where N=N] space_pair_measure bind_assoc[where N="M2 \<Otimes>\<^sub>M M1" and R=N])
+  finally show ?thesis .
+qed
+
+lemma subprob_algebra_cong: "sets M = sets N \<Longrightarrow> subprob_algebra M = subprob_algebra N"
+  unfolding subprob_algebra_def by simp
+
+lemma set_pmf_return: "set_pmf (return_pmf x) = {x}"
+  by transfer (auto simp add: measure_return split: split_indicator)
+
+lemma pmf_return: "pmf (return_pmf x) y = indicator {y} x"
+  by transfer (simp add: measure_return)
+
+lemma pmf_pair: "pmf (pair_pmf M N) (a, b) = pmf M a * pmf N b"
+  unfolding pair_pmf_def pmf_bind pmf_return
+  apply (subst integral_measure_pmf[where A="{b}"])
+  apply (auto simp: indicator_eq_0_iff)
+  apply (subst integral_measure_pmf[where A="{a}"])
+  apply (auto simp: indicator_eq_0_iff setsum_nonneg_eq_0_iff pmf_nonneg)
+  done
+
+lemma bind_pair_pmf:
+  assumes M[measurable]: "M \<in> measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) (subprob_algebra N)"
+  shows "measure_pmf (pair_pmf A B) \<guillemotright>= M = (measure_pmf A \<guillemotright>= (\<lambda>x. measure_pmf B \<guillemotright>= (\<lambda>y. M (x, y))))"
+    (is "?L = ?R")
+proof (rule measure_eqI)
+  have M'[measurable]: "M \<in> measurable (pair_pmf A B) (subprob_algebra N)"
+    using M[THEN measurable_space] by (simp_all add: space_pair_measure)
+
+  have sets_eq_N: "sets ?L = N"
+    by (simp add: sets_bind[OF M'])
+  show "sets ?L = sets ?R"
+    unfolding sets_eq_N
+    apply (subst sets_bind[where N=N])
+    apply (rule measurable_bind)
+    apply (rule measurable_compose[OF _ measurable_measure_pmf])
+    apply measurable
+    apply (auto intro!: sets_pair_measure_cong sets_measure_pmf_count_space)
+    done
+  fix X assume "X \<in> sets ?L"
+  then have X[measurable]: "X \<in> sets N"
+    unfolding sets_eq_N .
+  then show "emeasure ?L X = emeasure ?R X"
+    apply (simp add: emeasure_bind[OF _ M' X])
+    unfolding pair_pmf_def measure_pmf_bind[of A]
+    apply (subst nn_integral_bind[OF _ emeasure_nonneg])
+    apply (rule measurable_compose[OF M' measurable_emeasure_subprob_algebra, OF X])
+    apply (subst measurable_cong_sets[OF sets_measure_pmf_count_space refl])
+    apply (subst subprob_algebra_cong[OF sets_measure_pmf_count_space])
+    apply measurable
+    unfolding measure_pmf_bind
+    apply (subst nn_integral_bind[OF _ emeasure_nonneg])
+    apply (rule measurable_compose[OF M' measurable_emeasure_subprob_algebra, OF X])
+    apply (subst measurable_cong_sets[OF sets_measure_pmf_count_space refl])
+    apply (subst subprob_algebra_cong[OF sets_measure_pmf_count_space])
+    apply measurable
+    apply (simp add: nn_integral_measure_pmf_finite set_pmf_return emeasure_nonneg pmf_return one_ereal_def[symmetric])
+    apply (subst emeasure_bind[OF _ _ X])
+    apply simp
+    apply (rule measurable_bind[where N="count_space UNIV"])
+    apply (rule measurable_compose[OF _ measurable_measure_pmf])
+    apply measurable
+    apply (rule sets_pair_measure_cong sets_measure_pmf_count_space refl)+
+    apply (subst measurable_cong_sets[OF sets_pair_measure_cong[OF sets_measure_pmf_count_space refl] refl])
+    apply simp
+    apply (subst emeasure_bind[OF _ _ X])
+    apply simp
+    apply (rule measurable_compose[OF _ M])
+    apply (auto simp: space_pair_measure)
+    done
+qed
+
+lemma (in subprob_space) bind_in_space:
+  "A \<in> measurable M (subprob_algebra N) \<Longrightarrow> (M \<guillemotright>= A) \<in> space (subprob_algebra N)"
+  by (auto simp add: space_subprob_algebra subprob_not_empty intro!: subprob_space_bind)
+     unfold_locales
+
+lemma set_pmf_bind: "set_pmf (bind_pmf M N) = (\<Union>M\<in>set_pmf M. set_pmf (N M))"
+  apply (simp add: set_eq_iff set_pmf_iff pmf_bind)
+  apply (subst integral_nonneg_eq_0_iff_AE)
+  apply (auto simp: pmf_nonneg pmf_le_1 AE_measure_pmf_iff
+              intro!: measure_pmf.integrable_const_bound[where B=1])
+  done
+
+lemma set_pmf_pair_pmf: "set_pmf (pair_pmf A B) = set_pmf A \<times> set_pmf B"
+  unfolding pair_pmf_def set_pmf_bind set_pmf_return by auto
+
+lemma bind_pmf_cong:
+  assumes "\<And>x. A x \<in> space (subprob_algebra N)" "\<And>x. B x \<in> space (subprob_algebra N)"
+  assumes "\<And>i. i \<in> set_pmf x \<Longrightarrow> A i = B i"
+  shows "bind (measure_pmf x) A = bind (measure_pmf x) B"
+proof (rule measure_eqI)
+  show "sets (measure_pmf x \<guillemotright>= A) = sets (measure_pmf x \<guillemotright>= B)"
+    using assms by (subst (1 2) sets_bind) auto
+next
+  fix X assume "X \<in> sets (measure_pmf x \<guillemotright>= A)"
+  then have X: "X \<in> sets N"
+    using assms by (subst (asm) sets_bind) auto
+  show "emeasure (measure_pmf x \<guillemotright>= A) X = emeasure (measure_pmf x \<guillemotright>= B) X"
+    using assms
+    by (subst (1 2) emeasure_bind[where N=N, OF _ _ X])
+       (auto intro!: nn_integral_cong_AE simp: AE_measure_pmf_iff)
+qed
+
+interpretation measure_pmf: subprob_space "measure_pmf M" for M
+  by (rule prob_space_imp_subprob_space) unfold_locales
+
+locale Pair_MC =
+  K1!: MC_syntax K1 + K2!: MC_syntax K2 for K1 K2
+begin
+
+definition "Kp \<equiv> \<lambda>(a, b). pair_pmf (K1 a) (K2 b)"
+
+sublocale MC_syntax Kp .
+
+definition 
+  "szip\<^sub>E a b \<equiv> \<lambda>(\<omega>1, \<omega>2). szip (K1.force_enabled a \<omega>1) (K2.force_enabled b \<omega>2)"
+
+lemma szip_rT[measurable]: "(\<lambda>(\<omega>1, \<omega>2). szip \<omega>1 \<omega>2) \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) S"
+proof (rule measurable_stream_space2)
+  fix n
+  have "(\<lambda>x. (case x of (\<omega>1, \<omega>2) \<Rightarrow> szip \<omega>1 \<omega>2) !! n) = (\<lambda>\<omega>. (fst \<omega> !! n, snd \<omega> !! n))"
+    by auto
+  also have "\<dots> \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) (count_space UNIV)"
+    apply (rule measurable_compose_countable'[OF _ measurable_compose[OF measurable_fst K1.snth_rT, of n]])
+    apply (rule measurable_compose_countable'[OF _ measurable_compose[OF measurable_snd K2.snth_rT, of n]])
+    apply (auto intro!: K1.countable_accessible K2.countable_accessible)
+    done
+  finally show "(\<lambda>x. (case x of (\<omega>1, \<omega>2) \<Rightarrow> szip \<omega>1 \<omega>2) !! n) \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) (count_space UNIV)"
+    .
+qed
+
+lemma measurable_szipE[measurable]: "szip\<^sub>E a b \<in> measurable (K1.S \<Otimes>\<^sub>M K2.S) S"
+  unfolding szip\<^sub>E_def by measurable
+
+lemma T_eq_prod: "T = (\<lambda>(x1, x2). do { \<omega>1 \<leftarrow> K1.T x1 ; \<omega>2 \<leftarrow> K2.T x2 ; return S (szip\<^sub>E x1 x2 (\<omega>1, \<omega>2)) })"
+  (is "_ = ?B")
+proof (rule T_bisim)
+  have T1x: "\<And>x. subprob_space (K1.T x)"
+    by (rule prob_space_imp_subprob_space) unfold_locales
+
+  interpret T12: pair_prob_space "K1.T x" "K2.T y" for x y
+    by unfold_locales
+  interpret T1K2: pair_prob_space "K1.T x" "K2 y" for x y
+    by unfold_locales
+
+  let ?P = "\<lambda>x1 x2. K1.T x1 \<Otimes>\<^sub>M K2.T x2"
+
+  fix x show "prob_space (?B x)"
+    by (auto simp: space_stream_space split: prod.splits
+                intro!: prob_space.prob_space_bind prob_space_return
+                        measurable_bind[where R=S and N=S] measurable_compose[OF _ return_measurable] AE_I2)
+       unfold_locales
+
+  show "sets (?B x) = sets S"
+    by (simp split: prod.splits add: measurable_bind[where N=S] sets_bind[where N=S] space_stream_space)
+  
+  note measurable_bind[where N=S and R=S, measurable]
+  obtain a b where x_eq: "x = (a, b)"
+    by (cases x) auto
+  show "?B x = (measure_pmf (Kp x) \<guillemotright>= (\<lambda>s. distr (?B s) S (op ## s)))"
+    unfolding x_eq
+    apply (simp add: split_beta' comp_def
+       bind_return_distr[symmetric] space_bind[where N=S] space_stream_space measurable_bind[where N=S])
+    apply (subst bind_assoc[where R=S])
+    apply (rule measurable_bind[where N=S])
+    apply measurable
+    apply (subst bind_assoc[where R=S and N=S])
+    apply measurable
+    apply (simp_all add: space_stream_space bind_return[where N=S])
+    apply (subst K1.T_eq_bind')
+    apply (subst bind_assoc[where R=S])
+    apply measurable
+    apply (rule sets_pair_measure_cong)
+    apply (simp_all add: bind_assoc[where R=S and N=S] bind_return[where N=S] space_stream_space)
+    apply (subst K2.T_eq_bind')
+    apply (subst bind_assoc[where R=S])
+    apply measurable
+    apply (rule sets_pair_measure_cong)
+    apply (simp_all add: space_stream_space bind_assoc[where R=S and N=S] bind_return[where N=S])
+    apply (subst T1K2.bind_rotate[where N=S])
+    apply (subst measurable_cong_sets[OF sets_pair_measure_cong, OF K1.sets_T sets_measure_pmf_count_space refl])
+    apply measurable back
+    apply (simp add: Kp_def)
+    apply (subst bind_pair_pmf[of "split M" for M, unfolded split, symmetric])
+    unfolding measurable_split_conv
+    apply (rule measurable_bind) defer
+    apply (rule measurable_bind) defer
+    apply (rule measurable_compose[OF _ return_measurable])
+    apply measurable
+    defer
+    apply measurable
+    apply (rule sets_pair_measure_cong[OF _ refl])
+    apply (simp_all add: split_beta')
+    apply (intro bind_pmf_cong subprob_space.bind_in_space[OF T1x]
+      measurable_bind)
+    apply (rule measurable_compose[OF _ K2.T_subprob])
+    apply simp
+    apply (rule measurable_compose[OF _ return_measurable])
+    apply simp
+    apply (rule measurable_compose[OF _ K2.T_subprob])
+    apply simp
+    apply (rule measurable_compose[OF _ return_measurable])
+    apply simp
+    apply (intro bind_cong ballI arg_cong2[where f=return] refl)
+    apply (auto simp add: szip\<^sub>E_def stream_eq_Stream_iff set_pmf_pair_pmf)
+    done
+qed
+
+lemma nn_integral_pT: 
+  fixes f assumes "f \<in> borel_measurable S" and "\<And>x. 0 \<le> f x"
+  shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T (x, y)) = (\<integral>\<^sup>+\<omega>1. \<integral>\<^sup>+\<omega>2. f (szip\<^sub>E x y (\<omega>1, \<omega>2)) \<partial>K2.T y \<partial>K1.T x)"
+  apply (subst T_eq_prod)
+  apply simp
+  apply (subst nn_integral_bind[OF assms])
+  apply (rule measurable_bind)
+  apply (rule measurable_compose[OF _ K2.T_subprob'])
+  apply measurable
+  apply (subst nn_integral_bind[OF assms])
+  apply (rule measurable_compose[OF _ return_measurable])
+  apply measurable
+  apply (simp_all add: space_stream_space)
+  apply (subst nn_integral_return)
+  using assms
+  apply (auto simp: space_stream_space)
+  done
+
+lemma prod_eq_prob_T:
+  assumes [measurable]: "Measurable.pred K1.S P1" "Measurable.pred K2.S P2"
+  shows "\<P>(\<omega> in K1.T x1. P1 \<omega>) * \<P>(\<omega> in K2.T x2. P2 \<omega>) =
+    \<P>(\<omega> in T (x1, x2). P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>))"
+proof -
+  have "\<P>(\<omega> in T (x1, x2). P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>)) = 
+    (\<integral>\<omega>1. \<integral>\<omega>2. indicator {\<omega>\<in>space K1.S. P1 \<omega>} \<omega>1 * indicator {\<omega>\<in>space K2.S. P2 \<omega>} \<omega>2 \<partial>K2.T x2 \<partial>K1.T x1)"
+    apply (subst T_eq_prod)
+    unfolding split
+    apply (subst K1.T.measure_bind[where N=S])
+    apply (intro measurable_bind[where N=S] measurable_compose[OF _ return_measurable] )
+    apply measurable
+    apply simp
+    apply (subst K2.T.measure_bind[where N=S])
+    apply (intro measurable_bind[where N=S] measurable_compose[OF _ return_measurable] )
+    apply measurable
+    apply (simp add: space_stream_space)
+    apply measurable
+    apply simp
+    apply (subst measure_return)
+    apply simp
+    apply (intro integral_cong_AE)
+    apply measurable
+    using K1.AE_T_enabled
+    apply eventually_elim
+    apply (intro integral_cong_AE measurable_compose[OF _ borel_measurable_indicator]
+      measurable_compose[OF _ measurable_szipE])
+    apply (rule measurable_compose[OF _ measurable_szipE])
+    apply measurable
+    apply simp_all
+    apply (simp add: space_stream_space)
+    using K2.AE_T_enabled
+    apply eventually_elim
+    apply (auto simp: space_stream_space szip\<^sub>E_def K1.force_enabled K2.force_enabled 
+                      stream.map_ident smap_szip_snd[where g="\<lambda>x. x"] smap_szip_fst[where f="\<lambda>x. x"]
+                split: split_indicator)
+    done
+  also have "\<dots> = \<P>(\<omega> in K1.T x1. P1 \<omega>) * \<P>(\<omega> in K2.T x2. P2 \<omega>)"
+    by simp
+  finally show ?thesis ..
+qed
+
+end
+
+lemma (in prob_space) nn_integral_le_const:
+  "(AE x in M. f x \<le> c) \<Longrightarrow> 0 \<le> c \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>M) \<le> c"
+  using nn_integral_mono_AE[of f "\<lambda>x. c" M] emeasure_space_1 by simp
+
+lemma nn_integral_less:
+  assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  assumes f: "AE x in M. 0 \<le> f x" "(\<integral>\<^sup>+x. f x \<partial>M) \<noteq> \<infinity>"
+  assumes ord: "AE x in M. f x \<le> g x" "\<not> (AE x in M. g x \<le> f x)"
+  shows "(\<integral>\<^sup>+x. f x \<partial>M) < (\<integral>\<^sup>+x. g x \<partial>M)"
+proof -
+  have "0 < (\<integral>\<^sup>+x. g x - f x \<partial>M)"
+  proof (intro order_le_neq_trans nn_integral_nonneg notI)
+    assume "0 = (\<integral>\<^sup>+x. g x - f x \<partial>M)"
+    then have "AE x in M. g x - f x \<le> 0"
+      using nn_integral_0_iff_AE[of "\<lambda>x. g x - f x" M] by simp
+    with f(1) ord(1) have "AE x in M. g x \<le> f x"
+      by eventually_elim (auto simp: ereal_minus_le_iff)
+    with ord show False
+      by simp
+  qed
+  also have "\<dots> = (\<integral>\<^sup>+x. g x \<partial>M) - (\<integral>\<^sup>+x. f x \<partial>M)"
+    by (subst nn_integral_diff) (auto simp: f ord)
+  finally show ?thesis
+    by (simp add: ereal_less_minus_iff f nn_integral_nonneg)
+qed
+
+context order
+begin
+
+definition
+  "maximal f S = {x\<in>S. \<forall>y\<in>S. f y \<le> f x}"
+
+lemma maximalI: "x \<in> S \<Longrightarrow> (\<And>y. y \<in> S \<Longrightarrow> f y \<le> f x) \<Longrightarrow> x \<in> maximal f S"
+  by (simp add: maximal_def)
+
+lemma maximalI_trans: "x \<in> maximal f S \<Longrightarrow> f x \<le> f y \<Longrightarrow> y \<in> S \<Longrightarrow> y \<in> maximal f S"
+  unfolding maximal_def by (blast intro: antisym order_trans)
+
+lemma maximalD1: "x \<in> maximal f S \<Longrightarrow> x \<in> S"
+  by (simp add: maximal_def)
+
+lemma maximalD2: "x \<in> maximal f S \<Longrightarrow> y \<in> S \<Longrightarrow> f y \<le> f x"
+  by (simp add: maximal_def)
+
+lemma maximal_inject: "x \<in> maximal f S \<Longrightarrow> y \<in> maximal f S \<Longrightarrow> f x = f y"
+  unfolding maximal_def by (blast intro: antisym)
+
+lemma maximal_empty[simp]: "maximal f {} = {}"
+  by (simp add: maximal_def)
+
+lemma maximal_singleton[simp]: "maximal f {x} = {x}"
+  by (auto simp add: maximal_def)
+
+lemma maximal_in_S: "maximal f S \<subseteq> S"
+  using assms by (auto simp: maximal_def)
+
+end
+
+context linorder
+begin
+
+lemma maximal_ne:
+  assumes "finite S" "S \<noteq> {}"
+  shows "maximal f S \<noteq> {}"
+  using assms
+proof (induct rule: finite_ne_induct)
+  case (insert s S)
+  show ?case
+  proof cases
+    assume "\<forall>x\<in>S. f x \<le> f s"
+    with insert have "s \<in> maximal f (insert s S)"
+      by (auto intro!: maximalI)
+    then show ?thesis
+      by auto
+  next
+    assume "\<not> (\<forall>x\<in>S. f x \<le> f s)"
+    then have "maximal f (insert s S) = maximal f S"
+      by (auto simp: maximal_def)
+    with insert show ?thesis
+      by auto
+  qed
+qed simp
+  
+end
+
+
+lemma hld_smap': "HLD x (smap f s) = HLD (f -` x) s"
+  by (simp add: HLD_def)
+
+lemma set_pmf_map: "set_pmf (map_pmf f M) = f ` set_pmf M"
+  using pmf_set_map[of f] by (metis comp_def)
+
+lemma (in finite_measure) ereal_integral_real:
+  assumes [measurable]: "f \<in> borel_measurable M" 
+  assumes ae: "AE x in M. 0 \<le> f x" "AE x in M. f x \<le> ereal B"
+  shows "ereal (\<integral>x. real (f x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
+proof (subst nn_integral_eq_integral[symmetric])
+  show "integrable M (\<lambda>x. real (f x))"
+    using ae by (intro integrable_const_bound[where B=B]) (auto simp: real_le_ereal_iff)
+  show "AE x in M. 0 \<le> real (f x)"
+    using ae by (auto simp: real_of_ereal_pos)
+  show "(\<integral>\<^sup>+ x. ereal (real (f x)) \<partial>M) = integral\<^sup>N M f"
+    using ae by (intro nn_integral_cong_AE) (auto simp: ereal_real)
+qed
+
+lemma (in MC_syntax) AE_not_suntil_coinduct [consumes 1, case_names \<psi> \<phi>]:
+  assumes "P s"
+  assumes \<psi>: "\<And>s. P s \<Longrightarrow> s \<notin> \<psi>"
+  assumes \<phi>: "\<And>s t. P s \<Longrightarrow> s \<in> \<phi> \<Longrightarrow> t \<in> K s \<Longrightarrow> P t"
+  shows "AE \<omega> in T s. not (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>)"
+proof -
+  { fix \<omega> have "\<not> (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>) \<longleftrightarrow>
+      (\<forall>n. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>))"
+      unfolding suntil_def
+      by (subst continuous_lfp)
+         (auto simp add: Order_Continuity.continuous_def) }
+  moreover 
+  { fix n from `P s` have "AE \<omega> in T s. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>)"
+    proof (induction n arbitrary: s)
+      case (Suc n) then show ?case
+        apply (subst AE_T_iff)
+        apply (rule measurable_compose[OF measurable_Stream, where M1="count_space UNIV"])
+        apply measurable
+        apply simp
+        apply (auto simp: bot_fun_def intro!: AE_impI dest: \<phi> \<psi>)
+        done
+    qed simp }
+  ultimately show ?thesis
+    by (simp add: AE_all_countable)
+qed
+
+lemma (in MC_syntax) AE_not_suntil_coinduct_strong [consumes 1, case_names \<psi> \<phi>]:
+  assumes "P s"
+  assumes P_\<psi>: "\<And>s. P s \<Longrightarrow> s \<notin> \<psi>"
+  assumes P_\<phi>: "\<And>s t. P s \<Longrightarrow> s \<in> \<phi> \<Longrightarrow> t \<in> K s \<Longrightarrow> P t \<or> 
+    (AE \<omega> in T t. not (HLD \<phi> suntil HLD \<psi>) (t ## \<omega>))"
+  shows "AE \<omega> in T s. not (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>)" (is "?nuntil s")
+proof -
+  have "P s \<or> ?nuntil s"
+    using `P s` by auto
+  then show ?thesis
+  proof (coinduction arbitrary: s rule: AE_not_suntil_coinduct)
+    case (\<phi> t s) then show ?case
+      by (auto simp: AE_T_iff[of _ s] suntil_Stream[of _ _ s] dest: P_\<phi>)
+  qed (auto simp: suntil_Stream dest: P_\<psi>)
+qed
+
+declare [[coercion real_of_rat]]
+
+lemma of_rat_setsum: "of_rat (\<Sum>a\<in>A. f a) = (\<Sum>a\<in>A. of_rat (f a))"
+  by (induct rule: infinite_finite_induct) (auto simp: of_rat_add)
+
+lemma setsum_strict_mono_single: 
+  fixes f :: "_ \<Rightarrow> 'a :: {comm_monoid_add,ordered_cancel_ab_semigroup_add}"
+  shows "finite A \<Longrightarrow> a \<in> A \<Longrightarrow> f a < g a \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> f a \<le> g a) \<Longrightarrow> setsum f A < setsum g A"
+  using setsum_strict_mono_ex1[of A f g] by auto
+
+lemma prob_space_point_measure:
+  "finite S \<Longrightarrow> (\<And>s. s \<in> S \<Longrightarrow> 0 \<le> p s) \<Longrightarrow> (\<Sum>s\<in>S. p s) = 1 \<Longrightarrow> prob_space (point_measure S p)"
+  by (rule prob_spaceI) (simp add: space_point_measure emeasure_point_measure_finite)
+
+lemma diff_mono:
+  fixes a b c d :: "'a :: ordered_ab_group_add"
+  assumes "a \<le> b" "d \<le> c" shows "a - c \<le> b - d"
+  unfolding diff_conv_add_uminus by (intro add_mono le_imp_neg_le assms)
 
 end
 
