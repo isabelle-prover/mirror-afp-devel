@@ -18,12 +18,6 @@ lemma compute_float_down[code]:
     (if p + e < 0 then Float (m div power_int 2 (-(p + e))) (-p) else Float m e)"
   by (simp add: Float.compute_float_down power_int_def)
 
-lemma compute_float_up[code]:
-  "float_up p (Float m e) =
-    (let P = power_int 2 (-(p + e)); r = m mod P in
-      if p + e < 0 then Float (m div P + (if r = 0 then 0 else 1)) (-p) else Float m e)"
-  by (simp add: Float.compute_float_up power_int_def)
-
 lemma compute_lapprox_posrat[code]:
   fixes prec::nat and x y::nat
   shows "lapprox_posrat prec x y =
@@ -39,8 +33,7 @@ lemma compute_rapprox_posrat[code]:
   shows "rapprox_posrat prec x y = (let
      l = l ;
      X = if 0 \<le> l then (int x * power_int 2 l, int y) else (int x, int y * power_int 2 (-l)) ;
-     d = fst X div snd X ;
-     m = fst X mod snd X
+     (d, m) = divmod_int (fst X) (snd X)
    in normfloat (Float (d + (if m = 0 \<or> y = 0 then 0 else 1)) (- l)))"
   by (auto simp add: l_def Float.compute_rapprox_posrat power_int_def Let_def zdiv_int int_power int_mult)
 
@@ -49,13 +42,6 @@ lemma compute_float_truncate_down[code]:
     if 0 < d then let P = power_int 2 d ; n = m div P in Float n (e + d)
              else Float m e)"
   by (simp add: Float.compute_float_round_down power_int_def cong: if_cong)
-
-lemma compute_float_truncate_up[code]:
-  "float_round_up prec (Float m e) = (let d = (bitlen (abs m) - int prec) in
-     if 0 < d then let P = power_int 2 d ; n = m div P ; r = m mod P
-                   in Float (n + (if r = 0 then 0 else 1)) (e + d)
-              else Float m e)"
-  by (simp add: Float.compute_float_round_up power_int_def cong: if_cong)
 
 lemma compute_int_floor_fl[code]:
   "int_floor_fl (Float m e) = (if 0 \<le> e then m * power_int 2 e else m div (power_int 2 (-e)))"

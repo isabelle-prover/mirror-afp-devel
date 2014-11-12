@@ -1230,7 +1230,7 @@ next
         from neg have [simp]: "Inf_aform' p Y \<le> 0"
           by (metis Inf_aform'_le_Sup_aform' dual_order.strict_trans1 less_asym not_less)
         from neg have "0 < Inf_aform' p (uminus_aform Y)"
-          by (auto simp: Inf_aform'_def Sup_aform'_def truncate_down_uminus_truncate_up ac_simps)
+          by (auto simp: Inf_aform'_def Sup_aform'_def truncate_up_eq_truncate_down ac_simps)
         from inverse_aform'E[OF this e(1)] d1
         obtain err where err:
           "aform_val (e(d1 := err)) (inverse_aform' p d1 (uminus_aform Y)) =

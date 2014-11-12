@@ -1820,8 +1820,8 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
         { fix n::nat
           note 1 
           also assume "N \<le> n"
-          also have "real n < (2::real)^n" 
-            by simp
+          also have "real n < (2::real)^n"
+            by (rule two_realpow_gt)
           finally
           have "y < 2 ^ n"
             by simp

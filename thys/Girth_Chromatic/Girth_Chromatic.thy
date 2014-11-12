@@ -427,7 +427,7 @@ proof -
         and prob_fun_raw_le: "?prob_fun_raw_le n"
         and expr_bound: "n * exp (- p n * (real (natceiling (r n)) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)"
 
-      have "exp 1 < (3 :: real)" by (approximation 5)
+      have "exp 1 < (3 :: real)" by (approximation 6)
       then have "(exp 1 / n) powr (1 / 2) \<le> 1 powr (1 / 2)"
         using A by (intro powr_mono2) (auto simp: field_simps)
       then have ep_bound: "(exp 1 / n) powr (1 / 2) \<le> 1" by simp

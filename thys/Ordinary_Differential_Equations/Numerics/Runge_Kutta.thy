@@ -135,7 +135,7 @@ next
   from taylor_up_within_vector[of 2 t "t + h" diff x t, OF _ _ diff] ht `h\<noteq>0`
   obtain tt where tt: "tt \<in> Basis \<rightarrow> {t <..< t + h}"
     and taylor: "x (t + h) = x t + h *\<^sub>R f (t, x t) + (h\<^sup>2/2) *\<^sub>R (\<Sum>i\<in>Basis. ((?p (tt i)) \<bullet> i) *\<^sub>R i)"
-    by (auto simp: Pi_iff Bex_def numeral_2_eq_2 diff_def two_real_nat
+    by (auto simp: Pi_iff Bex_def numeral_2_eq_2 diff_def real_of_nat_Suc
       scaleR_setsum_right ac_simps power2_eq_square inverse_eq_divide setprod_numseg)
   hence "x (t + h) - discrete_evolution (euler_increment f) (t + h) t (x t) =
     (h\<^sup>2 / 2) *\<^sub>R (\<Sum>i\<in>Basis. ((?p (tt i)) \<bullet> i) *\<^sub>R i)" (is "?d = _")
