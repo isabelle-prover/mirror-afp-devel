@@ -7,6 +7,7 @@ section {* Extended natural numbers as a codatatype *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"
+  "~~/src/HOL/Library/Extended_Real"
   Complete_Partial_Order2
 begin
 
@@ -737,5 +738,62 @@ by(cases n)(simp_all add: zero_enat_def eSuc_enat)
 
 lemma enat_cocase_inf: "(case \<infinity> of 0 \<Rightarrow> a | eSuc b \<Rightarrow> f b) = f \<infinity>"
 by(auto split: co.enat.split simp add: infinity_eq_eSuc_iff)
+
+lemma eSuc_Inf: "eSuc (Inf A) = Inf (eSuc ` A)"
+proof -
+  { assume "A \<noteq> {}"
+    then obtain a where "a \<in> A" by blast
+    then have "eSuc (LEAST a. a \<in> A) = (LEAST a. a \<in> eSuc ` A)"
+    proof (rule LeastI2_wellorder)
+      fix a assume "a \<in> A" and b: "\<forall>b. b \<in> A \<longrightarrow> a \<le> b"
+      then have a: "eSuc a \<in> eSuc ` A"
+        by auto
+      then show "eSuc a = (LEAST a. a \<in> eSuc ` A)"
+        by (rule LeastI2_wellorder) (metis (full_types) b a antisym eSuc_le_iff imageE)
+    qed }
+  then show ?thesis
+    by (simp add: Inf_enat_def)
+qed
+
+lemma ereal_of_enat_Sup:
+  assumes "A \<noteq> {}" shows "ereal_of_enat (Sup A) = (\<Squnion>a\<in>A. ereal_of_enat a)"
+proof (intro antisym mono_Sup)
+  show "ereal_of_enat (Sup A) \<le> (\<Squnion>a\<in>A. ereal_of_enat a)"
+  proof cases
+    assume "finite A"
+    with `A \<noteq> {}` obtain a where "a \<in> A" "ereal_of_enat (Sup A) = ereal_of_enat a"
+      using Max_in[of A] by (auto simp: Sup_enat_def simp del: Max_in)
+    then show ?thesis
+      by (auto intro: SUP_upper)
+  next
+    assume "\<not> finite A"
+    have [simp]: "(\<Squnion>a\<in>A. ereal_of_enat a) = \<top>"
+      unfolding SUP_eq_top_iff
+    proof safe
+      fix x :: ereal assume "x < \<top>"
+      then obtain n :: nat where "x < n"
+        using less_PInf_Ex_of_nat top_ereal_def by auto
+      obtain a where "a \<in> A - enat ` {.. n}"
+        by (metis `\<not> finite A` all_not_in_conv finite_Diff2 finite_atMost finite_imageI finite.emptyI)
+      then have "a \<in> A" "ereal n \<le> ereal_of_enat a"
+        by (auto simp: image_iff Ball_def)
+           (metis enat_iless enat_ord_simps(1) ereal_of_enat_less_iff ereal_of_enat_simps(1) less_le not_less)
+      with `x < n` show "\<exists>i\<in>A. x < ereal_of_enat i"
+        by (auto intro!: bexI[of _ a])
+    qed
+    show ?thesis
+      by simp
+  qed
+qed (simp add: mono_def)
+
+lemma mcont_ereal_of_enat: "mcont Sup (op \<le>) Sup op \<le> ereal_of_enat"
+  by (auto intro!: mcontI monotoneI contI ereal_of_enat_Sup)
+
+lemma mcont2mcont_ereal_of_enat[cont_intro]:
+  "mcont lub ord Sup op \<le> f \<Longrightarrow> mcont lub ord Sup op \<le> (\<lambda>x. ereal_of_enat (f x))"
+  by (auto intro: ccpo.mcont2mcont[OF complete_lattice_ccpo'] mcont_ereal_of_enat)
+
+lemma ereal_of_enat_eSuc[simp]: "ereal_of_enat (eSuc x) = 1 + ereal_of_enat x"
+  by (cases x) (auto simp: eSuc_enat)
 
 end

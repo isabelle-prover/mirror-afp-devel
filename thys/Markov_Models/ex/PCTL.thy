@@ -10,16 +10,6 @@ begin
 
 section {* Adapt Gauss-Jordan elimination to DTMCs *}
 
-lemma split_option_bind:
-  fixes x :: "'a option" and f :: "'a \<Rightarrow> 'b option" and P :: "'b option \<Rightarrow> bool"
-  shows "P (x \<guillemotright>= f) \<longleftrightarrow> (x = None \<longrightarrow> P None) \<and> (\<forall>a. x = Some a \<longrightarrow> P (f a))"
-  by (cases x) auto
-
-lemma split_option_bind_asm:
-  fixes x :: "'a option" and f :: "'a \<Rightarrow> 'b option" and P :: "'b option \<Rightarrow> bool"
-  shows "P (x \<guillemotright>= f) \<longleftrightarrow> \<not> ((x = None \<and> \<not> P None) \<or> (\<exists>a. x = Some a \<and> \<not> P (f a)))"
-  by (simp split: split_option_bind)
-
 locale Finite_DTMC =
   fixes K :: "'s \<Rightarrow> 's pmf" and S :: "'s set" and \<rho> :: "'s \<Rightarrow> real" and \<iota> :: "'s \<Rightarrow> 's \<Rightarrow> real"
   assumes \<iota>_nonneg: "\<And>s t. 0 \<le> \<iota> s t" and \<rho>_nonneg: "\<And>s. 0 \<le> \<rho> s"
@@ -103,7 +93,7 @@ proof -
     a (order i) else M (order i) (order j)"
   ultimately obtain sol where sol: "gauss_jordan M' (card S) = Some sol"
     and f: "f = (\<lambda>i. sol (iorder i) (card S))"
-    by (auto simp: gauss_jordan'_def Let_def split: split_option_bind_asm)
+    by (auto simp: gauss_jordan'_def Let_def split: bind_split_asm)
 
   from gauss_jordan_correct[OF sol]
   have "\<forall>i\<in>{..<card S}. (\<Sum>j<card S. M (order i) (order j) * sol j (card S)) = a (order i)"
@@ -788,12 +778,12 @@ proof (induct F rule: Sat.induct)
     with svalid_subset_S have "setsum (\<tau> q) (svalid F) = \<P>(\<omega> in T q. HLD (svalid F) \<omega>)"
       by (subst prob_sum[OF `q\<in>S`]) (auto intro!: setsum.mono_neutral_cong_left) }
   with 5 show ?case
-    by (auto split: split_option_bind_asm)
+    by (auto split: bind_split_asm)
 
 next
   case (6 rel r k F1 F2)
   then show ?case
-    by (simp add: ProbU cong: conj_cong split: split_option_bind_asm)
+    by (simp add: ProbU cong: conj_cong split: bind_split_asm)
 
 next
   case (7 rel r F1 F2)
@@ -801,7 +791,7 @@ next
   moreover def distr \<equiv> "LES (Prob0 (svalid F1) (svalid F2) \<union> svalid F2)"
   ultimately obtain l where eq: "Sat F1 = Some (svalid F1)" "Sat F2 = Some (svalid F2)"
     and l: "gauss_jordan' distr constants = Some l"
-    by atomize_elim (simp add: ProbUinfty_def split: split_option_bind_asm)
+    by atomize_elim (simp add: ProbUinfty_def split: bind_split_asm)
     
   from l have P: "ProbUinfty (svalid F1) (svalid F2) = Some l"
     unfolding ProbUinfty_def constants_def distr_def by simp
@@ -867,7 +857,7 @@ next
   ultimately obtain l
     where l: "gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
     and F: "Sat F = Some ?F"
-    by (auto simp: ExpFuture_def Let_def split: split_option_bind_asm)
+    by (auto simp: ExpFuture_def Let_def split: bind_split_asm)
   
   from l have EF: "ExpFuture ?F =
     Some (\<lambda>s. if s \<in> Y then ereal (l s) else \<infinity>)"
@@ -900,7 +890,7 @@ next
     apply (case_tac "x \<in> Y")
     apply auto
     done
-qed (auto split: split_option_bind_asm)
+qed (auto split: bind_split_asm)
 
 subsection {* Completeness of @{const Sat} *}
 
@@ -994,7 +984,7 @@ next
     unfolding ExpFuture_def const_def N_def Y_def by auto
   with F show ?case
     by auto
-qed (force split: split_option_bind)+
+qed (force split: bind_split)+
 
 subsection {* Completeness and Soundness @{const Sat} *}
 

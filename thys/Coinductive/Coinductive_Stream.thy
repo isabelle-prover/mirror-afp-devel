@@ -6,6 +6,7 @@ section {* Infinite lists as a codatatype *}
 theory Coinductive_Stream
 imports
   "~~/src/HOL/Library/Stream"
+  "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
   Coinductive_List
 begin
 
@@ -369,5 +370,153 @@ lemma szip_sconst2 [simp]: "szip xs (sconst b) = smap (\<lambda>x. (x, b)) xs"
 by(coinduction arbitrary: xs) auto
 
 end
+
+subsection \<open> Counting elements \<close>
+
+partial_function (lfp) scount :: "('s stream \<Rightarrow> bool) \<Rightarrow> 's stream \<Rightarrow> enat" where
+  "scount P \<omega> = (if P \<omega> then eSuc (scount P (stl \<omega>)) else scount P (stl \<omega>))"
+
+lemma scount_simps:
+  "P \<omega> \<Longrightarrow> scount P \<omega> = eSuc (scount P (stl \<omega>))"
+  "\<not> P \<omega> \<Longrightarrow> scount P \<omega> = scount P (stl \<omega>)"
+  using scount.simps[of P \<omega>] by auto
+
+lemma scount_eq_0I: "alw (not P) \<omega> \<Longrightarrow> scount P \<omega> = 0"
+  by (induct arbitrary: \<omega> rule: scount.fixp_induct)
+     (auto simp: bot_enat_def intro!: admissible_all admissible_imp admissible_eq_mcontI mcont_const)
+
+lemma scount_eq_0D: "scount P \<omega> = 0 \<Longrightarrow> alw (not P) \<omega>"
+proof (induction rule: alw.coinduct)
+  case (alw \<omega>) with scount.simps[of P \<omega>] show ?case
+    by (simp split: split_if_asm)
+qed
+
+lemma scount_eq_0_iff: "scount P \<omega> = 0 \<longleftrightarrow> alw (not P) \<omega>"
+  by (metis scount_eq_0D scount_eq_0I)
+
+lemma
+  assumes "ev (alw (not P)) \<omega>"
+  shows scount_eq_card: "scount P \<omega> = card {i. P (sdrop i \<omega>)}"
+    and ev_alw_not_HLD_finite: "finite {i. P (sdrop i \<omega>)}"
+  using assms
+proof (induction \<omega>)
+  case (step \<omega>)
+  have eq: "{i. P (sdrop i \<omega>)} = (if P \<omega> then {0} else {}) \<union> (Suc ` {i. P (sdrop i (stl \<omega>))})"
+    apply (intro set_eqI)
+    apply (case_tac x)
+    apply (auto simp: image_iff)
+    done
+  { case 1 show ?case
+      using step unfolding eq by (auto simp: scount_simps card_image zero_notin_Suc_image eSuc_enat) }
+  { case 2 show ?case
+      using step unfolding eq by auto }
+next
+   case (base \<omega>)
+   then have [simp]: "{i. P (sdrop i \<omega>)} = {}"
+     by (simp add: not_HLD alw_iff_sdrop)
+   { case 1 show ?case using base by (simp add: scount_eq_0I enat_0) }
+   { case 2 show ?case by simp }
+qed
+
+lemma scount_finite: "ev (alw (not P)) \<omega> \<Longrightarrow> scount P \<omega> < \<infinity>"
+  using scount_eq_card[of P \<omega>] by auto
+
+lemma scount_infinite: 
+  "alw (ev P) \<omega> \<Longrightarrow> scount P \<omega> = \<infinity>"
+proof (coinduction arbitrary: \<omega> rule: enat_coinduct)
+  case (Eq_enat \<omega>)
+  then have "ev P \<omega>" "alw (ev P) \<omega>"
+    by auto
+  then show ?case
+    by (induction rule: ev_induct_strong) (auto simp add: scount_simps)
+qed
+
+lemma scount_infinite_iff: "scount P \<omega> = \<infinity> \<longleftrightarrow> alw (ev P) \<omega>"
+  by (metis enat_ord_simps(4) not_alw_not scount_finite scount_infinite)
+
+lemma scount_eq:
+  "scount P \<omega> = (if alw (ev P) \<omega> then \<infinity> else card {i. P (sdrop i \<omega>)})"
+  by (auto simp: scount_infinite_iff scount_eq_card not_alw_iff not_ev_iff) 
+
+subsection \<open> First index of an element \<close>
+
+partial_function (gfp) sfirst :: "('s stream \<Rightarrow> bool) \<Rightarrow> 's stream \<Rightarrow> enat" where
+  "sfirst P \<omega> = (if P \<omega> then 0 else eSuc (sfirst P (stl \<omega>)))"
+
+lemma sfirst_eq_0: "sfirst P \<omega> = 0 \<longleftrightarrow> P \<omega>"
+  by (subst sfirst.simps) auto
+
+lemma sfirst_0[simp]: "P \<omega> \<Longrightarrow> sfirst P \<omega> = 0"
+  by (subst sfirst.simps) auto
+
+lemma sfirst_eSuc[simp]: "\<not> P \<omega> \<Longrightarrow> sfirst P \<omega> = eSuc (sfirst P (stl \<omega>))"
+  by (subst sfirst.simps) auto
+
+lemma less_sfirstD:
+  fixes n :: nat
+  assumes "n < sfirst P \<omega>" shows "\<not> P (sdrop n \<omega>)"
+  using assms
+proof (induction n arbitrary: \<omega>)
+  case (Suc n) then show ?case
+    by (auto simp: sfirst.simps[of _ \<omega>] eSuc_enat[symmetric] split: split_if_asm)
+qed (simp add: enat_0 sfirst_eq_0)
+
+lemma sfirst_finite: "sfirst P \<omega> < \<infinity> \<longleftrightarrow> ev P \<omega>"
+proof
+  assume "sfirst P \<omega> < \<infinity>"
+  then obtain n where "sfirst P \<omega> = enat n" by auto
+  then show "ev P \<omega>"
+  proof (induction n arbitrary: \<omega>)
+    case (Suc n) then show ?case
+      by (auto simp add: eSuc_enat[symmetric] sfirst.simps[of P \<omega>] split: split_if_asm)
+  qed (auto simp add: enat_0 sfirst_eq_0)
+next
+  assume "ev P \<omega>" then show "sfirst P \<omega> < \<infinity>"
+    by (induction rule: ev_induct_strong) (auto simp: eSuc_enat)
+qed
+
+lemma sfirst_Stream: "sfirst P (s ## x) = (if P (s ## x) then 0 else eSuc (sfirst P x))"
+  by (subst sfirst.simps) (simp add: HLD_iff)
+
+lemma less_sfirst_iff: "(not P until (alw P)) \<omega> \<Longrightarrow> n < sfirst P \<omega> \<longleftrightarrow> \<not> P (sdrop n \<omega>)"
+proof (induction n arbitrary: \<omega>)
+  case 0 then show ?case
+    by (simp add: enat_0 sfirst_eq_0 HLD_iff)
+next
+  case (Suc n)
+  from Suc.prems have **: "P \<omega> \<Longrightarrow> P (stl \<omega>)"
+    by (auto elim: UNTIL.cases)
+  have *: "\<not> P (sdrop n (stl \<omega>)) \<longleftrightarrow> enat n < sfirst P (stl \<omega>)"
+    using Suc.prems by (intro Suc.IH[symmetric]) (auto intro: UNTIL.intros elim: UNTIL.cases)
+  show ?case
+    unfolding sdrop.simps * by (cases "P \<omega>") (simp_all add: ** eSuc_enat[symmetric])
+qed
+
+lemma sfirst_eq_Inf: "sfirst P \<omega> = Inf {enat i | i. P (sdrop i \<omega>)}"
+proof (rule antisym)
+  show "sfirst P \<omega> \<le> \<Sqinter>{enat i |i. P (sdrop i \<omega>)}"
+  proof (safe intro!: Inf_greatest)
+    fix \<omega> i assume "P (sdrop i \<omega>)" then show "sfirst P \<omega> \<le> enat i"
+    proof (induction i arbitrary: \<omega>)
+      case (Suc i) then show ?case
+       by (auto simp add: sfirst.simps[of P \<omega>] eSuc_enat[symmetric])
+    qed auto
+  qed
+  show "\<Sqinter>{enat i |i. P (sdrop i \<omega>)} \<le> sfirst P \<omega>"
+  proof (induction arbitrary: \<omega> rule: sfirst.fixp_induct)
+    case (3 f)
+    have "{enat i |i. P (sdrop i \<omega>)} = (if P \<omega> then {0} else {}) \<union> eSuc ` {enat i |i. P (sdrop i (stl \<omega>))}"
+      apply (intro set_eqI)
+      apply (case_tac x rule: enat_coexhaust)
+      apply (auto simp add: enat_0_iff image_iff eSuc_enat_iff)
+      done
+    with 3[of "stl \<omega>"] show ?case
+      by (auto simp: inf.absorb1 eSuc_Inf[symmetric] simp del: Inf_image_eq)
+  qed simp_all
+qed
+
+lemma sfirst_eq_enat_iff: "sfirst P \<omega> = enat n \<longleftrightarrow> ev_at P n \<omega>"
+  by (induction n arbitrary: \<omega>)
+     (simp_all add: eSuc_enat[symmetric] sfirst.simps enat_0)
 
 end

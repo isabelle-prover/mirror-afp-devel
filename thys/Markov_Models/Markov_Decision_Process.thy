@@ -17,6 +17,8 @@ with the restriction
 
 *}
 
+hide_const cont
+
 codatatype 's scheduler = Scheduler (action_sch: "'s pmf") (cont_sch: "'s \<Rightarrow> 's scheduler")
 datatype 's cfg = Cfg' (state: 's) (scheduler: "'s scheduler")
 
@@ -65,7 +67,7 @@ definition K_cfg :: "'s cfg \<Rightarrow> 's cfg pmf" where
   "K_cfg cfg = map_pmf (cont cfg) (action cfg)"
 
 lemma set_K_cfg: "set_pmf (K_cfg cfg) = cont cfg ` set_pmf (action cfg)"
-  by (simp add: K_cfg_def set_pmf_map)
+  by (simp add: K_cfg_def set_map_pmf)
 
 lemma nn_integral_K_cfg: "(\<integral>\<^sup>+cfg. f cfg \<partial>K_cfg cfg) = (\<integral>\<^sup>+s. f (cont cfg s) \<partial>action cfg)"
   by (simp add: K_cfg_def map_pmf.rep_eq nn_integral_distr)
@@ -112,7 +114,7 @@ lemma cfg_of_cfg_onI:
 definition "arb_act s = (SOME D. D \<in> K s)"
 
 lemma arb_actI[simp]: "arb_act s \<in> K s"
-  by (simp add: arb_act_def some_in_iff K_wf)
+  by (simp add: arb_act_def some_in_eq K_wf)
 
 lemma cfg_on_not_empty[intro, simp]: "cfg_on s \<noteq> {}"
   by (auto intro: memoryless_on_cfg_onI arb_actI)
@@ -507,7 +509,7 @@ lemma
   by (auto simp: valid_cfg_def intro!: bexI[of _ s] intro: action_closed)
 
 lemma valid_K_cfg[intro]: "cfg \<in> valid_cfg \<Longrightarrow> cfg' \<in> K_cfg cfg \<Longrightarrow> cfg' \<in> valid_cfg"
-  by (auto simp add: K_cfg_def set_pmf_map valid_cfg_cont)
+  by (auto simp add: K_cfg_def set_map_pmf valid_cfg_cont)
 
 definition "simple ct = memoryless_on (\<lambda>s. if s \<in> S then ct s else arb_act s)"
 

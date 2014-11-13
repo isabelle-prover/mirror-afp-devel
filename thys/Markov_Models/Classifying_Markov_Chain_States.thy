@@ -7,6 +7,38 @@ imports
   "~~/src/HOL/Library/NthRoot_Limits"
 begin
 
+lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
+  by (metis int_cases)
+
+lemma power_series_tendsto_at_left:
+  assumes nonneg: "\<And>i. 0 \<le> f i" and summable: "\<And>z. 0 \<le> z \<Longrightarrow> z < 1 \<Longrightarrow> summable (\<lambda>n. f n * z^n)"
+  shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) ---> (\<Sum>n. ereal (f n))) (at_left (1::real))"
+proof (intro tendsto_at_left_sequentially)
+  show "0 < (1::real)" by simp
+  fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S ----> 1" "incseq S"
+  then have S_nonneg: "\<And>i. 0 \<le> S i" by (auto intro: less_imp_le)
+
+  have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) ----> (\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV)"
+  proof (rule nn_integral_LIMSEQ)
+    show "incseq (\<lambda>i n. ereal (f n * S i^n))"
+      using S by (auto intro!: mult_mono power_mono nonneg simp: incseq_def le_fun_def less_imp_le)
+    fix n have "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n * 1^n)"
+      by (intro tendsto_intros lim_ereal[THEN iffD2] S)
+    then show "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n)"
+      by simp
+  qed (auto simp: S_nonneg intro!: mult_nonneg_nonneg nonneg)
+  also have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) = (\<lambda>i. \<Sum>n. f n * S i^n)"
+    by (subst nn_integral_count_space_nat)
+       (intro ext suminf_ereal mult_nonneg_nonneg nonneg S_nonneg ereal_less_eq(5)[THEN iffD2]
+              zero_le_power suminf_ereal_finite summable S)+
+  also have "(\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV) = (\<Sum>n. ereal (f n))"
+    by (simp add: nn_integral_count_space_nat nonneg)
+  finally show "(\<lambda>n. ereal (\<Sum>na. f na * S n ^ na)) ----> (\<Sum>n. ereal (f n))" .
+qed
+
+lemma eventually_at_left_1: "(\<And>z::real. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> P z) \<Longrightarrow> eventually P (at_left 1)"
+  by (subst eventually_at_left[of 0]) (auto intro: exI[of _ 0])
+
 inductive_set monoid_closure :: "nat set \<Rightarrow> int set" for S where
   base: "s \<in> S \<Longrightarrow> int s \<in> monoid_closure S"
 | plus: "s \<in> monoid_closure S \<Longrightarrow> t \<in> monoid_closure S \<Longrightarrow> s + t \<in> monoid_closure S"
@@ -237,10 +269,10 @@ begin
 
 subsection {* Expected number of visits *}
 
-definition "G s t = (\<integral>\<^sup>+\<omega>. scount {t} (s ## \<omega>) \<partial>T s)"
+definition "G s t = (\<integral>\<^sup>+\<omega>. scount (HLD {t}) (s ## \<omega>) \<partial>T s)"
 
 lemma G_eq: "G s t = (\<integral>\<^sup>+\<omega>. emeasure (count_space UNIV) {i. (s ## \<omega>) !! i = t} \<partial>T s)"
-  by (simp add: G_def scount_eq_emeasure)
+  by (simp add: G_def scount_eq_emeasure HLD_iff)
 
 definition "p s t n = \<P>(\<omega> in T s. (s ## \<omega>) !! n = t)"
 
@@ -511,7 +543,7 @@ qed
 lemma p_eq_setsum_p_f: "p x y n = (\<Sum>i\<le>n. p y y (n - i) * f x y i)"
   by (cases n)
      (simp_all del: setsum_atMost_Suc
-               add: f_0 p_0 p_eq_setsum_p_u atMost_Suc_insert_0 Zero_notin_Suc setsum.reindex
+               add: f_0 p_0 p_eq_setsum_p_u Iic_Suc_eq_insert_0 zero_notin_Suc_image setsum.reindex
                     f_Suc f_Suc_eq)
 
 lemma gf_G_eq_gf_F:
@@ -613,31 +645,31 @@ lemma H_eq:
   "\<not> recurrent s \<longleftrightarrow> H s s = 0"
   "H s t = U s t * H t t"
 proof -
-  def H' \<equiv> "\<lambda>t n. {\<omega>\<in>space S. enat n \<le> scount {t::'s} \<omega>}"
+  def H' \<equiv> "\<lambda>t n. {\<omega>\<in>space S. enat n \<le> scount (HLD {t::'s}) \<omega>}"
   have [measurable]: "\<And>y n. H' y n \<in> sets S"
     by (simp add: H'_def)
   let ?H' = "\<lambda>s t n. measure (T s) (H' t n)"
   { fix x y :: 's and \<omega>
-    have "Suc 0 \<le> scount {y} \<omega> \<longleftrightarrow> ev (HLD {y}) \<omega>"
-      using scount_eq_0_iff[of "{y}" \<omega>]
-      by (cases "scount {y} \<omega>" rule: enat_coexhaust)
-         (auto simp: not_ev_iff[symmetric] eSuc_enat[symmetric] enat_0) }
+    have "Suc 0 \<le> scount (HLD {y}) \<omega> \<longleftrightarrow> ev (HLD {y}) \<omega>"
+      using scount_eq_0_iff[of "HLD {y}" \<omega>]
+      by (cases "scount (HLD {y}) \<omega>" rule: enat_coexhaust)
+         (auto simp: not_ev_iff[symmetric] eSuc_enat[symmetric] enat_0 HLD_iff[abs_def]) }
   then have H'_1: "\<And>x y. ?H' x y 1 = U x y"
     unfolding H'_def U_def by simp
 
   { fix n and x y :: 's
-    let ?U = "(not (HLD {y}) suntil (HLD {y} aand nxt (\<lambda>\<omega>. enat n \<le> scount {y} \<omega>)))"
+    let ?U = "(not (HLD {y}) suntil (HLD {y} aand nxt (\<lambda>\<omega>. enat n \<le> scount (HLD {y}) \<omega>)))"
     { fix \<omega>
-      have "enat (Suc n) \<le> scount {y} \<omega> \<longleftrightarrow> ?U \<omega>"
+      have "enat (Suc n) \<le> scount (HLD {y}) \<omega> \<longleftrightarrow> ?U \<omega>"
       proof
-        assume "enat (Suc n) \<le> scount {y} \<omega>"
-        with scount_eq_0_iff[of "{y}" \<omega>] have "ev (HLD {y}) \<omega>" "enat (Suc n) \<le> scount {y} \<omega>"
+        assume "enat (Suc n) \<le> scount (HLD {y}) \<omega>"
+        with scount_eq_0_iff[of "HLD {y}" \<omega>] have "ev (HLD {y}) \<omega>" "enat (Suc n) \<le> scount (HLD {y}) \<omega>"
           by (auto simp add: not_ev_iff[symmetric] eSuc_enat[symmetric])
         then show "?U \<omega>"
           by (induction rule: ev_induct_strong)
              (auto simp: scount_simps eSuc_enat[symmetric] intro: suntil.intros)
       next
-        assume "?U \<omega>" then show "enat (Suc n) \<le> scount {y} \<omega>"
+        assume "?U \<omega>" then show "enat (Suc n) \<le> scount (HLD {y}) \<omega>"
           by induction (auto simp: scount_simps  eSuc_enat[symmetric])
       qed }
     then have "emeasure (T x) (H' y (Suc n)) = emeasure (T x) {\<omega>\<in>space (T x). ?U \<omega>}"
@@ -982,7 +1014,7 @@ lemma essential_class_iff_recurrent:
 
 definition "gf_U' x y z = (\<Sum>n. u x y n * Suc n * z ^ n)"
 
-definition "pos_recurrent x \<longleftrightarrow> recurrent x \<and> (\<integral>\<^sup>+\<omega>. hitting_time {x} \<omega> \<partial>T x) \<noteq> \<infinity>"
+definition "pos_recurrent x \<longleftrightarrow> recurrent x \<and> (\<integral>\<^sup>+\<omega>. sfirst (HLD {x}) \<omega> \<partial>T x) \<noteq> \<infinity>"
 
 lemma summable_gf_U':
   assumes z: "norm z < 1"
@@ -1013,27 +1045,23 @@ lemma DERIV_gf_U:
   unfolding gf_U_def[abs_def]  gf_U'_def real_scaleR_def u_def[symmetric]
   using z by (intro DERIV_power_series'[where R=1] summable_gf_U') auto
 
-lemma hitting_time_finiteI_recurrent:
-  "recurrent x \<Longrightarrow> AE \<omega> in T x. hitting_time {x} \<omega> < \<infinity>"
-  by (auto simp: recurrent_def hitting_time_finite[symmetric])
-
-lemma hitting_time_eq_enat_iff: "hitting_time C \<omega> = enat n \<longleftrightarrow> ev_at (HLD C) n \<omega>"
-  by (induction n arbitrary: \<omega>)
-     (simp_all add: eSuc_enat[symmetric] hitting_time.simps enat_0)
+lemma sfirst_finiteI_recurrent:
+  "recurrent x \<Longrightarrow> AE \<omega> in T x. sfirst (HLD {x}) \<omega> < \<infinity>"
+  by (auto simp: recurrent_def sfirst_finite[symmetric])
 
 lemma integral_t_eq_suminf:
   assumes x: "recurrent x"
-  shows "(\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x) = (\<Sum>i. ereal (u x x i * Suc i))"
+  shows "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x) = (\<Sum>i. ereal (u x x i * Suc i))"
 proof -
-  have "(\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x) = (\<integral>\<^sup>+\<omega>. (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T x). ev_at (HLD {x}) i \<omega>} \<omega>) \<partial>T x)"
-    using hitting_time_finiteI_recurrent[OF x]
+  have "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x) = (\<integral>\<^sup>+\<omega>. (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T x). ev_at (HLD {x}) i \<omega>} \<omega>) \<partial>T x)"
+    using sfirst_finiteI_recurrent[OF x]
   proof (intro nn_integral_cong_AE, eventually_elim)
-    fix \<omega> assume "hitting_time {x} \<omega> < \<infinity>"
-    then obtain n :: nat where [simp]: "hitting_time {x} \<omega> = n"
+    fix \<omega> assume "sfirst (HLD {x}) \<omega> < \<infinity>"
+    then obtain n :: nat where [simp]: "sfirst (HLD {x}) \<omega> = n"
       by auto
-    show "eSuc (hitting_time {x} \<omega>) = (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T x). ev_at (HLD {x}) i \<omega>} \<omega>)"
+    show "eSuc (sfirst (HLD {x}) \<omega>) = (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T x). ev_at (HLD {x}) i \<omega>} \<omega>)"
       by (subst suminf_cmult_indicator[where i=n])
-         (auto simp: disjoint_family_on_def ev_at_unique space_stream_space hitting_time_eq_enat_iff[symmetric]
+         (auto simp: disjoint_family_on_def ev_at_unique space_stream_space sfirst_eq_enat_iff[symmetric]
                split: split_indicator)
   qed
   also have "\<dots> = (\<Sum>i. ereal (Suc i) * emeasure (T x) {\<omega>\<in>space (T x). ev_at (HLD {x}) i \<omega>})"
@@ -1045,7 +1073,7 @@ qed
 
 lemma gf_U'_tendsto_integral_t:
   assumes x: "recurrent x"
-  shows "((\<lambda>z. ereal (gf_U' x x z)) ---> (\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x)) (at_left 1)"
+  shows "((\<lambda>z. ereal (gf_U' x x z)) ---> (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x)) (at_left 1)"
   unfolding integral_t_eq_suminf[OF x] gf_U'_def
   by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg)
 
@@ -1136,7 +1164,7 @@ lemma stationary_distribution_iterate':
 
 lemma one_le_integral_t:
   assumes x: "recurrent x"
-  shows "1 \<le> (\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x)"
+  shows "1 \<le> (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x)"
   using ereal_add_mono[OF order_refl nn_integral_nonneg]
   by (simp add: nn_integral_add T.emeasure_space_1 del: space_T)
 
@@ -1168,9 +1196,9 @@ lemma F_le_1: "F x y \<le> 1" by (simp add: F_def)
 
 lemma inverse_gf_U'_tendsto:
   assumes "recurrent y"
-  shows "((\<lambda>x. - 1 / - gf_U' y y x) ---> real (1 / \<integral>\<^sup>+\<omega>. eSuc (hitting_time {y} \<omega>) \<partial>T y)) (at_left (1::real))"
+  shows "((\<lambda>x. - 1 / - gf_U' y y x) ---> real (1 / \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y)) (at_left (1::real))"
 proof cases
-  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (hitting_time {y} \<omega>) \<partial>T y"
+  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y"
   assume inf: "?E y = \<infinity>"
   with gf_U'_tendsto_integral_t[of y] `recurrent y`
   have "LIM z (at_left 1). gf_U' y y z :> at_top"
@@ -1180,7 +1208,7 @@ proof cases
   with inf show ?thesis
     by (auto intro!: tendsto_divide_0)
 next
-  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (hitting_time {y} \<omega>) \<partial>T y"
+  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y"
   assume fin: "?E y \<noteq> \<infinity>"
   then obtain r where r: "?E y = ereal r"
     by (cases "?E y") auto
@@ -1219,7 +1247,7 @@ lemma pos_recurrentI_communicating:
   assumes y: "pos_recurrent y" and x: "(y, x) \<in> communicating"
   shows "pos_recurrent x"
 proof -
-  let ?E = "\<lambda>x. \<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x"
+  let ?E = "\<lambda>x. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x"
   from y x have recurrent: "recurrent y" "recurrent x" and fin: "?E y \<noteq> \<infinity>"
     by (auto simp: pos_recurrent_def recurrent_iffI_communicating nn_integral_nonneg nn_integral_add)
   have pos: "0 < real (1 / ?E y)"
@@ -1327,7 +1355,7 @@ lemma not_empty_irreducible: "C \<in> UNIV // communicating \<Longrightarrow> C 
   by (auto simp: quotient_def Image_def communicating_def)
 
 definition stat :: "'s set \<Rightarrow> 's measure" where
-  "stat C = point_measure UNIV (\<lambda>x. indicator C x / (\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x))"
+  "stat C = point_measure UNIV (\<lambda>x. indicator C x / (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x))"
 
 lemma sets_stat[simp]: "sets (stat C) = sets (count_space UNIV)"
   by (simp add: stat_def sets_point_measure)
@@ -1339,7 +1367,7 @@ lemma stat_subprob:
   assumes C: "essential_class C" and "countable C" and pos: "\<forall>c\<in>C. pos_recurrent c"
   shows "emeasure (stat C) C \<le> 1"
 proof -
-  let ?E = "\<lambda>x. \<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x"
+  let ?E = "\<lambda>x. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x"
   let ?L = "at_left (1::real)"
   from finite_sequence_to_countable_set[OF `countable C`] guess A . note A = this
   then have "(\<lambda>n. emeasure (stat C) (A n)) ----> emeasure (stat C) (\<Union>i. A i)"
@@ -1447,7 +1475,7 @@ proof -
       unfolding stat_def using A(1)[of n]
       apply (intro setsum.cong refl)
       apply (subst emeasure_point_measure_finite2)
-      apply (auto simp: inverse_nonneg_iff nn_integral_nonneg divide_ereal_def)
+      apply (auto simp: ereal_inverse_nonneg_iff nn_integral_nonneg divide_ereal_def)
       done
     also have "\<dots> = ereal (\<Sum>y\<in>A n. real (1 / ?E y))"
       apply (subst setsum_ereal[symmetric])
@@ -1626,7 +1654,7 @@ proof -
   then have "\<And>x. x \<in> C \<Longrightarrow> U x x = 1"
     by (metis recurrent_iff_U_eq_1)
   
-  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (hitting_time {y} \<omega>) \<partial>T y"
+  let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y"
   { fix y assume "y \<in> C"
     then have "U y y = 1" "recurrent y"
       using `y \<in> C \<Longrightarrow> U y y = 1` all_recurrent by auto
@@ -1709,7 +1737,7 @@ proof -
         also have "\<dots> = emeasure (stat C) {y}"
           unfolding stat_def using `y \<in> C` r
           by (subst emeasure_point_measure_finite2)
-             (auto simp: inverse_nonneg_iff nn_integral_nonneg divide_ereal_def one_ereal_def)
+             (auto simp: ereal_inverse_nonneg_iff nn_integral_nonneg divide_ereal_def one_ereal_def)
         finally show "emeasure N {y} \<le> emeasure (stat C) {y}"
           by simp
       next
@@ -1739,7 +1767,7 @@ proof -
     by default fact
   
   show "measure_pmf N = stat C"
-  proof (rule measure_eqI_countable)
+  proof (rule measure_eqI_countable_AE)
     show "sets N = UNIV" "sets (stat C) = UNIV"
       by auto
     show "countable C" "AE x in N. x \<in> C" and ae_stat: "AE x in stat C. x \<in> C"
@@ -1764,15 +1792,15 @@ qed
 
 lemma stationary_distribution_imp_int_t:
   assumes C: "essential_class C" "countable C" "stationary_distribution N" "N \<subseteq> C"
-  assumes x: "x \<in> C" shows "(\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x) = 1 / pmf N x"
+  assumes x: "x \<in> C" shows "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x) = 1 / pmf N x"
 proof -
   from stationary_distributionD[OF C]
   have "measure_pmf N = stat C" and *: "\<forall>x\<in>C. pos_recurrent x" by auto
   show ?thesis
     unfolding `measure_pmf N = stat C` pmf.rep_eq stat_def
     using *[THEN bspec, OF x] x
-    apply (cases "\<integral>\<^sup>+\<omega>. eSuc (hitting_time {x} \<omega>) \<partial>T x")
-    apply (auto simp add: measure_def emeasure_point_measure_finite2 inverse_nonneg_iff
+    apply (cases "\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x")
+    apply (auto simp add: measure_def emeasure_point_measure_finite2 ereal_inverse_nonneg_iff
                      nn_integral_nonneg pos_recurrent_def divide_inverse one_ereal_def)
     apply (simp add: nn_integral_add)
     done
@@ -1990,7 +2018,7 @@ lemma communicating_iff: "(x, y) \<in> communicating \<longleftrightarrow> (\<ex
 
 end
 
-context Pair_MC
+context MC_pair
 begin
 
 lemma p_eq_p1_p2:
@@ -2104,7 +2132,7 @@ proof -
   def K' \<equiv> "\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N"
 
   interpret K2: MC_syntax K' .
-  interpret KN: Pair_MC K K' .
+  interpret KN: MC_pair K K' .
 
   from stationary_distributionD[OF C(2,3) N]
   have pos: "\<And>x. x \<in> C \<Longrightarrow> pos_recurrent x" and "measure_pmf N = stat C" by auto
@@ -2112,7 +2140,7 @@ proof -
   have pos: "\<And>x. x \<in> C \<Longrightarrow> 0 < emeasure N {x}"
     using pos unfolding stat_def `measure_pmf N = stat C`
     by (subst emeasure_point_measure_finite2)
-       (auto simp: ereal_0_gt_inverse nn_integral_nonneg inverse_nonneg_iff pos_recurrent_def
+       (auto simp: ereal_0_gt_inverse nn_integral_nonneg ereal_inverse_nonneg_iff pos_recurrent_def
                    divide_ereal_def nn_integral_add emeasure_nonneg)
   then have rpos: "\<And>x. x \<in> C \<Longrightarrow> 0 < pmf N x"
     by (simp add: measure_pmf.emeasure_eq_measure pmf.rep_eq)

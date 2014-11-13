@@ -176,7 +176,7 @@ proof (rule has_subprob_densityI)
   next
     fix i :: nat 
     from subprob_space have "emeasure (distr M lborel h) {-real i..real i} \<le> 1"
-      by (intro subprob_space.subprob_measure_le_1) (auto dest: has_subprob_densityD)
+      by (intro subprob_space.subprob_emeasure_le_1) (auto dest: has_subprob_densityD)
     thus "emeasure (distr M lborel h) {- real i..real i} \<noteq> \<infinity>" by auto
   next
     fix X :: "real set" assume "X \<in> range (\<lambda>(a,b). {a..b})"

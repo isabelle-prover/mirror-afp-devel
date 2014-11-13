@@ -296,7 +296,7 @@ lemma valid_cfg_action_in_K: "cfg \<in> valid_cfg \<Longrightarrow> action cfg \
   by (auto dest!: valid_cfgD)
 
 lemma K_cfg_E: "cfg \<in> valid_cfg \<Longrightarrow> cfg' \<in> K_cfg cfg \<Longrightarrow> (state cfg, state cfg') \<in> E"
-  by (auto simp: E_def K_cfg_def set_pmf_map valid_cfg_action_in_K)
+  by (auto simp: E_def K_cfg_def set_map_pmf valid_cfg_action_in_K)
 
 lemma S\<^sub>r_directed_towards_S2:
   assumes s: "s \<in> S\<^sub>r"

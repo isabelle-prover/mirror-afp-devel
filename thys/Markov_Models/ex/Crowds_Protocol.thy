@@ -6,6 +6,13 @@ theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
 begin
 
+lemma setsum_ereal_left_distrib:
+  "(\<And>i. i \<in> A \<Longrightarrow> 0 \<le> f i) \<Longrightarrow> setsum f A * r = (\<Sum>n\<in>A. f n * r :: ereal)"
+  using setsum_ereal_right_distrib[of A f r] by (simp add: mult_ac)
+
+lemma ereal_left_mult_cong: "(c \<noteq> 0 \<Longrightarrow> a = b) \<Longrightarrow> a * c = (b * c::ereal)"
+  by (cases "c = 0") simp_all
+  
 subsection {* Definition of the Crowds-Protocol *}
 
 datatype 'a state = Start | Init 'a | Mix 'a | End
@@ -286,7 +293,9 @@ proof -
   have "?P Start (visit I L) = (\<integral>\<^sup>+x. ?P x (?J suntil ?E) * indicator (Init`I) x \<partial>N Start)"
     unfolding visit_def using I L by (subst emeasure_HLD_nxt) (auto simp: Int_absorb2)
   also have "\<dots> = (\<integral>\<^sup>+x. ereal (p_j * card L) * indicator (Init`I) x \<partial>N Start)"
-    using I J_suntil_E by (intro nn_integral_cong mult_indicator_cong) auto
+    using I J_suntil_E
+    by (intro nn_integral_cong ereal_left_mult_cong)
+       (auto split: split_indicator_asm)
   also have "\<dots> = ereal ((\<Sum>i\<in>I. p_i i) * card L * p_j)"
     using p_j_pos assms
     by (subst nn_integral_cmult_indicator)
@@ -429,8 +438,10 @@ proof -
   have "?P Start hit_C = (\<integral>\<^sup>+x. ?P x (ev ?M) * indicator ?I x \<partial>N Start)"
     unfolding hit_C_def by (rule emeasure_HLD_nxt) measurable
   also have "\<dots> = (\<integral>\<^sup>+x. ereal ((1 - p_H) / (1 - p_f * p_H)) * indicator ?I x \<partial>N Start)"
-  proof (intro nn_integral_cong mult_indicator_cong)
-    fix x assume "x \<in> ?I"
+  proof (intro nn_integral_cong ereal_left_mult_cong)
+    fix x assume "indicator (Init ` H) x \<noteq> 0"
+    then have "x \<in> ?I"
+      by (auto split: split_indicator_asm)
     { fix j assume j: "j \<in> H"
       with ev_eq_suntil[of "Mix j"] have "?P (Mix j) (ev ?M) = ?P (Mix j) ((HLD ?J) suntil ?M)"
         by (intro emeasure_eq_AE) auto

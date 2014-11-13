@@ -250,8 +250,8 @@ definition "P_min s = real (MDP.n s)"
 
 lemma
   assumes "i < state_count mdp"
-  shows P_max: "P_max i \<le> solution (pos_cert c) !! i" (is ?max)
-    and P_min: "P_min i \<ge> solution (neg_cert c) !! i" (is ?min)
+  shows P_max: "P_max i \<le> real_of_rat (solution (pos_cert c) !! i)" (is ?max)
+    and P_min: "P_min i \<ge> real_of_rat (solution (neg_cert c) !! i)" (is ?min)
 proof -
   have "valid_pos_cert mdp (pos_cert c)" "valid_neg_cert mdp (neg_cert c)"
     using `valid_cert mdp c` by (auto simp: valid_cert_def)
@@ -264,7 +264,7 @@ proof -
   next
     fix s D assume "s \<in> S1" "D \<in> K s"
     then obtain j where j: "j < length (distrs mdp !! s)"
-      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = lookup 0 (distrs mdp !! s ! j) i"
+      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! j) i)"
       by transfer (auto simp: in_set_conv_nth)
     with valid_sub_certD(4)[OF `valid_mdp_rp mdp` pos, of s "distrs mdp !! s ! j"] `s \<in> S1`
          valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (pos_cert c)"]
@@ -322,7 +322,7 @@ proof -
   next
     fix s D assume "s \<in> S1" "D \<in> K s"
     then obtain j where j: "j < length (distrs mdp !! s)"
-      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = lookup 0 (distrs mdp !! s ! j) i"
+      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! j) i)"
       by transfer (auto simp: in_set_conv_nth)
     with valid_sub_certD(4)[OF `valid_mdp_rp mdp` neg, of s "distrs mdp !! s ! j"] `s \<in> S1`
          valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (neg_cert c)"]
@@ -341,7 +341,7 @@ proof -
       using valid_sub_certD(3)[OF `valid_mdp_rp mdp` neg, of s] by auto
 
     from 2 obtain a where a: "a < length (distrs mdp !! s)"
-      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = lookup 0 (distrs mdp !! s ! a) i"
+      "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! a) i)"
       by transfer (auto simp: in_set_conv_nth)
 
     obtain js n where eq: "witness (neg_cert c) !! s = (js, n)"

@@ -385,7 +385,7 @@ proof (cases "f x > 0")
   from assms have "f x = emeasure M {x}"
     by (intro emeasure_count_space_density_singleton[symmetric]) 
        (auto simp: has_subprob_density_def)
-  also have "... \<le> 1" by (rule subprob_measure_le_1)
+  also have "... \<le> 1" by (rule subprob_emeasure_le_1)
   finally show ?thesis .
 qed (auto simp: not_less intro: order.trans[of _ 0 1])
 

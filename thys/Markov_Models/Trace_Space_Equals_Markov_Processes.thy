@@ -141,7 +141,7 @@ proof (rule stream_space_eq_sstart)
         next
           assume "\<not> (\<exists>n. 0 < \<P>(\<omega> in M. X n \<omega> = s))"
           then have "pmf (K s) (shd \<omega>) = indicator {shd \<omega>} s"
-            by (intro pmf_K2) (auto simp: not_less measure_le_0)
+            by (intro pmf_K2) (auto simp: not_less measure_le_0_iff)
           with 1 `s\<in>S` show ?thesis
             by (auto split: split_indicator_asm)
         qed
@@ -220,7 +220,7 @@ proof (rule stream_space_eq_sstart)
       moreover have "\<P>(x in M. \<forall>i\<le>?l. X i x = (s # xs) ! i) \<le> \<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i)"
         by (intro M.finite_measure_mono) (auto simp: nth_append nth_Cons split: nat.split)
       ultimately show ?thesis 
-        by (simp add: measure_le_0)
+        by (simp add: measure_le_0_iff)
     next
       assume "\<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i) \<noteq> 0"
       then have *: "0 < \<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i)"
@@ -301,7 +301,7 @@ proof -
         by (auto split: split_indicator)
       from Suc[of _ "\<lambda>i. \<omega>' (Suc i)"] show ?case
         by (subst (1 2) prob_T')
-           (simp_all add: T_eq_T' all_le_Suc_split conj_commute conj_left_commute sets_eq_imp_space_eq[OF sets_T'])
+           (simp_all add: T_eq_T' all_Suc_split[where P="\<lambda>i. i \<le> Suc n \<longrightarrow> Q i" for n Q] conj_commute conj_left_commute sets_eq_imp_space_eq[OF sets_T'])
     qed (simp add: start_eq)
     ultimately have "\<P>(\<omega> in T' I. stl \<omega> !! n = t \<bar> \<forall>i\<le>n. \<omega> !! i = \<omega>' i) = pmf (K (\<omega>' n)) t" 
       by (simp add: cond_prob_def field_simps) }
@@ -311,7 +311,7 @@ proof -
     moreover have "\<P>(\<omega> in T' I. \<forall>t\<le>n. \<omega> !! t = \<omega>' t) \<le> \<P>(\<omega> in T' I. \<omega> !! n = \<omega>' n)"
       by (auto intro!: finite_measure_mono_AE simp: sets_T' sets_eq_imp_space_eq[OF sets_T'])
     ultimately have "\<P>(\<omega> in T' I. \<omega> !! n = \<omega>' n) \<noteq> 0"
-      by (auto simp: neq_iff not_less measure_le_0) }
+      by (auto simp: neq_iff not_less measure_le_0_iff) }
   note MC' = this
 
   show ?thesis
