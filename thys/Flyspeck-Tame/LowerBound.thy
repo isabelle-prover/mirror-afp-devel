@@ -160,7 +160,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
    = (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>F4\<^esub> \<d> |vertices f| )" (*<*)
     by (simp only: F3_def F4_def ListSum_compl) (*>*) (* *)
 
-  txt_raw {* \newpage *}
+  text_raw {* \newpage *}
   txt {* ($E_1$) From the definition of @{text "ExcessAt"} we have *}
 
   also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + (\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f| )
@@ -271,7 +271,7 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
     finally show ?thesis by simp
   qed
 
-  txt_raw {* \newpage *}
+  text_raw {* \newpage *}
   txt {* ($A_3$) We use property @{text "admissible\<^sub>1"}. *}
 
   also(trans3) have "(\<Sum>\<^bsub> f \<in> F4\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F4\<^esub> w f)"
