@@ -142,6 +142,9 @@ lemma index_nth_id:
   "\<lbrakk> distinct xs;  n < length xs \<rbrakk> \<Longrightarrow> index xs (xs ! n) = n"
 by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
 
+lemma index_upt[simp]: "m \<le> i \<Longrightarrow> i < n \<Longrightarrow> index [m..<n] i = i-m"
+by (induction n) (auto simp add: index_append)
+
 lemma index_eq_index_conv[simp]: "x \<in> set xs \<or> y \<in> set xs \<Longrightarrow>
   (index xs x = index xs y) = (x = y)"
 by (induct xs) auto
