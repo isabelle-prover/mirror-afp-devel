@@ -114,11 +114,6 @@ lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<L
 
 ML_file "corder_generator.ML"
 
-setup {*
-  Corder_Generator.setup
-*}
-
-
 subsection {* Instantiations for HOL types *}
 
 derive (linorder) corder unit

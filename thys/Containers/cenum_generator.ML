@@ -7,9 +7,6 @@ sig
   (* derives a trivial instance (None) for class enum and any type *)
   val derive_no_cenum : string -> theory -> theory
 
-  (* registeres method in Derive-Manager *)
-  val setup : theory -> theory
-
 end
 
 structure Cenum_Generator : CENUM_GENERATOR = 
@@ -35,6 +32,6 @@ fun derive_cenum typ_name param thy =
     in derive_no_cenum typ_name thy
   end
 
-val setup = 
-  Derive_Manager.register_derive "cenum" "use (no) enumeration for class cenum" derive_cenum 
+val _ = Theory.setup  
+  (Derive_Manager.register_derive "cenum" "use (no) enumeration for class cenum" derive_cenum) 
 end

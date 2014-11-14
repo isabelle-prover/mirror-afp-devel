@@ -224,10 +224,6 @@ This generator can be used for arbitrary types, not just datatypes.
 
 ML_file "mapping_impl_generator.ML" 
 
-setup {*
-  Mapping_Impl_Generator.setup
-*}
-
 derive (assoclist) mapping_impl unit
 derive (assoclist) mapping_impl bool
 derive (rbt) mapping_impl nat

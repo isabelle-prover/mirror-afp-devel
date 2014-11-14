@@ -86,10 +86,6 @@ This generator can be used for arbitrary types, not just datatypes.
 
 ML_file "cenum_generator.ML"
 
-setup {*
-  Cenum_Generator.setup
-*}
-
 
 subsection {* Instantiations *}
 

@@ -13,9 +13,6 @@ sig
   (* derives a class instance for corder for some datatype by creating linear orders *)
   val derive_some_corder : string -> theory -> theory
 
-  (* registeres method in Derive-Manager *)
-  val setup : theory -> theory
-
 end
 
 structure Corder_Generator : CORDER_GENERATOR = 
@@ -154,9 +151,9 @@ fun derive_corder typ_name param thy =
   if param = "linorder" then derive_corder_linorder typ_name thy else
   error "(no) and (linorder) are only optional parameters for deriving corder"
 
-val setup = 
-  Derive_Manager.register_derive 
+val _ = Theory.setup  
+  (Derive_Manager.register_derive 
     "corder" 
     "derives an order for a datatype or (no) order for any type, or uses (linorder) instance for corder" 
-    derive_corder
+    derive_corder)
 end

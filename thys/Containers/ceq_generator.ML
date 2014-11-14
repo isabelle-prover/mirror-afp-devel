@@ -13,9 +13,6 @@ sig
   (* derives a class instance for ceq by using ceq for depending types, only for datatypes *)
   val derive_ceq_ceq : string -> theory -> theory
 
-  (* registeres method in Derive-Manager *)
-  val setup : theory -> theory
-
 end
 
 structure Ceq_Generator : CEQ_GENERATOR = 
@@ -303,7 +300,7 @@ fun derive_ceq typ_name param thy =
    error "optional parameter for class ceq must be 'no' or 'eq'")
    typ_name thy
 
-val setup = 
-  Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq 
+val _ = Theory.setup  
+  (Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq) 
 
 end

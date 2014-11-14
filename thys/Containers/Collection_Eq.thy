@@ -74,10 +74,6 @@ This generator can be used for arbitrary types, not just datatypes.
 
 ML_file "ceq_generator.ML"
 
-setup {*
-  Ceq_Generator.setup
-*}
-
 subsection {* Type class instances for HOL types *}
 
 derive (eq) ceq unit

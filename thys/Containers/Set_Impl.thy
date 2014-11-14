@@ -1934,9 +1934,6 @@ This generator can be used for arbitrary types, not just datatypes.
 *}
 
 ML_file "set_impl_generator.ML" 
-setup {*
-  Set_Impl_Generator.setup
-*}
 
 derive (dlist) set_impl unit
 derive (dlist) set_impl bool
