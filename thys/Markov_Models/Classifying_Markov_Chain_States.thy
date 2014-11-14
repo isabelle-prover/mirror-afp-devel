@@ -2344,7 +2344,7 @@ proof -
     show "countable (C \<times> Some`C)"
       using C by auto
     show "set_pmf (pair_pmf N (map_pmf Some N)) \<subseteq> C \<times> Some ` C"
-      using `N \<subseteq> C` by (auto simp: set_pmf_pair_pmf set_map_pmf)
+      using `N \<subseteq> C` by (auto simp: set_pair_pmf set_map_pmf)
   qed
   
   from c0_D have "\<P>(\<omega> in KN.T (y, None). alw (not (HLD D)) \<omega>) \<le> \<P>(\<omega> in KN.T (y, None). alw (not (HLD {(c0, Some c0)})) \<omega>)"
@@ -2360,7 +2360,7 @@ proof -
   proof
     fix t assume t: "t \<in> KN.Kp (y, None)"
     then obtain a b where t_eq: "t = (a, Some b)" "a \<in> K y" "b \<in> N"
-      unfolding KN.Kp_def by (auto simp: set_map_pmf set_pmf_pair_pmf K'_def)
+      unfolding KN.Kp_def by (auto simp: set_map_pmf set_pair_pmf K'_def)
     with `y \<in> C` have "a \<in> C"
       using essential_classD2[OF `essential_class C` `y \<in> C`] by auto
     have "b \<in> C"

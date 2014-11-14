@@ -1229,7 +1229,7 @@ next
 qed
 
 lemma nn_integral_T_split:
-  assumes f[measurable]: "f \<in> borel_measurable S" "\<And>x. 0 \<le> f x"
+  assumes f[measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s) = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (stake n \<omega> @- \<omega>') \<partial>T ((s ## \<omega>) !! n)) \<partial>T s)"
   apply (subst T_split[of s n])
   apply (subst nn_integral_bind[OF f measurable_distr2[where M=S]])
@@ -1794,12 +1794,12 @@ proof (rule T_bisim)
     apply (rule measurable_compose[OF _ return_measurable])
     apply simp
     apply (intro bind_cong ballI arg_cong2[where f=return] refl)
-    apply (auto simp add: szip\<^sub>E_def stream_eq_Stream_iff set_pmf_pair_pmf)
+    apply (auto simp add: szip\<^sub>E_def stream_eq_Stream_iff set_pair_pmf)
     done
 qed
 
 lemma nn_integral_pT: 
-  fixes f assumes "f \<in> borel_measurable S" and "\<And>x. 0 \<le> f x"
+  fixes f assumes "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T (x, y)) = (\<integral>\<^sup>+\<omega>1. \<integral>\<^sup>+\<omega>2. f (szip\<^sub>E x y (\<omega>1, \<omega>2)) \<partial>K2.T y \<partial>K1.T x)"
   apply (subst T_eq_prod)
   apply simp
@@ -1811,6 +1811,7 @@ lemma nn_integral_pT:
   apply (rule measurable_compose[OF _ return_measurable])
   apply measurable
   apply (simp_all add: space_stream_space)
+  apply (subst (3 5) nn_integral_max_0[symmetric])
   apply (subst nn_integral_return)
   using assms
   apply (auto simp: space_stream_space)

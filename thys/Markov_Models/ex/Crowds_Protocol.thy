@@ -5,13 +5,6 @@ section {* Formalization of the Crowds-Protocol *}
 theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
 begin
-
-lemma setsum_ereal_left_distrib:
-  "(\<And>i. i \<in> A \<Longrightarrow> 0 \<le> f i) \<Longrightarrow> setsum f A * r = (\<Sum>n\<in>A. f n * r :: ereal)"
-  using setsum_ereal_right_distrib[of A f r] by (simp add: mult_ac)
-
-lemma ereal_left_mult_cong: "(c \<noteq> 0 \<Longrightarrow> a = b) \<Longrightarrow> a * c = (b * c::ereal)"
-  by (cases "c = 0") simp_all
   
 subsection {* Definition of the Crowds-Protocol *}
 
@@ -438,7 +431,7 @@ proof -
   have "?P Start hit_C = (\<integral>\<^sup>+x. ?P x (ev ?M) * indicator ?I x \<partial>N Start)"
     unfolding hit_C_def by (rule emeasure_HLD_nxt) measurable
   also have "\<dots> = (\<integral>\<^sup>+x. ereal ((1 - p_H) / (1 - p_f * p_H)) * indicator ?I x \<partial>N Start)"
-  proof (intro nn_integral_cong ereal_left_mult_cong)
+  proof (intro nn_integral_cong ereal_left_mult_cong refl)
     fix x assume "indicator (Init ` H) x \<noteq> 0"
     then have "x \<in> ?I"
       by (auto split: split_indicator_asm)
