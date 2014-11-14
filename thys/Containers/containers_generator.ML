@@ -84,7 +84,7 @@ fun register_is_c_dots_lemma const_name base_name thm thy = let
       val name = Long_Name.base_name const_name ^ "_" ^ base_name
       val lthy_map = Local_Theory.note ((Binding.name name, 
           @{attributes [simp,code_post]}), [thm]) #> #2
-      val thy' = Named_Target.theory_init thy |> lthy_map |> Local_Theory.exit_global
+      val thy' = Named_Target.theory_map lthy_map thy
       val _ = writeln ("derived " ^ name ^ "-lemma")
     in thy'
 end
