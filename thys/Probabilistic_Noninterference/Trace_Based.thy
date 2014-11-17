@@ -232,20 +232,20 @@ lemma integral_trans:
 
 subsection "Quasi strong termination traces"
 
-abbreviation "qsend \<equiv> T.hitting_time {cf. discrCf cf}"
+abbreviation "qsend \<equiv> sfirst (holds discrCf)"
 
 lemma qsend_eq_0_iff: "qsend cfT = 0 \<longleftrightarrow> discrCf (shd cfT)"
-  by (simp add: T.hitting_time.simps[of _ cfT] HLD_iff)
+  by (simp add: sfirst.simps[of _ cfT])
 
 lemma qsend_eq_0[simp]: "discrCf cf \<Longrightarrow> qsend (cf ## \<omega>) = 0"
   by (simp add: qsend_eq_0_iff)
 
-lemma alw_discrCf: "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> alw (HLD {cf. discrCf cf}) \<omega>"
+lemma alw_discrCf: "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> alw (holds discrCf) \<omega>"
   by (coinduction arbitrary: cf \<omega>)
      (auto simp add: HLD_iff elim: enabled.cases intro: discrCf_G simp del: split_paired_Ex)
 
 lemma alw_discrCf_indis':
-  "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> snd cf \<approx> t \<Longrightarrow> alw (HLD {cf'. snd cf' \<approx> t}) \<omega>"
+  "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> snd cf \<approx> t \<Longrightarrow> alw (holds (\<lambda>cf'. snd cf' \<approx> t)) \<omega>"
 proof (coinduction arbitrary: cf \<omega>)
   case alw with discrCf_eff_indis[of cf] show ?case
     by (auto simp add: HLD_iff enabled.simps[of _ \<omega>] G_eq
@@ -256,7 +256,7 @@ proof (coinduction arbitrary: cf \<omega>)
 qed
 
 lemma alw_discrCf_indis:
-  "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> alw (HLD {cf'. snd cf' \<approx> snd cf }) (cf ## \<omega>)"
+  "enabled cf \<omega> \<Longrightarrow> discrCf cf \<Longrightarrow> alw (holds (\<lambda>cf'. snd cf' \<approx> snd cf)) (cf ## \<omega>)"
   using alw_discrCf_indis'[of cf \<omega>, OF _ _ indis_refl]
   by (simp add: alw.simps[of _ "cf ## \<omega>"] indis_refl)
 
@@ -266,12 +266,12 @@ proof (induction n arbitrary: cf \<omega>)
     unfolding enabled.simps[of cf] by simp
 qed simp
 
-lemma hitting_time_eq_eSuc: "hitting_time X \<omega> = eSuc n \<longleftrightarrow> (\<not> HLD X \<omega>) \<and> hitting_time X (stl \<omega>) = n"
-  by (subst hitting_time.simps) auto
+lemma sfirst_eq_eSuc: "sfirst P \<omega> = eSuc n \<longleftrightarrow> (\<not> P \<omega>) \<and> sfirst P (stl \<omega>) = n"
+  by (subst sfirst.simps) auto
 
 lemma qsend_snth: "qsend \<omega> = enat n \<Longrightarrow> discrCf (\<omega> !! n)"
   by (induction n arbitrary: \<omega>)
-     (simp_all add: eSuc_enat[symmetric] HLD_iff enat_0 hitting_time_eq_0 hitting_time_eq_eSuc)
+     (simp_all add: eSuc_enat[symmetric] enat_0 sfirst_eq_0 sfirst_eq_eSuc)
 
 lemma indis_iff: "a \<approx> d \<Longrightarrow> b \<approx> d \<Longrightarrow> a \<approx> c \<longleftrightarrow> b \<approx> c"
   by (metis indis_trans indis_sym indis_refl)
@@ -289,21 +289,23 @@ proof -
     by simp
 
   from discr_N alw_discrCf_indis[OF sd _] assms(2,3) show ?thesis
-    by (simp add: N alw_iff_sdrop HLD_iff le_iff_add eq)
+    by (simp add: N alw_iff_sdrop le_iff_add eq)
        (metis indis_iff)
 qed
 
 lemma enabled_imp_UNTIL_alw_discrCf:
-  "enabled (shd \<omega>) (stl \<omega>) \<Longrightarrow> (not (HLD {cf. discrCf cf}) until (alw (HLD {cf. discrCf cf}))) \<omega>"
+  "enabled (shd \<omega>) (stl \<omega>) \<Longrightarrow> (not (holds discrCf) until (alw (holds discrCf))) \<omega>"
 proof (coinduction arbitrary: \<omega>)
   case UNTIL then show ?case
+    using alw_discrCf[of "shd \<omega>" "stl \<omega>"]
     by (cases "discrCf (shd \<omega>)")
-       (simp_all add: HLD_iff enabled.simps[of "shd \<omega>"] alw.simps[of _ \<omega>] alw_discrCf[of "shd \<omega>" "stl \<omega>"])
+       (simp_all add: enabled.simps[of "shd \<omega>"] alw.simps[of _ \<omega>])
 qed
 
 lemma less_qsend_iff_not_discrCf:
   "enabled cf bT \<Longrightarrow> n < qsend (cf ## bT) \<longleftrightarrow> \<not> discrCf ((cf ## bT) !! n)"
-  using enabled_imp_UNTIL_alw_discrCf[THEN less_hitting_time_iff, of "cf ## bT"] by simp
+  using enabled_imp_UNTIL_alw_discrCf[THEN less_sfirst_iff, of "cf ## bT"]
+  by (simp add: holds.simps[abs_def])
 
 subsection "Terminating configurations"
 
@@ -313,7 +315,7 @@ lemma qstermCf_E:
   "qstermCf cf \<Longrightarrow> cf' \<in> G cf \<Longrightarrow> qstermCf cf'"
   apply (auto simp: qstermCf_def)
   apply (erule_tac x="cf' ## cfT" in allE)
-  apply (auto simp: T.hitting_time_Stream intro: enat_0 discrCf_G split: split_if_asm intro: enabled.intros)
+  apply (auto simp: sfirst_Stream intro: enat_0 discrCf_G split: split_if_asm intro: enabled.intros)
   done
 
 abbreviation "eff_at cf bT n \<equiv> snd ((cf ## bT) !! n)"
@@ -540,15 +542,15 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       { fix bT n assume *: "?S (cf ## cf' ## bT) n" have "S cf' bT"
         proof (cases n)
           case 0 with * cf' show ?thesis
-            by (auto simp: S_def enat_0 T.hitting_time_Stream G_eq split: split_if_asm intro!: exI[of _ 0])
+            by (auto simp: S_def enat_0 sfirst_Stream G_eq split: split_if_asm intro!: exI[of _ 0])
                (blast intro: indis_trans indis_sym discrCf_eff_indis)
         next
           case (Suc n) with * cf' show "S cf' bT"
-            by (auto simp: eSuc_enat[symmetric] T.hitting_time_Stream S_def split: split_if_asm)
+            by (auto simp: eSuc_enat[symmetric] sfirst_Stream S_def split: split_if_asm)
         qed }
       moreover
       { fix bT n assume "?S (cf' ## bT) n" with cf' have "?S (cf ## cf' ## bT) (if discrCf cf then 0 else Suc n)"
-          by (auto simp: eSuc_enat[symmetric] enat_0[symmetric] T.hitting_time_Stream G_eq split: split_if_asm)
+          by (auto simp: eSuc_enat[symmetric] enat_0[symmetric] sfirst_Stream G_eq split: split_if_asm)
              (blast intro: indis_trans indis_sym discrCf_eff_indis)
         then have "S cf (cf' ## bT)"
           by (auto simp: S_def) }
@@ -755,7 +757,7 @@ lemma AE_T_max_qsend_time:
   fixes cf and e :: real assumes AE: "AE bT in T.T cf. qsend (cf ## bT) < \<infinity>" "0 < e"
   shows "\<exists>N. \<P>(bT in T.T cf. \<not> discrCf ((cf ## bT) !! N)) < e"
 proof -
-  from T.AE_T_max_hitting_time[OF AE] obtain N :: nat
+  from AE_T_max_sfirst[OF _ AE] obtain N :: nat
     where "\<P>(bT in T.T cf. N < qsend (cf ## bT)) < e"
     by auto
   also have "\<P>(bT in T.T cf. N < qsend (cf ## bT)) = \<P>(bT in T.T cf. \<not> discrCf ((cf ## bT) !! N))"
