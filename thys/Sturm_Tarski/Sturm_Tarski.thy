@@ -877,7 +877,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
         by (auto simp add: le_less)
       moreover have "poly max_rp b > 0"
         unfolding max_rp_def poly_power
-        using `poly max_rp b \<noteq> 0` False max_rp_def poly_power zero_le_even_power [of _ "b - max_r"]
+        using `poly max_rp b \<noteq> 0` False max_rp_def poly_power zero_le_even_power [of "order max_r p" "b - max_r"]
         by (auto simp add: le_less)
       ultimately have "?R=cross p' a b"
         unfolding p' mult.commute cross_def using variation_mult_pos
@@ -1191,9 +1191,8 @@ proof (induct "smods p q" arbitrary:p q rule:length_induct)
       have "- poly r1 a = poly p a " 
         using mod_div_equality[of p q] `poly q a=0` unfolding r1_def poly_minus minus_minus
         by (metis mod_add_self1 mod_by_0 mod_mult_self2_is_0 poly_0 poly_mult poly_add)
-      hence "r1\<noteq>0" and "poly r1 a\<noteq>0" and "poly p a*poly r1 a<0" using `poly p a\<noteq>0` 
-        by (auto,metis (poly_guards_query) linorder_neqE_linordered_idom minus_minus mult_less_0_iff
-          neg_0_less_iff_less poly_mult)
+      hence "r1\<noteq>0" and "poly r1 a\<noteq>0" and "poly p a*poly r1 a<0" using `poly p a\<noteq>0`
+        by (auto dest!: sym [of "- poly r1 a"] simp add: mult_less_0_iff)
       then obtain ps where ps:"smods p q=p#q#r1#ps" "smods r1 r2=r1#ps"
         by (metis "1.prems"(1) `q \<noteq> 0` r1_def r2_def smods.simps)
       hence "length (smods r1 r2)<length (smods p q)" by auto
@@ -1273,8 +1272,8 @@ next
       case (Cons x1 xs)
       def r\<equiv>"- (p mod q)"
       hence "smods p q=p#xs" and "smods q r=xs" and "p\<noteq>0" 
-        using `x1 # xs = smods p q` unfolding r_def
-        by  (metis Cons.hyps(2) list.distinct(1) list.inject smods.simps)+
+        using `x1 # xs = smods p q` unfolding r_def 
+        by (metis Cons.hyps(2) list.distinct(1) list.inject smods.simps)+
       obtain a1 b1 where 
           "a < a1"  "a1 < b1"  "b1 < b" and  
           a1_b1_no_root:"\<forall>p\<in>set xs. \<forall>x. a < x \<and> x \<le> a1 \<or> b1 \<le> x \<and> x < b \<longrightarrow> poly p x \<noteq> 0"
