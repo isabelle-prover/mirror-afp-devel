@@ -396,7 +396,7 @@ lemma scount_eq_0_iff: "scount P \<omega> = 0 \<longleftrightarrow> alw (not P) 
 
 lemma
   assumes "ev (alw (not P)) \<omega>"
-  shows scount_eq_card: "scount P \<omega> = card {i. P (sdrop i \<omega>)}"
+  shows scount_eq_card: "scount P \<omega> = enat (card {i. P (sdrop i \<omega>)})"
     and ev_alw_not_HLD_finite: "finite {i. P (sdrop i \<omega>)}"
   using assms
 proof (induction \<omega>)
@@ -435,7 +435,7 @@ lemma scount_infinite_iff: "scount P \<omega> = \<infinity> \<longleftrightarrow
   by (metis enat_ord_simps(4) not_alw_not scount_finite scount_infinite)
 
 lemma scount_eq:
-  "scount P \<omega> = (if alw (ev P) \<omega> then \<infinity> else card {i. P (sdrop i \<omega>)})"
+  "scount P \<omega> = (if alw (ev P) \<omega> then \<infinity> else enat (card {i. P (sdrop i \<omega>)}))"
   by (auto simp: scount_infinite_iff scount_eq_card not_alw_iff not_ev_iff) 
 
 subsection \<open> First index of an element \<close>
@@ -454,7 +454,7 @@ lemma sfirst_eSuc[simp]: "\<not> P \<omega> \<Longrightarrow> sfirst P \<omega> 
 
 lemma less_sfirstD:
   fixes n :: nat
-  assumes "n < sfirst P \<omega>" shows "\<not> P (sdrop n \<omega>)"
+  assumes "enat n < sfirst P \<omega>" shows "\<not> P (sdrop n \<omega>)"
   using assms
 proof (induction n arbitrary: \<omega>)
   case (Suc n) then show ?case
@@ -478,7 +478,7 @@ qed
 lemma sfirst_Stream: "sfirst P (s ## x) = (if P (s ## x) then 0 else eSuc (sfirst P x))"
   by (subst sfirst.simps) (simp add: HLD_iff)
 
-lemma less_sfirst_iff: "(not P until (alw P)) \<omega> \<Longrightarrow> n < sfirst P \<omega> \<longleftrightarrow> \<not> P (sdrop n \<omega>)"
+lemma less_sfirst_iff: "(not P until (alw P)) \<omega> \<Longrightarrow> enat n < sfirst P \<omega> \<longleftrightarrow> \<not> P (sdrop n \<omega>)"
 proof (induction n arbitrary: \<omega>)
   case 0 then show ?case
     by (simp add: enat_0 sfirst_eq_0 HLD_iff)
@@ -520,3 +520,4 @@ lemma sfirst_eq_enat_iff: "sfirst P \<omega> = enat n \<longleftrightarrow> ev_a
      (simp_all add: eSuc_enat[symmetric] sfirst.simps enat_0)
 
 end
+
