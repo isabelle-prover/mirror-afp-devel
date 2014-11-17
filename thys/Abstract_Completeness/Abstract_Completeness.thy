@@ -125,8 +125,11 @@ proof -
           proof(cases rs)
             case Nil thus ?thesis unfolding alw by (intro exI) auto
           qed (auto simp: alw intro: exI[of _ n])
-        qed (insert alw, cases "m < n",
-          auto simp: ev_holds_sset r stream.set_map in_set_conv_nth, auto)
+        next
+          show "ev (holds (op = r)) (rs @- flat (smap (\<lambda>n. stake n rules) (fromN n)))"
+            using alw r unfolding ev_holds_sset
+            by (cases "m < n") (force simp: stream.set_map in_set_conv_nth)+
+        qed
      qed
     }
   }
