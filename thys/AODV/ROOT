@@ -11,7 +11,7 @@ session AODV (AFP) = AWN +
     "root.tex"
     "mathpartir.sty"
 
-session AODV_BASIC (AFP) = AWN +
+session AODV_BASIC = AWN +
   description {* Mechanized invariant proof of AODV (RFC3561) loop freedom *}
   options [ document_graph ]
   theories
@@ -32,7 +32,7 @@ session AODV_BASIC (AFP) = AWN +
 
     Aodv_Loop_Freedom
 
-session AODV_A_NORREQID (AFP) = AWN +
+session AODV_A_NORREQID = AWN +
   description {* Invariant proof of AODV variant: Skipping the RREQ ID *}
   options [ document_graph ]
   theories
@@ -54,7 +54,7 @@ session AODV_A_NORREQID (AFP) = AWN +
 
     "variants/a_norreqid/A_Aodv_Loop_Freedom"
 
-session AODV_B_FWDRREPS (AFP) = AWN +
+session AODV_B_FWDRREPS = AWN +
   description {* Invariant proof of AODV variant: Forwarding the Route Reply *}
   options [ document_graph ]
   theories
@@ -76,7 +76,7 @@ session AODV_B_FWDRREPS (AFP) = AWN +
 
     "variants/b_fwdrreps/B_Aodv_Loop_Freedom"
 
-session AODV_C_GTOBCAST (AFP) = AWN +
+session AODV_C_GTOBCAST = AWN +
   description {* Invariant proof of AODV variant: From Groupcast to Broadcast *}
   options [ document_graph ]
   theories
@@ -98,7 +98,7 @@ session AODV_C_GTOBCAST (AFP) = AWN +
 
     "variants/c_gtobcast/C_Aodv_Loop_Freedom"
 
-session AODV_D_FWDRREQS (AFP) = AWN +
+session AODV_D_FWDRREQS = AWN +
   description {* Invariant proof of AODV variant: Forwarding the Route Request *}
   options [ document_graph ]
   theories
@@ -120,7 +120,7 @@ session AODV_D_FWDRREQS (AFP) = AWN +
 
     "variants/d_fwdrreqs/D_Aodv_Loop_Freedom"
 
-session AODV_E_ALL_ABCD (AFP) = AWN +
+session AODV_E_ALL_ABCD = AWN +
   description {* Invariant proof of AODV variant: Combine Four Variants *}
   options [ document_graph ]
   theories
@@ -141,4 +141,3 @@ session AODV_E_ALL_ABCD (AFP) = AWN +
     "variants/e_all_abcd/E_Global_Invariants"
 
     "variants/e_all_abcd/E_Aodv_Loop_Freedom"
-
