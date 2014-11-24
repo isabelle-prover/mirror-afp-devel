@@ -243,8 +243,10 @@ lemma bind_density:
 proof (rule measure_eqI)
   interpret sfN: sigma_finite_measure N by fact
   interpret sfNM: pair_sigma_finite N M unfolding pair_sigma_finite_def using assms by simp
+  show eq: "sets (M \<guillemotright>= f) = sets (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M))"
+    using sets_bind[OF sets_kernel[OF assms(6)] assms(3)] by auto
   fix X assume "X \<in> sets (M \<guillemotright>= f)"
-  with assms have "X \<in> sets N" by auto
+  with eq have "X \<in> sets N" by auto
   with assms have "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
     by (intro emeasure_bind_density) simp_all
   also from `X \<in> sets N` have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. g x y * indicator X y \<partial>M \<partial>N"
@@ -263,7 +265,7 @@ proof (rule measure_eqI)
   also from `X \<in> sets N` and assms have "... = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X"
     by (subst emeasure_density) (simp_all add: sfN.borel_measurable_nn_integral)
   finally show "emeasure (M \<guillemotright>= f) X = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X" .
-qed (simp add: assms)
+qed
 
 
 lemma bind_has_density:

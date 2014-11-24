@@ -12,6 +12,44 @@ theory PDF_Compiler_Pred
 imports PDF_Semantics PDF_Density_Contexts PDF_Transformations Density_Predicates
 begin
 
+
+lemma bind_cong_AE:
+  assumes "M = N"
+  assumes f: "f \<in> measurable N (subprob_algebra B)"
+  assumes g: "g \<in> measurable N (subprob_algebra B)"
+  assumes ae: "AE x in N. f x = g x"
+  shows "bind M f = bind N g"
+proof cases
+  assume "space N = {}" then show ?thesis
+    using `M = N` by (simp add: bind_empty)
+next
+  assume "space N \<noteq> {}"
+  show ?thesis unfolding `M = N`
+  proof (rule measure_eqI)
+    have *: "sets (N \<guillemotright>= f) = sets B"
+      using sets_bind[OF sets_kernel[OF f] `space N \<noteq> {}`] by simp
+    then show "sets (N \<guillemotright>= f) = sets (N \<guillemotright>= g)"
+      using sets_bind[OF sets_kernel[OF g] `space N \<noteq> {}`] by auto
+    fix A assume "A \<in> sets (N \<guillemotright>= f)"
+    then have "A \<in> sets B"
+      unfolding * .
+    with ae f g `space N \<noteq> {}` show "emeasure (N \<guillemotright>= f) A = emeasure (N \<guillemotright>= g) A"
+      by (subst (1 2) emeasure_bind[where N=B]) (auto intro!: nn_integral_cong_AE)
+  qed
+qed
+
+lemma sets_bind_measurable:
+  assumes f: "f \<in> measurable M (subprob_algebra B)"
+  assumes M: "space M \<noteq> {}"
+  shows "sets (M \<guillemotright>= f) = sets B"
+  using M by (intro sets_bind[OF sets_kernel[OF f]]) auto
+
+lemma space_bind_measurable:
+  assumes f: "f \<in> measurable M (subprob_algebra B)"
+  assumes M: "space M \<noteq> {}"
+  shows "space (M \<guillemotright>= f) = space B"
+  using M by (intro space_bind[OF sets_kernel[OF f]]) auto
+
 subsection {* Density compiler predicate *}
 
 text {*
@@ -87,7 +125,7 @@ subsection {* Auxiliary lemmas *}
 
 lemma has_subprob_density_distr_Fst:
   fixes t1 t2 f
-  defines "N \<equiv> embed_measure (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) (split PairVal)"
+  defines "N \<equiv> stock_measure (PRODUCT t1 t2)"
   defines "N' \<equiv> stock_measure t1"
   defines "fst' \<equiv> op_sem Fst"
   defines "f' \<equiv> \<lambda>x. \<integral>\<^sup>+y. f <|x,y|> \<partial>stock_measure t2"
@@ -100,24 +138,22 @@ next
   from dens have M_M: "measurable M = measurable N"
     by (intro ext measurable_cong_sets) (auto dest: has_subprob_densityD)
   hence meas_fst: "fst' \<in> measurable M N'" unfolding fst'_def
-    by (subst op_sem.simps, subst M_M, unfold N'_def N_def, intro measurable_comp)
-       (rule measurable_extract_pair, rule measurable_fst)
+    by (subst op_sem.simps) (simp add: N'_def N_def M_M)
   thus "subprob_space (distr M N' fst')" 
     by (rule subprob_space_distr) (simp_all add: N'_def)
 
   interpret sigma_finite_measure "stock_measure t2" by simp
-  have A: "(\<lambda>(x, y). f <| x ,  y |>) = f \<circ> split PairVal" 
-    by (intro ext) (simp add: o_def split: prod.split)
-  have B: "split PairVal \<in> measurable (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) N" unfolding N_def
-    by (rule measurable_embed_measure2) (simp add: inj_PairVal)
-  from dens show meas_f': "f' \<in> borel_measurable N'" unfolding f'_def N'_def
-    by (intro borel_measurable_nn_integral, subst A, intro measurable_comp)
-       (blast intro: B dest: has_subprob_densityD)+
+  have f[measurable]: "f \<in> borel_measurable (stock_measure (PRODUCT t1 t2))"
+    using dens by (auto simp: has_subprob_density_def has_density_def N_def)
+  then show meas_f': "f' \<in> borel_measurable N'" unfolding f'_def N'_def
+    by measurable
 
   let ?M1 = "distr M N' fst'" and ?M2 = "density N' f'"
   show "sets ?M1 = sets ?M2" by simp
   fix X assume "X \<in> sets ?M1"
   hence X: "X \<in> sets N'" "X \<in> sets N'" by (simp_all add: N'_def)
+  then have [measurable]: "X \<in> sets (stock_measure t1)"
+    by (simp add: N'_def)
 
   from meas_fst and X(1) have "emeasure ?M1 X = emeasure M (fst' -` X \<inter> space M)"
     by (rule emeasure_distr)
@@ -128,7 +164,7 @@ next
     by (subst (1 2) M, subst space_density, subst emeasure_density)
        (erule has_subprob_densityD, erule measurable_sets, simp, simp)
   also have "N = distr (N' \<Otimes>\<^sub>M stock_measure t2) N (split PairVal)" (is "_ = ?N") 
-    unfolding N_def N'_def by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
+    unfolding N_def N'_def stock_measure.simps by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
   hence "\<And>f. nn_integral N f = nn_integral ... f" by simp
   also from dens and X 
     have "(\<integral>\<^sup>+x. f x * indicator (fst' -` X \<inter> space N) x \<partial>?N) = 
@@ -141,15 +177,18 @@ next
   also from has_subprob_densityD(1)[OF dens] and X
     have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f <|x,y|> * indicator (fst' -` X \<inter> space N) <|x, y|> \<partial>stock_measure t2 \<partial>N'"
              (is "_ = ?I")
-    by (subst sigma_finite_measure.nn_integral_fst[symmetric])
-       (simp, intro borel_measurable_ereal_times, 
-        rule measurable_compose[OF measurable_embed_measure2, of _ f], simp add: inj_PairVal,
-        simp add: N_def N'_def, rule measurable_compose[OF measurable_embed_measure2
-            borel_measurable_indicator], simp add: inj_PairVal, unfold N'_def, fold N_def, 
-        rule measurable_sets, rule meas_fst', simp_all add: N'_def)
+    apply (subst sigma_finite_measure.nn_integral_fst[symmetric])
+    apply (auto simp: N_def N'_def simp del: space_stock_measure)
+    apply measurable
+    apply (rule measurable_compose[where g=fst'])
+    apply measurable
+    using meas_fst'
+    apply (simp add: N_def N'_def)
+    apply measurable
+    done
   also from X have A: "\<And>x y. x \<in> space N' \<Longrightarrow> y \<in> space (stock_measure t2) \<Longrightarrow>
                           indicator (fst' -` X \<inter> space N) <|x, y|> = indicator X x"
-    by (auto split: split_indicator simp: fst'_def extract_pair_def N_def 
+    by (auto split: split_indicator simp: fst'_def N_def 
                  space_embed_measure space_pair_measure N'_def)
   have "?I = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f <|x,y|> * indicator X x \<partial>stock_measure t2 \<partial>N'"  (is "_ = ?I")
     by (intro nn_integral_cong) (simp add: A)
@@ -157,8 +196,7 @@ next
     by (intro ext) simp
   from dens have "?I = \<integral>\<^sup>+x. (\<integral>\<^sup>+y. f <|x,y|> \<partial>stock_measure t2) * indicator X x \<partial>N'"
     by (intro nn_integral_cong nn_integral_multc, subst A)
-       (simp, rule measurable_comp[OF _ measurable_comp[OF 
-        measurable_embed_measure2 has_subprob_densityD(1)]], auto simp: N_def N'_def inj_PairVal)
+       (auto intro!: measurable_comp f measurable_PairVal simp: N'_def)
   also from meas_f' and X(2) have "... = emeasure ?M2 X" unfolding f'_def
     by (rule emeasure_density[symmetric])
   finally show "emeasure ?M1 X = emeasure ?M2 X" .
@@ -166,7 +204,7 @@ qed
 
 lemma has_subprob_density_distr_Snd:
   fixes t1 t2 f
-  defines "N \<equiv> embed_measure (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) (split PairVal)"
+  defines "N \<equiv> stock_measure (PRODUCT t1 t2)"
   defines "N' \<equiv> stock_measure t2"
   defines "snd' \<equiv> op_sem Snd"
   defines "f' \<equiv> \<lambda>y. \<integral>\<^sup>+x. f <|x,y|> \<partial>stock_measure t1"
@@ -179,24 +217,29 @@ next
   from dens have M_M: "measurable M = measurable N"
     by (intro ext measurable_cong_sets) (auto dest: has_subprob_densityD)
   hence meas_snd: "snd' \<in> measurable M N'" unfolding snd'_def
-    by (subst op_sem.simps, subst M_M, unfold N'_def N_def, intro measurable_comp)
-       (rule measurable_extract_pair, rule measurable_snd)
+    by (subst op_sem.simps) (simp add: N'_def N_def M_M)
   thus "subprob_space (distr M N' snd')" 
     by (rule subprob_space_distr) (simp_all add: N'_def)
 
-  interpret sigma_finite_measure "stock_measure t1" by simp
+  interpret t1: sigma_finite_measure "stock_measure t1" by simp
   have A: "(\<lambda>(x, y). f <| x ,  y |>) = f \<circ> split PairVal" 
     by (intro ext) (simp add: o_def split: prod.split)
-  have B: "split PairVal \<in> measurable (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) N" unfolding N_def
-    by (rule measurable_embed_measure2) (simp add: inj_PairVal)
-  from dens show meas_f': "f' \<in> borel_measurable N'" unfolding f'_def N'_def
-    by (intro borel_measurable_nn_integral, subst measurable_pair_swap_iff,
-        simp only: prod.case A) (blast intro: measurable_comp B dest: has_subprob_densityD)
+  have f[measurable]: "f \<in> borel_measurable (stock_measure (PRODUCT t1 t2))"
+    using dens by (auto simp: has_subprob_density_def has_density_def N_def)
+  then show meas_f': "f' \<in> borel_measurable N'" unfolding f'_def N'_def
+    by measurable
+
+  interpret N': sigma_finite_measure N'
+    unfolding N'_def by (rule sigma_finite_stock_measure)
+
+  interpret N'_t1: pair_sigma_finite t1 N' proof qed
 
   let ?M1 = "distr M N' snd'" and ?M2 = "density N' f'"
   show "sets ?M1 = sets ?M2" by simp
   fix X assume "X \<in> sets ?M1"
   hence X: "X \<in> sets N'" "X \<in> sets N'" by (simp_all add: N'_def)
+  then have [measurable]: "X \<in> sets (stock_measure t2)"
+    by (simp add: N'_def)
 
   from meas_snd and X(1) have "emeasure ?M1 X = emeasure M (snd' -` X \<inter> space M)"
     by (rule emeasure_distr)
@@ -207,7 +250,7 @@ next
     by (subst (1 2) M, subst space_density, subst emeasure_density)
        (erule has_subprob_densityD, erule measurable_sets, simp, simp)
   also have "N = distr (stock_measure t1 \<Otimes>\<^sub>M N') N (split PairVal)" (is "_ = ?N") 
-    unfolding N_def N'_def by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
+    unfolding N_def N'_def stock_measure.simps by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
   hence "\<And>f. nn_integral N f = nn_integral ... f" by simp
   also from dens and X 
     have "(\<integral>\<^sup>+x. f x * indicator (snd' -` X \<inter> space N) x \<partial>?N) = 
@@ -218,38 +261,27 @@ next
           rule borel_measurable_ereal_times, erule has_subprob_densityD,
           intro borel_measurable_indicator measurable_sets[OF meas_snd'], simp)
   also from has_subprob_densityD(1)[OF dens] and X
-    have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f <|x,y|> * indicator (snd' -` X \<inter> space N) <|x, y|>  \<partial>N' \<partial>stock_measure t1"
-             (is "_ = ?I")
-    by (subst sigma_finite_measure.nn_integral_fst[symmetric], simp add: N'_def)
-       (simp, intro borel_measurable_ereal_times, 
-        rule measurable_compose[OF measurable_embed_measure2, of _ f], simp add: inj_PairVal,
-        simp add: N_def N'_def, rule measurable_compose[OF measurable_embed_measure2
-            borel_measurable_indicator], simp add: inj_PairVal, unfold N'_def, fold N_def, 
-        rule measurable_sets, rule meas_snd', simp_all add: N'_def)
-  also have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. f <|x,y|> * indicator (snd' -` X \<inter> space N) <|x, y|>  
-                       \<partial>stock_measure t1 \<partial>N'" (is "_ = ?I")
-    by (rule pair_sigma_finite.Fubini')
-       (simp add: pair_sigma_finite_def N'_def, subst measurable_split_conv, 
-        intro borel_measurable_ereal_times, subst measurable_split_conv[symmetric], 
-        subst measurable_pair_swap_iff, simp only: prod.case A, 
-        intro measurable_comp[OF measurable_embed_measure2[OF inj_PairVal]], subst N'_def, 
-        rule has_subprob_densityD(1), rule dens[unfolded N_def], 
-        rule measurable_compose[OF _  borel_measurable_indicator[OF measurable_sets]],
-        subst measurable_split_conv[symmetric], unfold N'_def N_def, subst measurable_pair_swap_iff,
-        subst prod.case, rule measurable_embed_measure2, rule inj_PairVal, fold N_def, 
-        rule meas_snd', rule X)
+    have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. f <|x,y|> * indicator (snd' -` X \<inter> space N) <|x, y|> \<partial>stock_measure t1 \<partial>N'"
+      (is "\<dots> = ?I")
+    apply (subst N'_t1.nn_integral_snd[symmetric])
+    apply (auto simp: N_def N'_def simp del: space_stock_measure)
+    apply measurable
+    apply (rule measurable_compose[where g=snd'])
+    apply measurable
+    using meas_snd'
+    apply (simp add: N_def N'_def)
+    apply measurable
+    done
   also from X have A: "\<And>x y. x \<in> space N' \<Longrightarrow> y \<in> space (stock_measure t1) \<Longrightarrow>
                           indicator (snd' -` X \<inter> space N) <|y, x|> = indicator X x"
-    by (auto split: split_indicator simp: snd'_def extract_pair_def N_def 
+    by (auto split: split_indicator simp: snd'_def N_def 
                  space_embed_measure space_pair_measure N'_def)
   have "?I = \<integral>\<^sup>+y. \<integral>\<^sup>+x. f <|x,y|> * indicator X y \<partial>stock_measure t1 \<partial>N'"  (is "_ = ?I")
     by (intro nn_integral_cong) (simp add: A)
   also have A: "\<And>y. y \<in> space N' \<Longrightarrow> (\<lambda>x. f <|x,y|>) = f \<circ> split PairVal \<circ> (\<lambda>x. (x,y))"
     by (intro ext) simp
   from dens have "?I = \<integral>\<^sup>+y. (\<integral>\<^sup>+x. f <|x,y|> \<partial>stock_measure t1) * indicator X y \<partial>N'"
-    by (intro nn_integral_cong nn_integral_multc, subst A)
-       (simp, rule measurable_comp[OF _ measurable_comp[OF 
-        measurable_embed_measure2 has_subprob_densityD(1)]], auto simp: N_def N'_def inj_PairVal)
+    by (intro nn_integral_cong nn_integral_multc) (auto simp: N'_def)
   also from meas_f' and X(2) have "... = emeasure ?M2 X" unfolding f'_def
     by (rule emeasure_density[symmetric])
   finally show "emeasure ?M1 X = emeasure ?M2 X" .
@@ -257,7 +289,7 @@ qed
 
 lemma dens_ctxt_measure_empty_bind:
   assumes "\<rho> \<in> space (state_measure V' \<Gamma>)"
-  assumes "f \<in> measurable (state_measure V' \<Gamma>) (subprob_algebra N)"
+  assumes f: "f \<in> measurable (state_measure V' \<Gamma>) (subprob_algebra N)"
   shows "dens_ctxt_measure ({},V',\<Gamma>,\<lambda>_. 1) \<rho> \<guillemotright>= f = f \<rho>" (is "bind ?M _ = ?R")
 proof (intro measure_eqI)
   from assms have nonempty: "space ?M \<noteq> {}"
@@ -267,14 +299,15 @@ proof (intro measure_eqI)
   moreover from assms have [simp]: "sets (f \<rho>) = sets N"
     by (intro sets_kernel[OF assms(2)])
   ultimately show sets_eq: "sets (?M \<guillemotright>= f) = sets ?R" using assms
-    unfolding dens_ctxt_measure_def state_measure'_def state_measure_def by simp
+    by (subst sets_bind[OF sets_kernel[OF f]])
+       (simp_all add: dens_ctxt_measure_def state_measure'_def state_measure_def)
 
   from assms have [simp]: "\<And>\<sigma>. merge {} V' (\<sigma>,\<rho>) = \<rho>"
     by (intro ext) (auto simp: merge_def state_measure_def space_PiM)
 
   fix X assume X: "X \<in> sets (?M \<guillemotright>= f)"
   hence "emeasure (?M \<guillemotright>= f) X =  \<integral>\<^sup>+x. emeasure (f x) X \<partial>?M" using assms
-    by (subst emeasure_bind[OF nonempty]) (simp_all add: nonempty meas)
+    by (subst emeasure_bind[OF nonempty]) (simp_all add: nonempty meas sets_eq cong: measurable_cong_sets)
   also have "... = \<integral>\<^sup>+(x::state). emeasure (f \<rho>) X \<partial>count_space {\<lambda>_. undefined}" 
     unfolding dens_ctxt_measure_def state_measure'_def state_measure_def using X assms
       apply (simp only: prod.case)
@@ -290,46 +323,25 @@ proof (intro measure_eqI)
   finally show "emeasure (?M \<guillemotright>= f) X = emeasure (f \<rho>) X" .
 qed
 
-
 lemma (in density_context) bind_dens_ctxt_measure_cong:
   assumes fg: "\<And>\<sigma>. (\<And>x. x \<in> V' \<Longrightarrow> \<sigma> x = \<rho> x) \<Longrightarrow> f \<sigma> = g \<sigma>"
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
-  assumes Mf: "f \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
-  assumes Mg: "g \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
+  assumes Mf[measurable]: "f \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
+  assumes Mg[measurable]: "g \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
   defines "M \<equiv> dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>"
   shows "M \<guillemotright>= f = M \<guillemotright>= g"
-proof (rule measure_eqI)
-  fix X assume X': "X \<in> sets (M \<guillemotright>= f)"
-  have M_merge: "(\<lambda>\<sigma>. merge V V' (\<sigma>, \<rho>)) \<in> measurable (state_measure V \<Gamma>) (state_measure (V \<union> V') \<Gamma>)"
+proof -
+  have [measurable]: "(\<lambda>\<sigma>. merge V V' (\<sigma>, \<rho>)) \<in> measurable (state_measure V \<Gamma>) (state_measure (V \<union> V') \<Gamma>)"
     using \<rho> unfolding state_measure_def by simp
-  from X' and Mf have X: "X \<in> sets N" apply (subst (asm) sets_bind)
-    by (simp_all add: M_def measurable_dens_ctxt_measure_eq)
-  hence "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+ x. emeasure (f x) X \<partial>dens_ctxt_measure \<Y> \<rho>" using Mf 
-    by (subst emeasure_bind) (simp_all add: M_def measurable_dens_ctxt_measure_eq)
-  also have "... = \<integral>\<^sup>+ x. \<delta> (merge V V' (x, \<rho>)) * 
-                        emeasure (f (merge V V' (x, \<rho>))) X \<partial>state_measure V \<Gamma>" (is "?I1 f = ?I2 f")
-    using Mf X unfolding dens_ctxt_measure_def state_measure'_def
-    apply (simp only: prod.case, subst nn_integral_density)
-    apply (auto intro!: AE_I[of _ _ "{}"]) [3]
-    apply (subst nn_integral_distr)
-    apply (auto intro!: borel_measurable_ereal_times X M_merge)
+  show ?thesis
+    using disjoint
+    apply (simp add: M_def dens_ctxt_measure_def state_measure'_def density_distr)
+    apply (subst (1 2) bind_distr)
+    apply measurable
+    apply (intro bind_cong_AE[where B=N] AE_I2 refl fg)
+    apply measurable
     done
-  also have "\<And>x. x \<in> space (state_measure V \<Gamma>) \<Longrightarrow>
-                         f (merge V V' (x, \<rho>)) = g (merge V V' (x, \<rho>))" using disjoint
-    by (intro fg) (auto simp: merge_def state_measure_def space_PiM dest: PiE_mem)
-  hence "?I2 f = ?I2 g" by (intro nn_integral_cong) simp
-  also have "... = ?I1 g"
-    using Mg X unfolding dens_ctxt_measure_def state_measure'_def
-    apply (simp only: prod.case, subst nn_integral_density)
-    apply (auto intro!: AE_I[of _ _ "{}"]) [3]
-    apply (subst nn_integral_distr)
-    apply (auto intro!: borel_measurable_ereal_times X M_merge)
-    done
-  also have "... = emeasure (M \<guillemotright>= g) X" using Mg X
-    by (subst emeasure_bind) (simp_all add: M_def measurable_dens_ctxt_measure_eq)
-  finally show "emeasure (M \<guillemotright>= f) X = emeasure (M \<guillemotright>= g) X" .
-qed (insert Mf Mg, simp_all add: M_def measurable_dens_ctxt_measure_eq)
-
+qed
 
 lemma (in density_context) bin_op_randomfree_restructure:
   assumes t1: "\<Gamma> \<turnstile> e : t" and t2: "\<Gamma> \<turnstile> e' : t'" and t3: "op_type oper (PRODUCT t t') = Some tr"
@@ -367,7 +379,7 @@ proof-
     also have "... = expr_sem \<sigma> e \<guillemotright>= (\<lambda>x. return_val <|x , expr_sem_rf \<sigma> e'|>)" using \<sigma> vars2
       by (intro bind_cong ballI, subst bind_return_val'[of _ t' _ ?tt'])
          (auto simp: vt_e' M_def space_dens_ctxt_measure 
-               intro!: measurable_PairVal1)
+               intro!: measurable_PairVal)
     finally have "expr_sem \<sigma> e \<guillemotright>= (\<lambda>x. expr_sem \<sigma> e' \<guillemotright>= (\<lambda>y. return_val <|x,y|>)) =
                      expr_sem \<sigma> e \<guillemotright>= (\<lambda>x. return_val <|x, expr_sem_rf \<sigma> e'|>)" .
   }
@@ -375,16 +387,15 @@ proof-
              M \<guillemotright>= (\<lambda>\<sigma>. (expr_sem \<sigma> e \<guillemotright>= (\<lambda>x. return_val <|x, expr_sem_rf \<sigma> e'|>))
                    \<guillemotright>= (\<lambda>x. return_val (op_sem oper x)))" (is "_ = ?T")
     by (intro bind_cong ballI) (simp only: expr_sem.simps)
-  also have [simp]: "\<And>\<sigma>. \<sigma> \<in> space M \<Longrightarrow>  expr_sem_rf \<sigma> e' \<in> type_universe t'"
+  also have [measurable]: "\<And>\<sigma>. \<sigma> \<in> space M \<Longrightarrow> expr_sem_rf \<sigma> e' \<in> space t'"
     by (simp add: type_universe_def vt_e' del: type_universe_type)
   note [measurable] = measurable_op_sem[OF t3]
   hence  "?T = M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e \<guillemotright>= (\<lambda>x. return_val (op_sem oper <|x, expr_sem_rf \<sigma> e'|>)))"
-    (is "_ = ?T") by (intro bind_cong ballI, subst bind_assoc_return_val[of _ t _ ?tt' _ tr])
-                     (auto simp: sets_expr_sem[OF t1 vars1'] inj_PairVal)
+    (is "_ = ?T")
+    by (intro bind_cong ballI, subst bind_assoc_return_val[of _ t _ ?tt' _ tr])
+       (auto simp: sets_expr_sem[OF t1 vars1'])
   also have eq: "\<And>\<sigma>. (\<And>x. x \<in> V' \<Longrightarrow> \<sigma> x = \<rho> x) \<Longrightarrow> expr_sem_rf \<sigma> e' = expr_sem_rf \<rho> e'"
     using vars2 by (intro expr_sem_rf_eq_on_vars) auto
-  have [measurable]: "split PairVal \<in> measurable (stock_measure t \<Otimes>\<^sub>M stock_measure t') (stock_measure ?tt')"
-    by (simp add: inj_PairVal)
   have [measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e') \<in> measurable (state_measure (V \<union> V') \<Gamma>) (stock_measure t')"
     using vars2 by (intro measurable_expr_sem_rf[OF t2 rf]) blast
   note [measurable] = Me measurable_bind measurable_return_val
@@ -402,7 +413,7 @@ proof-
   also have "... = distr (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure tr)
                       (\<lambda>x. op_sem oper <|x, expr_sem_rf \<rho> e'|>)" using Me expr_sem_rf_space
     by (subst bind_return_val_distr[of _ t _ tr])
-       (simp_all add: M_def measurable_dens_ctxt_measure_eq)
+       (simp_all add: M_def sets_expr_sem[OF t1 vars1'])
   finally show ?thesis unfolding v_def .
 qed
 
@@ -420,23 +431,15 @@ proof (insert t_disj, elim disjE)
     by (intro val_type_expr_sem_rf) simp_all
   let ?f' = "\<lambda>\<sigma> x. let c = expr_sem_rf \<sigma> e'
                     in  f \<sigma> (RealVal (extract_real x - extract_real c))"
+  note Mf[unfolded A, measurable] and rf[measurable] and vars[measurable] and t[unfolded A, measurable]
   have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-    unfolding Let_def
-    apply (subst measurable_split_conv, rule measurable_Pair_compose_split[OF Mf], simp)
-    apply (simp only: A stock_measure.simps)
-    apply (rule measurable_compose[OF _ measurable_embed_measure2[OF inj_RealVal]])
-    apply (subst measurable_lborel1, rule borel_measurable_diff, simp)
-    apply (rule measurable_compose[OF _ measurable_extract_real])
-    apply (subst (2) stock_measure.simps[symmetric])
-    apply (rule measurable_compose[OF _ measurable_expr_sem_rf[OF t' rf vars]])
-    apply (simp add: state_measure_def)
-    done
+    unfolding Let_def A by measurable
   also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
                 split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     by (intro measurable_cong)
        (auto simp: Let_def space_pair_measure A space_embed_measure f'_def lift_RealIntVal2_def 
                    lift_RealIntVal_def extract_real_def 
-             dest!: vt_e' type_universe_type split: val.split)
+             dest!: vt_e' split: val.split)
   finally show ?thesis .
 next
   assume A: "t = INTEG"
@@ -446,26 +449,17 @@ next
     by (intro val_type_expr_sem_rf) simp_all
   let ?f' = "\<lambda>\<sigma> x. let c = expr_sem_rf \<sigma> e'
                     in  f \<sigma> (IntVal (extract_int x - extract_int c))"
+  note Mf[unfolded A, measurable] and rf[measurable] and vars[measurable] and t[unfolded A, measurable]
   have Mdiff: "split (op - :: int \<Rightarrow> _) \<in> 
                  measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) (count_space UNIV)" by simp
   have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-    unfolding Let_def
-    apply (subst measurable_split_conv, rule measurable_Pair_compose_split[OF Mf], simp)
-    apply (simp only: A stock_measure.simps embed_measure_count_space[symmetric] inj_IntVal)
-    apply (rule measurable_compose[OF _ measurable_embed_measure2[OF inj_IntVal]])
-    apply (rule measurable_Pair_compose_split[OF Mdiff]) 
-    apply (rule measurable_compose[OF measurable_snd], simp)
-    apply (rule measurable_compose[OF _ measurable_extract_int])
-    apply (simp only: embed_measure_count_space inj_IntVal stock_measure.simps[symmetric])
-    apply (rule measurable_compose[OF _ measurable_expr_sem_rf[OF t' rf vars]])
-    apply (simp add: state_measure_def)
-    done
+    unfolding Let_def A by measurable
   also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
                 split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     by (intro measurable_cong)
        (auto simp: Let_def space_pair_measure A space_embed_measure f'_def lift_RealIntVal2_def 
                    lift_RealIntVal_def extract_int_def 
-             dest!: vt_e' type_universe_type split: val.split)
+             dest!: vt_e' split: val.split)
   finally show ?thesis .
 qed
 
@@ -486,8 +480,10 @@ lemma (in density_context) emeasure_bind_if_dens_ctxt_measure:
           (is "?lhs = ?rhs")
 proof (intro measure_eqI)
   have sets_lhs: "sets ?lhs = sets R"
-    by (subst sets_bind[of _ _ R])
-       (intro measurable_bind[OF Mf] measurable_If', simp_all add: P_def M_def)
+    apply (subst sets_bind_measurable[of _ _ R])
+    apply measurable
+    apply (simp_all add: P_def M_def)
+    done
   thus "sets ?lhs = sets ?rhs" by simp
 
   fix X assume "X \<in> sets ?lhs"
@@ -516,9 +512,9 @@ proof (intro measure_eqI)
     done
 
   interpret dc_True!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal True)"
-    using density_context_if_dens[of _ \<delta>f True] densf unfolding if_dens_def by simp
+    using density_context_if_dens[of _ \<delta>f True] densf unfolding if_dens_def by (simp add: stock_measure.simps)
   interpret dc_False!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal False)"
-    using density_context_if_dens[of _ \<delta>f False] densf unfolding if_dens_def by simp
+    using density_context_if_dens[of _ \<delta>f False] densf unfolding if_dens_def by (simp add: stock_measure.simps)
 
   have "emeasure (M \<guillemotright>= (\<lambda>x. f x \<guillemotright>= (\<lambda>b. if P b then g x else h x))) X = 
           \<integral>\<^sup>+x. emeasure (f x \<guillemotright>= (\<lambda>b. if P b then g x else h x)) X \<partial>M" using X
@@ -536,12 +532,12 @@ proof (intro measure_eqI)
     using has_parametrized_subprob_densityD[OF densf]
     by (intro nn_integral_cong)
        (simp_all add: AE_count_space field_simps nn_integral_density 
-                      M_def space_dens_ctxt_measure)
+                      M_def space_dens_ctxt_measure stock_measure.simps)
   also have "... = \<integral>\<^sup>+x. emeasure (g x) X * \<delta>f x (BoolVal True) +
                         emeasure (h x) X * \<delta>f x (BoolVal False) \<partial>M"
     using has_parametrized_subprob_densityD[OF densf']
     by (intro nn_integral_cong, subst nn_integral_BoolVal)
-       (auto simp: P_def nn_integral_BoolVal emeasure_nonneg simp del: stock_measure.simps)
+       (auto simp: P_def nn_integral_BoolVal emeasure_nonneg)
   also have "... = (\<integral>\<^sup>+x. emeasure (g x) X * \<delta>f x (BoolVal True) \<partial>M) +
                    (\<integral>\<^sup>+x. emeasure (h x) X * \<delta>f x (BoolVal False) \<partial>M)" using X
     using has_parametrized_subprob_densityD[OF densf'] BoolVal_in_space
@@ -603,7 +599,7 @@ proof (intro measure_eqI)
   have [measurable]: "Measurable.pred M P'"
     unfolding P'_def by (rule pred_eq_const1[OF Mf]) simp
   have sets_lhs: "sets ?lhs = sets R"
-    by (subst sets_bind[of _ _ R]) (simp_all add: M_def)
+    by (subst sets_bind_measurable[of _ _ R]) (simp_all, simp add: M_def)
   thus "sets ?lhs = sets ?rhs" by simp
   from Mg have Mg'[measurable]: "g \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra R)"
     by (simp add: M_def measurable_dens_ctxt_measure_eq)
@@ -615,10 +611,11 @@ proof (intro measure_eqI)
     by (rule sets_kernel[OF Mh])
   have [simp]: "sets M = sets (state_measure (V \<union> V') \<Gamma>)"
     by (simp add: M_def dens_ctxt_measure_def state_measure'_def)
+  then have [measurable_cong]: "sets (state_measure (V \<union> V') \<Gamma>) = sets M" ..
   have [simp]: "range BoolVal = {BoolVal True, BoolVal False}" by auto
 
   fix X assume "X \<in> sets ?lhs"
-  hence X: "X \<in> sets R" by (simp only: sets_lhs)
+  hence X[measurable]: "X \<in> sets R" by (simp only: sets_lhs)
 
   interpret dc_True!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P \<sigma> then 1 else 0)" by fact
   interpret dc_False!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P' \<sigma> then 1 else 0)" by fact
@@ -630,19 +627,18 @@ proof (intro measure_eqI)
   also have "... = \<integral>\<^sup>+x. (if P x then 1 else 0) * emeasure (g x) X + 
                         (if P' x then 1 else 0) * emeasure (h x) X \<partial>M" using X
     using measurable_space[OF Mf]
-    by (intro nn_integral_cong) (auto simp add: P_def P'_def)
+    by (intro nn_integral_cong) (auto simp add: P_def P'_def stock_measure.simps)
   also have "... = (\<integral>\<^sup>+x. (if P x then 1 else 0) * emeasure (g x) X \<partial>M) +
                    (\<integral>\<^sup>+x. (if P' x then 1 else 0) * emeasure (h x) X \<partial>M)" using X
     by (intro nn_integral_add) (simp_all add: emeasure_nonneg)
   also have "... = (\<integral>\<^sup>+ y. \<delta>g \<rho> y * indicator X y \<partial>R) + (\<integral>\<^sup>+ y. \<delta>h \<rho> y * indicator X y \<partial>R)"
     unfolding M_def using \<rho> X
-    apply (subst (1 2) nn_integral_dens_ctxt_measure, simp)
-    apply (intro borel_measurable_ereal_times, simp, simp)
-    apply (intro borel_measurable_ereal_times, simp, simp)
+    apply (simp add: nn_integral_dens_ctxt_measure)
     apply (subst (1 2) mult.assoc[symmetric])
     apply (subst dc_True.nn_integral_dens_ctxt_measure[symmetric], simp, simp)
     apply (subst dc_False.nn_integral_dens_ctxt_measure[symmetric], simp, simp)
     apply (subst (1 2) emeasure_bind[symmetric], simp_all add: measurable_dens_ctxt_measure_eq)
+    apply measurable
     apply (subst emeasure_has_parametrized_subprob_density[OF densg], simp, simp)
     apply (subst emeasure_has_parametrized_subprob_density[OF densh], simp_all)
     done
@@ -687,9 +683,11 @@ proof-
                            (stock_measure t') (g \<rho>)" (is "has_subprob_density ?N _ _") 
     proof (unfold has_subprob_density_def, intro conjI)
       show "subprob_space ?N" 
-        by (intro subprob_space.subprob_space_distr has_subprob_densityD[OF dens])
-           (subst measurable_cong_sets[OF sets_bind refl],
-            rule Me, simp_all add: measurable_op_sem t2)
+        apply (intro subprob_space.subprob_space_distr has_subprob_densityD[OF dens])
+        apply (subst measurable_cong_sets[OF sets_bind_measurable refl])
+        apply (rule Me)
+        apply (simp_all add: measurable_op_sem t2)
+        done
       from dens show "has_density ?N (stock_measure t') (g \<rho>)"
         by (intro dens') (simp add: has_subprob_density_def)
     qed
@@ -786,7 +784,7 @@ next
     let ?M1 = "dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Var x))"
     let ?M2 = "density (stock_measure t) (\<lambda>v. marg_dens \<Y> x \<rho> v)"
     have "\<forall>\<sigma>\<in>space (dens_ctxt_measure \<Y> \<rho>). val_type (\<sigma> x) = t" using hd_var
-      by (auto simp: space_dens_ctxt_measure space_PiM 
+      by (auto simp: space_dens_ctxt_measure space_PiM  PiE_iff
                      state_measure_def intro: type_universe_type)
     hence "?M1 = dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (return (stock_measure t) \<circ> (\<lambda>\<sigma>. \<sigma> x))"
       by (intro bind_cong) (simp add: return_val_def)
@@ -1009,7 +1007,7 @@ next
     with dens \<rho> Me have "has_subprob_density ?N (stock_measure t) (apply_dist_to_dens dst f \<rho>)"
       unfolding apply_dist_to_dens_def has_parametrized_subprob_density_def
       by (subst t2, intro bind_has_subprob_density')
-         (auto simp: measurable_split_conv hd_rand.IH
+         (auto simp: hd_rand.IH space_bind_measurable
                intro!: measurable_dist_dens dist_measure_has_subprob_density)
     finally show "has_subprob_density (?M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e))) (stock_measure t)
                       (apply_dist_to_dens dst f \<rho>)" .
@@ -1034,9 +1032,7 @@ next
   from hd_pair.prems have t: "t = PRODUCT (\<Gamma> x) (\<Gamma> y)" by auto
 
   have meas: "(\<lambda>\<sigma>. <|\<sigma> x, \<sigma> y|>) \<in> measurable (state_measure (V\<union>V') \<Gamma>) ?R"
-    by (auto intro!: measurable_Pair_compose_split[OF measurable_embed_measure2] inj_PairVal
-                     measurable_component_singleton hd_pair.hyps
-             simp: state_measure_def measurable_dens_ctxt_measure_eq t)
+    using hd_pair unfolding t state_measure_def by simp
 
   have "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
             (\<lambda>\<rho>. distr (dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>) ?R (\<lambda>\<sigma>. <|\<sigma> x, \<sigma> y|>)) 
@@ -1076,7 +1072,7 @@ next
   let ?M' = "\<lambda>b \<rho>. dens_ctxt_measure (V,V',\<Gamma>,if_dens \<delta> f b) \<rho>"
 
   from f have dc': "\<And>b. density_context V V' \<Gamma> (if_dens \<delta> f b)" 
-    by (intro dc.density_context_if_dens) simp
+    by (intro dc.density_context_if_dens) (simp add: stock_measure.simps)
   have g1: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. ?M' True \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e1)) (stock_measure t) g1" using hd_if.prems
     by (intro hd_if.IH(2)[OF t1 dc']) simp
@@ -1288,7 +1284,7 @@ next
       have M_e: "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in>  measurable ?M (subprob_algebra (stock_measure t))"
       by (auto simp: measurable_dens_ctxt_measure_eq intro!: measurable_expr_sem)
     from M_e have meas_N: "measurable ?N = measurable (stock_measure t)"
-      by (intro ext measurable_cong_sets) simp_all
+      by (intro ext measurable_cong_sets) (simp_all add: sets_bind_measurable)
     from dens' and t2 show "subprob_space (distr ?N (stock_measure t') (op_sem oper))"
       by (intro subprob_space.subprob_space_distr)
          (auto dest: has_subprob_densityD intro!: measurable_op_sem simp: meas_N)
@@ -1300,14 +1296,11 @@ next
       fix x assume "x \<in> type_universe t"
       with M_e have "val_type x = t" by (auto simp:)
       hence "val_type (op_sem oper x) = t'" by (intro op_sem_val_type) (simp add: t2)
-      hence "op_sem oper x \<in> type_universe t'" unfolding type_universe_def 
-        by (simp del: type_universe_type)
     } note op_sem_type_universe = this
     from countable countable_type_countable measurable_op_sem[OF t2] dens'
       have "distr ... (stock_measure t') (op_sem oper) = density (stock_measure t') (?f \<rho>)"
       by (subst count_space, subst distr_density_discrete')
-         (auto simp: meas_N count_space 
-               intro!: op_sem_type_universe dest: has_subprob_densityD)
+         (auto simp: meas_N count_space intro!: op_sem_type_universe dest: has_subprob_densityD)
     finally show "distr ?N (stock_measure t') (op_sem oper) =  density (stock_measure t') (?f \<rho>)" .
   qed (auto simp: nn_integral_nonneg)
   from hd_op_discr.prems
@@ -1388,7 +1381,7 @@ next
     have [measurable]: "extract_real \<in> borel_measurable (stock_measure REAL)" by simp
     show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" 
       apply (simp only: t2 measurable_split_conv, rule measurable_If', simp, simp)
-      apply (rule pred_const_less, simp only: stock_measure.simps)
+      apply (rule pred_const_less)
       apply (rule measurable_compose[OF measurable_snd measurable_extract_real], simp)
       done
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure REAL) (f \<rho>)"
@@ -1466,7 +1459,7 @@ next
     from hd_addc.prems hd_addc.hyps \<rho> have vt_e': "val_type (expr_sem_rf \<rho> e') = t"
       by (intro val_type_expr_sem_rf[OF t2]) auto
     have space_e: "space (?M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) = type_universe t"
-      by (subst space_bind, subst measurable_dens_ctxt_measure_eq)
+      by (subst space_bind_measurable, subst measurable_dens_ctxt_measure_eq)
          (rule Me, simp, simp add:)
     from hd_addc.prems show "subprob_space (?N \<rho>)"
       by (intro subprob_space_bind subprob_space_dens[OF \<rho>], 
@@ -1486,7 +1479,7 @@ next
       also have "?N'' = ?N'"
         by (intro distr_cong)
            (auto simp: lift_RealVal_def lift_RealIntVal_def extract_real_def vt_e' space_e t 
-                 dest: type_universe_type split: val.split)
+                 dest: split: val.split)
       also have "has_density ?N' (stock_measure t) ?f' = has_density ?N' (stock_measure t) (?f \<rho>)"
         using vt_e' by (intro has_density_cong)
                         (auto simp: lift_RealIntVal_def t extract_real_def space_embed_measure
@@ -1502,7 +1495,7 @@ next
       also have "?N'' = ?N'"
         by (intro distr_cong)
            (auto simp: lift_IntVal_def lift_RealIntVal_def extract_real_def vt_e' space_e t 
-                 dest: type_universe_type split: val.split)
+                 split: val.split)
       also have "has_density ?N' (stock_measure t) ?f' = has_density ?N' (stock_measure t) (?f \<rho>)"
         using vt_e' by (intro has_density_cong)
                         (auto simp: lift_RealIntVal_def t extract_int_def space_embed_measure
@@ -1512,7 +1505,7 @@ next
     also have "?N' = distr (?M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) 
                           (\<lambda>w. op_sem Add <|w, expr_sem_rf \<rho> e'|>)" using t_disj vt_e'
       by (intro distr_cong, simp, simp)
-         (auto split: val.split dest: type_universe_type  simp: lift_RealIntVal_def 
+         (auto split: val.split simp: lift_RealIntVal_def 
             lift_RealIntVal2_def space_e extract_real_def extract_int_def)
     also have "... = ?N \<rho>"
         using hd_addc.prems hd_addc.hyps t_disj \<rho>
@@ -1556,8 +1549,8 @@ next
                    measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra (stock_measure REAL))"
       using t1 hd_multc.prems by (intro measurable_expr_sem) simp_all
     have space_e: "space (?M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) = range RealVal"
-      by (subst space_bind, subst measurable_dens_ctxt_measure_eq)
-         (rule Me, simp, simp add: t space_embed_measure)
+      by (subst space_bind_measurable, subst measurable_dens_ctxt_measure_eq)
+         (rule Me, simp, simp add: t space_embed_measure type_universe_REAL)
     from hd_multc.prems show "subprob_space (?N \<rho>)"
       by (intro subprob_space_bind subprob_space_dens[OF \<rho>], 
           subst measurable_dens_ctxt_measure_eq)
@@ -1632,7 +1625,7 @@ next
     finally show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)" .
 
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure (PRODUCT t t)) (f \<rho>)"
-    hence Mf: "f \<rho> \<in> borel_measurable (stock_measure (PRODUCT t t))" by (rule has_subprob_densityD)
+    hence Mf[measurable]: "f \<rho> \<in> borel_measurable (stock_measure (PRODUCT t t))" by (rule has_subprob_densityD)
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
     show "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) (?f \<rho>)"
     proof (insert t_disj, elim disjE)
@@ -1641,12 +1634,12 @@ next
       have "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) ?f''"
         using dens'
         by (simp only: t op_sem.simps, intro distr_lift_RealPairVal)
-            (simp_all add: borel_prod[symmetric] has_subprob_density_imp_has_density 
+            (simp_all add: borel_prod'[symmetric] has_subprob_density_imp_has_density 
                            distr_convolution_real)
       also have "?f'' = (\<lambda>z. \<integral>\<^sup>+ x. f \<rho> (RealPairVal (x, extract_real z - x)) \<partial>lborel)" 
         (is "_ = ?f''")
         by (auto simp add: t space_embed_measure extract_real_def)
-      also have "\<And>z.  (\<lambda>x. f \<rho>  <|x, op_sem Add <|RealVal z, op_sem Minus x|>|>)
+      also have "\<And>z. val_type z = REAL \<Longrightarrow> (\<lambda>x. f \<rho>  <|x, op_sem Add <|z, op_sem Minus x|>|>)
                           \<in> borel_measurable (stock_measure REAL)"
         apply (rule measurable_compose[OF _ Mf], simp only: t)
         apply (subst stock_measure.simps(5))
@@ -1658,9 +1651,8 @@ next
         done
       hence "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) ?f'' \<longleftrightarrow> 
               has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) (?f \<rho>)"
-        by (intro has_density_cong, simp add: t space_embed_measure del: op_sem.simps) 
-            (auto simp:  nn_integral_RealVal RealPairVal_def extract_real_def
-                          lift_RealIntVal2_def lift_RealIntVal_def)
+        by (intro has_density_cong, simp add: t space_embed_measure del: op_sem.simps)
+           (auto simp add: nn_integral_RealVal RealPairVal_def lift_RealIntVal2_def lift_RealIntVal_def val_type_eq_REAL)
       finally show "..." .
     next
       assume t: "t = INTEG"
@@ -1676,7 +1668,7 @@ next
       also have "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) ?f'' \<longleftrightarrow> 
               has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) (?f \<rho>)"
         by (intro has_density_cong, simp add: t space_embed_measure del: op_sem.simps) 
-            (auto simp:  nn_integral_IntVal IntPairVal_def extract_int_def
+            (auto simp:  nn_integral_IntVal IntPairVal_def val_type_eq_INTEG
                           lift_RealIntVal2_def lift_RealIntVal_def)
       finally show "..." .
     qed

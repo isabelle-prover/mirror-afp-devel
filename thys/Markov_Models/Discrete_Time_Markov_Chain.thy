@@ -296,6 +296,9 @@ lemma alw_enabled: "enabled (shd \<omega>) (stl \<omega>) \<Longrightarrow> alw 
 
 abbreviation "S \<equiv> stream_space (count_space UNIV)"
 
+lemma in_S [measurable (raw)]: "x \<in> space S"
+  by (simp add: space_stream_space)
+
 inductive_simps enabled_iff: "enabled s \<omega>"
 
 lemma measurable_enabled[measurable]:
@@ -401,7 +404,7 @@ definition T :: "'s \<Rightarrow> 's stream measure" where
 lemma space_T[simp]: "space (T s) = space S"
   by (simp add: T_def)
 
-lemma sets_T[simp]: "sets (T s) = sets S"
+lemma sets_T[simp, measurable_cong]: "sets (T s) = sets S"
   by (simp add: T_def)
 
 lemma measurable_T1[simp]: "measurable (T s) M = measurable S M"
@@ -1179,7 +1182,7 @@ lemma distr_Stream_subprob:
   done
 
 lemma sets_T': "sets (T' I) = sets S"
-  by (simp add: T'_def sets_bind[OF distr_Stream_subprob])
+  by (simp add: T'_def)
 
 lemma prob_space_T': "prob_space (T' I)"
   unfolding T'_def
@@ -1245,7 +1248,7 @@ proof (induction n arbitrary: s)
 next
   case (Suc n)
   let ?K = "measure_pmf (K s)" and ?m = "\<lambda>n \<omega> \<omega>'. stake n \<omega> @- \<omega>'"
-  note sets_stream_space_cong[simp]
+  note sets_stream_space_cong[simp, measurable_cong]
 
   have "T s = (?K \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t)))"
     by (rule T_eq_bind)
@@ -1259,12 +1262,8 @@ next
     by (simp add: space_stream_space bind_distr[OF _ measurable_distr2[where M=S]] del: stake.simps)
   also have "\<dots> = (T s \<guillemotright>= (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>)))"
     unfolding T_eq_bind[of s]
-    apply (subst bind_assoc[OF measurable_distr2[where M=S] measurable_distr2[where M=S], OF _ T_subprob])
-    apply (simp_all add: space_stream_space del: stake.simps)
-    apply measurable
-    apply (rule sets_pair_measure_cong[OF _ refl])
-    apply auto
-    done
+    by (subst bind_assoc[OF measurable_distr2[where M=S] measurable_distr2[where M=S], OF _ T_subprob])
+       (simp_all add: space_stream_space del: stake.simps)
   finally show ?case
     by simp
 qed
@@ -1273,10 +1272,7 @@ lemma nn_integral_T_split:
   assumes f[measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s) = (\<integral>\<^sup>+\<omega>. (\<integral>\<^sup>+\<omega>'. f (stake n \<omega> @- \<omega>') \<partial>T ((s ## \<omega>) !! n)) \<partial>T s)"
   apply (subst T_split[of s n])
-  apply (subst nn_integral_bind[OF f measurable_distr2[where M=S]])
-  apply measurable
-  apply (rule sets_stream_space_cong)
-  apply simp
+  apply (simp add: nn_integral_bind[OF f measurable_distr2[where M=S]])
   apply (subst nn_integral_distr)
   apply (simp_all add: space_stream_space)
   done
@@ -1289,9 +1285,6 @@ lemma emeasure_T_split:
   apply (subst emeasure_bind[OF _ measurable_distr2[where M=S]])
   apply (simp_all add: )
   apply (simp add: space_stream_space)
-  apply measurable
-  apply (rule sets_stream_space_cong)
-  apply simp
   apply (subst emeasure_distr)
   apply simp_all
   apply (simp_all add: space_stream_space)
@@ -1301,12 +1294,9 @@ lemma prob_T_split:
   assumes P[measurable]: "Measurable.pred S P"
   shows "\<P>(\<omega> in T s. P \<omega>) = (\<integral>\<omega>. \<P>(\<omega>' in T ((s ## \<omega>) !! n). P (stake n \<omega> @- \<omega>')) \<partial>T s)"
   unfolding T.emeasure_eq_measure[symmetric] ereal.inject[symmetric] emeasure_T_split[OF P, of s n]
-  apply (auto intro!: nn_integral_eq_integral T.integrable_const_bound[where B=1]
-                      measure_measurable_subprob_algebra2[where N=S]
-              simp: measure_nonneg T.emeasure_eq_measure SIGMA_Collect_eq)
-  apply (rule measurable_compose[OF _ T_subprob])
-  apply simp
-  done
+  by (auto intro!: nn_integral_eq_integral T.integrable_const_bound[where B=1]
+                   measure_measurable_subprob_algebra2[where N=S]
+           simp: measure_nonneg T.emeasure_eq_measure SIGMA_Collect_eq)
 
 lemma enabled_imp_alw:
   "(\<Union>s\<in>X. K s) \<subseteq> X \<Longrightarrow> x \<in> X \<Longrightarrow> enabled x \<omega> \<Longrightarrow> alw (HLD X) \<omega>"
@@ -1390,8 +1380,6 @@ lemma rT_eq_bind: "rT x = do { y <- measure_pmf (K x) ; \<omega> <- rT y ; retur
   apply (subst T_eq_bind)
   apply (subst restrict_space_bind[where K=S])
   apply (rule measurable_distr2[where M=S])
-  apply measurable
-  apply (intro sets_pair_measure_cong)
   apply (auto simp del: measurable_pmf_measure1
               simp add: Ex_enabled return_restrict_space intro!: bind_cong )
   apply (subst restrict_space_bind[symmetric, where K=S])
@@ -1435,7 +1423,7 @@ qed
 
 lemma T_bisim:
   assumes "\<And>x. prob_space (M x)"
-  assumes sets_M [simp]: "\<And>x. sets (M x) = sets S"
+  assumes sets_M [simp, measurable_cong]: "\<And>x. sets (M x) = sets S"
   assumes M_eq: "\<And>x. M x = (measure_pmf (K x) \<guillemotright>= (\<lambda>s. distr (M s) S (op ## s)))"
   shows "T = M"
 proof (intro ext stream_space_eq_sstart)
@@ -1736,7 +1724,6 @@ qed
 
 end
 
-
 locale MC_pair =
   K1!: MC_syntax K1 + K2!: MC_syntax K2 for K1 K2
 begin
@@ -1778,121 +1765,59 @@ proof (rule T_bisim)
 
   let ?P = "\<lambda>x1 x2. K1.T x1 \<Otimes>\<^sub>M K2.T x2"
 
+
   fix x show "prob_space (?B x)"
     by (auto simp: space_stream_space split: prod.splits
                 intro!: prob_space.prob_space_bind prob_space_return
-                        measurable_bind[where R=S and N=S] measurable_compose[OF _ return_measurable] AE_I2)
+                        measurable_bind[where N=S] measurable_compose[OF _ return_measurable] AE_I2)
        unfold_locales
 
   show "sets (?B x) = sets S"
     by (simp split: prod.splits add: measurable_bind[where N=S] sets_bind[where N=S] space_stream_space)
-  
-  note measurable_bind[where N=S and R=S, measurable]
+
   obtain a b where x_eq: "x = (a, b)"
     by (cases x) auto
   show "?B x = (measure_pmf (Kp x) \<guillemotright>= (\<lambda>s. distr (?B s) S (op ## s)))"
     unfolding x_eq
-    apply (simp add: split_beta' comp_def
-       bind_return_distr[symmetric] space_bind[where N=S] space_stream_space measurable_bind[where N=S])
-    apply (subst bind_assoc[where R=S])
-    apply (rule measurable_bind[where N=S])
-    apply measurable
-    apply (subst bind_assoc[where R=S and N=S])
-    apply measurable
-    apply (simp_all add: space_stream_space bind_return[where N=S])
     apply (subst K1.T_eq_bind')
-    apply (subst bind_assoc[where R=S])
-    apply measurable
-    apply (rule sets_pair_measure_cong)
-    apply (simp_all add: bind_assoc[where R=S and N=S] bind_return[where N=S] space_stream_space)
     apply (subst K2.T_eq_bind')
-    apply (subst bind_assoc[where R=S])
-    apply measurable
-    apply (rule sets_pair_measure_cong)
-    apply (simp_all add: space_stream_space bind_assoc[where R=S and N=S] bind_return[where N=S])
-    apply (subst T1K2.bind_rotate[where N=S])
-    apply (subst measurable_cong_sets[OF sets_pair_measure_cong, OF K1.sets_T sets_measure_pmf_count_space refl])
-    apply measurable back
-    apply (simp add: Kp_def)
-    apply (subst bind_pair_pmf[of "split M" for M, unfolded split, symmetric])
-    unfolding measurable_split_conv
-    apply (rule measurable_bind) defer
-    apply (rule measurable_bind) defer
-    apply (rule measurable_compose[OF _ return_measurable])
-    apply measurable
-    defer
-    apply measurable
-    apply (rule sets_pair_measure_cong[OF _ refl])
-    apply (simp_all add: split_beta')
-    apply (intro bind_pmf_cong subprob_space.bind_in_space[OF T1x]
-      measurable_bind)
-    apply (rule measurable_compose[OF _ K2.T_subprob])
-    apply simp
-    apply (rule measurable_compose[OF _ return_measurable])
-    apply simp
-    apply (rule measurable_compose[OF _ K2.T_subprob])
-    apply simp
-    apply (rule measurable_compose[OF _ return_measurable])
-    apply simp
-    apply (intro bind_cong ballI arg_cong2[where f=return] refl)
-    apply (auto simp add: szip\<^sub>E_def stream_eq_Stream_iff set_pair_pmf)
+    apply (auto
+         simp add: space_stream_space bind_assoc[where R=S and N=S] bind_return_distr[symmetric]
+                   Kp_def T1K2.bind_rotate[where N=S] split_beta' set_pair_pmf space_subprob_algebra
+                   bind_pair_pmf[of "split M" for M, unfolded split, symmetric, where N=S] szip\<^sub>E_def
+                   stream_eq_Stream_iff bind_return[where N=S] space_bind[where N=S]
+         simp del: measurable_pmf_measure1
+         intro!: bind_pmf_cong[where N=S] subprob_space_bind[where N=S] subprob_space_measure_pmf
+                 T1x bind_cong[where M="MC_syntax.T K x" for K x] arg_cong2[where f=return])
     done
 qed
 
 lemma nn_integral_pT: 
-  fixes f assumes "f \<in> borel_measurable S"
+  fixes f assumes [measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T (x, y)) = (\<integral>\<^sup>+\<omega>1. \<integral>\<^sup>+\<omega>2. f (szip\<^sub>E x y (\<omega>1, \<omega>2)) \<partial>K2.T y \<partial>K1.T x)"
-  apply (subst T_eq_prod)
-  apply simp
-  apply (subst nn_integral_bind[OF assms])
-  apply (rule measurable_bind)
-  apply (rule measurable_compose[OF _ K2.T_subprob'])
-  apply measurable
-  apply (subst nn_integral_bind[OF assms])
-  apply (rule measurable_compose[OF _ return_measurable])
-  apply measurable
-  apply (simp_all add: space_stream_space)
-  apply (subst (3 5) nn_integral_max_0[symmetric])
-  apply (subst nn_integral_return)
-  using assms
-  apply (auto simp: space_stream_space)
-  done
+  by (subst (1 3) nn_integral_max_0[symmetric])
+     (simp add: nn_integral_bind[where B=S] nn_integral_return in_S T_eq_prod)
 
 lemma prod_eq_prob_T:
   assumes [measurable]: "Measurable.pred K1.S P1" "Measurable.pred K2.S P2"
   shows "\<P>(\<omega> in K1.T x1. P1 \<omega>) * \<P>(\<omega> in K2.T x2. P2 \<omega>) =
     \<P>(\<omega> in T (x1, x2). P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>))"
 proof -
-  have "\<P>(\<omega> in T (x1, x2). P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>)) = 
-    (\<integral>\<omega>1. \<integral>\<omega>2. indicator {\<omega>\<in>space K1.S. P1 \<omega>} \<omega>1 * indicator {\<omega>\<in>space K2.S. P2 \<omega>} \<omega>2 \<partial>K2.T x2 \<partial>K1.T x1)"
-    apply (subst T_eq_prod)
-    unfolding split
-    apply (subst K1.T.measure_bind[where N=S])
-    apply (intro measurable_bind[where N=S] measurable_compose[OF _ return_measurable] )
-    apply measurable
-    apply simp
-    apply (subst K2.T.measure_bind[where N=S])
-    apply (intro measurable_bind[where N=S] measurable_compose[OF _ return_measurable] )
-    apply measurable
-    apply (simp add: space_stream_space)
-    apply measurable
-    apply simp
-    apply (subst measure_return)
-    apply simp
+  have "\<P>(\<omega> in T (x1, x2). P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>)) =
+    (\<integral> x. \<integral> xa. indicator {\<omega> \<in> space S. P1 (smap fst \<omega>) \<and> P2 (smap snd \<omega>)} (szip\<^sub>E x1 x2 (x, xa)) \<partial>MC_syntax.T K2 x2 \<partial>MC_syntax.T K1 x1)"
+    by (subst T_eq_prod)
+       (simp add: K1.T.measure_bind[where N=S] K2.T.measure_bind[where N=S] measure_return)
+  also have "... = (\<integral>\<omega>1. \<integral>\<omega>2. indicator {\<omega>\<in>space K1.S. P1 \<omega>} \<omega>1 * indicator {\<omega>\<in>space K2.S. P2 \<omega>} \<omega>2 \<partial>K2.T x2 \<partial>K1.T x1)"
     apply (intro integral_cong_AE)
     apply measurable
     using K1.AE_T_enabled
     apply eventually_elim
-    apply (intro integral_cong_AE measurable_compose[OF _ borel_measurable_indicator]
-      measurable_compose[OF _ measurable_szipE])
-    apply (rule measurable_compose[OF _ measurable_szipE])
+    apply (intro integral_cong_AE)
     apply measurable
-    apply simp_all
-    apply (simp add: space_stream_space)
     using K2.AE_T_enabled
     apply eventually_elim
-    apply (auto simp: space_stream_space szip\<^sub>E_def K1.force_enabled K2.force_enabled 
-                      stream.map_ident smap_szip_snd[where g="\<lambda>x. x"] smap_szip_fst[where f="\<lambda>x. x"]
+    apply (auto simp: space_stream_space szip\<^sub>E_def K1.force_enabled K2.force_enabled
+                      smap_szip_snd[where g="\<lambda>x. x"] smap_szip_fst[where f="\<lambda>x. x"]
                 split: split_indicator)
     done
   also have "\<dots> = \<P>(\<omega> in K1.T x1. P1 \<omega>) * \<P>(\<omega> in K2.T x2. P2 \<omega>)"

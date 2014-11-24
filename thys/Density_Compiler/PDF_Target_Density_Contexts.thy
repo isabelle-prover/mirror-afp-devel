@@ -47,7 +47,6 @@ proof (unfold density_context_def, intro allI ballI conjI impI subprob_spaceI)
   show "(\<lambda>x. ereal (extract_real (cexpr_sem x \<delta>))) 
             \<in> borel_measurable (state_measure (set vs \<union> set vs') \<Gamma>)"
     apply (intro borel_measurable_ereal measurable_compose[OF _ measurable_extract_real])
-    apply (subst stock_measure.simps[symmetric], rule measurable_cexpr_sem)
     apply (insert cdens_ctxt_invarD[OF assms], auto)
     done
   note [measurable] = this
@@ -293,7 +292,7 @@ proof-
             extract_real (cexpr_sem ((case_nat <|fst z, snd z|> \<rho>) (Suc x := fst z, Suc y := snd z) \<circ> Suc)
                                (integrate_vars \<Gamma> ?vs \<delta>))"
       unfolding marg_dens2_cexpr_def
-      by (simp add: cexpr_sem_cexpr_comp_aux extract_pair_def cexpr_sem_map_vars split: prod.split)
+      by (simp add: cexpr_sem_cexpr_comp_aux cexpr_sem_map_vars split: prod.split)
     also have "((case_nat <|fst z, snd z|> \<rho>) (Suc x := fst z, Suc y := snd z)) \<circ> Suc =
                    \<rho>(x := fst z, y := snd z)" (is "?\<rho>1 = ?\<rho>2") by (intro ext) (simp split: nat.split)
     also have "ereal (extract_real (cexpr_sem (\<rho>(x := fst z, y := snd z)) 
@@ -305,7 +304,7 @@ proof-
                  marg_dens2 (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) x y \<rho> (split PairVal z)" 
       unfolding marg_dens2_def 
       by (subst A[symmetric], subst C, simp only: dens_ctxt_\<alpha>_def prod.case)
-         (auto intro!: nn_integral_cong split: prod.split simp: extract_pair_def)
+         (auto intro!: nn_integral_cong split: prod.split)
     finally show "ereal (extract_real (cexpr_sem (case_nat (split PairVal z) \<rho>) 
                                             (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) =
                       marg_dens2 (dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>)) x y \<rho> (split PairVal z)" .
@@ -320,15 +319,14 @@ lemma nonneg_cexpr_sem_marg_dens2:
   shows "extract_real (cexpr_sem (case_nat v \<rho>) (marg_dens2_cexpr \<Gamma> vs x y \<delta>)) \<ge> 0"
 proof-
   from v obtain a b where v': "v = <|a, b|>" "a \<in> type_universe (\<Gamma> x)" "b \<in> type_universe (\<Gamma> y)"
-    by (auto simp: space_stock_measure[symmetric] space_embed_measure space_pair_measure 
-             simp del: space_stock_measure)
+    by (auto simp: val_type_eq_PRODUCT)
   let ?vs = "filter (\<lambda>z. z \<noteq> x \<and> z \<noteq> y) vs"
   note invar = cdens_ctxt_invarD[OF assms(1)]
   have A: "((case_nat v \<rho>) (Suc x := fst (extract_pair v), Suc y := snd (extract_pair v))) \<circ> Suc =
                \<rho>(x := fst (extract_pair v), y := snd (extract_pair v))" by (intro ext) auto
   have B: "\<rho>(x := fst (extract_pair v), y := snd (extract_pair v)) 
                      \<in> space (state_measure (set vs' \<union> {x,y}) \<Gamma>)" using x y v' \<rho>
-    by (auto simp: state_measure_def space_PiM extract_pair_def split: split_if_asm)
+    by (auto simp: space_state_measure split: split_if_asm)
   from x y have "set ?vs \<union> (set vs' \<union> {x, y}) = set vs \<union> set vs'" by auto
   with invar have "nonneg_cexpr (set ?vs \<union> (set vs' \<union> {x, y})) \<Gamma> \<delta>" by simp
   thus ?thesis using assms invar(1-3) A unfolding marg_dens2_cexpr_def

@@ -13,6 +13,14 @@ theory Measure_Embeddings
 imports Probability Density_Predicates PDF_Misc
 begin
 
+lemma vimage_algebra_Sup_sigma:
+  assumes [simp]: "MM \<noteq> {}" and "\<And>M. M \<in> MM \<Longrightarrow> f \<in> X \<rightarrow> space M"
+  shows "vimage_algebra X f (Sup_sigma MM) = Sup_sigma (vimage_algebra X f ` MM)"
+proof (rule measure_eqI)
+  show "sets (vimage_algebra X f (Sup_sigma MM)) = sets (Sup_sigma (vimage_algebra X f ` MM))"
+    using assms by (rule sets_vimage_Sup_eq)
+qed (simp add: vimage_algebra_def Sup_sigma_def emeasure_sigma)
+
 lemma vimage_algebra_cong: 
   assumes "X = Y"
   assumes "\<And>x. x \<in> Y \<Longrightarrow> f x = g x"
@@ -58,47 +66,6 @@ lemma sets_embed_eq_vimage_algebra:
            dest: sets.sets_into_space
            intro!: image_cong the_inv_into_vimage[symmetric])
 
-lemma emeasure_sigma[simp]: "emeasure (sigma \<Omega> A) = (\<lambda>_. 0)"
-  unfolding measure_of_def emeasure_def
-  by (subst Abs_measure_inverse)
-     (auto simp: measure_space_def sigma_algebra_trivial sigma_algebra_sigma_sets
-                 positive_def countably_additive_def)
-
-lemma vimage_algebra_Sup_sigma:
-  assumes [simp]: "MM \<noteq> {}" and "\<And>M. M \<in> MM \<Longrightarrow> f \<in> X \<rightarrow> space M"
-  shows "vimage_algebra X f (Sup_sigma MM) = Sup_sigma (vimage_algebra X f ` MM)"
-proof (rule measure_eqI)
-  show "sets (vimage_algebra X f (Sup_sigma MM)) = sets (Sup_sigma (vimage_algebra X f ` MM))"
-    apply (intro antisym[of "sets A" for A] sets_image_in_sets sets_Sup_in_sets)
-    apply (subst space_Sup_sigma)
-    using assms
-    apply simp
-    apply (rule measurable_Sup_sigma2)
-    apply simp
-    apply (rule measurable_Sup_sigma1)
-    apply (rule imageI)
-    apply assumption
-    apply (rule measurable_vimage_algebra1)
-    apply fact
-    apply auto []
-    apply simp
-    apply (auto simp: sets_vimage_algebra2 assms(2))
-    apply (rule in_vimage_algebra)
-    apply (rule in_Sup_sigma)
-    apply assumption +
-    done
-qed (simp add: vimage_algebra_def Sup_sigma_def)
-
-lemma vimage_algebra_vimage_algebra:
-  assumes "f \<in> X \<rightarrow> Y" "g \<in> Y \<rightarrow> space M"
-  shows "vimage_algebra X f (vimage_algebra Y g M) = vimage_algebra X (\<lambda>x. g (f x)) M" (is "?L = ?R")  
-proof (rule measure_eqI)
-  have fg: "(\<lambda>x. g (f x)) \<in> X \<rightarrow> space M" "\<And>A. f -` g -` A \<inter> f -` Y \<inter> X = (\<lambda>x. g (f x)) -` A \<inter> X"
-    using assms by auto
-  show "sets ?L = sets ?R"
-    by (simp add: sets_vimage_algebra2 assms fg simple_image image_comp comp_def del: ex_simps)
-qed (simp add: vimage_algebra_def Sup_sigma_def)
-
 lemma sets_embed_measure:
   assumes inj: "inj f" 
   shows "sets (embed_measure M f) = {f ` A |A. A \<in> sets M}"
@@ -108,7 +75,7 @@ lemma in_sets_embed_measure: "A \<in> sets M \<Longrightarrow> f ` A \<in> sets 
   unfolding embed_measure_def
   by (intro in_measure_of) (auto dest: sets.sets_into_space)
 
-lemma measurable_embed_measure1[measurable (raw)]:
+lemma measurable_embed_measure1:
   assumes g: "(\<lambda>x. g (f x)) \<in> measurable M N" 
   shows "g \<in> measurable (embed_measure M f) N"
   unfolding measurable_def
@@ -138,7 +105,7 @@ proof-
     by (intro measurable_measure_of) (auto dest: sets.sets_into_space)
 qed
 
-lemma measurable_embed_measure2[measurable]:
+lemma measurable_embed_measure2:
   assumes [simp]: "inj f" shows "f \<in> measurable M (embed_measure M f)"
   by (auto simp: inj_vimage_image_eq embed_measure_def
            intro!: measurable_measure_of dest: sets.sets_into_space)
@@ -159,6 +126,13 @@ lemma embed_measure_eq_distr:
     "inj f \<Longrightarrow> embed_measure M f = distr M (embed_measure M f) f"
   by (rule embed_measure_eq_distr') (auto intro!: inj_onI dest: injD)
 
+lemma nn_integral_embed_measure:
+  "inj f \<Longrightarrow> g \<in> borel_measurable (embed_measure M f) \<Longrightarrow>
+  nn_integral (embed_measure M f) g = nn_integral M (\<lambda>x. g (f x))"
+  apply (subst embed_measure_eq_distr, simp)
+  apply (subst nn_integral_distr)
+  apply (simp_all add: measurable_embed_measure2)
+  done
 
 lemma emeasure_embed_measure':
     assumes "inj_on f (space M)" "A \<in> sets (embed_measure M f)"
@@ -176,6 +150,7 @@ lemma embed_measure_comp:
   shows "embed_measure (embed_measure M f) g = embed_measure M (g \<circ> f)"
 proof-
   have [simp]: "inj (\<lambda>x. g (f x))" by (subst o_def[symmetric]) (auto intro: inj_comp)
+  note measurable_embed_measure2[measurable]
   have "embed_measure (embed_measure M f) g = 
             distr M (embed_measure (embed_measure M f) g) (g \<circ> f)"
       by (subst (1 2) embed_measure_eq_distr) 
@@ -278,9 +253,9 @@ proof (rule pair_measure_eqI)
     apply (auto simp add: the_inv_into_f_f
                 simp del: map_prod_simp
                 del: prod_fun_imageE) []
-    apply (subst (1 2 3 4 ) vimage_algebra_vimage_algebra)
+    apply (subst (1 2 3 4 ) vimage_algebra_vimage_algebra_eq)
     apply (simp_all add: the_inv_into_in_Pi Pi_iff[of snd] Pi_iff[of fst] space_pair_measure)
-    apply (simp_all add: Pi_iff[of snd] Pi_iff[of fst] the_inv_into_in_Pi vimage_algebra_vimage_algebra
+    apply (simp_all add: Pi_iff[of snd] Pi_iff[of fst] the_inv_into_in_Pi vimage_algebra_vimage_algebra_eq
        space_pair_measure[symmetric] map_prod_image[symmetric])
     apply (intro arg_cong[where f=sets] arg_cong[where f=Sup_sigma] arg_cong2[where f=insert] vimage_algebra_cong)
     apply (auto simp: map_prod_image the_inv_into_f_f
@@ -288,6 +263,7 @@ proof (rule pair_measure_eqI)
     apply (simp_all add: the_inv_into_f_f space_pair_measure)
     done
 
+  note measurable_embed_measure2[measurable]
   fix A B assume AB: "A \<in> sets (embed_measure M f)" "B \<in> sets (embed_measure N g)"
   moreover have "f -` A \<times> g -` B \<inter> space (M \<Otimes>\<^sub>M N) = (f -` A \<inter> space M) \<times> (g -` B \<inter> space N)"
     by (auto simp: space_pair_measure)

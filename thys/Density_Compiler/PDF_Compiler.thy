@@ -111,7 +111,7 @@ proof (intro cdens_ctxt_invarI)
     show "(\<lambda>x. ereal (extract_real (cexpr_sem x (map_vars Suc \<delta> *\<^sub>c f)))) 
             \<in> borel_measurable (state_measure (?vs \<union> ?vs') ?\<Gamma>)"
       apply (rule borel_measurable_ereal, rule measurable_compose[OF _ measurable_extract_real])
-      apply (subst stock_measure.simps[symmetric], rule measurable_cexpr_sem[OF t'])
+      apply (rule measurable_cexpr_sem[OF t'])
       apply (insert invar is_density_exprD[OF wf1], auto simp: shift_var_set_def)
       done
   next
@@ -182,7 +182,7 @@ proof (intro cdens_ctxt_invarI nonneg_cexpr_Mult nonneg_cexpr_subst_val)
       hence "ereal (?eval (cexpr_subst_val f (BoolVal v)) \<sigma>) \<le> 1"
         using \<sigma> \<rho> dens' unfolding has_parametrized_subprob_density_def
         by (subst B, intro subprob_count_space_density_le_1[of _ _ ?f])
-           (auto intro: merge_in_state_measure)
+           (auto intro: merge_in_state_measure simp: stock_measure.simps)
       ultimately have "?eval (\<delta> *\<^sub>c cexpr_subst_val f (BoolVal v)) \<sigma> \<le> ?eval \<delta> \<sigma>"
         by (subst A, intro mult_right_le_one_le) simp_all
     }
@@ -550,8 +550,7 @@ next
     finally have A: "ereal (eval_cexpr (?e1 *\<^sub>c ?e2) \<rho> x) = ?c * ?d" .
     have "val_type (expr_sem_rf \<rho> e) = t" using edc_rand_det t1 \<rho>
       by (intro val_type_expr_sem_rf) auto
-    with x have "?d \<ge> 0" by (intro dist_dens_nonneg) 
-        (auto simp: t2 t_def type_universe_def simp del: type_universe_type)
+    with x have "?d \<ge> 0" by (intro dist_dens_nonneg)
     hence "?c * ?d \<ge> 0" by simp
     note A and this
   } note A = this
@@ -1103,7 +1102,7 @@ next
   proof (intro conjI, simp only: dens_ctxt_\<alpha>_def prod.case, rule hd_cong[OF hd_inv])
     fix \<rho> x assume \<rho>: "\<rho> \<in> space (state_measure (set vs') \<Gamma>)"
                and x: "x \<in> space (stock_measure REAL)"
-    from x obtain x' where [simp]: "x = RealVal x'" by (auto simp: space_embed_measure)
+    from x obtain x' where [simp]: "x = RealVal x'" by (auto simp: val_type_eq_REAL)
     from \<rho> and wf' have "val_type (cexpr_sem (case_nat (RealVal (inverse x')) \<rho>) f) = REAL"
       by (intro val_type_cexpr_sem[OF _ _ case_nat_in_state_measure ])
          (auto simp: type_universe_def simp del: type_universe_type)
@@ -1134,7 +1133,7 @@ next
   proof (intro conjI, simp only: dens_ctxt_\<alpha>_def prod.case, rule hd_cong[OF hd_exp])
     fix \<rho> x assume \<rho>: "\<rho> \<in> space (state_measure (set vs') \<Gamma>)"
                and x: "x \<in> space (stock_measure REAL)"
-    from x obtain x' where [simp]: "x = RealVal x'" by (auto simp: space_embed_measure)
+    from x obtain x' where [simp]: "x = RealVal x'" by (auto simp: val_type_eq_REAL)
     from \<rho> and wf' have "val_type (cexpr_sem (case_nat (RealVal (ln x')) \<rho>) f) = REAL"
       by (intro val_type_cexpr_sem[OF _ _ case_nat_in_state_measure ])
          (auto simp: type_universe_def simp del: type_universe_type)

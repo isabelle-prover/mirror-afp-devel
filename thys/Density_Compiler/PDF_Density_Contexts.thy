@@ -14,7 +14,7 @@ lemma measurable_case_nat_Suc_PiM:
 proof-
   have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) 
            \<in> measurable (PiM (Suc ` A) (case_nat M N)) (PiM A N)"
-    (is "?f \<in> ?M") by (rule measurable_restrict) simp
+    (is "?f \<in> ?M") by (rule measurable_restrict) (measurable, simp)
   also have "?f \<in> ?M \<longleftrightarrow> ?thesis"
     by (intro measurable_cong ext) (auto simp: state_measure_def space_PiM dest: PiE_mem)
   finally show ?thesis .
@@ -25,7 +25,7 @@ lemma measurable_case_nat_Suc:
 proof-
   have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) 
            \<in> measurable (state_measure (Suc ` A) (case_nat t \<Gamma>)) (state_measure A \<Gamma>)"
-    (is "?f \<in> ?M") unfolding state_measure_def by (rule measurable_restrict) simp
+    (is "?f \<in> ?M") unfolding state_measure_def by (rule measurable_restrict) (measurable, simp)
   also have "?f \<in> ?M \<longleftrightarrow> ?thesis"
     by (intro measurable_cong ext) (auto simp: state_measure_def space_PiM dest: PiE_mem)
   finally show ?thesis .
@@ -334,11 +334,8 @@ proof-
     unfolding product_sigma_finite_def by simp
   from assms have "(\<integral>\<^sup>+ z. marg_dens2 \<Y> x y \<rho> z * indicator X z \<partial>?M) = 
       \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (split PairVal z) * indicator X (split PairVal z) \<partial>?M'"
-    by (subst stock_measure.simps, subst embed_measure_eq_distr[OF inj_PairVal],
-        subst nn_integral_distr)
-       (rule measurable_embed_measure2[OF inj_PairVal], intro borel_measurable_ereal_times, 
-        subst stock_measure.simps[symmetric], intro measurable_marg_dens2,
-        simp_all add: borel_measurable_indicator)
+    by (subst nn_integral_PairVal)
+       (auto simp add: split_beta' intro!: borel_measurable_ereal_times measurable_marg_dens2)
 
   from assms have A: "V = insert y (V-{y})" by blast
   from assms have B: "insert x (V-{x,y}) = V - {y}" by blast
@@ -379,7 +376,7 @@ proof-
     have "\<And>v w \<sigma>. v \<in> space (stock_measure (\<Gamma> x)) \<Longrightarrow> w \<in> space (stock_measure (\<Gamma> y))
                \<Longrightarrow> \<sigma> \<in> space (state_measure (V-{x,y}) \<Gamma>)
                \<Longrightarrow> \<sigma>(x := v, y := w) \<in> X' \<longleftrightarrow> <|v,w|> \<in> X"
-    by (auto simp: X'_def state_measure_def space_PiM)
+    by (simp add: X'_def space_state_measure PiE_iff extensional_def)
   hence "?I = \<integral>\<^sup>+w. \<integral>\<^sup>+v. \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v, y := w), \<rho>)) * indicator X <|v,w|> 
                \<partial>state_measure (V - {x, y}) \<Gamma> \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
     by (intro nn_integral_cong) (simp split: split_indicator)
@@ -394,21 +391,13 @@ proof-
       done
   also have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. marg_dens2 \<Y> x y \<rho> <|v,w|> * indicator X <|v,w|> 
                        \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
-    by (intro nn_integral_cong)
-       (simp add: marg_dens2_def extract_pair_def)
+    by (intro nn_integral_cong) (simp add: marg_dens2_def)
   also from assms(4) 
     have "... = \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (split PairVal z) * indicator X (split PairVal z) 
                     \<partial>(stock_measure (\<Gamma> x) \<Otimes>\<^sub>M stock_measure (\<Gamma> y))"
-      apply (subst pair_sigma_finite.nn_integral_snd[symmetric])
-      apply (simp add: pair_sigma_finite_def)
-      apply (intro borel_measurable_ereal_times)
-      apply (rule measurable_compose[OF _ measurable_marg_dens2], 
-             simp add: measurable_embed_measure2 inj_PairVal)
-      apply (simp_all add: assms)[4]
-      apply (rule measurable_compose[OF _ borel_measurable_indicator], 
-             rule measurable_embed_measure2, rule inj_PairVal)
-      apply simp_all
-      done
+      using assms
+      by (subst pair_sigma_finite.nn_integral_snd[symmetric])
+         (auto simp add: pair_sigma_finite_def intro!: borel_measurable_ereal_times measurable_compose[OF _ measurable_marg_dens2])
   also have "... = \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> z * indicator X z \<partial>stock_measure (PRODUCT (\<Gamma> x) (\<Gamma> y))"
       apply (subst stock_measure.simps, subst embed_measure_eq_distr, rule inj_PairVal)
       apply (rule nn_integral_distr[symmetric], intro measurable_embed_measure2 inj_PairVal)
@@ -439,7 +428,7 @@ proof (rule measure_eqI)
   also from assms have "... = \<integral>\<^sup>+ \<sigma>. \<delta> (merge V V' (\<sigma>, \<rho>)) * 
                                         indicator ?X'' (merge V V' (\<sigma>,\<rho>)) \<partial>state_measure V \<Gamma>"
     by (intro nn_integral_cong)
-       (auto split: split_indicator simp: state_measure_def space_PiM merge_def)
+       (auto split: split_indicator simp: space_state_measure merge_def PiE_iff extensional_def)
   also from X and assms have "... = emeasure ?M2 X" using measurable_dens 
     by (auto simp: emeasure_distr emeasure_density nn_integral_distr 
                    dens_ctxt_measure_def state_measure'_def state_measure_def)
@@ -465,7 +454,7 @@ proof (rule measure_eqI)
     done
   from assms(1-4) X meas have "emeasure ?M2 X = emeasure (dens_ctxt_measure \<Y> \<rho>) ?X''"
     apply (subst emeasure_distr)
-    apply (subst measurable_dens_ctxt_measure_eq, unfold state_measure_def M_def, subst stock_measure.simps)
+    apply (subst measurable_dens_ctxt_measure_eq, unfold state_measure_def M_def)
     apply (simp_all add: space_dens_ctxt_measure state_measure_def)
     done
   also from assms(1-4) X meas 
@@ -480,7 +469,7 @@ proof (rule measure_eqI)
     done
   also from assms(1-4) X 
     have "\<And>\<sigma>. \<sigma>\<in>space (state_measure V \<Gamma>) \<Longrightarrow> merge V V' (\<sigma>, \<rho>) \<in> ?X'' \<longleftrightarrow> \<sigma> \<in> ?X'"
-    by (auto simp: state_measure_def space_PiM merge_def)
+    by (auto simp: space_state_measure merge_def PiE_iff extensional_def)
   hence "?I = \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>, \<rho>)) * indicator ?X' \<sigma> \<partial>state_measure V \<Gamma>"
     by (intro nn_integral_cong) (simp split: split_indicator)
   also from assms X have "... = \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> z * indicator X z \<partial>M" unfolding M_def
@@ -498,7 +487,7 @@ lemma measurable_insert_dens[measurable]:
 proof-
   have "(\<lambda>\<sigma>. \<sigma> 0) \<in> measurable (state_measure (shift_var_set (V \<union> V')) (case_nat t \<Gamma>))
                                (stock_measure t)" unfolding state_measure_def
-    unfolding shift_var_set_def by simp
+    unfolding shift_var_set_def by measurable simp
   thus ?thesis unfolding insert_dens_def[abs_def] by measurable
 qed
 
@@ -874,8 +863,7 @@ proof (intro measure_eqI)
     by (simp add: space_dens_ctxt_measure merge_in_state_measure \<rho>)
 
   have "sets ?lhs = sets (state_measure (shift_var_set (V \<union> V')) ?\<Gamma>')"
-    by (subst sets_bind, intro measurable_bind[OF meas_M'])
-       (simp_all add: meas_N' measurable_compose[OF _ return_measurable])
+    using nonempty' by (subst sets_bind, subst sets_bind) auto
   thus sets_eq: "sets ?lhs = sets ?rhs" 
     unfolding dens_ctxt_measure_def state_measure'_def by simp
 
@@ -1095,7 +1083,7 @@ proof-
     by (subst M_cong, intro measurable_compose[OF measurable_op_sem[OF t2]] return_measurable)
 
   from M_e have [simp]: "sets (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) = sets (stock_measure t)"
-    by (subst sets_bind) (auto simp: M_def)
+    by (intro sets_bind) (auto simp: M_def space_subprob_algebra dest!: measurable_space)
   from measurable_cong_sets[OF this refl]
     have M_op: "op_sem oper \<in> measurable (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t')"
     by (auto intro!: measurable_op_sem t2)

@@ -10,17 +10,6 @@ theory PDF_Semantics
 imports PDF_Values Poisson
 begin
 
-section {* Built-in Probability Distributions *}
-
-subsection {* Bernoulli *}
-
-definition bernoulli_density :: "real \<Rightarrow> bool \<Rightarrow> ereal" where
-  "bernoulli_density p b = (if p \<in> {0..1} then (if b then p else 1 - p) else 0)"
-
-definition bernoulli :: "val \<Rightarrow> val measure" where
-  "bernoulli = (\<lambda> RealVal p \<Rightarrow> density (count_space (range BoolVal)) 
-                                   (\<lambda>BoolVal b \<Rightarrow> bernoulli_density p b))"
-
 lemma measurable_subprob_algebra_density:
   assumes "sigma_finite_measure N"
   assumes "space N \<noteq> {}"
@@ -42,36 +31,24 @@ next
     by (simp only: cong: measurable_cong)
 qed simp_all
 
+section {* Built-in Probability Distributions *}
+
+subsection {* Bernoulli *}
+
+definition bernoulli_density :: "real \<Rightarrow> bool \<Rightarrow> ereal" where
+  "bernoulli_density p b = (if p \<in> {0..1} then (if b then p else 1 - p) else 0)"
+
+definition bernoulli :: "val \<Rightarrow> val measure" where
+  "bernoulli p = density BOOL (bernoulli_density (extract_real p) o extract_bool)"
+
 lemma measurable_bernoulli_density[measurable]:
-    "split bernoulli_density \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
+  "split bernoulli_density \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
   unfolding bernoulli_density_def[abs_def] by measurable
 
-lemma measurable_bernoulli[measurable]:
-  "bernoulli \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range BoolVal)))"
-proof (subst measurable_cong)
-  fix p assume "p \<in> space (embed_measure lborel RealVal)"
-  thus "bernoulli p = density (count_space (range BoolVal)) 
-                           (bernoulli_density (extract_real p) \<circ> extract_bool)"
-    by (auto intro!: density_cong AE_I2 simp: bernoulli_def extract_real_def 
-          extract_bool_def o_def space_embed_measure)
-next
-  show "(\<lambda>p. density (count_space (range BoolVal)) 
-                 (bernoulli_density (extract_real p) \<circ> extract_bool))
-           \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range BoolVal)))"
-  proof (rule measurable_subprob_algebra_density)
-    show "(\<lambda>(p, b). (bernoulli_density (extract_real p) \<circ> extract_bool) b)
-              \<in> borel_measurable (embed_measure lborel RealVal \<Otimes>\<^sub>M count_space (range BoolVal))"
-       unfolding o_def by measurable
-  next
-    have [simp]: "range BoolVal = {TRUE, FALSE}" by auto
-    fix p assume "p \<in> space (embed_measure lborel RealVal)"
-    thus "(\<integral>\<^sup>+b. (bernoulli_density (extract_real p) \<circ> extract_bool) b
-              \<partial>count_space (range BoolVal)) \<le> 1"
-      by (auto simp: o_def nn_integral_count_space_finite max_def bernoulli_density_def 
-                     extract_real_def extract_bool_def)
-  qed (auto intro!: sigma_finite_measure_count_space_finite)
-qed
-
+lemma measurable_bernoulli[measurable]: "bernoulli \<in> measurable REAL (subprob_algebra BOOL)"
+  unfolding bernoulli_def[abs_def]
+  by (auto intro!: measurable_subprob_algebra_density
+           simp: measurable_split_conv nn_integral_BoolVal bernoulli_density_def)
 
 subsection {* Uniform *}
 
@@ -99,57 +76,28 @@ proof-
 qed
 
 definition uniform_int :: "val \<Rightarrow> val measure" where
-  "uniform_int = (\<lambda> <| IntVal l, IntVal u |> \<Rightarrow> density (count_space (range IntVal))
-                                                    (\<lambda> IntVal x \<Rightarrow> uniform_int_density (l,u) x))"
+  "uniform_int = map_int_pair (\<lambda>l u. density INTEG (uniform_int_density (l,u) o extract_int)) (\<lambda>_. undefined)"
 
 definition uniform_real :: "val \<Rightarrow> val measure" where
-  "uniform_real = (\<lambda> <| RealVal l, RealVal u |> \<Rightarrow> density (embed_measure lborel RealVal)
-                                                      (\<lambda> RealVal x \<Rightarrow> uniform_real_density (l,u) x))"
+  "uniform_real = map_real_pair (\<lambda>l u. density REAL (uniform_real_density (l,u) o extract_real)) (\<lambda>_. undefined)"
+
+lemma if_bounded: "(if a \<le> i \<and> i \<le> b then v else 0) = (v::ereal) * indicator {a .. b} i"
+  by auto
 
 lemma measurable_uniform_int[measurable]:
-  "uniform_int \<in> measurable (embed_measure (count_space (range IntVal \<times> range IntVal))
-                              (split PairVal)) (subprob_algebra (count_space (range IntVal)))"
-    (is "_ \<in> ?M")
-proof (subst measurable_cong)
-  fix x assume "x \<in> space (embed_measure (count_space (range IntVal\<times>range IntVal)) (split PairVal))"
-  thus "uniform_int x = density (count_space (range IntVal))
-                            (\<lambda>y. uniform_int_density (extract_int_pair x) (extract_int y))"
-   unfolding uniform_int_def 
-   by (auto simp: space_embed_measure extract_int_def extract_int_pair_def 
-            intro!: density_cong[OF _ _ AE_I2])
-next
-  let ?f = "\<lambda>x. density (count_space (range IntVal))
-                            (\<lambda>y. uniform_int_density (extract_int_pair x) (extract_int y))"
-  show "?f \<in> ?M"
-  proof (rule measurable_subprob_algebra_density)
-    fix x assume "x \<in> space (embed_measure (count_space (range IntVal \<times> range IntVal)) (split PairVal))"
-    then obtain l u where [simp]: "x = <|IntVal l, IntVal u|>" by (auto simp: space_embed_measure)
-    show "(\<integral>\<^sup>+y. uniform_int_density (extract_int_pair x) (extract_int y) 
-             \<partial>count_space (range IntVal)) \<le> 1"
-    proof (cases "l \<le> u")
-      case True
-      let ?M = "count_space (range IntVal)"
-      have "(\<integral>\<^sup>+y. uniform_int_density (extract_int_pair x) (extract_int y) \<partial>?M) = 
-                integral\<^sup>N (count_space UNIV) (uniform_int_density (l, u))"
-        by (subst embed_measure_count_space[symmetric], simp, subst embed_measure_eq_distr, simp,
-            subst nn_integral_distr)
-           (simp_all add: space_embed_measure extract_int_pair_def extract_int_def)
-      also have "... = ereal (real_of_nat (card {a. l \<le> a \<and> a \<le> u}) * inverse (real u - real l + 1))"
-        by (subst nn_integral_count_space) (simp_all add: uniform_int_density_def)
-      also have "{a. l \<le> a \<and> a \<le> u} = {l..u}" by auto
-      also have "real_of_nat (card ...) = real u - real l + 1" using True
-        by (subst real_of_nat_def[symmetric]) simp
-      also have "ereal ((real u - real l + 1) * inverse (real u - real l + 1)) \<le> 1"
-        by (simp add: field_simps)
-      finally show ?thesis .
-    next
-      case False
-      hence "\<And>y. uniform_int_density (extract_int_pair x) y = 0"
-        by (simp add: uniform_int_density_def extract_int_def extract_int_pair_def)
-      thus ?thesis by simp
-    qed
-  qed (simp_all add: sigma_finite_measure_count_space_countable)
-qed
+  "uniform_int \<in> measurable (PRODUCT INTEG INTEG) (subprob_algebra INTEG)"
+  unfolding uniform_int_def
+proof (rule measurable measurable_subprob_algebra_density)+
+  fix x :: "int \<times> int"
+
+  show "integral\<^sup>N INTEG (uniform_int_density (fst x, snd x) \<circ> extract_int) \<le> 1"
+  proof cases
+    assume "fst x \<le> snd x" then show ?thesis
+      by (cases x)
+         (simp add: uniform_int_density_def comp_def nn_integral_IntVal nn_integral_cmult
+                    if_bounded[where 'a=int])
+  qed (simp add: uniform_int_density_def comp_def split_beta' if_bounded[where 'a=int])
+qed (auto simp: comp_def)
 
 lemma density_cong':
   "(\<And>x. x \<in> space M \<Longrightarrow> f x = g x) \<Longrightarrow> density M f = density M g"
@@ -157,51 +105,18 @@ lemma density_cong':
   by (auto dest: sets.sets_into_space intro!: nn_integral_cong measure_of_eq)
 
 lemma measurable_uniform_real[measurable]:
-  "uniform_real \<in> measurable (embed_measure (embed_measure lborel RealVal \<Otimes>\<^sub>M
-                     embed_measure lborel RealVal) (split PairVal)) 
-                  (subprob_algebra (embed_measure lborel RealVal))" (is "_ \<in> measurable ?M ?N")
-proof (subst measurable_cong)
-  fix x assume "x \<in> space ?M"
-  then obtain l u where [simp]: "x = <|RealVal l, RealVal u|>" 
-    by (auto simp: space_embed_measure space_pair_measure)
-  show "uniform_real x = density (embed_measure lborel RealVal)
-                            (\<lambda>y. uniform_real_density (extract_real_pair x) (extract_real y))"
-   unfolding uniform_real_def 
-   by (auto simp: space_embed_measure extract_real_def extract_real_pair_def space_pair_measure
-            intro!: density_cong')
-next
-  let ?f = "\<lambda>x. density (embed_measure lborel RealVal)
-                            (\<lambda>y. uniform_real_density (extract_real_pair x) (extract_real y))"
-  show "?f \<in> measurable ?M ?N"
-  proof (rule measurable_subprob_algebra_density)
-    fix x assume "x \<in> space ?M"
-    then obtain l u where [simp]: "x = <|RealVal l, RealVal u|>" 
-      by (auto simp: space_embed_measure space_pair_measure)
-    show "(\<integral>\<^sup>+y. uniform_real_density (extract_real_pair x) (extract_real y) 
-             \<partial>embed_measure lborel RealVal) \<le> 1"
-    proof (cases "l < u")
-      case True
-      let ?M = "embed_measure lborel RealVal"
-      have "(\<integral>\<^sup>+y. uniform_real_density (extract_real_pair x) (extract_real y) \<partial>?M) = 
-                integral\<^sup>N lborel (uniform_real_density (l, u))"
-        by (subst nn_integral_RealVal, simp)
-           (simp_all add: space_embed_measure extract_real_pair_def extract_real_def)
-      also have "... = \<integral>\<^sup>+x. indicator {l..u} x * inverse (u - l) \<partial>lborel" using True
-          by (intro nn_integral_cong) (simp add: uniform_real_density_def)
-      also have "... = (\<integral>\<^sup>+x. indicator {l..u} x \<partial>lborel) * inverse (u - l)" using True
-        by (subst nn_integral_multc[symmetric]) 
-           (auto intro!: nn_integral_cong split: split_indicator)
-      also have "... \<le> 1" using True by (simp add: field_simps)
-      finally show ?thesis .
-    next
-      case False
-      hence "\<And>y. uniform_real_density (extract_real_pair x) y = 0"
-        by (simp add: uniform_real_density_def extract_real_def extract_real_pair_def)
-      thus ?thesis by simp
-    qed
-  qed (simp_all add: stock_measure.simps[symmetric] del: stock_measure.simps)
-qed
-
+  "uniform_real \<in> measurable (PRODUCT REAL REAL) (subprob_algebra REAL)"
+  unfolding uniform_real_def
+proof (rule measurable measurable_subprob_algebra_density)+
+  fix x :: "real \<times> real"
+  obtain l u where [simp]: "x = (l, u)" 
+    by (cases x) auto
+  show "(\<integral>\<^sup>+y. (uniform_real_density (fst x, snd x) o extract_real) y \<partial>REAL) \<le> 1"
+  proof cases
+    assume "l < u" then show ?thesis
+      by (simp add: nn_integral_RealVal uniform_real_density_def if_bounded nn_integral_cmult)
+  qed (simp add: uniform_real_density_def comp_def)
+qed (auto simp: comp_def borel_prod')
 
 subsection {* Gaussian *}
 
@@ -222,50 +137,28 @@ proof-
 qed
 
 definition gaussian :: "val \<Rightarrow> val measure" where
-  "gaussian = (\<lambda> <|RealVal m, RealVal s|> \<Rightarrow> 
-                  density (embed_measure lborel RealVal) (\<lambda> RealVal x \<Rightarrow> gaussian_density (m,s) x))"
+  "gaussian = map_real_pair (\<lambda>m s. density REAL (gaussian_density (m,s) o extract_real)) undefined"
 
-lemma measurable_gaussian[measurable]:
-  "gaussian \<in> measurable (embed_measure (embed_measure lborel RealVal \<Otimes>\<^sub>M embed_measure lborel RealVal)
-                              (\<lambda>(a, b). <|a , b|>)) (subprob_algebra (embed_measure lborel RealVal))"
-    (is "gaussian \<in> measurable ?M ?N")
-proof (subst measurable_cong)
-  fix x assume "x \<in> space ?M"
-  then obtain \<mu> \<sigma> where [simp]: "x = <|RealVal \<mu>, RealVal \<sigma>|>"
-    by (auto simp: space_embed_measure space_pair_measure)
-  show "gaussian x = density (embed_measure lborel RealVal)
-                         (\<lambda>y. gaussian_density (extract_real_pair x) (extract_real y))"
-    unfolding gaussian_def
-    by (auto intro!: density_cong' simp: extract_real_pair_def extract_real_def space_embed_measure)
-next
-  let ?f = "(\<lambda>w. density (embed_measure lborel RealVal)
-                    (\<lambda>y. gaussian_density (extract_real_pair w) (extract_real y)))"
-  show "?f \<in> measurable ?M ?N"
-  proof (rule measurable_subprob_algebra_density)
-    fix x assume "x \<in> space ?M"
-    then obtain \<mu> \<sigma> where [simp]: "x = <|RealVal \<mu>, RealVal \<sigma>|>" 
-      by (auto simp: space_embed_measure space_pair_measure)
-    show "(\<integral>\<^sup>+y. gaussian_density (extract_real_pair x) (extract_real y) 
-             \<partial>embed_measure lborel RealVal) \<le> 1"
-    proof (cases "\<sigma> > 0")
-      case True
-      have "(\<integral>\<^sup>+y. gaussian_density (extract_real_pair x) (extract_real y) 
-               \<partial>embed_measure lborel RealVal) =  \<integral>\<^sup>+x. normal_density \<mu> \<sigma> x \<partial>lborel" using True
-        by (subst nn_integral_RealVal) (simp, simp add: extract_real_pair_def extract_real_def 
-                                                     gaussian_density_def normal_density_def)
-      also have "... \<le> 1" 
-        using integral_normal_density integrable_normal_density normal_density_nonneg True
-        by (subst nn_integral_eq_integral) auto
-      finally show ?thesis .
-    next
-      case False
-      hence "\<And>y. gaussian_density (extract_real_pair x) (extract_real y) = 0"
-        by (simp add: gaussian_density_def extract_real_pair_def)
-      thus ?thesis by simp
-    qed
-  qed (simp_all add: stock_measure.simps[symmetric] del: stock_measure.simps)
-qed
-
+lemma measurable_gaussian[measurable]: "gaussian \<in> measurable (PRODUCT REAL REAL) (subprob_algebra REAL)"
+  unfolding gaussian_def
+proof (rule measurable measurable_subprob_algebra_density)+
+  fix x :: "real \<times> real"
+  show "integral\<^sup>N (stock_measure REAL) (gaussian_density (fst x, snd x) \<circ> extract_real) \<le> 1"
+  proof cases
+    assume "snd x > 0"
+    then have "integral\<^sup>N lborel (gaussian_density x) = (\<integral>\<^sup>+y. normal_density (fst x) (snd x) y \<partial>lborel)"
+      by (auto simp add: gaussian_density_def normal_density_def split_beta' intro!: nn_integral_cong)
+    also have "\<dots> = 1"
+      using `snd x > 0`
+      by (subst nn_integral_eq_integral) (auto intro!: normal_density_nonneg)
+    finally show ?thesis
+      by (cases x) (simp add: nn_integral_RealVal comp_def)
+  next
+    assume "\<not> snd x > 0" then show ?thesis
+      by (cases x)
+         (simp add: nn_integral_RealVal comp_def gaussian_density_def zero_ereal_def[symmetric])
+  qed
+qed (auto simp: comp_def borel_prod')
 
 subsection {* Poisson *}
 
@@ -277,38 +170,15 @@ lemma measurable_poisson_density'[measurable]:
   unfolding poisson_density'_def[abs_def] by simp
 
 definition poisson :: "val \<Rightarrow> val measure" where
-  "poisson = (\<lambda> RealVal rate \<Rightarrow> density (count_space (range IntVal)) 
-                    (\<lambda> IntVal k \<Rightarrow> poisson_density' rate k))"
+  "poisson rate = density INTEG (poisson_density' (extract_real rate) o extract_int)"
 
-lemma measurable_poisson[measurable]:
-  "poisson \<in> measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range IntVal)))"
-      (is "_ \<in> measurable ?M (subprob_algebra ?N)")
-proof (subst measurable_cong)
-  let ?f = "\<lambda>rate k. if rate \<ge> 0 then poisson_density rate (extract_int k) else 0"
-  fix rate' assume "rate' \<in> space ?M"
-  then obtain rate where v: "rate' = RealVal rate" by (auto simp: space_embed_measure)  
-  thus "poisson rate' = density (count_space (range IntVal)) (?f (extract_real rate'))"
-    by (auto simp: poisson_def poisson_density'_def extract_real_def extract_int_def 
-             intro!: density_cong')
-next
-  let ?f = "\<lambda>rate k. if rate \<ge> 0 then poisson_density rate (extract_int k) else 0"
-  show "(\<lambda>rate. density (count_space (range IntVal)) (?f (extract_real rate))) \<in>
-            measurable (embed_measure lborel RealVal) (subprob_algebra (count_space (range IntVal)))"
-  proof (rule measurable_subprob_algebra_density)
-    show "(\<lambda>(x, y). ?f (extract_real x) y) \<in> 
-              borel_measurable (embed_measure lborel RealVal \<Otimes>\<^sub>M count_space (range IntVal))"
-      by (subst measurable_split_conv, rule measurable_If', simp, simp,
-          rule measurable_compose[OF measurable_fst],
-          simp add: measurable_compose[OF measurable_extract_real])
-  next
-    fix rate assume "rate \<in> space (embed_measure lborel RealVal)"
-    thus "(\<integral>\<^sup>+y. (if 0 \<le> extract_real rate then 
-                    poisson_density (extract_real rate) (extract_int y) else 0) 
-             \<partial>count_space (range IntVal)) \<le> 1"
-      by (cases "extract_real rate \<ge> 0")
-         (auto simp: nn_integral_IntVal extract_int_def poisson_density_integral_eq_1)
-  qed (auto intro!: sigma_finite_measure_count_space_countable)
-qed
+lemma measurable_poisson[measurable]: "poisson \<in> measurable REAL (subprob_algebra INTEG)"
+  unfolding poisson_def[abs_def]
+proof (rule measurable measurable_subprob_algebra_density)+
+  fix r :: real show "integral\<^sup>N INTEG (poisson_density' r \<circ> extract_int) \<le> 1"
+    using poisson_density_integral_eq_1[of r, where 'a=int]
+    by (cases "0 \<le> r") (auto simp add: nn_integral_IntVal poisson_density'_def)
+qed (auto simp: comp_def)
 
 section {* Source Language Syntax and Semantics *}
 
@@ -391,20 +261,19 @@ primrec dist_measure :: "pdf_dist \<Rightarrow> val \<Rightarrow> val measure" w
 | "dist_measure Poisson = poisson"
 | "dist_measure Gaussian = gaussian"
 
+lemma measurable_dist_measure[measurable]:
+  "dist_measure d \<in> measurable (dist_param_type d) (subprob_algebra (dist_result_type d))"
+  by (cases d) simp_all
+
 lemma sets_dist_measure[simp]:
   "val_type x = dist_param_type dst \<Longrightarrow> 
        sets (dist_measure dst x) = sets (stock_measure (dist_result_type dst))"
-  by (cases dst) (auto simp: bernoulli_def uniform_int_def uniform_real_def 
-                             poisson_def gaussian_def split: val.split)
+  by (rule sets_kernel[OF measurable_dist_measure]) simp
+
 lemma space_dist_measure[simp]:
   "val_type x = dist_param_type dst \<Longrightarrow> 
        space (dist_measure dst x) = type_universe (dist_result_type dst)"
   by (subst space_stock_measure[symmetric]) (intro sets_eq_imp_space_eq sets_dist_measure)
-
-lemma measurable_dist_measure[measurable]:
-    "dist_measure d \<in> measurable (stock_measure (dist_param_type d)) 
-                                 (subprob_algebra (stock_measure (dist_result_type d)))"
-  by (cases d) simp_all
 
 primrec dist_dens :: "pdf_dist \<Rightarrow> val \<Rightarrow> val \<Rightarrow> ereal" where
   "dist_dens Bernoulli x y = bernoulli_density (extract_real x) (extract_bool y)"
@@ -421,17 +290,10 @@ lemma measurable_dist_dens[measurable]:
   apply (subst dist_dens_def, cases dst, simp_all)
   done
 
-lemma dist_dens_nonneg:
-    assumes "x \<in> type_universe (dist_param_type dst)"
-    assumes "y \<in> type_universe (dist_result_type dst)"
-    shows "dist_dens dst x y \<ge> 0"
-  using assms
-  by (subst dist_dens_def, cases dst)
-     (auto simp: space_stock_measure[symmetric] space_embed_measure bernoulli_density_def
-                 uniform_int_density_def uniform_real_density_def poisson_density'_def 
-                 gaussian_density_def extract_int_def extract_real_def extract_bool_def
-                  extract_int_pair_def extract_real_pair_def space_pair_measure poisson_density_ge_0 
-           simp del: space_stock_measure)
+lemma dist_dens_nonneg: "dist_dens dst x y \<ge> 0"
+  by (cases dst)
+     (auto simp: bernoulli_density_def uniform_int_density_def uniform_real_density_def
+                 poisson_density'_def gaussian_density_def split_beta' poisson_density_ge_0)
 
 lemma dist_measure_has_density:
   "v \<in> type_universe (dist_param_type dst) \<Longrightarrow> 
@@ -441,10 +303,7 @@ proof (intro has_densityI)
   thus "dist_measure dst v = density (stock_measure (dist_result_type dst)) (dist_dens dst v)"
     by (cases dst)
        (auto simp: bernoulli_def uniform_int_def uniform_real_def poisson_def gaussian_def
-                   space_stock_measure[symmetric] space_embed_measure space_pair_measure
-                   extract_int_def extract_real_def extract_bool_def extract_int_pair_def
-                   extract_real_pair_def
-             simp del: space_stock_measure intro!: density_cong')
+             intro!: density_cong' elim!: PROD_E REAL_E INTEG_E)
 qed (insert dist_dens_nonneg, simp_all)
 
 lemma subprob_space_dist_measure: 
@@ -621,7 +480,8 @@ primrec countable_type :: "pdf_type \<Rightarrow> bool" where
 
 lemma countable_type_countable[dest]:
     "countable_type t \<Longrightarrow> countable (space (stock_measure t))"
-  by (induction t) (auto simp: pair_measure_countable space_embed_measure space_pair_measure)
+  by (induction t)
+     (auto simp: pair_measure_countable space_embed_measure space_pair_measure stock_measure.simps)
 
 lemma countable_type_imp_count_space: 
   "countable_type t \<Longrightarrow> stock_measure t = count_space (type_universe t)"
@@ -635,9 +495,9 @@ proof (subst space_stock_measure[symmetric], induction t)
       apply (subst (1 2) pair_measure_countable)
       apply (auto intro: countable_type_countable simp: countable simp del: space_stock_measure) [2]
       apply (subst (1 2) embed_measure_count_space, force intro: injI)
-      apply (simp add: count_space_image)
+      apply simp
       done
-qed simp_all
+qed (simp_all add: stock_measure.simps)
 
 lemma return_val_countable:
   assumes "countable_type (val_type v)"
@@ -753,32 +613,12 @@ primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
      }"
 | "expr_sem \<sigma> (Fail t) = null_measure (stock_measure t)"
 
-lemma expr_sem_pair_vars:
-  "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sigma> x, \<sigma> y|>"
-proof-
-  let ?M = "return (stock_measure (val_type (\<sigma> x))) (\<sigma> x)"
-  let ?N = "return (stock_measure (val_type (\<sigma> y))) (\<sigma> y)"
-  let ?R = "stock_measure (PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y)))"
-  have "expr_sem \<sigma> <Var x, Var y> = do {v \<leftarrow> ?M; w \<leftarrow> ?N; return_val <|v, w|>}"
-    by (simp add: return_val_def)
-  also have "... = do {v \<leftarrow> ?M; w \<leftarrow> ?N; return ?R <|v, w|>}"
-    by (intro bind_cong ballI) (simp add: return_val_def)
-  also have "... = do {w \<leftarrow> ?N; return ?R <|\<sigma> x, w|>}" unfolding return_val_def
-    by (subst bind_return)
-       (auto simp: measurable_split_conv[symmetric] 
-             intro!: measurable_bind measurable_embed_measure2 inj_PairVal 
-                     measurable_compose[OF _ return_measurable])
-  also have A: "(\<lambda>w. return ?R <|\<sigma> x, w|>) = return ?R \<circ> split PairVal \<circ> (\<lambda>w. (\<sigma> x, w))"
-    by (intro ext) simp
-  have \<sigma>x: "\<sigma> x \<in> space (stock_measure (val_type (\<sigma> x)))" by (simp add:)
-  have "(\<lambda>w. return ?R <|\<sigma> x, w|>) \<in> measurable (stock_measure (val_type (\<sigma> y))) (subprob_algebra ?R)"
-    by (subst A, intro measurable_comp)
-       (rule measurable_Pair1', rule \<sigma>x, rule measurable_embed_measure2, 
-        simp_all add: return_measurable inj_PairVal)
-  hence "do {w \<leftarrow> ?N; return ?R <|\<sigma> x, w|>} = return ?R <|\<sigma> x, \<sigma> y|>"
-    by (subst bind_return) (simp_all add:)
-  finally show ?thesis by (simp add: return_val_def)
-qed
+lemma bind_cong_strong: "M = N \<Longrightarrow> (\<And>x. x\<in>space M =simp=> f x = g x) \<Longrightarrow> bind M f = bind N g"
+  by (auto simp: simp_implies_def intro!: bind_cong)
+
+lemma expr_sem_pair_vars: "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sigma> x, \<sigma> y|>"
+  by (simp add: return_val_def bind_return[where N="PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y))"]
+           cong: bind_cong_strong)
 
 text {* 
   Well-typed expressions produce a result in the measure space that corresponds to their type
@@ -787,8 +627,9 @@ text {*
 lemma op_sem_val_type:
     "op_type oper (val_type v) = Some t' \<Longrightarrow> val_type (op_sem oper v) = t'"
   by (cases oper) (auto split: val.split split_if_asm pdf_type.split_asm 
-                        simp: extract_pair_def lift_RealIntVal_def lift_Comp_def
-                              lift_IntVal_def lift_RealVal_def lift_RealIntVal2_def)
+                        simp: lift_RealIntVal_def lift_Comp_def
+                              lift_IntVal_def lift_RealVal_def lift_RealIntVal2_def
+                        elim!: PROD_E INTEG_E REAL_E)
 
 lemma sets_expr_sem:
   "\<Gamma> \<turnstile> w : t \<Longrightarrow> (\<forall>x \<in> free_vars w. val_type (\<sigma> x) = \<Gamma> x) \<Longrightarrow> 
@@ -805,7 +646,7 @@ next
   from sets_eq_imp_space_eq[OF this]
     have A: "space (expr_sem \<sigma> e1) = type_universe t1" by (simp add:)
   hence B: "(SOME x. x \<in> space (expr_sem \<sigma> e1)) \<in> space (expr_sem \<sigma> e1)" (is "?v \<in> _")
-    by (rule_tac someI_ex) (simp add: ex_in_conv)   
+    unfolding some_in_eq by simp   
   with A et_let have "sets (expr_sem (case_nat ?v \<sigma>) e2) = sets (stock_measure t2)"
     by (intro et_let.IH(2)) (auto split: nat.split)
   with B show "sets (expr_sem \<sigma> (LetVar e1 e2)) = sets (stock_measure t2)"
@@ -817,7 +658,7 @@ next
   from sets_eq_imp_space_eq[OF this] 
       have [simp]: "space (expr_sem \<sigma> e) = type_universe t" by (simp add:)
   have "(SOME x. x \<in> space (expr_sem \<sigma> e)) \<in> space (expr_sem \<sigma> e)"
-     by (rule_tac someI_ex) (simp add: ex_in_conv)
+    unfolding some_in_eq by simp   
   with et_op show ?case by (simp add: bind_nonempty return_val_def op_sem_val_type)
 next
   case (et_pair \<Gamma> e1 t1 e2 t2 \<sigma>)
@@ -826,14 +667,18 @@ next
     by (simp_all add: sets_eq_imp_space_eq)
   have "(SOME x. x \<in> space (expr_sem \<sigma> e1)) \<in> space (expr_sem \<sigma> e1)"
        "(SOME x. x \<in> space (expr_sem \<sigma> e2)) \<in> space (expr_sem \<sigma> e2)"
-    by (rule_tac someI_ex, simp add: ex_in_conv)+
+    unfolding some_in_eq by simp_all
   with et_pair.hyps show ?case by (simp add: bind_nonempty return_val_def)
 next
   case (et_rand \<Gamma> e dst \<sigma>)
-  hence "space (expr_sem \<sigma> e) = space (stock_measure (dist_param_type dst))"
-    by (intro sets_eq_imp_space_eq)  simp
-  hence "space (expr_sem \<sigma> e) \<noteq> {}" by (simp add:)
-  with et_rand show ?case by simp
+  from et_rand.IH[of \<sigma>] et_rand.prems
+  have "sets (expr_sem \<sigma> e) = sets (stock_measure (dist_param_type dst))" by simp
+  from this sets_eq_imp_space_eq[OF this]
+  show ?case
+    apply simp_all
+    apply (subst sets_bind)
+    apply auto
+    done
 next
   case (et_if \<Gamma> b e1 t e2 \<sigma>)
   have "sets (expr_sem \<sigma> b) = sets (stock_measure BOOL)"
@@ -867,7 +712,7 @@ lemma expr_sem_eq_on_vars:
 proof (induction e arbitrary: \<sigma>\<^sub>1 \<sigma>\<^sub>2)
   case (LetVar e1 e2 \<sigma>1 \<sigma>2)
     from LetVar.prems have A: "expr_sem \<sigma>1 e1 = expr_sem \<sigma>2 e1" by (rule LetVar.IH(1)) simp_all
-    from LetVar.prems show ?case 
+    from LetVar.prems show ?case
       by (subst (1 2) expr_sem.simps, subst A) 
          (auto intro!: bind_cong LetVar.IH(2) split: nat.split)
 next
@@ -895,106 +740,76 @@ qed simp_all
 
 subsection {* Measurability *}
 
+lemma borel_measurable_eq[measurable (raw)]:
+  assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  shows "Measurable.pred M (\<lambda>x. f x = (g x::real))"
+proof -
+  have *: "(\<lambda>x. f x = g x) = (\<lambda>x. f x - g x = 0)"
+    by simp
+  show ?thesis
+    unfolding * by measurable
+qed
+
 lemma measurable_equals:
-    "(\<lambda>(x,y). x = y) \<in> measurable (stock_measure t \<Otimes>\<^sub>M stock_measure t) (count_space UNIV)"
+  "(\<lambda>(x,y). x = y) \<in> measurable (stock_measure t \<Otimes>\<^sub>M stock_measure t) (count_space UNIV)"
 proof (induction t)
   case REAL
-    let ?f = "\<lambda>x. (extract_real (fst x) - extract_real (snd x) = 0)"
-    show ?case
-    proof (subst measurable_cong)
-      fix x assume "x \<in> space (stock_measure REAL \<Otimes>\<^sub>M stock_measure REAL)"
-      thus "(\<lambda>(x,y). x = y) x = ?f x"
-          by (auto simp: space_pair_measure space_embed_measure extract_real_def)
-    next
-      show "?f \<in> measurable (stock_measure REAL \<Otimes>\<^sub>M stock_measure REAL) (count_space UNIV)"
-        by (subst (1 2) stock_measure.simps, rule pred_eq_const1, rule borel_measurable_diff)
-           (auto intro: measurable_compose[OF _ measurable_extract_real])
-    qed
+  let ?f = "\<lambda>x. extract_real (fst x) = extract_real (snd x)"
+  show ?case
+  proof (subst measurable_cong)
+    fix x assume "x \<in> space (stock_measure REAL \<Otimes>\<^sub>M stock_measure REAL)"
+    thus "(\<lambda>(x,y). x = y) x = ?f x"
+      by (auto simp: space_pair_measure elim!: REAL_E)
+  next
+    show "?f \<in> measurable (stock_measure REAL \<Otimes>\<^sub>M stock_measure REAL) (count_space UNIV)"
+      by measurable
+  qed
 next
   case (PRODUCT t1 t2)
-    let ?g = "\<lambda>(x,y). x = y"
-    let ?f = "\<lambda>x. ?g (fst (extract_pair (fst x)), fst (extract_pair (snd x))) \<and>
-                  ?g (snd (extract_pair (fst x)), snd (extract_pair (snd x)))"
-    show ?case
-    proof (subst measurable_cong)
-      fix x assume "x \<in> space (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2))"
-      thus "(\<lambda>(x,y). x = y) x = ?f x"
-          by (auto simp: space_pair_measure space_embed_measure extract_pair_def)
-    next
-      note [measurable] = PRODUCT.IH
-      show "Measurable.pred (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2)) ?f"
-          by simp
-    qed
-qed (simp_all add: pair_measure_countable)
+  let ?g = "\<lambda>(x,y). x = y"
+  let ?f = "\<lambda>x. ?g (fst (extract_pair (fst x)), fst (extract_pair (snd x))) \<and>
+                ?g (snd (extract_pair (fst x)), snd (extract_pair (snd x)))"
+  show ?case
+  proof (subst measurable_cong)
+    fix x assume "x \<in> space (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2))"
+    thus "(\<lambda>(x,y). x = y) x = ?f x"
+      apply (auto simp: space_pair_measure)
+      apply (elim PROD_E)
+      apply simp
+      done
+  next
+    note PRODUCT[measurable]
+    show "Measurable.pred (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2)) ?f" 
+      by measurable
+  qed
+qed (simp_all add: pair_measure_countable stock_measure.simps)
 
+lemma measurable_equals_stock_measure[measurable (raw)]:
+  assumes "f \<in> measurable M (stock_measure t)" "g \<in> measurable M (stock_measure t)"
+  shows "Measurable.pred M (\<lambda>x. f x = g x)"
+  using measurable_compose[OF measurable_Pair[OF assms] measurable_equals] by simp
 
 lemma measurable_op_sem:
   assumes "op_type oper t = Some t'"
   shows "op_sem oper \<in> measurable (stock_measure t) (stock_measure t')"
 proof (cases oper)
-  case Fst
-    with assms show ?thesis by (auto split: pdf_type.split_asm cong: measurable_cong)
+  case Fst with assms show ?thesis by (simp split: pdf_type.split_asm)
 next
-  case Snd
-    with assms show ?thesis by (auto split: pdf_type.split_asm cong: measurable_cong)
+  case Snd with assms show ?thesis by (simp split: pdf_type.split_asm)
 next
-  case Equals
-    with assms obtain t'' where T: "t = PRODUCT t'' t''" "t' = BOOL"
-        by (auto split: pdf_type.split_asm split_if_asm)
-    let ?f = "BoolVal \<circ> (\<lambda>(x,y). x = y) \<circ> extract_pair"
-    show ?thesis
-    proof (subst measurable_cong)
-      fix x assume "x \<in> space (stock_measure t)"
-      with Equals assms show "op_sem oper x = ?f x"
-          by (auto simp: space_embed_measure space_pair_measure extract_pair_def 
-                   simp del: space_stock_measure
-                   split: pdf_type.split_asm)
-    next
-      show "?f \<in> measurable (stock_measure t) (stock_measure t')"
-          by (simp only: T stock_measure.simps)
-             (intro measurable_comp, rule measurable_extract_pair, rule measurable_equals, simp)
-    qed
+  case Equals with assms show ?thesis
+    by (auto intro!: val_case_stock_measurable split: split_if_asm)
 next
-  case Pow
-    show ?thesis
-    proof (cases "t' = REAL")
-      case True
-        with assms Pow have t: "t = PRODUCT REAL INTEG" by (auto split: pdf_type.split_asm)
-        let ?f = "RealVal \<circ> (\<lambda>(x,y). if y \<ge> 0 then x ^ nat y else 0) \<circ> 
-                      (\<lambda>(x,y). (extract_real x, extract_int y)) \<circ> extract_pair"
-        show ?thesis
-        proof (subst measurable_cong)
-          fix x assume "x \<in> space (stock_measure t)"
-          with Pow True show "op_sem oper x = ?f x"
-              by (auto split: val.split simp: t extract_real_def extract_int_def extract_pair_def 
-                                              space_embed_measure space_pair_measure)
-        next
-          from True show "?f \<in> measurable (stock_measure t) (stock_measure t')"
-            apply (simp only: t stock_measure.simps embed_measure_comp)
-            apply (rule measurable_comp[OF measurable_extract_pair])
-            apply (rule measurable_comp[of _ _ "borel \<Otimes>\<^sub>M count_space UNIV"])
-            apply simp
-            apply (rule measurable_comp[OF _ measurable_embed_measure2])
-            apply (subst measurable_split_conv, rule measurable_If')
-            apply simp
-            apply simp
-            apply (rule measurable_compose[OF measurable_snd])
-            apply simp_all
-            done
-        qed
-    qed (insert assms Pow, auto intro!: measurable_embed_measure1 split: pdf_type.split_asm)
+  case Pow with assms show ?thesis
+    apply (auto intro!: val_case_stock_measurable split: pdf_type.splits)
+    apply (subst measurable_cong[where
+      g="\<lambda>(x, n). if extract_int n < 0 then RealVal 0 else RealVal (extract_real x ^ nat (extract_int n))"])
+    apply (auto simp: space_pair_measure elim!: REAL_E INTEG_E)
+    done
 next
-  case Less
-    with assms have "t = PRODUCT INTEG INTEG \<or> t = PRODUCT REAL REAL" "t' = BOOL"
-      by (auto split: pdf_type.split_asm)
-    with Less show ?thesis
-      apply (elim disjE)
-      apply (simp_all only: op_sem.simps stock_measure.simps measurable_lift_Comp_IntVal)
-      apply (rule measurable_lift_Comp_RealVal, simp)
-      done
-qed (insert assms, auto split: pdf_type.split_asm simp: space_embed_measure
-                        intro!: measurable_embed_measure1 simp del: space_stock_measure)
-
+  case Less with assms show ?thesis
+    by (auto split: pdf_type.splits)
+qed (insert assms, auto split: pdf_type.split_asm intro!: val_case_stock_measurable)
 
 definition shift_var_set :: "vname set \<Rightarrow> vname set" where
   "shift_var_set V = insert 0 (Suc ` V)"
@@ -1050,7 +865,8 @@ lemma case_nat_in_state_measure[intro]:
   shows "case_nat x \<sigma> \<in> space (state_measure (shift_var_set V) (case_nat t1 \<Gamma>))"
   apply (rule measurable_space[OF measurable_case_nat'])
   apply (rule measurable_ident_sets[OF refl], rule measurable_const[OF assms(2)])
-  apply (simp add: assms(1))
+  using assms
+  apply simp
   done
 
 lemma subset_shift_var_set:
@@ -1137,7 +953,7 @@ primrec expr_sem_rf :: "state \<Rightarrow> expr \<Rightarrow> val" where
 | "expr_sem_rf _ (Fail _) = undefined"
 
 
-lemma measurable_expr_sem_rf:
+lemma measurable_expr_sem_rf[measurable]:
   "\<Gamma> \<turnstile> e : t \<Longrightarrow> randomfree e \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow> 
        (\<lambda>\<sigma>. expr_sem_rf \<sigma> e) \<in> measurable (state_measure V \<Gamma>) (stock_measure t)"
 proof (induction arbitrary: V rule: expr_typing.induct)
@@ -1220,14 +1036,12 @@ next
         by (auto simp: return_val_def v w)
     qed
     also have "... = return_val (<|v, expr_sem_rf \<sigma> e2|>)"
-      by (subst bind_return, rule measurable_compose[OF _ return_measurable], 
-          subst stock_measure.simps, measurable)
-         (auto intro!: measurable_const injI simp: v B return_val_def)
-    finally show "expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>)) = 
-                      return_val (<|v, expr_sem_rf \<sigma> e2|>)" .
+      using v B
+      by (subst bind_return[where N="PRODUCT t1 t2"]) (auto simp: return_val_def)
+    finally show "expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>)) = return_val (<|v, expr_sem_rf \<sigma> e2|>)" .
   qed
   also have "(\<lambda>v. <|v, expr_sem_rf \<sigma> e2|>) \<in> measurable (stock_measure t1) (stock_measure (PRODUCT t1 t2))"
-    by (subst stock_measure.simps, measurable) (auto intro!: injI simp: B)
+    using B by (auto intro!: injI)
   hence "return (stock_measure t1) (expr_sem_rf \<sigma> e1) \<guillemotright>= (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>)) = 
              return_val (<|expr_sem_rf \<sigma> e1, expr_sem_rf \<sigma> e2|>)"
     by (subst bind_return, rule measurable_compose[OF _ measurable_return_val])
@@ -1244,7 +1058,8 @@ next
           "return_val (expr_sem_rf \<sigma> e2) \<in> space (subprob_algebra (stock_measure t))"
     using et_if.hyps and et_if.prems 
     by ((subst A[symmetric], intro measurable_space[OF measurable_expr_sem], auto) [])+
-  thus ?case by (simp only: expr_sem.simps A, subst bind_return_val'') (auto intro!: measurable_If)
+  thus ?case
+    by (auto simp: A bind_return_val''[where M=t])
 next
   case (et_op \<Gamma> e t oper t' V)
   let ?M = "PiM V (\<lambda>x. stock_measure (\<Gamma> x))"

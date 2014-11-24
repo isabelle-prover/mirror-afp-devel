@@ -266,17 +266,11 @@ next
   interpret sigma_finite_measure "stock_measure t" by simp
   let ?M = "(\<Pi>\<^sub>M x\<in>V. stock_measure (\<Gamma> x)) \<Otimes>\<^sub>M stock_measure t"
   let ?N = "embed_measure lborel RealVal"
-  have [measurable]: "(\<lambda>a. cexpr_sem a e) \<in> measurable (state_measure (shift_var_set V)
-                           (case_nat t \<Gamma>)) (embed_measure lborel RealVal)"
+  have *[measurable]: "(\<lambda>a. cexpr_sem a e) \<in> measurable (state_measure (shift_var_set V) (case_nat t \<Gamma>)) REAL"
     using cet_int.prems subset_shift_var_set
-    by (subst stock_measure.simps[symmetric], intro cet_int.IH) simp
-  from cet_int show ?case
-    apply (simp only: cexpr_sem.simps stock_measure.simps)
-    apply (rule measurable_compose[OF _ measurable_embed_measure2[OF inj_RealVal]])
-    apply (subst measurable_lborel1)
-    apply (rule borel_measurable_lebesgue_integral)
-    apply simp
-    done
+    by (intro cet_int.IH) simp
+  show ?case
+    by simp
 qed (simp_all add: state_measure_def inj_PairVal)
 
 lemma measurable_eval_cexpr[measurable]:
@@ -739,7 +733,6 @@ lemma measurable_cexpr_sem':
   shows "(\<lambda>\<sigma>. extract_real (cexpr_sem (merge V V' (\<sigma>, \<rho>)) e))
             \<in> borel_measurable (state_measure V \<Gamma>)"
   apply (rule measurable_compose[OF _ measurable_extract_real])
-  apply (subst stock_measure.simps[symmetric])
   apply (rule measurable_compose[OF _ measurable_cexpr_sem[OF e]])
   apply (insert \<rho>, unfold state_measure_def, rule measurable_compose[OF _ measurable_merge], simp)
   done
@@ -852,7 +845,6 @@ proof (intro conjI)
   note invar = cdens_ctxt_invarD[OF assms(1)]
   show "?f \<in> borel_measurable ?M"
     apply (rule measurable_compose[OF _ measurable_extract_real])
-    apply (subst stock_measure.simps[symmetric])
     apply (rule measurable_compose[OF _ measurable_cexpr_sem[OF invar(3,2)]]) 
     apply (simp only: state_measure_def set_append, rule measurable_compose[OF _ measurable_merge])
     apply (rule measurable_Pair, simp, insert assms(2), simp add: state_measure_def)
@@ -953,6 +945,16 @@ lemma cexpr_typing_dist_dens_cexpr:
   done
 
 
+lemma val_type_eq_BOOL: "val_type x = BOOL \<longleftrightarrow> x \<in> BoolVal`UNIV"
+  by (cases x) auto
+
+lemma val_type_eq_INTEG: "val_type x = INTEG \<longleftrightarrow> x \<in> IntVal`UNIV"
+  by (cases x) auto
+
+lemma val_type_eq_PRODUCT: "val_type x = PRODUCT t1 t2 \<longleftrightarrow>
+  (\<exists>a b. val_type a = t1 \<and> val_type b = t2 \<and> x = <| a, b |>)"
+  by (cases x) auto
+
 lemma cexpr_sem_dist_dens_cexpr:
   assumes "\<Gamma> \<turnstile>\<^sub>c e1 : dist_param_type dst" "\<Gamma> \<turnstile>\<^sub>c e2 : dist_result_type dst"
   assumes "free_vars e1 \<subseteq> V" "free_vars e2 \<subseteq> V"
@@ -966,11 +968,10 @@ proof-
     by (auto simp: type_universe_def simp del: type_universe_type)
   thus ?thesis
     by (subst dist_dens_cexpr_def, cases dst)
-       (auto simp del: space_stock_measure simp: space_embed_measure space_pair_measure
+       (auto simp:
             lift_Comp_def lift_RealVal_def lift_RealIntVal_def lift_RealIntVal2_def
-            extract_real_def extract_bool_def zero_ereal_def
-            bernoulli_density_def extract_pair_def extract_int_def extract_int_pair_def
-            uniform_int_density_def uniform_real_density_def extract_real_pair_def
+            bernoulli_density_def val_type_eq_REAL val_type_eq_BOOL val_type_eq_PRODUCT val_type_eq_INTEG
+            uniform_int_density_def uniform_real_density_def
             lift_IntVal_def poisson_density'_def poisson_density_int_def one_ereal_def
             field_simps gaussian_density_def)
 qed
@@ -988,7 +989,7 @@ proof (intro nonneg_cexprI)
     have "cexpr_sem \<sigma> e1 \<in> type_universe (dist_param_type dst)" and
          "cexpr_sem \<sigma> e2 \<in> type_universe (dist_result_type dst)" 
     by (auto simp: type_universe_def simp del: type_universe_type)
-  hence "dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2) \<ge> 0" by (rule dist_dens_nonneg)
+  hence "dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2) \<ge> 0" by (intro dist_dens_nonneg)
   finally show "extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2)) \<ge> 0" by simp
 qed
 
@@ -1104,11 +1105,10 @@ next
     apply (rule measurable_compose[OF measurable_Pair_compose_split[OF 
                 measurable_fun_upd_state_measure[of v V' \<Gamma>]]])
     apply (simp, simp, simp, rule measurable_compose[OF _ measurable_extract_real])
-    apply (subst stock_measure.simps[symmetric], rule measurable_cexpr_sem, simp, (auto) [])
+    apply (rule measurable_cexpr_sem, simp, (auto) [])
     apply (rule borel_measurable_lebesgue_integral)
     apply (subst measurable_split_conv)
     apply (rule measurable_compose[OF _ measurable_extract_real])
-    apply (subst stock_measure.simps[symmetric])
     apply (rule measurable_compose[OF _ measurable_cexpr_sem[of \<Gamma> _ _  "set vs \<union> insert v V'"]])
     apply (unfold state_measure_def, rule measurable_compose[OF _ measurable_merge])
     apply simp_all
@@ -1182,7 +1182,6 @@ proof-
   let ?f = "\<lambda>x. extract_real (cexpr_sem (case_nat x \<sigma>) e)"
   have meas: "?f \<in> borel_measurable (stock_measure t)"
     apply (rule measurable_compose[OF _ measurable_extract_real])
-    apply (subst stock_measure.simps[symmetric])
     apply (rule measurable_compose[OF measurable_case_nat' measurable_cexpr_sem])
     apply (rule measurable_ident_sets[OF refl], rule measurable_const[OF \<rho>])
     apply (simp_all add: t vars)
@@ -1234,7 +1233,8 @@ proof (rule AE_mp[OF _ AE_I2[OF impI]])
   thus "AE x in stock_measure t. ?f x \<noteq> \<infinity>" using \<rho> tf varsf by (intro nn_integral_PInf_AE) simp_all
   fix x assume x: "x \<in> space (stock_measure t)" and finite: "?f x \<noteq> \<infinity>"
   have nonneg': "AE y in stock_measure t'. eval_cexpr f (case_nat x \<rho>) y \<ge> 0"
-    unfolding eval_cexpr_def using \<rho> x by (intro AE_I2 nonneg_cexprD[OF nonneg]) auto
+    unfolding eval_cexpr_def using \<rho> x
+    by (intro AE_I2 nonneg_cexprD[OF nonneg]) (auto intro!: case_nat_in_state_measure)
   hence "integrable (stock_measure t') (\<lambda>y. eval_cexpr f (case_nat x \<rho>) y)"
     using x \<rho> tf varsf finite by (intro integrableI_nonneg) simp_all
   thus "?f x = ereal (eval_cexpr (\<integral>\<^sub>c f \<partial>t') \<rho> x)" using nonneg'
