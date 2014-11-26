@@ -256,9 +256,9 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val mapping = ty_vars ~~ restr_arg_tys
       val tyI = typ_subst_atomic mapping
       val tI = subst_atomic_types mapping
-      val (restr_c_ty, restr_ty, base_ty, pair_ty) = @{map_tuple 4} tyI 
+      val (restr_c_ty, restr_ty, base_ty, pair_ty) = @{apply 4} tyI 
           (restr_c_ty, restr_ty, base_ty, pair_ty)
-      val (b, P, wit, abs, base) = @{map_tuple 5} tI
+      val (b, P, wit, abs, base) = @{apply 5} tI
           (b, P, wit, abs, base)
 
       (* lift_definition restricted_cond_bool :: "restricted_cond \<Rightarrow> bool" is snd . *)
