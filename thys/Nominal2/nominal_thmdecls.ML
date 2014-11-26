@@ -222,7 +222,7 @@ in
 
 fun thm_1_of_2 ctxt thm =
   let
-    val (prem, concl) = thm |> prop_of |> Logic.dest_implies |> pairself HOLogic.dest_Trueprop
+    val (prem, concl) = thm |> prop_of |> Logic.dest_implies |> apply2 HOLogic.dest_Trueprop
     (* since argument terms "?p \<bullet> ?x1" may actually be eta-expanded
        or tuples, we need the following function to find ?p *)
     fun find_perm (Const (@{const_name "permute"}, _) $ (p as Var _) $ _) = p

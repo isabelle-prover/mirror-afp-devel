@@ -171,7 +171,7 @@ ML {*
       val T = ctyp_of_term a |> typ_of
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
-        |> pairself (ctyp_of thy)
+        |> apply2 (ctyp_of thy)
       val thm = Drule.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
         @{thm rel_ANNOT_eq}
     in

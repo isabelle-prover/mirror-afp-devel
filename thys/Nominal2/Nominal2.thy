@@ -149,7 +149,7 @@ let
   val bn_fun_strs = get_bn_fun_strs bn_funs
   val bn_fun_strs' = add_raws bn_fun_strs
   val bn_fun_env = bn_fun_strs ~~ bn_fun_strs'
-  val bn_fun_full_env = map (pairself (Long_Name.qualify thy_name)) 
+  val bn_fun_full_env = map (apply2 (Long_Name.qualify thy_name)) 
     (bn_fun_strs ~~ bn_fun_strs')
   
   val raw_dts = rawify_dts dts dts_env

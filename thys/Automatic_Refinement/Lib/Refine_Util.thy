@@ -172,7 +172,7 @@ ML {*
     | SOME (a,seq) => (false, Seq.cons a seq)
 
     fun (thA RSm thB) = let
-      val thy = Context.merge (pairself theory_of_thm (thA,thB))
+      val thy = Context.merge (apply2 theory_of_thm (thA,thB))
       val ctxt = Proof_Context.init_global thy
       val octxt = ctxt
       val ctxt = Variable.declare_thm thA ctxt
@@ -357,7 +357,7 @@ ML {*
 
     fun prefer_tac i = defer_tac i THEN PRIMITIVE (Thm.permute_prems 0 ~1)
 
-    fun order_by ord f = sort (ord o pairself f)
+    fun order_by ord f = sort (ord o apply2 f)
 
     (* CLONE from tactic.ML *)
     local
@@ -499,7 +499,7 @@ ML {*
       val freqs = map (freqf thy net) rhss
 
       val res = freqs ~~ items 
-        |> sort (rev_order o int_ord o pairself fst)
+        |> sort (rev_order o int_ord o apply2 fst)
         |> map snd
   
     in res end

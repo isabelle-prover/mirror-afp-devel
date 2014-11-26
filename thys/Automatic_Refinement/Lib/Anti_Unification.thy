@@ -73,7 +73,7 @@ ML {*
     fun var_pair p (tdt,(vtab,idx)) = 
       case Term2tab.lookup vtab p of
         NONE => let
-          val (T,tdt) = anti_unifyT (pairself fastype_of p) tdt
+          val (T,tdt) = anti_unifyT (apply2 fastype_of p) tdt
           val v = Var (("v",idx),T)
           val vtab = Term2tab.update (p,v) vtab
         in

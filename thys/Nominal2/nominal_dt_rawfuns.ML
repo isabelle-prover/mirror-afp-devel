@@ -166,7 +166,7 @@ fun mk_fv_rhs lthy fv_map fv_bn_map args (BC (bmode, binders, bodies)) =
       binders
       |> map (bind_fn lthy args)
       |> split_list
-      |> pairself combine_fn
+      |> apply2 combine_fn
     end  
 
     val t1 = map (mk_fv_body fv_map args) bodies

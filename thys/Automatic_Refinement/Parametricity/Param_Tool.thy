@@ -182,7 +182,7 @@ begin
       local
         val param_get_key = single o #rhs_head o #1
       in 
-        val net_empty = Item_Net.init (Thm.eq_thm o pairself #2) param_get_key
+        val net_empty = Item_Net.init (Thm.eq_thm o apply2 #2) param_get_key
       end
 
       fun wrap_pr_op f thm = case try (`dest_param_rule) thm of

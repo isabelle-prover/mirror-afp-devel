@@ -65,12 +65,12 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
     type T = extraction list Symtab.table
     val empty = Symtab.empty
     val extend = I
-    val merge = Symtab.merge_list (op = o pairself #pattern)
+    val merge = Symtab.merge_list (op = o apply2 #pattern)
   )
 
   fun add_extraction name ex = 
     Context.theory_map (extractions.map (
-      Symtab.update_list (op = o pairself #pattern) (name,ex)))
+      Symtab.update_list (op = o apply2 #pattern) (name,ex)))
 
   (*
     Define new constant name for subterm t in context bnd.
@@ -110,7 +110,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   val cert = cterm_of thy
  
   val pat_net : extraction Item_Net.T =
-    Item_Net.init (op= o pairself #pattern) (fn {pattern, ...} => [pattern])
+    Item_Net.init (op= o apply2 #pattern) (fn {pattern, ...} => [pattern])
     |> fold Item_Net.update exs
 
   local
@@ -269,7 +269,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (pairself term_of) 
+  val term_subst = #2 inst |> map (apply2 term_of) 
     |> map (apfst dest_Var);
 
   val param_terms = map (fn name =>
@@ -308,7 +308,7 @@ in
   lthy
 end;
 
-  val cd_pat_eq = pairself (term_of #> Refine_Util.anorm_term) #> op aconv
+  val cd_pat_eq = apply2 (term_of #> Refine_Util.anorm_term) #> op aconv
 
   structure cd_patterns = Generic_Data (
     type T = cterm list

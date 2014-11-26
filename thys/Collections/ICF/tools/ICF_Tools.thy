@@ -175,7 +175,7 @@ ML {*
       |> Termtab.make_list
       |> Termtab.dest 
       |> map snd
-      |> sort (int_ord o pairself hd)
+      |> sort (int_ord o apply2 hd)
       |> flat;
 
       val thm' = Drule.rearrange_prems perm thm

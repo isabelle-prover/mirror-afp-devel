@@ -549,7 +549,7 @@ fun aatac pred_names =
 val perm_inst_tac =
   Subgoal.FOCUS (fn {params, ...} => 
     let
-      val (p, q) = pairself snd (last2 params)
+      val (p, q) = apply2 snd (last2 params)
       val pq_inst = foldl1 (uncurry Thm.apply) [@{cterm "plus::perm => perm => perm"}, p, q]
       val exi_inst = Drule.instantiate' [SOME (@{ctyp "perm"})] [NONE, SOME pq_inst] @{thm exI}
     in

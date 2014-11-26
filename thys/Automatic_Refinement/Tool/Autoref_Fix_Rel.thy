@@ -303,7 +303,7 @@ ML {*
     (*********************)
     structure Rel_Prio_List = Prio_List (
       type item = string * term
-      val eq = op = o pairself fst 
+      val eq = op = o apply2 fst 
     )
 
     structure Rel_Prio = Generic_Data (
@@ -359,7 +359,7 @@ ML {*
       end
 
       fun dest_prio_tag @{mpat "Trueprop (PRIO_TAG ?ma ?mi)"} = 
-            pairself (#2 o HOLogic.dest_number) (ma,mi)
+            apply2 (#2 o HOLogic.dest_number) (ma,mi)
         | dest_prio_tag t = raise TERM ("dest_prio_tag",[t])
 
       fun get_tagged_prios thm = let
@@ -439,7 +439,7 @@ ML {*
           |> map (fn thm => (try constraint_of_thm thm,thm))
         val spairs = filter (is_some o #1) pairs
           |> map add_o 
-          |> sort (prio_order o pairself #1)
+          |> sort (prio_order o apply2 #1)
           |> map #2
         val npairs = filter (is_none o #1) pairs
       in

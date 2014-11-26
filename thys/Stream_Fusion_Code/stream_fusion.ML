@@ -52,7 +52,7 @@ structure Fusion_Rules = Generic_Data
 (
   type T = fusion_rules;
   val empty = {rules = Thm.full_rules,
-               conspats = Item_Net.init (Thm.eq_thm_prop o pairself snd) (single o fst),
+               conspats = Item_Net.init (Thm.eq_thm_prop o apply2 snd) (single o fst),
                unstream = []};
   val extend = I;
   fun merge 

@@ -35,7 +35,7 @@ ML {*
         in inst end
 
         val inst = vsubterms t
-          |> distinct (op = o pairself #1)
+          |> distinct (op = o apply2 #1)
           |> map inst_of
 
         val st' = Drule.instantiate_normalize ([],inst) st

@@ -18,13 +18,13 @@ ML {*
   structure Ord_Code_Preproc: ORD_CODE_PREPROC = struct
     val trace_enabled = Unsynchronized.ref false
 
-    val do_sort = sort (rev_order o int_ord o pairself #1)
+    val do_sort = sort (rev_order o int_ord o apply2 #1)
 
     structure Data = Theory_Data (
       type T = (int * string * (theory -> thm -> thm)) list
       val empty = []
       val extend = I
-      val merge = op @ #> do_sort #> distinct (op = o pairself #2)
+      val merge = op @ #> do_sort #> distinct (op = o apply2 #2)
     );
 
     val get = Data.get
