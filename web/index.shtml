@@ -50,6 +50,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2014-11-28:
+<a href="entries/UPF.shtml">The Unified Policy Framework (UPF)</a>
+<br>Author:
+<a href="adbrucker@0x5f.org">Achim D. Brucker</a>,
+<a href="lukas.a.bruegger@gmail.com">Lukas Brügger</a> and 
+<a href="wolff@lri.fr">Burkhart Wolff</a>
+</td></tr>
+
+<tr><td class="entry">
 2014-10-23:
 <a href="entries/AODV.shtml">Loop freedom of the (untimed) AODV routing protocol</a>
 <br>Author:
