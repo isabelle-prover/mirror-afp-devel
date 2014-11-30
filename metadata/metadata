@@ -1,3 +1,21 @@
+[UPF]
+title = The Unified Policy Framework (UPF)
+author = Achim D. Brucker <adbrucker@0x5f.org>, Lukas Brügger <lukas.a.bruegger@gmail.com>, Burkhart Wolff <wolff@lri.fr>
+date = 2014-11-28
+topic = Computer Science/Security
+abstract =
+  We present the Unified Policy Framework (UPF), a generic framework
+  for modelling security (access-control) policies. UPF emphasizes
+  the view that a policy is a policy decision function that grants or
+  denies access to resources, permissions, etc. In other words,
+  instead of modelling the relations of permitted or prohibited
+  requests directly, we model the concrete function that implements
+  the policy decision point in a system.  In more detail, UPF is
+  based on the following four principles: 1) Functional representation
+  of policies, 2) No conflicts are possible, 3) Three-valued decision
+  type (allow, deny, undefined), 4) Output type not containing the
+  decision only.
+
 [AODV]
 title = Loop freedom of the (untimed) AODV routing protocol
 author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>

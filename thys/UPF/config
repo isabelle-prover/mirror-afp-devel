@@ -1,0 +1,9 @@
+# -*- shell-script -*-
+
+# Get email when automated build fails. May be empty.
+# values: "email1 email2 .. emailn"
+NOTIFY="adbrucker@0x5f.org wolff@lri.fr lukas.a.bruegger@gmail.com"
+
+# Participate in frequent (nightly) build (only for small submissions)
+# values: "yes" "no"
+FREQUENT="no"
