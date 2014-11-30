@@ -56,8 +56,9 @@ the two approaches based on marked regular expressions, which were previously
 thought to be the same, are different, and one seems to produce uniformly
 smaller automata.  The common framework makes it possible to compare the
 performance of the different decision procedures in a meaningful way.
-<a href="http://www.in.tum.de/~nipkow/pubs/regex_equiv.html">
-The formalization is described in this paper</a>.
+<a href="http://www.in.tum.de/~nipkow/pubs/itp14.html">
+The formalization is described in a paper of the same name presented at
+Interactive Theorem Proving 2014</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
