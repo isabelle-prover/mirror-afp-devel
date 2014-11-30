@@ -65,22 +65,20 @@ where "flat_orA(allow(allow y)) = allow y"
 
 lemma flat_orA_deny[dest]:"flat_orA x = deny y \<Longrightarrow> x = deny(deny y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 lemma flat_orA_allow[dest]: "flat_orA x = allow y \<Longrightarrow> x = allow(allow y) 
                                                     \<or> x = allow(deny y) 
                                                     \<or> x = deny(allow y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 fun    flat_orD :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
@@ -91,22 +89,20 @@ where "flat_orD(allow(allow y)) = allow y"
 
 lemma flat_orD_allow[dest]: "flat_orD x = allow y \<Longrightarrow> x = allow(allow y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 lemma flat_orD_deny[dest]: "flat_orD x = deny y \<Longrightarrow>  x = deny(deny y) 
                                                    \<or> x = allow(deny y) 
                                                    \<or> x = deny(allow y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 fun    flat_1 :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
@@ -117,20 +113,18 @@ where "flat_1(allow(allow y)) = allow y"
 
 lemma flat_1_allow[dest]: "flat_1 x = allow y \<Longrightarrow> x = allow(allow y) \<or> x = allow(deny y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 lemma flat_1_deny[dest]: "flat_1 x = deny y \<Longrightarrow>  x = deny(deny y) \<or> x = deny(allow y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 fun    flat_2 :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
@@ -141,20 +135,18 @@ where "flat_2(allow(allow y)) = allow y"
 
 lemma flat_2_allow[dest]: "flat_2 x = allow y \<Longrightarrow> x = allow(allow y) \<or> x = deny(allow y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 lemma flat_2_deny[dest]: "flat_2 x = deny y \<Longrightarrow>  x = deny(deny y) \<or> x = allow(deny y)"
   apply (case_tac "x")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
-  apply (case_tac "\<alpha>")
-  apply (simp_all)
+   apply (rename_tac \<alpha>)
+   apply (case_tac "\<alpha>", simp_all)[1]
+  apply (rename_tac \<alpha>)
+  apply (case_tac "\<alpha>", simp_all)[1]
 done
 
 section{* Policy Composition *}
