@@ -196,6 +196,7 @@ lemma sub_ran : "ran p  \<subseteq> Allow \<union> Deny"
   apply (auto simp: Allow_def Deny_def ran_def full_SetCompr_eq[symmetric])
   apply (case_tac "x")
   apply (simp_all)
+  apply (rename_tac \<alpha>)
   apply (erule_tac x="\<alpha>" in allE)
   apply (simp)
   done
