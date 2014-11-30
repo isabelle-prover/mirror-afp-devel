@@ -41,14 +41,14 @@
  ******************************************************************************)
 (* $Id: Monads.thy 10922 2014-11-10 15:41:49Z wolff $ *)
 
-header {* Basic Monad Theory for Sequential Computations *}
+section {* Basic Monad Theory for Sequential Computations *}
 theory 
   Monads 
 imports 
   Main
 begin 
 
-section{* General Framework for Monad-based Sequence-Test *}
+subsection{* General Framework for Monad-based Sequence-Test *}
 text{* 
   As such, Higher-order Logic as a purely functional specification formalism has no built-in 
   mechanism for state and state-transitions. Forms of testing involving state require therefore 
@@ -69,7 +69,7 @@ text{*
   \end{enumerate}
 *}
 
-subsection{* State Exception Monads *}
+subsubsection{* State Exception Monads *}
 type_synonym ('o, '\<sigma>) MON\<^sub>S\<^sub>E = "'\<sigma> \<rightharpoonup> ('o \<times> '\<sigma>)"        
       
 definition bind_SE :: "('o,'\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('o \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E) \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
@@ -262,7 +262,7 @@ by(simp add: malt_SE_def)
 lemma malt_SE_cons [simp]: "\<Sqinter>\<^sub>S\<^sub>E (a # S) = (a \<sqinter>\<^sub>S\<^sub>E (\<Sqinter>\<^sub>S\<^sub>E S))"
 by(simp add: malt_SE_def)
 
-subsection{* State-Backtrack Monads *}
+subsubsection{* State-Backtrack Monads *}
 text{*This subsection is still rudimentary and as such an interesting
   formal analogue to the previous monad definitions. It is doubtful that it is
   interesting for testing and as a computational structure at all. 
@@ -301,7 +301,7 @@ lemma bind_assoc_SB: "(y := (x := m; k); h) = (x := m; (y := k; h))"
   apply (simp add: unit_SB_def bind_SB_def split_def)
 done
 
-subsection{* State Backtrack Exception Monad *}
+subsubsection{* State Backtrack Exception Monad *}
 text{* 
   The following combination of the previous two Monad-Constructions allows for the semantic 
   foundation of a simple generic assertion language in the style of Schirmer's Simpl-Language or 
@@ -390,7 +390,7 @@ next
 qed
 
 
-section{* Valid Test Sequences in the State Exception Monad *}
+subsection{* Valid Test Sequences in the State Exception Monad *}
 text{* 
   This is still an unstructured merge of executable monad concepts and specification oriented 
   high-level properties initiating test procedures. 
@@ -553,7 +553,7 @@ lemma [code]: "(\<sigma> \<Turnstile> m) = (case (m \<sigma>) of None  \<Rightar
   apply (auto)
 done
 
-section{* Valid Test Sequences in the State Exception Backtrack Monad *}
+subsection{* Valid Test Sequences in the State Exception Backtrack Monad *}
 text{* 
   This is still an unstructured merge of executable monad concepts and specification oriented 
   high-level properties initiating test procedures. 

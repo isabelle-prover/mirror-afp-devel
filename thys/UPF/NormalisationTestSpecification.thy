@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: NormalisationTestSpecification.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
-header {* Policy Transformation for Testing *}
+section {* Policy Transformation for Testing *}
 theory 
   NormalisationTestSpecification
 imports 

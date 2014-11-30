@@ -41,7 +41,7 @@
  ******************************************************************************)
 (* $Id: UPF.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
-header {* Putting Everything Together: UPF *}
+section {* Putting Everything Together: UPF *}
 theory 
   UPF
 imports 

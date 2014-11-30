@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: SeqComposition.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
-header{* Sequential Composition *}
+section{* Sequential Composition *}
 theory  
   SeqComposition
 imports 
@@ -52,7 +52,7 @@ text{*
   the second policy to the output of the first one. Again, there are four possibilities how the 
   decisions can be combined. *} 
 
-section {* Flattening *}
+subsection {* Flattening *}
 text{* 
   A key concept of sequential policy composition is the flattening of nested decisions. There are 
   four possibilities, and these possibilities will give the various flavours of policy composition.
@@ -149,7 +149,7 @@ lemma flat_2_deny[dest]: "flat_2 x = deny y \<Longrightarrow>  x = deny(deny y) 
   apply (case_tac "\<alpha>", simp_all)[1]
 done
 
-section{* Policy Composition *}
+subsection{* Policy Composition *}
 text{* 
   The following definition allows to compose two policies. Denies and allows are transferred. 
 *}

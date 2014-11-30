@@ -41,7 +41,7 @@
  ******************************************************************************)
 (* $Id: ElementaryPolicies.thy 10945 2014-11-21 12:50:43Z wolff $ *)
 
-header{* Elementary Policies *}
+section{* Elementary Policies *}
 theory 
   ElementaryPolicies
 imports 
@@ -54,7 +54,7 @@ text{*
   policies defined in this theory. 
 *}
 
-section{* The Core Policy Combinators: Allow and Deny Everything *}
+subsection{* The Core Policy Combinators: Allow and Deny Everything *}
 
 definition
    deny_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("AllD")
@@ -111,7 +111,7 @@ lemma neq_Allow_Deny: "pf \<noteq> \<emptyset> \<Longrightarrow> (deny_pfun pf) 
   apply (auto)
 done
 
-section{* Common Instances *}
+subsection{* Common Instances *}
 
 definition allow_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>f")
   where "allow_all_fun f =  allow_pfun (Some o f)"
@@ -161,7 +161,7 @@ lemma deny_left_cancel :"dom pf = UNIV \<Longrightarrow> (deny_pfun pf) \<Oplus>
   apply (auto simp: deny_pfun_def option.splits)
   done
 
-section{* Domain, Range, and Restrictions *}
+subsection{* Domain, Range, and Restrictions *}
 
 text{* 
   Since policies are essentially maps, we inherit the basic definitions for 

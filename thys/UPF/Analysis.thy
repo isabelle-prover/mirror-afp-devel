@@ -42,7 +42,7 @@
 (* $Id: Analysis.thy 10953 2014-11-24 11:23:40Z wolff $ *)
 
 
-header{* Properties on Policies *}
+section{* Properties on Policies *}
 theory 
   Analysis
 imports
@@ -54,14 +54,14 @@ text {*
   In this theory, several standard policy properties are paraphrased in UPF terms. 
 *}
 
-section{* Basic Properties *}
+subsection{* Basic Properties *}
 
-subsection{* A Policy Has no Gaps *}
+subsubsection{* A Policy Has no Gaps *}
 
 definition gap_free :: "('a \<mapsto> 'b) \<Rightarrow> bool" 
 where     "gap_free p = (dom p = UNIV)"
 
-subsection{* Comparing Policies *}
+subsubsection{* Comparing Policies *}
 text {*   Policy p is more defined than q: *}
 definition more_defined :: "('a \<mapsto> 'b) \<Rightarrow>('a \<mapsto> 'b) \<Rightarrow>bool" 
 where     "more_defined p q = (dom q \<subseteq> dom p)"
@@ -128,7 +128,7 @@ lemma "A\<^sub>I \<sqsubseteq>\<^sub>A p"
   unfolding more_permissive_def allow_all_fun_def allow_pfun_def allow_all_id_def
   by(auto split: option.split decision.split)
 
-section{* Combined Data-Policy Refinement *}
+subsection{* Combined Data-Policy Refinement *}
 
 definition policy_refinement :: 
            "('a \<mapsto> 'b) \<Rightarrow> ('a' \<Rightarrow> 'a) \<Rightarrow>('b' \<Rightarrow> 'b) \<Rightarrow> ('a' \<mapsto> 'b') \<Rightarrow> bool" 
@@ -163,7 +163,7 @@ apply(erule_tac x=" (f' a')" in allE, auto)
 done
 
 
-section {* Equivalence of Policies *}
+subsection {* Equivalence of Policies *}
 subsubsection{* Equivalence over domain D *}
 
 definition p_eq_dom :: "('a \<mapsto> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow>bool" ("_ \<approx>\<^bsub>_\<^esub> _" [60,60,60]60)
@@ -190,7 +190,7 @@ shows                "no_conflicts p q"
   apply (metis)+
 done
 
-subsection{* Miscellaneous *}
+subsubsection{* Miscellaneous *}
 
 lemma dom_inter: "\<lbrakk>dom p \<inter> dom q = {}; p x = \<lfloor>y\<rfloor>\<rbrakk> \<Longrightarrow> q x = \<bottom>"
   by (auto)

@@ -41,7 +41,7 @@
  ******************************************************************************)
 (* $Id: UPFCore.thy 10951 2014-11-21 21:54:46Z wolff $ *)
 
-header{* The Core of the Unified Policy Framework (UPF) *}
+section{* The Core of the Unified Policy Framework (UPF) *}
 theory
   UPFCore
 imports 
@@ -49,7 +49,7 @@ imports
 begin
 
 
-section{* Foundation *}
+subsection{* Foundation *}
 text{* 
   The purpose of this theory is to formalize a somewhat non-standard view
   on the fundamental concept of a security policy which is worth outlining.
@@ -112,7 +112,7 @@ definition Deny :: "('\<alpha> decision) set"
 where     "Deny = range deny"
  
 
-section{* Policy Constructors *}
+subsection{* Policy Constructors *}
 text{* 
   Most elementary policy constructors are based on the
   update operation @{thm [source] "Fun.fun_upd_def"} @{thm Fun.fun_upd_def}
@@ -172,7 +172,7 @@ lemma pol_upd_neq1 [simp]: "m(a\<mapsto>\<^sub>+x) \<noteq> n(a\<mapsto>\<^sub>-
   by(auto dest: map_upd_eqD1)
 
 
-section{* Override Operators *}
+subsection{* Override Operators *}
 text{* 
   Key operators for constructing policies are the override operators. There are four different 
   versions of them, with one of them being the override operator from the Map theory. As it is 
@@ -269,7 +269,7 @@ lemma override_D_assoc: "p1 \<Oplus>\<^sub>D (p2 \<Oplus>\<^sub>D p3) = (p1 \<Op
   apply (simp add: override_D_def split: decision.splits  option.splits)
 done
 
-section{* Coercion Operators *}
+subsection{* Coercion Operators *}
 text{* 
   Often, especially when combining policies of different type, it is necessary to 
   adapt the input or output domain of a policy to a more refined context. 

@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: ServiceExample.thy 10954 2014-11-24 12:43:29Z wolff $ *)
 
-header {* Instantiating Our Secure Service Example *}
+section {* Instantiating Our Secure Service Example *}
 theory 
   ServiceExample
 imports 
@@ -52,7 +52,7 @@ text {*
   two patients:
 *}
 
-section {* Access Control Configuration *}
+subsection {* Access Control Configuration *}
 definition alice :: user where "alice = 1"
 definition bob :: user where "bob = 2"
 definition charlie :: user where "charlie = 3"
@@ -86,11 +86,11 @@ definition LR1 :: LR where
 definition \<Sigma>0 :: \<Sigma> where
  "\<Sigma>0 = (empty(patient1\<mapsto>LR1))"
 
-section {* The Initial System State *}
+subsection {* The Initial System State *}
 definition \<sigma>0 :: "DB \<times> \<Sigma>\<times>\<upsilon>" where
  "\<sigma>0 = (Spine0,\<Sigma>0,UC0)"
  
-section{* Basic Properties *}
+subsection{* Basic Properties *}
 
 lemma [simp]: "(case a of allow d \<Rightarrow> \<lfloor>X\<rfloor> | deny d2 \<Rightarrow> \<lfloor>Y\<rfloor>) = \<bottom> \<Longrightarrow> False"
   by (case_tac a,simp_all)

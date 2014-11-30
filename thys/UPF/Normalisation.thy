@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: Normalisation.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
-header{* Policy Transformations *}
+section{* Policy Transformations *}
 theory 
   Normalisation
 imports 
@@ -54,7 +54,7 @@ text{*
   study~\cite{brucker.ea:formal-fw-testing:2014}.
 *}
 
-section{* Elementary Operators *}
+subsection{* Elementary Operators *}
 text{* 
   We start by providing several operators and theorems useful when reasoning about a list of 
   rules which should eventually be interpreted as combined using the standard override operator. 
@@ -236,7 +236,7 @@ proof (induct p rule: rev_induct)
 qed
 
 
-section{* Distributivity of the Transformation. *}
+subsection{* Distributivity of the Transformation. *}
 text{*
   The scenario is the following (can be applied iteratively):
   \begin{itemize}

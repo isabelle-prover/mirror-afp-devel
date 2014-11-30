@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: ParallelComposition.thy 10879 2014-10-26 11:35:31Z brucker $ *)
 
-header{* Parallel Composition*}
+section{* Parallel Composition*}
 theory  
   ParallelComposition
 imports 
@@ -62,7 +62,7 @@ text{*
   flattening.
 *}
 
-section{* Parallel Combinators: Foundations *}
+subsection{* Parallel Combinators: Foundations *}
 text {* 
   There are four possible semantics how the decision can be combined, thus there are four 
   parallel composition operators. For each of them, we prove several properties. 
@@ -212,7 +212,7 @@ lemma mt_prod_2_id[simp]:"\<emptyset> \<Otimes>\<^sub>2\<^sub>I p = \<emptyset>"
   apply (simp add: prod_2_id_def prod_2_def)
 done
 
-section{* Combinators for Transition Policies *}
+subsection{* Combinators for Transition Policies *}
 text {* 
   For constructing transition policies, two additional combinators are required: one combines 
   state transitions by pairing the states, the other works equivalently on general maps. 
@@ -231,7 +231,7 @@ where
    "p1 \<Otimes>\<^sub>S p2 = (p1 \<Otimes>\<^sub>M p2) o (\<lambda> (a,b,c). ((a,b),a,c))"
 
 
-section{* Range Splitting *}
+subsection{* Range Splitting *}
 text{* 
   The following combinator is a special case of both a parallel composition operator and a 
   range splitting operator. Its primary use case is when combining a policy with state transitions. 
@@ -257,7 +257,7 @@ lemma comp_ran_split_charn:
   apply (auto)
 done
 
-section {* Distributivity of the parallel combinators *}
+subsection {* Distributivity of the parallel combinators *}
 
 lemma distr_or1_a: "(F = F1 \<Oplus> F2) \<Longrightarrow>  (((N  \<Otimes>\<^sub>1 F) o f) = 
                (((N \<Otimes>\<^sub>1 F1) o f)  \<Oplus> ((N   \<Otimes>\<^sub>1 F2)  o f))) "

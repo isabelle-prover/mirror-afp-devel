@@ -40,7 +40,7 @@
  ******************************************************************************)
 (* $Id: Service.thy 10945 2014-11-21 12:50:43Z wolff $ *)
 
-header {* Secure Service Specification *}
+section {* Secure Service Specification *}
 theory 
   Service
 imports 
@@ -51,8 +51,8 @@ text {*
   that allows the staff in a hospital to access health care records of patients. 
 *}
 
-section{* Datatypes for Modelling Users and Roles*}
-subsection {* Users *}
+subsection{* Datatypes for Modelling Users and Roles*}
+subsubsection {* Users *}
 text{*
   First, we introduce a type for users that we use to model that each 
   staff member has a unique id:
@@ -64,7 +64,7 @@ text {*
 *}
 type_synonym patient = int (* Each patient gets a unique id *)
 
-subsection {* Roles and Relationships*}
+subsubsection {* Roles and Relationships*}
 text{*   In our example, we assume three different roles for members of the clinical staff: *}
 
 datatype role =  ClinicalPractitioner | Nurse | Clerical 
@@ -83,8 +83,8 @@ type_synonym \<Sigma> = "patient \<rightharpoonup> LR"
 text{* The user context stores the roles the users are in. *}
 type_synonym \<upsilon> = "user \<rightharpoonup> role"
 
-section {* Modelling Health Records and the Web Service API*}
-subsection {* Health Records *}
+subsection {* Modelling Health Records and the Web Service API*}
+subsubsection {* Health Records *}
 text {* The content and the status of the entries of a health record *}
 datatype data         = dummyContent 
 datatype status       = Open | Closed
@@ -93,7 +93,7 @@ type_synonym entry    = "status \<times> user \<times> data"
 type_synonym SCR      = "(entry_id \<rightharpoonup> entry)"
 type_synonym DB       = "patient \<rightharpoonup> SCR"
 
-subsection {* The Web Service API *}
+subsubsection {* The Web Service API *}
 text{* The operations provided by the service: *}
 datatype Operation = createSCR user role patient  
                    | appendEntry user role patient entry_id entry
@@ -207,7 +207,7 @@ fun allContentStatic where
   |"allContentStatic [] = True"
 
 
-section{* Modelling Access Control*}
+subsection{* Modelling Access Control*}
 text {*
   In the following, we define a rather complex access control model for our 
   scenario that extends traditional role-based access control 
@@ -217,7 +217,7 @@ text {*
   for a general motivation and explanation of break-the-glass access control).
 *}
 
-subsection {* Sealed Envelopes *}
+subsubsection {* Sealed Envelopes *}
 
 type_synonym SEPolicy = "(Operation \<times> DB \<mapsto>  unit) "
 
@@ -259,7 +259,7 @@ definition SEPolicy :: SEPolicy where
 lemmas SEsimps = SEPolicy_def get_entry_def userHasAccess_def
                  editEntrySE_def deleteEntrySE_def readEntrySE_def
 
-subsection {* Legitimate Relationships *}
+subsubsection {* Legitimate Relationships *}
 
 type_synonym LRPolicy = "(Operation \<times> \<Sigma>, unit) policy"
 
@@ -365,7 +365,7 @@ definition FunPolicy where
               removeLRFunPolicy \<Oplus> readSCRFunPolicy \<Oplus>
               addLRFunPolicy \<Oplus> createFunPolicy \<Oplus> A\<^sub>U"
 
-subsection{* Modelling Core RBAC *}
+subsubsection{* Modelling Core RBAC *}
 
 type_synonym RBACPolicy = "Operation \<times> \<upsilon> \<mapsto> unit"
 
@@ -389,9 +389,9 @@ definition RBACPolicy :: RBACPolicy where
      then  \<lfloor>allow ()\<rfloor>
      else  \<lfloor>deny ()\<rfloor>)"
 
-section {* The State Transitions and Output Function*}
+subsection {* The State Transitions and Output Function*}
 
-subsection{* State Transition *}
+subsubsection{* State Transition *}
 
 fun OpSuccessDB :: "(Operation \<times> DB) \<rightharpoonup> DB"  where
    "OpSuccessDB (createSCR u r p,S) = (case S p of \<bottom> \<Rightarrow> \<lfloor>S(p\<mapsto>\<emptyset>)\<rfloor>
@@ -434,7 +434,7 @@ fun OpSuccessSigma :: "(Operation \<times> \<Sigma>) \<rightharpoonup> \<Sigma>"
 fun OpSuccessUC :: "(Operation \<times> \<upsilon>) \<rightharpoonup> \<upsilon>" where
    "OpSuccessUC (f,u) = \<lfloor>u\<rfloor>"
 
-subsection {* Output *}
+subsubsection {* Output *}
 
 type_synonym Output = unit  
 
@@ -445,7 +445,7 @@ fun OpSuccessOutput :: "(Operation) \<rightharpoonup> Output" where
 fun OpFailOutput :: "Operation \<rightharpoonup>  Output" where
    "OpFailOutput x = \<lfloor>()\<rfloor>"
 
-section {* Combine All Parts *}
+subsection {* Combine All Parts *}
 
 definition SE_LR_Policy :: "(Operation \<times> DB \<times> \<Sigma>, unit) policy" where
    "SE_LR_Policy = (\<lambda>(x,x). x)  o\<^sub>f  (SEPolicy \<Otimes>\<^sub>\<or>\<^sub>D LR_Policy) o (\<lambda>(a,b,c). ((a,b),a,c))"
