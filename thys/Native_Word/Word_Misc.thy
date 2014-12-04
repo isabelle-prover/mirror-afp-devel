@@ -14,7 +14,7 @@ text {*
   code generator that PolyML does not provide.
 *}
 
-setup {* Code_Target.extend_target ("SML_word", (Code_ML.target_SML, I)) *}
+setup {* Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I)]) *}
 
 code_identifier code_module Word_Misc \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
