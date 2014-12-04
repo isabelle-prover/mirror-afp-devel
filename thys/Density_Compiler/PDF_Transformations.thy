@@ -397,7 +397,7 @@ proof
   from sets_M have [simp]: "measurable M = measurable borel" 
     by (intro ext measurable_cong_sets) simp_all
   have M_add: "split op+ \<in> borel_measurable (borel :: (real \<times> real) measure)"
-    by (simp add: borel_prod'[symmetric])
+    by (simp add: borel_prod[symmetric])
 
   show "distr M borel (split op+) = density lborel ?f'"
   proof (rule measure_eqI)
@@ -421,8 +421,12 @@ proof
       apply (rule nn_integral_cong, subst nn_integral_distr, simp)
       apply (intro borel_measurable_ereal_times, simp)
       apply (intro measurable_compose[OF measurable_Pair borel_measurable_indicator])
-      apply (erule measurable_const, rule measurable_ident_sets[OF refl])
-      apply (insert X, simp add: borel_prod measurable_sets_borel[OF M_add], simp)
+      apply (rule borel_measurable_const)
+      apply (rule measurable_id)
+      apply (insert X)
+      apply (subst borel_prod)
+      apply (simp add: borel_prod measurable_sets_borel[OF M_add])
+      apply (simp)
       done
     also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+z. f (x, z-x) * indicator X z \<partial>lborel \<partial>lborel"
       by (intro nn_integral_cong) (simp split: split_indicator)

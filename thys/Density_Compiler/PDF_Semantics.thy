@@ -71,7 +71,7 @@ proof-
       by (rule ext) (simp split: prod.split)
   also have "... \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
       unfolding uniform_real_density_def
-      by (simp only: prod.case) (simp add: borel_prod'[symmetric])
+      by (simp only: prod.case) (simp add: borel_prod[symmetric])
   finally show ?thesis .
 qed
 
@@ -116,7 +116,7 @@ proof (rule measurable measurable_subprob_algebra_density)+
     assume "l < u" then show ?thesis
       by (simp add: nn_integral_RealVal uniform_real_density_def if_bounded nn_integral_cmult)
   qed (simp add: uniform_real_density_def comp_def)
-qed (auto simp: comp_def borel_prod')
+qed (auto simp: comp_def borel_prod)
 
 subsection {* Gaussian *}
 
@@ -132,7 +132,7 @@ proof-
                              sqrt (2 * pi * snd x^2) else 0))"
     unfolding gaussian_density_def by (intro ext) (simp split: prod.split)
   also have "... \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
-    by (simp add: borel_prod'[symmetric])
+    by (simp add: borel_prod[symmetric])
   finally show ?thesis .
 qed
 
@@ -158,7 +158,7 @@ proof (rule measurable measurable_subprob_algebra_density)+
       by (cases x)
          (simp add: nn_integral_RealVal comp_def gaussian_density_def zero_ereal_def[symmetric])
   qed
-qed (auto simp: comp_def borel_prod')
+qed (auto simp: comp_def borel_prod)
 
 subsection {* Poisson *}
 

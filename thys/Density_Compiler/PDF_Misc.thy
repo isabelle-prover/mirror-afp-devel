@@ -115,7 +115,7 @@ proof (rule lborel_eqI[symmetric], clarify)
       ereal (setprod (op \<bullet> ((ua, ub) - (la, lb))) Basis)"
     by (simp add: lborel.emeasure_pair_measure_Times Basis_prod_def setprod.union_disjoint
                   setprod.reindex)
-qed (simp add: borel_prod)
+qed (simp add: borel_prod[symmetric])
 
 
 subsection {* Count spaces *}

@@ -240,7 +240,7 @@ lemma measurable_extract_real_pair[measurable]:
 
 lemma measurable_extract_real_pair'[measurable]:
   "extract_real_pair \<in> measurable (PRODUCT REAL REAL) borel"
-  by (subst borel_prod'[symmetric]) measurable
+  by (subst borel_prod[symmetric]) measurable
 
 lemma measurable_extract_bool[measurable]: "extract_bool \<in> measurable BOOL (count_space UNIV)"
   by simp

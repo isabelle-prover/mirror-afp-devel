@@ -1634,7 +1634,7 @@ next
       have "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) ?f''"
         using dens'
         by (simp only: t op_sem.simps, intro distr_lift_RealPairVal)
-            (simp_all add: borel_prod'[symmetric] has_subprob_density_imp_has_density 
+            (simp_all add: borel_prod[symmetric] has_subprob_density_imp_has_density 
                            distr_convolution_real)
       also have "?f'' = (\<lambda>z. \<integral>\<^sup>+ x. f \<rho> (RealPairVal (x, extract_real z - x)) \<partial>lborel)" 
         (is "_ = ?f''")
