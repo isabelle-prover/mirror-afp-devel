@@ -1869,6 +1869,13 @@ abstract = Sturm's Theorem states that polynomial sequences with certain
   P has exactly n roots in the interval I” or “P(x) > Q(x) for all x
   &#8712; &#8477;”.
 
+[Sturm_Tarski]
+title = The Sturm-Tarski Theorem
+author = Wenda Li <mailto:wl302@cam.ac.uk>
+date = 2014-09-19
+topic = Mathematics/Analysis
+abstract = We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem), which generalizes Sturm's theorem. Sturm's theorem is usually used as a way to count distinct real roots, while the Sturm-Tarksi theorem forms the basis for Tarski's classic quantifier elimination for real closed field.
+
 [Markov_Models]
 title = Markov Models
 author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
