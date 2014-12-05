@@ -914,7 +914,7 @@ primrec dist_dens_cexpr :: "pdf_dist \<Rightarrow> cexpr \<Rightarrow> cexpr \<R
 | "dist_dens_cexpr Gaussian p x = (IF\<^sub>c CReal 0 <\<^sub>c snd\<^sub>c p THEN
                                      exp\<^sub>c (-\<^sub>c((x -\<^sub>c fst\<^sub>c p)^\<^sub>cCInt 2 /\<^sub>c (CReal 2 *\<^sub>c snd\<^sub>c p^\<^sub>cCInt 2))) /\<^sub>c
                                          sqrt\<^sub>c (CReal 2 *\<^sub>c \<pi>\<^sub>c *\<^sub>c snd\<^sub>c p ^\<^sub>c CInt 2) ELSE CReal 0)"
-| "dist_dens_cexpr Poisson p x = (IF\<^sub>c CReal 0 \<le>\<^sub>c p \<and>\<^sub>c CInt 0 \<le>\<^sub>c x THEN
+| "dist_dens_cexpr Poisson p x = (IF\<^sub>c CReal 0 <\<^sub>c p \<and>\<^sub>c CInt 0 \<le>\<^sub>c x THEN
                                     p ^\<^sub>c x /\<^sub>c \<langle>fact\<^sub>c x\<rangle>\<^sub>c *\<^sub>c exp\<^sub>c (-\<^sub>c p) ELSE CReal 0)"
 
 lemma free_vars_dist_dens_cexpr:
@@ -936,7 +936,7 @@ lemma cexpr_typing_dist_dens_cexpr:
   (* Uniform real *)
   apply (simp, intro cet_if cet_op_intros cet_eq cet_fst cet_snd, simp_all add: cet_val') []
   (* Poisson *)
-  apply (simp, intro cet_if cet_and, rule cet_less_eq_real, simp add: cet_val', simp)
+  apply (simp, intro cet_if cet_and, rule cet_less_real, simp add: cet_val', simp)
   apply (rule cet_less_eq_int, simp add: cet_val', simp)
   apply (intro cet_mult_real cet_pow_real cet_inverse cet_cast_real_int cet_exp cet_minus_real 
                cet_op[where oper = Fact and t = INTEG] cet_var', simp_all add: cet_val') [2]
@@ -971,8 +971,8 @@ proof-
        (auto simp:
             lift_Comp_def lift_RealVal_def lift_RealIntVal_def lift_RealIntVal2_def
             bernoulli_density_def val_type_eq_REAL val_type_eq_BOOL val_type_eq_PRODUCT val_type_eq_INTEG
-            uniform_int_density_def uniform_real_density_def
-            lift_IntVal_def poisson_density'_def poisson_density_int_def one_ereal_def
+            uniform_int_density_def uniform_real_density_def transfer_nat_int_factorial
+            lift_IntVal_def poisson_density'_def one_ereal_def
             field_simps gaussian_density_def)
 qed
 

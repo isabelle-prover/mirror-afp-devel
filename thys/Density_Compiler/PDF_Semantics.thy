@@ -7,7 +7,7 @@
 *)
 
 theory PDF_Semantics
-imports PDF_Values Poisson
+imports PDF_Values
 begin
 
 lemma measurable_subprob_algebra_density:
@@ -163,11 +163,17 @@ qed (auto simp: comp_def borel_prod)
 subsection {* Poisson *}
 
 definition poisson_density' :: "real \<Rightarrow> int \<Rightarrow> ereal" where
-  "poisson_density' rate k = (if rate \<ge> 0 then poisson_density rate k else 0)"
+  "poisson_density' rate k = pmf (poisson_pmf rate) (nat k) * indicator ({0 <..} \<times> {0..}) (rate, k)"
 
 lemma measurable_poisson_density'[measurable]:
     "split poisson_density' \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
-  unfolding poisson_density'_def[abs_def] by simp
+proof -
+  have "split poisson_density' =
+    (\<lambda>(rate, k). rate ^ nat k / fact (nat k) * exp (-rate) * indicator ({0 <..} \<times> {0..}) (rate, k))"
+    by (auto split: split_indicator simp: fun_eq_iff poisson_density'_def)
+  then show ?thesis
+    by simp
+qed
 
 definition poisson :: "val \<Rightarrow> val measure" where
   "poisson rate = density INTEG (poisson_density' (extract_real rate) o extract_int)"
@@ -175,9 +181,22 @@ definition poisson :: "val \<Rightarrow> val measure" where
 lemma measurable_poisson[measurable]: "poisson \<in> measurable REAL (subprob_algebra INTEG)"
   unfolding poisson_def[abs_def]
 proof (rule measurable measurable_subprob_algebra_density)+
-  fix r :: real show "integral\<^sup>N INTEG (poisson_density' r \<circ> extract_int) \<le> 1"
-    using poisson_density_integral_eq_1[of r, where 'a=int]
-    by (cases "0 \<le> r") (auto simp add: nn_integral_IntVal poisson_density'_def)
+  fix r :: real
+  have [simp]: "nat ` {0..} = UNIV"
+    by (auto simp: image_iff intro!: bexI[of _ "int x" for x])
+
+  { assume "0 < r"
+    then have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / real (fact (nat x))) \<partial>count_space UNIV)
+      = (\<integral>\<^sup>+ x. ereal (pmf (poisson_pmf r) (nat x)) \<partial>count_space {0 ..})"
+      by (auto intro!: nn_integral_cong simp add: nn_integral_count_space_indicator split: split_indicator)
+    also have "\<dots> = 1"
+      using measure_pmf.emeasure_space_1[of "poisson_pmf r"]
+      by (subst nn_integral_pmf') (auto simp: inj_on_def)
+    finally have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / real (fact (nat x))) \<partial>count_space UNIV) = 1"
+      . }
+  then show "integral\<^sup>N INTEG (poisson_density' r \<circ> extract_int) \<le> 1"
+    by (cases "0 < r")
+       (auto simp: nn_integral_IntVal poisson_density'_def zero_ereal_def[symmetric])
 qed (auto simp: comp_def)
 
 section {* Source Language Syntax and Semantics *}
@@ -293,7 +312,7 @@ lemma measurable_dist_dens[measurable]:
 lemma dist_dens_nonneg: "dist_dens dst x y \<ge> 0"
   by (cases dst)
      (auto simp: bernoulli_density_def uniform_int_density_def uniform_real_density_def
-                 poisson_density'_def gaussian_density_def split_beta' poisson_density_ge_0)
+                 poisson_density'_def gaussian_density_def split_beta' pmf_nonneg)
 
 lemma dist_measure_has_density:
   "v \<in> type_universe (dist_param_type dst) \<Longrightarrow> 

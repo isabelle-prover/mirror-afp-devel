@@ -5,7 +5,6 @@ session Density_Compiler (AFP) = "HOL-Probability" +
   theories [document = false]
     "~~/src/HOL/Library/Monad_Syntax"
   theories
-    Poisson
     PDF_Misc
     PDF_Transformations
     PDF_Compiler
