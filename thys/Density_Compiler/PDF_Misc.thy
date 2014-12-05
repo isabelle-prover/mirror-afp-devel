@@ -11,7 +11,7 @@
 section {* Auxiliary Measures *}
 
 theory PDF_Misc
-imports Interval_Integral
+imports Probability
 begin
 
 subsection {* Null measure *}
@@ -722,52 +722,7 @@ proof (rule density_discrete)
 qed (insert assms, auto simp: nn_integral_nonneg)
 
 
-lemma strict_mono_inv:
-  fixes f :: "('a::linorder) \<Rightarrow> ('b::linorder)"
-  assumes "strict_mono f" and "surj f" and inv: "\<And>x. g (f x) = x"
-  shows "strict_mono g"
-proof
-  fix x y :: 'b assume "x < y"
-  from `surj f` obtain x' y' where [simp]: "x = f x'" "y = f y'" by blast
-  with `x < y` and `strict_mono f` have "x' < y'" by (simp add: strict_mono_less)
-  with inv show "g x < g y" by simp
-qed
 
-definition "mono_on f A \<equiv> \<forall>r s. r \<in> A \<and> s \<in> A \<and> r \<le> s \<longrightarrow> f r \<le> f s"
-
-lemma mono_onI:
-  "(\<And>r s. r \<in> A \<Longrightarrow> s \<in> A \<Longrightarrow> r \<le> s \<Longrightarrow> f r \<le> f s) \<Longrightarrow> mono_on f A"
-  unfolding mono_on_def by simp
-
-lemma mono_onD:
-  "\<lbrakk>mono_on f A; r \<in> A; s \<in> A; r \<le> s\<rbrakk> \<Longrightarrow> f r \<le> f s"
-  unfolding mono_on_def by simp
-
-lemma mono_imp_mono_on: "mono f \<Longrightarrow> mono_on f A"
-  unfolding mono_def mono_on_def by auto
-
-lemma mono_on_subset: "mono_on f A \<Longrightarrow> B \<subseteq> A \<Longrightarrow> mono_on f B"
-  unfolding mono_on_def by auto
-
-definition "strict_mono_on f A \<equiv> \<forall>r s. r \<in> A \<and> s \<in> A \<and> r < s \<longrightarrow> f r < f s"
-
-lemma strict_mono_onI:
-  "(\<And>r s. r \<in> A \<Longrightarrow> s \<in> A \<Longrightarrow> r < s \<Longrightarrow> f r < f s) \<Longrightarrow> strict_mono_on f A"
-  unfolding strict_mono_on_def by simp
-
-lemma strict_mono_onD:
-  "\<lbrakk>strict_mono_on f A; r \<in> A; s \<in> A; r < s\<rbrakk> \<Longrightarrow> f r < f s"
-  unfolding strict_mono_on_def by simp
-
-lemma mono_on_greaterD:
-  assumes "mono_on g A" "x \<in> A" "y \<in> A" "g x > (g (y::_::linorder) :: _ :: linorder)"
-  shows "x > y"
-proof (rule ccontr)
-  assume "\<not>x > y"
-  hence "x \<le> y" by (simp add: not_less)
-  from assms(1-3) and this have "g x \<le> g y" by (rule mono_onD)
-  with assms(4) show False by simp
-qed
 
 lemma nn_integral_indicator_singleton[simp]:
   "(\<integral>\<^sup>+(x::real). f x * indicator {y} x \<partial>lborel) = 0"
@@ -808,28 +763,6 @@ proof-
 qed
 
 
-lemma strict_mono_on_imp_inj_on:
-  assumes "strict_mono_on (f :: (_ :: linorder) \<Rightarrow> (_ :: preorder)) A"
-  shows "inj_on f A"
-proof (rule inj_onI)
-  fix x y assume "x \<in> A" "y \<in> A" "f x = f y"
-  thus "x = y"
-    by (cases x y rule: linorder_cases)
-       (auto dest: strict_mono_onD[OF assms, of x y] strict_mono_onD[OF assms, of y x]) 
-qed
-
-lemma strict_mono_on_leD:
-  assumes "strict_mono_on (f :: (_ :: linorder) \<Rightarrow> _ :: preorder) A" "x \<in> A" "y \<in> A" "x \<le> y"
-  shows "f x \<le> f y"
-proof (insert le_less_linear[of y x], elim disjE)
-  assume "x < y"
-  with assms have "f x < f y" by (rule_tac strict_mono_onD[OF assms(1)]) simp_all
-  thus ?thesis by (rule less_imp_le)
-qed (insert assms, simp)
-
-lemma strict_mono_on_imp_mono_on: 
-  "strict_mono_on (f :: (_ :: linorder) \<Rightarrow> _ :: preorder) A \<Longrightarrow> mono_on f A"
-  by (rule mono_onI, rule strict_mono_on_leD)
 
 lemma continuous_image_atLeastAtMost:
   assumes "continuous_on {a::real..b} f" "mono_on f {a..b}" "a \<le> b"
@@ -841,73 +774,7 @@ proof (intro equalityI subsetI)
   thus "y \<in> f ` {a..b}" by simp
 qed (insert `a \<le> b`, auto intro!: mono_onD[OF assms(2)])
 
-lemma strict_mono_on_eqD:
-  fixes f :: "(_ :: linorder) \<Rightarrow> (_ :: preorder)"
-  assumes "strict_mono_on f A" "f x = f y" "x \<in> A" "y \<in> A"
-  shows "y = x"
-  using assms by (rule_tac linorder_cases[of x y]) (auto dest: strict_mono_onD)
-
-
-lemma mono_on_imp_deriv_nonneg:
-  assumes mono: "mono_on f A" and deriv: "(f has_real_derivative D) (at x)"
-  assumes "x \<in> interior A"
-  shows "D \<ge> 0"
-proof (rule tendsto_le_const)
-  let ?A' = "(\<lambda>y. y - x) ` interior A"
-  from deriv show "((\<lambda>h. (f (x + h) - f x) / h) ---> D) (at 0)"
-      by (simp add: field_has_derivative_at has_field_derivative_def)
-  from mono have mono': "mono_on f (interior A)" by (rule mono_on_subset) (rule interior_subset)
-
-  show "eventually (\<lambda>h. (f (x + h) - f x) / h \<ge> 0) (at 0)"
-  proof (subst eventually_at_topological, intro exI conjI ballI impI)
-    have "open (interior A)" by simp
-    hence "open (op + (-x) ` interior A)" by (rule open_translation)
-    also have "(op + (-x) ` interior A) = ?A'" by auto
-    finally show "open ?A'" .
-  next
-    from `x \<in> interior A` show "0 \<in> ?A'" by auto
-  next
-    fix h assume "h \<in> ?A'"
-    hence "x + h \<in> interior A" by auto
-    with mono' and `x \<in> interior A` show "(f (x + h) - f x) / h \<ge> 0"
-      by (cases h rule: linorder_cases[of _ 0])
-         (simp_all add: divide_nonpos_neg divide_nonneg_pos mono_onD field_simps)
-  qed
-qed simp
-
-
-lemma closure_Iii: 
-  assumes "a < b"
-  shows "closure {a<..<b::real} = {a..b}"
-proof-
-  have "{a<..<b} = ball ((a+b)/2) ((b-a)/2)" by (auto simp: dist_real_def field_simps not_less)
-  also from assms have "closure ... = cball ((a+b)/2) ((b-a)/2)" by (intro closure_ball) simp
-  also have "... = {a..b}" by (auto simp: dist_real_def field_simps not_less)
-  finally show ?thesis .
-qed
-
-lemma continuous_ge_on_Iii:
-  assumes "continuous_on {c..d} g" "\<And>x. x \<in> {c<..<d} \<Longrightarrow> g x \<ge> a" "c < d" "x \<in> {c..d}"
-  shows "g (x::real) \<ge> (a::real)"
-proof-
-  from assms(3) have "{c..d} = closure {c<..<d}" by (rule closure_Iii[symmetric])
-  also from assms(2) have "{c<..<d} \<subseteq> (g -` {a..} \<inter> {c..d})" by auto
-  hence "closure {c<..<d} \<subseteq> closure (g -` {a..} \<inter> {c..d})" by (rule closure_mono)
-  also from assms(1) have "closed (g -` {a..} \<inter> {c..d})"
-    by (auto simp: continuous_on_closed_vimage)
-  hence "closure (g -` {a..} \<inter> {c..d}) = g -` {a..} \<inter> {c..d}" by simp
-  finally show ?thesis using `x \<in> {c..d}` by auto 
-qed 
-
-
-lemma measurable_sets_borel:
-    "\<lbrakk>f \<in> measurable borel M; A \<in> sets M\<rbrakk> \<Longrightarrow> f -` A \<in> sets borel"
-  by (drule (1) measurable_sets) simp
-
 (* TODO: maybe this should be a simp lemma *)
-lemma nn_integral_set_ereal:
-    "(\<integral>\<^sup>+x. ereal (f x) * indicator A x \<partial>M) = (\<integral>\<^sup>+x. ereal (f x * indicator A x) \<partial>M)"
-  by (rule nn_integral_cong) (simp split: split_indicator)
 
 lemma continuous_on_imp_isCont:
     "\<lbrakk>continuous_on A f; x \<in> A; open A\<rbrakk> \<Longrightarrow> isCont f x"
@@ -916,22 +783,6 @@ lemma continuous_on_imp_isCont:
 
 
 (* TODO MOVE *)
-lemma borel_set_induct[consumes 1, case_names interval compl union]:
-  assumes "A \<in> sets borel" 
-  assumes int: "\<And>a b. P {a..b}" and compl: "\<And>A. A \<in> sets borel \<Longrightarrow> P A \<Longrightarrow> P (-A)" and
-          un: "\<And>f. disjoint_family f \<Longrightarrow> (\<And>i. f i \<in> sets borel) \<Longrightarrow>  (\<And>i. P (f i)) \<Longrightarrow> P (\<Union>i::nat. f i)"
-  shows "P (A::real set)"
-proof-
-  let ?G = "range (\<lambda>(a,b). {a..b::real})"
-  have "Int_stable ?G" "?G \<subseteq> Pow UNIV" "A \<in> sigma_sets UNIV ?G" 
-      using assms(1) by (auto simp add: borel_eq_atLeastAtMost Int_stable_def)
-  thus ?thesis using int[of 1 0]
-  proof (induction rule: sigma_sets_induct_disjoint) 
-    case (union f)
-      from union.hyps(2) have "\<And>i. f i \<in> sets borel" by (auto simp: borel_eq_atLeastAtMost)
-      with union show ?case by (auto intro: un)
-  qed (auto intro: int compl simp: Compl_eq_Diff_UNIV[symmetric] borel_eq_atLeastAtMost)
-qed
 
 lemma borel_set_induct'[consumes 1, case_names empty interval compl union]:
   assumes "A \<in> sets borel" "P {}" "\<And>a b. a \<le> b \<Longrightarrow> P {a..b}" "\<And>A. A \<in> sets borel \<Longrightarrow> P A \<Longrightarrow> P (-A)" 
@@ -945,23 +796,6 @@ qed (auto intro: assms)
 
 
 (* TODO MOVE *)
-lemma closure_contains_Sup:
-  fixes S :: "real set"
-  assumes "S \<noteq> {}" "bdd_above S"
-  shows "Sup S \<in> closure S"
-proof-
-  have "Inf (uminus ` S) \<in> closure (uminus ` S)" 
-      using assms by (intro closure_contains_Inf) auto
-  also have "Inf (uminus ` S) = -Sup S" by (simp add: Inf_real_def)
-  also have "closure (uminus ` S) = uminus ` closure S"
-      by (rule sym, intro closure_injective_linear_image) (auto intro: linearI)
-  finally show ?thesis by auto
-qed
-
-lemma closed_contains_Sup:
-  fixes S :: "real set"
-  shows "S \<noteq> {} \<Longrightarrow> bdd_above S \<Longrightarrow> closed S \<Longrightarrow> Sup S \<in> S"
-  by (subst closure_closed[symmetric], assumption, rule closure_contains_Sup)
 (* END TODO *)
 
 lemma set_integral_eq_nn_integral:
@@ -976,39 +810,6 @@ proof-
     by (intro nn_integral_cong) (auto split: split_indicator simp del: ereal_max dest: assms(1))
   finally show ?thesis .
 qed
-
-lemma continuous_on_ivl_vimage_sets_borel:
-  assumes "continuous_on {a..b} f" "B \<in> sets borel" "(a::real) \<le> b"
-  shows "f -` B \<inter> {a..b} \<in> sets borel"
-proof-
-  let ?f' = "\<lambda>x. if x < a then f a else if x > b then f b else f x"
-  have "continuous_on ({..a} \<union> ({b..} \<union> {a..b})) ?f'" using assms
-      by (intro continuous_on_If) (auto intro: continuous_on_subset[OF continuous_on_const])
-  also have "{..a} \<union> ({b..} \<union> {a..b}) = UNIV" by auto
-  finally have "?f' \<in> borel_measurable borel" by (rule borel_measurable_continuous_on1)
-  from this and `B \<in> sets borel` have "?f' -` B \<in> sets borel" by (rule measurable_sets_borel)
-  hence "?f' -` B \<inter> {a..b} \<in> sets borel" by simp
-  also have "?f' -` B \<inter> {a..b} = f -` B \<inter> {a..b}" by (auto split: split_if) 
-  finally show ?thesis .
-qed
-
-lemma set_measurable_continuous_on_ivl:
-  assumes "continuous_on {a..b} (f :: real \<Rightarrow> real)"
-  shows "set_borel_measurable borel {a..b} f"
-proof (cases "a \<le> b")
-  assume "a \<le> b"
-  show ?thesis
-  proof (rule borel_measurableI)
-    fix A :: "real set" assume "open A"
-    hence A_borel: "A \<in> sets borel" by simp
-    let ?f = "\<lambda>x. indicator {a..b} x *\<^sub>R f x"
-    have "?f -` A = f -` A \<inter> {a..b} \<union> (if 0 \<in> A then -{a..b} else {})"
-        by (auto simp: indicator_def split: split_if_asm)
-    also have "... \<in> sets borel" using assms A_borel `a \<le> b`
-        by (intro sets.Un, blast intro: continuous_on_ivl_vimage_sets_borel, auto)
-    finally show "?f -` A \<inter> space borel \<in> sets borel" by simp
-  qed
-qed simp
 
 lemma real_of_ereal_SUP:
   assumes not_empty: "A \<noteq> {}" and f_nonneg: "\<And>x. f x \<ge> 0" and not_inf: "(SUP x:A. f x) \<noteq> \<infinity>"
@@ -1039,49 +840,7 @@ proof (rule antisym)
   thus "(SUP x:A. real (f x)) \<ge> real (SUP x:A. f x)" by simp
 qed
 
-lemma interior_real_semiline':
-  fixes a :: real
-  shows "interior {..a} = {..<a}"
-proof -
-  {
-    fix y
-    assume "a > y"
-    then have "y \<in> interior {..a}"
-      apply (simp add: mem_interior)
-      apply (rule_tac x="(a-y)" in exI)
-      apply (auto simp add: dist_norm)
-      done
-  }
-  moreover
-  {
-    fix y
-    assume "y \<in> interior {..a}"
-    then obtain e where e: "e > 0" "cball y e \<subseteq> {..a}"
-      using mem_interior_cball[of y "{..a}"] by auto
-    moreover from e have "y + e \<in> cball y e"
-      by (auto simp add: cball_def dist_norm)
-    ultimately have "a \<ge> y + e" by auto
-    then have "a > y" using e by auto
-  }
-  ultimately show ?thesis by auto
-qed
 
-lemma interior_atLeastAtMost_real: "interior {a..b} = {a<..<b :: real}"
-proof-
-  have "{a..b} = {a..} \<inter> {..b}" by auto
-  also have "interior ... = {a<..} \<inter> {..<b}" 
-    by (simp add: interior_real_semiline interior_real_semiline')
-  also have "... = {a<..<b}" by auto
-  finally show ?thesis .
-qed
 
-lemma has_real_derivative_imp_continuous_on:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> (f has_real_derivative f' x) (at x)"
-  shows "continuous_on A f"
-  apply (intro differentiable_imp_continuous_on, unfold differentiable_on_def)
-  apply (intro ballI Deriv.differentiableI)
-  apply (rule has_field_derivative_subset[OF assms])
-  apply simp_all
-  done
 
 end

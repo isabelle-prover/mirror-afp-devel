@@ -8,7 +8,7 @@
 section {* Measure Space Transformations *}
 
 theory PDF_Transformations
-imports Density_Predicates Lebesgue_Integral_Substitution PDF_Misc
+imports Density_Predicates PDF_Misc
 begin
 
 lemma Int_stable_Icc: "Int_stable (range (\<lambda>(a, b). {a .. b::real}))"

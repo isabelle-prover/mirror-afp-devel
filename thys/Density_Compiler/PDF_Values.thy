@@ -10,7 +10,7 @@
 section {* Source Language Values *}
 
 theory PDF_Values
-imports Giry_Monad Density_Predicates Measure_Embeddings PDF_Misc
+imports Density_Predicates PDF_Misc
 begin
 
 subsection {* Values and stock measures *}

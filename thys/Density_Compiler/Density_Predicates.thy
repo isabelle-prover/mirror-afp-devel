@@ -391,4 +391,100 @@ proof (cases "f x > 0")
   finally show ?thesis .
 qed (auto simp: not_less intro: order.trans[of _ 0 1])
 
+lemma has_density_embed_measure:
+  assumes inj: "inj f" and inv: "\<And>x. x \<in> space N \<Longrightarrow> f' (f x) = x"
+  shows "has_density (embed_measure M f) (embed_measure N f) (\<delta> \<circ> f') \<longleftrightarrow> has_density M N \<delta>"
+        (is "has_density ?M' ?N' ?\<delta>' \<longleftrightarrow> has_density M N \<delta>")
+proof
+  assume dens: "has_density ?M' ?N' ?\<delta>'"
+  show "has_density M N \<delta>"
+  proof
+    from dens show "space N \<noteq> {}" by (auto simp: space_embed_measure dest: has_densityD)
+    from dens have M\<delta>f': "\<delta> \<circ> f' \<in> borel_measurable ?N'" by (rule has_densityD)
+    hence M\<delta>f'f: "\<delta> \<circ> f' \<circ> f \<in> borel_measurable N" 
+      by (rule_tac measurable_comp, rule_tac measurable_embed_measure2[OF inj])
+    thus M\<delta>: "\<delta> \<in> borel_measurable N" by (simp cong: measurable_cong add: inv)
+    from dens have "embed_measure M f = density (embed_measure N f) (\<delta> \<circ> f')" by (rule has_densityD)
+    also have "... = embed_measure (density N (\<delta> \<circ> f' \<circ> f)) f" 
+      by (simp only: density_embed_measure[OF inj M\<delta>f'])
+    also have "density N (\<delta> \<circ> f' \<circ> f) = density N \<delta>"
+      by (intro density_cong[OF M\<delta>f'f M\<delta>]) (simp_all add: inv)
+    finally show "M = density N \<delta>" by (simp add: embed_measure_eq_iff[OF inj])
+    fix x assume x: "x \<in> space N"
+    with inv have "\<delta> x = ?\<delta>' (f x)" by simp
+    also from x have "... \<ge> 0" by (intro has_densityD[OF dens]) (simp add: space_embed_measure)
+    finally show "\<delta> x \<ge> 0" .
+  qed
+next
+  assume dens: "has_density M N \<delta>"
+  show "has_density ?M' ?N' ?\<delta>'"
+  proof
+    from dens show "space ?N' \<noteq> {}" by (auto simp: space_embed_measure dest: has_densityD)
+    have Mf'f: "(\<lambda>x. f' (f x)) \<in> measurable N N" by (subst measurable_cong[OF inv]) simp_all
+    from dens have M\<delta>: "\<delta> \<in> borel_measurable N" by (auto dest: has_densityD)
+    from Mf'f and dens show M\<delta>f': "\<delta> \<circ> f' \<in> borel_measurable (embed_measure N f)"
+      by (intro measurable_comp) (erule measurable_embed_measure1, rule has_densityD)
+    have "embed_measure M f = embed_measure (density N \<delta>) f"
+      by (simp only: has_densityD[OF dens])
+    also from inv and dens and measurable_comp[OF Mf'f M\<delta>] 
+      have "density N \<delta> = density N (?\<delta>' \<circ> f)"
+      by (intro density_cong[OF M\<delta>]) (simp add: o_def, simp add: inv o_def)
+    also have "embed_measure (density N (?\<delta>' \<circ> f)) f = density (embed_measure N f) (\<delta> \<circ> f')" 
+      by (simp only: density_embed_measure[OF inj M\<delta>f', symmetric])
+    finally show "embed_measure M f = density (embed_measure N f) (\<delta> \<circ> f')" .
+    fix x assume "x \<in> space (embed_measure N f)"
+    hence "f' x \<in> space N" by (auto simp: space_embed_measure inv)
+    with dens show "?\<delta>' x \<ge> 0" by (auto dest: has_densityD)
+  qed
+qed
+
+lemma has_density_embed_measure':
+  assumes inj: "inj f" and inv: "\<And>x. x \<in> space N \<Longrightarrow> f' (f x) = x" and
+          sets_M: "sets M = sets (embed_measure N f)"
+  shows "has_density (distr M N f') N (\<delta> \<circ> f) \<longleftrightarrow> has_density M (embed_measure N f) \<delta>"
+proof-
+  have sets': "sets (embed_measure (distr M N f') f) = sets (embed_measure N f)"
+    by (simp add: sets_embed_measure[OF inj])
+  have Mff': "(\<lambda>x. f' (f x)) \<in> measurable N N" by (subst measurable_cong[OF inv]) simp_all
+  have inv': "\<And>x. x \<in> space M \<Longrightarrow> f (f' x) = x"
+    by (subst (asm) sets_eq_imp_space_eq[OF sets_M]) (auto simp: space_embed_measure inv)
+  have "M = distr M (embed_measure (distr M N f') f) (\<lambda>x. f (f' x))" 
+    by (subst distr_cong[OF refl _ inv', of _ M]) (simp_all add: sets_embed_measure inj sets_M)
+  also have "... = embed_measure (distr M N f') f"
+    apply (subst (2) embed_measure_eq_distr[OF inj], subst distr_distr)
+    apply (subst measurable_cong_sets[OF refl sets'], rule measurable_embed_measure2[OF inj])
+    apply (subst measurable_cong_sets[OF sets_M refl], rule measurable_embed_measure1, rule Mff')
+    apply (simp cong: distr_cong add: inv)
+    done
+  finally have M: "M = embed_measure (distr M N f') f" .
+  show ?thesis by (subst (2) M, subst has_density_embed_measure[OF inj inv, symmetric])
+                  (auto simp: space_embed_measure inv intro!: has_density_cong)
+qed
+
+lemma has_density_embed_measure'':
+  assumes inj: "inj f" and inv: "\<And>x. x \<in> space N \<Longrightarrow> f' (f x) = x" and
+          "has_density M (embed_measure N f) \<delta>"
+  shows "has_density (distr M N f') N (\<delta> \<circ> f)"
+proof (subst has_density_embed_measure')
+  from assms(3) show "sets M = sets (embed_measure N f)" by (auto dest: has_densityD)
+qed (insert assms)
+
+lemma has_subprob_density_embed_measure'':
+  assumes inj: "inj f" and inv: "\<And>x. x \<in> space N \<Longrightarrow> f' (f x) = x" and
+          "has_subprob_density M (embed_measure N f) \<delta>"
+  shows "has_subprob_density (distr M N f') N (\<delta> \<circ> f)"
+proof (unfold has_subprob_density_def, intro conjI)
+  from assms show "has_density (distr M N f') N (\<delta> \<circ> f)"
+    by (intro has_density_embed_measure'' has_subprob_density_imp_has_density)
+  from assms(3) have "sets M = sets (embed_measure N f)" by (auto dest: has_subprob_densityD)
+  hence M: "measurable M = measurable (embed_measure N f)"
+    by (intro ext measurable_cong_sets) simp_all
+  have "(\<lambda>x. f' (f x)) \<in> measurable N N" by (simp cong: measurable_cong add: inv)
+  moreover from assms have "space (embed_measure N f) \<noteq> {}" 
+    unfolding has_subprob_density_def has_density_def by simp
+  ultimately show "subprob_space (distr M N f')" using assms
+    by (intro subprob_space.subprob_space_distr has_subprob_densityD)
+       (auto simp: M space_embed_measure intro!: measurable_embed_measure1 dest: has_subprob_densityD)
+qed (insert assms)
+
 end
