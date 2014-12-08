@@ -272,11 +272,11 @@ proof -
           by (auto intro!: cfg_of_cfg_onI D cfg memoryless_on_cfg_onI)
         have "ereal (pmf (D) t) * (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg) =
           (\<integral>\<^sup>+t'. (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg) * indicator {t} t' \<partial>D)"
-          by (subst mult_ac)
-             (simp add: nn_integral_nonneg nn_integral_cmult_indicator emeasure_pmf_single)
+          by (auto simp add: nn_integral_nonneg max_def emeasure_pmf_single intro: mult_ac)
         also have "\<dots> = (\<integral>\<^sup>+cfg. ?v cfg * indicator {t} (state cfg) \<partial>K_cfg ?cfg)"
           unfolding C using cfg
           by (auto simp add: nn_integral_distr map_pmf.rep_eq split: split_indicator
+                   simp del: nn_integral_indicator_singleton
                    intro!: nn_integral_cong)
         also have "\<dots> \<le> (\<integral>\<^sup>+cfg. ?v cfg \<partial>K_cfg ?cfg)"
           by (auto intro!: nn_integral_mono nn_integral_nonneg split: split_indicator)

@@ -1511,11 +1511,13 @@ proof (intro ext stream_space_eq_sstart)
       (\<integral>\<^sup>+y. emeasure (M y) (sstart \<Omega> xs) * indicator {a} y \<partial>K x)"
       by (subst emeasure_Collect_T)
          (auto intro!: nn_integral_cong_AE
-               simp: space_stream_space AE_measure_pmf_iff \<Omega>_trans split: split_indicator)
+               simp: space_stream_space AE_measure_pmf_iff \<Omega>_trans split: split_indicator
+               simp del: nn_integral_indicator_singleton)
     also have "\<dots> = emeasure (M x) {\<omega>\<in>space (M x). \<omega> \<in> sstart \<Omega> (a # xs)}"
       apply (subst M_eq[of x])
       apply (auto intro!: nn_integral_cong arg_cong2[where f=emeasure]
-                  simp add: emeasure_bind[OF _ *] emeasure_distr split: split_indicator)
+                  simp add: emeasure_bind[OF _ *] emeasure_distr split: split_indicator
+               simp del: nn_integral_indicator_singleton)
       apply (auto simp: space_stream_space)
       done
     finally show ?case

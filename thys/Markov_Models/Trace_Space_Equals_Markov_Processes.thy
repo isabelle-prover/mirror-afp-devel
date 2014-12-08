@@ -172,10 +172,10 @@ proof (rule stream_space_eq_sstart)
   have "emeasure (K.T' I) (sstart S xs') = (\<integral>\<^sup>+s. emeasure (K.T s) {\<omega>\<in>space K.S. s ## \<omega> \<in> sstart S xs'} \<partial>I)"
     by (rule K.emeasure_T') measurable
   also have "\<dots> = (\<integral>\<^sup>+s'. emeasure (K.T s) (sstart S xs) * indicator {s} s' \<partial>I)"
-    by (auto split: split_indicator simp: emeasure_distr vimage_def space_stream_space neq_Nil_conv xs'
-             intro!: arg_cong2[where f=emeasure] nn_integral_cong)
+    by (intro arg_cong2[where f=emeasure] nn_integral_cong)
+       (auto split: split_indicator simp: emeasure_distr vimage_def space_stream_space neq_Nil_conv xs')
   also have "\<dots> = pmf I s * emeasure (K.T s) (sstart S xs)"
-    by (simp add: nn_integral_cmult_indicator emeasure_nonneg emeasure_measure_pmf_finite) (rule mult.commute)
+    by (auto simp add: max_def emeasure_nonneg emeasure_pmf_single intro: mult_ac)
   also have "emeasure (K.T s) (sstart S xs) = ereal (\<Prod>i<length xs. pmf (K ((s#xs)!i)) (xs!i))"
     using xs s
   proof (induction arbitrary: s)
@@ -191,7 +191,7 @@ proof (rule stream_space_eq_sstart)
     also have "\<dots> = (\<integral>\<^sup>+t'. emeasure (K.T t) (sstart S xs) * indicator {t} t' \<partial>K s)"
       by (intro nn_integral_cong) (auto split: split_indicator simp: space_stream_space)
     also have "\<dots> = emeasure (K.T t) (sstart S xs) * pmf (K s) t"
-      by (simp add: emeasure_nonneg nn_integral_cmult_indicator emeasure_measure_pmf_finite)
+      by (simp add: emeasure_nonneg emeasure_pmf_single max_def)
     finally show ?case
       by (simp add: lessThan_Suc_eq_insert_0 Zero_notin_Suc setprod.reindex Cons)
   qed

@@ -169,7 +169,8 @@ using assms proof (induction rule: converse_rtrancl_induct)
     by (subst nn_integral_cmult_indicator)
        (auto intro!: ereal_0_le_mult p_nonneg simp: ac_simps emeasure_pmf_single)
   also have "\<dots> \<le> (\<integral>\<^sup>+t. p t \<partial>D)"
-    by (auto intro!: nn_integral_mono_AE p_nonneg split: split_indicator simp: in_S AE_measure_pmf_iff)
+    by (auto intro!: nn_integral_mono_AE p_nonneg split: split_indicator simp: in_S AE_measure_pmf_iff
+      simp del: nn_integral_indicator_singleton)
   also have "\<dots> \<le> p s"
     using `s \<in> S1` `D \<in> K s` by (auto intro: SUP_upper simp add: p_S1)
   finally show ?case .

@@ -321,7 +321,7 @@ proof (induction n arbitrary: x)
   have [simp]: "\<And>w. (if x = w then 1 else 0) * p w y m = ereal (p x y m) * indicator {x} w"
     by auto
   show ?case
-    by (simp add: p_0 p_nonneg nn_integral_cmult_indicator)
+    by (simp add: p_0 p_nonneg one_ereal_def[symmetric] max_def)
 next
   case (Suc n)
   def X \<equiv> "(SIGMA x:UNIV. K x)\<^sup>* `` K x"
@@ -361,9 +361,10 @@ lemma prob_reachable_le:
   shows "p x y m * p y w (n - m) \<le> p x w n"
 proof -
   have "p x y m * p y w (n - m) = (\<integral>\<^sup>+y'. ereal (p x y m * p y w (n - m)) * indicator {y} y' \<partial>count_space UNIV)"
-    by (simp add: nn_integral_cmult_indicator p_nonneg)
+    by (simp add:  p_nonneg one_ereal_def[symmetric] max_def)
   also have "\<dots> \<le> p x w (m + (n - m))"
-    by (subst p_add) (auto intro!: nn_integral_mono split: split_indicator simp: p_nonneg)
+    by (subst p_add)
+       (auto intro!: nn_integral_mono split: split_indicator simp: p_nonneg simp del: nn_integral_indicator_singleton)
   finally show ?thesis
     by simp
 qed
