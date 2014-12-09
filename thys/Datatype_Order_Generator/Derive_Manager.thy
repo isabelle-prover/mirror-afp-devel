@@ -4,7 +4,7 @@
     License:     LGPL
 *)
 
-section \<open>Derive manager\<close>
+section \<open>Derive Manager\<close>
 
 theory Derive_Manager
 imports Main
@@ -15,13 +15,13 @@ ML_file "derive_aux.ML"
 ML_file "derive_manager.ML"
 
 text \<open>
-The derive manager allows to install various deriving-commands, e.g., to derive 
-orders, pretty-printer, hash-functions, \ldots. -functions. All of the registered commands
-are then accessible via the \texttt{derive}-command, e.g., \texttt{derive hashable list}
-would automatically derive a hash-function for the datatype \texttt{list}.
+  The derive manager allows the user to register various derive-hooks, e.g., for orders,
+  pretty-printers, hash-functions, etc. All registered hooks are accessible via the
+  \texttt{derive}-command, e.g., @{text "derive hashable list"} automatically derives a
+  hash-function for datatype @{type list}.
 
-There is also the diagnostic command \texttt{print-derives} which shows a list of options
-what can currently be derived.
+  There is also the diagnostic command \texttt{print\_derives} that shows the list of currently
+  registered hooks.
 \<close>
 
 end
