@@ -79,23 +79,21 @@ subsection {* Type class instances for HOL types *}
 derive (eq) ceq unit
 lemma [code]: "CEQ(unit) = Some (\<lambda>_ _. True)"
   unfolding ceq_unit_def by (simp, intro ext, auto)
-derive (eq) ceq bool
-derive (eq) ceq nat
-derive (eq) ceq int
-derive (eq) ceq Enum.finite_1
-derive (eq) ceq Enum.finite_2
-derive (eq) ceq Enum.finite_3
-derive (eq) ceq Enum.finite_4
-derive (eq) ceq Enum.finite_5
-derive (eq) ceq integer
-derive (eq) ceq natural
-derive (eq) ceq nibble
-derive (eq) ceq char
-derive (eq) ceq String.literal
-derive ceq sum
-derive ceq prod
-derive ceq list
-derive ceq option
+derive (eq) ceq
+  bool
+  nat
+  int
+  Enum.finite_1
+  Enum.finite_2
+  Enum.finite_3
+  Enum.finite_4
+  Enum.finite_5
+  integer
+  natural
+  nibble
+  char
+  String.literal
+derive ceq sum prod list option
 derive (no) ceq "fun"
 
 lemma is_ceq_fun [simp]: "\<not> is_ceq TYPE('a \<Rightarrow> 'b)"

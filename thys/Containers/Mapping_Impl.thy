@@ -224,15 +224,11 @@ This generator can be used for arbitrary types, not just datatypes.
 
 ML_file "mapping_impl_generator.ML" 
 
-derive (assoclist) mapping_impl unit
-derive (assoclist) mapping_impl bool
+derive (assoclist) mapping_impl unit bool
 derive (rbt) mapping_impl nat
 derive (mapping_RBT) mapping_impl int (* shows usage of constant names *)
-derive (assoclist) mapping_impl Enum.finite_1
-derive (assoclist) mapping_impl Enum.finite_2
-derive (assoclist) mapping_impl Enum.finite_3
-derive (rbt) mapping_impl integer
-derive (rbt) mapping_impl natural
+derive (assoclist) mapping_impl Enum.finite_1 Enum.finite_2 Enum.finite_3
+derive (rbt) mapping_impl integer natural
 derive (assoclist) mapping_impl nibble
 derive (rbt) mapping_impl char
 

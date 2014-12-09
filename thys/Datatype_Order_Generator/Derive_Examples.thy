@@ -32,9 +32,7 @@ begin
 
 subsection "Register standard existing types"
 
-derive linorder list
-derive linorder sum
-derive linorder prod
+derive linorder list sum prod
 
 subsection "Without nested recursion"
 
@@ -94,12 +92,9 @@ datatype ('f, 'l) lab =
 
 datatype_compat lab
 
-derive linorder "term"
-derive linorder lab
-derive countable "term"
-derive countable lab
-derive hashable "term"
-derive hashable lab
+derive linorder "term" lab
+derive countable "term" lab
+derive hashable "term" lab
 
 subsection "A complex datatype"
 text {*

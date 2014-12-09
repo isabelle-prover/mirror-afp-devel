@@ -116,21 +116,9 @@ ML_file "corder_generator.ML"
 
 subsection {* Instantiations for HOL types *}
 
-derive (linorder) corder unit
-derive (linorder) corder bool
-derive (linorder) corder nat
-derive (linorder) corder int
-derive (linorder) corder Enum.finite_1
-derive (linorder) corder Enum.finite_2 
-derive (linorder) corder Enum.finite_3
-derive (no) corder Enum.finite_4
-derive (no) corder Enum.finite_5
-
-derive (linorder) corder integer
-derive (linorder) corder natural
-derive (linorder) corder nibble
-derive (linorder) corder char
-derive (linorder) corder String.literal
+derive (linorder) corder unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3
+derive (no) corder Enum.finite_4 Enum.finite_5
+derive (linorder) corder integer natural nibble char String.literal
 
 instantiation sum :: (corder, corder) corder begin
 definition "CORDER('a + 'b) = 

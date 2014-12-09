@@ -290,11 +290,6 @@ definition "CENUM(char) = Some (enum_class.enum, enum_class.enum_all, enum_class
 instance by(intro_classes)(auto simp add: cEnum_char_def enum_UNIV enum_all_UNIV enum_ex_UNIV)
 end
 
-derive (no) cenum list
-derive (no) cenum nat
-derive (no) cenum int
-derive (no) cenum integer
-derive (no) cenum natural
-derive (no) cenum String.literal
+derive (no) cenum list nat int integer natural String.literal
 
 end

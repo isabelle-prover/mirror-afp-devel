@@ -28,9 +28,7 @@ text {*
   For several types, we just derive the show function.
 *}
 
-derive "show" bool
-derive "show" option
-derive "show" sum
+derive "show" bool option sum
 
 text {*
   The derive-command is not used for @{type unit}, @{type prod}, and numbers: for @{type unit} and
