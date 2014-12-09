@@ -45,7 +45,7 @@ fun gen_derive prep id dtname param thy =
 
 val derive = gen_derive (K I)
 
-fun derive_cmd id dtname param = gen_derive
+fun derive_cmd id param dtname = gen_derive
   (fn thy => fst o dest_Type o Syntax.parse_typ (Proof_Context.init_global thy)) id dtname param
   
 (* TODO: also check for alternative of  *)
@@ -55,9 +55,10 @@ val _ =
   Outer_Syntax.command @{command_spec "print_derives"} "lists all registered sorts which can be derived"
     (Scan.succeed (Toplevel.theory (tap print_info)))
 
-val _ = Outer_Syntax.command @{command_spec "derive"} "derives some sort"
-    (Parse.parname -- Parse.name -- Parse.type_const >> (fn ((param, s), dtname) =>
-      Toplevel.theory (derive_cmd s dtname param)))
+val _ =
+  Outer_Syntax.command @{command_spec "derive"} "derives some sort"
+    (Parse.parname -- Parse.name -- Scan.repeat Parse.type_const >> (fn ((param, s), tycons) =>
+      Toplevel.theory (fold (derive_cmd s param) tycons)))
 
 end
 
