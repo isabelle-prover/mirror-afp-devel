@@ -264,14 +264,59 @@ end
 instantiation enat :: ccpo_topology
 begin
 
-definition open_enat :: "enat set \<Rightarrow> bool" where
-  "open_enat A \<longleftrightarrow> (\<forall>C. C \<noteq> {} \<longrightarrow> Sup C \<in> A \<longrightarrow> C \<inter> A \<noteq> {})"
-
 instance
-  by intro_classes (simp add: open_enat_def chain_linorder)
+proof
+  fix A :: "enat set"
+  show "open A = (\<forall>C. chain C \<longrightarrow> C \<noteq> {} \<longrightarrow> \<Squnion>C \<in> A \<longrightarrow> C \<inter> A \<noteq> {})"
+  proof (intro iffI allI impI)
+    fix C x assume "open A" "chain C" "C \<noteq> {}" "\<Squnion>C \<in> A"
+    
+    show "C \<inter> A \<noteq> {}"
+    proof cases
+      assume "\<Squnion>C = \<infinity>"
+      with `\<Squnion>C \<in> A` `open A` obtain n where "{enat n <..} \<subseteq> A"
+        unfolding open_enat_iff by auto
+      with `\<Squnion>C = \<infinity>` Sup_eq_top_iff[of C] show ?thesis
+        by (auto simp: top_enat_def)
+    next
+      assume "\<Squnion>C \<noteq> \<infinity>"
+      then obtain n where "C \<subseteq> {.. enat n}"
+        unfolding Sup_eq_top_iff top_enat_def[symmetric] by (auto simp: not_less top_enat_def)
+      moreover have "finite {.. enat n}"
+        by (auto intro: finite_enat_bounded)
+      ultimately have "finite C"
+        by (auto intro: finite_subset)
+      from in_chain_finite[OF `chain C` `finite C` `C \<noteq> {}`] `\<Squnion>C \<in> A` show ?thesis
+        by auto
+    qed
+  next
+    assume C: "\<forall>C. chain C \<longrightarrow> C \<noteq> {} \<longrightarrow> \<Squnion>C \<in> A \<longrightarrow> C \<inter> A \<noteq> {}"
+    show "open A"
+      unfolding open_enat_iff
+    proof safe
+      assume "\<infinity> \<in> A"
+      { fix C :: "enat set" assume "infinite C"
+        then have "\<Squnion>C = \<infinity>"
+          by (auto simp: Sup_enat_def)
+        with `infinite C` C[THEN spec, of C] `\<infinity> \<in> A` have "C \<inter> A \<noteq> {}"
+          by auto }
+      note inf_C = this
 
-text {* We could also prove that @{type enat} is not only a @{class ccpo_topology} but also a
-  @{class linorder_topology} *}
+      show "\<exists>x. {enat x<..} \<subseteq> A"
+      proof (rule ccontr)
+        assume "\<not> (\<exists>x. {enat x<..} \<subseteq> A)"
+        with `\<infinity> \<in> A` have "\<And>x. \<exists>y>x. enat y \<notin> A"
+          by (simp add: subset_eq Bex_def) (metis enat.exhaust enat_ord_simps(2))
+        then have "infinite {n. enat n \<notin> A}"
+          unfolding infinite_nat_iff_unbounded by auto
+        then have "infinite (enat ` {n. enat n \<notin> A})"
+          by (auto dest!: finite_imageD)
+        from inf_C[OF this] show False
+          by auto
+      qed
+    qed
+  qed
+qed
 
 end
 
