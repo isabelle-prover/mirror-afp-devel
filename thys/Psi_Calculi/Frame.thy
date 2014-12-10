@@ -1722,7 +1722,7 @@ proof -
   next
     case(FRes x F \<Psi> A\<^sub>F \<Psi>')
     from `insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>` `x \<sharp> \<Psi>`
-    moreover obtain y A\<^sub>F' where "A\<^sub>F = y#A\<^sub>F'" by(induct A\<^sub>F) auto
+    obtain y A\<^sub>F' where "A\<^sub>F = y#A\<^sub>F'" by(induct A\<^sub>F) auto
     with `insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>` `x \<sharp> \<Psi>` `x \<sharp> A\<^sub>F`
     have A: "insertAssertion F \<Psi> = \<langle>([(x, y)] \<bullet> A\<^sub>F'), [(x, y)] \<bullet> \<Psi>'\<rangle>"
       by(simp add: frame.inject alpha eqvts)

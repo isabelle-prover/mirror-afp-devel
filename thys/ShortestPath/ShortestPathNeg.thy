@@ -140,9 +140,9 @@ case (Suc n')
   obtain e' where reach: "s \<rightarrow>\<^sup>* tail G e'" and
     e': "e' \<in> arcs G" "head G e' = tail G e" "dist (tail G e') \<noteq> \<infinity>"
     using Suc(1)[OF nst tail_in_verts[OF ee(1)] ss ee(3)] by blast
-  from reach also have "tail G e' \<rightarrow> tail G e" using e'
-    by (metis in_arcs_imp_in_arcs_ends)
-  finally show ?case using e' ee by auto
+  then have "s \<rightarrow>\<^sup>* tail G e"
+    by (metis arc_implies_awalk reachable_awalk reachable_trans)
+  then show ?case using e' ee by auto
 qed
 
 lemma (in shortest_paths_locale_step1) path_from_root_Vr:

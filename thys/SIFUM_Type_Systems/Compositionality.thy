@@ -77,13 +77,13 @@ lemma compat_low:
      i < length cms\<^sub>1;
      x \<in> differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i \<rbrakk> \<Longrightarrow> dma x = Low"
 proof -
-  assume "i < length cms\<^sub>1" and "x \<in> differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i" and
+  assume "i < length cms\<^sub>1" and *: "x \<in> differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i" and
     "makes_compatible (cms\<^sub>1, mem\<^sub>1) (cms\<^sub>2, mem\<^sub>2) mems"
-  then also have
+  then have
     "(mem\<^sub>1 x = mem\<^sub>2 x \<or> dma x = High) \<longrightarrow> x \<notin> differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i"
     by (simp add: Let_def, blast)
-  ultimately show "dma x = Low"
-    by (cases "dma x", blast)
+  with * show "dma x = Low"
+    by (cases "dma x") blast
 qed
 
 lemma compat_different:
@@ -317,7 +317,7 @@ proof -
       assume "dom \<sigma> = insert x X"
       hence "dom ?\<sigma>\<^sub>X = X"
         by (metis dom_restrict inf_absorb2 subset_insertI)
-      from insert also have "doesnt_read c x" by auto
+      from insert have "doesnt_read c x" by auto
       moreover
       from IH have eval\<^sub>X: "\<langle>c, mds, mem [\<mapsto> ?\<sigma>\<^sub>X]\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> g\<^sub>X ?\<sigma>\<^sub>X]\<rangle>"
         using `dom ?\<sigma>\<^sub>X = X`
@@ -353,7 +353,7 @@ proof -
             unfolding g_def
             by (auto simp: Let_def)
 
-          from IH also have "g\<^sub>X ?\<sigma>\<^sub>X \<preceq> ?\<sigma>\<^sub>X"
+          also from IH have "g\<^sub>X ?\<sigma>\<^sub>X \<preceq> ?\<sigma>\<^sub>X"
             by (metis `dom (\<sigma> |\` X) = X` change_respecting.simps)
 
           ultimately show "g \<sigma> \<preceq> \<sigma>"
@@ -677,7 +677,7 @@ proof -
       by (metis domf' subst_def subst_not_in_dom)
   qed
 
-  then also have mem'_eq: "mem' [\<mapsto> g ?f'] = mem'"
+  then have mem'_eq: "mem' [\<mapsto> g ?f'] = mem'"
     using eval eval' deterministic
     by (metis Pair_inject)
 
@@ -1166,7 +1166,7 @@ proof -
           assume "x \<notin> ?X k"
           hence "mem\<^sub>1 x = ?mems\<^sub>1k x \<and> mem\<^sub>2 x = ?mems\<^sub>2k x"
             by (metis differing_vars_neg)
-          from `x \<notin> ?X k` also have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
+          from `x \<notin> ?X k` have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
             by auto
           moreover
           assume "x \<in> ?X' k"

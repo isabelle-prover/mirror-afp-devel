@@ -5473,7 +5473,7 @@ next
     moreover from `(p \<bullet> yvec) \<sharp>* N` `(p \<bullet> yvec) \<sharp>* P'` Sp have "\<dots> = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>(p \<bullet> N) \<prec>' (p \<bullet> P')))"
       by(simp add: boundOutputChainAlpha'')
     moreover with `y \<sharp> N` `y \<sharp> P'` `y \<sharp> (p \<bullet> yvec)` `y \<sharp> yvec` `x \<sharp> yvec` `x \<sharp> (p \<bullet> yvec)` Sp
-    moreover have "\<dots> = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>(([(x, y)] \<bullet> p \<bullet> N) \<prec>' ([(x, y)] \<bullet> p \<bullet> P'))))"
+    have "\<dots> = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>(([(x, y)] \<bullet> p \<bullet> N) \<prec>' ([(x, y)] \<bullet> p \<bullet> P'))))"
       by(subst alphaBoundOutput[where y=y]) (simp add: freshChainSimps eqvts)+
     moreover hence "\<dots> = \<lparr>\<nu>*xvec\<rparr>(\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>((((x, y)#p) \<bullet> N) \<prec>' (((x, y)#p) \<bullet> P'))))"
       by simp
