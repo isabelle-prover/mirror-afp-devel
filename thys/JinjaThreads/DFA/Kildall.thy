@@ -118,7 +118,7 @@ shows "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x) \<in> se
          \<longrightarrow> merges f ps xs \<in> list n A"
 (*<*)
 apply (insert closedI)
-apply (unfold closed_def)
+apply (unfold Semilat.closed_def)
 apply (induct ps)
  apply simp
 apply clarsimp

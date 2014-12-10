@@ -46,7 +46,7 @@ by(auto intro!: lock_thread_okI dest: lock_thread_okD)
 lemma lock_thread_ok_has_lockE:
   assumes "lock_thread_ok ls ts"
   and "has_lock (ls $ l) t"
-  obtains x ln where "ts t = \<lfloor>(x, ln)\<rfloor>"
+  obtains x ln' where "ts t = \<lfloor>(x, ln')\<rfloor>"
 using assms
 by(auto dest!: lock_thread_okD)
 
@@ -105,8 +105,9 @@ apply(erule exE)
 by(rule redT_updTs_Some1)
 
 lemma acquire_all_preserves_lock_thread_ok:
-  "\<lbrakk> lock_thread_ok ls ts; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> lock_thread_ok (acquire_all ls t ln) (ts(t \<mapsto> xw))"
-by(rule lock_thread_okI, auto dest!: has_lock_acquire_locks_implies_has_lock dest: lock_thread_okD)
+  fixes ln
+  shows "\<lbrakk> lock_thread_ok ls ts; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> lock_thread_ok (acquire_all ls t ln) (ts(t \<mapsto> xw))"
+by(rule lock_thread_okI)(auto dest!: has_lock_acquire_locks_implies_has_lock dest: lock_thread_okD)
 
 text {* Well-formedness condition: Wait sets contain only real threads *}
 
@@ -181,7 +182,8 @@ unfolding wset_final_ok_def by(blast)
 
 lemma wset_final_okE:
   assumes "wset_final_ok ws ts" "ws t = \<lfloor>w\<rfloor>"
-  obtains x ln where "ts t = \<lfloor>(x, ln)\<rfloor>" "\<not> final x"
+  and "\<And>x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> \<not> final x \<Longrightarrow> thesis"
+  shows thesis
 using assms by(blast dest: wset_final_okD)
 
 lemma wset_final_ok_imp_wset_thread_ok:

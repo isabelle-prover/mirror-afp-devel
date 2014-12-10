@@ -123,7 +123,7 @@ definition mexception ::
   "('addr,'thread_id,'addr expr\<times>'addr locals,'heap,'addr) state \<Rightarrow> 
    ('addr,'thread_id,'addr option\<times>'addr frame list,'heap,'addr) state"
 where
-  "mexception s \<equiv> 
+  "\<And>ln. mexception s \<equiv> 
   (locks s, (\<lambda>t. case thr s t of \<lfloor>(e, ln)\<rfloor> \<Rightarrow> \<lfloor>(exception e, ln)\<rfloor> | None \<Rightarrow> None, shr s), wset s, interrupts s)"
 
 declare compP1_def [simp del]

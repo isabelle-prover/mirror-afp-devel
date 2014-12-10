@@ -13,7 +13,7 @@ definition lock_oks1 ::
   "('addr,'thread_id) locks 
   \<Rightarrow> ('addr,'thread_id,(('a,'b,'addr) exp \<times> 'c) \<times> (('a,'b,'addr) exp \<times> 'c) list) thread_info \<Rightarrow> bool" 
 where
-  "lock_oks1 ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls $ l) t = 0)
+  "\<And>ln. lock_oks1 ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls $ l) t = 0)
                             | \<lfloor>((ex, exs), ln)\<rfloor> \<Rightarrow> (\<forall>l. has_locks (ls $ l) t + ln $ l = expr_lockss (map fst (ex # exs)) l))"
 
 primrec el_loc_ok :: "'addr expr1 \<Rightarrow> 'addr locals1 \<Rightarrow> bool"
@@ -150,13 +150,13 @@ apply(auto)
 done
 
 lemma lock_oks1D2:
-  "\<lbrakk> lock_oks1 ls ts; ts t = \<lfloor>(((e, x), exs), ln)\<rfloor> \<rbrakk> 
+  "\<And>ln. \<lbrakk> lock_oks1 ls ts; ts t = \<lfloor>(((e, x), exs), ln)\<rfloor> \<rbrakk> 
   \<Longrightarrow> \<forall>l. has_locks (ls $ l) t + ln $ l = expr_locks e l + expr_lockss (map fst exs) l"
 apply(fastforce simp add: lock_oks1_def)
 done
 
 lemma lock_oks1_thr_updI:
-  "\<lbrakk> lock_oks1 ls ts; ts t = \<lfloor>(((e, xs), exs), ln)\<rfloor>;
+  "\<And>ln. \<lbrakk> lock_oks1 ls ts; ts t = \<lfloor>(((e, xs), exs), ln)\<rfloor>;
      \<forall>l. expr_locks e l + expr_lockss (map fst exs) l = expr_locks e' l + expr_lockss (map fst exs') l \<rbrakk>
   \<Longrightarrow> lock_oks1 ls (ts(t \<mapsto> (((e', xs'), exs'), ln)))"
 by(rule lock_oks1I)(auto split: split_if_asm dest: lock_oks1D2 lock_oks1D1)
@@ -478,7 +478,7 @@ proof(cases rule: Red1_mthr.redT.cases)
     by(auto intro: lifting_wf.redT_updTs_preserves[OF Red1_el_loc_ok[OF wf]])
   ultimately show ?thesis by simp
 next
-  case (redT_acquire t x ln n)
+  case (redT_acquire t x n ln)
   thus ?thesis using loks unfolding lock_oks1_def
     apply auto
      apply force
@@ -662,7 +662,7 @@ proof -
     by(simp add: ts_ok_init_fin_descend_state)
   from Red show ?thesis
   proof(cases)
-    case (redT_acquire t x ln n)
+    case (redT_acquire t x n ln)
     hence "Red1_mthr.redT False P ?s1 (t, K$ [], [], [], [], [], convert_RA ln) ?s1'"
       by(cases x)(auto intro!: Red1_mthr.redT.redT_acquire simp add: init_fin_descend_thr_def)
     with wf have "lock_oks1 (locks ?s1') (thr ?s1')" using loks' sync' by(rule Red1'_preserves_lock_oks)

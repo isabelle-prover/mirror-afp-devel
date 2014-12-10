@@ -57,6 +57,7 @@ locale lifting_inv = multithreaded final r convert_RA
 begin
 
 lemma redT_updTs_invariant:
+  fixes ln
   assumes tsiP: "ts_inv P I ts m"
   and red: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
   and tao: "thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
@@ -158,6 +159,7 @@ lemma lifting_inv: "lifting_inv final r (\<lambda>_ :: unit. P)"
 by(unfold_locales)(blast intro: preserves_red preserves_NewThread preserves_other)+
 
 lemma redT_updTs_preserves:
+  fixes ln
   assumes esokQ: "ts_ok P ts m"
   and red: "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
   and "ts t = \<lfloor>(x, ln)\<rfloor>"

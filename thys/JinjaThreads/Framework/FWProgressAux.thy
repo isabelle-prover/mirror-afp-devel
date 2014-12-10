@@ -54,13 +54,13 @@ inductive_set active_threads :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't set"
 for s :: "('l,'t,'x,'m,'w) state"
 where
   normal:
-  "\<lbrakk> thr s t = Some (x, ln);
+  "\<And>ln. \<lbrakk> thr s t = Some (x, ln);
      ln = no_wait_locks;
      t \<turnstile> (x, shr s) -ta\<rightarrow> x'm';
      actions_ok s t ta \<rbrakk>
   \<Longrightarrow> t \<in> active_threads s"
 | acquire: 
-  "\<lbrakk> thr s t = Some (x, ln);
+  "\<And>ln. \<lbrakk> thr s t = Some (x, ln);
      ln \<noteq> no_wait_locks;
      \<not> waiting (wset s t);
      may_acquire_all (locks s) t ln \<rbrakk>
@@ -81,7 +81,7 @@ lemma active_thread_ex_red:
   shows "\<exists>ta s'. s -t\<triangleright>ta\<rightarrow> s'"
 using assms
 proof cases
-  case (normal x ln ta x'm')
+  case (normal x ta x'm' ln)
   with redT_updWs_total[of t "wset s" "\<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"]
   show ?thesis
     by(cases x'm')(fastforce intro!: redT_normal simp del: split_paired_Ex)
@@ -98,9 +98,9 @@ context final_thread begin
 
 inductive not_final_thread :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool"
 for s :: "('l,'t,'x,'m,'w) state" and t :: "'t" where
-  not_final_thread_final: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> final x \<rbrakk> \<Longrightarrow> not_final_thread s t"
-| not_final_thread_wait_locks: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ln \<noteq> no_wait_locks \<rbrakk> \<Longrightarrow> not_final_thread s t"
-| not_final_thread_wait_set: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = \<lfloor>w\<rfloor> \<rbrakk> \<Longrightarrow> not_final_thread s t"
+  not_final_thread_final: "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> final x \<rbrakk> \<Longrightarrow> not_final_thread s t"
+| not_final_thread_wait_locks: "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ln \<noteq> no_wait_locks \<rbrakk> \<Longrightarrow> not_final_thread s t"
+| not_final_thread_wait_set: "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = \<lfloor>w\<rfloor> \<rbrakk> \<Longrightarrow> not_final_thread s t"
 
 
 declare not_final_thread.cases [elim]
@@ -108,7 +108,7 @@ declare not_final_thread.cases [elim]
 lemmas not_final_thread_cases = not_final_thread.cases [consumes 1, case_names final wait_locks wait_set]
 
 lemma not_final_thread_cases2 [consumes 2, case_names final wait_locks wait_set]:
-  "\<lbrakk> not_final_thread s t; thr s t = \<lfloor>(x, ln)\<rfloor>;
+  "\<And>ln. \<lbrakk> not_final_thread s t; thr s t = \<lfloor>(x, ln)\<rfloor>;
      \<not> final x \<Longrightarrow> thesis; ln \<noteq> no_wait_locks \<Longrightarrow> thesis; \<And>w. wset s t = \<lfloor>w\<rfloor> \<Longrightarrow> thesis \<rbrakk>
   \<Longrightarrow> thesis"
 by(auto)
@@ -123,7 +123,8 @@ by(auto simp add: final_thread_def intro: not_final_thread.intros)
 
 lemma not_final_thread_existsE:
   assumes "not_final_thread s t"
-  obtains x ln where "thr s t = \<lfloor>(x, ln)\<rfloor>"
+  and "\<And>x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> thesis"
+  shows thesis
 using assms by blast
 
 lemma not_final_thread_final_thread_conv:
@@ -267,7 +268,7 @@ proof(rule invariant3pI)
         with tst' ts't aok `s \<in> I` `s' \<in> I` red red' show ?thesis 
           unfolding True m by blast
       next
-        case (redT_acquire x ln n) 
+        case (redT_acquire x n ln) 
         with ws't True have "wset s t = \<lfloor>w\<rfloor>" by auto
         from wset_Suspend_okD2[OF wso this] `thr s t' = \<lfloor>(x, ln)\<rfloor>` True
         obtain s0 s1 ttas x0 ta' w' ln' ln''

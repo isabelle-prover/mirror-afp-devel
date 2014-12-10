@@ -194,7 +194,7 @@ where
 
 primrec cond_action_ok :: "('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" 
 where
-  "cond_action_ok s t (Join T) = 
+  "\<And>ln. cond_action_ok s t (Join T) = 
    (case thr_lookup T (thr s)
       of None \<Rightarrow> True 
     | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> t \<noteq> T \<and> final x \<and> ln = no_wait_locks \<and> ws_lookup T (wset s) = None)"
@@ -1012,7 +1012,7 @@ definition step_thread ::
   "(('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 's) \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> 't
   \<Rightarrow> ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 's) option"
 where
-  "step_thread update_state s t =
+  "\<And>ln. step_thread update_state s t =
    (case thr s t of
       \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
       if ln = no_wait_locks then
@@ -1072,7 +1072,7 @@ definition step_thread ::
   "(('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 's) \<Rightarrow> ('l,'t,'m,'m_t,'m_w,'s_i) state_refine \<Rightarrow> 't \<Rightarrow>
    ('t \<times> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) option \<times> 's) option"
 where 
-  "step_thread update_state s t =
+  "\<And>ln. step_thread update_state s t =
   (case thr_lookup t (thr s) of
       \<lfloor>(x, ln)\<rfloor> \<Rightarrow>
       if ln = no_wait_locks then

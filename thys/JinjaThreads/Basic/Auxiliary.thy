@@ -10,7 +10,7 @@ header {*
 
 theory Auxiliary
 imports
-  Main
+  Complex_Main
   "~~/src/HOL/Library/FinFun_Syntax"
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
@@ -36,6 +36,7 @@ lemma less_min_eq2:
   "(a :: 'a :: order) > b \<Longrightarrow> min a b = b"
 by(auto simp add: min_def order_less_imp_le)
 
+no_notation floor ("\<lfloor>_\<rfloor>")
 notation Some ("(\<lfloor>_\<rfloor>)")
 
 (*<*)

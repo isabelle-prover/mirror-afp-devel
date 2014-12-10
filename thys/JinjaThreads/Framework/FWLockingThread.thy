@@ -24,10 +24,10 @@ lemma upd_threadRs_append [simp]:
 by(induct las arbitrary: n l, auto)
 
 definition redT_updLns :: "('l,'t) locks \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> 'l lock_actions \<Rightarrow> ('l \<Rightarrow>f nat)"
-where "redT_updLns ls t ln las = (\<lambda>(l, n, la). upd_threadRs n l t la) \<circ>$ ($ls, ($ln, las$)$)"
+where "\<And>ln. redT_updLns ls t ln las = (\<lambda>(l, n, la). upd_threadRs n l t la) \<circ>$ ($ls, ($ln, las$)$)"
 
 lemma redT_updLns_iff [simp]:
-  "redT_updLns ls t ln las $ l = upd_threadRs (ln $ l) (ls $ l) t (las $ l)"
+  "\<And>ln. redT_updLns ls t ln las $ l = upd_threadRs (ln $ l) (ls $ l) t (las $ l)"
 by(simp add: redT_updLns_def)
 
 lemma upd_threadRs_comp_empty [simp]: "(\<lambda>(l, n, las). upd_threadRs n l t las) \<circ>$ ($ls, ($lns, K$ []$)$) = lns"

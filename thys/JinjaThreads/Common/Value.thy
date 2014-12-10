@@ -13,6 +13,8 @@ imports
   "~~/src/HOL/Word/Word"
 begin
 
+no_notation floor ("\<lfloor>_\<rfloor>")
+
 type_synonym word32 = "32 word"
 
 datatype 'addr val

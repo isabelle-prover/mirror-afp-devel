@@ -270,11 +270,11 @@ where
   (\<forall>t status x ln. ts t = \<lfloor>((status, x), ln)\<rfloor> \<longrightarrow> status \<noteq> Running \<longrightarrow> ln = no_wait_locks)"
 
 lemma Status_no_wait_locks_PreStartD:
-  "\<lbrakk> Status_no_wait_locks ts; ts t = \<lfloor>((PreStart, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> ln = no_wait_locks"
+  "\<And>ln. \<lbrakk> Status_no_wait_locks ts; ts t = \<lfloor>((PreStart, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> ln = no_wait_locks"
 unfolding Status_no_wait_locks_def by blast
 
 lemma Status_no_wait_locks_FinishedD:
-  "\<lbrakk> Status_no_wait_locks ts; ts t = \<lfloor>((Finished, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> ln = no_wait_locks"
+  "\<And>ln. \<lbrakk> Status_no_wait_locks ts; ts t = \<lfloor>((Finished, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> ln = no_wait_locks"
 unfolding Status_no_wait_locks_def by blast
 
 lemma Status_no_wait_locksI:
@@ -698,10 +698,11 @@ end
 text {* In the subsequent locales, @{text "convert_RA"} refers to @{term "convert_RA"} and is no longer a parameter! *}
 
 lemma convert_RA_not_write:
-  "ob \<in> set (convert_RA ln) \<Longrightarrow> \<not> is_write_action (NormalAction ob)"
+  "\<And>ln. ob \<in> set (convert_RA ln) \<Longrightarrow> \<not> is_write_action (NormalAction ob)"
 by(auto simp add: convert_RA_def)
 
 lemma ta_seq_consist_convert_RA:
+  fixes ln shows
   "ta_seq_consist P vs (llist_of ((map NormalAction \<circ> convert_RA) ln))"
 proof(rule ta_seq_consist_nthI)
   fix i ad al v
@@ -714,7 +715,7 @@ proof(rule ta_seq_consist_nthI)
 qed
 
 lemma ta_hb_consistent_convert_RA:
-  "ta_hb_consistent P E (llist_of (map (Pair t) ((map NormalAction \<circ> convert_RA) ln)))"
+  "\<And>ln. ta_hb_consistent P E (llist_of (map (Pair t) ((map NormalAction \<circ> convert_RA) ln)))"
 by(rule ta_hb_consistent_not_ReadI)(auto simp add: convert_RA_def)
 
 locale allocated_multithreaded =
@@ -1168,12 +1169,13 @@ by(simp add: known_addrs_state_def)
 
 lemma known_addrs_thr_cases[consumes 1, case_names known_addrs, cases set: known_addrs_thr]:
   assumes "ad \<in> known_addrs_thr ts"
-  obtains t x ln where "ts t = \<lfloor>(x, ln)\<rfloor>" "ad \<in> known_addrs t x"
+  and "\<And>t x ln. \<lbrakk> ts t = \<lfloor>(x, ln)\<rfloor>; ad \<in> known_addrs t x \<rbrakk> \<Longrightarrow> thesis"
+  shows thesis
 using assms
 by(auto simp add: known_addrs_thr_def ran_def)
 
 lemma known_addrs_stateI:
-  "\<lbrakk> ad \<in> known_addrs t x; thr s t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> ad \<in> known_addrs_state s"
+  "\<And>ln. \<lbrakk> ad \<in> known_addrs t x; thr s t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> ad \<in> known_addrs_state s"
 by(fastforce simp add: known_addrs_state_def known_addrs_thr_def intro: rev_bexI)
 
 fun known_addrs_if :: "'t \<Rightarrow> status \<times> 'x \<Rightarrow> 'addr set"
@@ -1642,7 +1644,7 @@ proof(cases)
   case (redT_normal x x' m')
   thus ?thesis using ns conf wfx by(auto dest: wfs_non_speculative_vs_conf ts_okD)
 next
-  case (redT_acquire x ln l)
+  case (redT_acquire x l ln)
   have "w_values P vs (take n (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list))) = vs"
     by(fastforce dest: in_set_takeD simp add: convert_RA_not_write intro!: w_values_no_write_unchanged del: equalityI)
   thus ?thesis using conf redT_acquire by(auto)
@@ -1737,7 +1739,7 @@ proof -
       with redT_normal vs show ?thesis by(auto simp add: take_Cons')
     qed
   next
-    case (redT_acquire x ln l)
+    case (redT_acquire x l ln)
     have "w_values P vs (take n (map NormalAction (convert_RA ln :: ('addr, 'thread_id) obs_event list))) = vs"
       by(fastforce simp add: convert_RA_not_write take_Cons' dest: in_set_takeD intro!: w_values_no_write_unchanged del: equalityI)
     thus ?thesis using vs redT_acquire by auto 
@@ -2544,7 +2546,7 @@ proof -
           with red' tst aok' have "mthr.if.redT \<sigma>' (t_r, ta'_r) \<sigma>''''" ..
           thus thesis using eq' hb r_n' sim by(rule that)
         next
-          case (redT_acquire x ln n)
+          case (redT_acquire x n ln)
           hence "?hb ta_r" using set_convert_RA_not_Read[where ln=ln]
             by -(rule ta_hb_consistent_not_ReadI, fastforce simp del: set_convert_RA_not_Read dest!: in_set_dropD)
           with red_ra r_n show ?thesis by(auto intro: that)

@@ -267,7 +267,7 @@ end
 text {* Framework lock state agrees with locks stored in the expression *}
 
 definition lock_ok :: "('addr,'thread_id) locks \<Rightarrow> ('addr,'thread_id,('a, 'b,'addr) exp \<times> 'x) thread_info \<Rightarrow> bool" where
-  "lock_ok ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls $ l) t = 0)
+  "\<And>ln. lock_ok ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls $ l) t = 0)
                                      | \<lfloor>((e, x), ln)\<rfloor> \<Rightarrow> (\<forall>l. has_locks (ls $ l) t + ln $ l = expr_locks e l))"
 
 lemma lock_okI:
@@ -290,7 +290,7 @@ apply(auto)
 done
 
 lemma lock_okD2:
-  "\<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<forall>l. has_locks (ls $ l) t + ln $ l = expr_locks e l"
+  "\<And>ln. \<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, x), ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<forall>l. has_locks (ls $ l) t + ln $ l = expr_locks e l"
 apply(fastforce simp add: lock_ok_def)
 done
 
@@ -440,22 +440,22 @@ by(induct Ls arbitrary: l i n)(auto intro: upd_lock_upd_expr_lock_action_preserv
 
 
 definition ls_els_ok :: "('addr,'thread_id) locks \<Rightarrow> 'thread_id \<Rightarrow> ('addr \<Rightarrow>f nat) \<Rightarrow> ('addr \<Rightarrow> int) \<Rightarrow> bool" where
-  "ls_els_ok ls t ln els \<equiv> \<forall>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)"
+  "\<And>ln. ls_els_ok ls t ln els \<equiv> \<forall>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)"
 
 lemma ls_els_okI:
-  "(\<And>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)) \<Longrightarrow> ls_els_ok ls t ln els"
+  "\<And>ln. (\<And>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)) \<Longrightarrow> ls_els_ok ls t ln els"
 by(auto simp add: ls_els_ok_def)
 
 lemma ls_els_okE:
-  "\<lbrakk> ls_els_ok ls t ln els; \<forall>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "\<And>ln. \<lbrakk> ls_els_ok ls t ln els; \<forall>l. lock_expr_locks_ok (ls $ l) t (ln $ l) (els l) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 by(auto simp add: ls_els_ok_def)
 
 lemma ls_els_okD:
-  "ls_els_ok ls t ln els \<Longrightarrow> lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)"
+  "\<And>ln. ls_els_ok ls t ln els \<Longrightarrow> lock_expr_locks_ok (ls $ l) t (ln $ l) (els l)"
 by(auto simp add: ls_els_ok_def)
 
 lemma redT_updLs_upd_expr_locks_preserves_ls_els_ok:  
- "\<lbrakk> ls_els_ok ls t ln els; lock_ok_las ls t las \<rbrakk>
+ "\<And>ln. \<lbrakk> ls_els_ok ls t ln els; lock_ok_las ls t las \<rbrakk>
   \<Longrightarrow> ls_els_ok (redT_updLs ls t las) t (redT_updLns ls t ln las) (upd_expr_locks els las)"
 by(auto intro!: ls_els_okI upd_locks_upd_expr_lock_preserve_lock_expr_locks_ok elim!: ls_els_okE simp add: redT_updLs_def lock_ok_las_def)
 
@@ -495,7 +495,7 @@ next
 qed
 
 lemma lock_ok_thr_updI:
-  "\<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, xs), ln)\<rfloor>; expr_locks e = expr_locks e' \<rbrakk>
+  "\<And>ln. \<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, xs), ln)\<rfloor>; expr_locks e = expr_locks e' \<rbrakk>
   \<Longrightarrow> lock_ok ls (ts(t \<mapsto> ((e', xs'), ln)))"
 by(rule lock_okI)(auto split: split_if_asm dest: lock_okD2 lock_okD1)
 

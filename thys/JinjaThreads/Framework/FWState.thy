@@ -322,11 +322,11 @@ abbreviation no_wait_locks :: "'l \<Rightarrow>f nat"
 where "no_wait_locks \<equiv> (K$ 0)"
 
 lemma neq_no_wait_locks_conv:
-  "ln \<noteq> no_wait_locks \<longleftrightarrow> (\<exists>l. ln $ l > 0)"
+  "\<And>ln. ln \<noteq> no_wait_locks \<longleftrightarrow> (\<exists>l. ln $ l > 0)"
 by(auto simp add: expand_finfun_eq fun_eq_iff)
 
 lemma neq_no_wait_locksE:
-  assumes "ln \<noteq> no_wait_locks" obtains l where "ln $ l > 0"
+  fixes ln assumes "ln \<noteq> no_wait_locks" obtains l where "ln $ l > 0"
 using assms
 by(auto simp add: neq_no_wait_locks_conv)
 

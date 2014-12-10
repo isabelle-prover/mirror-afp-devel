@@ -385,7 +385,7 @@ lemma thr_init_fin_list_state':
 by(simp add: fun_eq_iff thr_init_fin_list_state)
 
 lemma init_fin_descend_thr_Some_conv [simp]:
-  "ts t = \<lfloor>((status, x), ln)\<rfloor> \<Longrightarrow> init_fin_descend_thr ts t = \<lfloor>(x, ln)\<rfloor>"
+  "\<And>ln. ts t = \<lfloor>((status, x), ln)\<rfloor> \<Longrightarrow> init_fin_descend_thr ts t = \<lfloor>(x, ln)\<rfloor>"
 by(simp add: init_fin_descend_thr_def)
 
 lemma init_fin_descend_thr_None_conv [simp]:

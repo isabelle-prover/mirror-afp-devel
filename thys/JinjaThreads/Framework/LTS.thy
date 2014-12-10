@@ -10,6 +10,8 @@ imports
   "../../Coinductive/TLList"
 begin
 
+no_notation floor ("\<lfloor>_\<rfloor>")
+
 lemma rel_option_mono:
   "\<lbrakk> rel_option R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> rel_option R' x y"
 by(cases x)(case_tac [!] y, auto)

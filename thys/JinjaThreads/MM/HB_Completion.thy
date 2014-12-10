@@ -628,7 +628,7 @@ proof(coinduction arbitrary: s E)
       ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
         by(cases ta')(auto intro!: exI redT.redT_normal)
     next
-      case (redT_acquire x ln n)
+      case (redT_acquire x n ln)
       thus ?thesis using ta_hb_consistent_convert_RA[of E t ln] 
         by(auto intro!: exI redT.redT_acquire)
     qed
@@ -684,7 +684,7 @@ proof -
         ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
           by(cases ta')(auto intro!: exI redT.redT_normal)
       next
-        case (redT_acquire x ln n)
+        case (redT_acquire x n ln)
         thus ?thesis using ta_hb_consistent_convert_RA[of E t ln]
           by(auto intro!: exI redT.redT_acquire)
       qed

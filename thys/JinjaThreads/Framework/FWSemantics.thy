@@ -23,7 +23,7 @@ inductive_simps redT_upd_simps [simp]:
 
 definition redT_acq :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> ('l,'t,'x,'m,'w) state"
 where
-  "redT_acq s t ln = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (fst (the (thr s t)), no_wait_locks)), shr s), wset s, interrupts s)"
+  "\<And>ln. redT_acq s t ln = (acquire_all (locks s) t ln, ((thr s)(t \<mapsto> (fst (the (thr s t)), no_wait_locks)), shr s), wset s, interrupts s)"
 
 context final_thread begin
 
@@ -94,7 +94,7 @@ lemma actions_subset_refl [intro]:
 by(auto intro: actions_subset.intros collect_locks'_subset_collect_locks del: subsetI)
 
 definition final_thread :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool" where
-  "final_thread s t \<equiv> (case thr s t of None \<Rightarrow> False | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> final x \<and> ln = no_wait_locks \<and> wset s t = None)"
+  "\<And>ln. final_thread s t \<equiv> (case thr s t of None \<Rightarrow> False | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> final x \<and> ln = no_wait_locks \<and> wset s t = None)"
 
 definition final_threads :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't set" 
 where "final_threads s \<equiv> {t. final_thread s t}"
@@ -122,11 +122,13 @@ lemma mfinalI:
 unfolding mfinal_def by blast
 
 lemma mfinalD:
+  fixes ln
   assumes "mfinal s" "thr s t = \<lfloor>(x, ln)\<rfloor>"
   shows "final x" "ln = no_wait_locks" "wset s t = None"
 using assms unfolding mfinal_def by blast+
 
 lemma mfinalE:
+  fixes ln
   assumes "mfinal s" "thr s t = \<lfloor>(x, ln)\<rfloor>"
   obtains "final x" "ln = no_wait_locks" "wset s t = None"
 using mfinalD[OF assms] by(rule that)
@@ -135,7 +137,6 @@ lemma mfinal_def2: "mfinal s \<longleftrightarrow> dom (thr s) \<subseteq> final
 by(fastforce elim: mfinalE final_threadE intro: mfinalI final_threadI)
 
 end
-
 
 locale multithreaded_base = final_thread +
   constrains final :: "'x \<Rightarrow> bool" 
@@ -163,7 +164,7 @@ where
   \<Longrightarrow> s -t\<triangleright>ta\<rightarrow> s'"
 
 | redT_acquire:
-  "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t);
+  "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t);
      may_acquire_all (locks s) t ln; ln $ n > 0;
      s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
   \<Longrightarrow> s -t\<triangleright>((K$ []), [], [], [], [], convert_RA ln)\<rightarrow> s'"
@@ -176,25 +177,28 @@ abbreviation
 where
   "\<langle>ls, tsm, ws, is\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', tsm', ws', is'\<rangle> \<equiv> (ls, tsm, ws, is) -t\<triangleright>ta\<rightarrow> (ls', tsm', ws', is')"
 
+
 lemma redT_elims [consumes 1, case_names normal acquire]:
   assumes red: "s -t\<triangleright>ta\<rightarrow> s'"
-  obtains (normal) x x' m' ws'
-    where "t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
-    and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
-    and "lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-    and "cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
-    and "wset_actions_ok (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
-    and "interrupt_actions_ok (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
-    and "redT_updWs t (wset s) \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws'"
-    and "s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'), ws', redT_updIs (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>)"
-  | (acquire) x ln n
-    where "thr s t = \<lfloor>(x, ln)\<rfloor>" 
-    and "ta = (K$ [], [], [], [], [], convert_RA ln)"
-    and "\<not> waiting (wset s t)"
-    and "may_acquire_all (locks s) t ln"
-    and "ln $ n > 0"
-    and "s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)"
+  and normal: "\<And>x x' m' ws'.
+    \<lbrakk> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>;
+      thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>;
+      lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>;
+      thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>;
+      cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
+      wset_actions_ok (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>;
+      interrupt_actions_ok (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>;
+      redT_updWs t (wset s) \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> ws';
+      s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'), ws', redT_updIs (interrupts s) \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>) \<rbrakk>
+    \<Longrightarrow> thesis"
+   and acquire: "\<And>x ln n.
+    \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>;
+      ta = (K$ [], [], [], [], [], convert_RA ln);
+      \<not> waiting (wset s t);
+      may_acquire_all (locks s) t ln; 0 < ln $ n;
+      s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s) \<rbrakk>
+    \<Longrightarrow> thesis"
+  shows thesis
 using red
 proof cases
   case redT_normal

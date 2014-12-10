@@ -107,6 +107,7 @@ lemma deadlockD1:
 using assms unfolding deadlock_def by(blast)
 
 lemma deadlockD2:
+  fixes ln
   assumes "deadlock s"
   and "thr s t = \<lfloor>(x, ln)\<rfloor>"
   and "ln $ l > 0"
@@ -219,16 +220,16 @@ coinductive_set deadlocked :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't set"
      \<Longrightarrow> t \<in> deadlocked s"
 
 | deadlockedWait:
-    "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; all_final_except s (deadlocked s); waiting (wset s t) \<rbrakk> \<Longrightarrow> t \<in> deadlocked s"
+    "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; all_final_except s (deadlocked s); waiting (wset s t) \<rbrakk> \<Longrightarrow> t \<in> deadlocked s"
 
 | deadlockedAcquire:
-    "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t); ln $ l > 0; has_lock (locks s $ l) t'; t' \<noteq> t; 
+    "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t); ln $ l > 0; has_lock (locks s $ l) t'; t' \<noteq> t; 
        t' \<in> deadlocked s \<or> final_thread s t' \<rbrakk> 
      \<Longrightarrow> t \<in> deadlocked s"
 monos must_wait_mono UN_mono
 
 lemma deadlockedAcquire_must_wait:
-  "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t); ln $ l > 0; must_wait s t (Inl l) (deadlocked s \<union> final_threads s) \<rbrakk>
+  "\<And>ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t); ln $ l > 0; must_wait s t (Inl l) (deadlocked s \<union> final_threads s) \<rbrakk>
   \<Longrightarrow> t \<in> deadlocked s"
 apply(erule must_wait_elims)
 apply(erule (2) deadlockedAcquire)
@@ -237,22 +238,16 @@ done
 
 lemma deadlocked_elims [consumes 1, case_names lock wait acquire]:
   assumes "t \<in> deadlocked s"
-  obtains (lock) x
-    where "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "t \<turnstile> \<langle>x, shr s\<rangle> \<wrong>" "wset s t = None"
-    and "\<And>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>lt \<in> LT. must_wait s t lt (deadlocked s \<union> final_threads s)"
-  | (wait) x ln
-    where "thr s t = \<lfloor>(x, ln)\<rfloor>" "all_final_except s (deadlocked s)" "waiting (wset s t)"
-  | (acquire) x ln l t'
-    where "thr s t = \<lfloor>(x, ln)\<rfloor>" "\<not> waiting (wset s t)" "0 < ln $ l" "has_lock (locks s $ l) t'" "t \<noteq> t'"
-    and "t' \<in> deadlocked s \<or> final_thread s t'"
-proof -
-  from assms show thesis
-    apply cases
-    apply(rule lock, blast+)
-    apply(rule wait, blast+)
-    apply(rule acquire, blast+)
-    done
-qed
+  and lock: "\<And>x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> \<langle>x, shr s\<rangle> \<wrong>; wset s t = None;
+     \<And>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>lt \<in> LT. must_wait s t lt (deadlocked s \<union> final_threads s) \<rbrakk>
+     \<Longrightarrow> thesis"
+  and wait: "\<And>x ln. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; all_final_except s (deadlocked s); waiting (wset s t) \<rbrakk>
+     \<Longrightarrow> thesis"
+  and acquire: "\<And>x ln l t'. 
+    \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> waiting (wset s t); 0 < ln $ l; has_lock (locks s $ l) t'; t \<noteq> t';
+      t' \<in> deadlocked s \<or> final_thread s t' \<rbrakk> \<Longrightarrow> thesis"
+  shows thesis
+using assms by cases blast+
 
 lemma deadlocked_coinduct 
   [consumes 1, case_names deadlocked, case_conclusion deadlocked Lock Wait Acquire, coinduct set: deadlocked]:
@@ -262,7 +257,7 @@ lemma deadlocked_coinduct
      (\<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> wset s t = None \<and>
          (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>lt\<in>LT. must_wait s t lt (X \<union> deadlocked s \<union> final_threads s)))) \<or>
      (\<exists>x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> all_final_except s (X \<union> deadlocked s) \<and> waiting (wset s t)) \<or>
-     (\<exists>x ln l t'. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> \<not> waiting (wset s t) \<and> 0 < ln $ l \<and> has_lock (locks s $ l) t' \<and>
+     (\<exists>x l t' ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> \<not> waiting (wset s t) \<and> 0 < ln $ l \<and> has_lock (locks s $ l) t' \<and>
          t' \<noteq> t \<and> ((t' \<in> X \<or> t' \<in> deadlocked s) \<or> final_thread s t'))"
   shows "t \<in> deadlocked s"
 using major
@@ -295,7 +290,8 @@ by(rule deadlocked'I)(blast)+
 
 lemma deadlocked_thread_exists: 
   assumes "t \<in> deadlocked s"
-  obtains x ln where "thr s t = \<lfloor>(x, ln)\<rfloor>"
+  and "\<And>x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> thesis"
+  shows thesis
 using assms
 by cases blast+
 
@@ -354,7 +350,7 @@ proof -
       qed
     qed
   next
-    case (redT_acquire x ln n)
+    case (redT_acquire x n ln)
     show False
     proof(cases "\<exists>w. wset s t = \<lfloor>InWS w\<rfloor>")
       case True with `\<not> waiting (wset s t)` show ?thesis
@@ -913,7 +909,7 @@ proof
       qed
     qed
   next
-    case (redT_acquire x ln n)
+    case (redT_acquire x n ln)
     hence [simp]: "ta = (K$ [], [], [], [], [], convert_RA ln)"
       and s': "s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s, interrupts s)"
       and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" 

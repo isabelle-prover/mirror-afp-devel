@@ -14,7 +14,7 @@ text{* Lifting for properties that only involve thread-local state information a
 definition
   ts_ok :: "('t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
 where
-  "ts_ok P ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> P t x m"
+  "\<And>ln. ts_ok P ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> P t x m"
 
 lemma ts_okI:
   "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P t x m \<rbrakk> \<Longrightarrow> ts_ok P ts m"
@@ -25,7 +25,7 @@ lemma ts_okE:
 by(auto simp add: ts_ok_def)
 
 lemma ts_okD:
-  "\<lbrakk> ts_ok P ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> P t x m"
+  "\<And>ln. \<lbrakk> ts_ok P ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> P t x m"
 by(auto simp add: ts_ok_def)
 
 lemma ts_ok_True [simp]:
@@ -45,7 +45,7 @@ text{* Lifting for properites, that also require additional data that does not c
 definition
   ts_inv :: "('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> ('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
 where
-  "ts_inv P I ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m" 
+  "\<And>ln. ts_inv P I ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m" 
 
 lemma ts_invI:
   "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m \<rbrakk> \<Longrightarrow> ts_inv P I ts m"
@@ -56,7 +56,7 @@ lemma ts_invE:
 by(auto simp add: ts_inv_def)
 
 lemma ts_invD:
-  "\<lbrakk> ts_inv P I ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m"
+  "\<And>ln. \<lbrakk> ts_inv P I ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m"
 by(auto simp add: ts_inv_def)
 
 text {* Wellformedness properties for lifting *}

@@ -23,10 +23,10 @@ lemma redT_updLs_Some_thread_idD:
 by(auto simp add: redT_updLs_def intro: has_lock_upd_locks_implies_has_lock)
 
 definition acquire_all :: "('l, 't) locks \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> ('l, 't) locks"
-where "acquire_all ls t ln \<equiv> (\<lambda>(l, la). acquire_locks l t la) \<circ>$ (($ls, ln$))"
+where "\<And>ln. acquire_all ls t ln \<equiv> (\<lambda>(l, la). acquire_locks l t la) \<circ>$ (($ls, ln$))"
 
 lemma acquire_all_iff [simp]: 
-  "acquire_all ls t ln $ l = acquire_locks (ls $ l) t (ln $ l)"
+  "\<And>ln. acquire_all ls t ln $ l = acquire_locks (ls $ l) t (ln $ l)"
 by(simp add: acquire_all_def)
 
 
@@ -63,26 +63,27 @@ by(auto dest!: lock_ok_lasD[where l=l])
 
 
 definition may_acquire_all :: "('l, 't) locks \<Rightarrow> 't \<Rightarrow> ('l \<Rightarrow>f nat) \<Rightarrow> bool"
-where "may_acquire_all ls t ln \<equiv> \<forall>l. ln $ l > 0 \<longrightarrow> may_lock (ls $ l) t"
+where "\<And>ln. may_acquire_all ls t ln \<equiv> \<forall>l. ln $ l > 0 \<longrightarrow> may_lock (ls $ l) t"
 
 lemma may_acquire_allI [intro]:
-  "(\<And>l. ln $ l > 0 \<Longrightarrow> may_lock (ls $ l) t) \<Longrightarrow> may_acquire_all ls t ln"
+  "\<And>ln. (\<And>l. ln $ l > 0 \<Longrightarrow> may_lock (ls $ l) t) \<Longrightarrow> may_acquire_all ls t ln"
 by(simp add: may_acquire_all_def)
 
 lemma may_acquire_allE:
-  "\<lbrakk> may_acquire_all ls t ln; \<forall>l. ln $ l > 0 \<longrightarrow> may_lock (ls $ l) t \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "\<And>ln. \<lbrakk> may_acquire_all ls t ln; \<forall>l. ln $ l > 0 \<longrightarrow> may_lock (ls $ l) t \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 by(auto simp add: may_acquire_all_def)
 
 lemma may_acquire_allD [dest]:
-  "\<lbrakk> may_acquire_all ls t ln; ln $ l > 0 \<rbrakk> \<Longrightarrow> may_lock (ls $ l) t"
+  "\<And>ln. \<lbrakk> may_acquire_all ls t ln; ln $ l > 0 \<rbrakk> \<Longrightarrow> may_lock (ls $ l) t"
 by(auto simp add: may_acquire_all_def)
 
 lemma may_acquire_all_has_locks_acquire_locks [simp]:
-  "\<lbrakk> may_acquire_all ls t ln; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (acquire_locks (ls $ l) t (ln $ l)) t' = has_locks (ls $ l) t'"
+  fixes ln
+  shows "\<lbrakk> may_acquire_all ls t ln; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (acquire_locks (ls $ l) t (ln $ l)) t' = has_locks (ls $ l) t'"
 by(cases "ln $ l > 0")(auto dest: may_acquire_allD)
 
 lemma may_acquire_all_code [code]:
-  "may_acquire_all ls t ln \<longleftrightarrow> finfun_All ((\<lambda>(lock, n). n > 0 \<longrightarrow> may_lock lock t) \<circ>$ ($ls, ln$))"
+  "\<And>ln. may_acquire_all ls t ln \<longleftrightarrow> finfun_All ((\<lambda>(lock, n). n > 0 \<longrightarrow> may_lock lock t) \<circ>$ ($ls, ln$))"
 by(auto simp add: may_acquire_all_def finfun_All_All o_def)
 
 definition collect_locks :: "'l lock_actions \<Rightarrow> 'l set" where

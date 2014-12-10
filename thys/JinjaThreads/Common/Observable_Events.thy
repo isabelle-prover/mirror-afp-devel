@@ -54,14 +54,14 @@ lemma some_choice: "(\<exists>a. \<forall>b. P b (a b)) \<longleftrightarrow> (\
 by metis
 
 definition convert_RA :: "'addr released_locks \<Rightarrow> ('addr :: addr, 'thread_id) obs_event list"
-where "convert_RA ln = concat (map (\<lambda>ad. replicate (ln $ ad) (SyncLock ad)) (monitor_finfun_to_list ln))"
+where "\<And>ln. convert_RA ln = concat (map (\<lambda>ad. replicate (ln $ ad) (SyncLock ad)) (monitor_finfun_to_list ln))"
 
 lemma set_convert_RA_not_New [simp]:
-  "NewHeapElem a CTn \<notin> set (convert_RA ln)"
+  "\<And>ln. NewHeapElem a CTn \<notin> set (convert_RA ln)"
 by(auto simp add: convert_RA_def)
 
 lemma set_convert_RA_not_Read [simp]:
-  "ReadMem ad al v \<notin> set (convert_RA ln)"
+  "\<And>ln. ReadMem ad al v \<notin> set (convert_RA ln)"
 by(auto simp add: convert_RA_def)
 
 end

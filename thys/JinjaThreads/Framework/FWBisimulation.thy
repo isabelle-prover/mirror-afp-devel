@@ -91,7 +91,7 @@ abbreviation ta_bisim_bisim_syntax ("_/ \<sim>m _" [50, 50] 60)
 where "ta1 \<sim>m ta2 \<equiv> ta_bisim bisim ta1 ta2"
 
 definition tbisim :: "bool \<Rightarrow> 't \<Rightarrow> ('x1 \<times> 'l released_locks) option \<Rightarrow> 'm1 \<Rightarrow> ('x2 \<times> 'l released_locks) option \<Rightarrow> 'm2 \<Rightarrow> bool" where
-  "tbisim nw t ts1 m1 ts2 m2 \<longleftrightarrow>
+  "\<And>ln. tbisim nw t ts1 m1 ts2 m2 \<longleftrightarrow>
   (case ts1 of None \<Rightarrow> ts2 = None
        | \<lfloor>(x1, ln)\<rfloor> \<Rightarrow> (\<exists>x2. ts2 = \<lfloor>(x2, ln)\<rfloor> \<and> t \<turnstile> (x1, m1) \<approx> (x2, m2) \<and> (nw \<or> x1 \<approx>w x2)))"
 
@@ -99,14 +99,15 @@ lemma tbisim_NoneI: "tbisim w t None m None m'"
 by(simp add: tbisim_def)
 
 lemma tbisim_SomeI:
-  "\<lbrakk> t \<turnstile> (x, m) \<approx> (x', m'); nw \<or> x \<approx>w x' \<rbrakk> \<Longrightarrow> tbisim nw t (Some (x, ln)) m (Some (x', ln)) m'"
+  "\<And>ln. \<lbrakk> t \<turnstile> (x, m) \<approx> (x', m'); nw \<or> x \<approx>w x' \<rbrakk> \<Longrightarrow> tbisim nw t (Some (x, ln)) m (Some (x', ln)) m'"
 by(simp add: tbisim_def)
 
 lemma tbisim_cases[consumes 1, case_names None Some]:
   assumes major: "tbisim nw t ts1 m1 ts2 m2"
-  obtains "ts1 = None" "ts2 = None"
-        | x ln x' where "ts1 = \<lfloor>(x, ln)\<rfloor>" "ts2 = \<lfloor>(x', ln)\<rfloor>" "t \<turnstile> (x, m1) \<approx> (x', m2)" "nw \<or> x \<approx>w x'"
-using major that
+  and "\<lbrakk> ts1 = None; ts2 = None \<rbrakk> \<Longrightarrow> thesis"
+  and "\<And>x ln x'. \<lbrakk> ts1 = \<lfloor>(x, ln)\<rfloor>; ts2 = \<lfloor>(x', ln)\<rfloor>; t \<turnstile> (x, m1) \<approx> (x', m2); nw \<or> x \<approx>w x' \<rbrakk> \<Longrightarrow> thesis"
+  shows thesis
+using assms
 by(auto simp add: tbisim_def)
 
 definition mbisim :: "(('l,'t,'x1,'m1,'w) state, ('l,'t,'x2,'m2,'w) state) bisim" ("_ \<approx>m _" [50, 50] 60)
@@ -124,12 +125,12 @@ apply(clarsimp)
 done
 
 lemma mbisim_thrD1:
-  "\<lbrakk> s1 \<approx>m s2; thr s1 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
+  "\<And>ln. \<lbrakk> s1 \<approx>m s2; thr s1 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
   \<Longrightarrow> \<exists>x'. thr s2 t = \<lfloor>(x', ln)\<rfloor> \<and> t \<turnstile> (x, shr s1) \<approx> (x', shr s2) \<and> (wset s1 t = None \<or> x \<approx>w x')"
 by(fastforce simp add: mbisim_def tbisim_def)
 
 lemma mbisim_thrD2:
-  "\<lbrakk> s1 \<approx>m s2; thr s2 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
+  "\<And>ln. \<lbrakk> s1 \<approx>m s2; thr s2 t = \<lfloor>(x, ln)\<rfloor> \<rbrakk>
   \<Longrightarrow> \<exists>x'. thr s1 t = \<lfloor>(x', ln)\<rfloor> \<and> t \<turnstile> (x', shr s1) \<approx> (x, shr s2) \<and> (wset s2 t = None \<or> x' \<approx>w x)"
 by(frule mbisim_thrNone_eq[where t=t])(cases "thr s1 t",(fastforce simp add: mbisim_def tbisim_def)+)
 
@@ -1065,7 +1066,7 @@ by(auto dest: FWdelay_bisimulation_obs.FWdelay_bisimulation_obs_flip simp only: 
 context FWdelay_bisimulation_obs begin
 
 lemma mbisim_redT_upd:
-  fixes s1 t ta1 x1' m1' s2 ta2 x2' m2'
+  fixes s1 t ta1 x1' m1' s2 ta2 x2' m2' ln
   assumes s1': "redT_upd s1 t ta1 x1' m1' s1'"
   and s2': "redT_upd s2 t ta2 x2' m2' s2'"
   and [simp]: "wset s1 = wset s2" "locks s1 = locks s2" 
@@ -1337,7 +1338,7 @@ proof -
       ultimately show ?thesis unfolding s1' by blast
     qed
   next
-    case (redT_acquire x1 ln n)
+    case (redT_acquire x1 n ln)
     hence [simp]: "ta1 = (K$ [], [], [], [], [], convert_RA ln)"
       and tst: "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" and wst: "\<not> waiting (wset s1 t)"
       and maa: "may_acquire_all (locks s1) t ln" and ln: "0 < ln $ n"
