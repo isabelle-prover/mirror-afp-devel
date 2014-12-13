@@ -57,7 +57,7 @@ val _ =
 
 val _ =
   Outer_Syntax.command @{command_spec "derive"} "derives some sort"
-    (Parse.parname -- Parse.name -- Scan.repeat Parse.type_const >> (fn ((param, s), tycons) =>
+    (Parse.parname -- Parse.name -- Scan.repeat1 Parse.type_const >> (fn ((param, s), tycons) =>
       Toplevel.theory (fold (derive_cmd s param) tycons)))
 
 end
