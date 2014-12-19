@@ -24,7 +24,7 @@ ML {*
 
     structure data = Proof_Data ( 
       type T = state
-      val init = K NULL 
+      fun init _ = NULL
     )
 
     fun get ctxt = case data.get ctxt of

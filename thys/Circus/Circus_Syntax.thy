@@ -26,18 +26,11 @@ syntax
   "_synt_assign" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ := _")
 
 
-ML{*
-type vars_data = {
-  State_vars: string list,
-  Alpha_vars: string list}
-
-fun make_vars_data (sv, av) =
-  {State_vars=sv, Alpha_vars=av}
-
+ML {*
 structure VARs_Data = Proof_Data
 (
-  type T = vars_data
-  fun init _ : T = make_vars_data ([],[])
+  type T = {State_vars: string list, Alpha_vars: string list}
+  fun init _ : T = {State_vars = [], Alpha_vars = []}
 )
 *}
 
