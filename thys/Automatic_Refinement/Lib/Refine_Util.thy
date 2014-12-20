@@ -514,7 +514,9 @@ ML {*
     fun monitor_conv msg conv ct = let
       val _ = tracing (msg ^ " (gets): " ^ @{make_string} ct);
       val res = conv ct 
-        handle exc => (tracing (msg ^ " (raises): " ^ @{make_string} exc);
+        handle exc =>
+         (if Exn.is_interrupt exc then reraise exc
+          else tracing (msg ^ " (raises): " ^ @{make_string} exc);
           reraise exc)
       val _ = tracing (msg ^ " (yields): " ^ @{make_string} res);
     in res end
