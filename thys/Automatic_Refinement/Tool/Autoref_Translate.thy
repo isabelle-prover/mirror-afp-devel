@@ -189,7 +189,7 @@ ML {*
 
     local
       open Autoref_Tacticals
-      fun trans_rule_tac ctxt net = resolve_from_net_tac net 
+      fun trans_rule_tac ctxt net = resolve_from_net_tac ctxt net
         THEN_ALL_NEW (TRY o match_tac ctxt [@{thm PRIO_TAGI}])
 
     in
