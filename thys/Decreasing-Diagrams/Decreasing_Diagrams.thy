@@ -632,7 +632,7 @@ qed
 
 lemma drop_left_mult_eq:
 assumes "trans r" and "irrefl r" and "(N+M,M) \<in> mul_eq r" shows "N = {#}" proof -
- have "(M+N,M+{#}) \<in> mul_eq r" using union_commute assms(3) apply auto using union_commute by metis
+ have "(M+N,M+{#}) \<in> mul_eq r" using assms(3) apply auto using union_commute by metis
  hence k:"(N,{#}) \<in> mul_eq r" using lemma2_6_6_b'[OF assms(1,2)] by fast
  from this obtain I J K where "{#} = I + J \<and> N = I + K \<and> set_of K \<subseteq> dm r J" unfolding mul_eq_def by fast
  thus ?thesis unfolding dm_def ds_def by auto

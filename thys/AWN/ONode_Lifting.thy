@@ -84,7 +84,7 @@ lemma nodemap_induct' [consumes, case_names init other local]:
     hence "s \<in> oreachable (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o) S U"
       by (rule oreachable_init)
     with \<open>s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)\<close> obtain \<sigma> \<zeta> where "s = (\<sigma>, NodeS ii \<zeta> R\<^sub>i)"
-      using node_net_state by (simp add: onode_comps) metis
+      by (simp add: onode_comps) metis
     with \<open>s \<in> init (\<langle>ii : T : R\<^sub>i\<rangle>\<^sub>o)\<close> and init show "P s" by simp
   next
     fix s a \<sigma>'
