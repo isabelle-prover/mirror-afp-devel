@@ -60,7 +60,10 @@ working with abstract functions modelled directly in the theorem prover's
 logic is defined and proved sound.  Then, this compiler is refined to a
 concrete version that returns a target-language expression.
 <p>
-A detailed presentation of this work can be found in the first author's master's thesis.
+An article with the same title and authors is published in the proceedings
+of ESOP 2015.
+A detailed presentation of this work can be found in the first author's
+master's thesis.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
