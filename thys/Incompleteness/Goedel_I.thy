@@ -653,18 +653,16 @@ proof -
   obtain \<delta> where        "{} \<turnstile> \<delta> IFF Neg ((PfP (Var i))(i::=\<lceil>\<delta>\<rceil>))"
              and suppd: "supp \<delta> = supp (Neg (PfP (Var i))) - {atom i}"
     by (metis SyntaxN.Neg diagonal)
-  hence diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"
+  then have diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"
     by simp
-  hence np: "\<not> {} \<turnstile> \<delta>"
-    by (metis assms Iff_MP_same Neg_D proved_iff_proved_PfP)
-  hence npn: "\<not> {} \<turnstile> Neg \<delta>" using diag
-    by (metis Iff_MP_same NegNeg_D Neg_cong proved_iff_proved_PfP)
-  moreover have "eval_fm e \<delta>" using hfthm_sound [where e=e, OF diag]
-    by simp (metis Pf_quot_imp_is_proved np)
+  then have np: "\<not> {} \<turnstile> \<delta> \<and> \<not> {} \<turnstile> Neg \<delta>"
+    by (metis Iff_MP_same NegNeg_D Neg_D Neg_cong assms proved_iff_proved_PfP)
+  then have "eval_fm e \<delta>" using hfthm_sound [where e=e, OF diag]
+    by simp (metis Pf_quot_imp_is_proved)
   moreover have "ground_fm \<delta>" using suppd  
     by (simp add: supp_conv_fresh ground_fm_aux_def subset_eq) (metis fresh_ineq_at_base)
   ultimately show ?thesis
-    by (metis diag np npn that)
+    by (metis diag np that)
 qed
 
 end
