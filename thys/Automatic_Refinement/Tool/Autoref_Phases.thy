@@ -81,7 +81,7 @@ ML {*
 
     structure autoref_state = Proof_Data (
       type T = bool
-      val init = K false
+      fun init _ = false
     )
 
     (* TODO: Workaround to have enough data for solvers in context *)

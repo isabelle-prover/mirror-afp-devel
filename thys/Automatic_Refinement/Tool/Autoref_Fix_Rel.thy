@@ -603,7 +603,7 @@ ML {*
     fun internal_hom_tac ctxt = let
       val hom_net = hom_netD.get ctxt
     in
-      Seq.INTERVAL (TRY o DETERM o resolve_from_net_tac hom_net)    
+      Seq.INTERVAL (TRY o DETERM o resolve_from_net_tac ctxt hom_net)    
     end
 
     fun internal_spec_tac ctxt = let
@@ -625,7 +625,7 @@ ML {*
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl thy))
         |> Tactic.build_net
     in 
-      Seq.INTERVAL (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac net))
+      Seq.INTERVAL (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
     end
 
     fun guess_relators_tac ctxt = let
@@ -638,7 +638,7 @@ ML {*
       val hom_net = hom_netD.get ctxt
 
       fun hom_tac i j = Seq.INTERVAL 
-        (TRY o DETERM o resolve_from_net_tac hom_net) i j
+        (TRY o DETERM o resolve_from_net_tac ctxt hom_net) i j
 
       fun spec_tac i j = 
         REPEAT (CHANGED 
@@ -646,7 +646,7 @@ ML {*
         )
 
       fun solve_tac i j = Seq.INTERVAL 
-        (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac net)) i j
+        (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac ctxt net)) i j
     in
       Seq.INTERVAL insert_CONSTRAINTS_tac
       THEN_INTERVAL hom_tac
@@ -925,7 +925,7 @@ ML {*
                   val rl = mk_CONSTRAINT_rl thy c 
                      |> Drule.zero_var_indexes
                   val res = (SOLVED' (rtac rl 
-                      THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac net)))
+                      THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net)))
                     ) i st
                     |> Seq.pull |> is_some
 
@@ -953,7 +953,7 @@ ML {*
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl thy))
         |> Tactic.build_net
     in 
-      resolve_from_net_tac net
+      resolve_from_net_tac ctxt net
     end
 
     val phase = {

@@ -353,7 +353,8 @@ nominal_function SeqStTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarro
                        HPair (Var n) (HPair (Var sn) (Var sn')) IN s AND
                        Var sl EQ Q_Eats (Var sm) (Var sn) AND
                        Var sl' EQ Q_Eats (Var sm') (Var sn')))))))))))"
-  by (auto simp: eqvt_def SeqStTermP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
+  apply (simp_all add: eqvt_def SeqStTermP_graph_aux_def flip_fresh_fresh)
+  by auto (metis obtain_fresh)
 
 nominal_termination (eqvt)
   by lexicographic_order
@@ -692,6 +693,7 @@ nominal_function SeqAbstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightar
                          Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm'))))))))))))))))"
   by (auto simp: eqvt_def SeqAbstFormP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
+
 nominal_termination (eqvt)
   by lexicographic_order
 
@@ -719,12 +721,11 @@ proof -
   thus ?thesis1 ?thsf
     by (auto intro: LstSeqP_OrdP)
   show ?thesis2 using atoms
-    by (force simp add: LstSeq_imp_Ord SeqAbstForm_def
-                 BuildSeq3_def BuildSeq_def Builds_def
-                 HBall_def HBex_def q_defs AbstMakeForm_def
-                 Seq_iff_app [of "\<lbrakk>s\<rbrakk>e", OF LstSeq_imp_Seq_succ]
-                 Ord_trans [of _ _ "succ \<lbrakk>k\<rbrakk>e"]
-             cong: conj_cong   intro!: conj_cong [OF refl] all_cong)
+    unfolding SeqAbstForm_def BuildSeq3_def BuildSeq_def Builds_def
+              HBall_def HBex_def q_defs AbstMakeForm_def
+    by (force simp add: LstSeq_imp_Ord   Ord_trans [of _ _ "succ \<lbrakk>k\<rbrakk>e"]
+                        Seq_iff_app [of "\<lbrakk>s\<rbrakk>e", OF LstSeq_imp_Seq_succ]
+              intro!: conj_cong [OF refl] all_cong)
 qed
 
 lemma SeqAbstFormP_subst [simp]:
@@ -922,7 +923,8 @@ nominal_function SeqSubstFormP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Righta
                         Var sl' EQ Q_Disj (Var sm') (Var sn')) OR
                         (Var sl EQ Q_Neg (Var sm) AND Var sl' EQ Q_Neg (Var sm')) OR
                         (Var sl EQ Q_Ex (Var sm) AND Var sl' EQ Q_Ex (Var sm')))))))))))))"
-by (auto simp: eqvt_def SeqSubstFormP_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
+  apply (simp_all add: eqvt_def SeqSubstFormP_graph_aux_def flip_fresh_fresh)
+  by auto (metis obtain_fresh)
 
 nominal_termination (eqvt)
   by lexicographic_order
@@ -953,12 +955,11 @@ proof -
   thus ?thesis1 ?thsf ?thOrd ?thLstSeq
     by (auto intro: LstSeqP_OrdP)
   show ?thesis2 using atoms
-    by (force simp add: LstSeq_imp_Ord SeqSubstForm_def
-                 BuildSeq2_def BuildSeq_def Builds_def
+    unfolding SeqSubstForm_def BuildSeq2_def BuildSeq_def Builds_def
                  HBall_def HBex_def q_defs SubstMakeForm_def
+    by (force simp add: LstSeq_imp_Ord   Ord_trans [of _ _ "succ \<lbrakk>k\<rbrakk>e"]
                  Seq_iff_app [of "\<lbrakk>s\<rbrakk>e", OF LstSeq_imp_Seq_succ]
-                 Ord_trans [of _ _ "succ \<lbrakk>k\<rbrakk>e"]
-             cong: conj_cong   intro!: conj_cong [OF refl]  all_cong)
+              intro!: conj_cong [OF refl]  all_cong)
 qed
 
 lemma SeqSubstFormP_subst [simp]:

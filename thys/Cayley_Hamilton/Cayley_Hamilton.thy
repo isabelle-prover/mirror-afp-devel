@@ -344,7 +344,7 @@ proof-
       done
   }
   ultimately show ?thesis
-    using charpoly_aux(1) n_gt_0 coeff_charpoly_xn_is_one
+    using charpoly_aux(1) n_gt_0 coeff_charpoly_xn_is_one [of A]
     by(simp, metis less_nat_zero_code less_one linorder_neqE_nat)
 qed
 

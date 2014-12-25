@@ -990,7 +990,7 @@ qed
 section {*A Shifted Sequence*}
 
 nominal_function ShiftP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
-  where "\<lbrakk>atom x \<sharp> (x',y,z,f,del,g,k); atom x' \<sharp> (y,z,f,del,g,k); atom y \<sharp> (z,f,del,g,k); atom z \<sharp> (f,del,g,k)\<rbrakk> \<Longrightarrow>
+  where "\<lbrakk>atom x \<sharp> (x',y,z,f,del,k); atom x' \<sharp> (y,z,f,del,k); atom y \<sharp> (z,f,del,k); atom z \<sharp> (f,del,g,k)\<rbrakk> \<Longrightarrow>
     ShiftP f k del g =
       All z (Var z IN g IFF 
       (Ex x (Ex x' (Ex y ((Var z) EQ HPair (Var x') (Var y) AND 
@@ -1004,8 +1004,8 @@ nominal_termination (eqvt)
 lemma ShiftP_fresh_iff [simp]: "a \<sharp> ShiftP f k del g \<longleftrightarrow> a \<sharp> f \<and> a \<sharp> k \<and> a \<sharp> del \<and> a \<sharp> g"       
 proof -
   obtain x::name and x'::name and y::name and z::name 
-    where "atom x \<sharp> (x',y,z,f,del,g,k)" "atom x' \<sharp> (y,z,f,del,g,k)" 
-          "atom y \<sharp> (z,f,del,g,k)" "atom z \<sharp> (f,del,g,k)"
+    where "atom x \<sharp> (x',y,z,f,del,k)" "atom x' \<sharp> (y,z,f,del,k)" 
+          "atom y \<sharp> (z,f,del,k)" "atom z \<sharp> (f,del,g,k)"
     by (metis obtain_fresh)
   thus ?thesis
     by auto
@@ -1015,8 +1015,8 @@ lemma subst_fm_ShiftP [simp]:
   "(ShiftP f k del g)(i::=u) = ShiftP (subst i u f) (subst i u k) (subst i u del) (subst i u g)"
 proof -
   obtain x::name and x'::name and y::name and z::name 
-  where "atom x \<sharp> (x',y,z,f,del,g,k,i,u)" "atom x' \<sharp> (y,z,f,del,g,k,i,u)" 
-        "atom y \<sharp> (z,f,del,g,k,i,u)" "atom z \<sharp> (f,del,g,k,i,u)"
+  where "atom x \<sharp> (x',y,z,f,del,k,i,u)" "atom x' \<sharp> (y,z,f,del,k,i,u)" 
+        "atom y \<sharp> (z,f,del,k,i,u)" "atom z \<sharp> (f,del,g,k,i,u)"
     by (metis obtain_fresh)
   thus ?thesis
     by (auto simp: ShiftP.simps [of x x' y z])
@@ -1035,8 +1035,8 @@ lemma ShiftP_Mem1:
   "{ShiftP f k del g, HPair a b IN f, HaddP del a a', a IN k} \<turnstile> HPair a' b IN g"       
 proof -
   obtain x::name and x'::name and y::name and z::name 
-    where "atom x \<sharp> (x',y,z,f,del,g,k,a,a',b)" "atom x' \<sharp> (y,z,f,del,g,k,a,a',b)" 
-          "atom y \<sharp> (z,f,del,g,k,a,a',b)" "atom z \<sharp> (f,del,g,k,a,a',b)"
+    where "atom x \<sharp> (x',y,z,f,del,k,a,a',b)" "atom x' \<sharp> (y,z,f,del,k,a,a',b)" 
+          "atom y \<sharp> (z,f,del,k,a,a',b)" "atom z \<sharp> (f,del,g,k,a,a',b)"
     by (metis obtain_fresh)
   thus ?thesis
     apply (auto simp: ShiftP.simps [of x x' y z])
@@ -1048,7 +1048,7 @@ proof -
 qed
  
 lemma ShiftP_Mem2:
-  assumes "atom u \<sharp> (f,k,del,g,a,b)"
+  assumes "atom u \<sharp> (f,k,del,a,b)"
   shows  "{ShiftP f k del g, HPair a b IN g} \<turnstile> Ex u ((Var u) IN k AND HaddP del (Var u) a AND HPair (Var u) b IN f)"       
 proof -
   obtain x::name and x'::name and y::name and z::name 
@@ -1067,7 +1067,7 @@ qed
 
 lemma ShiftP_Mem_D:
   assumes "H \<turnstile> ShiftP f k del g" "H \<turnstile> a IN g"
-          "atom x \<sharp> (x',y,a,f,del,g,k)" "atom x' \<sharp> (y,a,f,del,g,k)" "atom y \<sharp> (a,f,del,g,k)"
+          "atom x \<sharp> (x',y,a,f,del,k)" "atom x' \<sharp> (y,a,f,del,k)" "atom y \<sharp> (a,f,del,k)"
   shows  "H \<turnstile> (Ex x (Ex x' (Ex y (a EQ HPair (Var x') (Var y) AND 
                                   HaddP del (Var x) (Var x') AND
                                   HPair (Var x) (Var y) IN f AND Var x IN k))))" 
@@ -2336,7 +2336,7 @@ proof -
      apply (rule Ex_I [where x="Var sm"], simp)
      apply (rule Ex_I [where x="Var sm'"], simp)
      apply (rule Ex_I [where x="Var sn"], simp)
-     apply (rule Ex_I [where x="Var sn'"], simp_all)
+     apply (rule Ex_I [where x="Var sn'"], simp_all (no_asm_simp))
      apply (rule Conj_I, rule AssumeH)+
      apply (rule Conj_I)
      apply (blast intro: OrdP_Trans [OF OrdP_SUCC_I] Mem_Eats_I1 [OF SeqAppendP_Mem1 [THEN cut3]] Hyp)
@@ -2363,7 +2363,7 @@ proof -
      apply (rule Ex_I [where x="Var sm"], simp)
      apply (rule Ex_I [where x="Var sm'"], simp)
      apply (rule Ex_I [where x="Var sn"], simp)
-     apply (rule Ex_I [where x="Var sn'"], simp_all)
+     apply (rule Ex_I [where x="Var sn'"], simp_all (no_asm_simp))
      apply (rule Conj_I [OF _ Conj_I])
      apply (blast intro!: HaddP_Mem_cancel_left [THEN Iff_MP2_same] OrdP_SUCC_I intro: LstSeqP_OrdP Hyp)+
      apply (blast del: Disj_EH  intro: OrdP_Trans Hyp 

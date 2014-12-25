@@ -419,7 +419,7 @@ proof (rule finite_subset)
   from f show "finite (set -` (set ` A) \<inter> {xs. distinct xs})"
   proof (induct rule: finite_induct)
     case (insert x F)
-    from distinct_finite_set have "finite (set -` {x} \<inter> {xs. distinct xs})" 
+    have "finite (set -` {x} \<inter> {xs. distinct xs})" 
       apply (simp add: vimage_def)
       by (metis Collect_conj_eq distinct_finite_set)
     with insert show ?case

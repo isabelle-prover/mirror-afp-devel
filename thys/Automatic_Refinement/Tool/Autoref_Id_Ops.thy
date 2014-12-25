@@ -289,7 +289,7 @@ ML {*
         |> HOLogic.mk_Trueprop
         |> cterm_of thy
         |> Goal.init
-        |> resolve_from_net_tac typ_net 1
+        |> resolve_from_net_tac ctxt typ_net 1
         |> Seq.map Goal.conclude
     in typ_thms end
 
@@ -338,7 +338,7 @@ ML {*
         else K no_tac
 
       val id_typ = 
-        resolve_from_net_tac typ_net
+        resolve_from_net_tac ctxt typ_net
         ORELSE' tr_iu
 
       val pat_net = op_patterns.get ctxt 
@@ -641,7 +641,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
       assume_tac ctxt
       ORELSE'
       Indep_Vars.indep_tac
-      ORELSE' resolve_from_net_tac ind_net
+      ORELSE' resolve_from_net_tac ctxt ind_net
       ORELSE'
       (fn i => fn st => 
         case Logic.concl_of_goal (prop_of st) i of
