@@ -147,7 +147,7 @@ definition
         (\<forall> t \<in> (ET ST). (t \<in> T) =  (\<not> (\<exists> t' \<in> ET ST. HigherPriority (HA ST) (t',t))))"
 
 (* -------------------------------------------------------------- *)
-(* resolving the occurence of racing with interleaving semantic   *)
+(* resolving the occurrence of racing with interleaving semantic  *)
 (* for one set of transitions                                     *)
 (* -------------------------------------------------------------- *)
 

@@ -209,7 +209,7 @@ qed
 (*********************************************************)
 subsection {* @{term firstPos} - first position of an element *}
 text{* @{term "firstPos"} returns the zero-based index of the first
-  occurence of an element int a list, or the length of the list if the
+  occurrence of an element int a list, or the length of the list if the
   element does not occur. *}
 
 primrec firstPos :: "'a => 'a list => nat"

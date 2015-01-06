@@ -454,7 +454,7 @@ text {*
   
   If the @{text "for"} clause is given, it lists variables in the theorem, 
   and thus determines the order of parameters of the defined constant. Otherwise,
-  parameters will be in order of occurence.
+  parameters will be in order of occurrence.
 
   If the @{text "is"} clause is given, it lists patterns. The conclusion of the
   theorem will be matched against each of these patterns. For the first matching

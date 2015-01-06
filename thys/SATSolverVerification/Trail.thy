@@ -273,7 +273,7 @@ qed
 (*--------------------------------------------------------------------------------*)
 subsection{* Prefix before/upto a trail element *}
 
-text{* Elements of the trail before the first occurence of a given element - not incuding it *}
+text{* Elements of the trail before the first occurrence of a given element - not incuding it *}
 primrec
 prefixBeforeElement  :: "'a \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
 where
@@ -291,7 +291,7 @@ by (induct t) auto
 lemma "prefixBeforeElement e t = take (firstPos e (elements t)) t"
 by (induct t) auto
 
-text{* Elements of the trail before the first occurence of a given element - incuding it *}
+text{* Elements of the trail before the first occurrence of a given element - incuding it *}
 primrec
 prefixToElement  :: "'a \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
 where

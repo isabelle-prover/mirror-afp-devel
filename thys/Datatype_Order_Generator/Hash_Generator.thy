@@ -46,7 +46,7 @@ hashcode (C2 Nil) = c3
 hashcode (C2 (a # as)) = c4 * hashcode a + c5 * hashcode as
 \end{verbatim}
 where each \texttt{c$_{i}$} is a non-negative 32-bit number which is dependent on the
-datatype name, the constructor name, and the occurence of the argument (i.e., 
+datatype name, the constructor name, and the occurrence of the argument (i.e., 
 in the example \texttt{c1} and \texttt{c2} will usually be different numbers.)
 These parameters are used in linear combination with prime numbers to hopefully
 get some useful hash-function.

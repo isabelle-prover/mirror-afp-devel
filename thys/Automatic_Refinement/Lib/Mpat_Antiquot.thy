@@ -45,7 +45,7 @@ ML {*
     Limitations:
       * Non-linear patterns are not allowed, due to SML limitation.
         For term variables, it will result in an error. Type variables, 
-        however, are silently linearized and only the first occurence is bound.
+        however, are silently linearized and only the first occurrence is bound.
       * Indexes <>0 on term variables are not allowed. 
         On type variables, such indexes are silently ignored.
       * Sorts are completely ignored

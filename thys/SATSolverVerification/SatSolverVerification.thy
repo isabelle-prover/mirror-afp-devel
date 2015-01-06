@@ -2923,7 +2923,7 @@ subsubsection{* Conflict clause ordering *}
 (*-----------------------------------------------------------------------*)
 
 text{* The ordering of conflict clauses is the multiset ordering induced by the ordering of elements in the trail.
-Since, resolution operator is defined so that it removes all occurences of clashing literal, it is also neccessary 
+Since, resolution operator is defined so that it removes all occurrences of clashing literal, it is also neccessary 
 to remove duplicate literals before comparison. *}
 
 definition

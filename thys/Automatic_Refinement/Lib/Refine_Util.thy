@@ -458,7 +458,7 @@ ML {*
 
 
     (*
-      Instantiate variables by left-to-right order of occurence, 
+      Instantiate variables by left-to-right order of occurrence, 
       inferring type instantiations
     *)
     fun cterm_instantiate' instl thm = let

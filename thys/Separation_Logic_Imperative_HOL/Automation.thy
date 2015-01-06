@@ -392,7 +392,7 @@ structure Seplogic_Auto = struct
     else tr d t
   | dfs_opr _ tr d t = tr d t;
     
-  (* Replace single occurence of (atomic) ot in t by nt. 
+  (* Replace single occurrence of (atomic) ot in t by nt. 
     Returns new term or NONE if nothing was removed. *)
   fun dfs_replace_atomic opN ot nt t = let
     fun tr d t = if not d andalso t=ot then (true,SOME nt) else (d,SOME t);
