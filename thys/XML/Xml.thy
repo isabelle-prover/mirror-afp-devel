@@ -52,16 +52,15 @@ where
 fun shows_XML_indent :: "string \<Rightarrow> nat \<Rightarrow> xml \<Rightarrow> shows"
 where
   "shows_XML_indent ind i (XML n a c) =
-    (ind +#+ ''<'' +#+ shows n +@+ shows_attrs a +@+
+    (''\<newline>'' +#+ ind +#+ ''<'' +#+ shows n +@+ shows_attrs a +@+
       (if c = [] then shows_string ''/>''
       else (
         ''>'' +#+
-          shows_map (shows_XML_indent (ind @ replicate i (CHR '' '')) i) c +@+ shows_string ind
-         +@+
+          shows_map (shows_XML_indent (replicate i (CHR '' '') @ ind) i) c +@+ ''\<newline>'' +#+ ind +#+
         ''</'' +#+ shows n +@+ shows_string ''>'')))" |
   "shows_XML_indent ind i (XML_text t) = shows_string t"
 
-definition "shows_prec (d::nat) xml = shows_XML_indent ''\<newline>'' 2 xml"
+definition "shows_prec (d::nat) xml = shows_XML_indent '''' 2 xml"
 
 lemma shows_attr_assoc:
   "(s +#+ shows_attr av) r @ t = (s +#+ shows_attr av) (r @ t)"
