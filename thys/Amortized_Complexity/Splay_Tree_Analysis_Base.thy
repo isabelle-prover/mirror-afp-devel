@@ -1,8 +1,8 @@
+section "Splay Tree Analysis Basics"
+
 theory Splay_Tree_Analysis_Base
 imports Complex_Main "../Splay_Tree/Splay_Tree"
 begin
-
-section "Splay Tree Analysis Basics"
 
 declare size1_def[simp]
 

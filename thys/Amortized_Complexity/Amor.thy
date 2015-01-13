@@ -1,8 +1,8 @@
+section "Amortized Complexity"
+
 theory Amor
 imports Complex_Main
 begin
-
-section "Amortized Complexity"
 
 text{* For the background and most of the examples see some algorithms
 textbook, for example, \cite{Cormen-Leiserson-Rivest}. *}

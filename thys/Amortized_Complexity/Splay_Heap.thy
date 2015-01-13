@@ -1,8 +1,8 @@
+section "Splay Heap"
+
 theory Splay_Heap
 imports Amor "~~/src/HOL/Library/Tree"
 begin
-
-section "Splay Heap"
 
 text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. *}
 

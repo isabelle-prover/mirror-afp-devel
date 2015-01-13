@@ -1,8 +1,8 @@
+section{* Amortized Analysis of Skew Heaps *}
+
 theory Skew_Heap_Analysis
 imports "../Skew_Heap/Skew_Heap" Amor
 begin
-
-section{* Amortized Analysis of Skew Heaps *}
 
 text{* The following proof is a simplified version of the one by Kaldewaij and
 Schoenmakers~\cite{KaldewaijS-IPL91}. *}
