@@ -12,22 +12,22 @@ begin
 lemma measurable_case_nat_Suc_PiM:
   "(\<lambda>\<sigma>. \<sigma> \<circ> Suc) \<in> measurable (PiM (Suc ` A) (case_nat M N)) (PiM A N)"
 proof-
-  have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) 
-           \<in> measurable (PiM (Suc ` A) (case_nat M N)) (PiM A N)"
-    (is "?f \<in> ?M") by (rule measurable_restrict) (measurable, simp)
-  also have "?f \<in> ?M \<longleftrightarrow> ?thesis"
-    by (intro measurable_cong ext) (auto simp: state_measure_def space_PiM dest: PiE_mem)
+  have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) \<in> measurable
+      (PiM (Suc ` A) (case_nat M N)) (PiM A (\<lambda>x. case_nat M N (Suc x)))" (is "?A")
+    by measurable
+  also have "?A \<longleftrightarrow> ?thesis"
+    by (force intro!: measurable_cong ext simp: state_measure_def space_PiM dest: PiE_mem)
   finally show ?thesis .
 qed
 
 lemma measurable_case_nat_Suc:
   "(\<lambda>\<sigma>. \<sigma> \<circ> Suc) \<in> measurable (state_measure (Suc ` A) (case_nat t \<Gamma>)) (state_measure A \<Gamma>)"
 proof-
-  have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) 
-           \<in> measurable (state_measure (Suc ` A) (case_nat t \<Gamma>)) (state_measure A \<Gamma>)"
-    (is "?f \<in> ?M") unfolding state_measure_def by (rule measurable_restrict) (measurable, simp)
-  also have "?f \<in> ?M \<longleftrightarrow> ?thesis"
-    by (intro measurable_cong ext) (auto simp: state_measure_def space_PiM dest: PiE_mem)
+  have "(\<lambda>\<sigma>. \<lambda>x\<in>A. \<sigma> (Suc x)) \<in> measurable
+      (state_measure (Suc ` A) (case_nat t \<Gamma>)) (state_measure A (\<lambda>i. case_nat t \<Gamma> (Suc i)))" (is "?A")
+    unfolding state_measure_def by measurable
+  also have "?A \<longleftrightarrow> ?thesis"
+    by (force intro!: measurable_cong ext simp: state_measure_def space_PiM dest: PiE_mem)
   finally show ?thesis .
 qed
 
@@ -90,18 +90,17 @@ definition remove_var :: "state \<Rightarrow> state" where
 lemma measurable_remove_var[measurable]:
   "remove_var \<in> measurable (state_measure (shift_var_set V) (case_nat t \<Gamma>)) (state_measure V \<Gamma>)"
 proof-
-  have "(\<lambda>\<sigma>. \<lambda>x\<in>V. \<sigma> (Suc x)) \<in>
-           measurable (state_measure (shift_var_set V) (case_nat t \<Gamma>)) (state_measure V \<Gamma>)" 
-    (is "?f \<in> ?M") unfolding state_measure_def
-    by (intro measurable_restrict measurable_PiM_component_rev)
-       (simp_all add: shift_var_set_def)
+  have "(\<lambda>\<sigma>. \<lambda>x\<in>V. \<sigma> (Suc x)) \<in> measurable
+      (state_measure (shift_var_set V) (case_nat t \<Gamma>)) (state_measure V (\<lambda>x. case_nat t \<Gamma> (Suc x)))"
+    (is "?f \<in> ?M")
+    unfolding state_measure_def shift_var_set_def by measurable
   also have "\<And>x f. x \<notin> V \<Longrightarrow> f \<in> space (state_measure (shift_var_set V) (case_nat t \<Gamma>)) \<Longrightarrow>
                        f (Suc x) = undefined" unfolding state_measure_def
     by (subst (asm) space_PiM, drule PiE_arb[of _ _ _ "Suc x" for x])
        (simp_all add: space_PiM shift_var_set_def inj_image_mem_iff)
   hence "?f \<in> ?M \<longleftrightarrow> remove_var \<in> ?M" unfolding remove_var_def[abs_def] state_measure_def
     by (intro measurable_cong ext) (auto simp: space_PiM intro!: sym[of _ undefined])
-  finally show ?thesis .
+  finally show ?thesis by simp
 qed
 
 lemma measurable_case_nat_undefined[measurable]:
@@ -486,9 +485,9 @@ lemma measurable_insert_dens[measurable]:
              \<in> borel_measurable (state_measure (shift_var_set (V \<union> V')) (case_nat t \<Gamma>))"
 proof-
   have "(\<lambda>\<sigma>. \<sigma> 0) \<in> measurable (state_measure (shift_var_set (V \<union> V')) (case_nat t \<Gamma>))
-                               (stock_measure t)" unfolding state_measure_def
-    unfolding shift_var_set_def by measurable simp
-  thus ?thesis unfolding insert_dens_def[abs_def] by measurable
+                               (stock_measure (case_nat t \<Gamma> 0))" unfolding state_measure_def
+    unfolding shift_var_set_def by measurable
+  thus ?thesis unfolding insert_dens_def[abs_def] by simp
 qed
 
 lemma nn_integral_dens_ctxt_measure:
