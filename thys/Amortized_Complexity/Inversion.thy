@@ -1,8 +1,8 @@
+section "List Inversion"
+
 theory Inversion
 imports "../List-Index/List_Index"
 begin
-
-section "List Inversion"
 
 abbreviation "dist_perm xs ys \<equiv> distinct xs \<and> distinct ys \<and> set xs = set ys"
 
@@ -89,7 +89,11 @@ lemma distinct_mtf[simp]: "distinct (mtf x xs) = distinct xs"
 by (metis length_mtf set_mtf card_distinct distinct_card)
 
 
-definition "swapSuc n xs = xs[n := xs!Suc n, Suc n := xs!n]"
+definition "swapSuc n xs =
+  (if Suc n < size xs then xs[n := xs!Suc n, Suc n := xs!n] else xs)"
+
+lemma swapSuc_id[simp]: "Suc n \<ge> size xs \<Longrightarrow> swapSuc n xs = xs"
+by(simp add: swapSuc_def)
 
 lemma index_swapSuc_distinct:
   "distinct xs \<Longrightarrow> Suc n < length xs \<Longrightarrow>
@@ -97,7 +101,7 @@ lemma index_swapSuc_distinct:
   (if x = xs!n then Suc n else if x = xs!Suc n then n else index xs x)"
 by(auto simp add: swapSuc_def index_swap_if_distinct)
 
-lemma set_swapSuc[simp]: "Suc n < size xs \<Longrightarrow> set(swapSuc n xs) = set xs"
+lemma set_swapSuc[simp]: "set(swapSuc n xs) = set xs"
 by(auto simp add: swapSuc_def set_conv_nth nth_list_update) metis
 
 lemma before_in_swapSuc:
@@ -107,11 +111,13 @@ lemma before_in_swapSuc:
 by(simp add:before_in_def index_swapSuc_distinct)
   (metis Suc_lessD Suc_lessI index_less_size_conv index_nth_id less_Suc_eq n_not_Suc_n nth_index)
 
-lemma Inv_swap: assumes "dist_perm xs ys" "Suc n < size xs"
+lemma Inv_swap: assumes "dist_perm xs ys"
 shows "Inv xs (swapSuc n ys) = 
-  (if ys!n < ys!Suc n in xs
-   then Inv xs ys \<union> {(ys!n, ys!Suc n)}
-   else Inv xs ys - {(ys!Suc n, ys!n)})"
+  (if Suc n < size xs
+   then if ys!n < ys!Suc n in xs
+        then Inv xs ys \<union> {(ys!n, ys!Suc n)}
+        else Inv xs ys - {(ys!Suc n, ys!n)}
+   else Inv xs ys)"
 proof-
   have "length xs = length ys" using assms by (metis distinct_card)
   with assms show ?thesis

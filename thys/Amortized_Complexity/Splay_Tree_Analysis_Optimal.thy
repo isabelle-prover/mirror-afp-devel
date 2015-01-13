@@ -1,11 +1,11 @@
+section "Splay Tree Analysis (Optimal)"
+
 theory Splay_Tree_Analysis_Optimal
 imports
   Splay_Tree_Analysis_Base
   Amor
   "~~/src/HOL/Library/Sum_of_Squares"
 begin
-
-section "Splay Tree Analysis (Optimal)"
 
 text{* This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}. *}
 
