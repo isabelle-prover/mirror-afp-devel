@@ -326,15 +326,8 @@ proof-
     from kmax_prop kmin_prop 
     have "card (kmax f PR) = khl \<and> card (kmin f PR) = khl" 
       by blast
-    moreover
-    from finite_kmax and finite_kmin card_Un_Int[THEN sym]
-    have "card (kmax f PR \<union> kmin f PR) + 
-      card (kmax f PR \<inter> kmin f PR) = 
-      card (kmax f PR) +  card (kmin f PR)"
-      by auto
-    ultimately
-    have "card (kmax f PR \<union> kmin f PR) <= 2 * khl"
-      by auto
+    hence "card (kmax f PR \<union> kmin f PR) <= 2 * khl"
+    using card_Un_le[of "kmax f PR" "kmin f PR"] by simp
   }
   hence 
     "... <= card PR - card (kmax f PR \<union> kmin f PR)"

@@ -308,4 +308,63 @@ lemma finite_pderivs_lang:
   shows "finite (pderivs_lang A r)"
 by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_UNIV)
 
+
+text{* The following relationship between the alphabetic width of regular expressions
+(called @{text awidth} below) and the number of partial derivatives was proved
+by Antimirov~\cite{Antimirov95} and formalized by Max Haslbeck. *}
+
+fun awidth :: "'a rexp \<Rightarrow> nat" where
+"awidth Zero = 0" |
+"awidth One = 0" |
+"awidth (Atom a) = 1" |
+"awidth (Plus r1 r2) = awidth r1 + awidth r2" |
+"awidth (Times r1 r2) = awidth r1 + awidth r2" |
+"awidth (Star r1) = awidth r1"
+
+lemma card_Timess_pderivs_lang_le:
+  "card (Timess (pderivs_lang A r) s) \<le> card (pderivs_lang A r)"
+by (metis card_image_le finite_pderivs_lang image_eq_UN)
+
+lemma card_pderivs_lang_UNIV1_le_awidth: "card (pderivs_lang UNIV1 r) \<le> awidth r"
+proof (induction r)
+  case (Plus r1 r2)
+  have "card (pderivs_lang UNIV1 (Plus r1 r2)) = card (pderivs_lang UNIV1 r1 \<union> pderivs_lang UNIV1 r2)" by simp
+  also have "\<dots> \<le> card (pderivs_lang UNIV1 r1) + card (pderivs_lang UNIV1 r2)"
+    by(simp add: card_Un_le)
+  also have "\<dots> \<le> awidth (Plus r1 r2)" using Plus.IH by simp
+  finally show ?case .
+next
+  case (Times r1 r2)
+  have "card (pderivs_lang UNIV1 (Times r1 r2)) \<le> card (Timess (pderivs_lang UNIV1 r1) r2 \<union> pderivs_lang UNIV1 r2)"
+    by (simp add: card_mono finite_pderivs_lang pderivs_lang_Times)
+  also have "\<dots> \<le> card (Timess (pderivs_lang UNIV1 r1) r2) + card (pderivs_lang UNIV1 r2)"
+    by (simp add: card_Un_le)
+  also have "\<dots> \<le> card (pderivs_lang UNIV1 r1) + card (pderivs_lang UNIV1 r2)"
+    by (simp add: card_Timess_pderivs_lang_le)
+  also have "\<dots> \<le> awidth (Times r1 r2)" using Times.IH by simp
+  finally show ?case .
+next
+  case (Star r)
+  have "card (pderivs_lang UNIV1 (Star r)) \<le> card (Timess (pderivs_lang UNIV1 r) (Star r))"
+    by (simp add: card_mono finite_pderivs_lang pderivs_lang_Star)
+  also have "\<dots> \<le> card (pderivs_lang UNIV1 r)" by (rule card_Timess_pderivs_lang_le)
+  also have "\<dots> \<le> awidth (Star r)" by (simp add: Star.IH)
+  finally show ?case .
+qed (auto)
+
+text{* Antimirov's Theorem 3.4: *}
+theorem card_pderivs_lang_UNIV_le_awidth: "card (pderivs_lang UNIV r) \<le> awidth r + 1"
+proof -
+  have "card (insert r (pderivs_lang UNIV1 r)) \<le> Suc (card (pderivs_lang UNIV1 r))"
+    by(auto simp: card_insert_if[OF finite_pderivs_lang_UNIV1])
+  also have "\<dots> \<le> Suc (awidth r)" by(simp add: card_pderivs_lang_UNIV1_le_awidth)
+  finally show ?thesis by(simp add: pderivs_lang_UNIV)
+qed 
+
+text{* Antimirov's Corollary 3.5: *}
+corollary card_pderivs_lang_le_awidth: "card (pderivs_lang A r) \<le> awidth r + 1"
+by(rule order_trans[OF
+  card_mono[OF finite_pderivs_lang_UNIV pderivs_lang_subset[OF subset_UNIV]]
+  card_pderivs_lang_UNIV_le_awidth])
+
 end
