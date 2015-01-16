@@ -22,16 +22,6 @@ qed
 subsection {* Polynomials *}
 subsubsection {* General simplification lemmas *}
 
-lemma div_diff:
-  fixes a :: "'a::ring_div"
-  assumes "q dvd a" "q dvd b"
-  shows "a div q - b div q = (a - b) div q"
-proof-
-  from assms have "a div q + (-b div q) = (a + (-b)) div q" 
-      by (subst div_add, simp_all)
-  thus ?thesis by (simp add: assms dvd_neg_div algebra_simps)
-qed
-
 lemma poly_gcd_right_idem: "gcd (gcd (p :: _ poly) q) q = gcd p q"
     by (rule poly_gcd_unique, simp_all add: poly_gcd_monic)
 lemma poly_gcd_left_idem: "gcd p (gcd (p :: _ poly) q) = gcd p q"
@@ -65,14 +55,14 @@ lemma pderiv_div:
         "q*q dvd (q * pderiv p - p * pderiv q)"
 proof-
   note pderiv_mult[of q "p div q"]
-  also have "q * (p div q) = p" by (simp add: dvd_mult_div_cancel)
+  also have "q * (p div q) = p" by (simp)
   finally have "q * pderiv (p div q) = q * pderiv p div q - p * pderiv q div q"
       by (simp add: algebra_simps dvd_div_mult[symmetric]) 
   also have "... = (q * pderiv p - p * pderiv q) div q"
-      by (rule div_diff, simp_all)
+      by (simp)
   finally have A: "pderiv (p div q) * q div q = 
                    (q * pderiv p - p * pderiv q) div q div q" 
-      by (simp add: algebra_simps)
+      by (simp add: algebra_simps del: div_minus)
   thus "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)" 
         by (simp add: algebra_simps poly_div_mult_right) 
   from assms obtain r where "p = q * r" unfolding dvd_def by blast

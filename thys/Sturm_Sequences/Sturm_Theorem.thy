@@ -1205,7 +1205,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)])
     have [simp]: "d dvd q" "d dvd r" "d dvd s" unfolding q_def r_def s_def d_def
         using i_in_range by (auto intro: sturm_gcd)
     hence qrs_simps: "q = q' * d" "r = r' * d" "s = s' * d" 
-        unfolding q'_def r'_def s'_def by (simp_all add: dvd_div_mult_self)
+        unfolding q'_def r'_def s'_def by (simp_all)
     with goal1(2) i_in_range have r'_0: "poly r' x = 0" 
         unfolding r'_def r_def d_def sturm_squarefree'_def Let_def by simp
     hence r_0: "poly r x = 0" by (simp add: `r = r' * d`)
@@ -1213,7 +1213,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)])
         unfolding q_def r_def s_def by (simp add: mod_div_equality)
     hence "q' = (q div r * r - s) div d" by (simp add: q'_def)
     also have "... = (q div r * r) div d - s'" 
-        unfolding s'_def by (rule div_diff[symmetric], simp_all)
+        unfolding s'_def by (simp)
     also have "... = q div r * r' - s'"
         using dvd_div_mult[OF `d dvd r`, of "q div r"] 
         by (simp add: algebra_simps r'_def)

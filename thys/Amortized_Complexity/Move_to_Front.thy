@@ -5,14 +5,6 @@ imports Complex_Main Inversion
 begin
 
 (* mv after release *)
-context ring_div
-begin
-
-lemma div_minus[simp]: "\<lbrakk>z dvd x; z dvd y\<rbrakk> \<Longrightarrow> (x - y) div z = x div z - y div z"
-using div_add[where y = "- z" for z]
-by (simp add: dvd_neg_div)
-
-end
 
 lemma gauss_sum_div2: "(2::'a::semiring_div) \<noteq> 0 \<Longrightarrow>
   setsum of_nat {1..n} = of_nat n * (of_nat n + 1) div (2::'a)"
