@@ -244,10 +244,10 @@ using 0 by linarith
     case Del[simp]
     show ?thesis
     proof cases
-      assume "n \<le> 1" with goal5 show ?thesis
-        apply(auto simp: field_simps split: if_splits)
+      assume "n \<le> 1" with goal5 ad0 show ?thesis
+        apply(auto simp: field_simps not_le split: if_splits)
         apply (metis ad0 ai0 add.commute add_increasing2 mult_left_mono mult_nonneg_nonneg real_of_nat_ge_zero)
-by (smt ad0 mult_left_mono mult_nonneg_nonneg real_of_nat_ge_zero)
+        by (metis (no_types) distrib_left dual_order.order_iff_strict le_add_same_cancel2 mult_left_mono[OF _ ad0] order_trans real_of_nat_ge_zero)
     next
       assume [arith]: "\<not> n \<le> 1"
       hence "l \<ge> l0" and "f1*l \<le> n" using goal5 by (auto split: if_splits)
