@@ -520,14 +520,7 @@ proof (intro measure_eqI)
           \<integral>\<^sup>+x. emeasure (f x \<guillemotright>= (\<lambda>b. if P b then g x else h x)) X \<partial>M" using X
     by (subst emeasure_bind[of _ _ R], simp add: M_def, intro measurable_bind[OF Mf], measurable)
   also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+b. emeasure (if P b then g x else h x) X \<partial>f x \<partial>M"
-    apply (intro nn_integral_cong)
-    apply (subst emeasure_bind)
-    apply simp
-    apply (rule measurable_If')
-    apply (rule measurable_const, erule measurable_space[OF Mg])
-    apply (rule measurable_const, erule measurable_space[OF Mh])
-    apply (simp_all add: X)
-    done
+    by (intro nn_integral_cong) (simp_all add: X emeasure_bind[where N=R])
   also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+b. emeasure (if P b then g x else h x) X * \<delta>f x b \<partial>stock_measure BOOL \<partial>M"
     using has_parametrized_subprob_densityD[OF densf]
     by (intro nn_integral_cong)
@@ -541,14 +534,7 @@ proof (intro measure_eqI)
   also have "... = (\<integral>\<^sup>+x. emeasure (g x) X * \<delta>f x (BoolVal True) \<partial>M) +
                    (\<integral>\<^sup>+x. emeasure (h x) X * \<delta>f x (BoolVal False) \<partial>M)" using X
     using has_parametrized_subprob_densityD[OF densf'] BoolVal_in_space
-    apply (intro nn_integral_add)
-    apply (intro borel_measurable_ereal_times)
-    apply (erule measurable_compose[OF Mg measurable_emeasure_subprob_algebra], simp)
-    apply (auto intro!: AE_I'[of "{}"] simp: emeasure_nonneg) []
-    apply (intro borel_measurable_ereal_times)
-    apply (erule measurable_compose[OF Mh measurable_emeasure_subprob_algebra], simp)
-    apply (auto intro!: AE_I'[of "{}"] simp: emeasure_nonneg) []
-    done
+    by (intro nn_integral_add) (auto simp: emeasure_nonneg)
   also have "(\<integral>\<^sup>+x. emeasure (g x) X * \<delta>f x (BoolVal True) \<partial>M) = 
                   \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) * \<delta>f (merge V V' (x, \<rho>)) (BoolVal True) *
                          (emeasure (g (merge V V' (x, \<rho>)))) X \<partial>state_measure V \<Gamma>"
@@ -653,6 +639,10 @@ qed
 
 
 subsection {* Soundness proof *}
+
+lemma restrict_state_measure[measurable]:
+  "(\<lambda>x. restrict x V') \<in> measurable (state_measure (V \<union> V') \<Gamma>) (state_measure V' \<Gamma>)"
+  by (simp add: state_measure_def)
 
 lemma expr_has_density_sound_op:
   assumes dens_ctxt: "density_context V V' \<Gamma> \<delta>"
@@ -826,12 +816,9 @@ next
       by (intro hd_let.IH(2) t2 dc.density_context_insert)
          (auto dest: has_parametrized_subprob_densityD)
       
-    from g have Mg[measurable]:
-      "split g \<in> borel_measurable (state_measure (Suc`V') ?\<Gamma>' \<Otimes>\<^sub>M stock_measure t)"
-      unfolding has_parametrized_subprob_density_def by simp
-    thus "(\<lambda>(\<rho>, x). g (case_nat undefined \<rho>) x) 
-              \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-      by (subst measurable_split_conv) simp
+    note g[measurable]
+    thus "(\<lambda>(\<rho>, x). g (case_nat undefined \<rho>) x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+      by simp
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>" and 
@@ -852,7 +839,7 @@ next
       apply (subst M_dcm', simp)
       done
     also from t1 and hd_let.prems 
-      have "(\<lambda>\<sigma>. expr_sem \<sigma> e1) \<in> 
+      have "(\<lambda>\<sigma>. expr_sem \<sigma> e1) \<in>
                 measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra (stock_measure ?t))"
       by (intro measurable_expr_sem) auto
     hence "?R = dens_ctxt_measure ?\<Y>' (case_nat undefined \<rho>)" using hd_let.prems hd_let.hyps f \<rho>
@@ -868,6 +855,9 @@ next
 
 next
   case (hd_rand_det e V' V \<Gamma> \<delta> dst t)
+  then have [measurable]: "\<Gamma>  \<turnstile> e : dist_param_type dst" "randomfree e" "free_vars e \<subseteq> V'"
+    by auto
+
   interpret density_context V V' \<Gamma> \<delta> by fact
   from hd_rand_det have t: "t = dist_result_type dst" by auto
   
@@ -895,9 +885,6 @@ next
             (\<lambda>\<rho>. dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. dist_measure dst (expr_sem_rf \<sigma> e)))
             (stock_measure t) (\<lambda>\<rho> x. branch_prob \<Y> \<rho> * dist_dens dst (expr_sem_rf \<rho> e) x)"
   proof (unfold has_parametrized_subprob_density_def, intro conjI ballI)
-    have [measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e) \<in> measurable (state_measure V' \<Gamma>) 
-                            (stock_measure (dist_param_type dst))"
-      using hd_rand_det by (intro measurable_expr_sem_rf) auto
     show M: "(\<lambda>(\<rho>, v). branch_prob \<Y> \<rho> * dist_dens dst (expr_sem_rf \<rho> e) v)
                 \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by (subst t) measurable
@@ -927,17 +914,9 @@ next
         unfolding dens_ctxt_measure_def state_measure'_def
         by (subst t, rule measurable_compose[OF _ measurable_dist_measure], simp)
            (insert hd_rand_det, auto intro!: measurable_expr_sem_rf)
-      have M: "borel_measurable (?M \<Otimes>\<^sub>M stock_measure t) = 
-                  borel_measurable (state_measure (V \<union> V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-        by (intro measurable_cong_sets sets_pair_measure_cong)
-           (simp_all add: dens_ctxt_measure_def state_measure'_def)
       show "(\<lambda>(x, y). dist_dens dst (expr_sem_rf (restrict x V') e) y)
                \<in> borel_measurable (?M \<Otimes>\<^sub>M stock_measure t)"
-        by (subst M, subst measurable_split_conv,
-            intro measurable_dist_dens measurable_compose[OF _ measurable_expr_sem_rf], 
-            rule measurable_compose[OF measurable_fst], unfold state_measure_def, 
-            rule measurable_restrict, rule measurable_component_singleton)
-          (insert hd_rand_det, auto)
+        unfolding t by measurable
       fix \<sigma> assume \<sigma>: "\<sigma> \<in> space ?M"
       hence \<sigma>': "restrict \<sigma> V' \<in> space (state_measure V' \<Gamma>)" 
         unfolding dens_ctxt_measure_def state_measure'_def state_measure_def restrict_def
@@ -973,23 +952,15 @@ next
   let ?t = "dist_param_type dst"
   from hd_rand.prems have t1: "\<Gamma> \<turnstile> e : ?t" and t2: "t = dist_result_type dst" by auto
   interpret density_context V V' \<Gamma> \<delta> by fact
-  from hd_rand.prems have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>)
-                                     (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) 
-                                     (stock_measure ?t) f" by (intro hd_rand.IH) auto
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>)
+      (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure ?t) f"
+    using hd_rand.prems by (intro hd_rand.IH) auto
   show ?case
   proof (unfold has_parametrized_subprob_density_def, intro ballI conjI impI)
     interpret sigma_finite_measure "stock_measure (dist_param_type dst)" by simp
-    from dens have "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure ?t)"
-      unfolding has_parametrized_subprob_density_def by blast
-    hence Mf: "\<And>M g h. g \<in> measurable M (state_measure V' \<Gamma>) \<Longrightarrow>
-                        h \<in> measurable M (stock_measure ?t) \<Longrightarrow>
-                        (\<lambda>x. f (g x) (h x)) \<in> borel_measurable M" by simp
-    show "split (apply_dist_to_dens dst f) \<in> 
+    show "split (apply_dist_to_dens dst f) \<in>
               borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-      unfolding apply_dist_to_dens_def
-      by (subst measurable_split_conv, rule borel_measurable_nn_integral)
-         (auto simp: measurable_split_conv t2 
-               intro!: borel_measurable_ereal_times measurable_dist_dens Mf)
+      unfolding apply_dist_to_dens_def t2 by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
@@ -1073,17 +1044,15 @@ next
 
   from f have dc': "\<And>b. density_context V V' \<Gamma> (if_dens \<delta> f b)" 
     by (intro dc.density_context_if_dens) (simp add: stock_measure.simps)
-  have g1: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have g1[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. ?M' True \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e1)) (stock_measure t) g1" using hd_if.prems
     by (intro hd_if.IH(2)[OF t1 dc']) simp
-  have g2: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have g2[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. ?M' False \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e2)) (stock_measure t) g2" using hd_if.prems
     by (intro hd_if.IH(3)[OF t2 dc']) simp
 
   show ?case
   proof (rule has_parametrized_subprob_densityI)
-    note [measurable] = has_parametrized_subprob_densityD(4)[OF g1]
-                        has_parametrized_subprob_densityD(4)[OF g2]
     show "(\<lambda>(\<rho>, x). g1 \<rho> x + g2 \<rho> x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by measurable
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1108,7 +1077,13 @@ next
 next
   case (hd_if_det b V V' \<Gamma> \<delta> e1 g1 e2 g2 t)
   interpret dc!: density_context V V' \<Gamma> \<delta> by fact
-  from hd_if_det.prems have tb: "\<Gamma> \<turnstile> b : BOOL" and t1: "\<Gamma> \<turnstile> e1 : t" and t2: "\<Gamma> \<turnstile> e2 : t" by auto
+  from hd_if_det.prems `randomfree b`
+  have tb[measurable (raw)]: "\<Gamma> \<turnstile> b : BOOL" and [measurable (raw)]: "randomfree b"
+    and t1[measurable (raw)]: "\<Gamma> \<turnstile> e1 : t"
+    and t2[measurable (raw)]: "\<Gamma> \<turnstile> e2 : t"
+    and fv_b[measurable (raw)]: "free_vars b \<subseteq> V \<union> V'"
+    and fv_e1[measurable (raw)]: "free_vars e1 \<subseteq> V \<union> V'"
+    and fv_e2[measurable (raw)]: "free_vars e2 \<subseteq> V \<union> V'" by auto
   let ?M = "\<lambda>\<rho>. dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>"
   let ?M' = "\<lambda>x \<rho>. dens_ctxt_measure (V,V',\<Gamma>,if_dens_det \<delta> b x) \<rho>"
   let ?N = "\<lambda>\<rho>. ?M \<rho>\<guillemotright>= (\<lambda>\<sigma>. if expr_sem_rf \<sigma> b = BoolVal True then expr_sem \<sigma> e1 else expr_sem \<sigma> e2)"
@@ -1116,24 +1091,18 @@ next
   from hd_if_det.hyps hd_if_det.prems tb 
     have dc': "\<And>x. density_context V V' \<Gamma> (if_dens_det \<delta> b x)" 
     by (intro dc.density_context_if_dens_det) simp_all
-  have g1: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have g1[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. ?M' True \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e1)) (stock_measure t) g1" using hd_if_det.prems
     by (intro hd_if_det.IH(1)[OF]) (simp_all add: dc' t1)
-  have g2: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have g2[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. ?M' False \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e2)) (stock_measure t) g2" using hd_if_det.prems
     by (intro hd_if_det.IH(2)[OF]) (simp_all add: dc' t2)
 
-  from tb t1 t2 hd_if_det.prems hd_if_det.hyps have meas: 
-    "(\<lambda>\<sigma>. expr_sem_rf \<sigma> b) \<in> measurable (state_measure (V \<union> V') \<Gamma>) (stock_measure BOOL)"
-    "(\<lambda>\<sigma>. expr_sem \<sigma> e1) \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra (stock_measure t))"
-    "(\<lambda>\<sigma>. expr_sem \<sigma> e2) \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra (stock_measure t))"
-     by ((intro measurable_expr_sem_rf measurable_expr_sem, simp_all)[])+
+  note val_type_expr_sem_rf[OF tb, of "V \<union> V'", simp]
 
   have "has_parametrized_subprob_density (state_measure V' \<Gamma>) ?N
             (stock_measure t) (\<lambda>a b. g1 a b + g2 a b)" (is "?P")
   proof (rule has_parametrized_subprob_densityI)
-    note [measurable] = has_parametrized_subprob_densityD(4)[OF g1]
-                        has_parametrized_subprob_densityD(4)[OF g2]
     show "(\<lambda>(\<rho>, x). g1 \<rho> x + g2 \<rho> x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by measurable
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1145,27 +1114,17 @@ next
     }
     show "subprob_space (?N \<rho>)"
       using \<rho> hd_if_det.prems hd_if_det.hyps t1 t2
-      apply (intro subprob_space_bind[of _ _ "stock_measure t"], simp add: dc.subprob_space_dens)
-      apply (intro measurable_If')
-      apply (simp_all only: measurable_dens_ctxt_measure_eq)
-      apply ((rule measurable_expr_sem, simp_all) [])+
-      apply (rule pred_eq_const1, rule measurable_expr_sem_rf[OF tb], simp_all)
-      done
+      by (intro subprob_space_bind[of _ _ "stock_measure t"]) (auto simp add: dc.subprob_space_dens)
     show "?N \<rho> = density (stock_measure t) (\<lambda>x. g1 \<rho> x + g2 \<rho> x)"
-      using \<rho> hd_if_det.prems g1 g2 dc' meas unfolding if_dens_det_def
+      using \<rho> hd_if_det.prems g1 g2 dc' hd_if_det.prems unfolding if_dens_det_def
       by (intro dc.emeasure_bind_if_det_dens_ctxt_measure)
-         (simp_all add: measurable_dens_ctxt_measure_eq)
+         (simp_all add: space_dens_ctxt_measure)
   qed
-  also from hd_if_det.prems hd_if_det.hyps meas have "?P \<longleftrightarrow> ?case"
+  also from hd_if_det.prems hd_if_det.hyps have "?P \<longleftrightarrow> ?case"
     apply (intro has_parametrized_subprob_density_cong bind_cong ballI)
     apply (subst expr_sem.simps)
-    apply (subst expr_sem_rf_sound[OF tb, of "V \<union> V'", symmetric], 
-           simp, simp, simp add: space_dens_ctxt_measure) []
-    apply (subst bind_return_val'', rule measurable_If')
-    apply (rule measurable_const, rule measurable_space[OF meas(2)], simp add: space_dens_ctxt_measure)
-    apply (rule measurable_const, rule measurable_space[OF meas(3)], simp add: space_dens_ctxt_measure)
-    apply (rule pred_eq_const1, rule measurable_ident_sets[OF refl])
-    apply (subst val_type_expr_sem_rf[OF tb, of "V \<union> V'"], simp_all add: space_dens_ctxt_measure)
+    apply (subst expr_sem_rf_sound[OF tb, of "V \<union> V'", symmetric]) []
+    apply (simp_all add: space_dens_ctxt_measure bind_return_val''[where M="stock_measure t"])
     done
   finally show ?case .
 
@@ -1177,7 +1136,7 @@ next
   hence "\<Gamma> \<turnstile> Snd $$ e : t'" by (intro expr_typing.intros) auto
   hence t2: "the (expr_type \<Gamma> (Snd $$ e)) = t'" by (simp add: expr_type_Some_iff[symmetric])
   let ?N = "stock_measure (PRODUCT t t')"
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
                 (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) ?N f"
     by (intro hd_fst.IH) (insert hd_fst.prems hd_fst.hyps t, auto)
  
@@ -1188,12 +1147,7 @@ next
   proof (intro conjI ballI impI)
     interpret sigma_finite_measure "stock_measure t'" by simp
     show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-      by (subst measurable_split_conv, rule borel_measurable_nn_integral,
-          subst measurable_split_conv, 
-          rule measurable_Pair_compose_split[OF has_parametrized_subprob_densityD(4)[OF dens]], simp,
-          subst stock_measure.simps, 
-          rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]],
-          simp_all)
+      by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
@@ -1216,7 +1170,7 @@ next
   hence "\<Gamma> \<turnstile> Fst $$ e : t" by (intro expr_typing.intros) auto
   hence t2: "the (expr_type \<Gamma> (Fst $$ e)) = t" by (simp add: expr_type_Some_iff[symmetric])
   let ?N = "stock_measure (PRODUCT t t')"
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
                 (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) ?N f"
     by (intro hd_snd.IH) (insert hd_snd.prems hd_snd.hyps t, auto)
  
@@ -1227,12 +1181,7 @@ next
   proof (intro conjI ballI impI)
     interpret sigma_finite_measure "stock_measure t" by simp
     show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
-      by (subst measurable_split_conv, rule borel_measurable_nn_integral,
-          subst measurable_split_conv, 
-          rule measurable_Pair_compose_split[OF has_parametrized_subprob_densityD(4)[OF dens]], simp,
-          subst stock_measure.simps, 
-          rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]],
-          simp_all)
+      by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
@@ -1251,7 +1200,7 @@ next
   case (hd_op_discr \<Gamma> oper e V V' \<delta> f t')
   interpret density_context V V' \<Gamma> \<delta> by fact
   from hd_op_discr.prems obtain t where t1: "\<Gamma> \<turnstile> e : t" and t2: "op_type oper t = Some t'" by auto
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
                 (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) f"
     by (intro hd_op_discr.IH) (insert hd_op_discr.prems hd_op_discr.hyps t1, auto)
   from hd_op_discr t1 have "expr_type \<Gamma> e = Some t" and "expr_type \<Gamma> (oper $$ e) = Some t'" 
@@ -1266,13 +1215,9 @@ next
               (\<lambda>a b. \<integral>\<^sup>+x. (if op_sem oper x = b then 1 else 0) * f a x \<partial>stock_measure t)"
   proof (intro has_parametrized_subprob_densityI)
     let ?f = "\<lambda>\<rho> y. \<integral>\<^sup>+x. (if op_sem oper x = y then 1 else 0) * f \<rho> x \<partial>stock_measure t"
+    note sigma_finite_measure.borel_measurable_nn_integral[OF sigma_finite_stock_measure, measurable]
     show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
-      by (auto simp: measurable_split_conv 
-               intro!: sigma_finite_measure.borel_measurable_nn_integral measurable_If' 
-                       borel_measurable_ereal_times 
-                       measurable_Pair_compose_split[OF has_parametrized_subprob_densityD(4)[OF dens]]
-                       measurable_Pair_compose_split[OF measurable_equals] 
-                       measurable_compose[OF _ measurable_op_sem[OF t2]])
+      using measurable_op_sem[OF t2] by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
@@ -1367,7 +1312,7 @@ next
   case (hd_exp V V' \<Gamma> \<delta> e f t')
   from hd_exp.prems have t1: "\<Gamma> \<turnstile> e : REAL" and t2: "t' = REAL" 
     by (auto split: pdf_type.split_asm)
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
               (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure REAL) f"
     by (intro hd_exp.IH) (insert hd_exp.prems hd_exp.hyps t1, auto)
   with hd_exp and t1 and t2 show ?case
@@ -1378,12 +1323,8 @@ next
         by (blast dest: has_parametrized_subprob_densityD)
     let ?f = "\<lambda>\<rho> x. if extract_real x > 0 then 
                          f \<rho> (lift_RealVal safe_ln x) * inverse (extract_real x) else 0"
-    have [measurable]: "extract_real \<in> borel_measurable (stock_measure REAL)" by simp
     show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" 
-      apply (simp only: t2 measurable_split_conv, rule measurable_If', simp, simp)
-      apply (rule pred_const_less)
-      apply (rule measurable_compose[OF measurable_snd measurable_extract_real], simp)
-      done
+      unfolding t2 by measurable
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure REAL) (f \<rho>)"
     hence space_M: "space M = space (stock_measure REAL)" by (auto dest: has_subprob_densityD)
     have "has_density (distr M (stock_measure t') (lift_RealVal exp)) (stock_measure t')
@@ -1522,23 +1463,15 @@ next
       by (elim expr_typing_opE expr_typing_valE expr_typing_pairE,
           (auto split: pdf_type.split_asm) [])+
   have t4: "op_type Mult (PRODUCT REAL REAL) = Some REAL" by simp
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
                   (\<lambda>\<rho>. dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) f"
     by (rule hd_multc.IH) (insert hd_multc.prems t1 t, auto)
   show ?case (is "has_parametrized_subprob_density _ ?N _ ?f")
   proof (unfold has_parametrized_subprob_density_def has_subprob_density_def, intro conjI ballI)
-    from dens have Mf: "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure REAL)"
-      by (simp add: t has_parametrized_subprob_densityD)
-    let ?MR = "stock_measure REAL" and ?MP = "stock_measure (PRODUCT REAL REAL)"
-    have M_mult[measurable]: "(op_sem Mult) \<in> measurable ?MP ?MR" by (simp add: measurable_op_sem)
-    from t2 t hd_multc.prems hd_multc.hyps
-      show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-        unfolding state_measure_def
-      apply (subst t, subst measurable_split_conv)
-      apply (rule borel_measurable_ereal_times)
-      apply (rule measurable_Pair_compose_split[OF Mf], simp add: state_measure_def)
-      apply (simp_all add: inj_PairVal lift_RealVal_def space_embed_measure split: val.split)
-      done
+    let ?MR = "stock_measure t" and ?MP = "stock_measure (PRODUCT t t)"
+    have M_mult[measurable]: "(op_sem Mult) \<in> measurable ?MP ?MR" by (simp add: measurable_op_sem t)
+    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+      by measurable (insert t2, auto simp: t val_type_eq_REAL lift_RealVal_def)
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
@@ -1595,30 +1528,18 @@ next
       by (elim expr_typing_opE expr_typing_valE expr_typing_pairE,
           (auto split: pdf_type.split_asm) [])+
   let ?tp = "PRODUCT t t"
-  have dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
+  have dens[measurable]: "has_parametrized_subprob_density (state_measure V' \<Gamma>) 
                   (\<lambda>\<rho>. dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure ?tp) f"
     by (rule hd_add.IH) (insert hd_add.prems t1 t2 t_disj, auto)
   from hd_add.prems hd_add.hyps t1 t2 t_disj show ?case (is "has_parametrized_subprob_density _ ?N _ ?f")
   proof (intro expr_has_density_sound_op[OF _ dens])
-    from dens have Mf[measurable]: 
-      "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure ?tp)"
-      by (simp add: has_parametrized_subprob_densityD)
+    note sigma_finite_measure.borel_measurable_nn_integral[OF sigma_finite_stock_measure, measurable]
+    have [measurable]: "op_type Minus t = Some t"
+      using t_disj by auto
+    note measurable_op_sem[measurable] t2[measurable]
     let ?f' = "\<lambda>\<rho> z. \<integral>\<^sup>+ x. f \<rho>  <|x , op_sem Add <|z, op_sem Minus x|>|> \<partial>stock_measure t"
-    from hd_add.prems hd_add.hyps
-      have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
-        unfolding state_measure_def
-      apply (subst measurable_split_conv)
-      apply (rule sigma_finite_measure.borel_measurable_nn_integral)
-      apply simp
-      apply (subst measurable_split_conv)
-      apply (rule measurable_Pair_compose_split[OF Mf], simp add: state_measure_def)
-      apply (subst stock_measure.simps)
-      apply (rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]], simp)
-      apply (rule measurable_compose[OF _ measurable_op_sem[OF t2]])
-      apply (subst stock_measure.simps)
-      apply (rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]], simp)
-      apply (rule measurable_compose[OF measurable_snd measurable_op_sem], insert t_disj, auto)
-      done
+    have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+      by measurable
     also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
                     split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by (intro measurable_cong) (auto simp: space_pair_measure)
@@ -1639,16 +1560,9 @@ next
       also have "?f'' = (\<lambda>z. \<integral>\<^sup>+ x. f \<rho> (RealPairVal (x, extract_real z - x)) \<partial>lborel)" 
         (is "_ = ?f''")
         by (auto simp add: t space_embed_measure extract_real_def)
-      also have "\<And>z. val_type z = REAL \<Longrightarrow> (\<lambda>x. f \<rho>  <|x, op_sem Add <|z, op_sem Minus x|>|>)
-                          \<in> borel_measurable (stock_measure REAL)"
-        apply (rule measurable_compose[OF _ Mf], simp only: t)
-        apply (subst stock_measure.simps(5))
-        apply (rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]])
-        apply (simp add: t, rule measurable_compose[OF _ measurable_op_sem,
-                  of _ _ "PRODUCT REAL REAL"], subst stock_measure.simps(5))
-        apply (rule measurable_Pair_compose_split[OF measurable_embed_measure2[OF inj_PairVal]])
-        apply simp_all
-        done
+      also have "\<And>z. val_type z = REAL \<Longrightarrow>
+          (\<lambda>x. f \<rho>  <|x, op_sem Add <|z, op_sem Minus x|>|>) \<in> borel_measurable (stock_measure REAL)"
+        by (rule Mf[THEN measurable_compose_rev]) (simp add: t)
       hence "has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) ?f'' \<longleftrightarrow> 
               has_density (distr M (stock_measure t) (op_sem Add)) (stock_measure t) (?f \<rho>)"
         by (intro has_density_cong, simp add: t space_embed_measure del: op_sem.simps)

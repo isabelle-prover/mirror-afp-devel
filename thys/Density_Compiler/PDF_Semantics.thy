@@ -892,7 +892,7 @@ lemma subset_shift_var_set:
     "Suc -` A \<subseteq> V \<Longrightarrow> A \<subseteq> shift_var_set V"
   by (rule subsetI, rename_tac x, case_tac x) (auto simp: shift_var_set_def)
 
-lemma measurable_expr_sem:
+lemma measurable_expr_sem[measurable]:
   assumes "\<Gamma> \<turnstile> e : t" and "free_vars e \<subseteq> V"
   shows "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable (state_measure V \<Gamma>) 
                                          (subprob_algebra (stock_measure t))"

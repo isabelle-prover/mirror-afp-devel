@@ -486,6 +486,9 @@ definition lift_Comp where
     (map_real_pair (\<lambda>a b. BoolVal (g a b))
       id)"
 
+lemma lift_RealVal_eq: "lift_RealVal f (RealVal x) = RealVal (f x)"
+  by (simp add: lift_RealVal_def)
+
 lemma lift_RealIntVal_Real:
   "x \<in> space (stock_measure REAL) \<Longrightarrow> lift_RealIntVal f g x = lift_RealVal g x"
   by (auto simp: space_embed_measure lift_RealIntVal_def lift_RealVal_def)

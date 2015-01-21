@@ -72,6 +72,10 @@ lemma dens_ctxt_measure_nonempty[simp]:
     "space (dens_ctxt_measure \<Y> \<rho>) \<noteq> {}"
   unfolding dens_ctxt_measure_def state_measure'_def by (cases \<Y>) simp
 
+lemma sets_dens_ctxt_measure_eq[measurable_cong]:
+    "sets (dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>) = sets (state_measure (V\<union>V') \<Gamma>)"
+  by (simp_all add: dens_ctxt_measure_def state_measure'_def)
+
 lemma measurable_dens_ctxt_measure_eq:
     "measurable (dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>) = measurable (state_measure (V\<union>V') \<Gamma>)"
   by (intro ext measurable_cong_sets)

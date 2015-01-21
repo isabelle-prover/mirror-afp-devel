@@ -182,7 +182,7 @@ lemma has_parametrized_subprob_densityD:
   shows "\<And>x. x \<in> space M \<Longrightarrow> N x = density R (f x)"
     and "\<And>x y. x \<in> space M \<Longrightarrow> y \<in> space R \<Longrightarrow> f x y \<ge> 0"
     and "\<And>x. x \<in> space M \<Longrightarrow> subprob_space (N x)"
-    and "split f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
+    and [measurable_dest]: "split f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
   using assms unfolding has_parametrized_subprob_density_def
   by (auto dest: has_subprob_densityD)
 
