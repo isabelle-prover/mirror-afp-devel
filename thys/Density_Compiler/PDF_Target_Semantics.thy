@@ -779,7 +779,7 @@ proof (unfold real_integrable_def, intro AE_conjI)
   also have "(\<integral>\<^sup>+\<sigma>. ereal (?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) = 
                  \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ereal (?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
     using fin disjoint e \<rho>
-    by (unfold state_measure_def, subst product_nn_integral_insert')
+    by (unfold state_measure_def, subst product_nn_integral_insert_rev)
        (auto intro!: borel_measurable_ereal measurable_cexpr_sem'[unfolded state_measure_def])
   finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint
     by (intro nn_integral_PInf_AE)
@@ -795,7 +795,7 @@ proof (unfold real_integrable_def, intro AE_conjI)
   also have "(\<integral>\<^sup>+\<sigma>. ereal (-?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) = 
                  \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ereal (-?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
     using fin disjoint e \<rho>
-    by (unfold state_measure_def, subst product_nn_integral_insert')
+    by (unfold state_measure_def, subst product_nn_integral_insert_rev)
        (auto intro!: borel_measurable_ereal borel_measurable_uminus 
                      measurable_cexpr_sem'[unfolded state_measure_def])
   finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (-?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint

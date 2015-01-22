@@ -954,7 +954,7 @@ proof-
   hence "c * f (u *\<^sub>R x + v *\<^sub>R y) <= c * (ereal u * f x + ereal v * f y)"
      using assms by (intro ereal_mult_left_mono) auto
   also have "... <=  c * (ereal u * f x) + c * (ereal v * f y)"
-     using assms by (simp add: ereal_pos_le_distrib)
+     using assms by (simp add: ereal_le_distrib)
   also have "... = ereal u *(c* f x) + ereal v *(c* f y)" by (simp add: algebra_simps)
   finally have "c * f (u *\<^sub>R x + v *\<^sub>R y)
       <= ereal u * (c * f x) + ereal v * (c * f y)" by auto }

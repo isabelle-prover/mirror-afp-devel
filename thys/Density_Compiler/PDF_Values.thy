@@ -10,7 +10,7 @@
 section {* Source Language Values *}
 
 theory PDF_Values
-imports Density_Predicates PDF_Misc
+imports Density_Predicates
 begin
 
 subsection {* Values and stock measures *}
@@ -155,6 +155,9 @@ lemma space_stock_measure[simp]: "space (stock_measure t) = type_universe t"
   by (induction t)
      (auto simp add: type_universe_def space_pair_measure space_embed_measure
            simp del: type_universe_type elim: val_type.elims)
+
+lemma type_universe_stock_measure[measurable]: "type_universe t \<in> sets (stock_measure t)"
+  using sets.top[of "stock_measure t"] by simp
 
 lemma inj_RealVal[simp]: "inj RealVal" by (auto intro!: inj_onI)
 lemma inj_IntVal[simp]: "inj IntVal" by (auto intro!: inj_onI)

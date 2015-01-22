@@ -8,8 +8,22 @@
 section {* Measure Space Transformations *}
 
 theory PDF_Transformations
-imports Density_Predicates PDF_Misc
+imports Density_Predicates
 begin
+
+lemma range_int: "range int = {n. n \<ge> 0}"
+proof (intro equalityI subsetI)
+  fix n :: int assume "n \<in> {n. n \<ge> 0}"
+  hence "n = int (nat n)" by simp
+  thus "n \<in> range int" by blast
+qed auto
+
+lemma range_exp: "range (exp :: real \<Rightarrow> real) = {x. x > 0}"
+proof (intro equalityI subsetI)
+  fix x :: real assume "x \<in> {x. x > 0}"
+  hence "x = exp (ln x)" by simp
+  thus "x \<in> range exp" by blast
+qed auto
 
 lemma Int_stable_Icc: "Int_stable (range (\<lambda>(a, b). {a .. b::real}))"
   by (auto simp: Int_stable_def)
@@ -85,28 +99,16 @@ qed (insert assms, auto dest: has_densityD)
 
 lemma count_space_uminus:
   "count_space UNIV = distr (count_space UNIV) (count_space UNIV) (uminus :: ('a :: ring \<Rightarrow> _))"
-proof-
-  have "surj (uminus :: 'a \<Rightarrow> 'a)"
-  proof (rule surjI)
-    fix x :: 'a show "- (- x) = x" by simp
-  qed
-  hence A: "(UNIV :: 'a set) = uminus ` UNIV" ..
-  also have "count_space ... = distr (count_space UNIV) (count_space UNIV) uminus"
-    by (subst count_space_image) (auto simp: A[symmetric] intro!: injI)
-  finally show ?thesis .
+proof (rule distr_bij_count_space[symmetric])
+  show "bij (uminus :: 'a \<Rightarrow> 'a)"
+    by (auto intro!: o_bij[where g=uminus])
 qed
 
 lemma count_space_plus:
   "count_space UNIV = distr (count_space UNIV) (count_space UNIV) (op + (c :: ('a :: ring)))"
-proof-
-  have "surj (op + c)"
-  proof (rule surjI)
-    fix x :: 'a show "c + (x - c) = x" by simp
-  qed
-  hence A: "(UNIV :: 'a set) = op + c ` UNIV" ..
-  also have "count_space ... = distr (count_space UNIV) (count_space UNIV) (op + c)"
-    by (subst count_space_image) (auto simp: A[symmetric] intro!: injI)
-  finally show ?thesis .
+proof (rule distr_bij_count_space[symmetric])
+  show "bij (op + c :: 'a \<Rightarrow> 'a)"
+    by (auto intro!: o_bij[where g="\<lambda>x. x - c"])
 qed
 
 lemma distr_uminus_ring_count_space:
@@ -158,14 +160,14 @@ lemma subprob_density_distr_real_eq:
   assumes measure_eq:
     "\<And>a b. a \<le> b \<Longrightarrow> emeasure (distr (density lborel f) lborel h) {a..b} = 
                           emeasure (density lborel g) {a..b}"
-  shows "has_subprob_density (distr M lborel (h :: real \<Rightarrow> real)) lborel g"
+  shows "has_subprob_density (distr M borel (h :: real \<Rightarrow> real)) lborel g"
 proof (rule has_subprob_densityI)
   from dens have sets_M: "sets M = sets borel" by (auto dest: has_subprob_densityD)
   have meas_M[simp]: "measurable M = measurable borel" 
     by (intro ext, subst measurable_cong_sets[OF sets_M refl]) auto
-  from Mh and dens show subprob_space: "subprob_space (distr M lborel h)"
+  from Mh and dens show subprob_space: "subprob_space (distr M borel h)"
     by (intro subprob_space.subprob_space_distr) (auto dest: has_subprob_densityD)
-  show "distr M lborel h = density lborel g"
+  show "distr M borel h = density lborel g"
   proof (rule measure_eqI_generator_eq[OF Int_stable_Icc, of UNIV])
     {
       fix x :: real
@@ -175,14 +177,17 @@ proof (rule has_subprob_densityI)
     thus "(\<Union>i::nat. {-real i..real i}) = UNIV" by blast
   next
     fix i :: nat 
-    from subprob_space have "emeasure (distr M lborel h) {-real i..real i} \<le> 1"
+    from subprob_space have "emeasure (distr M borel h) {-real i..real i} \<le> 1"
       by (intro subprob_space.subprob_emeasure_le_1) (auto dest: has_subprob_densityD)
-    thus "emeasure (distr M lborel h) {- real i..real i} \<noteq> \<infinity>" by auto
+    thus "emeasure (distr M borel h) {- real i..real i} \<noteq> \<infinity>" by auto
   next
     fix X :: "real set" assume "X \<in> range (\<lambda>(a,b). {a..b})"
     then obtain a b where "X = {a..b}" by auto
-    with dens show "emeasure (distr M lborel h) X = emeasure (density lborel g) X"
+    with dens have "emeasure (distr M lborel h) X = emeasure (density lborel g) X"
       by (cases "a \<le> b") (auto simp: measure_eq dest: has_subprob_densityD)
+    also have "distr M lborel h = distr M borel h"
+      by (rule distr_cong) auto
+    finally show "emeasure (distr M borel h) X = emeasure (density lborel g) X" .
   qed (auto simp: borel_eq_atLeastAtMost)
 qed (insert assms, auto)
 
@@ -191,7 +196,7 @@ lemma subprob_density_distr_real_exp:
   shows "has_subprob_density (distr M borel exp) lborel 
            (\<lambda>x. if x > 0 then f (ln x) * inverse x else 0)"
            (is "has_subprob_density _ _ ?g")
-proof (simp only: distr_lborel[symmetric], rule subprob_density_distr_real_eq[OF dens])
+proof (rule subprob_density_distr_real_eq[OF dens])
   fix x from dens show "?g x \<ge> 0" by (auto intro!: ereal_0_le_mult dest: has_subprob_densityD)
 next
   from dens have Mg': "(\<lambda>x. f (ln x) * ereal (inverse x)) \<in> borel_measurable borel"
@@ -254,7 +259,7 @@ qed simp
 
 lemma subprob_density_distr_real_inverse_aux:
   assumes dens: "has_subprob_density M lborel f"
-  shows "has_subprob_density (distr M lborel (\<lambda>x. - inverse x)) lborel 
+  shows "has_subprob_density (distr M borel (\<lambda>x. - inverse x)) lborel 
               (\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
            (is "has_subprob_density _ _ ?g")
 proof (rule subprob_density_distr_real_eq[OF dens])
@@ -321,7 +326,7 @@ next
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less dest: has_subprob_densityD inv_le 
-               intro!: DERIV_neg_inverse'' continuous_on_mult continuous_on_inverse continuous_on_id)
+               intro!: derivative_eq_intros continuous_on_mult continuous_on_inverse continuous_on_id)
     also note A[symmetric]
     finally show "emeasure ?M1 (?A1 i \<inter> {a..b}) = emeasure ?M2 (?A1 i \<inter> {a..b})" .
   qed simp
@@ -344,7 +349,7 @@ next
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less dest: has_subprob_densityD inv_le 
-               intro!: DERIV_neg_inverse'' continuous_on_mult continuous_on_inverse continuous_on_id)
+               intro!: derivative_eq_intros continuous_on_mult continuous_on_inverse continuous_on_id)
     also note A[symmetric]
     finally show "emeasure ?M1 (?A2 i \<inter> {a..b}) = emeasure ?M2 (?A2 i \<inter> {a..b})" .
   qed simp
@@ -364,22 +369,21 @@ qed simp
 
 lemma subprob_density_distr_real_inverse:
   assumes dens: "has_subprob_density M lborel f"
-  shows "has_subprob_density (distr M borel inverse) lborel 
-              (\<lambda>x. f (inverse x) * ereal (inverse (x * x)))"
+  shows "has_subprob_density (distr M borel inverse) lborel (\<lambda>x. f (inverse x) * ereal (inverse (x * x)))"
 proof (unfold has_subprob_density_def, intro conjI)
   let ?g' = "(\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
-  have prob: "has_subprob_density (distr M lborel (\<lambda>x. -inverse x)) lborel ?g'"
+  have prob: "has_subprob_density (distr M borel (\<lambda>x. -inverse x)) lborel ?g'"
     by (rule subprob_density_distr_real_inverse_aux[OF assms])
   from assms have sets_M: "sets M = sets borel" by (auto dest: has_subprob_densityD)
   have [simp]: "measurable M = measurable borel"
     by (intro ext, subst measurable_cong_sets[OF sets_M refl]) auto
   from prob have dens: "has_density (distr M lborel (\<lambda>x. -inverse x)) lborel
                  (\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
-    unfolding has_subprob_density_def by simp
+    unfolding has_subprob_density_def by (simp cong: distr_cong)
   from distr_uminus_real[OF this]
     show "has_density (distr M borel inverse) lborel 
               (\<lambda>x. f (inverse x) * ereal (inverse (x * x)))"
-    by (simp add: distr_distr o_def distr_lborel cong: distr_cong)
+    by (simp add: distr_distr o_def cong: distr_cong)
   show "subprob_space (distr M borel inverse)"
     by (intro subprob_space.subprob_space_distr has_subprob_densityD[OF assms]) simp_all
 qed
@@ -486,3 +490,4 @@ proof
 qed (simp_all add: nn_integral_nonneg)
 
 end
+

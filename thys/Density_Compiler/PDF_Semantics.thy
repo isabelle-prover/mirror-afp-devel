@@ -19,7 +19,7 @@ lemma measurable_subprob_algebra_density:
 proof (rule measurable_subprob_algebra)
   fix x assume "x \<in> space M"
   with assms show "subprob_space (density N (f x))"
-    by (intro subprob_spaceI) (auto simp: emeasure_density_space)
+    by (intro subprob_spaceI) (auto simp: emeasure_density cong: nn_integral_cong')
 next
   interpret sigma_finite_measure N by fact
   fix X assume X: "X \<in> sets N"
@@ -342,8 +342,8 @@ proof-
   let ?M = "density (stock_measure (dist_result_type dst)) (dist_dens dst v)"
   from assms have "(\<integral>\<^sup>+u. dist_dens dst v u \<partial>stock_measure (dist_result_type dst)) =
                        emeasure ?M (space ?M)"
-    by (subst space_density, subst emeasure_density_space)
-       (auto intro!: measurable_dist_dens simp:)
+    by (subst space_density, subst emeasure_density)
+       (auto intro!: measurable_dist_dens cong: nn_integral_cong')
   also have "?M = dist_measure dst v" using dist_measure_has_density[OF assms]
     by (auto dest: has_densityD)
   also from assms have "emeasure ... (space ...) \<le> 1"

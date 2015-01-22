@@ -12,6 +12,32 @@ theory PDF_Compiler_Pred
 imports PDF_Semantics PDF_Density_Contexts PDF_Transformations Density_Predicates
 begin
 
+lemma density_discrete:
+  "countable A \<Longrightarrow> sets N = Set.Pow A \<Longrightarrow> (\<And>x. f x \<ge> 0) \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> f x = emeasure N {x}) \<Longrightarrow>
+    density (count_space A) f = N"
+  by (rule measure_eqI_countable[of _ A])
+     (auto simp: emeasure_density one_ereal_def[symmetric] emeasure_nonneg max.absorb2)
+
+lemma distr_density_discrete:
+  fixes f'
+  assumes "countable A"
+  assumes "f' \<in> borel_measurable M"
+  assumes "g \<in> measurable M (count_space A)"
+  defines "f \<equiv> \<lambda>x. \<integral>\<^sup>+t. (if g t = x then 1 else 0) * f' t \<partial>M"
+  assumes "\<And>x.  x \<in> space M \<Longrightarrow> g x \<in> A"
+  shows "density (count_space A) (\<lambda>x. f x) = distr (density M f') (count_space A) g"
+proof (rule density_discrete)
+  fix x assume x: "x \<in> A"
+  have "f x = \<integral>\<^sup>+t. indicator (g -` {x} \<inter> space M) t * f' t \<partial>M" (is "_ = ?I") unfolding f_def
+    by (intro nn_integral_cong) (simp split: split_indicator)
+  also from x have in_sets: "g -` {x} \<inter> space M \<in> sets M" 
+    by (intro measurable_sets[OF assms(3)]) simp
+  have "?I = emeasure (density M f') (g -` {x} \<inter> space M)" unfolding f_def
+    by (subst emeasure_density[OF assms(2) in_sets], subst mult.commute) (rule refl)
+  also from assms(3) x have "... = emeasure (distr (density M f') (count_space A) g) {x}"
+    by (subst emeasure_distr) simp_all
+  finally show "f x = emeasure (distr (density M f') (count_space A) g) {x}" .
+qed (insert assms, auto simp: nn_integral_nonneg)
 
 lemma bind_cong_AE:
   assumes "M = N"
@@ -289,7 +315,7 @@ qed
 
 lemma dens_ctxt_measure_empty_bind:
   assumes "\<rho> \<in> space (state_measure V' \<Gamma>)"
-  assumes f: "f \<in> measurable (state_measure V' \<Gamma>) (subprob_algebra N)"
+  assumes f[measurable]: "f \<in> measurable (state_measure V' \<Gamma>) (subprob_algebra N)"
   shows "dens_ctxt_measure ({},V',\<Gamma>,\<lambda>_. 1) \<rho> \<guillemotright>= f = f \<rho>" (is "bind ?M _ = ?R")
 proof (intro measure_eqI)
   from assms have nonempty: "space ?M \<noteq> {}"
@@ -319,13 +345,13 @@ proof (intro measure_eqI)
                   simp: state_measure_def sets_eq PiM_empty)
     done
   also have "... = emeasure (f \<rho>) X"
-    by (intro nn_integral_count_space_singleton) (simp add: emeasure_nonneg)
+    by (subst nn_integral_count_space_finite) (simp_all add: emeasure_nonneg max_def)
   finally show "emeasure (?M \<guillemotright>= f) X = emeasure (f \<rho>) X" .
 qed
 
 lemma (in density_context) bind_dens_ctxt_measure_cong:
   assumes fg: "\<And>\<sigma>. (\<And>x. x \<in> V' \<Longrightarrow> \<sigma> x = \<rho> x) \<Longrightarrow> f \<sigma> = g \<sigma>"
-  assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
+  assumes \<rho>[measurable]: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes Mf[measurable]: "f \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
   assumes Mg[measurable]: "g \<in> measurable (state_measure (V \<union> V') \<Gamma>) (subprob_algebra N)"
   defines "M \<equiv> dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>"
@@ -1243,8 +1269,8 @@ next
       hence "val_type (op_sem oper x) = t'" by (intro op_sem_val_type) (simp add: t2)
     } note op_sem_type_universe = this
     from countable countable_type_countable measurable_op_sem[OF t2] dens'
-      have "distr ... (stock_measure t') (op_sem oper) = density (stock_measure t') (?f \<rho>)"
-      by (subst count_space, subst distr_density_discrete')
+    have "distr ... (stock_measure t') (op_sem oper) = density (stock_measure t') (?f \<rho>)"
+      by (subst count_space, subst distr_density_discrete)
          (auto simp: meas_N count_space intro!: op_sem_type_universe dest: has_subprob_densityD)
     finally show "distr ?N (stock_measure t') (op_sem oper) =  density (stock_measure t') (?f \<rho>)" .
   qed (auto simp: nn_integral_nonneg)

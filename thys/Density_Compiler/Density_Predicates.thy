@@ -6,7 +6,7 @@
 section {* Density Predicates *}
 
 theory Density_Predicates
-imports Probability PDF_Misc
+imports Probability
 begin
 
 subsection {* Probability Densities *}
@@ -54,9 +54,12 @@ lemma has_density_emeasure:
     "has_density M N f \<Longrightarrow> X \<in> sets M \<Longrightarrow> emeasure M X = \<integral>\<^sup>+x. f x * indicator X x \<partial>N"
   unfolding has_density_def by (simp_all add: emeasure_density)
 
+lemma nn_integral_cong': "(\<And>x. x \<in> space N =simp=> f x = g x) \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>N) = (\<integral>\<^sup>+x. g x \<partial>N)"
+  by (simp add: simp_implies_def cong: nn_integral_cong)
+
 lemma has_density_emeasure_space:
-    "has_density M N f \<Longrightarrow> emeasure M (space M) = \<integral>\<^sup>+x. f x \<partial>N"
-  by (simp add: has_density_emeasure) (simp add: has_density_space nn_integral_over_space)
+    "has_density M N f \<Longrightarrow> emeasure M (space M) = (\<integral>\<^sup>+x. f x \<partial>N)"
+  by (simp add: has_density_emeasure) (simp add: has_density_space cong: nn_integral_cong')
 
 lemma has_density_emeasure_space':
     "has_density M N f \<Longrightarrow> emeasure (density N f) (space (density N f)) = \<integral>\<^sup>+x. f x \<partial>N"
@@ -133,7 +136,8 @@ lemma has_subprob_densityI':
 proof-
   from assms have D: "has_density M N f" by blast
   moreover from D and assms have "subprob_space M"
-    by (auto intro!: subprob_spaceI simp: has_density_emeasure_space emeasure_density_space)
+    by (auto intro!: subprob_spaceI simp: has_density_emeasure_space emeasure_density
+             cong: nn_integral_cong')
   ultimately show ?thesis unfolding has_subprob_density_def by simp
 qed
 
@@ -191,7 +195,7 @@ lemma has_parametrized_subprob_density_integral:
   shows "(\<integral>\<^sup>+y. f x y \<partial>R) \<le> 1"
 proof-
   have "(\<integral>\<^sup>+y. f x y \<partial>R) = emeasure (density R (f x)) (space (density R (f x)))" using assms
-    by (auto simp: emeasure_density_space dest: has_parametrized_subprob_densityD)
+    by (auto simp: emeasure_density cong: nn_integral_cong' dest: has_parametrized_subprob_densityD)
   also have "density R (f x) = (N x)" using assms by (auto dest: has_parametrized_subprob_densityD)
   also have "emeasure ... (space ...) \<le> 1" using assms
     by (subst subprob_space.emeasure_space_le_1) (auto dest: has_parametrized_subprob_densityD)

@@ -9,6 +9,14 @@ theory PDF_Density_Contexts
 imports PDF_Semantics
 begin
 
+lemma measurable_dens_ctxt_fun_upd[measurable]:
+  "x \<in> V \<Longrightarrow> y \<in> type_universe (\<Gamma> x) \<Longrightarrow>
+    (\<lambda>\<sigma>. \<sigma>(x := y)) \<in> measurable (state_measure (V-{x}) \<Gamma>) (state_measure V \<Gamma>)"
+  unfolding state_measure_def
+  using measurable_Pair_compose_split[OF measurable_add_dim measurable_id measurable_const, of
+     y "\<lambda>v. stock_measure (\<Gamma> v)" x "V - {x}" ]
+  by (simp add: insert_absorb fun_upd_def)
+
 lemma measurable_case_nat_Suc_PiM:
   "(\<lambda>\<sigma>. \<sigma> \<circ> Suc) \<in> measurable (PiM (Suc ` A) (case_nat M N)) (PiM A N)"
 proof-
@@ -148,7 +156,6 @@ proof (intro borel_measurable_ereal_times assms measurable_If)
                     \<in> sets (state_measure V \<Gamma>)" .
 qed simp_all
 
-
 locale density_context =
   fixes V V' \<Gamma> \<delta>
   assumes subprob_space_dens:
@@ -257,19 +264,14 @@ proof-
   hence "state_measure V \<Gamma> = Pi\<^sub>M (insert x (V-{x})) (\<lambda>y. stock_measure (\<Gamma> y))" 
     unfolding state_measure_def by simp
   also have "space ... = {\<sigma>(x := y) |\<sigma> y. \<sigma> \<in> space (state_measure (V-{x}) \<Gamma>) \<and> y \<in> type_universe (\<Gamma> x)}"
-    unfolding state_measure_def by (subst space_PiM_insert) (simp_all add:)
+    unfolding state_measure_def space_PiM PiE_insert_eq
+    by (simp add: image_def Bex_def) blast
   finally show ?thesis .
 qed
 
-lemma measurable_dens_ctxt_fun_upd:
-  assumes "x \<in> V" "y \<in> type_universe (\<Gamma> x)"
-  shows "(\<lambda>\<sigma>. \<sigma>(x := y)) \<in> measurable (state_measure (V-{x}) \<Gamma>) (state_measure V \<Gamma>)"
-proof-
-  from assms(1) have [simp]: "insert x V = V" by auto
-  from assms(2) have "y \<in> space (stock_measure (\<Gamma> x))" by (simp add:)
-  from assms(1) and measurable_fun_upd[of y "\<lambda>i. stock_measure (\<Gamma> i)", OF this, of "V-{x}"]
-      show ?thesis unfolding state_measure_def by simp
-qed
+lemma measurable_dens_ctxt_merge[measurable]:
+  "merge V V' \<in> measurable (state_measure V \<Gamma> \<Otimes>\<^sub>M state_measure V' \<Gamma>) (state_measure (V \<union> V') \<Gamma>)"
+  unfolding state_measure_def by (rule measurable_merge)
 
 lemma state_measure_integral_split:
   assumes "x \<in> A" "finite A"
@@ -283,7 +285,8 @@ proof-
   have "(\<integral>\<^sup>+\<sigma>. f \<sigma> \<partial>state_measure A \<Gamma>) = (\<integral>\<^sup>+\<sigma>. f \<sigma> \<partial>\<Pi>\<^sub>M v\<in>insert x (A-{x}). stock_measure (\<Gamma> v))"
     unfolding state_measure_def by simp
   also have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+\<sigma>. f (\<sigma>(x := y)) \<partial>state_measure (A-{x}) \<Gamma> \<partial>stock_measure (\<Gamma> x)" 
-    using assms unfolding state_measure_def by (subst product_nn_integral_insert') simp_all
+    using assms unfolding state_measure_def
+    by (subst product_nn_integral_insert_rev) simp_all
   finally show ?thesis .
 qed
 
@@ -340,9 +343,12 @@ proof-
     by (subst nn_integral_PairVal)
        (auto simp add: split_beta' intro!: borel_measurable_ereal_times measurable_marg_dens2)
 
+  have V'': "V - {x, y} = V - {y} - {x}" 
+    by auto
+
   from assms have A: "V = insert y (V-{y})" by blast
   from assms have B: "insert x (V-{x,y}) = V - {y}" by blast
-  from assms have X': "X' \<in> sets (state_measure V \<Gamma>)" unfolding X'_def
+  from assms have X'[measurable]: "X' \<in> sets (state_measure V \<Gamma>)" unfolding X'_def
     by (intro measurable_sets[OF _ assms(4)], unfold state_measure_def, subst stock_measure.simps)
        (rule measurable_Pair_compose_split[OF measurable_embed_measure2], rule inj_PairVal,
         erule measurable_component_singleton, erule measurable_component_singleton)
@@ -355,43 +361,33 @@ proof-
   from assms(5) X' have meas': "\<And>v. v \<in> space (stock_measure (\<Gamma> y)) \<Longrightarrow> 
                                      (\<lambda>\<sigma>. \<delta> (merge V V' (\<sigma>(y := v), \<rho>)) * indicator X' (\<sigma>(y := v)))
                                         \<in> borel_measurable (state_measure (V - {y}) \<Gamma>)"
-    apply (intro borel_measurable_ereal_times)
-    apply (rule measurable_compose[OF _ measurable_dens])
-    apply (unfold state_measure_def, rule measurable_compose[OF _ measurable_merge], 
-           rule measurable_Pair, subst (2) A, erule measurable_fun_upd, simp)
-    apply (rule measurable_compose[OF _ borel_measurable_indicator],
-           erule measurable_fun_upd, subst A[symmetric], assumption)
-    done
-  from assms have V: "V = insert y (insert x (V-{x,y}))" by blast
+    using assms(1-5) by measurable
+  from assms have V: "V = insert y (insert x (V-{x, y}))" by blast
   have "(\<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>,\<rho>)) * indicator X' \<sigma> \<partial>state_measure V \<Gamma>) = 
              (\<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>,\<rho>)) * indicator X' \<sigma> \<partial>state_measure ... \<Gamma>)"
     by (subst V) (rule refl)
   also from assms(1-5) meas meas' 
-    have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v, y := w), \<rho>)) * indicator X' (\<sigma>(x := v, y := w)) 
+  have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v, y := w), \<rho>)) * indicator X' (\<sigma>(x := v, y := w)) 
                   \<partial>state_measure (V - {x, y}) \<Gamma> \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)" (is "_ = ?I")
     unfolding state_measure_def
-      apply (subst product_nn_integral_insert', simp, simp, simp add: V[symmetric])
-      apply (rule nn_integral_cong)
-      apply (subst product_nn_integral_insert', simp, simp, simp add: B)
-      apply (rule refl)
-      done 
+    apply (subst product_nn_integral_insert_rev, simp, simp, simp add: V[symmetric])
+    apply (rule nn_integral_cong)
+    apply (subst product_nn_integral_insert_rev, simp, simp, simp add: B)
+    apply (rule refl)
+    done
   also from assms(1-5)
     have "\<And>v w \<sigma>. v \<in> space (stock_measure (\<Gamma> x)) \<Longrightarrow> w \<in> space (stock_measure (\<Gamma> y))
                \<Longrightarrow> \<sigma> \<in> space (state_measure (V-{x,y}) \<Gamma>)
                \<Longrightarrow> \<sigma>(x := v, y := w) \<in> X' \<longleftrightarrow> <|v,w|> \<in> X"
     by (simp add: X'_def space_state_measure PiE_iff extensional_def)
   hence "?I = \<integral>\<^sup>+w. \<integral>\<^sup>+v. \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v, y := w), \<rho>)) * indicator X <|v,w|> 
-               \<partial>state_measure (V - {x, y}) \<Gamma> \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
+               \<partial>state_measure (V - {x,y}) \<Gamma> \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
     by (intro nn_integral_cong) (simp split: split_indicator)
   also from assms(5)
-    have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. (\<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v,y := w), \<rho>)) \<partial>state_measure (V - {x, y}) \<Gamma>)
+    have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. (\<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v,y := w), \<rho>)) \<partial>state_measure (V - {x,y}) \<Gamma>)
                     * indicator X <|v,w|> \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
-      apply (intro nn_integral_cong nn_integral_multc)
-      apply (rule measurable_compose[OF _ measurable_dens], unfold state_measure_def,
-             rule measurable_compose[OF _ measurable_merge], rule measurable_Pair)
-      apply (subst (2) V, rule measurable_compose[OF measurable_fun_upd measurable_fun_upd])
-      apply simp_all
-      done
+      using assms
+      by (intro nn_integral_cong nn_integral_multc) (simp_all add: V'')
   also have "... = \<integral>\<^sup>+w. \<integral>\<^sup>+v. marg_dens2 \<Y> x y \<rho> <|v,w|> * indicator X <|v,w|> 
                        \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
     by (intro nn_integral_cong) (simp add: marg_dens2_def)
@@ -796,7 +792,7 @@ next
       let ?N = "density (stock_measure t) (f ?\<sigma>')"
       have "(\<integral>\<^sup>+x. f (merge V V' (\<sigma> \<circ> Suc, \<rho> \<circ> Suc)) x \<partial>stock_measure t) = emeasure ?N (space ?N)"
         using dens'(4) Suc_state_measure[OF \<sigma>]
-        by (subst space_density, subst emeasure_density_space) simp_all
+        by (simp_all cong: nn_integral_cong' add: emeasure_density)
       also have "?N = F ?\<sigma>'" by (subst dens') (simp_all add: Suc_state_measure \<sigma>)
       also have "subprob_space (F ?\<sigma>')" by (rule dens') (simp_all add: Suc_state_measure \<sigma>)
       hence "emeasure (F ?\<sigma>') (space (F ?\<sigma>')) \<le> 1" by (rule subprob_space.emeasure_space_le_1)
@@ -962,8 +958,8 @@ proof (intro allI conjI impI subprob_spaceI)
   have "emeasure ?M (space ?M) = 
           \<integral>\<^sup>+x. if_dens \<delta> f b (merge V V' (x, \<rho>)) \<partial>state_measure V \<Gamma>"
     using M \<rho> unfolding dens_ctxt_measure_def state_measure'_def
-    by (simp only: prod.case space_density, subst emeasure_density_space)
-       (auto simp: nn_integral_distr)
+    by (simp only: prod.case space_density)
+       (auto simp: nn_integral_distr emeasure_density cong: nn_integral_cong')
   also from \<rho> have "... \<le> \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) * 1 \<partial>state_measure V \<Gamma>"
     unfolding if_dens_def using dens_props
     by (intro nn_integral_mono ereal_mult_left_mono) simp_all
@@ -994,8 +990,8 @@ proof (intro allI conjI impI subprob_spaceI)
   have "emeasure ?M (space ?M) = 
           \<integral>\<^sup>+x. if_dens_det \<delta> e b (merge V V' (x, \<rho>)) \<partial>state_measure V \<Gamma>"
     using M \<rho> unfolding dens_ctxt_measure_def state_measure'_def
-    by (simp only: prod.case space_density, subst emeasure_density_space)
-       (auto simp: nn_integral_distr)
+    by (simp only: prod.case space_density)
+       (auto simp: nn_integral_distr emeasure_density cong: nn_integral_cong')
   also from \<rho> have "... \<le> \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) * 1 \<partial>state_measure V \<Gamma>"
     unfolding if_dens_det_def
     by (intro nn_integral_mono ereal_mult_left_mono) (simp_all add: merge_in_state_measure)
@@ -1117,7 +1113,8 @@ proof (unfold density_context_def, intro conjI allI impI subprob_spaceI)
   let ?N = "dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho>"
   from \<rho> have "emeasure ?M (space ?M) = \<integral>\<^sup>+x. \<delta>' (merge V V' (x, \<rho>)) \<partial>state_measure V \<Gamma>"
      unfolding dens_ctxt_measure_def state_measure'_def
-    apply (simp only: prod.case, subst space_density, subst emeasure_density_space, simp)
+    apply (simp only: prod.case, subst space_density)
+    apply (simp add: emeasure_density cong: nn_integral_cong')
     apply (subst nn_integral_distr, simp add: state_measure_def, simp_all)
     done
   also from \<rho> have "... = \<integral>\<^sup>+x. \<delta> (merge V V' (x, \<rho>)) \<partial>state_measure V \<Gamma>"
@@ -1129,3 +1126,4 @@ proof (unfold density_context_def, intro conjI allI impI subprob_spaceI)
 qed (insert assms, auto simp: density_context_def)
 
 end
+
