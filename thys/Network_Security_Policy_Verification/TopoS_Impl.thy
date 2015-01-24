@@ -131,7 +131,7 @@ in
       val tune_node_format = (get_tune_node_format edges);
       val evaluated_edges : term = evalutae_term ctx edges;
       val (biflows, uniflows) = partition_by_biflows ctx evaluated_edges;
-      fun node_to_string (n: term) : string = n |> Syntax.pretty_term ctx |> Pretty.string_of |> ATP_Util.unyxml |> tune_node_format n
+      fun node_to_string (n: term) : string = n |> Syntax.pretty_term ctx |> Pretty.string_of |> YXML.content_of |> tune_node_format n
           handle Subscript => let
             val _ = writeln ("Subscript Exception in iterate_edges_ML: node_to_string");
           in "ERROR" end;

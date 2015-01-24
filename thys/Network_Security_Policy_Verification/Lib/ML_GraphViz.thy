@@ -84,7 +84,7 @@ local
 
   fun format_dot_edges tune_node_format trm =
     let
-      fun format_node t = t |> Syntax.pretty_term @{context} |> Pretty.string_of |> ATP_Util.unyxml |> tune_node_format t |> sanitize_string
+      fun format_node t = t |> Syntax.pretty_term @{context} |> Pretty.string_of |> YXML.content_of |> tune_node_format t |> sanitize_string
       fun format_dot_edge (t1, t2) = format_node t1 ^ " -> " ^ format_node t2 ^ ";\n"
     in
       writeln "TODO: name clashes?"; map format_dot_edge trm
