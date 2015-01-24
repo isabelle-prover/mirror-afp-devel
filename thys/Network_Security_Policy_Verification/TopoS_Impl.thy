@@ -96,7 +96,7 @@ fun apply_function ctxt (f: string) (args: term list) : term =
   end;
 
 
-(*ctxt -> thy -> edges -> (biflows, uniflows)*)
+(*ctxt -> edges -> (biflows, uniflows)*)
 fun partition_by_biflows ctxt (t: term) : (term * term) =
   apply_function ctxt @{const_name "partition_by_biflows"} [t] |> HOLogic.dest_prod
 

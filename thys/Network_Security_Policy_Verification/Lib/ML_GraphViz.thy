@@ -42,8 +42,8 @@ fun write_to_tmpfile (t: string): Path.T =
     writeln ("using tmpfile " ^ p_str); File.write p (t^"\n"); p
   end
 
-fun evaluate_term thy edges = 
-  case Code_Evaluation.dynamic_value thy edges of
+fun evaluate_term ctxt edges = 
+  case Code_Evaluation.dynamic_value ctxt edges of
     SOME x => x
   | NONE => error "ML_GraphViz: failed to evaluate edges"
 
@@ -82,9 +82,9 @@ local
   val sanitize_string =
     String.map (fn c => if is_valid_char c then c else #"_")
 
-  fun format_dot_edges tune_node_format trm =
+  fun format_dot_edges ctxt tune_node_format trm =
     let
-      fun format_node t = t |> Syntax.pretty_term @{context} |> Pretty.string_of |> YXML.content_of |> tune_node_format t |> sanitize_string
+      fun format_node t = t |> Syntax.pretty_term ctxt |> Pretty.string_of |> YXML.content_of |> tune_node_format t |> sanitize_string
       fun format_dot_edge (t1, t2) = format_node t1 ^ " -> " ^ format_node t2 ^ ";\n"
     in
       writeln "TODO: name clashes?"; map format_dot_edge trm
@@ -93,10 +93,11 @@ local
   fun apply_dot_header es =
     "digraph graphname {\n" ^ implode es ^ "}"
 in
-  fun visualize_graph_pretty thy tune_node_format Es : int =
+  fun visualize_graph_pretty ctxt tune_node_format Es : int =
     let 
-      val evaluated_edges = map (fn (str, t) => (str, evaluate_term thy t)) Es
-      val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges tune_node_format #> implode
+      val evaluated_edges = map (fn (str, t) => (str, evaluate_term ctxt t)) Es
+      val edge_to_string =
+        HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges ctxt tune_node_format #> implode
       val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges
     in
       if !open_viewer then (* only run the shell commands if not disabled by open_viewer *)
@@ -110,8 +111,8 @@ in
     end
   end
 
-fun visualize_graph thy tune_node_format edges =
-  visualize_graph_pretty thy tune_node_format [("", edges)]
+fun visualize_graph ctxt tune_node_format edges =
+  visualize_graph_pretty ctxt tune_node_format [("", edges)]
 
 end;
 *}
