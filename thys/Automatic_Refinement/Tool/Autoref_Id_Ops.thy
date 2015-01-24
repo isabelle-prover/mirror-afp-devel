@@ -325,11 +325,12 @@ ML {*
                     Syntax.pretty_term ctxt t
                   ], 
                   Pretty.fbrk,
-                  Pretty.indent 2 (Pretty.block [
+                  Pretty.str "  ",
+                  Pretty.block [
                     Pretty.str "Candidates: ", 
                     Pretty.fbrk,
                     pretty_typ_thms tts
-                  ])
+                  ]
                 ]
                 |> Pretty.string_of |> tracing
               )
