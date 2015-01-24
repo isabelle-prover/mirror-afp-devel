@@ -83,22 +83,22 @@ subsection{*Utility Functions*}
 
 ML{*
 (*apply args to f. f ist best supplied using @{const_name "name_of_function"} *)
-fun apply_function (ctx: Proof.context) (f: string) (args: term list) : term = 
+fun apply_function ctxt (f: string) (args: term list) : term = 
   let
     val _ = writeln ("applying "^f^" to ");
-    val _ = List.map (fn t => Pretty.writeln (Syntax.pretty_term (Config.put show_types true ctx) t)) args;
+    val _ = List.map (fn t => Pretty.writeln (Syntax.pretty_term (Config.put show_types true ctxt) t)) args;
     (*val t_eval = Code_Evaluation.dynamic_value_strict thy t;*)
     (* $ associates to the left, give f its arguments*)
     val applied_untyped_uneval : term = List.foldl (fn (t, a) => a $ t) (Const (f, dummyT)) args;
-    val applied_uneval: term = Syntax.check_term ctx applied_untyped_uneval;
+    val applied_uneval: term = Syntax.check_term ctxt applied_untyped_uneval;
   in
-    applied_uneval |>  Code_Evaluation.dynamic_value_strict ctx
+    applied_uneval |>  Code_Evaluation.dynamic_value_strict ctxt
   end;
 
 
-(*ctx -> thy -> edges -> (biflows, uniflows)*)
-fun partition_by_biflows (ctx: Proof.context) (t: term) : (term * term) = 
-  apply_function ctx @{const_name "partition_by_biflows"} [t] |> HOLogic.dest_prod
+(*ctxt -> thy -> edges -> (biflows, uniflows)*)
+fun partition_by_biflows ctxt (t: term) : (term * term) =
+  apply_function ctxt @{const_name "partition_by_biflows"} [t] |> HOLogic.dest_prod
 
 
 local
@@ -109,29 +109,30 @@ local
     else
       Graphviz.default_tune_node_format;
 
-  fun evalutae_term (ctx: Proof.context) (edges: term) : term = 
-    case Code_Evaluation.dynamic_value ctx edges
+  fun evalutae_term ctxt (edges: term) : term = 
+    case Code_Evaluation.dynamic_value ctxt edges
       of SOME x => x
       | NONE => raise TERM ("could not evaluate", []);
 in
-  fun visualize_edges (ctx: Proof.context) (edges: term) (coloredges: (string * term) list): int = 
+  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list): int = 
     let
       val _ = writeln("visualize_edges");
-      val (biflows, uniflows) = partition_by_biflows ctx edges;
+      val (biflows, uniflows) = partition_by_biflows ctxt edges;
     in
-      Graphviz.visualize_graph_pretty ctx (get_tune_node_format edges) ([
+      Graphviz.visualize_graph_pretty ctxt (get_tune_node_format edges) ([
       ("", uniflows),
       ("edge [dir=\"none\", color=\"#000000\"]", biflows)] @ coloredges) (*dir=none, dir=both*)
     end
 
   (*iterate over the edges in ML, usefull for printing them in certain formats*)
-  fun iterate_edges_ML (ctx: Proof.context) (edges: term) (all: (string*string) -> unit) (bi: (string*string) -> unit) (uni: (string*string) -> unit): unit =
+  fun iterate_edges_ML ctxt (edges: term) (all: (string*string) -> unit) (bi: (string*string) -> unit) (uni: (string*string) -> unit): unit =
     let
       val _ = writeln("iterate_edges_ML");
       val tune_node_format = (get_tune_node_format edges);
-      val evaluated_edges : term = evalutae_term ctx edges;
-      val (biflows, uniflows) = partition_by_biflows ctx evaluated_edges;
-      fun node_to_string (n: term) : string = n |> Syntax.pretty_term ctx |> Pretty.string_of |> YXML.content_of |> tune_node_format n
+      val evaluated_edges : term = evalutae_term ctxt edges;
+      val (biflows, uniflows) = partition_by_biflows ctxt evaluated_edges;
+      fun node_to_string (n: term) : string =
+        n |> Syntax.pretty_term ctxt |> Pretty.string_of |> YXML.content_of |> tune_node_format n
           handle Subscript => let
             val _ = writeln ("Subscript Exception in iterate_edges_ML: node_to_string");
           in "ERROR" end;
@@ -142,8 +143,8 @@ in
           List.map (fn (v1, v2) => (node_to_string v1, node_to_string v2)) es
           handle Subscript => let
             val _ = writeln ("Subscript Exception in iterate_edges_ML: edge_to_string");
-            val _ = List.map (fn (v1, _) => Pretty.writeln (Syntax.pretty_term ctx v1)) es;
-            val _ = List.map (fn (_, v2) => Pretty.writeln (Syntax.pretty_term ctx v2)) es;
+            val _ = List.map (fn (v1, _) => Pretty.writeln (Syntax.pretty_term ctxt v1)) es;
+            val _ = List.map (fn (_, v2) => Pretty.writeln (Syntax.pretty_term ctxt v2)) es;
             in [] end;
       in
         edge_to_list evaluated_edges |> edge_to_string |> List.map all;
@@ -175,24 +176,24 @@ visualize_edges @{context} @{theory} @{term "[(1::int, 1::int), (1,2), (2, 1), (
 ML {*
 (*M: security requirements, list
   G: list_graph*)
-fun vizualize_graph (ctx: Proof.context) (M: term) (G: term): unit = 
+fun vizualize_graph ctxt (M: term) (G: term): unit = 
   let
-    val all_fulfilled = apply_function ctx @{const_name "all_security_requirements_fulfilled"} [M, G];
-    val edges = apply_function ctx @{const_name "edgesL"} [G];
+    val all_fulfilled = apply_function ctxt @{const_name "all_security_requirements_fulfilled"} [M, G];
+    val edges = apply_function ctxt @{const_name "edgesL"} [G];
   in
     if all_fulfilled = @{term "False"} then
       (let
-        val offending = apply_function ctx @{const_name "implc_get_offending_flows"} [M, G];
-        val offending_flat = apply_function ctx @{const_name "List.remdups"} [apply_function ctx @{const_name "List.concat"} [offending]];
+        val offending = apply_function ctxt @{const_name "implc_get_offending_flows"} [M, G];
+        val offending_flat = apply_function ctxt @{const_name "List.remdups"} [apply_function ctxt @{const_name "List.concat"} [offending]];
       in
        writeln("offending flows:");
-       Pretty.writeln (Syntax.pretty_term ctx offending);
-       visualize_edges ctx edges [("edge [dir=\"arrow\", style=dashed, color=\"#FF0000\", constraint=false]", offending_flat)]; 
+       Pretty.writeln (Syntax.pretty_term ctxt offending);
+       visualize_edges ctxt edges [("edge [dir=\"arrow\", style=dashed, color=\"#FF0000\", constraint=false]", offending_flat)]; 
       () end)
     else if all_fulfilled <> @{term "True"} then raise ERROR "all_fulfilled neither False nor True" else (
        writeln("check TRUE");
        writeln("All valid:");
-       visualize_edges ctx edges []; 
+       visualize_edges ctxt edges []; 
       ())
   end;
 *}
