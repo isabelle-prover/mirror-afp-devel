@@ -82,17 +82,17 @@ subsection{*Utility Functions*}
 
 
 ML{*
-(*apply args to f. f ist best supplied using @{const_name "name_of_function"} *)
+(*apply args to f. f is best supplied using @{const_name "name_of_function"} *)
 fun apply_function ctxt (f: string) (args: term list) : term = 
   let
     val _ = writeln ("applying "^f^" to ");
     val _ = map (fn t => Pretty.writeln (Syntax.pretty_term (Config.put show_types true ctxt) t)) args;
     (*val t_eval = Code_Evaluation.dynamic_value_strict thy t;*)
     (* $ associates to the left, give f its arguments*)
-    val applied_untyped_uneval : term = List.foldl (fn (t, a) => a $ t) (Const (f, dummyT)) args;
+    val applied_untyped_uneval: term = list_comb (Const (f, dummyT), args);
     val applied_uneval: term = Syntax.check_term ctxt applied_untyped_uneval;
   in
-    applied_uneval |>  Code_Evaluation.dynamic_value_strict ctxt
+    applied_uneval |> Code_Evaluation.dynamic_value_strict ctxt
   end;
 
 
