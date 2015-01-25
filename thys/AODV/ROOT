@@ -3,7 +3,7 @@ chapter AFP
 session AODV (AFP) = AWN +
   description {* Mechanized invariant proof of AODV (RFC3561) loop freedom:
                  all variants *}
-  options [ document_graph, timeout = 20160 ]
+  options [timeout = 20160]
   theories
     All
   document_files

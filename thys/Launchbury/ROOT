@@ -1,7 +1,7 @@
 chapter AFP
 
 session "HOLCF-HOL-Library" = HOLCF +
-  options [document = false, timeout=300]
+  options [document = false, timeout = 300]
   theories
     "~~/src/HOL/Library/Quotient_Option"
     "~~/src/HOL/Library/AList"
@@ -18,7 +18,7 @@ session "HOLCF-Nominal2" in "../Nominal2" = "HOLCF-HOL-Library" +
     "Eqvt"
 
 session Launchbury (AFP) = "HOLCF-Nominal2" +
-  options [document_graph, timeout=300]
+  options [timeout = 300]
   theories
     "EverythingAdequacy"
   document_files

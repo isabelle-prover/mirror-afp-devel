@@ -1,7 +1,7 @@
 chapter AFP
 
 session "AutoFocus-Stream" (AFP) = "Nat-Interval-Logic" +
-  options [timeout = 600, document_graph]
+  options [timeout = 600]
   theories
     ListSlice
     AF_Stream

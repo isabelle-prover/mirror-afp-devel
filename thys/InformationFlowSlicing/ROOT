@@ -7,7 +7,7 @@ session InformationFlowSlicing (AFP) = InformationFlowSlicing_Inter +
     LiftingInter
 
 session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
-  options [timeout = 600, document_graph]
+  options [timeout = 600]
   theories
     LiftingInter
   document_files
@@ -15,7 +15,7 @@ session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
     "root.tex"
 
 session InformationFlowSlicing_Intra (AFP) = "Slicing" +
-  options [timeout = 600, document_graph]
+  options [timeout = 600]
   theories
     LiftingIntra
   document_files
