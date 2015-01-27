@@ -142,9 +142,8 @@ proof (rule ccontr)
     proof -
       assume asm: "\<mu> c s v = - \<infinity>"
       let ?C = "(\<lambda>x. ereal (awalk_cost c x)) ` {p. awalk s p v}"
-      have "\<exists>x\<in> ?C. x < dist v" 
-        using Inf_ereal_iff [where y ="dist v"and X="?C" and z= "-\<infinity>"] 
-        nt asm unfolding \<mu>_def INF_def by simp
+      have "\<exists>x\<in> ?C. x < dist v"
+        using nt unfolding \<mu>_def not_le INF_less_iff by simp
       then obtain p where  
         "awalk s p v" 
         "awalk_cost c p < dist v" 

@@ -10,6 +10,9 @@ theory Discrete_Time_Markov_Chain
     "../Coinductive/Coinductive_Nat"
 begin
 
+lemma not_MInfty_nonneg[simp]: "0 \<le> (x::ereal) \<Longrightarrow> x \<noteq> - \<infinity>"
+  by auto
+
 lemma ereal_of_enat_Sup:
   assumes "A \<noteq> {}" shows "ereal_of_enat (Sup A) = (\<Squnion>a\<in>A. ereal_of_enat a)"
 proof (intro antisym mono_Sup)
@@ -547,7 +550,7 @@ proof -
     qed simp
   qed
   also have "\<dots> = (SUP i. ?M s (?E i)) * ?M t P"
-    by (subst (1 2) mult.commute) (auto intro!: SUP_ereal_cmult)
+    by (subst (1 2) mult.commute) (auto intro!: SUP_ereal_mult_left)
   also have [symmetric]: "?M s (ev ?t) = (SUP i. ?M s (?E i))"
     by (rule emeasure_ev) measurable
   finally show ?thesis .

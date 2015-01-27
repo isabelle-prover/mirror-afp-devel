@@ -164,7 +164,7 @@ lemma E_sup_const: "0 \<le> c \<Longrightarrow> E_sup s (\<lambda>_. c) = c"
 lemma E_sup_mult_right:
   assumes [measurable]: "f \<in> borel_measurable St" and [simp]: "0 \<le> c"
   shows "E_sup s (\<lambda>x. c * f x) = c * E_sup s f"
-  by (simp add: nn_integral_cmult E_sup_def SUP_ereal_mult_right nn_integral_nonneg)
+  by (simp add: nn_integral_cmult E_sup_def SUP_ereal_mult_left nn_integral_nonneg)
 
 lemma E_sup_mono:
   "(\<And>\<omega>. f \<omega> \<le> g \<omega>) \<Longrightarrow> E_sup s f \<le> E_sup s g"
@@ -189,7 +189,8 @@ qed
 lemma E_sup_add_left:
   assumes [measurable]: "f \<in> borel_measurable St" and nn: "0 \<le> c" "\<And>x. 0 \<le> f x"
   shows "E_sup s (\<lambda>x. f x + c) = E_sup s f + c"
-  by (simp add: nn nn_integral_add E_sup_def T.emeasure_space_1[simplified] nn_integral_nonneg SUP_ereal_add_left)
+  by (simp add: nn nn_integral_add E_sup_def T.emeasure_space_1[simplified] nn_integral_nonneg
+                SUP_ereal_add_left)
 
 lemma E_sup_SUP:
   assumes [measurable]: "\<And>i. f i \<in> borel_measurable St" and [simp]: "incseq f"
@@ -258,7 +259,7 @@ proof -
         by (auto intro!: pmf_positive)
       also have "\<dots> = (SUP cfg : cfg_on t. pmf (D) t * ?v cfg)"
         unfolding E_sup_def
-        by (auto simp add: pmf_nonneg nn_integral_nonneg intro!: SUP_ereal_mult_right[symmetric])
+        by (auto simp add: pmf_nonneg nn_integral_nonneg intro!: SUP_ereal_mult_left[symmetric])
       also have "\<dots> \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
         unfolding E_sup_def
       proof (intro SUP_least SUP_upper2)

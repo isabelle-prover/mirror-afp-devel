@@ -380,7 +380,7 @@ shows "lsc_at x0 (%x. -f x) <-> usc_at x0 f"
 proof-
 { assume lsc: "lsc_at x0 (%x. -f x)"
   { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
-    hence "(%i. - f (x i)) ----> -A" using ereal_lim_uminus[of "f o x" A] by auto
+    hence "(%i. - f (x i)) ----> -A" using tendsto_uminus_ereal[of "f o x" A] by auto
     hence "((%x. - f x) o x) ----> -A" unfolding o_def by auto
     hence " - f x0 <= - A" apply (subst lsc_at_mem[of x0 "(%x. -f x)" x]) using lsc x_def by auto
     hence "f x0 >= A" by auto
@@ -390,7 +390,7 @@ moreover
 { assume usc: "usc_at x0 f"
   { fix x A assume x_def: "x ----> x0" "((%x. - f x) o x) ----> A"
     hence "(%i. - f (x i)) ----> A" unfolding o_def by auto
-    hence "(%i. f (x i)) ----> - A" using ereal_lim_uminus[of "(%i. - f (x i))" A] by auto
+    hence "(%i. f (x i)) ----> - A" using tendsto_uminus_ereal[of "(%i. - f (x i))" A] by auto
     hence "(f o x) ----> -A" unfolding o_def by auto
     hence "f x0 >= - A" apply (subst usc_at_mem[of x0 "f" x]) using usc x_def by auto
     hence "-f x0 <= A" unfolding ereal_uminus_le_reorder by auto
