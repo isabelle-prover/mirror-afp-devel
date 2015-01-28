@@ -15,7 +15,6 @@ session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
   theories
     "ODE_Auxiliarities"
     "Numerics/Print"
-    "IVP/Bounded_Continuous_Function"
     "IVP/Initial_Value_Problem"
     "IVP/Picard_Lindeloef_Qualitative"
     "Numerics/One_Step_Method"

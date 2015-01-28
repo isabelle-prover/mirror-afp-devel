@@ -1,6 +1,6 @@
 section{* Initial Value Problems *}
 theory Initial_Value_Problem
-imports Bounded_Continuous_Function
+imports "../ODE_Auxiliarities"
 begin
 
 subsection {* Lipschitz continuity *}
@@ -432,7 +432,8 @@ lemma P_inner_bcontfun:
 proof -
   show ?thesis using interval iv_defined assms
     by (auto intro!: clamp_bcontfun continuous_intros continuous_f indefinite_integral_continuous
-      simp add: P_def P_inner_def)
+                     integrable_continuous_real
+             simp add: P_def P_inner_def)
 qed
 
 definition "iter_space = (Abs_bcontfun ` ((T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}))"
@@ -458,7 +459,7 @@ lemma P_self_mapping:
   assumes in_space: "g \<in> iter_space"
   shows "P g \<in> iter_space"
 proof (rule iter_spaceI)
-  have cont: "continuous_on {t0..t1} (P_inner (Rep_bcontfun g))"
+  have cont: "continuous_on (cbox t0 t1) (P_inner (Rep_bcontfun g))"
     using assms Rep_bcontfun[of g, simplified bcontfun_def]
     by (auto simp: interval iter_space_def Abs_bcontfun_inverse P_inner_def interval_notempty
       intro!: continuous_intros indefinite_integral_continuous integrable_continuous_real continuous_f)
@@ -569,7 +570,7 @@ proof (rule lipschitzI)
       unfolding P_def dist_norm ext_cont_def Abs_bcontfun_inverse[OF `y \<in> bcontfun`]
         Abs_bcontfun_inverse[OF `z \<in> bcontfun`]
       using interval iv_defined `y \<in> bcontfun` `z \<in> bcontfun` y_defined z_defined
-        clamp_in_interval[OF interval_notempty]
+        clamp_in_interval[of t0 t1] interval_notempty
       apply (intro norm_bound)
       unfolding Rep_bcontfun_minus
       apply (subst Abs_bcontfun_inverse)
