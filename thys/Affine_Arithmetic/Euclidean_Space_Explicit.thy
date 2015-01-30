@@ -11,7 +11,7 @@ definition (in plus) plusE :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "+\
 definition (in comm_monoid_add) setsumE where "setsumE = setsum"
 
 lemmas setsumE_insert = setsum.insert[simplified plusE_def[symmetric] setsumE_def[symmetric]]
-lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def setsum.insert)
+lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def)
 
 lemmas euclidean_representationE =
   euclidean_representation[simplified setsumE_def[symmetric], symmetric]
@@ -94,7 +94,9 @@ fun component_conv conv ct =
 fun euclidify ctxt = rewrite_outer_eucl ctxt
   then_conv rewrite_split_beta ctxt
   then_conv rewrite_inner_eucl []
-    (fn vs => fn ctxt => Conv.every_conv (map (fn v => Conv.top_sweep_conv (fn _ => represent_euclidean v) ctxt) vs)) ctxt
+    (fn vs => fn ctxt =>
+      Conv.every_conv (map (fn v => Conv.top_sweep_conv (fn _ => represent_euclidean v) ctxt) vs))
+    ctxt
   then_conv Conv.top_sweep_conv (fn ctxt => component_conv (
     Simplifier.rewrite (Basis_simps ctxt)
     then_conv Simplifier.rewrite (Inner_simps ctxt))) ctxt
@@ -102,7 +104,9 @@ fun euclidify ctxt = rewrite_outer_eucl ctxt
 
 *}
 
-lemma "(\<lambda>(x1, x2) (y1, y2) (z1, z2, z3). (x1 + x2, x2 * x1 + 1, y1, y2 + z1 * z2 * z3)::real*real*real*real) =
+lemma
+  "(\<lambda>(x1::real, x2::real) (y1::real, y2::real) (z1::real, z2::real, z3::real).
+       (x1 + x2, x2 * x1 + 1, y1, y2 + z1 * z2 * z3)) =
   (\<lambda>x xa xb.
        (xa \<bullet> (0, 1) + xb \<bullet> (1, 0, 0) * (xb \<bullet> (0, 1, 0)) * (xb \<bullet> (0, 0, 1))) *\<^sub>R (0, 0, 0, 1) +\<^sub>E
        (xa \<bullet> (1, 0)) *\<^sub>R (0, 0, 1, 0) +\<^sub>E
@@ -130,7 +134,8 @@ lemma "(\<lambda>x y. x + y::real) = (\<lambda>x y. (x \<bullet> 1 + y \<bullet>
     THEN (rtac refl) 1
   *})
 
-lemma "(\<lambda>x y. (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0)) =
+lemma
+  "(\<lambda>x y. (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0)) =
   (\<lambda>(x::real*real*real) (y::real*real*real). 0 *\<^sub>R (0, 1) +\<^sub>E
     (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1))) *\<^sub>R (1, 0)::real*real)"
   by (tactic {*

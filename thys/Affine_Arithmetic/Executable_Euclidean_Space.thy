@@ -48,11 +48,14 @@ instance proof qed (auto simp: Basis_list_real_def eucl_down_real_def eucl_trunc
 
 end
 
-instantiation prod::(executable_euclidean_space, executable_euclidean_space) executable_euclidean_space
+instantiation prod::(executable_euclidean_space, executable_euclidean_space)
+  executable_euclidean_space
 begin
 
 definition Basis_list_prod :: "('a \<times> 'b) list" where
-  "Basis_list_prod = zip Basis_list (replicate (length (Basis_list::'a list)) 0) @ zip (replicate (length (Basis_list::'b list)) 0) Basis_list"
+  "Basis_list_prod =
+    zip Basis_list (replicate (length (Basis_list::'a list)) 0) @
+    zip (replicate (length (Basis_list::'b list)) 0) Basis_list"
 
 definition "eucl_down p a = (eucl_down p (fst a), eucl_down p (snd a))"
 definition "eucl_truncate_down p a = (eucl_truncate_down p (fst a), eucl_truncate_down p (snd a))"
@@ -75,11 +78,13 @@ qed
 
 end
 
-lemma eucl_truncate_down_Basis[simp]: "i \<in> Basis \<Longrightarrow> eucl_truncate_down e x \<bullet> i = truncate_down e (x \<bullet> i)"
+lemma eucl_truncate_down_Basis[simp]:
+  "i \<in> Basis \<Longrightarrow> eucl_truncate_down e x \<bullet> i = truncate_down e (x \<bullet> i)"
   by (simp add: eucl_truncate_down_def)
 
 lemma eucl_truncate_down_correct:
-  "dist (x::'a::executable_euclidean_space) (eucl_down e x) \<in> {0..sqrt (DIM('a)) * 2 powr real (- e)}"
+  "dist (x::'a::executable_euclidean_space) (eucl_down e x) \<in>
+    {0..sqrt (DIM('a)) * 2 powr real (- e)}"
 proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
@@ -96,7 +101,8 @@ lemma eucl_down: "eucl_down e (x::'a::executable_euclidean_space) \<le> x"
 lemma eucl_truncate_down: "eucl_truncate_down e (x::'a::executable_euclidean_space) \<le> x"
   by (auto simp add: eucl_le[where 'a='a] truncate_down)
 
-lemma eucl_truncate_down_le: "x \<le> y \<Longrightarrow> eucl_truncate_down w x \<le> (y::'a::executable_euclidean_space)"
+lemma eucl_truncate_down_le:
+  "x \<le> y \<Longrightarrow> eucl_truncate_down w x \<le> (y::'a::executable_euclidean_space)"
   using eucl_truncate_down
   by (rule order.trans)
 

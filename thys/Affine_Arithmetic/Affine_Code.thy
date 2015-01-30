@@ -119,7 +119,8 @@ lemma distinct_binop:
 
 lemma binop_plus:
   fixes b::"(nat * 'a::euclidean_space) list"
-  shows "(\<Sum>(i, y)\<leftarrow>binop op + 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
+  shows
+    "(\<Sum>(i, y)\<leftarrow>binop op + 0 b ba. e i *\<^sub>R y) = (\<Sum>(i, y)\<leftarrow>b. e i *\<^sub>R y) + (\<Sum>(i, y)\<leftarrow>ba. e i *\<^sub>R y)"
   by (induct "op +::'a\<Rightarrow>_" "0::'a" b ba rule: binop.induct)
     (auto simp: algebra_simps)
 
@@ -213,7 +214,6 @@ lift_definition slist_of_pdevs::"'a pdevs \<Rightarrow> (nat, 'a::real_vector) s
 
 subsection {* Application *}
 
-text {* TODO: slightly more efficient---sorted---implementation... *}
 lift_definition slist_apply::"('a::linorder, 'b::zero) slist \<Rightarrow> 'a \<Rightarrow> 'b" is
   "\<lambda>xs i. the_default 0 (map_of xs i)" .
 
@@ -241,16 +241,21 @@ lemma
 lemma inj_on_fst_set_slist: "inj_on fst (set_slist xs)"
   by transfer (simp add: distinct_map)
 
-lemma pdevs_apply_Pdevs_eq_0: "pdevs_apply (Pdevs xs) i = 0 \<longleftrightarrow> ((\<forall>x. (i, x) \<in> set_slist xs \<longrightarrow> x = 0))"
+lemma pdevs_apply_Pdevs_eq_0:
+  "pdevs_apply (Pdevs xs) i = 0 \<longleftrightarrow> ((\<forall>x. (i, x) \<in> set_slist xs \<longrightarrow> x = 0))"
   by transfer (safe, auto simp: Pdevs_raw_def split: option.split)
 
 lemma compute_tdev[code]: "tdev (Pdevs xs) = tdev_slist xs"
 proof -
   have "tdev (Pdevs xs) = (\<Sum>i<degree (Pdevs xs). \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
     by (simp add: tdev_def)
-  also have "\<dots> = (\<Sum>i <degree (Pdevs xs). if pdevs_apply (Pdevs xs) i = 0 then 0 else \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
+  also have "\<dots> =
+    (\<Sum>i <degree (Pdevs xs).
+      if pdevs_apply (Pdevs xs) i = 0 then 0 else \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
     by (auto intro!: setsum.cong)
-  also have "\<dots> = (\<Sum>i\<in>{0..<degree (Pdevs xs)} \<inter> {x. pdevs_apply (Pdevs xs) x \<noteq> 0}. \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
+  also have "\<dots> =
+    (\<Sum>i\<in>{0..<degree (Pdevs xs)} \<inter> {x. pdevs_apply (Pdevs xs) x \<noteq> 0}.
+      \<bar>pdevs_apply (Pdevs xs) i\<bar>)"
     by (auto simp: setsum.If_cases Collect_neg_eq atLeast0LessThan)
   also have "\<dots> = (\<Sum>x\<in>fst ` set_slist xs. \<bar>pdevs_apply (Pdevs xs) x\<bar>)"
     by (rule setsum.mono_neutral_cong_left)
@@ -276,13 +281,14 @@ proof (induct xs)
 qed simp
 
 lift_definition msum_slist::"nat \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist"
-  is "\<lambda>m xs ys. map (apfst (\<lambda>n. n +  m)) ys @ dropWhile (\<lambda>(i, x). i \<ge> m) xs"
+  is "\<lambda>m xs ys. map (apfst (\<lambda>n. n + m)) ys @ dropWhile (\<lambda>(i, x). i \<ge> m) xs"
 proof safe
   case (goal1 n l1 l2)
   thus ?case
     by (auto dest: set_dropWhileD
       simp: dropWhile_rsorted_eq_filter sorted_append rev_map rev_filter sorted_filter distinct_map
-      intro!: comp_inj_on subset_inj_on[where A="{x \<in> set l1. case x of (i, x) \<Rightarrow> i < n}" and B="set l1"])
+      intro!: comp_inj_on
+        subset_inj_on[where A="{x \<in> set l1. case x of (i, x) \<Rightarrow> i < n}" and B="set l1"])
 next
   case (goal2 n l1 l2)
   hence "sorted (map ((\<lambda>na. na + n) \<circ> fst) (rev l2))"
@@ -292,11 +298,9 @@ next
     by (auto simp: sorted_append dropWhile_rsorted_eq_filter rev_map rev_filter sorted_filter)
 qed
 
-lemma distinct_map_fst_snd_eqD: "distinct (map fst xs) \<Longrightarrow> (i, a) \<in> set xs \<Longrightarrow> (i, b) \<in> set xs \<Longrightarrow> a = b"
-  by (metis (lifting) map_of_is_SomeI option.inject)
-
 lemma slist_apply_msum_slist:
-  "slist_apply (msum_slist m xs ys) i = (if i < m then slist_apply xs i else slist_apply ys (i - m))"
+  "slist_apply (msum_slist m xs ys) i =
+    (if i < m then slist_apply xs i else slist_apply ys (i - m))"
 proof transfer
   case goal1
   thus ?case
@@ -310,7 +314,9 @@ proof transfer
       using goal1 False
       by (auto simp add: dropWhile_rsorted_eq_filter map_of_eq_None_iff distinct_map_fst_snd_eqD
         split: option.split dest!: map_of_SomeD)
-  qed (force simp: map_of_eq_None_iff distinct_map_fst_snd_eqD split: option.split dest!: map_of_SomeD)
+  qed (force simp: map_of_eq_None_iff distinct_map_fst_snd_eqD
+    split: option.split
+    dest!: map_of_SomeD)
 qed
 
 lemma pdevs_apply_msum_slist:
@@ -320,6 +326,7 @@ lemma pdevs_apply_msum_slist:
 
 lemma compute_msum_pdevs[code]: "msum_pdevs m (Pdevs xs) (Pdevs ys) = Pdevs (msum_slist m xs ys)"
   by (rule pdevs_eqI) (auto simp: pdevs_apply_msum_slist pdevs_apply_msum_pdevs)
+
 
 subsection {* Unary Operations *}
 
@@ -336,11 +343,15 @@ lemma compute_scaleR_pdves[code]: "scaleR_pdevs r (Pdevs xs) = Pdevs (map_slist 
   and compute_pdevs_scaleR[code]: "pdevs_scaleR (Pdevs rs) x = Pdevs (map_slist (\<lambda>r. r *\<^sub>R x) rs)"
   and compute_uminus_pdevs[code]: "uminus_pdevs (Pdevs xs) = Pdevs (map_slist (\<lambda>x. - x) xs)"
   and compute_pdevs_inner[code]: "pdevs_inner (Pdevs xs) b = Pdevs (map_slist (\<lambda>x. x \<bullet> b) xs)"
-  and compute_inner_scaleR_pdevs[code]: "inner_scaleR_pdevs x (Pdevs ys) = Pdevs (map_slist (\<lambda>y. (x \<bullet> y) *\<^sub>R y) ys)"
-  and compute_trunc_pdevs[code]: "trunc_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x) xs)"
-  and compute_trunc_err_pdevs[code]: "trunc_err_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x - x) xs)"
-  by (auto intro!: pdevs_eqI simp: pdevs_apply_map_slist)
-
+  and compute_pdevs_inner2[code]:
+    "pdevs_inner2 (Pdevs xs) b c = Pdevs (map_slist (\<lambda>x. (x \<bullet> b, x \<bullet> c)) xs)"
+  and compute_inner_scaleR_pdevs[code]:
+    "inner_scaleR_pdevs x (Pdevs ys) = Pdevs (map_slist (\<lambda>y. (x \<bullet> y) *\<^sub>R y) ys)"
+  and compute_trunc_pdevs[code]:
+    "trunc_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x) xs)"
+  and compute_trunc_err_pdevs[code]:
+    "trunc_err_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x - x) xs)"
+  by (auto intro!: pdevs_eqI simp: pdevs_apply_map_slist zero_prod_def)
 
 subsection {* Filter *}
 
@@ -398,7 +409,9 @@ lemma
 
 lemma pdevs_apply_One_slist:
   "pdevs_apply (Pdevs One_slist) i =
-    (if i < length (Basis_list::'a::executable_euclidean_space list) then (Basis_list::'a list) ! i else 0)"
+    (if i < length (Basis_list::'a::executable_euclidean_space list)
+    then (Basis_list::'a list) ! i
+    else 0)"
   by transfer
     (auto simp: Pdevs_raw_def map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None
       split: option.split)
@@ -436,7 +449,8 @@ lemma in_set_update_list: "(n, x) \<in> set (update_list n x xs)"
 lemma overwrite_update_list: "(a, b) \<in> set xs \<Longrightarrow> (a, b) \<notin> set (update_list n x xs) \<Longrightarrow> a = n"
   by (induct xs) (auto split: split_if_asm)
 
-lemma insert_update_list: "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow> (a, b) \<in> set (update_list a x xs) \<Longrightarrow> b = x"
+lemma insert_update_list:
+  "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow> (a, b) \<in> set (update_list a x xs) \<Longrightarrow> b = x"
   by (induct xs) (force split: split_if_asm simp: sorted_append)+
 
 lemma set_update_list_eq: "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow>
@@ -489,5 +503,20 @@ lemma compute_equal_pdevs[code]:
   "equal_class.equal (Pdevs a) (Pdevs b) \<longleftrightarrow> (list_of_slist a) = (list_of_slist b)"
   by (auto intro!: pdevs_eqI simp: equal_pdevs_def compute_pdevs_apply slist_apply_list_of_slist_eq
     compute_list_of_pdevs[symmetric])
+
+
+subsection {* From List of Generators *}
+
+lift_definition slist_of_list::"'a::zero list \<Rightarrow> (nat, 'a) slist"
+  is "\<lambda>xs. rev (zip [0..<length xs] xs)"
+  by (auto simp: rev_map[symmetric] )
+
+lemma slist_apply_slist_of_list:
+  "slist_apply (slist_of_list xs) i = (if i < length xs then xs ! i else 0)"
+  by transfer (auto simp: map_of_rev_zip_upto_length_eq_nth map_of_rev_zip_upto_length_eq_None)
+
+lemma compute_pdevs_of_list[code]: "pdevs_of_list xs = Pdevs (slist_of_list xs)"
+  by (rule pdevs_eqI)
+    (auto simp: compute_pdevs_apply slist_apply_slist_of_list pdevs_apply_pdevs_of_list)
 
 end

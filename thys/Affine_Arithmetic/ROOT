@@ -1,13 +1,15 @@
 chapter AFP
 
 session Affine_Arithmetic (AFP) = "HOL-Multivariate_Analysis" +
-  options [timeout = 600]
+  options [timeout = 1200]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/Monad_Syntax"
+    "~~/src/HOL/Library/Permutation"
     "~~/src/HOL/Library/Float"
   theories
     Affine_Arithmetic
   document_files
-    "root.bib"
     "root.tex"
+    "root.bib"
+
