@@ -605,6 +605,25 @@ date = 2011-08-19
 topic = Computer Science/Algorithms, Mathematics/Algebra
 abstract = This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations.
 
+[UpDown_Scheme]
+title = Verification of the UpDown Scheme
+author = Johannes Hölzl <mailto:hoelzl@in.tum.de>
+date = 2015-01-28
+topic = Computer Science/Algorithms
+abstract =
+ The UpDown scheme is a recursive scheme used to compute the stiffness matrix
+ on a special form of sparse grids. Usually, when discretizing a Euclidean
+ space of dimension d we need O(n^d) points, for n points along each dimension.
+ Sparse grids are a hierarchical representation where the number of points is
+ reduced to O(n * log(n)^d). One disadvantage of such sparse grids is that the
+ algorithm now operate recursively in the dimensions and levels of the sparse grid.
+ <p>
+ The UpDown scheme allows us to compute the stiffness matrix on such a sparse
+ grid. The stiffness matrix represents the influence of each representation
+ function on the L^2 scalar product. For a detailed description see
+ Dirk Pflüger's thesis. This formalization was developed as a
+ interdisciplinary project (IDP) at the TU München.
+
 [GraphMarkingIBP]
 title = Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
