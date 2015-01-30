@@ -62,7 +62,7 @@ proof-
       by (simp)
   finally have A: "pderiv (p div q) * q div q = 
                    (q * pderiv p - p * pderiv q) div q div q" 
-      by (simp add: algebra_simps del: div_minus)
+      by (simp add: algebra_simps del: div_diff)
   thus "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)" 
         by (simp add: algebra_simps poly_div_mult_right) 
   from assms obtain r where "p = q * r" unfolding dvd_def by blast
