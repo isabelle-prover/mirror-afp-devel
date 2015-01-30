@@ -56,8 +56,8 @@ algorithm now operate recursively in the dimensions and levels of the sparse gri
 The UpDown scheme allows us to compute the stiffness matrix on such a sparse
 grid. The stiffness matrix represents the influence of each representation
 function on the L^2 scalar product. For a detailed description see
-Dirk Pflüger's thesis. This formalization was developed as a
-interdisciplinary project (IDP) at the TU München.
+Dirk Pflüger's PhD thesis. This formalization was developed as an
+interdisciplinary project (IDP) at the Technische Universität München.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
