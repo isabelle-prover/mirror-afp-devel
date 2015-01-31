@@ -15,13 +15,21 @@ lemma e3_fderiv: "((\<lambda>(t, x). (1::real, x*x + t*t::real)) has_derivative
 
 approximate_affine e3_d "\<lambda>(x, y) (h, j). (0::real, 2 * (j * y) + 2 * (h * x)::real)"
 
-interpretation e3: aform_approximate_ivp "uncurry_options e3" "uncurry_options e3_d"
+abbreviation "e3_ivp \<equiv> \<lambda>optns args. uncurry_options e3 optns (hd args) (tl args)"
+abbreviation "e3_d_ivp \<equiv> \<lambda>optns args. uncurry_options e3_d optns (hd args) (hd (tl args)) (tl (tl args))"
+
+interpretation e3!: aform_approximate_ivp
+  e3_ivp
+  e3_d_ivp
   "\<lambda>(t, x). (1::real, x*x + t*t::real)"
   "\<lambda>(x, y) (h, j). (0, 2 * (j * y) + 2 * (h * x))"
   apply unfold_locales
-  apply (rule e3[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (rule e3[THEN Joints2_JointsI])
+  unfolding list.sel apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (rule e3_fderiv)
   apply (rule e3_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta')
   done
 
@@ -32,7 +40,7 @@ definition "e3_optns = default_optns
       result_fun := ivls_result 23 1,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
-definition "e3test = (\<lambda>_::unit. euler_series_result (uncurry_options e3) (uncurry_options e3_d) e3_optns 0 (aform_of_point (0, 1)) (2 ^ 5))"
+definition "e3test = (\<lambda>_::unit. euler_series_result e3_ivp e3_d_ivp e3_optns 0 (aform_of_point (0, 1)) (2 ^ 5))"
 
 lemma e3test: "e3test () =
   Some (FloatR 32 (- 8),

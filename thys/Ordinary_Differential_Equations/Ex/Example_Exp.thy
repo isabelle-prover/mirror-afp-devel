@@ -8,22 +8,29 @@ subsection {* Example Exponential *}
 
 text {* TODO: why not exp-ivp "lambda x::real. x"? *}
 
-approximate_affine exp_ivp "\<lambda>(x::real, y::real). (x, y)"
+approximate_affine exp_affine "\<lambda>(x::real, y::real). (x, y)"
 
 lemma exp_ivp_fderiv: "((\<lambda>(x::real, y::real). (x, y)) has_derivative (\<lambda>(a, b) (h\<^sub>1, h\<^sub>2). (h\<^sub>1, h\<^sub>2 + 0 *a*b)) x) (at x within X)"
   by (auto intro!: derivative_eq_intros simp: split_beta id_def)
 
-approximate_affine exp_ivp_d "(\<lambda>(a::real, b::real) (h\<^sub>1::real, h\<^sub>2::real). (h\<^sub>1, h\<^sub>2 + 0 *a*b))"
+approximate_affine exp_d "(\<lambda>(a::real, b::real) (h\<^sub>1::real, h\<^sub>2::real). (h\<^sub>1, h\<^sub>2 + 0 *a*b))"
+
+abbreviation "exp_ivp \<equiv> \<lambda>optns args. uncurry_options exp_affine optns (hd args) (tl args)"
+abbreviation "exp_d_ivp \<equiv> \<lambda>optns args. uncurry_options exp_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
 interpretation exp_ivp!: aform_approximate_ivp
-  "uncurry_options exp_ivp"
-  "uncurry_options exp_ivp_d"
+  exp_ivp
+  exp_d_ivp
   "\<lambda>(y\<^sub>1, y\<^sub>2). (y\<^sub>1, y\<^sub>2)"
   "\<lambda>(a, b) (h\<^sub>1, h\<^sub>2). (h\<^sub>1, h\<^sub>2 + 0 *a*b)"
   apply default
-  apply (rule exp_ivp[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (rule exp_affine[THEN Joints2_JointsI])
+  unfolding list.sel
+  apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (rule exp_ivp_fderiv)
-  apply (rule exp_ivp_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (rule exp_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta)
   done
 
@@ -36,9 +43,8 @@ definition "exp_optns = default_optns
       widening_mod := 10,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
-definition "exptest = (\<lambda>_::unit.
-  euler_series_result (uncurry_options exp_ivp) (uncurry_options exp_ivp_d) exp_optns
-    0 (aform_of_point (1, 1)) (2 ^ 6))"
+definition "exptest = (\<lambda>_::unit. euler_series_result exp_ivp exp_d_ivp exp_optns 0
+  (aform_of_point (1, 1)) (2 ^ 6))"
 
 lemma "exptest () = Some (FloatR 64 (- 6),
        [(FloatR 63 (- 6), (FloatR 5612042 (- 21), FloatR 5612042 (- 21)), (FloatR 5701117 (- 21), FloatR 5701117 (- 21)),

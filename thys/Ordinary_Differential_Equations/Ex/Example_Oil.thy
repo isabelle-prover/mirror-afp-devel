@@ -23,16 +23,22 @@ lemma oil_fderiv: "((\<lambda>(y::real, z::real). (z, z * z + -3 * inverse (inve
 
 approximate_affine oil_d "\<lambda>(y::real, z) (dy, dz). (dz, 2 * dz * z  + 6 * (inverse (inverse 1000 + y*y) * (dy * (y * inverse (inverse 1000 + y*y)))))"
 
+abbreviation "oil_ivp \<equiv> \<lambda>optns args. uncurry_options oil optns (hd args) (tl args)"
+abbreviation "oil_d_ivp \<equiv> \<lambda>optns args. uncurry_options oil_d optns (hd args) (hd (tl args)) (tl (tl args))"
+
 interpretation oil!: aform_approximate_ivp
-  "uncurry_options oil"
-  "uncurry_options oil_d"
+  oil_ivp oil_d_ivp
   "\<lambda>(y::real, z::real). (z, z*z + -3 * inverse (inverse 1000 + y*y))"
   "\<lambda>(y::real, z) (dy, dz).
     (dz, 2 * dz * z  + 6 * (inverse (inverse 1000 + y*y) * (dy * (y * inverse (inverse 1000 + y*y)))))"
   apply default
-  apply (rule oil[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (rule oil[THEN Joints2_JointsI])
+  unfolding list.sel
+  apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (rule oil_fderiv)
   apply (rule oil_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta oil_deriv_ok)
   done
 
@@ -46,7 +52,7 @@ definition "rough_optns = default_optns
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
 definition "oiltest_rough =
-  (\<lambda>_::unit. euler_series_result (uncurry_options oil) (uncurry_options oil_d) rough_optns 0
+  (\<lambda>_::unit. euler_series_result oil_ivp oil_d_ivp rough_optns 0
       (aform_of_point (10, 0)) 22000)"
 
 lemma "oiltest_rough () =

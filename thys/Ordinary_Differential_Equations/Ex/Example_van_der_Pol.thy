@@ -20,9 +20,11 @@ approximate_affine vanderpol_d "\<lambda>(x::real, y) (dx, dy). (dy,
         dy * (1 + - (x * x)) +
         - dx)"
 
+abbreviation "vanderpol_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol optns (hd args) (tl args)"
+abbreviation "vanderpol_d_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol_d optns (hd args) (hd (tl args)) (tl (tl args))"
+
 interpretation vanderpol!: aform_approximate_ivp
-  "uncurry_options vanderpol"
-  "uncurry_options vanderpol_d"
+  vanderpol_ivp vanderpol_d_ivp
   "\<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
   "\<lambda>(x::real, y) (dx, dy).
     (dy,
@@ -30,15 +32,19 @@ interpretation vanderpol!: aform_approximate_ivp
         dy * (1 + - (x * x)) +
         - dx)"
   apply unfold_locales
-  apply (rule vanderpol[THEN Joints2_JointsI]) apply assumption apply assumption
+  unfolding list.sel
+  apply (rule Joints2_JointsI)
+  apply (rule vanderpol, assumption, assumption)
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (rule vanderpol_fderiv)
   apply (rule vanderpol_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta)
   apply intro_locales
   done
 
 definition "vanderpoltest =
-  (poincare_distance_d (uncurry_options vanderpol) (uncurry_options vanderpol_d)
+  (poincare_distance_d vanderpol_ivp vanderpol_d_ivp
     \<lparr>
     precision = 30,
     tolerance = FloatR 1 (- 5),

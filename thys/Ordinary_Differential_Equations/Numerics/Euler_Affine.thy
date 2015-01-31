@@ -68,11 +68,12 @@ locale approximate_sets = approximate_sets0 +
   assumes set_of_apprs_switch: "x#y#xs \<in> set_of_apprs (X#Y#XS) \<Longrightarrow> y#x#xs \<in> set_of_apprs (Y#X#XS)"
   assumes set_of_apprs_rotate: "x#y#xs \<in> set_of_apprs (X#Y#XS) \<Longrightarrow> y#xs@[x] \<in> set_of_apprs (Y#XS@[X])" --"TODO: better use the set (zip ...) property?"
   assumes set_of_apprs_Nil: "xs \<in> set_of_apprs [] \<Longrightarrow> xs = []"
+  assumes length_set_of_apprs: "xs \<in> set_of_apprs XS \<Longrightarrow> length xs = length XS"
   assumes set_of_apprs_Cons_ex: "xs \<in> set_of_apprs (X#XS) \<Longrightarrow> (\<exists>y ys. xs = y#ys \<and> y \<in> set_of_appr X \<and> ys \<in> set_of_apprs XS)"
   assumes in_image_Pair_of_listI[simp, intro]:
     "[x, y] \<in> set_of_apprs [X, Y] \<Longrightarrow> (x, y) \<in> Pair_of_list ` set_of_apprs [X, Y]"
   assumes add_appr: "(x # y # ys) \<in> set_of_apprs (X # Y # YS) \<Longrightarrow> (add_appr optns X Y YS) = Some S \<Longrightarrow> (x + y)#x#y#ys \<in> set_of_apprs (S#X#Y#YS)"
-  assumes scale_appr: "(x#xs) \<in> set_of_apprs (X#XS) \<Longrightarrow> (scale_appr optns r X XS) = Some S \<Longrightarrow> (r *\<^sub>R x # x # xs) \<in> set_of_apprs (S#X#XS)"
+  assumes scale_appr: "(x#xs) \<in> set_of_apprs (X#XS) \<Longrightarrow> (scale_appr optns r s X XS) = Some S \<Longrightarrow> ((r/s) *\<^sub>R x # x # xs) \<in> set_of_apprs (S#X#XS)"
   assumes scale_appr_ivl: "s \<in> {r..t} \<Longrightarrow> (x#xs) \<in> set_of_apprs (X#XS) \<Longrightarrow> (scale_appr_ivl optns r t X XS) = Some S \<Longrightarrow> (s *\<^sub>R x # x # xs) \<in> set_of_apprs (S#X#XS)"
   assumes split_appr: "x \<in> set_of_appr X \<Longrightarrow> list_ex (\<lambda>X. x \<in> set_of_appr X) (split_appr optns X)"
   assumes disjoint_apprs: "disjoint_apprs X Y \<Longrightarrow> set_of_appr X \<inter> set_of_appr Y = {}"
@@ -117,14 +118,14 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
   fixes ode::"'a  \<Rightarrow> 'a"
   fixes ode_d::"'a \<Rightarrow> 'a \<Rightarrow> 'a"
   assumes ode_approx:
-    "[x] \<in> set_of_apprs [X'] \<Longrightarrow>
-    ode_approx optns X' = Some A \<Longrightarrow>
-    [ode x, x] \<in> set_of_apprs [A, X']"
+    "x#xs \<in> set_of_apprs (X'#XS) \<Longrightarrow>
+    ode_approx optns (X'#XS) = Some A \<Longrightarrow>
+    (ode x # x # xs) \<in> set_of_apprs (A # X' # XS)"
   assumes fderiv[derivative_intros]: "x \<in> X \<Longrightarrow> (ode has_derivative ode_d x) (at x within X)"
   assumes ode_d_approx:
-    "[x, dx] \<in> set_of_apprs [X', DX'] \<Longrightarrow>
-     ode_d_approx optns X' DX' = (Some D') \<Longrightarrow>
-     [ode_d x dx, x, dx] \<in> set_of_apprs [D', X', DX']"
+    "x#dx#xs \<in> set_of_apprs (X'#DX'#XS) \<Longrightarrow>
+     ode_d_approx optns (X'#DX'#XS) = (Some D') \<Longrightarrow>
+     (ode_d x dx # x # dx # xs) \<in> set_of_apprs (D' # X' # DX' # XS)"
   assumes cont_fderiv: "continuous_on UNIV (\<lambda>((t::real, x), (dt::real, y)). ode_d x y)"
     --{* TODO: get rid of the reals *}
     --{* TODO: NOTE: if UNIV is too strong, then also a bound on
@@ -137,7 +138,7 @@ lemma fderiv'[derivative_intros]: "((\<lambda>(t, y). ode y) has_derivative (\<l
   by (auto intro!: derivative_eq_intros has_derivative_compose[of snd])
 
 lemma picard_approx:
-  assumes appr: "ode_approx optns X = Some Y"
+  assumes appr: "ode_approx optns [X] = Some Y"
   assumes bb: "inf_of_appr Y = l" "sup_of_appr Y = u"
   assumes x_in: "(\<And>t. t \<in> {t0 .. t1} \<Longrightarrow> x t \<in> set_of_appr X)"
   assumes cont: "continuous_on {t0 .. t1} x"
@@ -199,7 +200,7 @@ proof -
 qed
 
 lemma picard_approx_ivl:
-  assumes appr: "ode_approx optns X = Some Y"
+  assumes appr: "ode_approx optns [X] = Some Y"
   assumes bb: "inf_of_appr Y = l" "sup_of_appr Y = u"
   assumes x_in: "(\<And>t. t \<in> {t0 .. t1} \<Longrightarrow> x t \<in> set_of_appr X)"
   assumes cont: "continuous_on {t0 .. t1} x"
@@ -215,7 +216,7 @@ text {* automatic Picard operator *}
 
 lemma P_appr_Some_ode_approxE:
   assumes "P_appr optns X0 h X = Some R"
-  obtains Y where "ode_approx optns X = Some Y" "R = extend_appr X0 (inf 0 (h *\<^sub>R inf_of_appr Y)) (sup 0 (h *\<^sub>R sup_of_appr Y))"
+  obtains Y where "ode_approx optns [X] = Some Y" "R = extend_appr X0 (inf 0 (h *\<^sub>R inf_of_appr Y)) (sup 0 (h *\<^sub>R sup_of_appr Y))"
   using assms
   unfolding P_appr_def
   using assms by (auto simp: P_appr_def)
@@ -228,7 +229,7 @@ lemma P_appr:
   assumes P_res: "P_appr optns X0 h X = Some R"
   shows "x0 + integral {t0..t1} (\<lambda>t. ode (x t)) \<in> set_of_appr R"
 proof -
-  from P_res obtain Y where Y: "ode_approx optns X = Some Y"
+  from P_res obtain Y where Y: "ode_approx optns [X] = Some Y"
     "R = extend_appr X0 (inf 0 (h *\<^sub>R inf_of_appr Y)) (sup 0 (h *\<^sub>R sup_of_appr Y))"
     by (rule P_appr_Some_ode_approxE)
   have "x0 + integral {t0 .. t1} (\<lambda>t. ode (x t)) \<in>
@@ -296,7 +297,7 @@ lemma P_appr_ivl:
   assumes ivl_0: "{inf_of_appr X0..sup_of_appr X0} = set_of_appr X0"
   shows "{inf_of_appr X'..sup_of_appr X'} = set_of_appr X'"
 proof -
-  from assms obtain z where z: "ode_approx optns X = Some z"
+  from assms obtain z where z: "ode_approx optns [X] = Some z"
     and X': "extend_appr X0 (inf 0 (h *\<^sub>R inf_of_appr z)) (sup 0 (h *\<^sub>R sup_of_appr z)) = X'"
     by (auto simp: P_appr_def)
   have [simp]: "inf 0 (h *\<^sub>R inf_of_appr z) \<le> sup 0 (h *\<^sub>R sup_of_appr z)"
@@ -438,11 +439,11 @@ context
   assumes pos_step: "0 < h"
   assumes step_eq: "t0 + h = t1"
   assumes certified_stepsize: "cert_stepsize optns X0 (stepsize optns) n i = Some (h, CX)"
-  assumes bounded_ode: "ode_approx optns X0 = Some X0'"
-  assumes bounded_total_ode: "ode_approx optns CX = Some F"
-  assumes bounded_ode_d: "ode_d_approx optns CX F = Some D"
-  assumes bounded_err: "scale_appr optns (h*h / 2) (ivl_appr_of_appr D) [] = Some ERR"
-  assumes bounded_scale_euler: "scale_appr optns h X0' [X0] = Some S"
+  assumes bounded_ode: "ode_approx optns [X0] = Some X0'"
+  assumes bounded_total_ode: "ode_approx optns [CX] = Some F"
+  assumes bounded_ode_d: "ode_d_approx optns [CX, F] = Some D"
+  assumes bounded_err: "scale_appr optns (h*h) 2 (ivl_appr_of_appr D) [] = Some ERR"
+  assumes bounded_scale_euler: "scale_appr optns h 1 X0' [X0] = Some S"
   assumes bounded_scale_ivl_euler: "scale_appr_ivl optns 0 h X0' [X0] = Some S'"
   assumes bounded_add_euler: "add_appr optns X0 S [] = Some X1"
   assumes bounded_add_euler_ivl: "add_appr optns X0 S' [] = Some CX1"
@@ -600,7 +601,8 @@ proof -
   proof (rule msum_subsetI)
     have ode_x0: "[ode x0, x0] \<in> set_of_apprs [X0', X0]"
       by (metis bounded_ode ode_approx x0 set_of_apprs_set_of_appr)
-    note scale_appr[where r=h and X = "X0'" and XS = "[X0]" and x = "ode x0" and xs = "[x0]" and optns = optns,
+    note scale_appr[where r=h and s = 1 and X = "X0'" and XS = "[X0]" and x = "ode x0"
+      and xs = "[x0]" and optns = optns,
       THEN set_of_apprs_rotate, simplified append_Cons append_Nil,
       THEN set_of_apprs_Cons]
     from add_appr[OF this , of _ optns , THEN set_of_apprs_switch, THEN set_of_apprs_Cons,
@@ -612,10 +614,10 @@ proof -
       by (simp add: step_ivp_def)
   next
     from
-      scale_appr[where r="(h * h) / 2" and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
+      scale_appr[where r="h * h" and s = 2 and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
         and x="inf_of_appr D" and optns=optns,
         THEN set_of_apprs_switch, THEN set_of_apprs_Cons, OF _ bounded_err]
-      scale_appr[where r="(h * h) / 2" and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
+      scale_appr[where r="h * h" and s = 2 and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
         and x="sup_of_appr D" and optns=optns,
         THEN set_of_apprs_switch, THEN set_of_apprs_Cons, OF _ bounded_err]
     show "{(h * h / 2) *\<^sub>R inf_of_appr D..(h * h / 2) *\<^sub>R sup_of_appr D} \<subseteq> set_of_appr (ivl_appr_of_appr ERR)"
@@ -675,10 +677,10 @@ proof -
     qed
     also
     from
-      scale_appr[where r="(h * h) / 2" and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
+      scale_appr[where r="h * h" and s = 2 and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
         and x="inf_of_appr D" and optns=optns,
         THEN set_of_apprs_switch, THEN set_of_apprs_Cons, OF _ bounded_err]
-      scale_appr[where r="(h * h) / 2" and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
+      scale_appr[where r="h * h" and s = 2 and X = "ivl_appr_of_appr D" and XS="[]" and xs="[]"
         and x="sup_of_appr D" and optns=optns,
         THEN set_of_apprs_switch, THEN set_of_apprs_Cons, OF _ bounded_err]
     have "\<dots> \<subseteq> set_of_appr (appr_of_ivl (inf 0 (inf_of_appr ERR)) (sup 0 (sup_of_appr ERR)))"
@@ -806,11 +808,11 @@ proof -
   from euler_step_returns
   obtain X0' CX F D ERR S S' X1' X1'' where intermediate_results:
     "cert_stepsize optns X0 (stepsize optns) (iterations optns) (halve_stepsizes optns) = Some (h, CX)"
-    "ode_approx optns X0 = Some X0'"
-    "ode_approx optns CX = Some F"
-    "ode_d_approx optns CX F = Some D"
-    "scale_appr optns (h * h / 2) (ivl_appr_of_appr D) [] = Some ERR"
-    "scale_appr optns h X0' [X0] = Some S"
+    "ode_approx optns [X0] = Some X0'"
+    "ode_approx optns [CX] = Some F"
+    "ode_d_approx optns [CX, F] = Some D"
+    "scale_appr optns (h * h) 2 (ivl_appr_of_appr D) [] = Some ERR"
+    "scale_appr optns h 1 X0' [X0] = Some S"
     "scale_appr_ivl optns 0 h X0' [X0] = Some S'"
     "add_appr optns X0 S [] = Some X1'"
     "add_appr optns X0 S' [] = Some X1''"
@@ -946,13 +948,13 @@ sublocale aform_approximate_ivp0 \<subseteq>
     aform_of_ivl msum_aform' Affine Joints
     Inf_aform Sup_aform
     "uncurry_options add_aform_componentwise::('a, 'a::executable_euclidean_space aform, (real \<times> ((real \<times> 'a \<times> 'a \<times> real \<times> 'a \<times> 'a) list))) options \<Rightarrow> _"
-    "uncurry_options scaleR_aform_componentwise"
+    "uncurry_options scaleQ_aform_componentwise"
     "uncurry_options scaleR_aform_ivl"
-    split_aform_largest
+    "\<lambda>optns. split_aform_largest (precision optns) (presplit_summary_tolerance optns)"
     disjoint_aforms
     inter_aform_plane
 proof
-  fix x y::'a and X Y and xs ys::"'a list" and XS YS and r S
+  fix x y::'a and X Y and xs ys::"'a list" and XS YS and r s S
     and optns::"('a, 'a aform, (real \<times> ((real \<times> 'a \<times> 'a \<times> real \<times> 'a \<times> 'a) list))) options"
   show "([x] \<in> Joints [X]) = (x \<in> Affine X)"
     by (auto simp: Affine_def valuate_def Joints_def)
@@ -983,9 +985,9 @@ proof
     show "(x + y) # x # y # ys \<in> Joints (S # X # Y # YS)" .
   }
   {
-    assume "uncurry_options scaleR_aform_componentwise optns r X XS = Some S" "x # xs \<in> Joints (X # XS)"
-    from scaleR_aform_componentwise[OF this]
-    show "r *\<^sub>R x # x # xs \<in> Joints (S # X # XS)" .
+    assume "uncurry_options scaleQ_aform_componentwise optns r s X XS = Some S" "x # xs \<in> Joints (X # XS)"
+    from scaleQ_aform_componentwise[OF this]
+    show "(r/s) *\<^sub>R x # x # xs \<in> Joints (S # X # XS)" by simp
   }
   {
     fix s t::real
@@ -999,19 +1001,19 @@ proof
     then obtain e where e: "e \<in> UNIV \<rightarrow> {-1 .. 1}" "x = aform_val e X"
       by (auto simp: Affine_def valuate_def)
     let ?sum = "summarize_threshold (precision optns) (presplit_summary_tolerance optns) (degree_aform X) (snd X)"
-    obtain e' where e': "e' \<in> UNIV \<rightarrow> {-1 .. 1}"
+    obtain e' where e': "e' \<in> funcset UNIV {-1 .. 1}"
       "aform_val e' (fst X, ?sum) = aform_val e X"
       by (rule summarize_pdevsE[OF e(1) order_refl, of "snd X" "precision optns"
-          "(\<lambda>i y. presplit_summary_tolerance optns *\<^sub>R eucl_truncate_up (precision optns) (Radius' (precision optns) X) \<le> \<bar>y\<bar>)"])
+          "(\<lambda>i y. presplit_summary_tolerance optns * infnorm (eucl_truncate_up (precision optns) (Radius' (precision optns) X)) \<le> infnorm y)"])
         (auto simp: summarize_threshold_def aform_val_def)
     from e e' have x: "x = aform_val e' (fst X, ?sum)"
       by simp
-    show "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest optns X)"
+    show "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest (precision optns) (presplit_summary_tolerance optns) X)"
     proof (rule split_aformE[OF e'(1) x, where i="fst (max_pdev ?sum)"])
       fix err::real
       assume "err \<in> {-1 .. 1}" "x = aform_val (e'(fst (max_pdev ?sum) := err))
           (fst (split_aform (fst X, ?sum) (fst (max_pdev ?sum))))"
-      thus "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest optns X)"
+      thus "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest (precision optns) (presplit_summary_tolerance optns) X)"
         using e'(1)
         by (force simp: split_aform_largest_def split_aform_largest_uncond_def Affine_def valuate_def
           intro!: image_eqI[where x="e' (a := err)" for a] split: prod.split)
@@ -1019,7 +1021,7 @@ proof
       fix err::real
       assume "err \<in> {-1 .. 1}" "x = aform_val (e'(fst (max_pdev ?sum) := err))
           (snd (split_aform (fst X, ?sum) (fst (max_pdev ?sum))))"
-      thus "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest optns X)"
+      thus "list_ex (\<lambda>X. x \<in> Affine X) (split_aform_largest (precision optns) (presplit_summary_tolerance optns) X)"
         using e'(1)
         by (force simp: split_aform_largest_def split_aform_largest_uncond_def Affine_def valuate_def
           intro: image_eqI[where x="e' (a := err)" for a err]
@@ -1029,7 +1031,7 @@ proof
   show "disjoint_aforms X Y \<Longrightarrow> Affine X \<inter> Affine Y = {}"
     by (rule disjoint_aforms)
   show "Affine (msum_aform' X Y) = {x + y |x y. x \<in> Affine X \<and> y \<in> Affine Y}"
-    by (rule Affine_msum_aform)
+    by (rule Affine_msum_aform) simp
   show "Inf_aform (msum_aform' X Y) = Inf_aform X + Inf_aform Y"
     "Sup_aform (msum_aform' X Y) = Sup_aform X + Sup_aform Y"
     by (auto simp: Inf_aform_msum_aform Sup_aform_msum_aform)
@@ -1046,6 +1048,7 @@ proof
   }
   show "convex (Affine X)"
     by (rule convex_Affine)
+  show "xs \<in> Joints XS \<Longrightarrow> length xs = length XS" by (auto simp: Joints_def valuate_def)
 qed
 
 locale aform_approximate_ivp = aform_approximate_ivp0 +
@@ -1053,9 +1056,9 @@ locale aform_approximate_ivp = aform_approximate_ivp0 +
     aform_of_ivl msum_aform' Affine Joints
     Inf_aform Sup_aform
     "uncurry_options add_aform_componentwise::('a, 'a::executable_euclidean_space aform, (real \<times> ((real \<times> 'a \<times> 'a \<times> real \<times> 'a \<times> 'a) list))) options \<Rightarrow> _"
-    "uncurry_options scaleR_aform_componentwise"
+    "uncurry_options scaleQ_aform_componentwise"
     "uncurry_options scaleR_aform_ivl"
-    split_aform_largest
+    "\<lambda>optns. split_aform_largest (precision optns) (presplit_summary_tolerance optns)"
     disjoint_aforms
     inter_aform_plane
 begin

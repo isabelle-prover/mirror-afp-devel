@@ -14,15 +14,20 @@ lemma e1_fderiv: "((\<lambda>(t::real, y::real). (1::real, y * y + - t)) has_der
 
 approximate_affine e1_d "\<lambda>(a::real, b::real) (c::real, d::real). (0::real, 2 * (b * d) + - c)"
 
+abbreviation "e1_ivp \<equiv> \<lambda>optns args. uncurry_options e1 optns (hd args) (tl args)"
+abbreviation "e1_d_ivp \<equiv> \<lambda>optns args. uncurry_options e1_d optns (hd args) (hd (tl args)) (tl (tl args))"
+
 interpretation e1!: aform_approximate_ivp
-  "uncurry_options e1"
-  "uncurry_options e1_d"
+  e1_ivp e1_d_ivp
   "\<lambda>(t::real, y::real). (1::real, y*y + - t)"
   "\<lambda>(a::real, b::real) (c::real, d::real). (0::real, 2 * (b * d) + - c)"
   apply unfold_locales
-  apply (rule e1[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (rule e1[THEN Joints2_JointsI])
+  unfolding list.sel apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (rule e1_fderiv)
   apply (rule e1_d[THEN Joints2_JointsI]) apply assumption apply assumption
+  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta')
   done
 
@@ -33,7 +38,7 @@ definition "e1_optns = default_optns
       result_fun := ivls_result 23 4,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
-definition "e1test = (\<lambda>_::unit. euler_series_result (uncurry_options e1) (uncurry_options e1_d) e1_optns 0 (aform_of_point (Floatreal 0, FloatR 23 (- 5))) (2 ^ 7))"
+definition "e1test = (\<lambda>_::unit. euler_series_result e1_ivp e1_d_ivp e1_optns 0 (aform_of_point (Floatreal 0, FloatR 23 (- 5))) (2 ^ 7))"
 
 lemma e1test_result: "e1test () =
   Some (FloatR 128 (- 5),

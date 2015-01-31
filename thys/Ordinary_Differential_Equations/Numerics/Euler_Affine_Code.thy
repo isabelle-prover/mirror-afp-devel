@@ -36,7 +36,7 @@ locale approximate_sets0 =
   fixes inf_of_appr::"'b \<Rightarrow> 'a"
   fixes sup_of_appr::"'b \<Rightarrow> 'a"
   fixes add_appr::"('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b option"
-  fixes scale_appr::"('a, 'b, 'c) options \<Rightarrow> real \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b option"
+  fixes scale_appr::"('a, 'b, 'c) options \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b option"
   fixes scale_appr_ivl::"('a, 'b, 'c) options \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b option"
   fixes split_appr::"('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> 'b list"
   fixes disjoint_apprs::"'b \<Rightarrow> 'b \<Rightarrow> bool"
@@ -61,8 +61,8 @@ for appr_of_ivl msum_appr set_of_appr set_of_apprs inf_of_appr
   and sup_of_appr::"'b \<Rightarrow> 'a::{ordered_euclidean_space, executable_euclidean_space}"
   and add_appr:: "('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b option"
   and scale_appr scale_appr_ivl split_appr disjoint_apprs inter_appr_plane +
-  fixes ode_approx::"('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> 'b option"
-  fixes ode_d_approx:: "('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b option"
+  fixes ode_approx::"('a, 'b, 'c) options \<Rightarrow> 'b list \<Rightarrow> 'b option"
+  fixes ode_d_approx:: "('a, 'b, 'c) options \<Rightarrow> 'b list \<Rightarrow> 'b option"
 begin
 
 abbreviation "extend_appr \<equiv> \<lambda>x l u. msum_appr x (appr_of_ivl l u)"
@@ -71,7 +71,7 @@ definition P_appr::"('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> real \<R
   "P_appr optns X0 h X = map_option (\<lambda>Y.
     extend_appr X0 (inf 0 (h *\<^sub>R inf_of_appr Y))
                    (sup  0 (h *\<^sub>R sup_of_appr Y)))
-    (ode_approx optns X)"
+    (ode_approx optns [X])"
 
 fun P_iter::"('a, 'b, 'c) options \<Rightarrow> 'b \<Rightarrow> real \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'b option" where
   "P_iter optns X0 h 0 X =
@@ -107,15 +107,15 @@ lemma cert_stepsize_pos: "cert_stepsize optns X0 h n i = Some (h', cx) \<Longrig
 definition "euler_step optns X0 =
   bind_err (STR ''=certify stepsize failed'') (cert_stepsize optns X0 (stepsize optns) (iterations optns) (halve_stepsizes optns))
   (\<lambda>(h, CX).
-      bind_err (STR ''=ode_approx X0 failed'') (ode_approx optns X0)
+      bind_err (STR ''=ode_approx X0 failed'') (ode_approx optns [X0])
       (\<lambda>X0'.
-        bind_err (STR ''=ode_approx CX failed'') (ode_approx optns CX)
+        bind_err (STR ''=ode_approx CX failed'') (ode_approx optns [CX])
         (\<lambda>F.
-          bind_err (STR ''=ode_d_approx failed'') (ode_d_approx optns CX F)
+          bind_err (STR ''=ode_d_approx failed'') (ode_d_approx optns [CX, F])
           (\<lambda>D.
-            bind_err (STR ''=scale_appr err failed'') (scale_appr optns ((h*h)/2) (ivl_appr_of_appr D) [])
+            bind_err (STR ''=scale_appr err failed'') (scale_appr optns (h*h) 2 (ivl_appr_of_appr D) [])
             (\<lambda>ERR.
-                bind_err (STR ''=scale_appr euler failed'') (scale_appr optns h X0' [X0])
+                bind_err (STR ''=scale_appr euler failed'') (scale_appr optns h 1 X0' [X0])
                 (\<lambda>S.
                   bind_err (STR ''=scale_appr_ivl euler failed'') (scale_appr_ivl optns 0 h X0' [X0])
                   (\<lambda>S'.
@@ -309,7 +309,7 @@ definition "strongest_direction optns f =
 
 definition "next_sections optns d Xs =
   (let
-    set_dir_alist = map (\<lambda>X. (X, apsnd sgn (strongest_direction optns (the (ode_approx optns X))))) Xs;
+    set_dir_alist = map (\<lambda>X. (X, apsnd sgn (strongest_direction optns (the (ode_approx optns [X]))))) Xs;
     dirs = remdups (map snd set_dir_alist);
     dir_set_alist = map (\<lambda>bs. (bs, map fst (filter (\<lambda>(X, b, s). (b, s) = bs) set_dir_alist))) dirs;
     sctns = map (\<lambda>((b, s), Xs). if s = -1 then (Xs, (b, inf_of_appr (ivl_of_apprs Xs) \<bullet> b - d))
@@ -321,7 +321,7 @@ definition "poincares2_iter optns X0 b y =
   while (list_ex (\<lambda>(X, b, y). \<not>stop_iteration optns X))
     (concat o (map (\<lambda>(X, b, y).
       let
-        F = the (ode_approx optns X);
+        F = the (ode_approx optns [X]);
         (bs, fs) = strongest_direction optns F;
         (b, y) = (if bs = b then (b, y)
           else if fs \<le> 0 \<and> fs * 3 \<le> 4 * ((inf_of_appr F) \<bullet> b) then (bs, inf_of_appr X \<bullet> b)
@@ -357,7 +357,7 @@ definition "poincares optns X0s b y =
         (IS, NIS) = List.partition (\<lambda>(h, X0, t, CX, X). (inf_of_appr X \<bullet> b \<le> y \<or> sup_of_appr X \<bullet> b \<le> y)) YS;
         (RS', NIS) = List.partition (\<lambda>(_, _, _, _, X).
           list_ex (\<lambda>b'. b \<noteq> b' \<and>
-              (let sa = sup_abs_appr (the (ode_approx optns X)) in abs (sa \<bullet> b) * 4 \<le> 3 * abs (sa \<bullet> b')))
+              (let sa = sup_abs_appr (the (ode_approx optns [X])) in abs (sa \<bullet> b) * 4 \<le> 3 * abs (sa \<bullet> b')))
             Basis_list) NIS;
         XS' = ''concat (map (%X. split_appr_fp (optns(|max_tdev_thres:=collect_granularity optns|)) X) (map fst IS)'';
         (IS1, IS2) = List.partition (\<lambda>(h, X0, t, CX, X). h \<le> min_stepsize optns) IS;
@@ -439,16 +439,6 @@ abbreviation "msum_aform' \<equiv> \<lambda>X. msum_aform (degree_aform X) X"
 
 abbreviation "uncurry_options \<equiv> \<lambda>f x. f (precision x) (tolerance x)"
 
-definition "split_aform_largest_uncond X =
-    (let (i, x) = max_pdev (snd X) in split_aform X i)"
-
-definition "split_aform_largest optns X =
-  (let (a, b) =
-      split_aform_largest_uncond (fst X,
-        summarize_threshold (precision optns) (presplit_summary_tolerance optns)
-          (degree_aform X) (snd X))
-    in [a, b])"
-
 text {* intersection with plane *}
 
 definition inter_aform_plane where
@@ -459,9 +449,9 @@ locale aform_approximate_sets0 =
     aform_of_ivl msum_aform' Affine Joints
     Inf_aform Sup_aform
     "uncurry_options add_aform_componentwise::('a, 'a::executable_euclidean_space aform, (real \<times> ((real \<times> 'a \<times> 'a \<times> real \<times> 'a \<times> 'a) list))) options \<Rightarrow> _"
-    "uncurry_options scaleR_aform_componentwise"
+    "uncurry_options scaleQ_aform_componentwise"
     "uncurry_options scaleR_aform_ivl"
-    split_aform_largest
+    "\<lambda>optns. split_aform_largest (precision optns) (presplit_summary_tolerance optns)"
     disjoint_aforms
     inter_aform_plane
 
@@ -472,9 +462,9 @@ locale aform_approximate_ivp0 =
     aform_of_ivl msum_aform' Affine Joints
     Inf_aform Sup_aform
     "uncurry_options add_aform_componentwise::('a, 'a::executable_euclidean_space aform, (real \<times> ((real \<times> 'a \<times> 'a \<times> real \<times> 'a \<times> 'a) list))) options \<Rightarrow> _"
-    "uncurry_options scaleR_aform_componentwise"
+    "uncurry_options scaleQ_aform_componentwise"
     "uncurry_options scaleR_aform_ivl"
-    split_aform_largest
+    "\<lambda>optns. split_aform_largest (precision optns) (presplit_summary_tolerance optns)"
     disjoint_aforms
     inter_aform_plane
 
