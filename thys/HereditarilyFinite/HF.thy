@@ -801,4 +801,286 @@ lemma hb_ex_simps [simp, no_atp]:
 lemma le_HCollect_iff: "A \<le> \<lbrace>x \<^bold>\<in> B. P x\<rbrace> \<longleftrightarrow> A \<le> B \<and> (\<forall>x \<^bold>\<in> A. P x)"
   by blast
 
+section{*Relations and Functions*}
+
+definition is_hpair :: "hf \<Rightarrow> bool"
+  where "is_hpair z = (\<exists>x y. z = \<langle>x,y\<rangle>)"
+
+definition hconverse :: "hf \<Rightarrow> hf"
+  where "hconverse(r) = \<lbrace>z. w \<^bold>\<in> r, \<exists>x y. w = \<langle>x,y\<rangle> & z = \<langle>y,x\<rangle>\<rbrace>"
+
+definition hdomain :: "hf \<Rightarrow> hf"
+  where "hdomain(r) = \<lbrace>x. w \<^bold>\<in> r, \<exists>y. w = \<langle>x,y\<rangle>\<rbrace>"
+
+definition hrange :: "hf \<Rightarrow> hf"
+  where "hrange(r) = hdomain(hconverse(r))"
+
+definition hrelation :: "hf \<Rightarrow> bool"
+  where "hrelation(r) = (\<forall>z. z \<^bold>\<in> r \<longrightarrow> is_hpair z)"
+
+definition hrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"
+  --{* Restrict the relation r to the domain A *}
+  where "hrestrict r A = \<lbrace>z \<^bold>\<in> r. \<exists>x \<^bold>\<in> A. \<exists>y. z = \<langle>x,y\<rangle>\<rbrace>"
+
+definition nonrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"
+  where "nonrestrict r A = \<lbrace>z \<^bold>\<in> r. \<forall>x \<^bold>\<in> A. \<forall>y. z \<noteq> \<langle>x,y\<rangle>\<rbrace>"
+
+definition hfunction :: "hf \<Rightarrow> bool"
+  where "hfunction(r) = (\<forall>x y. \<langle>x,y\<rangle> \<^bold>\<in> r \<longrightarrow> (\<forall>y'. \<langle>x,y'\<rangle> \<^bold>\<in> r \<longrightarrow> y=y'))"
+
+definition app :: "hf \<Rightarrow> hf \<Rightarrow> hf"
+  where "app f x = (THE y. \<langle>x, y\<rangle> \<^bold>\<in> f)"
+
+lemma hrestrict_iff [iff]:
+    "z \<^bold>\<in> hrestrict r A \<longleftrightarrow> z \<^bold>\<in> r & (\<exists> x y. z = \<langle>x, y\<rangle> & x \<^bold>\<in> A)"
+  by (auto simp: hrestrict_def)
+
+lemma hrelation_0 [simp]: "hrelation 0"
+  by (force simp add: hrelation_def)
+
+lemma hrelation_restr [iff]: "hrelation (hrestrict r x)"
+  by (metis hrelation_def hrestrict_iff is_hpair_def)
+
+lemma hrelation_hunion [simp]: "hrelation (f \<squnion> g) \<longleftrightarrow> hrelation f \<and> hrelation g"
+  by (auto simp: hrelation_def)
+
+lemma hfunction_restr: "hfunction r \<Longrightarrow> hfunction (hrestrict r x)"
+  by (auto simp: hfunction_def hrestrict_def)
+
+lemma hdomain_restr [simp]: "hdomain (hrestrict r x) = hdomain r \<sqinter> x"
+  by (force simp add: hdomain_def hrestrict_def)
+
+lemma hdomain_0 [simp]: "hdomain 0 = 0"
+  by (force simp add: hdomain_def)
+
+lemma hdomain_ins [simp]: "hdomain (r \<triangleleft> \<langle>x, y\<rangle>) = hdomain r \<triangleleft> x"
+  by (force simp add: hdomain_def)
+
+lemma hdomain_hunion [simp]: "hdomain (f \<squnion> g) = hdomain f \<squnion> hdomain g"
+  by (simp add: hdomain_def)
+
+lemma hdomain_not_mem [iff]: "\<not> \<langle>hdomain r, a\<rangle> \<^bold>\<in> r"
+  by (metis hdomain_ins hinter_hinsert_right hmem_hinsert hmem_not_refl
+            hunion_hinsert_right sup_inf_absorb)
+
+lemma app_singleton [simp]: "app \<lbrace>\<langle>x, y\<rangle>\<rbrace> x = y"
+  by (simp add: app_def)
+
+lemma app_equality: "hfunction f \<Longrightarrow> \<langle>x, y\<rangle> <: f \<Longrightarrow> app f x = y"
+  by (auto simp: app_def hfunction_def intro: the1I2)
+
+lemma app_ins2: "x' \<noteq> x \<Longrightarrow> app (f \<triangleleft> \<langle>x, y\<rangle>) x' = app f x'"
+  by (simp add: app_def)
+
+lemma hfunction_0 [simp]: "hfunction 0"
+  by (force simp add: hfunction_def)
+
+lemma hfunction_ins: "hfunction f \<Longrightarrow> ~ x <: hdomain f \<Longrightarrow> hfunction (f\<triangleleft> \<langle>x, y\<rangle>)"
+  by (auto simp: hfunction_def hdomain_def)
+
+lemma hdomainI: "\<langle>x, y\<rangle> \<^bold>\<in> f \<Longrightarrow> x \<^bold>\<in> hdomain f"
+  by (auto simp: hdomain_def)
+
+lemma hfunction_hunion: "hdomain f \<sqinter> hdomain g = 0
+            \<Longrightarrow> hfunction (f \<squnion> g) \<longleftrightarrow> hfunction f \<and> hfunction g"
+  by (auto simp: hfunction_def) (metis hdomainI hinter_iff hmem_hempty)+
+
+lemma app_hrestrict [simp]: "x \<^bold>\<in> A \<Longrightarrow> app (hrestrict f A) x = app f x"
+  by (simp add: hrestrict_def app_def)
+
+section{*Operations on families of sets*}
+
+definition HLambda :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
+  where "HLambda A b = RepFun A (\<lambda>x. \<langle>x, b x\<rangle>)"
+
+definition HSigma :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
+  where "HSigma A B = (\<Squnion>x\<^bold>\<in>A. \<Squnion>y\<^bold>\<in>B(x). \<lbrace>\<langle>x,y\<rangle>\<rbrace>)"
+
+definition HPi :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
+  where "HPi A B = \<lbrace> f \<^bold>\<in> HPow(HSigma A B). A \<le> hdomain(f) & hfunction(f)\<rbrace>"
+
+
+syntax
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3PROD _<:_./ _)" 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3SUM _<:_./ _)" 10)
+  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3lam _<:_./ _)" 10)
+
+syntax (xsymbols)
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)
+  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
+
+syntax (HTML output)
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)
+  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
+
+translations
+  "PROD x<:A. B" == "CONST HPi A (%x. B)"
+  "SUM x<:A. B"  == "CONST HSigma A (%x. B)"
+  "lam x<:A. f"  == "CONST HLambda A (%x. f)"
+
+subsection{*Rules for Unions and Intersections of families*}
+
+lemma HUN_iff [simp]: "b \<^bold>\<in> (\<Squnion>x\<^bold>\<in>A. B(x)) \<longleftrightarrow> (\<exists>x\<^bold>\<in>A. b \<^bold>\<in> B(x))"
+  by auto
+
+(*The order of the premises presupposes that A is rigid; b may be flexible*)
+lemma HUN_I: "\<lbrakk> a \<^bold>\<in> A;  b \<^bold>\<in> B(a) \<rbrakk>  \<Longrightarrow> b \<^bold>\<in> (\<Squnion>x\<^bold>\<in>A. B(x))"
+  by auto
+
+lemma HUN_E [elim!]: assumes "b \<^bold>\<in> (\<Squnion>x\<^bold>\<in>A. B(x))" obtains x where "x \<^bold>\<in> A"  "b \<^bold>\<in> B(x)"
+  using assms  by blast
+
+lemma HINT_iff: "b \<^bold>\<in> (\<Sqinter>x\<^bold>\<in>A. B(x)) \<longleftrightarrow> (\<forall>x\<^bold>\<in>A. b \<^bold>\<in> B(x)) & A\<noteq>0"
+  by (simp add: HInter_def HBall_def) (metis foundation hmem_hempty)
+
+lemma HINT_I: "\<lbrakk> !!x. x \<^bold>\<in> A \<Longrightarrow> b \<^bold>\<in> B(x);  A\<noteq>0 \<rbrakk> \<Longrightarrow> b \<^bold>\<in> (\<Sqinter>x\<^bold>\<in>A. B(x))"
+  by (simp add: HINT_iff)
+
+lemma HINT_E: "\<lbrakk> b \<^bold>\<in> (\<Sqinter>x\<^bold>\<in>A. B(x));  a \<^bold>\<in> A \<rbrakk> \<Longrightarrow> b \<^bold>\<in> B(a)"
+  by (auto simp: HINT_iff)
+
+
+subsection{*Generalized Cartesian product*}
+
+lemma HSigma_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> HSigma A B \<longleftrightarrow> a \<^bold>\<in> A & b \<^bold>\<in> B(a)"
+  by (force simp add: HSigma_def)
+
+lemma HSigmaI [intro!]: "\<lbrakk> a \<^bold>\<in> A;  b \<^bold>\<in> B(a) \<rbrakk>  \<Longrightarrow> \<langle>a,b\<rangle> \<^bold>\<in> HSigma A B"
+  by simp
+
+lemmas HSigmaD1 = HSigma_iff [THEN iffD1, THEN conjunct1]
+lemmas HSigmaD2 = HSigma_iff [THEN iffD1, THEN conjunct2]
+
+text{*The general elimination rule*}
+lemma HSigmaE [elim!]:
+  assumes "c \<^bold>\<in> HSigma A B"
+  obtains x y where "x \<^bold>\<in> A" "y \<^bold>\<in> B(x)" "c=\<langle>x,y\<rangle>"
+  using assms  by (force simp add: HSigma_def)
+
+lemma HSigmaE2 [elim!]:
+  assumes "\<langle>a,b\<rangle> \<^bold>\<in> HSigma A B" obtains "a \<^bold>\<in> A" and "b \<^bold>\<in> B(a)"
+  using assms  by auto
+
+lemma HSigma_empty1 [simp]: "HSigma 0 B = 0"
+  by blast
+
+instantiation hf :: times
+begin
+definition times_hf where
+  "times A B = HSigma A (\<lambda>x. B)"
+instance proof qed
+end
+
+lemma times_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> A * B \<longleftrightarrow> a \<^bold>\<in> A & b \<^bold>\<in> B"
+  by (simp add: times_hf_def)
+
+lemma timesI [intro!]: "\<lbrakk> a \<^bold>\<in> A;  b \<^bold>\<in> B \<rbrakk>  \<Longrightarrow> \<langle>a,b\<rangle> \<^bold>\<in> A * B"
+  by simp
+
+lemmas timesD1 = times_iff [THEN iffD1, THEN conjunct1]
+lemmas timesD2 = times_iff [THEN iffD1, THEN conjunct2]
+
+text{*The general elimination rule*}
+lemma timesE [elim!]:
+  assumes c: "c \<^bold>\<in> A * B"
+  obtains x y where "x \<^bold>\<in> A" "y \<^bold>\<in> B" "c=\<langle>x,y\<rangle>" using c
+  by (auto simp: times_hf_def)
+
+text{*...and a specific one*}
+lemma timesE2 [elim!]:
+  assumes "\<langle>a,b\<rangle> \<^bold>\<in> A * B" obtains "a \<^bold>\<in> A" and "b \<^bold>\<in> B"
+using assms
+  by auto
+
+lemma times_empty1 [simp]: "0 * B = (0::hf)"
+  by auto
+
+lemma times_empty2 [simp]: "A*0 = (0::hf)"
+  by blast
+
+lemma times_empty_iff: "A*B=0 \<longleftrightarrow> A=0 | B=(0::hf)"
+  by (auto simp: times_hf_def hf_ext)
+
+instantiation hf :: mult_zero
+begin
+instance proof qed auto
+end
+
+section {*Disjoint Sum*}
+
+instantiation hf :: zero_neq_one
+begin
+
+definition
+  One_hf_def: "1 = \<lbrace>0\<rbrace>"
+instance proof
+  qed (auto simp: One_hf_def)
+end
+
+instantiation hf :: plus
+begin
+definition plus_hf where
+  "plus A B = (\<lbrace>0\<rbrace> * A) \<squnion> (\<lbrace>1\<rbrace> * B)"
+instance proof qed
+end
+
+definition Inl :: "hf=>hf" where
+     "Inl(a) \<equiv> \<langle>0,a\<rangle>"
+
+definition Inr :: "hf=>hf" where
+     "Inr(b) \<equiv> \<langle>1,b\<rangle>"
+
+lemmas sum_defs = plus_hf_def Inl_def Inr_def
+
+lemma Inl_nonzero [simp]:"Inl x \<noteq> 0"
+  by (metis Inl_def hpair_nonzero)
+
+lemma Inr_nonzero [simp]:"Inr x \<noteq> 0"
+  by (metis Inr_def hpair_nonzero)
+
+text{* Introduction rules for the injections (as equivalences) *}
+
+lemma Inl_in_sum_iff [iff]: "Inl(a) \<^bold>\<in> A+B \<longleftrightarrow> a \<^bold>\<in> A"
+  by (auto simp: sum_defs)
+
+lemma Inr_in_sum_iff [iff]: "Inr(b) \<^bold>\<in> A+B \<longleftrightarrow> b \<^bold>\<in> B"
+  by (auto simp: sum_defs)
+
+text{*Elimination rule*}
+
+lemma sumE [elim!]:
+  assumes u: "u \<^bold>\<in> A+B"
+  obtains x where "x \<^bold>\<in> A" "u=Inl(x)" | y where "y \<^bold>\<in> B" "u=Inr(y)" using u
+  by (auto simp: sum_defs)
+
+text{* Injection and freeness equivalences, for rewriting *}
+
+lemma Inl_iff [iff]: "Inl(a)=Inl(b) \<longleftrightarrow> a=b"
+  by (simp add: sum_defs)
+
+lemma Inr_iff [iff]: "Inr(a)=Inr(b) \<longleftrightarrow> a=b"
+  by (simp add: sum_defs)
+
+lemma Inl_Inr_iff [iff]: "Inl(a)=Inr(b) \<longleftrightarrow> False"
+  by (simp add: sum_defs)
+
+lemma Inr_Inl_iff [iff]: "Inr(b)=Inl(a) \<longleftrightarrow> False"
+  by (simp add: sum_defs)
+
+lemma sum_empty [simp]: "0+0 = (0::hf)"
+  by (auto simp: sum_defs)
+
+lemma sum_iff: "u \<^bold>\<in> A+B \<longleftrightarrow> (\<exists>x. x \<^bold>\<in> A & u=Inl(x)) | (\<exists>y. y \<^bold>\<in> B & u=Inr(y))"
+  by blast
+
+lemma sum_subset_iff:
+  fixes A :: hf shows "A+B \<le> C+D \<longleftrightarrow> A\<le>C & B\<le>D"
+  by blast
+
+lemma sum_equal_iff:
+  fixes A :: hf shows "A+B = C+D \<longleftrightarrow> A=C & B=D"
+  by (auto simp: hf_ext sum_subset_iff)
+
 end
