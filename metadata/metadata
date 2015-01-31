@@ -1794,6 +1794,9 @@ abstract =
  We provide affine operations as well as overapproximations of some non-affine operations like multiplication and division.
  Expressions involving those operations can automatically be turned into (executable) functions approximating the original
  expression in affine arithmetic.
+extra-history =
+  Change history:
+  [2015-01-31]: added algorithm for zonotope/hyperplane intersection
 
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality
