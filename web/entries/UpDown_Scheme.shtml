@@ -24,50 +24,51 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">T</font>he
-<font class="first">U</font>nified
-<font class="first">P</font>olicy
-<font class="first">F</font>ramework
-(UPF)
+<h1><font class="first">V</font>erification
+of
+the
+<font class="first">U</font>pDown
+<font class="first">S</font>cheme
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The Unified Policy Framework (UPF)</td></tr>
+        <td class="data" width="80%">Verification of the UpDown Scheme</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Achim D. Brucker (adbrucker /at/ 0x5f /dot/ org), Lukas Brügger (lukas /dot/ a /dot/ bruegger /at/ gmail /dot/ com) and Burkhart Wolff (wolff /at/ lri /dot/ fr)</td></tr>
+        <td class="data">Johannes Hölzl (hoelzl /at/ in /dot/ tum /dot/ de)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-11-28</td></tr>
+        <td class="data">2015-01-28</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-We present the Unified Policy Framework (UPF), a generic framework
-for modelling security (access-control) policies. UPF emphasizes
-the view that a policy is a policy decision function that grants or
-denies access to resources, permissions, etc. In other words,
-instead of modelling the relations of permitted or prohibited
-requests directly, we model the concrete function that implements
-the policy decision point in a system.  In more detail, UPF is
-based on the following four principles: 1) Functional representation
-of policies, 2) No conflicts are possible, 3) Three-valued decision
-type (allow, deny, undefined), 4) Output type not containing the
-decision only.
+The UpDown scheme is a recursive scheme used to compute the stiffness matrix
+on a special form of sparse grids. Usually, when discretizing a Euclidean
+space of dimension d we need O(n^d) points, for n points along each dimension.
+Sparse grids are a hierarchical representation where the number of points is
+reduced to O(n * log(n)^d). One disadvantage of such sparse grids is that the
+algorithm now operate recursively in the dimensions and levels of the sparse grid.
+<p>
+The UpDown scheme allows us to compute the stiffness matrix on such a sparse
+grid. The stiffness matrix represents the influence of each representation
+function on the L^2 scalar product. For a detailed description see
+Dirk Pflüger's PhD thesis. This formalization was developed as an
+interdisciplinary project (IDP) at the Technische Universität München.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{UPF-AFP,
-  author  = {Achim D. Brucker and Lukas Brügger and Burkhart Wolff},
-  title   = {The Unified Policy Framework (UPF)},
+			<pre>@article{UpDown_Scheme-AFP,
+  author  = {Johannes Hölzl},
+  title   = {Verification of the UpDown Scheme},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/UPF.shtml},
+  month   = jan,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/UpDown_Scheme.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -87,7 +88,7 @@ decision only.
 
 <p></p>
 
-<!--#set var="name" value="UPF" -->
+<!--#set var="name" value="UpDown_Scheme" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

@@ -49,6 +49,12 @@ Expressions involving those operations can automatically be turned into (executa
 expression in affine arithmetic.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-01-31]: added algorithm for zonotope/hyperplane intersection
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Affine_Arithmetic-AFP,

@@ -51,6 +51,25 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 <table width="80%" class="entries">
   <tbody>
     <tr>
+	  <td class="head">2015</td>
+	</tr>
+
+<tr><td class="entry">
+2015-01-28:
+<a href="entries/UpDown_Scheme.shtml">Verification of the UpDown Scheme</a>
+<br>Author:
+Johannes Hölzl
+</td></tr>
+
+
+
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
 	  <td class="head">2014</td>
 	</tr>
 
@@ -58,9 +77,9 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 2014-11-28:
 <a href="entries/UPF.shtml">The Unified Policy Framework (UPF)</a>
 <br>Author:
-<a href="adbrucker@0x5f.org">Achim D. Brucker</a>,
-<a href="lukas.a.bruegger@gmail.com">Lukas Brügger</a> and 
-<a href="wolff@lri.fr">Burkhart Wolff</a>
+Achim D. Brucker,
+Lukas Brügger and 
+Burkhart Wolff
 </td></tr>
 
 <tr><td class="entry">
