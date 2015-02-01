@@ -1,4 +1,4 @@
-header \<open> UpDown  \<close>
+section \<open> UpDown  \<close>
 
 (* Definition of sparse grids, hierarchical bases and the up-down algorithm.
  *

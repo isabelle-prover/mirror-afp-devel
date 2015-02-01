@@ -1,4 +1,4 @@
-header \<open> UpDown Scheme \<close>
+section \<open> UpDown Scheme \<close>
 
 theory UpDown_Scheme
   imports Grid

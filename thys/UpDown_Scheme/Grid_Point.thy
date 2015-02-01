@@ -1,4 +1,4 @@
-header \<open> Grid Points \<close>
+section \<open> Grid Points \<close>
 
 theory Grid_Point
 imports Complex_Main

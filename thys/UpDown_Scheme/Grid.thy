@@ -1,4 +1,4 @@
-header \<open> Sparse Grids \<close>
+section \<open> Sparse Grids \<close>
 
 theory Grid
 imports Grid_Point

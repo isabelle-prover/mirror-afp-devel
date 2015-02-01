@@ -1,4 +1,4 @@
-header \<open> Imperative Version \<close>
+section \<open> Imperative Version \<close>
 
 theory Imperative
 imports UpDown_Scheme "../Separation_Logic_Imperative_HOL/Sep_Main"

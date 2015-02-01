@@ -1,4 +1,4 @@
-header \<open> Down part \<close>
+section \<open> Down part \<close>
 
 theory Down
 imports Triangular_Function UpDown_Scheme

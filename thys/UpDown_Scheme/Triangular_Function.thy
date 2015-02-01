@@ -1,4 +1,4 @@
-header \<open> Hat Functions \<close>
+section \<open> Hat Functions \<close>
 
 theory Triangular_Function
 imports Probability Grid
