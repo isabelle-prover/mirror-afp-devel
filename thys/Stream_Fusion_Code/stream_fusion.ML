@@ -171,7 +171,7 @@ fun fusion_simproc ctxt ct =
         val thm = fusion_conv ctxt ct
         val failed = Thm.is_reflexive thm orelse occur_in (get_unstream ctxt) (term_of (Thm.rhs_of thm))
         val _ = tracing ctxt (fn _ => Pretty.string_of (Pretty.block 
-          [Pretty.str (if failed then "FAILED: " else "SUCEEDED: "),
+          [Pretty.str (if failed then "FAILED: " else "SUCCEEDED: "),
            Pretty.brk 2,
            Syntax.pretty_term ctxt (prop_of thm)]))
       in
