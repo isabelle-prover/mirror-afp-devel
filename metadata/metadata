@@ -2359,6 +2359,17 @@ abstract = Gödel's two incompleteness theorems are formalised, following a care
 	in the formalised calculus upon which the theorem is based.
 	However, other technical problems had to be solved in order to complete the argument.
 
+[Finite_Automata_HF]
+title = Finite Automata in Hereditarily Finite Set Theory
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+date = 2015-02-05
+topic = Computer Science/Automata and Formal Languages
+abstract = Finite Automata, both deterministic and non-deterministic, for regular languages.
+  The Myhill-Nerode Theorem. Closure under intersection, concatenation, etc.
+  Regular expressions define regular languages. Closure under reversal;
+  the powerset construction mapping NFAs to DFAs. Left and right languages; minimal DFAs.
+  Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs.
+
 [Decreasing-Diagrams]
 title = Decreasing Diagrams
 author = Harald Zankl <http://cl-informatik.uibk.ac.at/users/hzankl>
