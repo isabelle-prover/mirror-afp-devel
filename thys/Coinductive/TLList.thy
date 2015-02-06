@@ -241,7 +241,7 @@ unfolding Quotient_alt_def cr_tllist_def by(auto intro: tllist_of_llist_cong)
 lemma reflp_tllist: "reflp (\<lambda>(xs, a) (ys, b). xs = ys \<and> (lfinite ys \<longrightarrow> a = b))"
 by(simp add: reflp_def)
 
-setup_lifting (no_code) Quotient_tllist reflp_tllist
+setup_lifting Quotient_tllist reflp_tllist
 
 context
 begin

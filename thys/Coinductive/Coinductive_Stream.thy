@@ -145,7 +145,7 @@ by(unfold_locales) simp_all
 interpretation stream!: type_definition llist_of_stream stream_of_llist "{xs. \<not> lfinite xs}"
 by(fact stream_from_llist)
 
-setup_lifting (no_code) stream_from_llist
+setup_lifting stream_from_llist
 
 lemma cr_streamI: "\<not> lfinite xs \<Longrightarrow> cr_stream xs (stream_of_llist xs)"
 by(simp add: cr_stream_def Abs_stream_inverse)

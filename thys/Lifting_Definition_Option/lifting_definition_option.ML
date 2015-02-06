@@ -239,8 +239,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
       (* setup_lifting type_definition_restricted_bool *)
       val type_def_thm = info |> snd |> snd |> #type_definition |> Morphism.thm morph
-      val gen_code = true
-      val lthy = Lifting_Setup.setup_by_typedef_thm gen_code type_def_thm lthy
+      val lthy = Lifting_Setup.setup_by_typedef_thm type_def_thm lthy
       val _ = debug_out ("step 4: performed lifting_setup")
 
       val restr_c_ty = let (* convert type over fresh ty_vars into original ty_vars *)
