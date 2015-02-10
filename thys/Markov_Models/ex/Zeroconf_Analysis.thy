@@ -6,6 +6,17 @@ theory Zeroconf_Analysis
   imports "../Discrete_Time_Markov_Chain"
 begin
 
+lemma (in MC_with_rewards) reward_until_SCons[simp]:
+  "reward_until X s (t ## \<omega>) = (if s \<in> X then 0 else \<rho> s + \<iota> s t + reward_until X t \<omega>)"
+  by simp
+
+lemmas [simp] = set_map_pmf set_pmf_bernoulli UNIV_bool set_return_pmf
+
+lemma integral_map_pmf:
+  fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"
+  shows "integral\<^sup>L (measure_pmf (map_pmf g p)) f = integral\<^sup>L p (\<lambda>x. f (g x))"
+  by (simp add: integral_distr map_pmf_rep_eq)
+
 subsection {* Definition of a ZeroConf allocation run *}
 
 datatype zc_state = start 
@@ -14,7 +25,9 @@ datatype zc_state = start
                   | error
 
 lemma inj_probe: "inj_on probe X"
-  by (simp add: inj_on_def)
+  by (auto simp: inj_on_def)
+
+text {* Countability of @{typ zc_state} simplifies measurability of functions on @{typ zc_state}. *}
 
 instance zc_state :: countable
 proof
@@ -32,19 +45,14 @@ locale Zeroconf_Analysis =
   assumes r: "0 \<le> r" and e: "0 \<le> e"
 begin
 
-interpretation pmf_as_function .
+abbreviation states where
+  "states \<equiv> probe ` {.. N} \<union> {start, ok, error}"
 
-abbreviation "states == probe ` {.. N} \<union> ({start} \<union> {ok} \<union> {error})"
-
-lift_definition \<tau> :: "zc_state \<Rightarrow> zc_state pmf" is
-  "\<lambda>start   \<Rightarrow> ((\<lambda>_. 0) (probe 0 := q, ok := 1 - q))
-  | probe n \<Rightarrow> if n < N then (\<lambda>_. 0) (probe (Suc n) := p, start := 1 - p) 
-                           else (\<lambda>_. 0) (error := p, start := 1 - p)
-  | ok      \<Rightarrow> ((\<lambda>_. 0) (ok := 1))
-  | error   \<Rightarrow> ((\<lambda>_. 0) (error := 1))"
-  using q p
-  by (auto split: zc_state.splits split_if_asm simp: setsum.If_cases
-           intro!: nn_integral_count_space'[where A="states", THEN trans])
+primrec \<tau> :: "zc_state \<Rightarrow> zc_state pmf" where
+  "\<tau> start     = map_pmf (\<lambda>True \<Rightarrow> probe 0 | False \<Rightarrow> ok) (bernoulli_pmf q)"
+| "\<tau> (probe n) = map_pmf (\<lambda>True \<Rightarrow> (if n < N then probe (Suc n) else error) | False \<Rightarrow> start) (bernoulli_pmf p)"
+| "\<tau> ok        = return_pmf ok"
+| "\<tau> error     = return_pmf error"
 
 primrec \<rho> :: "zc_state \<Rightarrow> zc_state \<Rightarrow> real" where
   "\<rho> start     = (\<lambda>_. 0) (probe 0 := r, ok := r * (N + 1))"
@@ -62,27 +70,14 @@ subsection {* The allocation run is a rewarded DTMC *}
 
 abbreviation "E s \<equiv> set_pmf (\<tau> s)"
 
-lemma E_start_iff[simp]: "E start = {probe 0, ok}"
-  using q unfolding set_eq_iff set_pmf_iff by transfer simp
-
-lemma E_probe_iff[simp]:
-  "E (probe n) = (if n < N then {start, probe (Suc n)} else {start, error})"
-  using p q unfolding set_eq_iff set_pmf_iff by transfer simp
-
-lemma E_ok_iff[simp]: "E ok = {ok}"
-  unfolding set_eq_iff set_pmf_iff by transfer simp
-
 lemma enabled_ok: "enabled ok \<omega> \<longleftrightarrow> \<omega> = sconst ok"
   by (simp add: enabled_iff_sconst)
-
-lemma E_error_iff[simp]: "E error = {error}"
-  unfolding set_eq_iff set_pmf_iff by transfer simp
 
 lemma finite_E[intro, simp]: "finite (E s)"
   by (cases s) auto
 
 lemma E_closed: "s \<in> states \<Longrightarrow> E s \<subseteq> states"
-  by (auto split: split_if_asm)
+  using p q by (cases s) (auto split: bool.splits)
 
 lemma enabled_error: "enabled error \<omega> \<longleftrightarrow> \<omega> = sconst error"
   by (simp add: enabled_iff_sconst)
@@ -99,9 +94,9 @@ qed
 lemma to_error: assumes "n \<le> N" shows "(probe n, error) \<in> (Sigma UNIV E)\<^sup>*"
   using `n \<le> N`
 proof (induction rule: inc_induct)
-  case (step n') then show ?case
+  case (step n') with p show ?case
     by (intro rtrancl_trans[OF r_into_rtrancl step.IH]) auto
-qed auto
+qed (insert p, auto)
 
 subsection {* Probability of a erroneous allocation *}
 
@@ -118,7 +113,7 @@ proof (rule unique_les)
   have [arith]: "0 \<le> p * (q * p ^ N)"
     using p q by simp
   have p_eq: "p_start = p_probe 0 * q"
-    "\<And>n. n < N \<Longrightarrow> p_probe n = p_start * (1 - p) + p_probe (Suc n) * p"
+    "\<And>n. n < N \<Longrightarrow> p_probe n = p_probe (Suc n) * p + p_start * (1 - p)"
     "p_probe N = p + p_start * (1 - p)"
     using p q
     by (auto simp: p_probe_def p_start_def power_Suc[symmetric] Suc_diff_Suc divide_simps
@@ -126,21 +121,17 @@ proof (rule unique_les)
        (auto simp: field_simps)
   fix s assume s: "s \<in> states - {ok, error}"
   then show "?E s = (\<integral>t. ?E t \<partial>\<tau> s) + 0"
-    using p q
-    by (subst integral_measure_pmf[of states])
-       (auto split: zc_state.splits split_if_asm intro: p_eq
-             simp: setsum_clauses setsum.reindex inj_probe \<tau>.rep_eq
-                   setsum.If_cases if_distrib[where f="\<lambda>x. a * x" for a])
+    using p q by (auto simp add: integral_map_pmf intro: p_eq)
   show "\<exists>t\<in>{ok, error}. (s, t) \<in> (Sigma UNIV E)\<^sup>*"
-    using s to_error by auto
+    using s q to_error by auto
   from s show "P_err s = integral\<^sup>L (measure_pmf (\<tau> s)) P_err + 0"
-    unfolding P_err_def[abs_def] by (subst prob_T) (auto simp: ev_Stream)
+    unfolding P_err_def[abs_def] by (subst prob_T) (auto simp: ev_Stream simp del: UNIV_bool)
 next
   fix s assume "s \<in> {ok, error}" then show "P_err s = ?E s"
     by (auto intro!: T.prob_eq_0_AE T.prob_Collect_eq_1[THEN iffD2]
              simp: P_err_def AE_sconst ev_sconst HLD_iff ev_Stream T.prob_space
              simp del: space_T sets_T )
-qed (auto intro!: integrable_measure_pmf_finite split: split_if_asm)
+qed (insert p q, auto intro!: integrable_measure_pmf_finite split: split_if_asm)
 
 lemma P_err_start: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
   by (simp add: P_err)
@@ -151,7 +142,7 @@ lemma states_closed:
   assumes "s \<in> states"
   assumes "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
   shows "t \<in> states"
-  using assms(2,1) by induction (auto split: split_if_asm)
+  using assms(2,1) p q by induction (auto split: split_if_asm)
 
 lemma finite_reached:
   assumes s: "s \<in> states" shows "finite ((SIGMA s:UNIV. E s - {error, ok})\<^sup>* `` {s})"
@@ -163,7 +154,7 @@ lemma AE_reaches_error_or_ok:
   shows "AE \<omega> in T s. ev (HLD {error, ok}) \<omega>"
 proof (rule AE_T_ev_HLD)
   { fix t assume t: "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
-    with states_closed[OF s t] to_error show "\<exists>t'\<in>{error, ok}. (t, t') \<in> (Sigma UNIV E)\<^sup>*"
+    with states_closed[OF s t] to_error p q show "\<exists>t'\<in>{error, ok}. (t, t') \<in> (Sigma UNIV E)\<^sup>*"
       by auto }
 qed (rule finite_reached[OF s])
 
@@ -171,12 +162,18 @@ subsection {* Expected runtime of an allocation run *}
 
 definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} s \<omega> \<partial>T s)"
 
+lemma R_iter: "s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow> R s = (\<integral>\<^sup>+t. ereal (\<rho> s t) + R t \<partial>\<tau> s)"
+  unfolding R_def using T.emeasure_space_1
+  by (subst nn_integral_T)
+     (auto simp del: \<tau>.simps \<rho>.simps simp add: AE_measure_pmf_iff nn_integral_add reward_until_nonneg
+           intro!: nn_integral_cong_AE)
+
 lemma R_finite:
   assumes s: "s \<in> states"
   shows "R s \<noteq> \<infinity>"
   unfolding R_def
 proof (rule nn_integral_reward_until_finite)
-  { fix t assume "(s, t) \<in> (Sigma (- {error, ok}) E)\<^sup>*" from this s have "t \<in> states"
+  { fix t assume "(s, t) \<in> (Sigma (- {error, ok}) E)\<^sup>*" from this s p q have "t \<in> states"
       by induction (auto split: split_if_asm) } 
   then have "(Sigma (- {error, ok}) E)\<^sup>* `` {s} \<subseteq> states"
     by auto
@@ -192,73 +189,42 @@ lemma cost_from_start:
     (q * (r + p^Suc N * e + r * p * (1 - p^N) / (1 - p)) + (1 - q) * (r * Suc N)) /
     (1 - q + q * p^Suc N)"
 proof -
-  have "\<forall>s\<in>states. \<exists>r. R s = ereal r"
-    using R_nonneg R_finite
-    apply (intro ballI exI)
-    apply (rule ereal_real'[symmetric])+
-    apply simp
-    done
-  from bchoice[OF this] obtain R' where R': "\<And>s. s\<in>states \<Longrightarrow> R s = ereal (R' s)" by auto
-
-  { fix s have "s \<in> states \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
-      R s = (\<Sum>s'\<in>states. pmf (\<tau> s) s' * (\<rho> s s' + R s'))"
-      using T.emeasure_space_1 E_closed[of s]
-      unfolding R_def
-      apply (simp add: nn_integral_T[of _ s] nn_integral_add[of _ "T t" for t] reward_until_nonneg 
-          nn_integral_measure_pmf_support[of states] nn_integral_nonneg)
-      apply (subst nn_integral_measure_pmf_support[of states])
-      apply (simp_all add: nn_integral_nonneg subset_eq field_simps)
-      done }
-  then have R'_sum: "\<And>s. s \<in> states \<Longrightarrow> s \<noteq> error \<Longrightarrow> s \<noteq> ok \<Longrightarrow>
-    R' s = (\<Sum>s'\<in>states. pmf (\<tau> s) s' * (\<rho> s s' + R' s'))"
-    using R' by simp
-
-  have "R ok = 0 \<and> R error = 0"
+  have ok_error: "R ok = 0 \<and> R error = 0"
     unfolding R_def by (subst (1 2) reward_until_unfold[abs_def]) simp
-  with R' have R'_ok: "R' ok = 0" and R'_error: "R' error = 0"
-    by simp_all
 
-  then have R'_start: "R' start = q * (r + R' (probe 0)) + (1 - q) * (r * (N + 1))"
-    by (subst R'_sum)
-       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
-                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
+  then have R_start: "R start = q * (r + R (probe 0)) + (1 - q) * (r * (N + 1))"
+    using q r by (subst R_iter) (simp_all add: R_nonneg field_simps)
+  
+  have R_probe: "\<And>n. n < N \<Longrightarrow> R (probe n) = p * R (probe (Suc n)) + p * r + (1 - p) * R start"
+    using p r by (subst R_iter) (simp_all add: R_nonneg field_simps ereal_right_distrib zero_ereal_def[symmetric])
 
-  have R'_probe: "\<And>n. n < N \<Longrightarrow> R' (probe n) = p * R' (probe (Suc n)) + p * r + (1 - p) * R' start"
-    using R'_error
-    by (subst R'_sum)
-       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
-                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
-
-  have R'_N: "R' (probe N) = p * e + (1 - p) * R' start"
-    using R'_error by (subst R'_sum)
-       (auto simp: field_simps setsum_clauses setsum.reindex inj_probe setsum.distrib
-                   setsum.If_cases if_distrib[of "\<lambda>x. a * x" for a] \<tau>.rep_eq)
+  have R_N: "R (probe N) = p * e + (1 - p) * R start"
+    using p e ok_error by (subst R_iter) (auto simp: R_nonneg zero_ereal_def[symmetric] mult.commute)
 
   { fix n
     assume "n \<le> N"
-    then have "R' (probe (N - n)) =
-      p ^ Suc n * e + (1 - p^n) * r * p / (1 - p) + (1 - p^Suc n) * R' start"
+    then have "R (probe (N - n)) =
+      p ^ Suc n * e + (1 - p^n) * r * p / (1 - p) + (1 - p^Suc n) * R start"
     proof (induct n)
-      case 0 with R'_N show ?case by simp
+      case 0 with R_N show ?case by simp
     next
       case (Suc n)
       moreover then have "Suc (N - Suc n) = N - n" by simp
       ultimately show ?case
-        using R'_probe[of "N - Suc n"] p
-        by simp (simp add: field_simps)
+        using R_probe[of "N - Suc n"] p R_nonneg[of start] R_finite[of start]
+        by (cases "R start") (simp_all add: field_simps)
     qed }
   from this[of N]
-  have "R' (probe 0) = p ^ Suc N * e + (1 - p^N) * r * p / (1 - p) + (1 - p^Suc N) * R' start"
+  have "R (probe 0) = p ^ Suc N * e + (1 - p^N) * r * p / (1 - p) + (1 - p^Suc N) * R start"
     by simp
-  then have "R' start - q * (1 - p^Suc N) * R' start =
+  then have "R start - q * (1 - p^Suc N) * R start =
     q * (r + p^Suc N * e + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * (N + 1))"
-    by (subst R'_start) (simp, simp add: field_simps)
-  then have "R' start = (q * (r + p^Suc N * e + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * Suc N)) /
+    using R_nonneg[of start] R_finite[of start] by (subst R_start) (cases "R start", simp_all add: field_simps)
+  then have "R start = (q * (r + p^Suc N * e + (1 - p^N) * r * p / (1 - p)) + (1 - q) * (r * Suc N)) /
     (1 - q * (1 - p^Suc N))"
-    using pos_neg_q_pn
-    by (simp add: field_simps)
+    using pos_neg_q_pn R_nonneg[of start] R_finite[of start] by (cases "R start") (simp_all add: field_simps)
   then show ?thesis
-    using R' p q by (simp add: field_simps)
+    by (simp add: field_simps)
 qed
 
 end
