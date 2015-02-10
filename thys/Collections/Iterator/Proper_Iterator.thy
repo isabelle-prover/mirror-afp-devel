@@ -105,7 +105,7 @@ begin
   declaration {*
     Tagged_Solver.declare_solver @{thms proper_iterator_trigger} 
       @{binding proper_iterator} "Proper iterator solver"
-      (fn ctxt => REPEAT_ALL_NEW (resolve_tac (Icf_Proper_Iterator.get ctxt)))
+      (fn ctxt => REPEAT_ALL_NEW (resolve_tac ctxt (Icf_Proper_Iterator.get ctxt)))
     *}
 
   lemma pi_foldli[icf_proper_iteratorI]: 

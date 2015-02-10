@@ -315,7 +315,7 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
       HEADGOAL 
         (DETERM o (rtac induct_thm) 
          THEN_ALL_NEW 
-           (REPEAT_ALL_NEW (FIRST' [resolve_tac @{thms TrueI conjI}, cases_tac ctxt])))
+           (REPEAT_ALL_NEW (FIRST' [resolve_tac ctxt @{thms TrueI conjI}, cases_tac ctxt])))
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
     |> singleton (Proof_Context.export ctxt' ctxt)
@@ -392,7 +392,7 @@ fun mk_distinct_goal ty_trm_assoc neq =
   end
 
 fun distinct_tac ctxt cases_thms distinct_thms =
-  rtac notI THEN' eresolve_tac cases_thms 
+  rtac notI THEN' eresolve_tac ctxt cases_thms 
   THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps distinct_thms)
 
 fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
@@ -428,7 +428,7 @@ fun mk_simp_rule thm =
 fun alpha_eq_iff_tac ctxt dist_inj intros elims =
   SOLVED' (asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)) ORELSE'
   (rtac @{thm iffI} THEN' 
-    RANGE [eresolve_tac elims THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps dist_inj),
+    RANGE [eresolve_tac ctxt elims THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps dist_inj),
            asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)])
 
 fun mk_alpha_eq_iff_goal thm =
@@ -469,10 +469,10 @@ fun cases_tac intros ctxt =
 
     val bound_tac = 
       EVERY' [ rtac exi_zero, 
-               resolve_tac @{thms alpha_refl}, 
+               resolve_tac ctxt @{thms alpha_refl}, 
                asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ]
   in
-    resolve_tac intros THEN_ALL_NEW FIRST' [rtac @{thm refl}, unbound_tac, bound_tac]
+    resolve_tac ctxt intros THEN_ALL_NEW FIRST' [rtac @{thm refl}, unbound_tac, bound_tac]
   end
 
 fun raw_prove_refl ctxt alpha_result raw_dt_induct =
@@ -502,13 +502,13 @@ fun prem_bound_tac pred_names alpha_eqvt ctxt =
         let
           val prems' = map (transform_prem1 context pred_names) prems
         in
-          resolve_tac prems' 1
+          resolve_tac ctxt prems' 1
         end) ctxt
     val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_conv alphas}
   in
     EVERY' 
       [ etac exi_neg,
-        resolve_tac @{thms alpha_sym_eqvt},
+        resolve_tac ctxt @{thms alpha_sym_eqvt},
         asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps),
         eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
         trans_prem_tac pred_names ctxt] 
@@ -525,7 +525,7 @@ fun raw_prove_sym ctxt alpha_result alpha_eqvt =
     val props = map (fn t => fn (x, y) => t $ y $ x) alpha_trms
 
     fun tac ctxt = 
-      resolve_tac alpha_intros THEN_ALL_NEW 
+      resolve_tac ctxt alpha_intros THEN_ALL_NEW 
       FIRST' [assume_tac ctxt,
         rtac @{thm sym} THEN' assume_tac ctxt,
         prem_bound_tac alpha_names alpha_eqvt ctxt]
@@ -538,12 +538,12 @@ fun raw_prove_sym ctxt alpha_result alpha_eqvt =
 
 (* applies cases rules and resolves them with the last premise *)
 fun ecases_tac cases = 
-  Subgoal.FOCUS (fn {prems, ...} =>
-    HEADGOAL (resolve_tac cases THEN' rtac (List.last prems)))
+  Subgoal.FOCUS (fn {context = ctxt, prems, ...} =>
+    HEADGOAL (resolve_tac ctxt cases THEN' rtac (List.last prems)))
 
 fun aatac pred_names = 
-  SUBPROOF (fn {prems, context, ...} =>
-    HEADGOAL (resolve_tac (map (transform_prem1 context pred_names) prems)))
+  SUBPROOF (fn {context = ctxt, prems, ...} =>
+    HEADGOAL (resolve_tac ctxt (map (transform_prem1 ctxt pred_names) prems)))
   
 (* instantiates exI with the permutation p + q *)
 val perm_inst_tac =
@@ -560,13 +560,13 @@ fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
   let
     val prod_simps = @{thms split_conv alphas permute_prod.simps prod_alpha_def rel_prod_conv}
   in
-    resolve_tac intros
+    resolve_tac ctxt intros
     THEN_ALL_NEW (asm_simp_tac (put_simpset HOL_basic_ss ctxt) THEN' 
       TRY o EVERY'   (* if binders are present *)
         [ etac @{thm exE},
           etac @{thm exE},
           perm_inst_tac ctxt, 
-          resolve_tac @{thms alpha_trans_eqvt},
+          resolve_tac ctxt @{thms alpha_trans_eqvt},
           assume_tac ctxt,
           aatac pred_names ctxt, 
           eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
@@ -634,7 +634,7 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
   in    
     Goal.prove_multi ctxt [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
     (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (rtac @{thm equivpI} THEN' 
-       RANGE [resolve_tac refl', resolve_tac symm', resolve_tac trans']))))
+       RANGE [resolve_tac ctxt refl', resolve_tac ctxt symm', resolve_tac ctxt trans']))))
     |> chop (length alpha_trms)
   end
 
@@ -653,9 +653,9 @@ fun raw_prove_bn_imp_tac alpha_result ctxt =
         (REPEAT_ALL_NEW 
            (FIRST' [ rtac @{thm TrueI}, 
                      rtac @{thm conjI}, 
-                     resolve_tac prems', 
-                     resolve_tac prems'',
-                     resolve_tac alpha_intros ]))
+                     resolve_tac ctxt prems', 
+                     resolve_tac ctxt prems'',
+                     resolve_tac ctxt alpha_intros ]))
     end) ctxt
 
 
@@ -726,8 +726,8 @@ fun raw_constr_rsp_tac ctxt alpha_intros simps =
       prod_fv.simps fresh_star_zero permute_zero prod.case} @ simps
   in
     asm_full_simp_tac pre_simpset
-    THEN' REPEAT o (resolve_tac @{thms allI impI})
-    THEN' resolve_tac alpha_intros
+    THEN' REPEAT o (resolve_tac ctxt @{thms allI impI})
+    THEN' resolve_tac ctxt alpha_intros
     THEN_ALL_NEW (TRY o (rtac exi_zero) THEN' asm_full_simp_tac post_simpset)
   end
 
@@ -808,9 +808,9 @@ fun raw_prove_perm_bn_tac alpha_result simps ctxt =
            (FIRST' [ rtac @{thm TrueI}, 
                      rtac @{thm conjI}, 
                      rtac @{thm refl},
-                     resolve_tac prems', 
-                     resolve_tac prems'',
-                     resolve_tac alpha_intros ]))
+                     resolve_tac ctxt prems', 
+                     resolve_tac ctxt prems'',
+                     resolve_tac ctxt alpha_intros ]))
     end) ctxt
 
 fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =

@@ -274,7 +274,7 @@ in
               fun ord n = mk_sep_select_rule ctxt true (p,n)
               val ord_thms = map ord (0 upto p-1)
             in
-                (dresolve_tac ord_thms THEN' tac) i
+                (dresolve_tac ctxt ord_thms THEN' tac) i
             end;
         in
           (* backtrack until first premise that does something *)
@@ -300,7 +300,7 @@ in
         then (tracing ("Goal not of form: (_ " ^ SepConj.sep_conj_str ^
                       " _) _");
               no_tac)
-        else (resolve_tac ord_thms THEN' tac) i
+        else (resolve_tac ctxt ord_thms THEN' tac) i
       end;
   in
     fun sep_concl_tac ctxt tac = CSUBGOAL (sep_concl_tac' ctxt tac)
@@ -363,11 +363,11 @@ in
         EqSubst.eqsubst_asm_tac ctxt occs thms THEN' sep_atac ctxt;
 
   (* Forward reasoning *)
-  fun sep_dtac ctxt thms = sep_assm_tac ctxt (dresolve_tac thms)
-  fun sep_ftac ctxt thms = sep_assm_tac ctxt (forward_tac thms)
+  fun sep_dtac ctxt thms = sep_assm_tac ctxt (dresolve_tac ctxt thms)
+  fun sep_ftac ctxt thms = sep_assm_tac ctxt (forward_tac ctxt thms)
 
   (* Backward reasoning *)
-  fun sep_rtac ctxt thms = sep_concl_tac ctxt (resolve_tac thms)
+  fun sep_rtac ctxt thms = sep_concl_tac ctxt (resolve_tac ctxt thms)
 
 end;
 

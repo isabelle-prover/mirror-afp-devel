@@ -54,7 +54,7 @@ ML {*
       val transform = transform_ga_rule
     )
 
-    fun side_ga_tac ctxt = resolve_tac (ga_side_thms.get ctxt)
+    fun side_ga_tac ctxt = resolve_tac ctxt (ga_side_thms.get ctxt)
 
     fun side_ga_op_tac ctxt = 
       SOLVED' (Autoref_Tacticals.REPEAT_ON_SUBGOAL 

@@ -505,7 +505,7 @@ fun derive kind dtyp_name _ thy =
       ||>> define_overloaded ("less_eq_" ^ base_name ^ "_def", less_eq_def)
     val less_thms = [less_thm, less_eq_thm]
 
-    val thy' = Class.prove_instantiation_exit (K (Class.intro_classes_tac [])) lthy
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class ord")
 
     (* next register in class order *)
@@ -529,7 +529,8 @@ fun derive kind dtyp_name _ thy =
             rtac trans_eq 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after trans" THEN
             rtac antisym 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1
-          val thy'' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
+          val thy'' =
+            Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [] THEN order_tac ctxt) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class order")
         in thy'' end
 
@@ -545,7 +546,7 @@ fun derive kind dtyp_name _ thy =
           fun order_tac ctxt =
             unfold_tac ctxt less_thms THEN
             rtac linear 1
-          val thy''' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN order_tac ctxt)) lthy
+          val thy''' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [] THEN order_tac ctxt) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class linorder")
         in thy''' end
 

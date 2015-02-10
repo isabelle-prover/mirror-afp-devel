@@ -376,8 +376,8 @@ end;
       val tac = SELECT_GOAL (auto_tac ctxt)
     in
       TRY o pre_tac
-      THEN_ALL_NEW_FWD (TRY o REPEAT_ALL_NEW_FWD (resolve_tac rthms))
-      THEN_ALL_NEW_FWD (TRY o SOLVED' (resolve_tac sthms THEN_ALL_NEW_FWD tac))
+      THEN_ALL_NEW_FWD (TRY o REPEAT_ALL_NEW_FWD (resolve_tac ctxt rthms))
+      THEN_ALL_NEW_FWD (TRY o SOLVED' (resolve_tac ctxt sthms THEN_ALL_NEW_FWD tac))
     end
 
     val setup = I

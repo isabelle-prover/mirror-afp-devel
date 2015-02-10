@@ -451,7 +451,7 @@ fun map_thm_tac ctxt tac thm =
     val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms split_def}
   in
     EVERY [cut_facts_tac [thm] 1, etac rev_mp 1, 
-      REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac monos)),
+      REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac ctxt monos)),
       REPEAT_DETERM (rtac impI 1 THEN (assume_tac ctxt 1 ORELSE tac))]
   end
 

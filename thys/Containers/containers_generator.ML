@@ -49,7 +49,7 @@ fun derive_set_map_impl smi_const smi_sort choices typ_name choice thy =
     val set_map_impl_def = mk_def set_map_impl_ty smi_const set_map_impl_rhs
     val (_,lthy) = Class.instantiation ([typ_name],vs,smi_sort) thy
       |> define_overloaded (smi_name ^ "_" ^ base_name ^ "_def", set_map_impl_def)     
-    val thy' = Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac []) lthy
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class " ^ smi_name)  
   in thy' end
 
@@ -66,7 +66,7 @@ fun derive_none const sort mk_none typ_name thy =
     val (none_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded (const_name ^ "_" ^ base_name ^ "_def", const_def)
      
-    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt [none_thm]
       THEN (REPEAT (force_tac ctxt 1))) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    

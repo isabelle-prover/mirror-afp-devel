@@ -119,7 +119,7 @@ structure Record_Intf: RECORD_INTF = struct
     val ss = put_simpset (get_unf_ss (Context.Proof ctxt)) ctxt
     val wits = Locale.get_witnesses ctxt
     val thms = map (simplify ss) wits;
-  in ALLGOALS (TRY o (simp_tac ss THEN' resolve_tac thms)) end
+  in ALLGOALS (TRY o (simp_tac ss THEN' resolve_tac ctxt thms)) end
 
 
   fun setup_simprocs thy = let

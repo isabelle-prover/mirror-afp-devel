@@ -37,7 +37,7 @@ struct
                     val subst = subst RS @{thm "HOL.ssubst"}
                 in  TRY (rtac subst i
                     THEN REPEAT_ALL_NEW (FIRST' (map (fn thms => 
-                             DETERM o resolve_tac thms) sturm_PR_tag_intro_thmss)) i)
+                             DETERM o resolve_tac ctxt thms) sturm_PR_tag_intro_thmss)) i)
                 end;
           in  EVERY (map tac trms) thm
           end;

@@ -414,7 +414,7 @@ fun possibility_tac ctxt =
     (ALLGOALS (simp_tac (ctxt setSolver safe_solver delsimps [@{thm used_Says}]))
      THEN
      REPEAT_FIRST (eq_assume_tac ORELSE' 
-                   resolve_tac [refl, conjI, @{thm Nonce_supply}]))
+                   resolve_tac ctxt [refl, conjI, @{thm Nonce_supply}]))
 
 (*For harder protocols (such as Recur) where we have to set up some
   nonces and keys initially*)
@@ -422,7 +422,7 @@ fun basic_possibility_tac ctxt =
     REPEAT 
     (ALLGOALS (asm_simp_tac (ctxt setSolver safe_solver))
      THEN
-     REPEAT_FIRST (resolve_tac [refl, conjI]))
+     REPEAT_FIRST (resolve_tac ctxt [refl, conjI]))
 
 end
 *}
@@ -430,7 +430,7 @@ end
 method_setup analz_freshK = {*
     Scan.succeed (fn ctxt =>
      (SIMPLE_METHOD
-      (EVERY [REPEAT_FIRST (resolve_tac [allI, ballI, impI]),
+      (EVERY [REPEAT_FIRST (resolve_tac ctxt [allI, ballI, impI]),
           REPEAT_FIRST (rtac @{thm analz_image_freshK_lemma}),
           ALLGOALS (asm_simp_tac (put_simpset Public.analz_image_freshK_ss ctxt))]))) *}
     "for proving the Session Key Compromise theorem"

@@ -430,8 +430,8 @@ fun define_raw_perms raw_dt_info lthy =
 
     val perm_eqs = map (mk_perm_eq (raw_tys ~~ perm_fn_frees)) (flat raw_all_cns)
 
-    fun tac _ (_, _, simps) =
-      Class.intro_classes_tac [] THEN ALLGOALS (resolve_tac simps)
+    fun tac ctxt (_, _, simps) =
+      Class.intro_classes_tac ctxt [] THEN ALLGOALS (resolve_tac ctxt simps)
   
     fun morphism phi (fvs, dfs, simps) =
       (map (Morphism.term phi) fvs, 

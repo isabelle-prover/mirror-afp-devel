@@ -40,18 +40,18 @@ fun m_wd t =
   | @{term "Trueprop"} $ (Const ("WellDefined.well_def",_) $ _) => true
   | _ => false
 
-val sound_goal_tac =
-  resolve_tac @{thms sound_intros unitary_intros}
+fun sound_goal_tac ctxt =
+  resolve_tac ctxt @{thms sound_intros unitary_intros}
 fun maybe_sound_tac ctxt (g,i) =
   if m_sound g
   then trace_pre ctxt ("soundness goal " ^
                    Pretty.string_of (Syntax.pretty_term ctxt g))
-                  (sound_goal_tac i)
+                  (sound_goal_tac ctxt i)
   else no_tac
 fun sound_tac ctxt = SUBGOAL (maybe_sound_tac ctxt)
 
 fun wd_goal_tac ctxt =
-  resolve_tac (rev (Named_Theorems.get ctxt @{named_theorems wd}))
+  resolve_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems wd}))
 fun maybe_wd_tac ctxt (g,i) =
   if m_wd g
   then trace_pre ctxt "well-definedness goal" (wd_goal_tac ctxt i)
@@ -84,11 +84,11 @@ fun core_rules ctxt = rev (Named_Theorems.get ctxt @{named_theorems pwp_core})
 
 (* Prefer raw user rules, then lifted user rules, then core (safe) rules *)
 fun wp_step ctxt =
-  (trace_pre ctxt "user WP" (resolve_tac (user_wp_rules ctxt)) ORELSE'
-   resolve_tac (mod_user_wp_rules ctxt) ORELSE'
-   resolve_tac (user_wlp_rules ctxt) ORELSE'
-   resolve_tac (mod_user_wlp_rules ctxt) ORELSE'
-   resolve_tac (core_rules ctxt)) THEN_ALL_NEW
+  (trace_pre ctxt "user WP" (resolve_tac ctxt (user_wp_rules ctxt)) ORELSE'
+   resolve_tac ctxt (mod_user_wp_rules ctxt) ORELSE'
+   resolve_tac ctxt (user_wlp_rules ctxt) ORELSE'
+   resolve_tac ctxt (mod_user_wlp_rules ctxt) ORELSE'
+   resolve_tac ctxt (core_rules ctxt)) THEN_ALL_NEW
   (sidegoal_tac ctxt ORELSE' K all_tac)
 
 fun pVCG_tac ctxt =

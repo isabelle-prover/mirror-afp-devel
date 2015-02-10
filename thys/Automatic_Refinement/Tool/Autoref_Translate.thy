@@ -175,14 +175,14 @@ ML {*
     fun REMOVE_INTERNAL_tac ctxt = CONVERSION (REMOVE_INTERNAL_conv ctxt)
 
     fun side_tac ctxt =
-      resolve_tac @{thms SIDEI}
+      resolve_tac ctxt @{thms SIDEI}
       THEN' REMOVE_INTERNAL_tac ctxt
       THEN' Tagged_Solver.solve_tac ctxt
 
     fun side_dbg_tac ctxt = let
       val ctxt = Config.put Tagged_Solver.cfg_keep true ctxt
     in
-      resolve_tac @{thms SIDEI}
+      resolve_tac ctxt @{thms SIDEI}
       THEN' REMOVE_INTERNAL_tac ctxt
       THEN' TRY o Tagged_Solver.solve_tac ctxt
     end

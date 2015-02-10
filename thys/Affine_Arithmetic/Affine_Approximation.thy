@@ -1652,27 +1652,27 @@ fun approximate_affine (name, term) lthy =
     val approx_eq_thm' = approx_eq_thm
       |> Conv.fconv_rule (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv def_raw)) lthy5)
 
-    val len_tac =
+    fun len_tac ctxt =
       TRY (REPEAT (rtac (@{thm length_eq_ConsI}) 1))
-      THEN resolve_tac [len_qs_eq_thm, refl] 1
+      THEN resolve_tac ctxt [len_qs_eq_thm, refl] 1
     val (_, _, _, XSQS) = betapplys (approx_raw, approx_args) |> dest_approx_euclarith
     val len_eq =
       HOLogic.mk_eq (length_const aty $ xsqs, length_const (aformT aty) $ XSQS)
       |> HOLogic.mk_Trueprop
-    val len_thm = Goal.prove lthy5 [] [] len_eq (fn {context, ...} => len_tac)
+    val len_thm = Goal.prove lthy5 [] [] len_eq (len_tac o #context)
 
     val interpret_eq_thm = Goal.prove lthy5 [] [] interpret_eq
-      (fn {context, ...} =>
+      (fn {context = ctxt, ...} =>
         CONVERSION
-          (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv euclidify_thm)) context) 1
-        THEN CONVERSION (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv thm')) context) 1
+          (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv euclidify_thm)) ctxt) 1
+        THEN CONVERSION (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv thm')) ctxt) 1
         THEN rtac ((approx_eq_thm' RS @{thm approx_euclarith_outer2_shift_addvars})) 1
         THEN rtac joints_thm 1
         THEN rtac len_thm 1 (* instantiates *)
-        THEN len_tac
-        THEN Local_Defs.unfold_tac context @{thms zip_Cons_Cons zip_Nil set_simps}
-        THEN blast_tac context 1
-        THEN simp_tac lthy5 1
+        THEN len_tac ctxt
+        THEN Local_Defs.unfold_tac ctxt @{thms zip_Cons_Cons zip_Nil set_simps}
+        THEN blast_tac ctxt 1
+        THEN simp_tac ctxt 1
         )
     val correct_thm = singleton (Proof_Context.export lthy5 lthy'') interpret_eq_thm
     val (_, lthy''') = Local_Theory.notes [((name, []), [([correct_thm], [])])] lthy''
