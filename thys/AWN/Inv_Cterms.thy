@@ -80,7 +80,8 @@ fun create_vcs ctxt i =
 
 fun try_invs ctxt =
   let val inv_thms = rev (Named_Theorems.get ctxt @{named_theorems cterms_invs})
-      fun fapp thm = TRY o (EVERY' (ftac thm :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt)))
+      fun fapp thm =
+        TRY o (EVERY' (forward_tac ctxt [thm] :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt)))
   in
     EVERY' (map fapp inv_thms)
   end
