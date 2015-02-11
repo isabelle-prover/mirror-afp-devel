@@ -1,4 +1,4 @@
-header {*Finite Automata using the Hereditarily Finite Sets*}
+chapter {*Finite Automata using the Hereditarily Finite Sets*}
 
 theory Finite_Automata_HF imports
   "../HereditarilyFinite/Ordinal"
@@ -12,29 +12,6 @@ text{*Finite Automata, both deterministic and non-deterministic, for regular lan
   Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs.*}
 
 (*GENERAL LEMMAS*)
-
-(*SET.THY**)
-lemma Collect_mono_iff [simp]: "Collect P \<subseteq> Collect Q \<longleftrightarrow> (\<forall>x. P x \<longrightarrow> Q x)"
-  by blast
-
-lemma Setcompr_eq_image: "{f x | x. x \<in> A} = f ` A"
-  by blast
-
-lemma image_eq_imp_comp: "f ` A = g ` B \<Longrightarrow> (h o f) ` A = (h o g) ` B"
-  by (auto simp: o_def elim!: equalityE)
-
-(*Finite_Set.thy*)
-lemma finite_image_set2:
-  "finite {x. P x} \<Longrightarrow> finite {y. Q y} \<Longrightarrow> finite {f x y | x y. P x \<and> Q y}"
-  by (rule finite_subset [where B = "\<Union>x \<in> {x. P x}. \<Union>y \<in> {y. Q y}. {f x y}"]) auto
-
-
-(*FUN.THY**)
-lemma inj_on_image_mem_iff: "\<lbrakk>inj_on f B; a \<in> B; A \<subseteq> B\<rbrakk> \<Longrightarrow> (f a \<in> f`A) = (a \<in> A)"
-  by (auto simp: inj_on_def)
-
-lemma surj_card_le: "finite A \<Longrightarrow> B \<subseteq> f ` A \<Longrightarrow> card B \<le> card A"
-  by (meson card_image_le card_mono finite_imageI le_trans)
 
 lemma finite_refines_finite:
   assumes finAR: "finite (A//R)"
@@ -80,72 +57,6 @@ lemma finite_refines_finite_subset:
   using assms
   apply (auto simp: quotient_def)
   done
-
-
-(*LIBRARY/NAT_BIJECTION*)
-lemma set_encode_inf: "~ finite A \<Longrightarrow> set_encode A = 0"
-  by (simp add: set_encode_def)
-
-  (*HF.THY*)
-lemma Abs_hf_0 [simp]: "Abs_hf 0 = 0"
-  by (simp add: HF_def Zero_hf_def)
-
-declare hfset_0 [simp]
-
-lemma hmem_HF_iff [simp]: "x \<^bold>\<in> HF A \<longleftrightarrow> x \<in> A \<and> finite A"
-  apply (cases "finite A", auto)
-  apply (simp add: hmem_def)
-  apply (simp add: hmem_def)
-  apply (metis HF_def Rep_hf_inject Abs_hf_0 finite_imageD hempty_iff inj_onI set_encode_inf)
-  done
-
-lemma inj_on_HF: "inj_on HF (Collect finite)"
-  by (metis hfset_HF inj_onI mem_Collect_eq)
-
-lemma HF_HUnion: "\<lbrakk>finite A; \<And>x. x\<in>A \<Longrightarrow> finite (B x)\<rbrakk> \<Longrightarrow> HF (\<Union>x \<in> A. B x) = (\<Squnion>x\<^bold>\<in>HF A. HF (B x))"
-  by (rule hf_equalityI) (auto)
-
-(*HF/ORDINAL.THY *)
-lemma inj_ord_of: "inj_on ord_of A"
-  by (simp add: inj_on_def)
-
-lemma hfset_ord_of: "hfset (ord_of n) = ord_of ` {0..<n}"
-  by (induct n) (auto simp: hfset_hinsert succ_def)
-
-lemma bij_betw_ord_of: "bij_betw ord_of {0..<n} (hfset (ord_of n))"
-  by (simp add: bij_betw_def inj_ord_of hfset_ord_of)
-
-lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of o h) A (hfset (ord_of n))"
-  by (blast intro: bij_betw_ord_of bij_betw_trans)
-
-
-definition is_hsum :: "hf \<Rightarrow> bool"
-  where "is_hsum z = (\<exists>x. z = Inl x \<or> z = Inr x)"
-
-definition sum_case  :: "(hf \<Rightarrow> 'a) \<Rightarrow> (hf \<Rightarrow> 'a) \<Rightarrow> hf \<Rightarrow> 'a"
-  where
-  "sum_case f g a \<equiv>
-    THE z. (\<forall>x. a = Inl x \<longrightarrow> z = f x) \<and> (\<forall>y. a = Inr y \<longrightarrow> z = g y) \<and> (~ is_hsum a \<longrightarrow> z = undefined)"
-
-lemma sum_case_Inl [simp]: "sum_case f g (Inl x) = f x"
-  by (simp add: sum_case_def is_hsum_def)
-
-lemma sum_case_Inr [simp]: "sum_case f g (Inr y) = g y"
-  by (simp add: sum_case_def is_hsum_def)
-
-lemma sum_case_non [simp]: "~ is_hsum a \<Longrightarrow> sum_case f g a = undefined"
-  by (simp add: sum_case_def is_hsum_def)
-
-lemma is_hsum_cases: "(\<exists>x. z = Inl x \<or> z = Inr x) \<or> ~ is_hsum z"
-  by (auto simp: is_hsum_def)
- thm List.list.split_asm
-lemma sum_case_split: "P (sum_case f g a) \<longleftrightarrow> (\<forall>x. a = Inl x \<longrightarrow> P(f x)) \<and> (\<forall>y. a = Inr y \<longrightarrow> P(g y)) \<and> (~ is_hsum a \<longrightarrow> P undefined)"
-  by (cases "is_hsum a") (auto simp: is_hsum_def)
-
-lemma sum_case_split_asm:
-  "P (sum_case f g a) \<longleftrightarrow> ~ ((\<exists>x. a = Inl x \<and> ~ P(f x)) \<or> (\<exists>y. a = Inr y \<and> ~ P(g y)) \<or> (~ is_hsum a \<and> ~ P undefined))"
-  by (auto simp add: sum_case_split)
-
 
 (*END OF LIBRARY MATERIAL*)
 

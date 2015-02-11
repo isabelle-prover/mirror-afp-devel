@@ -323,6 +323,18 @@ lemma nat_of_ord_inject: "Ord x \<Longrightarrow> Ord y \<Longrightarrow> nat_of
 lemma nat_of_ord_succ [simp]: "Ord x \<Longrightarrow> nat_of_ord (succ x) = Suc (nat_of_ord x)"
   by (metis nat_of_ord_ord_of ord_of.simps(2) ord_of_nat_of_ord)
 
+lemma inj_ord_of: "inj_on ord_of A"
+  by (simp add: inj_on_def)
+
+lemma hfset_ord_of: "hfset (ord_of n) = ord_of ` {0..<n}"
+  by (induct n) (auto simp: hfset_hinsert succ_def)
+
+lemma bij_betw_ord_of: "bij_betw ord_of {0..<n} (hfset (ord_of n))"
+  by (simp add: bij_betw_def inj_ord_of hfset_ord_of)
+
+lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of o h) A (hfset (ord_of n))"
+  by (blast intro: bij_betw_ord_of bij_betw_trans)
+
 
 section{*Sequences and Ordinal Recursion*}
 

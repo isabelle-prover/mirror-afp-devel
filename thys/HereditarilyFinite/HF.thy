@@ -25,13 +25,14 @@ definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"     (infixl "<:" 50)
 
 instantiation hf :: zero
 begin
-
-definition
-  Zero_hf_def: "0 = HF {}"
-
-instance ..
-
+  definition
+    Zero_hf_def: "0 = HF {}"
+  instance ..
 end
+
+lemma Abs_hf_0 [simp]: "Abs_hf 0 = 0"
+  by (simp add: HF_def Zero_hf_def)
+
 
 text {* HF Set enumerations *}
 
@@ -60,6 +61,9 @@ lemma HF_hfset [simp]: "HF (hfset a) = a"
 lemma hfset_HF [simp]: "finite A \<Longrightarrow> hfset (HF A) = A"
   unfolding HF_def hfset_def
   by (simp add: image_image Abs_hf_inverse Rep_hf_inverse)
+
+lemma inj_on_HF: "inj_on HF (Collect finite)"
+  by (metis hfset_HF inj_onI mem_Collect_eq)
 
 lemma hmem_hempty [simp]: "\<not> a \<^bold>\<in> 0"
   unfolding hmem_def Zero_hf_def by simp
@@ -138,13 +142,20 @@ lemma hinsert_nonempty [simp]: "A \<triangleleft> a \<noteq> 0"
 lemma hinsert_commute: "(z \<triangleleft> y) \<triangleleft> x = (z \<triangleleft> x) \<triangleleft> y"
   by (auto simp: hf_ext)
 
+lemma hmem_HF_iff [simp]: "x \<^bold>\<in> HF A \<longleftrightarrow> x \<in> A \<and> finite A"
+  apply (cases "finite A", auto)
+  apply (simp add: hmem_def)
+  apply (simp add: hmem_def)
+  apply (metis HF_def Rep_hf_inject Abs_hf_0 finite_imageD hempty_iff inj_onI set_encode_inf)
+  done
+
+section {* Ordered Pairs, from ZF/ZF.thy *}
+
 lemma singleton_eq_iff [iff]: "\<lbrace>a\<rbrace> = \<lbrace>b\<rbrace> \<longleftrightarrow> a=b"
   by (metis hmem_hempty hmem_hinsert)
 
 lemma doubleton_eq_iff: "\<lbrace>a,b\<rbrace> = \<lbrace>c,d\<rbrace> \<longleftrightarrow> (a=c & b=d) | (a=d & b=c)"
-  by (metis (hide_lams, no_types) hinsert_commute hmem_hempty hmem_hinsert)
-
-section {* Ordered Pairs, from ZF/ZF.thy *}
+  by auto (metis hmem_hempty hmem_hinsert)+
 
 definition hpair :: "hf \<Rightarrow> hf \<Rightarrow> hf"
   where "hpair a b = \<lbrace>\<lbrace>a\<rbrace>,\<lbrace>a,b\<rbrace>\<rbrace>"
@@ -446,6 +457,9 @@ lemma RepFun_hunion [simp]:
   "RepFun (A \<squnion> B) f = RepFun A f  \<squnion>  RepFun B f"
   by blast
 
+lemma HF_HUnion: "\<lbrakk>finite A; \<And>x. x\<in>A \<Longrightarrow> finite (B x)\<rbrakk> \<Longrightarrow> HF (\<Union>x \<in> A. B x) = (\<Squnion>x\<^bold>\<in>HF A. HF (B x))"
+  by (rule hf_equalityI) (auto)
+
 
 section{*Subset relation and the Lattice Properties*}
 
@@ -611,7 +625,7 @@ lemma zero_notin_hpair: "~ 0 \<^bold>\<in> \<langle>x,y\<rangle>"
 subsection{*Cardinality*}
 
 text{*First we need to hack the underlying representation*}
-lemma hfset_0: "hfset 0 = {}"
+lemma hfset_0 [simp]: "hfset 0 = {}"
   by (metis Zero_hf_def finite.emptyI hfset_HF)
 
 lemma hfset_hinsert: "hfset (b \<triangleleft> a) = insert a (hfset b)"
@@ -620,7 +634,7 @@ lemma hfset_hinsert: "hfset (b \<triangleleft> a) = insert a (hfset b)"
 lemma hfset_hdiff: "hfset (x - y) = hfset x - hfset y"
 proof (induct x arbitrary: y rule: hf_induct)
   case 0 thus ?case
-    by (simp add: hfset_0)
+    by simp
 next
   case (hinsert a b) thus ?case
     by (simp add: hfset_hinsert Set.insert_Diff_if hinsert_hdiff_if hmem_def)
@@ -630,7 +644,7 @@ definition hcard :: "hf \<Rightarrow> nat"
   where "hcard x = card (hfset x)"
 
 lemma hcard_0 [simp]: "hcard 0 = 0"
-  by (simp add: hcard_def hfset_0)
+  by (simp add: hcard_def)
 
 lemma hcard_hinsert_if: "hcard (hinsert x y) = (if x \<^bold>\<in> y then hcard y else Suc (hcard y))"
   by (simp add: hcard_def hfset_hinsert card_insert_if hmem_def)
@@ -641,7 +655,7 @@ lemma hcard_union_inter: "hcard (x \<squnion> y) + hcard (x \<sqinter> y) = hcar
   done
 
 lemma hcard_hdiff1_less: "x \<^bold>\<in> z \<Longrightarrow> hcard (z - \<lbrace>x\<rbrace>) < hcard z"
-  by (simp add: hcard_def hfset_hdiff hfset_hinsert hfset_0)
+  by (simp add: hcard_def hfset_hdiff hfset_hinsert)
      (metis card_Diff1_less finite_hfset hmem_def)
 
 subsection{*Powerset Operator*}
@@ -1082,5 +1096,32 @@ lemma sum_subset_iff:
 lemma sum_equal_iff:
   fixes A :: hf shows "A+B = C+D \<longleftrightarrow> A=C & B=D"
   by (auto simp: hf_ext sum_subset_iff)
+
+definition is_hsum :: "hf \<Rightarrow> bool"
+  where "is_hsum z = (\<exists>x. z = Inl x \<or> z = Inr x)"
+
+definition sum_case  :: "(hf \<Rightarrow> 'a) \<Rightarrow> (hf \<Rightarrow> 'a) \<Rightarrow> hf \<Rightarrow> 'a"
+  where
+  "sum_case f g a \<equiv>
+    THE z. (\<forall>x. a = Inl x \<longrightarrow> z = f x) \<and> (\<forall>y. a = Inr y \<longrightarrow> z = g y) \<and> (~ is_hsum a \<longrightarrow> z = undefined)"
+
+lemma sum_case_Inl [simp]: "sum_case f g (Inl x) = f x"
+  by (simp add: sum_case_def is_hsum_def)
+
+lemma sum_case_Inr [simp]: "sum_case f g (Inr y) = g y"
+  by (simp add: sum_case_def is_hsum_def)
+
+lemma sum_case_non [simp]: "~ is_hsum a \<Longrightarrow> sum_case f g a = undefined"
+  by (simp add: sum_case_def is_hsum_def)
+
+lemma is_hsum_cases: "(\<exists>x. z = Inl x \<or> z = Inr x) \<or> ~ is_hsum z"
+  by (auto simp: is_hsum_def)
+
+lemma sum_case_split: "P (sum_case f g a) \<longleftrightarrow> (\<forall>x. a = Inl x \<longrightarrow> P(f x)) \<and> (\<forall>y. a = Inr y \<longrightarrow> P(g y)) \<and> (~ is_hsum a \<longrightarrow> P undefined)"
+  by (cases "is_hsum a") (auto simp: is_hsum_def)
+
+lemma sum_case_split_asm:
+  "P (sum_case f g a) \<longleftrightarrow> ~ ((\<exists>x. a = Inl x \<and> ~ P(f x)) \<or> (\<exists>y. a = Inr y \<and> ~ P(g y)) \<or> (~ is_hsum a \<and> ~ P undefined))"
+  by (auto simp add: sum_case_split)
 
 end
