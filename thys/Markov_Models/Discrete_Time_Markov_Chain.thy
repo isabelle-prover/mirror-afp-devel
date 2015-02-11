@@ -1792,7 +1792,7 @@ proof (rule T_bisim)
                    bind_pair_pmf[of "split M" for M, unfolded split, symmetric, where N=S] szip\<^sub>E_def
                    stream_eq_Stream_iff bind_return[where N=S] space_bind[where N=S]
          simp del: measurable_pmf_measure1
-         intro!: bind_pmf_cong[where N=S] subprob_space_bind[where N=S] subprob_space_measure_pmf
+         intro!: bind_measure_pmf_cong[where N=S] subprob_space_bind[where N=S] subprob_space_measure_pmf
                  T1x bind_cong[where M="MC_syntax.T K x" for K x] arg_cong2[where f=return])
     done
 qed
