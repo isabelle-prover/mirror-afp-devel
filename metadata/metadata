@@ -2592,6 +2592,13 @@ topic = Computer Science/Algorithms
 date = 2014-09-03
 abstract = The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.
 
+[Echelon_Form]
+title = Echelon Form
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
+topic = Computer Science/Algorithms, Mathematics/Algebra
+date = 2015-02-12
+abstract = We formalize an algorithm to compute the Echelon Form of a matrix. We have proved its existence over Bézout domains and made it executable over Euclidean domains, such as the integer ring and the univariate polynomials over a field. This allows us to compute determinants, inverses and characteristic polynomials of matrices. The work is based on the HOL-Multivariate Analysis library, and on both the Gauss-Jordan and Cayley-Hamilton AFP entries. As a by-product, some algebraic structures have been implemented (principal ideal domains, Bézout domains...). The algorithm has been refined to immutable arrays and code can be generated to functional languages as well.
+
 [Imperative_Insertion_Sort]
 title = Imperative Insertion Sort
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>
