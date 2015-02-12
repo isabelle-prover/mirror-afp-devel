@@ -1,0 +1,14 @@
+chapter AFP
+
+session "Echelon_Form" (AFP)= "HOL-Multivariate_Analysis" +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Code_Target_Numeral"
+    "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
+    "../Gauss_Jordan/Inverse_IArrays"
+    "../Cayley_Hamilton/Cayley_Hamilton"
+  theories
+     Examples_Echelon_Form_Abstract
+     Examples_Echelon_Form_IArrays
+  document_files
+    "root.tex"
