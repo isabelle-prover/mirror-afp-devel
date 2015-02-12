@@ -24,53 +24,36 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">N</font>ative
-<font class="first">W</font>ord
+<h1><font class="first">E</font>chelon
+<font class="first">F</font>orm
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Native Word</td></tr>
+        <td class="data" width="80%">Echelon Form</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.infsec.ethz.ch/people/detail.html?persid=193410">Andreas Lochbihler</a></td></tr>
-
-	<tr><td class="datahead">Contributors:</td>
-        <td class="data"><a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a></td></tr>
+        <td class="data"><a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a> and <a href="http://www.unirioja.es/cu/jearansa">Jesús Aransay</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-09-17</td></tr>
+        <td class="data">2015-02-12</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2013-11-06]:
-added conversion function between native words and characters
-(revision fd23d9a7fe3a)
-[2014-03-31]:
-added words of default size in the target language (by Peter Lammich)
-(revision 25caf5065833)
-[2014-10-06]:
-proper test setup with compilation and execution of tests in all target languages
-(revision 5d7a1c9ae047)
+We formalize an algorithm to compute the Echelon Form of a matrix. We have proved its existence over Bézout domains and made it executable over Euclidean domains, such as the integer ring and the univariate polynomials over a field. This allows us to compute determinants, inverses and characteristic polynomials of matrices. The work is based on the HOL-Multivariate Analysis library, and on both the Gauss-Jordan and Cayley-Hamilton AFP entries. As a by-product, some algebraic structures have been implemented (principal ideal domains, Bézout domains...). The algorithm has been refined to immutable arrays and code can be generated to functional languages as well.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Native_Word-AFP,
-  author  = {Andreas Lochbihler},
-  title   = {Native Word},
+			<pre>@article{Echelon_Form-AFP,
+  author  = {Jose Divasón and Jesús Aransay},
+  title   = {Echelon Form},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Native_Word.shtml},
+  month   = feb,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Echelon_Form.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -90,7 +73,7 @@ proper test setup with compilation and execution of tests in all target language
 
 <p></p>
 
-<!--#set var="name" value="Native_Word" -->
+<!--#set var="name" value="Echelon_Form" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -117,11 +100,7 @@ proper test setup with compilation and execution of tests in all target language
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
