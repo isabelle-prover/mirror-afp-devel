@@ -884,7 +884,7 @@ abstract =
 
 [FinFun]
 title = Code Generation for Functions as Data
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
 date = 2009-05-06
 topic = Computer Science/Data Structures
 abstract = <b>FinFun is now part of the Isabelle distribution. The entry is kept for archival; maintained but not developed further. Use the Isabelle distribution version instead.</b><p>FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.</p>
@@ -904,7 +904,7 @@ extra-history =
 [Collections]
 title = Collections Framework
 author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
-contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>, Thomas Tuerk <>
+contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>, Thomas Tuerk <>
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -926,7 +926,7 @@ extra-history =
 
 [Containers]
 title = Light-weight Containers
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
 date = 2013-04-15
 topic = Computer Science/Data Structures
 abstract =
@@ -1048,7 +1048,7 @@ abstract =
 [Coinductive]
 title = Coinductive
 topic = Computer Science/Functional Programming
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
 contributors = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2010-02-12
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
@@ -1138,7 +1138,7 @@ abstract = We introduce Jinja, a Java-like programming language with a formal se
 
 [JinjaThreads]
 title = Jinja with Threads
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
 date = 2007-12-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
@@ -2312,7 +2312,7 @@ abstract = This development provides a formal model of IEEE-754 floating-point a
 
 [Native_Word]
 title = Native Word
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
 contributors = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2013-09-17
 topic = Computer Science/Data Structures
@@ -2612,7 +2612,7 @@ abstract = The insertion sort algorithm of Cormen et al. (Introduction to Algori
 
 [Stream_Fusion_Code]
 title = Stream Fusion in HOL with Code Generation
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/person-detail.html?persid=193410>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
 date = 2014-10-10
 topic = Computer Science/Functional Programming
 abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://afp.sourceforge.net/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
