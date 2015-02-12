@@ -402,7 +402,7 @@ ML {*
 (* apply cont_intro rules as intro and try to solve 
    the remaining of the emerging subgoals with simp *)
 fun cont_intro_tac ctxt =
-  REPEAT_ALL_NEW (resolve_tac (rev (Named_Theorems.get ctxt @{named_theorems cont_intro})))
+  REPEAT_ALL_NEW (resolve_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cont_intro})))
   THEN_ALL_NEW (simp_tac ctxt)
 
 fun cont_intro_simproc ctxt ct =
