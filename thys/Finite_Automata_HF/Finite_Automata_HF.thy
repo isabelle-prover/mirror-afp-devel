@@ -13,50 +13,30 @@ text{*Finite Automata, both deterministic and non-deterministic, for regular lan
 
 (*GENERAL LEMMAS*)
 
-lemma finite_refines_finite:
-  assumes finAR: "finite (A//R)"
-      and "equiv A R"
-      and eAS: "equiv A S"
-      and "\<And>c. c \<in> A//R \<Longrightarrow> \<exists>d \<in> A//S. c \<subseteq> d"
-    obtains "finite (A//S)" "card (A//S) \<le> card (A//R)"
-proof -
-  have "\<forall>c \<in> A//R. \<exists>d. d \<in> A//S \<and> c \<subseteq> d"
-    using assms by blast
-  then obtain f where f: "\<And>x. x \<in> A//R \<Longrightarrow> f x \<in> A//S \<and> x \<subseteq> f x"
-    by (rule exE [OF bchoice]) blast
-  have fim: "A//S \<subseteq> f ` (A//R)"
-    unfolding quotient_def
-    proof clarify
-    fix a
-    assume a: "a \<in> A"
-    have 1: "a \<in> R``{a}" "a \<in> S``{a}"
-      by (meson a assms equiv_class_self)+
-    have 2: "R``{a} \<in> A//R"  "S``{a} \<in> A//S"
-      by (simp add: a quotientI)+
-    have 3: "a \<in> f (R``{a})" "f(R``{a}) \<in> A//S"  "(a,a) \<in> S"
-      using 1 2 f by blast+
-    show "S `` {a} \<in> f ` (\<Union>x\<in>A. {R `` {x}})"
-      apply (rule rev_image_eqI [of "R``{a}"])
-      using a quotient_eqI [OF eAS] 1 2 3
-      apply blast+
-      done
-    qed
-  then have "f ` (A//R) = A//S"
-    by (simp add: eq_iff f image_subset_iff)
-  then show ?thesis
-    by (metis finite_surj card_image_le finAR order_refl that)
-qed
+lemma refines_equiv_class_eq:
+   "\<lbrakk>R \<subseteq> S; equiv A R; equiv A S\<rbrakk> \<Longrightarrow> R``(S``{a}) = S``{a}"
+  by (auto simp: equiv_class_eq_iff)
 
-lemma finite_refines_finite_subset:
-  assumes finAR: "finite (A//R)"
-      and eAR: "equiv A R"
-      and eAS: "equiv A S"
-      and "R \<subseteq> S"
-    obtains "finite (A//S)" "card (A//S) \<le> card (A//R)"
-  apply (rule finite_refines_finite [OF finAR eAR eAS])
-  using assms
-  apply (auto simp: quotient_def)
+lemma refines_equiv_class_eq2:
+   "\<lbrakk>R \<subseteq> S; equiv A R; equiv A S\<rbrakk> \<Longrightarrow> S``(R``{a}) = S``{a}"
+  by (auto simp: equiv_class_eq_iff)
+
+lemma refines_equiv_image_eq:
+   "\<lbrakk>R \<subseteq> S; equiv A R; equiv A S\<rbrakk> \<Longrightarrow> (\<lambda>X. S``X) ` (A//R) = A//S"
+   by (auto simp: quotient_def image_UN refines_equiv_class_eq2)
+
+lemma finite_refines_finite:
+   "\<lbrakk>finite (A//R); R \<subseteq> S; equiv A R; equiv A S\<rbrakk> \<Longrightarrow> finite (A//S)"
+    apply (erule finite_surj [where f = "\<lambda>X. S``X"])
+    apply (simp add: refines_equiv_image_eq)
+    done
+
+lemma finite_refines_card_le:
+   "\<lbrakk>finite (A//R); R \<subseteq> S; equiv A R; equiv A S\<rbrakk> \<Longrightarrow> card (A//S) \<le> card (A//R)"
+  apply (subst refines_equiv_image_eq [of R S A, symmetric])
+  apply (auto simp: card_image_le [where f = "\<lambda>X. S``X"])
   done
+
 
 (*END OF LIBRARY MATERIAL*)
 
@@ -459,7 +439,7 @@ begin
 
   lemma index_le_index_eq_nextl:
        "card (UNIV // eq_app_right language) \<le> card (UNIV // eq_nextl)"
-    by (metis finite_refines_finite_subset finite_index_eq_nextl equiv_eq_nextl equiv_eq_app_right
+    by (metis finite_refines_card_le finite_index_eq_nextl equiv_eq_nextl equiv_eq_app_right
               eq_nextl_refines_eq_app_right)
 
   text{*A specific lower bound on the number of states in a DFA*}
@@ -477,7 +457,7 @@ lemma L2_3:
   assumes "MyhillNerode L R"
   obtains "finite (UNIV // eq_app_right L)"
           "card (UNIV // eq_app_right L) \<le> card (UNIV // R)"
-by (meson assms MN_refines_eq_app_right MyhillNerode_def equiv_eq_app_right finite_refines_finite_subset)
+by (meson assms MN_refines_eq_app_right MyhillNerode_def equiv_eq_app_right finite_refines_finite finite_refines_card_le)
 
 text {*Working towards step 3.  Also, every Myhill-Nerode relation @{term R} for @{term L}
   can be mapped to a machine. The locale below constructs such a DFA. *}
