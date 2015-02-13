@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{QR Decomposition}
+\author{By Jose Divas\'on and Jes\'us Aransay}
+\maketitle
+
+
+\begin{abstract}
+In this work we present a formalization of the QR decomposition, an algorithm which decomposes
+a real matrix $A$ in the product of another two matrices $Q$ and $R$, where $Q$ is an orthogonal matrix
+and $R$ is invertible and upper triangular. The algorithm is useful for the least squares problem, 
+i.e. the computation of the best approximation of an unsolvable system of linear equations. 
+As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. 
+The development relies, among others, on the AFP entry \emph{Implementing field extensions of the form $\mathbb{Q}[\sqrt{b}]$} by Ren\'e Thiemann,
+which allows to execute the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
+
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
