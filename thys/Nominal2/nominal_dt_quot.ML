@@ -113,9 +113,9 @@ fun define_qperms qtys qfull_ty_names tvs perm_specs raw_perm_laws lthy =
       map (Quotient_Tacs.lifted lthy3 qtys []) raw_perm_laws'
       |> Variable.exportT lthy3 lthy2
 
-    fun tac _ =
-      Class.intro_classes_tac [] THEN
-        (ALLGOALS (resolve_tac lifted_perm_laws))
+    fun tac ctxt =
+      Class.intro_classes_tac ctxt [] THEN
+        (ALLGOALS (resolve_tac ctxt lifted_perm_laws))
   in
     lthy2
     |> Class.prove_instantiation_exit tac 
@@ -126,7 +126,7 @@ fun define_qperms qtys qfull_ty_names tvs perm_specs raw_perm_laws lthy =
 (* defines the size functions and proves size-class *)
 fun define_qsizes qtys qfull_ty_names tvs size_specs lthy =
   let
-    val tac = K (Class.intro_classes_tac [])
+    fun tac ctxt = Class.intro_classes_tac ctxt []
   in
     lthy
     |> Local_Theory.exit_global
@@ -229,7 +229,7 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
 
     val tac = 
       EVERY' [ rtac @{thm supports_finite},
-               resolve_tac qsupports_thms,
+               resolve_tac ctxt' qsupports_thms,
                asm_simp_tac (put_simpset HOL_ss ctxt'
                 addsimps @{thms finite_supp supp_Pair finite_Un}) ]
   in
@@ -250,9 +250,9 @@ fun fs_instance qtys qfull_ty_names tvs qfsupp_thms lthy =
       |> Local_Theory.exit_global
       |> Class.instantiation (qfull_ty_names, tvs, @{sort fs}) 
   
-    fun tac _ =
-      Class.intro_classes_tac [] THEN
-        (ALLGOALS (resolve_tac qfsupp_thms))
+    fun tac ctxt =
+      Class.intro_classes_tac ctxt [] THEN
+        (ALLGOALS (resolve_tac ctxt qfsupp_thms))
   in
     lthy1
     |> Class.prove_instantiation_exit tac 
@@ -538,8 +538,8 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
   
         val tac1 = 
           if rec_flag
-          then resolve_tac @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
-          else resolve_tac @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
+          then resolve_tac ctxt @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
+          else resolve_tac ctxt @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
         
         val tac2 =
           EVERY' [simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss),
@@ -592,14 +592,14 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
             val tac1 = SOLVED' (EVERY'
               [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
                 rewrite_goal_tac ctxt'' (@{thms fresh_star_Un[THEN eq_reflection]}),
-                conj_tac (DETERM o resolve_tac fprops') ]) 
+                conj_tac (DETERM o resolve_tac ctxt'' fprops') ]) 
 
             (* for equalities between constructors *)
             val tac2 = SOLVED' (EVERY' 
               [ rtac (@{thm ssubst} OF prems),
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv eq_iff_thms),
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv abs_eqs),
-                conj_tac (DETERM o resolve_tac (@{thms refl} @ perm_bn_alphas)) ]) 
+                conj_tac (DETERM o resolve_tac ctxt'' (@{thms refl} @ perm_bn_alphas)) ])
 
             (* proves goal "P" *)
             val side_thm = Goal.prove ctxt'' [] [] (term_of concl)

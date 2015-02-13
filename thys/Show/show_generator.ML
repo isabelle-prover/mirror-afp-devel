@@ -188,7 +188,7 @@ fun derive dtyp_name _ thy =
       THEN rtac assoc_thm 1;
 
     val thy' = Class.prove_instantiation_exit (fn ctxt =>
-        Class.intro_classes_tac []
+        Class.intro_classes_tac ctxt []
         THEN assoc_tac ctxt
         THEN unfold_tac ctxt [shows_list_thm] 
         THEN rtac @{thm shows_list_aux_assoc} 1

@@ -336,7 +336,7 @@ ML {*
 
         val ethms = Rs |> map (fn R =>
           (Simplifier.norm_hhf ctxt (Thm.trivial R)));
-      in eresolve_tac ethms i end
+      in eresolve_tac ctxt ethms i end
       );
 
     (* Resolve with premise. Copied and adjusted from Goal.assume_rule_tac. *)

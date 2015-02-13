@@ -120,7 +120,7 @@ fun derive dtyp_name _ thy =
       unfold_tac ctxt hash_thms THEN
       my_print_tac ctxt "after unfolding" THEN
       simp_tac ctxt 1
-    val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac [] THEN hash_tac ctxt)) lthy
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [] THEN hash_tac ctxt) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class hashable")
 
   in thy' end

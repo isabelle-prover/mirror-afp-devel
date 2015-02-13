@@ -249,7 +249,7 @@ fun derive_ceq_ceq dtyp_name thy =
             mk_case_tac ctxt [[SOME ID_trm]] @{thm option.exhaust} sub_case_tac thm
           end
       in 
-        Class.intro_classes_tac []
+        Class.intro_classes_tac ctxt []
         THEN unfold_tac ctxt [ceq_thm]
         THEN split_tac ceq_eq_thm eq_vars
       end) lthy
@@ -286,7 +286,7 @@ fun derive_eq_ceq typ_name thy =
     val (ceq_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded ("ceq_" ^ base_name ^ "_def", ceq_def)
      
-    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt [ceq_thm]
       THEN force_tac ctxt 1) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class ceq")  

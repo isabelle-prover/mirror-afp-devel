@@ -592,16 +592,16 @@ structure Seplogic_Auto = struct
         (put_simpset HOL_ss ctxt addsimps @{thms solve_ent_preprocess_simps});
 
     val match_entails_tac =
-      resolve_tac @{thms entails_solve_init} 
-      THEN' match_frame_tac (resolve_tac @{thms ent_refl}) ctxt
-      THEN' resolve_tac @{thms entails_solve_finalize};
+      resolve_tac ctxt @{thms entails_solve_init} 
+      THEN' match_frame_tac (resolve_tac ctxt @{thms ent_refl}) ctxt
+      THEN' resolve_tac ctxt @{thms entails_solve_finalize};
   in
     preprocess_entails_tac
     THEN' (TRY o
       REPEAT_ALL_NEW (match_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems sep_eintros}))))
     THEN_ALL_NEW (dflt_tac ctxt THEN' 
       TRY o (match_tac ctxt @{thms ent_triv} 
-        ORELSE' resolve_tac @{thms ent_refl}
+        ORELSE' resolve_tac ctxt @{thms ent_refl}
         ORELSE' match_entails_tac))
   end;
 
@@ -611,8 +611,8 @@ structure Seplogic_Auto = struct
   (***********************************)
 
   fun heap_rule_tac ctxt h_thms = 
-    resolve_tac h_thms ORELSE' (
-    rtac @{thm fi_rule} THEN' (resolve_tac h_thms THEN_IGNORE_NEWGOALS
+    resolve_tac ctxt h_thms ORELSE' (
+    rtac @{thm fi_rule} THEN' (resolve_tac ctxt h_thms THEN_IGNORE_NEWGOALS
     frame_inference_tac ctxt));
 
   fun vcg_step_tac ctxt = let
@@ -631,10 +631,10 @@ structure Seplogic_Auto = struct
   in
     (FIRST' [
       CHANGED o dflt_tac ctxt,
-      REPEAT_ALL_NEW (resolve_tac @{thms normalize_rules}),
-      CHANGED o (FIRST' [resolve_tac d_thms, heap_rule_tac]
+      REPEAT_ALL_NEW (resolve_tac ctxt @{thms normalize_rules}),
+      CHANGED o (FIRST' [resolve_tac ctxt d_thms, heap_rule_tac]
         ORELSE' (app_post_cons_tac THEN' 
-          FIRST' [resolve_tac d_thms, heap_rule_tac])) 
+          FIRST' [resolve_tac ctxt d_thms, heap_rule_tac])) 
     ])
   end;
 

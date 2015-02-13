@@ -169,7 +169,7 @@ ML
 {*
 fun analz_mono_contra_tac ctxt =
   rtac @{thm analz_impI} THEN' 
-  REPEAT1 o (dresolve_tac @{thms analz_mono_contra})
+  REPEAT1 o (dresolve_tac ctxt @{thms analz_mono_contra})
   THEN' mp_tac ctxt
 *}
 
@@ -186,7 +186,7 @@ ML
 fun synth_analz_mono_contra_tac ctxt =
   rtac @{thm syan_impI} THEN'
   REPEAT1 o 
-    (dresolve_tac 
+    (dresolve_tac ctxt 
      [@{thm knows_subset_knows_Says} RS @{thm synth_analz_mono} RS @{thm contra_subsetD},
       @{thm knows_subset_knows_Notes} RS @{thm synth_analz_mono} RS @{thm contra_subsetD},
       @{thm knows_subset_knows_Gets} RS @{thm synth_analz_mono} RS @{thm contra_subsetD}])

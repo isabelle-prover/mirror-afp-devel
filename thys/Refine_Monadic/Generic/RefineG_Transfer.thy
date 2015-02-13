@@ -101,7 +101,7 @@ structure RefineG_Transfer = struct
       COND (has_fewer_prems (nprems_of st)) no_tac (
         FIRST [
           Method.assm_tac ctxt i,
-          resolve_tac thms i,
+          resolve_tac ctxt thms i,
           Tagged_Solver.solve_tac ctxt i,
           CHANGED_PROP (simp_tac ss i)]
       )) st

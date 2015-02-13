@@ -140,7 +140,7 @@ fun define_channels (params, binding) typesyn channels thy =
     rtac (Drule.instantiate' [] [SOME x]
       (#exhaust (BNF_LFP_Compat.the_info (Proof_Context.theory_of ctxt) [BNF_LFP_Compat.Keep_Nesting] dt_name)));
 
-  fun proof ctxt = (Class.intro_classes_tac [] THEN
+  fun proof ctxt = (Class.intro_classes_tac ctxt [] THEN
                       Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} =>
                                         (case_tac x ctxt) 1
                                             THEN auto_tac ctxt') ctxt 1 THEN

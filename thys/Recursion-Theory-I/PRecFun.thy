@@ -443,7 +443,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
     val (name, _, n1) = extract_free_arg t1
   in
     if name = @{const_name If} then
-      resolve_tac [get_if_by_index n2] i
+      resolve_tac ctxt [get_if_by_index n2] i
     else
       let
         val comp = get_comp_by_indexes (n1, n2)
@@ -455,7 +455,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
 
 fun prec_tac ctxt facts i =
   Method.insert_tac facts i THEN
-  REPEAT (resolve_tac [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
+  REPEAT (resolve_tac ctxt [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
     assume_tac ctxt i ORELSE if_comp_tac ctxt i)
 *}
 

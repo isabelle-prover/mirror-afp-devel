@@ -1905,10 +1905,10 @@ fun simp_state_eq_tac Record state_space =
 *)
 
 fun post_conforms_tac ctxt state_kind i =
-   EVERY [REPEAT1 (resolve_tac [allI,impI] i),
+   EVERY [REPEAT1 (resolve_tac ctxt [allI,impI] i),
           ((fn i  => TRY (rtac conjI i))
            THEN_ALL_NEW
-          (fn i => (REPEAT (resolve_tac [allI,impI] i))
+          (fn i => (REPEAT (resolve_tac ctxt [allI,impI] i))
                     THEN (full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps
                              [mem_Collect_eq,singleton_iff,empty_iff,UNIV_I]
                              addsimprocs (state_simprocs state_kind)) i))) i];
@@ -2067,7 +2067,7 @@ fun gen_context_thms ctxt thy mode params G T F =
           (fn thms =>
             EVERY[trace_tac ctxt "extracting specifications from hoare context",
                   rtac asmUN' 1,
-                  DEPTH_SOLVE_1 (resolve_tac [subset_refl,refl] 1 ORELSE
+                  DEPTH_SOLVE_1 (resolve_tac ctxt [subset_refl,refl] 1 ORELSE
                                   ((rtac subset_unI1 1 APPEND rtac subset_unI2 1)
                                    ORELSE
                                    (rtac subset_singleton_insert1 1
@@ -2176,7 +2176,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
          in
            EVERY [rtac augment_rule i,
                   rtac spec' (i+1),
-                  TRY (resolve_tac [subset_refl, empty_subsetI, Un_upper1, Un_upper2] i)]
+                  TRY (resolve_tac ctxt [subset_refl, empty_subsetI, Un_upper1, Un_upper2] i)]
          end;
 
     fun check_spec name P thm =
@@ -2206,7 +2206,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
       | solve_spec _ asmUN_rule _ mode Static _ _ i =(* try to infer spec out of context *)
          EVERY[trace_tac ctxt "inferring specification from hoare context1",
                rtac asmUN_rule i,
-               DEPTH_SOLVE_1 (resolve_tac [subset_refl,refl] i ORELSE
+               DEPTH_SOLVE_1 (resolve_tac ctxt [subset_refl,refl] i ORELSE
                                 ((rtac subset_unI1 i APPEND rtac subset_unI2 i)
                                  ORELSE
                                  (rtac subset_singleton_insert1 i
@@ -2560,7 +2560,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
   handle TERM t => (K no_tac);
 
 fun solve_in_Faults_tac ctxt i =
-    resolve_tac [UNIV_I, in_insert_hd] i
+    resolve_tac ctxt [UNIV_I, in_insert_hd] i
     ORELSE
     SELECT_GOAL (SOLVE (simp_tac (put_simpset (simpset_of @{theory_context Set}) ctxt) 1)) i;
 
@@ -2582,13 +2582,13 @@ fun guard_tac ctxt strip cont_tac mode (t,i) =
                      else [Guarantee mode]
 
     fun basic_tac i =
-          EVERY [resolve_tac [Guard mode, GuaranteeAsGuard mode] i,
+          EVERY [resolve_tac ctxt [Guard mode, GuaranteeAsGuard mode] i,
                  trace_tac ctxt "Guard", cont_tac (i+1),
                  triv_simp ctxt i]
 
 
     fun guarantee_tac i =
-          EVERY [resolve_tac guarantees i,
+          EVERY [resolve_tac ctxt guarantees i,
                  solve_in_Faults_tac ctxt (i+2),
                  cont_tac (i+1),
                  triv_simp ctxt i]
@@ -2644,7 +2644,7 @@ fun basic_while_tac ctxt state_kind cont_tac tac mode i =
                ]
 
     fun basic_tac i =
-          EVERY [resolve_tac [While mode] i,
+          EVERY [resolve_tac ctxt [While mode] i,
                  common_tac i]
   in
      EVERY [trace_tac ctxt "basic_while_tac: basic_tac", basic_tac i]
@@ -2706,7 +2706,7 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
     val rules' = (case (List.filter (not o null) (map dest_splits vars)) of
                     [] => rules
                   |(xs::_) => adapt_aux_var ctxt false (map fst xs) (map get_aux_tvar rules));
-  in EVERY [resolve_tac rules' i,
+  in EVERY [resolve_tac ctxt rules' i,
             tac,
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
                       addsimprocs [@{simproc split_beta}]) (i+2),
@@ -2764,13 +2764,13 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
                     [] => rules
                   | xs => adapt_aux_var ctxt true (map fst xs) (map get_aux_tvar rules));
 
-  in EVERY [resolve_tac rules' i,
+  in EVERY [resolve_tac ctxt rules' i,
             rtac spec (i+1),
             conseq_simp_tac ctxt state_kind [] i] st
   end
   handle TERM _ => no_tac st;
 
-fun prems_tac ctxt i = TRY (resolve_tac (Assumption.all_prems_of ctxt) i);
+fun prems_tac ctxt i = TRY (resolve_tac ctxt (Assumption.all_prems_of ctxt) i);
 
 
 
@@ -3396,19 +3396,19 @@ fun solve_modifies_tac ctxt state_kind state_space i =
       | is_split_state t = 0;
     val simp_ctxt = put_simpset HOL_ss ctxt addsimps (Ex_True::Ex_False::Record.get_extinjects thy);
       fun try_solve Record i = (*(SOLVE*)
-          (((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac [conjI, impI, allI]) k)))
+          (((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac ctxt [conjI, impI, allI]) k)))
             THEN_ALL_NEW
           (fn k => EVERY [state_split_simp_tac ctxt [] is_split_state k,
                           simp_tac simp_ctxt k THEN_MAYBE rename_goal ctxt remdeco' k
                           ])) i) (*)*)
         | try_solve StateFun i =
-           ((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac [conjI, impI, allI]) k)))
+           ((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac ctxt [conjI, impI, allI]) k)))
              THEN_ALL_NEW
             (fn k => REPEAT (rtac exI k) THEN
                      rtac ext k THEN
                      simp_tac (put_simpset state_fun_update_ss ctxt) k
                      THEN_MAYBE
-                     (REPEAT_ALL_NEW (resolve_tac [conjI,impI,refl]) k))) i
+                     (REPEAT_ALL_NEW (resolve_tac ctxt [conjI,impI,refl]) k))) i
   in
     (trace_tac ctxt "solve_modifies_tac" THEN
      clarsimp_tac ((ctxt
@@ -3509,14 +3509,14 @@ fun HoareCallRuleTac state_kind state_space ctxt thms i st =
              simp_tac (put_simpset HOL_basic_ss ctxt addsimps [Un_empty_left,Un_empty_right]) i THEN
              proc_lookup_simp_tac ctxt i
 
-    fun basic_tac i = (((resolve_tac thms')
+    fun basic_tac i = (((resolve_tac ctxt thms')
                        THEN_ALL_NEW
                        (fn k => (SUBGOAL solve_sidecondition_tac k))) i)
   in  (basic_tac
         ORELSE'
        (fn k =>
          (REPEAT (rtac allI k))
-           THEN EVERY [resolve_tac thms' k])) i st
+           THEN EVERY [resolve_tac ctxt thms' k])) i st
   end;
 
 (* vcg_polish_tac tries to solve modifies-clauses automatically; for other specifications the

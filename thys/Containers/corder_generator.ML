@@ -97,7 +97,7 @@ fun derive_corder_linorder typ_name thy =
     val (corder_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
-    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac []
+    val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt [corder_thm]
       THEN my_print_tac ctxt "after class intro"
       THEN asm_full_simp_tac ctxt 1
@@ -132,7 +132,7 @@ fun derive_some_corder dtyp_name thy = let
     val (corder_thm,lthy) = Class.instantiation ([dtyp_name],vs,@{sort corder}) thy
       |> define_overloaded ("corder_" ^ base_name ^ "_def", corder_def)
      
-    val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac []
+    val thy' = Class.prove_instantiation_exit (fn ctxt => (Class.intro_classes_tac ctxt []
       THEN my_print_tac ctxt "after class instance"
       THEN rtac (@{thm corder_intro} OF [linorder_thm]) 1
       THEN my_print_tac ctxt "after corder_intro"

@@ -312,7 +312,7 @@ declaration {*
     []
     @{binding force_relator_props_solver}
     "Additional relator properties solver (instantiate schematics)"
-    (fn ctxt => (REPEAT_ALL_NEW (resolve_tac (relator_props.get ctxt))))
+    (fn ctxt => REPEAT_ALL_NEW (resolve_tac ctxt (relator_props.get ctxt)))
 *}
 
 lemma relprop_id_orient[relator_props]: 

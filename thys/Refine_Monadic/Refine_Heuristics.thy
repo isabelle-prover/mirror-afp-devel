@@ -85,9 +85,9 @@ structure Refine_dref_type = struct
      refine_dref_RELATES-rules. *)
   fun type_tac ctxt =
     ALL_GOALS_FWD (TRY o (
-      resolve_tac (pattern_rules.get ctxt) THEN'
+      resolve_tac ctxt (pattern_rules.get ctxt) THEN'
       match_goal_shape_tac has_schematic ctxt THEN'
-      (SOLVED' (REPEAT_ALL_NEW (resolve_tac (RELATES_rules.get ctxt)))
+      (SOLVED' (REPEAT_ALL_NEW (resolve_tac ctxt (RELATES_rules.get ctxt)))
         ORELSE' (fn i => fn st => let 
           val failed_t = 
             HOLogic.dest_Trueprop (Logic.concl_of_goal (Thm.prop_of st) i);

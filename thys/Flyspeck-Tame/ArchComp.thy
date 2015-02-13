@@ -15,7 +15,7 @@ method_setup cond_eval = {*
     Scan.succeed (fn ctxt =>
       SIMPLE_METHOD'
        (if getenv "ISABELLE_FULL_TEST" = "true" then eval_tac ctxt
-        else Skip_Proof.cheat_tac))
+        else Skip_Proof.cheat_tac ctxt))
   end
 *} "solve goal by evaluation if ISABELLE_FULL_TEST=true)"
 

@@ -154,14 +154,14 @@ let
         |> Proof_Context.export lthy'
         |> (fn x => singleton x def_thm')
 
-      val lthy'' = Class.prove_instantiation_instance (K (
-        Class.intro_classes_tac []
+      val lthy'' = Class.prove_instantiation_instance (fn ctxt =>
+        Class.intro_classes_tac ctxt []
         THEN rtac assoc_thm 1
-        THEN unfold_tac lthy' [def_thm] 
+        THEN unfold_tac ctxt [def_thm] 
         THEN rtac @{thm shows_list_aux_assoc} 1
         THEN rtac @{thm ballI} 1
         THEN rtac assoc_thm 1
-        )) lthy'
+        ) lthy'
     in lthy'' end
 in
   Outer_Syntax.command @{command_spec "standard_shows_list"} 

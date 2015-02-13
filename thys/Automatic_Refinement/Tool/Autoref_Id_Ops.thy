@@ -399,9 +399,9 @@ ML {*
           )
         )
   
-      val id_tagged = resolve_tac @{thms ID_tagged}
+      val id_tagged = resolve_tac ctxt @{thms ID_tagged}
 
-      val id_annotated = resolve_tac @{thms ID_annotated}
+      val id_annotated = resolve_tac ctxt @{thms ID_annotated}
 
       (*
       val traced_rewr_conv = if Config.get ctxt cfg_trace_patterns then
@@ -647,7 +647,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
       (fn i => fn st => 
         case Logic.concl_of_goal (prop_of st) i of
           @{mpat "Trueprop (CNV_ANNOT _ _ _)"} => 
-            resolve_tac @{thms CNV_ANNOT} i st
+            resolve_tac ctxt @{thms CNV_ANNOT} i st
         | @{mpat "Trueprop (REL_OF_INTF ?I _)"} => 
             rtac (rel_of_intf_thm ctxt I) i st
         | _ => Seq.empty
@@ -659,10 +659,10 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
         | @{mpat "Trueprop (REL_OF_INTF_P (\<langle>_\<rangle>\<^sub>i_) _)"} => 
             rtac @{thm ROI_app} i st
         | @{mpat "Trueprop (REL_OF_INTF_P (i_of_rel _) _)"} => 
-            resolve_tac @{thms ROI_i_of_rel} i st
+            resolve_tac ctxt @{thms ROI_i_of_rel} i st
         | @{mpat "Trueprop (REL_OF_INTF (i_of_rel _) _)"} => 
-            resolve_tac @{thms ROI_i_of_rel} i st
-        | _ => resolve_tac @{thms ROI_const} i st
+            resolve_tac ctxt @{thms ROI_i_of_rel} i st
+        | _ => resolve_tac ctxt @{thms ROI_const} i st
       *)
       )
     )
