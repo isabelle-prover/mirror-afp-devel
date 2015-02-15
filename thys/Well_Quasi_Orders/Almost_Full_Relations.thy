@@ -674,7 +674,7 @@ proof
         then have "(P'\<^sup>*\<^sup>* OO (D OO P'\<^sup>*\<^sup>*)\<^sup>+\<^sup>+) (f i) (f (Suc i))" by auto
         then have "Suc i < i"
           using ** apply auto
-          by (metis (lifting, mono_tags) max.semilattice_strict_iff_order relcompp.relcompI tranclp_into_tranclp2)
+          by (metis (lifting, mono_tags) less_le relcompp.relcompI tranclp_into_tranclp2)
         then show False by auto
       qed
       with A [of i] show "f i \<in> A \<and> strict Q (f (Suc i)) (f i)" by auto

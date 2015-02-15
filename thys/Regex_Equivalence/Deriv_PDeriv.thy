@@ -42,16 +42,16 @@ next
         by (elim box_equals[OF _ sorted_list_of_set.insert sorted_list_of_set.insert]) auto
       with insert(2,5) have "a # sorted_list_of_set R = b # sorted_list_of_set S"
         apply (cases "sorted_list_of_set R" "sorted_list_of_set S" rule: list.exhaust[case_product list.exhaust])
-        apply (auto split: if_splits)
-        apply (metis insort_not_Nil)
-        apply (metis (full_types) set_insert distinct.simps(2) insert.prems(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) set_insert distinct.simps(2) insert.prems(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) set_insert distinct.simps(2) insert.prems(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) List.set_insert distinct.simps(2) insert.hyps(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) List.set_insert distinct.simps(2) insert.hyps(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) List.set_insert distinct.simps(2) insert.hyps(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) List.set_insert distinct.simps(2) insert.hyps(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
-        apply (metis (full_types) List.set_insert distinct.simps(2) insert.hyps(1) insertI1 min.semilattice_strict_iff_order not_in_set_insert sorted_list_of_set)
+        apply (auto split: if_splits simp add: not_le)
+        using insort_not_Nil apply metis
+        using insert.prems(1) sorted_list_of_set apply fastforce
+        using insert.prems(1) sorted_list_of_set apply fastforce
+        using insert.prems(1) sorted_list_of_set apply fastforce
+        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.hyps(1) sorted_list_of_set apply fastforce
         done
       with insert show "insert a R = insert b S" by auto
     next

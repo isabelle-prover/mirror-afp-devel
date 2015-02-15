@@ -1543,7 +1543,7 @@ begin
         have f1: "\<And>x\<^sub>1 x. \<not> (x\<^sub>1\<Colon>nat) < x\<^sub>1 - x"
           using less_imp_diff_less by blast
         have "j \<le> last B"
-          by (metis `j < last B` sup.semilattice_strict_iff_order)
+          by (metis `j < last B` less_le)
         hence f2: "\<And>x\<^sub>1. \<not> last B < x\<^sub>1 \<or> \<not> x\<^sub>1 \<le> j"
           using f1 by (metis diff_diff_cancel le_trans)
         have "\<And>x\<^sub>1. seg_end x\<^sub>1 \<le> j \<or> \<not> x\<^sub>1 < find_seg j"

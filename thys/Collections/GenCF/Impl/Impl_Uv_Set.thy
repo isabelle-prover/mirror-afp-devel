@@ -47,8 +47,8 @@ begin
   termination
     apply (relation "measure id")
     apply simp
-    apply simp
-    by (metis diff_less le0 lens_not_0(2) sup.semilattice_strict_iff_order)
+    apply (simp add: not_less less_diff_conv2)
+    done
 
   declare single_bit.simps[simp del]
 

@@ -803,7 +803,7 @@ lemma uint_word_of_uminus_conv:
   "[|x>0; x < 2^dflt_size|] ==> uint ((word_of_int (- x))::dflt_size word) = (2 ^ dflt_size - x)"
   apply (simp add: int_word_uint)
   thm zmod_zminus1_eq_if
-  by (metis min.semilattice_strict_iff_order power_eq_0_iff 
+  by (metis min.strict_iff_order power_eq_0_iff 
     semiring_numeral_div_class.mod_less zmod_zminus1_eq_if)
 
 lemma uint_word_of_negnum_conv: 
@@ -816,7 +816,7 @@ proof -
   assume a1: "a < 0"
   assume "- a < m"
   hence "\<forall>x\<^sub>0. - a + x\<^sub>0 \<le> m + x\<^sub>0"
-    by (metis add_le_cancel_right inf.semilattice_strict_iff_order)
+    by (metis add_le_cancel_right inf.strict_iff_order)
   hence "- a mod - m = - a + - m"
     using a1 by (metis add_0_iff is_num_normalize(10) mod_pos_neg_trivial neg_0_less_iff_less)
   hence "- a mod - m = - (m + a)"

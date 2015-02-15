@@ -2571,7 +2571,7 @@ lemma Un_set_drop_extend: "\<lbrakk>j\<ge>Suc 0; j < length l\<rbrakk>
     le_refl less_eq_Suc_le order.strict_iff_order)
   apply (metis Nat.diff_le_self set_drop_subset_set_drop subset_code(1))
   by (metis diff_Suc_Suc gr0_implies_Suc in_set_drop_conv_nth 
-    less_eq_Suc_le min.semilattice_strict_iff_order minus_nat.diff_0)
+    less_eq_Suc_le order.strict_iff_order minus_nat.diff_0)
 
 lemma drop_take_drop_unsplit: 
   "i\<le>j \<Longrightarrow> drop i (take j l) @ drop j l = drop i l"
@@ -4415,7 +4415,5 @@ proof rule
 qed
 
 end
-
-
 
 end

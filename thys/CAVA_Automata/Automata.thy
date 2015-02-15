@@ -1026,7 +1026,7 @@ begin
             by (metis 
               `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> local.acc (fst (r k))` 
               `i \<le> k - 1` `k - 1 < k` `k - 1 \<le> j`
-              le_antisym less.prems(2) min.semilattice_strict_iff_order)
+              le_antisym less.prems(2) less_le)
           ultimately show ?thesis
             by (auto simp: degeneralize_ext_def)
         qed
