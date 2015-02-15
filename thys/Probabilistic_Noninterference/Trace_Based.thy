@@ -711,13 +711,13 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
           using wt_less1 unfolding dist_mult by simp
         also {
           have "?v1 * ?w1 * ?wP = ?w1 * (?v0 * Ps cf1 + ?v1 * Ps cf1) - ?w1 * ?v0 * ps cf1 I0"
-            using wt_less1 unfolding divide_eq_eq times_divide_eq by (simp add: field_simps)
+            using wt_less1 unfolding divide_eq_eq by (simp add: field_simps)
           also have "\<dots> = (1 - ?w0 * ?v0) * Ps cf1 - ?D"
             by (simp add: field_simps)
           finally have "?v1 * ?w1 * ?wP = (1 - ?w0 * ?v0) * Ps cf1 - ?D" . }
         also {
           have "?v1 * ?w1 * ?wQ = ?v1 * (?w0 * Ps cf2 + ?w1 * Ps cf2) - ?v1 * ?w0 * (ps cf2 (F I0))"
-            using wt_less1 unfolding divide_eq_eq times_divide_eq by (simp add: field_simps)
+            using wt_less1 unfolding divide_eq_eq by (simp add: field_simps)
           also have "\<dots> = (1 - ?w0 * ?v0) * Ps cf2 - ?E"
             by (simp add: field_simps)
           finally have "?v1 * ?w1 * ?wQ = (1 - ?w0 * ?v0) * Ps cf2 - ?E" . }

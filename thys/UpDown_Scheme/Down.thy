@@ -104,7 +104,7 @@ proof (induct l arbitrary: b \<alpha> fl fr p)
       hence "p = b" using grid_onedim_split[where ds="{}" and d=d and b=b] `p \<in> grid b {d}` unfolding grid_empty_ds[where b=b] by auto
       from not_child have lnot_child: "!! dir. \<not> p \<in> lgrid (child b dir d) {d} lm" unfolding lgrid_def by auto
       have result: "((fl + fr) / 4 + 1 / 3 * \<alpha> b) / 2 ^ lv b d = (fl + (fr - fl) / 2) / 2 ^ (lv b d + 1) + \<alpha> b * l2_\<phi> (b ! d) (b ! d)"
-        unfolding l2_same diff_divide_distrib add_divide_distrib times_divide_eq(1)[symmetric] algebra_simps by auto
+        unfolding l2_same diff_divide_distrib add_divide_distrib times_divide_eq_left[symmetric] algebra_simps by auto
       show ?thesis
         unfolding down'.simps Let_def fun_upd_def hyps[OF `p \<in> sparsegrid' dm`] if_P[OF `p \<in> lgrid b {d} lm`] if_not_P[OF lnot_child] if_P[OF `p = b`]
         unfolding `p = b` parents_single unfolding result by auto
