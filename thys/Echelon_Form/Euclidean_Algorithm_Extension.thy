@@ -14,18 +14,7 @@ imports
   "~~/src/HOL/Library/Polynomial"
 begin
 
-(*TODO: After Isabelle2014 the following definition will be included in the Polynomial.thy file*)
 (*See \url{https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00000.html}*)
-
-defs lcm_gcd_inst_def: "gcd_poly_inst.lcm_poly a b == a * b div smult
-  (coeff a (degree a) * coeff b (degree b)) (gcd a b)"
-
-lemma lcm_poly_def:
-  "lcm a b = a * b div smult (coeff a (degree a) * coeff b (degree b)) (gcd a b)"
-  apply (tactic \<open>ALLGOALS (CONVERSION (Axclass.unoverload_conv @{theory}))\<close>)
-  unfolding lcm_gcd_inst_def
-  apply (tactic \<open>ALLGOALS (CONVERSION (Axclass.overload_conv @{theory}))\<close>)
-  ..
 
 
 instantiation nat :: euclidean_semiring_gcd

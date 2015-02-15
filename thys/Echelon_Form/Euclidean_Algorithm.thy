@@ -94,15 +94,7 @@ qed
 context semiring_div
 begin
 
-lemma dvd_setprod [intro]:
-  assumes "finite A" and "x \<in> A"
-  shows "f x dvd setprod f A"
-proof
-  from `finite A` have "setprod f (insert x (A - {x})) = f x * setprod f (A - {x})"
-    by (intro setprod.insert) auto
-  also from `x \<in> A` have "insert x (A - {x}) = A" by blast
-  finally show "setprod f A = f x * setprod f (A - {x})" .
-qed
+lemmas dvd_setprod = local.dvd_setprodI
 
 lemma dvd_mult_cancel_left:
   assumes "a \<noteq> 0" and "a * b dvd a * c"
@@ -1095,7 +1087,7 @@ lemma invertible_coprime:
 
 lemma lcm_eucl_gcd_eucl:
   "lcm_eucl a b = a * b div (gcd_eucl a b * normalisation_factor (a*b))"
-  by (simp only: lcm_lcm_eucl gcd_gcd_eucl lcm_eucl_def)
+  by (rule lcm_eucl_def)
 
 lemma lcm_eucl_gcd_eucl_prod:
   "lcm_eucl a b * gcd_eucl a b = a * b div normalisation_factor (a*b)"
@@ -1106,9 +1098,9 @@ proof (cases "a * b = 0")
   from lcm_eucl_gcd_eucl have "lcm_eucl a b * gcd_eucl a b = gcd_eucl a b * (a * b div (?nf (a*b) * gcd_eucl a b))" 
     by (simp add: mult_ac)
   also from `a * b \<noteq> 0` have "... = a * b div ?nf (a*b)" 
-    by (simp_all add: unit_ring_inv'1 dvd_mult_div_cancel unit_ring_inv)
+    by (simp_all add: unit_ring_inv'1 unit_ring_inv)
   finally show ?thesis .
-qed (simp add: lcm_eucl_gcd_eucl)
+qed (auto simp add: lcm_eucl_gcd_eucl)
 
 lemma lcm_eucl_dvd1 [iff]:
   "x dvd lcm_eucl x y"
@@ -1125,7 +1117,7 @@ proof (cases "x*y = 0")
   also have "... = x * (?c * y div gcd_eucl x y)"
     by (metis div_mult_swap gcd_eucl_dvd2 mult_assoc)
   finally show ?thesis by (rule dvdI)
-qed (simp add: lcm_eucl_gcd_eucl)
+qed (auto simp add: lcm_eucl_gcd_eucl)
 
 lemma lcm_eucl_least:
   "\<lbrakk>a dvd k; b dvd k\<rbrakk> \<Longrightarrow> lcm_eucl a b dvd k"
@@ -1138,8 +1130,8 @@ proof (cases "k = 0")
   hence "gcd_eucl a b \<noteq> 0" using `k \<noteq> 0` by (auto simp add: gcd_eucl_zero)
   from A obtain r s where ar: "k = a * r" and bs: "k = b * s" 
     unfolding dvd_def by blast
-  with `k \<noteq> 0` have "r * s \<noteq> 0" 
-    by (intro notI) (drule divisors_zero, elim disjE, simp_all)
+  with `k \<noteq> 0` have "r * s \<noteq> 0"
+    using local.divisors_zero local.mult_zero_right by fastforce 
   hence "is_unit (?nf (r * s))" by simp
   let ?c = "?nf k div ?nf (r*s)"
   from `is_unit (?nf k)` and `is_unit (?nf (r * s))` have "is_unit ?c" by (rule unit_div)
@@ -1214,7 +1206,7 @@ next
     have "?nf (lcm_eucl a b) * ?nf (gcd_eucl a b) = ?nf (a*b) div ?nf (a*b)"
     by (metis div_by_0 div_self normalisation_correct normalisation_factor_0 normalisation_factor_mult)
   also have "... = (if a*b = 0 then 0 else 1)"
-    by (cases "a*b = 0", simp, subst div_self, metis dvd_0_left normalisation_factor_dvd, simp)
+    by auto
   finally show ?thesis using False by (simp add: no_zero_divisors)
 qed
 
@@ -1573,7 +1565,7 @@ proof -
       apply (rule no_zero_divisors)
       apply blast+
       done
-    moreover from `finite A` have "\<forall>x\<in>A. x dvd \<Prod>A" by (intro ballI dvd_setprod)
+    moreover from `finite A` have "\<forall>x\<in>A. x dvd \<Prod>A"  by auto
     ultimately have "\<exists>l. l \<noteq> 0 \<and> (\<forall>x\<in>A. x dvd l)" by blast
     with Lcm_eucl0_iff' have "Lcm_eucl A \<noteq> 0" by simp
   }

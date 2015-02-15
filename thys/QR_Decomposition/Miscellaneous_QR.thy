@@ -410,16 +410,15 @@ next
   then show ?case by blast
 qed
 
-(*TODO: After Isabelle 2014, euclidean_space.dim must be replaced with real_vector.dim *)
 lemma orthogonal_basis_exists:
   fixes V :: "('a::euclidean_space) set"
   shows "\<exists>B. real_vector.independent B \<and> B \<subseteq> real_vector.span V 
-  \<and> V \<subseteq> real_vector.span B \<and> (card B = euclidean_space.dim V) \<and> pairwise orthogonal B"
+  \<and> V \<subseteq> real_vector.span B \<and> (card B = real_vector.dim V) \<and> pairwise orthogonal B"
 proof -
   from euclidean_space.basis_exists[of V] obtain B where
-    B: "B \<subseteq> V" "real_vector.independent B" "V \<subseteq> real_vector.span B" "card B = euclidean_space.dim V"
+    B: "B \<subseteq> V" "real_vector.independent B" "V \<subseteq> real_vector.span B" "card B = real_vector.dim V"
     by blast
-  from B have fB: "finite B" "card B = euclidean_space.dim V"
+  from B have fB: "finite B" "card B = real_vector.dim V"
     using euclidean_space.independent_bound by auto
   from basis_orthogonal[OF fB(1)] obtain C where
     C: "finite C" "card C \<le> card B" "real_vector.span C = real_vector.span B" "pairwise orthogonal C"
@@ -431,12 +430,12 @@ proof -
   from euclidean_space.card_le_dim_spanning[OF CSV SVC C(1)] C(2,3) fB
   have iC: "real_vector.independent C"
     by (simp add: euclidean_space.dim_span)
-  from C fB have "card C \<le> euclidean_space.dim V"
+  from C fB have "card C \<le> real_vector.dim V"
     by simp
-  moreover have "euclidean_space.dim V \<le> card C"
+  moreover have "real_vector.dim V \<le> card C"
     using euclidean_space.span_card_ge_dim[OF CSV SVC C(1)]
     by (simp add: euclidean_space.dim_span)
-  ultimately have CdV: "card C = euclidean_space.dim V"
+  ultimately have CdV: "card C = real_vector.dim V"
     using C(1) by simp
   from C B CSV CdV iC show ?thesis
     by auto
