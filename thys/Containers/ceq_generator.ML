@@ -167,14 +167,14 @@ fun mk_ceq_thm thy info =
     val (rec_t,eq_t) = (remove_x_y rec_x_y, remove_x_y eq_x_y)
     val equality = HOLogic.mk_Trueprop (HOLogic.mk_eq (rec_t,eq_t))
     val xs = map (dest_Free #> fst) eq_vars
-    val thm = Goal.prove (Proof_Context.init_global thy) xs prems equality 
+    val thm = Goal.prove_future (Proof_Context.init_global thy) xs prems equality 
       (fn {context = ctxt, prems = prems'} => 
       let val prems = map_index (fn (i,prem') => let
           val eq_var = nth eq_vars i        
           val ty = fastype_of eq_var
           val eq = Const (@{const_name HOL.eq}, ty)
           val equality = HOLogic.mk_Trueprop (HOLogic.mk_eq (eq_var,eq))
-          val prem = Goal.prove ctxt [] [] equality (K (
+          val prem = Goal.prove_future ctxt [] [] equality (K (
               rtac @{thm ID_ceq} 1
               THEN rtac prem' 1
             ))
@@ -263,7 +263,7 @@ fun derive_ceq_ceq dtyp_name thy =
     val is_ceq_thm_trm = HOLogic.mk_Trueprop (case param_is_ceq of 
       [] => main_is_ceq
     | _ => HOLogic.mk_eq (main_is_ceq,HOLogic_list_conj param_is_ceq))
-    val is_ceq_thm = Goal.prove (Proof_Context.init_global thy') [] [] is_ceq_thm_trm 
+    val is_ceq_thm = Goal.prove_future (Proof_Context.init_global thy') [] [] is_ceq_thm_trm 
       (fn {context = ctxt, prems = _} => 
         simp_tac (Splitter.add_split @{thm option.split} ctxt 
           addsimps (ceq_thm :: @{thms ID_Some ID_None is_ceq_def})

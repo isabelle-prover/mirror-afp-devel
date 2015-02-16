@@ -75,7 +75,7 @@ fun mk_linorder_thm dtyp_name lthy =
             rtac antisym 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after antisym" THEN
             rtac linear 1
-          val thm = Goal.prove lthy [] [] 
+          val thm = Goal.prove_future lthy [] [] 
             (HOLogic.mk_Trueprop (Const (@{const_name class.linorder}, class_ty) $ less_eq_term $ less_term)) 
             order_tac 
           val _ = writeln ("proved that " ^ base_name ^ " is in locale linorder")

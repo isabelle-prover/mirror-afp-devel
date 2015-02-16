@@ -165,7 +165,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
     val ind_thm_inst = instantiate' thy sort insts ind_thm
     val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
     val xs_strings = map (dest_Free #> fst) xs
-    val conjunctive_thm = Goal.prove_global thy xs_strings [] ind_term
+    val conjunctive_thm = Goal.prove_global_future thy xs_strings [] ind_term
       (fn {context = ctxt, ...} =>
         (
           (DETERM o strip_cases o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) [])

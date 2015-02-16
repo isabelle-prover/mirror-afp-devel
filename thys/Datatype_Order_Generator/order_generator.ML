@@ -205,7 +205,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                     val build_disj = mk_less_disj mk_less
                     val xy' = build_disj params_x params_y pdtys
                     val yz' = build_disj params_y params_z pdtys
-                    fun disj_thm t = Goal.prove ctxt [] [] t (K (solve_with_tac ctxt comp_eq))
+                    fun disj_thm t = Goal.prove_future ctxt [] [] t (K (solve_with_tac ctxt comp_eq))
                     val xy_disj = disj_thm xy'
                     val yz_disj = disj_thm yz'
                     fun solve_tac xy _ [] _ _ _ _ _ = K (solve_with_tac ctxt [xy])
@@ -220,16 +220,16 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                               then
                                 let
                                   val eq_term = HOLogic.mk_eq (px,py) |> HOLogic.mk_Trueprop
-                                  val eq_xy_thm = Goal.prove ctxt [] [] eq_term (K (solve_with_tac ctxt [hyp_xy]))
-                                  val xy'_thm = Goal.prove ctxt [] [] (build_disj pxs pys dtys) (K (solve_with_tac ctxt [hyp_xy]))
+                                  val eq_xy_thm = Goal.prove_future ctxt [] [] eq_term (K (solve_with_tac ctxt [hyp_xy]))
+                                  val xy'_thm = Goal.prove_future ctxt [] [] (build_disj pxs pys dtys) (K (solve_with_tac ctxt [hyp_xy]))
                                   fun yz_tac jj ctxt hyp_yz =
                                   if jj = 1 (* right branch, py = pz and pys < pzs *)
                                     (* = and = *)
                                   then
                                     let
                                       val eq_term = HOLogic.mk_eq (px,pz) |> HOLogic.mk_Trueprop
-                                      val eq_thm  = Goal.prove ctxt [] [] eq_term (K (solve_with_tac ctxt [eq_xy_thm,hyp_yz]))
-                                      val yz'_thm = Goal.prove ctxt [] [] (build_disj pys pzs dtys) (K (solve_with_tac ctxt [hyp_yz]))
+                                      val eq_thm  = Goal.prove_future ctxt [] [] eq_term (K (solve_with_tac ctxt [eq_xy_thm,hyp_yz]))
+                                      val yz'_thm = Goal.prove_future ctxt [] [] (build_disj pys pzs dtys) (K (solve_with_tac ctxt [hyp_yz]))
                                       val drop_hyps = if rec_type then tl else I
                                     in
                                       solve_tac xy'_thm yz'_thm pxs pys pzs dtys (eq_thm :: eqs) (drop_hyps ihyps) 1
@@ -238,7 +238,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                                     (* = and < *)
                                     let
                                       val xz_term = mk_less dty px pz |> HOLogic.mk_Trueprop
-                                      val xz_thm  = Goal.prove ctxt [] [] xz_term (K (solve_with_tac ctxt [hyp_xy,hyp_yz]))
+                                      val xz_thm  = Goal.prove_future ctxt [] [] xz_term (K (solve_with_tac ctxt [hyp_xy,hyp_yz]))
                                     in
                                       solve_with_tac ctxt (xz_thm :: case_hyp_z :: eqs)
                                     end
@@ -253,7 +253,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                                       (* < and = *)
                                     then
                                       let
-                                        val xz_thm = Goal.prove ctxt [] [] xz_term (K (solve_with_tac ctxt [hyp_xy,hyp_yz]))
+                                        val xz_thm = Goal.prove_future ctxt [] [] xz_term (K (solve_with_tac ctxt [hyp_xy,hyp_yz]))
                                       in
                                         solve_with_tac ctxt (xz_thm :: case_hyp_z :: eqs)
                                       end
@@ -262,7 +262,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                                       let
                                         val trans_thm = if rec_type then hd ihyps else @{thm less_trans}
                                         val tac = rtac (trans_thm OF [hyp_xy,hyp_yz]) 1
-                                        val xz_thm = Goal.prove ctxt [] [] xz_term (K tac)
+                                        val xz_thm = Goal.prove_future ctxt [] [] xz_term (K tac)
                                       in
                                         solve_with_tac ctxt (xz_thm :: case_hyp_z :: eqs)
                                       end
@@ -291,7 +291,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
     val (trans_eq_trm,vars) = mk_trans_eq_thm_trm thy info
     val inst_trans = instantiate' thy sort vars trans_thm
     val trans_eq_vars_string = map (dest_Free #> fst) vars
-    fun tac_to_eq_thm tac = Goal.prove_global thy trans_eq_vars_string [] trans_eq_trm (K tac)
+    fun tac_to_eq_thm tac = Goal.prove_global_future thy trans_eq_vars_string [] trans_eq_trm (K tac)
     val eq_tac = mk_solve_with_tac [inst_trans] (blast_tac ctxt 1)
     val trans_eq_thm = tac_to_eq_thm eq_tac
   in
@@ -314,7 +314,7 @@ fun mk_less_le_not_le_thm thy info =
         val comp_eq = y_prem :: ih_prems
         val build_disj = mk_less_disj mk_less
         val xy' = build_disj params_x params_y pdtys
-        val xy_disj = Goal.prove ctxt [] [] xy' (K (solve_with_tac ctxt comp_eq))
+        val xy_disj = Goal.prove_future ctxt [] [] xy' (K (solve_with_tac ctxt comp_eq))
         fun solve_tac ctxt xy [] _ _ _ _ = solve_with_tac ctxt [xy]
           | solve_tac ctxt xy (px :: pxs) (py :: pys) (dty :: dtys) eqs ihyps =
               let
@@ -324,7 +324,7 @@ fun mk_less_le_not_le_thm thy info =
                 val disj2 =
                   HOLogic.mk_disj (x_less_y, HOLogic.mk_conj (HOLogic.mk_not x_less_y, HOLogic.mk_conj( x_eq_y, HOLogic.dest_Trueprop xs_ys)))
                   |> HOLogic.mk_Trueprop
-                val disj2_thm = Goal.prove ctxt [] [] disj2 (K (Method.insert_tac [xy] 1 THEN blast_tac ctxt 1))
+                val disj2_thm = Goal.prove_future ctxt [] [] disj2 (K (Method.insert_tac [xy] 1 THEN blast_tac ctxt 1))
                 fun case_tac_disj disj tac =
                   mk_case_tac ctxt [] (@{thm disjE} OF [disj]) (fn (ctxt,ii,hyps,_) => tac ii ctxt (List.last hyps))
                 val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
@@ -333,10 +333,10 @@ fun mk_less_le_not_le_thm thy info =
                   then (* right branch, px = py and \<not> px < py and pxs < pys *)
                     let
                       val eq_term = x_eq_y |> HOLogic.mk_Trueprop
-                      val eq_xy_thm = Goal.prove ctxt [] [] eq_term (K (solve_with_tac ctxt [hyp_xy]))
-                      val xy'_thm = Goal.prove ctxt [] [] xs_ys (K (solve_with_tac ctxt [hyp_xy]))
+                      val eq_xy_thm = Goal.prove_future ctxt [] [] eq_term (K (solve_with_tac ctxt [hyp_xy]))
+                      val xy'_thm = Goal.prove_future ctxt [] [] xs_ys (K (solve_with_tac ctxt [hyp_xy]))
                       val yx_thm =
-                        Goal.prove ctxt [] [] (mk_less dty py px |> HOLogic.mk_not |> HOLogic.mk_Trueprop)
+                        Goal.prove_future ctxt [] [] (mk_less dty py px |> HOLogic.mk_not |> HOLogic.mk_Trueprop)
                         (K (solve_with_tac ctxt [hyp_xy]))
                       val ihyps' = if rec_type then tl ihyps else ihyps
                       val solve_rec = solve_tac ctxt xy'_thm pxs pys dtys (eq_xy_thm :: yx_thm :: eqs) ihyps'
@@ -348,7 +348,7 @@ fun mk_less_le_not_le_thm thy info =
                     let
                       val yx = HOLogic.mk_disj (mk_less dty py px, HOLogic.mk_eq (py,px)) |> HOLogic.mk_not |> HOLogic.mk_Trueprop
                       val tac = if rec_type then solve_with_tac ctxt [hd ihyps OF [hyp_xy]] else solve_with_tac ctxt [hyp_xy]
-                      val yx_thm = Goal.prove ctxt [] [] yx (K tac)
+                      val yx_thm = Goal.prove_future ctxt [] [] yx (K tac)
                     in
                       solve_with_tac ctxt (yx_thm :: y_prem :: eqs)
                     end;
@@ -367,7 +367,7 @@ fun mk_less_le_not_le_thm thy info =
       end)
     val inst_thm = instantiate' thy sort vars main_thm
     val vars_strings = map (dest_Free #> fst) vars
-    val thm = Goal.prove ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
+    val thm = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
   in
     thm
   end
@@ -384,7 +384,7 @@ fun mk_le_refl_thm thy info =
       end)
     val vars_strings = map (dest_Free #> fst) vars
   in
-    Goal.prove ctxt vars_strings [] thm_trm (K (blast_tac ctxt 1))
+    Goal.prove_future ctxt vars_strings [] thm_trm (K (blast_tac ctxt 1))
   end
 
 fun mk_antisym_thm thy info trans_thm less_thm =
@@ -403,7 +403,7 @@ fun mk_antisym_thm thy info trans_thm less_thm =
     fun inst_thm vars thm = instantiate' thy sort vars thm
     val inst_trans = inst_thm tvars trans_thm
     val inst_less = inst_thm lvars less_thm
-    val res = Goal.prove ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_trans,inst_less] 1 THEN blast_tac ctxt 1))
+    val res = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_trans,inst_less] 1 THEN blast_tac ctxt 1))
   in
     res
   end
@@ -440,7 +440,7 @@ fun mk_linear_thm thy info =
                 val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
                 val disj_thm' = if rec_type then hd ihyps else @{thm linear_cases}
                 val disj_tac = rtac disj_thm' 1
-                val disj_thm = Goal.prove ctxt [] [] disj_trm (K (disj_tac))
+                val disj_thm = Goal.prove_future ctxt [] [] disj_trm (K (disj_tac))
                 fun case_tac_disj disj tac =
                   mk_case_tac ctxt [] (@{thm disjE} OF [disj]) (fn (ctxt,ii,hyps,_) => tac ii ctxt (List.last hyps))
                 fun eq_less_less_tac ii _ eq_less =
@@ -474,7 +474,7 @@ fun mk_linear_thm thy info =
       end)
     val inst_thm = instantiate' thy sort vars main_thm
     val vars_strings = map (dest_Free #> fst) vars
-    val thm = Goal.prove ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
+    val thm = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
   in
     thm
   end
