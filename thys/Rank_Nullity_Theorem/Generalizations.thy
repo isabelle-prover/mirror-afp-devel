@@ -66,7 +66,7 @@ lemma linear_add: "f (x + y) = f x + f y"
   by (metis add)
 
 lemma linear_sub: "f (x - y) = f x - f y"
-  by (metis ab_add_uminus_conv_diff linear_add linear_neg)  
+  by (metis diff_conv_add_uminus linear_add linear_neg)  
 
 lemma linear_setsum:
   assumes fin: "finite S"
@@ -179,7 +179,7 @@ lemma subspace_neg: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> - 
 by (metis scale_minus_left scale_one subspace_mul)
 
 lemma subspace_sub: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x - y \<in> S"
-  by (metis ab_add_uminus_conv_diff subspace_add subspace_neg)
+  by (metis diff_conv_add_uminus subspace_add subspace_neg)
   
 lemma subspace_setsum:
   assumes sA: "subspace A"
