@@ -194,7 +194,7 @@ proof-
     also have "\<dots> = (\<Sum> q \<in> ?An. (- 1) * (\<Prod>i\<in>UNIV. A $ i $ (q o ?\<tau>) i) )" 
       using sign setsum.cong by auto
     finally show ?thesis
-      by (metis (no_types) comm_ring_1_class.normalizing_ring_rules(1)  setsum_right_distrib)
+      by (simp add: setsum_right_distrib setsum_negf)
   qed
   also have "(\<Sum>p\<in>{q. q permutes UNIV \<and> sign q = 1}. \<Prod>i\<in>UNIV. A $ i $ p i) +
   - (\<Sum>q | q permutes UNIV \<and> sign q = 1. \<Prod>ia\<in>UNIV. A $ ia $ (q \<circ> Fun.swap i j id) ia) = (\<Sum>p\<in>?An. \<Prod>i\<in>UNIV. A $ i $ p i) - (\<Sum>p\<in>?An. \<Prod>i\<in>UNIV. A $ i $ (p o ?\<tau>) i)"

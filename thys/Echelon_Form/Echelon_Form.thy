@@ -1744,10 +1744,12 @@ lemma condition2_part4:
   shows "(LEAST n. A $ a $ n \<noteq> 0) < (LEAST n. A $ b $ n \<noteq> 0)"
 proof -
   have not_all_zero: "\<not> (\<forall>m. is_zero_row_upt_k m k A)" by (metis i_nrows i nrows_not_0)
-  have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
-    by (metis (mono_tags, lifting) One_nat_def Suc_le' add_Suc_right 
-      comm_semiring_1_class.normalizing_semiring_rules(6) i i_nrows less_irrefl less_trans_Suc 
-      nrows_def to_nat_less_card to_nat_mono zero_less_card_finite)
+  then have "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i)
+  then have "nrows A = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" by (simp add: i_nrows)
+  then have "CARD('rows) = mod_type_class.to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1"
+    unfolding nrows_def .
+  then have "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
+    using to_nat_plus_one_less_card by auto
   hence g: "(GREATEST' n. \<not> is_zero_row_upt_k n k A) = -1" by (simp add: a_eq_minus_1)
   have "\<not> is_zero_row_upt_k a k A" 
   proof (rule greatest_ge_nonzero_row'[OF e _ not_all_zero])

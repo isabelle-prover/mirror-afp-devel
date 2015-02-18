@@ -269,9 +269,7 @@ proof -
     by (rule det_echelon_form_of_det[OF ib])
   thus "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
     * det (snd (echelon_form_of_det A bezout))"
-    by (metis (erased, hide_lams) comm_semiring_1_class.normalizing_semiring_rules(18) 
-      comm_semiring_1_class.normalizing_semiring_rules(7) echelon_form_of_unit
-      monoid_mult_class.mult.right_neutral ring_inv_is_inv1)
+    by (auto simp add: echelon_form_of_unit dest: sym)
 qed
 
 

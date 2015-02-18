@@ -562,15 +562,15 @@ next
           fix z assume "x < z"  "z < b"
           hence "0<poly (p'*p') z" using b by auto
           have " (0 < poly (p' * q * (p' * p)) z)=(0<poly (p'*p') z * poly (q*p) z)" 
-            by (metis comm_semiring_1_class.normalizing_semiring_rules(13) poly_mult)
+            by (simp add: poly_mult ac_simps)
           also have "...=(0<poly (q*p) z)"
             using `0<poly (p'*p') z` by (metis mult_pos_pos zero_less_mult_pos)
           finally show "(0 < poly (p' * q * (p' * p)) z) = (0 < poly (q * p) z)" .
         qed
     qed
-  moreover have " odd (order x (p' * p) - order x (p' * q)) = odd (order x p - order x q)"  
-    by (metis False add_diff_cancel_right assms(1) assms(2) 
-      comm_semiring_1_class.normalizing_semiring_rules(7) mult_eq_0_iff order_mult)
+  moreover from False assms
+    have "odd (order x (p' * p) - order x (p' * q)) = odd (order x p - order x q)"
+    by (simp add: order_mult)  
   moreover have " p' * q \<noteq> 0 \<longleftrightarrow> q \<noteq> 0" 
     by (metis assms(2) mult_eq_0_iff)
   ultimately show "jump (p' * q) (p' * p) x = jump q p x" unfolding jump_def by auto

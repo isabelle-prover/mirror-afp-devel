@@ -957,7 +957,7 @@ proof -
       unfolding c by auto
     also have "... = ?n (fact ?d) * ((?n n) ^ ?d * a ^ ?d)" by (auto simp: field_simps)
     also have "((?n n) ^ ?d * a ^ ?d) = (?n n * a) ^ ?d"
-      unfolding comm_semiring_1_class.normalizing_semiring_rules ..
+      by (simp add: field_simps)
     also have "?n (fact ?d) * (?n n * a) ^ ?d \<ge> ?n (fact ?ij) * (?n n* a) ^ ?d" (is "_ \<ge> ?z")
       by (rule times_left_mono[OF pow_ge_zero[OF mult_ge_zero[OF _ a0]] nfact], auto)
     also have "?z \<ge> ?n (fact ?ij) * (?n n * a) ^ ?ij" (is "_ \<ge> ?z")

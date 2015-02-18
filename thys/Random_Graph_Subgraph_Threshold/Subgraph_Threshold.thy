@@ -443,7 +443,7 @@ next
       fix S T
       assume "S \<in> ?I" "T \<in> ?I"
       hence *: "prob (?A S) * prob (?A T) = p n ^ (2 * ?e)"
-        using prob_A by (auto simp: comm_semiring_1_class.normalizing_semiring_rules)
+        using prob_A by (simp add: power_even_eq power2_eq_square)
 
       note S = I[OF `S \<in> ?I`]
       note T = I[OF `T \<in> ?I`]

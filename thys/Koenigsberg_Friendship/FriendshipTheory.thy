@@ -803,8 +803,8 @@ proof -
   have "card l2_neq_v = k*k-k"
     proof -
       obtain l2_v where l2_v:"l2_v={ps. length ps=2\<and> adj_path v ps}" by auto
-      hence "card l2_v=k*k" using path_count[OF k_adj,of v 2] `0<k` `finite V` `v\<in>V` 
-        by (metis comm_semiring_1_class.normalizing_semiring_rules(29))
+      hence "card l2_v=k*k" using path_count[OF k_adj,of v 2] `0<k` `finite V` `v\<in>V`
+        by (simp add: power2_eq_square)
       hence "finite l2_v" using `k>0` by (metis card_infinite mult_is_0 neq0_conv) 
       moreover have "l2_v=l2_neq_v \<union> l2_eq_v" using l2_v l2_neq_v l2_eq_v by auto
       moreover have "l2_neq_v \<inter> l2_eq_v ={}" using l2_neq_v l2_eq_v by auto
@@ -1386,14 +1386,18 @@ proof (rule ccontr)
       one_le_numeral one_plus_BitM prime_factor_nat semiring_norm(69) semiring_norm(71))
   hence p_minus_1:"p-(1::nat)+1=p" 
     by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq prime_nat_def)
-  hence "\<And>l::nat. card (C (l+1)) mod p=1"
+  hence *: "\<And>l::nat. card (C (l+1)) mod p=1"
     using `\<And>l::nat. card (C (l+1)) mod (k-(1::nat))=1` mod_mod_cancel[OF `p dvd (k-(1::nat))`]
       `prime p`
     by (metis mod_if prime_gt_1_nat)
-  hence "card (C (p-(1::nat))) mod p=1" 
-    by (metis  comm_semiring_1_class.normalizing_semiring_rules(24) dvd_imp_mod_0 gcd_add1_nat 
-      gcd_lcm_complete_lattice_nat.bot_unique gcd_lcm_complete_lattice_nat.inf_top_right 
-      mod_mod_trivial mult_eq_if nat_mult_1_right p_minus_1)
+  have "card (C (p - 1)) mod p = 1"
+  proof (cases "2 \<le> p")
+    case True with * [of "p - 2"] show ?thesis
+      by (metis Nat.add_diff_assoc2 add_le_cancel_right diff_diff_left one_add_one p_minus_1)
+  next
+    case False with * [of "p - 2"] `prime p` prime_ge_2_nat show ?thesis
+      by blast
+  qed
   moreover have "card (C (p-(1::nat))) mod p=0" using C
     proof -
       have closure1:"\<And>x. x\<in>C (p-(1::nat))\<Longrightarrow> rotate1 x \<in>C (p-(1::nat))" 
@@ -1467,8 +1471,9 @@ proof (rule ccontr)
                   qed
                 have "rotate (s*n1) x=rotate (s*n2) x" 
                   using `rotate n1 x=rotate n2 x`
-                  by (induct s,auto,metis comm_semiring_1_class.normalizing_semiring_rules(24) 
-                    rotate_rotate)
+                  apply (induct s)
+                  apply (auto simp add: algebra_simps)
+                  by (metis add.commute rotate_rotate)
                 hence "rotate (s*n1 - s*n2) x= x" 
                   using rotate_diff by auto
                 hence "rotate (s*(n1-n2)) x=x" by (metis diff_mult_distrib mult.commute)

@@ -454,7 +454,7 @@ term of highest order. *}
 
 lemma radical_sqrt_normal_form_sublemma:
   "((a::real) - b) * (a + b) = a * a - b * b"
-  by (metis comm_semiring_1_class.normalizing_semiring_rules(7) square_diff_square_factored)
+  by (simp add: field_simps)
 
 lemma eq_sqrt_squared:
   "(x::real) \<ge> 0 \<Longrightarrow> (sqrt x) * (sqrt x) = x"
@@ -861,9 +861,7 @@ next
   hence l0: "a \<noteq> 0" 
     by simp
   hence "x = - b /a" 
-    using eq0
-    by (metis add_0_iff add_minus_cancel nonzero_divide_eq_eq
-              comm_semiring_1_class.normalizing_semiring_rules(7))
+    using eq0 by (simp add: field_simps)
   also have "... \<in> radical_sqrt" 
     using a b radical_sqrt.simps l0
     by (metis radical_sqrt.intros(2) radical_sqrt_rule_division)
@@ -886,12 +884,12 @@ proof (cases "a*e - b*d =0")
   case False
   hence "(a*e-b*d) * x = (e*c-b*f)" using eq0 eq1
     by algebra
-  hence x: "x = (e*c-b*f) / (a*e-b*d)" 
-    by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
+  hence x: "x = (e*c-b*f) / (a*e-b*d)"
+    using False by (simp add: field_simps)
   hence "(a*e-b*d) * y = (a*f - d*c)" using eq0 eq1 
     by algebra
   hence y: "y = (a*f-d*c)/(a*e-b*d)"
-    by (metis False comm_semiring_1_class.normalizing_semiring_rules(7) nonzero_divide_eq_eq) 
+    using False by (simp add: field_simps)
   have ae_rad: "(a*e -b*d) \<in> radical_sqrt"
     using a e b d radical_sqrt.simps
     by (metis radical_sqrt.intros(5) radical_sqrt_rule_subtraction)
@@ -980,13 +978,15 @@ next
   have l13: "(e^2 +d^2) \<in> radical_sqrt" 
     using e d
     by (metis power2_eq_square radical_sqrt.intros(4) radical_sqrt.intros(5))
+  have 2: "2 \<in> radical_sqrt"
+    by (auto intro: radical_sqrt.intros)
   have sl1: "(2*e*b*d) \<in> radical_sqrt"
     using e b d
     by (metis (lifting) mult_2 radical_sqrt.intros(4) radical_sqrt.intros(5))
   hence sl2: "(- 2*a*e^2) \<in> radical_sqrt" using radical_sqrt.intros
-    by (metis a comm_semiring_1_class.normalizing_semiring_rules(29) e minus_mult_left mult_2)
+    by (simp add: field_simps) (metis mult_2 power2_eq_square a e)
   have "(- 2*d*f) \<in> radical_sqrt" using radical_sqrt.intros
-    by (metis d f minus_mult_left mult_2)
+    using d f by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   hence sl4: "((2*e*b*d) + (- 2*a*e^2) + (- 2*d*f)) \<in> radical_sqrt"
     using sl1 sl2
     by (metis radical_sqrt.intros(4))
@@ -996,20 +996,15 @@ next
     using sl4
     by metis
   have sl6: "(a^2 * e^2) \<in> radical_sqrt"
-    using a e
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(29) radical_sqrt.intros(5))
+    using a e by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl7: "(f^2) \<in> radical_sqrt" 
-    using f
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(29) radical_sqrt.intros(5))
+    using f by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl8: "(- 2 * e *b* f) \<in> radical_sqrt"
-    using e b f
-    by (metis (full_types) comm_semiring_1_class.normalizing_semiring_rules(7) minus_mult_commute mult_2 radical_sqrt.intros(2) radical_sqrt.intros(4) radical_sqrt.intros(5))
+    using e b f 2 by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl9: "(b^2 * e^2) \<in> radical_sqrt" 
-    using b e
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(29) comm_semiring_1_class.normalizing_semiring_rules(30) radical_sqrt.intros(5))
+    using b e by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl10: "(- c* e^2) \<in> radical_sqrt"
-    using c e
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(29) radical_sqrt.intros(2) radical_sqrt.intros(5))
+    using c e by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have sl6: "(a^2 * e^2 + f^2 + (- 2 * e *b* f) + b^2 * e^2 + (- c* e^2)) \<in> radical_sqrt" 
     using a e f b c sl6 sl7 sl8 sl9 sl10
     by (metis (hide_lams, no_types) power2_eq_square radical_sqrt.intros(4))
@@ -1038,7 +1033,7 @@ next
       by (metis minus_mult_commute mult_2 radical_sqrt.intros(2) radical_sqrt.intros(4))
     have l26: "(b^2 + (x - a)^2 - c) \<in> radical_sqrt" 
       using a b c x
-      by (metis comm_semiring_1_class.normalizing_semiring_rules(29) radical_sqrt.intros(4) radical_sqrt.intros(5) radical_sqrt_rule_subtraction)
+      by (auto intro: radical_sqrt.intros radical_sqrt_rule_subtraction simp add: power2_eq_square)
     thus ?thesis
       using radical_sqrt_quadratic_equation [of "1::real" "- 2* b" "b^2 + (x - a)^2 - c" "y"] l22 l24 l25 l26
       by auto
@@ -1212,22 +1207,22 @@ proof-
     by (metis point_eq_iff notEqual eqDist0 eqDist1)
   have "(abscissa B - abscissa C) \<in> radical_sqrt" 
     by (metis absB absC radical_sqrt_rule_subtraction)
-  hence sl1: "((abscissa B - abscissa C)^2) \<in> radical_sqrt" 
-    by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(33) comm_semiring_1_class.normalizing_semiring_rules(36) power_even_eq radical_sqrt.intros(5))
+  hence sl1: "((abscissa B - abscissa C)^2) \<in> radical_sqrt"
+    by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have "(ordinate B - ordinate C) \<in> radical_sqrt" 
     by (metis ordB ordC radical_sqrt_rule_subtraction)
   hence "(ordinate B - ordinate C)^2 \<in> radical_sqrt" 
-    by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(33) comm_semiring_1_class.normalizing_semiring_rules(36) power_even_eq radical_sqrt.intros(5))
+    by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   hence sl3: "((abscissa B - abscissa C)^2 + (ordinate B - ordinate C)^2) \<in> radical_sqrt"
     by (metis radical_sqrt.intros(4) sl1) 
   have "(abscissa E - abscissa F) \<in> radical_sqrt"
     by (metis absE absF radical_sqrt_rule_subtraction)
   hence sl4: "((abscissa E - abscissa F)^2) \<in> radical_sqrt" 
-    by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(33) comm_semiring_1_class.normalizing_semiring_rules(36) power_even_eq radical_sqrt.intros(5))
+    by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   have "(ordinate E - ordinate F) \<in> radical_sqrt" 
     by (metis ordE ordF radical_sqrt_rule_subtraction)
   hence "(ordinate E - ordinate F)^2 \<in> radical_sqrt" 
-    by (metis (no_types) comm_semiring_1_class.normalizing_semiring_rules(33) comm_semiring_1_class.normalizing_semiring_rules(36) power_even_eq radical_sqrt.intros(5))
+    by (auto intro: radical_sqrt.intros simp add: power2_eq_square)
   hence "((abscissa E - abscissa F)^2 + (ordinate E - ordinate F)^2) \<in> radical_sqrt"
     by (metis radical_sqrt.intros(4) sl4) 
   thus ?thesis 
@@ -1331,12 +1326,11 @@ proof-
   also have "... = cos x * (cos x * cos x - sin x * sin x) - sin x * (sin x * cos x + cos x * sin x)"
     by (metis cos_add mult_2 sin_add)
   also have "... = cos x * (cos x * cos x - (1 - cos x * cos x)) - sin x * (sin x * cos x + cos x * sin x)"
-    by (metis comm_semiring_1_class.normalizing_semiring_rules(29) sin_squared_eq)
+    using sin_squared_eq [of x] by (auto simp add: power2_eq_square)
   also have "... = cos x * (2 * cos x * cos x) + cos x * ( - 1) - sin x * sin x * cos x - sin x * sin x * cos x"
     by (auto simp add: algebra_simps) 
   also have "... = 2* cos x * cos x * cos x - cos x - (1 - cos x * cos x) * cos x - (1 - cos x * cos x) * cos x"
-    apply auto
-    by (metis add_0_left add_diff_cancel comm_semiring_1_class.normalizing_semiring_rules(24) cos_diff2 cos_zero)
+    using sin_squared_eq [of x] by (auto simp add: power2_eq_square)
   also have "... = 2 * cos x *cos x * cos x - cos x + - 2 * ((1 - cos x * cos x) * cos x)"
     by auto
   also have "... = 4 * cos x * cos x * cos x - 3 * cos x"

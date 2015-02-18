@@ -495,8 +495,6 @@ fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 shows "det A = (let A' = Gauss_Jordan_det_P A in setprod (\<lambda>i. (snd (A'))$i$i) (UNIV::'n set)/(fst (A')))"
 unfolding Let_def using det_Gauss_Jordan_det_P[of A]
 unfolding det_snd_Gauss_Jordan_det_P
-by (metis comm_semiring_1_class.normalizing_semiring_rules(7) fst_Gauss_Jordan_det_P_not_0 nonzero_eq_divide_eq)
-
-
+by (simp add: fst_Gauss_Jordan_det_P_not_0 nonzero_eq_divide_eq ac_simps)
 
 end

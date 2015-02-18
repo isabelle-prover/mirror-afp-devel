@@ -547,8 +547,8 @@ qed
 
 (* Showing  a + (-b) = a - b *)
 lemma float_neg_add:
-   "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a - b) \<Longrightarrow> Val a + Val (float_neg b) = Val a - Val b"
-by (metis comm_ring_1_class.normalizing_ring_rules(2) float_neg_val)
+  "Finite a \<Longrightarrow> Finite b \<Longrightarrow> Finite (a - b) \<Longrightarrow> Val a + Val (float_neg b) = Val a - Val b"
+  by (simp add: float_neg_val)
 
 lemma float_plus_minus:
   assumes "Finite a" "Finite b" "Finite (a - b)" shows "(a + float_neg b) \<doteq> (a - b)"

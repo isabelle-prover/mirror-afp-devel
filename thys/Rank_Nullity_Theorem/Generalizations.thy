@@ -2492,8 +2492,7 @@ proof -
 qed                   
 
 interpretation vector_space_over_itself: vector_space "op * :: 'a::field => 'a => 'a" 
-  by (unfold_locales, 
-      auto intro: comm_semiring_1_class.normalizing_semiring_rules comm_semiring_class.distrib)
+  by unfold_locales (simp_all add: algebra_simps)
 
 interpretation vector_space_over_itself: finite_dimensional_vector_space 
   "op * :: 'a::field => 'a => 'a" "{1}"  

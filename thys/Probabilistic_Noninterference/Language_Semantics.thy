@@ -27,9 +27,7 @@ lemma zero_one_minus[simp]:
 lemma times_le_1[simp]:
 assumes "0 \<le> (a :: real)" and "0 \<le> b" and "a \<le> 1" and "b \<le> 1"
 shows "a * b \<le> 1"
-using assms
-by (metis comm_semiring_1_class.normalizing_semiring_rules(12)
-          less_eq_real_def mult_le_0_iff mult_le_cancel_left_pos order_trans)
+using assms mult_mono [of a 1 b 1] by simp
 
 lemma less_plus_cases[case_names Left Right]:
 assumes
@@ -390,14 +388,14 @@ assumes "B1 = A1 - {a1}" and "B2 = A2 - {a2}" and
 shows "setsum f1 B1 = setsum f2 B2"
 proof-
   have 1: "A1 = B1 Un {a1}" and 2: "A2 = B2 Un {a2}"
-  using assms by blast+
-  have "setsum f1 A1 = setsum f1 B1 + f1 a1"
-  using 1 by (metis Un_empty_right Un_insert_right assms card_Diff1_less
-  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum.insert)
+    using assms by blast+
+  from assms have "a1 \<notin> B1" by simp
+  with 1 `finite A1` have "setsum f1 A1 = setsum f1 B1 + f1 a1"
+    by simp
   hence 3: "setsum f1 B1 = setsum f1 A1 - f1 a1" by simp
-  have "setsum f2 A2 = setsum f2 B2 + f2 a2"
-  using 2 by (metis Un_empty_right Un_insert_right assms card_Diff1_less
-  comm_semiring_1_class.normalizing_semiring_rules(24) finite_insert insert_absorb less_irrefl_nat setsum.insert)
+  from assms have "a2 \<notin> B2" by simp
+  with 2 `finite A2 `have "setsum f2 A2 = setsum f2 B2 + f2 a2"
+    by simp
   hence "setsum f2 B2 = setsum f2 A2 - f2 a2" by simp
   thus ?thesis using 3 assms by simp
 qed
@@ -692,7 +690,7 @@ proof-
 qed
 
 lemma WtNFT_1_WtFT: "0 < length cl \<Longrightarrow> WtNFT cl = 1 - WtFT cl"
-by (metis WtFT_WtNFT comm_semiring_1_class.normalizing_semiring_rules(24) eq_diff_eq')
+  by (simp add: algebra_simps)
 
 lemma WtNFT_WtFT_1[simp]:
 assumes "0 < length cl" and "WtFT cl \<noteq> 1"

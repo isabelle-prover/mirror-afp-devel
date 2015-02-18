@@ -174,8 +174,11 @@ proof -
 qed
 
 lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<and> n < 2 * (m :: nat)"
-by(metis div_less n_not_Suc_n not_leE Suc_1 div_by_0 lessI td_gal_lt One_nat_def Suc_1 comm_semiring_1_class.normalizing_semiring_rules(11) less_nat_zero_code mult_0 mult.commute neq0_conv sdl)
-
+  apply (auto simp add: sdl)
+  using not_less apply fastforce
+  apply (metis One_nat_def Suc_1 div_eq_0_iff lessI neq0_conv td_gal_lt)
+  done
+  
 lemma word_div_lt_eq_0: 
   fixes x :: "'a :: len word" 
   shows "x < y \<Longrightarrow> x div y = 0"

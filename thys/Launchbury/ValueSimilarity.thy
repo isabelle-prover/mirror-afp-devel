@@ -228,13 +228,17 @@ proof (rule admI)
     with goal1(2)[unfolded split_beta]
     have "\<And> i. \<exists> g'. snd (Y (i+n)) = CFn\<cdot>g'"  by (metis CValue'.con_rews Value.con_rews similar'_step.simps)
     then obtain Y'' where Y'': "\<And> i. snd (Y (i+n)) = CFn\<cdot>(Y'' i)" by metis
-    
+    from goal1(1) have "\<And>i. Y i \<sqsubseteq> Y (Suc i)"
+      by (simp add: po_class.chain_def)
+    then have *: "\<And>i. Y (i + n) \<sqsubseteq> Y (Suc i + n)"
+      by simp
     have "chain Y''"
       apply (rule chainI)
       apply (rule iffD1[OF CValue'.inverts])
       apply (subst (1 2) Y''[symmetric])
-      by (metis add_Suc_right comm_semiring_1_class.normalizing_semiring_rules(24) goal1(1) po_class.chain_def snd_monofun)
-    
+      apply (rule snd_monofun)
+      apply (rule *)
+      done
     have "similar'_step s (Fn\<cdot>(\<Squnion> i. (Y' i))) (CFn \<cdot> (\<Squnion> i. Y'' i))"
     proof (rule Fun_similar'_step)
       fix x y

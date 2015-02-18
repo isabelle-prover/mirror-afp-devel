@@ -52,7 +52,7 @@ lemma power_minor_var:
   assumes "\<forall>w\<in>X. k\<le>|w|"
   shows "\<forall>w\<in>X\<^bsup>Suc n\<^esup>. n*k\<le>|w|"
   using assms
-  by (auto simp add: l_prod_elim, metis comm_semiring_1_class.normalizing_semiring_rules(7) length_lang_pow_lb trans_le_add2)
+  by (auto simp add: l_prod_elim length_lang_pow_lb trans_le_add2 algebra_simps)
 
 lemma power_lb: "(\<forall>w\<in>X. k\<le>|w| ) \<longrightarrow> (\<forall>w. w\<in>X\<^bsup>Suc n\<^esup> \<longrightarrow> n*k\<le>|w| )"
   by (metis power_minor_var)

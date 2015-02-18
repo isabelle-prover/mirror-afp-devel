@@ -24,9 +24,8 @@ theorem ltln_pure_eventual_frmls_equiv:
   shows "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
   case goal1 
-  thus ?case 
-    by (auto, metis comm_semiring_1_class.normalizing_semiring_rules(5)
-      less_nat_zero_code)
+  thus ?case
+    by force
 next
   case (goal2 _ _ \<xi> \<phi>) show ?case using goal2(2)[of \<xi> \<phi>] goal2(4)[of \<xi> \<phi>]
     by (auto, metis less_nat_zero_code suffix_0)
@@ -117,8 +116,7 @@ theorem ltln_pure_universal_frmls_equiv:
 using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
   case goal1 
   thus ?case 
-    by (auto, metis comm_semiring_1_class.normalizing_semiring_rules(5) 
-      less_nat_zero_code)
+    by force
 next
   case (goal2 _ _ \<xi> \<phi>) 
   show ?case 

@@ -272,8 +272,7 @@ next
   have eq: "(x v* (transpose A)) = (A *v x)"
     by (metis Cartesian_Euclidean_Space.transpose_transpose transpose_vector)
   have eq_0: "0 = (x v* (transpose A)) * (A *v x)"
-    by (metis a comm_semiring_1_class.normalizing_semiring_rules(7) dot_lmul_matrix 
-      inner_eq_zero_iff inner_zero_left mult_zero_left transpose_vector)
+    by auto (metis a dot_lmul_matrix inner_eq_zero_iff inner_zero_left mult_not_zero transpose_vector)
   hence "0 = norm ((x v* (transpose A)) * (A *v x))" by auto
   also have "... = norm ((A *v x)*(A *v x))" unfolding eq ..
   also have "... = norm ((A *v x) \<bullet> (A *v x))"

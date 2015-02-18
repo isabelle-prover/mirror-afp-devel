@@ -312,7 +312,7 @@ proof-
     
     have "(\<Sum>j\<in>?U. (cofactor A j i) * (A $ j $ k)) = 
     (\<Sum>j\<in>?U. (A $ j $ k) * det (\<chi> r c. if c = i then \<delta> r j else (A $ r $ c)))" 
-      by (simp add: det_minorM_column cofactor_def comm_semiring_1_class.normalizing_semiring_rules)
+      by (simp add: det_minorM_column cofactor_def algebra_simps)
       
     also have "\<dots> = (\<Sum>j\<in>?U. det (\<chi> r c. if c = i then \<delta> r j * A $ r $ k else A $ r $ c))"
     proof-
@@ -320,7 +320,7 @@ proof-
         have "(A $ j $ k) * det (\<chi> r c. if c = i then \<delta> r j else (A $ r $ c)) =
         det (\<chi> r c. if c = i then \<delta> r j * (A $ r $ k) else A $ r $ c)"
         using det_col_mul[of i _ "\<chi> r c. if c = i then \<delta> r j else A $ r $ c", symmetric]
-        by(simp add: \<delta>_def comm_semiring_1_class.normalizing_semiring_rules(7) cong: if_cong)
+        by(simp add: \<delta>_def algebra_simps cong: if_cong)
           (simp add: if_distrib[where x=1 and y = 0] cong: if_cong) }
       thus ?thesis
       by auto

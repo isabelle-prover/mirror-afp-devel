@@ -3355,7 +3355,7 @@ proof
           moreover from len_i have "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>" using eq' j' by auto
           moreover from sim_i eq' ta''_j ta'_j
           have "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i)"
-            by(cases "j = 0")(auto split: split_if_asm, (metis add_strict_left_mono comm_semiring_1_class.normalizing_semiring_rules(6) nth_take)+)
+            by(cases "j = 0")(auto split: split_if_asm, (metis add_strict_left_mono add_0_right nth_take)+)
           ultimately show ?thesis using red'' aok'' by blast
         next
           case False
