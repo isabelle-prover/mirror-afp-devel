@@ -74,7 +74,7 @@ proof -
   also have "... = (x \<bullet> x) + (x \<bullet> y) + (y \<bullet> x) + (y \<bullet> y) "
     unfolding real_inner_class.inner_add_left by simp
   also have "... = (x \<bullet> x) + (y \<bullet> y)" using o unfolding orthogonal_def 
-    by (metis comm_monoid_add_class.add.right_neutral inner_commute)
+    by (metis monoid_add_class.add.right_neutral inner_commute)
   also have "... = norm x^2 + norm y^2" unfolding power2_norm_eq_inner ..
   finally show ?thesis .
 qed

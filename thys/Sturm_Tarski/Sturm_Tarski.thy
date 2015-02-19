@@ -173,11 +173,11 @@ lemma variation_mult_pos:
   shows "variation (c*x) y =variation x y" and "variation x (c*y) =variation x y" 
 proof -
   have "sgn (c*x) = sgn x" using `c>0` 
-    by (metis comm_monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
+    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
   thus "variation (c*x) y =variation x y" using variation_congr by blast 
 next
   have "sgn (c*y) = sgn y" using `c>0`
-    by (metis comm_monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
+    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
   thus "variation x (c*y) =variation x y" using variation_congr by blast 
 qed
 
@@ -423,7 +423,7 @@ lemma sign_r_pos_mod:
 proof -
   have "poly (q div p * p) x=0" using `poly p x=0` poly_mult by auto
   moreover hence "poly (q mod p) x \<noteq> 0" using `poly q x\<noteq>0` mod_div_equality 
-    by (metis comm_monoid_add_class.add.left_neutral poly_add)
+    by (metis monoid_add_class.add.left_neutral poly_add)
   ultimately show ?thesis 
     by (subst (2) mod_div_equality[THEN sym,of q p], auto simp add: sign_r_pos_add)
 qed

@@ -626,7 +626,7 @@ next
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ x\<^bsub>m + 2\<^esub>\<^bsup>m\<^esup>)"
       by (metis monoid_add_class.add.left_neutral powsum_split_var3 add_2_eq_Suc')
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>(m + 2)+ 0\<^esub>\<^bsup>m\<^esup>"
-      by (metis (hide_lams, no_types) comm_monoid_add_class.add.right_neutral distrib_left)
+      by (metis (hide_lams, no_types) monoid_add_class.add.right_neutral distrib_left)
     also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>Suc m \<^esup>+ (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+2 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m\<^esup>"
       by (subst powsum_shift[THEN sym], metis mult.assoc)
    also have "... =  (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> (x\<^bsub>0\<^esub>\<^bsup>m \<^esup>+  x\<^bsup>m+1\<^esup>) + (x\<^bsup>m+2\<^esup>)\<^sup>\<star> \<cdot> x\<^bsup>m+2 \<^esup>\<cdot> x\<^bsub>0\<^esub>\<^bsup>m\<^esup>"

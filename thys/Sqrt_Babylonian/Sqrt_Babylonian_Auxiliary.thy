@@ -32,7 +32,7 @@ lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
   using mod_div_equality[of n x] by arith
 
 lemma log_pow_cancel[simp]: "a > 0 \<Longrightarrow> a \<noteq> 1 \<Longrightarrow> log a (a ^ b) = b" 
-  by (metis comm_monoid_mult_class.mult.right_neutral log_eq_one log_nat_power)
+  by (metis monoid_mult_class.mult.right_neutral log_eq_one log_nat_power)
 
 lemma real_of_rat_floor[simp]: "floor (real_of_rat x) = floor x"
   by (metis Ratreal_def real_floor_code)

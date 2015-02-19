@@ -324,7 +324,7 @@ lemma lead_coeff_add_le:
   assumes "degree p < degree q"
   shows "lead_coeff (p+q) = lead_coeff q" 
 using assms unfolding lead_coeff_def
-by (metis coeff_add coeff_eq_0 comm_monoid_add_class.add.left_neutral degree_add_eq_right)
+by (metis coeff_add coeff_eq_0 monoid_add_class.add.left_neutral degree_add_eq_right)
 
 lemma lead_coeff_minus:
   "lead_coeff (-p) = - lead_coeff p"

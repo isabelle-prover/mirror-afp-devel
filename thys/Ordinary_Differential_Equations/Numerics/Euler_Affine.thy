@@ -466,7 +466,7 @@ proof -
     by (metis pth_4(1) set_of_apprs_Cons set_of_apprs_rotate3)
   from add_appr[OF this bounded_add_euler_ivl]
   show "x0 \<in> set_of_appr CX1"
-    by (metis comm_monoid_add_class.add.right_neutral set_of_apprs_Cons set_of_apprs_rotate3
+    by (metis monoid_add_class.add.right_neutral set_of_apprs_Cons set_of_apprs_rotate3
       set_of_apprs_set_of_appr)
 qed
 

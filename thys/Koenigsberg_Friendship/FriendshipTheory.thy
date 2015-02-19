@@ -1362,7 +1362,7 @@ proof (rule ccontr)
           ultimately show ?thesis by auto
         qed
       also have "...=(k-(1::nat))*card(C_star l)+card(T l)" using `k\<ge>4` 
-        by (metis comm_monoid_mult_class.mult.left_neutral diff_mult_distrib)
+        by (metis monoid_mult_class.mult.left_neutral diff_mult_distrib)
       finally have "card (C (l + 1))=(k-(1::nat))*card(C_star l)+card(T l)" .
       hence "card (C (l+1)) mod (k-(1::nat)) = card(T l) mod (k-(1::nat))" using `k>=4` 
         by (metis mod_mult_self3 mult.commute)

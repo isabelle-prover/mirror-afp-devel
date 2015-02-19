@@ -417,7 +417,7 @@ have solution_set_homogeneous_zero: "solution_set A 0 = {0}"
    have "{x} = solution_set A b" unfolding solution_set_def using x ex1_sol by blast      
    also have "... = {x} + solution_set A 0" unfolding solution_set_rel[OF x] ..
    finally show False 
-    by (metis (hide_lams, mono_tags) add_left_cancel comm_monoid_add_class.add.right_neutral empty_iff insert_iff set_plus_intro y y_not_0)
+    by (metis (hide_lams, mono_tags) add_left_cancel monoid_add_class.add.right_neutral empty_iff insert_iff set_plus_intro y y_not_0)
    qed
 thus ?thesis using vec.dim_zero_eq' by blast
 qed

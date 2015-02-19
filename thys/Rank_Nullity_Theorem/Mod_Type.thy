@@ -399,7 +399,7 @@ proof (clarify)
   have int_card: "int (CARD('a) - 1) = int CARD('a) - 1" using zdiff_int[of 1 "CARD ('a)"] 
     using size1 by simp
   have "a = Abs' (Rep a)" by (metis (hide_lams, mono_tags) Rep_0 add_0_right add_def' 
-      comm_monoid_add_class.add.right_neutral) 
+      monoid_add_class.add.right_neutral) 
   also have "... = Abs' (int (nat (Rep a)))" by (metis Rep_ge_0 int_nat_eq)
   also have "...  \<le> Abs' (int (CARD('a) - 1))"
   proof (rule from_nat_mono'[unfolded from_nat_def o_def, of "nat (Rep a)" "CARD('a) - 1"])

@@ -735,7 +735,7 @@ next
     moreover
     have "multiset (T v1 E (T v l r)) =  
           {#v1#} + multiset l + {#v#} + multiset r"
-      by (metis calculation comm_monoid_add_class.add.left_neutral 
+      by (metis calculation monoid_add_class.add.left_neutral 
           multiset.simps(1) multiset.simps(2) union_commute union_lcomm)
     moreover
     have "{#v#} + multiset l + {#v1#} + multiset r = 
@@ -1157,7 +1157,7 @@ next
            multiset (snd (removeLeaf (T v1 l1 r1))) + {#v#}`
     by auto
   thus ?case
-    by (metis comm_monoid_add_class.add.right_neutral 
+    by (metis monoid_add_class.add.right_neutral 
         multiset.simps(1) multiset.simps(2) union_commute)
 next
   case ("4_1" v v1 l1 r1 v2 l2 r2)

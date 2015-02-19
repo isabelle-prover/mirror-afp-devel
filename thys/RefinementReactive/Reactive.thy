@@ -799,7 +799,7 @@ thm fusion_spec_local_a
         by (metis eq_iff le_iff_diff_le_0 not_one_le_zero)}
       note B = this
       {assume "a n \<noteq> - (1\<Colon>int)" from this and Suc have " - (1\<Colon>int) \<le> a (Suc n)" 
-         by (metis add.commute comm_monoid_add_class.add.left_neutral le_less not_le right_minus uminus_add_conv_diff zle_add1_eq_le)}
+         by (metis add.commute monoid_add_class.add.left_neutral le_less not_le right_minus uminus_add_conv_diff zle_add1_eq_le)}
       note C = this
       {assume "a n = - (1\<Colon>int)" from this and Suc have " - (1\<Colon>int) \<le> a (Suc n)"
         by (metis add.commute le_minus_one_simps(4) monoid_add_class.add.right_neutral not_le right_minus zle_add1_eq_le)}

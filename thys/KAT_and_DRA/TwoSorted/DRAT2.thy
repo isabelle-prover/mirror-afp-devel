@@ -143,7 +143,7 @@ lemma test_iteration_sim: "`p\<cdot>x \<le> x\<cdot>p` \<Longrightarrow> `p\<cdo
   by (metis iteration_sim)
 
 lemma test_iteration_annir: "`!p\<cdot>(p\<cdot>x)\<^sup>\<infinity> = !p`"
-  by (metis (no_types) comm_monoid_add_class.add.left_neutral double_compl iteration_idep monoid_mult_class.mult.right_neutral test_comp_add2 test_inf test_not top_elim total_correctness)
+  by (metis (no_types) monoid_add_class.add.left_neutral double_compl iteration_idep monoid_mult_class.mult.right_neutral test_comp_add2 test_inf test_not top_elim total_correctness)
 
 end
 
