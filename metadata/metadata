@@ -240,6 +240,13 @@ extra-history =
   Change history:
   [2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
 
+[Call_Arity]
+title = The Safety of Call Arity
+author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
+date = 2015-02-20
+topic = Computer Science/Programming Languages/Transformations
+abstract = We formalize the Call Arity analysis, as implemented in GHC, and prove both functional correctness and, more interestingly, safety (i.e. the transformation does not increase allocation). We use Christian Urban's Nominal2 package to define our terms. The functional correctness is defined with regard to a standard denotational semantics. The operational properties are shown with regard to a small-step semantics akin to Sestoft's mark 1 machine. We make use of Brian Huffman's HOLCF package for the domain-theoretical aspects of the development.
+
 [CCS]
 title = CCS in nominal logic
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
