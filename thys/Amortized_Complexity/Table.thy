@@ -232,7 +232,7 @@ next
         from Ins_no_oflow2[OF this `real n + 1 > f2*l`]
         have "n > f2'*l" .
         thus ?thesis using ai
-apply(auto simp: algebra_simps real_of_nat_Suc real_of_nat_diff)
+apply(simp add: algebra_simps real_of_nat_Suc real_of_nat_diff)
 apply(simp add: field_simps)
 apply(drule mult_left_mono[of _ _ "f2 * real l"])
 apply simp
