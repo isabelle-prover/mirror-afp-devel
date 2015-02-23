@@ -632,7 +632,7 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
     fun prep_goal t = 
       HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t) 
   in    
-    Goal.prove_multi ctxt [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
+    Goal.prove_common ctxt NONE [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
     (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (rtac @{thm equivpI} THEN' 
        RANGE [resolve_tac ctxt refl', resolve_tac ctxt symm', resolve_tac ctxt trans']))))
     |> chop (length alpha_trms)
@@ -754,7 +754,7 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
       |> HOLogic.mk_Trueprop
   in
     map (fn constrs =>
-    Goal.prove_multi ctxt [] [] (map prep_goal constrs)
+    Goal.prove_common ctxt NONE [] [] (map prep_goal constrs)
       (K (HEADGOAL 
         (Goal.conjunction_tac THEN_ALL_NEW raw_constr_rsp_tac ctxt alpha_intros simps)))) constrs
   end

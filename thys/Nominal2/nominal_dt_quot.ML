@@ -739,7 +739,7 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
     fun size_simp_tac ctxt = 
       simp_tac (put_simpset size_ss ctxt addsimps (@{thms comp_def snd_conv} @ size_thms))
   in
-    Goal.prove_multi lthy'' [] prems' concls
+    Goal.prove_common lthy'' NONE [] prems' concls
       (fn {prems, context = ctxt} => 
         Induction_Schema.induction_schema_tac ctxt prems  
         THEN RANGE (map (pat_tac ctxt) exhausts) 1
