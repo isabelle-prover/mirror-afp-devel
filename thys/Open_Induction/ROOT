@@ -1,6 +1,6 @@
 chapter AFP
 
-session Open_Induction (AFP) = "HOL-Library" +
+session Open_Induction (AFP) = HOL +
   options [timeout = 600]
   theories [document = false]
     "../Well_Quasi_Orders/Restricted_Predicates"
