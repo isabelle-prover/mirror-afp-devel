@@ -1,0 +1,33 @@
+chapter AFP
+
+session "Call_Arity_Base" = HOLCF +
+  options [document = false]
+  theories
+    "~~/src/HOL/Library/Quotient_Option"
+    "~~/src/HOL/Library/AList"
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Permutation"
+    "~~/src/HOL/Library/LaTeXsugar"
+    "~~/src/HOL/Library/Infinite_Set"
+
+session "Call_Arity_Base_Nominal2" in "../Nominal2" = "Call_Arity_Base" +
+  options [document = false]
+  theories
+    "Nominal2"
+    "Atoms"
+    "Eqvt"
+
+session Call_Arity (AFP) = "Call_Arity_Base_Nominal2" +
+  options [document_graph]
+  theories
+    "TrivialArityAnal"
+    "NoCardinalityAnalysis"
+    "ArityTransformSafe"
+    "CallArityEnd2EndSafe"
+    "ArityAnalysisCorrDenotational"
+  document_files
+    "root.tex"
+    "root.bib"
+    "mathpartir.sty"
+
+
