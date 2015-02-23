@@ -240,9 +240,9 @@ lemma eq_right_lang_finite_index: "finite (states M // eq_right_lang)"
 
 definition Collapse_dfa :: "'a dfa" where
   "Collapse_dfa = \<lparr>dfa.states = HF ` (states M // eq_right_lang),
-                   init  = HF (eq_right_lang `` {init M}),
-                   final = {HF (eq_right_lang `` {q}) | q. q \<in> final M},
-                   nxt = \<lambda>Q x. HF (\<Union>q \<in> hfset Q. eq_right_lang `` {nxt M q x})\<rparr>"
+                   init       = HF (eq_right_lang `` {init M}),
+                   final      = {HF (eq_right_lang `` {q}) | q. q \<in> final M},
+                   nxt        = \<lambda>Q x. HF (\<Union>q \<in> hfset Q. eq_right_lang `` {nxt M q x})\<rparr>"
 
 lemma nxt_Collapse_resp: "(\<lambda>q. eq_right_lang `` {nxt M q x}) respects eq_right_lang"
   by (auto simp: nextl.simps [symmetric] congruent_def eq_right_lang_def nxt right_lang_def
@@ -1210,7 +1210,7 @@ subsection{*More about the relation @{term eq_app_right}*}
       unfolding index_f_def  by (metis someI_ex)
    qed
 
-  interpretation Canon :
+  interpretation Canon:
       MyhillNerode_dfa language "eq_app_right language"
                        language
                        min_states index_f
@@ -1329,10 +1329,10 @@ subsection{*More about the relation @{term eq_app_right}*}
   proof (rule dfa.minimal_APR)
     show "dfa (APR M)"
       by (simp add: dfa.dfa_Accessible nfa.dfa_Power nfa_Reverse_nfa)
-    next
-      show "dfa.states (APR M) = dfa.accessible (APR M)"
-        by (simp add: dfa.Accessible_accessible dfa.states_Accessible_dfa nfa.dfa_Power nfa_Reverse_nfa)
-    qed
+  next
+    show "dfa.states (APR M) = dfa.accessible (APR M)"
+      by (simp add: dfa.Accessible_accessible dfa.states_Accessible_dfa nfa.dfa_Power nfa_Reverse_nfa)
+  qed
 
   end
 
