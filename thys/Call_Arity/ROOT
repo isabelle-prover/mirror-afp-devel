@@ -18,7 +18,6 @@ session "Call_Arity_Base_Nominal2" in "../Nominal2" = "Call_Arity_Base" +
     "Eqvt"
 
 session Call_Arity (AFP) = "Call_Arity_Base_Nominal2" +
-  options [document_graph]
   theories
     "TrivialArityAnal"
     "NoCardinalityAnalysis"
