@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Call_Arity_Base" = HOLCF +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     "~~/src/HOL/Library/Quotient_Option"
     "~~/src/HOL/Library/AList"
@@ -11,13 +11,14 @@ session "Call_Arity_Base" = HOLCF +
     "~~/src/HOL/Library/Infinite_Set"
 
 session "Call_Arity_Base_Nominal2" in "../Nominal2" = "Call_Arity_Base" +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     "Nominal2"
     "Atoms"
     "Eqvt"
 
 session Call_Arity (AFP) = "Call_Arity_Base_Nominal2" +
+  options [timeout = 600]
   theories
     "TrivialArityAnal"
     "NoCardinalityAnalysis"
