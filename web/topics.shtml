@@ -193,7 +193,8 @@
 <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
 <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
 
-<strong>Transformations:</strong>&nbsp;<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
+<strong>Transformations:</strong>&nbsp;<a href="entries/Call_Arity.shtml">Call_Arity</a> &nbsp;
+<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
