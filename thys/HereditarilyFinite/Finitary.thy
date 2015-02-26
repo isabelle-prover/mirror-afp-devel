@@ -1,6 +1,5 @@
-theory Finitary imports
-  "$AFP/HereditarilyFinite/Ordinal"
-
+theory Finitary
+imports Ordinal
 begin
 
 class finitary =
