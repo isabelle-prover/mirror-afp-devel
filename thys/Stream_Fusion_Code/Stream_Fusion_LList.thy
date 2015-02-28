@@ -1,7 +1,7 @@
 (* Title: Stream_Fusion_LList
   Author: Andreas Lochbihler, ETH Zurich *)
 
-header {* Stream fusion for coinductive lists *}
+section {* Stream fusion for coinductive lists *}
 
 theory Stream_Fusion_LList imports
   Stream_Fusion_List
@@ -60,9 +60,9 @@ qed
 
 setup_lifting type_definition_lgenerator'
 
-section {* Conversions to @{typ "'a llist"} *}
+subsection {* Conversions to @{typ "'a llist"} *}
 
-subsection {* Infinitely many consecutive @{term Skip}s *}
+subsubsection {* Infinitely many consecutive @{term Skip}s *}
 
 context fixes g :: "('a, 's) lgenerator" begin
 
@@ -90,7 +90,7 @@ by(simp_all add: lhd_def lunstream_simps split: step.split)
 
 end
 
-subsection {* Finitely many consecutive @{term Skip}s *}
+subsubsection {* Finitely many consecutive @{term Skip}s *}
 
 lift_definition lunstream' :: "('a, 's) lgenerator' \<Rightarrow> 's \<Rightarrow> 'a llist"
 is lunstream .
@@ -113,9 +113,9 @@ by(transfer, simp add: lunstream_sels)+
 setup {* Context.theory_map (fold
   Stream_Fusion.add_unstream [@{const_name lunstream}, @{const_name lunstream'}]) *}
 
-section {* Producers *}
+subsection {* Producers *}
 
-subsection {* Conversion to streams *}
+subsubsection {* Conversion to streams *}
 
 fun lstream :: "('a, 'a llist) lgenerator"
 where
@@ -144,7 +144,7 @@ qed
 lemma lunstream'_lstream: "lunstream' lstream' xs = xs"
 by(transfer)(rule lunstream_lstream)
 
-subsection {* @{const iterates} *}
+subsubsection {* @{const iterates} *}
 
 definition iterates_raw :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a, 'a) lgenerator"
 where "iterates_raw f s = Yield s (f s)"
@@ -158,7 +158,7 @@ by(auto 4 3 intro: productiveI productive_on.intros simp add: iterates_raw_def)
 lemma lunstream'_iterates_prod [stream_fusion]: "lunstream' (iterates_prod f) x = iterates f x"
 by transfer(rule lunstream_iterates_raw)
 
-subsection {* @{const unfold_llist} *}
+subsubsection {* @{const unfold_llist} *}
 
 definition unfold_llist_raw :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('b, 'a) lgenerator"
 where
@@ -180,7 +180,7 @@ lemma lunstream'_unfold_llist_prod [stream_fusion]:
   "lunstream' (unfold_llist_prod stop head tail) s = unfold_llist stop head tail s"
 by transfer(rule lunstream_unfold_llist_raw)
 
-subsection {* @{const inf_llist} *}
+subsubsection {* @{const inf_llist} *}
 
 definition inf_llist_raw :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a, nat) lgenerator"
 where "inf_llist_raw f n = Yield (f n) (Suc n)"
@@ -195,9 +195,9 @@ lemma inf_llist_prod_fusion [stream_fusion]:
   "lunstream' (inf_llist_prod f) 0 = inf_llist f"
 by transfer(simp add: lunstream_inf_llist_raw)
 
-section {* Consumers *}
+subsection {* Consumers *}
 
-subsection {* @{const lhd} *}
+subsubsection {* @{const lhd} *}
 
 context fixes g :: "('a, 's) lgenerator" begin
 
@@ -214,7 +214,7 @@ lemma lhd_cons_fusion2 [stream_fusion]:
   "lhd_cons (lgenerator g) s = lhd (lunstream' g s)"
 by transfer(rule lhd_cons_def)
 
-subsection {* @{const llength} *}
+subsubsection {* @{const llength} *}
 
 context fixes g :: "('a, 's) lgenerator" begin
 
@@ -248,7 +248,7 @@ by(simp add: gen_llength_cons'_def gen_llength_cons_fusion lunstream'.rep_eq)
 
 end
 
-subsection {* @{const lnull} *}
+subsubsection {* @{const lnull} *}
 
 context fixes g :: "('a, 's) lgenerator" begin
 
@@ -278,7 +278,7 @@ by(simp add: lnull_cons'_def lnull_cons_def lunstream'.rep_eq)
 
 end
 
-subsection {* @{const llist_all2} *}
+subsubsection {* @{const llist_all2} *}
 
 context
   fixes g :: "('a, 'sg) lgenerator"
@@ -322,7 +322,7 @@ lemma llist_all2_cons_fusion4 [stream_fusion]:
   "llist_all2_cons (lgenerator g) h P sg sh \<longleftrightarrow> llist_all2 P (lunstream' g sg) (lunstream h sh)"
 by transfer(rule llist_all2_cons_def)
 
-subsection {* @{const lnth} *}
+subsubsection {* @{const lnth} *}
 
 context fixes g :: "('a, 's) lgenerator" begin
 
@@ -342,7 +342,7 @@ lemma lnth_cons_fusion2 [stream_fusion]:
   "lnth_cons (lgenerator g) n s = lnth (lunstream' g s) n"
 by transfer(rule lnth_cons_def)
 
-subsection {* @{const lprefix} *}
+subsubsection {* @{const lprefix} *}
 
 context
   fixes g :: "('a, 'sg) lgenerator"
@@ -380,9 +380,9 @@ lemma lprefix_cons_fusion4 [stream_fusion]:
   "lprefix_cons (lgenerator g) h sg sh \<longleftrightarrow> lprefix (lunstream' g sg) (lunstream h sh)"
 by transfer(rule lprefix_cons_def)
 
-section {* Transformers *}
+subsection {* Transformers *}
 
-subsection {* @{const lmap} *}
+subsubsection {* @{const lmap} *}
 
 definition lmap_trans :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a, 's) lgenerator \<Rightarrow> ('b, 's) lgenerator"
 where "lmap_trans = map_raw"
@@ -420,7 +420,7 @@ lemma lunstream'_lmap_trans' [stream_fusion]:
   "lunstream' (lmap_trans' f g) s = lmap f (lunstream' g s)"
 by transfer(rule lunstream_lmap_trans)
 
-subsection {* @{const ltake} *}
+subsubsection {* @{const ltake} *}
 
 fun ltake_trans :: "('a, 's) lgenerator \<Rightarrow> ('a, (enat \<times> 's)) lgenerator"
 where
@@ -464,7 +464,7 @@ lemma ltake_trans'_fusion [stream_fusion]:
   "lunstream' (ltake_trans' g) (n, s) = ltake n (lunstream' g s)"
 by transfer(rule ltake_trans_fusion)
 
-subsection {* @{const ldropn} *}
+subsubsection {* @{const ldropn} *}
 
 abbreviation (input) ldropn_trans :: "('b, 'a) lgenerator \<Rightarrow> ('b, nat \<times> 'a) lgenerator"
 where "ldropn_trans \<equiv> drop_raw"
@@ -510,7 +510,7 @@ lemma ldropn_trans'_fusion [stream_fusion]:
   "lunstream' (ldropn_trans' g) (n, s) = ldropn n (lunstream' g s)"
 by transfer(rule ldropn_trans_fusion)
 
-subsection {* @{const ldrop} *}
+subsubsection {* @{const ldrop} *}
 
 fun ldrop_trans :: "('a, 's) lgenerator \<Rightarrow> ('a, enat \<times> 's) lgenerator"
 where
@@ -537,7 +537,7 @@ lemma ldrop_trans_fusion2 [stream_fusion]:
   "lunstream (ldrop_trans (lgenerator g)) (n, s) = ldrop n (lunstream' g s)"
 by transfer (rule ldrop_trans_fusion)
 
-subsection {* @{const ltakeWhile} *}
+subsubsection {* @{const ltakeWhile} *}
 
 abbreviation (input) ltakeWhile_trans :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) lgenerator \<Rightarrow> ('a, 's) lgenerator"
 where "ltakeWhile_trans \<equiv> takeWhile_raw"
@@ -569,7 +569,7 @@ lemma ltakeWhile_trans'_fusion [stream_fusion]:
   "lunstream' (ltakeWhile_trans' P g) s = ltakeWhile P (lunstream' g s)"
 by transfer(rule ltakeWhile_trans_fusion)
 
-subsection {* @{const ldropWhile} *}
+subsubsection {* @{const ldropWhile} *}
 
 abbreviation (input) ldropWhile_trans :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) lgenerator \<Rightarrow> ('a, bool \<times> 'b) lgenerator"
 where "ldropWhile_trans \<equiv> dropWhile_raw"
@@ -589,7 +589,7 @@ lemma ldropWhile_trans_fusion2 [stream_fusion]:
   "lunstream (ldropWhile_trans P (lgenerator g)) (True, s) = ldropWhile P (lunstream' g s)"
 by transfer(rule ldropWhile_trans_fusion)
 
-subsection {* @{const lzip} *}
+subsubsection {* @{const lzip} *}
 
 abbreviation (input) lzip_trans :: "('a, 's1) lgenerator \<Rightarrow> ('b, 's2) lgenerator \<Rightarrow> ('a \<times> 'b, 's1 \<times> 's2 \<times> 'a option) lgenerator"
 where "lzip_trans \<equiv> zip_raw"
@@ -665,7 +665,7 @@ lemma lzip_trans'_fusion [stream_fusion]:
   "lunstream' (lzip_trans' g h) (sg, sh, None) = lzip (lunstream' g sg) (lunstream' h sh)"
 by transfer(rule lzip_trans_fusion)
 
-subsection {* @{const lappend} *}
+subsubsection {* @{const lappend} *}
 
 lift_definition lappend_trans :: "('a, 'sg) lgenerator' \<Rightarrow> ('a, 'sh) lgenerator \<Rightarrow> 'sh \<Rightarrow> ('a, 'sg + 'sh) lgenerator"
 is append_raw .
@@ -713,7 +713,7 @@ lemma lappend_trans'_fusion [stream_fusion]:
   "lunstream' (lappend_trans' g h sh) (Inl sg) = lappend (lunstream' g sg) (lunstream' h sh)"
 by transfer(rule lunstream_append_raw)
 
-subsection {* @{const lfilter} *}
+subsubsection {* @{const lfilter} *}
 
 definition lfilter_trans :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) lgenerator \<Rightarrow> ('a, 's) lgenerator"
 where "lfilter_trans = filter_raw"
@@ -734,7 +734,7 @@ lemma lunstream_lfilter_trans2 [stream_fusion]:
   "lunstream (lfilter_trans P (lgenerator g)) s = lfilter P (lunstream' g s)"
 by transfer(rule lunstream_lfilter_trans)
 
-subsection {* @{const llist_of} *}
+subsubsection {* @{const llist_of} *}
 
 lift_definition llist_of_trans :: "('a, 's) generator \<Rightarrow> ('a, 's) lgenerator'"
 is "\<lambda>x. x"

@@ -1,7 +1,7 @@
 (* Title: Stream_Fusion_Examples
   Author: Andreas Lochbihler, ETH Zurich *)
 
-header {* Examples and test cases for stream fusion *}
+section {* Examples and test cases for stream fusion *}
 
 theory Stream_Fusion_Examples imports Stream_Fusion_LList begin
 
@@ -26,7 +26,7 @@ using [[simproc add: stream_fusion, stream_fusion_trace]]
 apply(simp add: concat_map_maps) -- {* fuses partially *}
 by(unfold rhs_def) rule
 
-section {* Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM} *}
+subsection {* Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM} *}
 
 definition test_enum :: "nat \<Rightarrow> nat" -- {* @{const id} required to avoid eta contraction *}
 where "test_enum n = foldl (op +) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
@@ -53,7 +53,7 @@ code_thms test_enum
 code_thms test_nested
 code_thms test_merge
 
-section {* Test stream fusion in the code generator *}
+subsection {* Test stream fusion in the code generator *}
 
 definition fuse_test :: integer
 where "fuse_test = 

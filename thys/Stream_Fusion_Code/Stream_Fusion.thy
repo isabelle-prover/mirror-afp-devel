@@ -3,7 +3,7 @@
           Andreas Lochbihler, ETH Zurich
 *)
 
-header {* Stream fusion implementation *}
+section {* Stream fusion implementation *}
 
 theory Stream_Fusion
 imports
