@@ -1,4 +1,4 @@
-header {* \isaheader{Automatic Refinement Tool} *}
+section {* Automatic Refinement Tool *}
 theory Autoref_Tool
 imports 
   Autoref_Translate 

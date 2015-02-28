@@ -1,4 +1,4 @@
-header {* \isaheader{Data Refinement Heuristics} *}
+section {* Data Refinement Heuristics *}
 theory Refine_Heuristics
 imports Refine_Basic
 begin

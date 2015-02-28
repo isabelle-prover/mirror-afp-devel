@@ -1,4 +1,4 @@
-header {* \isaheader{Transfer between Domains} *}
+section {* Transfer between Domains *}
 theory RefineG_Transfer
 imports "../Refine_Misc"
 begin

@@ -1,4 +1,4 @@
-header {*\chapter{Examples}*}
+chapter {* Examples *}
 (*<*)
 theory Example_Chapter
 imports Main

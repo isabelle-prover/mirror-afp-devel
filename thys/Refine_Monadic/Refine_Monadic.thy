@@ -1,4 +1,4 @@
-header {*\isaheader{Refinement Framework}*}
+section {* Refinement Framework *}
 theory Refine_Monadic
 imports 
   Refine_Chapter

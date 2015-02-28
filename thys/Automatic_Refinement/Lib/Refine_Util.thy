@@ -1,4 +1,4 @@
-header "General Utilities"
+section "General Utilities"
 theory Refine_Util
 imports Main
 begin

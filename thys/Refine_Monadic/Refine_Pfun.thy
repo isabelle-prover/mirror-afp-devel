@@ -1,4 +1,4 @@
-header {* \isaheader{Partial Function Package Setup} *}
+section {* Partial Function Package Setup *}
 theory Refine_Pfun
 imports Refine_Basic Refine_Det
 begin

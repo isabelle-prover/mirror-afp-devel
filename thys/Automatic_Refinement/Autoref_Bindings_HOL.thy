@@ -1,4 +1,4 @@
-header {* \isaheader{Standard HOL Bindings} *}
+section {* Standard HOL Bindings *}
 theory Autoref_Bindings_HOL
 imports "Tool/Autoref_Tool"
 begin

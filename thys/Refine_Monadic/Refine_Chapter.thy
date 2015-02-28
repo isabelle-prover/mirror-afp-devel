@@ -1,4 +1,4 @@
-header {*\chapter{Refinement Framework}*}
+chapter {* Refinement Framework *}
 (*<*)
 theory Refine_Chapter
 imports Main

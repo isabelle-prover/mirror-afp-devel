@@ -1,4 +1,4 @@
-header "Autoref for the Refinement Monad"
+section "Autoref for the Refinement Monad"
 theory Autoref_Monadic
 imports Refine_Transfer
 begin

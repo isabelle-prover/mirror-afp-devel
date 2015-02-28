@@ -1,4 +1,4 @@
-header {* \isaheader{Relators} *}
+section {* Relators *}
 theory Relators
 imports "../Lib/Refine_Lib"
 begin

@@ -1,4 +1,4 @@
-header {* \isaheader{Breadth First Search}*}
+section {* Breadth First Search *}
 theory Breadth_First_Search
 imports "../Refine_Monadic"
 begin

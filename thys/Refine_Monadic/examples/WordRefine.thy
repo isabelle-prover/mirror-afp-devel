@@ -1,4 +1,4 @@
-header {* \isaheader{Machine Words} *}
+section {* Machine Words *}
 theory WordRefine
 imports "../Refine_Monadic" "~~/src/HOL/Word/Word"
 begin

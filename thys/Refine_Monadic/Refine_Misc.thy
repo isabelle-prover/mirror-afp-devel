@@ -1,4 +1,4 @@
-header {* \isaheader{Miscellanneous Lemmas and Tools} *}
+section {* Miscellanneous Lemmas and Tools *}
 theory Refine_Misc
 imports 
   "../Automatic_Refinement/Automatic_Refinement"

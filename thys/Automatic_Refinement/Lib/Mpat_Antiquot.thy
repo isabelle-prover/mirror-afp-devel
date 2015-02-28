@@ -1,4 +1,4 @@
-header {* Matching-Pattern Antiquotation *}
+section {* Matching-Pattern Antiquotation *}
 theory Mpat_Antiquot
 imports Main Refine_Util
 begin

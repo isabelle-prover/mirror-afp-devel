@@ -1,4 +1,4 @@
-header {* Anti-Unification *}
+section {* Anti-Unification *}
 theory Anti_Unification
 imports Refine_Util
 begin

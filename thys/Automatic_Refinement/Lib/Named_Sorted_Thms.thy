@@ -1,4 +1,4 @@
-header {* Named Theorems with Explicit Filtering and Sorting *}
+section {* Named Theorems with Explicit Filtering and Sorting *}
 theory Named_Sorted_Thms
 imports Attr_Comb
 begin

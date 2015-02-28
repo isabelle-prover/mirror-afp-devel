@@ -1,4 +1,4 @@
-header {* \isaheader{Basic Parametricity Reasoning} *}
+section {* Basic Parametricity Reasoning *}
 theory Param_Tool
 imports "Relators"
 begin

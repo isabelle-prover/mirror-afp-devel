@@ -1,4 +1,4 @@
-header "More Automation"
+section "More Automation"
 theory Refine_Automation
 imports Refine_Basic Refine_Transfer
 keywords "concrete_definition" :: thy_decl

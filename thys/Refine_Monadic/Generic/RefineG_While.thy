@@ -1,4 +1,4 @@
-header {* \isaheader{Generic While-Combinator} *}
+section {* Generic While-Combinator *}
 theory RefineG_While
 imports 
   RefineG_Recursion

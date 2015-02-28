@@ -1,4 +1,4 @@
-header {* \isaheader{While-Loops} *}
+section {* While-Loops *}
 theory Refine_While
 imports 
   Refine_Basic "Generic/RefineG_While"

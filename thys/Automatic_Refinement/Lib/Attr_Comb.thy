@@ -1,4 +1,4 @@
-header {* Attribute Combinators *}
+section {* Attribute Combinators *}
 theory Attr_Comb
 imports Refine_Util
 begin

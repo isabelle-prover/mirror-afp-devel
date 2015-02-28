@@ -1,4 +1,4 @@
-header {* \isaheader{Entry Point for the Automatic Refinement Tool} *}
+section {* Entry Point for the Automatic Refinement Tool *}
 theory Automatic_Refinement
 imports 
   "Tool/Autoref_Tool"

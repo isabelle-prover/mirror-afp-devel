@@ -1,4 +1,4 @@
-header {* Tagging of Terms *}
+section {* Tagging of Terms *}
 theory Autoref_Tagging
 imports "../Lib/Refine_Lib" 
 begin

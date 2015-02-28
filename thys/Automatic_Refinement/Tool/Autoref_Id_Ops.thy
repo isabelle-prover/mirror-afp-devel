@@ -1,4 +1,4 @@
-header {* Operation Identification *}
+section {* Operation Identification *}
 theory Autoref_Id_Ops
 imports 
   "../Lib/Refine_Lib" 

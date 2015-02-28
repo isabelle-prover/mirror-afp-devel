@@ -1,4 +1,4 @@
-header {* Priority Lists *}
+section {* Priority Lists *}
 theory Prio_List
 imports Main
 begin

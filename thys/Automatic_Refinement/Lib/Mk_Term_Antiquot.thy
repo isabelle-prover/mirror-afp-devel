@@ -1,4 +1,4 @@
-header {* Antiquotation to Build Terms *}
+section {* Antiquotation to Build Terms *}
 theory Mk_Term_Antiquot
 imports Refine_Util
 begin

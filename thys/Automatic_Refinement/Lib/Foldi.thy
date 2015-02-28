@@ -1,7 +1,7 @@
 (*  Title:       Interuptible Fold
     Author:      Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* Interuptible Fold *}
+section {* Interuptible Fold *}
 theory Foldi
 imports Main 
 begin

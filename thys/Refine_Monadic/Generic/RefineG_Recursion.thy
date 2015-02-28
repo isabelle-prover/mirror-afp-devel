@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Recursion Combinator for Complete Lattice Structured Domains} *}
+section {* Generic Recursion Combinator for Complete Lattice Structured Domains *}
 theory RefineG_Recursion
 imports "../Refine_Misc" RefineG_Transfer
 begin

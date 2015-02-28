@@ -1,4 +1,4 @@
-header {* \isaheader{Foreach Loops} *}
+section {* Foreach Loops *}
 theory Refine_Foreach
 imports 
   Refine_While 

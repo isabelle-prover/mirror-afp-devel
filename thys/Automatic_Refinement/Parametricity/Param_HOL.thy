@@ -1,4 +1,4 @@
-header {* \isaheader{Parametricity Theorems for HOL} *}
+section {* Parametricity Theorems for HOL *}
 theory Param_HOL
 imports Param_Tool
 begin

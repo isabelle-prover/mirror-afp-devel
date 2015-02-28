@@ -1,4 +1,4 @@
-header {* Infrastructure for Generic Algorithms *}
+section {* Infrastructure for Generic Algorithms *}
 theory Autoref_Gen_Algo
 imports Autoref_Translate
 begin

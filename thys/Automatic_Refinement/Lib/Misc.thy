@@ -12,7 +12,7 @@
 
 *)
 
-header {* Miscellaneous Definitions and Lemmas *}
+section {* Miscellaneous Definitions and Lemmas *}
 
 theory Misc
 imports Main 

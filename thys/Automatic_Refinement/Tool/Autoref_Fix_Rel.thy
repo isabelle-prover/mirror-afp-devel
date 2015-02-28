@@ -1,4 +1,4 @@
-header {* Relator Fixing *}
+section {* Relator Fixing *}
 theory Autoref_Fix_Rel
 imports Autoref_Id_Ops
 begin

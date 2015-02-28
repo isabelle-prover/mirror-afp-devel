@@ -1,4 +1,4 @@
-header {* Infrastructure for Multi-Phase Methods *}
+section {* Infrastructure for Multi-Phase Methods *}
 theory Autoref_Phases
 imports "../Lib/Refine_Lib"
 begin

@@ -1,4 +1,4 @@
-header {* \isaheader{Transfer Setup} *}
+section {* Transfer Setup *}
 theory Refine_Transfer
 imports
   Refine_Basic

@@ -1,4 +1,4 @@
-header {* \isaheader{Deterministic Monad} *}
+section {* Deterministic Monad *}
 theory Refine_Det
 imports 
   "~~/src/HOL/Library/Monad_Syntax"
