@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*IArray Addenda QR*}
+section{*IArray Addenda QR*}
 
 theory IArray_Addenda_QR
 imports

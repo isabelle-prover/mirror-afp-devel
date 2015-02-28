@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*QR Decomposition over iarrays*}
+section{*QR Decomposition over iarrays*}
 
 theory QR_Decomposition_IArrays 
 imports 

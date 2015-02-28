@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*The Gram-Schmidt algorithm*}
+section{*The Gram-Schmidt algorithm*}
 
 theory Gram_Schmidt
 imports

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Least Squares Approximation*}
+section{*Least Squares Approximation*}
 
 theory Least_Squares_Approximation
 imports

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of execution using symbolic computation and iarrays*}
+section{*Examples of execution using symbolic computation and iarrays*}
 
 theory Examples_QR_IArrays_Symbolic
 imports

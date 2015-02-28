@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Gram Schmidt over IArrays*}
+section{*Gram Schmidt over IArrays*}
 
 theory Gram_Schmidt_IArrays
 imports 

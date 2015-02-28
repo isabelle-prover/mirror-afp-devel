@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Miscellaneous file for the QR algorithm*}
+section{*Miscellaneous file for the QR algorithm*}
 
 theory Miscellaneous_QR
 imports

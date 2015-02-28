@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of execution using floats and IArrays*}
+section{*Examples of execution using floats and IArrays*}
 
 theory Examples_QR_IArrays_Float
 imports

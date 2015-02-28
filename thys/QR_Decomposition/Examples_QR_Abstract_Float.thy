@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of execution using floats*}
+section{*Examples of execution using floats*}
 
 theory Examples_QR_Abstract_Float
 imports

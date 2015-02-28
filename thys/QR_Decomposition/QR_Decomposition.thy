@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*QR Decomposition*}
+section{*QR Decomposition*}
 
 theory QR_Decomposition
 imports Gram_Schmidt

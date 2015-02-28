@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of execution using symbolic computation*}
+section{*Examples of execution using symbolic computation*}
 
 theory Examples_QR_Abstract_Symbolic
 imports
