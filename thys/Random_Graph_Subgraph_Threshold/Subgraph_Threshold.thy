@@ -401,8 +401,6 @@ next
       proof (rule mult_right_mono, rule binomial_ge_n_over_k_pow_k)
         show "?v \<le> n"
           using n .
-        show "0 < ?v"
-          using nonempty finite unfolding nonempty_graph_def finite_graph_def by fastforce
         show "0 \<le> p n ^ ?e"
           using p by simp
       qed
