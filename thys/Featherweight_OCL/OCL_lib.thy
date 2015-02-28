@@ -40,7 +40,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-header{* Formalization II: Library Definitions *}
+chapter{* Formalization II: Library Definitions *}
 
 theory OCL_lib
 imports OCL_core

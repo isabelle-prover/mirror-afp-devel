@@ -40,7 +40,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-header{* Formalization I: Core Definitions *}
+chapter{* Formalization I: Core Definitions *}
 
 theory
   OCL_core

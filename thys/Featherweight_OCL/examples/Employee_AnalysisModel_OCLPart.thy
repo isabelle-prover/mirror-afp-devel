@@ -40,7 +40,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-header{* The Employee Analysis Model (OCL) *}
+section{* The Employee Analysis Model (OCL) *}
 
 theory
   Employee_AnalysisModel_OCLPart
@@ -48,10 +48,10 @@ imports
   Employee_AnalysisModel_UMLPart
 begin
 text {* \label{ex:employee-analysis:ocl} *}
-section{* Standard State Infrastructure *}
+subsection{* Standard State Infrastructure *}
 text{* Ideally, these definitions are automatically generated from the class model. *}
 
-section{* Invariant *}
+subsection{* Invariant *}
 text{* These recursive predicates can be defined conservatively
 by greatest fix-point
 constructions---automatically. See~\cite{brucker.ea:hol-ocl-book:2006,brucker:interactive:2007}
@@ -81,7 +81,7 @@ coinductive inv :: "Person \<Rightarrow> (\<AA>)st \<Rightarrow> bool" where
                      ( (inv(self .boss))\<tau> )))
                      \<Longrightarrow> ( inv self \<tau>)"
 
-section{* The Contract of a Recursive Query *}
+subsection{* The Contract of a Recursive Query *}
 text{* The original specification of a recursive query :
 \begin{ocl}
 context Person::contents():Set(Integer)
@@ -121,7 +121,7 @@ text{* These \inlineocl{@pre} variants on methods are only available on queries,
 operations without side-effect. *}
 
 
-section{* The Contract of a Method *}
+subsection{* The Contract of a Method *}
 text{*
 The specification in high-level OCL input syntax reads as follows:
 \begin{ocl}

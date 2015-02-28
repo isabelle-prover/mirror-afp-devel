@@ -40,7 +40,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-header{* Formalization III:  State Operations and Objects *}
+chapter{* Formalization III:  State Operations and Objects *}
 
 theory OCL_state
 imports OCL_lib
