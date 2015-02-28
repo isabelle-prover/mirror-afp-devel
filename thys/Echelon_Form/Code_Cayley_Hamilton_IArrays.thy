@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Code Cayley Hamilton*}
+section{*Code Cayley Hamilton*}
 
 theory Code_Cayley_Hamilton_IArrays
   imports 

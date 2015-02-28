@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Inverse matrix over principal ideal rings*}
+section{*Inverse matrix over principal ideal rings*}
 
 theory Echelon_Form_Inverse
   imports 

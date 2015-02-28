@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Inverse matrices over principal ideal rings using immutable arrays*}
+section{*Inverse matrices over principal ideal rings using immutable arrays*}
 
 theory Echelon_Form_Inverse_IArrays
   imports 

@@ -58,7 +58,7 @@
 
 *)
 
-header {* Abstract euclidean algorithm *}
+section {* Abstract euclidean algorithm *}
 
 theory Euclidean_Algorithm
 imports Complex_Main

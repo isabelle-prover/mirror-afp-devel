@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of computations using immutable arrays*}
+section{*Examples of computations using immutable arrays*}
 
 theory Examples_Echelon_Form_IArrays
 imports 

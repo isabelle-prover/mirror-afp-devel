@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Determinant of matrices computed using immutable arrays*}
+section{*Determinant of matrices computed using immutable arrays*}
 
 theory Echelon_Form_Det_IArrays
 imports 

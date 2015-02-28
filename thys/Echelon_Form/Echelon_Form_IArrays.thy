@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Echelon Form refined to immutable arrays*}
+section{*Echelon Form refined to immutable arrays*}
 
 theory Echelon_Form_IArrays
 imports

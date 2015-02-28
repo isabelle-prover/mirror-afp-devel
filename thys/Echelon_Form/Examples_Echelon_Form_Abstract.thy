@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Examples of execution over matrices represented as functions*}
+section{*Examples of execution over matrices represented as functions*}
 
 theory Examples_Echelon_Form_Abstract
 imports

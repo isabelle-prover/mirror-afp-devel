@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Rings*}
+section{*Rings*}
 
 theory Rings2
 imports

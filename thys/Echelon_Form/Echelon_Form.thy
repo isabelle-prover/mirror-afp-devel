@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Echelon Form*}
+section{*Echelon Form*}
 
 theory Echelon_Form
 imports 

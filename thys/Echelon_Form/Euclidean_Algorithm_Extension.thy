@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-header "Euclidean Algorithm Extension"
+section "Euclidean Algorithm Extension"
 
 
 theory Euclidean_Algorithm_Extension

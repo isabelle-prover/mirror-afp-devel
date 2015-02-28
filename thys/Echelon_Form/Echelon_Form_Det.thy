@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-header{*Determinant of matrices over principal ideal rings*}
+section{*Determinant of matrices over principal ideal rings*}
 
 theory Echelon_Form_Det
   imports Echelon_Form
