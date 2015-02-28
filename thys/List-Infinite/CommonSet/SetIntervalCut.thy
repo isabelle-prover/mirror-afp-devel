@@ -3,7 +3,6 @@
     Author:     David Trachtenherz
 *)
 
-(* header {* Cutting @{term linorder} and @{term nat} sets *} *)
 section {* Cutting linearly ordered and natural sets *}
 
 theory SetIntervalCut
