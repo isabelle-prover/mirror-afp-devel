@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "AODV protocol messages"
+section "AODV protocol messages"
 
 theory B_Aodv_Message
 imports B_Fwdrreps

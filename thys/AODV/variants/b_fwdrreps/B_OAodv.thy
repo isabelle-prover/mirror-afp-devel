@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "The `open' AODV model"
+section "The `open' AODV model"
 
 theory B_OAodv
 imports B_Aodv "../../../AWN/OAWN_SOS_Labels" "../../../AWN/OAWN_Convert"

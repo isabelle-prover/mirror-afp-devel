@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Routing graphs and loop freedom"
+section "Routing graphs and loop freedom"
 
 theory C_Loop_Freedom
 imports C_Aodv_Predicates C_Fresher

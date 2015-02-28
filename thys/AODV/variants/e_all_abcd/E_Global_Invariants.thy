@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Global invariant proofs over sequential processes"
+section "Global invariant proofs over sequential processes"
 
 theory E_Global_Invariants
 imports E_Seq_Invariants

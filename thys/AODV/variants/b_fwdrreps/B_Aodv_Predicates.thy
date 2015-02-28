@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Invariant assumptions and properties"
+section "Invariant assumptions and properties"
 
 theory B_Aodv_Predicates
 imports B_Aodv

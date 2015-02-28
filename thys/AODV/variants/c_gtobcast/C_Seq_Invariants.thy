@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Invariant proofs on individual processes"
+section "Invariant proofs on individual processes"
 
 theory C_Seq_Invariants
 imports "../../../AWN/Invariants" C_Aodv C_Aodv_Data C_Aodv_Predicates C_Fresher

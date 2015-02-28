@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Routing graphs and loop freedom"
+section "Routing graphs and loop freedom"
 
 theory B_Loop_Freedom
 imports B_Aodv_Predicates B_Fresher

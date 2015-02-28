@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Global invariant proofs over sequential processes"
+section "Global invariant proofs over sequential processes"
 
 theory D_Global_Invariants
 imports D_Seq_Invariants

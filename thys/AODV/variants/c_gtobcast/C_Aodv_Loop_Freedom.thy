@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Lift and transfer invariants to show loop freedom"
+section "Lift and transfer invariants to show loop freedom"
 
 theory C_Aodv_Loop_Freedom
 imports "../../../AWN/OClosed_Transfer" "../../../AWN/Qmsg_Lifting" C_Global_Invariants C_Loop_Freedom

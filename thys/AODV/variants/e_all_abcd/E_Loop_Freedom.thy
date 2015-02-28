@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Routing graphs and loop freedom"
+section "Routing graphs and loop freedom"
 
 theory E_Loop_Freedom
 imports E_Aodv_Predicates E_Fresher

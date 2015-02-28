@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "AODV protocol messages"
+section "AODV protocol messages"
 
 theory D_Aodv_Message
 imports D_Fwdrreqs

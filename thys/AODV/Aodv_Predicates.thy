@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Invariant assumptions and properties"
+section "Invariant assumptions and properties"
 
 theory Aodv_Predicates
 imports Aodv

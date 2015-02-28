@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "AODV protocol messages"
+section "AODV protocol messages"
 
 theory A_Aodv_Message
 imports A_Norreqid

@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "AODV protocol messages"
+section "AODV protocol messages"
 
 theory E_Aodv_Message
 imports E_All_ABCD

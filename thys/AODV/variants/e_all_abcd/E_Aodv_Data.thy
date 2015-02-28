@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Predicates and functions used in the AODV model"
+section "Predicates and functions used in the AODV model"
 
 theory E_Aodv_Data
 imports E_All_ABCD

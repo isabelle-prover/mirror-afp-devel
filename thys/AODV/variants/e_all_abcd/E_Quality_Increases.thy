@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "The quality increases predicate"
+section "The quality increases predicate"
 
 theory E_Quality_Increases
 imports E_Aodv_Predicates E_Fresher

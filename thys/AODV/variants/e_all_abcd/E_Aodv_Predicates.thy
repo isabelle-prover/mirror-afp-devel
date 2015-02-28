@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Invariant assumptions and properties"
+section "Invariant assumptions and properties"
 
 theory E_Aodv_Predicates
 imports E_Aodv

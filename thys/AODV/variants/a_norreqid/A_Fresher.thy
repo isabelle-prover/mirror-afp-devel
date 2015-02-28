@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Quality relations between routes"
+section "Quality relations between routes"
 
 theory A_Fresher
 imports A_Aodv_Data

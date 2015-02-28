@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "The quality increases predicate"
+section "The quality increases predicate"
 
 theory Quality_Increases
 imports Aodv_Predicates Fresher

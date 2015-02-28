@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Basic data types and constants"
+section "Basic data types and constants"
 
 theory Aodv_Basic
 imports Main "../AWN/AWN_SOS"

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "AODV protocol messages"
+section "AODV protocol messages"
 
 theory Aodv_Message
 imports Aodv_Basic

@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Quality relations between routes"
+section "Quality relations between routes"
 
 theory D_Fresher
 imports D_Aodv_Data

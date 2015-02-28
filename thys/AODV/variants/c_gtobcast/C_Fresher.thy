@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Quality relations between routes"
+section "Quality relations between routes"
 
 theory C_Fresher
 imports C_Aodv_Data

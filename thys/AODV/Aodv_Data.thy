@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Predicates and functions used in the AODV model"
+section "Predicates and functions used in the AODV model"
 
 theory Aodv_Data
 imports Aodv_Basic

@@ -3,7 +3,7 @@
     Author:      Timothy Bourke, Inria
 *)
 
-header "Invariant proofs on individual processes"
+section "Invariant proofs on individual processes"
 
 theory A_Seq_Invariants
 imports "../../../AWN/Invariants" A_Aodv A_Aodv_Data A_Aodv_Predicates A_Fresher

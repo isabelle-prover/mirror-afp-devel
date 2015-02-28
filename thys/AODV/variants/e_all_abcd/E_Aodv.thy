@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "The AODV protocol"
+section "The AODV protocol"
 
 theory E_Aodv
 imports E_Aodv_Data E_Aodv_Message

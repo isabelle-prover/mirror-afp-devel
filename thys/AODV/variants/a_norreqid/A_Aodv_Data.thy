@@ -4,7 +4,7 @@
     Author:      Peter Höfner, NICTA
 *)
 
-header "Predicates and functions used in the AODV model"
+section "Predicates and functions used in the AODV model"
 
 theory A_Aodv_Data
 imports A_Norreqid
