@@ -1,6 +1,6 @@
 (* Authors:  Florian Haftmann and René Neumann, TU Muenchen *)
 
-header {* Abstract priority queues *}
+section {* Abstract priority queues *}
 
 theory PQ
 imports Main

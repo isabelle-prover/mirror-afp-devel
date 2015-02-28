@@ -1,6 +1,6 @@
 (* Authors:  René Neumann and Florian Haftmann, TU Muenchen *)
 
-header {* Relating Functional Binomial Queues To The Abstract Priority Queues *}
+section {* Relating Functional Binomial Queues To The Abstract Priority Queues *}
 
 theory PQ_Implementation
 imports PQ Binomial_Queue 

@@ -1,6 +1,6 @@
 (* Authors:  René Neumann and Florian Haftmann, TU Muenchen *)
 
-header {* Functional Binomial Queues *}
+section {* Functional Binomial Queues *}
 
 theory Binomial_Queue
 imports PQ
