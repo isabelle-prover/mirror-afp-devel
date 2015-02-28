@@ -1,4 +1,4 @@
-header {* Implementation of Safety Property Model Checker \label{sec:find_path_impl}*}
+section {* Implementation of Safety Property Model Checker \label{sec:find_path_impl}*}
 theory Find_Path_Impl
 imports 
   Find_Path

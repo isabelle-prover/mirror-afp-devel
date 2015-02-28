@@ -1,4 +1,4 @@
-header {* Code Generation for the Skeleton Algorithm \label{sec:skel_code}*}
+section {* Code Generation for the Skeleton Algorithm \label{sec:skel_code}*}
 theory Gabow_Skeleton_Code
 imports 
   Gabow_Skeleton

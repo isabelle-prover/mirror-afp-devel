@@ -1,4 +1,4 @@
-header {* Safety-Property Model-Checker\label{sec:find_path} *}
+section {* Safety-Property Model-Checker\label{sec:find_path} *}
 theory Find_Path
 imports
   "../CAVA_Automata/Digraph"

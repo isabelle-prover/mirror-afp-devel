@@ -1,4 +1,4 @@
-header {* Skeleton for Gabow's SCC Algorithm \label{sec:skel}*}
+section {* Skeleton for Gabow's SCC Algorithm \label{sec:skel}*}
 theory Gabow_Skeleton
 imports "../CAVA_Automata/Digraph"
 begin

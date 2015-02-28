@@ -1,4 +1,4 @@
-header {* Code Generation for GBG Lasso Finding Algorithm\label{sec:gbg_code} *}
+section {* Code Generation for GBG Lasso Finding Algorithm\label{sec:gbg_code} *}
 theory Gabow_GBG_Code
 imports
   Gabow_GBG 

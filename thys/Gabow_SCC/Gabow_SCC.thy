@@ -1,4 +1,4 @@
-header {* Enumerating the SCCs of a Graph \label{sec:scc}*}
+section {* Enumerating the SCCs of a Graph \label{sec:scc}*}
 theory Gabow_SCC
 imports Gabow_Skeleton
 begin

@@ -1,4 +1,4 @@
-header {* Code Generation for SCC-Computation \label{sec:scc_code}*}
+section {* Code Generation for SCC-Computation \label{sec:scc_code}*}
 theory Gabow_SCC_Code
 imports 
   Gabow_SCC 
