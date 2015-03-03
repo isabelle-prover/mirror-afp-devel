@@ -409,7 +409,7 @@ fun cont_intro_simproc ctxt ct =
   let
     fun mk_stmt t = t
       |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of (Proof_Context.theory_of ctxt)
+      |> Proof_Context.cterm_of ctxt
       |> Goal.init
     fun mk_thm t =
       case SINGLE (cont_intro_tac ctxt 1) (mk_stmt t) of

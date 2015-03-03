@@ -91,7 +91,7 @@ ML {*
       Args.context --
         Scan.lift Args.name_inner_syntax >> (fn (context,str) => 
           Proof_Context.read_term_pattern context str
-          |> cterm_of (Proof_Context.theory_of context) 
+          |> Thm.cterm_of (Proof_Context.theory_of context) 
         );
 
 
@@ -105,7 +105,7 @@ ML {*
     fun import_cterm ct ctxt = let
       val (t',ctxt') = yield_singleton (Variable.import_terms true) 
         (term_of ct) ctxt;
-      val ct' = cterm_of (Proof_Context.theory_of ctxt') t';
+      val ct' = Thm.cterm_of (Proof_Context.theory_of ctxt') t';
     in (ct',ctxt') end
 
   (* Get theorem by name, that is visible in HOL.Main. Moreover, the

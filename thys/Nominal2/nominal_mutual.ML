@@ -253,7 +253,7 @@ fun mk_applied_form ctxt caTs thm =
 
 fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   let
-    val cert = cterm_of (Proof_Context.theory_of ctxt)
+    val cert = Proof_Context.cterm_of ctxt
     val newPs =
       map2 (fn Pname => fn MutualPart {cargTs, ...} =>
           Free (Pname, cargTs ---> HOLogic.boolT))

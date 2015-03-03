@@ -408,7 +408,7 @@ ML {*
             ^ Display.string_of_thm ctxt thm
           )
 
-          val R_cert = cterm_of (Proof_Context.theory_of ctxt) R
+          val R_cert = Proof_Context.cterm_of ctxt R
 
           fun cnv ctxt ct = (case term_of ct of
             @{mpat "OP _ ::: _"} => all_conv

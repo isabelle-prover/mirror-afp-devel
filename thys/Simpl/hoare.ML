@@ -2685,7 +2685,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (prop_of st) i));
     val J = fold_rev Term.abs pars (I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
-    val cterm = Thm.cterm_of (Proof_Context.theory_of ctxt);
+    val cterm = Proof_Context.cterm_of ctxt;
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
     val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
       o strip_comb o #2 o dest_hoare) (List.last (prems_of WhileG));

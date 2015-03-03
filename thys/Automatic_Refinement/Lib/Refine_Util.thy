@@ -633,7 +633,7 @@ ML {*
           tracing (Syntax.string_of_term ctxt goal)
         else ()
 
-        val goal = cterm_of (Proof_Context.theory_of ctxt) goal
+        val goal = Proof_Context.cterm_of ctxt goal
 
         val thm = Goal.prove_internal ctxt [] goal (K tac)
       in

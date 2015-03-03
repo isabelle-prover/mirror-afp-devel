@@ -245,7 +245,7 @@ fun mk_clause_info globals G f no cdata qglr tree RCs GIntro_thm RIntro_thms =
     val Globals {h, ...} = globals
 
     val ClauseContext { ctxt, qs, cqs, ags, ... } = cdata
-    val cert = Thm.cterm_of (Proof_Context.theory_of ctxt)
+    val cert = Proof_Context.cterm_of ctxt
 
     (* Instantiate the GIntro thm with "f" and import into the clause context. *)
     val lGI = GIntro_thm
@@ -614,7 +614,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
           [] (* no special monos *)
       ||> Local_Theory.restore_naming lthy
 
-    val cert = cterm_of (Proof_Context.theory_of lthy)
+    val cert = Proof_Context.cterm_of lthy
     fun requantify orig_intro thm =
       let
         val (qs, t) = dest_all_all orig_intro
@@ -1037,7 +1037,7 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
     val newthy = Proof_Context.theory_of lthy
     val clauses = map (transfer_clause_ctx newthy) clauses
 
-    val cert = cterm_of (Proof_Context.theory_of lthy)
+    val cert = Proof_Context.cterm_of lthy
 
     val xclauses = PROFILE "xclauses"
       (@{map 7} (mk_clause_info globals G f) (1 upto n) clauses abstract_qglrs trees
