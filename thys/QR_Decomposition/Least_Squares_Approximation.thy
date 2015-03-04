@@ -13,7 +13,7 @@ begin
 
 subsection{*Second part of the Fundamental Theorem of Linear Algebra*}
 
-text{*See \url{http://en.wikipedia.org/wiki/Fundamental_theorem_of_linear_algebra}*}
+text{*See @{url "http://en.wikipedia.org/wiki/Fundamental_theorem_of_linear_algebra"}*}
 
 definition "orthogonal_complement W = {x. \<forall>y \<in> W. orthogonal x y}"
 
@@ -63,7 +63,7 @@ lemma left_null_space_orthogonal_complement_col_space:
 
 subsection{*Least Squares Approximation*}
 
-text{*See \url{https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf}*}
+text{*See @{url "https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf"}*}
 
 lemma phytagorean_theorem_norm:
   assumes o: "orthogonal x y"

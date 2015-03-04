@@ -74,7 +74,7 @@ subsection{*Computing the inverse of a matrix using the Gauss Jordan algorithm*}
 
 text{*This lemma is essential to demonstrate that the Gauss Jordan form of an invertible matrix is the identity. 
   The proof is made by induction and it is explained in 
-  \url{http://www.unirioja.es/cu/jodivaso/Isabelle/Gauss-Jordan-2013-2-Generalized/Demonstration_invertible.pdf}*}
+  @{url "http://www.unirioja.es/cu/jodivaso/Isabelle/Gauss-Jordan-2013-2-Generalized/Demonstration_invertible.pdf"}*}
 
 lemma id_upt_k_Gauss_Jordan:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"

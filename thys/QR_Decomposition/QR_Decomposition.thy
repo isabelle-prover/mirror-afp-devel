@@ -19,7 +19,7 @@ unit vectors.
 
 Although in some texts the QR decomposition is presented over square matrices, it can be applied to any matrix.
 There are some variants of the algorithm, depending on the properties that the output matrices 
-satisfy (see for instance, \url{http://inst.eecs.berkeley.edu/~ee127a/book/login/l_mats_qr.html}). 
+satisfy (see for instance, @{url "http://inst.eecs.berkeley.edu/~ee127a/book/login/l_mats_qr.html"}). 
 We present two of them below.
 
 Let A be a matrix with m rows and n columns (A is @{text "m \<times> n"}).
@@ -43,7 +43,7 @@ Case 2: The called full QR decomposition. We can obtain:
 \end{itemize}
 
 We have decided to formalise the first one, because it's the only useful for solving 
-the linear least squares problem (\url{http://math.mit.edu/linearalgebra/ila0403.pdf}).
+the linear least squares problem (@{url "http://math.mit.edu/linearalgebra/ila0403.pdf"}).
 
 If we have an unsolvable system @{text "A *v x = b"}, we can try to find an approximate solution.
 A plausible choice (not the only one) is to seek an @{text "x"} with the property that

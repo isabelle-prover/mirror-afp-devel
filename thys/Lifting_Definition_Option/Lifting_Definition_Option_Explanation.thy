@@ -88,7 +88,7 @@ is not admitted for code-equations
 \cite{DBLP:conf/itp/HaftmannKKN13, DBLP:conf/flops/HaftmannN10}.
 
 To overcome this problem, Joachim Breitner proposed the following 
-workaround\footnote{\url{http://stackoverflow.com/questions/16273812/working-with-isabelles-code-generator-data-refinement-and-higher-order-functio}},
+workaround\footnote{@{url "http://stackoverflow.com/questions/16273812/working-with-isabelles-code-generator-data-refinement-and-higher-order-functio"}},
 which requires an additional type definition, and some auxiliary definitions,
 to in the end define @{term create_pos} in a way that is amenable for code-generation.
 \<close>

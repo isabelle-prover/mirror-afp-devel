@@ -26,7 +26,7 @@ subsection{*Serializations*}
 
 text{*The following @{text "code_printing code_module"} module is the usual way to import libraries 
 in Haskell. In this case, we rebind some functions from Data.Ratio. 
-See \url{https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2013-June/msg00007.html}*}
+See @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2013-June/msg00007.html"}*}
 
 code_printing code_module Rational => (Haskell) {*
  import qualified Data.Ratio;

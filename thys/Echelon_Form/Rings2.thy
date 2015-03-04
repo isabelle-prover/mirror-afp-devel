@@ -1030,7 +1030,7 @@ qed
 subsection{*Field*}
 
 text{*Proving that any field is a euclidean domain. There are alternatives to do this,
-see \url{https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00034.html}*}
+see @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00034.html"}*}
 
 class field_euclidean = field + euclidean_ring +
   assumes "euclidean_size = (\<lambda>i. if i = 0 then 0 else 1::nat)"
