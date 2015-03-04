@@ -295,16 +295,6 @@ next
     by (auto simp add: echelon_form_of_column_k_iarrays_def Let_def  Suc.hyps)
 qed
 
-lemma snd_snd_foldl_echelon_form_of_column_k:
-  "snd (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<k])) = bezout"
-proof (induct k)
-  case 0 thus ?case by auto
-next
-  case (Suc K)
-  thus ?case
-    by (auto simp add: echelon_form_of_column_k_def Let_def  Suc.hyps)
-qed
-
 lemma foldl_echelon_form_column_k_eq:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"

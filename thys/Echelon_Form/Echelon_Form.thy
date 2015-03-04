@@ -24,9 +24,9 @@ lemma from_nat_CARD:
   shows "from_nat (CARD('a)) = (0::'a::{mod_type})"
   unfolding from_nat_def o_def Abs'_def by (simp add: zero_def)
 
-lemma invertible_iff_is_unit:
-  fixes A::"'a::{comm_ring_1, semiring_div}^'n^'n"
-  shows "invertible A \<longleftrightarrow> is_unit (det A)"
+lemma invertible_iff_is_unit':
+  fixes A::"'a::{comm_ring_1}^'n^'n"
+  shows "invertible A \<longleftrightarrow> (det A) dvd 1"
 proof 
   assume inv_A: "invertible A"
   obtain B where AB_mat: "A ** B = mat 1" using inv_A unfolding invertible_def by auto
@@ -34,24 +34,30 @@ proof
   also have "... = det (A ** B)" unfolding AB_mat ..
   also have "... = det A * det B" unfolding det_mul ..
   finally have "1 = det A * det B" by simp
-  thus "is_unit (det A)" unfolding is_unit_def dvd_def by auto
+  thus "(det A) dvd 1" unfolding is_unit_def dvd_def by auto
 next
-  assume det_unit: "is_unit (det A)"
+  assume det_unit: "(det A) dvd 1"
+  from this obtain a where a: "(det A) * a = 1" unfolding dvd_def by auto
   show "invertible A"
-  proof (unfold invertible_def, rule exI[of _ "ring_inv (det A) *ss adjugate A"], auto)
-    have *: "A ** (ring_inv (det A) *ss adjugate A) = ring_inv (det A) *ss adjugate A ** A"
+  proof (unfold invertible_def, rule exI[of _ "a *ss adjugate A"], auto)
+    have *: "A ** (a *ss adjugate A) = a *ss adjugate A ** A"
     by (metis (erased, hide_lams) adjugate_det adjugate_det_symmetric 
       matrix_mul_assoc matrix_scalar_mat_one scalar_mat_matrix_mult_left)
-    have "A ** (ring_inv (det A) *ss adjugate A) = (ring_inv (det A) *ss (adjugate A ** A))"
+    have "A ** (a *ss adjugate A) = (a *ss (adjugate A ** A))"
       by (metis adjugate_det adjugate_det_symmetric matrix_scalar_assoc)
-    also have "... = ring_inv (det A) *ss (det A *ss mat 1)" unfolding adjugate_det ..
-    also have "... = (ring_inv (det A) * det A) *ss mat 1" by (metis scalar_scalar_mult_assoc)
-    also have "... = 1 *ss mat 1" by (metis det_unit mult.commute ring_inv_is_inv1)
+    also have "... = a *ss (det A *ss mat 1)" unfolding adjugate_det ..
+    also have "... = (a * det A) *ss mat 1" by (metis scalar_scalar_mult_assoc)
+    also have "... = 1 *ss mat 1" by (metis a mult.commute) 
     also have "... = mat 1" by (metis one_scalar_mult_mat)
-    finally show "A ** (ring_inv (det A) *ss adjugate A) = mat 1" .
-    thus "ring_inv (det A) *ss adjugate A ** A = mat 1" unfolding * .
+    finally show "A ** (a *ss adjugate A) = mat 1" .
+    thus "a *ss adjugate A ** A = mat 1" unfolding * .
   qed
 qed
+
+lemma invertible_iff_is_unit:
+  fixes A::"'a::{comm_ring_1, semiring_div}^'n^'n"
+  shows "invertible A \<longleftrightarrow> is_unit (det A)"
+  using invertible_iff_is_unit' unfolding is_unit_def .
 
 
 subsection{*Definition of Echelon Form*}
@@ -2763,7 +2769,148 @@ next
   qed
 qed
 
-subsubsection{*Final result*}
+subsubsection{*Proving the existence of invertible matrices which do the transformations*}
+
+lemma bezout_iterate_invertible:
+  fixes A::"'a::{bezout_domain}^'cols^'rows::{mod_type}"
+  assumes ib: "is_bezout_ext (bezout)"
+  assumes "n<nrows A"
+  and "to_nat i\<le>n"
+  and "A $ i $ j \<noteq> 0"
+  shows "\<exists>P. invertible P \<and> P**A = bezout_iterate A n i j bezout"
+  using assms
+proof (induct n arbitrary: A)
+  case 0
+  show ?case 
+    unfolding bezout_iterate.simps 
+    by (simp add: exI[of _ "mat 1"] matrix_mul_lid invertible_def) 
+next
+  case (Suc n)
+  show ?case
+  proof (cases "Suc n = to_nat i")
+    case True show ?thesis unfolding bezout_iterate.simps using True Suc.prems(1) 
+      by (simp add: exI[of _ "mat 1"] matrix_mul_lid invertible_def) 
+  next
+    case False
+    have i_le_n: "to_nat i < Suc n" using Suc.prems(3) False by auto
+    let ?B="(bezout_matrix A i (from_nat (Suc n)) j bezout ** A)"
+    have b: "bezout_iterate A (Suc n) i j bezout = bezout_iterate ?B n i j bezout"
+      unfolding bezout_iterate.simps using i_le_n by auto
+    have "\<exists>P. invertible P \<and> P**?B = bezout_iterate ?B n i j bezout"
+    proof (rule Suc.hyps[OF ib _])
+      show "n < nrows ?B" using Suc.prems (2) unfolding nrows_def by simp
+      show "to_nat i \<le> n" using i_le_n by auto
+      show "?B $ i $ j \<noteq> 0" 
+        by (metis False Suc.prems(2) Suc.prems(4) bezout_matrix_not_zero 
+          ib nrows_def to_nat_from_nat_id)
+    qed
+    from this obtain P where inv_P: "invertible P" and P: "P**?B = bezout_iterate ?B n i j bezout"
+      by blast
+    show ?thesis
+    proof (rule exI[of _ "P ** bezout_matrix A i (from_nat (Suc n)) j bezout"], 
+        rule conjI, rule invertible_mult)
+      show "P ** bezout_matrix A i (from_nat (Suc n)) j bezout ** A 
+        = bezout_iterate A (Suc n) i j bezout" using P unfolding b by (metis matrix_mul_assoc)
+      have "det (bezout_matrix A i (from_nat (Suc n)) j bezout) = 1" 
+      proof (rule det_bezout_matrix[OF ib])
+        show "i < from_nat (Suc n)"
+          using i_le_n from_nat_mono[of "to_nat i" "Suc n"] Suc.prems(2)
+          unfolding nrows_def by (metis from_nat_to_nat_id)
+        show "A $ i $ j \<noteq> 0" by (rule Suc.prems(4))
+      qed
+      thus "invertible (bezout_matrix A i (mod_type_class.from_nat (Suc n)) j bezout)"
+        unfolding invertible_iff_is_unit' by simp
+      show "invertible P" using inv_P .
+    qed
+  qed
+qed
+
+lemma echelon_form_of_column_k_invertible:
+  fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
+  assumes ib: "is_bezout_ext (bezout)"
+  shows "\<exists>P. invertible P \<and> P**A = fst (echelon_form_of_column_k (A,i,bezout) k)"  
+proof -
+  have "\<exists>P. invertible P \<and> P ** A = A" 
+    by (simp add: exI[of _ "mat 1"] matrix_mul_lid invertible_def) 
+  thus ?thesis
+  proof (unfold echelon_form_of_column_k_def Let_def, auto)
+    fix P m ma
+    let ?least = "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)"
+    let ?interchange ="(interchange_rows A (from_nat i) ?least)"
+    assume i: "i \<noteq> nrows A" 
+      and i2: "mod_type_class.from_nat i \<le> ma"
+      and ma: "A $ ma $ mod_type_class.from_nat k \<noteq> 0"
+    have "\<exists>P. invertible P \<and>
+      P ** ?interchange =
+      bezout_iterate ?interchange (nrows A - Suc 0) (from_nat i) (from_nat k) bezout"
+    proof (rule bezout_iterate_invertible[OF ib])
+      show "nrows A - Suc 0 < nrows ?interchange" unfolding nrows_def by simp
+      show "to_nat (from_nat i::'rows) \<le> nrows A - Suc 0"
+        by (metis Suc_leI Suc_le_mono Suc_pred nrows_def to_nat_less_card zero_less_card_finite)
+      show "?interchange $ from_nat i $ from_nat k \<noteq> 0" 
+        by (metis (mono_tags, lifting) LeastI_ex i2 ma interchange_rows_i)
+    qed
+    from this obtain P where inv_P: "invertible P" and P: "P ** ?interchange =
+      bezout_iterate ?interchange (nrows A - Suc 0) (from_nat i) (from_nat k) bezout"
+      by blast
+    show "\<exists>P. invertible P \<and> P ** A 
+      = bezout_iterate ?interchange (nrows A - Suc 0) (from_nat i) (from_nat k) bezout" 
+    proof (rule exI[of _ "P ** interchange_rows (mat 1) (from_nat i) ?least"], 
+        rule conjI, rule invertible_mult)
+      show "P ** interchange_rows (mat 1) (from_nat i) ?least ** A =
+        bezout_iterate ?interchange (nrows A - Suc 0) (from_nat i) (from_nat k) bezout"
+        using P by (metis (no_types, lifting) interchange_rows_mat_1 matrix_mul_assoc) 
+      show "invertible P" by (rule inv_P)
+      show "invertible (interchange_rows (mat 1) (from_nat i) ?least)" 
+        by (simp add: invertible_interchange_rows)
+    qed
+  qed
+qed
+
+lemma snd_snd_foldl_echelon_form_of_column_k:
+  "snd (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<k])) = bezout"
+proof (induct k)
+  case 0 thus ?case by auto
+next
+  case (Suc K)
+  thus ?case
+    by (auto simp add: echelon_form_of_column_k_def Let_def  Suc.hyps)
+qed
+
+lemma echelon_form_of_upt_k_invertible:
+  fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
+  assumes ib: "is_bezout_ext (bezout)"
+  shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of_upt_k A k bezout)"
+proof (induct k)
+  case 0
+  show ?case
+    unfolding echelon_form_of_upt_k_def
+    by (simp add: echelon_form_of_column_k_invertible[OF ib])
+next
+  case (Suc k)
+  have set_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
+  let ?foldl="(foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])"
+  have ib2: "is_bezout_ext (snd (snd ?foldl))"
+    using snd_snd_foldl_echelon_form_of_column_k
+    by (metis ib)
+  obtain P where invP: "invertible P" 
+    and P: "P ** A = fst ?foldl"
+    using Suc.hyps unfolding echelon_form_of_upt_k_def by auto
+  obtain Q where invQ: "invertible Q" and Q: 
+    "Q ** fst ?foldl = fst (echelon_form_of_column_k (fst ?foldl, fst (snd ?foldl), snd (snd ?foldl)) (Suc k))"
+    using echelon_form_of_column_k_invertible[OF ib2] by blast
+  show ?case 
+  proof (rule exI[of _ "Q**P"], rule conjI)
+    show "invertible (Q**P)" by (metis invP invQ invertible_mult)
+    show "Q ** P ** A = echelon_form_of_upt_k A (Suc k) bezout"
+      unfolding echelon_form_of_upt_k_def 
+      unfolding set_rw unfolding foldl_append unfolding foldl.simps
+      unfolding matrix_mul_assoc[symmetric]
+      unfolding P Q by auto
+  qed
+qed
+
+subsubsection{*Final results*}
 
 lemma echelon_form_echelon_form_of:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
@@ -2777,6 +2924,14 @@ proof -
     unfolding ncols_def by simp
 qed
 
+lemma echelon_form_of_invertible:
+  fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
+  assumes ib: "is_bezout_ext (bezout)"
+  shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of A bezout) 
+         \<and> echelon_form (echelon_form_of A bezout)"
+  using echelon_form_of_upt_k_invertible[OF ib] echelon_form_echelon_form_of[OF ib]
+  unfolding echelon_form_of_def by fast
+
 text{*Executable version*}
  
 corollary echelon_form_echelon_form_of_euclidean:
@@ -2785,6 +2940,12 @@ corollary echelon_form_echelon_form_of_euclidean:
   using echelon_form_echelon_form_of is_bezout_ext_euclid_ext2 
   unfolding echelon_form_of_euclidean_def
   by auto
+
+corollary echelon_form_of_euclidean_invertible:
+  fixes A::"'a::{euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
+  shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of A euclid_ext2) 
+         \<and> echelon_form (echelon_form_of A euclid_ext2)"
+  using echelon_form_of_invertible[OF is_bezout_ext_euclid_ext2] .
 
 end
 

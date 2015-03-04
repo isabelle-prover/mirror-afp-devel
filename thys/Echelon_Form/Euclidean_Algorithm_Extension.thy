@@ -14,9 +14,6 @@ imports
   "~~/src/HOL/Library/Polynomial"
 begin
 
-(*See \url{https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00000.html}*)
-
-
 instantiation nat :: euclidean_semiring_gcd
 begin
 
