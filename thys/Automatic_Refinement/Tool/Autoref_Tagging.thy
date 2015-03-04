@@ -158,7 +158,7 @@ ML {*
       then_conv mk_PROTECT_conv
 
     fun mk_ANNOT_conv a ct = let
-      val Tt = ctyp_of_term ct
+      val Tt = Thm.ctyp_of_term ct
 
       val thm = Drule.instantiate' [SOME Tt] [SOME ct,SOME a] 
         @{thm ANNOT_def[symmetric]}
@@ -167,11 +167,11 @@ ML {*
     end
 
     fun mk_rel_ANNOT_conv a ct = let
-      val thy = theory_of_cterm ct
-      val T = ctyp_of_term a |> typ_of
+      val thy = Thm.theory_of_cterm ct
+      val T = Thm.ctyp_of_term a |> Thm.typ_of
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
-        |> apply2 (ctyp_of thy)
+        |> apply2 (Thm.ctyp_of thy)
       val thm = Drule.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
         @{thm rel_ANNOT_eq}
     in
@@ -182,7 +182,7 @@ ML {*
     fun rhs_conv conv ctxt ct = let 
       open Conv Refine_Util 
     in
-      case Logic.strip_imp_concl (term_of ct) of
+      case Logic.strip_imp_concl (Thm.term_of ct) of
         @{mpat "Trueprop ((_,_)\<in>_)"} =>
           HOL_concl_conv (fn ctxt => (arg1_conv (arg_conv (conv ctxt)))) ctxt ct
       | _ => raise CTERM ("rhs_conv",[ct])

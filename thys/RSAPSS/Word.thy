@@ -2264,11 +2264,11 @@ simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
         (Const(@{const_name Cons},_) $ Const(@{const_name One},_) $ t)) =
             if vec_is_usable t then
               SOME (Drule.cterm_instantiate
-                [(cterm_of thy (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
-                  cterm_of thy t)] @{thm fast_bv_to_nat_def})
+                [(Thm.cterm_of thy (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
+                  Thm.cterm_of thy t)] @{thm fast_bv_to_nat_def})
             else NONE
         | proc _ = NONE
-    in proc (term_of ct) end
+    in proc (Thm.term_of ct) end
 *}
 
 declare bv_to_nat1 [simp del]

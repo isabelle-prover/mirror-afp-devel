@@ -96,12 +96,12 @@ begin
           end
         | t => raise TERM ("dest_param_term: Expected (_,_):_",[t])
 
-      val dest_param_rule = dest_param_term o prop_of
+      val dest_param_rule = dest_param_term o Thm.prop_of
       fun dest_param_goal i st = 
-        if i > nprems_of st then
+        if i > Thm.nprems_of st then
           raise THM ("dest_param_goal",i,[st])
         else
-          dest_param_term (Logic.concl_of_goal (prop_of st) i)
+          dest_param_term (Logic.concl_of_goal (Thm.prop_of st) i)
 
 
       fun safe_fun_relD_tac ctxt = let
@@ -142,7 +142,7 @@ begin
 
 
       fun could_param_rl rl i st = 
-        if i > nprems_of st then NONE
+        if i > Thm.nprems_of st then NONE
         else (
           case (try (dest_param_goal i) st, try dest_param_term rl) of
             (SOME g, SOME r) =>
@@ -153,7 +153,7 @@ begin
         )
 
       fun param_rule_tac_aux ctxt rl i st = 
-        case could_param_rl (prop_of rl) i st of
+        case could_param_rl (Thm.prop_of rl) i st of
           SOME adj => (adjust_arity_tac adj ctxt THEN' rtac rl) i st
         | _ => Seq.empty
 
@@ -164,9 +164,9 @@ begin
         prepare_tac ctxt THEN' FIRST' (map (param_rule_tac_aux ctxt) rls)
 
       fun asm_param_tac_aux ctxt i st = 
-        if i > nprems_of st then Seq.empty
+        if i > Thm.nprems_of st then Seq.empty
         else let
-          val prems = Logic.prems_of_goal (prop_of st) i |> tag_list 1
+          val prems = Logic.prems_of_goal (Thm.prop_of st) i |> tag_list 1
           
           fun tac (n,t) i st = case could_param_rl t i st of
             SOME adj => (adjust_arity_tac adj ctxt THEN' rprem_tac n ctxt) i st
@@ -201,7 +201,7 @@ begin
       val net_del = Item_Net.remove o `dest_param_rule
 
       fun net_tac_aux net ctxt i st = 
-        if i > nprems_of st then 
+        if i > Thm.nprems_of st then 
           Seq.empty 
         else
           let
@@ -279,7 +279,7 @@ begin
           )
       end
 
-      fun fo_rule thm = case concl_of thm of
+      fun fo_rule thm = case Thm.concl_of thm of
             @{mpat "Trueprop ((_,_)\<in>_\<rightarrow>_)"} => fo_rule (thm RS @{thm fun_relD})
           | _ => thm 
           

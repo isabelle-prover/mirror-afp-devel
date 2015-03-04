@@ -769,7 +769,7 @@ ML_file "nominal_basics.ML"
 subsection {* Eqvt infrastructure *}
 
 text {* Setup of the theorem attributes @{text eqvt} and @{text eqvt_raw}. *}
-
+                   
 ML_file "nominal_thmdecls.ML"
 
 
@@ -822,7 +822,7 @@ method_setup perm_strict_simp =
  {* pushes permutations inside, raises an error if it cannot solve all permutations. *}
 
 simproc_setup perm_simproc ("p \<bullet> t") = {* fn _ => fn ctxt => fn ctrm =>
-  case term_of (Thm.dest_arg ctrm) of 
+  case Thm.term_of (Thm.dest_arg ctrm) of 
     Free _ => NONE
   | Var _ => NONE
   | Const (@{const_name permute}, _) $ _ $ _ => NONE
@@ -1884,17 +1884,19 @@ text {* for handling of freshness of functions *}
 
 simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
   let 
-    val _ $ _ $ f = term_of ctrm
+    val _ $ _ $ f = Thm.term_of ctrm
   in
     case (Term.add_frees f [], Term.add_vars f []) of
       ([], []) => SOME(@{thm fresh_fun_eqvt[simplified eqvt_def, THEN Eq_TrueI]})
-    | (x::_, []) => let
-         val thy = Proof_Context.theory_of ctxt
-         val argx = Free x
-         val absf = absfree x f
-         val cty_inst = [SOME (ctyp_of thy (fastype_of argx)), SOME (ctyp_of thy (fastype_of f))]
-         val ctrm_inst = [NONE, SOME (cterm_of thy absf), SOME (cterm_of thy argx)] 
-         val thm = Drule.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
+    | (x::_, []) =>
+      let
+        val thy = Proof_Context.theory_of ctxt
+        val argx = Free x
+        val absf = absfree x f
+        val cty_inst =
+          [SOME (Thm.ctyp_of thy (fastype_of argx)), SOME (Thm.ctyp_of thy (fastype_of f))]
+        val ctrm_inst = [NONE, SOME (Thm.cterm_of thy absf), SOME (Thm.cterm_of thy argx)] 
+        val thm = Drule.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
       in
         SOME(thm RS @{thm Eq_TrueI}) 
       end  
@@ -2951,7 +2953,7 @@ by (simp_all add: fresh_at_base)
 
 
 simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt => fn ctrm =>
-  case term_of ctrm of @{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ lhs $ rhs) =>
+  case Thm.term_of ctrm of @{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ lhs $ rhs) =>
     let  
       fun first_is_neg lhs rhs [] = NONE
         | first_is_neg lhs rhs (thm::thms) =
@@ -3352,7 +3354,7 @@ lemma Fresh_apply':
 
 simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
   let
-     val _ $ h = term_of ctrm
+     val _ $ h = Thm.term_of ctrm
 
      val cfresh = @{const_name fresh}
      val catom  = @{const_name atom}

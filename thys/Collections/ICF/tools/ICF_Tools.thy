@@ -104,7 +104,7 @@ ML {*
 
     fun import_cterm ct ctxt = let
       val (t',ctxt') = yield_singleton (Variable.import_terms true) 
-        (term_of ct) ctxt;
+        (Thm.term_of ct) ctxt;
       val ct' = Thm.cterm_of (Proof_Context.theory_of ctxt') t';
     in (ct',ctxt') end
 
@@ -168,7 +168,7 @@ ML {*
 
     (* Remove duplicate premises (stable) *)
     fun rem_dup_prems ctxt thm = let
-      val prems = prems_of thm;
+      val prems = Thm.prems_of thm;
       val perm = prems
       |> tag_list 0 
       |> map swap 
@@ -189,7 +189,7 @@ ML {*
     | dest_def_eq t = raise TERM ("No definitional equation",[t]);
 
     fun norm_def_thm thm =
-      case concl_of thm of
+      case Thm.concl_of thm of
         (Const (@{const_name Pure.eq},_)$_$_) => thm
       | _ => thm RS eq_reflection;
 
@@ -198,13 +198,13 @@ ML {*
     val dt_params = dt_lhs #> strip_comb #> snd;
     val dt_head = dt_lhs #> head_of;
 
-    val dthm_lhs = concl_of #> dt_lhs;
-    val dthm_rhs = concl_of #> dt_rhs;
-    val dthm_params = concl_of #> dt_params;
-    val dthm_head = concl_of #> dt_head;
+    val dthm_lhs = Thm.concl_of #> dt_lhs;
+    val dthm_rhs = Thm.concl_of #> dt_rhs;
+    val dthm_params = Thm.concl_of #> dt_params;
+    val dthm_head = Thm.concl_of #> dt_head;
 
     (* Head of function application (cterm) *)
-    fun chead_of ct = case term_of ct of
+    fun chead_of ct = case Thm.term_of ct of
       (_$_) => chead_of (Thm.dest_fun ct)
       | _ => ct;
 
@@ -214,11 +214,11 @@ ML {*
         OF @{thms "arg_cong"} OF @{thms "meta_eq_to_obj_eq"}
 
     fun inst_meta_cong ct = let
-      val thy = theory_of_cterm ct;
+      val thy = Thm.theory_of_cterm ct;
       val ctxt = Proof_Context.init_global thy;
       val (ct,ctxt') = import_cterm ct ctxt;
       val mc_thm = meta_cong_rl;
-      val fpat = mc_thm |> cprop_of |> Drule.strip_imp_concl 
+      val fpat = mc_thm |> Thm.cprop_of |> Drule.strip_imp_concl 
         |> Thm.dest_arg1 |> chead_of;
       val inst = Drule.cterm_instantiate 
         [(fpat,ct)] mc_thm;

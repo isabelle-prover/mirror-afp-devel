@@ -194,7 +194,7 @@ ML {*
     end
 
     fun constraints_of_goal i st =
-      case Logic.concl_of_goal (prop_of st) i of
+      case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop ((_,?a)\<in>_)"} => constraints_of_term a
       | _ => raise THM ("constraints_of_goal",i,[st])
 
@@ -221,7 +221,7 @@ ML {*
     (* Internal use for hom-patterns, f and R are unified *)
     fun mk_CONSTRAINT_rl_atom thy (f,R) = let
       open Refine_Util
-      val ts = map (SOME o cterm_of thy) [f,R]
+      val ts = map (SOME o Thm.cterm_of thy) [f,R]
       val idx = Term.maxidx_term f (Term.maxidx_of_term R) + 1
       val thm = cterm_instantiate' ts 
         (Thm.incr_indexes idx @{thm CONSTRAINTI})
@@ -230,9 +230,9 @@ ML {*
     end;
 
     fun insert_CONSTRAINTS_tac i st = let
-      val thy = theory_of_thm st
+      val thy = Thm.theory_of_thm st
       val cs = constraints_of_goal i st 
-      |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> cterm_of thy)
+      |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> Thm.cterm_of thy)
     in
       Refine_Util.insert_subgoals_tac cs i st
     end
@@ -274,14 +274,14 @@ ML {*
         | _ => raise THM ("constraint_of_thm: Invalid concl",~1,[thm])
       end
 
-      val (f,rel) = relator_of (prop_of thm) 
+      val (f,rel) = relator_of (Thm.prop_of thm) 
         handle exc as (NO_REL t) => (
           warning (
             "Could not infer unique higher-order relator for "
             ^ "refinement rule: \n"
             ^ Display.string_of_thm_without_context thm
             ^ "\n for argument: " 
-            ^ Syntax.string_of_term_global (theory_of_thm thm) t
+            ^ Syntax.string_of_term_global (Thm.theory_of_thm thm) t
           ); 
           reraise exc)
 
@@ -291,7 +291,7 @@ ML {*
           if has_Var f then NONE else SOME (f,R)
       | genop_cs _ = NONE
 
-      val gen_ops = prems_of thm
+      val gen_ops = Thm.prems_of thm
         |> map_filter genop_cs
 
     in
@@ -336,7 +336,7 @@ ML {*
 
     fun declare_prio name cpat relpos phi = 
       let
-        val item = (name,term_of (Morphism.cterm phi cpat))
+        val item = (name,Thm.term_of (Morphism.cterm phi cpat))
       in
         Rel_Prio.map (fn rpl =>
           case relpos of
@@ -363,7 +363,7 @@ ML {*
         | dest_prio_tag t = raise TERM ("dest_prio_tag",[t])
 
       fun get_tagged_prios thm = let
-        val prems = prems_of thm
+        val prems = Thm.prems_of thm
         fun r [] = (0,0)
           | r (prem::prems) = (
               case try dest_prio_tag prem of
@@ -410,7 +410,7 @@ ML {*
 
           val R_cert = Proof_Context.cterm_of ctxt R
 
-          fun cnv ctxt ct = (case term_of ct of
+          fun cnv ctxt ct = (case Thm.term_of ct of
             @{mpat "OP _ ::: _"} => all_conv
           | @{mpat "OP _"} => mk_rel_ANNOT_conv R_cert
           | @{mpat "_ $ _"} => arg1_conv (cnv ctxt)
@@ -461,7 +461,7 @@ ML {*
       val description = "Autoref: Homogenity rules"
       val sort = K I
       val transform = K (
-        fn thm => case concl_of thm of 
+        fn thm => case Thm.concl_of thm of 
           @{mpat "Trueprop (CONSTRAINT _ _)"} => [thm]
         | _ => raise THM ("Invalid homogenity rule",~1,[thm])
       )
@@ -512,7 +512,7 @@ ML {*
         val cs' = map (fn (_,(f,R)) => (f,hom_pat_of_rel ctxt R)) cs
         val thy = Proof_Context.theory_of ctxt
         val thms = get_hom_rules ctxt @ map (mk_CONSTRAINT_rl_atom thy) cs'
-        val thms = map (cprop_of #> Thm.trivial) thms
+        val thms = map (Thm.cprop_of #> Thm.trivial) thms
         val net = Tactic.build_net thms
       in
         net
@@ -531,7 +531,7 @@ ML {*
       val sort = K I
 
       val transform = K (
-        fn thm => case prop_of thm of 
+        fn thm => case Thm.prop_of thm of 
           @{mpat "Trueprop (TYREL _)"} => [thm]
         | _ => raise THM ("Invalid tyrel-rule",~1,[thm])
       )
@@ -561,20 +561,20 @@ ML {*
       end
   
       fun add_relators_of_subgoal st i acc = 
-        case Logic.concl_of_goal (prop_of st) i of
+        case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT _ ?R)"} => add_relators R acc
         | _ => acc
   
     in
 
       fun insert_tyrel_tac i j k st = let
-        val thy = theory_of_thm st
+        val thy = Thm.theory_of_thm st
 
         fun get_constraint t = let
           val T = fastype_of t
           val res = Const (@{const_name TYREL}, T --> HOLogic.boolT) $ t
         in
-          res |> HOLogic.mk_Trueprop |> cterm_of thy
+          res |> HOLogic.mk_Trueprop |> Thm.cterm_of thy
         end
         
         val relators = fold (add_relators_of_subgoal st) (i upto j) []
@@ -791,10 +791,10 @@ ML {*
 
       end
 
-      fun pretty_try_candidates ctxt i st = if i > nprems_of st then
+      fun pretty_try_candidates ctxt i st = if i > Thm.nprems_of st then
         Pretty.str "Goal number out of range"
       else
-        case Logic.concl_of_goal (prop_of st) i of
+        case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT ?f ?R)"} =>
             let
               val pairs = thm_pairsD.get ctxt
@@ -843,7 +843,7 @@ ML {*
 
       exception ERR of Pretty.T
       fun analyze' ctxt i j st = let
-        val As = Logic.strip_horn (prop_of st) |> #1 
+        val As = Logic.strip_horn (Thm.prop_of st) |> #1 
           |> drop (i-1) |> take (j-i+1)
           |> map (strip_all_body #> Logic.strip_imp_concl)
         val Cs = map_filter (
@@ -885,10 +885,10 @@ ML {*
         (analyze' ctxt i j st; Pretty.str "No failure") handle ERR p => p
 
       fun try_solve_tac ctxt i st =  
-        if i > nprems_of st then
+        if i > Thm.nprems_of st then
           (tracing "Goal number out of range"; Seq.empty)
         else
-          case Logic.concl_of_goal (prop_of st) i of
+          case Logic.concl_of_goal (Thm.prop_of st) i of
             @{mpat "Trueprop (CONSTRAINT ?f ?R)"} =>
               let
                 val pairs = thm_pairsD.get ctxt

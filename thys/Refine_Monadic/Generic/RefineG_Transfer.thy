@@ -98,7 +98,7 @@ structure RefineG_Transfer = struct
     val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_prod_case_simp}
   in
     REPEAT_DETERM1 (
-      COND (has_fewer_prems (nprems_of st)) no_tac (
+      COND (has_fewer_prems (Thm.nprems_of st)) no_tac (
         FIRST [
           Method.assm_tac ctxt i,
           resolve_tac ctxt thms i,
@@ -109,11 +109,11 @@ structure RefineG_Transfer = struct
 
   (* Adjust right term to have same structure as left one *)
   val align_tac = IF_EXGOAL (fn i => fn st =>
-    case Logic.concl_of_goal (prop_of st) i of
+    case Logic.concl_of_goal (Thm.prop_of st) i of
       @{mpat "Trueprop (REFINEG_TRANSFER_ALIGN ?c _)"} => let
-        val thy = theory_of_thm st
-        val c = cterm_of thy c
-        val cT = ctyp_of_term c
+        val thy = Thm.theory_of_thm st
+        val c = Thm.cterm_of thy c
+        val cT = Thm.ctyp_of_term c
         
         val rl = @{thm REFINEG_TRANSFER_ALIGNI}
           |> Thm.incr_indexes (Thm.maxidx_of st + 1)

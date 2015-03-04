@@ -112,7 +112,7 @@ structure Locale_Code :LOCALE_CODE = struct
 
   val matches_heads = can match_heads; 
 
-  val pat_nargs = term_of #> strip_comb #> #2 #> length;
+  val pat_nargs = Thm.term_of #> strip_comb #> #2 #> length;
 
   (* Adjust a theorem to exactly match pattern *)
   fun norm_thm_pat (thm,pat) = let
@@ -136,7 +136,7 @@ structure Locale_Code :LOCALE_CODE = struct
     | DEL of cterm
 
     fun filter_pat_eq thy thms pat = let
-      val cpat = cterm_of thy pat;
+      val cpat = Thm.cterm_of thy pat;
     in 
       if (pat_nargs cpat = 0) then NONE
       else let 
@@ -161,7 +161,7 @@ structure Locale_Code :LOCALE_CODE = struct
       map_filter (filter_pat_eq thy thms) pats
     | pat_eqs_of_spec thy (Spec_Rules.Unknown,
         ([Const (@{const_name LC_DEL},_)$pat],_)) 
-        = [(DEL (cterm_of thy pat))]
+        = [(DEL (Thm.cterm_of thy pat))]
     | pat_eqs_of_spec _ _ = [];
   in
 
@@ -172,7 +172,7 @@ structure Locale_Code :LOCALE_CODE = struct
 
   
   fun is_proper_pat cpat = let
-    val pat = term_of cpat;
+    val pat = Thm.term_of cpat;
     val (f,args) = strip_comb pat;
   in 
     is_Const f 
@@ -201,7 +201,7 @@ structure Locale_Code :LOCALE_CODE = struct
       (fn lthy => let
         val ((inst,thms),lthy) = Variable.import true thms lthy;
         val cpat = Thm.instantiate_cterm inst cpat;
-        val pat = term_of cpat;
+        val pat = Thm.term_of cpat;
         val name = inst_name lthy pat;
         val ((_,(_,def_thm)),lthy) 
           = Local_Theory.define ((Binding.name name,Mixfix.NoSyn),
@@ -296,7 +296,7 @@ structure Locale_Code :LOCALE_CODE = struct
 
   local
     fun cpat_of_thm thm = let
-      fun strip ct = case (term_of ct) of
+      fun strip ct = case Thm.term_of ct of
         (_$Var _) => strip (Thm.dest_fun ct)
       | _ => ct;
     in
@@ -304,8 +304,8 @@ structure Locale_Code :LOCALE_CODE = struct
     end;
 
     fun adjust_length (cpat1,cpat2) = let
-      val n1 = cpat1 |> term_of |> strip_comb |> #2 |> length;
-      val n2 = cpat2 |> term_of |> strip_comb |> #2 |> length;
+      val n1 = cpat1 |> Thm.term_of |> strip_comb |> #2 |> length;
+      val n2 = cpat2 |> Thm.term_of |> strip_comb |> #2 |> length;
     in 
       if n1>n2 then
         (funpow (n1-n2) Thm.dest_fun cpat1, cpat2)
@@ -315,7 +315,7 @@ structure Locale_Code :LOCALE_CODE = struct
     end
 
     fun find_match cpat cpat' = SOME (cpat,rename_cterm (cpat',cpat))
-      handle Pattern.MATCH => (case term_of cpat' of 
+      handle Pattern.MATCH => (case Thm.term_of cpat' of 
           _$_ => find_match (Thm.dest_fun cpat) (Thm.dest_fun cpat')
         | _ => NONE
       );

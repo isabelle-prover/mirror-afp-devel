@@ -43,7 +43,7 @@ ML {*
     end
 
     fun intf_of_rel ctxt R = let
-      fun dest_ri thm = case prop_of thm of
+      fun dest_ri thm = case Thm.prop_of thm of
         @{mpat "Trueprop (REL_INTF ?R ?I)"} => SOME (R,I)
       | _ => NONE
 

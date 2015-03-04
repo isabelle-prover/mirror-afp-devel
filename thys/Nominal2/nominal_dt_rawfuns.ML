@@ -125,7 +125,7 @@ fun define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy =
       val raw_bn_eqs = the simps
 
       val raw_bn_info = 
-        prep_bn_info lthy raw_dt_names raw_dts fs (map prop_of raw_bn_eqs)
+        prep_bn_info lthy raw_dt_names raw_dts fs (map Thm.prop_of raw_bn_eqs)
     in
       (fs, raw_bn_eqs, raw_bn_info, raw_bn_induct, lthy2)
     end

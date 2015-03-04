@@ -121,14 +121,14 @@ ML {*
 
     local
       fun specialize_aux_tac get_candidates i st = let
-        val thy = theory_of_thm st
+        val thy = Thm.theory_of_thm st
         val maxidx = Thm.maxidx_of st
-        val concl = Logic.concl_of_goal (prop_of st) i
+        val concl = Logic.concl_of_goal (Thm.prop_of st) i
         val pre_candidates = get_candidates concl
           |> map (fn thm => 
                let
                  val tidx = Thm.maxidx_of thm
-                 val t = Thm.incr_indexes maxidx thm |> concl_of
+                 val t = Thm.incr_indexes maxidx thm |> Thm.concl_of
                in (maxidx + tidx,t) end)
 
         fun unifies (idx,t) 
@@ -139,9 +139,9 @@ ML {*
         case candidates of 
           [] => Seq.single st
         | _ => let
-            val thy = theory_of_thm st
+            val thy = Thm.theory_of_thm st
             val pattern = anti_unify_list candidates
-              |> cterm_of thy |> Thm.trivial
+              |> Thm.cterm_of thy |> Thm.trivial
             (*val _ = tracing (Display.string_of_thm_without_context pattern)*)
           in 
             rtac pattern i st
@@ -150,7 +150,7 @@ ML {*
     in
       fun specialize_tac thms = let
         fun get_candidates concl = 
-          filter (fn thm => Term.could_unify (concl_of thm,concl)) thms
+          filter (fn thm => Term.could_unify (Thm.concl_of thm,concl)) thms
 
       in 
         specialize_aux_tac get_candidates

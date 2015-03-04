@@ -52,7 +52,7 @@ ML {*
       type T = solver Item_Net.T * solver Symtab.table
       val empty = (Item_Net.init 
         (op = o apply2 #2) 
-        (fn p:solver => #1 p |> map concl_of)
+        (fn p:solver => #1 p |> map Thm.concl_of)
       ,
         Symtab.empty
       )
@@ -121,7 +121,7 @@ ML {*
     (* Get potential solvers. Overapproximation caused by net *)
     fun get_potential_solvers ctxt i st = 
       let
-        val concl = Logic.concl_of_goal (prop_of st) i
+        val concl = Logic.concl_of_goal (Thm.prop_of st) i
         val net = solvers.get (Context.Proof ctxt) |> #1
         val solvers = Item_Net.retrieve net concl
       in solvers end
@@ -152,7 +152,7 @@ ML {*
         notrace_tac_of_solver ctxt
     
     fun get_potential_tacs ctxt i st = 
-      if i <= nprems_of st then
+      if i <= Thm.nprems_of st then
         eq_assume_tac :: (
           get_potential_solvers ctxt i st
           |> map (tac_of_solver ctxt)

@@ -36,7 +36,7 @@ structure Syntax_Match = struct
     (*val ctxt = Simplifier.the_context ss;*)
     val thy = Proof_Context.theory_of ctxt;
 
-    val redex = term_of credex;
+    val redex = Thm.term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
 
     fun fo_matches po = (Pattern.first_order_match 
@@ -49,7 +49,7 @@ structure Syntax_Match = struct
     (*val ctxt = Simplifier.the_context ss;*)
     val thy = Proof_Context.theory_of ctxt;
 
-    val redex = term_of credex;
+    val redex = Thm.term_of credex;
     val (_,[pat,obj]) = strip_comb redex;
   in
     if Pattern.matches thy (pat,obj) then NONE else SOME nomatch_thm

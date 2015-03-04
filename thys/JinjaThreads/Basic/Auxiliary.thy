@@ -447,7 +447,7 @@ let
     end;
 
   fun mk_swap_rrule ctxt ct =
-    (case find_eq ctxt (term_of ct) of
+    (case find_eq ctxt (Thm.term_of ct) of
       NONE => NONE
     | SOME (i, k, j) => SOME (swap_params_conv ctxt k j (K (swap_prems_conv i)) ct))
 in

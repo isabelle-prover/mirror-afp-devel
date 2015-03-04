@@ -418,7 +418,7 @@ fun cont_intro_simproc ctxt ct =
                 RS @{thm Eq_TrueI})
       | NONE => NONE
   in
-    case term_of ct of
+    case Thm.term_of ct of
       t as Const (@{const_name ccpo.admissible}, _) $ _ $ _ $ _ => mk_thm t
     | t as Const (@{const_name mcont}, _) $ _ $ _ $ _ $ _ $ _ => mk_thm t
     | t as Const (@{const_name monotone}, _) $ _ $ _ $ _ => mk_thm t

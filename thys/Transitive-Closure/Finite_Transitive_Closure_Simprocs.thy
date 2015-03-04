@@ -53,7 +53,7 @@ fun dest_trancl_Image
 
 fun gen_simproc dest mk_const eq_thm ctxt ct =
   let
-    val t = term_of ct;
+    val t = Thm.term_of ct;
     val (T, r, x) = t |> dest;
   in
     (*make sure that the relation as well as the given domain are finite sets*)

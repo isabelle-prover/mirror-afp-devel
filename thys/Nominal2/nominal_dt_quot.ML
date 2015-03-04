@@ -157,7 +157,7 @@ fun unraw_vars_thm thm =
   let
     fun unraw_var_str ((s, i), T) = ((unraw_str s, i), T)
 
-    val vars = Term.add_vars (prop_of thm) []
+    val vars = Term.add_vars (Thm.prop_of thm) []
     val vars' = map (Var o unraw_var_str) vars
   in
     Thm.certify_instantiate ([], (vars ~~ vars')) thm
@@ -436,7 +436,7 @@ fun is_abs_eq thm =
       | Const (@{const_name "Abs_res"}, _) => true
       | _ => false
   in 
-    thm |> prop_of 
+    thm |> Thm.prop_of 
         |> HOLogic.dest_Trueprop
         |> HOLogic.dest_eq
         |> fst
@@ -562,7 +562,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
         [] => EVERY' [rtac prem, assume_tac ctxt]
       | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>  
           let
-            val parms = map (term_of o snd) params
+            val parms = map (Thm.term_of o snd) params
             val fthm = fresh_thm ctxt c parms binders bn_finite_thms 
   
             val ss = @{thms fresh_star_Pair union_eqvt fresh_star_Un}
@@ -572,7 +572,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
                             REPEAT o (etac @{thm conjE})]) [fthm] ctxt
   
             val abs_eq_thms = flat 
-             (map (abs_eq_thm ctxt' fprops (term_of fperm) parms bn_eqvt permute_bns) bclauses)
+             (map (abs_eq_thm ctxt' fprops (Thm.term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
               (fn ctxt'' => EVERY1 
@@ -602,7 +602,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
                 conj_tac (DETERM o resolve_tac ctxt'' (@{thms refl} @ perm_bn_alphas)) ])
 
             (* proves goal "P" *)
-            val side_thm = Goal.prove ctxt'' [] [] (term_of concl)
+            val side_thm = Goal.prove ctxt'' [] [] (Thm.term_of concl)
               (K (EVERY1 [ rtac prem, RANGE [tac1, tac2] ]))
               |> singleton (Proof_Context.export ctxt'' ctxt)  
           in
@@ -622,7 +622,7 @@ fun prove_strong_exhausts lthy exhausts bclausesss bn_finite_thms eq_iff_thms bn
     val c = Free (c, TFree (a, @{sort fs}))
 
     val (ecases, main_concls) = exhausts' (* ecases are of the form (params, prems, concl) *)
-      |> map prop_of
+      |> map Thm.prop_of
       |> map Logic.strip_horn
       |> split_list
 
@@ -707,7 +707,7 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
     val c = Free (c_name, c_ty)
 
     val (prems, concl) = induct'
-      |> prop_of
+      |> Thm.prop_of
       |> Logic.strip_horn 
 
     val concls = concl
@@ -724,10 +724,10 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
       Subgoal.FOCUS (fn {params, context, ...} => 
         let
           val thy = Proof_Context.theory_of context
-          val ty_parms = map (fn (_, ct) => (fastype_of (term_of ct), ct)) params
-          val vs = Term.add_vars (prop_of thm) []
+          val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
+          val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
-          val vs_ctrms = map (cterm_of thy o Var) vs
+          val vs_ctrms = map (Thm.cterm_of thy o Var) vs
           val assigns = map (lookup ty_parms) vs_tys          
           
           val thm' = cterm_instantiate (vs_ctrms ~~ assigns) thm

@@ -925,13 +925,13 @@ ML {*
 fun alpha_single_simproc thm _ ctxt ctrm =
  let
     val thy = Proof_Context.theory_of ctxt
-    val _ $ (_ $ x) $ (_ $ y) = term_of ctrm
+    val _ $ (_ $ x) $ (_ $ y) = Thm.term_of ctrm
     val cvrs = union (op =) (Term.add_frees x []) (Term.add_frees y [])
       |> filter (fn (_, ty) => Sign.of_sort thy (ty, @{sort fs}))
       |> map Free
       |> HOLogic.mk_tuple
       |> Thm.cterm_of thy
-    val cvrs_ty = ctyp_of_term cvrs
+    val cvrs_ty = Thm.ctyp_of_term cvrs
     val thm' = thm
       |> Drule.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 
   in

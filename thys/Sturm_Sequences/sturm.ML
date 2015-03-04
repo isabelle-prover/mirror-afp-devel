@@ -30,9 +30,9 @@ struct
     let val thy = Proof_Context.theory_of ctxt
         fun subst_tac thms = EqSubst.eqsubst_tac ctxt [1] thms i
         fun process_PR_tag_tac thm =
-          let val trms = extract_PR_tags (prop_of thm) []
+          let val trms = extract_PR_tags (Thm.prop_of thm) []
               fun tac trm = 
-                let val subst = Thm.reflexive (cterm_of thy trm) RS @{thm HOL.meta_eq_to_obj_eq}
+                let val subst = Thm.reflexive (Thm.cterm_of thy trm) RS @{thm HOL.meta_eq_to_obj_eq}
                     val subst = subst RS @{thm "HOL.trans"}
                     val subst = subst RS @{thm "HOL.ssubst"}
                 in  TRY (rtac subst i
@@ -49,14 +49,14 @@ struct
   fun find_sturm_card_eq_thm ctxt s =
     let val thy = Proof_Context.theory_of ctxt
         fun matches thm =
-          case concl_of thm of
+          case Thm.concl_of thm of
             Const (@{const_name Trueprop}, _) $ (Const (@{const_name HOL.eq}, _) $ 
                 (Const (@{const_name Finite_Set.card}, _) $ s') $ _)
               => Pattern.matches thy (s',s)
           | _ => 
               let val _ = warning ("Invalid theorem in " ^
                           "sturm_card_eq_substs: \n" ^ Pretty.string_of (
-                            Syntax.pretty_term ctxt (concl_of thm)));
+                            Syntax.pretty_term ctxt (Thm.concl_of thm)));
                in false
               end
         val thm = find_first matches @{thms sturm_card_substs};
@@ -65,7 +65,7 @@ struct
     end;
 
   fun sturm_card_eq_instantiate_tac ctxt _ thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm  (* FIXME tactic must not access main conclusion *)
+    let val prop = case Thm.prems_of thm of p :: _ => p | _ => Thm.concl_of thm  (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -89,7 +89,7 @@ struct
     
 
   fun sturm_card_eq_tac ctxt i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
+    let val prop = case Thm.prems_of thm of p :: _ => p | _ => Thm.concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                 | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -110,13 +110,13 @@ struct
   fun find_sturm_prop_thm ctxt prop =
     let val thy = Proof_Context.theory_of ctxt
         fun matches thm =
-          case concl_of thm of
+          case Thm.concl_of thm of
             Const (@{const_name Trueprop}, _) $ (Const (@{const_name HOL.eq}, _) $ prop' $ _)
               => Pattern.matches thy (prop',prop)
           | _ => 
               let val _ = warning ("Invalid theorem in " ^
                           "sturm_prop_substs: \n" ^ Pretty.string_of (
-                            Syntax.pretty_term ctxt (concl_of thm)));
+                            Syntax.pretty_term ctxt (Thm.concl_of thm)));
                in false
               end
         val thm = find_first matches @{thms sturm_prop_substs};
@@ -125,7 +125,7 @@ struct
     end;
 
   fun sturm_prop_tac ctxt i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
+    let val prop = case Thm.prems_of thm of p :: _ => p | _ => Thm.concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                  | _ => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 
@@ -140,7 +140,7 @@ struct
     end;
 
   fun sturm_main_tac ctxt keep_goal i thm =
-    let val prop = case prems_of thm of p :: _ => p | _ => concl_of thm (* FIXME tactic must not access main conclusion *)
+    let val prop = case Thm.prems_of thm of p :: _ => p | _ => Thm.concl_of thm (* FIXME tactic must not access main conclusion *)
         val prop = case prop of Const (@{const_name Pure.prop}, _) $ prop => prop
                                | _  => prop
         val prop = case prop of Const (@{const_name Pure.conjunction}, _) $ 

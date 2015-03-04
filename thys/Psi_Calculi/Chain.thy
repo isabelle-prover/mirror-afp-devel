@@ -643,11 +643,12 @@ by(simp add: pt2[OF pt_name_inst, THEN sym])
 
 simproc_setup consPerm ("((x, y)#p) \<bullet> C") = {*
   fn _ => fn _ => fn ct => 
-     case term_of ct of 
-        Const (@{const_name perm}, _ ) $ (Const (@{const_name Cons}, _) $ _ $ p) $ _ =>
-              (case p of Const (@{const_name Nil}, _) => NONE
-                       | _ => SOME(mk_meta_eq @{thm consPerm})) 
-      | _ => NONE
+    case Thm.term_of ct of 
+      Const (@{const_name perm}, _ ) $ (Const (@{const_name Cons}, _) $ _ $ p) $ _ =>
+        (case p of
+          Const (@{const_name Nil}, _) => NONE
+        | _ => SOME(mk_meta_eq @{thm consPerm}))
+    | _ => NONE
 *}
 
 lemma distinctEqvt[eqvt]:

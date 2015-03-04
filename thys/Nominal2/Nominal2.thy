@@ -303,7 +303,7 @@ let
   val raw_funs_rsp = map (Drule.eta_contraction_rule o mk_funs_rsp lthy5) raw_funs_rsp_aux
 
   fun match_const cnst th =
-    (fst o dest_Const o snd o dest_comb o HOLogic.dest_Trueprop o prop_of) th =
+    (fst o dest_Const o snd o dest_comb o HOLogic.dest_Trueprop o Thm.prop_of) th =
     fst (dest_Const cnst);
   fun find_matching_rsp cnst =
     hd (filter (fn th => match_const cnst th) raw_funs_rsp);
@@ -452,7 +452,7 @@ let
 
   val qsupp_constrs = qfv_defs
     |> map (simplify (put_simpset HOL_basic_ss lthyC
-        addsimps (filter (is_qfv_thm o prop_of) qfv_supp_thms)))
+        addsimps (filter (is_qfv_thm o Thm.prop_of) qfv_supp_thms)))
 
   val transform_thm = @{lemma "x = y \<Longrightarrow> a \<notin> x \<longleftrightarrow> a \<notin> y" by simp}
   val transform_thms = 

@@ -457,7 +457,7 @@ fun map_thm_tac ctxt tac thm =
 
 fun map_thm ctxt f tac thm =
   let
-    val opt_goal_trm = map_term f (prop_of thm)
+    val opt_goal_trm = map_term f (Thm.prop_of thm)
   in
     case opt_goal_trm of
       NONE => thm
@@ -495,7 +495,7 @@ fun transform_prem2 ctxt names thm =
 fun atomize ctxt = Conv.fconv_rule (Object_Logic.atomize ctxt) o forall_intr_vars;
 fun atomize_rule ctxt i thm =
   Conv.fconv_rule (Conv.concl_conv i (Object_Logic.atomize ctxt)) thm
-fun atomize_concl ctxt thm = atomize_rule ctxt (length (prems_of thm)) thm
+fun atomize_concl ctxt thm = atomize_rule ctxt (length (Thm.prems_of thm)) thm
 
 
 (* applies a tactic to a formula composed of conjunctions *)

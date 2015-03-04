@@ -34,11 +34,11 @@ ML {*
         | is_side_prem @{mpat "Trueprop (DEFER_tag _)"} = true
         | is_side_prem _ = false
     in
-      if exists is_side_prem (prems_of rl) then
+      if exists is_side_prem (Thm.prems_of rl) then
         warn ("autoref_ga_rules: SIDE condition premise not allowed here")
       else ()
       ;
-      case concl_of rl of
+      case Thm.concl_of rl of
         @{mpat "Trueprop ((_,_)\<in>_)"} => 
           warn ("autoref_ga_rules: Refinement condition conclusion. Did you"
             ^" mean an autoref_rule?")  

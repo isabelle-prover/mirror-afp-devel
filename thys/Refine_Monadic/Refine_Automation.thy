@@ -107,7 +107,7 @@ fun mk_qualified basename q = Binding.qualify true basename (Binding.name q);
 fun extract_recursion_eqs exs basename orig_def_thm lthy = let
 
   val thy = Proof_Context.theory_of lthy
-  val cert = cterm_of thy
+  val cert = Thm.cterm_of thy
  
   val pat_net : extraction Item_Net.T =
     Item_Net.init (op= o apply2 #pattern) (fn {pattern, ...} => [pattern])
@@ -161,7 +161,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   (* Import theorem and extract RHS *)
   val ((_,orig_def_thm'),lthy) = yield_singleton2 
     (Variable.import true) orig_def_thm lthy;
-  val (lhs,rhs) = orig_def_thm' |> prop_of |> Logic.dest_equals;
+  val (lhs,rhs) = orig_def_thm' |> Thm.prop_of |> Logic.dest_equals;
   
   (* Transform RHS, generating new constants *)
   val ((rhs',defs),lthy) = transform rhs lthy;
@@ -215,7 +215,7 @@ fun prepare_code_thms_cmd names thm lthy = let
     | name_of (Free (n,_)) = n
     | name_of _ = raise (THM ("No definitional theorem",0,[thm]));
 
-  val (lhs,_) = thm |> prop_of |> Logic.dest_equals;
+  val (lhs,_) = thm |> Thm.prop_of |> Logic.dest_equals;
   val basename = lhs |> strip_comb |> #1 
     |> name_of 
     |> Long_Name.base_name;
@@ -262,14 +262,14 @@ let
   val lthy = orig_lthy;
   val ((inst,thm'),lthy) = yield_singleton2 (Variable.import true) thm lthy;
 
-  val concl = thm' |> concl_of
+  val concl = thm' |> Thm.concl_of
 
   (*val ((typ_subst,term_subst),lthy) 
     = Variable.import_inst true [concl] lthy;
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (apply2 term_of) 
+  val term_subst = #2 inst |> map (apply2 Thm.term_of) 
     |> map (apfst dest_Var);
 
   val param_terms = map (fn name =>
@@ -308,7 +308,7 @@ in
   lthy
 end;
 
-  val cd_pat_eq = apply2 (term_of #> Refine_Util.anorm_term) #> op aconv
+  val cd_pat_eq = apply2 (Thm.term_of #> Refine_Util.anorm_term) #> op aconv
 
   structure cd_patterns = Generic_Data (
     type T = cterm list
@@ -318,11 +318,11 @@ end;
   ) 
 
   fun prepare_cd_pattern pat = 
-    case term_of pat |> fastype_of of
+    case Thm.term_of pat |> fastype_of of
       @{typ bool} => 
-        term_of pat 
+        Thm.term_of pat 
         |> HOLogic.mk_Trueprop 
-        |> cterm_of (theory_of_cterm pat)
+        |> Thm.cterm_of (Thm.theory_of_cterm pat)
     | _ => pat
 
   fun add_cd_pattern pat = 
@@ -398,7 +398,7 @@ setup {*
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
     in
-      (cterm_of thy t,(context,tks))
+      (Thm.cterm_of thy t,(context,tks))
     end
 
     fun do_p f = Scan.repeat1 parse_cpat >> (fn pats => 
@@ -435,7 +435,7 @@ ML {* Outer_Syntax.local_theory
     val thy = Proof_Context.theory_of lthy
     val pats = case pats of 
       [] => Refine_Automation.get_cd_patterns lthy
-    | l => map (Proof_Context.read_term_pattern lthy #> cterm_of thy #> 
+    | l => map (Proof_Context.read_term_pattern lthy #> Thm.cterm_of thy #> 
         Refine_Automation.prepare_cd_pattern) l
 
   in 
@@ -520,13 +520,13 @@ lemma gen_code_thm_REC:
 
 setup {*
   Refine_Automation.add_extraction "nres" {
-    pattern = term_of @{cpat "REC _"},
+    pattern = Thm.term_of @{cpat "REC _"},
     gen_thm = @{thm gen_code_thm_REC},
     gen_tac = Refine_Misc.mono_prover_tac
   }
   #> 
   Refine_Automation.add_extraction "nres" {
-    pattern = term_of @{cpat "RECT _"},
+    pattern = Thm.term_of @{cpat "RECT _"},
     gen_thm = @{thm gen_code_thm_RECT},
     gen_tac = Refine_Misc.mono_prover_tac
   }

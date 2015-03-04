@@ -68,7 +68,7 @@ subsection {* Tools *}
 
 setup {*
   let
-    fun higher_order_rl_of ctxt thm = case concl_of thm of
+    fun higher_order_rl_of ctxt thm = case Thm.concl_of thm of
       @{mpat "Trueprop ((_,?t)\<in>_)"} => let
         val (f,args) = strip_comb t
       in
@@ -152,7 +152,7 @@ ML {*
     end
 
     fun print_thm_pairs_matching ctxt cpat = let
-      val pat = term_of cpat
+      val pat = Thm.term_of cpat
       val ctxt = Autoref_Phases.init_data ctxt
       val thy = Proof_Context.theory_of ctxt
 
