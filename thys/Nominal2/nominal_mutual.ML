@@ -167,13 +167,13 @@ fun in_context ctxt (f, pre_qs, pre_gs, pre_args, pre_rhs) F =
     val args = map inst pre_args
     val rhs = inst pre_rhs
 
-    val cqs = map (cterm_of thy) qs
-    val (ags, ctxt') = fold_map Thm.assume_hyps (map (cterm_of thy) gs) ctxt
+    val cqs = map (Thm.cterm_of thy) qs
+    val (ags, ctxt') = fold_map Thm.assume_hyps (map (Thm.cterm_of thy) gs) ctxt
 
     val import = fold Thm.forall_elim cqs
       #> fold Thm.elim_implies ags
 
-    val export = fold_rev (Thm.implies_intr o cprop_of) ags
+    val export = fold_rev (Thm.implies_intr o Thm.cprop_of) ags
       #> fold_rev forall_intr_rename (oqnames ~~ cqs)
   in
     F ctxt' (f, qs, gs, args, rhs) import export
@@ -243,7 +243,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
 fun mk_applied_form ctxt caTs thm =
   let
     val thy = Proof_Context.theory_of ctxt
-    val xs = map_index (fn (i,T) => cterm_of thy (Free ("x" ^ string_of_int i, T))) caTs (* FIXME: Bind xs properly *)
+    val xs = map_index (fn (i,T) => Thm.cterm_of thy (Free ("x" ^ string_of_int i, T))) caTs (* FIXME: Bind xs properly *)
   in
     fold (fn x => fn thm => Thm.combination thm (Thm.reflexive x)) xs thm
     |> Conv.fconv_rule (Thm.beta_conversion true)
@@ -314,7 +314,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
 
     (* extracting the acc-premises from the induction theorems *)
     val acc_prems = 
-     map prop_of induct_thms
+     map Thm.prop_of induct_thms
      |> map2 forall_elim_list argss 
      |> map (strip_qnt_body @{const_name Pure.all})
      |> map (curry Logic.nth_prem 1)
@@ -335,7 +335,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
         [thm] => thm
           |> Drule.gen_all 
           |> Thm.permute_prems 0 1
-          |> (fn thm => atomize_rule ctxt' (length (prems_of thm) - 1) thm)
+          |> (fn thm => atomize_rule ctxt' (length (Thm.prems_of thm) - 1) thm)
       | thms => thms
           |> map Drule.gen_all 
           |> map (Rule_Cases.add_consumes 1)
@@ -436,7 +436,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val G_name_aux = G_name ^ "_aux"
     val subst = [(G, Free (G_name_aux, G_type))]
     val GIntros_aux = GIntro_thms
-      |> map prop_of
+      |> map Thm.prop_of
       |> map (Term.subst_free subst)
       |> map (subst_all case_sum_exp)
 

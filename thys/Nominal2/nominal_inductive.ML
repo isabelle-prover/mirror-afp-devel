@@ -156,7 +156,7 @@ end
 val all_elims = 
   let
     fun spec' ct =
-      Drule.instantiate' [SOME (ctyp_of_term ct)] [NONE, SOME ct] @{thm spec}
+      Drule.instantiate' [SOME (Thm.ctyp_of_term ct)] [NONE, SOME ct] @{thm spec}
   in
     fold (fn ct => fn th => th RS spec' ct)
   end
@@ -180,8 +180,8 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
     let
       val thy = Proof_Context.theory_of context
       val (prms, p, _) = split_last2 (map snd params)
-      val prm_tys = map (fastype_of o term_of) prms
-      val cperms = map (cterm_of thy o perm_const) prm_tys
+      val prm_tys = map (fastype_of o Thm.term_of) prms
+      val cperms = map (Thm.cterm_of thy o perm_const) prm_tys
       val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ p_prms) 
@@ -234,7 +234,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
     let
       val thy = Proof_Context.theory_of ctxt
       val (prms, p, c) = split_last2 (map snd params)
-      val prm_trms = map term_of prms
+      val prm_trms = map Thm.term_of prms
       val prm_tys = map fastype_of prm_trms
 
       val avoid_trm' = subst_free (param_trms ~~ prm_trms) avoid_trm 
@@ -243,7 +243,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val user_thm' = map (cterm_instantiate (intr_cvars ~~ prms)) user_thm
         |> map (full_simplify (put_simpset HOL_ss ctxt addsimps (@{thm fresh_star_Pair}::prems)))
       
-      val fthm = fresh_thm ctxt user_thm' (term_of p) (term_of c) concl_args' avoid_trm'
+      val fthm = fresh_thm ctxt user_thm' (Thm.term_of p) (Thm.term_of c) concl_args' avoid_trm'
 
       val (([(_, q)], fprop :: fresh_eqs), ctxt') = Obtain.result
               (K (EVERY1 [etac @{thm exE}, 
@@ -256,7 +256,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
 
-      val cperms = map (cterm_of thy o perm_const) prm_tys
+      val cperms = map (Thm.cterm_of thy o perm_const) prm_tys
       val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ qp_prms)
@@ -277,7 +277,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       fun select prm (t, i) =
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
 
-      val side_thm = Goal.prove ctxt' [] [] (term_of concl)
+      val side_thm = Goal.prove ctxt' [] [] (Thm.term_of concl)
         (fn {context, ...} => 
            EVERY1 [ CONVERSION (expand_conv_bot context),
                     eqvt_stac context,
@@ -314,19 +314,19 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
     val ((_, [raw_induct']), ctxt') = Variable.import true [raw_induct] ctxt
 
     val (ind_prems, ind_concl) = raw_induct'
-      |> prop_of
+      |> Thm.prop_of
       |> Logic.strip_horn
       |>> map strip_full_horn
     val params = map (fn (x, _, _) => x) ind_prems
     val param_trms = (map o map) Free params  
 
-    val intr_vars_tys = map (fn t => rev (Term.add_vars (prop_of t) [])) intrs
+    val intr_vars_tys = map (fn t => rev (Term.add_vars (Thm.prop_of t) [])) intrs
     val intr_vars = (map o map) fst intr_vars_tys
     val intr_vars_substs = map2 (curry (op ~~)) intr_vars param_trms
-    val intr_cvars = (map o map) (cterm_of thy o Var) intr_vars_tys      
+    val intr_cvars = (map o map) (Thm.cterm_of thy o Var) intr_vars_tys      
 
     val (intr_prems, intr_concls) = intrs
-      |> map prop_of
+      |> map Thm.prop_of
       |> map2 subst_Vars intr_vars_substs
       |> map Logic.strip_horn
       |> split_list
@@ -417,7 +417,7 @@ fun prove_strong_inductive_cmd (pred_name, avoids) ctxt =
       let
         (* fixme hack *)
         val (((_, ctrms), _), ctxt') = Variable.import true [intr] ctxt
-        val trms = map (term_of o snd) ctrms
+        val trms = map (Thm.term_of o snd) ctrms
         val ctxt'' = fold Variable.declare_term trms ctxt'
       in
         map (Syntax.read_term ctxt'') avoid_trms

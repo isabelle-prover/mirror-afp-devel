@@ -111,7 +111,7 @@ fun format_error ctxt thm =
   Output.warning (Pretty.string_of (Pretty.block [
     Pretty.str "Wrong format for fusion rule: ",
     Pretty.brk 2,
-    Syntax.pretty_term (Context.proof_of ctxt) (prop_of thm)]))
+    Syntax.pretty_term (Context.proof_of ctxt) (Thm.prop_of thm)]))
 
 fun register thm NONE = (fn ctxt =>
   let
@@ -160,20 +160,20 @@ fun fusion_conv ctxt = Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimp
 
 fun fusion_simproc ctxt ct =
   let
-    val matches = match_consumer ctxt (term_of ct)
+    val matches = match_consumer ctxt (Thm.term_of ct)
   in
     if matches then 
       let
         val _ = tracing ctxt (fn _ => Pretty.string_of (Pretty.block 
           [Pretty.str "Trying stream fusion on ",
            Pretty.brk 2,
-           Syntax.pretty_term ctxt (term_of ct)]))
+           Syntax.pretty_term ctxt (Thm.term_of ct)]))
         val thm = fusion_conv ctxt ct
-        val failed = Thm.is_reflexive thm orelse occur_in (get_unstream ctxt) (term_of (Thm.rhs_of thm))
+        val failed = Thm.is_reflexive thm orelse occur_in (get_unstream ctxt) (Thm.term_of (Thm.rhs_of thm))
         val _ = tracing ctxt (fn _ => Pretty.string_of (Pretty.block 
           [Pretty.str (if failed then "FAILED: " else "SUCCEEDED: "),
            Pretty.brk 2,
-           Syntax.pretty_term ctxt (prop_of thm)]))
+           Syntax.pretty_term ctxt (Thm.prop_of thm)]))
       in
         if failed then NONE else SOME thm
       end

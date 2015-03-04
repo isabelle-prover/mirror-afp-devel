@@ -132,16 +132,16 @@ fun rulify_only_asm ctxt thm =
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
 fun instantiate' thy _ vars =
-  Ctr_Sugar_Util.cterm_instantiate_pos (map (cterm_of thy #> SOME) vars)
+  Ctr_Sugar_Util.cterm_instantiate_pos (map (Thm.cterm_of thy #> SOME) vars)
 
 fun permute_for_ind_thm ps xs ind_thm =
   let
     val n = length ps
-    val vs_p = prop_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev)
+    val vs_p = Thm.prop_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev)
     fun number_ih_vars _ [] = []
       | number_ih_vars i (P :: x :: pxs) = ((P,i) :: (x,i+n) :: number_ih_vars (i+1) pxs)
       | number_ih_vars _ _ = error "odd number of vars in ind-thm"
-    val vs_c = concl_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev) |> number_ih_vars 0
+    val vs_c = Thm.concl_of ind_thm |> Term.add_vars |> (fn f => f [] |> rev) |> number_ih_vars 0
     val permutation = map (AList.lookup (op =) vs_c #> the) vs_p
   in
     map (nth (ps @ xs)) permutation
@@ -176,7 +176,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
                 val m = length prems - nr_prems
                 val ih_prems = drop m prems
                 val ih_hyps = take m prems
-                val tparams = map (snd #> term_of) iparams
+                val tparams = map (snd #> Thm.term_of) iparams
                 val m' = length tparams - nr_arbi
                 val arbi_vars = drop m' tparams
                 val case_vars = take m' tparams
@@ -325,7 +325,7 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype
             then my_print_tac ctxt ("different constructors ") THEN solve_with_tac ctxt (case_hyp_y :: ihprems) (* different constructor *)
             else
               let
-                val params_y = map (snd #> term_of) iparams_y
+                val params_y = map (snd #> Thm.term_of) iparams_y
                 val c_info = nth descr idx |> snd |> (fn (_,_,info) => nth info j)
               in
                 my_print_tac ctxt ("consider constructor " ^ string_of_int k)

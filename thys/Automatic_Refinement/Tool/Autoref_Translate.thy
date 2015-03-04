@@ -69,17 +69,17 @@ ML {*
 
   structure Autoref_Tacticals :AUTOREF_TACTICALS = struct
     fun is_prefer_cond i st =
-      case Logic.concl_of_goal (prop_of st) i of
+      case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop (PREFER_tag _)"} => true
       | _ => false
 
     fun is_defer_cond i st =
-      case Logic.concl_of_goal (prop_of st) i of
+      case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop (DEFER_tag _)"} => true
       | _ => false
 
     fun REPEAT_INTERVAL tac i j st = let
-      val n = nprems_of st - (j - i)
+      val n = Thm.nprems_of st - (j - i)
       fun r st = (
         COND 
           (has_fewer_prems n) 
@@ -97,7 +97,7 @@ ML {*
     fun REPEAT_ON_SUBGOAL tac i = REPEAT_INTERVAL tac i i
 
     fun IF_SOLVED tac tac1 tac2 i st = let
-      val n = nprems_of st
+      val n = Thm.nprems_of st
     in
       (tac i THEN COND (has_fewer_prems n) (tac1 i) (tac2 i)) st
     end
@@ -165,7 +165,7 @@ ML {*
 
     fun REMOVE_INTERNAL_conv ctxt = 
       Conv.top_sweep_conv (
-        fn _ => fn ct => (case term_of ct of
+        fn _ => fn ct => (case Thm.term_of ct of
           @{mpat "REMOVE_INTERNAL _"} => 
             Conv.rewr_conv @{thm REMOVE_INTERNAL_def}
             then_conv Autoref_Tagging.untag_conv ctxt
@@ -264,7 +264,7 @@ ML {*
     fun trans_pretty_failure ctxt i j st = 
       if j < i then Pretty.str "No failure"
       else let
-        val goal = Logic.get_goal (prop_of st) i
+        val goal = Logic.get_goal (Thm.prop_of st) i
         val concl = strip_all_body goal |> Logic.strip_imp_concl
 
         val msg = case concl of

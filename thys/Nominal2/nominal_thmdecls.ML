@@ -113,9 +113,9 @@ fun key_of_raw_thm context thm =
     fun error_msg () =
       error
         ("Theorem must be of the form \"?p \<bullet> c \<equiv> c\", with c a constant or fixed parameter:\n" ^
-         Syntax.string_of_term (Context.proof_of context) (prop_of thm))
+         Syntax.string_of_term (Context.proof_of context) (Thm.prop_of thm))
   in
-    case prop_of thm of
+    case Thm.prop_of thm of
       Const (@{const_name Pure.eq}, _) $ (Const (@{const_name "permute"}, _) $ p $ c) $ c' =>
         if is_Var p andalso is_fixed (Context.proof_of context) c andalso c aconv c' then
           c
@@ -155,7 +155,7 @@ fun add_thm thm context =
   (
     if Item_Net.member (EqvtData.get context) thm then
       warning ("Theorem already declared as equivariant:\n" ^
-        Syntax.string_of_term (Context.proof_of context) (prop_of thm))
+        Syntax.string_of_term (Context.proof_of context) (Thm.prop_of thm))
     else ();
     EqvtData.map (Item_Net.update thm) context
   )
@@ -166,7 +166,7 @@ fun del_thm thm context =
       EqvtData.map (Item_Net.remove thm) context
     else (
       warning ("Cannot delete non-existing equivariance theorem:\n" ^
-        Syntax.string_of_term (Context.proof_of context) (prop_of thm));
+        Syntax.string_of_term (Context.proof_of context) (Thm.prop_of thm));
       context
     )
   )
@@ -191,7 +191,7 @@ in
 
 fun thm_4_of_1 ctxt thm =
   let
-    val (p, c) = thm |> prop_of |> HOLogic.dest_Trueprop
+    val (p, c) = thm |> Thm.prop_of |> HOLogic.dest_Trueprop
       |> HOLogic.dest_eq |> fst |> dest_perm ||> fst o (fixed_nonfixed_args ctxt)
     val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p c, c))
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
@@ -222,7 +222,7 @@ in
 
 fun thm_1_of_2 ctxt thm =
   let
-    val (prem, concl) = thm |> prop_of |> Logic.dest_implies |> apply2 HOLogic.dest_Trueprop
+    val (prem, concl) = thm |> Thm.prop_of |> Logic.dest_implies |> apply2 HOLogic.dest_Trueprop
     (* since argument terms "?p \<bullet> ?x1" may actually be eta-expanded
        or tuples, we need the following function to find ?p *)
     fun find_perm (Const (@{const_name "permute"}, _) $ (p as Var _) $ _) = p
@@ -232,7 +232,7 @@ fun thm_1_of_2 ctxt thm =
     val p = concl |> dest_comb |> snd |> find_perm
     val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p prem, concl))
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
-    val certify = cterm_of (theory_of_thm thm)
+    val certify = Thm.cterm_of (Thm.theory_of_thm thm)
     val thm' = Drule.cterm_instantiate [(certify p, certify (mk_minus p'))] thm
   in
     Goal.prove ctxt' [] [] goal' (fn {context, ...} => tac context thm thm' 1)
@@ -258,7 +258,7 @@ in
 
 (* Transforms a theorem of the form (1) or (2) into the form (4). *)
 fun eqvt_transform ctxt thm =
-  (case prop_of thm of @{const "Trueprop"} $ _ =>
+  (case Thm.prop_of thm of @{const "Trueprop"} $ _ =>
     thm_4_of_1 ctxt thm
   | @{const Pure.imp} $ _ $ _ =>
     thm_4_of_1 ctxt (thm_1_of_2 ctxt thm)
@@ -272,7 +272,7 @@ fun eqvt_transform ctxt thm =
    (3)) and (4); transforms a theorem of the form (2) into
    theorems of the form (3) and (4). *)
 fun eqvt_and_raw_transform ctxt thm =
-  (case prop_of thm of @{const "Trueprop"} $ (Const (@{const_name "HOL.eq"}, _) $ _ $ c_args) =>
+  (case Thm.prop_of thm of @{const "Trueprop"} $ (Const (@{const_name "HOL.eq"}, _) $ _ $ c_args) =>
     let
       val th' =
         if fastype_of c_args = @{typ "bool"}

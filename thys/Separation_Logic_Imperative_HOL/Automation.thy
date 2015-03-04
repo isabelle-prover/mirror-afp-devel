@@ -324,7 +324,7 @@ structure Seplogic_Auto = struct
   (* Repeat tac on subgoal. Determinize each step. 
      Stop if tac fails or subgoal is solved. *)
   fun REPEAT_DETERM' tac i st = let
-    val n = nprems_of st 
+    val n = Thm.nprems_of st 
   in
     REPEAT_DETERM (COND (has_fewer_prems n) no_tac (tac i)) st
   end
@@ -350,9 +350,9 @@ structure Seplogic_Auto = struct
      depend on the frame) are discharged.
   *)
   fun (tac1 THEN_IGNORE_NEWGOALS tac2) i st = let
-    val np = nprems_of st
+    val np = Thm.nprems_of st
   in
-    (tac1 i THEN (fn st' => let val np' = nprems_of st' in
+    (tac1 i THEN (fn st' => let val np' = Thm.nprems_of st' in
       if np'<np then tac2 i st'
       else tac2 (i+(np'-np)+1) st'
     end)) st
@@ -403,11 +403,11 @@ structure Seplogic_Auto = struct
 
   fun assn_simproc_fun ctxt credex = let
     (*val ctxt = Simplifier.the_context ss*)
-    val ([redex],ctxt') = Variable.import_terms true [term_of credex] ctxt;
+    val ([redex],ctxt') = Variable.import_terms true [Thm.term_of credex] ctxt;
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
 
-    val thy = theory_of_cterm credex;
+    val thy = Thm.theory_of_cterm credex;
 
     fun mk_star t1 t2 = @{term "op *::assn \<Rightarrow> _ \<Rightarrow> _"}$t2$t1;
 
@@ -575,7 +575,7 @@ structure Seplogic_Auto = struct
       = count_ex t RS @{thm enorm_exI'}
     | count_ex _ = @{thm imp_refl};
 
-    val concl = Logic.concl_of_goal (prop_of st) i |> HOLogic.dest_Trueprop;
+    val concl = Logic.concl_of_goal (Thm.prop_of st) i |> HOLogic.dest_Trueprop;
     val thm = count_ex concl;
   in
     (TRY o REPEAT_ALL_NEW (match_tac ctxt @{thms ent_ex_preI}) THEN'
@@ -622,7 +622,7 @@ structure Seplogic_Auto = struct
 
     (* Apply consequence rule if postcondition is not a schematic var *)
     fun app_post_cons_tac i st = 
-      case Logic.concl_of_goal (prop_of st) i |> HOLogic.dest_Trueprop of
+      case Logic.concl_of_goal (Thm.prop_of st) i |> HOLogic.dest_Trueprop of
         Const (@{const_name Hoare_Triple.hoare_triple},_)$_$_$qt =>
           if is_Var (head_of qt) then no_tac st
           else rtac @{thm cons_post_rule} i st

@@ -120,7 +120,7 @@ it introduces a new variable at the right hand side. *}
 
 simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = {* fn _ => fn ctxt => fn ctrm =>
   let
-     val _ $ (_ $ i $ A) $ j $ t = term_of ctrm
+     val _ $ (_ $ i $ A) $ j $ t = Thm.term_of ctrm
 
      val atoms = Simplifier.prems_of ctxt
       |> map_filter (fn thm => case Thm.prop_of thm of

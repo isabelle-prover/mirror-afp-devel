@@ -101,8 +101,8 @@ fun trace_enabled ctxt = Config.get ctxt trace_eqvt
 
 fun trace_msg ctxt result = 
   let
-    val lhs_str = Syntax.string_of_term ctxt (term_of (Thm.lhs_of result))
-    val rhs_str = Syntax.string_of_term ctxt (term_of (Thm.rhs_of result))
+    val lhs_str = Syntax.string_of_term ctxt (Thm.term_of (Thm.lhs_of result))
+    val rhs_str = Syntax.string_of_term ctxt (Thm.term_of (Thm.rhs_of result))
   in
     warning (Pretty.string_of (Pretty.strs ["Rewriting", lhs_str, "to", rhs_str]))
   end
@@ -120,7 +120,7 @@ fun trace_conv ctxt conv ctrm =
    out the analysed term  *)
 fun trace_info_conv ctxt ctrm = 
   let
-    val trm = term_of ctrm
+    val trm = Thm.term_of ctrm
     val _ = case (head_of trm) of 
         @{const "Trueprop"} => ()
       | _ => warning ("Analysing term " ^ Syntax.string_of_term ctxt trm)
@@ -130,14 +130,14 @@ fun trace_info_conv ctxt ctrm =
 
 (* conversion for applications *)
 fun eqvt_apply_conv ctrm =
-  case (term_of ctrm) of
+  case Thm.term_of ctrm of
     Const (@{const_name "permute"}, _) $ _ $ (_ $ _) =>
       let
         val (perm, t) = Thm.dest_comb ctrm
         val (_, p) = Thm.dest_comb perm
         val (f, x) = Thm.dest_comb t
-        val a = ctyp_of_term x;
-        val b = ctyp_of_term t;
+        val a = Thm.ctyp_of_term x;
+        val b = Thm.ctyp_of_term t;
         val ty_insts = map SOME [b, a]
         val term_insts = map SOME [p, f, x]                        
       in
@@ -147,7 +147,7 @@ fun eqvt_apply_conv ctrm =
 
 (* conversion for lambdas *)
 fun eqvt_lambda_conv ctrm =
-  case (term_of ctrm) of
+  case Thm.term_of ctrm of
     Const (@{const_name "permute"}, _) $ _ $ (Abs _) =>
       Conv.rewr_conv @{thm eqvt_lambda} ctrm
   | _ => Conv.no_conv ctrm
@@ -166,7 +166,8 @@ fun progress_info_conv ctxt strict_flag excluded ctrm =
         (if strict_flag then error else warning) 
           ("Cannot solve equivariance for " ^ (Syntax.string_of_term ctxt trm))
 
-    val _ = case (term_of ctrm) of
+    val _ =
+      case Thm.term_of ctrm of
         Const (@{const_name "permute"}, _) $ _ $ (trm as Const _) => msg trm
       | Const (@{const_name "permute"}, _) $ _ $ (trm as _ $ _) => msg trm
       | _ => () 

@@ -92,7 +92,7 @@ fun raw_equivariance ctxt preds raw_induct intrs =
 
     val (([raw_concl], [raw_pi]), ctxt') =
       ctxt
-      |> Variable.import_terms false [concl_of raw_induct']
+      |> Variable.import_terms false [Thm.concl_of raw_induct']
       ||>> Variable.variant_fixes ["p"]
     val pi = Free (raw_pi, @{typ perm})
 

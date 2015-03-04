@@ -180,8 +180,8 @@ local
 
   fun find_target ctxt tac cprem cconcl =
     let
-      val prem_cjts = cprem |> term_of |> SepConj.break_sep_conj;
-      val concl_cjts = cconcl |> term_of |> SepConj.break_sep_conj;
+      val prem_cjts = cprem |> Thm.term_of |> SepConj.break_sep_conj;
+      val concl_cjts = cconcl |> Thm.term_of |> SepConj.break_sep_conj;
 
       val iprems = ListExtra.index_list prem_cjts;
       val iconcls = ListExtra.index_list concl_cjts;
@@ -199,8 +199,8 @@ local
     end;
 
   fun strip_cprop ct =
-    let val thy = theory_of_cterm ct
-    in ct |> term_of |> HOLogic.dest_Trueprop |> cterm_of thy
+    let val thy = Thm.theory_of_cterm ct
+    in ct |> Thm.term_of |> HOLogic.dest_Trueprop |> Thm.cterm_of thy
     end;
 
   (* }}} *)
@@ -214,11 +214,11 @@ in
         val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
         val prems = Drule.strip_imp_prems ct';
 
-        fun prem_ok ct = SepConj.is_sep_conj_prop (term_of ct)
+        fun prem_ok ct = SepConj.is_sep_conj_prop (Thm.term_of ct)
 
         fun mk_tac prem =
             let
-              val prem = HOLogic.dest_Trueprop (term_of prem)
+              val prem = HOLogic.dest_Trueprop (Thm.term_of prem)
               val p = length (SepConj.break_sep_conj prem)
               val th = mk_sep_select_rule ctxt true (p,n)
                   handle Subscript => error "Conjunct index out of range"
@@ -243,7 +243,7 @@ in
       let
         (* digging out conclusions *)
         val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
-        val concl = ct' |> Drule.strip_imp_concl |> term_of;
+        val concl = ct' |> Drule.strip_imp_concl |> Thm.term_of;
         val p = concl |> HOLogic.dest_Trueprop |> SepConj.break_sep_conj
                 |> length;
         val th = mk_sep_select_rule ctxt false (p,n)
@@ -265,11 +265,11 @@ in
           val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
           val prems = Drule.strip_imp_prems ct';
 
-          fun prem_ok ct = SepConj.is_sep_conj_prop (term_of ct)
+          fun prem_ok ct = SepConj.is_sep_conj_prop (Thm.term_of ct)
 
           fun mk_tac prem =
             let
-              val prem = HOLogic.dest_Trueprop (term_of prem)
+              val prem = HOLogic.dest_Trueprop (Thm.term_of prem)
               val p = length (SepConj.break_sep_conj prem)
               fun ord n = mk_sep_select_rule ctxt true (p,n)
               val ord_thms = map ord (0 upto p-1)
@@ -290,7 +290,7 @@ in
       let
         (* digging out conclusion *)
         val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
-        val concl = ct' |> Drule.strip_imp_concl |> term_of;
+        val concl = ct' |> Drule.strip_imp_concl |> Thm.term_of;
         val p = concl |> HOLogic.dest_Trueprop |> SepConj.break_sep_conj
                 |> length;
         fun ord n = mk_sep_select_rule ctxt false (p,n);
@@ -320,13 +320,13 @@ in
             (* name of state in sep conj (should be Free after focus) *)
             fun state_get (_ $ _ $ _ $ s) = s
               | state_get t = raise Fail "prem_ok: state_get";
-            val state_get_ct = state_get o HOLogic.dest_Trueprop o term_of;
+            val state_get_ct = state_get o HOLogic.dest_Trueprop o Thm.term_of;
 
             val concl_state = concl |> state_get_ct;
             (* states considered equal if they alpha-convert *)
             fun state_ok ct = (state_get_ct ct) aconv concl_state;
           in
-            SepConj.is_sep_conj_prop (term_of ct) andalso state_ok ct
+            SepConj.is_sep_conj_prop (Thm.term_of ct) andalso state_ok ct
           end;
 
         fun mk_tac prem =
@@ -335,7 +335,7 @@ in
                 of SOME target => eliminate_target_tac ctxt tac target i
                  | NONE => no_tac;
       in
-        if (not (concl |> term_of |> SepConj.is_sep_conj_prop))
+        if (not (concl |> Thm.term_of |> SepConj.is_sep_conj_prop))
         then (tracing ("Goal not of form: (_ " ^ SepConj.sep_conj_str ^
                        " _) _");
               no_tac)

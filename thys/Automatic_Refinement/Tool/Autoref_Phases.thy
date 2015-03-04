@@ -121,7 +121,7 @@ ML {*
           Pretty.markup (Markup.subgoal "")
             [Pretty.str (" " ^ string_of_int n ^ ". "), prt_term A];
         fun pretty_subgoals () = let
-          val (As,_) = Logic.strip_horn (prop_of st)
+          val (As,_) = Logic.strip_horn (Thm.prop_of st)
           val As = drop (i - 1) As |> take (j - i + 1)
         in 
           map pretty_subgoal (1 upto length As ~~ As) 

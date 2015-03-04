@@ -198,8 +198,8 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                   K (solve_with_tac ctxt comp_eq)
                 else
                   let
-                    val params_y = map (snd #> term_of) iparams_y
-                    val params_z = map (snd #> term_of) iparams_z
+                    val params_y = map (snd #> Thm.term_of) iparams_y
+                    val params_z = map (snd #> Thm.term_of) iparams_z
                     val c_info = nth descr idx |> snd |> (fn (_,_,info) => nth info j)
                     val pdtys = snd c_info
                     val build_disj = mk_less_disj mk_less

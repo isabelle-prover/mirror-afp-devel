@@ -278,7 +278,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val lam_ty = Term.fastype_of lam
       val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> base_ty) $ lam
       fun tac ctxt = Subgoal.FOCUS (fn focus =>            
-             mk_case_tac ctxt [[SOME (#params focus |> hd |> snd |> term_of)]] @{thm prod.exhaust}
+             mk_case_tac ctxt [[SOME (#params focus |> hd |> snd |> Thm.term_of)]]
+              @{thm prod.exhaust}
              (fn (ctxt, prems2, _) => 
                 Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1 
               THEN auto_tac ctxt)

@@ -322,7 +322,7 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
     |> Old_Datatype_Aux.split_conj_thm
     |> map Old_Datatype_Aux.split_conj_thm
     |> flat
-    |> filter_out (is_true o concl_of)
+    |> filter_out (is_true o Thm.concl_of)
     |> map zero_var_indexes
   end
 
@@ -369,7 +369,7 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
     |> map (fn th => th RS mp) 
     |> map Old_Datatype_Aux.split_conj_thm
     |> flat
-    |> filter_out (is_true o concl_of)
+    |> filter_out (is_true o Thm.concl_of)
     |> map zero_var_indexes
   end
 
@@ -410,7 +410,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
         (K (distinct_tac ctxt alpha_cases raw_distinct_thms 1))
     end
   in
-    map (mk_alpha_distinct o prop_of) raw_distinct_thms
+    map (mk_alpha_distinct o Thm.prop_of) raw_distinct_thms
   end
 
 
@@ -421,7 +421,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
    rewritten to ((Rel Const = Const) = True) 
 *)
 fun mk_simp_rule thm =
-  case (prop_of thm) of
+  case Thm.prop_of thm of
     @{term "Trueprop"} $ (_ $ Const _ $ Const _) => thm RS @{thm eqTrueI}
   | _ => thm
 
@@ -433,7 +433,7 @@ fun alpha_eq_iff_tac ctxt dist_inj intros elims =
 
 fun mk_alpha_eq_iff_goal thm =
   let
-    val prop = prop_of thm;
+    val prop = Thm.prop_of thm;
     val concl = HOLogic.dest_Trueprop (Logic.strip_imp_concl prop);
     val hyps = map HOLogic.dest_Trueprop (Logic.strip_imp_prems prop);
     fun list_conj l = foldr1 HOLogic.mk_conj l;
@@ -774,7 +774,7 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
     val AlphaResult {alpha_bn_trms, ...} = alpha_result 
 
     fun mk_map thm =
-      thm |> `prop_of
+      thm |> `Thm.prop_of
           |>> List.last  o snd o strip_comb
           |>> HOLogic.dest_Trueprop
           |>> head_of

@@ -70,7 +70,7 @@ structure Record_Intf: RECORD_INTF = struct
 
   (* Gather select_conv theorems type of constant defined by def_thm *)
   fun gather_conv_thms_dt thy def_thm =
-    def_thm |> prop_of |> Logic.dest_equals |> fst 
+    def_thm |> Thm.prop_of |> Logic.dest_equals |> fst 
     |> fastype_of |> gather_conv_thms thy;
 
   (* Generate code-unfold theorems for definition
