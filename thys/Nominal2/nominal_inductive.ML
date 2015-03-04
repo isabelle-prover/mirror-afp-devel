@@ -156,7 +156,7 @@ end
 val all_elims = 
   let
     fun spec' ct =
-      Drule.instantiate' [SOME (Thm.ctyp_of_term ct)] [NONE, SOME ct] @{thm spec}
+      Drule.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
   in
     fold (fn ct => fn th => th RS spec' ct)
   end

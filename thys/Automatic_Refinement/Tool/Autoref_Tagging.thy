@@ -158,7 +158,7 @@ ML {*
       then_conv mk_PROTECT_conv
 
     fun mk_ANNOT_conv a ct = let
-      val Tt = Thm.ctyp_of_term ct
+      val Tt = Thm.ctyp_of_cterm ct
 
       val thm = Drule.instantiate' [SOME Tt] [SOME ct,SOME a] 
         @{thm ANNOT_def[symmetric]}
@@ -168,7 +168,7 @@ ML {*
 
     fun mk_rel_ANNOT_conv a ct = let
       val thy = Thm.theory_of_cterm ct
-      val T = Thm.ctyp_of_term a |> Thm.typ_of
+      val T = Thm.typ_of_cterm a
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
         |> apply2 (Thm.ctyp_of thy)

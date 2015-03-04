@@ -113,7 +113,7 @@ structure RefineG_Transfer = struct
       @{mpat "Trueprop (REFINEG_TRANSFER_ALIGN ?c _)"} => let
         val thy = Thm.theory_of_thm st
         val c = Thm.cterm_of thy c
-        val cT = Thm.ctyp_of_term c
+        val cT = Thm.ctyp_of_cterm c
         
         val rl = @{thm REFINEG_TRANSFER_ALIGNI}
           |> Thm.incr_indexes (Thm.maxidx_of st + 1)

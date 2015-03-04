@@ -931,7 +931,7 @@ fun alpha_single_simproc thm _ ctxt ctrm =
       |> map Free
       |> HOLogic.mk_tuple
       |> Thm.cterm_of thy
-    val cvrs_ty = Thm.ctyp_of_term cvrs
+    val cvrs_ty = Thm.ctyp_of_cterm cvrs
     val thm' = thm
       |> Drule.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 
   in

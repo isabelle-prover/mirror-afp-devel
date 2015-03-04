@@ -136,8 +136,8 @@ fun eqvt_apply_conv ctrm =
         val (perm, t) = Thm.dest_comb ctrm
         val (_, p) = Thm.dest_comb perm
         val (f, x) = Thm.dest_comb t
-        val a = Thm.ctyp_of_term x;
-        val b = Thm.ctyp_of_term t;
+        val a = Thm.ctyp_of_cterm x;
+        val b = Thm.ctyp_of_cterm t;
         val ty_insts = map SOME [b, a]
         val term_insts = map SOME [p, f, x]                        
       in

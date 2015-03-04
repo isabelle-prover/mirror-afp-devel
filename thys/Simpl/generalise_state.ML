@@ -99,7 +99,7 @@ fun spec' cv thm =
         => let 
              val thy = Thm.theory_of_thm thm; 
              val (Var (sP,_)$Var (sV,sVT)) = HOLogic.dest_Trueprop (Thm.concl_of spec);
-             val cvT = Thm.ctyp_of_term cv;
+             val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
                 ([(Thm.ctyp_of thy sVT,cvT)],
@@ -111,7 +111,7 @@ fun spec' cv thm =
         => let 
              val thy = Thm.theory_of_thm thm; 
              val (Var (sP,_)$Var (sV,sVT)) = Thm.concl_of meta_spec;
-             val cvT = Thm.ctyp_of_term cv;
+             val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
                 ([(Thm.ctyp_of thy sVT,cvT)],
@@ -154,9 +154,9 @@ fun split_thm qnt ctxt s T t =
 
 fun eta_expand ct = 
   let
-    val mi = #maxidx (Thm.rep_cterm ct)
+    val mi = Thm.maxidx_of_cterm ct;
     val thy = Thm.theory_of_cterm ct;
-    val T = domain_type (Thm.typ_of (Thm.ctyp_of_term ct)); 
+    val T = domain_type (Thm.typ_of_cterm ct);
     val x = Thm.cterm_of thy (Var (("s",mi+1),T));
   in Thm.lambda x (Thm.apply ct x) end;
 

@@ -1731,8 +1731,7 @@ fun rename_aux_var name rule =
 fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
      let
        val thy = Proof_Context.theory_of ctxt;
-       fun get_maxidx thm = let val {maxidx=m,...} = Thm.rep_thm thm in m end;
-       val max_idx = fold Integer.max (map (get_maxidx o snd) tvar_rules) 0;
+       val max_idx = fold Integer.max (map (Thm.maxidx_of o snd) tvar_rules) 0;
        val types = map (fn i => TVar (("z",i),Sign.defaultS thy))
                     (max_idx + 1 upto (max_idx + length vars));
        fun ctyp n = Thm.ctyp_of thy (TVar (n,Sign.defaultS thy));
@@ -1757,7 +1756,7 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
 fun gen_call_rec_rule ctxt specs_name n rule =
   let
     val thy = Proof_Context.theory_of ctxt;
-    val maxidx = #maxidx (Thm.rep_cterm (Thm.cprop_of rule));
+    val maxidx = Thm.maxidx_of rule;
     val vars = Term.add_vars (Thm.prop_of rule) [];
     fun get_type n = the (AList.lookup (op =) vars (n, 0));
     val specsT as (Type (_, [Type (_, [assT, Type (_, [pT,_])])])) = get_type specs_name;
