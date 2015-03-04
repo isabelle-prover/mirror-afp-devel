@@ -701,8 +701,7 @@ next
   assume "t1 \<noteq> t0" with interval iv_defined have interval: "T = {t0..t1}" "t0 < t1"
     by auto
   obtain n::nat and b where b: "b = (t1 - t0) / (Suc n)" and bL: "L * b < 1"
-    by (rule, rule) (auto intro: order_le_less_trans real_natceiling_ge
-    simp: natceiling_def)
+    by (rule, rule) (auto intro: order_le_less_trans real_nat_ceiling_ge)
   then interpret i': ivp_on_interval i "t0 + (Suc n) * b"
     using interval by unfold_locales simp_all
   from b have "b > 0" using interval iv_defined
