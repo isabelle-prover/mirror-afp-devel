@@ -1031,10 +1031,10 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
   show "\<And>s0 qs. length (adv A s0 qs) = length qs" by(simp add: adv_def)
   show "\<And>n. ?cruel n \<noteq> []" by auto
   show "?s0 \<in> ?S0" by simp
-  { fix Z::real and n::nat assume "n \<ge> natceiling Z"
+  { fix Z::real and n::nat assume "n \<ge> nat(ceiling Z)"
     have "?off n \<ge> length(?cruel n)" by(rule T_ge_len) (simp add: adv_def)
     hence "?off n > n" by simp
-    hence "Z \<le> ?off n" using `n \<ge> natceiling Z` by linarith }
+    hence "Z \<le> ?off n" using `n \<ge> nat(ceiling Z)` by linarith }
   thus "LIM n sequentially. real (?off n) :> at_top"
     by(auto simp only: filterlim_at_top eventually_sequentially)
   let ?a = "- (l^2 + l + 1)"

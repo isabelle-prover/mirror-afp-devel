@@ -88,10 +88,10 @@ next
       by atomize_elim
          (rule exI[where x="(- abs B -a)/c"], auto simp: field_simps)
     obtain x :: nat where "a + x * c \<le> B"
-    proof (atomize_elim, intro exI[where x="natceiling real_x"] conjI)
-      have "real (natceiling real_x) * c \<le> real_x * c"
-        using `c < 0` by (simp add: real_natceiling_ge)
-      then show "a + natceiling real_x * c \<le> B"
+    proof (atomize_elim, intro exI[where x="nat(ceiling real_x)"] conjI)
+      have "real (nat(ceiling real_x)) * c \<le> real_x * c"
+        using `c < 0` by (simp add: real_nat_ceiling_ge)
+      then show "a + nat(ceiling real_x) * c \<le> B"
         using `a + real_x * c \<le> B` by simp
     qed
     then show "y \<le> ereal B"

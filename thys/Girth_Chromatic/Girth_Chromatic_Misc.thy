@@ -101,31 +101,18 @@ lemma enat_neq_zero_cancel_iff[simp]:
 by (auto simp: enat_0[symmetric])
 
 
-lemma natceiling_lessD:
-  assumes "natceiling x < n" shows "x < real n"
-proof -
-  from assms have "natceiling x \<le> n - 1" and "0 < n" by auto
-  then have "x \<le> real (n - 1)" by (simp add: natceiling_le_eq)
-  then show ?thesis using `0 < n` by auto
-qed
+lemma natceiling_lessD: "nat(ceiling x) < n \<Longrightarrow> x < real n"
+by linarith
 
 lemma le_natceiling_iff:
   fixes n :: nat and r :: real
-  assumes "n \<le> r"
-  shows "n \<le> natceiling r"
-proof -
-  from assms have "n \<le> ceiling r" by (simp add: le_ceiling_eq)
-  then show ?thesis by (simp add: natceiling_def)
-qed
+  shows "n \<le> r \<Longrightarrow> n \<le> nat(ceiling r)"
+by linarith
 
 lemma natceiling_le_iff:
   fixes n :: nat and r :: real
-  assumes "r \<le> n"
-  shows "natceiling r \<le> n"
-proof -
-  from assms have "ceiling r \<le> n" by (simp add: ceiling_le_eq)
-  then show ?thesis by (simp add: natceiling_def)
-qed
+  shows "r \<le> n \<Longrightarrow> nat(ceiling r) \<le> n"
+by linarith
 
 lemma dist_real_noabs_less:
   fixes a b c :: real assumes "dist a b < c" shows "a - b < c"
@@ -220,7 +207,7 @@ proof (rule tendsto_zero_powrI)
       by (auto simp: field_simps)
     then show "eventually (\<lambda>x. dist (c / real x) 0 < e) sequentially"
       using `0 < c` `0 < e`
-      by (intro eventually_sequentially_lessI[of "natceiling (c/e)"])
+      by (intro eventually_sequentially_lessI[of "nat(ceiling (c/e))"])
          (auto simp: dist_real_def natceiling_lessD)
   qed
   show "0 < d" by (rule assms)

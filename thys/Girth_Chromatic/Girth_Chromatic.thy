@@ -340,16 +340,16 @@ lemma almost_never_le_\<alpha>:
   shows "(\<lambda>n. probGn p n (\<lambda>es. 1/2*n/k \<le> \<alpha> (edge_space.edge_ugraph n es))) ----> 0"
     (is "(\<lambda>n. ?prob_fun n) ----> 0")
 proof -
-  let "?prob_fun_raw n" = "probGn p n (\<lambda>es. natceiling (1/2*n/k) \<le> \<alpha> (edge_space.edge_ugraph n es))"
+  let "?prob_fun_raw n" = "probGn p n (\<lambda>es. nat(ceiling (1/2*n/k)) \<le> \<alpha> (edge_space.edge_ugraph n es))"
 
   def r \<equiv> "\<lambda>(n :: nat). (1 / 2 * n / k)"
-  let "?nr n" = "natceiling (r n)"
+  let "?nr n" = "nat(ceiling (r n))"
 
   have r_pos: "\<And>n. 0 < n \<Longrightarrow> 0 < r n " by (auto simp: r_def field_simps)
 
   have nr_bounds: "\<forall>\<^sup>\<infinity> n. 2 \<le> ?nr n \<and> ?nr n \<le> n"
     by (intro eventually_sequentiallyI[of "4 * k"])
-      (simp add: r_def natceiling_le le_natceiling_iff field_simps)
+       (simp add: r_def nat_ceiling_le_eq le_natceiling_iff field_simps)
 
   from nr_bounds p_prob have ev_prob_fun_raw_le:
     "\<forall>\<^sup>\<infinity> n. probGn p n (\<lambda>es. ?nr n\<le> \<alpha> (edge_space.edge_ugraph n es))
@@ -390,13 +390,14 @@ proof -
   proof (elim eventually_rev_mp, intro eventually_sequentiallyI conjI impI)
     fix n assume n_bound[arith]: "2 \<le> n"
       and p_bound: "0 < p n \<and> p n < 1" "(6 * k * ln n) / n \<le> p n"
-    have r_bound: "r n \<le> ?nr n" by (rule real_natceiling_ge)
+    have r_bound: "r n \<le> ?nr n" by (rule real_nat_ceiling_ge)
 
     have "n * exp (-p n * (real (?nr n)- 1) / 2) \<le> n * exp (- 3 / 2 * ln n + p n / 2)"
     proof -
       have "0 < ln n" using "n_bound" by auto
       then have "(3 / 2) * ln n \<le> ((6 * k * ln n) / n) * (?nr n / 2)"
-        using r_bound by (simp add: r_def field_simps del: ln_gt_zero_iff)
+        using r_bound real_of_int_ceiling_ge[of "n/2*k"]
+        by (simp add: r_def field_simps del: real_of_int_ceiling_ge)
       also have "\<dots> \<le> p n * (?nr n / 2)"
         using n_bound p_bound r_bound r_pos[of n] by (auto simp: field_simps)
       finally show ?thesis using r_bound by (auto simp: field_simps)
@@ -409,8 +410,8 @@ proof -
     finally show "n * exp (- p n * (real (?nr n) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)" .
   qed
 
-  have ceil_bound: "\<And>G n. 1/2*n/k \<le> \<alpha> G \<longleftrightarrow> natceiling (1/2*n/k) \<le> \<alpha> G"
-    by (case_tac "\<alpha> G") (auto simp: natceiling_le_eq)
+  have ceil_bound: "\<And>G n. 1/2*n/k \<le> \<alpha> G \<longleftrightarrow> nat(ceiling (1/2*n/k)) \<le> \<alpha> G"
+    by (case_tac "\<alpha> G") (auto simp: nat_ceiling_le_eq)
 
   show ?thesis
   proof (unfold ceil_bound, rule real_tendsto_sandwich)
@@ -425,7 +426,7 @@ proof -
       fix n assume A: "3 \<le> n"
         and nr_bounds: "2 \<le> ?nr n \<and> ?nr n \<le> n"
         and prob_fun_raw_le: "?prob_fun_raw_le n"
-        and expr_bound: "n * exp (- p n * (real (natceiling (r n)) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)"
+        and expr_bound: "n * exp (- p n * (real (nat(ceiling (r n))) - 1) / 2) \<le> (exp 1 / n) powr (1 / 2)"
 
       have "exp 1 < (3 :: real)" by (approximation 6)
       then have "(exp 1 / n) powr (1 / 2) \<le> 1 powr (1 / 2)"
