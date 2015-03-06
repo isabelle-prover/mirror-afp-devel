@@ -923,14 +923,14 @@ using assms by (auto simp: Abs1_eq_iff fresh_permute_left)
 
 ML {*
 fun alpha_single_simproc thm _ ctxt ctrm =
- let
+  let
     val thy = Proof_Context.theory_of ctxt
     val _ $ (_ $ x) $ (_ $ y) = Thm.term_of ctrm
     val cvrs = union (op =) (Term.add_frees x []) (Term.add_frees y [])
       |> filter (fn (_, ty) => Sign.of_sort thy (ty, @{sort fs}))
       |> map Free
       |> HOLogic.mk_tuple
-      |> Thm.cterm_of thy
+      |> Proof_Context.cterm_of ctxt
     val cvrs_ty = Thm.ctyp_of_cterm cvrs
     val thm' = thm
       |> Drule.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 

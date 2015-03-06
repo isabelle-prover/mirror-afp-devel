@@ -32,8 +32,7 @@ fun atomize_induct ctxt = Conv.fconv_rule (Conv.prems_conv ~1
 
 fun eqvt_rel_single_case_tac ctxt pred_names pi intro =
   let
-    val thy = Proof_Context.theory_of ctxt
-    val cpi = Thm.cterm_of thy pi
+    val cpi = Proof_Context.cterm_of ctxt pi
     val pi_intro_rule = Drule.instantiate' [] [NONE, SOME cpi] @{thm permute_boolI}
     val eqvt_sconfig = eqvt_strict_config addexcls pred_names
     val simps1 = 

@@ -721,13 +721,12 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
       |> map2 (prep_prem lthy'' c c_name c_ty) (flat bclausesss)
 
     fun pat_tac ctxt thm =
-      Subgoal.FOCUS (fn {params, context, ...} => 
+      Subgoal.FOCUS (fn {params, context = ctxt', ...} => 
         let
-          val thy = Proof_Context.theory_of context
           val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
           val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
-          val vs_ctrms = map (Thm.cterm_of thy o Var) vs
+          val vs_ctrms = map (Proof_Context.cterm_of ctxt' o Var) vs
           val assigns = map (lookup ty_parms) vs_tys          
           
           val thm' = cterm_instantiate (vs_ctrms ~~ assigns) thm

@@ -1890,12 +1890,11 @@ simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") =
       ([], []) => SOME(@{thm fresh_fun_eqvt[simplified eqvt_def, THEN Eq_TrueI]})
     | (x::_, []) =>
       let
-        val thy = Proof_Context.theory_of ctxt
         val argx = Free x
         val absf = absfree x f
         val cty_inst =
-          [SOME (Thm.ctyp_of thy (fastype_of argx)), SOME (Thm.ctyp_of thy (fastype_of f))]
-        val ctrm_inst = [NONE, SOME (Thm.cterm_of thy absf), SOME (Thm.cterm_of thy argx)] 
+          [SOME (Proof_Context.ctyp_of ctxt (fastype_of argx)), SOME (Proof_Context.ctyp_of ctxt (fastype_of f))]
+        val ctrm_inst = [NONE, SOME (Proof_Context.cterm_of ctxt absf), SOME (Proof_Context.cterm_of ctxt argx)] 
         val thm = Drule.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
       in
         SOME(thm RS @{thm Eq_TrueI}) 

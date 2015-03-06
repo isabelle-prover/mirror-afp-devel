@@ -176,30 +176,29 @@ fun helper_tac flag prm p ctxt =
     end) ctxt
 
 fun non_binder_tac prem intr_cvars Ps ctxt = 
-  Subgoal.SUBPROOF (fn {context, params, prems, ...} =>
+  Subgoal.SUBPROOF (fn {context = ctxt', params, prems, ...} =>
     let
-      val thy = Proof_Context.theory_of context
       val (prms, p, _) = split_last2 (map snd params)
       val prm_tys = map (fastype_of o Thm.term_of) prms
-      val cperms = map (Thm.cterm_of thy o perm_const) prm_tys
+      val cperms = map (Proof_Context.cterm_of ctxt' o perm_const) prm_tys
       val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ p_prms) 
         |> eqvt_srule ctxt
 
       (* for inductive-premises*)
-      fun tac1 prm = helper_tac true prm p context 
+      fun tac1 prm = helper_tac true prm p ctxt'
 
       (* for non-inductive premises *)   
       fun tac2 prm =  
         EVERY' [ minus_permute_intro_tac p, 
-                 eqvt_stac context, 
-                 helper_tac false prm p context ]
+                 eqvt_stac ctxt', 
+                 helper_tac false prm p ctxt' ]
 
       fun select prm (t, i) =
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
     in
-      EVERY1 [ eqvt_stac context, 
+      EVERY1 [ eqvt_stac ctxt', 
                rtac prem', 
                RANGE (map (SUBGOAL o select) prems) ]
     end) ctxt
@@ -232,7 +231,6 @@ val fresh_star_plus = @{lemma "fresh_star (permute q (permute p x)) c ==> fresh_
 fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt = 
   Subgoal.FOCUS (fn {context = ctxt, params, prems, concl, ...} =>
     let
-      val thy = Proof_Context.theory_of ctxt
       val (prms, p, c) = split_last2 (map snd params)
       val prm_trms = map Thm.term_of prms
       val prm_tys = map fastype_of prm_trms
@@ -256,7 +254,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
 
-      val cperms = map (Thm.cterm_of thy o perm_const) prm_tys
+      val cperms = map (Proof_Context.cterm_of ctxt o perm_const) prm_tys
       val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ qp_prms)
@@ -278,12 +276,12 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
 
       val side_thm = Goal.prove ctxt' [] [] (Thm.term_of concl)
-        (fn {context, ...} => 
-           EVERY1 [ CONVERSION (expand_conv_bot context),
-                    eqvt_stac context,
+        (fn {context = ctxt'', ...} => 
+           EVERY1 [ CONVERSION (expand_conv_bot ctxt''),
+                    eqvt_stac ctxt'',
                     rtac prem',
                     RANGE (tac_fresh :: map (SUBGOAL o select) prems) ])
-        |> singleton (Proof_Context.export ctxt' ctxt)        
+        |> singleton (Proof_Context.export ctxt' ctxt)
     in
       rtac side_thm 1
     end) ctxt
@@ -310,7 +308,6 @@ val normalise = @{lemma "(Q --> (!p c. P p c)) ==> (!!c. Q ==> P (0::perm) c)" b
 
 fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
   let
-    val thy = Proof_Context.theory_of ctxt
     val ((_, [raw_induct']), ctxt') = Variable.import true [raw_induct] ctxt
 
     val (ind_prems, ind_concl) = raw_induct'
@@ -323,7 +320,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
     val intr_vars_tys = map (fn t => rev (Term.add_vars (Thm.prop_of t) [])) intrs
     val intr_vars = (map o map) fst intr_vars_tys
     val intr_vars_substs = map2 (curry (op ~~)) intr_vars param_trms
-    val intr_cvars = (map o map) (Thm.cterm_of thy o Var) intr_vars_tys      
+    val intr_cvars = (map o map) (Proof_Context.cterm_of ctxt o Var) intr_vars_tys
 
     val (intr_prems, intr_concls) = intrs
       |> map Thm.prop_of
