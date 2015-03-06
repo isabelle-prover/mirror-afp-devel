@@ -107,7 +107,6 @@ fun mk_qualified basename q = Binding.qualify true basename (Binding.name q);
 fun extract_recursion_eqs exs basename orig_def_thm lthy = let
 
   val thy = Proof_Context.theory_of lthy
-  val cert = Thm.global_cterm_of thy
  
   val pat_net : extraction Item_Net.T =
     Item_Net.init (op= o apply2 #pattern) (fn {pattern, ...} => [pattern])
@@ -175,7 +174,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   val def_unfold_ss = 
     put_simpset HOL_basic_ss lthy addsimps (orig_def_thm::def_thms)
   val new_def_thm = Goal.prove_internal lthy
-    [] (Logic.mk_equals (lhs,rhs') |> cert) (K (simp_tac def_unfold_ss 1))
+    [] (Logic.mk_equals (lhs,rhs') |> Thm.cterm_of lthy) (K (simp_tac def_unfold_ss 1))
 
   (* Obtain new theorem by folding with defs of generated constants *)
   (* TODO: Maybe cleaner to generate eq-thm and prove by "unfold, refl" *)
@@ -393,12 +392,11 @@ setup Refine_Automation.setup
 setup {*
   let
     fun parse_cpat cxt = let 
-      val (t,(context,tks)) = Scan.lift Args.name_inner_syntax cxt 
-      val thy = Context.theory_of context
+      val (t, (context, tks)) = Scan.lift Args.name_inner_syntax cxt 
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
     in
-      (Thm.global_cterm_of thy t,(context,tks))
+      (Thm.cterm_of ctxt t, (context, tks))
     end
 
     fun do_p f = Scan.repeat1 parse_cpat >> (fn pats => 
@@ -432,10 +430,9 @@ ML {* Outer_Syntax.local_theory
       case Attrib.eval_thms lthy [raw_thm] of
         [thm] => thm
         | _ => error "Expecting exactly one theorem";
-    val thy = Proof_Context.theory_of lthy
     val pats = case pats of 
       [] => Refine_Automation.get_cd_patterns lthy
-    | l => map (Proof_Context.read_term_pattern lthy #> Thm.global_cterm_of thy #> 
+    | l => map (Proof_Context.read_term_pattern lthy #> Thm.cterm_of lthy #>
         Refine_Automation.prepare_cd_pattern) l
 
   in 

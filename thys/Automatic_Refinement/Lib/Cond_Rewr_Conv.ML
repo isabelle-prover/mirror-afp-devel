@@ -7,8 +7,7 @@ structure Cond_Rewr_Conv :COND_REWR_CONV = struct
   open Refine_Util
   (* Conditional rewrite rule. tac used to discharge conditions *)
   fun cond_rewr_conv_aux tac thm ctxt ct = let
-    val thy = Proof_Context.theory_of ctxt
-    val lhs = thm |> Thm.concl_of |> Logic.dest_equals |> #1 |> Thm.global_cterm_of thy
+    val lhs = thm |> Thm.concl_of |> Logic.dest_equals |> #1 |> Thm.cterm_of ctxt
     val inst = Thm.match (lhs,ct) 
       handle Pattern.MATCH => raise CTERM ("dis_rewr_conv: MATCH",[lhs,ct])
 

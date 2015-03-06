@@ -2249,7 +2249,6 @@ declare fast_bv_to_nat_Cons1 [simp]
 simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
   fn _ => fn ctxt => fn ct =>
     let
-      val thy = Proof_Context.theory_of ctxt
       fun is_const_bool (Const(@{const_name True},_)) = true
         | is_const_bool (Const(@{const_name False},_)) = true
         | is_const_bool _ = false
@@ -2264,8 +2263,8 @@ simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
         (Const(@{const_name Cons},_) $ Const(@{const_name One},_) $ t)) =
             if vec_is_usable t then
               SOME (Drule.cterm_instantiate
-                [(Thm.global_cterm_of thy (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
-                  Thm.global_cterm_of thy t)] @{thm fast_bv_to_nat_def})
+                [(Thm.cterm_of ctxt (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
+                  Thm.cterm_of ctxt t)] @{thm fast_bv_to_nat_def})
             else NONE
         | proc _ = NONE
     in proc (Thm.term_of ct) end

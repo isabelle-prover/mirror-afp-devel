@@ -452,9 +452,9 @@ ML {*
 
     fun import_cterms is_open cts ctxt = let
       val ts = map Thm.term_of cts
-      val (ts',ctxt') = Variable.import_terms is_open ts ctxt
-      val cts' = cts~~ts' |> map (fn (ct,t') => Thm.global_cterm_of (Thm.theory_of_cterm ct) t')
-    in (cts',ctxt') end
+      val (ts', ctxt') = Variable.import_terms is_open ts ctxt
+      val cts' = map (Thm.cterm_of ctxt) ts'
+    in (cts', ctxt') end
 
 
     (*

@@ -64,15 +64,14 @@ val map_apply_simproc =
       Const (@{const_name map_apply}, _) $ _ $ _ => NONE
     | f $ x => 
       let
-        val thy = Proof_Context.theory_of ctxt;
         val cTr = 
           redex
           |> fastype_of
           |> dest_Type
           |> snd |> hd
-          |> Thm.global_ctyp_of thy;
-        val cTx = Thm.global_ctyp_of thy (fastype_of x);
-        val cts = map (SOME o Thm.global_cterm_of thy) [f, x];
+          |> Thm.ctyp_of ctxt;
+        val cTx = Thm.ctyp_of ctxt (fastype_of x);
+        val cts = map (SOME o Thm.cterm_of ctxt) [f, x];
       in
         SOME (Drule.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
       end

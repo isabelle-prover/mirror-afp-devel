@@ -491,10 +491,10 @@ ML_val {*
     [@{term "Ra::('c\<times>'a) set"},@{term "\<langle>Rb\<rangle>option_rel"}] 
     @{type_name prod}
   |> the
-  |> Thm.global_cterm_of @{theory}
+  |> Thm.cterm_of @{context}
 ;
   Relators.mk_fun_rel @{term "\<langle>Id\<rangle>option_rel"} @{term "\<langle>Id\<rangle>list_rel"}
-  |> Thm.global_cterm_of @{theory}
+  |> Thm.cterm_of @{context}
 *}
 
 subsubsection "Additional Properties"

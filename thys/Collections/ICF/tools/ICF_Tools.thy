@@ -89,9 +89,9 @@ ML {*
 
     val parse_cpat =
       Args.context --
-        Scan.lift Args.name_inner_syntax >> (fn (context,str) => 
-          Proof_Context.read_term_pattern context str
-          |> Thm.global_cterm_of (Proof_Context.theory_of context) 
+        Scan.lift Args.name_inner_syntax >> (fn (ctxt, str) => 
+          Proof_Context.read_term_pattern ctxt str
+          |> Thm.cterm_of ctxt 
         );
 
 
@@ -103,10 +103,10 @@ ML {*
     val renames_cterm = can rename_cterm;
 
     fun import_cterm ct ctxt = let
-      val (t',ctxt') = yield_singleton (Variable.import_terms true) 
+      val (t', ctxt') = yield_singleton (Variable.import_terms true) 
         (Thm.term_of ct) ctxt;
-      val ct' = Thm.global_cterm_of (Proof_Context.theory_of ctxt') t';
-    in (ct',ctxt') end
+      val ct' = Thm.cterm_of ctxt' t';
+    in (ct', ctxt') end
 
   (* Get theorem by name, that is visible in HOL.Main. Moreover, the
     theory of this theorem will be HOL.Main, which is required to avoid

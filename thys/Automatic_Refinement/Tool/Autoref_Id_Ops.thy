@@ -146,7 +146,7 @@ ML_val {*
   depth_of @{term "f [1] [2] []"};
 
   limit_depth 2 @{term "[1,2,3,4,5,6,7]"}
-  |> Thm.global_cterm_of @{theory}
+  |> Thm.cterm_of @{context}
 
 *}
 
@@ -184,7 +184,7 @@ ML {*
     val id_phase: Autoref_Phases.phase
 
     val mk_const_intf: term -> term -> term
-    val mk_const_intf_thm: theory -> term -> term -> thm
+    val mk_const_intf_thm: Proof.context -> term -> term -> thm
 
     val dest_const_intf: term -> term * term
     val dest_const_intf_thm: thm -> term * term
@@ -217,10 +217,10 @@ ML {*
       Const (@{const_name CONST_INTF},T)$c$I
     end
 
-    fun mk_const_intf_thm thy f I = let
-      val fT = fastype_of f |> Thm.global_ctyp_of thy
-      val f = Thm.global_cterm_of thy f
-      val I = Thm.global_cterm_of thy I
+    fun mk_const_intf_thm ctxt f I = let
+      val fT = fastype_of f |> Thm.ctyp_of ctxt
+      val f = Thm.cterm_of ctxt f
+      val I = Thm.cterm_of ctxt I
       val thm = Drule.instantiate' [SOME fT] [SOME f, SOME I] @{thm itypeI}
     in
       thm
@@ -283,11 +283,10 @@ ML {*
     in typ_net end
 
     fun typ_thms_of_seq' ctxt typ_net c = let
-      val thy = Proof_Context.theory_of ctxt 
       val idx = Term.maxidx_of_term c + 1
       val typ_thms = mk_const_intf c (Var (("I",idx),@{typ interface}))
         |> HOLogic.mk_Trueprop
-        |> Thm.global_cterm_of thy
+        |> Thm.cterm_of ctxt
         |> Goal.init
         |> resolve_from_net_tac ctxt typ_net 1
         |> Seq.map Goal.conclude
@@ -490,12 +489,11 @@ ML {*
 
     fun decl_derived_typing overl c I context = let
       val ctxt = Context.proof_of context
-      val thy = Context.theory_of context
 
       val typ_thms = intf_types.get ctxt 
         (* TODO: Use net cached in ctxt here! *)
 
-      val thm = mk_const_intf_thm thy c I
+      val thm = mk_const_intf_thm ctxt c I
 
       val st = Thm.cprop_of thm |> Goal.init
       val has_t = SOLVED' (match_tac ctxt typ_thms) 1 st |> Seq.pull |> is_some
@@ -621,7 +619,6 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     | roi @{mpat "i_of_rel ?R"} ctxt = (R,ctxt)
     | roi t _ = raise TERM ("rel_of_intf: Unexpected interface", [t])
 
-    val thy = Proof_Context.theory_of ctxt
     val orig_ctxt = ctxt
     val (I,ctxt) = yield_singleton (Variable.import_terms true) I ctxt
     val (R,ctxt) = roi I ctxt
@@ -629,7 +626,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     val res = Syntax.check_term ctxt res
     val res = singleton (Variable.export_terms ctxt orig_ctxt) res
       |> HOLogic.mk_Trueprop
-      |> Thm.global_cterm_of thy
+      |> Thm.cterm_of ctxt
 
     val thm = Goal.prove_internal ctxt [] res (fn _ => rtac @{thm REL_OF_INTF_I} 1)
   in thm end
