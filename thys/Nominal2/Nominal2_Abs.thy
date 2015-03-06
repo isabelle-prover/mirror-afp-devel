@@ -930,7 +930,7 @@ fun alpha_single_simproc thm _ ctxt ctrm =
       |> filter (fn (_, ty) => Sign.of_sort thy (ty, @{sort fs}))
       |> map Free
       |> HOLogic.mk_tuple
-      |> Proof_Context.cterm_of ctxt
+      |> Thm.cterm_of ctxt
     val cvrs_ty = Thm.ctyp_of_cterm cvrs
     val thm' = thm
       |> Drule.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 

@@ -32,7 +32,7 @@ struct
         fun process_PR_tag_tac thm =
           let val trms = extract_PR_tags (Thm.prop_of thm) []
               fun tac trm = 
-                let val subst = Thm.reflexive (Thm.cterm_of thy trm) RS @{thm HOL.meta_eq_to_obj_eq}
+                let val subst = Thm.reflexive (Thm.global_cterm_of thy trm) RS @{thm HOL.meta_eq_to_obj_eq}
                     val subst = subst RS @{thm "HOL.trans"}
                     val subst = subst RS @{thm "HOL.ssubst"}
                 in  TRY (rtac subst i

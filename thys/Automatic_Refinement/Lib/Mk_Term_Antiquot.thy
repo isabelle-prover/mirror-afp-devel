@@ -186,8 +186,8 @@ ML_val {*
   fun mk_2elem_list a b = @{mk_term "[?a,?b]"}
   fun mk_compr s P = @{mk_term "{ x\<in>?s. ?P x}"}
 
-  val test1 = mk_2elem_list @{term "1::nat"} @{term "2::nat"} |> Thm.cterm_of @{theory}
-  val test2 = mk_compr @{term "{1,2,3::nat}"} @{term "op < (2::nat)"} |> Thm.cterm_of @{theory}
+  val test1 = mk_2elem_list @{term "1::nat"} @{term "2::nat"} |> Thm.global_cterm_of @{theory}
+  val test2 = mk_compr @{term "{1,2,3::nat}"} @{term "op < (2::nat)"} |> Thm.global_cterm_of @{theory}
 
   val test3 = let 
     val x = Bound 0 

@@ -112,7 +112,7 @@ structure RefineG_Transfer = struct
     case Logic.concl_of_goal (Thm.prop_of st) i of
       @{mpat "Trueprop (REFINEG_TRANSFER_ALIGN ?c _)"} => let
         val thy = Thm.theory_of_thm st
-        val c = Thm.cterm_of thy c
+        val c = Thm.global_cterm_of thy c
         val cT = Thm.ctyp_of_cterm c
         
         val rl = @{thm REFINEG_TRANSFER_ALIGNI}

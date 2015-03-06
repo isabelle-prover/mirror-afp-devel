@@ -726,7 +726,7 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
           val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
           val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
-          val vs_ctrms = map (Proof_Context.cterm_of ctxt' o Var) vs
+          val vs_ctrms = map (Thm.cterm_of ctxt' o Var) vs
           val assigns = map (lookup ty_parms) vs_tys          
           
           val thm' = cterm_instantiate (vs_ctrms ~~ assigns) thm

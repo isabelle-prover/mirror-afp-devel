@@ -171,7 +171,7 @@ ML {*
       val T = Thm.typ_of_cterm a
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
-        |> apply2 (Thm.ctyp_of thy)
+        |> apply2 (Thm.global_ctyp_of thy)
       val thm = Drule.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
         @{thm rel_ANNOT_eq}
     in

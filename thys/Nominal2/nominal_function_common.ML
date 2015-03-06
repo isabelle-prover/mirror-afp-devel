@@ -74,7 +74,7 @@ val get_function = NominalFunctionData.get o Context.Proof;
 
 fun lift_morphism ctxt f =
   let
-    fun term t = Thm.term_of (Drule.cterm_rule f (Proof_Context.cterm_of ctxt t))
+    fun term t = Thm.term_of (Drule.cterm_rule f (Thm.cterm_of ctxt t))
   in
     Morphism.morphism "lift_morphism"
       {binding = [],
@@ -85,11 +85,11 @@ fun lift_morphism ctxt f =
 
 fun import_function_data t ctxt =
   let
-    val ct = Proof_Context.cterm_of ctxt t
+    val ct = Thm.cterm_of ctxt t
     val inst_morph = lift_morphism ctxt o Thm.instantiate
 
     fun match (trm, data) =
-      SOME (morph_function_data data (inst_morph (Thm.match (Proof_Context.cterm_of ctxt trm, ct))))
+      SOME (morph_function_data data (inst_morph (Thm.match (Thm.cterm_of ctxt trm, ct))))
       handle Pattern.MATCH => NONE
   in
     get_first match (Item_Net.retrieve (get_function ctxt) t)

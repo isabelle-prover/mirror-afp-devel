@@ -180,7 +180,7 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
     let
       val (prms, p, _) = split_last2 (map snd params)
       val prm_tys = map (fastype_of o Thm.term_of) prms
-      val cperms = map (Proof_Context.cterm_of ctxt' o perm_const) prm_tys
+      val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
       val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ p_prms) 
@@ -254,7 +254,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
 
-      val cperms = map (Proof_Context.cterm_of ctxt o perm_const) prm_tys
+      val cperms = map (Thm.cterm_of ctxt o perm_const) prm_tys
       val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ qp_prms)
@@ -320,7 +320,7 @@ fun prove_strong_inductive pred_names rule_names avoids raw_induct intrs ctxt =
     val intr_vars_tys = map (fn t => rev (Term.add_vars (Thm.prop_of t) [])) intrs
     val intr_vars = (map o map) fst intr_vars_tys
     val intr_vars_substs = map2 (curry (op ~~)) intr_vars param_trms
-    val intr_cvars = (map o map) (Proof_Context.cterm_of ctxt o Var) intr_vars_tys
+    val intr_cvars = (map o map) (Thm.cterm_of ctxt o Var) intr_vars_tys
 
     val (intr_prems, intr_concls) = intrs
       |> map Thm.prop_of

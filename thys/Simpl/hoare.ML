@@ -1590,7 +1590,7 @@ fun cond_rename_bvars cond name thm =
                                          else Abs (x,T,ren t)
         | ren (t $ u) = ren t $ ren u
         | ren t = t;
-    in Thm.equal_elim (Thm.reflexive (Thm.cterm_of thy (ren prop))) thm end;
+    in Thm.equal_elim (Thm.reflexive (Thm.global_cterm_of thy (ren prop))) thm end;
 
 val rename_bvars = cond_rename_bvars (K true);
 
@@ -1654,7 +1654,7 @@ fun split_pair_apps ctxt thm =
           | _ =>  mk_subst (mk_subst subst t1) t2)
       | mk_subst subst t = subst;
 
-  val subst = map (fn (v,t) => (Thm.cterm_of thy v, Thm.cterm_of thy t)) (mk_subst [] t);
+  val subst = map (fn (v,t) => (Thm.global_cterm_of thy v, Thm.global_cterm_of thy t)) (mk_subst [] t);
 
   in full_simplify (put_simpset HOL_basic_ss ctxt addsimps [@{thm fst_conv}, @{thm snd_conv}])
        (Drule.instantiate_normalize ([],subst) thm)
@@ -1734,8 +1734,8 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
        val max_idx = fold Integer.max (map (Thm.maxidx_of o snd) tvar_rules) 0;
        val types = map (fn i => TVar (("z",i),Sign.defaultS thy))
                     (max_idx + 1 upto (max_idx + length vars));
-       fun ctyp n = Thm.ctyp_of thy (TVar (n,Sign.defaultS thy));
-       val pT = Thm.ctyp_of thy (foldr1 HOLogic.mk_prodT types);
+       fun ctyp n = Thm.global_ctyp_of thy (TVar (n,Sign.defaultS thy));
+       val pT = Thm.global_ctyp_of thy (foldr1 HOLogic.mk_prodT types);
        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,pT)],[]) r)) tvar_rules;
        val splits = mk_split_thms ctxt (vars ~~ types);
        val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
@@ -1744,8 +1744,8 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
   | adapt_aux_var ctxt _ ([]) tvar_rules =
       let
         val thy = Proof_Context.theory_of ctxt;
-        fun ctyp n = Thm.ctyp_of thy (TVar (n,Sign.defaultS thy));
-        val uT = Thm.ctyp_of thy HOLogic.unitT;
+        fun ctyp n = Thm.global_ctyp_of thy (TVar (n,Sign.defaultS thy));
+        val uT = Thm.global_ctyp_of thy HOLogic.unitT;
         val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,uT)],[]) r)) tvar_rules;
         val splits = [unit_meta,unit_object,unit_ex,unit_UN];
         val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
@@ -1780,7 +1780,7 @@ fun gen_call_rec_rule ctxt specs_name n rule =
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
-           instantiate' [] [SOME (Thm.cterm_of thy Specs)] rule
+           instantiate' [] [SOME (Thm.global_cterm_of thy Specs)] rule
            |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
@@ -2435,10 +2435,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                              in modify_return mods_abr return end
                         else return;*)
 
-          val cret    = Thm.cterm_of thy return';
+          val cret    = Thm.global_cterm_of thy return';
           val (_,_,return'_var,_,_,_) = nth (Thm.prems_of ModRet) to_prove_prem
                                                   |> dest_hoare |> #2 |> dest_call;
-          val creturn'_var  = Thm.cterm_of thy return'_var;
+          val creturn'_var  = Thm.global_cterm_of thy return'_var;
 
           val ModRet' = cterm_instantiate [(creturn'_var,cret)] ModRet;
           val modifies_thm_partial = if modif_spec_mode = Total
@@ -2612,7 +2612,7 @@ fun while_annotate_tac ctxt inv i st =
     val invVar = (#1 o strip_comb o #3 o dest_whileAnno o #2 o dest_hoare)
                   (List.last (Thm.prems_of annotateWhile));
     val annotate = cterm_instantiate
-                           [(Thm.cterm_of thy invVar, Thm.cterm_of thy lifted_inv)] annotateWhile;
+                           [(Thm.global_cterm_of thy invVar, Thm.global_cterm_of thy lifted_inv)] annotateWhile;
  in  ((trace_tac ctxt ("annotating While with: " ^ Syntax.string_of_term ctxt lifted_inv ))
        THEN
        compose_tac ctxt (false,annotate,1) i) st
@@ -2626,7 +2626,7 @@ fun cond_annotate_tac ctxt inv mode (_,i) st =
     val invVar = List.last (Thm.prems_of annotateCond) |> dest_hoare |> #3 |> strip_comb |> #1;
     val annotate =
       cterm_instantiate
-        [(Thm.cterm_of thy invVar, Thm.cterm_of thy lifted_inv)] annotateCond;
+        [(Thm.global_cterm_of thy invVar, Thm.global_cterm_of thy lifted_inv)] annotateCond;
   in  ((trace_tac ctxt ("annotating Cond with: "^ Syntax.string_of_term ctxt lifted_inv ))
        THEN
        compose_tac ctxt (false,annotate,5) i) st
@@ -2685,7 +2685,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (Thm.prop_of st) i));
     val J = fold_rev Term.abs pars (I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
-    val cterm = Proof_Context.cterm_of ctxt;
+    val cterm = Thm.cterm_of ctxt;
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
     val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
       o strip_comb o #2 o dest_hoare) (List.last (Thm.prems_of WhileG));
@@ -3282,8 +3282,8 @@ fun ex_tac ctxt vs st =
       let
         val rule  = Thm.lift_rule (Thm.cprem_of st i) (Drule.incr_indexes st exI);
         val (_$x) = HOLogic.dest_Trueprop (Logic.strip_assums_concl (hd (Thm.prems_of rule)));
-        val cx = Thm.cterm_of thy (head_of x);
-        val inst_rule = cterm_instantiate [(cx, Thm.cterm_of thy inst)] rule;
+        val cx = Thm.global_cterm_of thy (head_of x);
+        val inst_rule = cterm_instantiate [(cx, Thm.global_cterm_of thy inst)] rule;
       in (compose_tac ctxt (false,inst_rule, Thm.nprems_of exI) i st) end;
 
 

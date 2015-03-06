@@ -86,7 +86,7 @@ structure Select_Solve :SELECT_SOLVE = struct
   fun SELECT_FIRST tac st = if Thm.nprems_of st < 2 then tac st
   else let
     val thy = Thm.theory_of_thm st
-    val cert = Thm.cterm_of thy
+    val cert = Thm.global_cterm_of thy
 
     (*val _ = print_tac "Focusing" st*)
 

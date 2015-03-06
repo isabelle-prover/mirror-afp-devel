@@ -232,7 +232,7 @@ fun thm_1_of_2 ctxt thm =
     val p = concl |> dest_comb |> snd |> find_perm
     val goal = HOLogic.mk_Trueprop (HOLogic.mk_eq (mk_perm p prem, concl))
     val ([goal', p'], ctxt') = Variable.import_terms false [goal, p] ctxt
-    val thm' = Drule.cterm_instantiate [apply2 (Proof_Context.cterm_of ctxt') (p, mk_minus p')] thm
+    val thm' = Drule.cterm_instantiate [apply2 (Thm.cterm_of ctxt') (p, mk_minus p')] thm
   in
     Goal.prove ctxt' [] [] goal' (fn {context = ctxt'', ...} => tac ctxt'' thm thm' 1)
       |> singleton (Proof_Context.export ctxt' ctxt)

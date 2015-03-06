@@ -200,7 +200,7 @@ local
 
   fun strip_cprop ct =
     let val thy = Thm.theory_of_cterm ct
-    in ct |> Thm.term_of |> HOLogic.dest_Trueprop |> Thm.cterm_of thy
+    in ct |> Thm.term_of |> HOLogic.dest_Trueprop |> Thm.global_cterm_of thy
     end;
 
   (* }}} *)

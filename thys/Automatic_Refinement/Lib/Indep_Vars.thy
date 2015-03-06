@@ -26,7 +26,7 @@ ML {*
 
       fun indep_vars t st = let
         val thy = Thm.theory_of_thm st
-        val cert = Thm.cterm_of thy
+        val cert = Thm.global_cterm_of thy
 
         fun inst_of (name,vT,T,args) = let
           val Ts = map fastype_of args |> rev
@@ -75,7 +75,7 @@ end
       fun indep_vars t st = case strip_comb t of
         (v as Var (name,_),args) => let
           val thy = theory_of_thm st
-          val cert = Thm.cterm_of thy
+          val cert = Thm.global_cterm_of thy
   
           val T = fastype_of t
           val Ts = map fastype_of args |> rev
@@ -124,7 +124,7 @@ end
 
       fun indep_vars R st = let
         val vs = Term.add_vars R []
-        val cert = Thm.cterm_of (theory_of_thm st)
+        val cert = Thm.global_cterm_of (theory_of_thm st)
         val inst = map (fn v => (cert (Var v), cert (indep_var v))) vs
         val st' = Drule.instantiate_normalize ([],inst) st
           |> Conv.fconv_rule (Thm.beta_conversion true)

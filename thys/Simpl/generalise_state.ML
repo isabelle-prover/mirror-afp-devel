@@ -102,9 +102,9 @@ fun spec' cv thm =
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
-                ([(Thm.ctyp_of thy sVT,cvT)],
-                 [(Thm.cterm_of thy (Var (sP,vT --> HOLogic.boolT)),#2 (Thm.dest_comb ct2)),
-                 (Thm.cterm_of thy (Var (sV,vT)),cv)])
+                ([(Thm.global_ctyp_of thy sVT,cvT)],
+                 [(Thm.global_cterm_of thy (Var (sP,vT --> HOLogic.boolT)),#2 (Thm.dest_comb ct2)),
+                 (Thm.global_cterm_of thy (Var (sV,vT)),cv)])
                 spec
            end
       | Const (@{const_name Pure.all},_)
@@ -114,9 +114,9 @@ fun spec' cv thm =
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
-                ([(Thm.ctyp_of thy sVT,cvT)],
-                 [(Thm.cterm_of thy (Var (sP,vT --> propT)),ct2),
-                 (Thm.cterm_of thy (Var (sV,vT)),cv)])
+                ([(Thm.global_ctyp_of thy sVT,cvT)],
+                 [(Thm.global_cterm_of thy (Var (sP,vT --> propT)),ct2),
+                 (Thm.global_cterm_of thy (Var (sV,vT)),cv)])
                 meta_spec
            end
       | _ => raise THM ("spec'",0,[thm]))
@@ -138,11 +138,11 @@ fun split_thm qnt ctxt s T t =
   in (case qnt of
         Hol_ex => Goal.prove ctxt [] [] prop (fn _ => SplitState.ex_tac ctxt vars)
       | _ => let 
-               val rP = Thm.cterm_of thy (conc_of genRefl');
-               val thm0 = Thm.instantiate ([], [(rP, Thm.cterm_of thy prop)]) genRefl';
+               val rP = Thm.global_cterm_of thy (conc_of genRefl');
+               val thm0 = Thm.instantiate ([], [(rP, Thm.global_cterm_of thy prop)]) genRefl';
                fun elim_all v thm =
                  let 
-                   val cv = Thm.cterm_of thy v;
+                   val cv = Thm.global_cterm_of thy v;
                    val spc = Goal.protect 0 (spec' cv thm);
                  in genTrans SIMPLE_OF [thm,spc] end;
                val thm = fold elim_all vars thm0;
@@ -157,7 +157,7 @@ fun eta_expand ct =
     val mi = Thm.maxidx_of_cterm ct;
     val thy = Thm.theory_of_cterm ct;
     val T = domain_type (Thm.typ_of_cterm ct);
-    val x = Thm.cterm_of thy (Var (("s",mi+1),T));
+    val x = Thm.global_cterm_of thy (Var (("s",mi+1),T));
   in Thm.lambda x (Thm.apply ct x) end;
 
 fun split_abs ct =
@@ -214,7 +214,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                val thy = Proof_Context.theory_of ctxt; 
                val X = genImp |> Thm.concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop |> HOLogic.dest_Trueprop |> HOLogic.dest_imp |> #1 
-                       |> Thm.cterm_of thy;
+                       |> Thm.global_cterm_of thy;
                val genImp' = Thm.instantiate ([],[(X,cP)]) genImp;
              in genImp' SIMPLE_OF [thm] end)
        end 
@@ -226,7 +226,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                val thy = Proof_Context.theory_of ctxt; 
                val X = genImpl |> Thm.concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop  |> Logic.dest_implies |> #1 
-                       |> Thm.cterm_of thy;
+                       |> Thm.global_cterm_of thy;
                val genImpl' = Thm.instantiate ([],[(X,cP)]) genImpl;
              in genImpl' SIMPLE_OF [thm] end) 
        end
@@ -256,7 +256,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
   | decomp ctxt (Const (@{const_name "Trueprop"},_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
   | decomp ctxt (t, ct) = ([],[], fn [] => 
                          let val thy = Proof_Context.theory_of ctxt;
-                             val rP = Thm.cterm_of thy 
+                             val rP = Thm.global_cterm_of thy 
                                        (HOLogic.dest_Trueprop (dest_prop (conc_of genRefl)));
                          in  Thm.instantiate ([],[(rP,ct)]) genRefl end)
 
@@ -281,7 +281,7 @@ fun generalise_over_tac P i st =
   in (case P t of
        SOME t' =>
         let
-          val ct = Thm.cterm_of thy t';
+          val ct = Thm.global_cterm_of thy t';
           val meta_spec_protect' = cterm_instantiate [(cx,ct)] meta_spec_protect;
         in 
           (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))

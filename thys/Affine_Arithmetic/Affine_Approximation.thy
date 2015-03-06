@@ -1586,7 +1586,7 @@ fun approximate_affine (name, term) lthy =
   let
     val thy = Proof_Context.theory_of lthy
     val t_in = Syntax.read_term lthy term
-    val euclidify_thm = t_in |> Thm.cterm_of thy |> euclidify lthy
+    val euclidify_thm = t_in |> Thm.global_cterm_of thy |> euclidify lthy
     val t = euclidify_thm |> Thm.prop_of |> Logic.dest_equals |> snd
     val ty = fastype_of t
     val (atys, bty) = strip_type ty
@@ -1597,11 +1597,11 @@ fun approximate_affine (name, term) lthy =
     val (prec::thres::qs::args, ctxt') =
       Variable.variant_fixes ("prec"::"thres"::"qs"::map (fn _ => "x") atys) lthy
     val t_beta = fold (fn x => fn t => betapply (t, x)) (map (free aty) args) t
-    val ct = Thm.cterm_of thy t_beta
-    val atypat = TVar (("'a", 0), @{sort "{real_inner, scaleR, plus}" }) |> Thm.ctyp_of thy
-    val btypat = TVar (("'b", 0), @{sort "{scaleR, plus}" }) |> Thm.ctyp_of thy
+    val ct = Thm.global_cterm_of thy t_beta
+    val atypat = TVar (("'a", 0), @{sort "{real_inner, scaleR, plus}" }) |> Thm.global_ctyp_of thy
+    val btypat = TVar (("'b", 0), @{sort "{scaleR, plus}" }) |> Thm.global_ctyp_of thy
     val thms = map (Thm.instantiate (
-      [(atypat, Thm.ctyp_of thy aty), (btypat, Thm.ctyp_of thy bty)], [])) @{thms reify_euclarith_eqs}
+      [(atypat, Thm.global_ctyp_of thy aty), (btypat, Thm.global_ctyp_of thy bty)], [])) @{thms reify_euclarith_eqs}
     val thm = (floatify_conv ctxt' then_conv Reification.conv ctxt' thms) ct
     val interpret = Thm.prop_of thm |> Logic.dest_equals |> snd
     val (ea, xs) = dest_interpret_euclarith interpret
@@ -1632,12 +1632,12 @@ fun approximate_affine (name, term) lthy =
     val VSQS = conss (aformT aty) VS (Free (QS, HOLogic.listT (aformT aty)))
     val joints = HOLogic.mk_mem (vsqs, Joints_const aty $ VSQS)
       |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of thy
+      |> Thm.global_cterm_of thy
     val approx_args = Free (prec, HOLogic.natT) :: Free (thres, @{typ real}) :: VS @
       [Free (QS, HOLogic.listT (aformT aty))]
     val approx_term = betapplys (approx, approx_args)
     val approx_eq = HOLogic.mk_eq (approx_term, mk_Some (aformT bty) (Free (R, aformT bty)))
-      |> HOLogic.mk_Trueprop |> Thm.cterm_of thy
+      |> HOLogic.mk_Trueprop |> Thm.global_cterm_of thy
     val interpret_eq = HOLogic.mk_mem (HOLogic.mk_prod (vsqs, betapplys (t_in, vs)),
       Joints2_const aty bty $ VSQS $ Free (R, aformT bty))
       |> HOLogic.mk_Trueprop
@@ -1645,7 +1645,7 @@ fun approximate_affine (name, term) lthy =
       HOLogic.mk_eq
         (length_const aty $ Free (qs, HOLogic.listT aty),
           length_const (aformT aty) $ Free (QS, HOLogic.listT (aformT aty)))
-      |> HOLogic.mk_Trueprop |> Thm.cterm_of thy
+      |> HOLogic.mk_Trueprop |> Thm.global_cterm_of thy
     val ([joints_thm, approx_eq_thm, len_qs_eq_thm], lthy5) =
       Assumption.add_assumes [joints, approx_eq, len_qs_eq] lthy4
     val thm' = singleton (Proof_Context.export ctxt' lthy) thm

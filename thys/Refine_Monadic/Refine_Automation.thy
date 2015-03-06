@@ -107,7 +107,7 @@ fun mk_qualified basename q = Binding.qualify true basename (Binding.name q);
 fun extract_recursion_eqs exs basename orig_def_thm lthy = let
 
   val thy = Proof_Context.theory_of lthy
-  val cert = Thm.cterm_of thy
+  val cert = Thm.global_cterm_of thy
  
   val pat_net : extraction Item_Net.T =
     Item_Net.init (op= o apply2 #pattern) (fn {pattern, ...} => [pattern])
@@ -322,7 +322,7 @@ end;
       @{typ bool} => 
         Thm.term_of pat 
         |> HOLogic.mk_Trueprop 
-        |> Thm.cterm_of (Thm.theory_of_cterm pat)
+        |> Thm.global_cterm_of (Thm.theory_of_cterm pat)
     | _ => pat
 
   fun add_cd_pattern pat = 
@@ -398,7 +398,7 @@ setup {*
       val ctxt = Context.proof_of context
       val t = Proof_Context.read_term_pattern ctxt t
     in
-      (Thm.cterm_of thy t,(context,tks))
+      (Thm.global_cterm_of thy t,(context,tks))
     end
 
     fun do_p f = Scan.repeat1 parse_cpat >> (fn pats => 
@@ -435,7 +435,7 @@ ML {* Outer_Syntax.local_theory
     val thy = Proof_Context.theory_of lthy
     val pats = case pats of 
       [] => Refine_Automation.get_cd_patterns lthy
-    | l => map (Proof_Context.read_term_pattern lthy #> Thm.cterm_of thy #> 
+    | l => map (Proof_Context.read_term_pattern lthy #> Thm.global_cterm_of thy #> 
         Refine_Automation.prepare_cd_pattern) l
 
   in 

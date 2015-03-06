@@ -141,7 +141,7 @@ ML {*
         | _ => let
             val thy = Thm.theory_of_thm st
             val pattern = anti_unify_list candidates
-              |> Thm.cterm_of thy |> Thm.trivial
+              |> Thm.global_cterm_of thy |> Thm.trivial
             (*val _ = tracing (Display.string_of_thm_without_context pattern)*)
           in 
             rtac pattern i st

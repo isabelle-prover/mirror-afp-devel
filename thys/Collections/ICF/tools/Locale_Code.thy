@@ -136,7 +136,7 @@ structure Locale_Code :LOCALE_CODE = struct
     | DEL of cterm
 
     fun filter_pat_eq thy thms pat = let
-      val cpat = Thm.cterm_of thy pat;
+      val cpat = Thm.global_cterm_of thy pat;
     in 
       if (pat_nargs cpat = 0) then NONE
       else let 
@@ -161,7 +161,7 @@ structure Locale_Code :LOCALE_CODE = struct
       map_filter (filter_pat_eq thy thms) pats
     | pat_eqs_of_spec thy (Spec_Rules.Unknown,
         ([Const (@{const_name LC_DEL},_)$pat],_)) 
-        = [(DEL (Thm.cterm_of thy pat))]
+        = [(DEL (Thm.global_cterm_of thy pat))]
     | pat_eqs_of_spec _ _ = [];
   in
 

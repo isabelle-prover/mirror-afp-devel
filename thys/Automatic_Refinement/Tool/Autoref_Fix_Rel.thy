@@ -221,7 +221,7 @@ ML {*
     (* Internal use for hom-patterns, f and R are unified *)
     fun mk_CONSTRAINT_rl_atom thy (f,R) = let
       open Refine_Util
-      val ts = map (SOME o Thm.cterm_of thy) [f,R]
+      val ts = map (SOME o Thm.global_cterm_of thy) [f,R]
       val idx = Term.maxidx_term f (Term.maxidx_of_term R) + 1
       val thm = cterm_instantiate' ts 
         (Thm.incr_indexes idx @{thm CONSTRAINTI})
@@ -232,7 +232,7 @@ ML {*
     fun insert_CONSTRAINTS_tac i st = let
       val thy = Thm.theory_of_thm st
       val cs = constraints_of_goal i st 
-      |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> Thm.cterm_of thy)
+      |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> Thm.global_cterm_of thy)
     in
       Refine_Util.insert_subgoals_tac cs i st
     end
@@ -408,7 +408,7 @@ ML {*
             ^ Display.string_of_thm ctxt thm
           )
 
-          val R_cert = Proof_Context.cterm_of ctxt R
+          val R_cert = Thm.cterm_of ctxt R
 
           fun cnv ctxt ct = (case Thm.term_of ct of
             @{mpat "OP _ ::: _"} => all_conv
@@ -574,7 +574,7 @@ ML {*
           val T = fastype_of t
           val res = Const (@{const_name TYREL}, T --> HOLogic.boolT) $ t
         in
-          res |> HOLogic.mk_Trueprop |> Thm.cterm_of thy
+          res |> HOLogic.mk_Trueprop |> Thm.global_cterm_of thy
         end
         
         val relators = fold (add_relators_of_subgoal st) (i upto j) []

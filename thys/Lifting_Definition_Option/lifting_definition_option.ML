@@ -156,7 +156,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val ty_vars'' = names |> (fn names => map convert (names ~~ ty_vars))
         
         (* now instantiate inhabit thm to ty_vars' *)
-        val ctyp_of = Thm.ctyp_of (Proof_Context.theory_of lthy)
+        val ctyp_of = Thm.global_ctyp_of (Proof_Context.theory_of lthy)
         val ty_vars'_map = map ctyp_of sch_vars ~~ map ctyp_of ty_vars'
         val inhabit = Thm.instantiate (ty_vars'_map, []) inhabit
         val some_thm = @{thm someI_ex} OF [inhabit]
@@ -216,7 +216,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val (info, lthy) = let
         val t_fresh = subst_atomic_types (ty_vars ~~ fresh_ty_vars)
         val false_wit = HOLogic.mk_prod (Const (@{const_name undefined}, base_ty), @{term False})
-        val cterm_of = Proof_Context.cterm_of lthy
+        val cterm_of = Thm.cterm_of lthy
         val ex_thm = Ctr_Sugar_Util.cterm_instantiate_pos [NONE, SOME (cterm_of (t_fresh false_wit))] @{thm exI} 
         val imp = HOLogic.mk_imp (c, P $ b)
         val lam = lambda b (lambda c imp)
@@ -361,7 +361,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           val lthy = Local_Theory.note ((binding, []), [some_thm]) lthy |> snd
           val _ = debug_out ("step 9: derived thm " ^ Binding.name_of binding)
 
-          fun cterm_of t = SOME (Proof_Context.cterm_of lthy t)
+          fun cterm_of t = SOME (Thm.cterm_of lthy t)
           val eq = HOLogic.mk_eq (r_of_is, insert_abs abs fin_rhs) |> HOLogic.mk_Trueprop
           val pre_thm = @{thm valid_definition}
             |> Ctr_Sugar_Util.cterm_instantiate_pos 

@@ -165,8 +165,8 @@ fun in_context ctxt (f, pre_qs, pre_gs, pre_args, pre_rhs) F =
     val args = map inst pre_args
     val rhs = inst pre_rhs
 
-    val cqs = map (Proof_Context.cterm_of ctxt) qs
-    val (ags, ctxt') = fold_map Thm.assume_hyps (map (Proof_Context.cterm_of ctxt) gs) ctxt
+    val cqs = map (Thm.cterm_of ctxt) qs
+    val (ags, ctxt') = fold_map Thm.assume_hyps (map (Thm.cterm_of ctxt) gs) ctxt
 
     val import = fold Thm.forall_elim cqs
       #> fold Thm.elim_implies ags
@@ -240,7 +240,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
 
 fun mk_applied_form ctxt caTs thm =
   let
-    val xs = map_index (fn (i,T) => Proof_Context.cterm_of ctxt (Free ("x" ^ string_of_int i, T))) caTs (* FIXME: Bind xs properly *)
+    val xs = map_index (fn (i,T) => Thm.cterm_of ctxt (Free ("x" ^ string_of_int i, T))) caTs (* FIXME: Bind xs properly *)
   in
     fold (fn x => fn thm => Thm.combination thm (Thm.reflexive x)) xs thm
     |> Conv.fconv_rule (Thm.beta_conversion true)
@@ -250,7 +250,7 @@ fun mk_applied_form ctxt caTs thm =
 
 fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
   let
-    val cert = Proof_Context.cterm_of ctxt
+    val cert = Thm.cterm_of ctxt
     val newPs =
       map2 (fn Pname => fn MutualPart {cargTs, ...} =>
           Free (Pname, cargTs ---> HOLogic.boolT))

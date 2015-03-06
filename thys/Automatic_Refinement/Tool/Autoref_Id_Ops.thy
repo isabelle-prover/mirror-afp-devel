@@ -146,7 +146,7 @@ ML_val {*
   depth_of @{term "f [1] [2] []"};
 
   limit_depth 2 @{term "[1,2,3,4,5,6,7]"}
-  |> Thm.cterm_of @{theory}
+  |> Thm.global_cterm_of @{theory}
 
 *}
 
@@ -218,9 +218,9 @@ ML {*
     end
 
     fun mk_const_intf_thm thy f I = let
-      val fT = fastype_of f |> Thm.ctyp_of thy
-      val f = Thm.cterm_of thy f
-      val I = Thm.cterm_of thy I
+      val fT = fastype_of f |> Thm.global_ctyp_of thy
+      val f = Thm.global_cterm_of thy f
+      val I = Thm.global_cterm_of thy I
       val thm = Drule.instantiate' [SOME fT] [SOME f, SOME I] @{thm itypeI}
     in
       thm
@@ -287,7 +287,7 @@ ML {*
       val idx = Term.maxidx_of_term c + 1
       val typ_thms = mk_const_intf c (Var (("I",idx),@{typ interface}))
         |> HOLogic.mk_Trueprop
-        |> Thm.cterm_of thy
+        |> Thm.global_cterm_of thy
         |> Goal.init
         |> resolve_from_net_tac ctxt typ_net 1
         |> Seq.map Goal.conclude
@@ -629,7 +629,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     val res = Syntax.check_term ctxt res
     val res = singleton (Variable.export_terms ctxt orig_ctxt) res
       |> HOLogic.mk_Trueprop
-      |> Thm.cterm_of thy
+      |> Thm.global_cterm_of thy
 
     val thm = Goal.prove_internal ctxt [] res (fn _ => rtac @{thm REL_OF_INTF_I} 1)
   in thm end

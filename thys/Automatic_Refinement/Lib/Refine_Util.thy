@@ -453,7 +453,7 @@ ML {*
     fun import_cterms is_open cts ctxt = let
       val ts = map Thm.term_of cts
       val (ts',ctxt') = Variable.import_terms is_open ts ctxt
-      val cts' = cts~~ts' |> map (fn (ct,t') => Thm.cterm_of (Thm.theory_of_cterm ct) t')
+      val cts' = cts~~ts' |> map (fn (ct,t') => Thm.global_cterm_of (Thm.theory_of_cterm ct) t')
     in (cts',ctxt') end
 
 
@@ -467,7 +467,7 @@ ML {*
           map_filter (map_option Thm.term_of) instl);
 
       fun inst_of (v, ct) =
-        (Thm.cterm_of (Thm.theory_of_cterm ct) (Var v), ct)
+        (Thm.global_cterm_of (Thm.theory_of_cterm ct) (Var v), ct)
           handle TYPE (msg, _, _) => err msg;
 
       fun zip_vars xs ys =
@@ -537,7 +537,7 @@ ML {*
       fun mk_equals_ct (ct,ct') = let
         val thy = Context.merge (Thm.theory_of_cterm ct, Thm.theory_of_cterm ct');
       in
-        Logic.mk_equals (Thm.term_of ct, Thm.term_of ct') |> Thm.cterm_of thy
+        Logic.mk_equals (Thm.term_of ct, Thm.term_of ct') |> Thm.global_cterm_of thy
       end
 
       fun tag_ct name ct = let
@@ -546,7 +546,7 @@ ML {*
         val ty = fastype_of t;
         val t' = Const (@{const_name conv_tag},@{typ unit}-->ty-->ty)
           $Free (name,@{typ unit})$t;
-        val ct' = Thm.cterm_of thy t';
+        val ct' = Thm.global_cterm_of thy t';
       in ct' end
 
       fun mpat_conv pat ctxt ct = let
@@ -602,7 +602,7 @@ ML {*
     in if (Thm.term_of (Thm.lhs_of thm) aconv Thm.term_of ct)
       then thm
       else thm RS Thm.trivial
-        (Thm.mk_binop (Thm.cterm_of (Thm.theory_of_cterm ct) eq) ct (Thm.rhs_of thm)) 
+        (Thm.mk_binop (Thm.global_cterm_of (Thm.theory_of_cterm ct) eq) ct (Thm.rhs_of thm)) 
     end
 
     fun ite_conv cv cv1 cv2 ct =
@@ -633,7 +633,7 @@ ML {*
           tracing (Syntax.string_of_term ctxt goal)
         else ()
 
-        val goal = Proof_Context.cterm_of ctxt goal
+        val goal = Thm.cterm_of ctxt goal
 
         val thm = Goal.prove_internal ctxt [] goal (K tac)
       in

@@ -132,7 +132,7 @@ fun rulify_only_asm ctxt thm =
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
 fun instantiate' thy _ vars =
-  Ctr_Sugar_Util.cterm_instantiate_pos (map (Thm.cterm_of thy #> SOME) vars)
+  Ctr_Sugar_Util.cterm_instantiate_pos (map (Thm.global_cterm_of thy #> SOME) vars)
 
 fun permute_for_ind_thm ps xs ind_thm =
   let
