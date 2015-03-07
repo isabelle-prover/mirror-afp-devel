@@ -351,7 +351,7 @@ begin
       }
       note B = this
       then have "fst (u (Suc 0)) =  0" by auto
-      moreover have "fst (u (Suc 0)) =  Suc 0" by (cut_tac n2 = 0 in B, auto)
+      moreover have "fst (u (Suc 0)) =  Suc 0" using B [of 0] by auto
       ultimately show "(0) < fst (u (0))" by auto
     qed
 
