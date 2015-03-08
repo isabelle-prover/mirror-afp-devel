@@ -75,10 +75,10 @@ begin
         apply (intro conjI)
         apply blast
         apply clarify
-        apply (rule_tac m="m.\<alpha> ba" and 
-                        k=x and v=aa and 
-                        S'="(s.\<alpha> s - (it - {x}))" and 
-                        S="(s.\<alpha> s - it)" 
+        apply (rule_tac m2="m.\<alpha> ba" and 
+                        k2=x and v2=aa and 
+                        S'2="(s.\<alpha> s - (it - {x}))" and 
+                        S2="(s.\<alpha> s - it)" 
                         in i_aux)
         apply auto [3]
         apply auto [1]

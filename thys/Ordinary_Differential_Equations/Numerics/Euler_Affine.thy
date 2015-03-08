@@ -771,7 +771,7 @@ proof -
     fix t1 x
     assume "ivp.is_solution (euler_ivp t0 x0 t1) x"
     hence "\<And>t. t\<in>{t0 .. t1} \<Longrightarrow> x t = ivp.solution max_ivp t"
-      using J(5)[where K="{t0 .. t1}"]
+      using J(5)[where K2="{t0 .. t1}"]
       by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_closed_interval)
   } note solution_eqI = this
   interpret euler: unique_solution "(euler_ivp t0 x0 t1)"

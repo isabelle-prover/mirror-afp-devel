@@ -989,7 +989,7 @@ proof(induct \<phi> arbitrary: X s)
     apply rule
      apply (drule arg_cong[where f="toSet"])
      apply (clarsimp simp: odlist_all_iff)
-     apply (cut_tac s="(a, b)" and X="spr_knowledge envObs Y a' (aa, ba)" in Kknows.hyps)
+     apply (cut_tac s1="(a, b)" and X1="spr_knowledge envObs Y a' (aa, ba)" in Kknows.hyps)
       using Kknows(2) Kknows(3)
       apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n])[3]
 
@@ -1011,7 +1011,7 @@ next
       apply rule
        apply (drule arg_cong[where f="toSet"])
        apply (clarsimp simp: odlist_all_iff)
-       apply (cut_tac s="(a, b)" and X="spr_commonKnowledge envObs Y as (aa, ba)" in Kcknows.hyps)
+       apply (cut_tac s1="(a, b)" and X1="spr_commonKnowledge envObs Y as (aa, ba)" in Kcknows.hyps)
         using Kcknows(2) Kcknows(3)
         apply (auto simp add: S5n_rels_closed[OF spr_repMC_S5n])[2]
         apply (subst (asm) trancl_unfold) back back back (* FIXME clunky, why did this break? *)

@@ -980,7 +980,7 @@ next
             apply (cases n)
             apply (auto simp add: X_simps sfirst_Stream intro!: ereal_0_le_mult) []
             apply (simp add: X_simps)
-            apply (cut_tac t=y in Suc.IH[OF rtrancl_into_rtrancl[OF Suc.prems]])
+            apply (cut_tac t1=y in Suc.IH[OF rtrancl_into_rtrancl[OF Suc.prems]])
             apply simp
             apply simp
             done

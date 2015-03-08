@@ -354,7 +354,7 @@ next
         and tsC: "t' \<leadsto> s \<in> jkbpC"
         and tt': "jview a t = jview a t'"
       using simTrans[rule_format, where a=a and t=t] tC x' by auto
-    with Cons.hyps[where Y=Y] Cons(2) Cons(3) True S x ec show ?thesis
+    with Cons.hyps[where Y11=Y] Cons(2) Cons(3) True S x ec show ?thesis
       unfolding transUpdate_def
       apply auto
       apply (subst simTrans_simAbs_cong[where t=t' and ec'=x])

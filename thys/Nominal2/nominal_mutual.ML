@@ -330,16 +330,17 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
 
     val induct_thm = case induct_thms of
         [thm] => thm
-          |> Drule.gen_all 
+          |> Drule.gen_all (Variable.maxidx_of ctxt')
           |> Thm.permute_prems 0 1
           |> (fn thm => atomize_rule ctxt' (length (Thm.prems_of thm) - 1) thm)
       | thms => thms
-          |> map Drule.gen_all 
+          |> map (Drule.gen_all (Variable.maxidx_of ctxt'))
           |> map (Rule_Cases.add_consumes 1)
           |> snd o Rule_Cases.strict_mutual_rule ctxt'
           |> atomize_concl ctxt'
 
-    fun tac ctxt thm = rtac (Drule.gen_all thm) THEN_ALL_NEW assume_tac ctxt
+    fun tac ctxt thm =
+      rtac (Drule.gen_all (Variable.maxidx_of ctxt) thm) THEN_ALL_NEW assume_tac ctxt
   in
     Goal.prove ctxt' (flat arg_namess) [] goal
       (fn {context = ctxt'', ...} =>
@@ -476,15 +477,16 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
       (K (HEADGOAL (DETERM o etac G_aux_induct THEN_ALL_NEW asm_simp_tac simpset1)))
 
     fun aux_tac thm = 
-      rtac (Drule.gen_all thm) THEN_ALL_NEW (asm_full_simp_tac (simpset1 addsimps [inj_thm]))
+      rtac (Drule.gen_all (Variable.maxidx_of lthy''') thm) THEN_ALL_NEW
+      asm_full_simp_tac (simpset1 addsimps [inj_thm])
     
     val iff1_thm = Goal.prove lthy''' [] [] goal_iff1 
       (K (HEADGOAL (DETERM o etac G_aux_induct THEN' RANGE (map aux_tac GIntro_thms))))
-      |> Drule.gen_all
+      |> Drule.gen_all (Variable.maxidx_of lthy''')
     val iff2_thm = Goal.prove lthy''' [] [] goal_iff2 
       (K (HEADGOAL (DETERM o etac G_induct THEN' RANGE
         (map (aux_tac o simplify simpset0) GIntro_aux_thms))))
-      |> Drule.gen_all
+      |> Drule.gen_all (Variable.maxidx_of lthy''')
 
     val iff_thm = Goal.prove lthy''' [] [] (HOLogic.mk_Trueprop (HOLogic.mk_eq (G, G_aux)))
       (K (HEADGOAL (EVERY' ((map rtac @{thms ext ext iffI}) @ [etac iff2_thm, etac iff1_thm]))))

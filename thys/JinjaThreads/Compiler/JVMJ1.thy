@@ -672,7 +672,7 @@ next
     hence exec': "exec_meth_d (compP2 P) (compE2 e2) (stack_xlift (length [v]) (compxE2 e2 0 0)) t h ([] @ [v], loc, 0, None) ta h' (stk', loc', pc' - length (compE2 e1), xcp')"
       and pc': "pc' \<ge> length (compE2 e1)" by(safe dest!: BinOp_exec2D)simp_all
     then obtain PC' where PC': "pc' = length (compE2 e1) + PC'"
-      by -(rule that[where PC'="pc' - length (compE2 e1)"], simp)
+      by -(rule that[where PC'35="pc' - length (compE2 e1)"], simp)
     from exec' bisim2 obtain stk'' where stk': "stk' = stk'' @ [v]"
       and exec'': "exec_move_d P t e2 h ([], loc, 0, None) ta h' (stk'', loc', pc' - length (compE2 e1), xcp')"
       by(unfold exec_move_def)(drule (1) exec_meth_stk_split, auto)

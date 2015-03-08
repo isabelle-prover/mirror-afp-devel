@@ -1095,8 +1095,8 @@ contradiction. Hence $T$ is injective on $C$ and $T(C)$ is linearly independent.
       assume "\<not>inj_on T C"
       then obtain v w where "v\<in>C" "w\<in>C" "v\<noteq>w" "T v = T w" by (unfold inj_on_def, auto) 
       from this CinC show False 
-        apply (intro lc_in_ker[where ?D="{v,w}" and ?d="\<lambda>x. if x=v then \<one>\<^bsub>K\<^esub> else \<ominus>\<^bsub>K\<^esub>\<one>\<^bsub>K\<^esub>"
-          and ?v="v"])
+        apply (intro lc_in_ker[where ?D1="{v,w}" and ?d1="\<lambda>x. if x=v then \<one>\<^bsub>K\<^esub> else \<ominus>\<^bsub>K\<^esub>\<one>\<^bsub>K\<^esub>"
+          and ?v1="v"])
             by (auto simp add: V.module.lincomb_def hom_sum ring_subset_carrier 
               W.module.smult_minus_1 r_neg T_im)
     qed
@@ -1140,7 +1140,7 @@ independent. *}
       apply (subst finsum_reindex[where ?f="\<lambda>w. c' w \<odot>\<^bsub>W\<^esub> w" and ?h="T" and ?A="C", THEN sym])
          by auto
     with f c'fun cvnz v' show False
-      by (intro lc_in_ker[where ?D="C" and ?d="?c" and ?v="?f v'"], auto)
+      by (intro lc_in_ker[where ?D1="C" and ?d1="?c" and ?v1="?f v'"], auto)
   qed
   have C'_gen: "im.gen_set ?C'"
   proof - 

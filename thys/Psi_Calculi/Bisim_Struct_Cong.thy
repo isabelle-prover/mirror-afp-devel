@@ -499,7 +499,7 @@ proof -
       ultimately show "(\<Psi>, \<lparr>\<nu>*yvec\<rparr>T, \<lparr>\<nu>*yvec\<rparr>S) \<in> ?Y" by blast
     qed
     have C2: "\<And>\<Psi> T S y. \<lbrakk>(\<Psi>, T, S) \<in> ?Y; y \<sharp> \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>y\<rparr>T, \<lparr>\<nu>y\<rparr>S) \<in> ?Y"
-      by(drule_tac yvec="[y]" in C1) auto
+      by(drule_tac yvec2="[y]" in C1) auto
 
     have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>((P \<parallel> Q) \<parallel> R) \<leadsto>[?Y] \<lparr>\<nu>*xvec\<rparr>(P \<parallel> (Q \<parallel> R))"
     proof -

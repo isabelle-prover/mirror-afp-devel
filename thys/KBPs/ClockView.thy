@@ -722,7 +722,7 @@ proof(induct \<phi> arbitrary: X s)
     apply rule
      apply (drule arg_cong[where f="ODList.toSet"])
      apply (clarsimp simp: odlist_all_iff)
-     apply (cut_tac s="w'" and X="clock_knowledge envObs Y a' s" in Kknows.hyps)
+     apply (cut_tac s3="w'" and X3="clock_knowledge envObs Y a' s" in Kknows.hyps)
       using Kknows(2) Kknows(3)
       apply (auto simp add: S5n_rels_closed[OF clock_repMC_S5n])[3]
 
@@ -744,7 +744,7 @@ next
       apply rule
        apply (drule arg_cong[where f="ODList.toSet"])
        apply (clarsimp simp: odlist_all_iff)
-       apply (cut_tac s="w'" and X="clock_commonKnowledge envObs Y as s" in Kcknows.hyps)
+       apply (cut_tac s3="w'" and X3="clock_commonKnowledge envObs Y as s" in Kcknows.hyps)
         using Kcknows(2) Kcknows(3)
         apply (auto simp add: S5n_rels_closed[OF clock_repMC_S5n])[3]
         apply (subst (asm) trancl_unfold) back back back

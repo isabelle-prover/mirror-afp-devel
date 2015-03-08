@@ -3036,7 +3036,7 @@ next
     with exec have "pc' \<ge> length (compE2 e1)"
       by(simp add: compxE2_size_convs stack_xlift_compxE2)(auto split: bop.splits elim!: exec_meth_drop_xt_pc)
     then obtain PC where PC: "pc' = PC + length (compE2 e1)"
-      by -(rule_tac PC="pc' - length (compE2 e1)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 e1)" in that, simp)
     from pc bisim1 obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     with exec pc have "exec_meth_d (compP2 P) (compE2 e1 @ compE2 e2)
    (stack_xlift (length STK) (compxE2 e1 0 0 @ compxE2 e2 (length (compE2 e1)) (Suc 0))) t h (stk @ STK, loc, length (compE2 e1) + 0, xcp) ta h' (stk', loc', pc', xcp')"
@@ -3211,7 +3211,7 @@ next
     with exec have "pc' \<ge> length (compE2 a)"
       by(simp add: compxE2_size_convs stack_xlift_compxE2)(auto elim!: exec_meth_drop_xt_pc)
     then obtain PC where PC: "pc' = PC + length (compE2 a)"
-      by -(rule_tac PC="pc' - length (compE2 a)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 a)" in that, simp)
     from pc bisim1 obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     with exec pc have "exec_meth_d (compP2 P) (compE2 a @ compE2 i)
    (stack_xlift (length STK) (compxE2 a 0 0 @ compxE2 i (length (compE2 a)) (Suc 0))) t h (stk @ STK, loc, length (compE2 a) + 0, xcp) ta h' (stk', loc', pc', xcp')"
@@ -3350,7 +3350,7 @@ next
     with pc have pc: "pc = length (compE2 a)" by simp
     with exec' have "pc' \<ge> length (compE2 a)" by -(erule exec_meth_drop_xt_pc, auto)
     then obtain PC where PC: "pc' = PC + length (compE2 a)"
-      by -(rule_tac PC="pc' - length (compE2 a)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 a)" in that, simp)
     from pc bisim1 obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     with exec PC pc
     have "exec_meth_d (compP2 P) ((compE2 a @ compE2 i) @ compE2 e @ [AStore, Push Unit]) (stack_xlift (length STK) (compxE2 a 0 0 @ shift (length (compE2 a)) (compxE2 i 0 (Suc 0))) @ shift (length (compE2 a @ compE2 i)) (compxE2 e 0 (length STK + Suc (Suc 0)))) t
@@ -3412,7 +3412,7 @@ next
     with exec'[of arbitrary] have "pc' \<ge> length (compE2 a @ compE2 i)"
       by-(erule exec_meth_drop_xt_pc, auto simp add: shift_compxE2 stack_xlift_compxE2)
     then obtain PC where PC: "pc' = PC + length (compE2 a) + length (compE2 i)"
-      by -(rule_tac PC="pc' - length (compE2 a @ compE2 i)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 a @ compE2 i)" in that, simp)
     from pc bisim2 obtain v' where stk: "stk = [v']" and xcp: "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     from exec'[of v'] 
     have "exec_meth_d (compP2 P) (compE2 e @ [AStore, Push Unit]) (stack_xlift (length (v' # v # STK)) (compxE2 e 0 0)) t
@@ -3657,7 +3657,7 @@ next
     with exec have "pc' \<ge> length (compE2 e)"
       by(simp add: compxE2_size_convs stack_xlift_compxE2)(auto elim!: exec_meth_drop_xt_pc)
     then obtain PC where PC: "pc' = PC + length (compE2 e)"
-      by -(rule_tac PC="pc' - length (compE2 e)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 e)" in that, simp)
     from pc bisim1 obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     with exec pc have "exec_meth_d (compP2 P) (compE2 e @ compE2 e2)
       (stack_xlift (length STK) (compxE2 e 0 0 @ compxE2 e2 (length (compE2 e)) (Suc 0))) t 
@@ -3798,7 +3798,7 @@ next
     with exec have "pc' \<ge> length (compE2 obj)"
       by(simp add: compxEs2_size_convs stack_xlift_compxE2)(auto elim!: exec_meth_drop_xt_pc)
     then obtain PC where PC: "pc' = PC + length (compE2 obj)"
-      by -(rule_tac PC="pc' - length (compE2 obj)" in that, simp)
+      by -(rule_tac PC34="pc' - length (compE2 obj)" in that, simp)
     from pc bisimObj obtain v where [simp]: "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
     show ?thesis
     proof(cases ps)
