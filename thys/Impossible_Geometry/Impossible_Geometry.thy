@@ -1316,13 +1316,11 @@ theorem impossibility_of_doubling_the_cube:
 subsection {* Proving the impossibility of trisecting an angle *}
 
 lemma cos_3:
+  fixes x :: "'a::{real_normed_field,banach}"
   shows "cos(3 * x) = 4 * (cos x)^3 - 3 * (cos x)"
 proof-
   have "cos (3 * x) = cos (x + 2*x)"
     by simp
-  also have "... = cos x * cos (2 * x) - sin x * sin (2 * x)" 
-    using sin_cos_add_lemma [of "x" "2*x"]
-    by (metis cos_add)
   also have "... = cos x * (cos x * cos x - sin x * sin x) - sin x * (sin x * cos x + cos x * sin x)"
     by (metis cos_add mult_2 sin_add)
   also have "... = cos x * (cos x * cos x - (1 - cos x * cos x)) - sin x * (sin x * cos x + cos x * sin x)"
@@ -1331,12 +1329,8 @@ proof-
     by (auto simp add: algebra_simps) 
   also have "... = 2* cos x * cos x * cos x - cos x - (1 - cos x * cos x) * cos x - (1 - cos x * cos x) * cos x"
     using sin_squared_eq [of x] by (auto simp add: power2_eq_square)
-  also have "... = 2 * cos x *cos x * cos x - cos x + - 2 * ((1 - cos x * cos x) * cos x)"
-    by auto
-  also have "... = 4 * cos x * cos x * cos x - 3 * cos x"
-    by (simp add: algebra_simps)
   also have "... = 4 * cos x ^3 - 3 * cos x"
-    by (simp add: power_def)
+    by (simp add: algebra_simps power_def)
   finally show ?thesis .
 qed
 

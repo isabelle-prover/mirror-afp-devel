@@ -9,14 +9,12 @@ section{*Simple base cases*}
 
 text{*Upper bound for @{term"x\<ge>0"}*}
 lemma sin_le_arg:
-  assumes "0 \<le> x"
-    shows "sin x \<le> x"
-  apply (rule gen_upper_bound_increasing [OF assms])
-  apply (intro derivative_eq_intros | simp)+
-  apply (auto simp: algebra_simps)
-  done
+  fixes x :: real
+    shows "0 \<le> x \<Longrightarrow> sin x \<le> x"
+  by (fact sin_x_le_x)
 
 lemma cos_ge_1_arg:
+  fixes x :: real
   assumes "0 \<le> x"
     shows "1 - x \<le> cos x"
   apply (rule gen_lower_bound_increasing [OF assms])
@@ -26,6 +24,7 @@ lemma cos_ge_1_arg:
 lemmas sin_Taylor_0_upper_bound_pos = sin_le_arg --{*MetiTarski bound*}
 
 lemma cos_Taylor_1_lower_bound:
+  fixes x :: real
   assumes "0 \<le> x"
     shows "(1 - x^2 / 2) \<le> cos x"
   apply (rule gen_lower_bound_increasing [OF assms])
@@ -34,6 +33,7 @@ lemma cos_Taylor_1_lower_bound:
   done
 
 lemma sin_Taylor_1_lower_bound:
+  fixes x :: real
   assumes "0 \<le> x"
     shows "(x - x ^ 3 / 6) \<le> sin x"
   apply (rule gen_lower_bound_increasing [OF assms])

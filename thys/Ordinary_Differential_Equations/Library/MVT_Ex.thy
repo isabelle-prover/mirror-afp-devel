@@ -18,7 +18,7 @@ lemma MVT_wrong: assumes
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
     by (auto intro!: derivative_eq_intros)
-  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain t where t: "0 < t" "t < 1" and
+  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain t::real where t: "0 < t" "t < 1" and
     "cos 1 - cos 2 = sin (1 + t)" "sin 2 - sin 1 = cos (1 + t)"
     by auto
   moreover have "t \<in> {0..0.3} \<longrightarrow> cos (1 + t) > sin 2 - sin 1"
@@ -37,7 +37,7 @@ lemma MVT_wrong2: assumes
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
     by (auto intro!: derivative_eq_intros)
-  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain x where x: "1 \<le> x" "x \<le> 2" and
+  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain x::real where x: "1 \<le> x" "x \<le> 2" and
     "cos 2 - cos 1 = - sin x" "sin 2 - sin 1 = cos x"
     by auto
   moreover have
