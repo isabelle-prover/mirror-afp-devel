@@ -546,7 +546,7 @@ proof -
 qed
 
 lemma scaler_column_fst_QR_decomposition:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes i: "i>j"
   and r: "rank A = ncols A"
   shows "column i (fst (QR_decomposition A)) \<bullet> column j A = 0"
@@ -579,7 +579,7 @@ lemma R_Qi_Aj:
   unfolding row_transpose by auto
 
 lemma setsums_columns_Q_0:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(\<Sum>x\<in>{column i (fst (QR_decomposition A)) |i. i>b}. x \<bullet> column b A * x $ a) = 0"
 proof (rule setsum.neutral, auto) 
@@ -589,7 +589,7 @@ proof (rule setsum.neutral, auto)
 qed
 
 lemma QR_decomposition_mult:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "A = (fst (QR_decomposition A)) ** (snd (QR_decomposition A))"
 proof -
@@ -639,7 +639,7 @@ qed
 
 
 lemma upper_triangular_snd_QR_decomposition:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "upper_triangular (snd (QR_decomposition A))"
 proof (unfold upper_triangular_def, auto)
@@ -667,7 +667,7 @@ qed
 
 
 lemma invertible_snd_QR_decomposition:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "invertible (snd (QR_decomposition A))"
 proof (rule upper_triangular_invertible)
@@ -693,7 +693,7 @@ proof (rule upper_triangular_invertible)
 qed
 
 lemma QR_decomposition:
-  fixes A::"real^'n::{enum, mod_type}^'m::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "A = fst (QR_decomposition A) ** snd (QR_decomposition A) \<and>
   pairwise orthogonal (columns (fst (QR_decomposition A))) \<and> 
@@ -712,7 +712,7 @@ lemma QR_decomposition:
 
 
 lemma QR_decomposition_square:
-  fixes A::"real^'n::{enum, mod_type}^'n::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'n::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "A = fst (QR_decomposition A) ** snd (QR_decomposition A) \<and>
   orthogonal_matrix (fst (QR_decomposition A)) \<and>
@@ -729,7 +729,7 @@ lemma QR_decomposition_square:
 text{*QR for computing determinants*}
 
 lemma det_QR_decomposition:
-  fixes A::"real^'n::{enum, mod_type}^'n::{enum, mod_type}"
+  fixes A::"real^'n::{mod_type}^'n::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "\<bar>det A\<bar> = \<bar>(setprod (\<lambda>i. snd(QR_decomposition A)$i$i) (UNIV::'n set))\<bar>"
 proof -

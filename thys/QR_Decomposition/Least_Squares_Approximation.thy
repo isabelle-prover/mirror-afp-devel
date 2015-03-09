@@ -523,7 +523,7 @@ qed
 
 
 lemma in_set_least_squares_solution_eq_full_rank_QR:
-  fixes A::"real^'cols::{enum, mod_type}^'rows::{enum, mod_type}"
+  fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(x \<in> set_least_squares_solution A b) = ((snd (QR_decomposition A)) *v x = transpose (fst (QR_decomposition A)) *v b)"
 proof -
@@ -560,7 +560,7 @@ qed
 
 (*TODO: Maybe demonstrate that in this case there's only one solution.*)
 corollary in_set_least_squares_solution_eq_full_rank_QR2:
-  fixes A::"real^'cols::{enum, mod_type}^'rows::{enum, mod_type}"
+  fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(x \<in> set_least_squares_solution A b) = (x = matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b)"
 proof -
@@ -585,7 +585,7 @@ lemma set_least_squares_solution_unique_solution:
     empty_iff insertI1 r subsetI subset_singletonD)
 
 lemma set_least_squares_solution_unique_solution_QR:
-  fixes A::"real^'cols::{enum, mod_type}^'rows::{enum, mod_type}"
+  fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
   shows "(set_least_squares_solution A b) = {matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b}"
   by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_solution_eq_full_rank_QR2 insertI1 r subsetI subset_singletonD)
