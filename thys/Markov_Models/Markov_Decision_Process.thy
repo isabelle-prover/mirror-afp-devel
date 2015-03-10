@@ -70,7 +70,7 @@ lemma set_K_cfg: "set_pmf (K_cfg cfg) = cont cfg ` set_pmf (action cfg)"
   by (simp add: K_cfg_def set_map_pmf)
 
 lemma nn_integral_K_cfg: "(\<integral>\<^sup>+cfg. f cfg \<partial>K_cfg cfg) = (\<integral>\<^sup>+s. f (cont cfg s) \<partial>action cfg)"
-  by (simp add: K_cfg_def map_pmf.rep_eq nn_integral_distr)
+  by (simp add: K_cfg_def map_pmf_rep_eq nn_integral_distr)
 
 subsection {* Markov Decision Process *}
 
@@ -245,7 +245,7 @@ proof -
           using `0 < e` measure_pmf.emeasure_space_1[of D]
           by (subst nn_integral_add) (auto intro: cfg_on_cfg' nn_integral_nonneg)
         also have "(\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) = (\<integral>\<^sup>+t. ?v t \<partial>K_cfg ?cfg)"
-          by (simp add: cfg map_pmf.rep_eq nn_integral_distr)
+          by (simp add: cfg map_pmf_rep_eq nn_integral_distr)
         also have "\<dots> \<le> (SUP cfg:cfg_on s. (\<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg))"
           by (auto intro!: SUP_upper intro!: cfg_of_cfg_onI D cfg_on_cfg')
         finally show "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) + e"
@@ -276,7 +276,7 @@ proof -
           by (auto simp add: nn_integral_nonneg max_def emeasure_pmf_single intro: mult_ac)
         also have "\<dots> = (\<integral>\<^sup>+cfg. ?v cfg * indicator {t} (state cfg) \<partial>K_cfg ?cfg)"
           unfolding C using cfg
-          by (auto simp add: nn_integral_distr map_pmf.rep_eq split: split_indicator
+          by (auto simp add: nn_integral_distr map_pmf_rep_eq split: split_indicator
                    simp del: nn_integral_indicator_singleton
                    intro!: nn_integral_cong)
         also have "\<dots> \<le> (\<integral>\<^sup>+cfg. ?v cfg \<partial>K_cfg ?cfg)"
@@ -405,7 +405,7 @@ proof -
       have "?cfg \<in> cfg_on s"
         by (auto intro: D cfg_on_cfg' cfg_of_cfg_onI)
       then have "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t + e \<partial>D)"
-        by (rule INF_lower2) (auto simp: cfg map_pmf.rep_eq nn_integral_distr v_cfg' AE_measure_pmf_iff intro!: nn_integral_mono_AE)
+        by (rule INF_lower2) (auto simp: cfg map_pmf_rep_eq nn_integral_distr v_cfg' AE_measure_pmf_iff intro!: nn_integral_mono_AE)
       also have "\<dots> = (\<integral>\<^sup>+ t. ?p t \<partial>D) + e"
         using `0 < e` by (simp add: nn_integral_add E_inf_nonneg measure_pmf.emeasure_space_1[simplified])
       finally show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t \<partial>D) + e" .

@@ -2148,7 +2148,7 @@ proof -
   have eq: "\<And>x y. (if x = y then 1 else 0) = indicator {y} x" by auto
 
   have intK: "\<And>f x. (\<integral>x. (f x :: real) \<partial>K' (Some x)) = (\<integral>x. f (Some x) \<partial>K x)"
-    by (simp add: K'_def integral_distr map_pmf.rep_eq)
+    by (simp add: K'_def integral_distr map_pmf_rep_eq)
 
   { fix m and x y :: 's
     have "K2.p (Some x) (Some y) m = p x y m"
@@ -2215,7 +2215,7 @@ proof -
       apply (subst K2.p_def[symmetric])
       apply (subst K2.p_Suc')
       apply (subst K'_def)
-      apply (simp add: map_pmf.rep_eq integral_distr K_p_eq)
+      apply (simp add: map_pmf_rep_eq integral_distr K_p_eq)
       done
     then have "measure N {y} = \<P>(\<omega> in K2.T None. \<omega> !! n = Some y)"
       by simp }
@@ -2336,11 +2336,8 @@ proof -
   proof (rule KN.stationary_distributionD(1)[OF KN_essential _ KN.stationary_distributionI_pair[OF N(1)]])
     show "K2.stationary_distribution ?N'"
       unfolding K2.stationary_distribution_def
-      apply (subst N(1)[unfolded stationary_distribution_def])
-      apply (auto simp: K'_def bind_pmf_def map_pmf_comp)
-      unfolding bind_pmf_def[symmetric]
-      apply (simp add: bind_assoc_pmf bind_return_pmf''[symmetric])
-      done
+      by (subst N(1)[unfolded stationary_distribution_def])
+         (auto intro!: bind_pmf_cong simp: K'_def map_pmf_def bind_assoc_pmf bind_return_pmf)
     show "countable (C \<times> Some`C)"
       using C by auto
     show "set_pmf (pair_pmf N (map_pmf Some N)) \<subseteq> C \<times> Some ` C"

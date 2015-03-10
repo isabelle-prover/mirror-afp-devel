@@ -224,7 +224,7 @@ lemma measurable_indis[measurable]: "Measurable.pred (count_space UNIV) (\<lambd
 lemma integral_trans:
   "proper (fst cf) \<Longrightarrow>
     (\<integral>x. f x \<partial>trans cf) = (\<Sum>i<brn (fst cf). wt (fst cf) (snd cf) i * f (cont_eff cf i))"
-  unfolding trans_def map_pmf.rep_eq
+  unfolding trans_def map_pmf_rep_eq
   apply (simp add: integral_distr)
   apply (subst integral_measure_pmf[of "{..< brn (fst cf)}"])
   apply (auto simp: set_pmf_wt mult_ac wt_pmf.rep_eq split: prod.split)
