@@ -19,6 +19,10 @@ subsection {* Optional linear orders and comparators *}
 class ccompare =
   fixes ccompare :: "'a comparator option"
   assumes ccompare: "\<And> comp. ccompare = Some comp \<Longrightarrow> comparator comp"
+begin
+abbreviation cless :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless \<equiv> lt_of_comp (the (ID ccompare))"
+abbreviation cless_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless_eq \<equiv> le_of_comp (the (ID ccompare))"
+end
 
 class pre_corder = 
   fixes corder :: "(('a \<Rightarrow> 'a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'a \<Rightarrow> bool)) option"
@@ -48,10 +52,12 @@ begin
 lemma ID_corder: "\<And>less_eq less. ID corder = Some (less_eq, less) \<Longrightarrow> class.linorder less_eq less"
 unfolding ID_def id_apply by(rule corder)
 
-abbreviation cless_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless_eq \<equiv> fst (the (ID corder))"
-abbreviation cless :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless \<equiv> snd (the (ID corder))"
-
 end
+
+lemma (in ccompare) ID_ccompare: 
+  "\<And>c. ID ccompare = Some c \<Longrightarrow> class.linorder (le_of_comp c) (lt_of_comp c)"
+  unfolding ID_def id_apply using ccompare comparator.linorder
+  by (intro ccompare comparator.linorder)
 
 syntax "_CORDER" :: "type => logic" ("(1CORDER/(1'(_')))")
 
@@ -80,21 +86,6 @@ end
 *}
 
 
-
-context corder begin
-
-lemma cless_eq_conv_cless: 
-  fixes a b :: "'a"
-  assumes "ID CORDER('a) \<noteq> None"
-  shows "cless_eq a b \<longleftrightarrow> cless a b \<or> a = b"
-proof -
-  from assms interpret linorder cless_eq "cless :: 'a \<Rightarrow> 'a \<Rightarrow> bool"
-    by(clarsimp simp add: ID_corder)
-  show ?thesis by(rule le_less)
-qed
-
-end
-
 definition is_corder :: "'a :: corder itself \<Rightarrow> bool"
 where "is_corder _ \<longleftrightarrow> ID CORDER('a) \<noteq> None"
 
@@ -114,6 +105,18 @@ in [(@{syntax_const "_CCOMPARE"}, K ccompare_tr)] end
 definition is_ccompare :: "'a :: ccompare itself \<Rightarrow> bool"
 where "is_ccompare _ \<longleftrightarrow> ID CCOMPARE('a) \<noteq> None"
 
+context ccompare
+begin
+lemma cless_eq_conv_cless: 
+  fixes a b :: "'a"
+  assumes "ID CCOMPARE('a) \<noteq> None"
+  shows "cless_eq a b \<longleftrightarrow> cless a b \<or> a = b"
+proof -
+  from assms interpret linorder cless_eq "cless :: 'a \<Rightarrow> 'a \<Rightarrow> bool"
+    by(clarsimp simp add: ID_ccompare)
+  show ?thesis by(rule le_less)
+qed
+end
 
 subsection {* Generator for the @{class ccompare}- and @{class ccompare_order}-classes *}
 
@@ -205,29 +208,30 @@ derive (no) ccompare_order Predicate.pred
 
 subsection {* Proper intervals *}
 
-class cproper_interval = corder + 
+class cproper_interval = ccompare + 
   fixes cproper_interval :: "'a option \<Rightarrow> 'a option \<Rightarrow> bool"
   assumes cproper_interval: 
-  "\<lbrakk> ID CORDER('a) \<noteq> None; finite (UNIV :: 'a set) \<rbrakk>
+  "\<lbrakk> ID CCOMPARE('a) \<noteq> None; finite (UNIV :: 'a set) \<rbrakk>
   \<Longrightarrow> class.proper_interval cless cproper_interval"
 begin
 
-lemma ID_corder_interval: 
-  "\<lbrakk> ID CORDER('a) = Some (leq, lt); finite (UNIV :: 'a set) \<rbrakk>
-  \<Longrightarrow> class.linorder_proper_interval leq lt cproper_interval"
+lemma ID_ccompare_interval: 
+  "\<lbrakk> ID CCOMPARE('a) = Some c; finite (UNIV :: 'a set) \<rbrakk>
+  \<Longrightarrow> class.linorder_proper_interval (le_of_comp c) (lt_of_comp c) cproper_interval"
 using cproper_interval
-by(simp add: ID_corder class.linorder_proper_interval_def)
+by(simp add: ID_ccompare class.linorder_proper_interval_def)
 
 end
 
 instantiation unit :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: unit proper_interval)"
-instance by(intro_classes)(simp add: cproper_interval_unit_def corder_unit_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: compare_order_class.ord_defs cproper_interval_unit_def ccompare_unit_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation bool :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: bool proper_interval)"
-instance by(intro_classes)(simp add: cproper_interval_bool_def corder_bool_def ID_Some proper_interval_class.axioms)
+instance by(intro_classes)
+  (simp add: cproper_interval_bool_def ord_defs ccompare_bool_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation nat :: cproper_interval begin
@@ -237,53 +241,60 @@ end
 
 instantiation int :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: int proper_interval)"
-instance by intro_classes (simp add: cproper_interval_int_def corder_int_def ID_Some proper_interval_class.axioms)
+instance by intro_classes 
+  (simp add: cproper_interval_int_def ord_defs ccompare_int_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation integer :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: integer proper_interval)"
-instance by intro_classes (simp add: cproper_interval_integer_def corder_integer_def ID_Some proper_interval_class.axioms)
+instance by intro_classes 
+  (simp add: cproper_interval_integer_def ord_defs ccompare_integer_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation natural :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: natural proper_interval)"
-instance by intro_classes (simp add: cproper_interval_natural_def corder_natural_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_natural_def ord_defs ccompare_natural_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation nibble :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: nibble proper_interval)"
-instance by intro_classes (simp add: cproper_interval_nibble_def corder_nibble_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_nibble_def ord_defs ccompare_nibble_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation char :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: char proper_interval)"
-instance by intro_classes (simp add: cproper_interval_char_def corder_char_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_char_def ord_defs ccompare_char_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation Enum.finite_1 :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: Enum.finite_1 proper_interval)"
-instance by intro_classes (simp add: cproper_interval_finite_1_def corder_finite_1_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_finite_1_def ord_defs ccompare_finite_1_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation Enum.finite_2 :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: Enum.finite_2 proper_interval)"
-instance by intro_classes (simp add: cproper_interval_finite_2_def corder_finite_2_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_finite_2_def ord_defs ccompare_finite_2_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation Enum.finite_3 :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: Enum.finite_3 proper_interval)"
-instance by intro_classes (simp add: cproper_interval_finite_3_def corder_finite_3_def ID_Some proper_interval_class.axioms)
+instance by intro_classes (simp add: cproper_interval_finite_3_def ord_defs ccompare_finite_3_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation Enum.finite_4 :: cproper_interval begin
 definition "(cproper_interval :: Enum.finite_4 proper_interval) _ _ = undefined"
-instance by intro_classes(simp add: corder_finite_4_def ID_None)
+instance by intro_classes(simp add: ord_defs ccompare_finite_4_def ID_None)
 end
 
 instantiation Enum.finite_5 :: cproper_interval begin
 definition "(cproper_interval :: Enum.finite_5 proper_interval) _ _ = undefined"
-instance by intro_classes(simp add: corder_finite_5_def ID_None)
+instance by intro_classes(simp add: ord_defs ccompare_finite_5_def ID_None)
 end
+
+lemma lt_of_comp_sum: "lt_of_comp (comparator_sum ca cb) sx sy = (
+  case sx of Inl x \<Rightarrow> (case sy of Inl y \<Rightarrow> lt_of_comp ca x y | Inr y \<Rightarrow> True)
+   | Inr x \<Rightarrow> (case sy of Inl y \<Rightarrow> False | Inr y \<Rightarrow> lt_of_comp cb x y))" 
+    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: sum.split)
 
 instantiation sum :: (cproper_interval, cproper_interval) cproper_interval begin
 fun cproper_interval_sum :: "('a + 'b) proper_interval" where
@@ -298,12 +309,13 @@ fun cproper_interval_sum :: "('a + 'b) proper_interval" where
 | "cproper_interval_sum (Some (Inr x)) (Some (Inr y)) \<longleftrightarrow> cproper_interval (Some x) (Some y)"
 instance
 proof
-  assume "ID CORDER('a + 'b) \<noteq> None" "finite (UNIV :: ('a + 'b) set)"
-  then obtain leq_a lt_a leq_b lt_b 
-    where A: "ID CORDER('a) = Some (leq_a, lt_a)" "finite (UNIV :: 'a set)"
-    and B: "ID CORDER('b) = Some (leq_b, lt_b)" "finite (UNIV :: 'b set)" 
-    by(fastforce simp add: corder_sum_def ID_Some ID_None split: option.split_asm)
-  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] corder_sum_def ID_Some
+  assume "ID CCOMPARE('a + 'b) \<noteq> None" "finite (UNIV :: ('a + 'b) set)"
+  then obtain c_a c_b
+    where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
+    and B: "ID CCOMPARE('b) = Some c_b" "finite (UNIV :: 'b set)" 
+    by(fastforce simp add: ccompare_sum_def ID_Some ID_None split: option.split_asm)
+  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] 
+    lt_of_comp_sum ccompare_sum_def ID_Some
     and [split] = sum.split
   show "class.proper_interval cless (cproper_interval :: ('a + 'b) proper_interval)"
   proof
@@ -321,6 +333,11 @@ proof
 qed
 end
 
+
+lemma lt_of_comp_prod: "lt_of_comp (comparator_prod c_a c_b) (x1,x2) (y1,y2) = 
+    (lt_of_comp c_a x1 y1 \<or> le_of_comp c_a x1 y1 \<and> lt_of_comp c_b x2 y2)"
+    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: order.split)
+
 instantiation prod :: (cproper_interval, cproper_interval) cproper_interval begin
 fun cproper_interval_prod :: "('a \<times> 'b) proper_interval" where
   "cproper_interval_prod None None \<longleftrightarrow> True"
@@ -332,20 +349,21 @@ fun cproper_interval_prod :: "('a \<times> 'b) proper_interval" where
    \<not> cless y1 x1 \<and> cproper_interval (Some x2) (Some y2)"
 instance
 proof
-  assume "ID CORDER('a \<times> 'b) \<noteq> None" "finite (UNIV :: ('a \<times> 'b) set)"
-  then obtain leq_a lt_a leq_b lt_b 
-    where A: "ID CORDER('a) = Some (leq_a, lt_a)" "finite (UNIV :: 'a set)"
-    and B: "ID CORDER('b) = Some (leq_b, lt_b)" "finite (UNIV :: 'b set)"
-    by(fastforce simp add: corder_prod_def ID_Some ID_None finite_prod split: option.split_asm)
-  interpret a!: linorder leq_a lt_a by(rule ID_corder)(rule A) 
-  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] corder_prod_def ID_Some
-    and [split] = sum.split
+  assume "ID CCOMPARE('a \<times> 'b) \<noteq> None" "finite (UNIV :: ('a \<times> 'b) set)"
+  then obtain c_a c_b 
+    where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
+    and B: "ID CCOMPARE('b) = Some c_b" "finite (UNIV :: 'b set)"
+    by(fastforce simp add: ccompare_prod_def ID_Some ID_None finite_prod split: option.split_asm)
+  interpret a!: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A)
+  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] 
+    ccompare_prod_def lt_of_comp_prod ID_Some
   show "class.proper_interval cless (cproper_interval :: ('a \<times> 'b) proper_interval)" using A B
-    by unfold_locales (auto 4 4)
+    by (unfold_locales, auto 4 4)
 qed
 end
 
-instantiation list :: (corder) cproper_interval begin
+
+instantiation list :: (ccompare) cproper_interval begin
 definition cproper_interval_list :: "'a list proper_interval"
 where "cproper_interval_list xso yso = undefined"
 instance by(intro_classes)(simp add: infinite_UNIV_listI)
@@ -363,6 +381,12 @@ where "cproper_interval_literal xso yso = undefined"
 instance by(intro_classes)(simp add: infinite_UNIV_literal)
 end
 
+lemma lt_of_comp_option: "lt_of_comp (comparator_option c) sx sy = (
+  case sx of None \<Rightarrow> (case sy of None \<Rightarrow> False | Some y \<Rightarrow> True)
+   | Some x \<Rightarrow> (case sy of None \<Rightarrow> False | Some y \<Rightarrow> lt_of_comp c x y))" 
+    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: option.split)
+
+
 instantiation option :: (cproper_interval) cproper_interval begin
 fun cproper_interval_option :: "'a option proper_interval" where
   "cproper_interval_option None None \<longleftrightarrow> True"
@@ -372,11 +396,12 @@ fun cproper_interval_option :: "'a option proper_interval" where
 | "cproper_interval_option (Some x) (Some (Some y)) \<longleftrightarrow> cproper_interval x (Some y)"
 instance
 proof
-  assume "ID CORDER('a option) \<noteq> None" "finite (UNIV :: 'a option set)"
-  then obtain leq_a lt_a
-    where A: "ID CORDER('a) = Some (leq_a, lt_a)" "finite (UNIV :: 'a set)"
-    by(auto simp add: corder_option_def ID_def)
-  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] corder_option_def ID_Some
+  assume "ID CCOMPARE('a option) \<noteq> None" "finite (UNIV :: 'a option set)"
+  then obtain c_a
+    where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
+    by(auto simp add: ccompare_option_def ID_def split: option.split_asm)
+  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] 
+    ccompare_option_def lt_of_comp_option ID_Some
   show "class.proper_interval cless (cproper_interval :: 'a option proper_interval)" using A
   proof(unfold_locales)
     fix x y :: "'a option"
@@ -389,6 +414,7 @@ proof
 qed
 end
 
+(*
 instantiation set :: (cproper_interval) cproper_interval begin
 fun cproper_interval_set :: "'a set proper_interval" where
   [code]: "cproper_interval_set None None \<longleftrightarrow> True"
@@ -408,6 +434,7 @@ proof
     by unfold_locales auto
 qed
 
+
 lemma Complement_cproper_interval_set_Complement:
   fixes A B :: "'a set"
   assumes corder: "ID CORDER('a) \<noteq> None"
@@ -416,11 +443,12 @@ using assms
 by(clarsimp simp add: corder_set_def ID_Some)(metis double_complement linorder.Compl_set_less_Compl[OF ID_corder])
 
 end
+*)
 
 instantiation "fun" :: (type, type) cproper_interval begin
 text {* No interval checks on functions needed because we have not defined an order on them. *}
 definition "cproper_interval = (undefined :: ('a \<Rightarrow> 'b) proper_interval)"
-instance by(intro_classes)(simp add: corder_fun_def ID_None)
+instance by(intro_classes)(simp add: ccompare_fun_def ID_None)
 end
 
 end

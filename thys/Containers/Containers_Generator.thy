@@ -3,6 +3,7 @@
 theory Containers_Generator
 imports 
   "../Datatype_Order_Generator/Generator_Aux"
+  "../Datatype_Order_Generator/Derive_Manager"
   "~~/src/HOL/Library/Phantom_Type"
   Containers_Auxiliary
 begin
