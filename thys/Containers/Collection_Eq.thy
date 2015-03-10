@@ -4,6 +4,7 @@
 theory Collection_Eq imports
   Containers_Auxiliary
   Containers_Generator
+  "../Old_Datatype_Order_Generator/Derive_Aux"
 begin
 
 section {* A type class for optional equality testing *}

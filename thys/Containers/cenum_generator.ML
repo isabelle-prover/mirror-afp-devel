@@ -23,13 +23,14 @@ fun mk_none_cenum ty =
   in res
 end
 
-val derive_no_cenum = derive_none @{const_name cEnum} @{sort cenum} mk_none_cenum 
+fun derive_no_cenum ty thy = 
+  derive_none @{const_name cEnum} @{sort cenum} mk_none_cenum ty thy |> fst 
 
 fun derive_cenum typ_name param thy = 
   let
     val _ = if (param = "no") then false else  
       error "currently only parameter 'no' is accepted for class cenum"
-    in derive_no_cenum typ_name thy
+    in derive_no_cenum typ_name thy 
   end
 
 val _ = Theory.setup  
