@@ -25,8 +25,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 section {* Hash functions *}
 
 theory Hash_Generator
-imports "../Collections/Lib/HashCode"
-  Derive_Manager
+imports 
+  "../Collections/Lib/HashCode"
+  Derive_Aux
 begin
 
 subsection "Introduction"

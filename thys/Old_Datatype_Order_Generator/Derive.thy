@@ -27,7 +27,7 @@ theory Derive
 imports 
   Order_Generator
   Hash_Generator
-  Countable_Generator
+  "../Datatype_Order_Generator/Countable_Generator/Countable_Generator"
 begin
 
 text{*
