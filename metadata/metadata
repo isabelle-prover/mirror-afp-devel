@@ -2364,6 +2364,9 @@ abstract = The theory of hereditarily finite sets is formalised, following
 	The definition of addition for the HF sets follows Kirby.
 	This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
 	which has been <a href="Incompleteness.shtml">formalised separately</a>.
+extra-history =
+  Change history:
+  [2015-02-23]: Added the theory "Finitary" defining the class of types that can be embedded in hf, including int, char, option, list, etc.
 
 [Incompleteness]
 title = Gödel's Incompleteness Theorems

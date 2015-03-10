@@ -22,7 +22,6 @@ session Koenigsberg_Friendship_Base = HOL +
     "~~/src/HOL/Library/DAList"
     "~~/src/HOL/Library/FuncSet"
     "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Number_Theory/Binomial"
     "~~/src/HOL/Number_Theory/Cong"
     "~~/src/HOL/Number_Theory/Fib"
     "~~/src/HOL/Number_Theory/MiscAlgebra"

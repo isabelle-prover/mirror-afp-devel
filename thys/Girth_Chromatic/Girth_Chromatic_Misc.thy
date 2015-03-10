@@ -2,7 +2,6 @@ theory Girth_Chromatic_Misc
 imports
   "~~/src/HOL/Main"
   "~~/src/HOL/Library/Extended_Real"
-  "~~/src/HOL/Number_Theory/Binomial"
 begin
 
 section {* Auxilliary lemmas and setup *}
@@ -183,7 +182,7 @@ using assms by (rule eventually_elim2) (rule order_trans)
 
 lemma eventually_sequentially_lessI:
   assumes "\<And>x. c < x \<Longrightarrow> P x"
-  shows "eventually P sequentially" 
+  shows "eventually P sequentially"
 unfolding eventually_sequentially
 by (rule exI[where x="Suc c"]) (auto intro: assms)
 

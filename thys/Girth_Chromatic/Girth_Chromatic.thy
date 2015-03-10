@@ -3,8 +3,6 @@ imports
   Ugraphs
   Girth_Chromatic_Misc
   "~~/src/HOL/Probability/Probability"
-
-  "~~/src/HOL/Number_Theory/Binomial"
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
@@ -71,7 +69,7 @@ lemma sets_eq: "sets P = Pow (Pow S_edges)" by (simp add: P_def sets_point_measu
 lemma emeasure_eq:
   "emeasure P A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
   using finite_edges p_prob
-  by (simp add: P_def space_point_measure emeasure_point_measure_finite 
+  by (simp add: P_def space_point_measure emeasure_point_measure_finite
     sets_point_measure emeasure_notin_sets)
 
 lemma integrable_P[intro, simp]: "integrable P (f::_ \<Rightarrow> real)"
@@ -79,7 +77,7 @@ lemma integrable_P[intro, simp]: "integrable P (f::_ \<Rightarrow> real)"
 
 lemma borel_measurable_P[measurable]: "f \<in> borel_measurable P"
   unfolding P_def by simp
-  
+
 lemma prob_space_P: "prob_space P"
 proof
   show "emeasure P (space P) = 1" -- {* Sum of probabilities equals 1 *}
@@ -519,7 +517,7 @@ proof -
       using `k < n`
       by (simp add: card_image[OF inj_last_Cons] card_lists_distinct_length_eq fact_div_fact)
     then show ?thesis by (simp add: real_eq_of_nat)
-  qed                                    
+  qed
   finally show ?thesis by simp
 qed
 
@@ -528,7 +526,7 @@ theorem girth_chromatic:
   fixes l :: nat
   shows "\<exists>G. uwellformed G \<and> l < girth G \<and> l < chromatic_number G"
 proof -
-  def k \<equiv> "max 3 l" 
+  def k \<equiv> "max 3 l"
   def \<epsilon> \<equiv> "1 / (2 * k)"
   def p \<equiv> "\<lambda>(n :: nat). real n powr (\<epsilon> - 1)"
 
@@ -554,9 +552,9 @@ proof -
     fix n :: nat assume A: "Suc k \<le> n" "0 < p n \<and> p n < 1"
     then interpret pG: edge_space n "p n" by unfold_locales auto
     have "1 \<le> n" using A by auto
-  
+
     def mean_short_count \<equiv> "\<integral>es. short_count (?ug n es) \<partial> pG.P"
-  
+
     have mean_short_count_le: "mean_short_count \<le> (k - 2) * n powr (\<epsilon> * k)"
     proof -
       have small_empty: "\<And>es k. k \<le> 2 \<Longrightarrow> short_cycles (edge_space.edge_ugraph n es) k = {}"
@@ -583,7 +581,7 @@ proof -
             using Suc False unfolding short_cycles_def by (auto simp: not_le)
         qed
       qed
-  
+
       have "mean_short_count = (\<Sum>i=3..k. \<integral>es. card {c \<in> ucycles (?ug n es). uwalk_length c = i} \<partial> pG.P)"
         unfolding mean_short_count_def short_count_conv
         by (subst integral_setsum) (auto intro: pG.integral_finite_singleton)
@@ -598,7 +596,7 @@ proof -
           powr_realpow[symmetric] powr_mult[symmetric] powr_add[symmetric])
       finally show ?thesis by (simp add: real_eq_of_nat)
     qed
-  
+
     have "pG.prob {es \<in> space pG.P. n/2 \<le> short_count (?ug n es)} \<le> mean_short_count / (n/2)"
       unfolding mean_short_count_def using `1 \<le> n`
       by (intro pG.Markov_inequality) (auto simp: short_count_def)
