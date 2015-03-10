@@ -2,7 +2,7 @@ section {* Loading derive-commands *}
 theory Derive
 imports 
   "Comparator_Generator/Compare_Generator"
-  "Comparator_Generator/Compare_Standard_Types"
+  "Comparator_Generator/Compare_Instances"
   "Countable_Generator/Countable_Generator"
 begin
 

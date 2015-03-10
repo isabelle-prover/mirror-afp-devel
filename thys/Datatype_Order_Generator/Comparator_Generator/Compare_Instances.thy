@@ -1,4 +1,4 @@
-theory Compare_Standard_Types
+theory Compare_Instances
 imports
   Compare_Generator
 begin
