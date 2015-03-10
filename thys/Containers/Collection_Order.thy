@@ -6,7 +6,7 @@ theory Collection_Order
 imports
   Set_Linorder
   Containers_Generator
-  "../Datatype_Order_Generator/Order_Generator"
+  "../Datatype_Order_Generator/Comparator_Generator/Compare_Instances"
 begin
 
 chapter {* Light-weight containers *}
@@ -14,11 +14,35 @@ text_raw {* \label{chapter:light-weight:containers} *}
 
 section {* A linear order for code generation *}
 
-subsection {* Optional linear orders *}
+subsection {* Optional linear orders and comparators *}
 
-class corder = 
-  fixes corder :: "(('a \<Rightarrow> 'a \<Rightarrow> bool) * ('a \<Rightarrow> 'a \<Rightarrow> bool)) option"
+class ccompare =
+  fixes ccompare :: "'a comparator option"
+  assumes ccompare: "\<And> comp. ccompare = Some comp \<Longrightarrow> comparator comp"
+
+class pre_corder = 
+  fixes corder :: "(('a \<Rightarrow> 'a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'a \<Rightarrow> bool)) option"
+
+class corder = pre_corder + 
   assumes corder: "\<And>less_eq less. corder = Some (less_eq, less) \<Longrightarrow> class.linorder less_eq less"
+
+class ccompare_order = ccompare + pre_corder +
+  assumes corder: "corder = map_option (\<lambda> comp. (le_of_comp comp, lt_of_comp comp)) ccompare"    
+
+subclass (in ccompare_order) corder
+proof (unfold class.corder_def, intro allI impI) 
+  fix less_eq less :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assume "corder = Some (less_eq, less)"
+  from corder[unfolded this] obtain comp where 
+    comp: "ccompare = Some comp" and id: "less_eq = le_of_comp comp" "less = lt_of_comp comp"
+    by (cases ccompare, auto)
+  from ccompare[OF comp] interpret compare comp unfolding class.compare_def .
+  interpret compare_order comp less_eq less 
+    by (unfold_locales, auto simp: id)
+  show "class.linorder less_eq less" ..
+qed
+
+context corder
 begin
 
 lemma ID_corder: "\<And>less_eq less. ID corder = Some (less_eq, less) \<Longrightarrow> class.linorder less_eq less"
@@ -55,6 +79,8 @@ in [(@{const_syntax corder}, corder_tr')]
 end
 *}
 
+
+
 context corder begin
 
 lemma cless_eq_conv_cless: 
@@ -72,7 +98,24 @@ end
 definition is_corder :: "'a :: corder itself \<Rightarrow> bool"
 where "is_corder _ \<longleftrightarrow> ID CORDER('a) \<noteq> None"
 
-subsection {* Generator for the @{class corder}-class *}
+syntax "_CCOMPARE" :: "type => logic"  ("(1CCOMPARE/(1'(_')))")
+
+parse_translation {*
+let
+  fun ccompare_tr [ty] =
+     (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "ccompare"} $
+       (Syntax.const @{type_syntax option} $ 
+         (Syntax.const @{type_syntax fun} $ ty $ 
+           (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax order}))))
+    | ccompare_tr ts = raise TERM ("ccompare_tr", ts);
+in [(@{syntax_const "_CCOMPARE"}, K ccompare_tr)] end
+*}
+
+definition is_ccompare :: "'a :: ccompare itself \<Rightarrow> bool"
+where "is_ccompare _ \<longleftrightarrow> ID CCOMPARE('a) \<noteq> None"
+
+
+subsection {* Generator for the @{class ccompare}- and @{class ccompare_order}-classes *}
 
 text {*
 This generator registers itself at the derive-manager for the class
@@ -112,119 +155,28 @@ of the @{class corder} classes are derived.
 lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<Longrightarrow> a = Some (le',lt') \<Longrightarrow>
   class.linorder le' lt'" by auto
 
-ML_file "corder_generator.ML"
+lemma comparator_subst: "c1 = c2 \<Longrightarrow> comparator c1 \<Longrightarrow> comparator c2" by blast
+  
+lemma (in compare) compare_subst: "\<And> comp. compare = comp \<Longrightarrow> comparator comp"
+  using local.comparator_compare by blast  
+
+lemma is_corder_is_ccompare[simp, code_post]: "is_corder TYPE('a :: ccompare_order) = (is_ccompare TYPE('a))"
+  unfolding is_corder_def is_ccompare_def corder ID_def
+  by simp
+
+ML_file "ccompare_generator.ML"
 
 subsection {* Instantiations for HOL types *}
 
-derive (linorder) corder unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3
-derive (no) corder Enum.finite_4 Enum.finite_5
-derive (linorder) corder integer natural nibble char String.literal
+derive (linorder) compare_order 
+  Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
+derive (compare_order) ccompare_order 
+  unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
+derive (no) ccompare_order Enum.finite_4 Enum.finite_5
 
-instantiation sum :: (corder, corder) corder begin
-definition "CORDER('a + 'b) = 
-  (case ID CORDER('a) of None \<Rightarrow> None
-   | Some (leq_a, lt_a) \<Rightarrow>
-     case ID CORDER('b) of None \<Rightarrow> None
-     | Some (leq_b, lt_b) \<Rightarrow> 
-       Some
-         (\<lambda>x y. case x of Inl xl \<Rightarrow> (case y of Inl yl \<Rightarrow> leq_a xl yl | _ \<Rightarrow> True)
-                | Inr xr \<Rightarrow> (case y of Inr yr \<Rightarrow> leq_b xr yr | _ \<Rightarrow> False),
-          \<lambda>x y. case x of Inl xl \<Rightarrow> (case y of Inl yl \<Rightarrow> lt_a xl yl | _ \<Rightarrow> True)
-                | Inr xr \<Rightarrow> (case y of Inr yr \<Rightarrow> lt_b xr yr | _ \<Rightarrow> False)))"
-instance
-proof(intro_classes)
-  fix leq lt
-  assume "CORDER('a + 'b) = Some (leq, lt)"
-  then obtain leq_a lt_a leq_b lt_b 
-    where a: "ID CORDER('a) = Some (leq_a, lt_a)" 
-    and b: "ID CORDER('b) = Some (leq_b, lt_b)"
-    and leq: "\<And>x y. leq x y = (case x of Inl xl \<Rightarrow> (case y of Inl yl \<Rightarrow> leq_a xl yl | _ \<Rightarrow> True)
-                               | Inr xr \<Rightarrow> (case y of Inr yr \<Rightarrow> leq_b xr yr | _ \<Rightarrow> False))"
-    and lt: "\<And>x y. lt x y = (case x of Inl xl \<Rightarrow> (case y of Inl yl \<Rightarrow> lt_a xl yl | _ \<Rightarrow> True)
-                             | Inr xr \<Rightarrow> (case y of Inr yr \<Rightarrow> lt_b xr yr | _ \<Rightarrow> False))"
-    by(fastforce simp add: corder_sum_def split: option.split_asm)
-  from a interpret a!: linorder leq_a lt_a by(rule ID_corder)
-  from b interpret b!: linorder leq_b lt_b by(rule ID_corder)
-  show "class.linorder leq lt"
-    by(unfold_locales)(auto simp add: lt leq split: sum.splits)
-qed
-end
+derive ccompare_order sum list option prod
 
-lemma is_corder_sum [simp, code_post]:
-  "is_corder TYPE('a + 'b) \<longleftrightarrow> is_corder TYPE('a :: corder) \<and> is_corder TYPE('b :: corder)"
-by(simp add: is_corder_def corder_sum_def ID_None ID_Some split: option.split)
-
-instantiation prod :: (corder, corder) corder begin
-definition "CORDER('a * 'b) =
-  (case ID CORDER('a) of None \<Rightarrow> None
-   | Some (leq_a, lt_a) \<Rightarrow>
-     case ID CORDER('b) of None \<Rightarrow> None
-     | Some (leq_b, lt_b) \<Rightarrow>
-       Some (less_eq_prod leq_a lt_a leq_b, less_prod leq_a lt_a lt_b))"
-instance
-proof
-  fix leq lt
-  assume "CORDER('a * 'b) = Some (leq, lt)"
-  then obtain leq_a lt_a leq_b lt_b 
-    where a: "ID CORDER('a) = Some (leq_a, lt_a)" 
-    and b: "ID CORDER('b) = Some (leq_b, lt_b)"
-    and leq: "leq = less_eq_prod leq_a lt_a leq_b"
-    and lt: "lt = less_prod leq_a lt_a lt_b"
-    by(auto simp add: corder_prod_def split: option.split_asm prod.split_asm)
-  from a b have "class.linorder leq_a lt_a" "class.linorder leq_b lt_b"
-    by(blast intro: ID_corder)+
-  thus "class.linorder leq lt" unfolding leq lt by(rule linorder_prod)
-qed
-end
-
-lemma is_corder_prod [simp, code_post]:
-  "is_corder TYPE('a \<times> 'b) \<longleftrightarrow> is_corder TYPE('a :: corder) \<and> is_corder TYPE('b :: corder)"
-by(simp add: is_corder_def corder_prod_def ID_None ID_Some split: option.split)
-
-instantiation list :: (corder) corder begin
-definition "CORDER('a list) =
-  map_option (\<lambda>(leq, lt). (\<lambda>xs ys. ord.lexordp_eq lt xs ys, ord.lexordp lt)) (ID CORDER('a))"
-instance
-proof
-  fix leq lt
-  assume "CORDER('a list) = Some (leq, lt)"
-  then obtain leq_a lt_a where a: "ID CORDER('a) = Some (leq_a, lt_a)"
-    and leq: "\<And>xs ys. leq xs ys \<longleftrightarrow> ord.lexordp_eq lt_a xs ys"
-    and lt: "\<And>xs ys. lt xs ys \<longleftrightarrow> ord.lexordp lt_a xs ys"
-    by(auto simp add: corder_list_def)
-  from a interpret a!: linorder leq_a lt_a by(rule ID_corder)
-  show "class.linorder leq lt" unfolding leq[abs_def] lt[abs_def]
-    by(rule a.lexordp_linorder)
-qed
-end
-
-lemma is_corder_list [simp, code_post]:
-  "is_corder TYPE('a list) \<longleftrightarrow> is_corder TYPE('a :: corder)"
-by(simp add: is_corder_def corder_list_def ID_def)
-
-instantiation option :: (corder) corder begin
-definition "CORDER('a option) =
-  map_option (\<lambda>(leq, lt). (\<lambda>x y. case x of None \<Rightarrow> True | Some x' \<Rightarrow> case y of None \<Rightarrow> False | Some y' \<Rightarrow> leq x' y',
-                           \<lambda>x y. case y of None \<Rightarrow> False | Some y' \<Rightarrow> case x of None \<Rightarrow> True | Some x' \<Rightarrow> lt x' y')) 
-    (ID CORDER('a))"
-instance
-proof
-  fix leq lt
-  assume "CORDER('a option) = Some (leq, lt)"
-  then obtain leq_a lt_a where a: "ID CORDER('a) = Some (leq_a, lt_a)"
-    and leq: "\<And>x y. leq x y \<longleftrightarrow> (case x of None \<Rightarrow> True | Some x' \<Rightarrow> case y of None \<Rightarrow> False | Some y' \<Rightarrow> leq_a x' y')"
-    and lt: "\<And>x y. lt x y \<longleftrightarrow> (case y of None \<Rightarrow> False | Some y' \<Rightarrow> case x of None \<Rightarrow> True | Some x' \<Rightarrow> lt_a x' y')"
-    by(auto simp add: corder_option_def)
-  from a interpret a!: linorder leq_a lt_a by(rule ID_corder)
-  show "class.linorder leq lt" by(unfold_locales)(auto simp add: leq lt split: option.splits)
-qed
-end
-
-lemma is_corder_option [simp, code_post]:
-  "is_corder TYPE('a option) \<longleftrightarrow> is_corder TYPE('a :: corder)"
-by(simp add: is_corder_def corder_option_def ID_def)
-
-derive (no) corder "fun"
+derive (no) ccompare_order "fun"
 
 lemma is_corder_fun [simp]: "\<not> is_corder TYPE('a \<Rightarrow> 'b)"
 by(simp add: is_corder_def corder_fun_def ID_None)
@@ -249,7 +201,7 @@ lemma corder_set_code [code]:
   "CORDER('a :: corder set) = (case ID CORDER('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some (cless_eq_set, cless_set))"
 by(clarsimp simp add: corder_set_def ID_Some split: option.split)
 
-derive (no) corder Predicate.pred
+derive (no) ccompare_order Predicate.pred
 
 subsection {* Proper intervals *}
 

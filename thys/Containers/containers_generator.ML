@@ -11,7 +11,7 @@ sig
     -> string -> string -> theory -> theory
 
   (*                const_name, sort, mk_none,         typ_name *)
-  val derive_none : string -> sort -> (typ -> term) -> string -> theory -> theory
+  val derive_none : string -> sort -> (typ -> term) -> string -> theory -> theory * thm
 
   (*                             const_name  base_name *)
   val register_is_c_dots_lemma : string -> string -> thm -> theory -> theory
@@ -19,11 +19,26 @@ sig
   (*                           typ    const_name  defs      base_name *)
   val derive_is_c_dots_lemma : typ -> string -> thm list -> string -> theory -> theory
 
+  val mk_Some : term -> term
+
+  (* p1 /\ ... /\ pn *)
+  val HOLogic_list_conj : term list -> term
+
 end
 
 structure Containers_Generator : CONTAINERS_GENERATOR =
-struct
-open Derive_Aux; 
+struct 
+
+fun HOLogic_list_conj [] = @{term True}
+  | HOLogic_list_conj [x] = x
+  | HOLogic_list_conj (x :: xs) = HOLogic.mk_conj (x, HOLogic_list_conj xs)
+
+fun mk_Some t = 
+  let
+    val ty = fastype_of t
+  in
+    Const (@{const_name Some}, ty --> Type (@{type_name option}, [ty])) $ t
+  end
 
 fun mk_set_map_impl choices ty choice thy = 
   let 
@@ -43,12 +58,12 @@ fun derive_set_map_impl smi_const smi_sort choices typ_name choice thy =
     val base_name = Long_Name.base_name typ_name
     val smi_name = Long_Name.base_name smi_const
     val _ = writeln ("use " ^ choice ^ " as " ^ smi_name ^ " for type " ^ base_name)
-    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val (ty,vs) = Generator_Aux.typ_and_vs_of_typname thy typ_name @{sort type}
     val set_map_impl_rhs = mk_set_map_impl choices ty choice thy
     val set_map_impl_ty = Term.fastype_of set_map_impl_rhs
-    val set_map_impl_def = mk_def set_map_impl_ty smi_const set_map_impl_rhs
+    val set_map_impl_def = Generator_Aux.mk_def set_map_impl_ty smi_const set_map_impl_rhs
     val (_,lthy) = Class.instantiation ([typ_name],vs,smi_sort) thy
-      |> define_overloaded (smi_name ^ "_" ^ base_name ^ "_def", set_map_impl_def)     
+      |> Generator_Aux.define_overloaded (smi_name ^ "_" ^ base_name ^ "_def", set_map_impl_def)     
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class " ^ smi_name)  
   in thy' end
@@ -59,18 +74,18 @@ fun derive_none const sort mk_none typ_name thy =
     val const_name = Long_Name.base_name const
     val sort_name = hd sort |> Long_Name.base_name
     val _ = writeln ("use None as trivial implementation of " ^ sort_name ^ " for type " ^ base_name)
-    val (ty,vs) = typ_and_vs_of_typname thy typ_name @{sort type}
+    val (ty,vs) = Generator_Aux.typ_and_vs_of_typname thy typ_name @{sort type}
     val none_rhs = mk_none ty
     val none_ty = Term.fastype_of none_rhs
-    val const_def = mk_def none_ty const none_rhs
+    val const_def = Generator_Aux.mk_def none_ty const none_rhs
     val (none_thm,lthy) = Class.instantiation ([typ_name],vs,sort) thy
-      |> define_overloaded (const_name ^ "_" ^ base_name ^ "_def", const_def)
+      |> Generator_Aux.define_overloaded (const_name ^ "_" ^ base_name ^ "_def", const_def)
      
     val thy' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt [none_thm]
       THEN (REPEAT (force_tac ctxt 1))) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    
-  in thy' end
+  in (thy',none_thm) end
  
 fun mk_is_c_dots ty dots = 
   let 

@@ -80,6 +80,8 @@ sig
 
   val define_overloaded_generic : (Attrib.binding * term) -> local_theory -> thm * local_theory
 
+  val mk_def : typ -> string -> term -> term
+
 end
 
 structure Generator_Aux : GENERATOR_AUX =
@@ -156,6 +158,8 @@ fun infer_type ctxt =
       #> singleton (Type_Infer_Context.infer_types ctxt)
   
 val lambdas = fold_rev lambda
+
+fun mk_def T c rhs = Logic.mk_equals (Const (c, T), rhs)
 
 fun OF_option thm thms = thm OF map (the_default @{lemma "P \<Longrightarrow> P" by simp}) thms
 

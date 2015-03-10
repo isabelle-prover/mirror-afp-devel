@@ -2,7 +2,7 @@
     Author:     René Thiemann, UIBK *)
 theory Containers_Generator
 imports 
-  "../Datatype_Order_Generator/Derive_Manager"
+  "../Datatype_Order_Generator/Generator_Aux"
   "~~/src/HOL/Library/Phantom_Type"
   Containers_Auxiliary
 begin
