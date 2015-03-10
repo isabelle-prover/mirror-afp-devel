@@ -28,7 +28,7 @@ section {* Comparison of Matrices *}
 theory Matrix_Comparison
 imports 
   "../Abstract-Rewriting/SN_Orders"
-  Fact
+  Binomial
   Matrix_Arith
 begin
 
