@@ -71,7 +71,7 @@ proof -
   have [simp]: "state cfg \<notin> S2"
     using cfg_S1 S1_S2 S1 by blast
   show ?thesis
-    by (auto simp: v_eq emeasure_Collect_T[of _ cfg] K_cfg_def map_pmf.rep_eq nn_integral_distr
+    by (auto simp: v_eq emeasure_Collect_T[of _ cfg] K_cfg_def map_pmf_rep_eq nn_integral_distr
                    AE_measure_pmf_iff suntil_Stream[of _ _ "state cfg"]
                    valid_cfg_cont
              intro!: nn_integral_cong_AE)
@@ -1169,7 +1169,7 @@ proof (intro antisym lfp_lowerbound le_funI)
             apply (subst emeasure_Collect_T)
             apply (rule measurable_compose[OF measurable_Stream[OF measurable_const measurable_ident_sets[OF refl]]])
             apply (measurable, assumption)
-            apply (auto simp: K_cfg_def map_pmf.rep_eq nn_integral_distr
+            apply (auto simp: K_cfg_def map_pmf_rep_eq nn_integral_distr
                         intro!: nn_integral_cong)
             done
           also have "\<dots> \<le> (\<integral>\<^sup>+t. lfp F_inf t \<partial>ct s)"
