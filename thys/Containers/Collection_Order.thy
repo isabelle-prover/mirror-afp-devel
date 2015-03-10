@@ -334,9 +334,14 @@ qed
 end
 
 
+lemma lt_of_comp_less_prod: "lt_of_comp (comparator_prod c_a c_b) =
+  less_prod (le_of_comp c_a) (lt_of_comp c_a) (lt_of_comp c_b)"
+  unfolding less_prod_def
+  by (intro ext, auto simp: lt_of_comp_def le_of_comp_def comp_lex_code split: order.split_asm prod.split)
+
 lemma lt_of_comp_prod: "lt_of_comp (comparator_prod c_a c_b) (x1,x2) (y1,y2) = 
-    (lt_of_comp c_a x1 y1 \<or> le_of_comp c_a x1 y1 \<and> lt_of_comp c_b x2 y2)"
-    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: order.split)
+  (lt_of_comp c_a x1 y1 \<or> le_of_comp c_a x1 y1 \<and> lt_of_comp c_b x2 y2)"
+  unfolding lt_of_comp_less_prod less_prod_def by simp
 
 instantiation prod :: (cproper_interval, cproper_interval) cproper_interval begin
 fun cproper_interval_prod :: "('a \<times> 'b) proper_interval" where

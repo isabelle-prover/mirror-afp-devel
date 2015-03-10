@@ -125,66 +125,66 @@ type_synonym 'a set_rbt = "('a, unit) mapping_rbt"
 translations 
   (type) "'a set_rbt" <= (type) "('a, unit) mapping_rbt"
 
-abbreviation (input) Set_RBT :: "('a :: corder, unit) RBT_Impl.rbt \<Rightarrow> 'a set_rbt"
+abbreviation (input) Set_RBT :: "('a :: ccompare, unit) RBT_Impl.rbt \<Rightarrow> 'a set_rbt"
 where "Set_RBT \<equiv> Mapping_RBT"
 
 subsection {* Primitive operations *}
 
-lift_definition member :: "'a :: corder set_rbt \<Rightarrow> 'a \<Rightarrow> bool" is
+lift_definition member :: "'a :: ccompare set_rbt \<Rightarrow> 'a \<Rightarrow> bool" is
   "\<lambda>t x. x \<in> dom (ord.rbt_lookup cless t)" .
 
-abbreviation empty :: "'a :: corder set_rbt"
+abbreviation empty :: "'a :: ccompare set_rbt"
 where "empty \<equiv> RBT_Mapping2.empty"
 
-abbreviation insert :: "'a :: corder \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" 
+abbreviation insert :: "'a :: ccompare \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" 
 where "insert k \<equiv> RBT_Mapping2.insert k ()"
 
-abbreviation remove :: "'a :: corder \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
+abbreviation remove :: "'a :: ccompare \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "remove \<equiv> RBT_Mapping2.delete"
 
-lift_definition bulkload :: "'a :: corder list \<Rightarrow> 'a set_rbt" is
+lift_definition bulkload :: "'a :: ccompare list \<Rightarrow> 'a set_rbt" is
   "ord.rbt_bulkload cless \<circ> map (\<lambda>x. (x, ()))"
-by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_corder)
+by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_ccompare)
 
-abbreviation is_empty :: "'a :: corder set_rbt \<Rightarrow> bool"
+abbreviation is_empty :: "'a :: ccompare set_rbt \<Rightarrow> bool"
 where "is_empty \<equiv> RBT_Mapping2.is_empty"
 
-abbreviation union :: "'a :: corder set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
+abbreviation union :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "union \<equiv> RBT_Mapping2.join (\<lambda>_ _. id)"
 
-abbreviation inter :: "'a :: corder set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
+abbreviation inter :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "inter \<equiv> RBT_Mapping2.meet (\<lambda>_ _. id)"
 
-lift_definition inter_list :: "'a :: corder set_rbt \<Rightarrow> 'a list \<Rightarrow> 'a set_rbt" is
+lift_definition inter_list :: "'a :: ccompare set_rbt \<Rightarrow> 'a list \<Rightarrow> 'a set_rbt" is
   "\<lambda>t xs. fold (\<lambda>k. ord.rbt_insert cless k ()) [x \<leftarrow> xs. ord.rbt_lookup cless t x \<noteq> None] RBT_Impl.Empty"
-by(auto 4 3 intro: ID_corder linorder.is_rbt_fold_rbt_insert ord.Empty_is_rbt)
+by(auto 4 3 intro: ID_ccompare linorder.is_rbt_fold_rbt_insert ord.Empty_is_rbt)
 
-lift_definition minus :: "'a :: corder set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" is 
+lift_definition minus :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" is 
   "ord.rbt_minus cless"
-by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_corder)
+by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_ccompare)
 
-abbreviation filter :: "('a :: corder \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
+abbreviation filter :: "('a :: ccompare \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "filter P \<equiv> RBT_Mapping2.filter (P \<circ> fst)"
 
-lift_definition fold :: "('a :: corder \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_rbt \<Rightarrow> 'b \<Rightarrow> 'b" is "\<lambda>f. RBT_Impl.fold (\<lambda>a _. f a)" .
+lift_definition fold :: "('a :: ccompare \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a set_rbt \<Rightarrow> 'b \<Rightarrow> 'b" is "\<lambda>f. RBT_Impl.fold (\<lambda>a _. f a)" .
 
-lift_definition fold1 :: "('a :: corder \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a" is "RBT_Impl_fold1" .
+lift_definition fold1 :: "('a :: ccompare \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a" is "RBT_Impl_fold1" .
 
-lift_definition keys :: "'a :: corder set_rbt \<Rightarrow> 'a list" is "RBT_Impl.keys" .
+lift_definition keys :: "'a :: ccompare set_rbt \<Rightarrow> 'a list" is "RBT_Impl.keys" .
 
-abbreviation all :: "('a :: corder \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> bool"
+abbreviation all :: "('a :: ccompare \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> bool"
 where "all P \<equiv> RBT_Mapping2.all (\<lambda>k _. P k)"
 
-abbreviation ex :: "('a :: corder \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> bool"
+abbreviation ex :: "('a :: ccompare \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> bool"
 where "ex P \<equiv> RBT_Mapping2.ex (\<lambda>k _. P k)"
 
-definition product :: "'a :: corder set_rbt \<Rightarrow> 'b :: corder set_rbt \<Rightarrow> ('a \<times> 'b) set_rbt"
+definition product :: "'a :: ccompare set_rbt \<Rightarrow> 'b :: ccompare set_rbt \<Rightarrow> ('a \<times> 'b) set_rbt"
 where "product rbt1 rbt2 = RBT_Mapping2.product (\<lambda>_ _ _ _. ()) rbt1 rbt2"
 
-abbreviation Id_on :: "'a :: corder set_rbt \<Rightarrow> ('a \<times> 'a) set_rbt"
+abbreviation Id_on :: "'a :: ccompare set_rbt \<Rightarrow> ('a \<times> 'a) set_rbt"
 where "Id_on \<equiv> RBT_Mapping2.diag"
 
-abbreviation init :: "'a :: corder set_rbt \<Rightarrow> ('a, unit, 'a) rbt_generator_state"
+abbreviation init :: "'a :: ccompare set_rbt \<Rightarrow> ('a, unit, 'a) rbt_generator_state"
 where "init \<equiv> RBT_Mapping2.init"
 
 subsection {* Properties *}
@@ -213,16 +213,16 @@ by transfer(case_tac rbt, simp_all)
 lemma fold1_conv_fold: "fold1 f rbt = List.fold f (tl (keys rbt)) (hd (keys rbt))"
 by transfer(simp add: RBT_Impl_fold1_def)
 
-context assumes ID_corder_neq_None: "ID CORDER('a :: corder) \<noteq> None"
+context assumes ID_ccompare_neq_None: "ID CCOMPARE('a :: ccompare) \<noteq> None"
 begin
 
 lemma set_linorder: "class.linorder (cless_eq :: 'a \<Rightarrow> 'a \<Rightarrow> bool) cless"
-using ID_corder_neq_None by(clarsimp)(rule ID_corder)
+using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare)
 
 lemma is_rbt_impl_of [simp, intro]:
   fixes t :: "'a set_rbt"
   shows "ord.is_rbt cless (RBT_Mapping2.impl_of t)"
-  using ID_corder_neq_None impl_of [of t] by auto
+  using ID_ccompare_neq_None impl_of [of t] by auto
 
 lemma member_RBT:
   "ord.is_rbt cless t \<Longrightarrow> member (Set_RBT t) x \<longleftrightarrow> ord.rbt_lookup cless t x = Some ()"
@@ -234,7 +234,7 @@ by transfer auto
 
 lemma member_insert [simp]:
   "member (insert x (t :: 'a set_rbt)) = (member t)(x := True)"
-by transfer (simp add: fun_eq_iff linorder.rbt_lookup_rbt_insert[OF set_linorder] ID_corder_neq_None)
+by transfer (simp add: fun_eq_iff linorder.rbt_lookup_rbt_insert[OF set_linorder] ID_ccompare_neq_None)
 
 lemma member_fold_insert [simp]:
   "member (List.fold insert xs (t :: 'a set_rbt)) = (\<lambda>x. member t x \<or> x \<in> set xs)"
@@ -242,14 +242,14 @@ by(induct xs arbitrary: t) auto
 
 lemma member_remove [simp]:
   "member (remove (x :: 'a) t) = (member t)(x := False)"
-by transfer (simp add: linorder.rbt_lookup_rbt_delete[OF set_linorder] ID_corder_neq_None fun_eq_iff)
+by transfer (simp add: linorder.rbt_lookup_rbt_delete[OF set_linorder] ID_ccompare_neq_None fun_eq_iff)
 
 lemma member_bulkload [simp]:
   "member (bulkload xs) (x :: 'a) \<longleftrightarrow> x \<in> set xs"
 by transfer (auto simp add: linorder.rbt_lookup_rbt_bulkload[OF set_linorder] map_of_map_Pair_const split: split_if_asm)
 
 lemma member_conv_keys: "member t = (\<lambda>x :: 'a. x \<in> set (keys t))"
-by(transfer)(simp add: ID_corder_neq_None linorder.rbt_lookup_keys[OF set_linorder] ord.is_rbt_rbt_sorted)
+by(transfer)(simp add: ID_ccompare_neq_None linorder.rbt_lookup_keys[OF set_linorder] ord.is_rbt_rbt_sorted)
 
 lemma is_empty_empty [simp]:
   "is_empty t \<longleftrightarrow> t = empty"
@@ -264,87 +264,87 @@ qed
 
 lemma member_empty_empty [simp]:
   "member t = (\<lambda>_. False) \<longleftrightarrow> (t :: 'a set_rbt) = empty"
-by transfer(simp add: ID_corder_neq_None fun_eq_iff RBT_lookup_empty[symmetric])
+by transfer(simp add: ID_ccompare_neq_None fun_eq_iff RBT_lookup_empty[symmetric])
 
 lemma member_union [simp]:
   "member (union (t1 :: 'a set_rbt) t2) = (\<lambda>x. member t1 x \<or> member t2 x)"
-by(auto simp add: member_lookup fun_eq_iff lookup_join[OF ID_corder_neq_None] split: option.split)
+by(auto simp add: member_lookup fun_eq_iff lookup_join[OF ID_ccompare_neq_None] split: option.split)
 
 lemma member_minus [simp]:
   "member (minus (t1 :: 'a set_rbt) t2) = (\<lambda>x. member t1 x \<and> \<not> member t2 x)"
-by(transfer)(auto simp add: ID_corder_neq_None fun_eq_iff linorder.rbt_lookup_rbt_minus[OF set_linorder] ord.is_rbt_rbt_sorted)
+by(transfer)(auto simp add: ID_ccompare_neq_None fun_eq_iff linorder.rbt_lookup_rbt_minus[OF set_linorder] ord.is_rbt_rbt_sorted)
 
 lemma member_inter [simp]:
   "member (inter (t1 :: 'a set_rbt) t2) = (\<lambda>x. member t1 x \<and> member t2 x)"
-by(auto simp add: member_lookup fun_eq_iff lookup_meet[OF ID_corder_neq_None] split: option.split)
+by(auto simp add: member_lookup fun_eq_iff lookup_meet[OF ID_ccompare_neq_None] split: option.split)
 
 lemma member_inter_list [simp]:
   "member (inter_list (t :: 'a set_rbt) xs) = (\<lambda>x. member t x \<and> x \<in> set xs)"
-by transfer(auto simp add: ID_corder_neq_None fun_eq_iff linorder.rbt_lookup_fold_rbt_insert[OF set_linorder] ord.Empty_is_rbt map_of_map_Pair_key ord.rbt_lookup.simps rel_option_iff split: split_if_asm option.split_asm)
+by transfer(auto simp add: ID_ccompare_neq_None fun_eq_iff linorder.rbt_lookup_fold_rbt_insert[OF set_linorder] ord.Empty_is_rbt map_of_map_Pair_key ord.rbt_lookup.simps rel_option_iff split: split_if_asm option.split_asm)
 
 lemma member_filter [simp]:
   "member (filter P (t :: 'a set_rbt)) = (\<lambda>x. member t x \<and> P x)"
-by(simp add: member_lookup fun_eq_iff lookup_filter[OF ID_corder_neq_None] split: option.split)
+by(simp add: member_lookup fun_eq_iff lookup_filter[OF ID_ccompare_neq_None] split: option.split)
 
 lemma distinct_keys [simp]:
   "distinct (keys (rbt :: 'a set_rbt))"
-by transfer(simp add: ID_corder_neq_None RBT_Impl.keys_def ord.is_rbt_rbt_sorted linorder.distinct_entries[OF set_linorder])
+by transfer(simp add: ID_ccompare_neq_None RBT_Impl.keys_def ord.is_rbt_rbt_sorted linorder.distinct_entries[OF set_linorder])
 
 lemma all_conv_all_member:
   "all P t \<longleftrightarrow> (\<forall>x :: 'a. member t x \<longrightarrow> P x)"
-by(simp add: member_lookup all_conv_all_lookup[OF ID_corder_neq_None])
+by(simp add: member_lookup all_conv_all_lookup[OF ID_ccompare_neq_None])
 
 lemma ex_conv_ex_member:
   "ex P t \<longleftrightarrow> (\<exists>x :: 'a. member t x \<and> P x)"
-by(simp add: member_lookup ex_conv_ex_lookup[OF ID_corder_neq_None])
+by(simp add: member_lookup ex_conv_ex_lookup[OF ID_ccompare_neq_None])
 
 lemma finite_member: "finite (Collect (RBT_Set2.member (t :: 'a set_rbt)))"
 by transfer (simp add: linorder.finite_dom_rbt_lookup[OF set_linorder])
 
 lemma member_Id_on: "member (Id_on t) = (\<lambda>(k :: 'a, k'). k = k' \<and> member t k)"
-by(simp add: member_lookup[abs_def] diag_lookup[OF ID_corder_neq_None] fun_eq_iff)
+by(simp add: member_lookup[abs_def] diag_lookup[OF ID_ccompare_neq_None] fun_eq_iff)
 
-context assumes ID_corder_neq_None': "ID CORDER('b :: corder) \<noteq> None"
+context assumes ID_ccompare_neq_None': "ID CCOMPARE('b :: ccompare) \<noteq> None"
 begin
 
 lemma set_linorder': "class.linorder (cless_eq :: 'b \<Rightarrow> 'b \<Rightarrow> bool) cless"
-using ID_corder_neq_None' by(clarsimp)(rule ID_corder)
+using ID_ccompare_neq_None' by(clarsimp)(rule ID_ccompare)
 
 lemma member_product:
   "member (product rbt1 rbt2) = (\<lambda>ab :: 'a \<times> 'b. ab \<in> Collect (member rbt1) \<times> Collect (member rbt2))"
-by(auto simp add: fun_eq_iff member_lookup product_def RBT_Mapping2.lookup_product ID_corder_neq_None ID_corder_neq_None' split: option.splits)
+by(auto simp add: fun_eq_iff member_lookup product_def RBT_Mapping2.lookup_product ID_ccompare_neq_None ID_ccompare_neq_None' split: option.splits)
 
 end
 
 end
 
 lemma sorted_RBT_Set_keys: 
-  "map_option fst (ID CORDER('a :: corder)) = Some le 
-  \<Longrightarrow> linorder.sorted le (RBT_Set2.keys rbt)"
-by transfer(auto simp add: RBT_Set2.keys.rep_eq RBT_Impl.keys_def linorder.rbt_sorted_entries[OF ID_corder] ord.is_rbt_rbt_sorted)
+  "ID CCOMPARE('a :: ccompare) = Some c 
+  \<Longrightarrow> linorder.sorted (le_of_comp c) (RBT_Set2.keys rbt)"
+by transfer(auto simp add: RBT_Set2.keys.rep_eq RBT_Impl.keys_def linorder.rbt_sorted_entries[OF ID_ccompare] ord.is_rbt_rbt_sorted)
 
-context assumes ID_corder_neq_None: "ID CORDER('a :: {corder, lattice}) \<noteq> None"
+context assumes ID_ccompare_neq_None: "ID CCOMPARE('a :: {ccompare, lattice}) \<noteq> None"
 begin
 
 lemma set_linorder2: "class.linorder (cless_eq :: 'a \<Rightarrow> 'a \<Rightarrow> bool) cless"
-using ID_corder_neq_None by(clarsimp)(rule ID_corder)
+using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare)
 
 end
 
 lemma set_keys_Mapping_RBT: "set (keys (Mapping_RBT t)) = set (RBT_Impl.keys t)"
 proof(cases t)
   case Empty thus ?thesis
-    by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse ord.is_rbt_def ord.rbt_sorted.simps)
+    by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_ccompare_def Mapping_RBT'_inverse ord.is_rbt_def ord.rbt_sorted.simps)
 next
   case (Branch c l k v r)
   show ?thesis
-  proof(cases "is_corder TYPE('a) \<and> \<not> ord.is_rbt cless (Branch c l k v r)")
+  proof(cases "is_ccompare TYPE('a) \<and> \<not> ord.is_rbt cless (Branch c l k v r)")
     case False thus ?thesis using Branch
-      by(auto simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse simp del: not_None_eq)
+      by(auto simp add: Mapping_RBT_def keys.rep_eq is_ccompare_def Mapping_RBT'_inverse simp del: not_None_eq)
   next
     case True
     thus ?thesis using Branch
-      by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_corder_def Mapping_RBT'_inverse RBT_ext.linorder.is_rbt_fold_rbt_insert[OF ID_corder] linorder.rbt_insert_is_rbt[OF ID_corder] ord.Empty_is_rbt)(subst linorder.rbt_lookup_keys[OF ID_corder, symmetric], assumption, auto simp add: linorder.rbt_sorted_fold_insert[OF ID_corder] RBT_ext.linorder.rbt_lookup_fold_rbt_insert[OF ID_corder] RBT_ext.linorder.rbt_lookup_rbt_insert'[OF ID_corder] linorder.rbt_insert_rbt_sorted[OF ID_corder] ord.is_rbt_rbt_sorted ord.Empty_is_rbt dom_map_of_conv_image_fst RBT_Impl.keys_def ord.rbt_lookup.simps)
+      by(clarsimp simp add: Mapping_RBT_def keys.rep_eq is_ccompare_def Mapping_RBT'_inverse RBT_ext.linorder.is_rbt_fold_rbt_insert[OF ID_ccompare] linorder.rbt_insert_is_rbt[OF ID_ccompare] ord.Empty_is_rbt)(subst linorder.rbt_lookup_keys[OF ID_ccompare, symmetric], assumption, auto simp add: linorder.rbt_sorted_fold_insert[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_fold_rbt_insert[OF ID_ccompare] RBT_ext.linorder.rbt_lookup_rbt_insert'[OF ID_ccompare] linorder.rbt_insert_rbt_sorted[OF ID_ccompare] ord.is_rbt_rbt_sorted ord.Empty_is_rbt dom_map_of_conv_image_fst RBT_Impl.keys_def ord.rbt_lookup.simps)
   qed
 qed
 
