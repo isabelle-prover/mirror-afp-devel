@@ -227,17 +227,6 @@ lemma forall_finite: "(\<forall> i < (0 :: nat). P i) = True"
    "(\<forall> i < Suc 0. P i) = P 0"
    "(\<forall> i < Suc (Suc x). P i) = (P 0 \<and> (\<forall> i < Suc x. P (Suc i)))"
   by (auto, case_tac i, auto)
-
-lemma in_set_simps: 
-  "x \<in> set (y # z # ys) = (x = y \<or> x \<in> set (z # ys))"
-  "x \<in> set ([y]) = (x = y)"
-  "x \<in> set [] = False" 
-  "Ball (set []) P = True" 
-  "Ball (set [x]) P = P x" 
-  "Ball (set (x # y # zs)) P = (P x \<and> Ball (set (y # zs)) P)" 
-  by auto
-  
-lemma conj_weak_cong: "a = b \<Longrightarrow> c = d \<Longrightarrow> (a \<and> c) = (b \<and> d)" by auto
   
 lemma triple_trans_different:
   "triple_trans a b Lt"
@@ -249,7 +238,7 @@ lemma length_nth_simps:
   "length [] = 0" "length (x # xs) = Suc (length xs)" 
   "(x # xs) ! 0 = x" "(x # xs) ! (Suc n) = xs ! n" by auto
 
-lemma refl_True: "(x = x) = True" by simp
+subsection \<open>The Comparator Generator\<close>
 
 ML_file "comparator_generator.ML"
                  

@@ -20,6 +20,11 @@ sig
   
   (* thm[OF _(NONE) foo (SOME foo) ...] *)
   val OF_option : thm -> thm option list -> thm 
+
+(* aim: treat a possible empty conjunction and handle each subcase 
+   by a specific tactic (indexed from 0 onwards) *)
+  val conjI_tac : thm list ->
+    Proof.context -> 'a list -> (int -> tactic) -> tactic
   
   val mk_case_tac : 
     Proof.context ->
@@ -84,6 +89,10 @@ sig
 
   val mk_def : typ -> string -> term -> term
 
+  val mk_infer_const : string -> Proof.context -> term -> term
+
+  val ind_case_to_idxs : 'a list list -> int -> int * int
+
   val create_partial :
     'a ->
     (typ -> bool) ->
@@ -112,6 +121,14 @@ end
 
 structure Generator_Aux : GENERATOR_AUX =
 struct
+
+fun conjI_tac conj_thms ctxt xs tactics =
+  if null xs then all_tac
+  else
+    (K (Method.try_intros_tac ctxt conj_thms [])
+    THEN_ALL_NEW (fn k' =>
+      Subgoal.SUBPROOF (K (tactics (k' - 1))) ctxt k'))
+    1
 
 fun mk_id T =
   let val x = Free ("x", T)
@@ -164,6 +181,12 @@ fun subT name T = name ^ sub
   
 val ints_to_subscript = sub o foldr1 (fn (x, y) => x ^ "_" ^ y) o map string_of_int
 
+fun ind_case_to_idxs cTys= 
+  let
+    fun number n (i, j) ((_ :: xs) :: ys) = (n, (i, j)) :: number (n+1) (i, j+1) (xs :: ys)
+      | number n (i, _) ([] :: ys) = number n (i+1, 0) ys
+      | number _ _ [] = []
+  in AList.lookup (op =) (number 0 (0, 0) cTys) #> the end
 
 (*recursively compute free type variables that are actually used by a given ((co)data)type, i.e.,
 are not (indirect) phantom types.*)
@@ -269,6 +292,8 @@ fun type_parameters T lthy =
       in (tfrees, used_tfrees) end
 
 fun sum_list xs = fold (curry (op +)) xs 0
+
+fun mk_infer_const name ctxt c = infer_type ctxt (Const (name, dummyT) $ c)
 
 fun prove_multi_future ctxt = Goal.prove_common ctxt (SOME ~1)
 

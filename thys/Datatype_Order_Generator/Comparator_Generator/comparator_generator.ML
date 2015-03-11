@@ -66,8 +66,6 @@ open Generator_Aux
 datatype comparator_type = BNF | Linorder
 
 val debug = false
-val debug_tacs = false
-fun debug_tac ctxt s = if debug_tacs then print_tac ctxt s else all_tac 
 fun debug_out s = if debug then writeln s else ()
 
 val orderT = @{typ order}
@@ -120,16 +118,6 @@ val TRANS = 2
 fun register_foreign_partial_and_full_comparator tyco m p c c_def m_comp eq_thm sym_thm 
   trans_thm c_thm =
   declare_info tyco m p c c_def m_comp [eq_thm, sym_thm, trans_thm] c_thm
-
-(* aim: treat a possible empty conjunction and handle each subcase 
-   by a specific tactic (indexed from 0 onwards) *)
-fun conjI_tac conj_thms ctxt xs tactics =
-  if null xs then debug_tac ctxt "null xs" THEN all_tac
-  else
-    (K (Method.try_intros_tac ctxt conj_thms [])
-    THEN_ALL_NEW (fn k' =>
-      Subgoal.SUBPROOF (K (tactics (k' - 1))) ctxt k'))
-    1
 
 fun mk_infer_const name ctxt c = infer_type ctxt (Const (name, dummyT) $ c)
 val mk_eq_comp = mk_infer_const @{const_name eq_comp}
@@ -369,13 +357,6 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val concl = mk_eq_sym_trans' lthy (nth full_comps i) $ x |> HOLogic.mk_Trueprop
       in Logic.list_implies (conds, concl) |> infer_type lthy end) (set_funs ~~ x_vars ~~ xi_vars)
 
-    val ind_case_to_idxs = 
-      let
-        fun number n (i, j) ((_ :: xs) :: ys) = (n, (i, j)) :: number (n+1) (i, j+1) (xs :: ys)
-          | number n (i, _) ([] :: ys) = number n (i+1, 0) ys
-          | number _ _ [] = []
-      in AList.lookup (op =) (number 0 (0, 0) cTys) #> the end
-
     val induct_thms = Bnf_Access.induct_thms lthy tycos
     val set_simps = Bnf_Access.set_simps lthy tycos
     val case_thms = Bnf_Access.case_thms lthy tycos
@@ -407,7 +388,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     fun eq_solve_tac i ctxt IH_prems xs = 
       let 
-        val (i, j) = ind_case_to_idxs i
+        val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
         val IH = take k IH_prems
@@ -456,7 +437,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     fun sym_solve_tac i ctxt IH_prems xs = 
       let 
-        val (i, j) = ind_case_to_idxs i
+        val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
         val IH = take k IH_prems
@@ -505,7 +486,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     
     fun trans_solve_tac i ctxt IH_prems xs = 
       let 
-        val (i, j) = ind_case_to_idxs i
+        val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
         val IH = take k IH_prems
