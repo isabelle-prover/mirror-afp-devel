@@ -1,18 +1,19 @@
 theory Compare_Instances
 imports
   Compare_Generator
+  "~~/src/HOL/Library/Char_ord"
 begin
 
 section \<open>Defining comparators for standard types\<close>
 
 text \<open>For all of the following types, we define comparators and register them in the class 
   @{class compare}:
-  @{type int}, @{type nat}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
+  @{type int}, @{type nat}, @{type char}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
   and @{type prod}. We do not register those classes in @{class compare_order} where
   so far no linear order is defined.\<close>
 
-text \<open>For @{type int} and @{type nat} we just use their linear orders as comparators.\<close>
-derive (linorder) compare_order int nat
+text \<open>For @{type int}, @{type nat}, and @{type char} we just use their linear orders as comparators.\<close>
+derive (linorder) compare_order int nat char
 
 text \<open>For @{type sum}, @{type list}, @{type prod}, and @{type option} we generate comparators 
   which are however are not used to instantiate @{class linorder}.\<close>
