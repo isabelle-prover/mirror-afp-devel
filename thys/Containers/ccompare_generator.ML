@@ -11,7 +11,7 @@ sig
   val ccompare_instance_via_compare : string -> theory -> theory
   
   (* derives a trivial instance (None) for class ccompare *)
-  val derive_no_ccompare : string -> theory -> theory * thm
+  val derive_no_ccompare : string -> theory -> theory
 
 end
 
@@ -176,7 +176,7 @@ fun ccompare_instance tname param thy =
       andalso error ("type " ^ quote tname ^ " is already an instance of class \"ccompare\"")
   in
     if param = "" then ccompare_instance_via_comparator tname thy
-    else if param = "no" then derive_no_ccompare tname thy |> fst
+    else if param = "no" then derive_no_ccompare tname thy
     else if param = "compare" then ccompare_instance_via_compare tname thy 
     else error "unknown parameter, supported are (no parameter), \"compare\", and \"no\"" 
   end

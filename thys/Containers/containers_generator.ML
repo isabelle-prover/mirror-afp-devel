@@ -11,7 +11,7 @@ sig
     -> string -> string -> theory -> theory
 
   (*                const_name, sort, mk_none,         typ_name *)
-  val derive_none : string -> sort -> (typ -> term) -> string -> theory -> theory * thm
+  val derive_none : string -> sort -> (typ -> term) -> string -> theory -> theory
 
   (*                             const_name  base_name *)
   val register_is_c_dots_lemma : string -> string -> thm -> theory -> theory
@@ -85,7 +85,7 @@ fun derive_none const sort mk_none typ_name thy =
       THEN unfold_tac ctxt [none_thm]
       THEN (REPEAT (force_tac ctxt 1))) lthy
     val _ = writeln ("registered " ^ base_name ^ " in class " ^ sort_name)    
-  in (thy',none_thm) end
+  in thy' end
  
 fun mk_is_c_dots ty dots = 
   let 

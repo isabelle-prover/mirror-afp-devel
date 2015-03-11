@@ -272,7 +272,7 @@ fun derive_ceq_ceq dtyp_name thy =
     val thy'' = register_is_c_dots_lemma @{const_name is_ceq} base_name is_ceq_thm thy' 
   in thy'' end
 
-fun derive_no_ceq ty = derive_none @{const_name ceq} @{sort ceq} mk_none_ceq ty #> fst
+val derive_no_ceq = derive_none @{const_name ceq} @{sort ceq} mk_none_ceq
 
 fun derive_eq_ceq typ_name thy = 
   let

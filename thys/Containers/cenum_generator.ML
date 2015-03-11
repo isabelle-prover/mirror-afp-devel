@@ -23,8 +23,8 @@ fun mk_none_cenum ty =
   in res
 end
 
-fun derive_no_cenum ty thy = 
-  derive_none @{const_name cEnum} @{sort cenum} mk_none_cenum ty thy |> fst 
+val derive_no_cenum = 
+  derive_none @{const_name cEnum} @{sort cenum} mk_none_cenum
 
 fun derive_cenum typ_name param thy = 
   let
