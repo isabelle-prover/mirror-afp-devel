@@ -111,7 +111,7 @@ ML_file "ccompare_generator.ML"
 subsection {* Instantiations for HOL types *}
 
 derive (linorder) compare_order 
-  Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
+  Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble String.literal
 derive (compare) ccompare 
   unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
 derive (no) ccompare Enum.finite_4 Enum.finite_5
