@@ -4,7 +4,7 @@
 theory Collection_Eq imports
   Containers_Auxiliary
   Containers_Generator
-  "../Old_Datatype_Order_Generator/Derive_Aux"
+  "../Datatype_Order_Generator/Equality_Generator/Equality_Instances"
 begin
 
 section {* A type class for optional equality testing *}
@@ -13,6 +13,9 @@ class ceq =
   fixes ceq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) option"
   assumes ceq: "ceq = Some eq \<Longrightarrow> eq = op ="
 begin
+
+lemma ceq_equality: "ceq = Some eq \<Longrightarrow> equality eq"
+  by (drule ceq, rule equalityI, simp)
 
 lemma ID_ceq: "ID ceq = Some eq \<Longrightarrow> eq = op ="
 unfolding ID_def id_apply by(rule ceq)
@@ -72,6 +75,8 @@ If the parameter "no" is not used, then the corresponding
 text {*
 This generator can be used for arbitrary types, not just datatypes. 
 *}
+
+lemma equality_subst: "c1 = c2 \<Longrightarrow> equality c1 \<Longrightarrow> equality c2" by blast
 
 ML_file "ceq_generator.ML"
 
