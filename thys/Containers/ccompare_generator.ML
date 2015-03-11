@@ -183,6 +183,6 @@ fun ccompare_instance tname param thy =
 
 val _ = Theory.setup
  (Derive_Manager.register_derive "ccompare" 
-    "generate a conditional comparator" (ccompare_instance))
+    "generate a conditional comparator; options are (), (no), and (compare)" (ccompare_instance))
 
 end

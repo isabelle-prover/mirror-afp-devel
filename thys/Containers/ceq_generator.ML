@@ -301,6 +301,6 @@ fun derive_ceq typ_name param thy =
    typ_name thy
 
 val _ = Theory.setup  
-  (Derive_Manager.register_derive "ceq" "use (no) equality for class ceq" derive_ceq) 
+  (Derive_Manager.register_derive "ceq" "derive instance of class ceq, options are (), (no), and (eq)" derive_ceq) 
 
 end
