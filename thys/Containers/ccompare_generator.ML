@@ -41,7 +41,7 @@ fun mk_ID_ccompare eq_var =
   let
     val ty = fastype_of eq_var
     val oty = Type (@{type_name option}, [ty])
-    val ccompare = Const (@{const_name ccompare}, oty)
+    val ccompare = Const (ccmpN, oty)
     val ID_cc = Const (@{const_name ID}, oty --> oty) $ ccompare
   in 
     ID_cc
@@ -64,7 +64,7 @@ fun mk_ccmp_rhs c [] = mk_Some c
 
   
 fun mk_ccmp_def T rhs =
-  Logic.mk_equals (Const (@{const_name ccompare}, ccmpT T), rhs)
+  Logic.mk_equals (Const (ccmpN, ccmpT T), rhs)
 
 fun ccompare_tac ctxt tname Ts = 
   let
@@ -134,12 +134,11 @@ fun ccompare_instance_via_compare tname thy =
     val base_name = Long_Name.base_name tname
     val _ = writeln ("deriving \"ccompare_order\" instance for type " ^ 
       quote tname ^ " via compare_order")
-    val sort = @{sort ccompare}
     val (ty,vs) = typ_and_vs_of_typname thy tname @{sort compare}
     val ccompare_rhs = mk_some_compare ty
     val ccompare_ty = Term.fastype_of ccompare_rhs
-    val ccompare_def = mk_def ccompare_ty @{const_name ccompare} ccompare_rhs
-    val (ccompare_thm,lthy) = Class.instantiation ([tname],vs,sort) thy
+    val ccompare_def = mk_def ccompare_ty ccmpN ccompare_rhs
+    val (ccompare_thm,lthy) = Class.instantiation ([tname],vs,ccmpS) thy
       |> (define_overloaded ("ccompare_" ^ base_name ^ "_def", ccompare_def))
      
     val thy = Class.prove_instantiation_exit (fn ctxt => 
@@ -153,13 +152,9 @@ fun ccompare_instance_via_compare tname thy =
 
   in thy end
 
-fun mk_none_ccompare ty =
-  let 
-    val comp_ty = ty --> ty --> @{typ order}
-    val opt_ty = Type (@{type_name option}, [comp_ty])
-  in Const (@{const_name None}, opt_ty) end
+fun mk_none_ccompare ty = Const (@{const_name None}, Type (@{type_name option}, [cmpT ty]))
 
-val derive_no_ccompare = derive_none @{const_name ccompare} @{sort ccompare} mk_none_ccompare
+val derive_no_ccompare = derive_none ccmpN ccmpS mk_none_ccompare
   
 fun ccompare_instance tname param thy =
   let
