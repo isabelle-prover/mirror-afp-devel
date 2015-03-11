@@ -1,0 +1,10 @@
+chapter AFP
+
+session Show (AFP) = Datatype_Order_Generator +
+  options [timeout = 600]
+  theories
+    Show_Instances
+  document_files
+    "root.tex"
+    "root.bib"
+
