@@ -987,7 +987,7 @@ lemma cless_set_code [code]:
               | Some c \<Rightarrow>
      if finite A' \<and> finite B' then
         finite (UNIV :: 'b set) \<longrightarrow>
-        proper_intrvl.set_less_aux_Compl lt cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
+        proper_intrvl.set_less_aux_Compl (lt_of_comp c) cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
      else Code.abort (STR ''cless_set Complement2: infinite set'') (\<lambda>_. cless_set A' (Complement B')))"
   (is "?fin_Compl_fin")
   and cless_set_Complement1 [set_complement_code]:
@@ -1045,7 +1045,7 @@ proof -
   show ?rbt_Compl by(cases "finite (UNIV :: 'b set)") auto
   show ?Compl_rbt by(cases "finite (UNIV :: 'b set)") auto
   show ?fin_fin by auto
-  show ?fin_Compl_fin by(cases "finite (UNIV :: 'b set)") auto
+  show ?fin_Compl_fin by(cases "finite (UNIV :: 'b set)", auto)
   show ?Compl_fin_fin by(cases "finite (UNIV :: 'b set)") auto
 qed
 
@@ -1071,7 +1071,7 @@ lemma cless_eq_set_code [code]:
               | Some c \<Rightarrow>
      if finite A' \<and> finite B' then 
         finite (UNIV :: 'b set) \<longrightarrow>
-        proper_intrvl.set_less_eq_aux_Compl lt cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
+        proper_intrvl.set_less_eq_aux_Compl (lt_of_comp c) cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
      else Code.abort (STR ''cless_eq_set Complement2: infinite set'') (\<lambda>_. cless_eq_set A' (Complement B')))"
   (is "?fin_Compl_fin")
   and cless_eq_set_Complement1 [set_complement_code]:
@@ -1080,7 +1080,7 @@ lemma cless_eq_set_code [code]:
               | Some c \<Rightarrow>
     if finite A' \<and> finite B' then 
       finite (UNIV :: 'b set) \<and>
-      proper_intrvl.Compl_set_less_eq_aux lt cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
+      proper_intrvl.Compl_set_less_eq_aux (lt_of_comp c) cproper_interval None (csorted_list_of_set A') (csorted_list_of_set B')
     else Code.abort (STR ''cless_eq_set Complement1: infinite set'') (\<lambda>_. cless_eq_set (Complement A') B'))"
   (is "?Compl_fin_fin")
   and cless_eq_set_Complement12 [set_complement_code]:
@@ -1139,20 +1139,20 @@ lemma cproper_interval_set_Some_Some_code [code]:
 
   "cproper_interval (Some A) (Some B) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval: ccompare = None'') (\<lambda>_. cproper_interval (Some A) (Some B))
-              | Some (le, lt) \<Rightarrow>
-       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_aux lt cproper_interval (csorted_list_of_set A) (csorted_list_of_set B))"
+              | Some c \<Rightarrow>
+       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_aux (lt_of_comp c) cproper_interval (csorted_list_of_set A) (csorted_list_of_set B))"
   (is ?fin_fin)
   and cproper_interval_set_Some_Some_Complement [set_complement_code]:
   "cproper_interval (Some A) (Some (Complement B)) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval Complement2: ccompare = None'') (\<lambda>_. cproper_interval (Some A) (Some (Complement B)))
-              | Some (le, lt) \<Rightarrow>
-       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_Compl_aux lt cproper_interval None 0 (csorted_list_of_set A) (csorted_list_of_set B))"
+              | Some c \<Rightarrow>
+       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_Compl_aux (lt_of_comp c) cproper_interval None 0 (csorted_list_of_set A) (csorted_list_of_set B))"
   (is ?fin_Compl_fin)
   and cproper_interval_set_Some_Complement_Some [set_complement_code]:
   "cproper_interval (Some (Complement A)) (Some B) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval Complement1: ccompare = None'') (\<lambda>_. cproper_interval (Some (Complement A)) (Some B))
-              | Some (le, lt) \<Rightarrow>
-       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_Compl_set_aux lt cproper_interval None (csorted_list_of_set A) (csorted_list_of_set B))"
+              | Some c \<Rightarrow>
+       finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_Compl_set_aux (lt_of_comp c) cproper_interval None (csorted_list_of_set A) (csorted_list_of_set B))"
   (is ?Compl_fin_fin)
   and cproper_interval_set_Some_Complement_Some_Complement [set_complement_code]:
   "cproper_interval (Some (Complement A)) (Some (Complement B)) \<longleftrightarrow>
@@ -1162,24 +1162,25 @@ lemma cproper_interval_set_Some_Some_code [code]:
 
   "cproper_interval (Some (RBT_set rbt1)) (Some (RBT_set rbt2)) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval RBT_set RBT_set: ccompare = None'') (\<lambda>_. cproper_interval (Some (RBT_set rbt1)) (Some (RBT_set rbt2)))
-             | Some (leq, lt) \<Rightarrow>
-     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_aux_fusion lt cproper_interval rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
+             | Some c \<Rightarrow>
+     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_aux_fusion (lt_of_comp c) cproper_interval rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
   (is ?rbt_rbt)
   and cproper_interval_set_Some_rbt_Some_Complement [set_complement_code]:
   "cproper_interval (Some (RBT_set rbt1)) (Some (Complement (RBT_set rbt2))) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval RBT_set (Complement RBT_set): ccompare = None'') (\<lambda>_. cproper_interval (Some (RBT_set rbt1)) (Some (Complement (RBT_set rbt2))))
-             | Some (leq, lt) \<Rightarrow>
-     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_Compl_aux_fusion lt cproper_interval rbt_keys_generator rbt_keys_generator None 0 (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
+             | Some c \<Rightarrow>
+     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_set_Compl_aux_fusion (lt_of_comp c) cproper_interval rbt_keys_generator rbt_keys_generator None 0 (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
   (is ?rbt_Compl_rbt)
   and cproper_interval_set_Some_Complement_Some_rbt [set_complement_code]:
   "cproper_interval (Some (Complement (RBT_set rbt1))) (Some (RBT_set rbt2)) \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cproper_interval (Complement RBT_set) RBT_set: ccompare = None'') (\<lambda>_. cproper_interval (Some (Complement (RBT_set rbt1))) (Some (RBT_set rbt2)))
-             | Some (leq, lt) \<Rightarrow>
-     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_Compl_set_aux_fusion lt cproper_interval rbt_keys_generator rbt_keys_generator None (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
+             | Some c \<Rightarrow>
+     finite (UNIV :: 'a set) \<and> proper_intrvl.proper_interval_Compl_set_aux_fusion (lt_of_comp c) cproper_interval rbt_keys_generator rbt_keys_generator None (RBT_Set2.init rbt1) (RBT_Set2.init rbt2))"
   (is ?Compl_rbt_rbt)
 proof -
   note [split] = option.split csorted_list_of_set_split
     and [simp] = 
+    lt_of_comp_of_ords
     finite_subset[OF subset_UNIV] ccompare_set_def ID_Some
     linorder.set_less_finite_iff[OF ID_ccompare]
     RBT_set_def sorted_RBT_Set_keys member_conv_keys
@@ -1245,17 +1246,6 @@ end
 
 lemmas [code] = ord.sorted_list_subset_fusion_code
 
-definition mk_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
-where "mk_eq le x y \<longleftrightarrow> le x y \<and> le y x"
-
-lemma ccompare_mk_eq_eq:
-  assumes "ID CCOMPARE('a :: ccompare) = Some (le, lt)"
-  shows "mk_eq le = op ="
-proof -
-  interpret linorder le lt by(rule ID_ccompare) fact
-  show ?thesis by(auto intro!: ext simp add: mk_eq_def)
-qed
-
 text {* 
   Define a new constant for the subset operation
   because @{theory Cardinality} introduces @{const "Cardinality.subset'"}
@@ -1292,13 +1282,13 @@ lemma subset_eq_code [folded subset_eq_def, code]:
   and
   "RBT_set rbt1 \<subseteq> RBT_set rbt2 \<longleftrightarrow>
   (case ID CCOMPARE('d) of None \<Rightarrow> Code.abort (STR ''subset RBT_set RBT_set: ccompare = None'') (\<lambda>_. RBT_set rbt1 \<subseteq> RBT_set rbt2)
-                     | Some (le, lt) \<Rightarrow> 
-    (case ID CEQ('d) of None \<Rightarrow> ord.sorted_list_subset_fusion lt (mk_eq le) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)
-                   | Some eq \<Rightarrow> ord.sorted_list_subset_fusion lt eq rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)))" 
+                     | Some c \<Rightarrow> 
+    (case ID CEQ('d) of None \<Rightarrow> ord.sorted_list_subset_fusion (lt_of_comp c) (\<lambda> x y. c x y = Eq) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)
+                   | Some eq \<Rightarrow> ord.sorted_list_subset_fusion (lt_of_comp c) eq rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)))" 
   (is ?rbt_rbt)
 proof -
-  show ?rbt_rbt using ccompare_mk_eq_eq[where ?'a ="'d"]
-    by(auto simp add: RBT_set_def member_conv_keys unfoldr_rbt_keys_generator ord.sorted_list_subset_fusion_def linorder.sorted_list_subset_correct[OF ID_ccompare] sorted_RBT_Set_keys split: option.split dest!: ID_ceq[THEN equal.equal_eq] del: iffI)
+  show ?rbt_rbt 
+    by (auto simp add: comparator.eq[OF ID_ccompare'] RBT_set_def member_conv_keys unfoldr_rbt_keys_generator ord.sorted_list_subset_fusion_def linorder.sorted_list_subset_correct[OF ID_ccompare] sorted_RBT_Set_keys split: option.split dest!: ID_ceq[THEN equal.equal_eq] del: iffI)
   show ?rbt
     by(auto simp add: RBT_set_def member_conv_keys list_all_fusion_def unfoldr_rbt_keys_generator keys.rep_eq list_all_iff split: option.split)
   show ?dlist by(auto simp add: DList_set_def dlist_all_conv_member split: option.split)
@@ -1320,13 +1310,13 @@ lemma set_eq_code [code]:
   and
   "set_eq (RBT_set rbt1) (RBT_set rbt2) = 
   (case ID CCOMPARE('b) of None \<Rightarrow> Code.abort (STR ''set_eq RBT_set RBT_set: ccompare = None'') (\<lambda>_. set_eq (RBT_set rbt1) (RBT_set rbt2))
-                     | Some (le, lt) \<Rightarrow> 
-     (case ID CEQ('b) of None \<Rightarrow> list_all2_fusion (mk_eq le) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)
+                     | Some c \<Rightarrow> 
+     (case ID CEQ('b) of None \<Rightarrow> list_all2_fusion (\<lambda> x y. c x y = Eq) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)
                     | Some eq \<Rightarrow> list_all2_fusion eq rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt1) (RBT_Set2.init rbt2)))"
   (is ?rbt_rbt)
 proof -
-  show ?rbt_rbt using ccompare_mk_eq_eq[where ?'a="'b"]
-    by(auto 4 3 split: option.split simp add: sorted_RBT_Set_keys list_all2_fusion_def unfoldr_rbt_keys_generator RBT_set_conv_keys set_eq_def list.rel_eq dest!: ID_ceq[THEN equal.equal_eq] intro: linorder.sorted_distinct_set_unique[OF ID_ccompare])
+  show ?rbt_rbt
+    by (auto 4 3 split: option.split simp add: comparator.eq[OF ID_ccompare'] sorted_RBT_Set_keys list_all2_fusion_def unfoldr_rbt_keys_generator RBT_set_conv_keys set_eq_def list.rel_eq dest!: ID_ceq[THEN equal.equal_eq] intro: linorder.sorted_distinct_set_unique[OF ID_ccompare])
 qed(auto simp add: set_eq_def)
 
 lemma Set_project_code [code]:

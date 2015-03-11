@@ -8,19 +8,15 @@ section \<open>Defining comparators for standard types\<close>
 text \<open>For all of the following types, we define comparators and register them in the class 
   @{class compare}:
   @{type int}, @{type nat}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
-  and @{type prod}. For all but @{type prod}, we also register in class @{class compare_order}.\<close>
+  and @{type prod}. We do not register those classes in @{class compare_order} where
+  so far no linear order is defined.\<close>
 
 text \<open>For @{type int} and @{type nat} we just use their linear orders as comparators.\<close>
 derive (linorder) compare_order int nat
 
-text \<open>For @{type sum}, @{type list}, and @{type option} we generate comparators which are then
-  utilized to define linear orders on these types.\<close>
-derive compare_order sum list option
-
-text \<open>For @{type prod} we just generate a comparator, but do not define the linear order,
-  in order to not raise any conflicts with the class-instantiations for @{type prod} that
-  are provided in the Isabelle distribution.\<close>
-derive compare prod
+text \<open>For @{type sum}, @{type list}, @{type prod}, and @{type option} we generate comparators 
+  which are however are not used to instantiate @{class linorder}.\<close>
+derive compare sum list prod option
 
 text \<open>We do not use the linear order to define the comparator for @{typ bool} and @{typ unit}, 
   but implement more efficient ones.\<close>
