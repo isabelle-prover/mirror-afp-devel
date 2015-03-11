@@ -203,30 +203,14 @@ fun generate_comparators_from_bnf_fp tyco lthy =
       let
         val constrs = constr_terms lthy tyco 
 
-        fun arg_comps T x y =
+        fun comp_arg T x y =
           let
-            fun create_pcomp (Type (tyco, Ts)) =
-                  if member (op =) tycos tyco then HOLogic.id_const dummyT
-                  else
-                    let 
-                      val {map = m, pcomp = p, used_positions = up, ...} = the_info lthy tyco
-                      val ts = (up ~~ Ts) |> map (fn (b, T) =>
-                        if b then create_pcomp T else HOLogic.id_const dummyT)
-                    in HOLogic.mk_comp (p, list_comb (m, ts)) end
-              | create_pcomp _ = HOLogic.id_const dummyT
-
-            fun create_map (T as Type (tyco, Ts)) =
-                  if member (op =) tycos tyco then Free (mk_pcomp (tyco, T))
-                  else
-                    let
-                      val {map = m, used_positions = up, ...} = the_info lthy tyco
-                      val ts = (up ~~ Ts) |> map (fn (b, T) =>
-                        if b then create_map T else default_comp dummyT)
-                    in list_comb (m, ts) end
-               | create_map _ = HOLogic.id_const dummyT
-
-            val m = create_map T
-            val p = create_pcomp T
+            val m = Generator_Aux.create_map default_comp (K o Free o mk_pcomp) () (K false)
+              (#used_positions oo the_info) (#map oo the_info) (K o #pcomp oo the_info)
+              tycos ((K o K) ()) T lthy
+            val p = Generator_Aux.create_partial () (K false)
+              (#used_positions oo the_info) (#map oo the_info) (K o #pcomp oo the_info)
+              tycos ((K o K) ()) T lthy
           in p $ (m $ x) $ y |> infer_type lthy end
 
         fun generate_eq lthy (c_T as (cN, Ts)) =
@@ -241,7 +225,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
               if i < k then fold_rev absdummy Ts' @{term Gt}
               else if k < i then fold_rev absdummy Ts' @{term Lt}
               else
-                @{term comp_lex} $ HOLogic.mk_list orderT (@{map 3} arg_comps Ts xs ys)
+                @{term comp_lex} $ HOLogic.mk_list orderT (@{map 3} comp_arg Ts xs ys)
                 |> lambdas ys)
             val lhs = Free (mk_pcomp (tyco, T)) $ list_comb (c, xs) $ y
             val rhs = list_comb (singleton (Bnf_Access.case_consts lthy) tyco, cases) $ y

@@ -80,12 +80,62 @@ sig
 
   val define_overloaded_generic : (Attrib.binding * term) -> local_theory -> thm * local_theory
 
+  val mk_id : typ -> term
+
   val mk_def : typ -> string -> term -> term
+
+  val create_partial :
+    'a ->
+    (typ -> bool) ->
+    (local_theory -> string -> bool list) ->
+    (local_theory -> string -> term) ->
+    (local_theory -> string -> 'a -> term) ->
+    string list ->
+    (local_theory -> string -> 'a) ->
+    typ ->
+    local_theory -> term
+
+  val create_map :
+    (typ -> term) -> (*default operation*)
+    (string * typ -> 'a -> term) -> (*recursive occurrences of operation*)
+    'a -> (*initial state*)
+    (typ -> bool) -> (*early abort*)
+    (local_theory -> string -> bool list) -> (*used positions*)
+    (local_theory -> string -> term) -> (*map function*)
+    (local_theory -> string -> 'a -> term) -> (*partial operation*)
+    string list -> (*mutually recursive types*)
+    (local_theory -> string -> 'a) -> (*next state function*)
+    typ -> (*type for which map should be created*)
+    local_theory -> term
 
 end
 
 structure Generator_Aux : GENERATOR_AUX =
 struct
+
+fun mk_id T =
+  let val x = Free ("x", T)
+  in lambda x x end
+
+local
+  fun create_gen mk_comp dfun mk_p x early_abort up mfun pfun tycos read T lthy =
+    let 
+      fun create x (T as (Type (tyco, Ts))) =
+            if early_abort T then mk_id dummyT
+            else if member (op =) tycos tyco then mk_p (tyco, T) x
+            else
+              let
+                val x' = read lthy tyco
+                val ts = (up lthy tyco ~~ Ts) |> map (fn (used, T) =>
+                  if used then create x' T else dfun dummyT)
+              in mk_comp (pfun lthy tyco x, list_comb (mfun lthy tyco, ts)) end
+        | create _ _ = mk_id dummyT
+    in create x T end
+in
+  fun create_partial x = create_gen HOLogic.mk_comp mk_id ((K o K) (mk_id dummyT)) x
+  fun create_map dfun mk_p x = create_gen snd dfun mk_p x
+end
+
 fun drop_last [] = raise Empty
   | drop_last (x::xs) =
       let
