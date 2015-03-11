@@ -129,6 +129,7 @@ Nominal2
 Noninterference_CSP
 NormByEval
 Old_Datatype_Order_Generator
+Old_Datatype_Show
 Open_Induction
 Ordinal
 Ordinals_and_Cardinals
@@ -178,7 +179,6 @@ Separation_Logic_Imperative_HOL
 SequentInvertibility
 Shivers-CFA
 ShortestPath
-Show
 Simpl
 Skew_Heap
 Slicing
