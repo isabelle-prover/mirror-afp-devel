@@ -1,6 +1,6 @@
 chapter AFP
 
-session Show (AFP) = Datatype_Order_Generator +
+session Old_Show (AFP) = Old_Datatype_Order_Generator +
   options [timeout = 600]
   theories
     Show_Instances
