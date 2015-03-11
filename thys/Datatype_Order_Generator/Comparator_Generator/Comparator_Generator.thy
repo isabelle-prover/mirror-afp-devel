@@ -1,3 +1,5 @@
+section \<open>A generator for comparators for lexicographic orders on datatypes\<close>
+
 theory Comparator_Generator
 imports
   "../Generator_Aux"
@@ -5,21 +7,29 @@ imports
   Comparator
 begin
 
-section \<open>Lexicographic combination of @{typ order}\<close>
+subsection \<open>Lexicographic combination of @{typ order}\<close>
 
 fun comp_lex :: "order list \<Rightarrow> order"
 where
   "comp_lex (c # cs) = (case c of Eq \<Rightarrow> comp_lex cs | _ \<Rightarrow> c)" |
   "comp_lex [] = Eq"
 
-section \<open>improved code for non-lazy languages\<close>
+subsection \<open>Improved code for non-lazy languages\<close>
+
+text \<open>The following equations will eliminate all occurrences of @{term comp_lex}
+  in the generated code of the comparators.\<close>
+
 lemma comp_lex_code [code_unfold]: 
   "comp_lex [] = Eq"
   "comp_lex [c] = c"
   "comp_lex (c # d # cs) = (case c of Eq \<Rightarrow> comp_lex (d # cs) | Lt \<Rightarrow> Lt | Gt \<Rightarrow> Gt)"
   by (cases c, auto)+
 
-section \<open>separate properties for eq, sym, and trans, which are combinable with comp_lex\<close> 
+section \<open>Pointwise properties for equality, symmetry, and transitivity\<close> 
+
+
+text \<open>The pointwise properties are important during inductive proofs of soundness of comparators.
+  They are defined in a way that are combinable with @{const comp_lex}.\<close>
 
 lemma comp_lex_eq: "comp_lex os = Eq \<longleftrightarrow> (\<forall> ord \<in> set os. ord = Eq)" 
   by (induct os) (auto split: order.splits)
@@ -65,9 +75,7 @@ lemma comp_lex_sym:
 
 declare comp_lex.simps [simp del]
 
-section \<open>Partial properties, required for inductive proofs\<close>
-
-text \<open>partial equality property\<close>
+subsubsection \<open>Partial equality property\<close>
 
 definition eq_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool"
 where
@@ -79,7 +87,7 @@ lemma eq_pcompD: "eq_pcomp acomp x \<Longrightarrow> acomp x y = Eq \<longleftri
 lemma eq_pcompI: "(\<And> y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> eq_pcomp acomp x"
   unfolding eq_pcomp_def by auto
 
-text \<open>partial symmetry property\<close>
+subsubsection \<open>Partial symmetry property\<close>
 
 definition sym_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
   "sym_pcomp acomp x \<longleftrightarrow> (\<forall> y. sym_order (acomp x y) = (acomp y x))"
@@ -95,7 +103,7 @@ lemma sym_pcompI:
   using assms unfolding sym_pcomp_def by blast
 
 
-text \<open>partial transitivity property\<close>
+subsubsection \<open>Partial transitivity property\<close>
 
 definition trans_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
   "trans_pcomp acomp x \<longleftrightarrow> (\<forall> y z. triple_trans (acomp x y) (acomp y z) (acomp x z))"
@@ -110,7 +118,7 @@ lemma trans_pcompI:
   shows "trans_pcomp acomp x"
   using assms unfolding trans_pcomp_def by blast
 
-section \<open>Separate properties of comparators\<close>
+subsection \<open>Separate properties of comparators\<close>
 
 definition eq_comp :: "'a comparator \<Rightarrow> bool" where
   "eq_comp acomp \<longleftrightarrow> (\<forall> x. eq_pcomp acomp x)"
@@ -213,7 +221,7 @@ lemma comp_to_trans_pcomp: "trans_pcomp acomp x"
   by (intro trans_compD2)
 end
 
-section \<open>Auxiliary Lemmas for Comparator Generator\<close>
+subsection \<open>Auxiliary Lemmas for Comparator Generator\<close>
 
 lemma forall_finite: "(\<forall> i < (0 :: nat). P i) = True"
    "(\<forall> i < Suc 0. P i) = P 0"
@@ -246,4 +254,3 @@ lemma refl_True: "(x = x) = True" by simp
 ML_file "comparator_generator.ML"
                  
 end
-

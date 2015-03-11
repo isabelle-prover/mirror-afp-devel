@@ -4,6 +4,7 @@ session Containers (AFP) = "Datatype_Order_Generator" +
   options [timeout = 600]
   theories [document = false]
     "../Regular-Sets/Regexp_Method"
+    "../Old_Datatype_Order_Generator/Order_Generator"
   theories
     Containers_Auxiliary
     Card_Datatype

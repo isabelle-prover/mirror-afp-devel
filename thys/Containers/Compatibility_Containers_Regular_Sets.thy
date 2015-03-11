@@ -17,7 +17,7 @@ text {*
 
 datatype_compat rexp
 derive ceq rexp
-derive corder rexp
+derive ccompare rexp
 derive (choose) set_impl rexp
 
 notepad begin

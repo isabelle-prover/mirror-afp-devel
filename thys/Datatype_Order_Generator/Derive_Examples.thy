@@ -3,6 +3,7 @@ section Examples
 theory Derive_Examples
 imports 
   Derive
+  "Comparator_Generator/Compare_Order_Instances"
   Rat
 begin
 
