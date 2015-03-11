@@ -14,7 +14,7 @@ text_raw {* \label{chapter:light-weight:containers} *}
 
 section {* A linear order for code generation *}
 
-subsection {* Optional linear orders and comparators *}
+subsection {* Optional comparators *}
 
 class ccompare =
   fixes ccompare :: "'a comparator option"
@@ -24,75 +24,14 @@ abbreviation cless :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless \<eq
 abbreviation cless_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless_eq \<equiv> le_of_comp (the (ID ccompare))"
 end
 
-class pre_corder = 
-  fixes corder :: "(('a \<Rightarrow> 'a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'a \<Rightarrow> bool)) option"
-
-class corder = pre_corder + 
-  assumes corder: "\<And>less_eq less. corder = Some (less_eq, less) \<Longrightarrow> class.linorder less_eq less"
-
-class ccompare_order = ccompare + pre_corder +
-  assumes corder: "corder = map_option (\<lambda> comp. (le_of_comp comp, lt_of_comp comp)) ccompare"    
-
-subclass (in ccompare_order) corder
-proof (unfold class.corder_def, intro allI impI) 
-  fix less_eq less :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
-  assume "corder = Some (less_eq, less)"
-  from corder[unfolded this] obtain comp where 
-    comp: "ccompare = Some comp" and id: "less_eq = le_of_comp comp" "less = lt_of_comp comp"
-    by (cases ccompare, auto)
-  from ccompare[OF comp] interpret compare comp unfolding class.compare_def .
-  interpret compare_order comp less_eq less 
-    by (unfold_locales, auto simp: id)
-  show "class.linorder less_eq less" ..
-qed
-
-context corder
-begin
-
-lemma ID_corder: "\<And>less_eq less. ID corder = Some (less_eq, less) \<Longrightarrow> class.linorder less_eq less"
-unfolding ID_def id_apply by(rule corder)
-
-end
-
-lemma (in ccompare) ID_ccompare: 
-  "\<And>c. ID ccompare = Some c \<Longrightarrow> class.linorder (le_of_comp c) (lt_of_comp c)"
-  unfolding ID_def id_apply using ccompare comparator.linorder
-  by (intro ccompare comparator.linorder)
-
 lemma (in ccompare) ID_ccompare': 
   "\<And>c. ID ccompare = Some c \<Longrightarrow> comparator c"
   unfolding ID_def id_apply using ccompare by simp 
+
+lemma (in ccompare) ID_ccompare: 
+  "\<And>c. ID ccompare = Some c \<Longrightarrow> class.linorder (le_of_comp c) (lt_of_comp c)"
+  by (rule comparator.linorder[OF ID_ccompare'])
   
-syntax "_CORDER" :: "type => logic" ("(1CORDER/(1'(_')))")
-
-parse_translation {*
-let
-  fun corder_tr [ty] =
-     (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "corder"} $
-       (Syntax.const @{type_syntax option} $
-         (Syntax.const @{type_syntax prod} $
-           (Syntax.const @{type_syntax fun} $ ty $
-             (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax bool})) $
-           (Syntax.const @{type_syntax fun} $ ty $
-             (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax bool})))))
-    | corder_tr ts = raise TERM ("corder_tr", ts);
-in [(@{syntax_const "_CORDER"}, K corder_tr)] end
-*}
-
-typed_print_translation {*
-let
-  fun corder_tr' ctxt
-    (Type (@{type_name option}, [Type (@{type_name prod}, [Type (@{type_name fun}, [T, _]), _])])) ts =
-    Term.list_comb (Syntax.const @{syntax_const "_CORDER"} $ Syntax_Phases.term_of_typ ctxt T, ts)
-  | corder_tr' _ _ _ = raise Match;
-in [(@{const_syntax corder}, corder_tr')]
-end
-*}
-
-
-definition is_corder :: "'a :: corder itself \<Rightarrow> bool"
-where "is_corder _ \<longleftrightarrow> ID CORDER('a) \<noteq> None"
-
 syntax "_CCOMPARE" :: "type => logic"  ("(1CCOMPARE/(1'(_')))")
 
 parse_translation {*
@@ -122,41 +61,41 @@ proof -
 qed
 end
 
-subsection {* Generator for the @{class ccompare}- and @{class ccompare_order}-classes *}
+subsection {* Generator for the @{class ccompare}--class *}
 
 text {*
 This generator registers itself at the derive-manager for the class
-@{class corder}. To be more precise, one can choose whether one does not want to
-support a linear order by passing parameter "no", one wants to register an arbitrary type which
-is already in class @{class linorder} using parameter "linorder", or
-one wants to generate a new linear order by passing no parameter.
+@{class ccompare}. To be more precise, one can choose whether one does not want to
+support a comparator by passing parameter "no", one wants to register an arbitrary type which
+is already in class @{class compare} using parameter "compare", or
+one wants to generate a new comparator by passing no parameter.
 In the last case, one demands that the type is a datatype
-and that all non-recursive types of that datatype are in class @{class linorder}. 
+and that all non-recursive types of that datatype already provide a comparator,
+which can usually be achieved via "derive comparator type" or "derive compare type".
+
 
 \begin{itemize}
 \item \texttt{instantiation type :: (type,\ldots,type) (no) corder}
-\item \texttt{instantiation type :: (linorder,\ldots,linorder) corder}
-\item \texttt{instantiation datatype :: (linorder,\ldots,linorder) (linorder) corder}
+\item \texttt{instantiation datatype :: (type,\ldots,type) corder}
+\item \texttt{instantiation datatype :: (compare,\ldots,compare) (compare) corder}
 \end{itemize}
 
 If the parameter "no" is not used, then the corresponding
-@{term is_corder}-theorem is automatically generated and attributed with 
+@{const is_ccompare}-theorem is automatically generated and attributed with 
 \texttt{[simp, code-post]}.
 *}
 
 
 text {* 
-To create a new ordering, we just invoke the functionality provided by the order generator.
-The only difference is the boilerplate-code, which for the order generator has to perform
-the class instantiation for an order, whereas here we have to invoke the methods to 
-satisfy the corresponding locale for linear orders.
+To create a new comparator, we just invoke the functionality provided by the generator.
+The only difference is the boilerplate-code, which for the generator has to perform
+the class instantiation for a comparator, whereas here we have to invoke the methods to 
+satisfy the corresponding locale for comparators.
 *}
 
 text {*
 This generator can be used for arbitrary types, not just datatypes. 
 When passing no parameters, we get same limitation as for the order generator.
-For mutual recursive datatypes, only for the first mentioned datatype the instantiations 
-of the @{class corder} classes are derived.
 *}
 
 lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<Longrightarrow> a = Some (le',lt') \<Longrightarrow>
@@ -167,26 +106,22 @@ lemma comparator_subst: "c1 = c2 \<Longrightarrow> comparator c1 \<Longrightarro
 lemma (in compare) compare_subst: "\<And> comp. compare = comp \<Longrightarrow> comparator comp"
   using local.comparator_compare by blast  
 
-lemma is_corder_is_ccompare[simp, code_post]: "is_corder TYPE('a :: ccompare_order) = (is_ccompare TYPE('a))"
-  unfolding is_corder_def is_ccompare_def corder ID_def
-  by simp
-
 ML_file "ccompare_generator.ML"
 
 subsection {* Instantiations for HOL types *}
 
 derive (linorder) compare_order 
   Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
-derive (compare_order) ccompare_order 
+derive (compare) ccompare 
   unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
-derive (no) ccompare_order Enum.finite_4 Enum.finite_5
+derive (no) ccompare Enum.finite_4 Enum.finite_5
 
-derive ccompare_order sum list option prod
+derive ccompare sum list option prod
 
-derive (no) ccompare_order "fun"
+derive (no) ccompare "fun"
 
-lemma is_corder_fun [simp]: "\<not> is_corder TYPE('a \<Rightarrow> 'b)"
-by(simp add: is_corder_def corder_fun_def ID_None)
+lemma is_ccompare_fun [simp]: "\<not> is_ccompare TYPE('a \<Rightarrow> 'b)"
+by(simp add: is_ccompare_def ccompare_fun_def ID_None)
 
 instantiation set :: (ccompare) ccompare begin
 definition "CCOMPARE('a set) = 
@@ -196,7 +131,7 @@ end
 
 lemma is_ccompare_set [simp, code_post]:
   "is_ccompare TYPE('a set) \<longleftrightarrow> is_ccompare TYPE('a :: ccompare)"
-by(simp add: is_ccompare_def is_corder_def ccompare_set_def ID_def)
+by(simp add: is_ccompare_def ccompare_set_def ID_def)
 
 
 definition cless_eq_set :: "'a :: ccompare set \<Rightarrow> 'a set \<Rightarrow> bool" 
@@ -210,7 +145,7 @@ lemma ccompare_set_code [code]:
     (case ID CCOMPARE('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some (comp_of_ords cless_eq_set cless_set))"
   by (clarsimp simp add: ccompare_set_def ID_Some split: option.split)
 
-derive (no) ccompare_order Predicate.pred
+derive (no) ccompare Predicate.pred
 
 subsection {* Proper intervals *}
 
