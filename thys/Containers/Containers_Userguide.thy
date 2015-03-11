@@ -402,12 +402,13 @@ instance by(intro_classes)(simp_all add: cEnum_expr_def)
 end
 
 derive (no) cenum expr'
+derive compare_order expr
 
 text_raw {* \par\medskip \isastyletext For example, *}
-value "({b. b = True}, {x. compare x (Lit 0)})"
+value "({b. b = True}, {x. compare x (Lit 0) = Lt})"
 text_raw {*
   \isastyletext{}
-  yields @{value "({b. b = True}, {x. x > Lit 0})"}
+  yields @{value "({b. b = True}, {x. compare x (Lit 0) = Lt})"}
 *}
 
 text {*
@@ -433,7 +434,7 @@ text {*
   \item @{class card_UNIV} from theory @{theory Cardinality} defines the constant @{term [source] "card_UNIV :: ('a, nat) phantom"} which returns @{term "CARD('a)"}, i.e., the number of values in @{typ 'a}.
     If @{typ "'a"} is infinite, @{term "CARD('a) = 0"}.
   \item @{class cproper_interval} from theory @{theory Collection_Order} defines the function @{term [source] "cproper_interval :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool"}.
-    If the type @{typ "'a"} is finite and @{term "CORDER('a)"} yields a linear order on @{typ "'a"}, then @{term "cproper_interval x y"} returns whether the open interval between @{term "x"} and @{term "y"} is non-empty.
+    If the type @{typ "'a"} is finite and @{term "CCOMPARE('a)"} yields a linear order on @{typ "'a"}, then @{term "cproper_interval x y"} returns whether the open interval between @{term "x"} and @{term "y"} is non-empty.
     The bound @{term "None"} denotes unboundedness.
   \end{itemize}
 
@@ -496,7 +497,7 @@ definition cproper_interval_expr :: "expr proper_interval"
 instance by(intro_classes)(simp add: infinite_UNIV_expr)
 end
 
-instantiation expr' :: (corder) cproper_interval begin
+instantiation expr' :: (ccompare) cproper_interval begin
 definition cproper_interval_expr' :: "'a expr' proper_interval" 
   where "cproper_interval_expr' _ _ = undefined"
 instance by(intro_classes)(simp add: infinite_UNIV_expr')
@@ -506,10 +507,41 @@ subsubsection {* Instantiation of @{class proper_interval} *}
 
 text {*
   To illustrate what to do with finite types, we instantiate @{class proper_interval} for @{typ expr}.
-  Like @{class corder} relates to @{class linorder}, the class @{class cproper_interval} has a counterpart @{class proper_interval} without the finiteness assumption.
+  Like @{class ccompare} relates to @{class compare}, the class @{class cproper_interval} has a counterpart @{class proper_interval} without the finiteness assumption.
+  Here, we first have to gather the simplification rules of the comparator from the derive
+  invocation, especially, how the strict order of the comparator, @{term lt_of_comp}, can be defined.
+  
+  Since the order on lists is not yet shown to be consistent with the comparators that are used
+  for lists, this part of the userguide is currently not available.
+  
 *}
+(*
 instantiation expr :: proper_interval begin
 
+lemma less_expr_conv: "(op <) = lt_of_comp comparator_expr" "(op \<le>) = le_of_comp comparator_expr"
+  using less_expr_def less_eq_expr_def unfolding compare_expr_def by auto
+
+lemma lt_of_comp_expr: "lt_of_comp comparator_expr e1 e2 = (
+  case e1 of 
+    Var x1 \<Rightarrow> 
+      (case e2 of 
+        Var x2 \<Rightarrow> lt_of_comp (comparator_list comparator_of) x1 x2  
+      | Lit _ \<Rightarrow> True
+      | Add _ _ \<Rightarrow> True)
+  | Lit i1 \<Rightarrow>
+      (case e2 of
+        Var _ \<Rightarrow> False
+      | Lit i2 \<Rightarrow> lt_of_comp comparator_of i1 i2
+      | Add _ _ \<Rightarrow> True)
+  | Add a1 b1 \<Rightarrow>
+      (case e2 of
+        Var _ \<Rightarrow> False
+      | Lit _ \<Rightarrow> False
+      | Add a2 b2 \<Rightarrow> lt_of_comp comparator_expr a1 a2 
+          \<or> le_of_comp comparator_expr a1 a2 \<and> lt_of_comp comparator_expr b1 b2) 
+    )"
+  by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: expr.split order.split)
+    
 fun proper_interval_expr :: "expr option \<Rightarrow> expr option \<Rightarrow> bool"
 where
   "proper_interval_expr None (Some (Var x)) \<longleftrightarrow> proper_interval None (Some x)"
@@ -519,23 +551,23 @@ where
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Lit i)) \<longleftrightarrow> False"
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Var x)) \<longleftrightarrow> False"
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Add e1' e2')) \<longleftrightarrow> 
-  e1 < e1' \<or>
-  e1 \<le> e1' \<and> proper_interval_expr (Some e2) (Some e2')"
+    (case compare e1 e1' of Lt \<Rightarrow> True | Eq \<Rightarrow> proper_interval_expr (Some e2) (Some e2') | Gt \<Rightarrow> False)"
 | "proper_interval_expr _ _ \<longleftrightarrow> True"
 
 instance
 proof(intro_classes)
   fix x y :: expr
   show "proper_interval None (Some y) = (\<exists>z. z < y)"
-    by(cases y)(auto simp add: less_expr_iff Nil_less_conv_neq_Nil intro: exI[where x="''''"])
+    unfolding less_expr_conv
+    by (cases y)(auto simp add: lt_of_comp_expr  intro: exI[where x="''''"])
 
-  { fix x y have "x < Add x y" 
-      by(induct x arbitrary: y)(simp_all add: less_expr_def) }
+  { fix x y have "x < Add x y" unfolding less_expr_conv 
+      by(induct x arbitrary: y)(simp_all add: lt_of_comp_expr) }
   note le_Add = this
   thus "proper_interval (Some x) None = (\<exists>z. x < z)"
     by(simp add: less_expr_def exI[where x="Add x y"])
 
-  note [simp] = less_expr_iff
+  note [simp] = less_expr_conv lt_of_comp_expr
 
   show "proper_interval (Some x) (Some y) = (\<exists>z. x < z \<and> z < y)"
   proof(induct "Some x" "Some y" arbitrary: x y rule: proper_interval_expr.induct)
@@ -571,7 +603,7 @@ proof(intro_classes)
   qed auto
 qed simp
 end
-
+*)
 (*<*)
 value "{{Lit 1}}"
 value "{{{Lit 1}}}"
@@ -821,8 +853,8 @@ text {*
 *}
 
 lemma mapping_empty_choose_code [code]:
-  "(mapping_empty_choose :: ('a :: {corder, cbl}, 'b) mapping) =
-   (case ID CORDER('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
+  "(mapping_empty_choose :: ('a :: {ccompare, cbl}, 'b) mapping) =
+   (case ID CCOMPARE('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
     | None \<Rightarrow>
       case ID (cbl :: 'a cbl) of Some _ \<Rightarrow> Trie_Mapping empty 
       | None \<Rightarrow> Assoc_List_Mapping DAList.empty)"
@@ -937,8 +969,8 @@ text {*
       @{class ceq} & \S\ref{subsection:ceq} & @{theory Collection_Eq}
       %@{term "Collection_Eq.ceq_class"}
       \\
-      @{class corder} & \S\ref{subsection:corder} & @{theory Collection_Order}
-      %@{term "Collection_Order.corder_class"}
+      @{class ccompare} & \S\ref{subsection:corder} & @{theory Collection_Order}
+      %@{term "Collection_Order.ccompare_class"}
       \\
       @{class cproper_interval} & \S\ref{subsection:cproper_interval} & @{theory Collection_Order}
       %@{term "Collection_Order.cproper_interval_class"}
@@ -965,7 +997,7 @@ code_datatype Collect_set DList_set RBT_set Set_Monad
 (*<*)
 datatype minimal_sorts = Minimal_Sorts bool
 derive (eq) ceq minimal_sorts
-derive (no) corder minimal_sorts
+derive (no) ccompare minimal_sorts
 derive (monad) set_impl minimal_sorts
 derive (no) cenum minimal_sorts
 value "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
@@ -1020,9 +1052,9 @@ fun test_fail s f =
       Fail s' => if s = s' then () else raise (error s')
   end;
 
-test_fail "union RBT_set Set_Monad: corder = None" @{code test_set_impl_unsupported_operation1};
+test_fail "union RBT_set Set_Monad: ccompare = None" @{code test_set_impl_unsupported_operation1};
 test_fail "image Collect_set" @{code test_set_impl_unsupported_operation2};
-test_fail "is_empty RBT_Mapping: corder = None" @{code test_mapping_impl_unsupported_operation};
+test_fail "is_empty RBT_Mapping: ccompare = None" @{code test_mapping_impl_unsupported_operation};
 *}
 (*>*)
 
