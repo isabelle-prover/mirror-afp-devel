@@ -4,12 +4,14 @@ theory Derive_Examples
 imports 
   Derive
   "Comparator_Generator/Compare_Order_Instances"
+  "Equality_Generator/Equality_Instances"
   Rat
 begin
 
 subsection "Register standard existing types"
 
 derive (linorder) compare_order rat
+derive (eq) equality rat
 
 subsection "Without nested recursion"
 
@@ -17,6 +19,7 @@ datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree"
 
 derive compare_order bintree
 derive countable bintree
+derive equality bintree
 
 subsection "Using other datatypes"
 
@@ -24,6 +27,7 @@ datatype nat_list_list = NNil | CCons "nat list" nat_list_list
 
 derive compare_order nat_list_list
 derive countable nat_list_list
+derive (eq) equality nat_list_list
 
 subsection "Explicit mutual recursion"
 
@@ -33,6 +37,7 @@ datatype
 
 derive compare_order mtree
 derive countable mtree
+derive equality mtree
 
 subsection "Implicit mutual recursion"
 
@@ -41,6 +46,7 @@ datatype 'a ttree = TEmpty | TNode 'a "'a ttree list tree"
 
 derive compare_order tree ttree
 derive countable tree ttree
+derive equality tree ttree
 
 subsection "Examples from IsaFoR"
 
@@ -53,6 +59,7 @@ datatype ('f, 'l) lab =
 
 derive compare_order "term" lab
 derive countable "term" lab
+derive equality "term" lab
 
 subsection "A complex datatype"
 text {*
@@ -67,5 +74,6 @@ and ('a, 'b) complex2 = D1 "('a, 'b) complex ttree"
 
 derive compare_order complex
 derive countable complex
+derive equality complex
 
 end
