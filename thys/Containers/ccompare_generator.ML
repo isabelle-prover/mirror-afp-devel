@@ -37,11 +37,6 @@ fun dest_comp ctxt tname =
       in (c, c_thm, Ts) end
   | NONE => error ("no order info for type " ^ quote tname))
 
-fun all_tys comp free_types =
-  let
-    val Ts = fastype_of comp |> strip_type |> fst |> drop_last |> List.last |> dest_Type |> snd
-  in rename_types (Ts ~~ free_types) end
-
 fun mk_ID_ccompare eq_var = 
   let
     val ty = fastype_of eq_var
@@ -85,10 +80,6 @@ fun ccompare_tac ctxt tname Ts =
     THEN (rtac c_thm THEN_ALL_NEW atac) 1
   end
     
-fun is_class_instance thy tname class =
-  Proof_Context.read_type_name {proper = true, strict = true} (Proof_Context.init_global thy) tname
-  |> (fn T => Sign.of_sort thy (T, class))
-
 fun ccompare_instance_via_comparator tname thy =
   let
     val thy = Named_Target.theory_map (Comparator_Generator.ensure_info generator_type tname) thy

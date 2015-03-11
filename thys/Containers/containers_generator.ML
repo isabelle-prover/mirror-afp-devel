@@ -24,10 +24,24 @@ sig
   (* p1 /\ ... /\ pn *)
   val HOLogic_list_conj : term list -> term
 
+  val all_tys : term -> typ list -> term -> term
+  
+  val is_class_instance : theory -> string -> sort -> bool
 end
 
 structure Containers_Generator : CONTAINERS_GENERATOR =
 struct 
+
+open Generator_Aux
+
+fun is_class_instance thy tname class =
+  Proof_Context.read_type_name {proper = true, strict = true} (Proof_Context.init_global thy) tname
+  |> (fn T => Sign.of_sort thy (T, class))
+
+fun all_tys comp free_types =
+  let
+    val Ts = fastype_of comp |> strip_type |> fst |> drop_last |> List.last |> dest_Type |> snd
+  in rename_types (Ts ~~ free_types) end
 
 fun HOLogic_list_conj [] = @{term True}
   | HOLogic_list_conj [x] = x
