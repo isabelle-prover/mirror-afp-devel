@@ -59,6 +59,10 @@ lemma (in ccompare) ID_ccompare:
   unfolding ID_def id_apply using ccompare comparator.linorder
   by (intro ccompare comparator.linorder)
 
+lemma (in ccompare) ID_ccompare': 
+  "\<And>c. ID ccompare = Some c \<Longrightarrow> comparator c"
+  unfolding ID_def id_apply using ccompare by simp 
+  
 syntax "_CORDER" :: "type => logic" ("(1CORDER/(1'(_')))")
 
 parse_translation {*
@@ -184,25 +188,27 @@ derive (no) ccompare_order "fun"
 lemma is_corder_fun [simp]: "\<not> is_corder TYPE('a \<Rightarrow> 'b)"
 by(simp add: is_corder_def corder_fun_def ID_None)
 
-instantiation set :: (corder) corder begin
-definition "CORDER('a set) = map_option (\<lambda>(leq, lt). (ord.set_less_eq leq, ord.set_less leq)) (ID CORDER('a))"
-instance by(intro_classes)(auto simp add: corder_set_def intro: linorder.set_less_eq_linorder ID_corder)
+instantiation set :: (ccompare) ccompare begin
+definition "CCOMPARE('a set) = 
+  map_option (\<lambda> c. comp_of_ords (ord.set_less_eq (le_of_comp c)) (ord.set_less (le_of_comp c))) (ID CCOMPARE('a))"
+instance by(intro_classes)(auto simp add: ccompare_set_def intro: comp_of_ords linorder.set_less_eq_linorder ID_ccompare)
 end
 
-lemma is_corder_set [simp, code_post]:
-  "is_corder TYPE('a set) \<longleftrightarrow> is_corder TYPE('a :: corder)"
-by(simp add: is_corder_def corder_set_def ID_def)
+lemma is_ccompare_set [simp, code_post]:
+  "is_ccompare TYPE('a set) \<longleftrightarrow> is_ccompare TYPE('a :: ccompare)"
+by(simp add: is_ccompare_def is_corder_def ccompare_set_def ID_def)
 
 
-definition cless_eq_set :: "'a :: corder set \<Rightarrow> 'a set \<Rightarrow> bool" 
-where [simp, code del]: "cless_eq_set = fst (the (ID CORDER('a set)))"
+definition cless_eq_set :: "'a :: ccompare set \<Rightarrow> 'a set \<Rightarrow> bool" 
+where [simp, code del]: "cless_eq_set = le_of_comp (the (ID CCOMPARE('a set)))"
 
-definition cless_set :: "'a :: corder set \<Rightarrow> 'a set \<Rightarrow> bool"
-where [simp, code del]: "cless_set = snd (the (ID CORDER('a set)))"
+definition cless_set :: "'a :: ccompare set \<Rightarrow> 'a set \<Rightarrow> bool"
+where [simp, code del]: "cless_set = lt_of_comp (the (ID CCOMPARE('a set)))"
 
-lemma corder_set_code [code]:
-  "CORDER('a :: corder set) = (case ID CORDER('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some (cless_eq_set, cless_set))"
-by(clarsimp simp add: corder_set_def ID_Some split: option.split)
+lemma ccompare_set_code [code]:
+  "CCOMPARE('a :: ccompare set) = 
+    (case ID CCOMPARE('a) of None \<Rightarrow> None | Some _ \<Rightarrow> Some (comp_of_ords cless_eq_set cless_set))"
+  by (clarsimp simp add: ccompare_set_def ID_Some split: option.split)
 
 derive (no) ccompare_order Predicate.pred
 
@@ -419,7 +425,7 @@ proof
 qed
 end
 
-(*
+
 instantiation set :: (cproper_interval) cproper_interval begin
 fun cproper_interval_set :: "'a set proper_interval" where
   [code]: "cproper_interval_set None None \<longleftrightarrow> True"
@@ -429,26 +435,27 @@ fun cproper_interval_set :: "'a set proper_interval" where
   "cproper_interval_set (Some A) (Some B) \<longleftrightarrow> finite (UNIV :: 'a set) \<and> (\<exists>C. cless A C \<and> cless C B)"
 instance
 proof
-  assume "ID CORDER('a set) \<noteq> None" "finite (UNIV :: 'a set set)"
-  then obtain leq_a lt_a
-    where A: "ID CORDER('a) = Some (leq_a, lt_a)" "finite (UNIV :: 'a set)"
-    by(auto simp add: corder_set_def ID_def Finite_Set.finite_set)
-  interpret a!: linorder leq_a lt_a by(rule ID_corder)(rule A) 
-  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] corder_set_def ID_Some
+  assume "ID CCOMPARE('a set) \<noteq> None" "finite (UNIV :: 'a set set)"
+  then obtain c_a
+    where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
+    by(auto simp add: ccompare_set_def ID_def Finite_Set.finite_set)
+  interpret a!: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A) 
+  note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] ccompare_set_def 
+    ID_Some lt_of_comp_of_ords
   show "class.proper_interval cless (cproper_interval :: 'a set proper_interval)" using A
-    by unfold_locales auto
+    by (unfold_locales, auto)
 qed
 
 
 lemma Complement_cproper_interval_set_Complement:
   fixes A B :: "'a set"
-  assumes corder: "ID CORDER('a) \<noteq> None"
+  assumes corder: "ID CCOMPARE('a) \<noteq> None"
   shows "cproper_interval (Some (- A)) (Some (- B)) = cproper_interval (Some B) (Some A)"
 using assms
-by(clarsimp simp add: corder_set_def ID_Some)(metis double_complement linorder.Compl_set_less_Compl[OF ID_corder])
+by(clarsimp simp add: ccompare_set_def ID_Some lt_of_comp_of_ords) (metis double_complement linorder.Compl_set_less_Compl[OF ID_ccompare])
 
 end
-*)
+
 
 instantiation "fun" :: (type, type) cproper_interval begin
 text {* No interval checks on functions needed because we have not defined an order on them. *}
