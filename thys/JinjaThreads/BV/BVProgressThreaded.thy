@@ -962,13 +962,13 @@ proof(cases i)
   case (Invoke M' n)
   { fix T ta''' ta'''' va' va'' h' h''
     assume T: "typeof_addr (shr s) (the_Addr (stk ! n)) = \<lfloor>T\<rfloor>"
-      and method: "snd (snd (snd (method P (class_type_of T) M'))) = None" "P \<turnstile> class_type_of T has M'"
+      and "method": "snd (snd (snd (method P (class_type_of T) M'))) = None" "P \<turnstile> class_type_of T has M'"
       and params: "P,shr s \<turnstile> rev (take n stk) [:\<le>] fst (snd (method P (class_type_of T) M'))"
       and red1: "(ta''', va', h') \<in> red_external_aggr P t (the_Addr (stk ! n)) M' (rev (take n stk)) (shr s)"
       and red2: "(ta'''', va'', h'') \<in> red_external_aggr P t (the_Addr (stk ! n)) M' (rev (take n stk)) (shr s)"
       and ta': "ta' = extTA2JVM P ta'''"
       and ta'': "ta'' = extTA2JVM P ta''''"
-    from T method params obtain T' where "P,shr s \<turnstile> the_Addr (stk ! n)\<bullet>M'(rev (take n stk)) : T'"
+    from T "method" params obtain T' where "P,shr s \<turnstile> the_Addr (stk ! n)\<bullet>M'(rev (take n stk)) : T'"
       by(fastforce simp add: has_method_def confs_conv_map external_WT'_iff)
     hence "P,t \<turnstile> \<langle>the_Addr (stk ! n)\<bullet>M'(rev (take n stk)), shr s\<rangle> -ta'''\<rightarrow>ext \<langle>va', h'\<rangle>"
       and "P,t \<turnstile> \<langle>the_Addr (stk ! n)\<bullet>M'(rev (take n stk)), shr s\<rangle> -ta''''\<rightarrow>ext \<langle>va'', h''\<rangle>"

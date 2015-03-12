@@ -1428,11 +1428,11 @@ qed
 
 
 lemma least_method_is_type:
-assumes method:"P \<turnstile> C has least M = (Ts,T,m) via Cs" and wf:"wf_prog wf_md P"
+assumes "method":"P \<turnstile> C has least M = (Ts,T,m) via Cs" and wf:"wf_prog wf_md P"
 shows "is_type P T"
 
 proof -
-  from method have "(Cs,Ts,T,m) \<in> MethodDefs P C M"
+  from "method" have "(Cs,Ts,T,m) \<in> MethodDefs P C M"
     by (simp add:LeastMethodDef_def)
   from this obtain Bs fs ms 
     where "map_of ms M = Some(Ts,T,m)" 
@@ -1446,12 +1446,12 @@ qed
 
 
 lemma least_overrider_is_type:
-assumes method:"P \<turnstile> (C,Cs) has overrider M = (Ts,T,m) via Cs'" 
+assumes "method":"P \<turnstile> (C,Cs) has overrider M = (Ts,T,m) via Cs'" 
   and wf:"wf_prog wf_md P"
 shows "is_type P T"
 
 proof -
-  from method have "(Cs',Ts,T,m) \<in> MethodDefs P C M"
+  from "method" have "(Cs',Ts,T,m) \<in> MethodDefs P C M"
     by(clarsimp simp:FinalOverriderMethodDef_def OverriderMethodDefs_def 
                      MinimalMethodDefs_def)
   from this obtain Bs fs ms 

@@ -1135,7 +1135,7 @@ next
 next
   case (Call e M es)
   obtain C D Ts m Ts' where C: "P,E \<turnstile>\<^sub>1 e :: Class C"
-    and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
+    and "method": "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
     and wtes: "P,E \<turnstile>\<^sub>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
     using Call.prems by auto
   from wtes have same_size: "size es = size Ts'" by(rule WTs\<^sub>1_same_size)
@@ -1146,7 +1146,7 @@ next
   let ?\<tau>\<^sub>1 = "ty\<^sub>i' (rev Ts' @ Class C # ST) E ?A\<^sub>1"
   let ?\<tau>' = "ty\<^sub>i' (T # ST) E ?A\<^sub>1"
   have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^sub>1,?\<tau>']"
-    by(rule wt_Invoke[OF same_size method subs])
+    by(rule wt_Invoke[OF same_size "method" subs])
   also
   have "PROP ?Ps es E Ts' ?A\<^sub>0 (Class C # ST)" by fact
   hence "\<turnstile> compEs\<^sub>2 es,compxEs\<^sub>2 es 0 (size ST+1) [::] ?\<tau>\<^sub>e # ?\<tau>s\<^sub>e\<^sub>s"

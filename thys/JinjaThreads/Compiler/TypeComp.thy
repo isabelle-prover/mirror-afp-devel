@@ -1266,7 +1266,7 @@ next
   obtain U C D Ts m Ts'
     where C: "P,E \<turnstile>1 e :: U"
     and icto: "class_type_of' U = \<lfloor>C\<rfloor>"
-    and method: "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
+    and "method": "P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
     and wtes: "P,E \<turnstile>1 es [::] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
     by(cases) auto
   from wtes have same_size: "size es = size Ts'" by(rule WTs1_same_size)
@@ -1277,7 +1277,7 @@ next
   let ?\<tau>\<^sub>1 = "ty\<^sub>i' (rev Ts' @ U # ST) E ?A\<^sub>1"
   let ?\<tau>' = "ty\<^sub>i' (T # ST) E ?A\<^sub>1"
   have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^sub>1,?\<tau>']"
-    by(rule wt_Invoke[OF same_size icto method subs])
+    by(rule wt_Invoke[OF same_size icto "method" subs])
   also
   from Call.hyps(2)[of Ts'] Call.prems wtes C
   have "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^sub>e # ?\<tau>s\<^sub>e\<^sub>s"
