@@ -23,12 +23,11 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Abstract Rewrite Systems *}
+section \<open>Abstract Rewrite Systems\<close>
 
 theory Abstract_Rewriting
 imports
   "~~/src/HOL/Library/Infinite_Set"
-  "../Transitive-Closure/Transitive_Closure_Impl"
   "../Regular-Sets/Regexp_Method"
   Seq
 begin
@@ -44,28 +43,28 @@ lemma relpow_mono:
   using assms by (induct n) auto
 
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {*Two elements are \emph{joinable} (and then have in the joinability relation)
-w.r.t.\ @{term "A"}, iff they have a common reduct.*}
+text \<open>Two elements are \emph{joinable} (and then have in the joinability relation)
+w.r.t.\ @{term "A"}, iff they have a common reduct.\<close>
 definition join :: "'a rel \<Rightarrow> 'a rel" where
   "join A = A\<^sup>* O (A\<inverse>)\<^sup>*"
 
-text {* Two elements are \emph{meetable} (and then have in the meetability relation)
-w.r.t.\ @{term "A"}, iff they have a common ancestor.*}
+text \<open>Two elements are \emph{meetable} (and then have in the meetability relation)
+w.r.t.\ @{term "A"}, iff they have a common ancestor.\<close>
 definition meet :: "'a rel \<Rightarrow> 'a rel" where
   "meet A = (A\<inverse>)\<^sup>* O A\<^sup>*"
 
-text {*The \emph{symmetric closure} of a relation allows steps in both directions.*}
+text \<open>The \emph{symmetric closure} of a relation allows steps in both directions.\<close>
 abbreviation symcl :: "'a rel \<Rightarrow> 'a rel" ("(_^<->)" [1000] 999) where
   "A^<-> \<equiv> A \<union> A\<inverse>"
 
-text {*A \emph{conversion} is a (possibly empty) sequence of steps in the symmetric closure.*}
+text \<open>A \emph{conversion} is a (possibly empty) sequence of steps in the symmetric closure.\<close>
 definition conversion :: "'a rel \<Rightarrow> 'a rel" ("(_^<->*)" [1000] 999) where
   "A^<->* = (A^<->)\<^sup>*"
 
-text {*The set of \emph{normal forms} of an ARS constitutes all the elements that do
-not have any successors.*}
+text \<open>The set of \emph{normal forms} of an ARS constitutes all the elements that do
+not have any successors.\<close>
 definition NF :: "'a rel \<Rightarrow> 'a set" where
   "NF A = {a. A `` {a} = {}}"
 
@@ -134,7 +133,7 @@ proof (induct)
 next
   case (step b c)
   then have "(b, c) \<in> A\<^sup>\<leftrightarrow>" by simp
-  with `(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*` show ?case unfolding conversion_def by (rule rtrancl.intros)
+  with \<open>(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*\<close> show ?case unfolding conversion_def by (rule rtrancl.intros)
 qed
 
 lemma rtrancl_comp_trancl_conv:
@@ -147,8 +146,8 @@ lemma conversionE:
   "(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>* \<Longrightarrow> ((a, b) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>* \<Longrightarrow> P) \<Longrightarrow> P"
   by (simp add: conversion_def)
 
-text {*Later declarations are tried first for `proof' and `rule,' then have the ``main''
-introduction\,/\, elimination rules for constants should be declared last.*}
+text \<open>Later declarations are tried first for `proof' and `rule,' then have the ``main''
+introduction\,/\, elimination rules for constants should be declared last.\<close>
 declare joinI_left [intro]
 declare joinI_right [intro]
 declare joinI [intro]
@@ -173,7 +172,7 @@ proof (intro allI impI)
     case base then show ?case by simp
   next
     case (step b c')
-    from `(b, c') \<in> A\<^sup>\<leftrightarrow>` and `(c', c) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>*`
+    from \<open>(b, c') \<in> A\<^sup>\<leftrightarrow>\<close> and \<open>(c', c) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>*\<close>
       have "(b, c) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>*" by (rule converse_rtrancl_into_rtrancl)
     with step show ?case by simp
   qed
@@ -189,7 +188,7 @@ proof (intro allI impI)
   next
     case (step b c)
     then have "(c, b) \<in> A\<^sup>\<leftrightarrow>" by blast
-    from `(c, b) \<in> A\<^sup>\<leftrightarrow>` and `(b, a) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>*`
+    from \<open>(c, b) \<in> A\<^sup>\<leftrightarrow>\<close> and \<open>(b, a) \<in> (A\<^sup>\<leftrightarrow>)\<^sup>*\<close>
       show ?case by (rule converse_rtrancl_into_rtrancl)
   qed
 qed
@@ -211,20 +210,20 @@ lemma conversion_rtrancl [simp]:
 lemma rtrancl_join_join:
   assumes "(a, b) \<in> A\<^sup>*" and "(b, c) \<in> A\<^sup>\<down>" shows "(a, c) \<in> A\<^sup>\<down>"
 proof -
-  from `(b, c) \<in> A\<^sup>\<down>` obtain b' where "(b, b') \<in> A\<^sup>*" and "(b', c) \<in> (A\<inverse>)\<^sup>*"
+  from \<open>(b, c) \<in> A\<^sup>\<down>\<close> obtain b' where "(b, b') \<in> A\<^sup>*" and "(b', c) \<in> (A\<inverse>)\<^sup>*"
     unfolding join_def by blast
-  with `(a, b) \<in> A\<^sup>*` have "(a, b') \<in> A\<^sup>*" by simp
-  with `(b', c) \<in> (A\<inverse>)\<^sup>*` show ?thesis unfolding join_def by blast
+  with \<open>(a, b) \<in> A\<^sup>*\<close> have "(a, b') \<in> A\<^sup>*" by simp
+  with \<open>(b', c) \<in> (A\<inverse>)\<^sup>*\<close> show ?thesis unfolding join_def by blast
 qed
 
 lemma join_rtrancl_join:
   assumes "(a, b) \<in> A\<^sup>\<down>" and "(c, b) \<in> A\<^sup>*" shows "(a, c) \<in> A\<^sup>\<down>"
 proof -
-  from `(c, b) \<in> A\<^sup>*` have "(b, c) \<in> (A\<inverse>)\<^sup>*" unfolding rtrancl_converse by simp
-  from `(a, b) \<in> A\<^sup>\<down>` obtain a' where "(a, a') \<in> A\<^sup>*" and "(a', b) \<in> (A\<inverse>)\<^sup>*"
+  from \<open>(c, b) \<in> A\<^sup>*\<close> have "(b, c) \<in> (A\<inverse>)\<^sup>*" unfolding rtrancl_converse by simp
+  from \<open>(a, b) \<in> A\<^sup>\<down>\<close> obtain a' where "(a, a') \<in> A\<^sup>*" and "(a', b) \<in> (A\<inverse>)\<^sup>*"
     unfolding join_def by best
-  with `(b, c) \<in> (A\<inverse>)\<^sup>*` have "(a', c) \<in> (A\<inverse>)\<^sup>*" by simp
-  with `(a, a') \<in> A\<^sup>*` show ?thesis unfolding join_def by blast
+  with \<open>(b, c) \<in> (A\<inverse>)\<^sup>*\<close> have "(a', c) \<in> (A\<inverse>)\<^sup>*" by simp
+  with \<open>(a, a') \<in> A\<^sup>*\<close> show ?thesis unfolding join_def by blast
 qed
 
 lemma NF_I: "(\<And>b. (a, b) \<notin> A) \<Longrightarrow> a \<in> NF A" by (auto intro: no_step)
@@ -249,7 +248,7 @@ proof -
   show ?thesis
   proof (intro allI notI)
     fix b assume "(a, b) \<in> A\<^sup>+"
-    then show False by (induct) (auto simp: `\<forall>b. (a, b) \<notin> A`)
+    then show False by (induct) (auto simp: \<open>\<forall>b. (a, b) \<notin> A\<close>)
    qed
 qed
 
@@ -273,11 +272,11 @@ declare normalizability_I [intro]
 declare normalizability_E [elim]
 
 
-subsection {* Properties of ARSs *}
+subsection \<open>Properties of ARSs\<close>
 
-text {*The following properties on (elements of) ARSs are defined: completeness,
+text \<open>The following properties on (elements of) ARSs are defined: completeness,
 Church-Rosser property, semi-completeness, strong normalization, unique normal
-forms, Weak Church-Rosser property, and weak normalization.*}
+forms, Weak Church-Rosser property, and weak normalization.\<close>
 
 definition CR_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
   "CR_on r A \<longleftrightarrow> (\<forall>a\<in>A. \<forall>b c. (a, b) \<in> r\<^sup>* \<and> (a, c) \<in> r\<^sup>* \<longrightarrow> (b, c) \<in> join r)"
@@ -291,7 +290,7 @@ definition SN_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool" where
 abbreviation SN :: "'a rel \<Rightarrow> bool" where
   "SN r \<equiv> SN_on r UNIV"
 
-text {* Alternative definition of @{term "SN"}. *}
+text \<open>Alternative definition of @{term "SN"}.\<close>
 lemma SN_def: "SN r = (\<forall>x. SN_on r {x})"
   unfolding SN_on_def by blast
 
@@ -332,7 +331,7 @@ abbreviation semi_complete :: "'a rel \<Rightarrow> bool" where
 lemmas complete_defs = complete_on_def
 lemmas semi_complete_defs = semi_complete_on_def
 
-text {* Unique normal forms with respect to conversion. *}
+text \<open>Unique normal forms with respect to conversion.\<close>
 definition UNC :: "'a rel \<Rightarrow> bool" where
   "UNC A \<longleftrightarrow> (\<forall>a b. a \<in> NF A \<and> b \<in> NF A \<and> (a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>* \<longrightarrow> a = b)"
 
@@ -416,7 +415,7 @@ proof (rule ccontr)
   assume "\<not> SN_on R T"
   then obtain s where "s 0 \<in> T" and "chain R s" unfolding SN_defs by auto
   then have "chain (R\<^sup>+) s" by auto
-  with `s 0 \<in> T` have "\<not> SN_on (R\<^sup>+) T" unfolding SN_defs by auto
+  with \<open>s 0 \<in> T\<close> have "\<not> SN_on (R\<^sup>+) T" unfolding SN_defs by auto
   with assms show False by simp
 qed
 
@@ -497,8 +496,8 @@ declare WN_onI [intro]
 declare WN_onD [dest]
 declare WN_onE [elim]
 
-text {* Restricting a relation @{term r} to those elements that are strongly
-normalizing with respect to a relation @{term s}.*}
+text \<open>Restricting a relation @{term r} to those elements that are strongly
+normalizing with respect to a relation @{term s}.\<close>
 definition restrict_SN :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "restrict_SN r s = {(a, b) | a b. (a, b) \<in> r \<and> SN_on s {a}}"
 
@@ -514,7 +513,7 @@ proof
   then obtain a where "a \<in> A" and 1: "(a, f 0) \<in> r" by auto
   let ?g = "case_nat a f"
   from cons_chain [OF 1 chain] have "chain r ?g" .
-  moreover have "?g 0 \<in> A" by (simp add: `a \<in> A`)
+  moreover have "?g 0 \<in> A" by (simp add: \<open>a \<in> A\<close>)
   ultimately have "\<not> SN_on r A" unfolding SN_defs by best
   with assms show False by simp
 qed
@@ -543,15 +542,15 @@ proof (induct n arbitrary: y)
 next
   case (Suc n)
   then obtain z where "(x, z) \<in> r^^n" and "(z, y) \<in> r" by auto
-  from Suc(1)[OF `(x, z) \<in> r^^n`]
+  from Suc(1)[OF \<open>(x, z) \<in> r^^n\<close>]
     obtain f where "f 0 = x" and "f n = z" and seq: "\<forall>i<n. (f i, f (Suc i)) \<in> r" by auto
   let ?n = "Suc n"
   let ?f = "\<lambda>i. if i = ?n then y else f i"
   have "?f ?n = y" by simp
-  from `f 0 = x` have "?f 0 = x" by simp
+  from \<open>f 0 = x\<close> have "?f 0 = x" by simp
   from seq have seq': "\<forall>i<n. (?f i, ?f (Suc i)) \<in> r" by auto
-  with `f n = z` and `(z, y) \<in> r` have "\<forall>i<?n. (?f i, ?f (Suc i)) \<in> r" by auto
-  with `?f 0 = x` and `?f ?n = y` show ?case by best
+  with \<open>f n = z\<close> and \<open>(z, y) \<in> r\<close> have "\<forall>i<?n. (?f i, ?f (Suc i)) \<in> r" by auto
+  with \<open>?f 0 = x\<close> and \<open>?f ?n = y\<close> show ?case by best
 qed
 
 lemma rtrancl_imp_seq:
@@ -570,13 +569,13 @@ proof
   show False
   proof (cases n)
     case 0
-    with `(a, f 0) \<in> r^^n` have "f 0 = a" by simp
+    with \<open>(a, f 0) \<in> r^^n\<close> have "f 0 = a" by simp
     then have "f 0 \<in> A" by (simp add: a)
     with chain have "\<not> SN_on r A" by auto
     with assms show False by simp
   next
     case (Suc m)
-    from relpow_seq [OF `(a, f 0) \<in> r^^n`]
+    from relpow_seq [OF \<open>(a, f 0) \<in> r^^n\<close>]
       obtain g where g0: "g 0 = a" and "g n = f 0"
       and gseq: "\<forall>i<n. (g i, g (Suc i)) \<in> r" by auto
     let ?f = "\<lambda>i. if i < n then g i else f (i - n)"
@@ -593,22 +592,22 @@ proof
         then have eq: "Suc (i - n) = Suc i - n" by arith
         from chain have "(f (i - n), f (Suc (i - n))) \<in> r" by simp
         then have "(f (i - n), f (Suc i - n)) \<in> r" by (simp add: eq)
-        with `Suc i > n` have "(?f i, ?f (Suc i)) \<in> r" by simp
+        with \<open>Suc i > n\<close> have "(?f i, ?f (Suc i)) \<in> r" by simp
       }
       moreover
       {
         assume "Suc i = n"
-        then have eq: "f (Suc i - n) = g n" by (simp add: `g n = f 0`)
-        from `Suc i = n` have eq': "i = n - 1" by arith
+        then have eq: "f (Suc i - n) = g n" by (simp add: \<open>g n = f 0\<close>)
+        from \<open>Suc i = n\<close> have eq': "i = n - 1" by arith
         from gseq have "(g i, f (Suc i - n)) \<in> r" unfolding eq by (simp add: Suc eq')
-        then have "(?f i, ?f (Suc i)) \<in> r" using `Suc i = n` by simp
+        then have "(?f i, ?f (Suc i)) \<in> r" using \<open>Suc i = n\<close> by simp
       }
       ultimately show "(?f i, ?f (Suc i)) \<in> r" by simp
     qed
     moreover have "?f 0 \<in> A"
     proof (cases n)
       case 0
-      with `(a, f 0) \<in> r^^n` have eq: "a = f 0" by simp
+      with \<open>(a, f 0) \<in> r^^n\<close> have eq: "a = f 0" by simp
       from a show ?thesis by (simp add: eq 0)
     next
       case (Suc m)
@@ -641,8 +640,8 @@ next
       case (trancl_into_trancl a b c)
       then have IH: "(a, b) \<in> ?lhs" by auto
       from trancl_into_trancl have "(a, b) \<in> A\<^sup>*" by auto
-      from this and `SN_on A {a}` have "SN_on A {b}" by (rule steps_preserve_SN_on)
-      with `(b, c) \<in> A` have "(b, c) \<in> ?lhs" unfolding restrict_SN_def by auto
+      from this and \<open>SN_on A {a}\<close> have "SN_on A {b}" by (rule steps_preserve_SN_on)
+      with \<open>(b, c) \<in> A\<close> have "(b, c) \<in> ?lhs" unfolding restrict_SN_def by auto
       with IH show ?case by simp
     qed
   qed
@@ -651,12 +650,12 @@ qed
 lemma SN_imp_WN:
   assumes "SN A" shows "WN A"
 proof -
-  from `SN A` have "wf (A\<inverse>)" by (simp add: SN_defs wf_iff_no_infinite_down_chain)
+  from \<open>SN A\<close> have "wf (A\<inverse>)" by (simp add: SN_defs wf_iff_no_infinite_down_chain)
   show "WN A"
   proof
     fix a
     show "\<exists>b. (a, b) \<in> A\<^sup>!" unfolding normalizability_def NF_def Image_def
-      by (rule wfE_min [OF `wf (A\<inverse>)`, of a "A\<^sup>* `` {a}", simplified])
+      by (rule wfE_min [OF \<open>wf (A\<inverse>)\<close>, of a "A\<^sup>* `` {a}", simplified])
          (auto intro: rtrancl_into_rtrancl)
   qed
 qed
@@ -668,8 +667,8 @@ proof - {
   then have "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*" and "y \<in> NF r" and "z \<in> NF r" by auto
   then have "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" and "(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
   then have "(z, x) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
-  with `(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(z, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
-  from assms and this and `z \<in> NF r` and `y \<in> NF r` have "z = y" unfolding UNC_def by auto
+  with \<open>(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(z, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
+  from assms and this and \<open>z \<in> NF r\<close> and \<open>y \<in> NF r\<close> have "z = y" unfolding UNC_def by auto
 } then show ?thesis by auto
 qed
 
@@ -677,13 +676,13 @@ lemma join_NF_imp_eq:
  assumes "(x, y) \<in> r\<^sup>\<down>" and "x \<in> NF r" and "y \<in> NF r"
  shows "x = y"
 proof -
-  from `(x, y) \<in> r\<^sup>\<down>` obtain z where "(x, z)\<in>r\<^sup>*" and "(z, y)\<in>(r\<inverse>)\<^sup>*" unfolding join_def by auto
+  from \<open>(x, y) \<in> r\<^sup>\<down>\<close> obtain z where "(x, z)\<in>r\<^sup>*" and "(z, y)\<in>(r\<inverse>)\<^sup>*" unfolding join_def by auto
   then have "(y, z) \<in> r\<^sup>*" unfolding rtrancl_converse by simp
-  from `x \<in> NF r` have "(x, z) \<notin> r\<^sup>+" using NF_no_trancl_step by best
-  then have "x = z" using rtranclD [OF `(x, z) \<in> r\<^sup>*`] by auto
-  from `y \<in> NF r` have "(y, z) \<notin> r\<^sup>+" using NF_no_trancl_step by best
-  then have "y = z" using rtranclD [OF `(y, z) \<in> r\<^sup>*`] by auto
-  with `x = z` show ?thesis by simp
+  from \<open>x \<in> NF r\<close> have "(x, z) \<notin> r\<^sup>+" using NF_no_trancl_step by best
+  then have "x = z" using rtranclD [OF \<open>(x, z) \<in> r\<^sup>*\<close>] by auto
+  from \<open>y \<in> NF r\<close> have "(y, z) \<notin> r\<^sup>+" using NF_no_trancl_step by best
+  then have "y = z" using rtranclD [OF \<open>(y, z) \<in> r\<^sup>*\<close>] by auto
+  with \<open>x = z\<close> show ?thesis by simp
 qed
 
 lemma CR_iff_meet_subset_join: "CR r = (r\<^sup>\<up> \<subseteq> r\<^sup>\<down>)"
@@ -692,13 +691,13 @@ proof
  proof (rule subrelI)
   fix x y assume "(x, y) \<in> r\<^sup>\<up>"
   then obtain z where "(z, x) \<in> r\<^sup>*" and "(z, y) \<in> r\<^sup>*" using meetD by best
-  with `CR r` show "(x, y) \<in> r\<^sup>\<down>" by (auto simp: CR_defs)
+  with \<open>CR r\<close> show "(x, y) \<in> r\<^sup>\<down>" by (auto simp: CR_defs)
  qed
 next
  assume "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>" {
   fix x y z assume "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*"
   then have "(y, z) \<in> r\<^sup>\<up>" unfolding meet_def rtrancl_converse by auto
-  with `r\<^sup>\<up> \<subseteq> r\<^sup>\<down>` have "(y, z) \<in> r\<^sup>\<down>" by auto
+  with \<open>r\<^sup>\<up> \<subseteq> r\<^sup>\<down>\<close> have "(y, z) \<in> r\<^sup>\<down>" by auto
  } then show "CR r" by (auto simp: CR_defs)
 qed
 
@@ -712,8 +711,8 @@ proof
   fix x z assume "(x, z) \<in> r\<^sup>\<down>"
   then obtain y where "(x, y) \<in> r\<^sup>*" and "(z, y) \<in> r\<^sup>*" by auto
   then have "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" and "(z, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
-  from `(z, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
-  with `(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` show "(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
+  from \<open>(z, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
+  with \<open>(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> show "(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
 qed
 
 lemma meet_imp_conversion: "r\<^sup>\<up> \<subseteq> r\<^sup>\<leftrightarrow>\<^sup>*"
@@ -721,8 +720,8 @@ proof (rule subrelI)
   fix y z assume "(y, z) \<in> r\<^sup>\<up>"
   then obtain x where "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*" by auto
   then have "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" and "(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
-  from `(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(y, x) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
-  with `(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` show "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
+  from \<open>(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(y, x) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
+  with \<open>(x, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> show "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
 qed
 
 lemma CR_imp_UNF:
@@ -731,9 +730,9 @@ proof - {
 fix x y z assume "(x, y) \<in> r\<^sup>!" and "(x, z) \<in> r\<^sup>!"
   then have "(x, y) \<in> r\<^sup>*" and "y \<in> NF r" and "(x, z) \<in> r\<^sup>*" and "z \<in> NF r"
     unfolding normalizability_def by auto
-  from assms and `(x, y) \<in> r\<^sup>*` and `(x, z) \<in> r\<^sup>*` have "(y, z) \<in> r\<^sup>\<down>"
+  from assms and \<open>(x, y) \<in> r\<^sup>*\<close> and \<open>(x, z) \<in> r\<^sup>*\<close> have "(y, z) \<in> r\<^sup>\<down>"
     by (rule CR_divergence_imp_join)
-  from this and `y \<in> NF r` and `z \<in> NF r` have "y = z" by (rule join_NF_imp_eq)
+  from this and \<open>y \<in> NF r\<close> and \<open>z \<in> NF r\<close> have "y = z" by (rule join_NF_imp_eq)
 } then show ?thesis by auto
 qed
 
@@ -745,23 +744,23 @@ proof (intro iffI subrelI)
   proof (induct n arbitrary: x)
     case 0
     assume "(x, y) \<in> r\<^sup>\<leftrightarrow> ^^ 0" then have "x = y" by simp
-    show ?case unfolding `x = y` by auto
+    show ?case unfolding \<open>x = y\<close> by auto
   next
     case (Suc n)
-    from `(x, y) \<in> r\<^sup>\<leftrightarrow> ^^ Suc n` obtain  z where "(x, z) \<in> r\<^sup>\<leftrightarrow>" and "(z, y) \<in> r\<^sup>\<leftrightarrow> ^^ n"
+    from \<open>(x, y) \<in> r\<^sup>\<leftrightarrow> ^^ Suc n\<close> obtain  z where "(x, z) \<in> r\<^sup>\<leftrightarrow>" and "(z, y) \<in> r\<^sup>\<leftrightarrow> ^^ n"
       using relpow_Suc_D2 by best
     with Suc have "(z, y) \<in> r\<^sup>\<down>" by simp
-    from `(x, z) \<in> r\<^sup>\<leftrightarrow>` show ?case
+    from \<open>(x, z) \<in> r\<^sup>\<leftrightarrow>\<close> show ?case
     proof
-      assume "(x, z) \<in> r" with `(z, y) \<in> r\<^sup>\<down>` show ?thesis by (auto intro: rtrancl_join_join)
+      assume "(x, z) \<in> r" with \<open>(z, y) \<in> r\<^sup>\<down>\<close> show ?thesis by (auto intro: rtrancl_join_join)
     next
       assume "(x, z) \<in> r\<inverse>"
       then have "(z, x) \<in> r\<^sup>*" by simp
-      from `(z, y) \<in> r\<^sup>\<down>` obtain z' where "(z, z') \<in> r\<^sup>*" and "(y, z') \<in> r\<^sup>*" by auto
-      from `CR r` and `(z, x) \<in> r\<^sup>*` and `(z, z') \<in> r\<^sup>*` have "(x, z') \<in> r\<^sup>\<down>"
+      from \<open>(z, y) \<in> r\<^sup>\<down>\<close> obtain z' where "(z, z') \<in> r\<^sup>*" and "(y, z') \<in> r\<^sup>*" by auto
+      from \<open>CR r\<close> and \<open>(z, x) \<in> r\<^sup>*\<close> and \<open>(z, z') \<in> r\<^sup>*\<close> have "(x, z') \<in> r\<^sup>\<down>"
         by (rule CR_divergence_imp_join)
       then obtain x' where "(x, x') \<in> r\<^sup>*" and "(z', x') \<in> r\<^sup>*" by auto
-      with `(y, z') \<in> r\<^sup>*` show ?thesis by auto
+      with \<open>(y, z') \<in> r\<^sup>*\<close> show ?thesis by auto
     qed
   qed
 next
@@ -782,29 +781,29 @@ lemma join_sym: "sym (join r)" unfolding sym_def by auto
 lemma CR_join_left_I:
   assumes "CR r" and "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>\<down>" shows "(y, z) \<in> r\<^sup>\<down>"
 proof -
-  from `(x, z) \<in> r\<^sup>\<down>` obtain x' where "(x, x') \<in> r\<^sup>*" and "(z, x') \<in> r\<^sup>\<down>" by auto
-  from `CR r` and `(x, x') \<in> r\<^sup>*` and `(x, y) \<in> r\<^sup>*` have "(x, y) \<in> r\<^sup>\<down>" by auto
+  from \<open>(x, z) \<in> r\<^sup>\<down>\<close> obtain x' where "(x, x') \<in> r\<^sup>*" and "(z, x') \<in> r\<^sup>\<down>" by auto
+  from \<open>CR r\<close> and \<open>(x, x') \<in> r\<^sup>*\<close> and \<open>(x, y) \<in> r\<^sup>*\<close> have "(x, y) \<in> r\<^sup>\<down>" by auto
   then have "(y, x) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
-  from `CR r` have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join)
-  from `(y, x) \<in> r\<^sup>\<down>` and `(x, z) \<in> r\<^sup>\<down>` show ?thesis using conversion_trans
-    unfolding trans_def `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` [symmetric] by best
+  from \<open>CR r\<close> have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join)
+  from \<open>(y, x) \<in> r\<^sup>\<down>\<close> and \<open>(x, z) \<in> r\<^sup>\<down>\<close> show ?thesis using conversion_trans
+    unfolding trans_def \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric] by best
 qed
 
 lemma CR_join_right_I:
  assumes "CR r" and "(x, y) \<in> r\<^sup>\<down>" and "(y, z) \<in> r\<^sup>*" shows "(x, z) \<in> r\<^sup>\<down>"
 proof -
-  have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join [OF `CR r`])
-  from `(y, z) \<in> r\<^sup>*` have "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
-  with `(x, y) \<in> r\<^sup>\<down>` show ?thesis unfolding `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` [symmetric] using conversion_trans
+  have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join [OF \<open>CR r\<close>])
+  from \<open>(y, z) \<in> r\<^sup>*\<close> have "(y, z) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
+  with \<open>(x, y) \<in> r\<^sup>\<down>\<close> show ?thesis unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric] using conversion_trans
     unfolding trans_def by fast
 qed
 
 lemma NF_not_suc:
   assumes "(x, y) \<in> r\<^sup>*" and "x \<in> NF r" shows "x = y"
 proof -
-  from `x \<in> NF r` have "\<forall>y. (x, y) \<notin> r" using NF_no_step by auto
+  from \<open>x \<in> NF r\<close> have "\<forall>y. (x, y) \<notin> r" using NF_no_step by auto
   then have "x \<notin> Domain r" unfolding Domain_unfold by simp
-  from `(x, y) \<in> r\<^sup>*` show ?thesis unfolding Not_Domain_rtrancl [OF `x \<notin> Domain r`] by simp
+  from \<open>(x, y) \<in> r\<^sup>*\<close> show ?thesis unfolding Not_Domain_rtrancl [OF \<open>x \<notin> Domain r\<close>] by simp
 qed
 
 lemma semi_complete_imp_conversionIff_same_NF:
@@ -816,36 +815,36 @@ proof -
   show ?thesis
   proof
     assume "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*"
-    from `(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(x, y) \<in> r\<^sup>\<down>" unfolding `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` .
+    from \<open>(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(x, y) \<in> r\<^sup>\<down>" unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> .
     show "\<forall>u v. (x, u) \<in> r\<^sup>! \<and> (y, v) \<in> r\<^sup>! \<longrightarrow> u = v"
     proof (intro allI impI, elim conjE)
       fix u v assume "(x, u) \<in> r\<^sup>!" and "(y, v) \<in> r\<^sup>!"
       then have "(x, u) \<in> r\<^sup>*" and "(y, v) \<in> r\<^sup>*" and "u \<in> NF r" and "v \<in> NF r" by auto
-      from `CR r` and `(x, u) \<in> r\<^sup>*` and `(x, y) \<in> r\<^sup>\<down>` have "(u, y) \<in> r\<^sup>\<down>"
+      from \<open>CR r\<close> and \<open>(x, u) \<in> r\<^sup>*\<close> and \<open>(x, y) \<in> r\<^sup>\<down>\<close> have "(u, y) \<in> r\<^sup>\<down>"
         by (auto intro: CR_join_left_I)
       then have "(y, u) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
-      with `(x, y) \<in> r\<^sup>\<down>` have "(x, u) \<in> r\<^sup>\<down>" unfolding `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` [symmetric]
+      with \<open>(x, y) \<in> r\<^sup>\<down>\<close> have "(x, u) \<in> r\<^sup>\<down>" unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric]
         using conversion_trans unfolding trans_def by best
-      from `CR r` and `(x, y) \<in> r\<^sup>\<down>` and `(y, v) \<in> r\<^sup>*` have "(x, v) \<in> r\<^sup>\<down>"
+      from \<open>CR r\<close> and \<open>(x, y) \<in> r\<^sup>\<down>\<close> and \<open>(y, v) \<in> r\<^sup>*\<close> have "(x, v) \<in> r\<^sup>\<down>"
         by (auto intro: CR_join_right_I)
       then have "(v, x) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
-      with `(x, u) \<in> r\<^sup>\<down>` have "(v, u) \<in> r\<^sup>\<down>" unfolding `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` [symmetric]
+      with \<open>(x, u) \<in> r\<^sup>\<down>\<close> have "(v, u) \<in> r\<^sup>\<down>" unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric]
         using conversion_trans unfolding trans_def by best
       then obtain v' where "(v, v') \<in> r\<^sup>*" and "(u, v') \<in> r\<^sup>*" by auto
-      from `(u, v') \<in> r\<^sup>*` and `u \<in> NF r` have "u = v'" by (rule NF_not_suc)
-      from `(v, v') \<in> r\<^sup>*` and `v \<in> NF r` have "v = v'" by (rule NF_not_suc)
-      then show "u = v" unfolding `u = v'` by simp
+      from \<open>(u, v') \<in> r\<^sup>*\<close> and \<open>u \<in> NF r\<close> have "u = v'" by (rule NF_not_suc)
+      from \<open>(v, v') \<in> r\<^sup>*\<close> and \<open>v \<in> NF r\<close> have "v = v'" by (rule NF_not_suc)
+      then show "u = v" unfolding \<open>u = v'\<close> by simp
     qed
   next
     assume equal_NF:"\<forall>u v. (x, u) \<in> r\<^sup>! \<and> (y, v) \<in> r\<^sup>! \<longrightarrow> u = v"
-    from `WN r` obtain u where "(x, u) \<in> r\<^sup>!" by auto
-    from `WN r` obtain v where "(y, v) \<in> r\<^sup>!" by auto
-    from `(x, u) \<in> r\<^sup>!` and `(y, v) \<in> r\<^sup>!` have "u = v" using equal_NF by simp
-    from `(x, u) \<in> r\<^sup>!` and `(y, v) \<in> r\<^sup>!` have "(x, v) \<in> r\<^sup>*" and "(y, v) \<in> r\<^sup>*"
-      unfolding `u = v` by auto
+    from \<open>WN r\<close> obtain u where "(x, u) \<in> r\<^sup>!" by auto
+    from \<open>WN r\<close> obtain v where "(y, v) \<in> r\<^sup>!" by auto
+    from \<open>(x, u) \<in> r\<^sup>!\<close> and \<open>(y, v) \<in> r\<^sup>!\<close> have "u = v" using equal_NF by simp
+    from \<open>(x, u) \<in> r\<^sup>!\<close> and \<open>(y, v) \<in> r\<^sup>!\<close> have "(x, v) \<in> r\<^sup>*" and "(y, v) \<in> r\<^sup>*"
+      unfolding \<open>u = v\<close> by auto
     then have "(x, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" and "(y, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" by auto
-    from `(y, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(v, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
-    with `(x, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` show "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
+    from \<open>(y, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(v, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_sym unfolding sym_def by best
+    with \<open>(x, v) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> show "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*" using conversion_trans unfolding trans_def by best
   qed
 qed
 
@@ -854,11 +853,11 @@ lemma CR_imp_UNC:
 proof - {
   fix x y assume "x \<in> NF r" and "y \<in> NF r" and "(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*"
   have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join [OF assms])
-  from `(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*` have "(x, y) \<in> r\<^sup>\<down>" unfolding `r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>` by simp
+  from \<open>(x, y) \<in> r\<^sup>\<leftrightarrow>\<^sup>*\<close> have "(x, y) \<in> r\<^sup>\<down>" unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> by simp
   then obtain x' where "(x, x') \<in> r\<^sup>*" and "(y, x') \<in> r\<^sup>*" by best
-  from `(x, x') \<in> r\<^sup>*` and `x \<in> NF r` have "x = x'" by (rule NF_not_suc)
-  from `(y, x') \<in> r\<^sup>*` and `y \<in> NF r` have "y = x'" by (rule NF_not_suc)
-  then have "x = y" unfolding `x = x'` by simp
+  from \<open>(x, x') \<in> r\<^sup>*\<close> and \<open>x \<in> NF r\<close> have "x = x'" by (rule NF_not_suc)
+  from \<open>(y, x') \<in> r\<^sup>*\<close> and \<open>y \<in> NF r\<close> have "y = x'" by (rule NF_not_suc)
+  then have "x = y" unfolding \<open>x = x'\<close> by simp
 } then show ?thesis by (auto simp: UNC_def)
 qed
 
@@ -867,11 +866,11 @@ lemma WN_UNF_imp_CR:
 proof - {
   fix x y z assume "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*"
   from assms obtain y' where "(y, y') \<in> r\<^sup>!" unfolding WN_defs by best
-  with `(x, y) \<in> r\<^sup>*` have "(x, y') \<in> r\<^sup>!" by auto
+  with \<open>(x, y) \<in> r\<^sup>*\<close> have "(x, y') \<in> r\<^sup>!" by auto
   from assms obtain z' where "(z, z') \<in> r\<^sup>!" unfolding WN_defs by best
-  with `(x, z) \<in> r\<^sup>*` have "(x, z') \<in> r\<^sup>!" by auto
-  with `(x, y') \<in> r\<^sup>!` have "y' = z'" using `UNF r` unfolding UNF_defs by auto
-  from `(y, y') \<in> r\<^sup>!` and `(z, z') \<in> r\<^sup>!` have "(y, z) \<in> r\<^sup>\<down>" unfolding `y' = z'` by auto
+  with \<open>(x, z) \<in> r\<^sup>*\<close> have "(x, z') \<in> r\<^sup>!" by auto
+  with \<open>(x, y') \<in> r\<^sup>!\<close> have "y' = z'" using \<open>UNF r\<close> unfolding UNF_defs by auto
+  from \<open>(y, y') \<in> r\<^sup>!\<close> and \<open>(z, z') \<in> r\<^sup>!\<close> have "(y, z) \<in> r\<^sup>\<down>" unfolding \<open>y' = z'\<close> by auto
 } then show ?thesis by auto
 qed
 
@@ -889,18 +888,18 @@ proof (rule subrelI)
   fix y z assume "(y, z) \<in>  r\<inverse> O r\<^sup>*"
   then obtain x where "(x, y) \<in> r" and "(x, z) \<in> r\<^sup>*" by best
   then obtain n where "(x, z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
-  with `(x, y) \<in> r` show "(y, z) \<in> r\<^sup>\<down>"
+  with \<open>(x, y) \<in> r\<close> show "(y, z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x z y)
     case 0 then show ?case by auto
   next
     case (Suc n)
-    from `(x, z) \<in> r^^Suc n` obtain x' where "(x, x') \<in> r" and "(x', z) \<in> r^^n"
+    from \<open>(x, z) \<in> r^^Suc n\<close> obtain x' where "(x, x') \<in> r" and "(x', z) \<in> r^^n"
       using relpow_Suc_D2 by best
-    with `(x, y) \<in> r` have "(y, x') \<in> (r\<inverse> O r)" by auto
-    with `\<diamond> r` have "(y, x') \<in> (r O r\<inverse>)" by auto
+    with \<open>(x, y) \<in> r\<close> have "(y, x') \<in> (r\<inverse> O r)" by auto
+    with \<open>\<diamond> r\<close> have "(y, x') \<in> (r O r\<inverse>)" by auto
     then obtain y' where "(x', y') \<in> r" and "(y, y') \<in> r" by best
-    with Suc and `(x', z) \<in> r^^n` have "(y', z) \<in> r\<^sup>\<down>" by auto
-    with `(y, y') \<in> r` show ?case by (auto intro: rtrancl_join_join)
+    with Suc and \<open>(x', z) \<in> r^^n\<close> have "(y', z) \<in> r\<^sup>\<down>" by auto
+    with \<open>(y, y') \<in> r\<close> show ?case by (auto intro: rtrancl_join_join)
   qed
 qed
 
@@ -909,20 +908,20 @@ lemma semi_confluence_imp_CR:
 proof - {
   fix x y z assume "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*"
   then obtain n where "(x, z) \<in> r^^n" using rtrancl_imp_UN_relpow by best
-  with `(x, y) \<in> r\<^sup>*` have "(y, z) \<in> r\<^sup>\<down>"
+  with \<open>(x, y) \<in> r\<^sup>*\<close> have "(y, z) \<in> r\<^sup>\<down>"
   proof (induct n arbitrary: x y z)
     case 0 then show ?case by auto
   next
     case (Suc n)
-    from `(x, z) \<in> r^^Suc n` obtain x' where "(x, x') \<in> r" and "(x', z) \<in> r^^n"
+    from \<open>(x, z) \<in> r^^Suc n\<close> obtain x' where "(x, x') \<in> r" and "(x', z) \<in> r^^n"
       using relpow_Suc_D2 by best
-    from `(x, x') \<in> r` and `(x, y) \<in> r\<^sup>*` have "(x', y) \<in> (r\<inverse> O r\<^sup>* )" by auto
+    from \<open>(x, x') \<in> r\<close> and \<open>(x, y) \<in> r\<^sup>*\<close> have "(x', y) \<in> (r\<inverse> O r\<^sup>* )" by auto
     with assms have "(x', y) \<in> r\<^sup>\<down>" by auto
     then obtain y' where "(x', y') \<in> r\<^sup>*" and "(y, y') \<in> r\<^sup>*" by best
-    with Suc and `(x', z) \<in> r^^n` have "(y', z) \<in> r\<^sup>\<down>" by simp
+    with Suc and \<open>(x', z) \<in> r^^n\<close> have "(y', z) \<in> r\<^sup>\<down>" by simp
     then obtain u where "(z, u) \<in> r\<^sup>*" and "(y', u) \<in> r\<^sup>*" by best
-    from `(y, y') \<in> r\<^sup>*` and `(y', u) \<in> r\<^sup>*` have "(y, u) \<in> r\<^sup>*" by auto
-    with `(z, u) \<in> r\<^sup>*` show ?case by best
+    from \<open>(y, y') \<in> r\<^sup>*\<close> and \<open>(y', u) \<in> r\<^sup>*\<close> have "(y, u) \<in> r\<^sup>*" by auto
+    with \<open>(z, u) \<in> r\<^sup>*\<close> show ?case by best
   qed
 } then show ?thesis by auto
 qed
@@ -935,15 +934,15 @@ lemma diamond_imp_CR':
   assumes "\<diamond> s" and "r \<subseteq> s" and "s \<subseteq> r\<^sup>*" shows "CR r"
   unfolding CR_iff_meet_subset_join
 proof -
-  from `\<diamond> s` have "CR s" by (rule diamond_imp_CR)
+  from \<open>\<diamond> s\<close> have "CR s" by (rule diamond_imp_CR)
   then have "s\<^sup>\<up> \<subseteq> s\<^sup>\<down>" unfolding CR_iff_meet_subset_join by simp
-  from `r \<subseteq> s` have "r\<^sup>* \<subseteq> s\<^sup>*" by (rule rtrancl_mono)
-  from `s \<subseteq> r\<^sup>*` have "s\<^sup>* \<subseteq> (r\<^sup>*)\<^sup>*" by (rule rtrancl_mono)
+  from \<open>r \<subseteq> s\<close> have "r\<^sup>* \<subseteq> s\<^sup>*" by (rule rtrancl_mono)
+  from \<open>s \<subseteq> r\<^sup>*\<close> have "s\<^sup>* \<subseteq> (r\<^sup>*)\<^sup>*" by (rule rtrancl_mono)
   then have "s\<^sup>* \<subseteq> r\<^sup>*" by simp
-  with `r\<^sup>* \<subseteq> s\<^sup>*` have "r\<^sup>* = s\<^sup>*" by simp
-  show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>" unfolding meet_def join_def rtrancl_converse `r\<^sup>* = s\<^sup>*`
+  with \<open>r\<^sup>* \<subseteq> s\<^sup>*\<close> have "r\<^sup>* = s\<^sup>*" by simp
+  show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>" unfolding meet_def join_def rtrancl_converse \<open>r\<^sup>* = s\<^sup>*\<close>
     unfolding rtrancl_converse [symmetric] meet_def [symmetric]
-      join_def [symmetric] by (rule `s\<^sup>\<up> \<subseteq> s\<^sup>\<down>`)
+      join_def [symmetric] by (rule \<open>s\<^sup>\<up> \<subseteq> s\<^sup>\<down>\<close>)
 qed
 
 lemma SN_imp_minimal:
@@ -960,9 +959,9 @@ proof (rule ccontr)
   have "\<forall>i. (?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
   proof
     fix i show "(?S i, ?S (Suc i)) \<in> A \<and> ?S (Suc i) \<in> Q"
-      by (induct i) (auto simp: `x \<in> Q` a)
+      by (induct i) (auto simp: \<open>x \<in> Q\<close> a)
   qed
-  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> chain A S" by fast
+  with \<open>?S 0 = x\<close> have "\<exists>S. S 0 = x \<and> chain A S" by fast
   with assms show False by auto
 qed
 
@@ -979,9 +978,9 @@ proof (rule ccontr)
   have "?S 0 = x" by simp
   have "\<forall>i. (?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q"
   proof
-    fix i show "(?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q" by (induct i) (auto simp:`x \<in> Q` a)
+    fix i show "(?S i,?S(Suc i)) \<in> r \<and> ?S(Suc i) \<in> Q" by (induct i) (auto simp:\<open>x \<in> Q\<close> a)
   qed
-  with `?S 0 = x` have "\<exists>S. S 0 = x \<and> chain r S" by fast
+  with \<open>?S 0 = x\<close> have "\<exists>S. S 0 = x \<and> chain r S" by fast
   with assms show False by auto
 qed
 
@@ -993,13 +992,13 @@ proof (rule ccontr)
   then have "\<exists>P. (\<forall>x. (\<forall>y. (x, y) \<in> r \<longrightarrow> P y) \<longrightarrow> P x) \<and> (\<exists>x. \<not> P x)" unfolding wf_def by simp
   then obtain P x where suc:"\<forall>x. (\<forall>y. (x, y) \<in> r \<longrightarrow> P y) \<longrightarrow> P x" and "\<not> P x" by auto
   let ?Q = "{x. \<not> P x}"
-  from `\<not> P x` have "x \<in> ?Q" by simp
+  from \<open>\<not> P x\<close> have "x \<in> ?Q" by simp
   from assms have "\<forall>x. x \<in> ?Q \<longrightarrow> (\<exists>z\<in>?Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?Q)" by (rule allE [where x = ?Q])
-  with `x \<in> ?Q` obtain z where "z \<in> ?Q" and min:" \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?Q" by best
-  from `z \<in> ?Q` have "\<not> P z" by simp
+  with \<open>x \<in> ?Q\<close> obtain z where "z \<in> ?Q" and min:" \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?Q" by best
+  from \<open>z \<in> ?Q\<close> have "\<not> P z" by simp
   with suc obtain y where "(z, y) \<in> r" and "\<not> P y" by best
   then have "y \<in> ?Q" by simp
-  with `(z, y) \<in> r` and min show False by simp
+  with \<open>(z, y) \<in> r\<close> and min show False by simp
 qed
 
 lemmas SN_imp_wf = SN_imp_minimal [THEN minimal_imp_wf]
@@ -1009,7 +1008,7 @@ lemma wf_imp_SN:
 proof - {
   fix a
   let ?P = "\<lambda>a. \<not>(\<exists>S. S 0 = a \<and> chain A S)"
-  from `wf (A\<inverse>)` have "?P a"
+  from \<open>wf (A\<inverse>)\<close> have "?P a"
   proof induct
     case (less a)
     then have IH: "\<And>b. (a, b) \<in> A \<Longrightarrow> ?P b" by auto
@@ -1018,8 +1017,8 @@ proof - {
       assume "\<not> ?P a"
       then obtain S where "S 0 = a" and "chain A S" by auto
       then have "(S 0, S 1) \<in> A" by auto
-      with IH have "?P (S 1)" unfolding `S 0 = a` by auto
-      with `chain A S` show False by auto
+      with IH have "?P (S 1)" unfolding \<open>S 0 = a\<close> by auto
+      with \<open>chain A S\<close> show False by auto
     qed
   qed
   then have "SN_on A {a}" unfolding SN_defs by auto
@@ -1073,7 +1072,7 @@ proof -
       qed
     qed
   qed
-  with SN show "P s" using `s \<in> A` unfolding SN_on_def by blast
+  with SN show "P s" using \<open>s \<in> A\<close> unfolding SN_on_def by blast
 qed
 
 (* link SN_on to acc / accp *)
@@ -1133,7 +1132,7 @@ lemma SN_on_imp_acc:
   using assms unfolding SN_on_conv_acc by simp
 
 
-subsection {* Newman's Lemma *}
+subsection \<open>Newman's Lemma\<close>
 
 lemma rtrancl_len_E [elim]:
   assumes "(x, y) \<in> r\<^sup>*" obtains n where "(x, y) \<in> r^^n"
@@ -1145,7 +1144,7 @@ proof -
   assume assm: "\<And>y. (x, y) \<in> A \<Longrightarrow> (y, z) \<in> A\<^sup>* \<Longrightarrow> thesis"
   from relpow_Suc_E2 [OF assms] obtain y where "(x, y) \<in> A" and "(y, z) \<in> A^^n" by auto
   then have "(y, z) \<in> A\<^sup>*" using (*FIXME*) relpow_imp_rtrancl by auto
-  from assm [OF `(x, y) \<in> A` this] show thesis .
+  from assm [OF \<open>(x, y) \<in> A\<close> this] show thesis .
 qed
 
 lemmas SN_on_induct' [consumes 1, case_names IH] = SN_on_induct [OF _ singletonI]
@@ -1162,38 +1161,38 @@ proof - {
     case (IH x) show ?case
     proof
       fix y z assume "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*"
-      from `(x, y) \<in> r\<^sup>*` obtain m where "(x, y) \<in> r^^m" ..
-      from `(x, z) \<in> r\<^sup>*` obtain n where "(x, z) \<in> r^^n" ..
+      from \<open>(x, y) \<in> r\<^sup>*\<close> obtain m where "(x, y) \<in> r^^m" ..
+      from \<open>(x, z) \<in> r\<^sup>*\<close> obtain n where "(x, z) \<in> r^^n" ..
       show "(y, z) \<in> r\<^sup>\<down>"
       proof (cases n)
         case 0
-        from `(x, z) \<in> r^^n` have eq: "x = z" by (simp add: 0)
-        from `(x, y) \<in> r\<^sup>*` show ?thesis unfolding eq ..
+        from \<open>(x, z) \<in> r^^n\<close> have eq: "x = z" by (simp add: 0)
+        from \<open>(x, y) \<in> r\<^sup>*\<close> show ?thesis unfolding eq ..
       next
         case (Suc n')
-        from `(x, z) \<in> r^^n` [unfolded Suc] obtain t where "(x, t) \<in> r" and "(t, z) \<in> r\<^sup>*" ..
+        from \<open>(x, z) \<in> r^^n\<close> [unfolded Suc] obtain t where "(x, t) \<in> r" and "(t, z) \<in> r\<^sup>*" ..
         show ?thesis
         proof (cases m)
           case 0
-          from `(x, y) \<in> r^^m` have eq: "x = y" by (simp add: 0)
-          from `(x, z) \<in> r\<^sup>*` show ?thesis unfolding eq ..
+          from \<open>(x, y) \<in> r^^m\<close> have eq: "x = y" by (simp add: 0)
+          from \<open>(x, z) \<in> r\<^sup>*\<close> show ?thesis unfolding eq ..
         next
           case (Suc m')
-          from `(x, y) \<in> r^^m` [unfolded Suc] obtain s where "(x, s) \<in> r" and "(s, y) \<in> r\<^sup>*" ..          
+          from \<open>(x, y) \<in> r^^m\<close> [unfolded Suc] obtain s where "(x, s) \<in> r" and "(s, y) \<in> r\<^sup>*" ..          
           from WCR IH(2) have "WCR_on r {x}" unfolding WCR_on_def by auto
-          with `(x, s) \<in> r` and `(x, t) \<in> r` have "(s, t) \<in> r\<^sup>\<down>" by auto
+          with \<open>(x, s) \<in> r\<close> and \<open>(x, t) \<in> r\<close> have "(s, t) \<in> r\<^sup>\<down>" by auto
           then obtain u where "(s, u) \<in> r\<^sup>*" and "(t, u) \<in> r\<^sup>*" ..
-          from `(x, s) \<in> r` IH(2) have "SN_on r {s}" by (rule step_preserves_SN_on)
-          from IH(1)[OF `(x, s) \<in> r` this] have "CR_on r {s}" .
-          from this and `(s, u) \<in> r\<^sup>*` and `(s, y) \<in> r\<^sup>*` have "(u, y) \<in> r\<^sup>\<down>" by auto
+          from \<open>(x, s) \<in> r\<close> IH(2) have "SN_on r {s}" by (rule step_preserves_SN_on)
+          from IH(1)[OF \<open>(x, s) \<in> r\<close> this] have "CR_on r {s}" .
+          from this and \<open>(s, u) \<in> r\<^sup>*\<close> and \<open>(s, y) \<in> r\<^sup>*\<close> have "(u, y) \<in> r\<^sup>\<down>" by auto
           then obtain v where "(u, v) \<in> r\<^sup>*" and "(y, v) \<in> r\<^sup>*" ..
-          from `(x, t) \<in> r` IH(2) have "SN_on r {t}" by (rule step_preserves_SN_on)
-          from IH(1)[OF `(x, t) \<in> r` this] have "CR_on r {t}" .
-          moreover from `(t, u) \<in> r\<^sup>*` and `(u, v) \<in> r\<^sup>*` have "(t, v) \<in> r\<^sup>*" by auto
-          ultimately have "(z, v) \<in> r\<^sup>\<down>" using `(t, z) \<in> r\<^sup>*` by auto
+          from \<open>(x, t) \<in> r\<close> IH(2) have "SN_on r {t}" by (rule step_preserves_SN_on)
+          from IH(1)[OF \<open>(x, t) \<in> r\<close> this] have "CR_on r {t}" .
+          moreover from \<open>(t, u) \<in> r\<^sup>*\<close> and \<open>(u, v) \<in> r\<^sup>*\<close> have "(t, v) \<in> r\<^sup>*" by auto
+          ultimately have "(z, v) \<in> r\<^sup>\<down>" using \<open>(t, z) \<in> r\<^sup>*\<close> by auto
           then obtain w where "(z, w) \<in> r\<^sup>*" and "(v, w) \<in> r\<^sup>*" ..
-          from `(y, v) \<in> r\<^sup>*` and `(v, w) \<in> r\<^sup>*` have "(y, w) \<in> r\<^sup>*" by auto
-          with `(z, w) \<in> r\<^sup>*` show ?thesis by auto
+          from \<open>(y, v) \<in> r\<^sup>*\<close> and \<open>(v, w) \<in> r\<^sup>*\<close> have "(y, w) \<in> r\<^sup>*" by auto
+          with \<open>(z, w) \<in> r\<^sup>*\<close> show ?thesis by auto
         qed
       qed
     qed
@@ -1213,7 +1212,7 @@ proof
   fix f
   assume "f 0 \<in> A" and chain: "chain r f"
   then have "f (Suc 0) \<in> r `` A" by auto
-  with assms have "SN_on r {f (Suc 0)}" by (auto simp add: `f 0 \<in> A` SN_defs)
+  with assms have "SN_on r {f (Suc 0)}" by (auto simp add: \<open>f 0 \<in> A\<close> SN_defs)
   moreover have "\<not> SN_on r {f (Suc 0)}"
   proof -
     have "f (Suc 0) \<in> {f (Suc 0)}" by simp
@@ -1226,7 +1225,7 @@ qed
 lemma SN_on_Image_conv: "SN_on r (r `` A) = SN_on r A"
   using SN_on_Image and Image_SN_on by blast
 
-text {*If all successors are terminating, then the current element is also terminating.*}
+text \<open>If all successors are terminating, then the current element is also terminating.\<close>
 lemma step_reflects_SN_on:
   assumes "(\<And>b. (a, b) \<in> r \<Longrightarrow> SN_on r {b})"
   shows "SN_on r {a}"
@@ -1301,13 +1300,13 @@ proof (rule contrapos_pp)
   qed
   with assms have "\<forall>i. SN_on r {f i}"
     using steps_preserve_SN_on [of "f 0" _ r]
-    and `f 0 \<in> A`
+    and \<open>f 0 \<in> A\<close>
     and SN_on_subset2 [of "{f 0}" "A"] by auto
   with chain have "chain (?r\<^sup>+) f"
     unfolding restrict_SN_trancl_simp
     unfolding restrict_SN_def by auto
   then have "\<not> SN_on (?r\<^sup>+) {f 0}" by auto
-  with `SN (?r\<^sup>+)` have False by (simp add: SN_defs)
+  with \<open>SN (?r\<^sup>+)\<close> have False by (simp add: SN_defs)
   then show "\<not> SN_on r A" by simp
 qed
 
@@ -1315,7 +1314,7 @@ lemma SN_on_trancl_SN_on_conv: "SN_on (R\<^sup>+) T = SN_on R T"
   using SN_on_trancl_imp_SN_on [of R] SN_on_trancl [of R] by blast
 
 
-text {* Restrict an ARS to elements of a given set. *}
+text \<open>Restrict an ARS to elements of a given set.\<close>
 definition "restrict" :: "'a rel \<Rightarrow> 'a set \<Rightarrow> 'a rel" where
   "restrict r S = {(x, y). x \<in> S \<and> y \<in> S \<and> (x, y) \<in> r}"
 
@@ -1326,7 +1325,7 @@ proof (rule ccontr)
   assume "\<not> SN_on ?r A"
   then have "\<exists>f. f 0 \<in> A \<and> chain ?r f" by auto
   then have "\<exists>f. f 0 \<in> A \<and> chain r f" unfolding restrict_def by auto
-  with `SN_on r A` show False by auto
+  with \<open>SN_on r A\<close> show False by auto
 qed
 
 lemma restrict_rtrancl: "(restrict r S)\<^sup>* \<subseteq> r\<^sup>*" (is "?r\<^sup>* \<subseteq> r\<^sup>*")
@@ -1342,7 +1341,7 @@ lemma rtrancl_Image_step:
 proof -
   from assms(1) obtain c where "c \<in> A" and "(c, a) \<in> r\<^sup>*" by auto
   with assms have "(c, b) \<in> r\<^sup>*" by auto
-  with `c \<in> A` show ?thesis by auto
+  with \<open>c \<in> A\<close> show ?thesis by auto
 qed
 
 lemma WCR_SN_on_imp_CR_on:
@@ -1359,7 +1358,7 @@ proof -
     next
       assume "y \<in> ?S"
       then have "y \<in> r\<^sup>* `` A" by simp
-      with SN_on_Image_rtrancl [OF `SN_on r A`]
+      with SN_on_Image_rtrancl [OF \<open>SN_on r A\<close>]
         have "SN_on r {y}" using SN_on_subset2 [of "{y}" "r\<^sup>* `` A"] by blast
       then show ?thesis by (rule SN_on_restrict)
     qed
@@ -1374,14 +1373,14 @@ proof -
       case 0 then show ?case by simp
     next
       case (Suc n)
-      from `(x, y) \<in> r^^Suc n` obtain x' where "(x, x') \<in> r" and "(x', y) \<in> r^^n"
+      from \<open>(x, y) \<in> r^^Suc n\<close> obtain x' where "(x, x') \<in> r" and "(x', y) \<in> r^^n"
         using relpow_Suc_D2 by best
       then have "(x, x') \<in> r\<^sup>*" by simp
-      with `x \<in> ?S` have "x' \<in> ?S" by (rule rtrancl_Image_step)
-      with Suc and `(x', y) \<in> r^^n` have "(x', y) \<in> ?r\<^sup>*" by simp
-      from `(x, x') \<in> r` and `x \<in> ?S` and `x' \<in> ?S` have "(x, x') \<in> ?r"
+      with \<open>x \<in> ?S\<close> have "x' \<in> ?S" by (rule rtrancl_Image_step)
+      with Suc and \<open>(x', y) \<in> r^^n\<close> have "(x', y) \<in> ?r\<^sup>*" by simp
+      from \<open>(x, x') \<in> r\<close> and \<open>x \<in> ?S\<close> and \<open>x' \<in> ?S\<close> have "(x, x') \<in> ?r"
         unfolding restrict_def by simp
-      with `(x', y) \<in> ?r\<^sup>*` show ?case by simp
+      with \<open>(x', y) \<in> ?r\<^sup>*\<close> show ?case by simp
     qed
   }
   then have a:"\<forall>x y. (x, y) \<in> r\<^sup>* \<and> x \<in> ?S \<and> y \<in> ?S \<longrightarrow> (x, y) \<in> ?r\<^sup>*" by simp
@@ -1389,26 +1388,26 @@ proof -
     fix x' y z assume "(x', y) \<in> ?r" and "(x', z) \<in> ?r"
     then have "x' \<in> ?S" and "y \<in> ?S" and "z \<in> ?S" and "(x', y) \<in> r" and "(x', z) \<in> r"
       unfolding restrict_def by auto
-    with `WCR r` have "(y, z) \<in> r\<^sup>\<down>" by auto
+    with \<open>WCR r\<close> have "(y, z) \<in> r\<^sup>\<down>" by auto
     then obtain u where "(y, u) \<in> r\<^sup>*" and "(z, u) \<in> r\<^sup>*" by auto
-    from `x' \<in> ?S` obtain x where "x \<in> A" and "(x, x') \<in> r\<^sup>*" by auto
-    from `(x', y) \<in> r` have "(x', y) \<in> r\<^sup>*" by auto
-    with `(y, u) \<in> r\<^sup>*` have "(x', u) \<in> r\<^sup>*" by auto
-    with `(x, x') \<in> r\<^sup>*` have "(x, u) \<in> r\<^sup>*" by simp
-    then have "u \<in> ?S" using `x \<in> A` by auto
-    from `y \<in> ?S` and `u \<in> ?S` and `(y, u) \<in> r\<^sup>*` have "(y, u) \<in> ?r\<^sup>*" using a by auto
-    from `z \<in> ?S` and `u \<in> ?S` and `(z, u) \<in> r\<^sup>*` have "(z, u) \<in> ?r\<^sup>*" using a by auto
-    with `(y, u) \<in> ?r\<^sup>*` have "(y, z) \<in> ?r\<^sup>\<down>" by auto
+    from \<open>x' \<in> ?S\<close> obtain x where "x \<in> A" and "(x, x') \<in> r\<^sup>*" by auto
+    from \<open>(x', y) \<in> r\<close> have "(x', y) \<in> r\<^sup>*" by auto
+    with \<open>(y, u) \<in> r\<^sup>*\<close> have "(x', u) \<in> r\<^sup>*" by auto
+    with \<open>(x, x') \<in> r\<^sup>*\<close> have "(x, u) \<in> r\<^sup>*" by simp
+    then have "u \<in> ?S" using \<open>x \<in> A\<close> by auto
+    from \<open>y \<in> ?S\<close> and \<open>u \<in> ?S\<close> and \<open>(y, u) \<in> r\<^sup>*\<close> have "(y, u) \<in> ?r\<^sup>*" using a by auto
+    from \<open>z \<in> ?S\<close> and \<open>u \<in> ?S\<close> and \<open>(z, u) \<in> r\<^sup>*\<close> have "(z, u) \<in> ?r\<^sup>*" using a by auto
+    with \<open>(y, u) \<in> ?r\<^sup>*\<close> have "(y, z) \<in> ?r\<^sup>\<down>" by auto
   }
   then have "WCR ?r" by auto
-  have "CR ?r" using Newman [OF `SN ?r` `WCR ?r`] by simp
+  have "CR ?r" using Newman [OF \<open>SN ?r\<close> \<open>WCR ?r\<close>] by simp
   {
     fix x y z assume "x \<in> A" and "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>*"
     then have "y \<in> ?S" and "z \<in> ?S" by auto
-    have "x \<in> ?S" using `x \<in> A` by auto
-    from a and `(x, y) \<in> r\<^sup>*` and `x \<in> ?S` and `y \<in> ?S` have "(x, y) \<in> ?r\<^sup>*" by simp
-    from a and `(x, z) \<in> r\<^sup>*` and `x \<in> ?S` and `z \<in> ?S` have "(x, z) \<in> ?r\<^sup>*" by simp
-    with `CR ?r` and `(x, y) \<in> ?r\<^sup>*` have "(y, z) \<in> ?r\<^sup>\<down>" by auto
+    have "x \<in> ?S" using \<open>x \<in> A\<close> by auto
+    from a and \<open>(x, y) \<in> r\<^sup>*\<close> and \<open>x \<in> ?S\<close> and \<open>y \<in> ?S\<close> have "(x, y) \<in> ?r\<^sup>*" by simp
+    from a and \<open>(x, z) \<in> r\<^sup>*\<close> and \<open>x \<in> ?S\<close> and \<open>z \<in> ?S\<close> have "(x, z) \<in> ?r\<^sup>*" by simp
+    with \<open>CR ?r\<close> and \<open>(x, y) \<in> ?r\<^sup>*\<close> have "(y, z) \<in> ?r\<^sup>\<down>" by auto
     then obtain u where "(y, u) \<in> ?r\<^sup>*" and "(z, u) \<in> ?r\<^sup>*" by best
     then have "(y, u) \<in> r\<^sup>*" and "(z, u) \<in> r\<^sup>*" using restrict_rtrancl by auto
     then have "(y, z) \<in> r\<^sup>\<down>" by auto
@@ -1427,23 +1426,23 @@ proof
     then have A: "\<forall>b. (a, b) \<in> r\<^sup>* \<longrightarrow> b \<notin> NF r" using a by auto
     then have "a \<notin> NF r" by auto
     let ?Q = "{c. (a, c) \<in> r\<^sup>* \<and> c \<notin> NF r}"
-    have "a \<in> ?Q" using `a \<notin> NF r` by simp
+    have "a \<in> ?Q" using \<open>a \<notin> NF r\<close> by simp
     have "\<forall>c\<in>?Q. \<exists>b. (c, b) \<in> r \<and> b \<in> ?Q"
     proof
       fix c
       assume "c \<in> ?Q"
       then have "(a, c) \<in> r\<^sup>*" and "c \<notin> NF r" by auto
       then obtain d where "(c, d) \<in> r" by auto
-      with `(a, c) \<in> r\<^sup>*` have "(a, d) \<in> r\<^sup>*" by simp
+      with \<open>(a, c) \<in> r\<^sup>*\<close> have "(a, d) \<in> r\<^sup>*" by simp
       with A have "d \<notin> NF r" by simp
-      with `(c, d) \<in> r` and `(a, c) \<in> r\<^sup>*`
+      with \<open>(c, d) \<in> r\<close> and \<open>(a, c) \<in> r\<^sup>*\<close>
         show "\<exists>b. (c, b) \<in> r \<and> b \<in> ?Q" by auto
     qed
-    with `a \<in> ?Q` have "a \<in> ?Q \<and> (\<forall>c\<in>?Q. \<exists>b. (c, b) \<in> r \<and> b \<in> ?Q)" by auto
+    with \<open>a \<in> ?Q\<close> have "a \<in> ?Q \<and> (\<forall>c\<in>?Q. \<exists>b. (c, b) \<in> r \<and> b \<in> ?Q)" by auto
     then have "\<exists>Q. a \<in> Q \<and> (\<forall>c\<in>Q. \<exists>b. (c, b) \<in> r \<and> b \<in> Q)" by (rule exI [of _ "?Q"])
     then have "\<not> (\<forall>Q. a \<in> Q \<longrightarrow> (\<exists>c\<in>Q. \<forall>b. (c, b) \<in> r \<longrightarrow> b \<notin> Q))" by simp
     with SN_on_imp_on_minimal [of r a] have "\<not> SN_on r {a}" by blast
-    with assms and `a \<in> A` and SN_on_subset2 [of "{a}" A r] show False by simp
+    with assms and \<open>a \<in> A\<close> and SN_on_subset2 [of "{a}" A r] show False by simp
   qed
 qed
 
@@ -1452,7 +1451,7 @@ lemma SN_on_imp_normalizability:
   using SN_on_Image_normalizable [OF assms] by auto
 
 
-subsection {* Commutation *}
+subsection \<open>Commutation\<close>
 
 definition commute :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
   "commute r s \<longleftrightarrow> ((r\<inverse>)\<^sup>* O s\<^sup>*) \<subseteq> (s\<^sup>* O (r\<inverse>)\<^sup>*)"
@@ -1470,8 +1469,8 @@ using assms proof induct
 next
   case (step y z)
   then have "(x, y) \<in> ?r\<^sup>*" by simp
-  from `(y, z) \<in> r` and `r \<in> I` have "(y, z) \<in> ?r\<^sup>*" by auto
-  with `(x, y) \<in> ?r\<^sup>*` show ?case by auto
+  from \<open>(y, z) \<in> r\<close> and \<open>r \<in> I\<close> have "(y, z) \<in> ?r\<^sup>*" by auto
+  with \<open>(x, y) \<in> ?r\<^sup>*\<close> show ?case by auto
 qed
 
 definition quasi_commute :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
@@ -1497,7 +1496,7 @@ proof
         then have "(y, z) \<in> r\<^sup>* \<union> s\<^sup>*" by auto
         then show ?thesis using rtrancl_Un_subset by auto
       qed
-      with `(x, y) \<in> (r \<union> s)\<^sup>*` show ?case by simp
+      with \<open>(x, y) \<in> (r \<union> s)\<^sup>*\<close> show ?case by simp
     qed
   qed
 next
@@ -1510,7 +1509,7 @@ next
     next
       case (step y z)
       then have "(y, z) \<in> (r \<union> s\<^sup>+)\<^sup>*" by auto
-      with `(x, y) \<in> (r \<union> s\<^sup>+)\<^sup>*` show ?case by auto
+      with \<open>(x, y) \<in> (r \<union> s\<^sup>+)\<^sup>*\<close> show ?case by auto
     qed
   qed
 qed
@@ -1533,10 +1532,10 @@ proof (rule subrelI)
     with assms have "(a, z) \<in> r O (r \<union> s)\<^sup>*" unfolding quasi_commute_def by auto
     then obtain u where "(a, u) \<in> r" and "(u, z) \<in> (r \<union> s)\<^sup>*" by best
     then have "(u, z) \<in> (r \<union> s\<^sup>+)\<^sup>*" using rtrancl_union_subset_rtrancl_union_trancl by auto
-    from `(a, u) \<in> r` and step have "(x, u) \<in> r O (r \<union> s\<^sup>+)\<^sup>*" by auto
+    from \<open>(a, u) \<in> r\<close> and step have "(x, u) \<in> r O (r \<union> s\<^sup>+)\<^sup>*" by auto
     then obtain v where "(x, v) \<in> r" and "(v, u) \<in> (r \<union> s\<^sup>+)\<^sup>*" by best
-    with `(u, z) \<in> (r \<union> s\<^sup>+)\<^sup>*` have "(v, z) \<in> (r \<union> s\<^sup>+)\<^sup>*" by auto
-    with `(x, v) \<in> r` show ?case by auto
+    with \<open>(u, z) \<in> (r \<union> s\<^sup>+)\<^sup>*\<close> have "(v, z) \<in> (r \<union> s\<^sup>+)\<^sup>*" by auto
+    with \<open>(x, v) \<in> r\<close> show ?case by auto
   qed
 qed
 
@@ -1562,28 +1561,28 @@ lemma quasi_commute_imp_SN:
   assumes "SN r" and "SN s" and "quasi_commute r s"
   shows "SN (r \<union> s)"
 proof -
-  have "quasi_commute r (s\<^sup>+)" by (rule qc_imp_qc_trancl [OF `quasi_commute r s`])
+  have "quasi_commute r (s\<^sup>+)" by (rule qc_imp_qc_trancl [OF \<open>quasi_commute r s\<close>])
   let ?B = "{a. \<not> SN_on (r \<union> s) {a}}"
   {
     assume "\<not> SN(r \<union> s)"
     then obtain a where "a \<in> ?B" unfolding SN_defs by fast
-    from `SN r` have "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> Q)"
+    from \<open>SN r\<close> have "\<forall>Q x. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> Q)"
       by (rule SN_imp_minimal)
     then have "\<forall>x. x \<in> ?B \<longrightarrow> (\<exists>z\<in>?B. \<forall>y. (z, y) \<in> r \<longrightarrow> y \<notin> ?B)" by (rule spec [where x = ?B])
-    with `a \<in> ?B` obtain b where "b \<in> ?B" and min: "\<forall>y. (b, y) \<in> r \<longrightarrow> y \<notin> ?B" by auto
-    from `b \<in> ?B` obtain S where "S 0 = b" and
+    with \<open>a \<in> ?B\<close> obtain b where "b \<in> ?B" and min: "\<forall>y. (b, y) \<in> r \<longrightarrow> y \<notin> ?B" by auto
+    from \<open>b \<in> ?B\<close> obtain S where "S 0 = b" and
       chain: "chain (r \<union> s) S" unfolding SN_on_def by auto
     let ?S = "\<lambda>i. S(Suc i)"
     have "?S 0 = S 1" by simp
     from chain have "chain (r \<union> s) ?S" by auto
-    with `?S 0 = S 1` have "\<not> SN_on (r \<union> s) {S 1}" unfolding SN_on_def by auto
-    from `S 0 = b` and chain have "(b, S 1) \<in> r \<union> s" by auto
-    with min and `\<not> SN_on (r \<union> s) {S 1}` have "(b, S 1) \<in> s" by auto
+    with \<open>?S 0 = S 1\<close> have "\<not> SN_on (r \<union> s) {S 1}" unfolding SN_on_def by auto
+    from \<open>S 0 = b\<close> and chain have "(b, S 1) \<in> r \<union> s" by auto
+    with min and \<open>\<not> SN_on (r \<union> s) {S 1}\<close> have "(b, S 1) \<in> s" by auto
     let ?i = "LEAST i. (S i, S(Suc i)) \<notin> s"
     {
       assume "chain s S"
-      with `S 0 = b` have "\<not> SN_on s {b}" unfolding SN_on_def by auto
-      with `SN s` have False unfolding SN_defs by auto
+      with \<open>S 0 = b\<close> have "\<not> SN_on s {b}" unfolding SN_on_def by auto
+      with \<open>SN s\<close> have False unfolding SN_defs by auto
     }
     then have ex: "\<exists>i. (S i, S(Suc i)) \<notin> s" by auto
     then have "(S ?i, S(Suc ?i)) \<notin> s" by (rule LeastI_ex)
@@ -1592,45 +1591,45 @@ proof -
     {
       fix i assume "i < ?i" then have "(b, S(Suc i)) \<in> s\<^sup>+"
       proof (induct i)
-        case 0 then show ?case using `(b, S 1) \<in> s` and `S 0 = b` by auto
+        case 0 then show ?case using \<open>(b, S 1) \<in> s\<close> and \<open>S 0 = b\<close> by auto
       next
         case (Suc k)
       then have "(b, S(Suc k)) \<in> s\<^sup>+" and "Suc k < ?i" by auto
-      with `\<forall>i<?i. (S i, S(Suc i)) \<in> s` have "(S(Suc k), S(Suc(Suc k))) \<in> s" by fast
-      with `(b, S(Suc k)) \<in> s\<^sup>+` show ?case by auto
+      with \<open>\<forall>i<?i. (S i, S(Suc i)) \<in> s\<close> have "(S(Suc k), S(Suc(Suc k))) \<in> s" by fast
+      with \<open>(b, S(Suc k)) \<in> s\<^sup>+\<close> show ?case by auto
     qed
     }
     then have pref: "\<forall>i<?i. (b, S(Suc i)) \<in> s\<^sup>+" by auto
-    from `(b, S 1) \<in> s` and `S 0 = b` have "(S 0, S(Suc 0)) \<in> s" by auto
+    from \<open>(b, S 1) \<in> s\<close> and \<open>S 0 = b\<close> have "(S 0, S(Suc 0)) \<in> s" by auto
     {
       assume "?i = 0"
       from ex have "(S ?i, S(Suc ?i)) \<notin> s" by (rule LeastI_ex)
-      with `(S 0, S(Suc 0)) \<in> s` have False unfolding `?i = 0` by simp
+      with \<open>(S 0, S(Suc 0)) \<in> s\<close> have False unfolding \<open>?i = 0\<close> by simp
     }
     then have "0 < ?i" by auto
     then obtain j where "?i =  Suc j" unfolding gr0_conv_Suc by best
     with ini have "(S(?i-Suc 0), S(Suc(?i-Suc 0))) \<in> s" by auto
-    with pref have "(b, S(Suc j)) \<in> s\<^sup>+" unfolding `?i = Suc j` by auto
-    then have "(b, S ?i) \<in> s\<^sup>+" unfolding `?i = Suc j` by auto
-    with `(S ?i, S(Suc ?i)) \<in> r` have "(b, S(Suc ?i)) \<in> (s\<^sup>+ O r)" by auto
-    with `quasi_commute r (s\<^sup>+)` have "(b, S(Suc ?i)) \<in> r O (r \<union> s\<^sup>+)\<^sup>*"
+    with pref have "(b, S(Suc j)) \<in> s\<^sup>+" unfolding \<open>?i = Suc j\<close> by auto
+    then have "(b, S ?i) \<in> s\<^sup>+" unfolding \<open>?i = Suc j\<close> by auto
+    with \<open>(S ?i, S(Suc ?i)) \<in> r\<close> have "(b, S(Suc ?i)) \<in> (s\<^sup>+ O r)" by auto
+    with \<open>quasi_commute r (s\<^sup>+)\<close> have "(b, S(Suc ?i)) \<in> r O (r \<union> s\<^sup>+)\<^sup>*"
       unfolding quasi_commute_def by auto
     then obtain c where "(b, c) \<in> r" and "(c, S(Suc ?i)) \<in> (r \<union> s\<^sup>+)\<^sup>*" by best
-    from `(b, c) \<in> r` have "(b, c) \<in> (r \<union> s)\<^sup>*" by auto
+    from \<open>(b, c) \<in> r\<close> have "(b, c) \<in> (r \<union> s)\<^sup>*" by auto
     from chain_imp_not_SN_on [of S "r \<union> s"]
       and chain have "\<not> SN_on (r \<union> s) {S (Suc ?i)}" by auto
-    from `(c, S(Suc ?i)) \<in> (r \<union> s\<^sup>+)\<^sup>*` have "(c, S(Suc ?i)) \<in> (r \<union> s)\<^sup>*"
+    from \<open>(c, S(Suc ?i)) \<in> (r \<union> s\<^sup>+)\<^sup>*\<close> have "(c, S(Suc ?i)) \<in> (r \<union> s)\<^sup>*"
       unfolding rtrancl_union_subset_rtrancl_union_trancl by auto
     with steps_reflect_SN_on [of "r \<union> s"]
-      and `\<not> SN_on (r \<union> s) {S(Suc ?i)}` have "\<not> SN_on (r \<union> s) {c}" by auto
+      and \<open>\<not> SN_on (r \<union> s) {S(Suc ?i)}\<close> have "\<not> SN_on (r \<union> s) {c}" by auto
     then have "c \<in> ?B" by simp
-    with `(b, c) \<in> r` and min have False by auto
+    with \<open>(b, c) \<in> r\<close> and min have False by auto
   }
   then show ?thesis by auto
 qed
 
 
-subsection {* Strong Normalization *}
+subsection \<open>Strong Normalization\<close>
 
 lemma non_strict_into_strict:
   assumes compat: "NS O S \<subseteq> S"
@@ -1696,7 +1695,7 @@ proof (rule subrelI)
   next
     case (step a b)
     then have "(a, b) \<in> (s \<union> r)\<^sup>+" by auto
-    with `(x, a) \<in> (s \<union> r)\<^sup>+` show ?case by auto
+    with \<open>(x, a) \<in> (s \<union> r)\<^sup>+\<close> show ?case by auto
   qed
 qed
 
@@ -1709,14 +1708,14 @@ lemma chain_Un_SN_on_imp_first_step:
   assumes "chain (R \<union> S) t" and "SN_on S {t 0}"
   shows "\<exists>i. (t i, t (Suc i)) \<in> R \<and> (\<forall>j<i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R)"
 proof -
-  from `SN_on S {t 0}` obtain i where "(t i, t (Suc i)) \<notin> S" by blast
+  from \<open>SN_on S {t 0}\<close> obtain i where "(t i, t (Suc i)) \<notin> S" by blast
   with assms have "(t i, t (Suc i)) \<in> R" (is "?P i") by auto
   let ?i = "Least ?P"
-  from `?P i` have "?P ?i" by (rule LeastI)
+  from \<open>?P i\<close> have "?P ?i" by (rule LeastI)
   have "\<forall>j<?i. (t j, t (Suc j)) \<notin> R" using not_less_Least by auto
   moreover with assms have "\<forall>j<?i. (t j, t (Suc j)) \<in> S" by best
   ultimately have "\<forall>j<?i. (t j, t (Suc j)) \<in> S \<and> (t j, t (Suc j)) \<notin> R" by best
-  with `?P ?i` show ?thesis by best
+  with \<open>?P ?i\<close> show ?thesis by best
 qed
 
 lemma first_step:
@@ -1770,16 +1769,16 @@ next
     proof (cases "(x, y) \<in> R\<^sup>*")
       case False with step have "(x, y) \<in> R\<^sup>* O S O ?SR\<^sup>*" by simp
       from this obtain u where xu: "(x, u) \<in> R\<^sup>* O S" and uy: "(u, y) \<in> ?SR\<^sup>*" by force
-      from `(y, z) \<in> ?SR` have "(y, z) \<in> ?SR\<^sup>*" by auto
+      from \<open>(y, z) \<in> ?SR\<close> have "(y, z) \<in> ?SR\<^sup>*" by auto
       with uy have "(u, z) \<in> ?SR\<^sup>*" by (rule rtrancl_trans)
       with xu show ?thesis by auto
     next
       case True 
       have "(y, z) \<in> S" 
       proof (rule ccontr)
-        assume "(y, z) \<notin> S" with `(y, z) \<in> ?SR` have "(y, z) \<in> R" by auto
+        assume "(y, z) \<notin> S" with \<open>(y, z) \<in> ?SR\<close> have "(y, z) \<in> R" by auto
         with True  have "(x, z) \<in> R\<^sup>*"  by auto
-        with `(x, z) \<notin> R\<^sup>*` show False ..
+        with \<open>(x, z) \<notin> R\<^sup>*\<close> show False ..
       qed
       with True show ?thesis by auto
     qed
@@ -1952,7 +1951,7 @@ proof-
   from Ak B show "(x, y) \<in> A\<^sup>* O (A - B) O A\<^sup>*"
   proof (induct k arbitrary: x)
     case 0
-    with `(x, y) \<notin> B\<^sup>*` 0 show ?case using ccontr by auto
+    with \<open>(x, y) \<notin> B\<^sup>*\<close> 0 show ?case using ccontr by auto
   next
     case (Suc i)
     then have B:"(x, y) \<notin> B\<^sup>*" and ASk:"(x, y) \<in> A ^^ Suc i" by auto
@@ -1967,8 +1966,8 @@ proof-
       case True
       then have "(x, z) \<in> B\<^sup>*" by auto
       have "\<lbrakk>(x, z) \<in> B\<^sup>*; (z, y) \<in> B\<^sup>*\<rbrakk> \<Longrightarrow> (x, y) \<in> B\<^sup>*" using rtrancl_trans [of x z B] by auto
-      with  `(x, z) \<in> B\<^sup>*` `(x, y) \<notin> B\<^sup>*` have "(z, y) \<notin> B\<^sup>*" by auto
-      with Suc `(z, y) \<in> A ^^ i` have "(z, y) \<in> A\<^sup>* O (A - B) O A\<^sup>*" by auto
+      with  \<open>(x, z) \<in> B\<^sup>*\<close> \<open>(x, y) \<notin> B\<^sup>*\<close> have "(z, y) \<notin> B\<^sup>*" by auto
+      with Suc \<open>(z, y) \<in> A ^^ i\<close> have "(z, y) \<in> A\<^sup>* O (A - B) O A\<^sup>*" by auto
       with xz have xy:"(x, y) \<in> A O A\<^sup>* O (A - B) O A\<^sup>*" by auto
       have "A O A\<^sup>* O (A - B) O A\<^sup>* \<subseteq> A\<^sup>* O (A - B) O A\<^sup>*" by regexp
       from this xy show "(x, y) \<in> A\<^sup>* O (A - B) O A\<^sup>*"
@@ -2063,7 +2062,7 @@ proof
     unfolding INFM_nat_le 
   proof
     fix m
-    from `?S` [unfolded INFM_nat_le]
+    from \<open>?S\<close> [unfolded INFM_nat_le]
     obtain k where k: "k \<ge> m" and p: "P (shift f n k)" by auto
     show "\<exists> k \<ge> m. P (f k)"
       by (rule exI [of _ "k + n"], insert k p, auto)
@@ -2074,7 +2073,7 @@ next
     unfolding INFM_nat_le 
   proof
     fix m
-    from `?O` [unfolded INFM_nat_le]
+    from \<open>?O\<close> [unfolded INFM_nat_le]
     obtain k where k: "k \<ge> m + n" and p: "P (f k)" by auto
     show "\<exists> k \<ge> m. P (shift f n k)"
       by (rule exI [of _ "k - n"], insert k p, auto)
@@ -2296,7 +2295,7 @@ proof -
 qed
 
 
-subsection {* Terminating part of a relation *}
+subsection \<open>Terminating part of a relation\<close>
 
 inductive_set
   SN_part :: "'a rel \<Rightarrow> 'a set"
@@ -2304,11 +2303,11 @@ inductive_set
 where
   SN_partI: "(\<And>y. (x, y) \<in> r \<Longrightarrow> y \<in> SN_part r) \<Longrightarrow> x \<in> SN_part r"
 
-text {*The accessible part of a relation is the same as the terminating part
+text \<open>The accessible part of a relation is the same as the terminating part
 (just two names for the same definition -- modulo argument order). See
-@{thm accI}.*}
+@{thm accI}.\<close>
 
-text {*Characterization of @{const SN_on} via terminating part.*}
+text \<open>Characterization of @{const SN_on} via terminating part.\<close>
 lemma SN_on_SN_part_conv:
   "SN_on r A \<longleftrightarrow> A \<subseteq> SN_part r"
 proof -
@@ -2322,10 +2321,9 @@ proof -
   } ultimately show ?thesis by (force simp: SN_defs)
 qed
 
-text {*Special case for ``full'' termination.*}
+text \<open>Special case for ``full'' termination.\<close>
 lemma SN_SN_part_UNIV_conv:
   "SN r \<longleftrightarrow> SN_part r = UNIV"
   using SN_on_SN_part_conv [of r UNIV] by auto
 
 end
-

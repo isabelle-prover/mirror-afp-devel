@@ -23,22 +23,24 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Carriers of Strongly Normalizing Orders *}
+section \<open>Carriers of Strongly Normalizing Orders\<close>
 
 theory SN_Order_Carrier
-imports SN_Orders Rat
+imports
+  SN_Orders
+  Rat
 begin
 
-text {*
+text \<open>
   This theory shows that standard semirings can be used 
   in combination with polynomials, e.g. the naturals, integers,
   and arbitrary Archemedean fields by using delta-orders.
   
   It also contains the arctic integers and arctic delta-orders where
   0 is -infty, 1 is zero, + is max and * is plus.
-*}
+\<close>
 
-subsection {* The standard semiring over the naturals *}
+subsection \<open>The standard semiring over the naturals\<close>
 
 instantiation nat :: large_ordered_semiring_1 
 begin
@@ -65,7 +67,7 @@ proof (unfold_locales)
 qed (auto simp: field_simps power_strict_mono)
       
 
-subsection {* The standard semiring over the Archimedean fields using delta-orderings *}
+subsection \<open>The standard semiring over the Archimedean fields using delta-orderings\<close>
 
 definition delta_gt :: "'a :: floor_ceiling \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where 
   "delta_gt \<delta> \<equiv> (\<lambda> x y. x - y \<ge> \<delta>)"
@@ -147,7 +149,7 @@ proof -
       also have "\<dots> = ((x - 1) + 1) * (y - z)" by auto
       also have "\<dots> = ?p + 1 * ( y - z)" by (rule ring_distribs(2))
       also have "\<dots> = ?p + (y - z)" by simp
-      also have "\<dots> \<ge> (0 + d)" using yzd `0 \<le> ?p` by auto
+      also have "\<dots> \<ge> (0 + d)" using yzd \<open>0 \<le> ?p\<close> by auto
       finally 
       show "d \<le> x * y - x * z" by auto
     qed
@@ -233,7 +235,7 @@ proof
 qed
 
 
-subsection {* The standard semiring over the integers *}
+subsection \<open>The standard semiring over the integers\<close>
 
 definition int_mono :: "int \<Rightarrow> bool" where "int_mono x \<equiv> x \<ge> 1"
 
@@ -273,8 +275,8 @@ proof (unfold_locales)
 qed (auto simp: field_simps power_strict_mono)
 
 
-subsection {* The arctic semiring over the integers *}
-text {* plus is interpreted as max, times is interpreted as plus, 0 is -infinity, 1 is 0 *}
+subsection \<open>The arctic semiring over the integers\<close>
+text \<open>plus is interpreted as max, times is interpreted as plus, 0 is -infinity, 1 is 0\<close>
 
 datatype arctic = MinInfty | Num_arc int
 
@@ -477,9 +479,9 @@ next
 qed
 
 
-subsection {* The arctic semiring over an arbitrary archimedean field *}
+subsection \<open>The arctic semiring over an arbitrary archimedean field\<close>
 
-text {* completely analogous to the integers, where one has to use delta-orderings *}
+text \<open>completely analogous to the integers, where one has to use delta-orderings\<close>
 
 datatype 'a arctic_delta = MinInfty_delta | Num_arc_delta 'a
 
@@ -577,7 +579,7 @@ qed
 end
 
 
-text {* x >d y is interpreted as y = -inf or (x,y != -inf and x >d y) *}
+text \<open>x >d y is interpreted as y = -inf or (x,y != -inf and x >d y)\<close>
 fun gt_arctic_delta :: "'a :: floor_ceiling \<Rightarrow> 'a arctic_delta \<Rightarrow> 'a arctic_delta \<Rightarrow> bool"
 where "gt_arctic_delta \<delta> _ MinInfty_delta = True"
    |  "gt_arctic_delta \<delta> MinInfty_delta (Num_arc_delta _) = False"
@@ -740,6 +742,5 @@ proof
   show "\<exists>gt. SN_both_mono_ordered_semiring_1 1 gt pos_arctic_delta \<and> (\<forall>x y. (x, y) \<in> set xys \<longrightarrow> gt x y)"
     by (intro exI conjI, rule arctic_delta_interpretation[OF dpos], rule orient)
 qed  
-
     
 end
