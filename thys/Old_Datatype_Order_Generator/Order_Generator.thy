@@ -25,7 +25,8 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 section {* Generating linear orders for datatypes *}
 
 theory Order_Generator
-imports Derive_Manager
+imports 
+  Derive_Aux
 begin
 
 subsection Introduction

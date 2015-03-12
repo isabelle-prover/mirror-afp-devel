@@ -21,7 +21,7 @@ subsection {* Map implementations *}
 definition Assoc_List_Mapping :: "('a, 'b) alist \<Rightarrow> ('a, 'b) mapping"
 where [simp]: "Assoc_List_Mapping al = Mapping.Mapping (DAList.lookup al)"
 
-definition RBT_Mapping :: "('a :: corder, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping"
+definition RBT_Mapping :: "('a :: ccompare, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping"
 where [simp]: "RBT_Mapping t = Mapping.Mapping (RBT_Mapping2.lookup t)"
 
 code_datatype Assoc_List_Mapping RBT_Mapping Mapping
@@ -52,10 +52,10 @@ done
 end
 
 lemma is_empty_Mapping [code]:
-  fixes t :: "('a :: corder, 'b) mapping_rbt" shows
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.is_empty (Assoc_List_Mapping al) \<longleftrightarrow> al = DAList.empty"
   "Mapping.is_empty (RBT_Mapping t) \<longleftrightarrow>
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''is_empty RBT_Mapping: corder = None'') (\<lambda>_. Mapping.is_empty (RBT_Mapping t))
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''is_empty RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.is_empty (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping2.is_empty t)"
 apply(simp_all split: option.split)
  apply(transfer, case_tac al, simp_all)
@@ -65,22 +65,22 @@ done
 declare [[code drop: Mapping.update]]
 
 lemma update_Mapping [code]:
-  fixes t :: "('a :: corder, 'b) mapping_rbt" shows
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.update k v (Mapping m) = Mapping (m(k \<mapsto> v))"
   "Mapping.update k v (Assoc_List_Mapping al) = Assoc_List_Mapping (DAList.update k v al)"
   "Mapping.update k v (RBT_Mapping t) =
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''update RBT_Mapping: corder = None'') (\<lambda>_. Mapping.update k v (RBT_Mapping t))
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''update RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.update k v (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.insert k v t))" (is ?RBT)
 by(simp_all split: option.split)(transfer, simp)+
 
 declare [[code drop: Mapping.delete]]
 
 lemma delete_Mapping [code]:
-  fixes t :: "('a :: corder, 'b) mapping_rbt" shows
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.delete k (Mapping m) = Mapping (m(k := None))"
   "Mapping.delete k (Assoc_List_Mapping al) = Assoc_List_Mapping (AssocList.delete k al)"
   "Mapping.delete k (RBT_Mapping t) = 
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''delete RBT_Mapping: corder = None'') (\<lambda>_. Mapping.delete k (RBT_Mapping t))
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''delete RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.delete k (RBT_Mapping t))
                      | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.delete k t))"
 by(simp_all split: option.split)(transfer, simp)+
 
@@ -90,7 +90,7 @@ theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f)
 by(induct t)(simp_all add: fun_eq_iff)
 
 lemma keys_Mapping [code]:
-  fixes t :: "('a :: corder, 'b) mapping_rbt" shows
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.keys (Mapping m) = Collect (\<lambda>k. m k \<noteq> None)" (is "?Mapping")
   "Mapping.keys (Assoc_List_Mapping al) = AssocList.keys al" (is "?Assoc_List")
   "Mapping.keys (RBT_Mapping t) = RBT_set (RBT_Mapping2.map (\<lambda>_ _. ()) t)" (is "?RBT")
@@ -117,16 +117,16 @@ done
 end
 
 lemma size_Mapping [code]:
-  fixes t :: "('a :: corder, 'b) mapping_rbt" shows
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
   "Mapping.size (Assoc_List_Mapping al) = size al"
   "Mapping.size (RBT_Mapping t) =
-  (case ID CORDER('a) of None \<Rightarrow> Code.abort (STR ''size RBT_Mapping: corder = None'') (\<lambda>_. Mapping.size (RBT_Mapping t))
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''size RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.size (RBT_Mapping t))
                      | Some _ \<Rightarrow> length (RBT_Mapping2.entries t))"
 apply(simp_all split: option.split)
 apply(transfer, simp add: dom_map_of_conv_image_fst set_map[symmetric] distinct_card del: set_map)
 apply transfer
 apply(clarsimp simp add: size_eq_card_dom_lookup)
-apply(simp add: linorder.rbt_lookup_keys[OF ID_corder] ord.is_rbt_rbt_sorted RBT_Impl.keys_def distinct_card linorder.distinct_entries[OF ID_corder] del: set_map)
+apply(simp add: linorder.rbt_lookup_keys[OF ID_ccompare] ord.is_rbt_rbt_sorted RBT_Impl.keys_def distinct_card linorder.distinct_entries[OF ID_ccompare] del: set_map)
 done
 
 
@@ -156,8 +156,8 @@ definition mapping_empty_choose :: "('a, 'b) mapping"
 where [simp]: "mapping_empty_choose = Mapping.empty"
 
 lemma mapping_empty_choose_code [code]:
-  "(mapping_empty_choose :: ('a :: corder, 'b) mapping) =
-   (case ID CORDER('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
+  "(mapping_empty_choose :: ('a :: ccompare, 'b) mapping) =
+   (case ID CCOMPARE('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
     | None \<Rightarrow> Assoc_List_Mapping DAList.empty)"
 by(auto split: option.split simp add: DAList.lookup_empty[abs_def] Mapping.empty_def)
 

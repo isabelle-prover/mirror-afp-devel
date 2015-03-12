@@ -55,6 +55,14 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2015-03-11:
+<a href="entries/Datatype_Order_Generator.shtml">Generating linear orders for datatypes</a>
+<br>Author:
+Christian Sternagel and 
+René Thiemann
+</td></tr>
+
+<tr><td class="entry">
 2015-02-20:
 <a href="entries/Call_Arity.shtml">The Safety of Call Arity</a>
 <br>Author:
@@ -242,7 +250,7 @@ Holden Lee
 
 <tr><td class="entry">
 2014-07-29:
-<a href="entries/Show.shtml">Haskell's Show-Class in Isabelle/HOL</a>
+<a href="entries/Old_Datatype_Show.shtml">Haskell's Show-Class in Isabelle/HOL</a>
 <br>Author:
 Christian Sternagel and 
 René Thiemann
@@ -779,7 +787,7 @@ Johannes Hölzl
 
 <tr><td class="entry">
 2012-08-07:
-<a href="entries/Datatype_Order_Generator.shtml">Generating linear orders for datatypes</a>
+<a href="entries/Old_Datatype_Order_Generator.shtml">Generating linear orders for old datatypes</a>
 <br>Author:
 René Thiemann
 </td></tr>

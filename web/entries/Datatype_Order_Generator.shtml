@@ -37,35 +37,26 @@ datatypes
         <td class="data" width="80%">Generating linear orders for datatypes</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
+        <td class="data">Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com) and René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2012-08-07</td></tr>
+        <td class="data">2015-03-11</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-We provide a framework for registering automatic methods to derive
-class instances of datatypes, as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
-<p>
-We further implemented such automatic methods to derive (linear) orders or hash-functions which are
-required in the Isabelle Collection Framework. Moreover, for the tactic of Huffman and Krauss to show that a
-datatype is countable, we implemented a wrapper so that this tactic becomes accessible in our framework.
-<p>
-Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
-With our new tactic we could completely remove
-tedious proofs for linear orders of two datatypes.
+TODO.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Datatype_Order_Generator-AFP,
-  author  = {René Thiemann},
+  author  = {Christian Sternagel and René Thiemann},
   title   = {Generating linear orders for datatypes},
   journal = {Archive of Formal Proofs},
-  month   = aug,
-  year    = 2012,
+  month   = mar,
+  year    = 2015,
   note    = {\url{http://afp.sf.net/entries/Datatype_Order_Generator.shtml},
             Formal proof development},
   ISSN    = {2150-914x},

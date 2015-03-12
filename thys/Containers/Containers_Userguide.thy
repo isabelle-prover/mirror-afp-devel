@@ -224,117 +224,40 @@ text {*
 subsection {* Ordering *}
 text_raw {* \label{subsection:corder} *}
 
-(*<*)context fixes dummy :: "'a :: {corder, ceq}" begin(*>*)
+(*<*)context fixes dummy :: "'a :: {ccompare, ceq}" begin(*>*)
 text {* 
-  LC takes the order for storing elements in search trees from the type class @{class corder} rather than @{class linorder}, because we cannot instantiate @{class linorder} for some types (e.g., @{typ "'a set"} as @{term "op \<subseteq>"} is not linear).
-  Similar to @{term "CEQ('a)"} in class @{term ceq}, the class @{class corder} specifies an optional linear order @{term [source] "CORDER('a) :: (('a \<Rightarrow> 'a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'a \<Rightarrow> bool)) option" }.
-  If you cannot or do not want to implement a linear order on your type, you can default to @{term "None"}.
+  LC takes the order for storing elements in search trees from the type class @{class ccompare} rather than @{class compare}, because we cannot instantiate @{class compare} for some types (e.g., @{typ "'a set"} as @{term "op \<subseteq>"} is not linear).
+  Similar to @{term "CEQ('a)"} in class @{term ceq}, the class @{class ccompare} specifies an optional comparator @{term [source] "CCOMPARE('a) :: (('a \<Rightarrow> 'a \<Rightarrow> order)) option" }.
+  If you cannot or do not want to implement a comparator on your type, you can default to @{term "None"}.
   In that case, you will not be able to use your type as elements of sets or as keys in maps implemented by search trees.
 
-  If the type is already instantiates @{class linorder} and we wish to use that order also for the search tree, instantiation is again canonical:
+  If the type is a data type or instantiates @{class compare} and we wish to use that comparator also for the search tree, instantiation is again canonical:
   For our data type @{typ expr}, derive does everything!
 *}
 (*<*)end(*>*)
 (*<*)(*>*)
-derive linorder expr
-derive (linorder) corder expr
+derive ccompare expr
 (*<*)(*>*)
 
 text {*
   In general, the pattern for type constructors without parameters looks as follows:
 *}
-axiomatization where simple_tycon_linorder: "OFCLASS(simple_tycon, linorder_class)"
-instance simple_tycon :: linorder by (rule simple_tycon_linorder)
+axiomatization where simple_tycon_compare: "OFCLASS(simple_tycon, compare_class)"
+instance simple_tycon :: compare by (rule simple_tycon_compare)
 
-instantiation simple_tycon :: corder begin
-definition "CORDER(simple_tycon) = Some (op \<le>, op <)"
-instance by(intro_classes)(simp add: corder_simple_tycon_def, unfold_locales)
-end
+derive (compare) ccompare simple_tycon
 
-(*<*)
-lemma less_expr_iff:
-  "e < Var y \<longleftrightarrow> (\<exists>x. e = Var x \<and> x < y)"
-  "Var x < e \<longleftrightarrow> (\<forall>y. e = Var y \<longrightarrow> x < y)"
-  "e < Lit j \<longleftrightarrow> (\<exists>x. e = Var x) \<or> (\<exists>i. e = Lit i \<and> i < j)"
-  "Lit i < e \<longleftrightarrow> (\<exists>j. e = Lit j \<and> i < j) \<or> (\<exists>e1 e2. e = Add e1 e2)"
-  "e < Add e1' e2' \<longleftrightarrow> (\<forall>e1 e2. e = Add e1 e2 \<longrightarrow> e1 < e1' \<or> e1 = e1' \<and> e2 < e2')"
-  "Add e1 e2 < e \<longleftrightarrow> (\<exists>e1' e2'. e = Add e1' e2' \<and> (e1 < e1' \<or> e1 = e1' \<and> e2 < e2'))"
-by(case_tac [!] e)(simp_all add: less_expr_def)
-(*>*)
+
 text {* 
   For polymorphic types like @{typ "'a expr'"}, we should not do everything manually:
-  Frist, we must define an order that takes the order on the type variable @{typ "'a"} as a parameter.
-  This is necessary to maintain the separation between Isabelle/HOL's type classes (like @{class linorder}) and LC's.
-  (Alternatively, you can also use the order generator and the same pattern as for @{typ expr}, but you will then never be able to use unorderable variable names in generated code for sets of expressions, e.g., @{typ "int set expr' set"} -- if you stick to the separation, such things will still be possible.)
+  First, we must define a comparator that takes the comparator on the type variable @{typ "'a"} as a parameter.
+  This is necessary to maintain the separation between Isabelle/HOL's type classes (like @{class compare}) and LC's.
+  Such a comparator is again easily defined by derive.
 *}
 
-context fixes le_a lt_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" begin
+derive ccompare expr'
 
-function (sequential) less_expr' :: "'a expr' \<Rightarrow> 'a expr' \<Rightarrow> bool" (infix "\<sqsubset>" 50)
-where
-  "Var' x       \<sqsubset> Var' x'       \<longleftrightarrow> lt_a x x'"
-| "Var' x       \<sqsubset> _               \<longleftrightarrow> True"
-| "Lit' i        \<sqsubset> Lit' i'         \<longleftrightarrow> i < i'"
-| "Lit' _        \<sqsubset> Add' _ _      \<longleftrightarrow> True"
-| "Add' e\<^sub>1 e\<^sub>2 \<sqsubset> Add' e\<^sub>1' e\<^sub>2' \<longleftrightarrow> 
-   e\<^sub>1 \<sqsubset> e\<^sub>1' \<or> \<not> e\<^sub>1' \<sqsubset> e\<^sub>1 \<and> e\<^sub>2 \<sqsubset> e\<^sub>2'"
-   -- {* Note that we avoid an explicit equality test here by using @{text "\<not> e\<^sub>1' \<sqsubset> e\<^sub>1"} *}
-| "_             \<sqsubset> _                \<longleftrightarrow> False"
-by pat_completeness simp_all
-termination by size_change
-
-definition less_eq_expr' :: "'a expr' \<Rightarrow> 'a expr' \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
-where "e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<longleftrightarrow> \<not> e\<^sub>2 \<sqsubset> e\<^sub>1"
-
-lemma expr'_linorder:
-  assumes linorder: "class.linorder le_a lt_a"
-  shows "class.linorder op \<sqsubseteq> op \<sqsubset>"
-proof -
-  interpret linorder le_a lt_a by(rule assms)
-  { fix e\<^sub>1 e\<^sub>2
-    have "\<lbrakk> e\<^sub>1 \<sqsubset> e\<^sub>2; e\<^sub>2 \<sqsubset> e\<^sub>1 \<rbrakk> \<Longrightarrow> False"
-      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
-  hence lt_eq: "\<And>e\<^sub>1 e\<^sub>2. e\<^sub>1 \<sqsubset> e\<^sub>2 \<longleftrightarrow> e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<and> \<not> e\<^sub>2\<sqsubseteq> e\<^sub>1" 
-    and "\<And>e. e \<sqsubseteq> e" unfolding less_eq_expr'_def by auto
-  moreover
-  { fix e\<^sub>1 e\<^sub>2
-    have "\<lbrakk> e\<^sub>1 \<sqsubseteq> e\<^sub>2; e\<^sub>2 \<sqsubseteq> e\<^sub>1 \<rbrakk> \<Longrightarrow> e\<^sub>1 = e\<^sub>2"
-      unfolding less_eq_expr'_def 
-      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
-  note antisym = this
-  moreover
-  { fix e\<^sub>1 e\<^sub>2
-    have "e\<^sub>1 \<sqsubseteq> e\<^sub>2 \<or> e\<^sub>2 \<sqsubseteq> e\<^sub>1" unfolding less_eq_expr'_def
-      by(induct e\<^sub>1 e\<^sub>2 rule: less_expr'.induct) auto }
-  moreover
-  { fix e\<^sub>1 e\<^sub>2 e\<^sub>3
-    have "\<lbrakk> e\<^sub>1 \<sqsubseteq> e\<^sub>2; e\<^sub>2 \<sqsubseteq> e\<^sub>3 \<rbrakk> \<Longrightarrow> e\<^sub>1 \<sqsubseteq> e\<^sub>3"
-      apply(induct e\<^sub>1 e\<^sub>2 arbitrary: e\<^sub>3 rule: less_expr'.induct)
-      apply(case_tac [!] e\<^sub>3)
-      apply(simp_all add: less_eq_expr'_def)
-      apply(fold less_eq_expr'_def lt_eq[symmetric])
-      using antisym by(auto 6 2) }
-  ultimately show ?thesis by(unfold_locales)
-qed
-
-end
-
-text {* 
-  Now, we are ready to instantiate @{class corder}.
-  The instantiation follows the same pattern as for @{class ceq}.
-*}
-
-instantiation expr' :: (corder) corder begin
-definition
-  "CORDER('a expr') =
-  (case ID CORDER('a) of None \<Rightarrow> None
-   | Some (le_a, lt_a) \<Rightarrow> Some (less_eq_expr' lt_a, less_expr' lt_a))"
-instance
-  by(intro_classes)
-    (auto simp add: corder_expr'_def
-          split: option.split_asm prod.split_asm 
-          intro: expr'_linorder ID_corder)
-end
+thm ccompare_expr'_def comparator_expr'_simps
 
 subsection {* Heuristics for picking an implementation *}
 text_raw {* \label{subsection:set_impl} \label{subsection:mapping_impl} *}
@@ -428,9 +351,9 @@ text {*
     \end{tabular}
   \end{center}
   
-  For @{typ expr}, @{term mapping_Choose} picks RBTs, because @{term "CORDER(expr)"} provides a comparison operation for @{typ "expr"}.
+  For @{typ expr}, @{term mapping_Choose} picks RBTs, because @{term "CCOMPARE(expr)"} provides a comparison operation for @{typ "expr"}.
   For @{typ "'a expr'"}, the effect of @{term set_Choose} is more pronounced:
-  @{term "CORDER(string)"} is not @{term "None"}, so neither is @{term "CORDER(string expr')"}, and @{term set_Choose} picks RBTs.
+  @{term "CCOMPARE(string)"} is not @{term "None"}, so neither is @{term "CCOMPARE(string expr')"}, and @{term set_Choose} picks RBTs.
   As @{typ "nat \<Rightarrow> nat"} neither provides equality tests (@{class ceq}) nor comparisons (@{class corder}), neither does @{typ "(nat \<Rightarrow> nat) expr'"}, so we use lists with duplicates.
   The last two examples show the difference between inheriting a choice and choosing freshly:
   By default, @{typ bool} prefers distinct (associative) lists over RBTs, because there are just two elements.
@@ -479,12 +402,13 @@ instance by(intro_classes)(simp_all add: cEnum_expr_def)
 end
 
 derive (no) cenum expr'
+derive compare_order expr
 
 text_raw {* \par\medskip \isastyletext For example, *}
-value "({b. b = True}, {x. x > Lit 0})"
+value "({b. b = True}, {x. compare x (Lit 0) = Lt})"
 text_raw {*
   \isastyletext{}
-  yields @{value "({b. b = True}, {x. x > Lit 0})"}
+  yields @{value "({b. b = True}, {x. compare x (Lit 0) = Lt})"}
 *}
 
 text {*
@@ -510,7 +434,7 @@ text {*
   \item @{class card_UNIV} from theory @{theory Cardinality} defines the constant @{term [source] "card_UNIV :: ('a, nat) phantom"} which returns @{term "CARD('a)"}, i.e., the number of values in @{typ 'a}.
     If @{typ "'a"} is infinite, @{term "CARD('a) = 0"}.
   \item @{class cproper_interval} from theory @{theory Collection_Order} defines the function @{term [source] "cproper_interval :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool"}.
-    If the type @{typ "'a"} is finite and @{term "CORDER('a)"} yields a linear order on @{typ "'a"}, then @{term "cproper_interval x y"} returns whether the open interval between @{term "x"} and @{term "y"} is non-empty.
+    If the type @{typ "'a"} is finite and @{term "CCOMPARE('a)"} yields a linear order on @{typ "'a"}, then @{term "cproper_interval x y"} returns whether the open interval between @{term "x"} and @{term "y"} is non-empty.
     The bound @{term "None"} denotes unboundedness.
   \end{itemize}
 
@@ -573,7 +497,7 @@ definition cproper_interval_expr :: "expr proper_interval"
 instance by(intro_classes)(simp add: infinite_UNIV_expr)
 end
 
-instantiation expr' :: (corder) cproper_interval begin
+instantiation expr' :: (ccompare) cproper_interval begin
 definition cproper_interval_expr' :: "'a expr' proper_interval" 
   where "cproper_interval_expr' _ _ = undefined"
 instance by(intro_classes)(simp add: infinite_UNIV_expr')
@@ -583,10 +507,41 @@ subsubsection {* Instantiation of @{class proper_interval} *}
 
 text {*
   To illustrate what to do with finite types, we instantiate @{class proper_interval} for @{typ expr}.
-  Like @{class corder} relates to @{class linorder}, the class @{class cproper_interval} has a counterpart @{class proper_interval} without the finiteness assumption.
+  Like @{class ccompare} relates to @{class compare}, the class @{class cproper_interval} has a counterpart @{class proper_interval} without the finiteness assumption.
+  Here, we first have to gather the simplification rules of the comparator from the derive
+  invocation, especially, how the strict order of the comparator, @{term lt_of_comp}, can be defined.
+  
+  Since the order on lists is not yet shown to be consistent with the comparators that are used
+  for lists, this part of the userguide is currently not available.
+  
 *}
+(*
 instantiation expr :: proper_interval begin
 
+lemma less_expr_conv: "(op <) = lt_of_comp comparator_expr" "(op \<le>) = le_of_comp comparator_expr"
+  using less_expr_def less_eq_expr_def unfolding compare_expr_def by auto
+
+lemma lt_of_comp_expr: "lt_of_comp comparator_expr e1 e2 = (
+  case e1 of 
+    Var x1 \<Rightarrow> 
+      (case e2 of 
+        Var x2 \<Rightarrow> lt_of_comp (comparator_list comparator_of) x1 x2  
+      | Lit _ \<Rightarrow> True
+      | Add _ _ \<Rightarrow> True)
+  | Lit i1 \<Rightarrow>
+      (case e2 of
+        Var _ \<Rightarrow> False
+      | Lit i2 \<Rightarrow> lt_of_comp comparator_of i1 i2
+      | Add _ _ \<Rightarrow> True)
+  | Add a1 b1 \<Rightarrow>
+      (case e2 of
+        Var _ \<Rightarrow> False
+      | Lit _ \<Rightarrow> False
+      | Add a2 b2 \<Rightarrow> lt_of_comp comparator_expr a1 a2 
+          \<or> le_of_comp comparator_expr a1 a2 \<and> lt_of_comp comparator_expr b1 b2) 
+    )"
+  by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: expr.split order.split)
+    
 fun proper_interval_expr :: "expr option \<Rightarrow> expr option \<Rightarrow> bool"
 where
   "proper_interval_expr None (Some (Var x)) \<longleftrightarrow> proper_interval None (Some x)"
@@ -596,23 +551,23 @@ where
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Lit i)) \<longleftrightarrow> False"
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Var x)) \<longleftrightarrow> False"
 | "proper_interval_expr (Some (Add e1 e2)) (Some (Add e1' e2')) \<longleftrightarrow> 
-  e1 < e1' \<or>
-  e1 \<le> e1' \<and> proper_interval_expr (Some e2) (Some e2')"
+    (case compare e1 e1' of Lt \<Rightarrow> True | Eq \<Rightarrow> proper_interval_expr (Some e2) (Some e2') | Gt \<Rightarrow> False)"
 | "proper_interval_expr _ _ \<longleftrightarrow> True"
 
 instance
 proof(intro_classes)
   fix x y :: expr
   show "proper_interval None (Some y) = (\<exists>z. z < y)"
-    by(cases y)(auto simp add: less_expr_iff Nil_less_conv_neq_Nil intro: exI[where x="''''"])
+    unfolding less_expr_conv
+    by (cases y)(auto simp add: lt_of_comp_expr  intro: exI[where x="''''"])
 
-  { fix x y have "x < Add x y" 
-      by(induct x arbitrary: y)(simp_all add: less_expr_def) }
+  { fix x y have "x < Add x y" unfolding less_expr_conv 
+      by(induct x arbitrary: y)(simp_all add: lt_of_comp_expr) }
   note le_Add = this
   thus "proper_interval (Some x) None = (\<exists>z. x < z)"
     by(simp add: less_expr_def exI[where x="Add x y"])
 
-  note [simp] = less_expr_iff
+  note [simp] = less_expr_conv lt_of_comp_expr
 
   show "proper_interval (Some x) (Some y) = (\<exists>z. x < z \<and> z < y)"
   proof(induct "Some x" "Some y" arbitrary: x y rule: proper_interval_expr.induct)
@@ -648,7 +603,7 @@ proof(intro_classes)
   qed auto
 qed simp
 end
-
+*)
 (*<*)
 value "{{Lit 1}}"
 value "{{{Lit 1}}}"
@@ -898,8 +853,8 @@ text {*
 *}
 
 lemma mapping_empty_choose_code [code]:
-  "(mapping_empty_choose :: ('a :: {corder, cbl}, 'b) mapping) =
-   (case ID CORDER('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
+  "(mapping_empty_choose :: ('a :: {ccompare, cbl}, 'b) mapping) =
+   (case ID CCOMPARE('a) of Some _  \<Rightarrow> RBT_Mapping RBT_Mapping2.empty
     | None \<Rightarrow>
       case ID (cbl :: 'a cbl) of Some _ \<Rightarrow> Trie_Mapping empty 
       | None \<Rightarrow> Assoc_List_Mapping DAList.empty)"
@@ -1014,8 +969,8 @@ text {*
       @{class ceq} & \S\ref{subsection:ceq} & @{theory Collection_Eq}
       %@{term "Collection_Eq.ceq_class"}
       \\
-      @{class corder} & \S\ref{subsection:corder} & @{theory Collection_Order}
-      %@{term "Collection_Order.corder_class"}
+      @{class ccompare} & \S\ref{subsection:corder} & @{theory Collection_Order}
+      %@{term "Collection_Order.ccompare_class"}
       \\
       @{class cproper_interval} & \S\ref{subsection:cproper_interval} & @{theory Collection_Order}
       %@{term "Collection_Order.cproper_interval_class"}
@@ -1042,7 +997,7 @@ code_datatype Collect_set DList_set RBT_set Set_Monad
 (*<*)
 datatype minimal_sorts = Minimal_Sorts bool
 derive (eq) ceq minimal_sorts
-derive (no) corder minimal_sorts
+derive (no) ccompare minimal_sorts
 derive (monad) set_impl minimal_sorts
 derive (no) cenum minimal_sorts
 value "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
@@ -1097,9 +1052,9 @@ fun test_fail s f =
       Fail s' => if s = s' then () else raise (error s')
   end;
 
-test_fail "union RBT_set Set_Monad: corder = None" @{code test_set_impl_unsupported_operation1};
+test_fail "union RBT_set Set_Monad: ccompare = None" @{code test_set_impl_unsupported_operation1};
 test_fail "image Collect_set" @{code test_set_impl_unsupported_operation2};
-test_fail "is_empty RBT_Mapping: corder = None" @{code test_mapping_impl_unsupported_operation};
+test_fail "is_empty RBT_Mapping: ccompare = None" @{code test_mapping_impl_unsupported_operation};
 *}
 (*>*)
 

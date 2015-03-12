@@ -19,7 +19,7 @@ section {* Testing Generator on Examples from AFP-Entry Datatype-Order-Generator
 
 theory Show_Examples
 imports
-  "../Datatype_Order_Generator/Derive_Examples"
+  "../Old_Datatype_Order_Generator/Derive_Examples"
   Show_Instances
 begin
   

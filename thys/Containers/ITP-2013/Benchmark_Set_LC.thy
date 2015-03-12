@@ -12,9 +12,14 @@ definition "CEQ('a word) = Some op ="
 instance by(intro_classes)(simp add: ceq_word_def)
 end
 
-instantiation word :: (len0) corder begin
-definition "CORDER('a word) = Some (op \<le>, op <)"
-instance by(intro_classes)(simp add: corder_word_def, unfold_locales)
+instantiation word :: (len0) compare begin
+definition "compare_word = (comparator_of :: 'a word comparator)"
+instance by(intro_classes)(simp add: compare_word_def comparator_of)
+end
+
+instantiation word :: (len0) ccompare begin
+definition "CCOMPARE('a word) = Some compare"
+instance by(intro_classes)(simp add: ccompare_word_def comparator_compare)
 end
 
 instantiation word :: (len0) set_impl begin
@@ -63,7 +68,8 @@ end
 
 instantiation word :: (len) cproper_interval begin
 definition "cproper_interval = (proper_interval :: 'a word proper_interval)"
-instance by intro_classes (simp add: cproper_interval_word_def corder_word_def ID_Some proper_interval_class.axioms)
+instance by( intro_classes, simp add: cproper_interval_word_def ccompare_word_def 
+  compare_word_def le_lt_comparator_of ID_Some proper_interval_class.axioms)
 end
 
 instantiation word :: (len0) cenum begin

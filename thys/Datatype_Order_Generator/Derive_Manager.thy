@@ -1,9 +1,3 @@
-(*  Title:       Derive_Manager
-    Author:      René Thiemann <rene.thiemann@uibk.ac.at>
-    Maintainer:  René Thiemann
-    License:     LGPL
-*)
-
 section \<open>Derive Manager\<close>
 
 theory Derive_Manager
@@ -11,7 +5,6 @@ imports Main
 keywords "print_derives" :: diag and "derive" :: thy_decl
 begin
 
-ML_file "derive_aux.ML" 
 ML_file "derive_manager.ML"
 
 text \<open>
