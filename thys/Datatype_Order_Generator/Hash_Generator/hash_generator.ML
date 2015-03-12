@@ -9,25 +9,25 @@ sig
     map_comp : thm option,         (* hashositionality of map, important for nesting *)
     used_positions : bool list}
 
-  (* registers @{term hash_of :: "some_type :: linorder hash"} 
-     where some_type must just be a type without type-arguments *)
+  (* registers some type which is already instance of hashcode class in hash generator
+     where some type must just be a type without type-arguments *)
   val register_hash_of : string -> local_theory -> local_theory
 
   val register_foreign_hash :
     typ -> (* type-constant without type-variables *)
-    term -> (* hash for type *)
+    term -> (* hash-function for type *)
     local_theory -> local_theory
 
 
   val register_foreign_partial_and_full_hash :
     string -> (* long type name *)
     term -> (* map function, should be \<lambda>x. x, if there is no map *)
-    term -> (* partial hash of type (hashcode, 'b)ty => hashcode, 
+    term -> (* partial hash-function of type (hashcode, 'b)ty => hashcode, 
       where 'a is used, 'b is unused *)
-    term -> (* (full) hash of type ('a \<Rightarrow> hashcode) \<Rightarrow> ('a,'b)ty \<Rightarrow> hashcode,
+    term -> (* (full) hash-function of type ('a \<Rightarrow> hashcode) \<Rightarrow> ('a,'b)ty \<Rightarrow> hashcode,
       where 'a is used, 'b is unused *)
     thm option -> (* hash_def, should be full_hash = phash o map ahash ..., important for nesting *)
-    thm option -> (* map hashositionality, important for nesting *)
+    thm option -> (* map compositionality, important for nesting *)
     bool list -> (*used positions*)
     local_theory -> local_theory
 
