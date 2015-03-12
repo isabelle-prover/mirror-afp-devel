@@ -867,13 +867,13 @@ next
   have IHe: "P \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^sub>1\<rangle>"
     and IHes: "P \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
     and h\<^sub>2a: "h\<^sub>2 a = Some(C,fs)"
-    and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+    and "method": "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
     and same_length: "length vs = length pns"
     and l\<^sub>2': "l\<^sub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
     and eval_body: "P \<turnstile> \<langle>body,(h\<^sub>2, l\<^sub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3, l\<^sub>3)\<rangle>"
     and IHbody: "P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^sub>3,l\<^sub>3)\<rangle>" by fact+
   show "P \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^sub>3, l\<^sub>2)\<rangle>"
-    using method same_length l\<^sub>2' h\<^sub>2a IHbody eval_final[OF eval_body]
+    using "method" same_length l\<^sub>2' h\<^sub>2a IHbody eval_final[OF eval_body]
     by(fastforce intro:CallRedsFinal[OF wwf IHe IHes])
 next
   case Block thus ?case by(auto simp: BlockRedsFinal dest:eval_final)
@@ -1114,17 +1114,17 @@ next
    and IHps: "\<And>W. fvs ps \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>ps,(h\<^sub>1,l\<^sub>1|`W)\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2|`W)\<rangle>"
    and IHbd: "\<And>W. fv body \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>body,(h\<^sub>2,l\<^sub>2'|`W)\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>3|`W)\<rangle>"
    and h\<^sub>2a: "h\<^sub>2 a = Some (C, fs)"
-   and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
+   and "method": "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
    and same_len: "size vs = size pns"
    and l\<^sub>2': "l\<^sub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]" by fact+
   have "fv (e\<bullet>M(ps)) \<subseteq> W" by fact
   hence fve: "fv e  \<subseteq> W" and fvps: "fvs(ps) \<subseteq> W" by auto
   have wfmethod: "size Ts = size pns \<and> this \<notin> set pns" and
        fvbd: "fv body \<subseteq> {this} \<union> set pns"
-    using method wf by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
+    using "method" wf by(fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
   show ?case
     using IHbd[OF fvbd] l\<^sub>2' same_len wfmethod h\<^sub>2a
-      eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ method same_len l\<^sub>2']
+      eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ "method" same_len l\<^sub>2']
     by (simp add:subset_insertI)
 next
   case SeqThrow thus ?case by simp (blast intro: eval_evals.SeqThrow)
@@ -1272,10 +1272,10 @@ proof (induct rule: red_reds.inducts)
   with finals have "P \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
     by (iprover intro: eval_finalsId)
   moreover from s have "h\<^sub>2 a = Some (C, fs)" using RedCall by simp
-  moreover have method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
+  moreover have "method": "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
   moreover have same_len\<^sub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
-    using method wf by (fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
+    using "method" wf by (fastforce dest!:sees_wf_mdecl simp:wf_mdecl_def)+
   have same_len: "length vs = length pns" by fact
   moreover
   obtain l\<^sub>2' where l\<^sub>2': "l\<^sub>2' = [this\<mapsto>Addr a,pns[\<mapsto>]vs]" by simp
