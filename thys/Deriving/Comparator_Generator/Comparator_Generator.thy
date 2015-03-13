@@ -29,7 +29,7 @@ subsection \<open>Improved code for non-lazy languages\<close>
 text \<open>The following equations will eliminate all occurrences of @{term comp_lex}
   in the generated code of the comparators.\<close>
 
-lemma comp_lex_code [code_unfold]: 
+lemma comp_lex_unfolds: 
   "comp_lex [] = Eq"
   "comp_lex [c] = c"
   "comp_lex (c # d # cs) = (case c of Eq \<Rightarrow> comp_lex (d # cs) | Lt \<Rightarrow> Lt | Gt \<Rightarrow> Gt)"

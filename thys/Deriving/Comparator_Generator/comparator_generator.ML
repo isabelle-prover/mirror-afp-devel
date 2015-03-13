@@ -325,11 +325,13 @@ fun generate_comparators_from_bnf_fp tyco lthy =
           in thms end
 
         val thms = map (generate_eq_thm lthy) constrs |> List.concat
+        val simp_thms = map (Local_Defs.unfold lthy @{thms comp_lex_unfolds}) thms
         val name = "comparator_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), thms)
-        |> apfst snd
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), simp_thms)
+        |> snd
+        |> (fn lthy => (thms, lthy))
       end
 
     val (comp_simps, lthy) = fold_map generate_comp_simps (tycos ~~ Ts) lthy
