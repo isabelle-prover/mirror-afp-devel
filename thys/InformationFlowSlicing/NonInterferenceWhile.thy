@@ -1,9 +1,9 @@
 section {* Information Flow for While *}
 
 theory NonInterferenceWhile imports
-  SemanticsWellFormed
-  StaticControlDependences
-  "../../InformationFlowSlicing/LiftingIntra"
+  "../Slicing/While/SemanticsWellFormed"
+  "../Slicing/While/StaticControlDependences"
+  LiftingIntra
 begin
 
 locale SecurityTypes =
