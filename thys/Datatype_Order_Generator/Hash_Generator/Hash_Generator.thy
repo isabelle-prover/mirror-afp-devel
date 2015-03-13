@@ -22,15 +22,5 @@ lemma hash_combine_code [code_unfold]:
 subsection \<open>The Generator\<close>
 
 ML_file "hash_generator.ML"
-derive (hashcode) hash_code int bool char unit nat
 
-derive hash_code prod sum option list 
-
-datatype ('a,'b)tree = Node 'a 'a 'a "(('a,'b) tree list list) \<times> (('a,'b) tree)" bool | Foo
-derive hash_code tree
-thm hash_code_list_def
-thm partial_hash_code_list_def
-thm hash_code_list_simps
-thm hash_code_tree_simps[unfolded hash_combine_code]
-export_code hash_code_tree in Haskell
 end

@@ -45,6 +45,9 @@ sig
     string -> (* name of type *)
     local_theory -> local_theory
 
+  (* construct hashcode instance for datatype *)
+  val hashable_instance : string -> theory -> theory
+
   val get_info : Proof.context -> string -> info option
 
   (* ensures that the info will be available on later requests *)
@@ -61,6 +64,7 @@ datatype hash_type = BNF | HASHCODE
 
 val hash_name = @{const_name "hashcode"}
 
+val hashS = @{sort hashable}
 val hashT = @{typ hashcode}
 fun hashfunT T = T --> hashT
 val hashify = map_atyps (fn _ => hashT)
@@ -136,6 +140,8 @@ fun register_foreign_hash T hash lthy =
 
 fun register_hash_of tyco lthy = 
   let 
+    val _ = is_class_instance (Proof_Context.theory_of lthy) tyco hashS
+      orelse error ("type " ^ quote tyco ^ " is not an instance of class \"hashable\"")
     val (T,_) = typ_and_vs_of_typname (Proof_Context.theory_of lthy) tyco @{sort type}
     val hash = Const (hash_name, hashfunT T)
   in register_foreign_hash T hash lthy end
@@ -309,6 +315,65 @@ fun ensure_info gen_type tyco lthy =
     SOME _ => lthy
   | NONE => generate_hash gen_type tyco lthy)
 
+fun dest_hash ctxt tname =
+  (case get_info ctxt tname of
+    SOME {hash = c, ...} =>
+      let
+        val Ts = fastype_of c |> strip_type |> fst |> `((fn x => x - 1) o length) |> uncurry take
+      in (c, Ts) end
+  | NONE => error ("no hash info for type " ^ quote tname))
+
+fun all_tys hash free_types =
+  let
+    val Ts = fastype_of hash |> strip_type |> fst |> List.last |> dest_Type |> snd
+  in rename_types (Ts ~~ free_types) end
+
+fun mk_hash_rhs c Ts =
+  list_comb (c, map (fn T => Const (hash_name, T)) Ts)
+
+fun mk_hash_def T rhs =
+  Logic.mk_equals (Const (hash_name, hashfunT T), rhs)
+
+fun hashable_instance tname thy =
+  let
+    val _ = is_class_instance thy tname hashS
+      andalso error ("type " ^ quote tname ^ " is already an instance of class \"hashcode\"")
+    val _ = writeln ("deriving \"hashable\" instance for type " ^ quote tname)
+    val thy = Named_Target.theory_map (ensure_info BNF tname) thy
+    val {used_positions = us, ...} = the (get_info 
+        (Named_Target.theory_init thy) tname) 
+
+    val (_, xs) = typ_and_vs_of_used_typname tname us hashS
+    val (_, (hashs_thm,lthy)) =
+      Class.instantiation ([tname], xs, hashS) thy
+      |> (fn ctxt =>
+        let
+          val (c, Ts) = dest_hash ctxt tname
+          val typ_mapping = all_tys c (map TFree xs)
+          val hash_rhs = mk_hash_rhs c Ts
+          val hash_def = mk_hash_def dummyT hash_rhs |> typ_mapping |> infer_type ctxt
+
+          val ty = Term.fastype_of (snd (Logic.dest_equals hash_def)) |> Term.dest_Type |> snd |> hd
+          val ty_it = Type (@{type_name itself}, [ty])
+          val hashs_rhs = lambda (Free ("x",ty_it)) (HOLogic.mk_number @{typ nat} (create_def_size tname))
+          val hashs_def = mk_def (ty_it --> @{typ nat}) @{const_name def_hashmap_size} hashs_rhs
+
+          val basename = Long_Name.base_name tname
+        in
+          Generator_Aux.define_overloaded_generic
+           ((Binding.name ("hashcode_" ^ basename ^ "_def"),
+            @{attributes [code]}),
+            hash_def) ctxt
+          ||> define_overloaded ("def_hashmap_size_" ^ basename ^ "_def", hashs_def)
+        end)
+  in
+    Class.prove_instantiation_exit (fn ctxt =>
+      Class.intro_classes_tac ctxt []
+      THEN unfold_tac ctxt [hashs_thm]
+      THEN simp_tac ctxt 1
+      ) lthy
+  end
+
 fun generate_hash_cmd tyco param = Named_Target.theory_map (
   if param = "hashcode" then generate_hash HASHCODE tyco
   else if param = "" then generate_hash BNF tyco
@@ -317,6 +382,11 @@ fun generate_hash_cmd tyco param = Named_Target.theory_map (
 
 val _ =
   Theory.setup
-    (Derive_Manager.register_derive "hash_code" "generate a hash function, options are () and (hashcode)" generate_hash_cmd)
+    (Derive_Manager.register_derive 
+      "hash_code" "generate a hash function, options are () and (hashcode)" generate_hash_cmd
+    #> Derive_Manager.register_derive 
+      "hashable" 
+      "register types in class hashable" 
+      (fn tyname => K (hashable_instance tyname)))
 
 end

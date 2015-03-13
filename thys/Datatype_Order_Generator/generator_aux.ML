@@ -74,6 +74,9 @@ sig
    as second component *)
   val typ_and_vs_of_typname : theory -> string -> sort -> typ * (string * sort) list
 
+  (* similar to typ_and_vs_of_typname, but only for used types the sort contraint will be enforced *)
+  val typ_and_vs_of_used_typname : string -> bool list -> string list -> typ * (string * string list) list
+
   val freeify_tvars : typ -> typ
   
   val restore_with_morphism : local_theory -> morphism * local_theory
@@ -124,6 +127,15 @@ end
 
 structure Generator_Aux : GENERATOR_AUX =
 struct
+
+fun typ_and_vs_of_used_typname typ_name used_pos sort =
+  let
+    val sorts = map (fn b => if b then sort else @{sort type}) used_pos 
+    val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
+    val ty = Type (typ_name,map TFree ty_vars)
+  in 
+    (ty,ty_vars)
+  end
 
 fun is_class_instance thy tname class =
   Sorts.has_instance (Sign.classes_of thy) tname class
