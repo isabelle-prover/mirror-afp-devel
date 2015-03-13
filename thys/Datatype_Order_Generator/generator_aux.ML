@@ -21,11 +21,14 @@ sig
   (* thm[OF _(NONE) foo (SOME foo) ...] *)
   val OF_option : thm -> thm option list -> thm 
 
-(* aim: treat a possible empty conjunction and handle each subcase 
-   by a specific tactic (indexed from 0 onwards) *)
+  (* aim: treat a possible empty conjunction and handle each subcase 
+     by a specific tactic (indexed from 0 onwards) *)
   val conjI_tac : thm list ->
     Proof.context -> 'a list -> (int -> tactic) -> tactic
   
+  (* check whether a given type is of a given sort *)
+  val is_class_instance : theory -> string -> sort -> bool
+
   val mk_case_tac : 
     Proof.context ->
     term option list list ->
@@ -121,6 +124,9 @@ end
 
 structure Generator_Aux : GENERATOR_AUX =
 struct
+
+fun is_class_instance thy tname class =
+  Sorts.has_instance (Sign.classes_of thy) tname class
 
 fun conjI_tac conj_thms ctxt xs tactics =
   if null xs then all_tac

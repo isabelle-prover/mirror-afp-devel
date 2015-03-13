@@ -50,9 +50,6 @@ fun comparator_tac ctxt tname =
   let val (_, c_thm, _) = dest_comp ctxt tname
   in (rtac c_thm THEN_ALL_NEW rtac @{thm comparator_compare}) 1 end
 
-fun is_class_instance thy tname class =
-  Sorts.has_instance (Sign.classes_of thy) tname class
-
 fun typ_and_vs_of_used_typname typ_name used_pos sort =
   let
     val sorts = map (fn b => if b then sort else @{sort type}) used_pos 
