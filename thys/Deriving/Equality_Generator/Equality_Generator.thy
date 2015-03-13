@@ -30,7 +30,7 @@ subsection \<open>Improved Code for Non-Lazy Languages\<close>
 text \<open>The following equations will eliminate all occurrences of @{term list_all_eq}
   in the generated code of the equality functions.\<close>
 
-lemma list_all_eq_code [code_unfold]: 
+lemma list_all_eq_unfold: 
   "list_all_eq [] = True"
   "list_all_eq [b] = b"
   "list_all_eq (b1 # b2 # bs) = (b1 \<and> list_all_eq (b2 # bs))"

@@ -22,7 +22,7 @@ text \<open>The first argument of @{const hash_combine} originates from evaluati
 
 subsection \<open>Improved Code for Non-Lazy Languages\<close>
 
-lemma hash_combine_code [code_unfold]: 
+lemma hash_combine_unfold: 
   "hash_combine [] [x] = x"
   "hash_combine (y # ys) (z # zs) = y * z + hash_combine ys zs" 
   by auto

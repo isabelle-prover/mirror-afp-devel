@@ -282,11 +282,14 @@ fun generate_hashs_from_bnf_fp tyco lthy =
           in thms end
 
         val thms = map (generate_eq_thm lthy) constrs |> List.concat
+        val simp_thms = map (Local_Defs.unfold lthy @{thms hash_combine_unfold}) thms
+        
         val name = "hash_code_" ^ Long_Name.base_name tyco
       in
         lthy
-        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), thms)
-        |> apfst snd
+        |> Local_Theory.note ((Binding.name (name ^ "_simps"), @{attributes [simp, code]}), simp_thms)
+        |> snd
+        |> (fn lthy => (thms, lthy))
       end
 
     val (_, lthy) = fold_map generate_hash_simps (tycos ~~ Ts) lthy
