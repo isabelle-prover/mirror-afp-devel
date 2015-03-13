@@ -1,16 +1,18 @@
+subsection \<open>Defining Comparators and Compare-Instances for Common Types\<close>
+
 theory Compare_Instances
 imports
   Compare_Generator
   "~~/src/HOL/Library/Char_ord"
 begin
 
-section \<open>Defining comparators for standard types\<close>
 
 text \<open>For all of the following types, we define comparators and register them in the class 
   @{class compare}:
   @{type int}, @{type nat}, @{type char}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
   and @{type prod}. We do not register those classes in @{class compare_order} where
-  so far no linear order is defined.\<close>
+  so far no linear order is defined, in particular if there are conflicting orders, like pair-wise or
+  lexicographic comparison on pairs.\<close>
 
 text \<open>For @{type int}, @{type nat}, and @{type char} we just use their linear orders as comparators.\<close>
 derive (linorder) compare_order int nat char
@@ -58,7 +60,7 @@ local_setup {*
 
 derive compare bool unit
 
-text \<open>It is not directly possible to "derive (linorder) bool/unit", since 
+text \<open>It is not directly possible to @{text "derive (linorder) bool unit"}, since 
   @{term "compare :: bool comparator"}
   was not defined as @{term "comparator_of :: bool comparator"}, but as
   @{const comparator_bool}.

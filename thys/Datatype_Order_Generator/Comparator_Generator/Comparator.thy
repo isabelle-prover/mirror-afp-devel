@@ -1,12 +1,21 @@
+section \<open>Comparisons\<close>
+
+subsection \<open>Comparators and Linear Orders\<close>
+
 theory Comparator
 imports Main
 begin
+
+text \<open>Instead of having to define a strict and a weak linear order, @{term "(op <, op \<le>)"},
+ one can alternative use a comparator to define the linear order, which may deliver 
+ three possible outcomes when comparing two values.\<close>
 
 datatype order = Eq | Lt | Gt
 
 type_synonym 'a comparator = "'a \<Rightarrow> 'a \<Rightarrow> order"
 
-section \<open>Connection between comparators and linear orders\<close>
+text \<open>In the following, we provide the obvious definitions how to switch between 
+  linear orders and comparators.\<close>
 
 definition lt_of_comp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "lt_of_comp acomp x y = (case acomp x y of Lt \<Rightarrow> True | _ \<Rightarrow> False)"

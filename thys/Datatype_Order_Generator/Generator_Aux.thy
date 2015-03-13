@@ -1,3 +1,10 @@
+section \<open>Shared Utilities for all Generator\<close>
+
+text \<open>In this theory we mainly provide some Isabelle/ML infrastructure
+  that is used by several generators. It consists of a uniform interface
+  to access all the theorems, terms, etc.\ from the BNF package, and 
+  some auxiliary functions which provide recursors on datatypes, common tactics, etc.\<close>
+
 theory Generator_Aux
 imports 
   Main

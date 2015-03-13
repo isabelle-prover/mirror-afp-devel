@@ -2,8 +2,16 @@ chapter AFP
 
 session Datatype_Order_Generator (AFP) = "HOL-Library" +
   options [timeout = 600]
+  theories [document = false]
+    "../Collections/Lib/HashCode"
+    "~~/src/HOL/Library/Char_ord"
   theories
-    Derive
+    Derive_Manager
+    Generator_Aux
+    "Comparator_Generator/Compare"
+    "Comparator_Generator/Compare_Order_Instances"
+    "Equality_Generator/Equality_Instances"
+    "Hash_Generator/Hash_Instances"
     Derive_Examples
   document_files
     "root.bib"
