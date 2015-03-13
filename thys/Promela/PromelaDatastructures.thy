@@ -4,7 +4,7 @@ imports
   "../CAVA_Automata/CAVA_Base/CAVA_Base"
   PromelaAST
   "~~/src/HOL/Library/IArray"
-  "../Datatype_Order_Generator/Order_Generator"
+  "../Deriving/Comparator_Generator/Compare_Instances"
   "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
 begin
 
@@ -1234,9 +1234,7 @@ end
 
 (*subsection {* Ours *}*)
 
-derive linorder varType
-derive linorder variable
-derive linorder channel
+derive compare_order varType variable channel
 
 instantiation varType :: hashable
 begin

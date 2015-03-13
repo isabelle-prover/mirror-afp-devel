@@ -1,6 +1,6 @@
 chapter AFP
 
-session Show (AFP) = Datatype_Order_Generator +
+session Show (AFP) = Deriving +
   options [timeout = 600]
   theories
     Show_Instances

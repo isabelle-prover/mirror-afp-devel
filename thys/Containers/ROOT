@@ -1,6 +1,6 @@
 chapter AFP
 
-session Containers (AFP) = "Datatype_Order_Generator" +
+session Containers (AFP) = "Deriving" +
   options [timeout = 600]
   theories [document = false]
     "../Regular-Sets/Regexp_Method"

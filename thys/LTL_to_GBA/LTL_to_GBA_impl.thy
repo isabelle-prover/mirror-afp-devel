@@ -9,7 +9,7 @@ imports
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Code_Char"
   LTL_to_GBA
-  "../Datatype_Order_Generator/Order_Generator"
+  "../Deriving/Comparator_Generator/Compare_Instances"
   "../CAVA_Automata/Automata_Impl"
   "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
 begin
@@ -17,7 +17,20 @@ begin
 subsection {* Parametricity Setup Boilerplate *}
 
 subsubsection {* LTL Formulas *}
-derive linorder ltln
+derive comparator ltln
+instantiation ltln :: (linorder) linorder
+begin
+definition "less_eq_ltln = le_of_comp (comparator_ltln comparator_of)"
+definition "less_ltln = lt_of_comp (comparator_ltln comparator_of)"
+instance 
+proof -
+  interpret linorder "op \<le> :: 'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" "op <"
+    unfolding less_eq_ltln_def less_ltln_def
+    by (rule comparator.linorder[OF comparator_ltln[OF comparator_of]])
+  show "OFCLASS('a ltln, linorder_class)" 
+    by (intro_classes, auto)
+qed
+end
 
 inductive_set ltln_rel for R where
   "(LTLnTrue,LTLnTrue) \<in> ltln_rel R"

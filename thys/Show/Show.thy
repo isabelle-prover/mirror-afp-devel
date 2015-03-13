@@ -15,8 +15,8 @@ text \<open>
 theory Show
 imports
   Main
-  "../Datatype_Order_Generator/Generator_Aux"
-  "../Datatype_Order_Generator/Derive_Manager"
+  "../Deriving/Generator_Aux"
+  "../Deriving/Derive_Manager"
 begin
 
 type_synonym
