@@ -3,8 +3,6 @@
 
 signature DERIVE_AUX =
 sig
-  val alist_to_string : (string * 'a)list -> string
-
   (* split_last [a,...,z] -> ([a,...,y],z) *)
   val split_last : 'a list -> 'a list * 'a
 
@@ -107,8 +105,6 @@ struct
 
 val printing = false
 fun my_print_tac ctxt = if printing then print_tac ctxt else (fn _ => Seq.single)
-
-fun alist_to_string al = map fst al |> commas |> enclose "(" ")"
 
 fun split_last xs = (take (length xs - 1) xs, List.last xs)
 fun strip_cases ctac = ctac #> Seq.map snd

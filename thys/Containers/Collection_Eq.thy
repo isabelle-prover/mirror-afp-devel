@@ -4,7 +4,7 @@
 theory Collection_Eq imports
   Containers_Auxiliary
   Containers_Generator
-  "../Datatype_Order_Generator/Equality_Generator/Equality_Instances"
+  "../Deriving/Equality_Generator/Equality_Instances"
 begin
 
 section {* A type class for optional equality testing *}
@@ -15,7 +15,7 @@ class ceq =
 begin
 
 lemma ceq_equality: "ceq = Some eq \<Longrightarrow> equality eq"
-  by (drule ceq, rule equalityI, simp)
+  by (drule ceq, rule Equality_Generator.equalityI, simp)
 
 lemma ID_ceq: "ID ceq = Some eq \<Longrightarrow> eq = op ="
 unfolding ID_def id_apply by(rule ceq)

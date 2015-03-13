@@ -89,4 +89,6 @@ subsection \<open>The Generator\<close>
 
 ML_file "equality_generator.ML"
 
+hide_fact (open) equalityI
+
 end

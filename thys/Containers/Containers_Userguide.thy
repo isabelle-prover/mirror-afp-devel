@@ -104,18 +104,18 @@ section {* New types as elements *}
 
 text {*
   This section explains LC's type classes and shows how to instantiate them.
-  If you want to use your own types as the elements of sets or the keys of maps, you must instantiate up to eight type classes: @{class ceq} (\S\ref{subsection:ceq}), @{class corder} (\S\ref{subsection:corder}), @{class set_impl} (\S\ref{subsection:set_impl}), @{class mapping_impl} (\S\ref{subsection:mapping_impl}), @{class cenum} (\S\ref{subsection:cenum}), @{class finite_UNIV} (\S\ref{subsection:finite_UNIV}), @{class card_UNIV} (\S\ref{subsection:card_UNIV}), and @{class cproper_interval} (\S\ref{subsection:cproper_interval}).
+  If you want to use your own types as the elements of sets or the keys of maps, you must instantiate up to eight type classes: @{class ceq} (\S\ref{subsection:ceq}), @{class ccompare} (\S\ref{subsection:ccompare}), @{class set_impl} (\S\ref{subsection:set_impl}), @{class mapping_impl} (\S\ref{subsection:mapping_impl}), @{class cenum} (\S\ref{subsection:cenum}), @{class finite_UNIV} (\S\ref{subsection:finite_UNIV}), @{class card_UNIV} (\S\ref{subsection:card_UNIV}), and @{class cproper_interval} (\S\ref{subsection:cproper_interval}).
   Otherwise, well-sortedness errors like the following will occur:
 \begin{verbatim}
 *** Wellsortedness error:
-*** Type expr not of sort {ceq,corder}
+*** Type expr not of sort {ceq,ccompare}
 *** No type arity expr :: ceq
 *** At command "value"
 \end{verbatim}
 
   In detail, the sort requirements on the element type @{typ "'a"} are:
   \begin{itemize}
-  \item @{class ceq} (\S\ref{subsection:ceq}), @{class corder} (\S\ref{subsection:corder}), and @{class set_impl} (\S\ref{subsection:set_impl}) for @{typ "'a set"} in general
+  \item @{class ceq} (\S\ref{subsection:ceq}), @{class ccompare} (\S\ref{subsection:ccompare}), and @{class set_impl} (\S\ref{subsection:set_impl}) for @{typ "'a set"} in general
   \item @{class cenum} (\S\ref{subsection:cenum}) for set comprehensions @{term "{x. P x}"},
   \item @{class card_UNIV}, @{class cproper_interval} for @{typ "'a set set"} and any deeper nesting of sets (\S\ref{subsection:card_UNIV}),%
    \footnote{%
@@ -126,14 +126,14 @@ text {*
     \footnote{%
       We deviate here from the strict separation of type classes, because it does not make sense to store types in a map on which we do not have equality, because the most basic operation @{term "Mapping.lookup"} inherently requires equality.
     }
-    @{class corder} (\S\ref{subsection:corder}) and @{class mapping_impl} (\S\ref{subsection:mapping_impl}) for @{typ "('a, 'b) mapping"}.
+    @{class ccompare} (\S\ref{subsection:ccompare}) and @{class mapping_impl} (\S\ref{subsection:mapping_impl}) for @{typ "('a, 'b) mapping"}.
   \end{itemize}
 *}
 
 subsection {* Equality testing *}
 text_raw {* \label{subsection:ceq} *}
 
-(*<*)context fixes dummy :: "'a :: {cenum, ceq, corder, set_impl, mapping_impl}" begin(*>*)
+(*<*)context fixes dummy :: "'a :: {cenum, ceq, ccompare, set_impl, mapping_impl}" begin(*>*)
 text {*
   The type class @{class ceq} defines the operation @{term [source] "CEQ('a) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) option" } for testing whether two elements are equal.%
   \footnote{%
@@ -141,7 +141,7 @@ text {*
     As usage often does not fully determine @{term [source] ceq}'s type, we use the notation @{term "CEQ('a)"} that explicitly mentions the type.
     In detail, @{term "CEQ('a)"} is translated to @{term [source] "CEQ('a) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) option" } including the type constraint.
     We do the same for the other type class operators:
-    @{term "CORDER('a)"} constrains the operation @{term [source] corder} (\S\ref{subsection:corder}), 
+    @{term "CCOMPARE('a)"} constrains the operation @{term [source] ccompare} (\S\ref{subsection:ccompare}), 
     @{term [source] "SET_IMPL('a)"} constrains the operation @{term [source] set_impl}, (\S\ref{subsection:set_impl}),
     @{term [source] "MAPPING_IMPL('a)"} (constrains the operation @{term [source] mapping_impl}, (\S\ref{subsection:mapping_impl}), and
     @{term "CENUM('a)"} constrains the operation @{term [source] cenum}, \S\ref{subsection:cenum}.
@@ -222,7 +222,7 @@ text {*
 (*<*)end(*>*)
 
 subsection {* Ordering *}
-text_raw {* \label{subsection:corder} *}
+text_raw {* \label{subsection:ccompare} *}
 
 (*<*)context fixes dummy :: "'a :: {ccompare, ceq}" begin(*>*)
 text {* 
@@ -261,7 +261,7 @@ thm ccompare_expr'_def comparator_expr'_simps
 
 subsection {* Heuristics for picking an implementation *}
 text_raw {* \label{subsection:set_impl} \label{subsection:mapping_impl} *}
-(*<*)context fixes dummy :: "'a :: {ceq, corder, set_impl, mapping_impl}" begin(*>*)
+(*<*)context fixes dummy :: "'a :: {ceq, ccompare, set_impl, mapping_impl}" begin(*>*)
 text {*
   Now, we have defined the necessary operations on @{typ expr} and @{typ "'a expr'"} to store them in a set 
   or use them as the keys in a map.
@@ -274,7 +274,7 @@ text {*
   The Haskell and ML compiler will get rid of the extra type constructor again.
 
   For sets, you can choose between @{term set_Collect} (characteristic function @{term P} like in @{term "{x. P x}"}), @{term set_DList} (distinct list), @{term set_RBT} (red-black tree), and @{term set_Monad} (list with duplicates).
-  Additionally, you can define @{term "set_impl"} as @{term "set_Choose"} which picks the implementation based on the available operations (RBT if @{term "CORDER('a)"} provides a linear order, else distinct lists if @{term "CEQ('a)"} provides equality testing, and lists with duplicates otherwise).
+  Additionally, you can define @{term "set_impl"} as @{term "set_Choose"} which picks the implementation based on the available operations (RBT if @{term "CCOMPARE('a)"} provides a linear order, else distinct lists if @{term "CEQ('a)"} provides equality testing, and lists with duplicates otherwise).
   @{term "set_Choose"} is the safest choice because it picks only a data structure when the required operations are actually available.
   If @{term set_impl} picks a specific implementation, Isabelle does not ensure that all required operations are indeed available.
 
@@ -354,7 +354,7 @@ text {*
   For @{typ expr}, @{term mapping_Choose} picks RBTs, because @{term "CCOMPARE(expr)"} provides a comparison operation for @{typ "expr"}.
   For @{typ "'a expr'"}, the effect of @{term set_Choose} is more pronounced:
   @{term "CCOMPARE(string)"} is not @{term "None"}, so neither is @{term "CCOMPARE(string expr')"}, and @{term set_Choose} picks RBTs.
-  As @{typ "nat \<Rightarrow> nat"} neither provides equality tests (@{class ceq}) nor comparisons (@{class corder}), neither does @{typ "(nat \<Rightarrow> nat) expr'"}, so we use lists with duplicates.
+  As @{typ "nat \<Rightarrow> nat"} neither provides equality tests (@{class ceq}) nor comparisons (@{class ccompare}), neither does @{typ "(nat \<Rightarrow> nat) expr'"}, so we use lists with duplicates.
   The last two examples show the difference between inheriting a choice and choosing freshly:
   By default, @{typ bool} prefers distinct (associative) lists over RBTs, because there are just two elements.
   As @{typ "bool expr'"} enherits the choice for maps from @{typ bool}, an associative list implements @{term [source] "empty :: (bool expr', unit) mapping"}.
@@ -668,7 +668,7 @@ text {*
   Of course, this is not always possbile, but we only have to make sure that we pick tries as implementation only if the types do.
   This is similar to red-black trees which require an order.
   Hence, we introduce a type class to convert arbitrary keys into trie keys.
-  We make the conversions optional such that every type can instantiate the type class, just as LC does for @{class ceq} and @{class corder}.
+  We make the conversions optional such that every type can instantiate the type class, just as LC does for @{class ceq} and @{class ccompare}.
 *}
 type_synonym 'a cbl = "(('a \<Rightarrow> bool list) \<times> (bool list \<Rightarrow> 'a)) option"
 class cbl =
@@ -969,7 +969,7 @@ text {*
       @{class ceq} & \S\ref{subsection:ceq} & @{theory Collection_Eq}
       %@{term "Collection_Eq.ceq_class"}
       \\
-      @{class ccompare} & \S\ref{subsection:corder} & @{theory Collection_Order}
+      @{class ccompare} & \S\ref{subsection:ccompare} & @{theory Collection_Order}
       %@{term "Collection_Order.ccompare_class"}
       \\
       @{class cproper_interval} & \S\ref{subsection:cproper_interval} & @{theory Collection_Order}

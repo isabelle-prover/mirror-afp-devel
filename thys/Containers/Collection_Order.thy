@@ -6,7 +6,7 @@ theory Collection_Order
 imports
   Set_Linorder
   Containers_Generator
-  "../Datatype_Order_Generator/Comparator_Generator/Compare_Instances"
+  "../Deriving/Comparator_Generator/Compare_Instances"
 begin
 
 chapter {* Light-weight containers *}

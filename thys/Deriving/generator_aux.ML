@@ -1,5 +1,7 @@
 signature GENERATOR_AUX =
 sig
+  val alist_to_string : (string * 'a)list -> string
+
   (* put a string in sub-script *)
   val sub : string -> string
   
@@ -127,6 +129,8 @@ end
 
 structure Generator_Aux : GENERATOR_AUX =
 struct
+
+fun alist_to_string al = map fst al |> commas |> enclose "(" ")"
 
 fun typ_and_vs_of_used_typname typ_name used_pos sort =
   let
