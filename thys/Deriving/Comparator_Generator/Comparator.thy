@@ -83,6 +83,9 @@ proof
        (auto dest: trans simp: eq)
 qed
 
+sublocale linorder le lt
+  by (rule linorder)
+
 end
 
 lemma comp_of_ords: assumes "class.linorder le lt"
