@@ -551,7 +551,7 @@ next
   proof(rule WTrt_elim_cases)
     fix T' C Ts meth D Us
     assume wte: "P,E,hp s \<turnstile> e : T'" and icto: "class_type_of' T' = \<lfloor>C\<rfloor>"
-      and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
+      and "method": "P \<turnstile> C sees M:Ts\<rightarrow>T = meth in D"
       and wtes: "P,E,hp s \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> T'"
       using IH[OF conf wte tconf] by blast
@@ -570,7 +570,7 @@ next
       obtain Ts' T' meth' D'
         where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = meth' in D'"
         and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
-        using Call_lemma[OF method "subclass" wf] by fast
+        using Call_lemma[OF "method" "subclass" wf] by fast
       have wtes': "P,E,hp s' \<turnstile> es [:] Us"
         by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       show ?thesis using wtes' wte' icto' subs method' subs' sub' by(blast intro:widens_trans)
@@ -615,16 +615,16 @@ next
 next
   case (RedCall s a U M Ts T pns body D vs T' E)
   have hp: "typeof_addr (hp s) a = \<lfloor>U\<rfloor>"
-    and method: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D"
+    and "method": "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns,body)\<rfloor> in D"
     and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
   obtain Ts' where wtes: "P,E,hp s \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
-    using wt method hp wf by(auto 4 3 dest: sees_method_fun)
+    using wt "method" hp wf by(auto 4 3 dest: sees_method_fun)
   from wtes subs have length_vs: "length vs = length Ts"
     by(auto simp add: WTrts_conv_list_all2 dest!: list_all2_lengthD)
   have UsubD: "P \<turnstile> ty_of_htype U \<le> Class (class_type_of U)"
     by(cases U)(simp_all add: widen_array_object)
-  from sees_wf_mdecl[OF wf method] obtain T''
+  from sees_wf_mdecl[OF wf "method"] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
     by(fastforce simp:wf_mdecl_def simp del:map_upds_twist)
@@ -633,7 +633,7 @@ next
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WTrt_env_mono) simp
   hence "P,E,hp s \<turnstile> blocks (this#pns) (Class D#Ts) (Addr a#vs) body : T''"
-    using wtes subs hp sees_method_decl_above[OF method] length_vs length_pns UsubD
+    using wtes subs hp sees_method_decl_above[OF "method"] length_vs length_pns UsubD
     by(auto simp add:wt_blocks rel_list_all2_Cons2 intro: widen_trans)
   with T''subT T'isT show ?case by blast
 next

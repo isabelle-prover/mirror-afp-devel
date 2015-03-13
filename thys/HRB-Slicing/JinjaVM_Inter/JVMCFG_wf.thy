@@ -394,7 +394,7 @@ next
     and params: "(p, ins, outs) \<in> set (((ClassMain P, MethodMain P), [], []) # procs (PROG P))"
     and V: "V \<in> set ins"
   from params V obtain D fs ms Ts T mb where "class (PROG P) (fst p) = \<lfloor>(D, fs, ms)\<rfloor>"
-    and method: "PROG P \<turnstile> (fst p) sees (snd p): Ts\<rightarrow>T = mb in (fst p)"
+    and "method": "PROG P \<turnstile> (fst p) sees (snd p): Ts\<rightarrow>T = mb in (fst p)"
     and ins: "ins = Heap # map Local [0..<Suc (length Ts)]"
     by (cases p) (fastforce elim: in_set_procsE)
   from ve kind show "V \<in> Def P (targetnode a)" unfolding valid_edge_def
@@ -403,7 +403,7 @@ next
     with kind have "PROG P \<turnstile> D' sees Main: []\<rightarrow>T' = (mxs, mxl0, is, xt) in D'"
       and [simp]: "p = (D', Main)"
       by (auto dest: sees_method_idemp)
-    with method have [simp]: "Ts = []" and [simp]: "T' = T" and [simp]: "mb = (mxs, mxl0, is, xt)"
+    with "method" have [simp]: "Ts = []" and [simp]: "T' = T" and [simp]: "mb = (mxs, mxl0, is, xt)"
       by (fastforce dest: sees_method_fun)+
     from Main_Call ins V show ?thesis
       by (fastforce intro!: Def_Invoke_Call_Heap Def_Invoke_Call_Local
@@ -414,7 +414,7 @@ next
     with kind have "PROG P \<turnstile> D'' sees M': Ts'\<rightarrow>T' = (mxs, mxl0, is, xt) in D''"
       and [simp]: "p = (D'', M')"
       by (auto dest: sees_method_idemp)
-    with method have [simp]: "Ts' = Ts" and [simp]: "T' = T" and [simp]: "mb = (mxs, mxl0, is, xt)"
+    with "method" have [simp]: "Ts' = Ts" and [simp]: "T' = T" and [simp]: "mb = (mxs, mxl0, is, xt)"
       by (fastforce dest: sees_method_fun)+
     from CFG_Invoke_Call ins V show ?thesis
       by (fastforce intro!: Def_Invoke_Call_Local Def_Invoke_Call_Heap

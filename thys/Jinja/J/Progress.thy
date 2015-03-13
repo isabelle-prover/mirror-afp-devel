@@ -369,7 +369,7 @@ next
 next
   case (WTrtCall E e C M Ts T pns body D es Ts')
   have wte: "P,E,h \<turnstile> e : Class C"
-   and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+   and "method": "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
    and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
    and IHes: "\<And>l.
              \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
@@ -386,7 +386,7 @@ next
         assume es: "\<exists>vs. es = map Val vs"
         from wte e_addr obtain fs where ha: "h a = Some(C,fs)" by auto
         show ?thesis
-          using e_addr ha method WTrts_same_length[OF wtes] sub es sees_wf_mdecl[OF wf method]
+          using e_addr ha "method" WTrts_same_length[OF wtes] sub es sees_wf_mdecl[OF wf "method"]
           by (fastforce intro!: RedCall simp:list_all2_iff wf_mdecl_def)
       next
         assume "\<not>(\<exists>vs. es = map Val vs)"

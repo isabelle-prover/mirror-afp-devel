@@ -212,14 +212,14 @@ and subjects_reduction2: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarro
 proof (induct rule:red_reds_inducts)
   case (RedCall h l a C fs M Ts T pns body D vs E T')
   have hp: "hp(h,l) a = Some(C,fs)"
-   and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
+   and "method": "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
    and wt: "P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
   obtain Ts' where wtes: "P,E,h \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
-    using wt method hp by (auto dest:sees_method_fun)
+    using wt "method" hp by (auto dest:sees_method_fun)
   from wtes subs have length_vs: "length vs = length Ts"
     by(fastforce simp:list_all2_iff dest!:WTrts_same_length)
-  from sees_wf_mdecl[OF wf method] obtain T''
+  from sees_wf_mdecl[OF wf "method"] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
     by(fastforce simp:wf_mdecl_def simp del:map_upds_twist)
@@ -228,7 +228,7 @@ proof (induct rule:red_reds_inducts)
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),h \<turnstile> body : T''"
     by(rule WTrt_env_mono) simp
   hence "P,E,h \<turnstile> blocks(this#pns, Class D#Ts, Addr a#vs, body) : T''"
-  using wtes subs hp sees_method_decl_above[OF method] length_vs length_pns
+  using wtes subs hp sees_method_decl_above[OF "method"] length_vs length_pns
     by(fastforce simp add:wt_blocks rel_list_all2_Cons2)
   with T''subT T'isT show ?case by blast
 next
@@ -418,7 +418,7 @@ next
   moreover
   { fix C D Ts Us pns body
     assume wte: "P,E,h \<turnstile> e : Class C"
-      and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
+      and "method": "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
       and wtes: "P,E,h \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
     obtain U where wte': "P,E,h' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       using IH[OF conf wte] by blast
@@ -433,7 +433,7 @@ next
       moreover obtain Ts' T' pns' body' D'
         where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = (pns',body') in D'"
         and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
-        using Call_lemma[OF method "subclass" wf] by fast
+        using Call_lemma[OF "method" "subclass" wf] by fast
       moreover have "P,E,h' \<turnstile> es [:] Us"
         by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       ultimately have ?case

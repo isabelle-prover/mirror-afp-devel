@@ -1056,21 +1056,21 @@ fun exception :: "'a exp \<Rightarrow> addr option" where
 
 
 lemma comp\<^sub>2_correct:
-assumes method: "P\<^sub>1 \<turnstile> C sees M:Ts\<rightarrow>T = body in C"
+assumes "method": "P\<^sub>1 \<turnstile> C sees M:Ts\<rightarrow>T = body in C"
     and eval:   "P\<^sub>1 \<turnstile>\<^sub>1 \<langle>body,(h,ls)\<rangle> \<Rightarrow> \<langle>e',(h',ls')\<rangle>"
 shows "compP\<^sub>2 P\<^sub>1 \<turnstile> (None,h,[([],ls,C,M,0)]) -jvm\<rightarrow> (exception e',h',[])"
 (*<*)
       (is "_ \<turnstile> ?\<sigma>\<^sub>0 -jvm\<rightarrow> ?\<sigma>\<^sub>1")
 proof -
   let ?P = "compP\<^sub>2 P\<^sub>1"
-  have code: "?P,C,M,0 \<rhd> compE\<^sub>2 body" using beforeM[OF method] by auto
+  have code: "?P,C,M,0 \<rhd> compE\<^sub>2 body" using beforeM[OF "method"] by auto
   have xtab: "?P,C,M \<rhd> compxE\<^sub>2 body 0 (size[])/{..<size(compE\<^sub>2 body)},size[]"
-    using beforexM[OF method] by auto
+    using beforexM[OF "method"] by auto
   -- "Distinguish if e' is a value or an exception"
   { fix v assume [simp]: "e' = Val v"
     have "?P \<turnstile> ?\<sigma>\<^sub>0 -jvm\<rightarrow> (None,h',[([v],ls',C,M,size(compE\<^sub>2 body))])"
       using Jcc[OF eval code xtab] by auto
-    also have "?P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^sub>1" using beforeM[OF method] by auto
+    also have "?P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^sub>1" using beforeM[OF "method"] by auto
     finally have ?thesis .
   }
   moreover
@@ -1079,7 +1079,7 @@ proof -
           \<not> caught ?P pc h' a (compxE\<^sub>2 body 0 0)"
     and 1: "?P \<turnstile> ?\<sigma>\<^sub>0 -jvm\<rightarrow> handle ?P C M a h' [] ls' pc []"
       using Jcc[OF eval code xtab] by fastforce
-    from pc have "handle ?P C M a h' [] ls' pc [] = ?\<sigma>\<^sub>1" using xtab method
+    from pc have "handle ?P C M a h' [] ls' pc [] = ?\<sigma>\<^sub>1" using xtab "method"
       by(auto simp:handle_def compMb\<^sub>2_def)
     with 1 have ?thesis by simp
   } 
