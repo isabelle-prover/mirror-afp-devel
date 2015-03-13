@@ -15,7 +15,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Testing Generator on Examples from AFP-Entry Datatype-Order-Generator *}
+section {* Testing Generator on Examples from AFP-Entry Old-Datatype-Order-Generator *}
 
 theory Show_Examples
 imports
