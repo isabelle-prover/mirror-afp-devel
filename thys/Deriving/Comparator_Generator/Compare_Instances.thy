@@ -9,13 +9,13 @@ begin
 
 text \<open>For all of the following types, we define comparators and register them in the class 
   @{class compare}:
-  @{type int}, @{type nat}, @{type char}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
+  @{type int}, @{type integer}, @{type nibble}, @{type nat}, @{type char}, @{type bool}, @{type unit}, @{type sum}, @{type option}, @{type list},
   and @{type prod}. We do not register those classes in @{class compare_order} where
   so far no linear order is defined, in particular if there are conflicting orders, like pair-wise or
   lexicographic comparison on pairs.\<close>
 
-text \<open>For @{type int}, @{type nat}, and @{type char} we just use their linear orders as comparators.\<close>
-derive (linorder) compare_order int nat char
+text \<open>For @{type int}, @{type nat}, @{type integer}, @{type nibble}, and @{type char} we just use their linear orders as comparators.\<close>
+derive (linorder) compare_order int integer nibble nat char
 
 text \<open>For @{type sum}, @{type list}, @{type prod}, and @{type option} we generate comparators 
   which are however are not used to instantiate @{class linorder}.\<close>
