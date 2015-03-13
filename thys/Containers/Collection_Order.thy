@@ -111,7 +111,7 @@ ML_file "ccompare_generator.ML"
 subsection {* Instantiations for HOL types *}
 
 derive (linorder) compare_order 
-  Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble String.literal
+  Enum.finite_1 Enum.finite_2 Enum.finite_3 natural String.literal
 derive (compare) ccompare 
   unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
 derive (no) ccompare Enum.finite_4 Enum.finite_5
@@ -235,7 +235,7 @@ end
 lemma lt_of_comp_sum: "lt_of_comp (comparator_sum ca cb) sx sy = (
   case sx of Inl x \<Rightarrow> (case sy of Inl y \<Rightarrow> lt_of_comp ca x y | Inr y \<Rightarrow> True)
    | Inr x \<Rightarrow> (case sy of Inl y \<Rightarrow> False | Inr y \<Rightarrow> lt_of_comp cb x y))" 
-    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: sum.split)
+    by (simp add: lt_of_comp_def le_of_comp_def split: sum.split)
 
 instantiation sum :: (cproper_interval, cproper_interval) cproper_interval begin
 fun cproper_interval_sum :: "('a + 'b) proper_interval" where
@@ -278,7 +278,7 @@ end
 lemma lt_of_comp_less_prod: "lt_of_comp (comparator_prod c_a c_b) =
   less_prod (le_of_comp c_a) (lt_of_comp c_a) (lt_of_comp c_b)"
   unfolding less_prod_def
-  by (intro ext, auto simp: lt_of_comp_def le_of_comp_def comp_lex_code split: order.split_asm prod.split)
+  by (intro ext, auto simp: lt_of_comp_def le_of_comp_def split: order.split_asm prod.split)
 
 lemma lt_of_comp_prod: "lt_of_comp (comparator_prod c_a c_b) (x1,x2) (y1,y2) = 
   (lt_of_comp c_a x1 y1 \<or> le_of_comp c_a x1 y1 \<and> lt_of_comp c_b x2 y2)"
@@ -330,7 +330,7 @@ end
 lemma lt_of_comp_option: "lt_of_comp (comparator_option c) sx sy = (
   case sx of None \<Rightarrow> (case sy of None \<Rightarrow> False | Some y \<Rightarrow> True)
    | Some x \<Rightarrow> (case sy of None \<Rightarrow> False | Some y \<Rightarrow> lt_of_comp c x y))" 
-    by (simp add: lt_of_comp_def le_of_comp_def comp_lex_code split: option.split)
+    by (simp add: lt_of_comp_def le_of_comp_def split: option.split)
 
 
 instantiation option :: (cproper_interval) cproper_interval begin
