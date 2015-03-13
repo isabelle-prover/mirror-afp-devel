@@ -92,8 +92,6 @@ lemma eq_pcompD: "eq_pcomp acomp x \<Longrightarrow> acomp x y = Eq \<longleftri
 lemma eq_pcompI: "(\<And> y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> eq_pcomp acomp x"
   unfolding eq_pcomp_def by auto
 
-subsubsection \<open>Partial symmetry property\<close>
-
 definition sym_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
   "sym_pcomp acomp x \<longleftrightarrow> (\<forall> y. sym_order (acomp x y) = (acomp y x))"
 

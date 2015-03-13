@@ -1,4 +1,4 @@
-section {* Loading derive-commands *}
+section {* Loading Existing Derive-Commands *}
 theory Derive
 imports 
   "Comparator_Generator/Compare_Instances"
@@ -8,9 +8,9 @@ imports
 begin
 
 text{*
-We just load the commands to derive comparators, equality-functions, hash functions, and the
+We just load the commands to derive comparators, equality-functions, hash-functions, and the
 command to show that a datatype is countable, so that now all of them are available.
-There are further generators available in the AFP entries of lightweight containers and Show.
+There are further generators available in the AFP entries Containers and Show.
 *}
 
 print_derives

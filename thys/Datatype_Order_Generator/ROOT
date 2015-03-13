@@ -5,6 +5,7 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
   theories [document = false]
     "../Collections/Lib/HashCode"
     "~~/src/HOL/Library/Char_ord"
+    "~~/src/HOL/Library/Countable"
   theories
     Derive_Manager
     Generator_Aux
@@ -12,6 +13,7 @@ session Datatype_Order_Generator (AFP) = "HOL-Library" +
     "Comparator_Generator/Compare_Order_Instances"
     "Equality_Generator/Equality_Instances"
     "Hash_Generator/Hash_Instances"
+    "Countable_Generator/Countable_Generator"
     Derive_Examples
   document_files
     "root.bib"

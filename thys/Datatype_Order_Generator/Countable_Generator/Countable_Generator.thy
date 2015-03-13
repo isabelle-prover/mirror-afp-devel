@@ -1,4 +1,4 @@
-section {* Countable datatypes *}
+section {* Countable Datatypes *}
 
 theory Countable_Generator
 imports 
@@ -6,10 +6,8 @@ imports
   "../Derive_Manager"
 begin
 
-subsection "Introduction"
-
 text {*
-Brian Huffman and Alexander Krauss (old datatype), and Jasmin Blanchette (new datatype) 
+Brian Huffman and Alexander Krauss (old datatype), and Jasmin Blanchette (BNF datatype) 
 have developed tactics which automatically can prove that a datatype is countable.
 We just make this tactic available in the derive-manager so that
 one can conveniently write \texttt{derive countable some-datatype}.

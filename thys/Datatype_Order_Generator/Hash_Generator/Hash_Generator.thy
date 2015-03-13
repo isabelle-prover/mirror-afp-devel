@@ -7,12 +7,20 @@ imports
   "../../Collections/Lib/HashCode"
 begin
 
+text \<open>As usual, in the generator we use a dedicated function to combine the results
+  from evaluating the hash-function of the arguments of a constructor, to deliver
+  the global hash-value.\<close>
+
 fun hash_combine :: "hashcode list \<Rightarrow> hashcode list \<Rightarrow> hashcode" where
   "hash_combine [] [x] = x"
 | "hash_combine (y # ys) (z # zs) = y * z + hash_combine ys zs"
 | "hash_combine _ _ = 0"
 
-subsection \<open>improved code for non-lazy languages\<close>
+text \<open>The first argument of @{const hash_combine} originates from evaluating the hash-function 
+  on the arguments of a constructor, and the second argument of @{const hash_combine} will be static \emph{magic} numbers
+  which are generated within the generator.\<close>
+
+subsection \<open>Improved Code for Non-Lazy Languages\<close>
 
 lemma hash_combine_code [code_unfold]: 
   "hash_combine [] [x] = x"

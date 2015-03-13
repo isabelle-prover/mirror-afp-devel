@@ -8,13 +8,20 @@ imports
   Rat
 begin
 
-subsection "Register standard existing types"
+subsection "Rational Numbers"
 
+text \<open>The rational numbers are not a datatype, so it will not be possible to derive 
+  corresponding instances of comparators, hashcodes, etc. via the generators. But we can and should
+  still register the existing instances, so that later datatypes are supported 
+  which use rational numbers.\<close> 
+
+text \<open>Use the linear order on rationals to define the @{class compare_order}-instance.\<close>
 derive (linorder) compare_order rat
+
+text \<open>Use @{term "op = :: rat => rat => bool"} as equality function.\<close>
 derive (eq) equality rat
 
-text \<open>For rational numbers, we cannot generate a hashcode via the generator,
-  as it is not a BNF. Therefore, we have to define it manually.\<close>
+text \<open>First manually define a hashcode function.\<close>
 
 instantiation rat :: hashable
 begin
@@ -24,9 +31,11 @@ instance
   by (intro_classes)(simp_all add: def_hashmap_size_rat_def)
 end
 
+text \<open>And then register it at the generator.\<close>
+
 derive (hashcode) hash_code rat
 
-subsection "Without nested recursion"
+subsection "A Datatype Without Nested Recursion"
 
 datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree"
 
@@ -35,16 +44,16 @@ derive countable bintree
 derive equality bintree
 derive hashable bintree
 
-subsection "Using other datatypes"
+subsection "Using Other datatypes"
 
-datatype nat_list_list = NNil | CCons "nat list" nat_list_list
+datatype nat_list_list = NNil | CCons "nat list \<times> rat option" nat_list_list
 
 derive compare_order nat_list_list
 derive countable nat_list_list
 derive (eq) equality nat_list_list
 derive hashable nat_list_list
 
-subsection "Explicit mutual recursion"
+subsection "Mutual Recursion"
 
 datatype
   'a mtree = MEmpty | MNode 'a "'a mtree_list" and
@@ -52,10 +61,15 @@ datatype
 
 derive compare_order mtree mtree_list
 derive countable mtree mtree_list
-derive equality mtree
 derive hashable mtree mtree_list
 
-subsection "Implicit mutual recursion"
+text \<open>For @{text "derive (equality|comparator|hash_code) mutual_recursive_type"} 
+  there is the speciality that only one of the mutual recursive types has to be mentioned in
+  order to register all of them. So one of @{type mtree} and @{type mtree_list} suffices.\<close>
+
+derive equality mtree 
+ 
+subsection "Nested recursion"
 
 datatype 'a tree = Empty | Node 'a "'a tree list"
 datatype 'a ttree = TEmpty | TNode 'a "'a ttree list tree"
@@ -65,7 +79,7 @@ derive countable tree ttree
 derive equality tree ttree
 derive hashable tree ttree
 
-subsection "Examples from IsaFoR"
+subsection \<open>Examples from \isafor\<close>
 
 datatype ('f,'v) "term" = Var 'v | Fun 'f "('f,'v) term list"
 datatype ('f, 'l) lab =
@@ -79,20 +93,20 @@ derive countable "term" lab
 derive equality "term" lab
 derive hashable "term" lab
 
-subsection "A complex datatype"
+subsection "A Complex Datatype"
 text {*
-The following datatype has nested indirect recursion, mutual recursion and
+The following datatype has nested and mutual recursion, and
 uses other datatypes.
 *}
 
 datatype ('a, 'b) complex = 
-  C1 nat "'a ttree" |
+  C1 nat "'a ttree \<times> rat + ('a,'b) complex list" |
   C2 "('a, 'b) complex list tree tree" 'b "('a, 'b) complex" "('a, 'b) complex2 ttree list"
 and ('a, 'b) complex2 = D1 "('a, 'b) complex ttree"
 
-derive compare_order complex
-derive countable complex
+derive compare_order complex complex2
+derive countable complex complex2
 derive equality complex
-derive hashable complex
+derive hashable complex complex2
 
 end

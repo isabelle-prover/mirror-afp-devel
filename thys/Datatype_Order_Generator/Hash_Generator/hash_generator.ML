@@ -150,7 +150,7 @@ fun register_hash_of tyco lthy =
 fun generate_hashs_from_bnf_fp tyco lthy =
   let
     val (tycos, Ts) = mutual_recursive_types tyco lthy
-    val _ = map (fn tyco => "generating hash for type " ^ quote tyco) tycos
+    val _ = map (fn tyco => "generating hash-function for type " ^ quote tyco) tycos
       |> cat_lines |> writeln
     val (tfrees, used_tfrees) = type_parameters (hd Ts) lthy
     val used_positions = map (member (op =) used_tfrees o TFree) tfrees

@@ -1,4 +1,4 @@
-section \<open>Defining hash-functions for standard types\<close>
+subsection \<open>Defining Hash-Functions for Common Types\<close>
 
 theory Hash_Instances
 imports
@@ -14,6 +14,8 @@ derive (hashcode) hash_code int bool char unit nat
 
 derive hash_code prod sum option list 
 
-text \<open>There is no nead to ``derive hashable'' for these types, as they all are already instances.\<close>
+text \<open>There is no nead to @{text "derive hashable prod sum option list"} since all of these types 
+  are already instances of class @{class hashable}. Still the above command is necessary to register
+  these types in the generator.\<close>
 
 end

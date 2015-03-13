@@ -1,4 +1,4 @@
-section \<open>Checking equality without "="\<close>
+section \<open>Checking Equality Without "="\<close>
 
 theory Equality_Generator
 imports
@@ -6,10 +6,30 @@ imports
   "../Derive_Manager"
 begin
 
+typedecl ('a,'b,'c,'z)type
+
+text \<open>In the following, we define a generator which for a given datatype @{typ "('a,'b,'c,'z)type"}
+  constructs an equality-test function of type 
+  @{typ "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('z \<Rightarrow> 'z \<Rightarrow> bool) \<Rightarrow> 
+    (('a,'b,'c,'z)type \<Rightarrow> ('a,'b,'c,'z)type \<Rightarrow> bool)"}.
+  These functions are essential to synthesize conditional equality functions in the container framework,
+  where a strict membership in the @{class equal}-class must not be enforced.
+\<close>
+
+hide_type "type"
+
+text \<open>Just a constant to define conjunction on lists of booleans, which will
+  be used to merge the results when having compared the arguments of identical
+  constructors.\<close>
+
 definition list_all_eq :: "bool list \<Rightarrow> bool" where
   "list_all_eq = list_all id "
 
-subsection \<open>improved code for non-lazy languages\<close>
+subsection \<open>Improved Code for Non-Lazy Languages\<close>
+
+text \<open>The following equations will eliminate all occurrences of @{term list_all_eq}
+  in the generated code of the equality functions.\<close>
+
 lemma list_all_eq_code [code_unfold]: 
   "list_all_eq [] = True"
   "list_all_eq [b] = b"
@@ -20,7 +40,7 @@ lemma list_all_eq_code [code_unfold]:
 lemma list_all_eq: "list_all_eq bs \<longleftrightarrow> (\<forall> b \<in> set bs. b)" 
   unfolding list_all_eq_def list_all_iff by auto  
 
-subsection \<open>Partial equality property\<close>
+subsection \<open>Partial Equality Property\<close>
 
 text \<open>We require a partial property which can be used in inductive proofs.\<close>
 
