@@ -66,7 +66,7 @@ title = Certification Monads
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-10-03
 topic = Computer Science/Functional Programming
-depends-on = Old_Datatype_Show, Partial_Function_MR
+depends-on = Show, Partial_Function_MR
 abstract = This entry provides several monads intended for the development of stand-alone certifiers via code generation from Isabelle/HOL. More specifically, there are three flavors of error monads (the sum type, for the case where all monadic functions are total; an instance of the former, the so called check monad, yielding either success without any further information or an error message; as well as a variant of the sum type that accommodates partial functions by providing an explicit bottom element) and a parser monad built on top. All of this monads are heavily used in the IsaFoR/CeTA project which thus provides many examples of their usage.
 
 [CISC-Kernel]
@@ -2362,7 +2362,7 @@ title = XML
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-10-03
 topic = Computer Science/Functional Programming, Computer Science/Data Structures
-depends-on = Old_Datatype_Show, Partial_Function_MR, Certification_Monads
+depends-on = Show, Partial_Function_MR, Certification_Monads
 abstract =
  This entry provides an XML library for Isabelle/HOL. This includes parsing
  and pretty printing of XML trees as well as combinators for transforming XML
