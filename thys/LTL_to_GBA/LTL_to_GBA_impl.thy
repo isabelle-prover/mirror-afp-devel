@@ -17,20 +17,7 @@ begin
 subsection {* Parametricity Setup Boilerplate *}
 
 subsubsection {* LTL Formulas *}
-derive comparator ltln
-instantiation ltln :: (linorder) linorder
-begin
-definition "less_eq_ltln = le_of_comp (comparator_ltln comparator_of)"
-definition "less_ltln = lt_of_comp (comparator_ltln comparator_of)"
-instance 
-proof -
-  interpret linorder "op \<le> :: 'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" "op <"
-    unfolding less_eq_ltln_def less_ltln_def
-    by (rule comparator.linorder[OF comparator_ltln[OF comparator_of]])
-  show "OFCLASS('a ltln, linorder_class)" 
-    by (intro_classes, auto)
-qed
-end
+derive linorder ltln
 
 inductive_set ltln_rel for R where
   "(LTLnTrue,LTLnTrue) \<in> ltln_rel R"
