@@ -21,8 +21,14 @@ open Generator_Aux
 val cmpS = @{sort compare};
 val cmpoS = @{sort compare_order};
 val cmpN = @{const_name compare};
+val lessN = @{const_name less}
+val less_eqN = @{const_name less_eq}
+val linordS = @{sort linorder}
 fun cmpT T = T --> T --> @{typ order};
+fun ordT T = T --> T --> @{typ bool};
 fun cmp_const T = Const (cmpN, T);
+fun cmp_of_const T = Const (@{const_name comparator_of}, T);
+
 
 fun dest_comp ctxt tname =
   (case Comparator_Generator.get_info ctxt tname of
@@ -40,15 +46,28 @@ fun all_tys comp free_types =
 fun mk_cmp_rhs c Ts =
   list_comb (c, map cmp_const Ts)
 
+fun mk_cmp_rhs_comparator_of c Ts =
+  list_comb (c, map cmp_of_const Ts)
+
+
 fun mk_cmp_def T rhs =
   Logic.mk_equals (Const (@{const_name compare}, cmpT T), rhs)
 
+fun mk_ord_def T strict rhs =
+  Logic.mk_equals (
+    Const (if strict then lessN else less_eqN, ordT T),
+    Const (if strict then @{const_name lt_of_comp} else @{const_name le_of_comp}, cmpT T --> ordT T) $ rhs)
+  
 fun mk_binop_def binop T rhs =
   Logic.mk_equals (Const (binop, T --> T --> @{typ bool}), rhs)
 
 fun comparator_tac ctxt tname =
   let val (_, c_thm, _) = dest_comp ctxt tname
   in (rtac c_thm THEN_ALL_NEW rtac @{thm comparator_compare}) 1 end
+
+fun comparator_tac_comparator_of ctxt tname i =
+  let val (_, c_thm, _) = dest_comp ctxt tname
+  in (rtac c_thm THEN_ALL_NEW rtac @{thm comparator_of}) i end
 
 fun compare_instance gen_type tname thy =
   let
@@ -79,6 +98,52 @@ fun compare_instance gen_type tname thy =
       THEN unfold_tac ctxt [cmp_thm]
       THEN comparator_tac ctxt tname) lthy
   end
+  
+fun linorder_instance gen_type tname thy =
+  let
+    val _ = is_class_instance thy tname linordS
+      andalso error ("type " ^ quote tname ^ " is already an instance of class \"linorder\"")
+    val _ = writeln ("deriving \"linorder\" instance for type " ^ quote tname)
+    val thy = Named_Target.theory_map (Comparator_Generator.ensure_info gen_type tname) thy
+    val {used_positions = us, ...} = the (Comparator_Generator.get_info 
+        (Named_Target.theory_init thy) tname) 
+
+    val (_, xs) = typ_and_vs_of_used_typname tname us linordS
+    val ((less_thm, (less_eq_thm, lthy))) =
+      Class.instantiation ([tname], xs, linordS) thy
+      |> (fn ctxt =>
+        let
+          val (c, _, Ts) = dest_comp ctxt tname
+          val typ_mapping = all_tys c (map TFree xs)
+          val cmp = mk_cmp_rhs_comparator_of c Ts
+          val less_def = mk_ord_def dummyT true cmp |> typ_mapping |> infer_type ctxt
+          val less_eq_def = mk_ord_def dummyT false cmp |> typ_mapping
+          val base_name = Long_Name.base_name tname
+        in
+          (ctxt 
+          |> Generator_Aux.define_overloaded_generic
+            ((Binding.name ("less_" ^ base_name ^ "_def"), @{attributes [code]}), less_def)            
+          ||> Generator_Aux.define_overloaded_generic
+            ((Binding.name ("less_eq_" ^ base_name ^ "_def"), @{attributes [code]}), less_eq_def))
+
+        end)
+    fun linear_tac ctxt i = 
+      rtac (nth @{thms linorder_axiomsD} (i - 1)) i
+      THEN rtac @{thm comparator.linorder} i
+      THEN comparator_tac_comparator_of ctxt tname i
+  in
+    Class.prove_instantiation_exit ( fn ctxt => 
+      Class.intro_classes_tac ctxt []
+      THEN unfold_tac ctxt [less_thm, less_eq_thm]
+      THEN linear_tac ctxt 5
+      THEN linear_tac ctxt 4
+      THEN linear_tac ctxt 3
+      THEN linear_tac ctxt 2
+      THEN linear_tac ctxt 1
+      THEN auto_tac ctxt 
+    ) lthy
+  end
+
 
 fun compare_instance_param tname param =  
   let
@@ -86,6 +151,13 @@ fun compare_instance_param tname param =
       else if param = "linorder" then Comparator_Generator.Linorder
       else error "unknown parameter for compare instance"
   in compare_instance gen_type tname end
+
+fun linorder_instance_param tname param =  
+  let
+    val gen_type = if param = "" then Comparator_Generator.BNF
+      else if param = "linorder" then Comparator_Generator.Linorder
+      else error "unknown parameter for compare instance"
+  in linorder_instance gen_type tname end
 
 
 (*if "tname" not yet instance of "compare", instantiate*)
@@ -156,6 +228,10 @@ val _ =
     #> Derive_Manager.register_derive 
       "compare_order" 
       "register types in class compare_order, options: (linorder) or ()" 
-      compare_order_instance)
+      compare_order_instance
+    #> Derive_Manager.register_derive 
+      "linorder" 
+      "register types in class linorder, options: (linorder) or ()" 
+      linorder_instance_param)
 
 end
