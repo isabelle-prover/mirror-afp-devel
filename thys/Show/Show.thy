@@ -125,6 +125,11 @@ lemma show_law_list [show_law_intros]:
   "(\<And>x. x \<in> set xs \<Longrightarrow> show_law s x) \<Longrightarrow> show_law (showsp_list s) xs"
   by (simp add: show_law_def showsp_list_code show_law_simps)
 
+lemma showsp_list_append [show_law_simps]:
+  "(\<And>p y z. \<forall>x \<in> set xs. s p x (y @ z) = s p x y @ z) \<Longrightarrow>
+    showsp_list s p xs (y @ z) = showsp_list s p xs y @ z"
+  by (simp add: show_law_simps showsp_list_def pshowsp_list_def)
+
 
 subsection \<open>Show-Functions for Characters and Strings\<close>
 
@@ -170,7 +175,15 @@ local_setup {*
     @{term "map"} (SOME @{thm list.map_comp}) [true] @{thm show_law_list}
 *}
 
-derive "show" list
+instantiation list :: ("show") "show"
+begin
+
+definition "shows_prec (p :: nat) (xs :: 'a list) = shows_list xs"
+definition "shows_list (xss :: 'a list list) = showsp_list shows_prec 0 xss"
+
+instance by (default) (simp_all add: show_law_simps shows_prec_list_def shows_list_list_def)
+
+end
 
 definition shows_lines :: "'a::show list \<Rightarrow> shows"
 where
@@ -195,6 +208,11 @@ lemma shows_many_append [show_law_simps]:
 lemma shows_words_append [show_law_simps]:
   "shows_words xs (r @ s) = shows_words xs r @ s"
   by (simp add: shows_words_def show_law_simps)
+
+lemma shows_foldr_append [show_law_simps]:
+  assumes "\<And>r s. \<forall>x \<in> set xs. showx x (r @ s) = showx x r @ s"
+  shows "foldr showx xs (r @ s) = foldr showx xs r @ s"
+  using assms by (induct xs) (simp_all)
 
 lemma shows_sep_cong [fundef_cong]:
   assumes "xs = ys" and "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x"

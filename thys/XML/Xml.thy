@@ -43,11 +43,11 @@ begin
 
 definition shows_attr :: "string \<times> string \<Rightarrow> shows"
 where
-  "shows_attr av = (shows (fst av) +@+ ''='' +#+ shows_string (CHR ''\"'' # snd av @ ''\"''))"
+  "shows_attr av = shows (fst av) o shows_string (''=\"'' @ snd av @ ''\"'')"
 
-definition shows_attrs :: "(string\<times>string)list \<Rightarrow> shows"
+definition shows_attrs :: "(string \<times> string) list \<Rightarrow> shows"
 where
-  "shows_attrs as = shows_map (\<lambda>a. '' '' +#+ shows_attr a) as"
+  "shows_attrs as = foldr (\<lambda>a. '' '' +#+ shows_attr a) as"
 
 fun shows_XML_indent :: "string \<Rightarrow> nat \<Rightarrow> xml \<Rightarrow> shows"
 where
@@ -56,33 +56,31 @@ where
       (if c = [] then shows_string ''/>''
       else (
         ''>'' +#+
-          shows_map (shows_XML_indent (replicate i (CHR '' '') @ ind) i) c +@+ ''\<newline>'' +#+ ind +#+
+          foldr (shows_XML_indent (replicate i (CHR '' '') @ ind) i) c +@+ ''\<newline>'' +#+ ind +#+
         ''</'' +#+ shows n +@+ shows_string ''>'')))" |
   "shows_XML_indent ind i (XML_text t) = shows_string t"
 
 definition "shows_prec (d::nat) xml = shows_XML_indent '''' 2 xml"
 
-lemma shows_attr_assoc:
-  "(s +#+ shows_attr av) r @ t = (s +#+ shows_attr av) (r @ t)"
-  unfolding shows_attr_def by (cases av) (auto simp: show_defs o_def)
+definition "shows_list (xs :: xml list) = showsp_list shows_prec 0 xs"
 
-lemma shows_attr_assoc_elt:
-  "\<forall>av\<in>set avs. (s +#+ shows_attr av) r @ t = (s +#+ shows_attr av) (r @ t)"
-  using shows_attr_assoc by best
+lemma shows_attr_append:
+  "(s +#+ shows_attr av) (r @ t) = (s +#+ shows_attr av) r @ t"
+  unfolding shows_attr_def by (cases av) (auto simp: show_law_simps)
 
-lemma shows_attrs_assoc:
-  "shows_attrs as r @ s = shows_attrs as (r @ s)"
-  unfolding shows_attrs_def shows_map_assoc [OF shows_attr_assoc_elt [of as "'' ''"]] by simp
+lemma shows_attrs_append [show_law_simps]:
+  "shows_attrs as (r @ s) = shows_attrs as r @ s"
+  using shows_attr_append by (induct as) (simp_all add: shows_attrs_def)
 
-lemma assoc_xml':
-  "shows_XML_indent ind i xml r @ s = shows_XML_indent ind i xml (r @ s)"
-  by (induct xml arbitrary: ind r s) (auto simp: shows_attrs_assoc)
+lemma append_xml':
+  "shows_XML_indent ind i xml (r @ s) = shows_XML_indent ind i xml r @ s"
+  by (induct xml arbitrary: ind r s) (auto simp: show_law_simps)
 
-lemma assoc_xml:
-  "shows_prec d (xml::xml) r @ s = shows_prec d xml (r @ s)"
-  unfolding shows_prec_xml_def by (rule assoc_xml')
+lemma shows_prec_xml_append [show_law_simps]:
+  "shows_prec d (xml::xml) (r @ s) = shows_prec d xml r @ s"
+  unfolding shows_prec_xml_def by (rule append_xml')
 
-standard_shows_list assoc_xml
+instance by (default) (simp_all add: show_law_simps shows_list_xml_def)
 
 end
 
@@ -91,15 +89,16 @@ begin
 
 fun shows_xmldoc
 where
-  "shows_xmldoc (XMLDOC h x) = (shows_lines h +@+ shows_nl +@+ shows x)"
+  "shows_xmldoc (XMLDOC h x) = shows_lines h o shows_nl o shows x"
 
 definition "shows_prec (d::nat) doc = shows_xmldoc doc"
+definition "shows_list (xs :: xmldoc list) = showsp_list shows_prec 0 xs"
 
-lemma assoc_xmldoc:
-  "shows_prec d (x::xmldoc) r @ s = shows_prec d x (r @ s)"
-  by (cases x) (auto simp: shows_prec_xmldoc_def)
+lemma shows_prec_xmldoc_append [show_law_simps]:
+  "shows_prec d (x::xmldoc) (r @ s) = shows_prec d x r @ s"
+  by (cases x) (auto simp: shows_prec_xmldoc_def show_law_simps)
 
-standard_shows_list assoc_xmldoc
+instance by (default) (simp_all add: show_law_simps shows_list_xmldoc_def)
 
 end
 
@@ -494,7 +493,9 @@ lemma oneof_closed:
   "oneof [''/>'', ''>''] = oneof_closed" (is "?l = ?r")
 proof (rule ext)
   fix xs
-  have id: "''one of '' @ shows_list [''/>'',''>''] [] = ''one of [/>, >]''" by eval
+  have id: "''one of '' @ shows_list [''/>'', ''>''] [] = ''one of [/>, >]''"
+    by (simp add: shows_list_list_def showsp_list_def pshowsp_list_def shows_list_gen_def
+                  shows_string_def shows_prec_list_def shows_list_char_def)
   note d = oneof_def oneof_aux.simps id
   show "?l xs = ?r xs"
   proof (cases xs)
