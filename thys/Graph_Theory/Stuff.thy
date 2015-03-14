@@ -4,7 +4,7 @@
 
 theory Stuff
 imports
-  "~~/src/HOL/Main"
+  Main
   "~~/src/HOL/Library/Extended_Real"
 
 begin
