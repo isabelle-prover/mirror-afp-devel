@@ -2,7 +2,7 @@ theory Girth_Chromatic
 imports
   Ugraphs
   Girth_Chromatic_Misc
-  "~~/src/HOL/Probability/Probability"
+  Probability
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 

@@ -1,6 +1,6 @@
 theory Girth_Chromatic_Misc
 imports
-  "~~/src/HOL/Main"
+  Main
   "~~/src/HOL/Library/Extended_Real"
 begin
 

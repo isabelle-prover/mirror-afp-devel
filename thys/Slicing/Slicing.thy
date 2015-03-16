@@ -7,7 +7,7 @@ imports
   "StaticIntra/CDepInstantiations"
   "StaticIntra/ControlDependenceRelations"
   "While/DynamicControlDependences"
-  "While/NonInterferenceWhile"
+  "While/StaticControlDependences"
   "JinjaVM/JVMControlDependences" 
   "JinjaVM/SemanticsWF"
 begin
