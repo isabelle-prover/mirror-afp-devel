@@ -382,8 +382,9 @@ lemma taylor_up_within:
     ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. c < t & t < b &
-    f b = (\<Sum>m<n. (diff m c / real (fact m)) * (b - c)^m)+
-      (diff n t / real (fact n)) * (b - c)^n" (is "?taylor f diff")
+             f b = (\<Sum>m<n. (diff m c / (fact m)) * (b - c)^m) + 
+                   (diff n t / (fact n)) * (b - c)^n" 
+               (is "?taylor f diff")
 proof -
   from exists_linear_continuation[of a b, OF DERIV]
   have "\<forall>m. \<exists>d'. m < n \<longrightarrow>
@@ -404,13 +405,13 @@ lemma taylor_up_within_vector:
     ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. (\<forall>i\<in>Basis::'a set. c < t i & t i < b) \<and>
-    f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R real (fact m))) {..<n} +
-      setsum (\<lambda>x. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R real (fact n)) \<bullet> x) *\<^sub>R x) Basis"
+    f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R (fact m))) {..<n} +
+      setsum (\<lambda>x. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R (fact n)) \<bullet> x) *\<^sub>R x) Basis"
 proof -
   obtain t where t: "\<forall>i\<in>Basis::'a set. t i > c \<and> t i < b \<and>
     f b \<bullet> i =
-      (\<Sum>m<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
-      diff n (t i) \<bullet> i / real (fact n) * (b - c) ^ n"
+      (\<Sum>m<n. diff m c \<bullet> i / (fact m) * (b - c) ^ m) +
+      diff n (t i) \<bullet> i / (fact n) * (b - c) ^ n"
   proof (atomize_elim, rule bchoice, safe)
     fix i::'a
     assume "i \<in> Basis"
@@ -420,13 +421,13 @@ proof -
       using DERIV by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def)
     from taylor_up_within[OF INIT(1) DERIV_0 DERIV_Suc INTERV]
     show "\<exists>t>c. t < b \<and> f b \<bullet> i =
-      (\<Sum>m<n. diff m c \<bullet> i / real (fact m) * (b - c) ^ m) +
-      diff n t \<bullet> i / real (fact n) * (b - c) ^ n" by simp
+      (\<Sum>m<n. diff m c \<bullet> i / (fact m) * (b - c) ^ m) +
+      diff n t \<bullet> i / (fact n) * (b - c) ^ n" by simp
   qed
   have "f b = (\<Sum>i\<in>Basis. (f b \<bullet> i) *\<^sub>R i)" by (rule euclidean_representation[symmetric])
   also have "\<dots> =
-      (\<Sum>i\<in>Basis. ((\<Sum>m<n. (b - c) ^ m *\<^sub>R (diff m c /\<^sub>R real (fact m))) \<bullet> i) *\<^sub>R i) +
-      (\<Sum>x\<in>Basis. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R real (fact n)) \<bullet> x) *\<^sub>R x)"
+      (\<Sum>i\<in>Basis. ((\<Sum>m<n. (b - c) ^ m *\<^sub>R (diff m c /\<^sub>R (fact m))) \<bullet> i) *\<^sub>R i) +
+      (\<Sum>x\<in>Basis. (((b - c) ^ n *\<^sub>R diff n (t x) /\<^sub>R (fact n)) \<bullet> x) *\<^sub>R x)"
     using t by (simp add: setsum.distrib inner_setsum_left inverse_eq_divide algebra_simps)
   finally show ?thesis using t by (auto simp: euclidean_representation)
 qed

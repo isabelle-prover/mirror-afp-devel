@@ -16,13 +16,16 @@ text{*@{text exp_positive} is the theorem @{thm Transcendental.exp_ge_zero}*}
 text{*@{text exp_lower_taylor_1} is the theorem @{thm Transcendental.exp_ge_add_one_self} *}
 
 text{*All even approximants are lower bounds.*}
-lemma exp_lower_taylor_even: "even n \<Longrightarrow> (\<Sum>m<n. (x ^ m) / real (fact m)) \<le> exp x"
+lemma exp_lower_taylor_even: 
+  fixes x::real
+  shows "even n \<Longrightarrow> (\<Sum>m<n. (x ^ m) / (fact m)) \<le> exp x"
   using Maclaurin_exp_le [of x n]
   by (auto simp add: zero_le_even_power)
 
 lemma exp_upper_taylor_even:
+  fixes x::real
   assumes n: "even n"
-      and pos: "(\<Sum>m<n. ((-x) ^ m) / real (fact m)) > 0"  (is "?sum > 0")
+      and pos: "(\<Sum>m<n. ((-x) ^ m) / (fact m)) > 0"  (is "?sum > 0")
     shows "exp x \<le> inverse ?sum"
   using exp_lower_taylor_even [OF n, of "-x"]
   by (metis exp_minus inverse_inverse_eq le_imp_inverse_le pos)
@@ -51,7 +54,7 @@ lemma exp_lower_taylor_2:
   shows "1 + x + (1/2)*x^2 + (1/6)*x^3 \<le> exp x"
 proof -
   have "even (4::nat)" by simp
-  then have "(\<Sum>m<4. x ^ m / real (fact m)) \<le> exp x"
+  then have "(\<Sum>m<4. x ^ m / (fact m)) \<le> exp x"
     by (rule exp_lower_taylor_even)
   then show ?thesis by (auto simp add: numeral_eq_Suc)
 qed
