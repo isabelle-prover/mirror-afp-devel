@@ -28,7 +28,7 @@ section {* Comparison of Matrices *}
 theory Matrix_Comparison
 imports 
   "../Abstract-Rewriting/SN_Orders"
-  Fact
+  Binomial
   Matrix_Arith
 begin
 
@@ -949,10 +949,8 @@ proof -
     from main[rule_format, OF _ _ _ _ j i]
     have ge: "?n (fact (i - j)) * ((?n n * a) ^ (i - j)) \<ge> mat_pow d m n ! i ! j" ..
     have na: "?n n * a \<ge> 0" by (rule mult_ge_zero[OF _ a0], auto)
-    have fact: "fact ?d \<ge> fact ?ij"
-      by (rule fact_mono_nat[OF ijd])
-    have nfact: "?n (fact ?d) \<ge> ?n (fact ?ij)" 
-      by (rule of_nat_mono[OF fact])
+    have nfact: "?n (fact ?d) \<ge> ?n (fact ?ij)"
+      using fact_mono_nat ijd by blast 
     have "?n n ^ ?d * c = ?n n ^ ?d * (?n (fact ?d) * a ^ ?d)"
       unfolding c by auto
     also have "... = ?n (fact ?d) * ((?n n) ^ ?d * a ^ ?d)" by (auto simp: field_simps)
