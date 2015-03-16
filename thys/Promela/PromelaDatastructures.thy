@@ -1125,17 +1125,7 @@ begin
 end
 
 (* Other instantiations for types from Main *)
-instantiation iarray :: (linorder) linorder
-begin
-  definition [simp]: "less_eq_iarray (a :: 'a iarray) (b :: 'a iarray) \<longleftrightarrow> IArray.list_of a \<le> IArray.list_of b"
-  definition [simp]: "less_iarray (a :: 'a iarray) (b :: 'a iarray) \<longleftrightarrow> IArray.list_of a < IArray.list_of b"
-
-  instance 
-    apply default 
-    apply auto
-    apply (metis iarray.exhaust list_of.simps)
-    done
-end
+derive linorder iarray
 
 text {* Instead of operating on the list representation of an @{const IArray}, we walk it directly,
 using the indices. *}
@@ -1234,7 +1224,7 @@ end
 
 (*subsection {* Ours *}*)
 
-derive compare_order varType variable channel
+derive linorder varType channel variable
 
 instantiation varType :: hashable
 begin
