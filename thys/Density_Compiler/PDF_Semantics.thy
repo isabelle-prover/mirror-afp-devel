@@ -186,13 +186,13 @@ proof (rule measurable measurable_subprob_algebra_density)+
     by (auto simp: image_iff intro!: bexI[of _ "int x" for x])
 
   { assume "0 < r"
-    then have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / real (fact (nat x))) \<partial>count_space UNIV)
+    then have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV)
       = (\<integral>\<^sup>+ x. ereal (pmf (poisson_pmf r) (nat x)) \<partial>count_space {0 ..})"
       by (auto intro!: nn_integral_cong simp add: nn_integral_count_space_indicator split: split_indicator)
     also have "\<dots> = 1"
       using measure_pmf.emeasure_space_1[of "poisson_pmf r"]
       by (subst nn_integral_pmf') (auto simp: inj_on_def)
-    finally have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / real (fact (nat x))) \<partial>count_space UNIV) = 1"
+    finally have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV) = 1"
       . }
   then show "integral\<^sup>N INTEG (poisson_density' r \<circ> extract_int) \<le> 1"
     by (cases "0 < r")
@@ -588,7 +588,7 @@ fun op_sem :: "pdf_operator \<Rightarrow> val \<Rightarrow> val" where
                       | REAL \<Rightarrow>  (\<lambda> BoolVal b \<Rightarrow> RealVal (bool_to_real b)
                                   | IntVal i \<Rightarrow> RealVal (real i)))"
 | "op_sem Inverse = lift_RealVal inverse"
-| "op_sem Fact = lift_IntVal fact"
+| "op_sem Fact = lift_IntVal (\<lambda>i::int. fact (nat i))"
 | "op_sem Sqrt = lift_RealVal safe_sqrt"
 | "op_sem Exp = lift_RealVal exp"
 | "op_sem Ln = lift_RealVal safe_ln"

@@ -446,7 +446,7 @@ text {* Mean number of k-cycles in a graph. (Or rather of paths describing a cir
 lemma (in edge_space) mean_k_cycles:
   assumes "3 \<le> k" "k < n"
   shows "(\<integral>es. card {c \<in> ucycles (edge_ugraph es). uwalk_length c = k} \<partial> P)
-    = (fact n div fact (n - k)) * p ^ k"
+    = of_nat (fact n div fact (n - k)) * p ^ k"
 proof -
   let ?k_cycle = "\<lambda>es c k. c \<in> ucycles (edge_ugraph es) \<and> uwalk_length c = k"
   def C \<equiv> "\<lambda>k. {c. ?k_cycle S_edges c k}"
@@ -486,7 +486,7 @@ proof -
       by (auto simp: uwalk_length_def C_def ucycles_distinct_edges intro: distinct_card)
     then show ?thesis by (auto simp: C_def ucycles_def uwalks_def cylinder_prob)
   qed
-  also have "\<dots> = (fact n div fact (n - k)) * p ^ k"
+  also have "\<dots> = of_nat (fact n div fact (n - k)) * p ^ k"
   proof -
     have inj_last_Cons: "\<And>A. inj_on (\<lambda>es. last es # es) A" by (rule inj_onI) simp
     { fix xs A assume "3 \<le> length xs - Suc 0" "hd xs = last xs"
@@ -585,11 +585,11 @@ proof -
       have "mean_short_count = (\<Sum>i=3..k. \<integral>es. card {c \<in> ucycles (?ug n es). uwalk_length c = i} \<partial> pG.P)"
         unfolding mean_short_count_def short_count_conv
         by (subst integral_setsum) (auto intro: pG.integral_finite_singleton)
-      also have "\<dots> = (\<Sum>i\<in>{3..k}. (fact n div fact (n - i)) * p n ^ i)"
+      also have "\<dots> = (\<Sum>i\<in>{3..k}. of_nat (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"
         using A fact_div_fact_le_pow
-        by (auto intro: setsum_mono simp del: real_of_nat_power)
+        by (auto intro: setsum_mono simp: real_of_nat_def)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
         using `1 \<le> n` `0 < \<epsilon>` A
         by (intro setsum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr

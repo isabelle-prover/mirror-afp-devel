@@ -971,7 +971,7 @@ proof-
        (auto simp:
             lift_Comp_def lift_RealVal_def lift_RealIntVal_def lift_RealIntVal2_def
             bernoulli_density_def val_type_eq_REAL val_type_eq_BOOL val_type_eq_PRODUCT val_type_eq_INTEG
-            uniform_int_density_def uniform_real_density_def transfer_nat_int_factorial
+            uniform_int_density_def uniform_real_density_def 
             lift_IntVal_def poisson_density'_def one_ereal_def
             field_simps gaussian_density_def)
 qed
