@@ -44,32 +44,32 @@ subsection "Function @{text splay}"
 
 fun splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay a Leaf = Leaf" |
-"splay a (Node l c r) =
+"splay a (Node cl c cr) =
   (if a=c
-   then Node l c r
+   then Node cl c cr
    else if a < c
-        then case l of
-          Leaf \<Rightarrow> Node l c r |
-          Node ll b lr \<Rightarrow>
-            (if a=b then Node ll a (Node lr c r)
+        then case cl of
+          Leaf \<Rightarrow> Node cl c cr |
+          Node bl b br \<Rightarrow>
+            (if a=b then Node bl a (Node br c cr)
              else if a < b
-                  then if ll = Leaf then Node ll b (Node lr c r)
-                       else case splay a ll of
-                         Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r))
-                  else if lr = Leaf then Node ll b (Node lr c r)
-                       else case splay a lr of
-                         Node lrl u lrr \<Rightarrow> Node (Node ll b lrl) u (Node lrr c r))
-        else case r of
-          Leaf \<Rightarrow> Node l c r |
-          Node rl b rr \<Rightarrow>
-            (if a=b then Node (Node l c rl) a rr
+                  then if bl = Leaf then Node bl b (Node br c cr)
+                       else case splay a bl of
+                         Node al a' ar \<Rightarrow> Node al a' (Node ar b (Node br c cr))
+                  else if br = Leaf then Node bl b (Node br c cr)
+                       else case splay a br of
+                         Node al a' ar \<Rightarrow> Node (Node bl b al) a' (Node ar c cr))
+        else case cr of
+          Leaf \<Rightarrow> Node cl c cr |
+          Node bl b br \<Rightarrow>
+            (if a=b then Node (Node cl c bl) a br
              else if a < b
-                  then if rl = Leaf then Node (Node l c rl) b rr
-                       else case splay a rl of
-                         Node rll u rlr \<Rightarrow> Node (Node l c rll) u (Node rlr b rr)
-                  else if rr=Leaf then Node (Node l c rl) b rr
-                       else case splay a rr of
-                         Node rrl u rrr \<Rightarrow> Node (Node (Node l c rl) b rrl) u rrr))"
+                  then if bl = Leaf then Node (Node cl c bl) b br
+                       else case splay a bl of
+                         Node al a' ar \<Rightarrow> Node (Node cl c al) a' (Node ar b br)
+                  else if br=Leaf then Node (Node cl c bl) b br
+                       else case splay a br of
+                         Node al a' ar \<Rightarrow> Node (Node (Node cl c bl) b al) a' ar))"
 
 value "splay (5::int) (Node (Node A 5 B) 10 C)"
 value "splay (5::int) (Node (Node (Node A 5 B) 10 C) 15 D)"
@@ -478,8 +478,8 @@ subsection "Function @{text insert}"
 fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert a t =  (if t = Leaf then Node Leaf a Leaf
   else case splay a t of
-    Node l e r \<Rightarrow> if a=e then Node l e r
-      else if a<e then Node l a (Node Leaf e r) else Node (Node l e Leaf) a r)"
+    Node l a' r \<Rightarrow> if a=a' then Node l a r
+      else if a<a' then Node l a (Node Leaf a' r) else Node (Node l a' Leaf) a r)"
 
 hide_const (open) Splay_Tree.insert
 
@@ -504,7 +504,7 @@ fun splay_max :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "splay_max (Node l b (Node rl c rr)) =
   (if rr = Leaf then Node (Node l b rl) c Leaf
    else case splay_max rr of
-     Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr)"
+     Node rrl m rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) m rrr)"
 
 lemma splay_max_Leaf_iff[simp]: "(splay_max t = Leaf) = (t = Leaf)"
 apply(induction t rule: splay_max.induct)
@@ -622,10 +622,10 @@ subsection "Function @{text delete}"
 
 definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "delete a t = (if t=Leaf then Leaf
-  else case splay a t of Node l x r \<Rightarrow>
-    if x=a
+  else case splay a t of Node l a' r \<Rightarrow>
+    if a=a'
     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
-    else Node l x r)"
+    else Node l a' r)"
 
 hide_const (open) delete
 

@@ -26,20 +26,20 @@ fun get_min :: "'a tree \<Rightarrow> 'a" where
 
 fun partition :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree * 'a tree" where
 "partition p Leaf = (Leaf,Leaf)" |
-"partition p (Node l a r) =
+"partition p (Node al a ar) =
   (if a \<le> p then
-     case r of
-       Leaf \<Rightarrow> (Node l a r, Leaf) |
-       Node rl b rr \<Rightarrow>
+     case ar of
+       Leaf \<Rightarrow> (Node al a ar, Leaf) |
+       Node bl b br \<Rightarrow>
          if b \<le> p
-         then let (rrl,rrr) = partition p rr in (Node (Node l a rl) b rrl, rrr)
-         else let (rll,rlr) = partition p rl in (Node l a rll, Node rlr b rr)
-   else case l of
-       Leaf \<Rightarrow> (Leaf, Node l a r) |
-       Node ll b lr \<Rightarrow>
+         then let (pl,pr) = partition p br in (Node (Node al a bl) b pl, pr)
+         else let (pl,pr) = partition p bl in (Node al a pl, Node pr b br)
+   else case al of
+       Leaf \<Rightarrow> (Leaf, Node al a ar) |
+       Node bl b br \<Rightarrow>
          if b \<le> p
-         then let (lrl,lrr) = partition p lr in (Node ll b lrl, Node lrr a r)
-         else let (lll,llr) = partition p ll in (lll, Node llr b (Node lr a r)))" 
+         then let (pl,pr) = partition p br in (Node bl b pl, Node pr a ar)
+         else let (pl,pr) = partition p bl in (pl, Node pr b (Node br a ar)))" 
 
 definition insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert x h = (let (l,r) = partition x h in Node l x r)"
