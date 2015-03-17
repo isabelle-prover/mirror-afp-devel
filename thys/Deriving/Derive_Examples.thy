@@ -104,7 +104,25 @@ datatype ('a, 'b) complex =
   C2 "('a, 'b) complex list tree tree" 'b "('a, 'b) complex" "('a, 'b) complex2 ttree list"
 and ('a, 'b) complex2 = D1 "('a, 'b) complex ttree"
 
-derive compare_order complex complex2
+text \<open>On this last example type we illustrate the difference of the various comparator- and order-generators.
+
+  For @{type complex} we create an instance of @{class compare_order} which also defines
+  a linear order. Note however that the instance will 
+  be @{type complex} :: (@{class compare}, @{class compare}) @{class compare_order}, i.e., the 
+  argument types have to be in class @{class compare}. 
+
+  For @{type complex2} we only derive @{class compare} which is not a subclass of @{class linorder}.
+  The instance will be @{type complex2} :: (@{class compare}, @{class compare}) @{class compare}, i.e., 
+  again the argument types have to be in class @{class compare}.
+
+  To avoid the dependence on @{class compare}, we can also instruct @{text derive} to be based on 
+  @{class linorder}. Here, the command @{text "derive linorder complex2"} will create the instance
+  @{type complex2} :: (@{class linorder}, @{class linorder}) @{class linorder}, i.e., 
+  here the argument types have to be in class @{class linorder}.
+  \<close>
+derive compare_order complex 
+derive compare complex2
+derive linorder complex2
 derive countable complex complex2
 derive equality complex
 derive hashable complex complex2

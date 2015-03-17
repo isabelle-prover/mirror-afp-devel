@@ -10,7 +10,22 @@ text \<open>We provide a generator which takes the comparators of the comparator
   to synthesize suitable @{const compare}-functions from the @{class compare}-class.
 
 One can further also use these comparison functions to derive an instance of the
-@{class compare_order}-class, and therefore also for @{class linorder}.\<close>
+@{class compare_order}-class, and therefore also for @{class linorder}. In total, we provide the three
+@{text derive}-methods where the example type @{type prod} can be replaced by any other datatype.
+
+\begin{itemize}
+\item @{text "derive compare prod"} creates an instance @{type prod} :: (@{class compare}, @{class compare}) @{class compare}.
+\item @{text "derive compare_order prod"} creates an instance @{type prod} :: (@{class compare}, @{class compare}) @{class compare_order}.
+\item @{text "derive linorder prod"} creates an instance @{type prod} :: (@{class linorder}, @{class linorder}) @{class linorder}.
+\end{itemize}
+
+Usually, the use of @{text "derive linorder"} is not recommended if there are comparators available:
+Internally, the linear orders will directly be converted into comparators, so a direct use of the
+comparators will result in more efficient generated code. This command is mainly provided as a convenience method
+where comparators are not yet present. For example, at the time of writing, the Container Framework
+has partly been adapted to internally use comparators, whereas in other AFP-entries, we did not
+integrate comparators.
+\<close>
 
 lemma linorder_axiomsD: assumes "class.linorder le lt"
   shows 
