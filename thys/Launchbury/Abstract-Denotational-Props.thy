@@ -20,6 +20,18 @@ next
   case (Lam x e)
   show ?case by simp
 next
+  case (IfThenElse scrut e\<^sub>1 e\<^sub>2)
+  have [simp]: "(fv scrut \<inter> (fv scrut \<union> fv e\<^sub>1 \<union> fv e\<^sub>2)) = fv scrut" by auto
+  have [simp]: "(fv e\<^sub>1 \<inter> (fv scrut \<union> fv e\<^sub>1 \<union> fv e\<^sub>2)) = fv e\<^sub>1" by auto
+  have [simp]: "(fv e\<^sub>2 \<inter> (fv scrut \<union> fv e\<^sub>1 \<union> fv e\<^sub>2)) = fv e\<^sub>2" by auto
+  show ?case
+    apply simp
+    apply (subst (1 2) IfThenElse(1))
+    apply (subst (1 2) IfThenElse(2))
+    apply (subst (1 2) IfThenElse(3))
+    apply (simp)
+    done
+next
   case (Let as e)
 
   have "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>as\<rbrace>\<rho>\<^esub> = \<lbrakk>e\<rbrakk>\<^bsub>(\<lbrace>as\<rbrace>\<rho>) f|` (fv as \<union> fv e)\<^esub>"
@@ -36,7 +48,7 @@ next
     by (rule HSem_restr_cong) (auto simp add: lookup_env_restr_eq)
   finally
   show ?case by simp
-qed
+qed auto
 
 sublocale has_ignore_fresh_ESem ESem
   by default (rule fv_supp_exp, rule ESem_considers_fv')
@@ -125,12 +137,17 @@ case (Lam var exp x y \<rho>)
     by (rule Lam)
   thus ?case using Lam(1,2) by simp
 next
+case IfThenElse
+  from IfThenElse(1)[OF IfThenElse(4)] IfThenElse(2)[OF IfThenElse(4)] IfThenElse(3)[OF IfThenElse(4)]
+  show ?case
+    by simp
+next
 case Nil thus ?case by auto
 next
 case Cons
   from Cons(1,2)[OF Cons(3)] Cons(3)
   show ?case by auto
-qed
+qed auto
 
 lemma ESem_subst:
   assumes "x \<noteq> y"

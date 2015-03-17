@@ -1,5 +1,5 @@
 theory "AList-Utils-HOLCF"
-imports "HOLCF-Utils" "HOLCF-Join-Classes" "AList-Utils"
+imports "../Launchbury/HOLCF-Utils" "../Launchbury/HOLCF-Join-Classes" "../Launchbury/AList-Utils"
 begin
 
 syntax

@@ -1,5 +1,5 @@
 theory C
-imports HOLCF "Mono-Nat-Fun"
+imports "~~/src/HOL/HOLCF/HOLCF" "Mono-Nat-Fun"
 begin
 
 default_sort cpo
@@ -113,5 +113,6 @@ lemma Cpred_below: "Cpred\<cdot>r \<sqsubseteq> r"
 lemma C_Cpred_id[simp]:
   "r \<noteq> \<bottom> \<Longrightarrow> C\<cdot>(Cpred\<cdot>r) = r"
   by (cases r) auto
+
 
 end

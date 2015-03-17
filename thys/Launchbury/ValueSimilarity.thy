@@ -33,10 +33,10 @@ notation CValue'_take ("\<psi>\<^sup>A\<^bsub>_\<^esub>")
 subsubsection {* A note about section 2.3 *}
 
 text {*
-Section 2.3 of  \cite{functionspaces} contains equations (2) and (3) which do not hold in general. We demonstrate that fact here
-using our corresponding definition, but the counter-example carry over to the original forumlation.
-Lemma (2) is a generalisation of (3) to the resourced semantics, so the counter-example for
-(3) is the simpler and more educating:
+Section 2.3 of  \cite{functionspaces} contains equations (2) and (3) which do not hold in general.
+We demonstrate that fact here using our corresponding definition, but the counter-example carries
+over to the original formulation. Lemma (2) is a generalisation of (3) to the resourced semantics,
+so the counter-example for (3) is the simpler and more educating:
 *}
 
 lemma counter_example:
@@ -63,7 +63,7 @@ the left hand side):
 
 lemma "Abramsky 4,3,5 (1)":
   "\<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>(d \<down>Fn \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>d') = \<psi>\<^sup>D\<^bsub>Suc n\<^esub>\<cdot>d \<down>Fn \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>d'"
-  by (cases d)(auto simp add: Value.take_take)
+  by (cases d) (auto simp add: Value.take_take)
 
 text {*
 The problematic equations are used in the proof of the only-if direction of proposition 9 in
@@ -79,9 +79,14 @@ lemma value_CValue_cases:
   obtains
   "x = \<bottom>" "y = \<bottom>" |
   f where "x = Fn\<cdot>f" "y = \<bottom>" |
-  g where "x = \<bottom>" "y = CFn \<cdot> g" |
-  f g where "x = Fn\<cdot>f" "y = CFn \<cdot> g"
-by (metis CValue'.exhaust Value.exhaust)
+  g where "x = \<bottom>" "y = CFn\<cdot>g" |
+  f g where "x = Fn\<cdot>f" "y = CFn \<cdot> g" |
+  b\<^sub>1 where "x = B\<cdot>(Discr b\<^sub>1)" "y = \<bottom>" |
+  b\<^sub>1 g where "x = B\<cdot>(Discr b\<^sub>1)" "y = CFn\<cdot>g" |
+  b\<^sub>1 b\<^sub>2 where "x = B\<cdot>(Discr b\<^sub>1)" "y = CB\<cdot>(Discr b\<^sub>2)" |
+  f b\<^sub>2 where "x = Fn\<cdot>f" "y = CB\<cdot>(Discr b\<^sub>2)" |
+  b\<^sub>2 where "x = \<bottom>" "y = CB\<cdot>(Discr b\<^sub>2)"
+  by (metis CValue'.exhaust Discr_undiscr Value.exhaust)
 
 lemma Value_CValue_take_induct:
   assumes "adm (split P)"
@@ -111,15 +116,17 @@ text {* The inductive case *}
 
 inductive similar'_step :: "(Value \<Rightarrow> CValue' \<Rightarrow> bool) \<Rightarrow> Value \<Rightarrow> CValue' \<Rightarrow> bool" for s where
   bot_similar'_step[intro!]: "similar'_step s \<bottom> \<bottom>" |
+  bool_similar'_step[intro]: "similar'_step s (B\<cdot>b) (CB\<cdot>b)" |
   Fun_similar'_step[intro]: "(\<And> x y . s x (y\<cdot>C\<^sup>\<infinity>) \<Longrightarrow> s (f\<cdot>x) (g\<cdot>y\<cdot>C\<^sup>\<infinity>)) \<Longrightarrow> similar'_step s (Fn\<cdot>f) (CFn\<cdot>g)"
 
 inductive_cases [elim!]:
    "similar'_step s x \<bottom>"
    "similar'_step s \<bottom> y"
+   "similar'_step s (B\<cdot>f) (CB\<cdot>g)"
    "similar'_step s (Fn\<cdot>f) (CFn\<cdot>g)"
 
 text {*
-We know create the restricted similarity relation, by primitive recursion over @{term n}.
+We now create the restricted similarity relation, by primitive recursion over @{term n}.
 
 This cannot be done using an inductive definition, as it would not be monotone.
  *}
@@ -155,6 +162,15 @@ lemma similar'_bot[elim_format, elim!]:
     "y \<triangleleft>\<triangleright>\<^bsub>n\<^esub> \<bottom> \<Longrightarrow> y = \<bottom>"
 by (metis bot_or_not_bot')+
 
+lemma similar'_typed[simp]:
+  "\<not> B\<cdot>b \<triangleleft>\<triangleright>\<^bsub>n\<^esub> CFn\<cdot>g"
+  "\<not> Fn\<cdot>f \<triangleleft>\<triangleright>\<^bsub>n\<^esub> CB\<cdot>b"
+  by (cases n, auto simp add: similar'.simps elim: similar'_base.cases similar'_step.cases)+
+
+lemma similar'_bool[simp]:
+  "B\<cdot>b\<^sub>1 \<triangleleft>\<triangleright>\<^bsub>Suc n\<^esub> CB\<cdot>b\<^sub>2 \<longleftrightarrow> b\<^sub>1 = b\<^sub>2"
+  by (auto simp add: similar'.simps elim: similar'_base.cases similar'_step.cases)
+
 subsubsection {* Moving up and down the similarity relations *}
 
 text {*
@@ -166,11 +182,11 @@ lemma similar'_down: "d \<triangleleft>\<triangleright>\<^bsub>Suc n\<^esub> e \
 proof (induction n arbitrary: d e)
   case (Suc n) case 1 with  Suc
   show ?case
-  by (cases d e rule:value_CValue_cases) auto
+    by (cases d e rule:value_CValue_cases) auto
 next
   case (Suc n) case 2 with Suc
   show ?case
-  by (cases d e rule:value_CValue_cases) auto
+    by (cases d e rule:value_CValue_cases) auto
 qed auto
 
 text {*
@@ -201,9 +217,9 @@ holds for the limit of a chain, given that it holds for all elements.
 lemma similar'_base_adm: "adm (\<lambda> x. similar'_base (fst x) (snd x))"
 proof (rule admI)
   case (goal1 Y)
-  from goal1 have "Y = (\<lambda> _ . \<bottom>)" by (metis PairE fst_eqD inst_prod_pcpo case_prod_beta similar'_base.simps snd_eqD)
+  from goal1 have "Y = (\<lambda> _ . \<bottom>)" by (metis PairE fst_eqD inst_prod_pcpo similar'_base.simps snd_eqD)
   thus ?case by auto
-qed  
+qed
 
 lemma similar'_step_adm:
   assumes "adm (\<lambda> x. s (fst x) (snd x))"
@@ -213,20 +229,35 @@ proof (rule admI)
   from `chain Y`
   have "chain (\<lambda> i. fst (Y i))" by (rule ch2ch_fst)
   thus ?case
-  proof(rule Value_chainE)
-    assume "(\<lambda>i. fst (Y i)) = (\<lambda> _ . \<bottom>)"
+  proof(cases rule: Value_chainE)
+  case bot
     hence *: "\<And> i. fst (Y i) = \<bottom>" by metis
     with goal1(2)[unfolded split_beta]
     have "\<And> i. snd (Y i) = \<bottom>" by auto
     hence "Y = (\<lambda> i. (\<bottom>, \<bottom>))" using * by (metis surjective_pairing)
     thus ?thesis by auto
   next
+  case (B n b)
+    hence "\<forall> i. fst (Y (i + n)) = B\<cdot>b" by (metis add.commute not_add_less1)
+    with goal1(2)
+    have "\<forall>i. Y (i + n) = (B\<cdot>b, CB\<cdot>b)"
+      apply auto
+      apply (erule_tac x = "i + n" in allE)
+      apply (erule_tac x = "i" in allE)
+      apply (erule similar'_step.cases)
+      apply auto
+      by (metis fst_conv old.prod.exhaust snd_conv)
+    hence "similar'_step s (fst (\<Squnion> i. Y (i + n))) (snd (\<Squnion> i. Y (i + n)))" by auto
+    thus ?thesis
+      by (simp add: lub_range_shift[OF `chain Y`])
+  next
     fix n
     fix Y'
     assume "chain Y'" and "(\<lambda>i. fst (Y i)) = (\<lambda> m. (if m < n then \<bottom> else Fn\<cdot>(Y' (m-n))))"
     hence Y': "\<And> i. fst (Y (i+n)) = Fn\<cdot>(Y' i)" by (metis add_diff_cancel_right' not_add_less2)
     with goal1(2)[unfolded split_beta]
-    have "\<And> i. \<exists> g'. snd (Y (i+n)) = CFn\<cdot>g'"  by (metis CValue'.con_rews Value.con_rews similar'_step.simps)
+    have "\<And> i. \<exists> g'. snd (Y (i+n)) = CFn\<cdot>g'"
+      by -(erule_tac x = "i + n" in allE, auto elim!: similar'_step.cases)
     then obtain Y'' where Y'': "\<And> i. snd (Y (i+n)) = CFn\<cdot>(Y'' i)" by metis
     from goal1(1) have "\<And>i. Y i \<sqsubseteq> Y (Suc i)"
       by (simp add: po_class.chain_def)
@@ -234,11 +265,12 @@ proof (rule admI)
       by simp
     have "chain Y''"
       apply (rule chainI)
-      apply (rule iffD1[OF CValue'.inverts])
+      apply (rule iffD1[OF CValue'.inverts(1)])
       apply (subst (1 2) Y''[symmetric])
       apply (rule snd_monofun)
       apply (rule *)
       done
+
     have "similar'_step s (Fn\<cdot>(\<Squnion> i. (Y' i))) (CFn \<cdot> (\<Squnion> i. Y'' i))"
     proof (rule Fun_similar'_step)
       fix x y
@@ -266,6 +298,7 @@ proof (rule admI)
   qed
 qed
 
+
 lemma similar'_adm: "adm (\<lambda>x. fst x \<triangleleft>\<triangleright>\<^bsub>n\<^esub> snd x)"
   by (induct n) (auto simp add: similar'.simps intro: similar'_base_adm similar'_step_adm)
 
@@ -290,21 +323,36 @@ lemma similarE:
   unfolding similar_def by blast
 
 lemma similar_bot[simp]: "\<bottom> \<triangleleft>\<triangleright> \<bottom>" by (auto intro: similarI)
+
+lemma similar_bool[simp]: "B\<cdot>b \<triangleleft>\<triangleright> CB\<cdot>b"
+  by (rule similarI, case_tac n, auto)
  
 lemma [elim_format, elim!]: "x \<triangleleft>\<triangleright> \<bottom> \<Longrightarrow> x = \<bottom>"
   unfolding similar_def
   apply (cases x)
   apply auto
-  apply (erule_tac x = "Suc 0" in allE)
+  apply (erule_tac x = "Suc 0" in allE, auto)+
+  done
+
+lemma [elim_format, elim!]: "x \<triangleleft>\<triangleright> CB\<cdot>b \<Longrightarrow> x = B\<cdot>b"
+  unfolding similar_def
+  apply (cases x)
   apply auto
+  apply (erule_tac x = "Suc 0" in allE, auto)+
   done
 
 lemma [elim_format, elim!]: "\<bottom> \<triangleleft>\<triangleright> y \<Longrightarrow> y = \<bottom>"
   unfolding similar_def
   apply (cases y)
   apply auto
-  apply (erule_tac x = "Suc 0" in allE)
+  apply (erule_tac x = "Suc 0" in allE, auto)+
+  done
+
+lemma [elim_format, elim!]: "B\<cdot>b \<triangleleft>\<triangleright> y \<Longrightarrow> y = CB\<cdot>b"
+  unfolding similar_def
+  apply (cases y)
   apply auto
+  apply (erule_tac x = "Suc 0" in allE, auto)+
   done
 
 lemma take_similar'_similar:
@@ -326,12 +374,17 @@ lemma bot_or_not_bot:
   "x \<triangleleft>\<triangleright> y \<Longrightarrow> (x = \<bottom> \<longleftrightarrow> y = \<bottom>)"
   by (cases x y rule:value_CValue_cases) auto
 
-lemma slimilar_bot_cases[consumes 1, case_names bot Fn]:
+lemma bool_or_not_bool:
+  "x \<triangleleft>\<triangleright> y \<Longrightarrow> (x = B\<cdot>b) \<longleftrightarrow> (y = CB\<cdot>b)"
+  by (cases x y rule:value_CValue_cases) auto
+
+lemma slimilar_bot_cases[consumes 1, case_names bot bool Fn]:
   assumes "x \<triangleleft>\<triangleright> y"
   obtains "x = \<bottom>" "y = \<bottom>" |
+  b where "x = B\<cdot>(Discr b)" "y = CB\<cdot>(Discr b)" |
   f g where "x = Fn\<cdot>f" "y = CFn \<cdot> g"
 using assms
-by (metis bot_or_not_bot CValue'.exhaust Value.exhaust)
+by (metis CValue'.exhaust Value.exhaust bool_or_not_bool bot_or_not_bot discr.exhaust)
 
 lemma similar_adm: "adm (\<lambda>x. fst x \<triangleleft>\<triangleright> snd x)"
   unfolding similar_def
@@ -346,13 +399,15 @@ relating $|bot$ with $|bot$ and functions with functions, if they take related a
 This corresponds to Proposition 9 in |cite{functionspaces}.
 *}
 
-lemma similar_nice_def: "x \<triangleleft>\<triangleright> y \<longleftrightarrow> (x = \<bottom> \<and> y = \<bottom> \<or> (\<exists> f g. x = Fn\<cdot>f \<and> y = CFn\<cdot>g \<and> (\<forall> a b. a \<triangleleft>\<triangleright> b\<cdot>C\<^sup>\<infinity> \<longrightarrow> f\<cdot>a \<triangleleft>\<triangleright> g\<cdot>b\<cdot>C\<^sup>\<infinity>)))"
+lemma similar_nice_def: "x \<triangleleft>\<triangleright> y \<longleftrightarrow> (x = \<bottom> \<and> y = \<bottom> \<or> (\<exists> b. x = B\<cdot>(Discr b) \<and> y = CB\<cdot>(Discr b)) \<or> (\<exists> f g. x = Fn\<cdot>f \<and> y = CFn\<cdot>g \<and> (\<forall> a b. a \<triangleleft>\<triangleright> b\<cdot>C\<^sup>\<infinity> \<longrightarrow> f\<cdot>a \<triangleleft>\<triangleright> g\<cdot>b\<cdot>C\<^sup>\<infinity>)))"
   (is "?L \<longleftrightarrow> ?R")
 proof
   assume "?L"
   thus "?R"
   proof (cases x y rule:slimilar_bot_cases)
     case bot thus ?thesis by simp
+  next
+    case bool thus ?thesis by simp
   next 
     case (Fn f g)
     note `?L`[unfolded Fn]
@@ -394,6 +449,9 @@ next
   thus "?L"
   proof(elim conjE disjE exE ssubst)
     show "\<bottom> \<triangleleft>\<triangleright> \<bottom>" by simp
+  next
+    fix b
+    show "B\<cdot>(Discr b) \<triangleleft>\<triangleright> CB\<cdot>(Discr b)" by simp
   next
     fix f g
     assume imp: "\<forall>a b. a \<triangleleft>\<triangleright> b\<cdot>C\<^sup>\<infinity> \<longrightarrow> f\<cdot>a \<triangleleft>\<triangleright> g\<cdot>b\<cdot>C\<^sup>\<infinity>"

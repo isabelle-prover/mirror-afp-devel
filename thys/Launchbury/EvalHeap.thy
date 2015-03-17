@@ -1,5 +1,5 @@
 theory "EvalHeap"
-  imports "AList-Utils" "Env" "Nominal2" "Env" "HOLCF-Utils"
+  imports "AList-Utils" "Env" "../Nominal2/Nominal2" "HOLCF-Utils"
 begin
 
 subsubsection {* Conversion from heaps to environments *} 

@@ -2,7 +2,7 @@ theory CValue
 imports C
 begin
 
-domain CValue' = CFn (lazy "(C \<rightarrow> CValue') \<rightarrow> (C \<rightarrow> CValue')")
+domain CValue' = CFn (lazy "(C \<rightarrow> CValue') \<rightarrow> (C \<rightarrow> CValue')") | CB (lazy "bool discr")
 type_synonym CValue = "C \<rightarrow> CValue'"
 
 fixrec CFn_project :: "CValue' \<rightarrow> CValue \<rightarrow> CValue"
@@ -13,7 +13,27 @@ abbreviation CFn_project_abbr (infix "\<down>CFn" 55)
 
 lemma CFn_project_strict[simp]:
   "\<bottom> \<down>CFn v = \<bottom>"
-  by (fixrec_simp) 
+  "CB\<cdot>b \<down>CFn v = \<bottom>"
+  by (fixrec_simp)+
+
+lemma CB_below[simp]: "CB\<cdot>b \<sqsubseteq> v \<longleftrightarrow> v = CB\<cdot>b"
+  by (cases v) auto
+
+fixrec CB_project :: "CValue' \<rightarrow> CValue' \<rightarrow> CValue' \<rightarrow> CValue'" where
+  "CB_project\<cdot>(CB\<cdot>db)\<cdot>v\<^sub>1\<cdot>v\<^sub>2 = (if undiscr db then v\<^sub>1 else v\<^sub>2)"
+
+lemma [simp]:
+  "CB_project\<cdot>(CB\<cdot>(Discr b))\<cdot>v\<^sub>1\<cdot>v\<^sub>2 = (if b then v\<^sub>1 else v\<^sub>2)"
+  "CB_project\<cdot>\<bottom>\<cdot>v\<^sub>1\<cdot>v\<^sub>2 = \<bottom>"
+  "CB_project\<cdot>(CFn\<cdot>f)\<cdot>v\<^sub>1\<cdot>v\<^sub>2 = \<bottom>"
+by fixrec_simp+
+
+lemma CB_project_not_bot:
+  "CB_project\<cdot>scrut\<cdot>v\<^sub>1\<cdot>v\<^sub>2 \<noteq> \<bottom> \<longleftrightarrow> (\<exists> b. scrut = CB\<cdot>(Discr b) \<and> (if b then v\<^sub>1 else v\<^sub>2) \<noteq> \<bottom>)"
+  apply (cases scrut)
+  apply simp
+  apply simp
+  by (metis (poly_guards_query) CB_project.simps CValue'.injects(2) discr.exhaust undiscr_Discr)
 
 text {* HOLCF provides us @{const CValue'_take}@{text "::"}@{typeof CValue'_take};
 we want a similar function for @{typ CValue}. *}

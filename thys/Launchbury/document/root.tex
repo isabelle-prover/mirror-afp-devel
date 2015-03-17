@@ -72,6 +72,8 @@ Our correctness formal proof is very close to the original proof. This is possib
 
 Launchbury outlines an adequacy proof via an intermediate operational semantics and resourced denotational semantics. The alternative operational semantics  uses indirection instead of substitution for applications, does not update variable results and does not perform blackholing during evaluation of a variable. The equivalence of these two operational semantics is hard and tricky to prove. We found a direct proof for the adequacy of the original operational semantics and the (slightly modified) resourced denotational semantics. This is, as far as we know, the first complete and rigorous proof of adequacy of Launchbury's semantics.
 
+In this development we extend Launchbury’s syntax and semantics with boolean values and an if-then-else construct, in order to base a subsequent work \cite{callarita-afp} on this. This extension does not affect the validity of the proven theorems, and the extra cases can simply be ignored if one is interested in the plain semantics. The next introductory section does exactly that. Unfortunately, such meta-level arguments are not easily implemented inside a theorem prover.
+
 Our contributions are:
 \begin{itemize}
 \item We define the natural and denotational semantics given by Launchbury in the theorem prover Isabelle.
@@ -133,8 +135,6 @@ Chapter \ref{ch_adequacy}, where finally the adequacy is proved.
 %TODO
 
 \subsection{Acknowledgements}
-
-%I'd like to thank Andreas Lochbihler for his gladly given and very effective help during the development of this theory. I'd also like to thank Brian Huffmann and Christian Urban for their help on HOLCF and Nominal, respectively. This work was supported by the Deutsche Telekom Stiftung.
 
 I'd like to thank Lidia Sánchez-Gil, Mercedes Hidalgo-Herrero and Yolanda Ortega-Mallén for inviting me to Madrid to discuss our respective approaches.\\
 This work was supported by the Deutsche Telekom Stiftung.

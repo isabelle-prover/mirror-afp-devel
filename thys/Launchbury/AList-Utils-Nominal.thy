@@ -9,10 +9,15 @@ lemma domA_not_fresh:
   by (induct \<Gamma>, auto simp add: fresh_Cons fresh_Pair)
 
 lemma fresh_delete:
-  assumes "atom x \<sharp> \<Gamma>"
-  shows "atom x \<sharp> (delete v \<Gamma>)"
+  assumes "a \<sharp> \<Gamma>"
+  shows "a \<sharp> delete v \<Gamma>"
 using assms
 by(induct \<Gamma>)(auto simp add: fresh_Cons)
+
+lemma fresh_star_delete:
+  assumes "S \<sharp>* \<Gamma>"
+  shows "S \<sharp>* delete v \<Gamma>"
+  using assms fresh_delete unfolding fresh_star_def by fastforce
 
 lemma fv_delete_subset:
   "fv (delete v \<Gamma>) \<subseteq> fv \<Gamma>"
@@ -58,11 +63,19 @@ lemma domA_fv_subset: "domA \<Gamma> \<subseteq> fv \<Gamma>"
 lemma map_of_fv_subset: "x \<in> domA \<Gamma> \<Longrightarrow> fv (the (map_of \<Gamma> x)) \<subseteq> fv \<Gamma>"
   by (induction \<Gamma>) auto
 
+lemma map_of_Some_fv_subset: "map_of \<Gamma> x = Some e \<Longrightarrow> fv e \<subseteq> fv \<Gamma>"
+  by (metis domA_from_set map_of_fv_subset map_of_is_SomeD option.sel)
+
 subsubsection {* Equivariance lemmas *}
 
 lemma domA[eqvt]:
   "\<pi> \<bullet> domA \<Gamma> = domA (\<pi> \<bullet> \<Gamma>)"
   by (simp add: domA_def)
+
+lemma mapCollect[eqvt]:
+  "\<pi> \<bullet> mapCollect f m = mapCollect (\<pi> \<bullet> f) (\<pi> \<bullet> m)"
+unfolding mapCollect_def
+by perm_simp rule
 
 subsubsection {* Freshness and distinctness *}
 
@@ -83,6 +96,18 @@ proof-
   }
   thus "S \<inter> domA \<Gamma> = {}" by auto
 qed
+
+lemma fresh_distinct_list:
+ assumes "atom ` S \<sharp>* l"
+ shows "S \<inter> set l = {}"
+ using assms
+ by (metis disjoint_iff_not_equal fresh_list_elem fresh_star_def image_eqI not_self_fresh)
+
+lemma fresh_distinct_fv:
+ assumes "atom ` S \<sharp>* l"
+ shows "S \<inter> fv l = {}"
+ using assms
+ by (metis disjoint_iff_not_equal fresh_star_def fv_not_fresh image_eqI)
 
 subsubsection {* Pure codomains *}
 

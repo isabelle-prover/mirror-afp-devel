@@ -10,7 +10,7 @@ This is the main correctness theorem, Theorem 2 from \cite{launchbury}.
 
 theorem correctness:
   assumes "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z"
-  and     "fv (\<Gamma>, e) - domA \<Gamma> \<subseteq> set L"
+  and     "fv (\<Gamma>, e) \<subseteq> set L \<union> domA \<Gamma>"
   shows   "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk>z\<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>" and "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>"
   using assms
 proof(nominal_induct arbitrary: \<rho> rule:reds.strong_induct)
@@ -25,18 +25,16 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
     by (rule reds_doesnt_forget[OF Application.hyps(8)])
 
   case 1
-  hence prem1: "fv (\<Gamma>, e) - domA \<Gamma> \<subseteq> set (x#L)" by auto
-
-  from 1 Gamma_subset have *: "x \<in> set L \<or> x \<in> domA \<Delta>" by auto
-
-  have "fv (\<Delta>, e'[y::=x]) - domA \<Delta> \<subseteq> (fv (\<Delta>, Lam [y]. e') - domA \<Delta>) \<union> {x}"
-    by (auto dest!: set_mp[OF fv_subst_subset])
-  also have "\<dots> \<subseteq> (fv (\<Gamma>, e) - domA \<Gamma>) \<union> {x}"
-    using new_free_vars_on_heap[OF Application.hyps(8)] by auto
-  also have "\<dots> \<subseteq> set L \<union> {x}" using prem1 by auto
-  finally have "fv (\<Delta>, e'[y::=x]) - domA \<Delta> \<subseteq> set L \<union> {x}". 
-  with *
-  have prem2: "fv (\<Delta>, e'[y::=x]) - domA \<Delta> \<subseteq> set L" by auto
+  hence prem1: "fv (\<Gamma>, e) \<subseteq> set L \<union> domA \<Gamma>" and  "x \<in> set L \<union> domA \<Gamma>" by auto
+  moreover
+  note reds_pres_closed[OF Application.hyps(8) prem1]
+  moreover
+  note reds_doesnt_forget[OF Application.hyps(8)] 
+  moreover
+  have "fv (e'[y::=x]) \<subseteq> fv (Lam [y]. e') \<union> {x}"
+    by (auto simp add: fv_subst_eq)
+  ultimately
+  have prem2: "fv (\<Delta>, e'[y::=x]) \<subseteq> set L \<union> domA \<Delta>" by auto
   
   have *: "(\<lbrace>\<Gamma>\<rbrace>\<rho>) x = (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
   proof(cases "x \<in> domA \<Gamma>")
@@ -45,9 +43,9 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
     have "((\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma>) x  = ((\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>) x" by simp
     with True show ?thesis by simp
   next
-    case False 
-    from False reds_avoids_live[OF Application.hyps(8)] 
-    show ?thesis by (simp add: lookup_HSem_other)
+    case False
+    from False `x \<in> set L \<union> domA \<Gamma>` reds_avoids_live[OF Application.hyps(8)] 
+    show ?thesis by (auto simp add: lookup_HSem_other)
   qed
 
   have "\<lbrakk> App e x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = (\<lbrakk> e \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Gamma>\<rbrace>\<rho>) x"
@@ -84,16 +82,13 @@ case (Variable \<Gamma> x e L \<Delta> z)
   have subset: "domA ?\<Gamma> \<subseteq> domA \<Delta>"
     by (rule reds_doesnt_forget[OF Variable.hyps(2)])
 
+  let "?new" = "domA \<Delta> - domA \<Gamma>"
   have "fv (?\<Gamma>, e) \<union> {x} \<subseteq> fv (\<Gamma>, Var x)"
     by (rule fv_delete_heap[OF `map_of \<Gamma> x = Some e`])
-  hence prem: "fv (?\<Gamma>, e) - domA ?\<Gamma> \<subseteq> set (x # L)" using 2 by auto
+  hence prem: "fv (?\<Gamma>, e) \<subseteq> set (x # L) \<union> domA ?\<Gamma>" using 2 by auto
+  hence fv_subset: "fv (?\<Gamma>, e) - domA ?\<Gamma> \<subseteq> - ?new"
+    using reds_avoids_live'[OF Variable.hyps(2)] by auto
 
-  have fv_subset: "fv (?\<Gamma>, e) - domA ?\<Gamma> \<subseteq> - (domA \<Delta> - domA \<Gamma>)"
-    apply (rule subset_trans[OF prem])
-    apply (rule subset_trans[OF reds_avoids_live'[OF Variable.hyps(2)]])
-    by auto
-
-  let "?new" = "domA \<Delta> - domA \<Gamma>"
   have "domA \<Gamma> \<subseteq> (-?new)" by auto
 
   have "\<lbrace>\<Gamma>\<rbrace>\<rho> = \<lbrace>(x,e) # ?\<Gamma>\<rbrace>\<rho>"
@@ -136,6 +131,57 @@ case (Variable \<Gamma> x e L \<Delta> z)
   finally
   show "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>(x, z) # \<Delta>\<rbrace>\<rho>\<^esub>".
 next
+case (Bool b)
+  case 1
+  show ?case by simp
+  case 2
+  show ?case by simp
+next
+case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
+  have Gamma_subset: "domA \<Gamma> \<subseteq> domA \<Delta>"
+    by (rule reds_doesnt_forget[OF IfThenElse.hyps(1)])
+
+  let ?e = "if b then e\<^sub>1 else e\<^sub>2"
+
+  case 1
+  thm new_free_vars_on_heap[OF IfThenElse.hyps(1)]
+
+  hence prem1: "fv (\<Gamma>, scrut) \<subseteq> set L \<union> domA \<Gamma>"
+    and prem2: "fv (\<Delta>, ?e) \<subseteq> set L \<union> domA \<Delta>"
+    and "fv ?e \<subseteq> domA \<Gamma> \<union> set L"
+    using new_free_vars_on_heap[OF IfThenElse.hyps(1)] Gamma_subset by auto
+
+  have "\<lbrakk> (scrut ? e\<^sub>1 : e\<^sub>2) \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = B_project\<cdot>(\<lbrakk> scrut \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)\<cdot>(\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)\<cdot>(\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)" by simp
+  also have "\<dots> = B_project\<cdot>(\<lbrakk> Bool b \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>)\<cdot>(\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)\<cdot>(\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)"
+    unfolding IfThenElse.hyps(2)[OF prem1]..
+  also have "\<dots> = \<lbrakk> ?e \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>" by simp
+  also have "\<dots> = \<lbrakk> ?e \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
+    proof(rule ESem_fresh_cong_subset[OF  `fv ?e \<subseteq> domA \<Gamma> \<union> set L` env_restr_eqI])
+      fix x
+      assume "x \<in> domA \<Gamma> \<union> set L"
+      thus "(\<lbrace>\<Gamma>\<rbrace>\<rho>) x = (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
+      proof(cases "x \<in> domA \<Gamma>")
+        assume "x \<in> domA \<Gamma>"
+        from IfThenElse.hyps(3)[OF prem1]
+        have "((\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma>) x  = ((\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>) x" by simp
+        with `x \<in> domA \<Gamma>` show ?thesis by simp
+      next
+        assume "x \<notin> domA \<Gamma>"
+        from this `x \<in> domA \<Gamma> \<union> set L` reds_avoids_live[OF IfThenElse.hyps(1)]
+        show ?thesis
+          by (simp add: lookup_HSem_other)
+      qed
+    qed
+  also have "\<dots> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
+    unfolding IfThenElse.hyps(5)[OF prem2]..
+  finally
+  show ?case.
+  thm env_restr_eq_subset
+  show "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Theta>\<rbrace>\<rho>) f|` domA \<Gamma>"
+    using IfThenElse.hyps(3)[OF prem1]
+          env_restr_eq_subset[OF Gamma_subset IfThenElse.hyps(6)[OF prem2]]
+    by (rule trans)
+next
 case (Let as \<Gamma> L body \<Delta> z)
   case 1
   { fix a
@@ -150,7 +196,7 @@ case (Let as \<Gamma> L body \<Delta> z)
   
   have "fv (as @ \<Gamma>, body) - domA (as @ \<Gamma>) \<subseteq>  fv (\<Gamma>, Let as body) - domA \<Gamma>"
     by auto
-  with 1 have prem: "fv (as @ \<Gamma>, body) - domA (as @ \<Gamma>) \<subseteq> set L" by auto
+  with 1 have prem: "fv (as @ \<Gamma>, body) \<subseteq> set L \<union> domA (as @ \<Gamma>)" by auto
   
   have f1: "atom ` domA as \<sharp>* \<Gamma>"
     using Let(1) by (simp add: set_bn_to_atom_domA)

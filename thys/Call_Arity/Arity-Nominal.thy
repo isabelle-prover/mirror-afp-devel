@@ -1,5 +1,5 @@
 theory "Arity-Nominal"
-imports Arity "Nominal-HOLCF"
+imports Arity "../Launchbury/Nominal-HOLCF"
 begin
 
 lemma join_eqvt[eqvt]: "\<pi> \<bullet> (x \<squnion> (y :: 'a :: {Finite_Join_cpo, cont_pt})) = (\<pi> \<bullet> x) \<squnion> (\<pi> \<bullet> y)"

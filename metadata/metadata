@@ -246,13 +246,37 @@ abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John La
 extra-history =
   Change history:
   [2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
+  [2015-03-16]: Booleans and if-then-else added to syntax and semantics, making this entry suitable to be used by the entry "Call_Arity".
+
 
 [Call_Arity]
 title = The Safety of Call Arity
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 date = 2015-02-20
 topic = Computer Science/Programming Languages/Transformations
-abstract = We formalize the Call Arity analysis, as implemented in GHC, and prove both functional correctness and, more interestingly, safety (i.e. the transformation does not increase allocation). We use Christian Urban's Nominal2 package to define our terms. The functional correctness is defined with regard to a standard denotational semantics. The operational properties are shown with regard to a small-step semantics akin to Sestoft's mark 1 machine. We make use of Brian Huffman's HOLCF package for the domain-theoretical aspects of the development.
+abstract =
+  We formalize the Call Arity analysis, as implemented in GHC, and prove
+  both functional correctness and, more interestingly, safety (i.e. the
+  transformation does not increase allocation).
+  <p>
+  We use syntax and the denotational semantics from the entry 
+  "Launchbury", where we formalized Launchbury's natural semantics for
+  lazy evaluation.
+  <p>
+  The functional correctness of Call Arity is proved with regard to that
+  denotational semantics. The operational properties are shown with
+  regard to a small-step semantics akin to Sestoft's mark 1 machine,
+  which we prove to be equivalent to Launchbury's semantics.
+  <p>
+  We use Christian Urban's Nominal2 package to define our terms and make
+  use of Brian Huffman's HOLCF package for the domain-theoretical
+  aspects of the development.
+extra-history =
+  Change history:
+  [2015-03-16]: This entry now builds on top of the Launchbury entry,
+  and the equivalency proof of the natural and the small-step semantics
+  was added.
+
 
 [CCS]
 title = CCS in nominal logic
