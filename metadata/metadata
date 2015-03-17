@@ -950,7 +950,7 @@ abstract =
   <p>
   To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
   It even allows to compare complements with non-complements.
-depends-on = Datatype_Order_Generator
+depends-on = Deriving
 extra-history =
   Change history:
   [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
@@ -990,13 +990,27 @@ extra-history =
   [2015-03-11]: Renamed entry from "Datatype_Order_Generator" to
   "Old_Datatype_Order_Generator".<br>
 
-[Datatype_Order_Generator]
-title = Generating linear orders for datatypes
+[Deriving]
+title = Deriving class instances for datatypes
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2015-03-11
 topic = Computer Science/Data Structures
-abstract =
-  TODO.
+abstract = 
+  We provide a framework for registering automatic methods
+  to derive class instances of datatypes,
+  as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
+
+  We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
+  and hash-functions which are required in the
+  Isabelle Collection Framework and the Container Framework.
+  Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a
+  wrapper so that this tactic becomes accessible in our framework. All of the generators are based on
+  the infrastructure that is provided by the BNF-based datatype package.
+
+  Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
+  With our new tactics we could remove
+  several tedious proofs for (conditional) linear orders, and conditional equality operators
+  within IsaFoR and the Container Framework.
 
 [List-Index]
 title = List Index
