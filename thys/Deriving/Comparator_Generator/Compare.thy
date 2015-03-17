@@ -52,18 +52,10 @@ proof (intro ext)
       cases "compare x y", auto)
 qed
 
-lemma two_comparisons_into_compare: 
-  "(if x \<le> y then (if x = y then P else Q) else R) = (case_order P Q R (compare x y))" 
-  "(if x \<le> y then (if y = x then P else Q) else R) = (case_order P Q R (compare x y))" 
-  "(if x \<le> y then (if x < y then Q else P) else R) = (case_order P Q R (compare x y))" 
-  "(if x < y then Q else (if y < x then R else P)) = (case_order P Q R (compare x y))" 
-  "(if x < y then Q else (if x = y then P else R)) = (case_order P Q R (compare x y))" 
-  "(if x < y then Q else (if y = x then P else R)) = (case_order P Q R (compare x y))" 
-  "(if x = y then P else (if y < x then R else Q)) = (case_order P Q R (compare x y))" 
-  "(if x = y then P else (if x < y then Q else R)) = (case_order P Q R (compare x y))" 
-  "(if x = y then P else (if y \<le> x then R else Q)) = (case_order P Q R (compare x y))" 
-  "(if x = y then P else (if x \<le> y then Q else R)) = (case_order P Q R (compare x y))" 
-  by (auto simp: compare_is_comparator_of comparator_of_def)  
+lemmas two_comparisons_into_compare = 
+  comparator.two_comparisons_into_case_order[OF comparator_compare, unfolded ord_defs]
+  
+thm two_comparisons_into_compare
 end
 
 ML_file "compare_code.ML"

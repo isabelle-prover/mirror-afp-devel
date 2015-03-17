@@ -20,6 +20,7 @@ class ccompare =
   fixes ccompare :: "'a comparator option"
   assumes ccompare: "\<And> comp. ccompare = Some comp \<Longrightarrow> comparator comp"
 begin
+abbreviation ccomp :: "'a comparator" where "ccomp \<equiv> the (ID ccompare)"
 abbreviation cless :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless \<equiv> lt_of_comp (the (ID ccompare))"
 abbreviation cless_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "cless_eq \<equiv> le_of_comp (the (ID ccompare))"
 end

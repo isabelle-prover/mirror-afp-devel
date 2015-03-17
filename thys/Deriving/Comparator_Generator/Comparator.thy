@@ -86,6 +86,37 @@ qed
 sublocale linorder le lt
   by (rule linorder)
 
+lemma Gt_lt_conv: "comp x y = Gt \<longleftrightarrow> lt y x" 
+  unfolding lt_of_comp_def sym[of x y, symmetric] 
+  by (cases "comp x y", auto)
+lemma Lt_lt_conv: "comp x y = Lt \<longleftrightarrow> lt x y" 
+  unfolding lt_of_comp_def by (cases "comp x y", auto)
+lemma eq_Eq_conv: "comp x y = Eq \<longleftrightarrow> x = y" 
+  by (rule eq)
+lemma nGt_le_conv: "comp x y \<noteq> Gt \<longleftrightarrow> le x y" 
+  unfolding le_of_comp_def by (cases "comp x y", auto)
+lemma nLt_le_conv: "comp x y \<noteq> Lt \<longleftrightarrow> le y x" 
+  unfolding le_of_comp_def sym[of x y, symmetric] by (cases "comp x y", auto)
+lemma nEq_neq_conv: "comp x y \<noteq> Eq \<longleftrightarrow> x \<noteq> y" 
+  using eq_Eq_conv[of x y] by simp
+
+lemmas le_lt_convs =  nLt_le_conv nGt_le_conv Gt_lt_conv Lt_lt_conv eq_Eq_conv nEq_neq_conv
+
+lemma two_comparisons_into_case_order: 
+  "(if le x y then (if x = y then P else Q) else R) = (case_order P Q R (comp x y))" 
+  "(if le x y then (if y = x then P else Q) else R) = (case_order P Q R (comp x y))" 
+  "(if le x y then (if le y x then P else Q) else R) = (case_order P Q R (comp x y))" 
+  "(if le x y then (if lt x y then Q else P) else R) = (case_order P Q R (comp x y))" 
+  "(if lt x y then Q else (if le x y then P else R)) = (case_order P Q R (comp x y))" 
+  "(if lt x y then Q else (if lt y x then R else P)) = (case_order P Q R (comp x y))" 
+  "(if lt x y then Q else (if x = y then P else R)) = (case_order P Q R (comp x y))" 
+  "(if lt x y then Q else (if y = x then P else R)) = (case_order P Q R (comp x y))" 
+  "(if x = y then P else (if lt y x then R else Q)) = (case_order P Q R (comp x y))" 
+  "(if x = y then P else (if lt x y then Q else R)) = (case_order P Q R (comp x y))" 
+  "(if x = y then P else (if le y x then R else Q)) = (case_order P Q R (comp x y))" 
+  "(if x = y then P else (if le x y then Q else R)) = (case_order P Q R (comp x y))"
+  by (auto simp: le_lt_convs split: order.splits)
+
 end
 
 lemma comp_of_ords: assumes "class.linorder le lt"
