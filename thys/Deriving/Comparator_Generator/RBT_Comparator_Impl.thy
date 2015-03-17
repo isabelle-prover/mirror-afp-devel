@@ -9,7 +9,10 @@ begin
 text \<open>For all of the main algorithms of red-black trees, we
   provide alternatives which are completely based on comparators,
   and which are provable equivalent. At the time of writing,
-  this interface is used in the Container AFP-entry.\<close>
+  this interface is used in the Container AFP-entry.
+  
+  It does not rely on the modifications of code-equations as in 
+  the previous subsection.\<close>
 
 context 
   fixes c :: "'a comparator"

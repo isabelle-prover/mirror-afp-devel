@@ -10,6 +10,8 @@ session Deriving (AFP) = "HOL-Library" +
     Derive_Manager
     Generator_Aux
     "Comparator_Generator/Compare"
+    "Comparator_Generator/RBT_Compare_Order_Impl"
+    "Comparator_Generator/RBT_Comparator_Impl"
     "Comparator_Generator/Compare_Order_Instances"
     "Equality_Generator/Equality_Instances"
     "Hash_Generator/Hash_Instances"
