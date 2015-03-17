@@ -4,90 +4,58 @@ theory Move_to_Front
 imports Complex_Main Inversion
 begin
 
-(* mv List *)
-
-fun count :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
-"count [] y = 0" |
-"count (x#xs) y = (if x=y then count xs y + 1 else count xs y)"
-
-lemma count_notin[simp]: "x \<notin> set xs \<Longrightarrow> count xs x = 0"
-by (induction xs) auto
-
-lemma count_le_length: "count xs x \<le> length xs"
-by (induction xs) auto
-
-lemma nth_image: "l \<le> size xs \<Longrightarrow> nth xs ` {0..<l} = set(take l xs)"
-by(auto simp: set_conv_nth image_def) (metis Suc_le_eq nth_take order_trans)
-
-lemma inj_on_nth: "distinct xs \<Longrightarrow> \<forall>i \<in> I. i < length xs \<Longrightarrow> inj_on (nth xs) I"
-by (rule inj_onI) (simp add: nth_eq_iff_index_eq)
-
-lemma listsum_map_eq_setsum_count:
-  "listsum (map f xs) = setsum (\<lambda>x. count xs x * f x) (set xs)"
-proof(induction xs)
-  case (Cons x xs)
-  show ?case (is "?l = ?r")
-  proof cases
-    assume "x \<in> set xs"
-    have "?l = f x + (\<Sum>x\<in>set xs. count xs x * f x)" by (simp add: Cons.IH)
-    also have "set xs = insert x (set xs - {x})" using `x \<in> set xs`by blast
-    also have "f x + (\<Sum>x\<in>insert x (set xs - {x}). count xs x * f x) = ?r"
-      by (simp add: setsum.insert_remove eq_commute)
-    finally show ?thesis .
-  next
-    assume "x \<notin> set xs"
-    hence "\<And>xa. xa \<in> set xs \<Longrightarrow> x \<noteq> xa" by blast
-    thus ?thesis by (simp add: Cons.IH `x \<notin> set xs`)
-  qed
-qed simp
-
-lemma listsum_map_eq_setsum_count2:
-assumes "set xs \<subseteq> X" "finite X"
-shows "listsum (map f xs) = setsum (\<lambda>x. count xs x * f x) X"
-proof-
-  let ?F = "\<lambda>x. count xs x * f x"
-  have "setsum ?F X = setsum ?F (set xs \<union> (X - set xs))"
-    using Un_absorb1[OF assms(1)] by(simp)
-  also have "\<dots> = setsum ?F (set xs)"
-    using assms(2)
-    by(simp add: setsum.union_disjoint[OF _ _ Diff_disjoint] del: Un_Diff_cancel)
-  finally show ?thesis by(simp add:listsum_map_eq_setsum_count)
-qed
-
-lemma setsum_count_set:
-  "set xs \<subseteq> X \<Longrightarrow> finite X \<Longrightarrow> setsum (count xs) X = length xs"
-apply(induction xs arbitrary: X)
- apply simp
-apply (simp add: setsum.If_cases)
-by (metis Diff_eq setsum.remove)
-
-(* mv List-Index *)
-lemma bij_betw_index:
-  "distinct xs \<Longrightarrow> X = set xs \<Longrightarrow> l = size xs \<Longrightarrow> bij_betw (index xs) X {0..<l}"
-apply simp
-apply(rule bij_betw_imageI[OF inj_on_index])
-by (auto simp: image_def) (metis index_nth_id nth_mem)
-
-lemma index_last[simp]:
-  "xs \<noteq> [] \<Longrightarrow> distinct xs \<Longrightarrow> index xs (last xs) = length xs - 1"
-by (induction xs) auto
-
-lemma index_image: "distinct xs \<Longrightarrow> set xs = X \<Longrightarrow> index xs ` X = {0..<size xs}"
-by (simp add: bij_betw_imageE bij_betw_index)
-
-lemma inj_on_index: "distinct xs \<Longrightarrow> I \<subseteq> set xs \<Longrightarrow> inj_on (index xs) I"
-by (rule inj_onI) auto
-
-(* mv up *)
 declare Let_def[simp]
+
+subsection "Function @{text mtf}"
+
+definition "mtf x xs =
+  (if x \<in> set xs then x # (take (index xs x) xs) @ drop (index xs x + 1) xs
+   else xs)"
+
+lemma mtf_id[simp]: "x \<notin> set xs \<Longrightarrow> mtf x xs = xs"
+by(simp add: mtf_def)
 
 lemma mtf0[simp]: "x \<in> set xs \<Longrightarrow> mtf x xs ! 0 = x"
 by(auto simp: mtf_def)
 
-lemma nth_swapSuc_id[simp]: "Suc i < length xs \<Longrightarrow> swapSuc i xs ! i = xs!(i+1)"
-by(simp add: swapSuc_def)
+lemma before_in_mtf: assumes "z \<in> set xs"
+shows "x < y in mtf z xs  \<longleftrightarrow>
+      (y \<noteq> z \<and> (if x=z then y \<in> set xs else x < y in xs))"
+proof-
+  have 0: "index xs z < size xs" by (metis assms index_less_size_conv)
+  let ?xs = "take (index xs z) xs @ xs ! index xs z # drop (Suc (index xs z)) xs"
+  have "x < y in mtf z xs = (y \<noteq> z \<and> (if x=z then y \<in> set ?xs else x < y in ?xs))"
+    using assms
+    by(auto simp add: mtf_def before_in_def index_append)
+      (metis add_lessD1 index_less_size_conv length_take less_Suc_eq not_less_eq)
+  with id_take_nth_drop[OF 0, symmetric] show ?thesis by(simp)
+qed
+
+lemma Inv_mtf: "set xs = set ys \<Longrightarrow> z : set ys \<Longrightarrow> Inv xs (mtf z ys) =
+ Inv xs ys \<union> {(x,z)|x. x < z in xs \<and> x < z in ys}
+ - {(z,x)|x. z < x in xs \<and> x < z in ys}"
+by(auto simp add: Inv_def before_in_mtf not_before_in dest: before_in_setD1)
+
+lemma set_mtf[simp]: "set(mtf x xs) = set xs"
+by(simp add: mtf_def)
+  (metis append_take_drop_id Cons_nth_drop_Suc index_less le_refl Un_insert_right nth_index set_append set_simps(2))
+
+lemma length_mtf[simp]: "size (mtf x xs) = size xs"
+by (auto simp add: mtf_def min_def) (metis index_less_size_conv leD)
+
+lemma distinct_mtf[simp]: "distinct (mtf x xs) = distinct xs"
+by (metis length_mtf set_mtf card_distinct distinct_card)
+
+
+subsection "Function @{text swapSuc}"
+
+definition "swapSuc n xs =
+  (if Suc n < size xs then xs[n := xs!Suc n, Suc n := xs!n] else xs)"
 
 lemma length_swapSuc[simp]: "length(swapSuc i xs) = length xs"
+by(simp add: swapSuc_def)
+
+lemma swapSuc_id[simp]: "Suc n \<ge> size xs \<Longrightarrow> swapSuc n xs = xs"
 by(simp add: swapSuc_def)
 
 lemma distinct_swapSuc[simp]:
@@ -96,6 +64,40 @@ by(simp add: swapSuc_def)
 
 lemma swapSuc_Suc[simp]: "swapSuc (Suc n) (a # xs) = a # swapSuc n xs"
 by(induction xs) (auto simp: swapSuc_def)
+
+lemma index_swapSuc_distinct:
+  "distinct xs \<Longrightarrow> Suc n < length xs \<Longrightarrow>
+  index (swapSuc n xs) x =
+  (if x = xs!n then Suc n else if x = xs!Suc n then n else index xs x)"
+by(auto simp add: swapSuc_def index_swap_if_distinct)
+
+lemma set_swapSuc[simp]: "set(swapSuc n xs) = set xs"
+by(auto simp add: swapSuc_def set_conv_nth nth_list_update) metis
+
+lemma nth_swapSuc_id[simp]: "Suc i < length xs \<Longrightarrow> swapSuc i xs ! i = xs!(i+1)"
+by(simp add: swapSuc_def)
+
+lemma before_in_swapSuc:
+ "dist_perm xs ys \<Longrightarrow> Suc n < size xs \<Longrightarrow>
+  x < y in (swapSuc n xs) \<longleftrightarrow>
+  x < y in xs \<and> \<not> (x = xs!n \<and> y = xs!Suc n) \<or> x = xs!Suc n \<and> y = xs!n"
+by(simp add:before_in_def index_swapSuc_distinct)
+  (metis Suc_lessD Suc_lessI index_less_size_conv index_nth_id less_Suc_eq n_not_Suc_n nth_index)
+
+lemma Inv_swap: assumes "dist_perm xs ys"
+shows "Inv xs (swapSuc n ys) = 
+  (if Suc n < size xs
+   then if ys!n < ys!Suc n in xs
+        then Inv xs ys \<union> {(ys!n, ys!Suc n)}
+        else Inv xs ys - {(ys!Suc n, ys!n)}
+   else Inv xs ys)"
+proof-
+  have "length xs = length ys" using assms by (metis distinct_card)
+  with assms show ?thesis
+    by(simp add: Inv_def set_eq_iff)
+      (metis before_in_def not_before_in before_in_swapSuc)
+qed
+
 
 abbreviation swapSucs where "swapSucs == foldr swapSuc"
 
@@ -144,9 +146,7 @@ apply(simp add: Inv_swap before_swapSucs card_insert_if)
 apply(simp add: Inv_def)
 done
 
-(* FIXME mv mtf from Inversion to here *)
-
-subsection "MTF2"
+subsection "Function @{text mtf2}"
 
 definition mtf2 :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "mtf2 n x xs = (if x : set xs then swapSucs [index xs x - n..<index xs x] xs else xs)"
@@ -196,30 +196,14 @@ proof(induction j arbitrary: xs)
 qed simp
 
 
-subsection "MTF1"
+subsection "Function @{text mtf1}"
 
 definition "mtf1 x xs = mtf2 (length xs) x xs"
-
-(* mv List *)
-lemma take_update[simp]: "i \<le> j \<Longrightarrow> take i (xs[j := y]) = take i xs"
-by(simp add: list_eq_iff_nth_eq)
-
-lemma drop_update_swap: "m \<le> n \<Longrightarrow> drop m (xs[n := x]) = (drop m xs)[n-m := x]"
-apply(cases "n \<ge> length xs")
- apply simp
-apply(simp add: upd_conv_take_nth_drop drop_take)
-done
-
-lemma drop_update_cancel: "n < m \<Longrightarrow> drop m (xs[n := x]) = drop m xs"
-apply(cases "n \<ge> length xs")
- apply simp
-apply(simp add: upd_conv_take_nth_drop min_def drop_Cons')
-done
 
 lemma swapSucs_eq_nth_take_drop: "i < length xs \<Longrightarrow>
     swapSucs [0..<i] xs = xs!i # take i xs @ drop (Suc i) xs"
 apply(induction i arbitrary: xs)
-apply (auto simp add: neq_Nil_conv swapSuc_def drop_update_swap drop_update_cancel
+apply (auto simp add: neq_Nil_conv swapSuc_def drop_update_swap
   take_Suc_conv_app_nth Cons_nth_drop_Suc[symmetric])
 done
 
@@ -815,7 +799,7 @@ fun cruel :: "'a alg_on \<Rightarrow> 'a list \<Rightarrow> 'a state \<Rightarro
 definition adv :: "'a alg_on \<Rightarrow> ('a::linorder) alg_off" where
 "adv A s qs = (if qs=[] then [] else
   let crs = cruel A [last s] (step s (last s) (A [] s (last s))) (size qs - 1)
-  in (0,sort_sws (\<lambda>x. size qs - 1 - count crs x) s) # replicate (size qs - 1) (0,[]))"
+  in (0,sort_sws (\<lambda>x. size qs - 1 - List.count crs x) s) # replicate (size qs - 1) (0,[]))"
 
 definition wf_on :: "'a alg_on \<Rightarrow> bool" where
 "wf_on A = (\<forall>h s q. \<forall>n \<in> set(snd(A h s q)). n+1 < length s)"
@@ -895,7 +879,7 @@ proof-
   let ?q = "last ?s"
   let ?s' = "step ?s ?q (A [] ?s ?q)"
   let ?cr = "cruel A [?q] ?s' n"
-  let ?c = "count ?cr"
+  let ?c = "List.count ?cr"
   let ?k = "\<lambda>x. n - ?c x"
   let ?sort = "sort_key ?k ?s"
   have 1: "set ?s' = {0..<l}"
@@ -919,12 +903,12 @@ proof-
     by (simp add: algebra_simps)
   also(ord_eq_le_subst) have "\<dots> \<le> (l+1) * (\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) div 2"
     apply(rule sorted_weighted_gauss_Ico_div2)
-    apply(erule sorted_asc[where k = "\<lambda>x. n - count (cruel A [last ?s] ?s' n) x"])
+    apply(erule sorted_asc[where k = "\<lambda>x. n - List.count (cruel A [last ?s] ?s' n) x"])
     apply(auto simp add: index_nth_id dest!: 3)
     using assms(2) [[linarith_split_limit = 20]] apply simp by arith
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
     by(rule setsum.reindex_bij_betw[where ?h = "index ?sort", symmetric])
-      (simp add: bij_betw_imageI inj_on_index index_image)
+      (simp add: bij_betw_imageI inj_on_index2 index_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c x)" by(simp)
   also have "\<dots> = length ?cr"
     using set_cruel[OF assms(1), of ?s' "[last ?s]" n] assms(2) 1

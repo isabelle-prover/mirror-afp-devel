@@ -1,5 +1,5 @@
 theory "HOLCF-Utils"
-  imports HOLCF Pointwise
+  imports  "~~/src/HOL/HOLCF/HOLCF" Pointwise
 begin
 
 default_sort type
@@ -8,12 +8,14 @@ lemmas cont_fun[simp]
 lemmas cont2cont_fun[simp]
 
 lemma cont_compose2:
-  assumes "cont c"
-  assumes "\<And> x. cont (c x)"
+  assumes "\<And> y. cont (\<lambda> x. c x y)"
+  assumes "\<And> x. cont (\<lambda> y. c x y)"
   assumes "cont f"
   assumes "cont g"
   shows "cont (\<lambda>x. c (f x) (g x))"
-  by (rule cont_apply[OF assms(4) assms(2) cont2cont_fun[OF cont_compose[OF assms(1) assms(3)]]])
+  by (intro cont_apply[OF assms(4) assms(2)]
+            cont2cont_fun[OF cont_compose[OF _ assms(3)]]
+            cont2cont_lambda[OF assms(1)])
 
 lemma pointwise_adm:
   fixes P :: "'a::pcpo \<Rightarrow> 'b::pcpo \<Rightarrow> bool"
@@ -26,6 +28,21 @@ proof (rule admI)
     apply (rule admD[OF adm_subst[where t = "\<lambda>p . (fst p x, snd p x)" for x, OF _ assms, simplified] `chain Y`])
     using goal1(2) unfolding pointwise_def by auto
 qed
+
+lemma cfun_beta_Pair:
+  assumes "cont (\<lambda> p. f (fst p) (snd p))"
+  shows "csplit\<cdot>(\<Lambda> a b . f a b)\<cdot>(x, y) = f x y"
+  apply simp
+  apply (subst beta_cfun)
+  apply (rule cont2cont_LAM')
+  apply (rule assms)
+  apply (rule beta_cfun)
+  apply (rule cont2cont_fun)
+  using assms
+  unfolding prod_cont_iff
+  apply auto
+  done
+
 
 lemma fun_upd_mono:
   "\<rho>1 \<sqsubseteq> \<rho>2 \<Longrightarrow> v1 \<sqsubseteq> v2 \<Longrightarrow> \<rho>1(x := v1) \<sqsubseteq> \<rho>2(x := v2)"
@@ -40,6 +57,91 @@ lemma fun_upd_cont[simp,cont2cont]:
   shows "cont (\<lambda> x. (f x)(v := h x) :: 'a \<Rightarrow> 'b::pcpo)"
   by (rule cont2cont_lambda)(auto simp add: assms)
 
+lemma fun_upd_belowI:
+  assumes "\<And> z . z \<noteq> x \<Longrightarrow> \<rho> z \<sqsubseteq> \<rho>' z" 
+  assumes "y \<sqsubseteq> \<rho>' x"
+  shows  "\<rho>(x := y) \<sqsubseteq> \<rho>'"
+  apply (rule fun_belowI)
+  using assms
+  apply (case_tac "xa = x")
+  apply auto
+  done
+
+
+lemma cont_if_else_above: 
+  assumes "cont f"
+  assumes "cont g"
+  assumes "\<And> x. f x \<sqsubseteq> g x"
+  assumes "\<And> x y. x \<sqsubseteq> y \<Longrightarrow> P y \<Longrightarrow> P x"
+  assumes "adm P"
+  shows "cont (\<lambda>x. if P x then f x else g x)" (is "cont ?I")
+proof(intro contI2 monofunI)
+  fix x y :: 'a
+  assume "x \<sqsubseteq> y"
+  with assms(4)[OF this]
+  show "?I x \<sqsubseteq> ?I y"
+    apply (auto)
+    apply (rule cont2monofunE[OF assms(1)], assumption)
+    apply (rule below_trans[OF cont2monofunE[OF assms(1)] assms(3)], assumption)
+    apply (rule cont2monofunE[OF assms(2)], assumption)
+    done
+next
+  fix Y :: "nat \<Rightarrow> 'a"
+  assume "chain Y"
+  assume "chain (\<lambda>i . ?I (Y i))"
+
+  have ch_f: "f (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. f (Y i))" by (metis `chain Y` assms(1) below_refl cont2contlubE)
+
+  show "?I (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. ?I (Y i))" 
+  proof(cases "\<forall> i. P (Y i)")
+    case True hence "P (\<Squnion> i. Y i)" by (metis `chain Y` adm_def assms(5))
+    with True ch_f show ?thesis by auto
+  next
+    case False
+    then obtain j where "\<not> P (Y j)" by auto
+    hence *:  "\<forall> i \<ge> j. \<not> P (Y i)" "\<not> P (\<Squnion> i. Y i)"
+      apply (auto)
+      apply (metis assms(4) chain_mono[OF `chain Y`])
+      apply (metis assms(4) is_ub_thelub[OF `chain Y`])
+      done
+
+    have "?I (\<Squnion> i. Y i) = g (\<Squnion> i. Y i)" using * by simp
+    also have "\<dots> = g (\<Squnion> i. Y (i + j))" by (metis lub_range_shift[OF `chain Y`])
+    also have "\<dots> = (\<Squnion> i. (g (Y (i + j))))" by (rule cont2contlubE[OF assms(2) chain_shift[OF `chain Y`]] )
+    also have "\<dots> = (\<Squnion> i. (?I (Y (i + j))))" using * by auto
+    also have "\<dots> = (\<Squnion> i. (?I (Y i)))" by (metis lub_range_shift[OF `chain (\<lambda>i . ?I (Y i))`])
+    finally show ?thesis by simp
+  qed
+qed
+
+fun up2option :: "'a::cpo\<^sub>\<bottom> \<Rightarrow> 'a option"
+  where "up2option Ibottom = None"
+  |     "up2option (Iup a) = Some a"
+
+lemma up2option_simps[simp]:
+  "up2option \<bottom> = None"
+  "up2option (up\<cdot>x) = Some x"
+  unfolding up_def by (simp_all add: cont_Iup inst_up_pcpo)
+
+fun option2up :: "'a option \<Rightarrow> 'a::cpo\<^sub>\<bottom>"
+  where "option2up None = \<bottom>"
+  |     "option2up (Some a) = up\<cdot>a"
+
+lemma option2up_up2option[simp]:
+  "option2up (up2option x) = x"
+  by (cases x) auto
+lemma up2option_option2up[simp]:
+  "up2option (option2up x) = x"
+  by (cases x) auto
+
+lemma adm_subst2: "cont f \<Longrightarrow> cont g \<Longrightarrow> adm (\<lambda>x. f (fst x) = g (snd x))"
+  apply (rule admI)
+  apply (simp add:
+      cont2contlubE[where f = f]  cont2contlubE[where f = g]
+      cont2contlubE[where f = snd]  cont2contlubE[where f = fst]
+      )
+  done
+
 
 subsubsection {* Composition of fun and cfun *}
 
@@ -50,7 +152,7 @@ lemma cont2cont_comp [simp, cont2cont]:
   shows "cont (\<lambda> x. (f x) \<circ> (g x))"
   unfolding comp_def
   by (rule cont2cont_lambda)
-     (intro cont2cont  `cont g` `cont f` cont_compose2[OF assms(1,2)] cont2cont_fun)
+     (intro cont2cont  `cont g` `cont f` cont_compose2[OF cont2cont_fun[OF assms(1)] assms(2)] cont2cont_fun)
 
 definition cfun_comp :: "('a::pcpo \<rightarrow> 'b::pcpo) \<rightarrow> ('c::type \<Rightarrow> 'a) \<rightarrow> ('c::type \<Rightarrow> 'b)"
   where  "cfun_comp = (\<Lambda> f \<rho>. (\<lambda> x. f\<cdot>x) \<circ> \<rho>)"
@@ -65,7 +167,7 @@ lemma fix_eq_fix:
   "f\<cdot>(fix\<cdot>g) \<sqsubseteq> fix\<cdot>g \<Longrightarrow> g\<cdot>(fix\<cdot>f) \<sqsubseteq> fix\<cdot>f \<Longrightarrow> fix\<cdot>f = fix\<cdot>g"
   by (metis fix_least_below below_antisym)
 
-subsection {* Additional transitivity rules *}
+subsubsection {* Additional transitivity rules *}
 
 text {*
 These collect side-conditions of the form @{term "cont f"}, so the usual way to discharge them

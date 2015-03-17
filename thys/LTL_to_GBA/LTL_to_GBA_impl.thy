@@ -9,7 +9,7 @@ imports
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Code_Char"
   LTL_to_GBA
-  "../Datatype_Order_Generator/Order_Generator"
+  "../Deriving/Comparator_Generator/Compare_Instances"
   "../CAVA_Automata/Automata_Impl"
   "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
 begin

@@ -1,5 +1,5 @@
 theory SestoftConf
-imports Terms Substitution
+imports "../Launchbury/Terms" "../Launchbury/Substitution"
 begin
 
 datatype stack_elem = Alts exp exp | Arg var | Upd var | Dummy var
@@ -82,6 +82,10 @@ lemma dummies_fv_subset: "dummies S \<subseteq> fv S"
 lemma fresh_flattn[simp]: "atom (a::var) \<sharp> flattn S \<longleftrightarrow> atom a \<sharp> S"
   by (induction S rule:flattn.induct) (auto simp add: fresh_Nil fresh_Cons fresh_append fresh_fv[OF finite_fv])
 lemma fresh_star_flattn[simp]: "atom ` (as:: var set) \<sharp>* flattn S \<longleftrightarrow> atom ` as \<sharp>* S"
+  by (auto simp add: fresh_star_def)
+lemma fresh_upds_list[simp]: "atom a \<sharp> S \<Longrightarrow> atom (a::var) \<sharp> upds_list S"
+  by (induction S rule:upds_list.induct) (auto simp add: fresh_Nil fresh_Cons fresh_append fresh_fv[OF finite_fv])
+lemma fresh_star_upds_list[simp]: "atom ` (as:: var set) \<sharp>* S \<Longrightarrow> atom ` (as:: var set) \<sharp>* upds_list S"
   by (auto simp add: fresh_star_def)
 
 lemma upds_append[simp]: "upds (S@S') = upds S \<union> upds S'"

@@ -3193,7 +3193,7 @@ theorem create_name_gba_correct:
   apply (simp_all add: nds_invars_def fin_gba_rename_correct)
   done
 
-definition create_name_igba :: "'a::linorder ltln \<Rightarrow> _" where 
+definition create_name_igba :: "'a ltln \<Rightarrow> _" where 
 "create_name_igba \<phi> \<equiv> do {
   A\<leftarrow>create_name_gba \<phi>;
   A' \<leftarrow> gba_to_idx A;

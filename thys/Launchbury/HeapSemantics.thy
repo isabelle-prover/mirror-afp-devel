@@ -302,10 +302,22 @@ lemma ESem_fresh_cong:
   shows "\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> = \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub>"
 by (metis assms ESem_considers_fv)
 
+lemma ESem_fresh_cong_subset:
+  assumes "fv e \<subseteq> S"
+  assumes "\<rho> f|` S = \<rho>' f|` S"
+  shows "\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> = \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub>"
+by (rule ESem_fresh_cong[OF  env_restr_eq_subset[OF assms]])
+
 lemma ESem_fresh_cong_below:
   assumes "\<rho> f|` (fv e) \<sqsubseteq> \<rho>' f|` (fv e)"
   shows "\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> \<sqsubseteq> \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub>"
 by (metis assms ESem_considers_fv monofun_cfun_arg)
+
+lemma ESem_fresh_cong_below_subset:
+  assumes "fv e \<subseteq> S"
+  assumes "\<rho> f|` S \<sqsubseteq> \<rho>' f|` S"
+  shows "\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> \<sqsubseteq> \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub>"
+by (rule ESem_fresh_cong_below[OF  env_restr_below_subset[OF assms]])
 
 lemma ESem_ignores_fresh_restr:
   assumes "atom ` S \<sharp>* e"

@@ -100,7 +100,7 @@ written \mbox{@{term_type "Rep_cfun (Denotational.ESem e) \<rho>"}} and defined 
 @{thm (lhs) Denotational.ESem_simps(1)} & = @{thm (rhs) Denotational.ESem_simps(1)} \\
 @{thm (lhs) Denotational.ESem_simps(2)} & = @{thm (rhs) Denotational.ESem_simps(2)} \\
 @{thm (lhs) Denotational.ESem_simps(3)} & = @{thm (rhs) Denotational.ESem_simps(3)} \\
-@{thm (lhs) Denotational.ESem_simps(4)} & = @{thm (rhs) Denotational.ESem_simps(4)}.
+@{thm (lhs) Denotational.ESem_simps(6)} & = @{thm (rhs) Denotational.ESem_simps(6)}.
 \end{alignstar}
 *}
 
@@ -232,7 +232,7 @@ where the right-hand-side can be shown to be invariant of the choice of @{text x
 @{term "x \<notin> fv (Lam [x]. e)"}. Once the function is defined, the equality
 @{thm Denotational.ESem_considers_fv'} can be proved. With that, the desired equation for
 @{thm (lhs) Denotational.ESem_simps(1)} follows. The same trick is applied to the equation for
-@{thm (lhs) Denotational.ESem_simps(4)}.
+@{thm (lhs) Denotational.ESem_simps(6)}.
 
 This allows us to use the type @{typ "var \<Rightarrow> Value"} for the semantic envionments and considerably
 simplifies the formalization compared to \cite{breitner2013}.

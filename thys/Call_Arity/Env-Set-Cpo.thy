@@ -1,5 +1,5 @@
 theory "Env-Set-Cpo"
-imports Env "Set-Cpo"
+imports "../Launchbury/Env" "Set-Cpo"
 begin
 
 lemma cont_edom[THEN cont_compose, simp, cont2cont]:

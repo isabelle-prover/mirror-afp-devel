@@ -156,6 +156,9 @@ by (induct xs) (auto simp:last_index_Cons)
 lemma inj_on_index: "inj_on (index xs) (set xs)"
 by (simp add:inj_on_def)
 
+lemma inj_on_index2: "I \<subseteq> set xs \<Longrightarrow> inj_on (index xs) I"
+by (rule inj_onI) auto
+
 lemma inj_on_last_index: "inj_on (last_index xs) (set xs)"
 by (simp add:inj_on_def)
 
@@ -199,6 +202,10 @@ lemma index_take_if_set:
   "x : set(take n xs) \<Longrightarrow> index (take n xs) x = index xs x"
 by (metis index_take index_take_if_index linear)
 
+lemma index_last[simp]:
+  "xs \<noteq> [] \<Longrightarrow> distinct xs \<Longrightarrow> index xs (last xs) = length xs - 1"
+by (induction xs) auto
+
 lemma index_update_if_diff2:
   "n < length xs \<Longrightarrow> x \<noteq> xs!n \<Longrightarrow> x \<noteq> y \<Longrightarrow> index (xs[n := y]) x = index xs x"
 by(subst (2) id_take_nth_drop[of n xs])
@@ -220,6 +227,14 @@ proof-
     by (metis index_update_if_diff2 length_list_update nth_list_update)
 qed
 
+lemma bij_betw_index:
+  "distinct xs \<Longrightarrow> X = set xs \<Longrightarrow> l = size xs \<Longrightarrow> bij_betw (index xs) X {0..<l}"
+apply simp
+apply(rule bij_betw_imageI[OF inj_on_index])
+by (auto simp: image_def) (metis index_nth_id nth_mem)
+
+lemma index_image: "distinct xs \<Longrightarrow> set xs = X \<Longrightarrow> index xs ` X = {0..<size xs}"
+by (simp add: bij_betw_imageE bij_betw_index)
 
 subsection {* Map with index *}
 

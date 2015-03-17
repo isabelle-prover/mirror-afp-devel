@@ -33,16 +33,6 @@ lemma override_on_mono:
   shows "x1 ++\<^bsub>S\<^esub> y1 \<sqsubseteq> x2 ++\<^bsub>S\<^esub> y2"
 by (rule below_trans[OF cont2monofunE[OF override_on_cont1 assms(1)] cont2monofunE[OF override_on_cont2 assms(2)]])
 
-lemma fun_upd_belowI:
-  assumes "\<And> z . z \<noteq> x \<Longrightarrow> \<rho> z \<sqsubseteq> \<rho>' z" 
-  assumes "y \<sqsubseteq> \<rho>' x"
-  shows  "\<rho>(x := y) \<sqsubseteq> \<rho>'"
-  apply (rule fun_belowI)
-  using assms
-  apply (case_tac "xa = x")
-  apply auto
-  done
-
 lemma fun_upd_below_env_deleteI:
   assumes "env_delete x \<rho> \<sqsubseteq> env_delete x \<rho>'" 
   assumes "y \<sqsubseteq> \<rho>' x"
@@ -63,6 +53,13 @@ lemma env_restr_belowI:
   shows "m1 f|` S \<sqsubseteq> m2 f|` S"
   apply (rule fun_belowI)
   by (metis assms below_bottom_iff lookup_env_restr_not_there)
+
+lemma env_restr_belowI2:
+  assumes  "\<And> x. x \<in> S \<Longrightarrow> m1 x \<sqsubseteq> m2 x"
+  shows "m1 f|` S \<sqsubseteq> m2"
+  by (rule fun_belowI)
+     (simp add: assms env_restr_def)
+
 
 lemma env_restr_below_itself:
   shows "m f|` S \<sqsubseteq> m"
@@ -96,6 +93,8 @@ lemma env_restr_below_subset:
 using assms
 by (auto intro!: env_restr_belowI dest: env_restr_belowD)
 
+
+
 lemma  override_on_below_restrI:
   assumes " x f|` (-S) \<sqsubseteq> z f|` (-S)"
   and "y f|` S \<sqsubseteq> z f|` S"
@@ -118,5 +117,6 @@ lemma env_delete_cont:  "cont (env_delete x)"
   apply (auto simp add: assms)
   done
 lemmas env_delete_cont2cont[simp,cont2cont] = cont_compose[OF env_delete_cont]
+
 
 end

@@ -1,5 +1,5 @@
 theory TrivialArityAnal
-imports ArityAnalysisSpec "Env-Nominal"
+imports ArityAnalysisSpec "../Launchbury/Env-Nominal"
 begin
 
 definition Trivial_Aexp :: "exp \<Rightarrow> Arity \<rightarrow> AEnv"

@@ -1,5 +1,5 @@
 theory CoCallFix
-imports CoCallAnalysisSig CoCallAnalysisBinds ArityAnalysisSig "Env-Nominal"  ArityAnalysisFix
+imports CoCallAnalysisSig CoCallAnalysisBinds ArityAnalysisSig "../Launchbury/Env-Nominal"  ArityAnalysisFix
 begin
 
 

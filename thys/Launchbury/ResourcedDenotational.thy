@@ -7,6 +7,8 @@ type_synonym CEnv = "var \<Rightarrow> CValue"
 interpretation semantic_domain
   "\<Lambda> f . \<Lambda> r. CFn\<cdot>(\<Lambda> v. (f\<cdot>(v|\<^bsub>r\<^esub>))|\<^bsub>r\<^esub>)"
   "\<Lambda> x y. (\<Lambda> r. (x\<cdot>r \<down>CFn y|\<^bsub>r\<^esub>)\<cdot>r)"
+  "\<Lambda> b r. CB\<cdot>b"
+  "\<Lambda> scrut v1 v2 r. CB_project\<cdot>(scrut\<cdot>r)\<cdot>(v1\<cdot>r)\<cdot>(v2\<cdot>r)"
   "C_case".
 
 abbreviation ESem_syn'' ("\<N>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>"  [60,60] 60) where "\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> \<equiv> ESem e \<cdot> \<rho>"
@@ -19,9 +21,11 @@ Here we re-state the simplification rules, cleaned up by beta-reducing the local
 *}
 
 lemma CESem_simps:
-  "\<N>\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub> = (\<Lambda> (C\<cdot>r). CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>(x := v|\<^bsub>r\<^esub>)\<^esub>)|\<^bsub>r\<^esub>))"
-  "\<N>\<lbrakk> App e x \<rbrakk>\<^bsub>\<rho>\<^esub>    = (\<Lambda> (C\<cdot>r). ((\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r \<down>CFn \<rho> x|\<^bsub>r\<^esub>)\<cdot>r)"
-  "\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>\<^esub>      = (\<Lambda> (C\<cdot>r). (\<rho>  x) \<cdot> r)"
+  "\<N>\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub>  = (\<Lambda> (C\<cdot>r). CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>(x := v|\<^bsub>r\<^esub>)\<^esub>)|\<^bsub>r\<^esub>))"
+  "\<N>\<lbrakk> App e x \<rbrakk>\<^bsub>\<rho>\<^esub>     = (\<Lambda> (C\<cdot>r). ((\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r \<down>CFn \<rho> x|\<^bsub>r\<^esub>)\<cdot>r)"
+  "\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>\<^esub>       = (\<Lambda> (C\<cdot>r). (\<rho>  x) \<cdot> r)"
+  "\<N>\<lbrakk> Bool b \<rbrakk>\<^bsub>\<rho>\<^esub>      = (\<Lambda> (C\<cdot>r). CB\<cdot>(Discr b))"
+  "\<N>\<lbrakk> (scrut ? e\<^sub>1 : e\<^sub>2) \<rbrakk>\<^bsub>\<rho>\<^esub>  = (\<Lambda> (C\<cdot>r). CB_project\<cdot>((\<N>\<lbrakk> scrut \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r)\<cdot>((\<N>\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r)\<cdot>((\<N>\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r))"
   "\<N>\<lbrakk> Let as body \<rbrakk>\<^bsub>\<rho>\<^esub> = (\<Lambda> (C \<cdot> r). (\<N>\<lbrakk>body\<rbrakk>\<^bsub>\<N>\<lbrace>as\<rbrace>\<rho>\<^esub>) \<cdot> r)"
   by (auto simp add: eta_cfun)
 
@@ -39,11 +43,13 @@ lemma CESem_simps_no_tick:
   "(\<N>\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r \<sqsubseteq> CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>(x := v|\<^bsub>r\<^esub>)\<^esub>)|\<^bsub>r\<^esub>)"
   "(\<N>\<lbrakk> App e x \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r    \<sqsubseteq> ((\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r \<down>CFn \<rho> x|\<^bsub>r\<^esub>)\<cdot>r"
   "\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>\<^esub>         \<sqsubseteq> \<rho> x"
+  "(\<N>\<lbrakk> (scrut ? e\<^sub>1 : e\<^sub>2) \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r \<sqsubseteq> CB_project\<cdot>((\<N>\<lbrakk> scrut \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r)\<cdot>((\<N>\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r)\<cdot>((\<N>\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r)"
   "\<N>\<lbrakk> Let as body \<rbrakk>\<^bsub>\<rho>\<^esub>   \<sqsubseteq>  \<N>\<lbrakk>body\<rbrakk>\<^bsub>\<N>\<lbrace>as\<rbrace>\<rho>\<^esub>"
   apply -
   apply (rule below_trans[OF monofun_cfun_arg[OF below_C]], simp)
   apply (rule below_trans[OF monofun_cfun_arg[OF below_C]], simp)
   apply (rule cfun_belowI, rule below_trans[OF monofun_cfun_arg[OF below_C]], simp)
+  apply (rule below_trans[OF monofun_cfun_arg[OF below_C]], simp)
   apply (rule cfun_belowI, rule below_trans[OF monofun_cfun_arg[OF below_C]], simp)
   done
 

@@ -3,7 +3,7 @@ chapter AFP
 session MSO_Regex_Equivalence (AFP) = "HOL-Library" +
   options [timeout = 1600]
   theories [document = false]
-    "../Datatype_Order_Generator/Order_Generator"
+    "../Deriving/Comparator_Generator/Compare_Instances"
     "../List-Index/List_Index"
     List_More
     "~~/src/Tools/Permanent_Interpretation"

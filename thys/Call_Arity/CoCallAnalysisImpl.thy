@@ -1,5 +1,5 @@
 theory CoCallAnalysisImpl
-imports "Arity-Nominal" "Nominal-HOLCF" "Env-Nominal"  "Env-Set-Cpo" "Env-HOLCF" CoCallFix
+imports "Arity-Nominal" "../Launchbury/Nominal-HOLCF" "../Launchbury/Env-Nominal"  "Env-Set-Cpo" "../Launchbury/Env-HOLCF" CoCallFix
 begin
 
 fun combined_restrict :: "var set \<Rightarrow> (AEnv \<times> CoCalls) \<Rightarrow> (AEnv \<times> CoCalls)"

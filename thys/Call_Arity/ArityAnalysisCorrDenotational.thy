@@ -1,5 +1,5 @@
 theory ArityAnalysisCorrDenotational
-imports ArityAnalysisSpec Denotational ArityTransform
+imports ArityAnalysisSpec "../Launchbury/Denotational" ArityTransform
 begin
 
 context ArityAnalysisLetSafe

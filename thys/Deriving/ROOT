@@ -1,0 +1,20 @@
+chapter AFP
+
+session Deriving (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  theories [document = false]
+    "../Collections/Lib/HashCode"
+    "~~/src/HOL/Library/Char_ord"
+    "~~/src/HOL/Library/Countable"
+  theories
+    Derive_Manager
+    Generator_Aux
+    "Comparator_Generator/Compare"
+    "Comparator_Generator/Compare_Order_Instances"
+    "Equality_Generator/Equality_Instances"
+    "Hash_Generator/Hash_Instances"
+    "Countable_Generator/Countable_Generator"
+    Derive_Examples
+  document_files
+    "root.bib"
+    "root.tex"

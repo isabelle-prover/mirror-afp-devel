@@ -1,9 +1,9 @@
 theory "Mono-Nat-Fun"
-imports "Library/Infinite_Set"
+imports "~~/src/HOL/Library/Infinite_Set"
 begin
 
 text {*
-The following lemma proves that a monotonous function from and the natural numbers is either eventually
+The following lemma proves that a monotonous function from and to the natural numbers is either eventually
 constant or unbounded.
 *}
 

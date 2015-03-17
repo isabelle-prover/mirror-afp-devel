@@ -1,5 +1,5 @@
 theory EtaExpansion
-imports Terms Substitution
+imports "../Launchbury/Terms" "../Launchbury/Substitution"
 begin
 
 definition fresh_var :: "exp \<Rightarrow> var" where

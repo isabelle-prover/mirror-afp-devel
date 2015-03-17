@@ -1,76 +1,64 @@
-(*
-Copyright 2009-2014 Christian Sternagel, René Thiemann
-
-This file is part of IsaFoR/CeTA.
-
-IsaFoR/CeTA is free software: you can redistribute it and/or modify it under the
-terms of the GNU Lesser General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
-
-IsaFoR/CeTA is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
+(*  Title:       Show
+    Author:      Christian Sternagel <c.sternagel@gmail.com>
+    Author:      René Thiemann <rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel <c.sternagel@gmail.com>
+    Maintainer:  René Thiemann <rene.thiemann@uibk.ac.at>
 *)
 
-section {* Instances of the Show Class for Standard Types *}
+section \<open>Instances of the Show Class for Standard Types\<close>
 
 theory Show_Instances
 imports
-  Show_Generator
+  Show
   "~~/src/HOL/Rat"
 begin
 
-text {*
-  For several types, we just derive the show function.
-*}
-
-derive "show" bool option sum
-
-text {*
-  The derive-command is not used for @{type unit}, @{type prod}, and numbers: for @{type unit} and
-  @{type prod}, we do not want to display ``Unity'' and ``Pair''; for @{type nat}, we do not want to
-  display ``Suc (Suc ... Suc (0))''; and neither @{type int} nor @{type rat} are datatypes.
-*}
-
-instantiation unit :: "show"
-begin
-
-definition "shows_prec d (x::unit) = shows_string ''()''"
-
-lemma assoc_unit:
-  "shows_prec d (x::unit) r @ s = shows_prec d x (r @ s)"
-  by (simp add: shows_prec_unit_def)
-
-standard_shows_list assoc_unit
-
-end
-
-instantiation prod :: ("show", "show") "show"
-begin
-
-definition "shows_prec d (p :: 'a \<times> 'b) = shows_paren (shows (fst p) +@+ '','' +#+ shows (snd p))"
-
-lemma assoc_prod:
-  "shows_prec d (p::('a::show \<times> 'b::show)) r @ s = shows_prec d p (r @ s)"
-  by (cases p) (simp add: shows_prec_prod_def show_defs)
-
-standard_shows_list assoc_prod
-
-end
-
-
-instantiation nat :: "show"
-begin
-
-fun
-  digit2string :: "nat \<Rightarrow> string"
+definition showsp_unit :: "unit showsp"
 where
-  "digit2string n = (
-    if n = 0 then ''0''
+  "showsp_unit p x = shows_string ''()''"
+
+lemma show_law_unit [show_law_intros]:
+  "show_law showsp_unit x"
+  by (rule show_lawI) (simp add: showsp_unit_def show_law_simps)
+
+primrec showsp_bool :: "bool showsp"
+where
+  "showsp_bool p True = shows_string ''True''" |
+  "showsp_bool p False = shows_string ''False''"
+
+lemma show_law_bool [show_law_intros]:
+  "show_law showsp_bool x"
+  by (rule show_lawI, cases x) (simp_all add: show_law_simps)
+
+primrec pshowsp_prod :: "(shows \<times> shows) showsp"
+where
+  "pshowsp_prod p (x, y) = shows_string ''('' o x o shows_string '', '' o y o shows_string '')''"
+
+definition showsp_prod :: "'a showsp \<Rightarrow> 'b showsp \<Rightarrow> ('a \<times> 'b) showsp"
+where
+  [code del]: "showsp_prod s1 s2 p = pshowsp_prod p o map_prod (s1 0) (s2 0)"
+
+lemma showsp_prod_simps [simp, code]:
+  "showsp_prod s1 s2 p (x, y) =
+    shows_string ''('' o s1 0 x o shows_string '', '' o s2 0 y o shows_string '')''"
+  by (simp add: showsp_prod_def)
+
+lemma show_law_prod [show_law_intros]:
+  "(\<And>x. x \<in> Basic_BNFs.fsts y \<Longrightarrow> show_law s1 x) \<Longrightarrow>
+   (\<And>x. x \<in> Basic_BNFs.snds y \<Longrightarrow> show_law s2 x) \<Longrightarrow>
+    show_law (showsp_prod s1 s2) y"
+proof (induct y)
+  case (Pair x y)
+  note * = Pair [unfolded prod_set_simps]
+  show ?case
+    by (rule show_lawI)
+       (auto simp del: o_apply intro!: o_append intro: show_lawD * simp: show_law_simps)
+qed
+
+fun string_of_digit :: "nat \<Rightarrow> string"
+where
+  "string_of_digit n =
+    (if n = 0 then ''0''
     else if n = 1 then ''1''
     else if n = 2 then ''2''
     else if n = 3 then ''3''
@@ -81,63 +69,81 @@ where
     else if n = 8 then ''8''
     else ''9'')"
 
-fun shows_nat :: "nat \<Rightarrow> shows"
+fun showsp_nat :: "nat showsp"
 where
-  "shows_nat (n::nat) = (
-    if n < 10 then shows_string (digit2string n)
-    else shows_nat (n div 10) \<circ> shows_string (digit2string (n mod 10)))"
+  "showsp_nat p n =
+    (if n < 10 then shows_string (string_of_digit n)
+    else showsp_nat p (n div 10) o shows_string (string_of_digit (n mod 10)))"
+declare showsp_nat.simps [simp del]
 
-definition "shows_prec (d::nat) (n::nat) = shows_nat n"
+lemma show_law_nat [show_law_intros]:
+  "show_law showsp_nat n"
+  by (rule show_lawI, induct n rule: nat_less_induct) (simp add: show_law_simps showsp_nat.simps)
 
-lemma assoc_nat: "shows_prec d (n::nat) r @ s = shows_prec d n (r @ s)"
-proof (induct n arbitrary: r s rule: nat_less_induct)
-  case (1 n)
-  show ?case
-  proof (cases "n < 10")
-    case True thus ?thesis unfolding shows_prec_nat_def by simp
-  next
-    let ?m = "n div 10"
-    case False
-    hence "?m < n" by simp
-    with 1 have "\<And>s t. shows_prec d ?m s @ t = shows_prec d ?m (s @ t)" by simp
-    thus ?thesis unfolding shows_prec_nat_def by auto
-  qed
-qed
+lemma showsp_nat_append [show_law_simps]:
+  "showsp_nat p n (x @ y) = showsp_nat p n x @ y"
+  by (intro show_lawD show_law_intros)
 
-standard_shows_list assoc_nat
+definition showsp_int :: "int showsp"
+where
+  "showsp_int p i =
+    (if i < 0 then shows_string ''-'' o showsp_nat p (nat (- i)) else showsp_nat p (nat i))"
 
-end
+lemma show_law_int [show_law_intros]:
+  "show_law showsp_int i"
+  by (rule show_lawI, cases "i < 0") (simp_all add: showsp_int_def show_law_simps)
 
-instantiation int :: "show"
-begin
+lemma showsp_int_append [show_law_simps]:
+  "showsp_int p i (x @ y) = showsp_int p i x @ y"
+  by (intro show_lawD show_law_intros)
 
-definition "shows_prec (d::nat) (i::int) = (
-  if i < 0 then shows (CHR ''-'') \<circ> shows (nat (- i))
-  else shows (nat i))"
+definition showsp_rat :: "rat showsp"
+where
+  "showsp_rat p x =
+    (case quotient_of x of (d, n) \<Rightarrow>
+      if n = 1 then showsp_int p d else showsp_int p d o shows_string ''/'' o showsp_int p n)"
 
-lemma assoc_int:
-  "shows_prec d (i::int) r @ s = shows_prec d i (r @ s)"
-  by (simp add: shows_prec_int_def)
+lemma show_law_rat [show_law_intros]:
+  "show_law showsp_rat r"
+  by (rule show_lawI, cases "quotient_of r") (simp add: showsp_rat_def show_law_simps)
 
-standard_shows_list assoc_int
+lemma showsp_rat_append [show_law_simps]:
+  "showsp_rat p r (x @ y) = showsp_rat p r x @ y"
+  by (intro show_lawD show_law_intros)
 
-end
+text \<open>
+  Automatic show functions are not used for @{type unit}, @{type prod}, and numbers:
+  for @{type unit} and @{type prod}, we do not want to display @{term "''Unity''"} and
+  @{term "''Pair''"}; for @{type nat}, we do not want to display
+  @{term "''Suc (Suc (... (Suc 0) ...))''"}; and neither @{type int}
+  nor @{type rat} are datatypes.
+\<close>
 
-instantiation rat :: "show"
-begin
+local_setup {*
+  Show_Generator.register_foreign_partial_and_full_showsp @{type_name prod} 0
+       @{term "pshowsp_prod"}
+       @{term "showsp_prod"} (SOME @{thm showsp_prod_def})
+       @{term "map_prod"} (SOME @{thm prod.map_comp}) [true, true]
+       @{thm show_law_prod}
+  #> Show_Generator.register_foreign_showsp @{typ unit} @{term "showsp_unit"} @{thm show_law_unit}
+  #> Show_Generator.register_foreign_showsp @{typ bool} @{term "showsp_bool"} @{thm show_law_bool}
+  #> Show_Generator.register_foreign_showsp @{typ nat} @{term "showsp_nat"} @{thm show_law_nat}
+  #> Show_Generator.register_foreign_showsp @{typ int} @{term "showsp_int"} @{thm show_law_int}
+  #> Show_Generator.register_foreign_showsp @{typ rat} @{term "showsp_rat"} @{thm show_law_rat}
+*}
 
-definition "shows_prec (d::nat) (x::rat) =
-  (case quotient_of x of
-    Pair den num \<Rightarrow>
-    if num = 1 then shows den else shows den \<circ> shows (CHR ''/'') \<circ> shows num)"
+derive "show" option sum prod unit bool nat int rat
 
-lemma assoc_rat:
-  "shows_prec d (x::rat) r @ s = shows_prec d x (r @ s)"
-  unfolding shows_prec_rat_def by (cases "quotient_of x") auto
-
-standard_shows_list assoc_rat
-
-end
+export_code
+  "shows_prec :: 'a\<Colon>show option showsp"
+  "shows_prec :: ('a\<Colon>show, 'b\<Colon>show) sum showsp"
+  "shows_prec :: ('a\<Colon>show \<times> 'b\<Colon>show) showsp"
+  "shows_prec :: unit showsp"
+  "shows_prec :: bool showsp"
+  "shows_prec :: nat showsp"
+  "shows_prec :: int showsp"
+  "shows_prec :: rat showsp"
+  checking
 
 end
 

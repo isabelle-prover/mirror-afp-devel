@@ -55,6 +55,12 @@ This development forms the foundation for the Isabelle proof of Gödel's incompl
 which has been <a href="Incompleteness.shtml">formalised separately</a>.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-02-23]: Added the theory "Finitary" defining the class of types that can be embedded in hf, including int, char, option, list, etc.
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{HereditarilyFinite-AFP,

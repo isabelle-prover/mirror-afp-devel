@@ -202,7 +202,7 @@ proof -
       by(cases "ys = []")(auto simp add: distinct_map map_replicate_const intro!: inj_onI distinct_concat)
     hence "distinct (rev ?product)" by simp
     moreover have "ceq' = (op = :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
-      using neq ceq' by(auto simp add: ceq_prod_def ID_Some fun_eq_iff)
+      using neq ceq' by (auto simp add: ceq_prod_def ID_Some fun_eq_iff list_all_eq_def)
     ultimately have "equal_base.list_distinct ceq' (rev ?product)" by simp }
   with * 
   show "equal_base.list_distinct ceq' (rev ?product) \<or> ID CEQ('a \<times> 'b) = None"
@@ -386,7 +386,7 @@ lemma member_Id_on: "member (Id_on dxs) = (\<lambda>(x :: 'a, y). x = y \<and> m
 proof -
   have "ID CEQ('a \<times> 'a) = Some op ="
     using equal.equal_eq[where ?'a='a, OF equal_ceq]
-    by(auto simp add: ceq_prod_def ID_ceq_neq_None ID_Some fun_eq_iff split: option.split)
+    by(auto simp add: ceq_prod_def list_all_eq_def ID_ceq_neq_None ID_Some fun_eq_iff split: option.split)
   thus ?thesis
     using equal.equal_eq[where ?'a='a, OF equal_ceq]
     by transfer(auto simp add: ID_ceq_neq_None List.member_def[abs_def] ID_Some intro!: ext split: option.split_asm)
@@ -401,7 +401,7 @@ proof -
   from assms have "ceq' = (op = :: 'a \<Rightarrow> 'a \<Rightarrow> bool)" "ceq' = (op = :: 'b \<Rightarrow> 'b \<Rightarrow> bool)"
     by(auto intro: equal.equal_eq[OF ID_ceq])
   moreover with assms have "ceq' = (op = :: ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool)"
-    by(auto simp add: ceq_prod_def ID_Some fun_eq_iff)
+    by(auto simp add: ceq_prod_def list_all_eq_def ID_Some fun_eq_iff)
   ultimately show ?thesis by(transfer)(auto simp add: List.member_def[abs_def])
 qed
 

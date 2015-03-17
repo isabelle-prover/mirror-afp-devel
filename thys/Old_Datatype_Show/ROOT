@@ -1,0 +1,10 @@
+chapter AFP
+
+session Old_Datatype_Show (AFP) = Old_Datatype_Order_Generator +
+  options [timeout = 600]
+  theories
+    Show_Instances
+    Show_Examples
+  document_files
+    "root.bib"
+    "root.tex"

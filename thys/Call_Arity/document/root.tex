@@ -1,8 +1,30 @@
 \documentclass[11pt,a4paper,parskip=half]{scrartcl}
 \usepackage{isabelle,isabellesym}
 
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
 \usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
 \usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackagetcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
 
 % From src/HOL/HOLCF/document/root
 \newcommand{\isasymnotsqsubseteq}{\isamath{\not\sqsubseteq}}
@@ -56,7 +78,11 @@ Karlsruhe Institute for Technology\\
 \begin{abstract}
 We formalize the Call Arity analysis \cite{tfp}, as implemented in GHC, and prove both functional correctness and, more interestingly, safety (i.e.\ the transformation does not increase allocation). A highlevel overview of the work can be found in \cite{icfp15}.
 
-We use Christian Urban's Nominal2 package \cite{nominal} to define our terms. The functional correctness is defined with regard to a standard denotational semantics, e.g.\ as found in \cite{launchbury}. The operational properties are shown with regard to a small-step semantics akin to Sestoft's mark 1 machine \cite{sestoft}.  We make use of Brian Huffman's HOLCF package for the domain-theoretical aspects of the development \cite{holcf}.
+We use syntax and the denotational semantics from an earlier work \cite{breitner2013}, where we formalized Launchbury's natural semantics for lazy evaluation \cite{launchbury}. 
+The functional correctness of Call Arity is proved with regard to that denotational semantics.
+The operational properties are shown with regard to a small-step semantics akin to Sestoft's mark 1 machine \cite{sestoft}, which we prove to be equivalent to Launchbury's semantics.
+
+We use Christian Urban's Nominal2 package \cite{nominal} to define our terms and make use of Brian Huffman's HOLCF package for the domain-theoretical aspects of the development \cite{holcf}.
 
 \end{abstract}
 
@@ -71,7 +97,7 @@ The following table connects the definitions and theorems from \cite{icfp15} wit
 \begin{longtable}[h]{lll}
 \textsf{Concept} & \textsf{corresponds to} & \textsf{in theory} \\
 \midrule
-Syntax                                                        & \isacommand{nominal-datatype} \isa{expr}                  & \seetheory{Terms} \\
+Syntax                                                        & \isacommand{nominal-datatype} \isa{expr}                  & Terms in \cite{breitner2013} \\
 Stack                                                         & \isacommand{type-synonym} \isa{stack}                     & \seetheory{SestoftConf} \\
 Configuration                                                 & \isacommand{type-synonym} \isa{conf}                      & \seetheory{SestoftConf} \\
 Semantics ($\Rightarrow$)                                     & \isacommand{inductive} \isa{step}                         & \seetheory{Sestoft} \\
@@ -129,35 +155,20 @@ Theorem 1                                                     & \isacommand{lemm
 
 \section{Various Utilities}
 
-\theory{Nominal-Utils}
-\theory{AList-Utils}
-\theory{AList-Utils-Nominal}
-\theory{HOLCF-Join}
-\theory{HOLCF-Join-Classes}
-\theory{Pointwise}
-\theory{HOLCF-Utils}
-\theory{Nominal-HOLCF}
-\theory{Env}
-\theory{Env-Nominal}
 \theory{ConstOn}
 \theory{Set-Cpo}
 \theory{Env-Set-Cpo}
-\theory{Env-HOLCF}
 \theory{AList-Utils-HOLCF}
 \theory{List-Interleavings}
 
 
-\section{Syntax}
-
-\theory{Vars}
-\theory{Terms}
-\theory{Substitution}
-\theory{AnalBinds}
 
 \section{Small-step Semantics}
 \theory{SestoftConf}
 \theory{Sestoft}
 \theory{SestoftGC}
+\theory{BalancedTraces}
+\theory{SestoftCorrect}
 
 \section{Arity}
 \theory{Arity}
@@ -209,6 +220,7 @@ Theorem 1                                                     & \isacommand{lemm
 \theory{TTree-HOLCF}
 
 \section{Trace Tree Cardinality Analysis}
+\theory{AnalBinds}
 \theory{TTreeAnalysisSig}
 \theory{Cardinality-Domain-Lists}
 \theory{TTreeAnalysisSpec}
@@ -239,19 +251,6 @@ Theorem 1                                                     & \isacommand{lemm
 \section{End-to-end Saftey Results and Example}
 \theory{CallArityEnd2End}
 \theory{CallArityEnd2EndSafe}
-
-\section{Denotational semantics domain}
-\theory{Value}
-\theory{Value-Nominal}
-
-\section{Denotational semantics}
-\theory{EvalHeap}
-\theory{HasESem}
-\theory{Iterative}
-\theory{HeapSemantics}
-\theory{AbstractDenotational}
-\theory{Abstract-Denotational-Props}
-\theory{Denotational}
 
 \section{Functional Correctness of the Arity Analysis}
 \theory{ArityAnalysisCorrDenotational}

@@ -3,7 +3,7 @@ chapter AFP
 session "CAVA_Base" (AFP) in "CAVA_Base" = "Collections" +
   options [document = false, timeout = 600]
   theories
-    "../../Datatype_Order_Generator/Derive"
+    "../../Deriving/Derive"
     "CAVA_Base"
     "All_Of_CAVA_Base"
 
