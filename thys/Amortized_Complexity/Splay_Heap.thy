@@ -1,30 +1,45 @@
 section "Splay Heap"
 
 theory Splay_Heap
-imports Amor "~~/src/HOL/Library/Tree"
+imports
+  Amor
+  "~~/src/HOL/Library/Tree"
+  "~~/src/HOL/Library/Multiset"
 begin
 
-text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. *}
+(* FIXME mv *)
+fun mset_tree :: "'a tree \<Rightarrow> 'a multiset" where
+"mset_tree Leaf = {#}" |
+"mset_tree (Node l a r) = {#a#} + mset_tree l + mset_tree r"
+
+lemma set_of_mset_tree[simp]: "set_of (mset_tree t) = set_tree t"
+by(induction t) auto
+
+text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
+priority queues by binary search trees, not by heaps! *}
 
 
 subsection{* Definition and Correctness *}
 
+fun get_min :: "'a tree \<Rightarrow> 'a" where
+"get_min(Node l m r) = (if l = Leaf then m else get_min l)"
+
 fun partition :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree * 'a tree" where
 "partition p Leaf = (Leaf,Leaf)" |
-"partition p (Node l a r) =
+"partition p (Node al a ar) =
   (if a \<le> p then
-     case r of
-       Leaf \<Rightarrow> (Node l a r, Leaf) |
-       Node rl b rr \<Rightarrow>
+     case ar of
+       Leaf \<Rightarrow> (Node al a ar, Leaf) |
+       Node bl b br \<Rightarrow>
          if b \<le> p
-         then let (rrl,rrr) = partition p rr in (Node (Node l a rl) b rrl, rrr)
-         else let (rll,rlr) = partition p rl in (Node l a rll, Node rlr b rr)
-   else case l of
-       Leaf \<Rightarrow> (Leaf, Node l a r) |
-       Node ll b lr \<Rightarrow>
+         then let (pl,pr) = partition p br in (Node (Node al a bl) b pl, pr)
+         else let (pl,pr) = partition p bl in (Node al a pl, Node pr b br)
+   else case al of
+       Leaf \<Rightarrow> (Leaf, Node al a ar) |
+       Node bl b br \<Rightarrow>
          if b \<le> p
-         then let (lrl,lrr) = partition p lr in (Node ll b lrl, Node lrr a r)
-         else let (lll,llr) = partition p ll in (lll, Node llr b (Node lr a r)))" 
+         then let (pl,pr) = partition p br in (Node bl b pl, Node pr a ar)
+         else let (pl,pr) = partition p bl in (pl, Node pr b (Node br a ar)))" 
 
 definition insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert x h = (let (l,r) = partition x h in Node l x r)"
@@ -35,12 +50,24 @@ fun del_min :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "del_min (Node (Node ll a lr) b r) =
   (if ll = Leaf then Node lr b r else Node (del_min ll) a (Node lr b r))"
 
+
+lemma get_min_in:
+  "h \<noteq> Leaf \<Longrightarrow> get_min h \<in> set_tree h"
+by(induction h) auto
+
+lemma get_min_min:
+  "\<lbrakk> bst_eq h; h \<noteq> Leaf \<rbrakk> \<Longrightarrow> \<forall>x \<in> set_tree h. get_min h \<le> x"
+proof(induction h)
+  case (Node l x r) thus ?case using get_min_in[of l] get_min_in[of r]
+    by auto (blast intro: order_trans)
+qed simp
+
 lemma size_partition: "partition p t = (l',r') \<Longrightarrow> size t = size l' + size r'"
 by (induction p t arbitrary: l' r' rule: partition.induct)
    (auto split: if_splits tree.splits prod.splits)
 
-lemma set_partition: "\<lbrakk> bst_eq(t); partition p t = (l',r') \<rbrakk>
- \<Longrightarrow> set_tree t = set_tree l' \<union> set_tree r'"
+lemma mset_partition: "\<lbrakk> bst_eq(t); partition p t = (l',r') \<rbrakk>
+ \<Longrightarrow> mset_tree t = mset_tree l' + mset_tree r'"
 proof(induction p t arbitrary: l' r' rule: partition.induct)
   case 1 thus ?case by simp
 next
@@ -57,11 +84,11 @@ next
       proof cases
         assume "b \<le> p"
         thus ?thesis using Node `a \<le> p` "2.prems" "2.IH"(1)[OF _ Node]
-          by (auto split: prod.splits)
+          by (auto simp: ac_simps split: prod.splits)
       next
         assume "\<not> b \<le> p"
         thus ?thesis using Node `a \<le> p` "2.prems" "2.IH"(2)[OF _ Node]
-          by (auto split: prod.splits)
+          by (auto simp: ac_simps split: prod.splits)
       qed
     qed
   next
@@ -75,15 +102,19 @@ next
       proof cases
         assume "b \<le> p"
         thus ?thesis using Node `\<not> a \<le> p` "2.prems" "2.IH"(3)[OF _ Node]
-          by (auto split: prod.splits)
+          by (auto simp: ac_simps split: prod.splits)
       next
         assume "\<not> b \<le> p"
         thus ?thesis using Node `\<not> a \<le> p` "2.prems" "2.IH"(4)[OF _ Node]
-          by (auto split: prod.splits)
+          by (auto simp: ac_simps split: prod.splits)
       qed
     qed
   qed
 qed
+
+lemma set_partition: "\<lbrakk> bst_eq(t); partition p t = (l',r') \<rbrakk>
+ \<Longrightarrow> set_tree t = set_tree l' \<union> set_tree r'"
+by (metis mset_partition set_of_mset_tree set_of_union)
 
 lemma bst_partition:
   "bst_eq(t) \<Longrightarrow> partition p t = (l',r') \<Longrightarrow> bst_eq (Node l' p r')"
@@ -139,14 +170,26 @@ qed
 lemma size_del_min[simp]: "size(del_min t) = size t - 1"
 by(induction t rule: del_min.induct) (auto simp: neq_Leaf_iff)
 
-lemma set_del_min: "set_tree(del_min t) \<le> set_tree t"
-by (induction t rule: del_min.induct) auto
+lemma mset_del_min: "mset_tree (del_min h) = mset_tree h - {# get_min h #}"
+proof(induction h rule: del_min.induct)
+  case (3 ll)
+  show ?case
+  proof cases
+    assume "ll = Leaf" thus ?thesis using 3 by (simp add: ac_simps)
+  next
+    assume "ll \<noteq> Leaf"
+    hence "get_min ll :# mset_tree ll"
+      by (metis get_min_in mem_set_of_iff set_of_mset_tree)
+    thus ?thesis using 3 by(auto simp: multiset_eq_iff)
+  qed
+qed auto
 
 lemma bst_del_min: "bst_eq t \<Longrightarrow> bst_eq(del_min t)"
 apply(induction t rule: del_min.induct)
   apply simp
  apply simp
-using set_del_min by fastforce
+apply auto
+by (metis Multiset.diff_le_self subsetD set_of_mono set_of_mset_tree mset_del_min)
 
 
 subsection{* Analysis *}

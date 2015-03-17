@@ -23,20 +23,20 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Strongly Normalizing Orders *}
+section \<open>Strongly Normalizing Orders\<close>
 
 theory SN_Orders
 imports Abstract_Rewriting
 begin
 
-text {*
+text \<open>
 We define several classes of orders which are used to build ordered semirings. 
 Note that we do not use Isabelle's preorders since the condition 
    $x > y = x \geq y \wedge  y \not\geq x$
    is sometimes not applicable. E.g., for $\delta$-orders over the rationals
    we have $0.2 \geq 0.1 \wedge 0.1 \not\geq 0.2$, but $0.2 >_\delta 0.1$ does not 
    hold if $\delta$ is larger than $0.1$.
-*}
+\<close>
 class non_strict_order = ord +
   assumes ge_refl: "x \<ge> (x :: 'a)"
   and ge_trans[trans]: "\<lbrakk>x \<ge> y; (y :: 'a) \<ge> z\<rbrakk> \<Longrightarrow> x \<ge> z"
@@ -66,12 +66,12 @@ class ordered_semiring_0 = ordered_ab_semigroup + semiring_0 +
 class ordered_semiring_1 = ordered_semiring_0 + semiring_1 +
   assumes one_ge_zero: "1 \<ge> 0"
 
-text {*
+text \<open>
    We do not use a class to define order-pairs of a strict and a weak-order 
    since often we
    have parametric strict orders, e.g. on rational numbers there are several orders 
    $>$ where $x > y = x \geq y + \delta$ for some parameter $\delta$
-*}
+\<close>
 locale order_pair = 
   fixes gt :: "'a :: {non_strict_order,zero} \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50)
   and default :: "'a"
@@ -305,7 +305,7 @@ proof -
   qed
 qed
 
-text {* non infinitesmal is the same as in the CADE07 bounded increase paper *}  
+text \<open>non infinitesmal is the same as in the CADE07 bounded increase paper\<close>  
 
 definition non_inf :: "'a rel \<Rightarrow> bool"
  where "non_inf r \<equiv> \<forall> a f. \<exists> i. (f i, f (Suc i)) \<notin> r \<or> (f i, a) \<notin> r"

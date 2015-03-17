@@ -23,14 +23,14 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Relative Rewriting *}
+section \<open>Relative Rewriting\<close>
 
 theory Relative_Rewriting
 imports Abstract_Rewriting
 begin
 
-text {*Considering a relation @{term R} relative to another relation @{term S}, i.e.,
-@{term R}-steps may be preceded and followd by arbitrary many @{term S}-steps.*}
+text \<open>Considering a relation @{term R} relative to another relation @{term S}, i.e.,
+@{term R}-steps may be preceded and followed by arbitrary many @{term S}-steps.\<close>
 abbreviation (input) relto :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "relto R S \<equiv> S^* O R O S^*"
 
@@ -254,7 +254,7 @@ proof (unfold SN_rel_on_def)
       have "h i = gg i" using i unfolding h
         by (cases "i < n", auto simp: n)
     } note gg = this
-    from gg[of 0]  `f 0 \<in> T` have h0: "h 0 \<in> T" unfolding start by auto
+    from gg[of 0]  \<open>f 0 \<in> T\<close> have h0: "h 0 \<in> T" unfolding start by auto
     {
       fix i
       have "(h i, h (Suc i)) \<in> R \<union> S"
@@ -350,7 +350,7 @@ proof
     assume "\<exists> as. ideriv R S as \<and> as 0 \<in> T"
     then obtain as where id: "ideriv R S as" and T: "as 0 \<in> T" by auto
     note id = id[unfolded ideriv_def]
-    from `?L`[unfolded SN_rel_on_conv SN_rel_on_alt_def, THEN spec[of _ as]]
+    from \<open>?L\<close>[unfolded SN_rel_on_conv SN_rel_on_alt_def, THEN spec[of _ as]]
       id T obtain i where i: "\<And> j. j \<ge> i \<Longrightarrow> (as j, as (Suc j)) \<notin> R" by auto
     with id[unfolded INFM_nat, THEN conjunct2, THEN spec[of _ "Suc i"]] show False by auto
   qed
@@ -361,7 +361,7 @@ next
   proof(intro allI impI)
     fix as
     assume "chain (R \<union> S) as \<and> as 0 \<in> T"
-    with `?R`[unfolded ideriv_def] have "\<not> (INFM i. (as i, as (Suc i)) \<in> R)" by auto
+    with \<open>?R\<close>[unfolded ideriv_def] have "\<not> (INFM i. (as i, as (Suc i)) \<in> R)" by auto
     from this[unfolded INFM_nat] obtain i where i: "\<And>j. i < j \<Longrightarrow> (as j, as (Suc j)) \<notin> R" by auto
     show "\<not> (INFM j. (as j, as (Suc j)) \<in> R)" unfolding INFM_nat using i by blast
   qed
@@ -523,7 +523,8 @@ lemma SN_rel_alt_s_empty : "SN_rel_alt R {} = SN R"
 
 lemma SN_rel_mono':
   "R \<subseteq> R' \<Longrightarrow> S \<subseteq> R' \<union> S' \<Longrightarrow> SN_rel R' S' \<Longrightarrow> SN_rel R S"
-  unfolding SN_rel_on_conv SN_rel_defs INFM_nat_le by fast
+  unfolding SN_rel_on_conv SN_rel_defs INFM_nat_le
+  by (metis contra_subsetD sup.left_idem sup.mono)
 
 lemma SN_rel_mono:
   assumes R: "R \<subseteq> R'" and S: "S \<subseteq> S'" and SN: "SN_rel R' S'"
@@ -559,7 +560,7 @@ proof
     assume "\<exists> as. ideriv R S as"
     then obtain as where id: "ideriv R S as" by auto
     note id = id[unfolded ideriv_def]
-    from `?L`[unfolded SN_rel_on_conv SN_rel_defs, THEN spec[of _ as]]
+    from \<open>?L\<close>[unfolded SN_rel_on_conv SN_rel_defs, THEN spec[of _ as]]
       id obtain i where i: "\<And> j. j \<ge> i \<Longrightarrow> (as j, as (Suc j)) \<notin> R" by auto
     with id[unfolded INFM_nat, THEN conjunct2, THEN spec[of _ "Suc i"]] show False by auto
   qed
@@ -570,7 +571,7 @@ next
   proof (intro allI impI)
     fix as
     presume "chain (R \<union> S) as"
-    with `?R`[unfolded ideriv_def] have "\<not> (INFM i. (as i, as (Suc i)) \<in> R)" by auto
+    with \<open>?R\<close>[unfolded ideriv_def] have "\<not> (INFM i. (as i, as (Suc i)) \<in> R)" by auto
     from this[unfolded INFM_nat] obtain i where i: "\<And> j. i < j \<Longrightarrow> (as j, as (Suc j)) \<notin> R" by auto
     show "\<not> (INFM j. (as j, as (Suc j)) \<in> R)" unfolding INFM_nat using i by blast
   qed simp
@@ -685,7 +686,7 @@ proof (rule ccontr)
         show ?thesis unfolding 0 g0 by (rule m)
       next
         case (Suc j)
-        with `i \<le> n` have "j < n" by auto
+        with \<open>i \<le> n\<close> have "j < n" by auto
         from steps[OF this] show ?thesis unfolding Suc M' by auto
       qed
     } note min = this
@@ -730,7 +731,7 @@ proof (rule ccontr)
         case False
         hence "i = Suc n1 + (i - Suc n1)" by auto
         then obtain k where i: "i = Suc n1 + k" by auto
-        with `i < ?n` have "k < n2" by auto
+        with \<open>i < ?n\<close> have "k < n2" by auto
         thus ?thesis using seq2 unfolding i by auto
       qed
     qed
@@ -1301,7 +1302,7 @@ proof
   fix f
   assume "\<forall>i. (f i, f (Suc i)) \<in> R"
   hence "\<And>i. (f i, f (Suc i)) \<in> relto R S" by blast
-  thus False using assms unfolding SN_defs by force
+  thus False using assms unfolding SN_defs by blast
 qed
 
 lemma SN_relto_Id:
@@ -1309,7 +1310,7 @@ lemma SN_relto_Id:
   by (simp only: relto_Id)
 
 
-text {*Termination inheritance by transitivity (see, e.g., Geser's thesis).*}
+text \<open>Termination inheritance by transitivity (see, e.g., Geser's thesis).\<close>
 
 lemma trans_subset_SN:
   assumes "trans R" and "R \<subseteq> (r \<union> s)" and "SN r" and "SN s"
@@ -1343,7 +1344,7 @@ proof
       moreover have "(f (g i), f (g (Suc i))) \<in> r \<union> s" using * [OF less] by simp
       ultimately show "(f (g i), f (g (Suc i))) \<in> s" by blast
     qed
-    with `SN s` show False by (auto simp: SN_defs)
+    with \<open>SN s\<close> show False by (auto simp: SN_defs)
   qed
 qed
 

@@ -117,14 +117,14 @@ lemma sin_cos_between_zero_two_pi:
   shows "sin x \<noteq> 0 \<or> cos x \<noteq> 1"
 proof -
   { assume "0 < x" and "x < pi"
-    then have "sin x \<noteq> 0" by (auto dest: sin_gt_zero_pi) }
+    then have "sin x \<noteq> 0" by (auto dest: sin_gt_zero) }
   moreover
   { assume "x = pi"
     then have "cos x \<noteq> 1" by simp }
   moreover
   { assume pi1: "pi < x" and pi2: "x < 2 * pi"
     then have "0 < x - pi" and "x - pi < pi" by arith+
-    then have "sin (x - pi) \<noteq> 0" by (auto dest: sin_gt_zero_pi)
+    then have "sin (x - pi) \<noteq> 0" by (auto dest: sin_gt_zero)
     with pi1 pi2 have "sin x \<noteq> 0" by simp }
   ultimately show ?thesis using 0 pi by arith
 qed

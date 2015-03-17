@@ -22,29 +22,29 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Infinite Sequences *}
+section \<open>Infinite Sequences\<close>
 theory Seq
 imports
   Main
   "~~/src/HOL/Library/Infinite_Set"
 begin
 
-text {*Infinite sequences are represented by functions of type @{typ "nat \<Rightarrow> 'a"}.*}
+text \<open>Infinite sequences are represented by functions of type @{typ "nat \<Rightarrow> 'a"}.\<close>
 type_synonym 'a seq = "nat \<Rightarrow> 'a"
 
 
-subsection {*Operations on Infinite Sequences*}
+subsection \<open>Operations on Infinite Sequences\<close>
 
-text {*An infinite sequence is \emph{linked} by a binary predicate @{term P} if every two
-consecutive elements satisfy it. Such a sequence is called a \emph{@{term P}-chain}. *}
+text \<open>An infinite sequence is \emph{linked} by a binary predicate @{term P} if every two
+consecutive elements satisfy it. Such a sequence is called a \emph{@{term P}-chain}.\<close>
 abbreviation (input) chainp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow>'a seq \<Rightarrow> bool" where
   "chainp P S \<equiv> \<forall>i. P (S i) (S (Suc i))"
 
-text {*Special version for relations.*}
+text \<open>Special version for relations.\<close>
 abbreviation (input) chain :: "'a rel \<Rightarrow> 'a seq \<Rightarrow> bool" where
   "chain r S \<equiv> chainp (\<lambda>x y. (x, y) \<in> r) S"
 
-text {*Extending a chain at the front.*}
+text \<open>Extending a chain at the front.\<close>
 lemma cons_chainp:
   assumes "P x (S 0)" and "chainp P S"
   shows "chainp P (case_nat x S)" (is "chainp P ?S")
@@ -52,12 +52,12 @@ proof
   fix i show "P (?S i) (?S (Suc i))" using assms by (cases i) simp_all
 qed
 
-text {*Special version for relations.*}
+text \<open>Special version for relations.\<close>
 lemma cons_chain:
   assumes "(x, S 0) \<in> r" and "chain r S" shows "chain r (case_nat x S)"
   using cons_chainp[of "\<lambda>x y. (x, y) \<in> r", OF assms] .
 
-text {*A chain admits arbitrary transitive steps.*}
+text \<open>A chain admits arbitrary transitive steps.\<close>
 lemma chainp_imp_relpowp:
   assumes "chainp P S" shows "(P^^j) (S i) (S (i + j))"
 proof (induct "i + j" arbitrary: j)
@@ -88,7 +88,7 @@ proof -
     show ?thesis unfolding trancl_power by force
 qed
 
-text {*A chain admits arbitrary reflexive and transitive steps.*}
+text \<open>A chain admits arbitrary reflexive and transitive steps.\<close>
 lemma chainp_imp_rtranclp:
   assumes "chainp P S" and "i \<le> j" shows "P^** (S i) (S j)"
 proof -
@@ -104,8 +104,8 @@ proof -
   with chain_imp_relpow[OF assms(1), of i n] show ?thesis by (simp add: relpow_imp_rtrancl)
 qed
 
-text {*If for every @{term i} there is a later index @{term "f i"} such that the
-corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.*}
+text \<open>If for every @{term i} there is a later index @{term "f i"} such that the
+corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.\<close>
 lemma stepfun_imp_chainp':
   assumes "\<forall>i\<ge>n::nat. f i \<ge> i \<and> P (S i) (S (f i))"
   shows "chainp P (\<lambda>i. S ((f ^^ i) n))" (is "chainp P ?T")
@@ -137,8 +137,8 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-text {*If for every @{term i} there is a later index @{term j} such that the
-corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.*}
+text \<open>If for every @{term i} there is a later index @{term j} such that the
+corresponding elements satisfy the predicate @{term P}, then there is a @{term P}-chain.\<close>
 lemma steps_imp_chainp':
   assumes "\<forall>i\<ge>n::nat. \<exists>j\<ge>i. P (S i) (S j)" shows "\<exists>T. chainp P T"
 proof -
@@ -153,10 +153,10 @@ lemma steps_imp_chainp:
   using steps_imp_chainp' [of n P S] and assms by force
 
 
-subsection {* Predicates on Natural Numbers *}
+subsection \<open>Predicates on Natural Numbers\<close>
 
-text {*If some property holds for infinitely many natural numbers, obtain
-an index function that points to these numbers in increasing order.*}
+text \<open>If some property holds for infinitely many natural numbers, obtain
+an index function that points to these numbers in increasing order.\<close>
 
 locale infinitely_many =
   fixes p :: "nat \<Rightarrow> bool"
@@ -255,9 +255,9 @@ qed
 end
 
 
-subsection {* Assembling Infinite Words from Finite Words *}
+subsection \<open>Assembling Infinite Words from Finite Words\<close>
 
-text {*Concatenate infinitely many non-empty words to an infinite word.*}
+text \<open>Concatenate infinitely many non-empty words to an infinite word.\<close>
 
 fun inf_concat_simple :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> (nat \<times> nat)" where
   "inf_concat_simple f 0 = (0, 0)"
