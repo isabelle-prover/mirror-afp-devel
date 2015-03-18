@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 signature COMPARATOR_GENERATOR =
 sig
 
@@ -524,7 +529,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                       else 
                         (* different constructors *)
                         unfold_tac ctxt 
-                          (y_simp @ z_simp @ comp_simps @ @{thms triple_trans_different})
+                          (y_simp @ z_simp @ comp_simps @ @{thms trans_order_different})
               in
                 mk_case_tac ctxt [[SOME zt]] case_thm sub_case_tac'
               end
@@ -583,6 +588,9 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val _ = debug_out (@{make_string} comp_thms)
 
     val pcomp_thms = map (fn ((e, s), t) => [e, s, t]) (eq_thms' ~~ sym_thms' ~~ trans_thms')
+    val (_, lthy) = fold_map (fn (thms, cname) =>
+      Local_Theory.note ((Binding.name (cname ^ "_pointwise"), []), thms)) (pcomp_thms ~~ compNs) lthy
+
   in
     ((pcomps ~~ pcomp_simps, comps ~~ comp_defs), lthy)
     ||> fold (fn (((((((tyco, map), pcomp), comp), comp_def), map_comp), pcomp_thms), comp_thm) =>

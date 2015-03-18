@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 section \<open>Generating Comparators\<close>
 
 theory Comparator_Generator
@@ -44,17 +49,17 @@ text \<open>The pointwise properties are important during inductive proofs of so
 lemma comp_lex_eq: "comp_lex os = Eq \<longleftrightarrow> (\<forall> ord \<in> set os. ord = Eq)" 
   by (induct os) (auto split: order.splits)
   
-definition triple_trans :: "order \<Rightarrow> order \<Rightarrow> order \<Rightarrow> bool" where
-  "triple_trans x y z \<longleftrightarrow> x \<noteq> Gt \<longrightarrow> y \<noteq> Gt \<longrightarrow> z \<noteq> Gt \<and> ((x = Lt \<or> y = Lt) \<longrightarrow> z = Lt)"
+definition trans_order :: "order \<Rightarrow> order \<Rightarrow> order \<Rightarrow> bool" where
+  "trans_order x y z \<longleftrightarrow> x \<noteq> Gt \<longrightarrow> y \<noteq> Gt \<longrightarrow> z \<noteq> Gt \<and> ((x = Lt \<or> y = Lt) \<longrightarrow> z = Lt)"
 
-lemma triple_transI:
-  "(x \<noteq> Gt \<Longrightarrow> y \<noteq> Gt \<Longrightarrow> z \<noteq> Gt \<and> ((x = Lt \<or> y = Lt) \<longrightarrow> z = Lt)) \<Longrightarrow> triple_trans x y z"
-  by (simp add: triple_trans_def)
+lemma trans_orderI:
+  "(x \<noteq> Gt \<Longrightarrow> y \<noteq> Gt \<Longrightarrow> z \<noteq> Gt \<and> ((x = Lt \<or> y = Lt) \<longrightarrow> z = Lt)) \<Longrightarrow> trans_order x y z"
+  by (simp add: trans_order_def)
 
-lemma triple_transD:
-  assumes "triple_trans x y z" and "x \<noteq> Gt" and "y \<noteq> Gt"
+lemma trans_orderD:
+  assumes "trans_order x y z" and "x \<noteq> Gt" and "y \<noteq> Gt"
   shows "z \<noteq> Gt" and "x = Lt \<or> y = Lt \<Longrightarrow> z = Lt"
-  using assms by (auto simp: triple_trans_def)
+  using assms by (auto simp: trans_order_def)
 
 lemma All_less_Suc:
   "(\<forall>i < Suc x. P i) \<longleftrightarrow> P 0 \<and> (\<forall>i < x. P (Suc i))"
@@ -63,16 +68,16 @@ lemma All_less_Suc:
 lemma comp_lex_trans:
   assumes "length xs = length ys"
     and "length ys = length zs"
-    and "\<forall> i < length zs. triple_trans (xs ! i) (ys ! i) (zs ! i)"
-  shows "triple_trans (comp_lex xs) (comp_lex ys) (comp_lex zs)"
+    and "\<forall> i < length zs. trans_order (xs ! i) (ys ! i) (zs ! i)"
+  shows "trans_order (comp_lex xs) (comp_lex ys) (comp_lex zs)"
 using assms
 proof (induct xs ys zs rule: list_induct3)
   case (Cons x xs y ys z zs)
   then show ?case
-    by (intro triple_transI)
+    by (intro trans_orderI)
        (cases x y z rule: order.exhaust [case_product order.exhaust order.exhaust],
-        auto simp: All_less_Suc dest: triple_transD)
-qed (simp add: triple_trans_def)
+        auto simp: All_less_Suc dest: trans_orderD)
+qed (simp add: trans_order_def)
 
 lemma comp_lex_sym:
   assumes "length xs = length ys"
@@ -107,15 +112,15 @@ lemma sym_pcompI:
 
 
 definition trans_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
-  "trans_pcomp acomp x \<longleftrightarrow> (\<forall> y z. triple_trans (acomp x y) (acomp y z) (acomp x z))"
+  "trans_pcomp acomp x \<longleftrightarrow> (\<forall> y z. trans_order (acomp x y) (acomp y z) (acomp x z))"
 
 lemma trans_pcompD:
   assumes "trans_pcomp acomp x"
-  shows "triple_trans (acomp x y) (acomp y z) (acomp x z)"
+  shows "trans_order (acomp x y) (acomp y z) (acomp x z)"
   using assms unfolding trans_pcomp_def by blast+
 
 lemma trans_pcompI:
-  assumes "\<And> y z. triple_trans (acomp x y) (acomp y z) (acomp x z)"
+  assumes "\<And> y z. trans_order (acomp x y) (acomp y z) (acomp x z)"
   shows "trans_pcomp acomp x"
   using assms unfolding trans_pcomp_def by blast
 
@@ -156,10 +161,10 @@ lemma eq_compD: "eq_comp acomp \<Longrightarrow> acomp x y = Eq \<longleftrighta
 lemma eq_compI: "(\<And> x y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> eq_comp acomp"
   by (intro eq_compI2 eq_pcompI)
 
-lemma trans_compD: "trans_comp acomp \<Longrightarrow> triple_trans (acomp x y) (acomp y z) (acomp x z)"
+lemma trans_compD: "trans_comp acomp \<Longrightarrow> trans_order (acomp x y) (acomp y z) (acomp x z)"
   by (rule trans_pcompD[OF trans_compD2])
 
-lemma trans_compI: "(\<And> x y z. triple_trans (acomp x y) (acomp y z) (acomp x z)) \<Longrightarrow> trans_comp acomp"
+lemma trans_compI: "(\<And> x y z. trans_order (acomp x y) (acomp y z) (acomp x z)) \<Longrightarrow> trans_comp acomp"
   by (intro trans_compI2 trans_pcompI)
 
 lemma sym_compD:
@@ -183,7 +188,7 @@ proof
   }
   {
     assume "acomp x y = Lt" and "acomp y z = Lt"
-    with triple_transD [OF trans_compD [OF `trans_comp acomp`], of x y z]
+    with trans_orderD [OF trans_compD [OF `trans_comp acomp`], of x y z]
     show "acomp x z = Lt" by auto
   }
 qed
@@ -196,7 +201,7 @@ proof -
   show "eq_comp acomp" using eq by (intro eq_compI, auto)
   show "sym_comp acomp" using sym by (intro sym_compI, auto)
   show "trans_comp acomp"
-  proof (intro trans_compI triple_transI)
+  proof (intro trans_compI trans_orderI)
     fix x y z
     assume "acomp x y \<noteq> Gt" "acomp y z \<noteq> Gt"
     thus "acomp x z \<noteq> Gt \<and> (acomp x y = Lt \<or> acomp y z = Lt \<longrightarrow> acomp x z = Lt)"
@@ -229,11 +234,11 @@ lemma forall_finite: "(\<forall> i < (0 :: nat). P i) = True"
    "(\<forall> i < Suc (Suc x). P i) = (P 0 \<and> (\<forall> i < Suc x. P (Suc i)))"
   by (auto, case_tac i, auto)
   
-lemma triple_trans_different:
-  "triple_trans a b Lt"
-  "triple_trans Gt b c"
-  "triple_trans a Gt c"
-  by (intro triple_transI, auto)+
+lemma trans_order_different:
+  "trans_order a b Lt"
+  "trans_order Gt b c"
+  "trans_order a Gt c"
+  by (intro trans_orderI, auto)+
 
 lemma length_nth_simps: 
   "length [] = 0" "length (x # xs) = Suc (length xs)" 

@@ -5,6 +5,7 @@ theory RBT_Mapping2
 imports
   Collection_Order
   RBT_ext
+  "../Deriving/Comparator_Generator/RBT_Comparator_Impl"
 begin
 
 section {* Mappings implemented by red-black trees *}
@@ -71,26 +72,26 @@ setup_lifting type_definition_mapping_rbt'
 
 context fixes dummy :: "'a :: ccompare" begin
 
-lift_definition lookup :: "('a, 'b) mapping_rbt \<Rightarrow> 'a \<rightharpoonup> 'b" is "ord.rbt_lookup cless" .
+lift_definition lookup :: "('a, 'b) mapping_rbt \<Rightarrow> 'a \<rightharpoonup> 'b" is "rbt_comp_lookup ccomp" .
 
 lift_definition empty :: "('a, 'b) mapping_rbt" is "RBT_Impl.Empty"
 by(simp add: ord.Empty_is_rbt)
 
 lift_definition insert :: "'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" is
-  "ord.rbt_insert cless"
-by(auto 4 3 intro: linorder.rbt_insert_is_rbt ID_ccompare)
+  "rbt_comp_insert ccomp"
+by(auto 4 3 intro: linorder.rbt_insert_is_rbt ID_ccompare simp: rbt_comp_insert[OF ID_ccompare'])
 
 lift_definition delete :: "'a \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" is
-  "ord.rbt_delete cless"
-by(auto 4 3 intro: linorder.rbt_delete_is_rbt ID_ccompare)
+  "rbt_comp_delete ccomp"
+by(auto 4 3 intro: linorder.rbt_delete_is_rbt ID_ccompare simp: rbt_comp_delete[OF ID_ccompare'])
 
 lift_definition bulkload :: "('a \<times> 'b) list \<Rightarrow> ('a, 'b) mapping_rbt" is
-  "ord.rbt_bulkload cless"
-by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_ccompare)
+  "rbt_comp_bulkload ccomp"
+by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_ccompare simp: rbt_comp_bulkload[OF ID_ccompare'])
 
 lift_definition map_entry :: "'a \<Rightarrow> ('b \<Rightarrow> 'b) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" is
-  "ord.rbt_map_entry cless"
-by(simp add: ord.rbt_map_entry_is_rbt)
+  "rbt_comp_map_entry ccomp"
+by(auto simp: ord.rbt_map_entry_is_rbt rbt_comp_map_entry[OF ID_ccompare'])
 
 lift_definition map :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'c) mapping_rbt" is "RBT_Impl.map"
 by(simp add: ord.map_is_rbt)
@@ -109,13 +110,13 @@ by(auto intro!: linorder.is_rbt_rbtreeify ID_ccompare linorder.sorted_filter lin
 
 lift_definition join ::
   "('a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt"
-is "ord.rbt_union_with_key cless"
-by(auto 4 3 intro: linorder.is_rbt_rbt_unionwk ID_ccompare)
+is "rbt_comp_union_with_key ccomp"
+by(auto 4 3 intro: linorder.is_rbt_rbt_unionwk ID_ccompare simp: rbt_comp_union_with_key[OF ID_ccompare'])
 
 lift_definition meet ::
   "('a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> ('a, 'b) mapping_rbt" 
-is "ord.rbt_inter_with_key cless"
-by(auto 4 3 intro: linorder.rbt_interwk_is_rbt ID_ccompare ord.is_rbt_rbt_sorted)
+is "rbt_comp_inter_with_key ccomp"
+by(auto 4 3 intro: linorder.rbt_interwk_is_rbt ID_ccompare ord.is_rbt_rbt_sorted simp: rbt_comp_inter_with_key[OF ID_ccompare'])
 
 lift_definition all :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) mapping_rbt \<Rightarrow> bool" 
 is "RBT_Impl_rbt_all" .
@@ -147,11 +148,11 @@ lemma unfoldr_rbt_entries_generator:
 
 lemma lookup_RBT:
   "ord.is_rbt cless t \<Longrightarrow>
-  lookup (Mapping_RBT t) = ord.rbt_lookup cless t"
+  lookup (Mapping_RBT t) = rbt_comp_lookup ccomp t"
 by(simp add: lookup_def Mapping_RBT_inverse)
 
 lemma lookup_impl_of:
-  "ord.rbt_lookup cless (impl_of t) = lookup t"
+  "rbt_comp_lookup ccomp (impl_of t) = lookup t"
 by(transfer) simp
 
 lemma entries_impl_of:
@@ -180,6 +181,11 @@ begin
 lemma mapping_linorder: "class.linorder (cless_eq :: 'a \<Rightarrow> 'a \<Rightarrow> bool) cless"
 using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare)
 
+lemma mapping_comparator: "comparator (ccomp :: 'a comparator)"
+using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare')
+
+lemmas rbt_comp[simp] = rbt_comp_simps[OF mapping_comparator]
+
 lemma is_rbt_impl_of [simp, intro]:
   fixes t :: "('a, 'b) mapping_rbt"
   shows "ord.is_rbt cless (impl_of t)"
@@ -187,7 +193,8 @@ using ID_ccompare_neq_None impl_of [of t] by auto
 
 lemma lookup_insert [simp]:
   "lookup (insert (k :: 'a) v t) = (lookup t)(k \<mapsto> v)"
-by transfer(simp add: ID_ccompare_neq_None linorder.rbt_lookup_rbt_insert[OF mapping_linorder])
+by transfer (simp add: ID_ccompare_neq_None 
+  linorder.rbt_lookup_rbt_insert[OF mapping_linorder])
 
 lemma lookup_delete [simp]:
   "lookup (delete (k :: 'a) t) = (lookup t)(k := None)"
@@ -257,7 +264,12 @@ by transfer(auto simp add: ID_ccompare_neq_None linorder.rbt_lookup_keys[OF mapp
 lemma diag_lookup:
   "lookup (diag t) = (\<lambda>(k :: 'a, k'). if k = k' then lookup t k else None)"
 using linorder.rbt_lookup_RBT_Impl_diag[where ?'b='b, OF mapping_linorder]
-by transfer(clarsimp simp add: ID_ccompare_neq_None ccompare_prod_def lt_of_comp_less_prod ID_Some split: option.split)
+apply transfer
+apply (clarsimp simp add: ID_ccompare_neq_None ccompare_prod_def lt_of_comp_less_prod[symmetric] 
+  rbt_comp_lookup[OF comparator_prod[OF mapping_comparator mapping_comparator], symmetric]
+  ID_Some split: option.split) 
+apply (unfold rbt_comp_lookup[OF mapping_comparator], simp)
+done
 
 context assumes ID_ccompare_neq_None': "ID CCOMPARE('b :: ccompare) \<noteq> None"
 begin
@@ -265,17 +277,25 @@ begin
 lemma mapping_linorder': "class.linorder (cless_eq :: 'b \<Rightarrow> 'b \<Rightarrow> bool) cless"
 using ID_ccompare_neq_None' by(clarsimp)(rule ID_ccompare)
 
-lemma cless_prod_eq_less_prod:
-  "cless = (less_prod cless_eq cless cless :: 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool)"
-by(simp add: ccompare_prod_def lt_of_comp_less_prod ID_ccompare_neq_None ID_ccompare_neq_None' ID_Some split: option.splits)
+lemma mapping_comparator': "comparator (ccomp :: 'b comparator)"
+using ID_ccompare_neq_None' by(clarsimp)(rule ID_ccompare')
+
+lemmas rbt_comp'[simp] = rbt_comp_simps[OF mapping_comparator']
+
+lemma ccomp_comparator_prod:
+  "ccomp = (comparator_prod ccomp ccomp :: ('a \<times> 'b)comparator)"
+  by(simp add: ccompare_prod_def lt_of_comp_less_prod ID_ccompare_neq_None ID_ccompare_neq_None' ID_Some split: option.splits)
 
 lemma lookup_product: 
   "lookup (product f rbt1 rbt2) (a :: 'a, b :: 'b) = 
   (case lookup rbt1 a of None \<Rightarrow> None
    | Some c \<Rightarrow> map_option (f a c b) (lookup rbt2 b))"
 using mapping_linorder mapping_linorder'
-by transfer(simp add: cless_prod_eq_less_prod ID_ccompare_neq_None ID_ccompare_neq_None' rbt_lookup_rbt_product)
-
+apply transfer
+apply (unfold ccomp_comparator_prod rbt_comp_lookup[OF comparator_prod[OF mapping_comparator mapping_comparator']]
+  rbt_comp rbt_comp' lt_of_comp_less_prod)
+apply (simp add: ID_ccompare_neq_None ID_ccompare_neq_None' rbt_lookup_rbt_product)
+done
 end
 
 end

@@ -233,7 +233,7 @@ lemma showsp_list_cong [fundef_cong]:
     (\<And>p x. x \<in> set ys \<Longrightarrow> f p x = g p x) \<Longrightarrow> showsp_list f p xs = showsp_list g q ys"
   by (simp add: showsp_list_code cong: shows_list_gen_cong)
 
-abbreviation shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr "+#+" 10)
+abbreviation (input) shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr "+#+" 10)
 where
   "s +#+ p \<equiv> shows_string s \<circ> p"
 

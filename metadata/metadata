@@ -965,6 +965,7 @@ extra-history =
 [Containers]
 title = Light-weight Containers
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/detail.html?persid=193410>
+contributors = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-04-15
 topic = Computer Science/Data Structures
 abstract =

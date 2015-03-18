@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 signature EQUALITY_GENERATOR =
 sig
 
@@ -460,6 +465,9 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
       Local_Theory.note ((Binding.name cname, []), [thm])) (comp_thms ~~ compNs) lthy
 
     val _ = debug_out (@{make_string} comp_thms)
+
+    val (_, lthy) = fold_map (fn (thm, cname) =>
+      Local_Theory.note ((Binding.name (cname ^ "_pointwise"), []), [thm])) (eq_thms' ~~ compNs) lthy
 
   in
     ((pcomps ~~ pcomp_simps, comps ~~ comp_defs), lthy)

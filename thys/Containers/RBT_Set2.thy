@@ -96,6 +96,17 @@ where
    in if 2 * h1 \<le> h2 then rbtreeify (fold_rev (\<lambda>k v kvs. if rbt_lookup t2 k = None then (k, v) # kvs else kvs) t1 [])
       else RBT_Impl.fold (\<lambda>k v. rbt_delete k) t2 t1)"
 
+definition rbt_comp_minus :: "'a comparator \<Rightarrow> ('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt \<Rightarrow> ('a, 'b) rbt"
+where
+  "rbt_comp_minus c t1 t2 =
+  (let h1 = bheight t1; h2 = bheight t2
+   in if 2 * h1 \<le> h2 then rbtreeify (fold_rev (\<lambda>k v kvs. if rbt_comp_lookup c t2 k = None then (k, v) # kvs else kvs) t1 [])
+      else RBT_Impl.fold (\<lambda>k v. rbt_comp_delete c k) t2 t1)"
+
+lemma rbt_comp_minus: assumes c: "comparator c"
+  shows "rbt_comp_minus c = ord.rbt_minus (lt_of_comp c)"
+  by (intro ext, unfold rbt_comp_minus_def ord.rbt_minus_def, auto simp: rbt_comp_simps[OF c])
+  
 context linorder begin
 
 lemma sorted_fst_foldr_Cons:
@@ -131,7 +142,7 @@ where "Set_RBT \<equiv> Mapping_RBT"
 subsection {* Primitive operations *}
 
 lift_definition member :: "'a :: ccompare set_rbt \<Rightarrow> 'a \<Rightarrow> bool" is
-  "\<lambda>t x. x \<in> dom (ord.rbt_lookup cless t)" .
+  "\<lambda>t x. x \<in> dom (rbt_comp_lookup ccomp t)" .
 
 abbreviation empty :: "'a :: ccompare set_rbt"
 where "empty \<equiv> RBT_Mapping2.empty"
@@ -143,8 +154,8 @@ abbreviation remove :: "'a :: ccompare \<Rightarrow> 'a set_rbt \<Rightarrow> 'a
 where "remove \<equiv> RBT_Mapping2.delete"
 
 lift_definition bulkload :: "'a :: ccompare list \<Rightarrow> 'a set_rbt" is
-  "ord.rbt_bulkload cless \<circ> map (\<lambda>x. (x, ()))"
-by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_ccompare)
+  "rbt_comp_bulkload ccomp \<circ> map (\<lambda>x. (x, ()))"
+by(auto 4 3 intro: linorder.rbt_bulkload_is_rbt ID_ccompare simp: rbt_comp_bulkload[OF ID_ccompare'])
 
 abbreviation is_empty :: "'a :: ccompare set_rbt \<Rightarrow> bool"
 where "is_empty \<equiv> RBT_Mapping2.is_empty"
@@ -156,12 +167,12 @@ abbreviation inter :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightar
 where "inter \<equiv> RBT_Mapping2.meet (\<lambda>_ _. id)"
 
 lift_definition inter_list :: "'a :: ccompare set_rbt \<Rightarrow> 'a list \<Rightarrow> 'a set_rbt" is
-  "\<lambda>t xs. fold (\<lambda>k. ord.rbt_insert cless k ()) [x \<leftarrow> xs. ord.rbt_lookup cless t x \<noteq> None] RBT_Impl.Empty"
-by(auto 4 3 intro: ID_ccompare linorder.is_rbt_fold_rbt_insert ord.Empty_is_rbt)
+  "\<lambda>t xs. fold (\<lambda>k. rbt_comp_insert ccomp k ()) [x \<leftarrow> xs. rbt_comp_lookup ccomp t x \<noteq> None] RBT_Impl.Empty"
+by(auto 4 3 intro: ID_ccompare linorder.is_rbt_fold_rbt_insert ord.Empty_is_rbt simp: rbt_comp_simps[OF ID_ccompare'])
 
 lift_definition minus :: "'a :: ccompare set_rbt \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt" is 
-  "ord.rbt_minus cless"
-by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_ccompare)
+  "rbt_comp_minus ccomp"
+by(auto 4 3 intro: linorder.is_rbt_rbt_minus ID_ccompare simp: rbt_comp_minus[OF ID_ccompare'])
 
 abbreviation filter :: "('a :: ccompare \<Rightarrow> bool) \<Rightarrow> 'a set_rbt \<Rightarrow> 'a set_rbt"
 where "filter P \<equiv> RBT_Mapping2.filter (P \<circ> fst)"
@@ -219,18 +230,23 @@ begin
 lemma set_linorder: "class.linorder (cless_eq :: 'a \<Rightarrow> 'a \<Rightarrow> bool) cless"
 using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare)
 
+lemma ccomp_comparator: "comparator (ccomp :: 'a comparator)"
+  using ID_ccompare_neq_None by(clarsimp)(rule ID_ccompare')
+  
+lemmas rbt_comps = rbt_comp_simps[OF ccomp_comparator] rbt_comp_minus[OF ccomp_comparator] 
+
 lemma is_rbt_impl_of [simp, intro]:
   fixes t :: "'a set_rbt"
   shows "ord.is_rbt cless (RBT_Mapping2.impl_of t)"
   using ID_ccompare_neq_None impl_of [of t] by auto
 
 lemma member_RBT:
-  "ord.is_rbt cless t \<Longrightarrow> member (Set_RBT t) x \<longleftrightarrow> ord.rbt_lookup cless t x = Some ()"
-by(auto simp add: member_def Mapping_RBT_inverse)
+  "ord.is_rbt cless t \<Longrightarrow> member (Set_RBT t) (x :: 'a) \<longleftrightarrow> ord.rbt_lookup cless t x = Some ()"
+by(auto simp add: member_def Mapping_RBT_inverse rbt_comps)
 
 lemma member_impl_of:
-  "ord.rbt_lookup cless (RBT_Mapping2.impl_of t) x = Some () \<longleftrightarrow> member t x"
-by transfer auto
+  "ord.rbt_lookup cless (RBT_Mapping2.impl_of t) (x :: 'a) = Some () \<longleftrightarrow> member t x"
+by transfer (auto simp: rbt_comps)
 
 lemma member_insert [simp]:
   "member (insert x (t :: 'a set_rbt)) = (member t)(x := True)"
@@ -246,7 +262,7 @@ by transfer (simp add: linorder.rbt_lookup_rbt_delete[OF set_linorder] ID_ccompa
 
 lemma member_bulkload [simp]:
   "member (bulkload xs) (x :: 'a) \<longleftrightarrow> x \<in> set xs"
-by transfer (auto simp add: linorder.rbt_lookup_rbt_bulkload[OF set_linorder] map_of_map_Pair_const split: split_if_asm)
+by transfer (auto simp add: linorder.rbt_lookup_rbt_bulkload[OF set_linorder] rbt_comps map_of_map_Pair_const split: split_if_asm)
 
 lemma member_conv_keys: "member t = (\<lambda>x :: 'a. x \<in> set (keys t))"
 by(transfer)(simp add: ID_ccompare_neq_None linorder.rbt_lookup_keys[OF set_linorder] ord.is_rbt_rbt_sorted)
@@ -272,7 +288,7 @@ by(auto simp add: member_lookup fun_eq_iff lookup_join[OF ID_ccompare_neq_None] 
 
 lemma member_minus [simp]:
   "member (minus (t1 :: 'a set_rbt) t2) = (\<lambda>x. member t1 x \<and> \<not> member t2 x)"
-by(transfer)(auto simp add: ID_ccompare_neq_None fun_eq_iff linorder.rbt_lookup_rbt_minus[OF set_linorder] ord.is_rbt_rbt_sorted)
+by(transfer)(auto simp add: ID_ccompare_neq_None fun_eq_iff rbt_comps linorder.rbt_lookup_rbt_minus[OF set_linorder] ord.is_rbt_rbt_sorted)
 
 lemma member_inter [simp]:
   "member (inter (t1 :: 'a set_rbt) t2) = (\<lambda>x. member t1 x \<and> member t2 x)"
@@ -299,7 +315,7 @@ lemma ex_conv_ex_member:
 by(simp add: member_lookup ex_conv_ex_lookup[OF ID_ccompare_neq_None])
 
 lemma finite_member: "finite (Collect (RBT_Set2.member (t :: 'a set_rbt)))"
-by transfer (simp add: linorder.finite_dom_rbt_lookup[OF set_linorder])
+by transfer (simp add: rbt_comps linorder.finite_dom_rbt_lookup[OF set_linorder])
 
 lemma member_Id_on: "member (Id_on t) = (\<lambda>(k :: 'a, k'). k = k' \<and> member t k)"
 by(simp add: member_lookup[abs_def] diag_lookup[OF ID_ccompare_neq_None] fun_eq_iff)

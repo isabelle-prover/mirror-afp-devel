@@ -86,8 +86,8 @@ by(simp_all split: option.split)(transfer, simp)+
 
 declare [[code drop: Mapping.keys]]
 
-theorem (in ord) rbt_lookup_map_const: "rbt_lookup (RBT_Impl.map (\<lambda>_. f) t) = map_option f \<circ> rbt_lookup t"
-by(induct t)(simp_all add: fun_eq_iff)
+theorem rbt_comp_lookup_map_const: "rbt_comp_lookup c (RBT_Impl.map (\<lambda>_. f) t) = map_option f \<circ> rbt_comp_lookup c t"
+by(induct t)(auto simp: fun_eq_iff split: order.split)
 
 lemma keys_Mapping [code]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
@@ -98,7 +98,7 @@ proof -
   show ?Mapping by transfer auto
   show ?Assoc_List by simp(transfer, auto intro: rev_image_eqI)
   show ?RBT
-    by(simp add: RBT_set_def)(transfer, auto simp add: ord.rbt_lookup_map_const o_def)
+    by(simp add: RBT_set_def, transfer, auto simp add: rbt_comp_lookup_map_const o_def)
 qed
 
 declare [[code drop: Mapping.size]]
