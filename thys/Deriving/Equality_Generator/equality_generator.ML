@@ -466,6 +466,9 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
 
     val _ = debug_out (@{make_string} comp_thms)
 
+    val (_, lthy) = fold_map (fn (thm, cname) =>
+      Local_Theory.note ((Binding.name (cname ^ "_pointwise"), []), [thm])) (eq_thms' ~~ compNs) lthy
+
   in
     ((pcomps ~~ pcomp_simps, comps ~~ comp_defs), lthy)
     ||> fold (fn (((((((tyco, map), pcomp), comp), comp_def), map_comp) , peq_thm), comp_thm) =>
