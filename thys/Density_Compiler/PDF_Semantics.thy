@@ -169,7 +169,7 @@ lemma measurable_poisson_density'[measurable]:
     "split poisson_density' \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
 proof -
   have "split poisson_density' =
-    (\<lambda>(rate, k). rate ^ nat k / fact (nat k) * exp (-rate) * indicator ({0 <..} \<times> {0..}) (rate, k))"
+    (\<lambda>(rate, k). rate ^ nat k / real_of_nat (fact (nat k)) * exp (-rate) * indicator ({0 <..} \<times> {0..}) (rate, k))"
     by (auto split: split_indicator simp: fun_eq_iff poisson_density'_def)
   then show ?thesis
     by simp
