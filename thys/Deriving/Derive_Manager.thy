@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 section \<open>Derive Manager\<close>
 
 theory Derive_Manager

@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 subsection \<open>Defining Equality-Functions for Common Types\<close>
 
 theory Equality_Instances

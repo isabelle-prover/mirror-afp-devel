@@ -1,3 +1,5 @@
+(* Author:  René Thiemann, UIBK *)
+(* This generator was written as part of the IsaFoR/CeTA formalization. *)
 signature CCOMPARE_GENERATOR =
 sig
 

@@ -1,3 +1,8 @@
+(*  Title:       Deriving class instances for datatypes
+    Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
+    Maintainer:  Christian Sternagel and René Thiemann 
+    License:     LGPL
+*)
 signature COMPARE_GENERATOR =
 sig
 (* derives a compare-instance for a given class. depending on the comparator_type, this will
