@@ -529,7 +529,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                       else 
                         (* different constructors *)
                         unfold_tac ctxt 
-                          (y_simp @ z_simp @ comp_simps @ @{thms triple_trans_different})
+                          (y_simp @ z_simp @ comp_simps @ @{thms trans_order_different})
               in
                 mk_case_tac ctxt [[SOME zt]] case_thm sub_case_tac'
               end
