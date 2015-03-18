@@ -36,8 +36,9 @@ fun change_compare_code const inst_names lthy =
     val types = Term.add_tvars const' []
     val ctyp_of = TVar #> Thm.ctyp_of lthy
     val _ = lambda
+    fun filt s = not (member (op =) (@{sort ord} @ @{sort linorder} @ @{sort order}) s)
     val map_types = maps (fn ty => if List.exists (fn tn => tn = (fst o fst) ty) inst_names then 
-      [(ctyp_of ty, ctyp_of (apsnd (fn ss => ss @ @{sort compare_order}) ty))] else 
+      [(ctyp_of ty, ctyp_of (apsnd (fn ss => filter filt ss @ @{sort compare_order}) ty))] else 
       []) types
     val code_eqs = map (Thm.instantiate (map_types, [])) code_eqs 
 
@@ -48,7 +49,9 @@ fun change_compare_code const inst_names lthy =
       "Perhaps you have to provide some type variables which should be restricted to compare_order\n" ^
       (@{make_string} (map TVar types ~~ map snd types, const', code_eqs))) 
       else ()
-    val lthy = Local_Theory.note ((Binding.empty, @{attributes [code]}), new_code_eqs) lthy |> snd    
+    val lthy = Local_Theory.note (
+      (Binding.name (Long_Name.base_name cname ^ "_compare_code"), @{attributes [code]}), new_code_eqs) lthy 
+      |> snd    
   in
     lthy
   end
