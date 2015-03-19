@@ -10,15 +10,16 @@ imports
   Compare_Instances
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Product_Lexorder"
+  "~~/src/HOL/Library/Option_ord"
 begin
 
 text \<open>We now also instantiate class @{class compare_order} and not only @{class compare}.
   Here, we also prove that our definitions do not clash with existing orders on
-  @{type list} and @{type prod}.
+  @{type list}, @{type option}, and @{type prod}.
   
-  For @{type sum} and @{type option} we just define the linear orders via their comparator.\<close>
+  For @{type sum} we just define the linear orders via their comparator.\<close>
 
-derive compare_order sum option
+derive compare_order sum
 
 instance list :: (compare_order)compare_order
 proof
@@ -87,6 +88,25 @@ proof
     fix xy1 xy2 :: "('a,'b)prod"
     show "lt_of_comp (comparator_prod comparator_of comparator_of) xy1 xy2 = (xy1 < xy2)"
       by (cases xy1, cases xy2, auto)
+  qed
+qed
+
+instance option :: (compare_order)compare_order
+proof
+  note [simp] = le_of_comp_def lt_of_comp_def comparator_of_def
+  show "le_of_comp (compare :: 'a option comparator) = op \<le>" 
+    unfolding compare_option_def compare_is_comparator_of 
+  proof (intro ext)
+    fix xy1 xy2 :: "'a option"
+    show "le_of_comp (comparator_option comparator_of) xy1 xy2 = (xy1 \<le> xy2)"
+      by (cases xy1, (cases xy2, auto split: if_splits)+)
+  qed
+  show "lt_of_comp (compare :: 'a option comparator) = op <" 
+    unfolding compare_option_def compare_is_comparator_of 
+  proof (intro ext)
+    fix xy1 xy2 :: "'a option"
+    show "lt_of_comp (comparator_option comparator_of) xy1 xy2 = (xy1 < xy2)"
+      by (cases xy1, (cases xy2, auto split: if_splits)+)
   qed
 qed
 
