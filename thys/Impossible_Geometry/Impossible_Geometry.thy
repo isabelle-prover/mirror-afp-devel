@@ -1315,25 +1315,6 @@ theorem impossibility_of_doubling_the_cube:
 
 subsection {* Proving the impossibility of trisecting an angle *}
 
-lemma cos_3:
-  fixes x :: "'a::{real_normed_field,banach}"
-  shows "cos(3 * x) = 4 * (cos x)^3 - 3 * (cos x)"
-proof-
-  have "cos (3 * x) = cos (x + 2*x)"
-    by simp
-  also have "... = cos x * (cos x * cos x - sin x * sin x) - sin x * (sin x * cos x + cos x * sin x)"
-    by (metis cos_add mult_2 sin_add)
-  also have "... = cos x * (cos x * cos x - (1 - cos x * cos x)) - sin x * (sin x * cos x + cos x * sin x)"
-    using sin_squared_eq [of x] by (auto simp add: power2_eq_square)
-  also have "... = cos x * (2 * cos x * cos x) + cos x * ( - 1) - sin x * sin x * cos x - sin x * sin x * cos x"
-    by (auto simp add: algebra_simps) 
-  also have "... = 2* cos x * cos x * cos x - cos x - (1 - cos x * cos x) * cos x - (1 - cos x * cos x) * cos x"
-    using sin_squared_eq [of x] by (auto simp add: power2_eq_square)
-  also have "... = 4 * cos x ^3 - 3 * cos x"
-    by (simp add: algebra_simps power_def)
-  finally show ?thesis .
-qed
-
 lemma impossibility_of_trisecting_pi_over_3_lemma:
   assumes x: "x \<in> radical_sqrt"
   and x_eqn: "x^3 - 3 * x - 1 = 0"
@@ -1396,7 +1377,7 @@ theorem impossibility_of_trisecting_angle_pi_over_3:
   "Point (cos (pi / 9)) 0 \<notin> constructible"
 proof-
   have "cos (3 *(pi/9)) = 4 * (cos (pi/9))^3 - 3 * cos (pi/9)" 
-    using cos_3 [of "pi / 9"]
+    using cos_treble_cos [of "pi / 9"]
     by auto
   hence "1/2 = 4 * (cos (pi/9))^3 - 3 * cos (pi/9)" 
     by (simp add: cos_60)
