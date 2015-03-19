@@ -226,7 +226,9 @@ done
 
 ML {*
   ML_Thms.bind_thm ("trancl_induct3", Split_Rule.split_rule @{context}
-    (Rule_Insts.read_instantiate @{context} [(("a", 0), "(ax,ay,az)"), (("b", 0), "(bx,by,bz)")] []
+    (Rule_Insts.read_instantiate @{context}
+      [((("a", 0), Position.none), "(ax, ay, az)"),
+       ((("b", 0), Position.none), "(bx, by, bz)")] []
       @{thm tranclp_induct}));
 *}
 
@@ -553,7 +555,9 @@ inductive_cases execs_elim_cases [cases set]:
 
 ML {*
   ML_Thms.bind_thm ("converse_rtrancl_induct3", Split_Rule.split_rule @{context}
-    (Rule_Insts.read_instantiate @{context} [(("a", 0), "(cs,css,s)"), (("b", 0), "(cs',css',t)")] []
+    (Rule_Insts.read_instantiate @{context}
+      [((("a", 0), Position.none), "(cs, css, s)"),
+       ((("b", 0), Position.none), "(cs', css', t)")] []
       @{thm converse_rtranclp_induct}));
 *}
 
@@ -977,8 +981,10 @@ qed
 
 ML {*
   ML_Thms.bind_thm ("rtrancl_induct3", Split_Rule.split_rule @{context}
-    (Rule_Insts.read_instantiate @{context} [(("a", 0), "(ax,ay,az)"), (("b", 0), "(bx,by,bz)")] []
-     @{thm rtranclp_induct}));
+    (Rule_Insts.read_instantiate @{context}
+      [((("a", 0), Position.none), "(ax, ay, az)"),
+       ((("b", 0), Position.none), "(bx, by, bz)")] []
+      @{thm rtranclp_induct}));
 *}
 
 lemma steps_preserves_terminations: 

@@ -80,7 +80,7 @@ struct
                    | SOME n => 
                        (* FIXME fragile term as string composition *)
                        let val n' = (if ty = @{typ nat} then "" else "%_. ") ^ Int.toString (HOLogic.dest_nat n)
-                       in  Seq.single (Rule_Insts.read_instantiate ctxt [(idxname, n')] [] thm)
+                       in  Seq.single (Rule_Insts.read_instantiate ctxt [((idxname, Position.none), n')] [] thm)
                        end
                   end
         | _ => Seq.single thm

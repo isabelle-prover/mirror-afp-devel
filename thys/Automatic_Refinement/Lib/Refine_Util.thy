@@ -77,7 +77,7 @@ ML {*
     val insert_subgoals_tac: cterm list -> tactic'
 
     val eqsubst_inst_tac: Proof.context -> bool -> int list 
-      -> (indexname * string) list -> thm -> int -> tactic
+      -> ((indexname * Position.T) * string) list -> thm -> int -> tactic
 
     val eqsubst_inst_meth: (Proof.context -> Proof.method) context_parser
 
@@ -389,7 +389,7 @@ ML {*
       Scan.lift (Args.mode "asm" -- Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0]) --
       Scan.optional (Scan.lift
         (Parse.and_list1 
-          (Args.var -- (Args.$$$ "=" |-- Parse.!!! Args.name_inner_syntax)) --|
+          (Parse.position Args.var -- (Args.$$$ "=" |-- Parse.!!! Args.name_inner_syntax)) --|
           Args.$$$ "in")) [] --
       Attrib.thms >>
       (fn (((quant, (asm, occL)), insts), thms) => fn ctxt => METHOD 

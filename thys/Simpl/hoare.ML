@@ -3462,8 +3462,9 @@ fun HoareRuleTac ctxt insts st =
         if is_com_eq (Logic.concl_of_goal (Thm.prop_of st) i)
         then annotate_simp_tac i st
         else all_tac st;
-  in ((fn i => REPEAT (rtac allI i)) THEN' res_inst_tac ctxt insts st)
-     THEN_ALL_NEW annotate_tac
+  in
+    ((fn i => REPEAT (rtac allI i)) THEN' res_inst_tac ctxt insts st)
+      THEN_ALL_NEW annotate_tac
   end;
 
 fun HoareCallRuleTac state_kind state_space ctxt thms i st =
