@@ -20,20 +20,6 @@ text {* The concrete algorithms will not refine the MRU Voting model directly, b
   version instead. For simplicity, we thus do not create the model explicitly, but just prove guard
   strengthening. We will show later that the optimized model refines the Same Vote model. *}
 
-lemma Vinv1_finite_map_graph:
-   "s \<in> Vinv1 \<Longrightarrow> finite (map_graph (split (votes s)))"
-  apply(rule finite_dom_finite_map_graph)
-  apply(rule finite_subset[where B="{0..< v_state.next_round s} \<times> UNIV"])
-   apply(auto simp add: Vinv1_def dom_def not_le[symmetric])
-  done
-
-lemma Vinv1_finite_vote_set:
-   "s \<in> Vinv1 \<Longrightarrow> finite (vote_set (votes s) Q)"
-   apply(drule Vinv1_finite_map_graph)
-   apply(clarsimp simp add: map_graph_def fun_graph_def vote_set_def)
-   apply(erule finite_surj[where f="\<lambda>((r, a), v). (r, v)"])
-   by(force simp add: image_def)   
-
 lemma mru_vote_implies_safe:
   assumes 
     inv4: "s \<in> SV_inv4"
