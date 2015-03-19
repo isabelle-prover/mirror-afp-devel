@@ -81,8 +81,8 @@ qed (simp add: trans_order_def)
 
 lemma comp_lex_sym:
   assumes "length xs = length ys"
-    and "\<forall> i < length ys. sym_order (xs ! i) = ys ! i"
-  shows "sym_order (comp_lex xs) = comp_lex ys"
+    and "\<forall> i < length ys. invert_order (xs ! i) = ys ! i"
+  shows "invert_order (comp_lex xs) = comp_lex ys"
   using assms by (induct xs ys rule: list_induct2, simp, case_tac x) fastforce+
 
 declare comp_lex.simps [simp del]
@@ -98,15 +98,15 @@ lemma eq_pcompI: "(\<And> y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longr
   unfolding eq_pcomp_def by auto
 
 definition sym_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
-  "sym_pcomp acomp x \<longleftrightarrow> (\<forall> y. sym_order (acomp x y) = (acomp y x))"
+  "sym_pcomp acomp x \<longleftrightarrow> (\<forall> y. invert_order (acomp x y) = (acomp y x))"
 
 lemma sym_pcompD:
   assumes "sym_pcomp acomp x"
-  shows "sym_order (acomp x y) = (acomp y x)"
+  shows "invert_order (acomp x y) = (acomp y x)"
   using assms unfolding sym_pcomp_def by blast+
 
 lemma sym_pcompI:
-  assumes "\<And> y. sym_order (acomp x y) = (acomp y x)"
+  assumes "\<And> y. invert_order (acomp x y) = (acomp y x)"
   shows "sym_pcomp acomp x"
   using assms unfolding sym_pcomp_def by blast
 
@@ -168,10 +168,10 @@ lemma trans_compI: "(\<And> x y z. trans_order (acomp x y) (acomp y z) (acomp x 
   by (intro trans_compI2 trans_pcompI)
 
 lemma sym_compD:
-  "sym_comp acomp \<Longrightarrow> sym_order (acomp x y) = (acomp y x)" 
+  "sym_comp acomp \<Longrightarrow> invert_order (acomp x y) = (acomp y x)" 
   by (rule sym_pcompD[OF sym_compD2])
   
-lemma sym_compI: "(\<And> x y. sym_order (acomp x y) = (acomp y x)) \<Longrightarrow> sym_comp acomp"
+lemma sym_compI: "(\<And> x y. invert_order (acomp x y) = (acomp y x)) \<Longrightarrow> sym_comp acomp"
   by (intro sym_compI2 sym_pcompI)
 
 lemma eq_sym_trans_imp_comparator:
@@ -179,7 +179,7 @@ lemma eq_sym_trans_imp_comparator:
   shows "comparator acomp"
 proof
   fix x y z
-  show "sym_order (acomp x y) = acomp y x"
+  show "invert_order (acomp x y) = acomp y x"
     using sym_compD [OF `sym_comp acomp`] .
   {
     assume "acomp x y = Eq"

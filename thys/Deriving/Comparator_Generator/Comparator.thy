@@ -47,14 +47,14 @@ proof -
   show ?thesis by (rule le_of_comp_of_ords_gen) simp
 qed
 
-fun sym_order:: "order \<Rightarrow> order" where
-  "sym_order Lt = Gt" |
-  "sym_order Gt = Lt" |
-  "sym_order Eq = Eq"
+fun invert_order:: "order \<Rightarrow> order" where
+  "invert_order Lt = Gt" |
+  "invert_order Gt = Lt" |
+  "invert_order Eq = Eq"
 
 locale comparator =
   fixes comp :: "'a comparator"
-  assumes sym: "sym_order (comp x y) = comp y x"
+  assumes sym: "invert_order (comp x y) = comp y x"
     and weak_eq: "comp x y = Eq \<Longrightarrow> x = y"
     and trans: "comp x y = Lt \<Longrightarrow> comp y z = Lt \<Longrightarrow> comp x z = Lt"
 begin 

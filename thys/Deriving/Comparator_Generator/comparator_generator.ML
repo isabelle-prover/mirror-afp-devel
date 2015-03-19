@@ -475,7 +475,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                   THEN recursor_tac SYM ctxt pre_cond (nth xs_tys k) (nth IHs k))
               else 
                 (* different constructors *)
-                unfold_tac ctxt (y_simp @ comp_simps @ @{thms sym_order.simps})
+                unfold_tac ctxt (y_simp @ comp_simps @ @{thms invert_order.simps})
           in
             mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac
           end

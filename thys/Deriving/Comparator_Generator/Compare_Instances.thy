@@ -44,7 +44,7 @@ lemma comparator_unit: "comparator comparator_unit"
 lemma comparator_bool: "comparator comparator_bool"
 proof
   fix x y z :: bool
-  show "sym_order (comparator_bool x y) = comparator_bool y x" by (cases x, (cases y, auto)+)
+  show "invert_order (comparator_bool x y) = comparator_bool y x" by (cases x, (cases y, auto)+)
   show "comparator_bool x y = Eq \<Longrightarrow> x = y" by (cases x, (cases y, auto)+)
   show "comparator_bool x y = Lt \<Longrightarrow> comparator_bool y z = Lt \<Longrightarrow> comparator_bool x z = Lt"
     by (cases x, (cases y, auto), cases y, (cases z, auto)+)
