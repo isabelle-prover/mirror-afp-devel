@@ -269,7 +269,7 @@ fun t\<^sub>q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 
 interpretation queue: amor
 where init = "([],[])" and nxt = nxt\<^sub>q and inv = "\<lambda>_. True"
-and t = t\<^sub>q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. 2"
+and t = t\<^sub>q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof
   case goal1 show ?case by auto
 next
@@ -302,7 +302,7 @@ interpretation queue2: amor
 where init = "([],[])" and nxt = nxt_q2
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
 and t = t_q2 and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
-and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 3"
+and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
 proof
   case goal1 show ?case by auto
 next
