@@ -59,7 +59,8 @@ fun pr_comp_tac ctxt = SUBGOAL (fn (t, i) =>
     val (name, _, n1) = extract_free_arg t1
     val comp = get_comp_by_indexes (n1, n2)
   in
-    res_inst_tac ctxt [((("f", 0), Position.none), Variable.revert_fixed ctxt name)] comp i
+    Rule_Insts.res_inst_tac ctxt
+      [((("f", 0), Position.none), Variable.revert_fixed ctxt name)] comp i
   end
   handle BadArgument => no_tac)
 
