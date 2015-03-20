@@ -1004,7 +1004,8 @@ next
       by (auto simp add: power2_abs power_mult_distrib)
     with cm dn hlp have "4*x*y < x^2 + 3*(2*\<bar>d\<bar>)^2" 
       and "(3::int) > 0 \<and> (2*\<bar>d\<bar>)^2 < x^2" 
-      by (auto simp add: power_strict_mono)
+            using power_strict_mono [of "2*\<bar>b\<bar>" x 2 for b]
+      by auto
     hence "x*4*y < x^2 + 3*x^2" by (auto)
     also have "\<dots> = x*4*x" by (simp add: power2_eq_square)
     finally have contr: "(x-y)*(4*x) > 0" by (auto simp add: right_diff_distrib)

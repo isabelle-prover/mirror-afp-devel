@@ -388,7 +388,8 @@ next
             4*b3^2 = (2*\<bar>b3\<bar>)^2 \<and> 4*b4^2 = (2*\<bar>b4\<bar>)^2" 
             by (auto simp add: power_mult_distrib abs_mult power2_abs)
           with bc_abs have "4*b1^2<x^2 \<and> 4*b2^2<x^2 \<and> 4*b3^2<x^2 \<and> 4*b4^2<x^2" 
-            by (auto simp add: power_strict_mono)
+            using power_strict_mono [of "2*\<bar>b\<bar>" x 2 for b]
+            by auto
           hence "?B < x^2" by auto
           with y have "x*(x-y) > 0"
             by (auto simp add: power2_eq_square right_diff_distrib)

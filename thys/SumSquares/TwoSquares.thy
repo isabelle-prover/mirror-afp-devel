@@ -156,10 +156,12 @@ proof -
           from m1 have "4*?n1*m1 = 4*v^2 + 4*w^2" by arith
           also have "\<dots> = (2*\<bar>v\<bar>)^2 + (2*\<bar>w\<bar>)^2" 
             by (auto simp add: power2_abs power_mult_distrib)
-          also from rv hlp have "\<dots> \<le> ?n1^2 + (2*\<bar>w\<bar>)^2" 
-            by (auto simp add: power_mono)
+          also from rv hlp have "\<dots> \<le> ?n1^2 + (2*\<bar>w\<bar>)^2"
+            using power_mono [of "2*\<bar>b\<bar>" "1 + int n" 2 for b]
+            by auto
           also from sw hlp have "\<dots> \<le> ?n1^2 + ?n1^2"
-            by (auto simp add: power_mono)
+            using power_mono [of "2*\<bar>b\<bar>" "1 + int n" 2 for b]
+            by auto
           finally have "?n1*m1*4 \<le> ?n1*?n1*2" 
             by (simp add: power2_eq_square ac_simps)
           hence "?n1*(2*?n1- 4*m1) \<ge> 0" 
