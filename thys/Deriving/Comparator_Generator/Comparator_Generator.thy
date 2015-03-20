@@ -87,92 +87,92 @@ lemma comp_lex_sym:
 
 declare comp_lex.simps [simp del]
 
-definition eq_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool"
+definition peq_comp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool"
 where
-  "eq_pcomp acomp x \<longleftrightarrow> (\<forall> y. acomp x y = Eq \<longleftrightarrow> x = y)"
+  "peq_comp acomp x \<longleftrightarrow> (\<forall> y. acomp x y = Eq \<longleftrightarrow> x = y)"
 
-lemma eq_pcompD: "eq_pcomp acomp x \<Longrightarrow> acomp x y = Eq \<longleftrightarrow> x = y"
-  unfolding eq_pcomp_def by auto
+lemma peq_compD: "peq_comp acomp x \<Longrightarrow> acomp x y = Eq \<longleftrightarrow> x = y"
+  unfolding peq_comp_def by auto
 
-lemma eq_pcompI: "(\<And> y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> eq_pcomp acomp x"
-  unfolding eq_pcomp_def by auto
+lemma peq_compI: "(\<And> y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> peq_comp acomp x"
+  unfolding peq_comp_def by auto
 
-definition sym_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
-  "sym_pcomp acomp x \<longleftrightarrow> (\<forall> y. invert_order (acomp x y) = (acomp y x))"
+definition psym_comp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
+  "psym_comp acomp x \<longleftrightarrow> (\<forall> y. invert_order (acomp x y) = (acomp y x))"
 
-lemma sym_pcompD:
-  assumes "sym_pcomp acomp x"
+lemma psym_compD:
+  assumes "psym_comp acomp x"
   shows "invert_order (acomp x y) = (acomp y x)"
-  using assms unfolding sym_pcomp_def by blast+
+  using assms unfolding psym_comp_def by blast+
 
-lemma sym_pcompI:
+lemma psym_compI:
   assumes "\<And> y. invert_order (acomp x y) = (acomp y x)"
-  shows "sym_pcomp acomp x"
-  using assms unfolding sym_pcomp_def by blast
+  shows "psym_comp acomp x"
+  using assms unfolding psym_comp_def by blast
 
 
-definition trans_pcomp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
-  "trans_pcomp acomp x \<longleftrightarrow> (\<forall> y z. trans_order (acomp x y) (acomp y z) (acomp x z))"
+definition ptrans_comp :: "'a comparator \<Rightarrow> 'a \<Rightarrow> bool" where
+  "ptrans_comp acomp x \<longleftrightarrow> (\<forall> y z. trans_order (acomp x y) (acomp y z) (acomp x z))"
 
-lemma trans_pcompD:
-  assumes "trans_pcomp acomp x"
+lemma ptrans_compD:
+  assumes "ptrans_comp acomp x"
   shows "trans_order (acomp x y) (acomp y z) (acomp x z)"
-  using assms unfolding trans_pcomp_def by blast+
+  using assms unfolding ptrans_comp_def by blast+
 
-lemma trans_pcompI:
+lemma ptrans_compI:
   assumes "\<And> y z. trans_order (acomp x y) (acomp y z) (acomp x z)"
-  shows "trans_pcomp acomp x"
-  using assms unfolding trans_pcomp_def by blast
+  shows "ptrans_comp acomp x"
+  using assms unfolding ptrans_comp_def by blast
 
 subsection \<open>Separate properties of comparators\<close>
 
 definition eq_comp :: "'a comparator \<Rightarrow> bool" where
-  "eq_comp acomp \<longleftrightarrow> (\<forall> x. eq_pcomp acomp x)"
+  "eq_comp acomp \<longleftrightarrow> (\<forall> x. peq_comp acomp x)"
 
-lemma eq_compD2: "eq_comp acomp \<Longrightarrow> eq_pcomp acomp x"
+lemma eq_compD2: "eq_comp acomp \<Longrightarrow> peq_comp acomp x"
   unfolding eq_comp_def by blast
 
-lemma eq_compI2: "(\<And> x. eq_pcomp acomp x) \<Longrightarrow> eq_comp acomp" 
+lemma eq_compI2: "(\<And> x. peq_comp acomp x) \<Longrightarrow> eq_comp acomp" 
   unfolding eq_comp_def by blast
     
 definition trans_comp :: "'a comparator \<Rightarrow> bool" where
-  "trans_comp acomp \<longleftrightarrow> (\<forall> x. trans_pcomp acomp x)"
+  "trans_comp acomp \<longleftrightarrow> (\<forall> x. ptrans_comp acomp x)"
   
-lemma trans_compD2: "trans_comp acomp \<Longrightarrow> trans_pcomp acomp x"
+lemma trans_compD2: "trans_comp acomp \<Longrightarrow> ptrans_comp acomp x"
   unfolding trans_comp_def by blast
 
-lemma trans_compI2: "(\<And> x. trans_pcomp acomp x) \<Longrightarrow> trans_comp acomp" 
+lemma trans_compI2: "(\<And> x. ptrans_comp acomp x) \<Longrightarrow> trans_comp acomp" 
   unfolding trans_comp_def by blast
 
   
 definition sym_comp :: "'a comparator \<Rightarrow> bool" where
-  "sym_comp acomp \<longleftrightarrow> (\<forall> x. sym_pcomp acomp x)"
+  "sym_comp acomp \<longleftrightarrow> (\<forall> x. psym_comp acomp x)"
 
 lemma sym_compD2:
-  "sym_comp acomp \<Longrightarrow> sym_pcomp acomp x"
+  "sym_comp acomp \<Longrightarrow> psym_comp acomp x"
   unfolding sym_comp_def by blast
 
-lemma sym_compI2: "(\<And> x. sym_pcomp acomp x) \<Longrightarrow> sym_comp acomp" 
+lemma sym_compI2: "(\<And> x. psym_comp acomp x) \<Longrightarrow> sym_comp acomp" 
   unfolding sym_comp_def by blast
 
 lemma eq_compD: "eq_comp acomp \<Longrightarrow> acomp x y = Eq \<longleftrightarrow> x = y"
-  by (rule eq_pcompD[OF eq_compD2])
+  by (rule peq_compD[OF eq_compD2])
 
 lemma eq_compI: "(\<And> x y. acomp x y = Eq \<longleftrightarrow> x = y) \<Longrightarrow> eq_comp acomp"
-  by (intro eq_compI2 eq_pcompI)
+  by (intro eq_compI2 peq_compI)
 
 lemma trans_compD: "trans_comp acomp \<Longrightarrow> trans_order (acomp x y) (acomp y z) (acomp x z)"
-  by (rule trans_pcompD[OF trans_compD2])
+  by (rule ptrans_compD[OF trans_compD2])
 
 lemma trans_compI: "(\<And> x y z. trans_order (acomp x y) (acomp y z) (acomp x z)) \<Longrightarrow> trans_comp acomp"
-  by (intro trans_compI2 trans_pcompI)
+  by (intro trans_compI2 ptrans_compI)
 
 lemma sym_compD:
   "sym_comp acomp \<Longrightarrow> invert_order (acomp x y) = (acomp y x)" 
-  by (rule sym_pcompD[OF sym_compD2])
+  by (rule psym_compD[OF sym_compD2])
   
 lemma sym_compI: "(\<And> x y. invert_order (acomp x y) = (acomp y x)) \<Longrightarrow> sym_comp acomp"
-  by (intro sym_compI2 sym_pcompI)
+  by (intro sym_compI2 psym_compI)
 
 lemma eq_sym_trans_imp_comparator:
   assumes "eq_comp acomp" and "sym_comp acomp" and "trans_comp acomp"
@@ -214,15 +214,15 @@ context
   fixes acomp :: "'a comparator"
   assumes c: "comparator acomp"
 begin
-lemma comp_to_sym_pcomp: "sym_pcomp acomp x"
+lemma comp_to_psym_comp: "psym_comp acomp x"
   using comparator_imp_eq_sym_trans[OF c]
   by (intro sym_compD2)
 
-lemma comp_to_eq_pcomp: "eq_pcomp acomp x" 
+lemma comp_to_peq_comp: "peq_comp acomp x" 
   using comparator_imp_eq_sym_trans [OF c] 
   by (intro eq_compD2)
   
-lemma comp_to_trans_pcomp: "trans_pcomp acomp x" 
+lemma comp_to_ptrans_comp: "ptrans_comp acomp x" 
   using comparator_imp_eq_sym_trans [OF c] 
   by (intro trans_compD2)
 end

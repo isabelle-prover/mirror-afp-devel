@@ -126,20 +126,20 @@ fun register_foreign_partial_and_full_comparator tyco m p c c_def m_comp eq_thm 
 
 fun mk_infer_const name ctxt c = infer_type ctxt (Const (name, dummyT) $ c)
 val mk_eq_comp = mk_infer_const @{const_name eq_comp}
-val mk_eq_pcomp = mk_infer_const @{const_name eq_pcomp}
+val mk_peq_comp = mk_infer_const @{const_name peq_comp}
 val mk_sym_comp = mk_infer_const @{const_name sym_comp}
-val mk_sym_pcomp = mk_infer_const @{const_name sym_pcomp}
+val mk_psym_comp = mk_infer_const @{const_name psym_comp}
 val mk_trans_comp = mk_infer_const @{const_name trans_comp}
-val mk_trans_pcomp = mk_infer_const @{const_name trans_pcomp}
+val mk_ptrans_comp = mk_infer_const @{const_name ptrans_comp}
 val mk_comp = mk_infer_const @{const_name comparator}
 fun default_comp T = absdummy T (absdummy T @{term Eq}) (*%_ _. Eq*)
 
 fun register_foreign_comparator T comp comp_thm lthy =
   let 
     val tyco = (case T of Type (tyco, []) => tyco | _ => error "expected type constant")
-    val eq = @{thm comp_to_eq_pcomp} OF [comp_thm]
-    val sym = @{thm comp_to_sym_pcomp} OF [comp_thm]
-    val trans = @{thm comp_to_trans_pcomp} OF [comp_thm]
+    val eq = @{thm comp_to_peq_comp} OF [comp_thm]
+    val sym = @{thm comp_to_psym_comp} OF [comp_thm]
+    val trans = @{thm comp_to_ptrans_comp} OF [comp_thm]
   in
     register_foreign_partial_and_full_comparator 
       tyco (HOLogic.id_const T) comp comp NONE NONE eq sym trans comp_thm [] lthy
@@ -391,7 +391,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     (* partial eq-theorem *)
     val _ = debug_out "Partial equality"
-    val eq_thms' = mk_eq_sym_trans_thm' mk_eq_pcomp
+    val eq_thms' = mk_eq_sym_trans_thm' mk_peq_comp
 
     fun eq_solve_tac i ctxt IH_prems xs = 
       let 
@@ -406,7 +406,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm eq_pcompI} 1
+        rtac @{thm peq_compI} 1
         THEN Subgoal.FOCUS (fn focus => 
           let
             val y = #params focus |> hd
@@ -423,7 +423,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 THEN unfold_tac ctxt @{thms comp_lex_eq}
                 THEN unfold_tac ctxt (@{thms in_set_simps} @ inject_thms @ @{thms refl_True})
                 THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn k =>
-                  rtac @{thm eq_pcompD} 1
+                  rtac @{thm peq_compD} 1
                   THEN recursor_tac EQ ctxt pre_cond (nth xs_tys k) (nth IHs k))
               else 
                 (* different constructors *)
@@ -440,7 +440,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     (* partial symmetry-theorem *)
     val _ = debug_out "Partial symmetry"
-    val sym_thms' = mk_eq_sym_trans_thm' mk_sym_pcomp
+    val sym_thms' = mk_eq_sym_trans_thm' mk_psym_comp
 
     fun sym_solve_tac i ctxt IH_prems xs = 
       let 
@@ -453,7 +453,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm sym_pcompI} 1
+        rtac @{thm psym_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
           let 
             val y = #params focus |> hd
@@ -471,7 +471,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                 THEN conjI_tac @{thms conjI} ctxt xs (fn k =>
                   rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
-                    [NONE, get_v_i xs k, get_v_i ys k] @{thm sym_pcompD}) 1
+                    [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}) 1
                   THEN recursor_tac SYM ctxt pre_cond (nth xs_tys k) (nth IHs k))
               else 
                 (* different constructors *)
@@ -489,7 +489,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     (* partial transitivity-theorem *)
     val _ = debug_out "Partial transitivity"
 
-    val trans_thms' = mk_eq_sym_trans_thm' mk_trans_pcomp
+    val trans_thms' = mk_eq_sym_trans_thm' mk_ptrans_comp
     
     fun trans_solve_tac i ctxt IH_prems xs = 
       let 
@@ -502,7 +502,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm trans_pcompI} 1
+        rtac @{thm ptrans_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
           let 
             val y = nth (#params focus) 0
@@ -524,7 +524,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                         THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                         THEN conjI_tac @{thms conjI} ctxt xs (fn k =>
                           rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
-                            [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm trans_pcompD}) 1
+                            [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}) 1
                           THEN recursor_tac TRANS ctxt pre_cond (nth xs_tys k) (nth IHs k))
                       else 
                         (* different constructors *)
