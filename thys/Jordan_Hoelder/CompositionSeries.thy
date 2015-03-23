@@ -208,7 +208,10 @@ next
   case True
   hence "(length \<GG> - 2) + 1 < length \<GG>" by arith
   with normal last have "\<GG> ! (length \<GG> - 2) \<lhd> G\<lparr>carrier := \<GG> ! ((length \<GG> - 2) + 1)\<rparr>" by auto
-  with True have "\<GG> ! (length \<GG> - 2) \<lhd> G\<lparr>carrier :=  \<GG> ! (length \<GG> - 1)\<rparr>" by (metis Nat.add_diff_assoc comm_monoid_diff_class.add_diff_cancel_left add.commute one_add_one)
+  have "1 + (1 + (length \<GG> - (1 + 1))) = length \<GG>"
+    using True le_add_diff_inverse by presburger
+  then have "\<GG> ! (length \<GG> - 2) \<lhd> G\<lparr>carrier :=  \<GG> ! (length \<GG> - 1)\<rparr>"
+    by (metis `\<GG> ! (length \<GG> - 2) \<lhd> G \<lparr>carrier := \<GG> ! (length \<GG> - 2 + 1)\<rparr>` add.commute add_diff_cancel_left' one_add_one)
   with notempty last show ?thesis using last_conv_nth by force
 qed
 
@@ -266,7 +269,8 @@ lemma (in normal_series) quotients_length:
 proof -
   have "length quotients + 1 = length [0..<((length \<GG>) - 1)] + 1" unfolding quotients_def by simp
   also have "... = (length \<GG> - 1) + 1" by (metis diff_zero length_upt)
-  also with notempty have "... = length \<GG>" by (metis add_eq_if comm_monoid_diff_class.diff_cancel length_0_conv add.commute zero_neq_one)
+  also with notempty have "... = length \<GG>"
+    by (simp add: ac_simps)
   finally show ?thesis .
 qed
 

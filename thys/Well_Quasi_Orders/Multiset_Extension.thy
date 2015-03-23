@@ -530,10 +530,8 @@ proof
     proof -
       have "?X \<noteq> {#}" by auto
       moreover have "?X \<le> N"
-        by (rule mset_less_eqI)
-           (insert M [unfolded multi_count_eq [symmetric]],
-            auto simp add: N M' ac_simps,
-            metis add_diff_cancel_right comm_monoid_diff_class.add_diff_cancel_left diff_diff_add diff_is_0_eq zero_diff)
+        using M N M' by (simp add: add.commute [of "{#a#}"])
+          (metis Multiset.diff_le_self add.commute add_diff_cancel_right)
       moreover have "L = (N - ?X) + ?Y"
       proof (rule multiset_eqI)
         fix x :: 'a
