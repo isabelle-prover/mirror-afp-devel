@@ -357,7 +357,7 @@ proof -
     fix n :: nat assume A: "2 \<le> ?nr n \<and> ?nr n \<le> n" "0 < p n \<and>p n < 1"
     then interpret pG: edge_space n "p n" by unfold_locales auto
 
-    have r: "real (?nr n - 1) = real (?nr n) - 1" using A by auto
+    have r: "real (?nr n - Suc 0) = real (?nr n) - Suc 0" using A by auto
 
     have "probGn p n (\<lambda>es. ?nr n \<le> \<alpha> (edge_space.edge_ugraph n es))
         \<le> (n choose ?nr n) * (1 - p n)^(?nr n choose 2)"
@@ -369,7 +369,7 @@ proof -
       by (cases "even (?nr n - 1)")
         (auto simp add: n_choose_2_nat real_of_nat_div)
     also have "\<dots> = n powr ?nr n * ((1 - p n) powr ((?nr n - 1) / 2)) powr ?nr n"
-      by (auto simp: powr_powr algebra_simps)
+      by (auto simp add: powr_powr r ac_simps) 
     also have "\<dots> \<le> (n * exp (- p n * (?nr n - 1) / 2)) powr ?nr n"
     proof -
       have "(1 - p n) powr ((?nr n - 1) / 2) \<le> exp (- p n) powr ((?nr n - 1) / 2)"

@@ -246,7 +246,7 @@ next
       assume [simp]: "i' = 0"
       have *: "take (Suc j) (list_update (Array.get h\<^sub>2 a) 0 key) =
         key # take j (drop 1 (Array.get h\<^sub>2 a))"
-        by (simp) (metis `i' = 0` append_Nil take_Suc_j semiring_numeral_div_class.diff_zero take_0)
+        by (simp) (metis `i' = 0` append_Nil take_Suc_j diff_zero take_0)
       from sorted and shiftr
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
@@ -423,7 +423,7 @@ next
       assume [simp]: "i' = 0"
       have *: "take (Suc j) (list_update (Array.get h\<^sub>2 a) 0 key) =
         key # take j (drop 1 (Array.get h\<^sub>2 a))"
-        by (simp) (metis `i' = 0` append_Nil take_Suc_j semiring_numeral_div_class.diff_zero take_0)
+        by (simp) (metis `i' = 0` append_Nil take_Suc_j diff_zero take_0)
       from sorted and shiftr
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
