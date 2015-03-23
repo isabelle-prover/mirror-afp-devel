@@ -3447,7 +3447,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
   |> the_default (Seq.single st);
 
 
-fun HoareRuleTac ctxt insts st =
+fun HoareRuleTac ctxt insts fixes st =
   let
     val annotate_simp_tac =
       simp_tac (put_simpset HOL_basic_ss ctxt
@@ -3463,7 +3463,7 @@ fun HoareRuleTac ctxt insts st =
         then annotate_simp_tac i st
         else all_tac st;
   in
-    ((fn i => REPEAT (rtac allI i)) THEN' Rule_Insts.res_inst_tac ctxt insts st)
+    ((fn i => REPEAT (rtac allI i)) THEN' Rule_Insts.res_inst_tac ctxt insts fixes st)
       THEN_ALL_NEW annotate_tac
   end;
 

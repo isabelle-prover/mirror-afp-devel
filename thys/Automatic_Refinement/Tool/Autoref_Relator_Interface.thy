@@ -64,7 +64,7 @@ ML {*
 
       fun r @{mpat "\<langle>?Ra\<rangle>?Rf"} i = mk_intfAPP (r Ra 0) (r Rf (i+1))
         | r R i = (case get_ri R of 
-            SOME I => I |> Logic.incr_indexes ([],idx)
+            SOME I => I |> Logic.incr_indexes ([], [], idx)
           | NONE => let
               val T = replicate i @{typ interface} ---> @{typ interface}
             in 

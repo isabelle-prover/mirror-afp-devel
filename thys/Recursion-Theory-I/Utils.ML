@@ -60,7 +60,7 @@ fun pr_comp_tac ctxt = SUBGOAL (fn (t, i) =>
     val comp = get_comp_by_indexes (n1, n2)
   in
     Rule_Insts.res_inst_tac ctxt
-      [((("f", 0), Position.none), Variable.revert_fixed ctxt name)] comp i
+      [((("f", 0), Position.none), Variable.revert_fixed ctxt name)] [] comp i
   end
   handle BadArgument => no_tac)
 

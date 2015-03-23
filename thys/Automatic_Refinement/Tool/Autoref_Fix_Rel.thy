@@ -697,7 +697,7 @@ ML {*
       fun unifies thy (t1,t2) = Term.could_unify (t1,t2) andalso
         let
           val idx1 = Term.maxidx_of_term t1
-          val t2 = Logic.incr_indexes ([],idx1+1) t2
+          val t2 = Logic.incr_indexes ([], [], idx1 + 1) t2
           val idx2 = Term.maxidx_of_term t2
         in
           can (Pattern.unify (Context.Theory thy) (t1,t2)) (Envir.empty idx2)
