@@ -786,7 +786,7 @@ abstract =
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
-date = 2012-03-1
+date = 2012-03-01
 topic = Computer Science/Algorithms/Distributed
 abstract =
   We define the Abortable Linearizable Module automaton (ALM for short)
