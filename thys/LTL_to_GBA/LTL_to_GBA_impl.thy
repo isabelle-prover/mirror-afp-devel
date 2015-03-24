@@ -1147,13 +1147,12 @@ concrete_definition create_name_gba_code uses create_name_gba_code_aux
 lemmas [refine_transfer] = create_name_gba_code.refine
 
 schematic_lemma create_name_igba_impl_aux: 
-  fixes R :: "('a::linorder \<times> 'a) set"
   assumes RID: "R=Id"
   shows "(?c,create_name_igba)\<in>
   \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>igbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"
   unfolding RID
   unfolding create_name_igba_def[abs_def]
-  using [[autoref_trace_failed_id, autoref_trace_intf_unif]]
+  using [[autoref_trace_failed_id]]
   apply (autoref (trace, keep_goal))
   done
 concrete_definition create_name_igba_impl uses create_name_igba_impl_aux
