@@ -1613,7 +1613,7 @@ theorem extend_in_C: "alt_consistency C \<Longrightarrow>
   prefer 2
   apply simp
   apply (rule ballI)
-  apply (drule_tac A="- ?S" in infinite_nonempty)
+  apply (drule_tac A="- S" for S in infinite_nonempty)
   apply (erule exE)
   apply (rule someI2)
   apply (simp only: Compl_iff [symmetric])
@@ -1646,7 +1646,7 @@ theorem extend_in_C: "alt_consistency C \<Longrightarrow>
   prefer 2
   apply simp
   apply (rule ballI)
-  apply (drule_tac A="- ?S" in infinite_nonempty)
+  apply (drule_tac A="- S" for S in infinite_nonempty)
   apply (erule exE)
   apply (rule someI2)
   apply (simp only: Compl_iff [symmetric])
@@ -1708,10 +1708,10 @@ theorem extend_maximal: "\<forall>y. \<exists>n. y = f n \<Longrightarrow>
   apply (unfold subset_closed_def)
   apply (drule bspec)
   apply assumption
-  apply (erule_tac x="?a \<union> ?b" in allE)
+  apply (erule_tac x="a \<union> b" for a b in allE)
   apply (erule impE)
   apply assumption
-  apply (erule_tac P="?a \<in> ?b" in notE)
+  apply (erule_tac P="a \<in> b" for a b in notE)
   apply (rule_tac a="Suc n" in UN_I [OF UNIV_I])
   apply simp
   done
@@ -2001,7 +2001,7 @@ theorem extend_hintikka:
   apply (drule sym)
   apply simp
   apply (rule impI)
-  apply (erule_tac P="%x. ?l \<noteq> ?f x" and x=P in allE)
+  apply (erule_tac P="%x. l \<noteq> f x" and x=P for l f in allE)
   apply simp
   done
 
@@ -2391,7 +2391,7 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply (erule exE)+
   apply (frule bspec)
   apply assumption
-  apply (frule_tac A="- ?S" in infinite_nonempty)
+  apply (frule_tac A="- S" for S in infinite_nonempty)
   apply simp
   apply (erule exE)+
   apply (rule_tac x=x in exI)
@@ -2403,7 +2403,7 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply (erule exE)+
   apply (frule bspec)
   apply assumption
-  apply (frule_tac A="- ?S" in infinite_nonempty)
+  apply (frule_tac A="- S" for S in infinite_nonempty)
   apply simp
   apply (erule exE)+
   apply (rule_tac x=x in exI)

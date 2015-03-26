@@ -402,7 +402,7 @@ lemma liftT_substT_strange:
   apply (induct T and rT and fT arbitrary: n k and n k and n k
     rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
-  apply (thin_tac "\<And>x. PROP ?P x")
+  apply (thin_tac "\<And>x. PROP P x" for P)
   apply (drule_tac x=n in meta_spec)
   apply (drule_tac x="Suc k" in meta_spec)
   apply simp
@@ -454,7 +454,7 @@ lemma substT_substT:
   apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V
     rule: liftT.induct liftrT.induct liftfT.induct)
   apply (simp_all add: diff_Suc split add: nat.split)
-  apply (thin_tac "\<And>x. PROP ?P x")
+  apply (thin_tac "\<And>x. PROP P x" for P)
   apply (drule_tac x="Suc i" in meta_spec)
   apply (drule_tac x="Suc j" in meta_spec)
   apply simp
@@ -776,7 +776,7 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_all)
   apply simp
-  apply (thin_tac "\<And>x. PROP ?P x")
+  apply (thin_tac "\<And>x. PROP P x" for P)
   apply (drule_tac x="TVarB type1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (erule well_formed_cases)
@@ -788,7 +788,7 @@ theorem wf_subst:
   apply (drule meta_spec)
   apply (drule meta_mp)
   apply assumption
-  apply (thin_tac "\<forall>x \<in> ?S. ?P x")
+  apply (thin_tac "\<forall>x \<in> S. P x" for S P)
   apply (drule bpspec)
   apply assumption
   apply simp

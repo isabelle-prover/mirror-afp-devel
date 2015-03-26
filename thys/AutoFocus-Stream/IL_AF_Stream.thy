@@ -884,7 +884,7 @@ thm iT_Div_mod_inext_nth
 apply (simp add: iT_Div_mod_inext_nth)
 thm f_shrink_nth_eq_f_last_message_hold_nth
 apply (subst f_shrink_nth_eq_f_last_message_hold_nth)
- apply (drule sym, simp, thin_tac "card ?x = card ?y")
+ apply (drule sym, simp, thin_tac "card x = card y" for x y)
  apply (simp add: iT_Plus_cut_less iT_Plus_card)
  apply (rule less_mult_imp_div_less)
  thm less_card_cut_less_imp_inext_nth_less
@@ -1513,7 +1513,7 @@ apply (subgoal_tac "t1 \<le> t * k + k - Suc 0")
  apply (drule_tac x="t * k + k - Suc 0" in spec)
  apply (simp add: mod_pred)
 apply (clarsimp, rename_tac t3)
-apply (thin_tac "All (\<lambda>x. ?A x \<longrightarrow> ?B (x mod k))")
+apply (thin_tac "All (\<lambda>x. A x \<longrightarrow> B (x mod k))" for A B)
 apply (drule_tac x=t3 in spec)
 apply (subgoal_tac "t3 \<le> t2 \<Longrightarrow> s t3 = \<NoMsg>")
  prefer 2

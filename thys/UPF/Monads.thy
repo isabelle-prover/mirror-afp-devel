@@ -370,7 +370,7 @@ next
        by(rule_tac x="(a, b)" in bexI, simp_all)
 next
   case goal4 then show ?case    
-       apply (erule_tac Q="None = ?X" in contrapos_pp)
+       apply (erule_tac Q="None = X" for X in contrapos_pp)
        apply (erule_tac x="(aa,b)" and P="\<lambda> x. None \<noteq> split (\<lambda>out. k) x" in ballE)
        apply (auto simp: aux (*Option.not_None_eq*) image_def split_def intro!: rev_bexI)
      done

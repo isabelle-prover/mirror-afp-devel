@@ -91,7 +91,7 @@ lemma safe_hd_restr_stack[simp]:
   using assms
   apply (cases a)
   apply (auto split: if_splits)
-  apply (thin_tac "?P a")
+  apply (thin_tac "P a" for P)
   apply (induction S rule: restr_stack.induct)
   apply (auto split: if_splits)
   done

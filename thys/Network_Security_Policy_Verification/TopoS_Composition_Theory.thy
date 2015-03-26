@@ -393,7 +393,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
   lemma c_offending_flows_subseteq_edges: "configured_SecurityInvariant m \<Longrightarrow> \<Union>c_offending_flows m G \<subseteq> edges G"
     apply(clarify)
     apply(simp only: configured_SecurityInvariant.valid_c_offending_flows)
-    apply(thin_tac "configured_SecurityInvariant ?x")
+    apply(thin_tac "configured_SecurityInvariant _")
     by auto
 
 

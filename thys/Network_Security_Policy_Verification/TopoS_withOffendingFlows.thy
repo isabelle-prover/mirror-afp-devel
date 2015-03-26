@@ -815,12 +815,12 @@ subsection {* Monotonicity of offending flows *}
               apply(simp_all)
                 apply(simp add: `Fadd \<subseteq> Eadd`)
                apply(simp add: delete_edges_simp2, clarify)
-               apply(thin_tac "\<not> sinvar ?X ?y")
-               apply(thin_tac "\<forall> x\<in> Fadd. ?X x")
+               apply(thin_tac "\<not> sinvar X y" for X y)
+               apply(thin_tac "\<forall> x\<in> Fadd. X x" for X)
                apply(insert graph_edges_simp_helper, simp)
               apply(erule conjE)+
-              apply(thin_tac "\<not> sinvar ?X ?y")
-              apply(thin_tac "sinvar ?X ?y")
+              apply(thin_tac "\<not> sinvar X y" for X y)
+              apply(thin_tac "sinvar X y" for X y)
               apply(simp add: delete_edges_simp2)
               done
     
@@ -923,8 +923,8 @@ subsection {* Monotonicity of offending flows *}
         apply(subgoal_tac "insert a (insert b V) = V")
          apply(simp)
          using goal_not_eval apply fastforce
-        apply(thin_tac "\<forall>F \<subseteq> E. ?X F")
-        apply(thin_tac "\<exists>F \<subseteq> ?E. ?X F")
+        apply(thin_tac "\<forall>F \<subseteq> E. X F" for X)
+        apply(thin_tac "\<exists>F \<subseteq> E. X F" for E X)
         apply(insert validG)
         apply(simp add: valid_graph_def)
         apply(fastforce)

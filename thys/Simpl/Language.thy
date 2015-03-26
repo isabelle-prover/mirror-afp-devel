@@ -390,7 +390,7 @@ lemma normalize_block [simp]: "normalize (block init bdy return c) =
   apply (case_tac "flatten (normalize (c s sa))")
   apply  (simp add: flatten_nonEmpty)
   apply  simp
-  apply (thin_tac "flatten (normalize bdy) = ?P")
+  apply (thin_tac "flatten (normalize bdy) = P" for P)
   apply (drule flatten_normalize)
   apply (case_tac lista)
   apply  simp

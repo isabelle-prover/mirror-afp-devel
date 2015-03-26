@@ -1037,7 +1037,7 @@ lemma (in loc2) model':
    apply(drule_tac x="size form" in spec) apply(erule impE, force) 
    apply(drule_tac x="finst form m'" in spec) apply(erule impE, force) apply(erule impE) apply(force) apply(simp add: id_def)
   apply(simp add: FEval_finst id_def)
-  apply(drule_tac x="uton ma" and P="%m'. ~ (?P m')" in spec) 
+  apply(drule_tac x="uton ma" and P="%m'. ~ (P m')" for P in spec)
   apply(subgoal_tac "ma \<in> range ntou") apply(frule_tac ntou_uton) apply(simp) 
    apply(simp add: mo model_def)
   done

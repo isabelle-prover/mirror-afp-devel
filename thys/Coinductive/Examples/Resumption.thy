@@ -290,7 +290,7 @@ proof
 next
   show "?rhs \<subseteq> ?lhs" unfolding RESUMPTION_corec_def
     apply(simp split: resumption_corec.split add: LINEAR_UN BRANCH_UN)
-    by safe(rule_tac a="Suc ?n" in UN_I, rule UNIV_I, simp)+
+    by safe(rule_tac a="Suc n" for n in UN_I, rule UNIV_I, simp)+
 qed
 
 lemma RESUMPTION_corec_type: "RESUMPTION_corec f e \<in> resumption"

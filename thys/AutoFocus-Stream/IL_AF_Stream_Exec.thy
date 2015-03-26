@@ -683,7 +683,7 @@ apply (rule iffI)
   apply (drule_tac t="t * k + i" in ispec)
    apply (simp add: iT_add iT_iff)
   apply (simp add: add_Suc_right[symmetric] i_expand_i_take_mult_Suc f_Exec_append i_expand_i_take_mult del: add_Suc_right)
- apply (thin_tac "last_message ?x = m")
+ apply (thin_tac "last_message x = m" for x)
  apply (drule_tac 
    a="t * k + k" and b="t * k + Suc (k - Suc 0)" and
    P="\<lambda>x. State_Idle localState output_fun trans_fun
@@ -716,7 +716,7 @@ apply (rule iffI)
   prefer 2
   apply (rule_tac x="t' - t * k" in exI)
   apply simp
- apply (thin_tac "iAll ?I ?P")+
+ apply (thin_tac "iAll I P" for I P)+
  apply (elim exE conjE)
  apply (subgoal_tac "i' < k")
   prefer 2
@@ -756,7 +756,7 @@ apply (case_tac "
   apply (drule_tac t=t1 in ispec)
    apply (simp add: cut_less_mem_iff iT_add iT_iff)
   apply simp
- apply (thin_tac "iAll ?I ?P")
+ apply (thin_tac "iAll I P" for I P)
  apply (subgoal_tac "t1 \<le> t2")
   prefer 2
   apply (rule ccontr)
@@ -786,7 +786,7 @@ apply (subgoal_tac "t1 \<le> t * k + (k - Suc 0)")
  prefer 2
  apply (rule ccontr)
  apply (simp add: i_Exec_Stream_Acc_LocalState_nth i_expand_i_take_mult[symmetric] add.commute[of k])
- apply (thin_tac "iAll ?I ?P")
+ apply (thin_tac "iAll I P" for I P)
  apply (drule_tac t="t * k + (k - Suc 0)" in ispec)
   apply (simp add: cut_less_mem_iff iT_add iT_iff)
  apply (simp add: i_Exec_Stream_nth)
@@ -972,7 +972,7 @@ apply (unfold iUntil_def, erule disjE)
  apply (case_tac "t1 \<le> t * k + (k - Suc 0)")
   prefer 2
   apply (simp add: i_Exec_Stream_Acc_LocalState_nth i_Exec_Stream_nth i_expand_i_take_mult[symmetric])
-  apply (thin_tac "iAll ?I ?P")
+  apply (thin_tac "iAll I P" for I P)
   apply (drule_tac t="t * k + (k - Suc 0)" in ispec)
    apply (simp add: cut_less_mem_iff iT_add iT_iff)
   apply (simp add: add.commute[of k])

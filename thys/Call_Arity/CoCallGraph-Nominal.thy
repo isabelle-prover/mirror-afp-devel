@@ -18,7 +18,7 @@ instance CoCalls :: cont_pt
   apply (rule monofunI)
   apply transfer
   apply (metis (full_types) True_eqvt subset_eqvt)
-  apply (thin_tac "chain ?x")+
+  apply (thin_tac "chain _")+
   apply transfer
   apply simp
   done

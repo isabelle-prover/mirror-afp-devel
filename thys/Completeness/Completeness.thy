@@ -716,14 +716,14 @@ lemma evContainsExSuc_containsEx:
   apply(simp add: EV_def)
   apply(erule disjE)
   apply(blast dest!: containsPSeq0D)
-  apply(thin_tac "EV ?x")
+  apply(thin_tac "EV _")
   apply(erule exE) 
   apply(erule conjE)
   apply(unfold EV_def) apply(rule_tac x=n in exI)
   apply(rule considersContains)
   apply(frule containsNotTerminal') apply(assumption+)
   apply(frule notTerminalSucNotTerminal) apply assumption
-  apply(thin_tac "\<not> terminal ?x ?y")
+  apply(thin_tac "\<not> terminal x y" for x y)
   apply(frule branchSubs) apply assumption
   apply(frule notTerminalNforms)
   apply(case_tac "SATAxiom (sequent (f n))")

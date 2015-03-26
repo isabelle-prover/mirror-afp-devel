@@ -50,7 +50,7 @@ lemma replace_s_by_s':
   ==> $S A |- e :: $S t"
 apply (rule_tac P = "%A. A |- e :: $S t" in ssubst)
 apply (rule s'_a_equals_s_a [symmetric])
-apply (rule_tac P = "%t. $ (%n. if n : free_tv A Un free_tv (?t2 S) then S n else TVar n) A |- e :: t" in ssubst)
+apply (rule_tac P = "%t. $ (%n. if n : free_tv A Un free_tv (t2 S) then S n else TVar n) A |- e :: t" for t2 in ssubst)
 apply (rule s'_t_equals_s_t [symmetric])
 apply simp
 done

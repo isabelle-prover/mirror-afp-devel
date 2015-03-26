@@ -519,7 +519,7 @@ apply (simp (no_asm) add: subst_comp_scheme_list)
 apply (simp (no_asm) add: subst_comp_scheme_list [symmetric])
 apply (rule_tac A1 = "($ Sa ($ S A))" in trans [OF _ subst_comp_scheme_list [symmetric]])
 apply (simp add: o_def eq_sym_conv)
-apply (drule_tac s = "Some ?X" in sym)
+apply (drule_tac s = "Some _" in sym)
 apply (rule eq_free_eq_subst_scheme_list)
 apply safe
 apply (subgoal_tac "ma ~= na")

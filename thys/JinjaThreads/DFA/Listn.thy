@@ -438,7 +438,7 @@ apply (case_tac "\<exists>x\<in>A. \<exists>xs\<in>list k A. x#xs \<in> M")
 apply (erule_tac x = "{a. a \<in> A \<and> (\<exists>xs\<in>list k A. a#xs\<in>M)}" in allE)
 apply (erule impE)
  apply blast
-apply (thin_tac "\<exists>x\<in>A. \<exists>xs\<in>list k A. ?P x xs")
+apply (thin_tac "\<exists>x\<in>A. \<exists>xs\<in>list k A. P x xs" for P)
 apply clarify
 apply (rename_tac maxA xs)
 apply (erule_tac x = "{ys. ys \<in> list k A \<and> maxA#ys \<in> M}" in allE)

@@ -480,10 +480,10 @@ lemma sees_field_idemp:
 (*<*)
   apply (unfold sees_field_def)
   apply clarsimp
-  apply (rule_tac P = "map_of ?xs F = ?y" in mp)
+  apply (rule_tac P = "map_of xs F = y" for xs y in mp)
    prefer 2 
    apply assumption 
-  apply (thin_tac "map_of ?xs F = ?y")
+  apply (thin_tac "map_of xs F = y" for xs y)
   apply (erule Fields.induct)
    apply clarsimp
    apply (frule map_of_SomeD)

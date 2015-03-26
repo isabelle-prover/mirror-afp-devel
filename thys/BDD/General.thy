@@ -1554,7 +1554,7 @@ lemma Null_notin_Nodes: "\<lbrakk>Dag p low high t; nb <= length levellista; wf_
   apply (rule allI)
   apply (rule impI)
   apply (elim conjE)
-  apply (thin_tac "\<forall>q. ?P q")
+  apply (thin_tac "\<forall>q. P q" for P)
   apply (erule_tac x=k in allE)
   apply (erule impE)
   apply simp
