@@ -312,7 +312,7 @@ apply(rule iffI)
 
 apply (clarsimp simp add:is_pr_Iso_def)
 apply(clarsimp simp:is_pr_Hom_def quotient_diff1)
-apply(drule_tac s="?a // ?b" in sym)
+apply(drule_tac s="a // b" for a b in sym)
 apply(clarsimp)
 apply(subgoal_tac "{\<cong>} `` {map \<phi> F\<^sub>1} : Fs\<^sub>2 // {\<cong>}")
  prefer 2 apply(simp add:quotient_def)

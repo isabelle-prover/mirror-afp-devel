@@ -303,7 +303,7 @@ lemma wt_append [simp]:
   apply (simp add: append_ins_def phi_append_def)
   apply clarify
   apply (drule sym)
-  apply (erule_tac P="?x = ?y" in rev_mp)
+  apply (erule_tac P="x = y" for x y in rev_mp)
   apply (elim pc_end pc_next pc_0)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (fastforce simp add: matches_ex_entry_def subcls1
@@ -380,7 +380,7 @@ lemma wt_makelist [simp]:
   apply (simp add: wt_instr_def)
   apply clarify
   apply (drule sym)
-  apply (erule_tac P="?x = ?y" in rev_mp)
+  apply (erule_tac P="x = y" for x y in rev_mp)
   apply (elim pc_end pc_next pc_0)
   apply (simp add: relevant_entries_def is_relevant_entry_def)
   apply (simp add: relevant_entries_def is_relevant_entry_def)

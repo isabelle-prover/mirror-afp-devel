@@ -62,7 +62,7 @@ proof -
   then have r: "\<And> x y asa bsa. (\<exists>asa bsa. as @ bs = asa @ x # y # bsa) \<Longrightarrow> x \<le> y" by (auto simp: increasing_def)
   show ?thesis apply (clarsimp simp add: increasing_def)
     apply (rule_tac r)
-    apply (rule_tac x="as @ ?asa" in exI)
+    apply (rule_tac x="as @ _" in exI)
     apply auto
     done
 qed

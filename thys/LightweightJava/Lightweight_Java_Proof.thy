@@ -452,7 +452,7 @@ apply(clarsimp)
 apply(drule_tac x = "(aa, ba)" in bspec, simp)
 apply(clarsimp)
 apply(subgoal_tac "(\<exists>prefix' suffix'. find_path_rec_f P ab (case bb of cld_def dcl cl fds mds \<Rightarrow> cl) (prefix' @ [(ab, bb)]) = Some (prefix' @ suffix'))")
- apply(erule impE) apply(simp add: superclass_name_f_def) apply(thin_tac "\<exists>prefix suffix'. ?P prefix suffix'")
+ apply(erule impE) apply(simp add: superclass_name_f_def) apply(thin_tac "\<exists>prefix suffix'. P prefix suffix'" for P)
  apply(thin_tac "mtype_f P (ty_def aa (class_name_f ba)) m = Some mty")
  apply(frule find_cld_name_eq) apply(clarsimp split: option.splits split_if_asm)
  apply(clarsimp simp add: mtype_f_def split: option.splits meth_def.splits meth_sig.splits)
@@ -579,7 +579,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
                                          f \<in> set (fields_in_path_f suffix))
                             x))")
  defer
-apply(thin_tac ?P)+
+apply(thin_tac _)+
 apply(force)
 apply(thin_tac "\<And>aa ba x y.
            \<lbrakk>a = aa \<and> b = ba; x = aa \<and> y = ba\<rbrakk>
@@ -688,7 +688,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
                                          ftype_in_path_f P suffix f = Some ty)
                             x))")
 defer
-apply(thin_tac ?P)+
+apply(thin_tac _)+
 apply(force)
 apply(clarsimp)
 apply(frule path_append) apply(clarify)
@@ -1066,7 +1066,7 @@ apply(clarsimp)
 apply(subgoal_tac "i < length (map (\<lambda>((y, y'), yy, ty). (y', ty)) (zip y_y'_list y_ty_list))")
  apply(frule_tac f = fst and xs = "map (\<lambda>((y, y'), yy, ty). (y', ty)) (zip y_y'_list y_ty_list)" in nth_map)
  apply(simp)
-apply(subgoal_tac "length (map (\<lambda>((y, y'), yy, ty). (y', ty)) ?list) = length ?list")
+apply(subgoal_tac "length (map (\<lambda>((y, y'), yy, ty). (y', ty)) list) = length list" for list)
  apply(simp) apply(frule map_length_y') apply(simp)
 apply(simp only: map_length_list)
 done
@@ -1247,7 +1247,7 @@ by (force)
 
 lemma replicate_eq_length:
   "replicate x c = replicate y c \<Longrightarrow> x = y"
-apply(subgoal_tac "length (replicate x c) = length (replicate y c)") apply(thin_tac ?P)
+apply(subgoal_tac "length (replicate x c) = length (replicate y c)") apply(thin_tac _)
 apply(subgoal_tac "length (replicate x c) = x")
 apply(subgoal_tac "length (replicate y c) = y")
 by simp_all
@@ -1322,7 +1322,7 @@ apply(subgoal_tac "\<forall>aa ba aaa bb.
                                                    Some suffix')
                             x))")
 defer
-apply(thin_tac ?P)+
+apply(thin_tac _)+
 apply(force)
 apply(thin_tac "\<And>aa ba x y.
            \<lbrakk>a = aa \<and> b = ba; x = aa \<and> y = ba\<rbrakk>

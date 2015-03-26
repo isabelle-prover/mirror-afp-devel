@@ -334,7 +334,7 @@ apply(clarsimp simp add: OverriderMethodDefs'_def MinimalMethodDefs'_def MethodD
 apply(case_tac "last xb = hd Cs'")
  apply(simp)
 
-apply(thin_tac "PROP ?P")
+apply(thin_tac "PROP _")
 apply(simp add: leq_path1_def)
 done
 

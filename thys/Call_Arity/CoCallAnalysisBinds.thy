@@ -18,7 +18,7 @@ lemma ccBind_eq: "ccBind v e \<cdot> (ae, G) = (if (v--v\<notin>G) \<or> \<not> 
   (* Abstraction broken! Fix this. *)
   apply (case_tac p, auto, transfer, auto)[1]
   apply (rule adm_subst[OF cont_snd])
-  apply (rule admI, thin_tac "chain ?x", transfer, auto)
+  apply (rule admI, thin_tac "chain _", transfer, auto)
   done
 
 lemma ccBind_strict[simp]: "ccBind v e \<cdot> \<bottom> = \<bottom>"

@@ -144,7 +144,7 @@ qed
 lemma cont_paths[THEN cont_compose, cont2cont, simp]:
   "cont paths"
   apply (rule set_contI)
-  apply (thin_tac ?X)
+  apply (thin_tac _)
   unfolding lub_is_either
   apply transfer
   apply auto

@@ -27,7 +27,7 @@ have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_heap_sumC (Inl (e, y, z)
   apply(simp add: eqvt_at_def subst_def)
   apply(rule)
   apply(subst Projl_permute)
-  apply(thin_tac "?X")+
+  apply(thin_tac _)+
   apply (simp add: subst_subst_heap_sumC_def)
   apply (simp add: THE_default_def)
   apply (case_tac "Ex1 (subst_subst_heap_graph (Inl (e, y, z)))")
@@ -78,7 +78,7 @@ have eqvt_at_subst_heap: "\<And> as y z . eqvt_at subst_subst_heap_sumC (Inr (as
   apply(simp add: eqvt_at_def subst_heap_def)
   apply(rule)
   apply(subst Projr_permute)
-  apply(thin_tac "?X")+
+  apply(thin_tac _)+
   apply (simp add: subst_subst_heap_sumC_def)
   apply (simp add: THE_default_def)
   apply (case_tac "Ex1 (subst_subst_heap_graph (Inr (as, y, z)))")

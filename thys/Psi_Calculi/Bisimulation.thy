@@ -552,7 +552,7 @@ proof -
     case(cSim \<Psi> P Q)
     thus ?case
       apply -
-      apply(case_tac "(\<Psi>, P, Q) \<in> ?X")
+      apply(case_tac "(\<Psi>, P, Q) \<in> X" for X)
       apply(rule_tac rSim)
       apply simp
       apply(clarify)

@@ -1692,7 +1692,7 @@ apply (simp add: mult.commute[of _ c])
 thm div_mult1_eq[of c m k]
 apply (clarsimp simp add: div_mult1_eq[of c m k])
 apply (subgoal_tac "Suc 0 \<le> c * (m mod k) div k", simp)
-apply (thin_tac "?x = 0")+
+apply (thin_tac "_ = 0")+
 apply (drule div_le_mono[of k c k], simp)
 apply (rule order_trans[of _ "c div k"], simp)
 apply (rule div_le_mono, simp)

@@ -225,7 +225,7 @@ by transfer auto
 
 lemma cont_cc_restr: "cont (cc_restr S)"
   apply (rule contI)
-  apply (thin_tac "chain ?x")
+  apply (thin_tac "chain _")
   apply transfer
   apply auto
   done
@@ -292,7 +292,7 @@ lemma ccNeighbors_bot[simp]: "ccNeighbors x \<bottom> = {}" by transfer auto
 lemma cont_ccProd1:
   "cont (\<lambda> S. ccProd S S')"
   apply (rule contI)
-  apply (thin_tac "chain ?x")
+  apply (thin_tac "chain _")
   apply (subst lub_set)
   apply transfer
   apply auto
@@ -301,7 +301,7 @@ lemma cont_ccProd1:
 lemma cont_ccProd2:
   "cont (\<lambda> S'. ccProd S S')"
   apply (rule contI)
-  apply (thin_tac "chain ?x")
+  apply (thin_tac "chain _")
   apply (subst lub_set)
   apply transfer
   apply auto
@@ -312,7 +312,7 @@ lemmas cont_compose2[OF cont_ccProd1 cont_ccProd2, simp, cont2cont]
 lemma cont_ccNeighbors[THEN cont_compose, cont2cont, simp]:
   "cont (\<lambda>y. ccNeighbors x y)"
   apply (rule set_contI)
-  apply (thin_tac "chain ?x")
+  apply (thin_tac "chain _")
   apply transfer
   apply auto
   done 

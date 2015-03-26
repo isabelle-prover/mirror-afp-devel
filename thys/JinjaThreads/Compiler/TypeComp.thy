@@ -535,7 +535,7 @@ apply clarsimp
 apply(rule conjI, fastforce simp:wt_instr_appRx)
 apply clarsimp
 apply(erule_tac x = "pc - size is\<^sub>1" in allE)+
-apply(thin_tac "?P \<longrightarrow> ?Q")
+apply(thin_tac "P \<longrightarrow> Q" for P Q)
 apply(erule impE, arith) 
 apply(drule_tac \<tau>s' = "\<tau>s\<^sub>1" in wt_instr_appL)
   apply arith
@@ -770,8 +770,8 @@ apply(clarsimp split del: option.split_asm)
 apply(erule allE, erule (1) impE)
 apply(clarsimp simp add: wt_instr_def app_def eff_def split del: option.split_asm)
 apply(rule conjI)
- apply (thin_tac "\<forall>x\<in> ?A \<union> ?B. ?P x")
- apply (thin_tac "\<forall>x\<in> ?A \<union> ?B. ?P x")
+ apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
+ apply (thin_tac "\<forall>x\<in> A \<union> B. P x" for A B P)
  apply (clarsimp simp add: xcpt_app_def relevant_entries_def split del: option.split_asm)
  apply (simp add: nth_append is_relevant_entry_def split: split_if_asm split del: option.split_asm)
   apply (drule_tac x="\<tau>s\<^sub>1!pc" in bspec)
@@ -1439,7 +1439,7 @@ apply(rule conjI)
  apply (fastforce)
 apply(clarsimp)
 apply(drule (1) less_antisym)
-apply(thin_tac "\<forall>x. ?P x")
+apply(thin_tac "\<forall>x. P x" for P)
 apply(clarsimp simp:TC2.wt_defs xcpt_app_pcs xcpt_eff_pcs TC0.ty\<^sub>i'_def)
 done
 (*>*)
