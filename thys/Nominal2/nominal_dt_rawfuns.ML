@@ -468,7 +468,7 @@ fun subproof_tac const_names simps =
 fun prove_eqvt_tac insts ind_thms const_names simps ctxt = 
   HEADGOAL
     (Object_Logic.full_atomize_tac ctxt
-     THEN' (DETERM o (Induct_Tacs.induct_rules_tac ctxt insts ind_thms))  
+     THEN' (DETERM o (Induct_Tacs.induct_tac ctxt insts (SOME ind_thms)))
      THEN_ALL_NEW  subproof_tac const_names simps ctxt)
 
 fun mk_eqvt_goal pi const arg =
