@@ -79,7 +79,7 @@ fun rewrite_split_beta ctxt =
   Simplifier.rewrite (clear_simpset ctxt addsimps (@{thms split_beta' split_beta}));
 
 fun represent_euclidean ct1 ct2 =
-  if (Thm.term_of ct1 = Thm.term_of ct2)  (* FIXME equality? *)
+  if ct1 aconvc ct2
   then Conv.rewr_conv @{thm euclidean_representation[symmetric, THEN eq_reflection]} ct2
   else Conv.no_conv ct2
 
