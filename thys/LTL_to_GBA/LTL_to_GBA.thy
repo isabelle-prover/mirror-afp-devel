@@ -2913,7 +2913,7 @@ proof -
       have sbthm: "\<exists>q'. q'\<in>qs \<and> name (\<sigma> k)\<in>incoming q' \<and> auto_run_j (Suc k) \<xi> q'" 
         (is "\<exists>q'. ?sbthm q'") 
         by auto
-      have "?sbthm (\<sigma> (Suc k))" using someI_ex[where, OF sbthm] 
+      have "?sbthm (\<sigma> (Suc k))" using someI_ex[OF sbthm] 
       unfolding \<sigma>_def auto_run.simps by blast
       thus "?\<sigma>_valid (Suc k)" by fast
     qed
@@ -2929,7 +2929,7 @@ proof -
     have sbthm: "\<exists>q'. q'\<in>qs \<and> name (\<sigma> k)\<in>incoming q' 
       \<and> auto_run_j (Suc k) \<xi> q'" (is "\<exists>q'. ?sbthm q'") 
       by auto
-    show "\<sigma> k\<in> qs \<and> ?sbthm (\<sigma> (Suc k))" using `\<sigma> k\<in>qs` someI_ex[where, OF sbthm] 
+    show "\<sigma> k\<in> qs \<and> ?sbthm (\<sigma> (Suc k))" using `\<sigma> k\<in>qs` someI_ex[OF sbthm]
       unfolding \<sigma>_def auto_run.simps by blast
   qed
 
