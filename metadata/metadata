@@ -908,8 +908,8 @@ abstract =
  The implementation follows the paper of Hinze and Paterson.
  The code generator can be used to get efficient, verified code.
 
-[Tries]
-title = Tries
+[Trie]
+title = Trie
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
 date = 2015-03-30
 topic = Computer Science/Data Structures

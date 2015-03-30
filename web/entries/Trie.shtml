@@ -24,13 +24,13 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">T</font>ries
+<h1><font class="first">T</font>rie
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Tries</td></tr>
+        <td class="data" width="80%">Trie</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
@@ -55,13 +55,13 @@ This entry was extracted from existing entries of the authors.
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Tries-AFP,
+			<pre>@article{Trie-AFP,
   author  = {Andreas Lochbihler and Tobias Nipkow},
-  title   = {Tries},
+  title   = {Trie},
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Tries.shtml},
+  note    = {\url{http://afp.sf.net/entries/Trie.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -81,7 +81,7 @@ This entry was extracted from existing entries of the authors.
 
 <p></p>
 
-<!--#set var="name" value="Tries" -->
+<!--#set var="name" value="Trie" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
