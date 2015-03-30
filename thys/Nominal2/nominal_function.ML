@@ -156,19 +156,19 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
         val fnames = map (fst o fst) fixes
         fun qualify n = Binding.name n
           |> Binding.qualify true defname
-        val conceal_partial = if partials then I else Binding.conceal
+        val concealed_partial = if partials then I else Binding.concealed
 
         val addsmps = add_simps fnames post sort_cont
 
         val (((psimps', pinducts'), (_, [termination'])), lthy) =
           lthy
-          |> addsmps (conceal_partial o Binding.qualify false "partial")
-               "psimps" conceal_partial psimp_attribs psimps
-          ||>> Local_Theory.note ((conceal_partial (qualify "pinduct"),
+          |> addsmps (concealed_partial o Binding.qualify false "partial")
+               "psimps" concealed_partial psimp_attribs psimps
+          ||>> Local_Theory.note ((concealed_partial (qualify "pinduct"),
                  [Attrib.internal (K (Rule_Cases.case_names cnames)),
                   Attrib.internal (K (Rule_Cases.consumes 1)),
                   Attrib.internal (K (Induct.induct_pred ""))]), simple_pinducts)
-          ||>> Local_Theory.note ((Binding.conceal (qualify "termination"), []), [termination])
+          ||>> Local_Theory.note ((Binding.concealed (qualify "termination"), []), [termination])
           ||> (snd o Local_Theory.note ((qualify "cases",
                  [Attrib.internal (K (Rule_Cases.case_names cnames))]), [cases]))
           ||> (case domintros of NONE => I | SOME thms => 
