@@ -407,7 +407,7 @@ extra-history =
 
 [Impossible_Geometry]
 title = Proving the Impossibility of Trisecting an Angle and Doubling the Cube
-author = Ralph Romanos <mailto:ralph.romanos@student.ecp.fr>, Lawrence Paulson <http://www.cl.cam.ac.uk/~lp15/>
+author = Ralph Romanos <mailto:ralph.romanos@student.ecp.fr>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2012-08-05
 abstract = Squaring the circle, doubling the cube and trisecting an angle, using a compass and straightedge alone, are classic unsolved problems first posed by the ancient Greeks. All three problems were proved to be impossible in the 19th century. The following document presents the proof of the impossibility of solving the latter two problems using Isabelle/HOL, following a proof by Carrega. The proof uses elementary methods: no Galois theory or field extensions. The set of points constructible using a compass and straightedge is defined inductively. Radical expressions, which involve only square roots and arithmetic of rational numbers, are defined, and we find that all constructive points have radical coordinates. Finally, doubling the cube and trisecting certain angles requires solving certain cubic equations that can be proved to have no rational roots. The Isabelle proofs require a great many detailed calculations.
@@ -2343,7 +2343,7 @@ abstract = This is a collection of cute puzzles of the form ``Show that if a fun
 
 [FunWithTilings]
 title = Fun With Tilings
-author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Lawrence Paulson <http://www.cl.cam.ac.uk/users/lcp/>
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Lawrence C. Paulson <http://www.cl.cam.ac.uk/users/lcp/>
 date = 2008-11-07
 topic = Mathematics/Misc
 abstract = Tilings are defined inductively. It is shown that one form of mutilated chess board cannot be tiled with dominoes, while another one can be tiled with L-shaped tiles. Please add further fun examples of this kind!
