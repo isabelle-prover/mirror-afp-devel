@@ -915,10 +915,10 @@ date = 2015-03-30
 topic = Computer Science/Data Structures
 abstract =
   This article formalizes the ``trie'' data structure invented by
-  Fredkin [CACM 1960] It also provides a specialization where the entries
+  Fredkin [CACM 1960]. It also provides a specialization where the entries
   in the trie are lists.
 extra-0 =
-  Origin: This entry was extracted from existing entries of the authors.
+  Origin: This article was extracted from existing articles by the authors.
 
 [FinFun]
 title = Code Generation for Functions as Data
