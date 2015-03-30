@@ -1,0 +1,19 @@
+chapter AFP
+
+(* Session name, add to AFP group, list base session: *)
+session Trie (AFP) = HOL +
+
+(* Timeout (in sec) in case of non-termination problems *)
+  options [timeout = 600]
+
+  theories [document = false]
+    "../Collections/Lib/Assoc_List"
+
+(* The top-level theories of the submission: *)
+  theories
+    Tries
+    
+(* Dependencies on document source files: *)
+  document_files
+    "root.bib"
+    "root.tex"
