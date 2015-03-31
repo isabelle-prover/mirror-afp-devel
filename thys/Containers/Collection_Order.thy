@@ -105,7 +105,7 @@ lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<L
 lemma comparator_subst: "c1 = c2 \<Longrightarrow> comparator c1 \<Longrightarrow> comparator c2" by blast
   
 lemma (in compare) compare_subst: "\<And> comp. compare = comp \<Longrightarrow> comparator comp"
-  using local.comparator_compare by blast  
+  using comparator_compare by blast  
 
 ML_file "ccompare_generator.ML"
 

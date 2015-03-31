@@ -91,7 +91,7 @@ proof (rule set_eqI iffI)+
   assume "s \<in> terminates_on g"
   hence "\<exists>n. terminates_within s = Some n"
     by induction (subst terminates_within.simps, simp add: split_beta)+
-  then show "s \<in> dom local.terminates_within" by blast
+  then show "s \<in> dom terminates_within" by blast
 next
   fix s
   assume "s \<in> dom terminates_within"

@@ -60,7 +60,7 @@ lemmas (in module)  smult_minus_1_back = smult_minus_1[THEN sym]
 
 text{*-1 is not 0*}
 lemma (in field) neg_1_not_0 [simp]: "\<ominus>\<^bsub>R\<^esub> \<one>\<^bsub>R\<^esub> \<noteq> \<zero>\<^bsub>R\<^esub>"
-by (metis local.minus_minus local.minus_zero one_closed zero_not_one) 
+by (metis minus_minus minus_zero one_closed zero_not_one) 
 
 text {* Note smult-assoc1 is the wrong way around for simplification.
 This is the reverse of smult-assoc1. *}(*Add to Module. *)

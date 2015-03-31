@@ -228,10 +228,10 @@ lemma name_upd_incoming[simp]:
 proof safe
   fix x
   assume "x\<in>ns"
-  hence "upd_incoming_f n x \<in> (\<lambda>n'. local.upd_incoming_f n n') ` ns" by auto
-  hence "name (upd_incoming_f n x) \<in> name ` (\<lambda>n'. local.upd_incoming_f n n') ` ns"
+  hence "upd_incoming_f n x \<in> (\<lambda>n'. upd_incoming_f n n') ` ns" by auto
+  hence "name (upd_incoming_f n x) \<in> name ` (\<lambda>n'. upd_incoming_f n n') ` ns"
     by blast
-  thus "name x \<in> name ` (\<lambda>n'. local.upd_incoming_f n n') ` ns" by simp
+  thus "name x \<in> name ` (\<lambda>n'. upd_incoming_f n n') ` ns" by simp
 qed auto
 
 

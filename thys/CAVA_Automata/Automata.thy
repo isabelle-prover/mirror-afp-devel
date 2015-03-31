@@ -1024,7 +1024,7 @@ begin
               less_nat_zero_code neq0_conv)
           moreover have "n \<notin> acc (fst (r (k - 1)))"
             by (metis 
-              `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> local.acc (fst (r k))` 
+              `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> acc (fst (r k))` 
               `i \<le> k - 1` `k - 1 < k` `k - 1 \<le> j`
               le_antisym less.prems(2) less_le)
           ultimately show ?thesis
@@ -1034,7 +1034,7 @@ begin
     qed
 
     thus ?thesis 
-      by (metis `i \<le> j` `n \<in> local.acc (fst (r j))` 
+      by (metis `i \<le> j` `n \<in> acc (fst (r j))` 
         order_refl surjective_pairing)
   qed
       

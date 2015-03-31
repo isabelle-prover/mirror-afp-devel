@@ -94,7 +94,7 @@ qed
 context semiring_div
 begin
 
-lemmas dvd_setprod = local.dvd_setprodI
+lemmas dvd_setprod = dvd_setprodI
 
 lemma dvd_mult_cancel_left:
   assumes "a \<noteq> 0" and "a * b dvd a * c"
@@ -1131,7 +1131,7 @@ proof (cases "k = 0")
   from A obtain r s where ar: "k = a * r" and bs: "k = b * s" 
     unfolding dvd_def by blast
   with `k \<noteq> 0` have "r * s \<noteq> 0"
-    using local.divisors_zero local.mult_zero_right by fastforce 
+    using divisors_zero mult_zero_right by fastforce 
   hence "is_unit (?nf (r * s))" by simp
   let ?c = "?nf k div ?nf (r*s)"
   from `is_unit (?nf k)` and `is_unit (?nf (r * s))` have "is_unit ?c" by (rule unit_div)

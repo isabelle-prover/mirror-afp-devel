@@ -42,7 +42,7 @@ lemma translate_plus3: "ccw (a - x) (b - x) c \<longleftrightarrow> ccw a b (c +
 
 lemma renormalize:
   "ccw 0 (a - b) (c - a) \<Longrightarrow> ccw b a c"
-  by (metis diff_add_cancel diff_self local.cyclic minus_diff_eq translate_plus3 uminus1)
+  by (metis diff_add_cancel diff_self cyclic minus_diff_eq translate_plus3 uminus1)
 
 lemma cyclicI: "ccw p q r \<Longrightarrow> ccw q r p"
   by (metis cyclic)

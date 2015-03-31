@@ -362,7 +362,7 @@ begin
       {
         fix i
         assume "i<num_acc"
-        hence "\<exists>q\<in>set (lasso_cycle L). i \<in> local.acc (fst q) \<and> snd q = i"
+        hence "\<exists>q\<in>set (lasso_cycle L). i \<in> acc (fst q) \<and> snd q = i"
         proof (induction i)
           case 0
           thus ?case using ACC unfolding degeneralize_ext_def by fastforce

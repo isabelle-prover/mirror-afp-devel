@@ -115,7 +115,7 @@ lemma powsum_one: "1 \<le> x\<^bsub>0\<^esub>\<^bsup>Suc n\<^esup>"
 lemma powsum_shift1: "x \<cdot> x\<^bsub>m\<^esub>\<^bsup>n\<^esup> = x\<^bsub>m+1\<^esub>\<^bsup>n\<^esup>" 
   apply (induct n)
   apply (simp_all add: powsum_simps)
-  apply (metis local.add_left_comm local.distrib_left powsum_def)  
+  apply (metis add_left_comm distrib_left powsum_def)  
   done
 
 lemma powsum_shift: "x\<^bsup>k \<^esup>\<cdot> x\<^bsub>m\<^esub>\<^bsup>n\<^esup> = x\<^bsub>k+m\<^esub>\<^bsup>n\<^esup>" 

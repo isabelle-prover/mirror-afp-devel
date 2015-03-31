@@ -469,9 +469,9 @@ next
     apply (rule_tac x = "\<Gamma> (x \<mapsto> t)" in exI)
     apply (auto simp: mds_consistent_def)
          apply (metis Sec.exhaust)
-        apply (metis (lifting, full_types) CollectD domI local.assign\<^sub>2(1))
-       apply (metis (lifting, full_types) CollectD domI local.assign\<^sub>2(1))
-      apply (metis (lifting) CollectE domI local.assign\<^sub>2(1))
+        apply (metis (lifting, full_types) CollectD domI assign\<^sub>2(1))
+       apply (metis (lifting, full_types) CollectD domI assign\<^sub>2(1))
+      apply (metis (lifting) CollectE domI assign\<^sub>2(1))
      apply (metis (lifting, full_types) domD mem_Collect_eq)
     by (metis (lifting, full_types) domD mem_Collect_eq)
 next
@@ -486,7 +486,7 @@ next
   thus ?case
     apply (rule_tac x = \<Gamma> in exI)
     apply auto
-    by (metis Sec.simps(2) has_type.while_type if_type local.while_type(1) local.while_type(2) seq_type stop_type type_bexpr_elim)
+    by (metis Sec.simps(2) has_type.while_type if_type while_type(1) while_type(2) seq_type stop_type type_bexpr_elim)
 next
   case (seq_type \<Gamma> c\<^sub>1 \<Gamma>\<^sub>1 c\<^sub>2 \<Gamma>\<^sub>2 c' mds)
   thus ?case
@@ -496,7 +496,7 @@ next
       by (metis seq_stop_elim)
     thus ?case
       apply auto
-      by (metis (lifting) `c\<^sub>1 = Stop` context_le_refl local.seq_type(1) local.seq_type(3) stop_cxt sub)
+      by (metis (lifting) `c\<^sub>1 = Stop` context_le_refl seq_type(1) seq_type(3) stop_cxt sub)
   next
     assume "c\<^sub>1 \<noteq> Stop"
     then obtain c\<^sub>1' where "\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = (c\<^sub>1' ;; c\<^sub>2)"
@@ -520,7 +520,7 @@ next
   thus ?case
     apply (rule_tac x = \<Gamma>'' in exI)
     apply (rule conjI)
-     apply (metis (lifting) has_type.sub local.sub(4) stop_cxt stop_type)
+     apply (metis (lifting) has_type.sub sub(4) stop_cxt stop_type)
     apply (simp add: mds_consistent_def)
     by (metis context_le_def sub.hyps(3))
 qed
@@ -695,7 +695,7 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
     from seq_type `c\<^sub>1 = Stop` have "\<Gamma> \<sqsubseteq>\<^sub>c \<Gamma>''"
       by (metis stop_cxt)
     hence "\<turnstile> \<Gamma> { c\<^sub>2 } \<Gamma>'"
-      by (metis context_le_refl local.seq_type(3) sub)
+      by (metis context_le_refl seq_type(3) sub)
     have "\<langle>c\<^sub>2, mds, mem\<^sub>1\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
       apply (rule \<R>\<^sub>1.intro [of \<Gamma>])
       by (auto simp: seq_type `\<turnstile> \<Gamma> { c\<^sub>2 } \<Gamma>'`)
@@ -713,13 +713,13 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
       by (metis seq_elim)
     with seq_type(2) obtain c\<^sub>2'' mem\<^sub>2' where c\<^sub>2''_props:
       "\<langle>c\<^sub>1, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle> \<and> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>"
-      by (metis local.seq_type(5) local.seq_type(6))
+      by (metis seq_type(5) seq_type(6))
     hence "\<langle>c\<^sub>1'' ;; c\<^sub>2, mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>2'' ;; c\<^sub>2, mds', mem\<^sub>2'\<rangle>"
       apply (rule conjE)
       apply (erule \<R>_elim, auto)
-        apply (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>1 local.seq_type(3))
-       apply (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>2 local.seq_type(3))
-      by (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>3 local.seq_type(3))
+        apply (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>1 seq_type(3))
+       apply (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>2 seq_type(3))
+      by (metis \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>3 seq_type(3))
     moreover
     from c\<^sub>2''_props have "\<langle>c\<^sub>1 ;; c\<^sub>2, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'' ;; c\<^sub>2, mds', mem\<^sub>2'\<rangle>"
       by (metis eval\<^sub>w.seq)
@@ -729,14 +729,14 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
 next
   case (anno_type \<Gamma>' \<Gamma> upd c \<Gamma>'' mds)
   have "mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2"
-    by (metis less_eq_Sec_def local.anno_type(5) local.anno_type(7) tyenv_eq_def)
+    by (metis less_eq_Sec_def anno_type(5) anno_type(7) tyenv_eq_def)
   have "mds_consistent (update_modes upd mds) \<Gamma>'"
-    by (metis (lifting) local.anno_type(1) local.anno_type(6) mode_update_add_anno)
+    by (metis (lifting) anno_type(1) anno_type(6) mode_update_add_anno)
   then obtain c\<^sub>2' mem\<^sub>2' where "(\<langle>c, update_modes upd mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle> \<and>
     \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>)"
     using anno_type
     apply auto
-    by (metis `mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2` local.anno_type(1) upd_elim)
+    by (metis `mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2` anno_type(1) upd_elim)
   thus ?case
     apply (rule_tac x = c\<^sub>2' in exI)
     apply (rule_tac x = mem\<^sub>2' in exI)
@@ -781,8 +781,8 @@ next (* assign\<^sub>1 *)
     thus ?thesis
       using eval_vars_det\<^sub>A
       apply (auto simp: tyenv_eq_def)
-       apply (metis (no_types) local.assign\<^sub>1(5) tyenv_eq_def)
-      by (metis local.assign\<^sub>1(5) tyenv_eq_def)
+       apply (metis (no_types) assign\<^sub>1(5) tyenv_eq_def)
+      by (metis assign\<^sub>1(5) tyenv_eq_def)
   qed
   hence "\<langle>x \<leftarrow> e, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>Stop, mds', mem\<^sub>2 (x := ev\<^sub>A mem\<^sub>2 e)\<rangle>"
     "\<langle>Stop, mds', mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>Stop, mds', mem\<^sub>2 (x := ev\<^sub>A mem\<^sub>2 e)\<rangle>"
@@ -806,7 +806,7 @@ next (* assign\<^sub>2 *)
   proof (auto)
     from assign\<^sub>2 show "mds_consistent mds ?\<Gamma>'"
       apply (simp add: mds_consistent_def)
-      by (metis (lifting) insert_absorb local.assign\<^sub>2(1))
+      by (metis (lifting) insert_absorb assign\<^sub>2(1))
   next
     show "mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e) =\<^bsub>?\<Gamma>'\<^esub> mem\<^sub>2 (x := ev\<^sub>A mem\<^sub>2 e)"
       unfolding tyenv_eq_def
@@ -837,7 +837,7 @@ next (* if *)
     apply clarify
     apply (rule \<R>\<^sub>1.intro [where \<Gamma> = \<Gamma> and \<Gamma>' = \<Gamma>'])
       apply (auto simp: if_type)
-    by (metis (lifting) if_elim local.if_type(2) local.if_type(4) local.if_type(8))
+    by (metis (lifting) if_elim if_type(2) if_type(4) if_type(8))
   have eq_condition: "ev\<^sub>B mem\<^sub>1 e = ev\<^sub>B mem\<^sub>2 e \<Longrightarrow> ?case"
   proof -
     assume "ev\<^sub>B mem\<^sub>1 e = ev\<^sub>B mem\<^sub>2 e"
@@ -845,19 +845,19 @@ next (* if *)
       apply (cases "ev\<^sub>B mem\<^sub>1 e")
        apply (subgoal_tac "c\<^sub>1' = th")
         apply clarify
-        apply (metis cxt_to_stmt.simps(1) eval\<^sub>w_simplep.if_true eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq local.if_type(8))
-       apply (metis if_elim local.if_type(8))
+        apply (metis cxt_to_stmt.simps(1) eval\<^sub>w_simplep.if_true eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq if_type(8))
+       apply (metis if_elim if_type(8))
       apply (subgoal_tac "c\<^sub>1' = el")
-       apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false local.if_type(8))
-      by (metis if_elim local.if_type(8))
+       apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
+      by (metis if_elim if_type(8))
     thus ?thesis
-      by (metis `\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>` if_elim local.if_type(8))
+      by (metis `\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>` if_elim if_type(8))
   qed
   have "mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2"
     apply (auto simp: low_mds_eq_def mds_consistent_def)
     apply (subgoal_tac "x \<notin> dom \<Gamma>")
-     apply (metis local.if_type(7) to_total_def tyenv_eq_def)
-    by (metis (lifting, mono_tags) CollectD Sec.simps(2) local.if_type(6) mds_consistent_def)
+     apply (metis if_type(7) to_total_def tyenv_eq_def)
+    by (metis (lifting, mono_tags) CollectD Sec.simps(2) if_type(6) mds_consistent_def)
   obtain t where "\<Gamma> \<turnstile>\<^sub>b e \<in> t"
     by (metis type_bexpr.intros)
   from if_type show ?case
@@ -875,9 +875,9 @@ next (* if *)
       proof (cases "ev\<^sub>B mem\<^sub>1 e")
         assume "ev\<^sub>B mem\<^sub>1 e"
         hence "c\<^sub>1' = th"
-          by (metis (lifting) if_elim local.if_type(8))
+          by (metis (lifting) if_elim if_type(8))
         hence "\<langle>If e th el, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>el, mds, mem\<^sub>2\<rangle>"
-          by (metis `ev\<^sub>B mem\<^sub>1 e` cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false local.if_type(8) neq)
+          by (metis `ev\<^sub>B mem\<^sub>1 e` cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8) neq)
         moreover
         with `mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2` have "\<langle>th, mds, mem\<^sub>1\<rangle> \<approx> \<langle>el, mds, mem\<^sub>2\<rangle>"
           by (metis low_indistinguishable_def `th \<sim>\<^bsub>mds\<^esub> el`)
@@ -885,17 +885,17 @@ next (* if *)
           using if_type `t = High`
           by (metis `\<Gamma> \<turnstile>\<^sub>b e \<in> t`)
         have "\<langle>th, mds, mem\<^sub>1\<rangle> \<R>\<^sup>2\<^bsub>\<Gamma>'\<^esub> \<langle>el, mds, mem\<^sub>2\<rangle>"
-          by (metis (lifting) \<R>\<^sub>2.intro `\<forall>x\<in>dom \<Gamma>'. \<Gamma>' x = Some High` `\<langle>th, mds, mem\<^sub>1\<rangle> \<approx> \<langle>el, mds, mem\<^sub>2\<rangle>` local.if_type(2) local.if_type(4) local.if_type(6))
+          by (metis (lifting) \<R>\<^sub>2.intro `\<forall>x\<in>dom \<Gamma>'. \<Gamma>' x = Some High` `\<langle>th, mds, mem\<^sub>1\<rangle> \<approx> \<langle>el, mds, mem\<^sub>2\<rangle>` if_type(2) if_type(4) if_type(6))
         ultimately show ?thesis
           using \<R>.intro\<^sub>2
           apply clarify
-          by (metis `c\<^sub>1' = th` if_elim local.if_type(8))
+          by (metis `c\<^sub>1' = th` if_elim if_type(8))
       next
         assume "\<not> ev\<^sub>B mem\<^sub>1 e"
         hence [simp]: "c\<^sub>1' = el"
           by (metis (lifting) if_type(8) if_elim)
         hence "\<langle>If e th el, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>th, mds, mem\<^sub>2\<rangle>"
-          by (metis (hide_lams, mono_tags) `\<not> ev\<^sub>B mem\<^sub>1 e` cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_true local.if_type(8) neq)
+          by (metis (hide_lams, mono_tags) `\<not> ev\<^sub>B mem\<^sub>1 e` cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_true if_type(8) neq)
         moreover
         from `th \<sim>\<^bsub>mds\<^esub> el` have "el \<sim>\<^bsub>mds\<^esub> th"
           by (metis low_indistinguishable_sym)
@@ -910,7 +910,7 @@ next (* if *)
         ultimately show ?thesis
           using \<R>.intro\<^sub>2
           apply clarify
-          by (metis `c\<^sub>1' = el` if_elim local.if_type(8))
+          by (metis `c\<^sub>1' = el` if_elim if_type(8))
       qed
     qed
   next
@@ -934,7 +934,7 @@ next (* while *)
     apply (rule \<R>\<^sub>1.intro [where \<Gamma> = \<Gamma>])
       apply (auto simp: while_type)
     apply (rule if_type)
-      apply (metis (lifting) Sec.simps(1) local.while_type(1) type_bexpr_elim)
+      apply (metis (lifting) Sec.simps(1) while_type(1) type_bexpr_elim)
      apply (rule seq_type [where \<Gamma>' = \<Gamma>])
       by (auto simp: while_type)
   ultimately show ?case
@@ -944,7 +944,7 @@ next
   case (sub \<Gamma>\<^sub>1 c \<Gamma>\<^sub>1' \<Gamma> \<Gamma>' mds c\<^sub>1')
   hence "dom \<Gamma>\<^sub>1 \<subseteq> dom \<Gamma>" "dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'"
     apply (metis (lifting) context_le_def equalityE)
-    by (metis context_le_def local.sub(4) order_refl)
+    by (metis context_le_def sub(4) order_refl)
   hence "mds_consistent mds \<Gamma>\<^sub>1"
     using sub
     apply (auto simp: mds_consistent_def)
@@ -968,7 +968,7 @@ next
     have "?lc\<^sub>1 \<R>\<^sup>1\<^bsub>\<Gamma>\<^sub>1'\<^esub> ?lc\<^sub>2 \<Longrightarrow> ?lc\<^sub>1 \<R>\<^sup>1\<^bsub>\<Gamma>'\<^esub> ?lc\<^sub>2"
       apply (erule \<R>\<^sub>1_elim)
       apply auto
-      by (metis (lifting) has_type.sub local.sub(4) stop_cxt stop_type)
+      by (metis (lifting) has_type.sub sub(4) stop_cxt stop_type)
     moreover
     have "?lc\<^sub>1 \<R>\<^sup>2\<^bsub>\<Gamma>\<^sub>1'\<^esub> ?lc\<^sub>2 \<Longrightarrow> ?lc\<^sub>1 \<R>\<^sup>2\<^bsub>\<Gamma>'\<^esub> ?lc\<^sub>2"
     proof -
@@ -978,16 +978,16 @@ next
         by (metis \<R>\<^sub>2_elim)
       hence "\<turnstile> \<Lambda>\<^sub>1 { c\<^sub>1 } \<Gamma>'"
         using sub(4)
-        by (metis context_le_refl has_type.sub local.sub(4))
+        by (metis context_le_refl has_type.sub sub(4))
       moreover
       have "\<turnstile> \<Lambda>\<^sub>2 { c\<^sub>2 } \<Gamma>'"
-        by (metis `\<turnstile> \<Lambda>\<^sub>2 {c\<^sub>2} \<Gamma>\<^sub>1'` context_le_refl has_type.sub local.sub(4))
+        by (metis `\<turnstile> \<Lambda>\<^sub>2 {c\<^sub>2} \<Gamma>\<^sub>1'` context_le_refl has_type.sub sub(4))
       moreover
       from r2 have "\<forall> x \<in> dom \<Gamma>\<^sub>1'. \<Gamma>\<^sub>1' x = Some High"
         apply (rule \<R>\<^sub>2_elim)
         by auto
       hence "\<forall> x \<in> dom \<Gamma>'. \<Gamma>' x = Some High"
-        by (metis Sec.simps(2) `dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'` context_le_def domD less_eq_Sec_def local.sub(4) set_rev_mp option.sel)
+        by (metis Sec.simps(2) `dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'` context_le_def domD less_eq_Sec_def sub(4) set_rev_mp option.sel)
       ultimately show ?thesis
         by (metis (no_types) \<R>\<^sub>2.intro \<R>\<^sub>2_elim' `mds_consistent mds \<Lambda>\<^sub>1` `mds_consistent mds \<Lambda>\<^sub>2` r2)
     qed
@@ -1071,7 +1071,7 @@ proof -
           apply (rule conjI)
            apply (metis `c\<^sub>1 = Stop` cxt_to_stmt.simps(1) eval\<^sub>w_simplep.seq_stop eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq intro\<^sub>1.prems seq_stop_elim)
           apply (rule \<R>.intro\<^sub>1, clarify)
-          by (metis (no_types) \<R>\<^sub>1.intro `c\<^sub>1 = Stop` context_le_refl intro\<^sub>1.prems local.intro\<^sub>1(2) seq_stop_elim stop_cxt sub)
+          by (metis (no_types) \<R>\<^sub>1.intro `c\<^sub>1 = Stop` context_le_refl intro\<^sub>1.prems intro\<^sub>1(2) seq_stop_elim stop_cxt sub)
       next
         assume "c\<^sub>1 \<noteq> Stop"
         from intro\<^sub>1
@@ -1127,7 +1127,7 @@ proof -
           apply (auto simp: tyenv_eq_def low_mds_eq_def mds_consistent_def)
           by (metis Sec.simps(1) `\<forall>x\<in>dom \<Gamma>. \<Gamma> x = Some High` `mds' = mds` domI option.sel to_total_def)
         ultimately have "\<langle>cn, mds, mem\<^sub>1\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>'\<^esub> \<langle>cn, mds, mem\<^sub>2\<rangle>"
-          by (metis (lifting) \<R>\<^sub>1.intro local.intro\<^sub>2(2))
+          by (metis (lifting) \<R>\<^sub>1.intro intro\<^sub>2(2))
         thus "?thesis"
           using \<R>.intro\<^sub>1
           apply auto
@@ -1146,10 +1146,10 @@ proof -
           by (metis (lifting) intro\<^sub>2 eval\<^sub>w.seq)
         moreover
         have "(\<langle>c\<^sub>1''' ;; cn, mds', mem\<^sub>1'\<rangle>, \<langle>?c\<^sub>2', mds', mem\<^sub>2'\<rangle>) \<in> \<R>\<^sub>3 \<Gamma>'"
-          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 c\<^sub>2'''_props local.intro\<^sub>2(2) mem_Collect_eq splitI)
+          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 c\<^sub>2'''_props intro\<^sub>2(2) mem_Collect_eq splitI)
         ultimately show ?thesis
           using \<R>.intro\<^sub>3
-          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 `c\<^sub>1' = c\<^sub>1''' ;; cn` c\<^sub>2'''_props local.intro\<^sub>2(2))
+          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 `c\<^sub>1' = c\<^sub>1''' ;; cn` c\<^sub>2'''_props intro\<^sub>2(2))
       qed
     next
       case (intro\<^sub>3 \<Gamma> c\<^sub>1 mds mem\<^sub>1 c\<^sub>2 mem\<^sub>2 c \<Gamma>')
@@ -1161,7 +1161,7 @@ proof -
         then obtain c\<^sub>1'' where "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle>" "c\<^sub>1' = (c\<^sub>1'' ;; c)"
           by (metis intro\<^sub>3.prems seq_elim)
         then obtain c\<^sub>2'' mem\<^sub>2' where "\<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>" "\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>"
-          using local.intro\<^sub>3(2) mem_Collect_eq splitI
+          using intro\<^sub>3(2) mem_Collect_eq splitI
           by metis
         thus ?thesis
           apply (rule_tac x = "c\<^sub>2'' ;; c" in exI)
@@ -1170,9 +1170,9 @@ proof -
            apply (metis eval\<^sub>w.seq)
           apply (erule \<R>_elim)
             apply simp_all
-            apply (metis \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` local.intro\<^sub>3(3))
-           apply (metis (lifting) \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` local.intro\<^sub>3(3))
-          by (metis (lifting) \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>3 `c\<^sub>1' = c\<^sub>1'' ;; c` local.intro\<^sub>3(3))
+            apply (metis \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` intro\<^sub>3(3))
+           apply (metis (lifting) \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` intro\<^sub>3(3))
+          by (metis (lifting) \<R>.intro\<^sub>3 \<R>\<^sub>3_aux.intro\<^sub>3 `c\<^sub>1' = c\<^sub>1'' ;; c` intro\<^sub>3(3))
       qed
     qed
   }

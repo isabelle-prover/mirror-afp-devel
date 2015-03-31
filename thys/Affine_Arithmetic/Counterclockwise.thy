@@ -184,7 +184,7 @@ lemma linear: "a \<in> S \<Longrightarrow> b \<in> S \<Longrightarrow> LE a b \<
 
 lemma MIN_le1: "w \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> LE (MIN w y) y"
   and MIN_le2: "w \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> LE (MIN w y) w"
-  using local.linear
+  using linear
   by (auto simp: MIN_def refl)
 
 lemma fold_min:
@@ -298,7 +298,7 @@ begin
 lemmas ccw_axioms = cyclic nondegenerate ccw_antisym transitive
 
 sublocale ccw_system1235'
-(*  by (unfold_locales, smt cyclic local.transitive nondegenerate) *)
+(*  by (unfold_locales, smt cyclic transitive nondegenerate) *)
 proof (unfold_locales, rule ccontr)
   case goal1
   hence "ccw s p q \<Longrightarrow> ccw s r p"

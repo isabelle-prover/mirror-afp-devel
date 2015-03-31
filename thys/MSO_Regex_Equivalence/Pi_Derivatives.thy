@@ -203,10 +203,10 @@ next
 next
   case (Times r s)
   hence "finite (\<Union> (toplevel_summands ` {\<guillemotleft>lderivs xs s\<guillemotright> | xs . True}))" by auto
-  moreover have "{\<guillemotleft>r'\<guillemotright> |r'. \<exists>ys. r' \<in> toplevel_summands (local.lderivs ys s)} =
-    {r'. \<exists>ys. r' \<in> toplevel_summands \<guillemotleft>local.lderivs ys s\<guillemotright>}"
+  moreover have "{\<guillemotleft>r'\<guillemotright> |r'. \<exists>ys. r' \<in> toplevel_summands (lderivs ys s)} =
+    {r'. \<exists>ys. r' \<in> toplevel_summands \<guillemotleft>lderivs ys s\<guillemotright>}"
     unfolding toplevel_summands_ACI_norm by auto
-  ultimately have fin: "finite {\<guillemotleft>r'\<guillemotright> |r'. \<exists>ys. r' \<in> toplevel_summands (local.lderivs ys s)}"
+  ultimately have fin: "finite {\<guillemotleft>r'\<guillemotright> |r'. \<exists>ys. r' \<in> toplevel_summands (lderivs ys s)}"
     by (fastforce intro: finite_subset[of _ "\<Union> (toplevel_summands ` {\<guillemotleft>lderivs xs s\<guillemotright> | xs . True})"])
   let ?X = "\<lambda>xs. {Times (lderivs ys r) s | ys. True} \<union> {r'. r' \<in> (\<Union>ys. toplevel_summands (lderivs ys s))}"
   show ?case unfolding ACI_norm_flatten
@@ -314,7 +314,7 @@ proof (induct r arbitrary: as)
 next
   case (Pr r)
   hence "list_all2 (\<lambda>r s. \<guillemotleft>r\<guillemotright> = \<guillemotleft>s\<guillemotright>)
-    (map (\<lambda>a. local.lderiv a \<guillemotleft>r\<guillemotright>) (embed as)) (map (\<lambda>a. local.lderiv a r) (embed as))"
+    (map (\<lambda>a. lderiv a \<guillemotleft>r\<guillemotright>) (embed as)) (map (\<lambda>a. lderiv a r) (embed as))"
     unfolding list_all2_map1 list_all2_map2 by (intro list_all2_refl)
   thus ?case unfolding lderiv.simps ACI_norm.simps by (blast intro: ACI_norm_PLUS)
 qed (simp_all add: Let_def)

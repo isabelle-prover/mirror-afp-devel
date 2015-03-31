@@ -1828,7 +1828,7 @@ proof -
   proof (induct)
     case refl
     thus ?case
-      by (metis fst_conv loc_reach.mem_diff loc_reach.refl local.mem_diff snd_conv)
+      by (metis fst_conv loc_reach.mem_diff loc_reach.refl mem_diff snd_conv)
   next
     case step
     thus ?case

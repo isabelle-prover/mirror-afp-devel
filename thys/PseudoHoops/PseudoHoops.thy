@@ -807,7 +807,7 @@ end
 context monoid_mult
 begin
 lemma "a ^ 2 = a * a"
-  by (simp add: local.power2_eq_square)
+  by (simp add: power2_eq_square)
 end
 *)
 

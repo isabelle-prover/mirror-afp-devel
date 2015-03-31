@@ -948,7 +948,7 @@ proof (unfold is_bezout_ext_def Let_def, auto)
   show "fst (euclid_ext2 a b) * a + fst (snd (euclid_ext2 a b)) * b 
     = snd (snd (snd (snd (euclid_ext2 a b))))"
     unfolding snd_snd fst_snd fst
-    by (rule local.euclid_ext'_correct)
+    by (rule euclid_ext'_correct)
   show d_dvd_a: "?d dvd a" by (simp add: snd_snd)
   show d_dvd_b: "?d dvd b" by (simp add: snd_snd)
   show "?d * ?u = - b" unfolding euclid_ext2_def Let_def fst_conv snd_conv
@@ -974,7 +974,7 @@ proof (unfold is_bezout_def Let_def, auto)
     by (simp add: split_beta)
   show "fst (euclid_ext a b) * a + fst (snd (euclid_ext a b)) * b = snd (snd (euclid_ext a b))"
     unfolding snd_snd fst_snd fst
-    by (rule local.euclid_ext'_correct)
+    by (rule euclid_ext'_correct)
   show "snd (snd (euclid_ext a b)) dvd a" by (simp add: snd_snd)
   show "snd (snd (euclid_ext a b)) dvd b" by (simp add: snd_snd)
   fix d' assume "d' dvd a" and "d' dvd b" 

@@ -348,7 +348,7 @@ termination proof -
     assume "ltln_rewrite_step \<psi> = \<phi>"
     thm ltln_rewrite_step__size_leq
     moreover assume "\<lbrakk>ltln_rewrite_step \<psi> = \<phi>; 
-      size (local.ltln_rewrite_step \<psi>) \<le> size \<psi>\<rbrakk> \<Longrightarrow> thesis"
+      size (ltln_rewrite_step \<psi>) \<le> size \<psi>\<rbrakk> \<Longrightarrow> thesis"
     ultimately have thesis using ltln_rewrite_step__size_leq[of \<psi>]
       by blast
   } note AUX=this

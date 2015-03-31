@@ -34,7 +34,7 @@ locale dfa =
 begin
 
 lemma finite_final [simp]: "finite (final M)"
-  using final finite_subset local.finite by blast
+  using final finite_subset finite by blast
 
 text{*Transition function for a given starting state and word.*}
 primrec nextl :: "[hf, 'a list] \<Rightarrow> hf" where
@@ -168,7 +168,7 @@ next
     by (auto simp: nxt nxt_accessible)
 next
   show "finite (states Accessible_dfa)"
-    by (auto intro: accessible_imp_states finite_subset local.finite)
+    by (auto intro: accessible_imp_states finite_subset finite)
 qed
 
 lemma dfa_Accessible: "dfa Accessible_dfa"
@@ -211,7 +211,7 @@ proof
     using x sb [THEN subsetD]
     by blast
   then show "x \<in> qs2"
-    by (metis UN_E disjoint_iff_not_equal local.left_lang_disjoint y)
+    by (metis UN_E disjoint_iff_not_equal left_lang_disjoint y)
 qed
 
 lemma left_lang_UN:
@@ -236,7 +236,7 @@ lemma equiv_eq_right_lang: "equiv (states M) eq_right_lang"
   by (auto simp: equiv_def refl_on_def sym_def trans_def eq_right_lang_def)
 
 lemma eq_right_lang_finite_index: "finite (states M // eq_right_lang)"
-  by (metis finite_imageI local.finite proj_image)
+  by (metis finite_imageI finite proj_image)
 
 definition Collapse_dfa :: "'a dfa" where
   "Collapse_dfa = \<lparr>dfa.states = HF ` (states M // eq_right_lang),
@@ -249,7 +249,7 @@ lemma nxt_Collapse_resp: "(\<lambda>q. eq_right_lang `` {nxt M q x}) respects eq
            simp del: nextl.simps)
 
 lemma finite_Collapse_state: "Q \<in> states M // eq_right_lang \<Longrightarrow> finite Q"
-  by (meson equiv_eq_right_lang finite_subset in_quotient_imp_subset local.finite)
+  by (meson equiv_eq_right_lang finite_subset in_quotient_imp_subset finite)
 
 interpretation Collapse: dfa Collapse_dfa
 proof unfold_locales
@@ -304,7 +304,7 @@ theorem language_Collapse_dfa:
   by (simp add: ext_language_Collapse_dfa subset_antisym subset_iff)
 
 lemma card_Collapse_dfa: "card (states M // eq_right_lang) \<le> card (states M)"
-  by (metis card_image_le local.finite proj_image)
+  by (metis card_image_le finite proj_image)
 
 end
 
@@ -343,8 +343,8 @@ lemma nxt_inv_into: "q \<in> states N \<Longrightarrow> nxt N q x = h (nxt M (in
 lemma sym: "dfa_isomorphism N M (inv_into (states M) h)"
   apply unfold_locales
   apply (metis bij_betw_inv_into h)
-  apply (metis M.init bij_betw_imp_inj_on h inv_into_f_eq local.init)
-  apply (metis M.final bij_betw_def bij_betw_inv_into_subset h local.final)
+  apply (metis M.init bij_betw_imp_inj_on h inv_into_f_eq init)
+  apply (metis M.final bij_betw_def bij_betw_inv_into_subset h final)
   apply (simp add: nxt_inv_into)
   apply (metis M.nxt bij_betw_def h inv_into_f_eq inv_into_into)
   done
@@ -352,8 +352,8 @@ lemma sym: "dfa_isomorphism N M (inv_into (states M) h)"
 lemma trans: "dfa_isomorphism N N' h' \<Longrightarrow> dfa_isomorphism M N' (h' o h)"
   apply (auto simp: dfa_isomorphism_def dfa_isomorphism_axioms_def, unfold_locales)
   apply (metis bij_betw_comp_iff h)
-  apply (metis imageI local.final)
-  apply (metis image_comp local.final)
+  apply (metis imageI final)
+  apply (metis image_comp final)
   apply (metis bij_betw_def h imageI)
   done
 
@@ -560,7 +560,7 @@ locale nfa =
 begin
 
 lemma subset_states_finite [intro,simp]: "Q \<subseteq> states M \<Longrightarrow> finite Q"
-  by (simp add: finite_subset local.finite)
+  by (simp add: finite_subset finite)
 
 definition epsclo :: "hf set \<Rightarrow> hf set" where
   "epsclo Q \<equiv> states M \<inter> (\<Union>q\<in>Q. {q'. (q,q') \<in> (eps M)\<^sup>*})"
@@ -593,13 +593,13 @@ lemma epsclo_mono: "Q' \<subseteq> Q \<Longrightarrow> epsclo Q' \<subseteq> eps
   by (auto simp: epsclo_def)
 
 lemma finite_epsclo [simp]: "finite (epsclo Q)"
-  using epsclo_subset finite_subset local.finite by blast
+  using epsclo_subset finite_subset finite by blast
 
 lemma finite_final: "finite (final M)"
-  using final finite_subset local.finite by blast
+  using final finite_subset finite by blast
 
 lemma finite_nxt: "q \<in> states M \<Longrightarrow> finite (nxt M q x)"
-  by (metis finite_subset local.finite nxt)
+  by (metis finite_subset finite nxt)
 
 text{*Transition function for a given starting state and word.*}
 primrec nextl :: "[hf set, 'a list] \<Rightarrow> hf set" where
@@ -678,12 +678,12 @@ next
   show "q \<in> dfa.states Power_dfa \<Longrightarrow> dfa.nxt Power_dfa q a \<in> dfa.states Power_dfa"
     apply (auto simp: nxt)
     apply (subst inj_on_image_mem_iff [OF inj_on_HF])
-    apply (auto simp: rev_finite_subset [OF local.finite] nxt)
+    apply (auto simp: rev_finite_subset [OF finite] nxt)
     apply (metis Pow_iff epsclo_UN epsclo_idem epsclo_subset image_eqI)
     done
 next
   show "finite (dfa.states Power_dfa)"
-    by (force simp: local.finite)
+    by (force simp: finite)
 qed
 
 corollary dfa_Power: "dfa Power_dfa"
@@ -1079,7 +1079,7 @@ context dfa
 begin
 
   lemma nfa_Reverse_nfa: "nfa (Reverse_nfa M)"
-    by unfold_locales (auto simp: final local.finite)
+    by unfold_locales (auto simp: final finite)
 
   lemma nextl_Reverse_nfa:
     "nfa.nextl (Reverse_nfa M) Q u = {q' \<in> dfa.states M. dfa.nextl M q' (rev u) \<in> Q}"
@@ -1218,7 +1218,7 @@ subsection{*More about the relation @{term eq_app_right}*}
                   index_f eq_app_right_eq)
 
   interpretation MN: dfa Canon.DFA
-    by (fact local.Canon.dfa)
+    by (fact Canon.dfa)
 
   definition iso :: "hf \<Rightarrow> hf" where
     "iso \<equiv> index_f o (\<lambda>q. eq_app_right language `` {path_to q})"
@@ -1286,7 +1286,7 @@ subsection{*More about the relation @{term eq_app_right}*}
               "dfa.right_lang (nfa.Power_dfa (Reverse_nfa M)) q1 =
                dfa.right_lang (nfa.Power_dfa (Reverse_nfa M)) q2"
     then have "hfset q1 \<subseteq> accessible \<and> hfset q2 \<subseteq> accessible"
-      using assms rev_finite_subset [OF local.finite]
+      using assms rev_finite_subset [OF finite]
       by force
     with * show "q1 = q2"
       apply (simp add: nfa_Reverse_nfa nfa.Power_right_lang right_lang_Reverse
