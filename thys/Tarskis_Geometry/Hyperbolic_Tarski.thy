@@ -728,7 +728,7 @@ proof -
   have "?v' \<noteq> 0" by (rule vector2_append1_non_zero)
 
   from real_less_rsqrt [of "norm v" 1]
-    and less_one_imp_sqr_less_one [of "norm v"]
+    and abs_square_less_1 [of "norm v"]
   have "norm v < 1 \<longleftrightarrow> (norm v)\<^sup>2 < 1" by auto
   hence "norm v < 1 \<longleftrightarrow> ?v' \<bullet> (M *v ?v') < 0" by (simp add: norm_M)
   with `?v' \<noteq> 0` have "norm v < 1 \<longleftrightarrow> proj2_abs ?v' \<in> K2" by (subst K2_abs)
@@ -4335,7 +4335,7 @@ proof -
       and matrix_vector_mult_def
     by (simp_all add: setsum_3 power2_eq_square)
   with `\<bar>x\<bar> < 1` and `\<bar>y\<bar> < 1`
-  have "?aMa < 0" and "?bMb < 0" by (simp_all add: less_one_imp_sqr_less_one)
+  have "?aMa < 0" and "?bMb < 0" by (simp_all add: abs_square_less_1)
   hence "?pa \<in> hyp2" and "?pb \<in> hyp2"
     by (simp_all add: M_neg_imp_K2)
   with `?a \<noteq> 0` and `?b \<noteq> 0`

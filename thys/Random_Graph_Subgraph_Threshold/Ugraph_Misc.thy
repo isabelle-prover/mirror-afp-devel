@@ -23,7 +23,7 @@ lemma setsum_split2:
 proof (subst setsum.If_cases)
   show "finite {i \<in> I. P i}"
     using assms by simp
-  
+
   have "{i \<in> I. P i} \<inter> Collect Q = {i \<in> I. P i \<and> Q i}" "{i \<in> I. P i} \<inter> - Collect Q =  {i \<in> I. P i \<and> \<not> Q i}"
     by auto
   thus "setsum f ({i \<in> I. P i} \<inter> Collect Q) + setsum g ({i \<in> I. P i} \<inter> - Collect Q) = setsum f {i \<in> I. P i \<and> Q i} + setsum g {i \<in> I. P i \<and> \<not> Q i}"
@@ -407,7 +407,7 @@ proof -
   then show "integrable M X"
   proof (rule integrable_bound[OF _ _ always_eventually[OF allI]])
     fix x show "norm (X x) \<le> norm (max 1 ((X x)^2))"
-      using real_abs_le_square_iff[of 1 "X x"] power_increasing[of 1 2 "abs (X x)"]
+      using abs_le_square_iff[of 1 "X x"] power_increasing[of 1 2 "abs (X x)"]
       by (auto split: split_max)
   qed fact
 qed

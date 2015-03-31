@@ -219,7 +219,7 @@ proof (safe intro!: tendstoI)
     assume "x \<notin> s" hence "x \<in> t" using assms by auto
     have "eventually (\<lambda>x. x \<in> - s) (at x within s \<union> t)" using `closed s` `x \<notin> s`
       by (intro topological_tendstoD) (auto intro: tendsto_ident_at)
-    with tendstoD[OF g'[OF `x \<in> t`] `0 < e`] have ?thesis unfolding eventually_at_filter 
+    with tendstoD[OF g'[OF `x \<in> t`] `0 < e`] have ?thesis unfolding eventually_at_filter
       by eventually_elim (insert `x \<in> t` `x \<notin> s`, auto simp: connect)
   } ultimately show ?thesis by blast
 qed (insert assms, auto intro!: has_derivative_bounded_linear f' g')
@@ -382,8 +382,8 @@ lemma taylor_up_within:
     ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. c < t & t < b &
-             f b = (\<Sum>m<n. (diff m c / (fact m)) * (b - c)^m) + 
-                   (diff n t / (fact n)) * (b - c)^n" 
+             f b = (\<Sum>m<n. (diff m c / (fact m)) * (b - c)^m) +
+                   (diff n t / (fact n)) * (b - c)^n"
                (is "?taylor f diff")
 proof -
   from exists_linear_continuation[of a b, OF DERIV]
@@ -618,6 +618,6 @@ lemma max_transfer[transfer_rule]:
   by transfer_prover
 
 lemma max_power2: fixes a b::real shows "(max (abs a) (abs b))\<^sup>2 = max (a\<^sup>2) (b\<^sup>2)"
-  by (auto simp: max_def real_abs_le_square_iff)
+  by (auto simp: max_def abs_le_square_iff)
 
 end

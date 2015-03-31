@@ -110,7 +110,7 @@ proof -
   hence "prob {a \<in> space M. ?t \<le> ?X a} \<le> variance Y / s^2"
     using markov_inequality variance_expectation[OF Y_int Y_borel] by (simp add: field_simps)
   moreover have "{a \<in> space M. ?t \<le> ?X a} = {a \<in> space M. s \<le> \<bar>Y a - expectation Y\<bar>}"
-    using real_abs_le_square_iff s_pos by force
+    using abs_le_square_iff s_pos by force
   ultimately show ?thesis
     by simp
 qed
