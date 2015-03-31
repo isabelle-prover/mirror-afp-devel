@@ -96,7 +96,7 @@ lemma map_update_parametric [transfer_rule]:
 unfolding map_update_def[abs_def] by transfer_prover
 
 context begin
-local_setup {* Local_Theory.map_naming (Name_Space.mandatory_path "Mapping") *}
+local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "Mapping") *}
 
 lift_definition update' :: "'a \<Rightarrow> 'b option \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'b) mapping"
 is map_update parametric map_update_parametric .

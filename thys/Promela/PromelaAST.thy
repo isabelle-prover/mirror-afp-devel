@@ -14,7 +14,7 @@ begin
 
 (* Force everything in this context to start with AST. *)
 local_setup {*
-  Local_Theory.map_naming (Name_Space.mandatory_path "AST")
+  Local_Theory.map_background_naming (Name_Space.mandatory_path "AST")
 *} 
 
 datatype binOp = 
