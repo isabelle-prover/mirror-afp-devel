@@ -11,7 +11,8 @@ session "CAVA_Automata" (AFP) = "CAVA_Base" +
   options [timeout = 1200]
   theories
     Digraph
-    Automata Words
+    Automata
+    Words
     Lasso
     Digraph_Impl
     Automata_Impl
