@@ -1783,7 +1783,6 @@ proof -
   done
 qed
 
-(*declare [[names_long,show_types,show_sorts]]*)
 lemma OclIncludes_charn1:
 assumes def_X:"\<tau> \<Turnstile> (\<delta> X)"
 assumes val_x:"\<tau> \<Turnstile> (\<upsilon> x)"
