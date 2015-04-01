@@ -654,7 +654,7 @@ next
 next
   case (WTrtCall E h e C M Ts T pns body Cs es Ts')
   have wte: "P,E,h \<turnstile> e : Class C"
-    and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
+    and "method":"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
     and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
     and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
@@ -674,7 +674,7 @@ next
           and last:"last Cs' = C"
           by (fastforce split:split_if_asm)
         from wte ref h have subcls:"P \<turnstile> D \<preceq>\<^sup>* C" by -(drule mdc_leq_dyn_type,auto)
-        from method have has:"P \<turnstile> C has M = (Ts,T,pns,body) via Cs"
+        from "method" have has:"P \<turnstile> C has M = (Ts,T,pns,body) via Cs"
             by(rule has_least_method_has_method)
         from es obtain vs where vs:"es = map Val vs" by auto
         obtain Cs'' Ts'' T' pns' body' where 
@@ -703,13 +703,13 @@ next
               \<not> P \<turnstile> D has least M = (Ts'',T',pns',body') via Ds" by auto
           from suboD last have path:"P \<turnstile> Path D to C via Cs'" 
             by(simp add:path_via_def)
-          from method have notempty:"Cs \<noteq> []" 
+          from "method" have notempty:"Cs \<noteq> []" 
             by(fastforce intro!:Subobjs_nonempty 
                         simp:LeastMethodDef_def MethodDefs_def)
           from suboD have "class": "is_class P D" by(rule Subobjs_isClass)
           from suboD last have path:"P \<turnstile> Path D to C via Cs'"
             by(simp add:path_via_def)
-          with method wf have "P \<turnstile> D has M = (Ts,T,pns,body) via Cs'@\<^sub>pCs"
+          with "method" wf have "P \<turnstile> D has M = (Ts,T,pns,body) via Cs'@\<^sub>pCs"
             by(auto intro:has_path_has has_least_method_has_method)
           with "class" wf obtain Cs'' Ts'' T' pns' body' where overrider:
             "P \<turnstile> (D,Cs'@\<^sub>pCs) has overrider M = (Ts'',T',pns',body') via Cs''"
@@ -719,7 +719,7 @@ next
             by-(rule dyn_ambiguous,simp_all)
           from notempty have eq:"(Cs' @\<^sub>p Cs) @\<^sub>p [last Cs] = (Cs' @\<^sub>p Cs)"
             by(rule appendPath_append_last)
-          from method wf
+          from "method" wf
           have "P \<turnstile> last Cs has least M = (Ts,T,pns,body) via [last Cs]"
             by(auto dest:Subobj_last_isClass intro:Subobjs_Base subobjs_rel
                     simp:LeastMethodDef_def MethodDefs_def)
@@ -746,7 +746,7 @@ next
            new_body = \<lparr>D\<rparr>blocks(this#pns',Class(last Cs'')#Ts'',Ref(a,Cs'')#vs,body')
     | _ \<Rightarrow> new_body = blocks(this#pns',Class(last Cs'')#Ts'',Ref(a,Cs'')#vs,body')"
           by(cases T) auto
-        with h method last ass ref vs
+        with h "method" last ass ref vs
           show ?thesis by (auto intro!:exI RedCall)
       next
         assume "\<not>(\<exists>vs. es = map Val vs)"
@@ -793,7 +793,7 @@ next
   case (WTrtStaticCall E h e C' C M Ts T pns body Cs es Ts')
   have wte: "P,E,h \<turnstile> e : Class C'"
     and path_unique:"P \<turnstile> Path C' to C unique"
-    and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
+    and "method":"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
     and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
     and IHes: "\<And>l.
               \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
@@ -820,9 +820,9 @@ next
         from sub have "length Ts' = length Ts" by (simp add:list_all2_iff)
         with WTrts_same_length[OF wtes] vs have length:"length vs = length Ts"
           by simp
-        from has_least_wf_mdecl[OF wf method]
+        from has_least_wf_mdecl[OF wf "method"]
         have lengthParams:"length Ts = length pns" by (simp add:wf_mdecl_def)
-        with method last path_unique path_via Ds length ref vs show ?thesis
+        with "method" last path_unique path_via Ds length ref vs show ?thesis
           by (auto intro!:exI RedStaticCall)
       next
         assume "\<not>(\<exists>vs. es = map Val vs)"

@@ -1311,7 +1311,7 @@ assumes wwf: "wwf_prog P"
 and "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s\<^sub>1\<rangle>"
       "P,E \<turnstile> \<langle>es,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
 and hp: "h\<^sub>2 a = Some(C,S)"
-and method: "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
+and "method": "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
 and select: "P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
 and size: "size vs = size pns"
 and casts: "P \<turnstile> Ts Casts vs to vs'"
@@ -1351,7 +1351,7 @@ proof -
     case True
     hence "P,E \<turnstile> \<langle>(ref(a,Cs))\<bullet>M(map Val vs), (h\<^sub>2,l\<^sub>2)\<rangle> \<rightarrow> 
                  \<langle>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body), (h\<^sub>2,l\<^sub>2)\<rangle>"
-      using hp method select size wf
+      using hp "method" select size wf
       by -(rule RedCall,auto,cases T',auto)
     hence 3:"P,E \<turnstile> \<langle>(ref(a,Cs))\<bullet>M(map Val vs), (h\<^sub>2,l\<^sub>2)\<rangle> \<rightarrow>* 
                    \<langle>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body), (h\<^sub>2,l\<^sub>2)\<rangle>"
@@ -1374,7 +1374,7 @@ proof -
       by(cases T')(auto dest:Cast_final)
     from T' have "P,E \<turnstile> \<langle>(ref(a,Cs))\<bullet>M(map Val vs), (h\<^sub>2,l\<^sub>2)\<rangle> \<rightarrow> 
                  \<langle>\<lparr>D\<rparr>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body), (h\<^sub>2,l\<^sub>2)\<rangle>"
-      using hp method select size wf
+      using hp "method" select size wf
       by -(rule RedCall,auto)
     hence 3:"P,E \<turnstile> \<langle>(ref(a,Cs))\<bullet>M(map Val vs), (h\<^sub>2,l\<^sub>2)\<rangle> \<rightarrow>* 
                   \<langle>\<lparr>D\<rparr>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body),(h\<^sub>2,l\<^sub>2)\<rangle>"
@@ -1574,7 +1574,7 @@ next
   have IHe: "P,E \<turnstile> \<langle>e,s\<^sub>0\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s\<^sub>1\<rangle>"
     and IHes: "P,E \<turnstile> \<langle>ps,s\<^sub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
     and h\<^sub>2a: "h\<^sub>2 a = Some(C,S)"
-    and method: "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
+    and "method": "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
     and select: "P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
     and same_length: "length vs = length pns"
     and casts: "P \<turnstile> Ts Casts vs to vs'"
@@ -1587,7 +1587,7 @@ next
   from wwf select same_length have lengthTs:"length Ts = length vs"
     by (fastforce dest!:select_method_wf_mdecl simp:wf_mdecl_def)
   show "P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^sub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^sub>3, l\<^sub>2)\<rangle>"
-    using method select same_length l\<^sub>2' h\<^sub>2a casts body_case
+    using "method" select same_length l\<^sub>2' h\<^sub>2a casts body_case
       IHbody eval_final[OF eval_body]
     by(fastforce intro!:CallRedsFinal[OF wwf IHe IHes])
 next
@@ -1953,7 +1953,7 @@ next
     and IHbd: "\<And>W. fv new_body \<subseteq> W \<Longrightarrow> P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> 
                                     \<langle>new_body,(h\<^sub>2,l\<^sub>2'|`W)\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3,l\<^sub>3|`W)\<rangle>"
     and h\<^sub>2a: "h\<^sub>2 a = Some (C,S)"
-    and method: "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
+    and "method": "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
     and select:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
     and same_len: "size vs = size pns"
     and casts:"P \<turnstile> Ts Casts vs to vs'"
@@ -1968,7 +1968,7 @@ next
     by(cases T') auto
   from l\<^sub>2' have "l\<^sub>2' |` ({this} \<union> set pns) = [this \<mapsto> Ref (a, Cs'), pns [\<mapsto>] vs']"
     by (auto intro!:ext simp:restrict_map_def fun_upd_def)
-  with eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ method select same_len
+  with eval_evals.Call[OF IHe[OF fve] IHps[OF fvps] _ "method" select same_len
                           casts _ body_case IHbd[OF fvbd']] h\<^sub>2a
   show ?case by simp
 next
@@ -2317,7 +2317,7 @@ next
       assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^sub>1\<rangle>"
         and evals:"P,E \<turnstile> \<langle>es',s\<^sub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
         and hp:"h\<^sub>2 a = Some(C, S)"
-        and method:"P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
+        and "method":"P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
         and select:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
         and length:"length vs = length pns"
         and casts:"P \<turnstile> Ts Casts vs to vs'"
@@ -2334,7 +2334,7 @@ next
         \<langle>new_body,(h\<^sub>2,[this \<mapsto> Ref(a,Cs'),pns [\<mapsto>] vs'])\<rangle> \<Rightarrow> \<langle>e',(h\<^sub>3, l\<^sub>3)\<rangle>"
         by simp
       from eq IH evals have "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>" by simp
-      with eq Call[OF val' _ _ method select length casts _ body_case] 
+      with eq Call[OF val' _ _ "method" select length casts _ body_case] 
            hp body' s' None
       show "P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastforce
     next
@@ -2413,7 +2413,7 @@ next
   with finals have "P,E \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^sub>2,l\<^sub>2)\<rangle>"
     by (iprover intro: eval_finalsId)
   moreover from s have h\<^sub>2a:"h\<^sub>2 a = Some (C,S)" using RedCall by simp
-  moreover have method: "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds" by fact
+  moreover have "method": "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds" by fact
   moreover have select:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'" by fact
   moreover have blocks:"bs = blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)" by fact
   moreover have body_case:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)" by fact
