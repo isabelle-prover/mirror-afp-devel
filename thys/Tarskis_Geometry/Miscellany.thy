@@ -239,14 +239,6 @@ lemma trans_allrel: "trans (A \<times> A)"
   unfolding trans_def
   by simp
 
-lemma trans_restrict:
-  assumes "trans r"
-  shows "trans (r \<inter> A \<times> A)"
-proof -
-  from `trans r` and trans_allrel and trans_Int
-  show ?thesis by auto
-qed
-
 lemma equiv_Int:
   assumes "equiv A r" and "equiv B s"
   shows "equiv (A \<inter> B) (r \<inter> s)"
@@ -400,14 +392,6 @@ lemma card_le_UNIV:
   fixes A :: "('n::finite) set"
   shows "card A \<le> CARD('n)"
   by (simp add: card_mono)
-
-lemma setsum_forall_cong:
-  assumes "\<forall> x\<in>A. f x = g x"
-  shows "(\<Sum> x\<in>A. f x) = (\<Sum> x\<in>A. g x)"
-proof -
-  from `\<forall> x\<in>A. f x = g x` have "\<And> x. x \<in> A \<Longrightarrow> f x = g x" ..
-  with setsum.cong show "(\<Sum> x\<in>A. f x) = (\<Sum> x\<in>A. g x)" by simp
-qed
 
 lemma partition_Image_element:
   assumes "equiv A r" and "X \<in> A//r" and "x \<in> X"
