@@ -211,7 +211,7 @@ begin
 end
 
 lemma quot_bounds:
-  fixes x :: "'a :: linordered_field_inverse_zero"
+  fixes x :: "'a :: linordered_field"
   assumes "x \<le> x'" "y' \<le> y" "0 < y" "0 \<le> x" "0 < y'"
   shows "x / y \<le> x' / y'"
 proof (rule order_trans)

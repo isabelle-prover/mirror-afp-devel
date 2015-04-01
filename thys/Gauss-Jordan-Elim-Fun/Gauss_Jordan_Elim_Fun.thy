@@ -190,8 +190,7 @@ next
   from non_null_if_pivot[OF Suc.prems(2) `m<Suc m`]
   obtain p' where "p'<Suc m" and "A p' m \<noteq> 0" by blast
   hence "dropWhile (\<lambda>i. A i m = 0) [0..<Suc m] \<noteq> []"
-    by (simp add: dropWhile_eq_Nil_conv)
-       (metis atLeast0LessThan lessThan_iff linorder_neqE_nat not_less_eq)
+    by (simp add: atLeast0LessThan) (metis lessThan_iff linorder_neqE_nat not_less_eq)
   then obtain p xs where 1: "dropWhile (\<lambda>i. A i m = 0) [0..<Suc m] = p#xs"
     by (metis list.exhaust)
   from this have "p\<le>m" "A p m \<noteq> 0"
@@ -242,8 +241,8 @@ next
           then have "i < m" using `i < Suc m` by simp
           with a[unfolded solution2_def, THEN spec, of i] p(2)
           have "A p m * (A i m * A p n + A p m * (\<Sum>j = 0..<m. y j * A i j)) = A p m * (A i n * A p m + A i m * (\<Sum>j = 0..<m. y j * A p j))"
-            by (simp add: Fun.swap_def field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib[symmetric]
-                     split: if_splits)
+            by (simp add: Fun.swap_def split: if_splits)
+              (simp add: field_simps setsum_subtractf lem1 lem2 setsum_divide_distrib [symmetric])
           with `A p m \<noteq> 0` show ?thesis
             by simp (simp add: field_simps)
         qed

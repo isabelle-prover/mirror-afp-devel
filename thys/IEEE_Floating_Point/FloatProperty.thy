@@ -293,7 +293,7 @@ by (metis neg_one_even_power neg_one_odd_power)
 lemma exp_less: "(a::nat) \<le> b \<Longrightarrow> (2::real)^a \<le> 2^b"
   by auto
 
-lemma div_less: "(a::'a::linordered_field_inverse_zero) \<le> b \<and> c > 0 \<Longrightarrow> a/c \<le> b/c"
+lemma div_less: "(a::'a::linordered_field) \<le> b \<and> c > 0 \<Longrightarrow> a/c \<le> b/c"
   by (metis divide_le_cancel less_asym)
 
 lemma finite_topfloat: "Finite Topfloat"

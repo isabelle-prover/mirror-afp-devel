@@ -29,6 +29,33 @@ where "Gauss_Jordan_in_ij A i j = (let n = (LEAST n. A $ n $ j \<noteq> 0 \<and>
                                 A' = mult_row interchange_A i (1/interchange_A$i$j) in 
                                 vec_lambda(% s. if s=i then A' $ s else (row_add A' s i (-(interchange_A$s$j))) $ s))"
 
+lemma Gauss_Jordan_in_ij_unfold:
+  assumes "\<exists>n. A $ n $ j \<noteq> 0 \<and> i \<le> n"
+  obtains n :: "'n::{finite, wellorder}" and interchange_A and A'
+  where
+    "(LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) = n"
+    and "A $ n $ j \<noteq> 0"
+    and "i \<le> n"
+    and "interchange_A = interchange_rows A i n"
+    and "A' = mult_row interchange_A i (1 / interchange_A $ i $ j)"
+    and "Gauss_Jordan_in_ij A i j = vec_lambda (\<lambda>s. if s = i then A' $ s 
+      else (row_add A' s i (- (interchange_A $ s $ j))) $ s)"
+proof -
+  from assms obtain m where Anj: "A $ m $ j \<noteq> 0 \<and> i \<le> m" ..
+  moreover def n \<equiv> "LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n"
+  then have P1: "(LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) = n" by simp
+  ultimately have P2: "A $ n $ j \<noteq> 0" and P3: "i \<le> n"
+    using LeastI [of "\<lambda>n. A $ n $ j \<noteq> 0 \<and> i \<le> n" m] by simp_all
+  def interchange_A \<equiv> "interchange_rows A i n"
+  then have P4: "interchange_A = interchange_rows A i n" by simp
+  def A' \<equiv> "mult_row interchange_A i (1 / interchange_A $ i $ j)"
+  then have P5: "A' = mult_row interchange_A i (1 / interchange_A $ i $ j)" by simp
+  have P6: "Gauss_Jordan_in_ij A i j = vec_lambda (\<lambda>s. if s = i then A' $ s 
+    else (row_add A' s i (- (interchange_A $ s $ j))) $ s)"
+    by (simp only: Gauss_Jordan_in_ij_def P1 P4 [symmetric] P5 [symmetric] Let_def)
+  from P1 P2 P3 P4 P5 P6 that show thesis by blast
+qed
+                                
 text{*The following definition makes the step of Gauss-Jordan in a column. This function receives two input parameters: the column k
 where the step of Gauss-Jordan must be applied and a pair (which consists of the row where the pivot should be placed in the column k and the original matrix).*}
 
@@ -157,7 +184,7 @@ lemma Gauss_Jordan_in_ij_1:
   fixes A::"'a::{field}^'m^'n::{finite, ord, wellorder}"
   assumes ex: "\<exists>n. A $ n $ j \<noteq> 0 \<and> i \<le> n"
   shows "(Gauss_Jordan_in_ij A i j) $ i $ j = 1"
-proof (unfold Gauss_Jordan_in_ij_def Let_def mult_row_def interchange_rows_def, vector, rule divide_self)
+proof (unfold Gauss_Jordan_in_ij_def Let_def mult_row_def interchange_rows_def, vector)
   obtain n where Anj: "A $ n $ j \<noteq> 0 \<and> i \<le> n" using ex by blast
   show "A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j \<noteq> 0" using LeastI[of "\<lambda>n. A $ n $ j \<noteq> 0 \<and> i \<le> n" n, OF Anj] by simp 
 qed
@@ -166,14 +193,7 @@ lemma Gauss_Jordan_in_ij_0:
   fixes A::"'a::{field}^'m^'n::{finite, ord, wellorder}"
   assumes ex: "\<exists>n. A $ n $ j \<noteq> 0 \<and> i \<le> n" and a: "a \<noteq> i"
   shows "(Gauss_Jordan_in_ij A i j) $ a $ j = 0"
-proof (unfold Gauss_Jordan_in_ij_def Let_def mult_row_def interchange_rows_def row_add_def, auto simp add: a)
-  obtain n where Anj: "A $ n $ j \<noteq> 0 \<and> i \<le> n" using ex by blast
-  have A_least: "A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j \<noteq> 0" using LeastI[of "\<lambda>n. A $ n $ j \<noteq> 0 \<and> i \<le> n" n, OF Anj] by simp 
-  thus "A $ i $ j = A $ i $ j * A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j / A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j" by fastforce
-  assume "a \<noteq> (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)"
-  thus "A $ a $ j = A $ a $ j * A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j / A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j" 
-    using A_least by fastforce
-qed
+using ex apply (rule Gauss_Jordan_in_ij_unfold) using a by (simp add: mult_row_def interchange_rows_def row_add_def)
 
 corollary Gauss_Jordan_in_ij_0':
   fixes A::"'a::{field}^'m^'n::{finite, ord, wellorder}"
@@ -194,9 +214,9 @@ proof (unfold Gauss_Jordan_in_ij_def Let_def interchange_rows_def mult_row_def r
   hence zero_row: "is_zero_row_upt_k (last_nonzero_row + 1) k A"
     using not_le greatest_ge_nonzero_row last_nonzero_row_def by fastforce
   hence A_greatest_0: "A $ (last_nonzero_row + 1) $ j = 0" unfolding is_zero_row_upt_k_def last_nonzero_row_def using j_le_k by auto
-  thus  "A $ (last_nonzero_row + 1) $ j / A $ (last_nonzero_row + 1) $ from_nat k = A $ (last_nonzero_row + 1) $ j"
+  then show "A $ (last_nonzero_row + 1) $ j / A $ (last_nonzero_row + 1) $ from_nat k = A $ (last_nonzero_row + 1) $ j"
     by simp
-  have zero: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j = 0"
+  show zero: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j = 0"
   proof -
     def least_n \<equiv> "(LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n)"
     have "\<exists>n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n" by (metis exists_m)
@@ -215,9 +235,6 @@ proof (unfold Gauss_Jordan_in_ij_def Let_def interchange_rows_def mult_row_def r
   show "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
     A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
     A $ ((GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1) $ j" unfolding zero using A_greatest_0 unfolding last_nonzero_row_def by simp
-  show "A $ i $ from_nat k * A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ j /
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> (GREATEST' m. \<not> is_zero_row_upt_k m k A) + 1 \<le> n) $ from_nat k =
-    0" unfolding zero by auto
 qed
 
 
@@ -230,17 +247,14 @@ lemma Gauss_Jordan_in_ij_preserves_previous_elements':
   shows "Gauss_Jordan_in_ij A 0 (from_nat k) $ i $ j = A $ i $ j"
 proof (unfold Gauss_Jordan_in_ij_def Let_def mult_row_def interchange_rows_def row_add_def, auto)
   have A_0_j: "A $ 0 $ j = 0"  using all_zero is_zero_row_upt_k_def j_le_k by blast
-  thus "A $ 0 $ j / A $ 0 $ from_nat k = A $ 0 $ j" by simp
-  have A_least_j: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j = 0" using all_zero is_zero_row_upt_k_def j_le_k by blast
+  then show "A $ 0 $ j / A $ 0 $ from_nat k = A $ 0 $ j" by simp
+  show A_least_j: "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j = 0" using all_zero is_zero_row_upt_k_def j_le_k by blast
   show "A $ 0 $ j -
     A $ 0 $ from_nat k * A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j /
     A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ from_nat k =
     A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j" unfolding A_0_j A_least_j by fastforce
   show "A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j / A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ from_nat k = A $ 0 $ j"
     unfolding A_least_j A_0_j by simp
-  show "A $ i $ from_nat k * A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ j /
-    A $ (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> 0 \<le> n) $ from_nat k = 0"
-    unfolding A_least_j by simp
 qed
 
 lemma is_zero_after_Gauss:
