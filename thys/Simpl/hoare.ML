@@ -795,7 +795,7 @@ val get_data = Hoare_Data.get o Context.Proof;
 fun mk_free ctxt name =
   let
     val ctxt' = Context.proof_of ctxt;
-    val n' = Variable.intern_fixed ctxt' name;
+    val n' = Variable.intern_fixed ctxt' name |> perhaps Long_Name.dest_hidden;
     val T' = Proof_Context.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
@@ -1048,10 +1048,12 @@ fun add_variable_statespaces (cname,pars as (inpars,outpars,locvars)) thy =
            var_args varSP [((cname, false), ((map TFree in_out_env),parSP,[]))] locs'
   end;
 
+fun intern_locale thy = Locale.intern thy #> perhaps Long_Name.dest_hidden;
+
 fun apply_in_context thy lexp f t =
   let
     fun name_variant lname =
-         if Locale.intern thy lname = lname then lname
+         if intern_locale thy lname = lname then lname
          else name_variant (lname ^ "'");
   in
     thy
@@ -1180,7 +1182,7 @@ fun procedures_definition locname procs thy =
       let
         val calls = distinct (op =) (flat
                      (map_filter (AList.lookup (op =) (names ~~ all_callss)) clique));
-      in map (Locale.intern thy)
+      in map (intern_locale thy)
             (distinct (op =) (map_filter (get_loc sfx clique) calls))
       end;
 
@@ -1200,12 +1202,12 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
         (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
-        val pE = mk_loc_exp [Locale.intern thy (suffix parametersN cname)];
+        val pE = mk_loc_exp [intern_locale thy (suffix parametersN cname)];
         val sN = suffix signatureN  name';
       in thy
          |> add_locale sN pE fixes
          |> Proof_Context.theory_of
-         |> (fn thy => add_declaration (Locale.intern thy sN) parameter_info_decl thy)
+         |> (fn thy => add_declaration (intern_locale thy sN) parameter_info_decl thy)
       end;
 
 
@@ -1225,7 +1227,7 @@ fun procedures_definition locname procs thy =
         val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
             (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
         val pE = mk_loc_exp
-                  (map (Locale.intern thy)
+                  (map (intern_locale thy)
                     ([lname variablesN (the (my_clique name))]@
                      the_list locname@
                      map (resuffix proc_deco signatureN) callees));
@@ -1287,9 +1289,9 @@ fun procedures_definition locname procs thy =
             then StateSpace.namespace_definition cnamesN proc_nameT ([],[]) [] clique
             else I;
         val bodyLs = map (suffix bodyN o unsuffix proc_deco) clique;
-        fun pE thy = mk_loc_exp (map (Locale.intern thy) (hoare_ctxtL::bodyLs)
+        fun pE thy = mk_loc_exp (map (intern_locale thy) (hoare_ctxtL::bodyLs)
                               @ (parent_locales thy implementationN clique)
-                              @ (if multiple_procs then [Locale.intern thy cnamesN] else []));
+                              @ (if multiple_procs then [intern_locale thy cnamesN] else []));
         fun read_term thy = apply_in_context thy (pE thy) Syntax.read_term;
         fun elems thy = maps (mk_def_eq thy (read_term thy)) clique;
         fun add_recursive_info phi name =
@@ -1302,13 +1304,13 @@ fun procedures_definition locname procs thy =
         fun add_impl_locale name thy =
           let
             val implN = suffix implementationN (unsuffix proc_deco name);
-            val parentN = Locale.intern thy cliqN
+            val parentN = intern_locale thy cliqN
             val parent = mk_loc_exp [parentN];
           in thy
              |> add_locale_cmd implN parent []
              |> Proof_Context.theory_of
              |> (fn thy => Expression.sublocale_global parentN
-                  (mk_loc_exp [Locale.intern thy implN]) [] thy)
+                  (mk_loc_exp [intern_locale thy implN]) [] thy)
              |> Proof.global_terminal_proof
                  ((Method.Basic (fn ctxt => Method.SIMPLE_METHOD
                                  (Locale.intro_locales_tac false ctxt [])), Position.no_range), NONE)
@@ -1321,8 +1323,8 @@ fun procedures_definition locname procs thy =
               add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> Proof_Context.theory_of
          |> fold add_impl_locale clique
-         |> (fn thy => add_declaration (Locale.intern thy cliqN) proc_declaration thy)
-         |> (fn thy => add_declaration (Locale.intern thy cliqN)
+         |> (fn thy => add_declaration (intern_locale thy cliqN) proc_declaration thy)
+         |> (fn thy => add_declaration (intern_locale thy cliqN)
                 recursive_declaration thy)
       end;
 
@@ -1331,12 +1333,12 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val ps = (suffix signatureN name' :: the_list locname);
         val ps' = hoare_ctxtL :: ps ;
-        val pE = mk_loc_exp (map (Locale.intern thy) ps)
-        val pE' = mk_loc_exp (map (Locale.intern thy) ps')
+        val pE = mk_loc_exp (map (intern_locale thy) ps)
+        val pE' = mk_loc_exp (map (intern_locale thy) ps')
 
         fun read thy =
          apply_in_context thy
-            (mk_loc_exp [Locale.intern thy (suffix cliqueN (cname name))])
+            (mk_loc_exp [intern_locale thy (suffix cliqueN (cname name))])
             (Syntax.read_prop);
 
         fun proc_declaration phi =
@@ -1351,9 +1353,9 @@ fun procedures_definition locname procs thy =
              |> add_locale thm_name pE' [elem]
              |> Proof_Context.theory_of
              |> (fn thy =>
-                  add_declaration (Locale.intern thy thm_name) proc_declaration thy)
+                  add_declaration (intern_locale thy thm_name) proc_declaration thy)
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
-                  (add_abbrev (Locale.intern thy (suffix cliqueN (cname name))) Syntax.mode_input thm_name spec)
+                  (add_abbrev (intern_locale thy (suffix cliqueN (cname name))) Syntax.mode_input thm_name spec)
           end;
       in thy |> fold add_locale'' specs end;
 

@@ -146,12 +146,15 @@ fun is_global_comp ctxt name =
 val antiquoteCur = @{syntax_const "_antiquoteCur"};
 val antiquoteOld = @{syntax_const "_antiquoteOld"};
 
+fun intern_const_syntax consts =
+  Consts.intern_syntax consts #> perhaps Long_Name.dest_hidden;
+
 fun is_global ctxt name =
   let
     val thy = Proof_Context.theory_of ctxt;
     val consts = Proof_Context.consts_of ctxt;
   in
-    (case Sign.const_type thy (Consts.intern_syntax consts name) of
+    (case Sign.const_type thy (intern_const_syntax consts name) of
       NONE => is_global_comp ctxt name
     | SOME T => String.isPrefix globalsN (Long_Name.base_name (fst (dest_Type (domain_type T)))))
     handle Match => false
@@ -187,7 +190,7 @@ fun statespace_update_tr ctxt ps id n v s =
 local
   fun is_record_sel ctxt =
     let val consts = Proof_Context.consts_of ctxt;
-    in can (Consts.the_const consts) o Consts.intern_syntax consts end;
+    in can (Consts.the_const consts) o intern_const_syntax consts end;
 in
 
 fun lookup_comp ctxt ps name =
