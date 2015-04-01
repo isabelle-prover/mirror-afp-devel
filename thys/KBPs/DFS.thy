@@ -9,6 +9,7 @@ theory DFS
 imports Main
 begin
 (*>*)
+declare implies_True_equals[simp] False_implies_equals[simp] 
 
 subsection{* Generic DFS *}
 
@@ -315,12 +316,7 @@ proof(induct ys xs rule: dfs_induct)
   show ?case
   proof (cases "memb x S")
     case True
-    with step show ?thesis
-      apply (auto simp add: reachable_def)
-      apply (drule subsetD)
-       apply blast
-      apply blast
-      done
+    with step show ?thesis by (auto simp add: reachable_def)
   next
     case False
     have "reachable (set (succs x)) \<subseteq> reachable {x}"

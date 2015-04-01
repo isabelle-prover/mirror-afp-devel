@@ -528,7 +528,7 @@ next
 qed
 
 lemma sgn_div:
-  fixes x y :: "'a::linordered_field_inverse_zero"
+  fixes x y :: "'a::linordered_field"
   assumes "y \<noteq> 0" and "sgn x = sgn y"
   shows "x / y > 0"
 proof cases

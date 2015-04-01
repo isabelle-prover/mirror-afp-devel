@@ -3,7 +3,7 @@ section {* UTP variables *}
 theory Var
 imports Main
 begin
-
+declare implies_True_equals[simp] False_implies_equals[simp] 
 text {* UTP variables are characterized by two functions, $select$ and $update$. 
         The variable type is then defined as a tuple ($select$ * $update$). *}
 

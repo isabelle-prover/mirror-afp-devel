@@ -363,7 +363,7 @@ lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_name
 proof (coinduct rule: language.coinduct[of "regular_cong R"])
   fix L K assume "regular_cong R L K"
   then show "\<oo> L = \<oo> K \<and> rel_fun op = (regular_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: regular_cong.induct) (auto simp: rel_fun_def)
+    by (induct rule: regular_cong.induct) (auto simp: rel_fun_def Plus Times Shuffle)
 qed (intro Base R)
 
 lemma Star_unfoldR: "Star r = Plus One (Times (Star r) r)"

@@ -3,7 +3,7 @@
 *)
 
 theory FunWithFunctions imports Complex_Main begin
-
+declare implies_True_equals[simp] False_implies_equals[simp]
 text{* See \cite{Tao2006}. Was first brought to our attention by Herbert
 Ehler who provided a similar proof. *}
 
@@ -49,7 +49,7 @@ proof -
     have "2 + (k - 2) = k" using `k \<ge> 2` by arith
     hence "f(2) \<le> 2"
       using mono_nat_linear_lb[of f 2 "k - 2",OF f_mono] `f k = k`
-      by simp arith
+      by simp
     thus "f 2 = 2" using 1 f_mono[of 1 2] by arith
   qed
   show ?thesis

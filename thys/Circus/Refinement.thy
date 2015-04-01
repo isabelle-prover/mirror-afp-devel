@@ -310,7 +310,6 @@ and D:"\<And> a b. Q' (a, b) \<Longrightarrow> Q (a, b)"
 shows "R (P' \<turnstile> Q') (a, b) \<longrightarrow> R (P \<turnstile> Q) (a::('a::ev_eq, 'b) alpha_rp_scheme, b)"
 apply (insert rd_ref[of P Q P' Q', OF A B C D])
 apply (auto simp: ref_def)
-apply (atomize, auto)
 apply (subst (asm) action_of_inverse, simp add: B[simplified])
 apply (subst (asm) action_of_inverse, simp add: A[simplified])
 apply (erule_tac x=a in allE)
