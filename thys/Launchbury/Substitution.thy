@@ -125,7 +125,6 @@ next case (goal3 P x) show ?case
     thus P using Inl goal3
       apply (rule_tac y ="a1" and c ="(a2, a3)" in exp_strong_exhaust)
       apply (auto simp add: fresh_star_def)
-      apply metis
     done
   qed
   next

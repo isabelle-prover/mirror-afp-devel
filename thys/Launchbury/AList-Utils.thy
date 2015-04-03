@@ -1,7 +1,7 @@
 theory "AList-Utils"
 imports Main "~~/src/HOL/Library/AList"
 begin
-
+declare implies_True_equals [simp] False_implies_equals[simp]
 text {* We want to have @{text delete} and @{text update} back in the namespace. *}
 
 abbreviation delete where "delete \<equiv> AList.delete"

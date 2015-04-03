@@ -2,7 +2,7 @@ section {* Exception-Aware Relational Framework *}
 theory Run
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
 begin
-
+declare implies_True_equals [simp] False_implies_equals[simp]
   text {*
     With Imperative HOL comes a relational framework. 
     However, this can only be used if exception freeness is already assumed.
@@ -242,8 +242,8 @@ lemma run_upd[run_elims]:
   apply hypsubst_thin
 proof -
   case (goal1 aa h')
-  from goal1(4) have "h' = Array.update a i x aa" "res = a" by auto
-  from goal1(2)[OF this] show ?case .
+  from goal1(3) have "h' = Array.update a i x aa" "res = a" by auto
+  from goal1(1)[OF this] show ?case .
 qed
 
 
@@ -268,7 +268,7 @@ lemma run_nth[run_elims]:
   apply hypsubst_thin
 proof -
   case (goal1 aa h')
-  from goal1(4) have "r = Array.get aa a ! i" "h' = aa" by auto
+  from goal1(3) have "r = Array.get aa a ! i" "h' = aa" by auto
   from goal1(1)[OF this] show ?case .
 qed 
 
