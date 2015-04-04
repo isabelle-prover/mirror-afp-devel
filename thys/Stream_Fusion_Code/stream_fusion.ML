@@ -108,7 +108,7 @@ fun classify ctxt thm = case Thm.full_prop_of thm
 fun sym thm = thm RS @{thm sym}
 
 fun format_error ctxt thm =
-  Output.warning (Pretty.string_of (Pretty.block [
+  warning (Pretty.string_of (Pretty.block [
     Pretty.str "Wrong format for fusion rule: ",
     Pretty.brk 2,
     Syntax.pretty_term (Context.proof_of ctxt) (Thm.prop_of thm)]))

@@ -167,7 +167,7 @@ fun derive dtyp_name _ thy =
   let
     val tyco = dtyp_name
     val base_name = Long_Name.base_name tyco
-    val _ = Output.writeln ("creating show-functions for data type " ^ base_name)
+    val _ = writeln ("creating show-functions for data type " ^ base_name)
     val info = BNF_LFP_Compat.the_info thy [] tyco
     val vs =
       let val i = BNF_LFP_Compat.the_spec thy tyco |> fst
@@ -195,7 +195,7 @@ fun derive dtyp_name _ thy =
         THEN rtac @{thm ballI} 1
         THEN assoc_tac ctxt
       ) lthy;
-    val _ = Output.writeln ("registered " ^ base_name ^ " in class show")
+    val _ = writeln ("registered " ^ base_name ^ " in class show")
   
   in thy' end
 

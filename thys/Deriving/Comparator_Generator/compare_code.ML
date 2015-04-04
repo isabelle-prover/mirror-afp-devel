@@ -44,7 +44,7 @@ fun change_compare_code const inst_names lthy =
     (* replace comparisons and register code eqns *)
     val new_code_eqs = map (Local_Defs.unfold lthy @{thms two_comparisons_into_compare}) code_eqs
     val _ = if map Thm.prop_of new_code_eqs = map Thm.prop_of code_eqs then
-      Output.warning ("Code equations for " ^ const_string ^ " did not change\n" ^
+      warning ("Code equations for " ^ const_string ^ " did not change\n" ^
       "Perhaps you have to provide some type variables which should be restricted to compare_order\n" ^
       (@{make_string} (map TVar types ~~ map snd types, const', code_eqs))) 
       else ()

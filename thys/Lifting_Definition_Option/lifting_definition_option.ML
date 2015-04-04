@@ -383,10 +383,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           val lthy = Local_Theory.note ((eq_binding, []), [eq_thm]) lthy |> snd
           val _ = debug_out ("step 10: derived thm " ^ Binding.name_of eq_binding)
 
-          val _ = Output.writelns [
-            "registered code equations for " ^ Binding.name_of fin_bind ^ "\n",
-            "derived theorems " ^ Binding.name_of binding ^ " and " ^ Binding.name_of eq_binding
-            ]
+          val _ =
+            writeln
+              ("registered code equations for " ^ Binding.name_of fin_bind ^ "\n" ^
+               "derived theorems " ^ Binding.name_of binding ^ " and " ^ Binding.name_of eq_binding)
         in 
           lthy
         end      
