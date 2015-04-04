@@ -35,7 +35,6 @@ fun change_compare_code const inst_names lthy =
     val const' = hd code_eqs |> Thm.concl_of |> Logic.dest_equals |> fst |> strip_comb |> fst
     val types = Term.add_tvars const' []
     val ctyp_of = TVar #> Thm.ctyp_of lthy
-    val _ = lambda
     fun filt s = not (member (op =) (@{sort ord} @ @{sort linorder} @ @{sort order}) s)
     val map_types = maps (fn ty => if List.exists (fn tn => tn = (fst o fst) ty) inst_names then 
       [(ctyp_of ty, ctyp_of (apsnd (fn ss => filter filt ss @ @{sort compare_order}) ty))] else 
@@ -59,10 +58,10 @@ fun change_compare_code const inst_names lthy =
 fun change_compare_code_cmd const tnames_option lthy = 
   change_compare_code (Syntax.read_term lthy const) tnames_option lthy
 
-val parser : (string list * string)parser = Scan.optional 
-  (Parse.$$$ "(" |-- (Parse.list Parse.string) --| Parse.$$$ ")") [] -- Parse.term
-  
-val _ = Outer_Syntax.command @{command_spec "compare_code"} 
-  "turns comparisons via <= and < into compare within code-equations"
-  (parser >> (fn (inst, c) => Toplevel.local_theory NONE (change_compare_code_cmd c inst)))
+val _ =
+  Outer_Syntax.local_theory @{command_spec "compare_code"} 
+    "turn comparisons via <= and < into compare within code-equations"
+    (Scan.optional (@{keyword "("} |-- (Parse.list Parse.string) --| @{keyword ")"}) [] --
+      Parse.term >> (fn (inst, c) => change_compare_code_cmd c inst))
+
 end

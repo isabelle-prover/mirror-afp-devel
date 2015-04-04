@@ -120,6 +120,7 @@ lemma shows_list_aux_assoc:
   using assms by (simp add: shows_list_aux_def)
 
 ML {*
+(* FIXME export proper ML interfaces: define_shows_list, define_shows_list_cmd *)
 let 
   fun define_shows_list assoc_thm_ref lthy =
     let
@@ -164,10 +165,10 @@ let
         ) lthy'
     in lthy'' end
 in
-  Outer_Syntax.command @{command_spec "standard_shows_list"} 
+  Outer_Syntax.local_theory @{command_spec "standard_shows_list"}
     "use standard way to extend shows to shows_list, requires associativity lemma as parameter"
     (*standard way: "shows_list = shows_list_aux shows"*)
-    (Parse.xthm >> (fn thm_name => Toplevel.local_theory NONE (define_shows_list thm_name)))
+    (Parse.xthm >> define_shows_list)
 end
 *}
 
