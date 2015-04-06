@@ -353,7 +353,7 @@ val names =
 in
 
 val _ =
-  Outer_Syntax.command @{command_spec "circus_process"} "Circus process specification"
+  Outer_Syntax.command @{command_keyword circus_process} "Circus process specification"
     ((Parse.type_args_constrained -- Parse.binding --| @{keyword  "="}) --
       Scan.optional (@{keyword "alphabet"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --
       Scan.optional (@{keyword "state"} |-- Parse.!!! (@{keyword  "="} |-- fields)) [] --

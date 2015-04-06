@@ -107,7 +107,7 @@ val option_parser =
      (Parse.reserved "no_eqvt" >> K false)) --| @{keyword ")"}) (false))
 
 val _ =
-  Outer_Syntax.local_theory_to_proof @{command_spec "nominal_termination"}
+  Outer_Syntax.local_theory_to_proof @{command_keyword nominal_termination}
     "prove termination of a recursive nominal function"
       (option_parser -- Scan.option Parse.term >> 
         (fn (is_eqvt, opt_trm) => termination_cmd is_eqvt opt_trm))

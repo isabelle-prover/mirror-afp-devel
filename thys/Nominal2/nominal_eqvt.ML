@@ -139,7 +139,7 @@ fun equivariance_cmd pred_name ctxt =
   end
 
 val _ =
-  Outer_Syntax.local_theory @{command_spec "equivariance"}
+  Outer_Syntax.local_theory @{command_keyword equivariance}
     "Proves equivariance for inductive predicate involving nominal datatypes."
       (Parse.const >> equivariance_cmd)
 

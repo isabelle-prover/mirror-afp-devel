@@ -59,7 +59,7 @@ fun change_compare_code_cmd const tnames_option lthy =
   change_compare_code (Syntax.read_term lthy const) tnames_option lthy
 
 val _ =
-  Outer_Syntax.local_theory @{command_spec "compare_code"} 
+  Outer_Syntax.local_theory @{command_keyword compare_code} 
     "turn comparisons via <= and < into compare within code-equations"
     (Scan.optional (@{keyword "("} |-- (Parse.list Parse.string) --| @{keyword ")"}) [] --
       Parse.term >> (fn (inst, c) => change_compare_code_cmd c inst))

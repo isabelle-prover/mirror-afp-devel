@@ -436,7 +436,7 @@ local
   val main_parser = Parse.xname -- avoids_parser
 in
   val _ =
-    Outer_Syntax.local_theory_to_proof @{command_spec "nominal_inductive"}
+    Outer_Syntax.local_theory_to_proof @{command_keyword nominal_inductive}
       "prove strong induction theorem for inductive predicate involving nominal datatypes"
         (main_parser >> prove_strong_inductive_cmd)
 end

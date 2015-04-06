@@ -1011,7 +1011,7 @@ fun mk_tycon
   end
 
 val _ =
-  Outer_Syntax.command @{command_spec "tycondef"}
+  Outer_Syntax.command @{command_keyword tycondef}
     "define recursive type constructors (HOLCF)"
     (tycons_decl >> (Toplevel.theory o mk_tycon))
 

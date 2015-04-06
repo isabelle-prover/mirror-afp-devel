@@ -401,7 +401,7 @@ val liftdef_parser = ((Parse.binding -- (@{keyword "::"} |-- Parse.typ -- Parse.
     --| @{keyword "is"} -- Parse.term 
 
 val _ =
-  Outer_Syntax.local_theory_to_proof @{command_spec "lift_definition_option"}
+  Outer_Syntax.local_theory_to_proof @{command_keyword lift_definition_option}
     "definition for constants of option type over the quotient type"
       ((liftdef_parser >> (fn ((b, ty, mf), t) => fn lthy =>
         lift_def_opt_main ((b, SOME ty, mf), 
