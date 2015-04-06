@@ -120,6 +120,7 @@ val debug_out = if false then writeln else (K ())
 
 fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
   let
+      (* FIXME rebinding "lthy" is unreadable / unmaintainable *)
       val lthy = lthy1
       val ((fin_bind, SOME fin_ty, fin_mixfix), lthy) = yield_singleton Proof_Context.read_vars raw_var lthy
       val prefix = Binding.name_of fin_bind
