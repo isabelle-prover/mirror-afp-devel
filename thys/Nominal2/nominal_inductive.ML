@@ -35,7 +35,7 @@ fun real_head_of (@{term Trueprop} $ t) = real_head_of t
   | real_head_of (Const (@{const_name Pure.imp}, _) $ _ $ t) = real_head_of t
   | real_head_of (Const (@{const_name Pure.all}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of (Const (@{const_name All}, _) $ Abs (_, _, t)) = real_head_of t
-  | real_head_of (Const ("HOL.induct_forall", _) $ Abs (_, _, t)) = real_head_of t
+  | real_head_of (Const (@{const_name HOL.induct_forall}, _) $ Abs (_, _, t)) = real_head_of t
   | real_head_of t = head_of t
 
 
@@ -81,7 +81,7 @@ fun add_p_c p (c, c_ty) trm =
   end
 
 fun induct_forall_const T =
-  Const ("HOL.induct_forall", (T --> @{typ bool}) --> @{typ bool})
+  Const (@{const_name HOL.induct_forall}, (T --> @{typ bool}) --> @{typ bool})
 
 fun mk_induct_forall (a, T) t =
   induct_forall_const T $ Abs (a, T, t)
@@ -172,7 +172,7 @@ fun helper_tac flag prm p ctxt =
         |> flag ? (all_elims [p])
         |> flag ? (eqvt_srule context)
     in
-      asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps (prm' :: @{thms induct_forall_def})) 1
+      asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps (prm' :: @{thms HOL.induct_forall_def})) 1
     end) ctxt
 
 fun non_binder_tac prem intr_cvars Ps ctxt = 
