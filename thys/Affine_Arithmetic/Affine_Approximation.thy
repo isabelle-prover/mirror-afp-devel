@@ -1682,7 +1682,7 @@ fun approximate_affine (name, term) lthy =
 
 ML {*
 val _ =
-  Outer_Syntax.local_theory @{command_spec "approximate_affine"}
+  Outer_Syntax.local_theory @{command_keyword approximate_affine}
     "define approximation of term"
     (Parse.binding -- Parse.term >> approximate_affine)
 *}

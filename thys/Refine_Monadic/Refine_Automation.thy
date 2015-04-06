@@ -418,7 +418,7 @@ setup {*
   parameters on which it does not depend *)
 
 ML {* Outer_Syntax.local_theory 
-  @{command_spec "concrete_definition"} 
+  @{command_keyword concrete_definition} 
   "Define function from refinement theorem" 
   (Parse.binding 
     -- Parse.opt_attribs
@@ -476,7 +476,7 @@ ML {*
      (@{keyword "("} |-- Parse.list1 Parse.xname --| @{keyword ")"}) [])
   in
     Outer_Syntax.local_theory 
-    @{command_spec "prepare_code_thms"} 
+    @{command_keyword prepare_code_thms} 
     "Refinement framework: Prepare theorems for code generation" 
     (modes -- Parse.xthms1
       >> (fn (modes,raw_thms) => fn lthy => let

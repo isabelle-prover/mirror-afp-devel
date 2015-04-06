@@ -30,7 +30,7 @@ section \<open>Examples\<close>
 
 subsection \<open>A simple restricted type without type-parameters\<close>
 
-typedef restricted = "{ i :: int. i mod 2 = 0}" morphisms base restricted 
+typedef "restricted" = "{ i :: int. i mod 2 = 0}" morphisms base "restricted"
   by (intro exI[of _ 4]) auto
 setup_lifting type_definition_restricted
 

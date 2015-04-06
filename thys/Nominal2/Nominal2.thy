@@ -736,7 +736,7 @@ val main_parser =
 end
 
 (* Command Keyword *)
-val _ = Outer_Syntax.local_theory @{command_spec "nominal_datatype"}
+val _ = Outer_Syntax.local_theory @{command_keyword nominal_datatype}
   "declaration of nominal datatypes" 
     (main_parser >> nominal_datatype2_cmd)
 *}

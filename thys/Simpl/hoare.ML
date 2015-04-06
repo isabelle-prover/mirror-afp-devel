@@ -1422,7 +1422,7 @@ val par_loc =
 in
 
 val _ =
-  Outer_Syntax.command @{command_spec "procedures"} "define procedures"
+  Outer_Syntax.command @{command_keyword procedures} "define procedures"
     (par_loc -- (Parse.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs))
       >> (fn (loc,decls) =>
           let
@@ -1434,7 +1434,7 @@ val _ =
 
 
 val _ =
-  Outer_Syntax.command @{command_spec "hoarestate"} "define state space for hoare logic"
+  Outer_Syntax.command @{command_keyword hoarestate} "define state space for hoare logic"
     (StateSpace.statespace_decl >> (fn ((args,name),(parents,comps)) =>
       Toplevel.theory
         (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));

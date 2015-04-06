@@ -304,7 +304,7 @@ val add_partial_function_mr_cmd = gen_add_partial_function_mr Specification.read
 val mode = @{keyword "("} |-- Parse.xname --| @{keyword ")"};
 
 val _ =
-  Outer_Syntax.local_theory @{command_spec "partial_function_mr"} "define mutually recursive partial functions"
+  Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"
     ((mode -- (Parse.fixes -- Parse_Spec.where_alt_specs))
       >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
 

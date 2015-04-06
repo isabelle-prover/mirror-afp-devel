@@ -52,11 +52,11 @@ fun derive_cmd id param dtname = gen_derive
 (* NB: Proof_Context.read_type_name_proper ctxt false could be an alternative. *)
 
 val _ =
-  Outer_Syntax.command @{command_spec "print_derives"} "lists all registered sorts which can be derived"
+  Outer_Syntax.command @{command_keyword print_derives} "lists all registered sorts which can be derived"
     (Scan.succeed (Toplevel.theory (tap print_info)))
 
 val _ =
-  Outer_Syntax.command @{command_spec "derive"} "derives some sort"
+  Outer_Syntax.command @{command_keyword derive} "derives some sort"
     (Parse.parname -- Parse.name -- Scan.repeat1 Parse.type_const >> (fn ((param, s), tycons) =>
       Toplevel.theory (fold (derive_cmd s param) tycons)))
 

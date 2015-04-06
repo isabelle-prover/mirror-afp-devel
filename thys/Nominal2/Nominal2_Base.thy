@@ -890,14 +890,14 @@ lemma imp_eqvt [eqvt]:
   shows "p \<bullet> (A \<longrightarrow> B) \<longleftrightarrow> (p \<bullet> A) \<longrightarrow> (p \<bullet> B)"
   by (simp add: permute_bool_def)
 
-declare imp_eqvt[folded induct_implies_def, eqvt]
+declare imp_eqvt[folded HOL.induct_implies_def, eqvt]
 
 lemma all_eqvt [eqvt]:
   shows "p \<bullet> (\<forall>x. P x) = (\<forall>x. (p \<bullet> P) x)"
   unfolding All_def
   by (perm_simp) (rule refl)
 
-declare all_eqvt[folded induct_forall_def, eqvt]
+declare all_eqvt[folded HOL.induct_forall_def, eqvt]
 
 lemma ex_eqvt [eqvt]:
   shows "p \<bullet> (\<exists>x. P x) = (\<exists>x. (p \<bullet> P) x)"
