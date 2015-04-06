@@ -1,7 +1,6 @@
 theory Skew_Heap
 imports
-  "~~/src/HOL/Library/Tree"
-  "~~/src/HOL/Library/Multiset"
+  "~~/src/HOL/Library/Tree_Multiset"
 begin
 
 section "Skew Heap"
@@ -13,11 +12,6 @@ The implementation below should be generalized to separate the elements from
 their priorities. *}
 
 type_synonym 'a heap = "'a tree"
-
-(* FIXME mv *)
-fun mset_tree :: "'a tree \<Rightarrow> 'a multiset" where
-"mset_tree Leaf = {#}" |
-"mset_tree (Node l a r) = {#a#} + mset_tree l + mset_tree r"
 
 fun heap :: "'a::linorder heap \<Rightarrow> bool" where
 "heap Leaf = True" |

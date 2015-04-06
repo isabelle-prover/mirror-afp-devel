@@ -3,17 +3,8 @@ section "Splay Heap"
 theory Splay_Heap
 imports
   Amor
-  "~~/src/HOL/Library/Tree"
-  "~~/src/HOL/Library/Multiset"
+  "~~/src/HOL/Library/Tree_Multiset"
 begin
-
-(* FIXME mv *)
-fun mset_tree :: "'a tree \<Rightarrow> 'a multiset" where
-"mset_tree Leaf = {#}" |
-"mset_tree (Node l a r) = {#a#} + mset_tree l + mset_tree r"
-
-lemma set_of_mset_tree[simp]: "set_of (mset_tree t) = set_tree t"
-by(induction t) auto
 
 text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
 priority queues by binary search trees, not by heaps! *}
