@@ -119,7 +119,6 @@ fun add_split thms = Context.proof_map (Simplifier.map_ss (fold Splitter.add_spl
 val debug_out = if false then writeln else (K ())
 
 fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
-  Runtime.exn_trace (fn () =>
   let 
       val lthy = lthy1
       val ((fin_bind, SOME fin_ty, fin_mixfix), lthy) = yield_singleton Proof_Context.read_vars raw_var lthy
@@ -391,8 +390,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           lthy
         end      
       val state = Proof.theorem NONE after_qed [[(crucial_prop, [])]] lthy
-  in state
-  end)
+  in state end
 
 fun lift_def_opt args tac lthy = lift_def_opt_main args lthy 
   |> tactic_state_to_lthy tac
