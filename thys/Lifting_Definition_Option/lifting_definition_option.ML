@@ -36,7 +36,7 @@ val term_to_string = YXML.string_of_body o Term_XML.Encode.term;
 val typ_to_string = YXML.string_of_body o Term_XML.Encode.typ;
 
 fun tactic_state_to_lthy tactic state =
-    Proof.global_terminal_proof 
+    Proof.global_terminal_proof
       ((Method.Basic (SIMPLE_METHOD o tactic), Position.no_range), NONE) state
 
 fun lift_def_ml (binding, mx) ty rhs tactic =
@@ -55,28 +55,28 @@ fun define (def_name, eq) mixfix attrs lthy =
   in (t, thm, lthy')
 end
 
-fun mk_abort t = 
-   let val ty = fastype_of t 
+fun mk_abort t =
+   let val ty = fastype_of t
      in Const (@{const_name Code.abort}, @{typ String.literal} --> (@{typ unit} --> ty) --> ty)
       $ @{term "STR ''internal error in lift_definition_option''"}
       $ lambda (Free ("x", @{typ unit})) t
-   end        
- 
+   end
+
 fun mk_if c t e = let
   val ty = fastype_of t
-  in 
+  in
     Const (@{const_name If}, @{typ bool} --> ty --> ty --> ty) $ c $ t $ e
   end
 
 fun mk_Some t = let
   val ty = fastype_of t
-  in 
+  in
     Const (@{const_name Some}, ty --> Type (@{type_name option}, [ty])) $ t
   end
 
 fun type_dest ty = let
   val err = "result type must be option-type"
-  val res_ty = case body_type ty of 
+  val res_ty = case body_type ty of
     Type (opt,[res_ty]) => if opt = @{type_name option} then res_ty else error err
   | _ => error err
 in
@@ -119,7 +119,7 @@ fun add_split thms = Context.proof_map (Simplifier.map_ss (fold Splitter.add_spl
 val debug_out = if false then writeln else (K ())
 
 fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
-  let 
+  let
       val lthy = lthy1
       val ((fin_bind, SOME fin_ty, fin_mixfix), lthy) = yield_singleton Proof_Context.read_vars raw_var lthy
       val prefix = Binding.name_of fin_bind
@@ -127,9 +127,9 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val (impl_tys, restr_ty) = type_dest fin_ty
       val (restr_lname, restr_arg_tys) = dest_Type restr_ty
       val restr_name = Long_Name.base_name restr_lname
-      
+
       (* extraction of P from typedef = { x. P x} , defining witness satisfying P *)
-      val (P, wit, wit_thmI, ty_vars, fresh_ty_vars, base_ty, restr_ty, info, lthy) = let 
+      val (P, wit, wit_thmI, ty_vars, fresh_ty_vars, base_ty, restr_ty, info, lthy) = let
         val info = case Typedef.get_info lthy restr_lname of [info] => info
            | _ => error ("failed to extract information for type " ^ restr_lname)
         val inhabit = info |> #2 |> #inhabited
@@ -143,7 +143,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           val sch_vars = map TVar ty_vars_raw
           val ty_vars_sch = map (fn ((n,_),s) => TFree (n,s)) ty_vars_raw
           val ty_to_sch_map_index = AList.lookup (op =) (ty_vars_sch ~~ sch_vars) #> the
-        in 
+        in
           map ty_to_sch_map_index ty_vars
         end
         (* create three types of fresh typ-variables: for initial definition of witness,
@@ -153,12 +153,12 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val ty_vars' = names |> (fn names => map convert (names ~~ ty_vars))
         val (names, _) = Variable.variant_fixes (map (fst o dest_TFree) ty_vars) lthy'
         val ty_vars'' = names |> (fn names => map convert (names ~~ ty_vars))
-        
+
         (* now instantiate inhabit thm to ty_vars' *)
         val ty_vars'_map = map (Thm.ctyp_of lthy') sch_vars ~~ map (Thm.ctyp_of lthy') ty_vars'
         val inhabit = Thm.instantiate (ty_vars'_map, []) inhabit
         val some_thm = @{thm someI_ex} OF [inhabit]
-        val some = some_thm |> Thm.prop_of |> HOLogic.dest_Trueprop 
+        val some = some_thm |> Thm.prop_of |> HOLogic.dest_Trueprop
            |> (fn x => case x of ( _ $ wit $ _) => wit | _ => error "could not extract witness")
         val some_ty = fastype_of some
         val unit_ty = @{typ unit}
@@ -178,10 +178,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val wit = wit $ @{term "()"}
         val wit_thm = Goal.prove lthy [] [] (Logic.mk_equals (wit, some))
           (K (unfold_tac lthy [wit_thm]))
-        
+
         val wit_thm = let (* proving "P wit" *)
           val wit_thm_t = HOLogic.mk_Trueprop (P $ wit)
-          val wit_thm = Goal.prove lthy [] [] wit_thm_t 
+          val wit_thm = Goal.prove lthy [] [] wit_thm_t
             (K (Method.insert_tac [some_thm] 1
               THEN unfold_tac lthy [Thm.symmetric wit_thm]
               THEN rtac @{thm CollectE} 1
@@ -192,7 +192,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
         (* export things to global context, to have schematic type variables for typedef *)
         val morph = get_export_morph lthy lthy1
-        val wit_thm = Morphism.thm morph wit_thm 
+        val wit_thm = Morphism.thm morph wit_thm
         val sch_vars = map (Morphism.typ morph) ty_vars' |> map dest_TVar
         val sch_vars_mapI =
           map (Thm.ctyp_of lthy o TVar) sch_vars ~~ map (Thm.ctyp_of lthy) restr_arg_tys
@@ -227,11 +227,11 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val concealed = false
         val (info, lthy) =
           Typedef.add_typedef concealed
-            (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix) 
-            (t_fresh collect) 
+            (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix)
+            (t_fresh collect)
             NONE tac lthy
         val _ = debug_out ("step 3: created type " ^ restr_c_name)
-      in 
+      in
         (info, lthy)
       end
 
@@ -244,19 +244,19 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val _ = debug_out ("step 4: performed lifting_setup")
 
       val restr_c_ty = let (* convert type over fresh ty_vars into original ty_vars *)
-        val restr_c_ty' = info |> snd |> fst |> #abs_type  
+        val restr_c_ty' = info |> snd |> fst |> #abs_type
         val sch_vars = dest_Type (Morphism.typ morph restr_c_ty') |> snd |> map (fst o dest_TVar)
         val sch_subst_ty = typ_subst_TVars (sch_vars ~~ ty_vars)
-      in 
+      in
         sch_subst_ty (Morphism.typ morph restr_c_ty')
       end
 
-      (* here we instantiate the type-parameters from typedef 
+      (* here we instantiate the type-parameters from typedef
          to the actual parameters *)
       val mapping = ty_vars ~~ restr_arg_tys
       val tyI = typ_subst_atomic mapping
       val tI = subst_atomic_types mapping
-      val (restr_c_ty, restr_ty, base_ty, pair_ty) = @{apply 4} tyI 
+      val (restr_c_ty, restr_ty, base_ty, pair_ty) = @{apply 4} tyI
           (restr_c_ty, restr_ty, base_ty, pair_ty)
       val (b, P, wit, abs, base) = @{apply 5} tI
           (b, P, wit, abs, base)
@@ -269,7 +269,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         lift_def_ml (Binding.name restr_c_bool_name, mixfix) restr_c_bool_ty rhs (K all_tac) lthy
       val _ = debug_out ("step 5: created lift_definition for " ^ restr_c_bool_name)
 
-      (* lift_definition restricted_cond_restrict :: "restricted_cond \<Rightarrow> restricted" is 
+      (* lift_definition restricted_cond_restrict :: "restricted_cond \<Rightarrow> restricted" is
         "% (b, c). if c then b else wit" using P_wit by (cases (b,c), auto) *)
 
       val restr_c_restr_name = restr_c_name ^ "_" ^ restr_name
@@ -278,11 +278,11 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val lam = lambda b (lambda c (mk_if c b wit))
       val lam_ty = Term.fastype_of lam
       val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> base_ty) $ lam
-      fun tac ctxt = Subgoal.FOCUS (fn focus =>            
+      fun tac ctxt = Subgoal.FOCUS (fn focus =>
              mk_case_tac ctxt [[SOME (#params focus |> hd |> snd |> Thm.term_of)]]
               @{thm prod.exhaust}
-             (fn (ctxt, prems2, _) => 
-                Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1 
+             (fn (ctxt, prems2, _) =>
+                Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1
               THEN auto_tac ctxt)
            ) ctxt 1
       val lthy = lift_def_ml (binding,mixfix) restr_c_restr_ty caset tac lthy
@@ -294,43 +294,43 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
          by (rule resticted_condI, insert check, blast) *)
 
       val binding = Binding.name restr_c_name
-      val xs = strip_abs_vars fin_rhs 
-      val (check, gen) = case betapplys (fin_rhs, map Free xs) of 
-          (_ $ check $ ( _ $ gen) $ _) => (check, gen) 
+      val xs = strip_abs_vars fin_rhs
+      val (check, gen) = case betapplys (fin_rhs, map Free xs) of
+          (_ $ check $ ( _ $ gen) $ _) => (check, gen)
         | _ => error "internal error in lift_definition_option"
       val ite = mk_if check (HOLogic.mk_prod (gen, @{term True})) (HOLogic.mk_prod (wit, @{term False}))
       val rhs = fold_rev (fn x => fn t => lambda (Free x) t) xs ite
       val crucial_prop = fold_rev (fn x => fn t => Logic.all (Free x) t) xs (Logic.mk_implies (
-         HOLogic.mk_Trueprop check, 
+         HOLogic.mk_Trueprop check,
          HOLogic.mk_Trueprop (P $ gen)))
 
 
       fun after_qed check_thm lthy = let
           fun tac ctxt = unfold_tac ctxt @{thms simplify_cond}
             THEN rtac @{thm restrict_condI} 1
-            THEN Method.insert_tac (hd check_thm) 1 
+            THEN Method.insert_tac (hd check_thm) 1
             THEN blast_tac ctxt 1
           val ty = impl_tys ---> restr_c_ty
           val lthy = lift_def_ml (binding,mixfix) ty rhs tac lthy
           val _ = debug_out ("step 7: created lift_definition for " ^ restr_c_name)
-    
-    
+
+
           (* definition restricted_of :: "impl \<Rightarrow> restricted option" where
               "restricted_of i \<equiv> let rci = restricted_cond i
                 in if (restricted_cond_bool rci) then Some (restricted_cond_restricted rci) else None" *)
-          
-          val rcr = Free (restr_c_restr_name, restr_c_restr_ty) 
-          val rcb = Free (restr_c_bool_name, restr_c_bool_ty) 
+
+          val rcr = Free (restr_c_restr_name, restr_c_restr_ty)
+          val rcb = Free (restr_c_bool_name, restr_c_bool_ty)
           val binding = fin_bind
           val mixfix = fin_mixfix
           val rc = Free (restr_c_name, ty)
           val rci = list_comb (rc, map (fn x_i => Bound (snd x_i)) (rev (xs ~~ (0 upto (length xs - 1)))))
           val lthy' = Variable.add_fixes (map fst xs) lthy |> snd
-          val [r,rc_var] = Variable.variant_fixes ["r", "rc"] lthy' |> fst 
+          val [r,rc_var] = Variable.variant_fixes ["r", "rc"] lthy' |> fst
           val rc_var = Free (rc_var, restr_c_ty)
           val ro_ty = Type (@{type_name option}, [restr_ty])
-          val ite = mk_if (rcb $ rc_var) 
-            (mk_Some (rcr $ rc_var)) 
+          val ite = mk_if (rcb $ rc_var)
+            (mk_Some (rcr $ rc_var))
             (Const (@{const_name None}, ro_ty))
           val lett = Const (@{const_name Let}, restr_c_ty --> (restr_c_ty --> ro_ty) --> ro_ty)
             $ rci $ lambda rc_var ite
@@ -339,11 +339,11 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           val ((r_of, (_, def_thm)), lthy) = Local_Theory.define
             ((binding, mixfix), ((Binding.name (r_of_name ^ "_def"), @{attributes [code]}), def_rhs)) lthy
           val _ = debug_out ("step 8: created definition for " ^ Binding.name_of binding)
-          
-          val def_thm' = Goal.prove lthy [] [] 
+
+          val def_thm' = Goal.prove lthy [] []
             (HOLogic.mk_eq (betapplys (r_of, map Free xs), betapplys (def_rhs, map Free xs)) |> HOLogic.mk_Trueprop)
             (K (unfold_tac lthy [def_thm]))
-    
+
      (* lemma restricted_of: "restricted_of i = Some r \<Longrightarrow> base r = gen i"
           unfolding restricted_of_def Let_def
           by (transfer, force split: if_splits) *)
@@ -364,15 +364,15 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
           val eq = HOLogic.mk_eq (r_of_is, insert_abs abs fin_rhs) |> HOLogic.mk_Trueprop
           val pre_thm = @{thm valid_definition}
-            |> Ctr_Sugar_Util.cterm_instantiate_pos 
+            |> Ctr_Sugar_Util.cterm_instantiate_pos
              [SOME (Thm.cterm_of lthy abs),
               SOME (Thm.cterm_of lthy base),
-              SOME (Thm.cterm_of lthy r_of_is), NONE, 
+              SOME (Thm.cterm_of lthy r_of_is), NONE,
               SOME (Thm.cterm_of lthy rcb),
               SOME (Thm.cterm_of lthy rcr),
               SOME (Thm.cterm_of lthy gen),
               SOME (Thm.cterm_of lthy check)]
-            |> (fn thm => thm OF [inverse_thm, def_thm', some_thm])  
+            |> (fn thm => thm OF [inverse_thm, def_thm', some_thm])
           val eq_thm = Goal.prove lthy (map fst xs) [] eq (fn {context = ctxt, ...} =>
              rtac pre_thm 1
            THEN assume_tac ctxt 1
@@ -386,22 +386,21 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
             writeln
               ("registered code equations for " ^ Binding.name_of fin_bind ^ "\n" ^
                "derived theorems " ^ Binding.name_of binding ^ " and " ^ Binding.name_of eq_binding)
-        in 
+        in
           lthy
-        end      
+        end
       val state = Proof.theorem NONE after_qed [[(crucial_prop, [])]] lthy
   in state end
 
-fun lift_def_opt args tac lthy = lift_def_opt_main args lthy 
-  |> tactic_state_to_lthy tac
-
-val liftdef_parser = ((Parse.binding -- (@{keyword "::"} |-- Parse.typ -- Parse.opt_mixfix')) >> Parse.triple2)
-    --| @{keyword "is"} -- Parse.term 
+fun lift_def_opt args tac lthy =
+  lift_def_opt_main args lthy |> tactic_state_to_lthy tac
 
 val _ =
   Outer_Syntax.local_theory_to_proof @{command_keyword lift_definition_option}
     "definition for constants of option type over the quotient type"
-      ((liftdef_parser >> (fn ((b, ty, mf), t) => fn lthy =>
-        lift_def_opt_main ((b, SOME ty, mf), 
-          Syntax.parse_term lthy t) lthy)))
+      (Parse.binding -- (@{keyword "::"} |-- Parse.!!! (Parse.typ -- Parse.opt_mixfix')) --
+        (@{keyword "is"} |-- Parse.!!! Parse.term) >>
+      (fn ((b, (ty, mf)), t) => fn lthy =>
+        lift_def_opt_main ((b, SOME ty, mf), Syntax.parse_term lthy t) lthy))
+
 end
