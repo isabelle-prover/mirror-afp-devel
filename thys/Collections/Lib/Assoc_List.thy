@@ -232,7 +232,7 @@ lemma map_ran_filter: "map_ran f [(a, _)\<leftarrow>ps. fst p \<noteq> a] = [(a,
 
 lemma clearjunk_map_ran: "AList.clearjunk (map_ran f al) 
   = map_ran f (AList.clearjunk al)"
-  by (induct al rule: clearjunk.induct) (simp_all add: delete_eq map_ran_filter)
+  by (induct al rule: clearjunk.induct) (simp_all add: AList.delete_eq map_ran_filter)
 
 text {* new lemmas and definitions *}
 

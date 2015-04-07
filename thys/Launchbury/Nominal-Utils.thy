@@ -157,7 +157,7 @@ by (induct \<Gamma>, auto)
 
 lemma restrict_eqvt[eqvt]:
   "\<pi> \<bullet> AList.restrict S \<Gamma> = AList.restrict (\<pi> \<bullet> S) (\<pi> \<bullet> \<Gamma>)"
-unfolding restrict_eq by perm_simp rule
+unfolding AList.restrict_eq by perm_simp rule
 
 lemma supp_restrict:
   "supp (AList.restrict S \<Gamma>) \<subseteq> supp \<Gamma>"
