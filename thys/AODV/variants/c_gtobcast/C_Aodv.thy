@@ -369,7 +369,7 @@ where
          (
            \<langle>\<xi>. oip \<xi> \<in> vD (rt \<xi>)\<rangle>
              unicast(\<lambda>\<xi>. the (nhop (rt \<xi>) (oip \<xi>)), \<lambda>\<xi>. rrep(hops \<xi> + 1, dip \<xi>,
-	                 dsn \<xi>, oip \<xi>, ip \<xi>)).
+                         dsn \<xi>, oip \<xi>, ip \<xi>)).
              AODV()
            \<triangleright>
              \<lbrakk>\<xi>. \<xi> \<lparr> dests := (\<lambda>rip. if (rip \<in> vD (rt \<xi>) \<and> nhop (rt \<xi>) rip = nhop (rt \<xi>) (oip \<xi>))

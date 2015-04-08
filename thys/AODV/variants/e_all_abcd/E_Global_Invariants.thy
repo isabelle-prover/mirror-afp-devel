@@ -8,11 +8,11 @@ section "Global invariant proofs over sequential processes"
 
 theory E_Global_Invariants
 imports E_Seq_Invariants
-	E_Aodv_Predicates
-	E_Fresher
-	E_Quality_Increases
-	"../../../AWN/OAWN_Convert"
-	E_OAodv
+        E_Aodv_Predicates
+        E_Fresher
+        E_Quality_Increases
+        "../../../AWN/OAWN_Convert"
+        E_OAodv
 begin
 
 lemma other_quality_increases [elim]:

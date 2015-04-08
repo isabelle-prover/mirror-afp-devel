@@ -242,9 +242,9 @@ lemma anycast_msg_zhops:
       paodv i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V (\<lambda>(_, a, _). anycast msg_zhops a)"
   proof (inv_cterms inv add:
            onl_invariant_sterms [OF aodv_wf rreq_dip_in_vD_dip_eq_ip [THEN invariant_restrict_inD]]
-	   onl_invariant_sterms [OF aodv_wf hop_count_positive [THEN 
-	   invariant_restrict_inD]],
-	 elim conjE)
+           onl_invariant_sterms [OF aodv_wf hop_count_positive [THEN 
+           invariant_restrict_inD]],
+         elim conjE)
     fix l \<xi> a pp p' pp'
     assume "(\<xi>, pp) \<in> reachable (paodv i) TT"
        and "{PRreq-:20}unicast(\<lambda>\<xi>. the (nhop (rt \<xi>) (oip \<xi>)),

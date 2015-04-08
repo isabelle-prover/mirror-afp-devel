@@ -11,7 +11,7 @@ imports Seq_Invariants
         Fresher
         Quality_Increases
         "../AWN/OAWN_Convert"
-	      "OAodv"
+        "OAodv"
 begin
 
 lemma other_quality_increases [elim]:
