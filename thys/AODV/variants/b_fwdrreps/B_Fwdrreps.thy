@@ -12,7 +12,7 @@ chapter "Variant B: Forwarding the Route Reply"
 
 text \<open>
   Explanation~\cite[\textsection 10.2]{FehnkerEtAl:AWN:2013}:
-  In AODV’s route discovery process, a RREP message from the destination 
+  In AODV's route discovery process, a RREP message from the destination 
   node is unicast back along a route towards the originator of the RREQ 
   message. Every intermediate node on the selected route will process the 
   RREP message and, in most cases, forward it towards the originator node. 

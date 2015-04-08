@@ -15,7 +15,7 @@ text \<open>
   AODV does not need the route request identifier. This number, in 
   combination with the IP address of the originator, is used to identify 
   every RREQ message in a unique way. This variant shows that the 
-  combination of the originator’s IP address and its sequence number is just 
+  combination of the originator's IP address and its sequence number is just 
   as suited to uniquely determine the route request to which the message 
   belongs. Hence, the route request identifier field is not required. This 
   can then reduce the size of the RREQ message.

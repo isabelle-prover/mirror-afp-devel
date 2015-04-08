@@ -36,7 +36,7 @@ text \<open>
   @{term dsn} is the `destination sequence number', @{term dsk} is the
   `destination-sequence-number status', @{term flag} is the route status,
   @{term hops} is the number of hops to the destination, @{term nhip} is the
-  next hop toward the destination, and @{term pre} is the set of `precursor nodes'—those
+  next hop toward the destination, and @{term pre} is the set of `precursor nodes'--those
   interested in hearing about changes to the route.
 \<close>
 

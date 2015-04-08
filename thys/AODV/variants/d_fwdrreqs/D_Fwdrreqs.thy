@@ -12,7 +12,7 @@ chapter "Variant D: Forwarding the Route Request"
 
 text \<open>
   Explanation~\cite[\textsection 10.5]{FehnkerEtAl:AWN:2013}:
-  In AODV’s route discovery process, a destination node (or an intermediate 
+  In AODV's route discovery process, a destination node (or an intermediate 
   node with an active route to the destination) will generate a RREP message 
   in response to a received RREQ message. The RREQ message is then dropped 
   and not forwarded. This termination of the route discovery process at the 
