@@ -430,8 +430,6 @@ let
         Conv.implies_concl_conv (swap_prems_conv (i - 1)) then_conv
         Conv.rewr_conv Drule.swap_prems_eq;
 
-  fun drop_judgment ctxt = Object_Logic.drop_judgment (Proof_Context.theory_of ctxt);
-
   fun find_eq ctxt t =
     let
       val l = length (Logic.strip_params t);
