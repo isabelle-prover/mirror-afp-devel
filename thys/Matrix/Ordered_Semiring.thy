@@ -28,25 +28,6 @@ imports
   "../Abstract-Rewriting/SN_Orders"
 begin
 
-locale semiring = abelian_monoid R + monoid R for R (structure) +
-  assumes l_distr: "\<lbrakk> x \<in> carrier R; y \<in> carrier R; z \<in> carrier R \<rbrakk>
-      \<Longrightarrow> (x \<oplus> y) \<otimes> z = x \<otimes> z \<oplus> y \<otimes> z"
-  and r_distr: "\<lbrakk> x \<in> carrier R; y \<in> carrier R; z \<in> carrier R \<rbrakk>
-      \<Longrightarrow> z \<otimes> (x \<oplus> y) = z \<otimes> x \<oplus> z \<otimes> y"
-  and l_null[simp]: "x \<in> carrier R \<Longrightarrow> \<zero> \<otimes> x = \<zero>"
-  and r_null[simp]: "x \<in> carrier R \<Longrightarrow> x \<otimes> \<zero> = \<zero>"
-
-lemmas (in semiring) semiring_simprules
-  [algebra ring "zero R" "add R" "a_inv R" "one R" "mult R"] =
-  a_closed zero_closed  m_closed one_closed
-  a_assoc l_zero  a_comm m_assoc l_one l_distr 
-  r_zero l_null r_null
-  a_lcomm r_distr  
-
-
-sublocale ring < semiring
-  by (unfold_locales, rule l_distr, blast+, rule r_distr, blast+, auto)
-
 record 'a ordered_semiring = "'a ring" +
   geq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succeq>\<index>" 50)
   gt :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>\<index>" 50)
