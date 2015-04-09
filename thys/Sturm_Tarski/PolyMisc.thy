@@ -112,10 +112,9 @@ next
     qed
   hence "\<forall>n. c dvd coeff k n"
     by (metis diff_diff_cancel dvd_0_right le_add2 le_add_diff_inverse le_degree)
-  then obtain f where f:"\<forall>n. c * f n=coeff k n" unfolding dvd_def by metis
-  have "almost_everywhere_zero f" 
-    unfolding almost_everywhere_zero_def
-    by (rule_tac x="degree k" in exI , metis f assms(3) coeff_eq_0 mult_eq_0_iff)
+  then obtain f where f:"\<forall>n. c * f n = coeff k n" unfolding dvd_def by metis
+  from MOST_conjI[OF ALL_MOST[OF f] MOST_coeff_eq_0[of k]] have "\<forall>\<^sub>\<infinity>n. f n = 0"
+    by (rule MOST_rev_mp) (auto intro!: ALL_MOST simp: `c \<noteq> 0`)
   hence "smult c (Abs_poly f)=k" 
     using f smult.abs_eq[of c "Abs_poly f"] Abs_poly_inverse[of f] coeff_inverse[of k]
     by simp
