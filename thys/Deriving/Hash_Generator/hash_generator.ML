@@ -205,7 +205,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
     val eqs = map (generate_phash_eqs lthy) (tycos ~~ Ts) |> List.concat
     val bindings = tycos ~~ Ts |> map mk_phash
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
-    val ((phashs, phash_simps), lthy) = lthy
+    val ((phashs, _, phash_simps), lthy) = lthy
       |> BNF_LFP_Rec_Sugar.primrec bindings (eqs |> map (pair Attrib.empty_binding))
     val (phi, lthy) = restore_with_morphism lthy
     val phashs = map (Morphism.term phi) phashs

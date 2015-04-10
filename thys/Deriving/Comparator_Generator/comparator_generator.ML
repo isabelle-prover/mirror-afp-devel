@@ -228,7 +228,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val eqs = map (generate_pcomp_eqs lthy) (tycos ~~ Ts) |> List.concat
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
-    val ((pcomps, pcomp_simps), lthy) = lthy
+    val ((pcomps, _, pcomp_simps), lthy) = lthy
       |> BNF_LFP_Rec_Sugar.primrec bindings (eqs |> map (pair Attrib.empty_binding))
     val (phi, lthy) = restore_with_morphism lthy
     val pcomps = map (Morphism.term phi) pcomps
