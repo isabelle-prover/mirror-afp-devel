@@ -30,10 +30,10 @@ text {* This section follows~\cite{vO94}. *}
 subsubsection {* Appendix *}
 text {* interaction of multisets with sets *}
 definition diff :: "'a multiset \<Rightarrow> 'a set \<Rightarrow> 'a multiset"
- where "diff M S = Multiset.filter (\<lambda>x. x \<notin> S) M"
+ where "diff M S = filter_mset (\<lambda>x. x \<notin> S) M"
 
 definition intersect :: "'a multiset \<Rightarrow> 'a set \<Rightarrow> 'a multiset"
- where "intersect M S = Multiset.filter (\<lambda>x. x \<in> S) M"
+ where "intersect M S = filter_mset (\<lambda>x. x \<in> S) M"
 
 notation
  diff      (infixl "-s" 800) and
@@ -595,7 +595,7 @@ using assms proof (induct \<sigma>)
   thus ?thesis using dec by auto
  next
   case False hence "\<alpha> \<in># r|as|-s ds r {\<beta>}" using Cons(2) by auto
-  hence x: "\<alpha> \<in># r|as| \<and> \<alpha> \<notin> ds r {\<beta>}" unfolding diff_def by (metis count_filter gr_implies_not0)
+  hence x: "\<alpha> \<in># r|as| \<and> \<alpha> \<notin> ds r {\<beta>}" unfolding diff_def by (metis count_filter_mset gr_implies_not0)
   from this obtain \<sigma>1 \<sigma>3 where "as = \<sigma>1 @ [\<alpha>] @ \<sigma>3" and w: "\<alpha> \<notin> dl r \<sigma>1" using Cons(1) by auto
   hence  "\<beta>#as = (\<beta>#\<sigma>1) @ [\<alpha>] @ \<sigma>3" and  "\<alpha> \<notin> dl r (\<beta>#\<sigma>1)" using x w unfolding dm_def dl_def ds_def by auto
   thus ?thesis by fast
@@ -642,12 +642,12 @@ text {* generalized to lists *}
 lemma proposition3_4_inv_lists:
 assumes t: "trans r" and i: "irrefl r" and k:"(r|\<sigma>| -s r \<down>l \<beta>, {#\<alpha>#}) \<in> mul_eq r" (is "(?M,_) \<in> _")
 shows "\<exists> \<sigma>1 \<sigma>2 \<sigma>3. ((\<sigma> = \<sigma>1@\<sigma>2@\<sigma>3) \<and> set \<sigma>1 \<subseteq> dl r \<beta> \<and> length \<sigma>2 \<le> 1 \<and> set \<sigma>2 \<subseteq> {\<alpha>}) \<and> set \<sigma>3 \<subseteq> dl r (\<alpha>#\<beta>)"  proof (cases "\<alpha> \<in># ?M")
-  case True hence "\<alpha> \<in># r|\<sigma>|" unfolding diff_def by (metis count_filter less_not_refl3)
+  case True hence "\<alpha> \<in># r|\<sigma>|" unfolding diff_def by (metis count_filter_mset less_not_refl3)
   from this obtain \<sigma>1 \<sigma>3 where sigma: "\<sigma>=\<sigma>1@[\<alpha>]@\<sigma>3" and alpha: "\<alpha> \<notin> dl r \<sigma>1" using lexmax_decompose by metis
   hence dec: "((r|\<sigma>1|-sdl r \<beta>) + (r|[\<alpha>]|-s (dl r \<sigma>1 \<union> dl r \<beta>)) + (r|\<sigma>3| -s (dl r [\<alpha>] \<union> dl r \<sigma>1 \<union> dl r \<beta>)), {#\<alpha>#}) \<in> mul_eq r" (is "(?M1 + ?M2 + ?M3,_) \<in> _")
    using k unfolding sigma lemma3_2_2 lemmaA_3_8 lemmaA_3_9 LD_1'_def union_assoc by auto
 
-  from True have key: "\<alpha> \<notin> dl r \<beta>" unfolding diff_def by (metis (lifting) count_filter less_not_refl)
+  from True have key: "\<alpha> \<notin> dl r \<beta>" unfolding diff_def by (metis (lifting) count_filter_mset less_not_refl)
   hence "?M2 = {#\<alpha>#}" unfolding lexmax_singleton diff_def using alpha by auto
   hence "(?M1+?M3 + {#\<alpha>#},{#\<alpha>#}) \<in> mul_eq r" using dec union_assoc union_commute by metis
   hence w: "?M1+?M3 = {#}" using drop_left_mult_eq assms(1,2) by auto
@@ -1374,7 +1374,7 @@ shows "\<exists> \<sigma> \<tau>. ({\<sigma>,\<tau>} \<subseteq> seq ars \<and> 
   from Cons(2) have ts: "(t,ts) \<in> conv ars" unfolding dec using conv_tail1(1) by fast
   from Cons(1)[OF ts ts2] obtain \<sigma>' \<tau> where
    ih:"{\<sigma>', \<tau>} \<subseteq> seq ars \<and> fst \<sigma>' = fst (t,ts) \<and> fst \<tau> = lst_conv (t, ts) \<and> lst \<sigma>' = lst \<tau> \<and> set_of (measure r (\<sigma>',\<tau>)) \<subseteq> dm r M" by metis
-  have diff:"!!x. x \<in># r|map fst (snd \<sigma>')|-sds r {\<beta>} \<Longrightarrow> x \<in># r|map fst (snd \<sigma>')|" unfolding diff_def by (metis count_filter nat_neq_iff)
+  have diff:"!!x. x \<in># r|map fst (snd \<sigma>')|-sds r {\<beta>} \<Longrightarrow> x \<in># r|map fst (snd \<sigma>')|" unfolding diff_def by (metis count_filter_mset nat_neq_iff)
   show ?case proof (cases d)
    case True hence step:"(s,\<beta>,t) \<in> ars" using conv_tail1(2) Cons(2) unfolding dec by auto
    have "(s,(\<beta>,t)# snd \<sigma>') \<in> seq ars" (is "?\<sigma> \<in> _") using seq.intros(2)[OF step] using ih(1) by auto
