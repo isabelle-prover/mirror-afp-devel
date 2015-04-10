@@ -18,7 +18,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 section {* Converting Values to Readable Strings *}
 
-theory Show
+theory Old_Show
 imports Main
 keywords "standard_shows_list" :: thy_decl
 begin

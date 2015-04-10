@@ -18,10 +18,10 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 section {* Generating Show-Functions for Data Types *}
 
-theory Show_Generator
+theory Old_Show_Generator
 imports
-  "../Old_Datatype_Order_Generator/Derive_Aux"
-  Show
+  "../../Old_Datatype_Order_Generator/Derive_Aux"
+  Old_Show
 begin
 
 subsection {* Introduction *}
@@ -90,7 +90,7 @@ lemma shows_sep_paren_final:
   shows "(shows_sep_paren a) r @ s = (shows_sep_paren a) (r @ s)"
   unfolding shows_sep_paren_def by (simp add: assms)
 
-ML_file "show_generator.ML"
+ML_file "old_show_generator.ML"
 
 end
 

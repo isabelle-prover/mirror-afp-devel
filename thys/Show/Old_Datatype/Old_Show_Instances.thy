@@ -18,9 +18,9 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 section {* Instances of the Show Class for Standard Types *}
 
-theory Show_Instances
+theory Old_Show_Instances
 imports
-  Show_Generator
+  Old_Show_Generator
   "~~/src/HOL/Rat"
 begin
 
