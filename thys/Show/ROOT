@@ -1,10 +1,17 @@
 chapter AFP
 
-session Old_Datatype_Show (AFP) = Old_Datatype_Order_Generator +
+session Show (AFP) = Deriving +
   options [timeout = 600]
   theories
     Show_Instances
-    Show_Examples
   document_files
     "root.bib"
     "root.tex"
+
+session Old_Datatype_Show (AFP) in "Old_Datatype" =
+  Old_Datatype_Order_Generator +
+  options [timeout = 600]
+  theories
+    Old_Show_Instances
+    Old_Show_Examples
+
