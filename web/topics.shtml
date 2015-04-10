@@ -103,7 +103,7 @@
 <a href="entries/Containers.shtml">Containers</a> &nbsp;
 <a href="entries/FileRefinement.shtml">FileRefinement</a> &nbsp;
 <a href="entries/Old_Datatype_Order_Generator.shtml">Old_Datatype_Order_Generator</a> &nbsp;
-<a href="entries/Datatype_Order_Generator.shtml">Datatype_Order_Generator</a> &nbsp;
+<a href="entries/Deriving.shtml">Deriving</a> &nbsp;
 <a href="entries/List-Index.shtml">List-Index</a> &nbsp;
 <a href="entries/List-Infinite.shtml">List-Infinite</a> &nbsp;
 <a href="entries/Matrix.shtml">Matrix</a> &nbsp;
@@ -117,7 +117,7 @@
 <h3>Functional Programming</h3>
 
 <div class="list">
-<a href="entries/Old_Datatype_Show.shtml">Old_Datatype_Show</a> &nbsp;
+<a href="entries/Show.shtml">Show</a> &nbsp;
 <a href="entries/Certification_Monads.shtml">Certification_Monads</a> &nbsp;
 <a href="entries/Partial_Function_MR.shtml">Partial_Function_MR</a> &nbsp;
 <a href="entries/Lifting_Definition_Option.shtml">Lifting_Definition_Option</a> &nbsp;

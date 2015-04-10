@@ -45,7 +45,31 @@ of
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-We formalize the Call Arity analysis, as implemented in GHC, and prove both functional correctness and, more interestingly, safety (i.e. the transformation does not increase allocation). We use Christian Urban's Nominal2 package to define our terms. The functional correctness is defined with regard to a standard denotational semantics. The operational properties are shown with regard to a small-step semantics akin to Sestoft's mark 1 machine. We make use of Brian Huffman's HOLCF package for the domain-theoretical aspects of the development.
+
+We formalize the Call Arity analysis, as implemented in GHC, and prove
+both functional correctness and, more interestingly, safety (i.e. the
+transformation does not increase allocation).
+<p>
+We use syntax and the denotational semantics from the entry
+"Launchbury", where we formalized Launchbury's natural semantics for
+lazy evaluation.
+<p>
+The functional correctness of Call Arity is proved with regard to that
+denotational semantics. The operational properties are shown with
+regard to a small-step semantics akin to Sestoft's mark 1 machine,
+which we prove to be equivalent to Launchbury's semantics.
+<p>
+We use Christian Urban's Nominal2 package to define our terms and make
+use of Brian Huffman's HOLCF package for the domain-theoretical
+aspects of the development.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-03-16]: This entry now builds on top of the Launchbury entry,
+and the equivalency proof of the natural and the small-step semantics
+was added.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

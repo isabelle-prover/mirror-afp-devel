@@ -43,7 +43,7 @@ the
         <td class="data" width="80%">Proving the Impossibility of Trisecting an Angle and Doubling the Cube</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Ralph Romanos (ralph /dot/ romanos /at/ student /dot/ ecp /dot/ fr) and <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence Paulson</a></td></tr>
+        <td class="data">Ralph Romanos (ralph /dot/ romanos /at/ student /dot/ ecp /dot/ fr) and <a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2012-08-05</td></tr>
@@ -57,7 +57,7 @@ Squaring the circle, doubling the cube and trisecting an angle, using a compass 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Impossible_Geometry-AFP,
-  author  = {Ralph Romanos and Lawrence Paulson},
+  author  = {Ralph Romanos and Lawrence C. Paulson},
   title   = {Proving the Impossibility of Trisecting an Angle and Doubling the Cube},
   journal = {Archive of Formal Proofs},
   month   = aug,

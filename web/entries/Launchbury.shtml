@@ -56,6 +56,7 @@ In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury pr
         <td class="abstract">
 
 [2014-05-24]: Added the proof of adequacy, as well as simplified and improved the existing proofs. Adjusted abstract accordingly.
+[2015-03-16]: Booleans and if-then-else added to syntax and semantics, making this entry suitable to be used by the entry "Call_Arity".
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

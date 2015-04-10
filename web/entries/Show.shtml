@@ -25,7 +25,8 @@
 <p>&nbsp;</p>
 
 <h1><font class="first">H</font>askell's
-<font class="first">S</font>how-Class
+<font class="first">S</font>how
+<font class="first">C</font>lass
 in
 <font class="first">I</font>sabelle/HOL
 </h1>
@@ -33,7 +34,7 @@ in
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Haskell's Show-Class in Isabelle/HOL</td></tr>
+        <td class="data" width="80%">Haskell's Show Class in Isabelle/HOL</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com) and René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
@@ -45,18 +46,26 @@ in
         <td class="abstract">
 
 
-We implemented a type-class for pretty-printing, similar to
-Haskell's Show-class. Moreover, we provide instantiations for Isabelle/HOL’s
+We implemented a type class for "to-string" functions, similar to
+Haskell's Show class. Moreover, we provide instantiations for Isabelle/HOL's
 standard types like bool, prod, sum, nats, ints, and rats. It is further
-possible, to automatically derive pretty-printer for arbitrary user defined
+possible, to automatically derive show functions for arbitrary user defined
 datatypes similar to Haskell's "deriving Show".
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-03-11]: Adapted development to new-style (BNF-based) datatypes.<br>
+[2015-04-10]: Moved development for old-style datatypes into subdirectory
+"Old_Datatype".<br>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Show-AFP,
   author  = {Christian Sternagel and René Thiemann},
-  title   = {Haskell's Show-Class in Isabelle/HOL},
+  title   = {Haskell's Show Class in Isabelle/HOL},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2014,
@@ -68,6 +77,10 @@ datatypes similar to Haskell's "deriving Show".
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Old_Datatype_Order_Generator.shtml">Old_Datatype_Order_Generator</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

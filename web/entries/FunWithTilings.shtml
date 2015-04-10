@@ -35,7 +35,7 @@
         <td class="data" width="80%">Fun With Tilings</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a> and <a href="http://www.cl.cam.ac.uk/users/lcp/">Lawrence Paulson</a></td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a> and <a href="http://www.cl.cam.ac.uk/users/lcp/">Lawrence C. Paulson</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2008-11-07</td></tr>
@@ -49,7 +49,7 @@ Tilings are defined inductively. It is shown that one form of mutilated chess bo
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{FunWithTilings-AFP,
-  author  = {Tobias Nipkow and Lawrence Paulson},
+  author  = {Tobias Nipkow and Lawrence C. Paulson},
   title   = {Fun With Tilings},
   journal = {Archive of Formal Proofs},
   month   = nov,
