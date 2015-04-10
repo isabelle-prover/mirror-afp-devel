@@ -1633,7 +1633,7 @@ text {* Multiset Union *}
 (*MOVE*)
 definition mset_Union :: "'a multiset multiset \<Rightarrow> 'a multiset"
 where
-  "mset_Union M = Multiset.fold op + {#} M"
+  "mset_Union M = fold_mset op + {#} M"
 
 lemma comp_fun_commute_mset_Union:
   "comp_fun_commute (plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset)"
