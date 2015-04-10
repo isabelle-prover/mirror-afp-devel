@@ -15,11 +15,11 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Testing Generator on Examples from AFP-Entry Old-Datatype-Order-Generator *}
+section {* Testing Generator on Examples from AFP-Entry Datatype-Order-Generator *}
 
 theory Old_Show_Examples
 imports
-  "../../Old_Datatype_Order_Generator/Derive_Examples"
+  "../../Datatype_Order_Generator/Derive_Examples"
   Old_Show_Instances
 begin
   
