@@ -491,14 +491,8 @@ shows "(\<exists>\<^sub>\<infinity>x. is_solution x A 0) = (vec.dim (solution_se
 unfolding infinite_solution_set_homogeneous_eq[symmetric] INFM_iff_infinite unfolding solution_set_def ..
 
 lemma infinite_solution_set_imp_consistent:
-fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
-assumes i: "infinite (solution_set A b)"
-shows "consistent A b"
-proof -
-have "(\<exists>\<^sub>\<infinity>x. is_solution x A b)" using i unfolding solution_set_def INFM_iff_infinite .
-thus ?thesis unfolding consistent_def by (metis (full_types) INFM_MOST_simps(1) INFM_mono)
-qed
-
+  "infinite (solution_set A b) \<Longrightarrow> consistent A b"
+  by (auto dest!: infinite_imp_nonempty simp: solution_set_def consistent_def)
 
 lemma dim_solution_set_not_zero_imp_infinite_solutions_no_homogeneous:
 fixes A::"'a::{field, semiring_char_0}^'n::{mod_type}^'rows::{mod_type}"
@@ -526,8 +520,8 @@ fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
 assumes i: "infinite (solution_set A b)"
 shows "vec.dim (solution_set A 0) > 0"
 proof (rule ccontr, simp)
-have "(\<exists>\<^sub>\<infinity>x. is_solution x A b)" using i unfolding solution_set_def INFM_iff_infinite .
-from this obtain x where x: "is_solution x A b" by (metis (full_types) INFM_MOST_simps(1) INFM_mono)
+from i obtain x where x: "is_solution x A b"
+  by (auto dest: infinite_imp_nonempty simp: solution_set_def)
 assume "vec.dim (solution_set A 0) = 0"
 hence "solution_set A 0 = {0}" using dim_solution_set_0 by auto
 hence "solution_set A b = {x} + {0}"  unfolding solution_set_rel[OF x] by simp
