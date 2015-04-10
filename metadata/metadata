@@ -782,6 +782,29 @@ abstract =
  instantiate the framework by verifying six Consensus algorithms that differ in
  the underlying algorithmic mechanisms and the kinds of faults they tolerate.
 
+[Consensus_Refined]
+title = Consensus Refined
+date = 2015-03-18
+author = Ognjen Maric <mailto:omaric@inf.ethz.ch>, Christoph Sprenger <mailto:sprenger@inf.ethz.ch>
+topic = Computer Science/Algorithms/Distributed
+abstract =
+  Algorithms for solving the consensus problem are fundamental to
+  distributed computing. Despite their brevity, their
+  ability to operate in concurrent, asynchronous and failure-prone
+  environments comes at the cost of complex and subtle
+  behaviors. Accordingly, understanding how they work and proving
+  their correctness is a non-trivial endeavor where abstraction
+  is immensely helpful.
+  Moreover, research on consensus has yielded a large number of
+  algorithms, many of which appear to share common algorithmic
+  ideas. A natural question is whether and how these similarities can
+  be distilled and described in a precise, unified way.
+  In this work, we combine stepwise refinement and
+  lockstep models to provide an abstract and unified
+  view of a sizeable family of consensus algorithms. Our models
+  provide insights into the design choices underlying the different
+  algorithms, and classify them based on those choices.
+
 [Abortable_Linearizable_Modules]
 title = Abortable Linearizable Modules
 author = Rachid Guerraoui <mailto:rachid.guerraoui@epfl.ch>, Viktor Kuncak <http://lara.epfl.ch/~kuncak/>, Giuliano Losa <mailto:giuliano.losa@epfl.ch>
@@ -918,6 +941,18 @@ abstract =
  becomes true for the first time.
  The implementation follows the paper of Hinze and Paterson.
  The code generator can be used to get efficient, verified code.
+
+[Trie]
+title = Trie
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+date = 2015-03-30
+topic = Computer Science/Data Structures
+abstract =
+  This article formalizes the ``trie'' data structure invented by
+  Fredkin [CACM 1960]. It also provides a specialization where the entries
+  in the trie are lists.
+extra-0 =
+  Origin: This article was extracted from existing articles by the authors.
 
 [FinFun]
 title = Code Generation for Functions as Data

@@ -55,6 +55,22 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2015-03-30:
+<a href="entries/Trie.shtml">Trie</a>
+<br>Author:
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and 
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
+2015-03-18:
+<a href="entries/Consensus_Refined.shtml">Consensus Refined</a>
+<br>Author:
+Ognjen Maric and 
+Christoph Sprenger
+</td></tr>
+
+<tr><td class="entry">
 2015-03-11:
 <a href="entries/Deriving.shtml">Deriving class instances for datatypes</a>
 <br>Author:
