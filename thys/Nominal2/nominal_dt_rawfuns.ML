@@ -442,7 +442,7 @@ fun define_raw_perms raw_dt_info lthy =
       lthy
       |> Local_Theory.exit_global
       |> Class.instantiation (raw_dt_names, raw_ty_args, @{sort pt}) 
-      |> BNF_LFP_Compat.add_primrec perm_fn_binds perm_eqs
+      |> BNF_LFP_Compat.primrec perm_fn_binds perm_eqs
     
     val perm_zero_thms = prove_permute_zero raw_induct_thm perm_eq_thms perm_funs lthy'
     val perm_plus_thms = prove_permute_plus raw_induct_thm perm_eq_thms perm_funs lthy'  

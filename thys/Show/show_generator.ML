@@ -168,7 +168,7 @@ fun generate_showsp tyco lthy =
     val bindings = tycos ~~ Ts |> map mk_pshowsp
       |> map (fn (name, T) => (Binding.name name, T |> showsify_typ |> SOME, NoSyn))
     val ((pshows, pshow_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.add_primrec bindings (eqs |> map (pair Attrib.empty_binding))
+      |> BNF_LFP_Rec_Sugar.primrec bindings (eqs |> map (pair Attrib.empty_binding))
     val (phi, lthy) = restore_with_morphism lthy
     val pshows = map (Morphism.term phi) pshows
     val pshow_simps = Bnf_Access.postprocess_prim_rec_simp_rules pshow_simps
