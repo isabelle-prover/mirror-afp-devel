@@ -72,7 +72,7 @@ next
     using card(2) by (force intro: tendsto_zero_powrI[OF eventually_sequentiallyI])
   hence limit: "(\<lambda>n. p n powr ?e * n powr ?v) ----> 0"
     by (rule LIMSEQ_cong[OF _ eventually_sequentiallyI[where c = 1]])
-       (auto simp: card p_nz powr_powr powr_mult)
+       (auto simp: p card p_nz powr_powr powr_mult)
 
   {
     fix n
@@ -651,20 +651,23 @@ next
             by simp
           also have "\<dots> \<le> (real n powr -(1 / max_density H) * p n powr -1) powr ?e"
             apply (rule powr_mono2[OF _ _ mult_right_mono[OF powr_mono[OF le_imp_neg_le[OF divide_left_mono]]]])
-            using n v_e_nz by (auto simp:
+            using n v_e_nz p p_nz
+            by (auto simp:
               max_density_is_max[unfolded density_def, OF finite finite nonempty wellformed subgraph_refl]
               max_density_gr_zero[OF finite nonempty wellformed])
           also have "\<dots> = (real n powr -(1 / max_density H) * (1 / p n powr 1)) powr ?e"
             by (simp add: powr_minus_divide[symmetric])
           also have "\<dots> = (real n powr -(1 / max_density H) / p n) powr ?e"
-            using p_nz by simp
+            using p p_nz by simp
           also have "\<dots> = (subgraph_threshold H n / p n) powr ?e"
             unfolding subgraph_threshold_def ..
           finally show "1 / (real n ^ ?v * p n ^ ?e) \<le> (subgraph_threshold H n / p n) powr ?e"
             .
         next
           show "(\<lambda>n. (subgraph_threshold H n / p n) powr real (card (uedges H))) ----> 0"
-            using tendsto_zero_powrI[OF eventually_sequentiallyI[OF divide_pos_pos] p_threshold] subgraph_threshold_def p_nz v_e_nz by auto
+            using tendsto_zero_powrI[OF eventually_sequentiallyI[OF divide_pos_pos] p_threshold] 
+                  subgraph_threshold_def p_nz v_e_nz 
+                  by auto fastforce
         qed
       hence "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) ----> real (?v ^ ?v) * 0"
         by (rule LIMSEQ_const_mult)
@@ -695,7 +698,9 @@ next
           proof (rule less_fun_const_quot)
             have "(\<lambda>n. (subgraph_threshold H n / p n) powr (max_density H * k)) ----> 0"
               using tendsto_zero_powrI[OF eventually_sequentiallyI[OF divide_pos_pos] p_threshold mult_pos_pos[OF max_density_gr_zero[OF finite nonempty wellformed]]]
-              subgraph_threshold_def powr_gt_zero p_nz k by simp
+              subgraph_threshold_def powr_gt_zero p_nz k
+              apply (simp add: Suc_le_eq )
+              using real_of_nat_gt_zero_cancel_iff by blast
             thus "(\<lambda>n. (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)) / (real n ^ (2 * ?v) * p n ^ (2 * ?e))) ----> 0"
               proof (rule LIMSEQ_cong[OF _ eventually_sequentiallyI])
                 fix n :: nat
@@ -721,7 +726,7 @@ next
                 also have "\<dots> = (n powr -(1 / max_density H) * (1 / p n powr 1)) powr (max_density H * k)"
                   by (simp add: powr_minus_divide[symmetric])
                 also have "\<dots> = (n powr -(1 / max_density H) / p n) powr (max_density H * k)"
-                  using p_nz by simp
+                  by (simp add: p p_nz)
                 also have "\<dots> = (subgraph_threshold H n / p n) powr (max_density H * k)" (is "_ = ?rhs")
                   unfolding subgraph_threshold_def ..
                 finally have "?lhs = ?rhs"

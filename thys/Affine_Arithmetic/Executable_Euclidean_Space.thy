@@ -89,8 +89,9 @@ proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
   also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr real (- e))\<^sup>2))"
-    by (intro real_sqrt_le_mono setsum_mono power_mono)
-      (auto simp: dist_real_def eucl_down_def abs_round_down_le simp del: real_of_int_minus)
+    apply (intro real_sqrt_le_mono setsum_mono power_mono)
+    apply (auto simp: dist_real_def eucl_down_def simp del: real_of_int_minus)
+    by (simp add: abs_round_down_le)
   finally show ?thesis
     by (simp add: real_sqrt_mult real_of_nat_def)
 qed

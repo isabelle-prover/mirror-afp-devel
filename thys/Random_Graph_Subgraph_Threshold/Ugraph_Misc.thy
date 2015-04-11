@@ -3,7 +3,7 @@ section{* Miscellaneous and contributed lemmas *}
 theory Ugraph_Misc
 imports
   Limits
-  Probability
+  "~~/src/HOL/Probability/Probability"
   "../Girth_Chromatic/Girth_Chromatic_Misc"
 begin
 
@@ -84,6 +84,7 @@ proof -
 qed
 
 lemma powr_mono3:
+  fixes x::real
   assumes "0 < x" "x < 1" "b \<le> a"
   shows "x powr a \<le> x powr b"
 proof -
