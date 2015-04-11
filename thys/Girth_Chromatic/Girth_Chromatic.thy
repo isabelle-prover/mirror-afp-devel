@@ -2,7 +2,7 @@ theory Girth_Chromatic
 imports
   Ugraphs
   Girth_Chromatic_Misc
-  Probability
+  "~~/src/HOL/Probability/Probability"
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
@@ -543,7 +543,8 @@ proof -
   proof (rule eventually_sequentiallyI)
     fix n :: nat assume "2 \<le> n"
     with `\<epsilon> < 1` have "n powr (\<epsilon> - 1) < 1" by (auto intro!: powr_less_one)
-    then show "0 < p n \<and> p n < 1" by (auto simp: p_def)
+    then show "0 < p n \<and> p n < 1" using `2 \<le> n`
+      by (auto simp: p_def)
   qed
   then
   have prob_short_count_le: "\<forall>\<^sup>\<infinity> n. probGn p n (\<lambda>es. (real n/2) \<le> short_count (?ug n es))
@@ -634,9 +635,11 @@ proof -
       then have "(6 * k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * (n powr - 1) \<le> n powr (\<epsilon> - 1)"
         by  (subst powr_minus) (simp add: divide_inverse p_def)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * ((n powr - 1) / (n powr (\<epsilon> - 1))) \<le> n powr (\<epsilon> - 1) / (n powr (\<epsilon> - 1))"
-        by auto
-      also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
-        by (simp add: powr_divide2)
+        using `1 \<le> n` by (auto simp: field_simps)
+      also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" 
+        apply (simp add: powr_divide2)
+        using `1 \<le> n`  apply simp
+        done
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
     qed
     then have "(\<forall>\<^sup>\<infinity> n. (6 * k) * ln n / real n \<le> p n)

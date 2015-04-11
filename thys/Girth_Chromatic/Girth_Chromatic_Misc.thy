@@ -133,11 +133,12 @@ proof -
 qed
 
 lemma powr_less_one:
+  fixes x::real
   assumes "1 < x" "y < 0"
   shows "x powr y < 1"
-using assms by (metis powr_less_cancel_iff powr_zero_eq_one)
+using assms less_log_iff by force
 
-lemma powr_le_one_le: "\<And>x y. 0 < x \<Longrightarrow> x \<le> 1 \<Longrightarrow> 1 \<le> y \<Longrightarrow> x powr y \<le> x"
+lemma powr_le_one_le: "\<And>x y::real. 0 < x \<Longrightarrow> x \<le> 1 \<Longrightarrow> 1 \<le> y \<Longrightarrow> x powr y \<le> x"
 proof -
   fix x y :: real
   assume "0 < x" "x \<le> 1" "1 \<le> y"
@@ -147,7 +148,8 @@ proof -
     have "1 \<le> 1 / x" using `0 < x` `x \<le> 1` by (auto simp: field_simps)
     then have "(1 / x) powr 1  \<le> (1 / x) powr y" using `0 < x`
       using `1 \<le> y` by ( simp only: powr_mono)
-    then show ?thesis by (auto simp: field_simps)
+    then show ?thesis
+      by (metis `1 \<le> 1 / x` `1 \<le> y` neg_le_iff_le powr_minus_divide powr_mono)
   qed
   also have "\<dots> \<le> x" using `0 < x` by (auto simp: field_simps)
   finally show "?thesis x y" .

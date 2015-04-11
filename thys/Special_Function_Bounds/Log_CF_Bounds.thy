@@ -5,7 +5,7 @@ imports Bounds_Lemmas
 
 begin
 
-theorem ln_upper_1: "0<x \<Longrightarrow> ln(x) \<le> x - 1"
+theorem ln_upper_1: "0<x \<Longrightarrow> ln(x::real) \<le> x - 1"
 by (rule ln_le_minus_one)
 
 definition ln_lower_1 :: "real \<Rightarrow> real"

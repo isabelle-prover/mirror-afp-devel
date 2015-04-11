@@ -194,7 +194,7 @@ qed (insert assms, auto)
 lemma subprob_density_distr_real_exp:
   assumes dens: "has_subprob_density M lborel f"
   shows "has_subprob_density (distr M borel exp) lborel 
-           (\<lambda>x. if x > 0 then f (ln x) * inverse x else 0)"
+           (\<lambda>x. if x > 0 then f (ln x) * ereal (inverse x) else 0)"
            (is "has_subprob_density _ _ ?g")
 proof (rule subprob_density_distr_real_eq[OF dens])
   fix x from dens show "?g x \<ge> 0" by (auto intro!: ereal_0_le_mult dest: has_subprob_densityD)
@@ -202,7 +202,8 @@ next
   from dens have Mg': "(\<lambda>x. f (ln x) * ereal (inverse x)) \<in> borel_measurable borel"
     by (intro borel_measurable_ereal_times borel_measurable_ereal
               measurable_compose[OF borel_measurable_ln]) (auto dest: has_subprob_densityD)
-  thus Mg: "?g \<in> borel_measurable borel" by (intro measurable_If) simp_all
+  thus Mg: "?g \<in> borel_measurable borel" 
+    by (intro measurable_If) simp_all
   from dens have Mf: "f \<in> borel_measurable borel" by (auto dest: has_subprob_densityD)
 
   fix a b :: real assume "a \<le> b"

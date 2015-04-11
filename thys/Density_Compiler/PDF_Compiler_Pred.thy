@@ -1356,8 +1356,8 @@ next
     have "has_density (distr M (stock_measure t') (lift_RealVal exp)) (stock_measure t')
             ((\<lambda>x. if 0 < x then f \<rho> (RealVal (ln x)) * ereal (inverse x) else 0) 
                \<circ> extract_real)" (is "has_density _ _ ?f'") using dens'
-      apply (simp only: t2)                    
-      apply (rule distr_lift_RealVal[where g = "\<lambda>f x. if x > 0 then f (ln x) * inverse x else 0"])
+      apply (simp only: t2)
+      apply (rule distr_lift_RealVal[where g = "\<lambda>f x. if x > 0 then f (ln x) * ereal (inverse x) else 0"])
       apply (auto intro!: subprob_density_distr_real_exp intro: has_subprob_density_imp_has_density)
       done
     also have "?f' = ?f \<rho>" 
