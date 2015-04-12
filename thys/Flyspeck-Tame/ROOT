@@ -2,6 +2,8 @@ chapter AFP
 
 session "Flyspeck-Tame" (AFP) = "HOL-Library" +
   options [timeout = 86400]
+  theories [document = false]
+    "../Trie/Tries"
   theories
     Completeness
   document_files

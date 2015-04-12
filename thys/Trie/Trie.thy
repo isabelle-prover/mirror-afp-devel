@@ -1,6 +1,6 @@
 (* Author: Andreas Lochbihler and Tobias Nipkow *)
 
-header "Trie"
+section "Trie"
 
 theory Trie
 imports "../Collections/Lib/Assoc_List"

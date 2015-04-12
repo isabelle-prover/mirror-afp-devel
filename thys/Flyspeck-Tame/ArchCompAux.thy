@@ -3,7 +3,7 @@
 section {* Comparing Enumeration and Archive *}
 
 theory ArchCompAux
-imports TameEnum Tries Arch Worklist
+imports TameEnum "../Trie/Tries" Maps Arch Worklist
 begin
 
 function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -37,12 +37,28 @@ definition diff2 :: "nat fgraph list \<Rightarrow> nat fgraph list
 definition samet :: "(nat,nat fgraph) tries option \<Rightarrow> nat fgraph list \<Rightarrow> bool"
 where
   "samet fgto ags = (case fgto of None \<Rightarrow> False | Some tfgs \<Rightarrow>
-   let tags = trie_of_list hash ags in
-   (Tries.all (%fg. list_ex (iso_test fg) (Tries.lookup tags (hash fg))) tfgs &
-    Tries.all (%ag. list_ex (iso_test ag) (Tries.lookup tfgs (hash ag))) tags))"
+   let tags = tries_of_list hash ags in
+   (all_tries (%fg. list_ex (iso_test fg) (lookup_tries tags (hash fg))) tfgs &
+    all_tries (%ag. list_ex (iso_test ag) (lookup_tries tfgs (hash ag))) tags))"
 
 definition pre_iso_test :: "vertex fgraph \<Rightarrow> bool" where
   "pre_iso_test Fs \<longleftrightarrow>
    [] \<notin> set Fs \<and> (\<forall>F\<in>set Fs. distinct F) \<and> distinct (map rotate_min Fs)"
+
+
+interpretation map:
+  maps "Trie None []" update_trie lookup_tries invar_trie
+proof
+  case goal1 show ?case by(rule ext) simp
+next
+  case goal2 show ?case by(rule ext) (simp add: lookup_update)
+next
+  case goal3 show ?case by(simp)
+next
+  case goal4 thus ?case by (simp add: invar_trie_update)
+qed
+
+lemma set_of_conv: "set_tries = maps.set_of lookup_tries"
+by(rule ext) (auto simp add: set_tries_def map.set_of_def)
 
 end
