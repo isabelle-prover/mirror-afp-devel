@@ -11,7 +11,7 @@ imports
   KBPsAlg
   Eval
   List_local
-  ODList Trie
+  ODList Trie2
   "../Transitive-Closure/Transitive_Closure_List_Impl"
   "~~/src/HOL/Library/Mapping"
 begin
@@ -2003,10 +2003,10 @@ definition
                         \<rightharpoonup> ('a, 'es, 'as) spr_simWorldsRep"
 where
   "trans_MapOps_lookup \<equiv> \<lambda>m ((cec, aec), obs).
-     Option.bind (trie_lookup m (map fst (toList cec)))
-      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList cec)))
-       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aec)))
-        (\<lambda>m. Option.bind (trie_lookup m (map snd (toList aec)))
+     Option.bind (lookup_trie m (map fst (toList cec)))
+      (\<lambda>m. Option.bind (lookup_trie m (map snd (toList cec)))
+       (\<lambda>m. Option.bind (lookup_trie m (map fst (toList aec)))
+        (\<lambda>m. Option.bind (lookup_trie m (map snd (toList aec)))
          (\<lambda>m. Mapping.lookup m obs))))"
 
 definition
@@ -2016,9 +2016,9 @@ definition
                         \<Rightarrow> ('a, 'es, 'obs, 'as) trans_trie"
 where
   "trans_MapOps_update \<equiv> \<lambda>((cec, aec), obs) v m.
-     trie_update_with' (map fst (toList cec)) m trie_empty
-      (\<lambda>m. trie_update_with' (map snd (toList cec)) m trie_empty
-       (\<lambda>m. trie_update_with' (map fst (toList aec)) m trie_empty
+     trie_update_with' (map fst (toList cec)) m empty_trie
+      (\<lambda>m. trie_update_with' (map snd (toList cec)) m empty_trie
+       (\<lambda>m. trie_update_with' (map fst (toList aec)) m empty_trie
         (\<lambda>m. trie_update_with' (map snd (toList aec)) m Mapping.empty
          (\<lambda>m. Mapping.update obs v m))))"
 
@@ -2028,7 +2028,7 @@ definition
                     ('a, 'es, 'as) spr_simWorldsRep) MapOps"
 where
   "trans_MapOps \<equiv>
-     \<lparr> MapOps.empty = trie_empty,
+     \<lparr> MapOps.empty = empty_trie,
        lookup = trans_MapOps_lookup,
        update = trans_MapOps_update \<rparr>"
 
@@ -2050,12 +2050,12 @@ next
       using inj_onD[OF spr_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto simp: lookup_update trie_lookup_trie_update_with split: option.split split_split)
+      by (auto simp: lookup_update lookup_trie_update_with split: option.split split_split)
   next
     have *: "\<And> y ya. y \<noteq> ya \<Longrightarrow> Mapping.lookup (Mapping.update y e Mapping.empty) ya = None" by transfer simp
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto dest: map_prod_eq simp: trie_lookup_trie_update_with split: option.split split_split intro!: lookup_update_neq *)
+      by (auto dest: map_prod_eq simp: lookup_trie_update_with split: option.split split_split intro!: lookup_update_neq *)
   qed
 qed
 
@@ -2067,10 +2067,10 @@ definition
                        \<rightharpoonup> 'aAct"
 where
   "acts_MapOps_lookup \<equiv> \<lambda>m (cec, aec).
-     Option.bind (trie_lookup m (map fst (toList cec)))
-      (\<lambda>m. Option.bind (trie_lookup m (map snd (toList cec)))
-       (\<lambda>m. Option.bind (trie_lookup m (map fst (toList aec)))
-        (\<lambda>m. trie_lookup m (map snd (toList aec)))))"
+     Option.bind (lookup_trie m (map fst (toList cec)))
+      (\<lambda>m. Option.bind (lookup_trie m (map snd (toList cec)))
+       (\<lambda>m. Option.bind (lookup_trie m (map fst (toList aec)))
+        (\<lambda>m. lookup_trie m (map snd (toList aec)))))"
 
 definition
   acts_MapOps_update :: "('a, 'es, 'as) spr_simWorldsRep
@@ -2079,9 +2079,9 @@ definition
                        \<Rightarrow> ('a, 'es, 'aAct, 'as) acts_trie"
 where
   "acts_MapOps_update \<equiv> \<lambda>(cec, aec) pAct m.
-     trie_update_with' (map fst (toList cec)) m trie_empty
-      (\<lambda>m. trie_update_with' (map snd (toList cec)) m trie_empty
-       (\<lambda>m. trie_update_with' (map fst (toList aec)) m trie_empty
+     trie_update_with' (map fst (toList cec)) m empty_trie
+      (\<lambda>m. trie_update_with' (map snd (toList cec)) m empty_trie
+       (\<lambda>m. trie_update_with' (map fst (toList aec)) m empty_trie
         (\<lambda>m. trie_update (map snd (toList aec)) pAct m)))"
 
 definition
@@ -2090,7 +2090,7 @@ definition
                    'aAct) MapOps"
 where
   "acts_MapOps \<equiv>
-     \<lparr> MapOps.empty = trie_empty,
+     \<lparr> MapOps.empty = empty_trie,
        lookup = acts_MapOps_lookup,
        update = acts_MapOps_update \<rparr>"
 
@@ -2111,11 +2111,11 @@ next
       using inj_onD[OF spr_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto simp: trie_lookup_trie_update_with trie_lookup_trie_update split: option.split split_split)
+      by (auto simp: lookup_trie_update_with lookup_trie_update split: option.split split_split)
   next
     case False thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto dest: map_prod_eq simp: trie_lookup_trie_update_with trie_lookup_trie_update split: option.split split_split)
+      by (auto dest: map_prod_eq simp: lookup_trie_update_with lookup_trie_update split: option.split split_split)
   qed
 qed
 

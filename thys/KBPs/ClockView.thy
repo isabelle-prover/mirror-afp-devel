@@ -11,7 +11,7 @@ imports
   Eval
   List_local
   ODList
-  Trie
+  Trie2
   "../Transitive-Closure/Transitive_Closure_List_Impl"
   "~~/src/HOL/Library/Mapping"
 begin
@@ -1355,7 +1355,7 @@ definition
                         \<Rightarrow> ('s :: linorder, 'obs) clock_trans_trie"
 where
   "trans_MapOps_update \<equiv> \<lambda>k v m.
-     trie_odlist_update_with (fst (fst k)) m trie_empty (\<lambda>m.
+     trie_odlist_update_with (fst (fst k)) m empty_trie (\<lambda>m.
        trie_odlist_update_with (snd (fst k)) m Mapping.empty (\<lambda>m.
           Mapping.update (snd k) v m))"
 
@@ -1364,7 +1364,7 @@ definition
                     's clock_simWorldsRep \<times> 'obs, 's clock_simWorldsRep) MapOps"
 where
   "trans_MapOps \<equiv>
-     \<lparr> MapOps.empty = trie_empty,
+     \<lparr> MapOps.empty = empty_trie,
        lookup = trans_MapOps_lookup,
        update = trans_MapOps_update \<rparr>"
 
@@ -1386,12 +1386,12 @@ next
       using inj_onD[OF clock_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
-        by (simp add: trie_lookup_trie_update_with lookup_update split: option.split split_split) 
+        by (simp add: lookup_trie_update_with lookup_update split: option.split split_split) 
   next
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
       by (cases "fst k = fst k'")
-       (auto simp add: lookup_empty lookup_update_neq prod_eq_iff trie_lookup_trie_update_with split: option.split split_split)
+       (auto simp add: lookup_empty lookup_update_neq prod_eq_iff lookup_trie_update_with split: option.split split_split)
   qed
 qed
 
@@ -1412,14 +1412,14 @@ definition
                       \<Rightarrow> ('s :: linorder, 'aAct) clock_acts_trie"
 where
   "acts_MapOps_update \<equiv> \<lambda>k v m.
-     trie_odlist_update_with (fst k) m trie_empty (\<lambda>m.
+     trie_odlist_update_with (fst k) m empty_trie (\<lambda>m.
        trie_odlist_update (snd k) v m)"
 
 definition
   acts_MapOps :: "(('s :: linorder, 'aAct) clock_acts_trie, 's clock_simWorldsRep, 'aAct) MapOps"
 where
   "acts_MapOps \<equiv>
-     \<lparr> MapOps.empty = trie_empty,
+     \<lparr> MapOps.empty = empty_trie,
        lookup = acts_MapOps_lookup,
        update = acts_MapOps_update \<rparr>"
 
@@ -1441,12 +1441,12 @@ next
       using inj_onD[OF clock_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto simp: trie_lookup_trie_update trie_lookup_trie_update_with
+      by (auto simp: lookup_trie_update lookup_trie_update_with
                      trie_odlist_update_with_def trie_odlist_update_def trie_odlist_lookup_def)
   next
     case False thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto simp: trie_lookup_trie_update trie_lookup_trie_update_with
+      by (auto simp: lookup_trie_update lookup_trie_update_with
                      trie_odlist_update_with_def trie_odlist_update_def trie_odlist_lookup_def
                dest: prod_eqI
               split: option.split)
