@@ -11,7 +11,8 @@ imports
   KBPsAlg
   Eval
   List_local
-  ODList Trie2
+  ODList
+  "../Trie/Tries"
   "../Transitive-Closure/Transitive_Closure_List_Impl"
   "~~/src/HOL/Library/Mapping"
 begin

@@ -11,7 +11,7 @@ imports
   Eval
   List_local
   ODList
-  Trie2
+  "../Trie/Tries"
   "../Transitive-Closure/Transitive_Closure_List_Impl"
   "~~/src/HOL/Library/Mapping"
 begin
