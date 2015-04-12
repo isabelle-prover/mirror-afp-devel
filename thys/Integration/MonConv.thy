@@ -118,7 +118,7 @@ proof -
   have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z"
   proof -
     from mon_conv have aux: "\<And>r. r > 0 \<Longrightarrow> \<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < r"
-    unfolding real_mon_conv LIMSEQ_def dist_real_def by auto
+    unfolding real_mon_conv lim_sequentially dist_real_def by auto
     with less' show "\<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z" by auto
   qed
   also

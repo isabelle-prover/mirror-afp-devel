@@ -569,7 +569,7 @@ moreover
              using mi `(f o x) ----> l` Lim_MInfty[of "f o x"] by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "ALL n>=N1. dist (x n) x0 < d"
-               using `x ----> x0` unfolding LIMSEQ_def by auto
+               using `x ----> x0` unfolding lim_sequentially by auto
             hence "EX y. dist y x0 < d & y : {x. f(x)<=ereal B}"
               apply (rule_tac x="x (max N N1)" in exI) using N_def by auto
           }
@@ -586,7 +586,7 @@ moreover
           hence *: "ALL n>=N. x n : {x. f(x)<=l+e}" using N_def by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "ALL n>=N1. dist (x n) x0 < d"
-               using `x ----> x0` unfolding LIMSEQ_def by auto
+               using `x ----> x0` unfolding lim_sequentially by auto
             hence "EX y. dist y x0 < d & y : {x. f(x)<=l+e}"
               apply (rule_tac x="x (max N N1)" in exI) using * by auto
           }
