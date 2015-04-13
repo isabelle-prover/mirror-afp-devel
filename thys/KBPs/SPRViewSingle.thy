@@ -11,7 +11,7 @@ imports
   SPRView
   List_local
   ODList
-  "../Trie/Tries"
+  Trie2
   "~~/src/HOL/Library/Mapping"
 begin
 (*>*)

@@ -33,7 +33,7 @@ definition lmi_basic_ops :: "('k,'v,('k,'v) lmi) map_basic_ops"
   bmap_op_lookup = (\<lambda>k m. Map.map_of m k),
   bmap_op_update = AList.update,
   bmap_op_update_dj = (\<lambda>k v m. (k, v) # m),
-  bmap_op_delete = Assoc_List.delete_aux,
+  bmap_op_delete = AList.delete_aux,
   bmap_op_list_it = foldli
 \<rparr>"
 
@@ -45,7 +45,7 @@ interpretation lmi_basic!: StdBasicMap lmi_basic_ops
   apply unfold_locales
   apply (simp_all 
     add: icf_rec_unf lmi_\<alpha>_def lmi_invar_def 
-    add: AList.update_conv' AList.distinct_update Assoc_List.map_of_delete_aux'
+    add: AList.update_conv' AList.distinct_update AList.map_of_delete_aux'
       map_iterator_foldli_correct dom_map_of_conv_image_fst
   )
   done

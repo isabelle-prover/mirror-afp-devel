@@ -3,12 +3,8 @@
 section "Trie"
 
 theory Trie
-imports "../Collections/Lib/Assoc_List"
+imports "~~/src/HOL/Library/AList"
 begin
-
-(* FIXME Assoc_List is far too rich. Extract the required functions
-   and move them into Library/AList
-*)
 
 (* A truly generic Trie would be parameterized by the data type for mappings
 in each node. For this purpose the mapping type needs to become a bnf.
@@ -109,11 +105,11 @@ fun update_with_trie ::
   "'k list \<Rightarrow> ('v option \<Rightarrow> 'v) \<Rightarrow> ('k, 'v) trie \<Rightarrow> ('k, 'v) trie" where
 "update_with_trie []     f (Trie v ps)  = Trie (Some(f v)) ps" |
 "update_with_trie (k#ks) f (Trie v ps) =
-  Trie v (update_with_aux empty_trie k (update_with_trie ks f) ps)"
+  Trie v (AList.update_with_aux empty_trie k (update_with_trie ks f) ps)"
 
 text{* The function argument @{text f} of @{const update_with_trie}
 does not return an optional value because @{const None} could break the invariant
-that no empty tries are contained in a trie because @{const update_with_aux}
+that no empty tries are contained in a trie because @{const AList.update_with_aux}
 cannot recognise and remove empty tries.
 Therefore the delete function is implemented separately rather than via
 @{const update_with_trie}.
@@ -134,7 +130,7 @@ lemma update_trie_Nil[simp]: "update_trie [] v (Trie vo ts) = Trie (Some v) ts"
 by(simp add: update_trie_def)
 
 lemma update_trie_Cons[simp]: "update_trie (k#ks) v (Trie vo ts) =
-  Trie vo (Assoc_List.update_with_aux (Trie None []) k (update_trie ks v) ts)"
+  Trie vo (AList.update_with_aux (Trie None []) k (update_trie ks v) ts)"
 by(simp add: update_trie_def empty_trie_def)
 
 (* A simple implementation of delete; does not shrink the trie!
@@ -150,7 +146,7 @@ where
       None \<Rightarrow> Trie vo ts |
       Some t \<Rightarrow> let t' = delete_trie ks t 
                 in if is_empty_trie t'
-                   then Trie vo (Assoc_List.delete_aux k ts)
+                   then Trie vo (AList.delete_aux k ts)
                    else Trie vo (AList.update k t' ts))"
 
 fun all_trie :: "('v \<Rightarrow> bool) \<Rightarrow> ('k, 'v) trie \<Rightarrow> bool" where
@@ -290,7 +286,7 @@ next
       show ?thesis
       proof(cases "k' = k")
         case False
-        from Some Cons "2.prems"(1) have "delete_aux k ts = []"
+        from Some Cons "2.prems"(1) have "AList.delete_aux k ts = []"
           by(clarsimp simp add: Let_def split: split_if_asm)
         with False have "map_of ts k' = None"
           by(cases "map_of ts k'")(auto dest: map_of_is_SomeD simp add: delete_aux_eq_Nil_conv)
@@ -366,15 +362,15 @@ next
     proof(cases "is_empty_trie (delete_trie ks t)")
       case True
       { fix k' t'
-        assume k't': "(k', t') \<in> set (delete_aux k ts)"
-        with distinct have "map_of (delete_aux k ts) k' = Some t'" by simp
+        assume k't': "(k', t') \<in> set (AList.delete_aux k ts)"
+        with distinct have "map_of (AList.delete_aux k ts) k' = Some t'" by simp
         hence "map_of ts k' = Some t'" using distinct
           by (auto 
-            simp del: map_of_eq_Some_iff map_upd_eq_restrict
+            simp del: map_of_eq_Some_iff
             simp add: map_of_delete_aux 
             split: split_if_asm)
         with "2.prems" have "\<not> is_empty_trie t' \<and> invar_trie t'" by auto }
-      with "2.prems" have "invar_trie (Trie vo (delete_aux k ts))" by auto
+      with "2.prems" have "invar_trie (Trie vo (AList.delete_aux k ts))" by auto
       thus ?thesis using True Some by(simp)
     next
       case False
@@ -403,7 +399,7 @@ qed
 subsection {* @{const update_with_trie} *}
 
 (* FIXME mv *)
-lemma nonempty_update_with_aux: "update_with_aux v k f ps \<noteq> []"
+lemma nonempty_update_with_aux: "AList.update_with_aux v k f ps \<noteq> []"
 by (induction ps) auto
 
 lemma nonempty_update_with_trie: "\<not> is_empty_trie (update_with_trie ks f t)"

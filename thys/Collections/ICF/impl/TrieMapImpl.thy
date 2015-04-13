@@ -4,7 +4,7 @@
 *)
 header {* \isaheader{Map implementation via tries} *}
 theory TrieMapImpl imports
-  Trie
+  Trie2
   "../gen_algo/MapGA"
 begin
 (*@impl Map
@@ -18,21 +18,21 @@ subsection {* Operations *}
 type_synonym ('k, 'v) tm = "('k, 'v) trie"
 
 definition [icf_rec_def]: "tm_basic_ops \<equiv> \<lparr>
-  bmap_op_\<alpha> = Trie.lookup,
+  bmap_op_\<alpha> = Trie2.lookup,
   bmap_op_invar = \<lambda>_. True,
-  bmap_op_empty = (\<lambda>_::unit. Trie.empty),
-  bmap_op_lookup = (\<lambda>k m. Trie.lookup m k),
-  bmap_op_update = Trie.update,
-  bmap_op_update_dj = Trie.update,
-  bmap_op_delete = Trie.delete,
-  bmap_op_list_it = Trie.iteratei
+  bmap_op_empty = (\<lambda>_::unit. Trie2.empty),
+  bmap_op_lookup = (\<lambda>k m. Trie2.lookup m k),
+  bmap_op_update = Trie2.update,
+  bmap_op_update_dj = Trie2.update,
+  bmap_op_delete = Trie2.delete,
+  bmap_op_list_it = Trie2.iteratei
 \<rparr>"
 
 
 setup Locale_Code.open_block
 interpretation tm_basic!: StdBasicMap tm_basic_ops
   apply unfold_locales
-  apply (simp_all add: icf_rec_unf Trie.finite_dom_lookup Trie.iteratei_correct)
+  apply (simp_all add: icf_rec_unf Trie2.finite_dom_lookup Trie2.iteratei_correct)
   done
 setup Locale_Code.close_block
 
@@ -55,9 +55,9 @@ lemma pi_trie_impl[proper_it]:
   unfolding Trie_Impl.iteratei_def[abs_def]
 proof (rule proper_it'I)
   (*note [[show_types, show_consts]]*)
-  fix t :: "('k,'v) Trie_Impl.trie"
+  fix t :: "('k,'v) Trie.trie"
   {
-    fix l and t :: "('k,'v) Trie_Impl.trie"
+    fix l and t :: "('k,'v) Trie.trie"
     have "proper_it ((Trie_Impl.iteratei_postfixed l t)
        :: (_,'\<sigma>a) set_iterator)
       ((Trie_Impl.iteratei_postfixed l t)
@@ -122,14 +122,14 @@ proof (rule proper_it'I)
 qed
 
 lemma pi_trie[proper_it]: 
-  "proper_it' Trie.iteratei Trie.iteratei"
-  unfolding Trie.iteratei_def[abs_def]
+  "proper_it' Trie2.iteratei Trie2.iteratei"
+  unfolding Trie2.iteratei_def[abs_def]
   apply (rule proper_it'I)
   apply (intro icf_proper_iteratorI)
   apply (rule proper_it'D)
   by (rule pi_trie_impl)
 
-interpretation pi_trie: proper_it_loc Trie.iteratei Trie.iteratei
+interpretation pi_trie: proper_it_loc Trie2.iteratei Trie2.iteratei
   apply unfold_locales
   apply (rule pi_trie)
   done
