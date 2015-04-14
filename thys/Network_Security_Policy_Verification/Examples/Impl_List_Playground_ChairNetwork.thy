@@ -108,7 +108,7 @@ lemma "all_security_requirements_fulfilled ChairSecurityRequirements ChairNetwor
 value "ChairNetwork"
 
 ML_val{*
-vizualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
+visualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
 *}
 
 

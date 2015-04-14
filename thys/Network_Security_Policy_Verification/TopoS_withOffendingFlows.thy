@@ -76,20 +76,22 @@ begin
 
    text{*Invariant violations do not disappear if we add more flows. *}
    lemma sinvar_mono_imp_negative_mono:
-   "sinvar_mono
-   \<Longrightarrow> 
-   (\<forall> nP N E' E. valid_graph \<lparr> nodes = N, edges = E \<rparr> \<and> 
-   E' \<subseteq> E \<and> \<not> sinvar \<lparr> nodes = N, edges = E' \<rparr> nP \<longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E \<rparr> nP )"
+   "sinvar_mono \<Longrightarrow> valid_graph \<lparr> nodes = N, edges = E \<rparr> \<Longrightarrow>  E' \<subseteq> E \<Longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E' \<rparr> nP \<Longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E \<rparr> nP"
    apply (unfold sinvar_mono_def)
    by(blast)
 
   corollary sinvar_mono_imp_negative_delete_edge_mono:
-   "sinvar_mono
-   \<Longrightarrow> 
-   (\<forall> (G:: 'v graph) nP X Y. valid_graph G \<and> X \<subseteq> Y \<and> \<not> sinvar (delete_edges G (Y)) nP \<longrightarrow> \<not> sinvar (delete_edges G X) nP )"
-   apply(intro allI impI, elim conjE)
-   apply(frule_tac G=G in delete_edges_edges_mono)
-   by (metis delete_edges_simp2 delete_edges_valid sinvar_mono_imp_negative_mono graph.select_convs(2))
+   "sinvar_mono \<Longrightarrow> valid_graph G \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> \<not> sinvar (delete_edges G Y) nP \<Longrightarrow> \<not> sinvar (delete_edges G X) nP "
+  proof -
+   assume sinvar_mono
+   and "valid_graph G" and "X \<subseteq> Y" and "\<not> sinvar (delete_edges G Y) nP"
+   from delete_edges_valid[OF `valid_graph G`] have valid_G_delete: "valid_graph \<lparr>nodes = nodes G, edges = edges G - X\<rparr>" by(simp add: delete_edges_simp2)
+   from `X \<subseteq> Y` have "edges G - Y \<subseteq> edges G - X" by blast
+   with `sinvar_mono` sinvar_mono_def valid_G_delete have
+    "sinvar \<lparr>nodes = nodes G, edges = edges G - X\<rparr> nP \<Longrightarrow> sinvar \<lparr>nodes = nodes G, edges = edges G - Y\<rparr> nP" by blast
+   hence "sinvar (delete_edges G X) nP \<Longrightarrow> sinvar (delete_edges G Y) nP" by(simp add: delete_edges_simp2)
+   with `\<not> sinvar (delete_edges G Y) nP` show ?thesis by blast
+  qed
 
 
   (*lemma mono_offending_flows_min_set:
@@ -396,13 +398,13 @@ begin
   proof -
     from iO SecurityInvariant_withOffendingFlows.is_offending_flows_def have nS: "\<not> sinvar G nP" by metis
     from sinvar_mono_imp_negative_delete_edge_mono[OF mono_sinvar] have negative_delete_edge_mono: 
-      "\<forall> G nP X Y. valid_graph G \<and> X \<subseteq> Y \<and> \<not> sinvar (delete_edges G (Y)) nP \<longrightarrow> \<not> sinvar (delete_edges G X) nP" by simp
+      "\<forall> G nP X Y. valid_graph G \<and> X \<subseteq> Y \<and> \<not> sinvar (delete_edges G (Y)) nP \<longrightarrow> \<not> sinvar (delete_edges G X) nP" by blast
       
     from is_offending_flows_min_set_minimalize_offending_overapprox[OF mono_sinvar vG iO sS dF] 
      have "is_offending_flows_min_set (set (minimalize_offending_overapprox ff [] G nP)) G nP" by simp
     from this set_offending_flows_def sS have
-    "(set (minimalize_offending_overapprox ff [] G nP)) \<in> set_offending_flows G nP"
-      by (metis (lifting, no_types) list.set(1) Un_empty_right mem_Collect_eq minimalize_offending_overapprox_subset subset_code(1))
+      "(set (minimalize_offending_overapprox ff [] G nP)) \<in> set_offending_flows G nP"
+      using minimalize_offending_overapprox_subset[where keeps="[]"] by fastforce
     thus ?thesis by blast 
    qed
 
@@ -710,10 +712,9 @@ subsection {* Monotonicity of offending flows *}
        
               from a2 f1 f2 have gFadd3: 
                    "(E' - (F' \<union> Fadd)) \<union> {(e1, e2)} \<subseteq> (E - (F' \<union> Fadd)) \<union> {(e1, e2)}" by fast
-             
-              from sinvar_mono_imp_negative_mono[OF sinvar_monoI] have negative_mono_HOL:
-                  "\<And>nP N E' E. valid_graph \<lparr>nodes = N, edges = E\<rparr> \<Longrightarrow> E' \<subseteq> E \<Longrightarrow> \<not> sinvar \<lparr>nodes = N, edges = E'\<rparr> nP \<Longrightarrow> \<not> sinvar \<lparr>nodes = N, edges = E\<rparr> nP" by metis      
-              from negative_mono_HOL[where E1="(E - (F' \<union> Fadd)) \<union> {(e1, e2)}" and E'1="(E' - (F' \<union> Fadd)) \<union> {(e1, e2)}" and N1="V" and nP1="nP", OF gFadd2 gFadd3 gFadd1]
+               
+              from sinvar_mono_imp_negative_mono[where E="(E - (F' \<union> Fadd)) \<union> {(e1, e2)}" and E'="(E' - (F' \<union> Fadd)) \<union> {(e1, e2)}" and N="V" and nP="nP"]
+                   sinvar_monoI gFadd2 gFadd3 gFadd1
               show "\<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP" .
           qed
        qed

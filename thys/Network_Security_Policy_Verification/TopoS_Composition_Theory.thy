@@ -17,7 +17,7 @@ We need in instantiated security invariant, i.e.\ get rid of @{typ "'a"} and @{t
     c_offending_flows::"('v) graph \<Rightarrow> ('v \<times> 'v) set set"
     c_isIFS::"bool"
 
-  --{* First three parameters are the @{text "SecurityInvariant"}:
+  --{*  parameters 1-3 are the @{text "SecurityInvariant"}:
       @{text sinvar} @{text "\<bottom>"} @{text "receiver_violation"}
 
       Fourth parameter is the host attribute mapping @{text nP}
@@ -393,7 +393,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
   lemma c_offending_flows_subseteq_edges: "configured_SecurityInvariant m \<Longrightarrow> \<Union>c_offending_flows m G \<subseteq> edges G"
     apply(clarify)
     apply(simp only: configured_SecurityInvariant.valid_c_offending_flows)
-    apply(thin_tac "configured_SecurityInvariant _")
+    apply(thin_tac "configured_SecurityInvariant x" for x)
     by auto
 
 

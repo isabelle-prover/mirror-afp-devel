@@ -75,7 +75,7 @@ value "ChairNetwork"
 
 
 ML{*
-vizualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
+visualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
 *}
 
 
@@ -117,21 +117,21 @@ definition "ChairNetwork_stateful = generate_valid_stateful_policy_IFSACS ChairN
 
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful"} 
-    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful"})]; 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful"})] ""; 
 *}
 
 (*these requirements impose no restrictoins on the stateful flows*)
 definition "ChairNetwork_stateful_v2 = generate_valid_stateful_policy_IFSACS ChairNetwork [ConfidentialChairData, PrintingACL,  InternalSubnet, FilesSrcACL]"
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful_v2"} 
-    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful_v2"})]; 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful_v2"})] ""; 
 *}
 
 (*The sink requirements imposes the restriction that the printer cannot answer*)
 definition "ChairNetwork_stateful_v3 = generate_valid_stateful_policy_IFSACS ChairNetwork [PrintingSink]"
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful_v3"} 
-    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful_v3"})]; 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful_v3"})] ""; 
 *}
 
 subsection{*An example of bad side-effects in access control policies*}

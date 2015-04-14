@@ -44,7 +44,7 @@ definition "ChairNetwork_stateful = generate_valid_stateful_policy_IFSACS ChairN
 
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful"} 
-  [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful"})]; 
+  [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful"})] ""; 
 *}
 
 

@@ -40,7 +40,7 @@ definition "max_network = generate_valid_topology reqs
 value "max_network"
 
 ML{*
-vizualize_graph @{context} @{term "reqs"} @{term "max_network"};
+visualize_graph @{context} @{term "reqs"} @{term "max_network"};
 *}
 
 end

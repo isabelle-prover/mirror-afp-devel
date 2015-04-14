@@ -35,9 +35,13 @@ lemma "length (edgesL policy) = 3" by eval
 
 subsection{*Security Invariants*}
 text{*We construct a security invariant. Node @{term "2::nat"} has confidential data*}
+
+definition BLP_security_clearances :: "nat \<rightharpoonup> SINVAR_BLPtrusted.node_config"where
+  "BLP_security_clearances \<equiv> [2 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>]"
+
 definition BLP_m::"(nat SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [2 \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>], 
+          node_properties = BLP_security_clearances, 
           model_global_properties = () 
           \<rparr>"
 
@@ -53,11 +57,17 @@ value "implc_get_offending_flows security_invariants policy"
 lemma "implc_get_offending_flows security_invariants policy = [[(2, 3)]]" by eval
 
 
+
 text{*
 Visualization of the violation (only in interactive mode)
 *}
-ML{*
-vizualize_graph @{context} @{term "security_invariants"} @{term "policy"};
+ML_val{*
+visualize_graph @{context} @{term "security_invariants"} @{term "policy"};
+*}
+
+text{*Experimental: the config (only one) can be added to the end.*}
+ML_val{*
+visualize_graph_header @{context} @{term "security_invariants"} @{term "policy"} @{term "BLP_security_clearances"};
 *}
 
 
@@ -76,7 +86,7 @@ text{*
 Visualizing the maximum policy (only in interactive mode)
 *}
 ML{*
-vizualize_graph @{context} @{term "security_invariants"} @{term "max_policy"};
+visualize_graph @{context} @{term "security_invariants"} @{term "max_policy"};
 *}
 
 text{*Of course, all security invariants hold for the maximum policy. *}
@@ -96,8 +106,16 @@ Visualizing the stateful policy (only in interactive mode)
 *}
 ML_val{*
 visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
-    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})]; 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})] ""; 
 *}
+
+
+text{*This is how it would look like if @{term "(3,1)"} were a stateful flow*}
+ML_val{*
+visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
+    [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "[(3::nat,1::nat)]"})] ""; 
+*}
+
 
 hide_const policy security_invariants max_policy stateful_policy
 

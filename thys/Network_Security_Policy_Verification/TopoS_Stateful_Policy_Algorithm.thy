@@ -24,7 +24,7 @@ subsection{* Some unimportant lemmata *}
           (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = Efix, flows_state = E' \<rparr>)"
     apply(simp add: stateful_policy_to_network_graph_def all_flows_def)
     apply(drule all_security_requirements_fulfilled_mono[where E="Efix \<union> E \<union> backflows E" and E'="Efix \<union> E' \<union> backflows E'" and V="V"])
-       apply(thin_tac "valid_graph _")
+       apply(thin_tac "valid_graph G" for G)
        apply(thin_tac "all_security_requirements_fulfilled M G" for M G)
        apply(simp add: backflows_def, blast)
       apply(thin_tac "all_security_requirements_fulfilled M G" for M G)
@@ -158,7 +158,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         apply(rule conjI)
 
          apply(rule impI)
-         apply(thin_tac _) (*dont't need it*)
+         apply(thin_tac "_") (*dont't need it*)
          using Cons.IH[where accu="e # accu", OF Cons.prems(1) Cons.prems(2) _ _ goalTrue, simplified Let_def] Cons.prems(3) Cons.prems(4)
          apply(auto) [1]
 

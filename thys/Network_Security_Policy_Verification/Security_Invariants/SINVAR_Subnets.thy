@@ -4,6 +4,9 @@ begin
 
 subsection {* SecurityInvariant Subnets *}
 
+text{*If unsure, maybe you should look at @{file "SINVAR_SubnetsInGW.thy"}*}
+
+
 datatype subnets = Subnet nat | BorderRouter nat | Unassigned
 
 definition default_node_properties :: "subnets"
@@ -109,7 +112,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Subnets
    apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
    apply(rule conjI)
     apply(simp add: valid_graph_def)
-    apply(case_tac otherbot, simp_all)
+   apply(case_tac otherbot, simp_all)
     apply(rename_tac mysubnetcase)
     apply(rule_tac x="(\<lambda> x. Unassigned)(vertex_1 := Unassigned, vertex_2 := BorderRouter mysubnetcase)" in exI, simp)
     apply(rule_tac x="vertex_1" in exI, simp)

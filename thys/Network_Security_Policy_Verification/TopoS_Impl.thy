@@ -82,11 +82,10 @@ subsection{*Utility Functions*}
 
 
 ML{*
-(*apply args to f. f is best supplied using @{const_name "name_of_function"} *)
-fun apply_function ctxt (f: string) (args: term list) : term = 
+(*apply args to f. f ist best supplied using @{const_name "name_of_function"} *)
+fun apply_function (ctxt: Proof.context) (f: string) (args: term list) : term = 
   let
-    val _ = writeln ("applying "^f^" to ");
-    val _ = map (fn t => Pretty.writeln (Syntax.pretty_term (Config.put show_types true ctxt) t)) args;
+    val _ = writeln ("applying "^f^" to " ^ (fold (fn t => fn acc => acc^(Pretty.string_of (Syntax.pretty_term (Config.put show_types true ctxt) t))^" ") args ""));
     (*val t_eval = Code_Evaluation.dynamic_value_strict thy t;*)
     (* $ associates to the left, give f its arguments*)
     val applied_untyped_uneval: term = list_comb (Const (f, dummyT), args);
@@ -97,7 +96,7 @@ fun apply_function ctxt (f: string) (args: term list) : term =
 
 
 (*ctxt -> edges -> (biflows, uniflows)*)
-fun partition_by_biflows ctxt (t: term) : (term * term) =
+fun partition_by_biflows ctxt (t: term) : (term * term) = 
   apply_function ctxt @{const_name "partition_by_biflows"} [t] |> HOLogic.dest_prod
 
 
@@ -114,7 +113,7 @@ local
       of SOME x => x
       | NONE => raise TERM ("could not evaluate", []);
 in
-  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list): int = 
+  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list) (graphviz_header: string): int = 
     let
       val _ = writeln("visualize_edges");
       val (biflows, uniflows) = partition_by_biflows ctxt edges;
@@ -122,30 +121,22 @@ in
       Graphviz.visualize_graph_pretty ctxt (get_tune_node_format edges) ([
       ("", uniflows),
       ("edge [dir=\"none\", color=\"#000000\"]", biflows)] @ coloredges) (*dir=none, dir=both*)
+       graphviz_header
     end
 
-  (*iterate over the edges in ML, usefull for printing them in certain formats*)
+  (*iterate over the edges in ML, useful for printing them in certain formats*)
   fun iterate_edges_ML ctxt (edges: term) (all: (string*string) -> unit) (bi: (string*string) -> unit) (uni: (string*string) -> unit): unit =
     let
       val _ = writeln("iterate_edges_ML");
       val tune_node_format = (get_tune_node_format edges);
+      val node_to_string = Graphviz.node_to_string ctxt tune_node_format;
       val evaluated_edges : term = evalutae_term ctxt edges;
       val (biflows, uniflows) = partition_by_biflows ctxt evaluated_edges;
-      fun node_to_string (n: term) : string =
-        n |> Syntax.pretty_term ctxt |> Pretty.string_of |> YXML.content_of |> tune_node_format n
-          handle Subscript => let
-            val _ = writeln ("Subscript Exception in iterate_edges_ML: node_to_string");
-          in "ERROR" end;
     in
       let
         fun edge_to_list (es: term) : (term * term) list = es |> HOLogic.dest_list |> map HOLogic.dest_prod;
         fun edge_to_string (es: (term * term) list) : (string * string) list =
           map (fn (v1, v2) => (node_to_string v1, node_to_string v2)) es
-          handle Subscript => let
-            val _ = writeln ("Subscript Exception in iterate_edges_ML: edge_to_string");
-            val _ = map (fn (v1, _) => Pretty.writeln (Syntax.pretty_term ctxt v1)) es;
-            val _ = map (fn (_, v2) => Pretty.writeln (Syntax.pretty_term ctxt v2)) es;
-            in [] end;
       in
         edge_to_list evaluated_edges |> edge_to_string |> map all;
         edge_to_list biflows |> edge_to_string |> map bi;
@@ -166,36 +157,77 @@ in
   val _ = Pretty.writeln (Syntax.pretty_term (Config.put show_types true @{context}) uniflows);
 end;
 
-val t = fastype_of @{term "[(TopoS_Vertices.V ''x'', 2::nat)]"}
+val t = fastype_of @{term "[(TopoS_Vertices.V ''x'', 2::nat)]"};
 
-(*
-visualize_edges @{context} @{theory} @{term "[(1::int, 1::int), (1,2), (2, 1), (1,3)]"} []; *)
+*}
+ML_val{*(*
+visualize_edges @{context}  @{term "[(1::int, 1::int), (1,2), (2, 1), (1,3)]"} []; *)
 *}
 
 
+definition internal_get_invariant_types_list:: "'a SecurityInvariant list \<Rightarrow> string list" where
+  "internal_get_invariant_types_list M \<equiv> map implc_type M"
+
+
+definition internal_node_configs :: "'a list_graph \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<times>'b) list" where
+  "internal_node_configs G config \<equiv> zip (nodesL G) (map config (nodesL G))"
+
 ML {*
-(*M: security requirements, list
+local
+  fun get_graphivz_node_desc ctxt (node_config: term): string =
+   let
+     val (node, config) = HOLogic.dest_prod node_config;
+     (*TODO: tune node format? There must be a better way ...*)
+     val tune_node_format = if (fastype_of node) = @{typ "TopoS_Vertices.vString"}
+      then
+        tune_Vstring_format
+      else
+        Graphviz.default_tune_node_format;
+     val node_str = Graphviz.node_to_string ctxt tune_node_format node;
+     val config_str = Graphviz.term_to_string_html ctxt config;
+   in
+     node_str^"[label=<<TABLE BORDER=\"0\" CELLSPACING=\"0\"><TR><TD><FONT face=\"Verdana Bold\">"^node_str^"</FONT></TD></TR><TR><TD>"^config_str^"</TD></TR></TABLE>>]\n"
+   end;
+in
+  fun generate_graphviz_header ctxt (G: term) (configs: term): string =
+    let
+      val configlist: term list = apply_function ctxt @{const_name "internal_node_configs"} [G, configs] |> HOLogic.dest_list;
+    in
+      fold (fn c => fn acc => acc^get_graphivz_node_desc ctxt c) configlist ""
+    end;
+end;
+
+(* Convenience function. Use whenever possible!
+  M: security requirements, list
   G: list_graph*)
-fun vizualize_graph ctxt (M: term) (G: term): unit = 
+fun visualize_graph_header ctxt (M: term) (G: term) (Config: term): unit = 
   let
+    val valid_list_graph = apply_function ctxt @{const_name "valid_list_graph"} [G];
     val all_fulfilled = apply_function ctxt @{const_name "all_security_requirements_fulfilled"} [M, G];
     val edges = apply_function ctxt @{const_name "edgesL"} [G];
+    val invariants = apply_function ctxt @{const_name "internal_get_invariant_types_list"} [M];
+    val _ = writeln("Invariants:" ^ Pretty.string_of (Syntax.pretty_term ctxt invariants));
+    val header = if Config = @{term "[]"} then "#header" else generate_graphviz_header ctxt G Config;
   in
-    if all_fulfilled = @{term "False"} then
+    if valid_list_graph = @{term "False"} then
+      error ("The supplied graph is syntactically invalid. Check valid_list_graph.")
+    else if all_fulfilled = @{term "False"} then
       (let
         val offending = apply_function ctxt @{const_name "implc_get_offending_flows"} [M, G];
         val offending_flat = apply_function ctxt @{const_name "List.remdups"} [apply_function ctxt @{const_name "List.concat"} [offending]];
       in
        writeln("offending flows:");
        Pretty.writeln (Syntax.pretty_term ctxt offending);
-       visualize_edges ctxt edges [("edge [dir=\"arrow\", style=dashed, color=\"#FF0000\", constraint=false]", offending_flat)]; 
+       visualize_edges ctxt edges [("edge [dir=\"arrow\", style=dashed, color=\"#FF0000\", constraint=false]", offending_flat)] header; 
       () end)
     else if all_fulfilled <> @{term "True"} then raise ERROR "all_fulfilled neither False nor True" else (
-       writeln("check TRUE");
        writeln("All valid:");
-       visualize_edges ctxt edges []; 
+       visualize_edges ctxt edges [] header; 
       ())
   end;
+
+
+fun visualize_graph ctxt (M: term) (G: term): unit = visualize_graph_header ctxt M G @{term "[]"};
 *}
 
 end

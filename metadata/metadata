@@ -2667,6 +2667,10 @@ abstract =
   volume 150 of Electronic Proceedings in Theoretical Computer Science,
   pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
  </ul>
+extra-history =
+  Change history:
+  [2015-04-14]:
+        Added Distributed WebApp example and improved graphviz visualization<br>
 
 [Abstract_Completeness]
 title = Abstract Completeness

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Network_Security_Policy_Verification (AFP) = Collections + 
+session Network_Security_Policy_Verification (AFP) = Automatic_Refinement + (*Collections does not build atm +*)
   options [timeout = 600]
   theories [document = false]
     "Lib/ML_GraphViz_Disable"
@@ -13,11 +13,17 @@ session Network_Security_Policy_Verification (AFP) = Collections +
     TopoS_generateCode
   theories [document = false]
     attic
+  document_files
+    "root.bib"
+    "root.tex"
+
+session "Network_Security_Policy_Verification_Examples" = "Network_Security_Policy_Verification" +
   theories [document = false]
     "Examples/Impl_List_Playground_statefulpolicycompliance"
     "Examples/Example"
     "Examples/Example_NetModel"
     "Examples/Example_Forte14"
+    "Examples/Distributed_WebApp"
     "Examples/I8_SSH_Landscape"
     "Examples/Impl_List_Playground"
     "Examples/Impl_List_Playground_ChairNetwork_statefulpolicy_example"

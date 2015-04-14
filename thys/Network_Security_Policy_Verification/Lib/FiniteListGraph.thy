@@ -285,6 +285,10 @@ section{*Correctness lemmata*}
   unfolding succ_rtran_def valid_list_graph_def
   by (auto intro: distinct_rtrancl_list_impl)
 
+  lemma succ_rtran_set: "set (succ_rtran G v) = {e2. (v,e2) \<in> (set (edgesL G))\<^sup>*}"
+  unfolding succ_rtran_def
+  by (simp add: rtrancl_list_impl)
+
   -- "succ tran"
   lemma distinct_succ_tran: "valid_list_graph G \<Longrightarrow> distinct (succ_tran G v)"
   unfolding succ_tran_def valid_list_graph_def
@@ -370,5 +374,6 @@ lemmas list_graph_correct =
   succ_tran_correct
   num_reachable_correct
   undirected_correct
+
 
 end

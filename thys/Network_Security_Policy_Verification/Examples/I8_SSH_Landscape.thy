@@ -110,7 +110,7 @@ value "implc_get_offending_flows I8Requirements I8SSHgraph"
 value "implc_offending_flows PrintingSink I8SSHgraph"
 
 ML{*
-vizualize_graph @{context} @{term "I8Requirements"} @{term "I8SSHgraph"};
+visualize_graph @{context} @{term "I8Requirements"} @{term "I8SSHgraph"};
 *}
 
 lemma "all_security_requirements_fulfilled I8Requirements I8SSHgraph" by eval

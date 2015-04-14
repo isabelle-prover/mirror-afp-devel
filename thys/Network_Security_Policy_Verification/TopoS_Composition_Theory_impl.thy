@@ -16,6 +16,7 @@ subsection{*Generating instantiated (configured) network security invariants*}
   --"a configured network security invariant in list implementaion"
   (*very minimal version, no eval, ...*)
   record ('v) SecurityInvariant =
+    implc_type:: string
     implc_sinvar::"('v) list_graph \<Rightarrow> bool"
     implc_offending_flows::"('v) list_graph \<Rightarrow> ('v \<times> 'v) list list"
     implc_isIFS::"bool"
@@ -35,6 +36,7 @@ subsection{*Generating instantiated (configured) network security invariants*}
       "new_configured_list_SecurityInvariant m C = 
         (let nP = nm_node_props m C in
          \<lparr> 
+            implc_type = nm_name m,
             implc_sinvar = (\<lambda>G. (nm_sinvar m) G nP),
             implc_offending_flows = (\<lambda>G. (nm_offending_flows m) G nP),
             implc_isIFS = nm_receiver_violation m
