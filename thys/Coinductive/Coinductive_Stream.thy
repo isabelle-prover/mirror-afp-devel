@@ -1,4 +1,4 @@
-(*  Title:      HOL/Library/Coinductive_Stream.thy
+(*  Title:      Coinductive/Coinductive_Stream.thy
     Author:     Peter Gammie and Andreas Lochbihler
 *)
 section {* Infinite lists as a codatatype *}
@@ -145,6 +145,8 @@ by(unfold_locales) simp_all
 interpretation stream!: type_definition llist_of_stream stream_of_llist "{xs. \<not> lfinite xs}"
 by(fact stream_from_llist)
 
+declare stream.exhaust[cases type: stream]
+
 setup_lifting stream_from_llist
 
 lemma cr_streamI: "\<not> lfinite xs \<Longrightarrow> cr_stream xs (stream_of_llist xs)"
@@ -282,13 +284,11 @@ end
 
 lemma llist_all2_llist_of_stream [simp]: 
   "llist_all2 P (llist_of_stream xs) (llist_of_stream ys) = stream_all2 P xs ys"
-apply(cases xs, cases ys)
+apply(cases xs ys rule: stream.Abs_cases[case_product stream.Abs_cases])
 apply(simp add: llist_all2_def stream_all2_def)
 apply(safe elim!: GrpE)
- apply(rule_tac b="stream_of_llist b" in relcomppI)
-  apply(auto intro!: GrpI)[2]
-apply(rule_tac b="llist_of_stream b" in relcomppI)
- apply(auto intro!: GrpI)
+ apply(rule_tac b="stream_of_llist b" in relcomppI; auto intro!: GrpI)
+apply(rule_tac b="llist_of_stream b" in relcomppI; auto intro!: GrpI)
 done
 
 lemma stream_all2_transfer [transfer_rule]:
@@ -519,5 +519,35 @@ lemma sfirst_eq_enat_iff: "sfirst P \<omega> = enat n \<longleftrightarrow> ev_a
   by (induction n arbitrary: \<omega>)
      (simp_all add: eSuc_enat[symmetric] sfirst.simps enat_0)
 
-end
+subsection {* @{text stakeWhile} *}
 
+definition stakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a stream \<Rightarrow> 'a llist"
+where "stakeWhile P xs = ltakeWhile P (llist_of_stream xs)"
+
+lemma stakeWhile_SCons [simp]:
+  "stakeWhile P (x ## xs) = (if P x then LCons x (stakeWhile P xs) else LNil)"
+by(simp add: stakeWhile_def LCons_llist_of_stream[symmetric] del: LCons_llist_of_stream)
+
+lemma lnull_stakeWhile [simp]: "lnull (stakeWhile P xs) \<longleftrightarrow> \<not> P (shd xs)"
+by(simp add: stakeWhile_def)
+
+lemma lhd_stakeWhile [simp]: "P (shd xs) \<Longrightarrow> lhd (stakeWhile P xs) = shd xs"
+by(simp add: stakeWhile_def)
+
+lemma ltl_stakeWhile [simp]:
+  "ltl (stakeWhile P xs) = (if P (shd xs) then stakeWhile P (stl xs) else LNil)"
+by(simp add: stakeWhile_def)
+
+lemma stakeWhile_K_False [simp]: "stakeWhile (\<lambda>_. False) xs = LNil"
+by(simp add: stakeWhile_def)
+
+lemma stakeWhile_K_True [simp]: "stakeWhile (\<lambda>_. True) xs = llist_of_stream xs"
+by(simp add: stakeWhile_def)
+
+lemma stakeWhile_smap: "stakeWhile P (smap f xs) = lmap f (stakeWhile (P \<circ> f) xs)"
+by(simp add: stakeWhile_def ltakeWhile_lmap[symmetric] del: o_apply)
+
+lemma lfinite_stakeWhile [simp]: "lfinite (stakeWhile P xs) \<longleftrightarrow> (\<exists>x\<in>sset xs. \<not> P x)"
+by(simp add: stakeWhile_def lfinite_ltakeWhile)
+
+end
