@@ -1,4 +1,4 @@
-header {* Two-Step Observing Quorums Model *}
+section {* Two-Step Observing Quorums Model *}
 
 theory Two_Step_Observing
 imports "../Observing_Quorums_Opt" "../Two_Steps"

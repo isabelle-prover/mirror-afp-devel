@@ -1,4 +1,4 @@
-header {* Models, Invariants and Refinements *}
+section {* Models, Invariants and Refinements *}
 
 theory Refinement imports Infra 
 begin

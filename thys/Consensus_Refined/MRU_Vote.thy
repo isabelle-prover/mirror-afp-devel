@@ -1,4 +1,4 @@
-header {* The MRU Vote Model *}
+section {* The MRU Vote Model *}
 
 theory MRU_Vote
 imports Same_Vote

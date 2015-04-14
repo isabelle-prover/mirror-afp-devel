@@ -1,4 +1,4 @@
-header {* The Same Vote Model *}
+section {* The Same Vote Model *}
                                                                                             
 theory Same_Vote
 imports Voting Consensus_Misc Map

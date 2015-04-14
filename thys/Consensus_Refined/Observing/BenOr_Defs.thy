@@ -1,4 +1,4 @@
-header {* The Ben-Or Algorithm *}
+section {* The Ben-Or Algorithm *}
 
 theory BenOr_Defs
 imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Quorums" "../Two_Steps"

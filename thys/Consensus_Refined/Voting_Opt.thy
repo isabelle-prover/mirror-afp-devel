@@ -1,4 +1,4 @@
-header {* The Optimized Voting Model *}
+section {* The Optimized Voting Model *}
 
 theory Voting_Opt
 imports Voting

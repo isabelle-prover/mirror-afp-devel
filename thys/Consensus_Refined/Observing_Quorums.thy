@@ -1,4 +1,4 @@
-header {* The Observing Quorums Model *}
+section {* The Observing Quorums Model *}
 
 theory Observing_Quorums
 imports Same_Vote

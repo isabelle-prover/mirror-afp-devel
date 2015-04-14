@@ -1,4 +1,4 @@
-header {* Two-step Optimized MRU Model *}
+section {* Two-step Optimized MRU Model *}
 theory Two_Step_MRU
 imports "../MRU_Vote_Opt" "../Two_Steps"
 begin

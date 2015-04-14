@@ -1,4 +1,4 @@
-header {* The OneThirdRule Algorithm *}
+section {* The OneThirdRule Algorithm *}
 
 theory OneThirdRule_Defs
 imports "../../Heard_Of/HOModel" "../Consensus_Types"

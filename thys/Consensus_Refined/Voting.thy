@@ -1,4 +1,4 @@
-header {* The Voting Model *}
+section {* The Voting Model *}
 
 theory Voting imports Map Refinement Consensus_Misc Quorums
 begin

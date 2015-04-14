@@ -1,4 +1,4 @@
-header {* The Optimized Observing Quorums Model *}
+section {* The Optimized Observing Quorums Model *}
 
 theory Observing_Quorums_Opt
 imports Observing_Quorums

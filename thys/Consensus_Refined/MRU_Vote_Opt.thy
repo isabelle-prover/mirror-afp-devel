@@ -1,4 +1,4 @@
-header {* Optimized MRU Vote Model *}
+section {* Optimized MRU Vote Model *}
 
 theory MRU_Vote_Opt
 imports MRU_Vote

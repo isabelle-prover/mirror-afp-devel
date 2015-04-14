@@ -1,4 +1,4 @@
-header {* The UniformVoting Algorithm *}
+section {* The UniformVoting Algorithm *}
 theory Uv_Defs
 imports "../../Heard_Of/HOModel" "../Consensus_Types" "../Quorums"
 begin
