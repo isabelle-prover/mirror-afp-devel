@@ -316,7 +316,7 @@ proof (rule eventually_mono)
   case goal1
   let ?ps_nz = "{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}"
   show "eventually (\<lambda>x. \<forall>p\<in>?ps_nz. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
-      by (rule eventually_Ball_finite, auto intro: poly_neighbourhood_same_sign)
+      by (rule eventually_ball_finite, auto intro: poly_neighbourhood_same_sign)
 
   show "\<forall>x. (\<forall>p\<in>{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}. sgn (poly p x) = sgn (poly p x\<^sub>0)) \<longrightarrow>
         sign_changes' x\<^sub>0 ps x = sign_changes ps x"
@@ -455,7 +455,7 @@ next
             next
               show "eventually (\<lambda>x. \<forall>p\<in>set ps'. 
                         sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
-                  by (force intro: eventually_Ball_finite 
+                  by (force intro: eventually_ball_finite 
                                    poly_neighbourhood_same_sign)
             qed
     qed
