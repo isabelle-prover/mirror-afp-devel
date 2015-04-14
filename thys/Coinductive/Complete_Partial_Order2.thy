@@ -33,17 +33,6 @@ lemma chain_fun_ordD:
   shows "Complete_Partial_Order.chain le ((\<lambda>f. f x) ` Y)"
 by(rule chainI)(auto dest: chainD[OF assms] simp add: fun_ord_def)
 
-lemma chain_imageI: 
-  assumes chain: "Complete_Partial_Order.chain le_a Y"
-  and mono: "\<And>x y. \<lbrakk> x \<in> Y; y \<in> Y; le_a x y \<rbrakk> \<Longrightarrow> le_b (f x) (f y)"
-  shows "Complete_Partial_Order.chain le_b (f ` Y)"
-by(blast intro: chainI dest: chainD[OF chain] mono)
-
-lemma chain_subset:
-  "\<lbrakk> Complete_Partial_Order.chain ord A; B \<subseteq> A \<rbrakk>
-  \<Longrightarrow> Complete_Partial_Order.chain ord B"
-by(rule chainI)(blast dest: chainD)
-
 lemma chain_Diff:
   "Complete_Partial_Order.chain ord A
   \<Longrightarrow> Complete_Partial_Order.chain ord (A - B)"
@@ -65,12 +54,6 @@ context ccpo begin
 lemma ccpo_fun: "class.ccpo (fun_lub Sup) (fun_ord op \<le>) (mk_less (fun_ord op \<le>))"
 by(unfold_locales)(auto 4 3 simp add: mk_less_def fun_ord_def fun_lub_apply simp del: Sup_image_eq intro: order.trans antisym chain_imageI ccpo_Sup_upper ccpo_Sup_least)
 
-lemma chain_singleton: "Complete_Partial_Order.chain op \<le> {x}"
-by(rule chainI) simp
-
-lemma ccpo_Sup_singleton [simp]: "\<Squnion>{x} = x"
-by(rule antisym)(auto intro: ccpo_Sup_least ccpo_Sup_upper simp add: chain_singleton)
-
 lemma ccpo_Sup_below_iff: "Complete_Partial_Order.chain op \<le> Y \<Longrightarrow> Sup Y \<le> x \<longleftrightarrow> (\<forall>y\<in>Y. y \<le> x)"
 by(fast intro: order_trans[OF ccpo_Sup_upper] ccpo_Sup_least)
 
@@ -82,41 +65,6 @@ apply(rule antisym)
 apply(rule ccpo_Sup_least[OF chain])
 apply(case_tac "x = \<Squnion>{}")
 by(blast intro: ccpo_Sup_least chain_empty ccpo_Sup_upper[OF chain_Diff[OF chain]])+
-
-lemma in_chain_finite:
-  assumes "Complete_Partial_Order.chain op \<le> A" "finite A" "A \<noteq> {}"
-  shows "\<Squnion>A \<in> A"
-using assms(2,1,3)
-proof induction
-  case empty thus ?case by simp
-next
-  case (insert x A)
-  note chain = `Complete_Partial_Order.chain op \<le> (insert x A)`
-  show ?case
-  proof(cases "A = {}")
-    case True thus ?thesis by simp
-  next
-    case False
-    from chain have chain': "Complete_Partial_Order.chain op \<le> A"
-      by(rule chain_subset) blast
-    hence "\<Squnion>A \<in> A" using False by(rule insert.IH)
-    show ?thesis
-    proof(cases "x \<le> \<Squnion>A")
-      case True
-      have "\<Squnion>insert x A \<le> \<Squnion>A" using chain
-        by(rule ccpo_Sup_least)(auto simp add: True intro: ccpo_Sup_upper[OF chain'])
-      hence "\<Squnion>insert x A = \<Squnion>A"
-        by(rule antisym)(blast intro: ccpo_Sup_upper[OF chain] ccpo_Sup_least[OF chain'])
-      with `\<Squnion>A \<in> A` show ?thesis by simp
-    next
-      case False
-      with chainD[OF chain, of x "\<Squnion>A"] `\<Squnion>A \<in> A`
-      have "\<Squnion>insert x A = x"
-        by(auto intro: antisym ccpo_Sup_least[OF chain] order_trans[OF ccpo_Sup_upper[OF chain']] ccpo_Sup_upper[OF chain])
-      thus ?thesis by simp
-    qed
-  qed
-qed
 
 lemma mono_lub:
   fixes le_b (infix "\<sqsubseteq>" 60)
