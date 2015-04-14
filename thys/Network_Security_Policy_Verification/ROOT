@@ -13,12 +13,6 @@ session Network_Security_Policy_Verification (AFP) = Automatic_Refinement + (*Co
     TopoS_generateCode
   theories [document = false]
     attic
-  document_files
-    "root.bib"
-    "root.tex"
-
-session "Network_Security_Policy_Verification_Examples" = "Network_Security_Policy_Verification" +
-  theories [document = false]
     "Examples/Impl_List_Playground_statefulpolicycompliance"
     "Examples/Example"
     "Examples/Example_NetModel"

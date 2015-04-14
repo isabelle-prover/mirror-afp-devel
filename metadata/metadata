@@ -2670,7 +2670,8 @@ abstract =
 extra-history =
   Change history:
   [2015-04-14]:
-        Added Distributed WebApp example and improved graphviz visualization<br>
+        Added Distributed WebApp example and improved graphviz visualization
+        (revision 4dde08ca2ab8)<br>
 
 [Abstract_Completeness]
 title = Abstract Completeness
