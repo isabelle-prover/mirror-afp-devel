@@ -1,7 +1,7 @@
 (* Author: Hauke Brinkop *)
 (* Last update 03/25/2015 (пять) *)
 
-header {* Amortized Analysis of Pairing Heaps in Binary Tree Representation *}
+section {* Amortized Analysis of Pairing Heaps in Binary Tree Representation *}
 
 theory Pairing_Heap
 imports 
