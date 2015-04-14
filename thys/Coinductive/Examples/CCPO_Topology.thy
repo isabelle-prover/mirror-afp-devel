@@ -36,8 +36,6 @@ proof (subst continuous_on_open_vimage, (intro open_greaterThan allI impI)+)
       apply (rule_tac x= "x + ereal t'" in exI)
       apply (case_tac x)
       apply (auto simp: ac_simps)
-      apply (case_tac xa)
-      apply auto
       done
     show ?thesis
       unfolding *
