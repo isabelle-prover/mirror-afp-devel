@@ -88,7 +88,7 @@ lemma beh_consecutive_in_trans:
 proof-
   from assms have
     "b = take i b @ t # s # drop (Suc (Suc i)) b"    
-    by(auto simp add: id_take_nth_drop drop_Suc_conv_tl)    
+    by(auto simp add: id_take_nth_drop Cons_nth_drop_Suc)
   thus ?thesis
     by (metis assms(1) beh_non_empty beh_prefix_closed list.distinct(1) list.inject)
 qed

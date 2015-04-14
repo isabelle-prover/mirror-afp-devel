@@ -25,9 +25,9 @@ lemma div_Suc:
   "(Suc m) div n = (if (Suc m) mod n = 0 then Suc (m div n) else m div n)"
 proof(simp add: mod_Suc split: split_if, intro conjI impI)
   assume "Suc (m mod n) = n"
-  thus "Suc m div n = Suc (m div n)"    
-    by (metis add_Suc_right comm_semiring_1_class.normalizing_semiring_rules(24) 
-      div_mult_self1_is_m mod_div_equality2 mult_Suc_right zero_less_Suc)
+  thus "Suc m div n = Suc (m div n)"
+    by (metis Divides.mod_less Divides.mult_div_cancel diff_Suc_Suc div_mult_self2_is_id
+      le_div_geq mod_Suc_eq_Suc_mod mod_self mult.commute neq0_conv not_less old.nat.distinct(2))
 next
   assume "Suc (m mod n) \<noteq> n"
   moreover have "n = 0 \<or> m mod n < n"

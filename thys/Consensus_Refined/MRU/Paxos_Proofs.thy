@@ -315,8 +315,7 @@ proof -
       )
      apply (metis One_nat_def Suc3_eq_add_3 Suc_times_mod_eq distrib_left lessI mod_mult_self1_is_0 mult_1_right 
        nat.distinct(1) nat_less_le numeral_3_eq_3 order.strict_trans2)
-    apply (metis One_nat_def Suc_eq_plus1 add_Suc_right comm_semiring_1_class.normalizing_semiring_rules(24) mod_Suc 
-      mod_Suc_eq_Suc_mod mod_mult_self2 n_not_Suc_n)
+    apply (simp add: mod_Suc)
     done
     
   -- {* The proof: the coordinator hears enough messages in r0 and thus selects a value. *}
