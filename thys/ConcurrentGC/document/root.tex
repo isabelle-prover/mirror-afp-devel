@@ -77,10 +77,7 @@ models and proofs of \citet{DBLP:conf/popl/DoligezG94}. We leave a
 thorough survey of formal garbage collection verification to future
 work.
 
-Our presentation begins by fixing our syntax for point-free logical
-connectives (\S\ref{sec:cimp-lifted-predicates}), and proceeds to
-sketch our modelling language CIMP
-(\S\ref{sec:cimp-syntax-semantics}). We present our model of the
+We present our model of the
 garbage collector in \S\ref{sec:gc-model}, the detailed invariants in
 \S\ref{sec:gc-invs}, and the high-level safety results in
 \S\ref{sec:top-level-correctness}. This bottom-up presentation is how
@@ -91,6 +88,10 @@ structure to more readily support extensions and revisions.
 This document does not include the formal proofs that the model
 satisfies these invariants; the curious reader is encouraged to peruse
 the Isabelle sources.
+
+For details about the modelling language CIMP used in this development,
+see the separate AFP entry ConcurrentIMP \citep{ConcurrentIMP_AFP}.
+
 
 % generated text of all theories
 \input{session}
