@@ -1,6 +1,6 @@
 chapter AFP
 
-session ConcurrentGC (AFP) = "HOL-Library" +
+session ConcurrentGC (AFP) = ConcurrentIMP +
   theories [show_question_marks = false, names_short]
     Model
     Tactics
