@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Multiset Extension of Orders (as Binary Predicates) *}
+section \<open>Multiset Extension of Orders (as Binary Predicates)\<close>
 
 (*TODO: move theory (and maybe rename)*)
 
@@ -120,7 +120,7 @@ lemma mulex_on_add_right [simp]:
 proof -
   from assms have "a \<in> A" and "N \<in> multisets A" by auto
   then have "mulex_on P A N (N + {#a#})" by simp
-  with `mulex_on P A M N` show ?thesis by (rule mulex_on_trans)
+  with \<open>mulex_on P A M N\<close> show ?thesis by (rule mulex_on_trans)
 qed
 
 lemma empty_mulex_on [simp]:
@@ -209,7 +209,7 @@ lemma mulex_on_union_right' [simp]:
   shows "mulex_on P F A (B + K)"
   using mulex_on_union_right [OF assms] by (simp add: ac_simps)
 
-text {*Adapted from @{thm all_accessible} in @{theory Multiset}.*}
+text \<open>Adapted from @{thm all_accessible} in @{theory Multiset}.\<close>
 lemma accessible_on_mulex1_multisets:
   assumes wf: "wfp_on P A"
   shows "\<forall>M\<in>multisets A. accessible_on (mulex1 P) (multisets A) M"
@@ -237,13 +237,13 @@ proof
       proof (elim exE disjE conjE)
         fix M assume "M \<in> ?A" and "?P M M0" and N: "N = M + {#a#}"
         from acc_hyp have "M \<in> ?A \<and> ?P M M0 \<longrightarrow> ?acc (M + {#a#})" ..
-        with `M \<in> ?A` and `?P M M0` have "?acc (M + {#a#})" by blast
+        with \<open>M \<in> ?A\<close> and \<open>?P M M0\<close> have "?acc (M + {#a#})" by blast
         then show "?acc (N)" by (simp only: N)
       next
         fix K
         assume N: "N = M0 + K"
         assume "\<forall>b. b \<in># K \<longrightarrow> P b a"
-        moreover from N and `N \<in> ?A` have "K \<in> ?A" by (auto simp: multisets_def)
+        moreover from N and \<open>N \<in> ?A\<close> have "K \<in> ?A" by (auto simp: multisets_def)
         ultimately have "?acc (M0 + K)"
         proof (induct K)
           case empty
@@ -285,10 +285,10 @@ proof
         assume "?acc M'"
         moreover then have "M' \<in> ?A" by (blast dest: accessible_on_imp_mem)
         ultimately show "?acc (M' + {#a#})"
-          by (induct) (rule tedious_reasoning [OF _ `a \<in> A` _ r], auto)
+          by (induct) (rule tedious_reasoning [OF _ \<open>a \<in> A\<close> _ r], auto)
       qed
     qed
-    with `?acc (M)` show "?acc (M + {#a#})" by blast
+    with \<open>?acc (M)\<close> show "?acc (M + {#a#})" by blast
   qed
 qed
 
@@ -375,7 +375,7 @@ lemma mulex_on_mono:
   shows "mulex_on Q A M N"
 proof -
   let ?rel = "\<lambda>P. (restrict_to (mulex1 P) (multisets A))"
-  from `mulex_on P A M N` have "(?rel P)\<^sup>+\<^sup>+ M N" by (simp add: mulex_on_def)
+  from \<open>mulex_on P A M N\<close> have "(?rel P)\<^sup>+\<^sup>+ M N" by (simp add: mulex_on_def)
   then have "(?rel Q)\<^sup>+\<^sup>+ M N"
   proof (induct rule: tranclp.induct)
     case (r_into_trancl M N)
@@ -387,7 +387,7 @@ proof -
     then have "M \<in> multisets A" and "N \<in> multisets A" by auto
     from mulex1_mono [OF * this] and trancl_into_trancl
       have "?rel Q M N" by auto
-    with `(?rel Q)\<^sup>+\<^sup>+ L M` show ?case by (rule tranclp.trancl_into_trancl)
+    with \<open>(?rel Q)\<^sup>+\<^sup>+ L M\<close> show ?case by (rule tranclp.trancl_into_trancl)
   qed
   then show ?thesis by (simp add: mulex_on_def)
 qed
@@ -420,7 +420,7 @@ proof
     case (add M a)
     then obtain xs where "xs \<in> lists A" and "M = multiset_of xs" by auto
     then have "M + {#a#} = multiset_of (a # xs)" by simp
-    moreover have "a # xs \<in> lists A" using `xs \<in> lists A` and add by auto
+    moreover have "a # xs \<in> lists A" using \<open>xs \<in> lists A\<close> and add by auto
     ultimately show ?case by blast
   qed
 qed
@@ -457,7 +457,7 @@ next
   let ?Y = "{# y \<in># Y. \<exists>x. x \<in># M \<and> P y x #}"
   let ?Z = "Y - ?Y"
   have Y: "Y = ?Z + ?Y" by (subst multiset_eq_iff) auto
-  from `Y \<in> multisets A` have "?Y \<in> multisets A" by (metis multiset_partition union_multisets_iff)
+  from \<open>Y \<in> multisets A\<close> have "?Y \<in> multisets A" by (metis multiset_partition union_multisets_iff)
   moreover have "\<forall>y. y \<in># ?Y \<longrightarrow> (\<exists>x. x \<in># M \<and> P y x)" by auto
   moreover have "M \<in> multisets A" using add by auto
   ultimately have "mulex_on P A ?Y M" using add by blast
@@ -470,21 +470,21 @@ next
     ultimately have "mulex1 P ?Z {#x#}" unfolding mulex1_def mult1_def by blast
     moreover have "{#x#} \<in> multisets A" using add.prems by auto
     moreover have "?Z \<in> multisets A"
-      using `Y \<in> multisets A` by (metis diff_union_cancelL multiset_partition union_multisetsD)
+      using \<open>Y \<in> multisets A\<close> by (metis diff_union_cancelL multiset_partition union_multisetsD)
     ultimately show ?thesis by (auto simp: mulex_on_def)
   qed
   ultimately have "mulex_on P A (?Y + ?Z) (M + {#x#})" by (rule union_mulex_on_mono)
   then show ?case using Y by (simp add: ac_simps)
 qed
 
-text {*The following lemma shows that the textbook definition (e.g.,
-``Term Rewriting and All That'') is the same as the one used below.*}
+text \<open>The following lemma shows that the textbook definition (e.g.,
+``Term Rewriting and All That'') is the same as the one used below.\<close>
 lemma diff_set_Ex_iff:
   "X \<noteq> {#} \<and> X \<le> M \<and> N = (M - X) + Y \<longleftrightarrow> X \<noteq> {#} \<and> (\<exists>Z. M = Z + X \<and> N = Z + Y)"
   by (auto) (metis add_diff_cancel_left' multiset_diff_union_assoc union_commute)
 
-text {*Show that @{const mulex_on} is equivalent to the textbook definition
-of multiset-extension for transitive base orders.*}
+text \<open>Show that @{const mulex_on} is equivalent to the textbook definition
+of multiset-extension for transitive base orders.\<close>
 lemma mulex_on_alt_def:
   assumes trans: "transp_on P A"
   shows "mulex_on P A M N \<longleftrightarrow> M \<in> multisets A \<and> N \<in> multisets A \<and> (\<exists>X Y Z.
@@ -514,14 +514,14 @@ proof
       and Y: "\<forall>y. y \<in># Y \<longrightarrow> (\<exists>x. x \<in># X \<and> P y x)"
       and "mulex1 P M N"
       by blast
-    from `mulex1 P M N` obtain a M0 K
+    from \<open>mulex1 P M N\<close> obtain a M0 K
       where N: "N = M0 + {#a#}" and M': "M = M0 + K"
       and *: "\<forall>b. b \<in># K \<longrightarrow> P b a" unfolding mulex1_def mult1_def by blast
     have L': "L = (M - X) + Y" by (simp add: L M)
     have K: "\<forall>y. y \<in># K \<longrightarrow> (\<exists>x. x \<in># {#a#} \<and> P y x)" using * by auto
 
-    txt {*The remainder of the proof is adapted from the proof of Lemma 2.5.4. of
-    the book ``Term Rewriting and All That.''*}
+    txt \<open>The remainder of the proof is adapted from the proof of Lemma 2.5.4. of
+    the book ``Term Rewriting and All That.''\<close>
     let ?X = "{#a#} + (X - K)"
     let ?Y = "(K - X) + Y"
     
@@ -537,7 +537,7 @@ proof
         fix x :: 'a
         let ?c = "\<lambda>M. count M x"
         let ?ic = "\<lambda>x. int (?c x)"
-        from `?X \<le> N` have *: "?c {#a#} + ?c (X - K) \<le> ?c N"
+        from \<open>?X \<le> N\<close> have *: "?c {#a#} + ?c (X - K) \<le> ?c N"
           unfolding less_eq_multiset.rep_eq by simp
         from * have **: "?c (X - K) \<le> ?c M0" unfolding N by simp
         have "?ic (N - ?X + ?Y) = int (?c N - ?c ?X) + ?ic ?Y" by simp
@@ -567,15 +567,15 @@ proof
       next
         assume "y \<in># Y"
         with Y obtain x where "x \<in># X" and "P y x" by blast
-        { assume "x \<in># X - K" with `P y x` have ?thesis by auto }
+        { assume "x \<in># X - K" with \<open>P y x\<close> have ?thesis by auto }
         moreover
         { assume "x \<in># K" with * have "P x a" by auto
-          moreover have "y \<in> A" using `Y \<in> multisets A` and `y \<in># Y` by (auto simp: multisets_def)
-          moreover have "a \<in> A" using `N \<in> multisets A` by (auto simp: N)
-          moreover have "x \<in> A" using `M \<in> multisets A` and `x \<in># K` by (auto simp: M' multisets_def)
-          ultimately have "P y a" using `P y x` and trans unfolding transp_on_def by blast
+          moreover have "y \<in> A" using \<open>Y \<in> multisets A\<close> and \<open>y \<in># Y\<close> by (auto simp: multisets_def)
+          moreover have "a \<in> A" using \<open>N \<in> multisets A\<close> by (auto simp: N)
+          moreover have "x \<in> A" using \<open>M \<in> multisets A\<close> and \<open>x \<in># K\<close> by (auto simp: M' multisets_def)
+          ultimately have "P y a" using \<open>P y x\<close> and trans unfolding transp_on_def by blast
           then have ?thesis by force }
-        ultimately show ?thesis using `x \<in># X` by (cases "x \<in># X - K") auto
+        ultimately show ?thesis using \<open>x \<in># X\<close> by (cases "x \<in># X - K") auto
       qed
     qed
     ultimately show ?case by blast
@@ -586,7 +586,7 @@ next
     and "X \<noteq> {#}" and N: "N = Z + X" and M: "M = Z + Y"
     and *: "\<forall>y. y \<in># Y \<longrightarrow> (\<exists>x. x \<in># X \<and> P y x)" by blast
   with mulex_on_all_strict [of X A Y] have "mulex_on P A Y X" by auto
-  moreover from `N \<in> multisets A` have "Z \<in> multisets A" by (auto simp: N)
+  moreover from \<open>N \<in> multisets A\<close> have "Z \<in> multisets A" by (auto simp: N)
   ultimately show "?P M N" unfolding M N by (metis mulex_on_union)
 qed
 

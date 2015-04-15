@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Almost-Full Relations *}
+section \<open>Almost-Full Relations\<close>
 
 theory Almost_Full_Relations
 imports
@@ -16,7 +16,7 @@ imports
   Minimal_Bad_Sequences
 begin
 
-subsection {* Basic Definitions and Facts *}
+subsection \<open>Basic Definitions and Facts\<close>
 
 definition almost_full_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "almost_full_on P A \<longleftrightarrow> (\<forall>f \<in> SEQ A. good P f)"
@@ -56,9 +56,9 @@ lemma almost_full_on_mono:
   shows "almost_full_on P A"
   using assms by (metis almost_full_on_def almost_full_on_subset good_def)
 
-text {*
+text \<open>
   Every sequence over elements of an almost-full set has a homogeneous subsequence.
-*}
+\<close>
 lemma almost_full_on_imp_homogeneous_subseq:
   assumes "almost_full_on P A"
     and "\<forall>i::nat. f i \<in> A"
@@ -78,7 +78,7 @@ proof -
   then interpret infinitely_many1 "\<lambda>i. i \<in> I"
     by (unfold_locales) (simp add: infinite_nat_iff_unbounded)
 
-  have "c = 0 \<or> c = 1" using `c < 2` by arith
+  have "c = 0 \<or> c = 1" using \<open>c < 2\<close> by arith
   then show ?thesis
   proof
     assume [simp]: "c = 0"
@@ -86,8 +86,8 @@ proof -
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      from * and enum_P and enum_less [OF `i < j`] have "{enum i, enum j} \<in> X" by auto
-      with enum_less [OF `i < j`]
+      from * and enum_P and enum_less [OF \<open>i < j\<close>] have "{enum i, enum j} \<in> X" by auto
+      with enum_less [OF \<open>i < j\<close>]
         show "P (f (enum i)) (f (enum j))" by (auto simp: X_def doubleton_eq_iff)
     qed
     then show ?thesis using enum_less by blast
@@ -97,19 +97,19 @@ proof -
     proof (intro allI impI)
       fix i j :: nat
       assume "i < j"
-      from * and enum_P and enum_less [OF `i < j`] have "{enum i, enum j} \<in> Y" by auto
-      with enum_less [OF `i < j`]
+      from * and enum_P and enum_less [OF \<open>i < j\<close>] have "{enum i, enum j} \<in> Y" by auto
+      with enum_less [OF \<open>i < j\<close>]
         show "\<not> P (f (enum i)) (f (enum j))" by (auto simp: Y_def X_def doubleton_eq_iff)
     qed
     then have "\<not> good P (f \<circ> enum)" by auto
     moreover have "\<forall>i. f (enum i) \<in> A" using assms by auto
-    ultimately show ?thesis using `almost_full_on P A` by (simp add: almost_full_on_def)
+    ultimately show ?thesis using \<open>almost_full_on P A\<close> by (simp add: almost_full_on_def)
   qed
 qed
 
-text {*
+text \<open>
   Almost full relations do not admit infinite antichains.
-*}
+\<close>
 lemma almost_full_on_imp_no_antichain_on:
   assumes "almost_full_on P A"
   shows "\<not> antichain_on P f A"
@@ -123,9 +123,9 @@ proof
   ultimately show False by blast
 qed
 
-text {*
+text \<open>
   If the image of a function is almost-full then also its preimage is almost-full.
-*}
+\<close>
 lemma almost_full_on_map:
   assumes "almost_full_on Q B"
     and "h ` A \<subseteq> B"
@@ -134,13 +134,13 @@ proof
   fix f
   assume "\<forall>i::nat. f i \<in> A"
   then have "\<And>i. h (f i) \<in> B" using \<open>h ` A \<subseteq> B\<close> by auto
-  with `almost_full_on Q B` [unfolded almost_full_on_def, THEN bspec, of "h \<circ> f"]
+  with \<open>almost_full_on Q B\<close> [unfolded almost_full_on_def, THEN bspec, of "h \<circ> f"]
     show "good ?P f" unfolding good_def comp_def by blast
 qed
 
-text {*
+text \<open>
   The homomorphic image of an almost-full set is almost-full.
-*}
+\<close>
 lemma almost_full_on_hom:
   fixes h :: "'a \<Rightarrow> 'b"
   assumes hom: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q (h x) (h y)"
@@ -157,16 +157,16 @@ proof
     assume bad: "bad Q f"
     { fix i j :: nat
       assume "i < j"
-      from bad have "\<not> Q (f i) (f j)" using `i < j` by (auto simp: good_def)
+      from bad have "\<not> Q (f i) (f j)" using \<open>i < j\<close> by (auto simp: good_def)
       with hom have "\<not> P (g i) (g j)" using * by auto }
     then have "bad P g" by (auto simp: good_def)
     with af and * show False by (auto simp: good_def almost_full_on_def)
   qed
 qed
 
-text {*
+text \<open>
   The monomorphic preimage of an almost-full set is almost-full.
-*}
+\<close>
 lemma almost_full_on_mon:
   assumes mon: "\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> P x y = Q (h x) (h y)" "bij_betw h A B"
     and af: "almost_full_on Q B"
@@ -180,7 +180,7 @@ proof
     assume bad: "bad P f"
     { fix i j :: nat
       assume "i < j"
-      from bad have "\<not> P (f i) (f j)" using `i < j` by (auto simp: good_def)
+      from bad have "\<not> P (f i) (f j)" using \<open>i < j\<close> by (auto simp: good_def)
       with mon have "\<not> Q (h (f i)) (h (f j))"
         using * by (auto simp: bij_betw_def inj_on_def) }
     then have "bad Q (h \<circ> f)" by (auto simp: good_def)
@@ -188,9 +188,9 @@ proof
   qed
 qed
 
-text {*
+text \<open>
   Every total and well-founded relation is almost-full.
-*}
+\<close>
 lemma total_on_and_wfp_on_imp_almost_full_on:
   assumes "total_on P A" and "wfp_on P A"
   shows "almost_full_on P\<^sup>=\<^sup>= A"
@@ -199,16 +199,16 @@ proof (rule ccontr)
   then obtain f :: "nat \<Rightarrow> 'a" where *: "\<And>i. f i \<in> A"
     and "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
     unfolding almost_full_on_def by (auto dest: badE)
-  with `total_on P A` have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
+  with \<open>total_on P A\<close> have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
     unfolding total_on_def by blast
   then have "\<And>i. P (f (Suc i)) (f i)" by auto
-  with `wfp_on P A` and * show False
+  with \<open>wfp_on P A\<close> and * show False
     unfolding wfp_on_def by blast
 qed
 
 
 (*TODO: move to Option.thy of Isabelle/HOL?*)
-subsection {* Adding a Bottom Element to a Set *}
+subsection \<open>Adding a Bottom Element to a Set\<close>
 
 definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000)
 where
@@ -242,7 +242,7 @@ proof (rule set_eqI)
 qed
 
 
-subsection {* Adding a Bottom Element to an Almost-Full Set *}
+subsection \<open>Adding a Bottom Element to an Almost-Full Set\<close>
 
 fun
   option_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool"
@@ -271,12 +271,12 @@ proof
       and "P (the (f i)) (the (f j))" by auto
     then have "?P (Some (the (f i))) (Some (the (f j)))" by simp
     then have "?P (f i) (f j)" unfolding ** .
-    with `i < j` show "good ?P f" by (auto simp: good_def)
+    with \<open>i < j\<close> show "good ?P f" by (auto simp: good_def)
   qed auto
 qed
 
 
-subsection {* Disjoint Union of Almost-Full Sets *}
+subsection \<open>Disjoint Union of Almost-Full Sets\<close>
 
 fun
   sum_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a + 'b \<Rightarrow> 'a + 'b \<Rightarrow> bool"
@@ -294,9 +294,9 @@ lemma not_sum_le_cases:
   shows thesis
   using assms by (cases a b rule: sum.exhaust [case_product sum.exhaust]) auto
 
-text {*
+text \<open>
   When two sets are almost-full, then their disjoint sum is almost-full.
-*}
+\<close>
 lemma almost_full_on_Plus:
   assumes "almost_full_on P A" and "almost_full_on Q B"
   shows "almost_full_on (sum_le P Q) (A <+> B)" (is "almost_full_on ?P ?A")
@@ -325,7 +325,7 @@ proof
         with bad have "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
         then have "\<not> Q (?f i) (?f j)" by (auto elim: not_sum_le_cases) }
       then have "bad Q ?f" by (auto simp: good_def)
-      moreover from `almost_full_on Q B` and B
+      moreover from \<open>almost_full_on Q B\<close> and B
         have "good Q ?f" by (auto simp: good_def almost_full_on_def)
       ultimately show False by blast
     next
@@ -342,7 +342,7 @@ proof
         with bad have "\<not> ?P (f (enum i)) (f (enum j))" by (auto simp: good_def)
         then have "\<not> P (?f i) (?f j)" by (auto elim: not_sum_le_cases) }
       then have "bad P ?f" by (auto simp: good_def)
-      moreover from `almost_full_on P A` and A
+      moreover from \<open>almost_full_on P A\<close> and A
         have "good P ?f" by (auto simp: good_def almost_full_on_def)
       ultimately show False by blast
     qed
@@ -350,11 +350,11 @@ proof
 qed
 
 
-subsection {* Dickson's Lemma for Almost-Full Relations *}
+subsection \<open>Dickson's Lemma for Almost-Full Relations\<close>
 
-text {*
+text \<open>
   When two sets are almost-full, then their Cartesian product is almost-full.
-*}
+\<close>
 
 definition
   prod_le :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
@@ -384,12 +384,12 @@ proof (rule ccontr)
   with assms(2) have "good P2 (snd \<circ> f \<circ> \<phi>)" by (auto simp: almost_full_on_def)
   then obtain i j :: nat
     where "i < j" and "?B (f (\<phi> i)) (f (\<phi> j))" by auto
-  with * [OF `i < j`] have "?P (f (\<phi> i)) (f (\<phi> j))" by (simp add: case_prod_beta prod_le_def)
-  with mono [OF `i < j`] and bad show False by auto
+  with * [OF \<open>i < j\<close>] have "?P (f (\<phi> i)) (f (\<phi> j))" by (simp add: case_prod_beta prod_le_def)
+  with mono [OF \<open>i < j\<close>] and bad show False by auto
 qed
 
 
-subsection {* Higman's Lemma for Almost-Full Relations *}
+subsection \<open>Higman's Lemma for Almost-Full Relations\<close>
 
 lemma Nil_imp_good_list_emb [simp]:
   assumes "f i = []"
@@ -436,7 +436,7 @@ proof (rule ccontr)
     moreover with P have "P (h (\<phi> i)) (h (\<phi> j))" by blast
     ultimately have "?P (m (\<phi> i)) (m (\<phi> j))"
       by (subst (1 2) m) (rule list_emb_Cons2, auto)
-    with less and `i < j` have "good ?P m" by (auto simp: good_def)
+    with less and \<open>i < j\<close> have "good ?P m" by (auto simp: good_def)
     with bad show False by blast
   qed
   
@@ -454,23 +454,23 @@ proof (rule ccontr)
     assume "good ?P m'"
     then obtain i j where "i < j" and emb: "?P (m' i) (m' j)" by (auto simp: good_def)
     { assume "j < \<phi> 0"
-      with `i < j` and emb have "?P (m i) (m j)" by (auto simp: m'_less)
-      with `i < j` and bad have False by blast }
+      with \<open>i < j\<close> and emb have "?P (m i) (m j)" by (auto simp: m'_less)
+      with \<open>i < j\<close> and bad have False by blast }
     moreover
     { assume "\<phi> 0 \<le> i"
-      with `i < j` and emb have "?P (t (\<phi> (i - \<phi> 0))) (t (\<phi> (j - \<phi> 0)))"
+      with \<open>i < j\<close> and emb have "?P (t (\<phi> (i - \<phi> 0))) (t (\<phi> (j - \<phi> 0)))"
         and "i - \<phi> 0 < j - \<phi> 0" by (auto simp: m'_geq)
       with bad_t have False by auto }
     moreover
     { assume "i < \<phi> 0" and "\<phi> 0 \<le> j"
-      with `i < j` and emb have "?P (m i) (t (\<phi> (j - \<phi> 0)))" by (simp add: m'_less m'_geq)
+      with \<open>i < j\<close> and emb have "?P (m i) (t (\<phi> (j - \<phi> 0)))" by (simp add: m'_less m'_geq)
       from list_emb_Cons [OF this, of "h (\<phi> (j - \<phi> 0))"]
         have "?P (m i) (m (\<phi> (j - \<phi> 0)))" using ne by (simp add: h_def t_def)
       moreover have "i < \<phi> (j - \<phi> 0)"
-        using less [of 0 "j - \<phi> 0"] and `i < \<phi> 0` and `\<phi> 0 \<le> j`
+        using less [of 0 "j - \<phi> 0"] and \<open>i < \<phi> 0\<close> and \<open>\<phi> 0 \<le> j\<close>
         by (cases "j = \<phi> 0") auto
       ultimately have False using bad by blast }
-    ultimately show False using `i < j` by arith
+    ultimately show False using \<open>i < j\<close> by arith
   qed
   ultimately show False using min by blast
 qed
@@ -499,11 +499,11 @@ proof (induct rule: list_emb_eq_length_induct)
 qed simp
 
 
-subsection {* Special Case: Finite Sets *}
+subsection \<open>Special Case: Finite Sets\<close>
 
-text {*
+text \<open>
   Every reflexive relation on a finite set is almost-full.
-*}
+\<close>
 lemma finite_almost_full_on:
   assumes finite: "finite A"
     and refl: "reflp_on P A"
@@ -520,7 +520,7 @@ proof
   then obtain l where "k < l" and "f l = f k"
     unfolding infinite_nat_iff_unbounded by auto
   then have "P (f k) (f l)" using refl and * by (auto simp: reflp_on_def)
-  with `k < l` show "good P f" by (auto simp: good_def)
+  with \<open>k < l\<close> show "good P f" by (auto simp: good_def)
 qed
 
 lemma eq_almost_full_on_finite_set:
@@ -530,7 +530,7 @@ lemma eq_almost_full_on_finite_set:
   by (auto simp: reflp_on_def)
 
 
-subsection {* Natural Numbers *}
+subsection \<open>Natural Numbers\<close>
 
 lemma almost_full_on_UNIV_nat:
   "almost_full_on (op \<le>) (UNIV :: nat set)"
@@ -553,7 +553,7 @@ proof -
 qed
 
 
-subsection {* Further Results *}
+subsection \<open>Further Results\<close>
 
 lemma af_trans_imp_wf:
   assumes af: "almost_full_on P A"
@@ -607,7 +607,7 @@ proof (rule ccontr)
       and **: "\<forall>k. (\<forall>j>h k. \<not> P (f j) (f (h k)))" by auto
     def [simp]: \<phi> \<equiv> "\<lambda>i. (h ^^ Suc i) 0"
     have "\<And>i. \<phi> i < \<phi> (Suc i)"
-      using `\<forall>k. h k > k` by (induct_tac i) auto
+      using \<open>\<forall>k. h k > k\<close> by (induct_tac i) auto
     then have mono: "\<And>i j. i < j \<Longrightarrow> \<phi> i < \<phi> j" by (metis lift_Suc_mono_less)
     then have "\<forall>i j. i < j \<longrightarrow> \<not> P (f (\<phi> j)) (f (\<phi> i))"
       using ** by auto
@@ -625,7 +625,7 @@ lemma every_qo_extension_wf_imp_af:
     and "qo_on P A"
   shows "almost_full_on P A"
 proof
-  from `qo_on P A`
+  from \<open>qo_on P A\<close>
     have refl: "reflp_on P A"
     and trans: "transp_on P A"
     by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)

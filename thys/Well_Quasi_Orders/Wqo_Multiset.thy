@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Multiset Extension Preserves Well-Quasi-Orders *}
+section \<open>Multiset Extension Preserves Well-Quasi-Orders\<close>
 
 theory Wqo_Multiset
 imports
@@ -32,8 +32,8 @@ next
              simp: multisets_def)
 qed
 
-text {*The (reflexive closure of the) multiset extension of an almost-full relation
-is almost-full.*}
+text \<open>The (reflexive closure of the) multiset extension of an almost-full relation
+is almost-full.\<close>
 lemma almost_full_on_multisets:
   assumes "almost_full_on P A"
   shows "almost_full_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"

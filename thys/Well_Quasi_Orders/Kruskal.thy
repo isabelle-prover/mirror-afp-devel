@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Kruskal's Tree Theorem *}
+section \<open>Kruskal's Tree Theorem\<close>
 
 theory Kruskal
 imports Well_Quasi_Orders
@@ -93,22 +93,22 @@ proof (rule ccontr)
       assume "good ?P m'"
       then obtain i j where "i < j" and emb: "?P (m' i) (m' j)" by auto
       { assume "j < n"
-        with `i < j` and emb have "?P (m i) (m j)" by (auto simp: m'_less)
-        with `i < j` and bad have False by blast }
+        with \<open>i < j\<close> and emb have "?P (m i) (m j)" by (auto simp: m'_less)
+        with \<open>i < j\<close> and bad have False by blast }
       moreover
       { assume "n \<le> i"
-        with `i < j` and emb have "?P (s (k + (i - n))) (s (k + (j - n)))"
+        with \<open>i < j\<close> and emb have "?P (s (k + (i - n))) (s (k + (j - n)))"
           and "k + (i - n) < k + (j - n)" by (auto simp: m'_geq)
         with bad_s have False by auto }
       moreover
       { assume "i < n" and "n \<le> j"
-        with `i < j` and emb have *: "?P (m i) (s (k + (j - n)))" by (auto simp: m'_less m'_geq)
+        with \<open>i < j\<close> and emb have *: "?P (m i) (s (k + (j - n)))" by (auto simp: m'_less m'_geq)
         with args obtain l where "l \<ge> n" and **: "s (k + (j - n)) \<in> set (a l)" by blast
         from emb.arg [OF sig [of l] _ a_trees [of l] ** *]
           have "?P (m i) (m l)" by (simp add: m)
-        moreover have "i < l" using `i < n` and `n \<le> l` by auto
+        moreover have "i < l" using \<open>i < n\<close> and \<open>n \<le> l\<close> by auto
         ultimately have False using bad by blast }
-      ultimately show False using `i < j` by arith
+      ultimately show False using \<open>i < j\<close> by arith
     qed
     moreover have "(m, m') \<in> gseq"
     proof -
@@ -132,9 +132,9 @@ proof (rule ccontr)
   with assms have "good P (r \<circ> \<phi>)" by (auto simp: almost_full_on_def)
   then obtain i j
     where "i < j" and "P (r (\<phi> i)) (r (\<phi> j))" by auto
-  with lemb [OF `i < j`] have "?P (m (\<phi> i)) (m (\<phi> j))"
+  with lemb [OF \<open>i < j\<close>] have "?P (m (\<phi> i)) (m (\<phi> j))"
     using sig and arity and a_trees by (auto simp: m intro!: emb.list_emb)
-  with less [OF `i < j`] and bad show False by blast
+  with less [OF \<open>i < j\<close>] and bad show False by blast
 qed
 
 inductive_cases
@@ -160,7 +160,7 @@ proof (induct arbitrary: s)
 next
   case (list_emb f m g n ss ts)
   note IH = this
-  from `emb P s (mk f ss)`
+  from \<open>emb P s (mk f ss)\<close>
     show ?case
   proof (cases rule: emb_mk2)
     case arg

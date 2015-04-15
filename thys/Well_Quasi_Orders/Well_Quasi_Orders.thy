@@ -4,13 +4,13 @@
     License:    LGPL
 *)
 
-section {* Well-Quasi-Orders *}
+section \<open>Well-Quasi-Orders\<close>
 
 theory Well_Quasi_Orders
 imports Almost_Full_Relations
 begin
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "wqo_on P A \<longleftrightarrow> transp_on P A \<and> almost_full_on P A"
@@ -50,16 +50,16 @@ lemma wqo_on_subset:
   unfolding wqo_on_def by blast
 
 
-subsection {* Equivalent Definitions *}
+subsection \<open>Equivalent Definitions\<close>
 
-text {*
+text \<open>
   Given a quasi-order @{term P}, the following statements are equivalent:
   \begin{enumerate}
   \item @{term P} is a almost-full.
   \item @{term P} does neither allow decreasing chains nor antichains.
   \item Every quasi-order extending @{term P} is well-founded.
   \end{enumerate}
-*}
+\<close>
 
 lemma wqo_af_conv:
   assumes "qo_on P A"
@@ -90,9 +90,9 @@ lemma wqo_on_imp_wfp_on:
   "wqo_on P A \<Longrightarrow> wfp_on (strict P) A"
   by (metis (no_types) wqo_on_imp_qo_on wqo_wf_and_no_antichain_conv)
 
-text {*
+text \<open>
   The homomorphic image of a wqo set is wqo.
-*}
+\<close>
 lemma wqo_on_hom:
   assumes "transp_on Q (h ` A)"
     and "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
@@ -101,9 +101,9 @@ lemma wqo_on_hom:
   using assms and almost_full_on_hom [of A P Q h]
   unfolding wqo_on_def by blast
 
-text {*
+text \<open>
   The monomorphic preimage of a wqo set is wqo.
-*}
+\<close>
 lemma wqo_on_mon:
   assumes trans: "transp_on P A"
     and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
@@ -113,11 +113,11 @@ lemma wqo_on_mon:
   unfolding wqo_on_def by blast
 
 
-subsection {* A Type Class for Well-Quasi-Orders *}
+subsection \<open>A Type Class for Well-Quasi-Orders\<close>
 
-text {*
+text \<open>
   In a well-quasi-order (wqo) every infinite sequence is good.
-*}
+\<close>
 class wqo = preorder +
   assumes good: "good (op \<le>) f"
 
@@ -129,10 +129,10 @@ lemma wqo_on_UNIV_class_wqo [intro!]:
   "wqo_on P UNIV \<Longrightarrow> class.wqo P (strict P)"
   by (unfold_locales) (auto simp: wqo_on_def almost_full_on_def, unfold transp_on_def, blast)
 
-text {*
+text \<open>
   The following lemma converts between @{const wqo_on} (for the special case that the domain is the
   universe of a type) and the class predicate @{const class.wqo}.
-*}
+\<close>
 lemma wqo_on_UNIV_conv:
   "wqo_on P UNIV \<longleftrightarrow> class.wqo P (strict P)" (is "?lhs = ?rhs")
 proof
@@ -143,9 +143,9 @@ next
     by (auto simp: wqo_on_def almost_full_on_def transp_on_def)
 qed
 
-text {*
+text \<open>
   The strict part of a wqo is well-founded.
-*}
+\<close>
 lemma (in wqo) "wfP (op <)"
 proof -
   have "class.wqo (op \<le>) (op <)" ..
@@ -174,9 +174,9 @@ lemma wqo_on_option_UNIV [intro]:
   "wqo_on P UNIV \<Longrightarrow> wqo_on (option_le P) UNIV"
   using wqo_on_with_bot [of P UNIV] by simp
 
-text {*
+text \<open>
   When two sets are wqo, then their disjoint sum is wqo.
-*}
+\<close>
 lemma wqo_on_Plus:
   assumes "wqo_on P A" and "wqo_on Q B"
   shows "wqo_on (sum_le P Q) (A <+> B)" (is "wqo_on ?P ?A")
@@ -196,7 +196,7 @@ lemma wqo_on_sum_UNIV [intro]:
   using wqo_on_Plus [of P UNIV Q UNIV] by simp
 
 
-subsection {* Dickson's Lemma *}
+subsection \<open>Dickson's Lemma\<close>
 
 lemma wqo_on_Sigma:
   fixes A1 :: "'a set" and A2 :: "'b set"
@@ -219,7 +219,7 @@ lemma wqo_on_prod_UNIV [intro]:
   using wqo_on_Sigma [of P UNIV Q UNIV] by simp
 
 
-subsection {* Higman's Lemma *}
+subsection \<open>Higman's Lemma\<close>
 
 lemma transp_on_list_emb:
   assumes "transp_on P A"
@@ -238,9 +238,9 @@ lemma wqo_on_list_UNIV [intro]:
   "wqo_on P UNIV \<Longrightarrow> wqo_on (list_emb P) UNIV"
   using wqo_on_lists [of P UNIV] by simp
 
-text {*
+text \<open>
   Every reflexive and transitive relation on a finite set is a wqo.
-*}
+\<close>
 lemma finite_wqo_on:
   assumes "finite A" and refl: "reflp_on P A" and "transp_on P A"
   shows "wqo_on P A"
@@ -265,36 +265,36 @@ lemma wqo_on_map:
   shows "wqo_on P' A"
 proof
   let ?Q = "\<lambda>x y. Q (h x) (h y)"
-  from `wqo_on P A` have "transp_on P A"
+  from \<open>wqo_on P A\<close> have "transp_on P A"
     by (rule wqo_on_imp_transp_on)
   then show "transp_on P' A"
-    using `wqo_on Q B` and subset
+    using \<open>wqo_on Q B\<close> and subset
     unfolding wqo_on_def transp_on_def P'_def by blast
 
-  from `wqo_on P A` have "almost_full_on P A"
+  from \<open>wqo_on P A\<close> have "almost_full_on P A"
     by (rule wqo_on_imp_almost_full_on)
-  from `wqo_on Q B` have "almost_full_on Q B"
+  from \<open>wqo_on Q B\<close> have "almost_full_on Q B"
     by (rule wqo_on_imp_almost_full_on)
 
   show "almost_full_on P' A"
   proof
     fix f
     assume *: "\<forall>i::nat. f i \<in> A"
-    from almost_full_on_imp_homogeneous_subseq [OF `almost_full_on P A` this]
+    from almost_full_on_imp_homogeneous_subseq [OF \<open>almost_full_on P A\<close> this]
       obtain g :: "nat \<Rightarrow> nat"
       where g: "\<And>i j. i < j \<Longrightarrow> g i < g j"
       and **: "\<forall>i. f (g i) \<in> A \<and> P (f (g i)) (f (g (Suc i)))"
       using * by auto
-    from chain_on_transp_on_less [OF ** `transp_on P A`]
+    from chain_on_transp_on_less [OF ** \<open>transp_on P A\<close>]
       have **: "\<And>i j. i < j \<Longrightarrow> P (f (g i)) (f (g j))" .
     let ?g = "\<lambda>i. h (f (g i))"
     from * and subset have B: "\<And>i. ?g i \<in> B" by auto
-    with `almost_full_on Q B` [unfolded almost_full_on_def good_def, THEN bspec, of ?g]
+    with \<open>almost_full_on Q B\<close> [unfolded almost_full_on_def good_def, THEN bspec, of ?g]
       obtain i j :: nat
       where "i < j" and "Q (?g i) (?g j)" by blast
-    with ** [OF `i < j`] have "P' (f (g i)) (f (g j))"
+    with ** [OF \<open>i < j\<close>] have "P' (f (g i)) (f (g j))"
       by (auto simp: P'_def)
-    with g [OF `i < j`] show "good P' f" by (auto simp: good_def)
+    with g [OF \<open>i < j\<close>] show "good P' f" by (auto simp: good_def)
   qed
 qed
 

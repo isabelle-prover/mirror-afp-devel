@@ -4,31 +4,31 @@
     License:    LGPL
 *)
 
-section {* Constructing Minimal Bad Sequences *}
+section \<open>Constructing Minimal Bad Sequences\<close>
 
 theory Minimal_Bad_Sequences
 imports Restricted_Predicates
 begin
 
-text {*
+text \<open>
   The set of all infinite sequences over elements from @{term A}.
-*}
+\<close>
 definition "SEQ A = {f::nat \<Rightarrow> 'a. \<forall>i. f i \<in> A}"
 
 lemma SEQ_iff [iff]:
   "f \<in> SEQ A \<longleftrightarrow> (\<forall>i. f i \<in> A)"
   by (auto simp: SEQ_def)
 
-text {*
+text \<open>
   An infinite sequence is \emph{good} whenever there are indices @{term "i < j"} such that
   @{term "P (f i) (f j)"}.
-*}
+\<close>
 definition good :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
   "good P f \<longleftrightarrow> (\<exists>i j. i < j \<and> P (f i) (f j))"
 
-text {*
+text \<open>
   A sequence that is not good is called \emph{bad}.
-*}
+\<close>
 abbreviation "bad P f \<equiv> \<not> good P f"
 
 lemma goodI:
@@ -43,18 +43,18 @@ lemma badE [elim]:
   "bad P f \<Longrightarrow> ((\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)) \<Longrightarrow> Q) \<Longrightarrow> Q"
   by (auto simp: good_def)
 
-text {*
+text \<open>
   A locale capturing the construction of minimal bad sequences over values from @{term "A"}. Where
   minimality is to be understood w.r.t.\ @{term size} of an element.
-*}
+\<close>
 locale mbs =
   fixes A :: "('a :: size) set"
 begin
 
-text {*
+text \<open>
   Since the @{term size} is a well-founded measure, whenever some element satisfies a property
   @{term P}, then there is a size-minimal such element.
-*}
+\<close>
 lemma minimal:
   assumes "x \<in> A" and "P x"
   shows "\<exists>y \<in> A. size y \<le> size x \<and> P y \<and> (\<forall>z \<in> A. size z < size y \<longrightarrow> \<not> P z)"
@@ -76,26 +76,26 @@ lemma less_not_eq [simp]:
   "x \<in> A \<Longrightarrow> size x < size y \<Longrightarrow> x = y \<Longrightarrow> False"
   by simp
 
-text {*
+text \<open>
   The set of all bad sequences over @{term A}.
-*}
+\<close>
 definition "BAD P = {f \<in> SEQ A. bad P f}"
 
 lemma BAD_iff [iff]:
   "f \<in> BAD P \<longleftrightarrow> (\<forall>i. f i \<in> A) \<and> bad P f"
   by (auto simp: BAD_def)
 
-text {*
+text \<open>
   A partial order on infinite bad sequences.
-*}
+\<close>
 definition geseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set"
 where
   "geseq =
     {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (f = g \<or> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j)))}"
 
-text {*
+text \<open>
   The strict part of the above order.
-*}
+\<close>
 definition gseq :: "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) set" where
   "gseq = {(f, g). f \<in> SEQ A \<and> g \<in> SEQ A \<and> (\<exists>i. size (g i) < size (f i) \<and> (\<forall>j < i. f j = g j))}"
 
@@ -121,9 +121,9 @@ lemma gseqE:
   shows "Q"
   using assms by (auto simp: gseq_iff)
 
-text {*
+text \<open>
   The @{term i}-th "column" of a set @{term B} of infinite sequences.
-*}
+\<close>
 definition "ith B i = {f i | f. f \<in> B}"
 
 lemma ithI [intro]:
@@ -143,9 +143,9 @@ context
   assumes subset_A: "B \<subseteq> A" and ne: "B \<noteq> {}"
 begin
 
-text {*
+text \<open>
   A minimal element (w.r.t.~@{term size}) from a set.
-*}
+\<close>
 definition "min_elt = (SOME x. x \<in> B \<and> (\<forall>y \<in> A. size y < size x \<longrightarrow> y \<notin> B))"
 
 lemma min_elt_ex:
@@ -165,10 +165,10 @@ end
 
 end
 
-text {*
+text \<open>
   The restriction of a set @{term "B"} of sequences to sequences that are equal to a given sequence
   @{term f} up to position @{term i}.
-*}
+\<close>
 definition eq_upto :: "(nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a) set"
 where
   "eq_upto B f i = {g \<in> B. \<forall>j < i. f j = g j}"
@@ -201,9 +201,9 @@ context
   fixes P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 begin
 
-text {*
+text \<open>
   A lower bound to all sequences in a set of sequences @{term B}.
-*}
+\<close>
 fun lb :: "nat \<Rightarrow> 'a" where
   lb: "lb i = min_elt (ith (eq_upto (BAD P) lb i) i)"
 
@@ -214,18 +214,18 @@ lemma eq_upto_BAD_mem:
   shows "f j \<in> A"
   using assms by (auto)
 
-text {*
+text \<open>
   Assume that there is some infinite bad sequence @{term h}.
-*}
+\<close>
 context
   fixes h :: "nat \<Rightarrow> 'a"
   assumes BAD_ex: "h \<in> BAD P"
 begin
 
-text {*
+text \<open>
   When there is a bad sequence, then filtering @{term "BAD P"} w.r.t.~positions in @{term lb} never
   yields an empty set of sequences.
-*}
+\<close>
 lemma eq_upto_BAD_non_empty:
   "eq_upto (BAD P) lb i \<noteq> {}"
 proof (induct i)
@@ -251,9 +251,9 @@ lemmas
   lb_minimal = min_elt_minimal [OF non_empty_ith, folded lb] and
   lb_mem = min_elt_mem [OF non_empty_ith, folded lb]
 
-text {*
+text \<open>
   @{term "lb"} is a infinite bad sequence.
-*}
+\<close>
 lemma lb_BAD:
   "lb \<in> BAD P"
 proof -
@@ -265,15 +265,15 @@ proof -
     from * have "lb j \<in> ith (eq_upto (BAD P) lb j) j" by (auto)
     then obtain g where "g \<in> eq_upto (BAD P) lb j" and "g j = lb j" by force
     then have "\<forall>k \<le> j. g k = lb k" by (auto simp: order_le_less)
-    with `i < j` and `P (lb i) (lb j)` have "P (g i) (g j)" by auto
-    with `i < j` have "good P g" by (auto simp: good_def)
-    with `g \<in> eq_upto (BAD P) lb j` have False by auto }
+    with \<open>i < j\<close> and \<open>P (lb i) (lb j)\<close> have "P (g i) (g j)" by auto
+    with \<open>i < j\<close> have "good P g" by (auto simp: good_def)
+    with \<open>g \<in> eq_upto (BAD P) lb j\<close> have False by auto }
   ultimately show ?thesis by blast
 qed
 
-text {*
+text \<open>
   There is no infinite bad sequence that is strictly smaller than @{term lb}.
-*}
+\<close>
 lemma lb_lower_bound:
   "\<forall>g. (lb, g) \<in> gseq \<longrightarrow> g \<notin> BAD P"
 proof (intro allI impI)
@@ -286,9 +286,9 @@ proof (intro allI impI)
   ultimately show "g \<notin> BAD P" by blast
 qed
 
-text {*
+text \<open>
   If there is at least one bad sequence, then there is also a minimal one.
-*}
+\<close>
 lemma lower_bound_ex:
   "\<exists>f \<in> BAD P. \<forall>g. (f, g) \<in> gseq \<longrightarrow> g \<notin> BAD P"
   using lb_BAD and lb_lower_bound by blast
@@ -297,7 +297,7 @@ lemma gseq_conv:
   "(f, g) \<in> gseq \<longleftrightarrow> f \<noteq> g \<and> (f, g) \<in> geseq"
   by (auto simp: gseq_def geseq_def dest: less_not_eq)
 
-text {*There is a minimal bad sequence.*}
+text \<open>There is a minimal bad sequence.\<close>
 lemma mbs:
   "\<exists>f \<in> BAD P. \<forall>g. (f, g) \<in> gseq \<longrightarrow> good P g"
   using lower_bound_ex by (auto simp: gseq_conv geseq_iff)

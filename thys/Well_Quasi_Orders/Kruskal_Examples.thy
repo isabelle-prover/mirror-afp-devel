@@ -43,10 +43,10 @@ lemma wqo_on_trees:
   using wqo_on_Sigma [OF assms wqo_on_UNIV, THEN kruskal_tree_tree.kruskal]
   by (simp add: tree_emb_def)
 
-text {*
+text \<open>
 If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then trees of type @{typ "'a tree"}
 are well-quasi-ordered by the homeomorphic embedding relation.
-*}
+\<close>
 instantiation tree :: (wqo) wqo
 begin
 definition "s \<le> t \<longleftrightarrow> tree_emb UNIV (op \<le>) s t"

@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Binary Predicates Restricted to Elements of a Given Set *}
+section \<open>Binary Predicates Restricted to Elements of a Given Set\<close>
 
 theory Restricted_Predicates
 imports Main
@@ -94,11 +94,11 @@ lemma inductive_onI [Pure.intro]:
   shows "inductive_on P A"
   using assms unfolding inductive_on_def by metis
 
-text {*
+text \<open>
   If @{term P} is well-founded on @{term A} then every non-empty subset @{term Q} of @{term A} has a
   minimal element @{term z} w.r.t. @{term P}, i.e., all elements that are @{term P}-smaller than
   @{term z} are not in @{term Q}.
-*}
+\<close>
 lemma wfp_on_imp_minimal:
   assumes "wfp_on P A"
   shows "\<forall>Q x. x \<in> Q \<and> Q \<subseteq> A \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. P y z \<longrightarrow> y \<notin> Q)"
@@ -139,10 +139,10 @@ proof (rule ccontr)
   ultimately obtain z where "z \<in> ?Q"
     and min: "\<forall>y. P y z \<longrightarrow> y \<notin> ?Q"
     using assms [THEN spec [of _ ?Q], THEN spec [of _ x]] by blast
-  from `z \<in> ?Q` have "z \<in> A" and "\<not> Q z" by auto
+  from \<open>z \<in> ?Q\<close> have "z \<in> A" and "\<not> Q z" by auto
   with * obtain y where "y \<in> A" and "P y z" and "\<not> Q y" by auto
   then have "y \<in> ?Q" by auto
-  with `P y z` and min show False by auto
+  with \<open>P y z\<close> and min show False by auto
 qed
 
 lemmas wfp_on_imp_inductive_on =
@@ -249,9 +249,9 @@ proof
   show "a = b"
   proof (rule ccontr)
     assume "a \<noteq> b"
-    with `P\<^sup>=\<^sup>= a b` and `P\<^sup>=\<^sup>= b a` have "P a b" and "P b a" by auto
-    with `transp_on P A` and `a \<in> A` and `b \<in> A` have "P a a" unfolding transp_on_def by blast
-    with `irreflp_on P A` and `a \<in> A` show False unfolding irreflp_on_def by blast
+    with \<open>P\<^sup>=\<^sup>= a b\<close> and \<open>P\<^sup>=\<^sup>= b a\<close> have "P a b" and "P b a" by auto
+    with \<open>transp_on P A\<close> and \<open>a \<in> A\<close> and \<open>b \<in> A\<close> have "P a a" unfolding transp_on_def by blast
+    with \<open>irreflp_on P A\<close> and \<open>a \<in> A\<close> show False unfolding irreflp_on_def by blast
   qed
 qed
 
@@ -283,9 +283,9 @@ lemma qo_on_subset:
   using reflp_on_subset
     and transp_on_subset by blast
 
-text {*
+text \<open>
   Quasi-orders are instances of the @{class preorder} class.
-*}
+\<close>
 lemma qo_on_UNIV_conv:
   "qo_on P UNIV \<longleftrightarrow> class.preorder P (strict P)" (is "?lhs = ?rhs")
 proof
@@ -313,10 +313,10 @@ lemma wfp_on_iff_minimal:
     and inductive_on_imp_wfp_on [of P A]
     by blast
 
-text {*
+text \<open>
   Every non-empty well-founded set @{term A} has a minimal element, i.e., an element that is not
   greater than any other element.
-*}
+\<close>
 lemma wfp_on_imp_has_min_elt:
   assumes "wfp_on P A" and "A \<noteq> {}"
   shows "\<exists>x\<in>A. \<forall>y\<in>A. \<not> P y x"
@@ -334,7 +334,7 @@ lemma wfp_on_UNIV [simp]:
   unfolding wfp_on_iff_inductive_on inductive_on_def wfP_def wf_def by force
 
 
-subsection {* Measures on Sets (Instead of Full Types) *}
+subsection \<open>Measures on Sets (Instead of Full Types)\<close>
 
 definition
   inv_image_betw ::
@@ -424,7 +424,7 @@ lemma po_on_map:
 lemma chain_on_transp_on_less:
   assumes "chain_on P f A" and "transp_on P A" and "i < j"
   shows "P (f i) (f j)"
-using `i < j`
+using \<open>i < j\<close>
 proof (induct j)
   case 0 then show ?case by simp
 next
@@ -452,7 +452,7 @@ proof
     let ?f = "\<lambda>_. x"
     assume "P x x"
     then have "\<forall>i. P (?f (Suc i)) (?f i)" by blast
-    with `x \<in> A` have "\<not> wfp_on P A" by (auto simp: wfp_on_def)
+    with \<open>x \<in> A\<close> have "\<not> wfp_on P A" by (auto simp: wfp_on_def)
     with assms show False by contradiction
   qed
 qed
@@ -542,12 +542,12 @@ proof (induct)
     then show "accessible_on ?P A y"
     proof (cases)
       assume "restrict_to P A y x"
-      with 1 and `y \<in> A` show ?thesis by blast
+      with 1 and \<open>y \<in> A\<close> show ?thesis by blast
     next
       fix z
       assume "?P y z" and "restrict_to P A z x"
       with 1 have "accessible_on ?P A z" by (auto simp: restrict_to_def)
-      from accessible_on_downward [OF this `y \<in> A` `?P y z`]
+      from accessible_on_downward [OF this \<open>y \<in> A\<close> \<open>?P y z\<close>]
         show ?thesis .
     qed
   qed
@@ -615,7 +615,7 @@ next
   let ?f = "f(Suc ?n := z)"
   have "?f 0 = x" and "?f (Suc ?n) = z" by auto
   moreover have "\<forall>i\<le>?n. P (?f i) (?f (Suc i))"
-    using `P y z` and * by auto
+    using \<open>P y z\<close> and * by auto
   ultimately show ?case by blast
 qed
 
@@ -624,7 +624,7 @@ lemma tranclp_stepfun_conv:
   using tranclp_imp_stepfun and stepfun_imp_tranclp by metis
 
 
-subsection {* Facts About Predecessor Sets *}
+subsection \<open>Facts About Predecessor Sets\<close>
 
 lemma qo_on_predecessor_subset_conv':
   assumes "qo_on P A" and "B \<subseteq> A" and "C \<subseteq> A"
@@ -641,7 +641,7 @@ lemma po_on_predecessors_eq_conv:
   shows "{z\<in>A. P\<^sup>=\<^sup>= z x} = {z\<in>A. P\<^sup>=\<^sup>= z y} \<longleftrightarrow> x = y"
   using assms(2-)
     and reflp_on_reflclp [of P A]
-    and po_on_imp_antisymp_on [OF `po_on P A`]
+    and po_on_imp_antisymp_on [OF \<open>po_on P A\<close>]
     unfolding antisymp_on_def reflp_on_def
     by blast
 

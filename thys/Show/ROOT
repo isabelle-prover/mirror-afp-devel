@@ -10,7 +10,7 @@ session Show (AFP) = Deriving +
 
 session Old_Datatype_Show (AFP) in "Old_Datatype" =
   Datatype_Order_Generator +
-  options [timeout = 600]
+  options [timeout = 600, document = false]
   theories
     Old_Show_Instances
     Old_Show_Examples

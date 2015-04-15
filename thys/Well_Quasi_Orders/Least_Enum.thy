@@ -4,7 +4,7 @@
     License:    LGPL
 *)
 
-section {* Enumerations of Well-Ordered Sets in Increasing Order *}
+section \<open>Enumerations of Well-Ordered Sets in Increasing Order\<close>
 
 theory Least_Enum
 imports Main
@@ -15,9 +15,9 @@ locale infinitely_many1 =
   assumes infm: "\<forall>i. \<exists>j>i. P j"
 begin
 
-text {*
+text \<open>
   Enumerate the elements of a well-ordered infinite set in increasing order.
-*}
+\<close>
 fun enum :: "nat \<Rightarrow> 'a" where
   "enum 0 = (LEAST n. P n)" |
   "enum (Suc i) = (LEAST n. n > enum i \<and> P n)"
@@ -42,10 +42,10 @@ locale infinitely_many2 =
   assumes infm: "\<forall>i\<ge>N. \<exists>j>i. P i j"
 begin
 
-text {*
+text \<open>
   Enumerate the elements of a well-ordered infinite set that form a chain w.r.t.\ a given predicate
   @{term P} starting from a given index @{term N} in increasing order.
-*}
+\<close>
 fun enumchain :: "nat \<Rightarrow> 'a" where
   "enumchain 0 = N" |
   "enumchain (Suc n) = (LEAST m. m > enumchain n \<and> P (enumchain n) m)"

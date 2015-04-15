@@ -4,14 +4,14 @@
     License:    LGPL
 *)
 
-section {* Instances of Well-Quasi-Orders *}
+section \<open>Instances of Well-Quasi-Orders\<close>
 
 theory Wqo_Instances
 imports Kruskal
 begin
 
 
-subsection {* The Option Type is Well-Quasi-Ordered *}
+subsection \<open>The Option Type is Well-Quasi-Ordered\<close>
 
 instantiation option :: (wqo) wqo
 begin
@@ -24,7 +24,7 @@ instance
 end
 
 
-subsection {* The Sum Type is Well-Quasi-Ordered *}
+subsection \<open>The Sum Type is Well-Quasi-Ordered\<close>
 
 instantiation sum :: (wqo, wqo) wqo
 begin
@@ -37,11 +37,11 @@ instance
 end
 
 
-subsection {* Pairs are Well-Quasi-Ordered *}
+subsection \<open>Pairs are Well-Quasi-Ordered\<close>
 
-text {*If types @{typ "'a"} and @{typ "'b"} are well-quasi-ordered by @{text "P"}
+text \<open>If types @{typ "'a"} and @{typ "'b"} are well-quasi-ordered by @{text "P"}
 and @{text "Q"}, then pairs of type @{typ "'a \<times> 'b"} are well-quasi-ordered by
-the pointwise combination of @{text P} and @{text Q}.*}
+the pointwise combination of @{text P} and @{text Q}.\<close>
 
 instantiation prod :: (wqo, wqo) wqo
 begin
@@ -54,11 +54,11 @@ instance
 end
 
 
-subsection {* Lists are Well-Quasi-Ordered *}
+subsection \<open>Lists are Well-Quasi-Ordered\<close>
 
-text {*If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
+text \<open>If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
 lists of type @{typ "'a list"} are well-quasi-ordered by the homeomorphic
-embedding relation.*}
+embedding relation.\<close>
 
 instantiation list :: (wqo) wqo
 begin
