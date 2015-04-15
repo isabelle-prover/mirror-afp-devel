@@ -1,3 +1,13 @@
+[ConcurrentIMP]
+title = Concurrent IMP
+author = Peter Gammie <http://peteg.org/>
+date = 2015-04-13
+topic = Computer Science/Programming Languages/Logics
+abstract =
+  ConcurrentIMP extends the small imperative language IMP with control
+  non-determinism and constructs for synchronous message passing.
+
+
 [UPF]
 title = The Unified Policy Framework (UPF)
 author = Achim D. Brucker <mailto:adbrucker@0x5f.org>, Lukas Brügger <mailto:lukas.a.bruegger@gmail.com>, Burkhart Wolff <mailto:wolff@lri.fr>

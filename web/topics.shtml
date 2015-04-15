@@ -169,7 +169,8 @@
 <a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-<strong>Logics:</strong>&nbsp;<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
+<strong>Logics:</strong>&nbsp;<a href="entries/ConcurrentIMP.shtml">ConcurrentIMP</a> &nbsp;
+<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
 <a href="entries/Automatic_Refinement.shtml">Automatic_Refinement</a> &nbsp;
 <a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;

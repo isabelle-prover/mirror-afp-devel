@@ -1,10 +1,10 @@
-session ConcurrentIMP = HOL +
-  theories [document = false]
-    "~~/src/HOL/Library/Prefix_Order"
+chapter AFP
+
+session ConcurrentIMP (AFP) = "HOL-Library" +
   theories [show_question_marks = false, names_short]
     CIMP
     CIMP_one_place_buffer_ex
     CIMP_unbounded_buffer_ex
-  files
-    "document/root.bib"
-    "document/root.tex"
+  document_files
+    "root.bib"
+    "root.tex"
