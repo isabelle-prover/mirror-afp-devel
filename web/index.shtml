@@ -55,6 +55,22 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2015-04-13:
+<a href="entries/ConcurrentGC.shtml">Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</a>
+<br>Author:
+<a href="http://peteg.org/">Peter Gammie</a>,
+<a href="https://www.cs.purdue.edu/homes/hosking/">Tony Hosking</a> and 
+<a href="http://www.cse.unsw.edu.au/~kaie/">Kai Engelhardt</a>
+</td></tr>
+
+<tr><td class="entry">
+2015-04-13:
+<a href="entries/ConcurrentIMP.shtml">Concurrent IMP</a>
+<br>Author:
+<a href="http://peteg.org/">Peter Gammie</a>
+</td></tr>
+
+<tr><td class="entry">
 2015-03-30:
 <a href="entries/Trie.shtml">Trie</a>
 <br>Author:

@@ -75,6 +75,14 @@ pages 20-34, Singapore, May 2014. Open Publishing Association.</li>
 </ul>
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-04-14]:
+Added Distributed WebApp example and improved graphviz visualization
+(revision 4dde08ca2ab8)<br>
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Network_Security_Policy_Verification-AFP,

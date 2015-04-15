@@ -84,6 +84,8 @@
 <a href="entries/Heard_Of.shtml">Heard_Of</a> &nbsp;
 <a href="entries/Consensus_Refined.shtml">Consensus_Refined</a> &nbsp;
 <a href="entries/Abortable_Linearizable_Modules.shtml">Abortable_Linearizable_Modules</a> &nbsp;
+
+<strong>Concurrent:</strong>&nbsp;<a href="entries/ConcurrentGC.shtml">ConcurrentGC</a> &nbsp;
 </div>
 
 <h3>Data Structures</h3>
@@ -170,7 +172,8 @@
 <a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-<strong>Logics:</strong>&nbsp;<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
+<strong>Logics:</strong>&nbsp;<a href="entries/ConcurrentIMP.shtml">ConcurrentIMP</a> &nbsp;
+<a href="entries/Refine_Monadic.shtml">Refine_Monadic</a> &nbsp;
 <a href="entries/Automatic_Refinement.shtml">Automatic_Refinement</a> &nbsp;
 <a href="entries/MonoBoolTranAlgebra.shtml">MonoBoolTranAlgebra</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
