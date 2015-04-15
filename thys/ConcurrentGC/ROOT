@@ -1,0 +1,17 @@
+chapter AFP
+
+session ConcurrentGC (AFP) = "HOL-Library" +
+  theories [show_question_marks = false, names_short]
+    Model
+    Tactics
+    Proofs_basis
+    TSO
+    Handshakes
+    MarkObject
+    StrongTricolour
+    Proofs
+    "concrete/Concrete_heap"
+    "concrete/Concrete"
+  document_files
+    "root.bib"
+    "root.tex"

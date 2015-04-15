@@ -1,3 +1,18 @@
+[ConcurrentGC]
+title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
+author = Peter Gammie <http://peteg.org/>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
+date = 2015-04-13
+topic = Computer Science/Algorithms/Concurrent
+depends-on = ConcurrentIMP
+abstract =
+  <p>
+  We use ConcurrentIMP to model Schism, a state-of-the-art real-time
+  garbage collection scheme for weak memory, and show that it is safe
+  on x86-TSO.</p>
+  <p>
+  This development accompanies the PLDI 2015 paper of the same name.
+  </p>
+  
 [ConcurrentIMP]
 title = Concurrent IMP
 author = Peter Gammie <http://peteg.org/>
