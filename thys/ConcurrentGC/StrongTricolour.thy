@@ -201,12 +201,9 @@ lemma colours_get_work_done[simp]:
               sys := (s sys)\<lparr> handshake_pending := hp', W := W (s sys) \<union> W (s (mutator m)),
                               ghost_handshake_in_sync := his' \<rparr>)) \<longleftrightarrow> white r s"
 apply (simp_all add: black_def grey_def WL_def split: obj_at_splits)
-apply safe
-apply (case_tac [!] x)
 apply auto
-apply (case_tac "mut = m")
- apply auto
-done (* FIXME weird *)
+apply (metis (full_types) process_name.distinct(3))
+by metis
 
 lemma colours_get_roots_done[simp]:
   "black r (s(mutator m := (s (mutator m))\<lparr> W := {}, ghost_handshake_phase := hs' \<rparr>,
@@ -219,12 +216,9 @@ lemma colours_get_roots_done[simp]:
               sys := (s sys)\<lparr> handshake_pending := hp', W := W (s sys) \<union> W (s (mutator m)),
                               ghost_handshake_in_sync := his' \<rparr>)) \<longleftrightarrow> white r s"
 apply (simp_all add: black_def grey_def WL_def split: obj_at_splits)
-apply safe
-apply (case_tac [!] x)
 apply auto
-apply (case_tac "mut = m")
- apply auto
-done (* FIXME weird *)
+apply (metis process_name.distinct(3))
+by metis
 
 lemma colours_mark[simp]:
   "\<lbrakk> ghost_honorary_grey (s p) = {} \<rbrakk> \<Longrightarrow> black b (s(p := s p\<lparr>ghost_honorary_grey := {r}\<rparr>)) \<longleftrightarrow> black b s \<and> b \<noteq> r"
@@ -252,8 +246,7 @@ lemma colours_blacken[simp]:
   "\<lbrakk> r \<in> gc_W s; valid_W_inv s \<rbrakk> \<Longrightarrow> grey g (s(gc := s gc\<lparr>W := gc_W s - {r}\<rparr>)) \<longleftrightarrow> (grey g s \<and> g \<noteq> r)"
   "white w (s(gc := s gc\<lparr>W := gc_W s - {r}\<rparr>)) \<longleftrightarrow> white w s"
 apply (auto simp: black_def grey_def WL_def split: obj_at_splits)
-apply (case_tac [!] x)
-apply auto
+apply metis+
 done
 
 lemma colours_dequeue[simp]:
@@ -540,7 +533,7 @@ apply (clarsimp simp: mut_m.reachable_def sys_read_def)
 apply (rule iffI)
  apply clarsimp
  apply (elim disjE)
-  defer
+  apply metis
  apply (erule option_bind_invE)
  apply (auto dest!: fold_writes_points_to)
  apply (auto elim!: converse_rtranclp_into_rtranclp[rotated]
