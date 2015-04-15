@@ -73,14 +73,14 @@ No need to consider locations of @{const "Response"}s; could tweak
 (* Sequential, possibly space-efficient. *)
 fun locset_seq (thm : thm) (lthy : local_theory) : local_theory =
   let
-    val set_name = thm |> cprop_of |> Thm.dest_equals |> fst
-    val thm_name = set_name |> term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
-    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = cterm_of (Proof_Context.theory_of lthy) (@{mk_term "?x : ?S" (x, S)} (l, term_of set_name))
+    val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst
+    val thm_name = set_name |> Thm.term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
+    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
     fun mk_mthm (lthy : local_theory) (l : term) (thms : thm list) : thm list =
               mk_memb_term lthy l
            |> Simplifier.rewrite (lthy addsimps [thm]) (* probably want the ambient simpset + some stuff *)
            |> (fn thm => thm :: thms)
-    val coms = Com.get lthy |> map (cprop_of #> Thm.dest_equals #> snd #> term_of)
+    val coms = Com.get lthy |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
     val (thms : thm list) = List.foldl (fn (c : term, thms : thm list) => c |> com_locs_fold (mk_mthm lthy) thms) [] coms
    in lthy |> define_lemmas thm_name [Attrib.internal (K (Clasimp.iff_add)), Attrib.internal (K (Loc.add))] thms |> snd
   end;
@@ -88,10 +88,10 @@ fun locset_seq (thm : thm) (lthy : local_theory) : local_theory =
 (* Parallel, fast. *)
 fun locset (thm : thm) (lthy : local_theory) : local_theory =
   let
-    val set_name = thm |> cprop_of |> Thm.dest_equals |> fst
-    val thm_name = set_name |> term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
-    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = cterm_of (Proof_Context.theory_of lthy) (@{mk_term "?x : ?S" (x, S)} (l, term_of set_name))
-    val coms = Com.get lthy |> map (cprop_of #> Thm.dest_equals #> snd #> term_of)
+    val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst
+    val thm_name = set_name |> Thm.term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
+    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
+    val coms = Com.get lthy |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
     val (memb_terms : cterm list) = List.concat (List.map (com_locs_map (mk_memb_term lthy)) coms)
     val (thms : thm list) = Par_List.map (Simplifier.rewrite (lthy addsimps ([thm] @ Loc.get lthy))) (* probably want the ambient simpset + some stuff *)
                                          memb_terms

@@ -419,7 +419,7 @@ lemma pres_tuple_vcg:
     apply fast
    apply fast
   apply (rename_tac P)
-  apply (rule_tac f="f" and P="\<lambda>fs s. P fs (?g s)" in vcg_lift_comp, simp, simp)
+  apply (rule_tac f="f" and P="\<lambda>fs s. P fs (g s)" in vcg_lift_comp, simp, simp)
   done
 
 lemma pres_tuple_vcg_LST:
@@ -430,14 +430,10 @@ lemma pres_tuple_vcg_LST:
     apply fast
    apply fast
   apply (rename_tac P)
-  apply (rule_tac f="\<lambda>s. f s\<down>" and P="\<lambda>fs s. P fs (?g s)" in vcg_lift_comp, simp, simp)
+  apply (rule_tac f="\<lambda>s. f s\<down>" and P="\<lambda>fs s. P fs (g s)" for g in vcg_lift_comp, simp, simp)
   done
 
-lemma conj_explode: "(P \<and> Q \<Longrightarrow> PROP R) \<equiv> (P \<Longrightarrow> Q \<Longrightarrow> PROP R)"
-  apply rule
-   apply (erule meta_mp, simp)
-  apply simp
-  done
+lemmas conj_explode = conj_imp_eq_imp_imp
 
 end (* context *)
 (*<*)
