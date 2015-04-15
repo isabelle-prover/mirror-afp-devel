@@ -161,8 +161,8 @@ apply (cases p)
 apply (simp_all add: gc_all_defs)
 apply atomize
 
-apply (drule_tac P="?x \<or> ?y" and Q="v \<in> action ?p ?k"in conjI, assumption)
-apply (thin_tac "v \<in> action ?p ?k")
+apply (drule_tac P="x \<or> y" and Q="v \<in> action p k" for x y p k in conjI, assumption)
+apply (thin_tac "v \<in> action p k" for p k)
 apply (simp only: conj_disj_distribR conj_assoc mem_Collect_eq cong: conj_cong)
 
 apply (erule mp)
@@ -178,7 +178,7 @@ schematic_lemma system_responds_action_caseE:
      \<lbrakk> p = sys; case_request_op ?P1 ?P2 ?P3 ?P4 ?P5 ?P6 ?P7 ?P8 ?P9 ?P10 ?P11 ?P12 ?P13 req \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (erule(1) system_responds_actionE)
   apply (cases req, simp_all only: request_op.simps Pair_eq simp_thms fst_conv snd_conv)
-  apply (drule meta_mp[OF _ TrueI], erule meta_mp, erule_tac P="?A \<and> ?B" in triv)+
+  apply (drule meta_mp[OF _ TrueI], erule meta_mp, erule_tac P="A \<and> B" for A B in triv)+
   done
 
 schematic_lemma system_responds_action_specE:
@@ -244,9 +244,9 @@ val vcg_clarsimp_setup =
     "unfold com defs, execute vcg_fragments' and split goals"
 
 fun vcg_sem_tac ctxt =
-        Tactic.match_tac @{thms vcg.intros}
-  THEN' (TRY o (Tactic.ematch_tac @{thms system_responds_action_specE} THEN' atac))
-  THEN' thin_tac ctxt "hist ?s = ?h" (* FIXME discard history: we don't use it here *)
+        Tactic.match_tac ctxt @{thms vcg.intros}
+  THEN' (TRY o (Tactic.ematch_tac ctxt @{thms system_responds_action_specE} THEN' atac))
+  THEN' Rule_Insts.thin_tac ctxt "hist s = h" [(@{binding s}, NONE, NoSyn), (@{binding h}, NONE, NoSyn)] (* FIXME discard history: we don't use it here *)
   THEN' clarsimp_tac ctxt
 
 val vcg_sem_setup =
@@ -260,10 +260,10 @@ THEN'
   PARALLEL_GOALS o (
                vcg_sem_tac ctxt
   THEN_ALL_NEW (full_simp_tac (Splitter.add_split @{thm lcond_split_asm} (ctxt addsimps Inv.get ctxt)))
-  THEN_ALL_NEW ( (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms conjE}))
-           THEN' (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms thin_locs} THEN' REPEAT1 o atac))
+  THEN_ALL_NEW ( (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
+           THEN' (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
            THEN' asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
-           THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (thin_tac ctxt "True")) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
+           THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" [])) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
            THEN_ALL_NEW clarsimp_tac (ctxt addsimps (Loc.get ctxt @ @{thms atS_simps})) (* FIXME smelly *)
            THEN_ALL_NEW TRY o terminal_method ctxt))
 
@@ -283,22 +283,22 @@ THEN'
   PARALLEL_GOALS o (
                vcg_sem_tac ctxt
          THEN' (TRY o SELECT_GOAL (Local_Defs.unfold_tac ctxt (Inv.get ctxt)))
-         THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac @{thms conjI})) (* expose the location predicates, do not split the consequents *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.match_tac @{thms impI}))
+         THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms conjI})) (* expose the location predicates, do not split the consequents *)
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms impI}))
                    (* Preserve the label sets in atS but normalise the label in at; turn s' into s *)
   THEN_ALL_NEW asm_full_simp_tac ctxt (* FIXME diverges on some invariants *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms conjE}))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
                    (* The effect of vcg_pre: should be cheap *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms thin_locs} THEN' REPEAT1 o atac))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
   THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (thin_tac ctxt "True")) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" [])) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
   THEN_ALL_NEW clarsimp_tac ctxt)
 
 fun vcg_nihe_tac ctxt =
   vcg_clarsimp_tac ctxt
 THEN'
   PARALLEL_GOALS o (
-        (vcg_sem_tac ctxt THEN_ALL_NEW (Tactic.ematch_tac (NIE.get ctxt) THEN_ALL_NEW clarsimp_tac ctxt THEN_ALL_NEW SELECT_GOAL no_tac))
+        (vcg_sem_tac ctxt THEN_ALL_NEW (Tactic.ematch_tac ctxt (NIE.get ctxt) THEN_ALL_NEW clarsimp_tac ctxt THEN_ALL_NEW SELECT_GOAL no_tac))
 ORELSE' SELECT_GOAL all_tac) (* FIXME perhaps replace with vcg_ni? but less diagnosable then *)
 
 val vcg_ni_setup =
