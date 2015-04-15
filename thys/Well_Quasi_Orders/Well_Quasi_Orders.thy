@@ -105,12 +105,23 @@ text \<open>
   The monomorphic preimage of a wqo set is wqo.
 \<close>
 lemma wqo_on_mon:
-  assumes trans: "transp_on P A"
-    and mon: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)" "bij_betw h A B"
+  assumes *: "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longleftrightarrow> Q (h x) (h y)"
+    and bij: "bij_betw h A B"
     and wqo: "wqo_on Q B"
   shows "wqo_on P A"
-  using assms and almost_full_on_mon [of A P Q h]
-  unfolding wqo_on_def by blast
+proof -
+  have "transp_on P A"
+  proof
+    fix x y z assume [intro!]: "x \<in> A" "y \<in> A" "z \<in> A"
+      and "P x y" and "P y z"
+    with * have "Q (h x) (h y)" and "Q (h y) (h z)" by blast+
+    with wqo_on_imp_transp_on [OF wqo] have "Q (h x) (h z)"
+      using bij by (auto simp: bij_betw_def transp_on_def)
+    with * show "P x z" by blast
+  qed
+  with assms and almost_full_on_mon [of A P Q h]
+    show ?thesis unfolding wqo_on_def by blast
+qed
 
 
 subsection \<open>A Type Class for Well-Quasi-Orders\<close>
