@@ -56,13 +56,30 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
     the front page will be deferred until the next Isabelle release.
     If you feel this is necessary for your submission, please contact the editors.</p>
 
-    <p>The submission should follow these Isabelle style guidelines:</p>
+    <p>The submission must follow these Isabelle style guidelines:</p>
     <ul>
         <li>No use of the command <code>back</code>.</li>
-        <li>Instantiations must not use Isabelle-generated names such as <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid such names.</li>
-        <li>No use of the command <code>smt</code>. The result of this command depends on external tools that are not under our control and may stop working in the future.</li>
-        <li><code>apply</code> scripts should be indented by subgoal as in the Isabelle distribution. If an <code>apply</code> command is applied to a state with <code>n+1</code> subgoals, it must be indented by <code>n</code> spaces relative to the first <code>apply</code> in the sequence.</li>
-        <li>We prefer structured Isar proofs over apply style, but do not mandate them.</li>
+        
+        <li>Instantiations must not use Isabelle-generated names such as
+        <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid
+        such names.</li>
+        
+        <li>No use of the command <code>smt</code>. The result of this
+        command depends on external tools that are not under our control and
+        may stop working in the future.</li>
+        
+        <li><code>apply</code> scripts should be indented by subgoal as in
+        the Isabelle distribution. If an <code>apply</code> command is
+        applied to a state with <code>n+1</code> subgoals, it must be
+        indented by <code>n</code> spaces relative to the first
+        <code>apply</code> in the sequence.</li>
+        
+        <li>We prefer structured Isar proofs over apply style, but do not
+        mandate them.</li>
+        
+        <li>If there are proof steps that take significant time, i.e. longer
+        than roughly 1 min, please add a short comment to that step, so
+        maintainers will know what to expect.</li>
     </ul>
 
     <p>There is a <a href="submit-template">submission template</a>
@@ -71,7 +88,7 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
     that contains further information.</p>
 
     <p>It is possible and encouraged to build on other archive entries
-       in your submission. There is a standardized way to 
+       in your submission. There is a standardised way to 
        <a href="using.shtml">refer to other AFP entries</a> in your
        theories.</p>
 
