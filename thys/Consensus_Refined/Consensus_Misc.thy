@@ -6,20 +6,10 @@ begin
 
 subsection {* Miscellaneous lemmas *}
 
-ML {*
-  fun clasimp_method' tac =
-    Method.sections clasimp_modifiers >> K (SIMPLE_METHOD o tac);
-
-*}
-
-setup {*
-
-  Method.setup @{binding clarsimp_all} (clasimp_method' (
-    CHANGED_PROP o PARALLEL_GOALS o ALLGOALS o clarsimp_tac))
-    "clarify simplified, all goals";
-
-*}
-
+method_setup clarsimp_all =
+  \<open>Method.sections clasimp_modifiers >>
+    K (SIMPLE_METHOD o CHANGED_PROP o PARALLEL_GOALS o ALLGOALS o clarsimp_tac)\<close>
+  "clarify simplified, all goals"
 
 lemma div_Suc:
   "(Suc m) div n = (if (Suc m) mod n = 0 then Suc (m div n) else m div n)"
