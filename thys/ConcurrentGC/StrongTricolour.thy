@@ -515,7 +515,7 @@ apply (erule disjE)
 apply clarsimp
 apply (case_tac w, simp_all)
 apply (erule disjE)
- apply (rule_tac x=ref in exI)
+ apply (rule_tac x=x in exI)
  apply (fastforce elim!: converse_rtranclp_into_rtranclp[rotated] split: obj_at_splits intro!: ranI)
 apply (rule_tac x=x in exI)
 apply (fastforce elim!: converse_rtranclp_into_rtranclp[rotated] split: obj_at_splits intro!: ranI)
@@ -1937,15 +1937,15 @@ THEN'
   PARALLEL_GOALS o (
                vcg_sem_tac ctxt
          THEN' (SELECT_GOAL (Local_Defs.unfold_tac ctxt (Inv.get ctxt)))
-         THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac @{thms conjI})) (* expose the location predicates, do not split the consequents *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.match_tac @{thms impI}))
+         THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms conjI})) (* expose the location predicates, do not split the consequents *)
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms impI}))
                    (* Preserve the label sets in atS but normalise the label in at; turn s' into s *)
   THEN_ALL_NEW full_simp_tac ctxt (* FIXME vcg_ni uses asm_full_simp_tac here *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms conjE}))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
                    (* The effect of vcg_pre: should be cheap *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac @{thms thin_locs} THEN' REPEAT1 o atac))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
   THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (thin_tac ctxt "True"))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" []))
   THEN_ALL_NEW clarsimp_tac ctxt
 
 )
@@ -2201,6 +2201,7 @@ lemma marked_deletions_sweep_loop_free[simp]:
   "\<lbrakk> mut_m.marked_deletions m s; mut_m.reachable_snapshot_inv m s; no_grey_refs s; white r s \<rbrakk>
      \<Longrightarrow> mut_m.marked_deletions m (s(sys := s sys\<lparr>heap := (sys_heap s)(r := None)\<rparr>))"
 apply (clarsimp simp: mut_m.marked_deletions_def split: mem_write_action.splits)
+apply (rename_tac ref field option)
 apply (drule_tac x="mw_Mutate ref field option" in spec)
 apply clarsimp
 apply (erule disjE, blast)
@@ -2875,6 +2876,7 @@ lemma (in sys) strong_tricolour_inv[intro]:
 apply (vcg_jackhammer simp: strong_tricolour_inv_def p_not_sys)
 apply (clarsimp simp: do_write_action_def fM_rel_inv_def
                split: mem_write_action.splits)
+apply (rename_tac ref field)
 
 (* mw_Mark *)
 apply (frule (1) valid_W_invD2)
@@ -3052,8 +3054,8 @@ apply (erule disjE)
 apply force
 
 apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
-apply ((thin_tac "atS ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
-apply ((thin_tac "at ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
+apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
 apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
                split: mem_write_action.splits if_splits)
      apply (drule (1) valid_W_invD2)

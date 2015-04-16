@@ -398,7 +398,7 @@ lemma (in mut_m) phase_rel_inv[intro]:
 apply (vcg_jackhammer simp: phase_rel_inv_def)
 apply (auto dest!: handshake_phase_invD
              simp: handshake_phase_rel_def phase_rel_def hp_step_rel_def
-            split: handshake_phase.splits)
+            split: handshake_phase.splits) (* takes long *)
 done
 
 (*>*)
