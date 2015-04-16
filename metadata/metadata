@@ -1,6 +1,6 @@
 [Residuated_Lattices]
 title = Residuated Lattices
-author = Victor B. F. Gomes <vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <g.struth@sheffield.ac.uk>
+author = Victor B. F. Gomes <mailto:vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
 date = 2015-04-15
 topic = Mathematics/Algebra
 depends-on = Relation_Algebra
