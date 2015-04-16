@@ -1,3 +1,18 @@
+[Residuated_Lattices]
+title = Residuated Lattices
+author = Victor B. F. Gomes <mailto:vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
+date = 2015-04-15
+topic = Mathematics/Algebra
+depends-on = Relation_Algebra
+abstract =
+  The theory of residuated lattices, first proposed by Ward and Dilworth, is
+  formalised in Isabelle/HOL. This includes concepts of residuated functions;
+  their adjoints and conjugates. It also contains necessary and sufficient
+  conditions for the existence of these operations in an arbitrary lattice.
+  The mathematical components for residuated lattices are linked to the AFP
+  entry for relation algebra. In particular, we prove Jonsson and Tsinakis
+  conditions for a residuated boolean algebra to form a relation algebra.
+
 [ConcurrentGC]
 title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
 author = Peter Gammie <http://peteg.org/>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
@@ -2585,6 +2600,7 @@ author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>
          Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2014-01-25
 topic = Mathematics/Algebra
+depends-on = Kleene_Algebra
 abstract = Tarski's algebra of binary relations is formalised along the lines of
 	the standard textbooks of Maddux and Schmidt and Ströhlein. This
 	includes relation-algebraic concepts such as subidentities, vectors and

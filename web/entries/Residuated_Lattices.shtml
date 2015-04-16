@@ -24,42 +24,43 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">R</font>elation
-<font class="first">A</font>lgebra
+<h1><font class="first">R</font>esiduated
+<font class="first">L</font>attices
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Relation Algebra</td></tr>
+        <td class="data" width="80%">Residuated Lattices</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/">Alasdair Armstrong</a>, Simon Foster (simon /dot/ foster /at/ york /dot/ ac /dot/ uk), <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a> and <a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a></td></tr>
+        <td class="data">Victor B. F. Gomes (vborgesferreiragomes1 /at/ sheffield /dot/ ac /dot/ uk) and Georg Struth (g /dot/ struth /at/ sheffield /dot/ ac /dot/ uk)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-01-25</td></tr>
+        <td class="data">2015-04-15</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Tarski's algebra of binary relations is formalised along the lines of
-the standard textbooks of Maddux and Schmidt and Ströhlein. This
-includes relation-algebraic concepts such as subidentities, vectors and
-a domain operation as well as various notions associated to functions.
-Relation algebras are also expanded by a reflexive transitive closure
-operation, and they are linked with Kleene algebras and models of binary
-relations and Boolean matrices.
+
+The theory of residuated lattices, first proposed by Ward and Dilworth, is
+formalised in Isabelle/HOL. This includes concepts of residuated functions;
+their adjoints and conjugates. It also contains necessary and sufficient
+conditions for the existence of these operations in an arbitrary lattice.
+The mathematical components for residuated lattices are linked to the AFP
+entry for relation algebra. In particular, we prove Jonsson and Tsinakis
+conditions for a residuated boolean algebra to form a relation algebra.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Relation_Algebra-AFP,
-  author  = {Alasdair Armstrong and Simon Foster and Georg Struth and Tjark Weber},
-  title   = {Relation Algebra},
+			<pre>@article{Residuated_Lattices-AFP,
+  author  = {Victor B. F. Gomes and Georg Struth},
+  title   = {Residuated Lattices},
   journal = {Archive of Formal Proofs},
-  month   = jan,
-  year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Relation_Algebra.shtml},
+  month   = apr,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Residuated_Lattices.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -70,7 +71,7 @@ relations and Boolean matrices.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Kleene_Algebra.shtml">Kleene_Algebra</a></td></tr>
+        <td class="data"><a href="Relation_Algebra.shtml">Relation_Algebra</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -83,7 +84,7 @@ relations and Boolean matrices.
 
 <p></p>
 
-<!--#set var="name" value="Relation_Algebra" -->
+<!--#set var="name" value="Residuated_Lattices" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -110,11 +111,7 @@ relations and Boolean matrices.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-01-31.tar.gz">afp-<!--#echo var="name" -->-2014-01-31.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-01-25.tar.gz">afp-<!--#echo var="name" -->-2014-01-25.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
