@@ -139,11 +139,6 @@ ML {*
     val parse_bool_config: string -> bool Config.T -> bool context_parser
     val parse_paren_list: 'a context_parser -> 'a list context_parser
     val parse_paren_lists: 'a context_parser -> 'a list list context_parser
-
-    (* Setup *)
-
-    val setup: theory -> theory
-
   end
 
 
@@ -663,11 +658,11 @@ ML {*
 
     fun parse_paren_lists p = Scan.repeat (parse_paren_list p)
 
-    val setup = 
-      Method.setup @{binding fo_rule} 
+    val _ = Theory.setup
+      (Method.setup @{binding fo_rule} 
         (Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD' (
           fo_resolve_tac thms ctxt))) 
-        "Resolve using first-order matching"
+        "resolve using first-order matching"
      #>
       Method.setup @{binding rprems} 
         (Scan.lift (Scan.option Parse.nat) >> (fn i => fn ctxt => 
@@ -676,17 +671,17 @@ ML {*
               NONE => rprems_tac ctxt
             | SOME i => rprem_tac i ctxt
           ))
-        ) 
-        "Resolve with premises"
+        )
+        "resolve with premises"
       #> Method.setup @{binding elim_all}
          (Attrib.thms >> (fn thms => fn ctxt => SIMPLE_METHOD (elim_all_tac ctxt thms)))
          "repeteadly apply elimination rules to all subgoals"
       #> Method.setup @{binding subst_tac} eqsubst_inst_meth
-           "single-step substitution (dynamic instantiation)"
+         "single-step substitution (dynamic instantiation)"
       #> Method.setup @{binding clarsimp_all} (
            Method.sections Clasimp.clasimp_modifiers >> K (fn ctxt => SIMPLE_METHOD (
              CHANGED_PROP (ALLGOALS (Clasimp.clarsimp_tac ctxt))))
-         ) "Simplify and clarify all subgoals"
+         ) "simplify and clarify all subgoals")
 
   end
 
@@ -694,8 +689,5 @@ ML {*
   open Basic_Refine_Util
 
 *}
-
-setup Refine_Util.setup
-
 
 end
