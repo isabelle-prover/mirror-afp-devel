@@ -3110,8 +3110,8 @@ apply (erule disjE)
 apply force
 
 apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
-apply ((thin_tac "atS ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
-apply ((thin_tac "at ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
+apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
 apply (subst do_write_action_fM[where m=m], simp_all)[1]
  apply (elim disjE, simp_all)[1]
 apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
@@ -3173,8 +3173,8 @@ apply vcg_ni
  apply (clarsimp split: obj_at_splits)
 
  apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
- apply ((thin_tac "atS ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
- apply ((thin_tac "at ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
+ apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
  apply (drule mut_m.handshake_phase_invD[where m=m])
  apply (drule spec[where x=m])
  apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
@@ -3185,8 +3185,8 @@ apply vcg_ni
  apply (clarsimp split: obj_at_splits)
 
  apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
- apply ((thin_tac "atS ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
- apply ((thin_tac "at ?p ?ls ?s \<longrightarrow> ?Q")+)[1]
+ apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
  apply (drule mut_m.handshake_phase_invD[where m=m])
  apply (drule spec[where x=m])
  apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
