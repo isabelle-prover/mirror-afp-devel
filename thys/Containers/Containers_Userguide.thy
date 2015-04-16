@@ -14,7 +14,7 @@ text {*
   This user guide shows how to use and extend the lightweight containers framework (LC).
   For a more theoretical discussion, see \cite{Lochbihler2013ITP}.
   This user guide assumes that you are familiar with refinement in the code generator \cite{HaftmannBulwahn2013codetut,HaftmannKrausKuncarNipkow2013ITP}.
-  The theory @{theory Containers_Userguide} generates it; so if you want to experiment with the examples, you can find their source code there.
+  The theory @{text Containers_Userguide} generates it; so if you want to experiment with the examples, you can find their source code there.
 *}
 
 section {* Characteristics *}
