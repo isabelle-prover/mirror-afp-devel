@@ -64,7 +64,7 @@ local
       end
     | capture_type _ (TFree _) dict = ("_", dict)
 
-    (* Parse a list of the form "(x, y, z)". "inner" parses each of the indivdual items. *)
+    (* Parse a list of the form "(x, y, z)". "inner" parses each of the individual items. *)
     fun comma_list inner =
       (inner >> (fn a => [a])) ||
           (Args.parens (inner -- (Scan.repeat (Args.$$$ "," -- inner >> snd)) >> (fn (a, b) => a :: b)))
@@ -173,10 +173,11 @@ local
     typ_match
   end
 in
-  val _ = Context.>> (Context.map_theory (
-    ML_Antiquotation.inline @{binding "mk_term"}
-      ((Args.context -- Scan.lift Args.name_inner_syntax -- (Scan.optional (Scan.lift ((comma_list Args.name))) []))
-         >>  gen_constructor)))
+  val _ =
+    Theory.setup (ML_Antiquotation.inline @{binding "mk_term"}
+      ((Args.context -- Scan.lift Args.name_inner_syntax --
+        (Scan.optional (Scan.lift ((comma_list Args.name))) []))
+         >>  gen_constructor))
 end
 
 end
