@@ -214,7 +214,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
           in HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs)) |> infer_type lthy end
       in map (generate_eq lthy) constrs end
 
-    val eqs = map (generate_pcomp_eqs lthy) (tycos ~~ Ts) |> List.concat
+    val eqs = map (generate_pcomp_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
     val ((pcomps, _, pcomp_simps), lthy) = lthy
@@ -304,7 +304,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                   |> mk_eq c ys,
                 ctxt)
               end) (tag_list 0 constrs) ctxt
-              |> apfst (apfst List.concat o split_list)
+              |> apfst (apfst flat o split_list)
 
             val dep_comp_defs = map_filter (#equality_def o the_info lthy) dep_tycos
             val dep_map_comps = map_filter (#map_comp o the_info lthy) dep_tycos
@@ -313,12 +313,12 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                 Goal.conjunction_tac 1
                 THEN unfold_tac ctxt
                   (@{thms id_apply o_def} @
-                    List.concat case_simps @
-                    List.concat pcomp_simps @
-                    dep_map_comps @ comp_defs @ dep_comp_defs @ List.concat map_simps))
+                    flat case_simps @
+                    flat pcomp_simps @
+                    dep_map_comps @ comp_defs @ dep_comp_defs @ flat map_simps))
           in thms end
 
-        val thms = map (generate_eq_thm lthy) constrs |> List.concat
+        val thms = map (generate_eq_thm lthy) constrs |> flat
         val simp_thms = map (Local_Defs.unfold lthy @{thms list_all_eq_unfold}) thms
 
         val name = "equality_" ^ Long_Name.base_name tyco

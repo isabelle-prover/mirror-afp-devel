@@ -164,7 +164,7 @@ fun generate_showsp tyco lthy =
           in HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs)) end
       in map (generate_eq lthy) constrs end
 
-    val eqs = map (generate_pshow_eqs lthy) (tycos ~~ Ts) |> List.concat
+    val eqs = map (generate_pshow_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_pshowsp
       |> map (fn (name, T) => (Binding.name name, T |> showsify_typ |> SOME, NoSyn))
     val ((pshows, _, pshow_simps), lthy) = lthy
@@ -244,8 +244,8 @@ fun generate_showsp tyco lthy =
             val thm = Goal.prove_future lthy (fst (dest_Free p) :: map fst xs @ ss) [] eq
               (fn {context = ctxt, ...} => unfold_tac ctxt
                 (@{thms id_def o_def} @
-                  List.concat pshow_simps @
-                  dep_map_comps @ show_defs @ dep_show_defs @ List.concat map_simps))
+                  flat pshow_simps @
+                  dep_map_comps @ show_defs @ dep_show_defs @ flat map_simps))
           in thm end
 
        val thms = map (generate_eq_thm lthy) constrs

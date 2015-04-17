@@ -102,7 +102,7 @@ fun locset thm lthy =
     fun mk_memb_term lthy l =
       Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
     val coms = Com.get lthy |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
-    val memb_terms = List.concat (List.map (com_locs_map (mk_memb_term lthy)) coms)
+    val memb_terms = maps (com_locs_map (mk_memb_term lthy)) coms
     val thms =
       Par_List.map (Simplifier.rewrite (lthy addsimps ([thm] @ Loc.get lthy))) (* probably want the ambient simpset + some stuff *)
         memb_terms

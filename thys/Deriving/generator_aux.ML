@@ -233,7 +233,7 @@ fun add_used_tfrees ctxt =
                   NONE => fold (add skip) Ts
                 | SOME _ => (*(co)datatype*)
                   BNF_LFP_Compat.the_spec thy tyco
-                  |>> map TFree |>> (fn x => x ~~ Ts) ||> map snd ||> List.concat
+                  |>> map TFree |>> (fn x => x ~~ Ts) ||> map snd ||> flat
                   |> uncurry (map o typ_subst_atomic)
                   |> fold (add (insert (op =) tyco skip)))
       in add [] end
@@ -247,7 +247,7 @@ involved in its construction*)
 fun add_used_tycos ctxt tyco =
       (case BNF_FP_Def_Sugar.fp_sugar_of ctxt tyco of
         NONE => I
-      | SOME sugar => #fp_ctr_sugar sugar |> #ctrXs_Tss |> List.concat |> fold add_tycos)
+      | SOME sugar => #fp_ctr_sugar sugar |> #ctrXs_Tss |> flat |> fold add_tycos)
 
 fun restore_with_morphism lthy_old =
       Local_Theory.restore lthy_old

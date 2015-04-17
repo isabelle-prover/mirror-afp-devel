@@ -79,7 +79,7 @@ fun mk_shows_idx thy info =
           in rhs end
         val rec_args = map_index (fn (i, c) => (mk_rhs (i, c), i, idx)) cons 
       in rec_args end
-    val nrec_args = List.concat (map mk_rhss descr)
+    val nrec_args = flat (map mk_rhss descr)
     val rec_args = map #1 nrec_args
     fun mk_rec i = 
       let

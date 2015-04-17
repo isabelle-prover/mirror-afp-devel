@@ -202,7 +202,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
           in HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs)) |> infer_type lthy end
       in map (generate_eq lthy) constrs end
 
-    val eqs = map (generate_phash_eqs lthy) (tycos ~~ Ts) |> List.concat
+    val eqs = map (generate_phash_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_phash
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
     val ((phashs, _, phash_simps), lthy) = lthy
@@ -281,12 +281,12 @@ fun generate_hashs_from_bnf_fp tyco lthy =
                 Goal.conjunction_tac 1
                 THEN unfold_tac ctxt
                   (@{thms id_apply o_def} @
-                    List.concat case_simps @
-                    List.concat phash_simps @
-                    dep_map_comps @ hash_defs @ dep_hash_defs @ List.concat map_simps))
+                    flat case_simps @
+                    flat phash_simps @
+                    dep_map_comps @ hash_defs @ dep_hash_defs @ flat map_simps))
           in thms end
 
-        val thms = map (generate_eq_thm lthy) constrs |> List.concat
+        val thms = map (generate_eq_thm lthy) constrs |> flat
         val simp_thms = map (Local_Defs.unfold lthy @{thms hash_combine_unfold}) thms
         
         val name = "hash_code_" ^ Long_Name.base_name tyco
