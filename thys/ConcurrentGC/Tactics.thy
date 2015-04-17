@@ -238,10 +238,10 @@ fun vcg_clarsimp_tac ctxt =
         simp_tac (ss_only (@{thms vcg_fragments'_simps} @ Com.get ctxt) ctxt)
   THEN' (SELECT_GOAL (safe_tac ctxt))
 
-val vcg_clarsimp_setup =
-  Method.setup @{binding vcg_clarsimp}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_clarsimp}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_clarsimp_tac))
-    "unfold com defs, execute vcg_fragments' and split goals"
+    "unfold com defs, execute vcg_fragments' and split goals")
 
 fun vcg_sem_tac ctxt =
         Tactic.match_tac ctxt @{thms vcg.intros}
@@ -249,10 +249,10 @@ fun vcg_sem_tac ctxt =
   THEN' Rule_Insts.thin_tac ctxt "hist s = h" [(@{binding s}, NONE, NoSyn), (@{binding h}, NONE, NoSyn)] (* FIXME discard history: we don't use it here *)
   THEN' clarsimp_tac ctxt
 
-val vcg_sem_setup =
-  Method.setup @{binding vcg_sem}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_sem}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_sem_tac))
-    "turn VCG goal into semantics and clarsimp"
+    "turn VCG goal into semantics and clarsimp")
 
 fun vcg_jackhammer_gen_tac terminal_method ctxt =
   vcg_clarsimp_tac ctxt
@@ -267,15 +267,15 @@ THEN'
            THEN_ALL_NEW clarsimp_tac (ctxt addsimps (Loc.get ctxt @ @{thms atS_simps})) (* FIXME smelly *)
            THEN_ALL_NEW TRY o terminal_method ctxt))
 
-val vcg_jackhammer_setup =
-  Method.setup @{binding vcg_jackhammer}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_jackhammer}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_jackhammer_gen_tac (fn _ => SELECT_GOAL all_tac)))
-    "VCG supertactic, no terminal method"
+    "VCG supertactic, no terminal method")
 
-val vcg_jackhammer_ff_setup =
-  Method.setup @{binding vcg_jackhammer_ff}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_jackhammer_ff}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_jackhammer_gen_tac fast_force_tac))
-    "VCG supertactic, fastforce the survivors"
+    "VCG supertactic, fastforce the survivors")
 
 fun vcg_ni_tac ctxt =
   TRY o vcg_clarsimp_tac ctxt
@@ -301,23 +301,16 @@ THEN'
         (vcg_sem_tac ctxt THEN_ALL_NEW (Tactic.ematch_tac ctxt (NIE.get ctxt) THEN_ALL_NEW clarsimp_tac ctxt THEN_ALL_NEW SELECT_GOAL no_tac))
 ORELSE' SELECT_GOAL all_tac) (* FIXME perhaps replace with vcg_ni? but less diagnosable then *)
 
-val vcg_ni_setup =
-  Method.setup @{binding vcg_ni}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_ni}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_ni_tac))
-    "VCG non-interference supertactic, no terminal method"
+    "VCG non-interference supertactic, no terminal method")
 
-val vcg_nihe_setup =
-  Method.setup @{binding vcg_nihe}
+val _ =
+  Theory.setup (Method.setup @{binding vcg_nihe}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_nihe_tac))
-    "Cheap VCG non-interference tactic: apply non-interference Hoare and elimination rules, leaving remaining goals as Hoare triples."
+    "cheap VCG non-interference tactic: apply non-interference Hoare and elimination rules, leaving remaining goals as Hoare triples")
 *}
-
-setup {* vcg_clarsimp_setup *}
-setup {* vcg_sem_setup *}
-setup {* vcg_jackhammer_setup *}
-setup {* vcg_jackhammer_ff_setup *}
-setup {* vcg_ni_setup *}
-setup {* vcg_nihe_setup *}
 
 (*>*)
 (*<*)
