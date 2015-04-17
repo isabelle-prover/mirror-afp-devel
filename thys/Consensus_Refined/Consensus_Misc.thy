@@ -8,7 +8,7 @@ subsection {* Miscellaneous lemmas *}
 
 method_setup clarsimp_all =
   \<open>Method.sections clasimp_modifiers >>
-    K (SIMPLE_METHOD o CHANGED_PROP o PARALLEL_GOALS o ALLGOALS o clarsimp_tac)\<close>
+    K (SIMPLE_METHOD o CHANGED_PROP o PARALLEL_ALLGOALS o clarsimp_tac)\<close>
   "clarify simplified, all goals"
 
 lemma div_Suc:
