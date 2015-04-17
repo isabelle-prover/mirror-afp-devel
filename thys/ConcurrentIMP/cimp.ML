@@ -42,7 +42,7 @@ fun com_locs_map f com = com_locs_fold (fn l => fn acc => f l :: acc) [] com
 
 (* Clag from autocorres *)
 
-(* Define lemmas into the local theory. *)
+(* Define lemmas into the local theory. *)  (* FIXME !? *)
 fun define_lemmas name attrs thm_list lthy =
   let
     val ((_, thms), lthy) = Local_Theory.note ((Binding.name name, attrs), thm_list) lthy
@@ -51,7 +51,7 @@ fun define_lemmas name attrs thm_list lthy =
      * definitions from taking O(n^2) time (where "n" is the number of
      * definitions previously made).
      *)
-    val lthy' = Local_Theory.restore lthy
+    val lthy' = Local_Theory.restore lthy  (* FIXME !? *)
     val thms' = map (Morphism.thm (Local_Theory.target_morphism lthy)) thms
   in
     (thms', lthy')
@@ -71,31 +71,46 @@ No need to consider locations of @{const "Response"}s; could tweak
 *)
 
 (* Sequential, possibly space-efficient. *)
-fun locset_seq (thm : thm) (lthy : local_theory) : local_theory =
+fun locset_seq thm lthy =
   let
     val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst
-    val thm_name = set_name |> Thm.term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
-    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
-    fun mk_mthm (lthy : local_theory) (l : term) (thms : thm list) : thm list =
-              mk_memb_term lthy l
-           |> Simplifier.rewrite (lthy addsimps [thm]) (* probably want the ambient simpset + some stuff *)
-           |> (fn thm => thm :: thms)
+    val thm_name =
+      set_name |> Thm.term_of |> dest_Const |> fst
+      |> Long_Name.base_name |> (fn def => def ^ "_membs")
+    fun mk_memb_term lthy l =
+      Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
+    fun mk_mthm lthy l thms =
+      mk_memb_term lthy l
+       |> Simplifier.rewrite (lthy addsimps [thm]) (* probably want the ambient simpset + some stuff *)
+       |> (fn thm => thm :: thms)
     val coms = Com.get lthy |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
-    val (thms : thm list) = List.foldl (fn (c : term, thms : thm list) => c |> com_locs_fold (mk_mthm lthy) thms) [] coms
-   in lthy |> define_lemmas thm_name [Attrib.internal (K (Clasimp.iff_add)), Attrib.internal (K (Loc.add))] thms |> snd
+    val thms = List.foldl (fn (c, thms) => c |> com_locs_fold (mk_mthm lthy) thms) [] coms
+  in
+    lthy
+    |> define_lemmas thm_name
+        [Attrib.internal (K (Clasimp.iff_add)), Attrib.internal (K (Loc.add))] thms
+    |> snd
   end;
 
 (* Parallel, fast. *)
-fun locset (thm : thm) (lthy : local_theory) : local_theory =
+fun locset thm lthy =
   let
     val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst
-    val thm_name = set_name |> Thm.term_of |> dest_Const |> fst |> Long_Name.base_name |> (fn def => def ^ "_membs")
-    fun mk_memb_term (lthy : local_theory) (l : term) : cterm = Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
+    val thm_name =
+      set_name |> Thm.term_of |> dest_Const |> fst
+      |> Long_Name.base_name |> (fn def => def ^ "_membs")
+    fun mk_memb_term lthy l =
+      Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
     val coms = Com.get lthy |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
-    val (memb_terms : cterm list) = List.concat (List.map (com_locs_map (mk_memb_term lthy)) coms)
-    val (thms : thm list) = Par_List.map (Simplifier.rewrite (lthy addsimps ([thm] @ Loc.get lthy))) (* probably want the ambient simpset + some stuff *)
-                                         memb_terms
-   in lthy |> define_lemmas thm_name [(* Attrib.internal (K (Clasimp.iff_add)), *) Attrib.internal (K (Loc.add))] thms |> snd
+    val memb_terms = List.concat (List.map (com_locs_map (mk_memb_term lthy)) coms)
+    val thms =
+      Par_List.map (Simplifier.rewrite (lthy addsimps ([thm] @ Loc.get lthy))) (* probably want the ambient simpset + some stuff *)
+        memb_terms
+  in
+    lthy
+    |> define_lemmas thm_name
+        [(* Attrib.internal (K (Clasimp.iff_add)), *) Attrib.internal (K (Loc.add))] thms
+    |> snd
   end;
 
 (*
