@@ -1,6 +1,6 @@
 chapter AFP
 
-session AODV (AFP slow) = AWN +
+session AODV (AFP_big) = AWN +
   description {* Mechanized invariant proof of AODV (RFC3561) loop freedom:
                  all variants *}
   options [timeout = 21600]
