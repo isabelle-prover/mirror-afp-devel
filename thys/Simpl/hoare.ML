@@ -77,7 +77,7 @@ sig
   val hoare_rule_tac : Proof.context -> thm list -> int -> tactic
 
   datatype 'a bodykind = BodyTyp of 'a | BodyTerm of 'a
-  val proc_specs : Token.T list -> (bstring * string) list * Token.T list
+  val proc_specs : (bstring * string) list parser
   val add_params : morphism -> string -> (par_kind * string) list ->
                    Context.generic -> Context.generic
   val set_default_state_kind : state_kind -> Context.generic -> Context.generic
