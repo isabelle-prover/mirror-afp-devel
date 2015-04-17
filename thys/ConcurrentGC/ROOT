@@ -1,6 +1,6 @@
 chapter AFP
 
-session ConcurrentGC (AFP) = ConcurrentIMP +
+session ConcurrentGC (AFP slow) = ConcurrentIMP +
   theories [show_question_marks = false, names_short]
     Model
     Tactics
