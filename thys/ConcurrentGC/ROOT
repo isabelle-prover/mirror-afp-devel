@@ -1,6 +1,6 @@
 chapter AFP
 
-session ConcurrentGC (AFP_big) = ConcurrentIMP +
+session ConcurrentGC (AFP slow) = ConcurrentIMP +
   options [timeout = 14400]
   theories [show_question_marks = false, names_short]
     Model
