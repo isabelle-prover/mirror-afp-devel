@@ -64,6 +64,26 @@ sig
   val vcg: (Proof.context -> Proof.method) context_parser
   val vcg_step: (Proof.context -> Proof.method) context_parser
   val hoare_rule: (Proof.context -> Proof.method) context_parser
+  
+  val add_foldcongsimps: thm list -> theory -> theory
+  val get_foldcong_ss : theory -> simpset
+  val add_foldcongs :  thm list -> theory -> theory
+  val modeqN : string
+  val modexN : string
+  val implementationN : string
+  val specL : string
+
+  val vcg_tac : string -> string -> string list -> Proof.context -> int -> tactic
+  val hoare_rule_tac : Proof.context -> thm list -> int -> tactic
+
+  datatype 'a bodykind = BodyTyp of 'a | BodyTerm of 'a
+  val proc_specs : Token.T list -> (bstring * string) list * Token.T list
+  val add_params : morphism -> string -> (par_kind * string) list ->
+                   Context.generic -> Context.generic
+  val set_default_state_kind : state_kind -> Context.generic -> Context.generic
+  val add_state_kind : morphism -> string -> state_kind -> Context.generic ->
+                       Context.generic
+  val add_recursive : morphism -> string -> Context.generic -> Context.generic
 end;
 
 structure Hoare: HOARE =
@@ -71,22 +91,44 @@ struct
 
 (* Misc *)
 
+val record_vanish = Attrib.setup_config_bool @{binding hoare_record_vanish} (K true);
 val use_generalise = Attrib.setup_config_bool @{binding hoare_use_generalise} (K false);
 val sort_variables = Attrib.setup_config_bool @{binding hoare_sort_variables} (K true);
 val use_cond_inv_modifies = Attrib.setup_config_bool @{binding hoare_use_cond_inv_modifies} (K true);
 
 val hoare_trace = Attrib.setup_config_bool @{binding hoare_trace} (K false);
 
+val call_prfx = "_Call_";
+val call_ass_prfx = "_CallAss_";
+val guarded_call_prfx = "_GuardedCall_";
+val guarded_call_ass_prfx = "_GuardedCallAss_";
 val body_def_sfx = "_body";
+val actualsT  = Type ("Vcg.actuals",[]);
+val callT     = dummyT (* Type ("Vcg.call",[]) *);
 
 val programN = "\<Gamma>";
+val hoareL = "hoare";
 val hoare_ctxtL = "hoare";
+val specL = "_spec";
+val implL = "_impl";
+val varL = "_vars";
 val procL = "_proc";
 
 val bodyP = "_impl";
 
+val hoareN = "hoare";
+val callN = "Language.Call";
+val whileN = "Language.com.While";
+val implsfx = "_spec";
 val modifysfx = "_modifies";
+val modexN = "Hoare.mex";
+val modeqN = "Hoare.meq";
 
+val updatesfx = "_update";
+val hoarePartialN = "HoarePartial";
+val hoareTotalN = "HoareTotal";
+val modify_callN = "HoarePartial.ModifyReturnNoAbr";
+val modretN = "return'";
 val KNF = @{const_name StateFun.K_statefun};
 
 
@@ -137,6 +179,14 @@ val Guard = get_rule GuardPartial GuardTotal;
 val GuardStripPartial = @{thm HoarePartial.GuardStrip};
 val GuardStripTotal = @{thm HoareTotal.GuardStrip};
 val GuardStrip = get_rule GuardStripPartial GuardStripTotal;
+
+val GuardStripUNIVPartial = UNIV_I RSN (3,GuardStripPartial);
+val GuardStripUNIVTotal   = UNIV_I RSN (3,GuardStripTotal);
+val GuardStripUNIV = get_rule GuardStripUNIVPartial GuardStripUNIVTotal;
+
+val GuardSwapPartial = @{thm HoarePartial.GuardSwap};
+val GuardSwapTotal = @{thm HoareTotal.GuardSwap};
+val GuardSwap = get_rule GuardSwapPartial GuardSwapTotal;
 
 val GuaranteeAsGuardPartial = @{thm HoarePartial.GuaranteeAsGuard};
 val GuaranteeAsGuardTotal = @{thm HoareTotal.GuaranteeAsGuard};
@@ -287,6 +337,10 @@ val FCallPartial = @{thm HoarePartial.FCall};
 val FCallTotal = @{thm HoareTotal.FCall};
 val FCall = get_rule FCallPartial FCallTotal;
 
+val ProcRecPartial = @{thm HoarePartial.ProcRecList};
+val ProcRecTotal = @{thm HoareTotal.ProcRecList};
+val ProcRec = get_rule ProcRecPartial ProcRecTotal;
+
 val ProcRecPartialSpecs = @{thm HoarePartial.ProcRecSpecs};
 val ProcRecTotalSpecs = @{thm HoareTotal.ProcRecSpecs};
 val ProcRecSpecs = get_rule ProcRecPartialSpecs ProcRecTotalSpecs;
@@ -360,6 +414,10 @@ val AugmentContextPartial = @{thm HoarePartial.augment_context'};
 val AugmentContextTotal = @{thm HoareTotal.augment_context'};
 val AugmentContext = get_rule AugmentContextPartial AugmentContextTotal;
 
+val AugmentFaultsUNIVPartial = @{thm HoarePartial.augment_FaultsUNIV};
+val AugmentFaultsUNIVTotal = @{thm HoareTotal.augment_FaultsUNIV};
+val AugmentFaultsUNIV = get_rule AugmentFaultsUNIVPartial AugmentFaultsUNIVTotal;
+
 val AugmentEmptyFaultsPartial = @{thm HoarePartial.augment_emptyFaults};
 val AugmentEmptyFaultsTotal = @{thm HoareTotal.augment_emptyFaults};
 val AugmentEmptyFaults = get_rule AugmentEmptyFaultsPartial AugmentEmptyFaultsTotal;
@@ -384,9 +442,17 @@ val LemAnnoNoAbruptPartial = @{thm HoarePartial.LemAnnoNoAbrupt};
 val LemAnnoNoAbruptTotal = @{thm HoareTotal.LemAnnoNoAbrupt};
 val LemAnnoNoAbrupt = get_rule LemAnnoNoAbruptPartial LemAnnoNoAbruptTotal;
 
+val CombineStripPartial = @{thm HoarePartial.CombineStrip''};
+val CombineStripTotal = @{thm HoareTotal.CombineStrip''};
+val CombineStrip = get_rule CombineStripPartial CombineStripTotal;
+
+val TerminationPartialStrip = @{thm HoareTotalProps.TerminationPartialStrip};
+
+val ReannotateWhile = @{thm HoarePartial.reannotateWhile};
 val ReannotateWhileNoGuard = @{thm HoarePartial.reannotateWhileNoGuard};
 
 val TotalToPartial = @{thm HoareTotal.hoaret_to_hoarep'};
+val Strip = @{thm HoarePartial.hoarep_strip};
 
 val Compl_Collect = @{thm Hoare.Compl_Collect};
 val CollectInt_iff = @{thm Hoare.CollectInt_iff};
@@ -438,10 +504,12 @@ val unit_UN = @{thm Hoare.unit_UN};
 val subset_singleton_insert1 = @{thm Hoare.subset_singleton_insert1};
 val subset_singleton_insert2 = @{thm Hoare.subset_singleton_insert2};
 val conjE_simp = @{thm Hoare.conjE_simp};
+val assoc_simps = @{thms Hoare.assoc.simps};
 val conj_assoc = @{thm HOL.conj_assoc};
+val snd_guaranteeStripPair = @{thm Language.snd_guaranteeStripPair};
 val lookup_Some_in_dom = @{thm Hoare.lookup_Some_in_dom};
 val strip_simps =
-  @{thm Language.strip_simp} :: @{thm option.map(2)} :: @{thms Language.strip_guards_simps};
+  @{thm Language.strip_simp} :: @{thm Option.option.map(2)} :: @{thms Language.strip_guards_simps};
 val normalize_simps =
  [while_def, @{thm Language.bseq_def}, @{thm List.append_Nil}, @{thm List.append_Cons}] @
   @{thms List.list.cases} @
@@ -663,7 +731,7 @@ fun dest_string' t =
        SOME s => implode s
       | NONE => (case t of
                    Free (s,_) => s
-                 | Const (s,_) => s
+                 | Const (s,_) => Long_Name.base_name s
                  | _ => raise TERM ("dest_string'",[t])))
 
 
@@ -830,6 +898,24 @@ fun add_active_procs phi ps ctxt =
                    generate_guard wp_tacs hoare_tacs vcg_simps;
   in Hoare_Data.put data ctxt end;
 
+
+fun add_wp_tacs tacs ctxt =
+  let
+      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
+           vcg_simps,...}
+            = Hoare_Data.get ctxt;
+      val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
+                   (wp_tacs@tacs) hoare_tacs vcg_simps;
+  in Hoare_Data.put data ctxt end;
+
+fun add_hoare_tacs tacs ctxt =
+  let
+      val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
+           vcg_simps,...}
+            = Hoare_Data.get ctxt;
+      val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
+                   wp_tacs (hoare_tacs@tacs) vcg_simps;
+  in Hoare_Data.put data ctxt end;
 
 fun map_vcg_simps f ctxt =
   let
@@ -1379,8 +1465,6 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-local
-
 val valuePar = "val"
 val resultPar = "res"
 
@@ -1419,7 +1503,6 @@ fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.pro
 val par_loc =
   Scan.option (@{keyword "("} |-- @{keyword "imports"} |-- Parse.name --| @{keyword ")"});
 
-in
 
 val _ =
   Outer_Syntax.command @{command_keyword procedures} "define procedures"
@@ -1439,8 +1522,6 @@ val _ =
       Toplevel.theory
         (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));
 
-
-end;
 
 
 (***************************  Auxiliary Functions for integration of  ********************)
@@ -1800,12 +1881,36 @@ fun merge_assertion_simp_tac ctxt thms =
                    addsimps ([CollectInt_iff,conj_assoc,Compl_Collect,singleton_conv_sym,
                    Int_empty_right,Int_empty_left,Un_empty_right,Un_empty_left]@thms)) ;
 
+(* The following probably shouldn't live here, but refactoring
+   so that Hoare could depend on recursive_records does not look feasible.
+   The upshot is that there's a duplicate foldcong_ss set here. *)
+structure FoldCongData = Theory_Data
+(
+  type T = simpset;
+  val empty = HOL_basic_ss;
+
+  val copy = I;
+  val extend = I;
+  val merge = merge_ss;
+);
+
+val get_foldcong_ss = FoldCongData.get;
+fun add_foldcongs congs = FoldCongData.map (fn ss =>
+        put_simpset ss @{context}
+        |> fold Simplifier.add_cong congs
+        |> simpset_of);
+fun add_foldcongsimps simps = FoldCongData.map (fn ss =>
+        put_simpset ss @{context}
+        |> (fn ctxt => ctxt addsimps simps)
+        |> simpset_of);
+
 (* propagates state into "Collect" sets and simplifies selections updates like:
  *  s:{s. P s} = P s
  *)
 fun in_assertion_simp_tac ctxt state_kind thms i =
  let
      val vcg_simps = #vcg_simps (get_data ctxt);
+     val fold_simps = get_foldcong_ss (Proof_Context.theory_of ctxt)
  in
    EVERY [simp_tac
             (put_simpset HOL_basic_ss ctxt addsimps ([mem_Collect_eq,Un_iff,Int_iff,
@@ -1814,7 +1919,7 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
                           addsimprocs (state_simprocs state_kind)
                           |> fold Simplifier.add_cong K_congs)  i
            THEN_MAYBE
-           (simp_tac (put_simpset HOL_basic_ss ctxt addsimprocs [state_upd_simproc state_kind])  i)
+           (simp_tac (put_simpset fold_simps ctxt addsimprocs [state_upd_simproc state_kind])  i)
          ]
  end;
 
@@ -2781,12 +2886,19 @@ fun mk_proc_assoc thms =
 
 
 
+val initial_wp_tacs =
+  let fun seq_tac cont ctxt mode i =
+            EVERY [rtac (Seq mode) i,trace_tac ctxt "Seq",cont false (i+1)]
+  in [("seq_tac",seq_tac)] end;
+
 fun mk_hoare_tac cont ctxt mode i (name,tac) =
      EVERY [trace_tac ctxt ("trying: " ^ name),tac cont ctxt mode i];
 
 
 (* the main hoare tactic *)
-fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt tac st =
+fun HoareTac annotate_inv exspecs
+             strip_guards mode state_kind state_space
+             spec_sfx ctxt tac st =
  let
      val (P,c,Q,A,_,G,T,F) = dest_hoare (Logic.strip_assums_concl
                                        (Logic.get_goal (Thm.prop_of st) 1));
@@ -2798,9 +2910,11 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
                      (* while loops (makes sense for the modifies clause)         *)
                      SOME Q
                 else NONE);
+     val exspecthms = map (Proof_Context.get_thm ctxt) exspecs;
      val asms =
        try (fn () =>
-         mk_proc_assoc (gen_context_thms ctxt (Thm.theory_of_thm st) mode params G T F)) ()
+         mk_proc_assoc (gen_context_thms ctxt (Thm.theory_of_thm st) mode params G T F
+                @ exspecthms)) ()
        |> the_default [];
 
      fun while_annoG_tac (t,i) =
@@ -3094,7 +3208,9 @@ end;
 structure FunSplitState : SPLIT_STATE =
 struct
 
-val full_globalsN = @{const_name StateSpace.state.globals};
+ val globalsN = "globals";
+ val full_globalsN = @{const_name StateSpace.state.globals};
+ val localsN  = "locals";
 
 
 fun isState (Const _$Abs (s,T,t)) =
@@ -3317,6 +3433,7 @@ fun generalise Record = GeneraliseRecord.GENERALISE
    to better performance...
 *)
 fun record_vanish_tac ctxt state_kind state_space i =
+  if Config.get ctxt record_vanish then
     let
         val rem_useless_vars_simps = [Drule.triv_forall_equality,triv_All_eq,triv_Ex_eq];
         val rem_useless_vars_simpset = empty_simpset ctxt addsimps rem_useless_vars_simps;
@@ -3341,7 +3458,9 @@ fun record_vanish_tac ctxt state_kind state_space i =
                      full_simp_tac rem_useless_vars_simpset i,
                      trace_tac ctxt "record_vanish_tac -- STOP --"]*)
               ]
-    end;
+    end
+  else
+    all_tac;
 
 (* solve_modifies_tac tries to solve modifies-clauses automatically;
  * The following strategy is followed:
@@ -3373,7 +3492,7 @@ val state_fun_update_ss =
 
 in
 
-fun solve_modifies_tac ctxt state_kind state_space i =
+fun solve_modifies_tac ctxt state_kind state_space i st =
   let
     val thy = Proof_Context.theory_of ctxt;
     fun is_split_state (trm as (Const (@{const_name Pure.all},_)$Abs(x,T,t))) =
@@ -3409,7 +3528,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
                      THEN_MAYBE
                      (REPEAT_ALL_NEW (resolve_tac ctxt [conjI,impI,refl]) k))) i
   in
-    (trace_tac ctxt "solve_modifies_tac" THEN
+    ((trace_tac ctxt "solve_modifies_tac" THEN
      clarsimp_tac ((ctxt
         |> put_claset (claset_of @{theory_context HOL})
         |> put_simpset (simpset_of @{theory_context Set}))
@@ -3417,7 +3536,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
         addsimprocs (state_upd_simproc Record::(state_simprocs Record))
         |> fold Simplifier.add_cong K_congs) i)
     THEN_MAYBE
-     try_solve state_kind i
+     try_solve state_kind i) st
   end;
 end
 
@@ -3574,38 +3693,39 @@ fun get_state_space i st =
        | NONE => NONE)
     end
 
-fun mk_hoare_tac hoare_tac finish_tac annotate_inv strip_guards spec_sfx ctxt i st =
+fun mk_hoare_tac hoare_tac finish_tac annotate_inv exnames
+                 strip_guards spec_sfx ctxt i st =
     (case get_state_space i st of
        SOME (Tids,mode,kind)
        => SELECT_GOAL
-            (hoare_tac annotate_inv strip_guards mode kind (is_state_space_var Tids)
+            (hoare_tac annotate_inv exnames strip_guards mode kind (is_state_space_var Tids)
                    spec_sfx ctxt (finish_tac kind (is_state_space_var Tids))) i st
      | NONE =>
         (warning "could not find proper state space type (record) in goal";
          no_tac st))
 
-fun vcg_tac spec_sfx strip_guards ctxt i st =
+fun vcg_tac spec_sfx strip_guards exnames ctxt i st =
   mk_hoare_tac HoareTac (vcg_polish_tac (spec_sfx="_modifies") ctxt)
-      (spec_sfx="_modifies") (strip_guards="true") spec_sfx ctxt i st;
+      (spec_sfx="_modifies") exnames (strip_guards="true") spec_sfx ctxt i st;
 
-fun hoare_tac spec_sfx strip_guards ctxt i st =
+fun hoare_tac spec_sfx strip_guards exnames ctxt i st =
   let fun tac state_kind state_space i = if spec_sfx="_modifies"
                then solve_modifies_tac ctxt state_kind state_space i
                else all_tac;
 
-  in mk_hoare_tac HoareTac tac (spec_sfx="_modifies") (strip_guards="true") spec_sfx
-       ctxt i st
+  in mk_hoare_tac HoareTac tac (spec_sfx="_modifies") []
+                  (strip_guards="true") spec_sfx ctxt i st
   end;
 
-fun hoare_raw_tac spec_sfx strip_guards ctxt i st =
+fun hoare_raw_tac spec_sfx strip_guards exnames ctxt i st =
   mk_hoare_tac HoareTac (K (K (K all_tac)))
-     (spec_sfx="_modifies") (strip_guards="true") spec_sfx
+     (spec_sfx="_modifies") [] (strip_guards="true") spec_sfx
      ctxt i st;
 
 
-fun hoare_step_tac spec_sfx strip_guards ctxt i st =
-  mk_hoare_tac (K HoareStepTac) (vcg_polish_tac (spec_sfx="_modifies") ctxt)
-     false (strip_guards="true") spec_sfx ctxt i st;
+fun hoare_step_tac spec_sfx strip_guards exnames ctxt i st =
+  mk_hoare_tac (K (K HoareStepTac)) (vcg_polish_tac (spec_sfx="_modifies")
+     ctxt) false [] (strip_guards="true") spec_sfx ctxt i st;
 
 fun hoare_rule_tac ctxt thms i st = SUBGOAL (fn _ =>
     (case get_state_space i st of
@@ -3625,17 +3745,37 @@ val vcg_simp_modifiers =
   [Args.add -- Args.colon >> K (Method.modifier vcg_simp_add @{here}),
    Args.del -- Args.colon >> K (Method.modifier vcg_simp_del @{here})];
 
+fun assocs2 key = map snd o filter (curry (op =) key o fst);
+
 fun gen_simp_method tac =
   Scan.lift (argsP >> (fn args => args @ default_args)) --|
   Method.sections vcg_simp_modifiers >>
     (fn args => fn ctxt => Method.SIMPLE_METHOD'
       (tac ("_" ^ the (AList.lookup (op =) args "spec"))
-        (the (AList.lookup (op =) args "strip_guards")) ctxt));
- 
+        (the (AList.lookup (op =) args "strip_guards"))
+        (assocs2 "exspec" args) ctxt));
+
 val hoare = gen_simp_method hoare_tac;
 val hoare_raw = gen_simp_method hoare_raw_tac;
 val vcg = gen_simp_method vcg_tac;
 val vcg_step = gen_simp_method hoare_step_tac;
+
+
+val trace_hoare_users = Unsynchronized.ref false
+
+fun print_subgoal_tac ctxt s i =
+    SUBGOAL (fn (prem, n) => trace_tac ctxt (s ^ (Syntax.string_of_term ctxt prem))) i
+
+fun mk_hoare_thm thm cont ctxt mode i =
+    EVERY [rtac thm i, if !trace_hoare_users then print_subgoal_tac ctxt "Tracing: " i
+                       else all_tac]
+
+val vcg_hoare_add =
+    Thm.declaration_attribute (fn thm => add_hoare_tacs [(Thm.derivation_name thm, mk_hoare_thm thm)])
+
+exception UNDEF
+val vcg_hoare_del =
+    Thm.declaration_attribute (fn thm => fn ctxt => raise UNDEF)
 
 
 (* setup theory *)
@@ -3643,7 +3783,10 @@ val vcg_step = gen_simp_method hoare_step_tac;
 val _ =
   Theory.setup
     (Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
-      "declaration of Simplifier rule for vcg")
-   (*#> add_wp_tacs initial_wp_tacs*)
+      "declaration of Simplifier rule for vcg"
+    #>
+    Attrib.setup @{binding vcg_hoare} (Attrib.add_del vcg_hoare_add vcg_hoare_del)
+      "declaration of wp rule for vcg")
+    (*#> add_wp_tacs initial_wp_tacs*)
 
 end;
