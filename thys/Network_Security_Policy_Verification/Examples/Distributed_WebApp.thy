@@ -213,11 +213,11 @@ text{*OpenFlow Flow table Rules*}
 ML_val{*
 fun ARP (src: string) (dst: string): string =
   "# ARP Request\n"^
-	"in_port=${port_"^src^"} dl_src=${mac_"^src^"} dl_dst=ff:ff:ff:ff:ff:ff arp arp_sha=${mac_"^src^"} "^
-	"arp_spa=${ip4_"^src^"} arp_tpa=${ip4_"^dst^"} priority=40000 action=mod_dl_dst:${mac_"^dst^"},output:${port_"^dst^"}"^"\n"^
-	"# ARP Reply\n"^
-	"dl_src=${mac_"^dst^"} dl_dst=${mac_"^src^"} arp arp_sha=${mac_"^dst^"} "^
-	"arp_spa=${ip4_"^dst^"} arp_tpa=${ip4_"^src^"} priority=40000 action=output:${port_"^src^"}";
+  "in_port=${port_"^src^"} dl_src=${mac_"^src^"} dl_dst=ff:ff:ff:ff:ff:ff arp arp_sha=${mac_"^src^"} "^
+  "arp_spa=${ip4_"^src^"} arp_tpa=${ip4_"^dst^"} priority=40000 action=mod_dl_dst:${mac_"^dst^"},output:${port_"^dst^"}"^"\n"^
+  "# ARP Reply\n"^
+  "dl_src=${mac_"^dst^"} dl_dst=${mac_"^src^"} arp arp_sha=${mac_"^dst^"} "^
+  "arp_spa=${ip4_"^dst^"} arp_tpa=${ip4_"^src^"} priority=40000 action=output:${port_"^src^"}";
 
 local
   fun IPv4_helper (priority: int) (nw_src_wildcard: bool) (nw_dst_wildcard: bool) (src: string) (dst: string): string =
