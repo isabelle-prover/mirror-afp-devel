@@ -1057,7 +1057,7 @@ proof -
   obtain lsl where lsl: "lsl = Assoc_List.impl_of ls" by blast
 
   with assms have "map_of lsl k = Some v" by (simp add: Assoc_List.lookup_def)
-  hence "update_with_aux v k (\<lambda>_. v) lsl = lsl" by (induct lsl) auto
+  hence "AList.update_with_aux v k (\<lambda>_. v) lsl = lsl" by (induct lsl) auto
   with lsl show ?thesis by (simp add: Assoc_List.update_def Assoc_List.update_with_def Assoc_List_impl_of)
 qed
 
@@ -1068,7 +1068,7 @@ proof -
   obtain lsl where lsl: "lsl = Assoc_List.impl_of ls" by blast
 
   with assms have "map_of lsl k = Some v" by (simp add: Assoc_List.lookup_def)
-  hence "update_with_aux v k (\<lambda>_. v) (update_with_aux v2 k (\<lambda>_. v2) lsl) = lsl" by (induct lsl) auto
+  hence "AList.update_with_aux v k (\<lambda>_. v) (AList.update_with_aux v2 k (\<lambda>_. v2) lsl) = lsl" by (induct lsl) auto
   with lsl show ?thesis by (metis Assoc_List.update_def Assoc_List_impl_of impl_of_update_with) 
 qed
 
@@ -1079,7 +1079,7 @@ proof -
   obtain lsl where lsl: "lsl = Assoc_List.impl_of ls" by blast
 
   with assms have "map_of lsl k = None" by (simp add: Assoc_List.lookup_def)
-  hence "delete_aux k (update_with_aux v k (\<lambda>_. v) lsl) = lsl" by (induct lsl) auto
+  hence "AList.delete_aux k (AList.update_with_aux v k (\<lambda>_. v) lsl) = lsl" by (induct lsl) auto
   with lsl show ?thesis by (simp add: Assoc_List.delete_def Assoc_List.update_def assoc_list.impl_of_inverse impl_of_update_with)
 qed
 
