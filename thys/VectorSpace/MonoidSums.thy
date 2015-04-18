@@ -33,39 +33,31 @@ qed
 
 text {*Scalar multiplication distributes over scalar multiplication (on left). *}(*Add to module.*)
 lemma (in module) finsum_smult:
-  "[| finite A; c\<in> carrier R; g \<in> A -> carrier M |] ==>
+  "[| c\<in> carrier R; g \<in> A -> carrier M |] ==>
    (c \<odot>\<^bsub>M\<^esub> finsum M g A) = finsum M (%x. c \<odot>\<^bsub>M\<^esub> g x) A "
-proof (induct set: finite)
-  case empty 
-  from `c\<in>carrier R` show ?case 
-    by simp
-next
+proof (induct A rule: infinite_finite_induct)
   case (insert a A)
   from insert.hyps insert.prems have 1: "finsum M g (insert a A) = g a \<oplus>\<^bsub>M\<^esub> finsum M g A"
     by (intro finsum_insert, auto)
   from insert.hyps insert.prems have 2: "(\<Oplus>\<^bsub>M\<^esub>x\<in>insert a A. c \<odot>\<^bsub>M\<^esub> g x) = c \<odot>\<^bsub>M\<^esub> g a \<oplus>\<^bsub>M\<^esub>(\<Oplus>\<^bsub>M\<^esub>x\<in>A. c \<odot>\<^bsub>M\<^esub> g x)" 
     by (intro finsum_insert, auto)
   from insert.hyps insert.prems show ?case 
-    by (auto simp add:1 2 smult_r_distr finsum_closed)
-qed
+    by (auto simp add:1 2 smult_r_distr)
+qed auto
 
 text {*Scalar multiplication distributes over scalar multiplication (on right). *}(*Add to module.*)
 lemma (in module) finsum_smult_r:
-  "[| finite A; v\<in> carrier M; f \<in> A -> carrier R |] ==>
+  "[| v\<in> carrier M; f \<in> A -> carrier R |] ==>
    (finsum R f A \<odot>\<^bsub>M\<^esub> v) = finsum M (%x. f x \<odot>\<^bsub>M\<^esub> v) A "
-proof (induct set: finite)
-  case empty 
-  from `v\<in>carrier M` show ?case 
-    by simp
-next
+proof (induct A rule: infinite_finite_induct)
   case (insert a A)
   from insert.hyps insert.prems have 1: "finsum R f (insert a A) = f a \<oplus>\<^bsub>R\<^esub> finsum R f A"
     by (intro R.finsum_insert, auto)
   from insert.hyps insert.prems have 2: "(\<Oplus>\<^bsub>M\<^esub>x\<in>insert a A. f x \<odot>\<^bsub>M\<^esub> v) = f a \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub>(\<Oplus>\<^bsub>M\<^esub>x\<in>A. f x \<odot>\<^bsub>M\<^esub> v)" 
     by (intro finsum_insert, auto)
   from insert.hyps insert.prems show ?case 
-    by (auto simp add:1 2 smult_l_distr finsum_closed)
-qed
+    by (auto simp add:1 2 smult_l_distr)
+qed auto
 
 text {*A sequence of lemmas that shows that the product does not depend on the ambient group. 
 Note I had to dig back into the definitions of foldSet to show this. *}
@@ -108,7 +100,7 @@ proof -
 qed
 
 lemma (in comm_monoid) finprod_all1[simp]:
-  assumes fin: "finite A" and all1:" \<And>a. a\<in>A\<Longrightarrow>f a = \<one>\<^bsub>G\<^esub>"
+  assumes all1:" \<And>a. a\<in>A\<Longrightarrow>f a = \<one>\<^bsub>G\<^esub>"
   shows "(\<Otimes>\<^bsub>G\<^esub> a\<in>A. f a) = \<one>\<^bsub>G\<^esub>"
 (*  "[| \<And>a. a\<in>A\<Longrightarrow>f a = \<one>\<^bsub>G\<^esub> |] ==> (\<Otimes>\<^bsub>G\<^esub> a\<in>A. f a) = \<one>\<^bsub>G\<^esub>" won't work with proof - *)
 proof - 

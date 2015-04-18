@@ -47,10 +47,10 @@ qed
 
 lemma (in module) lincomb_closed [simp, intro]:
   fixes S a
-  assumes h1: "finite S" and h2: "S\<subseteq> carrier M" and h3: "a\<in>(S\<rightarrow>carrier R)"
+  assumes h2: "S\<subseteq> carrier M" and h3: "a\<in>(S\<rightarrow>carrier R)"
   shows "lincomb a S \<in> carrier M"
 proof -
-  from h1 h2 h3 show ?thesis by (unfold lincomb_def, auto intro:finsum_closed)
+  from h2 h3 show ?thesis by (unfold lincomb_def, auto intro:finsum_closed)
 (*doesn't work with simp*)
 qed
 
@@ -63,7 +63,7 @@ by (intro finprod_cong, auto)
 lemmas (in abelian_monoid) finsum_cong2 = add.finprod_cong2
 
 lemma (in module) lincomb_cong:
-  assumes h1: "finite (A)"  and h2: "A=B" and h3: "A \<subseteq> carrier M" 
+  assumes h2: "A=B" and h3: "A \<subseteq> carrier M" 
     and h4: "\<And>v. v\<in>A \<Longrightarrow> a v = b v" and h5: "b\<in> B\<rightarrow>carrier R"
   shows "lincomb a A = lincomb b B"
 using assms
@@ -112,7 +112,7 @@ using assms
 
 lemma (in module) lincomb_elim_if [simp]:
   fixes b c S
-  assumes h0:"finite S" and h1: "S \<subseteq> carrier M" and h2: "\<And>v. v\<in>S\<Longrightarrow> \<not>P v" and h3: "c\<in>S\<rightarrow>carrier R"
+  assumes h1: "S \<subseteq> carrier M" and h2: "\<And>v. v\<in>S\<Longrightarrow> \<not>P v" and h3: "c\<in>S\<rightarrow>carrier R"
   shows "lincomb (\<lambda>w. if P w then b w else c w) S = lincomb c S"
 using assms
   by (auto cong: finsum_cong2 
@@ -120,7 +120,7 @@ using assms
 
 lemma (in module) lincomb_smult:
   fixes A c
-  assumes h1: "finite A" and h2: "A\<subseteq>carrier M"  and h3: "a\<in>A\<rightarrow>carrier R" and h4: "c\<in>carrier R"
+  assumes h2: "A\<subseteq>carrier M"  and h3: "a\<in>A\<rightarrow>carrier R" and h4: "c\<in>carrier R"
   shows "lincomb (\<lambda>w. c\<otimes>\<^bsub>R\<^esub> a w) A = c\<odot>\<^bsub>M\<^esub> (lincomb a A)"
 using assms
   by (auto cong: finsum_cong2 
@@ -814,7 +814,7 @@ proof -
     apply (rule_tac x="(\<lambda> w. if (w=v) then \<one>\<^bsub>R\<^esub> else \<zero>\<^bsub>R\<^esub>)" in exI)
     apply (rule_tac x="{v}" in exI)
     apply (unfold lincomb_def)
-    by (auto simp add: finsum_insert)
+    by auto 
 qed
 
 lemma (in module) supset_ld_is_ld:
@@ -844,20 +844,17 @@ qed
 
 lemma (in mod_hom) hom_sum:
   fixes A B g
-  assumes h1: "finite A" and h2: "A\<subseteq>carrier M" and h3: "g:A\<rightarrow>carrier M"
+  assumes h2: "A\<subseteq>carrier M" and h3: "g:A\<rightarrow>carrier M"
   shows "f (\<Oplus>\<^bsub>M\<^esub> a\<in>A. g a) = (\<Oplus>\<^bsub>N\<^esub> a\<in>A. f (g a))"
 proof -   
-  from h1 h2 h3 show ?thesis
-  proof (induct set: finite) (*doesn't work on outside?*)
-    case empty
-    show ?case by auto
-  next
+  from h2 h3 show ?thesis
+  proof (induct A rule: infinite_finite_induct) (*doesn't work on outside?*)
     case (insert a A)
     then have "(\<Oplus>\<^bsub>N\<^esub>a\<in>insert a A. f (g a)) = f (g a) \<oplus>\<^bsub>N\<^esub> (\<Oplus>\<^bsub>N\<^esub>a\<in>A. f (g a))"  
       by (intro finsum_insert, auto)
     with insert.prems insert.hyps show ?case
       by simp
-  qed
+  qed auto
 qed
 
 
