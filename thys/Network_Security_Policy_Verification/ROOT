@@ -1,6 +1,6 @@
 chapter AFP
 
-session Network_Security_Policy_Verification (AFP) = Automatic_Refinement + (*Collections does not build atm +*)
+session Network_Security_Policy_Verification (AFP) = Collections +
   options [timeout = 600]
   theories [document = false]
     "Lib/ML_GraphViz_Disable"
