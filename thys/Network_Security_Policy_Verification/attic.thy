@@ -11,7 +11,7 @@ lemma exists_x1x2_x1notoffending_natLeq:
     f and
     p::"'v \<Rightarrow> nat"
   assumes
-    "valid_graph G"
+    "wf_graph G"
     "\<exists>(e1, e2)\<in>(edges G). \<not> (p e1 \<le> p e2)" and
     "f \<subseteq> edges G \<and> (\<forall>(e1, e2)\<in>f. \<not> p e1 \<le> p e2)" and
     "\<forall>(e1, e2)\<in>(edges G) - f. p e1 \<le> p e2"
@@ -20,7 +20,7 @@ proof -
    from assms have a2: "\<exists>x\<in>(edges G). \<not> (case x of (e1, e2) \<Rightarrow> p e1 \<le> p e2)" by auto
    from assms have a3: "f \<subseteq>(edges G) \<and> (\<forall>(e1, e2)\<in>f. \<not> p e1 \<le> p e2)" by simp
    from assms have a4: "\<forall>(e1, e2)\<in>(edges G) - f. p e1 \<le> p e2" by simp
-   from assms(1) have finiteE: "finite (edges G)" using valid_graph.finiteE by fast
+   from assms(1) have finiteE: "finite (edges G)" using wf_graph.finiteE by fast
    from finiteE conjunct1[OF a3] have  finiteF: "finite f" by (metis rev_finite_subset)
 
    -- "Find a suitable x1, it is the Max of the firsts"
@@ -63,7 +63,7 @@ subsection {* Paths *}
   text {* A path is represented by a list of adjacent edges. *}
   type_synonym 'v path = "('v \<times> 'v) list"
 
-  context valid_graph
+  context wf_graph
   begin
     text {* The following predicate describes a valid path:*}
     (* is-path src [src, ...., dst] dst *)
@@ -74,12 +74,12 @@ subsection {* Paths *}
     lemma is_path_simps[simp, intro!]:
       "is_path v [] v \<longleftrightarrow> v\<in>V"
       "is_path v [(v,v')] v' \<longleftrightarrow> (v,v')\<in>E"
-      by (auto dest: E_validD)
+      by (auto dest: E_wfD)
     
     lemma is_path_memb[simp]:
       "is_path v p v' \<Longrightarrow> v\<in>V \<and> v'\<in>V"
       apply (induction p arbitrary: v) 
-       apply (auto dest: E_validD)
+       apply (auto dest: E_wfD)
       done
 
     lemma is_path_split:
@@ -104,11 +104,11 @@ subsection {* Paths *}
     "int_vertices (p1@p2) = int_vertices p1 \<union> int_vertices p2"
     by (auto simp add: int_vertices_def)
   
-  lemma (in valid_graph) int_vertices_subset: 
+  lemma (in wf_graph) int_vertices_subset: 
     "is_path v p v' \<Longrightarrow> int_vertices p \<subseteq> V"
     apply (induct p arbitrary: v)
      apply (simp) 
-    apply (force dest: E_validD)
+    apply (force dest: E_wfD)
     done
 
   lemma int_vertices_empty[simp]: "int_vertices p = {} \<longleftrightarrow> p=[]"
@@ -116,7 +116,7 @@ subsection {* Paths *}
 
 subsubsection {* Splitting Paths *}
   text {*Split a path at the point where it first leaves the set @{text W}: *}
-  lemma (in valid_graph) path_split_set:
+  lemma (in wf_graph) path_split_set:
     assumes "is_path v p v'" and "v\<in>W" and "v'\<notin>W"
     obtains p1 p2 u w u' where
     "p=p1@(u,u')#p2" and
@@ -149,7 +149,7 @@ subsubsection {* Splitting Paths *}
   qed
   
   text {*Split a path at the point where it first enters the set @{text W}:*}
-  lemma (in valid_graph) path_split_set':
+  lemma (in wf_graph) path_split_set':
     assumes "is_path v p v'" and "v'\<in>W"
     obtains p1 p2 u where
     "p=p1@p2" and
@@ -193,7 +193,7 @@ subsubsection {* Splitting Paths *}
   qed
 
   text {* Split a path at the point where a given vertex is first visited: *}
-  lemma (in valid_graph) path_split_vertex:
+  lemma (in wf_graph) path_split_vertex:
     assumes "is_path v p v'" and "u\<in>int_vertices p"
     obtains p1 p2 where
     "p=p1@p2" and

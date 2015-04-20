@@ -17,18 +17,18 @@ subsection{* Some unimportant lemmata *}
     all_security_requirements_fulfilled (get_IFS M) G"
     by(simp add: all_security_requirements_fulfilled_def get_IFS_def)
   lemma all_security_requirements_fulfilled_mono_stateful_policy_to_network_graph:
-      "\<lbrakk> valid_reqs M; E' \<subseteq> E; valid_graph \<lparr> nodes = V, edges = Efix \<union> E \<rparr> \<rbrakk> \<Longrightarrow>  
+      "\<lbrakk> valid_reqs M; E' \<subseteq> E; wf_graph \<lparr> nodes = V, edges = Efix \<union> E \<rparr> \<rbrakk> \<Longrightarrow>  
         all_security_requirements_fulfilled M 
           (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = Efix, flows_state = E \<rparr>)\<Longrightarrow>
         all_security_requirements_fulfilled M 
           (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = Efix, flows_state = E' \<rparr>)"
     apply(simp add: stateful_policy_to_network_graph_def all_flows_def)
     apply(drule all_security_requirements_fulfilled_mono[where E="Efix \<union> E \<union> backflows E" and E'="Efix \<union> E' \<union> backflows E'" and V="V"])
-       apply(thin_tac "valid_graph G" for G)
+       apply(thin_tac "wf_graph G" for G)
        apply(thin_tac "all_security_requirements_fulfilled M G" for M G)
        apply(simp add: backflows_def, blast)
       apply(thin_tac "all_security_requirements_fulfilled M G" for M G)
-      apply(simp add: valid_graph_def)
+      apply(simp add: wf_graph_def)
       apply(simp add: backflows_def)
       using [[simproc add: finite_Collect]] apply(auto)[1]
      apply(simp_all)
@@ -38,10 +38,10 @@ subsection{* Some unimportant lemmata *}
 subsection {* Sketch for generating a stateful policy from a simple directed policy *}
   text{* Having no stateful flows, we trivially get a valid stateful policy. *}
     lemma trivial_stateful_policy_compliance:
-    "\<lbrakk> valid_graph \<lparr> nodes = V, edges = E \<rparr>; valid_reqs M; all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<rparr> \<rbrakk> \<Longrightarrow> 
+    "\<lbrakk> wf_graph \<lparr> nodes = V, edges = E \<rparr>; valid_reqs M; all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<rparr> \<rbrakk> \<Longrightarrow> 
       stateful_policy_compliance \<lparr> hosts = V, flows_fix = E, flows_state = {} \<rparr> \<lparr> nodes = V, edges = E \<rparr> M"
       apply(unfold_locales)
-                   apply(simp_all add: valid_graph_def stateful_policy_to_network_graph_def all_flows_def backflows_def False_set)
+                   apply(simp_all add: wf_graph_def stateful_policy_to_network_graph_def all_flows_def backflows_def False_set)
        apply(simp add: get_IFS_def get_ACS_def all_security_requirements_fulfilled_def)
       apply(clarify)
       apply(drule valid_reqs_ACS_D) 
@@ -73,13 +73,13 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
      apply(simp_all)
     apply force
     done
-    lemma filter_IFS_no_violations_accu_correct_induction: "valid_reqs (get_IFS M) \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
+    lemma filter_IFS_no_violations_accu_correct_induction: "valid_reqs (get_IFS M) \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
             all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = set (accu) \<rparr>) \<Longrightarrow> 
             (set accu) \<union> (set edgesList) \<subseteq> E \<Longrightarrow> 
             all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = set (filter_IFS_no_violations_accu \<lparr> nodes = V, edges = E \<rparr> M accu edgesList) \<rparr>)"
       apply(induction edgesList arbitrary: accu)
        by(simp_all)
-    lemma filter_IFS_no_violations_correct: "\<lbrakk>valid_reqs (get_IFS M); valid_graph G;
+    lemma filter_IFS_no_violations_correct: "\<lbrakk>valid_reqs (get_IFS M); wf_graph G;
             all_security_requirements_fulfilled (get_IFS M) G; 
             (set edgesList) \<subseteq> edges G \<rbrakk> \<Longrightarrow> 
             all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr> hosts = nodes G, flows_fix = edges G, flows_state = set (filter_IFS_no_violations G M edgesList) \<rparr>)"
@@ -88,14 +88,14 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     apply(drule(1) filter_IFS_no_violations_accu_correct_induction[where accu="[]", simplified])
       apply(simp_all)
     by(simp add: stateful_policy_to_network_graph_def all_flows_def backflows_def False_set)
-    lemma filter_IFS_no_violations_accu_no_IFS: "valid_reqs (get_IFS M) \<Longrightarrow> valid_graph G \<Longrightarrow> get_IFS M = [] \<Longrightarrow>
+    lemma filter_IFS_no_violations_accu_no_IFS: "valid_reqs (get_IFS M) \<Longrightarrow> wf_graph G \<Longrightarrow> get_IFS M = [] \<Longrightarrow>
             (set accu) \<union> (set edgesList) \<subseteq> edges G \<Longrightarrow> 
             filter_IFS_no_violations_accu G M accu edgesList = rev(edgesList)@accu"
       apply(induction edgesList arbitrary: accu)
        by(simp_all add: all_security_requirements_fulfilled_def)
 
 
-    lemma filter_IFS_no_violations_accu_maximal_induction: "valid_reqs (get_IFS M) \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow> 
+    lemma filter_IFS_no_violations_accu_maximal_induction: "valid_reqs (get_IFS M) \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow> 
       set accu \<subseteq> E \<Longrightarrow> set edgesList \<subseteq> E \<Longrightarrow>
         \<forall> e \<in> E - (set accu \<union> set edgesList).
             \<not> all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = {e} \<union> (set accu) \<rparr>)
@@ -108,19 +108,19 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       next
       case(Cons e Es)
         from Cons.prems(3) Cons.prems(2) have "fst ` set accu \<subseteq> V" and "snd ` set accu \<subseteq> V"
-          by(auto simp add: valid_graph_def)
-        --"@{const valid_graph} for some complicated structures"
-        from Cons.prems(2) this Cons.prems(4)  have "\<And>ea. ea\<in>E \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = insert e (insert ea (set accu)) \<rparr>"
-          by(auto simp add: valid_graph_def)
-        from backflows_valid[OF this] valid_graph_union_edges[OF Cons.prems(2)]
-        have "\<And>ea. ea\<in>E  \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<union> backflows (insert e (insert ea (set accu))) \<rparr>" by (simp)
-        hence "\<And>ea. ea\<in>E \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<union> set accu \<union> backflows (insert e (insert ea (set accu))) \<rparr>" 
+          by(auto simp add: wf_graph_def)
+        --"@{const wf_graph} for some complicated structures"
+        from Cons.prems(2) this Cons.prems(4)  have "\<And>ea. ea\<in>E \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = insert e (insert ea (set accu)) \<rparr>"
+          by(auto simp add: wf_graph_def)
+        from backflows_wf[OF this] wf_graph_union_edges[OF Cons.prems(2)]
+        have "\<And>ea. ea\<in>E  \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = E \<union> backflows (insert e (insert ea (set accu))) \<rparr>" by (simp)
+        hence "\<And>ea. ea\<in>E \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = E \<union> set accu \<union> backflows (insert e (insert ea (set accu))) \<rparr>" 
           by (metis Cons.prems(3) sup.order_iff)
         from this Cons.prems(4)
-        have "\<And>ea. ea\<in>E \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>"
+        have "\<And>ea. ea\<in>E \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>"
           by(simp add: insert_absorb)
         hence validgraph1: "\<And>ea. ea\<in>E - (set (e # accu) \<union> set Es) \<Longrightarrow> 
-          valid_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>" by(simp)
+          wf_graph \<lparr> nodes = V, edges = insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu))))) \<rparr>" by(simp)
 
         have validgraph2: "\<And> ea. 
          insert ea (E \<union> set accu \<union> backflows (insert ea (set accu))) \<subseteq> insert e (insert ea (E \<union> set accu \<union> backflows (insert e (insert ea (set accu)))))"
@@ -167,7 +167,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         apply(auto)
         done
      qed
-    lemma filter_IFS_no_violations_maximal: "\<lbrakk>valid_reqs (get_IFS M); valid_graph G;
+    lemma filter_IFS_no_violations_maximal: "\<lbrakk>valid_reqs (get_IFS M); wf_graph G;
             (set edgesList) = edges G \<rbrakk> \<Longrightarrow> 
             let stateful = set (filter_IFS_no_violations G M edgesList) in 
             \<forall> e \<in> edges G - stateful.
@@ -180,7 +180,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     --"It is not only maximal for single flows but all non-empty subsets"
     corollary filter_IFS_no_violations_maximal_allsubsets: 
     assumes a1: "valid_reqs (get_IFS M)"
-    and     a2: "valid_graph G"
+    and     a2: "wf_graph G"
     and     a4: "(set edgesList) = edges G"
     shows   "let stateful = set (filter_IFS_no_violations G M edgesList) in 
             \<forall> E \<subseteq> edges G - stateful. E \<noteq> {} \<longrightarrow>
@@ -207,7 +207,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
   
           from filter_IFS_no_violations_subseteq_input a4 have "?stateful \<subseteq> edges G" by blast
           hence "edges G \<union> (E \<union> ?stateful) = edges G" using h2 by blast
-          from a2 this have validgraph1: "valid_graph \<lparr>nodes = nodes G, edges = edges G \<union> (E \<union> ?stateful)\<rparr>"
+          from a2 this have validgraph1: "wf_graph \<lparr>nodes = nodes G, edges = edges G \<union> (E \<union> ?stateful)\<rparr>"
           by(case_tac G, simp)
   
           from h1 h2 h3 have subseteq: "({e} \<union> ?stateful) \<subseteq> (E \<union> ?stateful)" by blast
@@ -268,7 +268,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
        apply(simp_all)
       apply (metis Un_insert_right set_simps(2) set_subset_Cons set_union subset_trans)
       done
-    lemma filter_compliant_stateful_ACS_accu_correct_induction: "valid_reqs (get_ACS M) \<Longrightarrow> valid_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
+    lemma filter_compliant_stateful_ACS_accu_correct_induction: "valid_reqs (get_ACS M) \<Longrightarrow> wf_graph \<lparr> nodes = V, edges = E \<rparr> \<Longrightarrow>
             (set accu) \<union> (set edgesList) \<subseteq> E \<Longrightarrow> 
             \<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr> hosts = V, flows_fix = E, flows_state = set (accu) \<rparr>). F \<subseteq> backflows (set accu) \<Longrightarrow> 
             (\<forall>a \<in> set accu. a \<notin> (backflows E)) \<Longrightarrow>
@@ -286,7 +286,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       qed
 
     
-    lemma filter_compliant_stateful_ACS_accu_no_side_effects: "valid_reqs (get_ACS M) \<Longrightarrow> valid_graph G \<Longrightarrow>
+    lemma filter_compliant_stateful_ACS_accu_no_side_effects: "valid_reqs (get_ACS M) \<Longrightarrow> wf_graph G \<Longrightarrow>
             \<forall>F \<in> get_offending_flows (get_ACS M) \<lparr>nodes = nodes G, edges = edges G \<union> backflows (edges G)\<rparr>. F \<subseteq> (backflows (edges G)) - (edges G) \<Longrightarrow>
             (set accu) \<union> (set edgesList) \<subseteq> edges G \<Longrightarrow> 
             (\<forall>a \<in> set accu. a \<notin> (backflows (edges G))) \<Longrightarrow>
@@ -311,20 +311,20 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         apply(blast)
        apply(simp add: backflows_def)
        apply fast
-      using FiniteGraph.backflows_valid FiniteGraph.valid_graph_union_edges by metis
+      using FiniteGraph.backflows_wf FiniteGraph.wf_graph_union_edges by metis
 
 
 
     lemma filter_compliant_stateful_ACS_correct: 
       assumes a1: "valid_reqs (get_ACS M)"
-      and     a2: "valid_graph G"
+      and     a2: "wf_graph G"
       and     a3: "set edgesList \<subseteq> edges G"  
       and     a4: "all_security_requirements_fulfilled (get_ACS M) G"
       and     a5: "\<T> = \<lparr> hosts = nodes G, flows_fix = edges G, flows_state = set (filter_compliant_stateful_ACS G M edgesList) \<rparr>"
       shows   "\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>). F \<subseteq> backflows (filternew_flows_state \<T>)"
       proof -
         obtain V E where VE: "G = \<lparr> nodes = V, edges = E \<rparr>" by(case_tac G, blast)
-        from VE a2 have validVE: "valid_graph \<lparr> nodes = V, edges = E \<rparr>" by simp
+        from VE a2 have wfVE: "wf_graph \<lparr> nodes = V, edges = E \<rparr>" by simp
         from VE a3 have "set edgesList \<subseteq> E" by simp
 
         from a5 VE have a5': "\<T> = \<lparr>hosts = V, flows_fix = E, flows_state = set (filter_compliant_stateful_ACS_accu \<lparr>nodes = V, edges = E\<rparr> M [] edgesList)\<rparr>"
@@ -335,12 +335,12 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         have "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = {}\<rparr>). F \<subseteq> backflows {}"
           by(simp add: stateful_policy_to_network_graph_def all_flows_def backflows_def False_set)
 
-        from filter_compliant_stateful_ACS_accu_correct_induction[where accu="[]" and edgesList="edgesList", simplified, OF a1 validVE `set edgesList \<subseteq> E` this a5']
+        from filter_compliant_stateful_ACS_accu_correct_induction[where accu="[]" and edgesList="edgesList", simplified, OF a1 wfVE `set edgesList \<subseteq> E` this a5']
         show ?thesis .
      qed
 
 
-    lemma filter_compliant_stateful_ACS_accu_induction_maximal:"\<lbrakk> valid_reqs (get_ACS M);  valid_graph \<lparr> nodes = V, edges = E \<rparr>;
+    lemma filter_compliant_stateful_ACS_accu_induction_maximal:"\<lbrakk> valid_reqs (get_ACS M);  wf_graph \<lparr> nodes = V, edges = E \<rparr>;
             (set edgesList) \<subseteq> E;
             (set accu) \<subseteq> E; 
             stateful = set (filter_compliant_stateful_ACS_accu \<lparr> nodes = V, edges = E \<rparr> M accu edgesList);
@@ -393,15 +393,15 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
               dat_in: "dat_offender \<in> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set accu \<union> {e}\<rparr>)"
               and dat_offends: "dat_offender \<notin> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = set accu \<union> {e}\<rparr>)" by blast
 
-            have validGraphA: "valid_graph (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu) \<union> {e}\<rparr>)"
+            have wfGraphA: "wf_graph (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu) \<union> {e}\<rparr>)"
               proof(simp add: stateful_policy_to_network_graph_def all_flows_def)
               from Cons.prems(2) h1 Cons.prems(3) Cons.prems(4)
-              have "valid_graph \<lparr>nodes=V, edges = insert e (insert a (set accu)) \<rparr>" 
-              apply(auto simp add: valid_graph_def) by force
-              from this backflows_valid
-              have vgh1: "valid_graph \<lparr>nodes = V, edges = backflows (insert e (insert a (set accu)))\<rparr>" by auto
-              from Cons.prems(2) valid_graph_add_subset_edges h1  Cons.prems(3) Cons.prems(4)
-              have vgh2: "valid_graph \<lparr>nodes = V, edges = insert e ((insert a E) \<union> set accu)\<rparr>"
+              have "wf_graph \<lparr>nodes=V, edges = insert e (insert a (set accu)) \<rparr>" 
+              apply(auto simp add: wf_graph_def) by force
+              from this backflows_wf
+              have vgh1: "wf_graph \<lparr>nodes = V, edges = backflows (insert e (insert a (set accu)))\<rparr>" by auto
+              from Cons.prems(2) wf_graph_add_subset_edges h1  Cons.prems(3) Cons.prems(4)
+              have vgh2: "wf_graph \<lparr>nodes = V, edges = insert e ((insert a E) \<union> set accu)\<rparr>"
                 proof -
                   have f1: "e \<in> E - (set Es \<union> insert a (set accu) \<union> {R \<in> E. R \<in> backflows E})"
                     using h1 by simp
@@ -411,11 +411,11 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
                     using f1 by fastforce
                   have "E \<union> insert a (set accu) = E"
                     using f2 by fastforce
-                  thus "valid_graph \<lparr>nodes = V, edges = insert e (insert a E \<union> set accu)\<rparr>"
+                  thus "wf_graph \<lparr>nodes = V, edges = insert e (insert a E \<union> set accu)\<rparr>"
                     using f3 Cons.prems(2) Un_insert_right insert_absorb sup_commute by fastforce
                 qed
-              from vgh1 vgh2 valid_graph_union_edges
-              show "valid_graph \<lparr>nodes = V, edges = insert e (insert a (E \<union> set accu \<union> backflows (insert e (insert a (set accu)))))\<rparr>" by fastforce
+              from vgh1 vgh2 wf_graph_union_edges
+              show "wf_graph \<lparr>nodes = V, edges = insert e (insert a (E \<union> set accu \<union> backflows (insert e (insert a (set accu)))))\<rparr>" by fastforce
            qed
             
             from dat_in have dat_in_simplified: 
@@ -432,7 +432,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
             from get_offending_flows_union_mono[OF 
                 Cons.prems(1) 
-                validGraphA[simplified stateful_policy_to_network_graph_def all_flows_def graph.select_convs stateful_policy.select_convs],
+                wfGraphA[simplified stateful_policy_to_network_graph_def all_flows_def graph.select_convs stateful_policy.select_convs],
                 OF subsethlp]
             dat_in_simplified have dat_in_a: "dat_offender \<in> \<Union>get_offending_flows (get_ACS M) 
               (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu) \<union> {e}\<rparr>)"
@@ -529,7 +529,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
    
 
-    lemma filter_compliant_stateful_ACS_maximal: "\<lbrakk> valid_reqs (get_ACS M); valid_graph \<lparr> nodes = V, edges = E \<rparr>;
+    lemma filter_compliant_stateful_ACS_maximal: "\<lbrakk> valid_reqs (get_ACS M); wf_graph \<lparr> nodes = V, edges = E \<rparr>;
             (set edgesList) = E;
             stateful = set (filter_compliant_stateful_ACS \<lparr> nodes = V, edges = E \<rparr> M edgesList)
             \<rbrakk> \<Longrightarrow>
@@ -546,7 +546,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
 
     lemma filter_compliant_stateful_ACS_maximal_allsubsets:
-      assumes a1: "valid_reqs (get_ACS M)" and a2: "valid_graph \<lparr> nodes = V, edges = E \<rparr>"
+      assumes a1: "valid_reqs (get_ACS M)" and a2: "wf_graph \<lparr> nodes = V, edges = E \<rparr>"
       and a3: "(set edgesList) = E"
       and a4: "stateful = set (filter_compliant_stateful_ACS \<lparr> nodes = V, edges = E \<rparr> M edgesList)"
       and a5: "X \<subseteq> E - (stateful \<union> backflows E)" and a6: "X \<noteq> {}"
@@ -563,7 +563,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       hence accontr_simp: "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = E \<union> (backflows stateful) \<union> (backflows X)\<rparr> \<subseteq> backflows (stateful \<union> X) - E"
       using Set.Un_absorb2[OF `X \<subseteq> E`] backflows_un[of "stateful" "X"] by (metis Un_assoc)
       
-      from a2 a5 have "finite X" apply(simp add: valid_graph_def) by (metis (full_types) finite_Diff finite_subset)
+      from a2 a5 have "finite X" apply(simp add: wf_graph_def) by (metis (full_types) finite_Diff finite_subset)
       from a6 obtain x where "x \<in> X" by blast
 
 
@@ -589,16 +589,16 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
       have "backflows (stateful \<union> X) - E - backflows (X - {x}) = (backflows (stateful \<union> X) - E) - backflows (X - {x})" by simp
       from `finite X` backflows_finite have finite: "finite (backflows (X - {x}) - E)" by auto
-      from a2 a4 a3 filter_compliant_stateful_ACS_subseteq_input have "valid_graph \<lparr>nodes = V, edges = stateful\<rparr>" by (metis Diff_partition valid_graph_remove_edges_union)
-      from backflows_valid[OF this] have "valid_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>" .
-      from a2 `X \<subseteq> E` have "valid_graph \<lparr>nodes = V, edges = X\<rparr>" by (metis double_diff dual_order.refl valid_graph_remove_edges)
-       from backflows_valid[OF this] have "valid_graph \<lparr>nodes = V, edges = backflows X\<rparr>" .
-      from this valid_graph_union_edges `valid_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>` a2 have validG: 
-        "valid_graph \<lparr>nodes = V, edges = E \<union> backflows stateful \<union> backflows X\<rparr>" by metis
+      from a2 a4 a3 filter_compliant_stateful_ACS_subseteq_input have "wf_graph \<lparr>nodes = V, edges = stateful\<rparr>" by (metis Diff_partition wf_graph_remove_edges_union)
+      from backflows_wf[OF this] have "wf_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>" .
+      from a2 `X \<subseteq> E` have "wf_graph \<lparr>nodes = V, edges = X\<rparr>" by (metis double_diff dual_order.refl wf_graph_remove_edges)
+       from backflows_wf[OF this] have "wf_graph \<lparr>nodes = V, edges = backflows X\<rparr>" .
+      from this wf_graph_union_edges `wf_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>` a2 have wfG: 
+        "wf_graph \<lparr>nodes = V, edges = E \<union> backflows stateful \<union> backflows X\<rparr>" by metis
 
       from `x\<in>X` have subset: "backflows (X - {x}) - E \<subseteq> E \<union> backflows stateful \<union> backflows X" apply(simp add: backflows_def) by fast
 
-      from Un_set_offending_flows_bound_minus_subseteq'[OF a1 validG subset accontr_simp] have
+      from Un_set_offending_flows_bound_minus_subseteq'[OF a1 wfG subset accontr_simp] have
         "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = (E \<union> backflows stateful \<union> backflows X) - (backflows (X - {x}) - E)\<rparr> \<subseteq> (backflows (stateful \<union> X) - E) - (backflows (X - {x}) - E)" by simp
       from this xX_simp4 xX_simp5 have trans1:
         "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = E \<union> backflows stateful \<union> backflows {x}\<rparr> \<subseteq> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {x}\<rparr>)" by simp
@@ -639,13 +639,13 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         (let filterACS = filter_compliant_stateful_ACS G M filterIFS in \<lparr> hosts = nodes G, flows_fix = edges G, flows_state = set filterACS \<rparr>))"
 
 
-  lemma generate_valid_stateful_policy_IFSACS_valid_stateful_policy: assumes validG: "valid_graph G"
+  lemma generate_valid_stateful_policy_IFSACS_valid_stateful_policy: assumes wfG: "wf_graph G"
           and     edgesList: "(set edgesList) = edges G"
           shows "valid_stateful_policy (generate_valid_stateful_policy_IFSACS G M edgesList)"
    proof -
-    from  validG show ?thesis
+    from  wfG show ?thesis
      apply(simp add: generate_valid_stateful_policy_IFSACS_def valid_stateful_policy_def)
-     apply(auto simp add: valid_graph_def)
+     apply(auto simp add: wf_graph_def)
      using edgesList filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input by (metis set_rev_mp)
    qed
 
@@ -664,7 +664,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     qed
 
   lemma generate_valid_stateful_policy_IFSACS_all_security_requirements_fulfilled_IFS: assumes validReqs: "valid_reqs M"
-          and     validG: "valid_graph G"
+          and     wfG: "wf_graph G"
           and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
           and     edgesList: "(set edgesList) \<subseteq> edges G"
           shows "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph (generate_valid_stateful_policy_IFSACS G M edgesList))"
@@ -679,7 +679,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       "edges G \<union> backflows (set (filter_compliant_stateful_ACS G M (filter_IFS_no_violations G M edgesList))) \<subseteq> edges G \<union> backflows (set (filter_IFS_no_violations G M edgesList))" by blast
 
     from high_level_policy_valid have "all_security_requirements_fulfilled (get_IFS M) G" by(simp add: all_security_requirements_fulfilled_def get_IFS_def)
-    from filter_IFS_no_violations_correct[OF valid_reqs_IFS_D[OF validReqs] validG this edgesList] have 
+    from filter_IFS_no_violations_correct[OF valid_reqs_IFS_D[OF validReqs] wfG this edgesList] have 
       "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = set (filter_IFS_no_violations G M edgesList)\<rparr>)" .
       from this edgesList have goalIFS:
         "all_security_requirements_fulfilled (get_IFS M) \<lparr>nodes = nodes G, edges = edges G \<union> backflows (set (filter_IFS_no_violations G M edgesList))\<rparr>"
@@ -687,14 +687,14 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         by (metis Un_absorb2 filter_IFS_no_violations_subseteq_input order_trans)
 
 
-      from  validG filter_IFS_no_violations_subseteq_input[where Es="edgesList" and G="G" and M="M"] edgesList have 
-        "valid_graph \<lparr>nodes = nodes G, edges = set (filter_IFS_no_violations G M edgesList)\<rparr>" 
+      from  wfG filter_IFS_no_violations_subseteq_input[where Es="edgesList" and G="G" and M="M"] edgesList have 
+        "wf_graph \<lparr>nodes = nodes G, edges = set (filter_IFS_no_violations G M edgesList)\<rparr>" 
          apply(case_tac G, simp)
-         by (metis le_iff_sup valid_graph_remove_edges_union)
-      from backflows_valid[OF this] have
-        "valid_graph \<lparr>nodes = nodes G, edges = backflows (set (filter_IFS_no_violations G M edgesList))\<rparr>" by(simp)
-      from this valid_graph_union_edges validG have 
-        "valid_graph \<lparr>nodes = nodes G, edges = edges G \<union> backflows (set (filter_IFS_no_violations G M edgesList))\<rparr>" 
+         by (metis le_iff_sup wf_graph_remove_edges_union)
+      from backflows_wf[OF this] have
+        "wf_graph \<lparr>nodes = nodes G, edges = backflows (set (filter_IFS_no_violations G M edgesList))\<rparr>" by(simp)
+      from this wf_graph_union_edges wfG have 
+        "wf_graph \<lparr>nodes = nodes G, edges = edges G \<union> backflows (set (filter_IFS_no_violations G M edgesList))\<rparr>" 
         by (metis graph.cases graph.select_convs(1) graph.select_convs(2))
 
       from all_security_requirements_fulfilled_mono[OF valid_reqs_IFS_D[OF validReqs] subseteqhlp1 this goalIFS]
@@ -707,7 +707,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
   theorem generate_valid_stateful_policy_IFSACS_stateful_policy_compliance:
   assumes validReqs: "valid_reqs M"
-        and     validG: "valid_graph G"
+        and     wfG: "wf_graph G"
         and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
         and     edgesList: "(set edgesList) = edges G"
         and     Tau: "\<T> = generate_valid_stateful_policy_IFSACS G M edgesList"
@@ -715,9 +715,9 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     proof -
       have 1: "valid_stateful_policy \<T>"
         apply(simp add: Tau)
-        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF validG edgesList])
+        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF wfG edgesList])
       have 2: "valid_stateful_policy (generate_valid_stateful_policy_IFSACS G M edgesList)"
-        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF validG edgesList])
+        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF wfG edgesList])
       have 3: "hosts \<T> = nodes G"
         apply(simp add: Tau)
         by(simp add: generate_valid_stateful_policy_IFSACS_select_simps(1))
@@ -726,12 +726,12 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         by(simp add: generate_valid_stateful_policy_IFSACS_select_simps(2))
       have 5: " all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<T>)"
         apply(simp add: Tau)
-        using generate_valid_stateful_policy_IFSACS_all_security_requirements_fulfilled_IFS[OF validReqs validG high_level_policy_valid] edgesList by blast
+        using generate_valid_stateful_policy_IFSACS_all_security_requirements_fulfilled_IFS[OF validReqs wfG high_level_policy_valid] edgesList by blast
       have 6: "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>). F \<subseteq> backflows (filternew_flows_state \<T>)"
-        using filter_compliant_stateful_ACS_correct[OF valid_reqs_ACS_D[OF validReqs] validG _ _ Tau[simplified generate_valid_stateful_policy_IFSACS_def Let_def]] all_security_requirements_fulfilled_ACS_D[OF high_level_policy_valid]
+        using filter_compliant_stateful_ACS_correct[OF valid_reqs_ACS_D[OF validReqs] wfG _ _ Tau[simplified generate_valid_stateful_policy_IFSACS_def Let_def]] all_security_requirements_fulfilled_ACS_D[OF high_level_policy_valid]
         edgesList filter_IFS_no_violations_subseteq_input by metis
 
-    from 1 2 3 4 5 6 validReqs high_level_policy_valid validG
+    from 1 2 3 4 5 6 validReqs high_level_policy_valid wfG
     show ?thesis
     unfolding stateful_policy_compliance_def by simp
   qed
@@ -745,13 +745,13 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     \<lparr> hosts = nodes G, flows_fix = edges G, flows_state = set (filter_IFS_no_violations G M edgesList) \<inter> set (filter_compliant_stateful_ACS G M edgesList) \<rparr>"
 
 
-  lemma generate_valid_stateful_policy_IFSACS_2_valid_stateful_policy: assumes validG: "valid_graph G"
+  lemma generate_valid_stateful_policy_IFSACS_2_valid_stateful_policy: assumes wfG: "wf_graph G"
           and     edgesList: "(set edgesList) = edges G"
           shows "valid_stateful_policy (generate_valid_stateful_policy_IFSACS_2 G M edgesList)"
    proof -
-    from  validG show ?thesis
+    from  wfG show ?thesis
      apply(simp add: generate_valid_stateful_policy_IFSACS_2_def valid_stateful_policy_def)
-     apply(auto simp add: valid_graph_def)
+     apply(auto simp add: wf_graph_def)
      using edgesList filter_IFS_no_violations_subseteq_input by (metis set_rev_mp)
    qed
 
@@ -770,23 +770,23 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     qed
 
   lemma generate_valid_stateful_policy_IFSACS_2_all_security_requirements_fulfilled_IFS: assumes validReqs: "valid_reqs M"
-          and     validG: "valid_graph G"
+          and     wfG: "wf_graph G"
           and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
           and     edgesList: "(set edgesList) \<subseteq> edges G"
           shows "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph (generate_valid_stateful_policy_IFSACS_2 G M edgesList))"
   proof -
     have subseteq: "set (filter_IFS_no_violations G M edgesList) \<inter> set (filter_compliant_stateful_ACS G M edgesList) \<subseteq> set (filter_IFS_no_violations G M edgesList)" by blast
 
-    from validG filter_IFS_no_violations_subseteq_input edgesList
-    have validG': "valid_graph \<lparr>nodes = nodes G, edges = edges G \<union> set (filter_IFS_no_violations G M edgesList)\<rparr>" 
+    from wfG filter_IFS_no_violations_subseteq_input edgesList
+    have wfG': "wf_graph \<lparr>nodes = nodes G, edges = edges G \<union> set (filter_IFS_no_violations G M edgesList)\<rparr>" 
       by (metis graph_eq_intro Un_absorb2 graph.select_convs(1) graph.select_convs(2) order.trans)
 
     from high_level_policy_valid have "all_security_requirements_fulfilled (get_IFS M) G" by(simp add: all_security_requirements_fulfilled_def get_IFS_def)
-    from filter_IFS_no_violations_correct[OF valid_reqs_IFS_D[OF validReqs] validG this edgesList] have 
+    from filter_IFS_no_violations_correct[OF valid_reqs_IFS_D[OF validReqs] wfG this edgesList] have 
       "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = set (filter_IFS_no_violations G M edgesList)\<rparr>)" .
 
 
-    from all_security_requirements_fulfilled_mono_stateful_policy_to_network_graph[OF valid_reqs_IFS_D[OF validReqs] subseteq validG' this]
+    from all_security_requirements_fulfilled_mono_stateful_policy_to_network_graph[OF valid_reqs_IFS_D[OF validReqs] subseteq wfG' this]
     have "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph (generate_valid_stateful_policy_IFSACS_2 G M edgesList))"
       by(simp add: generate_valid_stateful_policy_IFSACS_2_def)
     thus ?thesis .
@@ -795,7 +795,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
   lemma generate_valid_stateful_policy_IFSACS_2_filter_compliant_stateful_ACS:
   assumes validReqs: "valid_reqs M"
-        and     validG: "valid_graph G"
+        and     wfG: "wf_graph G"
         and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
         and     edgesList: "(set edgesList) \<subseteq> edges G"
         and     Tau: "\<T> = generate_valid_stateful_policy_IFSACS_2 G M edgesList"
@@ -805,7 +805,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       let ?filterIFS = "set (filter_IFS_no_violations G M edgesList)"
       from all_security_requirements_fulfilled_ACS_D[OF high_level_policy_valid] have "all_security_requirements_fulfilled (get_ACS M) G" .
 
-      from filter_compliant_stateful_ACS_correct[OF valid_reqs_ACS_D[OF validReqs] validG edgesList this] have 
+      from filter_compliant_stateful_ACS_correct[OF valid_reqs_ACS_D[OF validReqs] wfG edgesList this] have 
         "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph  \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = ?filterACS\<rparr>). 
           F \<subseteq> backflows (?filterACS) - edges G"
         apply(simp)
@@ -820,12 +820,12 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
           backflows (?filterACS) - edges G"
         by(simp add: valid_reqs_def get_offending_flows_def, blast)
 
-      from validG filter_compliant_stateful_ACS_subseteq_input edgesList have "valid_graph \<lparr>nodes = nodes G, edges = ?filterACS\<rparr>"
-        by (metis graph.cases graph.select_convs(1) graph.select_convs(2) le_iff_sup valid_graph_remove_edges_union)
-      from this backflows_valid have "valid_graph \<lparr>nodes = nodes G, edges = backflows (?filterACS)\<rparr>" by blast
-      moreover have "valid_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" using validG by(case_tac G, simp)
-      ultimately have validG1: "valid_graph \<lparr>nodes = nodes G, edges = edges G \<union> backflows (?filterACS)\<rparr>"
-        using valid_graph_union_edges by blast
+      from wfG filter_compliant_stateful_ACS_subseteq_input edgesList have "wf_graph \<lparr>nodes = nodes G, edges = ?filterACS\<rparr>"
+        by (metis graph.cases graph.select_convs(1) graph.select_convs(2) le_iff_sup wf_graph_remove_edges_union)
+      from this backflows_wf have "wf_graph \<lparr>nodes = nodes G, edges = backflows (?filterACS)\<rparr>" by blast
+      moreover have "wf_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" using wfG by(case_tac G, simp)
+      ultimately have wfG1: "wf_graph \<lparr>nodes = nodes G, edges = edges G \<union> backflows (?filterACS)\<rparr>"
+        using wf_graph_union_edges by blast
         
       from edgesList have edgesUnsimp: "edges G \<union> (?filterACS \<inter> ?filterIFS) = edges G"
         using filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input by blast
@@ -839,12 +839,12 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       have REM_gives_desired_edges: "(edges G \<union> backflows (?filterACS)) - ?REM = edges G \<union> (backflows (?filterACS \<inter> ?filterIFS))"
         by(simp add: backflows_def, blast)
 
-      from validG have "finite (edges G)" using valid_graph_def by blast
+      from wfG have "finite (edges G)" using wf_graph_def by blast
       hence "finite (backflows ?filterACS)" using backflows_finite by (metis List.finite_set)
       hence finite1: "finite (backflows (?filterACS) - backflows (?filterIFS) - edges G)" by fast
 
       from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq[where E'="?REM" and X="(backflows (?filterACS) - edges G)",
-          OF _ validG1 offending_filterACS_upperbound, simplified REM_gives_desired_upper_bound REM_gives_desired_edges
+          OF _ wfG1 offending_filterACS_upperbound, simplified REM_gives_desired_upper_bound REM_gives_desired_edges
           ] valid_reqs_ACS_D[OF validReqs, unfolded valid_reqs_def]
       have "\<And>m. m \<in> set (get_ACS M) \<Longrightarrow>
               \<forall>F\<in>c_offending_flows m \<lparr>nodes = nodes G, edges = edges G \<union> backflows (?filterACS \<inter> ?filterIFS)\<rparr>.
@@ -872,7 +872,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
   theorem generate_valid_stateful_policy_IFSACS_2_stateful_policy_compliance:
   assumes validReqs: "valid_reqs M"
-        and     validG: "valid_graph G"
+        and     wfG: "wf_graph G"
         and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
         and     edgesList: "(set edgesList) = edges G"
         and     Tau: "\<T> = generate_valid_stateful_policy_IFSACS_2 G M edgesList"
@@ -880,9 +880,9 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     proof -
       have 1: "valid_stateful_policy \<T>"
         apply(simp add: Tau)
-        by(simp add: generate_valid_stateful_policy_IFSACS_2_valid_stateful_policy[OF validG edgesList])
+        by(simp add: generate_valid_stateful_policy_IFSACS_2_valid_stateful_policy[OF wfG edgesList])
       have 2: "valid_stateful_policy (generate_valid_stateful_policy_IFSACS G M edgesList)"
-        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF validG edgesList])
+        by(simp add: generate_valid_stateful_policy_IFSACS_valid_stateful_policy[OF wfG edgesList])
       have 3: "hosts \<T> = nodes G"
         apply(simp add: Tau)
         by(simp add: generate_valid_stateful_policy_IFSACS_2_select_simps(1))
@@ -891,13 +891,13 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         by(simp add: generate_valid_stateful_policy_IFSACS_2_select_simps(2))
       have 5: "all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<T>)"
         apply(simp add: Tau)
-        using generate_valid_stateful_policy_IFSACS_2_all_security_requirements_fulfilled_IFS[OF validReqs validG high_level_policy_valid] edgesList by blast
+        using generate_valid_stateful_policy_IFSACS_2_all_security_requirements_fulfilled_IFS[OF validReqs wfG high_level_policy_valid] edgesList by blast
       have 6: "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>). F \<subseteq> backflows (filternew_flows_state \<T>)"
         using generate_valid_stateful_policy_IFSACS_2_filter_compliant_stateful_ACS[OF 
-            validReqs validG high_level_policy_valid]
+            validReqs wfG high_level_policy_valid]
         Tau edgesList by auto
 
-    from 1 2 3 4 5 6 validReqs high_level_policy_valid validG
+    from 1 2 3 4 5 6 validReqs high_level_policy_valid wfG
     show ?thesis
     unfolding stateful_policy_compliance_def by simp
   qed
@@ -912,14 +912,14 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
   *}
   lemma generate_valid_stateful_policy_IFSACS_2_noIFS_noACSsideeffects_imp_fullgraph:
   assumes validReqs: "valid_reqs M"
-        and     validG: "valid_graph G"
+        and     wfG: "wf_graph G"
         and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
         and     edgesList: "(set edgesList) = edges G"
         and     no_ACS_sideeffects: "\<forall>F \<in> get_offending_flows (get_ACS M) \<lparr>nodes = nodes G, edges = edges G \<union> backflows (edges G)\<rparr>. F \<subseteq> (backflows (edges G)) - (edges G)"
         and     no_IFS: "get_IFS M = []"
   shows "stateful_policy_to_network_graph (generate_valid_stateful_policy_IFSACS_2 G M edgesList) = undirected G"
   proof -
-    from filter_IFS_no_violations_accu_no_IFS[OF valid_reqs_IFS_D[OF validReqs] validG no_IFS] edgesList
+    from filter_IFS_no_violations_accu_no_IFS[OF valid_reqs_IFS_D[OF validReqs] wfG no_IFS] edgesList
       have "filter_IFS_no_violations G M edgesList = rev edgesList"
       by(simp add: filter_IFS_no_violations_def)
     from this filter_compliant_stateful_ACS_subseteq_input have flows_state_IFS: "flows_state (generate_valid_stateful_policy_IFSACS_2 G M edgesList) = set (filter_compliant_stateful_ACS G M edgesList)"
@@ -929,7 +929,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
     have hosts: "hosts (generate_valid_stateful_policy_IFSACS_2 G M edgesList) = nodes G" by(simp add: generate_valid_stateful_policy_IFSACS_2_def)
 
-    from filter_compliant_stateful_ACS_accu_no_side_effects[OF valid_reqs_ACS_D[OF validReqs] validG no_ACS_sideeffects] have 
+    from filter_compliant_stateful_ACS_accu_no_side_effects[OF valid_reqs_ACS_D[OF validReqs] wfG no_ACS_sideeffects] have 
       "filter_compliant_stateful_ACS G M edgesList = rev [e\<leftarrow>edgesList . e \<notin> backflows (edges G)]"
       by(simp add: filter_compliant_stateful_ACS_def edgesList)
     hence filterACS: "set (filter_compliant_stateful_ACS G M edgesList) = edges G - (backflows (edges G))" using edgesList by force
@@ -942,14 +942,14 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
     qed
   lemma generate_valid_stateful_policy_IFSACS_noIFS_noACSsideeffects_imp_fullgraph:
   assumes validReqs: "valid_reqs M"
-        and     validG: "valid_graph G"
+        and     wfG: "wf_graph G"
         and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
         and     edgesList: "(set edgesList) = edges G"
         and     no_ACS_sideeffects: "\<forall>F \<in> get_offending_flows (get_ACS M) \<lparr>nodes = nodes G, edges = edges G \<union> backflows (edges G)\<rparr>. F \<subseteq> (backflows (edges G)) - (edges G)"
         and     no_IFS: "get_IFS M = []"
   shows "stateful_policy_to_network_graph (generate_valid_stateful_policy_IFSACS G M edgesList) = undirected G"
   proof -
-    from filter_IFS_no_violations_accu_no_IFS[OF valid_reqs_IFS_D[OF validReqs] validG no_IFS] edgesList
+    from filter_IFS_no_violations_accu_no_IFS[OF valid_reqs_IFS_D[OF validReqs] wfG no_IFS] edgesList
       have "filter_IFS_no_violations G M edgesList = rev edgesList"
       by(simp add: filter_IFS_no_violations_def)
     from this filter_compliant_stateful_ACS_subseteq_input have flows_state_IFS: "flows_state (generate_valid_stateful_policy_IFSACS G M edgesList) = set (filter_compliant_stateful_ACS G M (rev edgesList))"
@@ -959,7 +959,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
     have hosts: "hosts (generate_valid_stateful_policy_IFSACS G M edgesList) = nodes G" by(simp add: generate_valid_stateful_policy_IFSACS_def)
 
-    from filter_compliant_stateful_ACS_accu_no_side_effects[OF valid_reqs_ACS_D[OF validReqs] validG no_ACS_sideeffects] have 
+    from filter_compliant_stateful_ACS_accu_no_side_effects[OF valid_reqs_ACS_D[OF validReqs] wfG no_ACS_sideeffects] have 
       "filter_compliant_stateful_ACS G M (rev edgesList) = [e\<leftarrow>edgesList . e \<notin> backflows (edges G)]"
       apply(simp add: filter_compliant_stateful_ACS_def edgesList) by (metis rev_filter rev_swap)
     hence filterACS: "set (filter_compliant_stateful_ACS G M (rev edgesList)) = edges G - (backflows (edges G))" using edgesList by force
@@ -986,7 +986,7 @@ text{* In the following, we see failed attempts which try to prove that under co
 
 
 
-  theorem "\<lbrakk> valid_reqs M; valid_graph G; all_security_requirements_fulfilled M G; (set edgesList) \<subseteq> edges G
+  theorem "\<lbrakk> valid_reqs M; wf_graph G; all_security_requirements_fulfilled M G; (set edgesList) \<subseteq> edges G
     \<rbrakk> \<Longrightarrow>
         is_max_stateful_flows G M (set edgesList) (flows_state (generate_valid_stateful_policy_IFSACS_2 G M edgesList))"
   proof(induction edgesList)
@@ -1039,7 +1039,7 @@ oops
 (*IDEA: induction oder edgesList?? needs assumption,. ....*)
   theorem generate_valid_stateful_policy_IFSACS_stateful_policy_compliance_maximum:
   assumes validReqs: "valid_reqs M"
-      and     validG: "valid_graph G"
+      and     wfG: "wf_graph G"
       and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
       and     edgesList: "(set edgesList) = edges G"
       and     stateful: "stateful = flows_state (generate_valid_stateful_policy_IFSACS_2 G M edgesList)"
@@ -1049,7 +1049,7 @@ oops
     
     have G_unfold: "G = \<lparr>nodes = nodes G, edges = edges G\<rparr>" by(case_tac G, simp)
     hence G_fold: "\<lparr>nodes = nodes G, edges = edges G\<rparr> = G" by presburger
-    from validG have validG': "valid_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" by(case_tac G, simp)
+    from wfG have wfG': "wf_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" by(case_tac G, simp)
     let ?filterACS = "set (filter_compliant_stateful_ACS G M edgesList)"
     let ?filterIFS = "set (filter_IFS_no_violations G M edgesList)"
 
@@ -1057,9 +1057,9 @@ oops
       by(simp add: generate_valid_stateful_policy_IFSACS_2_def)
     from this filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input edgesList have "stateful \<subseteq> edges G" by blast
 
-    from validG addede `stateful \<subseteq> edges G` have valid_statefulG: 
+    from wfG addede `stateful \<subseteq> edges G` have valid_statefulG: 
       "valid_stateful_policy \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = insert e stateful\<rparr>"
-      by(simp add: valid_stateful_policy_def valid_graph_def)
+      by(simp add: valid_stateful_policy_def wf_graph_def)
 
     assume ccontr: "stateful_policy_compliance \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = stateful \<union> {e}\<rparr> G M"
     hence IFS_cctr: "all_security_requirements_fulfilled (get_IFS M) 
@@ -1067,7 +1067,7 @@ oops
       and 
       ACS_cctr: "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = insert e stateful\<rparr>).
         F \<subseteq> backflows (filternew_flows_state \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = insert e stateful\<rparr>)"
-      by(simp_all add: stateful_policy_compliance_def validG validReqs high_level_policy_valid valid_statefulG)
+      by(simp_all add: stateful_policy_compliance_def wfG validReqs high_level_policy_valid valid_statefulG)
       (**use theorem to ...**)
 
     from get_offending_flows_union_mono[OF validReqs]
@@ -1089,12 +1089,12 @@ oops
     thm filter_IFS_no_violations_accu_maximal_induction[where accu="[]", simplified]
     thm filter_compliant_stateful_ACS_accu_induction_maximal[where accu="[]", simplified]
 
-    from filter_IFS_no_violations_maximal[OF valid_reqs_IFS_D[OF validReqs] validG edgesList] have IFS_max:
+    from filter_IFS_no_violations_maximal[OF valid_reqs_IFS_D[OF validReqs] wfG edgesList] have IFS_max:
       "\<forall>e\<in>edges G - ?filterIFS.
         \<not> all_security_requirements_fulfilled (get_IFS M)
             (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = {e} \<union> ?filterIFS\<rparr>)" by metis
 
-    from filter_compliant_stateful_ACS_maximal[OF valid_reqs_ACS_D[OF validReqs] validG' edgesList, where stateful="?filterACS"] have ACS_max:
+    from filter_compliant_stateful_ACS_maximal[OF valid_reqs_ACS_D[OF validReqs] wfG' edgesList, where stateful="?filterACS"] have ACS_max:
       "\<forall>e\<in>edges G - (?filterACS \<union> {e \<in> edges G. e \<in> backflows (edges G)}).
      \<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = ?filterACS \<union> {e}\<rparr>)
         \<subseteq> backflows (filternew_flows_state \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = ?filterACS \<union> {e}\<rparr>)"
@@ -1132,14 +1132,14 @@ oops
 
   theorem generate_valid_stateful_policy_IFSACS_stateful_policy_compliance_maximum:
   assumes validReqs: "valid_reqs M"
-      and     validG: "valid_graph G"
+      and     wfG: "wf_graph G"
       and     high_level_policy_valid: "all_security_requirements_fulfilled M G"
       and     edgesList: "(set edgesList) = edges G"
       and     stateful: "stateful = flows_state (generate_valid_stateful_policy_IFSACS G M edgesList)"
       and     addede: "e \<in> edges G - stateful"
   shows "\<not> stateful_policy_compliance \<lparr> hosts = nodes G, flows_fix = edges G, flows_state = stateful \<union> {e} \<rparr> G M"
   proof -
-    from validG have validG': "valid_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" by(case_tac G, simp)
+    from wfG have wfG': "wf_graph \<lparr>nodes = nodes G, edges = edges G\<rparr>" by(case_tac G, simp)
 
     let ?filter_IFS = "(filter_IFS_no_violations G M edgesList)"
     from stateful have stateful_simp: 
@@ -1147,18 +1147,18 @@ oops
     hence stateful_subset_filterIFS: "stateful \<subseteq> set ?filter_IFS" using filter_compliant_stateful_ACS_subseteq_input by blast
     
     let ?IFSviolators = "edges G - set ?filter_IFS"
-    from filter_IFS_no_violations_maximal[OF valid_reqs_IFS_D[OF validReqs] validG edgesList] have
+    from filter_IFS_no_violations_maximal[OF valid_reqs_IFS_D[OF validReqs] wfG edgesList] have
       "\<forall>e \<in> ?IFSviolators. \<not> all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = {e} \<union> set ?filter_IFS\<rparr>)" by metis
     from this addede have 
       "stateful = set ?filter_IFS \<Longrightarrow> \<not> all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = stateful \<union> {e}\<rparr>)" by simp
 
-    (* from filter_IFS_no_violations_maximal_allsubsets[OF valid_reqs_IFS_D[OF validReqs] validG edgesList] have
+    (* from filter_IFS_no_violations_maximal_allsubsets[OF valid_reqs_IFS_D[OF validReqs] wfG edgesList] have
       "\<forall>E \<subseteq> edges G - set ?filter_IFS. E \<noteq> {} \<longrightarrow> \<not> all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = E \<union> set ?filter_IFS\<rparr>)" by metis
     hence filter_IFS_max_rule:
       "\<And>E. E \<subseteq> edges G - set ?filter_IFS \<Longrightarrow> E \<noteq> {} \<Longrightarrow> \<not> all_security_requirements_fulfilled (get_IFS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = E \<union> set ?filter_IFS\<rparr>)" by metis*)
 
     let ?ACSviolators = "edges G - (set (filter_compliant_stateful_ACS \<lparr>nodes = nodes G, edges = edges G\<rparr> M edgesList) \<union> {e \<in> edges G. e \<in> backflows (edges G)})"
-    from filter_compliant_stateful_ACS_maximal[OF valid_reqs_ACS_D[OF validReqs] validG' edgesList] have
+    from filter_compliant_stateful_ACS_maximal[OF valid_reqs_ACS_D[OF validReqs] wfG' edgesList] have
       "\<And> statefulACS. statefulACS = set (filter_compliant_stateful_ACS \<lparr>nodes = nodes G, edges = edges G\<rparr> M edgesList) \<Longrightarrow>
       \<forall> e \<in> ?ACSviolators.
         \<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = statefulACS \<union> {e}\<rparr>) \<subseteq> 
@@ -1171,7 +1171,7 @@ oops
       by(case_tac G, simp)
 
     from filter_compliant_stateful_ACS_accu_induction_maximal[where accu="[]" and E="edges G" and V="nodes G" and stateful="stateful" and edgesList="?filter_IFS", simplified, 
-        OF valid_reqs_ACS_D[OF validReqs] validG' filterIFS_subset_edges this]
+        OF valid_reqs_ACS_D[OF validReqs] wfG' filterIFS_subset_edges this]
     have "\<forall>e\<in>edges G - (set (filter_IFS_no_violations G M edgesList) \<union> {e \<in> edges G. e \<in> backflows (edges G)}).
      \<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = {e}\<rparr>) \<subseteq> backflows (filternew_flows_state \<lparr>hosts = nodes G, flows_fix = edges G, flows_state = {e}\<rparr>) \<Longrightarrow>
       \<forall>e\<in>edges G - (stateful \<union> {e \<in> edges G. e \<in> backflows (edges G)}).

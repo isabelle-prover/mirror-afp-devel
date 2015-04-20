@@ -38,7 +38,7 @@ definition I8SSHgraph :: "nat list_graph" where
 value "(0, 20) \<in> set (edgesL I8SSHgraph)"
 value "[(s,r) \<leftarrow> (edgesL I8SSHgraph). r = 2]"
 
-  lemma "valid_list_graph I8SSHgraph" by eval
+  lemma "wf_list_graph I8SSHgraph" by eval
 
 definition Confidentiality1::"(nat SecurityInvariant)" where
       "Confidentiality1 \<equiv> new_configured_list_SecurityInvariant SINVAR_BLPtrusted_impl.SINVAR_LIB_BLPtrusted \<lparr> 

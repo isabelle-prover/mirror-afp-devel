@@ -5,7 +5,7 @@ imports Main TopoS_Interface
 begin
 
 lemma (in SecurityInvariant_preliminaries) sinvar_valid_remove_flattened_offending_flows:
-  assumes "valid_graph \<lparr>nodes = nodesG, edges = edgesG\<rparr>"
+  assumes "wf_graph \<lparr>nodes = nodesG, edges = edgesG\<rparr>"
   shows "sinvar \<lparr>nodes = nodesG, edges = edgesG - \<Union> (set_offending_flows \<lparr>nodes = nodesG, edges = edgesG\<rparr> nP) \<rparr> nP"
 proof -
   { fix f
@@ -18,7 +18,7 @@ proof -
     note 1 2
   }
   with assms show ?thesis 
-    by (metis (hide_lams, no_types) Diff_empty Union_empty defined_offending equals0I mono_sinvar valid_graph_remove_edges)
+    by (metis (hide_lams, no_types) Diff_empty Union_empty defined_offending equals0I mono_sinvar wf_graph_remove_edges)
 qed
 
 end

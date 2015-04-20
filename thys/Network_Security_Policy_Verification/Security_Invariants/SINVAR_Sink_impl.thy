@@ -28,7 +28,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_Sink.default_node_prope
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "Sink_eval G P = (valid_list_graph G \<and> 
+definition "Sink_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_Sink.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_Sink.default_node_properties P))"
 
@@ -82,7 +82,7 @@ text {* Examples*}
   definition example_net_sink :: "nat list_graph" where
   "example_net_sink \<equiv> \<lparr> nodesL = [1::nat,2,3, 8, 11,12], 
     edgesL = [(1,8),(1,2), (2,8),(3,8),(4,8), (2,3),(3,2), (11,8),(12,8), (11,12), (1,12)] \<rparr>"
-  value "valid_list_graph example_net_sink"
+  value "wf_list_graph example_net_sink"
   
   definition example_conf_sink where
   "example_conf_sink \<equiv> (\<lambda>e. SINVAR_Sink.default_node_properties)(8:= Sink, 2:= SinkPool, 3:= SinkPool, 4:= SinkPool)" 

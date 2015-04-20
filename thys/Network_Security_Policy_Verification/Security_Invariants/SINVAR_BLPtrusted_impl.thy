@@ -26,7 +26,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_BLPtrusted.default_node
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "BLP_eval G P = (valid_list_graph G \<and> 
+definition "BLP_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_BLPtrusted.default_node_properties P))"
 

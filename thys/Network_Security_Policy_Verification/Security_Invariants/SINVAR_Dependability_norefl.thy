@@ -55,7 +55,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -89,7 +89,7 @@ and verify_globals = verify_globals
   apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. 0)(vertex_1 := 0, vertex_2 := 0)" in exI, simp)
   apply(rule conjI)
    apply(simp add: unique_default_example num_reachable_norefl_def)

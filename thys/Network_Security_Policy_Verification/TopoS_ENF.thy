@@ -586,7 +586,7 @@ subsubsection {* Instance helper*}
   (* snds version DRAFT*)
   lemma (in SecurityInvariant_withOffendingFlows)  ENF_weakrefl_instance_FALSE:
     fixes "default_node_properties" :: "'a" ("\<bottom>")
-    assumes a_validG: "valid_graph G"
+    assumes a_wfG: "wf_graph G"
     and   a_not_eval: "\<not> sinvar G nP"
     and   a_enf: "sinvar_all_edges_normal_form P"
     and   a_weakrefl: "P \<bottom> \<bottom>"

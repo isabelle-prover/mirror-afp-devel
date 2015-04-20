@@ -2,9 +2,6 @@ theory Distributed_WebApp
 imports "../TopoS_Impl"
 begin
 
-(*Isabelle 2013-2*)
-
-
 section{*Distributed Web Application Example*}
 
 text{* 
@@ -18,7 +15,7 @@ definition policy :: "vString list_graph" where
                 edgesL = [] \<rparr>"
 
 text{*Sanity check*}
-lemma "valid_list_graph policy" by eval
+lemma "wf_list_graph policy" by eval
 (*proof by eval means we have executable code to show the lemma.*)
 
 

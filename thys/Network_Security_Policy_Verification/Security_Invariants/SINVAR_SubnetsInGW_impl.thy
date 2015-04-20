@@ -26,7 +26,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_SubnetsInGW.default_nod
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "SubnetsInGW_eval G P = (valid_list_graph G \<and> 
+definition "SubnetsInGW_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_SubnetsInGW.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_SubnetsInGW.default_node_properties P))"
 
@@ -85,7 +85,7 @@ definition example_net_sub :: "nat list_graph" where
   (8,11),
   (11,8), (12,8),
   (11,42), (12,42), (8,42)] \<rparr>"
-value "valid_list_graph example_net_sub"
+value "wf_list_graph example_net_sub"
 
 definition example_conf_sub where
 "example_conf_sub \<equiv> ((\<lambda>e. SINVAR_SubnetsInGW.default_node_properties)

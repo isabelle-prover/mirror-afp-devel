@@ -39,7 +39,7 @@ export_code
   --"TopoS Params"
       model_global_properties node_properties
   --"Finite Graph functions"
-      FiniteListGraph.valid_list_graph
+      FiniteListGraph.wf_list_graph
       FiniteListGraph.add_node 
       FiniteListGraph.delete_node
       FiniteListGraph.add_edge

@@ -40,7 +40,7 @@ done*)
 lemma[code_unfold]: "DomainHierarchyNG.node_props P = NetModel_node_props P"
 by(simp add: NetModel_node_props_def)
 
-definition "DomainHierarchyNG_eval G P = (valid_list_graph G \<and> 
+definition "DomainHierarchyNG_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_DomainHierarchyNG.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_DomainHierarchyNG.default_node_properties P))"
 
@@ -103,7 +103,7 @@ definition example_TUM_net :: "vString list_graph" where
           (TopoS_Vertices.V ''LowerSVR'', TopoS_Vertices.V ''Gateway''),
           (TopoS_Vertices.V ''UpperSRV'', TopoS_Vertices.V ''Gateway'')
         ] \<rparr>"
-value "valid_list_graph example_TUM_net"
+value "wf_list_graph example_TUM_net"
 
 definition example_TUM_config :: "vString \<Rightarrow> domainNameTrust" where
   "example_TUM_config \<equiv> ((\<lambda> e. default_node_properties)

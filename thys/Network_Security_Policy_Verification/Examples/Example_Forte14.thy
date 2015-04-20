@@ -16,7 +16,7 @@ definition policy :: "vString list_graph" where
                           (V ''Wifi'', V ''P2''), (V ''P1'', V ''Wifi''), (V ''P1'', V ''P2''), (V ''P2'', V ''Wifi''), (V ''P2'', V ''P1'')
                           ] \<rparr>"
 
-lemma "valid_list_graph policy" by eval
+lemma "wf_list_graph policy" by eval
 
 (*21 rules*)
 lemma "length (edgesL policy) = 21" by eval

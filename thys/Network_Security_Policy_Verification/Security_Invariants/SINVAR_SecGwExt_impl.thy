@@ -26,7 +26,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_SecGwExt.default_node_p
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "SecurityGateway_eval G P = (valid_list_graph G \<and> 
+definition "SecurityGateway_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_SecGwExt.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_SecGwExt.default_node_properties P))"
 
@@ -80,7 +80,7 @@ text {* Examples*}
   definition example_net_secgw :: "nat list_graph" where
   "example_net_secgw \<equiv> \<lparr> nodesL = [1::nat,2, 3, 8,9, 11,12], 
     edgesL = [(3,8),(8,3),(2,8),(8,1),(1,9),(9,2),(2,9),(9,1), (1,3), (8,11),(8,12), (11,9), (11,3), (11,12)] \<rparr>"
-  value "valid_list_graph example_net_secgw"
+  value "wf_list_graph example_net_secgw"
   
   definition example_conf_secgw where
   "example_conf_secgw \<equiv> ((\<lambda>e. SINVAR_SecGwExt.default_node_properties)

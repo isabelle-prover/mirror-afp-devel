@@ -98,13 +98,13 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_NonInterference.default
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "NonInterference_eval G P = (valid_list_graph G \<and> 
+definition "NonInterference_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_NonInterference.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_NonInterference.default_node_properties P))"
 
 
 
-lemma sinvar_correct: "valid_list_graph G \<Longrightarrow> SINVAR_NonInterference.sinvar (list_graph_to_graph G) nP = sinvar G nP"
+lemma sinvar_correct: "wf_list_graph G \<Longrightarrow> SINVAR_NonInterference.sinvar (list_graph_to_graph G) nP = sinvar G nP"
    apply(simp add: sinvar_list_eq_set)
    apply(rule all_nodes_list_I)
    by (simp add: SINVAR_NonInterference.undirected_reachable_def succ_tran_correct undirected_correct undirected_reachable_def)

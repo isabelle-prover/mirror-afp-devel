@@ -111,7 +111,7 @@ subsubsection{*monotonic and preliminaries*}
   where sinvar = sinvar
   and verify_globals = verify_globals
     apply unfold_locales
-      apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+      apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
       apply(erule_tac exE)
       apply(rename_tac list_edges)
       apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -140,7 +140,7 @@ and verify_globals = verify_globals
      prefer 2
      apply fast
     apply(simp)
-    apply(thin_tac "valid_graph G")
+    apply(thin_tac "wf_graph G")
     apply(thin_tac "(a,b) \<in> f")
     apply(thin_tac "n \<in> nodes G")
     apply(thin_tac "nP n = Interfering")
@@ -158,7 +158,7 @@ and verify_globals = verify_globals
   apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. default_node_properties)(vertex_1 := Interfering, vertex_2 := Interfering)" in exI, simp)
   apply(rule conjI)
    apply(simp add: unique_default_example)

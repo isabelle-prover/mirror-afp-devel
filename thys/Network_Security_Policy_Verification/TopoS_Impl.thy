@@ -202,15 +202,15 @@ end;
   G: list_graph*)
 fun visualize_graph_header ctxt (M: term) (G: term) (Config: term): unit = 
   let
-    val valid_list_graph = apply_function ctxt @{const_name "valid_list_graph"} [G];
+    val wf_list_graph = apply_function ctxt @{const_name "wf_list_graph"} [G];
     val all_fulfilled = apply_function ctxt @{const_name "all_security_requirements_fulfilled"} [M, G];
     val edges = apply_function ctxt @{const_name "edgesL"} [G];
     val invariants = apply_function ctxt @{const_name "internal_get_invariant_types_list"} [M];
     val _ = writeln("Invariants:" ^ Pretty.string_of (Syntax.pretty_term ctxt invariants));
     val header = if Config = @{term "[]"} then "#header" else generate_graphviz_header ctxt G Config;
   in
-    if valid_list_graph = @{term "False"} then
-      error ("The supplied graph is syntactically invalid. Check valid_list_graph.")
+    if wf_list_graph = @{term "False"} then
+      error ("The supplied graph is syntactically invalid. Check wf_list_graph.")
     else if all_fulfilled = @{term "False"} then
       (let
         val offending = apply_function ctxt @{const_name "implc_get_offending_flows"} [M, G];

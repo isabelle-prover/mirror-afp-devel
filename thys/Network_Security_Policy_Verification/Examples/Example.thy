@@ -11,7 +11,7 @@ subsection {* Network Graph and Security Requirements *}
       (1,8),(8,2),(2,8),(8,1), 
       (8,11),(8,12), 
       (11,12)] \<rparr>"
-  value "valid_list_graph example_net_secgw"
+  value "wf_list_graph example_net_secgw"
 
 
   text{*We add two security requirements*}

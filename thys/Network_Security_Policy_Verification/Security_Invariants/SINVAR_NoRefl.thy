@@ -38,7 +38,7 @@ subsubsection {*Preliminaries*}
   where sinvar = sinvar
   and verify_globals = verify_globals
     apply unfold_locales
-      apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+      apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
       apply(erule_tac exE)
       apply(rename_tac list_edges)
       apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -95,7 +95,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = NoRefl_
    apply (simp split: split_split_asm split_split)
    apply(rule_tac x="\<lparr> nodes={vertex_1}, edges = {(vertex_1,vertex_1)} \<rparr>" in exI, simp)
    apply(rule conjI)
-    apply(simp add: valid_graph_def)
+    apply(simp add: wf_graph_def)
    apply(case_tac otherbot, simp_all)
    apply(rule_tac x="(\<lambda> x. NoRefl)(vertex_1 := NoRefl, vertex_2 := NoRefl)" in exI, simp)
    apply(rule_tac x="{(vertex_1,vertex_1)}" in exI, simp)

@@ -25,18 +25,18 @@ text{* It does not matter whether we iterate over all edges or all nodes. We cho
   fun sinvar_nodes :: "'v graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
     "sinvar_nodes G nP = (\<forall> v \<in> nodes G. (num_reachable G v) \<le> (nP v))"
   
-  theorem sinvar_edges_nodes_iff: "valid_graph G \<Longrightarrow> 
+  theorem sinvar_edges_nodes_iff: "wf_graph G \<Longrightarrow> 
     sinvar_nodes G nP = sinvar G nP"
   proof(unfold sinvar_nodes.simps sinvar.simps, rule iffI)
-    assume a1: "valid_graph G"
+    assume a1: "wf_graph G"
       and  a2: "\<forall>v\<in>nodes G. num_reachable G v \<le> nP v"
 
-      from a1[simplified valid_graph_def] have f1: "fst ` edges G \<subseteq> nodes G" by simp
+      from a1[simplified wf_graph_def] have f1: "fst ` edges G \<subseteq> nodes G" by simp
       from f1 a2 have "\<forall>v \<in> (fst ` edges G). num_reachable G v \<le> nP v" by auto
 
       thus "\<forall>(e1, _) \<in> edges G. num_reachable G e1 \<le> nP e1" by auto
     next
-    assume a1: "valid_graph G"
+    assume a1: "wf_graph G"
       and  a2: "\<forall>(e1, _)\<in>edges G. num_reachable G e1 \<le> nP e1"
 
       from a2 have g1: "\<forall> v \<in> (fst ` edges G). num_reachable G v \<le> nP v" by auto
@@ -50,13 +50,13 @@ text{* It does not matter whether we iterate over all edges or all nodes. We cho
 
 
 
-  lemma num_reachable_le_nodes: "\<lbrakk> valid_graph G \<rbrakk> \<Longrightarrow> num_reachable G v \<le> card (nodes G)"
+  lemma num_reachable_le_nodes: "\<lbrakk> wf_graph G \<rbrakk> \<Longrightarrow> num_reachable G v \<le> card (nodes G)"
     apply(simp add: num_reachable_def)
-    using succ_tran_subseteq_nodes card_seteq  nat_le_linear valid_graph.finiteV by metis
+    using succ_tran_subseteq_nodes card_seteq  nat_le_linear wf_graph.finiteV by metis
 
 
   text{* nP is valid if all dependability level are greater equal the total number of nodes in the graph *}
-  lemma "\<lbrakk> valid_graph G; \<forall>v \<in> nodes G. nP v \<ge> card (nodes G) \<rbrakk> \<Longrightarrow> sinvar G nP"
+  lemma "\<lbrakk> wf_graph G; \<forall>v \<in> nodes G. nP v \<ge> card (nodes G) \<rbrakk> \<Longrightarrow> sinvar G nP"
     apply(subst sinvar_edges_nodes_iff[symmetric], simp)
     apply(simp add:)
     using num_reachable_le_nodes by (metis le_trans)
@@ -69,12 +69,12 @@ text{* It does not matter whether we iterate over all edges or all nodes. We cho
       "fix_nP G nP = (\<lambda>v. if num_reachable G v \<le> (nP v) then (nP v) else num_reachable G v)"
   
    text{* @{const fix_nP} always gives you a valid solution *}
-   lemma fix_nP_valid: "\<lbrakk> valid_graph G \<rbrakk> \<Longrightarrow> sinvar G (fix_nP G nP)"
+   lemma fix_nP_valid: "\<lbrakk> wf_graph G \<rbrakk> \<Longrightarrow> sinvar G (fix_nP G nP)"
       by(subst sinvar_edges_nodes_iff[symmetric], simp_all)
   
    text{* furthermore, it gives you a minimal solution, i.e. if someone supplies a configuration with a value lower than
           calculated by @{const fix_nP}, this is invalid! *}
-   lemma fix_nP_minimal_solution: "\<lbrakk> valid_graph G; \<exists> v \<in> nodes G. (nP v) < (fix_nP G (\<lambda>_. 0)) v \<rbrakk> \<Longrightarrow> \<not> sinvar G nP"
+   lemma fix_nP_minimal_solution: "\<lbrakk> wf_graph G; \<exists> v \<in> nodes G. (nP v) < (fix_nP G (\<lambda>_. 0)) v \<rbrakk> \<Longrightarrow> \<not> sinvar G nP"
       apply(subst sinvar_edges_nodes_iff[symmetric], simp)
       apply(simp)
       apply(clarify)
@@ -125,7 +125,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -159,7 +159,7 @@ and verify_globals = verify_globals
   apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. 0)(vertex_1 := 0, vertex_2 := 0)" in exI, simp)
   apply(rule conjI)
    apply(simp add: unique_default_example num_reachable_def)

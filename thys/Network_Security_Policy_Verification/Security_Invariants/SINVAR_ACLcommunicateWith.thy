@@ -30,7 +30,7 @@ lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
   unfolding SecurityInvariant_withOffendingFlows.sinvar_mono_def
   proof(clarify)
     fix nP::"('v \<Rightarrow> 'v access_list)" and N E' E
-    assume a1: "valid_graph \<lparr>nodes = N, edges = E\<rparr>"
+    assume a1: "wf_graph \<lparr>nodes = N, edges = E\<rparr>"
     and    a2: "E' \<subseteq> E"
     and    a3: "sinvar \<lparr>nodes = N, edges = E\<rparr> nP"
 
@@ -57,7 +57,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -99,7 +99,7 @@ and verify_globals = verify_globals
   apply(case_tac "canAccessThis = vertex_1")
    apply(rule_tac x="\<lparr> nodes={canAccessThis,vertex_2}, edges = {(vertex_2,canAccessThis)} \<rparr>" in exI, simp)
    apply(rule conjI)
-    apply(simp add: valid_graph_def)
+    apply(simp add: wf_graph_def)
    apply(rule_tac x="(\<lambda> x. AccessList [])(vertex_1 := AccessList [], vertex_2 := AccessList [])" in exI, simp)
    apply(simp add: example_simps)
    apply(rule_tac x="{(vertex_2,vertex_1)}" in exI, simp)
@@ -108,7 +108,7 @@ and verify_globals = verify_globals
 
   apply(rule_tac x="\<lparr> nodes={vertex_1,canAccessThis}, edges = {(vertex_1,canAccessThis)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. AccessList [])(vertex_1 := AccessList [], canAccessThis := AccessList [])" in exI, simp)
   apply(simp add: example_simps)
   apply(rule_tac x="{(vertex_1,canAccessThis)}" in exI, simp)

@@ -26,7 +26,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_BLPbasic.default_node_p
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "BLP_eval G P = (valid_list_graph G \<and> 
+definition "BLP_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_BLPbasic.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_BLPbasic.default_node_properties P))"
 
@@ -88,7 +88,7 @@ subsubsection{* Example *}
                      (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot2''),
                      (TopoS_Vertices.V ''MissionControl2'', TopoS_Vertices.V ''Bot2''),
                      (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot2'')] \<rparr>"
-  value "valid_list_graph fabNet"
+  value "wf_list_graph fabNet"
 
 
   definition sensorProps_try1 :: "vString \<Rightarrow> privacy_level" where

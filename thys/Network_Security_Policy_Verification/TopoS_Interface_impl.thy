@@ -8,11 +8,11 @@ section{*Executable Implementation with Lists*}
   subsection{*Abstraction from list implementation to set specification*}
   text{*Nomenclature: @{text "_spec"} is the specification, @{text "_impl"} the corresponding implementation.*}
 
-  text{*@{text "_spec"} and @{text "_impl"} only need to comply for @{const valid_graph}s. 
-   We will always require the stricter @{const valid_list_graph}, which implies @{const valid_graph}.
+  text{*@{text "_spec"} and @{text "_impl"} only need to comply for @{const wf_graph}s. 
+   We will always require the stricter @{const wf_list_graph}, which implies @{const wf_graph}.
   *}
-  lemma "valid_list_graph G \<Longrightarrow> valid_graph (list_graph_to_graph G)"
-    by %invisible (metis valid_list_graph_def valid_list_graph_iff_valid_graph)
+  lemma "wf_list_graph G \<Longrightarrow> wf_graph (list_graph_to_graph G)"
+    by %invisible (metis wf_list_graph_def wf_list_graph_iff_wf_graph)
 
   locale TopoS_List_Impl = 
     fixes default_node_properties :: "'a" ("\<bottom>") 
@@ -27,13 +27,13 @@ section{*Executable Implementation with Lists*}
     assumes
       spec: "SecurityInvariant sinvar_spec default_node_properties receiver_violation" --"specification is valid"
     and
-      sinvar_spec_impl: "valid_list_graph G \<Longrightarrow> 
+      sinvar_spec_impl: "wf_list_graph G \<Longrightarrow> 
         (sinvar_spec (list_graph_to_graph G) nP) = (sinvar_impl G nP)"
     and
-      verify_globals_spec_impl: "valid_list_graph G \<Longrightarrow> 
+      verify_globals_spec_impl: "wf_list_graph G \<Longrightarrow> 
         (verify_globals_spec (list_graph_to_graph G) nP gP) = (verify_globals_impl G nP gP)"
     and
-      offending_flows_spec_impl: "valid_list_graph G \<Longrightarrow> 
+      offending_flows_spec_impl: "wf_list_graph G \<Longrightarrow> 
       (SecurityInvariant_withOffendingFlows.set_offending_flows sinvar_spec (list_graph_to_graph G) nP) = 
       set`set (offending_flows_impl G nP)"
     and 
@@ -86,13 +86,13 @@ section{*Executable Implementation with Lists*}
   text{*show that @{term "sinvar"} complies*}
   lemma TopoS_eval_impl_proofrule: 
     assumes inst: "SecurityInvariant sinvar_spec default_node_properties receiver_violation"
-    assumes ev: "\<And>nP. valid_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
-    assumes ver: "\<And> nP gP. valid_list_graph G \<Longrightarrow> verify_globals_spec (list_graph_to_graph G) nP gP = verify_globals_impl G nP gP"
+    assumes ev: "\<And>nP. wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
+    assumes ver: "\<And> nP gP. wf_list_graph G \<Longrightarrow> verify_globals_spec (list_graph_to_graph G) nP gP = verify_globals_impl G nP gP"
     shows "
       (distinct (nodesL G) \<and> distinct (edgesL G) \<and> SecurityInvariant.eval sinvar_spec verify_globals_spec default_node_properties (list_graph_to_graph G) P) =
-      (valid_list_graph G \<and> verify_globals_impl G (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
+      (wf_list_graph G \<and> verify_globals_impl G (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
        sinvar_impl G (SecurityInvariant.node_props default_node_properties P))"
-  proof (cases "valid_list_graph G")
+  proof (cases "wf_list_graph G")
     case True
     hence "(verify_globals_spec (list_graph_to_graph G) (SecurityInvariant.node_props default_node_properties P) (model_global_properties P) \<and>
        sinvar_spec (list_graph_to_graph G) (SecurityInvariant.node_props default_node_properties P)) =
@@ -101,15 +101,15 @@ section{*Executable Implementation with Lists*}
       using ev ver by blast
 
     with inst show ?thesis
-      unfolding valid_list_graph_def 
-      by (simp add: valid_list_graph_iff_valid_graph SecurityInvariant.eval_def)
+      unfolding wf_list_graph_def 
+      by (simp add: wf_list_graph_iff_wf_graph SecurityInvariant.eval_def)
   next
     case False
-    hence "(distinct (nodesL G) \<and> distinct (edgesL G) \<and> valid_list_graph_axioms G) = False"
-      unfolding valid_list_graph_def by blast
+    hence "(distinct (nodesL G) \<and> distinct (edgesL G) \<and> wf_list_graph_axioms G) = False"
+      unfolding wf_list_graph_def by blast
     with False show ?thesis
       unfolding SecurityInvariant.eval_def[OF inst]
-      by (fastforce simp: valid_list_graph_iff_valid_graph)
+      by (fastforce simp: wf_list_graph_iff_wf_graph)
   qed
 
 
@@ -127,8 +127,8 @@ subsection {*Helper lemmata*}
   
   text{*proof rule: if @{term sinvar} complies, @{const Generic_offending_list} complies *}
   lemma Generic_offending_list_correct: 
-    assumes valid: "valid_list_graph G"
-    assumes spec_impl: "\<And>G nP. valid_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
+    assumes valid: "wf_list_graph G"
+    assumes spec_impl: "\<And>G nP. wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
     shows "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar_spec (list_graph_to_graph G) nP = 
       set`set( Generic_offending_list sinvar_impl G nP )"
   proof -
@@ -139,7 +139,7 @@ subsection {*Helper lemmata*}
       unfolding list_graph_to_graph_def
       by (auto simp: sublists_powset)
 
-    from valid delete_edges_valid have "\<forall>f. valid_list_graph(FiniteListGraph.delete_edges G f)" by fast
+    from valid delete_edges_wf have "\<forall>f. wf_list_graph(FiniteListGraph.delete_edges G f)" by fast
     with spec_impl[symmetric] FiniteListGraph.delete_edges_correct[of "G"] have impl_spec_delete:
       "\<forall>f. sinvar_impl (FiniteListGraph.delete_edges G f) nP = 
           sinvar_spec (FiniteGraph.delete_edges (list_graph_to_graph G) (set f)) nP" by simp
@@ -147,7 +147,7 @@ subsection {*Helper lemmata*}
     from spec_impl[OF valid, symmetric] have impl_spec_not:
       "(\<not> sinvar_impl G nP) = (\<not> sinvar_spec (list_graph_to_graph G) nP)" by auto
 
-    from spec_impl[symmetric, OF FiniteListGraph.add_edge_valid[OF FiniteListGraph.delete_edges_valid[OF valid]]] have impl_spec_allE:
+    from spec_impl[symmetric, OF FiniteListGraph.add_edge_wf[OF FiniteListGraph.delete_edges_wf[OF valid]]] have impl_spec_allE:
     "\<forall> e1 e2 E. sinvar_impl (FiniteListGraph.add_edge e1 e2 (FiniteListGraph.delete_edges G E)) nP =
     sinvar_spec (list_graph_to_graph (FiniteListGraph.add_edge e1 e2 (FiniteListGraph.delete_edges G E))) nP" by simp
 

@@ -35,13 +35,13 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_Dependability_norefl.de
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "Dependability_norefl_eval G P = (valid_list_graph G \<and> 
+definition "Dependability_norefl_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_Dependability_norefl.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_Dependability_norefl.default_node_properties P))"
 
 
 
-lemma sinvar_correct: "valid_list_graph G \<Longrightarrow> SINVAR_Dependability_norefl.sinvar (list_graph_to_graph G) nP = sinvar G nP"
+lemma sinvar_correct: "wf_list_graph G \<Longrightarrow> SINVAR_Dependability_norefl.sinvar (list_graph_to_graph G) nP = sinvar G nP"
    apply(simp)
    apply(rule all_edges_list_I)
    apply(simp add: fun_eq_iff)

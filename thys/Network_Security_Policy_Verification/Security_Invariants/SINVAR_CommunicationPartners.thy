@@ -55,7 +55,7 @@ subsubsection {*Preliminaries*}
   where sinvar = sinvar
   and verify_globals = verify_globals
     apply unfold_locales
-      apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+      apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
       apply(erule_tac exE)
       apply(rename_tac list_edges)
       apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -120,7 +120,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Communi
   apply(erule default_uniqueness_by_counterexample_ACS)
   apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(simp add: CommunicationPartners_offending_set CommunicationPartners_offending_set_def delete_edges_simp2)
   apply(case_tac otherbot, simp_all)
    apply(rule_tac x="(\<lambda> x. DontCare)(vertex_1 := DontCare, vertex_2 := Master [vertex_1])" in exI, simp)

@@ -22,12 +22,12 @@ done
 
 definition "ACLcommunicateWith_offending_list = Generic_offending_list sinvar"
 
-definition "ACLcommunicateWith_eval G P = (valid_list_graph G \<and> 
+definition "ACLcommunicateWith_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_ACLcommunicateWith.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_ACLcommunicateWith.default_node_properties P))"
 
 
-lemma sinvar_correct: "valid_list_graph G \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar (list_graph_to_graph G) nP = sinvar G nP"
+lemma sinvar_correct: "wf_list_graph G \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar (list_graph_to_graph G) nP = sinvar G nP"
 by (metis SINVAR_ACLcommunicateWith.sinvar.simps SINVAR_ACLcommunicateWith_impl.sinvar.simps graph.select_convs(1) list_graph_to_graph_def succ_tran_correct)
 
 

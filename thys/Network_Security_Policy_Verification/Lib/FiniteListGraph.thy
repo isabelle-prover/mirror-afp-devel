@@ -19,17 +19,17 @@ text{*Correspondence the FiniteGraph*}
     "list_graph_to_graph G = \<lparr> nodes = set (nodesL G), edges = set (edgesL G) \<rparr>"
 
 
-  definition valid_list_graph_axioms :: "'v list_graph \<Rightarrow> bool" where
-    "valid_list_graph_axioms G \<longleftrightarrow> fst` set (edgesL G) \<subseteq> set (nodesL G) \<and> snd` set (edgesL G) \<subseteq> set (nodesL G)"
+  definition wf_list_graph_axioms :: "'v list_graph \<Rightarrow> bool" where
+    "wf_list_graph_axioms G \<longleftrightarrow> fst` set (edgesL G) \<subseteq> set (nodesL G) \<and> snd` set (edgesL G) \<subseteq> set (nodesL G)"
 
 
-  lemma valid_list_graph_iff_valid_graph: "valid_graph (list_graph_to_graph G) \<longleftrightarrow> valid_list_graph_axioms G"
-  unfolding list_graph_to_graph_def valid_graph_def valid_list_graph_axioms_def
+  lemma wf_list_graph_iff_wf_graph: "wf_graph (list_graph_to_graph G) \<longleftrightarrow> wf_list_graph_axioms G"
+  unfolding list_graph_to_graph_def wf_graph_def wf_list_graph_axioms_def
   by simp
 
   text{*We say a @{typ "'v list_graph"} is valid if it fulfills the graph axioms and its lists are distinct*}
-  definition valid_list_graph::"('v) list_graph \<Rightarrow> bool" where
-   "valid_list_graph G = (distinct (nodesL G) \<and> distinct (edgesL G) \<and> valid_list_graph_axioms G)"
+  definition wf_list_graph::"('v) list_graph \<Rightarrow> bool" where
+   "wf_list_graph G = (distinct (nodesL G) \<and> distinct (edgesL G) \<and> wf_list_graph_axioms G)"
 
 
 section{*FiniteListGraph operations*}
@@ -89,8 +89,8 @@ subsection{*undirected graph simulation*}
 section{*Correctness lemmata*}
 
   -- "add node"
-  lemma add_node_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (add_node v G)"
-  unfolding valid_list_graph_def valid_list_graph_axioms_def add_node_def
+  lemma add_node_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (add_node v G)"
+  unfolding wf_list_graph_def wf_list_graph_axioms_def add_node_def
   by auto
 
   lemma add_node_set_nodes: "set (nodesL (add_node v G)) = set (nodesL G) \<union> {v}"
@@ -105,12 +105,12 @@ section{*Correctness lemmata*}
   unfolding FiniteGraph.add_node_def list_graph_to_graph_def
   by (simp add: add_node_set_edges add_node_set_nodes)
 
-  lemma add_node_valid2: "valid_graph (list_graph_to_graph G) \<Longrightarrow> valid_graph (list_graph_to_graph (add_node v G))"
+  lemma add_node_wf2: "wf_graph (list_graph_to_graph G) \<Longrightarrow> wf_graph (list_graph_to_graph (add_node v G))"
   by (subst add_node_correct[symmetric]) simp
 
   -- "add edge"
-  lemma add_edge_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (add_edge v v' G)"
-  unfolding valid_list_graph_def add_edge_def add_node_def valid_list_graph_axioms_def
+  lemma add_edge_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (add_edge v v' G)"
+  unfolding wf_list_graph_def add_edge_def add_node_def wf_list_graph_axioms_def
   by auto
 
   lemma add_edge_set_nodes: "set (nodesL (add_edge v v' G)) = set (nodesL G) \<union> {v,v'}"
@@ -125,12 +125,12 @@ section{*Correctness lemmata*}
   unfolding FiniteGraph.add_edge_def add_edge_def list_graph_to_graph_def
   by (auto simp: add_node_set_nodes)
 
-  lemma add_edge_valid2: "valid_graph (list_graph_to_graph G) \<Longrightarrow> valid_graph (list_graph_to_graph (add_edge v v' G))"
+  lemma add_edge_wf2: "wf_graph (list_graph_to_graph G) \<Longrightarrow> wf_graph (list_graph_to_graph (add_edge v v' G))"
   by (subst add_edge_correct[symmetric]) simp
 
   -- "delete node"
-  lemma delete_node_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (delete_node v G)"
-  unfolding valid_list_graph_def delete_node_def valid_list_graph_axioms_def
+  lemma delete_node_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (delete_node v G)"
+  unfolding wf_list_graph_def delete_node_def wf_list_graph_axioms_def
   by auto
 
   lemma delete_node_set_edges:
@@ -139,10 +139,10 @@ section{*Correctness lemmata*}
   by auto
 
   lemma delete_node_correct:
-    assumes "valid_list_graph G"
+    assumes "wf_list_graph G"
     shows "FiniteGraph.delete_node v (list_graph_to_graph G) = list_graph_to_graph (delete_node v G)"
   using assms
-  unfolding FiniteGraph.delete_node_def delete_node_def list_graph_to_graph_def valid_list_graph_def
+  unfolding FiniteGraph.delete_node_def delete_node_def list_graph_to_graph_def wf_list_graph_def
   by auto
 
   -- "delete edge"
@@ -159,8 +159,8 @@ section{*Correctness lemmata*}
     "set (edgesL (delete_edge v v' G)) = set (edgesL G) - {(v,v')}"
   by (auto simp:delete_edge_set_edges)
 
-  lemma delete_edge_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (delete_edge v v' G)"
-  unfolding valid_list_graph_def delete_edge_def valid_list_graph_axioms_def
+  lemma delete_edge_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (delete_edge v v' G)"
+  unfolding wf_list_graph_def delete_edge_def wf_list_graph_axioms_def
   by auto
     
   lemma delete_edge_length: "length (edgesL (delete_edge v v' G)) \<le> length (edgesL G)"
@@ -175,12 +175,12 @@ section{*Correctness lemmata*}
   unfolding FiniteGraph.delete_edge_def delete_edge_def list_graph_to_graph_def
   by auto
 
-  lemma delete_edge_valid2: "valid_graph (list_graph_to_graph G) \<Longrightarrow> valid_graph (list_graph_to_graph (delete_edge v v' G))"
+  lemma delete_edge_wf2: "wf_graph (list_graph_to_graph G) \<Longrightarrow> wf_graph (list_graph_to_graph (delete_edge v v' G))"
   by (subst delete_edge_correct[symmetric]) simp
 
   -- "delete edges"
-  lemma delete_edges_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (delete_edges G E)"
-  by (induction E arbitrary: G) (auto simp: delete_edge_valid)
+  lemma delete_edges_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (delete_edges G E)"
+  by (induction E arbitrary: G) (auto simp: delete_edge_wf)
 
   lemma delete_edges_set_nodes: "set (nodesL (delete_edges G E)) = set (nodesL G)"
   by (induction E arbitrary: G) (auto simp: delete_edge_set_nodes)
@@ -247,8 +247,8 @@ section{*Correctness lemmata*}
   unfolding list_graph_to_graph_def FiniteGraph.delete_edges_def
   by (auto simp add: delete_edges_as_filter )
   
-  lemma delete_edges_valid2:
-    "valid_graph (list_graph_to_graph G) \<Longrightarrow> valid_graph (list_graph_to_graph (delete_edges G E))"
+  lemma delete_edges_wf2:
+    "wf_graph (list_graph_to_graph G) \<Longrightarrow> wf_graph (list_graph_to_graph (delete_edges G E))"
   by (subst delete_edges_correct[symmetric]) simp
 
   -- "helper about reflexive transitive closure impl"
@@ -281,8 +281,8 @@ section{*Correctness lemmata*}
   unfolding FiniteGraph.succ_rtran_def succ_rtran_def list_graph_to_graph_def
   by (simp add: rtrancl_list_impl)
 
-  lemma distinct_succ_rtran: "valid_list_graph G \<Longrightarrow> distinct (succ_rtran G v)"
-  unfolding succ_rtran_def valid_list_graph_def
+  lemma distinct_succ_rtran: "wf_list_graph G \<Longrightarrow> distinct (succ_rtran G v)"
+  unfolding succ_rtran_def wf_list_graph_def
   by (auto intro: distinct_rtrancl_list_impl)
 
   lemma succ_rtran_set: "set (succ_rtran G v) = {e2. (v,e2) \<in> (set (edgesL G))\<^sup>*}"
@@ -290,8 +290,8 @@ section{*Correctness lemmata*}
   by (simp add: rtrancl_list_impl)
 
   -- "succ tran"
-  lemma distinct_succ_tran: "valid_list_graph G \<Longrightarrow> distinct (succ_tran G v)"
-  unfolding succ_tran_def valid_list_graph_def
+  lemma distinct_succ_tran: "wf_list_graph G \<Longrightarrow> distinct (succ_tran G v)"
+  unfolding succ_tran_def wf_list_graph_def
   by (auto intro: distinct_trancl_list_impl)
 
   lemma succ_tran_set: "set (succ_tran G v) = {e2. (v,e2) \<in> (set (edgesL G))\<^sup>+}"
@@ -306,13 +306,13 @@ section{*Correctness lemmata*}
   
   --"num_reachable"
   lemma num_reachable_correct:
-    "valid_list_graph G \<Longrightarrow> FiniteGraph.num_reachable (list_graph_to_graph G) v = num_reachable G v"
+    "wf_list_graph G \<Longrightarrow> FiniteGraph.num_reachable (list_graph_to_graph G) v = num_reachable G v"
   unfolding num_reachable_def FiniteGraph.num_reachable_def
   by (metis List.distinct_card distinct_succ_tran succ_tran_correct)
 
   --"num_reachable_norefl"
   lemma num_reachable_norefl_correct:
-    "valid_list_graph G \<Longrightarrow> 
+    "wf_list_graph G \<Longrightarrow> 
      FiniteGraph.num_reachable_norefl (list_graph_to_graph G) v = num_reachable_norefl G v"
  unfolding num_reachable_norefl_def FiniteGraph.num_reachable_norefl_def
  by (metis (full_types) List.distinct_card distinct_filter distinct_succ_tran set_minus_filter_out succ_tran_correct)
@@ -347,8 +347,8 @@ section{*Correctness lemmata*}
   by(simp add: backlinks_set)
 
   -- "undirected"
-  lemma undirected_valid: "valid_list_graph G \<Longrightarrow> valid_list_graph (undirected G)"
-  unfolding valid_list_graph_def valid_list_graph_axioms_def
+  lemma undirected_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (undirected G)"
+  unfolding wf_list_graph_def wf_list_graph_axioms_def
   by (simp add:backlinks_in_nodes_G) (simp add: undirected_def)
 
   lemma undirected_correct: 
@@ -356,13 +356,13 @@ section{*Correctness lemmata*}
   unfolding FiniteGraph.undirected_def undirected_def list_graph_to_graph_def
   by (simp add: backlinks_set)
       
-lemmas valid_list_graph_valid =
-  add_node_valid
-  add_edge_valid
-  delete_node_valid
-  delete_edge_valid
-  delete_edges_valid
-  undirected_valid
+lemmas wf_list_graph_wf =
+  add_node_wf
+  add_edge_wf
+  delete_node_wf
+  delete_edge_wf
+  delete_edges_wf
+  undirected_wf
 
 lemmas list_graph_correct =
   add_node_correct

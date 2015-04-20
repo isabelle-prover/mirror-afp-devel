@@ -15,7 +15,7 @@ text{*Our access control view on the network*}
                                 V ''Internet''],
                       edgesL = [] \<rparr>"
   
-  lemma "valid_list_graph ChairNetwork_empty" by eval
+  lemma "wf_list_graph ChairNetwork_empty" by eval
 
 
 subsection{*Our security requirements*}
@@ -148,7 +148,7 @@ subsection{*An example of bad side-effects in access control policies*}
     "simple_network \<equiv> \<lparr> nodesL = [V ''A'', V ''B'', V ''C''],
                       edgesL = [(V ''B'', V ''A''), (V ''B'', V ''C'')] \<rparr>"
   
-  lemma "valid_list_graph ChairNetwork_empty" by eval
+  lemma "wf_list_graph ChairNetwork_empty" by eval
   lemma "\<forall>m \<in> set [ACL_not_with]. implc_sinvar m simple_network" by eval
 
 

@@ -502,7 +502,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -543,7 +543,7 @@ subsubsection {*ENF*}
 
   lemma Unassigned_unique_default: "otherbot \<noteq> default_node_properties \<Longrightarrow>
          \<exists>G nP gP i f.
-            valid_graph G \<and> 
+            wf_graph G \<and> 
             \<not> sinvar G nP \<and>
             f \<in> SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G nP \<and>
             sinvar (delete_edges G f) nP \<and>
@@ -555,7 +555,7 @@ subsubsection {*ENF*}
     apply (simp split: split_split_asm split_split domainNameTrust.split)
     apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
     apply(rule conjI)
-     apply(simp add: valid_graph_def)
+     apply(simp add: wf_graph_def)
     apply(case_tac otherbot)
      apply(rename_tac prod)
      apply(case_tac prod)

@@ -18,9 +18,9 @@ lemma stateful_list_policy_to_list_graph_complies:
     stateful_policy_to_network_graph \<lparr> hosts = set V, flows_fix = set E\<^sub>f, flows_state = set E\<^sub>\<sigma> \<rparr>"
     by(simp add: stateful_list_policy_to_list_graph_def stateful_policy_to_network_graph_def all_flows_def list_graph_to_graph_def backlinks_correct, blast)
 
-lemma valid_list_graph_stateful_list_policy_to_list_graph: 
-    "valid_list_graph G \<Longrightarrow> distinct E \<Longrightarrow> set E \<subseteq> set (edgesL G) \<Longrightarrow> valid_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = E\<rparr>)"
-  apply(simp add: valid_list_graph_def stateful_list_policy_to_list_graph_def)
+lemma wf_list_graph_stateful_list_policy_to_list_graph: 
+    "wf_list_graph G \<Longrightarrow> distinct E \<Longrightarrow> set E \<subseteq> set (edgesL G) \<Longrightarrow> wf_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = E\<rparr>)"
+  apply(simp add: wf_list_graph_def stateful_list_policy_to_list_graph_def)
   apply(rule conjI)
    apply(simp add: backlinks_distinct)
   apply(rule conjI)
@@ -29,7 +29,7 @@ lemma valid_list_graph_stateful_list_policy_to_list_graph:
   apply(rule conjI)
    apply(simp add: backlinks_set)
    apply(blast)
-  apply(simp add: valid_list_graph_axioms_def)
+  apply(simp add: wf_list_graph_axioms_def)
    apply(rule conjI)
    apply(simp add: backlinks_set)
    apply(force)
@@ -60,7 +60,7 @@ subsection{*Algorithms*}
 
    lemma filter_IFS_no_violations_accu_complies:
     "\<lbrakk>\<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec;
-      valid_list_graph G; set Es \<subseteq> set (edgesL G); set accu \<subseteq> set (edgesL G); distinct (Es@accu) \<rbrakk> \<Longrightarrow>
+      wf_list_graph G; set Es \<subseteq> set (edgesL G); set accu \<subseteq> set (edgesL G); distinct (Es@accu) \<rbrakk> \<Longrightarrow>
       filter_IFS_no_violations_accu G (get_impl M) accu Es = TopoS_Stateful_Policy_Algorithm.filter_IFS_no_violations_accu (list_graph_to_graph G) (get_spec M) accu Es"
       proof(induction Es arbitrary: accu)
       case Nil
@@ -81,8 +81,8 @@ subsection{*Algorithms*}
         from Cons.prems(5) have "distinct (Es @ accu)" by simp
         from Cons.prems(5) have "distinct (Es @ (e # accu))" by simp
 
-        from Cons.prems(2) have validLG: "valid_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
-          apply(rule valid_list_graph_stateful_list_policy_to_list_graph)
+        from Cons.prems(2) have validLG: "wf_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
+          apply(rule wf_list_graph_stateful_list_policy_to_list_graph)
            apply(fact `distinct (e # accu)`)
           apply(fact `set (e # accu) \<subseteq> set (edgesL G)`)
           done
@@ -91,7 +91,7 @@ subsection{*Algorithms*}
         from get_IFS_get_ACS_select_simps(1)[OF Cons.prems(1)]
         have "\<forall> (m_impl, m_spec) \<in> set (zip (get_IFS (get_impl M)) (TopoS_Composition_Theory.get_IFS (get_spec M))). SecurityInvariant_complies_formal_def m_impl m_spec" .
         from all_security_requirements_fulfilled_complies[OF this] have all_security_requirements_fulfilled_eq_rule: 
-        "\<And>G. valid_list_graph G \<Longrightarrow>
+        "\<And>G. wf_list_graph G \<Longrightarrow>
             TopoS_Composition_Theory_impl.all_security_requirements_fulfilled (TopoS_Composition_Theory_impl.get_IFS (get_impl M)) G =
             TopoS_Composition_Theory.all_security_requirements_fulfilled (TopoS_Composition_Theory.get_IFS (get_spec M)) (list_graph_to_graph G)"
             by(simp add: get_impl_zip_simp get_spec_zip_simp)
@@ -131,12 +131,12 @@ subsection{*Algorithms*}
 
 
    lemma filter_IFS_no_violations_complies:
-    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; valid_list_graph G \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; wf_list_graph G \<rbrakk> \<Longrightarrow>
        filter_IFS_no_violations G (get_impl M) = TopoS_Stateful_Policy_Algorithm.filter_IFS_no_violations (list_graph_to_graph G) (get_spec M) (edgesL G)"
     apply(unfold filter_IFS_no_violations_def TopoS_Stateful_Policy_Algorithm.filter_IFS_no_violations_def) 
     apply(rule filter_IFS_no_violations_accu_complies)
         apply(simp_all)
-    apply(simp add: valid_list_graph_def)
+    apply(simp add: wf_list_graph_def)
     done
 
 
@@ -155,7 +155,7 @@ subsection{*Algorithms*}
 
    lemma filter_compliant_stateful_ACS_accu_complies: 
     "\<lbrakk>\<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec;
-      valid_list_graph G; set Es \<subseteq> set (edgesL G); set accu \<subseteq> set (edgesL G); distinct (Es@accu) \<rbrakk> \<Longrightarrow>
+      wf_list_graph G; set Es \<subseteq> set (edgesL G); set accu \<subseteq> set (edgesL G); distinct (Es@accu) \<rbrakk> \<Longrightarrow>
       filter_compliant_stateful_ACS_accu G (get_impl M) accu Es = TopoS_Stateful_Policy_Algorithm.filter_compliant_stateful_ACS_accu (list_graph_to_graph G) (get_spec M) accu Es"
       proof(induction Es arbitrary: accu)
       case Nil
@@ -170,10 +170,10 @@ subsection{*Algorithms*}
 
         have "\<And> G X. (\<forall>F\<in>set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). set F \<subseteq> X) =
               (\<forall>F\<in>set ` set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). F \<subseteq> X)" by blast
-        also have "\<And> G X. valid_list_graph G \<Longrightarrow> (\<forall>F\<in>set ` set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). F \<subseteq> X) =
+        also have "\<And> G X. wf_list_graph G \<Longrightarrow> (\<forall>F\<in>set ` set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). F \<subseteq> X) =
           (\<forall>F\<in>get_offending_flows (TopoS_Composition_Theory.get_ACS (get_spec M)) (list_graph_to_graph G). F \<subseteq> X)"
             using implc_get_offending_flows_complies[OF get_IFS_get_ACS_select_simps(4)[OF Cons.prems(1)], simplified get_IFS_get_ACS_select_simps[OF Cons.prems(1)]] by simp
-        finally have implc_get_offending_flows_simp_rule: "\<And>G X. valid_list_graph G \<Longrightarrow> 
+        finally have implc_get_offending_flows_simp_rule: "\<And>G X. wf_list_graph G \<Longrightarrow> 
           (\<forall>F\<in>set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). set F \<subseteq> X) = (\<forall>F\<in>get_offending_flows (TopoS_Composition_Theory.get_ACS (get_spec M)) (list_graph_to_graph G). F \<subseteq> X)" .
 
 
@@ -183,8 +183,8 @@ subsection{*Algorithms*}
         from Cons.prems(3) have "set Es \<subseteq> set (edgesL G)" by simp
         from Cons.prems(5) have "distinct (Es @ accu)" by simp
         from Cons.prems(5) have "distinct (Es @ (e # accu))" by simp
-        from Cons.prems(2) have validLG: "valid_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
-          apply(rule valid_list_graph_stateful_list_policy_to_list_graph)
+        from Cons.prems(2) have validLG: "wf_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
+          apply(rule wf_list_graph_stateful_list_policy_to_list_graph)
            apply(fact `distinct (e # accu)`)
           apply(fact `set (e # accu) \<subseteq> set (edgesL G)`)
           done
@@ -231,7 +231,7 @@ subsection{*Algorithms*}
 
 
    lemma filter_compliant_stateful_ACS_cont_complies:
-    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; valid_list_graph G; set Es \<subseteq> set (edgesL G); distinct Es \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; wf_list_graph G; set Es \<subseteq> set (edgesL G); distinct Es \<rbrakk> \<Longrightarrow>
        filter_compliant_stateful_ACS_accu G (get_impl M) [] Es = TopoS_Stateful_Policy_Algorithm.filter_compliant_stateful_ACS (list_graph_to_graph G) (get_spec M) Es"
     apply(unfold filter_compliant_stateful_ACS_def TopoS_Stateful_Policy_Algorithm.filter_compliant_stateful_ACS_def) 
     apply(rule filter_compliant_stateful_ACS_accu_complies)
@@ -239,16 +239,16 @@ subsection{*Algorithms*}
     done
 
    lemma filter_compliant_stateful_ACS_complies:
-    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; valid_list_graph G \<rbrakk> \<Longrightarrow>
+    "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; wf_list_graph G \<rbrakk> \<Longrightarrow>
        filter_compliant_stateful_ACS G (get_impl M) = TopoS_Stateful_Policy_Algorithm.filter_compliant_stateful_ACS (list_graph_to_graph G) (get_spec M) (edgesL G)"
     apply(unfold filter_compliant_stateful_ACS_def TopoS_Stateful_Policy_Algorithm.filter_compliant_stateful_ACS_def) 
     apply(rule filter_compliant_stateful_ACS_accu_complies)
         apply(simp_all)
-    apply(simp add: valid_list_graph_def)
+    apply(simp add: wf_list_graph_def)
     done
 
 
-(*TODO: show valid_stateful_policy and distinctness and valid_list_graph, ...*)
+(*TODO: show valid_stateful_policy and distinctness and wf_list_graph, ...*)
 
 
    definition generate_valid_stateful_policy_IFSACS :: "'v list_graph \<Rightarrow> 'v SecurityInvariant list \<Rightarrow> 'v stateful_list_policy" where
@@ -270,14 +270,14 @@ subsection{*Algorithms*}
 
 
    lemma generate_valid_stateful_policy_IFSACS_2_complies: "\<lbrakk>\<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec;
-          valid_list_graph G;
+          wf_list_graph G;
           valid_reqs (get_spec M);
           TopoS_Composition_Theory.all_security_requirements_fulfilled (get_spec M) (list_graph_to_graph G);
           \<T> = (generate_valid_stateful_policy_IFSACS_2 G (get_impl M))\<rbrakk> \<Longrightarrow> 
    stateful_policy_compliance \<lparr>hosts = set (hostsL \<T>), flows_fix = set (flows_fixL \<T>), flows_state = set (flows_stateL \<T>) \<rparr> (list_graph_to_graph G) (get_spec M)"
     apply(rule_tac edgesList="edgesL G" in generate_valid_stateful_policy_IFSACS_2_stateful_policy_compliance)
         apply(simp)
-       apply (metis valid_list_graph_def valid_list_graph_iff_valid_graph)
+       apply (metis wf_list_graph_def wf_list_graph_iff_wf_graph)
       apply(simp)
      apply(simp add: list_graph_to_graph_def)
     apply(simp add: TopoS_Stateful_Policy_Algorithm.generate_valid_stateful_policy_IFSACS_2_def TopoS_Stateful_Policy_impl.generate_valid_stateful_policy_IFSACS_2_def)

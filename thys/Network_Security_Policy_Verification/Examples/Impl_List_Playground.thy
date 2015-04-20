@@ -13,7 +13,7 @@ definition testGraph :: "vString list_graph" where
   "testGraph \<equiv> \<lparr> nodesL = [V ''Master'', V ''Slave1'', V ''Slave2'', V ''other1'', V ''other2''], 
                  edgesL = [(V ''Master'', V ''Slave1'')] \<rparr>"
 
-lemma "valid_list_graph testGraph" by eval
+lemma "wf_list_graph testGraph" by eval
 
 definition req1 ::"(vString SecurityInvariant)" where
   "req1 \<equiv> new_configured_list_SecurityInvariant SINVAR_SecGwExt_impl.SINVAR_LIB_SecurityGatewayExtended \<lparr> 

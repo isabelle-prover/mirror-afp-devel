@@ -27,7 +27,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-  apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+  apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
   apply(erule_tac exE)
   apply(rename_tac list_edges)
   apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -65,7 +65,7 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
   -- "proof by counter example: assume False is not the unique default parameter"
   apply(rule_tac x="\<lparr> nodes={vertex_1}, edges = {(vertex_1,vertex_1)} \<rparr>" in exI, simp)
   apply(rule conjI)
-  apply(simp add: valid_graph_def)
+  apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. default_node_properties)(vertex_1 := False)" in exI, simp add:default_node_properties_def)
   apply(case_tac receiver_violation)
     apply(simp_all)

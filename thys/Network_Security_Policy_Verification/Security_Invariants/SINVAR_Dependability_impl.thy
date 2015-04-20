@@ -32,7 +32,7 @@ text{* Generate a valid configuration to start from: *}
    fun fix_nP :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> ('v \<Rightarrow> dependability_level)" where
       "fix_nP G nP = (\<lambda>v. let nr = num_reachable G v in (if nr \<le> (nP v) then (nP v) else nr))"
 
-   theorem fix_nP_impl_correct: "valid_list_graph G \<Longrightarrow> fix_nP G nP  = SINVAR_Dependability.fix_nP (list_graph_to_graph G) nP"
+   theorem fix_nP_impl_correct: "wf_list_graph G \<Longrightarrow> fix_nP G nP  = SINVAR_Dependability.fix_nP (list_graph_to_graph G) nP"
    by(simp add: num_reachable_correct fun_eq_iff)
 
    value "let G = \<lparr> nodesL = [1::nat,2,3,4], edgesL = [(1,1), (2,1), (3,1), (4,1), (1,2), (1,3)] \<rparr> in (let nP = fix_nP G (\<lambda>e. 0) in map (\<lambda>v. nP v) (nodesL G))"
@@ -52,13 +52,13 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_Dependability.default_n
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "Dependability_eval G P = (valid_list_graph G \<and> 
+definition "Dependability_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_Dependability.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_Dependability.default_node_properties P))"
 
 
 
-lemma sinvar_correct: "valid_list_graph G \<Longrightarrow> SINVAR_Dependability.sinvar (list_graph_to_graph G) nP = sinvar G nP"
+lemma sinvar_correct: "wf_list_graph G \<Longrightarrow> SINVAR_Dependability.sinvar (list_graph_to_graph G) nP = sinvar G nP"
    apply(simp)
    apply(rule all_edges_list_I)
    apply(simp add: fun_eq_iff)

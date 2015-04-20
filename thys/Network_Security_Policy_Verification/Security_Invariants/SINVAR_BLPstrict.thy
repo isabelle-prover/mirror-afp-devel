@@ -71,7 +71,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -123,7 +123,7 @@ subsection {*ENF*}
       apply(simp add: secret_default_candidate)
      apply(erule default_uniqueness_by_counterexample_ACS)
      apply(rule_tac x="\<lparr> nodes=set [vertex_1,vertex_2], edges = set [(vertex_1,vertex_2)] \<rparr>" in exI, simp)
-     apply(simp add: BLP_offending_set graph_ops valid_graph_def)
+     apply(simp add: BLP_offending_set graph_ops wf_graph_def)
      apply(rule_tac x="(\<lambda> x. Secret)(vertex_1 := Secret, vertex_2 := Confidential)" in exI, simp)
      apply(rule_tac x="vertex_1" in exI, simp)
      apply(rule_tac x="set [(vertex_1,vertex_2)]" in exI, simp)

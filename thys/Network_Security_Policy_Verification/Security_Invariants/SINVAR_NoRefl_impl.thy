@@ -27,7 +27,7 @@ lemma[code_unfold]: "SecurityInvariant.node_props SINVAR_NoRefl.default_node_pro
 apply(simp add: NetModel_node_props_def)
 done
 
-definition "NoRefl_eval G P = (valid_list_graph G \<and> 
+definition "NoRefl_eval G P = (wf_list_graph G \<and> 
   verify_globals G (SecurityInvariant.node_props SINVAR_NoRefl.default_node_properties P) (model_global_properties P) \<and> 
   sinvar G (SecurityInvariant.node_props SINVAR_NoRefl.default_node_properties P))"
 
@@ -81,7 +81,7 @@ text {* Examples*}
   definition example_net :: "nat list_graph" where
   "example_net \<equiv> \<lparr> nodesL = [1::nat,2,3], 
     edgesL = [(1,2),(2,2),(2,1),(1,3)] \<rparr>"
-  lemma "valid_list_graph example_net" by eval
+  lemma "wf_list_graph example_net" by eval
   
   definition example_conf where
   "example_conf \<equiv> ((\<lambda>e. SINVAR_NoRefl.default_node_properties)(2:= Refl))" 

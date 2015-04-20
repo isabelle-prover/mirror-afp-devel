@@ -15,7 +15,7 @@ text{*Our access control view on the network*}
                                 V ''Internet''],
                       edgesL = [] \<rparr>"
   
-  lemma "valid_list_graph ChairNetwork_empty" by eval
+  lemma "wf_list_graph ChairNetwork_empty" by eval
 
 
 subsection{*Our security requirements*}

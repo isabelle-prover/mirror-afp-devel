@@ -33,7 +33,7 @@ interpretation SecurityInvariant_preliminaries
 where sinvar = sinvar
 and verify_globals = verify_globals
   apply unfold_locales
-    apply(frule_tac finite_distinct_list[OF valid_graph.finiteE])
+    apply(frule_tac finite_distinct_list[OF wf_graph.finiteE])
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
@@ -47,7 +47,7 @@ and verify_globals = verify_globals
 lemma "a \<noteq> b \<Longrightarrow> ((\<exists> x. y x)) \<Longrightarrow> ((\<forall> x. \<not> y x) \<Longrightarrow> a = b )" by simp
 
 lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarrow>
-    \<exists>G p i f. valid_graph G \<and> \<not> sinvar G p \<and> f \<in> (SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G p) \<and>
+    \<exists>G p i f. wf_graph G \<and> \<not> sinvar G p \<and> f \<in> (SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G p) \<and>
        sinvar (delete_edges G f) p \<and> 
          i \<in> snd ` f \<and> sinvar G (p(i := otherbot)) "
   apply(simp add:default_node_properties_def)
@@ -58,7 +58,7 @@ lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarro
   apply (simp split: split_split_asm split_split)
   apply(rule_tac x="\<lparr> nodes={vertex_1, vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
-   apply(simp add: valid_graph_def)
+   apply(simp add: wf_graph_def)
   apply(rule_tac x="(\<lambda> x. default_node_properties)(vertex_1 := \<lparr>privacy_level = 1, trusted = False \<rparr>, vertex_2 := \<lparr>privacy_level = 0, trusted = False \<rparr>)" in exI, simp add:default_node_properties_def)
   apply(rule_tac x="vertex_2" in exI, simp)
   apply(rule_tac x="{(vertex_1,vertex_2)}" in exI, simp)

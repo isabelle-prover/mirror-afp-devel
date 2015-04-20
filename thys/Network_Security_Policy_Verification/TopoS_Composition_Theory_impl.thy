@@ -25,8 +25,8 @@ subsection{*Generating instantiated (configured) network security invariants*}
   definition SecurityInvariant_complies_formal_def :: 
     "('v) SecurityInvariant \<Rightarrow> 'v TopoS_Composition_Theory.SecurityInvariant_configured \<Rightarrow> bool" where
     "SecurityInvariant_complies_formal_def impl spec \<equiv> 
-      (\<forall> G. valid_list_graph G \<longrightarrow> implc_sinvar impl G = c_sinvar spec (list_graph_to_graph G)) \<and>
-      (\<forall> G. valid_list_graph G \<longrightarrow> set`set (implc_offending_flows impl G) = c_offending_flows spec (list_graph_to_graph G)) \<and>
+      (\<forall> G. wf_list_graph G \<longrightarrow> implc_sinvar impl G = c_sinvar spec (list_graph_to_graph G)) \<and>
+      (\<forall> G. wf_list_graph G \<longrightarrow> set`set (implc_offending_flows impl G) = c_offending_flows spec (list_graph_to_graph G)) \<and>
       (implc_isIFS impl = c_isIFS spec)"
     
 
@@ -140,7 +140,7 @@ subsection{*Calculating offending flows*}
   
   theorem implc_get_offending_flows_complies:
     assumes a1: "\<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec"
-    and     a2: "valid_list_graph G"
+    and     a2: "wf_list_graph G"
     shows   "set`set (implc_get_offending_flows (get_impl M) G) = (get_offending_flows (get_spec M) (list_graph_to_graph G))"
     proof -
       from a1 have "\<forall> (m_impl, m_spec) \<in> set M. set ` set (implc_offending_flows m_impl G) = c_offending_flows m_spec (list_graph_to_graph G)"
@@ -265,7 +265,7 @@ subsection{*All security requirements fulfilled*}
 
   lemma all_security_requirements_fulfilled_complies:
     "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; 
-       valid_list_graph (G::('v::vertex) list_graph) \<rbrakk> \<Longrightarrow>
+       wf_list_graph (G::('v::vertex) list_graph) \<rbrakk> \<Longrightarrow>
     all_security_requirements_fulfilled (get_impl M) G <-> TopoS_Composition_Theory.all_security_requirements_fulfilled (get_spec M) (list_graph_to_graph G)"
     apply(simp add: all_security_requirements_fulfilled_def TopoS_Composition_Theory.all_security_requirements_fulfilled_def)
     apply(simp add: get_impl_def get_spec_def)
@@ -280,7 +280,7 @@ subsection{*generate valid topology*}
 
   lemma generate_valid_topology_complies:
     "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec;
-       valid_list_graph (G::('v::vertex) list_graph) \<rbrakk> \<Longrightarrow> 
+       wf_list_graph (G::('v::vertex) list_graph) \<rbrakk> \<Longrightarrow> 
        list_graph_to_graph (generate_valid_topology (get_impl M) G) = 
        TopoS_Composition_Theory.generate_valid_topology (get_spec M) (list_graph_to_graph G)"
     apply(subst generate_valid_topology_def_alt)
