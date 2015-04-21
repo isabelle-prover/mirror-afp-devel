@@ -269,10 +269,10 @@ proof -
           ev_wait_all_weakly_step_consistent
           ev_wait_one_weakly_step_consistent
           ev_signal_weakly_step_consistent
-          vpeq_refl ev_signal_stage_t.exhaust
+          vpeq_refl
     unfolding atomic_step_def
     apply (cases ipt, auto)
-    apply  (simp split add: ev_consume_t.splits ev_wait_stage_t.splits )
+    apply  (simp split add: ev_consume_t.splits ev_wait_stage_t.splits)
     by  (simp split add: ev_signal_stage_t.splits)
    qed
 end
