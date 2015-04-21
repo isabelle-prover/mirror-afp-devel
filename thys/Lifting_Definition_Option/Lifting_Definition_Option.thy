@@ -32,8 +32,6 @@ lemma restrict_condI: assumes "a \<Longrightarrow> P b"
         else (c, False))
        \<in> {(b, c). c \<longrightarrow> P b}" using assms by auto
 
-lemma simplify_cond: "(\<forall>x. P \<longrightarrow> Q x) = (P \<longrightarrow> (\<forall>x. Q x))" by blast
-
 lemma snd_if: "snd (if b then (P,True) else (Q,False)) = b" by simp
 
 lemma valid_definition: assumes 
