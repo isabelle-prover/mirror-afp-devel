@@ -9,6 +9,8 @@ theory DFS
 imports Main
 begin
 
+declare implies_True_equals[simp]
+
 subsection "Definition of Graphs"
 
 typedecl node 
@@ -215,7 +217,7 @@ next
       by(simp add: reachable_append, auto simp add: reachable_def)
     with False 2
     show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
-      by (auto simp add: reachable_def List.member_def) blast
+      by (auto simp add: reachable_def List.member_def)
   qed
 qed
 
