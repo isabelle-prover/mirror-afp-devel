@@ -9,7 +9,6 @@ theory DFS
 imports Main
 begin
 (*>*)
-declare implies_True_equals[simp] False_implies_equals[simp] 
 
 subsection{* Generic DFS *}
 

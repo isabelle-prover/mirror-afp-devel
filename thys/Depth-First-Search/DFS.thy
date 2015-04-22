@@ -9,8 +9,6 @@ theory DFS
 imports Main
 begin
 
-declare implies_True_equals[simp]
-
 subsection "Definition of Graphs"
 
 typedecl node 

@@ -3,7 +3,7 @@
 *)
 
 theory FunWithFunctions imports Complex_Main begin
-declare implies_True_equals[simp] False_implies_equals[simp]
+
 text{* See \cite{Tao2006}. Was first brought to our attention by Herbert
 Ehler who provided a similar proof. *}
 
