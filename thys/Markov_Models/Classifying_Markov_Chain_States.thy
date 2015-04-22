@@ -3,7 +3,6 @@ section {* Classifying Markov Chain States *}
 theory Classifying_Markov_Chain_States
 imports
   Discrete_Time_Markov_Chain
-  "~~/src/HOL/Library/NthRoot_Limits"
 begin
 
 lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
