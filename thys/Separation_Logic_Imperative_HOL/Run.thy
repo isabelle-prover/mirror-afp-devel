@@ -2,7 +2,7 @@ section {* Exception-Aware Relational Framework *}
 theory Run
 imports "~~/src/HOL/Imperative_HOL/Imperative_HOL"
 begin
-declare implies_True_equals [simp] False_implies_equals[simp]
+
   text {*
     With Imperative HOL comes a relational framework. 
     However, this can only be used if exception freeness is already assumed.
