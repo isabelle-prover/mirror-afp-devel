@@ -327,7 +327,7 @@ lemma lfilter'_LNil: "lfilter' P LNil = LNil"
 
 lemma lfilter'_LCons [simp]: "lfilter' P (LCons a xs) = (if P a then LCons a (lfilter' P xs) else lfilter' P xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_lfilter isCont_LCons isCont_ident isCont_If)
+     (auto intro!: isCont_lfilter isCont_LCons isCont_If)
 
 lemma ldistinct_lfilter': "ldistinct l \<Longrightarrow> ldistinct (lfilter' P l)"
   by (rule tendsto_closed[OF closed_ldistinct', OF isCont_lfilter])
@@ -382,13 +382,15 @@ lemma lconcat'_LNil: "lconcat' LNil = LNil"
 
 lemma lconcat'_LCons [simp]: "lconcat' (LCons l xs) = lappend l (lconcat' xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_lconcat' isCont_lappend isCont_LCons isCont_ident)
+     (auto intro!: isCont_lconcat' isCont_lappend isCont_LCons)
 
 lemma lmap_lconcat: "lmap f (lconcat' xss) = lconcat' (lmap (lmap f) (xss::'a llist llist))"
 proof (rule tendsto_closed[where x=xss, OF closed_Collect_eq])
-  fix xs :: "'a llist llist" assume "lfinite xs" then show "lmap f (lconcat' xs) = lconcat' (lmap (lmap f) xs)"
+  fix xs :: "'a llist llist" 
+  assume "lfinite xs" 
+  then show "lmap f (lconcat' xs) = lconcat' (lmap (lmap f) xs)"
     by (induct xs rule: lfinite.induct) (auto simp: lmap_lappend_distrib)
-qed (intro isCont_lconcat' isCont_lappend isCont_LCons isCont_ident isCont_lmap)+
+qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_within_id isCont_lmap)+
 
 lemmas tendsto_Sup[THEN tendsto_compose, tendsto_intros] =
   mcont_SUP[OF mcont_id' mcont_const, THEN tendsto_mcont]
@@ -427,7 +429,7 @@ lemma ldropWhile'_LNil: "ldropWhile' P LNil = LNil"
 
 lemma ldropWhile'_LCons [simp]: "ldropWhile' P (LCons l xs) = (if P l then ldropWhile' P xs else LCons l xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_ldropWhile' isCont_If isCont_LCons isCont_ident)
+     (auto intro!: isCont_ldropWhile' isCont_If isCont_LCons)
 
 lemma "ldropWhile' P (lmap f xs) = lmap f (ldropWhile' (P \<circ> f) xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
@@ -478,7 +480,7 @@ lemma "ldrop' n LNil = LNil"
 
 lemma "ldrop' n (LCons x xs) = (case n of 0 \<Rightarrow> LCons x xs | eSuc n \<Rightarrow> ldrop' n xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_ldrop' isCont_enat_case isCont_LCons isCont_ident split: enat_cosplit)
+     (auto intro!: isCont_ldrop' isCont_enat_case isCont_LCons split: enat_cosplit)
 
 primrec up :: "'a :: order \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "up a [] = []"
@@ -515,7 +517,7 @@ lemma lup_LNil: "lup a LNil = LNil"
 
 lemma lup_LCons [simp]: "lup a (LCons x xs) = (if a < x then LCons x (lup x xs) else lup a xs)"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_lup isCont_If isCont_LCons isCont_ident)
+     (auto intro!: isCont_lup isCont_If isCont_LCons)
 
 lemma lset_lup: "lset (lup x xs) \<subseteq> lset xs \<inter> {y. x < y}"
   by (rule tendsto_le_ccpo[where g="\<lambda>xs. lset (lup x xs)" and f="\<lambda>xs. lset xs \<inter> {y. x < y}" and F="at' xs"])
@@ -620,11 +622,11 @@ lemma "lextup i LNil = LNil" "lextdown i LNil = LNil"
 
 lemma "lextup i (LCons x xs) = (if i \<le> x then lextup x xs else LCons i (lextdown x xs))"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons isCont_ident)
+     (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons)
 
 lemma "lextdown i (LCons x xs) = (if x \<le> i then lextdown x xs else LCons i (lextup x xs))"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons isCont_ident)
+     (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons)
 
 lemma "lset (lextup a xs) \<subseteq> {a} \<union> lset xs"
   apply (rule tendsto_le_ccpo[where g="\<lambda>xs. lset (lextup a xs)" and f="\<lambda>xs. {a} \<union> lset xs" and F="at' xs"])
@@ -774,6 +776,6 @@ lemma "f' LNil = LNil"
 
 lemma "f' (LCons x xs) = LCons (x * 2) (f' (f' xs))"
   by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
-     (auto intro!: isCont_f' isCont_LCons isCont_ident)
+     (auto intro!: isCont_f' isCont_LCons)
 
 end
