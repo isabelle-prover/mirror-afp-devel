@@ -2236,15 +2236,36 @@ depends-on = Lehmer
 title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2008-09-01
-topic = Mathematics/Social Choice Theory
+topic = Mathematics/Economics
 abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>.
 
 [SenSocialChoice]
 title = Some classical results in Social Choice Theory
 author = Peter Gammie <http://peteg.org/>
 date = 2008-11-09
-topic = Mathematics/Social Choice Theory
+topic = Mathematics/Economics
 abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare" (1970), this development proves Arrow's General Possibility Theorem, Sen's Liberal Paradox and May's Theorem in a general setting. The goal was to make precise the classical statements and proofs of these results, and to provide a foundation for more recent results such as the Gibbard-Satterthwaite and Duggan-Schwartz theorems.
+
+[Vickrey_Clarke_Groves]
+title = VCG - Combinatorial Vickrey-Clarke-Groves Auctions
+author = Marco B. Caminati <http://caminati.co.nr>, Manfred Kerber <http://www.cs.bham.ac.uk/~mmk>, Christoph Lange<mailto:math.semantic.web@gmail.com>, Colin Rowat<mailto:c.rowat@bham.ac.uk>
+date = 2015-04-30
+topic = Mathematics/Economics
+abstract =
+ A VCG auction is a generalization of the single-good, second price
+ Vickrey auction to the case of a combinatorial auction (multiple
+ goods, from which any participant can bid on each possible
+ combination).
+ <p>
+ The theories CombinatorialAuction.thy, StrictCombinatorialAuction.thy
+ and UniformTieBreaking.thy contain the relevant definitions and
+ theorems; CombinatorialAuctionExamples.thy and
+ CombinatorialAuctionCodeExtraction.thy present simple helper
+ definitions to run the definitions on given examples and to export
+ them to the Scala language, respectively; FirstPrice.thy shows how
+ easy it is to adapt the definitions to the first price combinatorial
+ auction. For further details, see the <a
+ href="http://dx.doi.org/10.1145/2764468.2764511">EC-2015 paper</a>.
 
 [Topology]
 title = Topology

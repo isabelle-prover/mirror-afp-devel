@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{VCG --- Combinatorial Vickrey-Clarke-Groves Auctions}
+\author{Marco B. Caminati, Manfred Kerber, Christoph Lange, Colin Rowat}
+
+\maketitle
+
+\begin{abstract}
+    A VCG auction is a generalization of the single-good, second price
+    Vickrey auction to the case of a combinatorial auction (multiple
+    goods, from which any participant can bid on each possible
+    combination).
+
+    The theories CombinatorialAuction.thy, StrictCombinatorialAuction.thy
+    and UniformTieBreaking.thy contain the relevant definitions and
+    theorems; CombinatorialAuctionExamples.thy and
+    CombinatorialAuctionCodeExtraction.thy present simple helper
+    definitions to run the definitions on given examples and to export
+    them to the Scala language, respectively; FirstPrice.thy shows how
+    easy it is to adapt the definitions to the first price combinatorial
+    auction. For further details, see the corresponding EC-2015 paper.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

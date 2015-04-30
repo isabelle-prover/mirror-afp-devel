@@ -1,0 +1,128 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">V</font>CG
+-
+<font class="first">C</font>ombinatorial
+<font class="first">V</font>ickrey-Clarke-Groves
+<font class="first">A</font>uctions
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">VCG - Combinatorial Vickrey-Clarke-Groves Auctions</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://caminati.co.nr">Marco B. Caminati</a>, <a href="http://www.cs.bham.ac.uk/~mmk">Manfred Kerber</a>, Christoph Lange (math /dot/ semantic /dot/ web /at/ gmail /dot/ com) and Colin Rowat (c /dot/ rowat /at/ bham /dot/ ac /dot/ uk)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2015-04-30</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+A VCG auction is a generalization of the single-good, second price
+Vickrey auction to the case of a combinatorial auction (multiple
+goods, from which any participant can bid on each possible
+combination).
+<p>
+The theories CombinatorialAuction.thy, StrictCombinatorialAuction.thy
+and UniformTieBreaking.thy contain the relevant definitions and
+theorems; CombinatorialAuctionExamples.thy and
+CombinatorialAuctionCodeExtraction.thy present simple helper
+definitions to run the definitions on given examples and to export
+them to the Scala language, respectively; FirstPrice.thy shows how
+easy it is to adapt the definitions to the first price combinatorial
+auction. For further details, see the <a
+href="http://dx.doi.org/10.1145/2764468.2764511">EC-2015 paper</a>.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Vickrey_Clarke_Groves-AFP,
+  author  = {Marco B. Caminati and Manfred Kerber and Christoph Lange and Colin Rowat},
+  title   = {VCG - Combinatorial Vickrey-Clarke-Groves Auctions},
+  journal = {Archive of Formal Proofs},
+  month   = apr,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Vickrey_Clarke_Groves.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Vickrey_Clarke_Groves" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
