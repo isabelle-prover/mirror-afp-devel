@@ -15,7 +15,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Locus where a function or a list (of linord type) attains its maximum value *}
+section {* Locus where a function or a list (of linord type) attains its maximum value *}
 
 theory Argmax
 imports Main

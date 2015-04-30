@@ -15,18 +15,17 @@ See LICENSE file for details
 *)
 
 
-header {* Additional operators on relations, going beyond Relations.thy,
+section {* Additional operators on relations, going beyond Relations.thy,
   and properties of these operators *}
 
 theory RelationOperators
 imports
-  Main
   SetUtils
   "~~/src/HOL/Library/Code_Target_Nat"
 
 begin
 
-section {* evaluating a relation as a function *}
+subsection {* Evaluating a relation as a function *}
 
 text {* If an input has a unique image element under a given relation, return that element; 
   otherwise return a fallback value. *}
@@ -39,7 +38,7 @@ This is the set-theoretical way of characterizing functions, as opposed to @{tex
 definition runiq :: "('a \<times> 'b) set \<Rightarrow> bool" 
   where "runiq R = (\<forall> X . trivial X \<longrightarrow> trivial (R `` X))"
 
-section {* restriction *}
+subsection {* Restriction *}
 
 text {* restriction of a relation to a set (usually resulting in a relation with a smaller domain) *}
 definition restrict :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'b) set" (infix "||" 75)
@@ -73,7 +72,7 @@ text {* alternative characterization of the restriction of a relation to a singl
 lemma restrict_to_singleton: "P || {x} = {x} \<times> (P `` {x})" 
       unfolding restrict_def by fast
 
-section {* relation outside some set *}
+subsection {* Relation outside some set *}
 
 text {* For a set-theoretical relation @{term R} and an ``exclusion'' set @{term X}, return those
   tuples of @{term R} whose first component is not in @{term X}.  In other words, exclude @{term X}
@@ -109,7 +108,7 @@ lemma Range_outside_sub:
   shows "Range (R outside X) \<subseteq> Y"
   using assms outside_union_restrict by (metis Range_mono inf_sup_ord(3) subset_trans)
 
-section {* flipping pairs of relations *}
+subsection {* Flipping pairs of relations *}
 
 text {* flipping a pair: exchanging first and second component *}
 definition flip where "flip tup = (snd tup, fst tup)"
@@ -133,14 +132,14 @@ proof -
   finally show ?thesis .
 qed
 
-section {* evaluation as a function *}
+subsection {* Evaluation as a function *}
 
 text {* Evaluates a relation @{term R} for a single argument, as if it were a function.
   This will only work if @{term R} is right-unique, i.e. if the image is always a singleton set. *}
 fun eval_rel :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b" (infix ",," 75) (* . (Mizar's notation) confuses Isar *)
     where "R ,, a = the_elem (R `` {a})"
 
-section {* paste *}
+subsection {* Paste *}
 
 text {* the union of two binary relations @{term P} and @{term Q}, where pairs from @{term Q}
   override pairs from @{term P} when their first components coincide.

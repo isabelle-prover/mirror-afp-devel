@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Additional material that we would have expected in Set.thy *}
+section {* Additional material that we would have expected in Set.thy *}
 
 theory SetUtils
 imports
@@ -22,13 +22,13 @@ imports
 
 begin
 
-section {* Equality *}
+subsection {* Equality *}
 
 text {* An inference (introduction) rule that combines @{thm equalityI} and @{thm subsetI} to a single step *}
 lemma equalitySubsetI: "(\<And>x . x \<in> A \<Longrightarrow> x \<in> B) \<Longrightarrow> (\<And>x . x \<in> B \<Longrightarrow> x \<in> A) \<Longrightarrow> A = B" 
       by blast
 
-section {* Trivial sets *}
+subsection {* Trivial sets *}
 
 text {* A trivial set (i.e. singleton or empty), as in Mizar *}
 definition trivial where "trivial x = (x \<subseteq> {the_elem x})"
@@ -67,20 +67,20 @@ lemma trivial_imp_no_distinct:
 (* CL: The following takes 17 ms in Isabelle2013-1-RC1: *)
   using assms by (metis empty_subsetI insert_subset singleton_sub_trivial_uniq) 
 
-section {* The image of a set under a function *}
+subsection {* The image of a set under a function *}
 
 text {* an equivalent notation for the image of a set, using set comprehension *}
 lemma image_Collect_mem: "{ f x | x . x \<in> S } = f ` S" 
       by auto
 
-section {* Big Union *}
+subsection {* Big Union *}
 
 text {* An element is in the union of a family of sets if it is in one of the family's member sets. *}
 
 lemma Union_member: "(\<exists> S \<in> F . x \<in> S) \<longleftrightarrow> x \<in> \<Union> F" 
       by blast
 
-section {* Miscellaneous *}
+subsection {* Miscellaneous *}
 
 lemma trivial_subset_non_empty: assumes "trivial t" "t \<inter> X \<noteq> {}" 
             shows   "t \<subseteq> X" 

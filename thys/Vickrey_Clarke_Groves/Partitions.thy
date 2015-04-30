@@ -14,11 +14,10 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Partitions of sets *}
+section {* Partitions of sets *}
 
 theory Partitions
 imports
-  Main
   SetUtils
 
 begin

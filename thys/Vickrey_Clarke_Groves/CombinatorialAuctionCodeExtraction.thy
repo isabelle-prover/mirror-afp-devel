@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* VCG auction: Scala code extraction *}
+section {* VCG auction: Scala code extraction *}
 
 theory CombinatorialAuctionCodeExtraction
 
@@ -52,10 +52,10 @@ definition "payments b r n (a::allocation) =
             vcgpAlg ((participantsSet b)) (goodsList b) (Bid2funcBid b) r n (a::allocation)"
 
 (* Isabelle will export code for the vcgaAlg and payments as well as all other functions
-   necessary for the computation and write it to a file of choice, in this case, for Linux
-   the temporary file /dev/shm/VCG.scala *)
+   necessary for the computation and write it to a file of choice, in this case the file
+   VCG.scala *)
 export_code vcgaAlg payments allocationPrettyPrint in Scala module_name VCG 
-            file "/dev/shm/VCG-withoutWrapper.scala"
+            file "VCG-withoutWrapper.scala"
 
 end
 

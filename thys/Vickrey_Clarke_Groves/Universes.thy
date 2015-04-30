@@ -15,7 +15,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Sets of injections, partitions, allocations expressed as suitable subsets of the corresponding universes *}
+section {* Sets of injections, partitions, allocations expressed as suitable subsets of the corresponding universes *}
 
 theory Universes
 
@@ -26,7 +26,7 @@ StrictCombinatorialAuction
 
 begin
 
-section {* Preliminary lemmas *}
+subsection {* Preliminary lemmas *}
 
 lemma lm001: 
   assumes "Y \<in> set (all_partitions_alg X)" 
@@ -45,7 +45,7 @@ lemma lm002:
 
 
 
-section {* Definitions of various subsets of @{term UNIV}. *}
+subsection {* Definitions of various subsets of @{term UNIV}. *}
 
 (* For with R = {({1,2},2), ({2,3},3)} is a choice relation, choosing one element of the set. *)
 abbreviation "isChoice R == \<forall>x. R``{x} \<subseteq> x"
@@ -66,7 +66,7 @@ abbreviation "totalRels X Y == {R. Domain R = X & Range R \<subseteq> Y}"
 
 
 
-section {* Results about the sets defined in the previous section *}
+subsection {* Results about the sets defined in the previous section *}
 
 lemma lm003: 
   assumes "\<forall> x1 \<in> X. (x1 \<noteq> {} & (\<forall> x2 \<in> X-{x1}. x1 \<inter> x2  =  {}))" 
@@ -731,7 +731,7 @@ proof -
   have "a \<in> injectionsUniverse" using assms by fast 
   then have 
   0: "?u a" by simp
-  moreover have "?R \<subseteq> a & ?R--i \<subseteq> a" using Outside_def by blast
+  moreover have "?R \<subseteq> a & ?R--i \<subseteq> a" using Outside_def using lm088 by auto
   ultimately have "finite (?R -- i) & ?u (?R--i) & ?u ?R" 
     using finite_subset subrel_runiq by (metis assms(4))
   then moreover have "trivial ({i}\<times>(?R``{i}))" using runiq_def 
@@ -885,7 +885,7 @@ corollary allocationsUniverseOutside:
   using assms Outside_def by (metis (lifting, mono_tags) reducedAllocation)
 
 
-section{* Bridging theorem for injections *}
+subsection {* Bridging theorem for injections *}
 
 lemma lm062: 
   "totalRels {} Y = {{}}" 
@@ -1150,7 +1150,7 @@ lemma lm095:
          (\<Union> f \<in> set F.{f +* {(x,y)} | y . y \<in> Y - (Range f)})" 
   using assms lm094 lm092 by auto
 
-section{* computable injections *}
+subsection {* Computable injections *}
 
 fun injectionsAlg 
     where 
@@ -1222,10 +1222,10 @@ theorem injections_equiv:
   assumes "finite Y" and "distinct X" 
   shows  "set (injections_alg X Y) = injections (set X) Y"
 proof -
-  let ?P="\<lambda> l. (distinct l \<longrightarrow> (set (injections_alg l Y)=injections (set l) Y))"
-  have "?P []" using injectionsFromEmptyAreEmpty list.set(1) lm099 by (metis)
+  let ?P="\<lambda> l. distinct l \<longrightarrow> (set (injections_alg l Y)=injections (set l) Y)"
+  have "?P []" using injectionsFromEmptyAreEmpty list.set(1) lm099 by metis
   moreover have "\<forall>x xs. ?P xs \<longrightarrow> ?P (x#xs)" 
-    using assms(1) lm101 by (metis distinct.simps(2) list.simps(15))
+    using assms(1) lm101 by (metis distinct.simps(2) insert_is_Un list.simps(15)) 
   ultimately have "?P X" by (rule structInduct)
   then show ?thesis using assms(2) by blast
 qed
@@ -1277,7 +1277,7 @@ corollary allAllocationsBridgingLemma:
 proof -
   let ?LL = "\<Union> {injections P N| P. P \<in> all_partitions (set G)}"
   let ?RR = "\<Union> (set [set (injections_alg l N) . l \<leftarrow> all_partitions_list G])"
-  have "?LL = ?RR" using assms apply (rule lm104) done
+  have "?LL = ?RR" using assms by (rule lm104)
   then have "converse ` ?LL = converse ` ?RR" by simp
   thus ?thesis using possible_allocations_rel_def by force
 qed

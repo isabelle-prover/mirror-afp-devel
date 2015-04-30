@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Termination theorem for uniform tie-breaking *}
+section {* Termination theorem for uniform tie-breaking *}
 
 theory UniformTieBreaking
 
@@ -26,7 +26,7 @@ Universes
 begin
 
 
-section {* Uniform tie breaking: definitions *}
+subsection {* Uniform tie breaking: definitions *}
 text{* Let us repeat the general context. Each bidder has made their bids and the VCG algorithm up
  to now allocates goods to the higher bidders. If there are several high bidders tie breaking has 
 to take place. To do tie breaking we generate out of a random number a second bid vector so that 
@@ -100,7 +100,7 @@ abbreviation "chosenAllocation N G bids random ==
 abbreviation "resolvingBid N G bids random == 
   tiebids (chosenAllocation N G bids random) N (set G)"
 
-section {* Termination theorem for the uniform tie-breaking scheme *}
+subsection {* Termination theorem for the uniform tie-breaking scheme *}
 
 corollary winningAllocationPossible: 
   "winningAllocationsRel N G b \<subseteq> allAllocations N G" 
@@ -206,7 +206,7 @@ corollary lm015:
 
 
 
-section{* Results on summed bid vectors *}
+subsection {* Results on summed bid vectors *}
 
 lemma lm016: 
   "summedBidVectorRel bids N G = 
@@ -297,8 +297,8 @@ lemma lm027:
   shows "is_non_overlapping (omega ` f)"
 proof -
 let ?X="omega ` f" let ?p=finestpart
-  { fix y1 y2; 
-    assume "y1 \<in> ?X & y2 \<in> ?X"
+  { fix y1 y2
+    assume "y1 \<in> ?X \<and> y2 \<in> ?X"
     then obtain pair1 pair2 where 
       "y1 = omega pair1 & y2 = omega pair2 & pair1 \<in> f & pair2 \<in> f" by blast
     then moreover have "snd pair1 \<noteq> {} & snd pair1 \<noteq> {}" 
@@ -687,7 +687,7 @@ qed
 
 
 
-section{* From Pseudo-allocations to allocations  *}
+subsection {* From Pseudo-allocations to allocations  *}
 
 (* pseudoAllocationInv inverts pseudoAllocation *)
 abbreviation "pseudoAllocationInv pseudo == {(x, \<Union> (pseudo `` {x}))| x. x \<in> Domain pseudo}"

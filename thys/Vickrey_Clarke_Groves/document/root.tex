@@ -37,7 +37,24 @@
 
 \title{VCG --- Combinatorial Vickrey-Clarke-Groves Auctions}
 \author{Marco B. Caminati, Manfred Kerber, Christoph Lange, Colin Rowat}
+
 \maketitle
+
+\begin{abstract}
+    A VCG auction is a generalization of the single-good, second price
+    Vickrey auction to the case of a combinatorial auction (multiple
+    goods, from which any participant can bid on each possible
+    combination).
+
+    The theories CombinatorialAuction.thy, StrictCombinatorialAuction.thy
+    and UniformTieBreaking.thy contain the relevant definitions and
+    theorems; CombinatorialAuctionExamples.thy and
+    CombinatorialAuctionCodeExtraction.thy present simple helper
+    definitions to run the definitions on given examples and to export
+    them to the Scala language, respectively; FirstPrice.thy shows how
+    easy it is to adapt the definitions to the first price combinatorial
+    auction. For further details, see the corresponding EC-2015 paper.
+\end{abstract}
 
 \tableofcontents
 

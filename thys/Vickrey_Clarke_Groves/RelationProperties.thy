@@ -14,19 +14,17 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Additional properties of relations, and operators on relations,
+section {* Additional properties of relations, and operators on relations,
   as they have been defined by Relations.thy *}
 
 theory RelationProperties
 imports
-  Main
   RelationOperators
-  SetUtils
   Conditionally_Complete_Lattices (*cSup_singleton*)
 
 begin
 
-section {* right-uniqueness *}
+subsection {* Right-Uniqueness *}
 
 (* flip is applied to pairs so that (flip (x, y)) = (y, x) *)
 lemma injflip: "inj_on flip A" 
@@ -196,12 +194,7 @@ lemma eval_runiq_in_Range:
 
 
 
-
-
-
-
-
-subsection {* converse *}
+subsection {* Converse *}
 
 text {* The inverse image of the image of a singleton set under some relation is the same
   singleton set, if both the relation and its converse are right-unique and the singleton set
@@ -251,7 +244,7 @@ qed
 
 
 
-section {* injectivity *}
+subsection {* Injectivity *}
 
 text {* The following is a classical definition of the set of all injective functions from @{term X} to @{term Y}. *}
 definition injections :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<times> 'b) set set"

@@ -15,7 +15,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* Definitions about those Combinatorial Auctions which are strict (i.e., which assign all the available goods) *}
+section {* Definitions about those Combinatorial Auctions which are strict (i.e., which assign all the available goods) *}
 
 theory StrictCombinatorialAuction
 imports Complex_Main
@@ -24,7 +24,7 @@ imports Complex_Main
 
 begin
 
-section {* Types *}
+subsection {* Types *}
 
 type_synonym index = "integer"
 type_synonym participant = index
@@ -69,7 +69,7 @@ abbreviation "allAllocationsAlg N G ==
 
 
 
-section {* VCG mechanism *}
+subsection {* VCG mechanism *}
 
 (* N is the set of bidders, G the set of goods, and b the bidvector *)
 abbreviation "winningAllocationsRel N G b == 

@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-header {* VCG auction: definitions and theorems *}
+section {* VCG auction: definitions and theorems *}
 
 theory CombinatorialAuction
 
@@ -23,7 +23,7 @@ UniformTieBreaking
 
 begin
 
-section {* Definition of a VCG auction scheme, through the pair @{term "(vcga, vcgp)"} *}
+subsection {* Definition of a VCG auction scheme, through the pair @{term "(vcga, vcgp)"} *}
 
 (* b is a bid vector and participants is the set of all participants present in b *) 
 abbreviation "participants b == Domain (Domain b)"
@@ -438,7 +438,7 @@ proof -
   have "finite (a||{?n})" using assms restrict_def by (metis finite_Int) 
   moreover have "\<forall>z \<in> a||{?n}. b z=0" using assms restrict_def by fastforce
   ultimately have "setsum b (a||{?n}) = 0" using assms by (metis setsum.neutral)
-  thus ?thesis using setsumOutside assms(2) by (metis comm_monoid_add_class.add.right_neutral)
+  thus ?thesis using setsumOutside assms(2) by (metis add.comm_neutral) 
 qed
 
 corollary neutralSellerVariant: 
@@ -599,7 +599,7 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-section{* Computable versions of the VCG formalization *}
+subsection {* Computable versions of the VCG formalization *}
 
 (*  The computable versions are used to extract code.
    Furthermore we prove the equivalence with their classical counterparts. This computes the set of all maximal allocations including the seller. *)

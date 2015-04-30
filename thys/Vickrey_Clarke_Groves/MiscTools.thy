@@ -15,22 +15,20 @@ See LICENSE file for details
 *)
 
 
-header {* Toolbox of various definitions and theorems about sets, relations and lists *}
+section {* Toolbox of various definitions and theorems about sets, relations and lists *}
 
 theory MiscTools 
 
 imports 
-RelationProperties
 "~~/src/HOL/Library/Discrete"
-Main
-RelationOperators
+RelationProperties
 "~~/src/HOL/Library/Code_Target_Nat"
 "~~/src/HOL/Library/Indicator_Function"
 Argmax
 
 begin
 
-section {* Facts and notations about relations, sets and functions. *}
+subsection {* Facts and notations about relations, sets and functions. *}
 
 (* We use as alternative notation for paste instead of +* also +< and overload this with the next definition *)
 notation paste (infix "+<" 75)
@@ -211,7 +209,7 @@ lemma lm018:
 
 
 
-section {* ordered relations *}
+subsection {* Ordered relations *}
 
 (* note that card \<^bold>X\<ge>1 means in Isabelle that X is finite and not empty *)
 lemma lm019: 
@@ -782,7 +780,7 @@ lemma lm097:
 
 
 
-section {* Indicator function in set-theoretical form. *}
+subsection {* Indicator function in set-theoretical form. *}
 
 abbreviation 
   "Outside' X f == f outside X"
@@ -863,7 +861,7 @@ corollary lm109:
 corollary lm110: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
   shows "setsum (X <| Y) Z = setsum (X <| Y) (Z \<inter> X)" 
-  using assms lm078 lm108 comm_monoid_add_class.add.left_neutral by metis
+  using assms lm078 lm108 comm_monoid_add_class.add_0 by metis
 
 corollary lm111: 
   assumes "finite Z" 
@@ -898,7 +896,7 @@ corollary differenceSetsumVsCardinalityReal:
   using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE setsum.infinite)
 
 
-section{* Lists *}
+subsection {* Lists *}
 (* If there is an element in a list satisfying P, then the list of all elements satisfying P is not the empty list *)
 lemma lm114: 
   assumes "\<exists> n \<in> {0..<size l}. P (l!n)" 
@@ -1036,7 +1034,7 @@ corollary takeAllPermutation:
 abbreviation "subList l xl == map (nth l) (takeAll (%x. x \<le> size l) xl)"
 
 
-section {* A more computable version of @{term toFunction}.*}
+subsection {* A more computable version of @{term toFunction}.*}
 
 (* If R is a relation and the image of x is unique then take that, else take the fallback *)
 abbreviation "toFunctionWithFallback R fallback == 
@@ -1064,9 +1062,9 @@ lemma lm131:
 
 lemma lm132: 
   assumes "Y \<subseteq> f-`{0}" "finite X" 
-  shows "setsum f X = setsum f (X-Y)" 
-  using assms Int_lower2 comm_monoid_add_class.add.right_neutral inf.boundedE inf.orderE lm078 lm131
-  by (metis(no_types))
+  shows "setsum f X = setsum f (X-Y)"
+  using Int_lower2 add.comm_neutral assms(1) assms(2) lm078 lm131 order_trans
+  by (metis (no_types))
 
 (* - means the complement of a set. *)
 lemma lm133: 
@@ -1127,7 +1125,7 @@ lemma functionEquivalenceOnSets:
   using assms by (metis image_cong)
 
 
-section {* cardinalities of sets. *}
+subsection {* Cardinalities of sets. *}
 lemma lm140: 
   assumes "runiq R" "runiq (R^-1)" 
   shows "(R``A) \<inter> (R``B) = R``(A\<inter>B)" 
@@ -1173,8 +1171,7 @@ lemma lm147:
   assumes "card (Pow A) = 2" 
   shows "card A = 1" 
   using assms lm146 
-  by (metis(no_types) comm_semiring_1_class.normalizing_semiring_rules(33) 
-                      log_exp zero_neq_numeral)
+  by (metis log_exp power_one_right zero_not_eq_two)
 
 lemma lm148: 
   assumes "card (Pow X) = 1 \<or> card (Pow X) = 2" 
@@ -1271,7 +1268,7 @@ lemma lm160:
 
 
 
-section{* some easy properties on real numbers *}
+subsection {* Some easy properties on real numbers *}
 lemma lm161: 
   fixes a::real 
   fixes b c 
@@ -1282,7 +1279,7 @@ lemma lm162:
   fixes a::real 
   fixes b c 
   shows "a*b - c*b=(a-c)*b"
-  using assms lm161 by (metis comm_semiring_1_class.normalizing_semiring_rules(7))
+  using assms lm161 by (metis mult.commute)
 
 end
 
