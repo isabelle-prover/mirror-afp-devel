@@ -33,3 +33,5 @@ thys/JinjaThreads/JVM_Execute2.ML
 thys/JinjaThreads/JWellForm.ML
 thys/JinjaThreads/J_Execute.ML
 
+thys/Vickrey_Clarke_Groves/VCG-withoutWrapper.scala
+
