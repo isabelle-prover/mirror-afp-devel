@@ -8,7 +8,7 @@ section "The hyperbolic plane and Tarski's axioms"
 theory Hyperbolic_Tarski
 imports Euclid_Tarski
   Projective
-  Quadratic_Discriminant
+  "~~/src/HOL/Library/Quadratic_Discriminant"
 begin
 
 subsection {* Characterizing a specific conic in the projective plane *}
@@ -2067,7 +2067,7 @@ proof -
     by (simp add: proj2_line_through_incident)
   hence "proj2_incident (?p$1) (?l$1)" and "proj2_incident (?p$2) (?l$2)"
     by fast+
-  
+
   let ?q = "\<chi> i. \<some> qi. qi \<noteq> ?p$i \<and> qi \<in> S \<and> proj2_incident qi (?l$i)"
   have "\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)"
   proof
@@ -3635,7 +3635,7 @@ proof -
     by (rule statement60_one_way)
 
   from `proj2_incident c l` and `apply_cltn2_line equator J = l`
-    and `proj2_incident c m` and `apply_cltn2_line meridian J = m` 
+    and `proj2_incident c m` and `apply_cltn2_line meridian J = m`
   have "proj2_incident c (apply_cltn2_line equator J)"
     and "proj2_incident c (apply_cltn2_line meridian J)"
     by simp_all
@@ -5291,7 +5291,7 @@ next
     and `proj2_incident ?pa' l'` and `proj2_incident ?pbJ l'`
     and `proj2_incident ?pb' l'`
   have "proj2_set_Col {pp',pq',pd',?paJ}" and "proj2_set_Col {pp',pq',pd',?pa'}"
-    and "proj2_set_Col {pp',pq',?pa',?pbJ}" 
+    and "proj2_set_Col {pp',pq',?pa',?pbJ}"
     and "proj2_set_Col {pp',pq',?pa',?pb'}"
     by (unfold proj2_set_Col_def) (simp_all add: exI [of _ l'])
   with `pp' \<noteq> pq'` and `pp' \<in> S` and `pq' \<in> S` and `pd' \<in> hyp2`
