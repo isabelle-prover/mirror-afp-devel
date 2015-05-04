@@ -321,17 +321,17 @@ proof -
 qed
 
 lemma P_sup_lfp:
-  assumes Q: "Order_Continuity.continuous Q"
+  assumes Q: "sup_continuous Q"
   assumes f: "f \<in> measurable St M"
   assumes Q_m: "\<And>P. Measurable.pred M P \<Longrightarrow> Measurable.pred M (Q P)"
   shows "P_sup s (\<lambda>x. lfp Q (f x)) = (\<Squnion>i. P_sup s (\<lambda>x. (Q ^^ i) \<bottom> (f x)))"
-  unfolding Order_Continuity.continuous_lfp[OF Q]
+  unfolding sup_continuous_lfp[OF Q]
   apply simp
 proof (rule P_sup_SUP)
   fix i show "Measurable.pred St (\<lambda>x. (Q ^^ i) \<bottom> (f x))"
     apply (intro measurable_compose[OF f])
     by (induct i) (auto intro!: Q_m)
-qed (intro mono_funpow continuous_mono[OF Q] mono_compose[where f=f])
+qed (intro mono_funpow sup_continuous_mono[OF Q] mono_compose[where f=f])
 
 lemma P_sup_iterate:
   assumes [measurable]: "Measurable.pred St P"
@@ -443,12 +443,12 @@ proof -
     by simp
 qed
 
-lemma P_inf_lfp:
-  assumes Q: "Order_Continuity.down_continuous Q"
+lemma P_inf_gfp:
+  assumes Q: "inf_continuous Q"
   assumes f: "f \<in> measurable St M"
   assumes Q_m: "\<And>P. Measurable.pred M P \<Longrightarrow> Measurable.pred M (Q P)"
   shows "P_inf s (\<lambda>x. gfp Q (f x)) = (\<Sqinter>i. P_inf s (\<lambda>x. (Q ^^ i) \<top> (f x)))"
-  unfolding Order_Continuity.down_continuous_gfp[OF Q]
+  unfolding inf_continuous_gfp[OF Q]
   apply simp
 proof (rule P_inf_INF)
   fix i show "Measurable.pred St (\<lambda>x. (Q ^^ i) \<top> (f x))"
@@ -456,7 +456,7 @@ proof (rule P_inf_INF)
     by (induct i) (auto intro!: Q_m)
 next
   show "decseq (\<lambda>i x. (Q ^^ i) \<top> (f x))"
-    using down_continuous_mono[OF Q, THEN funpow_increasing[rotated]]
+    using inf_continuous_mono[OF Q, THEN funpow_increasing[rotated]]
     unfolding decseq_def le_fun_def by auto
 qed
 

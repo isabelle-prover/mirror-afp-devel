@@ -184,12 +184,12 @@ lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrighta
   by (auto simp: F_sup_def AE_measure_pmf_iff subset_eq
               intro!: SUP_cong nn_integral_cong_AE)
 
-lemma continuous_F_sup: "Order_Continuity.continuous F_sup"
-  unfolding Order_Continuity.continuous_def fun_eq_iff F_sup_def[abs_def]
+lemma continuous_F_sup: "sup_continuous F_sup"
+  unfolding sup_continuous_def fun_eq_iff F_sup_def[abs_def]
   by (auto simp:  SUP_apply[abs_def] nn_integral_monotone_convergence_SUP intro: SUP_commute)
 
 lemma mono_F_sup: "mono F_sup"
-  by (intro continuous_mono continuous_F_sup)
+  by (intro sup_continuous_mono continuous_F_sup)
 
 lemma F_sup_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_sup F s"
   by (auto simp: F_sup_def intro!: SUP_upper2 nn_integral_nonneg intro: arb_actI)
@@ -207,7 +207,7 @@ proof -
                  simp del: funpow.simps simp add: funpow_Suc_right F_sup_nonneg le_funI)
     qed }
   then show ?thesis
-    by (auto simp: continuous_lfp continuous_F_sup)
+    by (auto simp: sup_continuous_lfp continuous_F_sup)
 qed
 
 lemma p_eq_lfp_F_sup: "p = lfp F_sup"
@@ -221,7 +221,7 @@ proof -
       fix P assume P: "Measurable.pred St P"
       show "Measurable.pred St (HLD S2 or (HLD S1 aand (\<lambda>\<omega>. P (stl \<omega>))))"
         by (intro pred_intros_logic measurable_compose[OF _ P] measurable_compose[OF measurable_shd]) auto
-    qed (auto simp: Order_Continuity.continuous_def)
+    qed (auto simp: sup_continuous_def)
     also have "\<dots> = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0) s)"
     proof (rule SUP_cong)
       fix i from `s \<in> S` show "P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s##\<omega>)) = (F_sup ^^ i) (\<lambda>x\<in>S. 0) s"
@@ -1141,7 +1141,7 @@ proof (intro antisym lfp_lowerbound le_funI)
     also have "\<dots> = (\<Squnion>n. P s n)" unfolding P_def
       apply (rule emeasure_lfp2[where P="\<lambda>M. \<exists>s. M = T (simple ct s)" and M="T (simple ct s)"])
       apply (intro exI[of _ s] refl)
-      apply (auto simp: continuous_def) []
+      apply (auto simp: sup_continuous_def) []
       apply auto []
     proof safe
       fix A s assume "\<And>N. \<exists>s. N = T (simple ct s) \<Longrightarrow> Measurable.pred N A"
