@@ -316,7 +316,7 @@ proof (coinduction arbitrary: s rule: measurable_gfp2_coinduct)
   note countable_set_pmf[simp]
   show ?case
     unfolding * by measurable
-qed (auto simp: down_continuous_def)
+qed (auto simp: inf_continuous_def)
 
 lemma enabled_iff_snth: "enabled s \<omega> \<longleftrightarrow> (\<forall>i. \<omega> !! i \<in> K ((s ## \<omega>) !! i))"
 proof safe
@@ -498,7 +498,7 @@ proof -
       using measurable[of "T s"] by auto
     show ?case
       by simp
-  qed (auto simp: Order_Continuity.continuous_def)
+  qed (auto simp: sup_continuous_def)
 qed
 
 lemma emeasure_ev:
@@ -516,7 +516,7 @@ proof -
       using measurable[of "T s"] by auto
     show ?case
       by simp
-  qed (auto simp: Order_Continuity.continuous_def)
+  qed (auto simp: sup_continuous_def)
 qed
 
 lemma emeasure_suntil_HLD:
@@ -594,7 +594,7 @@ proof -
       apply (rule P)
       done }
   then have "almost_everywhere (T x) (gfp (\<lambda>p x. P x \<and> p (stl x)))"
-    by (subst down_continuous_gfp) (auto simp: down_continuous_def AE_all_countable)
+    by (subst inf_continuous_gfp) (auto simp: inf_continuous_def AE_all_countable)
   then show ?thesis
     by (simp add: alw_def)
 qed
@@ -886,7 +886,7 @@ next
     assume "\<forall>n. AE \<omega> in T t. X n (t ## \<omega>)"
     then have "AE \<omega> in T t. alw (not (HLD H)) (t ## \<omega>)"
       unfolding alw_def X_def
-      by (subst down_continuous_gfp) (auto simp: down_continuous_def AE_all_countable top_fun_def)
+      by (subst inf_continuous_gfp) (auto simp: inf_continuous_def AE_all_countable top_fun_def)
     ultimately have "AE \<omega> in T t. False"
       by eventually_elim (simp add: not_ev_iff[symmetric] del: holds.simps)
     then have False
@@ -1543,8 +1543,8 @@ proof -
   { fix \<omega> have "\<not> (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>) \<longleftrightarrow>
       (\<forall>n. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>))"
       unfolding suntil_def
-      by (subst continuous_lfp)
-         (auto simp add: Order_Continuity.continuous_def) }
+      by (subst sup_continuous_lfp)
+         (auto simp add: sup_continuous_def) }
   moreover 
   { fix n from `P s` have "AE \<omega> in T s. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>)"
     proof (induction n arbitrary: s)
@@ -1603,9 +1603,9 @@ proof -
 
   have [measurable]: "lfp ?F \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M S)"
   proof (rule borel_measurable_lfp)
-    show "Order_Continuity.continuous ?F"
+    show "sup_continuous ?F"
       using \<iota>_nonneg \<rho>_nonneg
-      by (auto simp: Order_Continuity.continuous_def SUP_ereal_add_right SUP_sup_distrib[symmetric]
+      by (auto simp: sup_continuous_def SUP_ereal_add_right SUP_sup_distrib[symmetric]
                simp del: sup_ereal_def)
   next
     fix f :: "('s \<times> 's stream) \<Rightarrow> ereal"
@@ -1625,8 +1625,8 @@ proof -
 qed
 
 lemma continuous_reward_until:
-  "Order_Continuity.continuous (\<lambda>F s \<omega>. if s \<in> X then 0 else \<rho> s + \<iota> s (shd \<omega>) + (0 \<squnion> (F (shd \<omega>) (stl \<omega>))))"
-  unfolding Order_Continuity.continuous_def
+  "sup_continuous (\<lambda>F s \<omega>. if s \<in> X then 0 else \<rho> s + \<iota> s (shd \<omega>) + (0 \<squnion> (F (shd \<omega>) (stl \<omega>))))"
+  unfolding sup_continuous_def
   using \<iota>_nonneg \<rho>_nonneg
   by (auto simp: fun_eq_iff SUP_ereal_add_right SUP_sup_distrib[symmetric] simp del: sup_ereal_def)
 
@@ -1640,7 +1640,7 @@ proof -
   { fix s \<omega> have "reward_until X s \<omega> = ?F (reward_until X) s \<omega>"
       unfolding reward_until_def
       apply (subst lfp_unfold)
-      apply (rule continuous_reward_until[THEN continuous_mono, of X])
+      apply (rule continuous_reward_until[THEN sup_continuous_mono, of X])
       apply rule
       done }
   note step = this
