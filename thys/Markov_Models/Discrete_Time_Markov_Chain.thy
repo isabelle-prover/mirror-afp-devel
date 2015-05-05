@@ -5,6 +5,7 @@ section {* Discrete-Time Markov Chain *}
 theory Discrete_Time_Markov_Chain
   imports
     Probability
+    "~~/src/HOL/Library/Rewrite"
     "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
     "../Coinductive/Coinductive_Stream"
     "../Coinductive/Coinductive_Nat"
@@ -435,6 +436,9 @@ proof -
     by (simp add: T_def prob_space_distr)
 qed
 
+lemma emeasure_T_const[simp]: "emeasure (T s) (space S) = 1"
+  using T.emeasure_space_1[of s] by simp
+
 lemma nn_integral_T:
   assumes f[measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+X. f X \<partial>T s) = (\<integral>\<^sup>+t. (\<integral>\<^sup>+\<omega>. f (t ## \<omega>) \<partial>T t) \<partial>K s)"
@@ -465,6 +469,65 @@ proof -
   also have "\<dots> = (\<integral>\<^sup>+t. \<integral>\<^sup>+\<omega>. f (t ## \<omega>) \<partial>T t \<partial>K s)"
     by (rule nn_integral_cong_AE) (simp add: AE_measure_pmf_iff)
   finally show ?thesis .
+qed
+
+lemma nn_integral_T_gfp:
+  fixes g
+  defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
+  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes cont_g: "\<And>s. inf_continuous (g s)"
+  assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
+  assumes bnd_g: "\<And>f s. g s f \<le> b" "0 \<le> b" "b < \<infinity>"
+  shows "(\<integral>\<^sup>+\<omega>. gfp l \<omega> \<partial>T s) = gfp (\<lambda>f s. \<integral>\<^sup>+t. g t (f t) \<partial>K s) s"
+proof (rule nn_integral_gfp)
+  show "\<And>s. sets (T s) = sets S" "\<And>F. F \<in> borel_measurable S \<Longrightarrow> l F \<in> borel_measurable S"
+    by (auto simp: l_def)
+  show "\<And>s. emeasure (T s) (space (T s)) \<noteq> 0" 
+   by (rewrite T.emeasure_space_1) simp
+  { fix s F
+    have "integral\<^sup>N (T s) (l F) \<le> (\<integral>\<^sup>+x. b \<partial>T s)"
+      by (intro nn_integral_mono) (simp add: l_def bnd_g)
+    also have "\<dots> < \<infinity>"
+      using bnd_g by simp
+    finally show "integral\<^sup>N (T s) (l F) < \<infinity>" . }
+  show "inf_continuous l"
+    using cont_g by (auto simp add: inf_continuous_def fun_eq_iff antimono_def le_fun_def l_def)
+  show "inf_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
+  proof (rule inf_continuous_nn_integral)
+    fix f s
+    have "(\<integral>\<^sup>+ t. g t (f t) \<partial>K s) \<le> (\<integral>\<^sup>+ t. b \<partial>K s)"
+      by (intro nn_integral_mono bnd_g)
+    also have "\<dots> < \<infinity>"
+      using bnd_g by simp
+    finally show "(\<integral>\<^sup>+ t. g t (f t) \<partial>K s) \<noteq> \<infinity>"
+      by simp
+  qed (insert cont_g, auto simp add: inf_continuous_def fun_eq_iff antimono_def le_fun_def)
+next
+  fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable S"
+  then show "integral\<^sup>N (T s) (l F) = (\<integral>\<^sup>+ t. g t (integral\<^sup>N (T t) F) \<partial>K s) "
+    by (rewrite nn_integral_T) (simp_all add: l_def int_g)
+qed
+
+lemma nn_integral_T_lfp:
+  fixes g
+  defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
+  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes cont_g: "\<And>s. sup_continuous (g s)"
+  assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
+  shows "(\<integral>\<^sup>+\<omega>. lfp l \<omega> \<partial>T s) = lfp (\<lambda>f s. \<integral>\<^sup>+t. g t (f t) \<partial>K s) s"
+proof (rule nn_integral_lfp)
+  show "\<And>s. sets (T s) = sets S" "\<And>F. F \<in> borel_measurable S \<Longrightarrow> l F \<in> borel_measurable S"
+       "\<And>F s. 0 \<le> (\<integral>\<^sup>+ t. g t (F t) \<partial>K s)"
+    by (auto simp: l_def nn_integral_nonneg)
+  show "sup_continuous l"
+    using cont_g by (auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def l_def)
+  show "sup_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
+    by (rule sup_continuous_nn_integral)
+       (insert cont_g, auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
+next
+  fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable S"
+  then show "integral\<^sup>N (T s) (l F) = (\<integral>\<^sup>+ t. g t (integral\<^sup>N (T t) F) \<partial>K s) "
+    by (rewrite nn_integral_T) (simp_all add: l_def int_g)
 qed
 
 lemma emeasure_Collect_T:
@@ -1769,7 +1832,6 @@ proof (rule T_bisim)
     by unfold_locales
 
   let ?P = "\<lambda>x1 x2. K1.T x1 \<Otimes>\<^sub>M K2.T x2"
-
 
   fix x show "prob_space (?B x)"
     by (auto simp: space_stream_space split: prod.splits

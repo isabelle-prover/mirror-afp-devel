@@ -6,6 +6,10 @@ theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain
 begin
 
+lemma mono_INF_fun:
+    "(\<And>x y. mono (F x y)) \<Longrightarrow> mono (\<lambda>z x. \<Sqinter>y\<in>X x. F x y z :: 'a :: complete_lattice)"
+  by (auto intro!: INF_mono[OF bexI] simp: le_fun_def mono_def)
+
 subsection {* Schedulers *}
 
 text {*
@@ -145,6 +149,30 @@ lemma nn_integral_T:
   assumes [measurable]: "f \<in> borel_measurable St"
   shows "(\<integral>\<^sup>+X. f X \<partial>T cfg) = (\<integral>\<^sup>+cfg'. (\<integral>\<^sup>+x. f (state cfg' ## x) \<partial>T cfg') \<partial>K_cfg cfg)"
   by (simp add: T_def MC.nn_integral_T[of _ cfg] nn_integral_distr)
+
+lemma nn_integral_T_lfp:
+  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes cont_g: "\<And>s. sup_continuous (g s)"
+  assumes int_g: "\<And>f cfg. f \<in> borel_measurable (stream_space (count_space UNIV)) \<Longrightarrow>
+    (\<integral>\<^sup>+\<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T cfg)"
+  shows "(\<integral>\<^sup>+\<omega>. lfp (\<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))) \<omega> \<partial>T cfg) = 
+    lfp (\<lambda>f cfg. \<integral>\<^sup>+t. g (state t) (f t) \<partial>K_cfg cfg) cfg"
+proof (rule nn_integral_lfp)
+  show "\<And>s. sets (T s) = sets St"
+      "\<And>F. F \<in> borel_measurable St \<Longrightarrow> (\<lambda>a. g (shd a) (F (stl a))) \<in> borel_measurable St"
+      "\<And>F cfg. 0 \<le> (\<integral>\<^sup>+ t. g (state t) (F t) \<partial>K_cfg cfg)"
+    by (auto simp: nn_integral_nonneg)
+  show "sup_continuous (\<lambda>a b. g (shd b) (a (stl b)))"
+    using cont_g by (auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
+  show "sup_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g (state t) (f t) \<partial>K_cfg s)"
+    by (rule sup_continuous_nn_integral)
+       (insert cont_g, auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
+next
+  fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable St"
+  then show "(\<integral>\<^sup>+ a. g (shd a) (F (stl a)) \<partial>T s) =
+           (\<integral>\<^sup>+ cfg. g (state cfg) (integral\<^sup>N (T cfg) F) \<partial>K_cfg s)"
+    by (rewrite nn_integral_T) (simp_all add: int_g)
+qed
 
 lemma emeasure_Collect_T:
   assumes [measurable]: "Measurable.pred St P"
@@ -412,6 +440,130 @@ proof -
     qed
   qed
   finally show ?thesis .
+qed
+
+lemma emeasure_T_const[simp]: "emeasure (T s) (space St) = 1"
+  using T.emeasure_space_1[of s] by simp
+
+lemma E_inf_greatest: 
+  "(\<And>cfg. cfg \<in> cfg_on s \<Longrightarrow> x \<le> (\<integral>\<^sup>+x. f x \<partial>T cfg)) \<Longrightarrow> x \<le> E_inf s f"
+  unfolding E_inf_def by (rule INF_greatest)
+
+lemma E_inf_lower2: 
+  "cfg \<in> cfg_on s \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>T cfg) \<le> x \<Longrightarrow> E_inf s f \<le> x"
+  unfolding E_inf_def by (rule INF_lower2)
+
+text \<open>
+  Maybe the following statement can be generalized to infinite @{term "K s"}.
+\<close>
+
+lemma E_inf_lfp:
+  fixes g
+  defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
+  assumes measurable_g[measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes cont_g: "\<And>s. sup_continuous (g s)"
+  assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
+     (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"
+  assumes K_finite: "\<And>s. finite (K s)"
+  shows "(\<lambda>s. E_inf s (lfp l)) = lfp (\<lambda>f s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>D)"
+proof (rule antisym)
+  let ?F = "\<lambda>F s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>D"
+  let ?I = "\<lambda>D. (\<integral>\<^sup>+t. g t (lfp ?F t) \<partial>measure_pmf D)"
+  have mono_F: "mono ?F"
+    using sup_continuous_mono[OF cont_g]
+    by (force intro!: INF_mono nn_integral_mono monoI simp: mono_def le_fun_def)
+  def ct \<equiv> "\<lambda>s. SOME D. D \<in> K s \<and> (lfp ?F s = ?I D)"
+  { fix s
+    have "finite (?I ` K s)"
+      by (auto intro: K_finite)
+    then obtain D where "D \<in> K s" "?I D = Min (?I ` K s)"
+      by (auto simp: K_wf dest!: Min_in)
+    note this(2)
+    also have "\<dots> = (INF D : K s. ?I D)"
+      using K_wf by (subst Min_Inf) (auto intro: K_finite)
+    also have "\<dots> = lfp ?F s"
+      by (rewrite in "_ = \<hole>" lfp_unfold[OF mono_F]) auto
+    finally have "\<exists>D. D \<in> K s \<and> (lfp ?F s = ?I D)"
+      using `D \<in> K s` by auto
+    then have "ct s \<in> K s \<and> (lfp ?F s = ?I (ct s))"
+      unfolding ct_def by (rule someI_ex)
+    then have "ct s \<in> K s" "lfp ?F s = ?I (ct s)"
+      by auto }
+  note ct = this
+  then have ct_cfg_on[simp]: "\<And>s. memoryless_on ct s \<in> cfg_on s"
+    by (intro memoryless_on_cfg_onI) simp
+  then show "(\<lambda>s. E_inf s (lfp l)) \<le> lfp ?F"
+  proof (intro le_funI, rule E_inf_lower2)
+    fix s
+    def P \<equiv> "\<lambda>f cfg. \<integral>\<^sup>+ t. g (state t) (f t) \<partial>K_cfg cfg"
+    have "integral\<^sup>N (T (memoryless_on ct s)) (lfp l) = lfp P (memoryless_on ct s)"
+      unfolding P_def l_def using measurable_g cont_g int_g by (rule nn_integral_T_lfp)
+    also have "\<dots> = (SUP i. (P ^^ i) \<bottom>) (memoryless_on ct s)"
+    proof (rewrite sup_continuous_lfp)
+      have "\<And>t. sup_continuous (\<lambda>F x. g (state t) (F t))"
+         by (auto simp: le_fun_def fun_eq_iff sup_continuous_def  mono_def
+                  intro!: sup_continuousD[OF cont_g])
+      then show "sup_continuous P"
+        unfolding P_def by (rule sup_continuous_nn_integral) auto
+    qed rule
+    also have "\<dots> = (SUP i. (P ^^ i) \<bottom> (memoryless_on ct s))"
+      by simp
+    also have "\<dots> \<le> lfp ?F s"
+    proof (rule SUP_least)
+      fix i show "(P ^^ i) \<bottom> (memoryless_on ct s) \<le> lfp ?F s"
+      proof (induction i arbitrary: s)
+        case 0 then show ?case
+          by simp
+      next
+        case (Suc n)
+        have "(P ^^ Suc n) \<bottom> (memoryless_on ct s) =
+          (\<integral>\<^sup>+ t. g t ((P ^^ n) \<bottom> (memoryless_on ct t)) \<partial>ct s)"
+          by (simp add: P_def K_cfg_def)
+        also have "\<dots> \<le> (\<integral>\<^sup>+ t. g t (lfp ?F t) \<partial>ct s)"
+          by (intro nn_integral_mono sup_continuous_mono[OF cont_g, THEN monoD] Suc)
+        also have "\<dots> = lfp ?F s"
+          by (rule  ct(2) [symmetric])
+        finally show ?case .
+      qed
+    qed
+    finally show "integral\<^sup>N (T (memoryless_on ct s)) (lfp l) \<le> lfp ?F s" .
+  qed
+
+  have cont_l: "sup_continuous l"
+     by (auto simp: l_def le_fun_def fun_eq_iff sup_continuous_def mono_def
+              intro!: sup_continuousD[OF cont_g])
+
+  show "lfp ?F \<le> (\<lambda>s. E_inf s (lfp l))"
+  proof (intro lfp_lowerbound le_funI)
+    fix s show "(\<Sqinter>x\<in>K s. \<integral>\<^sup>+ t. g t (E_inf t (lfp l)) \<partial>measure_pmf x) \<le> E_inf s (lfp l)"
+    proof (rewrite in "_ \<le> \<hole>" E_inf_iterate)
+      show l: "lfp l \<in> borel_measurable St"
+        using cont_l by (rule borel_measurable_lfp) (simp add: l_def)
+      show "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. g t (E_inf t (lfp l)) \<partial>measure_pmf D) \<le>
+        (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. E_inf t (\<lambda>\<omega>. lfp l (t ## \<omega>)) \<partial>measure_pmf D)"
+      proof (rule INF_mono nn_integral_mono bexI)+
+        fix t D assume "D \<in> K s"
+        { fix cfg assume "cfg \<in> cfg_on t"
+          have "(\<integral>\<^sup>+ \<omega>. g (state cfg) (lfp l \<omega>) \<partial>T cfg) = g (state cfg) (\<integral>\<^sup>+ \<omega>. (lfp l \<omega>) \<partial>T cfg)"
+            using l by (rule int_g)
+          with `cfg \<in> cfg_on t` have *: "(\<integral>\<^sup>+ \<omega>. g t (lfp l \<omega>) \<partial>T cfg) = g t (\<integral>\<^sup>+ \<omega>. (lfp l \<omega>) \<partial>T cfg)"
+            by simp }
+        then
+        have *: "g t (\<Sqinter>cfg\<in>cfg_on t. integral\<^sup>N (T cfg) (lfp l)) \<le> (\<Sqinter>cfg\<in>cfg_on t. \<integral>\<^sup>+ \<omega>. g t (lfp l \<omega>) \<partial>T cfg)"
+          apply simp
+          apply (rule INF_greatest)
+          apply (rule sup_continuous_mono[OF cont_g, THEN monoD])
+          apply (rule INF_lower)
+          apply assumption
+          done
+        show "g t (E_inf t (lfp l)) \<le> E_inf t (\<lambda>\<omega>. lfp l (t ## \<omega>))"
+          apply (rewrite in "_ \<le> \<hole>" lfp_unfold[OF sup_continuous_mono[OF cont_l]])
+          apply (rewrite in "_ \<le> \<hole>" l_def)
+          apply (simp add: E_inf_def *)
+          done
+      qed
+    qed
+  qed
 qed
 
 definition "P_inf s P = (\<Sqinter>cfg\<in>cfg_on s. emeasure (T cfg) {x\<in>space St. P x})"
