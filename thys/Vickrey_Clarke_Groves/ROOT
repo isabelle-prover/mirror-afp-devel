@@ -6,3 +6,4 @@ session Vickrey_Clarke_Groves (AFP) = "HOL-Library" +
     CombinatorialAuctionCodeExtraction
   document_files
     "root.tex"
+    "root.bib"
