@@ -197,22 +197,14 @@ lemma LIMSEQ_inv_powr:
   assumes "0 < c" "0 < d"
   shows "(\<lambda>n :: nat. (c / n) powr d) ----> 0"
 proof (rule tendsto_zero_powrI)
-  from `0 < c` have "\<And>x. 0 < x \<Longrightarrow> 0 < c / x" by simp
-  then show "eventually (\<lambda>x. 0 < c / real x) sequentially"
-     by (rule eventually_sequentiallyI[of 1]) simp
+  from `0 < c` show "eventually (\<lambda>x. 0 \<le> c / real x) sequentially"
+     by (intro eventually_sequentiallyI[of 1]) simp
 
   show "(\<lambda>x. c / real x) ----> 0"
-  proof (rule tendstoI)
-    fix e :: real assume "0 < e"
-    then have "\<And>x. 0 < x \<Longrightarrow> c / x < e \<longleftrightarrow> c / e < x"
-      by (auto simp: field_simps)
-    then show "eventually (\<lambda>x. dist (c / real x) 0 < e) sequentially"
-      using `0 < c` `0 < e`
-      by (intro eventually_sequentially_lessI[of "nat(ceiling (c/e))"])
-         (auto simp: dist_real_def natceiling_lessD)
-  qed
+    by (intro tendsto_divide_0[OF tendsto_const] filterlim_at_top_imp_at_infinity
+              filterlim_real_sequentially tendsto_divide_0)
   show "0 < d" by (rule assms)
-qed
+qed simp
 
 
 end

@@ -69,7 +69,7 @@ next
   moreover have "\<And>n. 1 \<le> n \<Longrightarrow> 0 < p n * n powr (?v / ?e)"
     by (auto simp: p_nz)
   ultimately have "(\<lambda>n. (p n * n powr (?v / ?e)) powr ?e) ----> 0"
-    using card(2) by (force intro: tendsto_zero_powrI[OF eventually_sequentiallyI])
+    using card(2) by (force intro: tendsto_zero_powrI[OF _ _ eventually_sequentiallyI])
   hence limit: "(\<lambda>n. p n powr ?e * n powr ?v) ----> 0"
     by (rule LIMSEQ_cong[OF _ eventually_sequentiallyI[where c = 1]])
        (auto simp: p card p_nz powr_powr powr_mult)
@@ -665,9 +665,9 @@ next
             .
         next
           show "(\<lambda>n. (subgraph_threshold H n / p n) powr real (card (uedges H))) ----> 0"
-            using tendsto_zero_powrI[OF eventually_sequentiallyI[OF divide_pos_pos] p_threshold] 
-                  subgraph_threshold_def p_nz v_e_nz 
-                  by auto fastforce
+            using p_nz v_e_nz 
+            by (intro tendsto_zero_powrI[OF p_threshold tendsto_const eventually_sequentiallyI[OF divide_nonneg_nonneg]])
+               (auto simp: subgraph_threshold_def less_imp_le)
         qed
       hence "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) ----> real (?v ^ ?v) * 0"
         by (rule LIMSEQ_const_mult)
@@ -697,10 +697,9 @@ next
         have "(\<lambda>n. ?num n k) \<lless> ?den'"
           proof (rule less_fun_const_quot)
             have "(\<lambda>n. (subgraph_threshold H n / p n) powr (max_density H * k)) ----> 0"
-              using tendsto_zero_powrI[OF eventually_sequentiallyI[OF divide_pos_pos] p_threshold mult_pos_pos[OF max_density_gr_zero[OF finite nonempty wellformed]]]
-              subgraph_threshold_def powr_gt_zero p_nz k
-              apply (simp add: Suc_le_eq )
-              using real_of_nat_gt_zero_cancel_iff by blast
+              using mult_pos_pos[OF max_density_gr_zero[OF finite nonempty wellformed]] powr_gt_zero p_nz k
+              by (intro tendsto_zero_powrI[OF p_threshold tendsto_const])
+                 (auto simp: less_imp_le subgraph_threshold_def)
             thus "(\<lambda>n. (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)) / (real n ^ (2 * ?v) * p n ^ (2 * ?e))) ----> 0"
               proof (rule LIMSEQ_cong[OF _ eventually_sequentiallyI])
                 fix n :: nat
