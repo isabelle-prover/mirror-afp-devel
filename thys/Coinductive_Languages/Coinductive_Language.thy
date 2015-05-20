@@ -39,7 +39,7 @@ yielding an executable decision procedure for the word problem without further a
 *}
 (*<*)
 (* custom coinduction theorem (getting rid of rel_fun) *)
-declare language.coinduct[unfolded rel_fun_def, simplified, case_names Lang, coinduct pred]
+declare language.coinduct_strong[unfolded rel_fun_def, simplified, case_names Lang, coinduct pred]
 (*>*)
 
 section {* Regular Languages *}
@@ -83,6 +83,85 @@ lemma Plus_idem_assoc: "Plus r (Plus r s) = Plus r s"
 
 lemmas Plus_ACI[simp] = Plus_rotate Plus_comm Plus_assoc Plus_idem_assoc Plus_idem
 
+lemma Plus_OneL[simp]: "\<oo> r \<Longrightarrow> Plus One r = r"
+  by (coinduction arbitrary: r) auto
+
+lemma Plus_OneR[simp]: "\<oo> r \<Longrightarrow> Plus r One = r"
+  by (coinduction arbitrary: r) auto
+
+text {*
+  Concatenation is not primitively corecursive---the corecursive call of its derivative is
+  guarded by @{term Plus}. However, it can be defined as a composition of two primitively
+  corecursive functions.
+*}
+
+primcorec TimesLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
+  "\<oo> (TimesLR r s) = (\<oo> r \<and> \<oo> s)"
+| "\<dd> (TimesLR r s) = (\<lambda>(a, b). 
+   if b then TimesLR (\<dd> r a) s else if \<oo> r then TimesLR (\<dd> s a) One else Zero)"
+
+primcorec Times_Plus :: "('a \<times> bool) language \<Rightarrow> 'a language" where
+  "\<oo> (Times_Plus r) = \<oo> r"
+| "\<dd> (Times_Plus r) = (\<lambda>a. Times_Plus (Plus (\<dd> r (a, True)) (\<dd> r (a, False))))"
+
+lemma TimesLR_ZeroL[simp]: "TimesLR Zero r = Zero"
+  by (coinduction arbitrary: r) auto
+
+lemma TimesLR_ZeroR[simp]: "TimesLR r Zero = Zero"
+  by (coinduction arbitrary: r) (auto intro: exI[of _ Zero])
+
+lemma TimesLR_PlusL[simp]: "TimesLR (Plus r s) t = Plus (TimesLR r t) (TimesLR s t)"
+  by (coinduction arbitrary: r s t) auto
+
+lemma TimesLR_PlusR[simp]: "TimesLR r (Plus s t) = Plus (TimesLR r s) (TimesLR r t)"
+  by (coinduction arbitrary: r s t) auto
+
+lemma Times_Plus_Zero[simp]: "Times_Plus Zero = Zero"
+  by coinduction simp
+
+lemma Times_Plus_Plus[simp]: "Times_Plus (Plus r s) = Plus (Times_Plus r) (Times_Plus s)"
+proof (coinduction arbitrary: r s)
+  case (Lang r s)
+  then show ?case unfolding Times_Plus.sel Plus.sel
+    by (intro conjI[OF refl]) (metis Plus_comm Plus_rotate) 
+qed
+
+lemma Times_Plus_TimesLR_One[simp]: "Times_Plus (TimesLR r One) = r"
+  by (coinduction arbitrary: r) simp
+
+lemma Times_Plus_TimesLR_PlusL[simp]:
+  "Times_Plus (TimesLR (Plus r s) t) = Plus (Times_Plus (TimesLR r t)) (Times_Plus (TimesLR s t))"
+  by (coinduction arbitrary: r s t) auto
+
+lemma Times_Plus_TimesLR_PlusR[simp]:
+  "Times_Plus (TimesLR r (Plus s t)) = Plus (Times_Plus (TimesLR r s)) (Times_Plus (TimesLR r t))"
+  by (coinduction arbitrary: r s t) auto
+
+definition Times :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
+  "Times r s = Times_Plus (TimesLR r s)"
+
+lemma \<oo>_Times[simp]:
+  "\<oo> (Times r s) = (\<oo> r \<and> \<oo> s)"
+  unfolding Times_def by simp
+
+lemma \<dd>_Times[simp]:
+  "\<dd> (Times r s) = (\<lambda>a. if \<oo> r then Plus (Times (\<dd> r a) s) (\<dd> s a) else Times (\<dd> r a) s)"
+  unfolding Times_def by (rule ext, coinduction arbitrary: r s) auto
+
+theorem Times_ZeroL[simp]: "Times Zero r = Zero"
+  by coinduction simp
+
+theorem Times_ZeroR[simp]: "Times r Zero = Zero"
+  by (coinduction arbitrary: r) auto
+
+theorem Times_OneL[simp]: "Times One r = r"
+  by (coinduction arbitrary: r rule: language.coinduct_strong) (simp add: rel_fun_def)
+
+theorem Times_OneR[simp]: "Times r One = r"
+  by (coinduction arbitrary: r) simp
+
+
+
 text {*
   Coinduction up-to @{term Plus}--congruence relaxes the coinduction hypothesis by requiring
   membership in the congruence closure of the bisimulation rather than in the bisimulation itself.
@@ -103,83 +182,6 @@ proof (coinduct rule: language.coinduct[of "Plus_cong R"])
   then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)" using hyp
     by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def)
 qed (intro Base R)
-
-lemma Plus_OneL[simp]: "\<oo> r \<Longrightarrow> Plus One r = r"
-  by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) auto
-
-lemma Plus_OneR[simp]: "\<oo> r \<Longrightarrow> Plus r One = r"
-  by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) auto
-
-text {*
-  Concatenation is not primitively corecursive---the corecursive call of its derivative is
-  guarded by @{term Plus}. However, it can be defined as a composition of two primitively
-  corecursive functions.
-*}
-
-primcorec TimesLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
-  "\<oo> (TimesLR r s) = (\<oo> r \<and> \<oo> s)"
-| "\<dd> (TimesLR r s) = (\<lambda>(r, s). TimesLR r s) o (\<lambda>(a, b). 
-   (if b then (\<dd> r a, s) else if \<oo> r then (\<dd> s a, One) else (Zero, One)))"
-
-primcorec Times_Plus :: "('a \<times> bool) language \<Rightarrow> 'a language" where
-  "\<oo> (Times_Plus r) = \<oo> r"
-| "\<dd> (Times_Plus r) = (\<lambda>a. Times_Plus (Plus (\<dd> r (a, True)) (\<dd> r (a, False))))"
-
-lemma TimesLR_ZeroL[simp]: "TimesLR Zero r = Zero"
-  by (coinduction arbitrary: r) auto
-
-lemma TimesLR_ZeroR[simp]: "TimesLR r Zero = Zero"
-  by (coinduction arbitrary: r) (auto intro: exI[of _ Zero])
-
-lemma TimesLR_PlusL[simp]: "TimesLR (Plus r s) t = Plus (TimesLR r t) (TimesLR s t)"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
-
-lemma TimesLR_PlusR[simp]: "TimesLR r (Plus s t) = Plus (TimesLR r s) (TimesLR r t)"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
-
-lemma Times_Plus_Zero[simp]: "Times_Plus Zero = Zero"
-  by coinduction simp
-
-lemma Times_Plus_Plus[simp]: "Times_Plus (Plus r s) = Plus (Times_Plus r) (Times_Plus s)"
-proof (coinduction arbitrary: r s)
-  case (Lang r s)
-  then show ?case unfolding Times_Plus.sel Plus.sel
-    by (intro conjI[OF refl] allI exI conjI[rotated], rule refl) (metis Plus_comm Plus_rotate) 
-qed
-
-lemma Times_Plus_TimesLR_One[simp]: "Times_Plus (TimesLR r One) = r"
-  by (coinduction arbitrary: r) simp
-
-lemma Times_Plus_TimesLR_PlusL[simp]:
-  "Times_Plus (TimesLR (Plus r s) t) = Plus (Times_Plus (TimesLR r t)) (Times_Plus (TimesLR s t))"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
-
-lemma Times_Plus_TimesLR_PlusR[simp]:
-  "Times_Plus (TimesLR r (Plus s t)) = Plus (Times_Plus (TimesLR r s)) (Times_Plus (TimesLR r t))"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
-
-definition Times :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
-  "Times r s = Times_Plus (TimesLR r s)"
-
-lemma \<oo>_Times[simp]:
-  "\<oo> (Times r s) = (\<oo> r \<and> \<oo> s)"
-  unfolding Times_def by simp
-
-lemma \<dd>_Times[simp]:
-  "\<dd> (Times r s) = (\<lambda>a. if \<oo> r then Plus (Times (\<dd> r a) s) (\<dd> s a) else Times (\<dd> r a) s)"
-  unfolding Times_def by (rule ext, coinduction arbitrary: r s rule: language_coinduct_upto_Plus) auto
-
-theorem Times_ZeroL[simp]: "Times Zero r = Zero"
-  by coinduction simp
-
-theorem Times_ZeroR[simp]: "Times r Zero = Zero"
-  by (coinduction arbitrary: r) auto
-
-theorem Times_OneL[simp]: "Times One r = r"
-  by (coinduction arbitrary: r rule: language.coinduct_strong) (simp add: rel_fun_def)
-
-theorem Times_OneR[simp]: "Times r One = r"
-  by (coinduction arbitrary: r) simp
 
 theorem Times_PlusL[simp]: "Times (Plus r s) t = Plus (Times r t) (Times s t)"
   by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus) fastforce
@@ -229,17 +231,17 @@ lemma \<oo>_Star[simp]: "\<oo> (Star r)"
   unfolding Star_def by simp
 
 lemma \<dd>_Star[simp]: "\<dd> (Star r) = (\<lambda>a. Times (\<dd> r a) (Star r))"
-  unfolding Star_def by (rule ext, coinduction arbitrary: r rule: language_coinduct_upto_Plus)
+  unfolding Star_def by (rule ext, coinduction arbitrary: r)
     (auto simp add: Star_def StarLR_Times[symmetric])
 
 lemma Star_Zero[simp]: "Star Zero = One"
-  by (coinduction rule: language.coinduct_strong) auto
+  by coinduction auto
 
 lemma Star_One[simp]: "Star One = One"
-  by (coinduction rule: language.coinduct_strong) auto
+  by coinduction auto
 
 lemma Star_unfoldL: "Star r = Plus One (Times r (Star r))"
-  by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) auto
+  by coinduction auto
 
 primcorec Inter :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
   "\<oo> (Inter r s) = (\<oo> r \<and> \<oo> s)"
@@ -261,7 +263,7 @@ text {*
 
 primcorec ShuffleLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
   "\<oo> (ShuffleLR r s) = (\<oo> r \<and> \<oo> s)"
-| "\<dd> (ShuffleLR r s) = (\<lambda>(r, s). ShuffleLR r s) o (\<lambda>(a, b). (if b then (\<dd> r a, s) else (r, \<dd> s a)))"
+| "\<dd> (ShuffleLR r s) = (\<lambda>(a, b). if b then ShuffleLR (\<dd> r a) s else ShuffleLR r (\<dd> s a))"
 
 primcorec Shuffle_Plus :: "('a \<times> bool) language \<Rightarrow> 'a language" where
   "\<oo> (Shuffle_Plus r) = \<oo> r"
@@ -274,10 +276,10 @@ lemma ShuffleLR_ZeroR[simp]: "ShuffleLR r Zero = Zero"
   by (coinduction arbitrary: r) (auto intro: exI[of _ Zero])
 
 lemma ShuffleLR_PlusL[simp]: "ShuffleLR (Plus r s) t = Plus (ShuffleLR r t) (ShuffleLR s t)"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
+  by (coinduction arbitrary: r s t) auto
 
 lemma ShuffleLR_PlusR[simp]: "ShuffleLR r (Plus s t) = Plus (ShuffleLR r s) (ShuffleLR r t)"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
+  by (coinduction arbitrary: r s t) auto
 
 lemma Shuffle_Plus_Zero[simp]: "Shuffle_Plus Zero = Zero"
   by coinduction simp
@@ -286,7 +288,7 @@ lemma Shuffle_Plus_Plus[simp]: "Shuffle_Plus (Plus r s) = Plus (Shuffle_Plus r) 
 proof (coinduction arbitrary: r s)
   case (Lang r s)
   then show ?case unfolding Shuffle_Plus.sel Plus.sel
-    by (intro conjI[OF refl] allI exI conjI[rotated], rule refl) (metis Plus_comm Plus_rotate) 
+    by (intro conjI[OF refl]) (metis Plus_comm Plus_rotate) 
 qed
 
 lemma Shuffle_Plus_ShuffleLR_One[simp]: "Shuffle_Plus (ShuffleLR r One) = r"
@@ -294,11 +296,11 @@ lemma Shuffle_Plus_ShuffleLR_One[simp]: "Shuffle_Plus (ShuffleLR r One) = r"
 
 lemma Shuffle_Plus_ShuffleLR_PlusL[simp]:
   "Shuffle_Plus (ShuffleLR (Plus r s) t) = Plus (Shuffle_Plus (ShuffleLR r t)) (Shuffle_Plus (ShuffleLR s t))"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
+  by (coinduction arbitrary: r s t) auto
 
 lemma Shuffle_Plus_ShuffleLR_PlusR[simp]:
   "Shuffle_Plus (ShuffleLR r (Plus s t)) = Plus (Shuffle_Plus (ShuffleLR r s)) (Shuffle_Plus (ShuffleLR r t))"
-  by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) auto
+  by (coinduction arbitrary: r s t) auto
 
 definition Shuffle :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
   "Shuffle r s = Shuffle_Plus (ShuffleLR r s)"
@@ -309,7 +311,7 @@ lemma \<oo>_Shuffle[simp]:
 
 lemma \<dd>_Shuffle[simp]:
   "\<dd> (Shuffle r s) = (\<lambda>a. Plus (Shuffle (\<dd> r a) s) (Shuffle r (\<dd> s a)))"
-  unfolding Shuffle_def by (rule ext, coinduction arbitrary: r s rule: language_coinduct_upto_Plus) auto
+  unfolding Shuffle_def by (rule ext, coinduction arbitrary: r s) auto
 
 theorem Shuffle_ZeroL[simp]: "Shuffle Zero r = Zero"
   by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) (auto 0 4)
@@ -318,7 +320,7 @@ theorem Shuffle_ZeroR[simp]: "Shuffle r Zero = Zero"
   by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) (auto 0 4)
 
 theorem Shuffle_OneL[simp]: "Shuffle One r = r"
-  by (coinduction arbitrary: r rule: language.coinduct_strong) (simp add: rel_fun_def)
+  by (coinduction arbitrary: r) simp
 
 theorem Shuffle_OneR[simp]: "Shuffle r One = r"
   by (coinduction arbitrary: r) simp
