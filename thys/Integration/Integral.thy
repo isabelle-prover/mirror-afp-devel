@@ -2198,14 +2198,14 @@ theorem integral_times:
   thus "integrable (\<lambda>t. a*f t) M" and "\<integral> (\<lambda>t. a*f t) \<partial>M = a*\<integral> f \<partial>M" by simp_all
 qed(*>*)
 
- (* Left out for lack of time   
+(* Left out for lack of time   
    
 theorem sf_integral: 
   assumes M: "measure_space M" and f: "f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi> (A i) t)"
   and A: "\<forall>i\<in>S. A i \<in> measurable_sets M" and S: "finite S"
   shows "\<integral> f \<partial> M = (\<Sum>i\<in>S. x i * measure M (A i))" 
   and "integrable f M"
-  sorry
+  oops
   
 constdefs
   The probabilistic Quantifiers as in Hurd: p. 53 could be defined as a special case of this
@@ -2214,16 +2214,17 @@ almost_everywhere:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('
 
 theorem assumes ae0: "M-a.e. (\<lambda>w. f w = 0)" 
   shows ae0_nn_integ: "\<integral> f \<partial> M = 0"
-  sorry
+  oops
 
 theorem  assumes "integrable f M" and "integrable g M" and "M-a.e. (\<lambda>w. f w \<le> g w)"
   shows ae_integ_monotone: "\<integral> f \<partial> M \<le> \<integral> g \<partial> M"
-  sorry
+  oops
 
 theorem assumes aeq: "M-a.e. (\<lambda>w. f w = g w)" 
   shows aeq_nn_integ: "integrable f M \<Longrightarrow> \<integral> f \<partial> M = \<integral> g \<partial> M"
-  sorry
-    *)
+  oops
+ *)
+   
 text{*To try out our definitions in an application, only one more
   theorem is missing. The famous Markov--Chebyshev inequation is not
   difficult to arrive at using the basic integral properties. *}
