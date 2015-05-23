@@ -1359,13 +1359,6 @@ by (frule n_val[of v x], assumption,
     frule Lv_pos[of v], frule Lv_z[of v], erule exE, simp,
     frule value_in_aug_inf[of v x], assumption+, simp add:aug_inf_def) 
 
-(*
-lemma (in Corps) zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z" 
-sorry*) (** remove **)
-(*
-lemma (in Corps) times_1_both:"\<lbrakk>(0::int) < z; z * z' = 1\<rbrakk> \<Longrightarrow> z = 1 \<and> z' = 1"
-sorry *)(** remove **)
-
 lemma (in Corps) val_surj_n_valTr:"\<lbrakk>valuation K v; \<exists>x \<in> carrier K. v x = 1\<rbrakk>
       \<Longrightarrow>  Lv K v = 1"
 apply (erule bexE,
