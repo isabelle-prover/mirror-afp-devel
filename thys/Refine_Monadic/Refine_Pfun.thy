@@ -36,10 +36,10 @@ lemma fixp_induct_nrec:
   assumes step: "\<And>f x z. (\<And>x. U f x = U f x; Q x z) \<Longrightarrow> Q (U (F (C f))) z"
  (* assumes defined: "RETURN y \<le> U (C f) x"*)
   assumes Q: "\<And>x z. Q x z \<longleftrightarrow> z = U f x \<and> U f x \<le> SPEC (P x)"
-  shows "Q x z" sorry
+  shows "Q x z" oops
   (*using step defined
     nrec.fixp_induct_uc[of U F C, OF mono eq inverse2 nrec_admissible]
-  unfolding Q sorry (*
+  unfolding Q oops (*
   by blast*)*)
 
 lemma fixp_induct_nrec':
