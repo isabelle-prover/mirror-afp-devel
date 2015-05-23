@@ -35,3 +35,7 @@ thys/JinjaThreads/J_Execute.ML
 
 thys/Vickrey_Clarke_Groves/VCG-withoutWrapper.scala
 
+thys/CAVA_LTL_Modelchecker/Nested_DFS/nested_dfs_hash.sml
+thys/CAVA_LTL_Modelchecker/code/CAVA_Export.sml
+thys/Collections/Examples/Autoref/nested_dfs.sml
+thys/Promela/Promela.sml
