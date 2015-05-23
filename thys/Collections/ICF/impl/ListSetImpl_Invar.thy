@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Set Implementation by List with explicit invariants} *}
+section {* \isaheader{Set Implementation by List with explicit invariants} *}
 theory ListSetImpl_Invar
   imports 
   "../spec/SetSpec"

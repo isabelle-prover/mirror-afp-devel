@@ -1,4 +1,4 @@
-header {*\isaheader{Verified BFS Implementation in ML}*}
+section {*\isaheader{Verified BFS Implementation in ML}*}
 theory Bfs_Impl
 imports 
   "../../../Refine_Monadic/examples/Breadth_First_Search"

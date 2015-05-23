@@ -8,6 +8,7 @@ session Promela (AFP) = LTL_to_GBA +
   theories
     Promela
     PromelaLTL
+    PromelaLTLConv
   theories [document = false]
     All_Of_Promela
   document_files

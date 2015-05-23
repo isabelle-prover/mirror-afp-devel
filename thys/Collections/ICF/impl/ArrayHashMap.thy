@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Array-based hash maps without explicit invariants} *}
+section {* \isaheader{Array-based hash maps without explicit invariants} *}
 theory ArrayHashMap 
   imports ArrayHashMap_Impl
 begin

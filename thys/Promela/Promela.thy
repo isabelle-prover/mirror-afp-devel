@@ -489,8 +489,6 @@ lemma toVariable_variable_inv:
   shows "variable_inv (fst (snd (toVariable g p v)))"
 using assms
 apply (cases v)
-  prefer 2
-  apply hypsubst_thin
   apply (auto intro!: checkVarValue_Var 
               simp del: variable_inv.simps checkVarValue.simps varType_inv.simps 
               split: if_splits option.splits)
@@ -498,7 +496,7 @@ apply (cases v)
     apply (simp_all add: assms gState_inv_def 
                max_channels_def max_var_value_def min_var_value_def max_array_size_def)
     including integer.lifting
-    apply (transfer, simp)+
+    apply (transfer', simp)+
 done
 
 lemma toVariable_channels_inv:
@@ -1101,6 +1099,8 @@ qed
 
 subsection {* AST to edges *}
 
+type_synonym ast = "AST.module list"
+
 text {* In this section, the AST is translated into the transition system. *}
 
 text {* 
@@ -1374,17 +1374,16 @@ lemma toProcess_startE:
   by blast
 
 text {* 
-  The main construction function. Takes an enriched AST and returns
-  the list of LTL formulae, an initial state, 
+  The main construction function. Takes an AST 
+  and returns  an initial state, 
   and the program (= transition system).
 *}
 
-definition setUp :: "promela \<Rightarrow> (ltls * gState * program)" where
-  "setUp prom = (
+definition setUp :: "ast \<Rightarrow> program \<times> gState" where
+  "setUp ast = (
       let
-       (decls, procs, ltls) = prom;
+       (decls, procs, _) = preprocess ast;
        assertVar = Var (VTBounded 0 1) 0;
-       ltls = lm.to_map ltls;
  
        pre_procs = map (split toProcess) (List.enumerate 1 procs);
 
@@ -1409,10 +1408,10 @@ definition setUp :: "promela \<Rightarrow> (ltls * gState * program)" where
                           ) g (replicate a name)
                    ) g' pre_procs
       in
-       (ltls, g'', prog))"
+       (prog, g''))"
 
 lemma setUp_program_inv':
-  "program_inv (snd (snd (setUp prom)))"
+  "program_inv (fst (setUp ast))"
 proof (rule program_invI)
   case goal1 show ?case by (simp add: setUp_def split: prod.split)
 next
@@ -1440,13 +1439,13 @@ next
 qed
 
 lemma setUp_program_inv:
-  assumes "setUp prom = (ltl,g,prog)"
+  assumes "setUp ast = (prog,g)"
   shows "program_inv prog"
 using assms setUp_program_inv' 
-by (metis snd_conv)
+by (metis fst_conv)
 
 lemma setUp_gState_inv:
-  assumes "setUp prom = (ltl,g,prog)"
+  assumes "setUp ast = (prog, g)"
   shows "gState_inv prog g"
 proof -
   from assms have p_INV: "program_inv prog" by (fact setUp_program_inv)
@@ -1581,7 +1580,10 @@ where
               then ab()
               else let
                      q' = if \<not> srt then q@[es]
-                          else insort es q;
+                          else let
+                            q = map lexlist q;
+                            q' = insort (lexlist es) q
+                          in map unlex q';
                      g = gState.channels_update (\<lambda>cs. 
                               cs[ i := Channel cap ts q' ]) g
                    in (g,l)
@@ -1755,9 +1757,9 @@ next
         by (auto simp add: gState_inv_def simp del: channel_inv.simps)
       with Channel DEF show ?thesis
         by (cases v) 
-           (auto simp add: withChannel'_def withVar'_def for_all_def 
-                      split: channel.split 
-                      intro!: gState_progress_rel_channels_update)
+           (auto simp add: withChannel'_def withVar'_def for_all_def
+                 split: channel.split 
+                 intro!: gState_progress_rel_channels_update)
     next
       case HSChannel with DEF show ?thesis 
         by (cases v) 
@@ -2302,12 +2304,12 @@ by (refine_transfer)
 concrete_definition applyEdge_impl for e p g uses applyEdge_refine
 
 definition nexts 
-  :: "program \<Rightarrow> (gState \<Rightarrow> 'a) \<Rightarrow> gState \<Rightarrow> 'a ls nres"
+  :: "program \<Rightarrow> gState \<Rightarrow> gState ls nres"
   -- "The successor function"
 where
-  "nexts prog f g = (
+  "nexts prog g = (
      let 
-       f = f \<circ> from\<^sub>I;
+       f = from\<^sub>I;
        g = to\<^sub>I g
      in
 
@@ -2375,33 +2377,29 @@ lemma cl_inv_reset\<^sub>I:
 lemmas refine_helpers = 
   gState_progress_rel_intros gState_progress_rel_step_intros cl_inv_reset\<^sub>I
 
-text {* @{const nexts} takes a postprocessing function @{term f} as argument. Hence we cannot show bluntly, that all generated results are in @{const gState_progress_rel}. Instead we have to take a detour over some generic invariant @{term I}. *}  
 
 lemma nexts_SPEC:
-  assumes "\<And>g g'. (g,g') \<in> gState_progress_rel prog \<Longrightarrow> I (f g) (f g')"
-  and "gState_inv prog g"
+  assumes "gState_inv prog g"
   and "program_inv prog"
-  shows "nexts prog f g \<le> SPEC (\<lambda>gs. \<forall>g' \<in> ls.\<alpha> gs. I (f g) g')"
+  shows "nexts prog g \<le> SPEC (\<lambda>gs. \<forall>g' \<in> ls.\<alpha> gs. (g,g') \<in> gState_progress_rel prog)"
   using assms
   unfolding nexts_def
   apply (refine_rcg refine_vcg REC_rule[where 
-           \<Phi>="\<lambda>g'. (to\<^sub>I g,g') \<in> gState_progress_rel prog"])
+           pre="\<lambda>g'. (to\<^sub>I g,g') \<in> gState_progress_rel prog"])
     apply (simp add: gState_inv_to\<^sub>I)
   apply (rule order_trans[OF executable_edgeSet'])
       apply (drule gState_progress_rel_gState_invI2)
       apply assumption
     apply assumption
   apply (refine_rcg refine_vcg nfoldli_rule[where 
-             I="\<lambda>_ _ \<sigma>.  \<forall>g' \<in> ls.\<alpha> \<sigma>. I (f g) g'"] 
+             I="\<lambda>_ _ \<sigma>.  \<forall>g' \<in> ls.\<alpha> \<sigma>. (g,g') \<in> gState_progress_rel prog"] 
           order_trans[OF applyEdge_gState_progress_rel])
         apply (vc_solve intro: refine_helpers solve: asm_rl simp add: ls.correct)
-      apply (rule order_trans)
-        apply (rprems)
-        apply (vc_solve intro: refine_helpers solve: asm_rl simp add: ls.correct)
-    apply (rprems)
-    apply (force intro: refine_helpers)
   apply (rule order_trans)
     apply (rprems)
+    apply (vc_solve intro: refine_helpers solve: asm_rl simp add: ls.correct)
+  apply (rule order_trans)
+    apply rprems
     apply (vc_solve intro: refine_helpers solve: asm_rl simp add: ls.correct)
   done
 
@@ -2421,12 +2419,106 @@ using applyEdge_impl.refine
 by (simp add: RETURN_dRETURN)
 
 schematic_lemma nexts_code_aux:
-  "nres_of (?nexts prog f g) \<le> nexts prog f g"
+  "nres_of (?nexts prog g) \<le> nexts prog g"
   unfolding nexts_def 
   by (refine_transfer the_resI executable_dRETURN applyEdge_dRETURN)
 
-concrete_definition nexts_code for prog f g uses nexts_code_aux
-prepare_code_thms nexts_code_def
+concrete_definition nexts_code_aux for prog g uses nexts_code_aux
+prepare_code_thms nexts_code_aux_def
+
+subsubsection {* Handle non-termination *}
+
+text {* 
+  A Promela model may include non-terminating parts. Therefore we cannot guarantee, that @{const nexts} will actually terminate.
+  To avoid having to deal with this in the model checker, we fail in case of non-termination.
+*}
+
+(* TODO: Integrate such a concept into refine_transfer! *)
+definition SUCCEED_abort where
+  "SUCCEED_abort msg dm m = ( 
+     case m of 
+       RES X \<Rightarrow> if X={} then Code.abort msg (\<lambda>_. dm) else RES X
+     | _ \<Rightarrow> m)"
+
+
+definition dSUCCEED_abort where
+  "dSUCCEED_abort msg dm m = (
+     case m of 
+       dSUCCEEDi \<Rightarrow> Code.abort msg (\<lambda>_. dm)
+     | _ \<Rightarrow> m)"
+
+definition ref_succeed where 
+  "ref_succeed m m' \<longleftrightarrow> m \<le> m' \<and> (m=SUCCEED \<longrightarrow> m'=SUCCEED)"
+
+lemma dSUCCEED_abort_SUCCEED_abort:
+   "\<lbrakk> RETURN dm' \<le> dm; ref_succeed (nres_of m') m \<rbrakk> 
+       \<Longrightarrow> nres_of (dSUCCEED_abort msg (dRETURN dm') (m')) 
+           \<le> SUCCEED_abort msg dm m"
+unfolding dSUCCEED_abort_def SUCCEED_abort_def ref_succeed_def
+by (auto split: dres.splits nres.splits)
+
+text {* The final successor function now incorporates:
+  \begin{enumerate}
+    \item @{const Promela.nexts}
+    \item handling of non-termination
+  \end{enumerate} *}
+definition nexts_code where 
+  "nexts_code prog g = 
+     the_res (dSUCCEED_abort (STR ''The Universe is broken!'') 
+                             (dRETURN (ls.sng g)) 
+                             (nexts_code_aux prog g))"
+
+lemma nexts_code_SPEC:
+  assumes "gState_inv prog g"
+  and "program_inv prog"
+  shows "g' \<in> ls.\<alpha> (nexts_code prog g) 
+         \<Longrightarrow> (g,g') \<in> gState_progress_rel prog"
+unfolding nexts_code_def
+unfolding dSUCCEED_abort_def
+using assms
+using order_trans[OF nexts_code_aux.refine nexts_SPEC[OF assms(1,2)]]
+by (auto split: dres.splits simp: ls.correct)
+
+subsection {* Finiteness of the state space *}
+
+inductive_set reachable_states
+  for P :: program
+  and g\<^sub>s :: gState -- "start state"
+where
+"g\<^sub>s \<in> reachable_states P g\<^sub>s" |
+"g \<in> reachable_states P g\<^sub>s \<Longrightarrow> x \<in> ls.\<alpha> (nexts_code P g) 
+                               \<Longrightarrow> x \<in> reachable_states P g\<^sub>s"
+
+lemmas reachable_states_induct[case_names init step] = 
+  reachable_states.induct[split_format (complete)]
+
+lemma reachable_states_finite:
+  assumes "program_inv prog"
+  and "gState_inv prog g"
+  shows "finite (reachable_states prog g)"
+proof (rule finite_subset[OF _ gStates_finite[of _ g]])
+  def INV \<equiv> "\<lambda>g'. g' \<in> (gState_progress_rel prog)\<^sup>* `` {g}  
+                       \<and> gState_inv prog g'"
+
+  {
+    fix g'
+    have "g' \<in> reachable_states prog g \<Longrightarrow> INV g'"
+    proof (induct rule: reachable_states_induct)
+      case init with assms show ?case by (simp add: INV_def)
+    next
+      case (step g g')
+      from step(2,3) have 
+        "(g, g') \<in> gState_progress_rel prog"
+        using nexts_code_SPEC[OF _ `program_inv prog`]
+        unfolding INV_def by auto
+      thus ?case using step(2) unfolding INV_def by auto
+    qed
+   }
+
+  thus "reachable_states prog g \<subseteq> 
+        (gState_progress_rel prog)\<^sup>* `` {g}"
+    unfolding INV_def by auto
+qed
 
 subsection {* Traces *}
 
@@ -2510,23 +2602,26 @@ where
            in if eps = [] \<and> g\<^sub>1 = g\<^sub>0 then ''    -- stutter --''
               else printList print eps [] [] (lf#''    ''))"
 
+definition "printConfigFromAST f \<equiv> printConfig f o fst o setUp"
+
 subsection {* Code export *}
 
 code_identifier
   code_module "PromelaInvariants" \<rightharpoonup> (SML) Promela
 | code_module "PromelaDatastructures" \<rightharpoonup> (SML) Promela
 
-definition "nexts_triv prog g = the_res (nexts_code prog id g)"
 definition "executable_triv prog g = executable_impl (snd prog) g"
 definition "apply_triv prog g ep = applyEdge_impl prog (fst ep) (snd ep) (reset\<^sub>I g)"
 
 export_code 
-  preprocess setUp printProcesses printConfig nexts_triv executable_triv apply_triv 
-  in SML 
-  file "Promela.sml"
+  setUp printProcesses printConfigFromAST nexts_code executable_triv apply_triv
+  extractLTLs lookupLTL
+  checking SML
 
 export_code 
-  preprocess setUp printProcesses printConfig nexts_triv executable_triv apply_triv 
-  checking SML
+  setUp printProcesses printConfigFromAST nexts_code executable_triv apply_triv 
+  extractLTLs lookupLTL
+  in SML 
+  file "Promela.sml"
 
 end

@@ -16,9 +16,9 @@ definition phil_const :: "nat \<Rightarrow> const_map" where
 
 definition phil_fun :: "nat \<Rightarrow> fun_map" where
   "phil_fun n \<equiv> mapping_from_list [
-              (''eat'', Eat n),
-              (''one'', One n),
-              (''free'', Free n) ]"
+              (STR ''eat'', Eat n),
+              (STR ''one'', One n),
+              (STR ''free'', Free n) ]"
 
 
 definition phil_init :: "nat \<Rightarrow> state" where

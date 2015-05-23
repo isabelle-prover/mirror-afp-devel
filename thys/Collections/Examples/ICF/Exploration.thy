@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{State Space Exploration} *}
+section {* \isaheader{State Space Exploration} *}
 theory Exploration
 imports Main "../../ICF/Collections"
 begin

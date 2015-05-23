@@ -198,6 +198,12 @@ lemma transfer_option[refine_transfer]:
   shows "\<alpha> (case_option fa fb x) \<le> case_option Fa Fb x"
   using assms by (auto split: option.split)
 
+lemma transfer_sum[refine_transfer]:
+  assumes "\<And>l. \<alpha> (fl l) \<le> Fl l"
+  assumes "\<And>r. \<alpha> (fr r) \<le> Fr r"
+  shows "\<alpha> (case_sum fl fr x) \<le> (case_sum Fl Fr x)"
+  using assms by (auto split: sum.split)
+
 lemma transfer_list[refine_transfer]:
   assumes "\<alpha> fn \<le> Fn"
   assumes "\<And>x xs. \<alpha> (fc x xs) \<le> Fc x xs"

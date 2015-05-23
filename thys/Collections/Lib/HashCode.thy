@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
                  Philipp Meyer <meyerphi@in.tum.de>
 *)
-header {* \isaheader {The hashable Typeclass} *}
+section {* \isaheader {The hashable Typeclass} *}
 theory HashCode
 imports 
   "../../Native_Word/Uint32" 

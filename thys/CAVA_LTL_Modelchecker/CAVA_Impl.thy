@@ -13,7 +13,8 @@ imports
   "BoolProgs/Programs/BoolProgs_Programs" (* the actual programs *)
   "BoolProgs/BoolProgs_LTL_Conv"          (* LTL parsing setup *)
 
-  "../Promela/PromelaLTL" (* Promela *)
+  "../Promela/PromelaLTL"     (* Promela *)
+  "../Promela/PromelaLTLConv" (* LTL parsing setup *)
 
   "~~/src/HOL/Library/AList_Mapping"
   "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
@@ -26,19 +27,19 @@ subsection {* Exporting Graphs *}
   of graphs.
   For the moment, we just keep it here.
 *)
-definition "frv_edge_set G \<equiv> frg_E G \<inter> (frg_V G \<times> UNIV)"
+definition "frv_edge_set G \<equiv> g_E G \<inter> (g_V G \<times> UNIV)"
 
-definition "frv_edge_set_aimpl G \<equiv> FOREACHi (\<lambda>it r. r = frg_E G \<inter> ((frg_V G - it) \<times> UNIV))
-  (frg_V G) 
+definition "frv_edge_set_aimpl G \<equiv> FOREACHi (\<lambda>it r. r = g_E G \<inter> ((g_V G - it) \<times> UNIV))
+  (g_V G) 
   (\<lambda>u r. do {
-    let E = (\<lambda>v. (u,v))`(succ_of_E (frg_E G) u);
+    let E = (\<lambda>v. (u,v))`(succ_of_E (g_E G) u);
     ASSERT (E \<inter> r = {});
     RETURN (E \<union> r)
   }) 
   {}"
 
 lemma frv_edge_set_aimpl_correct: 
-  "finite (frg_V G) \<Longrightarrow> frv_edge_set_aimpl G \<le> SPEC (\<lambda>r. r = frv_edge_set G)"
+  "finite (g_V G) \<Longrightarrow> frv_edge_set_aimpl G \<le> SPEC (\<lambda>r. r = frv_edge_set G)"
   unfolding frv_edge_set_aimpl_def frv_edge_set_def
   apply (refine_rcg refine_vcg)
   apply auto []
@@ -69,10 +70,12 @@ lemma frv_edge_set_autoref[autoref_rules]:
 proof (intro fun_relI)
   fix Gi G
   assume Gr: "(Gi, G) \<in> \<langle>Re, R\<rangle>frgv_impl_rel_ext" 
-  hence [simp]: "finite (frg_V G)"
-    unfolding frgv_impl_rel_ext_def frg_impl_rel_ext_def
-      gen_frg_impl_rel_ext_def
-    by (auto simp: list_set_rel_def br_def)
+  hence [simp]: "finite (g_V G)"
+    unfolding frgv_impl_rel_ext_def g_impl_rel_ext_def
+      gen_g_impl_rel_ext_def
+    apply (simp add: list_set_rel_def br_def)
+    apply fastforce
+    done
 
   note frv_edge_set_code.refine
   also note frv_edge_set_impl.refine[OF EQ SV, THEN fun_relD, OF Gr, THEN nres_relD]
@@ -82,8 +85,8 @@ proof (intro fun_relI)
 qed
 
 definition "frv_export G \<equiv> do {
-  nodes \<leftarrow> SPEC (\<lambda>l. set l = frg_V G \<and> distinct l);
-  V0 \<leftarrow> SPEC (\<lambda>l. set l = frg_V0 G \<and> distinct l);
+  nodes \<leftarrow> SPEC (\<lambda>l. set l = g_V G \<and> distinct l);
+  V0 \<leftarrow> SPEC (\<lambda>l. set l = g_V0 G \<and> distinct l);
   E \<leftarrow> SPEC (\<lambda>l. set l = frv_edge_set G \<and> distinct l);
   RETURN (nodes,V0,E)
   }"
@@ -134,14 +137,22 @@ definition gerth_ltl_to_gba
 
 lemma gerth_ltl_to_gba_refine:
   "gerth_ltl_to_gba \<phi> \<le> \<Down>Id (ltl_to_gba_spec \<phi>)"
-  apply simp
-  unfolding ltl_to_gba_spec_def gerth_ltl_to_gba_def
-  apply (rule order_trans[OF create_name_igba_correct])
-  apply (rule SPEC_rule)
-
-  apply (auto simp add: igba.lang_def ltlc_language_def ltln_rewrite__equiv
-    ltl_nnf_equiv ltlc_to_ltl_equiv)
-  done
+apply simp
+unfolding ltl_to_gba_spec_def gerth_ltl_to_gba_def
+apply (rule order_trans[OF create_name_igba_correct])
+apply (rule SPEC_rule)
+proof (safe del: equalityI)
+  fix G :: "(nat, 'a set) igba_rec"
+  assume "igba G"
+  interpret igba G by fact
+  assume 1: "finite (g_V G)"
+  assume 2: "\<forall> \<xi>. accept \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n ltln_rewrite (ltl_to_ltln (ltl_pushneg (ltlc_to_ltl \<phi>)))"
+  show "lang = ltlc_language \<phi>"
+    unfolding lang_def ltlc_language_def using 2
+    by (auto simp: ltln_rewrite__equiv ltlc_to_ltl_equiv)
+  show "finite ((g_E G)\<^sup>* `` g_V0 G)" using 1 reachable_V 
+    by (auto intro: finite_subset)
+qed
 
 definition "gerth_ltl_to_gba_code \<phi> 
   \<equiv> create_name_igba_code 
@@ -215,7 +226,9 @@ proof -
     unfolding find_ce_spec_def AUX_EQ
     apply (refine_rcg)
     apply (rule order_trans[
-      OF bind_mono[OF Gabow_GBG_Code.find_lasso_tr_correct order_refl]])
+      OF bind_mono(1)[OF Gabow_GBG_Code.find_lasso_tr_correct order_refl]])
+    apply assumption
+    apply (rule igb_fr_graphI)
     apply assumption
     apply assumption
     unfolding igb_graph.find_lasso_spec_def
@@ -247,9 +260,11 @@ lemma ndfs_find_ce_refine: "(G',G)\<in>Id \<Longrightarrow>
   ndfs_find_ce G' \<le> \<Down>(\<langle>\<langle>\<langle>Id\<rangle>lasso_run_rel\<rangle>option_rel\<rangle>option_rel) (find_ce_spec G)"
   apply simp
   unfolding find_ce_spec_def
-proof (refine_rcg SPEC_refine_sv refine_vcg)
+proof (refine_rcg SPEC_refine refine_vcg)
   assume [simp]: "igb_graph G"
   then interpret igb_graph G .
+
+  assume fr: "finite ((g_E G)\<^sup>* `` g_V0 G)"
 
   have [simp]: "b_graph degeneralize" by (simp add: degen_invar)
   (*then interpret bg!: b_graph degeneralize .*)
@@ -265,14 +280,16 @@ proof (refine_rcg SPEC_refine_sv refine_vcg)
     apply (refine_rcg refine_vcg order_trans[OF blue_dfs_correct])
     apply (clarsimp_all)
 
-    apply (auto 
+    apply (auto intro: degen_finite_reachable fr) []
+
+    apply (auto
       elim!: degen_acc_run_complete[where m="\<lambda>_. ()"]
-      dest!: degen.accepted_lasso
+      dest!: degen.accepted_lasso[OF degen_finite_reachable[OF fr]]
       simp: degen.is_lasso_prpl_of_lasso[symmetric] prpl_of_lasso_def
       simp del: degen.is_lasso_prpl_of_lasso) []
 
     apply (auto 
-      simp: b_graph.is_lasso_prpl_def fr_graph.is_lasso_prpl_pre_def) []
+      simp: b_graph.is_lasso_prpl_def graph.is_lasso_prpl_pre_def) []
 
     apply (auto split: option.split
       simp: degen.is_lasso_prpl_conv lasso_run_rel_def br_def
@@ -357,15 +374,15 @@ begin
   *}
   lemma prod_impl_aux_alt_cava_reorder:
     "prod = (\<lparr>
-      frg_V = Collect (\<lambda>(q,s). q \<in> igba.V \<and> s \<in> sa.V),
-      frg_E = E_of_succ (\<lambda>(q,s). 
+      g_V = Collect (\<lambda>(q,s). q \<in> igba.V \<and> s \<in> sa.V),
+      g_E = E_of_succ (\<lambda>(q,s). 
         if igba.L q (sa.L s) then     
           (\<lambda>(s,q). (q,s))`(LIST_SET_REV_TAG (succ_of_E (sa.E) s) 
            \<times> (succ_of_E (igba.E) q))
         else
           {}
       ),
-      frg_V0 = igba.V0 \<times> sa.V0,
+      g_V0 = igba.V0 \<times> sa.V0,
       igbg_num_acc = igba.num_acc,
       igbg_acc = \<lambda>(q,s). if s\<in>sa.V then igba.acc q else {}
     \<rparr>)"
@@ -419,6 +436,10 @@ begin
     show "igb_graph prod" by (rule prod_invar)
 
     fix r
+
+    assume "finite (igba.E\<^sup>* `` igba.V0)" "finite ((g_E S)\<^sup>* `` g_V0 S)"
+    thus "finite ((g_E prod)\<^sup>* `` g_V0 prod)" using prod_finite_reachable by auto
+
     show "(\<exists>r'. prod.is_acc_run r' \<and> r = snd \<circ> r') \<longleftrightarrow>
           (sa.is_run r \<and> sa.L \<circ> r \<in> igba.lang)"
       using gsp_correct1 gsp_correct2 
@@ -513,14 +534,11 @@ proof -
     apply unfold_locales
     using EQ R by simp_all
 
-  note RETURN_refine_sv[OF _ dflt_inter_impl.refine[OF cava_inter_impl_loc_this]]
+  note RETURN_refine[OF dflt_inter_impl.refine[OF cava_inter_impl_loc_this]]
   also note dflt_inter_refine
   finally show "RETURN (dflt_inter_impl eqq Si Gi)
   \<le> \<Down> (igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs) \<times>\<^sub>r (Rq \<times>\<^sub>r Rs \<rightarrow> Rs))
-     (inter_spec S G)" 
-    apply rprems
-    apply tagged_solver
-    done
+     (inter_spec S G)" .
 qed
 
 subsubsection {* Definition of Model-Checker *}
@@ -563,12 +581,12 @@ theorem cava_sys_agn_correct:
     and \<phi> :: "'p ltlc" 
     and cfg :: "config_l2b \<times> unit \<times> config_ce" 
   assumes "(sysi, sys) \<in> sa_impl_rel_ext unit_rel Id (\<langle>Id\<rangle>fun_set_rel)"
-    and "sa sys"
+    and "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
   shows "case cava_sys_agn cfg sysi \<phi> of
          None \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi> 
          | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
          | Some (Some L) \<Rightarrow> 
-             fr_graph.is_run sys (run_of_lasso L) 
+             graph_defs.is_run sys (run_of_lasso L) 
            \<and> sa_L sys \<circ> (run_of_lasso L) \<notin> ltlc_language \<phi>"
   using cava_sys_agn.impl_model_check_correct[OF assms, of \<phi> cfg]
   unfolding cava_sys_agn_def
@@ -583,9 +601,9 @@ definition bpc_to_sa
   where 
   "bpc_to_sa bpc \<equiv> let (bp,c0)=bpc in
   \<lparr>
-    frg_V = UNIV,
-    frg_E = E_of_succ (set o BoolProgs.nexts bp),
-    frg_V0 = {c0},
+    g_V = UNIV,
+    g_E = E_of_succ (set o BoolProgs.nexts bp),
+    g_V0 = {c0},
     sa_L = \<lambda>c. bs_\<alpha> (snd c)
   \<rparr>"
 
@@ -594,17 +612,17 @@ definition bpc_to_sa_impl
   \<Rightarrow> (BoolProgs.config,nat \<Rightarrow> bool,unit) sa_impl_scheme" 
   where 
   "bpc_to_sa_impl bpc \<equiv> let (bp,c0)=bpc in
-  \<lparr> frgi_V = \<lambda>_. True,
-    frgi_E = remdups o BoolProgs.nexts bp,
-    frgi_V0 = [c0],
+  \<lparr> gi_V = \<lambda>_. True,
+    gi_E = remdups o BoolProgs.nexts bp,
+    gi_V0 = [c0],
     sai_L = \<lambda>c i. bs_mem i (snd c)
   \<rparr>"
 
 lemma bpc_to_sa_impl_refine: "(bpc_to_sa_impl bpc, bpc_to_sa bpc) 
   \<in> sa_impl_rel_ext unit_rel Id (\<langle>nat_rel\<rangle>fun_set_rel)"
   unfolding bpc_to_sa_impl_def bpc_to_sa_def 
-  unfolding sa_impl_rel_eext_def frg_impl_rel_ext_def
-  unfolding gen_sa_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding sa_impl_rel_eext_def g_impl_rel_ext_def
+  unfolding gen_sa_impl_rel_eext_def gen_g_impl_rel_ext_def
   apply (clarsimp split: prod.split)
   apply (intro conjI)
   apply (auto simp: fun_set_rel_def br_def) []
@@ -618,33 +636,34 @@ lemma bpc_to_sa_impl_refine: "(bpc_to_sa_impl bpc, bpc_to_sa bpc)
   done
 
 
-lemma bpc_to_sa_invar: "sa (bpc_to_sa bpc)"
+lemma
+  shows bpc_to_sa_invar: "sa (bpc_to_sa bpc)"
+  and bpc_to_sa_fr: "finite ((g_E (bpc_to_sa bpc))\<^sup>* `` g_V0 (bpc_to_sa bpc))"
 proof -
   obtain bp c where [simp]: "bpc = (bp,c)" by (cases bpc)
-  show ?thesis
+  show "sa (bpc_to_sa bpc)"
     apply unfold_locales
-
-    apply (simp add: bpc_to_sa_def)
-    thm BoolProgs.reachable_configs_finite
-
-    apply (rule finite_subset[OF _ BoolProgs.reachable_configs_finite[of bp c]])
-    apply (rule rtrancl_reachable_induct)
-    apply (auto 
-      intro: BoolProgs.reachable_configs.intros 
-      simp: E_of_succ_def) [2]
 
     apply (simp add: bpc_to_sa_def)
     apply (simp add: bpc_to_sa_def)
     done
+  show "finite ((g_E (bpc_to_sa bpc))\<^sup>* `` g_V0 (bpc_to_sa bpc))"
+    apply (simp add: bpc_to_sa_def)
+    apply (rule finite_subset[OF _ BoolProgs.reachable_configs_finite[of bp c]])
+    apply (rule rtrancl_reachable_induct)
+    apply (auto 
+      intro: BoolProgs.reachable_configs.intros 
+      simp: E_of_succ_def)
+    done
 qed
 
-interpretation bpc_to_sa!: sa "(bpc_to_sa bpc)"
+interpretation bpc_to_sa!: sa "bpc_to_sa bpc"
   using bpc_to_sa_invar .
 
 lemma bpc_to_sa_run_conv[simp]: 
-  "fr_graph.is_run (bpc_to_sa bpc) = bpc_is_run bpc"
+  "graph_defs.is_run (bpc_to_sa bpc) = bpc_is_run bpc"
   apply (rule ext)
-  unfolding bpc_to_sa.is_run_def
+  unfolding graph_defs.is_run_def
   unfolding bpc_to_sa_def bpc_is_run_def 
     ipath_def E_of_succ_def
   by auto
@@ -673,7 +692,7 @@ theorem cava_bpc_correct:
   | Some (Some ce) \<Rightarrow> 
       bpc_is_run bpc (run_of_lasso ce) 
     \<and> bpc_props o run_of_lasso ce \<notin> ltlc_language \<phi>"
-  using cava_sys_agn_correct[OF bpc_to_sa_impl_refine bpc_to_sa_invar, 
+  using cava_sys_agn_correct[OF bpc_to_sa_impl_refine bpc_to_sa_invar bpc_to_sa_fr, 
     of bpc \<phi> cfg]
   unfolding cava_bpc_def
   by (auto split: option.split simp: lasso_run_rel_def br_def)
@@ -683,32 +702,32 @@ export_code cava_bpc checking SML
 subsection {* Model Checker for Promela Programs *}
 
 definition promela_to_sa 
-  :: "promela \<times> PromelaLTL.config \<Rightarrow> (PromelaLTL.config, nat set) sa_rec" 
+  :: "PromelaDatastructures.program \<times> APs \<times> gState \<Rightarrow> (gState, nat set) sa_rec" 
   -- "Conversion of a Promela model to a system automata."
-  where "promela_to_sa promc \<equiv> let (prom,c\<^sub>0)=promc in
+  where "promela_to_sa promg \<equiv> let (prog,APs,g\<^sub>0)=promg in
   \<lparr>
-    frg_V = UNIV,
-    frg_E = E_of_succ (ls.\<alpha> o PromelaLTL.nexts_code prom),
-    frg_V0 = {c\<^sub>0},
-    sa_L = bs_\<alpha> \<circ> fst
+    g_V = UNIV,
+    g_E = E_of_succ (ls.\<alpha> o Promela.nexts_code prog),
+    g_V0 = {g\<^sub>0},
+    sa_L = promela_props_ltl APs
   \<rparr>"
 
 definition promela_to_sa_impl 
-  :: "promela \<times> PromelaLTL.config 
-  \<Rightarrow> (PromelaLTL.config, nat \<Rightarrow> bool, unit) sa_impl_scheme" where 
-  "promela_to_sa_impl promc \<equiv> let (prom,c\<^sub>0)=promc in
-  \<lparr> frgi_V = \<lambda>_. True,
-    frgi_E = ls.to_list o PromelaLTL.nexts_code prom,
-    frgi_V0 = [c\<^sub>0],
-    sai_L = \<lambda>c i. bs_mem i (fst c)
+  :: "PromelaDatastructures.program \<times> APs \<times> gState
+  \<Rightarrow> (gState, nat \<Rightarrow> bool, unit) sa_impl_scheme" where 
+  "promela_to_sa_impl promg \<equiv> let (prog,APs,g\<^sub>0)=promg in
+  \<lparr> gi_V = \<lambda>_. True,
+    gi_E = ls.to_list o Promela.nexts_code prog,
+    gi_V0 = [g\<^sub>0],
+    sai_L = propValid APs
   \<rparr>"
 
-lemma promela_to_sa_impl_refine: 
-  "(promela_to_sa_impl promc, promela_to_sa promc) 
+lemma promela_to_sa_impl_refine:
+  shows "(promela_to_sa_impl promg, promela_to_sa promg) 
   \<in> sa_impl_rel_ext unit_rel Id (\<langle>nat_rel\<rangle>fun_set_rel)"
   unfolding promela_to_sa_impl_def promela_to_sa_def 
-  unfolding sa_impl_rel_eext_def frg_impl_rel_ext_def
-  unfolding gen_sa_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding sa_impl_rel_eext_def g_impl_rel_ext_def
+  unfolding gen_sa_impl_rel_eext_def gen_g_impl_rel_ext_def
 
   apply (clarsimp split: prod.split)
   apply (intro conjI)
@@ -719,94 +738,81 @@ lemma promela_to_sa_impl_refine:
   apply (auto simp: list_set_rel_def br_def ls.correct) []
 
   apply (auto simp: list_set_rel_def br_def) []
-  apply (auto simp: fun_set_rel_def br_def in_set_member) []
+  apply (auto simp: fun_set_rel_def br_def in_set_member promela_props_ltl_def) []
   done
 
+definition "cava_promela cfg ast \<phi> \<equiv> 
+  let 
+      (promg,\<phi>\<^sub>i) = PromelaLTL.prepare cfg ast \<phi>
+  in
+     cava_sys_agn (fst cfg) (promela_to_sa_impl promg) \<phi>\<^sub>i"
 
-definition "cava_promela cfg promc \<phi> \<equiv> cava_sys_agn cfg (promela_to_sa_impl promc) \<phi>"
+text {*
+  The next theorem states correctness of the Promela model checker.
 
-lemma cava_promela_correct_aux:
-  assumes "promela_inv prom" and "config_inv prom c\<^sub>0"
+  The correctness is specified for some AST.
+*}
+lemma cava_promela_correct:
   shows 
-  "case cava_promela cfg (prom,c\<^sub>0) \<phi> of 
-    None \<Rightarrow> promela_language (prom,c\<^sub>0) \<subseteq> ltlc_language \<phi>
-  | Some None \<Rightarrow> (\<not>(promela_language (prom,c\<^sub>0) \<subseteq> ltlc_language \<phi>))
-  | Some (Some ce) \<Rightarrow> promela_is_run (prom,c\<^sub>0) (run_of_lasso ce) 
+  "case cava_promela cfg ast \<phi> of 
+    None \<Rightarrow> promela_language ast \<subseteq> ltlc_language \<phi>
+  | Some None \<Rightarrow> (\<not>(promela_language ast \<subseteq> ltlc_language \<phi>))
+  | Some (Some ce) \<Rightarrow> promela_is_run ast (run_of_lasso ce) 
     \<and> promela_props o run_of_lasso ce \<notin> ltlc_language \<phi>"
 proof -
-  have promela_to_sa_invar: "sa (promela_to_sa (prom,c\<^sub>0))"
-  proof -
-    show ?thesis
-      apply unfold_locales
-      apply (simp add: promela_to_sa_def)
-      apply (rule 
-        finite_subset[OF _ PromelaLTL.reachable_configs_finite[of prom c\<^sub>0]])
-      apply (rule rtrancl_reachable_induct)
-      apply (auto 
-        intro: PromelaLTL.reachable_configs.intros 
-        simp: E_of_succ_def) [2]
-      apply fact
-      apply fact
-      
-      apply (simp add: promela_to_sa_def)
-      apply (simp add: promela_to_sa_def)
-      done
-  qed
+  obtain APs \<phi>\<^sub>i where conv: "PromelaLTL.ltl_convert \<phi> = (APs,\<phi>\<^sub>i)" 
+    by (metis prod.exhaust)
+  obtain prog g\<^sub>0 where ast: "Promela.setUp ast = (prog,g\<^sub>0)" 
+    by (metis prod.exhaust)
 
-  interpret promela_to_sa!: sa "promela_to_sa (prom,c\<^sub>0)"
+  let ?promg = "(prog,APs,g\<^sub>0)"
+
+  have promela_to_sa_invar: "sa (promela_to_sa ?promg)"
+    apply unfold_locales
+    apply (simp add: promela_to_sa_def)
+    apply (simp add: promela_to_sa_def)
+    done
+
+  have promela_to_sa_fr: "finite ((g_E (promela_to_sa ?promg))\<^sup>* `` g_V0 (promela_to_sa ?promg))"
+    apply (simp add: promela_to_sa_def)
+    apply (rule 
+      finite_subset[OF _ Promela.reachable_states_finite[of prog g\<^sub>0]])
+    apply (rule rtrancl_reachable_induct)
+    apply (auto 
+      intro: Promela.reachable_states.intros 
+      simp: E_of_succ_def) [2]
+    apply (fact setUp_program_inv[OF ast])
+    apply (fact setUp_gState_inv[OF ast])
+    done
+
+  interpret promela_to_sa!: sa "promela_to_sa ?promg"
     using promela_to_sa_invar .
 
   have promela_to_sa_run_conv[simp]: 
-    "fr_graph.is_run (promela_to_sa (prom,c\<^sub>0)) = promela_is_run (prom,c\<^sub>0)"
+    "graph_defs.is_run (promela_to_sa ?promg) = promela_is_run_ltl ?promg"
     apply (rule ext)
-    unfolding promela_to_sa.is_run_def
-    unfolding promela_to_sa_def promela_is_run_def ipath_def E_of_succ_def
+    unfolding graph_defs.is_run_def
+    unfolding promela_to_sa_def promela_is_run_ltl_def promela_is_run'_def ipath_def E_of_succ_def
     by auto
 
   have promela_to_sa_L_conv[simp]: 
-    "sa_L (promela_to_sa (prom,c\<^sub>0)) = promela_props"
+    "sa_L (promela_to_sa ?promg) = promela_props_ltl APs"
     apply (rule ext)
-    unfolding promela_to_sa_def promela_props_def
-    by (auto simp: E_of_succ_def split: prod.split)
+    unfolding promela_to_sa_def promela_props_ltl_def[abs_def]
+    by (auto simp: E_of_succ_def)
 
   have promela_to_sa_lang_conv[simp]: 
-    "sa.lang (promela_to_sa (prom,c\<^sub>0)) = promela_language (prom,c\<^sub>0)"
+    "sa.lang (promela_to_sa ?promg) = promela_language_ltl ?promg"
     unfolding promela_to_sa.lang_def promela_to_sa.accept_def[abs_def]
-      promela_language_def
+      promela_language_ltl_def
     by auto
   
   show ?thesis
     using cava_sys_agn_correct[OF 
-      promela_to_sa_impl_refine promela_to_sa_invar, of \<phi> cfg]
-    unfolding cava_promela_def
-    by (auto split: option.split simp: lasso_run_rel_def br_def)
-qed
-
-text {*
-  The next theorem states correctness of the Promela model checker. 
-
-  Note that the function @{const "PromelaLTL.prepare"} processes the
-  promela model and the formula into a system automaton and a 
-  new formula over different APs. 
-  The correctness theorem is specified in terms of the system automata and 
-  the processed formula.
-*}
-theorem cava_promela_correct:
-  assumes "PromelaLTL.prepare ltlChoose ast = (promc, \<phi>)"
-  shows 
-  "case cava_promela cfg promc \<phi> of 
-    None \<Rightarrow> promela_language promc \<subseteq> ltlc_language \<phi>
-  | Some None \<Rightarrow> (\<not>(promela_language promc \<subseteq> ltlc_language \<phi>))
-  | Some (Some ce) \<Rightarrow> 
-      promela_is_run promc (run_of_lasso ce) 
-    \<and> promela_props o run_of_lasso ce \<notin> ltlc_language \<phi>"
-proof -
-  obtain prom c where promcFmt[simp]: "promc = (prom,c)" by (cases promc)
-  
-  show ?thesis
-    apply (subst promcFmt)+
-    apply (rule cava_promela_correct_aux)
-    using prepare_connect[of ltlChoose ast prom c \<phi>] assms by simp_all
+      promela_to_sa_impl_refine promela_to_sa_invar promela_to_sa_fr, of \<phi>\<^sub>i "fst cfg"]
+    using promela_language_sub_iff[OF conv ast] promela_run_in_language_iff[OF conv]
+    unfolding cava_promela_def PromelaLTL.prepare_def
+    by (auto split: option.split prod.splits simp: lasso_run_rel_def br_def conv ast promela_is_run_ltl_def)
 qed
 
 export_code cava_promela checking SML
@@ -819,14 +825,15 @@ export_code (* Cava MC *)
             cava_bpc cava_promela dflt_cfg CAVA_Impl.CFG_CE_NDFS
             
             (* BP *)
-            BoolProgs.print_config ltl_conv chose_prog list_progs
-            BoolProgs_LTL_Conv.CProp BoolProgs_Programs.default_prog 
+            BoolProgs.print_config chose_prog list_progs
+            BoolProgs_LTL_Conv.ltl_conv BoolProgs_LTL_Conv.CProp 
+            BoolProgs_Programs.default_prog 
             BoolProgs_Programs.keys_of_map
             BoolProgs_Programs.default_prog BoolProgs_Programs.keys_of_map
             
             (* Promela *)
-            printProcesses PromelaLTL.prepare PromelaLTL.printConfig
-            PromelaLTL.CProp PromelaLTL.Ident PromelaLTL.Eq
+            printProcesses Promela.printConfigFromAST lookupLTL
+            PromelaLTLConv.ltl_conv
 
             (* stat printing *)
             frv_export_code LTL_to_GBA_impl.create_name_gba_code
@@ -843,14 +850,15 @@ export_code (* Cava MC *)
             cava_bpc cava_promela dflt_cfg CAVA_Impl.CFG_CE_NDFS
             
             (* BP *)
-            BoolProgs.print_config ltl_conv chose_prog list_progs
-            BoolProgs_LTL_Conv.CProp BoolProgs_Programs.default_prog 
+            BoolProgs.print_config chose_prog list_progs
+            BoolProgs_LTL_Conv.ltl_conv BoolProgs_LTL_Conv.CProp 
+            BoolProgs_Programs.default_prog 
             BoolProgs_Programs.keys_of_map
             BoolProgs_Programs.default_prog BoolProgs_Programs.keys_of_map
             
             (* Promela *)
-            printProcesses PromelaLTL.prepare PromelaLTL.printConfig
-            PromelaLTL.CProp PromelaLTL.Ident PromelaLTL.Eq
+            printProcesses Promela.printConfigFromAST lookupLTL
+            PromelaLTLConv.ltl_conv PromelaLTLConv.CProp PromelaLTLConv.Eq PromelaLTLConv.Ident
 
             (* stat printing *)
             frv_export_code LTL_to_GBA_impl.create_name_gba_code

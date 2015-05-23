@@ -1,4 +1,4 @@
-header {*\isaheader{Implementing Unique Priority Queues by Annotated Lists}*}
+section {*\isaheader{Implementing Unique Priority Queues by Annotated Lists}*}
 theory PrioUniqueByAnnotatedList
 imports 
   "../spec/AnnotatedListSpec"

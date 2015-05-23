@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Hash Maps} *}
+section {* \isaheader{Hash Maps} *}
 theory HashMap 
   imports HashMap_Impl 
 begin

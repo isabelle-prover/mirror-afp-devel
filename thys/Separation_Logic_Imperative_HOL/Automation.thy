@@ -629,13 +629,13 @@ structure Seplogic_Auto = struct
       | _ => no_tac st;
 
   in
-    (FIRST' [
+    CSUBGOAL (snd #> (FIRST' [
       CHANGED o dflt_tac ctxt,
       REPEAT_ALL_NEW (resolve_tac ctxt @{thms normalize_rules}),
       CHANGED o (FIRST' [resolve_tac ctxt d_thms, heap_rule_tac]
         ORELSE' (app_post_cons_tac THEN' 
           FIRST' [resolve_tac ctxt d_thms, heap_rule_tac])) 
-    ])
+    ]))
   end;
 
   fun vcg_tac ctxt = REPEAT_DETERM' (vcg_step_tac ctxt)

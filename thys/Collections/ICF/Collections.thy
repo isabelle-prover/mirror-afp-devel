@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Standard Collections} *}
+section {* \isaheader{Standard Collections} *}
 theory Collections
 imports
   ICF_Impl

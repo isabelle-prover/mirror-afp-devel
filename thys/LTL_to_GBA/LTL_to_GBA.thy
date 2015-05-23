@@ -228,10 +228,10 @@ lemma name_upd_incoming[simp]:
 proof safe
   fix x
   assume "x\<in>ns"
-  hence "upd_incoming_f n x \<in> (\<lambda>n'. upd_incoming_f n n') ` ns" by auto
-  hence "name (upd_incoming_f n x) \<in> name ` (\<lambda>n'. upd_incoming_f n n') ` ns"
+  hence "upd_incoming_f n x \<in> (\<lambda>n'. local.upd_incoming_f n n') ` ns" by auto
+  hence "name (upd_incoming_f n x) \<in> name ` (\<lambda>n'. local.upd_incoming_f n n') ` ns"
     by blast
-  thus "name x \<in> name ` (\<lambda>n'. upd_incoming_f n n') ` ns" by simp
+  thus "name x \<in> name ` (\<lambda>n'. local.upd_incoming_f n n') ` ns" by simp
 qed auto
 
 
@@ -280,10 +280,19 @@ where
       }
      )"
 
-lemma expand_body_mono: "mono expand_body" by refine_mono
+lemma expand_body_mono: "trimono expand_body" by refine_mono
 
 definition expand :: "('a node \<times> ('a node set)) \<Rightarrow> (node_name \<times> 'a node set) nres"
   where "expand \<equiv> REC expand_body"
+
+lemma REC_rule_old: (* TODO: Adapt proofs below, have fun with goal27 ...*)
+  fixes x::"'x"
+  assumes M: "trimono body"
+  assumes I0: "\<Phi> x"
+  assumes IS: "\<And>f x. \<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> f x \<le> M x; \<Phi> x; f \<le> REC body \<rbrakk> 
+    \<Longrightarrow> body f x \<le> M x"
+  shows "REC body x \<le> M x"
+  by (rule REC_rule_arb[where pre="\<lambda>_. \<Phi>" and M="\<lambda>_. M", OF assms])
 
 lemma expand_rec_rule:
   assumes I0: "\<Phi> x"
@@ -291,7 +300,7 @@ lemma expand_rec_rule:
     \<Longrightarrow> expand_body f x \<le> M x"
   shows "expand x \<le> M x"
   unfolding expand_def
-  apply (rule REC_rule)
+  apply (rule REC_rule_old[where \<Phi>="\<Phi>"])
   apply (rule expand_body_mono)
   apply (rule I0)
   apply (rule IS[unfolded expand_def])
@@ -1004,7 +1013,7 @@ lemma expand_term_prop:
   (is "_ \<Longrightarrow> _ \<le> SPEC (?P n_ns)")
   unfolding expand\<^sub>T_def
   apply (rule_tac RECT_rule[where 
-    \<Phi>="\<lambda>(n, ns). expand_inv \<phi> (n, ns)" and
+    pre="\<lambda>(n, ns). expand_inv \<phi> (n, ns)" and
     V="expand_ord \<phi>"
     ])
   apply (refine_mono)
@@ -1096,145 +1105,18 @@ next
 qed
 
 lemma expand_eq_expand\<^sub>T:
-  assumes "expand_inv \<phi> n_ns"
+  assumes I: "expand_inv \<phi> n_ns"
     shows "expand\<^sub>T n_ns = expand n_ns"
-unfolding expand\<^sub>T_def expand_def
-proof (rule_tac RECT_eq_REC'[where V' = "expand_ord \<phi>" and I = "expand_inv \<phi>"])
-  case goal1 thus ?case by simp
-next
-  case goal2 thus ?case using assms by auto
-next
-  case (goal3 f x) thus ?case
-  proof (refine_mono)
-    case (goal1 n nds)
-      { assume "(\<lambda>n. (old n, next n)) ` nds =
-                   insert (old n, next n) ((\<lambda>n. (old n, next n)) ` nds)"
-        hence "\<exists>x'\<in>(\<lambda>n. (old n, next n)) ` nds. x' = (old n, next n)" by auto
-        then obtain x' where "x'\<in>(\<lambda>n. (old n, next n)) ` nds" 
-          and x'_eq: "x' = (old n, next n)" by auto
-        then obtain n' where "n'\<in>nds" and "(old n', next n') = x'" by auto
-        with goal1 x'_eq have "False" by auto }
-      thus ?case using goal1 
-        by (auto simp add:expand_inv_def expand_ord_def finite_psupset_def)
-  next
-    case (goal2 n nds \<psi>) thus ?case
-      by (auto simp add:expand_inv_def expand_ord_def finite_psupset_def)
-  next
-    case (goal3 n nds \<psi>) thus ?case
-      by (auto simp add:expand_inv_def expand_ord_def finite_psupset_def)
-  next
-    case (goal4 n nds \<psi>)
-      hence prm1: "expand_inv \<phi> (n, nds)" and prm2: "\<psi>\<in>new n"
-        and prm3: "(\<lambda>n. (old n, next n)) ` nds \<subseteq> (\<lambda>n. (old n, next n)) ` nds"
-        and prm4: "finite nds \<and> (\<forall>n'\<in>nds. new n'\<union> old n'\<union>next n' \<subseteq> subfrmlsn \<phi>)" 
-        by (auto simp add: expand_inv_def)
-      from expand_inv_impl[OF prm1 prm2 prm3 prm4] goal4 show ?case by simp
-  next
-    case (goal5 n nds \<psi>)
-      hence prm1: "expand_inv \<phi> (n, nds)" and prm2: "\<psi>\<in>new n"
-        and prm3: "(\<lambda>n. (old n, next n)) ` nds \<subseteq> (\<lambda>n. (old n, next n)) ` nds"
-        and prm4: "finite nds \<and> (\<forall>n'\<in>nds. new n'\<union> old n'\<union>next n' \<subseteq> subfrmlsn \<phi>)" 
-        by (auto simp add: expand_inv_def)
-      from expand_inv_impl[OF prm1 prm2 prm3 prm4] goal5 show ?case by simp
-  next
-    case (goal6 n nds \<psi> x' nm' nds')
-      hence prm1: "expand_inv \<phi> (n, nds)" and prm2: "\<psi>\<in>new n"
-        and prm3: "(\<lambda>n. (old n, next n)) ` nds \<subseteq> (\<lambda>n. (old n, next n)) ` nds"
-        and prm4: "finite nds \<and> (\<forall>n'\<in>nds. new n'\<union> old n'\<union>next n' \<subseteq> subfrmlsn \<phi>)"
-        by (auto simp add: expand_inv_def)
-      from expand_inv_impl[OF prm1 prm2 prm3 prm4] goal6[folded expand\<^sub>T_def]
-      have "RETURN (nm', nds') \<le> expand\<^sub>T (n\<lparr>new := new n - {\<psi>},
-                 new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
-                 old := {\<psi>} \<union> old n,
-                 next := next1 \<psi> \<union> next n\<rparr>, nds)"
-       and prm_inv: "expand_inv \<phi> (n\<lparr>new := new n - {\<psi>},
-                       new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
-                       old := {\<psi>} \<union> old n,
-                       next := next1 \<psi> \<union> next n\<rparr>, nds)"
-      proof -
-        case goal1 thus ?case 
-          by (rule_tac order_trans[OF _ goal6(2)[folded expand\<^sub>T_def, of ]]) auto
-      next
-        case goal2 thus ?case by auto
-      qed
-      with expand_term_prop[OF prm_inv]
-      have nds'_spec: "RETURN (nm', nds') \<le> SPEC
-     (\<lambda>(nm', nds').
-         (\<lambda>n. (old n, next n)) `
-         snd
-          (n\<lparr>new := new n - {\<psi>},
-               new :=
-                 new1 \<psi> \<union>
-                 new (n\<lparr>new := new n - {\<psi>}\<rparr>),
-               old := {\<psi>} \<union> old n,
-               next := next1 \<psi> \<union> next n\<rparr>,
-           nds)
-         \<subseteq> (\<lambda>n. (old n, next n)) ` nds' \<and>
-         finite nds' \<and>
-         (\<forall>n'\<in>nds'.
-             new n' \<union> old n' \<union> next n'
-             \<subseteq> subfrmlsn \<phi>))" by (rule_tac order_trans) auto
-      hence inv: "expand_inv \<phi>
-              (n\<lparr>name := nm', 
-                 new := new2 \<psi> \<union> (new n - {\<psi>}), 
-                 old := insert \<psi> (old n)\<rparr>, nds')
-            \<and> ((n\<lparr>name := nm', 
-                  new := new2 \<psi> \<union> (new n - {\<psi>}), 
-                  old := insert \<psi> (old n)\<rparr>, nds'),
-                (n, nds)) \<in> expand_ord \<phi>" 
-        using prm1 goal6(5) goal6(6) goal6(7) goal6(8) goal6(9)
-      unfolding expand_inv_def expand_ord_def
-      proof(auto)
-        case (goal1 \<nu>)
-          with subfrmlsn_subset[OF new2_subset_frmls[OF `\<nu> \<in> new2 \<psi>`]]
-            subfrmlsn_subset[of \<psi> \<phi>, OF set_rev_mp[of _ "new n"]]
-          show ?case by force
-      next
-        case (goal2 nd')
-          { assume "((\<lambda>n. (old n, next n)) ` nds',
-                        (\<lambda>n. (old n, next n)) ` nds)
-                            \<notin> finite_psupset
-                                (Pow (subfrmlsn \<phi>) \<times> Pow (subfrmlsn \<phi>))" 
-               and "(\<lambda>n. (old n, next n)) ` nds \<noteq>  (\<lambda>n. (old n, next n)) ` nds'"
-            hence "False" using goal2(6) goal2(9) 
-              by (auto simp add: finite_psupset_def) }
-          moreover
-          { assume "(\<lambda>n. (old n, next n)) ` nds = (\<lambda>n. (old n, next n)) ` nds'"
-            hence ?case using goal2(18) by auto }
-          ultimately show ?case using goal2(17) goal2(9) 
-            by (auto simp add: finite_psupset_def)
-      next
-        case goal3
-          let ?newn' = "new2 \<psi> \<union> (new n - {\<psi>})"
-          from goal3 setsum_diff1_nat[of size_frmln "new n" \<psi>]
-          have "frmlset_sumn (new n - {\<psi>}) = frmlset_sumn (new n) - size_frmln \<psi>"
-            by simp
-          moreover
-          from goal3 new2_less_setsum[of \<psi>] 
-            setsum_Un_nat[OF new2_finite _, of "new n - {\<psi>}" size_frmln \<psi>]
-          have "frmlset_sumn ?newn' 
-            \<le> frmlset_sumn (new2 \<psi>) + frmlset_sumn (new n - {\<psi>})" 
-            by auto  
-          moreover have sum_leq:"frmlset_sumn (new n) \<ge>  frmlset_sumn {\<psi>}"
-          using goal3 setsum_mono2[OF `finite (new n)`, of "{\<psi>}" size_frmln] 
-            size_frmln_gt_zero 
-          by simp
-          ultimately show ?case using new2_less_setsum[of \<psi>] sum_leq by auto
-      qed
-      thus ?case unfolding `x = (n, nds)` by simp
-  qed
-qed
-
-
+  unfolding expand\<^sub>T_def expand_def
+  apply (rule RECT_eq_REC)
+  apply refine_mono
+  unfolding expand\<^sub>T_def[symmetric]
+  using expand_term_prop[OF I] by auto
+  
 lemma expand_nofail:
   assumes inv:"expand_inv \<phi> n_ns"
     shows "nofail (expand\<^sub>T n_ns)"
-proof -
-  let ?P = "\<lambda>(_, nds). old_next_pair ` snd n_ns \<subseteq> old_next_pair ` nds 
-    \<and> expand_inv_result \<phi> nds"
-  have "nofail (SPEC ?P)" by auto
-  with pwD1[OF expand_term_prop[OF inv]] show ?thesis by fast
-qed
+  using expand_term_prop[OF inv] by (simp add: pw_le_iff refine_pw_simps)
 
 lemma [intro!]: "expand_inv \<phi> (
   \<lparr> 
@@ -1284,7 +1166,8 @@ unfolding create_graph\<^sub>T_def create_graph_def
 unfolding eq_iff
 proof
   case goal1 thus ?case
-    apply (refine_mono) unfolding expand_def expand\<^sub>T_def by (rule REC_le_RECT)
+    apply (refine_mono) unfolding expand_def expand\<^sub>T_def 
+      by (rule REC_le_RECT)
 next
   case goal2 thus ?case
     by (refine_mono, rule expand_eq_expand\<^sub>T[unfolded eq_iff, THEN conjunct1]) auto
@@ -1646,9 +1529,9 @@ text {* This section formalizes the second part of the algorithm, that creates
 definition create_gba_from_nodes
   :: "'a frml \<Rightarrow> 'a node set \<Rightarrow> ('a node, 'a set) gba_rec"
 where "create_gba_from_nodes \<phi> qs \<equiv> \<lparr> 
-  frg_V = qs,
-  frg_E = {(q, q'). q\<in>qs \<and> q'\<in>qs \<and> name q\<in>incoming q'},
-  frg_V0 = {q\<in>qs. expand_init\<in>incoming q},
+  g_V = qs,
+  g_E = {(q, q'). q\<in>qs \<and> q'\<in>qs \<and> name q\<in>incoming q'},
+  g_V0 = {q\<in>qs. expand_init\<in>incoming q},
   gbg_F = {{q\<in>qs. \<mu> U\<^sub>n \<eta>\<in>old q \<longrightarrow> \<eta>\<in>old q}|\<mu> \<eta>. \<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>},
   gba_L = \<lambda>q l. q\<in>qs \<and> {p. prop\<^sub>n(p)\<in>old q}\<subseteq>l \<and> {p. nprop\<^sub>n(p)\<in>old q} \<inter> l = {}
 \<rparr>"
@@ -1664,18 +1547,18 @@ begin
   lemma finite_qs[simp, intro!]: "finite qs"
     using res create_graph_finite by (auto simp add: refine_pw_simps pw_le_iff)
 
-  lemma create_gba_from_nodes__invar:
-    shows "fin_gba (create_gba_from_nodes \<phi> qs)"
+  lemma create_gba_from_nodes__invar: "gba (create_gba_from_nodes \<phi> qs)"
     using [[simproc finite_Collect]]
     apply unfold_locales 
-    apply (auto 
-      intro!: finite_reachable_restrictedI finite_vimageI subfrmlsn_finite injI
-      simp: create_gba_from_nodes_def
-      )
+    apply (auto
+      intro!: finite_vimageI subfrmlsn_finite injI
+      simp: create_gba_from_nodes_def)
     done
 
-  sublocale gba!: fin_gba "create_gba_from_nodes \<phi> qs" 
-    using create_gba_from_nodes__invar .
+  sublocale gba!: gba "create_gba_from_nodes \<phi> qs" using create_gba_from_nodes__invar .
+
+  lemma create_gba_from_nodes__fin: "finite (g_V (create_gba_from_nodes \<phi> qs))"
+    unfolding create_gba_from_nodes_def by auto
 
   lemma create_gba_from_nodes__ipath:
     shows "ipath gba.E r
@@ -2929,7 +2812,7 @@ proof -
     have sbthm: "\<exists>q'. q'\<in>qs \<and> name (\<sigma> k)\<in>incoming q' 
       \<and> auto_run_j (Suc k) \<xi> q'" (is "\<exists>q'. ?sbthm q'") 
       by auto
-    show "\<sigma> k\<in> qs \<and> ?sbthm (\<sigma> (Suc k))" using `\<sigma> k\<in>qs` someI_ex[OF sbthm]
+    show "\<sigma> k\<in> qs \<and> ?sbthm (\<sigma> (Suc k))" using `\<sigma> k\<in>qs` someI_ex[OF sbthm] 
       unfolding \<sigma>_def auto_run.simps by blast
   qed
 
@@ -3086,7 +2969,7 @@ lemma create_graph_precond: "create_graph \<phi>
   by simp
   
 lemma create_gba__invar:
-  "create_gba \<phi> \<le> SPEC fin_gba"
+  "create_gba \<phi> \<le> SPEC gba"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph_precond])
   by (rule create_gba_from_nodes_precond.create_gba_from_nodes__invar)
@@ -3100,14 +2983,14 @@ lemma create_gba_acc:
   by blast
 
 lemma create_gba__name_inj: 
-  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. (inj_on name (frg_V \<A>)))"
+  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. (inj_on name (g_V \<A>)))"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph__name_inj])
   apply (auto simp: create_gba_from_nodes_def)
   done
 
 lemma create_gba__fin: 
-  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. (finite (frg_V \<A>)))"
+  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. (finite (g_V \<A>)))"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph_finite])
   apply (auto simp: create_gba_from_nodes_def)
@@ -3131,7 +3014,7 @@ proof -
 qed
 
 lemma create_gba__old_fin: 
-  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. \<forall>nd\<in>frg_V \<A>. finite (old nd))"
+  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. \<forall>nd\<in>g_V \<A>. finite (old nd))"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph_old_finite])
   apply (simp add: create_gba_from_nodes_def)
@@ -3139,14 +3022,14 @@ lemma create_gba__old_fin:
 
 lemma create_gba__incoming_exists: 
   shows "create_gba \<phi> 
-  \<le> SPEC(\<lambda>\<A>. \<forall>nd\<in>frg_V \<A>. incoming nd \<subseteq> insert expand_init (name ` (frg_V \<A>)))"
+  \<le> SPEC(\<lambda>\<A>. \<forall>nd\<in>g_V \<A>. incoming nd \<subseteq> insert expand_init (name ` (g_V \<A>)))"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph__incoming_name_exist])
   apply (auto simp add: create_gba_from_nodes_def)
   done
 
 lemma create_gba__no_init: 
-  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. expand_init \<notin> name ` (frg_V \<A>))"
+  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. expand_init \<notin> name ` (g_V \<A>))"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph__incoming_name_exist])
   apply (auto simp add: create_gba_from_nodes_def)
@@ -3160,7 +3043,7 @@ definition "nds_invars nds \<equiv>
     finite (old nd) 
     \<and> incoming nd \<subseteq> insert expand_init (name ` nds))"
 
-lemma create_gba_nds_invars: "create_gba \<phi> \<le> SPEC (\<lambda>\<A>. nds_invars (frg_V \<A>))"
+lemma create_gba_nds_invars: "create_gba \<phi> \<le> SPEC (\<lambda>\<A>. nds_invars (g_V \<A>))"
   using create_gba__name_inj[of \<phi>] create_gba__fin[of \<phi>] 
     create_gba__old_fin[of \<phi>] create_gba__incoming_exists[of \<phi>] 
     create_gba__no_init[of \<phi>]
@@ -3170,50 +3053,53 @@ lemma create_gba_nds_invars: "create_gba \<phi> \<le> SPEC (\<lambda>\<A>. nds_i
 
 theorem T4_1:
   shows "create_gba \<phi> \<le> SPEC(
-    \<lambda>\<A>. fin_gba \<A> 
+    \<lambda>\<A>. gba \<A>
+    \<and> finite (g_V \<A>)
     \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>) 
-    \<and> (nds_invars (frg_V \<A>)))"
-  using create_gba__invar create_gba_acc create_gba_nds_invars
+    \<and> (nds_invars (g_V \<A>)))"
+  using create_gba__invar create_gba__fin create_gba_acc create_gba_nds_invars
   apply (simp add: refine_pw_simps pw_le_iff) 
   apply blast
   done
 
 definition "create_name_gba \<phi> \<equiv> do {
   G \<leftarrow> create_gba \<phi>;
-  ASSERT (nds_invars (frg_V G));
+  ASSERT (nds_invars (g_V G));
   RETURN (gba_rename name G)
 }"
 
 
 theorem create_name_gba_correct:
   shows "create_name_gba \<phi> \<le> SPEC(
-    \<lambda>\<A>. fin_gba \<A> \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
+    \<lambda>\<A>. gba \<A> \<and> finite (g_V \<A>) \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
   unfolding create_name_gba_def
   apply (refine_rcg refine_vcg order_trans[OF T4_1])
-  apply (simp_all add: nds_invars_def fin_gba_rename_correct)
+  apply (simp_all add: nds_invars_def gba_rename_correct)
   done
 
 definition create_name_igba :: "'a::linorder ltln \<Rightarrow> _" where 
 "create_name_igba \<phi> \<equiv> do {
-  A\<leftarrow>create_name_gba \<phi>;
+  A \<leftarrow> create_name_gba \<phi>;
   A' \<leftarrow> gba_to_idx A;
-  stat_set_data_nres (card (frg_V A)) (card (frg_V0 A')) (igbg_num_acc A');
+  stat_set_data_nres (card (g_V A)) (card (g_V0 A')) (igbg_num_acc A');
   RETURN A'
 }"
 
 lemma create_name_igba_correct: "create_name_igba \<phi> \<le> SPEC (\<lambda>G. 
-  igba G \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
+  igba G \<and> finite (g_V G) \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
   unfolding create_name_igba_def
-  apply (refine_rcg 
-    order_trans[OF create_name_gba_correct] 
-    order_trans[OF finFe_gba.gba_to_idx_ext_correct]
+  apply (refine_rcg
+    order_trans[OF create_name_gba_correct]
+    order_trans[OF gba.gba_to_idx_ext_correct]
     refine_vcg)
   apply clarsimp_all
 proof -
   fix G :: "(nat, 'a set) gba_rec"
-  assume "fin_gba G"
-  then interpret fin_gba G .
-  show "finFe_gba G" by unfold_locales
+  fix A :: "nat set"
+  assume 1: "gba G"
+  assume 2: "finite (g_V G)" "A \<in> gbg_F G"
+  interpret gba G using 1 by this
+  show "finite A" using finite_V_Fe 2 by this
 qed
 
 (* For presentation in paper*)
@@ -3225,13 +3111,13 @@ lemma "create_name_igba \<phi> \<le> SPEC (\<lambda>G.
   unfolding create_name_igba_def
 proof (refine_rcg refine_vcg, clarsimp_all)
   fix G :: "(nat, 'a set) gba_rec"
-  assume "fin_gba G"
-  then interpret fin_gba G .
+  assume "gba G"
+  then interpret gba G .
   note [refine_vcg] = order_trans[OF gba_to_idx_ext_correct]
 
-  assume "\<forall>\<xi>. gba.accept G \<xi> = \<xi> \<Turnstile>\<^sub>n \<phi>"
+  assume "\<forall>\<xi>. gba.accept G \<xi> = \<xi> \<Turnstile>\<^sub>n \<phi>" "finite (g_V G)"
   thus "gba_to_idx G \<le> SPEC (\<lambda>G'. igba G' \<and> (\<forall>\<xi>. igba.accept G' \<xi> = \<xi> \<Turnstile>\<^sub>n \<phi>))"
-    by (refine_rcg refine_vcg) auto
+    by (refine_rcg refine_vcg) (auto intro: finite_V_Fe)
 qed
 
 end

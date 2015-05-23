@@ -1,4 +1,4 @@
-header {* Example for locale-code *}
+section {* Example for locale-code *}
 theory Locale_Code_Ex
 imports 
   Locale_Code   

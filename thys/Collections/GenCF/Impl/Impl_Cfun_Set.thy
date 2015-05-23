@@ -1,4 +1,4 @@
-header {* Set by Characteristic Function *}
+section {* Set by Characteristic Function *}
 theory Impl_Cfun_Set
 imports "../Intf/Intf_Set"
 begin
@@ -51,6 +51,59 @@ lemma fun_set_empty_refine[autoref_rules]:
 lemma fun_set_UNIV_refine[autoref_rules]: 
   "(\<lambda>_. True,UNIV)\<in>\<langle>R\<rangle>fun_set_rel"
   by (force simp add: fun_set_rel_def br_def)
+
+lemma fun_set_union_refine[autoref_rules]: 
+  "(\<lambda>a b x. a x \<or> b x,op \<union>)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+proof -
+  have A: "\<And>a b. (\<lambda>x. x\<in>a \<or> x\<in>b, a \<union> b) \<in> br Collect (\<lambda>_. True)"
+    by (auto simp: br_def)
+
+  show ?thesis
+    apply (simp add: fun_set_rel_def)
+    apply (intro fun_relI)
+    apply clarsimp
+    apply rule
+    defer
+    apply (rule A)
+    apply (auto simp: br_def dest: fun_relD)
+    done
+qed
+
+lemma fun_set_inter_refine[autoref_rules]: 
+  "(\<lambda>a b x. a x \<and> b x,op \<inter>)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+proof -
+  have A: "\<And>a b. (\<lambda>x. x\<in>a \<and> x\<in>b, a \<inter> b) \<in> br Collect (\<lambda>_. True)"
+    by (auto simp: br_def)
+
+  show ?thesis
+    apply (simp add: fun_set_rel_def)
+    apply (intro fun_relI)
+    apply clarsimp
+    apply rule
+    defer
+    apply (rule A)
+    apply (auto simp: br_def dest: fun_relD)
+    done
+qed
+
+
+lemma fun_set_diff_refine[autoref_rules]: 
+  "(\<lambda>a b x. a x \<and> \<not>b x,op -)\<in>\<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel \<rightarrow> \<langle>R\<rangle>fun_set_rel"
+proof -
+  have A: "\<And>a b. (\<lambda>x. x\<in>a \<and> \<not>x\<in>b, a - b) \<in> br Collect (\<lambda>_. True)"
+    by (auto simp: br_def)
+
+  show ?thesis
+    apply (simp add: fun_set_rel_def)
+    apply (intro fun_relI)
+    apply clarsimp
+    apply rule
+    defer
+    apply (rule A)
+    apply (auto simp: br_def dest: fun_relD)
+    done
+qed
+
 
 
 end

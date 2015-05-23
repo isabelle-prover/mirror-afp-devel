@@ -1,6 +1,25 @@
 Changes of Refinement Framework since 2011-12-24:
 
+2014-11 Peter Lammich
+  * le-or-fail relation (leof)
+  * while-invariants via (leof), and modular reasoning about invariants
+
+2014-07 Peter Lammich
+  * Now defining total correct recursion via flat domain. Renamed some rules, 
+    changed RECT_eq_REC-rules. 
+    INCOMPATIBILITIES: 
+      - Renamed preconditions of REC[T]_rule[_arb] from \Phi to pre.
+      - Introduced "trimono" predicate. Used in mono-rules instead of mono.
+        Use thm trimonoD_mono to get back "mono"-predicate.
+  * Changed the notion of refinement to conc_fun R (RES X) = RES (R^-1 `` X).
+    INCOMPATIBILITIES: 
+      - For single-valued R, this definition matches the old one.
+      - For non single-valued case, the new definition allows for more convenient 
+        rules. Removed many single-valued assumptions from refinement rules.
+
+
 2014-06 Peter Lammich
+  * Strengthened RECT_eq_REC - rule.
   * Added vc_solve method
   * Fine-tuned rcg/vcg setup for ASSERT/ASSUME
   * Added more convenience lemmas

@@ -74,4 +74,41 @@ begin
       by blast
   qed
 
+
+  context begin interpretation LTL_Syntax .
+    primrec ltlc_next_free :: "'a ltlc \<Rightarrow> bool"
+    where
+      "ltlc_next_free true\<^sub>c = True"
+    | "ltlc_next_free false\<^sub>c = True"
+    | "ltlc_next_free (prop\<^sub>c(q)) = True"
+    | "ltlc_next_free (not\<^sub>c \<phi>) = ltlc_next_free \<phi>"
+    | "ltlc_next_free (\<phi> and\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+    | "ltlc_next_free (\<phi> or\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+    | "ltlc_next_free (\<phi> implies\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+    | "ltlc_next_free (\<phi> iff\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+    | "ltlc_next_free (X\<^sub>c \<phi>) = False"
+    | "ltlc_next_free (F\<^sub>c \<phi>) = ltlc_next_free \<phi>"
+    | "ltlc_next_free (G\<^sub>c \<phi>) = ltlc_next_free \<phi>"
+    | "ltlc_next_free (\<phi> U\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+    | "ltlc_next_free (\<phi> V\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+  end
+
+  lemma ltlc_to_ltl_next_free_iff: 
+    "ltl_next_free (ltlc_to_ltl \<phi>) \<longleftrightarrow> ltlc_next_free \<phi>"
+    by (induction \<phi>) (auto simp: Let_def)
+
+
+  theorem ltlc_next_free_stutter_invariant: 
+    assumes next_free: "ltlc_next_free \<phi>"
+    assumes eq: "r \<approx> r'"
+    shows "r \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> r' \<Turnstile>\<^sub>c \<phi>"
+    -- {* A next free formula cannot distinguish between 
+      stutter-equivalent runs. *}
+  proof -
+    note NF' = next_free[folded ltlc_to_ltl_next_free_iff]
+    from next_free_stutter_invariant[OF NF' eq] show ?thesis
+      by (auto simp: ltlc_to_ltl_equiv)
+  qed
+
 end
+

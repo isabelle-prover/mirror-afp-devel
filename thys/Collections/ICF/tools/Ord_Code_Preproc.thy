@@ -1,4 +1,4 @@
-header {* Functrans simpset for Code Preprocessing *}
+section {* Functrans simpset for Code Preprocessing *}
 theory Ord_Code_Preproc
 imports Main ICF_Tools
 begin

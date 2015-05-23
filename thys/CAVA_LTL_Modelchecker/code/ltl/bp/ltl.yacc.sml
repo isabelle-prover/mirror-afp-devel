@@ -259,11 +259,11 @@ end
 )
  in ( LrTable.NT 1, ( result, LPAREN1left, RPAREN1right), rest671)
 end
-|  ( 15, ( ( _, ( MlyValue.IDENT_ARG IDENT_ARG, _, IDENT_ARG1right)) :: ( _, ( MlyValue.IDENT IDENT, IDENT1left, _)) :: rest671)) => let val  result = MlyValue.ident ((*#line 56.26 "ltl.yacc"*)FProp (String.explode IDENT, IDENT_ARG)(*#line 262.1 "ltl.yacc.sml"*)
+|  ( 15, ( ( _, ( MlyValue.IDENT_ARG IDENT_ARG, _, IDENT_ARG1right)) :: ( _, ( MlyValue.IDENT IDENT, IDENT1left, _)) :: rest671)) => let val  result = MlyValue.ident ((*#line 56.26 "ltl.yacc"*)FProp (IDENT, IDENT_ARG)(*#line 262.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 2, ( result, IDENT1left, IDENT_ARG1right), rest671)
 end
-|  ( 16, ( ( _, ( MlyValue.IDENT IDENT, IDENT1left, IDENT1right)) :: rest671)) => let val  result = MlyValue.ident ((*#line 57.26 "ltl.yacc"*)CProp (String.explode IDENT)(*#line 266.1 "ltl.yacc.sml"*)
+|  ( 16, ( ( _, ( MlyValue.IDENT IDENT, IDENT1left, IDENT1right)) :: rest671)) => let val  result = MlyValue.ident ((*#line 57.26 "ltl.yacc"*)CProp IDENT(*#line 266.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 2, ( result, IDENT1left, IDENT1right), rest671)
 end

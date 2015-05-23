@@ -1,4 +1,4 @@
-header {* \isaheader{Example for Foreach-Loops} *}
+section {* \isaheader{Example for Foreach-Loops} *}
 theory Foreach_Refine
 imports 
   "../../Refine_Dflt_Only_ICF" 

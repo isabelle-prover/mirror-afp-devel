@@ -1,4 +1,4 @@
-header {* \isaheader{Array Based Hash-Maps} *}
+section {* \isaheader{Array Based Hash-Maps} *}
 theory Impl_Array_Hash_Map imports 
   "../../../Automatic_Refinement/Automatic_Refinement"
   "../../Iterator/Array_Iterator"

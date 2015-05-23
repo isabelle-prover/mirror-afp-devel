@@ -173,7 +173,7 @@ fun measure_cava phi
     
     (* Print buchi stats *)
     (*println "";*)
-    buchi_stats show_buchi phi;
+    (*buchi_stats show_buchi phi;*)
     
     ()
   end
@@ -200,26 +200,22 @@ fun promela_get_params progF ltl fromFile fromPromela cppargs =
   let
     val progS = preprocess cppargs progF
     val _ = PromelaStatistics.start_parse()
-    val prom = List.map SC.convert (PromelaParser.stringParse progS)
-    val chooseLTL = fn lookup => 
+    val ast = List.map SC.convert (PromelaParser.stringParse progS)
+    val phi = fn _ => 
         let 
           val phi = if fromFile then PromelaLtl.compile_from_file ltl
                     else if fromPromela then 
-                      (case lookup ltl of 
+                      (case Promela.lookupLTL ast ltl of 
                             SOME p => PromelaLtl.compile_from_string p
                           | NONE => raise PromelaLtl.LtlError ("No formula named '" ^ ltl ^ "'"))
                     else PromelaLtl.compile_from_string ltl
         in
            println "Chosen LTL-formula:";
            println(PromelaLtl.toString phi);
-           phi
+           PromelaLTLConv.ltl_conv phi
         end
-    val params = PromelaLTL.prepare chooseLTL prom
-    val (((prog,_), _),phi) = params
   in
-     println("Running Program \"" ^ progF ^"\"");
-     List.app (println o String.implode) (Promela.printProcesses int_to_charlist prog);
-     (params,phi)
+     (ast,phi ())
   end
 
 
@@ -227,17 +223,17 @@ fun bp_get_params p n ltl fromFile =
   let
     val pre_phi = if fromFile then BPLtl.compile_from_file ltl 
                   else BPLtl.compile_from_string ltl
-    val (descr, (_, (prog, (consts, funs)))) = BoolProgs_Programs.chose_prog (String.explode p) n
+    val (descr, (_, (prog, (consts, funs)))) = BoolProgs_Programs.chose_prog p n
     val phi = BoolProgs_LTL_Conv.ltl_conv consts funs pre_phi
   in
     case phi of
          Sum_Type.Inl p => (
-           println("Running Program \"" ^ String.implode descr ^"\"");
+           println("Running Program \"" ^ descr ^"\"");
            println "Chosen LTL-formula:";
            println(BPLtl.toString pre_phi);
            println "";
            ((prog, p),p))
-       | Sum_Type.Inr s => raise BPLtl.LtlError (String.implode s)
+       | Sum_Type.Inr s => raise BPLtl.LtlError s
   end
 
 fun usage () =
@@ -257,10 +253,10 @@ fun usage () =
     println ("\nThe first variant checks a builtin boolean program against the given LTL formula.");
     println ("    prog can be any of:");
     List.app (fn (k,(d,n)) => 
-      println ("        '" ^ String.implode k ^ "' --> " ^ String.implode d
-               ^ " (size = " ^ String.implode n ^ ")"))
+      println ("        '" ^ k ^ "' --> " ^ d
+               ^ " (size = " ^ n ^ ")"))
       list_progs;
-    println ("        default: " ^ String.implode default_prog);
+    println ("        default: " ^ default_prog);
     println ("    -f file      Read LTL-formula from file");
     
 
@@ -275,18 +271,17 @@ fun usage () =
 
 fun explain p =
   let
-    val (descr, (ndescr, (_, (consts, funs)))) = BoolProgs_Programs.chose_prog
-    (String.explode p) (Arith.nat 2)
+    val (descr, (ndescr, (_, (consts, funs)))) = BoolProgs_Programs.chose_prog p (Arith.nat 2)
   in
-    println (String.implode descr);
-    println ("Size = " ^ String.implode ndescr);
+    println descr;
+    println ("Size = " ^ ndescr);
     println ("\nConstants:");
     List.app (fn k =>
-        println("  - " ^ String.implode k))
+        println("  - " ^ k))
         (BoolProgs_Programs.keys_of_map consts);
     println ("\nFunctions:");
     List.app (fn k =>
-        println("  - " ^ String.implode k))
+        println("  - " ^ k))
         (BoolProgs_Programs.keys_of_map funs)
   end
 
@@ -310,12 +305,15 @@ fun parse_args args show cfg cppargs parseonly =
             in measure_cava phi (bp_cava cfg params) print_graphq show end
 
     fun run_promela prog ltl fromFile fromPromela =
-      let val (params, phi) = promela_get_params prog ltl fromFile fromPromela cppargs
-          val ((prog, _),_) = params
-          fun print_config q1 q2 = String.implode (PromelaLTL.printConfig
-            int_to_charlist prog q1 q2)
+      let val (ast, phi) = promela_get_params prog ltl fromFile fromPromela cppargs
+          fun print_config q1 q2 = String.implode (Promela.printConfigFromAST
+            int_to_charlist ast q1 q2)
+          fun print_prog p = (
+            println("\nRunning Program \"" ^ prog ^"\"");
+            List.app (println o String.implode) (Promela.printProcesses int_to_charlist p)
+            )
       in if not parseonly then
-           measure_cava phi (promela_cava cfg params) print_config show
+           measure_cava phi (promela_cava (cfg,print_prog) (ast,phi)) print_config show
          else ()
       end
   in
@@ -387,6 +385,8 @@ fun main () =
              (printlnErr ("Unsupported Construct: " ^ msg); e())
          | PromelaUtils.StaticError msg =>
              (printlnErr ("Static Promela Error: " ^ msg); e())
+         | PromelaUtils.RuntimeError msg =>
+             (printlnErr ("Promela Runtime Error: " ^ msg); e())
   end
 
 val _ = if CAVA_Support.isMLton then main() else ()

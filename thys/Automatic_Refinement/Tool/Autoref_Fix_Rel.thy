@@ -618,14 +618,28 @@ ML {*
       )
     end
 
+    fun apply_to_constraints tac = let
+      fun no_CONSTRAINT_tac i st = 
+        case Logic.concl_of_goal (Thm.prop_of st) i of
+          @{mpat "Trueprop (CONSTRAINT _ _)"} => Seq.empty
+        | _ => Seq.single st  
+
+    in
+      Seq.INTERVAL (no_CONSTRAINT_tac ORELSE' tac)
+    end
+
     fun internal_solve_tac ctxt = let
       val pairs = thm_pairsD.get ctxt
       val thy = Proof_Context.theory_of ctxt
       val net = pairs
         |> map_filter (fst #> map_option (mk_CONSTRAINT_rl thy))
         |> Tactic.build_net
+
+      val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
     in 
-      Seq.INTERVAL (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
+      apply_to_constraints s_tac
+      ORELSE_INTERVAL 
+      apply_to_constraints (TRY o DETERM o s_tac)
     end
 
     fun guess_relators_tac ctxt = let
@@ -645,8 +659,13 @@ ML {*
           (Seq.INTERVAL (DETERM o Anti_Unification.specialize_net_tac net) i j)
         )
 
-      fun solve_tac i j = Seq.INTERVAL 
-        (TRY o DETERM o REPEAT_ALL_NEW (resolve_from_net_tac ctxt net)) i j
+      val solve_tac = let 
+        val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
+      in   
+        apply_to_constraints s_tac
+        ORELSE_INTERVAL 
+        apply_to_constraints (TRY o DETERM o s_tac)
+      end
     in
       Seq.INTERVAL insert_CONSTRAINTS_tac
       THEN_INTERVAL hom_tac

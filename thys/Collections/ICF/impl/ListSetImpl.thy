@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Set Implementation by List} *}
+section {* \isaheader{Set Implementation by List} *}
 theory ListSetImpl
 imports "../spec/SetSpec" "../gen_algo/SetGA" "../../Lib/Dlist_add"
 begin

@@ -72,7 +72,7 @@ begin
     done
 
 
-  context fr_graph begin
+  context graph begin
     definition is_lasso_pre :: "'v lasso \<Rightarrow> bool" 
       where "is_lasso_pre L \<equiv> 
         lasso_v0 L \<in> V0
@@ -179,6 +179,7 @@ begin
   context gb_graph
   begin
     lemma accepted_lasso:
+      assumes [simp, intro]: "finite (E\<^sup>* `` V0)"
       assumes A: "is_acc_run r"
       shows "\<exists>L. is_lasso L"
     proof -
@@ -362,7 +363,7 @@ begin
       {
         fix i
         assume "i<num_acc"
-        hence "\<exists>q\<in>set (lasso_cycle L). i \<in> acc (fst q) \<and> snd q = i"
+        hence "\<exists>q\<in>set (lasso_cycle L). i \<in> local.acc (fst q) \<and> snd q = i"
         proof (induction i)
           case 0
           thus ?case using ACC unfolding degeneralize_ext_def by fastforce

@@ -1,5 +1,5 @@
 (*<*)
-header {* \isaheader{Examples for the Isabelle Collection Framework} *}
+section {* \isaheader{Examples for the Isabelle Collection Framework} *}
 theory ICF_Examples
 imports 
   "itp_2010"

@@ -29,7 +29,7 @@ definition ltl_to_gba_spec
   :: "'prop ltlc \<Rightarrow> ('q, 'prop set, _) igba_rec_scheme nres"
   -- {* Conversion of LTL formula to generalized buchi automaton *}  
   where "ltl_to_gba_spec \<phi> \<equiv> SPEC (\<lambda>gba. 
-    igba.lang gba = ltlc_language \<phi> \<and> igba gba)"
+    igba.lang gba = ltlc_language \<phi> \<and> igba gba \<and> finite ((g_E gba)\<^sup>* `` g_V0 gba))"
 
 definition inter_spec 
   :: "('s,'prop set,_) sa_rec_scheme 
@@ -38,10 +38,12 @@ definition inter_spec
   -- "Intersection of system and IGBA"
   where "\<And>sys ba. inter_spec sys ba \<equiv> do {
     ASSERT (sa sys);
+    ASSERT (finite ((g_E sys)\<^sup>* `` g_V0 sys));
     ASSERT (igba ba);
-    SPEC (\<lambda>(G,project). igb_graph G \<and> (\<forall>r. 
+    ASSERT (finite ((g_E ba)\<^sup>* `` g_V0 ba));
+    SPEC (\<lambda>(G,project). igb_graph G \<and> finite ((g_E G)\<^sup>* `` g_V0 G) \<and> (\<forall>r. 
       (\<exists>r'. igb_graph.is_acc_run G r' \<and> r = project o r')
-        \<longleftrightarrow> (fr_graph.is_run sys r \<and> sa_L sys o r \<in> igba.lang ba)))
+        \<longleftrightarrow> (graph_defs.is_run sys r \<and> sa_L sys o r \<in> igba.lang ba)))
   }"
 
 
@@ -50,6 +52,7 @@ definition find_ce_spec
   -- "Check Generalized Buchi graph for emptiness, with optional counterexample"
   where "find_ce_spec G \<equiv> do {
     ASSERT (igb_graph G);
+    ASSERT (finite ((g_E G)\<^sup>* `` g_V0 G));
     SPEC (\<lambda>res. case res of 
       None \<Rightarrow> (\<forall>r. \<not>igb_graph.is_acc_run G r)
     | Some None \<Rightarrow> (\<exists>r. igb_graph.is_acc_run G r)
@@ -61,6 +64,7 @@ text {*
   of the model-checking algorithm: Convert the LTL-formula to a GBA,
   make an intersection with the system and check the result for emptiness.
 *}
+
 definition abs_model_check 
   :: "'ba_state itself \<Rightarrow> 'ba_more itself 
   \<Rightarrow> 'prod_state itself \<Rightarrow> 'prod_more itself
@@ -91,13 +95,14 @@ text {*
   returning a counterexample is optional.
 *}
 theorem abs_model_check_correct:
-  "abs_model_check T1 T2 T3 T4 sys \<phi> 
-  \<le> do{ ASSERT (sa sys); 
-        SPEC (\<lambda>res. case res of
-          None \<Rightarrow> (sa.lang sys \<subseteq> ltlc_language \<phi>)
-        | Some None \<Rightarrow> (\<not>(sa.lang sys \<subseteq> ltlc_language \<phi>))
-        | Some (Some r) \<Rightarrow> (
-            fr_graph.is_run sys r \<and> sa_L sys o r \<notin> ltlc_language \<phi>))}"
+  "abs_model_check T1 T2 T3 T4 sys \<phi> \<le> do {
+    ASSERT (sa sys);
+    ASSERT (finite ((g_E sys)\<^sup>* `` g_V0 sys));
+    SPEC (\<lambda>res. case res of
+      None \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>
+    | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
+    | Some (Some r) \<Rightarrow> graph_defs.is_run sys r \<and> sa_L sys \<circ> r \<notin> ltlc_language \<phi>)
+  }"
   unfolding abs_model_check_def ltl_to_gba_spec_def inter_spec_def 
     find_ce_spec_def
   apply (refine_rcg refine_vcg ASSERT_leI le_ASSERTI)
@@ -189,7 +194,7 @@ begin
 
   theorem impl_model_check_correct:
     assumes R: "(sysi,sys)\<in>sa_rel"
-    assumes [simp]: "sa sys"
+    assumes [simp]: "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
     shows "case impl_model_check cfg sysi \<phi> of
       None 
         \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>
@@ -197,7 +202,7 @@ begin
         \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
     | Some (Some ri) 
         \<Rightarrow> (\<exists>r. (ri,r)\<in>mce_rel 
-           \<and> fr_graph.is_run sys r \<and> sa_L sys o r \<notin> ltlc_language \<phi>)"
+           \<and> graph_defs.is_run sys r \<and> sa_L sys o r \<notin> ltlc_language \<phi>)"
   proof -
     note impl_model_check_refine[
       where cfg=cfg,
@@ -214,13 +219,13 @@ begin
 
   theorem impl_model_check_correct_no_ce:
     assumes "(sysi,sys)\<in>sa_rel"
-    assumes SA: "sa sys"
+    assumes SA: "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
     shows "impl_model_check cfg sysi \<phi> = None 
     \<longleftrightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>"
     using impl_model_check_correct[where cfg=cfg, OF assms, of \<phi>]
     by (auto 
       split: option.splits 
-      simp: sa.lang_def[OF SA] sa.accept_def[OF SA,abs_def])
+      simp: sa.lang_def[OF SA(1)] sa.accept_def[OF SA(1), abs_def])
 
 end
 

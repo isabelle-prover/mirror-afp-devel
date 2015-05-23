@@ -2,6 +2,7 @@ section "Data structures as used in Promela"
 theory PromelaDatastructures
 imports
   "../CAVA_Automata/CAVA_Base/CAVA_Base"
+  "../CAVA_Automata/CAVA_Base/Lexord_List"
   PromelaAST
   "~~/src/HOL/Library/IArray"
   "../Deriving/Comparator_Generator/Compare_Instances"
@@ -791,6 +792,24 @@ definition preprocess :: "AST.module list \<Rightarrow> promela" where
        in
          pr)"
 
+fun extractLTL
+  :: "AST.module \<Rightarrow> ltl option"
+where
+  "extractLTL (AST.Ltl name formula) = Some (name, formula)"
+| "extractLTL _ = None"
+
+primrec extractLTLs
+  :: "AST.module list \<Rightarrow> (String.literal, String.literal) lm"
+where
+  "extractLTLs [] = lm.empty()"
+| "extractLTLs (m#ms) = (case extractLTL m of 
+                           None \<Rightarrow> extractLTLs ms
+                         | Some (n,f) \<Rightarrow> lm.update n f (extractLTLs ms))"
+
+definition lookupLTL
+  :: "AST.module list \<Rightarrow> String.literal \<Rightarrow> String.literal option"
+  where "lookupLTL ast k = lm.lookup k (extractLTLs ast)"
+
 subsection {* The transition system *}
 
 text {* 
@@ -1114,18 +1133,42 @@ end
 
 instantiation assoc_list :: (linorder,linorder) linorder
 begin
-  definition [simp]: "less_eq_assoc_list (a :: ('a,'b) assoc_list) (b :: ('a,'b) assoc_list) \<longleftrightarrow> Assoc_List.impl_of a \<le> Assoc_List.impl_of b"
-  definition [simp]: "less_assoc_list (a :: ('a,'b) assoc_list) (b :: ('a,'b) assoc_list) \<longleftrightarrow> Assoc_List.impl_of a < Assoc_List.impl_of b"
+  definition [simp]: "less_eq_assoc_list (a :: ('a,'b) assoc_list) (b :: ('a,'b) assoc_list) \<longleftrightarrow> lexlist (Assoc_List.impl_of a) \<le> lexlist (Assoc_List.impl_of b)"
+  definition [simp]: "less_assoc_list (a :: ('a,'b) assoc_list) (b :: ('a,'b) assoc_list) \<longleftrightarrow> lexlist (Assoc_List.impl_of a) < lexlist (Assoc_List.impl_of b)"
 
   instance 
     apply default 
-    apply auto
-    apply (metis assoc_list_ext)
+    apply (auto)
+    apply (metis assoc_list_ext lexlist_ext lexlist_def)
     done
 end
 
 (* Other instantiations for types from Main *)
+(*instantiation iarray :: (linorder) linorder
+begin
+  definition [simp]: "less_eq_iarray (a :: 'a iarray) (b :: 'a iarray) \<longleftrightarrow> lexlist (IArray.list_of a) \<le> lexlist (IArray.list_of b)"
+  definition [simp]: "less_iarray (a :: 'a iarray) (b :: 'a iarray) \<longleftrightarrow> lexlist (IArray.list_of a) < lexlist (IArray.list_of b)"
+
+  instance 
+    apply default 
+    apply auto
+    apply (metis iarray.exhaust list_of.simps lexlist_ext lexlist_def)
+    done
+end*)
 derive linorder iarray
+
+instantiation lexlist :: (hashable) hashable
+begin
+  definition "def_hashmap_size_lexlist = (\<lambda>_ :: 'a lexlist itself. 2 * def_hashmap_size TYPE('a))"
+
+  definition "hashcode_lexlist = hashcode o unlex"
+  instance
+  proof
+    from def_hashmap_size[where ?'a = "'a"]
+    show "1 < def_hashmap_size TYPE('a lexlist)"
+      by(simp add: def_hashmap_size_lexlist_def)
+  qed
+end
 
 text {* Instead of operating on the list representation of an @{const IArray}, we walk it directly,
 using the indices. *}
@@ -1172,13 +1215,13 @@ end
 instantiation array :: (linorder) linorder
 begin
 
-  definition [simp]: "less_eq_array (a :: 'a array) (b :: 'a array) \<longleftrightarrow> list_of_array a \<le> list_of_array b"
-  definition [simp]: "less_array (a :: 'a array) (b :: 'a array) \<longleftrightarrow> list_of_array a < list_of_array b"
+  definition [simp]: "less_eq_array (a :: 'a array) (b :: 'a array) \<longleftrightarrow> lexlist (list_of_array a) \<le> lexlist (list_of_array b)"
+  definition [simp]: "less_array (a :: 'a array) (b :: 'a array) \<longleftrightarrow> lexlist (list_of_array a) < lexlist (list_of_array b)"
 
   instance 
     apply default 
     apply auto
-    apply (metis array.exhaust list_of_array.simps)
+    apply (metis array.exhaust list_of_array.simps lexlist_ext lexlist_def)
     done
 end
 
@@ -1224,7 +1267,8 @@ end
 
 (*subsection {* Ours *}*)
 
-derive linorder varType channel variable
+derive linorder varType
+derive linorder variable
 
 instantiation varType :: hashable
 begin
@@ -1250,6 +1294,26 @@ begin
   instance by default (simp add: def_hashmap_size_variable_def)
 end
 
+fun channel_to_tuple where
+  "channel_to_tuple (Channel io vs iss) = (3::nat,io,lexlist vs, lexlist (map lexlist iss))"
+| "channel_to_tuple (HSChannel vs) = (2,0,lexlist vs, lexlist [])"
+| "channel_to_tuple InvChannel = (1,0,lexlist [], lexlist [])"
+
+instantiation channel :: linorder
+begin
+  definition [simp]: "less_eq_channel xs ys \<longleftrightarrow> channel_to_tuple xs \<le> channel_to_tuple ys"
+  definition [simp]: "less_channel xs ys \<longleftrightarrow> channel_to_tuple xs < channel_to_tuple ys"
+
+  instance
+    apply default
+    apply (auto)
+    apply (case_tac x)
+    apply (case_tac [!] y)
+    apply (auto dest!: map_inj_on 
+                intro!: inj_onI lexlist_ext 
+                simp: Lex_inject lexlist_def)
+    done
+end
 
 instantiation channel :: hashable
 begin
@@ -1259,19 +1323,19 @@ begin
   fun hashcode_channel where 
     "hashcode_channel (Channel io vs iss) = hashcode (io, vs, iss)"
   | "hashcode_channel (HSChannel vs) = 42 * hashcode vs"
-  | "hashcode_channel InvChan = 4711"
+  | "hashcode_channel InvChannel = 4711"
 
   instance by default (simp add: def_hashmap_size_channel_def)
 end
 
 function pState2HASH where
-  "pState2HASH \<lparr> pid = p, vars = v, pc = c, channels = ch, idx = s, \<dots> = m \<rparr> = (p, v, c, ch, s, m)"
+  "pState2HASH \<lparr> pid = p, vars = v, pc = c, channels = ch, idx = s, \<dots> = m \<rparr> = (p, v, c, lexlist ch, s, m)"
 by (metis pState.surjective) force
 termination by lexicographic_order
 
 lemma pState2HASH_eq:
   "pState2HASH x = pState2HASH y \<Longrightarrow> x = y"
-by (cases x, cases y) simp
+by (cases x, cases y) (auto intro: lexlist_ext simp: lexlist_def)
 
 instantiation pState_ext :: (linorder) linorder
 begin
@@ -1290,13 +1354,13 @@ begin
 end
 
 function gState2HASH where
-  "gState2HASH \<lparr> gState.vars = v, channels = ch, timeout = t, procs = p, \<dots> = m \<rparr> = (v, ch, t, p, m)"
+  "gState2HASH \<lparr> gState.vars = v, channels = ch, timeout = t, procs = p, \<dots> = m \<rparr> = (v, lexlist ch, t, lexlist p, m)"
 by (metis gState.surjective) force
 termination by lexicographic_order
 
 lemma gState2HASH_eq:
   "gState2HASH x = gState2HASH y \<Longrightarrow> x = y"
-by (cases x, cases y) simp
+by (cases x, cases y) (auto intro: lexlist_ext simp: lexlist_def)
 
 instantiation gState_ext :: (linorder) linorder
 begin

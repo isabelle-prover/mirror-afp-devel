@@ -23,21 +23,24 @@ lemma nrec_admissible: "nrec.admissible (\<lambda>(f::'a \<Rightarrow> 'b nres).
   apply auto
   done
 
-(*
+(*thm fixp_induct_option
+
 lemma fixp_induct_nrec:
   fixes F :: "'c \<Rightarrow> 'c" and
     U :: "'c \<Rightarrow> 'b \<Rightarrow> 'a nres" and
     C :: "('b \<Rightarrow> 'a nres) \<Rightarrow> 'c" and
     P :: "'b \<Rightarrow> 'a \<Rightarrow> bool"
-  assumes mono: "\<And>x. nrec_mono (\<lambda>f. U (F (C f)) x)"
-  assumes eq: "f \<equiv> C (nrec_ffix (\<lambda>f. U (F (C f))))"
+  assumes mono: "\<And>x. nrec.mono_body (\<lambda>f. U (F (C f)) x)"                       
+  assumes eq: "f \<equiv> C (nrec.fixp_fun (\<lambda>f. U (F (C f))))"
   assumes inverse2: "\<And>f. U (C f) = f"
-  assumes step: "\<And>f x. (\<And>x. U f x \<le> SPEC (P x)) \<Longrightarrow> U (F f) x \<le> SPEC (P x)"
-  assumes defined: "RETURN y \<le> U f x"
-  shows "U f x \<le> SPEC (P x)"
-  using step defined 
+  assumes step: "\<And>f x z. (\<And>x. U f x = U f x; Q x z) \<Longrightarrow> Q (U (F (C f))) z"
+ (* assumes defined: "RETURN y \<le> U (C f) x"*)
+  assumes Q: "\<And>x z. Q x z \<longleftrightarrow> z = U f x \<and> U f x \<le> SPEC (P x)"
+  shows "Q x z" sorry
+  (*using step defined
     nrec.fixp_induct_uc[of U F C, OF mono eq inverse2 nrec_admissible]
-  by blast
+  unfolding Q sorry (*
+  by blast*)*)
 
 lemma fixp_induct_nrec':
   fixes F :: "'c \<Rightarrow> 'c" and
@@ -68,7 +71,7 @@ qed
 
 declaration {* Partial_Function.init "nrec" @{term nrec.fixp_fun}
   @{term nrec.mono_body} @{thm nrec.fixp_rule_uc} @{thm nrec.fixp_induct_uc}
-  (*SOME @{thm fixp_induct_nrec'}*) NONE *}
+  (*SOME @{thm fixp_induct_nrec}*) (NONE) *}
 
 lemma bind_mono_pfun[partial_function_mono]:
   fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c nres) \<Rightarrow> ('d nres)"
@@ -80,7 +83,6 @@ lemma bind_mono_pfun[partial_function_mono]:
   apply (rule Refine_Basic.bind_mono)
   apply (blast dest: monotoneD)+
   done
-
 
 
 subsection {* Deterministic Result Monad *}

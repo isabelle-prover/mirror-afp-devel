@@ -58,8 +58,8 @@ section {* Correctness Theorem *}
 
 theorem compute_SCC_tr_correct:
   -- "Correctness theorem for the constant we extracted to SML"
-  fixes G :: "('a::hashable,'more) fr_graph_rec_scheme"
-  assumes A: "(G_impl,G)\<in>\<langle>Re,Id\<rangle>frg_impl_rel_ext"
+  fixes G :: "('a::hashable,'more) graph_rec_scheme"
+  assumes A: "(G_impl,G)\<in>\<langle>Re,Id\<rangle>g_impl_rel_ext"
   assumes C: "fr_graph G"
   shows "RETURN (compute_SCC_tr G_impl) 
   \<le> \<Down>(\<langle>\<langle>Id\<rangle>list_set_rel\<rangle>list_rel) (fr_graph.compute_SCC_spec G)"

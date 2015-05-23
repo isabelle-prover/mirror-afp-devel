@@ -18,6 +18,12 @@ definition
 definition "iWHILE bind return \<equiv> iWHILEI bind return (\<lambda>_. True)"
 definition "iWHILET bind return \<equiv> iWHILEIT bind return (\<lambda>_. True)"
 
+(* TODO: Move to refine_mono_prover*)
+lemma mono_prover_monoI[refine_mono]: 
+  "monotone (fun_ord op\<le>) (fun_ord op\<le>) B \<Longrightarrow> mono B"
+  apply (rule ccpo_monoD)
+  apply (simp add: le_fun_def[abs_def] fun_ord_def[abs_def])
+  done
 
 locale generic_WHILE =
   fixes bind :: "'m \<Rightarrow> ('a\<Rightarrow>'m) \<Rightarrow> ('m::complete_lattice)"
@@ -26,8 +32,10 @@ locale generic_WHILE =
   assumes imonad1: "bind (return x) f = f x"
   assumes imonad2: "bind M return = M"
   assumes imonad3: "bind (bind M f) g = bind M (\<lambda>x. bind (f x) g)"
-  assumes ibind_mono1: "mono bind"
-  assumes ibind_mono2: "mono (bind M)"
+  assumes ibind_mono_ge: "\<lbrakk>flat_ge m m'; \<And>x. flat_ge (f x) (f' x)\<rbrakk> 
+    \<Longrightarrow> flat_ge (bind m f) (bind m' f')"
+  assumes ibind_mono: "\<lbrakk>op \<le> m m'; \<And>x. op \<le> (f x) (f' x)\<rbrakk> 
+    \<Longrightarrow> op \<le> (bind m f) (bind m' f')"
   assumes WHILEIT_eq: "WHILEIT \<equiv> iWHILEIT bind return"
   assumes WHILEI_eq: "WHILEI \<equiv> iWHILEI bind return"
   assumes WHILET_eq: "WHILET \<equiv> iWHILET bind return"
@@ -41,33 +49,48 @@ begin
 
   lemmas imonad_laws = imonad1 imonad2 imonad3
   
-  lemma ibind_mono: "m \<le> m' \<Longrightarrow> f \<le> f' \<Longrightarrow> bind m f \<le> bind m' f'"
+  lemmas [refine_mono] = ibind_mono_ge ibind_mono
+
+(*  lemma ibind_mono: "m \<le> m' \<Longrightarrow> f \<le> f' \<Longrightarrow> bind m f \<le> bind m' f'"
     by (metis (no_types) ibind_mono1 ibind_mono2 le_funD monoD order_trans)
+*)
 
+lemma WHILEI_body_trimono: "trimono (WHILEI_body bind return I b f)"
+  unfolding WHILEI_body_def 
+  by refine_mono
 
-lemma WHILEI_mono: "mono (WHILEI_body bind return I b f)"
-  apply rule
-  unfolding WHILEI_body_def
-  apply (rule le_funI)
-  apply (clarsimp)
-  apply (rule_tac x=x and y=y in monoD)
-  apply (auto intro: ibind_mono2)
-  done
+lemmas WHILEI_mono = trimonoD_mono[OF WHILEI_body_trimono]
+lemmas WHILEI_mono_ge = trimonoD_flatf_ge[OF WHILEI_body_trimono]
 
 
 lemma WHILEI_unfold: "WHILEI I b f x = (
   if (I x) then (if b x then bind (f x) (WHILEI I b f) else return x) else top) "
   unfolding WHILEI_def
-  apply (subst REC_unfold[OF WHILEI_mono])
+  apply (subst REC_unfold[OF WHILEI_body_trimono])
   unfolding WHILEI_body_def
   apply (rule refl)
   done
+
+(* TODO: Move *)
+lemma REC_mono_ref[refine_mono]: 
+  "\<lbrakk>trimono B; \<And>D x. B D x \<le> B' D x\<rbrakk> \<Longrightarrow> REC B x \<le> REC B' x"
+  unfolding REC_def
+  apply clarsimp
+  apply (rule lfp_mono[THEN le_funD])
+  by (rule le_funI)
+  
+lemma RECT_mono_ref[refine_mono]: 
+  "\<lbrakk>trimono B; \<And>D x. B D x \<le> B' D x\<rbrakk> \<Longrightarrow> RECT B x \<le> RECT B' x"
+  unfolding RECT_gfp_def
+  apply clarsimp
+  apply (rule gfp_mono[THEN le_funD])
+  by (rule le_funI)
 
 lemma WHILEI_weaken:
   assumes IW: "\<And>x. I x \<Longrightarrow> I' x"
   shows "WHILEI I' b f x \<le> WHILEI I b f x"
   unfolding WHILEI_def
-  apply (rule REC_mono[OF WHILEI_mono])
+  apply (rule REC_mono_ref[OF WHILEI_body_trimono])
   apply (auto simp add: WHILEI_body_def dest: IW)
   done
 
@@ -76,7 +99,7 @@ lemma WHILEIT_unfold: "WHILEIT I b f x = (
     (if b x then bind (f x) (WHILEIT I b f) else return x) 
   else top) "
   unfolding WHILEIT_def
-  apply (subst RECT_unfold[OF WHILEI_mono])
+  apply (subst RECT_unfold[OF WHILEI_body_trimono])
   unfolding WHILEI_body_def
   apply (rule refl)
   done
@@ -85,7 +108,7 @@ lemma WHILEIT_weaken:
   assumes IW: "\<And>x. I x \<Longrightarrow> I' x"
   shows "WHILEIT I' b f x \<le> WHILEIT I b f x"
   unfolding WHILEIT_def
-  apply (rule RECT_mono[OF WHILEI_mono])
+  apply (rule RECT_mono_ref[OF WHILEI_body_trimono])
   apply (auto simp add: WHILEI_body_def dest: IW)
   done
 
@@ -109,6 +132,7 @@ lemma WHILET_unfold:
   apply simp
   done
 
+
 lemma transfer_WHILEIT_esc[refine_transfer]:
   assumes REF: "\<And>x. return (f x) \<le> F x"
   shows "return (while b f x) \<le> WHILEIT I b F x"
@@ -121,7 +145,8 @@ proof -
     unfolding WHILEI_body_def
     apply (split split_if, intro allI impI conjI)+
     apply simp_all
-    apply (rule order_trans[OF _ monoD[OF ibind_mono1 REF, THEN le_funD]])
+
+    apply (rule order_trans[OF _ ibind_mono[OF REF order_refl]])
     apply (simp add: imonad_laws)
     done
 qed
@@ -134,39 +159,17 @@ lemma transfer_WHILET_esc[refine_transfer]:
 
 
 lemma WHILE_mono_prover_rule[refine_mono]:
-  notes [refine_mono] = ibind_mono
-  assumes "\<And>x. f x \<le> f' x"
-  shows "WHILE b f s0 \<le> WHILE b f' s0"
+  "\<lbrakk>\<And>x. f x \<le> f' x\<rbrakk> \<Longrightarrow> WHILE b f s0 \<le> WHILE b f' s0"
+  "\<lbrakk>\<And>x. f x \<le> f' x\<rbrakk> \<Longrightarrow> WHILEI I b f s0 \<le> WHILEI I b f' s0"
+  "\<lbrakk>\<And>x. f x \<le> f' x\<rbrakk> \<Longrightarrow> WHILET b f s0 \<le> WHILET b f' s0"
+  "\<lbrakk>\<And>x. f x \<le> f' x\<rbrakk> \<Longrightarrow> WHILEIT I b f s0 \<le> WHILEIT I b f' s0"
+
+  "\<lbrakk>\<And>x. flat_ge (f x) (f' x)\<rbrakk> \<Longrightarrow> flat_ge (WHILET b f s0) (WHILET b f' s0)"
+  "\<lbrakk>\<And>x. flat_ge (f x) (f' x)\<rbrakk> \<Longrightarrow> flat_ge (WHILEIT I b f s0) (WHILEIT I b f' s0)"
   unfolding WHILE_def WHILEI_def WHILEI_body_def
+    WHILET_def WHILEIT_def
   using assms apply -
-  apply refine_mono
-  done
-
-lemma WHILEI_mono_prover_rule[refine_mono]:
-  notes [refine_mono] = ibind_mono
-  assumes "\<And>x. f x \<le> f' x"
-  shows "WHILEI I b f s0 \<le> WHILEI I b f' s0"
-  unfolding WHILE_def WHILEI_def WHILEI_body_def
-  using assms apply -
-  apply refine_mono
-  done
-
-lemma WHILET_mono_prover_rule[refine_mono]:
-  notes [refine_mono] = ibind_mono
-  assumes "\<And>x. f x \<le> f' x"
-  shows "WHILET b f s0 \<le> WHILET b f' s0"
-  unfolding WHILET_def WHILEIT_def WHILEI_body_def
-  using assms apply -
-  apply refine_mono
-  done
-
-lemma WHILEIT_mono_prover_rule[refine_mono]:
-  notes [refine_mono] = ibind_mono
-  assumes "\<And>x. f x \<le> f' x"
-  shows "WHILEIT I b f s0 \<le> WHILEIT I b f' s0"
-  unfolding WHILET_def WHILEIT_def WHILEI_body_def
-  using assms apply -
-  apply refine_mono
+  apply (refine_mono)+
   done
 
 end
@@ -189,7 +192,7 @@ lemma transfer_WHILEIT[refine_transfer]:
   assumes REF: "\<And>x. \<alpha> (f x) \<le> F x"
   shows "\<alpha> (cWHILEIT I b f x) \<le> aWHILEIT I b F x"
   unfolding c.WHILEIT_def a.WHILEIT_def
-  apply (rule transfer_RECT[OF _ c.WHILEI_mono])
+  apply (rule transfer_RECT[OF _ c.WHILEI_body_trimono])
   unfolding WHILEI_body_def
   apply auto
   apply (rule transfer_bind)
@@ -202,7 +205,7 @@ lemma transfer_WHILEI[refine_transfer]:
   assumes REF: "\<And>x. \<alpha> (f x) \<le> F x"
   shows "\<alpha> (cWHILEI I b f x) \<le> aWHILEI I b F x"
   unfolding c.WHILEI_def a.WHILEI_def
-  apply (rule transfer_REC[OF _ c.WHILEI_mono])
+  apply (rule transfer_REC[OF _ c.WHILEI_body_trimono])
   unfolding WHILEI_body_def
   apply auto
   apply (rule transfer_bind)
@@ -250,7 +253,7 @@ lemma WHILEI_rule:
   shows "WHILEI I b f s \<le> SPEC \<Phi>"
   apply (rule order_trans[where y="SPEC (\<lambda>s. I s \<and> \<not> b s)"])
     apply (unfold WHILEI_def)
-    apply (rule REC_rule[OF WHILEI_mono])
+    apply (rule REC_rule[OF WHILEI_body_trimono])
       apply (rule I0)
     
       unfolding WHILEI_body_def
@@ -276,7 +279,7 @@ lemma WHILEIT_rule:
   shows "WHILEIT I b f s \<le> SPEC \<Phi>"
 
   unfolding WHILEIT_def
-  apply (rule RECT_rule[OF WHILEI_mono WF, where \<Phi>=I,OF I0])
+  apply (rule RECT_rule[OF WHILEI_body_trimono WF, where pre=I,OF I0])
   unfolding WHILEI_body_def
   apply (split split_if)+
   apply (intro impI conjI)

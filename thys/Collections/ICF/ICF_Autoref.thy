@@ -1,4 +1,4 @@
-header {* ICF-setup for Automatic Refinement *}
+section {* ICF-setup for Automatic Refinement *}
 theory ICF_Autoref
 imports 
   ICF_Refine_Monadic 

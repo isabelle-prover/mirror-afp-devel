@@ -18,7 +18,7 @@ definition simple_const :: "nat \<Rightarrow> const_map"  where
   "simple_const n \<equiv> Mapping.empty"
 
 definition simple_fun :: "nat \<Rightarrow> fun_map" where
-  "simple_fun n \<equiv> mapping_from_list [(''var'', \<lambda>i. V i)]"
+  "simple_fun n \<equiv> mapping_from_list [(STR ''var'', \<lambda>i. V i)]"
 
 end
 

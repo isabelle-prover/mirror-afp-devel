@@ -1,4 +1,4 @@
-header {* Graphs defined by Successor Functions *}
+section {* Graphs defined by Successor Functions *}
 theory Succ_Graph
 imports 
   "../../Refine_Dflt"

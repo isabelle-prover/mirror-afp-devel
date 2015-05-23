@@ -348,7 +348,6 @@ begin
       \<Down>(build_rel (\<alpha>r \<circ> mr.\<alpha>) (\<lambda>m. mr.invar m \<and> res_invarm (mr.\<alpha> m))) 
         dijkstra'"
       apply (subst (asm) conc_fun_chain)
-      apply rule
       apply (simp only: br_chain)
       done
     also note dijkstra'_refines[simplified]
@@ -391,15 +390,15 @@ setup Locale_Code.close_block
 definition "hrf_dijkstra \<equiv> hrf.cdijkstra"
 lemmas hrf_dijkstra_correct = hrf.cdijkstra_correct[folded hrf_dijkstra_def]
 
-export_code hrf_dijkstra in SML
+export_code hrf_dijkstra checking SML
 export_code hrf_dijkstra in OCaml
 export_code hrf_dijkstra in Haskell
-export_code hrf_dijkstra in Scala
+export_code hrf_dijkstra checking Scala
 
 definition hrfn_dijkstra :: "(nat,nat) hlg \<Rightarrow> _" 
   where "hrfn_dijkstra \<equiv> hrf_dijkstra"
 
-export_code hrfn_dijkstra in SML
+export_code hrfn_dijkstra checking SML
 
 lemmas hrfn_dijkstra_correct = 
   hrf_dijkstra_correct[where ?'a = nat and ?'b = nat, folded hrfn_dijkstra_def]

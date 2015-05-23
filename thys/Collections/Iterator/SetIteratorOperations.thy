@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* Operations on Set Iterators *}
+section {* Operations on Set Iterators *}
 theory SetIteratorOperations
 imports Main SetIterator
 begin

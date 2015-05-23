@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Deprecated: Data Refinement for the While-Combinator} *}
+section {* \isaheader{Deprecated: Data Refinement for the While-Combinator} *}
 theory DatRef
 imports 
   Main 

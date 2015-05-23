@@ -1,4 +1,4 @@
-header {* Backwards Compatibility for Version 1 *}
+section {* Backwards Compatibility for Version 1 *}
 theory CollectionsV1
 imports Collections
 begin

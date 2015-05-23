@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Hash Set} *}
+section {* \isaheader{Hash Set} *}
 theory HashSet
   imports 
   "../spec/SetSpec" 

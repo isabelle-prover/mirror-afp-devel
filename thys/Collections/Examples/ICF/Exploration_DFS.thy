@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{DFS Implementation by Hashset} *}
+section {* \isaheader{DFS Implementation by Hashset} *}
 theory Exploration_DFS
 imports Exploration 
 begin

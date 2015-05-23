@@ -1,4 +1,4 @@
-header {* \isaheader{Set Interface} *}
+section {* \isaheader{Set Interface} *}
 theory Intf_Set
 imports "../../../Refine_Monadic/Refine_Monadic"
 begin

@@ -602,6 +602,9 @@ context begin interpretation autoref_syn .
     "(\<forall>i\<le>u. l\<le>i \<longrightarrow> P i) \<equiv> OP List.all_interval_nat P l (Suc u)"
     by (auto intro!: eq_reflection simp: List.all_interval_nat_def)
 
+
+  lemmas [autoref_rules] = param_dropWhile param_takeWhile
+
 end
 
 subsection "Examples"

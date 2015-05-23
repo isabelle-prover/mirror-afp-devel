@@ -1,4 +1,4 @@
-header {* \isaheader{Iterator by get and size } *}
+section {* \isaheader{Iterator by get and size } *}
 theory Idx_Iterator
 imports
   SetIterator

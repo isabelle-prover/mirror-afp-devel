@@ -761,6 +761,12 @@ lemma preciseD':
   apply (blast intro: assms)
   done
 
+lemma precise_extr_pure[simp]: 
+  "precise (\<lambda>x y. \<up>P * R x y) \<longleftrightarrow> (P \<longrightarrow> precise R)"
+  "precise (\<lambda>x y. R x y * \<up>P) \<longleftrightarrow> (P \<longrightarrow> precise R)"
+  apply (cases P, (auto intro!: preciseI) [2])+
+  done
+
 lemma sngr_prec: "precise (\<lambda>x p. p\<mapsto>\<^sub>rx)"
   apply rule
   apply (clarsimp simp: mod_and_dist)

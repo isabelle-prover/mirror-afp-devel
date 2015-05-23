@@ -23,7 +23,7 @@ end
 section {* Extended Invariant *}
 
 locale cscc_invar_ext = fr_graph G
-  for G :: "('v,'more) fr_graph_rec_scheme" + 
+  for G :: "('v,'more) graph_rec_scheme" + 
   fixes l :: "'v set list" and D :: "'v set"
   assumes l_is_D: "\<Union>set l = D" -- "The output contains all done CNodes"
   assumes l_scc: "set l \<subseteq> Collect (is_scc E)" -- "The output contains only SCCs"
@@ -34,14 +34,14 @@ begin
 end
   
 locale cscc_outer_invar_loc = outer_invar_loc G it D + cscc_invar_ext G l D
-  for G :: "('v,'more) fr_graph_rec_scheme" and it l D 
+  for G :: "('v,'more) graph_rec_scheme" and it l D 
 begin
   lemma locale_this: "cscc_outer_invar_loc G it l D" by unfold_locales
   lemma abs_outer_this: "outer_invar_loc G it D" by unfold_locales
 end
 
 locale cscc_invar_loc = invar_loc G v0 D0 p D pE + cscc_invar_ext G l D
-  for G :: "('v,'more) fr_graph_rec_scheme" and v0 D0 and l :: "'v set list" 
+  for G :: "('v,'more) graph_rec_scheme" and v0 D0 and l :: "'v set list" 
   and p D pE
 begin
   lemma locale_this: "cscc_invar_loc G v0 D0 l p D pE" by unfold_locales
@@ -347,7 +347,7 @@ begin
         solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
         dest!: sym[of "pop A" for A]
-        simp: pE_fin'[OF invar_from_cscc_invarI]
+        simp: pE_fin'[OF invar_from_cscc_invarI] finite_V0
       )
       done
   qed
@@ -366,7 +366,7 @@ begin
         rec: cscc_invarI cscc_outer_invarI solve: cscc_invar_preserve cscc_finI
         intro: invar_from_cscc_invarI outer_invar_from_cscc_invarI
         dest!: sym[of "pop A" for A]
-        simp: pE_fin'[OF invar_from_cscc_invarI])
+        simp: pE_fin'[OF invar_from_cscc_invarI] finite_V0)
   end
 
 end

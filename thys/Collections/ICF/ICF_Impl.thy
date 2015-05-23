@@ -1,4 +1,4 @@
-header {* All ICF Implementations *}
+section {* All ICF Implementations *}
 theory ICF_Impl
 imports
   (*"../../Refine_Monadic/Refine_Monadic"*)

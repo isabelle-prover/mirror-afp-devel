@@ -18,20 +18,20 @@ fun b2l :: "bexp \<Rightarrow> nat ltlc" where
 end
 
 datatype
-  propc = CProp string | FProp "string * integer"
+  propc = CProp String.literal | FProp "String.literal * integer"
 
 context begin interpretation LTL_Syntax .
 
-fun ltl_conv :: "const_map \<Rightarrow> fun_map \<Rightarrow> propc ltlc \<Rightarrow> (nat ltlc + string)"
+fun ltl_conv :: "const_map \<Rightarrow> fun_map \<Rightarrow> propc ltlc \<Rightarrow> (nat ltlc + String.literal)"
 where
   "ltl_conv _ _ LTLcTrue = Inl LTLcTrue"
 | "ltl_conv _ _ LTLcFalse = Inl LTLcFalse"
 | "ltl_conv C _ (LTLcProp (CProp s)) = (case Mapping.lookup C s of
                                               Some c \<Rightarrow> Inl (b2l c)
-                                             | None \<Rightarrow> Inr (''Unknown constant: '' @ s))"
+                                             | None \<Rightarrow> Inr (STR ''Unknown constant: '' @@ s))"
 | "ltl_conv _ M (LTLcProp (FProp (s, arg))) = (case Mapping.lookup M s of
                                                     Some f \<Rightarrow> (Inl \<circ> b2l \<circ> f \<circ> nat_of_integer) arg
-                                                  | None \<Rightarrow> Inr (''Unknown function: '' @s))"
+                                                  | None \<Rightarrow> Inr (STR ''Unknown function: '' @@ s))"
 | "ltl_conv C M (LTLcNeg x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (LTLcNeg l) | Inr s \<Rightarrow> Inr s)"
 | "ltl_conv C M (LTLcNext x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (LTLcNext l) | Inr s \<Rightarrow> Inr s)"
 | "ltl_conv C M (LTLcFinal x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (LTLcFinal l) | Inr s \<Rightarrow> Inr s)"

@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Map Implementation by Associative Lists} *}
+section {* \isaheader{Map Implementation by Associative Lists} *}
 theory ListMapImpl
 imports 
   "../spec/MapSpec" 

@@ -1,4 +1,4 @@
-header {*\isaheader{Specification of Unique Priority Queues}*}
+section {*\isaheader{Specification of Unique Priority Queues}*}
 theory PrioUniqueSpec
 imports ICF_Spec_Base
 begin

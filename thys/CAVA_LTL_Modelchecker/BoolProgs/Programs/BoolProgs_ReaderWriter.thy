@@ -28,16 +28,16 @@ definition "activeR_eq r w v \<equiv> counter_eq (activeR r w) r v"
 
 definition rw_const :: "nat \<Rightarrow> const_map" where
   "rw_const n \<equiv> mapping_from_list [
-              (''ready'', V ready),
-              (''readers_active'', V readers_active),
-              (''writers_active'', V writers_active),
-              (''q_error'', V q_error) ]"
+              (STR ''ready'', V ready),
+              (STR ''readers_active'', V readers_active),
+              (STR ''writers_active'', V writers_active),
+              (STR ''q_error'', V q_error) ]"
 
 definition rw_fun :: "nat \<Rightarrow> fun_map" where
   "rw_fun n \<equiv> mapping_from_list [
-             (''reading'', \<lambda>i. V (reading n n i)),
-             (''writing'', \<lambda>i. V (writing n n i)),
-             (''activeR_eq'', activeR_eq n n) ]"
+             (STR ''reading'', \<lambda>i. V (reading n n i)),
+             (STR ''writing'', \<lambda>i. V (writing n n i)),
+             (STR ''activeR_eq'', activeR_eq n n) ]"
 
 
 (* init variable list *)

@@ -1,4 +1,4 @@
-header {* \isaheader{Orderings By Comparison Operator} *}
+section {* \isaheader{Orderings By Comparison Operator} *}
 theory Intf_Comp
 imports 
   "../../../Automatic_Refinement/Automatic_Refinement"

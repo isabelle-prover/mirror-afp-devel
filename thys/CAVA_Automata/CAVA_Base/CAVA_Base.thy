@@ -9,10 +9,19 @@ theory CAVA_Base
   "CAVA_Code_Target" (*-- {* Code Generator Setup *}*)
 begin
 
+hide_const (open) CollectionsV1.ahs_rel
+
+
 (* Select-function that selects element from set *)
 (* TODO: Move! Is select properly integrated into autoref? *)
   definition select where
     "select S \<equiv> if S={} then RETURN None else RES {Some s | s. s\<in>S}"
+
+lemma select_correct: 
+  "select X \<le> SPEC (\<lambda>r. case r of None \<Rightarrow> X={} | Some x \<Rightarrow> x\<in>X)"
+  unfolding select_def
+  apply (refine_rcg refine_vcg)
+  by auto
 
   text {* Cleaning up the namespace a bit *}
   

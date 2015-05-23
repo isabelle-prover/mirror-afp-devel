@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Indices of Sets} *}
+section {* \isaheader{Indices of Sets} *}
 theory SetIndex
 imports 
   "../spec/MapSpec"

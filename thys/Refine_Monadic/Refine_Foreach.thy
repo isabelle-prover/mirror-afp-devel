@@ -65,6 +65,9 @@ definition FOREACHoi ("FOREACH\<^sub>O\<^bsup>_,_\<^esup>") where
 text {* Basic foreach *}
 definition "FOREACH S \<equiv> FOREACHc S (\<lambda>_. True)"
 
+lemmas FOREACH_to_oci_unfold
+  = FOREACHci_def FOREACHc_def FOREACHi_def FOREACHoi_def FOREACH_def
+
 subsection {* Proof Rules *}
 
 lemma FOREACHoci_rule[refine_vcg]:
@@ -207,9 +210,6 @@ lemma FOREACHoci_refine_genR:
     it\<noteq>{}; it'\<noteq>{};
     \<not>c \<sigma>; \<not>c' \<sigma>'
   \<rbrakk> \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACHoci RR \<Phi> S c f \<sigma>0 \<le> \<Down>R' (FOREACHoci RR' \<Phi>' S' c' f' \<sigma>0')"
   (* TODO: Clean up this mess !!! *)
   unfolding FOREACHoci_def
@@ -224,14 +224,12 @@ lemma FOREACHoci_refine_genR:
 
   using REFS INJ apply (auto dest: finite_imageD) []
   apply (rule intro_prgR[where R="{(xs,xs') . xs'=map \<alpha> xs }"])
-  apply (rule SPEC_refine_sv)
-  apply (auto simp: single_valued_def) []
+  apply (rule SPEC_refine)
   using INJ RR_OK 
   apply (auto 
     simp add: distinct_map sorted_by_rel_map 
     intro: sorted_by_rel_weaken[of _ RR]) []
   using REF0 apply auto []
-  defer
 
   apply simp apply (rule conjI)
   using INJ apply clarsimp
@@ -281,9 +279,7 @@ lemma FOREACHoci_refine_genR:
 
   apply (clarsimp simp: FOREACH_cond_def)
   apply (clarsimp simp: FOREACH_cond_def)
-  
-  using SV apply (auto simp: single_valued_def) []
-  
+ 
   apply (clarsimp simp: map_tl)
   apply (intro conjI)
 
@@ -308,13 +304,10 @@ lemma FOREACHoci_refine_genR:
     }
     "])
   apply auto []
-  apply (rule SV')
   apply (simp add: FOREACH_cond_def, elim conjE)
   apply (elim disjE1, simp_all) []
   using REF_R_DONE apply auto []
   using REF_R_BRK apply auto []
-
-  using SV apply (auto simp: single_valued_def) []
   done
 
 lemma FOREACHoci_refine:
@@ -324,7 +317,6 @@ lemma FOREACHoci_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes RR_OK: "\<And>x y. \<lbrakk>x \<in> S; y \<in> S; RR x y\<rbrakk> \<Longrightarrow> RR' (\<alpha> x) (\<alpha> y)"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
@@ -353,8 +345,6 @@ lemma FOREACHoci_refine:
   using REFSTEP apply auto []
   apply auto []
   apply auto []
-  using SV apply (auto simp: single_valued_def) []
-  apply fact
   done
  
 lemma FOREACHoci_refine_rcg[refine]:
@@ -365,7 +355,6 @@ lemma FOREACHoci_refine_rcg[refine]:
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
   assumes RR_OK: "\<And>x y. \<lbrakk>x \<in> S; y \<in> S; RR x y\<rbrakk> \<Longrightarrow> RR' (\<alpha> x) (\<alpha> y)"
-  assumes SV: "single_valued R"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; \<Phi> it \<sigma>; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> c \<sigma> \<longleftrightarrow> c' \<sigma>'"
@@ -425,9 +414,6 @@ lemma FOREACHoi_refine_genR:
     \<le> \<Down>({(\<sigma>, \<sigma>'). ((it-{x},\<sigma>),(it'-{x'},\<sigma>'))\<in>R}) (f' x' \<sigma>')"
   assumes REF_R_DONE: "\<And>\<sigma> \<sigma>'. \<lbrakk> \<Phi> {} \<sigma>; \<Phi>' {} \<sigma>'; (({},\<sigma>),({},\<sigma>'))\<in>R \<rbrakk> 
     \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACHoi RR \<Phi> S f \<sigma>0 \<le> \<Down>R' (FOREACHoi RR' \<Phi>' S' f' \<sigma>0')"
   unfolding FOREACHoi_def
   apply (rule FOREACHoci_refine_genR)
@@ -443,7 +429,6 @@ lemma FOREACHoi_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes RR_OK: "\<And>x y. \<lbrakk>x \<in> S; y \<in> S; RR x y\<rbrakk> \<Longrightarrow> RR' (\<alpha> x) (\<alpha> y)"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFPHI: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
@@ -468,7 +453,6 @@ lemma FOREACHoi_refine_rcg[refine]:
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
   assumes RR_OK: "\<And>x y. \<lbrakk>x \<in> S; y \<in> S; RR x y\<rbrakk> \<Longrightarrow> RR' (\<alpha> x) (\<alpha> y)"
-  assumes SV: "single_valued R"
   assumes REFPHI: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> \<Phi> it \<sigma>"
@@ -514,9 +498,6 @@ lemma FOREACHci_refine_genR:
     it\<noteq>{}; it'\<noteq>{};
     \<not>c \<sigma>; \<not>c' \<sigma>'
   \<rbrakk> \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACHci \<Phi> S c f \<sigma>0 \<le> \<Down>R' (FOREACHci \<Phi>' S' c' f' \<sigma>0')"
   unfolding FOREACHci_def
   apply (rule FOREACHoci_refine_genR)
@@ -526,7 +507,6 @@ lemma FOREACHci_refine_genR:
   using REFSTEP apply auto []
   apply (fact|simp)+
   using REF_R_BRK apply auto []
-  apply (fact|simp)+
   done
 
 lemma FOREACHci_refine:
@@ -536,7 +516,6 @@ lemma FOREACHci_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>';  \<Phi>'' it \<sigma> it' \<sigma>'; \<Phi> it \<sigma>; (\<sigma>,\<sigma>')\<in>R
@@ -563,7 +542,6 @@ lemma FOREACHci_refine_rcg[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; \<Phi> it \<sigma>; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> c \<sigma> \<longleftrightarrow> c' \<sigma>'"
@@ -653,9 +631,6 @@ lemma FOREACHc_refine_genR:
     it\<noteq>{}; it'\<noteq>{};
     \<not>c \<sigma>; \<not>c' \<sigma>'
   \<rbrakk> \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACHc S c f \<sigma>0 \<le> \<Down>R' (FOREACHc S' c' f' \<sigma>0')"
   unfolding FOREACHc_def
   apply (rule FOREACHci_refine_genR)
@@ -665,7 +640,6 @@ lemma FOREACHc_refine_genR:
   using REFSTEP apply auto []
   using REF_R_DONE apply auto []
   using REF_R_BRK apply auto []
-  apply (fact|simp)+
   done
 
 lemma FOREACHc_refine:
@@ -675,7 +649,6 @@ lemma FOREACHc_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>'' it \<sigma> it' \<sigma>'; (\<sigma>,\<sigma>')\<in>R
@@ -687,7 +660,7 @@ lemma FOREACHc_refine:
     \<le> \<Down>({(\<sigma>, \<sigma>'). (\<sigma>, \<sigma>') \<in> R \<and> \<Phi>'' (it - {x}) \<sigma> (it' - {x'}) \<sigma>'}) (f' x' \<sigma>')"
   shows "FOREACHc S c f \<sigma>0 \<le> \<Down>R (FOREACHc S' c' f' \<sigma>0')"
   unfolding FOREACHc_def
-  apply (rule FOREACHci_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 SV REFPHI0])
+  apply (rule FOREACHci_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 REFPHI0])
   apply (erule (4) REFC)
   apply (rule TrueI)
   apply (erule (9) REFSTEP)
@@ -700,7 +673,6 @@ lemma FOREACHc_refine_rcg[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> c \<sigma> \<longleftrightarrow> c' \<sigma>'"
@@ -736,9 +708,6 @@ lemma FOREACHi_refine_genR:
     \<le> \<Down>({(\<sigma>, \<sigma>'). ((it-{x},\<sigma>),(it'-{x'},\<sigma>'))\<in>R}) (f' x' \<sigma>')"
   assumes REF_R_DONE: "\<And>\<sigma> \<sigma>'. \<lbrakk> \<Phi> {} \<sigma>; \<Phi>' {} \<sigma>'; (({},\<sigma>),({},\<sigma>'))\<in>R \<rbrakk> 
     \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACHi \<Phi> S f \<sigma>0 \<le> \<Down>R' (FOREACHi \<Phi>' S' f' \<sigma>0')"
   unfolding FOREACHi_def
   apply (rule FOREACHci_refine_genR)
@@ -754,7 +723,6 @@ lemma FOREACHi_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFPHI: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; \<Phi>'' it \<sigma> it' \<sigma>'; (\<sigma>,\<sigma>')\<in>R
@@ -767,7 +735,7 @@ lemma FOREACHi_refine:
     \<le> \<Down>({(\<sigma>, \<sigma>'). (\<sigma>, \<sigma>') \<in> R \<and> \<Phi>'' (it - {x}) \<sigma> (it' - {x'}) \<sigma>'}) (f' x' \<sigma>')"
   shows "FOREACHi \<Phi> S f \<sigma>0 \<le> \<Down>R (FOREACHi \<Phi>' S' f' \<sigma>0')"
   unfolding FOREACHi_def
-  apply (rule FOREACHci_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 SV REFPHI0])
+  apply (rule FOREACHci_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 REFPHI0])
   apply (rule refl)
   apply (erule (5) REFPHI)
   apply (erule (9) REFSTEP)
@@ -780,7 +748,6 @@ lemma FOREACHi_refine_rcg[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFPHI: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> \<Phi> it \<sigma>"
@@ -814,9 +781,6 @@ lemma FOREACH_refine_genR:
     \<le> \<Down>({(\<sigma>, \<sigma>'). ((it-{x},\<sigma>),(it'-{x'},\<sigma>'))\<in>R}) (f' x' \<sigma>')"
   assumes REF_R_DONE: "\<And>\<sigma> \<sigma>'. \<lbrakk> (({},\<sigma>),({},\<sigma>'))\<in>R \<rbrakk> 
     \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
-  assumes SV: "single_valued { ((it,\<sigma>),(it',\<sigma>')) . 
-    it'=\<alpha>`it \<and> ((it,\<sigma>),(it',\<sigma>'))\<in>R }"
-  assumes SV': "single_valued R'"
   shows "FOREACH S f \<sigma>0 \<le> \<Down>R' (FOREACH S' f' \<sigma>0')"
   unfolding FOREACH_def
   apply (rule FOREACHc_refine_genR)
@@ -832,7 +796,6 @@ lemma FOREACH_refine:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFPHI0: "\<Phi>'' S \<sigma>0 (\<alpha>`S) \<sigma>0'"
   assumes REFSTEP: "\<And>x it \<sigma> x' it' \<sigma>'. \<lbrakk> 
     x'=\<alpha> x; x\<in>it; x'\<in>it'; it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S';
@@ -841,7 +804,7 @@ lemma FOREACH_refine:
     \<le> \<Down>({(\<sigma>, \<sigma>'). (\<sigma>, \<sigma>') \<in> R \<and> \<Phi>'' (it - {x}) \<sigma> (it' - {x'}) \<sigma>'}) (f' x' \<sigma>')"
   shows "FOREACH S f \<sigma>0 \<le> \<Down>R (FOREACH S' f' \<sigma>0')"
   unfolding FOREACH_def
-  apply (rule FOREACHc_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 SV REFPHI0])
+  apply (rule FOREACHc_refine[where \<Phi>''=\<Phi>'', OF INJ REFS REF0 REFPHI0])
   apply (rule refl)
   apply (erule (7) REFSTEP)
   done
@@ -853,7 +816,6 @@ lemma FOREACH_refine_rcg[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFSTEP: "\<And>x it \<sigma> x' it' \<sigma>'. \<lbrakk> 
     x'=\<alpha> x; x\<in>it; x'\<in>it'; it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S';
     (\<sigma>,\<sigma>')\<in>R
@@ -871,7 +833,6 @@ lemma FOREACHci_refine_rcg'[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFC: "\<And>it \<sigma> it' \<sigma>'. \<lbrakk> 
     it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S'; \<Phi>' it' \<sigma>'; (\<sigma>,\<sigma>')\<in>R
   \<rbrakk> \<Longrightarrow> c \<sigma> \<longleftrightarrow> c' \<sigma>'"
@@ -883,7 +844,6 @@ lemma FOREACHci_refine_rcg'[refine]:
   shows "FOREACHc S c f \<sigma>0 \<le> \<Down>R (FOREACHci \<Phi>' S' c' f' \<sigma>0')"
   unfolding FOREACHc_def
   apply (rule FOREACHci_refine_rcg) 
-  apply (rule assms)
   apply (rule assms)
   apply (rule assms)
   apply (rule assms)
@@ -899,7 +859,6 @@ lemma FOREACHi_refine_rcg'[refine]:
   assumes INJ: "inj_on \<alpha> S"
   assumes REFS: "S' = \<alpha>`S"
   assumes REF0: "(\<sigma>0,\<sigma>0')\<in>R"
-  assumes SV: "single_valued R"
   assumes REFSTEP: "\<And>x it \<sigma> x' it' \<sigma>'. \<lbrakk> 
     x'=\<alpha> x; x\<in>it; x'\<in>it'; it'=\<alpha>`it; it\<subseteq>S; it'\<subseteq>S';
     \<Phi>' it' \<sigma>';
@@ -992,48 +951,44 @@ by (simp add: FOREACHi_def)
 
 subsubsection "Monotonicity"
 
-lemma FOREACHoci_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACHoci I S R c f s0 \<le> FOREACHoci I S R c f' s0"
-  using assms apply -
-  unfolding FOREACHoci_def FOREACH_body_def
-  apply (refine_mono)
+(* TODO: Move to RefineG_Domain *)
+definition "lift_refl P c f g == \<forall>x. P c (f x) (g x)"
+definition "lift_mono P c f g == \<forall>x y. c x y \<longrightarrow> P c (f x) (g y)"
+definition "lift_mono1 P c f g == \<forall>x y. (\<forall>a. c (x a) (y a)) \<longrightarrow> P c (f x) (g y)"
+definition "lift_mono2 P c f g == \<forall>x y. (\<forall>a b. c (x a b) (y a b)) \<longrightarrow> P c (f x) (g y)"
+
+definition "trimono_spec L f == ((L id op \<le> f f) \<and> (L id flat_ge f f))"
+
+lemmas trimono_atomize = atomize_imp atomize_conj atomize_all
+lemmas trimono_deatomize = trimono_atomize[symmetric]
+
+lemmas trimono_spec_defs = trimono_spec_def lift_refl_def[abs_def] comp_def id_def
+    lift_mono_def[abs_def] lift_mono1_def[abs_def] lift_mono2_def[abs_def]
+    trimono_deatomize
+
+locale trimono_spec begin
+abbreviation "R \<equiv> lift_refl"
+abbreviation "M \<equiv> lift_mono"
+abbreviation "M1 \<equiv> lift_mono1"
+abbreviation "M2 \<equiv> lift_mono2"
+end
+
+context begin interpretation trimono_spec .
+
+lemma FOREACHoci_mono[unfolded trimono_spec_defs,refine_mono]: 
+  "trimono_spec (R o R o R o R o M2 o R) FOREACHoci"
+  "trimono_spec (R o R o R o M2 o R) FOREACHoi"
+  "trimono_spec (R o R o R o M2 o R) FOREACHci"
+  "trimono_spec (R o R o M2 o R) FOREACHc"
+  "trimono_spec (R o R o M2 o R) FOREACHi"
+  "trimono_spec (R o M2 o R) FOREACH"
+  apply (unfold trimono_spec_defs)
+  apply -
+  unfolding FOREACHoci_def FOREACH_to_oci_unfold FOREACH_body_def
+  apply (refine_mono)+
   done
-lemma FOREACHoi_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACHoi I S R f s0 \<le> FOREACHoi I S R f' s0"
-  using assms apply -
-  unfolding FOREACHoi_def FOREACH_body_def
-  apply (refine_mono)
-  done
-lemma FOREACHci_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACHci I S c f s0 \<le> FOREACHci I S c f' s0"
-  using assms apply -
-  unfolding FOREACHci_def FOREACH_body_def
-  apply (refine_mono)
-  done
-lemma FOREACHc_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACHc S c f s0 \<le> FOREACHc S c f' s0"
-  using assms apply -
-  unfolding FOREACHc_def 
-  apply (refine_mono)
-  done
-lemma FOREACHi_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACHi I S f s0 \<le> FOREACHi I S f' s0"
-  using assms apply -
-  unfolding FOREACHi_def 
-  apply (refine_mono)
-  done
-lemma FOREACH_mono[refine_mono]:
-  assumes "\<And>x. f x \<le> f' x"
-  shows "FOREACH S f s0 \<le> FOREACH S f' s0"
-  using assms apply -
-  unfolding FOREACH_def 
-  apply (refine_mono)
-  done
+
+end
 
 subsubsection {* Transfer to fold *}
 text {*
@@ -1059,7 +1014,6 @@ lemma nfoldli_simps[simp]:
   done
   
 lemma param_nfoldli[param]:
-  assumes "single_valued Rb"
   shows "(nfoldli,nfoldli) \<in> 
     \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb\<rightarrow>Id) \<rightarrow> (Ra\<rightarrow>Rb\<rightarrow>\<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
   apply (intro fun_relI)
@@ -1112,8 +1066,13 @@ next
     done
 qed
 
-lemma nfoldli_mono[refine_mono]:
-  "\<lbrakk> \<And>x. f x \<le> f' x \<rbrakk> \<Longrightarrow> nfoldli l c f \<sigma> \<le> nfoldli l c f' \<sigma>"
+lemma nfoldli_mono[refine_mono]: 
+  "\<lbrakk> \<And>x s. f x s \<le> f' x s \<rbrakk> \<Longrightarrow> nfoldli l c f \<sigma> \<le> nfoldli l c f' \<sigma>"
+  "\<lbrakk> \<And>x s. flat_ge (f x s) (f' x s) \<rbrakk> \<Longrightarrow> flat_ge (nfoldli l c f \<sigma>) (nfoldli l c f' \<sigma>)"
+  apply (induct l arbitrary: \<sigma>)
+  apply auto
+  apply refine_mono
+
   apply (induct l arbitrary: \<sigma>)
   apply auto
   apply refine_mono
@@ -1198,84 +1157,6 @@ lemma nfoldli_rule:
   using FNC apply auto []
   done
 
-
-(* TODO: Remove --- Hopefully obsolete 
-definition "it_FOREACH tsl s c f \<sigma> \<equiv> do { 
-  l \<leftarrow> tsl s; 
-  nfoldli l c f \<sigma> 
-}"
-
-lemma param_it_FOREACH[param]:
-  assumes "single_valued R\<sigma>"
-  shows "(it_FOREACH,it_FOREACH) \<in> 
-    (\<langle>Rk\<rangle>Rs \<rightarrow> \<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel) \<rightarrow> \<langle>Rk\<rangle>Rs \<rightarrow> 
-      (R\<sigma>\<rightarrow>Id) \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) 
-    \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-  using assms
-  unfolding it_FOREACH_def[abs_def]
-  by parametricity
-
-lemma FOREACH_to_it_FOREACH:
-  fixes R I tsl
-  defines "lspec \<equiv> \<lambda>s. (SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_by_rel R l))"
-  assumes SV: "single_valued R\<sigma>"
-  assumes LS: "\<And>s s'. (s,s')\<in>\<langle>Rk\<rangle>Rs \<Longrightarrow> tsl s \<le> \<Down>(\<langle>Rk\<rangle>list_rel) (lspec s')"
-  shows "(it_FOREACH tsl,FOREACHoci R I) 
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (R\<sigma>\<rightarrow>Id) \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof (intro fun_relI nres_relI)
-  fix s s' c c' f f' \<sigma> \<sigma>'
-  assume [param]:
-    "(s,s')\<in>\<langle>Rk\<rangle>Rs"
-    "(c,c')\<in>R\<sigma>\<rightarrow>(Id::(bool\<times>_) set)" 
-    "(f,f')\<in>Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel"
-    "(\<sigma>,\<sigma>')\<in>R\<sigma>"
-
-  have "it_FOREACH tsl s c f \<sigma> \<le> \<Down>R\<sigma> (it_FOREACH lspec s' c' f' \<sigma>')"
-    apply (rule nres_relD)
-    using SV LS[THEN nres_relI]
-    by parametricity
-  also have 
-    "it_FOREACH lspec s' c' f' \<sigma>' \<le> FOREACHoci R I s' c' f' \<sigma>'"
-    apply (rule refine_IdD)
-    unfolding it_FOREACH_def FOREACHoci_def lspec_def
-    apply refine_rcg
-    apply simp
-    apply (rule nfoldli_while)
-    done 
-  finally show "it_FOREACH tsl s c f \<sigma> \<le> \<Down> R\<sigma> (FOREACH\<^sub>O\<^sub>C\<^bsup>R,I\<^esup> s' c' f' \<sigma>')" .
-qed
-
-lemma it_FOREACH_transfer_plain[refine_transfer]:
-  assumes "\<And>s. RETURN (tsl s) \<le> TSL s"
-  assumes "\<And>x \<sigma>. RETURN (f x \<sigma>) \<le> F x \<sigma>"
-  shows "RETURN (foldli (tsl s) c f \<sigma>) \<le> it_FOREACH TSL s c F \<sigma>"
-proof -
-  have "RETURN (let x = tsl s in foldli x c f \<sigma>) \<le> it_FOREACH TSL s c F \<sigma>"
-    using assms
-    unfolding it_FOREACH_def
-    apply refine_transfer
-    done
-  thus ?thesis by simp
-qed
-
-definition "dres_it_FOREACH tsl s c f \<sigma> \<equiv> 
-  tsl s \<guillemotright>= (\<lambda>l. foldli l (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>))"
-
-lemma it_FOREACH_transfer_dres[refine_transfer]:
-  assumes "\<And>s. nres_of (tsl s) \<le> (TSL s)"
-  assumes "\<And>x \<sigma>. nres_of (f x \<sigma>) \<le> F x \<sigma>"
-  shows "nres_of (dres_it_FOREACH tsl s c f \<sigma>) \<le> it_FOREACH TSL s c F \<sigma>"
-  using assms
-  unfolding it_FOREACH_def dres_it_FOREACH_def
-  by refine_transfer
-
-lemma it_FOREACH_mono[refine_mono]:
-  "\<lbrakk> \<And>x. f x \<le> f' x \<rbrakk> \<Longrightarrow> it_FOREACH it s c f \<sigma> \<le> it_FOREACH it s c f' \<sigma>"
-  unfolding it_FOREACH_def
-  by refine_mono
-*)
-
-
 lemma foldli_mono_dres_aux1:
   fixes \<sigma> :: "'a :: {order_bot, order_top}"
   assumes COND: "\<And>\<sigma> \<sigma>'. \<sigma>\<le>\<sigma>' \<Longrightarrow> c \<sigma> \<noteq> c \<sigma>' \<Longrightarrow> \<sigma>=bot \<or> \<sigma>'=top "
@@ -1317,14 +1198,58 @@ lemma foldli_mono_dres[refine_mono]:
   apply (simp_all add: A)
   done
 
-(*
-lemma dres_it_FOREACH_mono[refine_mono]: 
-  assumes A: "\<And>a x. f a x \<le> f' a x"
-  shows "dres_it_FOREACH l s c f \<sigma> \<le> dres_it_FOREACH l s c f' \<sigma>"
-  using assms
-  unfolding dres_it_FOREACH_def
-  by refine_mono
-*)
+
+partial_function (drec) dfoldli where
+  "dfoldli l c f s = (case l of 
+    [] \<Rightarrow> dRETURN s 
+    | x#ls \<Rightarrow> if c s then do { s\<leftarrow>f x s; dfoldli ls c f s} else dRETURN s
+  )"
+
+lemma dfoldli_simps[simp]:
+  "dfoldli [] c f s = dRETURN s"
+  "dfoldli (x#ls) c f s = 
+    (if c s then do { s\<leftarrow>f x s; dfoldli ls c f s} else dRETURN s)"
+  apply (subst dfoldli.simps, simp)+
+  done
+  
+lemma dfoldli_mono[refine_mono]: 
+  "\<lbrakk> \<And>x s. f x s \<le> f' x s \<rbrakk> \<Longrightarrow> dfoldli l c f \<sigma> \<le> dfoldli l c f' \<sigma>"
+  "\<lbrakk> \<And>x s. flat_ge (f x s) (f' x s) \<rbrakk> \<Longrightarrow> flat_ge (dfoldli l c f \<sigma>) (dfoldli l c f' \<sigma>)"
+  apply (induct l arbitrary: \<sigma>)
+  apply auto
+  apply refine_mono
+
+  apply (induct l arbitrary: \<sigma>)
+  apply auto
+  apply refine_mono
+  done
+
+lemma foldli_dres_pres_FAIL[simp]: 
+  "foldli l (case_dres False False c) (\<lambda>x s. dbind s (f x)) dFAIL = dFAIL"
+  by (cases l) auto
+
+lemma foldli_dres_pres_SUCCEED[simp]:
+  "foldli l (case_dres False False c) (\<lambda>x s. dbind s (f x)) dSUCCEED = dSUCCEED"
+  by (cases l) auto
+
+lemma dfoldli_by_foldli: "dfoldli l c f \<sigma>
+  = foldli l (case_dres False False c) (\<lambda>x s. dbind s (f x)) (dRETURN \<sigma>)"
+  apply (induction l arbitrary: \<sigma>)
+  apply simp
+  apply (clarsimp intro!: ext)
+  apply (rename_tac a l x)
+  apply (case_tac "f a x")
+  apply auto
+  done
+
+lemma foldli_mono_dres_flat[refine_mono]:
+  assumes A: "\<And>a x. flat_ge (f a x) (f' a x)"
+  shows "flat_ge (foldli l (case_dres False False c) (\<lambda>x s. dbind s (f x)) \<sigma>) 
+          (foldli l (case_dres False False c) (\<lambda>x s. dbind s (f' x)) \<sigma>)"
+  apply (cases \<sigma>)
+  apply (simp_all add: dfoldli_by_foldli[symmetric])
+  using A apply refine_mono
+  done
 
 lemma dres_foldli_ne_bot[refine_transfer]:
   assumes 1: "\<sigma> \<noteq> dSUCCEED"
@@ -1338,16 +1263,6 @@ lemma dres_foldli_ne_bot[refine_transfer]:
   apply (simp add: dres_ne_bot_basic)
   done
 
-(*lemma dres_it_FOREACH_ne_bot[refine_transfer]:
-  assumes "\<And>s. l s\<noteq>dSUCCEED"
-  assumes "\<And>x \<sigma>. f x \<sigma> \<noteq> dSUCCEED"
-  shows "dres_it_FOREACH l s c f \<sigma> \<noteq> dSUCCEED"
-  using assms
-  unfolding dres_it_FOREACH_def
-  apply refine_transfer
-  done
-*)
-
 subsection {* Autoref Setup *}
 text {*
   Foreach-loops are mapped to the combinator @{text "LIST_FOREACH"}, that
@@ -1359,11 +1274,9 @@ text {*
 *}
 
 lemma autoref_nfoldli[autoref_rules]:
-  assumes "PREFER single_valued Rb"
   shows "(nfoldli, nfoldli)
   \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
-  using assms param_nfoldli by simp
-
+  using assms param_nfoldli .
 
 text {* This constant is a placeholder to be converted to
   custom operations by pattern rules *}
@@ -1389,7 +1302,7 @@ text {* Patterns that convert FOREACH-constructs
 *}
 context begin interpretation autoref_syn .
 
-lemma FOREACH_patterns[autoref_op_pat]:
+lemma FOREACH_patterns[autoref_op_pat_def]:
   "FOREACH\<^bsup>I\<^esup> s f \<equiv> FOREACH\<^sub>O\<^sub>C\<^bsup>\<lambda>_ _. True,I\<^esup> s (\<lambda>_. True) f"
   "FOREACHci I s c f \<equiv> FOREACHoci (\<lambda>_ _. True) I s c f"
   "FOREACH\<^sub>O\<^sub>C\<^bsup>R,\<Phi>\<^esup> s c f \<equiv> \<lambda>\<sigma>. do {
@@ -1430,16 +1343,13 @@ end
 definition "LIST_FOREACH' tsl c f \<sigma> \<equiv> do {xs \<leftarrow> tsl; nfoldli xs c f \<sigma>}"
 
 lemma LIST_FOREACH'_param[param]: 
-  assumes "single_valued R\<sigma>"
   shows "(LIST_FOREACH',LIST_FOREACH') 
   \<in> (\<langle>\<langle>Rv\<rangle>list_rel\<rangle>nres_rel \<rightarrow> (R\<sigma>\<rightarrow>bool_rel) 
     \<rightarrow> (Rv \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel)"
-  using assms
   unfolding LIST_FOREACH'_def[abs_def]
   by parametricity
 
 lemma LIST_FOREACH_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
   shows "(LIST_FOREACH', LIST_FOREACH \<Phi>) \<in> 
     (\<langle>\<langle>Rv\<rangle>list_rel\<rangle>nres_rel \<rightarrow> (R\<sigma>\<rightarrow>bool_rel) 
       \<rightarrow> (Rv \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel)"
@@ -1451,11 +1361,8 @@ proof (intro fun_relI nres_relI)
     "(f,f')\<in>Rv\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel"
     "(\<sigma>,\<sigma>')\<in>R\<sigma>"
 
-  note SV = SV[simplified]
-
   have "LIST_FOREACH' tsl c f \<sigma> \<le> \<Down>R\<sigma> (LIST_FOREACH' tsl' c' f' \<sigma>')"
     apply (rule nres_relD)
-    using SV
     by parametricity
   also have "LIST_FOREACH' tsl' c' f' \<sigma>'
     \<le> LIST_FOREACH \<Phi> tsl' c' f' \<sigma>'"
@@ -1470,12 +1377,16 @@ proof (intro fun_relI nres_relI)
     .
 qed
 
-lemma LIST_FOREACH'_mono[refine_mono]:
-  assumes "tsl \<le> tsl'"
-  assumes "\<And>x \<sigma>. f x \<sigma> \<le> f' x \<sigma>"
-  shows "LIST_FOREACH' tsl c f \<sigma> \<le> LIST_FOREACH' tsl' c f' \<sigma>"
-  using assms unfolding LIST_FOREACH'_def
-  by refine_mono
+context begin interpretation trimono_spec .
+
+lemma LIST_FOREACH'_mono[unfolded trimono_spec_defs,refine_mono]: 
+  "trimono_spec (R o R o M2 o R) LIST_FOREACH'"
+  apply (unfold trimono_spec_defs)
+  apply -
+  unfolding LIST_FOREACH'_def
+  by refine_mono+
+
+end
 
 lemma LIST_FOREACH'_transfer_plain[refine_transfer]:
   assumes "RETURN tsl \<le> tsl'"
@@ -1500,89 +1411,6 @@ lemma LIST_FOREACH'_transfer_nres[refine_transfer]:
   unfolding LIST_FOREACH'_def
   using assms
   by refine_transfer
-
-(*
-lemma FOREACHoci_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS: "GEN_OP tsl (it_to_sorted_list R) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(it_FOREACH tsl,FOREACHoci R I)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (R\<sigma>\<rightarrow>Id) \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-  using FOREACH_to_it_FOREACH[OF SV[simplified], OF nres_relD] LS
-  apply (simp add: it_to_sorted_list_def[abs_def])
-  apply parametricity
-  apply (erule (1) fun_relD)
-  done
-
-lemma FOREACHoi_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS: "GEN_OP tsl (it_to_sorted_list R) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(\<lambda>s. it_FOREACH tsl s (\<lambda>_. True),FOREACHoi R I)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof -
-  note [relator_props] = SV[unfolded autoref_tag_defs]
-  note [autoref_rules] = LS[unfolded autoref_tag_defs]
-  show ?thesis
-    unfolding FOREACHoi_def[abs_def]
-    by (autoref (keep_goal))
-
-qed
-
-lemma FOREACHci_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS: 
-    "GEN_OP tsl (it_to_sorted_list (\<lambda>_ _. True)) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(it_FOREACH tsl,FOREACHci I)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (R\<sigma>\<rightarrow>Id) \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof -
-  note [relator_props] = SV[unfolded autoref_tag_defs]
-  note [autoref_rules] = LS[unfolded autoref_tag_defs]
-  show ?thesis
-    unfolding FOREACHci_def[abs_def]
-    by (autoref)
-qed
-
-lemma FOREACHi_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS:
-    "GEN_OP tsl (it_to_sorted_list (\<lambda>_ _. True)) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(\<lambda>s. it_FOREACH tsl s (\<lambda>_. True),FOREACHi I)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof -
-  note [relator_props] = SV[unfolded autoref_tag_defs]
-  note [autoref_rules] = LS[unfolded autoref_tag_defs]
-  show ?thesis
-    unfolding FOREACHi_def[abs_def]
-    by (autoref (keep_goal))
-qed
-
-lemma FOREACHc_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS:
-    "GEN_OP tsl (it_to_sorted_list (\<lambda>_ _. True)) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(it_FOREACH tsl,FOREACHc)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (R\<sigma>\<rightarrow>Id) \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof -
-  note [relator_props] = SV[unfolded autoref_tag_defs]
-  note [autoref_rules] = LS[unfolded autoref_tag_defs]
-  show ?thesis
-    unfolding FOREACHc_def[abs_def]
-    by (autoref)
-qed
-
-lemma FOREACH_autoref[autoref_rules]:
-  assumes SV: "PREFER single_valued R\<sigma>"
-  assumes LS:
-    "GEN_OP tsl (it_to_sorted_list (\<lambda>_ _. True)) (\<langle>Rk\<rangle>Rs\<rightarrow>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel)"
-  shows "(\<lambda>s. it_FOREACH tsl s (\<lambda>_. True),FOREACH)
-    \<in> \<langle>Rk\<rangle>Rs \<rightarrow> (Rk\<rightarrow>R\<sigma>\<rightarrow>\<langle>R\<sigma>\<rangle>nres_rel) \<rightarrow> R\<sigma> \<rightarrow> \<langle>R\<sigma>\<rangle>nres_rel"
-proof -
-  note [relator_props] = SV[unfolded autoref_tag_defs]
-  note [autoref_rules] = LS[unfolded autoref_tag_defs]
-  show ?thesis
-    unfolding FOREACH_def[abs_def]
-    by (autoref (keep_goal))
-qed
-*)
 
 text {* Simplification rules to summarize iterators *}
 lemma [refine_transfer_post_simp]: 
@@ -1654,5 +1482,22 @@ lemma map_sigma_sigma_foreach:
   
   apply auto
   done
+
+
+lemma bij_set_rel_for_inj: 
+  fixes R
+  defines "\<alpha> \<equiv> fun_of_rel R" 
+  assumes "bijective R" "(s,s')\<in>\<langle>R\<rangle>set_rel"  
+  shows "inj_on \<alpha> s" "s' = \<alpha>`s"
+  -- \<open>To be used when generating refinement conditions for foreach-loops\<close>
+  using assms
+  unfolding bijective_def set_rel_def \<alpha>_def fun_of_rel_def[abs_def]
+  apply (auto intro!: inj_onI ImageI simp: image_def)
+  apply (metis (mono_tags) Domain.simps contra_subsetD tfl_some)
+  apply (metis (mono_tags) someI)
+  apply (metis DomainE contra_subsetD tfl_some)
+  done
+
+
 
 end

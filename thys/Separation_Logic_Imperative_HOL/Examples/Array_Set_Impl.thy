@@ -157,6 +157,21 @@ begin
     by (sep_auto heap: ias_delete_rule)
   interpretation ias: imp_set_delete is_ias ias_delete
     using ias_delete_impl .
+
+  (* Self - contained proof, for paper *)  
+  context begin
+    interpretation ias: imp_set_ins is_ias ias_ins proof
+      fix s p a
+      show "<is_ias s p> ias_ins a p <is_ias (insert a s)>\<^sub>t"
+        unfolding is_ias_def ias_ins_def
+        by (sep_auto decon: decon_split_if simp: ias_ins_abs1 ias_ins_abs2)
+    qed    
+
+  end
+
+  lemma "imp_set_ins is_ias ias_ins"
+    apply unfold_locales
+    by (sep_auto heap: ias_ins_rule)
   
   lemma ias_ins_impl: "imp_set_ins is_ias ias_ins"
     apply unfold_locales

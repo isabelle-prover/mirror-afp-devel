@@ -1,4 +1,4 @@
-header {*\isaheader{Specification of Annotated Lists}*}
+section {*\isaheader{Specification of Annotated Lists}*}
 theory AnnotatedListSpec
 imports ICF_Spec_Base
 begin

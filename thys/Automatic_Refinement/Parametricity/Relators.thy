@@ -280,6 +280,14 @@ lemma set_rel_simp[simp]:
   "({},{})\<in>\<langle>R\<rangle>set_rel" 
   by (auto simp: set_rel_def)
 
+lemma set_relD: "(s,s')\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> x\<in>s \<Longrightarrow> \<exists>x'\<in>s'. (x,x')\<in>R"
+  unfolding set_rel_def by blast
+
+lemma set_relE[consumes 2]: 
+  assumes "(s,s')\<in>\<langle>R\<rangle>set_rel" "x\<in>s"
+  obtains x' where "x'\<in>s'" "(x,x')\<in>R"
+  using set_relD[OF assms] ..
+
 subsection {* Automation *} 
 subsubsection {* A solver for relator properties *}
 lemma relprop_triggers: 
@@ -296,15 +304,25 @@ ML {*
     val name = @{binding relator_props}
     val description = "Additional relator properties"
   )
+
+  structure solve_relator_props = Named_Thms (
+    val name = @{binding solve_relator_props}
+    val description = "Relator properties that solve goal"
+  )
+
 *}
 setup relator_props.setup
+setup solve_relator_props.setup
 
 declaration {*
   Tagged_Solver.declare_solver 
     @{thms relprop_triggers} 
     @{binding relator_props_solver}
-    "Additional relator peoperties solver"
-    (fn ctxt => (REPEAT_ALL_NEW (match_tac ctxt (relator_props.get ctxt))))
+    "Additional relator properties solver"
+    (fn ctxt => (REPEAT_ALL_NEW (CHANGED o (
+      match_tac ctxt (solve_relator_props.get ctxt) ORELSE'
+      match_tac ctxt (relator_props.get ctxt)
+    ))))
 *}
 
 declaration {*
@@ -312,17 +330,19 @@ declaration {*
     []
     @{binding force_relator_props_solver}
     "Additional relator properties solver (instantiate schematics)"
-    (fn ctxt => REPEAT_ALL_NEW (resolve_tac ctxt (relator_props.get ctxt)))
+    (fn ctxt => (REPEAT_ALL_NEW (CHANGED o (
+      resolve_tac ctxt (solve_relator_props.get ctxt) ORELSE'
+      match_tac ctxt (relator_props.get ctxt)
+    ))))
 *}
 
-lemma relprop_id_orient[relator_props]: 
-  "R=Id \<Longrightarrow> Id=R"
-  "Id = Id"
+lemma 
+  relprop_id_orient[relator_props]: "R=Id \<Longrightarrow> Id=R" and
+  relprop_eq_refl[solve_relator_props]: "t = t"
   by auto
 
-lemma relprop_UNIV_orient[relator_props]: 
-  "R=UNIV \<Longrightarrow> UNIV=R"
-  "UNIV = UNIV"
+lemma 
+  relprop_UNIV_orient[relator_props]: "R=UNIV \<Longrightarrow> UNIV=R"
   by auto
 
 subsubsection {* ML-Level utilities *}
@@ -647,6 +667,16 @@ proof (clarsimp simp: eq_UNIV_iff)
     using A[unfolded eq_UNIV_iff]
     by (auto simp: Range_iff intro: list_relI)
 qed
+
+
+lemma bijective_imp_sv:  
+  "bijective R \<Longrightarrow> single_valued R"
+  "bijective R \<Longrightarrow> single_valued (R\<inverse>)"
+  by (simp_all add: bijective_alt)
+
+(* TODO: Move *)
+declare bijective_Id[relator_props]
+declare bijective_Empty[relator_props]
 
 text {* Pointwise refinement for set types: *}
 lemma set_rel_sv[relator_props]: 

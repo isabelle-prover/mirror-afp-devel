@@ -10,13 +10,15 @@ session "CAVA_Base" (AFP) in "CAVA_Base" = "Collections" +
 session "CAVA_Automata" (AFP) = "CAVA_Base" +
   options [timeout = 1200]
   theories
+    Words
     Digraph
     Automata
-    Words
     Lasso
+    Simulation
+    Stuttering_Extension
     Digraph_Impl
     Automata_Impl
-  theories [document = false]
+  theories [document =false]
     All_Of_CAVA_Automata
   document_files
     "root.tex"

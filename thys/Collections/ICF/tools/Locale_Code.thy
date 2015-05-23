@@ -1,4 +1,4 @@
-header {* Code Generation from Locales *}
+section {* Code Generation from Locales *}
 theory Locale_Code
   imports ICF_Tools Ord_Code_Preproc
 begin

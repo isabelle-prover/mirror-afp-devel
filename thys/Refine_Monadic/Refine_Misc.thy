@@ -2,74 +2,8 @@ section {* Miscellanneous Lemmas and Tools *}
 theory Refine_Misc
 imports 
   "../Automatic_Refinement/Automatic_Refinement"
+  "Refine_Mono_Prover"
 begin
-
-subsection {* ML-level stuff *}
-
-ML {*
-
-structure Refine_Misc = struct
-  (* Fail if goal index out of bounds. *)
-  (* Use IF_EXGOAL instead!
-  fun wrap_nogoals tac i st = if nprems_of st < i then 
-    no_tac st 
-  else
-    tac i st;*)
-
-  (********************)
-  (* Monotonicity Prover *)
-  (********************)
-
-    structure refine_mono = Named_Thms
-      ( val name = @{binding refine_mono}
-        val description = "Refinement Framework: " ^
-          "Monotonicity rules" )
-
-    (*structure refine_mono_trigger = Named_Thms
-      ( val name = @{binding refine_mono_trigger}
-        val description = "Refinement Framework: " ^
-          "Triggering rules for monotonicity prover" )
-    *)
-
-    (* Monotonicity prover: Solve by removing function arguments *)
-    fun solve_le_tac ctxt = SOLVED' (REPEAT_ALL_NEW (
-      Method.assm_tac ctxt ORELSE' fo_rtac @{thm le_funD} ctxt));
-
-    (* Monotonicity prover. TODO: A related thing is in the 
-      partial_function package, can we reuse (parts of) that?
-    *)
-    fun mono_prover_tac ctxt = REPEAT_ALL_NEW (FIRST' [
-      Method.assm_tac ctxt,
-      match_tac ctxt (refine_mono.get ctxt),
-      solve_le_tac ctxt
-    ]);
-
-    fun untriggered_mono_tac ctxt = mono_prover_tac ctxt 
-      THEN_ALL_NEW (TRY o Tagged_Solver.solve_tac ctxt)
-
-    val declare_mono_triggers =
-      Tagged_Solver.add_triggers "Refine_Misc.refine_mono" 
-      (* TODO: Hack, how to get correct naming? *)
-
-    val setup = refine_mono.setup
-    val decl_setup = 
-      Tagged_Solver.declare_solver 
-        @{thms monoI monotoneI[of "op \<le>" "op \<le>"]} @{binding refine_mono}
-        "Autoref: Monotonicity prover" 
-        mono_prover_tac
-end;
-*}
-
-setup Refine_Misc.setup
-declaration Refine_Misc.decl_setup
-
-
-method_setup refine_mono = 
-  {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
-    Refine_Misc.untriggered_mono_tac ctxt
-  )) *} 
-  "Refinement framework: Monotonicity prover"
-
 
 text {* Basic configuration for monotonicity prover: *}
 lemmas [refine_mono] = monoI monotoneI[of "op \<le>" "op \<le>"]
@@ -377,6 +311,39 @@ lemma lfp_le_gfp: "mono f \<Longrightarrow> lfp f \<le> gfp f"
 lemma lfp_le_gfp': "mono f \<Longrightarrow> lfp f x \<le> gfp f x"
   by (rule le_funD[OF lfp_le_gfp])
 
+(* Just a reformulation of lfp_induct *)
+lemma lfp_induct':
+  assumes M: "mono f"
+  assumes IS: "\<And>m. \<lbrakk> m \<le> lfp f; m \<le> P \<rbrakk> \<Longrightarrow> f m \<le> P"
+  shows "lfp f \<le> P"
+  apply (rule lfp_induct[OF M])
+  apply (rule IS)
+  by simp_all
+
+lemma lfp_gen_induct:
+  -- "Induction lemma for generalized lfps"
+  assumes M: "mono f"
+  notes MONO'[refine_mono] = monoD[OF M]
+  assumes I0: "m0 \<le> P"
+  assumes IS: "\<And>m. \<lbrakk>
+      m \<le> lfp (\<lambda>s. sup m0 (f s));  (* Assume already established invariants *)
+      m \<le> P;                       (* Assume invariant *)
+      f m \<le> lfp (\<lambda>s. sup m0 (f s)) (* Assume that step preserved est. invars *)
+    \<rbrakk> \<Longrightarrow> f m \<le> P"                 (* Show that step preserves invariant *)
+  shows "lfp (\<lambda>s. sup m0 (f s)) \<le> P"
+  apply (rule lfp_induct')
+  apply (meson MONO' monoI order_mono_setup.refl sup_mono)
+  apply (rule sup_least)
+  apply (rule I0)
+  apply (rule IS, assumption+)
+  apply (subst lfp_unfold)
+  apply (meson MONO' monoI order_mono_setup.refl sup_mono)
+  apply (rule le_supI2)
+  apply (rule monoD[OF M])
+  .
+
+
+
 subsubsection {* Connecting Complete Lattices and 
   Chain-Complete Partial Orders *}
 (* Note: Also connected by subclass now. However, we need both directions
@@ -534,7 +501,52 @@ lemma inf_distrib_is_mono[simp]:
   by simp
 
 text {* Only proven for complete lattices here. Also holds for CCPOs. *}
+
+theorem gen_kleene_lfp:
+  fixes f:: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes CONT: "cont f"
+  shows "lfp (\<lambda>x. sup m (f x)) = (SUP i. (f^^i) m)"
+proof (rule antisym)
+  let ?f = "(\<lambda>x. sup m (f x))"
+  let ?K="{ (f^^i) m | i . True}"
+  note MONO=cont_is_mono[OF CONT]
+  note MONO'[refine_mono] = monoD[OF MONO]
+  {
+    fix i
+    have "(f^^i) m \<le> lfp ?f"
+      apply (induct i)
+      apply simp
+      apply (subst lfp_unfold)
+      apply (meson MONO' monoI order_mono_setup.refl sup_mono) 
+      apply simp
+      
+      apply (subst lfp_unfold)
+      apply (meson MONO' monoI order_mono_setup.refl sup_mono) 
+      apply simp
+      by (metis MONO' le_supI2)
+  } thus "(SUP i. (f^^i) m) \<le> lfp ?f" by (blast intro: SUP_least)
+next
+  let ?f = "(\<lambda>x. sup m (f x))"
+  show "lfp ?f \<le> (SUP i. (f^^i) m)"
+    apply (rule lfp_lowerbound)
+    apply (rule sup_least)
+    apply (rule order_trans[OF _ SUP_upper[where i=0]], simp_all) []
+    unfolding SUP_def
+    apply (simp add: contD [OF CONT] del: Sup_image_eq)
+    apply (rule Sup_subset_mono)
+    apply (auto)
+    apply (rule_tac x="Suc i" in range_eqI)
+    apply simp
+    done
+qed
+
 theorem kleene_lfp:
+  fixes f:: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes CONT: "cont f"
+  shows "lfp f = (SUP i. (f^^i) bot)"
+  using gen_kleene_lfp[OF CONT,where m=bot] by simp
+
+theorem (* Detailed proof *)
   fixes f:: "'a::complete_lattice \<Rightarrow> 'a"
   assumes CONT: "cont f"
   shows "lfp f = (SUP i. (f^^i) bot)"
@@ -560,6 +572,82 @@ next
     apply auto
     done
 qed
+
+(* Alternative proof of gen_kleene_lfp that re-uses standard Kleene, but is more tedious *)
+lemma SUP_funpow_contracting:
+  fixes f :: "'a \<Rightarrow> ('a::complete_lattice)"
+  assumes C: "cont f" 
+  shows "f (SUP i. (f^^i) m) \<le> (SUP i. (f^^i) m)"
+proof -
+  have 1: "\<And>i x. f ((f^^i) x) = (f^^(Suc i)) x"
+    by simp
+
+  have "f (SUP i. (f^^i) m) = (SUP i. f ((f ^^ i) m))"
+    unfolding SUP_def by (subst contD[OF C]) (simp_all)
+  also have "\<dots> \<le> (SUP i. (f^^i) m)"
+    apply (rule SUP_least)
+    apply (simp, subst 1)
+    apply (rule SUP_upper)
+    ..
+  finally show ?thesis .
+qed
+
+lemma gen_kleene_chain_conv:
+  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes C: "cont f"
+  shows "(SUP i. (f^^i) m) = (SUP i. ((\<lambda>x. sup m (f x))^^i) bot)"
+proof -
+  let ?f' = "\<lambda>x. sup m (f x)"
+  show ?thesis
+  proof (intro antisym SUP_least)
+    from C have C': "cont ?f'"
+      unfolding cont_def
+      by (simp add: SUP_sup_distrib[symmetric])
+  
+    fix i
+    show "(f ^^ i) m \<le> (SUP i. (?f' ^^ i) bot)"
+    proof (induction i)
+      case 0 show ?case
+        by (rule order_trans[OF _ SUP_upper[where i=1]]) auto
+    next
+      case (Suc i)
+      from cont_is_mono[OF C, THEN monoD, OF Suc]
+      have "(f ^^ (Suc i)) m \<le> f (SUP i. ((\<lambda>x. sup m (f x)) ^^ i) bot)"
+        by simp
+      also have "\<dots> \<le> sup m \<dots>" by simp
+      also note SUP_funpow_contracting[OF C']
+      finally show ?case .
+    qed
+  next
+    fix i
+    show "(?f'^^i) bot \<le> (SUP i. (f^^i) m)"
+    proof (induction i)
+      case 0 thus ?case by simp
+    next
+      case (Suc i)
+      from monoD[OF cont_is_mono[OF C] Suc]
+      have "(?f'^^Suc i) bot \<le> sup m (f (SUP i. (f ^^ i) m))" 
+        by (simp add: le_supI2)
+      also have "\<dots> \<le> (SUP i. (f ^^ i) m)"
+        apply (rule sup_least)
+        apply (rule order_trans[OF _ SUP_upper[where i=0]], simp_all) []
+        apply (rule SUP_funpow_contracting[OF C])
+        done
+      finally show ?case .
+    qed
+  qed
+qed
+   
+theorem 
+  assumes C: "cont f"
+  shows "lfp (\<lambda>x. sup m (f x)) = (SUP i. (f^^i) m)"
+  apply (subst gen_kleene_chain_conv[OF C])
+  apply (rule kleene_lfp)
+    using C
+    unfolding cont_def
+    apply (simp add: SUP_sup_distrib[symmetric])
+  done
+
 
 
 lemma (in galois_connection) dual_inf_dist_\<gamma>: "\<gamma> (Inf C) = Inf (\<gamma>`C)"

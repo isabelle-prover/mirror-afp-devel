@@ -70,8 +70,8 @@ definition stats where
 
 subsection {* Misc *}
 (* this is only used for the code setup in Programs/* *)
-type_synonym const_map = "(string, bexp) mapping"
-type_synonym fun_map = "(string, nat \<Rightarrow> bexp) mapping"
+type_synonym const_map = "(String.literal, bexp) mapping"
+type_synonym fun_map = "(String.literal, nat \<Rightarrow> bexp) mapping"
 
 definition mapping_from_list :: "('a \<times> 'b) list \<Rightarrow> ('a, 'b) mapping"
 where

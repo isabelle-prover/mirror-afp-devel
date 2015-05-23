@@ -271,11 +271,15 @@ schematic_lemma "(?f::?'c,
 )\<in>?R"
   by (autoref (keep_goal))
 
+
+lemma is_refgoal: "(c,a)\<in>R \<Longrightarrow> (c,a)\<in>R" .
+
 schematic_lemma "(?f::?'c,
   ({{1::nat}:::\<langle>Id\<rangle> map2set_rel dflt_rm_rel} ) 
   \<union> ({{2,3,4,5,5,6,7,8,98,9,0}}) 
 )\<in>?R"
   by (autoref (keep_goal))
+
 
 text {* The next two lemmas demonstrate optimization: The insert-operation
   is translated by @{term "op #"} *}

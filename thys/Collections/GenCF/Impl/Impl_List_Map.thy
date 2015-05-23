@@ -1,4 +1,4 @@
-header {* \isaheader{List Based Maps} *}
+section {* \isaheader{List Based Maps} *}
 theory Impl_List_Map
 imports
   "../../Iterator/Iterator"
@@ -554,16 +554,12 @@ context begin interpretation autoref_syn .
   lemma list_map_autoref_pick_remove[autoref_rules]:
     assumes NE: "SIDE_PRECOND (m\<noteq>Map.empty)"
     assumes R: "(l,m)\<in>\<langle>Rk,Rv\<rangle>list_map_rel"
-    assumes SV: 
-      "PREFER single_valued Rk" "PREFER single_valued Rv"
     defines "Rres \<equiv> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>list_map_rel\<rangle>nres_rel"
     shows "(
         RETURN (list_map_pick_remove l),
         (OP op_map_pick_remove ::: \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> Rres)$m
       ) \<in> Rres"
   proof -
-    note [relator_props] = SV[simplified]
-
     from NE R obtain k v lr where 
       [simp]: "l=(k,v)#lr"
       by (cases l) (auto simp: list_map_rel_def br_def)
@@ -592,7 +588,7 @@ context begin interpretation autoref_syn .
 
     show ?thesis
       apply (simp add: Rres_def)
-      apply (refine_rcg SPEC_refine_sv nres_relI refine_vcg)
+      apply (refine_rcg SPEC_refine nres_relI refine_vcg)
       using LM KVR MKV'
       by auto
   qed

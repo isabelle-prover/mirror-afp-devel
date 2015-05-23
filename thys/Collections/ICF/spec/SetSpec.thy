@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Specification of Sets} *}
+section {* \isaheader{Specification of Sets} *}
 theory SetSpec
 imports ICF_Spec_Base
 begin

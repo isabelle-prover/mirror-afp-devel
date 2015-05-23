@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Fifo Queue by Pair of Lists} *}
+section {* \isaheader{Fifo Queue by Pair of Lists} *}
 theory Fifo
 imports 
   "../gen_algo/ListGA"

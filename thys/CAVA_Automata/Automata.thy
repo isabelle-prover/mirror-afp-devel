@@ -18,11 +18,12 @@ text {*
   each inner set representing one acceptance class.
 *}
 
-record 'Q gb_graph_rec = "'Q fr_graph_rec" +
+record 'Q gb_graph_rec = "'Q graph_rec" +
   gbg_F :: "'Q set set"
 
 
-locale gb_graph = fr_graph G 
+locale gb_graph =
+  graph G 
   for G :: "('Q,'more) gb_graph_rec_scheme" +
   assumes finite_F[simp, intro!]: "finite (gbg_F G)"
   assumes F_ss: "gbg_F G \<subseteq> Pow V"
@@ -71,10 +72,11 @@ begin
       by auto
   qed
 
-  lemma is_acc_run_limit_alt: 
-    "is_acc_run r \<longleftrightarrow> is_run r \<and> (\<forall>A\<in>F. limit r \<inter> A \<noteq> {})"
-    using acc_eq_limit[symmetric]
-    unfolding is_acc_run_def by (auto dest: is_run_finite)
+  lemma is_acc_run_limit_alt:
+    assumes "finite (E\<^sup>* `` V0)"
+    shows "is_acc_run r \<longleftrightarrow> is_run r \<and> (\<forall>A\<in>F. limit r \<inter> A \<noteq> {})"
+    using assms acc_eq_limit[symmetric] unfolding is_acc_run_def
+    by (auto dest: run_reachable finite_subset)
 
   lemma is_acc_suffix[simp]: "is_acc (suffix i r) \<longleftrightarrow> is_acc r"
     unfolding is_acc_def suffix_def
@@ -82,24 +84,12 @@ begin
     apply (rule iffI)
     apply (metis trans_less_add2)
     by (metis add_lessD1 less_imp_add_positive nat_add_left_cancel_less)
-end
 
-locale finFe_gb_graph = gb_graph G 
-  for G :: "('Q,'more) gb_graph_rec_scheme"+ 
-  assumes finite_Fe[simp, intro]: "\<And>A. A\<in>F \<Longrightarrow> finite A"
-begin
-  lemma is_finFe_gb_graph: "finFe_gb_graph G" by unfold_locales
+  lemma finite_V_Fe:
+    assumes "finite V" "A \<in> F"
+    shows "finite A"
+    using assms by (metis Pow_iff infinite_super set_rev_mp F_ss)
 
-end
-
-locale fin_gb_graph = gb_graph G + fin_fr_graph G
-  for G :: "('Q,'more) gb_graph_rec_scheme"
-begin
-  lemma is_fin_gb_graph: "fin_gb_graph G" by unfold_locales
-
-  sublocale finFe_gb_graph G
-    apply unfold_locales
-    by (metis Pow_iff finite_V infinite_super set_rev_mp F_ss)
 end
 
 
@@ -111,8 +101,9 @@ definition "gb_rename_ecnv ecnv f G \<equiv> \<lparr>
 abbreviation "gb_rename_ext ecnv f \<equiv> fr_rename_ext (gb_rename_ecnv ecnv f) f"
 
 
-locale gb_rename_precond = gb_graph G +
-  fr_rename_precond G f "gb_rename_ecnv ecnv f"
+locale gb_rename_precond =
+  gb_graph G +
+  g_rename_precond G f "gb_rename_ecnv ecnv f"
   for G :: "('u,'more) gb_graph_rec_scheme"
   and f :: "'u \<Rightarrow> 'v" and ecnv
 begin
@@ -168,7 +159,9 @@ text {*
 record ('Q,'L) gba_rec = "'Q gb_graph_rec" +
   gba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
 
-locale gba = gb_graph G for G :: "('Q,'L,'more) gba_rec_scheme" +
+locale gba =
+  gb_graph G
+  for G :: "('Q,'L,'more) gba_rec_scheme" +
   assumes L_ss: "gba_L G q l \<Longrightarrow> q \<in> V"
 begin
   abbreviation "L \<equiv> gba_L G"
@@ -183,25 +176,10 @@ begin
   lemma langI[intro?]: "accept w \<Longrightarrow> w\<in>lang" by (auto simp: lang_def)
 end
 
-locale finFe_gba = gba G + finFe_gb_graph G 
-  for G :: "('Q,'L,'more) gba_rec_scheme"
-begin
-  lemma is_finFe_gba: "finFe_gba G" by unfold_locales
-
-end
-
-locale fin_gba = gba G + fin_gb_graph G
-  for G :: "('Q,'L,'more) gba_rec_scheme"
-begin
-  lemma is_fin_gba: "fin_gba G" by unfold_locales
-
-  sublocale finFe_gba by unfold_locales
-end
-
 definition "gba_rename_ecnv ecnv f G \<equiv> \<lparr>
   gba_L = \<lambda>q l. 
-    if q\<in>f`frg_V G then 
-      gba_L G (the_inv_into (frg_V G) f q) l
+    if q\<in>f`g_V G then 
+      gba_L G (the_inv_into (g_V G) f q) l
     else
       False, 
   \<dots> = ecnv G
@@ -242,7 +220,7 @@ begin
     assume R: "G'.is_acc_run r"
     assume L: "\<forall>i. G'.L (r i) (w i)"
     from R have RAN: "range r \<subseteq> f`V"
-      using G'.run_V[OF G'.acc_run_run[OF R]]
+      using G'.run_reachable[OF G'.acc_run_run[OF R]] G'.reachable_V
       unfolding G'_fields
       by simp
     from L show "\<exists>r. is_acc_run r \<and> (\<forall>i. L (r i) (w i))"
@@ -254,7 +232,7 @@ begin
     assume L: "\<forall>i. L (r i) (w i)"
     
     from R have RAN: "range r \<subseteq> V"
-      using run_V[OF acc_run_run[OF R]] by simp
+      using run_reachable[OF acc_run_run[OF R]] reachable_V by simp
       
     from L show "\<exists>r. 
         G'.is_acc_run r 
@@ -265,6 +243,12 @@ begin
 
   lemma lang_eq[simp]: "G'.lang = lang"
     unfolding G'.lang_def lang_def by simp
+
+  lemma finite_G'_V:
+    assumes "finite V"
+    shows "finite G'.V"
+    using assms by (auto simp add: G'_gba_fields G'_fields split: split_if_asm)
+
 end
 
 
@@ -273,9 +257,10 @@ abbreviation "gba_rename \<equiv> gba_rename_ext (\<lambda>_. ())"
 lemma gba_rename_correct:
   fixes G :: "('v,'l,'m) gba_rec_scheme"
   assumes "gba G" 
-  assumes INJ: "inj_on f (frg_V G)" 
+  assumes INJ: "inj_on f (g_V G)" 
   defines "G' \<equiv> gba_rename f G"
   shows "gba G'"
+  and "finite (g_V G) \<Longrightarrow> finite (g_V G')"
   and "gba.accept G' = gba.accept G"
   and "gba.lang G' = gba.lang G"
   unfolding G'_def
@@ -287,35 +272,7 @@ proof -
     apply unfold_locales by simp_all
 
   show "gba ?G'" by fact
-  show "G'.accept = accept" by fact
-  show "G'.lang = lang" by fact
-qed
-
-locale fin_gba_rename_precond = gba_rename_precond + fin_gba
-begin
-  sublocale G'!: fin_gba G'
-    apply unfold_locales
-    apply (auto simp add: G'_gba_fields G'_fields split: split_if_asm)
-    done
-end
-
-lemma fin_gba_rename_correct:
-  fixes G :: "('v,'l,'m) gba_rec_scheme"
-  assumes "fin_gba G" 
-  assumes INJ: "inj_on f (frg_V G)" 
-  defines "G' \<equiv> gba_rename f G"
-  shows "fin_gba G'"
-  and "gba.accept G' = gba.accept G"
-  and "gba.lang G' = gba.lang G"
-  unfolding G'_def
-proof -
-  let ?G' = "gba_rename f G"
-  interpret fin_gba G by fact
-  
-  from INJ interpret fin_gba_rename_precond G f "\<lambda>_. ()"
-    apply unfold_locales by simp_all
-
-  show "fin_gba ?G'" by fact
+  show "finite (g_V G) \<Longrightarrow> finite (g_V ?G')" by fact
   show "G'.accept = accept" by fact
   show "G'.lang = lang" by fact
 qed
@@ -324,21 +281,23 @@ subsection "Buchi Graphs"
 
 text {* A Buchi graph has exactly one acceptance class *}
 
-record 'Q b_graph_rec = "'Q fr_graph_rec" +
+record 'Q b_graph_rec = "'Q graph_rec" +
   bg_F :: "'Q set"
 
-locale b_graph = fr_graph G 
+locale b_graph =
+  graph G 
   for G :: "('Q,'more) b_graph_rec_scheme"
-+ assumes F_ss: "bg_F G \<subseteq> V"
+  +
+  assumes F_ss: "bg_F G \<subseteq> V"
 begin
   abbreviation F where "F \<equiv> bg_F G"
 
   lemma is_b_graph: "b_graph G" by unfold_locales
 
   definition "to_gbg_ext m 
-    \<equiv> \<lparr> frg_V = V, 
-        frg_E=E, 
-        frg_V0=V0, 
+    \<equiv> \<lparr> g_V = V, 
+        g_E=E, 
+        g_V0=V0, 
         gbg_F = if F=UNIV then {} else {F}, 
         \<dots> = m \<rparr>"
   abbreviation "to_gbg \<equiv> to_gbg_ext ()"
@@ -353,6 +312,9 @@ begin
   definition is_acc_run where "is_acc_run r \<equiv> is_run r \<and> is_acc r"
 
   lemma to_gbg_alt:
+    "gbg.V T m = V"
+    "gbg.E T m = E"
+    "gbg.V0 T m = V0"
     "gbg.F T m = (if F=UNIV then {} else {F})"
     "gbg.is_run T m = is_run"
     "gbg.is_acc T m = is_acc"
@@ -370,8 +332,10 @@ text {* Buchi automata are labeled Buchi graphs *}
 record ('Q,'L) ba_rec = "'Q b_graph_rec" +
   ba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
 
-locale ba = bg: b_graph G 
-  for G :: "('Q,'L,'more) ba_rec_scheme" +
+locale ba =
+  bg: b_graph G 
+  for G :: "('Q,'L,'more) ba_rec_scheme"
+  +
   assumes L_ss: "ba_L G q l \<Longrightarrow> q \<in> V"
 begin
   abbreviation L where "L == ba_L G"
@@ -411,12 +375,14 @@ begin
 end
 
 subsection "Indexed acceptance classes"
-record 'Q igb_graph_rec = "'Q fr_graph_rec" +
+record 'Q igb_graph_rec = "'Q graph_rec" +
   igbg_num_acc :: nat
   igbg_acc :: "'Q \<Rightarrow> nat set"
 
 locale igb_graph = 
-  fr_graph G for G :: "('Q,'more) igb_graph_rec_scheme" +   
+  graph G
+  for G :: "('Q,'more) igb_graph_rec_scheme"
+  +
   assumes acc_bound: "\<Union>range (igbg_acc G) \<subseteq> {0..<(igbg_num_acc G)}"
   assumes acc_ss: "igbg_acc G q \<noteq> {} \<Longrightarrow> q\<in>V"
 begin
@@ -433,7 +399,7 @@ begin
   definition "F \<equiv> { accn i | i. i<num_acc }"
 
   definition "to_gbg_ext m 
-    \<equiv> \<lparr> frg_V = V, frg_E = E, frg_V0 = V0, gbg_F = F, \<dots>=m \<rparr>"
+    \<equiv> \<lparr> g_V = V, g_E = E, g_V0 = V0, gbg_F = F, \<dots>=m \<rparr>"
 
   sublocale gbg!: gb_graph "to_gbg_ext m" 
     apply unfold_locales
@@ -505,7 +471,10 @@ end
 record ('Q,'L) igba_rec = "'Q igb_graph_rec" +
   igba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
 
-locale igba = igbg: igb_graph G for G :: "('Q,'L,'more) igba_rec_scheme" +
+locale igba =
+  igbg: igb_graph G
+  for G :: "('Q,'L,'more) igba_rec_scheme"
+  +
   assumes L_ss: "igba_L G q l \<Longrightarrow> q \<in> V"
 begin
   abbreviation L where "L \<equiv> igba_L G"
@@ -631,21 +600,22 @@ definition gbg_to_idx_ext
   where "gbg_to_idx_ext ecnv A = do {
   (num_acc,acc) \<leftarrow> F_to_idx_impl (gbg_F A); 
   RETURN \<lparr> 
-    frg_V = frg_V A,
-    frg_E = frg_E A, 
-    frg_V0=frg_V0 A, 
+    g_V = g_V A,
+    g_E = g_E A, 
+    g_V0=g_V0 A, 
     igbg_num_acc = num_acc, 
     igbg_acc = acc,
     \<dots> = ecnv A
   \<rparr>
 }"
 
-lemma (in finFe_gb_graph) gbg_to_idx_ext_correct: 
-  "gbg_to_idx_ext ecnv G \<le> SPEC (\<lambda>G'. 
+lemma (in gb_graph) gbg_to_idx_ext_correct:
+  assumes [simp, intro]: "\<And> A. A \<in> F \<Longrightarrow> finite A"
+  shows "gbg_to_idx_ext ecnv G \<le> SPEC (\<lambda>G'. 
     igb_graph.is_acc_run G' = is_acc_run 
-  \<and> frg_V G' = V
-  \<and> frg_E G' = E
-  \<and> frg_V0 G' = V0
+  \<and> g_V G' = V
+  \<and> g_E G' = E
+  \<and> g_V0 G' = V0
   \<and> igb_graph_rec.more G' = ecnv G
   \<and> igb_graph G'
 )"
@@ -671,7 +641,7 @@ proof -
     assume INR: "(\<Union>x. acc x) \<subseteq> {0..<num_acc}"
     have "finite {q. i \<in> acc q}" 
     proof (cases "i<num_acc")
-      case True thus ?thesis using finite_Fe FE by auto
+      case True thus ?thesis using FE by auto
     next
       case False hence "{q. i \<in> acc q} = {}" using INR by force
       thus ?thesis by simp
@@ -697,9 +667,9 @@ proof -
     assume FE[simp]: "F = {{q. i \<in> acc q} |i. i < num_acc}"
       and BOUND: "(\<Union>x. acc x) \<subseteq> {0..<num_acc}"
     let ?G' = "\<lparr>
-      frg_V = V, 
-      frg_E = E, 
-      frg_V0 = V0, 
+      g_V = V, 
+      g_E = E, 
+      g_V0 = V0, 
       igbg_num_acc = num_acc, 
       igbg_acc = acc,
       \<dots> = ecnv G\<rparr>"
@@ -732,10 +702,18 @@ definition ti_Lcnv where "ti_Lcnv ecnv A \<equiv> \<lparr> igba_L = gba_L A, \<d
 abbreviation "gba_to_idx_ext ecnv \<equiv> gbg_to_idx_ext (ti_Lcnv ecnv)"
 abbreviation "gba_to_idx \<equiv> gba_to_idx_ext (\<lambda>_. ())"
 
-lemma (in finFe_gba) gba_to_idx_ext_correct:
-  "gba_to_idx_ext ecnv G \<le> 
-  SPEC (\<lambda>G'. igba.accept G' = accept \<and> igba_rec.more G' = ecnv G \<and> igba G')"
+lemma (in gba) gba_to_idx_ext_correct:
+  assumes [simp, intro]: "\<And> A. A \<in> F \<Longrightarrow> finite A"
+  shows "gba_to_idx_ext ecnv G \<le> 
+    SPEC (\<lambda>G'.
+    igba.accept G' = accept 
+  \<and> g_V G' = V
+  \<and> g_E G' = E
+  \<and> g_V0 G' = V0
+  \<and> igba_rec.more G' = ecnv G
+  \<and> igba G')"
   apply (rule order_trans[OF gbg_to_idx_ext_correct])
+  apply (rule, assumption)
   apply (rule SPEC_rule)
   apply (elim conjE, intro conjI)
 proof -
@@ -744,7 +722,7 @@ proof -
     ARUN: "igb_graph.is_acc_run G' = is_acc_run"
     and MORE: "igb_graph_rec.more G' = ti_Lcnv ecnv G" 
     and LOC: "igb_graph G'"
-    and FIELDS: "frg_V G' = V" "frg_E G' = E" "frg_V0 G' = V0"
+    and FIELDS: "g_V G' = V" "g_E G' = E" "g_V0 G' = V0"
   
   from LOC interpret igb!: igb_graph G' .
 
@@ -765,10 +743,12 @@ proof -
   show "igba G'" by unfold_locales
 qed
 
-corollary (in finFe_gba) gba_to_idx_ext_lang_correct:
-  "gba_to_idx_ext ecnv G \<le> 
-  SPEC (\<lambda>G'. igba.lang G' = lang \<and> igba_rec.more G' = ecnv G \<and> igba G')"
+corollary (in gba) gba_to_idx_ext_lang_correct:
+  assumes [simp, intro]: "\<And> A. A \<in> F \<Longrightarrow> finite A"
+  shows "gba_to_idx_ext ecnv G \<le> 
+    SPEC (\<lambda>G'. igba.lang G' = lang \<and> igba_rec.more G' = ecnv G \<and> igba G')"
   apply (rule order_trans[OF gba_to_idx_ext_correct])
+  apply (rule, assumption)
   apply (rule SPEC_rule)
   unfolding lang_def[abs_def]
   apply (subst igba.lang_def)
@@ -783,19 +763,19 @@ begin
   definition degeneralize_ext :: "_ \<Rightarrow> ('Q \<times> nat, _) b_graph_rec_scheme" where
     "degeneralize_ext ecnv \<equiv> 
       if num_acc = 0 then \<lparr>
-        frg_V = V \<times> {0},
-        frg_E = {((q,0),(q',0)) | q q'. (q,q')\<in>E}, 
-        frg_V0 = V0\<times>{0}, 
+        g_V = V \<times> {0},
+        g_E = {((q,0),(q',0)) | q q'. (q,q')\<in>E}, 
+        g_V0 = V0\<times>{0}, 
         bg_F = V \<times> {0},
         \<dots> = ecnv G
       \<rparr>
       else \<lparr>
-        frg_V = V \<times> {0..<num_acc},
-        frg_E = { ((q,i),(q',i')) | i i' q q'. 
+        g_V = V \<times> {0..<num_acc},
+        g_E = { ((q,i),(q',i')) | i i' q q'. 
             i<num_acc 
           \<and> (q,q')\<in>E 
           \<and> i' = (if i\<in>acc q then (i+1) mod num_acc else i) },
-        frg_V0 = V0 \<times> {0},
+        g_V0 = V0 \<times> {0},
         bg_F = {(q,0)| q. 0\<in>acc q},
         \<dots> = ecnv G
       \<rparr>"
@@ -809,13 +789,38 @@ begin
   lemma degen_invar: "b_graph (degeneralize_ext ecnv)"
   proof
     let ?G' = "degeneralize_ext ecnv"
-    have "((frg_E ?G')\<^sup>* `` frg_V0 ?G')
+
+    show "g_V0 ?G' \<subseteq> g_V ?G'"
+      unfolding degeneralize_ext_def
+      using V0_ss
+      by auto
+
+    show "g_E ?G' \<subseteq> g_V ?G' \<times> g_V ?G'"
+      unfolding degeneralize_ext_def
+      using E_ss
+      by auto
+
+    show "bg_F ?G' \<subseteq> g_V ?G'"
+      unfolding degeneralize_ext_def
+      using acc_ss
+      by auto
+
+  qed
+
+  sublocale degen!: b_graph "degeneralize_ext m" using degen_invar .
+
+  lemma degen_finite_reachable:
+    assumes [simp, intro]: "finite (E\<^sup>* `` V0)"
+    shows "finite ((g_E (degeneralize_ext ecnv))\<^sup>* `` g_V0 (degeneralize_ext ecnv))"
+  proof -
+    let ?G' = "degeneralize_ext ecnv"
+    have "((g_E ?G')\<^sup>* `` g_V0 ?G')
       \<subseteq> E\<^sup>*``V0 \<times> {0..num_acc}"
     proof -
       {
         fix q n q' n'
-        assume "((q,n),(q',n'))\<in>(frg_E ?G')\<^sup>*" 
-          and 0: "(q,n)\<in>frg_V0 ?G'"
+        assume "((q,n),(q',n'))\<in>(g_E ?G')\<^sup>*" 
+          and 0: "(q,n)\<in>g_V0 ?G'"
         hence G1: "(q,q')\<in>E\<^sup>* \<and> n'\<le>num_acc"
           apply (induction rule: rtrancl_induct2)
           by (auto simp: degeneralize_ext_def split: split_if_asm)
@@ -826,26 +831,8 @@ begin
       } thus ?thesis by fastforce
     qed
     also have "finite \<dots>" by auto
-    finally (finite_subset) show "finite ((frg_E ?G')\<^sup>* `` frg_V0 ?G')" .
-
-    show "frg_V0 ?G' \<subseteq> frg_V ?G'"
-      unfolding degeneralize_ext_def
-      using V0_ss
-      by auto
-
-    show "frg_E ?G' \<subseteq> frg_V ?G' \<times> frg_V ?G'"
-      unfolding degeneralize_ext_def
-      using E_ss
-      by auto
-
-    show "bg_F ?G' \<subseteq> frg_V ?G'"
-      unfolding degeneralize_ext_def
-      using acc_ss
-      by auto
-
+    finally (finite_subset) show "finite ((g_E ?G')\<^sup>* `` g_V0 ?G')" .
   qed
-
-  sublocale degen!: b_graph "degeneralize_ext m" using degen_invar .
 
   lemma degen_is_run_sound: 
     "degen.is_run T m r \<Longrightarrow> is_run (fst o r)"
@@ -906,7 +893,7 @@ begin
     unfolding degen.is_acc_run_def is_acc_run_def is_acc_def degen.is_acc_def
     apply (simp add: degen_run_complete0)
     unfolding degeneralize_ext_def
-    using run_V[of r]
+    using run_reachable[of r] reachable_V
     by (auto simp: INFM_nat)
 
   lemma degen_run_complete:
@@ -1023,10 +1010,9 @@ begin
             by clarsimp (metis One_nat_def Suc_diff_1 `k - 1 < k` 
               less_nat_zero_code neq0_conv)
           moreover have "n \<notin> acc (fst (r (k - 1)))"
-            by (metis 
-              `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> acc (fst (r k))` 
-              `i \<le> k - 1` `k - 1 < k` `k - 1 \<le> j`
-              le_antisym less.prems(2) less_le)
+            using `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> acc (fst (r k))` `i \<le> k - 1` `k - 1 < k` 
+              dual_order.strict_trans1 less.prems(2) 
+              by blast
           ultimately show ?thesis
             by (auto simp: degeneralize_ext_def)
         qed
@@ -1034,7 +1020,7 @@ begin
     qed
 
     thus ?thesis 
-      by (metis `i \<le> j` `n \<in> acc (fst (r j))` 
+      by (metis `i \<le> j` `n \<in> local.acc (fst (r j))` 
         order_refl surjective_pairing)
   qed
       
@@ -1267,20 +1253,22 @@ text {*
   used to describe the model (system) to be checked.
 *}
 
-record ('Q,'L) sa_rec = "'Q fr_graph_rec" +
+record ('Q,'L) sa_rec = "'Q graph_rec" +
   sa_L :: "'Q \<Rightarrow> 'L"
 
-locale sa = frg: fr_graph G for G :: "('Q,'L,'more) sa_rec_scheme"
+locale sa =
+  g: graph G
+  for G :: "('Q, 'L, 'more) sa_rec_scheme"
 begin
-  abbreviation L where "L == sa_L G"
 
-  lemma is_sa: "sa G" by unfold_locales
+  abbreviation L where "L \<equiv> sa_L G"
 
   definition "accept w \<equiv> \<exists>r. is_run r \<and> w = L o r"
-  lemma acceptI[intro?]: "\<lbrakk>is_run r; w = L o r\<rbrakk> \<Longrightarrow> accept w"
-    by (auto simp: accept_def)
 
-  definition "lang \<equiv> Collect (accept)"
+  lemma acceptI[intro?]: "\<lbrakk>is_run r; w = L o r\<rbrakk> \<Longrightarrow> accept w" by (auto simp: accept_def)
+
+  definition "lang \<equiv> Collect accept"
+
   lemma langI[intro?]: "accept w \<Longrightarrow> w\<in>lang" by (auto simp: lang_def)
 
 end
@@ -1298,53 +1286,56 @@ locale igba_sys_prod_precond = igba!: igba G + sa!: sa S for
 begin
 
   definition "prod \<equiv> \<lparr>
-    frg_V = igba.V \<times> sa.V,
-    frg_E = { ((q,s),(q',s')). 
+    g_V = igba.V \<times> sa.V,
+    g_E = { ((q,s),(q',s')). 
       igba.L q (sa.L s) \<and> (q,q') \<in> igba.E \<and> (s,s') \<in> sa.E },
-    frg_V0 = igba.V0 \<times> sa.V0,
+    g_V0 = igba.V0 \<times> sa.V0,
     igbg_num_acc = igba.num_acc,
     igbg_acc = (\<lambda>(q,s). if s\<in>sa.V then igba.acc q else {} ) \<rparr>"
 
-  lemma prod_invar: 
-    shows "igb_graph prod" 
+  lemma prod_invar: "igb_graph prod" 
+    apply unfold_locales
+
+    using igba.V0_ss sa.V0_ss
+    apply (auto simp: prod_def) []
+
+    using igba.E_ss sa.E_ss
+    apply (auto simp: prod_def) []
+
+    using igba.acc_bound
+    apply (auto simp: prod_def split: split_if_asm) []
+
+    using igba.acc_ss
+    apply (fastforce simp: prod_def split: split_if_asm) []
+    done
+  
+  sublocale prod!: igb_graph prod using prod_invar .
+
+  lemma prod_finite_reachable:
+    assumes "finite (igba.E\<^sup>* `` igba.V0)" "finite (sa.E\<^sup>* `` sa.V0)"
+    shows "finite ((g_E prod)\<^sup>* `` g_V0 prod)"
   proof -
     {
       fix q s q' s'
-      assume "((q,s),(q',s')) \<in> (frg_E prod)\<^sup>*"
+      assume "((q,s),(q',s')) \<in> (g_E prod)\<^sup>*"
       hence "(q,q') \<in> (igba.E)\<^sup>* \<and> (s,s') \<in> (sa.E)\<^sup>*"
         apply (induction rule: rtrancl_induct2)
         apply (auto simp: prod_def)
         done
     } note gsp_reach=this
 
-    have [simp]: "\<And>q s. (q,s) \<in> frg_V0 prod \<longleftrightarrow> q \<in> igba.V0 \<and> s \<in> sa.V0"
+    have [simp]: "\<And>q s. (q,s) \<in> g_V0 prod \<longleftrightarrow> q \<in> igba.V0 \<and> s \<in> sa.V0"
       by (auto simp: prod_def)
 
     have reachSS: 
-      "((frg_E prod)\<^sup>* `` frg_V0 prod) 
+      "((g_E prod)\<^sup>* `` g_V0 prod) 
       \<subseteq> ((igba.E)\<^sup>* `` igba.V0) \<times> (sa.E\<^sup>* `` sa.V0)"
       by (auto dest: gsp_reach)
-
     show ?thesis
-      apply unfold_locales
       apply (rule finite_subset[OF reachSS])
-      apply simp
-
-      using igba.V0_ss sa.V0_ss
-      apply (auto simp: prod_def) []
-
-      using igba.E_ss sa.E_ss
-      apply (auto simp: prod_def) []
-
-      using igba.acc_bound
-      apply (auto simp: prod_def split: split_if_asm) []
-  
-      using igba.acc_ss
-      apply (fastforce simp: prod_def split: split_if_asm) []
-      done
+      using assms
+      by simp
   qed
-  
-  sublocale prod!: igb_graph prod using prod_invar .
 
   lemma prod_fields:
     "prod.V = igba.V \<times> sa.V"
@@ -1396,8 +1387,9 @@ begin
     from A have PR: "prod.is_run r" and PA: "prod.is_acc r" 
       unfolding prod.is_acc_run_def by auto
 
-    from prod.run_V[OF PR] have RSR: "range (snd o r) \<subseteq> sa.V"
-      by (auto simp add: prod_fields)
+    have PRR: "range r \<subseteq> prod.V" using prod.run_reachable prod.reachable_V PR by auto
+
+    have RSR: "range (snd o r) \<subseteq> sa.V" using PRR unfolding prod_fields by auto
   
     show ?thesis
       using PR PA
@@ -1424,13 +1416,12 @@ begin
       apply clarsimp
       
       apply (subst prod_acc)
-      using sa.run_V
+      using order_trans[OF sa.run_reachable sa.reachable_V]
       apply auto []
 
       apply auto []
       done
   qed
-
 
 end
 

@@ -10,7 +10,7 @@ begin
 
 section {* Autoref Setup *}
 
-locale impl_lasso_loc = igb_graph G 
+locale impl_lasso_loc = igb_fr_graph G 
   + fr_graph_impl_loc "\<langle>mrel,Id\<rangle>igbg_impl_rel_eext" G_impl G
   for mrel and G_impl and G :: "('q::hashable,'more) igb_graph_rec_scheme"
 begin
@@ -327,11 +327,11 @@ abbreviation fl_rel :: "(_ \<times> ('a list \<times> 'b list) option) set" wher
 theorem find_lasso_tr_correct:
   -- "Correctness theorem for the constant we extracted to SML"
   assumes A: "(G_impl,G)\<in>igbg_impl_rel_ext Re Id"
-  assumes B: "igb_graph G"
+  assumes B: "igb_fr_graph G"
   shows "RETURN (find_lasso_tr G_impl) 
   \<le> \<Down>fl_rel (igb_graph.find_lasso_spec G)"
 proof -
-  from B interpret igb_graph G .
+  from B interpret igb_fr_graph G .
 
   have I: "impl_lasso_loc Re G_impl G"
     by unfold_locales fact
@@ -361,7 +361,7 @@ lemma [autoref_itype]:
   by simp
 
 lemma find_lasso_spec_autoref[autoref_rules_raw]:
-  assumes "SIDE_PRECOND (igb_graph G)"
+  assumes "SIDE_PRECOND (igb_fr_graph G)"
   assumes "PREFER_id R"
   assumes "(G_impl,G)\<in>igbg_impl_rel_ext Re R"
   shows "(RETURN (find_lasso_tr G_impl), 

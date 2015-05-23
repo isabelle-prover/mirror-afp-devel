@@ -5,7 +5,7 @@
 theory Code_String
 imports
   "~~/src/HOL/Library/Code_Char"
-  "~~/src/HOL/Library/List_lexord"
+  (*"~~/src/HOL/Library/List_lexord"*)
   "../../Collections/Refine_Dflt"      
 begin
 

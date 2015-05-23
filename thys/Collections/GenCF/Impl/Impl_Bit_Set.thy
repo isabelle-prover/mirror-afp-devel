@@ -1,4 +1,4 @@
-header "Bitvector based Sets of Naturals"
+section "Bitvector based Sets of Naturals"
 theory Impl_Bit_Set
 imports 
   "../../Iterator/Iterator" 
