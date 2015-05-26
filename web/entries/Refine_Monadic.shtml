@@ -59,6 +59,28 @@ This submission comes with a collection of examples and a user-guide,
 illustrating the usage of the framework.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2012-04-23] Introduced ordered FOREACH loops<br>
+[2012-06] New features:
+REC_rule_arb and RECT_rule_arb allow for generalizing over variables.
+prepare_code_thms - command extracts code equations for recursion combinators.<br>
+[2012-07] New example: Nested DFS for emptiness check of Buchi-automata with witness.<br>
+New feature:
+fo_rule method to apply resolution using first-order matching. Useful for arg_conf, fun_cong.<br>
+[2012-08] Adaptation to ICF v2.<br>
+[2012-10-05] Adaptations to include support for Automatic Refinement Framework.<br>
+[2013-09] This entry now depends on Automatic Refinement<br>
+[2014-06] New feature: vc_solve method to solve verification conditions.
+Maintenace changes: VCG-rules for nfoldli, improved setup for FOREACH-loops.<br>
+[2014-07] Now defining recursion via flat domain. Dropped many single-valued prerequisites.
+Changed notion of data refinement. In single-valued case, this matches the old notion.
+In non-single valued case, the new notion allows for more convenient rules.
+In particular, the new definitions allow for projecting away ghost variables as a refinement step.<br>
+[2014-11] New features: le-or-fail relation (leof), modular reasoning about loop invariants.
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Refine_Monadic-AFP,
