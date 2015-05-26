@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code Generation from IArrays to Haskell*}
+header{*Code Generation from IArrays to Haskell*}
 
 theory IArray_Haskell
   imports IArray_Addenda
@@ -15,8 +15,12 @@ subsection{*Code Generation to Haskell*}
 text{*The following code is included to import into our namespace 
   the modules and classes to which our serialisation will be mapped*}
 
+(*We map iarrays in Isabelle to Data.Array.IArray.array in Haskell. 
+  Performance mapping to Data.Array.Unboxed.Array and Data.Array.Array is similar*)
+
 code_printing code_module "IArray" => (Haskell) {*
   import qualified Data.Array.IArray;
+  import qualified Data.Array.Base;
   import qualified Data.Ix;
   import qualified System.IO;
   import qualified Data.List;
@@ -31,7 +35,7 @@ code_printing code_module "IArray" => (Haskell) {*
   -- It is the equivalent to SML Vector.of_fun:
 
   array :: (Integer -> e) -> Integer -> IArray e;
-  array f k = Data.Array.IArray.array (0, k - 1) (map (\i -> (i, f i)) [0..k - 1]) ;
+  array f k = Data.Array.IArray.array (0, k - 1) (map (\i -> let fi = f i in fi `seq` (i, f i)) [0..k - 1]) ;
   
   -- The following function is the equivalent to "IArray" type constructor in the SML code
   -- generation setup;
@@ -49,7 +53,7 @@ code_printing code_module "IArray" => (Haskell) {*
   infixl 9 !;
 
   (!) :: IArray e -> Integer -> e;
-  v ! i = v Data.Array.IArray.! i;
+  v ! i = v `Data.Array.Base.unsafeAt` fromInteger i;
 
   sub :: (IArray e, Integer) -> e;
   sub (v, i) = v ! i;
