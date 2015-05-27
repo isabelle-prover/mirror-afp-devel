@@ -1945,7 +1945,8 @@ proof -
     hence "finite ?Bi" by simp
     with `card ?Bi = 2` and card_ge_dim [of ?Bi] have "dim ?Bi \<le> 2" by simp
     hence "dim (span ?Bi) \<le> 2" by (subst dim_span)
-    then have "span ?Bi \<noteq> UNIV" by (auto simp: dim_UNIV)
+    then have "span ?Bi \<noteq> UNIV"
+      by clarify (auto simp: dim_UNIV)
     with `span (insert ?v ?Bi) = UNIV` and in_span_eq
     have "?v \<notin> span ?Bi" by auto
 

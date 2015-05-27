@@ -4,7 +4,7 @@ section {* Discrete-Time Markov Chain *}
 
 theory Discrete_Time_Markov_Chain
   imports
-    Probability
+    "~~/src/HOL/Probability/Probability"
     "~~/src/HOL/Library/Rewrite"
     "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
     "../Coinductive/Coinductive_Stream"

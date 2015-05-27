@@ -1456,7 +1456,7 @@ unfolding mC_ZOC_def proof (intro conjI)
   unfolding mC_ZOC_part_def proof(intro conjI)
     have 0: "inj_on F P" "I0 \<in> P" using * unfolding mC_ZOC_def mC_ZOC_part_def by blast+
     have "inv_into P F ` (F ` P - {F I0}) = inv_into P F ` (F ` (P - {I0}))"
-    using 0 inj_on_image_set_diff[of F P P "{I0}"] by simp
+    using 0 inj_on_image_set_diff[of F P P "{I0}", OF _ Set.Diff_subset] by simp
     also have "... = P - {I0}" using 0 by (metis Diff_subset inv_into_image_cancel)
     finally have "inv_into P F ` (F ` P - {F I0}) = P - {I0}" .
     thus "{} \<notin> inv_into P F ` (F ` P - {F I0})"
