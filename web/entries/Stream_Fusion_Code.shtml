@@ -105,7 +105,11 @@ Stream Fusion is a system for removing intermediate list data structures from fu
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-10-13.tar.gz">afp-<!--#echo var="name" -->-2014-10-13.tar.gz</a></li>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-10-10.tar.gz">afp-<!--#echo var="name" -->-2014-10-10.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

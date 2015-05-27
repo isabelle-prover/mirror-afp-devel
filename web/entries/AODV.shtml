@@ -123,7 +123,11 @@ automatically and identify exactly the steps that are no longer valid.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-11-03.tar.gz">afp-<!--#echo var="name" -->-2014-11-03.tar.gz</a></li>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-11-01.tar.gz">afp-<!--#echo var="name" -->-2014-11-01.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

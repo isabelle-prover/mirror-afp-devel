@@ -126,6 +126,7 @@ terms and joining processes).</p>
   </tr>
     <tr><td class="links">Older releases:
 <ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
 <li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-03-15.tar.gz">afp-<!--#echo var="name" -->-2014-03-15.tar.gz</a></li>
 
 </ul>    </td></tr>

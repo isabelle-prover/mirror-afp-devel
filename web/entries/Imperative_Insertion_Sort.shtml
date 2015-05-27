@@ -101,7 +101,10 @@ The insertion sort algorithm of Cormen et al. (Introduction to Algorithms) is ex
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-09-25.tar.gz">afp-<!--#echo var="name" -->-2014-09-25.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
