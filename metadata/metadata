@@ -603,7 +603,7 @@ abstract =
  Procedure for WS1S"
  (http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html) by the
  author.
-depends-on = Coinductive_Languages, Deriving, List-Index
+depends-on = Coinductive_Languages, Deriving, Show, List-Index
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
