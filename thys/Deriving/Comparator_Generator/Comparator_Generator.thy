@@ -37,7 +37,7 @@ text \<open>The following equations will eliminate all occurrences of @{term com
 lemma comp_lex_unfolds: 
   "comp_lex [] = Eq"
   "comp_lex [c] = c"
-  "comp_lex (c # d # cs) = (case c of Eq \<Rightarrow> comp_lex (d # cs) | Lt \<Rightarrow> Lt | Gt \<Rightarrow> Gt)"
+  "comp_lex (c # d # cs) = (case c of Eq \<Rightarrow> comp_lex (d # cs) | z \<Rightarrow> z)"
   by (cases c, auto)+
 
 subsection \<open>Pointwise properties for equality, symmetry, and transitivity\<close> 
