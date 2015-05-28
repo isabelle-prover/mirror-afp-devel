@@ -57,10 +57,9 @@ locale. This locale is then instantiated by different atomic formulas and their
 derivatives (which may differ even for the same logic under different encodings
 of interpretations as formal words).
 <p>
-The WS1S instance is described in the draft paper "A Coalgebraic Decision
-Procedure for WS1S"
-(http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html) by the
-author.
+The WS1S instance is described in the draft paper <a
+href="http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html">A
+Coalgebraic Decision Procedure for WS1S</a> by the author.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
