@@ -9,7 +9,7 @@
 
 *)
 
-header {* \isaheader{Generic Algorithms for Maps} *}
+section {* \isaheader{Generic Algorithms for Maps} *}
 theory MapGA
 imports SetIteratorCollectionsGA
 begin

@@ -37,8 +37,6 @@ definition RELATES :: "('a\<times>'b) set \<Rightarrow> bool" where "RELATES R \
 
 ML {*
 structure Refine_dref_type = struct
-  open Refine_Misc;
-
   structure pattern_rules = Named_Thms
     ( val name = @{binding refine_dref_pattern}
       val description = "Refinement Framework: " ^

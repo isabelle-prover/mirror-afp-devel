@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Map Algorithms} *}
+section {* \isaheader{Generic Map Algorithms} *}
 theory Gen_Map
 imports "../Intf/Intf_Map" "../../Iterator/Iterator"
 begin
@@ -306,7 +306,6 @@ context begin interpretation autoref_syn .
   lemma gen_pick[autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
     assumes IT: "SIDE_GEN_ALGO (is_map_to_list Rk Rv Rm it)"
-    assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
     assumes NE: "SIDE_PRECOND (m'\<noteq>Map.empty)"
     assumes SREF: "(m,m')\<in>\<langle>Rk,Rv\<rangle>Rm"
     shows "(RETURN (gen_pick (\<lambda>x. foldli (it x)) m), 
@@ -338,13 +337,14 @@ context begin interpretation autoref_syn .
     have "(RETURN (gen_pick (\<lambda>x. foldli (it x)) m), RETURN (the ?fld)) 
       \<in> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel"
       unfolding gen_pick_def
-      using SV[unfolded autoref_tag_defs]
       apply (parametricity add: the_paramR)
-      apply tagged_solver
       using `?fld = Some (k,v)`
       by simp
     ultimately show ?thesis
-      apply (simp add: nres_rel_def)
+      unfolding autoref_tag_defs
+      apply -
+      apply (drule nres_relD)
+      apply (rule nres_relI)
       apply (erule ref_two_step)
       by simp
   qed
@@ -361,9 +361,6 @@ context begin interpretation autoref_syn .
   lemma gen_map_pick_remove
     [unfolded gen_map_pick_remove_def, autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
-    assumes SV: 
-      "PREFER single_valued Rk" "PREFER single_valued Rv"
-      "PREFER single_valued (\<langle>Rk,Rv\<rangle>Rm)"
     assumes PICK: "SIDE_GEN_OP (
       (pick m, 
       (OP op_map_pick ::: \<langle>Rk,Rv\<rangle>Rm \<rightarrow> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel)$m') \<in>
@@ -379,8 +376,6 @@ context begin interpretation autoref_syn .
       PICK[unfolded autoref_tag_defs] 
       DEL[unfolded autoref_tag_defs]
 
-    note [relator_props] = SV[unfolded autoref_tag_defs]
-
     have "(gen_map_pick_remove pick del m, 
       do {    
         (k,v)\<leftarrow>op_map_pick m';
@@ -389,7 +384,6 @@ context begin interpretation autoref_syn .
       }) \<in> \<langle>(Rk\<times>\<^sub>rRv) \<times>\<^sub>r \<langle>Rk,Rv\<rangle>Rm\<rangle>nres_rel" (is "(_,?h):_")
       unfolding gen_map_pick_remove_def[abs_def]
       apply parametricity
-      apply tagged_solver
       done
     also have "?h = op_map_pick_remove m'"
       by (auto simp add: pw_eq_iff refine_pw_simps)

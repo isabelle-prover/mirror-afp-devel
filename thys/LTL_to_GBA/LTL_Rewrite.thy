@@ -24,7 +24,7 @@ theorem ltln_pure_eventual_frmls_equiv:
   shows "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
   case goal1 
-  thus ?case
+  thus ?case 
     by force
 next
   case (goal2 _ _ \<xi> \<phi>) show ?case using goal2(2)[of \<xi> \<phi>] goal2(4)[of \<xi> \<phi>]
@@ -115,8 +115,7 @@ theorem ltln_pure_universal_frmls_equiv:
   shows "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
   case goal1 
-  thus ?case 
-    by force
+  thus ?case by force
 next
   case (goal2 _ _ \<xi> \<phi>) 
   show ?case 
@@ -348,7 +347,7 @@ termination proof -
     assume "ltln_rewrite_step \<psi> = \<phi>"
     thm ltln_rewrite_step__size_leq
     moreover assume "\<lbrakk>ltln_rewrite_step \<psi> = \<phi>; 
-      size (ltln_rewrite_step \<psi>) \<le> size \<psi>\<rbrakk> \<Longrightarrow> thesis"
+      size (local.ltln_rewrite_step \<psi>) \<le> size \<psi>\<rbrakk> \<Longrightarrow> thesis"
     ultimately have thesis using ltln_rewrite_step__size_leq[of \<psi>]
       by blast
   } note AUX=this

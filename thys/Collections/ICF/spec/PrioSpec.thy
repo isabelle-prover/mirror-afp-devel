@@ -1,4 +1,4 @@
-header {*\isaheader{Specification of Priority Queues}*}
+section {*\isaheader{Specification of Priority Queues}*}
 theory PrioSpec
 imports ICF_Spec_Base "~~/src/HOL/Library/Multiset"
 begin

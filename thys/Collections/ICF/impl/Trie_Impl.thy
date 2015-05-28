@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Implementation of a trie with explicit invariants} *}
+section {* \isaheader{Implementation of a trie with explicit invariants} *}
 theory Trie_Impl imports
   "../../Lib/Assoc_List"
   "../../../Trie/Trie"

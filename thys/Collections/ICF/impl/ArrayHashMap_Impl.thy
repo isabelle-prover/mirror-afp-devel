@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Array-based hash map implementation} *}
+section {* \isaheader{Array-based hash map implementation} *}
 theory ArrayHashMap_Impl imports 
   "../../Lib/HashCode"
   "../../Lib/Diff_Array"

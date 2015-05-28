@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Standard Set Implementations"
+section "Standard Set Implementations"
 theory SetStdImpl
 imports 
   ListSetImpl 

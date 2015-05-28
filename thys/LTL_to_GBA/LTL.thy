@@ -2,7 +2,7 @@ section {* Linear Temporal Logic *}
 (* Author: Alexander Schimpf *)
 theory LTL
 imports 
-  "../CAVA_Automata/Words"
+  "../CAVA_Automata/Words" Refine_Util
 begin
 
 subsection "LTL formulas"
@@ -82,8 +82,8 @@ text {* In this section, we provide a formulation of LTL with
   explicit syntactic sugar deeply embedded. This formalization
   serves as a reference semantics.
 *}
-datatype
- 'a ltlc = LTLcTrue 
+datatype (ltlc_aprops: 'a)
+    ltlc = LTLcTrue 
          | LTLcFalse
          | LTLcProp 'a  
          | LTLcNeg "'a ltlc"    
@@ -146,6 +146,80 @@ lemma ltlc_semantics_sugar:
   "\<xi> \<Turnstile>\<^sub>c F\<^sub>c \<phi> = \<xi> \<Turnstile>\<^sub>c (true\<^sub>c U\<^sub>c \<phi>)"
   "\<xi> \<Turnstile>\<^sub>c G\<^sub>c \<phi> = \<xi> \<Turnstile>\<^sub>c (false\<^sub>c V\<^sub>c \<phi>)"
 by auto
+
+definition "pw_eq_on S w w' \<equiv> \<forall>i. w i \<inter> S = w' i \<inter> S"
+
+lemma 
+      pw_eq_on_refl[simp]: "pw_eq_on S w w"
+  and pw_eq_on_sym: "pw_eq_on S w w' \<Longrightarrow> pw_eq_on S w' w"
+  and pw_eq_on_trans[trans]: 
+    "\<lbrakk>pw_eq_on S w w'; pw_eq_on S w' w''\<rbrakk> \<Longrightarrow> pw_eq_on S w w''"
+  unfolding pw_eq_on_def by auto
+
+lemma ltlc_eq_on: "pw_eq_on (ltlc_aprops \<phi>) w w' \<Longrightarrow> w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> w' \<Turnstile>\<^sub>c \<phi>"
+  unfolding pw_eq_on_def
+  apply (induction \<phi> arbitrary: w w')
+  apply (simp_all add: suffix_def)
+  apply (auto) []
+  apply ((rprems, (auto) []) | fo_rule arg_cong2 arg_cong | intro ext | simp)+
+  done
+
+lemma map_ltlc_semantics_aux:
+  assumes "inj_on f APs"
+  assumes "\<Union>(range \<xi>) \<subseteq> APs"
+  assumes "ltlc_aprops \<phi> \<subseteq> APs"
+  shows "\<xi> \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> (\<lambda>i. f ` \<xi> i) \<Turnstile>\<^sub>c map_ltlc f \<phi>"
+  using assms(2,3)
+  apply (induct \<phi> arbitrary: \<xi>)
+  using assms(1)
+  apply (simp_all add: suffix_def inj_on_Un)
+  apply (auto dest: inj_onD) []
+  apply ((rprems, (auto) []) | fo_rule arg_cong2 arg_cong | intro ext | simp)+
+  done
+
+
+definition "map_aprops f APs \<equiv> { i. \<exists>p\<in>APs. f p = Some i }"
+
+lemma map_ltlc_semantics:
+  assumes INJ: "inj_on f (dom f)" and DOM: "ltlc_aprops \<phi> \<subseteq> dom f"
+  shows "\<xi> \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> (map_aprops f o \<xi>) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>"
+proof -
+  let ?\<xi>r = "\<lambda>i. \<xi> i \<inter> ltlc_aprops \<phi>"
+  let ?\<xi>r' = "\<lambda>i. \<xi> i \<inter> dom f"
+
+  have 1: "\<Union>range ?\<xi>r \<subseteq> ltlc_aprops \<phi>" by auto
+
+  have INJ_the_dom: "inj_on (the o f) (dom f)" 
+    using assms
+    by (auto simp: inj_on_def domIff) 
+  note 2 = subset_inj_on[OF this DOM]
+
+  have 3: "(\<lambda>i. (the o f) ` ?\<xi>r' i) = map_aprops f o \<xi>" using DOM INJ
+    apply (auto intro!: ext simp: map_aprops_def domIff image_iff)
+    by (metis Int_iff domI option.sel)
+
+  have "\<xi> \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> ?\<xi>r \<Turnstile>\<^sub>c \<phi>"
+    apply (rule ltlc_eq_on)
+    apply (auto simp: pw_eq_on_def)
+    done
+  also from map_ltlc_semantics_aux[OF 2 1 subset_refl]
+  have "\<dots> \<longleftrightarrow> (\<lambda>i. (the o f) ` ?\<xi>r i) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>" .
+  also have "\<dots> \<longleftrightarrow> (\<lambda>i. (the o f) ` ?\<xi>r' i) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>"
+    apply (rule ltlc_eq_on) using DOM INJ
+    apply (auto simp: pw_eq_on_def ltlc.set_map domIff image_iff)
+    by (metis Int_iff contra_subsetD domD domI inj_on_eq_iff option.sel)
+  also note 3
+  finally show ?thesis .
+qed
+
+lemma map_ltlc_semantics_inv:
+  assumes INJ: "inj_on f (dom f)" and DOM: "ltlc_aprops \<phi> \<subseteq> dom f"
+  shows "\<xi> \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi> \<longleftrightarrow> (\<lambda>i. (the o f) -` \<xi> i) \<Turnstile>\<^sub>c \<phi>"
+  using map_ltlc_semantics[OF assms]
+  apply simp
+  apply (intro ltlc_eq_on)
+  apply (auto simp add: pw_eq_on_def ltlc.set_map map_aprops_def)
+  by (metis DOM comp_apply contra_subsetD domD option.sel vimage_eq)
 
 text {* Conversion from LTL with common syntax to LTL *}
 

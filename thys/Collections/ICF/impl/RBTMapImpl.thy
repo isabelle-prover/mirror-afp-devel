@@ -9,7 +9,7 @@
 
 
 *)
-header {* \isaheader{Map Implementation by Red-Black-Trees} *}
+section {* \isaheader{Map Implementation by Red-Black-Trees} *}
 theory RBTMapImpl
 imports 
   "../spec/MapSpec"

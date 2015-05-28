@@ -5,14 +5,23 @@ begin
 
 text {* Default setup of the autoref-tool for the monadic framework. *}
 
-lemma autoref_monadicI:
+lemma autoref_monadicI1:
   assumes "(b,a)\<in>\<langle>R\<rangle>nres_rel"
   assumes "RETURN c \<le> b"
-  shows "(RETURN c, a)\<in>\<langle>R\<rangle>nres_rel"
+  shows "(RETURN c, a)\<in>\<langle>R\<rangle>nres_rel" "RETURN c \<le>\<Down>R a"
   using assms
   unfolding nres_rel_def
-  by simp
+  by simp_all
 
+lemma autoref_monadicI2:
+  assumes "(b,a)\<in>\<langle>R\<rangle>nres_rel"
+  assumes "nres_of c \<le> b"
+  shows "(nres_of c, a)\<in>\<langle>R\<rangle>nres_rel" "nres_of c \<le> \<Down>R a"
+  using assms
+  unfolding nres_rel_def
+  by simp_all
+
+lemmas autoref_monadicI = autoref_monadicI1 autoref_monadicI2
 
 ML {*
   structure Autoref_Monadic = struct
@@ -21,20 +30,15 @@ ML {*
 
     fun autoref_monadic_tac ctxt = let
       open Autoref_Tacticals
-      (*val optimize_tac = optimize_iterators_tac*)
       val ctxt = Autoref_Phases.init_data ctxt
       val plain = Config.get ctxt cfg_plain
       val trans_thms = if plain then [] else @{thms the_resI}
   
     in
-      rtac @{thm autoref_monadicI}
+      resolve_tac ctxt @{thms autoref_monadicI}
       THEN' 
       IF_SOLVED (Autoref_Phases.all_phases_tac ctxt)
         (RefineG_Transfer.post_transfer_tac trans_thms ctxt)
-        (*IF_SOLVED (RefineG_Transfer.transfer_tac trans_thms ctxt)
-           (optimize_tac ctxt THEN' rtac @{thm detTAGI})
-           (K all_tac) (* Transfer failed *)
-        *)
         (K all_tac) (* Autoref failed *)
 
     end
@@ -61,7 +65,5 @@ method_setup autoref_monadic = {* let
 
  *} 
  "Automatic Refinement and Determinization for the Monadic Refinement Framework"
-
-
 
 end

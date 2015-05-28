@@ -1,4 +1,4 @@
-header {* \isaheader{Specification of Sequences} *}
+section {* \isaheader{Specification of Sequences} *}
 theory ListSpec 
 imports ICF_Spec_Base
 begin

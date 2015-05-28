@@ -1,4 +1,4 @@
-header {* \isaheader{Iterators} *}
+section {* \isaheader{Iterators} *}
 theory Gen_Iterator
 imports "../../Refine_Monadic/Refine_Monadic" "Proper_Iterator"
 begin
@@ -246,7 +246,6 @@ end
 
 lemma set_to_sorted_list_by_tsl[autoref_rules]:
   assumes "MINOR_PRIO_TAG (- 11)"
-  assumes SV: "PREFER single_valued Rk"
   assumes TSL: "SIDE_GEN_ALGO (is_set_to_sorted_list R Rk Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), set_to_sorted_list R) 
     \<in> \<langle>Rk\<rangle>Rs \<rightarrow> \<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel"
@@ -260,16 +259,13 @@ proof (intro fun_relI nres_relI)
     by blast
   
   have "RETURN (tsl s) \<le> \<Down>(\<langle>Rk\<rangle>list_rel) (RETURN l')"
-    apply (rule RETURN_refine_sv)
-    using SV unfolding autoref_tag_defs apply tagged_solver
-    by fact
+    by (rule RETURN_refine) fact
   also note R2
   finally show "RETURN (tsl s) \<le> \<Down> (\<langle>Rk\<rangle>list_rel) (set_to_sorted_list R s')" .
 qed
 
 lemma set_to_list_by_tsl[autoref_rules]:
   assumes "MINOR_PRIO_TAG (- 10)"
-  assumes SV: "PREFER single_valued Rk"
   assumes TSL: "SIDE_GEN_ALGO (is_set_to_list Rk Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), set_to_sorted_list (\<lambda>_ _. True)) 
     \<in> \<langle>Rk\<rangle>Rs \<rightarrow> \<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel"
@@ -278,7 +274,6 @@ lemma set_to_list_by_tsl[autoref_rules]:
 
 lemma map_to_sorted_list_by_tsl[autoref_rules]:
   assumes "MINOR_PRIO_TAG (- 11)"
-  assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
   assumes TSL: "SIDE_GEN_ALGO (is_map_to_sorted_list R Rk Rv Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), map_to_sorted_list R) 
     \<in> \<langle>Rk,Rv\<rangle>Rs \<rightarrow> \<langle>\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel\<rangle>nres_rel"
@@ -292,8 +287,7 @@ proof (intro fun_relI nres_relI)
     by blast
   
   have "RETURN (tsl s) \<le> \<Down>(\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel) (RETURN l')"
-    apply (rule RETURN_refine_sv)
-    using SV unfolding autoref_tag_defs apply tagged_solver
+    apply (rule RETURN_refine)
     by fact
   also note R2
   finally show 
@@ -302,7 +296,6 @@ qed
 
 lemma map_to_list_by_tsl[autoref_rules]:
   assumes "MINOR_PRIO_TAG (- 10)"
-  assumes SV: "PREFER single_valued Rk" "PREFER single_valued Rv"
   assumes TSL: "SIDE_GEN_ALGO (is_map_to_list Rk Rv Rs tsl)"
   shows "(\<lambda>s. RETURN (tsl s), map_to_sorted_list (\<lambda>_ _. True)) 
     \<in> \<langle>Rk,Rv\<rangle>Rs \<rightarrow> \<langle>\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel\<rangle>nres_rel"
@@ -358,6 +351,43 @@ proof -
   also note B_FMT[symmetric]
   finally show ?thesis .
 qed
+
+lemma proper_it_mono_dres_pair_flat:
+  assumes PR: "proper_it' it it'"
+  assumes A: "\<And>k v x. flat_ge (f k v x) (f' k v x)"
+  shows "
+    flat_ge (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>)
+      (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>)" 
+      (is "flat_ge ?a ?b")
+proof -
+  from proper_itE[OF PR[THEN proper_it'D]] obtain l where 
+    A_FMT: 
+      "?a = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>" 
+        (is "_ = ?a'")
+    and B_FMT: 
+      "?b = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>" 
+        (is "_ = ?b'")
+    by metis
+  
+  from A have A': "\<And>kv x. flat_ge (case_prod f kv x) (case_prod f' kv x)"
+    by auto
+
+  note A_FMT
+  also have 
+    "?a' = foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f kv) \<sigma>"
+    apply (fo_rule fun_cong)
+    apply (fo_rule arg_cong)
+    by auto
+  also note foldli_mono_dres_flat[OF A']
+  also have 
+    "foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f' kv) \<sigma> = ?b'"
+    apply (fo_rule fun_cong)
+    apply (fo_rule arg_cong)
+    by auto
+  also note B_FMT[symmetric]
+  finally show ?thesis .
+qed
+
     
 lemma proper_it_mono_dres:
   assumes PR: "proper_it' it it'"
@@ -370,6 +400,16 @@ lemma proper_it_mono_dres:
   apply (rule foldli_mono_dres[OF A])
   done
 
+lemma proper_it_mono_dres_flat:
+  assumes PR: "proper_it' it it'"
+  assumes A: "\<And>kv x. flat_ge (f kv x) (f' kv x)"
+  shows "
+    flat_ge (it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>)
+      (it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>)"
+  apply (rule proper_itE[OF PR[THEN proper_it'D[where s=s]]])
+  apply (erule_tac t="it' s" in ssubst)
+  apply (rule foldli_mono_dres_flat[OF A])
+  done
 
 lemma pi'_dom[icf_proper_iteratorI]: "proper_it' it it' 
   \<Longrightarrow> proper_it' (map_iterator_dom o it) (map_iterator_dom o it')"
@@ -391,10 +431,23 @@ lemma proper_it_mono_dres_dom:
   apply (rule icf_proper_iteratorI)
   by fact+
 
+lemma proper_it_mono_dres_dom_flat:
+  assumes PR: "proper_it' it it'"
+  assumes A: "\<And>kv x. flat_ge (f kv x) (f' kv x)"
+  shows "flat_ge 
+    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>)
+    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>)"
+  apply (rule proper_it_mono_dres_flat)
+  apply (rule icf_proper_iteratorI)
+  by fact+
+
+
 (* TODO/FIXME: Hack! Mono-prover should be able to find proper-iterators itself
 *)
 lemmas proper_it_monos = 
-  proper_it_mono_dres_pair proper_it_mono_dres proper_it_mono_dres_dom
+  proper_it_mono_dres_pair proper_it_mono_dres_pair_flat
+  proper_it_mono_dres proper_it_mono_dres_flat
+  proper_it_mono_dres_dom proper_it_mono_dres_dom_flat
 
 (* TODO: Conceptually, this leads to some kind of bundles: 
   Each bundle has a list of processors, that are invoked for every registered
@@ -408,7 +461,7 @@ attribute_setup "proper_it" = {*
       (*val mono_thms = map (fn mt => thm RS mt) @{thms proper_it_monos}*)
       val context = context 
         |> Icf_Proper_Iterator.add_thm thm
-        |> fold Refine_Misc.refine_mono.add_thm mono_thms
+        |> fold Refine_Mono_Prover.add_mono_thm mono_thms
     in
       context
     end

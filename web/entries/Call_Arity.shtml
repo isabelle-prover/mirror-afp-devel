@@ -127,7 +127,12 @@ was added.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-05-11.tar.gz">afp-<!--#echo var="name" -->-2015-05-11.tar.gz</a></li>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-02-21.tar.gz">afp-<!--#echo var="name" -->-2015-02-21.tar.gz</a></li>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-02-20.tar.gz">afp-<!--#echo var="name" -->-2015-02-20.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

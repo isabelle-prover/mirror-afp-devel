@@ -1,4 +1,4 @@
-header {* Arrays with in-place updates *}
+section {* Arrays with in-place updates *}
 theory Diff_Array imports 
   Assoc_List
   "../../Automatic_Refinement/Parametricity/Parametricity"

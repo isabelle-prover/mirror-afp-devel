@@ -1,4 +1,4 @@
-header {* \isaheader{Nested DFS (HPY improvement)} *}
+section {* \isaheader{Nested DFS (HPY improvement)} *}
 theory Nested_DFS
 imports 
   "../../Refine_Dflt" 
@@ -481,7 +481,7 @@ proof -
       \<le> SPEC (post S \<sigma>)"
 
       apply (rule RECT_rule_arb[where 
-        \<Phi>="pre" and
+        pre="pre" and
         V="gen_dfs_var U <*lex*> {}" and
         arb="S"
         ])
@@ -935,7 +935,7 @@ proof -
       \<le> SPEC (post \<sigma>)"
 
       apply (intro refine_vcg
-        RECT_rule[where \<Phi>="pre"
+        RECT_rule[where pre="pre"
         and V="gen_dfs_var ?U <*lex*> {}"]
       )
       apply refine_mono

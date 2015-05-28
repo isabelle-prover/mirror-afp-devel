@@ -1,4 +1,4 @@
-section {* Assert and Assume *}
+section {* {Assert and Assume} *}
 theory RefineG_Assert
 imports RefineG_Transfer
 begin

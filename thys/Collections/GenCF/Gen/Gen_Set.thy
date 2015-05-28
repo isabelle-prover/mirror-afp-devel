@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Set Algorithms} *}
+section {* \isaheader{Generic Set Algorithms} *}
 theory Gen_Set
 imports "../Intf/Intf_Set" "../../Iterator/Iterator"
 begin
@@ -378,7 +378,6 @@ context begin interpretation autoref_syn .
   lemma gen_pick[autoref_rules_raw]:
     assumes PRIO_TAG_GEN_ALGO
     assumes IT: "SIDE_GEN_ALGO (is_set_to_list Rk Rs it)"
-    assumes SV: "PREFER single_valued Rk"
     assumes NE: "SIDE_PRECOND (s'\<noteq>{})"
     assumes SREF: "(s,s')\<in>\<langle>Rk\<rangle>Rs"
     shows "(RETURN (gen_pick (\<lambda>x. foldli (it x)) s), 
@@ -400,18 +399,18 @@ context begin interpretation autoref_syn .
     have "(RETURN (gen_pick (\<lambda>x. foldli (it x)) s), RETURN (the ?fld)) 
       \<in> \<langle>Rk\<rangle>nres_rel"
       unfolding gen_pick_def
-      using SV[unfolded autoref_tag_defs]
       apply (parametricity add: the_paramR)
       using `?fld = Some x`
       by simp
     ultimately show ?thesis
-      apply (simp add: nres_rel_def)
+      unfolding autoref_tag_defs
+      apply -
+      apply (drule nres_relD)
+      apply (rule nres_relI)
       apply (erule ref_two_step)
       by simp
   qed
 end
-
-  term Sigma
 
   definition gen_Sigma
     where "gen_Sigma it1 it2 empX insX s1 f2 \<equiv> 
@@ -521,28 +520,24 @@ lemmas [autoref_rules] = gen_cart[OF _ GEN_OP_D]
 context begin interpretation autoref_syn .
 
   lemma op_set_to_sorted_list_autoref[autoref_rules]:
-    assumes "PREFER single_valued Rk"
     assumes "SIDE_GEN_ALGO (is_set_to_sorted_list ordR Rk Rs tsl)"
     shows "(\<lambda>si. RETURN (tsl si),  OP (op_set_to_sorted_list ordR)) 
       \<in> \<langle>Rk\<rangle>Rs \<rightarrow> \<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel"
     using assms
     apply (intro fun_relI nres_relI)
     apply simp
-    apply (rule RETURN_SPEC_refine_sv)
-    apply tagged_solver
+    apply (rule RETURN_SPEC_refine)
     apply (auto simp: is_set_to_sorted_list_def it_to_sorted_list_def)
     done
 
   lemma op_set_to_list_autoref[autoref_rules]:
-    assumes "PREFER single_valued Rk"
     assumes "SIDE_GEN_ALGO (is_set_to_sorted_list ordR Rk Rs tsl)"
     shows "(\<lambda>si. RETURN (tsl si), op_set_to_list) 
       \<in> \<langle>Rk\<rangle>Rs \<rightarrow> \<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel"
     using assms
     apply (intro fun_relI nres_relI)
     apply simp
-    apply (rule RETURN_SPEC_refine_sv)
-    apply tagged_solver
+    apply (rule RETURN_SPEC_refine)
     apply (auto simp: is_set_to_sorted_list_def it_to_sorted_list_def)
     done
 
@@ -595,7 +590,6 @@ schematic_lemma atLeastLessThan_code_aux:
   notes [autoref_rules] = IdI[of a] IdI[of b]
   assumes [autoref_rules]: "(emp,{})\<in>Rs"
   assumes [autoref_rules]: "(ins,insert)\<in>nat_rel \<rightarrow> Rs \<rightarrow> Rs"
-  assumes [relator_props]: "single_valued Rs"
   shows "(?c, atLeastLessThan_impl) 
   \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> \<langle>Rs\<rangle>nres_rel"
   unfolding atLeastLessThan_impl_def[abs_def]
@@ -614,13 +608,12 @@ lemma atLeastLessThan_gen[autoref_rules]:
   assumes "PRIO_TAG_GEN_ALGO"
   assumes "GEN_OP emp {} Rs"
   assumes "GEN_OP ins insert (nat_rel \<rightarrow> Rs \<rightarrow> Rs)"
-  assumes "PREFER single_valued Rs"
   shows "(atLeastLessThan_tr emp ins, atLeastLessThan) 
     \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> Rs"
 proof (intro fun_relI, simp)
   fix a b
   from assms have GEN: 
-    "(emp,{})\<in>Rs" "(ins,insert)\<in>nat_rel \<rightarrow> Rs \<rightarrow> Rs" "single_valued Rs"
+    "(emp,{})\<in>Rs" "(ins,insert)\<in>nat_rel \<rightarrow> Rs \<rightarrow> Rs"
     by auto
 
   note atLeastLessThan_tr.refine[of emp ins a b]

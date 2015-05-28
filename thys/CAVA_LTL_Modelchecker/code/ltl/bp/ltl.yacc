@@ -53,8 +53,8 @@ formula: ident			 (LTLcProp ident)
        | formula RELEASE formula (LTLcRelease (formula1, formula2))
        | LPAREN formula RPAREN   (formula)
 
-ident: IDENT IDENT_ARG  (FProp (String.explode IDENT, IDENT_ARG))
-     | IDENT            (CProp (String.explode IDENT))
+ident: IDENT IDENT_ARG  (FProp (IDENT, IDENT_ARG))
+     | IDENT            (CProp IDENT)
 
 (* 
  * vim: ft=yacc 

@@ -140,20 +140,6 @@ no checkin, no enter in s1
 *)
 
 (*<*)
-(*
-defs initk_def:  "initk == %r. if r then 1 else 0"
-
-lemma [code_unfold]: "(UNIV::bool set) == {True,False}"
-sorry
-
-lemma "let s\<^sub>2 = [Checkin g r c'',Checkin g' r c'];
-s = s\<^sub>3 @ [Enter g r c] @ s\<^sub>2 @ [Checkin g r c] in
-       hotel s \<and>
-       (ALL e:set s\<^sub>2. case e of Enter g' r' c \<Rightarrow> \<not>(g' = g \<and> r' = r) | _ \<Rightarrow> True) \<and>
-       owns s r = Some g \<and> isin (s\<^sub>2 @ [Checkin g r c]) r = {} \<and> g' : isin s r
-\<longrightarrow> g' = g"
-quickcheck[iterations=100000,size=8]
-*)
 lemma safe_safe: "safe s r \<Longrightarrow> safe\<^sub>0 s r"
 by (simp add: safe\<^sub>0_def safe_def) blast
 
@@ -176,10 +162,7 @@ lemma issued_app: "issued (s @ s') = issued s \<union> issued s'"
 apply (induct s) apply (auto split:event.split)
 apply (induct s') apply (auto split:event.split)
 done
-(*
-lemma cards_app[simp]: "cards (s @ s') g = cards s g \<union> cards s' g"
-by (induct s) (auto split:event.split)
-*)
+
 lemma owns_app[simp]: "no_Check_in s\<^sub>2 r \<Longrightarrow> owns (s\<^sub>2 @ s\<^sub>1) r = owns s\<^sub>1 r"
 by (induct s\<^sub>2) (auto split:event.split)
 

@@ -500,7 +500,7 @@ text {*
 lemma gen_code_thm_RECT:
   fixes x
   assumes D: "f \<equiv> RECT B"
-  assumes M: "mono B"
+  assumes M: "trimono B"
   shows "f x \<equiv> B f x"
   unfolding D
   apply (subst RECT_unfold)
@@ -509,7 +509,7 @@ lemma gen_code_thm_RECT:
 lemma gen_code_thm_REC:
   fixes x
   assumes D: "f \<equiv> REC B"
-  assumes M: "mono B"
+  assumes M: "trimono B"
   shows "f x \<equiv> B f x"
   unfolding D
   apply (subst REC_unfold)
@@ -519,13 +519,13 @@ setup {*
   Refine_Automation.add_extraction "nres" {
     pattern = Thm.term_of @{cpat "REC _"},
     gen_thm = @{thm gen_code_thm_REC},
-    gen_tac = Refine_Misc.mono_prover_tac
+    gen_tac = Refine_Mono_Prover.mono_tac
   }
   #> 
   Refine_Automation.add_extraction "nres" {
     pattern = Thm.term_of @{cpat "RECT _"},
     gen_thm = @{thm gen_code_thm_RECT},
-    gen_tac = Refine_Misc.mono_prover_tac
+    gen_tac = Refine_Mono_Prover.mono_tac
   }
 *}
 

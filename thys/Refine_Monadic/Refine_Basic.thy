@@ -11,8 +11,6 @@ subsection {* Setup *}
   ML {*
     structure Refine = struct
 
-    open Refine_Misc;
-
     structure vcg = Named_Thms
       ( val name = @{binding refine_vcg}
         val description = "Refinement Framework: " ^ 
@@ -91,6 +89,13 @@ subsection {* Setup *}
     )) *} 
     "Refinement framework: Generate refinement conditions"
 
+  method_setup refine_vcg = 
+    {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
+      Refine.rcg_tac (add_thms @ Refine.vcg.get ctxt) ctxt THEN_ALL_NEW (TRY o Refine.post_tac ctxt)
+    )) *} 
+    "Refinement framework: Generate refinement and verification conditions"
+
+
   (* Use tagged-solver instead!
   method_setup refine_post = 
     {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
@@ -128,7 +133,7 @@ text {*
   @{text FAILi} is only an internal notation, that should not be exposed to 
   the user.
   Instead, @{text FAIL} should be used, that is defined later as abbreviation 
-  for the bottom element of the lattice.
+  for the top element of the lattice.
 *}
 instantiation nres :: (type) complete_lattice
 begin
@@ -309,6 +314,22 @@ lemma pw_eq_iff:
   apply (simp_all add: pw_le_iff)
   done
 
+lemma pw_flat_le_iff: "flat_le S S' \<longleftrightarrow> 
+  (\<exists>x. inres S x) \<longrightarrow> (nofail S \<longleftrightarrow> nofail S') \<and> (\<forall>x. inres S x \<longleftrightarrow> inres S' x)"
+  by (auto simp : flat_ord_def pw_eq_iff)
+  
+lemma pw_flat_ge_iff: "flat_ge S S' \<longleftrightarrow> 
+  (nofail S) \<longrightarrow> nofail S' \<and> (\<forall>x. inres S x \<longleftrightarrow> inres S' x)"
+  apply (simp add: flat_ord_def pw_eq_iff) apply safe
+  apply simp
+  apply simp
+  apply simp
+  apply (rule ccontr)
+  apply simp
+  done
+
+lemmas pw_ords_iff = pw_le_iff pw_flat_le_iff pw_flat_ge_iff
+
 lemma pw_leI: 
   "(nofail S'\<longrightarrow> (nofail S \<and> (\<forall>x. inres S x \<longrightarrow> inres S' x))) \<Longrightarrow> S \<le> S'"
   by (simp add: pw_le_iff)
@@ -427,6 +448,24 @@ lemma pw_Inf_inres[refine_pw_simps]: "inres (Inf C) r \<longleftrightarrow> (\<f
 lemma pw_INF_inres [refine_pw_simps]: "inres (INFIMUM C f) r \<longleftrightarrow> (\<forall>M\<in>C. inres (f M) r)"
   using pw_Inf_inres [of "f ` C"] by simp
 
+lemma nofail_RES_conv: "nofail m \<longleftrightarrow> (\<exists>M. m=RES M)" by (cases m) auto
+
+primrec the_RES where "the_RES (RES X) = X"
+lemma the_RES_inv[simp]: "nofail m \<Longrightarrow> RES (the_RES m) = m"
+  by (cases m) auto
+
+lemma le_SPEC_UNIV_rule [refine_vcg]: 
+  "m \<le> SPEC (\<lambda>_. True) \<Longrightarrow> m \<le> RES UNIV" by auto
+
+definition [refine_pw_simps]: "nf_inres m x \<equiv> nofail m \<and> inres m x"
+
+lemma nf_inres_RES[simp]: "nf_inres (RES X) x \<longleftrightarrow> x\<in>X" 
+  by (simp add: refine_pw_simps)
+  
+lemma nf_inres_SPEC[simp]: "nf_inres (SPEC \<Phi>) x \<longleftrightarrow> \<Phi> x" 
+  by (simp add: refine_pw_simps)
+
+
 
 subsubsection {* Monad Operators *}
 definition bind where "bind M f \<equiv> case M of 
@@ -476,12 +515,22 @@ lemma nres_monad3[simp]: "bind (bind M f) g = bind M (\<lambda>x. bind (f x) g)"
   by (rule pw_eqI) (auto simp: refine_pw_simps)
 lemmas nres_monad_laws = nres_monad1 nres_monad2 nres_monad3
 
+text {* \paragraph{Congruence rule for bind} *}
+lemma bind_cong:
+  assumes "m=m'"
+  assumes "\<And>x. RETURN x \<le> m' \<Longrightarrow> f x = f' x"
+  shows "bind m f = bind m' f'"  
+  using assms
+  by (auto simp: refine_pw_simps pw_eq_iff pw_le_iff)
 
 text {* \paragraph{Monotonicity and Related Properties} *}
 lemma bind_mono[refine_mono]:
-  "\<lbrakk> M \<le> M'; \<And>x. RETURN x \<le> M \<Longrightarrow> f x \<le> f' x \<rbrakk> \<Longrightarrow>
-  bind M f \<le> bind M' f'"
-  by (auto simp: refine_pw_simps pw_le_iff)
+  "\<lbrakk> M \<le> M'; \<And>x. RETURN x \<le> M \<Longrightarrow> f x \<le> f' x \<rbrakk> \<Longrightarrow> bind M f \<le> bind M' f'"
+  (*"\<lbrakk> flat_le M M'; \<And>x. flat_le (f x) (f' x) \<rbrakk> \<Longrightarrow> flat_le (bind M f) (bind M' f')"*)
+  "\<lbrakk> flat_ge M M'; \<And>x. flat_ge (f x) (f' x) \<rbrakk> \<Longrightarrow> flat_ge (bind M f) (bind M' f')"
+  apply (auto simp: refine_pw_simps pw_ords_iff) []
+  apply (auto simp: refine_pw_simps pw_ords_iff) []
+  done
 
 lemma bind_mono1[simp, intro!]: "mono (\<lambda>M. bind M f)"
   apply (rule monoI)
@@ -500,8 +549,18 @@ lemma bind_mono2'[simp, intro!]: "mono (bind M)"
   by (auto dest: le_funD)
 
 
-lemma bind_distrib_sup: "bind (sup M N) f = sup (bind M f) (bind N f)"
+lemma bind_distrib_sup1: "bind (sup M N) f = sup (bind M f) (bind N f)"
   by (auto simp add: pw_eq_iff refine_pw_simps)
+
+lemma  bind_distrib_sup2: "bind m (\<lambda>x. sup (f x) (g x)) = sup (bind m f) (bind m g)"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma bind_distrib_Sup1: "bind (Sup M) f = (SUP m:M. bind m f)" 
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma bind_distrib_Sup2: "F\<noteq>{} \<Longrightarrow> bind m (Sup F) = (SUP f:F. bind m f)"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
 
 lemma RES_Sup_RETURN: "Sup (RETURN`X) = RES X"
   by (rule pw_eqI) (auto simp add: refine_pw_simps)
@@ -512,107 +571,76 @@ text {*
   lifting a relation @{text "R"} between concrete and abstract values to 
   our result lattice.
 
-  We define two lifting operations: @{text "\<Up>R"} yields a function from 
-  concrete to abstract values (abstraction function), and @{text "\<Down>R"} yields
-  a function from abstract to concrete values (concretization function).
-  The abstraction function fails if it cannot abstract its argument, i.e.,
-  if there is a value in the argument with no abstract counterpart. 
-  The concretization function, however, will just ignore abstract elements with
-  no concrete counterpart. This matches the intuition that the concrete 
-  datastructure needs not to be able to represent any abstract value, while 
-  concrete values that have no corresponding abstract value make no sense.
-  Also, the concretization relation will ignore abstract values that have
-  a concretization whose abstractions are not all included in the result to
-  be abstracted. Intuitively, this indicates an abstraction mismatch.
+  Given a relation @{text R}, we define a {\em concretization function}
+  @{text "\<Down>R"} that takes an abstract result, and returns a concrete result.
+  The concrete result contains all values that are mapped by @{text R} to
+  a value in the abstract result.
 
-  The concretization function results from the abstraction function by the
-  natural postulate that concretization and abstraction function form a
-  Galois connection, i.e., that abstraction and concretization can be exchanged:
-  @{text [display] "\<Up>R M \<le> M' \<longleftrightarrow> M \<le> \<Down>R M'"}
-  
-  Our approach is inspired by \cite{mmo97}, that also uses the adjuncts of
+  Note that our concretization function forms no Galois connection, i.e.,
+  in general there is no @{text \<alpha>} such that 
+  @{text "m \<le>\<Down> R m'"} is equivalent to @{text "\<alpha> m \<le> m'"}.
+  However, we get a Galois connection for the special case of 
+  single-valued relations.
+ 
+  Regarding data refinement as Galois connections is inspired by \cite{mmo97},
+  that also uses the adjuncts of
   a Galois connection to express data refinement by program refinement.
 *}
 
-definition abs_fun ("\<Up>") where
-  "abs_fun R M \<equiv> case M of 
-    FAILi \<Rightarrow> FAIL |
-    RES X \<Rightarrow> (
-      if X\<subseteq>Domain R then
-        RES (R``X)
-      else
-        FAIL
-    )"
-
-lemma 
-  abs_fun_FAIL[simp]: "\<Up>R FAIL = FAIL" and
-  abs_fun_RES: "\<Up>R (RES X) = (
-      if X\<subseteq>Domain R then
-        RES (R``X)
-      else
-        FAIL
-    )"
-  unfolding abs_fun_def 
-  by (auto split: nres.split)
-
 definition conc_fun ("\<Down>") where
-  "conc_fun R M \<equiv> case M of 
-    FAILi \<Rightarrow> FAIL |
-    RES X \<Rightarrow> RES {c. \<exists>a\<in>X. (c,a)\<in>R \<and> (\<forall>a'. (c,a')\<in>R \<longrightarrow> a'\<in>X)}"
+  "conc_fun R m \<equiv> case m of FAILi \<Rightarrow> FAIL | RES X \<Rightarrow> RES (R\<inverse>``X)"
+
+definition abs_fun ("\<Up>") where
+  "abs_fun R m \<equiv> case m of FAILi \<Rightarrow> FAIL 
+    | RES X \<Rightarrow> if X\<subseteq>Domain R then RES (R``X) else FAIL"
 
 lemma 
   conc_fun_FAIL[simp]: "\<Down>R FAIL = FAIL" and
-  conc_fun_RES: "\<Down>R (RES X) = RES {c. \<exists>a\<in>X. (c,a)\<in>R \<and> (\<forall>a'. (c,a')\<in>R \<longrightarrow> a'\<in>X)}"
-  unfolding conc_fun_def 
-  by (auto split: nres.split)
+  conc_fun_RES: "\<Down>R (RES X) = RES (R\<inverse>``X)"
+  unfolding conc_fun_def by (auto split: nres.split)
+
+lemma abs_fun_simps[simp]: 
+  "\<Up>R FAIL = FAIL"
+  "X\<subseteq>Domain R \<Longrightarrow> \<Up>R (RES X) = RES (R``X)"
+  "\<not>(X\<subseteq>Domain R) \<Longrightarrow> \<Up>R (RES X) = FAIL"
+  unfolding abs_fun_def by (auto split: nres.split)
   
+context fixes R assumes SV: "single_valued R" begin
+lemma conc_abs_swap: "m' \<le> \<Down>R m \<longleftrightarrow> \<Up>R m' \<le> m"
+  unfolding conc_fun_def abs_fun_def using SV
+  by (auto split: nres.split)
+    (metis ImageE converseD single_valuedD subsetD)
+
 lemma ac_galois: "galois_connection (\<Up>R) (\<Down>R)"
   apply (unfold_locales)
-  apply rule
-  unfolding conc_fun_def abs_fun_def
-  apply (force split: nres.split nres.split_asm split_if_asm 
-    simp add: top_nres_def[symmetric]) []
+  by (rule conc_abs_swap)
 
-  apply (force split: nres.split nres.split_asm split_if_asm 
-    simp add: top_nres_def[symmetric]) []
-  done
-
-interpretation ac!: galois_connection "(\<Up>R)" "(\<Down>R)"
-  by (rule ac_galois)
+end
 
 lemma pw_abs_nofail[refine_pw_simps]: 
   "nofail (\<Up>R M) \<longleftrightarrow> (nofail M \<and> (\<forall>x. inres M x \<longrightarrow> x\<in>Domain R))"
   apply (cases M)
   apply simp
-  apply (auto simp: abs_fun_RES)
+  apply (auto simp: abs_fun_simps abs_fun_def)
   done
 
 lemma pw_abs_inres[refine_pw_simps]: 
   "inres (\<Up>R M) a \<longleftrightarrow> (nofail (\<Up>R M) \<longrightarrow> (\<exists>c. inres M c \<and> (c,a)\<in>R))"
   apply (cases M)
   apply simp
-  apply (auto simp: abs_fun_RES)
+  apply (auto simp: abs_fun_def)
   done
 
 lemma pw_conc_nofail[refine_pw_simps]: 
   "nofail (\<Down>R S) = nofail S"
   by (cases S) (auto simp: conc_fun_RES)
 
-lemma pw_conc_inres:
+lemma pw_conc_inres[refine_pw_simps]:
   "inres (\<Down>R S') = (\<lambda>s. nofail S' 
-  \<longrightarrow> (\<exists>s'. (s,s')\<in>R \<and> inres S' s' \<and> (\<forall>s''. (s,s'')\<in>R \<longrightarrow> inres S' s'')))"
+  \<longrightarrow> (\<exists>s'. (s,s')\<in>R \<and> inres S' s'))"
   apply (rule ext)
   apply (cases S')
   apply (auto simp: conc_fun_RES)
-  done
-
-lemma pw_conc_inres_sv[refine_pw_simps]:
-  "inres (\<Down>R S') = (\<lambda>s. nofail S' 
-  \<longrightarrow> (\<exists>s'. (s,s')\<in>R \<and> inres S' s' \<and> (
-    \<not> single_valued R \<longrightarrow> (\<forall>s''. (s,s'')\<in>R \<longrightarrow> inres S' s''))))"
-  apply (rule ext)
-  apply (cases S')
-  apply (auto simp: conc_fun_RES dest: single_valuedD)
   done
 
 lemma abs_fun_strict[simp]:
@@ -623,11 +651,15 @@ lemma conc_fun_strict[simp]:
   "\<Down> R SUCCEED = SUCCEED"
   unfolding conc_fun_def by (auto split: nres.split)
 
-lemmas [simp, intro!] = ac.\<alpha>_mono ac.\<gamma>_mono
+lemma conc_fun_mono[simp, intro!]: "mono (\<Down>R)"
+  by rule (auto simp: pw_le_iff refine_pw_simps)
 
-lemma conc_fun_chain: "single_valued R \<Longrightarrow> \<Down>R (\<Down>S M) = \<Down>(R O S) M"
+lemma abs_fun_mono[simp, intro!]: "mono (\<Up>R)"
+  by rule (auto simp: pw_le_iff refine_pw_simps)
+
+lemma conc_fun_chain: "\<Down>R (\<Down>S M) = \<Down>(R O S) M"
   unfolding conc_fun_def
-  by (auto split: nres.split dest: single_valuedD)
+  by (auto split: nres.split)
 
 lemma conc_Id[simp]: "\<Down>Id = id"
   unfolding conc_fun_def [abs_def] by (auto split: nres.split)
@@ -643,73 +675,12 @@ lemma conc_fun_fail_iff[simp]:
 lemma conc_trans[trans]:
   assumes A: "C \<le> \<Down>R B" and B: "B \<le> \<Down>R' A" 
   shows "C \<le> \<Down>R (\<Down>R' A)"
-proof -
-  from A have "\<Up>R C \<le> B" by (simp add: ac.galois)
-  also note B
-  finally show ?thesis 
-    by (simp add: ac.galois)
-qed
+  using assms by (fastforce simp: pw_le_iff refine_pw_simps)
 
 lemma abs_trans[trans]:
   assumes A: "\<Up>R C \<le> B" and B: "\<Up>R' B \<le> A" 
   shows "\<Up>R' (\<Up>R C) \<le> A"
-  using assms unfolding ac.galois[symmetric]
-  by (rule conc_trans)
-
-(*
-definition "difun R \<equiv> 
-  \<forall>a a' c c'. (a,c)\<in>R \<and> (a',c')\<in>R \<and> (a,c')\<in>R \<longrightarrow> (a',c)\<in>R"
-
-lemma sv_is_difun: "single_valued R \<Longrightarrow> difun R"
-  unfolding single_valued_def difun_def
-  by auto
-
-definition "conc_fun' R m \<equiv> case m of
-  FAILi \<Rightarrow> FAIL
-| RES X \<Rightarrow> RES {c. \<exists>a\<in>X. (c,a)\<in>R}"
-
-definition "abs_fun' R m' \<equiv> case m' of
-  FAILi \<Rightarrow> FAIL
-| RES X' \<Rightarrow> RES {a. \<exists>c\<in>X'. (c,a)\<in>R}"
-
-lemma [simp]: 
-  "conc_fun' R FAIL = FAIL"
-  "conc_fun' R (RES X) = RES {c. \<exists>a\<in>X. (c,a)\<in>R}"
-  "abs_fun' R FAIL = FAIL"
-  "abs_fun' R (RES X') = RES {a. \<exists>c\<in>X'. (c,a)\<in>R}"
-  unfolding conc_fun'_def abs_fun'_def
-  by (auto split: nres.split)
-
-lemma ac_galois: 
-  "difun R \<Longrightarrow> galois_connection (abs_fun' R) (conc_fun' R)"
-  apply (unfold_locales)
-  apply rule
-  unfolding conc_fun'_def abs_fun'_def
-  apply (clarsimp split: nres.split nres.split_asm)
-  apply (intro conjI allI impI)
-  apply auto []
-  apply clarsimp
-
-  unfolding difun_def
-  apply clarsimp
-
-  apply (force split: nres.split nres.split_asm)
-  apply auto []
-  apply auto []
-
-  apply (auto split: nres.split nres.split_asm split_if_asm 
-    simp add: top_nres_def[symmetric]) []
-  apply (drule (1) set_mp)
-  apply auto []
-
-
-  apply (force split: nres.split nres.split_asm split_if_asm 
-    simp add: top_nres_def[symmetric]) []
-  done
-*)
-
-
-
+  using assms by (fastforce simp: pw_le_iff refine_pw_simps)
 
 subsubsection {* Transitivity Reasoner Setup *}
 
@@ -734,9 +705,10 @@ lemma abs_trans_additional[trans]:
   "\<And>A B C. \<lbrakk>\<Up> Id A \<le> B; \<Up> Id B \<le> C\<rbrakk> \<Longrightarrow> A \<le> C"
   "\<And>A B C. \<lbrakk>\<Up> Id A \<le> B; B \<le> C\<rbrakk> \<Longrightarrow> A \<le> C"
   "\<And>A B C. \<lbrakk>A \<le> B; \<Up> Id B \<le> C\<rbrakk> \<Longrightarrow> A \<le> C"
-  using conc_trans_additional[unfolded ac.galois]
-    abs_trans[where R=Id and R'=R]
-  by auto
+
+  apply (auto simp: refine_pw_simps pw_le_iff)
+  apply fastforce+
+  done
 
 
 subsection {* Derived Program Constructs *}
@@ -762,32 +734,32 @@ lemma pw_ASSUME[refine_pw_simps]:
   "inres (ASSUME \<Phi>) x \<longleftrightarrow> \<Phi>"
   by (cases \<Phi>, simp_all)+
 
-text {* Assumptions and assertions are in particular useful with bindings, hence
-  we show some handy rules here: *}
-
 subsubsection {* Recursion *}
-lemma pw_REC_nofail: "nofail (REC B x) \<longleftrightarrow> mono B \<and>
+lemma pw_REC_nofail: 
+  shows "nofail (REC B x) \<longleftrightarrow> trimono B \<and>
   (\<exists>F. (\<forall>x. 
     nofail (F x) \<longrightarrow> nofail (B F x) 
     \<and> (\<forall>x'. inres (B F x) x' \<longrightarrow> inres (F x) x')
   ) \<and> nofail (F x))"
 proof -
-  have "nofail (REC B x) \<longleftrightarrow> mono B \<and>
+  have "nofail (REC B x) \<longleftrightarrow> trimono B \<and>
   (\<exists>F. (\<forall>x. B F x \<le> F x) \<and> nofail (F x))"
     unfolding REC_def lfp_def
-    by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
+    apply (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
+    done
   thus ?thesis
     unfolding pw_le_iff .
 qed
 
-lemma pw_REC_inres: "inres (REC B x) x' = (mono B \<longrightarrow>
+lemma pw_REC_inres: 
+  "inres (REC B x) x' = (trimono B \<longrightarrow>
   (\<forall>F. (\<forall>x''. 
     nofail (F x'') \<longrightarrow> nofail (B F x'') 
     \<and> (\<forall>x. inres (B F x'') x \<longrightarrow> inres (F x'') x)) 
     \<longrightarrow> inres (F x) x'))"
 proof -
   have "inres (REC B x) x' 
-    \<longleftrightarrow> (mono B \<longrightarrow> (\<forall>F. (\<forall>x''. B F x'' \<le> F x'') \<longrightarrow> inres (F x) x'))"
+    \<longleftrightarrow> (trimono B \<longrightarrow> (\<forall>F. (\<forall>x''. B F x'' \<le> F x'') \<longrightarrow> inres (F x) x'))"
     unfolding REC_def lfp_def
     by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis unfolding pw_le_iff .
@@ -795,25 +767,27 @@ qed
   
 lemmas pw_REC = pw_REC_inres pw_REC_nofail
 
-lemma pw_RECT_nofail: "nofail (RECT B x) \<longleftrightarrow> mono B \<and>
+lemma pw_RECT_nofail: 
+  shows "nofail (RECT B x) \<longleftrightarrow> trimono B \<and>
   (\<forall>F. (\<forall>y. nofail (B F y) \<longrightarrow>
              nofail (F y) \<and> (\<forall>x. inres (F y) x \<longrightarrow> inres (B F y) x)) \<longrightarrow>
         nofail (F x))"
 proof -
-  have "nofail (RECT B x) \<longleftrightarrow> (mono B \<and> (\<forall>F. (\<forall>y. F y \<le> B F y) \<longrightarrow> nofail (F x)))"
-    unfolding RECT_def gfp_def
+  have "nofail (RECT B x) \<longleftrightarrow> (trimono B \<and> (\<forall>F. (\<forall>y. F y \<le> B F y) \<longrightarrow> nofail (F x)))"
+    unfolding RECT_gfp_def gfp_def
     by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis
     unfolding pw_le_iff .
 qed
 
-lemma pw_RECT_inres: "inres (RECT B x) x' = (mono B \<longrightarrow>
+lemma pw_RECT_inres: 
+  shows "inres (RECT B x) x' = (trimono B \<longrightarrow>
    (\<exists>M. (\<forall>y. nofail (B M y) \<longrightarrow>
              nofail (M y) \<and> (\<forall>x. inres (M y) x \<longrightarrow> inres (B M y) x)) \<and>
         inres (M x) x'))"
 proof -
-  have "inres (RECT B x) x' \<longleftrightarrow> mono B \<longrightarrow> (\<exists>M. (\<forall>y. M y \<le> B M y) \<and> inres (M x) x')"
-    unfolding RECT_def gfp_def
+  have "inres (RECT B x) x' \<longleftrightarrow> trimono B \<longrightarrow> (\<exists>M. (\<forall>y. M y \<le> B M y) \<and> inres (M x) x')"
+    unfolding RECT_gfp_def gfp_def
     by (auto simp: refine_pw_simps intro: le_funI dest: le_funD)
   thus ?thesis unfolding pw_le_iff .
 qed
@@ -902,6 +876,7 @@ lemma Let_rule':
   using assms by simp
 
 
+(* Obsolete, use RECT_eq_REC_tproof instead
 text {* The following lemma shows that greatest and least fixed point are equal,
   if we can provide a variant. *}
 thm RECT_eq_REC
@@ -922,32 +897,16 @@ lemma RECT_eq_REC_old:
   apply (rule pw_eqI)
   apply (auto simp add: refine_pw_simps)
   done
+*)
 
 (* TODO: Also require RECT_le_rule. Derive RECT_invisible_refine from that. *)
 lemma REC_le_rule:
-  assumes M: "mono body"
+  assumes M: "trimono body"
   assumes I0: "(x,x')\<in>R"
   assumes IS: "\<And>f x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le> M x'; (x,x')\<in>R \<rbrakk> 
     \<Longrightarrow> body f x \<le> M x'"
   shows "REC body x \<le> M x'"
-proof -
-  have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> lfp body x \<le> M x'"
-    apply (rule lfp_cadm_induct[OF _ _ M])
-      apply rule+
-      unfolding Sup_fun_def
-      apply (rule SUP_least)
-      apply simp
-
-      apply simp
-
-      using IS 
-      apply blast
-    done
-  with I0 show ?thesis 
-    unfolding REC_def
-    by (auto simp: M)
-qed
-
+  by (rule REC_rule_arb[OF M, where pre="\<lambda>x' x. (x,x')\<in>R", OF I0 IS])
 
 (* TODO: Invariant annotations and vcg-rule
   Possibility 1: Semantically alter the program, such that it fails if the 
@@ -989,49 +948,26 @@ text {* If we have two identical programs, this rule solves the refinement goal
 lemma Id_refine[refine0]: "S \<le> \<Down>Id S" by auto
 
 lemma RES_refine: 
-  assumes "S\<subseteq>Domain R" 
-  assumes "\<And>x x'. \<lbrakk>x\<in>S; (x,x')\<in>R\<rbrakk> \<Longrightarrow> x'\<in>S'"
-  shows "RES S \<le> \<Down>R (RES S')" 
-  using assms 
-  by (force simp: conc_fun_RES)
-
-lemma RES_refine_sv: 
-  "\<lbrakk>single_valued R; 
-    \<And>s. s\<in>S \<Longrightarrow> \<exists>s'\<in>S'. (s,s')\<in>R\<rbrakk> \<Longrightarrow> RES S \<le> \<Down>R (RES S')" 
-  by (auto simp: conc_fun_RES dest: single_valuedD)
+  "\<lbrakk> \<And>s. s\<in>S \<Longrightarrow> \<exists>s'\<in>S'. (s,s')\<in>R\<rbrakk> \<Longrightarrow> RES S \<le> \<Down>R (RES S')" 
+  by (auto simp: conc_fun_RES)
 
 lemma SPEC_refine: 
-  assumes "S \<le> SPEC (\<lambda>x. x\<in>Domain R \<and> (\<forall>x'. (x,x')\<in>R \<longrightarrow> \<Phi> x'))"
-  shows "S \<le> \<Down>R (SPEC \<Phi>)" 
-  using assms by (force simp: pw_le_iff refine_pw_simps)
-
-lemma SPEC_refine_sv: 
-  assumes "single_valued R"
   assumes "S \<le> SPEC (\<lambda>x. \<exists>x'. (x,x')\<in>R \<and> \<Phi> x')"
   shows "S \<le> \<Down>R (SPEC \<Phi>)"
   using assms
-  by (force simp: pw_le_iff refine_pw_simps dest: single_valuedD)
+  by (force simp: pw_le_iff refine_pw_simps)
 
 (* TODO/FIXME: This is already part of a type-based heuristics! *)
 lemma Id_SPEC_refine[refine]: 
   "S \<le> SPEC \<Phi> \<Longrightarrow> S \<le> \<Down>Id (SPEC \<Phi>)" by simp
 
-lemma RETURN_refine: 
-  assumes "x\<in>Domain R"
-  assumes "\<And>x''. (x,x'')\<in>R \<Longrightarrow> x''=x'"
-  shows "RETURN x \<le> \<Down>R (RETURN x')"
-  using assms by (auto simp: pw_le_iff refine_pw_simps)
-
-lemma RETURN_refine_sv[refine]:
-  assumes "single_valued R"
+lemma RETURN_refine[refine]:
   assumes "(x,x')\<in>R"
   shows "RETURN x \<le> \<Down>R (RETURN x')"
-  apply (rule RETURN_refine)
   using assms
-  by (auto dest: single_valuedD)
+  by (auto simp: RETURN_def conc_fun_RES)
 
-lemma RETURN_SPEC_refine_sv:
-  assumes SV: "single_valued R"
+lemma RETURN_SPEC_refine:
   assumes "\<exists>x'. (x,x')\<in>R \<and> \<Phi> x'"
   shows "RETURN x \<le> \<Down>R (SPEC \<Phi>)"
   using assms 
@@ -1061,6 +997,19 @@ lemma bind_refine[refine]:
     \<Longrightarrow> f x \<le> \<Down> R (f' x')"
   shows "bind M (\<lambda>x. f x) \<le> \<Down> R (bind M' (\<lambda>x'. f' x'))"
   apply (rule bind_refine') using assms by auto
+
+lemma bind_refine_abs': (* Only keep nf_inres-information for abstract *)
+  fixes R' :: "('a\<times>'b) set" and R::"('c\<times>'d) set"
+  assumes R1: "M \<le> \<Down> R' M'"
+  assumes R2: "\<And>x x'. \<lbrakk> (x,x')\<in>R'; nf_inres M' x'
+  \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')"
+  shows "bind M (\<lambda>x. f x) \<le> \<Down> R (bind M' (\<lambda>x'. f' x'))"
+  using assms
+  apply (simp add: pw_le_iff refine_pw_simps)
+  apply blast
+  done
+
+
 
 text {* Special cases for refinement of binding to @{text "RES"}
   statements *}
@@ -1140,62 +1089,60 @@ lemmas [refine] = ASSUME_refine_left
 lemmas [refine] = ASSERT_refine_right
 
 
+definition lift_assn :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)"
+  -- \<open>Lift assertion over refinement relation\<close>
+  where "lift_assn R \<Phi> s \<equiv> \<exists>s'. (s,s')\<in>R \<and> \<Phi> s'"
+lemma lift_assnI: "\<lbrakk>(s,s')\<in>R; \<Phi> s'\<rbrakk> \<Longrightarrow> lift_assn R \<Phi> s"
+  unfolding lift_assn_def by auto
+
+
+
+
 lemma REC_refine[refine]:
-  assumes M: "mono body"
+  assumes M: "trimono body"
   assumes R0: "(x,x')\<in>R"
-  assumes RS: "\<And>f f' x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le>\<Down>S (f' x'); (x,x')\<in>R \<rbrakk> 
+  assumes RS: "\<And>f f' x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le>\<Down>S (f' x'); (x,x')\<in>R; 
+        REC body' = f' \<rbrakk> 
     \<Longrightarrow> body f x \<le>\<Down>S (body' f' x')"
   shows "REC (\<lambda>f x. body f x) x \<le>\<Down>S (REC (\<lambda>f' x'. body' f' x') x')"
   unfolding REC_def
   apply (clarsimp simp add: M)
-proof -
-  assume M': "mono body'"
-  have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> lfp body x \<le> \<Down>S (lfp body' x')"
-    apply (rule lfp_cadm_induct[OF _ _ M])
-      apply rule+
-      unfolding Sup_fun_def
-      apply (rule SUP_least)
-      apply simp
+  apply (rule lfp_induct_pointwise[where pre="\<lambda>x' x. (x,x')\<in>R" and B=body])
 
-      apply simp
+  apply rule
+  apply clarsimp
+  apply (blast intro: SUP_least)
 
-      apply (rule)+
-      apply (subst lfp_unfold[OF M'])
-      apply (rule RS)
-      apply blast
-      apply assumption
-    done
-  thus "lfp body x \<le> \<Down> S (lfp body' x')" by (blast intro: R0)
-qed
+  apply simp
+
+  apply (simp add: trimonoD[OF M])
+
+  apply (rule R0)
+
+  apply (subst lfp_unfold, simp add: trimonoD)
+  apply (rule RS)
+  apply blast
+  apply blast
+  apply (simp add: REC_def[abs_def])
+  done
 
 lemma RECT_refine[refine]:
-  assumes M: "mono body"
+  assumes M: "trimono body"
   assumes R0: "(x,x')\<in>R"
   assumes RS: "\<And>f f' x x'. \<lbrakk> \<And>x x'. (x,x')\<in>R \<Longrightarrow> f x \<le>\<Down>S (f' x'); (x,x')\<in>R \<rbrakk> 
     \<Longrightarrow> body f x \<le>\<Down>S (body' f' x')"
   shows "RECT (\<lambda>f x. body f x) x \<le>\<Down>S (RECT (\<lambda>f' x'. body' f' x') x')"
   unfolding RECT_def
   apply (clarsimp simp add: M)
-proof -
-  assume M': "mono body'"
-  have "\<forall>x x'. (x,x')\<in>R \<longrightarrow> \<Up>S (gfp body x) \<le> (gfp body' x')"
-    apply (rule gfp_cadm_induct[OF _ _ M'])
-      apply rule+
-      unfolding Inf_fun_def
-      apply (rule INF_greatest)
-      apply simp
 
-      apply simp
-
-      apply (rule)+
-      apply (subst gfp_unfold[OF M])
-      apply (rule RS[unfolded ac.galois])
-      apply blast
-      apply assumption
-    done
-  thus "gfp body x \<le> \<Down> S (gfp body' x')" 
-    unfolding ac.galois by (blast intro: R0)
-qed
+  apply (rule flatf_fixp_transfer[where 
+        fp'="flatf_gfp body" 
+    and B'=body 
+    and P="\<lambda>x x'. (x',x)\<in>R", 
+    OF _ _ flatf_ord.fixp_unfold[OF M[THEN trimonoD_flatf_ge]] R0])
+  apply simp
+  apply (simp add: trimonoD)
+  by (rule RS)
 
 lemma if_refine[refine]:
   assumes "b \<longleftrightarrow> b'"
@@ -1217,12 +1164,19 @@ lemma Let_refine:
   shows "Let m (\<lambda>x. f x) \<le>\<Down>R (Let m' (\<lambda>x'. f' x'))"
   using assms by auto
 
+lemma Let_refine':
+  assumes "(m,m')\<in>R"
+  assumes "(m,m')\<in>R \<Longrightarrow> f m \<le>\<Down>S (f' m')"
+  shows "Let m f \<le> \<Down>S (Let m' f')"
+  using assms by simp
+
 lemma case_option_refine[refine]:
   assumes "(x,x')\<in>Id"
-  assumes "fn \<le> \<Down>R fn'"
+  assumes "x=None \<Longrightarrow> fn \<le> \<Down>R fn'"
   assumes "\<And>v v'. \<lbrakk>x=Some v; (v,v')\<in>Id\<rbrakk> \<Longrightarrow> fs v \<le> \<Down>R (fs' v')"
   shows "case_option fn (\<lambda>v. fs v) x \<le> \<Down>R (case_option fn' (\<lambda>v'. fs' v') x')"
   using assms by (auto split: option.split)
+
 
 text {* It is safe to split conjunctions in refinement goals.*}
 declare conjI[refine]
@@ -1263,13 +1217,15 @@ lemma bind2letRETURN_refine[refine2]:
   apply fast
   done
 
-lemma RETURN_as_SPEC_refine_sv[refine2]:
-  assumes "single_valued R"
+lemma RETURN_as_SPEC_refine[refine2]:
   assumes "M \<le> SPEC (\<lambda>c. (c,a)\<in>R)"
   shows "M \<le> \<Down>R (RETURN a)"
   using assms
-  apply (simp add: pw_le_iff refine_pw_simps)
-  done
+  by (simp add: pw_le_iff refine_pw_simps)
+
+lemma RETURN_as_SPEC_refine_old:
+  "\<And>M R. M \<le> \<Down>R (SPEC (\<lambda>x. x=v)) \<Longrightarrow> M \<le>\<Down>R (RETURN v)"
+  by (simp add: RETURN_def)
 
 lemma if_RETURN_refine [refine2]:
   assumes "b \<longleftrightarrow> b'"
@@ -1280,17 +1236,12 @@ lemma if_RETURN_refine [refine2]:
   using assms
   by (simp add: pw_le_iff refine_pw_simps)
 
-lemma RES_sng_as_SPEC_refine_sv[refine2]:
-  assumes "single_valued R"
+lemma RES_sng_as_SPEC_refine[refine2]:
   assumes "M \<le> SPEC (\<lambda>c. (c,a)\<in>R)"
   shows "M \<le> \<Down>R (RES {a})"
   using assms
-  apply (simp add: pw_le_iff refine_pw_simps)
-  done
+  by (simp add: pw_le_iff refine_pw_simps)
 
-lemma RETURN_as_SPEC_refine: 
-  "\<And>M R. M \<le> \<Down>R (SPEC (\<lambda>x. x=v)) \<Longrightarrow> M \<le>\<Down>R (RETURN v)"
-  by (simp add: RETURN_def)
 
 lemma intro_spec_refine_iff:
   "(bind (RES X) f \<le> \<Down>R M) \<longleftrightarrow> (\<forall>x\<in>X. f x \<le> \<Down>R M)"
@@ -1341,6 +1292,61 @@ lemma intro_bind_refine_id:
   apply blast
   done
 
+text \<open>The following set of rules executes a step on the LHS or RHS of 
+  a refinement proof obligation, without changing the other side.
+  These kind of rules is useful for performing refinements with 
+  invisible steps.\<close>  
+lemma lhs_step_If:
+  "\<lbrakk> b \<Longrightarrow> t \<le> m; \<not>b \<Longrightarrow> e \<le> m \<rbrakk> \<Longrightarrow> If b t e \<le> m" by simp
+
+lemma lhs_step_RES:
+  "\<lbrakk> \<And>x. x\<in>X \<Longrightarrow> RETURN x \<le> m  \<rbrakk> \<Longrightarrow> RES X \<le> m" 
+  by (simp add: pw_le_iff)
+
+lemma lhs_step_SPEC:
+  "\<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> RETURN x \<le> m \<rbrakk> \<Longrightarrow> SPEC (\<lambda>x. \<Phi> x) \<le> m" 
+  by (simp add: pw_le_iff)
+
+lemma lhs_step_bind:
+  fixes m :: "'a nres" and f :: "'a \<Rightarrow> 'b nres"
+  assumes "nofail m' \<Longrightarrow> nofail m"
+  assumes "\<And>x. nf_inres m x \<Longrightarrow> f x \<le> m'"
+  shows "do {x\<leftarrow>m; f x} \<le> m'"
+  using assms
+  by (simp add: pw_le_iff refine_pw_simps) blast
+
+lemma rhs_step_bind:
+  assumes "m \<le> \<Down>R m'" "inres m x" "\<And>x'. (x,x')\<in>R \<Longrightarrow> lhs \<le>\<Down>S (f' x')"
+  shows "lhs \<le> \<Down>S (m' \<guillemotright>= f')"
+  using assms
+  by (simp add: pw_le_iff refine_pw_simps) blast
+
+lemma rhs_step_bind_RES:
+  assumes "x'\<in>X'"
+  assumes "m \<le> \<Down>R (f' x')"
+  shows "m \<le> \<Down>R (RES X' \<guillemotright>= f')"
+  using assms by (simp add: pw_le_iff refine_pw_simps) blast
+
+lemma rhs_step_bind_SPEC:
+  assumes "\<Phi> x'"
+  assumes "m \<le> \<Down>R (f' x')"
+  shows "m \<le> \<Down>R (SPEC \<Phi> \<guillemotright>= f')"
+  using assms by (simp add: pw_le_iff refine_pw_simps) blast
+
+lemma RES_bind_choose:
+  assumes "x\<in>X"
+  assumes "m \<le> f x"
+  shows "m \<le> RES X \<guillemotright>= f"
+  using assms by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma pw_RES_bind_choose: 
+  "nofail (RES X \<guillemotright>= f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
+  "inres (RES X \<guillemotright>= f) y \<longleftrightarrow> (\<exists>x\<in>X. inres (f x) y)"
+  by (auto simp: refine_pw_simps)
+
+
+
+
 subsection {* Relators *}
 
 definition nres_rel where 
@@ -1352,18 +1358,25 @@ lemma nres_rel_def: "\<langle>R\<rangle>nres_rel \<equiv> {(c,a). c \<le> \<Down
 lemma nres_relD: "(c,a)\<in>\<langle>R\<rangle>nres_rel \<Longrightarrow> c \<le>\<Down>R a" by (simp add: nres_rel_def)
 lemma nres_relI: "c \<le>\<Down>R a \<Longrightarrow> (c,a)\<in>\<langle>R\<rangle>nres_rel" by (simp add: nres_rel_def)
 
+lemma param_SUCCEED[param]: "(SUCCEED,SUCCEED) \<in> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def)
+
+lemma param_FAIL[param]: "(FAIL,FAIL) \<in> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def)
+
 lemma param_RES[param]:
   "(RES,RES) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>nres_rel"
   unfolding set_rel_def nres_rel_def
-  by (auto intro: RES_refine)
+  by (fastforce intro: RES_refine)
 
 lemma param_RETURN[param]: 
-  "single_valued R \<Longrightarrow> (RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
-  by (auto simp: nres_rel_def RETURN_refine_sv)
+  "(RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def RETURN_refine)
 
 lemma param_bind[param]:
   "(bind,bind) \<in> \<langle>Ra\<rangle>nres_rel \<rightarrow> (Ra\<rightarrow>\<langle>Rb\<rangle>nres_rel) \<rightarrow> \<langle>Rb\<rangle>nres_rel"
   by (auto simp: nres_rel_def intro: bind_refine dest: fun_relD)
+
 
 subsection {* Autoref Setup *}
 
@@ -1379,6 +1392,16 @@ lemma [autoref_op_pat_def]: "RETURN x \<equiv> op_RETURN x" by simp
 *)
 
 definition [simp]: "op_nres_ASSERT_bnd \<Phi> m \<equiv> do {ASSERT \<Phi>; m}"
+
+
+lemma param_op_nres_ASSERT_bnd[param]:
+  assumes "\<Phi>' \<Longrightarrow> \<Phi>"
+  assumes "\<lbrakk>\<Phi>'; \<Phi>\<rbrakk> \<Longrightarrow> (m,m')\<in>\<langle>R\<rangle>nres_rel"
+  shows "(op_nres_ASSERT_bnd \<Phi> m, op_nres_ASSERT_bnd \<Phi>' m') \<in> \<langle>R\<rangle>nres_rel"
+  using assms
+  by (auto simp: pw_le_iff refine_pw_simps nres_rel_def)
+
+
 
 context begin interpretation autoref_syn .
 lemma id_ASSERT[autoref_op_pat_def]:
@@ -1399,8 +1422,8 @@ lemma autoref_FAIL[autoref_rules]: "(FAIL,FAIL) \<in> \<langle>R\<rangle>nres_re
   by (auto simp: nres_rel_def)
 
 lemma autoref_RETURN[autoref_rules]: 
-  "PREFER single_valued R \<Longrightarrow> (RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
-  by (auto simp: nres_rel_def RETURN_refine_sv)
+  "(RETURN,RETURN) \<in> R \<rightarrow> \<langle>R\<rangle>nres_rel"
+  by (auto simp: nres_rel_def RETURN_refine)
 
 lemma autoref_bind[autoref_rules]: 
   "(bind,bind) \<in> \<langle>R1\<rangle>nres_rel \<rightarrow> (R1\<rightarrow>\<langle>R2\<rangle>nres_rel) \<rightarrow> \<langle>R2\<rangle>nres_rel"
@@ -1410,7 +1433,8 @@ lemma autoref_bind[autoref_rules]:
   apply (erule nres_relD)
   apply (erule (1) fun_relD[THEN nres_relD])
   done
- 
+
+
 context begin interpretation autoref_syn .
 lemma autoref_ASSERT[autoref_rules]:
   assumes "\<Phi> \<Longrightarrow> (m',m)\<in>\<langle>R\<rangle>nres_rel"
@@ -1431,7 +1455,7 @@ lemma autoref_ASSUME[autoref_rules]:
 
 lemma autoref_REC[autoref_rules]:
   assumes "(B,B')\<in>(Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
-  assumes "DEFER mono B"
+  assumes "DEFER trimono B"
   shows "(REC B,
     (OP REC 
       ::: ((Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel)$B'
@@ -1443,19 +1467,28 @@ lemma autoref_REC[autoref_rules]:
   apply blast
   done
 
-lemma autoref_RECT[autoref_rules]:
-  assumes "(B,B') \<in> (Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel"
-  assumes "DEFER mono B"
-  shows "(RECT B,
-    (OP RECT 
-      ::: ((Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel)$B'
-   ) \<in> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+theorem param_RECT[param]:
+  assumes "(B, B') \<in> (Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+    and "trimono B"
+  shows "(REC\<^sub>T B, REC\<^sub>T B')\<in> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
   apply (intro fun_relI)
   using assms
   apply (auto simp: nres_rel_def intro!: RECT_refine)
   apply (simp add: fun_rel_def)
   apply blast
   done
+
+lemma autoref_RECT[autoref_rules]:
+  assumes "(B,B') \<in> (Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel"
+  assumes "DEFER trimono B"
+  shows "(RECT B,
+    (OP RECT 
+      ::: ((Ra\<rightarrow>\<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel) \<rightarrow> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel)$B'
+    ) \<in> Ra \<rightarrow> \<langle>Rr\<rangle>nres_rel"
+  using assms
+  unfolding autoref_tag_defs 
+  by (rule param_RECT)
+
 end
 
 subsection {* Convenience Rules*}
@@ -1463,23 +1496,22 @@ text {*
   In this section, we define some lemmas that simplify common prover tasks.
 *}
 
-lemma ref_two_step: "A\<le>\<Down>R  B \<Longrightarrow> B\<le>    C \<Longrightarrow> A\<le>\<Down>R  C" 
+lemma ref_two_step: "A\<le>\<Down>R  B \<Longrightarrow> B\<le>C \<Longrightarrow> A\<le>\<Down>R  C" 
   by (rule conc_trans_additional)
 
    
-lemma pw_ref_sv_iff:
-  shows "single_valued R \<Longrightarrow> S \<le> \<Down>R S' 
+lemma pw_ref_iff:
+  shows "S \<le> \<Down>R S' 
   \<longleftrightarrow> (nofail S' 
     \<longrightarrow> nofail S \<and> (\<forall>x. inres S x \<longrightarrow> (\<exists>s'. (x, s') \<in> R \<and> inres S' s')))"
   by (simp add: pw_le_iff refine_pw_simps)
 
-lemma pw_ref_svI:
-  assumes "single_valued R"
+lemma pw_ref_I:
   assumes "nofail S' 
     \<longrightarrow> nofail S \<and> (\<forall>x. inres S x \<longrightarrow> (\<exists>s'. (x, s') \<in> R \<and> inres S' s'))"
   shows "S \<le> \<Down>R S'"
   using assms
-  by (simp add: pw_ref_sv_iff)
+  by (simp add: pw_ref_iff)
 
 text {* Introduce an abstraction relation. Usage: 
   @{text "rule introR[where R=absRel]"}
@@ -1527,8 +1559,7 @@ lemma le_RES_nofailI:
   using assms
   by (metis nofail_simps(2) pwD1)
 
-lemma sv_add_invar_refineI:
-  assumes "single_valued R"
+lemma add_invar_refineI:
   assumes "f x \<le>\<Down>R (f' x')"
     and "nofail (f x) \<Longrightarrow> f x \<le> SPEC I"
   shows "f x \<le> \<Down> {(c, a). (c, a) \<in> R \<and> I c} (f' x')"
@@ -1559,6 +1590,72 @@ lemma bind_assert_refine:
   shows "do {x\<leftarrow>m1; ASSERT (\<Phi> x); m2 x} \<le> m'"
   using assms
   by (simp add: pw_le_iff refine_pw_simps) blast
+
+
+lemma RETURN_refine_iff[simp]: "RETURN x \<le>\<Down>R (RETURN y) \<longleftrightarrow> (x,y)\<in>R"
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma RETURN_RES_refine_iff: 
+  "RETURN x \<le>\<Down>R (RES Y) \<longleftrightarrow> (\<exists>y\<in>Y. (x,y)\<in>R)"
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma in_nres_rel_iff: "(a,b)\<in>\<langle>R\<rangle>nres_rel \<longleftrightarrow> a \<le>\<Down>R b"
+  by (auto simp: nres_rel_def)
+
+lemma inf_RETURN_RES: 
+  "inf (RETURN x) (RES X) = (if x\<in>X then RETURN x else SUCCEED)"
+  "inf (RES X) (RETURN x) = (if x\<in>X then RETURN x else SUCCEED)"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+
+lemma inf_RETURN_SPEC[simp]:
+  "inf (RETURN x) (SPEC (\<lambda>y. \<Phi> y)) = SPEC (\<lambda>y. y=x \<and> \<Phi> x)"
+  "inf (SPEC (\<lambda>y. \<Phi> y)) (RETURN x) = SPEC (\<lambda>y. y=x \<and> \<Phi> x)"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma RES_sng_eq_RETURN: "RES {x} = RETURN x"
+  by simp
+
+lemma nofail_inf_serialize:
+  "\<lbrakk>nofail a; nofail b\<rbrakk> \<Longrightarrow> inf a b = do {x\<leftarrow>a; ASSUME (inres b x); RETURN x}"
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+
+lemma conc_fun_SPEC: 
+  "\<Down>R (SPEC (\<lambda>x. \<Phi> x)) = SPEC (\<lambda>y. \<exists>x. (y,x)\<in>R \<and> \<Phi> x)"  
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+lemma conc_fun_RETURN: 
+  "\<Down>R (RETURN x) = SPEC (\<lambda>y. (y,x)\<in>R)"  
+  by (auto simp: pw_eq_iff refine_pw_simps)
+
+
+lemma use_spec_rule:
+  assumes "m \<le> SPEC \<Psi>"
+  assumes "m \<le> SPEC (\<lambda>s. \<Psi> s \<longrightarrow> \<Phi> s)"
+  shows "m \<le> SPEC \<Phi>"
+  using assms
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma strengthen_SPEC: "m \<le> SPEC \<Phi> \<Longrightarrow> m \<le> SPEC(\<lambda>s. inres m s \<and> \<Phi> s)"
+  -- "Strengthen SPEC by adding trivial upper bound for result"
+  by (auto simp: pw_le_iff refine_pw_simps)
+
+lemma weaken_SPEC:
+  "m \<le> SPEC \<Phi> \<Longrightarrow> (\<And>x. \<Phi> x \<Longrightarrow> \<Psi> x) \<Longrightarrow> m \<le> SPEC \<Psi>"
+  by (force elim!: order_trans)
+
+lemma bind_le_nofailI:
+  assumes "nofail m"
+  assumes "\<And>x. RETURN x \<le> m \<Longrightarrow> f x \<le> m'"
+  shows "m\<guillemotright>=f \<le> m'"
+  using assms 
+  by (simp add: refine_pw_simps pw_le_iff) blast
+
+lemma bind_le_shift:
+  "bind m f \<le> m' 
+  \<longleftrightarrow> m \<le> (if nofail m' then SPEC (\<lambda>x. f x \<le> m') else FAIL)"
+  by (auto simp: pw_le_iff refine_pw_simps)
 
 
 text {* The following rules are useful for massaging programs before the 
@@ -1595,49 +1692,49 @@ lemma intro_RETURN_Let_refine:
   (* this should be needed very rarely - so don't add it *)
   using assms by auto
 
-text {* 
-  This rule establishes equality between RECT and REC, using an additional 
-  invariant. Note that the default way is to prove termination in
-  first place, instead of re-proving parts of the invariant just for the
-  termination proof. *}
-lemma RECT_eq_REC':
-  assumes WF: "wf V'"
-  assumes I0: "I x"
-  assumes IS: "\<And>f x. I x \<Longrightarrow> (\<And>x. f x \<le> RECT body x) \<Longrightarrow>
-    body (\<lambda>x'. if (I x' \<and> (x',x)\<in>V') then f x' else top) x \<le> body f x"
-  shows "RECT body x = REC body x"
-proof (cases "mono body")
-  assume "\<not>mono body"
-  thus ?thesis unfolding REC_def RECT_def by simp
-next
-  assume MONO: "mono body"
+lemma ife_FAIL_to_ASSERT_cnv: 
+  "(if \<Phi> then m else FAIL) = op_nres_ASSERT_bnd \<Phi> m"
+  by (cases \<Phi>, auto)
 
-  have lfp_ubound: "\<And>x. lfp body x \<le> RECT body x"
-  proof -
-    fix x
-    from REC_le_RECT[of body x, unfolded REC_def] MONO
-    show "lfp body x \<le> RECT body x" by auto
-  qed
 
-  from lfp_le_gfp' MONO have "lfp body x \<le> gfp body x" .
-  moreover have "I x \<longrightarrow> gfp body x \<le> lfp body x"
-    using WF
-    apply (induct rule: wf_induct[consumes 1])
-    apply (rule impI)
-    apply (subst lfp_unfold[OF MONO])
-    apply (subst gfp_unfold[OF MONO])
-    apply (rule order_trans[OF _ IS])
-    apply (rule monoD[OF MONO,THEN le_funD])
-    apply (rule le_funI)
-    apply simp
-    apply simp
-    apply (rule lfp_ubound)
-    done
-  ultimately show ?thesis
-    unfolding REC_def RECT_def
-    apply (rule_tac antisym)
-    using I0 MONO by auto
-qed
+lemma le_ASSERT_defI1:
+  assumes "c \<equiv> do {ASSERT \<Phi>; m}"
+  assumes "\<Phi> \<Longrightarrow> m' \<le> c"
+  shows "m' \<le> c"
+  using assms
+  by (simp add: le_ASSERTI)
+
+lemma refine_ASSERT_defI1:
+  assumes "c \<equiv> do {ASSERT \<Phi>; m}"
+  assumes "\<Phi> \<Longrightarrow> m' \<le> \<Down>R c"
+  shows "m' \<le> \<Down>R c"
+  using assms
+  by (simp, refine_vcg)
+
+lemma le_ASSERT_defI2:
+  assumes "c \<equiv> do {ASSERT \<Phi>; ASSERT \<Psi>; m}"
+  assumes "\<lbrakk>\<Phi>; \<Psi>\<rbrakk> \<Longrightarrow> m' \<le> c"
+  shows "m' \<le> c"
+  using assms
+  by (simp add: le_ASSERTI)
+
+lemma refine_ASSERT_defI2:
+  assumes "c \<equiv> do {ASSERT \<Phi>; ASSERT \<Psi>; m}"
+  assumes "\<lbrakk>\<Phi>; \<Psi>\<rbrakk> \<Longrightarrow> m' \<le> \<Down>R c"
+  shows "m' \<le> \<Down>R c"
+  using assms
+  by (simp, refine_vcg)
+
+lemma ASSERT_le_defI:
+  assumes "c \<equiv> do { ASSERT \<Phi>; m'}"
+  assumes "\<Phi>"
+  assumes "\<Phi> \<Longrightarrow> m' \<le> m"
+  shows "c \<le> m"
+  using assms by (auto)
+
+
+
+
 
 subsubsection {* Boolean Operations on Specifications *}
 lemma SPEC_iff:
@@ -1686,6 +1783,17 @@ by (auto dest: pwD2)
 lemma SPEC_nofail:
   "X \<le> SPEC \<Phi> \<Longrightarrow> nofail X"
 by (auto dest: pwD1)
+
+lemma nofail_SPEC: "nofail m \<Longrightarrow> m \<le> SPEC (\<lambda>_. True)"
+  by (simp add: pw_le_iff)
+
+lemma nofail_SPEC_iff: "nofail m \<longleftrightarrow> m \<le> SPEC (\<lambda>_. True)"
+  by (simp add: pw_le_iff)
+
+lemma nofail_SPEC_triv_refine: "\<lbrakk> nofail m; \<And>x. \<Phi> x \<rbrakk> \<Longrightarrow> m \<le> SPEC \<Phi>"
+  by (simp add: pw_le_iff)
+
+
 
 
 end

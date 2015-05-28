@@ -2,6 +2,14 @@ section {* Skeleton for Gabow's SCC Algorithm \label{sec:skel}*}
 theory Gabow_Skeleton
 imports "../CAVA_Automata/Digraph"
 begin
+
+(* TODO: convenience locale, consider merging this with invariants *)
+locale fr_graph =
+  graph G
+  for G :: "('v, 'more) graph_rec_scheme"
+  +
+  assumes finite_reachableE_V0[simp, intro!]: "finite (E\<^sup>* `` V0)"
+
 text {*
   In this theory, we formalize a skeleton of Gabow's SCC algorithm. 
   The skeleton serves as a starting point to develop concrete algorithms,
@@ -127,7 +135,7 @@ begin
 end
 
 locale outer_invar_loc -- "Invariant of the outer loop"
-  = fr_graph G for G :: "('v,'more) fr_graph_rec_scheme" +
+  = fr_graph G for G :: "('v,'more) graph_rec_scheme" +
   fixes it :: "'v set" -- {* Remaining nodes to iterate over *}
   fixes D :: "'v set" -- {* Finished nodes *}
 
@@ -148,7 +156,7 @@ end
 
 locale invar_loc -- "Invariant of the inner loop"
   = fr_graph G
-  for G :: "('v, 'more) fr_graph_rec_scheme" +
+  for G :: "('v, 'more) graph_rec_scheme" +
   fixes v0 :: "'v"
   fixes D0 :: "'v set"
   fixes p :: "'v set list"
@@ -1346,7 +1354,7 @@ begin
       apply (refine_rcg 
         WHILEIT_rule[where R="abs_wf_rel v0" for v0] refine_vcg)
 
-      apply (vc_solve solve: invar_preserve simp: pE_fin')
+      apply (vc_solve solve: invar_preserve simp: pE_fin' finite_V0)
       done
   qed
 
@@ -1357,7 +1365,7 @@ begin
     theorem "skeleton \<le> SPEC (\<lambda>D. outer_invar {} D)"
       unfolding skeleton_def select_edge_def select_def
       by (refine_rcg WHILEIT_rule[where R="abs_wf_rel v0" for v0])
-         (vc_solve solve: invar_preserve simp: pE_fin')
+         (vc_solve solve: invar_preserve simp: pE_fin' finite_V0)
   end
 
 end
@@ -1437,7 +1445,6 @@ end
 subsection {* Gabow's Datastructure *}
 
 subsubsection {* Definition and Invariant *}
-
 datatype node_state = STACK nat | DONE
 
 type_synonym 'v oGS = "'v \<rightharpoonup> node_state"
@@ -2014,7 +2021,7 @@ begin
     show ?thesis
       unfolding pop_impl_def
       apply (refine_rcg 
-        SPEC_refine_sv refine_vcg order_trans[OF mark_as_done_aux])
+        SPEC_refine refine_vcg order_trans[OF mark_as_done_aux])
       apply (simp_all add: BNE seg_start_less_end seg_end_bound)
       apply (fold ci_def)
       unfolding GS_rel_def
@@ -2357,7 +2364,7 @@ begin
 
     show ?thesis
       unfolding collapse_impl_def
-      apply (refine_rcg SPEC_refine_sv refine_vcg order_trans[OF idx_of_correct])
+      apply (refine_rcg SPEC_refine refine_vcg order_trans[OF idx_of_correct])
 
       apply fact
       apply (metis discrete)

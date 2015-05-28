@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Standard Implementations of Maps"
+section "Standard Implementations of Maps"
 theory MapStdImpl
 imports 
   ListMapImpl 

@@ -1,4 +1,4 @@
-header {* \isaheader{Examples from ITP-2010 slides (adopted to ICF v2)} *}
+section {* \isaheader{Examples from ITP-2010 slides (adopted to ICF v2)} *}
 theory itp_2010
 imports 
   "../../ICF/Collections" 

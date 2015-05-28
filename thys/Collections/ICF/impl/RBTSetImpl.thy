@@ -9,7 +9,7 @@
 
 *)
 
-header {* \isaheader{Set Implementation by Red-Black-Tree} *}
+section {* \isaheader{Set Implementation by Red-Black-Tree} *}
 theory RBTSetImpl
 imports 
   "../spec/SetSpec"

@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Specification of Maps} *}
+section {* \isaheader{Specification of Maps} *}
 theory MapSpec
 imports ICF_Spec_Base
 begin

@@ -1,4 +1,4 @@
-header {* \isaheader{Entry Point with only the ICF} *}
+section {* \isaheader{Entry Point with only the ICF} *}
 theory Refine_Dflt_Only_ICF
 imports
   "../Refine_Monadic/Refine_Monadic"

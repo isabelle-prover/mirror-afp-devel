@@ -9,7 +9,7 @@
 
 *)
 
-header {* \isaheader{Generic Algorithms for Sets} *}
+section {* \isaheader{Generic Algorithms for Sets} *}
 theory SetGA
 imports "../spec/SetSpec" SetIteratorCollectionsGA
 begin

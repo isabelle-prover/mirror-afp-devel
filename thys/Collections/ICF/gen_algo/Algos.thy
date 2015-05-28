@@ -2,7 +2,7 @@
     Author:      Peter Lammich <lammich at in.tum.de>
     Maintainer:  Peter Lammich <lammich at in.tum.de>
 *)
-header {* \isaheader{More Generic Algorithms} *}
+section {* \isaheader{More Generic Algorithms} *}
 theory Algos
 imports 
   "../spec/SetSpec"

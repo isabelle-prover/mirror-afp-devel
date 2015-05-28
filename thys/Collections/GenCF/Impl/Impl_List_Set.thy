@@ -1,4 +1,4 @@
-header {* \isaheader{List Based Sets} *}
+section {* \isaheader{List Based Sets} *}
 theory Impl_List_Set
 imports
   "../../Iterator/Iterator" 

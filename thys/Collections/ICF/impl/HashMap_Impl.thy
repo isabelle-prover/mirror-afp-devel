@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Hash maps implementation} *}
+section {* \isaheader{Hash maps implementation} *}
 theory HashMap_Impl
 imports 
   RBTMapImpl 

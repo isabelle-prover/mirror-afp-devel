@@ -37,13 +37,13 @@ definition "curr_check n i chk \<equiv> array_check (curr_eq n i) chk (n + 1)"
 
 definition lf_const :: "nat \<Rightarrow> const_map" where
   "lf_const n \<equiv> mapping_from_list [
-              (''elected'', V elected),
-              (''error'', V error)]"
+              (STR ''elected'', V elected),
+              (STR ''error'', V error)]"
 
 definition lf_fun :: "nat \<Rightarrow> fun_map" where
   "lf_fun n \<equiv> mapping_from_list [
-             (''b'', \<lambda>i. V (b n i)),
-             (''c'', \<lambda>i. V (c n i))]"
+             (STR ''b'', \<lambda>i. V (b n i)),
+             (STR ''c'', \<lambda>i. V (c n i))]"
 
 
 (* init variable list *)

@@ -100,7 +100,10 @@ QR decomposition is an algorithm to decompose a real matrix A into the product o
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-02-13.tar.gz">afp-<!--#echo var="name" -->-2015-02-13.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

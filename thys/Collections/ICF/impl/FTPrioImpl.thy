@@ -1,4 +1,4 @@
-header {*\isaheader{Implementation of Priority Queues by Finger Trees}*}
+section {*\isaheader{Implementation of Priority Queues by Finger Trees}*}
 theory FTPrioImpl
 imports FTAnnotatedListImpl 
   "../gen_algo/PrioByAnnotatedList"

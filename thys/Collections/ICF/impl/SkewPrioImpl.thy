@@ -1,4 +1,4 @@
-header {*\isaheader{Implementation of Priority Queues by Skew Binomial Heaps}*}
+section {*\isaheader{Implementation of Priority Queues by Skew Binomial Heaps}*}
 
 theory SkewPrioImpl
 imports 

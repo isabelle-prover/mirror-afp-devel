@@ -38,8 +38,6 @@ in
     structure IsaArith = Arith
     structure CAVA_Impl
     structure Statistics
-    structure Digraph_Impl
-    structure Automata_Impl
 
     structure Lasso
 
@@ -57,7 +55,7 @@ in
     structure BoolProgs
 
     structure Promela
-    structure PromelaLTL
+    structure PromelaLTLConv
     structure PromelaAST
     structure PromelaUtils
     structure PromelaStatistics

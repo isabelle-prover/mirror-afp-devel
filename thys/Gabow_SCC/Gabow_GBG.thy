@@ -6,6 +6,20 @@ imports
   Find_Path
 begin
 
+(* TODO: convenience locale, consider merging this with invariants *)
+locale igb_fr_graph = 
+  igb_graph G + fr_graph G
+  for G :: "('Q,'more) igb_graph_rec_scheme"
+
+lemma igb_fr_graphI:
+  assumes "igb_graph G"
+  assumes "finite ((g_E G)\<^sup>* `` g_V0 G)"
+  shows "igb_fr_graph G"
+proof -
+  interpret igb_graph G by fact
+  show ?thesis using assms(2) by unfold_locales
+qed
+
 text {*
   We implement an algorithm that computes witnesses for the 
   non-emptiness of Generalized B\"uchi Graphs (GBG).
@@ -42,7 +56,7 @@ end
 section {* Invariant Extension *}
 
 text {* Extension of the outer invariant: *}
-context igb_graph
+context igb_fr_graph
 begin
   definition no_acc_over
     -- "Specifies that there is no accepting cycle touching a set of nodes"
@@ -81,7 +95,7 @@ definition (in igb_graph) "fgl_invar v0 D0 \<equiv>
 
 section {* Definition of the Lasso-Finding Algorithm*}
 
-context igb_graph
+context igb_fr_graph
 begin
   definition find_ce :: "('Q set \<times> 'Q set) option nres" where
     "find_ce \<equiv> do {
@@ -134,7 +148,7 @@ end
 section {* Invariant Preservation *}
 
 
-context igb_graph
+context igb_fr_graph
 begin
 
   definition "fgl_invar_part \<equiv> \<lambda>(brk, p, D, pE). 
@@ -776,7 +790,7 @@ end
 
 section {* Main Correctness Proof *}
 
-context igb_graph
+context igb_fr_graph
 begin
   lemma outer_invar_from_fgl_invarI: 
     "fgl_outer_invar it (None,D) \<Longrightarrow> outer_invar it D"
@@ -806,7 +820,7 @@ begin
         intro: invar_from_fgl_invarI outer_invar_from_fgl_invarI
         dest!: sym[of "collapse a b" for a b]
         simp: collapse_ne
-        simp: pE_fin'[OF invar_from_fgl_invarI]
+        simp: pE_fin'[OF invar_from_fgl_invarI] finite_V0
         solve: invar_preserve
         solve: fgl_invar_preserve)
       done
@@ -816,7 +830,7 @@ end
 section "Emptiness Check"
 text {* Using the lasso-finding algorithm, we can define an emptiness check *}
 
-context igb_graph
+context igb_fr_graph
 begin
   definition "abs_is_empty \<equiv> do {
     ce \<leftarrow> find_ce;
@@ -860,7 +874,7 @@ begin
 
     apply (clarsimp_all simp: ce_correct_def)
 
-    using accepted_lasso apply (metis is_lasso_prpl_of_lasso surj_pair)
+    using accepted_lasso finite_reachableE_V0 apply (metis is_lasso_prpl_of_lasso surj_pair)
     apply blast
     apply (simp add: lasso_prpl_acc_run)
     done
@@ -883,7 +897,7 @@ type_synonym 'a abs_gstate = "nat set list \<times> 'a abs_state"
 type_synonym 'a ce = "('a set \<times> 'a set) option"
 type_synonym 'a abs_gostate = "'a ce \<times> 'a set"
 
-context igb_graph
+context igb_fr_graph
 begin
 
   definition gstate_invar :: "'Q abs_gstate \<Rightarrow> bool" where 
@@ -1090,8 +1104,6 @@ lemma Un_set_drop_impl_correct:
   done
 
 schematic_lemma Un_set_drop_code_aux: 
-  assumes [relator_props]: "single_valued R"
-  assumes [relator_props]: "single_valued (\<langle>R\<rangle>Rs)"
   assumes [autoref_rules]: "(es_impl,{})\<in>\<langle>R\<rangle>Rs"
   assumes [autoref_rules]: "(un_impl,op \<union>)\<in>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs"
   shows "(?c,Un_set_drop_impl)\<in>nat_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>as_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>nres_rel"
@@ -1110,14 +1122,11 @@ concrete_definition Un_set_drop_tr for es_impl un_impl i A
 lemma Un_set_drop_autoref[autoref_rules]: 
   assumes "GEN_OP es_impl {} (\<langle>R\<rangle>Rs)"
   assumes "GEN_OP un_impl op \<union> (\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs)"
-  assumes "PREFER single_valued R"
-  assumes "PREFER single_valued (\<langle>R\<rangle>Rs)"
   shows "(\<lambda>i A. RETURN (Un_set_drop_tr es_impl un_impl i A),Un_set_drop_impl)
     \<in>nat_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>as_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>nres_rel"
   apply (intro fun_relI nres_relI)
   apply (rule order_trans[OF Un_set_drop_tr.refine])
-  thm Un_set_drop_code.refine
-  using Un_set_drop_code.refine[of R Rs es_impl un_impl, 
+  using Un_set_drop_code.refine[of es_impl Rs R un_impl, 
     param_fo, THEN nres_relD]
   using assms
   by simp
@@ -1162,7 +1171,7 @@ lemma goGS_rel_sv[relator_props,intro!,simp]: "single_valued goGS_rel"
 end
 
 
-context igb_graph
+context igb_fr_graph
 begin
   lemma gGS_relE:
     assumes "(s',(a,p,D,pE))\<in>gGS_rel"
@@ -1404,7 +1413,7 @@ begin
     show ?thesis
       unfolding gcollapse_alt gcollapse_impl_aux_def
       apply simp
-      apply (rule RETURN_as_SPEC_refine_sv, tagged_solver)
+      apply (rule RETURN_as_SPEC_refine)
       apply (refine_rcg
         order_trans[OF GS_invar.idx_of_correct[OF GS_invar PRE']] 
         order_trans[OF collapse_refine[OF OSR B PRE, simplified]]
@@ -1646,8 +1655,6 @@ begin
       using GS_invar.set_butlast_p_refine[OF GS_invar NE']
       using GS_invar.set_last_p_refine[OF GS_invar NE']
       unfolding ce_impl_def
-      apply (simp)
-      apply (rule RETURN_refine_sv, tagged_solver)
       using A
       by auto
   qed
@@ -1810,7 +1817,7 @@ section {* Constructing a Lasso from Counterexample *}
 
 subsection {* Lassos in GBAs *}
 
-context igb_graph begin
+context igb_fr_graph begin
 
   definition reconstruct_reach :: "'Q set \<Rightarrow> 'Q set \<Rightarrow> ('Q list \<times> 'Q) nres"
     -- "Reconstruct the reaching path of a lasso"
@@ -1820,7 +1827,7 @@ context igb_graph begin
       RETURN (the res)
     }"
 
-  lemma (in igb_graph) reconstruct_reach_correct:
+  lemma reconstruct_reach_correct:
     assumes CEC: "ce_correct Vr Vl"
     shows "reconstruct_reach Vr Vl 
       \<le> SPEC (\<lambda>(pr,va). \<exists>v0\<in>V0. path E v0 pr va \<and> va\<in>Vl)"
@@ -1847,7 +1854,7 @@ context igb_graph begin
     show ?thesis
       using assms unfolding reconstruct_reach_def
       apply (refine_rcg refine_vcg order_trans[OF find_path_ex_rule])
-      apply (clarsimp_all simp: FIN_aux)
+      apply (clarsimp_all simp: FIN_aux finite_V0)
 
       using `va\<in>Vl` 1 apply auto []
 
@@ -1891,7 +1898,7 @@ context igb_graph begin
   }"
 
 
-lemma (in igb_graph) reconstruct_lasso_correct:
+lemma (in igb_fr_graph) reconstruct_lasso_correct:
   assumes CEC: "ce_correct Vr Vl"
   shows "reconstruct_lasso Vr Vl \<le> SPEC (is_lasso_prpl)"
 proof -
@@ -2079,7 +2086,7 @@ definition find_lasso where "find_lasso \<equiv> do {
     }
 }"
 
-lemma (in igb_graph) find_lasso_correct: "find_lasso \<le> find_lasso_spec"
+lemma (in igb_fr_graph) find_lasso_correct: "find_lasso \<le> find_lasso_spec"
   unfolding find_lasso_spec_def find_lasso_def find_ce_spec_def
   apply (refine_rcg refine_vcg order_trans[OF reconstruct_lasso_correct])
   apply auto

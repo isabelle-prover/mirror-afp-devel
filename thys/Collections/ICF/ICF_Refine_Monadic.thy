@@ -1,4 +1,4 @@
-header {* \isaheader{Refine-Monadci setup for ICF} *}
+section {* \isaheader{Refine-Monadci setup for ICF} *}
 theory ICF_Refine_Monadic
 imports ICF_Impl
 begin

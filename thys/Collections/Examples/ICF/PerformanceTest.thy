@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header "Tests"
+section "Tests"
 theory PerformanceTest
 imports "../../ICF/Collections" "~~/src/HOL/Library/Code_Target_Numeral" 
 begin

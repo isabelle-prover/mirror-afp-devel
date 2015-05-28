@@ -835,7 +835,7 @@ begin
       nofail/inres method to prove refinement."
     unfolding mpop_min_def pop_min_def prio_pop_min_def
 
-    apply (rule pw_ref_svI)
+    apply (rule pw_ref_I)
     apply rule
     apply (auto simp add: refine_pw_simps \<alpha>s_def \<alpha>w_def refine_rel_defs
       split: prod.split prod.split_asm)
@@ -848,6 +848,8 @@ begin
       simp: wl_weight_correct 
       intro!: least_map.intros
     ) []
+    apply (metis restrict_map_eq(2))
+
     done
 
   text {* The new update function: *}

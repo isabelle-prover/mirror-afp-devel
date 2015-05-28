@@ -8,4 +8,6 @@ begin
   hide_const (open) Array
   hide_type (open) array
 
+  hide_type (open) Words.word
+
 end

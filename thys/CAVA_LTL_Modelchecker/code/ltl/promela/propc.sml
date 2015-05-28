@@ -9,7 +9,7 @@ structure Propc : sig
   
   val propcToString : propc -> string;
 end = struct
-  open PromelaLTL;
+  open PromelaLTLConv;
 
   fun opToString Eq = "="
     | opToString Le = "<"

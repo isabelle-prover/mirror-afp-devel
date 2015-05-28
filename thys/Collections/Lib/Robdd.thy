@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* \isaheader{ROBDDs} *}
+section {* \isaheader{ROBDDs} *}
 theory Robdd
 imports Main "../ICF/spec/MapSpec" "../Iterator/SetIteratorOperations"
         

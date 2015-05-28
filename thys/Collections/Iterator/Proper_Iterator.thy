@@ -1,4 +1,4 @@
-header {* Proper Iterators *}
+section {* Proper Iterators *}
 theory Proper_Iterator
 imports 
   "SetIteratorOperations" 

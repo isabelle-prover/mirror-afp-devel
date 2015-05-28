@@ -1,4 +1,4 @@
-header {*\isaheader{Implementation of Unique Priority Queues by Finger Trees}*}
+section {*\isaheader{Implementation of Unique Priority Queues by Finger Trees}*}
 theory FTPrioUniqueImpl
 imports 
   FTAnnotatedListImpl 

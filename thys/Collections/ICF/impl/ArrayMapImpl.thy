@@ -1,4 +1,4 @@
-header {* \isaheader{Maps from Naturals by Arrays} *}
+section {* \isaheader{Maps from Naturals by Arrays} *}
 theory ArrayMapImpl
 imports 
   "../spec/MapSpec"

@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Algorithms for Sequences} *}
+section {* \isaheader{Generic Algorithms for Sequences} *}
 theory ListGA
 imports "../spec/ListSpec" 
 begin

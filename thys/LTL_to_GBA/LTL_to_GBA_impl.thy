@@ -5,9 +5,6 @@ section {* Refinement to Efficient Code *}
 *)
 theory LTL_to_GBA_impl
 imports 
-  "~~/src/HOL/Library/Char_ord"
-  "~~/src/HOL/Library/List_lexord"
-  "~~/src/HOL/Library/Code_Char"
   LTL_to_GBA
   "../Deriving/Comparator_Generator/Compare_Instances"
   "../CAVA_Automata/Automata_Impl"
@@ -61,8 +58,8 @@ proof (intro single_valuedI allI impI)
   assume "(x, y) \<in> \<langle>R\<rangle>ltln_rel" "(x, z) \<in> \<langle>R\<rangle>ltln_rel"
   thus "y=z"
     apply (induction arbitrary: z)
-    apply (simp (no_asm_use) only: ltln_rel_left_simps, 
-      blast intro: single_valuedD[OF SV])+
+    apply (simp (no_asm_use) only: ltln_rel_left_simps 
+      | blast intro: single_valuedD[OF SV])+
     done
 qed
 
@@ -472,18 +469,18 @@ proof -
     apply (simp add: R'_def)
 
     apply (auto split: ltln.split) []
-    apply (fastforce simp: R'_def) []
-    apply (refine_rcg aux)
-    apply (refine_rcg aux)
-    apply (auto simp: R'_def) []
-    apply (auto simp: R'_def) []
+    apply (fastforce simp: R_def R'_def) []
+    apply (fastforce simp: R_def R'_def) []
 
-    apply (fastforce simp: R'_def) []
-    apply (refine_rcg aux)
-    apply (fastforce simp: R'_def) []
-    apply (fastforce simp: R'_def) []
-    apply (fastforce simp: R'_def) []
-    apply (fastforce simp: R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
+    apply (auto simp: R_def R'_def) []
     apply (refine_rcg, rprems, (fastforce simp: R_def R'_def)+) []
     apply (fastforce simp: R'_def) []
     apply (refine_rcg, rprems, (fastforce simp: R_def R'_def)+) []
@@ -519,7 +516,7 @@ lemma create_name_gba_alt: "create_name_gba \<phi> = do {
   RETURN (gba_rename_ext (\<lambda>_. ()) name (create_gba_from_nodes \<phi> nds))
   }"
 proof -
-  have [simp]: "\<And>nds. frg_V (create_gba_from_nodes \<phi> nds) = nds"
+  have [simp]: "\<And>nds. g_V (create_gba_from_nodes \<phi> nds) = nds"
     by (auto simp: create_gba_from_nodes_def)
 
   show ?thesis
@@ -737,7 +734,7 @@ definition "cr_rename_gba nds \<phi> \<equiv> do {
       None \<Rightarrow> False 
     | Some (P,N) \<Rightarrow> (\<forall>p\<in>P. p\<in>(l:::\<^sub>r\<langle>Id\<rangle>fun_set_rel)) \<and> (\<forall>p\<in>N. p\<notin>l)
   );
-  RETURN (\<lparr> frg_V = V, frg_E=E, frg_V0=V0, gbg_F = F, gba_L = L \<rparr>)
+  RETURN (\<lparr> g_V = V, g_E=E, g_V0=V0, gbg_F = F, gba_L = L \<rparr>)
 }"
 
 lemma cr_rename_gba_refine:
@@ -805,7 +802,6 @@ lemmas [autoref_rules] = until_frmlsn_impl.refine[OF PREFER_id_D]
 
 
 schematic_lemma build_succ_impl_aux:
-  assumes [relator_props]: "single_valued Rm" "single_valued R"
   shows "(?c,build_succ) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel 
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>nat_rel\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
@@ -815,7 +811,7 @@ schematic_lemma build_succ_impl_aux:
   done
 
 concrete_definition build_succ_impl uses build_succ_impl_aux
-lemmas [autoref_rules] = build_succ_impl.refine[OF PREFER_sv_D PREFER_sv_D]
+lemmas [autoref_rules] = build_succ_impl.refine
 
 (* TODO: Post-processing should be on by default! *)
 schematic_lemma build_succ_code_aux: "RETURN ?c \<le> build_succ_impl x"
@@ -845,7 +841,6 @@ lemmas [autoref_rules] = build_F_impl.refine[OF PREFER_id_D]
 
 
 schematic_lemma pn_map_impl_aux:
-  assumes [relator_props]: "single_valued Rm"
   shows "(?c,pn_map) \<in> 
     \<langle>\<langle>Rm,Id\<rangle>node_rel\<rangle>list_set_rel 
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>Id\<rangle>list_set_rel \<times>\<^sub>r \<langle>Id\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
@@ -857,7 +852,6 @@ schematic_lemma pn_map_impl_aux:
 concrete_definition pn_map_impl uses pn_map_impl_aux
 lemma pn_map_impl_autoref[autoref_rules]: 
   assumes "PREFER_id R"
-  assumes "PREFER single_valued Rm"
   shows "(pn_map_impl,pn_map) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel 
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>R\<rangle>list_set_rel \<times>\<^sub>r \<langle>R\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
@@ -878,7 +872,6 @@ thm autoref_tyrel
 
 schematic_lemma cr_rename_gba_impl_aux:
   assumes ID[relator_props]: "R=Id"
-  assumes [relator_props]: "single_valued Rm"
   notes [autoref_tyrel del] = TYRELI[of "\<langle>nat_rel\<rangle>dflt_rs_rel"]
   shows "(?c,cr_rename_gba) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> (?R::(?'c \<times> _) set)"
@@ -893,7 +886,6 @@ thm cr_rename_gba_impl.refine
 
 lemma cr_rename_gba_autoref[autoref_rules]:
   assumes "PREFER_id R"
-  assumes "PREFER single_valued Rm"
   shows "(cr_rename_gba_impl, cr_rename_gba) \<in> 
     \<langle>\<langle>Rm, R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow>
     \<langle>gbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"

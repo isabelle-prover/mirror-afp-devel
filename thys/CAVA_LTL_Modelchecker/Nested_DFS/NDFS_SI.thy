@@ -394,7 +394,7 @@ definition blue_dfs
   where
   "blue_dfs G \<equiv> do {
     NDFS_SI_Statistics.start_nres;
-    (_,_,cyc) \<leftarrow> FOREACHc (frg_V0 G) (\<lambda>(_,_,cyc). cyc=NO_CYC) 
+    (_,_,cyc) \<leftarrow> FOREACHc (g_V0 G) (\<lambda>(_,_,cyc). cyc=NO_CYC) 
       (\<lambda>v0 (blues,reds,_). do {
         if v0 \<notin> blues then do {
           (blues,reds,_,cyc) \<leftarrow> REC\<^sub>T (\<lambda>D (blues,reds,onstack,s). do {
@@ -403,7 +403,7 @@ definition blue_dfs
             let s_acc = s \<in> bg_F G;
             NDFS_SI_Statistics.vis_blue_nres;
             (blues,reds,onstack,cyc) \<leftarrow> 
-            FOREACH\<^sub>C ((frg_E G)``{s}) (\<lambda>(_,_,_,cyc). cyc=NO_CYC) 
+            FOREACH\<^sub>C ((g_E G)``{s}) (\<lambda>(_,_,_,cyc). cyc=NO_CYC) 
               (\<lambda>t (blues,reds,onstack,cyc). 
                 if t \<in> onstack \<and> (s_acc \<or> t \<in> bg_F G) then (
                   RETURN (blues,reds,onstack, init_wit_blue_early s t)
@@ -418,7 +418,7 @@ definition blue_dfs
 
             (reds,cyc) \<leftarrow> 
             if cyc=NO_CYC \<and> s_acc then do {
-              (reds,rcyc) \<leftarrow> red_dfs (frg_E G) onstack reds s;
+              (reds,rcyc) \<leftarrow> red_dfs (g_E G) onstack reds s;
               RETURN (reds, init_wit_blue s rcyc)
             } else RETURN (reds,cyc);
 
@@ -444,7 +444,7 @@ concrete_definition blue_dfs_fe uses blue_dfs_def
   }"
 
 concrete_definition blue_dfs_body uses blue_dfs_fe_def
-  is "_ \<equiv> FOREACHc (frg_V0 G) (\<lambda>(_,_,cyc). cyc=NO_CYC) 
+  is "_ \<equiv> FOREACHc (g_V0 G) (\<lambda>(_,_,cyc). cyc=NO_CYC) 
     (\<lambda>v0 (blues,reds,_). do {
       if v0\<notin>blues then do {
         (blues,reds,_,cyc) \<leftarrow> REC\<^sub>T ?B (blues,reds,{},v0);
@@ -580,7 +580,7 @@ proof -
       \<le> SPEC (post S \<sigma>)"
 
       apply (rule RECT_rule_arb[where 
-        \<Phi>="pre" and
+        pre="pre" and
         V="gen_dfs_var U <*lex*> {}" and
         arb="S"
         ])
@@ -658,6 +658,7 @@ text {* Main theorem: Correctness of the blue DFS *}
 theorem blue_dfs_correct:
   fixes G :: "('v,_) b_graph_rec_scheme"
   assumes "b_graph G"
+  assumes finitely_reachable: "finite ((g_E G)\<^sup>* `` g_V0 G)"
   shows "blue_dfs G \<le> SPEC (\<lambda>r. 
     case r of None \<Rightarrow> (\<forall>L. \<not>b_graph.is_lasso_prpl G L)
   | Some L \<Rightarrow> b_graph.is_lasso_prpl G L)"
@@ -665,8 +666,8 @@ proof -
   interpret b_graph G by fact
 
   let ?A = "bg_F G"
-  let ?E = "frg_E G"
-  let ?V0 = "frg_V0 G"
+  let ?E = "g_E G"
+  let ?V0 = "g_V0 G"
 
   let ?U = "?E\<^sup>*``?V0"
 
@@ -716,7 +717,8 @@ proof -
     | _ \<Rightarrow> False"
 
   have OUTER_INITIAL: "outer_inv V0 ({}, {}, NO_CYC)"
-    unfolding outer_inv_def add_inv_def 
+    unfolding outer_inv_def add_inv_def
+    using finitely_reachable
     apply (auto intro: red_dfs_inv_initial gen_dfs_outer_initial)
     done
 
@@ -1046,11 +1048,11 @@ proof -
 
     have "REC\<^sub>T (blue_dfs_body G) \<sigma> \<le> SPEC (post \<sigma>)"
       apply (intro refine_vcg
-        RECT_rule[where \<Phi>="pre"
+        RECT_rule[where pre="pre"
         and V="gen_dfs_var ?U <*lex*> {}"]
       )
       apply (unfold blue_dfs_body_def, refine_mono) []
-      apply (blast intro!: fin_U_imp_wf)
+      apply (blast intro!: fin_U_imp_wf finitely_reachable)
       apply (rule INV0)
 
       (* Body *)
@@ -1198,7 +1200,7 @@ proof -
       refine_vcg
     )
 
-    apply simp
+    apply (simp add: finitely_reachable finite_V0)
 
     apply (rule OUTER_INITIAL)
     
@@ -1480,7 +1482,7 @@ export_code code_blue_dfs_ahs checking SML
 
 text {* Correctness theorem *}
 theorem code_blue_dfs_correct:
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "RETURN (code_blue_dfs Gi) \<le> SPEC (\<lambda>r. 
     case r of None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1493,7 +1495,7 @@ proof -
 qed
 
 theorem code_blue_dfs_correct':
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "case code_blue_dfs Gi of
       None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1502,7 +1504,7 @@ theorem code_blue_dfs_correct':
   by simp
 
 theorem code_blue_dfs_hash_correct:
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "RETURN (code_blue_dfs_hash Gi) \<le> SPEC (\<lambda>r.
     case r of None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1515,7 +1517,7 @@ proof -
 qed
 
 theorem code_blue_dfs_hash_correct':
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "case code_blue_dfs_hash Gi of
       None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1524,7 +1526,7 @@ theorem code_blue_dfs_hash_correct':
   by simp
 
 theorem code_blue_dfs_ahs_correct:
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "RETURN (code_blue_dfs_ahs Gi) \<le> SPEC (\<lambda>r. 
     case r of None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1537,7 +1539,7 @@ proof -
 qed
 
 theorem code_blue_dfs_ahs_correct':
-  assumes G: "b_graph G"
+  assumes G: "b_graph G" "finite ((g_E G)\<^sup>* `` g_V0 G)"
   assumes REL: "(Gi,G)\<in>bg_impl_rel_ext unit_rel Id"
   shows "case code_blue_dfs_ahs Gi of
       None \<Rightarrow> \<forall>prpl. \<not>b_graph.is_lasso_prpl G prpl
@@ -1584,6 +1586,7 @@ export_code
   acc_of_list_impl_hash_int
   nat_of_integer
   integer_of_nat
+  lasso_ext
   in SML module_name HPY_new_hash
   file "nested_dfs_hash.sml"
 

@@ -32,17 +32,22 @@ end
 structure Lifting_Definition_Option: LIFTING_DEFINITION_OPTION =
 struct
 
-val term_to_string = YXML.string_of_body o Term_XML.Encode.term;
-val typ_to_string = YXML.string_of_body o Term_XML.Encode.typ;
-
 fun tactic_state_to_lthy tactic state =
     Proof.global_terminal_proof
       ((Method.Basic (SIMPLE_METHOD o tactic), Position.no_range), NONE) state
 
-fun lift_def_ml (binding, mx) ty rhs tactic =
-    Lifting_Def.lift_def_cmd
-      ((binding, SOME (typ_to_string ty), mx), term_to_string rhs, [])
-  #> tactic_state_to_lthy tactic
+val pred_fun_unfold = @{lemma "pred_fun P f = (\<forall>x. P (f x))" by simp}
+
+fun lift_def_ml (binding, mx) ty rhs tactic lthy =
+  let
+    fun rsp_unfold ctxt i = EVERY' [SELECT_GOAL (Local_Defs.unfold_tac ctxt 
+      @{thms option.rel_eq_onp fun.rel_eq_onp rel_fun_eq_onp_rel eq_onp_same_args}), 
+      SELECT_GOAL (Local_Defs.unfold_tac ctxt [pred_fun_unfold]), Object_Logic.rulify_tac ctxt] i;
+  in
+    Lifting_Def.lift_def Lifting_Def.default_config
+      (binding, mx) ty rhs (fn ctxt => HEADGOAL (rsp_unfold ctxt) THEN tactic ctxt) [] lthy 
+      |>> (Lifting_Def.mk_lift_const_of_lift_def ty) 
+  end
 
 fun define (def_name, eq) mixfix attrs lthy =
   let
@@ -241,7 +246,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
       (* setup_lifting type_definition_restricted_bool *)
       val type_def_thm = info |> snd |> snd |> #type_definition |> Morphism.thm morph
-      val lthy = Lifting_Setup.setup_by_typedef_thm type_def_thm lthy
+      val lthy = Lifting_Setup.setup_by_typedef_thm Lifting_Setup.default_config type_def_thm lthy
+        |> snd
       val _ = debug_out ("step 4: performed lifting_setup")
 
       val restr_c_ty = let (* convert type over fresh ty_vars into original ty_vars *)
@@ -266,7 +272,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val restr_c_bool_name = restr_c_name ^ "_bool"
       val restr_c_bool_ty = restr_c_ty --> bool_ty
       val rhs = Const (@{const_name snd}, pair_ty --> bool_ty)
-      val lthy =
+
+      val (rcb, lthy) =
         lift_def_ml (Binding.name restr_c_bool_name, mixfix) restr_c_bool_ty rhs (K all_tac) lthy
       val _ = debug_out ("step 5: created lift_definition for " ^ restr_c_bool_name)
 
@@ -286,7 +293,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
                 Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1
               THEN auto_tac ctxt)
            ) ctxt 1
-      val lthy = lift_def_ml (binding,mixfix) restr_c_restr_ty caset tac lthy
+      val (rcr, lthy) = lift_def_ml (binding,mixfix) restr_c_restr_ty caset tac lthy
       val _ = debug_out ("step 6: created lift_definition for " ^ restr_c_restr_name)
 
       (* lift_definition restricted_cond :: "impl \<Rightarrow> restricted_cond" is
@@ -307,12 +314,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
 
       fun after_qed check_thm lthy = let
-          fun tac ctxt = unfold_tac ctxt @{thms simplify_cond}
-            THEN rtac @{thm restrict_condI} 1
-            THEN Method.insert_tac (hd check_thm) 1
-            THEN blast_tac ctxt 1
+          fun tac ctxt = 
+              rtac @{thm restrict_condI} 1 THEN resolve_tac ctxt (hd check_thm) 1 THEN (TRY o atac) 1
           val ty = impl_tys ---> restr_c_ty
-          val lthy = lift_def_ml (binding,mixfix) ty rhs tac lthy
+          val (rc, lthy) = lift_def_ml (binding,mixfix) ty rhs tac lthy
           val _ = debug_out ("step 7: created lift_definition for " ^ restr_c_name)
 
 
@@ -320,11 +325,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
               "restricted_of i \<equiv> let rci = restricted_cond i
                 in if (restricted_cond_bool rci) then Some (restricted_cond_restricted rci) else None" *)
 
-          val rcr = Free (restr_c_restr_name, restr_c_restr_ty)
-          val rcb = Free (restr_c_bool_name, restr_c_bool_ty)
           val binding = fin_bind
           val mixfix = fin_mixfix
-          val rc = Free (restr_c_name, ty)
           val rci = list_comb (rc, map (fn x_i => Bound (snd x_i)) (rev (xs ~~ (0 upto (length xs - 1)))))
           val lthy' = Variable.add_fixes (map fst xs) lthy |> snd
           val [r,rc_var] = Variable.variant_fixes ["r", "rc"] lthy' |> fst

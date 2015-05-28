@@ -139,6 +139,13 @@ method_setup autoref_id_op = {*
   ))
 *}
 
+method_setup autoref_solve_id_op = {*
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    Autoref_Id_Ops.id_tac (Config.put Autoref_Id_Ops.cfg_ss_id_op false ctxt)
+  ))
+*}
+
+
 
 ML {*
   structure Autoref_Debug = struct
@@ -168,6 +175,24 @@ ML {*
     end
   end
 *}
+
+
+text {* General casting-tag, that allows type-casting on concrete level, while 
+  being identity on abstract level. *}
+definition [simp]: "CAST \<equiv> id"
+lemma [autoref_itype]: "CAST ::\<^sub>i I \<rightarrow>\<^sub>i I" by simp
+
+(* TODO: This idea does currently not work, b/c a homogeneity rule
+  will be created from the (\<lambda>x. x, CAST)\<in>R \<rightarrow> R rule, which will always
+  be applied first! As a workaround, we make the cast mandatory!
+*)
+(*lemma [autoref_rules]: 
+  assumes "PRIO_TAG_GEN_ALGO"
+  shows "(\<lambda>x. x,CAST) \<in> R \<rightarrow> R"
+  by auto
+*)
+
+
 
 text {* Hide internal stuff *}
 

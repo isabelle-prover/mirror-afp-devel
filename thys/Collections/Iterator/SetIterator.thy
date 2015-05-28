@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* \isaheader{Iterators over Finite Sets} *}
+section {* \isaheader{Iterators over Finite Sets} *}
 theory SetIterator
 imports 
   "../../Automatic_Refinement/Lib/Misc" 

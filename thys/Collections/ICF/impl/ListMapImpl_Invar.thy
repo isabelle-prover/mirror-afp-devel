@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Map Implementation by Association Lists with explicit invariants} *}
+section {* \isaheader{Map Implementation by Association Lists with explicit invariants} *}
 theory ListMapImpl_Invar
 imports 
   "../spec/MapSpec"

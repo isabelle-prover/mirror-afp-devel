@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Compare Algorithms} *}
+section {* \isaheader{Generic Compare Algorithms} *}
 theory Gen_Comp
 imports 
   "../Intf/Intf_Comp" 

@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* \isaheader{Iterators over Representations of Finite Sets} *}
+section {* \isaheader{Iterators over Representations of Finite Sets} *}
 theory SetAbstractionIterator
 imports Main SetIterator 
 begin

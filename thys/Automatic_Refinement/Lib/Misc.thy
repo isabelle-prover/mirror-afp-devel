@@ -142,6 +142,14 @@ subsection {* Sets *}
 
   lemma inter_compl_diff_conv[simp]: "A \<inter> -B = A - B" by auto
 
+  lemma subset_Collect_conv: "S \<subseteq> Collect P \<longleftrightarrow> (\<forall>x\<in>S. P x)"
+    by auto
+
+  lemma memb_imp_not_empty: "x\<in>S \<Longrightarrow> S\<noteq>{}"
+    by auto
+
+
+  (* TODO: Groups_Big.comm_monoid_add_class.setsum.subset_diff*)
   lemma setsum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "setsum f A = setsum f (A-B) + setsum f B" proof -
     from P have 1: "A = (A-B) \<union> B" by auto
     have 2: "(A-B) \<inter> B = {}" by auto
@@ -474,6 +482,18 @@ lemma comp_cong_left: "x = y \<Longrightarrow> x o f = y o f" by (simp)
 
 lemma fun_comp_eq_conv: "f o g = fg \<longleftrightarrow> (\<forall>x. f (g x) = fg x)"
   by auto
+
+abbreviation comp2 (infixl "oo" 55) where "f oo g \<equiv> \<lambda>x. f o (g x)"
+abbreviation comp3 (infixl "ooo" 55) where "f ooo g \<equiv> \<lambda>x. f oo (g x)"
+
+notation (xsymbols)
+  comp2  (infixl "\<circ>\<circ>" 55) and
+  comp3  (infixl "\<circ>\<circ>\<circ>" 55)
+
+notation (HTML output)
+  comp2  (infixl "\<circ>\<circ>" 55) and
+  comp3  (infixl "\<circ>\<circ>\<circ>" 55)
+
 
 subsection {* Multisets *}
 
@@ -1199,6 +1219,16 @@ lemma find_SomeD:
   "List.find P xs = Some x \<Longrightarrow> x\<in>set xs"
   by (auto simp add: find_Some_iff)
 
+lemma in_hd_or_tl_conv[simp]: "l\<noteq>[] \<Longrightarrow> x=hd l \<or> x\<in>set (tl l) \<longleftrightarrow> x\<in>set l"
+  by (cases l) auto
+
+lemma length_dropWhile_takeWhile:
+  assumes "x < length (dropWhile P xs)"
+  shows "x + length (takeWhile P xs) < length xs"
+  using assms
+  by (induct xs) auto
+
+
 subsubsection {* List Destructors *}
 lemma not_hd_in_tl:
   "x \<noteq> hd xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x \<in> set (tl xs)"
@@ -1324,6 +1354,58 @@ fun revg where
 lemma revg_fun[simp]: "revg a b = rev a @ b"
   by (induct a arbitrary: b)
       auto
+
+lemma rev_split_conv[simp]:
+  "l \<noteq> [] \<Longrightarrow> rev (tl l) @ [hd l] = rev l"
+by (induct l) simp_all
+
+lemma neq_Nil_rev_conv: "l\<noteq>[] \<longleftrightarrow> (\<exists>xs x. l = xs@[x])"
+  by (cases l rule: rev_cases) auto
+
+lemma rev_butlast_is_tl_rev: "rev (butlast l) = tl (rev l)"
+  by (induct l) auto
+
+lemma hd_last_singletonI:
+  "\<lbrakk>xs \<noteq> []; hd xs = last xs; distinct xs\<rbrakk> \<Longrightarrow> xs = [hd xs]"
+  by (induct xs rule: list_nonempty_induct) auto
+
+lemma last_filter:
+  "\<lbrakk>xs \<noteq> []; P (last xs)\<rbrakk> \<Longrightarrow> last (filter P xs) = last xs"
+  by (induct xs rule: rev_nonempty_induct) simp_all
+
+(* As the following two rules are similar in nature to list_induct2',
+   they are named accordingly. *)
+lemma rev_induct2' [case_names empty snocl snocr snoclr]: 
+  assumes empty: "P [] []"
+  and snocl: "\<And>x xs. P (xs@[x]) []"
+  and snocr: "\<And>y ys. P [] (ys@[y])"
+  and snoclr: "\<And>x xs y ys.  P xs ys  \<Longrightarrow> P (xs@[x]) (ys@[y])"
+  shows "P xs ys"
+proof (induct xs arbitrary: ys rule: rev_induct)
+  case Nil thus ?case using empty snocr 
+    by (cases ys rule: rev_exhaust) simp_all
+next
+  case snoc thus ?case using snocl snoclr
+    by (cases ys rule: rev_exhaust) simp_all
+qed
+
+lemma rev_nonempty_induct2' [case_names single snocl snocr snoclr, consumes 2]: 
+  assumes "xs \<noteq> []" "ys \<noteq> []"
+  assumes single': "\<And>x y. P [x] [y]"
+  and snocl: "\<And>x xs y. xs \<noteq> [] \<Longrightarrow> P (xs@[x]) [y]"
+  and snocr: "\<And>x y ys. ys \<noteq> [] \<Longrightarrow> P [x] (ys@[y])"
+  and snoclr: "\<And>x xs y ys. \<lbrakk>P xs ys; xs \<noteq> []; ys\<noteq>[]\<rbrakk>  \<Longrightarrow> P (xs@[x]) (ys@[y])"
+  shows "P xs ys"
+  using assms(1,2)
+proof (induct xs arbitrary: ys rule: rev_nonempty_induct)
+  case single then obtain z zs where "ys = zs@[z]" by (metis rev_exhaust)
+  thus ?case using single' snocr
+    by (cases "zs = []") simp_all
+next
+  case (snoc x xs) then obtain z zs where zs: "ys = zs@[z]" by (metis rev_exhaust)
+  thus ?case using snocl snoclr snoc
+    by (cases "zs = []") simp_all
+qed
 
 
 subsubsection "Folding"
@@ -3423,6 +3505,23 @@ subsection {* Directed Graphs and Relations *}
   lemma r_le_rtrancl[simp]: "S\<subseteq>S\<^sup>*" by auto
   lemma rtrancl_mono_rightI: "S\<subseteq>S' \<Longrightarrow> S\<subseteq>S'\<^sup>*" by auto
 
+  lemma trancl_sub:
+    "R \<subseteq> R\<^sup>+"
+  by auto
+  
+  lemma trancl_single[simp]:
+    "{(a,b)}\<^sup>+ = {(a,b)}"
+  proof -
+    {
+      fix x y
+      assume "(x,y) \<in> {(a,b)}\<^sup>+"
+      hence "(x,y) \<in> {(a,b)}"
+        by (induct rule: trancl.induct) auto
+    }
+    with trancl_sub show ?thesis by auto
+  qed
+
+
   text {* Pick first non-reflexive step *}
   lemma converse_rtranclE'[consumes 1, case_names base step]:
     assumes "(u,v)\<in>R\<^sup>*"
@@ -3612,6 +3711,89 @@ lemma Image_absorb_rtrancl:
   "\<lbrakk> trans A; refl_on B A; C \<subseteq> B \<rbrakk> \<Longrightarrow> A^* `` C = A `` C"
   by (simp add: trans_rtrancl_eq_reflcl refl_on_reflcl_Image)
 
+lemma trancl_Image_unfold_left: "E\<^sup>+``S = E\<^sup>*``E``S"
+  by (auto simp: trancl_unfold_left)
+
+lemma trancl_Image_unfold_right: "E\<^sup>+``S = E``E\<^sup>*``S"
+  by (auto simp: trancl_unfold_right)
+
+lemma trancl_Image_advance_ss: "(u,v)\<in>E \<Longrightarrow> E\<^sup>+``{v} \<subseteq> E\<^sup>+``{u}"
+  by auto
+
+lemma rtrancl_Image_advance_ss: "(u,v)\<in>E \<Longrightarrow> E\<^sup>*``{v} \<subseteq> E\<^sup>*``{u}"
+  by auto
+
+(* FIXME: nicer name *)
+lemma trancl_union_outside:
+  assumes "(v,w) \<in> (E\<union>U)\<^sup>+"
+  and "(v,w) \<notin> E\<^sup>+"
+  shows "\<exists>x y. (v,x) \<in> (E\<union>U)\<^sup>* \<and> (x,y) \<in> U \<and> (y,w) \<in> (E\<union>U)\<^sup>*" 
+using assms
+proof (induction)
+  case base thus ?case by auto
+next
+  case (step w x)
+  show ?case
+  proof (cases "(v,w)\<in>E\<^sup>+")
+    case True 
+    from step have "(v,w)\<in>(E\<union>U)\<^sup>*" by simp
+    moreover from True step have "(w,x) \<in> U" by (metis Un_iff trancl.simps)
+    moreover have "(x,x) \<in> (E\<union>U)\<^sup>*" by simp
+    ultimately show ?thesis by blast
+  next
+    case False with step.IH obtain a b where "(v,a) \<in> (E\<union>U)\<^sup>*" "(a,b) \<in> U" "(b,w) \<in> (E\<union>U)\<^sup>*" by blast
+    moreover with step have "(b,x) \<in> (E\<union>U)\<^sup>*" by (metis rtrancl_into_rtrancl)
+    ultimately show ?thesis by blast
+  qed
+qed
+
+lemma trancl_restrict_reachable:
+  assumes "(u,v) \<in> E\<^sup>+"
+  assumes "E``S \<subseteq> S"
+  assumes "u\<in>S"
+  shows "(u,v) \<in> (E\<inter>S\<times>S)\<^sup>+"
+  using assms
+  by (induction rule: converse_trancl_induct)
+     (auto intro: trancl_into_trancl2)
+
+lemma rtrancl_image_unfold_right: "E``E\<^sup>*``V \<subseteq> E\<^sup>*``V"
+  by (auto intro: rtrancl_into_rtrancl)
+
+
+lemma trancl_Image_in_Range:
+  "R\<^sup>+ `` V \<subseteq> Range R"
+by (auto elim: trancl.induct)
+  
+lemma rtrancl_Image_in_Field:
+  "R\<^sup>* `` V \<subseteq> Field R \<union> V"
+proof -
+  from trancl_Image_in_Range have "R\<^sup>+ `` V \<subseteq> Field R" 
+    unfolding Field_def by fast
+  hence "R\<^sup>+ `` V \<union> V \<subseteq> Field R \<union> V" by blast
+  with trancl_image_by_rtrancl show ?thesis by metis
+qed
+
+lemma rtrancl_sub_insert_rtrancl:
+  "R\<^sup>* \<subseteq> (insert x R)\<^sup>*"
+by (auto elim: rtrancl.induct rtrancl_into_rtrancl)
+
+lemma trancl_sub_insert_trancl:
+  "R\<^sup>+ \<subseteq> (insert x R)\<^sup>+"
+by (auto elim: trancl.induct trancl_into_trancl)
+
+lemma Restr_rtrancl_mono:
+  "(v,w) \<in> (Restr E U)\<^sup>* \<Longrightarrow> (v,w) \<in> E\<^sup>*"
+  by (metis inf_le1 rtrancl_mono subsetCE)
+
+lemma Restr_trancl_mono:
+  "(v,w) \<in> (Restr E U)\<^sup>+ \<Longrightarrow> (v,w) \<in> E\<^sup>+"
+  by (metis inf_le1 trancl_mono)
+
+
+
+
+
+
 
 
   subsubsection "Converse Relation"
@@ -3700,6 +3882,14 @@ lemma dom_ran_disj_comp[simp]: "Domain R \<inter> Range R = {} \<Longrightarrow>
             simp add: trancl_converse rtrancl_converse
     )
   qed
+
+lemma cyclic_subset:
+  "\<lbrakk> \<not> acyclic R; R \<subseteq> S \<rbrakk> \<Longrightarrow> \<not> acyclic S"
+  unfolding acyclic_def
+  by (blast intro: trancl_mono)
+
+
+
 
   
   subsubsection {* Wellfoundedness *}
@@ -3892,6 +4082,83 @@ proof -
   finally (finite_subset) show ?thesis .
 qed
 
+context begin
+  private lemma rtrancl_restrictI_aux:
+    assumes "(u,v)\<in>(E-UNIV\<times>R)\<^sup>*"
+    assumes "u\<notin>R"
+    shows "(u,v)\<in>(rel_restrict E R)\<^sup>* \<and> v\<notin>R"
+    using assms
+    by (induction) (auto simp: rel_restrict_def intro: rtrancl.intros)
+  
+  corollary rtrancl_restrictI: 
+    assumes "(u,v)\<in>(E-UNIV\<times>R)\<^sup>*"
+    assumes "u\<notin>R"
+    shows "(u,v)\<in>(rel_restrict E R)\<^sup>*"
+    using rtrancl_restrictI_aux[OF assms] ..
+end
+
+lemma E_closed_restr_reach_cases:
+  assumes P: "(u,v)\<in>E\<^sup>*"
+  assumes CL: "E``R \<subseteq> R"
+  obtains "v\<in>R" | "u\<notin>R" "(u,v)\<in>(rel_restrict E R)\<^sup>*"
+  using P
+proof (cases rule: rtrancl_last_visit[where S=R])
+  case no_visit
+  show ?thesis proof (cases "u\<in>R")
+    case True with P have "v\<in>R" 
+      using rtrancl_reachable_induct[OF _ CL, where I="{u}"] 
+      by auto
+    thus ?thesis ..
+  next
+    case False with no_visit have "(u,v)\<in>(rel_restrict E R)\<^sup>*" 
+      by (rule rtrancl_restrictI)
+    with False show ?thesis ..
+  qed
+next
+  case (last_visit_point x)
+  from \<open>(x, v) \<in> (E - UNIV \<times> R)\<^sup>*\<close> have "(x,v)\<in>E\<^sup>*" 
+    by (rule rtrancl_mono_mp[rotated]) auto
+  with \<open>x\<in>R\<close> have "v\<in>R" 
+    using rtrancl_reachable_induct[OF _ CL, where I="{x}"] 
+    by auto
+  thus ?thesis ..
+qed
+
+lemma rel_restrict_trancl_notR:
+  assumes "(v,w) \<in> (rel_restrict E R)\<^sup>+"
+  shows "v \<notin> R" and "w \<notin> R"
+  using assms
+  by (metis rel_restrict_trancl_mem rel_restrict_notR)+
+
+lemma rel_restrict_tranclI:
+  assumes "(x,y) \<in> E\<^sup>+"
+  and "x \<notin> R" "y \<notin> R"
+  and "E `` R \<subseteq> R"
+  shows "(x,y) \<in> (rel_restrict E R)\<^sup>+"
+  using assms
+  proof (induct)
+    case base thus ?case by (metis r_into_trancl rel_restrictI)
+  next
+    case (step y z) hence "y \<notin> R" by auto
+    with step show ?case by (metis trancl_into_trancl rel_restrictI)
+  qed
+
+
+
+
+subsubsection {* Bijective Relations *}
+definition "bijective R \<equiv> 
+  (\<forall>x y z. (x,y)\<in>R \<and> (x,z)\<in>R \<longrightarrow> y=z) \<and>
+  (\<forall>x y z. (x,z)\<in>R \<and> (y,z)\<in>R \<longrightarrow> x=y)"
+
+lemma bijective_alt: "bijective R \<longleftrightarrow> single_valued R \<and> single_valued (R\<inverse>)"
+  unfolding bijective_def single_valued_def by blast
+
+lemma bijective_Id[simp, intro!]: "bijective Id"
+  by (auto simp: bijective_def)
+
+lemma bijective_Empty[simp, intro!]: "bijective {}"
+  by (auto simp: bijective_def)
 
 subsubsection {* Miscellaneous *}
 
@@ -3949,7 +4216,22 @@ lemma finite_Image_subset:
   "finite (A `` B) \<Longrightarrow> C \<subseteq> A \<Longrightarrow> finite (C `` B)"
 by (metis Image_mono order_refl rev_finite_subset)
 
+lemma finite_Field_eq_finite[simp]: "finite (Field R) \<longleftrightarrow> finite R"
+  by (metis finite_cartesian_product finite_subset R_subset_Field finite_Field)
 
+
+
+definition "fun_of_rel R x \<equiv> SOME y. (x,y)\<in>R"
+
+lemma for_in_RI(*[intro]*): "x\<in>Domain R \<Longrightarrow> (x,fun_of_rel R x)\<in>R"
+  unfolding fun_of_rel_def
+  by (auto intro: someI)
+
+lemma Field_not_elem:
+  "v \<notin> Field R \<Longrightarrow> \<forall>(x,y) \<in> R. x \<noteq> v \<and> y \<noteq> v"
+unfolding Field_def by auto
+
+lemma Sigma_UNIV_cancel[simp]: "(A \<times> X - A \<times> UNIV) = {}" by auto
 
 
 subsection {* @{text "option"} Datatype *}
@@ -4120,6 +4402,16 @@ qed
 lemma map_dom_ran_finite:
   "finite (dom M) \<Longrightarrow> finite (ran M)"
 by (simp add: ran_is_image)
+
+lemma map_update_eta_repair[simp]:
+  (* An update operation may get simplified, if it happens to be eta-expanded.
+    This lemma tries to repair some common expressions *)
+  "dom (\<lambda>x. if x=k then Some v else m x) = insert k (dom m)"
+  "m k = None \<Longrightarrow> ran (\<lambda>x. if x=k then Some v else m x) = insert v (ran m)"
+  apply auto []
+  apply (force simp: ran_def)
+  done
+
 
 subsection{* Connection between Maps and Sets of Key-Value Pairs *}
 

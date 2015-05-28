@@ -293,9 +293,11 @@ lemma dres_monad3[simp]: "dbind (dbind M f) g = dbind M (\<lambda>x. dbind (f x)
 lemmas dres_monad_laws = dres_monad1 dres_monad2 dres_monad3
 
 lemma dbind_mono[refine_mono]:
-  "\<lbrakk> M \<le> M'; \<And>x. dRETURN x \<le> M \<Longrightarrow> f x \<le> f' x \<rbrakk> \<Longrightarrow>
-  dbind M f \<le> dbind M' f'"
+  "\<lbrakk> M \<le> M'; \<And>x. dRETURN x \<le> M \<Longrightarrow> f x \<le> f' x \<rbrakk> \<Longrightarrow> dbind M f \<le> dbind M' f'"
+  "\<lbrakk> flat_ge M M'; \<And>x. flat_ge (f x) (f' x) \<rbrakk> \<Longrightarrow> flat_ge (dbind M f) (dbind M' f')"
   apply (cases M, simp_all)
+  apply (cases M', simp_all)
+  apply (cases M, simp_all add: flat_ord_def)
   apply (cases M', simp_all)
   done
 
@@ -350,6 +352,7 @@ interpretation dres_while!: generic_WHILE dbind dRETURN
   dWHILEIT dWHILEI dWHILET dWHILE
   apply unfold_locales
   apply (auto simp: dWHILEIT_def dWHILEI_def dWHILET_def dWHILE_def) 
+  apply refine_mono+
   done
 
 lemmas [code] = 
@@ -379,34 +382,16 @@ lemma dres_ne_bot_basic[refine_transfer]:
   apply (case_tac \<Phi>, auto) []
   done
   
-lemma dres_ne_bot_RECT[rule_format, refine_transfer]:
+lemma dres_ne_bot_RECT[refine_transfer]:
   assumes A: "\<And>f x. \<lbrakk> \<And>x. f x \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> B f x \<noteq> dSUCCEED"
-  shows "\<forall>x. RECT B x \<noteq> dSUCCEED"
+  shows "RECT B x \<noteq> dSUCCEED"
   unfolding RECT_def
   apply (split split_if)
-  apply (subst all_conj_distrib)
   apply (intro impI conjI)
-  apply simp
-  apply (intro impI)
-  apply (erule gfp_cadm_induct[rotated 2])
-  apply (intro allI)
-  apply (rule A)
-  apply simp
-
-  apply rule
-  apply simp
-  apply (intro allI)
-  apply (drule_tac x=x in point_chainI)
-  apply (erule dres_Inf_chain_cases)
-
-  apply (auto simp: INF_def simp del: Inf_image_eq dest!: subset_singletonD) []
-  apply (auto simp: INF_def simp del: Inf_image_eq) []
-  apply (clarsimp simp: INF_def simp del: Inf_image_eq) []
-  apply metis
-
-  apply simp
-
-  apply simp
+  apply simp_all
+  
+  apply (rule flatf_fp_induct_pointwise[where pre="\<lambda>_ _. True" and B=B and b=top and post="\<lambda>_ _ m. m\<noteq>dSUCCEED"])
+  apply (simp_all add: trimonoD A)
   done
 
 lemma dres_ne_bot_dWHILEIT[refine_transfer]:

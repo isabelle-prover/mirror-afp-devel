@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Tries without invariants} *}
+section {* \isaheader{Tries without invariants} *}
 theory Trie2 imports
   Trie_Impl
 begin

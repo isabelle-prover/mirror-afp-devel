@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Map implementation via tries} *}
+section {* \isaheader{Map implementation via tries} *}
 theory TrieMapImpl imports
   Trie2
   "../gen_algo/MapGA"

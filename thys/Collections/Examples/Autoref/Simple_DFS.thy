@@ -1,4 +1,4 @@
-header {* \isaheader{Simple DFS Algorithm} *}
+section {* \isaheader{Simple DFS Algorithm} *}
 theory Simple_DFS
 imports 
   "../../Refine_Dflt" 
@@ -51,10 +51,11 @@ proof -
     unfolding dfs_def S
     apply (refine_rcg refine_vcg impI
       RECT_rule[where 
-        \<Phi>="\<lambda>(V,v). (v0,v)\<in>E\<^sup>* \<and> V\<subseteq>{v. (v0,v)\<in>E\<^sup>*}" and
+        pre="\<lambda>(V,v). (v0,v)\<in>E\<^sup>* \<and> V\<subseteq>{v. (v0,v)\<in>E\<^sup>*}" and
         V="finite_psupset ({v. (v0,v)\<in>E\<^sup>*}) <*lex*> {}"]
       FOREACHc_rule[where I="\<lambda>_ r. r \<longrightarrow> (v0, vd) \<in> E\<^sup>*"]
     )
+
     apply (auto intro: finite_subset[of _ "{v'. (v0,v')\<in>E\<^sup>*}"])
     apply rprems
     apply (auto simp: finite_psupset_def)
@@ -103,7 +104,6 @@ text {* We can also leave the type of the nodes and its implementation
 schematic_lemma dfs_impl_refine_aux3:
   fixes succi and succ :: "'a::linorder \<Rightarrow> 'a set" 
     and Rv :: "('ai\<times>'a) set"
-  assumes [relator_props]: "single_valued Rv"
   assumes [autoref_rules_raw]: "(cmpk, dflt_cmp op \<le> op <)\<in>(Rv\<rightarrow>Rv\<rightarrow>Id)"
   notes [autoref_tyrel] = ty_REL[where 'a="'a set" and R="\<langle>Rv\<rangle>dflt_rs_rel"]
   assumes P_REF[autoref_rules]: 

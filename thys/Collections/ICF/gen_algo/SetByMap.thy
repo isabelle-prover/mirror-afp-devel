@@ -8,7 +8,7 @@
   2009-12-10: OrderedMap, transfer of iterators to OrderedSet
 
 *)
-header {* \isaheader{Implementing Sets by Maps} *}
+section {* \isaheader{Implementing Sets by Maps} *}
 theory SetByMap
 imports 
   "../spec/SetSpec"

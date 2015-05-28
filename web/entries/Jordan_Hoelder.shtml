@@ -105,7 +105,10 @@ This submission contains theories that lead to a formalization of the proof of t
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-09-11.tar.gz">afp-<!--#echo var="name" -->-2014-09-11.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

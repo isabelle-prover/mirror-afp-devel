@@ -1,4 +1,4 @@
-header {*\isaheader{Implementation of Annotated Lists by 2-3 Finger Trees}*}
+section {*\isaheader{Implementation of Annotated Lists by 2-3 Finger Trees}*}
 theory FTAnnotatedListImpl
 imports 
   "../../../Finger-Trees/FingerTree" 

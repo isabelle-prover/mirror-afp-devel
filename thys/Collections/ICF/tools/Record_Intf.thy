@@ -1,4 +1,4 @@
-header {* Automation for Record Based Interfaces *}
+section {* Automation for Record Based Interfaces *}
 theory Record_Intf
   imports Main ICF_Tools Ord_Code_Preproc
 begin

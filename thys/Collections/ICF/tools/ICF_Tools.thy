@@ -1,4 +1,4 @@
-header {* General ML-level tools *}
+section {* General ML-level tools *}
 theory ICF_Tools
 imports Main
 begin

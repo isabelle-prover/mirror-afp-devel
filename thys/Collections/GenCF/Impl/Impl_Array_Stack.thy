@@ -1,4 +1,4 @@
-header {* Stack by Array *}
+section {* Stack by Array *}
 theory Impl_Array_Stack
 imports   
   "../../../Automatic_Refinement/Automatic_Refinement"

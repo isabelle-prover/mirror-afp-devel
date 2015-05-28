@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* \isaheader{Set Implementation by non-distinct Lists} *}
+section {* \isaheader{Set Implementation by non-distinct Lists} *}
 theory ListSetImpl_NotDist
 imports 
   "../spec/SetSpec"

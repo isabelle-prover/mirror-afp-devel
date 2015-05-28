@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-header {* \isaheader{Set implementation via tries} *}
+section {* \isaheader{Set implementation via tries} *}
 theory TrieSetImpl imports
   TrieMapImpl
   "../gen_algo/SetByMap"

@@ -1,4 +1,4 @@
-header {* \isaheader{Set Implementation by Arrays} *}
+section {* \isaheader{Set Implementation by Arrays} *}
 theory ArraySetImpl
 imports 
   "../spec/SetSpec" 

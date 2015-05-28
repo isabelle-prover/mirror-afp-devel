@@ -10,7 +10,7 @@ subsection {* Indexed Generalized Buchi Graphs *}
 consts
   i_igbg_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
 
-abbreviation "i_igbg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_igbg_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+abbreviation "i_igbg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_igbg_eext,Iv\<rangle>\<^sub>ii_g_ext"
 
 context begin interpretation autoref_syn .
 
@@ -23,7 +23,7 @@ lemma igbg_type[autoref_itype]:
 end
 
 
-record ('vi,'ei,'v0i,'acci) gen_igbg_impl = "('vi,'ei,'v0i) gen_frg_impl" +
+record ('vi,'ei,'v0i,'acci) gen_igbg_impl = "('vi,'ei,'v0i) gen_g_impl" +
   igbgi_num_acc :: nat
   igbgi_acc :: 'acci
 
@@ -62,7 +62,7 @@ lemma gen_igbg_impl_rel_sv[relator_props]:
 abbreviation gen_igbg_impl_rel_ext 
   :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (_\<times>(_,_)igb_graph_rec_scheme) set"
   where "gen_igbg_impl_rel_ext Rm Racc 
-  \<equiv> \<langle>\<langle>Rm,Racc\<rangle>gen_igbg_impl_rel_eext\<rangle>gen_frg_impl_rel_ext "
+  \<equiv> \<langle>\<langle>Rm,Racc\<rangle>gen_igbg_impl_rel_eext\<rangle>gen_g_impl_rel_ext "
 
 lemma gen_igbg_refine:
   assumes "TERM (Rv,Re,Rv0)"
@@ -74,7 +74,7 @@ lemma gen_igbg_refine:
     \<in> \<langle>Rv,Re,Rv0\<rangle>gen_igbg_impl_rel_ext Rm Racc \<rightarrow> Racc"
   "(gen_igbg_impl_ext, igb_graph_rec_ext) 
     \<in> nat_rel \<rightarrow> Racc \<rightarrow> Rm \<rightarrow> \<langle>Rm,Racc\<rangle>gen_igbg_impl_rel_eext"
-  unfolding gen_igbg_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding gen_igbg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation with bit-set *}
@@ -93,7 +93,7 @@ lemma [relator_props, simp]:
   \<Longrightarrow> single_valued (\<langle>Rm,Rv\<rangle>igbg_impl_rel_eext)"
   unfolding igbg_impl_rel_eext_def by tagged_solver
 
-lemma frg_tag: "TERM (\<langle>Rv\<rangle>fun_set_rel,\<langle>Rv\<rangle>slg_rel,\<langle>Rv\<rangle>list_set_rel)" .
+lemma g_tag: "TERM (\<langle>Rv\<rangle>fun_set_rel,\<langle>Rv\<rangle>slg_rel,\<langle>Rv\<rangle>list_set_rel)" .
 lemma frgv_tag: "TERM (\<langle>Rv\<rangle>list_set_rel,\<langle>Rv\<rangle>slg_rel,\<langle>Rv\<rangle>list_set_rel)" .
 lemma igbg_bs_tag: "TERM (Rv \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel)" .
 
@@ -101,14 +101,14 @@ abbreviation "igbgv_impl_rel_ext Rm Rv
   \<equiv> \<langle>\<langle>Rm, Rv\<rangle>igbg_impl_rel_eext, Rv\<rangle>frgv_impl_rel_ext"
 
 abbreviation "igbg_impl_rel_ext Rm Rv 
-  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>igbg_impl_rel_eext, Rv\<rangle>frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>igbg_impl_rel_eext, Rv\<rangle>g_impl_rel_ext"
 
 type_synonym ('v,'m) igbgv_impl_scheme = 
   "('v, \<lparr> igbgi_num_acc::nat, igbgi_acc::'v\<Rightarrow>integer, \<dots>::'m  \<rparr>) 
     frgv_impl_scheme"
 type_synonym ('v,'m) igbg_impl_scheme = 
   "('v, \<lparr> igbgi_num_acc::nat, igbgi_acc::'v\<Rightarrow>integer, \<dots>::'m  \<rparr>) 
-    frg_impl_scheme"
+    g_impl_scheme"
 
 context fixes Rv :: "('vi\<times>'v) set" begin
 lemmas [autoref_rules] = gen_igbg_refine[
@@ -116,30 +116,30 @@ lemmas [autoref_rules] = gen_igbg_refine[
   folded frgv_impl_rel_ext_def igbg_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_igbg_refine[
-  OF frg_tag[of Rv] igbg_bs_tag[of Rv], 
-  folded frg_impl_rel_ext_def igbg_impl_rel_eext_def]
+  OF g_tag[of Rv] igbg_bs_tag[of Rv], 
+  folded g_impl_rel_ext_def igbg_impl_rel_eext_def]
 end
 
 
 
 schematic_lemma "(?c::?'c, 
-    \<lambda>G x. if igbg_num_acc G = 0 \<and> 1\<in>igbg_acc G x then (frg_E G `` {x}) else {} 
+    \<lambda>G x. if igbg_num_acc G = 0 \<and> 1\<in>igbg_acc G x then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
 
 
-schematic_lemma "\<lbrakk>single_valued R; Range R = UNIV\<rbrakk> \<Longrightarrow> (?c, 
+schematic_lemma "(?c, 
   \<lambda>V0 E num_acc acc. 
-    \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
+    \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
   )\<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> nat_rel \<rightarrow> (R \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel) 
     \<rightarrow> igbg_impl_rel_ext unit_rel R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma "\<lbrakk>single_valued R; Range R = UNIV\<rbrakk> \<Longrightarrow> (?c, 
+schematic_lemma "(?c, 
   \<lambda>V0 E num_acc acc. 
-    \<lparr> frg_V = {}, frg_E = E, frg_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
+    \<lparr> g_V = {}, g_E = E, g_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
   )\<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> nat_rel \<rightarrow> (R \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel) 
     \<rightarrow> igbgv_impl_rel_ext unit_rel R"
   apply (autoref (keep_goal))
@@ -151,7 +151,7 @@ consts
   i_igba_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
 
 abbreviation "i_igba Ie Iv Il 
-  \<equiv> \<langle>\<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_igba_eext,Iv\<rangle>\<^sub>ii_igbg_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+  \<equiv> \<langle>\<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_igba_eext,Iv\<rangle>\<^sub>ii_igbg_eext,Iv\<rangle>\<^sub>ii_g_ext"
 context begin interpretation autoref_syn .
 
 lemma igba_type[autoref_itype]:
@@ -210,7 +210,7 @@ lemma gen_igba_refine:
   "(gen_igba_impl_ext, igba_rec_ext) 
     \<in> Rl \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rl\<rangle>gen_igba_impl_rel_eext"
   unfolding gen_igba_impl_rel_eext_def gen_igbg_impl_rel_eext_def
-    gen_frg_impl_rel_ext_def
+    gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation as function *}
@@ -253,21 +253,21 @@ lemmas [autoref_rules] = gen_igba_refine[
   folded frgv_impl_rel_ext_def igbg_impl_rel_eext_def igba_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_igba_refine[
-  OF frg_tag[of Rv] igbg_bs_tag[of Rv] igba_f_tag[of Rv Rl], 
-  folded frg_impl_rel_ext_def igbg_impl_rel_eext_def igba_impl_rel_eext_def]
+  OF g_tag[of Rv] igbg_bs_tag[of Rv] igba_f_tag[of Rv Rl], 
+  folded g_impl_rel_ext_def igbg_impl_rel_eext_def igba_impl_rel_eext_def]
 end
 
 thm autoref_itype
 
 schematic_lemma 
-  "(?c::?'c, \<lambda>G x l. if igba_L G x l then (frg_E G `` {x}) else {} )\<in>?R"
+  "(?c::?'c, \<lambda>G x l. if igba_L G x l then (g_E G `` {x}) else {} )\<in>?R"
   apply (autoref (keep_goal))
   done
 
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) num_acc acc L. 
-  \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, 
+  \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, 
     igbg_num_acc = num_acc, igbg_acc = acc, igba_L = L \<rparr>
   )\<in>?R"
   apply (autoref (keep_goal))
@@ -276,7 +276,7 @@ schematic_lemma
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) num_acc acc L. 
-  \<lparr> frg_V = V0, frg_E = E, frg_V0 = V0, 
+  \<lparr> g_V = V0, g_E = E, g_V0 = V0, 
     igbg_num_acc = num_acc, igbg_acc = acc, igba_L = L \<rparr>
   )\<in>?R"
   apply (autoref (keep_goal))
@@ -287,7 +287,7 @@ subsection {* Generalized Buchi Graphs *}
 consts
   i_gbg_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
 
-abbreviation "i_gbg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_gbg_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+abbreviation "i_gbg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_gbg_eext,Iv\<rangle>\<^sub>ii_g_ext"
 
 context begin interpretation autoref_syn .
 
@@ -297,7 +297,7 @@ lemma gbg_type[autoref_itype]:
   by simp_all
 end
 
-record ('vi,'ei,'v0i,'fi) gen_gbg_impl = "('vi,'ei,'v0i) gen_frg_impl" +
+record ('vi,'ei,'v0i,'fi) gen_gbg_impl = "('vi,'ei,'v0i) gen_g_impl" +
   gbgi_F :: 'fi
 
 definition gen_gbg_impl_rel_eext_def_internal: 
@@ -333,7 +333,7 @@ lemma gen_gbg_impl_rel_sv[relator_props]:
 abbreviation gen_gbg_impl_rel_ext 
   :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (_ \<times> ('q,_) gb_graph_rec_scheme) set"
   where "gen_gbg_impl_rel_ext Rm Rf 
-  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_gbg_impl_rel_eext\<rangle>gen_frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_gbg_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_gbg_refine:
   assumes "TERM (Rv,Re,Rv0)"
@@ -343,7 +343,7 @@ lemma gen_gbg_refine:
     \<in> \<langle>Rv,Re,Rv0\<rangle>gen_gbg_impl_rel_ext Rm Rf \<rightarrow> Rf"
   "(gen_gbg_impl_ext, gb_graph_rec_ext) 
     \<in> Rf \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rf\<rangle>gen_gbg_impl_rel_eext"
-  unfolding gen_gbg_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding gen_gbg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation with list of lists *}
@@ -370,7 +370,7 @@ abbreviation "gbgv_impl_rel_ext Rm Rv
   \<equiv> \<langle>\<langle>Rm, Rv\<rangle>gbg_impl_rel_eext, Rv\<rangle>frgv_impl_rel_ext"
 
 abbreviation "gbg_impl_rel_ext Rm Rv 
-  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>gbg_impl_rel_eext, Rv\<rangle>frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>gbg_impl_rel_eext, Rv\<rangle>g_impl_rel_ext"
 
 context fixes Rv :: "('vi\<times>'v) set" begin
 lemmas [autoref_rules] = gen_gbg_refine[
@@ -378,12 +378,12 @@ lemmas [autoref_rules] = gen_gbg_refine[
   folded frgv_impl_rel_ext_def gbg_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_gbg_refine[
-  OF frg_tag[of Rv] gbg_ls_tag[of Rv], 
-  folded frg_impl_rel_ext_def gbg_impl_rel_eext_def]
+  OF g_tag[of Rv] gbg_ls_tag[of Rv], 
+  folded g_impl_rel_ext_def gbg_impl_rel_eext_def]
 end
 
 schematic_lemma "(?c::?'c, 
-    \<lambda>G x. if gbg_F G = {} then (frg_E G `` {x}) else {} 
+    \<lambda>G x. if gbg_F G = {} then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
@@ -391,14 +391,14 @@ schematic_lemma "(?c::?'c,
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
-    \<lparr> frg_V = {}, frg_E = E, frg_V0 = V0, gbg_F = F \<rparr>)\<in>?R"
+    \<lparr> g_V = {}, g_E = E, g_V0 = V0, gbg_F = F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
-    \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, gbg_F = insert {} F \<rparr>)\<in>?R"
+    \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, gbg_F = insert {} F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
@@ -412,7 +412,7 @@ consts
   i_gba_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
 
 abbreviation "i_gba Ie Iv Il 
-  \<equiv> \<langle>\<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_gba_eext,Iv\<rangle>\<^sub>ii_gbg_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+  \<equiv> \<langle>\<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_gba_eext,Iv\<rangle>\<^sub>ii_gbg_eext,Iv\<rangle>\<^sub>ii_g_ext"
 context begin interpretation autoref_syn .
 
 lemma gba_type[autoref_itype]:
@@ -470,7 +470,7 @@ lemma gen_gba_refine:
   "(gen_gba_impl_ext, gba_rec_ext) 
     \<in> Rl \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rl\<rangle>gen_gba_impl_rel_eext"
   unfolding gen_gba_impl_rel_eext_def gen_gbg_impl_rel_eext_def
-    gen_frg_impl_rel_ext_def
+    gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation as function *}
@@ -505,21 +505,21 @@ lemmas [autoref_rules] = gen_gba_refine[
   folded frgv_impl_rel_ext_def gbg_impl_rel_eext_def gba_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_gba_refine[
-  OF frg_tag[of Rv] gbg_ls_tag[of Rv] gba_f_tag[of Rv Rl], 
-  folded frg_impl_rel_ext_def gbg_impl_rel_eext_def gba_impl_rel_eext_def]
+  OF g_tag[of Rv] gbg_ls_tag[of Rv] gba_f_tag[of Rv Rl], 
+  folded g_impl_rel_ext_def gbg_impl_rel_eext_def gba_impl_rel_eext_def]
 end
 
 thm autoref_itype
 
 schematic_lemma 
-  "(?c::?'c, \<lambda>G x l. if gba_L G x l then (frg_E G `` {x}) else {} )\<in>?R"
+  "(?c::?'c, \<lambda>G x l. if gba_L G x l then (g_E G `` {x}) else {} )\<in>?R"
   apply (autoref (keep_goal))
   done
 
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F L. 
-  \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, 
+  \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, 
     gbg_F = F, gba_L = L \<rparr>
   )\<in>?R"
   apply (autoref (keep_goal))
@@ -528,7 +528,7 @@ schematic_lemma
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F L. 
-  \<lparr> frg_V = V0, frg_E = E, frg_V0 = V0, 
+  \<lparr> g_V = V0, g_E = E, g_V0 = V0, 
     gbg_F = F, gba_L = L \<rparr>
   )\<in>?R"
   apply (autoref (keep_goal))
@@ -539,7 +539,7 @@ subsection {* Buchi Graphs *}
 consts
   i_bg_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
 
-abbreviation "i_bg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_bg_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+abbreviation "i_bg Ie Iv \<equiv> \<langle>\<langle>Ie,Iv\<rangle>\<^sub>ii_bg_eext,Iv\<rangle>\<^sub>ii_g_ext"
 
 context begin interpretation autoref_syn .
 lemma bg_type[autoref_itype]:
@@ -548,7 +548,7 @@ lemma bg_type[autoref_itype]:
   by simp_all
 end
 
-record ('vi,'ei,'v0i,'fi) gen_bg_impl = "('vi,'ei,'v0i) gen_frg_impl" +
+record ('vi,'ei,'v0i,'fi) gen_bg_impl = "('vi,'ei,'v0i) gen_g_impl" +
   bgi_F :: 'fi
 
 definition gen_bg_impl_rel_eext_def_internal: 
@@ -584,7 +584,7 @@ lemma gen_bg_impl_rel_sv[relator_props]:
 abbreviation gen_bg_impl_rel_ext 
   :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (_ \<times> ('q,_) b_graph_rec_scheme) set"
   where "gen_bg_impl_rel_ext Rm Rf 
-  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_bg_impl_rel_eext\<rangle>gen_frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_bg_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_bg_refine:
   assumes "TERM (Rv,Re,Rv0)"
@@ -594,7 +594,7 @@ lemma gen_bg_refine:
     \<in> \<langle>Rv,Re,Rv0\<rangle>gen_bg_impl_rel_ext Rm Rf \<rightarrow> Rf"
   "(gen_bg_impl_ext, b_graph_rec_ext) 
     \<in> Rf \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rf\<rangle>gen_bg_impl_rel_eext"
-  unfolding gen_bg_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding gen_bg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation with Characteristic Functions *}
@@ -621,7 +621,7 @@ abbreviation "bgv_impl_rel_ext Rm Rv
   \<equiv> \<langle>\<langle>Rm, Rv\<rangle>bg_impl_rel_eext, Rv\<rangle>frgv_impl_rel_ext"
 
 abbreviation "bg_impl_rel_ext Rm Rv 
-  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>bg_impl_rel_eext, Rv\<rangle>frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm, Rv\<rangle>bg_impl_rel_eext, Rv\<rangle>g_impl_rel_ext"
 
 context fixes Rv :: "('vi\<times>'v) set" begin
 lemmas [autoref_rules] = gen_bg_refine[
@@ -629,12 +629,12 @@ lemmas [autoref_rules] = gen_bg_refine[
   folded frgv_impl_rel_ext_def bg_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_bg_refine[
-  OF frg_tag[of Rv] bg_fs_tag[of Rv], 
-  folded frg_impl_rel_ext_def bg_impl_rel_eext_def]
+  OF g_tag[of Rv] bg_fs_tag[of Rv], 
+  folded g_impl_rel_ext_def bg_impl_rel_eext_def]
 end
 
 schematic_lemma "(?c::?'c, 
-    \<lambda>G x. if x \<in> bg_F G then (frg_E G `` {x}) else {} 
+    \<lambda>G x. if x \<in> bg_F G then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
@@ -642,14 +642,14 @@ schematic_lemma "(?c::?'c,
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
-    \<lparr> frg_V = {}, frg_E = E, frg_V0 = V0, bg_F = F \<rparr>)\<in>?R"
+    \<lparr> g_V = {}, g_E = E, g_V0 = V0, bg_F = F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
-    \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, bg_F = F \<rparr>)\<in>?R"
+    \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, bg_F = F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
@@ -658,7 +658,7 @@ subsection {* System Automata *}
 consts
   i_sa_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
 
-abbreviation "i_sa Ie Iv Il \<equiv> \<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_sa_eext,Iv\<rangle>\<^sub>ii_frg_ext"
+abbreviation "i_sa Ie Iv Il \<equiv> \<langle>\<langle>Ie,Iv,Il\<rangle>\<^sub>ii_sa_eext,Iv\<rangle>\<^sub>ii_g_ext"
 
 context begin interpretation autoref_syn .
 term sa_L
@@ -668,7 +668,7 @@ lemma sa_type[autoref_itype]:
   by simp_all
 end
 
-record ('vi,'ei,'v0i,'li) gen_sa_impl = "('vi,'ei,'v0i) gen_frg_impl" +
+record ('vi,'ei,'v0i,'li) gen_sa_impl = "('vi,'ei,'v0i) gen_g_impl" +
   sai_L :: 'li
 
 definition gen_sa_impl_rel_eext_def_internal: 
@@ -704,7 +704,7 @@ lemma gen_sa_impl_rel_sv[relator_props]:
 abbreviation gen_sa_impl_rel_ext 
   :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (_ \<times> ('q,'l,_) sa_rec_scheme) set"
   where "gen_sa_impl_rel_ext Rm Rf 
-  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_sa_impl_rel_eext\<rangle>gen_frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_sa_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_sa_refine:
   assumes "TERM (Rv,Re,Rv0)"
@@ -714,7 +714,7 @@ lemma gen_sa_refine:
     \<in> \<langle>Rv,Re,Rv0\<rangle>gen_sa_impl_rel_ext Rm Rl \<rightarrow> Rl"
   "(gen_sa_impl_ext, sa_rec_ext) 
     \<in> Rl \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rl\<rangle>gen_sa_impl_rel_eext"
-  unfolding gen_sa_impl_rel_eext_def gen_frg_impl_rel_ext_def
+  unfolding gen_sa_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
 subsubsection {* Implementation with Function *}
@@ -741,13 +741,13 @@ abbreviation "sav_impl_rel_ext Rm Rv Rl
   \<equiv> \<langle>\<langle>Rm, Rv, Rl\<rangle>sa_impl_rel_eext, Rv\<rangle>frgv_impl_rel_ext"
 
 abbreviation "sa_impl_rel_ext Rm Rv Rl 
-  \<equiv> \<langle>\<langle>Rm, Rv, Rl\<rangle>sa_impl_rel_eext, Rv\<rangle>frg_impl_rel_ext"
+  \<equiv> \<langle>\<langle>Rm, Rv, Rl\<rangle>sa_impl_rel_eext, Rv\<rangle>g_impl_rel_ext"
 
 type_synonym ('v,'l,'m) sav_impl_scheme = 
   "('v, \<lparr> sai_L :: 'v \<Rightarrow> 'l , \<dots>::'m  \<rparr>) frgv_impl_scheme"
 
 type_synonym ('v,'l,'m) sa_impl_scheme = 
-  "('v, \<lparr> sai_L :: 'v \<Rightarrow> 'l , \<dots>::'m  \<rparr>) frg_impl_scheme"
+  "('v, \<lparr> sai_L :: 'v \<Rightarrow> 'l , \<dots>::'m  \<rparr>) g_impl_scheme"
 
 context fixes Rv :: "('vi\<times>'v) set" begin
 lemmas [autoref_rules] = gen_sa_refine[
@@ -755,12 +755,12 @@ lemmas [autoref_rules] = gen_sa_refine[
   folded frgv_impl_rel_ext_def sa_impl_rel_eext_def]
 
 lemmas [autoref_rules] = gen_sa_refine[
-  OF frg_tag[of Rv] sa_f_tag[of Rv], 
-  folded frg_impl_rel_ext_def sa_impl_rel_eext_def]
+  OF g_tag[of Rv] sa_f_tag[of Rv], 
+  folded g_impl_rel_ext_def sa_impl_rel_eext_def]
 end
 
 schematic_lemma "(?c::?'c, 
-    \<lambda>G x l. if sa_L G x = l then (frg_E G `` {x}) else {} 
+    \<lambda>G x l. if sa_L G x = l then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
@@ -768,14 +768,14 @@ schematic_lemma "(?c::?'c,
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) L. 
-    \<lparr> frg_V = {}, frg_E = E, frg_V0 = V0, sa_L = L \<rparr>)\<in>?R"
+    \<lparr> g_V = {}, g_E = E, g_V0 = V0, sa_L = L \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
 schematic_lemma 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) L. 
-    \<lparr> frg_V = UNIV, frg_E = E, frg_V0 = V0, sa_L = L \<rparr>)\<in>?R"
+    \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, sa_L = L \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
@@ -783,9 +783,6 @@ subsection {* Index Conversion *}
 
 schematic_lemma gbg_to_idx_ext_impl_aux:
   fixes Rv :: "('qi \<times> 'q) set"
-  assumes [relator_props]: "single_valued Ri"
-  assumes [relator_props]: "single_valued Rv"
-  assumes [relator_props]: "Range Rv = UNIV"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
   shows "(?c, gbg_to_idx_ext :: _ \<Rightarrow> ('q, _) gb_graph_rec_scheme \<Rightarrow> _)
@@ -801,7 +798,7 @@ concrete_definition gbg_to_idx_ext_impl
 
 lemmas [autoref_rules] = 
   gbg_to_idx_ext_impl.refine[ 
-  OF PREFER_sv_D PREFER_sv_D PREFER_RUNIV_D SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
+  OF SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
 
 schematic_lemma gbg_to_idx_ext_code_aux: 
   "RETURN ?c \<le> gbg_to_idx_ext_impl eq bhc def_size ecnv G"
@@ -819,11 +816,6 @@ end
 
 schematic_lemma gba_to_idx_ext_impl_aux:
   fixes Rv :: "('qi \<times> 'q) set"
-  assumes [relator_props]: "single_valued Ri"
-  assumes [relator_props]: "single_valued Rv"
-  assumes [relator_props]: "Range Rv = UNIV"
-  (*assumes [relator_props]: "single_valued Rl"*)
-  assumes [relator_props]: "Range Rl = UNIV"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
   shows "(?c, gba_to_idx_ext :: _ \<Rightarrow> ('q, 'l, _) gba_rec_scheme \<Rightarrow> _)
@@ -835,9 +827,7 @@ schematic_lemma gba_to_idx_ext_impl_aux:
   done
 concrete_definition gba_to_idx_ext_impl for eq bhc uses gba_to_idx_ext_impl_aux
 lemmas [autoref_rules] = 
-  gba_to_idx_ext_impl.refine[ 
-    OF PREFER_sv_D PREFER_sv_D PREFER_RUNIV_D PREFER_RUNIV_D 
-    SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
+  gba_to_idx_ext_impl.refine[OF SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
 
 schematic_lemma gba_to_idx_ext_code_aux: 
   "RETURN ?c \<le> gba_to_idx_ext_impl eq bhc def_size ecnv G"
@@ -852,22 +842,22 @@ context igb_graph begin
 
 lemma degen_impl_aux_alt: "degeneralize_ext ecnv = (
       if num_acc = 0 then \<lparr>
-        frg_V = Collect (\<lambda>(q,x). x=0 \<and> q\<in>V),
-        frg_E= E_of_succ (\<lambda>(q,x). if x=0 then (\<lambda>q'. (q',0))`succ_of_E E q else {}),
-        frg_V0 = (\<lambda>q'. (q',0))`V0, 
+        g_V = Collect (\<lambda>(q,x). x=0 \<and> q\<in>V),
+        g_E= E_of_succ (\<lambda>(q,x). if x=0 then (\<lambda>q'. (q',0))`succ_of_E E q else {}),
+        g_V0 = (\<lambda>q'. (q',0))`V0, 
         bg_F = Collect (\<lambda>(q,x). x=0 \<and> q\<in>V),
         \<dots> = ecnv G
       \<rparr>
       else \<lparr>
-        frg_V = Collect (\<lambda>(q,x). x<num_acc \<and> q\<in>V),
-        frg_E = E_of_succ (\<lambda>(q,i). 
+        g_V = Collect (\<lambda>(q,x). x<num_acc \<and> q\<in>V),
+        g_E = E_of_succ (\<lambda>(q,i). 
           if i<num_acc then
             let
               i' = if i \<in> acc q then (i + 1) mod num_acc else i
             in (\<lambda>q'. (q',i'))`succ_of_E E q
           else {}
         ),
-        frg_V0 = (\<lambda>q'. (q',0))`V0,
+        g_V0 = (\<lambda>q'. (q',0))`V0,
         bg_F = Collect (\<lambda>(q,x). x=0 \<and> 0\<in>acc q),
         \<dots> = ecnv G
       \<rparr>)"
@@ -938,14 +928,14 @@ context igba_sys_prod_precond begin
 
 lemma prod_impl_aux_alt:
   "prod = (\<lparr>
-    frg_V = Collect (\<lambda>(q,s). q \<in> igba.V \<and> s \<in> sa.V),
-    frg_E = E_of_succ (\<lambda>(q,s). 
+    g_V = Collect (\<lambda>(q,s). q \<in> igba.V \<and> s \<in> sa.V),
+    g_E = E_of_succ (\<lambda>(q,s). 
       if igba.L q (sa.L s) then     
         succ_of_E (igba.E) q \<times> succ_of_E sa.E s
       else
         {}
     ),
-    frg_V0 = igba.V0 \<times> sa.V0,
+    g_V0 = igba.V0 \<times> sa.V0,
     igbg_num_acc = igba.num_acc,
     igbg_acc = \<lambda>(q,s). if s\<in>sa.V then igba.acc q else {}
   \<rparr>)"

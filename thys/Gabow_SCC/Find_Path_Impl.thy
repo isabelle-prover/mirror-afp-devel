@@ -264,7 +264,8 @@ begin
     "wset_find_path' E U0 P \<le> \<Down>Id (wset_find_path E U0 P)"
     unfolding wset_find_path'_def wset_find_path_def
     unfolding op_map_pick_remove_alt
-    apply (refine_rcg IdI single_valued_Id)
+    apply (refine_rcg IdI)
+    apply assumption
     apply simp_all
     done
 

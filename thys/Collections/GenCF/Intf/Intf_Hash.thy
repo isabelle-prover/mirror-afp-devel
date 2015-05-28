@@ -1,4 +1,4 @@
-header {* \isaheader{Hashable Interface} *}
+section {* \isaheader{Hashable Interface} *}
 theory Intf_Hash
 imports 
     Main

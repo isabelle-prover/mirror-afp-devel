@@ -21,7 +21,11 @@ code_printing
       val time = Unsynchronized.ref Time.zeroTime
 
       fun is_active () = !active
-      fun newnode () = num_vis := !num_vis + 1
+      fun newnode () =
+      (
+        num_vis := !num_vis + 1;
+        if !num_vis mod 10000 = 0 then tracing (IntInf.toString (!num_vis) ^ "\n") else ()
+      )
 
       fun start () = (active := true; time := Time.now ())
       fun stop () = (time := Time.- (Time.now (), !time))
@@ -92,9 +96,9 @@ consts i_node :: interface
 
 (* TODO: Move generic part of this locale to Digraph_impl *)
 locale fr_graph_impl_loc = fr_graph G
-  for mrel and G_impl and G :: "('v::hashable,'more) fr_graph_rec_scheme"
+  for mrel and G_impl and G :: "('v::hashable,'more) graph_rec_scheme"
   +
-  assumes G_refine: "(G_impl,G)\<in>\<langle>mrel,Id\<rangle>frg_impl_rel_ext"
+  assumes G_refine: "(G_impl,G)\<in>\<langle>mrel,Id\<rangle>g_impl_rel_ext"
 begin
   abbreviation "node_rel \<equiv> Id :: ('v \<times> _) set"
   lemmas [autoref_rel_intf] = REL_INTFI[of node_rel i_node]

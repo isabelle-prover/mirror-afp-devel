@@ -1,4 +1,4 @@
-header {* \isaheader{Default Setup} *}
+section {* \isaheader{Default Setup} *}
 theory Refine_Dflt
 imports 
   "../Refine_Monadic/Refine_Monadic"

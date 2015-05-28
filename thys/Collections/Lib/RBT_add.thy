@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-header {* \isaheader{Additions to RB-Trees} *}
+section {* \isaheader{Additions to RB-Trees} *}
 theory RBT_add
 imports 
   "~~/src/HOL/Library/RBT_Impl" 

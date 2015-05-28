@@ -301,4 +301,49 @@ begin
 
   setup Parametricity.setup
 
+
+
+  subsection \<open>Convenience Tools\<close>
+
+  ML {*
+    (* Prefix p_ or wrong type supresses generation of relAPP *)
+  
+    fun cnv_relAPP t = let
+      fun consider (Var ((name,_),T)) =
+        if String.isPrefix "p_" name then false   
+        else (
+          case T of
+            Type(@{type_name set},[Type(@{type_name prod},_)]) => true
+          | _ => false)
+      | consider _ = true
+  
+      fun strip_rcomb u : term * term list =
+        let 
+          fun stripc (x as (f$t, ts)) = 
+            if consider t then stripc (f, t::ts) else x
+          | stripc  x =  x
+        in  stripc(u,[])  end;
+  
+      val (f,a) = strip_rcomb t
+    in 
+      Relators.list_relAPP a f
+    end
+  
+    fun to_relAPP_conv ctxt = Refine_Util.f_tac_conv ctxt 
+      cnv_relAPP 
+      (ALLGOALS (simp_tac 
+        (put_simpset HOL_basic_ss ctxt addsimps @{thms relAPP_def})))
+  
+  
+    val to_relAPP_attr = Thm.rule_attribute (fn context => let
+      val ctxt = Context.proof_of context
+    in
+      Conv.fconv_rule (Conv.arg1_conv (to_relAPP_conv ctxt))
+    end)
+  *}
+  
+  attribute_setup to_relAPP = {* Scan.succeed (to_relAPP_attr) *} 
+    "Convert relator definition to prefix-form"
+
+
 end

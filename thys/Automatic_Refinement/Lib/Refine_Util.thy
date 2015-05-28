@@ -7,7 +7,8 @@ definition conv_tag where "conv_tag n x == x"
 
 ML {*
   infix 0 RSm THEN_ELSE' THEN_ELSE_COMB'
-  infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL;
+  infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL
+  infix 2 ORELSE_INTERVAL
   infix 3 ->>
   infix 1 ##
 
@@ -58,6 +59,7 @@ ML {*
 
     val SINGLE_INTERVAL: itactic -> tactic'
     val THEN_INTERVAL: itactic * itactic -> itactic
+    val ORELSE_INTERVAL: itactic * itactic -> itactic
 
     val CAN': tactic' -> tactic'
 
@@ -292,6 +294,8 @@ ML {*
           THEN (fn st' => tac2 i (j + Thm.nprems_of st' - Thm.nprems_of st) st')
         ) st
       ):itactic
+
+    fun tac1 ORELSE_INTERVAL tac2 = (fn i => fn j => tac1 i j ORELSE tac2 i j)
 
     (* Fail if tac fails, otherwise do nothing *)
     fun CAN' tac i st = 
@@ -689,5 +693,9 @@ ML {*
   open Basic_Refine_Util
 
 *}
+
+attribute_setup zero_var_indexes = {*
+  Scan.succeed (Thm.rule_attribute (K Drule.zero_var_indexes))
+*} "Set variable indexes to zero, renaming to avoid clashes"
 
 end

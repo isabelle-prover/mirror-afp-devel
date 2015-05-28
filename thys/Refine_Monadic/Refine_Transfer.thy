@@ -84,6 +84,8 @@ interpretation dres!: dist_transfer nres_of
   apply (simp add: nres_transfer)
   done
 
+lemma nres_of_transfer[refine_transfer]: "nres_of x \<le> nres_of x" by simp
+
 lemma det_FAIL[refine_transfer]: "nres_of (dFAIL) \<le> FAIL" by auto
 lemma det_SUCCEED[refine_transfer]: "nres_of (dSUCCEED) \<le> SUCCEED" by auto
 lemma det_SPEC: "\<Phi> x \<Longrightarrow> nres_of (dRETURN x) \<le> SPEC \<Phi>" by simp
@@ -150,7 +152,7 @@ interpretation plain!: transfer RETURN .
 lemma plain_RETURN[refine_transfer]: "RETURN a \<le> RETURN a" by simp
 lemma plain_bind[refine_transfer]: 
   "\<lbrakk>RETURN x \<le> M; \<And>x. RETURN (f x) \<le> F x\<rbrakk> \<Longrightarrow> RETURN (Let x f) \<le> bind M F"
-  apply (erule order_trans[rotated,OF bind_mono])
+  apply (erule order_trans[rotated,OF bind_mono(1)])
   apply assumption
   apply simp
   done
@@ -249,5 +251,16 @@ lemma plain_nres_rel_as_br_conv:
 (* TODO: Refine_Transfer could be expressed also just as a 
     parametricity based transfer, and based on the same infrastructure
     as autoref *)
+
+subsection \<open>Post-Simplification Setup\<close>
+lemma dres_unit_simps[refine_transfer_post_simp]:
+  "dbind (dRETURN (u::unit)) f = f ()"
+  by auto
+
+lemma Let_dRETURN_simp[refine_transfer_post_simp]:
+  "Let m dRETURN = dRETURN m" by auto
+
+lemmas [refine_transfer_post_simp] = dres_monad_laws
+
 
 end

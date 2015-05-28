@@ -1,4 +1,4 @@
-header {* \isaheader{Array-Based Maps with Natural Number Keys} *}
+section {* \isaheader{Array-Based Maps with Natural Number Keys} *}
 theory Impl_Array_Map
 imports 
   "../../../Automatic_Refinement/Automatic_Refinement"

@@ -1,4 +1,4 @@
-header {* \isaheader{Generic Map To Set Converter} *}
+section {* \isaheader{Generic Map To Set Converter} *}
 theory Gen_Map2Set
 imports 
   "../Intf/Intf_Map"
@@ -81,7 +81,6 @@ lemma map2set_delete[autoref_rules_raw]:
   by (force dest: fun_relD)
 
 lemma map2set_to_sorted_list[autoref_ga_rules]:
-  (*assumes SV: "single_valued Rk"*)
   fixes it :: "'m \<Rightarrow> ('k\<times>unit) list"
   assumes A: "GEN_ALGO_tag (is_map_to_sorted_list ordR Rk Id R it)"
   shows "is_set_to_sorted_list ordR Rk (map2set_rel R) 

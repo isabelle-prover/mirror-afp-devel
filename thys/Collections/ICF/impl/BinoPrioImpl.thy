@@ -1,4 +1,4 @@
-header {*\isaheader{Implementation of Priority Queues by Binomial Heap}*}
+section {*\isaheader{Implementation of Priority Queues by Binomial Heap}*}
 
 theory BinoPrioImpl
 imports 

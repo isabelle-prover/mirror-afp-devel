@@ -1,4 +1,4 @@
-header {* \isaheader{Red-Black Tree based Maps} *}
+section {* \isaheader{Red-Black Tree based Maps} *}
 theory Impl_RBT_Map
 imports 
   "~~/src/HOL/Library/RBT_Impl"
@@ -946,7 +946,6 @@ qed
 
 lemma autoref_rbt_is_iterator[autoref_ga_rules]: 
   assumes ELO: "GEN_ALGO_tag (eq_linorder cmp')"
-  (*assumes [relator_props]: "single_valued Rk"   "single_valued Rv"*)
   shows "is_map_to_sorted_list (comp2le cmp') Rk Rv (rbt_map_rel (comp2lt cmp'))
     rbt_to_list"
 proof -

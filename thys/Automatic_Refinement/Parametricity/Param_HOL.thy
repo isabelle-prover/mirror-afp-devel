@@ -106,6 +106,13 @@ lemma param_case_prod':
     \<rbrakk> \<Longrightarrow> (case_prod f p, case_prod f' p') \<in> R"
   by (auto split: prod.split)
 
+lemma param_case_prod'': (* TODO: Really needed? *)
+  "\<lbrakk> 
+    \<And>a b a' b'. \<lbrakk>p=(a,b); p'=(a',b')\<rbrakk> \<Longrightarrow> (f a b,f' a' b')\<in>R  
+  \<rbrakk> \<Longrightarrow> (case_prod f p, case_prod f' p')\<in>R"
+  by (auto split: prod.split)
+
+
 lemma param_map_prod[param]: 
   "(map_prod, map_prod) 
   \<in> (Ra\<rightarrow>Rb) \<rightarrow> (Rc\<rightarrow>Rd) \<rightarrow> \<langle>Ra,Rc\<rangle>prod_rel \<rightarrow> \<langle>Rb,Rd\<rangle>prod_rel"
@@ -213,7 +220,19 @@ lemma sum_projr_param[param]:
   apply (auto elim: sum_relE)
   done
 
+lemma list_rel_append1: "(as @ bs, l) \<in> \<langle>R\<rangle>list_rel 
+  \<longleftrightarrow> (\<exists>cs ds. l = cs@ds \<and> (as,cs)\<in>\<langle>R\<rangle>list_rel \<and> (bs,ds)\<in>\<langle>R\<rangle>list_rel)"
+  apply (simp add: list_rel_def list_all2_append1)
+  apply auto
+  apply (metis list_all2_lengthD)
+  done
 
+lemma list_rel_append2: "(l,as @ bs) \<in> \<langle>R\<rangle>list_rel 
+  \<longleftrightarrow> (\<exists>cs ds. l = cs@ds \<and> (cs,as)\<in>\<langle>R\<rangle>list_rel \<and> (ds,bs)\<in>\<langle>R\<rangle>list_rel)"
+  apply (simp add: list_rel_def list_all2_append2)
+  apply auto
+  apply (metis list_all2_lengthD)
+  done
 
 
 lemma param_append[param]: 
@@ -403,6 +422,14 @@ lemma param_all_interval_nat[param]:
   apply simp
   done
 
+lemma param_dropWhile[param]: 
+  "(dropWhile, dropWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
+  unfolding dropWhile_def by parametricity
+
+lemma param_takeWhile[param]: 
+  "(takeWhile, takeWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
+  unfolding takeWhile_def by parametricity
+
 
 subsection {*Sets*}
 
@@ -427,6 +454,18 @@ lemma param_diff[param]:
   shows "(op -, op -) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
   using assms 
   by (auto dest: single_valuedD simp: set_rel_def)
+
+lemma param_subseteq[param]: 
+  "\<lbrakk>single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> (op \<subseteq>, op \<subseteq>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
+  by (clarsimp simp: set_rel_def single_valued_def) blast
+
+lemma param_subset[param]: 
+  "\<lbrakk>single_valued (R\<inverse>)\<rbrakk> \<Longrightarrow> (op \<subset>, op \<subset>) \<in> \<langle>R\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel \<rightarrow> bool_rel"
+  (* Fine-tuned proof for speed *)
+  apply (simp add: set_rel_def single_valued_def)
+  apply safe
+  apply blast+
+  done
 
 lemma param_set[param]: 
   "single_valued Ra \<Longrightarrow> (set,set)\<in>\<langle>Ra\<rangle>list_rel \<rightarrow> \<langle>Ra\<rangle>set_rel"

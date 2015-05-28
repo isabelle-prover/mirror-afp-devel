@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-header {* General Algorithms for Iterators over Finite Sets *}
+section {* General Algorithms for Iterators over Finite Sets *}
 theory SetIteratorCollectionsGA
 imports 
   "../spec/SetSpec" 

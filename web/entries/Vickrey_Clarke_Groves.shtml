@@ -46,20 +46,17 @@
         <td class="abstract">
 
 
-A VCG auction is a generalization of the single-good, second price
-Vickrey auction to the case of a combinatorial auction (multiple
-goods, from which any participant can bid on each possible
-combination).
-<p>
-The theories CombinatorialAuction.thy, StrictCombinatorialAuction.thy
-and UniformTieBreaking.thy contain the relevant definitions and
-theorems; CombinatorialAuctionExamples.thy and
-CombinatorialAuctionCodeExtraction.thy present simple helper
-definitions to run the definitions on given examples and to export
-them to the Scala language, respectively; FirstPrice.thy shows how
-easy it is to adapt the definitions to the first price combinatorial
-auction. For further details, see the <a
-href="http://dx.doi.org/10.1145/2764468.2764511">EC-2015 paper</a>.
+A VCG auction (named after their inventors Vickrey, Clarke, and
+Groves) is a generalization of the single-good, second price Vickrey
+auction to the case of a combinatorial auction (multiple goods, from
+which any participant can bid on each possible combination). We
+formalize in this entry VCG auctions, including tie-breaking and prove
+that the functions for the allocation and the price determination are
+well-defined. Furthermore we show that the allocation function
+allocates goods only to participants, only goods in the auction are
+allocated, and no good is allocated twice. We also show that the price
+function is non-negative. These properties also hold for the
+automatically extracted Scala code.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
@@ -117,7 +114,11 @@ href="http://dx.doi.org/10.1145/2764468.2764511">EC-2015 paper</a>.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-05-09.tar.gz">afp-<!--#echo var="name" -->-2015-05-09.tar.gz</a></li>
+<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-04-30.tar.gz">afp-<!--#echo var="name" -->-2015-04-30.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
