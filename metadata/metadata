@@ -589,7 +589,7 @@ date = 2015-05-28
 abstract =
  We formalize new decision procedures for WS1S, M2L(Str), and Presburger
  Arithmetics. Formulas of these logics denote regular languages. Unlike
- traditional decision procedures, we do *not* translate formulas into automata
+ traditional decision procedures, we do <em>not</em> translate formulas into automata
  (nor into regular expressions), at least not explicitly. Instead we devise
  notions of derivatives (inspired by Brzozowski derivatives for regular
  expressions) that operate on formulas directly and compute a syntactic
