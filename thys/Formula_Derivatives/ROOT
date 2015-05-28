@@ -1,0 +1,31 @@
+chapter AFP
+
+session "Formula_Derivatives" (AFP) = "HOL-Library" +
+  theories [document = false]
+    While_Default
+    FSet_More
+    "~~/src/Tools/Permanent_Interpretation"
+    "~~/src/HOL/Library/Code_Target_Nat"
+    "~~/src/HOL/Library/Code_Target_Int"
+    "~~/src/HOL/Library/Code_Char"
+    "~~/src/HOL/Library/While_Combinator"
+    "../Coinductive_Languages/Coinductive_Language"
+    "../Deriving/Comparator_Generator/Compare_Instances"
+    "../List-Index/List_Index"
+  theories
+    WS1S_Formula
+    WS1S_Alt_Formula
+    Presburger_Formula
+    WS1S_Presburger_Equivalence
+    WS1S_Nameful
+  document_files (in "document")
+    "root.tex"
+
+session "Formula_Derivatives-Examples" (AFP) = "Formula_Derivatives" +
+  options [document = false]
+  theories
+    WS1S_Examples
+    WS1S_Alt_Examples
+    Presburger_Examples
+    WS1S_Presburger_Examples
+    WS1S_Nameful_Examples

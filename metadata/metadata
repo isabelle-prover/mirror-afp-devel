@@ -581,6 +581,30 @@ abstract =
  <p>
  The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
 
+[Formula_Derivatives]
+title = Derivatives of Logical Formulas
+author = Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+topic = Computer Science/Automata and Formal Languages, Logic
+date = 2015-05-28
+abstract =
+ We formalize new decision procedures for WS1S, M2L(Str), and Presburger
+ Arithmetics. Formulas of these logics denote regular languages. Unlike
+ traditional decision procedures, we do *not* translate formulas into automata
+ (nor into regular expressions), at least not explicitly. Instead we devise
+ notions of derivatives (inspired by Brzozowski derivatives for regular
+ expressions) that operate on formulas directly and compute a syntactic
+ bisimulation using these derivatives. The treatment of Boolean connectives and
+ quantifiers is uniform for all mentioned logics and is abstracted into a
+ locale. This locale is then instantiated by different atomic formulas and their
+ derivatives (which may differ even for the same logic under different encodings
+ of interpretations as formal words).
+ <p>
+ The WS1S instance is described in the draft paper "A Coalgebraic Decision
+ Procedure for WS1S"
+ (http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html) by the
+ author.
+depends-on = Coinductive_Languages, Deriving, List-Index
+
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
