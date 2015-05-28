@@ -1,0 +1,36 @@
+chapter AFP
+
+session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
+  theories [document = false]
+    Nonempty_Bounded_Set
+    "~~/src/HOL/Eisbach/Eisbach"
+  theories
+    Probabilistic_Hierarchy
+    Vardi
+  document_files (in "document/Hierarchy")
+    "root.tex"
+
+session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Multivariate_Analysis" +
+  theories [document = false]
+    "~~/src/HOL/Probability/Giry_Monad"
+    "~~/src/HOL/Library/Multiset"
+    "~~/src/HOL/Cardinals/Cardinals"
+  theories
+    "~~/src/HOL/Probability/Probability_Mass_Function"
+    "~~/src/HOL/Cardinals/Bounded_Set"
+    Nonempty_Bounded_Set
+    Bool_Bounded_Set
+  document_files (in "document/BNFs")
+    "root.tex"
+
+session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
+  theories [document = false]
+    Nonempty_Bounded_Set
+    "~~/src/HOL/Eisbach/Eisbach"
+    Probabilistic_Hierarchy
+    Vardi
+  theories
+    Finitely_Bounded_Set_Counterexample
+    Vardi_Counterexample
+  document_files (in "document/Non_BNFs")
+    "root.tex"

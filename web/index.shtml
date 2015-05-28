@@ -50,6 +50,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2015-05-27:
+<a href="entries/Probabilistic_System_Zoo.shtml">A Zoo of Probabilistic Systems</a>
+<br>Author:
+<a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a>,
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and 
+<a href="http://www21.in.tum.de/~traytel/">Dmitriy Traytel</a>
+</td></tr>
+
+<tr><td class="entry">
 2015-04-30:
 <a href="entries/Vickrey_Clarke_Groves.shtml">VCG - Combinatorial Vickrey-Clarke-Groves Auctions</a>
 <br>Author:

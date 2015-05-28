@@ -2080,6 +2080,23 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
   ZeroConf and an analysis of the anonymity of the Crowds protocol.
   <a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 
+[Probabilistic_System_Zoo]
+title = A Zoo of Probabilistic Systems
+author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>,
+ Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>,
+ Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+date = 2015-05-27
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ Numerous models of probabilistic systems are studied in the literature.
+ Coalgebra has been used to classify them into system types and compare their
+ expressiveness.  We formalize the resulting hierarchy of probabilistic system
+ types by modeling the semantics of the different systems as codatatypes.
+ This approach yields simple and concise proofs, as bisimilarity coincides
+ with equality for codatatypes.
+ <p>
+ This work is described in detail in the ITP 2015 publication by the authors.
+
 [Density_Compiler]
 title = A Verified Compiler for Probability Density Functions
 author = Manuel Eberl <http://www.in.tum.de/~eberlm>, Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
