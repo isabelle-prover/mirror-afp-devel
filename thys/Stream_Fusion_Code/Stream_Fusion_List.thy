@@ -348,6 +348,9 @@ by(simp add: gen_length_cons_def split: step.split)
 lemma unstream_gen_length [stream_fusion]: "gen_length_cons 0 s = length (unstream g s)"
 by(simp add: gen_length_cons_def)
 
+lemma unstream_gen_length2 [stream_fusion]: "gen_length_cons n s = List.gen_length n (unstream g s)"
+by(simp add: List.gen_length_def gen_length_cons_def)
+
 end
 
 subsubsection {* @{const foldr} *}
