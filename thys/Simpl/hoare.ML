@@ -1666,14 +1666,12 @@ end;
 
 
 fun cond_rename_bvars cond name thm =
-    let
-      val thy = Thm.theory_of_thm thm;
-      val prop = Thm.prop_of thm;
-      fun ren (trm as (Abs (x, T, t))) = if cond trm then Abs (name x, T, ren t)
-                                         else Abs (x,T,ren t)
-        | ren (t $ u) = ren t $ ren u
-        | ren t = t;
-    in Thm.equal_elim (Thm.reflexive (Thm.global_cterm_of thy (ren prop))) thm end;
+  let
+    fun rename (tm as (Abs (x, T, t))) =
+          if cond tm then Abs (name x, T, rename t) else Abs (x, T, rename t)
+      | rename (t $ u) = rename t $ rename u
+      | rename a = a;
+  in Thm.renamed_prop (rename (Thm.prop_of thm)) thm end;
 
 val rename_bvars = cond_rename_bvars (K true);
 
