@@ -7,6 +7,8 @@ theory Summation_Conversion
 imports Factorials Summation
 begin
 
+text \<open>Extensible theorem collection for solving summation problems\<close>
+
 named_theorems summation "rules for solving summation problems"
 
 declare
@@ -38,24 +40,12 @@ next
   finally show ?case by (simp only: `m = Suc n` diff_Suc_1)
 qed
 
-lemma \<Sigma>_ffact_div [summation]:
-  "\<Sigma> (ffact n) j l =
-    (ffact (Suc n) (of_int l :: 'a :: {ring_div, semiring_char_0}) - ffact (Suc n) (of_int j)) div of_nat (Suc n)"
-proof -
-  have "ffact (Suc n) (of_int l :: 'a) - ffact (Suc n) (of_int j) =
-    \<Sigma> (\<lambda>k. \<Delta> (ffact (Suc n)) k) j l"
-    by (simp add: \<Sigma>_\<Delta>)
-  also have "\<dots> = \<Sigma> (\<lambda>k. of_nat (Suc n) * ffact n (of_int k)) j l"
-    by (simp add: \<Delta>_ffact)
-  also have "\<dots> = of_nat (Suc n) * \<Sigma> (ffact n \<circ> of_int) j l"
-    by (simp add: \<Sigma>_factor comp_def)
-  finally show ?thesis by (simp only: \<Sigma>_comp_of_int div_mult_self1_is_id of_nat_eq_0_iff)
-qed
-
 lemma \<Sigma>_ffact_divide [summation]:
   "\<Sigma> (ffact n) j l =
-    (ffact (Suc n) (of_int l :: 'a :: field_char_0) - ffact (Suc n) (of_int j)) / of_nat (Suc n)"
+    divide (ffact (Suc n) (of_int l :: 'a :: {idom_divide, semiring_char_0}) - ffact (Suc n) (of_int j)) (of_nat (Suc n))"
 proof -
+  have *: "divide (of_nat (Suc n) * \<Sigma> (ffact n) j l) (of_nat (Suc n)) = (\<Sigma> (ffact n) j l :: 'a)"
+    using of_nat_neq_0 [where ?'a = 'a] by simp
   have "ffact (Suc n) (of_int l :: 'a) - ffact (Suc n) (of_int j) =
     \<Sigma> (\<lambda>k. \<Delta> (ffact (Suc n)) k) j l"
     by (simp add: \<Sigma>_\<Delta>)
@@ -63,8 +53,11 @@ proof -
     by (simp add: \<Delta>_ffact)
   also have "\<dots> = of_nat (Suc n) * \<Sigma> (ffact n \<circ> of_int) j l"
     by (simp add: \<Sigma>_factor comp_def)
-  finally show ?thesis by (simp only: \<Sigma>_comp_of_int nonzero_mult_divide_cancel_left of_nat_eq_0_iff)
+  finally show ?thesis by (simp only: \<Sigma>_comp_of_int * of_nat_eq_0_iff)
 qed
+
+
+text \<open>Various other rules\<close>
 
 lemma of_int_coeff:
   "(of_int l :: 'a::comm_ring_1) * numeral k = of_int (l * numeral k)"
@@ -76,12 +69,15 @@ lemmas nat_simps =
   One_nat_def of_nat_simps
 
 lemmas of_int_pull_out =
-   of_int_add [symmetric] of_int_diff [symmetric] of_int_mult [symmetric]
-   of_int_coeff
+  of_int_add [symmetric] of_int_diff [symmetric] of_int_mult [symmetric]
+  of_int_coeff
 
 lemmas of_int_pull_in =
   of_int_pull_out [symmetric] add_divide_distrib diff_divide_distrib of_int_power
   of_int_numeral of_int_neg_numeral times_divide_eq_left [symmetric]
+
+  
+text \<open>Generic conversion\<close>  
 
 ML {*
 signature SUMMATION =
@@ -139,4 +135,3 @@ end
 hide_fact (open) nat_simps of_int_pull_out of_int_pull_in
 
 end
-
