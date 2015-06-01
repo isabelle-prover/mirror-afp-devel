@@ -214,9 +214,9 @@ definition taq :: "'a::linordered_idom set \<Rightarrow> 'a poly \<Rightarrow> i
 
 section {*Sign at the right*}
 
-definition sign_r_pos :: "'a :: {linordered_idom,topological_space} poly \<Rightarrow> 'a \<Rightarrow> bool " 
+definition sign_r_pos :: "'a :: {linordered_idom,order_topology} poly \<Rightarrow> 'a \<Rightarrow> bool " 
   where
-  "sign_r_pos p x\<equiv> (eventually (\<lambda>x. poly p x>0) (at_right x))"
+  "sign_r_pos p x \<equiv> (eventually (\<lambda>x. poly p x>0) (at_right x))"
 
 lemma sign_r_pos_rec:
   fixes p:: "real poly"
@@ -468,13 +468,13 @@ qed
 
 section{*Jump*}
 
-definition jump :: "'a :: {linordered_idom,topological_space} poly \<Rightarrow> 'a poly \<Rightarrow>'a \<Rightarrow> int"
+definition jump :: "'a :: {linordered_idom,order_topology} poly \<Rightarrow> 'a poly \<Rightarrow>'a \<Rightarrow> int"
  where 
  "jump q p x\<equiv> ( if q\<noteq>0 \<and> odd((order x p) - (order x q) ) then 
                   if sign_r_pos (q*p) x then 1 else -1
                 else 0 )"
 
-definition sjump:: "'a :: {linordered_idom,topological_space} poly  \<Rightarrow>'a \<Rightarrow> int" 
+definition sjump:: "'a :: {linordered_idom,order_topology} poly  \<Rightarrow>'a \<Rightarrow> int" 
   where
   "sjump p x\<equiv> ( if odd(order x p) then if sign_r_pos p x then 1 else -1 else 0 )"
 
@@ -893,7 +893,7 @@ qed
 
 section {*Cauchy index*}
 
-definition cindex:: "'a:: {linordered_idom,topological_space} \<Rightarrow> 'a \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> int" 
+definition cindex:: "'a:: {linordered_idom,order_topology} \<Rightarrow> 'a \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> int" 
   where 
   "cindex a b q p\<equiv> (\<Sum>x\<in>{x. poly p x=0 \<and> a< x\<and> x< b}. jump q p x)"
 

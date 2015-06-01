@@ -1174,7 +1174,7 @@ definition mat_monoid :: "nat \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> (
     one = mat0 nr nc, 
     \<dots> = b\<rparr>"
 
-definition mat_ring :: "nat \<Rightarrow> 'b \<Rightarrow> (('a :: {plus,zero,times,one}) mat,'b) ring_scheme" where
+definition mat_ring :: "nat \<Rightarrow> 'b \<Rightarrow> (('a :: semiring_1) mat,'b) ring_scheme" where
   "mat_ring n b \<equiv> \<lparr> 
     carrier = Collect (mat n n), 
     mult = mat_mult n, 
@@ -1222,12 +1222,12 @@ proof -
   show ?thesis ..
 qed
 
-lemma mat_abelian_monoid: "abelian_monoid (mat_ring n b :: (('a :: {comm_monoid_add,one,times}) mat,'b)ring_scheme)"
+lemma mat_abelian_monoid: "abelian_monoid (mat_ring n b :: (('a :: semiring_1) mat,'b)ring_scheme)"
   unfolding mat_ring_def
   unfolding abelian_monoid_def using mat_comm_monoid[of n n, unfolded mat_monoid_def mat_ring_def]
   by simp
 
-lemma mat_abelian_group: "abelian_group (mat_ring n b :: (('a :: {ab_group_add,one,times}) mat,'b)ring_scheme)"
+lemma mat_abelian_group: "abelian_group (mat_ring n b :: (('a :: {ab_group_add,semiring_1}) mat,'b)ring_scheme)"
   (is "abelian_group ?R")
 proof -
   interpret abelian_monoid ?R by (rule mat_abelian_monoid)
