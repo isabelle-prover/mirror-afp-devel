@@ -355,13 +355,12 @@ fun prove_permute_zero induct perm_defs perm_fns ctxt =
     val goals =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
-
-    val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_zero} :: perm_defs)
-
-    val tac = (Old_Datatype_Aux.ind_tac induct perm_indnames 
-               THEN_ALL_NEW asm_simp_tac simpset) 1
   in
-    Goal.prove ctxt perm_indnames [] goals (K tac)
+    Goal.prove ctxt perm_indnames [] goals
+      (fn {context = ctxt', ...} =>
+        (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
+          asm_simp_tac
+            (put_simpset HOL_basic_ss ctxt' addsimps (@{thm permute_zero} :: perm_defs))) 1)
     |> Old_Datatype_Aux.split_conj_thm
   end
 
@@ -379,14 +378,12 @@ fun prove_permute_plus induct perm_defs perm_fns ctxt =
     val goals =
       HOLogic.mk_Trueprop (foldr1 HOLogic.mk_conj
         (map single_goal (perm_fns ~~ perm_types ~~ perm_indnames)))
-
-    (* FIXME proper goal context *)
-    val simpset = put_simpset HOL_basic_ss ctxt addsimps (@{thm permute_plus} :: perm_defs)
-
-    val tac = (Old_Datatype_Aux.ind_tac induct perm_indnames
-               THEN_ALL_NEW asm_simp_tac simpset) 1
   in
-    Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals (K tac)
+    Goal.prove ctxt ("p" :: "q" :: perm_indnames) [] goals
+      (fn {context = ctxt', ...} =>
+        (Old_Datatype_Aux.ind_tac ctxt' induct perm_indnames THEN_ALL_NEW
+          asm_simp_tac
+            (put_simpset HOL_basic_ss ctxt' addsimps (@{thm permute_plus} :: perm_defs))) 1)
     |> Old_Datatype_Aux.split_conj_thm 
   end
 
