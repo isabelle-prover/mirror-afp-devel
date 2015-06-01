@@ -20,7 +20,7 @@ begin
 
 definition
   div_enat_def [code del]: "
-  a div b \<equiv> (case a of 
+  divide a b \<equiv> (case a of 
     (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x div y) | \<infinity> \<Rightarrow> 0) | 
     \<infinity> \<Rightarrow> (case b of (enat y) \<Rightarrow> ((case y of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> \<infinity>)) | \<infinity> \<Rightarrow> \<infinity> ))"
 definition
@@ -198,13 +198,10 @@ by (case_tac m, simp_all) (case_tac n, simp_all)
 
 thm div_mult2_eq
 lemma idiv_imult2_eq: "(a::enat) div (b * c) = a div b div c"
-apply (case_tac a, case_tac b, case_tac c, simp add: div_mult2_eq)
-apply (simp add: imult_infinity_right_if idiv_infinity_right)
-apply (simp add: imult_infinity_if idiv_infinity_right idiv_0[unfolded zero_enat_def])
+apply (case_tac a, case_tac b, case_tac c, simp_all add: div_mult2_eq)
+apply (simp add: imult_infinity_if)
 apply (case_tac "b = 0", simp)
 apply (case_tac "c = 0", simp)
-thm idiv_infinity
-thm idiv_infinity[OF enat_0_less_mult_iff[THEN iffD2]]
 apply (simp add: idiv_infinity[OF enat_0_less_mult_iff[THEN iffD2]])
 done
 

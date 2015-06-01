@@ -76,7 +76,7 @@ lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op
 lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op -" .
 lift_definition uminus_uint :: "uint \<Rightarrow> uint" is uminus .
 lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op *" .
-lift_definition div_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op div" .
+lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op div" .
 lift_definition mod_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op mod" .
 instance by default (transfer, simp add: algebra_simps)+
 end

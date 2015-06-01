@@ -480,7 +480,7 @@ apply (subgoal_tac "Suc (indexa div blockSize) =
   (indexa + blockSize) div blockSize")
 apply (simp only:)
 apply (rule div_le_mono)
-apply auto
+apply (simp_all add: le_diff_conv)
 done
 
 lemma writeSucceedCorrect:

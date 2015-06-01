@@ -211,7 +211,7 @@ lemma sum_phi'_factors :
  assumes "n > 0"
  shows "(\<Sum>d | d dvd n. phi' d) = n"
 proof -
-  { fix d assume "d dvd n"
+  { fix d assume "d dvd n" then obtain q where q: "n = d * q" ..
     have "card {a. 1 \<le> a \<and> a \<le> d \<and> coprime a d} = card {m \<in> {1 .. n}.  n div gcd m n = d}"
          (is "card ?RF = card ?F")
     proof (rule card_bij_eq)
@@ -226,8 +226,7 @@ proof -
         hence ge_1:"a * n div d \<ge> 1" by (simp add: `d dvd n` div_mult_swap)
         have le_n:"a * n div d \<le> n" using div_mult_mono a by simp
         have "gcd (a * n div d) n = n div d * gcd a d"
-          using dvd_div_mult_self[OF `d dvd n`]
-          by (simp add: `d dvd n` div_mult_swap mult.commute gcd_mult_distrib_nat)
+          by (simp add: gcd_mult_distrib_nat q ac_simps)
         hence "n div gcd (a * n div d) n = d*n div (d*(n div d))" using a by simp
         hence "a * n div d \<in> ?F"
           using ge_1 le_n by (fastforce simp add: `d dvd n` dvd_mult_div_cancel)

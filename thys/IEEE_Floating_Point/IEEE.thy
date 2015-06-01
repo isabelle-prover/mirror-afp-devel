@@ -445,7 +445,7 @@ end
 instantiation float :: inverse begin
 
 definition divide_float :: "float \<Rightarrow> float \<Rightarrow> float" where
-"a / b = Abs_float (fdiv float_format To_nearest (Rep_float a) (Rep_float b))"
+"divide a b = Abs_float (fdiv float_format To_nearest (Rep_float a) (Rep_float b))"
 
 definition inverse_float :: "float \<Rightarrow> float" where
 "inverse_float a = Float ((1::real) / Val a)"
