@@ -454,7 +454,7 @@ ML {*
           rtac @{thm ID_is_tagged_OP} THEN_ELSE' (
             rtac @{thm ID_tagged_OP_no_annot} THEN' id_typ,
             FIRST' [
-              Indep_Vars.indep_tac,
+              Indep_Vars.indep_tac ctxt,
               id_annotated,
               def_id_pat,
               id_pat APPEND' id_dflt,
@@ -638,7 +638,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
     IF_EXGOAL (
       assume_tac ctxt
       ORELSE'
-      Indep_Vars.indep_tac
+      Indep_Vars.indep_tac ctxt
       ORELSE' resolve_from_net_tac ctxt ind_net
       ORELSE'
       (fn i => fn st => 
