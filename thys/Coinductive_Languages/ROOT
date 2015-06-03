@@ -3,6 +3,7 @@ chapter AFP
 session "Coinductive_Languages" (AFP) = HOL +
   theories
     Coinductive_Language
+    Coinductive_Regular_Set
     CFG_Examples
   document_files
     "root.tex"
