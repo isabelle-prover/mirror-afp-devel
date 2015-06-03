@@ -153,14 +153,14 @@ in
       |> fst
 end
 
-fun unraw_vars_thm thm =
+fun unraw_vars_thm ctxt thm =
   let
     fun unraw_var_str ((s, i), T) = ((unraw_str s, i), T)
 
     val vars = Term.add_vars (Thm.prop_of thm) []
     val vars' = map (Var o unraw_var_str) vars
   in
-    Thm.certify_instantiate ([], (vars ~~ vars')) thm
+    Thm.certify_instantiate ctxt ([], (vars ~~ vars')) thm
   end
 
 fun unraw_bounds_thm th =
@@ -174,7 +174,7 @@ fun unraw_bounds_thm th =
 fun lift_thms qtys simps thms ctxt =
   (map (Quotient_Tacs.lifted ctxt qtys simps
         #> unraw_bounds_thm
-        #> unraw_vars_thm
+        #> unraw_vars_thm ctxt
         #> Drule.zero_var_indexes) thms, ctxt)
 
 
