@@ -149,7 +149,7 @@ if the parameters are not distinct,
 the number of supplied values differs from the number of parameters,
 or the evaluation of the body yields an error. *}
 
-definition supply :: "prog \<Rightarrow> nat list \<Rightarrow> env option"
+definition "supply" :: "prog \<Rightarrow> nat list \<Rightarrow> env option"
 where "supply p us \<equiv>
   let vs = para p in
   if distinct vs \<and> length us = length vs
