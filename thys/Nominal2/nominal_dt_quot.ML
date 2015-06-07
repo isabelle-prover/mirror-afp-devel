@@ -73,7 +73,7 @@ fun lift_raw_const qtys (qconst_name, rconst, mx', rsp_thm) lthy =
     val rhs_raw = rconst
 
     val raw_var = (Binding.name qconst_name, NONE, mx')
-    val ([(binding, _, mx)], ctxt) = Proof_Context.cert_vars [raw_var] lthy
+    val ((binding, _, mx), ctxt) = Proof_Context.cert_var raw_var lthy
     val lhs = Syntax.check_term ctxt lhs_raw
     val rhs = Syntax.check_term ctxt rhs_raw
 
