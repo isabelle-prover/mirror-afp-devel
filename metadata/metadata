@@ -927,7 +927,7 @@ abstract =
 [Dynamic_Tables]
 title = Parameterized Dynamic Tables
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
-date = 2014-06-07
+date = 2015-06-07
 topic = Computer Science/Data Structures
 depends-on = Amortized_Complexity
 abstract =
