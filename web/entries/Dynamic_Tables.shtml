@@ -46,7 +46,7 @@
 
 This article formalizes the amortized analysis of dynamic tables
 parameterized with their minimal and maximal load factors and the
-extension and contraction factors.
+expansion and contraction factors.
 <P>
 A full description is found in a
 <a href="http://www.in.tum.de/~nipkow/pubs">companion paper</a>.
