@@ -687,21 +687,6 @@ lemma \<dd>_TIMES[simp]: "\<dd> (TIMES xs) a = (let n = length (takeWhile \<oo> 
 
 section {* Context Free Languages *}
 
-context
-fixes init :: "'n::enum"
-and   prod :: "'n \<Rightarrow> ('t + 'n) language"
-begin
-
-primcorec deep_subst :: "('t + 'n) language \<Rightarrow> 't language" where
-  "deep_subst r =
-     (let shallow_subst = PLUS (r # map (\<lambda>N. Times (prod N) (\<dd> r (Inr N))) Enum.enum)
-     in Lang (\<oo> shallow_subst) (\<lambda>a. deep_subst (\<dd> shallow_subst (Inl a))))"
-
-definition subst where
-  "subst = deep_subst (prod init)"
-
-end
-
 text {*
 A context-free grammar consists of a list of productions for every nonterminal
 and an initial nonterminal. The productions are required to be in weak Greibach
@@ -713,12 +698,36 @@ locale cfg =
 fixes init :: "'n::enum"
 and   prod :: "'n \<Rightarrow> ('t + 'n) list list"
 assumes weakGreibach: "\<forall>N. \<forall>rhs \<in> set (prod N). case rhs of (Inr N # _) \<Rightarrow> False | _ \<Rightarrow> True"
+
+context
+fixes init :: "'n::enum"
+and   prod :: "'n \<Rightarrow> ('t + 'n) list list"
 begin
 
-abbreviation lang :: "'t language" where
-  "lang \<equiv> subst init (\<lambda>N. PLUS (map (TIMES o map Atom) (prod N)))"
+private abbreviation "\<oo>\<^sub>n N \<equiv> ([] \<in> set (prod N))"
+private fun \<oo>\<^sub>r where
+  "\<oo>\<^sub>r [] = True"
+| "\<oo>\<^sub>r (Inl _ # _) = False"
+| "\<oo>\<^sub>r (Inr N # xs) = (\<oo>\<^sub>n N \<and> \<oo>\<^sub>r xs)"
+private abbreviation "\<oo>\<^sub>P P \<equiv> fold (op \<or>) (map \<oo>\<^sub>r P) False"
+
+private abbreviation "\<dd>\<^sub>n N a \<equiv>
+  List.map_filter (\<lambda>xs.
+    case xs of Inl b # xs \<Rightarrow> if a = b then Some xs else None | _ \<Rightarrow> None) (prod N)"
+private fun \<dd>\<^sub>r where
+  "\<dd>\<^sub>r [] a = []"
+| "\<dd>\<^sub>r (Inl b # xs) a = (if a = b then [xs] else [])"
+| "\<dd>\<^sub>r (Inr N # xs) a = map (\<lambda>ys. ys @ xs) (\<dd>\<^sub>n N a) @ (if \<oo>\<^sub>n N then \<dd>\<^sub>r xs a else [])"
+private abbreviation "\<dd>\<^sub>P P a \<equiv> fold (op @) (map (\<lambda>r. \<dd>\<^sub>r r a) P) []"
+
+primcorec subst :: "('t + 'n) list list \<Rightarrow> 't language" where
+  "subst P = Lang (\<oo>\<^sub>P P) (\<lambda>x. subst (\<dd>\<^sub>P P x))"
 
 end
+
+abbreviation (in cfg) lang where
+  "lang \<equiv> subst prod (prod init)"
+
 
 section {* Word-theoretic Semantics of Languages *}
 
@@ -758,7 +767,7 @@ lemma to_language_bij: "bij to_language"
   by (rule o_bij[of "Collect o in_language"]) (simp_all add: fun_eq_iff)
 
 (*<*)
-hide_const (open) TimesLR Times_Plus StarLR deep_subst subst
+hide_const (open) TimesLR Times_Plus StarLR subst
 
 end
 (*>*)
