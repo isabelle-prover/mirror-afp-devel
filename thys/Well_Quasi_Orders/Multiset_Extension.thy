@@ -480,7 +480,7 @@ qed
 text \<open>The following lemma shows that the textbook definition (e.g.,
 ``Term Rewriting and All That'') is the same as the one used below.\<close>
 lemma diff_set_Ex_iff:
-  "X \<noteq> {#} \<and> X \<le> M \<and> N = (M - X) + Y \<longleftrightarrow> X \<noteq> {#} \<and> (\<exists>Z. M = Z + X \<and> N = Z + Y)"
+  "X \<noteq> {#} \<and> X \<le># M \<and> N = (M - X) + Y \<longleftrightarrow> X \<noteq> {#} \<and> (\<exists>Z. M = Z + X \<and> N = Z + Y)"
   by (auto) (metis add_diff_cancel_left' multiset_diff_union_assoc union_commute)
 
 text \<open>Show that @{const mulex_on} is equivalent to the textbook definition
@@ -529,7 +529,7 @@ proof
     moreover have "?X \<noteq> {#} \<and> (\<exists>Z. N = Z + ?X \<and> L = Z + ?Y)"
     proof -
       have "?X \<noteq> {#}" by auto
-      moreover have "?X \<le> N"
+      moreover have "?X \<le># N"
         using M N M' by (simp add: add.commute [of "{#a#}"])
           (metis Multiset.diff_le_self add.commute add_diff_cancel_right)
       moreover have "L = (N - ?X) + ?Y"
@@ -537,8 +537,8 @@ proof
         fix x :: 'a
         let ?c = "\<lambda>M. count M x"
         let ?ic = "\<lambda>x. int (?c x)"
-        from \<open>?X \<le> N\<close> have *: "?c {#a#} + ?c (X - K) \<le> ?c N"
-          unfolding less_eq_multiset.rep_eq by simp
+        from \<open>?X \<le># N\<close> have *: "?c {#a#} + ?c (X - K) \<le> ?c N"
+          by (simp add: subseteq_mset_def)
         from * have **: "?c (X - K) \<le> ?c M0" unfolding N by simp
         have "?ic (N - ?X + ?Y) = int (?c N - ?c ?X) + ?ic ?Y" by simp
         also have "\<dots> = int (?c N - (?c {#a#} + ?c (X - K))) + ?ic (K - X) + ?ic Y" by simp

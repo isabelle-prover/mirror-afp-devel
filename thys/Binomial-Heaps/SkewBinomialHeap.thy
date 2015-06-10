@@ -1131,15 +1131,15 @@ lemma mset_rev:
   by (induct q, auto simp add: union_ac)
 
 lemma in_set_subset: "t \<in> set q \<Longrightarrow> 
-  tree_to_multiset t \<le> queue_to_multiset q"
+  tree_to_multiset t \<le># queue_to_multiset q"
 proof(induct q, simp)
   case goal1 thus ?case
   proof(cases "t = a", simp)
     case goal1
     hence t_in_q: "t \<in> set q" by simp
-    have "queue_to_multiset q \<le> queue_to_multiset (a # q)"
+    have "queue_to_multiset q \<le># queue_to_multiset (a # q)"
       by simp
-    from order_trans[OF goal1(1)[OF t_in_q] this] show ?case .
+    from subset_mset.order_trans[OF goal1(1)[OF t_in_q] this] show ?case .
   qed
 qed
 
@@ -1258,7 +1258,7 @@ proof -
   let ?Q = "queue_to_multiset q"
   let ?MT = "tree_to_multiset (getMinTree q)"
   from q_ne have head_subset_min: 
-    "{# (val (getMinTree q), prio (getMinTree q)) #} \<le> ?MT"
+    "{# (val (getMinTree q), prio (getMinTree q)) #} \<le># ?MT"
     by(cases "getMinTree q") simp
   note min_subset_q = in_set_subset[OF min_in_q]
   from mset_insertList mset_meld mset_rev mset_rem mset_filter mset_children

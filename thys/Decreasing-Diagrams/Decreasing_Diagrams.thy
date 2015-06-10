@@ -43,7 +43,7 @@ lemma diff_from_empty: "{#}-s S = {#}" unfolding diff_def by auto
 
 lemma diff_empty: "M -s {} = M" unfolding diff_def by (rule multiset_eqI) simp
 
-lemma submultiset_implies_subset: assumes "M \<le> N" shows "set_of M \<subseteq> set_of N"
+lemma submultiset_implies_subset: assumes "M \<le># N" shows "set_of M \<subseteq> set_of N"
  using assms mset_leD by auto
 
 lemma subset_implies_remove_empty: assumes "set_of M \<subseteq> S" shows "M -s S = {#}"
@@ -246,7 +246,7 @@ lemma dl_monotone: "dl r (\<sigma>@\<tau>) \<subseteq> dl r (\<sigma>@\<tau>'@\<
 
 text {* Lemma 2.6.2 *}
 
-lemma lemma2_6_2_a: assumes t: "trans r" and "M \<le> N" shows "(M,N) \<in> mul_eq r" proof -
+lemma lemma2_6_2_a: assumes t: "trans r" and "M \<le># N" shows "(M,N) \<in> mul_eq r" proof -
  from assms(2) obtain J where "N=M+J" by (metis assms(2) mset_le_exists_conv)
  hence "M = M + {#}" and "N = M + J" and "set_of {#} \<subseteq> dm r J" by auto
  thus ?thesis unfolding mul_eq_def by fast
@@ -318,7 +318,7 @@ lemma lemma2_6_3: assumes t:"trans r" and i:"irrefl r" and "(M,N) \<in> mul_eq r
  have "set_of (J #\<inter>K) \<subseteq> dm r J" using 3 by auto
  hence key: "set_of (J -s dm r J) \<subseteq> set_of (J - (J #\<inter>K))" unfolding set_of_def diff_def by auto
  from 1 2 3 have "N = (I + (J #\<inter> K)) + (J - (J #\<inter> K))"
-  by (metis diff_union_cancelL inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
+  by (metis diff_union_cancelL subset_mset.inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
   moreover have "M = (I + (J #\<inter> K)) + (K - (J #\<inter> K))"
   by (metis diff_le_self diff_union_cancelL 2 multiset_diff_union_assoc multiset_inter_commute multiset_inter_def union_assoc)
  moreover have "set_of (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof -
@@ -453,7 +453,7 @@ qed
 
 text {* missing?; similar to lemma\_2.6.2? *}
 lemma lemma2_6_8: assumes t: "trans r" and "S \<subseteq> T" shows "(M -s T,M -s S) \<in> mul_eq r" proof -
- from assms(2) have "(M -s T) \<le> (M -s S)"
+ from assms(2) have "(M -s T) \<le># (M -s S)"
   by (metis Un_absorb2 Un_commute lemmaA_3_10 lemmaA_3_9 mset_le_add_right)
  thus ?thesis using lemma2_6_2_a[OF t] by auto
 qed
@@ -544,10 +544,10 @@ definition LD' :: "'a rel \<Rightarrow> 'a \<Rightarrow> 'a
 
 text {* auxiliary properties on multisets *}
 
-lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<le> multiset_of \<sigma>" proof (induct "\<sigma>")
+lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<le># multiset_of \<sigma>" proof (induct "\<sigma>")
  case Nil thus ?case unfolding lexmax.simps by auto
  next
- case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<le> multiset_of \<tau>" using lemmaA_3_10 mset_le_add_right order_trans by metis
+ case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<le># multiset_of \<tau>" using lemmaA_3_10 mset_le_add_right subset_mset.order_trans by metis
  thus ?case unfolding multiset_of.simps lexmax.simps using mset_le_mono_add_right_cancel union_commute by metis
 qed
 
@@ -1134,7 +1134,7 @@ qed
 
 lemma lemma2_6_2_set: assumes "S \<subseteq> T" shows "ds r S \<subseteq> ds r T" using assms unfolding ds_def by auto
 
-lemma leq_imp_subseteq: assumes "M \<le> N" shows "set_of M \<subseteq> set_of N" using assms mset_leD by auto
+lemma leq_imp_subseteq: assumes "M \<le># N" shows "set_of M \<subseteq> set_of N" using assms mset_leD by auto
 
 lemma mul_add_mul_eq_imp_mul: assumes "(M,N) \<in> mul r" and "(P,Q) \<in> mul_eq r" shows "(M+P,N+Q) \<in> mul r" proof -
  from assms(1) obtain I J K where a:"M = I + K" "N = I + J" "set_of K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto
