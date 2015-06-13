@@ -170,6 +170,7 @@ text {*
 inductive Plus_cong where
   Refl[intro]: "x = y \<Longrightarrow> Plus_cong R x y"
 | Base[intro]: "R x y \<Longrightarrow> Plus_cong R x y"
+| Sym: "Plus_cong R x y \<Longrightarrow> Plus_cong R y x"
 | Trans[intro]: "Plus_cong R x y \<Longrightarrow> Plus_cong R y z \<Longrightarrow> Plus_cong R x z"
 | Plus[intro]: "\<lbrakk>Plus_cong R x y; Plus_cong R x' y'\<rbrakk> \<Longrightarrow> Plus_cong R (Plus x x') (Plus y y')"
 
@@ -180,11 +181,11 @@ lemma language_coinduct_upto_Plus[unfolded rel_fun_def, simplified, case_names L
 proof (coinduct rule: language.coinduct[of "Plus_cong R"])
   fix L K assume "Plus_cong R L K"
   then show "\<oo> L = \<oo> K \<and> rel_fun op = (Plus_cong R) (\<dd> L) (\<dd> K)" using hyp
-    by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def)
+    by (induct rule: Plus_cong.induct) (auto simp: rel_fun_def intro: Sym)
 qed (intro Base R)
 
 theorem Times_PlusL[simp]: "Times (Plus r s) t = Plus (Times r t) (Times s t)"
-  by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus) fastforce
+  by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus) auto
 
 theorem Times_PlusR[simp]: "Times r (Plus s t) = Plus (Times r s) (Times r t)"
   by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus) fastforce
