@@ -93,6 +93,7 @@
 <h3>Data Structures</h3>
 
 <div class="list">
+<a href="entries/List_Interleaving.shtml">List_Interleaving</a> &nbsp;
 <a href="entries/Amortized_Complexity.shtml">Amortized_Complexity</a> &nbsp;
 <a href="entries/Dynamic_Tables.shtml">Dynamic_Tables</a> &nbsp;
 <a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
