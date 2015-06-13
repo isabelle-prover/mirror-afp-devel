@@ -1,0 +1,13 @@
+chapter AFP
+
+session "Noninterference_Ipurge_Unwinding" (AFP) = Noninterference_CSP +
+  options [timeout = 600]
+  theories [document = false]
+    "../Noninterference_CSP/CSPNoninterference"
+    "../List_Interleaving/ListInterleaving"
+  theories
+    IpurgeUnwinding
+    DeterministicProcesses
+  document_files
+    "root.bib"
+    "root.tex"
