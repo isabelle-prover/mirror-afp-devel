@@ -1,8 +1,8 @@
 (*  Title:       Noninterference Security in Communicating Sequential Processes
     Author:      Pasquale Noce
-                 Security Certification Specialist at Arjowiggins Security - Gep S.p.A.
-                 pasquale dot noce at arjowiggins-it dot com
+                 Security Certification Specialist at Arjo Systems - Gep S.p.A.
                  pasquale dot noce dot lavoro at gmail dot com
+                 pasquale dot noce at arjowiggins-it dot com
 *)
 
 section "Noninterference in CSP"
@@ -488,4 +488,3 @@ next
 qed
 
 end
-
