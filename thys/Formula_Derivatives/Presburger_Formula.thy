@@ -287,6 +287,9 @@ proof -
   then show ?thesis by simp
 qed
 
+lemma mod_lemma: "\<lbrakk> (0::nat) < c; r < b \<rbrakk> \<Longrightarrow> b * (q mod c) + r < b * c"
+  by (metis add_gr_0 div_le_mono div_mult_self1_is_m less_imp_add_positive mod_less_divisor not_less split_div)
+
 lemma relevant_set_bit[simp]:
   fixes p m n :: nat
   assumes "m < n" "p div 2 ^ m = 2 * q"
@@ -296,7 +299,7 @@ proof -
   using assms proof (induct m arbitrary: p n)
     case 0 then show ?case
       by (auto simp: gr0_conv_Suc)
-        (metis One_nat_def Suc_eq_plus1 lessI mod_lemma numeral_2_eq_2 zero_less_numeral zero_less_power)
+         (metis One_nat_def Suc_eq_plus1 lessI mod_lemma numeral_2_eq_2 zero_less_numeral zero_less_power)
   next
     case (Suc m)
     from Suc(1)[of "n - 1" "p div 2"] Suc(2,3) show ?case
