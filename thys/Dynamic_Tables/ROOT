@@ -1,0 +1,11 @@
+chapter AFP
+
+session Dynamic_Tables (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "../Amortized_Complexity/Amor"
+  theories
+    Tables_nat
+  document_files
+    "root.bib"
+    "root.tex"

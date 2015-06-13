@@ -53,6 +53,7 @@ Deriving
 Dijkstra_Shortest_Path
 Discrete_Summation
 DiskPaxos
+Dynamic_Tables
 Echelon_Form
 Efficient-Mergesort
 Example-Submission
@@ -67,6 +68,7 @@ Finite_Automata_HF
 Finger-Trees
 Flyspeck-Tame
 FocusStreamsCaseStudies
+Formula_Derivatives
 Free-Boolean-Algebra
 Free-Groups
 FunWithFunctions
@@ -113,6 +115,7 @@ LightweightJava
 LinearQuantifierElim
 List-Index
 List-Infinite
+List_Interleaving
 Lifting_Definition_Option
 Locally-Nameless-Sigma
 Lower_Semicontinuous
@@ -125,12 +128,15 @@ MiniML
 MonoBoolTranAlgebra
 MSO_Regex_Equivalence
 MuchAdoAboutTwo
+Multirelations
 Myhill-Nerode
 Nat-Interval-Logic
 Native_Word
 Network_Security_Policy_Verification
 Nominal2
 Noninterference_CSP
+Noninterference_Ipurge_Unwinding
+Noninterference_Generic_Unwinding
 NormByEval
 Open_Induction
 Ordinal
@@ -149,6 +155,7 @@ Pratt_Certificate
 Presburger-Automata
 Priority_Queue_Braun
 Probabilistic_Noninterference
+Probabilistic_System_Zoo
 Program-Conflict-Analysis
 Promela
 PseudoHoops

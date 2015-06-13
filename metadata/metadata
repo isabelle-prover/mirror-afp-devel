@@ -1,3 +1,124 @@
+[Multirelations]
+title = Binary Multirelations
+author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+date = 2015-06-11
+topic = Mathematics/Algebra
+depends-on = Kleene_Algebra
+abstract =
+  Binary multirelations associate elements of a set with its subsets; hence
+  they are binary relations from a set to its power set. Applications include
+  alternating automata, models and logics for games, program semantics with
+  dual demonic and angelic nondeterministic choices and concurrent dynamic
+  logics. This proof document supports an arXiv article that formalises the
+  basic algebra of multirelations and proposes axiom systems for them,
+  ranging from weak bi-monoids to weak bi-quantales.
+  
+
+[Noninterference_Generic_Unwinding]
+title = The Generic Unwinding Theorem for CSP Noninterference Security
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+date = 2015-06-11
+topic = Computer Science/Security
+depends-on = Noninterference_Ipurge_Unwinding
+abstract =
+  <p>
+  The classical definition of noninterference security for a deterministic state
+  machine with outputs requires to consider the outputs produced by machine
+  actions after any trace, i.e. any indefinitely long sequence of actions, of the
+  machine. In order to render the verification of the security of such a machine
+  more straightforward, there is a need of some sufficient condition for security
+  such that just individual actions, rather than unbounded sequences of actions,
+  have to be considered.
+  </p><p>  
+  By extending previous results applying to transitive noninterference policies,
+  Rushby has proven an unwinding theorem that provides a sufficient condition of
+  this kind in the general case of a possibly intransitive policy. This condition
+  has to be satisfied by a generic function mapping security domains into
+  equivalence relations over machine states.
+  </p><p>
+  An analogous problem arises for CSP noninterference security, whose definition
+  requires to consider any possible future, i.e. any indefinitely long sequence of
+  subsequent events and any indefinitely large set of refused events associated to
+  that sequence, for each process trace.
+  </p><p>
+  This paper provides a sufficient condition for CSP noninterference security,
+  which indeed requires to just consider individual accepted and refused events
+  and applies to the general case of a possibly intransitive policy. This
+  condition follows Rushby's one for classical noninterference security, and has
+  to be satisfied by a generic function mapping security domains into equivalence
+  relations over process traces; hence its name, Generic Unwinding Theorem.
+  Variants of this theorem applying to deterministic processes and trace set
+  processes are also proven. Finally, the sufficient condition for security
+  expressed by the theorem is shown not to be a necessary condition as well, viz.
+  there exists a secure process such that no domain-relation map satisfying the
+  condition exists.
+  </p>
+
+
+[Noninterference_Ipurge_Unwinding]
+title = The Ipurge Unwinding Theorem for CSP Noninterference Security
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+date = 2015-06-11
+topic = Computer Science/Security
+depends-on = Noninterference_CSP, List_Interleaving
+abstract =
+  <p>
+  The definition of noninterference security for Communicating Sequential
+  Processes requires to consider any possible future, i.e. any indefinitely long
+  sequence of subsequent events and any indefinitely large set of refused events
+  associated to that sequence, for each process trace. In order to render the
+  verification of the security of a process more straightforward, there is a need
+  of some sufficient condition for security such that just individual accepted and
+  refused events, rather than unbounded sequences and sets of events, have to be
+  considered.
+  </p><p>  
+  Of course, if such a sufficient condition were necessary as well, it would be
+  even more valuable, since it would permit to prove not only that a process is
+  secure by verifying that the condition holds, but also that a process is not
+  secure by verifying that the condition fails to hold.
+  </p><p>
+  This paper provides a necessary and sufficient condition for CSP noninterference
+  security, which indeed requires to just consider individual accepted and refused
+  events and applies to the general case of a possibly intransitive policy. This
+  condition follows Rushby's output consistency for deterministic state machines
+  with outputs, and has to be satisfied by a specific function mapping security
+  domains into equivalence relations over process traces. The definition of this
+  function makes use of an intransitive purge function following Rushby's one;
+  hence the name given to the condition, Ipurge Unwinding Theorem.
+  </p><p>
+  Furthermore, in accordance with Hoare's formal definition of deterministic
+  processes, it is shown that a process is deterministic just in case it is a
+  trace set process, i.e. it may be identified by means of a trace set alone,
+  matching the set of its traces, in place of a failures-divergences pair. Then,
+  variants of the Ipurge Unwinding Theorem are proven for deterministic processes
+  and trace set processes.
+  </p>
+
+[List_Interleaving]
+title = Reasoning about Lists via List Interleaving
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+date = 2015-06-11
+topic = Computer Science/Data Structures
+abstract =
+  <p>
+  Among the various mathematical tools introduced in his outstanding work on
+  Communicating Sequential Processes, Hoare has defined "interleaves" as the
+  predicate satisfied by any three lists such that the first list may be
+  split into sublists alternately extracted from the other two ones, whatever
+  is the criterion for extracting an item from either one list or the other
+  in each step.
+  </p><p>  
+  This paper enriches Hoare's definition by identifying such criterion with
+  the truth value of a predicate taking as inputs the head and the tail of
+  the first list. This enhanced "interleaves" predicate turns out to permit
+  the proof of equalities between lists without the need of an induction.
+  Some rules that allow to infer "interleaves" statements without induction,
+  particularly applying to the addition or removal of a prefix to the input
+  lists, are also proven. Finally, a stronger version of the predicate, named
+  "Interleaves", is shown to fulfil further rules applying to the addition or
+  removal of a suffix to the input lists.
+  </p>
+
 [Residuated_Lattices]
 title = Residuated Lattices
 author = Victor B. F. Gomes <mailto:vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
@@ -581,6 +702,29 @@ abstract =
  <p>
  The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.
 
+[Formula_Derivatives]
+title = Derivatives of Logical Formulas
+author = Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+topic = Computer Science/Automata and Formal Languages, Logic
+date = 2015-05-28
+abstract =
+ We formalize new decision procedures for WS1S, M2L(Str), and Presburger
+ Arithmetics. Formulas of these logics denote regular languages. Unlike
+ traditional decision procedures, we do <em>not</em> translate formulas into automata
+ (nor into regular expressions), at least not explicitly. Instead we devise
+ notions of derivatives (inspired by Brzozowski derivatives for regular
+ expressions) that operate on formulas directly and compute a syntactic
+ bisimulation using these derivatives. The treatment of Boolean connectives and
+ quantifiers is uniform for all mentioned logics and is abstracted into a
+ locale. This locale is then instantiated by different atomic formulas and their
+ derivatives (which may differ even for the same logic under different encodings
+ of interpretations as formal words).
+ <p>
+ The WS1S instance is described in the draft paper <a
+ href="http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html">A
+ Coalgebraic Decision Procedure for WS1S</a> by the author.
+depends-on = Coinductive_Languages, Deriving, Show, List-Index
+
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
 author = Chunhan Wu <>, Xingyuan Zhang <>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
@@ -900,6 +1044,20 @@ abstract =
   In the same spirit we show that the move-to-front algorithm for the list
   update problem is 2-competitive and that this is optimal for deterministic
   online algorithms for this problem.
+
+[Dynamic_Tables]
+title = Parameterized Dynamic Tables
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2015-06-07
+topic = Computer Science/Data Structures
+depends-on = Amortized_Complexity
+abstract =
+  This article formalizes the amortized analysis of dynamic tables
+  parameterized with their minimal and maximal load factors and the
+  expansion and contraction factors.
+  <P>
+  A full description is found in a
+  <a href="http://www.in.tum.de/~nipkow/pubs">companion paper</a>.
 
 [AVL-Trees]
 title = AVL Trees
@@ -2082,6 +2240,23 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
   ZeroConf and an analysis of the anonymity of the Crowds protocol.
   <a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 
+[Probabilistic_System_Zoo]
+title = A Zoo of Probabilistic Systems
+author = Johannes Hölzl <http://www.in.tum.de/~hoelzl>,
+ Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>,
+ Dmitriy Traytel <http://www21.in.tum.de/~traytel/>
+date = 2015-05-27
+topic = Computer Science/Automata and Formal Languages
+abstract =
+ Numerous models of probabilistic systems are studied in the literature.
+ Coalgebra has been used to classify them into system types and compare their
+ expressiveness.  We formalize the resulting hierarchy of probabilistic system
+ types by modeling the semantics of the different systems as codatatypes.
+ This approach yields simple and concise proofs, as bisimilarity coincides
+ with equality for codatatypes.
+ <p>
+ This work is described in detail in the ITP 2015 publication by the authors.
+
 [Density_Compiler]
 title = A Verified Compiler for Probability Density Functions
 author = Manuel Eberl <http://www.in.tum.de/~eberlm>, Johannes Hölzl <http://www.in.tum.de/~hoelzl>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -2606,7 +2781,16 @@ title = A General Method for the Proof of Theorems on Tail-recursive Functions
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2013-12-01
 topic = Computer Science/Functional Programming
-abstract = Tail-recursive function definitions are sometimes more straightforward than alternatives, but proving theorems on them may be roundabout because of the peculiar form of the resulting recursion induction rules. This paper describes a proof method that provides a general solution to this problem by means of suitable invariants over inductive sets, and illustrates the application of such method by examining two case studies.
+abstract =
+  <p>
+  Tail-recursive function definitions are sometimes more straightforward than
+  alternatives, but proving theorems on them may be roundabout because of the
+  peculiar form of the resulting recursion induction rules.
+  </p><p>
+  This paper describes a proof method that provides a general solution to
+  this problem by means of suitable invariants over inductive sets, and
+  illustrates the application of such method by examining two case studies.
+  </p>
 
 [CryptoBasedCompositionalProperties]
 title = Compositional Properties of Crypto-Based Components

@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Multirelations" (AFP) = "Kleene_Algebra" +
+
+  options [timeout = 600]
+
+  theories [document = false]  
+    "../Kleene_Algebra/Dioid"
+
+  theories 
+    C_Algebras
+    Multirelations
+
+  document_files
+    "root.tex"
+    "root.bib"

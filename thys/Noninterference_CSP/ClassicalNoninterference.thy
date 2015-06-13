@@ -1,8 +1,8 @@
 (*  Title:       Noninterference Security in Communicating Sequential Processes
     Author:      Pasquale Noce
-                 Security Certification Specialist at Arjowiggins Security - Gep S.p.A.
-                 pasquale dot noce at arjowiggins-it dot com
+                 Security Certification Specialist at Arjo Systems - Gep S.p.A.
                  pasquale dot noce dot lavoro at gmail dot com
+                 pasquale dot noce at arjowiggins-it dot com
 *)
 
 section "CSP noninterference vs. classical noninterference"
@@ -1858,4 +1858,3 @@ theorem secure_equals_c_secure:
 by (rule iffI, rule secure_implies_c_secure, assumption, rule c_secure_implies_secure)
 
 end
-

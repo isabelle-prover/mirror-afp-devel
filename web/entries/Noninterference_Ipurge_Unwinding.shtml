@@ -1,0 +1,152 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">T</font>he
+<font class="first">I</font>purge
+<font class="first">U</font>nwinding
+<font class="first">T</font>heorem
+for
+<font class="first">C</font>SP
+<font class="first">N</font>oninterference
+<font class="first">S</font>ecurity
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">The Ipurge Unwinding Theorem for CSP Noninterference Security</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Pasquale Noce (pasquale /dot/ noce /dot/ lavoro /at/ gmail /dot/ com)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2015-06-11</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+<p>
+The definition of noninterference security for Communicating Sequential
+Processes requires to consider any possible future, i.e. any indefinitely long
+sequence of subsequent events and any indefinitely large set of refused events
+associated to that sequence, for each process trace. In order to render the
+verification of the security of a process more straightforward, there is a need
+of some sufficient condition for security such that just individual accepted and
+refused events, rather than unbounded sequences and sets of events, have to be
+considered.
+</p><p>
+Of course, if such a sufficient condition were necessary as well, it would be
+even more valuable, since it would permit to prove not only that a process is
+secure by verifying that the condition holds, but also that a process is not
+secure by verifying that the condition fails to hold.
+</p><p>
+This paper provides a necessary and sufficient condition for CSP noninterference
+security, which indeed requires to just consider individual accepted and refused
+events and applies to the general case of a possibly intransitive policy. This
+condition follows Rushby's output consistency for deterministic state machines
+with outputs, and has to be satisfied by a specific function mapping security
+domains into equivalence relations over process traces. The definition of this
+function makes use of an intransitive purge function following Rushby's one;
+hence the name given to the condition, Ipurge Unwinding Theorem.
+</p><p>
+Furthermore, in accordance with Hoare's formal definition of deterministic
+processes, it is shown that a process is deterministic just in case it is a
+trace set process, i.e. it may be identified by means of a trace set alone,
+matching the set of its traces, in place of a failures-divergences pair. Then,
+variants of the Ipurge Unwinding Theorem are proven for deterministic processes
+and trace set processes.
+</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Noninterference_Ipurge_Unwinding-AFP,
+  author  = {Pasquale Noce},
+  title   = {The Ipurge Unwinding Theorem for CSP Noninterference Security},
+  journal = {Archive of Formal Proofs},
+  month   = jun,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Noninterference_Ipurge_Unwinding.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Noninterference_CSP.shtml">Noninterference_CSP</a>, <a href="List_Interleaving.shtml">List_Interleaving</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Noninterference_Ipurge_Unwinding" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

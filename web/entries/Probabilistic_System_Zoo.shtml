@@ -1,0 +1,122 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">A</font>
+<font class="first">Z</font>oo
+of
+<font class="first">P</font>robabilistic
+<font class="first">S</font>ystems
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">A Zoo of Probabilistic Systems</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.in.tum.de/~hoelzl">Johannes Hölzl</a>, <a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a> and <a href="http://www21.in.tum.de/~traytel/">Dmitriy Traytel</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2015-05-27</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+Numerous models of probabilistic systems are studied in the literature.
+Coalgebra has been used to classify them into system types and compare their
+expressiveness.  We formalize the resulting hierarchy of probabilistic system
+types by modeling the semantics of the different systems as codatatypes.
+This approach yields simple and concise proofs, as bisimilarity coincides
+with equality for codatatypes.
+<p>
+This work is described in detail in the ITP 2015 publication by the authors.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Probabilistic_System_Zoo-AFP,
+  author  = {Johannes Hölzl and Andreas Lochbihler and Dmitriy Traytel},
+  title   = {A Zoo of Probabilistic Systems},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Probabilistic_System_Zoo.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Probabilistic_System_Zoo" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

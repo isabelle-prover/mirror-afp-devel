@@ -1,6 +1,8 @@
 (*  Title:       A General Method for the Proof of Theorems on Tail-recursive Functions
-    Author:      Pasquale Noce, Security Certification Specialist at Arjowiggins Security
-                 (pasquale dot noce at arjowiggins-it dot com)
+    Author:      Pasquale Noce
+                 Security Certification Specialist at Arjo Systems - Gep S.p.A.
+                 pasquale dot noce dot lavoro at gmail dot com
+                 pasquale dot noce at arjowiggins-it dot com
 *)
 
 section "Case study 2"
