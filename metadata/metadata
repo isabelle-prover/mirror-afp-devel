@@ -1,3 +1,19 @@
+[Multirelations]
+title = Binary Multirelations
+author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+date = 2015-06-11
+topic = Mathematics/Algebra
+depends-on = Kleene_Algebra
+abstract =
+  Binary multirelations associate elements of a set with its subsets; hence
+  they are binary relations from a set to its power set. Applications include
+  alternating automata, models and logics for games, program semantics with
+  dual demonic and angelic nondeterministic choices and concurrent dynamic
+  logics. This proof document supports an arXiv article that formalises the
+  basic algebra of multirelations and proposes axiom systems for them,
+  ranging from weak bi-monoids to weak bi-quantales.
+  
+
 [Noninterference_Generic_Unwinding]
 title = The Generic Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
