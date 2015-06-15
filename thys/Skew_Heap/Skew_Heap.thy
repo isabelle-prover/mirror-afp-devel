@@ -78,11 +78,8 @@ by(induction t1 t2 rule: meld2.induct) auto
 lemma mset_meld: "mset_tree (meld h1 h2) = mset_tree h1 + mset_tree h2"
 by (induction h1 h2 rule: meld.induct) (auto simp add: ac_simps)
 
-lemma set_mset_tree: "set_of(mset_tree t) = set_tree t"
-by(induction t) auto
-
 lemma set_meld: "set_tree (meld h1 h2) = set_tree h1 \<union> set_tree h2"
-by (metis mset_meld set_mset_tree set_of_union)
+by (metis mset_meld set_of_mset_tree set_of_union)
 
 lemma heap_meld:
   "heap h1 \<Longrightarrow> heap h2 \<Longrightarrow> heap (meld h1 h2)"
@@ -99,8 +96,7 @@ hide_const (open) Skew_Heap.insert
 lemma heap_insert: "heap h \<Longrightarrow> heap (Skew_Heap.insert a h)"
 by (simp add: insert_def heap_meld)
 
-lemma mset_insert: "heap h \<Longrightarrow>
-  mset_tree (Skew_Heap.insert a h) = {#a#} + mset_tree h"
+lemma mset_insert: "mset_tree (Skew_Heap.insert a h) = {#a#} + mset_tree h"
 by (auto simp: mset_meld insert_def)
 
 
@@ -113,8 +109,7 @@ fun del_min :: "'a::linorder heap \<Rightarrow> 'a heap" where
 lemma heap_del_min: "heap h \<Longrightarrow> heap (del_min h)"
 by (cases h) (auto simp: heap_meld)
 
-lemma mset_del_min: "heap h \<Longrightarrow>
-  mset_tree (del_min h) = mset_tree h - {# get_min h #}"
+lemma mset_del_min: "mset_tree (del_min h) = mset_tree h - {# get_min h #}"
 by (cases h) (auto simp: mset_meld ac_simps)
 
 end
