@@ -187,7 +187,7 @@ qed
 
 subsubsection "Heap Ordering"
 fun heap_ordered :: "('e, 'a::linorder) BinomialTree \<Rightarrow> bool" where
-  "heap_ordered (Node e a r ts) = (\<forall>x \<in> set_of(queue_to_multiset ts). a \<le> snd x)"
+  "heap_ordered (Node e a r ts) = (\<forall>x \<in> set_mset(queue_to_multiset ts). a \<le> snd x)"
 
 text {* The invariant for trees implies heap order. *}
 lemma tree_invar_heap_ordered: "tree_invar t \<Longrightarrow> heap_ordered t"
@@ -727,7 +727,7 @@ lemma treehead_in_multiset:
   by (induct bq, simp, cases t, auto) 
 
 lemma heap_ordered_single: 
-"heap_ordered t = (\<forall>x \<in> set_of (tree_to_multiset t). prio t \<le> snd x)"
+"heap_ordered t = (\<forall>x \<in> set_mset (tree_to_multiset t). prio t \<le> snd x)"
   by (cases t) auto
 
 lemma getMinTree_cons: 
@@ -749,17 +749,17 @@ proof -
 qed
 
 lemma getMinTree_min_prio:
-  "\<lbrakk>queue_invar bq; y \<in> set_of (queue_to_multiset bq)\<rbrakk>
+  "\<lbrakk>queue_invar bq; y \<in> set_mset (queue_to_multiset bq)\<rbrakk>
   \<Longrightarrow> prio (getMinTree bq) \<le> snd y"
 proof -
   case goal1
   hence "bq \<noteq> []" by (cases bq) simp_all
-  with goal1 have "\<exists> t \<in> set bq. (y \<in> set_of ((tree_to_multiset t)))"
+  with goal1 have "\<exists> t \<in> set bq. (y \<in> set_mset ((tree_to_multiset t)))"
     apply(induct bq)
     apply simp
   proof -
     case goal1 thus ?case
-      apply(cases "y \<in> set_of (tree_to_multiset a)") 
+      apply(cases "y \<in> set_mset (tree_to_multiset a)") 
       apply simp
       apply(cases bq)
       apply simp_all
@@ -767,7 +767,7 @@ proof -
   qed
   from this obtain t where O: 
     "t \<in> set bq"
-    "y \<in> set_of (tree_to_multiset t)" by blast
+    "y \<in> set_mset (tree_to_multiset t)" by blast
   obtain e a r ts where [simp]: "t = (Node e a r ts)" by (cases t) blast
   from O goal1(1) have inv: "tree_invar t" by (simp add: queue_invar_def)
   from tree_invar_heap_ordered[OF inv] heap_ordered.simps[of e a r ts] O
@@ -784,12 +784,12 @@ lemma findMin_correct:
   assumes NE: "q \<noteq> Nil"
   shows 
   "findMin q \<in># queue_to_multiset q"
-  "\<forall>y\<in>set_of (queue_to_multiset q). snd (findMin q) \<le> snd y"
+  "\<forall>y\<in>set_mset (queue_to_multiset q). snd (findMin q) \<le> snd y"
 proof -
   from NE have "getMinTree q \<in> set q" by (simp only: mintree_exists)
   thus "findMin q \<in># queue_to_multiset q" 
     by (simp add: treehead_in_multiset Let_def findMin_def)
-  show "\<forall>y\<in>set_of (queue_to_multiset q). snd (findMin q) \<le> snd y"
+  show "\<forall>y\<in>set_mset (queue_to_multiset q). snd (findMin q) \<le> snd y"
     using I[unfolded invar_def]
     by (auto simp add: getMinTree_min_prio Let_def findMin_def)
 qed  
@@ -1162,7 +1162,7 @@ begin
     assumes "q\<noteq>empty"
     shows 
     "findMin q \<in># to_mset q"
-    "\<forall>y\<in>set_of (to_mset q). snd (findMin q) \<le> snd y"
+    "\<forall>y\<in>set_mset (to_mset q). snd (findMin q) \<le> snd y"
     using assms
     apply (unfold findMin_def to_mset_def)
     apply (simp_all add: empty_rep BinomialHeapStruc.findMin_correct)

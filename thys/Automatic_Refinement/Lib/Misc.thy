@@ -533,7 +533,7 @@ lemma in_multiset_of_set[simp]:
   "finite S \<Longrightarrow> x \<in># (multiset_of_set S) \<longleftrightarrow> x \<in> S"
   by (simp add: count_multiset_of_set_finite_iff)
 
-declare Multiset.finite_set_of_multiset_of_set[simp]
+declare Multiset.finite_set_mset_multiset_of_set[simp]
 
 lemma multiset_of_insert: "finite S \<Longrightarrow>
   multiset_of_set (insert e S) =
@@ -557,7 +557,7 @@ next
 qed
 
 lemma ex_Melem_conv: "(\<exists>x. x \<in># A) = (A \<noteq> {#})"
-  by (metis all_not_in_conv mem_set_of_iff set_of_eq_empty_iff)
+  by (metis all_not_in_conv mem_set_mset_iff set_mset_eq_empty_iff)
 
 subsubsection {* Case distinction *}
 text {* Install a (new) default case-distinction lemma for multisets, that distinguishes between empty multiset and multiset that is the union of of some multiset and a singleton multiset. 
@@ -584,31 +584,31 @@ subsubsection {* Count *}
 subsubsection {* Union, difference and intersection *}
 
   lemma size_diff_se: "\<lbrakk>t :# S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
-                let ?SIZE = "setsum (count S) (set_of S)"
+                let ?SIZE = "setsum (count S) (set_mset S)"
                 assume A: "t :# S"
-                from A have SPLITPRE: "finite (set_of S) & {t}\<subseteq>(set_of S)" by auto
-                hence "?SIZE = setsum (count S) (set_of S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
-                hence "?SIZE = setsum (count S) (set_of S - {t}) + count (S) t" by auto
+                from A have SPLITPRE: "finite (set_mset S) & {t}\<subseteq>(set_mset S)" by auto
+                hence "?SIZE = setsum (count S) (set_mset S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
+                hence "?SIZE = setsum (count S) (set_mset S - {t}) + count (S) t" by auto
                 moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
-                ultimately have D: "?SIZE = setsum (count S) (set_of S - {t}) + count (S-{#t#}) t + 1" by (arith)
-                moreover have "setsum (count S) (set_of S - {t}) = setsum (count (S-{#t#})) (set_of S - {t})" proof -
-                        have "ALL x:(set_of S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
+                ultimately have D: "?SIZE = setsum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
+                moreover have "setsum (count S) (set_mset S - {t}) = setsum (count (S-{#t#})) (set_mset S - {t})" proof -
+                        have "ALL x:(set_mset S - {t}) . count S x = count (S-{#t#}) x" by (auto iff add: count_ne_remove)
                         thus ?thesis by simp
                 qed
-                ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + count (S-{#t#}) t + 1" by (simp)
+                ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (simp)
                 moreover
                 { assume CASE: "count (S-{#t#}) t = 0"
-                        from CASE have "set_of S - {t} = set_of (S-{#t#})" by (auto iff add: set_of_def)
-                        with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by simp
+                        from CASE have "set_mset S - {t} = set_mset (S-{#t#})" by (auto iff add: set_mset_def)
+                        with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by simp
                 }
                 moreover
                 { assume CASE: "count (S-{#t#}) t ~= 0"
-                        from CASE have 1: "set_of S = set_of (S-{#t#})" by (auto iff add: set_of_def)
-                        moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
-                        moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_of S) = setsum (count (S-{#t#})) (set_of S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
-                        ultimately have "?SIZE = setsum (count (S-{#t#})) (set_of (S-{#t#})) + 1" by simp
+                        from CASE have 1: "set_mset S = set_mset (S-{#t#})" by (auto iff add: set_mset_def)
+                        moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
+                        moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_mset S) = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
+                        ultimately have "?SIZE = setsum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
                 }
-                ultimately show "?SIZE = setsum (count (S-{#t#})) (set_of (S - {#t#})) + 1" by blast
+                ultimately show "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by blast
         qed
 
   (* TODO: Check whether this proof can be done simpler *)
@@ -638,8 +638,8 @@ subsubsection {* Union, difference and intersection *}
   lemma mset_diff_same_empty[simp]: "(S::'a multiset) - S = {#}"
   proof -
     have "ALL e . count (S-S) e = 0" by auto
-    hence "ALL e . ~ (e : set_of (S-S))" by auto
-    hence "set_of (S-S) = {}" by blast
+    hence "ALL e . ~ (e : set_mset (S-S))" by auto
+    hence "set_mset (S-S) = {}" by blast
     thus ?thesis by (auto)
   qed
 *)
@@ -1139,7 +1139,7 @@ next
   finally show ?case .
 qed
 
-lemma mset_map_set_of: "set_of (f `# A) = f ` set_of A"
+lemma mset_map_set_mset: "set_mset (f `# A) = f ` set_mset A"
   by (induct A) auto
 
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"

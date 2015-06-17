@@ -190,10 +190,10 @@ lemma midMultiset:
 proof-
   from assms have "A :# \<Gamma>'"
       proof-
-      from assms have "set_of (\<Gamma> \<oplus> A) = set_of (\<Gamma>' \<oplus> B)" by auto
-      then have "set_of \<Gamma> \<union> {A} = set_of \<Gamma>' \<union> {B}" by auto
-      then have "set_of \<Gamma> \<union> {A} \<subseteq> set_of \<Gamma>' \<union> {B}" by simp
-      then have "A \<in> set_of \<Gamma>'" using assms by auto
+      from assms have "set_mset (\<Gamma> \<oplus> A) = set_mset (\<Gamma>' \<oplus> B)" by auto
+      then have "set_mset \<Gamma> \<union> {A} = set_mset \<Gamma>' \<union> {B}" by auto
+      then have "set_mset \<Gamma> \<union> {A} \<subseteq> set_mset \<Gamma>' \<union> {B}" by simp
+      then have "A \<in> set_mset \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
   then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)

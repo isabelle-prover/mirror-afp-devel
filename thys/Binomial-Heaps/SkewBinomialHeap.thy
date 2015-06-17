@@ -291,7 +291,7 @@ subsubsection "Heap Order"
 
 fun heap_ordered :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> bool" where
   "heap_ordered (Node e a r ts) 
-   = (\<forall>x \<in> set_of (queue_to_multiset ts). a \<le> snd x)"
+   = (\<forall>x \<in> set_mset (queue_to_multiset ts). a \<le> snd x)"
 
 
 text {* The invariant for trees implies heap order. *}
@@ -1005,7 +1005,7 @@ lemma treehead_in_multiset:
   by (induct bq, simp, cases t, auto)
 
 lemma heap_ordered_single: 
-  "heap_ordered t = (\<forall>x \<in> set_of (tree_to_multiset t). prio t \<le> snd x)"
+  "heap_ordered t = (\<forall>x \<in> set_mset (tree_to_multiset t). prio t \<le> snd x)"
   by (cases t) auto
 
 lemma getMinTree_cons: 
@@ -1027,17 +1027,17 @@ proof -
 qed
 
 lemma getMinTree_min_prio:
-  "\<lbrakk>queue_invar bq; y \<in> set_of (queue_to_multiset bq)\<rbrakk>
+  "\<lbrakk>queue_invar bq; y \<in> set_mset (queue_to_multiset bq)\<rbrakk>
   \<Longrightarrow> prio (getMinTree bq) \<le> snd y"
 proof -
   case goal1
   hence "bq \<noteq> []" by (cases bq) simp_all
-  with goal1 have "\<exists> t \<in> set bq. (y \<in> set_of (tree_to_multiset t))"
+  with goal1 have "\<exists> t \<in> set bq. (y \<in> set_mset (tree_to_multiset t))"
     apply(induct bq)
     apply simp
   proof -
     case goal1 thus ?case
-      apply(cases "y \<in> set_of (tree_to_multiset a)") 
+      apply(cases "y \<in> set_mset (tree_to_multiset a)") 
       apply simp
       apply(cases bq)
       apply simp_all
@@ -1045,7 +1045,7 @@ proof -
   qed
   from this obtain t where O: 
     "t \<in> set bq"
-    "y \<in> set_of ((tree_to_multiset t))" by blast
+    "y \<in> set_mset ((tree_to_multiset t))" by blast
   obtain e a r ts where [simp]: "t = (Node e a r ts)" by (cases t) blast
   from O goal1(1) have inv: "tree_invar t" by simp
   from tree_invar_heap_ordered[OF inv] heap_ordered.simps[of e a r ts] O
@@ -1057,12 +1057,12 @@ lemma findMin_mset:
   assumes I: "queue_invar q"
   assumes NE: "q\<noteq>Nil"
   shows "findMin q \<in># queue_to_multiset q"
-  "\<forall>y\<in>set_of (queue_to_multiset q). snd (findMin q) \<le> snd y"
+  "\<forall>y\<in>set_mset (queue_to_multiset q). snd (findMin q) \<le> snd y"
 proof -
   from NE have "getMinTree q \<in> set q" by (simp only: mintree_exists)
   thus "findMin q \<in># queue_to_multiset q" 
     by (simp add: treehead_in_multiset findMin_def Let_def)
-  show "\<forall>y\<in>set_of (queue_to_multiset q). snd (findMin q) \<le> snd y"
+  show "\<forall>y\<in>set_mset (queue_to_multiset q). snd (findMin q) \<le> snd y"
     by (simp add: getMinTree_min_prio findMin_def Let_def NE I)
 qed  
 
@@ -1070,7 +1070,7 @@ theorem findMin_correct:
   assumes I: "invar q"
   assumes NE: "q\<noteq>Nil"
   shows "findMin q \<in># queue_to_multiset q"
-  "\<forall>y\<in>set_of (queue_to_multiset q). snd (findMin q) \<le> snd y"
+  "\<forall>y\<in>set_mset (queue_to_multiset q). snd (findMin q) \<le> snd y"
   using I NE findMin_mset
   unfolding invar_def by auto
 
@@ -2006,7 +2006,7 @@ lemma findMin_correct_aux:
   assumes I: "invar q"
   assumes NE: "q\<noteq>[]"
   shows "(findMin q, eprio (findMin q)) \<in># queue_to_multiset_aux q"
-  "\<forall>y\<in>set_of (queue_to_multiset_aux q). snd (findMin q,eprio (findMin q)) \<le> snd y"
+  "\<forall>y\<in>set_mset (queue_to_multiset_aux q). snd (findMin q,eprio (findMin q)) \<le> snd y"
   apply (simp_all add:
     I NE findMin_xlate_aux 
     SkewBinomialHeapStruc.findMin_correct)
@@ -2016,7 +2016,7 @@ lemma findMin_correct:
   assumes I: "invar q"
   assumes NE: "q\<noteq>[]"
   shows "findMin q \<in># queue_to_multiset q"
-  "\<forall>y\<in>set_of (queue_to_multiset q). eprio (findMin q) \<le> eprio y"
+  "\<forall>y\<in>set_mset (queue_to_multiset q). eprio (findMin q) \<le> eprio y"
   using findMin_correct_aux[OF I NE]
   apply simp_all
   apply (force dest: bsmap_fs_depD)
@@ -2099,10 +2099,10 @@ lemma level_m:
   done
 
 lemma level_measure:
-  "x \<in> set_of (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
+  "x \<in> set_mset (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   "x \<in># (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   apply (case_tac [!] x)
-  apply (auto dest: level_m simp del: set_of_image_mset)
+  apply (auto dest: level_m simp del: set_mset_image_mset)
   done
 
 text {*
@@ -2193,7 +2193,7 @@ lemma findMin_correct':
   assumes I: "elem_invar x"
   shows
   "findMin' x \<in># elem_to_mset x"
-  "\<forall>y\<in>set_of (elem_to_mset x). snd (findMin' x) \<le> snd y"
+  "\<forall>y\<in>set_mset (elem_to_mset x). snd (findMin' x) \<le> snd y"
   using I
   apply (cases x)
   apply simp
@@ -2213,7 +2213,7 @@ proof -
   from findMin_correct[OF IQ NE] have
     FMIQ: "findMin q \<in># queue_to_multiset q" and
     FMIN: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> eprio (findMin q) \<le> eprio y"
-    by (auto simp del: set_of_image_mset)
+    by (auto simp del: set_mset_image_mset)
   from FMIQ I have FMEI: "elem_invar (findMin q)" by auto
   from I have FEI: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> elem_invar y" by auto
   
@@ -2301,7 +2301,7 @@ theorem bs_findMin_correct:
   assumes I: "bs_invar h"
   assumes NE: "h\<noteq>bs_empty"
   shows "bs_findMin h \<in># bs_to_mset h"
-        "\<forall>y\<in>set_of (bs_to_mset h). snd (bs_findMin h) \<le> snd y"
+        "\<forall>y\<in>set_mset (bs_to_mset h). snd (bs_findMin h) \<le> snd y"
   using I NE
   apply (case_tac [!] h)
   apply (auto simp add: bs_empty_def findMin_correct')
@@ -2484,7 +2484,7 @@ begin
     assumes "q\<noteq>empty"
     shows 
     "findMin q \<in># to_mset q"
-    "\<forall>y\<in>set_of (to_mset q). snd (findMin q) \<le> snd y"
+    "\<forall>y\<in>set_mset (to_mset q). snd (findMin q) \<le> snd y"
     using assms
     apply (unfold findMin_def to_mset_def)
     apply (simp_all add: empty_rep BsSkewBinomialHeapStruc.bs_findMin_correct)

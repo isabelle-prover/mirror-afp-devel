@@ -55,8 +55,8 @@ definition
 
 lemma mon_s_alt: "mon_s fg s == \<Union> (mon fg ` proc_of fg ` set s)"
   by (unfold mon_s_def mon_n_def) (auto intro!: eq_reflection)
-lemma mon_c_alt: "mon_c fg c == \<Union> (mon_s fg ` set_of c)"
-  by (unfold mon_c_def set_of_def) (auto intro!: eq_reflection)
+lemma mon_c_alt: "mon_c fg c == \<Union> (mon_s fg ` set_mset c)"
+  by (unfold mon_c_def set_mset_def) (auto intro!: eq_reflection)
 lemma mon_w_alt: "mon_w fg w == \<Union> (mon_e fg ` set w)"
   by (unfold mon_w_def) (auto intro!: eq_reflection)
 

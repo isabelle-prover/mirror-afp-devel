@@ -79,7 +79,7 @@ lemma mset_meld: "mset_tree (meld h1 h2) = mset_tree h1 + mset_tree h2"
 by (induction h1 h2 rule: meld.induct) (auto simp add: ac_simps)
 
 lemma set_meld: "set_tree (meld h1 h2) = set_tree h1 \<union> set_tree h2"
-by (metis mset_meld set_of_mset_tree set_of_union)
+by (metis mset_meld set_mset_tree set_mset_union)
 
 lemma heap_meld:
   "heap h1 \<Longrightarrow> heap h2 \<Longrightarrow> heap (meld h1 h2)"

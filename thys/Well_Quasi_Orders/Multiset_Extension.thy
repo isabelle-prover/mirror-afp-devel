@@ -15,7 +15,7 @@ imports
 begin
 
 definition multisets :: "'a set \<Rightarrow> 'a multiset set" where
-  "multisets A = {M. set_of M \<subseteq> A}"
+  "multisets A = {M. set_mset M \<subseteq> A}"
 
 lemma empty_multisets [simp]:
   "{#} \<in> multisets F"
@@ -358,7 +358,7 @@ lemma mult1_mono:
   shows "(M, N) \<in> mult1 S"
   using assms 
   unfolding mult1_def multisets_def
-  by (auto) (metis (full_types) mem_set_of_iff set_mp)
+  by (auto) (metis (full_types) mem_set_mset_iff set_mp)
 
 lemma mulex1_mono:
   assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y"
@@ -428,7 +428,7 @@ qed
 lemma image_multiset_of_lists [simp]:
   "multiset_of ` lists A = multisets A"
   using surj_on_multisets_multiset_of [of A]
-  by auto (metis mem_Collect_eq multisets_def set_of_multiset_of subsetI)
+  by auto (metis mem_Collect_eq multisets_def set_mset_multiset_of subsetI)
 
 lemma multisets_UNIV [simp]: "multisets UNIV = UNIV"
   by (metis image_multiset_of_lists lists_UNIV surj_multiset_of)

@@ -43,7 +43,7 @@ locale prio_find = prio +
   constrains \<alpha> :: "'p \<Rightarrow> ('e \<times> 'a::linorder) multiset"
   fixes find :: "'p \<Rightarrow> ('e \<times> 'a::linorder)"
   assumes find_correct: "\<lbrakk>invar p; \<alpha> p \<noteq> {#}\<rbrakk> \<Longrightarrow> 
-       (find p) \<in># (\<alpha> p) \<and> (\<forall>y \<in> set_of (\<alpha> p). snd (find p) \<le> snd y)"
+       (find p) \<in># (\<alpha> p) \<and> (\<forall>y \<in> set_mset (\<alpha> p). snd (find p) \<le> snd y)"
 
 subsubsection "Insert"
 locale prio_insert = prio +

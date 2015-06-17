@@ -848,7 +848,7 @@ proof-
       moreover
          {assume "A :# M\<cdot>(\<LM>x\<RM>)"
           then have "A :# \<LM> Modal M [x] \<RM>" by (auto simp add:modaliseMultiset_def)
-          then have "A \<in> set_of (\<LM>Modal M [x]\<RM>)" by (auto simp only:set_of_def)
+          then have "A \<in> set_mset (\<LM>Modal M [x]\<RM>)" by (auto simp only:set_mset_def)
           then have "A \<in> {Modal M [x]}" by auto
           then have "A = Modal M [x]" by auto
           then have "\<exists> B. A = Modal M [B]" by blast
@@ -861,15 +861,15 @@ qed
 lemma non_contain:
 fixes \<Delta> \<Delta>' :: "('a,'b) form multiset"
 assumes "\<Delta> \<noteq> \<Empt>" and "\<Delta>' \<noteq> \<Empt>" and "M \<noteq> N"
-shows "set_of (M\<cdot>\<Delta>) \<inter> set_of (N\<cdot>\<Delta>') = {}"
+shows "set_mset (M\<cdot>\<Delta>) \<inter> set_mset (N\<cdot>\<Delta>') = {}"
 proof-
 {
-assume "set_of (M\<cdot>\<Delta>) \<inter> set_of (N\<cdot>\<Delta>') \<noteq> {}"
-then have "\<exists> A. A \<in> set_of (M\<cdot>\<Delta>) \<inter> set_of (N\<cdot>\<Delta>')" by auto
-then obtain A where a: "A \<in> set_of (M\<cdot>\<Delta>) \<inter> set_of (N\<cdot>\<Delta>')" by blast
+assume "set_mset (M\<cdot>\<Delta>) \<inter> set_mset (N\<cdot>\<Delta>') \<noteq> {}"
+then have "\<exists> A. A \<in> set_mset (M\<cdot>\<Delta>) \<inter> set_mset (N\<cdot>\<Delta>')" by auto
+then obtain A where a: "A \<in> set_mset (M\<cdot>\<Delta>) \<inter> set_mset (N\<cdot>\<Delta>')" by blast
 then have "False"
  proof- 
-   from a have box: "A \<in> set_of (M\<cdot>\<Delta>)" and dia: "A \<in> set_of (N\<cdot>\<Delta>')" by auto
+   from a have box: "A \<in> set_mset (M\<cdot>\<Delta>)" and dia: "A \<in> set_mset (N\<cdot>\<Delta>')" by auto
    from box have "A :# M\<cdot>\<Delta>" by auto
    with `\<Delta> \<noteq> \<Empt>` have "\<exists> B. A = Modal M [B]" using modalise_characterise[where M=M] by (auto)
    then obtain B where "A = Modal M [B]" by blast
@@ -1140,10 +1140,10 @@ proof-
      {assume "\<exists> A. H = \<LM>A\<RM>"
       then obtain T where "H = \<LM>T\<RM>" by auto
       then have "\<Psi> \<oplus> T = \<Delta> \<oplus> Modal M Ms" using `\<Psi> + H = \<Delta> \<oplus> Modal M Ms` by auto
-      then have "set_of (\<Psi> \<oplus> T) = set_of (\<Delta> \<oplus> Modal M Ms)" by auto
-      then have "set_of \<Psi> \<union> {T} = set_of \<Delta> \<union> {Modal M Ms}" by auto
+      then have "set_mset (\<Psi> \<oplus> T) = set_mset (\<Delta> \<oplus> Modal M Ms)" by auto
+      then have "set_mset \<Psi> \<union> {T} = set_mset \<Delta> \<union> {Modal M Ms}" by auto
       moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
-      ultimately have "Modal M Ms \<in> set_of \<Psi>" by auto
+      ultimately have "Modal M Ms \<in> set_mset \<Psi>" by auto
       then have "Modal M Ms :# \<Psi>" by auto
      }
      ultimately show "Modal M Ms :# \<Psi>" by blast
@@ -1387,10 +1387,10 @@ proof-
      {assume "\<exists> A. H = \<LM>A\<RM>"
       then obtain T where "H = \<LM>T\<RM>" by auto
       then have "\<Phi> \<oplus> T = \<Gamma> \<oplus> Modal M Ms" using `\<Phi> + H = \<Gamma> \<oplus> Modal M Ms` by auto
-      then have "set_of (\<Phi> \<oplus> T) = set_of (\<Gamma> \<oplus> Modal M Ms)" by auto
-      then have "set_of \<Phi> \<union> {T} = set_of \<Gamma> \<union> {Modal M Ms}" by auto
+      then have "set_mset (\<Phi> \<oplus> T) = set_mset (\<Gamma> \<oplus> Modal M Ms)" by auto
+      then have "set_mset \<Phi> \<union> {T} = set_mset \<Gamma> \<union> {Modal M Ms}" by auto
       moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
-      ultimately have "Modal M Ms \<in> set_of \<Phi>" by auto
+      ultimately have "Modal M Ms \<in> set_mset \<Phi>" by auto
       then have "Modal M Ms :# \<Phi>" by auto
      }
      ultimately show "Modal M Ms :# \<Phi>" by blast
@@ -1760,14 +1760,14 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
    eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
             by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
      (*<*)         then have eq2: "M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs = \<Delta> \<oplus> Modal M Ms" by auto
-                then have "set_of (M2 \<cdot> \<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = set_of (\<Delta> \<oplus> Modal M Ms)" by auto
-                then have "set_of (\<LM>Modal M Ms\<RM>) \<subseteq> set_of (M2 \<cdot> \<Delta>'') \<union> set_of \<Delta>1 \<union>  {Modal F Fs}" by auto (*>*)
-  then have "Modal M Ms \<in> set_of (M2\<cdot>\<Delta>'') \<or> 
-             Modal M Ms \<in> set_of \<Delta>1 \<or> 
+                then have "set_mset (M2 \<cdot> \<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = set_mset (\<Delta> \<oplus> Modal M Ms)" by auto
+                then have "set_mset (\<LM>Modal M Ms\<RM>) \<subseteq> set_mset (M2 \<cdot> \<Delta>'') \<union> set_mset \<Delta>1 \<union>  {Modal F Fs}" by auto (*>*)
+  then have "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'') \<or> 
+             Modal M Ms \<in> set_mset \<Delta>1 \<or> 
              Modal M Ms = Modal F Fs"
        by auto
   moreover
-     {assume "Modal M Ms \<in> set_of (M2\<cdot>\<Delta>'')" -- "Contradiction"
+     {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')" -- "Contradiction"
      then have "Modal M Ms :# M2\<cdot>\<Delta>''" by auto
      with (*<*)modal_not_contain[where M=M and N=M2 and A=Ms and \<Gamma>=\<Delta>''] and(*>*) neq
        have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" 
@@ -1807,7 +1807,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
    (*<*) using ee(*>*) by auto
   }
 moreover
-  {assume "Modal M Ms \<in> set_of \<Delta>1" -- "Formula is in the implicit weakening"
+  {assume "Modal M Ms \<in> set_mset \<Delta>1" -- "Formula is in the implicit weakening"
  (*<*)  then have "Modal M Ms :# \<Delta>1" by auto
   then have "\<exists> \<Delta>2. \<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Delta>1"]
                          apply auto apply (rule_tac x="\<Delta>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)(*>*)
@@ -1849,18 +1849,18 @@ txt{* \noindent The other case, where the last inference was a left inference, i
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta> \<oplus> Modal M Ms" by auto
-                then have "set_of (M2 \<cdot> \<Delta>'' + \<Delta>1) = set_of (\<Delta> \<oplus> Modal M Ms)" by auto
-                then have "set_of (\<LM>Modal M Ms\<RM>) \<subseteq> set_of (M2 \<cdot> \<Delta>'') \<union> set_of \<Delta>1" by auto
-                then have "Modal M Ms \<in> set_of (M2\<cdot>\<Delta>'') \<or> Modal M Ms \<in> set_of \<Delta>1"
+                then have "set_mset (M2 \<cdot> \<Delta>'' + \<Delta>1) = set_mset (\<Delta> \<oplus> Modal M Ms)" by auto
+                then have "set_mset (\<LM>Modal M Ms\<RM>) \<subseteq> set_mset (M2 \<cdot> \<Delta>'') \<union> set_mset \<Delta>1" by auto
+                then have "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'') \<or> Modal M Ms \<in> set_mset \<Delta>1"
                      by auto
                 moreover
-                   {assume "Modal M Ms \<in> set_of (M2\<cdot>\<Delta>'')"
+                   {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')"
                     then have "Modal M Ms :# M2\<cdot>\<Delta>''" by auto
                     with modal_not_contain[where M=M and N=M2 and A=Ms and \<Gamma>=\<Delta>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
                    }
                 moreover
-                   {assume "Modal M Ms \<in> set_of \<Delta>1"
+                   {assume "Modal M Ms \<in> set_mset \<Delta>1"
                     then have "Modal M Ms :# \<Delta>1" by auto
                     then have "\<exists> \<Delta>2. \<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Delta>1"]
                          apply auto apply (rule_tac x="\<Delta>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)
@@ -2108,18 +2108,18 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1  \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma> \<oplus> Modal M Ms" by auto
-                then have "set_of (M1 \<cdot> \<Gamma>'' + \<Gamma>1) = set_of (\<Gamma> \<oplus> Modal M Ms)" by auto
-                then have "set_of (\<LM>Modal M Ms\<RM>) \<subseteq> set_of (M1 \<cdot> \<Gamma>'') \<union> set_of \<Gamma>1" by auto
-                then have "Modal M Ms \<in> set_of (M1\<cdot>\<Gamma>'') \<or> Modal M Ms \<in> set_of \<Gamma>1"
+                then have "set_mset (M1 \<cdot> \<Gamma>'' + \<Gamma>1) = set_mset (\<Gamma> \<oplus> Modal M Ms)" by auto
+                then have "set_mset (\<LM>Modal M Ms\<RM>) \<subseteq> set_mset (M1 \<cdot> \<Gamma>'') \<union> set_mset \<Gamma>1" by auto
+                then have "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'') \<or> Modal M Ms \<in> set_mset \<Gamma>1"
                      by auto
                 moreover
-                   {assume "Modal M Ms \<in> set_of (M1\<cdot>\<Gamma>'')"
+                   {assume "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'')"
                     then have "Modal M Ms :# M1\<cdot>\<Gamma>''" by auto
                     with modal_not_contain[where M=M and N=M1 and A=Ms and \<Gamma>=\<Gamma>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
                    }
                 moreover
-                   {assume "Modal M Ms \<in> set_of \<Gamma>1"
+                   {assume "Modal M Ms \<in> set_mset \<Gamma>1"
                     then have "Modal M Ms :# \<Gamma>1" by auto
                     then have "\<exists> \<Gamma>2. \<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Gamma>1"]
                          apply auto apply (rule_tac x="\<Gamma>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)
@@ -2155,12 +2155,12 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs = \<Gamma> \<oplus> Modal M Ms" by auto
-                then have "set_of (M1 \<cdot> \<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs) = set_of (\<Gamma> \<oplus> Modal M Ms)" by auto
-                then have "set_of (\<LM>Modal M Ms\<RM>) \<subseteq> set_of (M1\<cdot> \<Gamma>'') \<union> set_of \<Gamma>1 \<union>  {Modal F Fs}" by auto
-                then have "Modal M Ms \<in> set_of (M1\<cdot>\<Gamma>'') \<or> Modal M Ms \<in> set_of \<Gamma>1 \<or> Modal M Ms = Modal F Fs"
+                then have "set_mset (M1 \<cdot> \<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs) = set_mset (\<Gamma> \<oplus> Modal M Ms)" by auto
+                then have "set_mset (\<LM>Modal M Ms\<RM>) \<subseteq> set_mset (M1\<cdot> \<Gamma>'') \<union> set_mset \<Gamma>1 \<union>  {Modal F Fs}" by auto
+                then have "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'') \<or> Modal M Ms \<in> set_mset \<Gamma>1 \<or> Modal M Ms = Modal F Fs"
                      by auto
                 moreover
-                   {assume "Modal M Ms \<in> set_of (M1\<cdot>\<Gamma>'')"
+                   {assume "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'')"
                     then have "Modal M Ms :# M1\<cdot>\<Gamma>''" by auto
                     with modal_not_contain[where M=M and N=M1 and A=Ms and \<Gamma>=\<Gamma>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
@@ -2196,7 +2196,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                          using ee by auto
                    }
                 moreover
-                   {assume "Modal M Ms \<in> set_of \<Gamma>1"
+                   {assume "Modal M Ms \<in> set_mset \<Gamma>1"
                     then have "Modal M Ms :# \<Gamma>1" by auto
                     then have "\<exists> \<Gamma>2. \<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Gamma>1"]
                          apply auto apply (rule_tac x="\<Gamma>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)

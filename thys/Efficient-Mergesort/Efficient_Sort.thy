@@ -205,7 +205,7 @@ lemma multiset_of_merge[simp]:
 
 lemma set_merge[simp]:
   "set (merge key xs ys) = set xs \<union> set ys"
-  unfolding set_of_multiset_of[symmetric] by simp
+  unfolding set_mset_multiset_of[symmetric] by simp
 
 lemma multiset_of_concat_merge_pairs[simp]:
   "multiset_of (concat (merge_pairs key xs)) = multiset_of (concat xs)"
@@ -213,7 +213,7 @@ lemma multiset_of_concat_merge_pairs[simp]:
 
 lemma set_concat_merge_pairs[simp]:
   "set (concat (merge_pairs key xs)) = set (concat xs)"
-  unfolding set_of_multiset_of[symmetric] by simp
+  unfolding set_mset_multiset_of[symmetric] by simp
 
 lemma multiset_of_merge_all[simp]:
   "multiset_of (merge_all key xs) = multiset_of (concat xs)"
@@ -221,7 +221,7 @@ lemma multiset_of_merge_all[simp]:
 
 lemma set_merge_all[simp]:
   "set (merge_all key xs) = set (concat xs)"
-  unfolding set_of_multiset_of[symmetric] by simp
+  unfolding set_mset_multiset_of[symmetric] by simp
 
 lemma sorted_merge[simp]:
   assumes "sorted (map key xs)" and "sorted (map key ys)"

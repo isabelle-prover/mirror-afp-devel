@@ -107,7 +107,7 @@ primrec t_multiset :: "'a bintree \<Rightarrow> 'a multiset" where
 "t_multiset Leaf = {#}" |
 "t_multiset (Branch x xl xr) = {#x#} + t_multiset xl + t_multiset xr"
 
-lemma t_set_multiset: "t_set xt = set_of (t_multiset xt)"
+lemma t_set_multiset: "t_set xt = set_mset (t_multiset xt)"
 by (induction, simp_all)
 
 primrec t_sorted :: "'a::linorder bintree \<Rightarrow> bool" where

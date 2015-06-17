@@ -312,8 +312,8 @@ proof -
     "sorted_by_rel R (sort_fun l)"
     "set (sort_fun l) = S0" "distinct (sort_fun l)"
     apply (simp_all)
-    apply (metis set_of_multiset_of)
-    apply (metis distinct_count_atmost_1 set_of_multiset_of)
+    apply (metis set_mset_multiset_of)
+    apply (metis distinct_count_atmost_1 set_mset_multiset_of)
   done
 
   show ?thesis

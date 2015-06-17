@@ -358,10 +358,10 @@ lemma midMultiset:
 proof-
   from assms have "A :# \<Gamma>'"
       proof-
-      from assms have "set_of (\<Gamma> \<oplus> A) = set_of (\<Gamma>' \<oplus> B)" by auto
-      then have "set_of \<Gamma> \<union> {A} = set_of \<Gamma>' \<union> {B}" by auto
-      then have "set_of \<Gamma> \<union> {A} \<subseteq> set_of \<Gamma>' \<union> {B}" by simp
-      then have "A \<in> set_of \<Gamma>'" using assms by auto
+      from assms have "set_mset (\<Gamma> \<oplus> A) = set_mset (\<Gamma>' \<oplus> B)" by auto
+      then have "set_mset \<Gamma> \<union> {A} = set_mset \<Gamma>' \<union> {B}" by auto
+      then have "set_mset \<Gamma> \<union> {A} \<subseteq> set_mset \<Gamma>' \<union> {B}" by simp
+      then have "A \<in> set_mset \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
   then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
@@ -793,10 +793,10 @@ at the lower height of the premisses: *}
                     {assume "\<exists> A. H = \<LM>A\<RM>"
                      then obtain A where "H = \<LM>A\<RM>" by auto
                      then have "\<Psi> \<oplus> A = \<Delta> \<oplus> Compound F Fs" using `\<Psi> + H = \<Delta> \<oplus> Compound F Fs` by auto
-                     then have "set_of (\<Psi> \<oplus> A) = set_of (\<Delta> \<oplus> Compound F Fs)" by auto
-                     then have "set_of \<Psi> \<union> {A} = set_of \<Delta> \<union> {Compound F Fs}" by auto
+                     then have "set_mset (\<Psi> \<oplus> A) = set_mset (\<Delta> \<oplus> Compound F Fs)" by auto
+                     then have "set_mset \<Psi> \<union> {A} = set_mset \<Delta> \<union> {Compound F Fs}" by auto
                      moreover from `H = \<LM>A\<RM>` and `\<LM>Compound F Fs\<RM> \<noteq> H` have "Compound F Fs \<noteq> A" by auto
-                     ultimately have "Compound F Fs \<in> set_of \<Psi>" by auto
+                     ultimately have "Compound F Fs \<in> set_mset \<Psi>" by auto
                      then have "Compound F Fs :# \<Psi>" by auto
                     }
                  ultimately show "Compound F Fs :# \<Psi>" by blast
@@ -1105,10 +1105,10 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                     {assume "\<exists> A. G = \<LM>A\<RM>"
                      then obtain A where "G = \<LM>A\<RM>" by auto
                      then have "\<Phi> \<oplus> A = \<Gamma> \<oplus> Compound F Fs" using `\<Phi> + G = \<Gamma> \<oplus> Compound F Fs` by auto
-                     then have "set_of (\<Phi> \<oplus> A) = set_of (\<Gamma> \<oplus> Compound F Fs)" by auto
-                     then have "set_of \<Phi> \<union> {A} = set_of \<Gamma> \<union> {Compound F Fs}" by auto
+                     then have "set_mset (\<Phi> \<oplus> A) = set_mset (\<Gamma> \<oplus> Compound F Fs)" by auto
+                     then have "set_mset \<Phi> \<union> {A} = set_mset \<Gamma> \<union> {Compound F Fs}" by auto
                      moreover from `G = \<LM>A\<RM>` and `\<LM>Compound F Fs\<RM> \<noteq> G` have "Compound F Fs \<noteq> A" by auto
-                     ultimately have "Compound F Fs \<in> set_of \<Phi>" by auto
+                     ultimately have "Compound F Fs \<in> set_mset \<Phi>" by auto
                      then have "Compound F Fs :# \<Phi>" by auto
                     }
                  ultimately show "Compound F Fs :# \<Phi>" by blast

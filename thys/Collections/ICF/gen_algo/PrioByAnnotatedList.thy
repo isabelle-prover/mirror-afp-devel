@@ -368,7 +368,7 @@ proof -
 qed
 
 lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
-   \<forall>y\<in>set_of (multiset_of (map p_unwrap (map snd xs))).
+   \<forall>y\<in>set_mset (multiset_of (map p_unwrap (map snd xs))).
               snd (p_unwrap (listsum (map snd xs))) \<le> snd y"          
     proof (induct xs)
     case Nil thus ?case by simp

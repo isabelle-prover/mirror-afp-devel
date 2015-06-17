@@ -43,15 +43,15 @@ lemma diff_from_empty: "{#}-s S = {#}" unfolding diff_def by auto
 
 lemma diff_empty: "M -s {} = M" unfolding diff_def by (rule multiset_eqI) simp
 
-lemma submultiset_implies_subset: assumes "M \<le># N" shows "set_of M \<subseteq> set_of N"
+lemma submultiset_implies_subset: assumes "M \<le># N" shows "set_mset M \<subseteq> set_mset N"
  using assms mset_leD by auto
 
-lemma subset_implies_remove_empty: assumes "set_of M \<subseteq> S" shows "M -s S = {#}"
+lemma subset_implies_remove_empty: assumes "set_mset M \<subseteq> S" shows "M -s S = {#}"
  unfolding diff_def using assms by (induct M) auto
 
-lemma remove_empty_implies_subset: assumes "M -s S = {#}" shows "set_of M \<subseteq> S" proof
- fix x assume A: "x \<in> set_of M"
- have "x \<notin> set_of (M -s S)" using assms by auto
+lemma remove_empty_implies_subset: assumes "M -s S = {#}" shows "set_mset M \<subseteq> S" proof
+ fix x assume A: "x \<in> set_mset M"
+ have "x \<notin> set_mset (M -s S)" using assms by auto
  thus "x \<in> S" using A unfolding diff_def by auto
 qed
 
@@ -66,7 +66,7 @@ definition ds :: "'a rel \<Rightarrow> 'a set \<Rightarrow> 'a set"
  where "ds r S = {y . \<exists>x \<in> S. (y,x) \<in> r}"
 
 definition dm :: "'a rel \<Rightarrow> 'a multiset \<Rightarrow> 'a set"
- where "dm r M = ds r (set_of M)"
+ where "dm r M = ds r (set_mset M)"
 
 definition dl :: "'a rel \<Rightarrow> 'a list \<Rightarrow> 'a set"
  where "dl r \<sigma> = ds r (set \<sigma>)"
@@ -97,47 +97,47 @@ definition mult_eq :: "'a rel \<Rightarrow> 'a multiset rel" where
   "mult_eq r = (mult1 r)\<^sup>*"
 
 definition mul :: "'a rel \<Rightarrow> 'a multiset rel" where
-  "mul r = {(M,N).\<exists>I J K. M = I + K \<and> N = I + J \<and> set_of K \<subseteq> dm r J \<and> J \<noteq> {#}}"
+  "mul r = {(M,N).\<exists>I J K. M = I + K \<and> N = I + J \<and> set_mset K \<subseteq> dm r J \<and> J \<noteq> {#}}"
 
 definition mul_eq :: "'a rel \<Rightarrow> 'a multiset rel" where
-  "mul_eq r = {(M,N).\<exists>I J K. M = I + K \<and> N = I + J \<and> set_of K \<subseteq> dm r J}"
+  "mul_eq r = {(M,N).\<exists>I J K. M = I + K \<and> N = I + J \<and> set_mset K \<subseteq> dm r J}"
 
 lemma downset_intro:
-assumes "\<forall>k\<in>set_of K.\<exists>j\<in>set_of J.(k,j)\<in>r" shows "set_of K \<subseteq> dm r J" proof
- fix x assume "x\<in>set_of K" thus "x \<in> dm r J" using assms unfolding dm_def ds_def by fast
+assumes "\<forall>k\<in>set_mset K.\<exists>j\<in>set_mset J.(k,j)\<in>r" shows "set_mset K \<subseteq> dm r J" proof
+ fix x assume "x\<in>set_mset K" thus "x \<in> dm r J" using assms unfolding dm_def ds_def by fast
 qed
 
 lemma downset_elim:
-assumes "set_of K \<subseteq> dm r J" shows "\<forall>k\<in>set_of K.\<exists>j\<in>set_of J.(k,j)\<in>r" proof
- fix k assume "k\<in> set_of K" thus "\<exists>j\<in>set_of J.(k,j)\<in> r" using assms unfolding dm_def ds_def by fast
+assumes "set_mset K \<subseteq> dm r J" shows "\<forall>k\<in>set_mset K.\<exists>j\<in>set_mset J.(k,j)\<in>r" proof
+ fix k assume "k\<in> set_mset K" thus "\<exists>j\<in>set_mset J.(k,j)\<in> r" using assms unfolding dm_def ds_def by fast
 qed
 
 text {* to closure-free representation *}
 lemma mult_eq_implies_one_or_zero_step:
-assumes "trans r" and "(M,N) \<in> mult_eq r" shows "\<exists>I J K. N = I + J \<and> M = I + K \<and> set_of K \<subseteq> dm r J"
+assumes "trans r" and "(M,N) \<in> mult_eq r" shows "\<exists>I J K. N = I + J \<and> M = I + K \<and> set_mset K \<subseteq> dm r J"
 proof (cases "(M,N) \<in> mult r")
   case True thus ?thesis using mult_implies_one_step[OF assms(1)] downset_intro by blast
  next
   case False hence A: "M = N" using assms rtrancl_eq_or_trancl unfolding mult_eq_def mult_def by metis
-  hence "N = N + {#} \<and> M = M + {#} \<and> set_of {#} \<subseteq> dm r{#}" by auto
+  hence "N = N + {#} \<and> M = M + {#} \<and> set_mset {#} \<subseteq> dm r{#}" by auto
   thus ?thesis unfolding A by fast
 qed
 
 text {* from closure-free representation *}
-lemma one_step_implies_mult_eq: assumes "trans r" and "set_of K \<subseteq> dm r J" shows "(I+K,I+J)\<in>mult_eq r"
-proof (cases "set_of J = {}")
- case True hence "set_of K = {}" using assms downset_elim by (metis all_not_in_conv emptyE)
+lemma one_step_implies_mult_eq: assumes "trans r" and "set_mset K \<subseteq> dm r J" shows "(I+K,I+J)\<in>mult_eq r"
+proof (cases "set_mset J = {}")
+ case True hence "set_mset K = {}" using assms downset_elim by (metis all_not_in_conv emptyE)
  thus ?thesis using True unfolding mult_eq_def by auto
 next
- case False hence h:"J \<noteq> {#}" using set_of_eq_empty_iff by auto
-  hence "(I+K,I+J)\<in> mult r" using set_of_eq_empty_iff assms one_step_implies_mult downset_elim by fast
+ case False hence h:"J \<noteq> {#}" using set_mset_eq_empty_iff by auto
+  hence "(I+K,I+J)\<in> mult r" using set_mset_eq_empty_iff assms one_step_implies_mult downset_elim by fast
   thus ?thesis unfolding mult_eq_def mult_def by auto
 qed
 
 lemma mult_is_mul: assumes "trans r" shows "mult r = mul r" proof
  show "mult r \<subseteq> mul r" proof
   fix N M assume A: "(N,M) \<in> mult r" show "(N,M) \<in> mul r" proof -
-   obtain I J K where "M = I + J" and "N = I + K" and "J \<noteq> {#}" and "set_of K \<subseteq> dm r J"
+   obtain I J K where "M = I + J" and "N = I + K" and "J \<noteq> {#}" and "set_mset K \<subseteq> dm r J"
     using mult_implies_one_step[OF assms A] downset_intro by metis
    thus ?thesis unfolding mul_def by auto
   qed
@@ -145,7 +145,7 @@ lemma mult_is_mul: assumes "trans r" shows "mult r = mul r" proof
  next
  show "mul r \<subseteq> mult r" proof
   fix N M assume A: "(N,M) \<in> mul r" show "(N,M) \<in> mult r" proof -
-   obtain I J K where "M = I + J" and "N = I + K" and "J \<noteq> {#}" and "set_of K \<subseteq> dm r J"
+   obtain I J K where "M = I + J" and "N = I + K" and "J \<noteq> {#}" and "set_mset K \<subseteq> dm r J"
     using A unfolding mul_def by auto
    thus ?thesis using one_step_implies_mult assms downset_elim by metis
   qed
@@ -158,7 +158,7 @@ lemma mult_eq_is_mul_eq: assumes "trans r" shows "mult_eq r = mul_eq r" proof
    case True thus ?thesis unfolding mult_is_mul[OF assms] mul_def mul_eq_def by auto
   next
    case False hence eq: "N = M" using A rtranclD unfolding mult_def mult_eq_def by metis
-   hence "M = M + {#} \<and> N = N + {#} \<and> set_of {#} \<subseteq> dm r {#}" by auto
+   hence "M = M + {#} \<and> N = N + {#} \<and> set_mset {#} \<subseteq> dm r {#}" by auto
    thus ?thesis unfolding eq unfolding mul_eq_def by fast
   qed
  qed
@@ -168,7 +168,7 @@ qed
 lemma "mul_eq r = (mul r)\<^sup>=" proof
  show "mul_eq r \<subseteq> (mul r)\<^sup>=" proof
   fix M N assume A:"(M,N) \<in> mul_eq r" show "(M,N) \<in> (mul r)\<^sup>=" proof -
-   from A obtain I J K where 1: "M = I + K" and 2: "N = I + J" and 3: "set_of K \<subseteq> dm r J" unfolding mul_eq_def by auto
+   from A obtain I J K where 1: "M = I + K" and 2: "N = I + J" and 3: "set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
    show ?thesis proof (cases "J = {#}")
     case True hence "K = {#}" using 3 unfolding dm_def ds_def by auto
     hence "M = N" using True 1 2 by auto
@@ -181,7 +181,7 @@ lemma "mul_eq r = (mul r)\<^sup>=" proof
  show "mul_eq r \<supseteq> (mul r)\<^sup>=" proof
   fix M N assume A:"(M,N) \<in> (mul r)\<^sup>=" show "(M,N) \<in> mul_eq r"
    proof (cases "M = N")
-    case True hence "M = M + {#}" and "N = M + {#}" and "set_of {#} \<subseteq> dm r {#}" by auto
+    case True hence "M = M + {#}" and "N = M + {#}" and "set_mset {#} \<subseteq> dm r {#}" by auto
     thus ?thesis unfolding mul_eq_def by fast
    next
     case False hence "(M,N) \<in> mul r" using A by auto
@@ -192,7 +192,7 @@ qed
 
 text{* useful properties on multisets *}
 lemma mul_eq_reflexive: "(M,M) \<in> mul_eq r" proof -
- have "M = M + {#}" and "set_of {#} \<subseteq> dm r {#}" by auto
+ have "M = M + {#}" and "set_mset {#} \<subseteq> dm r {#}" by auto
  thus ?thesis unfolding mul_eq_def by fast
 qed
 
@@ -200,8 +200,8 @@ lemma mul_eq_trans: assumes "trans r" and "(M,N) \<in> mul_eq r" and "(N,P) \<in
  using assms unfolding mult_eq_is_mul_eq[symmetric,OF assms(1)] mult_eq_def
 by auto
 
-lemma mul_eq_singleton: assumes "(M, {#\<alpha>#}) \<in> mul_eq r" shows "M = {#\<alpha>#} \<or> set_of M \<subseteq> dm r {#\<alpha>#}" proof -
- from assms obtain I J K where 1:"M = I + K" and 2:"{#\<alpha>#} = I + J" and 3:"set_of K \<subseteq> dm r J" unfolding mul_eq_def by auto
+lemma mul_eq_singleton: assumes "(M, {#\<alpha>#}) \<in> mul_eq r" shows "M = {#\<alpha>#} \<or> set_mset M \<subseteq> dm r {#\<alpha>#}" proof -
+ from assms obtain I J K where 1:"M = I + K" and 2:"{#\<alpha>#} = I + J" and 3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
  thus ?thesis proof (cases "I = {#}")
   case True hence "J = {#\<alpha>#}" using 2 by auto
   thus ?thesis using 1 3 True by auto
@@ -222,7 +222,7 @@ lemma wf_mul: assumes "trans r" and "wf r" shows "wf (mul r)"
  unfolding mult_is_mul[symmetric,OF assms(1)] using wf_mult[OF assms(2)] by auto
 
 lemma remove_is_empty_imp_mul: assumes "M -s dm r {#\<alpha>#} = {#}" shows "(M,{#\<alpha>#}) \<in> mul r" proof -
- from assms have C: "set_of M \<subseteq> dm r {#\<alpha>#}" by (metis remove_empty_implies_subset)
+ from assms have C: "set_mset M \<subseteq> dm r {#\<alpha>#}" by (metis remove_empty_implies_subset)
  have "M = {#}+M" and "{#\<alpha>#}={#}+{#\<alpha>#}" and "{#\<alpha>#} \<noteq> {#}" by auto
  thus ?thesis using C unfolding mul_def by fast
 qed
@@ -230,13 +230,13 @@ qed
 text {* Lemma 2.6 *}
 
 lemma lemma2_6_1_set: "ds r (S \<union> T) = ds r S \<union> ds r T"
- unfolding set_of_union ds_def by auto
+ unfolding set_mset_union ds_def by auto
 
 lemma lemma2_6_1_list: "dl r (\<sigma>@\<tau>) = dl r \<sigma> \<union> dl r \<tau>"
  unfolding dl_def ds_def set_append by auto
 
 lemma lemma2_6_1_multiset: "dm r (M + N) = dm r M \<union> dm r N"
- unfolding dm_def set_of_union ds_def by auto
+ unfolding dm_def set_mset_union ds_def by auto
 
 lemma lemma2_6_1_diff: "(dm r M) - ds r S \<subseteq> dm r (M -s S)"
  unfolding diff_def dm_def ds_def by (rule subsetI) auto
@@ -248,20 +248,20 @@ text {* Lemma 2.6.2 *}
 
 lemma lemma2_6_2_a: assumes t: "trans r" and "M \<le># N" shows "(M,N) \<in> mul_eq r" proof -
  from assms(2) obtain J where "N=M+J" by (metis assms(2) mset_le_exists_conv)
- hence "M = M + {#}" and "N = M + J" and "set_of {#} \<subseteq> dm r J" by auto
+ hence "M = M + {#}" and "N = M + J" and "set_mset {#} \<subseteq> dm r J" by auto
  thus ?thesis unfolding mul_eq_def by fast
 qed
 
 lemma mul_eq_not_equal_imp_elt:
-assumes "(M,N)\<in>mul_eq r" and "y\<in>set_of M - set_of N" shows "\<exists>z\<in>set_of N.(y,z)\<in>r" proof -
- from assms obtain I J K where "N=I+J" and "M=I+K" and F3:"set_of K \<subseteq> dm r J" unfolding mul_eq_def by auto
+assumes "(M,N)\<in>mul_eq r" and "y\<in>set_mset M - set_mset N" shows "\<exists>z\<in>set_mset N.(y,z)\<in>r" proof -
+ from assms obtain I J K where "N=I+J" and "M=I+K" and F3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
  thus ?thesis using assms(2) downset_elim[OF F3] by auto
 qed
 
 lemma lemma2_6_2_b: assumes "trans r" and "(M,N) \<in> mul_eq r" shows "dm r M \<subseteq> dm r N" proof
  fix x assume A: "x \<in> dm r M" show "x \<in> dm r N" proof -
-  from A obtain y where F2:"y\<in>set_of M" and F3:"(x,y)\<in>r" unfolding dm_def ds_def by auto
-  hence "\<exists> z \<in> set_of N. (x,z)\<in>r" proof (cases "y\<in>set_of N")
+  from A obtain y where F2:"y\<in>set_mset M" and F3:"(x,y)\<in>r" unfolding dm_def ds_def by auto
+  hence "\<exists> z \<in> set_mset N. (x,z)\<in>r" proof (cases "y\<in>set_mset N")
    case True thus ?thesis using F3 unfolding ds_def by auto
    next
    case False thus ?thesis using mul_eq_not_equal_imp_elt assms F2 F3 trans_def by fast
@@ -274,7 +274,7 @@ text {* Lemma 2.6.3 *}
 lemma ds_trans_contrapos: assumes t: "trans r" and "x \<notin> ds r S" and "(x,y) \<in> r" shows "y \<notin> ds r S"
  using assms unfolding ds_def trans_def by fast
 
-lemma dm_max_elt: assumes i: "irrefl r" and t: "trans r"  shows "x \<in> dm r M \<Longrightarrow> \<exists> y \<in> set_of (M -s dm r M). (x,y) \<in> r"
+lemma dm_max_elt: assumes i: "irrefl r" and t: "trans r"  shows "x \<in> dm r M \<Longrightarrow> \<exists> y \<in> set_mset (M -s dm r M). (x,y) \<in> r"
  proof (induct M arbitrary: x)
   case empty thus ?case unfolding dm_def ds_def by auto
  next
@@ -290,13 +290,13 @@ lemma dm_max_elt: assumes i: "irrefl r" and t: "trans r"  shows "x \<in> dm r M 
     case False thus ?thesis using not_mem_dm relp unfolding dm_def ds_def diff_def by auto
    qed
   next
-    case True obtain y where key: "y \<in> set_of P" "y \<notin> dm r P" "(x,y) \<in> r" using add(1)[OF True] unfolding diff_def by auto
+    case True obtain y where key: "y \<in> set_mset P" "y \<notin> dm r P" "(x,y) \<in> r" using add(1)[OF True] unfolding diff_def by auto
     thus ?thesis
     proof (cases "y \<in> dm r {#p#}")
      case True hence rely: "(y,p) \<in> r" unfolding dm_def ds_def by auto
      hence relp: "(x,p) \<in> r" using rely t key trans_def by metis
-     have not_memp: "p \<notin> set_of P" using rely key unfolding dm_def ds_def by auto
-     have memp: "p \<in> set_of (P + {#p#})" by auto
+     have not_memp: "p \<notin> set_mset P" using rely key unfolding dm_def ds_def by auto
+     have memp: "p \<in> set_mset (P + {#p#})" by auto
      have "p \<notin> dm r P" using ds_trans_contrapos[OF t] key(2) rely unfolding dm_def by auto
      hence "p \<notin> dm r (P + {#p#})" using not_mem_dm unfolding dm_def ds_def by auto
      thus ?thesis using relp unfolding diff_def by auto
@@ -313,16 +313,16 @@ lemma dm_eq: assumes i:"irrefl r" and t: "trans r" shows "dm r M = dm r (M -s dm
  using dm_subset[OF assms] unfolding dm_def ds_def diff_def by auto
 
 lemma lemma2_6_3: assumes t:"trans r" and i:"irrefl r" and "(M,N) \<in> mul_eq r"
- shows "\<exists> I' J' K' . N = I' + J' \<and> M = I' + K' \<and> J' #\<inter> K' = {#} \<and> set_of K' \<subseteq> dm r J'" proof -
- from assms obtain I J K where 1:"N = I + J" and 2:"M = I + K"  and 3:"set_of K \<subseteq> dm r J" unfolding mul_eq_def by auto
- have "set_of (J #\<inter>K) \<subseteq> dm r J" using 3 by auto
- hence key: "set_of (J -s dm r J) \<subseteq> set_of (J - (J #\<inter>K))" unfolding set_of_def diff_def by auto
+ shows "\<exists> I' J' K' . N = I' + J' \<and> M = I' + K' \<and> J' #\<inter> K' = {#} \<and> set_mset K' \<subseteq> dm r J'" proof -
+ from assms obtain I J K where 1:"N = I + J" and 2:"M = I + K"  and 3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
+ have "set_mset (J #\<inter>K) \<subseteq> dm r J" using 3 by auto
+ hence key: "set_mset (J -s dm r J) \<subseteq> set_mset (J - (J #\<inter>K))" unfolding set_mset_def diff_def by auto
  from 1 2 3 have "N = (I + (J #\<inter> K)) + (J - (J #\<inter> K))"
   by (metis diff_union_cancelL subset_mset.inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
   moreover have "M = (I + (J #\<inter> K)) + (K - (J #\<inter> K))"
   by (metis diff_le_self diff_union_cancelL 2 multiset_diff_union_assoc multiset_inter_commute multiset_inter_def union_assoc)
- moreover have "set_of (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof -
-  have "set_of (K-(J#\<inter>K)) \<subseteq> dm r J" using 3 by auto
+ moreover have "set_mset (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof -
+  have "set_mset (K-(J#\<inter>K)) \<subseteq> dm r J" using 3 by auto
   moreover have "... = dm r (J -s dm r J)" using dm_eq[OF i t] by auto
   moreover have "... \<subseteq> dm r (J - (J #\<inter> K))" using ds_monotone[OF key] unfolding dm_def by auto
   ultimately show ?thesis by auto
@@ -333,8 +333,8 @@ qed
 
 (*  (* initial proof by Bertram Felgenhauer *)
 lemma lemma2_6_3_step:
-assumes t:"trans r" and i:"irrefl r" and P:"set_of K \<subseteq> dm r J" shows "set_of (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof
- fix k assume K: "k \<in> set_of (K - (J#\<inter>K))" show "k \<in> dm r (J - (J#\<inter>K))" proof -
+assumes t:"trans r" and i:"irrefl r" and P:"set_mset K \<subseteq> dm r J" shows "set_mset (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof
+ fix k assume K: "k \<in> set_mset (K - (J#\<inter>K))" show "k \<in> dm r (J - (J#\<inter>K))" proof -
   have k: "k \<in># K" using K by simp
   have step: "k \<in> dm r (J-K)" proof -
    {
@@ -343,12 +343,12 @@ assumes t:"trans r" and i:"irrefl r" and P:"set_of K \<subseteq> dm r J" shows "
    next
     case (add Q q)
     have h1: "q \<in># K" and h2: "Q \<le> K" using mset_le_insertD[OF add(2)] by auto
-    obtain j where mem1: "j\<in>set_of (J - Q)" and rel1: "(k, j) \<in> r" using add(1)[OF h2 add(3)] unfolding dm_def ds_def by auto
+    obtain j where mem1: "j\<in>set_mset (J - Q)" and rel1: "(k, j) \<in> r" using add(1)[OF h2 add(3)] unfolding dm_def ds_def by auto
     show ?case proof (cases "j \<in># J - (Q + {#q#})")
      case True thus ?thesis using rel1 unfolding dm_def ds_def by force
     next
      case False hence eq: "q = j" using mem1 by (cases "q = j") auto
-     obtain j2 where mem2: "j2\<in>set_of (J - Q)" and rel2: "(j, j2) \<in> r" using eq add(1)[OF h2 h1] unfolding dm_def ds_def by auto
+     obtain j2 where mem2: "j2\<in>set_mset (J - Q)" and rel2: "(j, j2) \<in> r" using eq add(1)[OF h2 h1] unfolding dm_def ds_def by auto
      have rel: "(k,j2) \<in> r" using transD[OF assms(1) rel1 rel2] by auto
      have "j2 \<noteq> q" using rel2 eq i irrefl_def by fast
      thus ?thesis using rel mem2 unfolding dm_def ds_def by (cases "j2=k") auto
@@ -363,9 +363,9 @@ assumes t:"trans r" and i:"irrefl r" and P:"set_of K \<subseteq> dm r J" shows "
 qed
 
 lemma lemma2_6_3: assumes t: "trans r" and i: "irrefl r" and "(M,N) \<in> mul_eq r"
-shows "\<exists> I J K. N = I + J \<and> M = I + K \<and> J#\<inter>K = {#} \<and> set_of K \<subseteq> dm r J" proof -
+shows "\<exists> I J K. N = I + J \<and> M = I + K \<and> J#\<inter>K = {#} \<and> set_mset K \<subseteq> dm r J" proof -
  from assms(1,3)
- obtain I J K where f1:"N = I + J" and f2:"M = I + K" and f3:"set_of K \<subseteq> dm r J" unfolding mul_eq_def by fast
+ obtain I J K where f1:"N = I + J" and f2:"M = I + K" and f3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by fast
  hence "N = (I + (J #\<inter> K)) + (J - (J #\<inter> K))"
   by (metis diff_union_cancelL inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
  moreover have "M = (I + (J #\<inter> K)) + (K - (J #\<inter> K))"
@@ -376,7 +376,7 @@ qed
 *)
 
 text {* Lemma 2.6.4 *}
-lemma lemma2_6_4: assumes t: "trans r" and "N \<noteq> {#}" and "set_of M \<subseteq> dm r N" shows "(M,N) \<in> mul r" proof -
+lemma lemma2_6_4: assumes t: "trans r" and "N \<noteq> {#}" and "set_mset M \<subseteq> dm r N" shows "(M,N) \<in> mul r" proof -
  have "M = {#} + M" and "N = {#} + N" using assms by auto
  thus ?thesis using assms(2,3) unfolding mul_def by fast
 qed
@@ -384,11 +384,11 @@ qed
 lemma lemma2_6_5_a: assumes t: "trans r" and "ds r S \<subseteq> S" and "(M,N) \<in> mul_eq r"
 shows "(M -s S, N -s S) \<in> mul_eq r" proof -
  from assms(1,3)
- obtain I J K where a: "N=I+J" and b:"M=I+K" and c:"set_of K \<subseteq> dm r J" unfolding mul_eq_def by best
+ obtain I J K where a: "N=I+J" and b:"M=I+K" and c:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by best
  from a b have A: "N-sS = (I-sS)+(J-sS)" and B: "M-sS = (I-sS)+(K-sS)" using lemmaA_3_8 by auto
- have C: "set_of (K-sS) \<subseteq> dm r (J-sS)" proof -
-  have "set_of (K-sS) \<subseteq> set_of (K-s (ds r S))" using assms(2) unfolding diff_def by auto
-  moreover have "set_of(K-s (ds r S)) \<subseteq> (dm r J) - (ds r S)" using c unfolding diff_def by auto
+ have C: "set_mset (K-sS) \<subseteq> dm r (J-sS)" proof -
+  have "set_mset (K-sS) \<subseteq> set_mset (K-s (ds r S))" using assms(2) unfolding diff_def by auto
+  moreover have "set_mset(K-s (ds r S)) \<subseteq> (dm r J) - (ds r S)" using c unfolding diff_def by auto
   moreover have "(dm r J) - (ds r S) \<subseteq> dm r (J -s S)" using lemma2_6_1_diff by fast
   ultimately show ?thesis by auto
  qed
@@ -400,16 +400,16 @@ lemma lemma2_6_5_a': assumes t:"trans r" and "(M,N) \<in> mul_eq r" shows "(M -s
 
 text {* Lemma 2.6.6 *}
 lemma lemma2_6_6_a: assumes t: "trans r" and "(M,N) \<in> mul_eq r" shows "(Q + M,Q + N) \<in> mul_eq r" proof -
- obtain I J K where A:"Q+N=(Q+I)+J" and B:"Q+M=(Q+I)+K" and C:"set_of K \<subseteq> dm r J"
+ obtain I J K where A:"Q+N=(Q+I)+J" and B:"Q+M=(Q+I)+K" and C:"set_mset K \<subseteq> dm r J"
   using assms(2) unfolding union_assoc mul_eq_def by auto
  thus ?thesis using C unfolding mul_eq_def by auto
 qed
 
 lemma add_left_one:
- assumes  "\<exists> I J K. {#q#} + N = I + J \<and> {#q#} + M = I + K \<and> (J#\<inter>K={#}) \<and> set_of K \<subseteq> dm r J"
- shows "\<exists> I2 J K. N = I2 + J \<and> M = I2 + K \<and> set_of K \<subseteq> dm r J" proof -
+ assumes  "\<exists> I J K. {#q#} + N = I + J \<and> {#q#} + M = I + K \<and> (J#\<inter>K={#}) \<and> set_mset K \<subseteq> dm r J"
+ shows "\<exists> I2 J K. N = I2 + J \<and> M = I2 + K \<and> set_mset K \<subseteq> dm r J" proof -
  from assms obtain I J K where A: "{#q#} + N = I + J" and B:"{#q#} + M = I + K"
-  and C:"(J #\<inter> K = {#})" and D:"set_of K \<subseteq> dm r J" by auto
+  and C:"(J #\<inter> K = {#})" and D:"set_mset K \<subseteq> dm r J" by auto
  have "q\<in>#I" proof (cases "q \<in># I")
   case True thus ?thesis by auto
  next
@@ -436,17 +436,17 @@ lemma lemma2_6_6_b' : assumes "trans r" and i: "irrefl r" and "(Q + M, Q + N) \<
  qed
 
 lemma lemma2_6_9: assumes t: "trans r" and "(M,N) \<in> mul r" shows "(Q+M,Q+N) \<in> mul r" proof -
- obtain I J K where F1:"N = I + J" and F2:"M = I + K"and F3:"set_of K \<subseteq> dm r J" and F4:"J \<noteq> {#}"
+ obtain I J K where F1:"N = I + J" and F2:"M = I + K"and F3:"set_mset K \<subseteq> dm r J" and F4:"J \<noteq> {#}"
   using assms unfolding mul_def by auto
  have "Q+N=Q+I+J" and "Q+M=Q+I+K" unfolding F1 F2 union_commute union_lcomm by auto
  thus ?thesis using assms(1) F3 F4 unfolding mul_def by auto
 qed
 
 text {* Lemma 2.6.7 *}
-lemma lemma2_6_7_a: assumes t: "trans r" and "set_of Q \<subseteq> dm r N - dm r M" and "(M,N) \<in> mul_eq r"
+lemma lemma2_6_7_a: assumes t: "trans r" and "set_mset Q \<subseteq> dm r N - dm r M" and "(M,N) \<in> mul_eq r"
 shows "(Q+M,N) \<in> mul_eq r" proof -
- obtain I J K where A: "N=I+J" and B:"M=I+K" and C:"set_of K \<subseteq> dm r J" using assms unfolding mul_eq_def by auto
- hence "set_of(Q+K) \<subseteq> dm r J" using assms lemma2_6_1_diff unfolding dm_def ds_def by auto
+ obtain I J K where A: "N=I+J" and B:"M=I+K" and C:"set_mset K \<subseteq> dm r J" using assms unfolding mul_eq_def by auto
+ hence "set_mset(Q+K) \<subseteq> dm r J" using assms lemma2_6_1_diff unfolding dm_def ds_def by auto
  hence "(I+(Q+K),I+J) \<in> mul_eq r" unfolding mul_eq_def by fast
  thus ?thesis using A B C union_assoc union_commute by metis
 qed
@@ -557,10 +557,10 @@ lemma split: assumes "LD_1' r \<beta> \<alpha> \<sigma>1 \<sigma>2 \<sigma>3" sh
 lemma proposition3_4_step: assumes "trans r" and "irrefl r" and "LD_1' r \<beta> \<alpha> \<sigma>1 \<sigma>2 \<sigma>3"
 shows "(r|\<sigma>1@\<sigma>2@\<sigma>3| -s (dm r {#\<beta>#}), r|[\<alpha>]| ) \<in> mul_eq r" proof -
  from assms have "set \<sigma>1 \<subseteq> dm r {#\<beta>#}" unfolding LD'_def LD_1'_def dm_def by auto
- hence "set_of (lexmax r \<sigma>1) \<subseteq> dm r {#\<beta>#}" using submultiset_implies_subset[OF lexmax_le_multiset[OF assms(1)]] by auto
+ hence "set_mset (lexmax r \<sigma>1) \<subseteq> dm r {#\<beta>#}" using submultiset_implies_subset[OF lexmax_le_multiset[OF assms(1)]] by auto
  hence one: "lexmax r \<sigma>1 -s dm r {#\<beta>#} = {#}" using subset_implies_remove_empty by auto
  from assms have "set \<sigma>3 \<subseteq> dl r \<sigma>2 \<union> dl r \<sigma>1 \<union> dm r {#\<beta>#} \<union> dm r {#\<alpha>#}" (is "?l \<subseteq> ?r") unfolding LD'_def LD_1'_def dm_def ds_def by auto
- hence "set_of (lexmax r \<sigma>3) \<subseteq> ?r " using submultiset_implies_subset[OF lexmax_le_multiset[OF assms(1)]] by auto
+ hence "set_mset (lexmax r \<sigma>3) \<subseteq> ?r " using submultiset_implies_subset[OF lexmax_le_multiset[OF assms(1)]] by auto
  hence pre3: "lexmax r \<sigma>3 -s ?r = {#}" using subset_implies_remove_empty by auto
  show ?thesis proof (cases "\<sigma>2 = []")
   case True
@@ -602,13 +602,13 @@ using assms proof (induct \<sigma>)
  qed
 qed
 
-lemma lexmax_elt: assumes "trans r" and "x \<in> (set \<sigma>)" and "x \<notin> set_of r|\<sigma>|"
-shows "\<exists>y. (x,y) \<in> r \<and> y \<in> set_of r|\<sigma>|"  using assms(2,3) proof (induct \<sigma>)
+lemma lexmax_elt: assumes "trans r" and "x \<in> (set \<sigma>)" and "x \<notin> set_mset r|\<sigma>|"
+shows "\<exists>y. (x,y) \<in> r \<and> y \<in> set_mset r|\<sigma>|"  using assms(2,3) proof (induct \<sigma>)
  case Nil thus ?case by auto
 next
- case (Cons a as) thus ?case proof (cases "x \<notin> set_of r|as|")
+ case (Cons a as) thus ?case proof (cases "x \<notin> set_mset r|as|")
    case True
-   from Cons True obtain y where s: "(x, y) \<in> r \<and> y \<in> set_of r|as|" by auto
+   from Cons True obtain y where s: "(x, y) \<in> r \<and> y \<in> set_mset r|as|" by auto
    thus ?thesis proof (cases "y \<in> ds r {a}")
     case True thus ?thesis using transD[OF assms(1)] s unfolding dm_def ds_def by auto
    next
@@ -619,12 +619,12 @@ next
   qed
  qed
 
-lemma lexmax_set: assumes "trans r" and "set_of r|\<sigma>| \<subseteq> r \<down>s S" shows "set \<sigma> \<subseteq> r \<down>s S" proof
- fix x assume A: "x \<in> set \<sigma>" show "x \<in> ds r S" proof (cases "x \<in> set_of r|\<sigma>|")
+lemma lexmax_set: assumes "trans r" and "set_mset r|\<sigma>| \<subseteq> r \<down>s S" shows "set \<sigma> \<subseteq> r \<down>s S" proof
+ fix x assume A: "x \<in> set \<sigma>" show "x \<in> ds r S" proof (cases "x \<in> set_mset r|\<sigma>|")
   case True thus ?thesis using assms by auto
  next
   case False from lexmax_elt[OF assms(1) A False] obtain y
-  where rel: "(x,y) \<in> r \<and> y \<in> set_of r|\<sigma>|" by auto
+  where rel: "(x,y) \<in> r \<and> y \<in> set_mset r|\<sigma>|" by auto
   hence "y \<in> ds r S" using assms by auto
   thus ?thesis using rel assms transD unfolding dm_def ds_def by fast
  qed
@@ -634,7 +634,7 @@ lemma drop_left_mult_eq:
 assumes "trans r" and "irrefl r" and "(N+M,M) \<in> mul_eq r" shows "N = {#}" proof -
  have "(M+N,M+{#}) \<in> mul_eq r" using assms(3) apply auto using union_commute by metis
  hence k:"(N,{#}) \<in> mul_eq r" using lemma2_6_6_b'[OF assms(1,2)] by fast
- from this obtain I J K where "{#} = I + J \<and> N = I + K \<and> set_of K \<subseteq> dm r J" unfolding mul_eq_def by fast
+ from this obtain I J K where "{#} = I + J \<and> N = I + K \<and> set_mset K \<subseteq> dm r J" unfolding mul_eq_def by fast
  thus ?thesis unfolding dm_def ds_def by auto
 qed
 
@@ -652,7 +652,7 @@ shows "\<exists> \<sigma>1 \<sigma>2 \<sigma>3. ((\<sigma> = \<sigma>1@\<sigma>2
   hence "(?M1+?M3 + {#\<alpha>#},{#\<alpha>#}) \<in> mul_eq r" using dec union_assoc union_commute by metis
   hence w: "?M1+?M3 = {#}" using drop_left_mult_eq assms(1,2) by auto
   from w have "(r|\<sigma>1|-sdl r \<beta>) = {#}" by auto
-  hence "set_of r|\<sigma>1| \<subseteq> ds r (set \<beta>)" using remove_empty_implies_subset unfolding dl_def dm_def by auto
+  hence "set_mset r|\<sigma>1| \<subseteq> ds r (set \<beta>)" using remove_empty_implies_subset unfolding dl_def dm_def by auto
   hence sigma1: "set \<sigma>1 \<subseteq> ds r (set \<beta>)" using lexmax_set[OF assms(1)] by auto
 
   have sigma2: "length [\<alpha>] \<le> 1 \<and> set [\<alpha>] \<subseteq> {\<alpha>}" by auto
@@ -662,12 +662,12 @@ shows "\<exists> \<sigma>1 \<sigma>2 \<sigma>3. ((\<sigma> = \<sigma>1@\<sigma>2
   from w have  "?M3 = {#}" by auto
   hence "r|\<sigma>3|-s (ds r {\<alpha>} \<union> ds r (set \<beta>)) = {#}" unfolding Un_assoc sub2 unfolding dl_def by auto
   hence "r|\<sigma>3|-s (ds r ({\<alpha>} \<union> (set \<beta>))) = {#}" unfolding lemma2_6_1_set[symmetric] by metis
-  hence "set_of r|\<sigma>3| \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" using remove_empty_implies_subset by auto
+  hence "set_mset r|\<sigma>3| \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" using remove_empty_implies_subset by auto
   hence sigma3: "set \<sigma>3 \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" using lexmax_set[OF assms(1)] by auto
   show ?thesis using sigma sigma1 sigma2 sigma3 unfolding dl_def apply auto by (metis One_nat_def append_Cons append_Nil sigma2)
  next
-  case False hence "set_of ?M \<subseteq> dm r {#\<alpha>#}" using mul_eq_singleton[OF k] by auto
-  hence "set_of r|\<sigma>| \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" unfolding diff_def dm_def dl_def ds_def by auto
+  case False hence "set_mset ?M \<subseteq> dm r {#\<alpha>#}" using mul_eq_singleton[OF k] by auto
+  hence "set_mset r|\<sigma>| \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" unfolding diff_def dm_def dl_def ds_def by auto
   hence "set \<sigma> \<subseteq> ds r ({\<alpha>} \<union> (set \<beta>))" using lexmax_set[OF assms(1)] by auto
   thus ?thesis unfolding dl_def apply auto by (metis append_Nil bot_least empty_set le0 length_0_conv)
  qed
@@ -701,8 +701,8 @@ lemma claim1: assumes t: "trans r" and "D r \<tau> \<sigma> \<sigma>' \<tau>'"
 shows "(r|\<sigma>@\<tau>'| + ((r|\<upsilon>'| -s r \<down>l (\<sigma>@\<tau>')) \<inter>s r \<down>l \<tau>),r|\<sigma>| + r|\<tau>| ) \<in> mul_eq r" (is "(?F+?H,?G) \<in> _")
 proof -
  have 1: "(?F,?G) \<in> mul_eq r" using assms(2) unfolding D_def unfolding union_commute by auto
- have 2: "set_of ?H \<subseteq> (dm r ?G) - (dm r ?F)" (is "(?L \<subseteq> _)") proof -
-  have "set_of ?H = set_of ((lexmax r \<upsilon>' \<inter>s dl r \<tau>) -s dl r (\<sigma>@\<tau>'))" unfolding lemmaA_3_11 by auto
+ have 2: "set_mset ?H \<subseteq> (dm r ?G) - (dm r ?F)" (is "(?L \<subseteq> _)") proof -
+  have "set_mset ?H = set_mset ((lexmax r \<upsilon>' \<inter>s dl r \<tau>) -s dl r (\<sigma>@\<tau>'))" unfolding lemmaA_3_11 by auto
   moreover have  "\<dots> \<subseteq> (dl r \<tau> - dl r (\<sigma>@\<tau>'))" unfolding diff_def intersect_def by auto
   moreover have "... \<subseteq> ((dl r \<sigma> \<union> dl r \<tau>) - dl r (\<sigma>@\<tau>'))" by auto
   ultimately show ?thesis unfolding lemma2_6_1_multiset lemma3_2_1[OF t] by auto
@@ -751,7 +751,7 @@ shows "D r (\<tau>@\<upsilon>) \<sigma> \<sigma>'' (\<tau>'@\<upsilon>')"
 lemma step2: assumes "trans r" and "\<tau> \<noteq> []" shows "(M \<inter>s dl r \<tau>,lexmax r \<tau>) \<in> mul r" proof -
  from assms obtain x xs where "\<tau>=x#xs" using list.exhaust by auto
  hence x: "lexmax r \<tau> \<noteq> {#}" by auto
- from assms(2) have y: "set_of (M \<inter>sdl r \<tau>) \<subseteq> dm r (lexmax r \<tau>)" unfolding lemma3_2_1[OF assms(1)] intersect_def by auto
+ from assms(2) have y: "set_mset (M \<inter>sdl r \<tau>) \<subseteq> dm r (lexmax r \<tau>)" unfolding lemma3_2_1[OF assms(1)] intersect_def by auto
  show ?thesis using lemma2_6_4[OF assms(1) x y] by auto
 qed
 
@@ -1112,36 +1112,36 @@ subsection {* Conversion Version *}
 text {* This section follows~\cite{vO08a}. *}
 text {* auxiliary results on multisets *}
 lemma mul_eq_add_right: "(M,M+P) \<in> mul_eq r" proof -
- have "M = M + {#}" "set_of {#} \<subseteq> dm r P" by auto
+ have "M = M + {#}" "set_mset {#} \<subseteq> dm r P" by auto
  thus ?thesis unfolding mul_eq_def by fast
 qed
 
 lemma mul_add_right: assumes "(M,N) \<in> mul r" shows "(M,N+P) \<in> mul r" proof -
- from assms obtain I J K where "M = I + K" "N = I + J" "set_of K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto
- hence b: "M = I + K" "N + P = I + (J + P)" "set_of K \<subseteq> ds r (set_of J \<union> set_of P)" "J+P \<noteq> {#}" unfolding dm_def lemma2_6_1_set using union_assoc by auto
- hence "set_of K \<subseteq> ds r (set_of (J+P ))" by auto
+ from assms obtain I J K where "M = I + K" "N = I + J" "set_mset K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto
+ hence b: "M = I + K" "N + P = I + (J + P)" "set_mset K \<subseteq> ds r (set_mset J \<union> set_mset P)" "J+P \<noteq> {#}" unfolding dm_def lemma2_6_1_set using union_assoc by auto
+ hence "set_mset K \<subseteq> ds r (set_mset (J+P ))" by auto
  thus ?thesis using b unfolding mul_def unfolding dm_def by fast
 qed
 
 lemma mul_eq_and_ds_imp_ds:
-assumes t: "trans r" and "(M,N) \<in> mul_eq r" and "set_of N \<subseteq> ds r S"
-shows "set_of M \<subseteq> ds r S" proof -
- from assms obtain I J K where a: "M = I + K" and "N = I + J" and c: "set_of K \<subseteq> dm r J" unfolding mul_eq_def by auto
- hence k1:"set_of I \<subseteq> ds r S" "set_of J \<subseteq> ds r S" using assms by auto
- hence "ds r (set_of J) \<subseteq> ds r S"  using subset_imp_ds_subset[OF t] by auto
+assumes t: "trans r" and "(M,N) \<in> mul_eq r" and "set_mset N \<subseteq> ds r S"
+shows "set_mset M \<subseteq> ds r S" proof -
+ from assms obtain I J K where a: "M = I + K" and "N = I + J" and c: "set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
+ hence k1:"set_mset I \<subseteq> ds r S" "set_mset J \<subseteq> ds r S" using assms by auto
+ hence "ds r (set_mset J) \<subseteq> ds r S"  using subset_imp_ds_subset[OF t] by auto
  thus ?thesis using k1 a c unfolding dm_def by auto
 qed
 
 lemma lemma2_6_2_set: assumes "S \<subseteq> T" shows "ds r S \<subseteq> ds r T" using assms unfolding ds_def by auto
 
-lemma leq_imp_subseteq: assumes "M \<le># N" shows "set_of M \<subseteq> set_of N" using assms mset_leD by auto
+lemma leq_imp_subseteq: assumes "M \<le># N" shows "set_mset M \<subseteq> set_mset N" using assms mset_leD by auto
 
 lemma mul_add_mul_eq_imp_mul: assumes "(M,N) \<in> mul r" and "(P,Q) \<in> mul_eq r" shows "(M+P,N+Q) \<in> mul r" proof -
- from assms(1) obtain I J K where a:"M = I + K" "N = I + J" "set_of K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto
- from assms(2) obtain I2 J2 K2 where b:"P = I2 + K2" "Q = I2 + J2" "set_of K2 \<subseteq> dm r J2" unfolding mul_eq_def by auto
+ from assms(1) obtain I J K where a:"M = I + K" "N = I + J" "set_mset K \<subseteq> dm r J" "J \<noteq> {#}" unfolding mul_def by auto
+ from assms(2) obtain I2 J2 K2 where b:"P = I2 + K2" "Q = I2 + J2" "set_mset K2 \<subseteq> dm r J2" unfolding mul_eq_def by auto
  have "M + P = (I + I2) + (K + K2)" using a b union_commute union_assoc by metis
  moreover have "N + Q = (I + I2) + (J + J2)" using a b union_commute union_assoc by metis
- moreover have "set_of (K + K2) \<subseteq> dm r (J + J2)"  using a b unfolding lemma2_6_1_multiset by auto
+ moreover have "set_mset (K + K2) \<subseteq> dm r (J + J2)"  using a b unfolding lemma2_6_1_multiset by auto
  ultimately show ?thesis using a b unfolding mul_def by fast
 qed
 
@@ -1333,19 +1333,19 @@ shows "conv_mirror \<sigma> \<in> conv ars \<and>
 qed
 
 lemma DD_subset_helper:
-assumes t:"trans r" and "(r|\<tau>@\<sigma>'|, r|\<tau>| + r|\<sigma>| ) \<in> mul_eq r" and "set_of (r|\<tau>| + r|\<sigma>| ) \<subseteq> ds r S"
-shows "set_of r|\<sigma>'| \<subseteq> ds r S" proof -
+assumes t:"trans r" and "(r|\<tau>@\<sigma>'|, r|\<tau>| + r|\<sigma>| ) \<in> mul_eq r" and "set_mset (r|\<tau>| + r|\<sigma>| ) \<subseteq> ds r S"
+shows "set_mset r|\<sigma>'| \<subseteq> ds r S" proof -
   from assms have d: "(r|\<tau>| + r|\<sigma>'| -s dl r (\<tau>) , r|\<tau>| + r|\<sigma>| ) \<in> mul_eq r" unfolding lemma3_2_2 by auto
-  from assms have assm:"set_of (r|\<tau>| + r|\<sigma>| ) \<subseteq> ds r S" unfolding measure_def by auto
-  hence tau:"ds r (set_of r|\<tau>| ) \<subseteq> ds r S" using subset_imp_ds_subset[OF t] by auto
-  have "set_of (r|\<tau>| + (r|\<sigma>'| -s dl r \<tau>)) \<subseteq> ds r S" using mul_eq_and_ds_imp_ds[OF t d assm] by auto
-  hence "set_of (r|\<sigma>'| -s ds r (set \<tau>)) \<subseteq> ds r S" unfolding dl_def by auto
-  hence "set_of (r|\<sigma>'| -s ds r (set \<tau>)) \<union> ds r (set \<tau>) \<subseteq> ds r S" using tau by (metis t dl_def dm_def le_sup_iff lemma3_2_1)
+  from assms have assm:"set_mset (r|\<tau>| + r|\<sigma>| ) \<subseteq> ds r S" unfolding measure_def by auto
+  hence tau:"ds r (set_mset r|\<tau>| ) \<subseteq> ds r S" using subset_imp_ds_subset[OF t] by auto
+  have "set_mset (r|\<tau>| + (r|\<sigma>'| -s dl r \<tau>)) \<subseteq> ds r S" using mul_eq_and_ds_imp_ds[OF t d assm] by auto
+  hence "set_mset (r|\<sigma>'| -s ds r (set \<tau>)) \<subseteq> ds r S" unfolding dl_def by auto
+  hence "set_mset (r|\<sigma>'| -s ds r (set \<tau>)) \<union> ds r (set \<tau>) \<subseteq> ds r S" using tau by (metis t dl_def dm_def le_sup_iff lemma3_2_1)
   thus ?thesis unfolding diff_def by auto
 qed
 
 lemma DD_subset_ds:
-assumes t:"trans r" and DD: "DD ars r (\<tau>,\<sigma>,\<sigma>',\<tau>')" and "set_of (measure r (\<tau>,\<sigma>)) \<subseteq> ds r S" shows "set_of (measure r (\<sigma>',\<tau>')) \<subseteq> ds r S" proof -
+assumes t:"trans r" and DD: "DD ars r (\<tau>,\<sigma>,\<sigma>',\<tau>')" and "set_mset (measure r (\<tau>,\<sigma>)) \<subseteq> ds r S" shows "set_mset (measure r (\<sigma>',\<tau>')) \<subseteq> ds r S" proof -
  have d1:"(r|labels \<tau> @ labels \<sigma>'|, r|labels \<tau>| + r|labels \<sigma>| ) \<in> mul_eq r" using DD unfolding DD_def D2_def D_def by auto
  have d2:"(r|labels \<sigma> @ labels \<tau>'|, r|labels \<sigma>| + r|labels \<tau>| ) \<in> mul_eq r" using DD unfolding DD_def D2_def D_def apply auto unfolding union_commute by auto
  show ?thesis using DD_subset_helper[OF t d1] DD_subset_helper[OF t d2] assms(3) unfolding measure_def by auto
@@ -1355,25 +1355,25 @@ lemma conv_imp_valley:
 assumes t: "trans r"
 and IH: "!!y . ((y,((s,[\<alpha>_step]@\<rho>_step),(s,[\<beta>_step]@\<upsilon>_step))) \<in> pex r \<Longrightarrow> peak ars y \<Longrightarrow> \<exists>\<sigma>' \<tau>'. DD ars r (fst y, snd y, \<sigma>', \<tau>'))" (is "!!y. ((y,?P) \<in> _ \<Longrightarrow> _ \<Longrightarrow> _)")
 and "\<delta>1 \<in> conv ars"
-and "set_of (measure_conv r \<delta>1) \<subseteq> dm r M"
+and "set_mset (measure_conv r \<delta>1) \<subseteq> dm r M"
 and "(M,{#fst \<alpha>_step,fst \<beta>_step#}) \<in> mul_eq r"
-shows "\<exists> \<sigma> \<tau>. ({\<sigma>,\<tau>} \<subseteq> seq ars \<and> fst \<sigma> = fst \<delta>1 \<and> fst \<tau> = lst_conv \<delta>1 \<and> lst \<sigma> = lst \<tau> \<and> set_of (measure r (\<sigma>,\<tau>)) \<subseteq> dm r M)" proof -
+shows "\<exists> \<sigma> \<tau>. ({\<sigma>,\<tau>} \<subseteq> seq ars \<and> fst \<sigma> = fst \<delta>1 \<and> fst \<tau> = lst_conv \<delta>1 \<and> lst \<sigma> = lst \<tau> \<and> set_mset (measure r (\<sigma>,\<tau>)) \<subseteq> dm r M)" proof -
  from assms obtain s ss where sigma1: "\<delta>1 = (s,ss)" using surjective_pairing by metis
  show ?thesis using assms(3,4) unfolding sigma1 proof (induct ss arbitrary: s rule:list.induct)
   case Nil
   hence "(s,[]) \<in> seq ars" using seq.intros(1) by fast
-  moreover have "set_of (measure r ((s,[]),(s,[]))) \<subseteq> dm r M" unfolding measure_def labels_def by auto
+  moreover have "set_mset (measure r ((s,[]),(s,[]))) \<subseteq> dm r M" unfolding measure_def labels_def by auto
   ultimately show ?case by auto
  next
   case (Cons t' ts) obtain d \<beta> t where dec: "t' = (d,\<beta>,t)" using surjective_pairing by metis
-  hence dic: "{\<beta>} \<subseteq> ds r (set_of M)" using Cons(3) unfolding dec measure_conv_def labels_conv_def dm_def by auto
+  hence dic: "{\<beta>} \<subseteq> ds r (set_mset M)" using Cons(3) unfolding dec measure_conv_def labels_conv_def dm_def by auto
   have one:"ds r {\<beta>} \<subseteq> dm r M " unfolding dm_def using subset_imp_ds_subset[OF t dic] by auto
-  have "set_of (measure_conv r (t,ts) -s ds r {\<beta>})  \<subseteq> dm r M" using Cons(3) unfolding measure_conv_def labels_conv_def dec by auto
-  hence "set_of (measure_conv r (t,ts)) \<subseteq> dm r M \<union> ds r {\<beta>}" unfolding set_of_def diff_def by auto
-  hence ts2: "set_of (measure_conv r (t,ts)) \<subseteq> dm r M" using dic one by auto
+  have "set_mset (measure_conv r (t,ts) -s ds r {\<beta>})  \<subseteq> dm r M" using Cons(3) unfolding measure_conv_def labels_conv_def dec by auto
+  hence "set_mset (measure_conv r (t,ts)) \<subseteq> dm r M \<union> ds r {\<beta>}" unfolding set_mset_def diff_def by auto
+  hence ts2: "set_mset (measure_conv r (t,ts)) \<subseteq> dm r M" using dic one by auto
   from Cons(2) have ts: "(t,ts) \<in> conv ars" unfolding dec using conv_tail1(1) by fast
   from Cons(1)[OF ts ts2] obtain \<sigma>' \<tau> where
-   ih:"{\<sigma>', \<tau>} \<subseteq> seq ars \<and> fst \<sigma>' = fst (t,ts) \<and> fst \<tau> = lst_conv (t, ts) \<and> lst \<sigma>' = lst \<tau> \<and> set_of (measure r (\<sigma>',\<tau>)) \<subseteq> dm r M" by metis
+   ih:"{\<sigma>', \<tau>} \<subseteq> seq ars \<and> fst \<sigma>' = fst (t,ts) \<and> fst \<tau> = lst_conv (t, ts) \<and> lst \<sigma>' = lst \<tau> \<and> set_mset (measure r (\<sigma>',\<tau>)) \<subseteq> dm r M" by metis
   have diff:"!!x. x \<in># r|map fst (snd \<sigma>')|-sds r {\<beta>} \<Longrightarrow> x \<in># r|map fst (snd \<sigma>')|" unfolding diff_def by (metis count_filter_mset nat_neq_iff)
   show ?case proof (cases d)
    case True hence step:"(s,\<beta>,t) \<in> ars" using conv_tail1(2) Cons(2) unfolding dec by auto
@@ -1382,13 +1382,13 @@ shows "\<exists> \<sigma> \<tau>. ({\<sigma>,\<tau>} \<subseteq> seq ars \<and> 
    moreover have "(fst ?\<sigma>) = fst (s, t' # ts)" by auto
    moreover have "fst \<tau> = lst_conv (s, t' # ts)" using ih unfolding dec lst_conv.simps by auto
    moreover have "lst ?\<sigma> = lst \<tau>" by (metis `(s, (\<beta>, t) # snd \<sigma>') \<in> seq ars` fst_conv ih seq_tail1(3) snd_conv surjective_pairing)
-   moreover have "set_of (measure r (?\<sigma>,\<tau>)) \<subseteq> dm r M" using diff ih dic unfolding measure_def labels_def dm_def by auto
+   moreover have "set_mset (measure r (?\<sigma>,\<tau>)) \<subseteq> dm r M" using diff ih dic unfolding measure_def labels_def dm_def by auto
    ultimately show ?thesis by blast
   next
    case False hence step:"(t,\<beta>,s) \<in> ars" using conv_tail1(3) Cons(2) unfolding dec by auto
    hence "(t,[(\<beta>,s)]) \<in> seq ars" using seq.intros by metis
    hence p:"peak ars ((t,[(\<beta>,s)]),\<sigma>')" (is "peak ars ?y") using seq.intros unfolding peak_def using ih by auto
-   hence mp: "set_of (measure r ?y) \<subseteq> ds r (set_of M)" using ih dic unfolding measure_def labels_def dm_def apply auto by (metis count_empty diff_from_empty less_nat_zero_code)
+   hence mp: "set_mset (measure r ?y) \<subseteq> ds r (set_mset M)" using ih dic unfolding measure_def labels_def dm_def apply auto by (metis count_empty diff_from_empty less_nat_zero_code)
    hence ne: "M \<noteq> {#}" using dec dic unfolding dm_def ds_def by auto
    hence x:"(measure r ?y,M) \<in> mul r" using mp unfolding dm_def mul_def apply auto by (metis add_0)
    have "({#fst \<alpha>_step#}+{#fst \<beta>_step#},measure r ?P) \<in> mul_eq r" unfolding assms(2) measure_def labels_def apply auto
@@ -1400,9 +1400,9 @@ shows "\<exists> \<sigma> \<tau>. ({\<sigma>,\<tau>} \<subseteq> seq ars \<and> 
    have tau'': "\<tau>'' \<in> seq ars" and eq: "lst \<tau> = fst \<tau>''" using DD  unfolding DD_def diagram_def using ih by auto
    have tau:"(fst \<tau>,snd \<tau> @ snd \<tau>'') \<in> seq ars" (is "?\<tau>''' \<in> _") and "lst \<tau>'' = lst (fst \<tau>,snd \<tau>@ snd \<tau>'')" using seq_concat[OF _ tau'' eq] ih by auto
    hence tau2: "fst ?\<tau>''' = lst_conv (s,t'#ts)" "lst \<sigma>'' = lst ?\<tau>'''" using DD ih unfolding DD_def diagram_def dec lst_conv.simps by auto
-   have "set_of (measure r (\<sigma>'',\<tau>'')) \<subseteq> ds r (set_of M)" using DD_subset_ds[OF t DD mp] unfolding measure_def by auto
-   hence "set_of (r|labels \<sigma>''| + r|labels \<tau>| + (r|labels \<tau>''| -s (dl r (labels \<tau>)) )) \<subseteq> dm r M" using ih unfolding measure_def dm_def diff_def by auto
-   hence fin: "set_of (measure r (\<sigma>'',?\<tau>''')) \<subseteq> dm r M"  unfolding measure_def labels_def apply auto unfolding lemma3_2_2 by auto
+   have "set_mset (measure r (\<sigma>'',\<tau>'')) \<subseteq> ds r (set_mset M)" using DD_subset_ds[OF t DD mp] unfolding measure_def by auto
+   hence "set_mset (r|labels \<sigma>''| + r|labels \<tau>| + (r|labels \<tau>''| -s (dl r (labels \<tau>)) )) \<subseteq> dm r M" using ih unfolding measure_def dm_def diff_def by auto
+   hence fin: "set_mset (measure r (\<sigma>'',?\<tau>''')) \<subseteq> dm r M"  unfolding measure_def labels_def apply auto unfolding lemma3_2_2 by auto
    show ?thesis using sigma tau tau2 fin by blast
   qed
  qed
@@ -1455,10 +1455,10 @@ proof -
  qed
  show "set (labels \<tau>') \<subseteq> ds r ({\<alpha>,\<beta>})" proof -
   have x:"(r|labels \<tau>'| -s dl r (labels \<sigma>),r|labels \<tau>| ) \<in> mul_eq r" using DD D_eq[OF t i] unfolding DD_def D2_def by auto
-  have y:"set_of r|labels \<tau>| \<subseteq> ds r {\<beta>}" using leq_imp_subseteq[OF lexmax_le_multiset[OF t]] assms(4) by auto
-  hence  "set_of (r|labels \<tau>'|-s ds r (set (labels \<sigma>))) \<subseteq> ds r {\<beta>}" using mul_eq_and_ds_imp_ds[OF t x y] unfolding dl_def by auto
-  hence "set_of (r|labels \<tau>'| ) \<subseteq> ds r {\<beta>} \<union> ds r (set (labels \<sigma>))" unfolding diff_def by auto
-  hence "set_of (r|labels \<tau>'| ) \<subseteq> ds r {\<alpha>,\<beta>}" using assms(6) unfolding ds_def by auto
+  have y:"set_mset r|labels \<tau>| \<subseteq> ds r {\<beta>}" using leq_imp_subseteq[OF lexmax_le_multiset[OF t]] assms(4) by auto
+  hence  "set_mset (r|labels \<tau>'|-s ds r (set (labels \<sigma>))) \<subseteq> ds r {\<beta>}" using mul_eq_and_ds_imp_ds[OF t x y] unfolding dl_def by auto
+  hence "set_mset (r|labels \<tau>'| ) \<subseteq> ds r {\<beta>} \<union> ds r (set (labels \<sigma>))" unfolding diff_def by auto
+  hence "set_mset (r|labels \<tau>'| ) \<subseteq> ds r {\<alpha>,\<beta>}" using assms(6) unfolding ds_def by auto
   thus ?thesis using lexmax_set[OF t] by auto
  qed
 qed
@@ -1476,15 +1476,15 @@ proof -
  from assms have \<gamma>1: "\<gamma>1 \<in> conv ars" and \<gamma>3: "\<gamma>3 \<in> conv ars" and \<gamma>2_l: "length (labels \<gamma>2) \<le> 1"
   and \<gamma>2_s: "set (labels \<gamma>2) \<subseteq> {fst \<alpha>_step}" and \<gamma>3_s: "set (labels_conv \<gamma>3) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}"
   and "set (labels_conv \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding LT_def LD'_def LT1_def LD_1'_def labels_def local_triangle1_def by auto
- hence "set_of (measure_conv r \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding measure_conv_def using lexmax_le_multiset[OF t] by (metis set_of_multiset_of submultiset_implies_subset subset_trans)
- hence \<gamma>1_s: "set_of (measure_conv r \<gamma>1) \<subseteq> dm r {#fst \<beta>_step#}" unfolding dm_def by auto
+ hence "set_mset (measure_conv r \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding measure_conv_def using lexmax_le_multiset[OF t] by (metis set_mset_multiset_of submultiset_implies_subset subset_trans)
+ hence \<gamma>1_s: "set_mset (measure_conv r \<gamma>1) \<subseteq> dm r {#fst \<beta>_step#}" unfolding dm_def by auto
  have x: "({#fst \<beta>_step#}, {#fst \<beta>_step, fst \<alpha>_step#}) \<in> mul_eq r" using mul_eq_add_right by auto
  obtain \<gamma>1' \<gamma>1'' where \<gamma>1': "\<gamma>1' \<in> seq ars" and \<gamma>1'': "\<gamma>1'' \<in> seq ars" and eqx:"fst \<gamma>1' = fst \<gamma>1"
-  and  "fst \<gamma>1'' = lst_conv \<gamma>1" and \<gamma>1'_eq: "lst \<gamma>1' = lst \<gamma>1''"  and m2: "set_of (measure r (\<gamma>1',\<gamma>1'')) \<subseteq> dm r {#fst \<beta>_step#}"
+  and  "fst \<gamma>1'' = lst_conv \<gamma>1" and \<gamma>1'_eq: "lst \<gamma>1' = lst \<gamma>1''"  and m2: "set_mset (measure r (\<gamma>1',\<gamma>1'')) \<subseteq> dm r {#fst \<beta>_step#}"
   using conv_imp_valley[OF t IH \<gamma>1 \<gamma>1_s x] apply auto by fast
  hence Q:"peak ars (\<gamma>1'',\<gamma>2)" (is "peak ars ?Q") unfolding peak_def using assms(1) unfolding LT_def LD'_def LT1_def local_triangle1_def by auto
  from m2 have  \<gamma>1's: "set (labels \<gamma>1') \<subseteq> ds r {fst \<beta>_step}" and \<gamma>1''s: "set (labels \<gamma>1'') \<subseteq> ds r {fst \<beta>_step}" unfolding measure_def dm_def using lexmax_set[OF t] by auto
- from m2 have \<tau>1'_m:"(r|labels \<gamma>1''|,{#fst \<beta>_step#}) \<in> mul r" unfolding measure_def mul_def apply auto by (metis dm_def empty_neutral(1) set_of_single single_not_empty)
+ from m2 have \<tau>1'_m:"(r|labels \<gamma>1''|,{#fst \<beta>_step#}) \<in> mul r" unfolding measure_def mul_def apply auto by (metis dm_def empty_neutral(1) set_mset_single single_not_empty)
  hence y:"(r|labels \<gamma>1''| + r|labels \<gamma>2|,{#fst \<alpha>_step#}+{#fst \<beta>_step#}) \<in> mul r" using mul_add_mul_eq_imp_mul[OF \<tau>1'_m s2] union_commute by metis
  have "(r|labels \<gamma>1''| + r|labels \<gamma>2|, {#fst \<alpha>_step,fst \<beta>_step#} + (r|map fst \<rho>_step|-sds r {fst \<alpha>_step} + r|map fst \<upsilon>_step|-sds r {fst \<beta>_step})) \<in> mul r" using mul_add_right[OF y] by auto
  hence q:"(?Q,?P) \<in> pex r"  unfolding pex_def measure_def labels_def apply auto by (metis union_assoc union_commute union_lcomm)
@@ -1603,17 +1603,17 @@ proof -
     have c12l: "set (labels_conv ?c12) \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using conv_concat_labels[OF c1(1) c2(1)] c1 c2 by auto
     have c123l: "set (labels_conv ?c123) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using conv_concat_labels[OF c12(1) c3(1)] c12l c3 by auto
     have c1234l:"set (labels_conv ?c1234) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using conv_concat_labels[OF c123(1) c4(1)] c123l c4 by auto
-    hence "set_of (r|labels_conv ?c1234| ) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using submultiset_implies_subset[OF lexmax_le_multiset[OF t]] by auto
-    hence "set_of (measure_conv r ?c1234) \<subseteq> dm r {#fst \<beta>_step, fst \<alpha>_step#}" unfolding measure_conv_def dm_def by auto
-    hence m: "set_of (measure_conv r ?c1234) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}" unfolding union_commute by auto
+    hence "set_mset (r|labels_conv ?c1234| ) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using submultiset_implies_subset[OF lexmax_le_multiset[OF t]] by auto
+    hence "set_mset (measure_conv r ?c1234) \<subseteq> dm r {#fst \<beta>_step, fst \<alpha>_step#}" unfolding measure_conv_def dm_def by auto
+    hence m: "set_mset (measure_conv r ?c1234) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}" unfolding union_commute by auto
 
-    from c1234 m obtain \<rho> where \<rho>:"\<rho> \<in> conv ars" and \<rho>m:"set_of (measure_conv r \<rho>) \<subseteq> dm r {# fst \<alpha>_step, fst \<beta>_step#}"
+    from c1234 m obtain \<rho> where \<rho>:"\<rho> \<in> conv ars" and \<rho>m:"set_mset (measure_conv r \<rho>) \<subseteq> dm r {# fst \<alpha>_step, fst \<beta>_step#}"
     and eq1: "fst \<rho> = lst \<tau>3'" and eq2: "lst_conv \<rho> = lst \<sigma>3'" by auto
 
     have M:"({#fst \<alpha>_step,fst \<beta>_step#},{#fst \<beta>_step,fst \<alpha>_step#}) \<in> mul_eq r" using union_commute mul_eq_reflexive by metis
     from conv_imp_valley[OF t IH \<rho> \<rho>m M] obtain \<tau>3'' \<sigma>3'' where
      \<tau>3'':"\<tau>3'' \<in> seq ars" and \<sigma>3'': "\<sigma>3'' \<in> seq ars" and eq:"fst \<tau>3'' = fst \<rho> \<and> fst \<sigma>3'' = lst_conv \<rho> \<and> lst \<tau>3'' = lst \<sigma>3'' \<and>
-    set_of (measure r (\<tau>3'', \<sigma>3'')) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}"  apply auto by fast
+    set_mset (measure r (\<tau>3'', \<sigma>3'')) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}"  apply auto by fast
     have s1: "set (labels \<sigma>3'') \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set set_mp t)
     have s2: "set (labels \<tau>3'') \<subseteq> ds r {fst \<beta>_step, fst \<alpha>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set set_mp t)
     have \<sigma>1_eq: "lst (s, [\<beta>_step]) = fst \<sigma>1" and \<tau>1_eq: "lst (s, [\<alpha>_step]) = fst \<tau>1" using onetwo1 onetwo2 surjective_pairing unfolding lst_def by auto

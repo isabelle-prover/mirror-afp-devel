@@ -61,7 +61,7 @@ primrec antec :: "sequent \<Rightarrow> form multiset" where "antec (Sequent ant
 primrec succ :: "sequent \<Rightarrow> form multiset" where "succ (Sequent ant suc) = suc"
 primrec mset :: "sequent \<Rightarrow> form multiset" where "mset (Sequent ant suc) = ant + suc"
 primrec seq_size :: "sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
-primrec set_of_seq :: "sequent \<Rightarrow> form set" where "set_of_seq (Sequent ant suc) = set_of (mset (Sequent ant suc))"
+primrec set_of_seq :: "sequent \<Rightarrow> form set" where "set_of_seq (Sequent ant suc) = set_mset (mset (Sequent ant suc))"
 primrec set_of_prem :: "sequent list \<Rightarrow> form set" where
   "set_of_prem Nil = {}"
 | "set_of_prem (p # ps) = set_of_seq p \<union> set_of_prem ps"
@@ -162,7 +162,7 @@ To formalise the condition ``no specific substitutions'', an inductive predicate
 *}
 
 definition multSubst :: "form multiset \<Rightarrow> bool" where
-multSubst_def: "multSubst \<Gamma> \<equiv> (\<exists> A \<in> (set_of \<Gamma>). \<exists> x y B. [y,x]B = A \<and> y\<noteq>x)"
+multSubst_def: "multSubst \<Gamma> \<equiv> (\<exists> A \<in> (set_mset \<Gamma>). \<exists> x y B. [y,x]B = A \<and> y\<noteq>x)"
 
 text{* 
 \noindent The notation $[z;y]xs$ stands for substitution of a variable in a variable list.  The details are simple, and so are not shown.
@@ -378,7 +378,7 @@ fixes S :: "sequent"
 shows "finite (set_of_seq S)"
 proof-
 obtain \<Gamma> \<Delta> where "S = (\<Gamma> \<Rightarrow>* \<Delta>)" by (cases S) auto
-then show ?thesis by (auto simp add:finite_set_of)
+then show ?thesis by (auto simp add:finite_set_mset)
 qed
 
 lemma finPremSet:
@@ -663,10 +663,10 @@ ultimately have "F \<nabla> [x].A :# \<Psi>"
     {assume "\<exists> A. H = \<LM>A\<RM>"
      then obtain T where "H = \<LM>T\<RM>" by auto
      then have "\<Psi> \<oplus> T = \<Delta> \<oplus> F \<nabla> [x].A" using `\<Psi> + H = \<Delta> \<oplus> F \<nabla> [x].A` by auto
-     then have "set_of (\<Psi> \<oplus> T) = set_of (\<Delta> \<oplus> F \<nabla> [x].A)" by auto
-     then have "set_of \<Psi> \<union> {T} = set_of \<Delta> \<union> {F \<nabla> [x].A}" by auto
+     then have "set_mset (\<Psi> \<oplus> T) = set_mset (\<Delta> \<oplus> F \<nabla> [x].A)" by auto
+     then have "set_mset \<Psi> \<union> {T} = set_mset \<Delta> \<union> {F \<nabla> [x].A}" by auto
      moreover from `H = \<LM>T\<RM>` and `\<LM>F \<nabla> [x].A\<RM> \<noteq> H` have "F \<nabla> [x].A \<noteq> T" by auto
-     ultimately have "F \<nabla> [x].A \<in> set_of \<Psi>" by auto
+     ultimately have "F \<nabla> [x].A \<in> set_mset \<Psi>" by auto
      then have "F \<nabla> [x].A :# \<Psi>" by auto
     }
     ultimately show "F \<nabla> [x].A :# \<Psi>" by blast
@@ -863,10 +863,10 @@ ultimately have "F \<nabla> [x].A :# \<Phi>"
     {assume "\<exists> A. G = \<LM>A\<RM>"
      then obtain T where "G = \<LM>T\<RM>" by auto
      then have "\<Phi> \<oplus> T = \<Gamma> \<oplus> F \<nabla> [x].A" using `\<Phi> + G = \<Gamma> \<oplus> F \<nabla> [x].A` by auto
-     then have "set_of (\<Phi> \<oplus> T) = set_of (\<Gamma> \<oplus> F \<nabla> [x].A)" by auto
-     then have "set_of \<Phi> \<union> {T} = set_of \<Gamma> \<union> {F \<nabla> [x].A}" by auto
+     then have "set_mset (\<Phi> \<oplus> T) = set_mset (\<Gamma> \<oplus> F \<nabla> [x].A)" by auto
+     then have "set_mset \<Phi> \<union> {T} = set_mset \<Gamma> \<union> {F \<nabla> [x].A}" by auto
      moreover from `G = \<LM>T\<RM>` and `\<LM>F \<nabla> [x].A\<RM> \<noteq> G` have "F \<nabla> [x].A \<noteq> T" by auto
-     ultimately have "F \<nabla> [x].A \<in> set_of \<Phi>" by auto
+     ultimately have "F \<nabla> [x].A \<in> set_mset \<Phi>" by auto
      then have "F \<nabla> [x].A :# \<Phi>" by auto
     }
     ultimately show "F \<nabla> [x].A :# \<Phi>" by blast

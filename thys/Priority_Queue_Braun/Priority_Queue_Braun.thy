@@ -67,7 +67,7 @@ lemma mset_Node[simp]:
   "mset_tree (Node l x r) = {#x#} + mset_tree l + mset_tree r"
 by(simp add: mset_tree_def ac_simps)
 
-lemma set_mset_tree: "set_of(mset_tree t) = set_tree t"
+lemma set_mset_tree: "set_mset(mset_tree t) = set_tree t"
 by (simp add: mset_tree_def)
 
 lemma mset_iff_set_tree: "x \<in># mset_tree t \<longleftrightarrow> x \<in> set_tree t"
@@ -205,7 +205,7 @@ by(induction l a r rule: sift_down.induct) (auto simp: ac_simps)
 
 lemma set_sift_down: "braun(Node l a r)
   \<Longrightarrow> set_tree(sift_down l a r) = insert a (set_tree l \<union> set_tree r)"
-by(drule arg_cong[where f=set_of, OF mset_sift_down]) (simp add:set_mset_tree)
+by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp add:set_mset_tree)
 
 lemma heap_sift_down:
   "braun(Node l a r) \<Longrightarrow> heap l \<Longrightarrow> heap r \<Longrightarrow> heap(sift_down l a r)"
@@ -260,7 +260,7 @@ qed
 
 lemma set_del_min: "\<lbrakk> braun t; heap t; t \<noteq> Leaf \<rbrakk>
   \<Longrightarrow> set_tree t = insert (val t) (set_tree(del_min t))"
-by(drule (2) arg_cong[where f=set_of, OF mset_del_min]) (simp add:set_mset_tree)
+by(drule (2) arg_cong[where f=set_mset, OF mset_del_min]) (simp add:set_mset_tree)
 
 
 end
