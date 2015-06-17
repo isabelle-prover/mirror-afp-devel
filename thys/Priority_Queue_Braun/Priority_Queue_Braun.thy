@@ -2,8 +2,7 @@ section "Priority Queues Based on Braun Trees"
 
 theory Priority_Queue_Braun
 imports
-  "~~/src/HOL/Library/Tree"
-  "~~/src/HOL/Library/Multiset"
+  "~~/src/HOL/Library/Tree_Multiset"
 begin
 
 
@@ -18,9 +17,6 @@ implemented priority queues via Braun trees. This theory verifies
 Paulsons's implementation, including the logarithmic bounds.  *}
 
 (* FIXME mv to Tree *)
-
-lemma size_0_iff_Leaf[simp]: "size t = 0 \<longleftrightarrow> t = Leaf"
-by(cases t) auto
 
 fun height :: "'a tree \<Rightarrow> nat" where
 "height Leaf = 0" |
@@ -47,31 +43,7 @@ proof(induction t)
   qed
 qed simp
 
-fun heap :: "'a::linorder tree \<Rightarrow> bool" where
-"heap Leaf = True" |
-"heap (Node l m r) =
-  (heap l \<and> heap r \<and> (\<forall>x \<in> set_tree l \<union> set_tree r. m \<le> x))"
-
 (* eomv *)
-
-
-subsection {* Multiset of tree *}
-
-definition mset_tree :: "'a tree \<Rightarrow> 'a multiset" where
-"mset_tree t = multiset_of (inorder t)"
-
-lemma mset_Leaf[simp]: "mset_tree Leaf = {#}"
-by(simp add: mset_tree_def)
-
-lemma mset_Node[simp]:
-  "mset_tree (Node l x r) = {#x#} + mset_tree l + mset_tree r"
-by(simp add: mset_tree_def ac_simps)
-
-lemma set_mset_tree: "set_mset(mset_tree t) = set_tree t"
-by (simp add: mset_tree_def)
-
-lemma mset_iff_set_tree: "x \<in># mset_tree t \<longleftrightarrow> x \<in> set_tree t"
-by(induction t arbitrary: x) auto
 
 
 subsection {* Braun predicate *}
@@ -205,7 +177,7 @@ by(induction l a r rule: sift_down.induct) (auto simp: ac_simps)
 
 lemma set_sift_down: "braun(Node l a r)
   \<Longrightarrow> set_tree(sift_down l a r) = insert a (set_tree l \<union> set_tree r)"
-by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp add:set_mset_tree)
+by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp)
 
 lemma heap_sift_down:
   "braun(Node l a r) \<Longrightarrow> heap l \<Longrightarrow> heap r \<Longrightarrow> heap(sift_down l a r)"
@@ -246,7 +218,7 @@ shows "mset_tree t = {#val t#} + mset_tree(del_min t)"
 proof(cases t rule: del_min.cases)
   case 1 with assms show ?thesis by simp
 next
-  case 2 with assms show ?thesis by simp
+  case 2 with assms show ?thesis by (simp add: size_0_iff_Leaf)
 next
   case (3 ll b lr a r)[simp]
   { fix y l' assume del: "del_left (Node ll b lr) = (y,l')"
@@ -260,7 +232,7 @@ qed
 
 lemma set_del_min: "\<lbrakk> braun t; heap t; t \<noteq> Leaf \<rbrakk>
   \<Longrightarrow> set_tree t = insert (val t) (set_tree(del_min t))"
-by(drule (2) arg_cong[where f=set_mset, OF mset_del_min]) (simp add:set_mset_tree)
+by(drule (2) arg_cong[where f=set_mset, OF mset_del_min]) (simp)
 
 
 end

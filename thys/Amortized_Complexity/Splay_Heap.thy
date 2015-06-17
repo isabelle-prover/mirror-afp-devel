@@ -105,7 +105,7 @@ qed
 
 lemma set_partition: "\<lbrakk> bst_eq(t); partition p t = (l',r') \<rbrakk>
  \<Longrightarrow> set_tree t = set_tree l' \<union> set_tree r'"
-by (metis mset_partition set_of_mset_tree set_of_union)
+by (metis mset_partition set_mset_tree set_mset_union)
 
 lemma bst_partition:
   "bst_eq(t) \<Longrightarrow> partition p t = (l',r') \<Longrightarrow> bst_eq (Node l' p r')"
@@ -170,7 +170,7 @@ proof(induction h rule: del_min.induct)
   next
     assume "ll \<noteq> Leaf"
     hence "get_min ll :# mset_tree ll"
-      by (metis get_min_in mem_set_of_iff set_of_mset_tree)
+      by (metis get_min_in mem_set_mset_iff set_mset_tree)
     thus ?thesis using 3 by(auto simp: multiset_eq_iff)
   qed
 qed auto
@@ -180,7 +180,7 @@ apply(induction t rule: del_min.induct)
   apply simp
  apply simp
 apply auto
-by (metis Multiset.diff_le_self subsetD set_of_mono set_of_mset_tree mset_del_min)
+by (metis Multiset.diff_le_self subsetD set_mset_mono set_mset_tree mset_del_min)
 
 
 subsection{* Analysis *}
