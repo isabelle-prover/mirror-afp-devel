@@ -1139,9 +1139,6 @@ next
   finally show ?case .
 qed
 
-lemma mset_map_set_mset: "set_mset (f `# A) = f ` set_mset A"
-  by (induct A) auto
-
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (induct P)
   apply fastforce

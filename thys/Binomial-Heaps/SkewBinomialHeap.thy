@@ -2102,7 +2102,7 @@ lemma level_measure:
   "x \<in> set_mset (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   "x \<in># (queue_to_multiset q) \<Longrightarrow> (x,(Element e a q))\<in>measure level"
   apply (case_tac [!] x)
-  apply (auto dest: level_m simp del: set_mset_image_mset)
+  apply (auto dest: level_m simp del: set_image_mset)
   done
 
 text {*
@@ -2213,7 +2213,7 @@ proof -
   from findMin_correct[OF IQ NE] have
     FMIQ: "findMin q \<in># queue_to_multiset q" and
     FMIN: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> eprio (findMin q) \<le> eprio y"
-    by (auto simp del: set_mset_image_mset)
+    by (auto simp del: set_image_mset)
   from FMIQ I have FMEI: "elem_invar (findMin q)" by auto
   from I have FEI: "!!y. y\<in>#(queue_to_multiset q) \<Longrightarrow> elem_invar y" by auto
   
@@ -2588,4 +2588,3 @@ text {*
 
 
 end
-
