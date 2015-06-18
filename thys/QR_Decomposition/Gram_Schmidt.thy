@@ -9,6 +9,7 @@ section{*The Gram-Schmidt algorithm*}
 theory Gram_Schmidt
 imports
  Miscellaneous_QR
+ Projections
 begin
 
 subsection{*Gram-Schmidt algorithm*}
@@ -40,7 +41,7 @@ Every function can be executed with arbitrary precision (using rational numbers)
 subsubsection{*First way*}
 
 definition Gram_Schmidt_step :: "('a::{real_inner}^'b) => ('a^'b) list => ('a^'b) list"
-  where "Gram_Schmidt_step a ys = ys @ [(a - (setsum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) (set ys)))]"
+  where "Gram_Schmidt_step a ys = ys @ [(a - proj_onto a (set ys))]"
 
 definition "Gram_Schmidt xs = foldr Gram_Schmidt_step xs []"
 
@@ -72,15 +73,15 @@ next
     proof (rule conjI)
       have set_rw1: "set (a # xs) = insert a (set xs)" by simp
       have set_rw2: "set (Gram_Schmidt (a # xs)) 
-        = (insert (a - (\<Sum>x\<in>set (Gram_Schmidt xs). (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x)) (set (Gram_Schmidt xs)))"
-        unfolding Gram_Schmidt_cons Gram_Schmidt_step_def by auto
+        = (insert (a - (\<Sum>x\<in>set (Gram_Schmidt xs). (a \<bullet> x / (x \<bullet> x)) *\<^sub>R x)) (set (Gram_Schmidt xs)))"
+        unfolding Gram_Schmidt_cons Gram_Schmidt_step_def proj_onto_def proj_def[abs_def] by auto
       def C=="set (Gram_Schmidt xs)"
       have finite_C: "finite C" unfolding C_def by auto
       {   
         fix x k
         have th0: "!!(a::'a^'b) b c. a - (b - c) = c + (a - b)"
           by (simp add: field_simps)
-        have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet>  x)) *\<^sub>R x)) \<in> real_vector.span C 
+        have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (a \<bullet> x / (x \<bullet>  x)) *\<^sub>R x)) \<in> real_vector.span C 
           \<longleftrightarrow> x - k *\<^sub>R a \<in> real_vector.span C"
           apply (simp only: scaleR_right_diff_distrib th0)
           apply (rule real_vector.span_add_eq)
@@ -95,26 +96,9 @@ next
       then show "real_vector.span (set (Gram_Schmidt (a # xs))) = real_vector.span (set (a # xs))"
         unfolding set_eq_iff set_rw2 set_rw1 real_vector.span_breakdown_eq C_def s[symmetric]
         by auto
-      {
-        fix y
-        assume yC: "y \<in> C"
-        then have Cy: "C = insert y (C - {y})"
-          by blast
-        have fth: "finite (C - {y})"
-          using C_def by simp
-        have "orthogonal (a - (\<Sum>x\<in>set (Gram_Schmidt xs). (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x)) y"
-          unfolding orthogonal_def
-          unfolding inner_diff inner_setsum_left right_minus_eq
-          unfolding setsum.remove  [OF finite_C yC, unfolded C_def]
-          apply (clarsimp simp add: inner_commute[of y a])
-          apply (rule setsum.neutral)
-          apply clarsimp
-          apply (rule p[unfolded pairwise_def orthogonal_def, rule_format])
-          using yC unfolding C_def by auto
-      }
       with p show "pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
-        unfolding set_rw2 unfolding C_def
-        by (rule pairwise_orthogonal_insert)
+        using pairwise_orthogonal_proj_set[OF finite_C]
+        unfolding set_rw2 unfolding C_def proj_def[symmetric] proj_onto_def[symmetric] by simp
     qed
   qed
 qed
@@ -129,13 +113,14 @@ proof (induct xs)
   case Nil show ?case unfolding Gram_Schmidt_def by simp
 next
   case (Cons x xs)
-  def b\<equiv>"(\<Sum>xa\<in>set (Gram_Schmidt xs). (xa \<bullet> x / (xa \<bullet> xa)) *\<^sub>R xa)"
+  def b\<equiv>"(\<Sum>xa\<in>set (Gram_Schmidt xs). (x \<bullet> xa / (xa \<bullet> xa)) *\<^sub>R xa)"
   have distinct_xs: "distinct xs" using Cons.prems by auto
   show ?case
   proof (cases "x - b \<notin> set (Gram_Schmidt xs)")
     case True
     have "card (set (Gram_Schmidt (x # xs))) = card (insert (x - b) (set (Gram_Schmidt xs)))"
-      unfolding Gram_Schmidt_cons Gram_Schmidt_step_def b_def by simp
+      unfolding Gram_Schmidt_cons Gram_Schmidt_step_def b_def 
+      unfolding proj_onto_def proj_def[abs_def] by simp
     also have "... = Suc (card (set (Gram_Schmidt xs)))"
     proof (rule card_insert_disjoint)
       show "finite (set (Gram_Schmidt xs))" by simp
@@ -152,7 +137,8 @@ next
     case False
     have x_b_in: "x - b \<in> set (Gram_Schmidt xs)" using False by simp
     have "card (set (Gram_Schmidt (x # xs))) = card (insert (x - b) (set (Gram_Schmidt xs)))"
-      unfolding Gram_Schmidt_cons Gram_Schmidt_step_def b_def by simp
+      unfolding Gram_Schmidt_cons Gram_Schmidt_step_def b_def
+      unfolding proj_onto_def proj_def[abs_def] by simp
     also have "... = (card (set (Gram_Schmidt xs)))" by (metis False insert_absorb)
     also have "... \<le> (card (set xs))" using Cons.hyps[OF distinct_xs] .
     also have "... \<le> (card (set (x # xs)))" unfolding List.card_set by simp
@@ -248,7 +234,7 @@ definition Gram_Schmidt_column_k :: "'a::{real_inner}^'cols::{mod_type}^'rows \<
   \<Rightarrow> 'a^'cols::{mod_type}^'rows" 
   where "Gram_Schmidt_column_k A k 
   = (\<chi> a. (\<chi> b. (if b = from_nat k 
-  then (column b A - (\<Sum>x\<in>{column i A|i. i < b}. (x \<bullet> (column b A) / (x \<bullet> x)) *\<^sub>R x)) 
+  then (column b A - (proj_onto (column b A) {column i A|i. i < b})) 
   else (column b A)) $ a))"
 
 definition "Gram_Schmidt_upt_k A k = foldl Gram_Schmidt_column_k A [0..<(Suc k)]"
@@ -258,13 +244,13 @@ text{*Some definitions and lemmas in order to get execution.*}
 
 definition "Gram_Schmidt_column_k_row A k a = 
   vec_lambda(\<lambda>b. (if b = from_nat k then 
-  (column b A - (\<Sum>x\<in>{column i A|i. i < b}. (x \<bullet> (column b A) / (x \<bullet> x)) *\<^sub>R x)) 
+  (column b A - (\<Sum>x\<in>{column i A|i. i < b}. ((column b A) \<bullet> x / (x \<bullet> x)) *\<^sub>R x)) 
   else (column b A)) $ a)"
 
 lemma Gram_Schmidt_column_k_row_code[code abstract]:
   "vec_nth (Gram_Schmidt_column_k_row A k a) 
   = (%b. (if b = from_nat k 
-  then (column b A - (\<Sum>x\<in>{column i A|i. i < b}. (x \<bullet> (column b A) / (x \<bullet> x)) *\<^sub>R x)) 
+  then (column b A - (\<Sum>x\<in>{column i A|i. i < b}. ((column b A) \<bullet> x / (x \<bullet> x)) *\<^sub>R x)) 
   else (column b A)) $ a)"
   unfolding Gram_Schmidt_column_k_row_def
   by (metis (lifting) vec_lambda_beta)
@@ -272,6 +258,7 @@ lemma Gram_Schmidt_column_k_row_code[code abstract]:
 lemma Gram_Schmidt_column_k_code[code abstract]:
   "vec_nth (Gram_Schmidt_column_k A k) = Gram_Schmidt_column_k_row A k"
   unfolding Gram_Schmidt_column_k_def unfolding Gram_Schmidt_column_k_row_def[abs_def]
+  unfolding proj_onto_def proj_def[abs_def]
   by fastforce
 
 text{*Proofs*}
@@ -349,7 +336,10 @@ proof -
         column (from_nat (Suc k)) (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k))"
         unfolding Gram_Schmidt_column_k_def column_def apply auto unfolding set_rw 
         unfolding vector_scaleR_component[symmetric]
-        unfolding setsum_component[symmetric] by vector 
+        unfolding setsum_component[symmetric]
+        unfolding proj_onto_def proj_def[abs_def]
+        unfolding proj_onto_setsum_rw
+        by vector 
     qed
   next
     fix i
@@ -369,7 +359,10 @@ proof -
         apply auto
         unfolding set_rw
         unfolding vector_scaleR_component[symmetric]
-        unfolding setsum_component[symmetric] by vector
+        unfolding setsum_component[symmetric]
+        unfolding proj_onto_def proj_def[abs_def]
+        unfolding proj_onto_setsum_rw
+        by vector
       thus False using col_not_eq by contradiction
     qed
     show "\<exists>ia. column i (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k)) 
@@ -396,30 +389,11 @@ proof (induct k)
 next
   case (Suc k)
   have rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [(Suc k)]" by simp
-  show ?case unfolding column_set_Gram_Schmidt_upt_k[OF Suc.prems[unfolded ncols_def], of A]
-    apply auto
-  proof (rule pairwise_orthogonal_insert)
-    show "pairwise orthogonal {column i (Gram_Schmidt_upt_k A k) |i. to_nat i \<le> k}"
-      by (metis Suc.hyps Suc.prems Suc_lessD)    
-    fix y
-    def a=="(column (from_nat (Suc k)) (Gram_Schmidt_upt_k A k))"
-    def C == "{column i (Gram_Schmidt_upt_k A k) |i. to_nat i \<le> k}"
-    let ?a = "a - setsum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"    
-    assume "y \<in> {column i (Gram_Schmidt_upt_k A k) |i. to_nat i \<le> k}"
-    hence yC: "y \<in> C" unfolding C_def by auto
-    then have Cy: "C = insert y (C - {y})" unfolding C_def  by auto
-    have fth: "finite (C - {y})" unfolding C_def by simp
-    have finite_C: "finite C" unfolding C_def by simp
-    show "orthogonal ?a y"
-      unfolding orthogonal_def
-      unfolding inner_diff inner_setsum_left right_minus_eq
-      unfolding setsum.remove[OF finite_C yC]
-      apply (clarsimp simp add: inner_commute[of y a])
-      apply (rule setsum.neutral)
-      apply clarsimp
-      apply (rule Suc.hyps[unfolded pairwise_def orthogonal_def, rule_format])
-      using yC unfolding C_def apply auto by (metis Suc.prems dual_order.strict_trans lessI)
-  qed
+  show ?case
+    unfolding column_set_Gram_Schmidt_upt_k[OF Suc.prems[unfolded ncols_def], of A]
+    unfolding proj_onto_setsum_rw
+    by (auto simp add: proj_def[symmetric] proj_onto_def[symmetric])
+       (rule pairwise_orthogonal_proj_set, auto simp add: Suc.hyps Suc.prems Suc_lessD)
 qed
 
 
@@ -451,7 +425,10 @@ lemma column_Gram_Schmidt_column_k:
   shows "column k (Gram_Schmidt_column_k A (to_nat k)) = 
   (column k A) - (\<Sum>x\<in>{column i A|i. i < k}. (x \<bullet> (column k A) / (x \<bullet> x)) *\<^sub>R x)"
   unfolding Gram_Schmidt_column_k_def column_def
-  unfolding from_nat_to_nat_id by vector
+  unfolding from_nat_to_nat_id 
+  unfolding proj_onto_def proj_def[abs_def]
+  unfolding proj_onto_setsum_rw
+  by vector
 
 
 lemma column_Gram_Schmidt_column_k':
@@ -519,7 +496,9 @@ proof (induct k)
     by (auto, metis eq_iff least_mod_type)
   have set_rw3: "{column i A |i. i \<le> 0} ={column 0 A}"  by (auto, metis eq_iff least_mod_type)
   have col_0_eq: "column 0 (Gram_Schmidt_column_k A j) = column 0 A"
-    unfolding Gram_Schmidt_column_k_def column_def by (simp add: set_rw)
+    unfolding Gram_Schmidt_column_k_def column_def
+    unfolding proj_onto_def proj_def[abs_def]
+    by (simp add: set_rw)
   show ?case unfolding cols_upt_k_def from_nat_0 unfolding set_rw2 set_rw3 unfolding col_0_eq ..
 next
   case (Suc k)
@@ -566,8 +545,12 @@ next
     qed
     have rw: "column (from_nat (Suc k)) (Gram_Schmidt_column_k A j) = (a - (\<Sum>x\<in>cols_upt_k A k. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x))"
       unfolding Gram_Schmidt_column_k_def True  unfolding cols_upt_k_def a_def C_def
-      unfolding  column_def apply auto unfolding column_def[symmetric] col_rw minus_vec_def
-      unfolding column_def vec_lambda_beta by auto        
+      unfolding  column_def apply auto 
+      unfolding column_def[symmetric] col_rw minus_vec_def
+      unfolding column_def vec_lambda_beta
+      unfolding proj_onto_def proj_def[abs_def]
+      unfolding proj_onto_setsum_rw
+      by auto        
     have finite_C: "finite C" unfolding C_def cols_upt_k_def by auto
     {
       fix x b
@@ -614,10 +597,13 @@ proof (induct k)
     have set_rw: "{\<chi> ia. A $ ia $ i |i. i < from_nat 0} = {}"
       by (auto, metis less_le_not_le least_mod_type from_nat_0)
     thus "\<exists>ia. column i (Gram_Schmidt_column_k A 0) = column ia A" 
-      unfolding Gram_Schmidt_column_k_def column_def by auto
+      unfolding Gram_Schmidt_column_k_def column_def
+      unfolding proj_onto_def proj_def[abs_def] by auto
     show "\<exists>ia. column i A = column ia (Gram_Schmidt_column_k A 0)"
       using set_rw unfolding Gram_Schmidt_column_k_def column_def 
-      unfolding from_nat_0 by force
+      unfolding from_nat_0 
+      unfolding proj_onto_def proj_def[abs_def]
+      by force
   qed
   thus ?case unfolding Gram_Schmidt_upt_k_def by auto
 next
@@ -730,7 +716,7 @@ proof (induct k, unfold from_nat_0)
   have col_rw: "column 0 A = column 0 (Gram_Schmidt_upt_k A 0)"
     unfolding Gram_Schmidt_upt_k_def apply auto unfolding Gram_Schmidt_column_k_def from_nat_0
     unfolding column_def
-    using set_rw2  
+    using set_rw2 unfolding proj_onto_def proj_def[abs_def]
     by vector
   show "column 0 (Gram_Schmidt_upt_k A 0) 
     = column 0 A - (\<Sum>x\<in>{column i (Gram_Schmidt_upt_k A 0) |i. i < 0}. (x \<bullet> column 0 A / (x \<bullet> x)) *\<^sub>R x)"
@@ -910,6 +896,9 @@ qed
 
 subsubsection{*Examples of execution*}
 
+text{*Code lemma*}
+lemmas Gram_Schmidt_step_def[unfolded proj_onto_def proj_def[abs_def],code]
+
 value "let a = map (list_to_vec::real list=> real^4) [[4,-2,-1,2], 
   [-6,3,4,-8], [5,-5,-3,-4]] in 
   map vec_to_list (Gram_Schmidt a)"
@@ -920,7 +909,7 @@ value "let a = map (list_to_vec::real list=> real^4) [[4,-2,-1,2],
 
 value "let A = list_of_list_to_matrix [[4,-2,-1,2], 
   [-6,3,4,-8], [5,-5,-3,-4]]::real^4^3 in 
-  matrix_to_list_of_list (Gram_Schmidt_matrix A)"                      
+  matrix_to_list_of_list (Gram_Schmidt_matrix A)"
 
 
 end

@@ -63,6 +63,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_d
     unfolding vector_scaleR_component
     unfolding vec_to_iarray_scaleR[symmetric]
     unfolding vec_to_iarray_nth[OF i_nrows[unfolded nrows_def]]
+    unfolding normalize_def
     by auto
 qed
 

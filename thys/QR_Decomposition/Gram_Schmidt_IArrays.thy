@@ -215,9 +215,9 @@ subsection{*Gram Schmidt over IArrays*}
 
 definition "Gram_Schmidt_column_k_iarrays A k
   = tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>a b. (if b = k
-  then (column_iarray b A - setsum (\<lambda>x. ((x \<bullet>i (column_iarray b A)) / (x \<bullet>i x)) *\<^sub>R x) 
+  then (column_iarray b A - setsum (\<lambda>x. (((column_iarray b A) \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
   (set (List.map (\<lambda>n. column_iarray n A) [0..<b])))
-  else (column_iarray b A)) !! a)"      
+  else (column_iarray b A)) !! a)"
 
 definition "Gram_Schmidt_upt_k_iarrays A k = List.foldl Gram_Schmidt_column_k_iarrays A [0..<(Suc k)]"
 definition "Gram_Schmidt_matrix_iarrays A = Gram_Schmidt_upt_k_iarrays A (ncols_iarray A - 1)"
@@ -233,14 +233,16 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_d
   show "IArray.length (matrix_to_iarray (Gram_Schmidt_column_k A k) !! i) 
     = IArray.length (Gram_Schmidt_column_k_iarrays (matrix_to_iarray A) k !! i)"
     unfolding matrix_to_iarray_def Gram_Schmidt_column_k_iarrays_def tabulate2_def 
-    unfolding nrows_iarray_def ncols_iarray_def  o_def      
+    unfolding nrows_iarray_def ncols_iarray_def o_def
   proof (auto)
     have f1: "i < card (UNIV\<Colon>'rows set)"
       by (metis i length_eq_card_rows)
     have f2: "\<And>x\<^sub>5. IArray.list_of (vec_to_iarray x\<^sub>5) 
       = List.map (\<lambda>uua. x\<^sub>5 $ (from_nat uua\<Colon>'cols)\<Colon>real) [0..<card (UNIV\<Colon>'cols set)]"
       by (metis list_of.simps of_fun_def vec_to_iarray_def)
-    thus "length (IArray.list_of (List.map (\<lambda>x. vec_to_iarray (Gram_Schmidt_column_k A k $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)] ! i)) = length (IArray.list_of (List.map (\<lambda>i. IArray (List.map (\<lambda>b. IArray.list_of (if b = k then column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) - (\<Sum>x\<in>set (List.map (\<lambda>n. column_iarray n (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) [0..< b]). (x \<bullet>i column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) / (x \<bullet>i x)) *\<^sub>R x) else column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) ! i) [0..< length (IArray.list_of (vec_to_iarray (A $ from_nat 0)))])) [0..<card (UNIV\<Colon>'rows set)] ! i))"
+    thus "length (IArray.list_of (List.map (\<lambda>x. vec_to_iarray (Gram_Schmidt_column_k A k $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)] ! i)) 
+    = length (IArray.list_of (List.map (\<lambda>i. IArray (List.map (\<lambda>b. IArray.list_of (if b = k then column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) 
+    - (\<Sum>x\<in>set (List.map (\<lambda>n. column_iarray n (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) [0..< b]). (column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) else column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) ! i) [0..< length (IArray.list_of (vec_to_iarray (A $ from_nat 0)))])) [0..<card (UNIV\<Colon>'rows set)] ! i))"
       using f1 by auto
   qed
 next
@@ -260,7 +262,7 @@ next
     unfolding tabulate2_def
     unfolding of_fun_nth[OF i_nrows_iarray]
     unfolding of_fun_nth[OF ia_ncols_iarray]
-  proof (auto, unfold sub_def[symmetric])
+  proof (unfold proj_onto_def proj_def[abs_def], auto, unfold sub_def[symmetric])
     have inj: "inj_on vec_to_iarray {column i A |i. i < from_nat k}" unfolding inj_on_def
       by (auto, metis vec_to_iarray_morph)
     have set_rw: "{column i A |i. i < from_nat k} = (\<lambda>n. column n A)` {0..<from_nat k}"
@@ -285,15 +287,15 @@ next
         by (metis k order.strict_trans vec_to_iarray_column vec_to_iarray_column' xa)
     qed
     show "column (from_nat k) A $ from_nat i -
-      (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x)) =
+      (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x)) =
       (column_iarray k (matrix_to_iarray A) -
-      (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x)) !! i"
+      (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x)) !! i"
     proof (cases "k=0")
       case True
       have set_rw_empty: "{column i A |i. i < from_nat k}={}" 
         unfolding True from_nat_0 using least_mod_type not_le by auto
       have "column (from_nat k) A $ from_nat i -
-        (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A 
+        (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x
         * x $ from_nat i / (x \<bullet> x)) =
         column (from_nat k) A $ from_nat i - 0" unfolding set_rw_empty by simp
       also have "...= column (from_nat k) A $ from_nat i" by simp
@@ -302,36 +304,36 @@ next
         unfolding vec_to_iarray_column'[OF k, symmetric]
         unfolding vec_to_iarray_nth[OF i_nrows[unfolded nrows_def]] ..
       also have "...= (column_iarray k (matrix_to_iarray A) - 
-        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x))
+        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x))
         !! i" unfolding True by auto
       finally show ?thesis .
     next
       case False    
-      have "(\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) !! i = 
+      have "(\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x) !! i = 
         (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. 
-        ((x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) !! i)" 
+        (( column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x) !! i)" 
       proof (rule setsum_component_iarray)
-        show "\<forall>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. i < IArray.length ((x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x)"
+        show "\<forall>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. i < IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x)"
         proof (unfold column_iarray_def, auto)
           fix x :: nat
-          have "\<And>x\<^sub>1 x\<^sub>2. IArray.length (x\<^sub>1 *\<^sub>R (x\<^sub>2\<Colon>real iarray)) = IArray.length x\<^sub>2"
-            by (metis length_def length_map list_of.simps map_nth of_fun_def scaleR_iarray_def)
-          thus "i < length (IArray.list_of ((IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
-            by (metis i_nrows_iarray length_def length_map list_of.simps map_nth nrows_iarray_def)
+          have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> op $ A \<circ> mod_type_class.from_nat) [0..<card (UNIV\<Colon>'rows set)])))"
+            by (metis i_nrows_iarray length_def matrix_to_iarray_def nrows_iarray_def)
+          thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
+            by (simp add: matrix_to_iarray_def scaleR_iarray_def)
         qed
         show "finite ((\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k})" by auto
         show "(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k} \<noteq> {}" using False by auto
       qed
       also have "... = (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. 
-        (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x !! i)"
+        (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x !! i)"
       proof (rule setsum.cong)
         fix x assume "x \<in> (\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}"
         from this obtain n where x: "x = column_iarray n (matrix_to_iarray A)" and n: "n<k" by auto
         have n_ncols: "n<ncols A" by (metis k n order.strict_trans)
         have c_eq: "column_iarray k (matrix_to_iarray A) = vec_to_iarray (column (from_nat k::'cols) A)"
           by (metis k vec_to_iarray_column')
-        show "((x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) !! i 
-          = (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x !! i"
+        show "((column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) !! i 
+          = (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x !! i"
           unfolding x 
           unfolding vec_to_iarray_column[symmetric, of "from_nat n::'cols", 
             unfolded to_nat_from_nat_id[OF n_ncols[unfolded ncols_def]]]
@@ -343,65 +345,63 @@ next
           unfolding to_nat_from_nat_id[OF i_nrows[unfolded nrows_def]]
           unfolding vec_to_iarray_scaleR ..
       qed (simp)
-      also have "... =  (\<Sum>x\<in>vec_to_iarray ` {column i A |i. i < from_nat k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x !! i)" 
+      also have "... =  (\<Sum>x\<in>vec_to_iarray ` {column i A |i. i < from_nat k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x !! i)" 
         unfolding set_rw2[symmetric] ..
       also have "...= 
-        (\<Sum>x\<in>{column i A |i. i < from_nat k}. (x \<bullet> column (from_nat k) A / (x \<bullet> x)) *\<^sub>R vec_to_iarray x !! i)" 
+        (\<Sum>x\<in>{column i A |i. i < from_nat k}. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R vec_to_iarray x !! i)" 
         unfolding setsum.reindex[OF inj] o_def 
         unfolding vec_to_iarray_column[of "from_nat k::'cols",symmetric,unfolded to_nat_from_nat_id[OF k[unfolded ncols_def]]]
         unfolding vec_to_iarray_inner[symmetric] .. 
       also have "... 
-        = (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x))"
+        = (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x))"
         unfolding vec_to_iarray_nth[OF i_nrows[unfolded nrows_def]] by auto
-      finally have *: "(\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) !! i 
-        = (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x))" .    
+      finally have *: "(\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) !! i 
+        = (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x))" .    
       have "(column_iarray k (matrix_to_iarray A) -
-        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x)) !! i =
+        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x)) !! i =
         (column_iarray k (matrix_to_iarray A) !! i -
-        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) !! i)"
+        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) !! i)"
       proof (rule minus_iarray_component)
         have finite: "finite ((\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k})"
           using False by auto
         have not_empty: "(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k} \<noteq> {}"
           by (metis False atLeastLessThan_empty_iff2 empty_is_image neq0_conv)
-        let ?C="{IArray.length ((x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) |x. x \<in> (\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}}"
+        let ?C="{IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) |x. x \<in> (\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}}"
         have finite_C: "finite ?C" by auto
         have not_empty_C: "?C \<noteq> {}" using False by auto
         let ?x="(column_iarray 0 (matrix_to_iarray A))"
-        let ?c="IArray.length ((?x \<bullet>i column_iarray k (matrix_to_iarray A) / (?x \<bullet>i ?x)) *\<^sub>R ?x)"
+        let ?c="IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i ?x / (?x \<bullet>i ?x)) *\<^sub>R ?x)"
         show "i < IArray.length (column_iarray k (matrix_to_iarray A))"
           unfolding column_iarray_def
           by (auto, metis i_nrows_iarray length_def nrows_iarray_def)
-        show "i < IArray.length (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x)"
+        show "i < IArray.length (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x)"
           unfolding length_setsum_iarray[OF finite not_empty]
           unfolding Max_gr_iff[OF finite_C not_empty_C]
         proof (rule bexI[of _ "?c"])
-          show "i < ?c"
-            unfolding column_iarray_def
-          proof (auto)
-            have f1: "\<And>x\<^sub>1. IArray.length (IArray (x\<^sub>1\<Colon>real list)) = length x\<^sub>1"
-              by simp
-            hence "\<And>x\<^sub>1 x\<^sub>2. IArray.length (x\<^sub>1 *\<^sub>R (x\<^sub>2\<Colon>real iarray)) = IArray.length x\<^sub>2"
-              by (metis length_def length_map map_nth of_fun_def scaleR_iarray_def)
-            thus "i < length (IArray.list_of ((IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (List.map (\<lambda>m. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! m) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
-              using f1 by (metis i_nrows_iarray length_def length_map map_nth nrows_iarray_def)
+          show "i < ?c"           
+          proof (unfold column_iarray_def, auto)
+            have "i < card (UNIV\<Colon>'rows set)"
+              by (metis (no_types) i_nrows nrows_def)
+            thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
+              by (simp add: matrix_to_iarray_def scaleR_iarray_def)
           qed
-          show "?c \<in> {IArray.length ((x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x) 
+          show "?c \<in> {IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
             |x. x \<in> (\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}}"
             using False by auto 
         qed
       qed
       also have "... = column_iarray k (matrix_to_iarray A) !! i -
-        (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x))"    
+        (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x))"    
         unfolding * ..
       also have "... = column (from_nat k) A $ from_nat i -
-        (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x))"
+        (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x))"
         unfolding vec_to_iarray_column[of "from_nat k::'cols",symmetric,unfolded to_nat_from_nat_id[OF k[unfolded ncols_def]]]
         unfolding vec_to_iarray_nth[OF i_nrows[unfolded nrows_def]] ..
       finally show "column (from_nat k) A $ from_nat i -
-        (\<Sum>x\<in>{column i A |i. i < from_nat k}. x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x)) =
+        (\<Sum>x\<in>{column i A |i. i < from_nat k}. column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x)) =
         (column_iarray k (matrix_to_iarray A) -
-        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (x \<bullet>i column_iarray k (matrix_to_iarray A) / (x \<bullet>i x)) *\<^sub>R x)) !! i" ..
+        (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i  x/ (x \<bullet>i x)) *\<^sub>R x)) !! i"
+        ..
     qed
     show "column (from_nat ia) A $ from_nat i = column_iarray ia (matrix_to_iarray A) !! i"
       unfolding vec_to_iarray_nth[symmetric, OF i_nrows[unfolded nrows_def]]
@@ -411,7 +411,7 @@ next
     have "ia=k" by (rule from_nat_eq_imp_eq[OF eq ia_ncols[unfolded ncols_def] k[unfolded ncols_def]])
     thus "column (from_nat k) A $ from_nat i 
       - (\<Sum>x\<in>{column i A |i. i < from_nat k}. 
-      x \<bullet> column (from_nat k) A * x $ from_nat i / (x \<bullet> x)) 
+      column (from_nat k) A \<bullet> x * x $ from_nat i / (x \<bullet> x)) 
       = column_iarray ia (matrix_to_iarray A) !! i"
       using ia_not_k by contradiction
   qed

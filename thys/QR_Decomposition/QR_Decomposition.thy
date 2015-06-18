@@ -79,7 +79,7 @@ text{*An orthogonal matrix is a matrix whose rows (and columns) are orthonormal 
 obtain the QR decomposition, we have to normalise (divide by the norm) 
 the vectors obtained with the Gram-Schmidt algorithm.*}
 
-definition "divide_by_norm A  = (\<chi> a b. ((1/norm (column b A)) *\<^sub>R (column b A)) $ a)"
+definition "divide_by_norm A  = (\<chi> a b. normalize (column b A) $ a)"
 
 text{*Properties*}
 
@@ -89,11 +89,16 @@ lemma norm_column_divide_by_norm:
   shows "norm (column a (divide_by_norm A)) = 1"
 proof -
   have not_0: "norm (\<chi> i. A $ i $ a) \<noteq> 0" by (metis a column_def norm_eq_zero)
-  have "column a (divide_by_norm A) = (\<chi> i. (1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R A $ i $ a)" unfolding divide_by_norm_def column_def by auto
-  also have "... =  (1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R (\<chi> i.  A $ i $ a)" unfolding vec_eq_iff by auto
-  finally have "norm (column a (divide_by_norm A)) = norm ((1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R (\<chi> i.  A $ i $ a))" by simp
-  also have "... = \<bar>1 / norm (\<chi> i. A $ i $ a)\<bar> * norm (\<chi> i. A $ i $ a)" unfolding norm_scaleR ..
-  also have "... = (1 / norm (\<chi> i. A $ i $ a)) * norm (\<chi> i. A $ i $ a)" by auto
+  have "column a (divide_by_norm A) = (\<chi> i. (1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R A $ i $ a)" 
+    unfolding divide_by_norm_def column_def normalize_def by auto
+  also have "... =  (1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R (\<chi> i.  A $ i $ a)"
+    unfolding vec_eq_iff by auto
+  finally have "norm (column a (divide_by_norm A)) = norm ((1 / norm (\<chi> i. A $ i $ a)) *\<^sub>R (\<chi> i.  A $ i $ a))"
+    by simp
+  also have "... = \<bar>1 / norm (\<chi> i. A $ i $ a)\<bar> * norm (\<chi> i. A $ i $ a)"
+    unfolding norm_scaleR ..
+  also have "... = (1 / norm (\<chi> i. A $ i $ a)) * norm (\<chi> i. A $ i $ a)"
+    by auto
   also have "... = 1" using not_0 by auto
   finally show ?thesis .
 qed
@@ -105,7 +110,7 @@ proof (auto)
   fix x assume x: "x \<in> columns (divide_by_norm A)"
   from this obtain i where x_col_i: "x=column i (divide_by_norm A)" unfolding columns_def by blast
   also have "... = (1/norm (column i  A)) *\<^sub>R (column i A)" 
-    unfolding divide_by_norm_def column_def by vector
+    unfolding divide_by_norm_def column_def normalize_def by vector
   finally have x_eq: "x=(1/norm (column i A)) *\<^sub>R (column i A)" .
   show "x \<in> real_vector.span (columns A)"
     by (unfold x_eq, rule real_vector.span_mul, rule real_vector.span_superset, auto simp add: columns_def)
@@ -120,7 +125,7 @@ next
     from x obtain i where x_col_i: "x=column i A" unfolding columns_def by blast
     have "x=column i A" using x_col_i .
     also have "... = norm (column i A) *\<^sub>R column i (divide_by_norm A)"
-      using False unfolding x_col_i columns_def divide_by_norm_def column_def by vector
+      using False unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i A) *\<^sub>R column i (divide_by_norm A)" .
     show "x \<in> real_vector.span (columns (divide_by_norm A))" 
       by (unfold x_eq, rule real_vector.span_mul, rule real_vector.span_superset,
@@ -138,7 +143,8 @@ lemma divide_by_norm_row_code[code abstract]:
 
 lemma divide_by_norm_code [code abstract]:
   "vec_nth (divide_by_norm A) = divide_by_norm_row A"
-  unfolding divide_by_norm_def  unfolding divide_by_norm_row_def[abs_def]
+  unfolding divide_by_norm_def unfolding divide_by_norm_row_def[abs_def]
+  unfolding normalize_def
   by fastforce
 
 subsubsection{*The QR Decomposition*}
@@ -163,7 +169,7 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
     from this obtain i where x_col_i: "x=column i (fst (QR_decomposition A))" unfolding columns_def by blast
     also have "... = column i (divide_by_norm (Gram_Schmidt_matrix A))" unfolding QR_decomposition_def Let_def fst_conv ..
     also have "... = (1/norm (column i (Gram_Schmidt_matrix A))) *\<^sub>R (column i (Gram_Schmidt_matrix A))" 
-      unfolding divide_by_norm_def column_def by vector
+      unfolding divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x=(1/norm (column i (Gram_Schmidt_matrix A))) *\<^sub>R (column i (Gram_Schmidt_matrix A))" .
     show "x \<in> vec.span (columns (Gram_Schmidt_matrix A))"
       unfolding x_eq
@@ -176,7 +182,7 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
       using vec.dependent_0[of "(columns (Gram_Schmidt_matrix A))"] x by auto
     have "x=column i (Gram_Schmidt_matrix A)" using x_col_i .
     also have "... = norm (column i (Gram_Schmidt_matrix A)) *\<^sub>R column i (divide_by_norm (Gram_Schmidt_matrix A))"
-      using zero_not_in unfolding x_col_i columns_def divide_by_norm_def column_def by vector
+      using zero_not_in unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i (Gram_Schmidt_matrix A)) *\<^sub>R column i (divide_by_norm (Gram_Schmidt_matrix A))" .
     show "x \<in> vec.span (columns (fst (QR_decomposition A)))"
       unfolding x_eq op_vec_scaleR 
@@ -210,11 +216,11 @@ proof (auto)
   have d1: "column i (fst (QR_decomposition A))
     = (1 / norm (\<chi> ia. Gram_Schmidt_matrix A $ ia $ i)) *\<^sub>R (column i (Gram_Schmidt_matrix A))"
     unfolding QR_decomposition_def Let_def fst_conv
-    unfolding divide_by_norm_def column_def unfolding vec_eq_iff by auto
+    unfolding divide_by_norm_def column_def normalize_def unfolding vec_eq_iff by auto
   have d2: "column ia (fst (QR_decomposition A))
     = (1 / norm (\<chi> i. Gram_Schmidt_matrix A $ i $ ia)) *\<^sub>R (column ia (Gram_Schmidt_matrix A))"
     unfolding QR_decomposition_def Let_def fst_conv
-    unfolding divide_by_norm_def column_def unfolding vec_eq_iff by auto
+    unfolding divide_by_norm_def column_def normalize_def unfolding vec_eq_iff by auto
   show "orthogonal (column i (fst (QR_decomposition A))) (column ia (fst (QR_decomposition A)))"
     unfolding d1 d2 apply (rule orthogonal_mult) using orthogonal_Gram_Schmidt_matrix[of A]
     unfolding pairwise_def using col_not_eq2 by auto
@@ -225,7 +231,7 @@ lemma qk_uk_norm:
   "(1/(norm (column k ((Gram_Schmidt_matrix A))))) *\<^sub>R (column k ((Gram_Schmidt_matrix A))) 
   = column k (fst(QR_decomposition A))"
   unfolding QR_decomposition_def Let_def fst_conv divide_by_norm_def
-  unfolding column_def by vector
+  unfolding column_def normalize_def by vector
 
 
 lemma norm_columns_fst_QR_decomposition:
@@ -372,7 +378,7 @@ proof -
     assume i: "i < k"
     have col_rw: "column i (fst (QR_decomposition A)) = 
       (1/norm (column i (Gram_Schmidt_matrix A))) *\<^sub>R (column i (Gram_Schmidt_matrix A))"
-      unfolding QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def by vector
+      unfolding QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def normalize_def by vector
     thus "column i (fst (QR_decomposition A)) \<in> f ` {column i (Gram_Schmidt_matrix A) |i. i < k}"
       unfolding f_def using i
       by auto
@@ -387,9 +393,11 @@ proof -
     fix i ia assume i: "i < k" and ia: "ia < k"
       and f_eq: "f (column i (Gram_Schmidt_matrix A)) = f (column ia (Gram_Schmidt_matrix A))"
     have fi: "f (column i (Gram_Schmidt_matrix A)) = column i (fst (QR_decomposition A))"
-      unfolding f_def QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def by vector
+      unfolding f_def QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def normalize_def
+      by vector
     have fia: "f (column ia (Gram_Schmidt_matrix A)) = column ia (fst (QR_decomposition A))"
-      unfolding f_def QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def by vector
+      unfolding f_def QR_decomposition_def Let_def fst_conv divide_by_norm_def column_def normalize_def
+      by vector
     have "i = ia" using column_eq_fst_QR_decomposition[OF r] f_eq unfolding fi fia by simp
     thus "column i (Gram_Schmidt_matrix A) = column ia (Gram_Schmidt_matrix A)" by simp
   qed

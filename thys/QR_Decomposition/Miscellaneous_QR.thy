@@ -29,7 +29,6 @@ lemma from_nat_le:
   shows "i < from_nat k"
   by (metis (full_types) from_nat_mono from_nat_to_nat_id i k)
 
-
 text{*Some properties about orthogonal matrices.*}
 
 lemma orthogonal_mult:
