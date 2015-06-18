@@ -261,47 +261,11 @@ qed
   
   lemmas length_remdups_card = length_remdups_concat[of "[l]", simplified] for l
 
-lemma card_Plus:
-  assumes fina: "finite (A::'a set)" and finb: "finite (B::'b set)"
-  shows "card (A <+> B) = (card A) + (card B)"
-proof -
-  from fina finb
-  have "card ((Inl ` A) \<union> (Inr ` B)) =
-        (card ((Inl ` A)::('a+'b)set)) + (card ((Inr ` B)::('a+'b)set))"
-    by (auto intro: card_Un_disjoint finite_imageI)
-  thus ?thesis
-    by (simp add: Plus_def card_image inj_on_def)
-qed
-
-
   lemma fs_contract: "fst ` { p | p. f (fst p) (snd p) \<in> S } = { a . \<exists>b. f a b \<in> S }"
     by (simp add: image_Collect)
 
-    (* Nice lemma thanks to Andreas Lochbihler *)
-  lemma finite_Collect:
-    assumes fin: "finite S" and inj: "inj f"
-    shows "finite {a. f a : S}"
-  proof -
-    def S' == "S \<inter> range f"
-    hence "{a. f a : S} = {a. f a : S'}" by auto
-    also have "... = (inv f) ` S'"
-    proof
-      show "{a. f a : S'} <= inv f ` S'"
-        using inj by(force intro: image_eqI)
-      show "inv f ` S' <= {a. f a : S'}"
-      proof
-        fix x
-        assume "x : inv f ` S'"
-        then obtain y where "y : S'" "x = inv f y" by blast
-        moreover from `y : S'` obtain x' where "f x' = y"
-          unfolding S'_def by blast
-        hence "f (inv f y) = y" unfolding inv_def by(rule someI)
-        ultimately show "x : {a. f a : S'}" by simp
-      qed
-    qed
-    also have "finite S'" using fin unfolding S'_def by blast
-    ultimately show ?thesis by simp
-  qed 
+lemma finite_Collect: "finite S \<Longrightarrow> inj f \<Longrightarrow> finite {a. f a : S}"
+by(simp add: finite_vimageI vimage_def[symmetric])
 
   -- "Finite sets have an injective mapping to an initial segments of the 
       natural numbers"
@@ -376,16 +340,10 @@ text {*
   if the index set is finite and if for every index the component
   set is itself finite. Conversely, we show that every component
   set must be finite when the union is finite.
-*} (* Author: Stefan Merz? *)
+*}
 lemma finite_UNION_then_finite:
-  assumes hyp: "finite (UNION A B)" and a: "a \<in> A"
-  shows "finite (B a)"
-proof (rule ccontr)
-  assume cc: "\<not>finite (B a)"
-  from a have "B a \<subseteq> UNION A B" by auto
-  from this cc have "\<not>finite (UNION A B)" by (auto intro: finite_subset)
-  from this hyp show "False" ..
-qed
+  "finite (UNION A B) \<Longrightarrow> a \<in> A \<Longrightarrow> finite (B a)"
+by (metis Set.set_insert UN_insert Un_infinite)
 
 lemma finite_if_eq_beyond_finite: "finite S \<Longrightarrow> finite {s. s - S = s' - S}"
 proof (rule finite_subset[where B="(\<lambda>s. s \<union> (s' - S)) ` Pow S"], clarsimp)
@@ -523,26 +481,12 @@ subsection {* Multisets *}
 (*declare union_ac[simp] -- don't do it !*)
 
 
-thm count_multiset_of_set
-
-lemma count_multiset_of_set_finite_iff:
-  "finite S \<Longrightarrow> count (multiset_of_set S) a = (if a \<in> S then 1 else 0)"
+lemma count_mset_set_finite_iff:
+  "finite S \<Longrightarrow> count (mset_set S) a = (if a \<in> S then 1 else 0)"
   by simp
 
-lemma in_multiset_of_set[simp]:
-  "finite S \<Longrightarrow> x \<in># (multiset_of_set S) \<longleftrightarrow> x \<in> S"
-  by (simp add: count_multiset_of_set_finite_iff)
-
-declare Multiset.finite_set_mset_multiset_of_set[simp]
-
-lemma multiset_of_insert: "finite S \<Longrightarrow>
-  multiset_of_set (insert e S) =
-  multiset_of_set (S - {e}) + {#e#}"
-  by (metis multiset_of_set.insert_remove union_commute)
-
-lemma multiset_of_set_set :
-  "distinct l \<Longrightarrow>
-   multiset_of_set (set l) = multiset_of l"
+lemma mset_set_set :
+  "distinct l \<Longrightarrow> mset_set (set l) = multiset_of l"
 proof (induct l)
   case Nil thus ?case by simp
 next
@@ -550,31 +494,14 @@ next
   from Cons(2) have e_nin_l : "e \<notin> set l" by simp
   from Cons(2) have dist_l: "distinct l" by simp
   note ind_hyp = Cons(1)[OF dist_l]
-
   from e_nin_l have "set l - {e} = set l" by auto
   with ind_hyp show ?case
-    by (simp add: multiset_of_insert)
+    by (simp add: mset_set.insert_remove ac_simps)
 qed
 
 lemma ex_Melem_conv: "(\<exists>x. x \<in># A) = (A \<noteq> {#})"
   by (metis all_not_in_conv mem_set_mset_iff set_mset_eq_empty_iff)
 
-subsubsection {* Case distinction *}
-text {* Install a (new) default case-distinction lemma for multisets, that distinguishes between empty multiset and multiset that is the union of of some multiset and a singleton multiset. 
-  This is the same case distinction as done by the @{thm [source] multiset_induct} rule that is installed as default induction rule for multisets by Multiset.thy. *}
-lemma mset_cases[case_names empty add, cases type: multiset]: "\<lbrakk> M={#} \<Longrightarrow> P; !!x M'. M=M'+{#x#} \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply (induct M)
-  apply auto
-done
-
-lemma multiset_induct'[case_names empty add]: "\<lbrakk>P {#}; \<And>M x. P M \<Longrightarrow> P ({#x#}+M)\<rbrakk> \<Longrightarrow> P M"
-  by (induct rule: multiset_induct) (auto simp add: union_commute)
-
-lemma mset_cases'[case_names empty add]: "\<lbrakk> M={#} \<Longrightarrow> P; !!x M'. M={#x#}+M' \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply (induct M rule: multiset_induct')
-  apply auto
-done
-  
 subsubsection {* Count *}
         lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
           by (auto)

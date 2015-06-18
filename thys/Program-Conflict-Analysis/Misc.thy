@@ -104,21 +104,10 @@ subsection {* Multisets *}
 (*declare union_ac[simp] -- don't do it !*)
 
 subsubsection {* Case distinction *}
-text {* Install a (new) default case-distinction lemma for multisets, that distinguishes between empty multiset and multiset that is the union of of some multiset and a singleton multiset. 
-  This is the same case distinction as done by the @{thm [source] multiset_induct} rule that is installed as default induction rule for multisets by Multiset.thy. *}
-lemma mset_cases[case_names empty add, cases type: multiset]: "\<lbrakk> M={#} \<Longrightarrow> P; !!x M'. M=M'+{#x#} \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply (induct M)
-  apply auto
-done
 
 lemma multiset_induct'[case_names empty add]: "\<lbrakk>P {#}; \<And>M x. P M \<Longrightarrow> P ({#x#}+M)\<rbrakk> \<Longrightarrow> P M"
   by (induct rule: multiset_induct) (auto simp add: union_commute)
 
-lemma mset_cases'[case_names empty add]: "\<lbrakk> M={#} \<Longrightarrow> P; !!x M'. M={#x#}+M' \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply (induct M rule: multiset_induct')
-  apply auto
-done
-  
 subsubsection {* Count *}
   lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
     by (auto)
@@ -165,9 +154,6 @@ subsubsection {* Union, difference and intersection *}
     ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_eq_iff)
   qed
 
-  lemma mset_diff_union_cancel[simp]: "t :# S \<Longrightarrow> (S - {#t#}) + {#t#} = S"
-    by (auto simp add: mset_union_diff_comm union_ac)
-
   lemma mset_right_cancel_union: "\<lbrakk>a :# A+B; ~(a :# B)\<rbrakk> \<Longrightarrow> a:#A"
     by (simp)
   lemma mset_left_cancel_union: "\<lbrakk>a :# A+B; ~(a :# A)\<rbrakk> \<Longrightarrow> a:#B"
@@ -194,9 +180,9 @@ subsubsection {* Union, difference and intersection *}
     ultimately show ?thesis by (auto simp add: multiset_eq_iff)
   qed
 
-  lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
+  (*lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
     by (auto iff add: multiset_eq_iff)
-  (*lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
+  lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
     by (auto iff add: multiset_eq_iff)
   lemmas union_diff_assoc_se = union_diff_assoc_se1 union_diff_assoc_se2*)
 
@@ -234,9 +220,6 @@ subsubsection {* Union, difference and intersection *}
     thus ?thesis by (simp add: multiset_inter_commute)
   qed
 
-  lemmas mset_inter_1elem = mset_inter_1elem1 mset_inter_1elem2
-
-
   lemmas mset_neutral_cancel1 = union_left_cancel[where N="{#}", simplified] union_right_cancel[where N="{#}", simplified]
   declare mset_neutral_cancel1[simp]
 
@@ -263,8 +246,8 @@ subsubsection {* Union, difference and intersection *}
       assume NEQ: "c~=b & a~=c"
       from A have "{#a#}+{#b#}-{#c#} = M + {#c#}-{#c#}" by auto
       hence "{#a#}+{#b#}-{#c#} = M" by (auto simp add: union_assoc)
-      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c :# {#b#})", auto simp add: mset_inter_1elem multiset_union_diff_commute)
-      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a :# {#c#})", auto simp add: mset_diff_cancel1elem)
+      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c :# {#b#})", auto simp add: multiset_union_diff_commute)
+      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a :# {#c#})", auto)
       hence S1: "size M = 2" by auto
       moreover from A have "size ({#a#}+{#b#}) = size (M + {#c#})" by auto
       hence "size M = 1" by auto
@@ -273,11 +256,7 @@ subsubsection {* Union, difference and intersection *}
     ultimately show ?thesis by blast
   qed
 
-  lemma mset_diff_union_s_inverse[simp]: "s :# S \<Longrightarrow> {#s#} + (S - {# s #}) = S" proof -
-    assume "s :# S"
-    hence "S = S - {#s#} + {#s#}" by (auto simp add: mset_union_diff_comm)
-    thus ?thesis by (auto simp add: union_ac)
-  qed
+declare insert_DiffM[simp]
 
   lemma mset_un_iff: "(a :# A + B) = (a :# A | a :# B)"
     by (simp)
@@ -324,7 +303,7 @@ subsubsection {* Union, difference and intersection *}
       have "s:#{#s#}+c" by simp
       with A have "s:#{#r'#}+c'" by simp
       with CASE have "s:#c'" by (auto elim!: mset_un_cases split: split_if_asm)
-      from mset_diff_union_s_inverse[OF this, symmetric] have 1: "c' = {#s#} + (c' - {#s#})" .
+      from insert_DiffM[OF this, symmetric] have 1: "c' = {#s#} + (c' - {#s#})" .
       with A have "{#s#}+c = {#s#}+({#r'#}+(c' - {#s#}))" by (auto simp add: union_ac)
       hence 2: "c={#r'#}+(c' - {#s#})" by (auto)
       hence 3: "c-{#r'#} = (c' - {#s#})" by auto
@@ -791,9 +770,6 @@ subsubsection {* Miscellaneous *}
 
   lemma last_in_set[intro]: "\<lbrakk>l\<noteq>[]\<rbrakk> \<Longrightarrow> last l \<in> set l"
     by (induct l) auto
-
-  lemma map_ident_id[simp]: "map id = id" "map id x = x"
-    by (unfold id_def) auto
 
 subsection {* Induction on nat *}
   lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; !! n . ALL nn . nn <= n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"

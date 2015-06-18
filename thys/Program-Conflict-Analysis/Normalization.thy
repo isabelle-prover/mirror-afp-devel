@@ -1118,23 +1118,8 @@ lemma (in flowgraph) ntr_split':
     mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg wa) = {} \<and> 
     (ca,wa,ca')\<in>trcl (ntr fg) \<and> 
     (cb,wb,cb')\<in>trcl (ntr fg)"
-proof (cases ca)
-  case empty with A show ?thesis by (fastforce intro: exI[of _ "{#}"] exI[of _ "[]"])
-next
-  case (add s cae) hence CASE: "ca+cb={#s#}+(cae+cb)" by (simp add: union_ac) 
-  with ntrs.gtr2gtrp A obtain s' ce' ww where NTRP: "c'={#s'#}+ce'" "w=map le_rem_s ww" "((s,cae+cb),ww,(s',ce'))\<in>trcl (ntrp fg)" by (simp, blast)
-  from ntrp_split[OF NTRP(3)] VALID CASE obtain w1 w2 c1' c2' where LEM:
-    "ww \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "ce' = c1' + c2'" "((s, cae), w1, s', c1') \<in> trcl (ntrp fg)" "(cb, w2, c2') \<in> trcl (ntr fg)" "mon_ww fg (map le_rem_s w1) \<inter> mon_c fg cb = {}" "mon_ww fg w2 \<inter> mon_c fg ({#s#} + cae) = {}"
-    by (auto simp add: union_ac)
-  from cil_map[OF LEM(1)[unfolded \<alpha>nl_def']] NTRP(2) have "w \<in> map le_rem_s w1 \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2" by auto
-  moreover from gtrp2gtr[OF LEM(3)] add NTRP(1) LEM(2) have "(ca,map le_rem_s w1,{#s'#}+c1')\<in>trcl (ntr fg)" "c'=({#s'#}+c1') + c2'" by (simp_all add: union_ac)
-  moreover from add LEM(6) have "mon_c fg ca \<inter> mon_ww fg w2 = {}" by (auto simp add: union_ac)
-  with VALID have "mon_c fg ca \<inter> (mon_c fg cb \<union> mon_ww fg w2) = {}" by (auto simp add: valid_unconc)
-  moreover from VALID LEM(5) have "mon_c fg cb \<inter> (mon_c fg ca \<union> mon_ww fg (map le_rem_s w1))={}" by (auto simp add: valid_unconc)
-  moreover note LEM(4)
-  ultimately show ?thesis by blast
-qed
-  
+using A VALID by(rule ntr_split)
+
 text {* The unsplit lemma combines two interleavable executions. For illustration purposes, we first prove the less general version for multiset-configurations.
   The general version for loc/env-configurations is shown later. *}   
 lemma (in flowgraph) ntr_unsplit: 
