@@ -28,15 +28,6 @@ text_raw {*\label{thy:Misc}*}
 text {* Here we provide a collection of miscellaneous definitions and helper lemmas *}
 
 subsection "Miscellaneous (1)"
-(* TODO: To be moved to List.thy, Option.thy *)
-lemma equal_Nil_null [code_unfold]:
-  "HOL.equal [] = List.null"
-  by (auto simp add: List.null_def equal)
-
-lemma equal_None_is_none [code_unfold]:
-  "HOL.equal None = Option.is_none"
-  by (auto simp add: Option.is_none_def equal)
-
 
 text {* This stuff is used in this theory itself, and thus occurs in first place or is simply not sorted into any other section of this theory. *}
 
