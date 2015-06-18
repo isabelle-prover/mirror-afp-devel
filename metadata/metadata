@@ -2992,6 +2992,9 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <htt
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2015-02-12
 abstract = QR decomposition is an algorithm to decompose a real matrix A into the product of two other matrices Q and R, where Q is orthogonal and R is invertible and upper triangular. The algorithm is useful for the least squares problem; i.e., the computation of the best approximation of an unsolvable system of linear equations. As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. The development relies, among others, on the AFP entry "Implementing field extensions of the form Q[sqrt(b)]" by René Thiemann, which allows execution of the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
+extra-history =
+  Change history:
+  [2015-06-18]: The second part of the Fundamental Theorem of Linear Algebra has been generalized to more general inner product spaces.
 
 [Imperative_Insertion_Sort]
 title = Imperative Insertion Sort
