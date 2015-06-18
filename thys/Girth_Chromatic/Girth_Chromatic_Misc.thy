@@ -14,15 +14,6 @@ text {*
   Also, a little bit of setup happens.
 *}
 
-text {*
-  We employ filters and the @{term eventually} predicate to deal with the
-  @{term "\<exists>N. \<forall>n\<ge>N. P n"} cases. To make this more convenient, introduce
-  a shorter syntax.
-*}
-
-abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
-  "evseq P \<equiv> eventually P sequentially"
-
 subsection {* Numbers *}
 
 lemma enat_in_Inf:
@@ -159,18 +150,21 @@ by (induct rule: inc_induct) (auto simp: card_Suc_eq)
 
 subsection {* Limits and eventually *}
 
+text {*
+  We employ filters and the @{term eventually} predicate to deal with the
+  @{term "\<exists>N. \<forall>n\<ge>N. P n"} cases. To make this more convenient, introduce
+  a shorter syntax.
+*}
+
+abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
+  "evseq P \<equiv> eventually P sequentially"
+
 lemma eventually_le_le:
   fixes P :: "'a => ('b :: preorder)"
   assumes "eventually (\<lambda>x. P x \<le> Q x) net"
   assumes "eventually (\<lambda>x. Q x \<le> R  x) net"
   shows "eventually (\<lambda>x. P x \<le> R x) net"
-using assms by (rule eventually_elim2) (rule order_trans)
-
-lemma eventually_sequentially_lessI:
-  assumes "\<And>x. c < x \<Longrightarrow> P x"
-  shows "eventually P sequentially"
-unfolding eventually_sequentially
-by (rule exI[where x="Suc c"]) (auto intro: assms)
+using assms by eventually_elim (rule order_trans)
 
 lemma LIMSEQ_neg_powr:
   assumes s: "s < 0"
