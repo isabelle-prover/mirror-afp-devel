@@ -49,7 +49,7 @@ begin
     by auto
 
   definition set :: "'b \<Rightarrow> 'a set" where
-     [simp]: "set l = set_of (multiset l)"
+     [simp]: "set l = set_mset (multiset l)"
 end
 
 subsection {* Function remove\_max *}
@@ -113,7 +113,7 @@ lemma remove_max_set:
   "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
                                  set l' \<union> {m} = set l"
 using remove_max_multiset[of l m l']
-by (metis set_def set_of_single set_of_union)
+by (metis set_def set_mset_single set_mset_union)
 
 text{* As it is said before
 in each iteration invariant condition must be satisfied, so the {\em
@@ -239,7 +239,7 @@ proof-
     thus "sorted (m # sl) \<and> (\<forall>x\<in>set l'. \<forall>y\<in>List.set (m # sl). x \<le> y)"
       using remove_max_set[of l m l'] remove_max_max[of l m l']
       apply (auto simp add: sorted_Cons) 
-      by (metis Max_ge finite_set_of insert_iff mem_set_of_iff)
+      by (metis Max_ge finite_set_mset insert_iff mem_set_mset_iff)
   qed
   thus ?thesis
     by simp

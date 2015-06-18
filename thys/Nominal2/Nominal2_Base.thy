@@ -2120,12 +2120,12 @@ by (simp add: supp_set)
 
 subsection {* Type @{typ "'a multiset"} is finitely supported *}
 
-lemma set_of_eqvt [eqvt]:
-  shows "p \<bullet> (set_of M) = set_of (p \<bullet> M)"
+lemma set_mset_eqvt [eqvt]:
+  shows "p \<bullet> (set_mset M) = set_mset (p \<bullet> M)"
 by (induct M) (simp_all add: insert_eqvt empty_eqvt)
 
-lemma supp_set_of:
-  shows "supp (set_of M) \<subseteq> supp M"
+lemma supp_set_mset:
+  shows "supp (set_mset M) \<subseteq> supp M"
   apply (rule supp_fun_app_eqvt)
   unfolding eqvt_def
   apply(perm_simp)
@@ -2165,11 +2165,11 @@ lemma Union_included_multiset:
   fixes M::"('a::fs multiset)" 
   shows "(\<Union>{supp x | x. x \<in># M}) \<subseteq> supp M"
 proof -
-  have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>{supp x | x. x \<in> set_of M})" by simp
-  also have "... \<subseteq> (\<Union>x \<in> set_of M. supp x)" by auto
-  also have "... = supp (set_of M)"
+  have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>{supp x | x. x \<in> set_mset M})" by simp
+  also have "... \<subseteq> (\<Union>x \<in> set_mset M. supp x)" by auto
+  also have "... = supp (set_mset M)"
     by (simp add: supp_of_finite_sets)
-  also have " ... \<subseteq> supp M" by (rule supp_set_of)
+  also have " ... \<subseteq> supp M" by (rule supp_set_mset)
   finally show "(\<Union>{supp x | x. x \<in># M}) \<subseteq> supp M" .
 qed
 
