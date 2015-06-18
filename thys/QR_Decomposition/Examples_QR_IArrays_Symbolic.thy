@@ -153,6 +153,19 @@ value "let A = IArray[IArray[1,2,4],IArray[9,4,5],IArray[0,0,4],IArray[3,5,4]]in
   iarray_of_iarray_to_list_of_list (show_matrix_real_iarrays 
     ((fst (QR_decomposition_iarrays A)) **i (snd (QR_decomposition_iarrays A))))"
 
+
+text{*The following example is presented in Chapter 1 of the book
+@{text "Numerical Methods in Scientific Computing"} by Dahlquist and Bjorck*}
+
+value "let A = list_of_list_to_matrix 
+  [[1,-0.6691],[1,-0.3907],[1,-0.1219],[1,0.3090],[1,0.5878]]::real^2^5; 
+  b = list_to_vec [0.3704,0.5,0.6211,0.8333,0.9804]::real^5;
+  QR = (QR_decomposition A);
+  Q = fst QR;
+  R = snd QR
+  in print_vec (the (inverse_matrix R) ** transpose Q *v b)"
+
+
 (*
   Limitation: if the input matrix has irrational numbers, then we won't be working in the same
   field extension so the computation will fail.

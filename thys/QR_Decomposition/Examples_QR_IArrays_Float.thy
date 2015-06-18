@@ -68,9 +68,20 @@ definition "example5b = (let A = IArray[IArray[1,2,4],IArray[9,4,5],IArray[0,0,4
   
 definition "example6b = (let A = IArray [IArray[1,sqrt 2,4],IArray[sqrt 5,4,5],IArray[0,sqrt 7,4]]
   in iarray_of_iarray_to_list_of_list (fst (QR_decomposition_iarrays A)))"
-  
+
+text{*The following example is presented in Chapter 1 of the book
+@{text "Numerical Methods in Scientific Computing"} by Dahlquist and Bjorck*}
+
+definition "book_example = (let A = list_of_list_to_matrix 
+  [[1,-0.6691],[1,-0.3907],[1,-0.1219],[1,0.3090],[1,0.5878]]::real^2^5; 
+  b = list_to_vec [0.3704,0.5,0.6211,0.8333,0.9804]::real^5;
+  QR = (QR_decomposition A);
+  Q = fst QR;
+  R = snd QR
+  in IArray.list_of (vec_to_iarray (the (inverse_matrix R) ** transpose Q *v b)))"
+
 export_code example1 example2 example3 example4 example5 example6 
-            example1b example2b example3b example4b example5b example6b
+            example1b example2b example3b example4b example5b example6b book_example
             in SML module_name "QR"
 
 end
