@@ -597,24 +597,35 @@ end
 
 text{*We can get the explicit results for complex and real matrices*}
 
-interpretation real_matrix: matrix "\<lambda>x y::real^'cols::{mod_type}. 
+interpretation real_matrix: matrix "\<lambda>x y::real^'cols::{finite,wellorder}. 
   setsum (\<lambda>i. (x$i) * (y$i)) UNIV" "\<lambda>x y. setsum (\<lambda>i. (x$i) * (y$i)) UNIV"
   apply (unfold_locales, auto simp add: cnj_real_def real_real_def distrib_right)
   using not_real_square_gt_zero by blast
 
-interpretation complex_matrix: matrix "\<lambda>x y::complex^'cols::{mod_type}. 
+interpretation complex_matrix: matrix "\<lambda>x y::complex^'cols::{finite,wellorder}. 
   setsum (\<lambda>i. (x$i) * cnj (y$i)) UNIV" "\<lambda>x y. setsum (\<lambda>i. (x$i) * cnj (y$i)) UNIV"
   by (unfold_locales, auto simp add: distrib_right)
 
 lemma null_space_orthogonal_complement_row_space_complex:
-  fixes A::"complex^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"complex^'cols::{finite,wellorder}^'rows::{finite,wellorder}"
   shows "null_space A = complex_matrix.orthogonal_complement (row_space (\<chi> i j. cnj (A $ i $ j)))"
   using complex_matrix.null_space_orthogonal_complement_row_space .
 
+lemma left_null_space_orthogonal_complement_col_space_complex:
+  fixes A::"complex^'cols::{finite, wellorder}^'rows::{finite, wellorder}"
+  shows "left_null_space A = complex_matrix.orthogonal_complement (col_space (\<chi> i j. cnj (A $ i $ j)))"
+  using complex_matrix.left_null_space_orthogonal_complement_col_space .
+
 lemma null_space_orthogonal_complement_row_space_reals:
-  fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"real^'cols::{finite,wellorder}^'rows::{finite,wellorder}"
   shows "null_space A = real_matrix.orthogonal_complement (row_space A)"
   using real_matrix.null_space_orthogonal_complement_row_space[of A]
   unfolding cnj_real_def by (simp add: vec_lambda_eta)
+
+lemma left_null_space_orthogonal_complement_col_space_real:
+  fixes A::"real^'cols::{finite, wellorder}^'rows::{finite, wellorder}"
+  shows "left_null_space A = real_matrix.orthogonal_complement (col_space A)"
+  using real_matrix.left_null_space_orthogonal_complement_col_space[of A]
+  by (simp add: cnj_real_def vec_lambda_eta)
 
 end
