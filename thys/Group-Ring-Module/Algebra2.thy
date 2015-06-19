@@ -4321,7 +4321,7 @@ definition
   Pj :: "[_ , 'a set] \<Rightarrow>  ( 'a => 'a set)" where
   "Pj G H = (\<lambda>x \<in> carrier G. H \<bullet>\<^bsub>G\<^esub> x)"        
 
-no_notation divide (infixl "'/" 70)
+no_notation inverse_divide (infixl "'/" 70)
 
 abbreviation
   QGRP :: "([('a, 'more) Group_scheme, 'a set] => ('a set) Group)"

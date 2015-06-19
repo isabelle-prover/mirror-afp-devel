@@ -161,11 +161,11 @@ begin
 
 definition
   div_ordinal_def:
-   "divide x y = (if 0 < y then oInv (op * y) x else 0)"
+   "x div y = (if 0 < y then oInv (op * y) x else 0)"
 
 definition
   mod_ordinal_def: 
-   "x mod y = ((x::ordinal) - y * (divide x y))"
+   "x mod y = ((x::ordinal) - y * (x div y))"
 
 instance ..
 

@@ -42,9 +42,9 @@ qed
 
 lemma \<Sigma>_ffact_divide [summation]:
   "\<Sigma> (ffact n) j l =
-    divide (ffact (Suc n) (of_int l :: 'a :: {idom_divide, semiring_char_0}) - ffact (Suc n) (of_int j)) (of_nat (Suc n))"
+    (ffact (Suc n) (of_int l :: 'a :: {idom_divide, semiring_char_0}) - ffact (Suc n) (of_int j)) div of_nat (Suc n)"
 proof -
-  have *: "divide (of_nat (Suc n) * \<Sigma> (ffact n) j l) (of_nat (Suc n)) = (\<Sigma> (ffact n) j l :: 'a)"
+  have *: "(of_nat (Suc n) * \<Sigma> (ffact n) j l) div of_nat (Suc n) = (\<Sigma> (ffact n) j l :: 'a)"
     using of_nat_neq_0 [where ?'a = 'a] by simp
   have "ffact (Suc n) (of_int l :: 'a) - ffact (Suc n) (of_int j) =
     \<Sigma> (\<lambda>k. \<Delta> (ffact (Suc n)) k) j l"
