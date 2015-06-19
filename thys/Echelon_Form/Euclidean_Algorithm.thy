@@ -102,7 +102,7 @@ lemma dvd_mult_cancel_left:
 proof-
   from assms(2) obtain k where "a * c = a * b * k" unfolding dvd_def by blast
   hence "c * a = b * k * a" by (simp add: ac_simps)
-  hence "c * (a div a) = b * k * (a div a)" by (simp add: div_mult_swap)
+  hence "c * (a div a) = b * k * (a div a)" by auto
   also from `a \<noteq> 0` have "a div a = 1" by simp
   finally show ?thesis by simp
 qed
@@ -113,14 +113,14 @@ lemma dvd_mult_cancel_right:
 
 lemma nonzero_pow_nonzero:
   "a \<noteq> 0 \<Longrightarrow> a ^ n \<noteq> 0"
-  by (induct n) (simp_all add: no_zero_divisors)
+  by (fact power_not_zero)
 
 lemma zero_pow_zero: "n \<noteq> 0 \<Longrightarrow> 0 ^ n = 0"
   by (cases n, simp_all)
 
 lemma pow_zero_iff:
   "n \<noteq> 0 \<Longrightarrow> a^n = 0 \<longleftrightarrow> a = 0"
-  using nonzero_pow_nonzero zero_pow_zero by auto
+  by (fact semiring_div_power_eq_0_iff)
 
 end
 
@@ -158,7 +158,7 @@ lemma inv_imp_eq_ring_inv:
 
 lemma ring_inv_is_inv1 [simp]:
   "is_unit a \<Longrightarrow> a * ring_inv a = 1"
-  unfolding is_unit_def ring_inv_def by (simp add: dvd_mult_div_cancel)
+  unfolding is_unit_def ring_inv_def by simp
 
 lemma ring_inv_is_inv2 [simp]:
   "is_unit a \<Longrightarrow> ring_inv a * a = 1"
@@ -256,7 +256,7 @@ lemma associated_0 [simp]:
 
 lemma associated_unit:
   "is_unit x \<Longrightarrow> associated x y \<Longrightarrow> is_unit y"
-  unfolding associated_def by (fast dest: dvd_unit_imp_unit)
+  unfolding associated_def by (auto dest: dvd_unit_imp_unit)
 
 lemma is_unit_1 [simp]:
   "is_unit 1"
@@ -276,7 +276,7 @@ qed
 
 lemma unit_mult_right_cancel:
   "is_unit x \<Longrightarrow> (y * x) = (z * x) \<longleftrightarrow> y = z"
-  by (simp add: ac_simps unit_mult_left_cancel)
+  by auto
 
 lemma unit_div_cancel:
   "is_unit x \<Longrightarrow> (y div x) = (z div x) \<longleftrightarrow> y = z"
@@ -310,9 +310,9 @@ proof
     hence [simp]: "x dvd y" "y dvd x" using `associated x y`
         unfolding associated_def by simp_all
     hence "1 = x div y * (y div x)"
-      by (simp add: div_mult_swap dvd_div_mult_self)
+      by (simp add: div_mult_swap)
     hence "is_unit (x div y)" unfolding is_unit_def by (rule dvdI)
-    moreover have "x = (x div y) * y" by (simp add: dvd_div_mult_self)
+    moreover have "x = (x div y) * y" by simp
     ultimately show ?thesis by blast
   qed
 next
@@ -415,7 +415,7 @@ proof (cases "x = 0", simp)
   have "?nf (x div ?nf x) * ?nf (?nf x) = ?nf (x div ?nf x * ?nf x)" 
     by (simp add: normalisation_factor_mult)
   also have "x div ?nf x * ?nf x = x" using `x \<noteq> 0`
-    by (simp add: dvd_div_mult_self)
+    by simp
   also have "?nf (?nf x) = ?nf x" using `x \<noteq> 0` 
     normalisation_factor_is_unit normalisation_factor_unit by simp
   finally show ?thesis using `x \<noteq> 0` and `?nf x \<noteq> 0` 
@@ -711,7 +711,7 @@ proof-
   also have "... = k * gcd_eucl x y div ?nf k"
     by (metis dvd_div_mult dvd_eq_mod_eq_0 mod_0 normalisation_factor_dvd)
   finally show ?thesis
-    by (simp add: ac_simps dvd_mult_div_cancel)
+    by (simp add: ac_simps)
 qed
 
 lemma euclidean_size_gcd_eucl_le1 [simp]:

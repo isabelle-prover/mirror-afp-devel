@@ -184,17 +184,17 @@ lemma poly_div_gcd_squarefree_aux:
   defines "d \<equiv> gcd p (pderiv p)"
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
-proof-
+proof -
   from bezout_poly' obtain r s where rs: "d = r * p + s * pderiv p" 
-      unfolding d_def by blast
+    unfolding d_def by blast
   def t \<equiv> "p div d" 
   def [simp]: p' \<equiv> "pderiv p"
   def [simp]: d' \<equiv> "pderiv d"
   def u \<equiv> "p' div d"
   have A: "p = t * d" and B: "p' = u * d" 
-      by (simp_all add: t_def u_def dvd_mult_div_cancel d_def algebra_simps)
+    by (simp_all add: t_def u_def d_def algebra_simps)
   from poly_squarefree_decomp[OF assms(1) A B[unfolded p'_def] rs]
-      show "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" by (auto simp: t_def)
+    show "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" by (auto simp: t_def)
 
   from rs have C: "s*t*d' = d * (1 - r*t - s*pderiv t)" 
       by (simp add: A B algebra_simps pderiv_mult)
@@ -202,7 +202,7 @@ proof-
       by (force, force, subst (asm) A, force)
 
   have "\<And>x. \<lbrakk>x dvd t; x dvd (pderiv t)\<rbrakk> \<Longrightarrow> x dvd 1"
-  proof-
+  proof -
     fix x assume "x dvd t" "x dvd (pderiv t)"
     then obtain v w where vw: 
         "t = x*v" "pderiv t = x*w" unfolding dvd_def by blast
@@ -261,8 +261,8 @@ proof-
         by (simp add: one_poly_def)
   qed
 
-  thus "coprime t (pderiv t)"
-      by (force intro: poly_gcd_unique[of 1 t "pderiv t"])
+  then show "coprime t (pderiv t)"
+    using poly_gcd_unique [of 1 t "pderiv t"] by auto
 qed
 
 text {*
