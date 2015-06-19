@@ -22,4 +22,9 @@ ML {*
   @{cterm "\<Sigma> (\<lambda>k::int. k ^ Suc (Suc (Suc 0)) + 3) 0 j"}
 *}
 
+ML {*
+  Summation.conv @{context}
+  @{cterm "\<Sigma>\<^sub>\<nat> (\<lambda>n::nat. n ^ Suc (Suc (Suc 0)) + 3) 0 m"}
+*}
+
 end

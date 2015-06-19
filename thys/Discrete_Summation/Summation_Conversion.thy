@@ -72,9 +72,69 @@ lemmas of_int_pull_out =
   of_int_add [symmetric] of_int_diff [symmetric] of_int_mult [symmetric]
   of_int_coeff
 
+lemma of_nat_coeff:
+  "(of_nat n :: 'a::comm_semiring_1) * numeral m = of_nat (n * numeral m)"
+  by (induct n) simp_all
+  
+lemmas of_nat_pull_out =
+  of_nat_add [symmetric] of_nat_mult [symmetric] of_nat_coeff
+
+lemmas nat_pull_in =
+  nat_int_add
+
 lemmas of_int_pull_in =
   of_int_pull_out [symmetric] add_divide_distrib diff_divide_distrib of_int_power
   of_int_numeral of_int_neg_numeral times_divide_eq_left [symmetric]
+
+  
+text \<open>Special for @{typ nat}\<close>
+
+definition lift_nat :: "(nat \<Rightarrow> nat) \<Rightarrow> int \<Rightarrow> int"
+where
+  "lift_nat f = int \<circ> f \<circ> nat"
+
+definition \<Sigma>_nat :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" ("\<Sigma>\<^sub>\<nat>")
+where
+  [summation]: "\<Sigma>\<^sub>\<nat> f m n = nat (\<Sigma> (lift_nat f) (int m) (int n))"  
+
+definition pos_id :: "int \<Rightarrow> int"
+where
+  "pos_id k = (if k < 0 then 0 else k)"
+
+lemma \<Sigma>_pos_id [summation]:
+  "0 \<le> k \<Longrightarrow> 0 \<le> l \<Longrightarrow> \<Sigma> (\<lambda>r. f (pos_id r)) k l = \<Sigma> f k l"
+  by (simp add: \<Sigma>_def pos_id_def)
+
+lemma [summation]:
+  "(0::int) \<le> 0"
+  "(0::int) \<le> 1"
+  "(0::int) \<le> numeral m"
+  "(0::int) \<le> int n"
+  by simp_all
+  
+lemma [summation]:
+  "lift_nat (\<lambda>n. m) = (\<lambda>k. int m)"
+  by (simp add: lift_nat_def fun_eq_iff)
+
+lemma [summation]:
+  "lift_nat (\<lambda>n. n) = pos_id"
+  by (simp add: lift_nat_def fun_eq_iff pos_id_def)
+
+lemma [summation]:
+  "lift_nat (\<lambda>n. f n + g n) = (\<lambda>k. lift_nat f k + lift_nat g k)"
+  by (simp add: lift_nat_def fun_eq_iff)
+
+lemma [summation]:
+  "lift_nat (\<lambda>n. m * f n) = (\<lambda>k. int m * lift_nat f k)"
+  by (simp add: lift_nat_def fun_eq_iff of_nat_mult)
+
+lemma [summation]:
+  "lift_nat (\<lambda>n. f n * m) = (\<lambda>k. lift_nat f k * int m)"
+  by (simp add: lift_nat_def fun_eq_iff of_nat_mult)
+
+lemma [summation]:
+  "lift_nat (\<lambda>n. f n ^ m) = (\<lambda>k. lift_nat f k ^ m)"
+  by (simp add: lift_nat_def fun_eq_iff of_nat_power)
 
   
 text \<open>Generic conversion\<close>  
@@ -93,7 +153,7 @@ val simpset3 =
   @{context}
   |> fold Simplifier.add_simp @{thms field_simps}
   |> Simplifier.simpset_of;
-val simps4 = @{thms of_int_pull_out};
+val simps4 = @{thms of_int_pull_out of_nat_pull_out nat_pull_in};
 val simps6 = @{thms of_int_pull_in};
 
 fun conv ctxt =
@@ -113,9 +173,10 @@ fun conv ctxt =
       ctxt
       |> put_simpset HOL_basic_ss
       |> fold Simplifier.add_simp simps4
-    val semiring_conv = Conv.arg1_conv (Conv.arg_conv
-       (Semiring_Normalizer.semiring_normalize_conv ctxt))
-       (* an approximation: we assume @{term "of_int _ / _"} here *)
+    val semiring_conv_base = Semiring_Normalizer.semiring_normalize_conv ctxt
+    val semiring_conv = Conv.arg_conv (Conv.arg1_conv (Conv.arg_conv semiring_conv_base))
+      else_conv Conv.arg1_conv (Conv.arg_conv semiring_conv_base)
+      else_conv semiring_conv_base
     val ctxt6 =
       ctxt
       |> put_simpset HOL_basic_ss
