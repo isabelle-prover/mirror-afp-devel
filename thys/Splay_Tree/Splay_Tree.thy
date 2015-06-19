@@ -42,9 +42,52 @@ end
 
 subsection "Function @{text splay}"
 
-fun splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay a Leaf = Leaf" |
-"splay a (Node cl c cr) =
+"splay a (Node l a r) = Node l a r" |
+"a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)" |
+"a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r" |
+"a<c \<Longrightarrow> a\<le>b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)" |
+"a<c \<Longrightarrow> a<b \<Longrightarrow> ll \<noteq> Leaf \<Longrightarrow>
+ splay a (Node (Node ll b lr) c r) =
+ (case splay a ll of Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r)))" |
+"a<c \<Longrightarrow> b<a \<Longrightarrow> splay a (Node (Node ll b Leaf) c r) = Node ll b (Node Leaf c r)" |
+"a<c \<Longrightarrow> b<a \<Longrightarrow> lr \<noteq> Leaf \<Longrightarrow>
+ splay a (Node (Node ll b lr) c r) =
+ (case splay a lr of Node lrl u lrr \<Rightarrow> Node (Node ll b lrl) u (Node lrr c r))" |
+"b<a \<Longrightarrow> splay a (Node l b (Node rl a rr)) = Node (Node l b rl) a rr" |
+"b<a \<Longrightarrow> splay a (Node l b Leaf) = Node l b Leaf" |
+"c<a \<Longrightarrow> a<b \<Longrightarrow>  rl \<noteq> Leaf \<Longrightarrow>
+ splay a (Node l c (Node rl b rr)) =
+ (case splay a rl of Node rll u rlr \<Rightarrow> Node (Node l c rll) u (Node rlr b rr))" |
+"c<a \<Longrightarrow> a<b \<Longrightarrow> splay a (Node l c (Node Leaf b rr)) = Node (Node l c Leaf) b rr" |
+"c<a \<Longrightarrow> b\<le>a \<Longrightarrow> splay a (Node l c (Node rl b Leaf)) = Node (Node l c rl) b Leaf" |
+"c<a \<Longrightarrow> b<a \<Longrightarrow>  rr \<noteq> Leaf \<Longrightarrow>
+ splay a (Node l c (Node rl b rr)) =
+ (case splay a rr of Node rrl u rrr \<Rightarrow> Node (Node (Node l c rl) b rrl) u rrr)"
+apply(atomize_elim)
+apply(auto)
+(* 1 subgoal *)
+apply (subst (asm) neq_Leaf_iff)
+apply(auto)
+apply (metis tree.exhaust le_less_linear less_linear)+
+done
+
+termination splay
+by lexicographic_order
+
+lemma splay_induct_old: (* until all old proofs have been updated *)
+  "\<lbrakk>\<And>a. P a \<langle>\<rangle>;
+ \<And>a cl c cr.
+    \<lbrakk>\<And>x21 x22 x23. \<lbrakk>a \<noteq> c; a < c; cl = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; a < x22; x21 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x21;
+     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; a < c; cl = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; \<not> a < x22; x23 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x23;
+     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; \<not> a < c; cr = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; a < x22; x21 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x21;
+     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; \<not> a < c; cr = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; \<not> a < x22; x23 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x23\<rbrakk>
+    \<Longrightarrow> P a \<langle>cl, c, cr\<rangle>\<rbrakk>
+\<Longrightarrow> P a t"
+by induction_schema (pat_completeness, lexicographic_order)
+
+lemma splay_code: "splay a (Node cl c cr) =
   (if a=c
    then Node cl c cr
    else if a < c
@@ -70,55 +113,16 @@ fun splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
                   else if br=Leaf then Node (Node cl c bl) b br
                        else case splay a br of
                          Node al a' ar \<Rightarrow> Node (Node (Node cl c bl) b al) a' ar))"
-
-value "splay (5::int) (Node (Node A 5 B) 10 C)"
-value "splay (5::int) (Node (Node (Node A 5 B) 10 C) 15 D)"
-value "splay (5::int) (Node (Node A 0 (Node B 5 C)) 10 D)"
-
-value "splay (7::int) (Node L 5 (Node (Node A 6 B) 7 R))"
-
-value "splay (0::int) (Node (Node (Node (Node (Node (Node (Node A 0 B) 1 C) 2 D) 3 E) 4 F) 5 G) 6 H)"
-
-value "splay (74::int) (Node (Node (Node (Node A 70 (Node (Node B 71 (Node C 72 (Node D 73 (Node E 74 F)))) 79 G)) 80 H) 90 I) 100 J)"
-
-value "splay (6::int) (Node (Node A 0 (Node (Node B 1 (Node (Node C 2 (Node D 6 E)) 7 F)) 8 G)) 9 H)"
-
-value "splay (70::int) (Node L 50 (Node A 60 (Node (Node B 70 C) 90 D)))"
-
-lemma splay_simps[simp]:
-  "splay a (Node l a r) = Node l a r"
-  "a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)"
-  "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r"
-  "a<c \<Longrightarrow> a\<le>b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)"
-  "a<c \<Longrightarrow> a<b \<Longrightarrow> splay a ll = Node lll u llr
-   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node lll u (Node llr b (Node lr c r))"
-  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a (Node (Node ll b Leaf) c r) = Node ll b (Node Leaf c r)"
-  "a<c \<Longrightarrow> b<a \<Longrightarrow> splay a lr = Node lrl u lrr
-   \<Longrightarrow> splay a (Node (Node ll b lr) c r) = Node (Node ll b lrl) u (Node lrr c r)"
-  "b<a \<Longrightarrow> splay a (Node l b (Node rl a rr)) = Node (Node l b rl) a rr"
-  "b<a \<Longrightarrow> splay a (Node l b Leaf) = Node l b Leaf"
-  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a rl = Node rll u rlr
-   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node l c rll) u (Node rlr b rr)"
-  "c<a \<Longrightarrow> a<b \<Longrightarrow> splay a (Node l c (Node Leaf b rr)) = Node (Node l c Leaf) b rr"
-  "c<a \<Longrightarrow> b\<le>a \<Longrightarrow> splay a (Node l c (Node rl b Leaf)) = Node (Node l c rl) b Leaf"
-  "c<a \<Longrightarrow> b<a \<Longrightarrow> splay a rr = Node rrl u rrr
-   \<Longrightarrow> splay a (Node l c (Node rl b rr)) = Node (Node (Node l c rl) b rrl) u rrr"
-by auto
-
-declare splay.simps(2)[simp del]
+by(auto split: tree.split)
 
 lemma splay_Leaf_iff[simp]: "(splay a t = Leaf) = (t = Leaf)"
 apply(induction a t rule: splay.induct)
- apply(simp)
-apply(subst splay.simps(2))
 apply auto
- apply(auto split: tree.splits if_splits)
+ apply(auto split: tree.splits)
 done
 
 lemma size_splay[simp]: "size (splay a t) = size t"
 apply(induction a t rule: splay.induct)
- apply simp
-apply (subst splay.simps)
 apply auto
  apply(force split: tree.split)+
 done
@@ -126,337 +130,70 @@ done
 lemma size_if_splay: "splay a t = Node l u r \<Longrightarrow> size t = size l + size r + 1"
 by (metis One_nat_def size_splay tree.size(4))
 
+lemma splay_not_Leaf: "t \<noteq> Leaf \<Longrightarrow> \<exists>l x r. splay a t = Node l x r"
+by (metis neq_Leaf_iff splay_Leaf_iff)
+
 lemma set_splay: "set_tree(splay a t) = set_tree t"
 proof(induction a t rule: splay.induct)
-  case 1 thus ?case by simp
+  case (6 a)
+  with splay_not_Leaf[OF 6(3), of a] show ?case by(fastforce)
 next
-  case (2 a l b r)
-  show ?case
-  proof cases
-    assume "a=b" thus ?thesis by simp
-  next
-    assume "a\<noteq>b"
-    hence "a<b \<or> b<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<b"
-      show ?thesis
-      proof(cases l)
-        case Leaf thus ?thesis using `a<b` by simp
-      next
-        case (Node ll c lr)[simp]
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using `a<b` by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c"
-            show ?thesis
-            proof cases
-              assume "ll = Leaf" thus ?thesis using `a<b` `a<c` by auto
-            next
-              assume "ll \<noteq> Leaf"
-              hence "splay a ll \<noteq> Leaf" by simp
-              then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
-                by (metis tree.exhaust)
-              from "2.IH"(1)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `a<c` `ll \<noteq> Leaf`]
-              show ?thesis using `a<b` `a<c` by auto
-            qed
-          next
-            assume "c<a" hence "\<not> a<c" by simp
-            show ?thesis
-            proof cases
-              assume "lr = Leaf" thus ?thesis using `a<b` `c<a` by(auto)
-            next
-              assume "lr \<noteq> Leaf"
-              hence "splay a lr \<noteq> Leaf" by simp
-              then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
-                by (metis tree.exhaust)
-              from "2.IH"(2)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `\<not>a<c` `lr \<noteq> Leaf`]
-              show ?thesis using `a<b` `c<a` by auto
-            qed
-          qed
-        qed
-      qed
-    next
-      assume "b<a" hence "\<not>a<b" by simp
-      show ?thesis
-      proof(cases r)
-        case Leaf thus ?thesis using `b<a` by(auto)
-      next
-        case (Node rl c rr)[simp]
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using `b<a` by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c" hence "\<not> c<a" by simp
-            show ?thesis
-            proof cases
-              assume "rl = Leaf" thus ?thesis using `b<a` `a<c` by(auto)
-            next
-              assume "rl \<noteq> Leaf"
-              hence "splay a rl \<noteq> Leaf" by simp
-              then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
-                by (metis tree.exhaust)
-              from "2.IH"(3)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `a<c` `rl \<noteq> Leaf`]
-              show ?thesis using `b<a` `a<c` by auto
-            qed
-          next
-            assume "c<a" hence "\<not>a<c" by simp
-            show ?thesis
-            proof cases
-              assume "rr = Leaf" thus ?thesis using `b<a` `c<a` by(auto)
-            next
-              assume "rr \<noteq> Leaf"
-              hence "splay a rr \<noteq> Leaf" by simp
-              then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
-                by (metis tree.exhaust)
-              from "2.IH"(4)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `\<not>a<c` `rr \<noteq> Leaf`]
-              show ?thesis using `b<a` `c<a` by auto
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-qed
+  case (8 a)
+  with splay_not_Leaf[OF 8(3), of a] show ?case by(fastforce)
+next
+  case (11 _ a)
+  with splay_not_Leaf[OF 11(3), of a] show ?case by(fastforce)
+next
+  case (14 _ a)
+  with splay_not_Leaf[OF 14(3), of a] show ?case by(fastforce)
+qed auto
 
 lemma splay_bstL: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree l \<Longrightarrow> x < a"
 apply(induction a t arbitrary: l x r rule: splay.induct)
- apply simp
-apply (subst (asm) splay.simps)
-apply (auto split: if_splits tree.splits)
- apply auto
+apply (auto split: tree.splits)
+apply auto
 done
 
 lemma splay_bstR: "bst t \<Longrightarrow> splay a t = Node l e r \<Longrightarrow> x \<in> set_tree r \<Longrightarrow> a < x"
 apply(induction a t arbitrary: l e x r rule: splay.induct)
- apply simp
-apply (subst (asm) splay.simps)
-using [[simp_depth_limit = 3]] apply (fastforce split: if_splits tree.splits)
+apply auto
+apply (fastforce split: tree.splits)+
 done
 
 lemma bst_splay: "bst t \<Longrightarrow> bst(splay a t)"
 proof(induction a t rule: splay.induct)
-  case 1 show ?case by simp
+  case (6 a _ _ ll)
+  with splay_not_Leaf[OF 6(3), of a] set_splay[of a ll,symmetric]
+  show ?case by (fastforce)
 next
-  case (2 a l b r)
-  show ?case
-  proof cases
-    assume "a=b" thus ?thesis using "2.prems" by auto
-  next
-    assume "a\<noteq>b"
-    hence "a<b \<or> b<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<b"
-      show ?thesis
-      proof(cases l)
-        case Leaf thus ?thesis using "2.prems" `a<b` by(auto)
-      next
-        case (Node ll c lr)[simp]
-        have "c < b" using "2.prems" by (auto)
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using "2.prems" `a<b` by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c"
-            show ?thesis
-            proof cases
-              assume "ll = Leaf" thus ?thesis using `a<b` `a<c` `c<b` "2.prems" by(auto)
-            next
-              assume "ll \<noteq> Leaf"
-              hence "splay a ll \<noteq> Leaf" by simp
-              then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
-                by (metis tree.exhaust)
-              have "bst ll" using "2.prems" by simp
-              from "2.IH"(1)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `a<c` `ll \<noteq> Leaf` `bst ll`]
-              show ?thesis using `a<b` `a<c` `c<b` "2.prems" set_splay[of a ll]
-                by auto (metis insertI1 less_trans)+
-            qed
-          next
-            assume "c<a" hence "\<not> a<c" by simp
-            show ?thesis
-            proof cases
-              assume "lr = Leaf" thus ?thesis using `a<b` `c<a` "2.prems" by(auto)
-            next
-              assume "lr \<noteq> Leaf"
-              hence "splay a lr \<noteq> Leaf" by simp
-              then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
-                by (metis tree.exhaust)
-              have "bst lr" using "2.prems" by simp
-              from "2.IH"(2)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `\<not>a<c` `lr \<noteq> Leaf`]
-              show ?thesis using `a<b` `c<a` `c<b` "2.prems" set_splay[of a lr]
-                by auto (metis Un_iff insertI1 less_trans)+
-            qed
-          qed
-        qed
-      qed
-    next
-      assume "a>b" hence "\<not>a<b" by simp
-      show ?thesis
-      proof(cases r)
-        case Leaf thus ?thesis using "2.prems" `a>b` by(auto)
-      next
-        case (Node rl c rr)[simp]
-        have "c > b" using "2.prems" by (auto)
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using "2.prems" `a>b` by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c"
-            show ?thesis
-            proof cases
-              assume "rl = Leaf" thus ?thesis using `a>b` `a<c` `c>b` "2.prems" by(auto)
-            next
-              assume "rl \<noteq> Leaf"
-              hence "splay a rl \<noteq> Leaf" by simp
-              then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
-                by (metis tree.exhaust)
-              have "bst rl" using "2.prems" by simp
-              from "2.IH"(3)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `a<c` `rl \<noteq> Leaf` `bst rl`]
-              show ?thesis using `a>b` `a<c` `c>b` "2.prems" set_splay[of a rl]
-                by auto (metis Un_iff insertI1 less_trans)+
-            qed
-          next
-            assume "c<a" hence "\<not> a<c" by simp
-            show ?thesis
-            proof cases
-              assume "rr = Leaf" thus ?thesis using `a>b` `c<a` "2.prems" by(auto)
-            next
-              assume "rr \<noteq> Leaf"
-              hence "splay a rr \<noteq> Leaf" by simp
-              then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
-                by (metis tree.exhaust)
-              have "bst rr" using "2.prems" by simp
-              from "2.IH"(4)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `\<not>a<c` `rr \<noteq> Leaf`]
-              show ?thesis using `a>b` `c<a` `c>b` "2.prems" set_splay[of a rr]
-                by auto (metis insertI1 less_trans)+
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-qed
+  case (8 a _ _ t)
+  with splay_not_Leaf[OF 8(3), of a] set_splay[of a t,symmetric]
+  show ?case by fastforce
+next
+  case (11 _ a _ t)
+  with splay_not_Leaf[OF 11(3), of a] set_splay[of a t,symmetric]
+  show ?case by fastforce
+next
+  case (14 _ a _ t)
+  with splay_not_Leaf[OF 14(3), of a] set_splay[of a t,symmetric]
+  show ?case by fastforce
+qed auto
 
 lemma splay_to_root: "\<lbrakk> bst t;  splay a t = t' \<rbrakk> \<Longrightarrow>
   a \<in> set_tree t \<longleftrightarrow> (\<exists>l r. t' = Node l a r)"
 proof(induction a t arbitrary: t' rule: splay.induct)
-  case 1 thus ?case by simp
+  case (6 a)
+  with splay_not_Leaf[OF 6(3), of a] show ?case by auto
 next
-  case (2 a l b r)
-  show ?case
-  proof cases
-    assume "a=b" thus ?thesis using "2.prems" by auto
-  next
-    assume "a\<noteq>b"
-    hence "a<b \<or> b<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<b"
-      show ?thesis
-      proof(cases l)
-        case Leaf thus ?thesis using `a<b` "2.prems" by fastforce
-      next
-        case (Node ll c lr)[simp]
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using `a<b` "2.prems" by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c"
-            show ?thesis
-            proof cases
-              assume "ll = Leaf" thus ?thesis using `a<b` `a<c` "2.prems" by auto
-            next
-              assume "ll \<noteq> Leaf"
-              hence "splay a ll \<noteq> Leaf" by simp
-              then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
-                by (metis tree.exhaust)
-              from "2.IH"(1)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `a<c` `ll \<noteq> Leaf`]
-              show ?thesis using `a<b` `a<c` "2.prems" by auto
-            qed
-          next
-            assume "c<a" hence "\<not> a<c" by simp
-            show ?thesis
-            proof cases
-              assume "lr = Leaf" thus ?thesis using `a<b` `c<a` "2.prems" by(auto)
-            next
-              assume "lr \<noteq> Leaf"
-              hence "splay a lr \<noteq> Leaf" by simp
-              then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
-                by (metis tree.exhaust)
-              from "2.IH"(2)[OF `a\<noteq>b` `a<b` Node `a\<noteq>c` `\<not>a<c` `lr \<noteq> Leaf`]
-              show ?thesis using `a<b` `c<a` "2.prems" by auto
-            qed
-          qed
-        qed
-      qed
-    next
-      assume "b<a" hence "\<not>a<b" by simp
-      show ?thesis
-      proof(cases r)
-        case Leaf thus ?thesis using `b<a` `\<not>a<b` "2.prems" by fastforce
-      next
-        case (Node rl c rr)[simp]
-        show ?thesis
-        proof cases
-          assume "a=c" thus ?thesis using `b<a` "2.prems" by auto
-        next
-          assume "a\<noteq>c"
-          hence "a<c \<or> c<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<c" hence "\<not> c<a" by simp
-            show ?thesis
-            proof cases
-              assume "rl = Leaf" thus ?thesis using `b<a` `a<c` "2.prems" by(auto)
-            next
-              assume "rl \<noteq> Leaf"
-              hence "splay a rl \<noteq> Leaf" by simp
-              then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
-                by (metis tree.exhaust)
-              from "2.IH"(3)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `a<c` `rl \<noteq> Leaf`]
-              show ?thesis using `b<a` `a<c` "2.prems" by auto
-            qed
-          next
-            assume "c<a" hence "\<not>a<c" by simp
-            show ?thesis
-            proof cases
-              assume "rr = Leaf" thus ?thesis using `b<a` `c<a` "2.prems" by(auto)
-            next
-              assume "rr \<noteq> Leaf"
-              hence "splay a rr \<noteq> Leaf" by simp
-              then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
-                by (metis tree.exhaust)
-              from "2.IH"(4)[OF `a\<noteq>b` `\<not>a<b` Node `a\<noteq>c` `\<not>a<c` `rr \<noteq> Leaf`]
-              show ?thesis using `b<a` `c<a` "2.prems" by auto
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-qed
+  case (8 a)
+  with splay_not_Leaf[OF 8(3), of a] show ?case by auto
+next
+  case (11 _ a)
+  with splay_not_Leaf[OF 11(3), of a] show ?case by auto
+next
+  case (14 _ a)
+  with splay_not_Leaf[OF 14(3), of a] show ?case by auto
+qed fastforce+
 
 
 subsection "Is-in Test"
@@ -475,13 +212,16 @@ by(auto simp add: is_root_def splay_to_root split: tree.split)
 
 subsection "Function @{text insert}"
 
-fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+context
+begin
+
+qualified fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert a t =  (if t = Leaf then Node Leaf a Leaf
   else case splay a t of
     Node l a' r \<Rightarrow> if a=a' then Node l a r
       else if a<a' then Node l a (Node Leaf a' r) else Node (Node l a' Leaf) a r)"
 
-hide_const (open) Splay_Tree.insert
+end
 
 lemma set_insert: "set_tree(Splay_Tree.insert a t) = insert a (set_tree t)"
 apply(cases t)
@@ -559,53 +299,14 @@ text{* For sanity purposes only: *}
 lemma splay_max_eq_splay:
   "bst t \<Longrightarrow> \<forall>x \<in> set_tree t. x \<le> a \<Longrightarrow> splay_max t = splay a t"
 proof(induction a t rule: splay.induct)
-  case 1 thus ?case by simp
-next
-  case (2 a l b r)
-  have "b = a \<or> b < a" using "2.prems"(2) by auto
-  thus ?case
-  proof
-    assume [simp]: "b = a"
-    have "r = Leaf"
-      apply(rule ccontr)
-      using  "2.prems" by (auto simp: ball_Un neq_Leaf_iff)
-    thus ?thesis by simp
+  case (2 a l r)
+  show ?case
+  proof (cases r)
+    case Leaf with 2 show ?thesis by simp
   next
-    assume "b < a"
-    hence "a \<noteq> b" by simp
-    show ?thesis
-    proof(cases r)
-      case Leaf thus ?thesis using `b<a` by(auto)
-    next
-      case (Node rl c rr)[simp]
-      have "c = a \<or> c< a" using "2.prems" by auto
-      thus ?thesis
-      proof
-        assume [simp]: "c = a"
-        have "rr = Leaf"
-          apply(rule ccontr)
-          using  "2.prems" by (auto simp: ball_Un neq_Leaf_iff)
-        thus ?thesis using `b<a` by simp
-      next
-        assume "c < a"
-        hence "a \<noteq> c" by simp
-        show ?thesis
-        proof cases
-          assume "rr = Leaf" thus ?thesis using `b<a` `c<a` by(auto)
-        next
-          assume "rr \<noteq> Leaf"
-          then obtain rrl u rrr where [simp]: "rr = Node rrl u rrr"
-            by (auto simp: neq_Leaf_iff)
-          hence "splay a rr \<noteq> Leaf" by simp
-          then obtain rrl' u' rrr' where [simp]: "splay a rr = Node rrl' u' rrr'"
-            by (metis tree.exhaust)
-          from "2.IH"(4)[OF `a\<noteq>b` _ Node `a\<noteq>c` _ `rr \<noteq> Leaf`] "2.prems"
-          show ?thesis using `b<a` `c<a` by (auto split: tree.split)
-        qed
-      qed
-    qed
+    case Node with 2 show ?thesis by(auto)
   qed
-qed
+qed (auto simp: neq_Leaf_iff)
 
 lemma splay_max_eq_splay_ex: assumes "bst t" shows "\<exists>a. splay_max t = splay a t"
 proof(cases t)
@@ -620,17 +321,18 @@ qed
 
 subsection "Function @{text delete}"
 
-definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+context
+begin
+
+qualified definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "delete a t = (if t=Leaf then Leaf
   else case splay a t of Node l a' r \<Rightarrow>
     if a=a'
     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
     else Node l a' r)"
 
-hide_const (open) delete
-
 lemma set_delete: assumes "bst t"
-shows "set_tree (Splay_Tree.delete a t) = set_tree t - {a}"
+shows "set_tree (delete a t) = set_tree t - {a}"
 proof(cases t)
   case Leaf thus ?thesis by(simp add: delete_def)
 next
@@ -664,7 +366,7 @@ next
   qed
 qed
 
-lemma bst_delete: assumes "bst t" shows "bst (Splay_Tree.delete a t)"
+lemma bst_delete: assumes "bst t" shows "bst (delete a t)"
 proof(cases t)
   case Leaf thus ?thesis by(simp add: delete_def)
 next
@@ -693,5 +395,7 @@ next
       by(auto simp: delete_def split: tree.split prod.split)
   qed
 qed
+
+end
 
 end

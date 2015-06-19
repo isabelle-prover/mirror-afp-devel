@@ -18,7 +18,7 @@ by(auto simp add: A_def algebra_simps real_of_nat_Suc)
 
 lemma A_ub: "\<lbrakk> bst t; Node la a ra : subtrees t \<rbrakk>
   \<Longrightarrow> A a t \<le> 3 * (\<phi> t - \<phi>(Node la a ra)) + 1"
-proof(induction a t rule: splay.induct)
+proof(induction a t rule: splay_induct_old)
   case 1 thus ?case by simp
 next
   case (2 a l c r)
@@ -347,7 +347,7 @@ next
     case (Delete a)[simp]
     show ?thesis
     proof (cases s)
-      case Leaf thus ?thesis by(simp add: delete_def t_delete_def)
+      case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def t_delete_def)
     next
       case (Node ls x rs)[simp]
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
@@ -363,7 +363,7 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis
-          using opt apply(simp add: delete_def t_delete_def field_simps real_of_nat_Suc)
+          using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
           using `?lslr \<ge> 0` by arith
       next
         case True[simp]
@@ -372,7 +372,7 @@ next
           case Leaf
           have 1: "log 2 (2 + real (size r)) \<ge> 0" by(simp)
           show ?thesis
-            using Leaf opt apply(simp add: delete_def t_delete_def field_simps real_of_nat_Suc)
+            using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
             using 1 `?lslr \<ge> 0` by arith
         next
           case (Node ll y lr)
@@ -392,7 +392,7 @@ next
           have 4: "log 2 (2 + (real(size ll) + real(size lr))) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: delete_def t_delete_def field_simps real_of_nat_Suc)
+            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
             using 4 `\<Phi> r' \<ge> 0` by arith
         qed
       qed

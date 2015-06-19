@@ -77,123 +77,50 @@ definition t_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" wh
 lemma ex_in_set_tree: "t \<noteq> Leaf \<Longrightarrow> bst t \<Longrightarrow>
   \<exists>a' \<in> set_tree t. splay a' t = splay a t \<and> t_splay a' t = t_splay a t"
 proof(induction a t rule: splay.induct)
-  case 1 thus ?case by simp
+  case (6 a c b ll)
+  hence "splay a ll \<noteq> Leaf" by simp
+  then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
+    by (metis tree.exhaust)
+  have "b < c" "bst ll" using "6.prems" by auto
+  from "6.IH"[OF `ll \<noteq> Leaf` `bst ll`]
+  obtain e where "e \<in> set_tree ll" "splay e ll = splay a ll" "t_splay e ll = t_splay a ll"
+    by blast
+  moreover hence "e<b" using "6.prems"(2) by auto
+  ultimately show ?case using `a<c` `a<b` `b<c` `bst ll` by force
 next
-  case (2 a l c r)
-  show ?case
-  proof cases
-    assume "a=c" thus ?thesis using "2.prems" by auto
-  next
-    assume "a\<noteq>c"
-    hence "a<c \<or> c<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<c"
-      show ?thesis
-      proof(cases l)
-        case Leaf thus ?thesis using `a<c` by(auto)
-      next
-        case (Node ll b lr)[simp]
-        have "b < c" using "2.prems" by (auto)
-        show ?thesis
-        proof cases
-          assume "a=b" thus ?thesis using `a<c` by auto
-        next
-          assume "a\<noteq>b"
-          hence "a<b \<or> b<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<b"
-            show ?thesis
-            proof cases
-              assume "ll = Leaf" thus ?thesis using `a<c` `a<b` `b<c` by(auto)
-            next
-              assume "ll \<noteq> Leaf"
-              hence "splay a ll \<noteq> Leaf" by simp
-              then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
-                by (metis tree.exhaust)
-              have "bst ll" using "2.prems" by simp
-              from "2.IH"(1)[OF `a\<noteq>c` `a<c` Node `a\<noteq>b` `a<b` `ll \<noteq> Leaf` `ll \<noteq> Leaf` `bst ll`]
-              obtain e where "e \<in> set_tree ll" "splay e ll = splay a ll" "t_splay e ll = t_splay a ll"
-                by blast
-              moreover hence "e<b" using "2.prems"(2) by auto
-              ultimately show ?thesis using `a<c` `a<b` `b<c` `bst ll` by force
-            qed
-          next
-            assume "b<a" hence "\<not> a<b" by simp
-            show ?thesis
-            proof cases
-              assume "lr = Leaf" thus ?thesis using `a<c` `b<a` by(auto)
-            next
-              assume "lr \<noteq> Leaf"
-              hence "splay a lr \<noteq> Leaf" by simp
-              then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
-                by (metis tree.exhaust)
-              have "bst lr" using "2.prems" by simp
-              from "2.IH"(2)[OF `a\<noteq>c` `a<c` Node `a\<noteq>b` `\<not>a<b` `lr \<noteq> Leaf` `lr \<noteq> Leaf` `bst lr`]
-              obtain e where "e \<in> set_tree lr" "splay e lr = splay a lr" "t_splay e lr = t_splay a lr"
-                by blast
-              moreover hence "b<e & e<c" using "2.prems"(2) by simp
-              ultimately show ?thesis using `a<c` `b<a` `b<c` `bst lr` by force
-            qed
-          qed
-        qed
-      qed
-    next
-      assume "c<a" hence "\<not>a<c" by simp
-      show ?thesis
-      proof(cases r)
-        case Leaf thus ?thesis using `c<a` by(auto)
-      next
-        case (Node rl b rr)[simp]
-        have "c < b" using "2.prems" by (auto)
-        show ?thesis
-        proof cases
-          assume "a=b" thus ?thesis using `c<a` by auto
-        next
-          assume "a\<noteq>b"
-          hence "a<b \<or> b<a" by (metis neqE)
-          thus ?thesis
-          proof
-            assume "a<b" hence "\<not> b<a" by simp
-            show ?thesis
-            proof cases
-              assume "rl = Leaf" thus ?thesis using `c<a` `a<b` by(auto)
-            next
-              assume "rl \<noteq> Leaf"
-              hence "splay a rl \<noteq> Leaf" by simp
-              then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
-                by (metis tree.exhaust)
-              have "bst rl" using "2.prems" by simp
-              from "2.IH"(3)[OF `a\<noteq>c` `\<not>a<c` Node `a\<noteq>b` `a<b` `rl \<noteq> Leaf` `rl \<noteq> Leaf` `bst rl`]
-              obtain e where "e \<in> set_tree rl" "splay e rl = splay a rl" "t_splay e rl = t_splay a rl"
-                by blast
-              moreover hence "c<e & e<b" using "2.prems"(2) by simp
-              ultimately show ?thesis using `c<a` `a<b` `c<b` `bst rl` by force
-            qed
-          next
-            assume "b<a" hence "\<not>a<b" by simp
-            show ?thesis
-            proof cases
-              assume "rr = Leaf" thus ?thesis using `c<a` `b<a` `c<b` by(auto)
-            next
-              assume "rr \<noteq> Leaf"
-              hence "splay a rr \<noteq> Leaf" by simp
-              then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
-                by (metis tree.exhaust)
-              have "bst rr" using "2.prems" by simp
-              from "2.IH"(4)[OF `a\<noteq>c` `\<not>a<c` Node `a\<noteq>b` `\<not>a<b` `rr \<noteq> Leaf` `rr \<noteq> Leaf` `bst rr`]
-              obtain e where "e \<in> set_tree rr" "splay e rr = splay a rr" "t_splay e rr = t_splay a rr"
-                by blast
-              moreover hence "b<e" using "2.prems"(2) by simp
-              ultimately show ?thesis using `c<a` `b<a` `c<b` `bst rr` by force
-            qed
-          qed
-        qed
-      qed
-    qed
-  qed
-qed
+  case (8 a c b lr)
+  hence "splay a lr \<noteq> Leaf" by simp
+  then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
+    by (metis tree.exhaust)
+  have "b < c" "bst lr" using "8.prems" by auto
+  from "8.IH"[OF `lr \<noteq> Leaf` `bst lr`]
+  obtain e where "e \<in> set_tree lr" "splay e lr = splay a lr" "t_splay e lr = t_splay a lr"
+    by blast
+  moreover hence "b<e & e<c" using "8.prems"(2) by simp
+  ultimately show ?case using `a<c` `b<a` `b<c` `bst lr` by force
+next
+  case (11 c a b rl)
+  hence "splay a rl \<noteq> Leaf" by simp
+  then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
+    by (metis tree.exhaust)
+  have "c < b" "bst rl" using "11.prems" by auto
+  from "11.IH"[OF `rl \<noteq> Leaf` `bst rl`]
+  obtain e where "e \<in> set_tree rl" "splay e rl = splay a rl" "t_splay e rl = t_splay a rl"
+    by blast
+  moreover hence "c<e & e<b" using "11.prems" by simp
+  ultimately show ?case using `c<a` `a<b` `c<b` `bst rl` by force
+next
+  case (14 c a b rr)
+  hence "splay a rr \<noteq> Leaf" by simp
+  then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
+    by (metis tree.exhaust)
+  have "c < b" "bst rr" using "14.prems" by auto
+  from "14.IH"[OF `rr \<noteq> Leaf` `bst rr`]
+  obtain e where "e \<in> set_tree rr" "splay e rr = splay a rr" "t_splay e rr = t_splay a rr"
+    by blast
+  moreover hence "b<e" using "14.prems"(2) by simp
+  ultimately show ?case using `c<a` `b<a` `c<b` `bst rr` by force
+qed (auto simp: le_less)
 
 
 datatype 'a op\<^sub>s\<^sub>t = Splay 'a | Insert 'a | Delete 'a
