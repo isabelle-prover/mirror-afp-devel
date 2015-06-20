@@ -16,163 +16,138 @@ lemma A_simps[simp]: "A a (Node l a r) = 1"
  "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
 by(auto simp add: A_def algebra_simps real_of_nat_Suc)
 
-lemma A_ub: "\<lbrakk> bst t; Node la a ra : subtrees t \<rbrakk>
-  \<Longrightarrow> A a t \<le> 3 * (\<phi> t - \<phi>(Node la a ra)) + 1"
-proof(induction a t rule: splay_induct_old)
+lemma A_ub: "\<lbrakk> bst t; Node lx x rx : subtrees t \<rbrakk>
+  \<Longrightarrow> A x t \<le> 3 * (\<phi> t - \<phi>(Node lx x rx)) + 1"
+proof(induction x t rule: splay.induct)
   case 1 thus ?case by simp
 next
-  case (2 a l c r)
-  let ?A = "Node la a ra" let ?C = "Node l c r"
-  have a: "a : insert c (set_tree l Un set_tree r)" using "2.prems"(2)
-    by (metis Node_notin_subtrees_if tree.set(2))
-  show ?case
-  proof cases
-    assume "a=c"
-    thus ?thesis using "2.prems" by (auto simp: real_of_nat_Suc)
-  next
-    assume "a\<noteq>c"
-    hence "a<c \<or> c<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<c"
-      then obtain ll b lr where [simp]: "l = Node ll b lr"
-        using "2.prems"(1,2)
-        by (cases l) (auto, metis in_set_tree_if less_asym)
-      let ?B = "Node ll b lr"  let ?C' = "Node lr c r"
-      have "b < c" using "2.prems"(1,2) by (auto)
-      hence "b \<notin> set_tree r" using "2.prems"(1) by auto
-      show ?thesis
-      proof cases
-        assume "a=b"
-        thus ?thesis using "2.prems"(1,2) `a<c` `b \<notin> set_tree r`
-          log_le_cancel_iff[of 2 "size1 ?C'" "size1 ?C"]
-          log_le_cancel_iff[of 2 "size1 ?B" "size1 ?C"]
-          by (auto simp: real_of_nat_Suc field_simps simp del:log_le_cancel_iff)
-      next
-        assume "a\<noteq>b"
-        hence "a<b \<or> b<a" by (metis neqE)
-        thus ?thesis
-        proof
-          assume "a<b"
-          hence 0: "a \<notin> set_tree lr \<and> a \<notin> set_tree r"
-            using "2.prems"(1) by auto
-          hence 1: "a \<in> set_tree ll" using "2.prems" `a<b` by (auto)
-          then obtain l' u r' where sp: "splay a ll = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a ll") auto
-          have "ll \<noteq> Leaf" using 1 by auto
-          let ?R = ll  let ?R' = "Node l' u r'"  let ?B' = "Node r' b ?C'"
-          have "A a ?C = A a ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' + 1"
-            using "2.prems" 1 sp
-              by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
-          also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?A + 2"
-            using "2.IH"(1)[OF `a\<noteq>c` `a<c` `l = Node ll b lr` `a\<noteq>b`] `ll \<noteq> Leaf` `a<b` "2.prems" 0
-            by(auto simp: algebra_simps)
-          also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - 3 * \<phi> ?A + 2"
-            using sp by(simp add: size_if_splay)
-          also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?C' - 3 * \<phi> ?A + 2" by(simp)
-          also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp add_log_log1[of "size1 ?R" "size1 ?C'"]
-            by(simp add: size_if_splay real_of_nat_Suc)
-          also have "\<dots> \<le> 3 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp by(simp add: size_if_splay)
-          finally show ?thesis by simp
-       next
-          assume "b<a"
-          hence 0: "a \<notin> set_tree ll \<and> a \<notin> set_tree r"
-            using "2.prems"(1) `a < c` by(auto)
-          hence 1: "a \<in> set_tree lr" using "2.prems" `b<a` `a<c` by (auto)
-          then obtain l' u r' where sp: "splay a lr = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a lr") auto
-          have "lr \<noteq> Leaf" using 1 by auto
-          let ?R = lr  let ?R' = "Node l' u r'"
-          let ?B' = "Node ll b l'"  let ?C' = "Node r' c r"
-          have "A a ?C = A a ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' + 1"
-            using "2.prems" 1 sp
-              by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
-          also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?A + 2"
-            using "2.IH"(2)[OF `a\<noteq>c` `a<c` `l = Node ll b lr` `a\<noteq>b`] `lr \<noteq> Leaf` `a\<noteq>c` `b<a` "2.prems" 0
-            by(auto simp: algebra_simps)
-          also have "\<dots> = 2 * \<phi> lr + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - 3 * \<phi> ?A + 2"
-            using sp by(simp add: size_if_splay)
-          also have "\<dots> \<le> \<phi> lr + \<phi> ?B' + \<phi> ?C' - 3 * \<phi> ?A + 2" by(simp)
-          also have "\<dots> \<le> \<phi> lr + 2 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp add_log_log1[of "size1 ?B'" "size1 ?C'"]
-            by(simp add: size_if_splay real_of_nat_Suc)
-          also have "\<dots> \<le> 3 * \<phi> ?C - 3 * \<phi> ?A + 1" by(simp)
-          finally show ?thesis by simp
-        qed
-      qed
-    next
-      assume "c<a"
-      then obtain rl b rr where [simp]: "r = Node rl b rr"
-        using "2.prems"(1,2)
-        by (cases r) (auto, metis in_set_tree_if less_asym)
-      let ?B = "Node rl b rr"  let ?C' = "Node l c rl"
-      have "c < b" using "2.prems"(1,2) by (auto)
-      hence "b \<notin> set_tree l" using "2.prems"(1) by auto
-      show ?thesis
-      proof cases
-        assume "a=b"
-        thus ?thesis using "2.prems"(1,2) `c<a` `b \<notin> set_tree l`
-          log_le_cancel_iff[of 2 "size1 ?C'" "size1 ?C"]
-          log_le_cancel_iff[of 2 "size1 ?B" "size1 ?C"]
-          by (auto simp: real_of_nat_Suc field_simps simp del:log_le_cancel_iff)
-      next
-        assume "a\<noteq>b"
-        hence "a<b \<or> b<a" by (metis neqE)
-        thus ?thesis
-        proof
-          assume "a<b"
-          hence 0: "a \<notin> set_tree rr \<and> a \<notin> set_tree l"
-            using "2.prems"(1) `c<a` by (auto)
-          hence 1: "a \<in> set_tree rl" using "2.prems" `c<a` `a<b` by (auto)
-          then obtain l' u r' where sp: "splay a rl = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a rl") auto
-          have "rl \<noteq> Leaf" using 1 by auto
-          let ?R = rl  let ?R' = "Node l' u r'"
-          let ?B' = "Node r' b rr"  let ?C' = "Node l c l'"
-          have "A a ?C = A a ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' + 1"
-            using "2.prems" 1 sp
-              by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
-          also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?A + 2"
-            using "2.IH"(3)[OF `a\<noteq>c` order_less_not_sym[OF `c<a`] `r = Node rl b rr` `a\<noteq>b`]
-              `rl \<noteq> Leaf` `a\<noteq>c` `a<b` "2.prems" 0 by(auto simp: algebra_simps)
-          also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - 3 * \<phi> ?A + 2"
-            using sp by(simp add: size_if_splay)
-          also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?C' - 3 * \<phi> ?A + 2" by(simp)
-          also have "\<dots> \<le> \<phi> ?R + 2 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp add_log_log1[of "size1 ?B'" "size1 ?C'"]
-            by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
-          also have "\<dots> \<le> 3 * \<phi> ?C - 3 * \<phi> ?A + 1" by(simp)
-          finally show ?thesis by simp
-        next
-          assume "b<a"
-          hence 0: "a \<notin> set_tree rl \<and> a \<notin> set_tree l"
-            using "2.prems"(1) `b<a` by(auto)
-          hence 1: "a \<in> set_tree rr" using "2.prems" `b<a` `c<a` by (auto)
-          then obtain l' u r' where sp: "splay a rr = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a rr") auto
-          have "rr \<noteq> Leaf" using 1 by auto
-          let ?R = rr  let ?R' = "Node l' u r'"  let ?B' = "Node ?C' b l'"
-          have "A a ?C = A a ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' + 1"
-            using "2.prems" 1 sp
-              by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
-          also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?A + 2"
-            using "2.IH"(4)[OF `a\<noteq>c` order_less_not_sym[OF `c<a`] `r = Node rl b rr` `a\<noteq>b`]
-              `rr \<noteq> Leaf` `b<a` "2.prems" 0 by(auto simp: algebra_simps)
-          also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?B - 3 * \<phi> ?A + 2"
-            using sp by(simp add: size_if_splay)
-          also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?C' - 3 * \<phi> ?A + 2" by(simp)
-          also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp add_log_log1[of "size1 ?R" "size1 ?C'"]
-            by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
-          also have "\<dots> \<le> 3 * \<phi> ?C - 3 * \<phi> ?A + 1"
-            using sp by(simp add: size_if_splay)
-          finally show ?thesis by simp
-        qed
-      qed
-    qed
-  qed
+  case 2 thus ?case by auto
+next
+  case 4 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 5 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 7 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 10 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 12 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 13 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case (3 b a lb rb ra)
+  let ?A = "Node (Node lb b rb) a ra"
+  have "b \<notin> set_tree ra" using "3.prems"(1) by auto
+  with 3 show ?case using
+    log_le_cancel_iff[of 2 "size1(Node rb a ra)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
+    by (auto simp: real_of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
+next
+  case (9 a b la lb rb)
+  let ?A = "\<langle>la, a, \<langle>lb, b, rb\<rangle>\<rangle>"
+  have "b \<notin> set_tree la" using "9.prems"(1) by auto
+  with 9 show ?case using
+    log_le_cancel_iff[of 2 "size1(Node la a lb)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
+    by (auto simp: real_of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
+next
+  case (6 x a b lb rb ra)
+  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
+  hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
+  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using "6.prems"(1,2) by(cases "splay x lb") auto
+  have "lb \<noteq> Leaf" using 1 by auto
+  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
+  let ?R = lb  let ?R' = "Node lu u ru"
+  let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
+  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+    using "6.prems" 1 sp
+    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+    using "6.IH" `lb \<noteq> Leaf` `x<b` "6.prems" 0 by(auto simp: algebra_simps)
+  also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+    using sp by(simp add: size_if_splay)
+  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp add_log_log1[of "size1 ?R" "size1 ?A'"]
+    by(simp add: size_if_splay real_of_nat_Suc)
+  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp by(simp add: size_if_splay)
+  finally show ?case by simp
+next
+  case (8 x a b rb lb ra)
+  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra"
+    using "8.prems"(1) `x < a` by(auto)
+  hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
+  then obtain lu u ru where sp: "splay x rb = Node lu u ru"
+    using "8.prems"(1,2) by(cases "splay x rb") auto
+  have "rb \<noteq> Leaf" using 1 by auto
+  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
+  let ?R = rb  let ?R' = "Node lu u ru"
+  let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
+  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+    using "8.prems" 1 sp
+    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+    using "8.IH" `rb \<noteq> Leaf` `x<a` `b<x` "8.prems" 0
+    by(auto simp: algebra_simps)
+  also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+    using sp by(simp add: size_if_splay)
+  also have "\<dots> \<le> \<phi> rb + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> rb + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp add_log_log1[of "size1 ?B'" "size1 ?A'"]
+    by(simp add: size_if_splay real_of_nat_Suc)
+  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
+  finally show ?case by simp
+next
+  case (11 a x b lb la rb)
+  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la"
+    using "11.prems"(1) `a<x` by (auto)
+  hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
+  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using "11.prems"(1,2) by(cases "splay x lb") auto
+  have "lb \<noteq> Leaf" using 1 by auto
+  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
+  let ?R = lb  let ?R' = "Node lu u ru"
+  let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
+  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+    using "11.prems" 1 sp
+    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+    using "11.IH" `lb \<noteq> Leaf` `a<x` `x<b` "11.prems" 0 by(auto simp: algebra_simps)
+  also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+    using sp by(simp add: size_if_splay)
+  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> ?R + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp add_log_log1[of "size1 ?B'" "size1 ?A'"]
+    by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
+  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
+  finally show ?case by simp
+next
+  case (14 a x b rb la lb)
+  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la"
+    using "14.prems"(1) `b<x` by(auto)
+  hence 1: "x \<in> set_tree rb" using "14.prems" `b<x` `a<x` by (auto)
+  then obtain l' u r' where sp: "splay x rb = Node l' u r'"
+    using "14.prems"(1,2) by(cases "splay x rb") auto
+  have "rb \<noteq> Leaf" using 1 by auto
+  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
+  let ?R = rb  let ?R' = "Node l' u r'"
+  let ?A' = "Node la a lb"  let ?B' = "Node ?A' b l'"
+  have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+    using "14.prems" 1 sp
+    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+    using "14.IH" `rb \<noteq> Leaf` `b<x` "14.prems" 0 by(auto simp: algebra_simps)
+  also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+    using sp by(simp add: size_if_splay)
+  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp add_log_log1[of "size1 ?R" "size1 ?A'"]
+    by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
+  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
+    using sp by(simp add: size_if_splay)
+  finally show ?case by simp
 qed
 
 lemma A_ub2: assumes "bst t" "a : set_tree t"
