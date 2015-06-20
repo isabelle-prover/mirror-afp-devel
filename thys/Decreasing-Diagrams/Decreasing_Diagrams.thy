@@ -544,11 +544,11 @@ definition LD' :: "'a rel \<Rightarrow> 'a \<Rightarrow> 'a
 
 text {* auxiliary properties on multisets *}
 
-lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<le># multiset_of \<sigma>" proof (induct "\<sigma>")
+lemma lexmax_le_multiset: assumes t:"trans r" shows "r|\<sigma>| \<le># mset \<sigma>" proof (induct "\<sigma>")
  case Nil thus ?case unfolding lexmax.simps by auto
  next
- case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<le># multiset_of \<tau>" using lemmaA_3_10 mset_le_add_right subset_mset.order_trans by metis
- thus ?case unfolding multiset_of.simps lexmax.simps using mset_le_mono_add_right_cancel union_commute by metis
+ case (Cons s \<tau>) hence "lexmax r \<tau> -s ds r {s} \<le># mset \<tau>" using lemmaA_3_10 mset_le_add_right subset_mset.order_trans by metis
+ thus ?case unfolding mset.simps lexmax.simps using mset_le_mono_add_right_cancel union_commute by metis
 qed
 
 lemma split: assumes "LD_1' r \<beta> \<alpha> \<sigma>1 \<sigma>2 \<sigma>3" shows "\<sigma>2 = [] \<or> \<sigma>2 = [\<alpha>]"
@@ -1476,7 +1476,7 @@ proof -
  from assms have \<gamma>1: "\<gamma>1 \<in> conv ars" and \<gamma>3: "\<gamma>3 \<in> conv ars" and \<gamma>2_l: "length (labels \<gamma>2) \<le> 1"
   and \<gamma>2_s: "set (labels \<gamma>2) \<subseteq> {fst \<alpha>_step}" and \<gamma>3_s: "set (labels_conv \<gamma>3) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}"
   and "set (labels_conv \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding LT_def LD'_def LT1_def LD_1'_def labels_def local_triangle1_def by auto
- hence "set_mset (measure_conv r \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding measure_conv_def using lexmax_le_multiset[OF t] by (metis set_mset_multiset_of submultiset_implies_subset subset_trans)
+ hence "set_mset (measure_conv r \<gamma>1) \<subseteq> ds r {fst \<beta>_step}" unfolding measure_conv_def using lexmax_le_multiset[OF t] by (metis set_mset_mset submultiset_implies_subset subset_trans)
  hence \<gamma>1_s: "set_mset (measure_conv r \<gamma>1) \<subseteq> dm r {#fst \<beta>_step#}" unfolding dm_def by auto
  have x: "({#fst \<beta>_step#}, {#fst \<beta>_step, fst \<alpha>_step#}) \<in> mul_eq r" using mul_eq_add_right by auto
  obtain \<gamma>1' \<gamma>1'' where \<gamma>1': "\<gamma>1' \<in> seq ars" and \<gamma>1'': "\<gamma>1'' \<in> seq ars" and eqx:"fst \<gamma>1' = fst \<gamma>1"

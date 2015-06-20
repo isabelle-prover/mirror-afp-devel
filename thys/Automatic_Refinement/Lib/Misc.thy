@@ -477,7 +477,7 @@ lemma count_mset_set_finite_iff:
   by simp
 
 lemma mset_set_set :
-  "distinct l \<Longrightarrow> mset_set (set l) = multiset_of l"
+  "distinct l \<Longrightarrow> mset_set (set l) = mset l"
 proof (induct l)
   case Nil thus ?case by simp
 next
@@ -634,9 +634,6 @@ subsubsection {* Union, difference and intersection *}
     thus ?thesis by (simp add: multiset_inter_commute)
   qed
 
-  lemmas mset_inter_1elem = mset_inter_1elem1 mset_inter_1elem2
-
-
   lemmas mset_neutral_cancel1 = union_left_cancel[where N="{#}", simplified] union_right_cancel[where N="{#}", simplified]
   declare mset_neutral_cancel1[simp]
 
@@ -663,8 +660,8 @@ subsubsection {* Union, difference and intersection *}
       assume NEQ: "c~=b & a~=c"
       from A have "{#a#}+{#b#}-{#c#} = M + {#c#}-{#c#}" by auto
       hence "{#a#}+{#b#}-{#c#} = M" by (auto simp add: union_assoc)
-      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c :# {#b#})", auto simp add: mset_inter_1elem multiset_union_diff_commute)
-      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a :# {#c#})", auto simp add: mset_diff_cancel1elem)
+      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c :# {#b#})", auto simp add: multiset_union_diff_commute)
+      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a :# {#c#})", auto)
       hence S1: "size M = 2" by auto
       moreover from A have "size ({#a#}+{#b#}) = size (M + {#c#})" by auto
       hence "size M = 1" by auto
@@ -2037,7 +2034,7 @@ lemma quicksort_by_rel_remove_acc_guared :
 by (metis quicksort_by_rel_remove_acc)
 
 lemma quicksort_by_rel_permutes [simp]:
-  "multiset_of (quicksort_by_rel R sl xs) = multiset_of (xs @ sl)"
+  "mset (quicksort_by_rel R sl xs) = mset (xs @ sl)"
 proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"]) 
   case (less xs)
   note ind_hyp = this
@@ -2051,9 +2048,9 @@ proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"])
     obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
       by (rule PairE)
 
-    from part_rev_eq[symmetric] have xs'_multi_eq : "multiset_of xs' = multiset_of xs1 + multiset_of xs2"
+    from part_rev_eq[symmetric] have xs'_multi_eq : "mset xs' = mset xs1 + mset xs2"
       unfolding partition_rev_filter_conv
-      by (simp add: multiset_of_filter multiset_partition)
+      by (simp add: mset_filter multiset_partition)
 
     from part_rev_eq[symmetric]
     have length_le: "length xs1 < length xs" "length xs2 < length xs"
@@ -2161,10 +2158,10 @@ lemma mergesort_by_rel_split_length :
 by (induct xs arbitrary: xs1 xs2 rule: list_induct_first2)
    (simp_all)
 
-lemma multiset_of_mergesort_by_rel_split [simp]:
-  "multiset_of (fst (mergesort_by_rel_split (xs1, xs2) xs)) +
-   multiset_of (snd (mergesort_by_rel_split (xs1, xs2) xs)) = 
-   multiset_of xs + multiset_of xs1 + multiset_of xs2"
+lemma mset_mergesort_by_rel_split [simp]:
+  "mset (fst (mergesort_by_rel_split (xs1, xs2) xs)) +
+   mset (snd (mergesort_by_rel_split (xs1, xs2) xs)) = 
+   mset xs + mset xs1 + mset xs2"
   apply (induct xs arbitrary: xs1 xs2 rule: list_induct_first2)
   apply (simp_all add: ac_simps)
 done
@@ -2206,8 +2203,8 @@ next
   qed
 qed
 
-lemma multiset_of_mergesort_by_rel_merge [simp]:
-  "multiset_of (mergesort_by_rel_merge R xs ys) = multiset_of xs + multiset_of ys"
+lemma mset_mergesort_by_rel_merge [simp]:
+  "mset (mergesort_by_rel_merge R xs ys) = mset xs + mset ys"
 by (induct R xs ys rule: mergesort_by_rel_merge.induct) (simp_all add: ac_simps)
 
 lemma set_mergesort_by_rel_merge [simp]:
@@ -2270,7 +2267,7 @@ apply (simp add: mergesort_by_rel.simps[of _ "x1 # x2 # xs"] split: prod.splits)
 done
 
 lemma mergesort_by_rel_permutes [simp]:
-  "multiset_of (mergesort_by_rel R xs) = multiset_of xs"
+  "mset (mergesort_by_rel R xs) = mset xs"
 proof (induct xs rule: length_induct)
   case (1 xs) note ind_hyp = this
 

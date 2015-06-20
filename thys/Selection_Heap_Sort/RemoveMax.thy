@@ -38,7 +38,7 @@ locale Collection =
   -- {* -- Must be satisfied that function {\em is\_empty} returns true for element {\em empty} *}
   assumes multiset_empty: "multiset empty = {#}"
   -- {* -- Multiset of an empty object is empty multiset.  *}
-  assumes multiset_of_list: "multiset (of_list i) = multiset_of i"
+  assumes multiset_of_list: "multiset (of_list i) = mset i"
   -- {* -- Multiset of an object gained by
   applying function {\em of\_list} must be the same as the multiset of
   the list. This, practically, means that function {\em of\_list} does
@@ -200,20 +200,20 @@ proof-
   qed
 qed
 
-lemma multiset_of_ssort':
+lemma mset_ssort':
   assumes "inv l"
-  shows "multiset_of (ssort' l sl) = multiset l + multiset_of sl"
+  shows "mset (ssort' l sl) = multiset l + mset sl"
 using assms
 proof-
-    have "multiset empty + multiset_of (ssort' l sl) = multiset l + multiset_of sl"
+    have "multiset empty + mset (ssort' l sl) = multiset l + mset sl"
       using assms
     proof (rule ssort'Induct)
       fix l1 sl1 m l'
       assume "\<not> is_empty l1" 
              "inv l1" 
              "(m, l') = remove_max l1" 
-             "multiset l1 + multiset_of sl1 = multiset l + multiset_of sl"
-      thus "multiset l' + multiset_of (m # sl1) = multiset l + multiset_of sl"
+             "multiset l1 + mset sl1 = multiset l + mset sl"
+      thus "multiset l' + mset (m # sl1) = multiset l + mset sl"
         using remove_max_multiset[of l1 m l']
         by (auto simp add: union_commute union_lcomm)
     qed simp
@@ -251,10 +251,10 @@ using sorted_ssort'[of "of_list i" "[]"] of_list_inv
 by auto
 
 lemma permutation_ssort: "ssort l <~~> l"
-proof (subst multiset_of_eq_perm[symmetric])
-  show "multiset_of (ssort l) = multiset_of l"
+proof (subst mset_eq_perm[symmetric])
+  show "mset (ssort l) = mset l"
     unfolding ssort_def
-    using multiset_of_ssort'[of "of_list l" "[]"]
+    using mset_ssort'[of "of_list l" "[]"]
     using multiset_of_list of_list_inv
     by simp
 qed

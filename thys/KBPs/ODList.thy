@@ -54,8 +54,8 @@ lemma distinct_sorted_merge[simp]:
      \<Longrightarrow> distinct (merge xs ys) \<and> sorted (merge xs ys)"
   by (induct xs ys rule: merge.induct) (auto iff: sorted_Cons)
 
-lemma multiset_of_merge [simp]:
-  "\<lbrakk> distinct (xs @ ys) \<rbrakk> \<Longrightarrow> multiset_of (merge xs ys) = multiset_of xs + multiset_of ys"
+lemma mset_merge [simp]:
+  "\<lbrakk> distinct (xs @ ys) \<rbrakk> \<Longrightarrow> mset (merge xs ys) = mset xs + mset ys"
   by (induct xs ys rule: merge.induct) (simp_all add: ac_simps)
 (*>*)
 
@@ -86,9 +86,9 @@ lemma msort_idle[simp]:
   "\<lbrakk> distinct xs; sorted xs \<rbrakk> \<Longrightarrow> msort xs = xs"
   by (rule map_sorted_distinct_set_unique[where f=id]) (auto simp: map.id)
 
-lemma multiset_of_msort[simp]:
-  "distinct xs \<Longrightarrow> multiset_of (msort xs) = multiset_of xs"
-  by (rule iffD1[OF set_eq_iff_multiset_of_eq_distinct]) simp_all
+lemma mset_msort[simp]:
+  "distinct xs \<Longrightarrow> mset (msort xs) = mset xs"
+  by (rule iffD1[OF set_eq_iff_mset_eq_distinct]) simp_all
 
 lemma msort_sort[simp]:
   "distinct xs \<Longrightarrow> sort xs = msort xs"

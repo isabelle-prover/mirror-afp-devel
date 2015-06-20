@@ -879,19 +879,19 @@ next
   qed
 qed
 
-lemma multiset_of_list_tree:
- "multiset (of_list_tree l) = multiset_of l"
+lemma mset_list_tree:
+ "multiset (of_list_tree l) = mset l"
 proof(induct l)
   case Nil
   thus ?case
     by auto
 next
   case (Cons v tail)
-  hence "multiset (of_list_tree (v # tail)) = multiset_of tail + {#v#}"
+  hence "multiset (of_list_tree (v # tail)) = mset tail + {#v#}"
     by auto
-  also have "... = multiset_of (v # tail)"
+  also have "... = mset (v # tail)"
     by auto
-  finally show "multiset (of_list_tree (v # tail)) = multiset_of (v # tail)"
+  finally show "multiset (of_list_tree (v # tail)) = mset (v # tail)"
     by auto
 qed
   
@@ -913,9 +913,9 @@ qed
     
 
 lemma multiset_heapify_of_list_tree:
-  "multiset (heapify (of_list_tree l)) = multiset_of l"
+  "multiset (heapify (of_list_tree l)) = mset l"
 using multiset_heapify[of "of_list_tree l"]
-using multiset_of_list_tree[of l]
+using mset_list_tree[of l]
 by auto
 
 lemma removeLeaf_val_val:
@@ -1092,7 +1092,7 @@ next
     by auto
 next
   fix l
-  show "multiset (hs_of_list l) = multiset_of l"
+  show "multiset (hs_of_list l) = mset l"
     unfolding hs_of_list_def
     using multiset_heapify_of_list_tree[of l]
     by auto

@@ -12,7 +12,7 @@ subsection {* Defining data structure *}
 text{* Selection sort works with list and that is the reason why {\em
   Collection} should be interpreted as list. *}
 
-interpretation Collection "[]" "\<lambda> l. l = []" id multiset_of
+interpretation Collection "[]" "\<lambda> l. l = []" id mset
 by (unfold_locales, auto)
 
 subsection {* Defining function remove\_max *}
@@ -66,15 +66,15 @@ by simp
 text{* Nothing new is added in the list and noting is deleted
 from the list except the maximum element. *}
 
-lemma remove_max_multiset_of_lemma:
+lemma remove_max_mset_lemma:
   assumes "(m, l') = foldl f (m', t') l"
-  shows "multiset_of (m # l') = multiset_of (m' # t' @ l)"
+  shows "mset (m # l') = mset (m' # t' @ l)"
 using assms
 proof (induct l arbitrary: l' m m' t' rule: rev_induct)
   case (snoc x xs)
   let ?a = "foldl f (m', t') xs"
   let ?m' = "fst ?a" and ?t' = "snd ?a"
-  have "multiset_of (?m' # ?t') = multiset_of (m' # t' @ xs)"
+  have "mset (?m' # ?t') = mset (m' # t' @ xs)"
     using snoc(1)[of ?m' ?t' m' t']
     by simp
   thus ?case
@@ -84,12 +84,12 @@ proof (induct l arbitrary: l' m m' t' rule: rev_induct)
     by (metis union_assoc)
 qed simp
 
-lemma remove_max_multiset_of:
+lemma remove_max_mset:
   assumes "l \<noteq> []" "(m, l') = remove_max l" 
-  shows "multiset_of l' + {#m#} = multiset_of l"
+  shows "mset l' + {#m#} = mset l"
 using assms
 unfolding remove_max_def
-using remove_max_multiset_of_lemma[of m l' "hd l" "[]" "tl l"]
+using remove_max_mset_lemma[of m l' "hd l" "[]" "tl l"]
 by auto
 
 definition ssf_ssort' where
@@ -98,12 +98,12 @@ definition ssf_ssort where
   [simp, code del]: "ssf_ssort = RemoveMax.ssort (\<lambda> l. l = []) id remove_max"
 
 interpretation SSRemoveMax: 
-  RemoveMax "[]" "\<lambda> l. l = []" id multiset_of remove_max "\<lambda> _. True" 
+  RemoveMax "[]" "\<lambda> l. l = []" id mset remove_max "\<lambda> _. True" 
   where
  "RemoveMax.ssort' (\<lambda> l. l = []) remove_max = ssf_ssort'" and
  "RemoveMax.ssort (\<lambda> l. l = []) id remove_max = ssf_ssort"
 using remove_max_max
-by (unfold_locales, auto simp add: remove_max_multiset_of)
+by (unfold_locales, auto simp add: remove_max_mset)
 
 
   

@@ -60,8 +60,8 @@ theorem jordan_hoelder_multisets:
   assumes "finite (carrier G)"
   assumes "composition_series G \<GG>"
   assumes "composition_series G \<HH>"
-  shows "multiset_of (map group.iso_class (normal_series.quotients G \<GG>))
-    = multiset_of (map group.iso_class (normal_series.quotients G \<HH>))"
+  shows "mset (map group.iso_class (normal_series.quotients G \<GG>))
+    = mset (map group.iso_class (normal_series.quotients G \<HH>))"
 using assms
 proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
   case (1 \<GG> \<HH> G)
@@ -139,19 +139,19 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
         also have "\<dots> = last comp\<HH>.quotients" using length\<HH>big comp\<HH>.last_quotient unfolding m_def by auto
         finally show ?thesis .
       qed
-      from ltaken have ind:"multiset_of (map group.iso_class \<GG>butlast.quotients) = multiset_of (map group.iso_class \<HH>butlast.quotients)"
+      from ltaken have ind:"mset (map group.iso_class \<GG>butlast.quotients) = mset (map group.iso_class \<HH>butlast.quotients)"
         using 1(1) True n'(5) grp\<GG>Pn.is_group finGbl \<GG>butlast.is_composition_series \<HH>butlast.is_composition_series unfolding \<GG>Pn_def \<HH>Pm_def by metis
-      have "multiset_of (map group.iso_class comp\<GG>.quotients)
-                    = multiset_of (map group.iso_class (butlast comp\<GG>.quotients @ [last comp\<GG>.quotients]))" by (simp add: quots\<GG>notempty)
-      also have "\<dots> = multiset_of (map group.iso_class (\<GG>butlast.quotients @ [last (comp\<GG>.quotients)]))" using comp\<GG>.quotients_butlast length unfolding n_def \<GG>Pn_def by auto
-      also have "\<dots> = multiset_of ((map group.iso_class \<GG>butlast.quotients) @ [group.iso_class (last (comp\<GG>.quotients))])" by auto
-      also have "\<dots> = multiset_of (map group.iso_class \<GG>butlast.quotients) + {# group.iso_class (last (comp\<GG>.quotients)) #}" by auto
-      also have "\<dots> = multiset_of (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (last (comp\<GG>.quotients)) #}" using ind by simp
-      also have "\<dots> = multiset_of (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (last (comp\<HH>.quotients)) #}" using lasteq by simp
-      also have "\<dots> = multiset_of ((map group.iso_class \<HH>butlast.quotients) @ [group.iso_class (last (comp\<HH>.quotients))])" by auto
-      also have "\<dots> = multiset_of (map group.iso_class (\<HH>butlast.quotients @ [last (comp\<HH>.quotients)]))" by auto
-      also have "\<dots> = multiset_of (map group.iso_class (butlast comp\<HH>.quotients @ [last comp\<HH>.quotients]))" using length\<HH>big comp\<HH>.quotients_butlast unfolding m_def \<HH>Pm_def by auto
-      also have "\<dots> = multiset_of (map group.iso_class comp\<HH>.quotients)" using append_butlast_last_id quots\<HH>notempty by simp
+      have "mset (map group.iso_class comp\<GG>.quotients)
+                    = mset (map group.iso_class (butlast comp\<GG>.quotients @ [last comp\<GG>.quotients]))" by (simp add: quots\<GG>notempty)
+      also have "\<dots> = mset (map group.iso_class (\<GG>butlast.quotients @ [last (comp\<GG>.quotients)]))" using comp\<GG>.quotients_butlast length unfolding n_def \<GG>Pn_def by auto
+      also have "\<dots> = mset ((map group.iso_class \<GG>butlast.quotients) @ [group.iso_class (last (comp\<GG>.quotients))])" by auto
+      also have "\<dots> = mset (map group.iso_class \<GG>butlast.quotients) + {# group.iso_class (last (comp\<GG>.quotients)) #}" by auto
+      also have "\<dots> = mset (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (last (comp\<GG>.quotients)) #}" using ind by simp
+      also have "\<dots> = mset (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (last (comp\<HH>.quotients)) #}" using lasteq by simp
+      also have "\<dots> = mset ((map group.iso_class \<HH>butlast.quotients) @ [group.iso_class (last (comp\<HH>.quotients))])" by auto
+      also have "\<dots> = mset (map group.iso_class (\<HH>butlast.quotients @ [last (comp\<HH>.quotients)]))" by auto
+      also have "\<dots> = mset (map group.iso_class (butlast comp\<HH>.quotients @ [last comp\<HH>.quotients]))" using length\<HH>big comp\<HH>.quotients_butlast unfolding m_def \<HH>Pm_def by auto
+      also have "\<dots> = mset (map group.iso_class comp\<HH>.quotients)" using append_butlast_last_id quots\<HH>notempty by simp
       finally show ?thesis .
     next
       case False 
@@ -227,9 +227,9 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
 
       -- {* Apply the induction hypothesis on @{text \<GG>butlast} and @{text \<LL>} *}
       from n'(2) have "Suc (length (take n \<GG>)) \<le> length \<GG>" by auto
-      hence multisets\<GG>butlast\<LL>:"multiset_of (map group.iso_class \<GG>butlast.quotients) = multiset_of (map group.iso_class \<LL>.quotients)"
+      hence multisets\<GG>butlast\<LL>:"mset (map group.iso_class \<GG>butlast.quotients) = mset (map group.iso_class \<LL>.quotients)"
         using  "1.hyps" grp\<GG>Pn.is_group finGbl \<GG>butlast.is_composition_series \<LL>.is_composition_series by metis
-      hence length\<LL>:"n = length \<LL>" using \<GG>butlast.quotients_length \<LL>.quotients_length length_map size_multiset_of ltaken by metis
+      hence length\<LL>:"n = length \<LL>" using \<GG>butlast.quotients_length \<LL>.quotients_length length_map size_mset ltaken by metis
       hence length\<LL>':"length \<LL> > 1" "length \<LL> - 1 > 0" "length \<LL> - 1 \<le> length \<LL>" using n'(6) length by auto
       have Inteq\<LL>sndlast:"\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1) = \<LL> ! (length \<LL> - 1 - 1)"
       proof -
@@ -281,19 +281,19 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       then interpret \<KK>butlast: composition_series \<HH>PmInt\<GG>Pn "(take (length \<KK> - 1) \<KK>)" using Inteq\<KK>sndlast unfolding \<HH>PmInt\<GG>Pn_def by auto
       from finGbl have finInt:"finite (carrier \<HH>PmInt\<GG>Pn)" unfolding \<HH>PmInt\<GG>Pn_def \<GG>Pn_def by simp
       moreover have "Suc (length (take (length \<LL> - 1) \<LL>)) \<le> length \<GG>" using length\<LL> unfolding n_def using n'(2) by auto
-      ultimately have multisets\<KK>\<LL>butlast:"multiset_of (map group.iso_class \<LL>butlast.quotients) = multiset_of (map group.iso_class \<KK>butlast.quotients)"
+      ultimately have multisets\<KK>\<LL>butlast:"mset (map group.iso_class \<LL>butlast.quotients) = mset (map group.iso_class \<KK>butlast.quotients)"
          using "1.hyps" \<LL>butlast.is_group \<KK>butlast.is_composition_series \<LL>butlast.is_composition_series by auto
       hence "length (take (length \<KK> - 1) \<KK>) = length (take (length \<LL> - 1) \<LL>)"
-        using \<KK>butlast.quotients_length \<LL>butlast.quotients_length length_map size_multiset_of by metis
+        using \<KK>butlast.quotients_length \<LL>butlast.quotients_length length_map size_mset by metis
       hence "length (take (length \<KK> - 1) \<KK>) = n - 1" using length\<LL> n'(1) by auto
       hence length\<KK>:"length \<KK> = n" by (metis Suc_diff_1 \<KK>.notempty butlast_conv_take length_butlast length_greater_0_conv n'(1))
       
       -- {* Apply the induction hypothesis on @{text \<KK>} and @{text \<HH>butlast} *}
       from Inteq\<KK>sndlast have \<KK>sndlast:"\<HH>PmInt\<GG>Pn = (\<HH>Pm\<lparr>carrier := \<KK> ! (length \<KK> - 1 - 1)\<rparr>)" unfolding \<HH>PmInt\<GG>Pn_def \<HH>Pm_def \<KK>_def by auto
       from length\<KK> have "Suc (length \<KK>) \<le> length \<GG>" using n'(2) by auto
-      hence multisets\<HH>butlast\<KK>:"multiset_of (map group.iso_class \<HH>butlast.quotients) = multiset_of (map group.iso_class \<KK>.quotients)"
+      hence multisets\<HH>butlast\<KK>:"mset (map group.iso_class \<HH>butlast.quotients) = mset (map group.iso_class \<KK>.quotients)"
         using  "1.hyps" grp\<HH>Pm.is_group finHbl \<HH>butlast.is_composition_series \<KK>.is_composition_series by metis
-      hence length\<KK>:"m = length \<KK>" using \<HH>butlast.quotients_length \<KK>.quotients_length length_map size_multiset_of ltakem by metis
+      hence length\<KK>:"m = length \<KK>" using \<HH>butlast.quotients_length \<KK>.quotients_length length_map size_mset ltakem by metis
       hence  "length \<KK> > 1" "length \<KK> - 1 > 0" "length \<KK> - 1 \<le> length \<KK>" using m'(4) length\<HH>big by auto
       hence quots\<KK>notemtpy:"\<KK>.quotients \<noteq> []" unfolding \<KK>.quotients_def by auto
       
@@ -305,28 +305,28 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
         unfolding \<HH>Pm_def \<HH>PmInt\<GG>Pn_def by auto
       
       -- {* Prove equality of those composition series. *}
-      have "multiset_of (map group.iso_class comp\<GG>.quotients)
-                    = multiset_of (map group.iso_class ((butlast comp\<GG>.quotients) @ [last comp\<GG>.quotients]))" using quots\<GG>notempty by simp
-      also have "\<dots> = multiset_of (map group.iso_class (\<GG>butlast.quotients @ [G Mod \<GG> ! (n - 1)]))"
+      have "mset (map group.iso_class comp\<GG>.quotients)
+                    = mset (map group.iso_class ((butlast comp\<GG>.quotients) @ [last comp\<GG>.quotients]))" using quots\<GG>notempty by simp
+      also have "\<dots> = mset (map group.iso_class (\<GG>butlast.quotients @ [G Mod \<GG> ! (n - 1)]))"
         using comp\<GG>.quotients_butlast comp\<GG>.last_quotient length unfolding n_def \<GG>Pn_def by auto
-      also have "\<dots> = multiset_of (map group.iso_class ((butlast \<LL>.quotients) @ [last \<LL>.quotients])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class ((butlast \<LL>.quotients) @ [last \<LL>.quotients])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
         using multisets\<GG>butlast\<LL> quots\<LL>notemtpy by simp
-      also have "\<dots> = multiset_of (map group.iso_class (\<LL>butlast.quotients @ [\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class (\<LL>butlast.quotients @ [\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
         using \<LL>.quotients_butlast \<LL>.last_quotient `length \<LL> > 1` \<LL>sndlast Inteq\<LL>sndlast unfolding n_def by auto
-      also have "\<dots> = multiset_of (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
         using multisets\<KK>\<LL>butlast by simp
-      also have "\<dots> = multiset_of (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #} + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #} + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #}"
         using \<phi> \<psi>2 iso_classes_iff grp\<GG>PnMod\<HH>Pmint\<GG>Pn.is_group grpGMod\<HH>Pm.is_group grpGMod\<GG>Pn.is_group grp\<HH>PmMod\<HH>Pmint\<GG>Pn.is_group
         by metis
-      also have "\<dots> = multiset_of (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         by (metis add_eq_conv_ex)
-      also have "\<dots> = multiset_of (map group.iso_class ((butlast \<KK>.quotients) @ [last \<KK>.quotients])) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class ((butlast \<KK>.quotients) @ [last \<KK>.quotients])) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         using \<KK>.quotients_butlast \<KK>.last_quotient `length \<KK> > 1` \<KK>sndlast Inteq\<KK>sndlast unfolding m_def by auto
-      also have "\<dots> = multiset_of (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
+      also have "\<dots> = mset (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         using multisets\<HH>butlast\<KK> quots\<KK>notemtpy by simp
-      also have "\<dots> = multiset_of (map group.iso_class ((butlast comp\<HH>.quotients) @ [last comp\<HH>.quotients]))"
+      also have "\<dots> = mset (map group.iso_class ((butlast comp\<HH>.quotients) @ [last comp\<HH>.quotients]))"
         using comp\<HH>.quotients_butlast comp\<HH>.last_quotient length\<HH>big unfolding m_def \<HH>Pm_def by auto
-      also have "\<dots> = multiset_of (map group.iso_class comp\<HH>.quotients)" using quots\<HH>notempty by simp
+      also have "\<dots> = mset (map group.iso_class comp\<HH>.quotients)" using quots\<HH>notempty by simp
       finally show ?thesis .
     qed
   qed
@@ -339,10 +339,10 @@ corollary (in jordan_hoelder) jordan_hoelder_size:
 proof -
   have "length \<GG> = length comp\<GG>.quotients + 1" by (metis comp\<GG>.quotients_length)
   also have "\<dots> = length (map group.iso_class comp\<GG>.quotients) + 1" by (metis length_map)
-  also have "\<dots> = size (multiset_of (map group.iso_class comp\<GG>.quotients)) + 1" by (metis size_multiset_of)
-  also have "\<dots> = size (multiset_of (map group.iso_class comp\<HH>.quotients)) + 1"
+  also have "\<dots> = size (mset (map group.iso_class comp\<GG>.quotients)) + 1" by (metis size_mset)
+  also have "\<dots> = size (mset (map group.iso_class comp\<HH>.quotients)) + 1"
     using jordan_hoelder_multisets is_group finite is_composition_series comp\<HH>.is_composition_series by metis
-  also have "\<dots> = length (map group.iso_class comp\<HH>.quotients) + 1" by (metis size_multiset_of)
+  also have "\<dots> = length (map group.iso_class comp\<HH>.quotients) + 1" by (metis size_mset)
   also have "\<dots> = length comp\<HH>.quotients + 1" by (metis length_map)
   also have "\<dots> = length \<HH>" by (metis comp\<HH>.quotients_length)
   finally show ?thesis.

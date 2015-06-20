@@ -113,8 +113,8 @@ lemma effect_shiftr:
     and "effect (while (shiftr_p a key i) (shiftr_f a i)) h h' u"
   shows "Array.length h a = Array.length h' a \<and>
     ?i h' \<le> j \<and>
-    multiset_of (list_update (Array.get h a) j key) =
-      multiset_of (list_update (Array.get h' a) (?i h') key) \<and>
+    mset (list_update (Array.get h a) j key) =
+      mset (list_update (Array.get h' a) (?i h') key) \<and>
     ini h a j = both h' a j i \<and>
     sorted (both h' a j i) \<and>
     (\<forall>x \<in> set (right h' a j i). x > key)"
@@ -143,13 +143,13 @@ next
   moreover
   have "?i h'' \<le> j" using step by auto
   moreover
-  have "multiset_of (list_update (Array.get h a) j key) =
-    multiset_of (list_update (Array.get h'' a) (?i h'') key)"
+  have "mset (list_update (Array.get h a) j key) =
+    mset (list_update (Array.get h'' a) (?i h'') key)"
   proof -
     have "?i h' < length (Array.get h' a)"
       and "?i h' - 1 < length (Array.get h' a)" using * by auto
     then show ?thesis
-      using step by (simp add: multiset_of_update ac_simps nth_list_update)
+      using step by (simp add: mset_update ac_simps nth_list_update)
   qed
   moreover
   have "ini h a j = both h'' a j i"
@@ -188,7 +188,7 @@ lemma effect_for_insert_elt:
     and "effect (for [1 ..< l] (insert_elt a)) h h' u"
   shows "Array.length h a = Array.length h' a \<and>
     sorted (take l (Array.get h' a)) \<and>
-    multiset_of (Array.get h a) = multiset_of (Array.get h' a)"
+    mset (Array.get h a) = mset (Array.get h' a)"
 using assms(2-)
 proof (induction l h' rule: effect_for_induct)
   case base
@@ -232,7 +232,7 @@ next
   have "Array.length h a = Array.length h'' a"
     using shiftr by (auto) (metis step.IH)
   moreover
-  have "multiset_of (Array.get h a) = multiset_of (Array.get h'' a)"
+  have "mset (Array.get h a) = mset (Array.get h'' a)"
     using shiftr and step by (simp add: key)
   moreover
   have "sorted (take (Suc j) (Array.get h'' a))"
@@ -272,7 +272,7 @@ qed
 
 lemma effect_insertion_sort:
   assumes "effect (insertion_sort a) h h' u"
-  shows "multiset_of (Array.get h a) = multiset_of (Array.get h' a) \<and> sorted (Array.get h' a)"
+  shows "mset (Array.get h a) = mset (Array.get h' a) \<and> sorted (Array.get h' a)"
   using assms
   apply (cases "Array.length h a")
   apply (auto elim!: effect_elims simp: insertion_sort_def Array.length_def)[1]
@@ -362,7 +362,7 @@ lemma for_insert_elt_correct:
   shows "\<exists>h'. effect (for [1 ..< l] (insert_elt a)) h h' () \<and>
     Array.length h a = Array.length h' a \<and>
     sorted (take l (Array.get h' a)) \<and>
-    multiset_of (Array.get h a) = multiset_of (Array.get h' a)"
+    mset (Array.get h a) = mset (Array.get h' a)"
 using assms(2)
 proof (induction rule: for_induct)
   case (succeed k h)
@@ -409,7 +409,7 @@ next
   have "Array.length h a = Array.length h'' a"
     using shiftr by (auto) (metis step.hyps(1))
   moreover
-  have "multiset_of (Array.get h a) = multiset_of (Array.get h'' a)"
+  have "mset (Array.get h a) = mset (Array.get h'' a)"
     using shiftr and step by (simp add: key)
   moreover
   have "sorted (take (Suc j) (Array.get h'' a))"
@@ -449,12 +449,12 @@ qed
 
 lemma insertion_sort_correct:
   "\<exists>h'. effect (insertion_sort a) h h' u \<and>
-    multiset_of (Array.get h a) = multiset_of (Array.get h' a) \<and>
+    mset (Array.get h a) = mset (Array.get h' a) \<and>
     sorted (Array.get h' a)"
 proof (cases "Array.length h a = 0")
   assume "Array.length h a = 0"
   then have "effect (insertion_sort a) h h ()"
-    and "multiset_of (Array.get h a) = multiset_of (Array.get h a)"
+    and "mset (Array.get h a) = mset (Array.get h a)"
     and "sorted (Array.get h a)"
     by (auto simp: insertion_sort_def length_def intro!: effect_intros)
   then show ?thesis by auto

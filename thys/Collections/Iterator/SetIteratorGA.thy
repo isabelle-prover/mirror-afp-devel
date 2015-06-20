@@ -300,7 +300,7 @@ definition iterator_to_ordered_iterator where
    foldli (sort_fun (iterate_to_list it))"
 
 lemma iterator_to_ordered_iterator_correct :
-assumes sort_fun_OK: "\<And>l. sorted_by_rel R (sort_fun l) \<and> multiset_of (sort_fun l) = multiset_of l"
+assumes sort_fun_OK: "\<And>l. sorted_by_rel R (sort_fun l) \<and> mset (sort_fun l) = mset l"
     and it_OK: "set_iterator it S0"
 shows "set_iterator_genord (iterator_to_ordered_iterator sort_fun it) S0 R"
 proof -
@@ -312,8 +312,8 @@ proof -
     "sorted_by_rel R (sort_fun l)"
     "set (sort_fun l) = S0" "distinct (sort_fun l)"
     apply (simp_all)
-    apply (metis set_mset_multiset_of)
-    apply (metis distinct_count_atmost_1 set_mset_multiset_of)
+    apply (metis set_mset_mset)
+    apply (metis distinct_count_atmost_1 set_mset_mset)
   done
 
   show ?thesis

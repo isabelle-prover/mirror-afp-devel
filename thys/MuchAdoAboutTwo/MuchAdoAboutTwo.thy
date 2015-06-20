@@ -1432,11 +1432,11 @@ proof -
       thus "set xs \<inter> set ys = {}" using i_xs_ys by auto
     qed
   with all_set_inter_empty_distinct have "distinct js" using A2 by auto
-  with set_eq have "multiset_of js = multiset_of [0..<k + 1]"
-    using Multiset.set_eq_iff_multiset_of_eq_distinct 
+  with set_eq have "mset js = mset [0..<k + 1]"
+    using Multiset.set_eq_iff_mset_eq_distinct 
           [where x=js and y="[0..<k + 1]"] by simp
   thus "js <~~> [0..<k + 1]" 
-    using Permutation.multiset_of_eq_perm [where xs=js and ys="[0..<k + 1]"] 
+    using Permutation.mset_eq_perm [where xs=js and ys="[0..<k + 1]"] 
     by simp
 qed
 
