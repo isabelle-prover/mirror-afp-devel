@@ -187,22 +187,22 @@ lemma remdups_concat_map_remdups:
   by (induct xs) (auto simp: remdups_append filter_empty_conv)
 
 (*multisets only needed below*)
-lemma multiset_concat_gen: "M + multiset_of (concat xs) = fold (\<lambda>x M. M + multiset_of x) xs M"
+lemma multiset_concat_gen: "M + mset (concat xs) = fold (\<lambda>x M. M + mset x) xs M"
   by (induct xs arbitrary: M) (auto, metis union_assoc)
 
-corollary multiset_concat: "multiset_of (concat xs) = fold (\<lambda>x M. M + multiset_of x) xs {#}"
+corollary multiset_concat: "mset (concat xs) = fold (\<lambda>x M. M + mset x) xs {#}"
   using multiset_concat_gen[of "{#}" xs] by simp
 
-lemma fold_multiset_of_insort[simp]: "fold (\<lambda>x M. M + multiset_of (f x)) (insort x xs) M =
-  fold (\<lambda>x M. M + multiset_of (f x)) xs (multiset_of (f x) + M)"
+lemma fold_mset_insort[simp]: "fold (\<lambda>x M. M + mset (f x)) (insort x xs) M =
+  fold (\<lambda>x M. M + mset (f x)) xs (mset (f x) + M)"
   by (induct xs arbitrary: M) (auto simp: ac_simps)
 
-lemma fold_multiset_of_sort[simp]:
-  "fold (\<lambda>x M. M + multiset_of (f x)) (sort xs) M = fold (\<lambda>x M. M + multiset_of (f x)) xs M"
+lemma fold_mset_sort[simp]:
+  "fold (\<lambda>x M. M + mset (f x)) (sort xs) M = fold (\<lambda>x M. M + mset (f x)) xs M"
   by (induct xs arbitrary: M) (auto simp: ac_simps)
 
 lemma multiset_concat_map_sort[simp]:
-  "multiset_of (concat (map f (sort xs))) = multiset_of (concat (map f xs))"
+  "mset (concat (map f (sort xs))) = mset (concat (map f xs))"
   by (auto simp: multiset_concat fold_map o_def)
 
 lemma sort_concat_map_sort[simp]: "sort (concat (map f (sort xs))) = sort (concat (map f xs))"

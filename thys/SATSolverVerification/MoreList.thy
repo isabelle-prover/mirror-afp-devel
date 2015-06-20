@@ -48,7 +48,7 @@ subsection{* @{term removeAll} - element removal *}
 
 lemma removeAll_multiset:
   assumes "distinct a" "x \<in> set a"
-  shows "multiset_of a = {#x#} + multiset_of (removeAll x a)"
+  shows "mset a = {#x#} + mset (removeAll x a)"
 using assms
 proof (induct a)
   case (Cons y a')
@@ -70,7 +70,7 @@ proof (induct a)
     with `distinct (y # a')`
     have "x \<noteq> y" "distinct a'"
       by auto
-    hence "multiset_of a' = {#x#} + multiset_of (removeAll x a')"
+    hence "mset a' = {#x#} + mset (removeAll x a')"
       using `x \<in> set a'`
       using Cons(1)
       by simp
@@ -1047,7 +1047,7 @@ next
 qed
 
 lemma remdupsAppendMultiSet: 
-  shows "multiset_of (remdups (a @ b)) = multiset_of (remdups a @ remdups (list_diff b a))"
+  shows "mset (remdups (a @ b)) = mset (remdups a @ remdups (list_diff b a))"
 proof (induct a)
   case Nil
   thus ?case
@@ -1068,8 +1068,8 @@ next
       case True
       show ?thesis
       proof-
-        have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
+        have "mset (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          mset (x # remdups a' @ remdups (list_diff b (x # a')))"
         proof-
           have "remdups (x # a') = x # remdups a'"
             using `x \<notin> set a'`
@@ -1077,19 +1077,19 @@ next
           thus ?thesis
             by simp
         qed
-        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
           by auto
-        also have "\<dots> = multiset_of (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
+        also have "\<dots> = mset (x # remdups a' @ remdups (removeAll x (list_diff b a')))"
           by simp
-        also have "\<dots> = multiset_of (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
+        also have "\<dots> = mset (remdups a' @ x # remdups (removeAll x (list_diff b a')))"
           by (simp add: union_assoc)
-        also have "\<dots> = multiset_of (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
+        also have "\<dots> = mset (remdups a' @ x # removeAll x (remdups (list_diff b a')))"
           by (simp only: remdupsRemoveAllCommute)
-        also have "\<dots> = multiset_of (remdups a') + multiset_of (x # removeAll x (remdups (list_diff b a')))"
+        also have "\<dots> = mset (remdups a') + mset (x # removeAll x (remdups (list_diff b a')))"
           by simp
-        also have "\<dots> = multiset_of (remdups a') + {#x#} + multiset_of (removeAll x (remdups (list_diff b a')))"
+        also have "\<dots> = mset (remdups a') + {#x#} + mset (removeAll x (remdups (list_diff b a')))"
           by (simp add: union_assoc) (simp add: union_commute)
-        also have "\<dots> = multiset_of (remdups a') + multiset_of (remdups (list_diff b a'))"
+        also have "\<dots> = mset (remdups a') + mset (remdups (list_diff b a'))"
         proof-
           from `x \<notin> set a'` `x \<in> set b`
           have "x \<in> set (list_diff b a')"
@@ -1101,10 +1101,10 @@ next
             using removeAll_multiset[of "remdups (list_diff b a')" "x"]
             by (simp add: union_assoc)
         qed
-        also have "\<dots> = multiset_of (remdups (a' @ b))"
+        also have "\<dots> = mset (remdups (a' @ b))"
           using Cons(1)
           by simp
-        also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
+        also have "\<dots> = mset (remdups ((x # a') @ b))"
           using `x \<in> set b`
           by simp
         finally show ?thesis
@@ -1114,8 +1114,8 @@ next
       case False
       thus ?thesis
       proof-
-        have "multiset_of (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
-          multiset_of (x # remdups a' @ remdups (list_diff b (x # a')))"
+        have "mset (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
+          mset (x # remdups a' @ remdups (list_diff b (x # a')))"
         proof-
           have "remdups (x # a') = x # remdups a'"
             using `x \<notin> set a'`
@@ -1123,16 +1123,16 @@ next
           thus ?thesis
             by simp
         qed
-        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
+        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
           by auto
-        also have "\<dots> = multiset_of (x # remdups a' @ remdups (list_diff b a'))"
+        also have "\<dots> = mset (x # remdups a' @ remdups (list_diff b a'))"
           using `x \<notin> set b`
           using removeAll_id[of "x" "b"]
           by simp
-        also have "\<dots> = {#x#} + multiset_of (remdups (a' @ b))"
+        also have "\<dots> = {#x#} + mset (remdups (a' @ b))"
           using Cons(1)
           by (simp add: union_commute)
-        also have "\<dots> = multiset_of (remdups ((x # a') @ b))"
+        also have "\<dots> = mset (remdups ((x # a') @ b))"
           using `x \<notin> set a'` `x \<notin> set b`
           by (auto simp add: union_commute)
         finally show ?thesis
@@ -1246,7 +1246,7 @@ lemma multisetLeListDiff:
 assumes
   "trans r"
 shows 
-  "multiset_le (multiset_of (list_diff a b)) (multiset_of a) r"
+  "multiset_le (mset (list_diff a b)) (mset a) r"
 proof (induct a)
   case Nil
   thus ?case
@@ -1257,8 +1257,8 @@ next
   thus ?case
     using assms
     using multisetEmptyLeI[of "r" "{#x#}"]
-    using multisetUnionLeMono[of "r" "multiset_of (list_diff a' b)" "multiset_of a'" "{#}" "{#x#}"]
-    using multisetUnionLeMono1[of "r" "multiset_of (list_diff a' b)" "multiset_of a'" "{#x#}"]
+    using multisetUnionLeMono[of "r" "mset (list_diff a' b)" "mset a'" "{#}" "{#x#}"]
+    using multisetUnionLeMono1[of "r" "mset (list_diff a' b)" "mset a'" "{#x#}"]
     by auto
 qed
 

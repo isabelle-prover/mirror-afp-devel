@@ -2927,7 +2927,7 @@ Since, resolution operator is defined so that it removes all occurrences of clas
 to remove duplicate literals before comparison. *}
 
 definition
-"multLess M = inv_image  (mult (precedesOrder (elements M))) (\<lambda> x. multiset_of (remdups (oppositeLiteralList x)))"
+"multLess M = inv_image  (mult (precedesOrder (elements M))) (\<lambda> x. mset (remdups (oppositeLiteralList x)))"
 
 text{* The following lemma will help prove that application of the
 $Explain$ DPLL transition rule decreases the conflict clause in the
@@ -2939,13 +2939,13 @@ lemma multLessResolve:
   shows
   "(resolve C reason (opposite l), C) \<in> multLess  M"
 proof-
-  let ?X = "multiset_of (remdups (oppositeLiteralList C))"
-  let ?Y = "multiset_of (remdups (oppositeLiteralList (resolve C reason (opposite l))))"
+  let ?X = "mset (remdups (oppositeLiteralList C))"
+  let ?Y = "mset (remdups (oppositeLiteralList (resolve C reason (opposite l))))"
   let ?ord = "precedesOrder (elements M)"
   have "(?Y, ?X) \<in> (mult1 ?ord)"
   proof-
-    let ?Z = "multiset_of (remdups (oppositeLiteralList (removeAll (opposite l) C)))"
-    let ?W = "multiset_of (remdups (oppositeLiteralList (removeAll l (list_diff reason C))))"
+    let ?Z = "mset (remdups (oppositeLiteralList (removeAll (opposite l) C)))"
+    let ?W = "mset (remdups (oppositeLiteralList (removeAll l (list_diff reason C))))"
     let ?a = "l"
     from `(opposite l) el C`
     have "?X = ?Z + {#?a#}"
@@ -3038,20 +3038,20 @@ proof-
     using transPrecedesOrder[of "elements M"]
     by simp
 
-  have  "(multiset_of (?f a), multiset_of (?f b)) \<in> mult ?pOrd"
+  have  "(mset (?f a), mset (?f b)) \<in> mult ?pOrd"
     using assms
     unfolding multLess_def
     unfolding oppositeLiteralList_def
     by simp
   moreover
-  have "multiset_le (multiset_of (list_diff (?f a) (?f x)))
-                    (multiset_of (?f a))
+  have "multiset_le (mset (list_diff (?f a) (?f x)))
+                    (mset (?f a))
                     ?pOrd"
     using `trans ?pOrd`
     using multisetLeListDiff[of "?pOrd" "?f a" "?f x"]
     by simp
   ultimately
-  have "(multiset_of (list_diff (?f a) (?f x)), multiset_of (?f b)) \<in> mult ?pOrd"
+  have "(mset (list_diff (?f a) (?f x)), mset (?f b)) \<in> mult ?pOrd"
     unfolding multiset_le_def
     unfolding mult_def
     by auto

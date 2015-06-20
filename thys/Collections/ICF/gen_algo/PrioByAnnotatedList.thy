@@ -116,7 +116,7 @@ subsubsection "Operations"
 definition alprio_\<alpha> :: "('s \<Rightarrow> (unit \<times> ('e,'a::linorder) Prio) list) 
   \<Rightarrow> 's \<Rightarrow> ('e \<times> 'a::linorder) multiset"
   where 
-  "alprio_\<alpha> \<alpha> al == (multiset_of (map p_unwrap (map snd (\<alpha> al))))"
+  "alprio_\<alpha> \<alpha> al == (mset (map p_unwrap (map snd (\<alpha> al))))"
 
 definition alprio_invar :: "('s \<Rightarrow> (unit \<times> ('c, 'd::linorder) Prio) list) 
   \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> bool" 
@@ -368,7 +368,7 @@ proof -
 qed
 
 lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
-   \<forall>y\<in>set_mset (multiset_of (map p_unwrap (map snd xs))).
+   \<forall>y\<in>set_mset (mset (map p_unwrap (map snd xs))).
               snd (p_unwrap (listsum (map snd xs))) \<le> snd y"          
     proof (induct xs)
     case Nil thus ?case by simp

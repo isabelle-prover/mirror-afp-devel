@@ -406,32 +406,32 @@ lemma mulex1_reflclp:
 lemma mulex_on_reflclp:
   assumes "mulex_on P A M N"
   shows "mulex_on (P\<^sup>=\<^sup>=) A M N"
-  using mulex_on_mono [OF _ assms, of "P\<^sup>=\<^sup>="] by auto
+  using mulex_on_mono [OF _ assms, of "P\<^sup>=\<^sup>="] by auto                  
 
-lemma surj_on_multisets_multiset_of:
-  "\<forall>M\<in>multisets A. \<exists>xs\<in>lists A. M = multiset_of xs"
+lemma surj_on_multisets_mset:
+  "\<forall>M\<in>multisets A. \<exists>xs\<in>lists A. M = mset xs"
 proof
   fix M
   assume "M \<in> multisets A"
-  then show "\<exists>xs\<in>lists A. M = multiset_of xs"
+  then show "\<exists>xs\<in>lists A. M = mset xs"
   proof (induct M)
     case empty show ?case by simp
   next
     case (add M a)
-    then obtain xs where "xs \<in> lists A" and "M = multiset_of xs" by auto
-    then have "M + {#a#} = multiset_of (a # xs)" by simp
+    then obtain xs where "xs \<in> lists A" and "M = mset xs" by auto
+    then have "M + {#a#} = mset (a # xs)" by simp
     moreover have "a # xs \<in> lists A" using \<open>xs \<in> lists A\<close> and add by auto
     ultimately show ?case by blast
   qed
 qed
 
-lemma image_multiset_of_lists [simp]:
-  "multiset_of ` lists A = multisets A"
-  using surj_on_multisets_multiset_of [of A]
-  by auto (metis mem_Collect_eq multisets_def set_mset_multiset_of subsetI)
+lemma image_mset_lists [simp]:
+  "mset ` lists A = multisets A"
+  using surj_on_multisets_mset [of A]
+  by auto (metis mem_Collect_eq multisets_def set_mset_mset subsetI)
 
 lemma multisets_UNIV [simp]: "multisets UNIV = UNIV"
-  by (metis image_multiset_of_lists lists_UNIV surj_multiset_of)
+  by (metis image_mset_lists lists_UNIV surj_mset)
 
 lemma non_empty_multiset_induct [consumes 1, case_names singleton add]:
   assumes "M \<noteq> {#}"

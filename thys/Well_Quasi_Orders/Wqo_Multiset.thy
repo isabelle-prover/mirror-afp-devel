@@ -15,7 +15,7 @@ begin
 lemma list_emb_imp_reflclp_mulex_on:
   assumes "xs \<in> lists A" and "ys \<in> lists A"
     and "list_emb P xs ys"
-  shows "(mulex_on P A)\<^sup>=\<^sup>= (multiset_of xs) (multiset_of ys)"
+  shows "(mulex_on P A)\<^sup>=\<^sup>= (mset xs) (mset ys)"
 using assms(3, 1, 2)
 proof (induct)
   case (list_emb_Nil ys)
@@ -39,7 +39,7 @@ lemma almost_full_on_multisets:
   shows "almost_full_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
 proof -
   let ?P = "(mulex_on P A)\<^sup>=\<^sup>="
-  from almost_full_on_hom [OF _ almost_full_on_lists, of A P ?P multiset_of,
+  from almost_full_on_hom [OF _ almost_full_on_lists, of A P ?P mset,
     OF list_emb_imp_reflclp_mulex_on, simplified]
     show ?thesis using assms by blast
 qed

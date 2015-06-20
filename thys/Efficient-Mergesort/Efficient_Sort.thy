@@ -131,12 +131,12 @@ lemma (in linorder) sorted_rev_take_chain_gt_append:
   using linked_less_imp_sorted[OF linked_rev_take_chain_append[OF assms, of "map key xs"]]
     by (simp add: rev_map)
 
-lemma multiset_of_take_chain_drop_chain[simp]:
-  "multiset_of (take_chain x P xs) + multiset_of (drop_chain x P xs) = multiset_of xs"
+lemma mset_take_chain_drop_chain[simp]:
+  "mset (take_chain x P xs) + mset (drop_chain x P xs) = mset xs"
   by (induct xs arbitrary: x) (simp_all add: ac_simps)
 
-lemma multiset_of_drop_chain_take_chain[simp]:
-  "multiset_of (drop_chain x P xs) + multiset_of (take_chain x P xs) = multiset_of xs"
+lemma mset_drop_chain_take_chain[simp]:
+  "mset (drop_chain x P xs) + mset (take_chain x P xs) = mset xs"
   by (induct xs arbitrary: x) (simp_all add: ac_simps)
 
 
@@ -199,29 +199,29 @@ fun merge_all :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list list \<Rightarrow>
 | "merge_all key [x] = x"
 | "merge_all key xs = merge_all key (merge_pairs key xs)"
 
-lemma multiset_of_merge[simp]:
-  "multiset_of (merge key xs ys) = multiset_of xs + multiset_of ys"
+lemma mset_merge[simp]:
+  "mset (merge key xs ys) = mset xs + mset ys"
   by (induct xs ys rule: merge.induct) (simp_all add: ac_simps)
 
 lemma set_merge[simp]:
   "set (merge key xs ys) = set xs \<union> set ys"
-  unfolding set_mset_multiset_of[symmetric] by simp
+  unfolding set_mset_mset[symmetric] by simp
 
-lemma multiset_of_concat_merge_pairs[simp]:
-  "multiset_of (concat (merge_pairs key xs)) = multiset_of (concat xs)"
+lemma mset_concat_merge_pairs[simp]:
+  "mset (concat (merge_pairs key xs)) = mset (concat xs)"
   by (induct xs rule: merge_pairs.induct) (auto simp: ac_simps)
 
 lemma set_concat_merge_pairs[simp]:
   "set (concat (merge_pairs key xs)) = set (concat xs)"
-  unfolding set_mset_multiset_of[symmetric] by simp
+  unfolding set_mset_mset[symmetric] by simp
 
-lemma multiset_of_merge_all[simp]:
-  "multiset_of (merge_all key xs) = multiset_of (concat xs)"
+lemma mset_merge_all[simp]:
+  "mset (merge_all key xs) = mset (concat xs)"
   by (induct xs rule: merge_all.induct) (simp_all add: ac_simps)
 
 lemma set_merge_all[simp]:
   "set (merge_all key xs) = set (concat xs)"
-  unfolding set_mset_multiset_of[symmetric] by simp
+  unfolding set_mset_mset[symmetric] by simp
 
 lemma sorted_merge[simp]:
   assumes "sorted (map key xs)" and "sorted (map key ys)"
@@ -289,8 +289,8 @@ proof (induct key xs rule: sequences_induct)
     by (cases "le key a b") auto
 qed simp_all
 
-lemma multiset_of_sequences[simp]:
-  "multiset_of (concat (sequences key xs)) = multiset_of xs"
+lemma mset_sequences[simp]:
+  "mset (concat (sequences key xs)) = mset xs"
   by (induct key xs rule: sequences_induct) (simp_all add: ac_simps)
 
 lemma filter_by_key_drop_chain_gt[simp]:

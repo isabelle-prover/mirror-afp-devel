@@ -330,7 +330,7 @@ next
     by auto
 next
   fix l 
-  show "multiset (hs_of_list l) = multiset_of l"
+  show "multiset (hs_of_list l) = mset l"
   proof(induct l)
     case Nil
     thus ?case
