@@ -47,7 +47,7 @@ function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" whe
 "splay a (Node l a r) = Node l a r" |
 "a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)" |
 "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r" |
-"a<c \<Longrightarrow> a\<le>b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)" |
+"a<c \<Longrightarrow> a<b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)" |
 "a<c \<Longrightarrow> a<b \<Longrightarrow> ll \<noteq> Leaf \<Longrightarrow>
  splay a (Node (Node ll b lr) c r) =
  (case splay a ll of Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r)))" |
