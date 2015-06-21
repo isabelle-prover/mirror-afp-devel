@@ -56,7 +56,6 @@ next
   hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
   then obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using "6.prems"(1,2) by(cases "splay x lb") auto
-  have "lb \<noteq> Leaf" using 1 by auto
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
@@ -64,7 +63,7 @@ next
     using "6.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
-    using "6.IH" `lb \<noteq> Leaf` `x<b` "6.prems" 0 by(auto simp: algebra_simps)
+    using 6 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
@@ -81,7 +80,6 @@ next
   hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
   then obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using "8.prems"(1,2) by(cases "splay x rb") auto
-  have "rb \<noteq> Leaf" using 1 by auto
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = rb  let ?R' = "Node lu u ru"
   let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
@@ -89,8 +87,7 @@ next
     using "8.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
-    using "8.IH" `rb \<noteq> Leaf` `x<a` `b<x` "8.prems" 0
-    by(auto simp: algebra_simps)
+    using 8 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> rb + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
@@ -106,7 +103,6 @@ next
   hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
   then obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using "11.prems"(1,2) by(cases "splay x lb") auto
-  have "lb \<noteq> Leaf" using 1 by auto
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
@@ -114,7 +110,7 @@ next
     using "11.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
-    using "11.IH" `lb \<noteq> Leaf` `a<x` `x<b` "11.prems" 0 by(auto simp: algebra_simps)
+    using 11 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
@@ -130,7 +126,6 @@ next
   hence 1: "x \<in> set_tree rb" using "14.prems" `b<x` `a<x` by (auto)
   then obtain l' u r' where sp: "splay x rb = Node l' u r'"
     using "14.prems"(1,2) by(cases "splay x rb") auto
-  have "rb \<noteq> Leaf" using 1 by auto
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
   let ?R = rb  let ?R' = "Node l' u r'"
   let ?A' = "Node la a lb"  let ?B' = "Node ?A' b l'"
@@ -138,7 +133,7 @@ next
     using "14.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
-    using "14.IH" `rb \<noteq> Leaf` `b<x` "14.prems" 0 by(auto simp: algebra_simps)
+    using 14 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
