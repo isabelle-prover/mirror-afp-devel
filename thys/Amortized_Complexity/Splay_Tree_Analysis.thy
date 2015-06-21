@@ -54,8 +54,8 @@ next
   case (6 x a b lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
   hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
-  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
-    using "6.prems"(1,2) by(cases "splay x lb") auto
+  obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
@@ -78,8 +78,8 @@ next
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra"
     using "8.prems"(1) `x < a` by(auto)
   hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
-  then obtain lu u ru where sp: "splay x rb = Node lu u ru"
-    using "8.prems"(1,2) by(cases "splay x rb") auto
+  obtain lu u ru where sp: "splay x rb = Node lu u ru"
+     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
   let ?R = rb  let ?R' = "Node lu u ru"
   let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
@@ -101,8 +101,8 @@ next
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la"
     using "11.prems"(1) `a<x` by (auto)
   hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
-  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
-    using "11.prems"(1,2) by(cases "splay x lb") auto
+  obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
   let ?R = lb  let ?R' = "Node lu u ru"
   let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
@@ -124,11 +124,11 @@ next
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la"
     using "14.prems"(1) `b<x` by(auto)
   hence 1: "x \<in> set_tree rb" using "14.prems" `b<x` `a<x` by (auto)
-  then obtain l' u r' where sp: "splay x rb = Node l' u r'"
-    using "14.prems"(1,2) by(cases "splay x rb") auto
+  obtain lu u ru where sp: "splay x rb = Node lu u ru"
+    using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
-  let ?R = rb  let ?R' = "Node l' u r'"
-  let ?A' = "Node la a lb"  let ?B' = "Node ?A' b l'"
+  let ?R = rb  let ?R' = "Node lu u ru"
+  let ?A' = "Node la a lb"  let ?B' = "Node ?A' b lu"
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "14.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
