@@ -114,11 +114,10 @@ theorem Clos_closure:
   assumes "is_bound rel n"
   shows "(x, y) \<in> Clos rel n \<longleftrightarrow> (x, y) \<in> rel\<^sup>+"
 proof
-  assume "(x, y) \<in> Clos rel n"
-  then show "(x, y) \<in> rel\<^sup>+" by induct simp_all
-next
-  assume "(x, y) \<in> rel\<^sup>+"
-  then show "(x, y) \<in> Clos rel n"
+  show "(x, y) \<in> rel\<^sup>+" if "(x, y) \<in> Clos rel n"
+    using that by induct simp_all
+  show "(x, y) \<in> Clos rel n" if "(x, y) \<in> rel\<^sup>+"
+    using that
   proof (induct rule: trancl_induct)
     case (base y)
     then show ?case by (rule Clos.base)
@@ -146,19 +145,20 @@ proof (induct n arbitrary: x y)
   case 0
   show ?case
   proof
-    assume "(x, y) \<in> steps rel 0"
-    then have "(x, y) \<in> rel" by simp
-    then show "(x, y) \<in> Clos rel 0" by (rule Clos.base)
-  next
-    assume "(x, y) \<in> Clos rel 0"
-    then show "(x, y) \<in> steps rel 0" by cases simp_all
+    show "(x, y) \<in> Clos rel 0" if "(x, y) \<in> steps rel 0"
+    proof -
+      from that have "(x, y) \<in> rel" by simp
+      then show ?thesis by (rule Clos.base)
+    qed
+    show "(x, y) \<in> steps rel 0" if "(x, y) \<in> Clos rel 0"
+      using that by cases simp_all
   qed
 next
   case (Suc n)
   show ?case
   proof
-    assume "(x, y) \<in> steps rel (Suc n)"
-    then show "(x, y) \<in> Clos rel (Suc n)"
+    show "(x, y) \<in> Clos rel (Suc n)" if "(x, y) \<in> steps rel (Suc n)"
+      using that
     proof (cases rule: steps_cases)
       case copy
       with Suc(1) have "(x, y) \<in> Clos rel n" ..
@@ -171,9 +171,8 @@ next
         by (simp_all add: Clos_Suc)
       then show ?thesis by (rule Clos.step) simp
     qed
-  next
-    assume "(x, y) \<in> Clos rel (Suc n)"
-    then show "(x, y) \<in> steps rel (Suc n)"
+    show "(x, y) \<in> steps rel (Suc n)" if "(x, y) \<in> Clos rel (Suc n)"
+      using that
     proof induct
       case (base x y)
       then show ?case by (simp add: steps_rel)
@@ -203,14 +202,14 @@ proof -
   let ?N = "SOME n. is_bound rel n"
   have is_bound: "is_bound rel ?N"
     by (rule someI_ex) (rule finite_bound [OF \<open>finite rel\<close>])
-  {
-    fix x y
+  have "(x, y) \<in> steps rel ?N \<longleftrightarrow> (x, y) \<in> rel\<^sup>+" for x y
+  proof -
     have "(x, y) \<in> steps rel ?N \<longleftrightarrow> (x, y) \<in> Clos rel ?N"
       by (rule steps_Clos_equiv)
     also have "\<dots> \<longleftrightarrow> (x, y) \<in> rel\<^sup>+"
       using is_bound by (rule Clos_closure)
-    finally have "(x, y) \<in> steps rel ?N \<longleftrightarrow> (x, y) \<in> rel\<^sup>+" .
-  }
+    finally show ?thesis .
+  qed
   then show ?thesis unfolding transitive_closure_def by auto
 qed
 
@@ -232,8 +231,8 @@ where
 
 lemma steps_equiv: "(x, y) \<in> steps rel n \<longleftrightarrow> Steps rel n (x, y)"
 proof
-  assume "(x, y) \<in> steps rel n"
-  then show "Steps rel n (x, y)"
+  show "Steps rel n (x, y)" if "(x, y) \<in> steps rel n"
+    using that
   proof (induct n arbitrary: x y)
     case 0
     then have "(x, y) \<in> rel" by simp
@@ -252,10 +251,8 @@ proof
       then show ?thesis by (rule Steps.step)
     qed
   qed
-next
-  assume "Steps rel n (x, y)"
-  then show "(x, y) \<in> steps rel n"
-    by induct simp_all
+  show "(x, y) \<in> steps rel n" if "Steps rel n (x, y)"
+    using that by induct simp_all
 qed
 
 end
