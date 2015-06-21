@@ -76,17 +76,6 @@ done
 termination splay
 by lexicographic_order
 
-lemma splay_induct_old: (* until all old proofs have been updated *)
-  "\<lbrakk>\<And>a. P a \<langle>\<rangle>;
- \<And>a cl c cr.
-    \<lbrakk>\<And>x21 x22 x23. \<lbrakk>a \<noteq> c; a < c; cl = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; a < x22; x21 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x21;
-     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; a < c; cl = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; \<not> a < x22; x23 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x23;
-     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; \<not> a < c; cr = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; a < x22; x21 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x21;
-     \<And>x21 x22 x23. \<lbrakk>a \<noteq> c; \<not> a < c; cr = \<langle>x21, x22, x23\<rangle>; a \<noteq> x22; \<not> a < x22; x23 \<noteq> \<langle>\<rangle>\<rbrakk> \<Longrightarrow> P a x23\<rbrakk>
-    \<Longrightarrow> P a \<langle>cl, c, cr\<rangle>\<rbrakk>
-\<Longrightarrow> P a t"
-by induction_schema (pat_completeness, lexicographic_order)
-
 lemma splay_code: "splay a (Node cl c cr) =
   (if a=c
    then Node cl c cr

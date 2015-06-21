@@ -47,138 +47,103 @@ lemma A_simps[simp]: "A a (Node l a r) = 1"
  "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> rl l - \<phi> rr rl + 1"
 by(auto simp add: A_def \<phi>_def algebra_simps real_of_nat_Suc)
 
+
 lemma A_ub: "\<lbrakk> bst t; Node la a ra : subtrees t \<rbrakk>
   \<Longrightarrow> A a t \<le> log \<alpha> ((size1 t)/(size1 la + size1 ra)) + 1"
-proof(induction a t rule: splay_induct_old)
+proof(induction a t rule: splay.induct)
   case 1 thus ?case by simp
 next
-  case (2 a l b r)
-  let ?r = "real (size1 r)" let ?l = "real (size1 l)"
-  have a: "a : insert b (set_tree l Un set_tree r)" using "2.prems"(2)
-    by (metis Node_notin_subtrees_if tree.set(2))
-  show ?case
-  proof cases
-    assume "a=b"
-    thus ?thesis using "2.prems" by (auto simp: real_of_nat_Suc)
-  next
-    assume "a\<noteq>b"
-    hence "a<b \<or> b<a" by (metis neqE)
-    thus ?thesis
-    proof
-      assume "a<b"
-      then obtain ll c lr where [simp]: "l = Node ll c lr"
-        using "2.prems"(1,2)
-        by (cases l) (auto, metis in_set_tree_if less_asym)
-      let ?ll = "real (size1 ll)" let ?lr = "real (size1 lr)"
-      have "c < b" using "2.prems"(1,2) by (auto)
-      hence "c \<notin> set_tree r" using "2.prems"(1) by auto
-      show ?thesis
-      proof cases
-        assume "a=c"
-        thus ?thesis using "2.prems"(1,2) `a<b` `c \<notin> set_tree r` nl2[of ?ll ?lr ?r]
-          by (auto simp: real_of_nat_Suc \<phi>_def log_divide field_simps)
-      next
-        assume "a\<noteq>c"
-        hence "a<c \<or> c<a" by (metis neqE)
-        thus ?thesis
-        proof
-          assume "a<c"
-          hence 0: "a \<notin> set_tree lr \<and> a \<notin> set_tree r"
-            using "2.prems"(1) by auto
-          hence 1: "a \<in> set_tree ll" using "2.prems" `a<c` by (auto)
-          then obtain l' u r' where sp: "splay a ll = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a ll") auto
-          have "ll \<noteq> Leaf" using 1 by auto
-          let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
-          have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?lr + ?r) + \<beta> * log \<alpha> (?lr + ?r' + ?r) \<le>
-               \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?lr + ?r') + log \<alpha> (?l' + ?lr + ?r' + ?r)" (is "?L\<le>?R")
-          proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
-            show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?l' ?r' ?lr ?r]
-              by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
-          qed
-          thus ?thesis
-            using "2.IH"(1)[OF `a\<noteq>b` `a<b` `l = Node ll c lr` `a\<noteq>c`] `ll \<noteq> Leaf` `a<c` `c<b` "2.prems" 0 1 sp
-            by(auto simp: A_def \<phi>_def size_if_splay algebra_simps real_of_nat_Suc log_divide)
-       next
-          assume "c<a"
-          hence 0: "a \<notin> set_tree ll \<and> a \<notin> set_tree r"
-            using "2.prems"(1) `a < b` by(auto)
-          hence 1: "a \<in> set_tree lr" using "2.prems" `c<a` `a<b` by (auto)
-          then obtain l' u r' where sp: "splay a lr = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a lr") auto
-          have "lr \<noteq> Leaf" using 1 by auto
-          let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
-          have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?ll) + \<beta> * log \<alpha> (?r' + ?r) \<le>
-               \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?ll + ?r') + log \<alpha> (?l' + ?ll + ?r' + ?r)" (is "?L\<le>?R")
-          proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
-            show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A3[of ?l' ?r' ?ll ?r]
-              by(simp add: powr_add mult.commute[of \<beta>] powr_powr[symmetric])
-          qed
-          thus ?thesis
-            using "2.IH"(2)[OF `a\<noteq>b` `a<b` `l = Node ll c lr` `a\<noteq>c`] `lr \<noteq> Leaf` `c<a` `a<b` "2.prems" 0 1 sp
-            by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
-        qed
-      qed
-    next
-      assume "b<a"
-      then obtain rl c rr where [simp]: "r = Node rl c rr"
-        using "2.prems"(1,2)
-        by (cases r) (auto, metis in_set_tree_if less_asym)
-      let ?rl = "real (size1 rl)" let ?rr = "real (size1 rr)"
-      have "b < c" using "2.prems"(1,2) by (auto)
-      hence "c \<notin> set_tree l" using "2.prems"(1) by auto
-      show ?thesis
-      proof cases
-        assume "a=c"
-        thus ?thesis using "2.prems"(1,2) `b<a` `c \<notin> set_tree l` nl2[of ?rr ?rl ?l]
-          by (auto simp add: real_of_nat_Suc \<phi>_def log_divide algebra_simps)
-      next
-        assume "a\<noteq>c"
-        hence "a<c \<or> c<a" by (metis neqE)
-        thus ?thesis
-        proof
-          assume "a<c"
-          hence 0: "a \<notin> set_tree rr \<and> a \<notin> set_tree l"
-            using "2.prems"(1) `b<a` by (auto)
-          hence 1: "a \<in> set_tree rl" using "2.prems" `b<a` `a<c` by (auto)
-          then obtain l' u r' where sp: "splay a rl = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a rl") auto
-          have "rl \<noteq> Leaf" using 1 by auto
-          let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
-          have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?l) + \<beta> * log \<alpha> (?r' + ?rr) \<le>
-               \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?r' + ?rr) + log \<alpha> (?l' + ?l + ?r' + ?rr)" (is "?L\<le>?R")
-          proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
-            show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A3[of ?r' ?l' ?rr ?l]
-              by(simp add: powr_add mult.commute[of \<beta>] powr_powr[symmetric])
-                (simp add: algebra_simps)
-          qed
-          thus ?thesis
-            using "2.IH"(3)[OF `a\<noteq>b` order_less_not_sym[OF`b<a`] `r = Node rl c rr` `a\<noteq>c`] `rl \<noteq> Leaf` `b<a` `a<c` "2.prems" 0 1 sp
-            by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
-        next
-          assume "c<a"
-          hence 0: "a \<notin> set_tree rl \<and> a \<notin> set_tree l"
-            using "2.prems"(1) `c<a` by(auto)
-          hence 1: "a \<in> set_tree rr" using "2.prems" `c<a` `b<a` by (auto)
-          then obtain l' u r' where sp: "splay a rr = Node l' u r'"
-            using "2.prems"(1,2) by(cases "splay a rr") auto
-          have "rr \<noteq> Leaf" using 1 by auto
-          let ?l' = "real (size1 l')" let ?r' = "real (size1 r')"
-          have "1 + log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l + ?rl) + \<beta> * log \<alpha> (?l' + ?l + ?rl) \<le>
-               \<beta> * log \<alpha> (?l' + ?r') + \<beta> * log \<alpha> (?l' + ?rl + ?r') + log \<alpha> (?l' + ?rl + ?r' + ?l)" (is "?L\<le>?R")
-          proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
-            show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?r' ?l' ?rl ?l]
-              by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
-          qed
-          thus ?thesis
-            using "2.IH"(4)[OF `a\<noteq>b` order_less_not_sym[OF `b<a`] `r = Node rl c rr` `a\<noteq>c`] `rr \<noteq> Leaf` `c<a` `b<a` "2.prems" 0 1 sp
-            by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
-        qed
-      qed
-    qed
+  case 2 thus ?case by auto
+next
+  case 4 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 5 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 7 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 10 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 12 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case 13 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
+next
+  case (3 b a lb rb ra)
+thm "3.prems"
+  have "b \<notin> set_tree ra" using "3.prems"(1) by auto
+  thus ?case using "3.prems"(1,2) nl2[of "size1 lb" "size1 rb" "size1 ra"]
+    by (auto simp: real_of_nat_Suc \<phi>_def log_divide algebra_simps)
+next
+  case (9 a b la lb rb)
+  have "b \<notin> set_tree la" using "9.prems"(1) by auto
+  thus ?case using "9.prems"(1,2) nl2[of "size1 rb" "size1 lb" "size1 la"]
+    by (auto simp add: real_of_nat_Suc \<phi>_def log_divide algebra_simps)
+next
+  case (6 x a b lb rb ra)
+  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
+  hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
+  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using "6.prems"(1,2) by(cases "splay x lb") auto
+  have "b < a" using "6.prems"(1,2) by (auto)
+  let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
+  let ?rb = "real(size1 rb)"  let ?r = "real(size1 ra)"
+  have "1 + log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?rb + ?r) + \<beta> * log \<alpha> (?rb + ?ru + ?r) \<le>
+        \<beta> * log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?rb + ?ru) + log \<alpha> (?lu + ?rb + ?ru + ?r)" (is "?L\<le>?R")
+  proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
+    show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?lu ?ru ?rb ?r]
+      by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
   qed
+  thus ?case using 6 0 1 sp
+    by(auto simp: A_def \<phi>_def size_if_splay algebra_simps real_of_nat_Suc log_divide)
+next
+  case (8 x a b rb lb ra)
+  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra" using "8.prems"(1) by(auto)
+  hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
+  then obtain lu u ru where sp: "splay x rb = Node lu u ru"
+    using "8.prems"(1,2) by(cases "splay x rb") auto
+  let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
+  let ?lb = "real(size1 lb)" let ?r = "real(size1 ra)"
+  have "1 + log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?lb) + \<beta> * log \<alpha> (?ru + ?r) \<le>
+        \<beta> * log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?lb + ?ru) + log \<alpha> (?lu + ?lb + ?ru + ?r)" (is "?L\<le>?R")
+  proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
+     show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A3[of ?lu ?ru ?lb ?r]
+       by(simp add: powr_add mult.commute[of \<beta>] powr_powr[symmetric])
+  qed
+  thus ?case using 8 0 1 sp
+    by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
+next
+  case (11 a x b lb la rb)
+  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la" using "11.prems"(1) by (auto)
+  hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
+  then obtain lu u ru where sp: "splay x lb = Node lu u ru"
+    using "11.prems"(1,2) by(cases "splay x lb") auto
+  let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
+  let ?l = "real(size1 la)"  let ?rb = "real(size1 rb)"
+  have "1 + log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?l) + \<beta> * log \<alpha> (?ru + ?rb) \<le>
+        \<beta> * log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?ru + ?rb) + log \<alpha> (?lu + ?l + ?ru + ?rb)" (is "?L\<le>?R")
+  proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
+    show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A3[of ?ru ?lu ?rb ?l]
+      by(simp add: powr_add mult.commute[of \<beta>] powr_powr[symmetric])
+        (simp add: algebra_simps)
+  qed
+  thus ?case using 11 0 1 sp
+    by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
+next
+  case (14 a x b rb la lb)
+  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la" using "14.prems"(1) by(auto)
+  hence 1: "x \<in> set_tree rb" using "14.prems" `a<x` `b<x` by (auto)
+  then obtain lu u ru where sp: "splay x rb = Node lu u ru"
+    using "14.prems"(1,2) by(cases "splay x rb") auto
+  let ?la = "real(size1 la)"  let ?lb = "real(size1 lb)"
+  let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
+  have "1 + log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?la + ?lb) + \<beta> * log \<alpha> (?lu + ?la + ?lb) \<le>
+        \<beta> * log \<alpha> (?lu + ?ru) + \<beta> * log \<alpha> (?lu + ?lb + ?ru) + log \<alpha> (?lu + ?lb + ?ru + ?la)" (is "?L\<le>?R")
+  proof(rule powr_le_cancel_iff[THEN iffD1, OF a1])
+     show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?ru ?lu ?lb ?la]
+       by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
+  qed
+  thus ?case using 14 0 1 sp
+    by(auto simp add: A_def size_if_splay real_of_nat_Suc \<phi>_def log_divide algebra_simps)
 qed
-
 
 lemma A_ub2: assumes "bst t" "a : set_tree t"
 shows "A a t \<le> log \<alpha> ((size1 t)/2) + 1"
