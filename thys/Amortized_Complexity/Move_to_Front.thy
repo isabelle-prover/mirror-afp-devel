@@ -799,7 +799,7 @@ fun cruel :: "'a alg_on \<Rightarrow> 'a list \<Rightarrow> 'a state \<Rightarro
 definition adv :: "'a alg_on \<Rightarrow> ('a::linorder) alg_off" where
 "adv A s qs = (if qs=[] then [] else
   let crs = cruel A [last s] (step s (last s) (A [] s (last s))) (size qs - 1)
-  in (0,sort_sws (\<lambda>x. size qs - 1 - List.count crs x) s) # replicate (size qs - 1) (0,[]))"
+  in (0,sort_sws (\<lambda>x. size qs - 1 - count_list crs x) s) # replicate (size qs - 1) (0,[]))"
 
 definition wf_on :: "'a alg_on \<Rightarrow> bool" where
 "wf_on A = (\<forall>h s q. \<forall>n \<in> set(snd(A h s q)). n+1 < length s)"
@@ -879,7 +879,7 @@ proof-
   let ?q = "last ?s"
   let ?s' = "step ?s ?q (A [] ?s ?q)"
   let ?cr = "cruel A [?q] ?s' n"
-  let ?c = "List.count ?cr"
+  let ?c = "count_list ?cr"
   let ?k = "\<lambda>x. n - ?c x"
   let ?sort = "sort_key ?k ?s"
   have 1: "set ?s' = {0..<l}"
@@ -903,7 +903,7 @@ proof-
     by (simp add: algebra_simps)
   also(ord_eq_le_subst) have "\<dots> \<le> (l+1) * (\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) div 2"
     apply(rule sorted_weighted_gauss_Ico_div2)
-    apply(erule sorted_asc[where k = "\<lambda>x. n - List.count (cruel A [last ?s] ?s' n) x"])
+    apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A [last ?s] ?s' n) x"])
     apply(auto simp add: index_nth_id dest!: 3)
     using assms(2) [[linarith_split_limit = 20]] apply simp by arith
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
