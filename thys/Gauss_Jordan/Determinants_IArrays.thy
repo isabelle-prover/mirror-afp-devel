@@ -216,7 +216,7 @@ subsection{*Code equations*}
 definition "det_iarrays A = (let A' = Gauss_Jordan_det_P_iarrays A in listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]) / fst A')"
 
 lemma matrix_to_iarray_det[code_unfold]:
-fixes A::"'a::{field,linordered_idom}^'n::{mod_type}^'n::{mod_type}"
+fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 shows "det A = det_iarrays (matrix_to_iarray A)"
 proof -
 let ?f="(\<lambda>i. snd (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A)) !! i !! i)"
