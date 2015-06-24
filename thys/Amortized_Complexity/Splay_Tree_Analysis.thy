@@ -16,6 +16,39 @@ lemma A_simps[simp]: "A a (Node l a r) = 1"
  "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
 by(auto simp add: A_def algebra_simps real_of_nat_Suc)
 
+text{* The following lemma is an attempt to prove a generic lemma that covers
+both zig-zig cases. However, the lemma is not as nice as one would like.
+Hence it is used only once, as a demo. Ideally the lemma would involve
+function @{const A}, but that is impossible because this involves @{const splay}
+and thus depends on the ordering. We would need a truly symmetric version of @{const splay}
+that takes the ordering as an explicit argument. Then we could define
+all the symmetric cases by one final equation
+@{term"splay2 less t = splay2 (not o less) (mirror t)"}.
+This would simplify the code and the proofs. *}
+
+lemma zig_zig: fixes lx x rx lb b rb a ra u lb1 lb2
+defines [simp]: "X == Node lx (x) rx" defines[simp]: "B == Node lb b rb"
+defines [simp]: "t == Node B a ra" defines [simp]: "A' == Node rb a ra"
+defines [simp]: "t' == Node lb1 u (Node lb2 b A')"
+assumes hyps: "lb \<noteq> \<langle>\<rangle>" and IH: "t_splay x lb + \<Phi> lb1 + \<Phi> lb2 - \<Phi> lb \<le> 2 * \<phi> lb - 3 * \<phi> X + 1" and
+ prems: "size lb = size lb1 + size lb2 + 1" "X \<in> subtrees lb"
+shows "t_splay x lb + \<Phi> t' - \<Phi> t \<le> 3 * (\<phi> t - \<phi> X)"
+proof -
+  def [simp]: B' == "Node lb2 b A'"
+  have "t_splay x lb + \<Phi> t' - \<Phi> t = t_splay x lb + \<Phi> lb1 + \<Phi> lb2 - \<Phi> lb + \<phi> B' + \<phi> A' - \<phi> B"
+    using prems
+    by(auto simp: A_def size_if_splay algebra_simps in_set_tree_if real_of_nat_Suc split: tree.split)
+  also have "\<dots> \<le> 2 * \<phi> lb + \<phi> B' + \<phi> A' - \<phi> B - 3 * \<phi> X + 1"
+    using IH prems(2) by(auto simp: algebra_simps)
+  also have "\<dots> \<le> \<phi> lb + \<phi> B' + \<phi> A' - 3 * \<phi> X + 1" by(simp)
+  also have "\<dots> \<le> \<phi> B' + 2 * \<phi> t - 3 * \<phi> X "
+    using prems add_log_log1[of "size1 lb" "size1 A'"]
+    by(simp add: size_if_splay real_of_nat_Suc)
+  also have "\<dots> \<le> 3 * \<phi> t - 3 * \<phi> X"
+    using prems by(simp add: size_if_splay)
+  finally show ?thesis by simp
+qed
+
 lemma A_ub: "\<lbrakk> bst t; Node lx x rx : subtrees t \<rbrakk>
   \<Longrightarrow> A x t \<le> 3 * (\<phi> t - \<phi>(Node lx x rx)) + 1"
 proof(induction x t rule: splay.induct)
@@ -126,9 +159,9 @@ next
   hence 1: "x \<in> set_tree rb" using "14.prems" `b<x` `a<x` by (auto)
   obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
-  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
-  let ?R = rb  let ?R' = "Node lu u ru"
-  let ?A' = "Node la a lb"  let ?B' = "Node ?A' b lu"
+  from zig_zig[of rb x ru lu lx rx _ b lb a la] 14 sp 0
+  show ?case by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc)
+(* The explicit version:
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "14.prems" 1 sp
     by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
@@ -143,6 +176,7 @@ next
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
   finally show ?case by simp
+*)
 qed
 
 lemma A_ub2: assumes "bst t" "a : set_tree t"
