@@ -1580,7 +1580,7 @@ begin
       with sorted_nth_mono[OF B_sorted `i+1 \<le> length B - 1`] have "j<last B"
         by (auto simp: last_conv_nth)
       moreover from `j < seg_end i` have "j<length S"
-        by (metis GS.seg_end_def Nat.add_diff_inverse `i + 1 \<le> length B - 1`
+        by (metis GS.seg_end_def add_diff_inverse_nat `i + 1 \<le> length B - 1`
           add_lessD1 less_imp_diff_less less_le_not_le nat_neq_iff 
           seg_end_bound)
         (*by (smt `i < length B - 1` seg_end_bound)*)
