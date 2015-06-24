@@ -416,7 +416,7 @@ begin
     show False proof (cases i)
       case 0 with root_v0 IDX show False by (cases p) auto
     next
-      case (Suc j) [simp]
+      case [simp]: (Suc j)
       from p_connected'[of j] IDX show False by simp
     qed
   qed

@@ -486,7 +486,7 @@ next
     case Nil
     thus ?thesis by simp
   next
-    case Cons [simp]
+    case [simp]: Cons
     with ve V_notin_Def ik pred show ?thesis unfolding valid_edge_def
     proof cases
       case CFG_Load with V_notin_Def show ?thesis by (fastforce intro: Def_Load)

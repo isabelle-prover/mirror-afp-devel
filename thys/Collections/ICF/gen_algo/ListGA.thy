@@ -60,7 +60,7 @@ begin
         show ?case proof (cases "c \<sigma>")
           case False thus ?thesis by simp
         next
-          case True[simp, intro!]
+          case [simp, intro!]: True
           show ?thesis using Suc by (simp add: get_correct size_correct drop_aux)
         qed
       qed
@@ -111,7 +111,7 @@ begin
         show ?case proof (cases "c \<sigma>")
           case False thus ?thesis by simp
         next
-          case True[simp, intro!]
+          case [simp, intro!]: True
           show ?thesis using Suc 
             by (simp add: get_correct size_correct take_Suc_conv_app_nth)
         qed

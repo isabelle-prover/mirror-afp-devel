@@ -296,7 +296,7 @@ proof -
     proof (cases b)
       case (Le i ks) thus ?thesis using b by(auto split:list.splits)
     next
-      case (Dvd d i ks)[simp]
+      case [simp]: (Dvd d i ks)
       then obtain k ks' where [simp]: "ks = k#ks'" using b
         by(auto split:list.splits)
       have k: "k \<in> set(map hd_coeff as)" using `b \<in> set as` by force
@@ -305,7 +305,7 @@ proof -
         by(auto simp add:dvd_def)
       thus ?thesis using b by (simp)
     next
-      case (NDvd d i ks)[simp]
+      case [simp]: (NDvd d i ks)
       then obtain k ks' where [simp]: "ks = k#ks'" using b
         by(auto split:list.splits)
       have k: "k \<in> set(map hd_coeff as)" using `b \<in> set as` by force

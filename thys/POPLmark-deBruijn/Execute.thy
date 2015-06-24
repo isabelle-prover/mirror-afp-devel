@@ -44,14 +44,14 @@ proof -
   from valuep.prems show thesis
   proof (cases rule: valuep.cases)
     case (Rcd fs)
-    from this Rcd_Nil Rcd_Cons show thesis
+    from this valuep.Rcd_Nil valuep.Rcd_Cons show thesis
       by (cases fs) (auto intro: valuep.intros)
   next
     case Abs
-    with Abs' show thesis .
+    with valuep.Abs' show thesis .
   next
     case TAbs
-    with TAbs' show thesis .
+    with valuep.TAbs' show thesis .
   qed
 qed
 

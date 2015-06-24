@@ -192,7 +192,7 @@ next
       hence "b' \<in> ran \<beta>' \<or> b' \<le> b" by (auto dest:ran_upd[THEN subsetD])
       thus "b' \<le> b" using prem_d by auto
     qed
-    from contours_in_ve_upds[OF eq_length Next.prems(1) Next.prems(3)]
+    from contours_in_ve_upds[OF eq_length "1.prems"(1) "1.prems"(3)]
     have b_dom_ve: "\<forall>b'\<in>contours_in_ve (ve(map (\<lambda>v. (v, b)) vs [\<mapsto>] ds)). b' \<le> b"
       by auto
 
@@ -209,7 +209,7 @@ next
     assume "\<forall>b'\<in>contours_in_d cnt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cnt. b' < nb b cp" by auto
     have b_dom_ds: "\<forall>d' \<in> set [DI (i1+i2)]. \<forall>b'\<in>contours_in_d d'. b' < nb b cp" by auto
-    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp" using Next.prems(1) by auto
+    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp" using "1.prems"(1) by auto
     {
       fix t
       assume "((cp,[cp \<mapsto> b]), t) \<in> evalF\<cdot>(Discr (cnt, [DI (i1 + i2)], ve, nb b cp))"
@@ -230,7 +230,7 @@ next
     assume "\<forall>b'\<in>contours_in_d cntt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cntt. b' < nb b cp1" by auto
     have b_dom_ds: "\<forall>d' \<in> set []. \<forall>b'\<in>contours_in_d d'. b' < nb b cp1" by auto
-    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp1" using Next.prems(1) by auto
+    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp1" using "1.prems"(1) by auto
     {
       fix t
       assume "((cp1,[cp1 \<mapsto> b]), t) \<in> evalF\<cdot>(Discr (cntt, [], ve, nb b cp1))"
@@ -251,7 +251,7 @@ next
     assume "\<forall>b'\<in>contours_in_d cntt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cntt. b' < nb b cp1" by auto
     have b_dom_ds: "\<forall>d' \<in> set []. \<forall>b'\<in>contours_in_d d'. b' < nb b cp1" by auto
-    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp1" using Next.prems(1) by auto
+    have b_dom_ve: "\<forall>b' \<in> contours_in_ve ve. b' < nb b cp1" using "1.prems"(1) by auto
     {
       fix t
       assume "((cp1,[cp1 \<mapsto> b]), t) \<in> evalF\<cdot>(Discr (cntt, [], ve, nb b cp1))"
@@ -274,8 +274,8 @@ next
   txt {* Case App *}
     fix lab' f vs
 
-    have prem2': "\<forall>b'\<in>ran \<beta>'. b' < nb b lab'" using Next.prems(2) by auto
-    have prem3': "\<forall>b'\<in>contours_in_ve ve. b' < nb b lab'" using Next.prems(3) by auto
+    have prem2': "\<forall>b'\<in>ran \<beta>'. b' < nb b lab'" using "2.prems"(2) by auto
+    have prem3': "\<forall>b'\<in>contours_in_ve ve. b' < nb b lab'" using "2.prems"(3) by auto
     note c_in_e = contours_in_eval[OF prem3' prem2']
 
     have b_dom_d: "\<forall>b'\<in>contours_in_d (evalV f \<beta>' ve). b' < nb b lab'" by(rule c_in_e)
@@ -307,9 +307,9 @@ next
     proof
       fix b' assume "b'\<in>ran (\<beta>'(lab' \<mapsto> nb b lab'))"
       hence "b' \<in> ran \<beta>' \<or> b' = nb b lab'" by (auto dest:ran_upd[THEN subsetD])
-      thus "b' \<le> nb b lab'" using  Next.prems(2) by auto
+      thus "b' \<le> nb b lab'" using "2.prems"(2) by auto
     qed
-    have prem3': "\<forall>b'\<in>contours_in_ve ve. b' \<le> nb b lab'" using Next.prems(3)
+    have prem3': "\<forall>b'\<in>contours_in_ve ve. b' \<le> nb b lab'" using "2.prems"(3)
       by auto
 
     note c_in_e = contours_in_eval[OF prem3' prem2']

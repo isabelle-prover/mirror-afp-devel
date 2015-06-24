@@ -1795,7 +1795,7 @@ next
       apply(auto simp add: neq_Nil_conv)
       done
   next
-    case Call[simp]
+    case [simp]: Call
     from bisim1 have "pc \<le> length (compE2 obj)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 obj)"
@@ -2203,7 +2203,7 @@ next
       using bisim' by(rule bisim1CallParams)
     ultimately show ?thesis using ins CallParams by fastforce
   next
-    case Call[simp]
+    case [simp]: Call
     from bisim1 have "\<tau>Exec_mover_a P t obj h (stk, loc, pc, None) ([Addr a], loc, length (compE2 obj), None)"
       and [simp]: "xs = loc" by(auto dest!: bisim1Val2D1)
     hence "\<tau>Exec_mover_a P t (obj\<bullet>M(ps)) h (stk, loc, pc, None) ([Addr a], loc, length (compE2 obj), None)"

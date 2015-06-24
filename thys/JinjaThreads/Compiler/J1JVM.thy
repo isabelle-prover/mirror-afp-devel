@@ -546,7 +546,7 @@ next
       by(auto intro!: bisim1_bisims1.bisim1CastFail)
     ultimately show ?thesis using s by(auto simp add: exec_move_def)
   next
-    case (Cast1Throw a)[simp]
+    case [simp]: (Cast1Throw a)
     have \<tau>: "\<tau>move1 P h (Cast U e)" by(auto intro: \<tau>move1CastThrow)
     from bisim have "xcp = \<lfloor>a\<rfloor> \<or> xcp = None" by(auto dest: bisim1_ThrowD)
     thus ?thesis
@@ -4385,7 +4385,7 @@ proof -
         have "\<exists>stk' pc'. \<tau>Exec_mover_a P t body h (stk, loc, pc, xcp) (stk', loc, pc', \<lfloor>ad\<rfloor>) \<and>
                          P,blocks1 0 (Class D#Ts) body,h \<turnstile> (Throw ad, loc) \<leftrightarrow> (stk', loc, pc', \<lfloor>ad\<rfloor>)"
         proof(cases xcp)
-          case None[simp]
+          case [simp]: None
           from bisim1_Throw_\<tau>Exec_mover[OF bisim[unfolded None `e = Throw ad`]] obtain pc'
             where exec: "\<tau>Exec_mover_a P t body h (stk, loc, pc, None) ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"
             and bisim': "P,blocks1 0 (Class D#Ts) body,h \<turnstile> (Throw ad, xs) \<leftrightarrow> ([Addr ad], loc, pc', \<lfloor>ad\<rfloor>)"

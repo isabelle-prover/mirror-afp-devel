@@ -44,12 +44,12 @@ proof(induct f)
   case (Atom a)
   show ?case
   proof (cases a)
-    case (Less r cs)[simp]
+    case [simp]: (Less r cs)
     show ?thesis
     proof (cases cs)
       case Nil thus ?thesis using Atom by (simp add:depends\<^sub>R_def)
     next
-      case (Cons c cs)[simp]
+      case [simp]: (Cons c cs)
       hence "r < c*x + \<langle>cs,xs\<rangle>" using Atom by simp
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover
@@ -74,12 +74,12 @@ proof(induct f)
       } ultimately show ?thesis by force
     qed
   next
-    case (Eq r cs)[simp]
+    case [simp]: (Eq r cs)
     show ?thesis
     proof (cases cs)
       case Nil thus ?thesis using Atom by (simp add:depends\<^sub>R_def)
     next
-      case (Cons c cs)[simp]
+      case [simp]: (Cons c cs)
       hence "r = c*x + \<langle>cs,xs\<rangle>" using Atom by simp
       { assume "c=0" hence ?thesis using Atom by simp }
       moreover

@@ -371,7 +371,7 @@ lemma ahm_invar_aux_card_dom_ahm_\<alpha>_auxD:
   assumes inv: "ahm_invar_aux bhc n a"
   shows "card (dom (ahm_\<alpha>_aux bhc a)) = n"
 proof(cases a)
-  case (Array xs)[simp]
+  case [simp]: (Array xs)
   from inv have "card (dom (ahm_\<alpha>_aux bhc (Array xs))) = card (dom (map_of (concat xs)))"
     by(simp add: ahm_\<alpha>_aux_conv_map_of_concat[OF bhc])
   also from inv have "distinct (map fst (concat xs))"
@@ -651,7 +651,7 @@ lemma ahm_iteratei_aux_code[code]:
   "ahm_iteratei_aux a c f \<sigma> = idx_iteratei array_get array_length a c 
        (\<lambda>x. foldli x c f) \<sigma>"
 proof(cases a)
-  case (Array xs)[simp]
+  case [simp]: (Array xs)
   have "ahm_iteratei_aux a c f \<sigma> = foldli (concat xs) c f \<sigma>" by simp
   also have "\<dots> = foldli xs c (\<lambda>x. foldli x c f) \<sigma>" by (simp add: foldli_concat)
   also have "\<dots> = idx_iteratei op ! length xs c (\<lambda>x. foldli x c f) \<sigma>" 

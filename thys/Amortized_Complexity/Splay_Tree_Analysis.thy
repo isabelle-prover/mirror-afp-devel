@@ -275,7 +275,7 @@ next
     with bst_splay[OF goal2, of a] show ?thesis
       by (auto simp: splay_bstL[OF goal2] splay_bstR[OF goal2] split: tree.split)
   next
-    case (Delete a)[simp]
+    case [simp]: (Delete a)
     with goal2 show ?thesis by(simp add: bst_delete)
   qed
 next
@@ -290,7 +290,7 @@ next
     case (Splay a)
     thus ?thesis using A_ub3[OF goal5] by(simp add: A_def)
   next
-    case (Insert a)[simp]
+    case [simp]: (Insert a)
     show ?thesis
     proof cases
       assume "s = Leaf" thus ?thesis by(simp)
@@ -348,12 +348,12 @@ next
       qed
     qed
   next
-    case (Delete a)[simp]
+    case [simp]: (Delete a)
     show ?thesis
     proof (cases s)
       case Leaf thus ?thesis by(simp add: Splay_Tree.delete_def t_delete_def)
     next
-      case (Node ls x rs)[simp]
+      case [simp]: (Node ls x rs)
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
         by (metis tree.exhaust splay_Leaf_iff)
       let ?t = "real(t_splay a s)"
@@ -370,7 +370,7 @@ next
           using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
           using `?lslr \<ge> 0` by arith
       next
-        case True[simp]
+        case [simp]: True
         show ?thesis
         proof (cases l)
           case Leaf

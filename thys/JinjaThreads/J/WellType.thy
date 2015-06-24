@@ -333,11 +333,11 @@ proof -
   from WT.prems show thesis
   proof cases
     case (WTBlock T V e vo)
-    thus thesis using WTBlock'[OF refl refl refl, of V T vo e] by(auto)
-  qed(assumption|erule that[OF refl refl refl]|rule refl)+
+    thus thesis using WT.WTBlock'[OF refl refl refl, of V T vo e] by(auto)
+  qed(assumption|erule WT.that[OF refl refl refl]|rule refl)+
 next
   case WTs
-  from WTs.prems that show thesis by cases blast+
+  from WTs.prems WTs.that show thesis by cases blast+
 qed
 
 inductive is_lub_sup :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"

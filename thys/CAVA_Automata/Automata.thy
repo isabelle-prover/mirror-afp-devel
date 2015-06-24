@@ -1204,7 +1204,7 @@ begin
 
     show ?thesis
     proof (cases "num_acc = 0")
-      case False[simp] note NN0=this
+      case NN0[simp]: False
 
       from ACC have ACC': "\<forall>i. \<exists>j>i. r j \<in> degen.F T m"
         by (auto simp: INFM_nat)
@@ -1221,7 +1221,7 @@ begin
         proof (cases n)
           case 0 thus ?thesis using `j>i` RJ ACCJ by auto
         next
-          case (Suc n')[simp]
+          case [simp]: (Suc n')
           from degen_run_find_acc_aux[OF NN0 A RJ ACCJ NLESS] obtain k qk where
             "j\<le>k" "r k = (qk,n)" "n \<in> acc qk" by auto
           thus ?thesis
@@ -1233,7 +1233,7 @@ begin
       with R' show ?thesis
         unfolding is_acc_run_def is_acc_def by auto
     next
-      case True[simp]
+      case [simp]: True
       with R' show ?thesis
         unfolding is_acc_run_def is_acc_def
         by auto

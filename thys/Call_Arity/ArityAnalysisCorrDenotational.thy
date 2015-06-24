@@ -200,7 +200,7 @@ next
       assume ass: "(Aheap \<Gamma> e\<cdot>a \<squnion> Aexp (Let \<Gamma> e)\<cdot>a) x = up\<cdot>a'"
       show "eq a' ((\<rho>1 ++\<^bsub>domA \<Gamma>\<^esub> \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>\<rho>1'\<^esub>) x) ((\<rho>2 ++\<^bsub>domA \<Gamma>\<^esub> \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>\<rho>2'\<^esub>) x)"
       proof(cases "x\<in> domA \<Gamma>")
-        case True[simp]
+        case [simp]: True
         then obtain e' where [simp]: "map_of \<Gamma> x = Some e'" by (metis domA_map_of_Some_the)
         have "(Aheap \<Gamma> e\<cdot>a) x = up\<cdot>a'" using ass by simp
         hence "Aexp e'\<cdot>a' \<sqsubseteq> Aheap \<Gamma> e\<cdot>a \<squnion> Aexp (Let \<Gamma> e)\<cdot>a" using `map_of _ _ = _` by (rule Aexp_heap_below_Aheap)
@@ -209,7 +209,7 @@ next
           by (rule Let(1)[OF map_of_is_SomeD[OF `map_of _ _ = _`]])
         thus ?thesis by (simp add: lookupEvalHeap')
       next
-        case False[simp]
+        case [simp]: False
         with edom_Aheap have "x \<notin> edom (Aheap \<Gamma> e\<cdot>a)" by blast
         hence "(Aexp (Let \<Gamma> e)\<cdot>a) x = up\<cdot>a'" using ass by (simp add: edomIff)
         with `eq\<rho> (Aexp (Let \<Gamma> e)\<cdot>a) \<rho>1 \<rho>2`
@@ -273,7 +273,7 @@ next
         assume ass: "(Aheap \<Gamma> e\<cdot>a \<squnion> Aexp (Let \<Gamma> e)\<cdot>a) x = up\<cdot>a'"
         show "eq a' ((\<^bold>\<lbrakk> map_transform Aeta_expand (Aheap \<Gamma> e\<cdot>a) (map_transform t (Aheap \<Gamma> e\<cdot>a) \<Gamma>) \<^bold>\<rbrakk>\<^bsub>\<rho>1\<^esub>) x) ((\<^bold>\<lbrakk>\<Gamma>\<^bold>\<rbrakk>\<^bsub>\<rho>2\<^esub>) x)"
         proof(cases "x \<in> domA \<Gamma>")
-          case True[simp]
+          case [simp]: True
           then obtain e' where [simp]: "map_of \<Gamma> x = Some e'" by (metis domA_map_of_Some_the)
           from ass have ass': "(Aheap \<Gamma> e\<cdot>a) x = up\<cdot>a'" by simp
 

@@ -247,7 +247,7 @@ proof(induction t arbitrary: X)
   have 2: "reduced t2 (insert x X)" using IF.prems(1) by simp
   show ?case
   proof(cases t1)
-    case Trueif[simp]
+    case [simp]: Trueif
     show ?thesis
     proof (cases t2)
       case Trueif thus ?thesis using IF.prems(1) by simp
@@ -265,7 +265,7 @@ proof(induction t arbitrary: X)
       thus ?thesis by blast
     qed
   next
-    case Falseif[simp]
+    case [simp]: Falseif
     show ?thesis
     proof (cases t2)
       case Falseif thus ?thesis using IF.prems(1) by simp

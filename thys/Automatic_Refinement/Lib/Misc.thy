@@ -2728,7 +2728,7 @@ lemma in_set_upd_eq:
       case Nil with Cprems have False by auto
       thus ?thesis ..
     next
-      case (Cons a' all')[simp]
+      case [simp]: (Cons a' all')
       with Cprems have [simp]: "a=a'" and P: "al@e#bl = all'@e#bl'" by auto
       from Cprems(1) have D: "distinct (al@e#bl)" by auto
       from Chyps[OF D P] have [simp]: "al=all'" "bl=bl'" by auto
@@ -3019,12 +3019,12 @@ next
   case (snoc x xs)
   show ?case
   proof(cases "P x")
-    case False[simp]
+    case [simp]: False
     from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
     hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
     thus ?thesis by(auto simp add: nth_append)
   next
-    case True[simp]
+    case [simp]: True
     show ?thesis
     proof(cases "n = length (filter P xs)")
       case False
@@ -3033,7 +3033,7 @@ next
         by(rule snoc)
       ultimately show ?thesis by(auto simp add: nth_append)
     next
-      case True[simp]
+      case [simp]: True
       hence "filter P (xs @ [x]) ! n = (xs @ [x]) ! length xs" by simp
       moreover have "length xs < length (xs @ [x])" by simp
       moreover have "length xs \<ge> n" by simp

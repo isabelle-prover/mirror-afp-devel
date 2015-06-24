@@ -1405,7 +1405,7 @@ proof(subst finfun_to_list_def, rule the_equality)
     and [simp]: "sorted xs" "distinct xs" by simp_all
   show "xs = (if b = finfun_default f then remove1 a (finfun_to_list f) else insort_insert a (finfun_to_list f))"
   proof(cases "b = finfun_default f")
-    case True [simp]
+    case [simp]: True
     show ?thesis
     proof(cases "(finfun_dom f)\<^sub>f a")
       case True

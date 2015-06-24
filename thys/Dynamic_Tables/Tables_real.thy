@@ -233,7 +233,7 @@ next
   hence [arith]: "l > 0" by arith
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis
     proof cases
       assume "n+1 \<le> f2*l" thus ?thesis using goal2 by (auto)
@@ -258,7 +258,7 @@ next
       with 0 f1 f2 show ?thesis by(simp add: field_simps)
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     show ?thesis
     proof cases
       assume "f1*l \<le> real (n - 1)"
@@ -291,7 +291,7 @@ next
   have [arith]: "l \<ge> l0"  "n \<le> f2*l" using goal5 by auto
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis (is "?A \<le> _")
     proof cases
       assume "n+1 \<le> f2*l"
@@ -324,7 +324,7 @@ next
       finally show ?thesis by simp
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     show ?thesis (is "?A \<le> _")
     proof cases
       assume "n=0" with goal5 show ?thesis

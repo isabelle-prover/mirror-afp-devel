@@ -306,7 +306,7 @@ next
   show ?case proof (cases xs)
     case Nil thus ?thesis by simp
   next
-    case (Cons xxs xx)[simp]
+    case [simp]: (Cons xxs xx)
     from snoc.hyps[OF invar_butlast[OF snoc.prems]] have
       IH: "length xs \<le> Suc (rank (last xs))" .
     also from invar_last_max[OF snoc.prems] last_in_set[of xs] have
@@ -422,7 +422,7 @@ proof (induct q arbitrary: t)
   note iv = Cons.hyps
   show ?case
   proof (cases "rank t = rank a")
-    case True[simp]
+    case [simp]: True
     from Cons.prems have 
       inv_a: "tree_invar a" and inv_q: "queue_invar q" 
       by (simp_all)
@@ -685,7 +685,7 @@ proof(induct q q' rule: meld.induct)
     case greater with prems iv show ?thesis
       by (auto simp add: union_ac)
   next
-    case eq[simp]
+    case [simp]: eq
     from prems have 
       inv_bq1: "queue_invar bq1" and
       inv_t1: "tree_invar t1" and

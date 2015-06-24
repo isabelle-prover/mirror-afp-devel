@@ -51,7 +51,7 @@ proof -
   from assms have "l0 \<le> l" and "n \<le> f2*l" by auto
   show ?thesis
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis
     proof cases
       assume "n+1 \<le> f2*l" thus ?thesis using assms by (auto)
@@ -86,7 +86,7 @@ proof -
       with 0 f1 f2 show ?thesis by (auto simp add: field_simps) linarith
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     show ?thesis
     proof cases
       assume "f1*l \<le> real n - 1"
@@ -184,7 +184,7 @@ next
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis (is "?A \<le> _")
     proof cases
       assume "n+1 \<le> f2*l"
@@ -243,7 +243,7 @@ next
       finally show ?thesis by simp
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     have [arith]: "l \<ge> l0" using goal5 by simp
     show ?thesis
     proof cases
@@ -375,7 +375,7 @@ next
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis (is "?L \<le> _")
     proof cases
       assume "n+1 \<le> f2*l"
@@ -419,7 +419,7 @@ next
       finally show ?thesis by simp
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     have [arith]: "l \<ge> l0" using goal5 by simp
     show ?thesis
     proof cases

@@ -206,7 +206,7 @@ done
 
 lemma size_del_min: assumes "braun t" shows "size(del_min t) = size t - 1"
 proof(cases t rule: del_min.cases)
-  case (3 ll b lr a r)[simp]
+  case [simp]: (3 ll b lr a r)
   { fix y l' assume "del_left (Node ll b lr) = (y,l')"
     hence "size(sift_down r y l') = size t - 1" using assms
     by(subst size_sift_down) (auto dest: del_left_size del_left_braun) }
@@ -220,7 +220,7 @@ proof(cases t rule: del_min.cases)
 next
   case 2 with assms show ?thesis by (simp add: size_0_iff_Leaf)
 next
-  case (3 ll b lr a r)[simp]
+  case [simp]: (3 ll b lr a r)
   { fix y l' assume del: "del_left (Node ll b lr) = (y,l')"
     have "mset_tree t = {#a#} + mset_tree(sift_down r y l')"
       using assms del_left_mset[OF del] del_left_size[OF del]

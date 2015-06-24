@@ -407,19 +407,19 @@ proof -
   from WT.prems show thesis
   proof(cases (no_simp) rule: WT.cases)
     case WTDynCast thus thesis
-      by(rule WTDynCast_new[OF refl, unfolded WTDynCast_ex_def, simplified])
+      by(rule WT.WTDynCast_new[OF refl, unfolded WTDynCast_ex_def, simplified])
   next
     case WTStaticCast thus ?thesis
       unfolding subcls1_def rtrancl_def mem_Collect_eq prod.case
-      by(rule WTStaticCast_new[OF refl, unfolded WTStaticCast_sub_def])
+      by(rule WT.WTStaticCast_new[OF refl, unfolded WTStaticCast_sub_def])
   next
     case WTBinOp thus ?thesis
-      by(split bop.split_asm)(simp_all, (erule (4) WTBinOp1[OF refl] WTBinOp2[OF refl])+)
-  qed(assumption|erule (2) that[OF refl])+
+      by(split bop.split_asm)(simp_all, (erule (4) WT.WTBinOp1[OF refl] WT.WTBinOp2[OF refl])+)
+  qed(assumption|erule (2) WT.that[OF refl])+
 next
   case WTs
   from WTs.prems show thesis
-    by(cases (no_simp) rule: WTs.cases)(assumption|erule (2) that[OF refl])+
+    by(cases (no_simp) rule: WTs.cases)(assumption|erule (2) WTs.that[OF refl])+
 qed
 
 lemma casts_to_code [code_pred_intro]:
@@ -1030,63 +1030,63 @@ proof -
     moreover
     have "app a [Cs] (a @ [Cs])" "app (a @ [Cs]) Cs' (a @ [Cs] @ Cs')"
       by(simp_all add: app_eq)
-    ultimately show ?thesis by(rule StaticDownCast'[OF refl])
+    ultimately show ?thesis by(rule eval'.StaticDownCast'[OF refl])
   next
     case StaticCastFail thus ?thesis
       unfolding rtrancl_def subcls1_def mem_Collect_eq prod.case
-      by(rule StaticCastFail'[OF refl])
+      by(rule eval'.StaticCastFail'[OF refl])
   next
     case (StaticDownDynCast E e s\<^sub>0 a Cs C Cs' s\<^sub>1)
     moreover have "app Cs [C] (Cs @ [C])" "app (Cs @ [C]) Cs' (Cs @ [C] @ Cs')"
       by(simp_all add: app_eq)
-    ultimately show thesis by(rule StaticDownDynCast'[OF refl])
+    ultimately show thesis by(rule eval'.StaticDownDynCast'[OF refl])
   next
-    case DynCast thus ?thesis by(rule DynCast'[OF refl])
+    case DynCast thus ?thesis by(rule eval'.DynCast'[OF refl])
   next
-    case DynCastFail thus ?thesis by(rule DynCastFail'[OF refl])
+    case DynCastFail thus ?thesis by(rule eval'.DynCastFail'[OF refl])
   next
-    case BinOpThrow2 thus ?thesis by(rule BinOpThrow2'[OF refl])
+    case BinOpThrow2 thus ?thesis by(rule eval'.BinOpThrow2'[OF refl])
   next
     case FAcc thus ?thesis
-      by(rule FAcc'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
+      by(rule eval'.FAcc'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
   next
     case FAss thus ?thesis
-      by(rule FAss'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
+      by(rule eval'.FAss'[OF refl, unfolded Predicate_Compile.contains_def Set_project_def mem_Collect_eq])
   next
-    case FAssThrow2 thus ?thesis by(rule FAssThrow2'[OF refl])
+    case FAssThrow2 thus ?thesis by(rule eval'.FAssThrow2'[OF refl])
   next
     case (CallParamsThrow E e s\<^sub>0 v s\<^sub>1 es vs ex es' s\<^sub>2 Copt M)
     moreover have "map_val2 (map Val vs @ throw ex # es') vs (throw ex # es')"
       by(simp add: map_val2_conv[symmetric])
-    ultimately show ?thesis by(rule CallParamsThrow'[OF refl])
+    ultimately show ?thesis by(rule eval'.CallParamsThrow'[OF refl])
   next
     case (Call E e s\<^sub>0 a Cs s\<^sub>1 ps vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
-    ultimately show ?thesis by-(rule Call'[OF refl])
+    ultimately show ?thesis by-(rule eval'.Call'[OF refl])
   next
     case (StaticCall E e s\<^sub>0 a Cs s\<^sub>1 ps vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
-    ultimately show ?thesis by-(rule StaticCall'[OF refl])
+    ultimately show ?thesis by-(rule eval'.StaticCall'[OF refl])
   next
     case (CallNull E e s\<^sub>0 s\<^sub>1 es vs)
     moreover have "map_val (map Val vs) vs" by(simp add: map_val_conv[symmetric])
-    ultimately show ?thesis by-(rule CallNull'[OF refl])
+    ultimately show ?thesis by-(rule eval'.CallNull'[OF refl])
   next
-    case SeqThrow thus ?thesis by(rule SeqThrow'[OF refl])
+    case SeqThrow thus ?thesis by(rule eval'.SeqThrow'[OF refl])
   next
-    case CondF thus ?thesis by(rule CondF'[OF refl])
+    case CondF thus ?thesis by(rule eval'.CondF'[OF refl])
   next
-    case CondThrow thus ?thesis by(rule CondThrow'[OF refl])
+    case CondThrow thus ?thesis by(rule eval'.CondThrow'[OF refl])
   next
-    case WhileCondThrow thus ?thesis by(rule WhileCondThrow'[OF refl])
+    case WhileCondThrow thus ?thesis by(rule eval'.WhileCondThrow'[OF refl])
   next
-    case WhileBodyThrow thus ?thesis by(rule WhileBodyThrow'[OF refl])
+    case WhileBodyThrow thus ?thesis by(rule eval'.WhileBodyThrow'[OF refl])
   next
-    case ThrowNull thus ?thesis by(rule ThrowNull'[OF refl])
-  qed(assumption|erule (4) that[OF refl])+
+    case ThrowNull thus ?thesis by(rule eval'.ThrowNull'[OF refl])
+  qed(assumption|erule (4) eval'.that[OF refl])+
 next
   case evals'
-  from evals'.prems that[OF refl]
+  from evals'.prems evals'.that[OF refl]
   show thesis by transfer(erule evals.cases)
 qed
 

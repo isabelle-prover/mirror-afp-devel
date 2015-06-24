@@ -151,7 +151,7 @@ proof (rule nth_equalityI)
 
     show "ps ! i = ?ps ! i"
     proof (cases "d = i")
-      case True[simp]
+      case [simp]: True
 
       have "?c_p ! i = ?c_ps ! i" using `?c_p = ?c_ps` by auto
       hence "ix p i = ix ps d + sgn dir" and "lv p i = lv ps i"

@@ -604,7 +604,7 @@ next
     from A B show "x\<in>?R qn"
       by (auto simp: succ_of_E_def image_def)
   next
-    case True[simp]
+    case [simp]: True
     from XL show "x\<in>?R qn" by simp
   qed
 qed

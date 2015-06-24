@@ -252,7 +252,7 @@ proof
     by simp_all
   show "state_val (transfer (kind a) s) V = state_val (transfer (kind a) s') V"
   proof (cases "sourcenode a")
-    case (Node cs x) [simp]
+    case [simp]: (Node cs x)
     from vn ex_edge have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
     then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
@@ -260,7 +260,7 @@ proof
       by (cases cs', (cases x, auto)+)
     show ?thesis
     proof (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc")
-      case (Load n) [simp]
+      case [simp]: (Load n)
       from ex_edge have [simp]: "x = None"
         by (auto elim!: JVM_CFG.cases)
       hence "Loc (length cs') n \<in> Use P (sourcenode a)"
@@ -272,7 +272,7 @@ proof
                   elim: JVM_CFG.cases
                   simp: split_beta)
     next
-      case (Store n) [simp]
+      case [simp]: (Store n)
       from ex_edge have [simp]:"x = None"
         by (auto elim!: JVM_CFG.cases)
       have "ST \<noteq> []"
@@ -304,14 +304,14 @@ proof
                   elim: JVM_CFG.cases
                   simp: split_beta)
     next
-      case (Push val) [simp]
+      case [simp]: (Push val)
       from ex_edge have "x = None"
         by (auto elim!: JVM_CFG.cases)
       with v_in_def ex_edge show ?thesis
         by (auto elim!: Def.cases
                   elim: JVM_CFG.cases)
     next
-      case (New Cl) [simp]
+      case [simp]: (New Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -334,7 +334,7 @@ proof
                     elim: JVM_CFG.cases)
       qed
     next
-      case (Getfield Fd Cl) [simp]
+      case [simp]: (Getfield Fd Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -380,7 +380,7 @@ proof
                     simp: split_beta)
       qed
     next
-      case (Putfield Fd Cl) [simp]
+      case [simp]: (Putfield Fd Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -434,7 +434,7 @@ proof
                    simp: split_beta)
       qed
     next
-      case (Checkcast Cl) [simp]
+      case [simp]: (Checkcast Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -451,7 +451,7 @@ proof
                     elim: JVM_CFG.cases)
       qed
     next
-      case (Invoke M' n') [simp]
+      case [simp]: (Invoke M' n')
       show ?thesis
       proof (cases x)
         case None
@@ -469,7 +469,7 @@ proof
             by (auto elim!: Def.cases
                       elim: JVM_CFG.cases)
         next
-          case False [simp]
+          case [simp]: False
           have "length ST > n'"
           proof -
             from vn obtain T Ts mxs mxl "is" xt
@@ -509,10 +509,10 @@ proof
         qed
       qed
     next
-      case Return [simp]
+      case [simp]: Return
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         show ?thesis
         proof (cases cs')
           case Nil
@@ -544,10 +544,10 @@ proof
       with v_in_def ex_edge show ?thesis
         by (auto elim!: Def.cases elim: JVM_CFG.cases)
     next
-      case IAdd [simp]
+      case [simp]: IAdd
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         from wt
         have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -572,10 +572,10 @@ proof
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case (IfFalse b) [simp]
+      case [simp]: (IfFalse b)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         from wt
         have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -591,10 +591,10 @@ proof
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case CmpEq [simp]
+      case [simp]: CmpEq
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
           by (auto intro!: Use_CmpEq_Stk)
@@ -621,10 +621,10 @@ proof
         by (auto elim!: Def.cases
                   elim: JVM_CFG.cases)
     next
-      case Throw [simp]
+      case [simp]: Throw
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
           by (auto intro!: Use_Throw_Stk)
@@ -673,7 +673,7 @@ proof -
   note P_wf = wf_jvmprog_is_wf [of P]
   show "pred (kind a) s'"
   proof (cases "sourcenode a")
-    case (Node cs x) [simp]
+    case [simp]: (Node cs x)
     from ve have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
     then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
@@ -693,7 +693,7 @@ proof -
       with ex_edge show ?thesis
         by (auto elim: JVM_CFG.cases)
     next
-      case (New Cl) [simp]
+      case [simp]: (New Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -711,7 +711,7 @@ proof -
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case (Getfield Fd Cl) [simp]
+      case [simp]: (Getfield Fd Cl)
       have "ST \<noteq> []"
       proof -
         from vn obtain T Ts mxs mxl "is" xt
@@ -728,7 +728,7 @@ proof -
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         from wt
         have "Stk (length cs') (length ST - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -743,7 +743,7 @@ proof -
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case (Putfield Fd Cl) [simp]
+      case [simp]: (Putfield Fd Cl)
       have "length ST > 1"
       proof -
         from vn obtain T Ts mxs mxl "is" xt
@@ -761,7 +761,7 @@ proof -
       then obtain ST2 STr where [simp]: "ST = ST1#ST2#STr" by (cases STr', fastforce+)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         with wt
         have "Stk (length cs') (length ST - 2) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -776,7 +776,7 @@ proof -
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case (Checkcast Cl) [simp]
+      case [simp]: (Checkcast Cl)
       have "ST \<noteq> []"
       proof -
         from vn obtain T Ts mxs mxl "is" xt
@@ -793,7 +793,7 @@ proof -
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         from wt
         have "Stk (length cs') (stkLength P C M pc - Suc 0) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -816,7 +816,7 @@ proof -
           by (auto elim: JVM_CFG.cases)
       qed
     next
-      case (Invoke M' n') [simp]
+      case [simp]: (Invoke M' n')
       have "length ST > n'"
       proof -
         from vn obtain T Ts mxs mxl "is" xt
@@ -837,7 +837,7 @@ proof -
         by (auto simp: id_take_nth_drop)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         with wt
         have "Stk (length cs') (stkLength P C M pc - Suc n') \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -872,10 +872,10 @@ proof -
       with ex_edge show ?thesis
         by (auto elim: JVM_CFG.cases)
     next
-      case (IfFalse b) [simp]
+      case [simp]: (IfFalse b)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
           by (fastforce intro: Use_IfFalse_Stk)
@@ -898,7 +898,7 @@ proof -
       with ex_edge show ?thesis
         by (auto elim: JVM_CFG.cases)
     next
-      case Throw [simp]
+      case [simp]: Throw
       have "ST \<noteq> []"
       proof -
         from vn obtain T Ts mxs mxl "is" xt
@@ -915,7 +915,7 @@ proof -
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
       show ?thesis
       proof (cases x)
-        case None [simp]
+        case [simp]: None
         from wt
         have "Stk (length cs') (stkLength P C M pc - 1) \<in> Use P (sourcenode a)"
           (is "?stk_top \<in> ?Use")
@@ -959,7 +959,7 @@ proof -
     by simp_all
   show "state_val (transfer (kind a) s) V = state_val s V"
   proof (cases "sourcenode a")
-    case (Node cs x) [simp]
+    case [simp]: (Node cs x)
     with ve have "cs \<noteq> []"
       by (cases x, auto elim: JVM_CFG.cases)
     then obtain C M pc cs' where [simp]: "cs = (C, M, pc)#cs'" by (cases cs, fastforce+)
@@ -967,7 +967,7 @@ proof -
       by (cases cs', (cases x, auto)+)
     show ?thesis
     proof (cases "instrs_of (P\<^bsub>wf\<^esub>) C M ! pc")
-      case (Load nat) [simp]
+      case [simp]: (Load nat)
       from ex_edge have "x = None"
         by (auto elim: JVM_CFG.cases)
       with v_not_def have "V \<noteq> Stk (length cs') (stkLength P C M pc)"
@@ -975,7 +975,7 @@ proof -
       with ex_edge show ?thesis
         by (auto elim!: JVM_CFG.cases, cases V, auto)
     next
-      case (Store nat) [simp]
+      case [simp]: (Store nat)
       with ex_edge have "x = None"
         by (auto elim: JVM_CFG.cases)
       with v_not_def have "V \<noteq> Loc (length cs') nat"
@@ -983,7 +983,7 @@ proof -
       with ex_edge show ?thesis
         by (auto elim!: JVM_CFG.cases, cases V, auto)
     next
-      case (Push val) [simp]
+      case [simp]: (Push val)
       with ex_edge have "x = None"
         by (auto elim: JVM_CFG.cases)
       with v_not_def have "V \<noteq> Stk (length cs') (stkLength P C M pc)"
@@ -991,7 +991,7 @@ proof -
       with ex_edge show ?thesis
         by (auto elim!: JVM_CFG.cases, cases V, auto)
     next
-      case (New Cl) [simp]
+      case [simp]: (New Cl)
       show ?thesis
       proof (cases x)
         case None
@@ -1007,7 +1007,7 @@ proof -
            by (cases V, auto intro!: Def_Exc_Stk)+
      qed
    next
-     case (Getfield F Cl) [simp]
+     case [simp]: (Getfield F Cl)
      show ?thesis
      proof (cases x)
        case None
@@ -1023,7 +1023,7 @@ proof -
           by (cases V, auto intro!: Def_Exc_Stk)+
      qed
    next
-     case (Putfield Fd Cl) [simp]
+     case [simp]: (Putfield Fd Cl)
      show ?thesis
      proof (cases x)
        case None
@@ -1039,7 +1039,7 @@ proof -
           by (cases V, auto intro!: Def_Exc_Stk)+
      qed
    next
-     case (Checkcast Cl) [simp]
+     case [simp]: (Checkcast Cl)
      show ?thesis
      proof (cases x)
        case None
@@ -1054,7 +1054,7 @@ proof -
           by (cases V, auto intro!: Def_Exc_Stk)+
      qed
    next
-     case (Invoke M' n') [simp]
+     case [simp]: (Invoke M' n')
      show ?thesis
      proof (cases x)
        case None
@@ -1097,7 +1097,7 @@ proof -
      with ex_edge show ?thesis
        by (auto elim: JVM_CFG.cases)
    next
-     case Throw [simp]
+     case [simp]: Throw
      show ?thesis
      proof (cases x)
        case None

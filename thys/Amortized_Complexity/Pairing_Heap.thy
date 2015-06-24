@@ -97,10 +97,10 @@ lemma \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t: "oneRoot h
 lemma \<Delta>\<Phi>\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e: assumes "oneRoot h1 \<and> oneRoot h2" 
   shows "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2*ld (size h1 + size h2)" 
 proof (cases h1)
-  case (Node lx x rx)[simp]
+  case [simp]: (Node lx x rx)
   thus ?thesis
   proof (cases h2)
-    case (Node ly y ry)[simp]
+    case [simp]: (Node ly y ry)
     let ?h = "Node lx x (Node ly y Leaf)"
     have "\<Phi> (link ?h) - \<Phi> ?h \<le> ld (1 + size lx + size ly)" by simp
     also have "\<dots> \<le> ld (size h1 + size h2)" by simp
@@ -168,7 +168,7 @@ proof (induction h rule: secondpass.induct)
   case (2 lx x rx)
   thus ?case 
   proof (cases rx)
-    case (Node ly y ry)[simp]
+    case [simp]: (Node ly y ry)
     let ?h = "Node lx x rx"
     obtain la a where 1: "secondpass rx = Node la a Leaf" using secondpass_struct by force
     hence "size \<dots> = size rx" using secondpass_size by metis
@@ -202,7 +202,7 @@ lemma insert_oneRoot: "oneRoot h \<Longrightarrow> oneRoot (insert x h)"
 
 lemma deleteMin_oneRoot: assumes "oneRoot h" shows "oneRoot (deleteMin h)"
 proof (cases h)
-  case (Node lx x rx)[simp]
+  case [simp]: (Node lx x rx)
   have "rx = Leaf" using assms by simp
   thus ?thesis 
   proof (cases lx)
@@ -252,14 +252,14 @@ proof
   case goal3 show ?case by (induct s) simp_all 
   case goal5 show ?case 
   proof (cases f)
-    case (Insert x)[simp]
+    case [simp]: (Insert x)
     have "\<Phi> (insert x s) - \<Phi> s \<le> ld (1 + size s)" using \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t goal5 by auto
     thus ?thesis by simp
   next
-    case (Delmin)[simp]
+    case [simp]: Delmin
     thus ?thesis
     proof (cases s)
-      case (Node lx x rx)[simp]
+      case [simp]: (Node lx x rx)
       have "t\<^sub>s\<^sub>e\<^sub>c\<^sub>o\<^sub>n\<^sub>d\<^sub>p\<^sub>a\<^sub>s\<^sub>s (firstpass lx) + t\<^sub>f\<^sub>i\<^sub>r\<^sub>s\<^sub>t\<^sub>p\<^sub>a\<^sub>s\<^sub>s lx \<le> 2 + 2*countTrees lx"
         by (induct lx rule: firstpass.induct) simp_all
       hence  "t f s \<le> 1 + \<dots>" by simp

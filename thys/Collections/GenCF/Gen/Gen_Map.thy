@@ -58,7 +58,7 @@ begin
           by auto
 
         show ?case proof (cases "P (k,v)")
-          case True[simp] 
+          case [simp]: True 
           have "foldli (kv#l) (\<lambda>_. True) ?f m = foldli l (\<lambda>_. True) ?f (m(k\<mapsto>v))"
             by simp
           also from Cons.IH[OF DL] have 
@@ -72,7 +72,7 @@ begin
               simp: map_of_eq_None_iff[symmetric])
           finally show ?thesis .
         next
-          case False[simp] 
+          case [simp]: False 
           have "foldli (kv#l) (\<lambda>_. True) ?f m = foldli l (\<lambda>_. True) ?f m"
             by simp
           also from Cons.IH[OF DL] have 

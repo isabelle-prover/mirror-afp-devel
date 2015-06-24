@@ -212,7 +212,7 @@ next
     thus ?thesis
       by (cases cs', auto)
   next
-    case (Cons a frs') [simp]
+    case [simp]: (Cons a frs')
     obtain stk' loc' C M pc where [simp]: "a = (stk', loc', C, M, pc)" by (cases a, fastforce)
     from Cons bv_correct show ?thesis
       apply clarsimp
@@ -470,7 +470,7 @@ proof -
       by (cases "the (P\<^bsub>\<Phi>\<^esub> C M ! pc)") auto
     show ?thesis
     proof (cases x)
-      case None [simp]
+      case [simp]: None
       with ve Invoke obtain Q where kind: "kind a = (Q)\<^sub>\<surd>"
         by (auto elim!: JVM_CFG.cases)
       with ve Invoke have "(C',M',pc')#cs' = (C,M,pc)#cs"
@@ -478,7 +478,7 @@ proof -
       with state_correct kind show ?thesis
         by simp
     next
-      case (Some aa) [simp]
+      case [simp]: (Some aa)
       with ve Invoke obtain xf where [simp]: "aa = ((C',M',pc')#cs' , xf)"
         by (auto elim!: JVM_CFG.cases)
       from ve Invoke obtain f where kind: "kind a = \<Up>f"
@@ -489,7 +489,7 @@ proof -
         done
       show ?thesis
       proof (cases xf)
-        case True [simp]
+        case [simp]: True
         with a_pred Invoke have stk_n: "stk (length cs, stkLength P C M pc - Suc n) = Null"
           apply auto
           apply (erule JVM_CFG.cases)
@@ -524,7 +524,7 @@ proof -
           apply fastforce
           done
       next
-        case False [simp]
+        case [simp]: False
         from a_pred Invoke
         have [simp]: "m = M'"
           by -(clarsimp, erule JVM_CFG.cases, auto)

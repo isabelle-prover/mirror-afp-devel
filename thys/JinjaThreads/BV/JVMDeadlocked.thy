@@ -72,7 +72,7 @@ proof -
   from tconf hext have tconf': "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
   show ?thesis
   proof(cases xcp)
-    case (Some a)[simp]
+    case [simp]: (Some a)
     with exec have [simp]: "m' = h'" by(auto)
     from `\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>` obtain D where D: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
       by(auto simp add: correct_state_def)
@@ -86,7 +86,7 @@ proof -
       by(auto intro: execd_mthr.can_syncI)
     thus ?thesis by auto
   next
-    case None[simp]
+    case [simp]: None
 
     note [simp] = defs1 list_all2_Cons2
 

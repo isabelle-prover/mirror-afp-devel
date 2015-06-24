@@ -61,19 +61,19 @@ proof -
       with `x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2` have "T = T2" ..
       from `xa = E` `xb = if (e) e1 else e2` `xc = T` `x,E \<turnstile> e :: Boolean` 
         `x,E \<turnstile> e1 :: T1` `x,E \<turnstile> e2 :: T2` `x \<turnstile> T1 \<le> T2` `x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1`
-      show ?thesis unfolding `T = T2` by(rule WTCond1[OF refl])
+      show ?thesis unfolding `T = T2` by(rule WT.WTCond1[OF refl])
     next
       assume "x \<turnstile> T2 \<le> T1"
       with `x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1` have "T = T1" ..
       from `xa = E` `xb = if (e) e1 else e2` `xc = T` `x,E \<turnstile> e :: Boolean` 
         `x,E \<turnstile> e1 :: T1` `x,E \<turnstile> e2 :: T2` `x \<turnstile> T2 \<le> T1` `x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2`
-      show ?thesis unfolding `T = T1` by(rule WTCond2[OF refl])
+      show ?thesis unfolding `T = T1` by(rule WT.WTCond2[OF refl])
     qed
-  qed(assumption|erule (2) that[OF refl])+
+  qed(assumption|erule (2) WT.that[OF refl])+
 next
   case WTs
   from WTs.prems show thesis
-    by(cases (no_simp))(assumption|erule (2) that[OF refl])+
+    by(cases (no_simp))(assumption|erule (2) WTs.that[OF refl])+
 qed
 
 notation infer_type ("_,_ \<turnstile> _ :: '_" [51,51,51]100)

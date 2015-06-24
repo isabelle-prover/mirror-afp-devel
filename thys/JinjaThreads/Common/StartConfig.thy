@@ -261,7 +261,7 @@ proof -
         case False thus ?thesis
           using ads len by(auto simp add: create_initial_object_simps zip_append1)
       next
-        case True[simp]
+        case [simp]: True
         obtain h' a' where h'a': "(SOME ha. ha \<in> allocate h (Class_type x)) = (h', a')"
           by(cases "SOME ha. ha \<in> allocate h (Class_type x)")
         with True have new_obj: "(h', a') \<in> allocate h (Class_type x)"
@@ -334,7 +334,7 @@ proof -
           case False thus ?thesis
             using inv Ca len by(auto simp add: create_initial_object_simps zip_append1 split: split_if_asm)
         next
-          case True[simp]
+          case [simp]: True
           obtain h' a' where h'a': "(SOME ha. ha \<in> allocate h (Class_type x)) = (h', a')"
             by(cases "SOME ha. ha \<in> allocate h (Class_type x)")
           with True have new_obj: "(h', a') \<in> allocate h (Class_type x)"

@@ -66,7 +66,7 @@ proof -
     proof(cases "stk ! n = Null")
       case True with exec check Invoke show ?thesis by(simp)
     next
-      case False[simp]
+      case [simp]: False
       with check Invoke obtain a where stkn: "stk ! n = Addr a" "n < length stk" by auto
       hence a: "a \<in> (\<Union>v \<in> set stk. ka_Val v)" by(fastforce dest: nth_mem)
       show ?thesis
@@ -694,7 +694,7 @@ lemma exec_instr_non_speculative_read:
            \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v' \<and> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 using exec_i i read
 proof(cases i)
-  case ALoad[simp]
+  case [simp]: ALoad
   let ?a = "the_Addr (hd (tl stk))"
   let ?i = "the_Intg (hd stk)"
   from exec_i i read have Null: "hd (tl stk) \<noteq> Null"
@@ -713,7 +713,7 @@ proof(cases i)
   with hrt adal have "heap_read (shr s) ?a (ACell (nat (sint ?i))) v'" using hconf by(rule heap_read_typeableD)
   with type bounds Null aok exec_i show ?thesis by(fastforce)
 next
-  case (Getfield F D)[simp]
+  case [simp]: (Getfield F D)
   let ?a = "the_Addr (hd stk)"
 
   from exec_i i read have Null: "hd stk \<noteq> Null"
@@ -732,7 +732,7 @@ next
   with hrt adal have "heap_read (shr s) ?a (CField D F) v'" using hconf by(rule heap_read_typeableD)
   with type Null aok exec_i show ?thesis by(fastforce)
 next
-  case (Invoke M n)[simp]
+  case [simp]: (Invoke M n)
   let ?a = "the_Addr (stk ! n)"
   let ?vs = "rev (take n stk)"
   from exec_i i read have Null: "stk ! n \<noteq> Null" 

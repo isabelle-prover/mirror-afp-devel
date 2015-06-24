@@ -59,10 +59,10 @@ proof(induct f)
       by (clarsimp simp: nth.simps Ball_def split:split_if_asm nat.splits)
          (metis not_leE order_antisym order_less_trans)+
   next
-    case (Eq i j)[simp]
+    case [simp]: (Eq i j)
     show ?thesis
     proof (cases i)
-      case 0[simp]
+      case [simp]: 0
       show ?thesis
       proof (cases j)
         case 0 thus ?thesis using Atom by simp
@@ -70,7 +70,7 @@ proof(induct f)
         case Suc thus ?thesis using Atom by(simp add:EQ_def)
       qed
     next
-      case Suc[simp]
+      case [simp]: Suc
       show ?thesis
       proof (cases j)
         case 0 thus ?thesis using Atom by(simp add:EQ_def)

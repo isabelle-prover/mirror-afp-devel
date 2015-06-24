@@ -1575,7 +1575,7 @@ next
       ultimately show ?thesis using red red' \<tau> stk' pc xcp pc' stk call
         by(fastforce elim!: rtranclp_trans Call_\<tau>red1r_param Call_\<tau>red1t_param intro: Call1Params rtranclp_tranclp_tranclp split: split_if_asm)
     next
-      case Nil[simp]
+      case [simp]: Nil
       from exec pc stk xcp
       have "v = Null \<or> (is_Addr v \<and> (\<exists>T C' Ts' Tr' D'. typeof\<^bsub>h\<^esub> v = \<lfloor>T\<rfloor> \<and> class_type_of' T = \<lfloor>C'\<rfloor> \<and> P \<turnstile> C' sees M':Ts'\<rightarrow>Tr' = Native in D'))" (is "_ \<or> ?rest")
         by(fastforce elim!: exec_meth.cases simp add: is_Ref_def exec_move_def compP2_def has_method_def split: split_if_asm)
@@ -3335,7 +3335,7 @@ proof(cases)
 
   show ?thesis
   proof(cases xcp)
-    case None[simp]
+    case [simp]: None
     from exec have execi: "(ta, xcp', h', frs') \<in> exec_instr (instrs_of (compP2 P) C M ! pc) (compP2 P) t h stk loc C M pc FRS"
       by(simp add: exec_1_iff)
     show ?thesis
@@ -3482,7 +3482,7 @@ proof(cases)
       hence Red: "\<tau>Red1r P t h ((e, xs), exs) ((Val v, loc), exs)" by(rule \<tau>red1r_into_\<tau>Red1r)
       show ?thesis
       proof(cases "FRS")
-        case Nil [simp]
+        case [simp]: Nil
         with bisims have [simp]: "exs = []" by simp
         with exec sees' have [simp]: "ta = \<epsilon>" "xcp' = None" "h' = h" "frs' = []"
           by(auto simp add: exec_1_iff)
@@ -3546,7 +3546,7 @@ proof(cases)
       qed
     qed
   next
-    case (Some a')[simp]
+    case [simp]: (Some a')
     from exec have execs: "(xcp', h', frs') = exception_step (compP2 P) a' h (stk, loc, C, M, pc) FRS"
       and [simp]: "ta = \<epsilon>" by(auto simp add: exec_1_iff)
     from conf have confxcp': "conf_xcp' P h xcp" 
@@ -3619,7 +3619,7 @@ proof(cases)
         ultimately show ?thesis using Red
           by(auto simp del: \<tau>Red1_conv intro: rtranclp.rtrancl_into_rtrancl rtranclp_into_tranclp1)
       next
-        case Nil [simp]
+        case [simp]: Nil
         with bisims have [simp]: "exs = []" by simp
         from hconf have "bisim1_list1 t h (Throw a', loc) [] \<lfloor>a'\<rfloor> []" by(rule bl1_finalThrow)
         thus ?thesis using Red 
@@ -3713,7 +3713,7 @@ proof cases
 
   show ?thesis
   proof(cases xcp)
-    case None[simp]
+    case [simp]: None
     from exec have execi: "(ta, xcp', h', frs') \<in> exec_instr (instrs_of (compP2 P) C M ! pc) (compP2 P) t h stk loc C M pc FRS"
       by(simp add: exec_1_iff)
     show ?thesis
@@ -3791,7 +3791,7 @@ proof cases
       ultimately show ?thesis by blast
     qed
   next
-    case (Some ad)[simp]
+    case [simp]: (Some ad)
     from bisim have pc: "pc < length (compE2 body)" by(auto dest: bisim1_xcp_pcD)
     with \<tau> sees' have False by auto
     thus ?thesis ..

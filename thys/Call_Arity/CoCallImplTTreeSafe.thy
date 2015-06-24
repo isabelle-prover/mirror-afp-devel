@@ -309,7 +309,7 @@ next
       by (simp add: Theap_simp False)
     finally show ?thesis.
   next
-    case True[simp]
+    case [simp]: True
 
     from True
     have "ttree_restr (edom (Aheap \<Delta> e\<cdot>a)) (substitute (Texp.AnalBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (thunks \<Delta>) (Texp e\<cdot>a))

@@ -556,7 +556,7 @@ code_pred
 proof -
   case heap_copy_loc
   from heap_copy_loc.prems show thesis
-    by(rule heap_base.heap_copy_loc.cases)(rule that[OF refl refl refl refl refl refl])
+    by(rule heap_base.heap_copy_loc.cases)(rule heap_copy_loc.that[OF refl refl refl refl refl refl])
 qed
 
 declare heap_base.heap_copies.intros [code_pred_intro]
@@ -567,7 +567,7 @@ code_pred
 proof -
   case heap_copies
   from heap_copies.prems show thesis
-    by(rule heap_base.heap_copies.cases)(erule (3) that[OF refl refl refl refl]|assumption)+
+    by(rule heap_base.heap_copies.cases)(erule (3) heap_copies.that[OF refl refl refl refl]|assumption)+
 qed
 
 declare heap_base.heap_clone.intros [folded Predicate_Compile.contains_def, code_pred_intro]
@@ -578,7 +578,7 @@ code_pred
 proof -
   case heap_clone
   from heap_clone.prems show thesis
-    by(rule heap_base.heap_clone.cases[folded Predicate_Compile.contains_def])(erule (3) that[OF refl refl refl refl refl refl refl]|assumption)+
+    by(rule heap_base.heap_clone.cases[folded Predicate_Compile.contains_def])(erule (3) heap_clone.that[OF refl refl refl refl refl refl refl]|assumption)+
 qed
 
 text {* 
@@ -611,7 +611,7 @@ proof -
   case red_external
   from red_external.prems show ?thesis
     apply(rule heap_base.red_external.cases)
-    apply(erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl refl]|assumption|erule eqTrueI)+
+    apply(erule (4) red_external.that[OF refl refl refl refl refl refl refl refl refl refl refl refl]|assumption|erule eqTrueI)+
     done
 qed
 

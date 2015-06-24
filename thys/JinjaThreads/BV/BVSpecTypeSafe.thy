@@ -1457,7 +1457,7 @@ proof -
     case Some thus ?thesis
       unfolding f exec_1_iff by auto
   next
-    case None [simp]
+    case [simp]: None
     note [simp del] = split_paired_Ex
     note [simp] = defs1 list_all2_Cons2
 
@@ -1469,7 +1469,7 @@ proof -
 
     have "\<exists>ta \<sigma>'. (ta, \<sigma>') \<in> exec_instr (is ! pc) P t h stk loc C M pc frs"
     proof(cases "is ! pc")
-      case ALoad [simp]
+      case [simp]: ALoad
       with wt \<Phi>_pc have lST: "length ST > 1" by(auto)
       show ?thesis
       proof(cases "hd (tl stk) = Null")
@@ -1512,7 +1512,7 @@ proof -
         qed
       qed
     next
-      case AStore [simp]
+      case [simp]: AStore
       from wt \<Phi>_pc have lST: "length ST > 2" by(auto)
       
       show ?thesis
@@ -1569,7 +1569,7 @@ proof -
         qed
       qed
     next
-      case (Getfield F D)[simp]
+      case [simp]: (Getfield F D)
 
       from \<Phi>_pc wt obtain oT ST'' vT fm where oT: "P \<turnstile> oT \<le> Class D" 
         and "ST = oT # ST''" and F: "P \<turnstile> D sees F:vT (fm) in D" 
@@ -1596,7 +1596,7 @@ proof -
         show ?thesis using stk' a by auto
       qed
     next
-      case (Putfield F D)[simp]
+      case [simp]: (Putfield F D)
 
       from \<Phi>_pc wt obtain vT vT' oT ST'' fm where "ST = vT # oT # ST''" 
         and field: "P \<turnstile> D sees F:vT' (fm) in D"
@@ -1624,7 +1624,7 @@ proof -
         from heap_write_total[OF hconf al this] v a stk' h show ?thesis by auto
       qed
     next
-      case (Invoke M' n)[simp]
+      case [simp]: (Invoke M' n)
 
       from wt \<Phi>_pc have n: "n < size ST" by simp
   
@@ -1672,7 +1672,7 @@ proof -
         proof(cases m')
           case Some with Call' C' obj Addr C' C'subD show ?thesis by(auto)
         next
-          case None[simp]
+          case [simp]: None
           from ST have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
           then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
             by(auto simp add: confs_conv_map)

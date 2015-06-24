@@ -1096,7 +1096,7 @@ next
       unfolding FOREACH_cond_def
       by simp
   next
-    case True[simp]
+    case [simp]: True
     from Cons show ?thesis
       apply (subst WHILEIT_unfold)
       unfolding FOREACH_cond_def FOREACH_body_def

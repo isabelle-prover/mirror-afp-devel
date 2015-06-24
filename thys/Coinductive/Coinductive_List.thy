@@ -1260,7 +1260,7 @@ unfolding lfinite_eq_range_llist_of by auto
 
 lemma llength_eq_enat_lfiniteD: "llength xs = enat n \<Longrightarrow> lfinite xs"
 proof(induct n arbitrary: xs)
-  case 0[folded zero_enat_def]
+  case [folded zero_enat_def]: 0
   thus ?case by simp
 next
   case (Suc n)
@@ -2527,7 +2527,7 @@ by(auto simp add: lset_conv_lnth lnth_lzip)(auto intro!: exI simp add: lnth_lzip
 
 lemma lset_lzipD1: "(x, y) \<in> lset (lzip xs ys) \<Longrightarrow> x \<in> lset xs"
 proof(induct "lzip xs ys" arbitrary: xs ys rule: lset_induct)
-  case find[symmetric]
+  case [symmetric]: find
   thus ?case by(auto simp add: lzip_eq_LCons_conv)
 next
   case (step z zs)
@@ -2536,7 +2536,7 @@ qed
 
 lemma lset_lzipD2: "(x, y) \<in> lset (lzip xs ys) \<Longrightarrow> y \<in> lset ys"
 proof(induct "lzip xs ys" arbitrary: xs ys rule: lset_induct)
-  case find[symmetric]
+  case [symmetric]: find
   thus ?case by(auto simp add: lzip_eq_LCons_conv)
 next
   case (step z zs)
@@ -4635,7 +4635,7 @@ proof
   assume "?lhs"
   thus "?rhs" (is "?concl xss")
   proof(induct "lconcat xss" arbitrary: xss)
-    case lfinite_LNil[symmetric]
+    case [symmetric]: lfinite_LNil
     moreover hence "lnull (lfilter (\<lambda>xs. \<not> lnull xs) xss)"
       by(auto simp add: lconcat_eq_LNil)
     ultimately show ?case by(auto)
@@ -5137,7 +5137,7 @@ proof(rule rel_funI)+
   assume "A x y"
   thus "llist_all2 B (corec_llist IS_LNIL1 LHD1 STOP1 MORE1 LTL1 x) (corec_llist IS_LNIL2 LHD2 STOP2 MORE2 LTL2 y)"
   proof(coinduction arbitrary: x y)
-    case (LNil x y)[transfer_rule]
+    case [transfer_rule]: (LNil x y)
     show ?case by simp transfer_prover
   next
     case (LCons x y)

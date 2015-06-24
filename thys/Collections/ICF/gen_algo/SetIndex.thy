@@ -171,9 +171,9 @@ begin
         by (simp add: ci_invar_def)
       
       show ?case proof (cases "i=f x")
-        case True[simp]
+        case [simp]: True
         show ?thesis proof (cases "m.\<alpha> m (f x)")
-          case None[simp]
+          case [simp]: None
           hence "idx_build_stepfun f x m = m.update i (s.ins x (s.empty ())) m"
             apply (unfold idx_build_stepfun_def) 
             apply (simp add: m.update_correct m.lookup_correct s.empty_correct)
@@ -195,7 +195,7 @@ begin
               by (unfold index_map_def index_def) auto
           } finally show ?thesis .
         next
-          case (Some ss)[simp]
+          case [simp]: (Some ss)
           hence [simp, intro!]: "s.invar ss" by (simp del: Some)
           hence "idx_build_stepfun f x m = m.update (f x) (s.ins x ss) m"
             by (unfold idx_build_stepfun_def) 

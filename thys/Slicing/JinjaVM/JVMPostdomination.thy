@@ -205,10 +205,10 @@ proof -
     thus ?thesis
       by simp
   next
-    case (Node cs opt) [simp]
+    case [simp]: (Node cs opt)
     show ?thesis
     proof (cases opt)
-      case None [simp]
+      case [simp]: None
       from vn
       show ?thesis
         apply (cases cs)
@@ -230,7 +230,7 @@ proof -
         apply clarsimp
         by (case_tac ba, clarsimp, clarsimp)
     next
-      case (Some f) [simp]
+      case [simp]: (Some f)
       obtain cs'' xf where [simp]: "f = (cs'', xf)"
         by (cases f, fastforce)
       from vn
@@ -480,7 +480,7 @@ proof -
       by (rule_tac B="{(_Exit_), (_ [(C0, Main, 0)],None _)}" in finite_subset,
         auto dest: JVMCFG_EntryD)
   next
-    case (Node cs x) [simp]
+    case [simp]: (Node cs x)
     show ?thesis
     proof (cases cs)
       case Nil
@@ -488,7 +488,7 @@ proof -
         by (rule_tac B="{}" in finite_subset,
           auto elim: JVM_CFG.cases)
     next
-      case (Cons a cs') [simp]
+      case [simp]: (Cons a cs')
       obtain C M pc where [simp]: "a = (C,M,pc)" by (cases a, fastforce)
       have finite_classes: "finite {C. is_class (P\<^bsub>wf\<^esub>) C}"
         by (rule finite_is_class)

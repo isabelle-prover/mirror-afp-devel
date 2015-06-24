@@ -126,7 +126,7 @@ next
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis
     proof cases
       assume "l = 0" with goal2 l0f1 l0f2 show ?thesis
@@ -156,7 +156,7 @@ next
       qed
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     show ?thesis
     proof cases
       assume "n \<le> 1" with goal2 show ?thesis by(auto)
@@ -206,7 +206,7 @@ next
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
-    case Ins[simp]
+    case [simp]: Ins
     show ?thesis
     proof cases
       assume "l = 0" with goal5 adai show ?thesis
@@ -241,7 +241,7 @@ using 0 by linarith
       qed
     qed
   next
-    case Del[simp]
+    case [simp]: Del
     show ?thesis
     proof cases
       assume "n \<le> 1" with goal5 ad0 show ?thesis

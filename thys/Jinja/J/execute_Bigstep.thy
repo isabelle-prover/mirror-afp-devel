@@ -143,20 +143,20 @@ proof -
   from eval.prems show thesis
   proof(cases (no_simp))
     case CallNull thus ?thesis
-      by(rule CallNull2[OF refl])(simp add: map_val_conv[symmetric])
+      by(rule eval.CallNull2[OF refl])(simp add: map_val_conv[symmetric])
   next
     case CallParamsThrow thus ?thesis
-      by(rule CallParamsThrow2[OF refl])(simp add: map_val2_conv[symmetric])
+      by(rule eval.CallParamsThrow2[OF refl])(simp add: map_val2_conv[symmetric])
   next
     case Call thus ?thesis
-      by -(rule Call2[OF refl], simp_all add: map_val_conv[symmetric])
+      by -(rule eval.Call2[OF refl], simp_all add: map_val_conv[symmetric])
   next
-    case WhileBodyThrow thus ?thesis by(rule WhileBodyThrow2[OF refl])
-  qed(assumption|erule (4) that[OF refl]|erule (3) that[OF refl])+
+    case WhileBodyThrow thus ?thesis by(rule eval.WhileBodyThrow2[OF refl])
+  qed(assumption|erule (4) eval.that[OF refl]|erule (3) eval.that[OF refl])+
 next
   case evals
   from evals.prems show thesis
-    by(cases (no_simp))(assumption|erule (3) that[OF refl])+
+    by(cases (no_simp))(assumption|erule (3) evals.that[OF refl])+
 qed
 
 notation execute ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ \<langle>'_, '_\<rangle>)" [51,0,0] 81)

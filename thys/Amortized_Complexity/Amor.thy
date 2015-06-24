@@ -146,7 +146,7 @@ next
   case goal2
   show ?case
   proof (cases s)
-    case (Pair n l)[simp]
+    case [simp]: (Pair n l)
     show ?thesis
     proof cases
       assume "l=0" thus ?thesis using goal2 ac
@@ -190,7 +190,7 @@ next
   case goal5
   show ?case
   proof (cases s)
-    case (Pair n l)[simp]
+    case [simp]: (Pair n l)
     show ?thesis
     proof cases
       assume "l=0" thus ?thesis using goal5 by (simp)

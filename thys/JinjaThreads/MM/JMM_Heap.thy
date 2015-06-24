@@ -73,7 +73,7 @@ proof -
         case False thus ?thesis using ads
           by(simp add: create_initial_object_simps zip_append1)
       next
-        case True[simp]
+        case [simp]: True
         then obtain h' a' 
           where h'a': "(SOME ha. ha \<in> allocate h (Class_type x)) = (h', a')"
           and new_obj: "(h', a') \<in> allocate h (Class_type x)"
@@ -229,12 +229,12 @@ proof -
   then obtain obs obs' where obs: "start_heap_obs = obs @ NewHeapElem a CTn # obs'" by(auto dest: split_list)
   have "w_value P (w_values P (\<lambda>_. {}) (map NormalAction obs)) (NormalAction (NewHeapElem a CTn)) (a, al) \<noteq> {}"
   proof(cases CTn)
-    case (Class_type C)[simp]
+    case [simp]: (Class_type C)
     with wf CTn have "typeof_addr start_heap a = \<lfloor>Class_type C\<rfloor>"
       by(auto intro: NewHeapElem_start_heap_obsD)
     with adal show ?thesis by cases auto
   next
-    case (Array_type T n)[simp]
+    case [simp]: (Array_type T n)
     with wf CTn have "typeof_addr start_heap a = \<lfloor>Array_type T n\<rfloor>"
       by(auto dest: NewHeapElem_start_heap_obsD)
     with adal show ?thesis by cases(auto dest: has_field_decl_above)

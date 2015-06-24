@@ -285,7 +285,7 @@ begin
   case (var\<^sub>2 \<Gamma> x e S)
     show ?case
     proof(cases "x \<in> set r")
-      case False[simp]
+      case [simp]: False
 
       from var\<^sub>2
       have "a_consistent (ae, a, as) (restrictA (- set r) \<Gamma>, e, Upd x # restr_stack (-set r) S)" by auto

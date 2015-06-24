@@ -480,7 +480,7 @@ next
   show ?case proof (cases xs)
     case Nil thus ?thesis by simp
   next
-    case (Cons xxs xx)[simp] 
+    case [simp]: (Cons xxs xx) 
     note Cons' = Cons
     thus ?thesis
     proof (cases xx)
@@ -514,7 +514,7 @@ next
   proof (cases xs)
     case Nil thus ?thesis by simp
   next
-    case (Cons xx xxs)[simp]
+    case [simp]: (Cons xx xxs)
     from snoc.hyps[OF invar_butlast[OF snoc.prems]]
     have IH: "2 ^ (length xs - 1) \<le> Suc (size (queue_to_multiset xs))" by simp
     have size_q: 
@@ -2425,7 +2425,7 @@ begin
     (case (Rep_SkewBinomialHeap q) of Inl _ \<Rightarrow> BsSkewBinomialHeapStruc.bs_empty |
      _ \<Rightarrow> BsSkewBinomialHeapStruc.bs_deleteMin (Rep_SkewBinomialHeap q))"
   proof (cases "(Rep_SkewBinomialHeap q)")
-    case (Inl a)[simp]
+    case [simp]: (Inl a)
     hence "(Rep_SkewBinomialHeap q) = BsSkewBinomialHeapStruc.bs_empty"
       apply (cases q) 
       apply (auto simp add: BsSkewBinomialHeapStruc.bs_empty_def)

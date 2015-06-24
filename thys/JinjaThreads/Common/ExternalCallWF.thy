@@ -258,7 +258,7 @@ proof -
     have "hconf h'" using new hconf `is_htype P hT` by(rule hconf_allocate_mono)
     show ?thesis
     proof(cases hT)
-      case (Class_type C)[simp]
+      case [simp]: (Class_type C)
       from `is_htype P hT` have "is_class P C" by simp
       from wf_Fields_Ex[OF wf this]
       obtain FDTs where FDTs: "P \<turnstile> C has_fields FDTs" ..
@@ -279,7 +279,7 @@ proof -
       with typea new FDTs ObjClone[of h a C h' a' P FDTs obs h'']
       show ?thesis by auto
     next
-      case (Array_type T n)[simp]
+      case [simp]: (Array_type T n)
       from wf obtain FDTs where FDTs: "P \<turnstile> Object has_fields FDTs"
         by(blast dest: wf_Fields_Ex is_class_Object)
       let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]"
@@ -393,12 +393,12 @@ proof(atomize_elim)
 
     show ?thesis
     proof(cases "wset s t")
-      case (Some w)[simp]
+      case [simp]: (Some w)
       with wst obtain w' where [simp]: "w = PostWS w'" "M = wait" by auto
       from red have [simp]: "vs = []" by(auto elim: red_external.cases)
       show ?thesis
       proof(cases w')
-        case WSWokenUp[simp]
+        case [simp]: WSWokenUp
         let ?ta' = "\<lbrace>WokenUp, ClearInterrupt t, ObsInterrupted t\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"
@@ -407,7 +407,7 @@ proof(atomize_elim)
         have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
         ultimately show ?thesis by blast
       next
-        case WSNotified[simp]
+        case [simp]: WSNotified
         let ?ta' = "\<lbrace>Notified\<rbrace>"
         have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
         moreover have "final_thread.actions_subset ?ta' ta"

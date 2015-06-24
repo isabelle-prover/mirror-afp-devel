@@ -670,19 +670,19 @@ proof -
     SynchronizedThrow2 SeqThrow CondThrow ThrowThrow])
 
     case (RedCall s a U M Ts T pns body D vs)
-    with RedCall_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body U T]
+    with red.RedCall_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s pns D Ts body U T]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
-    with RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' U Ts T D]
+    with red.RedCallExternal_code[OF refl refl refl refl refl refl refl refl refl refl refl, of a M "map Val vs" s ta va h' U Ts T D]
     show ?thesis by(simp add: o_def)
   next
     case (RedCallNull M vs s)
-    with RedCallNull_code[OF refl refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
+    with red.RedCallNull_code[OF refl refl refl refl refl refl refl refl refl refl refl, of M "map Val vs" s]
     show ?thesis by(simp add: o_def)
   next
     case (CallThrowParams es vs a es' v M s)
-    with CallThrowParams_code[OF refl refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
+    with red.CallThrowParams_code[OF refl refl refl refl refl refl refl refl refl refl refl, of v M "map Val vs @ Throw a # es'" s]
     show ?thesis 
       apply(auto simp add: is_Throws_conv)
       apply(erule meta_impE)
@@ -691,15 +691,15 @@ proof -
       done
   next
     case RedThrowNull thus ?thesis
-      by-(erule (4) RedThrowNull'[OF refl refl refl refl refl refl refl refl refl refl refl])
+      by-(erule (4) red.RedThrowNull'[OF refl refl refl refl refl refl refl refl refl refl refl])
   next
     case ThrowThrow thus ?thesis
-      by-(erule (4) ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl refl])
-  qed(assumption|erule (4) that[unfolded Predicate_Compile.contains_def, OF refl refl refl refl refl refl refl refl refl refl refl])+
+      by-(erule (4) red.ThrowThrow'[OF refl refl refl refl refl refl refl refl refl refl refl])
+  qed(assumption|erule (4) red.that[unfolded Predicate_Compile.contains_def, OF refl refl refl refl refl refl refl refl refl refl refl])+
 next
   case reds
   from reds.prems show thesis
-    by(rule J_heap_base.reds.cases)(assumption|erule (4) that[OF refl refl refl refl refl refl refl refl refl refl refl])+
+    by(rule J_heap_base.reds.cases)(assumption|erule (4) reds.that[OF refl refl refl refl refl refl refl refl refl refl refl])+
 qed
 
 end

@@ -335,7 +335,7 @@ proof -
       let ?s = "s\<^sub>3 @ ?b" and ?t = "(e \<cdot> s\<^sub>3) @ ?b"
       show ?case
       proof(cases e)
-        case (Enter g'' r' c)[simp]
+        case [simp]: (Enter g'' r' c)
         show "g' = g"
         proof cases
           assume [simp]: "r' = r"

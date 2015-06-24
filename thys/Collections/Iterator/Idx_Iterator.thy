@@ -57,7 +57,7 @@ proof-
       show ?case proof (cases "c \<sigma>")
         case False thus ?thesis by simp
       next
-        case True[simp, intro!]
+        case [simp, intro!]: True
         show ?thesis using Suc
             by (simp add: size_correct[OF S] get_correct[OF S] drop_aux)
       qed

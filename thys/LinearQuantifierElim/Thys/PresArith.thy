@@ -171,12 +171,12 @@ done
 lemma I_hd_coeff1_mult_a: assumes "m>0"
 shows "hd_coeff a dvd m | hd_coeff a = 0 \<Longrightarrow> I\<^sub>Z (hd_coeff1 m a) (m*x#xs) = I\<^sub>Z a (x#xs)"
 proof(induct a)
-  case (Le i ks)[simp]
+  case [simp]: (Le i ks)
   show ?case
   proof(cases ks)
     case Nil thus ?thesis by simp
   next
-    case (Cons k ks')[simp]
+    case [simp]: (Cons k ks')
     show ?thesis
     proof cases
       assume "k=0" thus ?thesis by simp
@@ -206,12 +206,12 @@ proof(induct a)
     qed
   qed
 next
-  case (Dvd d i ks)[simp]
+  case [simp]: (Dvd d i ks)
   show ?case
   proof(cases ks)
     case Nil thus ?thesis by simp
   next
-    case (Cons k ks')[simp]
+    case [simp]: (Cons k ks')
     show ?thesis
     proof cases
       assume "k=0" thus ?thesis by simp
@@ -238,12 +238,12 @@ next
     qed
   qed
 next
-  case (NDvd d i ks)[simp]
+  case [simp]: (NDvd d i ks)
   show ?case
   proof(cases ks)
     case Nil thus ?thesis by simp
   next
-    case (Cons k ks')[simp]
+    case [simp]: (Cons k ks')
     show ?thesis
     proof cases
       assume "k=0" thus ?thesis by simp

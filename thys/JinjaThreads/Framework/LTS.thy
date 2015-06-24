@@ -1115,7 +1115,7 @@ proof(coinduction arbitrary: s tls stlss)
     and Run = `Runs_table s stlss`
   show ?case
   proof(cases tls)
-    case (TNil so)[simp]
+    case [simp]: (TNil so)
     from tls
     have silent: "\<forall>(s, tl, s') \<in> lset stlss. \<tau>move s tl s'"
       by(auto simp add: TNil_eq_tmap_conv tfilter_empty_conv)
@@ -1133,7 +1133,7 @@ proof(coinduction arbitrary: s tls stlss)
       thus ?thesis by simp
     qed
   next
-    case (TCons tl tls')[simp]
+    case [simp]: (TCons tl tls')
     from tls obtain s' s'' stlss' 
       where tl': "tfilter None (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') (tllist_of_llist \<lfloor>llast (LCons s (lmap (\<lambda>(s, tl, s'). s') stlss))\<rfloor> stlss) = TCons (s', tl, s'') stlss'"
       and tls': "tls' = tmap (\<lambda>(s, tl, s'). tl) id stlss'"

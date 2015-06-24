@@ -591,7 +591,7 @@ subsection "Dijkstra's Algorithm"
           ) \<and> (\<forall>p. (res'(v'\<mapsto>the (res v)@[(v,w',v')])) v'' = Some p 
                 \<longrightarrow> is_path v0 p v'')"
         proof (cases "v''=v'")
-          case False[simp]
+          case [simp]: False
           have "{ Some (p@[(v,w,v'')]) | p w. res v = Some p 
           \<and> (w,v'') \<in> succ G v - (it - {(w',v')}) } = 
             { Some (p@[(v,w,v'')]) | p w. res v = Some p 
@@ -600,7 +600,7 @@ subsection "Dijkstra's Algorithm"
           with INV VMEM show ?thesis unfolding uinvar_def 
             by simp
         next
-          case True[simp]
+          case [simp]: True
           have EQ: "{ res v'' } \<union> { Some (p@[(v,w,v'')]) | p w. res v = Some p 
           \<and> (w,v'') \<in> succ G v - (it - {(w',v')}) } =
           insert (Some (pv@[(v,w',v')])) (
@@ -653,11 +653,11 @@ subsection "Dijkstra's Algorithm"
 
     show "uinvar v wl res (it - {(w',v')}) (wl',res')"
     proof (cases "res v")
-      case None [simp]
+      case [simp]: None
       from INV show ?thesis
         unfolding uinvar_def by auto
     next
-      case (Some p) [simp]
+      case [simp]: (Some p)
       {
         fix v''
         assume [simp, intro!]: "v''\<in>V"
@@ -669,7 +669,7 @@ subsection "Dijkstra's Algorithm"
           case False with INV show ?thesis
             unfolding uinvar_def by auto
         next
-          case True[simp]
+          case [simp]: True
           
           have EQ: "?S = insert (Some (p@[(v,w',v')])) (
             { res v' } \<union> { Some (p@[(v,w,v'')]) | p w. res v = Some p 

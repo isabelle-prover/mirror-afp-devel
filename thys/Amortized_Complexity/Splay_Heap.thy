@@ -313,7 +313,7 @@ next
     proof (cases r)
       case Leaf thus ?thesis using `a \<le> p` "2.prems" by fastforce
     next
-      case (Node rl b rr)[simp]
+      case [simp]: (Node rl b rr)
       let ?t = "Node l a r"
       show ?thesis
       proof cases
@@ -343,7 +343,7 @@ next
     proof (cases l)
       case Leaf thus ?thesis using `\<not> a \<le> p` "2.prems" by fastforce
     next
-      case (Node ll b lr)[simp]
+      case [simp]: (Node ll b lr)
       let ?t = "Node l a r"
       show ?thesis
       proof cases

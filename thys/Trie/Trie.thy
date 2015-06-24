@@ -313,13 +313,13 @@ next
   proof(cases ks')
     case Nil thus ?thesis by(simp split: option.split add: Let_def)
   next
-    case (Cons k' ks'')[simp]
+    case [simp]: (Cons k' ks'')
     show ?thesis
     proof(cases "k' = k")
       case False thus ?thesis using "2.prems"
         by(auto simp add: Let_def update_conv' map_of_delete_aux split: option.split)
     next
-      case True[simp]
+      case [simp]: True
       show ?thesis
       proof(cases "map_of ts k")
         case None thus ?thesis by simp

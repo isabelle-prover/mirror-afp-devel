@@ -774,7 +774,7 @@ lemma red_external_non_speculative_read:
                          \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i = ReadMem a'' al'' v' \<and> length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 using red i read
 proof cases
-  case (RedClone obs a')[simp]
+  case [simp]: (RedClone obs a')
   from heap_clone_non_speculative_read[OF hrt `heap_clone P (shr s) a h' \<lfloor>(obs, a')\<rfloor>` vs hconf, of i a'' al'' v v'] i read v ns
   show ?thesis using aok
     by(fastforce intro: red_external.RedClone simp add: final_thread.actions_ok_iff)

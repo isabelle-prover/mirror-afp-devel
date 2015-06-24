@@ -581,7 +581,7 @@ lemma exec_updW_correct:
 proof -
   from invar have "?thesis1 \<and> ?thesis2"
   proof(cases wa)
-    case (Notify w)[simp]
+    case [simp]: (Notify w)
     show ?thesis
     proof(cases "pick_wakeup \<sigma> t w ws")
       case (Some t')
@@ -593,7 +593,7 @@ proof -
       with None show ?thesis using invar by(auto simp add: ran_def)
     qed
   next
-    case (NotifyAll w)[simp]
+    case [simp]: (NotifyAll w)
     let ?f = "\<lambda>(t, w') ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws'"
     let ?I = "\<lambda>T ws'. (\<forall>k. if k\<notin>T \<and> ws_\<alpha> ws k = \<lfloor>InWS w\<rfloor> then ws_\<alpha> ws' k = \<lfloor>PostWS WSNotified\<rfloor> else ws_\<alpha> ws' k = ws_\<alpha> ws k) \<and> ws_invar ws'"
     from invar have "?I (dom (ws_\<alpha> ws)) ws" by(auto simp add: ws.lookup_correct)
