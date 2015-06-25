@@ -243,7 +243,7 @@ proof-
   show "\<exists>i\<in>(UNIV :: 'n::finite set). i \<noteq> p i" 
     using a1 by auto
   then show "card {i. i = p i} < CARD('n)"
-    by (metis (full_types) UNIV_I finite mem_Collect_eq psubset_card_mono top.not_eq_extremum)
+    using card_seteq finite_class.finite_UNIV linorder_not_le by blast
 qed   
 
 lemma coeff_charpoly_xn_is_one:
@@ -311,7 +311,7 @@ proof-
                                        le0 le_antisym nat.distinct(1) pCons_cases)
 
         hence "\<exists> B\<Colon>(nat \<Rightarrow> 'a^'n^'n). A = (\<Sum>i\<le>maxdegM A. monom 1 i *ss mat2matofpoly (B i))"
-          by(auto simp add: caseass scalar_matrix_mult_monom intro!: exI[of _ "\<lambda>x. coeffM A 0"])          
+          by (auto simp add: caseass scalar_matrix_mult_monom)
       }
       thus ?case by auto
     next

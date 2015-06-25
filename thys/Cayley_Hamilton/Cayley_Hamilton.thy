@@ -266,8 +266,7 @@ proof-
       
     thus ?thesis  
     using charpoly_aux(2) coeff_top
-    by(auto simp add: coeffM_monom_mult mat2matofpoly_mult coeffM_mat2matofpoly coeffM_mat 1
-                         one_scalar_mult_mat)
+    by(auto simp add: coeffM_monom_mult mat2matofpoly_mult coeffM_mat2matofpoly coeffM_mat 1)
     qed
   } note coeffM_charpoly = this   
     
@@ -318,7 +317,7 @@ proof-
     ultimately show ?thesis 
       using a0 coeff_top coeffM_charpoly[of 0]
       by(simp add: zero[symmetric] atMost_def matrix_mul_rid coeffM_mat 
-      matrix_mul_lid setsum_subtractf charpoly_aux(2) one_scalar_mult_mat)
+      matrix_mul_lid setsum_subtractf charpoly_aux(2))
   qed
 
   txt{* case n > 1 *}

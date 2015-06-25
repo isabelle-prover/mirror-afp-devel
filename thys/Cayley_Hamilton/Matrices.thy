@@ -253,7 +253,7 @@ lemma scalar_minus_left:
   shows "- x *ss A = - (x *ss A)" 
   by (simp add: vec_eq_iff scalar_matrix_mult_def )
 
-lemma one_scalar_mult_mat: 
+lemma one_scalar_mult_mat [simp]: 
   shows "1 *ss (A::'a\<Colon>comm_ring_1^'n^'n) = A"
   unfolding scalar_matrix_mult_def
   by(simp add: vec_lambda_eta) 
