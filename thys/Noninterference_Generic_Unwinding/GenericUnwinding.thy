@@ -1066,9 +1066,11 @@ proof (simp add: P\<^sub>c_def ts_ipurge_unwinding [OF counterexample_trace_set]
       ipurge_tr_rev I\<^sub>c id u xs = ipurge_tr_rev I\<^sub>c id u ys \<longrightarrow>
       {x. u = x \<and> xs @ [x] \<in> T\<^sub>c} = {x. u = x \<and> ys @ [x] \<in> T\<^sub>c}"
     (* The following proof step performs an exhaustive case distinction over all traces and domains,
-       and then can take long to be completed. *)
-    by (simp add: T\<^sub>c_def I\<^sub>c_def, rule impI, (erule conjE)+, cases u,
-     (((erule disjE)+)?, simp, blast?)+)
+       and then could take ca. 20 seconds to be completed. *)
+       apply (simp add: T\<^sub>c_def I\<^sub>c_def)
+       apply clarify
+       apply (cases u; elim disjE; simp; blast)
+       done
   qed
 qed
 
