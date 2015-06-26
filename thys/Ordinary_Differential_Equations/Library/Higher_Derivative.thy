@@ -318,7 +318,7 @@ proof -
       have "eventually (\<lambda>u. norm (?g u 1 - ?g u 0 - (u * u) *\<^sub>R f'' a i j) \<le>
           u * u * e * (2 * norm i + 3 * norm j)) ?F"
       proof eventually_elim
-        case elim
+        case (elim u)
         hence ijsub: "(\<lambda>t. ?ij t u) ` {0..1} \<subseteq> G" and isub: "(\<lambda>t. ?i t u) ` {0..1} \<subseteq> G" by auto
         note has_derivative_subset[OF _ ijsub, derivative_intros]
         note has_derivative_subset[OF _ isub, derivative_intros]
@@ -421,7 +421,7 @@ proof -
     have "eventually (\<lambda>u. norm ((u * u) *\<^sub>R f'' a i j - (u * u) *\<^sub>R f'' a j i)
          \<le> u * u * e * (5 * norm j + 5 * norm i)) ?F"
     proof eventually_elim
-      case elim
+      case (elim u)
       have "norm ((u * u) *\<^sub>R f'' a i j - (u * u) *\<^sub>R f'' a j i) =
         norm (f (a + u *\<^sub>R j + u *\<^sub>R i) - f (a + u *\<^sub>R j) -
          (f (a + u *\<^sub>R i) - f a) - (u * u) *\<^sub>R f'' a j i

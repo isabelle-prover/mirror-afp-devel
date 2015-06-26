@@ -507,7 +507,8 @@ proof -
     show "AE \<omega> in \<PP>. ?V \<omega> \<longleftrightarrow> ((Init`I \<cdot> ?U) or (Init`(I \<inter> L) \<cdot> ?L)) \<omega>"
       using AE_T_enabled AE_visit
     proof eventually_elim
-      case elim then show ?case
+      case (elim \<omega>)
+      then show ?case
         using before_C_imp_hit_C[of \<omega> "L"]  before_C[of \<omega> "L"] I L
         by (auto simp: visit_def HLD_iff Int_absorb2)
     qed
