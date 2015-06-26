@@ -982,8 +982,7 @@ theorem framing:
    apply(simp add: invalid_def bot_option_def)+
  by blast
  qed qed
- apply_end(simp add: OclSelf_at_post_def OclSelf_at_pre_def OclValid_def StrongEq_def true_def)+
-qed
+qed (simp add: OclSelf_at_post_def OclSelf_at_pre_def OclValid_def StrongEq_def true_def)+
 
 
 text{* As corollary, the framing property can be expressed with only the strong equality

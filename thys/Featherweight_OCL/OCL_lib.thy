@@ -181,12 +181,11 @@ by(rule ext, simp add: OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^
 lemma OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_zero1[simp,code_unfold] :
 "(x `+ \<zero>) = (if \<upsilon> x and not (\<delta> x) then invalid else x endif)"
  proof (rule ext, rename_tac \<tau>, case_tac "(\<upsilon> x and not (\<delta> x)) \<tau> = true \<tau>")
-  fix \<tau> show "(\<upsilon> x and not (\<delta> x)) \<tau> = true \<tau> \<Longrightarrow> 
+  fix \<tau>
+  show "(\<upsilon> x and not (\<delta> x)) \<tau> = true \<tau> \<Longrightarrow> 
               (x `+ \<zero>) \<tau> = (if \<upsilon> x and not (\<delta> x) then invalid else x endif) \<tau>"
    apply(subst OclIf_true', simp add: OclValid_def)
   by (metis OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_def OclNot_defargs OclValid_def foundation5 foundation9)
-  apply_end assumption
- next fix \<tau>
   have A: "\<And>\<tau>. (\<tau> \<Turnstile> not (\<upsilon> x and not (\<delta> x))) = (x \<tau> = invalid \<tau> \<or> \<tau> \<Turnstile> \<delta> x)"
   by (metis OclNot_not OclOr_def defined5 defined6 defined_not_I foundation11 foundation18'
             foundation6 foundation7 foundation9 invalid_def)
@@ -194,15 +193,15 @@ lemma OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_zero1[simp,
    apply(cases "x \<tau>", metis bot_option_def foundation17)
    apply(rename_tac x', case_tac x', metis bot_option_def foundation16 null_option_def)
   by(simp)
-  show "\<tau> \<Turnstile> not (\<upsilon> x and not (\<delta> x)) \<Longrightarrow> 
-              (x `+ \<zero>) \<tau> = (if \<upsilon> x and not (\<delta> x) then invalid else x endif) \<tau>"
+  show "(x `+ \<zero>) \<tau> = (if \<upsilon> x and not (\<delta> x) then invalid else x endif) \<tau>"
+    when "\<tau> \<Turnstile> not (\<upsilon> x and not (\<delta> x))"
+   apply (insert that)
    apply(subst OclIf_false', simp, simp add: A, auto simp: OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_def OclInt0_def)
      (* *)
      apply (metis OclValid_def foundation19 foundation20)
     apply(simp add: B)
   by(simp add: OclValid_def)
-  apply_end(metis OclValid_def defined5 defined6 defined_and_I defined_not_I foundation9)
-qed
+qed (metis OclValid_def defined5 defined6 defined_and_I defined_not_I foundation9)
 
 lemma OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_zero2[simp,code_unfold] : 
 "(\<zero> `+ x) = (if \<upsilon> x and not (\<delta> x) then invalid else x endif)"
@@ -2841,8 +2840,7 @@ proof -
    apply(erule_tac x = x in ballE)+
    by(rule disjE4[OF destruct_ocl[of "P (\<lambda>\<tau>. x) \<tau>"]],
       (simp add: true_def false_def null_fun_def null_option_def bot_fun_def bot_option_def)+)
-  apply_end(simp add: assms[simplified OclValid_def true_def])+
- qed
+ qed (simp add: assms[simplified OclValid_def true_def])+
 qed
 
 lemma OclForall_includes :
@@ -2920,8 +2918,7 @@ proof -
        apply(simp_all add: true_def false_def OclAnd_def
                            null_fun_def null_option_def bot_fun_def bot_option_def)
    by (metis (lifting) option.distinct(1))+
-  apply_end(simp add: OclValid_def)+
- qed
+ qed (simp add: OclValid_def)+
 qed
 
 lemma OclForall_cong:

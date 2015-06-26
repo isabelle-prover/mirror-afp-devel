@@ -399,49 +399,48 @@ text {* Next we show that multirelations form c-lattices (Proposition 7.3) and p
 
 interpretation mrel_c_lattice: c_lattice "1\<^sub>\<sigma>" "op \<cdot>" "1\<^sub>\<pi>" "op \<parallel>" "op \<union>" "op \<subseteq>" "op \<subset>" "{}" "U" "op \<inter>" "NC"
 proof
-  show "\<And>x. x \<cdot> 1\<^sub>\<pi> \<union> x \<cdot> NC = x \<cdot> U"
+  fix x y z :: "('b \<times> 'b set) set"
+  show "x \<cdot> 1\<^sub>\<pi> \<union> x \<cdot> NC = x \<cdot> U"
     apply (rule set_eqI) 
     apply (clarsimp simp:  mr_simp)
     using UN_constant all_not_in_conv by metis
-  show "\<And>x. 1\<^sub>\<pi> \<inter> (x \<union> NC) = x \<cdot> {}"
+  show "1\<^sub>\<pi> \<inter> (x \<union> NC) = x \<cdot> {}"
     by (auto simp: mr_simp)
-  show "\<And>x y z. x \<cdot> (y \<parallel> z) \<subseteq> x \<cdot> y \<parallel> (x \<cdot> z)"
+  show "x \<cdot> (y \<parallel> z) \<subseteq> x \<cdot> y \<parallel> (x \<cdot> z)"
     by (rule cl3)
-  show "\<And>z x y. z \<parallel> z \<subseteq> z \<Longrightarrow> x \<parallel> y \<cdot> z = x \<cdot> z \<parallel> (y \<cdot> z)"
+  show "z \<parallel> z \<subseteq> z \<Longrightarrow> x \<parallel> y \<cdot> z = x \<cdot> z \<parallel> (y \<cdot> z)"
     by (metis cl4 seq_conc_subdistr subset_antisym)
-  show "\<And>x y z. x \<cdot> (y \<cdot> (z \<cdot> {})) = x \<cdot> y \<cdot> (z \<cdot> {})"
+  show "x \<cdot> (y \<cdot> (z \<cdot> {})) = x \<cdot> y \<cdot> (z \<cdot> {})"
     by (metis cl5)
-  show "\<And>x z. x \<cdot> {} \<cdot> z = x \<cdot> {}"
+  show "x \<cdot> {} \<cdot> z = x \<cdot> {}"
     by (clarsimp simp: mr_simp)
   show "1\<^sub>\<sigma> \<parallel> 1\<^sub>\<sigma> = 1\<^sub>\<sigma>"
     by (auto simp: mr_simp)
-  show "\<And>x y. x \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> \<cdot> y = x \<cdot> 1\<^sub>\<pi> \<parallel> y"
+  show "x \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> \<cdot> y = x \<cdot> 1\<^sub>\<pi> \<parallel> y"
     by (metis cl8_var d_def_expl)
-  show "\<And>x. x \<inter> 1\<^sub>\<sigma> \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> = x \<inter> 1\<^sub>\<sigma>"
+  show "x \<inter> 1\<^sub>\<sigma> \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> = x \<inter> 1\<^sub>\<sigma>"
     by (auto simp: mr_simp)
-  show "\<And>x. x \<inter> NC \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> = 1\<^sub>\<sigma> \<inter> (x \<inter> NC \<cdot> NC)"
+  show "x \<inter> NC \<cdot> 1\<^sub>\<pi> \<parallel> 1\<^sub>\<sigma> = 1\<^sub>\<sigma> \<inter> (x \<inter> NC \<cdot> NC)"
     by (metis Int_Diff cl10_var d_def_expl)
-  show "\<And>z x y. z \<parallel> z \<subseteq> z \<Longrightarrow> z \<parallel> z \<subseteq> z"
-    by meson
-  show "\<And>x. x \<inter> NC \<cdot> 1\<^sub>\<pi> \<parallel> NC = x \<inter> NC \<cdot> NC"
+  show "x \<inter> NC \<cdot> 1\<^sub>\<pi> \<parallel> NC = x \<inter> NC \<cdot> NC"
     apply (rule set_eqI)
     apply (clarsimp simp: d_def U_def p_id_def p_prod_def s_prod_im)
     apply default
     apply (metis (no_types, lifting) UN_extend_simps(2) Un_empty)
-proof -
-  fix x :: "('b \<times> 'b set) set" and a :: 'b and b :: "'b set"
-  assume a1: "\<exists>B. (a, B) \<in> x \<and> B \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>B. f b \<noteq> {}) \<and> b = (\<Union>x\<in>B. f x))"
-  { fix bb :: "'b set \<Rightarrow> 'b set \<Rightarrow> 'b set \<Rightarrow> ('b \<Rightarrow> 'b set) \<Rightarrow> 'b"
-    obtain BB :: "'b set" and BBa :: "'b \<Rightarrow> 'b set" where
-      ff1: "(a, BB) \<in> x \<and> {} \<noteq> BB \<and> (\<forall>b. b \<notin> BB \<or> {} \<noteq> BBa b) \<and> UNION BB BBa = b"
-      by (metis (full_types) a1)
-    hence "\<forall>B. (\<Union>b\<in>BB. (B\<Colon>'b set)) = B"
-      by force
-    hence "\<exists>B Ba. B \<union> Ba = b \<and> (\<exists>Bb. (a, Bb) \<in> x \<and> {} \<noteq> Bb \<and> (\<exists>f. (bb B Ba Bb f \<notin> Bb \<or> {} = f (bb B Ba Bb f)) \<and> UNION Bb f = B)) \<and> {} \<noteq> Ba"
-      by (metis ff1 SUP_bot_conv(2) sup_bot.left_neutral) }
-  thus "\<exists>B Ba. b = B \<union> Ba \<and> (\<exists>Ba. (a, Ba) \<in> x \<and> Ba \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>Ba. f b = {}) \<and> B = (\<Union>b\<in>Ba. f b))) \<and> Ba \<noteq> {}"
-    by metis
-qed
+  proof -
+    fix a :: 'b and b :: "'b set"
+    assume a1: "\<exists>B. (a, B) \<in> x \<and> B \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>B. f b \<noteq> {}) \<and> b = (\<Union>x\<in>B. f x))"
+    { fix bb :: "'b set \<Rightarrow> 'b set \<Rightarrow> 'b set \<Rightarrow> ('b \<Rightarrow> 'b set) \<Rightarrow> 'b"
+      obtain BB :: "'b set" and BBa :: "'b \<Rightarrow> 'b set" where
+        ff1: "(a, BB) \<in> x \<and> {} \<noteq> BB \<and> (\<forall>b. b \<notin> BB \<or> {} \<noteq> BBa b) \<and> UNION BB BBa = b"
+        by (metis (full_types) a1)
+      hence "\<forall>B. (\<Union>b\<in>BB. (B\<Colon>'b set)) = B"
+        by force
+      hence "\<exists>B Ba. B \<union> Ba = b \<and> (\<exists>Bb. (a, Bb) \<in> x \<and> {} \<noteq> Bb \<and> (\<exists>f. (bb B Ba Bb f \<notin> Bb \<or> {} = f (bb B Ba Bb f)) \<and> UNION Bb f = B)) \<and> {} \<noteq> Ba"
+        by (metis ff1 SUP_bot_conv(2) sup_bot.left_neutral) }
+    thus "\<exists>B Ba. b = B \<union> Ba \<and> (\<exists>Ba. (a, Ba) \<in> x \<and> Ba \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>Ba. f b = {}) \<and> B = (\<Union>b\<in>Ba. f b))) \<and> Ba \<noteq> {}"
+      by metis
+  qed
 qed
 
 text {* The following facts from Lemma 2.2 remain to be shown. *}

@@ -101,8 +101,8 @@ lemma Sup_mono:
   assumes le: "x \<sqsubseteq> y" and x: "x \<in> Y" and y: "y \<in> Y"
   shows "\<Squnion>(f x ` Y) \<le> \<Squnion>(f y ` Y)" (is "_ \<le> ?rhs")
 proof(rule ccpo_Sup_least)
-  from chain show chain': "\<And>x. x \<in> Y \<Longrightarrow> Complete_Partial_Order.chain op \<le> (f x ` Y)"
-    by(rule chain_imageI)(auto dest: mono2)
+  from chain show chain': "Complete_Partial_Order.chain op \<le> (f x ` Y)" when "x \<in> Y" for x
+    by(rule chain_imageI) (insert that, auto dest: mono2)
 
   fix x'
   assume "x' \<in> f x ` Y"

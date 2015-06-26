@@ -38,23 +38,24 @@ definition
 definition
   less_eq_I_def:  "(i::I) \<le> (j::I) \<equiv> i = j \<or> i < j"
 
-instance proof
-fix x y z :: I
+instance
+proof
+  fix x y z :: I
   assume "x < y" and "y < z" then  show  "x < z"
     apply (simp add: less_I_def)
     by auto
-  next
-fix x y :: I
+next
+  fix x y :: I
   show  "x \<le> y <-> x = y \<or> x < y"
     by (simp add: less_eq_I_def)
-  next
-fix P fix a::I
-  show " (\<forall> x. (\<forall> y. y < x \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
+next
+  fix P fix a::I
+  show "P a" when "\<forall>x. (\<forall> y. y < x \<longrightarrow> P y) \<longrightarrow> P x"
+    apply (insert that)
     apply (case_tac "P final")
     apply (case_tac "P loop")
     apply (simp_all add: less_I_def)
     by blast
-next
 qed (simp)
 
 end

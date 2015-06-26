@@ -476,9 +476,9 @@ lemma ext_cont_solution_fixed_point:
   shows "P (ext_cont x t0 t1) = ext_cont x t0 t1"
   unfolding P_def
 proof (rule ext_cont_cong)
-  show "\<And>t. t \<in> {t0..t1} \<Longrightarrow> P_inner (Rep_bcontfun (ext_cont x t0 t1)) t = x t"
+  show "P_inner (Rep_bcontfun (ext_cont x t0 t1)) t = x t" when "t \<in> {t0..t1}" for t
     unfolding P_inner_def
-    using solution_fixed_point solution_continuous_on assms is_solutionD
+    using solution_fixed_point solution_continuous_on assms is_solutionD that
     by (subst integral_spike[OF negligible_empty])
        (auto simp: interval P_inner_def integral_spike[OF negligible_empty])
 qed (insert iv_defined solution_continuous_on assms is_solutionD,
