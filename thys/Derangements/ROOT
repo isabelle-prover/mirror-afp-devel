@@ -1,0 +1,11 @@
+chapter AFP
+
+session Derangements (AFP) = HOL +
+  options [timeout=600]
+  theories [document = false]
+    "~~/src/HOL/Decision_Procs/Approximation"
+    "~~/src/HOL/Library/Permutations"
+  theories
+    Derangements
+  document_files
+    "root.tex"
