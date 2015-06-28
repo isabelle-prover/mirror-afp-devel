@@ -235,14 +235,16 @@ proof (induction t)
         case False with MKT 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps simp: height_mkt_bal_l2)
       next
         case True 
-        then have "height (mkt_bal_l n (AVL.insert x l) r) = height r + 2 \<or> 
-              height (mkt_bal_l n (AVL.insert x l) r) = height r + 3" 
-          using MKT 2 by (intro height_mkt_bal_l) simp_all
-        then show ?thesis 
-        proof (rule disjE)
-          case goal1 with 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps)
+        then consider (a) "height (mkt_bal_l n (AVL.insert x l) r) = height r + 2"
+          | (b) "height (mkt_bal_l n (AVL.insert x l) r) = height r + 3" 
+          using MKT 2 by (atomize_elim, intro height_mkt_bal_l) simp_all
+        then show ?thesis
+        proof cases
+          case a
+          with 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps)
         next
-          case goal2 with True 1 MKT(2) `x < n` show ?thesis  by (simp del: mkt_bal_l.simps) arith
+          case b
+          with True 1 MKT(2) `x < n` show ?thesis by (simp del: mkt_bal_l.simps) arith
         qed
       qed
     next
@@ -252,14 +254,16 @@ proof (induction t)
         case False with MKT 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps simp: height_mkt_bal_r2)
       next
         case True 
-        then have "height (mkt_bal_r n l (AVL.insert x r)) = height l + 2 \<or> 
-              height (mkt_bal_r n l (AVL.insert x r)) = height l + 3" 
-          using MKT 2 by (intro height_mkt_bal_r) simp_all
+        then consider (a) "height (mkt_bal_r n l (AVL.insert x r)) = height l + 2"
+          | (b) "height (mkt_bal_r n l (AVL.insert x r)) = height l + 3" 
+          using MKT 2 by (atomize_elim, intro height_mkt_bal_r) simp_all
         then show ?thesis 
-        proof (rule disjE)
-          case goal1 with 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps)
+        proof cases
+          case a
+          with 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps)
         next
-          case goal2 with True 1 MKT(4) `\<not>x < n` show ?thesis by (simp del: mkt_bal_r.simps) arith
+          case b
+          with True 1 MKT(4) `\<not>x < n` show ?thesis by (simp del: mkt_bal_r.simps) arith
         qed
       qed
     qed
@@ -390,14 +394,16 @@ proof (induct t)
         case False with MKT 1 `x < n` show ?thesis by auto
       next
         case True 
-        then have "height (mkt_bal_r n (delete x l) r) = height (delete x l) + 2 \<or>
-              height (mkt_bal_r n (delete x l) r) = height (delete x l) + 3" 
-              using MKT 2 by (intro height_mkt_bal_r) auto
+        then consider (a) "height (mkt_bal_r n (delete x l) r) = height (delete x l) + 2"
+          | (b) "height (mkt_bal_r n (delete x l) r) = height (delete x l) + 3"
+          using MKT 2 by (atomize_elim, intro height_mkt_bal_r) auto
         then show ?thesis 
-        proof(rule disjE)
-          case goal1 with `x < n` MKT 2 show ?thesis by auto
+        proof cases
+          case a
+          with `x < n` MKT 2 show ?thesis by auto
         next
-          case goal2 with `x < n` MKT 2 show ?thesis by auto
+          case b
+          with `x < n` MKT 2 show ?thesis by auto
         qed
       qed
     next
@@ -407,14 +413,16 @@ proof (induct t)
         case False with MKT 1 `\<not>x < n` `x \<noteq> n` show ?thesis by auto
       next
         case True 
-        then have "height (mkt_bal_l n l (delete x r)) = height (delete x r) + 2 \<or>
-              height (mkt_bal_l n l (delete x r)) = height (delete x r) + 3" 
-              using MKT 2 by (intro height_mkt_bal_l) auto
+        then consider (a) "height (mkt_bal_l n l (delete x r)) = height (delete x r) + 2"
+          | (b) "height (mkt_bal_l n l (delete x r)) = height (delete x r) + 3" 
+          using MKT 2 by (atomize_elim, intro height_mkt_bal_l) auto
         then show ?thesis 
-        proof(rule disjE)
-          case goal1 with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+        proof cases
+          case a
+          with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
         next
-          case goal2 with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+          case b
+          with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
         qed
       qed
     qed
@@ -422,6 +430,7 @@ proof (induct t)
 qed simp_all
 
 lemmas avl_delete = avl_delete_aux(1)
+
 
 subsubsection {* Correctness of insertion *}
 
