@@ -174,10 +174,16 @@ lemma rank_link: "rank t = rank t' \<Longrightarrow> rank (link t t') = rank t +
 lemma rank_skew_rank_invar: "rank_skew_invar (t # bq) \<Longrightarrow> rank_invar bq" 
   by (cases bq) simp_all
 
-lemma rank_invar_rank_skew: "rank_invar q \<Longrightarrow> rank_skew_invar q" 
-proof (cases q, simp)
-  case goal1 thus ?case
-    by (cases "list") simp_all
+lemma rank_invar_rank_skew:
+  assumes "rank_invar q"
+  shows "rank_skew_invar q" 
+proof (cases q)
+  case Nil
+  then show ?thesis by simp
+next
+  case (Cons _ list)
+  with assms show ?thesis
+    by (cases list) simp_all
 qed
 
 lemma rank_invar_cons_up: 
@@ -218,32 +224,37 @@ lemma tail_invar_cons_down:
 lemma tail_invar_app_single: 
   "\<lbrakk>tail_invar bq; \<forall>t \<in> set bq. rank t < rank t'; tree_invar t'\<rbrakk> 
     \<Longrightarrow> tail_invar (bq @ [t'])" 
-proof (induct bq, simp add: tail_invar_def)
-  case goal1
+proof (induct bq)
+  case Nil
+  then show ?case by (simp add: tail_invar_def)
+next
+  case (Cons a bq)
   from `tail_invar (a # bq)` have "tail_invar bq" 
     by (rule tail_invar_cons_down)
-  with goal1 have "tail_invar (bq @ [t'])" by simp
-  with goal1 show ?case 
-    by(cases bq) (simp_all add: tail_invar_cons_up tail_invar_def)
+  with Cons have "tail_invar (bq @ [t'])" by simp
+  with Cons show ?case 
+    by (cases bq) (simp_all add: tail_invar_cons_up tail_invar_def)
 qed
 
 lemma invar_app_single: 
   "\<lbrakk>invar bq; \<forall>t \<in> set bq. rank t < rank t'; tree_invar t'\<rbrakk> 
    \<Longrightarrow> invar (bq @ [t'])"
-proof (induct bq, (simp add: invar_def))
-  case goal1 thus ?case
-  proof(cases bq, (simp add: invar_def))
-    fix ta qa
-    assume ass: 
-      "\<lbrakk>invar bq; \<forall>t\<in>set bq. rank t < rank t'; tree_invar t'\<rbrakk> 
-      \<Longrightarrow> invar (bq @ [t'])"
-      "invar (a # bq)" "\<forall>t\<in>set (a # bq). rank t < rank t'" 
-      "tree_invar t'" "bq = ta # qa" 
-    from ass(2) have a1: "tail_invar bq" by (rule invar_tail_invar)
-    from ass(3) have a2: "\<forall>t\<in>set bq. rank t < rank t'" by simp
-    from a1 a2 ass(4) tail_invar_app_single[of "bq" "t'"] 
+proof (induct bq)
+  case Nil
+  then show ?case by (simp add: invar_def)
+next
+  case (Cons a bq)
+  show ?case
+  proof (cases bq)
+    case Nil
+    with Cons show ?thesis by (simp add: invar_def)
+  next
+    case Cons': (Cons ta qa)
+    from Cons(2) have a1: "tail_invar bq" by (rule invar_tail_invar)
+    from Cons(3) have a2: "\<forall>t\<in>set bq. rank t < rank t'" by simp
+    from a1 a2 Cons(4) tail_invar_app_single[of "bq" "t'"] 
     have "tail_invar (bq @ [t'])" by simp
-    with ass show "invar ((a # bq) @ [t'])"
+    with Cons Cons' show ?thesis
       by (simp_all add: tail_invar_cons_up_invar invar_def tail_invar_def)
   qed 
 qed
@@ -251,39 +262,43 @@ qed
 lemma invar_children: 
   assumes "tree_invar ((Node e a r ts)::(('e, 'a::linorder) SkewBinomialTree))"
   shows "queue_invar ts" using assms
-proof(induct r arbitrary: e a ts, simp)
-  case goal1
-  from goal1(2)obtain e1 a1 ts1 e2 a2 ts2 e' a' where  
+proof (induct r arbitrary: e a ts)
+  case 0
+  then show ?case by simp
+next
+  case (Suc r)
+  from Suc(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where  
     inv_t1: "tree_invar (Node e1 a1 r ts1)" and
     inv_t2: "tree_invar (Node e2 a2 r ts2)" and
     link_or_skew: 
     "((Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)
     \<or> (Node e a (Suc r) ts) 
        = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2))"
-    by (simp only: tree_invar.simps) blast 
-  from goal1(1)[OF inv_t1] inv_t2 
+    by (simp only: tree_invar.simps) blast
+  from Suc(1)[OF inv_t1] inv_t2 
   have case1: "queue_invar ((Node e2 a2 r ts2) # ts1)" by simp
-  from goal1(1)[OF inv_t2] inv_t1 
+  from Suc(1)[OF inv_t2] inv_t1 
   have case2: "queue_invar ((Node e1 a1 r ts1) # ts2)" by simp
   show ?case
-  proof (cases 
-      "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
-    case goal1
-    hence "ts = (if a1\<le>a2 
+  proof (cases "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
+    case True
+    hence "ts =
+     (if a1 \<le> a2 
       then (Node e2 a2 r ts2) # ts1 
       else (Node e1 a1 r ts1) # ts2)" by auto
-    with case1 case2 show ?case by simp
+    with case1 case2 show ?thesis by simp
   next
-    case goal2
+    case False
     with link_or_skew 
     have "Node e a (Suc r) ts = 
       skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)" by simp
-    hence "ts = (if a' \<le> a1 \<and> a' \<le> a2
+    hence "ts =
+     (if a' \<le> a1 \<and> a' \<le> a2
       then [(Node e1 a1 r ts1),(Node e2 a2 r ts2)]
       else (if a1 \<le> a2 
         then (Node e' a' 0 []) # (Node e2 a2 r ts2) # ts1
         else (Node e' a' 0 []) # (Node e1 a1 r ts1) # ts2))" by auto
-    with case1 case2 show ?case by simp
+    with case1 case2 show ?thesis by simp
   qed
 qed
 
@@ -296,22 +311,27 @@ fun heap_ordered :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> bool" whe
 
 text {* The invariant for trees implies heap order. *}
 lemma tree_invar_heap_ordered: 
-  "tree_invar (t ::('e, 'a::linorder) SkewBinomialTree) \<Longrightarrow> heap_ordered t"
-proof(cases t)
-  case (goal1 e a nat list) thus ?case
-  proof(induct nat arbitrary: t e a list, simp)
-    case goal1
-    from goal1(2,3) obtain t1 e1 a1 ts1 t2 e2 a2 ts2 e' a' where 
+  fixes t :: "('e, 'a::linorder) SkewBinomialTree"
+  assumes "tree_invar t"
+  shows "heap_ordered t"
+proof (cases t)
+  case (Node e a nat list)
+  with assms show ?thesis
+  proof (induct nat arbitrary: t e a list)
+    case 0
+    then show ?case by simp
+  next
+    case (Suc nat)
+    from Suc(2,3) obtain t1 e1 a1 ts1 t2 e2 a2 ts2 e' a' where 
       inv_t1: "tree_invar t1" and
       inv_t2: "tree_invar t2" and 
-      link_or_skew: "t = link t1 t2 \<or>  t = skewlink e' a' t1 t2" and 
+      link_or_skew: "t = link t1 t2 \<or> t = skewlink e' a' t1 t2" and 
       eq_t1[simp]: "t1 = (Node e1 a1 nat ts1)" and 
       eq_t2[simp]: "t2 = (Node e2 a2 nat ts2)" 
       by (simp only: tree_invar.simps) blast
-    note heap_t1 = goal1(1)[OF inv_t1 eq_t1]
-    note heap_t2 = goal1(1)[OF inv_t2 eq_t2]
-    from link_or_skew heap_t1 heap_t2
-    show ?case 
+    note heap_t1 = Suc(1)[OF inv_t1 eq_t1]
+    note heap_t2 = Suc(1)[OF inv_t2 eq_t2]
+    from link_or_skew heap_t1 heap_t2 show ?case
       by (cases "t = link t1 t2") auto
   qed
 qed
@@ -350,72 +370,80 @@ done
 lemma tree_rank_estimate_upper: 
   "tree_invar (Node e a r ts) \<Longrightarrow> 
    size (tree_to_multiset (Node e a r ts)) \<le> (2::nat)^(Suc r) - 1"
-apply(induct r arbitrary: e a ts, simp)
-proof -
-  case goal1
-  from goal1(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where link:
-    "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
-    (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
+proof (induct r arbitrary: e a ts)
+  case 0
+  then show ?case by simp
+next
+  case (Suc r)
+  from Suc(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where
+    link:
+      "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
+       (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
     and inv1: "tree_invar (Node e1 a1 r ts1)"
     and inv2: "tree_invar (Node e2 a2 r ts2)"
     by simp blast
-  note iv1 = goal1(1)[OF inv1]
-  note iv2 = goal1(1)[OF inv2]
+  note iv1 = Suc(1)[OF inv1]
+  note iv2 = Suc(1)[OF inv2]
   have "(2::nat)^r - 1 + (2::nat)^r - 1 \<le> (2::nat)^(Suc r) - 1" by simp
-  with link goal1 show ?case
-    apply (cases 
-      "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
+  with link Suc show ?case
+    apply (cases "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
     using iv1 iv2 apply (simp del: link.simps)
-    using iv1 iv2 by (simp del: skewlink.simps)
+    using iv1 iv2 apply (simp del: skewlink.simps)
+    done
 qed
 
 lemma tree_rank_estimate_lower: 
   "tree_invar (Node e a r ts) \<Longrightarrow> 
    size (tree_to_multiset (Node e a r ts)) \<ge> (2::nat)^r"
-apply(induct r arbitrary: e a ts, simp)
-proof -
-  case goal1
-  from goal1(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where link:
-    "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
-    (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
+proof (induct r arbitrary: e a ts)
+  case 0
+  then show ?case by simp
+next
+  case (Suc r)
+  from Suc(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where
+    link:
+      "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
+       (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
     and inv1: "tree_invar (Node e1 a1 r ts1)"
     and inv2: "tree_invar (Node e2 a2 r ts2)"
     by simp blast
-  note iv1 = goal1(1)[OF inv1]
-  note iv2 = goal1(1)[OF inv2]
+  note iv1 = Suc(1)[OF inv1]
+  note iv2 = Suc(1)[OF inv2]
   have "(2::nat)^r - 1 + (2::nat)^r - 1 \<le> (2::nat)^(Suc r) - 1" by simp
-  with link goal1 show ?case
-    apply (cases 
-      "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
+  with link Suc show ?case
+    apply (cases "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
     using iv1 iv2 apply (simp del: link.simps)
-    using iv1 iv2 by (simp del: skewlink.simps)
+    using iv1 iv2 apply (simp del: skewlink.simps)
+    done
 qed
 
 
 
 lemma tree_rank_height:
   "tree_invar (Node e a r ts) \<Longrightarrow> height_tree (Node e a r ts) = r"
-  apply(induct r arbitrary: e a ts, simp)
-  proof -
-    case goal1
-  from goal1(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where link:
-    "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
-    (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
+proof (induct r arbitrary: e a ts)
+  case 0
+  then show ?case by simp
+next
+  case (Suc r)
+  from Suc(2) obtain e1 a1 ts1 e2 a2 ts2 e' a' where
+    link:
+      "(Node e a (Suc r) ts) = link (Node e1 a1 r ts1) (Node e2 a2 r ts2) \<or>
+       (Node e a (Suc r) ts) = skewlink e' a' (Node e1 a1 r ts1) (Node e2 a2 r ts2)"
     and inv1: "tree_invar (Node e1 a1 r ts1)"
     and inv2: "tree_invar (Node e2 a2 r ts2)"
     by simp blast
-  note iv1 = goal1(1)[OF inv1]
-  note iv2 = goal1(1)[OF inv2]
-  from goal1(2) link show ?case
-    apply (cases 
-      "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
+  note iv1 = Suc(1)[OF inv1]
+  note iv2 = Suc(1)[OF inv2]
+  from Suc(2) link show ?case
+    apply (cases "Node e a (Suc r) ts = link (Node e1 a1 r ts1) (Node e2 a2 r ts2)")
     apply (cases "a1 \<le> a2")
     using iv1 iv2 apply simp 
     using iv1 iv2 apply simp
-    apply(cases "a' \<le> a1 \<and> a' \<le> a2")
-    apply(unfold height_tree.simps)
+    apply (cases "a' \<le> a1 \<and> a' \<le> a2")
+    apply (simp only: height_tree.simps)
     using iv1 iv2 apply simp 
-    apply(cases "a1 \<le> a2") 
+    apply (cases "a1 \<le> a2") 
     using iv1 iv2 
     apply (simp del: tree_invar.simps link.simps) 
     using iv1 iv2 
@@ -583,19 +611,23 @@ fun insert :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) SkewBinomial
 lemma ins_mset: 
   "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_to_multiset (ins t q) 
    = tree_to_multiset t + queue_to_multiset q"
-proof(induct q arbitrary: t, simp) 
-  case goal1 thus ?case
-    apply(cases "rank t < rank a")
-    apply(simp add: union_ac)
-    apply(cases "rank t = rank a") defer
-    apply(simp add: union_ac)
-  proof -
-    case goal1
-    from goal1(3) have inv_a: "tree_invar a" by simp
-    from goal1(3) have inv_q: "queue_invar q" by simp
-    note inv_link = link_tree_invar[OF goal1(2) inv_a goal1(5)]
-    note iv = goal1(1)[OF inv_link inv_q]
-    with link_mset[of t a] goal1(5) show ?case by (simp add: union_ac)
+proof (induct q arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q)
+  thus ?case
+    apply (cases "rank t < rank a")
+    apply (simp add: union_ac)
+    apply (cases "rank t = rank a") defer
+    apply (simp add: union_ac)
+  proof goals
+    case prems: 1
+    from prems(3) have inv_a: "tree_invar a" by simp
+    from prems(3) have inv_q: "queue_invar q" by simp
+    note inv_link = link_tree_invar[OF prems(2) inv_a prems(5)]
+    note iv = prems(1)[OF inv_link inv_q]
+    with link_mset[of t a] prems(5) show ?case by (simp add: union_ac)
   qed
 qed
 
@@ -607,37 +639,46 @@ lemma insert_mset: "queue_invar q \<Longrightarrow>
   done
 
 lemma ins_queue_invar: "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_invar (ins t q)"
-proof (induct q arbitrary: t, simp)
-  case goal1 
-  note iv = goal1(1)
-  from goal1(2,3) show ?case
-    apply(cases "rank t < rank a") apply simp
-    apply(cases "rank t = rank a") defer using iv[of "t"] apply simp
-  proof -
-    case goal1
-    from goal1(2) have inv_a: "tree_invar a" by simp
-    from goal1(2) have inv_q: "queue_invar q" by simp
-    note inv_link = link_tree_invar[OF goal1(1) inv_a goal1(4)]
-    from iv[OF inv_link inv_q] goal1(4) show ?case by simp
+proof (induct q arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q) 
+  note iv = Cons(1)
+  from Cons(2,3) show ?case
+    apply (cases "rank t < rank a")
+    apply simp
+    apply (cases "rank t = rank a")
+    defer
+    using iv[of "t"] apply simp
+  proof goals
+    case prems: 1
+    from prems(2) have inv_a: "tree_invar a" by simp
+    from prems(2) have inv_q: "queue_invar q" by simp
+    note inv_link = link_tree_invar[OF prems(1) inv_a prems(4)]
+    from iv[OF inv_link inv_q] prems(4) show ?case by simp
   qed
 qed
 
-lemma insert_queue_invar:
-  assumes "queue_invar q"
-  shows "queue_invar (insert e a q)" using assms
-  apply(induct q rule: insert.induct)
-  apply simp
-  apply simp
-proof -
-  case goal1 thus ?case
-    apply(cases "rank t = rank t'") defer
-    apply simp
-  proof -
-    case goal1
-    from goal1(1) have inv_t: "tree_invar t"  by simp
-    from goal1(1) have inv_t': "tree_invar t'"  by simp
-    from skewlink_tree_invar[OF inv_t inv_t' goal1(2), of e a] goal1(1)
-    show ?case by simp
+lemma insert_queue_invar: "queue_invar q \<Longrightarrow> queue_invar (insert e a q)"
+proof (induct q rule: insert.induct)
+  case 1
+  then show ?case by simp
+next
+  case 2
+  then show ?case by simp
+next
+  case (3 e a t t' bq)
+  show ?case
+  proof (cases "rank t = rank t'")
+    case False
+    with 3 show ?thesis by simp
+  next
+    case True
+    from 3 have inv_t: "tree_invar t" by simp
+    from 3 have inv_t': "tree_invar t'" by simp
+    from 3 skewlink_tree_invar[OF inv_t inv_t' True, of e a] True
+    show ?thesis by simp
   qed
 qed
 
@@ -645,15 +686,14 @@ lemma rank_ins2:
   "rank_invar bq \<Longrightarrow> 
     rank t \<le> rank (hd (ins t bq)) 
     \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])"
-  apply(induct bq arbitrary: t)
-  apply(auto)
-proof -
-  case goal1
+  apply (induct bq arbitrary: t)
+  apply auto
+proof goals
+  case prems: (1 a bq t)
   hence r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
-
-  from goal1 r and goal1(1)[of "(link t a)"] show ?case
-    apply(cases bq)
-    apply(auto)
+  with prems and prems(1)[of "(link t a)"] show ?case
+    apply (cases bq)
+    apply auto
     done
 qed
 
@@ -668,18 +708,20 @@ proof (cases q, simp)
     thus "rank_skew_invar (insert e a q)"
       apply(cases "rank t = rank t'") defer 
       apply (auto intro: gr0I)[1]
-    proof (simp del: skewlink.simps)
-      case goal1
-      from rank_invar_cons_down[of "t'" "q'"] goal1 have "rank_invar q'" by simp
-      with goal1 show ?case
-      proof (cases "q''", simp)
-        fix t'' q'''
-        assume ass: "rank_invar (t' # q'')" "q = t # t' # q''" "q' = t' # q''" 
-          "rank t = rank t'" "rank_invar q'" "q'' = t'' # q'''"
-        hence "rank t' < rank t''" by simp
-        with ass have "rank (skewlink e a t t') \<le> rank t''" by simp
-        with ass rank_skew_cons_up[of "t''" "q'''" "skewlink e a t t'"] 
-        show ?case by simp
+      apply (simp del: skewlink.simps)
+    proof goals
+      case prems: 1
+      with rank_invar_cons_down[of "t'" "q'"] have "rank_invar q'" by simp
+      show ?case
+      proof (cases q'')
+        case Nil
+        then show ?thesis by simp
+      next
+        case (Cons t'' q''')
+        with prems have "rank t' < rank t''" by simp
+        with prems have "rank (skewlink e a t t') \<le> rank t''" by simp
+        with prems Cons rank_skew_cons_up[of "t''" "q'''" "skewlink e a t t'"] 
+        show ?thesis by simp
       qed 
     qed 
   qed 
@@ -731,204 +773,230 @@ lemma invar_uniqify: "queue_invar q \<Longrightarrow> queue_invar (uniqify q)"
   apply(auto simp add: ins_queue_invar)
 done
 
-lemma invar_meldUniq: 
-  "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> queue_invar (meldUniq q q')"
-proof (induct q q' rule: meldUniq.induct, simp, simp)
-  case goal1 thus ?case
-  proof (cases "rank t1 < rank t2")
-    case goal1
-    from goal1(4) have inv_bq1: "queue_invar bq1" by simp
-    from goal1(4) have inv_t1: "tree_invar t1" by simp
-    from goal1(1)[OF goal1(6) inv_bq1 goal1(5)] inv_t1 goal1(6)
-    show ?case by simp
+lemma invar_meldUniq: "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> queue_invar (meldUniq q q')"
+proof (induct q q' rule: meldUniq.induct)
+  case 1
+  then show ?case by simp
+next
+  case 2
+  then show ?case by simp
+next
+  case (3 t1 bq1 t2 bq2)
+  consider (lt) "rank t1 < rank t2" | (gt) "rank t1 > rank t2" | (eq) "rank t1 = rank t2"
+    by atomize_elim auto
+  then show ?case
+  proof cases
+    case t1t2: lt
+    from 3(4) have inv_bq1: "queue_invar bq1" by simp
+    from 3(4) have inv_t1: "tree_invar t1" by simp
+    from 3(1)[OF t1t2 inv_bq1 3(5)] inv_t1 t1t2
+    show ?thesis by simp
   next
-    case goal2 thus ?case
-    proof(cases "rank t2 < rank t1")
-      case goal1
-      from goal1(5) have inv_bq2: "queue_invar bq2" by simp
-      from goal1(5) have inv_t2: "tree_invar t2" by simp
-      from goal1(2)[OF goal1(6) goal1(7) goal1(4) inv_bq2] inv_t2 goal1(6,7)
-      show ?case by simp
-    next
-      case goal2
-      from goal2(6,7) have eq: "rank t1 = rank t2" by simp
-      from goal2(4) have inv_bq1: "queue_invar bq1" by simp
-      from goal2(4) have inv_t1: "tree_invar t1" by simp
-      from goal2(5) have inv_bq2: "queue_invar bq2" by simp
-      from goal2(5) have inv_t2: "tree_invar t2" by simp
-      note inv_link = link_tree_invar[OF inv_t1 inv_t2 eq]
-      note inv_meld = goal2(3)[OF goal2(6,7) inv_bq1 inv_bq2]
-      from ins_queue_invar[OF inv_link inv_meld] goal2(6,7)
-      show ?case by simp
-    qed
+    case t1t2: gt
+    from 3(5) have inv_bq2: "queue_invar bq2" by simp
+    from 3(5) have inv_t2: "tree_invar t2" by simp
+    from t1t2 have "\<not> rank t1 < rank t2" by simp
+    from 3(2) [OF this t1t2 3(4) inv_bq2] inv_t2 t1t2
+    show ?thesis by simp
+  next
+    case t1t2: eq
+    from 3(4) have inv_bq1: "queue_invar bq1" by simp
+    from 3(4) have inv_t1: "tree_invar t1" by simp
+    from 3(5) have inv_bq2: "queue_invar bq2" by simp
+    from 3(5) have inv_t2: "tree_invar t2" by simp
+    note inv_link = link_tree_invar[OF inv_t1 inv_t2 t1t2]
+    from t1t2 have "\<not> rank t1 < rank t2" "\<not> rank t2 < rank t1" by auto
+    note inv_meld = 3(3)[OF this inv_bq1 inv_bq2]
+    from ins_queue_invar[OF inv_link inv_meld] t1t2
+    show ?thesis by simp
   qed
 qed
 
 
-lemma meld_queue_invar: 
-  "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> queue_invar (meld q q')"
+lemma meld_queue_invar:
+  assumes "queue_invar q"
+    and "queue_invar q'"
+  shows "queue_invar (meld q q')"
 proof -
-  case goal1
-  note inv_uniq_q = invar_uniqify[OF goal1(1)] 
-  note inv_uniq_q' = invar_uniqify[OF goal1(2)]
+  note inv_uniq_q = invar_uniqify[OF assms(1)] 
+  note inv_uniq_q' = invar_uniqify[OF assms(2)]
   note inv_meldUniq = invar_meldUniq[OF inv_uniq_q inv_uniq_q']
-  thus ?case by (simp add: meld_def)
+  thus ?thesis by (simp add: meld_def)
 qed
 
-lemma uniqify_mset: "queue_invar q \<Longrightarrow> 
-  queue_to_multiset q = queue_to_multiset (uniqify q)"
+lemma uniqify_mset: "queue_invar q \<Longrightarrow> queue_to_multiset q = queue_to_multiset (uniqify q)"
   apply (cases q) 
   apply simp
   apply (simp add: ins_mset)
-done
+  done
 
 lemma meldUniq_mset: "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> 
   queue_to_multiset (meldUniq q q') = 
   queue_to_multiset q + queue_to_multiset q'"
-proof (induct q q' rule: meldUniq.induct, simp, simp)
-  case goal1 thus ?case
-  proof (cases "rank t1 < rank t2")
-    case goal1
-    from goal1(4) have inv_bq1: "queue_invar bq1" by simp
-    from goal1(1)[OF goal1(6) inv_bq1 goal1(5)] goal1(6)
-    show ?case by (simp add: union_ac)
+proof (induct q q' rule: meldUniq.induct)
+  case 1
+  then show ?case by simp
+next
+  case 2
+  then show ?case by simp
+next
+  case (3 t1 bq1 t2 bq2)
+  consider (lt) "rank t1 < rank t2" | (gt) "rank t1 > rank t2" | (eq) "rank t1 = rank t2"
+    by atomize_elim auto
+  then show ?case
+  proof cases
+    case t1t2: lt
+    from 3(4) have inv_bq1: "queue_invar bq1" by simp
+    from 3(1)[OF t1t2 inv_bq1 3(5)] t1t2
+    show ?thesis by (simp add: union_ac)
   next
-    case goal2 thus ?case
-    proof (cases "rank t2 < rank t1")
-      case goal1
-      from goal1(5) have inv_bq2: "queue_invar bq2" by simp
-      from goal1(2)[OF goal1(6,7) goal1(4) inv_bq2] goal1(6,7)
-      show ?case by (simp add: union_ac)
-    next
-      case goal2
-      from goal2(6,7) have eq: "rank t1 = rank t2" by simp
-      from goal2(4) have inv_bq1: "queue_invar bq1" by simp
-      from goal2(4) have inv_t1: "tree_invar t1" by simp
-      from goal2(5) have inv_bq2: "queue_invar bq2" by simp
-      from goal2(5) have inv_t2: "tree_invar t2" by simp
-      note inv_link = link_tree_invar[OF inv_t1 inv_t2 eq]
-      note inv_meldUniq = invar_meldUniq[OF inv_bq1 inv_bq2]
-      note mset_meldUniq = goal2(3)[OF goal2(6,7) inv_bq1 inv_bq2]
-      note mset_link = link_mset[of t1 t2]
-      from ins_mset[OF inv_link inv_meldUniq] mset_meldUniq mset_link goal2(6,7)
-      show ?case by (simp add: union_ac)
-    qed
+    case t1t2: gt
+    from 3(5) have inv_bq2: "queue_invar bq2" by simp
+    from t1t2 have "\<not> rank t1 < rank t2" by auto
+    from 3(2)[OF this t1t2 3(4) inv_bq2] t1t2
+    show ?thesis by (simp add: union_ac)
+  next
+    case t1t2: eq
+    then have eq: "rank t1 = rank t2" by simp
+    from 3(4) have inv_bq1: "queue_invar bq1" by simp
+    from 3(4) have inv_t1: "tree_invar t1" by simp
+    from 3(5) have inv_bq2: "queue_invar bq2" by simp
+    from 3(5) have inv_t2: "tree_invar t2" by simp
+    note inv_link = link_tree_invar[OF inv_t1 inv_t2 eq]
+    note inv_meldUniq = invar_meldUniq[OF inv_bq1 inv_bq2]
+    from t1t2 have "\<not> rank t1 < rank t2" "\<not> rank t2 < rank t1" by auto
+    note mset_meldUniq = 3(3)[OF this inv_bq1 inv_bq2]
+    note mset_link = link_mset[of t1 t2]
+    from ins_mset[OF inv_link inv_meldUniq] mset_meldUniq mset_link eq
+    show ?thesis by (simp add: union_ac)
   qed
 qed
 
-lemma meld_mset: "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> 
-  queue_to_multiset (meld q q') = 
-  queue_to_multiset q + queue_to_multiset q'"
+lemma meld_mset:
+  assumes "queue_invar q"
+    and "queue_invar q'"
+  shows "queue_to_multiset (meld q q') = queue_to_multiset q + queue_to_multiset q'"
 proof -
-  case goal1
-  note inv_uniq_q = invar_uniqify[OF goal1(1)]
-  note inv_uniq_q' = invar_uniqify[OF goal1(2)]
-  note mset_uniq_q = uniqify_mset[OF goal1(1)]
-  note mset_uniq_q' = uniqify_mset[OF goal1(2)]
+  note inv_uniq_q = invar_uniqify[OF assms(1)]
+  note inv_uniq_q' = invar_uniqify[OF assms(2)]
+  note mset_uniq_q = uniqify_mset[OF assms(1)]
+  note mset_uniq_q' = uniqify_mset[OF assms(2)]
   note meldUniq_mset[OF inv_uniq_q inv_uniq_q']
-  with mset_uniq_q mset_uniq_q' show ?case by (simp add: meld_def)
+  with mset_uniq_q mset_uniq_q' show ?thesis by (simp add: meld_def)
 qed
 
-(* Ins operation satisfies rank invariant, see binomial queues*)
+text \<open>Ins operation satisfies rank invariant, see binomial queues\<close>
 lemma rank_ins: "rank_invar bq \<Longrightarrow> rank_invar (ins t bq)"
-  apply(induct bq arbitrary: t)
-  apply(simp)
-  apply(auto)
-proof -
-  case goal1
-  hence inv: "rank_invar (ins t bq)" by (cases bq, simp_all)
-  from goal1 have hd: "bq \<noteq> [] \<Longrightarrow> rank a < rank (hd bq)"  by (cases bq, auto)
-  from goal1 have "rank t \<le> rank (hd (ins t bq)) 
-                   \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])"
-    by (metis rank_ins2 rank_invar_cons_down)
-  with goal1 have "rank a < rank (hd (ins t bq)) 
-    \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])" by auto
-  with goal1 and inv and hd show ?case
-    apply(auto simp add: rank_invar_hd_cons)
-    done
+proof (induct bq arbitrary: t)
+  case Nil
+  then show ?case by simp
 next
-  case goal2
-  hence inv: "rank_invar bq" by (cases bq, simp_all)
-  with goal2 and goal2(1)[of "(link t a)"] show ?case by simp
+  case (Cons a bq)
+  then show ?case
+    apply auto
+  proof goals
+    case prems: 1
+    hence inv: "rank_invar (ins t bq)" by (cases bq) simp_all
+    from prems have hd: "bq \<noteq> [] \<Longrightarrow> rank a < rank (hd bq)"  by (cases bq) auto
+    from prems have "rank t \<le> rank (hd (ins t bq)) 
+                     \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])"
+      by (metis rank_ins2 rank_invar_cons_down)
+    with prems have "rank a < rank (hd (ins t bq)) 
+      \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])" by auto
+    with prems and inv and hd show ?case
+      by (auto simp add: rank_invar_hd_cons)
+  next
+    case prems: 2
+    hence inv: "rank_invar bq" by (cases bq) simp_all
+    with prems and prems(1)[of "(link t a)"] show ?case by simp
+  qed
 qed
      
-lemma rank_uniqify: "rank_skew_invar q \<Longrightarrow> rank_invar (uniqify q)" 
-  apply (cases q) apply simp
-proof -
-  case goal1
-  with rank_skew_rank_invar[of "a" "list"] rank_ins[of "list" "a"] 
-  show ?case by simp 
+lemma rank_uniqify:
+  assumes "rank_skew_invar q"
+  shows "rank_invar (uniqify q)"
+proof (cases q)
+  case Nil
+  then show ?thesis by simp
+next
+  case (Cons a list)
+  with rank_skew_rank_invar[of "a" "list"] rank_ins[of "list" "a"] assms
+  show ?thesis by simp 
 qed
 
-lemma rank_ins_min: 
-  "rank_invar bq \<Longrightarrow> rank (hd (ins t bq)) \<ge> min (rank t) (rank (hd bq))"
-  apply(induct bq arbitrary: t)
-  apply(auto)
-proof -
-  case goal1
-  hence inv: "rank_invar bq" by (cases bq, simp_all)
-  from goal1 have r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
-  with goal1 and inv and goal1(1)[of "(link t a)"] show ?case
-    apply(cases bq)
-    apply(auto)
-    done
+lemma rank_ins_min: "rank_invar bq \<Longrightarrow> rank (hd (ins t bq)) \<ge> min (rank t) (rank (hd bq))"
+proof (induct bq arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a bq)
+  then show ?case
+    apply auto
+  proof goals
+    case prems: 1
+    hence inv: "rank_invar bq" by (cases bq) simp_all
+    from prems have r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
+    with prems and inv and prems(1)[of "(link t a)"] show ?case
+      by (cases bq) auto
+  qed
 qed
 
-lemma rank_invar_not_empty_hd: 
-  "\<lbrakk>rank_invar (t # bq); bq \<noteq> []\<rbrakk> \<Longrightarrow> rank t < rank (hd bq)"
-  apply(induct bq arbitrary: t)
-  apply(auto)
-  done
+lemma rank_invar_not_empty_hd: "\<lbrakk>rank_invar (t # bq); bq \<noteq> []\<rbrakk> \<Longrightarrow> rank t < rank (hd bq)"
+  by (induct bq arbitrary: t) auto
 
 lemma rank_invar_meldUniq_strong: 
   "\<lbrakk>rank_invar bq1; rank_invar bq2\<rbrakk> \<Longrightarrow> 
     rank_invar (meldUniq bq1 bq2) 
     \<and> rank (hd (meldUniq bq1 bq2)) \<ge> min (rank (hd bq1)) (rank (hd bq2))"
-  apply(induct bq1 bq2 rule: meldUniq.induct)
-  apply(simp, simp)
-proof -
-  case goal1
-  from goal1 have inv1: "rank_invar bq1" by (cases bq1, simp_all)
-  from goal1 have inv2: "rank_invar bq2" by (cases bq2, simp_all)
+proof (induct bq1 bq2 rule: meldUniq.induct)
+  case 1
+  then show ?case by simp
+next
+  case 2
+  then show ?case by simp
+next
+  case (3 t1 bq1 t2 bq2)
+  from 3 have inv1: "rank_invar bq1" by (cases bq1) simp_all
+  from 3 have inv2: "rank_invar bq2" by (cases bq2) simp_all
   
-  from inv1 and inv2 and goal1 show ?case
-    apply(auto)
-  proof -
+  from inv1 and inv2 and 3 show ?case
+    apply auto
+  proof goals
     let ?t = "t2"
     let ?bq = "bq2"
     let ?meldUniq = "rank t2 < rank (hd (meldUniq (t1 # bq1) bq2))"
-    case goal1
+    case prems: 1
     hence "?bq \<noteq> [] \<Longrightarrow> rank ?t < rank (hd ?bq)" 
       by (simp add: rank_invar_not_empty_hd)
-    with goal1 have ne: "?bq \<noteq> [] \<Longrightarrow> ?meldUniq" by simp
-    from goal1 have "?bq = [] \<Longrightarrow> ?meldUniq" by simp
+    with prems have ne: "?bq \<noteq> [] \<Longrightarrow> ?meldUniq" by simp
+    from prems have "?bq = [] \<Longrightarrow> ?meldUniq" by simp
     with ne have "?meldUniq" by (cases "?bq = []")
-    with goal1 show ?case by (simp add: rank_invar_hd_cons)
+    with prems show ?case by (simp add: rank_invar_hd_cons)
   next -- analog
     let ?t = "t1"
     let ?bq = "bq1"
     let ?meldUniq = "rank t1 < rank (hd (meldUniq bq1 (t2 # bq2)))"
-    case goal2
+    case prems: 2
     hence "?bq \<noteq> [] \<Longrightarrow> rank ?t < rank (hd ?bq)" 
       by (simp add: rank_invar_not_empty_hd)
-    with goal2 have ne: "?bq \<noteq> [] \<Longrightarrow> ?meldUniq" by simp
-    from goal2 have "?bq = [] \<Longrightarrow> ?meldUniq" by simp
+    with prems have ne: "?bq \<noteq> [] \<Longrightarrow> ?meldUniq" by simp
+    from prems have "?bq = [] \<Longrightarrow> ?meldUniq" by simp
     with ne have "?meldUniq" by (cases "?bq = []")
-    with goal2 show ?case by (simp add: rank_invar_hd_cons)
+    with prems show ?case by (simp add: rank_invar_hd_cons)
   next
-    case goal3
+    case 3
     thus ?case by (simp add: rank_ins)
   next
-    case goal4 (* Ab hier wirds hässlich *)
-    from goal4 have r: "rank (link t1 t2) = rank t2 + 1" by (simp add: rank_link)
-    have m: "meldUniq bq1 [] = bq1" by (cases bq1, auto)
+    case prems: 4 (* Ab hier wirds hässlich *)
+    then have r: "rank (link t1 t2) = rank t2 + 1" by (simp add: rank_link)
+    have m: "meldUniq bq1 [] = bq1" by (cases bq1) auto
     
-    from inv1 and inv2 and goal4 have 
+    from inv1 and inv2 and prems have 
       mm: "min (rank (hd bq1)) (rank (hd bq2)) \<le> rank (hd (meldUniq bq1 bq2))" 
       by simp
     from `rank_invar (t1 # bq1)` have "bq1 \<noteq> [] \<Longrightarrow> rank t1 < rank (hd bq1)" 
       by (simp add: rank_invar_not_empty_hd)
-    with goal4 have r1: "bq1 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq1)" by simp
+    with prems have r1: "bq1 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq1)" by simp
     from `rank_invar (t2 # bq2)` have r2: "bq2 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq2)"
       by (simp add: rank_invar_not_empty_hd)
     
@@ -996,8 +1064,12 @@ definition findMin :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e \<
   "findMin bq = (let min = getMinTree bq in (val min, prio min))"
 
 lemma mintree_exists: "(bq \<noteq> []) = (getMinTree bq \<in> set bq)"
-proof (induct bq, simp)
-  case goal1 thus ?case by (cases bq, simp_all)
+proof (induct bq)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons _ bq)
+  then show ?case by (cases bq) simp_all
 qed
 
 lemma treehead_in_multiset: 
@@ -1012,45 +1084,36 @@ lemma getMinTree_cons:
   "prio (getMinTree (y # x # xs)) \<le> prio (getMinTree (x # xs))" 
   by (induct xs rule: getMinTree.induct) simp_all 
 
-lemma getMinTree_min_tree:
-  "t \<in> set bq  \<Longrightarrow> prio (getMinTree bq) \<le> prio t"
-  apply(induct bq arbitrary: t rule: getMinTree.induct) 
-  apply simp   
-  defer
-  apply simp
-proof -
-  case goal1 thus ?case
-    apply (cases "ta = t")
-    apply auto[1] 
-    apply (metis getMinTree_cons goal1(1) goal1(3) set_ConsD xt1(6))
-    done
-qed
+lemma getMinTree_min_tree: "t \<in> set bq  \<Longrightarrow> prio (getMinTree bq) \<le> prio t"
+  by (induct bq arbitrary: t rule: getMinTree.induct) (simp, fastforce, simp)
 
 lemma getMinTree_min_prio:
-  "\<lbrakk>queue_invar bq; y \<in> set_mset (queue_to_multiset bq)\<rbrakk>
-  \<Longrightarrow> prio (getMinTree bq) \<le> snd y"
+  assumes "queue_invar bq"
+    and "y \<in> set_mset (queue_to_multiset bq)"
+  shows "prio (getMinTree bq) \<le> snd y"
 proof -
-  case goal1
-  hence "bq \<noteq> []" by (cases bq) simp_all
-  with goal1 have "\<exists> t \<in> set bq. (y \<in> set_mset (tree_to_multiset t))"
-    apply(induct bq)
+  from assms have "bq \<noteq> []" by (cases bq) simp_all
+  with assms have "\<exists>t \<in> set bq. (y \<in> set_mset (tree_to_multiset t))"
+  proof (induct bq)
+    case Nil
+    then show ?case by simp
+  next
+    case (Cons a bq)
+    then show ?case
+    apply (cases "y \<in> set_mset (tree_to_multiset a)") 
     apply simp
-  proof -
-    case goal1 thus ?case
-      apply(cases "y \<in> set_mset (tree_to_multiset a)") 
-      apply simp
-      apply(cases bq)
-      apply simp_all
-      done
+    apply (cases bq)
+    apply simp_all
+    done
   qed
   from this obtain t where O: 
     "t \<in> set bq"
     "y \<in> set_mset ((tree_to_multiset t))" by blast
   obtain e a r ts where [simp]: "t = (Node e a r ts)" by (cases t) blast
-  from O goal1(1) have inv: "tree_invar t" by simp
+  from O assms(1) have inv: "tree_invar t" by simp
   from tree_invar_heap_ordered[OF inv] heap_ordered.simps[of e a r ts] O
   have "prio t \<le> snd y" by auto
-  with getMinTree_min_tree[OF O(1)] show ?case by simp
+  with getMinTree_min_tree[OF O(1)] show ?thesis by simp
 qed
 
 lemma findMin_mset:
@@ -1126,69 +1189,83 @@ lemma invar_rev[simp]: "queue_invar (rev q) \<longleftrightarrow> queue_invar q"
 lemma invar_remove1: "queue_invar q \<Longrightarrow> queue_invar (remove1 t q)" 
   by (unfold queue_invar_def) (auto)
 
-lemma mset_rev: 
-  "queue_to_multiset (rev q) = queue_to_multiset q"
-  by (induct q, auto simp add: union_ac)
+lemma mset_rev: "queue_to_multiset (rev q) = queue_to_multiset q"
+  by (induct q) (auto simp add: union_ac)
 
-lemma in_set_subset: "t \<in> set q \<Longrightarrow> 
-  tree_to_multiset t \<le># queue_to_multiset q"
-proof(induct q, simp)
-  case goal1 thus ?case
-  proof(cases "t = a", simp)
-    case goal1
-    hence t_in_q: "t \<in> set q" by simp
+lemma in_set_subset: "t \<in> set q \<Longrightarrow> tree_to_multiset t \<le># queue_to_multiset q"
+proof (induct q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q)
+  show ?case
+  proof (cases "t = a")
+    case True
+    then show ?thesis by simp
+  next
+    case False
+    with Cons have t_in_q: "t \<in> set q" by simp
     have "queue_to_multiset q \<le># queue_to_multiset (a # q)"
       by simp
-    from subset_mset.order_trans[OF goal1(1)[OF t_in_q] this] show ?case .
+    from subset_mset.order_trans[OF Cons(1)[OF t_in_q] this] show ?thesis .
   qed
 qed
 
 lemma mset_remove1: "t \<in> set q \<Longrightarrow> 
   queue_to_multiset (remove1 t q) = 
   queue_to_multiset q - tree_to_multiset t"
-proof (induct q, simp)
-  case goal1 thus ?case
-  proof (cases "t = a", simp add: union_ac)
-    case goal1
-    from goal1(2,3) have t_in_q: "t \<in> set q" by simp
-    note iv = goal1(1)[OF t_in_q]
+proof (induct q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q)
+  show ?case
+  proof (cases "t = a")
+    case True
+    then show ?thesis by (simp add: union_ac)
+  next
+    case False
+    with Cons(2) have t_in_q: "t \<in> set q" by simp
+    note iv = Cons(1)[OF t_in_q]
     note t_subset_q = in_set_subset[OF t_in_q]
     note assoc = 
       multiset_diff_union_assoc[OF t_subset_q, of "tree_to_multiset a"]
-    from iv goal1(3) assoc show ?case by (simp add: union_ac)
+    from iv False assoc show ?thesis by (simp add: union_ac)
   qed
 qed
 
-lemma invar_children': "tree_invar t \<Longrightarrow> queue_invar (children t)"
-proof(cases t)
-  case (goal1 e a nat list)
-  hence inv: "tree_invar (Node e a nat list)" by simp
-  from goal1 invar_children[OF inv] show ?case by simp
+lemma invar_children':
+  assumes "tree_invar t"
+  shows "queue_invar (children t)"
+proof (cases t)
+  case (Node e a nat list)
+  with assms have inv: "tree_invar (Node e a nat list)" by simp
+  from Node invar_children[OF inv] show ?thesis by simp
 qed
 
 lemma invar_filter: "queue_invar q \<Longrightarrow> queue_invar (filter f q)" 
   by (unfold queue_invar_def) simp
   
-lemma insertList_queue_invar: 
-  "queue_invar q \<Longrightarrow> queue_invar (insertList ts q)"
-  apply(induct ts arbitrary: q, simp)
-proof -
-  case goal1
-  note inv_insert = insert_queue_invar[OF goal1(2), of "val a" "prio a"]
-  from goal1(1)[OF inv_insert] show ?case by simp
+lemma insertList_queue_invar: "queue_invar q \<Longrightarrow> queue_invar (insertList ts q)"
+proof (induct ts arbitrary: q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q)
+  note inv_insert = insert_queue_invar[OF Cons(2), of "val a" "prio a"]
+  from Cons(1)[OF inv_insert] show ?case by simp
 qed
 
 lemma deleteMin_queue_invar: 
   "\<lbrakk>queue_invar q; queue_to_multiset q \<noteq> {#}\<rbrakk> \<Longrightarrow> 
   queue_invar (deleteMin q)"
-  apply(unfold deleteMin_def)
-  apply(unfold Let_def)
-proof -
-  case goal1
-  from goal1(2) have q_ne: "q \<noteq> []" by auto
-  with goal1(1) mintree_exists[of q]
+  unfolding deleteMin_def Let_def
+proof goals
+  case prems: 1
+  from prems(2) have q_ne: "q \<noteq> []" by auto
+  with prems(1) mintree_exists[of q]
   have inv_min: "tree_invar (getMinTree q)" by simp
-  note inv_rem = invar_remove1[OF goal1(1), of "getMinTree q"]
+  note inv_rem = invar_remove1[OF prems(1), of "getMinTree q"]
   note inv_children = invar_children'[OF inv_min]
   note inv_filter = invar_filter[OF inv_children, of "\<lambda>t. 0 < rank t"]
   note inv_rev = iffD2[OF invar_rev inv_filter]
@@ -1196,7 +1273,7 @@ proof -
   note inv_ins = 
     insertList_queue_invar[OF inv_meld, 
       of "[t\<leftarrow>children (getMinTree q). rank t = 0]"]
-  thus ?case by simp
+  then show ?case by simp
 qed
 
 lemma mset_children: "queue_to_multiset (children t) = 
@@ -1207,17 +1284,17 @@ lemma mset_insertList:
   "\<lbrakk>\<forall>t \<in> set ts. rank t = 0 \<and> children t = [] ; queue_invar q\<rbrakk> \<Longrightarrow> 
   queue_to_multiset (insertList ts q) = 
   queue_to_multiset ts + queue_to_multiset q"
-  apply(induct ts arbitrary: q) 
-  apply(simp)
-proof -
-  case goal1
-  from goal1(2) have ball_ts: "\<forall>t\<in>set ts. rank t = 0 \<and> children t = []" by simp
-  note inv_insert = insert_queue_invar[OF goal1(3), of "val a" "prio a"]
-  note iv = goal1(1)[OF ball_ts inv_insert]
-  from goal1(2) 
-  have mset_a: "tree_to_multiset a = {# (val a, prio a)#}"
+proof (induct ts arbitrary: q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a ts)
+  from Cons(2) have ball_ts: "\<forall>t\<in>set ts. rank t = 0 \<and> children t = []" by simp
+  note inv_insert = insert_queue_invar[OF Cons(3), of "val a" "prio a"]
+  note iv = Cons(1)[OF ball_ts inv_insert]
+  from Cons(2) have mset_a: "tree_to_multiset a = {# (val a, prio a)#}"
     by (cases a) simp
-  note insert_mset[OF goal1(3), of "val a" "prio a"]
+  note insert_mset[OF Cons(3), of "val a" "prio a"]
   with mset_a iv show ?case by (simp add: union_ac)
 qed
         
@@ -1226,16 +1303,16 @@ lemma mset_filter: "(queue_to_multiset [t\<leftarrow>q . rank t = 0]) +
   queue_to_multiset q"
   by (induct q) (auto simp add: union_ac)
 
-lemma deleteMin_mset: "\<lbrakk>queue_invar q; queue_to_multiset q \<noteq> {#}\<rbrakk> \<Longrightarrow> 
-  queue_to_multiset (deleteMin q) =
-  queue_to_multiset q - {# (findMin q) #}"
+lemma deleteMin_mset:
+  assumes "queue_invar q"
+    and "queue_to_multiset q \<noteq> {#}"
+  shows "queue_to_multiset (deleteMin q) = queue_to_multiset q - {# (findMin q) #}"
 proof -
-  case goal1
-  from goal1(2) have q_ne: "q \<noteq> []" by auto
+  from assms(2) have q_ne: "q \<noteq> []" by auto
   with mintree_exists[of q]
   have min_in_q: "getMinTree q \<in> set q" by simp
-  with goal1(1) have inv_min: "tree_invar (getMinTree q)" by simp
-  note inv_rem = invar_remove1[OF goal1(1), of "getMinTree q"]
+  with assms(1) have inv_min: "tree_invar (getMinTree q)" by simp
+  note inv_rem = invar_remove1[OF assms(1), of "getMinTree q"]
   note inv_children = invar_children'[OF inv_min]
   note inv_filter = invar_filter[OF inv_children, of "\<lambda>t. 0 < rank t"]
   note inv_rev = iffD2[OF invar_rev inv_filter]
@@ -1246,10 +1323,8 @@ proof -
   note mset_children = mset_children[of "getMinTree q"]
   thm mset_insertList[of "[t\<leftarrow>children (getMinTree q) .
              rank t = 0]"]
-  have "\<And>t. \<lbrakk>tree_invar t; rank t = 0\<rbrakk> \<Longrightarrow> children t = []"
-    proof -
-      case goal1 thus ?case by (cases t) simp
-    qed
+  have "\<lbrakk>tree_invar t; rank t = 0\<rbrakk> \<Longrightarrow> children t = []" for t
+    by (cases t) simp
   with inv_children 
   have ball_min: "\<forall>t\<in>set [t\<leftarrow>children (getMinTree q). rank t = 0]. 
     rank t = 0 \<and> children t = []" by (unfold queue_invar_def) auto
@@ -1264,7 +1339,7 @@ proof -
   from mset_insertList mset_meld mset_rev mset_rem mset_filter mset_children
     multiset_diff_union_assoc[OF head_subset_min, of "?Q - ?MT"]
     mset_le_multiset_union_diff_commute[OF min_subset_q, of "?MT"]
-  show ?case 
+  show ?thesis 
     by (auto simp add: deleteMin_def Let_def union_ac findMin_def)
 qed
 
@@ -1272,33 +1347,42 @@ lemma rank_insertList: "rank_skew_invar q \<Longrightarrow> rank_skew_invar (ins
   by (induct ts arbitrary: q) (simp_all add: insert_rank_invar) 
 
 lemma insertList_invar: "invar q \<Longrightarrow> invar (insertList ts q)"
-  apply (induct ts arbitrary: q) 
-  apply simp 
-  apply(unfold insertList.simps) 
-proof -
-  case goal1
-  from goal1(2) insert_rank_invar[of "q" "val a" "prio a"] have 
-    a1: "rank_skew_invar (insert (val a) (prio a) q)" 
-    by (simp add: invar_def)
-  from goal1(2) insert_queue_invar[of "q" "val a" "prio a"] have 
-    a2: "queue_invar (insert (val a) (prio a) q)" by (simp add: invar_def)
-  from a1 a2 have 
-    "invar (insert (val a) (prio a) q)" by (simp add: invar_def)
-  with goal1(1)[of "(insert (val a) (prio a) q)"] show ?case  .
+proof (induct ts arbitrary: q)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a q)
+  show ?case
+    apply (unfold insertList.simps)
+  proof goals
+    case 1
+    from Cons(2) insert_rank_invar[of "q" "val a" "prio a"]
+    have a1: "rank_skew_invar (insert (val a) (prio a) q)" 
+      by (simp add: invar_def)
+    from Cons(2) insert_queue_invar[of "q" "val a" "prio a"]
+    have a2: "queue_invar (insert (val a) (prio a) q)" by (simp add: invar_def)
+    from a1 a2 have "invar (insert (val a) (prio a) q)" by (simp add: invar_def)
+    with Cons(1)[of "(insert (val a) (prio a) q)"] show ?case .
+  qed
 qed
 
-lemma children_rank_less: 
-  "tree_invar t \<Longrightarrow> \<forall>t' \<in> set (children t). rank t' < rank t"
+lemma children_rank_less:
+  assumes "tree_invar t"
+  shows "\<forall>t' \<in> set (children t). rank t' < rank t"
 proof (cases t)
-  case (goal1 e a nat list) thus ?case
-  proof (induct nat arbitrary: t e a list, simp) 
-    case goal1
-    from goal1 obtain e1 a1 ts1 e2 a2 ts2 e' a' where 
+  case (Node e a nat list)
+  with assms show ?thesis
+  proof (induct nat arbitrary: t e a list) 
+    case 0
+    then show ?case by simp
+  next
+    case (Suc nat)
+    then obtain e1 a1 ts1 e2 a2 ts2 e' a' where 
       O: "tree_invar (Node e1 a1 nat ts1)"  "tree_invar (Node e2 a2 nat ts2)"
       "t = link (Node e1 a1 nat ts1) (Node e2 a2 nat ts2) 
        \<or> t = skewlink e' a' (Node e1 a1 nat ts1) (Node e2 a2 nat ts2)" 
       by (simp only: tree_invar.simps) blast
-    hence ch_id: 
+    hence ch_id:
       "children t = (if a1 \<le> a2 then (Node e2 a2 nat ts2)#ts1 
                      else (Node e1 a1 nat ts1)#ts2) \<or>
       children t = 
@@ -1306,48 +1390,51 @@ proof (cases t)
          else (if a1 \<le> a2 then (Node e' a' 0 []) # (Node e2 a2 nat ts2) # ts1
          else (Node e' a' 0 []) # (Node e1 a1 nat ts1) # ts2))" 
       by auto
-    from O goal1(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] 
+    from O Suc(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] 
     have  p1: "\<forall>t'\<in>set ((Node e2 a2 nat ts2) # ts1). rank t' < Suc nat" by auto
-    from O goal1(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"] 
+    from O Suc(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"] 
     have p2: "\<forall>t'\<in>set ((Node e1 a1 nat ts1) # ts2). rank t' < Suc nat" by auto
     from O have 
       p3: "\<forall>t' \<in> set [(Node e1 a1 nat ts1), (Node e2 a2 nat ts2)]. 
                  rank t' < Suc nat" by simp
-    from O goal1(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] 
+    from O Suc(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] 
     have 
       p4: "\<forall>t' \<in> set ((Node e' a' 0 []) # (Node e2 a2 nat ts2) # ts1). 
                  rank t' < Suc nat" by auto
-    from O goal1(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"] 
+    from O Suc(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"] 
     have p5: 
       "\<forall>t' \<in> set ((Node e' a' 0 []) # (Node e1 a1 nat ts1) # ts2). 
                  rank t' < Suc nat" by auto
-    from goal1(3) p1 p2 p3 p4 p5 ch_id show ?case 
+    from Suc(3) p1 p2 p3 p4 p5 ch_id show ?case 
       by(cases "children t = (if a1 \<le> a2 then Node e2 a2 nat ts2 # ts1 
                               else Node e1 a1 nat ts1 # ts2)") simp_all
   qed
 qed
 
-lemma strong_rev_children: 
-  "tree_invar t \<Longrightarrow> invar (rev [t \<leftarrow> children t. 0 < rank t])"
+lemma strong_rev_children:
+  assumes "tree_invar t"
+  shows "invar (rev [t \<leftarrow> children t. 0 < rank t])"
 proof (cases t)
-  case (goal1 e a nat list) thus ?case
-  proof (induct "nat" arbitrary: t e a list, simp add: invar_def)
-    case goal1 thus ?case
+  case (Node e a nat list)
+  with assms show ?thesis
+  proof (induct "nat" arbitrary: t e a list)
+    case 0
+    then show ?case by (simp add: invar_def)
+  next
+    case (Suc nat)
+    show ?case
     proof (cases "nat")
-      case goal1
-      from goal1 obtain e1 a1 e2 a2 e' a' where 
+      case 0
+      with Suc obtain e1 a1 e2 a2 e' a' where 
         O: "tree_invar (Node e1 a1 0 [])" "tree_invar (Node e2 a2 0 [])"
         "t = link (Node e1 a1 0 []) (Node e2 a2 0 []) 
         \<or> t = skewlink e' a' (Node e1 a1 0 []) (Node e2 a2 0 [])" 
         by (simp only: tree_invar.simps) blast
       hence "[t \<leftarrow> children t. 0 < rank t] = []" by auto
-      thus ?case by (simp add: invar_def)
+      then show ?thesis by (simp add: invar_def)
     next
-      fix n
-      assume ass: "\<And>t e a list. \<lbrakk>tree_invar t; t = Node e a nat list\<rbrakk> 
-        \<Longrightarrow> invar (rev [t\<leftarrow>children t . 0 < rank t])"
-        "tree_invar t" "t = Node e a (Suc nat) list" "nat = Suc n"
-      from goal1 obtain e1 a1 ts1 e2 a2 ts2 e' a' where 
+      case Suc': (Suc n)
+      from Suc obtain e1 a1 ts1 e2 a2 ts2 e' a' where 
         O: "tree_invar (Node e1 a1 nat ts1)" "tree_invar (Node e2 a2 nat ts2)"
         "t = link (Node e1 a1 nat ts1) (Node e2 a2 nat ts2) 
         \<or> t = skewlink e' a' (Node e1 a1 nat ts1) (Node e2 a2 nat ts2)" 
@@ -1363,7 +1450,7 @@ proof (cases t)
           (Node e' a' 0 []) # (Node e2 a2 nat ts2) # ts1
         else (Node e' a' 0 []) # (Node e1 a1 nat ts1) # ts2))" 
         by auto 
-      from O goal1(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] have 
+      from O Suc(1)[of "Node e1 a1 nat ts1" "e1" "a1" "ts1"] have 
         rev_ts1: "invar (rev [t \<leftarrow> ts1. 0 < rank t])" by simp
       from O children_rank_less[of "Node e1 a1 nat ts1"] have
         "\<forall>t\<in>set (rev [t \<leftarrow> ts1. 0 < rank t]). rank t < rank (Node e2 a2 nat ts2)"
@@ -1374,36 +1461,33 @@ proof (cases t)
       have 
         "invar (rev ((Node e2 a2 nat ts2) # [t \<leftarrow> ts1. 0 < rank t]))" 
         by simp
-      with ass(4) have 
-        p1: "invar (rev [t \<leftarrow> ((Node e2 a2 nat ts2) # ts1). 0 < rank t])" by simp
-      from O goal1(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"] have 
-        rev_ts2: "invar (rev [t \<leftarrow> ts2. 0 < rank t])" by simp
-      from O children_rank_less[of "Node e2 a2 nat ts2"] have
-        "\<forall>t\<in>set (rev [t \<leftarrow> ts2. 0 < rank t]). 
+      with Suc' have p1: "invar (rev [t \<leftarrow> ((Node e2 a2 nat ts2) # ts1). 0 < rank t])"
+        by simp
+      from O Suc(1)[of "Node e2 a2 nat ts2" "e2" "a2" "ts2"]
+      have rev_ts2: "invar (rev [t \<leftarrow> ts2. 0 < rank t])" by simp
+      from O children_rank_less[of "Node e2 a2 nat ts2"]
+      have "\<forall>t\<in>set (rev [t \<leftarrow> ts2. 0 < rank t]). 
         rank t < rank (Node e1 a1 nat ts1)" by simp
       with O rev_ts2 invar_app_single[of "rev [t \<leftarrow> ts2. 0 < rank t]" 
                                          "Node e1 a1 nat ts1"] 
       have "invar (rev [t \<leftarrow> ts2. 0 < rank t] @ [Node e1 a1 nat ts1])"
         by simp
-      with ass(4) have p2: 
-        "invar (rev [t \<leftarrow> ((Node e1 a1 nat ts1) # ts2). 0 < rank t])" 
+      with Suc' have p2: "invar (rev [t \<leftarrow> ((Node e1 a1 nat ts1) # ts2). 0 < rank t])" 
         by simp
-      from O(1-2) have 
-        p3: "invar (rev (filter (\<lambda> t. 0 < rank t) 
+      from O(1-2)
+      have p3: "invar (rev (filter (\<lambda> t. 0 < rank t)
                                  [(Node e1 a1 nat ts1), (Node e2 a2 nat ts2)]))" 
         by (simp add: invar_def)
-      from p1 have 
-        p4: "invar (rev 
-             [t \<leftarrow> ((Node e' a' 0 []) # (Node e2 a2 nat ts2) # ts1). 0 < rank t])"
+      from p1 have p4: "invar (rev 
+           [t \<leftarrow> ((Node e' a' 0 []) # (Node e2 a2 nat ts2) # ts1). 0 < rank t])"
         by simp
-      from p2 have 
-        p5: "invar (rev 
-             [t \<leftarrow> ((Node e' a' 0 []) # (Node e1 a1 nat ts1) # ts2). 0 < rank t])"
+      from p2 have p5: "invar (rev 
+           [t \<leftarrow> ((Node e' a' 0 []) # (Node e1 a1 nat ts1) # ts2). 0 < rank t])"
         by simp
       from p1 p2 p3 p4 p5 ch_id show 
         "invar (rev [t\<leftarrow>children t . 0 < rank t])"
-        by(cases "children t = (if a1 \<le> a2 then (Node e2 a2 nat ts2)#ts1 
-                                else (Node e1 a1 nat ts1)#ts2)", metis+)
+        by (cases "children t = (if a1 \<le> a2 then (Node e2 a2 nat ts2)#ts1 
+                                else (Node e1 a1 nat ts1)#ts2)") metis+
     qed
   qed
 qed
@@ -1425,33 +1509,34 @@ lemma first_less_eq:
   done
 
 lemma remove1_tail_invar: "tail_invar bq \<Longrightarrow> tail_invar (remove1 t bq)" 
-proof (induct bq arbitrary: t, simp) 
-  case goal1 
-  thus ?case 
-    apply(cases "t=a")
-  proof -
-    case goal1
-    from goal1(2) have "tail_invar bq" by (rule tail_invar_cons_down)
-    with goal1(3) show ?case by simp
+proof (induct bq arbitrary: t) 
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a bq)
+  show ?case 
+  proof (cases "t = a")
+    case True
+    from Cons(2) have "tail_invar bq" by (rule tail_invar_cons_down)
+    with True show ?thesis by simp
   next
-    case goal2
-    from goal2(2) have "tail_invar bq" by (rule tail_invar_cons_down)
-    with goal2(1)[of "t"] have si1: "tail_invar (remove1 t bq)" .
-    from goal2(3) have 
-      "tail_invar (remove1 t (a # bq)) = tail_invar (a # (remove1 t bq))" 
+    case False
+    from Cons(2) have "tail_invar bq" by (rule tail_invar_cons_down)
+    with Cons(1)[of "t"] have si1: "tail_invar (remove1 t bq)" .
+    from False have "tail_invar (remove1 t (a # bq)) = tail_invar (a # (remove1 t bq))" 
       by simp
-    with si1 goal2(2) show ?case
-    proof (cases "remove1 t bq", simp add: tail_invar_def) 
-      fix aa list
-      assume ass: "tail_invar (remove1 t bq)" "tail_invar (a # bq)"
-        "tail_invar (remove1 t (a # bq)) = tail_invar (a # remove1 t bq)" 
-        "remove1 t bq = aa # list"
-      from ass(2) have "tree_invar a" by (simp add: tail_invar_def)
-      from ass(2) first_less[of "a" "bq"] have 
-        "\<forall>t \<in> set (remove1 t bq). rank a < rank t"
+    show ?thesis
+    proof (cases "remove1 t bq")
+      case Nil
+      with si1 Cons(2) False show ?thesis by (simp add: tail_invar_def)
+    next
+      case Cons': (Cons aa list)
+      from Cons(2) have "tree_invar a" by (simp add: tail_invar_def)
+      from Cons(2) first_less[of "a" "bq"]
+      have "\<forall>t \<in> set (remove1 t bq). rank a < rank t"
         by (metis notin_set_remove1 tail_invar_def) 
-      with ass(4) have "rank a < rank aa" by simp
-      with ass tail_invar_cons_up[of "aa" "list" "a"] show ?case 
+      with Cons' have "rank a < rank aa" by simp
+      with si1 Cons(2) False Cons' tail_invar_cons_up[of "aa" "list" "a"] show ?thesis
         by (simp add: tail_invar_def)
     qed
   qed
@@ -1461,56 +1546,59 @@ lemma invar_cons_down: "invar (t # bq) \<Longrightarrow> invar bq"
   by (metis rank_invar_rank_skew tail_invar_def 
     invar_def invar_tail_invar) 
 
-lemma remove1_invar: 
-  "invar bq \<Longrightarrow> invar (remove1 t bq)" 
-proof (induct bq arbitrary: t, simp) 
-  case goal1 
-  thus ?case 
-    apply(cases "t=a")
-  proof -
-    case goal1
-    from goal1(2) have "invar bq" by (rule invar_cons_down)
-    with goal1(3) show ?case by simp
+lemma remove1_invar: "invar bq \<Longrightarrow> invar (remove1 t bq)" 
+proof (induct bq arbitrary: t)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons a bq)
+  show ?case
+  proof (cases "t = a")
+    case True
+    from Cons(2) have "invar bq" by (rule invar_cons_down)
+    with True show ?thesis by simp
   next
-    case goal2
-    from goal2(2) have "invar bq" by (rule invar_cons_down)
-    with goal2(1)[of "t"] have si1: "invar (remove1 t bq)" .
-    from goal2(3) have "invar (remove1 t (a # bq)) = invar (a # (remove1 t bq))"
+    case False
+    from Cons(2) have "invar bq" by (rule invar_cons_down)
+    with Cons(1)[of "t"] have si1: "invar (remove1 t bq)" .
+    from False have "invar (remove1 t (a # bq)) = invar (a # (remove1 t bq))"
       by simp
-    with si1 goal2(2) show ?case
-    proof (cases "remove1 t bq", (simp add: invar_def)) 
-      fix aa list
-      assume ass: "invar (remove1 t bq)" "invar (a # bq)"
-        "invar (remove1 t (a # bq)) = invar (a # remove1 t bq)" 
-        "remove1 t bq = aa # list"
-      from ass(2) have ti: "tree_invar a" by (simp add: invar_def)
-      from ass(2) have sbq: "tail_invar bq" by (metis invar_tail_invar)
+    show ?thesis
+    proof (cases "remove1 t bq")
+      case Nil
+      with si1 Cons(2) False show ?thesis by (simp add: invar_def)
+    next
+      case Cons': (Cons aa list)
+      from Cons(2) have ti: "tree_invar a" by (simp add: invar_def)
+      from Cons(2) have sbq: "tail_invar bq" by (metis invar_tail_invar)
       hence srm: "tail_invar (remove1 t bq)" by (metis remove1_tail_invar)
-        from ass(2) first_less_eq[of "a" "bq"] have 
-          "\<forall>t \<in> set (remove1 t bq). rank a \<le> rank t"
+      from Cons(2) first_less_eq[of "a" "bq"]
+      have "\<forall>t \<in> set (remove1 t bq). rank a \<le> rank t"
         by (metis notin_set_remove1 invar_def) 
-      with ass(4) have "rank a \<le> rank aa" by simp
-      with ti ass srm tail_invar_cons_up_invar[of "aa" "list" "a"] 
-      show ?case by simp 
+      with Cons' have "rank a \<le> rank aa" by simp
+      with si1 Cons(2) False Cons' ti srm tail_invar_cons_up_invar[of "aa" "list" "a"] 
+      show ?thesis by simp 
     qed
   qed
 qed
 
-lemma deleteMin_invar: "\<lbrakk>invar bq; bq \<noteq> []\<rbrakk> \<Longrightarrow> invar (deleteMin bq)" 
+lemma deleteMin_invar:
+  assumes "invar bq"
+    and "bq \<noteq> []"
+  shows "invar (deleteMin bq)"
 proof -
-  case goal1
   have eq: "invar (deleteMin bq) = 
     invar (insertList
     (filter (\<lambda> t. rank t = 0) (children (getMinTree bq)))
     (meld (rev (filter (\<lambda> t. rank t > 0) (children (getMinTree bq)))) 
           (remove1 (getMinTree bq) bq)))" 
     by (simp add: deleteMin_def Let_def)
-  from goal1 mintree_exists[of "bq"] have ti: "tree_invar (getMinTree bq)" 
+  from assms mintree_exists[of "bq"] have ti: "tree_invar (getMinTree bq)" 
     by (simp add: invar_def queue_invar_def del: queue_invar_simps)
   with strong_rev_children[of "getMinTree bq"] have 
     m1: "invar (rev [t \<leftarrow> children (getMinTree bq). 0 < rank t])" .
-  from remove1_invar[of "bq" "getMinTree bq"] goal1(1) have 
-    m2: "invar (remove1 (getMinTree bq) bq)" .
+  from remove1_invar[of "bq" "getMinTree bq"] assms(1)
+  have m2: "invar (remove1 (getMinTree bq) bq)" .
   from meld_invar[of "rev [t \<leftarrow> children (getMinTree bq). 0 < rank t]" 
                      "remove1 (getMinTree bq) bq"] m1 m2
   have "invar (meld (rev [t \<leftarrow> children (getMinTree bq). 0 < rank t]) 
@@ -1524,23 +1612,19 @@ proof -
      [t\<leftarrow>children (getMinTree bq) . rank t = 0]
      (meld (rev [t\<leftarrow>children (getMinTree bq) . 0 < rank t])
        (remove1 (getMinTree bq) bq)))" . 
-  with eq show ?case ..
+  with eq show ?thesis ..
 qed
 
 theorem deleteMin_correct:
   assumes I: "invar q"
-  assumes NE: "q\<noteq>Nil"
-  shows 
-  "invar (deleteMin q)"
-  "queue_to_multiset (deleteMin q) = queue_to_multiset q - {#findMin q#}"
+    and NE: "q \<noteq> Nil"
+  shows "invar (deleteMin q)"
+    and "queue_to_multiset (deleteMin q) = queue_to_multiset q - {#findMin q#}"
   apply (rule deleteMin_invar[OF I NE])
   using deleteMin_mset[of q] I NE
   unfolding invar_def
-  by (auto simp add: empty_correct)
-
-
-
-
+  apply (auto simp add: empty_correct)
+  done
 
 
 (*
@@ -2014,21 +2098,21 @@ lemma findMin_correct_aux:
 
 lemma findMin_correct:
   assumes I: "invar q"
-  assumes NE: "q\<noteq>[]"
+    and NE: "q\<noteq>[]"
   shows "findMin q \<in># queue_to_multiset q"
-  "\<forall>y\<in>set_mset (queue_to_multiset q). eprio (findMin q) \<le> eprio y"
+    and "\<forall>y\<in>set_mset (queue_to_multiset q). eprio (findMin q) \<le> eprio y"
   using findMin_correct_aux[OF I NE]
   apply simp_all
   apply (force dest: bsmap_fs_depD)
   apply auto
-proof -
-  case goal1
-  from goal1(3) have "(a,eprio a) \<in># queue_to_multiset_aux q"
+proof goals
+  case prems: (1 a b)
+  from prems(3) have "(a, eprio a) \<in># queue_to_multiset_aux q"
     apply -
     apply (frule bsmap_fs_dep)
     apply simp
     done
-  with goal1(2)[rule_format, simplified]
+  with prems(2)[rule_format, simplified]
   show ?case by auto
 qed
 
