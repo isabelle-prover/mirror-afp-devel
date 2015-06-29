@@ -23,12 +23,17 @@ type_synonym ('a, 'b) binqueue = "('a, 'b) bintree option list"
 
 lemma binqueue_induct [case_names Empty None Some, induct type: binqueue]:
   assumes "P []"
-  and "\<And>xs. P xs \<Longrightarrow> P (None # xs)"
-  and "\<And>x xs. P xs \<Longrightarrow> P (Some x # xs)"
+    and "\<And>xs. P xs \<Longrightarrow> P (None # xs)"
+    and "\<And>x xs. P xs \<Longrightarrow> P (Some x # xs)"
   shows "P xs"
-using assms proof (induct xs)
-  case (Cons x xs) thus ?case by (cases x) simp_all
-qed simp
+  using assms
+proof (induct xs)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  then show ?case by (cases x) simp_all
+qed
 
 text {*
   \noindent Terminology:
