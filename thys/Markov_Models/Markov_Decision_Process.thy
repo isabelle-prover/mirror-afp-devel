@@ -162,17 +162,12 @@ proof (rule nn_integral_lfp)
       "\<And>F. F \<in> borel_measurable St \<Longrightarrow> (\<lambda>a. g (shd a) (F (stl a))) \<in> borel_measurable St"
       "\<And>F cfg. 0 \<le> (\<integral>\<^sup>+ t. g (state t) (F t) \<partial>K_cfg cfg)"
     by (auto simp: nn_integral_nonneg)
-  show "sup_continuous (\<lambda>a b. g (shd b) (a (stl b)))"
-    using cont_g by (auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
-  show "sup_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g (state t) (f t) \<partial>K_cfg s)"
-    by (rule sup_continuous_nn_integral)
-       (insert cont_g, auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
 next
   fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable St"
   then show "(\<integral>\<^sup>+ a. g (shd a) (F (stl a)) \<partial>T s) =
            (\<integral>\<^sup>+ cfg. g (state cfg) (integral\<^sup>N (T cfg) F) \<partial>K_cfg s)"
     by (rewrite nn_integral_T) (simp_all add: int_g)
-qed
+qed (auto intro!: sup_continuous_intros sup_continuous_nn_integral cont_g[THEN sup_continuous_compose])
 
 lemma emeasure_Collect_T:
   assumes [measurable]: "Measurable.pred St P"
@@ -499,13 +494,9 @@ proof (rule antisym)
     have "integral\<^sup>N (T (memoryless_on ct s)) (lfp l) = lfp P (memoryless_on ct s)"
       unfolding P_def l_def using measurable_g cont_g int_g by (rule nn_integral_T_lfp)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom>) (memoryless_on ct s)"
-    proof (rewrite sup_continuous_lfp)
-      have "\<And>t. sup_continuous (\<lambda>F x. g (state t) (F t))"
-         by (auto simp: le_fun_def fun_eq_iff sup_continuous_def  mono_def
-                  intro!: sup_continuousD[OF cont_g])
-      then show "sup_continuous P"
-        unfolding P_def by (rule sup_continuous_nn_integral) auto
-    qed rule
+      by (rewrite sup_continuous_lfp)
+         (auto intro!: sup_continuous_intros sup_continuous_nn_integral cont_g[THEN sup_continuous_compose]
+               simp: P_def)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom> (memoryless_on ct s))"
       by simp
     also have "\<dots> \<le> lfp ?F s"

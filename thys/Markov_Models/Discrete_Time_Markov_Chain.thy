@@ -493,7 +493,7 @@ proof (rule nn_integral_gfp)
   show "inf_continuous l"
     using cont_g by (auto simp add: inf_continuous_def fun_eq_iff antimono_def le_fun_def l_def)
   show "inf_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
-  proof (rule inf_continuous_nn_integral)
+  proof (intro inf_continuous_intros inf_continuous_nn_integral)
     fix f s
     have "(\<integral>\<^sup>+ t. g t (f t) \<partial>K s) \<le> (\<integral>\<^sup>+ t. b \<partial>K s)"
       by (intro nn_integral_mono bnd_g)
@@ -522,7 +522,7 @@ proof (rule nn_integral_lfp)
   show "sup_continuous l"
     using cont_g by (auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def l_def)
   show "sup_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
-    by (rule sup_continuous_nn_integral)
+    by (intro sup_continuous_intros sup_continuous_nn_integral)
        (insert cont_g, auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
 next
   fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable S"
