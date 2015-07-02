@@ -501,7 +501,8 @@ fun domain_isomorphism
               ((Binding.prefix_name "tc_" (Binding.suffix_name "_def" tbind), []), tc_eqn))
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val tc_def = singleton (Proof_Context.export lthy ctxt_thy) tc_ldef
-        val thy = lthy |> Class.prove_instantiation_exit Class.intro_classes_tac
+        val thy = lthy
+          |> Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [])
         (* declare domain_defl_simps *)
         val attr = @{attributes [domain_defl_simps]}
           |> map (Attrib.attribute_global thy)
@@ -772,7 +773,7 @@ fun domain_isomorphism
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val fmap_def = singleton (Proof_Context.export lthy ctxt_thy) fmap_ldef
         fun tacf ctxt = EVERY
-          [Class.intro_classes_tac ctxt,
+          [Class.intro_classes_tac ctxt [],
            rewrite_goals_tac ctxt (fmap_def :: tc_defs),
            resolve_tac ctxt isodefl_thms 1,
            REPEAT (resolve_tac ctxt @{thms isodefl_ID_DEFL isodefl_LIFTDEFL isodefl_cast} 1)]
