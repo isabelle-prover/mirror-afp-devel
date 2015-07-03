@@ -11,6 +11,55 @@ theory Discrete_Time_Markov_Chain
     "../Coinductive/Coinductive_Nat"
 begin
 
+lemma mult_eq_1:
+  fixes a b :: "'a :: {ordered_semiring, comm_monoid_mult}"
+  shows "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> b \<le> 1 \<Longrightarrow> a * b = 1 \<longleftrightarrow> (a = 1 \<and> b = 1)"
+  by (metis mult.left_neutral eq_iff mult.commute mult_right_mono)
+
+lemma pigeonhole_stream:
+  assumes "alw (HLD s) \<omega>"
+  assumes "finite s"
+  shows "\<exists>x\<in>s. alw (ev (HLD {x})) \<omega>"
+proof -
+  have "\<forall>i\<in>UNIV. \<exists>x\<in>s. \<omega> !! i = x"
+    using `alw (HLD s) \<omega>` by (simp add: alw_iff_sdrop HLD_iff)
+  from pigeonhole_infinite_rel[OF infinite_UNIV_nat `finite s` this]
+  show ?thesis
+    by (simp add: HLD_iff infinite_iff_alw_ev[symmetric])
+qed
+
+lemma nn_integral_enat_function:
+  assumes f: "f \<in> measurable M (count_space UNIV)"
+  shows "(\<integral>\<^sup>+ x. ereal_of_enat (f x) \<partial>M) = (\<Sum>t. emeasure M {x \<in> space M. t < f x})"
+proof -
+  def F \<equiv> "\<lambda>i::nat. {x\<in>space M. i < f x}"
+  with assms have [measurable]: "\<And>i. F i \<in> sets M"
+    by auto
+
+  { fix x assume "x \<in> space M"
+    have "(\<lambda>i::nat. if i < f x then 1 else 0) sums ereal_of_enat (f x)"
+      using sums_If_finite[of "\<lambda>r. r < f x" "\<lambda>_. 1 :: ereal"]
+      apply (cases "f x")
+      apply (simp add: one_ereal_def real_of_nat_def[symmetric]) []
+      apply (simp add: sums_def tendsto_PInfty_eq_at_top real_of_nat_def[symmetric]
+                       filterlim_real_sequentially one_ereal_def)
+      done
+    also have "(\<lambda>i. (if i < f x then 1 else 0)) = (\<lambda>i. indicator (F i) x)"
+      using `x \<in> space M` by (simp add: one_ereal_def F_def fun_eq_iff)
+    finally have "ereal_of_enat (f x) = (\<Sum>i. indicator (F i) x)"
+      by (simp add: sums_iff) }
+  then have "(\<integral>\<^sup>+x. ereal_of_enat (f x) \<partial>M) = (\<integral>\<^sup>+x. (\<Sum>i. indicator (F i) x) \<partial>M)"
+    by (simp cong: nn_integral_cong)
+  also have "\<dots> = (\<Sum>i. emeasure M (F i))"
+    by (simp add: nn_integral_suminf)
+  finally show ?thesis
+    by (simp add: F_def)
+qed
+
+lemma ereal_of_enat_inj[simp]:
+  "ereal_of_enat i = ereal_of_enat j \<longleftrightarrow> i = j" 
+  by (cases i j rule: enat.exhaust[case_product enat.exhaust]) auto
+
 lemma inf_continuous_suntil_disj[order_continuous_intros]:
   assumes Q: "inf_continuous Q"
   assumes disj: "\<And>x \<omega>. \<not> (P \<omega> \<and> Q x \<omega>)"
@@ -43,37 +92,6 @@ proof
   assume "ev P \<omega>" then show "((\<lambda>xs. \<not> P xs) suntil P) \<omega>"
     by (induction rule: ev_induct_strong) (auto intro: suntil.intros)
 qed (auto simp: ev_suntil)
-
-lemma ereal_of_enat_Sup:
-  assumes "A \<noteq> {}" shows "ereal_of_enat (Sup A) = (\<Squnion>a\<in>A. ereal_of_enat a)"
-proof (intro antisym mono_Sup)
-  show "ereal_of_enat (Sup A) \<le> (\<Squnion>a\<in>A. ereal_of_enat a)"
-  proof cases
-    assume "finite A"
-    with `A \<noteq> {}` obtain a where "a \<in> A" "ereal_of_enat (Sup A) = ereal_of_enat a"
-      using Max_in[of A] by (auto simp: Sup_enat_def simp del: Max_in)
-    then show ?thesis
-      by (auto intro: SUP_upper)
-  next
-    assume "\<not> finite A"
-    have [simp]: "(\<Squnion>a\<in>A. ereal_of_enat a) = \<top>"
-      unfolding SUP_eq_top_iff
-    proof safe
-      fix x :: ereal assume "x < \<top>"
-      then obtain n :: nat where "x < n"
-        using less_PInf_Ex_of_nat top_ereal_def by auto
-      obtain a where "a \<in> A - enat ` {.. n}"
-        by (metis `\<not> finite A` all_not_in_conv finite_Diff2 finite_atMost finite_imageI finite.emptyI)
-      then have "a \<in> A" "ereal n \<le> ereal_of_enat a"
-        by (auto simp: image_iff Ball_def)
-           (metis enat_iless enat_ord_simps(1) ereal_of_enat_less_iff ereal_of_enat_simps(1) less_le not_less)
-      with `x < n` show "\<exists>i\<in>A. x < ereal_of_enat i"
-        by (auto intro!: bexI[of _ a])
-    qed
-    show ?thesis
-      by simp
-  qed
-qed (simp add: mono_def)
 
 lemma mcont_ereal_of_enat: "mcont Sup (op \<le>) Sup op \<le> ereal_of_enat"
   by (auto intro!: mcontI monotoneI contI ereal_of_enat_Sup)
@@ -637,11 +655,6 @@ proof -
   qed (auto simp: sup_continuous_def)
 qed
 
-lemma mult_eq_1:
-  fixes a b :: "'a :: {ordered_semiring, comm_monoid_mult}"
-  shows "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> b \<le> 1 \<Longrightarrow> a * b = 1 \<longleftrightarrow> (a = 1 \<and> b = 1)"
-  by (metis mult.left_neutral eq_iff mult.commute mult_right_mono)
-
 lemma AE_suntil: 
   assumes [measurable]: "Measurable.pred S P"
   shows "(AE x in T s. (not (HLD {t}) suntil (HLD {t} aand nxt P)) x) \<longleftrightarrow>
@@ -800,18 +813,6 @@ proof -
   qed
 qed
 
-lemma pigeonhole_stream:
-  assumes "alw (HLD s) \<omega>"
-  assumes "finite s"
-  shows "\<exists>x\<in>s. alw (ev (HLD {x})) \<omega>"
-proof -
-  have "\<forall>i\<in>UNIV. \<exists>x\<in>s. \<omega> !! i = x"
-    using `alw (HLD s) \<omega>` by (simp add: alw_iff_sdrop HLD_iff)
-  from pigeonhole_infinite_rel[OF infinite_UNIV_nat `finite s` this]
-  show ?thesis
-    by (simp add: HLD_iff infinite_iff_alw_ev[symmetric])
-qed
-
 lemma fair_imp: assumes "fair t t' \<omega>" "alw (ev (HLD {t})) \<omega>" shows "alw (ev (HLD {t'})) \<omega>"
 proof -
   { fix \<omega> assume "ev (HLD {t} aand nxt (HLD {t'})) \<omega>" then have "ev (HLD {t'}) \<omega>"
@@ -854,34 +855,6 @@ proof eventually_elim
   qed
 qed
 
-lemma nn_integral_enat_function:
-  assumes f: "f \<in> measurable M (count_space UNIV)"
-  shows "(\<integral>\<^sup>+ x. ereal_of_enat (f x) \<partial>M) = (\<Sum>t. emeasure M {x \<in> space M. t < f x})"
-proof -
-  def F \<equiv> "\<lambda>i::nat. {x\<in>space M. i < f x}"
-  with assms have [measurable]: "\<And>i. F i \<in> sets M"
-    by auto
-
-  { fix x assume "x \<in> space M"
-    have "(\<lambda>i::nat. if i < f x then 1 else 0) sums ereal_of_enat (f x)"
-      using sums_If_finite[of "\<lambda>r. r < f x" "\<lambda>_. 1 :: ereal"]
-      apply (cases "f x")
-      apply (simp add: one_ereal_def real_of_nat_def[symmetric]) []
-      apply (simp add: sums_def tendsto_PInfty_eq_at_top real_of_nat_def[symmetric]
-                       filterlim_real_sequentially one_ereal_def)
-      done
-    also have "(\<lambda>i. (if i < f x then 1 else 0)) = (\<lambda>i. indicator (F i) x)"
-      using `x \<in> space M` by (simp add: one_ereal_def F_def fun_eq_iff)
-    finally have "ereal_of_enat (f x) = (\<Sum>i. indicator (F i) x)"
-      by (simp add: sums_iff) }
-  then have "(\<integral>\<^sup>+x. ereal_of_enat (f x) \<partial>M) = (\<integral>\<^sup>+x. (\<Sum>i. indicator (F i) x) \<partial>M)"
-    by (simp cong: nn_integral_cong)
-  also have "\<dots> = (\<Sum>i. emeasure M (F i))"
-    by (simp add: nn_integral_suminf)
-  finally show ?thesis
-    by (simp add: F_def)
-qed
-
 lemma AE_T_max_sfirst:
   assumes [measurable]: "Measurable.pred S X"
   assumes AE: "AE \<omega> in T c. sfirst X (c ## \<omega>) < \<infinity>" and "0 < e"
@@ -901,10 +874,6 @@ proof -
   then show ?thesis
     by (auto simp: measure_nonneg)
 qed
-
-lemma ereal_of_enat_inj[simp]:
-  "ereal_of_enat i = ereal_of_enat j \<longleftrightarrow> i = j" 
-  by (cases i j rule: enat.exhaust[case_product enat.exhaust]) auto
 
 lemma nn_integral_sfirst_finite':
   assumes "s \<notin> H"
@@ -943,7 +912,7 @@ proof -
 
   let ?F = "\<lambda>F \<omega>. if shd \<omega> \<in> H then 0 else 0 \<squnion> F (stl \<omega>) + 1 :: ereal"
   have "sup_continuous ?F"
-    by (intro order_continuous_intros) simp
+    by (intro order_continuous_intros) simp_all
   then have "mono ?F"
     by (rule sup_continuous_mono)
   have lfp_nonneg[simp]: "\<And>\<omega>. 0 \<le> lfp ?F \<omega>"
@@ -977,11 +946,8 @@ proof -
   also have "\<dots> = lfp (?I^^Suc n) s"
     unfolding lfp_funpow[OF \<open>mono ?I\<close>]
     by (subst nn_integral_T_lfp)
-       (auto simp: nn_integral_add nn_integral_max_0 max_absorb2 nn_integral_nonneg fun_eq_iff
-             intro!: arg_cong2[where f=lfp] nn_integral_cong order_continuous_intros
-             split: split_indicator)
-  also have "lfp (?I^^Suc n) t \<le> p"
-    if "(s, t) \<in> ?R" for t
+       (auto simp: nn_integral_add nn_integral_max_0 max_absorb2 nn_integral_nonneg intro!: order_continuous_intros)
+  also have "lfp (?I^^Suc n) t \<le> p" if "(s, t) \<in> ?R" for t
     using that
   proof (induction arbitrary: t rule: lfp_ordinal_induct[of "?I^^Suc n"])
     case (step S)
