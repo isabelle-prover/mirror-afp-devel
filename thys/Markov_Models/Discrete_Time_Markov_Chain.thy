@@ -11,8 +11,38 @@ theory Discrete_Time_Markov_Chain
     "../Coinductive/Coinductive_Nat"
 begin
 
-lemma not_MInfty_nonneg[simp]: "0 \<le> (x::ereal) \<Longrightarrow> x \<noteq> - \<infinity>"
-  by auto
+lemma inf_continuous_suntil_disj[order_continuous_intros]:
+  assumes Q: "inf_continuous Q"
+  assumes disj: "\<And>x \<omega>. \<not> (P \<omega> \<and> Q x \<omega>)"
+  shows "inf_continuous (\<lambda>x. P suntil Q x)"
+  unfolding inf_continuous_def
+proof (safe intro!: ext)
+  fix M \<omega> i assume "(P suntil Q (\<Sqinter>i. M i)) \<omega>" "decseq M" then show "(P suntil Q (M i)) \<omega>"
+    unfolding inf_continuousD[OF Q `decseq M`] by induction (auto intro: suntil.intros)
+next
+  fix M \<omega> assume *: "(\<Sqinter>i. P suntil Q (M i)) \<omega>" "decseq M" 
+  then have "(P suntil Q (M 0)) \<omega>"
+    by auto
+  from this * show "(P suntil Q (\<Sqinter>i. M i)) \<omega>"
+    unfolding inf_continuousD[OF Q `decseq M`]
+  proof induction
+    case (base \<omega>) with disj[of \<omega> "M _"] show ?case by (auto intro: suntil.intros elim: suntil.cases)
+  next
+    case (step \<omega>) with disj[of \<omega> "M _"] show ?case by (auto intro: suntil.intros elim: suntil.cases)
+  qed
+qed
+
+lemma inf_continuous_nxt[order_continuous_intros]: "inf_continuous P \<Longrightarrow> inf_continuous (\<lambda>x. nxt (P x) \<omega>)"
+  by (auto simp: inf_continuous_def)
+
+lemma sup_continuous_nxt[order_continuous_intros]: "sup_continuous P \<Longrightarrow> sup_continuous (\<lambda>x. nxt (P x) \<omega>)"
+  by (auto simp: sup_continuous_def)
+
+lemma ev_eq_suntil: "ev P \<omega> \<longleftrightarrow> (not P suntil P) \<omega>"
+proof
+  assume "ev P \<omega>" then show "((\<lambda>xs. \<not> P xs) suntil P) \<omega>"
+    by (induction rule: ev_induct_strong) (auto intro: suntil.intros)
+qed (auto simp: ev_suntil)
 
 lemma ereal_of_enat_Sup:
   assumes "A \<noteq> {}" shows "ereal_of_enat (Sup A) = (\<Squnion>a\<in>A. ereal_of_enat a)"
@@ -391,10 +421,10 @@ proof -
     by auto
   then have "(\<lambda>x. walk (g x) (sdrop n x)) \<in> measurable D S"
   proof (coinduction arbitrary: g n rule: measurable_stream_coinduct)
-    case (shd f') show ?case
+    case (shd g) show ?case
       by (fastforce intro: measurable_g[OF _ shd])
   next
-    case (stl f') show ?case
+    case (stl g) show ?case
       by (fastforce simp add: sdrop.simps[symmetric] some_in_eq set_pmf_not_empty
                     simp del: sdrop.simps intro: rtrancl_into_rtrancl measurable_g[OF _ stl])
   qed
@@ -462,9 +492,9 @@ proof -
     apply (intro UNIV_I AE_component)
     apply (auto simp: AE_measure_pmf_iff)
     done
-  also have "\<dots> = (\<integral>\<^sup>+d. \<integral>\<^sup>+\<omega>. f (d s ## \<omega>) * indicator {t. t \<in> K s} (d s) \<partial>T (d s) \<partial>\<Pi>\<^sub>M i\<in>UNIV. K i)"
+  also have "\<dots> = (\<integral>\<^sup>+d. \<integral>\<^sup>+\<omega>. f (d s ## \<omega>) * indicator (K s) (d s) \<partial>T (d s) \<partial>\<Pi>\<^sub>M i\<in>UNIV. K i)"
     by (subst T) (simp_all split: split_indicator)
-  also have "\<dots> = (\<integral>\<^sup>+t. \<integral>\<^sup>+\<omega>. f (t ## \<omega>) * indicator {t. t \<in> K s} t \<partial>T t \<partial>K s)"
+  also have "\<dots> = (\<integral>\<^sup>+t. \<integral>\<^sup>+\<omega>. f (t ## \<omega>) * indicator (K s) t \<partial>T t \<partial>K s)"
     by (subst (2) PiM_component[symmetric]) (simp_all add: nn_integral_distr)
   also have "\<dots> = (\<integral>\<^sup>+t. \<integral>\<^sup>+\<omega>. f (t ## \<omega>) \<partial>T t \<partial>K s)"
     by (rule nn_integral_cong_AE) (simp add: AE_measure_pmf_iff)
@@ -475,7 +505,7 @@ lemma nn_integral_T_gfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
   assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
-  assumes cont_g: "\<And>s. inf_continuous (g s)"
+  assumes cont_g[THEN inf_continuous_compose, order_continuous_intros]: "\<And>s. inf_continuous (g s)"
   assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
   assumes bnd_g: "\<And>f s. g s f \<le> b" "0 \<le> b" "b < \<infinity>"
   shows "(\<integral>\<^sup>+\<omega>. gfp l \<omega> \<partial>T s) = gfp (\<lambda>f s. \<integral>\<^sup>+t. g t (f t) \<partial>K s) s"
@@ -490,10 +520,8 @@ proof (rule nn_integral_gfp)
     also have "\<dots> < \<infinity>"
       using bnd_g by simp
     finally show "integral\<^sup>N (T s) (l F) < \<infinity>" . }
-  show "inf_continuous l"
-    using cont_g by (auto simp add: inf_continuous_def fun_eq_iff antimono_def le_fun_def l_def)
   show "inf_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
-  proof (intro inf_continuous_intros inf_continuous_nn_integral)
+  proof (intro order_continuous_intros)
     fix f s
     have "(\<integral>\<^sup>+ t. g t (f t) \<partial>K s) \<le> (\<integral>\<^sup>+ t. b \<partial>K s)"
       by (intro nn_integral_mono bnd_g)
@@ -501,34 +529,29 @@ proof (rule nn_integral_gfp)
       using bnd_g by simp
     finally show "(\<integral>\<^sup>+ t. g t (f t) \<partial>K s) \<noteq> \<infinity>"
       by simp
-  qed (insert cont_g, auto simp add: inf_continuous_def fun_eq_iff antimono_def le_fun_def)
+  qed simp
 next
   fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable S"
   then show "integral\<^sup>N (T s) (l F) = (\<integral>\<^sup>+ t. g t (integral\<^sup>N (T t) F) \<partial>K s) "
     by (rewrite nn_integral_T) (simp_all add: l_def int_g)
-qed
+qed (auto intro!: order_continuous_intros simp: l_def)
 
 lemma nn_integral_T_lfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
   assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
-  assumes cont_g: "\<And>s. sup_continuous (g s)"
+  assumes cont_g[THEN sup_continuous_compose, order_continuous_intros]: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
   shows "(\<integral>\<^sup>+\<omega>. lfp l \<omega> \<partial>T s) = lfp (\<lambda>f s. \<integral>\<^sup>+t. g t (f t) \<partial>K s) s"
 proof (rule nn_integral_lfp)
   show "\<And>s. sets (T s) = sets S" "\<And>F. F \<in> borel_measurable S \<Longrightarrow> l F \<in> borel_measurable S"
        "\<And>F s. 0 \<le> (\<integral>\<^sup>+ t. g t (F t) \<partial>K s)"
     by (auto simp: l_def nn_integral_nonneg)
-  show "sup_continuous l"
-    using cont_g by (auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def l_def)
-  show "sup_continuous (\<lambda>f s. \<integral>\<^sup>+ t. g t (f t) \<partial>K s)"
-    by (intro sup_continuous_intros sup_continuous_nn_integral)
-       (insert cont_g, auto simp add: sup_continuous_def fun_eq_iff mono_def le_fun_def)
 next
   fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable S"
   then show "integral\<^sup>N (T s) (l F) = (\<integral>\<^sup>+ t. g t (integral\<^sup>N (T t) F) \<partial>K s) "
     by (rewrite nn_integral_T) (simp_all add: l_def int_g)
-qed
+qed (auto simp: l_def intro!: order_continuous_intros)
 
 lemma emeasure_Collect_T:
   assumes f[measurable]: "Measurable.pred S P"
@@ -546,6 +569,38 @@ lemma AE_T_iff:
   by (simp add: AE_iff_nn_integral nn_integral_T[where s=x])
      (auto simp add: nn_integral_0_iff_AE AE_measure_pmf_iff split: split_indicator)
 
+lemma emeasure_suntil_HLD:
+  assumes [measurable]: "Measurable.pred S P"
+  shows "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
+   emeasure (T s) {x\<in>space (T s). ev (HLD {t}) x} * emeasure (T t) {x\<in>space (T t). P x}"
+proof -
+  { fix P :: "'s stream \<Rightarrow> bool" assume [measurable]: "Measurable.pred S P"
+    have "emeasure (T s) {x\<in>space S. lfp (\<lambda>Q. (HLD {t} aand nxt P) or (not (HLD {t}) aand nxt Q)) x} =
+      lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then emeasure (T t) {x\<in>space S. P x} else f s') \<partial>K s) s"
+      (is "emeasure (T s) {x\<in>space S. lfp ?F x} = lfp ?f s")
+    proof (rule emeasure_lfp)
+      fix Q :: "'s stream \<Rightarrow> bool" and s assume [measurable]: "Measurable.pred S Q"
+      show "emeasure (T s) {x \<in> space S. ?F Q x} = ?f (\<lambda>t. emeasure (T t) {x \<in> space S. Q x}) s"
+        unfolding space_T[symmetric, of s] by (subst emeasure_Collect_T) (auto intro!: nn_integral_cong)
+    qed (auto intro!: nn_integral_nonneg order_continuous_intros) 
+    then have "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} = lfp ?f s" 
+      by (simp add: suntil_lfp) }
+  note * = this
+  
+  have "lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then emeasure (T t) {x\<in>space S. P x} else f s') \<partial>K s) s =
+      lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then 1 else f s') \<partial>K s) s * emeasure (T t) {x\<in>space S. P x}"
+    by (subst lfp_transfer_bounded[where \<alpha>="\<lambda>f s. f s * emeasure (T t) {x\<in>space S. P x}" and P=top, symmetric])
+       (auto simp: SUP_apply[abs_def] T.emeasure_eq_measure Sup_ereal_mult_right' measure_nonneg
+                   bot_ereal_def le_fun_def fun_eq_iff less_le nn_integral_multc[symmetric]
+             intro!: order_continuous_intros nn_integral_nonneg nn_integral_cong)
+  then have "emeasure (T s) {x \<in> space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
+    emeasure (T s) {x \<in> space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt (\<lambda>x. True))) x} *
+    emeasure (T t) {x \<in> space (T t). P x}"
+    by (subst (1 2) *) (simp_all cong del: if_cong)
+  then show ?thesis
+    by (simp add: ev_eq_suntil)
+qed
+
 lemma emeasure_suntil:
   assumes [measurable]: "Measurable.pred S P" "Measurable.pred S Q"
   shows "emeasure (T s) {x\<in>space (T s). (P suntil Q) x} =
@@ -555,7 +610,7 @@ proof -
     unfolding suntil_def by (auto intro!: arg_cong[where f=lfp])
   show ?thesis
     unfolding suntil_eq
-  proof (coinduction arbitrary: s rule: emeasure_lfp)
+  proof (coinduction arbitrary: s rule: emeasure_lfp')
     case measurable
     have [measurable]: "Measurable.pred S A"
       using measurable[of "T s"] by auto
@@ -573,50 +628,13 @@ proof -
     unfolding ev_def by (auto intro!: arg_cong[where f=lfp])
   show ?thesis
     unfolding ev_eq
-  proof (coinduction arbitrary: s rule: emeasure_lfp)
+  proof (coinduction arbitrary: s rule: emeasure_lfp')
     case measurable
     have [measurable]: "Measurable.pred S A"
       using measurable[of "T s"] by auto
     show ?case
       by simp
   qed (auto simp: sup_continuous_def)
-qed
-
-lemma emeasure_suntil_HLD:
-  assumes [measurable]: "Measurable.pred S P"
-  shows "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
-   emeasure (T s) {x\<in>space (T s). ev (HLD {t}) x} * emeasure (T t) {x\<in>space (T t). P x}"
-proof -
-  let ?t = "HLD {t}"
-  let ?M = "\<lambda>s P. emeasure (T s) {x\<in>space (T s). P x}"
-  let ?F = "\<lambda>i. ((\<lambda>Q. (?t aand nxt P) or (not ?t aand nxt Q))^^i) (\<lambda>_. False)"
-  let ?E = "\<lambda>i. ((\<lambda>Q. ?t or nxt Q)^^i) (\<lambda>_. False)"
-
-  have "?M s ((not ?t) suntil (?t aand nxt P)) = (SUP i. ?M s (?F i))"
-    by (rule emeasure_suntil) measurable
-  also have "\<dots> = (SUP i. ?M s (?E i) * ?M t P)"
-  proof (intro SUP_cong refl)
-    fix i :: nat show "?M s (?F i) = ?M s (?E i) * ?M t P"
-    proof (induct i arbitrary: s)
-      case (Suc i)
-      have "?M s (?F (Suc i)) = (\<integral>\<^sup>+t. ?M t (\<lambda>\<omega>. ?F (Suc i) (t ## \<omega>)) \<partial>K s)"
-        by (intro emeasure_Collect_T measurable_predpow) auto
-      also have "\<dots> = (\<integral>\<^sup>+t'. (if t' = t then ?M t P else ?M t' (?F i)) \<partial>K s)"
-        by (intro nn_integral_cong) (auto simp: HLD_iff)
-      also have "\<dots> = (\<integral>\<^sup>+t'. ?M t' (\<lambda>\<omega>. ?E (Suc i) (t' ## \<omega>)) * ?M t P \<partial>K s)"
-        using T.emeasure_space_1 unfolding Suc by (intro nn_integral_cong) (auto simp: HLD_iff)
-      also have "\<dots> = (\<integral>\<^sup>+t'. ?M t' (\<lambda>\<omega>. ?E (Suc i) (t' ## \<omega>)) \<partial>K s) * ?M t P"
-        by (rule nn_integral_multc) auto
-      also have "(\<integral>\<^sup>+t'. ?M t' (\<lambda>\<omega>. ?E (Suc i) (t' ## \<omega>)) \<partial>K s) = ?M s (?E (Suc i))"
-        by (intro emeasure_Collect_T[symmetric] measurable_predpow) auto
-      finally show ?case .
-    qed simp
-  qed
-  also have "\<dots> = (SUP i. ?M s (?E i)) * ?M t P"
-    by (subst (1 2) mult.commute) (auto intro!: SUP_ereal_mult_left)
-  also have [symmetric]: "?M s (ev ?t) = (SUP i. ?M s (?E i))"
-    by (rule emeasure_ev) measurable
-  finally show ?thesis .
 qed
 
 lemma mult_eq_1:
@@ -635,9 +653,6 @@ lemma AE_suntil:
   apply (simp_all add: measure_def emeasure_suntil_HLD del: space_T nxt.simps)
   apply (auto simp: T.emeasure_eq_measure mult_eq_1 measure_nonneg)
   done
-
-definition fair :: "'s \<Rightarrow> 's \<Rightarrow> 's stream \<Rightarrow> bool" where
-  "fair s t = alw (ev (HLD {s})) impl alw (ev (HLD {s} aand nxt (HLD {t})))"
 
 lemma AE_T_alw:
   assumes [measurable]: "Measurable.pred S P"
@@ -662,95 +677,69 @@ proof -
     by (simp add: alw_def)
 qed
 
+definition fair :: "'s \<Rightarrow> 's \<Rightarrow> 's stream \<Rightarrow> bool" where
+  "fair s t = alw (ev (HLD {s})) impl alw (ev (HLD {s} aand nxt (HLD {t})))"
+
 lemma AE_T_fair:
   assumes "t' \<in> K t"
   shows "AE \<omega> in T s. fair t t' \<omega>"
 proof -
-  def never \<equiv> "alw (ev (HLD {t})) aand alw (not (HLD {t} aand nxt (HLD {t'})))"
-  have never_stl: "\<And>\<omega>. never \<omega> \<Longrightarrow> never (stl \<omega>)"
-    by (auto simp: never_def)
-  have [measurable]: "Measurable.pred S never"
-    unfolding never_def by measurable
+  let ?M = "\<lambda>P s. emeasure (T s) {\<omega>\<in>space (T s). P \<omega>}"
+  let ?t = "HLD {t}" and ?t' = "HLD {t'}"
+  def N \<equiv> "alw (ev ?t) aand alw (not (?t aand nxt ?t'))"
+  let ?until = "not ?t suntil (?t aand nxt (not ?t' aand nxt N))"
+  have N_stl: "\<And>\<omega>. N \<omega> \<Longrightarrow> N (stl \<omega>)"
+    by (auto simp: N_def)
+  have [measurable]: "Measurable.pred S N"
+    unfolding N_def by measurable
 
-  def c \<equiv> "measure (K t) {t'}"
-  have c_le_1[arith]: "c \<le> 1"
-    unfolding c_def by (rule measure_pmf.prob_le_1)
-  have "0 < c"
-    unfolding c_def
-    using emeasure_pmf_single_eq_zero_iff[of "K t" t'] `t' \<in> K t`
-    by (simp add: measure_pmf.emeasure_eq_measure measure_nonneg less_le)
+  def c \<equiv> "emeasure (K t) {t'}"
+  then have "0 < c" "c \<le> 1"
+    using `t' \<in> K t` by (auto simp add: emeasure_nonneg less_le emeasure_pmf_single_eq_zero_iff measure_pmf.measure_le_1)
 
-  let ?M = "\<lambda>s P. emeasure (T s) {\<omega>\<in>space (T s). P \<omega>}"
-  { fix x k have "?M x (\<lambda>\<omega>. never \<omega>) \<le> (1 - c)^k"
-    proof (induct k arbitrary: x)
-      case 0 then show ?case
-        by (simp add: T.measure_le_1 one_ereal_def[symmetric])
-    next
-      case (Suc k)
-      let ?C = "ereal ((1 - c)^k)"
-      let ?until = "not (HLD {t}) suntil (HLD {t} aand nxt (not (HLD {t'}) aand never))"
-      { fix \<omega> assume "never \<omega>"
-        then have "ev (HLD {t}) \<omega>" "never \<omega>"
-          by (auto simp: never_def)
-        then have "?until \<omega>"
-        proof (induct rule: ev_induct_strong)
-          case (base \<omega>) then show ?case
-            by (intro suntil.base) (auto simp: never_def)
-        next
-          case (step \<omega>) then show ?case
-            by (intro suntil.step[of _ \<omega>]) (auto simp: never_stl)
-        qed }
-      then have "?M x (\<lambda>\<omega>. never \<omega>) \<le> ?M x (\<lambda>\<omega>. ?until \<omega>)"
-        apply (intro emeasure_mono_AE)
-        defer
-        apply measurable []
-        apply (rule UNIV_I)
-        apply measurable
-        done
-      also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * ?M t (\<lambda>\<omega>. (not (HLD {t'}) aand never) \<omega>)"
-        by (intro emeasure_suntil_HLD) simp
-      also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (\<integral>\<^sup>+y. ?M y (\<lambda>\<omega>. y \<noteq> t' \<and> never (y ## \<omega>)) \<partial>K t)"
-        by (subst (2) emeasure_Collect_T) (simp_all add: HLD_iff)
-      also have "\<dots> \<le> ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (\<integral>\<^sup>+y. ?M y (\<lambda>\<omega>. y \<noteq> t' \<and> never \<omega>) \<partial>K t)"
-        by (intro ereal_mult_left_mono emeasure_nonneg nn_integral_mono emeasure_mono_AE)
-           (auto dest: never_stl[of "x ## s" for x s, simplified])
-      also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (\<integral>\<^sup>+y. indicator (- {t'}) y * ?M y never \<partial>K t)"
-        by (subst (2 4) emeasure_Collect_T)
-           (auto intro!: ereal_left_mult_cong nn_integral_cong split: split_indicator)
-      also have "\<dots> \<le> ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (\<integral>\<^sup>+y. indicator (- {t'}) y * ?C \<partial>K t)"
-        by (intro ereal_mult_left_mono emeasure_nonneg nn_integral_mono Suc ereal_indicator_nonneg)
-      also have "\<dots> = ?M x (\<lambda>\<omega>. ev (HLD {t}) \<omega>) * (emeasure (K t) (space (K t) - {t'}) * ?C)"
-        by (subst nn_integral_multc) (auto intro!: zero_le_power simp: Compl_eq_Diff_UNIV)
-      also have "\<dots> \<le> 1 * (emeasure (K t) (space (K t) - {t'}) * ?C)"
-        by (intro ereal_mult_right_mono T.measure_le_1) (auto intro!: ereal_0_le_mult)
-      also have "emeasure (K t) (space (K t) - {t'}) = 1 - emeasure (K t) {t'}"
-        using measure_pmf.emeasure_space_1[of "K t"] by (subst emeasure_compl) auto
-      also have "1 * ((1 - emeasure (K t) {t'}) * ?C) \<le> 1 * (ereal (1 - c) * ?C)"
-        unfolding c_def
-        by (intro ereal_mult_right_mono ereal_mult_left_mono)
-           (auto simp: measure_pmf.emeasure_eq_measure one_ereal_def field_simps intro!: zero_le_power)
-      finally show ?case
-        by simp
-    qed }
-  then have "\<And>x. emeasure (T x) {\<omega> \<in> space (T x). never \<omega>} \<le> 0"
-  proof (intro tendsto_le_const[OF sequentially_bot])
-    show "(\<lambda>k. ereal ((1 - c) ^ k)) ----> 0"
-      unfolding zero_ereal_def by (auto intro!: LIMSEQ_realpow_zero `0 < c`)
-  qed auto
-  then have "\<And>x. AE \<omega> in T x. \<not> never \<omega>"
-    by (intro AE_I[OF order_refl] antisym emeasure_nonneg) auto
-  then have "AE \<omega> in T s. alw (not never) \<omega>"
+  let ?R = "\<lambda>x. 1 \<sqinter> x * (1 - c)"
+  have "mono ?R"
+    by (intro monoI ereal_mult_right_mono inf_mono)
+       (auto simp: mono_def one_ereal_def c_def measure_pmf.emeasure_eq_measure field_simps)
+  have "\<And>s. ?M N s \<le> gfp ?R"
+  proof (induction rule: gfp_ordinal_induct[OF \<open>mono ?R\<close>])
+    fix x s assume x: "\<And>s. ?M N s \<le> x"
+    { fix \<omega> assume "N \<omega>"
+      then have "ev (HLD {t}) \<omega>" "N \<omega>"
+        by (auto simp: N_def)
+      then have "?until \<omega>"
+        by (induct rule: ev_induct_strong) (auto simp: N_def intro: suntil.intros dest: N_stl) }
+    then have "?M N s \<le> ?M ?until s"
+      by (intro emeasure_mono_AE) auto
+    also have "\<dots> \<le> ?M (ev ?t) s * ?M (not ?t' aand nxt N) t"
+      by (simp_all add: emeasure_suntil_HLD del: nxt.simps space_T)
+    also have "\<dots> \<le> ?M (ev ?t) s * (\<integral>\<^sup>+s'. 1 \<sqinter> x * indicator (UNIV - {t'}) s' \<partial>K t)"
+      by (auto intro!: ereal_mult_left_mono nn_integral_nonneg nn_integral_mono T.measure_le_1 emeasure_mono
+               split: split_indicator simp add: x emeasure_Collect_T[of _ t] simp del: space_T)
+    also have "\<dots> \<le> 1 * (\<integral>\<^sup>+s'. 1 \<sqinter> x * indicator (UNIV - {t'}) s' \<partial>K t)"
+      by (intro ereal_mult_right_mono nn_integral_nonneg T.measure_le_1)
+    finally show "?M N s \<le> 1 \<sqinter> x * (1 - c)"
+      using order_trans[OF emeasure_nonneg x]
+      by (subst (asm) nn_integral_cmult_indicator) (auto simp: emeasure_Diff c_def)
+  qed (auto intro: Inf_greatest)
+  also have "gfp ?R \<le> 0"
+    using gfp_lemma2[OF \<open>mono ?R\<close>] `0 < c`
+    by (cases "gfp ?R" c rule: ereal2_cases)
+       (auto simp: one_ereal_def min_def field_simps mult_le_0_iff split: split_if_asm)
+  finally have "\<And>s. AE \<omega> in T s. \<not> N \<omega>"
+    by (subst AE_iff_measurable[OF _ refl]) (auto intro: antisym simp: le_fun_def)
+  then have "AE \<omega> in T s. alw (not N) \<omega>"
     by (intro AE_T_alw) auto
   moreover
   { fix \<omega> assume "alw (ev (HLD {t})) \<omega>"
     then have "alw (alw (ev (HLD {t}))) \<omega>"
       unfolding alw_alw .
-    moreover assume "alw (not never) \<omega>"
+    moreover assume "alw (not N) \<omega>"
     then have "alw (alw (ev (HLD {t})) impl ev (HLD {t} aand nxt (HLD {t'}))) \<omega>"
-      unfolding never_def not_alw_iff not_ev_iff de_Morgan_disj de_Morgan_conj not_not imp_conv_disj .
+      unfolding N_def not_alw_iff not_ev_iff de_Morgan_disj de_Morgan_conj not_not imp_conv_disj .
     ultimately have "alw (ev (HLD {t} aand nxt (HLD {t'}))) \<omega>"
       by (rule alw_mp) }
-  then have "\<forall>\<omega>. alw (not never) \<omega> \<longrightarrow> fair t t' \<omega>"
+  then have "\<forall>\<omega>. alw (not N) \<omega> \<longrightarrow> fair t t' \<omega>"
     by (auto simp: fair_def)
   ultimately show ?thesis
     by (rule eventually_rev_mono)
@@ -775,7 +764,6 @@ proof -
      by (auto simp: HLD_iff enabled.simps[of _ \<omega>] alw.simps[of _ \<omega>] intro!: rtrancl_trans[of s t])
   qed
 qed
-  
 
 lemma AE_T_reachable: "AE \<omega> in T s. alw (HLD ((SIGMA s:UNIV. K s)\<^sup>* `` {s})) \<omega>"
   using AE_T_enabled
@@ -914,192 +902,131 @@ proof -
     by (auto simp: measure_nonneg)
 qed
 
+lemma ereal_of_enat_inj[simp]:
+  "ereal_of_enat i = ereal_of_enat j \<longleftrightarrow> i = j" 
+  by (cases i j rule: enat.exhaust[case_product enat.exhaust]) auto
+
+lemma nn_integral_sfirst_finite':
+  assumes "s \<notin> H"
+  assumes [simp]: "finite ((SIGMA x:- H. set_pmf (K x) - H)\<^sup>* `` {s})" (is "finite (?R `` {s})")
+  assumes until: "AE \<omega> in T s. ev (HLD H) \<omega>"
+  shows "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) \<omega> \<partial>T s) \<noteq> \<infinity>"
+proof -
+  have R_ne[simp]: "?R `` {s} \<noteq> {}"
+    by auto
+  have [measurable]: "H \<in> sets (count_space UNIV)"
+    by simp
+
+  let ?Pf = "\<lambda>n t. \<P>(\<omega> in T t. enat n < sfirst (HLD H) (t ## \<omega>))"
+  have Pf_mono: "\<And>N n t. N \<le> n \<Longrightarrow> ?Pf n t \<le> ?Pf N t"
+    by (auto intro!: T.finite_measure_mono simp del: enat_ord_code(1) simp: enat_ord_code(1)[symmetric])
+
+  have "\<forall>\<^sub>F n in sequentially. \<forall>t\<in>?R``{s}. ?Pf n t < 1"
+  proof (safe intro!: eventually_ball_finite)
+    fix t assume "(s, t) \<in> ?R"
+    then have "AE \<omega> in T t. sfirst (HLD H) (t ## \<omega>) < \<infinity>"
+      unfolding sfirst_finite
+    proof induction
+      case (step t u) with step.IH show ?case
+        by (subst (asm) AE_T_iff) (auto simp: ev_Stream)
+    qed (simp add: ev_Stream eventually_frequently_simps until)
+    from AE_T_max_sfirst[OF _ this, of 1]
+    obtain N where "?Pf N t < 1" by auto
+    with Pf_mono[of N] show "\<forall>\<^sub>F n in sequentially. ?Pf n t < 1"
+      by (auto simp: eventually_sequentially intro: le_less_trans)
+  qed simp
+  then obtain n where "\<And>t. (s, t) \<in> ?R \<Longrightarrow> ?Pf n t < 1"
+    by (auto simp: eventually_sequentially)
+  moreover def d \<equiv> "Max (?Pf n ` ?R `` {s})"
+  ultimately have d: "0 \<le> d" "d < 1" "\<And>t. (s, t) \<in> ?R \<Longrightarrow> ?Pf (Suc n) t \<le> d"
+    using Pf_mono[of n "Suc n"] by (auto simp: Max_ge_iff measure_nonneg)
+
+  let ?F = "\<lambda>F \<omega>. if shd \<omega> \<in> H then 0 else 0 \<squnion> F (stl \<omega>) + 1 :: ereal"
+  have "sup_continuous ?F"
+    by (intro order_continuous_intros) simp
+  then have "mono ?F"
+    by (rule sup_continuous_mono)
+  have lfp_nonneg[simp]: "\<And>\<omega>. 0 \<le> lfp ?F \<omega>"
+    by (subst lfp_unfold[OF \<open>mono ?F\<close>]) auto
+
+  let ?I = "\<lambda>F s. \<integral>\<^sup>+t. (if t \<in> H then 0 else 0 \<squnion> F t + 1) \<partial>K s"
+  have "sup_continuous ?I"
+    by (intro order_continuous_intros) auto
+  then have "mono ?I"
+    by (rule sup_continuous_mono)
+
+  have not_H: "\<And>t. (s, t) \<in> ?R \<Longrightarrow> t \<notin> H"
+    using `s \<notin> H` by (auto elim: rtrancl.cases)
+
+  def p \<equiv> "Suc n / (1 - d)"
+  have p: "p = Suc n + d * p"
+    unfolding p_def using d(1,2) by (auto simp: field_simps)
+  have "0 \<le> p"
+    using d(1,2) by (auto simp: p_def)
+
+  have "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) \<omega> \<partial>T s) = (\<integral>\<^sup>+ \<omega>. lfp ?F \<omega> \<partial>T s)"
+  proof (intro nn_integral_cong_AE)
+    show "AE x in T s. sfirst (HLD H) x = lfp ?F x"
+      using until
+    proof eventually_elim
+      fix \<omega> assume "ev (HLD H) \<omega>" then show "sfirst (HLD H) \<omega> = lfp ?F \<omega>"
+        by (induction rule: ev_induct_strong;
+            subst lfp_unfold[OF \<open>mono ?F\<close>], simp add: HLD_iff[abs_def] ac_simps max_absorb2)
+    qed
+  qed
+  also have "\<dots> = lfp (?I^^Suc n) s"
+    unfolding lfp_funpow[OF \<open>mono ?I\<close>]
+    by (subst nn_integral_T_lfp)
+       (auto simp: nn_integral_add nn_integral_max_0 max_absorb2 nn_integral_nonneg fun_eq_iff
+             intro!: arg_cong2[where f=lfp] nn_integral_cong order_continuous_intros
+             split: split_indicator)
+  also have "lfp (?I^^Suc n) t \<le> p"
+    if "(s, t) \<in> ?R" for t
+    using that
+  proof (induction arbitrary: t rule: lfp_ordinal_induct[of "?I^^Suc n"])
+    case (step S)
+    have "(?I^^i) S t \<le> i + ?Pf i t * p" for i
+      using step(3)
+    proof (induction i arbitrary: t)
+      case 0 then show ?case
+        using T.prob_space step(1)
+        by (auto simp add: zero_ereal_def[symmetric] not_H zero_enat_def[symmetric] one_ereal_def[symmetric])
+    next
+      case (Suc i)
+      then have "t \<notin> H"
+        by (auto simp: not_H)
+      from Suc.prems have "\<And>t'. t' \<in> K t \<Longrightarrow> t' \<notin> H \<Longrightarrow> (s, t') \<in> ?R"
+        by (rule rtrancl_into_rtrancl) (insert Suc.prems, auto dest: not_H)
+      then have "(?I ^^ Suc i) S t \<le> ?I (\<lambda>t. ereal i + ereal (?Pf i t) * p) t"
+        by (auto simp: AE_measure_pmf_iff simp del: sfirst_eSuc space_T
+                 intro!: nn_integral_mono_AE add_mono max.mono Suc)
+      also have "\<dots> \<le> (\<integral>\<^sup>+ t. ereal (Suc i) + ereal \<P>(\<omega> in T t. enat i < sfirst (HLD H) (t ## \<omega>)) * p \<partial>K t)"
+        by (intro nn_integral_mono)
+           (auto simp: max_def measure_nonneg `0 \<le> p` real_of_nat_Suc one_ereal_def[symmetric] plus_ereal.simps[symmetric] field_simps
+                 simp del: ereal_plus_1 plus_ereal.simps)
+      also have "\<dots> \<le> Suc i + ereal (?Pf (Suc i) t) * p"
+        unfolding T.emeasure_eq_measure[symmetric]
+        by (subst (2) emeasure_Collect_T)
+           (auto simp: \<open>t \<notin> H\<close> eSuc_enat[symmetric] \<open>0 \<le> p\<close> emeasure_nonneg nn_integral_add nn_integral_multc)
+      finally show ?case by simp
+    qed
+    then have "(?I^^Suc n) S t \<le> ereal (Suc n + ?Pf (Suc n) t * p)" .
+    also have "\<dots> \<le> p"
+      using d step by (subst (2) p) (auto intro!: mult_right_mono \<open>0 \<le> p\<close>)
+    finally show ?case .
+  qed (auto simp: SUP_least intro!: mono_pow \<open>mono ?I\<close> simp del: funpow.simps)
+  finally show ?thesis
+    unfolding p_def by auto
+qed
+
 lemma nn_integral_sfirst_finite:
   assumes [simp]: "finite ((SIGMA x:- H. set_pmf (K x) - H)\<^sup>* `` {s})" (is "finite (?R `` {s})")
   assumes until: "AE \<omega> in T s. ev (HLD H) \<omega>"
   shows "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) (s ## \<omega>) \<partial>T s) \<noteq> \<infinity>"
 proof cases
-  assume "s \<in> H" then show ?thesis
-    by (simp add: sfirst.simps)
-next
-  assume "s \<notin> H"
-  then have [simp]: "?R `` {s} \<noteq> {}"
-    by auto
-
-  def X \<equiv> "\<lambda>n. ((\<lambda>Q. not (HLD H) aand nxt Q) ^^ n) \<top>"
-  then have X_simps: "X 0 = \<top>" "\<And>n. X (Suc n) = not (HLD H) aand nxt (X n)"
-    by simp_all
-
-  have [measurable]: "\<And>n. Measurable.pred S (X n)"
-    unfolding X_def
-  proof (intro measurable_predpow)
-    fix n and Q :: "'s stream \<Rightarrow> bool" assume [measurable]: "Measurable.pred S Q"
-    show "Measurable.pred S (\<lambda>xs. \<not> HLD H xs \<and> nxt Q xs)"
-      by measurable
-  qed (simp add: top_fun_def)
-
-  { fix t assume "(s, t) \<in> ?R"
-    then have "AE \<omega> in T t. ev (HLD H) (t ## \<omega>)"
-    proof induction
-      case (step t u) with step.IH show ?case
-        by (subst (asm) AE_T_iff)
-           (auto simp add: ev_Stream holds_Stream simp del: holds.simps elim!: ballE[of _ _ u])
-    qed (simp add: ev_Stream holds_Stream `s \<notin> H` del: holds.simps, fact)
-    moreover
-    assume "\<forall>n. AE \<omega> in T t. X n (t ## \<omega>)"
-    then have "AE \<omega> in T t. alw (not (HLD H)) (t ## \<omega>)"
-      unfolding alw_def X_def
-      by (subst inf_continuous_gfp) (auto simp: inf_continuous_def AE_all_countable top_fun_def)
-    ultimately have "AE \<omega> in T t. False"
-      by eventually_elim (simp add: not_ev_iff[symmetric] del: holds.simps)
-    then have False
-      by auto }
-  then have "\<forall>t\<in>?R `` {s}. \<exists>n. \<not> (AE \<omega> in T t. X n (t ## \<omega>))"
-    by blast
-  then obtain N where N: "\<And>t. (s, t) \<in> ?R \<Longrightarrow> \<not> (AE \<omega> in T t. X (N t) (t ## \<omega>))"
-    unfolding bchoice_iff by auto
-
-  def n \<equiv> "Max (N ` ?R `` {s})"
-  { fix t and m :: nat assume t: "(s, t) \<in> ?R"
-    then have "N t \<le> n"
-      by (simp add: n_def)
-    then have "X n \<le> X (N t)"
-      unfolding X_def by (intro funpow_increasing) (auto simp: mono_def)
-    with N[OF t] have "\<not> (AE \<omega> in T t. X n (t ## \<omega>))"
-      by (auto intro: eventually_mono simp add: le_fun_def top_fun_def) }
-  note n = this
-  have "\<not> N s = 0"
-      using N[of s] by (intro notI) (auto simp: X_simps)
-  then have "1 \<le> n"
-    unfolding n_def by (subst Max_ge_iff) (auto intro!: bexI[of _ s])
-
-  def d \<equiv> "Max ((\<lambda>t. \<P>(\<omega> in T t. X n (t ## \<omega>))) ` ?R `` {s})"
-  have d: "\<And>t. t \<in> ?R `` {s} \<Longrightarrow> \<P>(\<omega> in T t. X n (t ## \<omega>)) \<le> d"
-    by (simp add: d_def)
-  have [arith]: "0 \<le> d"
-    using d[of s] by (auto intro: measure_nonneg order_trans)
-  have "d < 1"
-    unfolding d_def
-    apply (subst Max_less_iff)
-    apply (auto simp add: less_le dest!: n simp del: space_T)
-    apply (subst (asm) T.prob_Collect_eq_1)
-    apply simp_all
-    done
-
-  let ?M = "\<lambda>s P. emeasure (T s) {\<omega>\<in>space (T s). P \<omega>}"
-
-  have "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) (s ## \<omega>) \<partial>T s) = (\<Sum>i. ?M s (\<lambda>\<omega>. i < sfirst (HLD H)(s ## \<omega>)))"
-    by (intro nn_integral_enat_function) simp
-  also have "\<dots> \<le> (\<Sum>i. ereal (d^(i div n)))"
-  proof (intro suminf_le_pos emeasure_nonneg)
-    fix N
-    def i \<equiv> "N div n"
-    def t \<equiv> "s"
-    then have "(s, t) \<in> ?R"
-      by simp
-    have "\<And>\<omega>. enat N < sfirst (HLD H)(s ## \<omega>) \<Longrightarrow> enat (i * n) < sfirst (HLD H)(s ## \<omega>)"
-      by (metis le_add1 mod_div_equality i_def enat_ord_code(1) le_less_trans)
-    then have "?M s (\<lambda>\<omega>. enat N < sfirst (HLD H)(s ## \<omega>)) \<le> ?M t (\<lambda>\<omega>. enat (i * n) < sfirst (HLD H)(t ## \<omega>))"
-      unfolding t_def by (intro emeasure_mono Collect_mono) (auto simp: i_def)
-    also have "\<dots> \<le> ereal (d ^ i)"
-      using `(s, t) \<in> ?R`
-    proof (induction i arbitrary: t)
-      case 0 then show ?case
-        using T.emeasure_space_1
-        by (cases "t \<in> H") (simp_all add: sfirst_Stream zero_enat_def[symmetric])
-    next
-      case (Suc i)
-      def j \<equiv> "i * n"
-      have [simp, arith]: "0 \<le> d ^ i"
-        by (auto simp add: field_simps intro!: ereal_0_le_mult zero_le_power)
-        
-      { fix \<omega> have "enat (n + j) < sfirst (HLD H)\<omega> \<longleftrightarrow> X n \<omega> \<and> enat j < sfirst (HLD H)(sdrop n \<omega>)"
-        proof (induct n arbitrary: \<omega>)
-          case (Suc n) then show ?case
-            by (cases \<omega>) (simp add: sfirst_Stream eSuc_enat[symmetric] X_simps)
-        qed (simp add: X_simps) }
-      then have "?M t (\<lambda>\<omega>. enat (Suc i * n) < sfirst (HLD H)(t ## \<omega>))
-        = ?M t (\<lambda>\<omega>. X n (t ## \<omega>) \<and> enat j < sfirst (HLD H)(sdrop n (t ## \<omega>)))"
-        by (simp add: j_def)
-      also have "\<dots> \<le> ?M t (\<lambda>\<omega>. X n (t ## \<omega>)) * ereal (d ^ i)"
-        using Suc.prems
-      proof (induction n arbitrary: t)
-        case (0 t) then show ?case
-          using Suc.IH[of t] T.emeasure_space_1 `d < 1`
-          by (auto simp add: X_simps sfirst_Stream j_def)
-      next
-        case (Suc n s)
-        show ?case
-        proof cases
-          assume "s \<notin> H"
-          then have "?M s (\<lambda>\<omega>. X (Suc n) (s ## \<omega>) \<and> enat j < sfirst (HLD H)(sdrop (Suc n) (s ## \<omega>)))
-            = (\<integral>\<^sup>+t. ?M t (\<lambda>\<omega>. X n (t ## \<omega>) \<and> enat j < sfirst (HLD H)(sdrop n (t ## \<omega>))) \<partial>K s)"
-            by (subst emeasure_Collect_T) (auto simp add: X_simps)
-          also have "\<dots> \<le> (\<integral>\<^sup>+t. ?M t (\<lambda>\<omega>. X n (t ## \<omega>)) * ereal (d ^ i) \<partial>K s)"
-            using `d < 1` `s \<notin> H`
-            apply (intro nn_integral_mono_AE)
-            apply (auto simp add: X_simps sfirst_Stream emeasure_nonneg AE_measure_pmf_iff)
-            apply (case_tac "y \<in> H")
-            apply (cases n)
-            apply (auto simp add: X_simps sfirst_Stream intro!: ereal_0_le_mult) []
-            apply (simp add: X_simps)
-            apply (cut_tac t1=y in Suc.IH[OF rtrancl_into_rtrancl[OF Suc.prems]])
-            apply simp
-            apply simp
-            done
-          also have "\<dots> = (\<integral>\<^sup>+t. ?M t (\<lambda>\<omega>. X n (t ## \<omega>)) \<partial>K s) * d ^ i"
-            by (intro nn_integral_multc) auto
-          also have "\<dots> = ?M s (\<lambda>\<omega>. X (Suc n) (s ## \<omega>)) * d ^ i"
-            using `s \<notin>  H` by (subst (2) emeasure_Collect_T) (simp_all add: X_simps)
-          finally show ?case .
-        qed (simp add: X_simps)
-      qed
-      also have "\<dots> \<le> ereal d * d^i"
-        using Suc.prems
-        by (intro ereal_mult_right_mono)
-           (simp_all add: T.emeasure_eq_measure d del: space_T)
-      finally show ?case
-        by simp
-    qed
-    finally show "emeasure (T s) {\<omega> \<in> space (T s). enat N < sfirst (HLD H)(s ## \<omega>)} \<le> ereal (d ^ i)" .
-  qed
-  also have "\<dots> < \<infinity>"
-  proof cases
-    assume "d = 0"
-    with `1 \<le> n` have "summable (\<lambda>i. d ^ (i div n))"
-      by (auto simp add: power_0_left div_eq_0_iff)
-    then show "(\<Sum>i. ereal (d ^ (i div n))) < \<infinity>"
-      by (auto simp: suminf_ereal_finite)
-  next
-    assume "d \<noteq> 0"
-    from `d < 1` `1 \<le> n` have "root n d < 1"
-      by (subst real_root_lt_1_iff) simp
-    with summable_geometric[of "root n d"] `0 \<le> d`
-    have "summable (\<lambda>i. root n d ^ i / d)"
-      by (simp add: real_root_ge_zero summable_divide)
-    then have "summable (\<lambda>i. d ^ (i div n))"
-    proof (rule summable_comparison_test[rotated], intro exI allI impI)
-      fix i
-      have "i \<le> i div n * n + n"  
-        using `1 \<le> n`
-        by (subst mod_div_equality[symmetric, of i n]) (intro add_mono, auto)
-      then have "(d ^ (i div n) * d) ^ Suc (n - 1) \<le> (root n d ^ n) ^ i"
-        using `1 \<le> n` `0 \<le> d` `d < 1` mod_div_equality[of i n]
-        by (auto simp add: power_Suc2[symmetric] power_mult[symmetric] simp del: power_Suc
-                 intro!: power_decreasing)
-      also have "\<dots> = (root n d ^ i) ^ (Suc (n - 1))"
-        using `1 \<le> n` unfolding power_mult[symmetric] by (simp add: ac_simps)
-      finally have "(d ^ (i div n) * d) \<le> root n d ^ i"
-        by (rule power_le_imp_le_base) (insert `0 \<le> d` `1 \<le> n`, simp)
-      then show "norm (d ^ (i div n)) \<le> (root n d ^ i / d)"
-        using `0 \<le> d` `d \<noteq> 0` by (simp_all add: divide_simps)
-    qed
-    then show "(\<Sum>i. ereal (d ^ (i div n))) < \<infinity>"
-      by (auto simp: suminf_ereal_finite)
-  qed
-  finally show ?thesis
-    by simp
-qed
+  assume "s \<notin> H" then show ?thesis
+    using nn_integral_sfirst_finite'[of s H] until by (simp add: nn_integral_add)
+qed (simp add: sfirst.simps)
 
 lemma emeasure_HLD_nxt:
   assumes [measurable]: "Measurable.pred S P"
@@ -1666,11 +1593,6 @@ proof -
 
   have [measurable]: "lfp ?F \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M S)"
   proof (rule borel_measurable_lfp)
-    show "sup_continuous ?F"
-      using \<iota>_nonneg \<rho>_nonneg
-      by (auto simp: sup_continuous_def SUP_ereal_add_right SUP_sup_distrib[symmetric]
-               simp del: sup_ereal_def)
-  next
     fix f :: "('s \<times> 's stream) \<Rightarrow> ereal"
     assume [measurable]: "f \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M S)"
     show "?F f \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M S)"
@@ -1682,16 +1604,15 @@ proof -
       apply (rule measurable_compose[OF measurable_fst])
       apply measurable []
       done
-  qed
+  qed (auto intro!: \<iota>_nonneg \<rho>_nonneg ereal_add_nonneg_nonneg order_continuous_intros)
   show ?thesis
     unfolding * by measurable
 qed
 
 lemma continuous_reward_until:
   "sup_continuous (\<lambda>F s \<omega>. if s \<in> X then 0 else \<rho> s + \<iota> s (shd \<omega>) + (0 \<squnion> (F (shd \<omega>) (stl \<omega>))))"
-  unfolding sup_continuous_def
-  using \<iota>_nonneg \<rho>_nonneg
-  by (auto simp: fun_eq_iff SUP_ereal_add_right SUP_sup_distrib[symmetric] simp del: sup_ereal_def)
+  by (intro \<iota>_nonneg \<rho>_nonneg ereal_add_nonneg_nonneg order_continuous_intros)
+     (auto simp: sup_continuous_def)
 
 lemma
   shows reward_until_nonneg: "\<And>s \<omega>. 0 \<le> reward_until X s \<omega>"

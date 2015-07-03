@@ -167,7 +167,7 @@ next
   then show "(\<integral>\<^sup>+ a. g (shd a) (F (stl a)) \<partial>T s) =
            (\<integral>\<^sup>+ cfg. g (state cfg) (integral\<^sup>N (T cfg) F) \<partial>K_cfg s)"
     by (rewrite nn_integral_T) (simp_all add: int_g)
-qed (auto intro!: sup_continuous_intros sup_continuous_nn_integral cont_g[THEN sup_continuous_compose])
+qed (auto intro!: order_continuous_intros cont_g[THEN sup_continuous_compose])
 
 lemma emeasure_Collect_T:
   assumes [measurable]: "Measurable.pred St P"
@@ -495,8 +495,7 @@ proof (rule antisym)
       unfolding P_def l_def using measurable_g cont_g int_g by (rule nn_integral_T_lfp)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom>) (memoryless_on ct s)"
       by (rewrite sup_continuous_lfp)
-         (auto intro!: sup_continuous_intros sup_continuous_nn_integral cont_g[THEN sup_continuous_compose]
-               simp: P_def)
+         (auto intro!: order_continuous_intros cont_g[THEN sup_continuous_compose] simp: P_def)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom> (memoryless_on ct s))"
       by simp
     also have "\<dots> \<le> lfp ?F s"
@@ -521,8 +520,7 @@ proof (rule antisym)
   qed
 
   have cont_l: "sup_continuous l"
-     by (auto simp: l_def le_fun_def fun_eq_iff sup_continuous_def mono_def
-              intro!: sup_continuousD[OF cont_g])
+    by (auto simp: l_def intro!: order_continuous_intros cont_g[THEN sup_continuous_compose])
 
   show "lfp ?F \<le> (\<lambda>s. E_inf s (lfp l))"
   proof (intro lfp_lowerbound le_funI)

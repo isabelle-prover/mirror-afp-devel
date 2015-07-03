@@ -443,21 +443,6 @@ lemma finite_lessThan_enat_iff:
   "finite {..<m :: enat} \<longleftrightarrow> m \<noteq> \<infinity>"
 by(cases m)(auto intro: finite_lessThan_enatI simp add: infinite_lessThan_infty)
 
-
-lemma eSuc_max: "eSuc (max x y) = max (eSuc x) (eSuc y)"
-by(cases x y rule: enat.exhaust[case_product enat.exhaust]) simp_all
-
-lemma eSuc_Max: 
-  assumes "finite A" "A \<noteq> {}"
-  shows "eSuc (Max A) = Max (eSuc ` A)"
-using assms proof induction
-  case (insert x A)
-  thus ?case by(cases "A = {}")(simp_all add: eSuc_max)
-qed simp
-
-lemma eSuc_Sup: "A \<noteq> {} \<Longrightarrow> eSuc (Sup A) = Sup (eSuc ` A)"
-by(auto simp add: Sup_enat_def eSuc_Max inj_on_def dest: finite_imageD)
-
 lemma enat_minus_mono1: "x \<le> y \<Longrightarrow> x - m \<le> y - (m :: enat)"
 by(cases m x y rule: enat.exhaust[case_product enat.exhaust[case_product enat.exhaust]]) simp_all
 
