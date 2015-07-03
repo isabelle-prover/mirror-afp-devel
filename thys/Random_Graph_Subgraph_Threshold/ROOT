@@ -9,3 +9,4 @@ session "Random_Graph_Subgraph_Threshold" (AFP) = "HOL-Probability" +
     Subgraph_Threshold
   document_files
     "root.tex"
+    "root.bib"
