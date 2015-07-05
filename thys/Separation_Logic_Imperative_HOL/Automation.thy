@@ -402,12 +402,9 @@ structure Seplogic_Auto = struct
   end;
 
   fun assn_simproc_fun ctxt credex = let
-    (*val ctxt = Simplifier.the_context ss*)
     val ([redex],ctxt') = Variable.import_terms true [Thm.term_of credex] ctxt;
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
-
-    val thy = Thm.theory_of_cterm credex;
 
     fun mk_star t1 t2 = @{term "op *::assn \<Rightarrow> _ \<Rightarrow> _"}$t2$t1;
 
