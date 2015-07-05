@@ -60,7 +60,8 @@ structure Record_Intf: RECORD_INTF = struct
   fun add_unf_thms_global thms = Context.theory_map (add_unf_thms thms);
   
   (* Gather select_conv-, defs- and simps-theorems for given type *)
-  fun gather_conv_thms thy typ = let
+  fun gather_conv_thms ctxt typ = let
+    val thy = Proof_Context.theory_of ctxt
     val infos = Record.dest_recTs typ 
       |> map fst |> map Long_Name.qualifier |> map (Record.the_info thy);
     val cs = map #select_convs infos |> flat |> map (Thm.transfer thy);
@@ -69,9 +70,9 @@ structure Record_Intf: RECORD_INTF = struct
   in (cs,ds) end
 
   (* Gather select_conv theorems type of constant defined by def_thm *)
-  fun gather_conv_thms_dt thy def_thm =
+  fun gather_conv_thms_dt ctxt def_thm =
     def_thm |> Thm.prop_of |> Logic.dest_equals |> fst 
-    |> fastype_of |> gather_conv_thms thy;
+    |> fastype_of |> gather_conv_thms ctxt;
 
   (* Generate code-unfold theorems for definition
     and remove definition from
@@ -80,18 +81,17 @@ structure Record_Intf: RECORD_INTF = struct
   local
     fun unf_thms_of def_thm context = let
       val ctxt = Context.proof_of context;
-      val thy = Context.theory_of context;
       
       val def_thm = norm_def_thm def_thm;
 
-      val (conv_thms, simp_thms) = gather_conv_thms_dt thy def_thm;
+      val (conv_thms, simp_thms) = gather_conv_thms_dt ctxt def_thm;
       val ss = put_simpset (get_unf_ss context) ctxt addsimps simp_thms
       (*val simp_thms = icf_rec_unf.get ctxt @ simp_thms;*)
 
       val unf_thms = conv_thms 
         |> map (
           chead_of_thm 
-          #> inst_meta_cong 
+          #> inst_meta_cong ctxt
           #> (fn thm => thm OF [def_thm])
           #> simplify ss
         )
