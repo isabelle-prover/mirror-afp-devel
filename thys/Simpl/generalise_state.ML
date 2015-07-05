@@ -95,7 +95,6 @@ fun spec' cv thm =
      (case Thm.term_of ct1 of 
        Const (@{const_name "Trueprop"},_) 
         => let 
-             val thy = Thm.theory_of_thm thm; 
              val (Var (sP,_)$Var (sV,sVT)) = HOLogic.dest_Trueprop (Thm.concl_of spec);
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
@@ -107,7 +106,6 @@ fun spec' cv thm =
            end
       | Const (@{const_name Pure.all},_)
         => let 
-             val thy = Thm.theory_of_thm thm; 
              val (Var (sP,_)$Var (sV,sVT)) = Thm.concl_of meta_spec;
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
@@ -149,26 +147,24 @@ fun split_thm qnt ctxt s T t =
   
 
 
-fun eta_expand ct = 
+fun eta_expand ctxt ct = 
   let
     val mi = Thm.maxidx_of_cterm ct;
-    val thy = Thm.theory_of_cterm ct;
     val T = domain_type (Thm.typ_of_cterm ct);
-    val x = Thm.global_cterm_of thy (Var (("s",mi+1),T));
+    val x = Thm.cterm_of ctxt (Var (("s",mi+1),T));
   in Thm.lambda x (Thm.apply ct x) end;
 
-fun split_abs ct =
+fun split_abs ctxt ct =
   (case Thm.term_of ct of
-     Abs x => (x,Thm.dest_abs NONE ct)
-   | _ => split_abs (eta_expand ct))
+     Abs x => (x, Thm.dest_abs NONE ct)
+   | _ => split_abs ctxt (eta_expand ctxt ct))
             
 fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
       ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => SIMPLE_OF ctxt genConj [thm,thm'])
   | decomp ctxt ((allc as Const (@{const_name "All"},aT)) $ f, ct) = 
        let 
-         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
-         val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
+         val (abst as (x,T,_),(cx',cb)) = split_abs ctxt cf;    
          val Free (x',_) = Thm.term_of cx';
          val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = genAll |> Thm.prems_of |> hd |> dest_prop;
          val genAll' = Drule.rename_bvars [(s,x)] genAll;
@@ -189,9 +185,8 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
        end
   | decomp ctxt ((exc as Const (@{const_name "Ex"},_)) $ f, ct) =
        let
-         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
-         val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
+         val (abst as (x,T,_),(cx',cb)) = split_abs ctxt cf;    
          val Free (x',_) = Thm.term_of cx';
          val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = genEx |> Thm.prems_of |> hd |> dest_prop;
          val genEx' = Drule.rename_bvars [(s,x)] genEx;
@@ -227,9 +222,8 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
        end
   | decomp ctxt ((allc as Const (@{const_name Pure.all},_)) $ f, ct) =
        let 
-         val thy = Proof_Context.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
-         val (abst as (x,T,_),(cx',cb)) = split_abs cf;    
+         val (abst as (x,T,_),(cx',cb)) = split_abs ctxt cf;    
          val Free (x',_) = Thm.term_of cx';
          val (Const (@{const_name Pure.all},_)$Abs (s,_,_)) = gen_all |> Thm.prems_of |> hd |> dest_prop;
          val gen_all' = Drule.rename_bvars [(s,x)] gen_all;
@@ -267,14 +261,13 @@ val cx = meta_spec_protect |> Thm.cprop_of |> Thm.dest_implies |> snd |> Thm.des
          Thm.dest_comb |> snd
 fun init ct = Drule.instantiate' [] [SOME ct] protectRefl;
 in
-fun generalise_over_tac P i st = 
+fun generalise_over_tac ctxt P i st = 
   let 
     val t = List.nth (Thm.prems_of st,i-1);
-    val thy = Thm.theory_of_thm st;
   in (case P t of
        SOME t' =>
         let
-          val ct = Thm.global_cterm_of thy t';
+          val ct = Thm.cterm_of ctxt t';
           val meta_spec_protect' = cterm_instantiate [(cx,ct)] meta_spec_protect;
         in 
           (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
@@ -287,7 +280,8 @@ fun generalise_over_tac P i st =
   end
 end
 
-fun generalise_over_all_states_tac i = REPEAT (generalise_over_tac SplitState.abs_state i);
+fun generalise_over_all_states_tac ctxt i =
+  REPEAT (generalise_over_tac ctxt SplitState.abs_state i);
 
 fun generalise_tac ctxt i st =
   let 
@@ -302,7 +296,7 @@ fun generalise_tac ctxt i st =
   end
 
 fun GENERALISE ctxt i = 
-  generalise_over_all_states_tac i THEN 
+  generalise_over_all_states_tac ctxt i THEN 
   generalise_tac ctxt i
 
 end;
