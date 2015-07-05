@@ -550,11 +550,7 @@ ML {*
 
       fun mpat_conv pat ctxt ct = let
         val (tym,tm) = Thm.first_order_match (pat,ct);
-        val tm' = map (fn (pt,ot) =>
-          case Thm.term_of pt of
-            (Var ((name,_),_)) => (pt,tag_ct name ot)
-          | _ => (pt,ot)
-        ) tm;
+        val tm' = map (fn (pt as ((name, _), _),ot) => (pt,tag_ct name ot)) tm;
         val ct' = Thm.instantiate_cterm (tym,tm') pat;
 
         val rthm = Goal.prove_internal ctxt [] (mk_equals_ct (ct,ct'))

@@ -71,17 +71,15 @@ fun dest_All (Const (@{const_name "All"},_)$t) = t
 
 
 
-infix 0 SIMPLE_OF
-fun rule SIMPLE_OF prems = 
+fun SIMPLE_OF ctxt rule prems = 
   let
     val mx = fold (fn thm => fn i => Int.max (Thm.maxidx_of thm,i)) prems 0;
-  in DistinctTreeProver.discharge prems (Thm.incr_indexes (mx + 1) rule) end;
+  in DistinctTreeProver.discharge ctxt prems (Thm.incr_indexes (mx + 1) rule) end;
 
 infix 0 OF_RAW
 fun tha OF_RAW thb = thb COMP (Drule.incr_indexes thb tha);
 
-infix 0 SIMPLE_OF_RAW
-fun tha SIMPLE_OF_RAW thb = tha SIMPLE_OF [thb]; 
+fun SIMPLE_OF_RAW ctxt tha thb = SIMPLE_OF ctxt tha [thb]; 
 
 
 datatype qantifier = Meta_all | Hol_all | Hol_ex
@@ -102,9 +100,9 @@ fun spec' cv thm =
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
-                ([(Thm.global_ctyp_of thy sVT,cvT)],
-                 [(Thm.global_cterm_of thy (Var (sP,vT --> HOLogic.boolT)),#2 (Thm.dest_comb ct2)),
-                 (Thm.global_cterm_of thy (Var (sV,vT)),cv)])
+                ([(dest_TVar sVT, cvT)],
+                 [((sP, vT --> HOLogic.boolT), #2 (Thm.dest_comb ct2)),
+                 ((sV, vT), cv)])
                 spec
            end
       | Const (@{const_name Pure.all},_)
@@ -114,9 +112,9 @@ fun spec' cv thm =
              val cvT = Thm.ctyp_of_cterm cv;
              val vT = Thm.typ_of cvT;
            in Thm.instantiate 
-                ([(Thm.global_ctyp_of thy sVT,cvT)],
-                 [(Thm.global_cterm_of thy (Var (sP,vT --> propT)),ct2),
-                 (Thm.global_cterm_of thy (Var (sV,vT)),cv)])
+                ([(dest_TVar sVT, cvT)],
+                 [((sP, vT --> propT), ct2),
+                 ((sV, vT),cv)])
                 meta_spec
            end
       | _ => raise THM ("spec'",0,[thm]))
@@ -137,13 +135,13 @@ fun split_thm qnt ctxt s T t =
   in (case qnt of
         Hol_ex => Goal.prove ctxt [] [] prop (fn _ => SplitState.ex_tac ctxt vars)
       | _ => let 
-               val rP = Thm.cterm_of ctxt (conc_of genRefl');
-               val thm0 = Thm.instantiate ([], [(rP, Thm.cterm_of ctxt prop)]) genRefl';
+               val rP = conc_of genRefl';
+               val thm0 = Thm.instantiate ([], [(dest_Var rP, Thm.cterm_of ctxt prop)]) genRefl';
                fun elim_all v thm =
                  let 
                    val cv = Thm.cterm_of ctxt v;
                    val spc = Goal.protect 0 (spec' cv thm);
-                 in genTrans SIMPLE_OF [thm,spc] end;
+                 in SIMPLE_OF ctxt genTrans [thm,spc] end;
                val thm = fold elim_all vars thm0;
              in thm end)
    end;
@@ -165,7 +163,7 @@ fun split_abs ct =
    | _ => split_abs (eta_expand ct))
             
 fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
-      ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => genConj SIMPLE_OF [thm,thm'])
+      ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => SIMPLE_OF ctxt genConj [thm,thm'])
   | decomp ctxt ((allc as Const (@{const_name "All"},aT)) $ f, ct) = 
        let 
          val thy = Proof_Context.theory_of ctxt;
@@ -184,7 +182,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                                         Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm'));
                            val thm2 = genAll' OF_RAW 
                                         Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm));
-                       in genTrans SIMPLE_OF [thm1,thm2]
+                       in SIMPLE_OF ctxt genTrans [thm1,thm2]
                        end)
           else ([Thm.term_of cb],[cb], fn [thm] => 
                         genAll' OF_RAW Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm)))
@@ -201,7 +199,7 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
           then ([Thm.term_of cb],[cb], fn [thm] => 
                        let val P = HOLogic.dest_Trueprop (dest_prop (prem_of thm));
                            val thm' = split_thm Hol_ex ctxt x' T P;
-                       in protectImp SIMPLE_OF_RAW Goal.protect 0 thm' end )
+                       in SIMPLE_OF_RAW ctxt protectImp (Goal.protect 0 thm') end )
           else ([Thm.term_of cb],[cb], fn [thm] => 
                        genEx' OF_RAW Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm)))
        end
@@ -212,9 +210,9 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
              let
                val X = genImp |> Thm.concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop |> HOLogic.dest_Trueprop |> HOLogic.dest_imp |> #1 
-                       |> Thm.cterm_of ctxt;
+                       |> dest_Var;
                val genImp' = Thm.instantiate ([],[(X,cP)]) genImp;
-             in genImp' SIMPLE_OF [thm] end)
+             in SIMPLE_OF ctxt genImp' [thm] end)
        end 
   | decomp ctxt (Const (@{const_name Pure.imp},_)$P$Q, ct) =
        let 
@@ -223,9 +221,9 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
              let
                val X = genImpl |> Thm.concl_of |> dest_prop |> Logic.dest_implies |> #1 
                        |> dest_prop  |> Logic.dest_implies |> #1 
-                       |> Thm.cterm_of ctxt;
+                       |> dest_Var;
                val genImpl' = Thm.instantiate ([],[(X,cP)]) genImpl;
-             in genImpl' SIMPLE_OF [thm] end) 
+             in SIMPLE_OF ctxt genImpl' [thm] end) 
        end
   | decomp ctxt ((allc as Const (@{const_name Pure.all},_)) $ f, ct) =
        let 
@@ -245,16 +243,15 @@ fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
                                        Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm'));
                            val thm2 = gen_all' OF_RAW 
                                        Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm));
-                       in genTrans SIMPLE_OF [thm1,thm2]
+                       in SIMPLE_OF ctxt genTrans [thm1,thm2]
                        end)
           else ([Thm.term_of cb],[cb], fn [thm] => 
                     gen_all' OF_RAW Goal.protect 0 (Thm.forall_intr cx' (Goal.conclude thm)))
        end
   | decomp ctxt (Const (@{const_name "Trueprop"},_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
   | decomp ctxt (t, ct) = ([],[], fn [] => 
-                         let val rP = Thm.cterm_of ctxt
-                                       (HOLogic.dest_Trueprop (dest_prop (conc_of genRefl)));
-                         in  Thm.instantiate ([],[(rP,ct)]) genRefl end)
+                         let val rP = HOLogic.dest_Trueprop (dest_prop (conc_of genRefl));
+                         in  Thm.instantiate ([],[(dest_Var rP, ct)]) genRefl end)
 
 fun generalise ctxt ct = gen_thm (decomp ctxt) (Thm.term_of ct,ct);
 

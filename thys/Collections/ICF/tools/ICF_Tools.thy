@@ -19,8 +19,8 @@ ML {*
 
     val parse_cpat: cterm context_parser
 
-    val rename_cterm: (cterm * cterm) 
-      -> (ctyp*ctyp) list * (cterm * cterm) list
+    val rename_cterm: (cterm * cterm) ->
+      ((indexname * sort) * ctyp) list * ((indexname * typ) * cterm) list
     val renames_cterm: (cterm * cterm) -> bool
 
     val import_cterm: cterm -> Proof.context -> cterm * Proof.context

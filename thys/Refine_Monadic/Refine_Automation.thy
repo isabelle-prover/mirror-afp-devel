@@ -268,8 +268,7 @@ let
   val concl = Term_Subst.instantiate (typ_subst,term_subst) concl;
   *)
 
-  val term_subst = #2 inst |> map (apply2 Thm.term_of) 
-    |> map (apfst dest_Var);
+  val term_subst = #2 inst |> map (apsnd Thm.term_of);
 
   val param_terms = map (fn name =>
     case AList.lookup (fn (n,v) => n = #1 v) term_subst name of

@@ -1734,7 +1734,7 @@ fun split_pair_apps ctxt thm =
           | _ =>  mk_subst (mk_subst subst t1) t2)
       | mk_subst subst t = subst;
 
-  val subst = map (fn (v,t) => (Thm.cterm_of ctxt v, Thm.cterm_of ctxt t)) (mk_subst [] t);
+  val subst = map (fn (v,t) => (dest_Var v, Thm.cterm_of ctxt t)) (mk_subst [] t);
 
   in full_simplify (put_simpset HOL_basic_ss ctxt addsimps [@{thm fst_conv}, @{thm snd_conv}])
        (Drule.instantiate_normalize ([],subst) thm)
@@ -1814,9 +1814,9 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
        val max_idx = fold Integer.max (map (Thm.maxidx_of o snd) tvar_rules) 0;
        val types = map (fn i => TVar (("z",i),Sign.defaultS thy))
                     (max_idx + 1 upto (max_idx + length vars));
-       fun ctyp n = Thm.ctyp_of ctxt (TVar (n,Sign.defaultS thy));
+       fun tvar n = (n, Sign.defaultS thy);
        val pT = Thm.ctyp_of ctxt (foldr1 HOLogic.mk_prodT types);
-       val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,pT)],[]) r)) tvar_rules;
+       val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,pT)],[]) r)) tvar_rules;
        val splits = mk_split_thms ctxt (vars ~~ types);
        val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
      in if split_app then (map (split_pair_apps ctxt) rules'') else rules'' end
@@ -1824,9 +1824,9 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
   | adapt_aux_var ctxt _ ([]) tvar_rules =
       let
         val thy = Proof_Context.theory_of ctxt;
-        fun ctyp n = Thm.ctyp_of ctxt (TVar (n,Sign.defaultS thy));
+        fun tvar n = (n, Sign.defaultS thy);
         val uT = Thm.ctyp_of ctxt HOLogic.unitT;
-        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,uT)],[]) r)) tvar_rules;
+        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,uT)],[]) r)) tvar_rules;
         val splits = [unit_meta,unit_object,unit_ex,unit_UN];
         val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
       in rules'' end

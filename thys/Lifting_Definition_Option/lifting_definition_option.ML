@@ -161,7 +161,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val ty_vars'' = names |> (fn names => map convert (names ~~ ty_vars))
 
         (* now instantiate inhabit thm to ty_vars' *)
-        val ty_vars'_map = map (Thm.ctyp_of lthy') sch_vars ~~ map (Thm.ctyp_of lthy') ty_vars'
+        val ty_vars'_map = map dest_TVar sch_vars ~~ map (Thm.ctyp_of lthy') ty_vars'
         val inhabit = Thm.instantiate (ty_vars'_map, []) inhabit
         val some_thm = @{thm someI_ex} OF [inhabit]
         val some = some_thm |> Thm.prop_of |> HOLogic.dest_Trueprop
@@ -200,8 +200,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val morph = get_export_morph lthy lthy1
         val wit_thm = Morphism.thm morph wit_thm
         val sch_vars = map (Morphism.typ morph) ty_vars' |> map dest_TVar
-        val sch_vars_mapI =
-          map (Thm.ctyp_of lthy o TVar) sch_vars ~~ map (Thm.ctyp_of lthy) restr_arg_tys
+        val sch_vars_mapI = sch_vars ~~ map (Thm.ctyp_of lthy) restr_arg_tys
         val wit_thmI = wit_thm |> Thm.instantiate (sch_vars_mapI, [])
         val morph_t = Morphism.term morph #> subst_TVars (map fst sch_vars ~~ ty_vars)
       in (morph_t P, morph_t wit, wit_thmI, ty_vars, ty_vars'', base_ty, restr_ty, info, lthy) end

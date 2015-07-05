@@ -37,7 +37,7 @@ fun change_compare_code const inst_names lthy =
     val ctyp_of = TVar #> Thm.ctyp_of lthy
     fun filt s = not (member (op =) (@{sort ord} @ @{sort linorder} @ @{sort order}) s)
     val map_types = maps (fn ty => if List.exists (fn tn => tn = (fst o fst) ty) inst_names then 
-      [(ctyp_of ty, ctyp_of (apsnd (fn ss => filter filt ss @ @{sort compare_order}) ty))] else 
+      [(ty, ctyp_of (apsnd (fn ss => filter filt ss @ @{sort compare_order}) ty))] else 
       []) types
     val code_eqs = map (Thm.instantiate (map_types, [])) code_eqs 
 
