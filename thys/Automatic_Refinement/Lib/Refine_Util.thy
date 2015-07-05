@@ -6,7 +6,7 @@ definition conv_tag where "conv_tag n x == x"
   -- {* Used internally for @{text "pat_conv"}-conversion *}
 
 ML {*
-  infix 0 RSm THEN_ELSE' THEN_ELSE_COMB'
+  infix 0 THEN_ELSE' THEN_ELSE_COMB'
   infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL
   infix 2 ORELSE_INTERVAL
   infix 3 ->>
@@ -25,7 +25,7 @@ ML {*
     val seq_is_empty: 'a Seq.seq -> bool * 'a Seq.seq
 
     (* Resolution with matching *)
-    val RSm: thm * thm -> thm
+    val RSm: Proof.context -> thm -> thm -> thm
 
     val is_Abs: term -> bool
     val is_Comb: term -> bool
@@ -168,17 +168,14 @@ ML {*
       NONE => (true, seq)
     | SOME (a,seq) => (false, Seq.cons a seq)
 
-    fun (thA RSm thB) = let
-      val thy = Context.merge (apply2 Thm.theory_of_thm (thA,thB))
-      val ctxt = Proof_Context.init_global thy
-      val octxt = ctxt
-      val ctxt = Variable.declare_thm thA ctxt
-      val ctxt = Variable.declare_thm thB ctxt
-      val (thA,ctxt) = 
-        yield_singleton (apfst snd oo Variable.import true) thA ctxt
+    fun RSm ctxt thA thB = let
+      val (thA, ctxt') = ctxt
+        |> Variable.declare_thm thA
+        |> Variable.declare_thm thB
+        |> yield_singleton (apfst snd oo Variable.import true) thA
       val thm = thA RS thB
-      val thm = singleton (Variable.export ctxt octxt) thm
-      |> Drule.zero_var_indexes
+      val thm = singleton (Variable.export ctxt' ctxt) thm
+        |> Drule.zero_var_indexes
     in 
       thm
     end
