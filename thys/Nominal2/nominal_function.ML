@@ -151,7 +151,7 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
       let
         val NominalFunctionResult {fs, R, psimps, simple_pinducts,
           termination, domintros, cases, eqvts, ...} =
-          cont (Thm.close_derivation proof)
+          cont lthy (Thm.close_derivation proof)
   
         val fnames = map (fst o fst) fixes
         fun qualify n = Binding.name n

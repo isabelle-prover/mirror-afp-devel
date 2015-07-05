@@ -19,7 +19,7 @@ sig
     -> term list
     -> local_theory
     -> ((thm (* goalstate *)
-        * (thm -> Nominal_Function_Common.nominal_function_result) (* proof continuation *)
+        * (Proof.context -> thm -> Nominal_Function_Common.nominal_function_result) (* proof continuation *)
        ) * local_theory)
 end
 
@@ -441,7 +441,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val ((G_aux, GIntro_aux_thms, _, G_aux_induct), lthy''') = 
       Nominal_Function_Core.inductive_def ((Binding.name G_name_aux, G_type), NoSyn) GIntros_aux lthy''
 
-    val mutual_cont = mk_partial_rules_mutual lthy''' cont mutual'
+    fun mutual_cont ctxt = mk_partial_rules_mutual lthy''' (cont ctxt) mutual'
 
     (* proof of equivalence between graph and auxiliary graph *)
     val x = Var(("x", 0), ST)

@@ -22,7 +22,7 @@ sig
         * thm list (* GIntros *)
         * thm (* Ginduct *) 
         * thm  (* goalstate *)
-        * (thm -> Nominal_Function_Common.nominal_function_result) (* continuation *)
+        * (Proof.context -> thm -> Nominal_Function_Common.nominal_function_result) (* continuation *)
        ) * local_theory
 
   val inductive_def : (binding * typ) * mixfix -> term list -> local_theory 
@@ -1063,11 +1063,8 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
       (prove_stuff lthy globals G f R xclauses complete compat
          compat_store G_elim G_eqvt invariant) f_defthm
      
-    fun mk_partial_rules provedgoal =
+    fun mk_partial_rules newctxt provedgoal =
       let
-        val newthy = Thm.theory_of_thm provedgoal (*FIXME*)
-        val newctxt = Proof_Context.init_global newthy (*FIXME*)
-
         val ((graph_is_function, complete_thm), graph_is_eqvt) =
           provedgoal
           |> Conjunction.elim
