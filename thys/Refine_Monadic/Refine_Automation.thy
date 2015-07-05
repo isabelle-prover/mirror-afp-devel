@@ -34,7 +34,7 @@ signature REFINE_AUTOMATION = sig
     cterm list -> local_theory -> local_theory
   
 
-  val prepare_cd_pattern: cterm -> cterm
+  val prepare_cd_pattern: Proof.context -> cterm -> cterm
   val add_cd_pattern: cterm -> Context.generic -> Context.generic
   val del_cd_pattern: cterm -> Context.generic -> Context.generic
   val get_cd_patterns: Proof.context -> cterm list
@@ -315,19 +315,19 @@ end;
     val merge = merge cd_pat_eq
   ) 
 
-  fun prepare_cd_pattern pat = 
+  fun prepare_cd_pattern ctxt pat = 
     case Thm.term_of pat |> fastype_of of
       @{typ bool} => 
         Thm.term_of pat 
         |> HOLogic.mk_Trueprop 
-        |> Thm.global_cterm_of (Thm.theory_of_cterm pat)
+        |> Thm.cterm_of ctxt
     | _ => pat
 
-  fun add_cd_pattern pat = 
-    cd_patterns.map (insert cd_pat_eq (prepare_cd_pattern pat))
+  fun add_cd_pattern pat context = 
+    cd_patterns.map (insert cd_pat_eq (prepare_cd_pattern (Context.proof_of context) pat)) context
 
-  fun del_cd_pattern pat = 
-    cd_patterns.map (remove cd_pat_eq (prepare_cd_pattern pat))
+  fun del_cd_pattern pat context = 
+    cd_patterns.map (remove cd_pat_eq (prepare_cd_pattern (Context.proof_of context) pat)) context
 
   val get_cd_patterns = cd_patterns.get o Context.Proof
 
@@ -432,7 +432,7 @@ ML {* Outer_Syntax.local_theory
     val pats = case pats of 
       [] => Refine_Automation.get_cd_patterns lthy
     | l => map (Proof_Context.read_term_pattern lthy #> Thm.cterm_of lthy #>
-        Refine_Automation.prepare_cd_pattern) l
+        Refine_Automation.prepare_cd_pattern lthy) l
 
   in 
     Refine_Automation.define_concrete_fun 

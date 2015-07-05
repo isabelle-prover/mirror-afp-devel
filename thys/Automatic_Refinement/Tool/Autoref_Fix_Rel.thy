@@ -103,7 +103,7 @@ ML {*
 
     val insert_CONSTRAINTS_tac: Proof.context -> tactic'
 
-    val constraint_of_thm: thm -> constraint
+    val constraint_of_thm: Proof.context -> thm -> constraint
 
     datatype prio_relpos = 
       PR_FIRST 
@@ -236,7 +236,7 @@ ML {*
       Refine_Util.insert_subgoals_tac cs i st
     end
 
-    fun constraint_of_thm thm = let 
+    fun constraint_of_thm ctxt thm = let 
       exception NO_REL of term
       open Autoref_Tagging
 
@@ -278,9 +278,9 @@ ML {*
           warning (
             "Could not infer unique higher-order relator for "
             ^ "refinement rule: \n"
-            ^ Display.string_of_thm_without_context thm
+            ^ Display.string_of_thm ctxt thm
             ^ "\n for argument: " 
-            ^ Syntax.string_of_term_global (Thm.theory_of_thm thm) t
+            ^ Syntax.string_of_term ctxt t
           ); 
           reraise exc)
 
@@ -411,9 +411,9 @@ ML {*
 
           fun cnv ctxt ct = (case Thm.term_of ct of
             @{mpat "OP _ ::: _"} => all_conv
-          | @{mpat "OP _"} => mk_rel_ANNOT_conv R_cert
+          | @{mpat "OP _"} => mk_rel_ANNOT_conv ctxt R_cert
           | @{mpat "_ $ _"} => arg1_conv (cnv ctxt)
-          | _ => mk_OP_conv then_conv mk_rel_ANNOT_conv R_cert
+          | _ => mk_OP_conv then_conv mk_rel_ANNOT_conv ctxt R_cert
 
           ) ct
 
@@ -435,7 +435,7 @@ ML {*
         fun add_o p = (prio_order_of ctxt p,p)
 
         val pairs = rules
-          |> map (fn thm => (try constraint_of_thm thm,thm))
+          |> map (fn thm => (try (constraint_of_thm ctxt) thm,thm))
         val spairs = filter (is_some o #1) pairs
           |> map add_o 
           |> sort (prio_order o apply2 #1)

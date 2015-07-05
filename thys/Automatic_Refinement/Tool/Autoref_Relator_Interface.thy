@@ -96,7 +96,7 @@ ML {*
       ] |> Pretty.string_of |> warning
 
     fun itype_of_rule ctxt thm = 
-      case try Autoref_Fix_Rel.constraint_of_thm thm of
+      case try (Autoref_Fix_Rel.constraint_of_thm ctxt) thm of
         NONE => NONE
       | SOME (_,(f,R)) => let
           val I = intf_of_rel ctxt R

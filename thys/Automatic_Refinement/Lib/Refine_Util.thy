@@ -131,7 +131,7 @@ ML {*
 
     val import_conv: (Proof.context -> conv) -> Proof.context -> conv
 
-    val fix_conv: conv -> conv
+    val fix_conv: Proof.context -> conv -> conv
     val ite_conv: conv -> conv -> conv -> conv
 
     val cfg_trace_f_tac_conv: bool Config.T
@@ -533,28 +533,22 @@ ML {*
     fun fixup_vars_conv' conv ctxt = fixup_vars_conv (conv ctxt)
 
     local
-      fun mk_equals_ct (ct,ct') = let
-        val thy = Context.merge (Thm.theory_of_cterm ct, Thm.theory_of_cterm ct');
-      in
-        Logic.mk_equals (Thm.term_of ct, Thm.term_of ct') |> Thm.global_cterm_of thy
-      end
-
-      fun tag_ct name ct = let
-        val thy = Thm.theory_of_cterm ct;
+      fun tag_ct ctxt name ct = let
         val t = Thm.term_of ct;
         val ty = fastype_of t;
         val t' = Const (@{const_name conv_tag},@{typ unit}-->ty-->ty)
           $Free (name,@{typ unit})$t;
-        val ct' = Thm.global_cterm_of thy t';
+        val ct' = Thm.cterm_of ctxt t';
       in ct' end
 
       fun mpat_conv pat ctxt ct = let
         val (tym,tm) = Thm.first_order_match (pat,ct);
-        val tm' = map (fn (pt as ((name, _), _),ot) => (pt,tag_ct name ot)) tm;
+        val tm' = map (fn (pt as ((name, _), _),ot) => (pt, tag_ct ctxt name ot)) tm;
         val ct' = Thm.instantiate_cterm (tym,tm') pat;
-
-        val rthm = Goal.prove_internal ctxt [] (mk_equals_ct (ct,ct'))
-          (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
+        val rthm =
+          Goal.prove_internal ctxt []
+            (Thm.cterm_of ctxt (Logic.mk_equals (apply2 Thm.term_of (ct, ct'))))
+            (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
         |> Goal.norm_result ctxt
       in 
         fixup_vars ct rthm 
@@ -591,13 +585,12 @@ ML {*
     in res' end
 
 
-    fun fix_conv conv ct = let
+    fun fix_conv ctxt conv ct = let
       val thm = conv ct
       val eq = Logic.mk_equals (Thm.term_of ct, Thm.term_of ct) |> head_of
     in if (Thm.term_of (Thm.lhs_of thm) aconv Thm.term_of ct)
       then thm
-      else thm RS Thm.trivial
-        (Thm.mk_binop (Thm.global_cterm_of (Thm.theory_of_cterm ct) eq) ct (Thm.rhs_of thm)) 
+      else thm RS Thm.trivial (Thm.mk_binop (Thm.cterm_of ctxt eq) ct (Thm.rhs_of thm))
     end
 
     fun ite_conv cv cv1 cv2 ct =

@@ -52,8 +52,8 @@ begin
       val net_empty: param_net
       val net_add: thm -> param_net -> param_net
       val net_del: thm -> param_net -> param_net
-      val net_add_int: thm -> param_net -> param_net
-      val net_del_int: thm -> param_net -> param_net
+      val net_add_int: Context.generic -> thm -> param_net -> param_net
+      val net_del_int: Context.generic -> thm -> param_net -> param_net
       val net_tac: param_net -> Proof.context -> tactic'
     
       (*** Default parametricity rules ***)
@@ -185,11 +185,11 @@ begin
         val net_empty = Item_Net.init (Thm.eq_thm o apply2 #2) param_get_key
       end
 
-      fun wrap_pr_op f thm = case try (`dest_param_rule) thm of
+      fun wrap_pr_op f context thm = case try (`dest_param_rule) thm of
         NONE => 
           let 
             val msg = "Ignoring invalid parametricity theorem: "
-              ^ Display.string_of_thm_without_context thm
+              ^ Display.string_of_thm (Context.proof_of context) thm
             val _ = warning msg
           in I end
       | SOME p => f p
@@ -225,8 +225,8 @@ begin
         val merge = Item_Net.merge
       )
         
-      fun add_dflt thm = dflt_rules.map (net_add_int thm)
-      fun del_dflt thm = dflt_rules.map (net_del_int thm)
+      fun add_dflt thm context = dflt_rules.map (net_add_int context thm) context
+      fun del_dflt thm context = dflt_rules.map (net_del_int context thm) context
       val add_dflt_attr = Thm.declaration_attribute add_dflt
       val del_dflt_attr = Thm.declaration_attribute del_dflt
 

@@ -40,9 +40,9 @@ signature SELECT_SOLVE = sig
   val PREFER_SOLVED: tactic -> tactic
   val IF_SUBGOAL_SOLVED: tactic -> tactic -> tactic -> tactic
   val TRY_SOLVE_FWD: int -> tactic -> tactic
-  val SELECT_FIRST: tactic -> tactic
+  val SELECT_FIRST: Proof.context -> tactic -> tactic
   val AS_FIRSTGOAL: tactic -> tactic'
-  val REPEAT_SOLVE_FWD_SELECT: int -> tactic' -> tactic' 
+  val REPEAT_SOLVE_FWD_SELECT: Proof.context -> int -> tactic' -> tactic' 
 end
 
 structure Select_Solve :SELECT_SOLVE = struct
@@ -83,11 +83,8 @@ structure Select_Solve :SELECT_SOLVE = struct
   end
 
 
-  fun SELECT_FIRST tac st = if Thm.nprems_of st < 2 then tac st
+  fun SELECT_FIRST ctxt tac st = if Thm.nprems_of st < 2 then tac st
   else let
-    val thy = Thm.theory_of_thm st
-    val cert = Thm.global_cterm_of thy
-
     (*val _ = print_tac "Focusing" st*)
 
     (* Extract first subgoal *)
@@ -108,11 +105,11 @@ structure Select_Solve :SELECT_SOLVE = struct
       val tvars = subtract op = vtvars tvars
 
       val tvars_tag = tvars
-        |> map (Drule.mk_term o cert o Logic.mk_type o TVar)
+        |> map (Drule.mk_term o Thm.cterm_of ctxt o Logic.mk_type o TVar)
         |> intr_bal
 
       val vars_tag = vars
-        |> map (Drule.mk_term o cert o Var)
+        |> map (Drule.mk_term o Thm.cterm_of ctxt o Var)
         |> intr_bal
     in
       val tag_thm = Conjunction.intr tvars_tag vars_tag
@@ -199,7 +196,7 @@ structure Select_Solve :SELECT_SOLVE = struct
       THEN PRIMITIVE (Thm.permute_prems 0 (1-i))) st
     else Seq.empty
 
-  fun REPEAT_SOLVE_FWD_SELECT bias tac = let
+  fun REPEAT_SOLVE_FWD_SELECT ctxt bias tac = let
     fun BIASED_SELECT tac st = 
       if Thm.nprems_of st < 2 then tac st
       else let
@@ -212,7 +209,7 @@ structure Select_Solve :SELECT_SOLVE = struct
           val s1 = Logic.dest_implies (Thm.prop_of st) |> #1 |> size_of_term
         in
           if 5 * s1 < 2 * s then
-            SELECT_FIRST tac st
+            SELECT_FIRST ctxt tac st
           else tac st
         end
       end
