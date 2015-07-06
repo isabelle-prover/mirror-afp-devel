@@ -52,8 +52,6 @@ lemma tendsto_add_ereal:
   using continuous_add_ereal[where t=x]
   unfolding continuous_on_def
   apply (auto simp add: at_within_open[where S="{- \<infinity> <..}"])
-  apply (erule ballE[where x=y])
-  apply auto
   done
 
 lemma tendsto_LimI: "(f ---> y) F \<Longrightarrow> (f ---> Lim F f) F"
