@@ -6,7 +6,7 @@ definition conv_tag where "conv_tag n x == x"
   -- {* Used internally for @{text "pat_conv"}-conversion *}
 
 ML {*
-  infix 0 RSm THEN_ELSE' THEN_ELSE_COMB'
+  infix 0 THEN_ELSE' THEN_ELSE_COMB'
   infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL
   infix 2 ORELSE_INTERVAL
   infix 3 ->>
@@ -25,7 +25,7 @@ ML {*
     val seq_is_empty: 'a Seq.seq -> bool * 'a Seq.seq
 
     (* Resolution with matching *)
-    val RSm: thm * thm -> thm
+    val RSm: Proof.context -> thm -> thm -> thm
 
     val is_Abs: term -> bool
     val is_Comb: term -> bool
@@ -131,7 +131,7 @@ ML {*
 
     val import_conv: (Proof.context -> conv) -> Proof.context -> conv
 
-    val fix_conv: conv -> conv
+    val fix_conv: Proof.context -> conv -> conv
     val ite_conv: conv -> conv -> conv -> conv
 
     val cfg_trace_f_tac_conv: bool Config.T
@@ -168,17 +168,14 @@ ML {*
       NONE => (true, seq)
     | SOME (a,seq) => (false, Seq.cons a seq)
 
-    fun (thA RSm thB) = let
-      val thy = Context.merge (apply2 Thm.theory_of_thm (thA,thB))
-      val ctxt = Proof_Context.init_global thy
-      val octxt = ctxt
-      val ctxt = Variable.declare_thm thA ctxt
-      val ctxt = Variable.declare_thm thB ctxt
-      val (thA,ctxt) = 
-        yield_singleton (apfst snd oo Variable.import true) thA ctxt
+    fun RSm ctxt thA thB = let
+      val (thA, ctxt') = ctxt
+        |> Variable.declare_thm thA
+        |> Variable.declare_thm thB
+        |> yield_singleton (apfst snd oo Variable.import true) thA
       val thm = thA RS thB
-      val thm = singleton (Variable.export ctxt octxt) thm
-      |> Drule.zero_var_indexes
+      val thm = singleton (Variable.export ctxt' ctxt) thm
+        |> Drule.zero_var_indexes
     in 
       thm
     end
@@ -533,32 +530,22 @@ ML {*
     fun fixup_vars_conv' conv ctxt = fixup_vars_conv (conv ctxt)
 
     local
-      fun mk_equals_ct (ct,ct') = let
-        val thy = Context.merge (Thm.theory_of_cterm ct, Thm.theory_of_cterm ct');
-      in
-        Logic.mk_equals (Thm.term_of ct, Thm.term_of ct') |> Thm.global_cterm_of thy
-      end
-
-      fun tag_ct name ct = let
-        val thy = Thm.theory_of_cterm ct;
+      fun tag_ct ctxt name ct = let
         val t = Thm.term_of ct;
         val ty = fastype_of t;
         val t' = Const (@{const_name conv_tag},@{typ unit}-->ty-->ty)
           $Free (name,@{typ unit})$t;
-        val ct' = Thm.global_cterm_of thy t';
+        val ct' = Thm.cterm_of ctxt t';
       in ct' end
 
       fun mpat_conv pat ctxt ct = let
         val (tym,tm) = Thm.first_order_match (pat,ct);
-        val tm' = map (fn (pt,ot) =>
-          case Thm.term_of pt of
-            (Var ((name,_),_)) => (pt,tag_ct name ot)
-          | _ => (pt,ot)
-        ) tm;
+        val tm' = map (fn (pt as ((name, _), _),ot) => (pt, tag_ct ctxt name ot)) tm;
         val ct' = Thm.instantiate_cterm (tym,tm') pat;
-
-        val rthm = Goal.prove_internal ctxt [] (mk_equals_ct (ct,ct'))
-          (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
+        val rthm =
+          Goal.prove_internal ctxt []
+            (Thm.cterm_of ctxt (Logic.mk_equals (apply2 Thm.term_of (ct, ct'))))
+            (K (simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms conv_tag_def}) 1))
         |> Goal.norm_result ctxt
       in 
         fixup_vars ct rthm 
@@ -595,13 +582,12 @@ ML {*
     in res' end
 
 
-    fun fix_conv conv ct = let
+    fun fix_conv ctxt conv ct = let
       val thm = conv ct
       val eq = Logic.mk_equals (Thm.term_of ct, Thm.term_of ct) |> head_of
     in if (Thm.term_of (Thm.lhs_of thm) aconv Thm.term_of ct)
       then thm
-      else thm RS Thm.trivial
-        (Thm.mk_binop (Thm.global_cterm_of (Thm.theory_of_cterm ct) eq) ct (Thm.rhs_of thm)) 
+      else thm RS Thm.trivial (Thm.mk_binop (Thm.cterm_of ctxt eq) ct (Thm.rhs_of thm))
     end
 
     fun ite_conv cv cv1 cv2 ct =

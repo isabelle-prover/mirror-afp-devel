@@ -19,7 +19,7 @@ structure Cond_Rewr_Conv :COND_REWR_CONV = struct
     val res = thm' OF dthms
   in res end;
 
-  fun cond_rewr_conv tac thm ctxt = fix_conv (cond_rewr_conv_aux tac thm ctxt)
+  fun cond_rewr_conv tac thm ctxt = fix_conv ctxt (cond_rewr_conv_aux tac thm ctxt)
 
   (*fun first_conv [] ct = Conv.no_conv ct
     | first_conv (cv::cvs) ct = (cv else_conv first_conv cvs) ct*)

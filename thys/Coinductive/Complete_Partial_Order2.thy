@@ -361,9 +361,7 @@ fun cont_intro_simproc ctxt ct =
       |> Goal.init
     fun mk_thm t =
       case SINGLE (cont_intro_tac ctxt 1) (mk_stmt t) of
-        SOME thm =>
-          SOME (Goal.finish (Syntax.init_pretty_global (Thm.theory_of_thm thm)) thm 
-                RS @{thm Eq_TrueI})
+        SOME thm => SOME (Goal.finish ctxt thm RS @{thm Eq_TrueI})
       | NONE => NONE
   in
     case Thm.term_of ct of

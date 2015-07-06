@@ -1597,8 +1597,8 @@ fun approximate_affine (name, term) lthy =
       Variable.variant_fixes ("prec"::"thres"::"qs"::map (fn _ => "x") atys) lthy
     val t_beta = fold (fn x => fn t => betapply (t, x)) (map (free aty) args) t
     val ct = Thm.cterm_of ctxt' t_beta
-    val atypat = TVar (("'a", 0), @{sort "{real_inner, scaleR, plus}" }) |> Thm.ctyp_of ctxt'
-    val btypat = TVar (("'b", 0), @{sort "{scaleR, plus}" }) |> Thm.ctyp_of ctxt'
+    val atypat = (("'a", 0), @{sort "{real_inner, scaleR, plus}" })
+    val btypat = (("'b", 0), @{sort "{scaleR, plus}" })
     val thms = map (Thm.instantiate (
       [(atypat, Thm.ctyp_of ctxt' aty), (btypat, Thm.ctyp_of ctxt' bty)], [])) @{thms reify_euclarith_eqs}
     val thm = (floatify_conv ctxt' then_conv Reification.conv ctxt' thms) ct

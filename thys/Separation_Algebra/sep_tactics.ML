@@ -198,10 +198,7 @@ local
          | NONE => NONE
     end;
 
-  fun strip_cprop ct =
-    let val thy = Thm.theory_of_cterm ct
-    in ct |> Thm.term_of |> HOLogic.dest_Trueprop |> Thm.global_cterm_of thy
-    end;
+  fun strip_cprop ct = (HOLogic.dest_Trueprop (Thm.term_of ct); Thm.dest_arg ct);
 
   (* }}} *)
 in

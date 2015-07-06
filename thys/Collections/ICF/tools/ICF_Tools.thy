@@ -19,12 +19,12 @@ ML {*
 
     val parse_cpat: cterm context_parser
 
-    val rename_cterm: (cterm * cterm) 
-      -> (ctyp*ctyp) list * (cterm * cterm) list
+    val rename_cterm: (cterm * cterm) ->
+      ((indexname * sort) * ctyp) list * ((indexname * typ) * cterm) list
     val renames_cterm: (cterm * cterm) -> bool
 
     val import_cterm: cterm -> Proof.context -> cterm * Proof.context
-    val inst_meta_cong: cterm -> thm
+    val inst_meta_cong: Proof.context -> cterm -> thm
 
     (*
     val thms_from_main: string -> thm list
@@ -213,10 +213,8 @@ ML {*
     val meta_cong_rl = @{thm "eq_reflection"}
         OF @{thms "arg_cong"} OF @{thms "meta_eq_to_obj_eq"}
 
-    fun inst_meta_cong ct = let
-      val thy = Thm.theory_of_cterm ct;
-      val ctxt = Proof_Context.init_global thy;
-      val (ct,ctxt') = import_cterm ct ctxt;
+    fun inst_meta_cong ctxt ct = let
+      val (ct, ctxt') = import_cterm ct ctxt;
       val mc_thm = meta_cong_rl;
       val fpat = mc_thm |> Thm.cprop_of |> Drule.strip_imp_concl 
         |> Thm.dest_arg1 |> chead_of;

@@ -81,7 +81,7 @@ ML {*
     val mk_OP_conv: conv
     val mk_ABS_conv: Proof.context -> conv
     val mk_ANNOT_conv: cterm -> conv
-    val mk_rel_ANNOT_conv: cterm -> conv
+    val mk_rel_ANNOT_conv: Proof.context -> cterm -> conv
 
     val ABS_beta_conv: Proof.context -> conv
 
@@ -166,12 +166,11 @@ ML {*
       thm
     end
 
-    fun mk_rel_ANNOT_conv a ct = let
-      val thy = Thm.theory_of_cterm ct
+    fun mk_rel_ANNOT_conv ctxt a ct = let
       val T = Thm.typ_of_cterm a
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
-        |> apply2 (Thm.global_ctyp_of thy)
+        |> apply2 (Thm.ctyp_of ctxt)
       val thm = Drule.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
         @{thm rel_ANNOT_eq}
     in
@@ -196,7 +195,7 @@ ML_val {*
 *}
 
 ML_val {*
-  Autoref_Tagging.mk_rel_ANNOT_conv 
+  Autoref_Tagging.mk_rel_ANNOT_conv @{context}
     @{cterm "bar::('c\<times>'a) set"} @{cterm "foo::'a::type"}
 *}
 

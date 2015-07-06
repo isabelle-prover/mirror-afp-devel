@@ -1734,7 +1734,7 @@ fun split_pair_apps ctxt thm =
           | _ =>  mk_subst (mk_subst subst t1) t2)
       | mk_subst subst t = subst;
 
-  val subst = map (fn (v,t) => (Thm.cterm_of ctxt v, Thm.cterm_of ctxt t)) (mk_subst [] t);
+  val subst = map (fn (v,t) => (dest_Var v, Thm.cterm_of ctxt t)) (mk_subst [] t);
 
   in full_simplify (put_simpset HOL_basic_ss ctxt addsimps [@{thm fst_conv}, @{thm snd_conv}])
        (Drule.instantiate_normalize ([],subst) thm)
@@ -1814,9 +1814,9 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
        val max_idx = fold Integer.max (map (Thm.maxidx_of o snd) tvar_rules) 0;
        val types = map (fn i => TVar (("z",i),Sign.defaultS thy))
                     (max_idx + 1 upto (max_idx + length vars));
-       fun ctyp n = Thm.ctyp_of ctxt (TVar (n,Sign.defaultS thy));
+       fun tvar n = (n, Sign.defaultS thy);
        val pT = Thm.ctyp_of ctxt (foldr1 HOLogic.mk_prodT types);
-       val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,pT)],[]) r)) tvar_rules;
+       val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,pT)],[]) r)) tvar_rules;
        val splits = mk_split_thms ctxt (vars ~~ types);
        val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
      in if split_app then (map (split_pair_apps ctxt) rules'') else rules'' end
@@ -1824,9 +1824,9 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
   | adapt_aux_var ctxt _ ([]) tvar_rules =
       let
         val thy = Proof_Context.theory_of ctxt;
-        fun ctyp n = Thm.ctyp_of ctxt (TVar (n,Sign.defaultS thy));
+        fun tvar n = (n, Sign.defaultS thy);
         val uT = Thm.ctyp_of ctxt HOLogic.unitT;
-        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(ctyp z,uT)],[]) r)) tvar_rules;
+        val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,uT)],[]) r)) tvar_rules;
         val splits = [unit_meta,unit_object,unit_ex,unit_UN];
         val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
       in rules'' end
@@ -2124,7 +2124,7 @@ end
 val conseq_simp_tac = raw_conseq_simp_tac;
 
 (* Generates the hoare-quadruples that can be derived out of the hoare-context T *)
-fun gen_context_thms ctxt thy mode params G T F =
+fun gen_context_thms ctxt mode params G T F =
   let
     val Type (_,[comT]) = range_type (fastype_of G);
 
@@ -2160,12 +2160,12 @@ fun gen_context_thms ctxt thy mode params G T F =
       in (HOLogic.mk_Trueprop (HOLogic.list_all (vars,bdy)), map fst params')
       end;
 
-    fun hoare_context_specs thy mode G T F =
+    fun hoare_context_specs mode G T F =
       let fun mk t = try (mkHoare mode G T F o apsnd destQuadruple o dest_UN) t;
       in map_filter mk (dest_Un T) end;
 
 
-    fun mk_prove ctxt mode (prop,params) =
+    fun mk_prove mode (prop,params) =
       let
         val vars = map fst (strip_qnt_vars @{const_name All}
                              (HOLogic.dest_Trueprop (Logic.strip_assums_concl prop)));
@@ -2183,9 +2183,8 @@ fun gen_context_thms ctxt thy mode params G T F =
                  ])
       end;
 
-    val specs = hoare_context_specs thy mode G T F;
-  in map (mk_prove ctxt mode) specs
-  end;
+    val specs = hoare_context_specs mode G T F;
+  in map (mk_prove mode) specs end;
 
 
 fun is_modifies_clause t =
@@ -2807,7 +2806,6 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
 
 fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
   let
-    val thy = Thm.theory_of_thm st;
     val vars = (dest o #2 o dest_hoare) (Logic.strip_assums_concl t);
     val rules' = (case (List.filter (not o null) (map dest_splits vars)) of
                     [] => rules
@@ -2915,8 +2913,7 @@ fun HoareTac annotate_inv exspecs
      val exspecthms = map (Proof_Context.get_thm ctxt) exspecs;
      val asms =
        try (fn () =>
-         mk_proc_assoc (gen_context_thms ctxt (Thm.theory_of_thm st) mode params G T F
-                @ exspecthms)) ()
+         mk_proc_assoc (gen_context_thms ctxt mode params G T F @ exspecthms)) ()
        |> the_default [];
 
      fun while_annoG_tac (t,i) =
@@ -3022,7 +3019,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
          let val (_,_,_,_,_,G,T,F) = dest_hoare (Logic.strip_assums_concl
                                                 (Logic.get_goal (Thm.prop_of st) 1));
              val params = (strip_vars (Logic.get_goal (Thm.prop_of st) 1));
-         in mk_proc_assoc (gen_context_thms ctxt (Thm.theory_of_thm st) mode params G T F)
+         in mk_proc_assoc (gen_context_thms ctxt mode params G T F)
          end) ()
        |> the_default [];
 
@@ -3653,12 +3650,14 @@ fun vcg_polish_tac solve_modifies ctxt state_kind state_space i =
 fun is_funtype (Type ("fun", _)) = true
   | is_funtype _ = false;
 
-fun state_kind_of thy T =
-     let val (s,sT) = nth (fst (Record.get_recT_fields thy T)) 1;
-     in if Long_Name.base_name s = "locals" andalso is_funtype sT then Function else Record end
-     handle Subscript => Record;
+fun state_kind_of ctxt T =
+  let
+    val thy = Proof_Context.theory_of ctxt;
+    val (s,sT) = nth (fst (Record.get_recT_fields thy T)) 1;
+  in if Long_Name.base_name s = "locals" andalso is_funtype sT then Function else Record end
+  handle Subscript => Record;
 
-fun find_state_space_in_triple thy t =
+fun find_state_space_in_triple ctxt t =
   try (fn () =>
     (case first_subterm is_hoare t of
        NONE => NONE
@@ -3668,11 +3667,11 @@ fun find_state_space_in_triple thy t =
            val T = fastype_of1 (map snd abs_vars,com)
            val Type(_,state_spaceT::_) = T;
            val SOME Tids  = stateT_ids state_spaceT;
-        in SOME (Tids,mode,state_kind_of thy state_spaceT)
+        in SOME (Tids,mode, state_kind_of ctxt state_spaceT)
         end)) ()
   |> Option.join;
 
-fun get_state_space_in_subset_eq thy t =
+fun get_state_space_in_subset_eq ctxt t =
   (* get state type from the following kind of terms: P <= Q, s: P *)
   try (fn () =>
     let
@@ -3683,21 +3682,18 @@ fun get_state_space_in_subset_eq thy t =
       val Type (_, [_,Type (_, [Type (_, [state_spaceT]), _])]) = T; 
               (* also works for "in": x : P *)
       val SOME Tids = stateT_ids state_spaceT;
-    in (Tids,Partial,state_kind_of thy state_spaceT) end) ();
+    in (Tids,Partial, state_kind_of ctxt state_spaceT) end) ();
 
-fun get_state_space i st =
-    let val thy = Thm.theory_of_thm st;
-    in
-      (case try (Logic.concl_of_goal (Thm.prop_of st)) i of
-         SOME t => (case find_state_space_in_triple thy t of
-                      SOME sp => SOME sp
-                    | NONE => get_state_space_in_subset_eq thy t)
-       | NONE => NONE)
-    end
+fun get_state_space ctxt i st =
+  (case try (Logic.concl_of_goal (Thm.prop_of st)) i of
+     SOME t => (case find_state_space_in_triple ctxt t of
+                  SOME sp => SOME sp
+                | NONE => get_state_space_in_subset_eq ctxt t)
+   | NONE => NONE);
 
 fun mk_hoare_tac hoare_tac finish_tac annotate_inv exnames
                  strip_guards spec_sfx ctxt i st =
-    case get_state_space i st of
+    case get_state_space ctxt i st of
        SOME (Tids,mode,kind)
        => SELECT_GOAL
             (hoare_tac annotate_inv exnames strip_guards mode kind (is_state_space_var Tids)
@@ -3728,7 +3724,7 @@ fun hoare_step_tac spec_sfx strip_guards exnames ctxt i st =
      ctxt) false [] (strip_guards="true") spec_sfx ctxt i st;
 
 fun hoare_rule_tac ctxt thms i st = SUBGOAL (fn _ =>
-    (case get_state_space i st of
+    (case get_state_space ctxt i st of
        SOME (Tids,_,kind) => HoareCallRuleTac kind (is_state_space_var Tids) ctxt thms i
      | NONE => error "could not find proper state space type (structure or record) in goal")) i st;
 

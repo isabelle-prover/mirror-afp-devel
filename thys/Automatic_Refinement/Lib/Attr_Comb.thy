@@ -25,7 +25,7 @@ ML {*
     val RPT1_ATTR: attribute -> attribute
 
     val EFF_ATTR: (Context.generic * thm -> 'a) -> attribute
-    val WARN_ATTR: string -> attribute
+    val WARN_ATTR: Context.generic -> string -> attribute
     val TRACE_ATTR: string -> attribute -> attribute
 
 
@@ -70,8 +70,8 @@ ML {*
 
     fun EFF_ATTR f cxt = (f cxt; (NONE,NONE))
 
-    fun WARN_ATTR msg = EFF_ATTR (fn (_,thm) => warning (msg ^ ": " 
-      ^ Display.string_of_thm_without_context thm))
+    fun WARN_ATTR context msg = EFF_ATTR (fn (_,thm) => warning (msg ^ ": " 
+      ^ Display.string_of_thm (Context.proof_of context) thm))
 
     fun TRACE_ATTR msg a cxt = let
       val _ = tracing (msg ^ "\n" ^ @{make_string} cxt)
@@ -98,8 +98,8 @@ ML {*
           raise ATTR_EXC ("RS_attr: " ^ @{make_string} exc)))
 
     fun RSm_attr thm = 
-      Thm.rule_attribute (fn _ => fn thm' => (
-        thm' RSm thm handle (exc as THM _) => 
+      Thm.rule_attribute (fn context => fn thm' => (
+        RSm (Context.proof_of context) thm' thm handle (exc as THM _) => 
           raise ATTR_EXC ("RSm_attr: " ^ @{make_string} exc)))
 
   end

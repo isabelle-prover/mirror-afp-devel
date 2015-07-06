@@ -108,11 +108,10 @@ structure RefineG_Transfer = struct
   end
 
   (* Adjust right term to have same structure as left one *)
-  val align_tac = IF_EXGOAL (fn i => fn st =>
+  fun align_tac ctxt = IF_EXGOAL (fn i => fn st =>
     case Logic.concl_of_goal (Thm.prop_of st) i of
       @{mpat "Trueprop (REFINEG_TRANSFER_ALIGN ?c _)"} => let
-        val thy = Thm.theory_of_thm st
-        val c = Thm.global_cterm_of thy c
+        val c = Thm.cterm_of ctxt c
         val cT = Thm.ctyp_of_cterm c
         
         val rl = @{thm REFINEG_TRANSFER_ALIGNI}
@@ -127,7 +126,7 @@ structure RefineG_Transfer = struct
 
   fun post_transfer_tac thms ctxt = let open Autoref_Tacticals in
     rtac @{thm START_REFINEG_TRANSFER} 
-    THEN' align_tac 
+    THEN' align_tac ctxt 
     THEN' IF_SOLVED (transfer_tac thms ctxt)
       (post_process_tac ctxt THEN' rtac @{thm STOP_REFINEG_TRANSFER})
       (K all_tac)

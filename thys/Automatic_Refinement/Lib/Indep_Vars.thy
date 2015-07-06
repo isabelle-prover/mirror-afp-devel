@@ -30,7 +30,7 @@ ML {*
         fun inst_of (name,vT,T,args) = let
           val Ts = map fastype_of args |> rev
           val t' = fold absdummy Ts (Var (name,T))
-          val inst = (cert (Var (name,vT)), cert t')
+          val inst = ((name, vT), cert t')
         in inst end
 
         val inst = vsubterms t
