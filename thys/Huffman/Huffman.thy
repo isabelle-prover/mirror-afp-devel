@@ -79,7 +79,7 @@ empty bit sequence, giving the decoder no way to recover the original string's
 length. This scenario can be ruled out by requiring that the alphabet has
 cardinality 2 or more.}
 Codes that have this property are called {\sl prefix codes}. As an example of a
-code that doesn't have this property, consider the code associated with the
+code that does not have this property, consider the code associated with the
 tree\strut
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-non-prefix.pdf}}}$$
 and observe that `$\xb\xb\xb$', `$\xb\xd$', and `$\xd\xb$' all map to the
@@ -395,7 +395,7 @@ A tree is {\sl consistent\/} if for each inner node the alphabets of the two
 subtrees are disjoint. Intuitively, this means that every symbol in the
 alphabet occurs in exactly one leaf node. Consistency is a sufficient condition
 for $\delta_a$ (the length of the {\sl unique\/} code word for $a$) to be
-defined. Although this well\-formed\-ness property isn't mentioned in algorithms
+defined. Although this well\-formed\-ness property is not mentioned in algorithms
 textbooks \cite{aho-et-al-1983,cormen-et-al-2001,knuth-1997}, it is essential
 and appears as an assumption in many of our lemmas.
 *}
@@ -487,7 +487,7 @@ text {*
 The {\sl depth\/} of a symbol (which we denoted by $\delta_a$ in
 Section~\ref{binary-codes}) is the length of the path from the root to the
 leaf node labeled with that symbol, or equivalently the length of the code word
-for the symbol. Symbols that don't occur in the tree or that occur at the root
+for the symbol. Symbols that do not occur in the tree or that occur at the root
 of a one-node tree have depth 0. If a symbol occurs in several leaf nodes (which
 may happen with inconsistent trees), the depth is arbitrarily defined in terms
 of the leftmost node labeled with that symbol.
@@ -1175,7 +1175,7 @@ invoking @{text swapLeaves}, we normally pass @{term "freq t a"} and
 
 Note that we do not bother updating the cached weight of the ancestor nodes
 when performing the interchange. The cached weight is used only in the
-implementation of Huffman's algorithm, which doesn't invoke @{text swapLeaves}.
+implementation of Huffman's algorithm, which does not invoke @{text swapLeaves}.
 *}
 
 primrec swapLeaves :: "'a tree \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a tree" where
@@ -1885,7 +1885,7 @@ subsection {* Four-Way Symbol Interchange Cost Lemma *}
 
 text {*
 If $a$ and $b$ are minima, and $c$ and $d$ are at the very bottom of the tree,
-then exchanging $a$ and $b$ with $c$ and $d$ doesn't increase the cost.
+then exchanging $a$ and $b$ with $c$ and $d$ does not increase the cost.
 Graphically, we have\strut
 %
 $${\it cost\/}
@@ -2125,7 +2125,7 @@ subsection {* Leaf Split Commutativity Lemma
 
 text {*
 A key property of Huffman's algorithm is that once it has combined two
-lowest-weight trees using @{const uniteTrees}, it doesn't visit these trees
+lowest-weight trees using @{const uniteTrees}, it does not visit these trees
 ever again. This suggests that splitting a leaf node before applying the
 algorithm should give the same result as applying the algorithm first and
 splitting the leaf node afterward. The diagram below illustrates the
@@ -2469,7 +2469,7 @@ Formalizing the proof of Huffman's algorithm also led to a deeper
 understanding of this classic algorithm. Many of the lemmas, notably the leaf
 split commutativity lemma of Section~\ref{leaf-split-commutativity}, have not
 been found in the literature and express fundamental properties of the
-algorithm. Other discoveries didn't find their way into the final proof. In
+algorithm. Other discoveries did not find their way into the final proof. In
 particular, each step of the algorithm appears to preserve the invariant that
 the nodes in a forest are ordered by weight from left to right, bottom to top,
 as in the example below:\strut
