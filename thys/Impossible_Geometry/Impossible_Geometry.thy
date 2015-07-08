@@ -1274,37 +1274,36 @@ proof-
     by (metis Rats_cases hypsy)
   hence "\<exists>! p. r = Fract (fst p) (snd p) & snd p > 0 & coprime (fst p) (snd p)" 
     by (metis quotient_of_unique)
-  then obtain p where hypsp: "r = Fract (fst p) (snd p) & snd p > 0 & coprime (fst p) (snd p)" 
+  then obtain p q where hypsp: "r = Fract p q" "q > 0" "coprime p q" 
     by auto
   have l6: "r^3 = 2" 
     by (metis (lifting) hypsy hypsr of_rat_eq_iff of_rat_numeral_eq of_rat_power)
-  have l7: "r^3  = Fract ((fst p)^3) ((snd p)^3)" 
+  have l7: "r^3  = Fract (p^3) (q^3)" 
     by (metis (no_types) hypsp mult_rat power3_eq_cube)
-  have l8: "(snd p) ^3 > 0 & coprime ((fst p)^3) ((snd p)^3)" 
+  have l8: "q ^ 3 > 0 & coprime (p ^ 3) (q ^ 3)" 
     by (metis hypsp gcd_exp_int power_one zero_less_power)
-  have "Fract ((fst p)^3) ((snd p)^3) = 2"
+  have "Fract (p ^ 3) (q ^ 3) = 2"
     using l6 l7
     by auto
-  hence "Fract ((fst p)^3) ((snd p)^3) = Fract 2 1"
+  hence "Fract (p ^ 3) (q ^ 3) = Fract 2 1"
     by (metis rat_number_expand(3))
-  hence l12: "(fst p) ^3 = ((snd p)^3) * 2" using hypsp
+  hence l12: "p ^ 3 = q ^ 3 * 2" using hypsp
     by (simp add: eq_rat)
-  hence "2 dvd (fst p)^3"
-    using l8
-    by (auto simp add: dvd_def)
-  hence two_dvd_fst: "2 dvd fst p"
+  hence "even (p ^ 3)"
+    by (auto intro: dvdI)
+  then have "even p"
     by auto
-  hence "8 dvd (fst p)^3"
+  then have "8 dvd p ^ 3"
     by (auto simp add: dvd_def power_def)
-  hence "8 dvd ((snd p)^3) * 2" 
-    using l12
-    by auto
-  hence "2 dvd (snd p)^3"
+  then have "8 dvd q ^ 3 * 2" 
+    using l12 by auto
+  then have "even (q ^ 3)"
     by (auto simp add: dvd_def)
-  then have two_dvd_snd: "2 dvd snd p"
+  then have "even q"
     by auto
-  thus ?thesis 
-    using hypsp gcd_greatest_int two_dvd_fst by fastforce 
+  with \<open>even p\<close> have "2 dvd gcd p q"
+    by (rule gcd_greatest)
+  with \<open>coprime p q\<close> show False by simp
 qed
 
 

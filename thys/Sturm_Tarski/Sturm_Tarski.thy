@@ -562,7 +562,7 @@ next
           fix z assume "x < z"  "z < b"
           hence "0<poly (p'*p') z" using b by auto
           have " (0 < poly (p' * q * (p' * p)) z)=(0<poly (p'*p') z * poly (q*p) z)" 
-            by (simp add: poly_mult ac_simps)
+            by (simp add: ac_simps)
           also have "...=(0<poly (q*p) z)"
             using `0<poly (p'*p') z` by (metis mult_pos_pos zero_less_mult_pos)
           finally show "(0 < poly (p' * q * (p' * p)) z) = (0 < poly (q * p) z)" .

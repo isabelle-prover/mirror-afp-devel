@@ -174,8 +174,10 @@ qed
 
 subsection{*Normalization of vectors*}
 
-definition "normalize x  = ((1/norm x) *\<^sub>R x)"
-definition "normalize_set_of_vec X  = normalize` X"
+definition normalize
+  where "normalize x  = ((1/norm x) *\<^sub>R x)"
+definition normalize_set_of_vec
+  where "normalize_set_of_vec X  = normalize` X"
 
 lemma norm_normalize:
   assumes "x \<noteq> 0"

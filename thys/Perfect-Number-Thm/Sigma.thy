@@ -159,7 +159,7 @@ assumes "coprime p m"
 shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
 proof-
   have "ALL x f. x dvd m \<longrightarrow> coprime (p ^ f) x"
-    by (metis assms coprime_exp_nat gcd_1_nat gcd_nat.absorb_iff1 gcd_nat.commute gcd_semilattice_nat.inf_left_commute)
+    by (metis assms coprime_exp_nat gcd_1_nat gcd_nat.absorb_iff1 gcd.commute gcd_semilattice_nat.inf_left_commute)
   thus ?thesis
     by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
             intro!: arg_cong[where f = "setsum (%x. x)"])

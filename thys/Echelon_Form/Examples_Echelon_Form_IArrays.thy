@@ -28,9 +28,10 @@ begin
 lift_definition gcd_integer :: "integer => integer => integer"
   is "gcd :: int => int => int" .
 
-lemma gcd_integer_code[code]:
+lemma gcd_integer_code [code]:
 "gcd_integer l k = \<bar>if l = (0::integer) then k else gcd_integer l (\<bar>k\<bar> mod \<bar>l\<bar>)\<bar>"
-apply (transfer) using gcd_code_int by (metis gcd_int.commute)
+by transfer (simp add: gcd_code_int [symmetric] ac_simps)
+
 end
 
 code_printing
