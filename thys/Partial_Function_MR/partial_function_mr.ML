@@ -112,13 +112,13 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val ((fixes, eq_abinding_eqns), _) = prep fixes_raw eqns_raw lthy;
     val fix_eq_abinding_eqns = fixes ~~ eq_abinding_eqns;
     fun gethead (_,(_,eqn)) = let
-        val ((_, plain_eqn), _) = Variable.focus eqn lthy;
+        val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
         val lhs = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn) |> #1;
         val head = strip_comb lhs |> #1;
       in head end;
     val heads = map gethead fix_eq_abinding_eqns;
     fun get_infos (fix,(_,eqn)) = let
-        val ((_, plain_eqn), _) = Variable.focus eqn lthy;
+        val ((_, plain_eqn), _) = Variable.focus NONE eqn lthy;
         val ((f_binding, fT), mixfix) = fix;
         val fname = Binding.name_of f_binding;
         val (lhs, rhs) = HOLogic.dest_eq (HOLogic.dest_Trueprop plain_eqn);

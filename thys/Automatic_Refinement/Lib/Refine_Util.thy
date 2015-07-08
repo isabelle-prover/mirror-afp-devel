@@ -324,7 +324,7 @@ ML {*
           | non_atomic (Const (@{const_name Pure.all}, _) $ _) = true
           | non_atomic _ = false;
 
-        val ((_, goal'), ctxt') = Variable.focus_cterm goal ctxt;
+        val ((_, goal'), ctxt') = Variable.focus_cterm NONE goal ctxt;
         val goal'' = Drule.cterm_rule 
           (singleton (Variable.export ctxt' ctxt)) goal';
         val Rs = filter (non_atomic o Thm.term_of) 
@@ -338,7 +338,7 @@ ML {*
     (* Resolve with premise. Copied and adjusted from Goal.assume_rule_tac. *)
     fun rprem_tac n ctxt = Goal.norm_hhf_tac ctxt THEN' CSUBGOAL (fn (goal, i) =>
       let
-        val ((_, goal'), ctxt') = Variable.focus_cterm goal ctxt;
+        val ((_, goal'), ctxt') = Variable.focus_cterm NONE goal ctxt;
         val goal'' = Drule.cterm_rule 
           (singleton (Variable.export ctxt' ctxt)) goal';
 
