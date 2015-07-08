@@ -142,10 +142,10 @@ fun define_channels (params, binding) typesyn channels thy =
 
   fun proof ctxt = (Class.intro_classes_tac ctxt [] THEN
                       Subgoal.FOCUS (fn {context = ctxt', params = [(_, x)], ...} =>
-                                        (case_tac x ctxt) 1
+                                        (case_tac x ctxt') 1
                                             THEN auto_tac ctxt') ctxt 1 THEN
                       Subgoal.FOCUS (fn {context = ctxt', params = [(_, x), (_, y)], ...} =>
-                                        ((case_tac x ctxt) THEN_ALL_NEW (case_tac y ctxt)) 1
+                                        ((case_tac x ctxt') THEN_ALL_NEW (case_tac y ctxt')) 1
                                             THEN auto_tac ctxt') ctxt 1);
 
  val thy2 =

@@ -498,11 +498,11 @@ val exi_neg = @{lemma "(EX (p::perm). P p) ==> (!!q. P q ==> Q (- q)) ==> EX p. 
 fun prem_bound_tac pred_names alpha_eqvt ctxt = 
   let
     fun trans_prem_tac pred_names ctxt = 
-      SUBPROOF (fn {prems, context, ...} => 
+      SUBPROOF (fn {prems, context = ctxt', ...} => 
         let
-          val prems' = map (transform_prem1 context pred_names) prems
+          val prems' = map (transform_prem1 ctxt' pred_names) prems
         in
-          resolve_tac ctxt prems' 1
+          resolve_tac ctxt' prems' 1
         end) ctxt
     val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_conv alphas}
   in
@@ -642,20 +642,20 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
 (* proves that alpha_raw implies alpha_bn *)
 
 fun raw_prove_bn_imp_tac alpha_result ctxt = 
-  SUBPROOF (fn {prems, context, ...} => 
+  SUBPROOF (fn {prems, context = ctxt', ...} => 
     let
       val AlphaResult {alpha_names, alpha_intros, ...} = alpha_result 
 
       val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
-      val prems'' = map (transform_prem1 context alpha_names) prems'
+      val prems'' = map (transform_prem1 ctxt' alpha_names) prems'
     in
       HEADGOAL 
         (REPEAT_ALL_NEW 
            (FIRST' [ rtac @{thm TrueI}, 
                      rtac @{thm conjI}, 
-                     resolve_tac ctxt prems', 
-                     resolve_tac ctxt prems'',
-                     resolve_tac ctxt alpha_intros ]))
+                     resolve_tac ctxt' prems', 
+                     resolve_tac ctxt' prems'',
+                     resolve_tac ctxt' alpha_intros ]))
     end) ctxt
 
 
@@ -796,21 +796,21 @@ val perm_bn_rsp = @{lemma "(!x y p. R x y --> R (f p x) (f p y)) ==> (op= ===> R
  by (simp add: rel_fun_def)}
 
 fun raw_prove_perm_bn_tac alpha_result simps ctxt = 
-  SUBPROOF (fn {prems, context, ...} => 
+  SUBPROOF (fn {prems, context = ctxt', ...} => 
     let
       val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, ...} = alpha_result 
       val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
-      val prems'' = map (transform_prem1 context (alpha_names @ alpha_bn_names)) prems'
+      val prems'' = map (transform_prem1 ctxt' (alpha_names @ alpha_bn_names)) prems'
     in
       HEADGOAL 
-        (simp_tac (put_simpset HOL_basic_ss ctxt addsimps (simps @ prems'))
+        (simp_tac (put_simpset HOL_basic_ss ctxt' addsimps (simps @ prems'))
          THEN' TRY o REPEAT_ALL_NEW 
            (FIRST' [ rtac @{thm TrueI}, 
                      rtac @{thm conjI}, 
                      rtac @{thm refl},
-                     resolve_tac ctxt prems', 
-                     resolve_tac ctxt prems'',
-                     resolve_tac ctxt alpha_intros ]))
+                     resolve_tac ctxt' prems', 
+                     resolve_tac ctxt' prems'',
+                     resolve_tac ctxt' alpha_intros ]))
     end) ctxt
 
 fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =

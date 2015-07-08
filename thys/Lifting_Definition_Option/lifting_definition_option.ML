@@ -285,12 +285,12 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val lam = lambda b (lambda c (mk_if c b wit))
       val lam_ty = Term.fastype_of lam
       val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> base_ty) $ lam
-      fun tac ctxt = Subgoal.FOCUS (fn focus =>
-             mk_case_tac ctxt [[SOME (#params focus |> hd |> snd |> Thm.term_of)]]
+      fun tac ctxt = Subgoal.FOCUS (fn focus as {context = ctxt', params, prems, ...} =>
+             mk_case_tac ctxt' [[SOME (params |> hd |> snd |> Thm.term_of)]]
               @{thm prod.exhaust}
-             (fn (ctxt, prems2, _) =>
-                Method.insert_tac (#prems focus @ prems2 @ [wit_thmI]) 1
-              THEN auto_tac ctxt)
+             (fn (ctxt'', prems2, _) =>
+                Method.insert_tac (prems @ prems2 @ [wit_thmI]) 1
+              THEN auto_tac ctxt'')
            ) ctxt 1
       val (rcr, lthy) = lift_def_ml (binding,mixfix) restr_c_restr_ty caset tac lthy
       val _ = debug_out ("step 6: created lift_definition for " ^ restr_c_restr_name)
