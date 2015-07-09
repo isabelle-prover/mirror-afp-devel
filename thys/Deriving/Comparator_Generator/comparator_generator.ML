@@ -469,7 +469,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 unfold_tac ctxt (y_simp @ comp_simps)
                 THEN rtac @{thm comp_lex_sym} 1
                 THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
-                THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt'=> fn k =>
+                THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
                   rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
                     [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}) 1
                   THEN recursor_tac SYM pre_cond (nth xs_tys k) (nth IHs k) ctxt')
