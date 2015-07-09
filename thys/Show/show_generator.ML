@@ -313,7 +313,7 @@ fun generate_showsp tyco lthy =
           K (Method.try_intros_tac ctxt @{thms o_append} [])
           THEN_ALL_NEW K (unfold_tac ctxt show_law_simps)
           THEN_ALL_NEW (fn st =>
-            Subgoal.SUBPROOF (K (f (st - 1))) ctxt st))
+            Subgoal.SUBPROOF (fn {context = ctxt', ...} => f ctxt' (st - 1)) ctxt st))
         fun solve_tac ctxt case_num prems params =
           let
             val (i, _) = ind_case_to_idxs case_num (*(constructor number, argument number)*)
@@ -328,9 +328,9 @@ fun generate_showsp tyco lthy =
                 val IHs = instantiate_IHs IHs assms |> split_IHs Ts
               in
                 unfold_tac ctxt (nth show_simps i)
-                THEN o_append_intro_tac ctxt (fn st =>
+                THEN o_append_intro_tac ctxt (fn ctxt' => fn st =>
                   rtac @{thm show_lawD} 1
-                  THEN recursor_tac ctxt assms (nth Ts st) (nth IHs st))
+                  THEN recursor_tac assms (nth Ts st) (nth IHs st) ctxt')
               end) ctxt 1
           end
       in induct_tac ctxt solve_tac end

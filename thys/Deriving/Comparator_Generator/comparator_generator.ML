@@ -422,9 +422,9 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 unfold_tac ctxt (y_simp @ comp_simps)
                 THEN unfold_tac ctxt @{thms comp_lex_eq}
                 THEN unfold_tac ctxt (@{thms in_set_simps} @ inject_thms @ @{thms refl_True})
-                THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn k =>
+                THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
                   rtac @{thm peq_compD} 1
-                  THEN recursor_tac EQ ctxt pre_cond (nth xs_tys k) (nth IHs k))
+                  THEN recursor_tac EQ pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
                 unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms order.simps}) 
@@ -469,10 +469,10 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 unfold_tac ctxt (y_simp @ comp_simps)
                 THEN rtac @{thm comp_lex_sym} 1
                 THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
-                THEN conjI_tac @{thms conjI} ctxt xs (fn k =>
+                THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt'=> fn k =>
                   rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
                     [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}) 1
-                  THEN recursor_tac SYM ctxt pre_cond (nth xs_tys k) (nth IHs k))
+                  THEN recursor_tac SYM pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
                 unfold_tac ctxt (y_simp @ comp_simps @ @{thms invert_order.simps})
@@ -522,10 +522,10 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                         unfold_tac ctxt (y_simp @ z_simp @ comp_simps)
                         THEN rtac @{thm comp_lex_trans} 1
                         THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
-                        THEN conjI_tac @{thms conjI} ctxt xs (fn k =>
+                        THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
                           rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
                             [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}) 1
-                          THEN recursor_tac TRANS ctxt pre_cond (nth xs_tys k) (nth IHs k))
+                          THEN recursor_tac TRANS pre_cond (nth xs_tys k) (nth IHs k) ctxt')
                       else 
                         (* different constructors *)
                         unfold_tac ctxt 
