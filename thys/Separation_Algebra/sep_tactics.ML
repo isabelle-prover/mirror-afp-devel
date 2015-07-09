@@ -208,7 +208,7 @@ in
     fun sep_select_asm_tac' ctxt n (ct, i) =
       let
         (* digging out prems *)
-        val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
+        val ((_, ct'), _) = Variable.focus_cterm NONE ct ctxt;
         val prems = Drule.strip_imp_prems ct';
 
         fun prem_ok ct = SepConj.is_sep_conj_prop (Thm.term_of ct)
@@ -239,7 +239,7 @@ in
     fun sep_select_tac' ctxt n (ct, i) =
       let
         (* digging out conclusions *)
-        val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
+        val ((_, ct'), _) = Variable.focus_cterm NONE ct ctxt;
         val concl = ct' |> Drule.strip_imp_concl |> Thm.term_of;
         val p = concl |> HOLogic.dest_Trueprop |> SepConj.break_sep_conj
                 |> length;
@@ -259,7 +259,7 @@ in
       fun sep_assm_tac' ctxt tac (ct,i) =
         let
           (* digging out prems *)
-          val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
+          val ((_, ct'), _) = Variable.focus_cterm NONE ct ctxt;
           val prems = Drule.strip_imp_prems ct';
 
           fun prem_ok ct = SepConj.is_sep_conj_prop (Thm.term_of ct)
@@ -286,7 +286,7 @@ in
     fun sep_concl_tac' ctxt tac (ct, i) =
       let
         (* digging out conclusion *)
-        val ((_, ct'), _) = Variable.focus_cterm ct ctxt;
+        val ((_, ct'), _) = Variable.focus_cterm NONE ct ctxt;
         val concl = ct' |> Drule.strip_imp_concl |> Thm.term_of;
         val p = concl |> HOLogic.dest_Trueprop |> SepConj.break_sep_conj
                 |> length;
@@ -308,7 +308,7 @@ in
     fun sep_cancel_tac' ctxt tac (ct, i) =
       let
         (* digging out prems and conclusions *)
-        val ((vars, ct'), ctxt') = Variable.focus_cterm ct ctxt;
+        val ((vars, ct'), ctxt') = Variable.focus_cterm NONE ct ctxt;
         val concl = Drule.strip_imp_concl ct';
         val prems = Drule.strip_imp_prems ct';
 

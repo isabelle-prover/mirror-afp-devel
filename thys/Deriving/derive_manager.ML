@@ -4,6 +4,7 @@ sig
   val register_derive : string -> string -> (string -> string -> theory -> theory) -> theory -> theory
   (* identifier, description, (fn dtyp_name => param => derive-method) *)
   val derive : string -> string -> string -> theory -> theory
+  val derive_cmd : string -> string -> string -> theory -> theory
   (* print all registered deriving-methods  *)
   val print_info : theory -> unit
 end

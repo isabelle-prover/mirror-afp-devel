@@ -411,9 +411,9 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                 unfold_tac ctxt (y_simp @ comp_simps)
                 THEN unfold_tac ctxt @{thms list_all_eq}
                 THEN unfold_tac ctxt (@{thms in_set_simps} @ inject_thms @ @{thms refl_True})
-                THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn k =>
+                THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
                   rtac @{thm pequalityD} 1
-                  THEN recursor_tac ctxt pre_cond (nth xs_tys k) (nth IHs k))
+                  THEN recursor_tac pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
                 unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms bool.simps}) 

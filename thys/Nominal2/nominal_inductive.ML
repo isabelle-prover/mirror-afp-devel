@@ -162,17 +162,17 @@ val all_elims =
   end
 
 fun helper_tac flag prm p ctxt =
-  Subgoal.SUBPROOF (fn {context, prems, ...} =>
+  Subgoal.SUBPROOF (fn {context = ctxt', prems, ...} =>
     let
       val prems' = prems
         |> map (minus_permute_elim p)
-        |> map (eqvt_srule context)
+        |> map (eqvt_srule ctxt')
 
       val prm' = (prems' MRS prm)
         |> flag ? (all_elims [p])
-        |> flag ? (eqvt_srule context)
+        |> flag ? (eqvt_srule ctxt')
     in
-      asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps (prm' :: @{thms HOL.induct_forall_def})) 1
+      asm_full_simp_tac (put_simpset HOL_ss ctxt' addsimps (prm' :: @{thms HOL.induct_forall_def})) 1
     end) ctxt
 
 fun non_binder_tac prem intr_cvars Ps ctxt = 
@@ -184,7 +184,7 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
       val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ p_prms) 
-        |> eqvt_srule ctxt
+        |> eqvt_srule ctxt'
 
       (* for inductive-premises*)
       fun tac1 prm = helper_tac true prm p ctxt'
@@ -254,11 +254,11 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
 
-      val cperms = map (Thm.cterm_of ctxt o perm_const) prm_tys
+      val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
       val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
       val prem' = prem
         |> cterm_instantiate (intr_cvars ~~ qp_prms)
-        |> eqvt_srule ctxt
+        |> eqvt_srule ctxt'
 
       val fprop' = eqvt_srule ctxt' fprop 
       val tac_fresh = simp_tac (put_simpset HOL_basic_ss ctxt' addsimps [fprop'])
@@ -269,7 +269,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       (* for non-inductive premises *)   
       fun tac2 prm =  
         EVERY' [ minus_permute_intro_tac (mk_cplus q p), 
-                 eqvt_stac ctxt, 
+                 eqvt_stac ctxt', 
                  helper_tac false prm (mk_cplus q p) ctxt' ]
 
       fun select prm (t, i) =

@@ -31,7 +31,7 @@ sig
   (* aim: treat a possible empty conjunction and handle each subcase 
      by a specific tactic (indexed from 0 onwards) *)
   val conjI_tac : thm list ->
-    Proof.context -> 'a list -> (int -> tactic) -> tactic
+    Proof.context -> 'a list -> (Proof.context -> int -> tactic) -> tactic
   
   (* check whether a given type is of a given sort *)
   val is_class_instance : theory -> string -> sort -> bool
@@ -74,7 +74,7 @@ sig
   val std_recursor_tac : (string -> 'info) * ('info -> bool list) * string list ->
     typ list ->
     ('info -> thm) ->
-    Proof.context -> thm list -> typ -> thm list -> tactic
+    thm list -> typ -> thm list -> Proof.context -> tactic
   
   (* delivers a full type from a type name by instantiating the type-variables of that
    type with different variables of a given sort, also returns the chosen variables
@@ -149,12 +149,12 @@ fun typ_and_vs_of_used_typname typ_name used_pos sort =
 fun is_class_instance thy tname class =
   Sorts.has_instance (Sign.classes_of thy) tname class
 
-fun conjI_tac conj_thms ctxt xs tactics =
+fun conjI_tac conj_thms ctxt xs tac =
   if null xs then all_tac
   else
     (K (Method.try_intros_tac ctxt conj_thms [])
     THEN_ALL_NEW (fn k' =>
-      Subgoal.SUBPROOF (K (tactics (k' - 1))) ctxt k'))
+      Subgoal.SUBPROOF (fn {context = ctxt', ...} => tac ctxt' (k' - 1)) ctxt k'))
     1
 
 fun mk_id T =
@@ -351,21 +351,21 @@ fun split_IHs rec_info (ty :: tys : typ list) (IHs : thm list) : thm list list =
   | split_IHs _ [] [] = []
   | split_IHs _ [] (_ :: _) = error "split IH error: too many"
 
-fun std_recursor_tac rec_info used_tfrees info_to_pthm ctxt assms = recursor rec_info false
+fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info false
       (* TFrees via pre_condition and blast *)
-      (fn T => fn IH =>
+      (fn T => fn IH => fn ctxt =>
           if null IH then              
             (rtac (nth assms (find_index (equal T) used_tfrees)) THEN_ALL_NEW blast_tac ctxt) 1               
           else error "error 1 in distributing IHs in recursor_tac") 
       (* TVars may not occur *)
       (fn ty => error ("error in recursor_tac for " ^ @{make_string} ty))
       (* recursive case via IH and blast *)
-      (K (fn IHs =>
+      (K (fn IHs => fn ctxt =>
         if length IHs = 1 then
           (rtac (hd IHs) THEN_ALL_NEW blast_tac ctxt) 1
         else error "error 2 in distributing IHs in recursor_tac"))
       (* non-rec.-case distributed IHs and invokes partial soundness thm *)
-      (fn (tys_tactics, info) => fn IH => 
+      (fn (tys_tactics, info) => fn IH => fn ctxt => 
         let
           val IHs = split_IHs rec_info (map fst tys_tactics) IH
           val tactics = tys_tactics ~~ IHs |> map_filter (fn ((_, tac_opt), IH) =>
@@ -374,9 +374,9 @@ fun std_recursor_tac rec_info used_tfrees info_to_pthm ctxt assms = recursor rec
         in
           HEADGOAL (
             rtac pthm
-            THEN_ALL_NEW (fn k => Subgoal.SUBPROOF (fn {prems, ...} =>
+            THEN_ALL_NEW (fn k => Subgoal.SUBPROOF (fn {prems, context = ctxt', ...} =>
               Method.insert_tac prems 1
-              THEN (nth tactics (k - 1))) ctxt k))
+              THEN (nth tactics (k - 1) ctxt')) ctxt k))
         end)
 
 end
