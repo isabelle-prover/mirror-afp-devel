@@ -587,72 +587,94 @@ lemma AE_T_iff:
   by (simp add: AE_iff_nn_integral nn_integral_T[where s=x])
      (auto simp add: nn_integral_0_iff_AE AE_measure_pmf_iff split: split_indicator)
 
+lemma AE_T_alw:
+  assumes [measurable]: "Measurable.pred S P"
+  assumes P: "\<And>s. (x, s) \<in> accessible \<Longrightarrow> AE \<omega> in T s. P \<omega>"
+  shows "AE \<omega> in T x. alw P \<omega>"
+proof -
+  def F \<equiv> "\<lambda>p x. P x \<and> p (stl x)"
+  have [measurable]: "\<And>p. Measurable.pred S p \<Longrightarrow> Measurable.pred S (F p)"
+    by (auto simp: F_def)
+  have "almost_everywhere (T s) ((F ^^ i) top)"
+    if "(x, s) \<in> accessible" for i s
+    using that
+  proof (induction i arbitrary: s)
+    case (Suc i) then show ?case
+      apply simp
+      apply (subst F_def)
+      apply (simp add: P)
+      apply (subst AE_T_iff)
+      apply (measurable; simp)
+      apply (auto dest: rtrancl_into_rtrancl)
+      done
+  qed simp
+  then have "almost_everywhere (T x) (gfp F)"
+    by (subst inf_continuous_gfp) (auto simp: inf_continuous_def AE_all_countable F_def)
+  then show ?thesis
+    by (simp add: alw_def F_def)
+qed
+  
+lemma emeasure_suntil_disj:
+  assumes [measurable]: "Measurable.pred S P"
+  assumes *: "\<And>t. AE \<omega> in T t. \<not> (P \<sqinter> (HLD X \<sqinter> nxt (HLD X suntil P))) \<omega>"
+  shows "emeasure (T s) {\<omega>\<in>space (T s). (HLD X suntil P) \<omega>} =
+    lfp (\<lambda>F s. emeasure (T s) {\<omega>\<in>space (T s). P \<omega>} + (\<integral>\<^sup>+t. F t * indicator X t \<partial>K s)) s"
+  unfolding suntil_lfp
+proof (rule emeasure_lfp[where s=s])
+  fix F t assume [measurable]: "Measurable.pred (T s) F" and
+    F: "F \<le> lfp (\<lambda>a b. P b \<or> HLD X b \<and> a (stl b))"
+  have "emeasure (T t) {\<omega> \<in> space (T s). P \<omega> \<or> HLD X \<omega> \<and> F (stl \<omega>)} = 
+    emeasure (T t) {\<omega> \<in> space (T t). P \<omega>} + emeasure (T t) {\<omega>\<in>space (T t). HLD X \<omega> \<and> F (stl \<omega>)}"
+  proof (rule emeasure_add_AE)
+    show "AE x in T t. \<not> (x \<in> {\<omega> \<in> space (T t). P \<omega>} \<and> x \<in> {\<omega> \<in> space (T t). HLD X \<omega> \<and> F (stl \<omega>)})"
+      using * by eventually_elim (insert F, auto simp: suntil_lfp[symmetric])
+  qed auto
+  also have "emeasure (T t) {\<omega>\<in>space (T t). HLD X \<omega> \<and> F (stl \<omega>)} = 
+    (\<integral>\<^sup>+t. emeasure (T t) {\<omega> \<in> space (T s). F \<omega>} * indicator X t \<partial>K t)"
+    by (subst emeasure_Collect_T) (auto intro!: nn_integral_cong split: split_indicator)
+  finally show "emeasure (T t) {\<omega> \<in> space (T s). P \<omega> \<or> HLD X \<omega> \<and> F (stl \<omega>)} =
+    emeasure (T t) {\<omega> \<in> space (T t). P \<omega>} + (\<integral>\<^sup>+ t. emeasure (T t) {\<omega> \<in> space (T s). F \<omega>} * indicator X t \<partial>K t)" .
+qed (auto intro!: order_continuous_intros split: split_indicator simp: emeasure_nonneg nn_integral_nonneg)
+
+lemma emeasure_positive: "0 < emeasure M A \<longleftrightarrow> emeasure M A \<noteq> 0"
+  using emeasure_nonneg[of M A] by auto
+
+lemma emeasure_HLD_nxt:
+  assumes [measurable]: "Measurable.pred S P"
+  shows "emeasure (T s) {\<omega>\<in>space (T s). (X \<cdot> P) \<omega>} =
+    (\<integral>\<^sup>+x. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>} * indicator X x \<partial>K s)"
+  by (subst emeasure_Collect_T)
+     (auto intro!: nn_integral_cong_AE simp: AE_measure_pmf_iff split: split_indicator)
+
+lemma emeasure_HLD:
+  "emeasure (T s) {\<omega>\<in>space (T s). HLD X \<omega>} = emeasure (K s) X"
+  using emeasure_HLD_nxt[of "\<lambda>\<omega>. True" s X] T.emeasure_space_1 by simp
+
 lemma emeasure_suntil_HLD:
   assumes [measurable]: "Measurable.pred S P"
   shows "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
    emeasure (T s) {x\<in>space (T s). ev (HLD {t}) x} * emeasure (T t) {x\<in>space (T t). P x}"
 proof -
-  { fix P :: "'s stream \<Rightarrow> bool" assume [measurable]: "Measurable.pred S P"
-    have "emeasure (T s) {x\<in>space S. lfp (\<lambda>Q. (HLD {t} aand nxt P) or (not (HLD {t}) aand nxt Q)) x} =
-      lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then emeasure (T t) {x\<in>space S. P x} else f s') \<partial>K s) s"
-      (is "emeasure (T s) {x\<in>space S. lfp ?F x} = lfp ?f s")
-    proof (rule emeasure_lfp)
-      fix Q :: "'s stream \<Rightarrow> bool" and s assume [measurable]: "Measurable.pred S Q"
-      show "emeasure (T s) {x \<in> space S. ?F Q x} = ?f (\<lambda>t. emeasure (T t) {x \<in> space S. Q x}) s"
-        unfolding space_T[symmetric, of s] by (subst emeasure_Collect_T) (auto intro!: nn_integral_cong)
-    qed (auto intro!: nn_integral_nonneg order_continuous_intros) 
-    then have "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} = lfp ?f s" 
-      by (simp add: suntil_lfp) }
-  note * = this
-  
-  have "lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then emeasure (T t) {x\<in>space S. P x} else f s') \<partial>K s) s =
-      lfp (\<lambda>f s. \<integral>\<^sup>+s'. (if s' = t then 1 else f s') \<partial>K s) s * emeasure (T t) {x\<in>space S. P x}"
-    by (subst lfp_transfer_bounded[where \<alpha>="\<lambda>f s. f s * emeasure (T t) {x\<in>space S. P x}" and P=top, symmetric])
-       (auto simp: SUP_apply[abs_def] T.emeasure_eq_measure Sup_ereal_mult_right' measure_nonneg
-                   bot_ereal_def le_fun_def fun_eq_iff less_le nn_integral_multc[symmetric]
-             intro!: order_continuous_intros nn_integral_nonneg nn_integral_cong)
-  then have "emeasure (T s) {x \<in> space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
-    emeasure (T s) {x \<in> space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt (\<lambda>x. True))) x} *
-    emeasure (T t) {x \<in> space (T t). P x}"
-    by (subst (1 2) *) (simp_all cong del: if_cong)
-  then show ?thesis
-    by (simp add: ev_eq_suntil)
-qed
-
-lemma emeasure_suntil:
-  assumes [measurable]: "Measurable.pred S P" "Measurable.pred S Q"
-  shows "emeasure (T s) {x\<in>space (T s). (P suntil Q) x} =
-   (SUP i. emeasure (T s) {x\<in>space (T s). ((\<lambda>R. Q or (P aand nxt R))^^i) (\<lambda>_. False) x})"
-proof -
-  have suntil_eq: "(P suntil Q) = lfp (\<lambda>R. Q or (P aand nxt R))"
-    unfolding suntil_def by (auto intro!: arg_cong[where f=lfp])
-  show ?thesis
-    unfolding suntil_eq
-  proof (coinduction arbitrary: s rule: emeasure_lfp')
-    case measurable
-    have [measurable]: "Measurable.pred S A"
-      using measurable[of "T s"] by auto
-    show ?case
-      by simp
-  qed (auto simp: sup_continuous_def)
-qed
-
-lemma emeasure_ev:
-  assumes [measurable]: "Measurable.pred S P"
-  shows "emeasure (T s) {x\<in>space (T s). ev P x} =
-   (SUP i. emeasure (T s) {x\<in>space (T s). ((\<lambda>R. P or nxt R)^^i) (\<lambda>_. False) x})"
-proof -
-  have ev_eq: "ev P = lfp (\<lambda>R. P or nxt R)"
-    unfolding ev_def by (auto intro!: arg_cong[where f=lfp])
-  show ?thesis
-    unfolding ev_eq
-  proof (coinduction arbitrary: s rule: emeasure_lfp')
-    case measurable
-    have [measurable]: "Measurable.pred S A"
-      using measurable[of "T s"] by auto
-    show ?case
-      by simp
-  qed (auto simp: sup_continuous_def)
+  let ?P = "emeasure (T t) {\<omega>\<in>space (T t). P \<omega>}"
+  let ?F = "\<lambda>Q F s. emeasure (T s) {\<omega>\<in>space (T s). Q \<omega>} + (\<integral>\<^sup>+t'. F t' * indicator (- {t}) t' \<partial>K s)"
+  have "emeasure (T s) {x\<in>space (T s). (HLD (-{t}) suntil ({t} \<cdot> P)) x} = lfp (?F ({t} \<cdot> P)) s"
+    by (rule emeasure_suntil_disj) (auto simp: HLD_iff)
+  also have "lfp (?F ({t} \<cdot> P)) = (\<lambda>s. lfp (?F (HLD {t})) s * ?P)"
+  proof (rule lfp_transfer[symmetric, where \<alpha>="\<lambda>x s. x s * emeasure (T t) {\<omega>\<in>space (T t). P \<omega>}"])
+    fix F show "(\<lambda>s. ?F (HLD {t}) F s * ?P) = ?F ({t} \<cdot> P) (\<lambda>s. F s * ?P)"
+      unfolding emeasure_HLD emeasure_HLD_nxt[OF assms]
+      apply (subst (1 3) nn_integral_max_0[symmetric])
+      apply (simp add: ereal_left_distrib emeasure_nonneg nn_integral_nonneg max_absorb2)
+      apply (auto simp: ac_simps fun_eq_iff nn_integral_cmult[symmetric] emeasure_nonneg ereal_zero_le_0_iff ereal_mult_le_0_iff
+                        emeasure_positive[symmetric]
+                  intro!: arg_cong[where f="\<lambda>x. c + x" for c] nn_integral_cong split: split_max split_indicator)
+      done
+  qed (auto intro!: order_continuous_intros split: split_indicator
+              simp: nn_integral_nonneg emeasure_nonneg le_fun_def emeasure_positive bot_ereal_def)
+  also have "lfp (?F (HLD {t})) s = emeasure (T s) {x\<in>space (T s). (HLD (-{t}) suntil HLD {t}) x}"
+    by (rule emeasure_suntil_disj[symmetric]) (auto simp: HLD_iff)
+  finally show ?thesis
+    by (simp add: HLD_iff[abs_def] ev_eq_suntil) 
 qed
 
 lemma AE_suntil: 
@@ -666,29 +688,6 @@ lemma AE_suntil:
   apply (simp_all add: measure_def emeasure_suntil_HLD del: space_T nxt.simps)
   apply (auto simp: T.emeasure_eq_measure mult_eq_1 measure_nonneg)
   done
-
-lemma AE_T_alw:
-  assumes [measurable]: "Measurable.pred S P"
-  assumes P: "\<And>x. AE \<omega> in T x. P \<omega>"
-  shows "AE \<omega> in T x. alw P \<omega>"
-proof -
-  { fix i have "almost_everywhere (T x) (((\<lambda>p x. P x \<and> p (stl x)) ^^ i) top)"
-      apply (induct i arbitrary: x)
-      apply simp
-      apply (subst AE_T_iff)
-      unfolding top_fun_def
-      apply measurable
-      apply simp
-      apply simp
-      apply (subst AE_T_iff[symmetric])
-      apply simp
-      apply (rule P)
-      done }
-  then have "almost_everywhere (T x) (gfp (\<lambda>p x. P x \<and> p (stl x)))"
-    by (subst inf_continuous_gfp) (auto simp: inf_continuous_def AE_all_countable)
-  then show ?thesis
-    by (simp add: alw_def)
-qed
 
 definition fair :: "'s \<Rightarrow> 's \<Rightarrow> 's stream \<Rightarrow> bool" where
   "fair s t = alw (ev (HLD {s})) impl alw (ev (HLD {s} aand nxt (HLD {t})))"
@@ -993,129 +992,6 @@ proof cases
   assume "s \<notin> H" then show ?thesis
     using nn_integral_sfirst_finite'[of s H] until by (simp add: nn_integral_add)
 qed (simp add: sfirst.simps)
-
-lemma emeasure_HLD_nxt:
-  assumes [measurable]: "Measurable.pred S P"
-  shows "emeasure (T s) {\<omega>\<in>space (T s). (X \<cdot> P) \<omega>} =
-    (\<integral>\<^sup>+x. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>} * indicator X x \<partial>K s)"
-  by (subst emeasure_Collect_T)
-     (auto intro!: nn_integral_cong_AE simp: AE_measure_pmf_iff split: split_indicator)
-
-lemma emeasure_HLD:
-  "emeasure (T s) {\<omega>\<in>space (T s). HLD X \<omega>} = emeasure (K s) X"
-  using emeasure_HLD_nxt[of "\<lambda>\<omega>. True" s X] T.emeasure_space_1 by simp
-
-lemma emeasure_suntil_sums:
-  assumes [measurable]: "Measurable.pred S \<phi>"
-  assumes [measurable]: "Measurable.pred S \<psi>"
-  shows "emeasure (T s) {\<omega>\<in>space (T s). (\<phi> suntil \<psi>) \<omega>} =
-    (\<Sum>i. emeasure (T s) {\<omega>\<in>space (T s). ((\<lambda>R. \<phi> aand ((not \<psi>) aand (nxt R))) ^^ i) \<psi> \<omega>})"
-proof -
-  let ?R = "\<lambda>i \<omega>. ((\<lambda>R. \<psi> or (\<phi> aand (nxt R))) ^^ i) \<bottom> \<omega>"
-  let ?L = "\<lambda>j \<omega>. ((\<lambda>R. \<phi> aand ((not \<psi>) aand (nxt R))) ^^ j) \<psi> \<omega>"
-  { fix \<omega> i assume "?R i \<omega>" then have "\<exists>j<i. ?L j \<omega>"
-    proof (induction i arbitrary: \<omega>)
-      case (Suc i) then show ?case
-        by (cases "\<not> \<psi> \<omega>") force+
-    qed simp }
-  moreover
-  { fix \<omega> i j assume "?L j \<omega>" then have "?R (Suc j) \<omega>"
-      by (induction j arbitrary: \<omega>) auto
-    moreover assume "j < i"
-    then have "?R (Suc j) \<le> ?R i"
-      by (intro funpow_decreasing) (auto simp: mono_def)
-    ultimately have "?R i \<omega>"
-      by (auto simp: le_fun_def) }
-  ultimately have R_eq_L: "\<And>i \<omega>. ?R i \<omega> \<longleftrightarrow> (\<exists>j<i. ?L j \<omega>)"
-    by blast
-
-  { fix m n \<omega> assume "?L m \<omega>" "?L n \<omega>"
-    then have "m = n"
-    proof (induction m arbitrary: \<omega> n)
-      case 0 then show ?case
-        by (cases n) auto
-    next
-      case (Suc m) then show ?case
-        by (cases n) auto
-    qed }
-  note inj = this
-
-  have "emeasure (T s) {\<omega>\<in>space (T s). (\<phi> suntil \<psi>) \<omega>} =
-    (SUP i. emeasure (T s) {\<omega>\<in>space (T s). ?R i \<omega>})"
-    unfolding bot_fun_def bot_bool_def by (intro emeasure_suntil) fact+
-  also have "\<dots> = (SUP i. emeasure (T s) (\<Union>j<i. {\<omega>\<in>space (T s). ?L j \<omega>}))"
-    unfolding R_eq_L by (auto intro!: SUP_cong arg_cong2[where f=emeasure])
-  also have "\<dots> = (SUP i. \<Sum>j<i. emeasure (T s) {\<omega>\<in>space (T s). ?L j \<omega>})"
-    apply (intro SUP_cong[OF refl] setsum_emeasure[symmetric] image_subset_iff[THEN iffD2] ballI)
-    apply measurable
-    apply (auto simp: disjoint_family_on_def inj)
-    done
-  also have "\<dots> = (\<Sum>i. emeasure (T s) {\<omega>\<in>space (T s). ?L i \<omega>})"
-    by (intro suminf_ereal_eq_SUP[symmetric] emeasure_nonneg)
-  finally show ?thesis .
-qed
-
-lemma emeasure_suntil_geometric:
-  assumes [measurable]: "Measurable.pred S \<phi>"
-  assumes [measurable]: "Measurable.pred S \<psi>"
-  assumes "s \<in> X" and Y: "\<And>s. s \<in> X \<Longrightarrow> Y s \<subseteq> X" and "p < 1"
-  assumes \<psi>: "\<And>s. s \<in> X \<Longrightarrow> emeasure (T s) {\<omega>\<in>space (T s). \<psi> \<omega>} = ereal r"
-  assumes \<phi>: "\<And>s. s \<in> X \<Longrightarrow> AE \<omega> in T s. (((\<phi> aand not \<psi>) aand nxt \<psi>) \<omega> \<longleftrightarrow> (Y s \<cdot> \<psi>) \<omega>)"
-   "\<And>s. s \<in> X \<Longrightarrow> AE \<omega> in T s. (((\<phi> aand not \<psi>) aand nxt (\<phi> aand not \<psi>)) \<omega> \<longleftrightarrow> (Y s \<cdot> (\<phi> aand not \<psi>)) \<omega>)"
-  assumes p: "\<And>s. s \<in> X \<Longrightarrow> emeasure (K s) (Y s) = ereal p"
-  shows "emeasure (T s) {\<omega>\<in>space (T s). (\<phi> suntil \<psi>) \<omega>} = r / (1 - p)"
-proof -
-  let ?P = "\<lambda>x P. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>}"
-  have nn: "0 \<le> r" "0 \<le> p"
-    using p[OF `s \<in> X`, symmetric] \<psi>[OF `s \<in> X`, symmetric]
-    by (auto simp: T.emeasure_eq_measure measure_pmf.emeasure_eq_measure measure_nonneg)
-
-  let ?I = "\<lambda>n. ((\<lambda>R. \<phi> aand ((not \<psi>) aand nxt R)) ^^ n) \<psi>"
-  { fix n
-    from `s \<in> X` have "?P s (?I n) = p^n * r"
-    proof (induction n arbitrary: s)
-      case (Suc n)
-      have "?P s (?I (Suc n)) = ?P s (Y s \<cdot> ?I n)"
-      proof (intro emeasure_Collect_eq_AE)
-        show "AE \<omega> in T s. ?I (Suc n) \<omega> \<longleftrightarrow> (Y s \<cdot> ?I n) \<omega>"
-          using \<phi>[OF `s\<in>X`]
-        proof eventually_elim
-          fix \<omega> assume "((\<phi> aand not \<psi>) aand nxt \<psi>) \<omega> \<longleftrightarrow> (Y s \<cdot> \<psi>) \<omega>"
-            "((\<phi> aand not \<psi>) aand nxt (\<phi> aand not \<psi>)) \<omega> \<longleftrightarrow> (Y s \<cdot> (\<phi> aand not \<psi>)) \<omega>"
-          then show "?I (Suc n) \<omega> \<longleftrightarrow> (Y s \<cdot> ?I n) \<omega>"
-            by (cases n) auto
-        qed
-        show "Measurable.pred (T s) (?I (Suc n))"
-          by measurable simp
-        show "Measurable.pred (T s) (Y s \<cdot> ?I n)"
-          unfolding measurable_T1 by measurable
-      qed
-      also have "\<dots> = (\<integral>\<^sup>+y. ?P y (?I n) * indicator (Y s) y \<partial>K (s))"
-        by (intro emeasure_HLD_nxt) measurable
-      also have "\<dots> = (\<integral>\<^sup>+y. ereal (p^n * r) * indicator (Y s) y \<partial>K s)"
-        using Suc Y by (intro nn_integral_cong) (auto split: split_indicator)
-      also have "\<dots> = ereal (p^Suc n * r)"
-        using nn Suc by (subst nn_integral_cmult_indicator) (auto simp: p)
-      finally show ?case
-        by simp
-    qed (insert \<psi>, simp) }
-  note iter = this
-
-  have "?P s (\<phi> suntil \<psi>) = (\<Sum>n. ?P s (?I n))"
-    by (subst emeasure_suntil_sums) measurable
-  also have "\<dots> = (\<Sum>n. ereal (p^n * r))"
-    by (subst iter) rule
-  also have "\<dots> = ereal ((1 / (1 - p)) * r)"
-    using `p < 1` nn by (intro sums_suminf_ereal sums_mult2 geometric_sums) auto
-  finally show ?thesis
-    by simp
-qed
-
-lemma emeasure_ev_sums:
-  assumes [measurable]: "Measurable.pred S \<phi>"
-  shows "emeasure (T s) {\<omega>\<in>space (T s). ev \<phi> \<omega>} =
-    (\<Sum>i. emeasure (T s) {\<omega>\<in>space (T s). ((\<lambda>R. (not \<phi>) aand (nxt R)) ^^ i) \<phi> \<omega>})"
-  using emeasure_suntil_sums[of "\<lambda>s. True" \<phi> s] by (simp add: true_suntil)
 
 lemma prob_T:
   assumes P: "Measurable.pred S P"
@@ -1782,4 +1658,3 @@ qed
 end
 
 end
-

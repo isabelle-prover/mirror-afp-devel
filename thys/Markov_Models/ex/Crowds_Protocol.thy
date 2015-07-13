@@ -5,6 +5,65 @@ section {* Formalization of the Crowds-Protocol *}
 theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
 begin
+
+lemma (in MC_syntax) emeasure_suntil_geometric:
+  assumes [measurable]: "Measurable.pred S P"
+  assumes "s \<in> X"
+  assumes r: "\<And>s. s \<in> X \<Longrightarrow> emeasure (T s) {\<omega>\<in>space (T s). P \<omega>} = ereal r"
+  assumes p: "\<And>s. s \<in> X \<Longrightarrow> emeasure (K s) X = ereal p" "p < 1"
+  assumes "\<And>t. AE \<omega> in T t. \<not> (P \<sqinter> (HLD X \<sqinter> nxt (HLD X suntil P))) \<omega>"
+  shows "emeasure (T s) {\<omega>\<in>space (T s). (HLD X suntil P) \<omega>} = r / (1 - p)"
+proof (subst emeasure_suntil_disj)
+  let ?F = "\<lambda>F s. emeasure (T s) {\<omega> \<in> space (T s). P \<omega>} + \<integral>\<^sup>+ t. F t * indicator X t \<partial>K s"
+  let ?f = "\<lambda>x. max 0 (ereal r + ereal p * x)"
+  have *[simp]: "0 \<le> p" "0 \<le> r"
+    using p(1)[OF \<open>s \<in> X\<close>, symmetric] r(1)[OF \<open>s \<in> X\<close>, symmetric]
+    by (simp_all add: T.emeasure_eq_measure measure_pmf.emeasure_eq_measure measure_nonneg)
+  with `p < 1` have fp_nn: "0 \<le> ereal (r / (1 - p))" 
+    by (simp add: divide_simps del: *)
+
+  have "mono ?F" "mono ?f"
+    by (auto intro!: monoI max.mono ereal_add_mono nn_integral_mono ereal_mult_left_mono ereal_mult_right_mono simp: le_fun_def)
+
+  have lfp_F_nn: "0 \<le> lfp ?F s" for s
+    by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: nn_integral_nonneg emeasure_nonneg)
+  have lfp_f_nn: "0 \<le> lfp ?f"
+    by (subst lfp_unfold[OF \<open>mono ?f\<close>]) auto
+
+  have 1: "lfp ?f \<le> lfp ?F s"
+    using `s \<in> X`
+  proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?f\<close>])
+    case step: (1 x)
+    then have "?f x \<le> ?F (\<lambda>s. max 0 x) s"
+      by (auto simp: p emeasure_nonneg nn_integral_nonneg r[simplified] nn_integral_cmult mult.commute[of _ x]
+               intro!: ereal_add_mono ereal_mult_right_mono)
+    also have "?F (\<lambda>s. max 0 x) \<le> ?F (lfp ?F)"
+      using lfp_F_nn step
+      by (intro le_funI ereal_add_mono order_refl nn_integral_mono) (auto simp: split: split_indicator)
+    finally show ?case  
+      by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: le_fun_def)
+  qed (auto intro!: Sup_least)
+  also have 2: "lfp ?F s \<le> r / (1 - p)"
+    using `s \<in> X`
+  proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?F\<close>])
+    case (1 S)
+    with r have "?F S s \<le> ereal r + (\<integral>\<^sup>+x. ereal (r / (1 - p)) * indicator X x \<partial>K s)"
+      by (intro ereal_add_mono nn_integral_mono) (auto split: split_indicator)
+    also have "\<dots> \<le> ereal r + ereal (r * p / (1 - p))"
+      using fp_nn `s \<in> X` by (simp add: nn_integral_cmult_indicator p)
+    also have "\<dots> = ereal (r / (1 - p))"
+      using `p < 1` by (simp add: field_simps)
+    finally show ?case .
+  qed (auto intro!: SUP_least)
+  finally obtain x where x: "lfp ?f = ereal x"
+    using lfp_f_nn by (cases "lfp ?f") auto
+  from `p < 1` have "\<And>x. x = r + p * x \<Longrightarrow> x = r / (1 - p)"
+    by (auto simp: field_simps)
+  with lfp_unfold[OF \<open>mono ?f\<close>] `p < 1` have "lfp ?f = r / (1 - p)"
+    unfolding x by (auto simp: max_def)
+  with 1 2 show "lfp ?F s = ereal (r / (1 - p))"
+    by auto
+qed fact+
   
 subsection {* Definition of the Crowds-Protocol *}
 
@@ -260,7 +319,7 @@ proof -
 
   { fix j assume j: "j \<in> H"
     have "?P (Mix j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f)"
-    proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl])
+    proof (rule emeasure_suntil_geometric)
       fix s assume s: "s \<in> Mix ` J"
       then have "?P s ?E = (\<integral>\<^sup>+x. ereal (1 - p_f) * indicator (Mix`L) x \<partial>N s)"
         by (auto simp add: emeasure_HLD_nxt emeasure_HLD AE_measure_pmf_iff emeasure_pmf_single
@@ -273,9 +332,8 @@ proof -
       finally show "?P s ?E = p_f * p_j * (1 - p_f) * card L"
         by simp
     next
-      fix s show "AE \<omega> in T s. (?\<phi> aand nxt ?E) \<omega> \<longleftrightarrow> (Mix`J \<cdot> ?E) \<omega>"
-        "AE \<omega> in T s. (?\<phi> aand nxt ?\<phi>) \<omega> \<longleftrightarrow> (Mix`J \<cdot> ?\<phi>) \<omega>"
-        by (auto simp add: HLD_iff)
+      show "\<And>t. AE \<omega> in T  t. \<not> (?E \<sqinter> (?J \<sqinter> nxt (?J suntil ?E))) \<omega>"
+        by (intro AE_I2) (auto simp: HLD_iff elim: suntil.cases)
     qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def real_of_nat_def)
     then have "?P (Init j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f) / p_f"
       by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s])
@@ -439,24 +497,15 @@ proof -
       with ev_eq_suntil[of "Mix j"] have "?P (Mix j) (ev ?M) = ?P (Mix j) ((HLD ?J) suntil ?M)"
         by (intro emeasure_eq_AE) auto
       also have "\<dots> = (((1 - p_H) * p_f)) / (1 - p_H * p_f)"
-      proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl p_H_p_f_less_1])
-        show "Mix j \<in> Mix`H"
-          using j by auto
-      next
+      proof (rule emeasure_suntil_geometric)
         fix s assume s: "s \<in> Mix ` H"
-        then show 
-          "AE \<omega> in T s. (?\<phi> aand nxt (HLD (Mix ` C))) \<omega> \<longleftrightarrow> (Mix ` H \<cdot> HLD (Mix ` C)) \<omega>"
-          by (auto simp add: AE_T_iff E_Mix E_End)
-        from s show
-          "AE \<omega> in T s. (?\<phi> aand nxt ?\<phi>) \<omega> \<longleftrightarrow> (Mix ` H \<cdot> ?\<phi>) \<omega>"
-          by (auto simp add: AE_T_iff E_Mix)
         from s C_smaller show "?P s ?M = ereal ((1 - p_H) * p_f)"
           by (subst emeasure_HLD)
              (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl
                              real_of_nat_def[symmetric])
         from s show "emeasure (N s) (Mix`H) = p_H * p_f"
           by (auto simp: emeasure_measure_pmf_finite setsum.reindex real_of_nat_def[symmetric] H_eq2)
-      qed auto
+      qed (insert j, auto simp: HLD_iff p_H_p_f_less_1)
       finally have "?P (Init j) (ev ?M) = (1 - p_H) / (1 - p_H * p_f)"
         using p_f by (subst emeasure_Init_eq_Mix) (auto simp: ev_Stream AE_End ev_sconst HLD_iff) }
     then show "?P x (ev ?M) = (1 - p_H) / (1 - p_f * p_H)"
@@ -543,7 +592,7 @@ proof -
       by auto
     have "?P (Mix i) ?U = (p_f * p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f))"
       unfolding before_C_def
-    proof (rule emeasure_suntil_geometric[OF _ _ _ order_refl, where X="?M"])
+    proof (rule emeasure_suntil_geometric[where X="?M"])
       show "Mix i \<in> ?M"
         using i by auto
     next
@@ -558,7 +607,14 @@ proof -
     next
       fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ereal (p_H * p_f)"
         by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2 real_of_nat_def[symmetric])
-    qed (insert L, auto simp: AE_T_iff p_H_p_f_less_1 E_Mix)
+    next
+      show "AE \<omega> in T t. \<not> ((Mix ` L \<cdot> ?L) \<sqinter> (HLD (Mix ` H) \<sqinter> nxt ?U)) \<omega>" for t
+        using L
+        apply (simp add: AE_T_iff[of _ t])
+        apply (subst AE_T_iff; simp)
+        apply (auto simp: HLD_iff suntil_Stream)
+        done
+    qed (insert L, auto simp: p_H_p_f_less_1 E_Mix)
     then show "?P (Init i) ?U = p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)"
       by (subst emeasure_Init_eq_Mix) (auto simp: AE_End suntil_Stream)
   qed
