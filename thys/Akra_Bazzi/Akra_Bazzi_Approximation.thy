@@ -1,11 +1,3 @@
-(*
-  File:   Akra_Bazzi_Approximation.thy
-  Author: Manuel Eberl <eberlm@in.tum.de>
-
-  Provides the "akra_bazzi_approximation" proof method for approximating the exponent that occurs 
-  in the Akra--Bazzi theorem.
-*)
-subsection {* Approximation of the parameter $p$ *}
 theory Akra_Bazzi_Approximation
 imports
   Complex_Main
@@ -13,8 +5,7 @@ imports
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
-(*
-  TODO:
+(* 
   This is a temporary workaround since recent changes broke approximation of the "powr" function. 
   Once it works again, this entire section can be removed.
 *)

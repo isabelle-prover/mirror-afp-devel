@@ -285,7 +285,6 @@ proof-
   finally have "0 \<le> hb * x\<^sub>1 / ln x\<^sub>1 powr (1 + e)" .
   hence "0 \<le> ... * (ln x\<^sub>1 powr (1 + e) / x\<^sub>1)"
     by (rule mult_nonneg_nonneg) (intro divide_nonneg_nonneg, insert x1_pos, simp_all)
-    find_theorems  x\<^sub>1
   also have "... = hb" using x1_gt_1 by (simp add: field_simps)
   finally show ?thesis .
 qed

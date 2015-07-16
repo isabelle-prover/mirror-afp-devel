@@ -13,3 +13,4 @@ session Akra_Bazzi (AFP) = "HOL-Probability" +
     Master_Theorem_Examples
   document_files
     "root.tex"
+    "root.bib"

@@ -25,7 +25,7 @@
 <p>&nbsp;</p>
 
 <h1><font class="first">T</font>he
-<font class="first">A</font>kra–Bazzi
+<font class="first">A</font>kra-Bazzi
 theorem
 and
 the
@@ -36,7 +36,7 @@ theorem
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">The Akra–Bazzi theorem and the Master theorem</td></tr>
+        <td class="data" width="80%">The Akra-Bazzi theorem and the Master theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="https://in.tum.de/~eberlm">Manuel Eberl</a></td></tr>
@@ -47,22 +47,23 @@ theorem
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The Akra–Bazzi theorem is a generalisation of the well-known
-Master Theorem. It is a useful tool for analysing the complexity
-of Divide&Conquer algorithms such as Merge Sort, Karatsuba multiplication,
-etc. This work contains a formalisation of the Akra–Bazzi theorem
-(as generalised by Tom Leighton), a generalised version of the Master
-theorem derived from the Akra–Bazzi theorem, and some automated proof methods
-that facilitate the application of this Master Theorem and allow mostly
-automatic verification of Θ-bounds for Divide & Conquer recurrences.
-A number of examples taken from standard algorithm analysis are also provided.
+This article contains a formalisation of the Akra-Bazzi method
+based on a proof by Leighton. It is a generalisation of the well-known
+Master Theorem for analysing the complexity of Divide & Conquer algorithms.
+We also include a generalised version of the Master theorem based on the
+Akra-Bazzi theorem, which is easier to apply than the Akra-Bazzi theorem
+itself.
+<p>
+Some proof methods that facilitate applying the Master theorem are also
+included. For a more detailed explanation of the formalisation and the
+proof methods, see the accompanying paper (publication forthcoming).
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Akra_Bazzi-AFP,
   author  = {Manuel Eberl},
-  title   = {The Akra–Bazzi theorem and the Master theorem},
+  title   = {The Akra-Bazzi theorem and the Master theorem},
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2015,
@@ -74,6 +75,10 @@ A number of examples taken from standard algorithm analysis are also provided.
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Landau_Symbols.shtml">Landau_Symbols</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

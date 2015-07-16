@@ -2988,19 +2988,21 @@ topic = Mathematics/Analysis
 abstract = This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
 
 [Akra_Bazzi]
-title = The Akra–Bazzi theorem and the Master theorem 
+title = The Akra-Bazzi theorem and the Master theorem 
 author = Manuel Eberl <https://in.tum.de/~eberlm>
 date = 2015-07-14
 topic = Mathematics/Analysis
-abstract = The Akra–Bazzi theorem is a generalisation of the well-known
- Master Theorem. It is a useful tool for analysing the complexity
- of Divide&Conquer algorithms such as Merge Sort, Karatsuba multiplication,
- etc. This work contains a formalisation of the Akra–Bazzi theorem
- (as generalised by Tom Leighton), a generalised version of the Master
- theorem derived from the Akra–Bazzi theorem, and some automated proof methods
- that facilitate the application of this Master Theorem and allow mostly
- automatic verification of Θ-bounds for Divide & Conquer recurrences.
- A number of examples taken from standard algorithm analysis are also provided.
+abstract = This article contains a formalisation of the Akra-Bazzi method
+ based on a proof by Leighton. It is a generalisation of the well-known
+ Master Theorem for analysing the complexity of Divide & Conquer algorithms.
+ We also include a generalised version of the Master theorem based on the
+ Akra-Bazzi theorem, which is easier to apply than the Akra-Bazzi theorem
+ itself.
+ <p>
+ Some proof methods that facilitate applying the Master theorem are also
+ included. For a more detailed explanation of the formalisation and the
+ proof methods, see the accompanying paper (publication forthcoming).
+depends-on = Landau_Symbols
 
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
