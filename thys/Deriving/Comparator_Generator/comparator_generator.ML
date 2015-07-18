@@ -406,7 +406,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm peq_compI} 1
+        resolve_tac ctxt @{thms peq_compI} 1
         THEN Subgoal.FOCUS (fn focus => 
           let
             val y = #params focus |> hd
@@ -423,7 +423,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 THEN unfold_tac ctxt @{thms comp_lex_eq}
                 THEN unfold_tac ctxt (@{thms in_set_simps} @ inject_thms @ @{thms refl_True})
                 THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
-                  rtac @{thm peq_compD} 1
+                  resolve_tac ctxt @{thms peq_compD} 1
                   THEN recursor_tac EQ pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
@@ -453,7 +453,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm psym_compI} 1
+        resolve_tac ctxt @{thms psym_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
           let 
             val y = #params focus |> hd
@@ -467,11 +467,11 @@ fun generate_comparators_from_bnf_fp tyco lthy =
             fun sub_case_tac j' (ctxt, y_simp, ys) =
               if j = j' then
                 unfold_tac ctxt (y_simp @ comp_simps)
-                THEN rtac @{thm comp_lex_sym} 1
+                THEN resolve_tac ctxt @{thms comp_lex_sym} 1
                 THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                 THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
-                  rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
-                    [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}) 1
+                  resolve_tac ctxt [Ctr_Sugar_Util.cterm_instantiate_pos 
+                    [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}] 1
                   THEN recursor_tac SYM pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
@@ -502,7 +502,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm ptrans_compI} 1
+        resolve_tac ctxt @{thms ptrans_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
           let 
             val y = nth (#params focus) 0
@@ -520,11 +520,11 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 fun sub_case_tac' j'' (ctxt, z_simp, zs) =
                       if j = j' andalso j = j'' then
                         unfold_tac ctxt (y_simp @ z_simp @ comp_simps)
-                        THEN rtac @{thm comp_lex_trans} 1
+                        THEN resolve_tac ctxt @{thms comp_lex_trans} 1
                         THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                         THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
-                          rtac (Ctr_Sugar_Util.cterm_instantiate_pos 
-                            [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}) 1
+                          resolve_tac ctxt [Ctr_Sugar_Util.cterm_instantiate_pos 
+                            [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}] 1
                           THEN recursor_tac TRANS pre_cond (nth xs_tys k) (nth IHs k) ctxt')
                       else 
                         (* different constructors *)
@@ -555,7 +555,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val thms = prove_multi_future lthy free_names [] thms (fn {context = ctxt, ...} =>
           ALLGOALS Goal.conjunction_tac
           THEN Method.intros_tac ctxt (@{thm conjI} :: compI2 :: thms') []
-          THEN ALLGOALS (etac compE2))
+          THEN ALLGOALS (eresolve_tac ctxt [compE2]))
       in thms end
 
     val eq_thms = mk_eq_sym_trans_thm mk_eq_comp @{thm eq_compI2} @{thm eq_compD2} eq_thms'
@@ -578,7 +578,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
            |> (fn concl => Logic.list_implies (conds, concl))
       in
         Goal.prove_future lthy free_names [] thm 
-          (K (rtac nearly_thm 1 THEN ALLGOALS atac))
+          (K (resolve_tac lthy [nearly_thm] 1 THEN ALLGOALS (assume_tac lthy)))
       end
     val comp_thms = map_index mk_comp_thm (eq_thms ~~ sym_thms ~~ trans_thms)
     

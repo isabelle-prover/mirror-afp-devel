@@ -395,7 +395,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
         val set_thms = nth set_simps i
       in
         (* after induction *)
-        rtac @{thm pequalityI} 1
+        resolve_tac ctxt @{thms pequalityI} 1
         THEN Subgoal.FOCUS (fn focus => 
           let
             val y = #params focus |> hd
@@ -412,7 +412,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                 THEN unfold_tac ctxt @{thms list_all_eq}
                 THEN unfold_tac ctxt (@{thms in_set_simps} @ inject_thms @ @{thms refl_True})
                 THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
-                  rtac @{thm pequalityD} 1
+                  resolve_tac ctxt @{thms pequalityD} 1
                   THEN recursor_tac pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
                 (* different constructors *)
@@ -439,7 +439,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
         val thms = prove_multi_future lthy free_names [] thms (fn {context = ctxt, ...} =>
           ALLGOALS Goal.conjunction_tac
           THEN Method.intros_tac ctxt (@{thm conjI} :: compI2 :: thms') []
-          THEN ALLGOALS (etac compE2))
+          THEN ALLGOALS (eresolve_tac ctxt [compE2]))
       in thms end
 
     val eq_thms = mk_eq_sym_trans_thm mk_equality @{thm equalityI2} @{thm equalityD2} eq_thms'
@@ -457,7 +457,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
            |> (fn concl => Logic.list_implies (conds, concl))
       in
         Goal.prove_future lthy free_names [] thm 
-          (K (rtac nearly_thm 1 THEN ALLGOALS atac))
+          (K (resolve_tac lthy [nearly_thm] 1 THEN ALLGOALS (assume_tac lthy)))
       end
     val comp_thms = map_index mk_comp_thm eq_thms
     

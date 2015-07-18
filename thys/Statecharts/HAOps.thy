@@ -1153,16 +1153,16 @@ val insert_union = @{thm insert_union};
 
 
 fun wellformed_tac ctxt L i =
-  FIRST[rtac AddSA_SAs_IFF i,
-        rtac AddSA_Events_IFF i,
-        rtac AddSA_CompFun_IFF i,
-        rtac AddSA_HAStates_IFF i,
-        rtac PseudoHA_HAStates_IFF i,
-        rtac AddSA_HAInitValue_IFF i,
-        rtac AddSA_HARoot_IFF i,
-        rtac AddSA_CompFun_ran_IFF i,
-        rtac insert_inter i,
-        rtac insert_notmem i,
+  FIRST[resolve_tac ctxt [AddSA_SAs_IFF] i,
+        resolve_tac ctxt [AddSA_Events_IFF] i,
+        resolve_tac ctxt [AddSA_CompFun_IFF] i,
+        resolve_tac ctxt [AddSA_HAStates_IFF] i,
+        resolve_tac ctxt [PseudoHA_HAStates_IFF] i,
+        resolve_tac ctxt [AddSA_HAInitValue_IFF] i,
+        resolve_tac ctxt [AddSA_HARoot_IFF] i,
+        resolve_tac ctxt [AddSA_CompFun_ran_IFF] i,
+        resolve_tac ctxt [insert_inter] i,
+        resolve_tac ctxt [insert_notmem] i,
         CHANGED (simp_tac (put_simpset HOL_basic_ss ctxt addsimps
            [PseudoHA_HARoot, PseudoHA_CompFun, PseudoHA_CompFun_ran,PseudoHA_Events,PseudoHA_SAs,insert_union,
             PseudoHA_HAInitValue,Un_empty_right]@ L) i),

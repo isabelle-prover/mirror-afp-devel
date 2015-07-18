@@ -291,7 +291,7 @@ proof-
      c = c1 ;; c2 \<longrightarrow>  
      (\<exists> c1'. (c1, s) \<rightarrow>*c (c1',t') \<and> d' = c1' ;; c2) \<or> 
      (\<exists> s'. (c1, s) \<rightarrow>*t s' \<and> (c2, s') \<rightarrow>*c (d',t'))"
-   apply(erule MtransC_induct2) proof(tactic {* mauto_no_simp_tac *})
+   apply(erule MtransC_induct2) proof(tactic {* mauto_no_simp_tac @{context} *})
      fix c s d' t' d'' t'' c1 c2
      assume (*  "(c, s) \<rightarrow>*c (d', t')" and *)
      "\<forall>c1 c2. c = c1 ;; c2 \<longrightarrow> 

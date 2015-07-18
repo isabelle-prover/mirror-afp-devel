@@ -215,7 +215,8 @@ ML {*
       val g = Logic.list_implies (ps,c)
     in
       (* FIXME use proper context *)
-      Goal.prove_global (Proof_Context.theory_of ctxt) [] [] g (K (rtac @{thm CONSTRAINTI} 1))
+      Goal.prove_global (Proof_Context.theory_of ctxt) [] [] g
+        (K (resolve_tac ctxt @{thms CONSTRAINTI} 1))
     end;
 
     (* Internal use for hom-patterns, f and R are unified *)
@@ -581,13 +582,13 @@ ML {*
     end
 
     fun solve_tyrel_tac ctxt = let
-      fun mk_tac rl = rtac @{thm TYREL_RES} 
+      fun mk_tac rl = resolve_tac ctxt @{thms TYREL_RES} 
         THEN' match_tac ctxt [rl RS @{thm DOMAIN_OF_TYREL}]
-        THEN' rtac rl
+        THEN' resolve_tac ctxt [rl]
 
       val tac = FIRST' (map mk_tac (tyrel_rules.get ctxt))
     in
-      DETERM o tac ORELSE' (TRY o rtac @{thm TYRELI})
+      DETERM o tac ORELSE' (TRY o resolve_tac ctxt @{thms TYRELI})
     end
     
     fun tyrel_tac ctxt i j =
@@ -831,7 +832,7 @@ ML {*
 
                 val rl = mk_CONSTRAINT_rl ctxt c 
                    |> Drule.zero_var_indexes
-                val res = (SOLVED' (rtac rl)) i st
+                val res = (SOLVED' (resolve_tac ctxt [rl])) i st
                   |> Seq.pull |> is_some
 
                 val pt2 = (if res then Pretty.str "OK" else Pretty.str "ERR")
@@ -934,7 +935,7 @@ ML {*
 
                   val rl = mk_CONSTRAINT_rl ctxt c 
                      |> Drule.zero_var_indexes
-                  val res = (SOLVED' (rtac rl 
+                  val res = (SOLVED' (resolve_tac ctxt [rl] 
                       THEN_ALL_NEW (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net)))
                     ) i st
                     |> Seq.pull |> is_some

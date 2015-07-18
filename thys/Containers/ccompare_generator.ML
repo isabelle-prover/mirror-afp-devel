@@ -77,9 +77,9 @@ fun ccompare_tac ctxt tname Ts =
       Splitter.split_asm_tac ctxt @{thms option.splits} 1 THEN
       unfold_tac ctxt @{thms option.simps}) 
     THEN unfold_tac ctxt @{thms option.simps} 
-    THEN rtac @{thm comparator_subst} 1 THEN atac 1 
-    THEN REPEAT_DETERM (dtac @{thm ccompare} 1) 
-    THEN (rtac c_thm THEN_ALL_NEW atac) 1
+    THEN resolve_tac ctxt @{thms comparator_subst} 1 THEN assume_tac ctxt 1 
+    THEN REPEAT_DETERM (dresolve_tac ctxt @{thms ccompare} 1) 
+    THEN (resolve_tac ctxt [c_thm] THEN_ALL_NEW assume_tac ctxt) 1
   end
     
 fun ccompare_instance_via_comparator tname thy =
@@ -147,7 +147,7 @@ fun ccompare_instance_via_compare tname thy =
       Class.intro_classes_tac ctxt [] 
       THEN unfold_tac ctxt [ccompare_thm]
       THEN unfold_tac ctxt @{thms option.simps prod.simps}
-      THEN rtac @{thm compare_subst} 1 THEN atac 1
+      THEN resolve_tac ctxt @{thms compare_subst} 1 THEN assume_tac ctxt 1
       ) lthy
     val thy = derive_is_c_dots_lemma ty @{const_name is_ccompare} 
       [ccompare_thm, @{thm is_ccompare_def}] base_name thy

@@ -141,7 +141,7 @@ ML {*
             val pattern = anti_unify_list candidates
               |> Thm.cterm_of ctxt |> Thm.trivial
           in
-            rtac pattern i st
+            resolve_tac ctxt [pattern] i st
           end
       end
     in

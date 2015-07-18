@@ -45,7 +45,7 @@ fun define_singleton_type
   let
     val set = @{term "UNIV :: unit set"}
     val opt_morphs = NONE
-    fun tac _ = rtac UNIV_witness 1
+    fun tac ctxt = resolve_tac ctxt [UNIV_witness] 1
     val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
     Typedef.add_typedef_global false typ set opt_morphs tac thy
@@ -324,11 +324,11 @@ fun define_map_functions
         Goal.prove_global thy [] assms goal (fn {prems, context = ctxt, ...} =>
          EVERY
           [rewrite_goals_tac ctxt map_apply_thms,
-           rtac (map_cont_thm RS @{thm cont_fix_ind}) 1,
+           resolve_tac ctxt [map_cont_thm RS @{thm cont_fix_ind}] 1,
            REPEAT (resolve_tac ctxt adm_rules 1),
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
-           REPEAT (etac @{thm conjE} 1),
+           REPEAT (eresolve_tac ctxt @{thms conjE} 1),
            REPEAT (resolve_tac ctxt (deflation_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
     fun conjuncts [] _ = []
@@ -640,13 +640,12 @@ fun domain_isomorphism
         Goal.prove_global thy [] assms goal (fn {prems, context = ctxt, ...} =>
          EVERY
           [rewrite_goals_tac ctxt (defl_apply_thms @ map_apply_thms),
-           rtac (@{thm cont_parallel_fix_ind}
-             OF [defl_cont_thm, map_cont_thm]) 1,
+           resolve_tac ctxt [@{thm cont_parallel_fix_ind} OF [defl_cont_thm, map_cont_thm]] 1,
            REPEAT (resolve_tac ctxt adm_rules 1),
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps bottom_rules) 1,
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps tuple_rules) 1,
            simp_tac (put_simpset HOL_basic_ss ctxt addsimps map_ID_simps) 1,
-           REPEAT (etac @{thm conjE} 1),
+           REPEAT (eresolve_tac ctxt @{thms conjE} 1),
            REPEAT (resolve_tac ctxt (isodefl_rules @ prems) 1 ORELSE assume_tac ctxt 1)])
       end
     val isodefl_binds = map (Binding.prefix_name "isodefl_") dbinds
@@ -671,10 +670,10 @@ fun domain_isomorphism
         val lhs = list_ccomb (map_const, map mk_ID (filter is_cpo Ts))
         val goal = mk_eqs (lhs, mk_ID lhsT)
         fun tac ctxt = EVERY
-          [rtac @{thm isodefl_DEFL_imp_ID} 1,
+          [resolve_tac ctxt @{thms isodefl_DEFL_imp_ID} 1,
            stac ctxt @{thm DEFL_app} 1,
            stac ctxt DEFL_thm 1,
-           rtac isodefl_thm 1,
+           resolve_tac ctxt [isodefl_thm] 1,
            REPEAT (resolve_tac ctxt @{thms isodefl_ID_DEFL isodefl_LIFTDEFL} 1)]
       in
         Goal.prove_global thy [] [] goal (tac o #context)
@@ -717,8 +716,8 @@ fun domain_isomorphism
             EVERY
             [simp_tac (put_simpset HOL_basic_ss ctxt addsimps start_rules) 1,
              simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms fix_def2}) 1,
-             rtac @{thm lub_eq} 1,
-             rtac @{thm nat.induct} 1,
+             resolve_tac ctxt @{thms lub_eq} 1,
+             resolve_tac ctxt @{thms nat.induct} 1,
              simp_tac (put_simpset HOL_basic_ss ctxt addsimps rules0) 1,
              asm_full_simp_tac (put_simpset beta_ss ctxt addsimps rules1) 1]
       in
@@ -732,9 +731,10 @@ fun domain_isomorphism
         val goal = mk_eqs (mk_lub (lambda n (take_const $ n)), mk_ID lhsT)
         fun tac ctxt =
             EVERY
-            [rtac @{thm trans} 1, rtac map_ID_thm 2,
+            [resolve_tac ctxt @{thms trans} 1,
+             resolve_tac ctxt [map_ID_thm] 2,
              cut_facts_tac [lub_take_lemma] 1,
-             REPEAT (etac @{thm Pair_inject} 1), assume_tac ctxt 1]
+             REPEAT (eresolve_tac ctxt @{thms Pair_inject} 1), assume_tac ctxt 1]
         val lub_take_thm = Goal.prove_global thy [] [] goal (tac o #context)
       in
         add_qualified_thm "lub_take" (dbind, lub_take_thm) thy

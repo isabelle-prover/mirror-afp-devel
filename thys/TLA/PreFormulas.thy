@@ -35,7 +35,7 @@ lemma prefI[intro!]: "(\<And> w. w \<Turnstile> A) \<Longrightarrow> |~ A"
 
 method_setup pref_unlift = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD'
-    (rtac @{thm prefI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
+    (resolve_tac ctxt @{thms prefI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
 *} "int_unlift for PreFormulas"
 
 lemma prefeq_reflection: assumes P1: "|~ x=y" shows  "(x \<equiv> y)"

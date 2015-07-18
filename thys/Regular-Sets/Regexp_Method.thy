@@ -35,13 +35,13 @@ method_setup regexp = {*
        @{const_name check_eqv}, @{const_name Trueprop}] }
   in Scan.succeed (fn ctxt =>
       SIMPLE_METHOD' (
-        (TRY o etac @{thm rev_subsetD})
+        (TRY o eresolve_tac ctxt @{thms rev_subsetD})
         THEN' (Subgoal.FOCUS_PARAMS (fn {context = ctxt', ...} =>
           TRY (Local_Defs.unfold_tac ctxt' @{thms regexp_unfold})
           THEN Reification.tac ctxt' @{thms regexp_reify} NONE 1
-          THEN rtac @{thm rel_eqI} 1
+          THEN resolve_tac ctxt' @{thms rel_eqI} 1
           THEN CONVERSION (regexp_conv ctxt') 1
-          THEN rtac TrueI 1) ctxt)))
+          THEN resolve_tac ctxt' [TrueI] 1) ctxt)))
   end
 *} "decide relation equalities via regular expressions"
 

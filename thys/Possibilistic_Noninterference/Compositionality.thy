@@ -74,7 +74,7 @@ proof-
     (\<exists> tst d1 d. c = d1 ;; (While tst d) \<and> discr d1 \<and> discr d)
     \<Longrightarrow> discr c"
    apply(erule discr_coind)
-   apply(tactic {* mauto_no_simp_tac *})
+   apply(tactic {* mauto_no_simp_tac @{context} *})
    apply (metis While_transC_invert indis_refl)
    apply (metis Seq_transC_invert discr.cases)
    apply (metis While_transC_invert)
@@ -490,7 +490,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> Sretr (thetaSeq Un Sbis)"
    unfolding Sretr_def proof (clarify, intro conjI)
      show "matchC_C (thetaSeq Un Sbis) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (d1 ;; d2, t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaSeq Un Sbis"
@@ -545,7 +545,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> Sretr (thetaIf Un Sbis)"
    unfolding Sretr_def proof (clarify, intro conjI)
      show "matchC_C (thetaIf Un Sbis) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (If tst d1 d2, t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaIf Un Sbis"
@@ -591,7 +591,7 @@ proof-
    have "(While tst c, While tst d) \<in> Sretr (thetaWhile Un Sbis)"
    unfolding Sretr_def proof (clarify, intro conjI)
      show "matchC_C (thetaWhile \<union> Sbis) (While tst c) (While tst d)"
-     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (While tst d, t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaWhile \<union> Sbis"
@@ -601,7 +601,7 @@ proof-
      qed
    next
      show "matchT_T (While tst c) (While tst d)"
-     unfolding matchT_T_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchT_T_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t s' assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>t s'"
        thus "\<exists>t'. (While tst d, t) \<rightarrow>t t' \<and> s' \<approx> t' "
        apply - apply(erule While_transT_invert)
@@ -619,7 +619,7 @@ proof-
    have "(c1 ;; (While tst c), d1 ;; (While tst d)) \<in> Sretr (thetaWhile Un Sbis)"
    unfolding Sretr_def proof (clarify, intro conjI)
      show "matchC_C (thetaWhile \<union> Sbis) (c1 ;; (While tst c)) (d1 ;; (While tst d))"
-     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; (While tst c), s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (d1 ;; (While tst d), t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaWhile \<union> Sbis"
@@ -675,7 +675,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> Sretr (thetaPar Un Sbis)"
    unfolding Sretr_def proof (clarify, intro conjI)
      show "matchC_C (thetaPar \<union> Sbis) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_C_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (Par d1 d2, t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaPar \<union> Sbis"
@@ -754,7 +754,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> ZOretrT (thetaSeqZOT Un ZObisT)"
    unfolding ZOretrT_def proof (clarify, intro conjI)
      show "matchC_ZOC (thetaSeqZOT Un ZObisT) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -767,7 +767,7 @@ proof-
           (\<exists>d1' t'. (d1, t) \<rightarrow>c (d1', t') \<and> s' \<approx> t' \<and> c1' \<approx>01T d1')"
          using st matchC_ZOC1 unfolding matchC_ZOC_def by auto
          thus ?thesis unfolding c' thetaSeqZOT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2d2)
          apply simp by (metis SeqC c2d2 ) 
        next      
@@ -776,7 +776,7 @@ proof-
          using st matchT_T1 unfolding matchT_T_def by auto
          thus ?thesis 
          unfolding c' thetaSeqZOT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp by (metis PL.SeqT c2d2) 
        qed
      qed 
@@ -816,7 +816,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> ZOretrT (thetaIfZOT Un ZObisT)"
    unfolding ZOretrT_def proof (clarify, intro conjI)
      show "matchC_ZOC (thetaIfZOT Un ZObisT) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -864,7 +864,7 @@ proof-
    have "(While tst c, While tst d) \<in> ZOretrT (thetaWhileZOT Un ZObisT)"
    unfolding ZOretrT_def proof (clarify, intro conjI)
      show "matchC_ZOC (thetaWhileZOT \<union> ZObisT) (While tst c) (While tst d)"
-     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>c (c', s')"
        thus 
@@ -876,7 +876,7 @@ proof-
      qed
    next
      show "matchT_T (While tst c) (While tst d)"
-     unfolding matchT_T_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchT_T_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t s' assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>t s'"
        thus "\<exists>t'. (While tst d, t) \<rightarrow>t t' \<and> s' \<approx> t' "
        apply - apply(erule While_transT_invert)
@@ -894,7 +894,7 @@ proof-
    have "(c1 ;; (While tst c), d1 ;; (While tst d)) \<in> ZOretrT (thetaWhileZOT Un ZObisT)"
    unfolding ZOretrT_def proof (clarify, intro conjI)
      show "matchC_ZOC (thetaWhileZOT \<union> ZObisT) (c1 ;; (While tst c)) (d1 ;; (While tst d))"
-     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; (While tst c), s) \<rightarrow>c (c', s')"
        thus 
@@ -908,7 +908,7 @@ proof-
          using st matchC_ZOC1 unfolding matchC_ZOC_def by auto
          thus ?thesis
          unfolding c' thetaWhileZOT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c_d tst)
          apply simp by (metis SeqC c_d tst) 
        next
@@ -956,7 +956,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> ZOretrT (thetaParZOT Un ZObisT)"
    unfolding ZOretrT_def proof (clarify, intro conjI)
      show "matchC_ZOC (thetaParZOT \<union> ZObisT) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZOC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -969,7 +969,7 @@ proof-
           (\<exists>d' t'. (d1, t) \<rightarrow>c (d', t') \<and> s' \<approx> t' \<and> c1' \<approx>01T d')"
          using st matchC_ZOC1 unfolding matchC_ZOC_def by auto
          thus ?thesis unfolding c' thetaParZOT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2d2)
          apply simp by(metis ParCL c2d2)
        next      
@@ -987,7 +987,7 @@ proof-
          using st matchC_ZOC2 unfolding matchC_ZOC_def by auto
          thus ?thesis 
          unfolding c' thetaParZOT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c1d1)
          apply simp by (metis ParCR c1d1)
        next
@@ -1034,7 +1034,7 @@ proof-
       show "(c, d) \<in> ZOretr ?theta"
       unfolding ZOretr_def proof (clarify, intro conjI)
         show "matchC_ZO ?theta c d"
-        unfolding matchC_ZO_def proof (tactic {*mauto_no_simp_tac *})
+        unfolding matchC_ZO_def proof (tactic {*mauto_no_simp_tac @{context} *})
           fix s t c' s'
           assume st: "s \<approx> t" and cs: "(c, s) \<rightarrow>c (c', s')"
           show 
@@ -1051,7 +1051,7 @@ proof-
         qed
       next
         show "matchT_ZO c d"
-        unfolding matchT_ZO_def proof (tactic {*mauto_no_simp_tac *})
+        unfolding matchT_ZO_def proof (tactic {*mauto_no_simp_tac @{context} *})
           fix s t s'
           assume st: "s \<approx> t" and cs: "(c, s) \<rightarrow>t s'"
           show 
@@ -1098,7 +1098,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> ZOretr (thetaSeqZO Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaSeqZO Un ZObis) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -1112,7 +1112,7 @@ proof-
           (\<exists>d1' t'. (d1, t) \<rightarrow>c (d1', t') \<and> s' \<approx> t' \<and> c1' \<approx>01T d1')"
          using st matchC_ZOC1 unfolding matchC_ZOC_def by auto
          thus ?thesis unfolding c' thetaSeqZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2d2)
          apply simp by (metis SeqC c2d2 ) 
        next      
@@ -1121,7 +1121,7 @@ proof-
          using st matchT_T1 unfolding matchT_T_def by auto
          thus ?thesis 
          unfolding c' thetaSeqZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp by (metis PL.SeqT c2d2) 
        qed
      qed 
@@ -1166,7 +1166,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> ZOretr (thetaSeqZOD Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaSeqZOD Un ZObis) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -1181,7 +1181,7 @@ proof-
           (\<exists>t'. (d1, t) \<rightarrow>t t' \<and> s' \<approx> t' \<and> discr c1')"
          using st matchC_ZO unfolding matchC_ZO_def by auto
          thus ?thesis unfolding c' thetaSeqZOD_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2 d2)
          apply simp apply (metis SeqC c2 d2)
          apply simp by (metis SeqT c2 d2 discr_Seq discr_ZObis) 
@@ -1194,7 +1194,7 @@ proof-
          using st matchT_ZO unfolding matchT_ZO_def by auto
          thus ?thesis 
          unfolding c' thetaSeqZOD_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2 d2 discr_Seq discr_ZObis)
          apply simp apply (metis SeqC c2 d2 discr_Seq discr_ZObis)
          apply simp by (metis SeqT c2 d2 discr_ZObis) 
@@ -1236,7 +1236,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> ZOretr (thetaIfZO Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaIfZO Un ZObis) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -1291,7 +1291,7 @@ proof-
    have "(Par c1 c2, d) \<in> ZOretr (thetaParZOL1 Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaParZOL1 \<union> ZObis) (Par c1 c2) d"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus
@@ -1351,7 +1351,7 @@ proof-
    have "(d, Par c1 c2) \<in> ZOretr (thetaParZOL1\<inverse> \<union> ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaParZOL1\<inverse> \<union> ZObis) d (Par c1 c2)"
-     unfolding matchC_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchC_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t d' t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>c (d', t')"
        hence 
@@ -1364,14 +1364,14 @@ proof-
         (\<exists>c' s'. (Par c1 c2, s) \<rightarrow>c (c', s') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaParZOL1 \<union> ZObis) \<or>
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>t s' \<and> s' \<approx> t' \<and> discr d')"
        unfolding thetaParZOL1_def 
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis ZObis_Sym c2)
        apply simp apply (metis ParCL ZObis_sym c2 sym_def)
        apply simp by (metis ParTL c2 discr_ZObis) 
      qed
    next
      show "matchT_ZO d (Par c1 c2)"
-     unfolding matchT_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchT_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>t t'"
        hence 
@@ -1383,7 +1383,7 @@ proof-
        "(s \<approx> t' \<and> discr (Par c1 c2)) \<or> 
         (\<exists>c' s'. (Par c1 c2, s) \<rightarrow>c (c', s') \<and> s' \<approx> t' \<and> discr c') \<or> 
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>t s' \<and> s' \<approx> t')"
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis c2 discr_Par)
        apply simp apply (metis ParCL c2 discr_Par)
        apply simp by (metis ParTL c2)
@@ -1425,7 +1425,7 @@ proof-
    have "(Par c1 c2, d) \<in> ZOretr (thetaParZOL2 Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaParZOL2 \<union> ZObis) (Par c1 c2) d"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus
@@ -1485,7 +1485,7 @@ proof-
    have "(d, Par c1 c2) \<in> ZOretr (thetaParZOL2\<inverse> \<union> ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaParZOL2\<inverse> \<union> ZObis) d (Par c1 c2)"
-     unfolding matchC_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchC_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t d' t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>c (d', t')"
        hence 
@@ -1498,14 +1498,14 @@ proof-
         (\<exists>c' s'. (Par c1 c2, s) \<rightarrow>c (c', s') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaParZOL2 \<union> ZObis) \<or>
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>t s' \<and> s' \<approx> t' \<and> discr d')"
        unfolding thetaParZOL2_def 
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis ZObis_Sym c1)
        apply simp apply (metis ParCR ZObis_sym c1 sym_def)
        apply simp by (metis ParTR c1 discr_ZObis) 
      qed
    next
      show "matchT_ZO d (Par c1 c2)"
-     unfolding matchT_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchT_ZO_def2 ZObis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>t t'"
        hence 
@@ -1517,7 +1517,7 @@ proof-
        "(s \<approx> t' \<and> discr (Par c1 c2)) \<or> 
         (\<exists>c' s'. (Par c1 c2, s) \<rightarrow>c (c', s') \<and> s' \<approx> t' \<and> discr c') \<or> 
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>t s' \<and> s' \<approx> t')"
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis c1 discr_Par)
        apply simp apply (metis ParCR c1 discr_Par)
        apply simp by (metis ParTR c1)
@@ -1563,7 +1563,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> ZOretr (thetaParZO Un ZObis)"
    unfolding ZOretr_def proof (clarify, intro conjI)
      show "matchC_ZO (thetaParZO \<union> ZObis) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_ZO_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -1578,7 +1578,7 @@ proof-
           (\<exists>t'. (d1, t) \<rightarrow>t t' \<and> s' \<approx> t' \<and> discr c1')"
          using st matchC_ZO1 unfolding matchC_ZO_def by auto
          thus ?thesis unfolding c' thetaParZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c2d2)
          apply simp apply (metis ParCL c2d2)
          apply simp by (metis ParTL Par_ZObis_discrL2 c2d2)   
@@ -1591,7 +1591,7 @@ proof-
          using st matchT_ZO1 unfolding matchT_ZO_def by auto
          thus ?thesis 
          unfolding c' thetaParZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis Par_ZObis_discrR2 c2d2)
          apply simp apply (metis PL.ParCL Par_ZObis_discrR2 c2d2)
          apply simp by (metis PL.ParTL c2d2) 
@@ -1604,7 +1604,7 @@ proof-
          using st matchC_ZO2 unfolding matchC_ZO_def by auto
          thus ?thesis 
          unfolding c' thetaParZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis c1d1)
          apply simp apply (metis PL.ParCR c1d1)
          apply simp by (metis PL.ParTR Par_ZObis_discrL1 c1d1)
@@ -1617,7 +1617,7 @@ proof-
          using st matchT_ZO2 unfolding matchT_ZO_def by auto
          thus ?thesis 
          unfolding c' thetaParZO_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis Par_ZObis_discrR1 c1d1)
          apply simp apply (metis PL.ParCR Par_ZObis_discrR1 c1d1)
          apply simp by (metis PL.ParTR c1d1) 
@@ -1687,7 +1687,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> WretrT (thetaSeqWT Un WbisT)"
    unfolding WretrT_def proof (clarify, intro conjI)
      show "matchC_MC (thetaSeqWT Un WbisT) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus "(\<exists>d' t'. (d1 ;; d2, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaSeqWT Un WbisT)"
@@ -1703,7 +1703,7 @@ proof-
          using st matchT_MT1 unfolding matchT_MT_def by auto
          thus ?thesis 
          unfolding c' thetaSeqWT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp by (metis Seq_MtransT_MtransC c2d2) 
        qed
      qed 
@@ -1743,7 +1743,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> WretrT (thetaIfWT Un WbisT)"
    unfolding WretrT_def proof (clarify, intro conjI)
      show "matchC_MC (thetaIfWT Un WbisT) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (If tst d1 d2, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaIfWT Un WbisT"
@@ -1790,7 +1790,7 @@ proof-
    have "(While tst c, While tst d) \<in> WretrT (thetaWhileW Un WbisT)"
    unfolding WretrT_def proof (clarify, intro conjI)
      show "matchC_MC (thetaWhileW \<union> WbisT) (While tst c) (While tst d)"
-     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (While tst d, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> 
@@ -1801,7 +1801,7 @@ proof-
      qed
    next
      show "matchT_MT (While tst c) (While tst d)"
-     unfolding matchT_MT_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchT_MT_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t s' assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>t s'"
        thus "\<exists>t'. (While tst d, t) \<rightarrow>*t t' \<and> s' \<approx> t' "
        apply - apply(erule While_transT_invert)
@@ -1819,7 +1819,7 @@ proof-
    have "(c1 ;; (While tst c), d1 ;; (While tst d)) \<in> WretrT (thetaWhileW Un WbisT)"
    unfolding WretrT_def proof (clarify, intro conjI)
      show "matchC_MC (thetaWhileW \<union> WbisT) (c1 ;; (While tst c)) (d1 ;; (While tst d))"
-     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; (While tst c), s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (d1 ;; (While tst d), t) \<rightarrow>*c (d', t') \<and> 
@@ -1876,7 +1876,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> WretrT (thetaParWT Un WbisT)"
    unfolding WretrT_def proof (clarify, intro conjI)
      show "matchC_MC (thetaParWT \<union> WbisT) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_MC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (Par d1 d2, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> 
@@ -1946,7 +1946,7 @@ proof-
    have "(c,d) \<in> RetrT thetaFDW0"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC thetaFDW0 c d"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s' assume "mustT c s" "mustT d t" 
        "s \<approx> t" and "(c, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (d, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaFDW0"
@@ -1956,7 +1956,7 @@ proof-
      qed
    next
      show "matchT_TMT c d"
-     unfolding matchT_TMT_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchT_TMT_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t s' assume mt: "mustT c s" "mustT d t"  
        and st: "s \<approx> t" and cs: "(c, s) \<rightarrow>t s'"
        obtain t' where dt: "(d, t) \<rightarrow>*t t'" by (metis mt mustT_MtransT)
@@ -2007,7 +2007,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> RetrT (thetaSeqTT \<union> BisT)"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC (thetaSeqTT \<union> BisT) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume mt: "mustT (c1 ;; c2) s" "mustT (d1 ;; d2) t"
        and st: "s \<approx> t" 
@@ -2031,7 +2031,7 @@ proof-
          by (metis mustT_Seq_R d1 mt(2))
          thus ?thesis 
          unfolding c' thetaSeqTT_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp by (metis Seq_MtransT_MtransC c2d2 d1 s't') 
        qed
      qed 
@@ -2071,7 +2071,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> RetrT (thetaIfTT \<union> BisT)"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC (thetaIfTT \<union> BisT) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (If tst d1 d2, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> 
@@ -2119,7 +2119,7 @@ proof-
    have "(While tst c, While tst d) \<in> RetrT (thetaWhileW0 \<union> BisT)"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC (thetaWhileW0 \<union> BisT) (While tst c) (While tst d)"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>c (c', s')"
        thus "\<exists>d' t'. (While tst d, t) \<rightarrow>*c (d', t') \<and> s' \<approx> t' \<and> 
@@ -2130,7 +2130,7 @@ proof-
      qed
    next
      show "matchT_TMT (While tst c) (While tst d)"
-     unfolding matchT_TMT_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchT_TMT_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t s' assume st: "s \<approx> t" assume "(While tst c, s) \<rightarrow>t s'"
        thus "\<exists>t'. (While tst d, t) \<rightarrow>*t t' \<and> s' \<approx> t' "
        apply - apply(erule While_transT_invert)
@@ -2148,7 +2148,7 @@ proof-
    have "(c1 ;; (While tst c), d1 ;; (While tst d)) \<in> RetrT (thetaWhileW0 \<union> BisT)"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC (thetaWhileW0 \<union> BisT) (c1 ;; (While tst c)) (d1 ;; (While tst d))"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume mt: "mustT (c1 ;; While tst c) s" "mustT (d1 ;; While tst d) t"
        and st: "s \<approx> t" 
@@ -2209,7 +2209,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> RetrT (thetaParTT \<union> BisT)"
    unfolding RetrT_def proof (clarify, intro conjI)
      show "matchC_TMC (thetaParTT \<union> BisT) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_TMC_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume "mustT (Par c1 c2) s" and "mustT (Par d1 d2) t"
        and st: "s \<approx> t" 
@@ -2301,7 +2301,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> Wretr (thetaSeqW \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaSeqW \<union> Wbis) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -2363,7 +2363,7 @@ proof-
    have "(c1 ;; c2, d1 ;; d2) \<in> Wretr (thetaSeqWD \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaSeqWD \<union> Wbis) (c1 ;; c2) (d1 ;; d2)"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(c1 ;; c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -2376,7 +2376,7 @@ proof-
           (\<exists>t'. (d1, t) \<rightarrow>*t t' \<and> s' \<approx> t' \<and> discr c1')"
          using st matchC_M unfolding matchC_M_def by blast
          thus ?thesis unfolding c' thetaSeqWD_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.Seq_MtransC c2 d2)
          apply simp by (metis PL.Seq_MtransT_MtransC c2 d2 discr_Seq discr_Wbis)
        next      
@@ -2387,7 +2387,7 @@ proof-
          using st matchT_M unfolding matchT_M_def by blast
          thus ?thesis 
          unfolding c' thetaSeqWD_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.Seq_MtransC c2 d2 discr_Seq discr_Wbis)
          apply simp by (metis PL.Seq_MtransT_MtransC c2 d2 discr_Wbis)
        qed
@@ -2428,7 +2428,7 @@ proof-
    have "(If tst c1 c2, If tst d1 d2) \<in> Wretr (thetaIfW \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaIfW \<union> Wbis) (If tst c1 c2) (If tst d1 d2)"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(If tst c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -2476,7 +2476,7 @@ proof-
    have "(Par c1 c2, d) \<in> Wretr (thetaParWL1 \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaParWL1 \<union> Wbis) (Par c1 c2) d"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus
@@ -2531,7 +2531,7 @@ proof-
    have "(d, Par c1 c2) \<in> Wretr (thetaParWL1\<inverse> \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaParWL1\<inverse> \<union> Wbis) d (Par c1 c2)"
-     unfolding matchC_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchC_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t d' t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>c (d', t')"
        hence 
@@ -2542,13 +2542,13 @@ proof-
        "(\<exists>c' s'. (Par c1 c2, s) \<rightarrow>*c (c', s') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaParWL1 \<union> Wbis) \<or>
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>*t s' \<and> s' \<approx> t' \<and> discr d')"
        unfolding thetaParWL1_def 
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis PL.ParCL_MtransC Wbis_Sym c2)
        apply simp by (metis PL.ParTL_MtransC c2 discr_Wbis)
      qed
    next
      show "matchT_M d (Par c1 c2)"
-     unfolding matchT_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchT_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>t t'"
        hence 
@@ -2558,7 +2558,7 @@ proof-
        thus
        "(\<exists>c' s'. (Par c1 c2, s) \<rightarrow>*c (c', s') \<and> s' \<approx> t' \<and> discr c') \<or> 
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>*t s' \<and> s' \<approx> t')"
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply (metis PL.ParCL_MtransC c2 discr_Par)
        by (metis PL.ParTL_MtransC c2)  
      qed
@@ -2599,7 +2599,7 @@ proof-
    have "(Par c1 c2, d) \<in> Wretr (thetaParWL2 \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaParWL2 \<union> Wbis) (Par c1 c2) d"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus
@@ -2654,7 +2654,7 @@ proof-
    have "(d, Par c1 c2) \<in> Wretr (thetaParWL2\<inverse> \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaParWL2\<inverse> \<union> Wbis) d (Par c1 c2)"
-     unfolding matchC_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchC_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t d' t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>c (d', t')"
        hence 
@@ -2665,13 +2665,13 @@ proof-
        "(\<exists>c' s'. (Par c1 c2, s) \<rightarrow>*c (c', s') \<and> s' \<approx> t' \<and> (c', d') \<in> thetaParWL2 \<union> Wbis) \<or>
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>*t s' \<and> s' \<approx> t' \<and> discr d')"
        unfolding thetaParWL2_def 
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply simp apply (metis PL.ParCR_MtransC Wbis_Sym c1)
        apply simp by (metis PL.ParTR_MtransC c1 discr_Wbis) 
      qed
    next
      show "matchT_M d (Par c1 c2)"
-     unfolding matchT_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac *}) 
+     unfolding matchT_M_def2 Wbis_converse proof (tactic {* mauto_no_simp_tac @{context} *}) 
        fix s t t'
        assume "s \<approx> t" and "(d, t) \<rightarrow>t t'"
        hence 
@@ -2681,7 +2681,7 @@ proof-
        thus
        "(\<exists>c' s'. (Par c1 c2, s) \<rightarrow>*c (c', s') \<and> s' \<approx> t' \<and> discr c') \<or> 
         (\<exists>s'. (Par c1 c2, s) \<rightarrow>*t s' \<and> s' \<approx> t')"
-       apply - apply(tactic {* mauto_no_simp_tac *})
+       apply - apply(tactic {* mauto_no_simp_tac @{context} *})
        apply (metis PL.ParCR_MtransC c1 discr_Par)
        by (metis PL.ParTR_MtransC c1)
      qed
@@ -2726,7 +2726,7 @@ proof-
    have "(Par c1 c2, Par d1 d2) \<in> Wretr (thetaParW \<union> Wbis)"
    unfolding Wretr_def proof (clarify, intro conjI)
      show "matchC_M (thetaParW \<union> Wbis) (Par c1 c2) (Par d1 d2)"
-     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac *})
+     unfolding matchC_M_def proof (tactic {* mauto_no_simp_tac @{context} *})
        fix s t c' s'
        assume st: "s \<approx> t" assume "(Par c1 c2, s) \<rightarrow>c (c', s')"
        thus 
@@ -2739,7 +2739,7 @@ proof-
           (\<exists>t'. (d1, t) \<rightarrow>*t t' \<and> s' \<approx> t' \<and> discr c1')"
          using st matchC_M1 unfolding matchC_M_def by blast
          thus ?thesis unfolding c' thetaParW_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.ParCL_MtransC c2d2) 
          apply simp by (metis PL.ParTL_MtransC Par_Wbis_discrL2 c2d2)
        next      
@@ -2750,7 +2750,7 @@ proof-
          using st matchT_M1 unfolding matchT_M_def by blast
          thus ?thesis 
          unfolding c' thetaParW_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.ParCL_MtransC Par_Wbis_discrR2 c2d2)
          apply simp by (metis PL.ParTL_MtransC c2d2) 
        next
@@ -2761,7 +2761,7 @@ proof-
          using st matchC_M2 unfolding matchC_M_def by blast
          thus ?thesis 
          unfolding c' thetaParW_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.ParCR_MtransC c1d1)
          apply simp by (metis PL.ParTR_MtransC Par_Wbis_discrL1 c1d1) 
        next
@@ -2772,7 +2772,7 @@ proof-
          using st matchT_M2 unfolding matchT_M_def by blast
          thus ?thesis 
          unfolding c' thetaParW_def
-         apply - apply(tactic {* mauto_no_simp_tac *})
+         apply - apply(tactic {* mauto_no_simp_tac @{context} *})
          apply simp apply (metis PL.ParCR_MtransC Par_Wbis_discrR1 c1d1) 
          apply simp by (metis PL.ParTR_MtransC c1d1)
        qed

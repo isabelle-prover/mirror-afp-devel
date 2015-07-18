@@ -32,9 +32,9 @@ struct
           let val trms = extract_PR_tags (Thm.prop_of thm) []
               fun tac trm = 
                 let val subst = Thm.reflexive (Thm.cterm_of ctxt trm) RS @{thm HOL.meta_eq_to_obj_eq}
-                    val subst = subst RS @{thm "HOL.trans"}
-                    val subst = subst RS @{thm "HOL.ssubst"}
-                in  TRY (rtac subst i
+                    val subst = subst RS @{thm HOL.trans}
+                    val subst = subst RS @{thm HOL.ssubst}
+                in  TRY (resolve_tac ctxt [subst] i
                     THEN REPEAT_ALL_NEW (FIRST' (map (fn thms => 
                              DETERM o resolve_tac ctxt thms) sturm_PR_tag_intro_thmss)) i)
                 end;
@@ -153,19 +153,19 @@ struct
               | _ => sturm_prop_tac;
     in  ((tac ctxt i
          THEN CONVERSION (sturm_conv ctxt) i
-         THEN rtac @{thm TrueI} i
+         THEN resolve_tac ctxt @{thms TrueI} i
         ) ORELSE (if keep_goal then all_tac else no_tac)) thm
     end;
 
     fun convert_meta_spec_tac ctxt = SUBGOAL (fn (goal, i) =>
       let val frees = Term.add_frees goal []  (* FIXME !? *)
       in case frees of
-           [_] => let
-                    val goal' = Logic.close_form goal
-                    val rule = Goal.prove ctxt [] [] (Logic.mk_implies (goal', goal)) (fn _ =>
-                                   dtac @{thm sturm_meta_spec} i THEN assume_tac ctxt i)
-                in  rtac rule i
-                end
+           [_] =>
+                let
+                  val goal' = Logic.close_form goal
+                  val rule = Goal.prove ctxt [] [] (Logic.mk_implies (goal', goal)) (fn _ =>
+                     dresolve_tac ctxt @{thms sturm_meta_spec} i THEN assume_tac ctxt i)
+                in resolve_tac ctxt [rule] i end
          | _ => no_tac
       end)
 

@@ -77,9 +77,9 @@ fun ceq_tac ctxt tname Ts =
       Splitter.split_asm_tac ctxt @{thms option.splits} 1 THEN
       unfold_tac ctxt @{thms option.simps}) 
     THEN unfold_tac ctxt @{thms option.simps} 
-    THEN rtac @{thm equality_subst} 1 THEN atac 1 
-    THEN REPEAT_DETERM (dtac @{thm ceq_equality} 1) 
-    THEN (rtac c_thm THEN_ALL_NEW atac) 1
+    THEN resolve_tac ctxt @{thms equality_subst} 1 THEN assume_tac ctxt 1 
+    THEN REPEAT_DETERM (dresolve_tac ctxt @{thms ceq_equality} 1) 
+    THEN (resolve_tac ctxt [c_thm] THEN_ALL_NEW assume_tac ctxt) 1
   end
     
 fun ceq_instance_via_equality tname thy =
@@ -104,7 +104,7 @@ fun ceq_instance_via_equality tname thy =
     val thy = Class.prove_instantiation_exit (fn ctxt =>
       Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt [eq_thm]
-      THEN rtac @{thm equality_imp_eq} 1
+      THEN resolve_tac ctxt @{thms equality_imp_eq} 1
       THEN ceq_tac ctxt tname Ts) lthy
     val info = Equality_Generator.get_info (Named_Target.theory_init thy) tname |> the
     val used = #used_positions info
@@ -148,7 +148,7 @@ fun ceq_instance_via_eq tname thy =
       Class.intro_classes_tac ctxt [] 
       THEN unfold_tac ctxt [ceq_thm]
       THEN unfold_tac ctxt @{thms option.simps prod.simps}
-      THEN rtac @{thm sym} 1 THEN atac 1
+      THEN resolve_tac ctxt @{thms sym} 1 THEN assume_tac ctxt 1
       ) lthy
     val thy = derive_is_c_dots_lemma ty @{const_name is_ceq} 
       [ceq_thm, @{thm is_ceq_def}] base_name thy

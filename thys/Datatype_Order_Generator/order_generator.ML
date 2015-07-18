@@ -261,7 +261,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
                                       (* < and < *)
                                       let
                                         val trans_thm = if rec_type then hd ihyps else @{thm less_trans}
-                                        val tac = rtac (trans_thm OF [hyp_xy,hyp_yz]) 1
+                                        val tac = resolve_tac ctxt [trans_thm OF [hyp_xy,hyp_yz]] 1
                                         val xz_thm = Goal.prove_future ctxt [] [] xz_term (K tac)
                                       in
                                         solve_with_tac ctxt (xz_thm :: case_hyp_z :: eqs)
@@ -439,7 +439,7 @@ fun mk_linear_thm thy info =
                 val disj_trm = HOLogic.mk_disj (x_eq_y,HOLogic.mk_disj(less px py, less py px)) |> HOLogic.mk_Trueprop
                 val rec_type = (fn Old_Datatype_Aux.DtRec _ => true | _ => false) dty
                 val disj_thm' = if rec_type then hd ihyps else @{thm linear_cases}
-                val disj_tac = rtac disj_thm' 1
+                val disj_tac = resolve_tac ctxt [disj_thm'] 1
                 val disj_thm = Goal.prove_future ctxt [] [] disj_trm (K (disj_tac))
                 fun case_tac_disj disj tac =
                   mk_case_tac ctxt [] (@{thm disjE} OF [disj]) (fn (ctxt,ii,hyps,_) => tac ii ctxt (List.last hyps))
@@ -522,13 +522,13 @@ fun derive kind dtyp_name _ thy =
             my_print_tac ctxt "enter order" THEN
             unfold_tac ctxt less_thms THEN
             my_print_tac ctxt "after unfolding" THEN
-            rtac less 1 THEN
+            resolve_tac ctxt [less] 1 THEN
             my_print_tac ctxt "after less" THEN
-            rtac refl 1 THEN
+            resolve_tac ctxt [refl] 1 THEN
             my_print_tac ctxt "after refl" THEN
-            rtac trans_eq 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
+            resolve_tac ctxt [trans_eq] 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1 THEN
             my_print_tac ctxt "after trans" THEN
-            rtac antisym 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1
+            resolve_tac ctxt [antisym] 1 THEN assume_tac ctxt 1 THEN assume_tac ctxt 1
           val thy'' =
             Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [] THEN order_tac ctxt) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class order")
@@ -545,7 +545,7 @@ fun derive kind dtyp_name _ thy =
           val linear = mk_linear_thm thy info
           fun order_tac ctxt =
             unfold_tac ctxt less_thms THEN
-            rtac linear 1
+            resolve_tac ctxt [linear] 1
           val thy''' = Class.prove_instantiation_exit (fn ctxt => Class.intro_classes_tac ctxt [] THEN order_tac ctxt) lthy
           val _ = writeln ("registered " ^ base_name ^ " in class linorder")
         in thy''' end

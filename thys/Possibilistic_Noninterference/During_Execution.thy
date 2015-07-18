@@ -1034,7 +1034,7 @@ lemma match_imp[simp]:
 "\<And> theta c1 c2. matchC_MC theta c1 c2 \<Longrightarrow> matchC_TMC theta c1 c2"
 (*  *)
 "\<And> theta c1 c2. matchT_MT c1 c2 \<Longrightarrow> matchT_TMT c1 c2"
-unfolding match_defs apply(tactic {* mauto_no_simp_tac *})
+unfolding match_defs apply(tactic {* mauto_no_simp_tac @{context} *})
 apply fastforce apply fastforce
 apply (metis MtransC_Refl transC_MtransC)
 by force+

@@ -157,11 +157,11 @@ let
 
       val lthy'' = Class.prove_instantiation_instance (fn ctxt =>
         Class.intro_classes_tac ctxt []
-        THEN rtac assoc_thm 1
+        THEN resolve_tac ctxt [assoc_thm] 1
         THEN unfold_tac ctxt [def_thm] 
-        THEN rtac @{thm shows_list_aux_assoc} 1
-        THEN rtac @{thm ballI} 1
-        THEN rtac assoc_thm 1
+        THEN resolve_tac ctxt @{thms shows_list_aux_assoc} 1
+        THEN resolve_tac ctxt @{thms ballI} 1
+        THEN resolve_tac ctxt [assoc_thm] 1
         ) lthy'
     in lthy'' end
 in

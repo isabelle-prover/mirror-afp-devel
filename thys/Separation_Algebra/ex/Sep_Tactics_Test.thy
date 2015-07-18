@@ -58,8 +58,8 @@ schematic_lemma
 text {* Example of low-level rewrites *}
 
 lemma "\<lbrakk> unrelated s ; (P ** Q ** R) s \<rbrakk> \<Longrightarrow> (A ** B ** Q ** P) s"
-  apply (tactic {* dtac (mk_sep_select_rule @{context} true (3,1)) 1 *})
-  apply (tactic {* rtac (mk_sep_select_rule @{context} false (4,2)) 1 *})
+  apply (tactic {* dresolve_tac @{context} [mk_sep_select_rule @{context} true (3, 1)] 1 *})
+  apply (tactic {* resolve_tac @{context} [mk_sep_select_rule @{context} false (4, 2)] 1 *})
   (* now sep_conj_impl1 can be used *)
   apply (erule (1) sep_conj_impl)
   oops

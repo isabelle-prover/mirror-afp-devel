@@ -248,10 +248,10 @@ ML {*
           addsimps @{thms APP_def PROTECT_def ANNOT_def}
           addsimps get_post_rules ctxt
         val trans_opt_tac = 
-          rtac @{thm autoref_REMOVE_INTERNAL_EQ} 
+          resolve_tac ctxt @{thms autoref_REMOVE_INTERNAL_EQ} 
           THEN' 
           IF_SOLVED (REPEAT_ON_SUBGOAL (trans_step_tac ctxt))
-            (simp_tac ss THEN' rtac @{thm REMOVE_INTERNAL_EQI})
+            (simp_tac ss THEN' resolve_tac ctxt @{thms REMOVE_INTERNAL_EQI})
             (K all_tac)
       in
         Seq.INTERVAL trans_opt_tac

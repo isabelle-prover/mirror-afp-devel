@@ -23,12 +23,18 @@ val exE = @{thm exE}
 val disjE = @{thm disjE}
 
 
-fun mclarTacs i = [rtac impI i, rtac allI i, rtac ballI i, etac conjE i, etac exE i]
-val mclarify_all_tac = REPEAT(SOMEGOAL(fn i => FIRST (mclarTacs i)))
-fun mclarsimp_all_tac SS = (TRY mclarify_all_tac) THEN (TRYALL (asm_full_simp_tac SS))
+fun mclarTacs ctxt i =
+  [resolve_tac ctxt [impI] i,
+   resolve_tac ctxt [allI] i,
+   resolve_tac ctxt [ballI] i,
+   eresolve_tac ctxt [conjE] i,
+   eresolve_tac ctxt [exE] i];
 
-fun mautoTacs i = mclarTacs i @ [rtac conjI i, etac disjE i]
-val mauto_no_simp_tac = REPEAT(SOMEGOAL(fn i => FIRST (mautoTacs i)))
+fun mclarify_all_tac ctxt = REPEAT(SOMEGOAL(fn i => FIRST (mclarTacs ctxt i)));
+fun mclarsimp_all_tac ctxt = TRY (mclarify_all_tac ctxt) THEN TRYALL (asm_full_simp_tac ctxt)
+
+fun mautoTacs ctxt i = mclarTacs ctxt i @ [resolve_tac ctxt [conjI] i, eresolve_tac ctxt [disjE] i]
+fun mauto_no_simp_tac ctxt = REPEAT(SOMEGOAL(fn i => FIRST (mautoTacs ctxt i)))
 
 fun clarify_all_tac ctxt = TRYALL (clarify_tac ctxt)
 *}
@@ -77,12 +83,12 @@ oops
 
 lemma "(\<forall> i j k. P \<longrightarrow> Q) \<and> (\<forall> a b. G a \<and> G b \<longrightarrow> (Q \<and> R)) \<and> D"
 apply(tactic {* REPEAT(SOMEGOAL(rtac @{thm conjI})) *})
-apply(tactic {* mauto_no_simp_tac *})
+apply(tactic {* mauto_no_simp_tac @{context} *})
 oops
 
 
 lemma test: "(\<forall> i j k. P \<longrightarrow> Q) \<and> (\<forall> a b. G a \<and> G b \<longrightarrow> Q)"
-apply(tactic {* mauto_no_simp_tac *})
+apply(tactic {* mauto_no_simp_tac @{context} *})
 apply(rule disjE)
 oops
 

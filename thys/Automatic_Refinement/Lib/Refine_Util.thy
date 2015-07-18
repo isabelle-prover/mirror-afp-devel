@@ -306,12 +306,12 @@ ML {*
 
     (* Resolve with rule. Use first-order unification.
       From cookbook, added exception handling *)
-    fun fo_rtac thm = Subgoal.FOCUS (fn {concl, ...} => 
+    fun fo_rtac thm = Subgoal.FOCUS (fn {context = ctxt, concl, ...} => 
     let
       val concl_pat = Drule.strip_imp_concl (Thm.cprop_of thm)
       val insts = Thm.first_order_match (concl_pat, concl)
     in
-      rtac (Drule.instantiate_normalize insts thm) 1
+      resolve_tac ctxt [Drule.instantiate_normalize insts thm] 1
     end handle Pattern.MATCH => no_tac )
 
     fun fo_resolve_tac thms ctxt = 
@@ -345,7 +345,7 @@ ML {*
         val R = nth (Drule.strip_imp_prems goal'') (n - 1)
         val rl = Simplifier.norm_hhf ctxt (Thm.trivial R)
       in
-        etac rl i
+        eresolve_tac ctxt [rl] i
       end
       );
 

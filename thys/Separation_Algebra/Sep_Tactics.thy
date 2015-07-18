@@ -81,11 +81,11 @@ ML {*
       tac
       ORELSE' (sep_cancel_tac ctxt tac
                THEN' TRY' tac
-               THEN' TRY' (rtac @{thm TrueI}))
-      ORELSE' (etac @{thm sep_conj_sep_emptyE}
+               THEN' TRY' (resolve_tac ctxt @{thms TrueI}))
+      ORELSE' (eresolve_tac ctxt @{thms sep_conj_sep_emptyE}
                THEN' sep_cancel_tac ctxt tac
                THEN' TRY' tac
-               THEN' TRY' (rtac @{thm TrueI}))
+               THEN' TRY' (resolve_tac ctxt @{thms TrueI}))
     end;
 
   fun sep_cancel_smart_tac_rules ctxt etacs =
@@ -99,7 +99,8 @@ ML {*
 method_setup sep_cancel = {*
   sep_cancel_syntax >> (fn _ => fn ctxt =>
     let
-      val etacs = map etac (rev (Named_Theorems.get ctxt @{named_theorems sep_cancel}));
+      val etacs = map (eresolve_tac ctxt o single)
+        (rev (Named_Theorems.get ctxt @{named_theorems sep_cancel}));
     in
       SIMPLE_METHOD' (sep_cancel_smart_tac_rules ctxt etacs)
     end)

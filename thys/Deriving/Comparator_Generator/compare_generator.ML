@@ -68,11 +68,11 @@ fun mk_binop_def binop T rhs =
 
 fun comparator_tac ctxt tname =
   let val (_, c_thm, _) = dest_comp ctxt tname
-  in (rtac c_thm THEN_ALL_NEW rtac @{thm comparator_compare}) 1 end
+  in (resolve_tac ctxt [c_thm] THEN_ALL_NEW resolve_tac ctxt @{thms comparator_compare}) 1 end
 
 fun comparator_tac_comparator_of ctxt tname i =
   let val (_, c_thm, _) = dest_comp ctxt tname
-  in (rtac c_thm THEN_ALL_NEW rtac @{thm comparator_of}) i end
+  in (resolve_tac ctxt [c_thm] THEN_ALL_NEW resolve_tac ctxt @{thms comparator_of}) i end
 
 fun compare_instance gen_type tname thy =
   let
@@ -133,8 +133,8 @@ fun linorder_instance gen_type tname thy =
 
         end)
     fun linear_tac ctxt i = 
-      rtac (nth @{thms linorder_axiomsD} (i - 1)) i
-      THEN rtac @{thm comparator.linorder} i
+      resolve_tac ctxt [nth @{thms linorder_axiomsD} (i - 1)] i
+      THEN resolve_tac ctxt @{thms comparator.linorder} i
       THEN comparator_tac_comparator_of ctxt tname i
   in
     Class.prove_instantiation_exit ( fn ctxt => 
@@ -209,8 +209,8 @@ fun compare_order_instance_via_comparator_of tname thy =
     Class.prove_instantiation_exit (fn ctxt =>
       Class.intro_classes_tac ctxt []
       THEN unfold_tac ctxt (Named_Theorems.get ctxt @{named_theorems compare_simps})
-      THEN rtac @{thm le_lt_comparator_of(1)} 1
-      THEN rtac @{thm le_lt_comparator_of(2)} 1) lthy
+      THEN resolve_tac ctxt @{thms le_lt_comparator_of(1)} 1
+      THEN resolve_tac ctxt @{thms le_lt_comparator_of(2)} 1) lthy
   end
   
 fun compare_order_instance tname param thy =

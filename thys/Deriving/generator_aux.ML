@@ -355,14 +355,14 @@ fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info
       (* TFrees via pre_condition and blast *)
       (fn T => fn IH => fn ctxt =>
           if null IH then              
-            (rtac (nth assms (find_index (equal T) used_tfrees)) THEN_ALL_NEW blast_tac ctxt) 1               
+            (resolve_tac ctxt [nth assms (find_index (equal T) used_tfrees)] THEN_ALL_NEW blast_tac ctxt) 1               
           else error "error 1 in distributing IHs in recursor_tac") 
       (* TVars may not occur *)
       (fn ty => error ("error in recursor_tac for " ^ @{make_string} ty))
       (* recursive case via IH and blast *)
       (K (fn IHs => fn ctxt =>
         if length IHs = 1 then
-          (rtac (hd IHs) THEN_ALL_NEW blast_tac ctxt) 1
+          (resolve_tac ctxt [hd IHs] THEN_ALL_NEW blast_tac ctxt) 1
         else error "error 2 in distributing IHs in recursor_tac"))
       (* non-rec.-case distributed IHs and invokes partial soundness thm *)
       (fn (tys_tactics, info) => fn IH => fn ctxt => 
@@ -373,7 +373,7 @@ fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info
           val pthm = info_to_pthm info
         in
           HEADGOAL (
-            rtac pthm
+            resolve_tac ctxt [pthm]
             THEN_ALL_NEW (fn k => Subgoal.SUBPROOF (fn {prems, context = ctxt', ...} =>
               Method.insert_tac prems 1
               THEN (nth tactics (k - 1) ctxt')) ctxt k))

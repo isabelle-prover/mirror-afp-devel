@@ -1652,7 +1652,7 @@ fun approximate_affine (name, term) lthy =
       |> Conv.fconv_rule (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv def_raw)) lthy5)
 
     fun len_tac ctxt =
-      TRY (REPEAT (rtac (@{thm length_eq_ConsI}) 1))
+      TRY (REPEAT (resolve_tac ctxt @{thms length_eq_ConsI} 1))
       THEN resolve_tac ctxt [len_qs_eq_thm, refl] 1
     val (_, _, _, XSQS) = betapplys (approx_raw, approx_args) |> dest_approx_euclarith
     val len_eq =
@@ -1665,9 +1665,9 @@ fun approximate_affine (name, term) lthy =
         CONVERSION
           (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv euclidify_thm)) ctxt) 1
         THEN CONVERSION (Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv thm')) ctxt) 1
-        THEN rtac ((approx_eq_thm' RS @{thm approx_euclarith_outer2_shift_addvars})) 1
-        THEN rtac joints_thm 1
-        THEN rtac len_thm 1 (* instantiates *)
+        THEN resolve_tac ctxt [approx_eq_thm' RS @{thm approx_euclarith_outer2_shift_addvars}] 1
+        THEN resolve_tac ctxt [joints_thm] 1
+        THEN resolve_tac ctxt [len_thm] 1 (* instantiates *)
         THEN len_tac ctxt
         THEN Local_Defs.unfold_tac ctxt @{thms zip_Cons_Cons zip_Nil set_simps}
         THEN blast_tac ctxt 1

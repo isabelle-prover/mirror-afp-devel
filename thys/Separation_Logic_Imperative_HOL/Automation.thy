@@ -534,19 +534,19 @@ structure Seplogic_Auto = struct
       simp_tac (put_simpset HOL_basic_ss ctxt addsimps @{thms SLN_def});
 
     (* Do a match step *)
-    val match_tac = rtac @{thm FI_match} (* Separate p,q*)
+    val match_tac = resolve_tac ctxt @{thms FI_match} (* Separate p,q*)
       THEN' SOLVED' imp_solve_tac (* Solve implication *)
       THEN' norm_tac;
 
     (* Do a no-match step *)
-    val nomatch_tac = rtac @{thm FI_p_nomatch} ORELSE' 
-      (rtac @{thm FI_q_nomatch} THEN' norm_tac);
+    val nomatch_tac = resolve_tac ctxt @{thms FI_p_nomatch} ORELSE' 
+      (resolve_tac ctxt @{thms FI_q_nomatch} THEN' norm_tac);
   in
-    rtac @{thm FI_init} THEN' norm_tac 
+    resolve_tac ctxt @{thms FI_init} THEN' norm_tac 
     THEN' REPEAT_DETERM' (FIRST' [
       CHANGED o dflt_tac ctxt,
       (match_tac ORELSE' nomatch_tac)])
-    THEN' rtac @{thm FI_finalize} THEN' strip_tac
+    THEN' resolve_tac ctxt @{thms FI_finalize} THEN' strip_tac
   end;
 
 
@@ -555,9 +555,9 @@ structure Seplogic_Auto = struct
   (***********************************)
 
   fun frame_inference_tac ctxt =
-    rtac @{thm frame_inference_init} 
-    THEN' match_frame_tac (rtac @{thm ent_refl}) ctxt
-    THEN' rtac @{thm frame_inference_finalize};
+    resolve_tac ctxt @{thms frame_inference_init} 
+    THEN' match_frame_tac (resolve_tac ctxt @{thms ent_refl}) ctxt
+    THEN' resolve_tac ctxt @{thms frame_inference_finalize};
 
 
   (***********************************)
@@ -576,7 +576,7 @@ structure Seplogic_Auto = struct
     val thm = count_ex concl;
   in
     (TRY o REPEAT_ALL_NEW (match_tac ctxt @{thms ent_ex_preI}) THEN'
-     rtac thm) i st
+     resolve_tac ctxt [thm]) i st
   end;
 
 
@@ -609,7 +609,7 @@ structure Seplogic_Auto = struct
 
   fun heap_rule_tac ctxt h_thms = 
     resolve_tac ctxt h_thms ORELSE' (
-    rtac @{thm fi_rule} THEN' (resolve_tac ctxt h_thms THEN_IGNORE_NEWGOALS
+    resolve_tac ctxt @{thms fi_rule} THEN' (resolve_tac ctxt h_thms THEN_IGNORE_NEWGOALS
     frame_inference_tac ctxt));
 
   fun vcg_step_tac ctxt = let
@@ -622,7 +622,7 @@ structure Seplogic_Auto = struct
       case Logic.concl_of_goal (Thm.prop_of st) i |> HOLogic.dest_Trueprop of
         Const (@{const_name Hoare_Triple.hoare_triple},_)$_$_$qt =>
           if is_Var (head_of qt) then no_tac st
-          else rtac @{thm cons_post_rule} i st
+          else resolve_tac ctxt @{thms cons_post_rule} i st
       | _ => no_tac st;
 
   in
@@ -835,7 +835,7 @@ lemma fr_rot_rhs: "(A \<Longrightarrow>\<^sub>A B*C) \<Longrightarrow> (A \<Long
 method_setup fr_rot = {* 
   let
     fun rot_tac ctxt = 
-      rtac @{thm fr_rot} THEN'
+      resolve_tac ctxt @{thms fr_rot} THEN'
       simp_tac (put_simpset HOL_basic_ss ctxt 
         addsimps @{thms star_assoc[symmetric]})
 
@@ -850,7 +850,7 @@ method_setup fr_rot = {*
 method_setup fr_rot_rhs = {* 
   let
     fun rot_tac ctxt = 
-      rtac @{thm fr_rot_rhs} THEN'
+      resolve_tac ctxt @{thms fr_rot_rhs} THEN'
       simp_tac (put_simpset HOL_basic_ss ctxt 
         addsimps @{thms star_assoc[symmetric]})
 
@@ -904,35 +904,35 @@ lemma "(h\<Turnstile>((A*B*\<up>b*true*\<up>c*true) \<and>\<^sub>A (\<up>(p=q)*P
 lemma assumes "FI_RESULT [(B, B), (A, A)] C D F" 
   shows "FI_QUERY (A*B*C) (D*B*A) F"
   apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (rtac @{thm ent_refl}) @{context} 1 *})
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(B,B), (A,A)] C emp F"
   shows "FI_QUERY (A*B*C) (B*A) F"
   apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (rtac @{thm ent_refl}) @{context} 1 *})
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(B, B), (A, A)] emp emp F"
   shows "FI_QUERY (A*B) (B*A) F"
   apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (rtac @{thm ent_refl}) @{context} 1 *})
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(A, A)] emp emp F"
   shows "FI_QUERY (A) (A) F"
   apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (rtac @{thm ent_refl}) @{context} 1 *})
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(A, A)] (B * C * D) emp F"
   shows "FI_QUERY (B*C*D*A) (A) F"
   apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (rtac @{thm ent_refl}) @{context} 1 *})
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
   by (rule assms)
 
 

@@ -145,9 +145,10 @@ fun mk_assoc_thm thy info =
                 val (thm, ihs') = (case dty of Old_Datatype_Aux.DtRec _ => (hd ihs, tl ihs) | _ => (@{thm assoc(1)}, ihs))
               in
                 (*handle separator*)
-                rtac (case pdtys of [] => @{thm shows_sep_paren_final} | _ => @{thm shows_sep_paren}) 1
+                resolve_tac ctxt
+                  [case pdtys of [] => @{thm shows_sep_paren_final} | _ => @{thm shows_sep_paren}] 1
                 (*handle argument*)
-                THEN (rtac thm 1)
+                THEN resolve_tac ctxt [thm] 1
                 (*recurse*)
                 THEN sub_case_tac pdtys ihs'
               end
@@ -156,7 +157,8 @@ fun mk_assoc_thm thy info =
         (*unfold recursor*)
         unfold_tac ctxt simp_that 
         (*handle constructor*)
-        THEN rtac (case pdtys of [] => @{thm append_assoc} | _ => @{thm append_assoc_trans}) 1
+        THEN resolve_tac ctxt
+          [case pdtys of [] => @{thm append_assoc} | _ => @{thm append_assoc_trans}] 1
         (*handle arguments*)
         THEN sub_case_tac pdtys ihs
       end
@@ -185,14 +187,14 @@ fun derive dtyp_name _ thy =
 
     val assoc_thm = mk_assoc_thm thy info;
     fun assoc_tac ctxt = unfold_tac ctxt [shows_prec_thm]
-      THEN rtac assoc_thm 1;
+      THEN resolve_tac ctxt [assoc_thm] 1;
 
     val thy' = Class.prove_instantiation_exit (fn ctxt =>
         Class.intro_classes_tac ctxt []
         THEN assoc_tac ctxt
         THEN unfold_tac ctxt [shows_list_thm] 
-        THEN rtac @{thm shows_list_aux_assoc} 1
-        THEN rtac @{thm ballI} 1
+        THEN resolve_tac ctxt @{thms shows_list_aux_assoc} 1
+        THEN resolve_tac ctxt @{thms ballI} 1
         THEN assoc_tac ctxt
       ) lthy;
     val _ = writeln ("registered " ^ base_name ^ " in class show")

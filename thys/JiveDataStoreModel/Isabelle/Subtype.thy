@@ -241,7 +241,7 @@ ML {*
 local val ss = simpset_of @{context} in
 
 fun widen_tac ctxt =
-  rtac @{thm widen_asm} THEN'
+  resolve_tac ctxt @{thms widen_asm} THEN'
   simp_tac (put_simpset ss ctxt addsimps @{thms le_Javatype_def}) THEN'
   Method.insert_tac @{thms direct_subtype_widened} THEN'
   simp_tac (put_simpset (simpset_of @{theory_context Transitive_Closure}) ctxt)

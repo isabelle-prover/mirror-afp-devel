@@ -1943,7 +1943,7 @@ THEN'
   THEN_ALL_NEW full_simp_tac ctxt (* FIXME vcg_ni uses asm_full_simp_tac here *)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
                    (* The effect of vcg_pre: should be cheap *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o assume_tac ctxt))
   THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" []))
   THEN_ALL_NEW clarsimp_tac ctxt

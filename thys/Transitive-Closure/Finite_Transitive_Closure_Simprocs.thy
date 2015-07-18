@@ -34,10 +34,9 @@ end
 structure Finite_Trancl_Image : FINITE_TRANCL_IMAGE =
 struct
 
-(*copied from src/HOL/HOL.thy*)
 fun eval_tac ctxt =
   let val conv = Code_Runtime.dynamic_holds_conv ctxt
-  in CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN' rtac TrueI end
+  in CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN' resolve_tac ctxt [TrueI] end
 
 fun mk_rtrancl T = Const (@{const_name rtrancl_list_impl}, T);
 
@@ -83,8 +82,8 @@ fun gen_simproc dest mk_const eq_thm ctxt ct =
             SOME rule =>
             let
               val conv = (t, t') |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
-              val eq_thm' = Goal.prove ctxt [] [] conv (fn {context, ...} =>
-                rtac eq_thm 1 THEN REPEAT (simp_tac context 1));
+              val eq_thm' = Goal.prove ctxt [] [] conv (fn {context = ctxt', ...} =>
+                resolve_tac ctxt' [eq_thm] 1 THEN REPEAT (simp_tac ctxt' 1));
             in
               SOME (@{thm HOL.trans} OF [eq_thm', rule] RS @{thm eq_reflection})
             end

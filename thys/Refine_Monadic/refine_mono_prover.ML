@@ -72,7 +72,7 @@ structure Refine_Mono_Prover : REFINE_MONO_PROVER = struct
                       (DETERM o strip_cases 
                         o Induct.cases_tac ctxt false [[SOME arg]] NONE [])
                       THEN_ALL_NEW (rewrite_with_asm_tac ctxt 0)
-                      THEN_ALL_NEW etac @{thm thin_rl}
+                      THEN_ALL_NEW eresolve_tac ctxt @{thms thin_rl}
                       THEN_ALL_NEW (
                         CONVERSION (params_conv ~1 (mk_conv (K conv)) ctxt))
                     ) i

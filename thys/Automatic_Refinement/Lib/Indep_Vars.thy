@@ -45,7 +45,7 @@ ML {*
 
       fun indep_tac_aux ctxt i st = case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop (INDEP ?v)"}
-          => (indep_vars ctxt v THEN rtac @{thm INDEPI} i) st
+          => (indep_vars ctxt v THEN resolve_tac ctxt @{thms INDEPI} i) st
       | _ => Seq.empty
 
     in

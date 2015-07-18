@@ -68,7 +68,7 @@ fun create_vcs ctxt i =
   let val main_simp_thms = rev (Named_Theorems.get ctxt @{named_theorems cterms_env})
       val ctermsl_cases = rev (Named_Theorems.get ctxt @{named_theorems ctermsl_cases})
   in
-    dtac @{thm has_ctermsl} i
+    dresolve_tac ctxt @{thms has_ctermsl} i
     THEN_ELSE (dmatch_tac ctxt ctermsl_cases i
                THEN
                TRY (REPEAT_ALL_NEW (ematch_tac ctxt [@{thm disjE}]) i)
@@ -88,7 +88,7 @@ fun try_invs ctxt =
 
 fun try_final ctxt =
   let val final_thms = rev (Named_Theorems.get ctxt @{named_theorems cterms_final})
-      fun eapp thm = EVERY' (etac thm :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt))
+      fun eapp thm = EVERY' (eresolve_tac ctxt [thm] :: replicate (Thm.nprems_of thm - 1) (assume_tac ctxt))
   in
     TRY o (FIRST' (map eapp final_thms))
   end
@@ -100,8 +100,8 @@ fun each ctxt =
    THEN' (ematch_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cterms_seqte}))
      THEN_ALL_NEW
        (fn j => simp_only [@{thm mem_Collect_eq}] ctxt j
-                  THEN REPEAT (etac @{thm exE} j)
-                  THEN REPEAT (etac @{thm conjE} j))))
+                  THEN REPEAT (eresolve_tac ctxt @{thms exE} j)
+                  THEN REPEAT (eresolve_tac ctxt @{thms conjE} j))))
   ORELSE' (SOLVED' (clarsimp_tac ctxt))
 
 fun simp_all ctxt =

@@ -271,7 +271,7 @@ text{*
 
 method_setup int_unlift = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD'
-    (rtac @{thm intI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
+    (resolve_tac ctxt @{thms intI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
 *} "method to unlift and followed by intensional rewrites"
 
 lemma inteq_reflection: assumes P1: "\<turnstile> x=y" shows  "(x \<equiv> y)"

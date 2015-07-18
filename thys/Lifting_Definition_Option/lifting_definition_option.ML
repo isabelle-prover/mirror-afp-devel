@@ -190,7 +190,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
           val wit_thm = Goal.prove lthy [] [] wit_thm_t
             (K (Method.insert_tac [some_thm] 1
               THEN unfold_tac lthy [Thm.symmetric wit_thm]
-              THEN rtac @{thm CollectE} 1
+              THEN resolve_tac lthy @{thms CollectE} 1
               THEN assume_tac lthy 1 THEN assume_tac lthy 1
               ))
           val _ = debug_out "step 2: proved that witness satisfies invariant"
@@ -228,7 +228,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val lam_ty = Term.fastype_of lam
         val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> bool_ty) $ lam
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
-        fun tac ctxt = rtac ex_thm 1 THEN blast_tac ctxt 1
+        fun tac ctxt = resolve_tac ctxt [ex_thm] 1 THEN blast_tac ctxt 1
         val concealed = false
         val (info, lthy) =
           Typedef.add_typedef concealed
@@ -313,8 +313,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
 
       fun after_qed check_thm lthy = let
-          fun tac ctxt = 
-              rtac @{thm restrict_condI} 1 THEN resolve_tac ctxt (hd check_thm) 1 THEN (TRY o atac) 1
+          fun tac ctxt =
+            resolve_tac ctxt @{thms restrict_condI} 1 THEN
+            resolve_tac ctxt (hd check_thm) 1 THEN
+            (TRY o assume_tac ctxt) 1
           val ty = impl_tys ---> restr_c_ty
           val (rc, lthy) = lift_def_ml (binding,mixfix) ty rhs tac lthy
           val _ = debug_out ("step 7: created lift_definition for " ^ restr_c_name)
@@ -376,10 +378,10 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
               SOME (Thm.cterm_of lthy check)]
             |> (fn thm => thm OF [inverse_thm, def_thm', some_thm])
           val eq_thm = Goal.prove lthy (map fst xs) [] eq (fn {context = ctxt, ...} =>
-             rtac pre_thm 1
+             resolve_tac ctxt [pre_thm] 1
            THEN assume_tac ctxt 1
            THEN transfer_tac ctxt 1
-           THEN rtac @{thm snd_if} 1)
+           THEN resolve_tac ctxt @{thms snd_if} 1)
           val eq_binding = Binding.name (r_of_name)
           val lthy = Local_Theory.note ((eq_binding, []), [eq_thm]) lthy |> snd
           val _ = debug_out ("step 10: derived thm " ^ Binding.name_of eq_binding)

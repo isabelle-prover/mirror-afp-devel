@@ -65,7 +65,7 @@ fun sidegoal_tac ctxt =
                   asm_full_simp_tac ctxt))
 
 fun wp_start ctxt =
-  (rtac @{thm wp_weaken_pre} ORELSE' rtac @{thm wlp_weaken_pre})
+  (resolve_tac ctxt @{thms wp_weaken_pre} ORELSE' resolve_tac ctxt @{thms wlp_weaken_pre})
   THEN_ALL_NEW ((sidegoal_tac ctxt) ORELSE' (K all_tac))
 
 fun user_wp_rules ctxt = rev (Named_Theorems.get ctxt @{named_theorems pwp})

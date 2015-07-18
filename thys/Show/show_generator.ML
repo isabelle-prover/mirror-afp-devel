@@ -320,7 +320,7 @@ fun generate_showsp tyco lthy =
             val k = length prems - length used_tfrees
             val (IHs, assms) = chop k prems
           in
-            rtac @{thm show_lawI} 1
+            resolve_tac ctxt @{thms show_lawI} 1
             THEN Subgoal.FOCUS (fn {context = ctxt, ...} =>
               let
                 val assms = map (Local_Defs.unfold ctxt (nth set_simps i)) assms
@@ -329,7 +329,7 @@ fun generate_showsp tyco lthy =
               in
                 unfold_tac ctxt (nth show_simps i)
                 THEN o_append_intro_tac ctxt (fn ctxt' => fn st =>
-                  rtac @{thm show_lawD} 1
+                  resolve_tac ctxt' @{thms show_lawD} 1
                   THEN recursor_tac assms (nth Ts st) (nth IHs st) ctxt')
               end) ctxt 1
           end
@@ -402,10 +402,10 @@ fun show_instance tyco thy =
       let
         val show_law_intros = Named_Theorems.get ctxt @{named_theorems "show_law_intros"}
         val show_law_simps = Named_Theorems.get ctxt @{named_theorems "show_law_simps"}
-        val show_append_tac = rtac @{thm show_lawD}
+        val show_append_tac = resolve_tac ctxt @{thms show_lawD}
           THEN' REPEAT_ALL_NEW (resolve_tac ctxt show_law_intros)
           THEN_ALL_NEW (
-            rtac @{thm show_lawI}
+            resolve_tac ctxt @{thms show_lawI}
             THEN' simp_only_tac ctxt show_law_simps)
       in
         Class.intro_classes_tac ctxt []

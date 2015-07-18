@@ -119,16 +119,16 @@ structure RefineG_Transfer = struct
           |> instantiate' [NONE,SOME cT] [NONE,SOME c]
         (*val _ = tracing (@{make_string} rl)*)
       in
-        rtac rl i st
+        resolve_tac ctxt [rl] i st
       end
     | _ => Seq.empty
   )
 
   fun post_transfer_tac thms ctxt = let open Autoref_Tacticals in
-    rtac @{thm START_REFINEG_TRANSFER} 
+    resolve_tac ctxt @{thms START_REFINEG_TRANSFER} 
     THEN' align_tac ctxt 
     THEN' IF_SOLVED (transfer_tac thms ctxt)
-      (post_process_tac ctxt THEN' rtac @{thm STOP_REFINEG_TRANSFER})
+      (post_process_tac ctxt THEN' resolve_tac ctxt @{thms STOP_REFINEG_TRANSFER})
       (K all_tac)
 
   end

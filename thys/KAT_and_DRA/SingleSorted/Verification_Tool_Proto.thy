@@ -108,10 +108,10 @@ named_theorems hoare_rule "extra Hoare Rules"
 
 ML {*
 fun hoare_step_tac ctxt n =
-  rtac @{thm hoare_assignment} n THEN TRY (rtac @{thm subset_refl} n)
-  ORELSE (rtac @{thm hoare_while_inv} n THEN asm_full_simp_tac ( ctxt) 1)
+  resolve_tac ctxt @{thms hoare_assignment} n THEN TRY (resolve_tac ctxt @{thms subset_refl} n)
+  ORELSE (resolve_tac ctxt @{thms hoare_while_inv} n THEN asm_full_simp_tac ctxt 1)
   ORELSE (FIRST'
-    (map (fn thm => rtac thm) (rev (Named_Theorems.get ctxt @{named_theorems hoare_rule}))) n)
+    (map (fn thm => resolve_tac ctxt [thm]) (rev (Named_Theorems.get ctxt @{named_theorems hoare_rule}))) n)
 
 val hoare_tac = Subgoal.FOCUS (fn {context = ctxt, ...} =>
   REPEAT (hoare_step_tac ctxt 1)

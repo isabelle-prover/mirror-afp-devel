@@ -57,12 +57,12 @@ ML {*
 fun vcg_tac ctxt n =
   let
     fun vcg' [] = no_tac
-      | vcg' (r :: rs) = rtac r n ORELSE vcg' rs;
+      | vcg' (r :: rs) = resolve_tac ctxt [r] n ORELSE vcg' rs;
   in REPEAT (CHANGED
        (dra_hom_tac ctxt n
         THEN REPEAT (vcg' (rev (Named_Theorems.get ctxt @{named_theorems vcg})))
         THEN dra_hom_tac ctxt n
-        THEN TRY (rtac @{thm order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
+        THEN TRY (resolve_tac ctxt @{thms order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
   end
 *}
 

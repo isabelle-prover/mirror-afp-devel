@@ -84,8 +84,8 @@ setup {*
             |> Thm.cterm_of ctxt
 
           val res_thm = Goal.prove_internal ctxt [] goal (fn _ => 
-            REPEAT (rtac @{thm fun_relI} 1)
-            THEN (rtac thm 1)
+            REPEAT (resolve_tac ctxt @{thms fun_relI} 1)
+            THEN (resolve_tac ctxt [thm] 1)
             THEN (ALLGOALS (assume_tac ctxt))
           )
         in

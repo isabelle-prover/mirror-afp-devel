@@ -174,8 +174,9 @@ local
       val concl_select = mk_sep_select_rule ctxt false
                            (concl_total,concl_idx);
     in
-      dtac asm_select THEN' rtac concl_select
-      THEN' etac SepConj.sep_conj_impl THEN' tac
+      dresolve_tac ctxt [asm_select] THEN'
+      resolve_tac ctxt [concl_select] THEN'
+      eresolve_tac ctxt [SepConj.sep_conj_impl] THEN' tac
     end;
 
   fun find_target ctxt tac cprem cconcl =
@@ -220,7 +221,7 @@ in
               val th = mk_sep_select_rule ctxt true (p,n)
                   handle Subscript => error "Conjunct index out of range"
              in
-               dtac th i
+               dresolve_tac ctxt [th] i
              end;
       in
         if length prems = 0
@@ -248,7 +249,7 @@ in
       in
         if not (SepConj.is_sep_conj_prop concl)
         then error ("Goal not of form: (_ " ^ SepConj.sep_conj_str ^ " _) _")
-        else rtac th i
+        else resolve_tac ctxt [th] i
       end;
   in
     fun sep_select_tac ctxt n = CSUBGOAL (sep_select_tac' ctxt (n-1))

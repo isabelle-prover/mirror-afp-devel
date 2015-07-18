@@ -10,7 +10,7 @@ method_setup cond_eval = {*
   let
     fun eval_tac ctxt =
       let val conv = Code_Runtime.dynamic_holds_conv ctxt
-      in CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN' rtac TrueI end
+      in CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 conv)) ctxt) THEN' resolve_tac ctxt [TrueI] end
   in
     Scan.succeed (fn ctxt =>
       SIMPLE_METHOD'

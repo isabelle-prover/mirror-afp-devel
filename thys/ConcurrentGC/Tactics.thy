@@ -245,7 +245,7 @@ val _ =
 
 fun vcg_sem_tac ctxt =
         Tactic.match_tac ctxt @{thms vcg.intros}
-  THEN' (TRY o (Tactic.ematch_tac ctxt @{thms system_responds_action_specE} THEN' atac))
+  THEN' (TRY o (Tactic.ematch_tac ctxt @{thms system_responds_action_specE} THEN' assume_tac ctxt))
   THEN' Rule_Insts.thin_tac ctxt "hist s = h" [(@{binding s}, NONE, NoSyn), (@{binding h}, NONE, NoSyn)] (* FIXME discard history: we don't use it here *)
   THEN' clarsimp_tac ctxt
 
@@ -261,7 +261,7 @@ THEN'
                vcg_sem_tac ctxt
   THEN_ALL_NEW (full_simp_tac (Splitter.add_split @{thm lcond_split_asm} (ctxt addsimps Inv.get ctxt)))
   THEN_ALL_NEW ( (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
-           THEN' (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
+           THEN' (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o assume_tac ctxt))
            THEN' asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
            THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" [])) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
            THEN_ALL_NEW clarsimp_tac (ctxt addsimps (Loc.get ctxt @ @{thms atS_simps})) (* FIXME smelly *)
@@ -289,7 +289,7 @@ THEN'
   THEN_ALL_NEW asm_full_simp_tac ctxt (* FIXME diverges on some invariants *)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
                    (* The effect of vcg_pre: should be cheap *)
-  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o atac))
+  THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o assume_tac ctxt))
   THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" [])) (* FIXME weird, must be a standard way to do this. Leaving them in can cause simp to diverge ?? *)
   THEN_ALL_NEW clarsimp_tac ctxt)

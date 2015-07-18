@@ -36,7 +36,7 @@ begin
 
       val adjust_arity: int -> thm -> thm
       val adjust_arity_tac: int -> Proof.context -> tactic'
-      val unlambda_tac: tactic'
+      val unlambda_tac: Proof.context -> tactic'
       val prepare_tac: Proof.context -> tactic'
 
       val fo_rule: thm -> thm
@@ -105,13 +105,13 @@ begin
 
 
       fun safe_fun_relD_tac ctxt = let
-        fun t a b = fo_resolve_tac [a] ctxt THEN' rtac b
+        fun t a b = fo_resolve_tac [a] ctxt THEN' resolve_tac ctxt [b]
       in
         DETERM o (
           t @{thm tag_both} @{thm tagged_fun_relD_both} ORELSE'
           t @{thm tag_rhs} @{thm tagged_fun_relD_rhs} ORELSE'
           t @{thm tag_lhs} @{thm tagged_fun_relD_lhs} ORELSE'
-          rtac @{thm tagged_fun_relD_none}
+          resolve_tac ctxt @{thms tagged_fun_relD_none}
         )
       end
 
@@ -126,19 +126,19 @@ begin
 
       fun adjust_arity_tac n ctxt i st = 
         (if n = 0 then K all_tac
-        else if n>0 then NTIMES n (DETERM o rtac @{thm fun_relI})
+        else if n>0 then NTIMES n (DETERM o resolve_tac ctxt @{thms fun_relI})
         else NTIMES (~n) (safe_fun_relD_tac ctxt)) i st
 
-      fun unlambda_tac i st = 
+      fun unlambda_tac ctxt i st = 
         case try (dest_param_goal i) st of
           NONE => Seq.empty
         | SOME g => let
             val n = Term.strip_abs (#rhs_head g) |> #1 |> length
-          in NTIMES n (rtac @{thm fun_relI}) i st end
+          in NTIMES n (resolve_tac ctxt @{thms fun_relI}) i st end
 
       fun prepare_tac ctxt = 
         Subgoal.FOCUS (K (PRIMITIVE (Drule.eta_contraction_rule))) ctxt
-        THEN' unlambda_tac
+        THEN' unlambda_tac ctxt
 
 
       fun could_param_rl rl i st = 
@@ -154,7 +154,7 @@ begin
 
       fun param_rule_tac_aux ctxt rl i st = 
         case could_param_rl (Thm.prop_of rl) i st of
-          SOME adj => (adjust_arity_tac adj ctxt THEN' rtac rl) i st
+          SOME adj => (adjust_arity_tac adj ctxt THEN' resolve_tac ctxt [rl]) i st
         | _ => Seq.empty
 
       fun param_rule_tac ctxt rl = 
@@ -210,8 +210,7 @@ begin
         
             fun tac (r,thm) = 
               adjust_arity_tac (#arity r - #arity g) ctxt 
-              THEN' DETERM o rtac thm
-        
+              THEN' DETERM o resolve_tac ctxt [thm]
           in 
             FIRST' (map tac rls) i st
           end
