@@ -271,7 +271,7 @@ fun generalise_over_tac ctxt P i st =
           val meta_spec_protect' = cterm_instantiate [(cx,ct)] meta_spec_protect;
         in 
           (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
-           |> rtac meta_spec_protect' 1
+           |> resolve_tac ctxt [meta_spec_protect'] 1
            |> Seq.maps (fn st' =>
                 Thm.bicompose NONE {flatten = true, match = false, incremented = false}
                         (false, Goal.conclude st', Thm.nprems_of st') i st))
@@ -289,7 +289,7 @@ fun generalise_tac ctxt i st =
     val ct' = Thm.dest_equals_rhs (Thm.cprop_of (Thm.eta_conversion ct));
     val r = Goal.conclude (generalise ctxt ct');
   in (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
-      |> (rtac r 1 THEN rtac (Drule.protectI) 1)
+      |> (resolve_tac ctxt [r] 1 THEN resolve_tac ctxt [Drule.protectI] 1)
       |> Seq.maps (fn st' =>
             Thm.bicompose NONE {flatten = true, match = false, incremented = false}
                     (false, Goal.conclude st', Thm.nprems_of st') i st))
