@@ -114,8 +114,7 @@ lemma
        (x \<bullet> (1, 0) + x \<bullet> (0, 1)) *\<^sub>R (1, 0, 0, 0))"
   by (tactic {*
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-    THEN (rtac refl) 1
-  *})
+  *}) (rule refl)
 
 lemma "(\<lambda>(x1, x2) (y1, y2). (x1 + x2, x2 * x1 + 1, y1, y2)::real*real*real*real) =
     (\<lambda>x xa.
@@ -125,14 +124,12 @@ lemma "(\<lambda>(x1, x2) (y1, y2). (x1 + x2, x2 * x1 + 1, y1, y2)::real*real*re
        (x \<bullet> (1, 0) + x \<bullet> (0, 1)) *\<^sub>R (1, 0, 0, 0))"
   by (tactic {*
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-    THEN (rtac refl) 1
-  *})
+  *}) (rule refl)
 
 lemma "(\<lambda>x y. x + y::real) = (\<lambda>x y. (x \<bullet> 1 + y \<bullet> 1) *\<^sub>R 1)"
   by (tactic {*
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-    THEN (rtac refl) 1
-  *})
+  *}) (rule refl)
 
 lemma
   "(\<lambda>x y. (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0)) =
@@ -140,8 +137,6 @@ lemma
     (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1))) *\<^sub>R (1, 0)::real*real)"
   by (tactic {*
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-    THEN (rtac refl) 1
-  *})
-
+  *}) (rule refl)
 
 end
