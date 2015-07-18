@@ -47,7 +47,8 @@ fun eqvt_rel_single_case_tac ctxt pred_names pi intro =
         val prems'' = map (fn thm => eqvt_rule ctxt eqvt_sconfig (thm RS pi_intro_rule)) prems'
         val prems''' = map (simplify simps2 o simplify simps1) prems''
       in
-        HEADGOAL (rtac intro THEN_ALL_NEW resolve_tac ctxt (prems' @ prems'' @ prems'''))
+        HEADGOAL (resolve_tac ctxt [intro] THEN_ALL_NEW
+          resolve_tac ctxt (prems' @ prems'' @ prems'''))
       end) ctxt
   end
 
@@ -55,7 +56,7 @@ fun eqvt_rel_tac ctxt pred_names pi induct intros =
   let
     val cases = map (eqvt_rel_single_case_tac ctxt pred_names pi) intros
   in
-    EVERY' ((DETERM o rtac induct) :: cases)
+    EVERY' ((DETERM o resolve_tac ctxt [induct]) :: cases)
   end
 
 

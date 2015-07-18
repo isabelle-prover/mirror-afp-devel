@@ -183,8 +183,9 @@ fun tac ctxt thm =
   in
     REPEAT o FIRST'
       [CHANGED o simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss_thms),
-       rtac (thm RS @{thm "trans"}),
-       rtac @{thm "trans"[OF "permute_fun_def"]} THEN' rtac @{thm "ext"}]
+       resolve_tac ctxt [thm RS @{thm trans}],
+       resolve_tac ctxt @{thms trans[OF "permute_fun_def"]} THEN'
+       resolve_tac ctxt @{thms ext}]
   end
 
 in
@@ -213,8 +214,12 @@ fun tac ctxt thm thm' =
   let
     val ss_thms = @{thms "permute_minus_cancel"(2)}
   in
-    EVERY' [rtac @{thm "iffI"}, dtac @{thm "permute_boolE"}, rtac thm, assume_tac ctxt,
-      rtac @{thm "permute_boolI"}, dtac thm', 
+    EVERY' [resolve_tac ctxt @{thms iffI},
+      dresolve_tac ctxt @{thms permute_boolE},
+      resolve_tac ctxt [thm],
+      assume_tac ctxt,
+      resolve_tac ctxt @{thms permute_boolI},
+      dresolve_tac ctxt [thm'],
       full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss_thms)]
   end
 

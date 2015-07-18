@@ -340,11 +340,13 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
           |> atomize_concl ctxt'
 
     fun tac ctxt thm =
-      rtac (Drule.gen_all (Variable.maxidx_of ctxt) thm) THEN_ALL_NEW assume_tac ctxt
+      resolve_tac ctxt [Drule.gen_all (Variable.maxidx_of ctxt) thm]
+        THEN_ALL_NEW assume_tac ctxt
   in
     Goal.prove ctxt' (flat arg_namess) [] goal
       (fn {context = ctxt'', ...} =>
-        HEADGOAL (DETERM o (rtac induct_thm) THEN' RANGE (map (tac ctxt'') eqvts_thms)))
+        HEADGOAL (DETERM o (resolve_tac ctxt'' [induct_thm]) THEN'
+          RANGE (map (tac ctxt'') eqvts_thms)))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> split_conj_thm
     |> map (fn th => th RS mp)
@@ -474,22 +476,25 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
     val simpset1 = put_simpset HOL_ss lthy''' addsimps simp_thms
 
     val inj_thm = Goal.prove lthy''' [] [] goal_inj 
-      (K (HEADGOAL (DETERM o etac G_aux_induct THEN_ALL_NEW asm_simp_tac simpset1)))
+      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_aux_induct]
+        THEN_ALL_NEW asm_simp_tac simpset1)))
 
     fun aux_tac thm = 
-      rtac (Drule.gen_all (Variable.maxidx_of lthy''') thm) THEN_ALL_NEW
+      resolve_tac lthy''' [Drule.gen_all (Variable.maxidx_of lthy''') thm] THEN_ALL_NEW
       asm_full_simp_tac (simpset1 addsimps [inj_thm])
     
     val iff1_thm = Goal.prove lthy''' [] [] goal_iff1 
-      (K (HEADGOAL (DETERM o etac G_aux_induct THEN' RANGE (map aux_tac GIntro_thms))))
+      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_aux_induct]
+        THEN' RANGE (map aux_tac GIntro_thms))))
       |> Drule.gen_all (Variable.maxidx_of lthy''')
     val iff2_thm = Goal.prove lthy''' [] [] goal_iff2 
-      (K (HEADGOAL (DETERM o etac G_induct THEN' RANGE
+      (K (HEADGOAL (DETERM o eresolve_tac lthy''' [G_induct] THEN' RANGE
         (map (aux_tac o simplify simpset0) GIntro_aux_thms))))
       |> Drule.gen_all (Variable.maxidx_of lthy''')
 
     val iff_thm = Goal.prove lthy''' [] [] (HOLogic.mk_Trueprop (HOLogic.mk_eq (G, G_aux)))
-      (K (HEADGOAL (EVERY' ((map rtac @{thms ext ext iffI}) @ [etac iff2_thm, etac iff1_thm]))))
+      (K (HEADGOAL (EVERY' ((map (resolve_tac lthy''' o single) @{thms ext ext iffI}) @
+        [eresolve_tac lthy''' [iff2_thm], eresolve_tac lthy''' [iff1_thm]]))))
  
     val tac = HEADGOAL (simp_tac (put_simpset HOL_basic_ss lthy''' addsimps [iff_thm]))
     val goalstate' = 

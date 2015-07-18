@@ -228,13 +228,13 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
       |> HOLogic.mk_Trueprop
 
     val tac = 
-      EVERY' [ rtac @{thm supports_finite},
+      EVERY' [ resolve_tac ctxt' @{thms supports_finite},
                resolve_tac ctxt' qsupports_thms,
                asm_simp_tac (put_simpset HOL_ss ctxt'
                 addsimps @{thms finite_supp supp_Pair finite_Un}) ]
   in
     Goal.prove ctxt' [] [] goals
-      (K (HEADGOAL (rtac qinduct THEN_ALL_NEW tac)))
+      (K (HEADGOAL (resolve_tac ctxt' [qinduct] THEN_ALL_NEW tac)))
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> Old_Datatype_Aux.split_conj_thm
     |> map zero_var_indexes
@@ -500,7 +500,7 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
       @ @{thms finite.intros finite_Un finite_set finite_fset}  
   in
     Goal.prove ctxt [] [] goal
-      (K (HEADGOAL (rtac @{thm at_set_avoiding1}
+      (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding1}
           THEN_ALL_NEW (simp_tac (put_simpset HOL_ss ctxt addsimps ss)))))
   end
 
@@ -559,7 +559,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
   let
     fun aux_tac prem bclauses =
       case (get_all_binders bclauses) of
-        [] => EVERY' [rtac prem, assume_tac ctxt]
+        [] => EVERY' [resolve_tac ctxt [prem], assume_tac ctxt]
       | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>  
           let
             val parms = map (Thm.term_of o snd) params
@@ -567,18 +567,18 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
   
             val ss = @{thms fresh_star_Pair union_eqvt fresh_star_Un}
             val (([(_, fperm)], fprops), ctxt') = Obtain.result
-              (fn ctxt' => EVERY1 [etac exE, 
+              (fn ctxt' => EVERY1 [eresolve_tac ctxt [exE], 
                             full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss), 
-                            REPEAT o (etac @{thm conjE})]) [fthm] ctxt
+                            REPEAT o (eresolve_tac ctxt @{thms conjE})]) [fthm] ctxt
   
             val abs_eq_thms = flat 
              (map (abs_eq_thm ctxt' fprops (Thm.term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
               (fn ctxt'' => EVERY1 
-                   [ REPEAT o (etac @{thm exE}), 
-                     REPEAT o (etac @{thm conjE}),
-                     REPEAT o (dtac setify),
+                   [ REPEAT o (eresolve_tac ctxt @{thms exE}), 
+                     REPEAT o (eresolve_tac ctxt @{thms conjE}),
+                     REPEAT o (dresolve_tac ctxt [setify]),
                      full_simp_tac (put_simpset HOL_basic_ss ctxt''
                       addsimps @{thms set_append set_simps})]) abs_eq_thms ctxt'
 
@@ -592,24 +592,24 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
             val tac1 = SOLVED' (EVERY'
               [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
                 rewrite_goal_tac ctxt'' (@{thms fresh_star_Un[THEN eq_reflection]}),
-                conj_tac (DETERM o resolve_tac ctxt'' fprops') ]) 
+                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' fprops') ]) 
 
             (* for equalities between constructors *)
             val tac2 = SOLVED' (EVERY' 
-              [ rtac (@{thm ssubst} OF prems),
+              [ resolve_tac ctxt [@{thm ssubst} OF prems],
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv eq_iff_thms),
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv abs_eqs),
-                conj_tac (DETERM o resolve_tac ctxt'' (@{thms refl} @ perm_bn_alphas)) ])
+                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' (@{thms refl} @ perm_bn_alphas)) ])
 
             (* proves goal "P" *)
             val side_thm = Goal.prove ctxt'' [] [] (Thm.term_of concl)
-              (K (EVERY1 [ rtac prem, RANGE [tac1, tac2] ]))
+              (K (EVERY1 [ resolve_tac ctxt'' [prem], RANGE [tac1, tac2] ]))
               |> singleton (Proof_Context.export ctxt'' ctxt)  
           in
-            rtac side_thm 1 
+            resolve_tac ctxt [side_thm] 1 
           end) ctxt
   in
-    EVERY1 [rtac qexhaust_thm, RANGE (map2 aux_tac prems bclausess)]
+    EVERY1 [resolve_tac ctxt [qexhaust_thm], RANGE (map2 aux_tac prems bclausess)]
   end
 
 
@@ -731,7 +731,7 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
           
           val thm' = cterm_instantiate (vs_ctrms ~~ assigns) thm
         in
-          rtac thm' 1
+          resolve_tac ctxt [thm'] 1
         end) ctxt
       THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
  

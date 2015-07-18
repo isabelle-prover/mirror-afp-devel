@@ -32,7 +32,7 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
 
     (* typedef *)
     val set = atom_decl_set str;
-    fun tac _ = rtac @{thm exists_eq_simple_sort} 1;
+    fun tac ctxt = resolve_tac ctxt @{thms exists_eq_simple_sort} 1;
     val ((full_tname, info as ({Rep_name, Abs_name, ...}, {type_definition, ...})), thy) =
       Typedef.add_typedef_global false (name, [], NoSyn) set NONE tac thy;
 
@@ -68,7 +68,7 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
     val sort_thm = @{thm at_class_sort} OF [type_definition, atom_def]
     val thy = lthy
       |> snd o (Local_Theory.note ((sort_thm_name, [simp_attr]), [sort_thm]))
-      |> Class.prove_instantiation_instance (K (rtac class_thm 1))
+      |> Class.prove_instantiation_instance (fn ctxt => resolve_tac ctxt [class_thm] 1)
       |> Local_Theory.exit_global;
   in
     thy

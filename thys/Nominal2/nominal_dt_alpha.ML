@@ -313,7 +313,7 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
 
     fun tac ctxt =
       HEADGOAL 
-        (DETERM o (rtac induct_thm) 
+        (DETERM o (resolve_tac ctxt [induct_thm]) 
          THEN_ALL_NEW 
            (REPEAT_ALL_NEW (FIRST' [resolve_tac ctxt @{thms TrueI conjI}, cases_tac ctxt])))
   in
@@ -360,8 +360,8 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
 
     fun tac ctxt =
       HEADGOAL 
-        (DETERM o (rtac alpha_induct_thm) 
-         THEN_ALL_NEW FIRST' [rtac @{thm TrueI}, cases_tac ctxt])
+        (DETERM o (resolve_tac ctxt [alpha_induct_thm]) 
+         THEN_ALL_NEW FIRST' [resolve_tac ctxt @{thms TrueI}, cases_tac ctxt])
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
     |> singleton (Proof_Context.export ctxt' ctxt)
@@ -392,7 +392,7 @@ fun mk_distinct_goal ty_trm_assoc neq =
   end
 
 fun distinct_tac ctxt cases_thms distinct_thms =
-  rtac notI THEN' eresolve_tac ctxt cases_thms 
+  resolve_tac ctxt [notI] THEN' eresolve_tac ctxt cases_thms 
   THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps distinct_thms)
 
 fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
@@ -427,7 +427,7 @@ fun mk_simp_rule thm =
 
 fun alpha_eq_iff_tac ctxt dist_inj intros elims =
   SOLVED' (asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)) ORELSE'
-  (rtac @{thm iffI} THEN' 
+  (resolve_tac ctxt @{thms iffI} THEN' 
     RANGE [eresolve_tac ctxt elims THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps dist_inj),
            asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)])
 
@@ -465,14 +465,15 @@ fun cases_tac intros ctxt =
   let
     val prod_simps = @{thms split_conv prod_alpha_def rel_prod_conv}
 
-    val unbound_tac = REPEAT o (etac @{thm conjE}) THEN' assume_tac ctxt  
+    val unbound_tac = REPEAT o (eresolve_tac ctxt @{thms conjE}) THEN' assume_tac ctxt  
 
     val bound_tac = 
-      EVERY' [ rtac exi_zero, 
+      EVERY' [ resolve_tac ctxt [exi_zero], 
                resolve_tac ctxt @{thms alpha_refl}, 
                asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ]
   in
-    resolve_tac ctxt intros THEN_ALL_NEW FIRST' [rtac @{thm refl}, unbound_tac, bound_tac]
+    resolve_tac ctxt intros THEN_ALL_NEW
+      FIRST' [resolve_tac ctxt @{thms refl}, unbound_tac, bound_tac]
   end
 
 fun raw_prove_refl ctxt alpha_result raw_dt_induct =
@@ -507,10 +508,11 @@ fun prem_bound_tac pred_names alpha_eqvt ctxt =
     val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_conv alphas}
   in
     EVERY' 
-      [ etac exi_neg,
+      [ eresolve_tac ctxt [exi_neg],
         resolve_tac ctxt @{thms alpha_sym_eqvt},
         asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps),
-        eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
+        eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN'
+        resolve_tac ctxt @{thms refl},
         trans_prem_tac pred_names ctxt] 
   end
 
@@ -527,7 +529,7 @@ fun raw_prove_sym ctxt alpha_result alpha_eqvt =
     fun tac ctxt = 
       resolve_tac ctxt alpha_intros THEN_ALL_NEW 
       FIRST' [assume_tac ctxt,
-        rtac @{thm sym} THEN' assume_tac ctxt,
+        resolve_tac ctxt @{thms sym} THEN' assume_tac ctxt,
         prem_bound_tac alpha_names alpha_eqvt ctxt]
   in
     alpha_prove alpha_trms (alpha_trms ~~ props) alpha_raw_induct tac ctxt 
@@ -539,7 +541,7 @@ fun raw_prove_sym ctxt alpha_result alpha_eqvt =
 (* applies cases rules and resolves them with the last premise *)
 fun ecases_tac cases = 
   Subgoal.FOCUS (fn {context = ctxt, prems, ...} =>
-    HEADGOAL (resolve_tac ctxt cases THEN' rtac (List.last prems)))
+    HEADGOAL (resolve_tac ctxt cases THEN' resolve_tac ctxt [List.last prems]))
 
 fun aatac pred_names = 
   SUBPROOF (fn {context = ctxt, prems, ...} =>
@@ -547,13 +549,13 @@ fun aatac pred_names =
   
 (* instantiates exI with the permutation p + q *)
 val perm_inst_tac =
-  Subgoal.FOCUS (fn {params, ...} => 
+  Subgoal.FOCUS (fn {context = ctxt, params, ...} => 
     let
       val (p, q) = apply2 snd (last2 params)
       val pq_inst = foldl1 (uncurry Thm.apply) [@{cterm "plus::perm => perm => perm"}, p, q]
       val exi_inst = Drule.instantiate' [SOME (@{ctyp "perm"})] [NONE, SOME pq_inst] @{thm exI}
     in
-      HEADGOAL (rtac exi_inst)
+      HEADGOAL (resolve_tac ctxt [exi_inst])
     end)
 
 fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt = 
@@ -563,13 +565,14 @@ fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
     resolve_tac ctxt intros
     THEN_ALL_NEW (asm_simp_tac (put_simpset HOL_basic_ss ctxt) THEN' 
       TRY o EVERY'   (* if binders are present *)
-        [ etac @{thm exE},
-          etac @{thm exE},
+        [ eresolve_tac ctxt @{thms exE},
+          eresolve_tac ctxt @{thms exE},
           perm_inst_tac ctxt, 
           resolve_tac ctxt @{thms alpha_trans_eqvt},
           assume_tac ctxt,
           aatac pred_names ctxt, 
-          eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN' rtac @{thm refl},
+          eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN'
+          resolve_tac ctxt @{thms refl},
           asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ])
   end
 
@@ -582,8 +585,9 @@ fun prove_trans_tac alpha_result raw_dt_thms alpha_eqvt ctxt =
       asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps raw_dt_thms) 
       THEN' TRY o non_trivial_cases_tac alpha_names alpha_intros alpha_eqvt ctxt
   in
-    EVERY' [ rtac @{thm allI}, rtac @{thm impI}, 
-             ecases_tac alpha_cases ctxt THEN_ALL_NEW all_cases ctxt ]
+    EVERY' [ resolve_tac ctxt @{thms allI},
+      resolve_tac ctxt @{thms impI}, 
+      ecases_tac alpha_cases ctxt THEN_ALL_NEW all_cases ctxt ]
   end
 
 fun prep_trans_goal alpha_trm (arg1, arg2) =
@@ -633,7 +637,7 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
       HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t) 
   in    
     Goal.prove_common ctxt NONE [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
-    (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (rtac @{thm equivpI} THEN' 
+    (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt @{thms equivpI} THEN' 
        RANGE [resolve_tac ctxt refl', resolve_tac ctxt symm', resolve_tac ctxt trans']))))
     |> chop (length alpha_trms)
   end
@@ -651,8 +655,8 @@ fun raw_prove_bn_imp_tac alpha_result ctxt =
     in
       HEADGOAL 
         (REPEAT_ALL_NEW 
-           (FIRST' [ rtac @{thm TrueI}, 
-                     rtac @{thm conjI}, 
+           (FIRST' [ resolve_tac ctxt' @{thms TrueI}, 
+                     resolve_tac ctxt' @{thms conjI}, 
                      resolve_tac ctxt' prems', 
                      resolve_tac ctxt' prems'',
                      resolve_tac ctxt' alpha_intros ]))
@@ -711,7 +715,7 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
       put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def rel_prod_conv 
       permute_prod_def prod.case prod.rec})
 
-    val tac = (TRY o REPEAT o etac @{thm exE}) THEN' asm_full_simp_tac simpset
+    val tac = (TRY o REPEAT o eresolve_tac ctxt @{thms exE}) THEN' asm_full_simp_tac simpset
   in
     alpha_prove (alpha_trms @ alpha_bn_trms) props alpha_raw_induct (K tac) ctxt
   end
@@ -728,7 +732,7 @@ fun raw_constr_rsp_tac ctxt alpha_intros simps =
     asm_full_simp_tac pre_simpset
     THEN' REPEAT o (resolve_tac ctxt @{thms allI impI})
     THEN' resolve_tac ctxt alpha_intros
-    THEN_ALL_NEW (TRY o (rtac exi_zero) THEN' asm_full_simp_tac post_simpset)
+    THEN_ALL_NEW (TRY o (resolve_tac ctxt [exi_zero]) THEN' asm_full_simp_tac post_simpset)
   end
 
 fun raw_constrs_rsp ctxt alpha_result constrs simps =
@@ -805,9 +809,9 @@ fun raw_prove_perm_bn_tac alpha_result simps ctxt =
       HEADGOAL 
         (simp_tac (put_simpset HOL_basic_ss ctxt' addsimps (simps @ prems'))
          THEN' TRY o REPEAT_ALL_NEW 
-           (FIRST' [ rtac @{thm TrueI}, 
-                     rtac @{thm conjI}, 
-                     rtac @{thm refl},
+           (FIRST' [ resolve_tac ctxt' @{thms TrueI}, 
+                     resolve_tac ctxt' @{thms conjI}, 
+                     resolve_tac ctxt' @{thms refl},
                      resolve_tac ctxt' prems', 
                      resolve_tac ctxt' prems'',
                      resolve_tac ctxt' alpha_intros ]))

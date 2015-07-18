@@ -104,7 +104,7 @@ sig
   val atomize_concl: Proof.context -> thm -> thm
 
   (* applies a tactic to a formula composed of conjunctions *)
-  val conj_tac: (int -> tactic) -> int -> tactic
+  val conj_tac: Proof.context -> (int -> tactic) -> int -> tactic
 end
 
 
@@ -450,9 +450,9 @@ fun map_thm_tac ctxt tac thm =
     val monos = Inductive.get_monos ctxt
     val simpset = put_simpset HOL_basic_ss ctxt addsimps @{thms split_def}
   in
-    EVERY [cut_facts_tac [thm] 1, etac rev_mp 1, 
+    EVERY [cut_facts_tac [thm] 1, eresolve_tac ctxt [rev_mp] 1, 
       REPEAT_DETERM (FIRSTGOAL (simp_tac simpset THEN' resolve_tac ctxt monos)),
-      REPEAT_DETERM (rtac impI 1 THEN (assume_tac ctxt 1 ORELSE tac))]
+      REPEAT_DETERM (resolve_tac ctxt [impI] 1 THEN (assume_tac ctxt 1 ORELSE tac))]
   end
 
 fun map_thm ctxt f tac thm =
@@ -485,10 +485,10 @@ fun split_conj2 names (Const (@{const_name "conj"}, _) $ f1 $ f2) =
 | split_conj2 _ _ = NONE;
 
 fun transform_prem1 ctxt names thm =
-  map_thm ctxt (split_conj1 names) (etac conjunct1 1) thm
+  map_thm ctxt (split_conj1 names) (eresolve_tac ctxt [conjunct1] 1) thm
 
 fun transform_prem2 ctxt names thm =
-  map_thm ctxt (split_conj2 names) (etac conjunct2 1) thm
+  map_thm ctxt (split_conj2 names) (eresolve_tac ctxt [conjunct2] 1) thm
 
 
 (* transforms a theorem into one of the object logic *)
@@ -499,12 +499,13 @@ fun atomize_concl ctxt thm = atomize_rule ctxt (length (Thm.prems_of thm)) thm
 
 
 (* applies a tactic to a formula composed of conjunctions *)
-fun conj_tac tac i =
+fun conj_tac ctxt tac i =
   let
      fun select (trm, i) =
        case trm of
          @{term "Trueprop"} $ t' => select (t', i)
-       | @{term "op &"} $ _ $ _ => EVERY' [rtac @{thm conjI}, RANGE [conj_tac tac, conj_tac tac]] i
+       | @{term "op &"} $ _ $ _ =>
+          EVERY' [resolve_tac ctxt @{thms conjI}, RANGE [conj_tac ctxt tac, conj_tac ctxt tac]] i
        | _ => tac i
   in
     SUBGOAL select i

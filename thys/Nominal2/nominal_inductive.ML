@@ -24,8 +24,8 @@ fun mk_cplus p q =
 fun mk_cminus p =
   Thm.apply @{cterm "uminus :: perm => perm"} p
 
-fun minus_permute_intro_tac p =
-  rtac (Drule.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE})
+fun minus_permute_intro_tac ctxt p =
+  resolve_tac ctxt [Drule.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE}]
 
 fun minus_permute_elim p thm =
   thm RS (Drule.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
@@ -191,7 +191,7 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
 
       (* for non-inductive premises *)   
       fun tac2 prm =  
-        EVERY' [ minus_permute_intro_tac p, 
+        EVERY' [ minus_permute_intro_tac ctxt' p, 
                  eqvt_stac ctxt', 
                  helper_tac false prm p ctxt' ]
 
@@ -199,7 +199,7 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
         (if member same_name Ps (real_head_of t) then tac1 prm else tac2 prm) i
     in
       EVERY1 [ eqvt_stac ctxt', 
-               rtac prem', 
+               resolve_tac ctxt' [prem'], 
                RANGE (map (SUBGOAL o select) prems) ]
     end) ctxt
 
@@ -217,8 +217,9 @@ fun fresh_thm ctxt user_thm p c concl_args avoid_trm =
     val simp = asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps ss)
   in 
     Goal.prove ctxt [] [] fresh_goal
-      (K (HEADGOAL (rtac @{thm at_set_avoiding2} 
-          THEN_ALL_NEW EVERY' [cut_facts_tac user_thm, REPEAT o etac @{thm conjE}, simp])))
+      (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding2}
+          THEN_ALL_NEW EVERY' [cut_facts_tac user_thm, REPEAT o
+            eresolve_tac ctxt @{thms conjE}, simp])))
   end
 
 val supp_perm_eq' = @{lemma "fresh_star (supp (permute p x)) q ==> permute p x == permute (q + p) x" 
@@ -244,12 +245,12 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val fthm = fresh_thm ctxt user_thm' (Thm.term_of p) (Thm.term_of c) concl_args' avoid_trm'
 
       val (([(_, q)], fprop :: fresh_eqs), ctxt') = Obtain.result
-              (K (EVERY1 [etac @{thm exE}, 
+              (K (EVERY1 [eresolve_tac ctxt @{thms exE}, 
                           full_simp_tac (put_simpset HOL_basic_ss ctxt
                             addsimps @{thms supp_Pair fresh_star_Un}),
-                          REPEAT o etac @{thm conjE},
-                          dtac fresh_star_plus,
-                          REPEAT o dtac supp_perm_eq'])) [fthm] ctxt 
+                          REPEAT o eresolve_tac ctxt @{thms conjE},
+                          dresolve_tac ctxt [fresh_star_plus],
+                          REPEAT o dresolve_tac ctxt [supp_perm_eq']])) [fthm] ctxt 
 
       val expand_conv = Conv.try_conv (Conv.rewrs_conv fresh_eqs)
       fun expand_conv_bot ctxt = Conv.bottom_conv (K expand_conv) ctxt
@@ -268,7 +269,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
 
       (* for non-inductive premises *)   
       fun tac2 prm =  
-        EVERY' [ minus_permute_intro_tac (mk_cplus q p), 
+        EVERY' [ minus_permute_intro_tac ctxt' (mk_cplus q p), 
                  eqvt_stac ctxt', 
                  helper_tac false prm (mk_cplus q p) ctxt' ]
 
@@ -279,11 +280,11 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
         (fn {context = ctxt'', ...} => 
            EVERY1 [ CONVERSION (expand_conv_bot ctxt''),
                     eqvt_stac ctxt'',
-                    rtac prem',
+                    resolve_tac ctxt'' [prem'],
                     RANGE (tac_fresh :: map (SUBGOAL o select) prems) ])
         |> singleton (Proof_Context.export ctxt' ctxt)
     in
-      rtac side_thm 1
+      resolve_tac ctxt [side_thm] 1
     end) ctxt
 
 fun case_tac ctxt Ps avoid avoid_trm intr_cvars param_trms prem user_thm concl_args =
@@ -291,17 +292,17 @@ fun case_tac ctxt Ps avoid avoid_trm intr_cvars param_trms prem user_thm concl_a
     val tac1 = non_binder_tac prem intr_cvars Ps ctxt
     val tac2 = binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt
   in 
-    EVERY' [ rtac @{thm allI}, rtac @{thm allI}, 
+    EVERY' [ resolve_tac ctxt @{thms allI}, resolve_tac ctxt @{thms allI}, 
              if null avoid then tac1 else tac2 ]
   end
 
 fun prove_sinduct_tac raw_induct user_thms Ps avoids avoid_trms intr_cvars param_trms concl_args 
-  {prems, context} =
+  {prems, context = ctxt} =
   let
     val cases_tac = 
-      map7 (case_tac context Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
+      map7 (case_tac ctxt Ps) avoids avoid_trms intr_cvars param_trms prems user_thms concl_args
   in 
-    EVERY1 [ DETERM o rtac raw_induct, RANGE cases_tac ]
+    EVERY1 [ DETERM o resolve_tac ctxt [raw_induct], RANGE cases_tac ]
   end
 
 val normalise = @{lemma "(Q --> (!p c. P p c)) ==> (!!c. Q ==> P (0::perm) c)" by simp}
