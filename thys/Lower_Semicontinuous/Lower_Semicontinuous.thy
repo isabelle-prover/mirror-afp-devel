@@ -1445,15 +1445,17 @@ lemma improper_lsc_hull:
   assumes "~(proper f)"
   shows "~(proper (lsc_hull f))"
 proof-
-{ assume "ALL x. f x = \<infinity>"
-  moreover hence "lsc f" using continuous_at_const[of f \<infinity>]
-     by (metis continuous_iff_lsc_usc lsc_def)
-  ultimately have "ALL x. (lsc_hull f) x = \<infinity>" by (metis lsc_hull_lsc)
-} hence "(ALL x. f x = \<infinity>) <-> (ALL x. (lsc_hull f) x = \<infinity>)"
-     by (metis ereal_infty_less_eq(1) lsc_hull_le)
-moreover have "(EX x. f x = -\<infinity>) --> (EX x. (lsc_hull f) x = -\<infinity>)"
-  by (metis ereal_infty_less_eq2(2) lsc_hull_le)
-ultimately show ?thesis using assms unfolding improper_iff by auto
+  {
+    assume *: "ALL x. f x = \<infinity>"
+    then have "lsc f"
+      by (metis (full_types) UNIV_I lsc_at_open lsc_def open_UNIV)
+    with * have "ALL x. (lsc_hull f) x = \<infinity>" by (metis lsc_hull_lsc)
+  }
+  hence "(ALL x. f x = \<infinity>) <-> (ALL x. (lsc_hull f) x = \<infinity>)"
+    by (metis ereal_infty_less_eq(1) lsc_hull_le)
+  moreover have "(EX x. f x = -\<infinity>) --> (EX x. (lsc_hull f) x = -\<infinity>)"
+    by (metis ereal_infty_less_eq2(2) lsc_hull_le)
+  ultimately show ?thesis using assms unfolding improper_iff by auto
 qed
 
 
