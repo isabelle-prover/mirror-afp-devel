@@ -23,7 +23,7 @@ definition nrows :: "'a^'columns^'rows => nat"
 definition ncols :: "'a^'columns^'rows => nat"
   where "ncols A = CARD('columns)"
   
-definition matrix_scalar_mult :: "'a => ('a::semiring_1) ^'n^'m => ('a::semiring_1) ^'n^'m"
+definition matrix_scalar_mult :: "'a::ab_semigroup_mult => 'a ^'n^'m => 'a ^'n^'m"
     (infixl "*k" 70)
   where "k *k A \<equiv> (\<chi> i j. k * A $ i $ j)"
 

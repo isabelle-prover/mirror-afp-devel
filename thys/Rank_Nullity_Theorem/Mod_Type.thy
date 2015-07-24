@@ -475,6 +475,10 @@ using to_nat_less_card by simp
 
 end
 
+lemma from_nat_CARD:
+  shows "from_nat (CARD('a)) = (0::'a::{mod_type})"
+  unfolding from_nat_def o_def Abs'_def by (simp add: zero_def)
+
 
 subsection{*Instantiations*}
 

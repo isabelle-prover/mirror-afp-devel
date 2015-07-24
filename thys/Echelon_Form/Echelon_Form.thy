@@ -10,54 +10,8 @@ theory Echelon_Form
 imports 
   Rings2
   "../Gauss_Jordan/Determinants2"
-  "../Cayley_Hamilton/Cayley_Hamilton"
+  "Cayley_Hamilton_Compatible"
 begin
-
-subsection{*Some previous lemmas and results*}
-
-text{*The following two lemmas should be in the Gauss-Jordan AFP development (files Code\_Matrix
-and Mod\_Type respectively).*}
-
-lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
-
-lemma from_nat_CARD:
-  shows "from_nat (CARD('a)) = (0::'a::{mod_type})"
-  unfolding from_nat_def o_def Abs'_def by (simp add: zero_def)
-
-lemma invertible_iff_is_unit':
-  fixes A::"'a::{comm_ring_1}^'n^'n"
-  shows "invertible A \<longleftrightarrow> (det A) dvd 1"
-proof 
-  assume inv_A: "invertible A"
-  obtain B where AB_mat: "A ** B = mat 1" using inv_A unfolding invertible_def by auto
-  have "1 = det (mat 1::'a^'n^'n)" unfolding det_I ..
-  also have "... = det (A ** B)" unfolding AB_mat ..
-  also have "... = det A * det B" unfolding det_mul ..
-  finally have "1 = det A * det B" by simp
-  thus "(det A) dvd 1" unfolding is_unit_def dvd_def by auto
-next
-  assume det_unit: "(det A) dvd 1"
-  from this obtain a where a: "(det A) * a = 1" unfolding dvd_def by auto
-  show "invertible A"
-  proof (unfold invertible_def, rule exI[of _ "a *ss adjugate A"], auto)
-    have *: "A ** (a *ss adjugate A) = a *ss adjugate A ** A"
-    by (metis (erased, hide_lams) adjugate_det adjugate_det_symmetric 
-      matrix_mul_assoc matrix_scalar_mat_one scalar_mat_matrix_mult_left)
-    have "A ** (a *ss adjugate A) = (a *ss (adjugate A ** A))"
-      by (metis adjugate_det adjugate_det_symmetric matrix_scalar_assoc)
-    also have "... = a *ss (det A *ss mat 1)" unfolding adjugate_det ..
-    also have "... = (a * det A) *ss mat 1" by (metis scalar_scalar_mult_assoc)
-    also have "... = 1 *ss mat 1" by (metis a mult.commute) 
-    also have "... = mat 1" by (metis one_scalar_mult_mat)
-    finally show "A ** (a *ss adjugate A) = mat 1" .
-    thus "a *ss adjugate A ** A = mat 1" unfolding * .
-  qed
-qed
-
-lemma invertible_iff_is_unit:
-  fixes A::"'a::{comm_ring_1, semiring_div}^'n^'n"
-  shows "invertible A \<longleftrightarrow> is_unit (det A)"
-  using invertible_iff_is_unit' unfolding is_unit_def .
 
 
 subsection{*Definition of Echelon Form*}

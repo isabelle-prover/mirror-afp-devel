@@ -27,7 +27,7 @@ definition "cofactorM_iarrays A = tabulate2 (nrows_iarray A) (nrows_iarray A)
 definition "adjugate_iarrays A = transpose_iarray (cofactorM_iarrays A)"
 
 lemma matrix_to_iarray_scalar_matrix_mult[code_unfold]: 
-  "matrix_to_iarray (k *ss A) = k *ssi (matrix_to_iarray A)"
+  "matrix_to_iarray (k *k A) = k *ssi (matrix_to_iarray A)"
 proof -
   have n_rw: "nrows_iarray (IArray (map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<CARD('c)])) 
     = CARD('c)" unfolding nrows_iarray_def by auto
@@ -37,9 +37,8 @@ proof -
     [0..<CARD('b)])) [0..<CARD('c)])) = CARD('b)"
     unfolding ncols_iarray_def by auto
   show ?thesis
-    unfolding matrix_to_iarray_def o_def
-    scalar_matrix_mult_def scalar_matrix_mult_iarrays_def
-    tabulate2_def vec_to_iarray_def 
+    unfolding matrix_to_iarray_def o_def matrix_scalar_mult_def scalar_matrix_mult_iarrays_def
+      tabulate2_def vec_to_iarray_def 
     by (simp add: n_rw n_rw2 n_rw3)
 qed
 
@@ -51,7 +50,7 @@ proof -
     unfolding nrows_iarray_def by auto
   have n_rw2: "ncols_iarray (IArray (map (\<lambda>x. IArray (map (\<lambda>i. A $ from_nat x $ from_nat i) 
     [0..<CARD('b)])) [0..<CARD('c)])) = CARD('b)"
-    unfolding ncols_iarray_def by auto
+    unfolding ncols_iarray_def by simp
   show ?thesis
     unfolding matrix_to_iarray_def o_def
     minorM_def minorM_iarrays_def
@@ -61,9 +60,9 @@ qed
 
 lemma matrix_to_iarray_cofactor[code_unfold]: 
   "(cofactor A i j) = cofactor_iarrays (matrix_to_iarray A) (to_nat i) (to_nat j)"
-   unfolding o_def cofactor_iarrays_def cofactor_def
+   unfolding o_def cofactor_iarrays_def cofactor_def cofactorM_def
    unfolding matrix_to_iarray_minorM[symmetric]
-   unfolding matrix_to_iarray_det_euclidean_ring[symmetric] ..
+   unfolding matrix_to_iarray_det_euclidean_ring[symmetric] by simp
 
 lemma matrix_to_iarray_cofactorM[code_unfold]: 
   "matrix_to_iarray (cofactorM A) = cofactorM_iarrays (matrix_to_iarray A)"
@@ -72,8 +71,8 @@ proof -
     [0..<CARD('b)])) [0..<CARD('b)])) = CARD('b)"
     unfolding nrows_iarray_def by simp
   show ?thesis
-    unfolding cofactorM_def cofactorM_iarrays_def tabulate2_def  
-    by (simp add: n_rw matrix_to_iarray_cofactor
+    unfolding cofactorM_iarrays_def tabulate2_def cofactorM_def
+    by (auto simp add: n_rw matrix_to_iarray_cofactor
         matrix_to_iarray_def o_def vec_to_iarray_def to_nat_from_nat_id)
 qed
 

@@ -26,4 +26,5 @@ lemma matrix_to_iarray_inverse:
   by (metis (mono_tags) inverse_matrix_code_rings matrix_to_iarray_adjugate 
       matrix_to_iarray_det_euclidean_ring matrix_to_iarray_scalar_matrix_mult 
       option.distinct(1) option.sel)
+
 end

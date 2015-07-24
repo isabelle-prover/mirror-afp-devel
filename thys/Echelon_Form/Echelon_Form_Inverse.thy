@@ -14,26 +14,39 @@ begin
 
 subsection{*Computing the inverse of matrix over rings*}
 
+lemma scalar_mult_mat: 
+  fixes x :: "'a::comm_semiring_0"
+  shows "x *k mat y = mat (x * y)"
+  by (simp add: matrix_scalar_mult_def mat_def vec_eq_iff)
+
+lemma matrix_mul_mat:
+  fixes A :: "'a::comm_semiring_1 ^ 'm ^ 'n"
+  shows "A ** mat x = x *k A"
+  by (simp add: matrix_matrix_mult_def mat_def if_distrib setsum.If_cases matrix_scalar_mult_def vec_eq_iff ac_simps)
+
 lemma invertible_imp_matrix_inv:
   assumes i: "invertible A"
-  shows "matrix_inv A = ring_inv (det A) *ss adjugate A"
+  shows "matrix_inv A = ring_inv (det A) *k adjugate A"
 proof -
-  have "A ** adjugate A = det A *ss mat 1" using adjugate_det_symmetric .
-  hence "matrix_inv A ** (A ** adjugate A) = matrix_inv A ** (det A *ss mat 1)"
+  let ?A = "adjugate A"
+  have "A ** ?A = det A *k mat 1" 
+    using mult_adjugate_det[of "from_vec A"]
+    unfolding det_sq_matrix_eq adjugate_eq to_vec_eq_iff[symmetric] 
+      to_vec_matrix_matrix_mult to_vec_from_vec 
+    by (simp add: to_vec_diag scalar_mult_mat)
+  hence "matrix_inv A ** (A ** ?A) = matrix_inv A ** (det A *k mat 1)"
     by auto
-  hence "adjugate A = det A *ss matrix_inv A"    
-    by (metis i matrix_inv_left matrix_mul_assoc matrix_scalar_mat_one 
-       one_scalar_mult_mat scalar_mat_matrix_mult_left)
-  thus "matrix_inv A = ring_inv (det A) *ss adjugate A" 
-    by (metis (erased, hide_lams) transpose_transpose i invertible_iff_is_unit matrix_mul_rid 
-        matrix_scalar_assoc matrix_transpose_mul ring_inv_is_inv1 scalar_mat_matrix_mult_left 
-        scalar_scalar_mult_assoc)
+  hence "?A = det A *k matrix_inv A"
+    unfolding matrix_mul_assoc matrix_inv_left[OF i] matrix_mul_lid scalar_mult_mat matrix_mul_mat
+    by simp
+  thus "matrix_inv A = ring_inv (det A) *k ?A"
+    by (metis (no_types, lifting) i invertible_iff_is_unit matrix_mul_assoc matrix_mul_mat
+        matrix_mul_rid ring_inv_is_inv2 scalar_mult_mat) 
 qed    
 
 lemma inverse_matrix_code_rings[code_unfold]: 
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
-  shows "inverse_matrix A = (let d=det A in if is_unit d 
-    then Some (ring_inv d *ss adjugate A) else None)"
+  shows "inverse_matrix A = (let d=det A in if is_unit d then Some (ring_inv d *k adjugate A) else None)"
   using invertible_imp_matrix_inv
   unfolding inverse_matrix_def invertible_iff_is_unit by auto
 

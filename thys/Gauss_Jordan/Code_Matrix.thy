@@ -20,9 +20,11 @@ lemmas vec.vec_nth_inverse[code abstype]
 lemma [code abstract]: "vec_nth 0 = (%x. 0)" by (metis zero_index)
 lemma [code abstract]: "vec_nth 1 = (%x. 1)" by (metis one_index)
 lemma [code abstract]: "vec_nth (a + b) =  (%i. a$i + b$i)" by (metis vector_add_component)
+lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
 lemma [code abstract]: "vec_nth (vec n) = (\<lambda>i. n)" unfolding vec_def by fastforce
 lemma [code abstract]: "vec_nth (a * b) =  (%i. a$i * b$i)" unfolding vector_mult_component by auto
 lemma [code abstract]: "vec_nth (c *s x) = (\<lambda>i. c * (x$i))" unfolding vector_scalar_mult_def by auto
+lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
 
 definition mat_mult_row 
   where "mat_mult_row m m' f = vec_lambda (%c. setsum (%k. ((m$f)$k) * ((m'$k)$c)) (UNIV :: 'n::finite set))"
