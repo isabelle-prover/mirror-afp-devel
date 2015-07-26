@@ -1473,7 +1473,7 @@ proof-
   moreover have "eventually (\<lambda>x. 0 < ln x / x powr (b / a)) at_top"
     using eventually_gt_at_top[of "1::real"] by (elim eventually_elim1) simp
   with assms have "((\<lambda>x. (ln x / x powr (b/a)) powr a) ---> 0) at_top"
-    by (intro tendsto_zero_powrI tendsto_ln_over_powr) simp_all
+    by (intro tendsto_zero_powrI tendsto_ln_over_powr) (simp_all add: eventually_elim1)
   ultimately show ?thesis by (subst tendsto_cong) simp_all
 qed
 

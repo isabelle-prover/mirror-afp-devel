@@ -31,7 +31,7 @@ locale groupsort =
   fixes merge :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   fixes g :: "'a list \<Rightarrow> 'c"
   assumes f_merge: "f x = f y \<Longrightarrow> f (merge x y) = f x"
-  assumes g_cong: "multiset_of xs = multiset_of ys \<Longrightarrow> g xs = g ys"
+  assumes g_cong: "mset xs = mset ys \<Longrightarrow> g xs = g ys"
   assumes g_merge: "f x = f y \<Longrightarrow> g [x,y] = g [merge x y]"
   assumes g_append_cong: "g xs1 = g xs2 \<Longrightarrow> g ys1 = g ys2 \<Longrightarrow> g (xs1 @ ys1) = g (xs2 @ ys2)"
 begin
@@ -97,13 +97,13 @@ private lemma filter_mset_union:
        filter_mset P A + filter_mset Q A = filter_mset (\<lambda>x. P x \<or> Q x) A"
   by (subst multiset_eq_iff) force
 
-private lemma multiset_of_sort: "multiset_of (sort xs) = multiset_of xs"
+private lemma multiset_of_sort: "mset (sort xs) = mset xs"
 proof (induction xs rule: sort.induct)
   case (goal2 x xs)
-  let ?M = "\<lambda>oper. {#y:# multiset_of xs. oper (f y) (f x)#}"
-  from goal2 have "multiset_of (sort (x#xs)) = ?M (op <) + ?M (op =) + ?M (op >) + {#x#}"
-    by (simp add: part Multiset.union_assoc multiset_of_filter)
-  also have "?M (op <) + ?M (op =) + ?M (op >) = multiset_of xs"
+  let ?M = "\<lambda>oper. {#y:# mset xs. oper (f y) (f x)#}"
+  from goal2 have "mset (sort (x#xs)) = ?M (op <) + ?M (op =) + ?M (op >) + {#x#}"
+    by (simp add: part Multiset.union_assoc mset_filter)
+  also have "?M (op <) + ?M (op =) + ?M (op >) = mset xs"
     by ((subst filter_mset_union, force)+, subst multiset_eq_iff, force)
   finally show ?case by simp
 qed simp
@@ -112,7 +112,7 @@ private lemma g_sort: "g (sort xs) = g xs"
   by (intro g_cong multiset_of_sort)
 
 private lemma set_sort: "set (sort xs) = set xs"
-  using arg_cong[OF multiset_of_sort[of xs], of "set_of"] by (simp only: set_of_multiset_of)
+  using arg_cong[OF multiset_of_sort[of xs], of "set_mset"] by (simp only: set_mset_mset)
 
 private lemma sorted_all_equal: "(\<And>x. x \<in> set xs \<Longrightarrow> x = y) \<Longrightarrow> sorted xs"
   by (induction xs) (auto simp: sorted_Cons)
