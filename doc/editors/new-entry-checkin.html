@@ -21,22 +21,20 @@ Start by making a directory <code>~/afp</code> where the different branches
 will go.
 </li>
 
-<li>To set up the release version, in that directory do (fill in 20XX and login)<br>
-<code>hg clone ssh://&lt;login&gt;@hg.code.sf.net/p/afp/afp-20XX release</code>
+<li>To set up the release version, in that directory do (fill in 20XX)<br>
+<code>hg clone ssh://hg@bitbucket.org/isa-afp/afp-20XX release</code>
 </li>
 
 <li>for development<br>
-<code>hg clone ssh://&lt;login&gt;@hg.code.sf.net/p/afp/code devel
+<code>hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel
 </code></li>
 </ul>
 
-<p>You might need to set up ssh keys on sourceforge for this to work. More information on ssh at sourceforge is available <a
-href="http://sourceforge.net/apps/trac/sourceforge/wiki/SSH%20keys">here
-[ssh keys]</a>.</p>
+<p>You might need to set up ssh keys on Bitbucket for this to work. This ca be done under "Manage account/SSH Keys".</p>
 
 <p>New submissions, changes to the web site and to admin scripts go into
-afp/release. A script automatically propagates these to the development
-branch once a day.</p>
+afp/release. Gerwin merges these into the development version within a day or
+two.</p>
 
 <p>Maintenance and changes on existing submissions all occur in afp/devel and go
 properly public with the next Isabelle release (they are only available as
@@ -81,7 +79,7 @@ end of the file). </li>
 
 <li><code>hg add</code> and <code>hg commit</code> the web site updates.</li>
 
-<li>finally, when you are happy with everything, <code>hg push</code> all changes to sourceforge. The publish script will refuse to publish if the changes aren't pushed.
+<li>finally, when you are happy with everything, <code>hg push</code> all changes to bitbucket. The publish script will refuse to publish if the changes aren't pushed.
 
 <li>to publish the changes to the web, run<br>
 <code>
@@ -90,7 +88,7 @@ cd ../admin<br>
 </code>
 <p>
 This will check out the Isabelle201X (=release) version of the archive from
-sourceforge, will run the session &lt;name&gt; to generate
+bitbucket, will run the session &lt;name&gt; to generate
 HTML, produce a <code>.tar.gz</code> for the archive and for the entry, and will update the
 web pages on the server. The script will ask before it copies, so you can check locally if everything is as you want it.
 </p></li>
