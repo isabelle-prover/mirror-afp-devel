@@ -1,11 +1,7 @@
 chapter AFP
 
-session Landau_Symbols (AFP) = HOL +
+session Landau_Symbols (AFP) = "HOL-Library" +
   options [timeout=600]
-  theories [document = false]
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Set_Algebras"
-    "~~/src/HOL/Library/Function_Algebras"
   theories
     Landau_Symbols
   document_files
