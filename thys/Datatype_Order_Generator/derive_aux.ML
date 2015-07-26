@@ -18,9 +18,6 @@ sig
   (* rulifys P1 .. Pn in a thm P1 ==> ... ==> Pn ==> Q *)
   val rulify_only_asm : Proof.context -> thm -> thm
 
-  (* instantiates a thm for given terms of given sort *)
-  val instantiate' : theory -> sort -> term list -> thm -> thm
-
 (* takes a list of implications, an induction theorem, and a tactic to handle each case,
    and delivers the major implication.
    Example: if imp_list is [([p1 x y, q1 x y], [x,y]), ([p2 x' y', q2 x' y'], [x',y'])]
@@ -127,9 +124,6 @@ fun rulify_only_asm ctxt thm =
   |> Object_Logic.rulify ctxt (* rulify everything, i.e., by preprocessing only the assms *)
   |> (fn conj => (@{thm conjunct2} OF [conj])) (* drop conjunction again *)
 
-fun instantiate' thy _ vars =
-  Ctr_Sugar_Util.cterm_instantiate_pos (map (Thm.global_cterm_of thy #> SOME) vars)
-
 fun permute_for_ind_thm ps xs ind_thm =
   let
     val n = length ps
@@ -158,12 +152,13 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
     val ps = xs ~~ imps
       |> map (fn (x,imp) => lambda x imp)
     val insts = permute_for_ind_thm ps xs ind_thm
-    val ind_thm_inst = instantiate' thy sort insts ind_thm
-    val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
     val xs_strings = map (dest_Free #> fst) xs
     val conjunctive_thm = Goal.prove_global_future thy xs_strings [] ind_term
       (fn {context = ctxt, ...} =>
-        (
+        let
+          val ind_thm_inst = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) insts) ind_thm
+          val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
+        in
           (DETERM o strip_cases o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) [])
           THEN_ALL_NEW
           (fn i => Subgoal.SUBPROOF
@@ -181,7 +176,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
               end
             ) ctxt i
           )
-        ) 1
+        end 1
       )
     (* extract first conjunct *)
     val first_conj = if length imp_list > 1 then @{thm conjunct1} OF [conjunctive_thm] else conjunctive_thm

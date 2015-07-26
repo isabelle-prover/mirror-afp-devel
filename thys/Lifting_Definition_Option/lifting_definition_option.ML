@@ -221,8 +221,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val t_fresh = subst_atomic_types (ty_vars ~~ fresh_ty_vars)
         val false_wit = HOLogic.mk_prod (Const (@{const_name undefined}, base_ty), @{term False})
         val ex_thm =
-          Ctr_Sugar_Util.cterm_instantiate_pos
-            [NONE, SOME (Thm.cterm_of lthy (t_fresh false_wit))] @{thm exI}
+          infer_instantiate' lthy [NONE, SOME (Thm.cterm_of lthy (t_fresh false_wit))] @{thm exI}
         val imp = HOLogic.mk_imp (c, P $ b)
         val lam = lambda b (lambda c imp)
         val lam_ty = Term.fastype_of lam
@@ -368,7 +367,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
 
           val eq = HOLogic.mk_eq (r_of_is, insert_abs abs fin_rhs) |> HOLogic.mk_Trueprop
           val pre_thm = @{thm valid_definition}
-            |> Ctr_Sugar_Util.cterm_instantiate_pos
+            |> infer_instantiate' lthy
              [SOME (Thm.cterm_of lthy abs),
               SOME (Thm.cterm_of lthy base),
               SOME (Thm.cterm_of lthy r_of_is), NONE,
