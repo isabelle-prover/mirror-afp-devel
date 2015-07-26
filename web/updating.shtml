@@ -54,9 +54,9 @@
     In the background, the archive maintainers evolve all entries to
     be up to date with the current Isabelle development
     version. Authors can contribute changes to this version which is
-    available over <a
-    href="http://sourceforge.net/projects/afp/develop">sourceforge
-    mercurial</a> or as tar.gz package on the <a
+    available as a <a
+    href="https://bitbucket.org/isa-afp/afp-devel/">bitbucket
+    mercurial repository</a> or as tar.gz package on the <a
     href="download.shtml">download page</a>.
     </li>
     <li>
@@ -76,7 +76,7 @@
     </p>
     <p>
     To achieve this, you should base your changes on the <a
-    href="http://sourceforge.net/projects/afp/develop">mercurial 
+    href="https://bitbucket.org/isa-afp/afp-devel/">mercurial 
     development version</a>
     of your AFP entry and test it against the current <a
     href="http://isabelle.in.tum.de/devel/">Isabelle development
