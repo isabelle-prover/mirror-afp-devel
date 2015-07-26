@@ -8,10 +8,13 @@ current release branch and development version.
 
 -   Start by making a directory `~/afp` where the different branches
     will go.
--   To set up the release version, in that directory do (fill in 20XX)\
-     `hg clone ssh://hg@bitbucket.org/isa-afp/afp-20XX release`
--   for development\
-     `hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel devel`
+-   To set up the release version, in that directory do (fill in 20XX)
+
+        hg clone ssh://hg@bitbucket.org/isa-afp/afp-20XX release
+
+-   for development
+    
+        hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel devel
 
 You might need to set up ssh keys on Bitbucket for this to work. This can
 be done under "Manage account/SSH Keys".
@@ -68,7 +71,7 @@ Everything happens in the release branch `afp/release`.
          cd ../admin ./publish -r Isabelle201X <name>
 
     This will check out the Isabelle201X (=release) version of the
-    archive from bitbucket, will run the session \<name\> to generate
+    archive from bitbucket, will run the session `name` to generate
     HTML, produce a `.tar.gz` for the archive and for the entry, and
     will update the web pages on the server. The script will ask before
     it copies, so you can check locally if everything is as you want it.

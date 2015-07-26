@@ -7,7 +7,8 @@ Bitbucket](https://bitbucket.org), and ask one of the
 [editors](http://afp.sourceforge.net/about.shtml#editors) to add you to
 the AFP project.
 
-**Setup:**\
+**Setup:**
+
  Check out the archive from the mercurial repository with:
 
     hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel
@@ -17,7 +18,8 @@ additional files are located. You can register an ssh key for your
 account at Bitbucket under "Manage Account/SSH keys" from the avatar
 icon on the top right of the Bitbucket interface.
 
-**Maintenance:**\
+**Maintenance:**
+
  Maintaining an entry means making sure that this entry works with the
 current Isabelle development version. Maintainers are not supposed to
 check in and push new entries. New entries must be reviewed and formally
@@ -67,7 +69,8 @@ an automatic email notification each time your entry breaks (see below).
     this log should link to the relevant hg change set(s). See existing
     change logs like the one for JinjaThreads for examples.
 
-**Email Notification:**\
+**Email Notification:**
+
  You can receive an automatic email notification if entry `x` breaks by
 editing the file `afp-devel/thys/x/config`:
 
