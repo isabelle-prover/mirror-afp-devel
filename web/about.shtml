@@ -37,8 +37,8 @@ and larger scientific developments, mechanically checked in the theorem prover
 of a scientific journal. <a href="submitting.shtml">Submissions</a> are
 refereed.</p>
 
-<p>The archive is hosted by <a href="http://sourceforge.net">sourceforge</a> to
-provide continuity and easy free access to archive entries. The entries are
+<p>The archive repository is hosted on <a href="https://bitbucket.org">Bitbucket</a> to
+provide easy free access to archive entries. The entries are
 tested and maintained continuously against the current stable release of
 Isabelle. Older versions of archive entries will remain available.</p>
 
@@ -46,7 +46,7 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <p><a name="editors">The editors of the archive are</a></p>
 <ul>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
-    <a href="http://www.nicta.com.au">National ICT Australia</a></li>
+    <a href="http://www.nicta.com.au">NICTA</a></li>
 <li><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>,
     <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>,

@@ -15,7 +15,7 @@ ISABELLE_VERSION=Isabelle$VERSION
 
 DEST=afp@web.sourceforge.net:htdocs/
 FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
-SRC=hg.code.sf.net/p/afp/$AFP_VERSION
+SRC=ssh://hg@bitbucket.org/isa-afp/$AFP_VERSION
 
 if [ -n "$SF_LOGIN" ]; then
     LN=$SF_LOGIN
@@ -25,7 +25,6 @@ fi
 
 DEST=$LN,$DEST
 FILES=$LN@$FILES
-SRC=ssh://$LN@$SRC
 
 EXPORT_PRE=afp
 HG=hg
