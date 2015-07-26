@@ -255,20 +255,14 @@ fun generalise ctxt ct = gen_thm (decomp ctxt) (Thm.term_of ct,ct);
 *)
 fun init ct = Drule.instantiate' [] [SOME ct] protectRefl;
 
-local
-val meta_spec_protect = @{thm meta_spec_protect};
-val cx = meta_spec_protect |> Thm.cprop_of |> Thm.dest_implies |> snd |> Thm.dest_comb |> snd |> 
-         Thm.dest_comb |> snd
-fun init ct = Drule.instantiate' [] [SOME ct] protectRefl;
-in
 fun generalise_over_tac ctxt P i st = 
   let 
-    val t = List.nth (Thm.prems_of st,i-1);
+    val t = List.nth (Thm.prems_of st, i - 1);  (* FIXME !? *)
   in (case P t of
        SOME t' =>
         let
           val ct = Thm.cterm_of ctxt t';
-          val meta_spec_protect' = cterm_instantiate [(cx,ct)] meta_spec_protect;
+          val meta_spec_protect' = infer_instantiate ctxt [(("x", 0), ct)] @{thm meta_spec_protect};
         in 
           (init (Thm.adjust_maxidx_cterm 0 (List.nth (Drule.cprems_of st, i - 1)))
            |> resolve_tac ctxt [meta_spec_protect'] 1
@@ -277,8 +271,7 @@ fun generalise_over_tac ctxt P i st =
                         (false, Goal.conclude st', Thm.nprems_of st') i st))
         end
       | NONE => no_tac st)
-  end
-end
+  end;
 
 fun generalise_over_all_states_tac ctxt i =
   REPEAT (generalise_over_tac ctxt SplitState.abs_state i);

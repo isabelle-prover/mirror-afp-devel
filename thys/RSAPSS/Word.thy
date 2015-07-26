@@ -2262,9 +2262,9 @@ simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
       fun proc (Const(@{const_name bv_to_nat},_) $
         (Const(@{const_name Cons},_) $ Const(@{const_name One},_) $ t)) =
             if vec_is_usable t then
-              SOME (Drule.cterm_instantiate
-                [(Thm.cterm_of ctxt (Var(("bs",0),Type(@{type_name list},[Type(@{type_name bit},[])]))),
-                  Thm.cterm_of ctxt t)] @{thm fast_bv_to_nat_def})
+              SOME
+                (infer_instantiate ctxt
+                  [(("bs", 0), Thm.cterm_of ctxt t)] @{thm fast_bv_to_nat_def})
             else NONE
         | proc _ = NONE
     in proc (Thm.term_of ct) end

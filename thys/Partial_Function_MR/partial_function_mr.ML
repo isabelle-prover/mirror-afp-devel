@@ -256,11 +256,9 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
     val glob_simp_thm = Goal.prove lthy [glob_x_name] [] eq (fn {prems = _, context = ctxt} => let
       (* TODO: is there some easier way to write 'simp_thm = thm[of glob_x]' *)
-      val schematic_x = Thm.prop_of thm |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst |> Term.dest_comb |> snd
-      val cert = Thm.cterm_of ctxt
-      val cschematic_x = cert schematic_x
-      val cglob_x = cert glob_x
-      val simp_thm = Drule.cterm_instantiate [(cschematic_x,cglob_x)] thm
+      val schematic_x =
+        Thm.prop_of thm |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst |> Term.dest_comb |> snd
+      val simp_thm = infer_instantiate ctxt [(#1 (dest_Var schematic_x), Thm.cterm_of ctxt glob_x)] thm
       in (
         unfold_tac ctxt [simp_thm]
       THEN unfold_tac ctxt fdefs

@@ -30,9 +30,7 @@ ML {*
       @{mpat "Trueprop (?f _=_)"} => 
         let
           val cf = cert f
-          val r = cterm_instantiate 
-            [(@{cpat "?f :: ?'a \<Rightarrow> ?'b"},cf)] 
-            @{thm mk_record_simp_thm}
+          val r = infer_instantiate ctxt [(("f", 0), cf)] @{thm mk_record_simp_thm}
           val r = r OF [thm]
         in r end
     | _ => raise THM("",~1,[thm])
