@@ -78,6 +78,7 @@
 <a href="entries/Gauss_Jordan.shtml">Gauss_Jordan</a> &nbsp;
 <a href="entries/Echelon_Form.shtml">Echelon_Form</a> &nbsp;
 <a href="entries/QR_Decomposition.shtml">QR_Decomposition</a> &nbsp;
+<a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 <a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
@@ -207,6 +208,7 @@
 <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
+<a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
 </div>
 
 <h3>Refinement</h3>
@@ -308,6 +310,7 @@
 <a href="entries/VectorSpace.shtml">VectorSpace</a> &nbsp;
 <a href="entries/Echelon_Form.shtml">Echelon_Form</a> &nbsp;
 <a href="entries/QR_Decomposition.shtml">QR_Decomposition</a> &nbsp;
+<a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
@@ -324,6 +327,8 @@
 <a href="entries/Sturm_Sequences.shtml">Sturm_Sequences</a> &nbsp;
 <a href="entries/Sturm_Tarski.shtml">Sturm_Tarski</a> &nbsp;
 <a href="entries/Special_Function_Bounds.shtml">Special_Function_Bounds</a> &nbsp;
+<a href="entries/Landau_Symbols.shtml">Landau_Symbols</a> &nbsp;
+<a href="entries/Akra_Bazzi.shtml">Akra_Bazzi</a> &nbsp;
 </div>
 
 <h3>Probability Theory</h3>

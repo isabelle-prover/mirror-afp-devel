@@ -24,42 +24,37 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">Q</font>R
-<font class="first">D</font>ecomposition
+<h1><font class="first">H</font>ermite
+<font class="first">N</font>ormal
+<font class="first">F</font>orm
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">QR Decomposition</td></tr>
+        <td class="data" width="80%">Hermite Normal Form</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="http://www.unirioja.es/cu/jodivaso">Jose Divasón</a> and <a href="http://www.unirioja.es/cu/jearansa">Jesús Aransay</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-02-12</td></tr>
+        <td class="data">2015-07-07</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-QR decomposition is an algorithm to decompose a real matrix A into the product of two other matrices Q and R, where Q is orthogonal and R is invertible and upper triangular. The algorithm is useful for the least squares problem; i.e., the computation of the best approximation of an unsolvable system of linear equations. As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. The development relies, among others, on the AFP entry "Implementing field extensions of the form Q[sqrt(b)]" by René Thiemann, which allows execution of the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
-        </td></tr>
-
-    <tr><td class="datahead" valign="top">Change history:</td>
-        <td class="abstract">
-
-[2015-06-18]: The second part of the Fundamental Theorem of Linear Algebra has been generalized to more general inner product spaces.
+Hermite Normal Form is a canonical matrix analogue of Reduced Echelon Form, but involving matrices over more general rings. In this work we formalise an algorithm to compute the Hermite Normal Form of a matrix by means of elementary row operations, taking advantage of the Echelon Form AFP entry. We have proven the correctness of such an algorithm and refined it to immutable arrays. Furthermore, we have also formalised the uniqueness of the Hermite Normal Form of a matrix. Code can be exported and some examples of execution involving integer matrices and polynomial matrices are presented as well.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{QR_Decomposition-AFP,
+			<pre>@article{Hermite-AFP,
   author  = {Jose Divasón and Jesús Aransay},
-  title   = {QR Decomposition},
+  title   = {Hermite Normal Form},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = jul,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/QR_Decomposition.shtml},
+  note    = {\url{http://afp.sf.net/entries/Hermite.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -79,7 +74,7 @@ QR decomposition is an algorithm to decompose a real matrix A into the product o
 
 <p></p>
 
-<!--#set var="name" value="QR_Decomposition" -->
+<!--#set var="name" value="Hermite" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -106,10 +101,7 @@ QR decomposition is an algorithm to decompose a real matrix A into the product o
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-02-13.tar.gz">afp-<!--#echo var="name" -->-2015-02-13.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -12,7 +12,7 @@ abstract =
   logics. This proof document supports an arXiv article that formalises the
   basic algebra of multirelations and proposes axiom systems for them,
   ranging from weak bi-monoids to weak bi-quantales.
-  
+
 
 [Noninterference_Generic_Unwinding]
 title = The Generic Unwinding Theorem for CSP Noninterference Security
@@ -29,7 +29,7 @@ abstract =
   more straightforward, there is a need of some sufficient condition for security
   such that just individual actions, rather than unbounded sequences of actions,
   have to be considered.
-  </p><p>  
+  </p><p>
   By extending previous results applying to transitive noninterference policies,
   Rushby has proven an unwinding theorem that provides a sufficient condition of
   this kind in the general case of a possibly intransitive policy. This condition
@@ -71,7 +71,7 @@ abstract =
   of some sufficient condition for security such that just individual accepted and
   refused events, rather than unbounded sequences and sets of events, have to be
   considered.
-  </p><p>  
+  </p><p>
   Of course, if such a sufficient condition were necessary as well, it would be
   even more valuable, since it would permit to prove not only that a process is
   secure by verifying that the condition holds, but also that a process is not
@@ -107,7 +107,7 @@ abstract =
   split into sublists alternately extracted from the other two ones, whatever
   is the criterion for extracting an item from either one list or the other
   in each step.
-  </p><p>  
+  </p><p>
   This paper enriches Hoare's definition by identifying such criterion with
   the truth value of a predicate taking as inputs the head and the tail of
   the first list. This enhanced "interleaves" predicate turns out to permit
@@ -148,7 +148,7 @@ abstract =
   <p>
   This development accompanies the PLDI 2015 paper of the same name.
   </p>
-  
+
 [ConcurrentIMP]
 title = Concurrent IMP
 author = Peter Gammie <http://peteg.org/>
@@ -419,7 +419,7 @@ abstract =
   both functional correctness and, more interestingly, safety (i.e. the
   transformation does not increase allocation).
   <p>
-  We use syntax and the denotational semantics from the entry 
+  We use syntax and the denotational semantics from the entry
   "Launchbury", where we formalized Launchbury's natural semantics for
   lazy evaluation.
   <p>
@@ -521,19 +521,19 @@ abstract = We provide a framework for program and data refinement in Isabelle/HO
 extra-history =
   Change history:
   [2012-04-23] Introduced ordered FOREACH loops<br>
-  [2012-06] New features: 
-                REC_rule_arb and RECT_rule_arb allow for generalizing over variables. 
+  [2012-06] New features:
+                REC_rule_arb and RECT_rule_arb allow for generalizing over variables.
                 prepare_code_thms - command extracts code equations for recursion combinators.<br>
   [2012-07] New example: Nested DFS for emptiness check of Buchi-automata with witness.<br>
-            New feature: 
+            New feature:
                 fo_rule method to apply resolution using first-order matching. Useful for arg_conf, fun_cong.<br>
   [2012-08] Adaptation to ICF v2.<br>
   [2012-10-05] Adaptations to include support for Automatic Refinement Framework.<br>
   [2013-09] This entry now depends on Automatic Refinement<br>
   [2014-06] New feature: vc_solve method to solve verification conditions.
             Maintenace changes: VCG-rules for nfoldli, improved setup for FOREACH-loops.<br>
-  [2014-07] Now defining recursion via flat domain. Dropped many single-valued prerequisites. 
-            Changed notion of data refinement. In single-valued case, this matches the old notion. 
+  [2014-07] Now defining recursion via flat domain. Dropped many single-valued prerequisites.
+            Changed notion of data refinement. In single-valued case, this matches the old notion.
             In non-single valued case, the new notion allows for more convenient rules.
             In particular, the new definitions allow for projecting away ghost variables as a refinement step.<br>
   [2014-11] New features: le-or-fail relation (leof), modular reasoning about loop invariants.
@@ -556,7 +556,7 @@ abstract = We present the Autoref tool for Isabelle/HOL, which automatically
   This AFP-entry provides the basic tool, which is then used by the
   Refinement and Collection Framework to provide automatic data refinement for
   the nondeterminism monad and various collection datastructures.
-  
+
 [PseudoHoops]
 title = Pseudo Hoops
 author = George Georgescu <>, Laurentiu Leustean <>, Viorel Preoteasa <http://users.abo.fi/vpreotea/>
@@ -1215,7 +1215,7 @@ extra-history =
                           map_image_filter, map_value_image_filter
                 Some maintenance changes<br>
   [2012-04-25]: New iterator foundation by Tuerk. Various maintenance changes.<br>
-  [2012-08]: Collections V2. New features: Polymorphic iterators. Generic algorithm instantiation where required. Naming scheme changed from xx_opname to xx.opname. 
+  [2012-08]: Collections V2. New features: Polymorphic iterators. Generic algorithm instantiation where required. Naming scheme changed from xx_opname to xx.opname.
                 A compatibility file CollectionsV1 tries to simplify porting of existing theories, by providing old naming scheme and the old monomorphic iterator locales.<br>
   [2013-09]: Added Generic Collection Framework based on Autoref. The GenCF provides: Arbitrary nesting, full integration with Autoref.<br>
   [2014-06]: Maintenace changes to GenCF: Optimized inj_image on list_set. op_set_cart (Cartesian product). big-Union operation. atLeastLessThan - operation ({a..&lt;b})<br>
@@ -1276,7 +1276,7 @@ title = Deriving class instances for datatypes
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2015-03-11
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
   We provide a framework for registering automatic methods
   to derive class instances of datatypes,
   as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
@@ -1917,6 +1917,24 @@ date = 2005-06-20
 license = LGPL
 topic = Computer Science/Programming Languages/Misc
 abstract = This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
+
+[Case_Labeling]
+title = Generating Cases from Labeled Subgoals
+author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
+date = 2015-07-21
+topic = Computer Science/Programming Languages/Misc
+abstract =
+ Isabelle/Isar provides named cases to structure proofs. This article
+ contains an implementation of a proof method <tt>casify</tt>, which can
+ be used to easily extend proof tools with support for named cases. Such
+ a proof tool must produce labeled subgoals, which are then interpreted
+ by <tt>casify</tt>.
+ <p>
+ As examples, this work contains verification condition generators
+ producing named cases for three languages: The Hoare language from
+ <tt>HOL/Library</tt>, a monadic language for computations with failure
+ (inspired by the AutoCorres tool), and a language of conditional
+  expressions. These VCGs are demonstrated by a number of example programs.
 
 [HotelKeyCards]
 title = Hotel Key Card System
@@ -2982,6 +3000,30 @@ date = 2014-08-29
 topic = Mathematics/Analysis
 abstract = This development proves upper and lower bounds for several familiar real-valued functions. For sin, cos, exp and sqrt, it defines and verifies infinite families of upper and lower bounds, mostly based on Taylor series expansions. For arctan, ln and exp, it verifies a finite collection of upper and lower bounds, originally obtained from the functions' continued fraction expansions using the computer algebra system Maple. A common theme in these proofs is to take the difference between a function and its approximation, which should be zero at one point, and then consider the sign of the derivative. The immediate purpose of this development is to verify axioms used by MetiTarski, an automatic theorem prover for real-valued special functions. Crucial to MetiTarski's operation is the provision of upper and lower bounds for each function of interest.
 
+[Landau_Symbols]
+title = Landau Symbols
+author = Manuel Eberl <https://in.tum.de/~eberlm>
+date = 2015-07-14
+topic = Mathematics/Analysis
+abstract = This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
+
+[Akra_Bazzi]
+title = The Akra-Bazzi theorem and the Master theorem 
+author = Manuel Eberl <https://in.tum.de/~eberlm>
+date = 2015-07-14
+topic = Mathematics/Analysis
+abstract = This article contains a formalisation of the Akra-Bazzi method
+ based on a proof by Leighton. It is a generalisation of the well-known
+ Master Theorem for analysing the complexity of Divide & Conquer algorithms.
+ We also include a generalised version of the Master theorem based on the
+ Akra-Bazzi theorem, which is easier to apply than the Akra-Bazzi theorem
+ itself.
+ <p>
+ Some proof methods that facilitate applying the Master theorem are also
+ included. For a more detailed explanation of the formalisation and the
+ proof methods, see the accompanying paper (publication forthcoming).
+depends-on = Landau_Symbols
+
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
@@ -3005,6 +3047,13 @@ abstract = QR decomposition is an algorithm to decompose a real matrix A into th
 extra-history =
   Change history:
   [2015-06-18]: The second part of the Fundamental Theorem of Linear Algebra has been generalized to more general inner product spaces.
+
+[Hermite]
+title = Hermite Normal Form
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
+topic = Computer Science/Algorithms, Mathematics/Algebra
+date = 2015-07-07
+abstract = Hermite Normal Form is a canonical matrix analogue of Reduced Echelon Form, but involving matrices over more general rings. In this work we formalise an algorithm to compute the Hermite Normal Form of a matrix by means of elementary row operations, taking advantage of the Echelon Form AFP entry. We have proven the correctness of such an algorithm and refined it to immutable arrays. Furthermore, we have also formalised the uniqueness of the Hermite Normal Form of a matrix. Code can be exported and some examples of execution involving integer matrices and polynomial matrices are presented as well.
 
 [Imperative_Insertion_Sort]
 title = Imperative Insertion Sort
