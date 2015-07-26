@@ -8,7 +8,7 @@ The main development version of the AFP repository is hosted at
 
 If you are an AFP author or Isabelle maintainer, you can get push access to
 this repository by sending a request, including your bitbucket login, to
-<mailto:afp-submit@in.tum.de>
+`afp-submit at in.tum.de`
 
 Guidelines for maintaining entries can be found in the `doc/` directory.
 
