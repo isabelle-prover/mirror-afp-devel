@@ -766,7 +766,8 @@ proof-
     fix x i assume i: "i < k" and x: "x \<ge> x\<^sub>1"
     let ?m = "min 1 (min ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
     have "min 1 ((bs!i + (hs ! i) x / x) powr (p+1)) \<ge> min 1 (min ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
-      apply (insert x i x0_le_x1 x1_pos step_pos b_pos, rule min.mono, simp, cases "p + 1 \<ge> 0")
+      apply (insert x i x0_le_x1 x1_pos step_pos b_pos[OF b_in_bs[OF i]], 
+             rule min.mono, simp, cases "p + 1 \<ge> 0")
       apply (rule order.trans[OF min.cobounded1 powr_mono2[OF _ _ x0_hb_bound4']], simp_all add: field_simps) []
       apply (rule order.trans[OF min.cobounded2 powr_mono2'[OF _ _ x0_hb_bound5]], simp_all add: field_simps) []
       done
@@ -1037,7 +1038,8 @@ proof-
     let ?m = "max 1 (max ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
     from i x have "c3 \<le> c1*((1-bs!i)/2) / ?m" unfolding c3_def by (intro Min.coboundedI) auto
     also have "max 1 ((bs!i + (hs ! i) x / x) powr (p+1)) \<le> max 1 (max ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
-      apply (insert x i x0_le_x1 x1_pos step_pos b_pos, rule max.mono, simp, cases "p + 1 \<ge> 0")
+      apply (insert x i x0_le_x1 x1_pos step_pos[OF i x] b_pos[OF b_in_bs[OF i]], 
+             rule max.mono, simp, cases "p + 1 \<ge> 0")
       apply (rule order.trans[OF powr_mono2[OF _ _ x0_hb_bound5] max.cobounded2], simp_all add: field_simps) []
       apply (rule order.trans[OF powr_mono2'[OF _ _ x0_hb_bound4'] max.cobounded1], simp_all add: field_simps) []
       done
