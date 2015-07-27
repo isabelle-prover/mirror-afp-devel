@@ -105,8 +105,6 @@ ML {*
     val import_cterms: bool -> cterm list -> Proof.context -> 
       cterm list * Proof.context
 
-    val cterm_instantiate': cterm option list -> thm -> thm
-
     val subsume_sort: ('a -> term) -> theory -> 'a list -> 'a list
     val subsume_sort_gen: ('a -> term) -> Context.generic 
       -> 'a list -> 'a list
@@ -451,32 +449,6 @@ ML {*
       val (ts', ctxt') = Variable.import_terms is_open ts ctxt
       val cts' = map (Thm.cterm_of ctxt) ts'
     in (cts', ctxt') end
-
-
-    (*
-      Instantiate variables by left-to-right order of occurrence, 
-      inferring type instantiations
-    *)
-    fun cterm_instantiate' instl thm = let
-      fun err msg =
-        raise TERM ("instantiate': " ^ msg,
-          map_filter (map_option Thm.term_of) instl);
-
-      fun inst_of (v, ct) =
-        (Thm.global_cterm_of (Thm.theory_of_cterm ct) (Var v), ct)
-          handle TYPE (msg, _, _) => err msg;
-
-      fun zip_vars xs ys =
-        zip_options xs ys handle ListPair.UnequalLengths =>
-          err "more instantiations than variables in thm";
-
-      val vars = rev (Thm.fold_terms Term.add_vars thm [])
-      val insts = zip_vars vars instl |> map inst_of
-
-      val thm' = cterm_instantiate insts thm
-    in 
-      thm' 
-    end
 
 
     (* Order a list of items such that more specific items come
