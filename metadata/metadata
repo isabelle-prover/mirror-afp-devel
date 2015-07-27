@@ -1916,24 +1916,6 @@ license = LGPL
 topic = Computer Science/Programming Languages/Misc
 abstract = This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
 
-[Case_Labeling]
-title = Generating Cases from Labeled Subgoals
-author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
-date = 2015-07-21
-topic = Computer Science/Programming Languages/Misc
-abstract =
- Isabelle/Isar provides named cases to structure proofs. This article
- contains an implementation of a proof method <tt>casify</tt>, which can
- be used to easily extend proof tools with support for named cases. Such
- a proof tool must produce labeled subgoals, which are then interpreted
- by <tt>casify</tt>.
- <p>
- As examples, this work contains verification condition generators
- producing named cases for three languages: The Hoare language from
- <tt>HOL/Library</tt>, a monadic language for computations with failure
- (inspired by the AutoCorres tool), and a language of conditional
-  expressions. These VCGs are demonstrated by a number of example programs.
-
 [HotelKeyCards]
 title = Hotel Key Card System
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
@@ -3063,3 +3045,21 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexand
 date = 2014-10-10
 topic = Computer Science/Functional Programming
 abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://afp.sourceforge.net/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
+
+[Case_Labeling]
+title = Generating Cases from Labeled Subgoals
+author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
+date = 2015-07-21
+topic = Tools, Computer Science/Programming Languages/Misc
+abstract =
+ Isabelle/Isar provides named cases to structure proofs. This article
+ contains an implementation of a proof method <tt>casify</tt>, which can
+ be used to easily extend proof tools with support for named cases. Such
+ a proof tool must produce labeled subgoals, which are then interpreted
+ by <tt>casify</tt>.
+ <p>
+ As examples, this work contains verification condition generators
+ producing named cases for three languages: The Hoare language from
+ <tt>HOL/Library</tt>, a monadic language for computations with failure
+ (inspired by the AutoCorres tool), and a language of conditional
+  expressions. These VCGs are demonstrated by a number of example programs.
