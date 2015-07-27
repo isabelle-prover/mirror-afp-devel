@@ -137,7 +137,7 @@ fun register_equality_of tyco lthy =
   let 
     val (T,_) = typ_and_vs_of_typname (Proof_Context.theory_of lthy) tyco @{sort type}
     val comp = HOLogic.eq_const T
-    val comp_thm = Drule.instantiate' [SOME (Thm.ctyp_of lthy T)] 
+    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)] 
       [] @{thm eq_equality}
   in register_foreign_equality T comp comp_thm lthy end
 

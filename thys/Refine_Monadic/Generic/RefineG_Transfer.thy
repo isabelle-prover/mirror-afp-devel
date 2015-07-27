@@ -116,7 +116,7 @@ structure RefineG_Transfer = struct
         
         val rl = @{thm REFINEG_TRANSFER_ALIGNI}
           |> Thm.incr_indexes (Thm.maxidx_of st + 1)
-          |> instantiate' [NONE,SOME cT] [NONE,SOME c]
+          |> Thm.instantiate' [NONE,SOME cT] [NONE,SOME c]
         (*val _ = tracing (@{make_string} rl)*)
       in
         resolve_tac ctxt [rl] i st

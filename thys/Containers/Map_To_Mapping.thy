@@ -73,7 +73,7 @@ val map_apply_simproc =
         val cTx = Thm.ctyp_of ctxt (fastype_of x);
         val cts = map (SOME o Thm.cterm_of ctxt) [f, x];
       in
-        SOME (Drule.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
+        SOME (Thm.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
       end
     | _ => NONE);
 *}

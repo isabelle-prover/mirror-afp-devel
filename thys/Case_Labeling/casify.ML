@@ -286,7 +286,7 @@ fun prod_case_conv ctxt =
     let
       val insts = [NONE, SOME x, SOME y]
       val typ_insts = map (Option.map Thm.ctyp_of_cterm) insts
-      val th = Drule.instantiate' typ_insts insts prod_case_th
+      val th = Thm.instantiate' typ_insts insts prod_case_th
     in Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv th)) ctxt ct end
   ) ctxt) ctxt
 

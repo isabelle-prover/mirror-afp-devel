@@ -1860,11 +1860,11 @@ fun gen_call_rec_rule ctxt specs_name n rule =
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
-           instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
-           |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
-                  addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
-                            image_Un,image_Un_single_simp] )
-           |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
+       Thm.instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
+       |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
+              addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
+                        image_Un,image_Un_single_simp] )
+       |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
 

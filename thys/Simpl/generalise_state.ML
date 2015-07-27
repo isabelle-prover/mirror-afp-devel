@@ -253,7 +253,7 @@ fun generalise ctxt ct = gen_thm (decomp ctxt) (Thm.term_of ct,ct);
   -------- (init)
   #C ==> #C
 *)
-fun init ct = Drule.instantiate' [] [SOME ct] protectRefl;
+fun init ct = Thm.instantiate' [] [SOME ct] protectRefl;
 
 fun generalise_over_tac ctxt P i st = 
   let 

@@ -221,7 +221,7 @@ ML {*
       val fT = fastype_of f |> Thm.ctyp_of ctxt
       val f = Thm.cterm_of ctxt f
       val I = Thm.cterm_of ctxt I
-      val thm = Drule.instantiate' [SOME fT] [SOME f, SOME I] @{thm itypeI}
+      val thm = Thm.instantiate' [SOME fT] [SOME f, SOME I] @{thm itypeI}
     in
       thm
     end

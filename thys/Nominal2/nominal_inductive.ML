@@ -25,10 +25,10 @@ fun mk_cminus p =
   Thm.apply @{cterm "uminus :: perm => perm"} p
 
 fun minus_permute_intro_tac ctxt p =
-  resolve_tac ctxt [Drule.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE}]
+  resolve_tac ctxt [Thm.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE}]
 
 fun minus_permute_elim p thm =
-  thm RS (Drule.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
+  thm RS (Thm.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
 
 (* fixme: move to nominal_library *)
 fun real_head_of (@{term Trueprop} $ t) = real_head_of t
@@ -156,7 +156,7 @@ end
 val all_elims = 
   let
     fun spec' ct =
-      Drule.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
+      Thm.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
   in
     fold (fn ct => fn th => th RS spec' ct)
   end

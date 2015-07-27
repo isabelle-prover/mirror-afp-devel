@@ -366,7 +366,7 @@ fun analyze_call ctxt f x t =
   end
 
 fun instantiate_akra_bazzi ctxt ts = 
-    map (Drule.instantiate' [] (map (Option.map (Thm.cterm_of ctxt)) ts))
+    map (Thm.instantiate' [] (map (Option.map (Thm.cterm_of ctxt)) ts))
 
 fun analyze_equation ctxt f eq funvar = 
   let 

@@ -158,9 +158,9 @@ fun unraw_vars_thm ctxt thm =
     fun unraw_var_str ((s, i), T) = ((unraw_str s, i), T)
 
     val vars = Term.add_vars (Thm.prop_of thm) []
-    val vars' = map (Var o unraw_var_str) vars
+    val vars' = map (Thm.cterm_of ctxt o Var o unraw_var_str) vars
   in
-    Thm.certify_instantiate ctxt ([], (vars ~~ vars')) thm
+    Thm.instantiate ([], (vars ~~ vars')) thm
   end
 
 fun unraw_bounds_thm th =

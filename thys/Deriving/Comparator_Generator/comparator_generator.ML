@@ -149,7 +149,7 @@ fun register_comparator_of tyco lthy =
   let 
     val T = Type (tyco, [])
     val comp = Const (@{const_name comparator_of}, compT T)
-    val comp_thm = Drule.instantiate' [SOME (Thm.ctyp_of lthy T)] 
+    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)] 
       [] @{thm comparator_of}
   in register_foreign_comparator T comp comp_thm lthy end
 
