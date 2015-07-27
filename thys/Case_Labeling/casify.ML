@@ -1,4 +1,5 @@
-signature CASIFY = sig
+signature CASIFY =
+sig
   datatype options = Options of { simp_all_cases: bool, split_right_only: bool,
     protect_subgoals: bool }
 
@@ -12,7 +13,8 @@ signature CASIFY = sig
   val casify_method_setup: options -> (Proof.context -> Method.method) context_parser
 end
 
-structure Casify : CASIFY = struct
+structure Casify : CASIFY =
+struct
 
 val bind_unnamedN = "case"
 val case_premsN = "prems"
@@ -195,7 +197,7 @@ fun build_precase (prg_ctxt, (prems, t))=
               end
 
             val precase = Precase {
-              fixes=fixes',
+              fixes = fixes',
               assumes = assumes,
               binds = binds,
               cases = mk_precase (n+1) abs_fixes prg_ctxt prems2 }
@@ -208,10 +210,9 @@ fun merge_precases precases =
     fun merge_p (_, []) = error "empty case" (*XXX*)
       | merge_p (s, Precase {fixes, assumes, binds, cases} :: pcs) =
         let
-          val assumes' = map (apfst (Binding.qualify false s o Binding.name)) assumes
           fun sel_cases (Precase {cases, ...}) = cases
           val cases' = merge_precases (cases @ maps sel_cases pcs)
-        in (s, Rule_Cases.Case {fixes=fixes, assumes = assumes', binds = binds, cases = cases'}) end
+        in (s, Rule_Cases.Case {fixes = fixes, assumes = assumes, binds = binds, cases = cases'}) end
     val cases = precases
       |> coalesce_order (prod_ord int_ord string_ord)
       |> map (apfst snd)
@@ -220,7 +221,7 @@ fun merge_precases precases =
   in cases end
 
 fun mk_cases' ctxt = Thm.prems_of
-  #> map (fn t => Variable.focus t ctxt)
+  #> map (fn t => Variable.focus NONE t ctxt)
   #> strip_prg_ctxts
   #> maps build_precase
   #> merge_precases
@@ -253,7 +254,7 @@ fun prepare_labels_tac ctxt =
 fun extract_cases_tac ctxt st =
   let val tac = unfold_tac ctxt @{thms LABEL_simps}
   in CASES (mk_cases' ctxt st) tac st end
-  
+
 
 (* Splits the nth ALL into its components and simplifies any prod_case over this variable*)
 
@@ -338,7 +339,7 @@ datatype options = Options of { simp_all_cases: bool, split_right_only: bool, pr
 
 fun casify_tac (Options { simp_all_cases, split_right_only, protect_subgoals }) ctxt =
   let
-    fun inst_disambig ct = Thm.instantiate ([], [(@{cpat "?n::nat"}, ct )]) @{thm DISAMBIG_I}
+    fun inst_disambig ct = Thm.instantiate ([], [((("n", 0), @{typ nat}), ct)]) @{thm DISAMBIG_I}
     fun disambig_tac i =
       if protect_subgoals
       then match_tac ctxt [inst_disambig (Thm.cterm_of ctxt (HOLogic.mk_number @{typ nat} i))]
