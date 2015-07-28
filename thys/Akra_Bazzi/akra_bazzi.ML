@@ -167,7 +167,7 @@ fun akra_bazzi_relation_tac ctxt =
         val relations = map (mk_relation o mk_extractor T) calls
       in
         (ANY' (map (Function_Relation.relation_tac ctxt o K) relations)
-         THEN' rtac @{thm wf_measure})
+         THEN' resolve_tac ctxt @{thms wf_measure})
         THEN_ALL_NEW (rewrite_tac ctxt @{thms measure_prod_conv measure_prod_conv'})
       end
   | _ => K no_tac
@@ -199,7 +199,7 @@ let
   val prop = Logic.mk_equals (t, num_to_Suc (dest_nat_number t))
   fun tac {context = ctxt, prems = _ } = 
     SOLVE (Local_Defs.unfold_tac ctxt @{thms eval_nat_numeral BitM.simps One_nat_def} 
-    THEN rtac @{thm Pure.reflexive} 1);
+    THEN resolve_tac ctxt @{thms Pure.reflexive} 1);
 in  
   case try (fn () => Goal.prove ctxt [] [] prop tac) () of
     NONE => raise CTERM ("nat_numeral_conv", [ct])

@@ -256,7 +256,7 @@ in
         let
           fun tac {context = ctxt, ...} =
                 Simplifier.asm_full_simp_tac ctxt 1
-                THEN TRY (rtac @{thm TrueI} 1)
+                THEN TRY (resolve_tac ctxt @{thms TrueI} 1)
           val prop = HOLogic.mk_Trueprop (mk_in_smallo S T l r)
         in
           case try (fn () => Goal.prove ctxt [] [] prop tac) () of
