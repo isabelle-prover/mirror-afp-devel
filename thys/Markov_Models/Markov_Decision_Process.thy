@@ -10,6 +10,33 @@ lemma mono_INF_fun:
     "(\<And>x y. mono (F x y)) \<Longrightarrow> mono (\<lambda>z x. \<Sqinter>y\<in>X x. F x y z :: 'a :: complete_lattice)"
   by (auto intro!: INF_mono[OF bexI] simp: le_fun_def mono_def)
 
+lemma sup_continuous_SUP[order_continuous_intros]:
+  assumes M: "\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)"
+  shows  "sup_continuous (\<Squnion>i\<in>I. M i)"
+  unfolding sup_continuous_def by (auto simp add: sup_continuousD[OF M] intro: SUP_commute)
+
+lemma sup_continuous_apply_SUP[order_continuous_intros]:
+  "(\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)) \<Longrightarrow> sup_continuous (\<lambda>x. \<Squnion>i\<in>I. M i x)"
+  unfolding SUP_apply[symmetric] by (rule sup_continuous_SUP)
+
+lemma SUP_sup_continuous_ereal: 
+  fixes f :: "ereal \<Rightarrow> 'a::complete_lattice"
+  assumes f: "sup_continuous f" and "I \<noteq> {}"
+  shows "(SUP i:I. f (g i)) = f (SUP i:I. g i)"
+proof (rule antisym)
+  show "(\<Squnion>i\<in>I. f (g i)) \<le> f (\<Squnion>i\<in>I. g i)"
+    by (rule mono_SUP[OF sup_continuous_mono[OF f]])
+  from Sup_countable_SUP[of "g`I"] \<open>I \<noteq> {}\<close>
+  obtain M :: "nat \<Rightarrow> ereal" where "incseq M" and M: "range M \<subseteq> g ` I" and eq: "(\<Squnion>i\<in>I. g i) = (\<Squnion>i. M i)"
+    by auto
+  have "f (\<Squnion>i\<in>I. g i) = (\<Squnion>i\<in>range M. f i)"
+    unfolding eq sup_continuousD[OF f \<open>mono M\<close>] by simp
+  also have "\<dots> \<le> (\<Squnion>i\<in>I. f (g i))"
+    using M unfolding subset_image_iff SUP_def
+    by (auto simp del: SUP_image simp add: SUP_image[of g] intro!: SUP_subset_mono)
+  finally show "f (\<Squnion>i\<in>I. g i) \<le> (\<Squnion>i\<in>I. f (g i))" .
+qed
+
 subsection {* Schedulers *}
 
 text {*
@@ -313,6 +340,35 @@ proof -
   qed
   finally show ?thesis .
 qed
+
+lemma E_sup_bot: "E_sup s \<bottom> = 0"
+  by (auto simp add: E_sup_def nn_integral_const_nonpos)
+
+lemma E_sup_lfp:
+  fixes g
+  defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
+  assumes measurable_g[measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes cont_g: "\<And>s. sup_continuous (g s)"
+  assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
+     (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"
+  shows "(\<lambda>s. E_sup s (lfp l)) = lfp (\<lambda>f s. \<Squnion>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>D)"
+proof (rule lfp_transfer_bounded[where \<alpha>="\<lambda>F s. E_sup s F" and f=l and P="\<lambda>f. f \<in> borel_measurable St"])
+  show "sup_continuous (\<lambda>f s. \<Squnion>x\<in>K s. \<integral>\<^sup>+ t. g t (f t) \<partial>measure_pmf x)"
+    using cont_g[THEN sup_continuous_compose] by (auto intro!: order_continuous_intros)
+  show "sup_continuous l"
+    using cont_g[THEN sup_continuous_compose] by (auto intro!: order_continuous_intros simp: l_def)
+  show "\<And>F. (\<lambda>s. E_sup s \<bottom>) \<le> (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>D)"
+    using K_wf by (auto simp: E_sup_bot le_fun_def intro: SUP_upper2 nn_integral_nonneg)
+next
+  fix f :: "'s stream \<Rightarrow> ereal" assume f: "f \<in> borel_measurable St"
+  moreover
+  have "E_sup s (\<lambda>\<omega>. g s (f \<omega>)) = g s (E_sup s f)" for s
+    unfolding E_sup_def using int_g[OF f]
+    by (subst SUP_sup_continuous_ereal[OF cont_g, symmetric])
+       (auto intro!: SUP_cong simp del: cfg_onD_state dest: cfg_onD_state[symmetric])
+  ultimately show "(\<lambda>s. E_sup s (l f)) = (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (E_sup t f) \<partial>D)"
+    by (subst E_sup_iterate) (auto simp: l_def int_g fun_eq_iff intro!: SUP_cong nn_integral_cong)
+qed (auto simp: bot_fun_def l_def SUP_apply[abs_def] E_sup_SUP)
 
 definition "P_sup s P = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) {x\<in>space St. P x})"
 
