@@ -130,17 +130,10 @@ lemma upper_triangular_adjugate:
   assumes A: "upper_triangular A"
   shows "upper_triangular (adjugate A)"
 proof (auto simp add: cofactor_def upper_triangular_def adjugate_def transpose_def cofactorM_def)
-  fix i j::'n assume ji: "j < i"
-  def B \<equiv> "(\<chi> k. if k = j then e i else row k A)"
-  have Bjj: "B $ j $ j = 0" using ji unfolding B_def e_def by (simp add: \<delta>_def) 
-  have ut_B: "upper_triangular B" 
-    using A unfolding upper_triangular_def B_def e_def
-    using ji by (auto simp add: \<delta>_def row_def)
-  have "det (minorM A j i) = (\<Prod>i\<in>UNIV. B $ i $ i)"
-    unfolding det_minorM_row B_def[symmetric]
-    using det_upperdiagonal using ut_B unfolding upper_triangular_def by auto
-  also have "... = 0" by (rule setprod_zero, auto intro: Bjj)
-  finally show "det (minorM A j i) = 0"  .
+  fix i j::'n assume ji: "j < i" with A show "det (minorM A j i) = 0"
+    unfolding minorM_eq det_sq_matrix_eq[symmetric] from_vec_to_vec det_minor_row
+    by (subst Square_Matrix.det_upperdiagonal)
+       (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: setprod_zero)
 qed
 
 
@@ -151,7 +144,7 @@ lemma upper_triangular_inverse:
   shows "upper_triangular (matrix_inv A)"
   using upper_triangular_adjugate[OF A]
   unfolding invertible_imp_matrix_inv[OF inv_A] 
-  unfolding scalar_matrix_mult_def upper_triangular_def by auto
+  unfolding matrix_scalar_mult_def upper_triangular_def by auto
 
 
 lemma upper_triangular_mult_diagonal:
@@ -1992,8 +1985,8 @@ proof -
     by (metis U_def inv_P inv_Q invertible_def invertible_mult matrix_inv_left matrix_inv_right)
   have H_UK: "H = U ** K" using A_PH A_QK inv_P 
     by (metis U_def matrix_inv_left matrix_mul_assoc matrix_mul_lid)
-  have "det K *ss U = H ** adjugate K" 
-    by (metis H_UK adjugate_det_symmetric matrix_mul_assoc matrix_scalar_mat_one)
+  have "det K *k U = H ** adjugate K"
+    unfolding H_UK matrix_mul_assoc[symmetric] mult_adjugate_det matrix_mul_mat ..
   have upper_triangular_H: "upper_triangular H" 
     by (metis H Hermite_def echelon_form_imp_upper_triagular)
   have upper_triangular_K: "upper_triangular K" 
