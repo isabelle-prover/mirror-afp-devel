@@ -576,7 +576,7 @@ proof-
       also note map_to_set_inverse
       finally have "map_of (l ! bhc (length l) k) k = Some v" .
       hence "(k,v) \<in> set (l ! bhc (length l) k)"
-          by (simp add: map_of_is_SomeD)
+          by (simp add: map_of_SomeD)
       moreover have "bhc (length l) k < length l" using bhc length ..
       ultimately show ?case by force
   next
@@ -993,7 +993,7 @@ proof (cases "list_map_lookup op= k xs", simp_all)
 next
   case (Some v')
     hence "(k,v') \<in> set xs" unfolding list_map_lookup_is_map_of
-        by (rule map_of_is_SomeD)
+        by (rule map_of_SomeD)
     hence "\<And>a. length (list_map_update_aux op= k v xs a) = 
         length xs + length a" by (induction xs, auto)
     thus "?l_new = length xs" unfolding list_map_update_def by simp
@@ -1012,7 +1012,7 @@ proof (cases "list_map_lookup op= k xs", simp_all)
 next
   case (Some v')
     hence "(k,v') \<in> set xs" unfolding list_map_lookup_is_map_of
-        by (rule map_of_is_SomeD)
+        by (rule map_of_SomeD)
     hence "\<And>a. k \<notin> fst`set a \<Longrightarrow> length (list_map_delete_aux op= k xs a) = 
         length xs + length a - 1" by (induction xs, auto)
     thus "?l_new = length xs - Suc 0" unfolding list_map_delete_def by simp

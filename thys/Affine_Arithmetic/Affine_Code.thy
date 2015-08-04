@@ -363,7 +363,7 @@ lift_definition filter_slist::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Right
 lemma slist_apply_filter_slist: "slist_apply (filter_slist P xs) i =
   (if P i (slist_apply xs i) then slist_apply xs i else 0)"
   by transfer (force simp: Pdevs_raw_def o_def map_of_eq_None_iff distinct_map_fst_snd_eqD
-    dest: map_of_is_SomeD distinct_map_fst_snd_eqD split: option.split)
+    dest: map_of_SomeD distinct_map_fst_snd_eqD split: option.split)
 
 lemma pdevs_apply_filter_slist: "pdevs_apply (Pdevs (filter_slist P xs)) i =
   (if P i (pdevs_apply (Pdevs xs) i) then pdevs_apply (Pdevs xs) i else 0)"
@@ -480,7 +480,7 @@ lift_definition fold_slist::"('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow
 lemma Pdevs_raw_Cons:
   "Pdevs_raw ((a, b) # xs) = (\<lambda>i. if i = a then b else Pdevs_raw xs i)"
   by (auto simp: Pdevs_raw_def map_of_eq_None_iff
-    dest!: map_of_is_SomeD
+    dest!: map_of_SomeD
     split: option.split)
 
 lemma zeros_aux: "- (\<lambda>i. if i = a then b else Pdevs_raw xs i) -` {0} \<subseteq>
@@ -497,7 +497,7 @@ subsection {* Equality *}
 lemma slist_apply_list_of_slist_eq: "slist_apply a i = the_default 0 (map_of (list_of_slist a) i)"
   by (transfer)
     (force split: option.split simp: map_of_eq_None_iff distinct_map_fst_snd_eqD
-      dest!: map_of_is_SomeD)
+      dest!: map_of_SomeD)
 
 lemma compute_equal_pdevs[code]:
   "equal_class.equal (Pdevs a) (Pdevs b) \<longleftrightarrow> (list_of_slist a) = (list_of_slist b)"

@@ -108,7 +108,7 @@ lemma ccBinds_cong[fundef_cong]:
   apply (rule arg_cong[OF mapCollect_cong])
   apply (rule arg_cong[OF ccBind_cong])
   apply auto
-  by (metis imageI map_of_is_SomeD snd_conv)
+  by (metis imageI map_of_SomeD snd_conv)
 
 lemma ccBindsExtra_cong[fundef_cong]:
   "\<lbrakk> (\<And> e. e \<in> snd ` set heap2 \<Longrightarrow> cccexp1 e = cccexp2 e); heap1 = heap2 \<rbrakk>

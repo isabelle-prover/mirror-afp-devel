@@ -627,7 +627,7 @@ apply(induct xys)
  apply simp
 apply (simp add: notin_range_map_of inj_on_map_upd)
 apply(clarsimp simp add:image_def)
-apply(drule map_of_is_SomeD)
+apply(drule map_of_SomeD)
 apply fastforce
 done
 

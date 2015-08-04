@@ -371,7 +371,7 @@ lemma fv_delete_heap:
 proof-
   have "fv (delete x \<Gamma>) \<subseteq> fv \<Gamma>" by (metis fv_delete_subset)
   moreover
-  have "(x,e) \<in> set \<Gamma>" by (metis assms map_of_is_SomeD)
+  have "(x,e) \<in> set \<Gamma>" by (metis assms map_of_SomeD)
   hence "fv e \<subseteq> fv \<Gamma>" by (metis assms domA_from_set map_of_fv_subset option.sel)
   moreover
   have "x \<in> fv (Var x)" by simp

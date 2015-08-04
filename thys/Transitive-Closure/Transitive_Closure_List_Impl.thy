@@ -102,7 +102,7 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a, b) \<in> (set r)^*}"
-      using map_of_is_SomeD [OF Some]
+      using map_of_SomeD [OF Some]
         rtrancl_list_impl [of r "[a]"] by force
     then show ?thesis unfolding memo_list_rtrancl_def Let_def Some by simp
   qed
@@ -141,7 +141,7 @@ proof -
   next
     case (Some as) 
     have as: "set as = {b. (a, b) \<in> (set r)\<^sup>+}"
-      using map_of_is_SomeD [OF Some]
+      using map_of_SomeD [OF Some]
         trancl_list_impl[of r "[a]"] by force
     then show ?thesis unfolding memo_list_trancl_def Let_def Some by simp
   qed
