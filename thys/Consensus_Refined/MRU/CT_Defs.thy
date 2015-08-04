@@ -77,7 +77,7 @@ definition msgs_to_lvs ::
   "(process \<rightharpoonup> 'val msg)
   \<Rightarrow> (process, round \<times> 'val) map"
 where
-  "msgs_to_lvs msgs \<equiv> msg_to_val_stamp o_m msgs"
+  "msgs_to_lvs msgs \<equiv> msg_to_val_stamp \<circ>\<^sub>m msgs"
 
 definition send0 where
   "send0 r p q st \<equiv>
