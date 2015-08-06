@@ -79,23 +79,26 @@ lemmas rat_arith_code =
 
 lemma one_to_numeral: "1 = Numeral1" by simp
 
-lemma gcd_1_int': "gcd 1 x = (1::int)" by simp
+lemma gcd_1_int': "gcd 1 x = (1::int)"
+  by (fact coprime_1_left)
 
 lemma gcd_numeral_red: "gcd (numeral x::int) (numeral y) = gcd (numeral y) (numeral x mod numeral y)"
-  by (rule gcd_red_int)
+  by (fact gcd_red_int)
 
 lemma divmod_one: 
   "divmod (Num.One) (Num.One) = (Numeral1, 0)"
   "divmod (Num.One) (Num.Bit0 x) = (0, Numeral1)"
   "divmod (Num.One) (Num.Bit1 x) = (0, Numeral1)"
-  "divmod x (Num.One) = (numeral x, 0)" 
-  by (simp_all add: divmod_def semiring_numeral_div_class.div_less 
-                    semiring_numeral_div_class.mod_less)
+  "divmod x (Num.One) = (numeral x, 0)"
+  unfolding divmod_def by simp_all
 
 lemmas divmod_numeral_simps = 
-  div_0 div_by_0 mod_0 mod_by_0 semiring_numeral_div_class.fst_divmod[symmetric]
-  divmod_step_simps semiring_numeral_div_class.snd_divmod[symmetric] divmod_cancel 
-  divmod_divmod_step[of _ "Num.Bit1 n" for n] divmod_one
+  div_0 div_by_0 mod_0 mod_by_0
+  semiring_numeral_div_class.fst_divmod [symmetric]
+  semiring_numeral_div_class.snd_divmod [symmetric]
+  divmod_cancel 
+  divmod_steps [simplified rel_simps if_True] divmod_trivial
+  rel_simps
 
 lemma Suc_0_to_numeral: "Suc 0 = Numeral1" by simp
 lemmas Suc_to_numeral = Suc_0_to_numeral Num.Suc_1 Num.Suc_numeral

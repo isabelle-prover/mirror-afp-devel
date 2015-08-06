@@ -735,7 +735,7 @@ next
               qed
           next
             show "(1 / ?v ^ ?v)^2 \<noteq> 0"
-              by (rule field_power_not_zero[OF less_imp_neq[symmetric]]) (rule vpowv_inv_gr_z)
+              by (rule power_not_zero[OF less_imp_neq[symmetric]]) (rule vpowv_inv_gr_z)
           qed
 
         hence "(\<lambda>n. ?num n k) \<lless> ?den"

@@ -119,8 +119,8 @@ lemma zero_pow_zero: "n \<noteq> 0 \<Longrightarrow> 0 ^ n = 0"
   by (cases n, simp_all)
 
 lemma pow_zero_iff:
-  "n \<noteq> 0 \<Longrightarrow> a^n = 0 \<longleftrightarrow> a = 0"
-  by (fact semiring_div_power_eq_0_iff)
+  "n \<noteq> 0 \<Longrightarrow> a ^ n = 0 \<longleftrightarrow> a = 0"
+  by simp
 
 end
 

@@ -109,8 +109,8 @@ text {* The function @{term cis} from the complex library returns the
 definition root :: "nat => complex" where
   "root n == cis (2*pi/(real (n::nat)))"
 
-lemma sin_periodic_pi_diff [simp]: "sin (x - pi) = - sin x"
-  by (simp add: sin_diff)
+lemma sin_periodic_pi_diff: "sin (x - pi) = - sin x"
+  by (fact sin_minus_pi)
 
 lemma sin_cos_between_zero_two_pi:
   assumes 0: "0 < x" and pi: "x < 2 * pi"
@@ -332,7 +332,7 @@ proof (unfold IDFT_def)
     txt {* Second pair of sums *}
     apply (simp add: setsum_right_distrib)
     apply (simp add: power_add)
-    apply (simp add: nonzero_power_divide root_nonzero)
+    apply (simp add: power_divide root_nonzero)
     apply (simp add: root_cancel1)
     done
   finally show "?s = ?t" .
@@ -359,7 +359,7 @@ proof (unfold IDFT_def)
     apply (simp add: root_cancel1)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
     txt {* Second pair of sums *}
-    apply (simp add: nonzero_power_divide root_nonzero)
+    apply (simp add: power_divide root_nonzero)
     apply (simp add: mbound root_cancel2)
     apply (simp add: setsum_divide_distrib)
     apply (simp add: power_add)
@@ -379,7 +379,7 @@ lemma power_diff_inverse:
   assumes nz: "(a::'a::field) ~= 0"
   shows "m <= n ==> (inverse a) ^ (n-m) = (a^m) / (a^n)"
   apply (induct n m rule: diff_induct)
-    apply (simp add: nonzero_power_inverse
+    apply (simp add: power_inverse
       nonzero_inverse_eq_divide [THEN sym] nz)
    apply simp
   apply (simp add: nz)
@@ -399,7 +399,7 @@ qed
 lemma power_divides_special:
   "(a::'a::field) ~= 0 ==>
   a ^ (i * j) / a ^ (k * i) = (a ^ j / a ^ k) ^ i"
-  by (simp add: nonzero_power_divide power_mult [THEN sym] ac_simps)
+  by (simp add: power_divide power_mult [THEN sym] ac_simps)
 
 theorem DFT_inverse:
   assumes i_less: "i < n"

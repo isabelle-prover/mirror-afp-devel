@@ -278,7 +278,7 @@ next
     by (metis eq_0 a dot_lmul_matrix eq inner_zero_right norm_zero)
   also have "... = norm (A *v x)^2" unfolding norm_mult_vec[of "(A *v x)"] power2_eq_square ..
   finally show "A *v x = 0"
-    by (metis (lifting) field_power_not_zero norm_eq_0_imp)
+    by (metis (lifting) power_not_zero norm_eq_0_imp)
 qed
 
 
