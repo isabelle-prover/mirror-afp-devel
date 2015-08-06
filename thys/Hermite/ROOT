@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Hermite" (AFP) = "HOL-Multivariate_Analysis" +
+session "Hermite" (AFP) = "Echelon_Form" +
   options [timeout = 600]
   theories [document = false]
     "../Echelon_Form/Echelon_Form_Inverse"
