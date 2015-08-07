@@ -21,6 +21,14 @@ lemma show_law_unit [show_law_intros]:
   "show_law showsp_unit x"
   by (rule show_lawI) (simp add: showsp_unit_def show_law_simps)
 
+abbreviation showsp_char :: "char showsp"
+where
+  "showsp_char \<equiv> shows_prec"
+
+lemma show_law_char [show_law_intros]:
+  "show_law showsp_char x"
+  by (rule show_lawI) (simp add: show_law_simps)
+
 primrec showsp_bool :: "bool showsp"
 where
   "showsp_bool p True = shows_string ''True''" |
@@ -127,6 +135,7 @@ local_setup {*
        @{thm show_law_prod}
   #> Show_Generator.register_foreign_showsp @{typ unit} @{term "showsp_unit"} @{thm show_law_unit}
   #> Show_Generator.register_foreign_showsp @{typ bool} @{term "showsp_bool"} @{thm show_law_bool}
+  #> Show_Generator.register_foreign_showsp @{typ char} @{term "showsp_char"} @{thm show_law_char}
   #> Show_Generator.register_foreign_showsp @{typ nat} @{term "showsp_nat"} @{thm show_law_nat}
   #> Show_Generator.register_foreign_showsp @{typ int} @{term "showsp_int"} @{thm show_law_int}
   #> Show_Generator.register_foreign_showsp @{typ rat} @{term "showsp_rat"} @{thm show_law_rat}
@@ -139,6 +148,7 @@ export_code
   "shows_prec :: ('a\<Colon>show, 'b\<Colon>show) sum showsp"
   "shows_prec :: ('a\<Colon>show \<times> 'b\<Colon>show) showsp"
   "shows_prec :: unit showsp"
+  "shows_prec :: char showsp"
   "shows_prec :: bool showsp"
   "shows_prec :: nat showsp"
   "shows_prec :: int showsp"
