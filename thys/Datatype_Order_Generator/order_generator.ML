@@ -289,7 +289,7 @@ fun mk_transitivity_thms thy (info : Old_Datatype_Aux.info) =
       end (* end ind_case tac *)
     val trans_thm =  trans_thm_of_tac ind_case_tac
     val (trans_eq_trm,vars) = mk_trans_eq_thm_trm thy info
-    val inst_trans = instantiate' thy sort vars trans_thm
+    val inst_trans = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) vars) trans_thm
     val trans_eq_vars_string = map (dest_Free #> fst) vars
     fun tac_to_eq_thm tac = Goal.prove_global_future thy trans_eq_vars_string [] trans_eq_trm (K tac)
     val eq_tac = mk_solve_with_tac [inst_trans] (blast_tac ctxt 1)
@@ -365,7 +365,7 @@ fun mk_less_le_not_le_thm thy info =
       in
         ([HOLogic.mk_eq (less x y,HOLogic.mk_conj (lesseq x y, lesseq y x |> HOLogic.mk_not))], [x,y])
       end)
-    val inst_thm = instantiate' thy sort vars main_thm
+    val inst_thm = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) vars) main_thm
     val vars_strings = map (dest_Free #> fst) vars
     val thm = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
   in
@@ -400,7 +400,7 @@ fun mk_antisym_thm thy info trans_thm less_thm =
     val vars_strings = map (dest_Free #> fst) vars
     val tvars = vars @ [hd vars]
     val lvars = [hd vars,hd vars]
-    fun inst_thm vars thm = instantiate' thy sort vars thm
+    fun inst_thm vars thm = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) vars) thm
     val inst_trans = inst_thm tvars trans_thm
     val inst_less = inst_thm lvars less_thm
     val res = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_trans,inst_less] 1 THEN blast_tac ctxt 1))
@@ -472,7 +472,7 @@ fun mk_linear_thm thy info =
       in
         ([HOLogic.mk_disj (lesseq x y,lesseq y x)],[x,y])
       end)
-    val inst_thm = instantiate' thy sort vars main_thm
+    val inst_thm = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) vars) main_thm
     val vars_strings = map (dest_Free #> fst) vars
     val thm = Goal.prove_future ctxt vars_strings [] thm_trm (K (Method.insert_tac [inst_thm] 1 THEN blast_tac ctxt 1))
   in

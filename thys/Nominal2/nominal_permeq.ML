@@ -141,7 +141,7 @@ fun eqvt_apply_conv ctrm =
         val ty_insts = map SOME [b, a]
         val term_insts = map SOME [p, f, x]                        
       in
-        Drule.instantiate' ty_insts term_insts @{thm eqvt_apply}
+        Thm.instantiate' ty_insts term_insts @{thm eqvt_apply}
       end
   | _ => Conv.no_conv ctrm
 

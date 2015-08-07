@@ -1860,11 +1860,11 @@ fun gen_call_rec_rule ctxt specs_name n rule =
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
-           instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
-           |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
-                  addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
-                            image_Un,image_Un_single_simp] )
-           |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
+       Thm.instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
+       |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
+              addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
+                        image_Un,image_Un_single_simp] )
+       |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
 
@@ -2549,9 +2549,8 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
           val cret = Thm.cterm_of ctxt return';
           val (_,_,return'_var,_,_,_) = nth (Thm.prems_of ModRet) to_prove_prem
                                                   |> dest_hoare |> #2 |> dest_call;
-          val creturn'_var = Thm.cterm_of ctxt return'_var;
 
-          val ModRet' = cterm_instantiate [(creturn'_var,cret)] ModRet;
+          val ModRet' = infer_instantiate ctxt [(#1 (dest_Var return'_var), cret)] ModRet;
           val modifies_thm_partial = if modif_spec_mode = Total
                                      then TotalToPartial OF [modifies_thm] else modifies_thm;
 
@@ -2722,8 +2721,8 @@ fun while_annotate_tac ctxt inv i st =
     val lifted_inv = fold_rev Term.abs (Logic.strip_params (Logic.get_goal (Thm.prop_of st) i)) inv;
     val invVar = (#1 o strip_comb o #3 o dest_whileAnno o #2 o dest_hoare)
                   (List.last (Thm.prems_of annotateWhile));
-    val annotate = cterm_instantiate
-                           [(Thm.cterm_of ctxt invVar, Thm.cterm_of ctxt lifted_inv)] annotateWhile;
+    val annotate =
+      infer_instantiate ctxt [(#1 (dest_Var invVar), Thm.cterm_of ctxt lifted_inv)] annotateWhile;
  in  ((trace_tac ctxt ("annotating While with: " ^ Syntax.string_of_term ctxt lifted_inv ))
        THEN
        compose_tac ctxt (false,annotate,1) i) st
@@ -2735,8 +2734,7 @@ fun cond_annotate_tac ctxt inv mode (_,i) st =
     val lifted_inv = fold_rev Term.abs (Logic.strip_params (Logic.get_goal (Thm.prop_of st) i)) inv;
     val invVar = List.last (Thm.prems_of annotateCond) |> dest_hoare |> #3 |> strip_comb |> #1;
     val annotate =
-      cterm_instantiate
-        [(Thm.cterm_of ctxt invVar, Thm.cterm_of ctxt lifted_inv)] annotateCond;
+      infer_instantiate ctxt [(#1 (dest_Var invVar), Thm.cterm_of ctxt lifted_inv)] annotateCond;
   in  ((trace_tac ctxt ("annotating Cond with: "^ Syntax.string_of_term ctxt lifted_inv))
        THEN
        compose_tac ctxt (false,annotate,5) i) st
@@ -2795,12 +2793,11 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (Thm.prop_of st) i));
     val J = fold_rev Term.abs pars (I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
-    val cterm = Thm.cterm_of ctxt;
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
     val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
       o strip_comb o #2 o dest_hoare) (List.last (Thm.prems_of WhileG));
-    val WhileGInst = cterm_instantiate [(cterm invVar, cterm J)] WhileG;
-  in ((trace_tac ctxt ("WhileAnnoG, adding guards to invariant: "^ Syntax.string_of_term ctxt J))
+    val WhileGInst = infer_instantiate ctxt [(#1 (dest_Var invVar), Thm.cterm_of ctxt J)] WhileG;
+  in ((trace_tac ctxt ("WhileAnnoG, adding guards to invariant: " ^ Syntax.string_of_term ctxt J))
       THEN compose_tac ctxt (false,WhileGInst,1) i) st
   end
   handle TERM _ => no_tac st
@@ -3409,8 +3406,8 @@ fun ex_tac ctxt vs st =
       let
         val rule  = Thm.lift_rule (Thm.cprem_of st i) (Drule.incr_indexes st exI);
         val (_$x) = HOLogic.dest_Trueprop (Logic.strip_assums_concl (hd (Thm.prems_of rule)));
-        val cx = Thm.cterm_of ctxt (head_of x);
-        val inst_rule = cterm_instantiate [(cx, Thm.cterm_of ctxt inst)] rule;
+        val inst_rule =
+          infer_instantiate ctxt [(#1 (dest_Var (head_of x)), Thm.cterm_of ctxt inst)] rule;
       in (compose_tac ctxt (false,inst_rule, Thm.nprems_of exI) i st) end;
 
 

@@ -59,7 +59,7 @@ lemma map_of_map_and_x[simp]:
 apply(subgoal_tac "x \<noteq> x'") apply(subgoal_tac "\<forall>(y, cl, var, var', v) \<in> set y_cl_var_var'_v_list. x_var var' \<noteq> x")
   apply(case_tac "map_of (map (\<lambda>((y, cl, var, var', v), y', ty). (x_var var', ty)) (zip y_cl_var_var'_v_list y_ty_list)) x")
    apply(clarsimp simp add: map_add_def)
-  apply(clarsimp) apply(drule map_of_is_SomeD) apply(clarsimp) apply(rename_tac y cl var var' v y' ty)
+  apply(clarsimp) apply(drule map_of_SomeD) apply(clarsimp) apply(rename_tac y cl var var' v y' ty)
   apply(drule_tac x = "(y, cl, var, var', v)" in bspec) apply(force simp add: set_zip)
   apply(drule_tac x = "x_var var'" in bspec, simp add: domI) apply(erule wf_objectE, simp+)
  apply(force elim: wf_objectE)+
@@ -855,7 +855,7 @@ lemma exists_var':
     map (\<lambda>(y, cl, var, var', v). var) y_cl_var_var'_v_list = map (\<lambda>(cl, var, ty). var) cl_var_ty_list;
     map_of (map (\<lambda>(cl, var, ty). (x_var var, ty)) cl_var_ty_list) var_k = Some ty_k\<rbrakk>
       \<Longrightarrow> \<exists>var'_k. map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) var_k = Some (x_var var'_k)"
-apply(drule map_of_is_SomeD) apply(clarsimp, hypsubst_thin) apply(rename_tac cl_k var_k)
+apply(drule map_of_SomeD) apply(clarsimp, hypsubst_thin) apply(rename_tac cl_k var_k)
 apply(subgoal_tac "var_k \<in> set (map (\<lambda>(y, cl, var, var', v). var) y_cl_var_var'_v_list)")
  apply(simp (no_asm_use)) apply(clarify) apply(rename_tac y_k cl_k' var_k var'_k v_k)
  apply(rule_tac x = var'_k in exI)
@@ -897,7 +897,7 @@ lemma map_of_map_zip_some:
     map (\<lambda>(y, cl, var, var', v). y) y_cl_var_var'_v_list = map fst y_ty_list;
     map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)) x_G = Some ty_k\<rbrakk>
       \<Longrightarrow> \<exists>v_k. map_of (map (\<lambda>(y, cl, var, var', y). (x_var var', y)) y_cl_var_var'_v_list) x_G = Some v_k"
-apply(drule map_of_is_SomeD)
+apply(drule map_of_SomeD)
 apply(clarsimp) apply(rename_tac y cl var var' v y')
 apply(subgoal_tac "(y, cl, var, var', v) \<in> set y_cl_var_var'_v_list")
  apply(rule_tac x = v in exI)
@@ -1012,7 +1012,7 @@ lemma map_of_ty_k':
                        (map_of (map (\<lambda>(y, cl, var, var', v). (x_var var, x_var var')) y_cl_var_var'_v_list) (x_var var))))) =
        Some ty_var"
 apply(frule exists_var') apply(simp add: weaken_list_var) apply(simp) apply(clarsimp split del: split_if) apply(clarsimp)
-apply(drule map_of_is_SomeD)+ apply(clarsimp split del: split_if) apply(frule x'_not_in_list, simp+)
+apply(drule map_of_SomeD)+ apply(clarsimp split del: split_if) apply(frule x'_not_in_list, simp+)
 apply(frule map_of_ty_k) apply(simp add: weaken_list_y weaken_list_var)+
 done
 
@@ -1107,7 +1107,7 @@ lemma var_k_of_ty_k:
           Some ty_x"
 apply(clarsimp) apply(rule) apply(rule) apply(simp) apply(clarsimp)
 apply(frule exists_var') apply(simp add: weaken_list_var) apply(simp) apply(clarsimp split del: split_if)
-apply(drule map_of_is_SomeD)+ apply(clarsimp split del: split_if) apply(frule x'_not_in_list, simp+)
+apply(drule map_of_SomeD)+ apply(clarsimp split del: split_if) apply(frule x'_not_in_list, simp+)
 apply(frule map_of_ty_k) apply(simp add: weaken_list_y weaken_list_var)+
 done
 
@@ -1752,7 +1752,7 @@ apply(subgoal_tac "x_var var \<in> dom \<Gamma>")
    apply(rule wf_objectI) apply(simp) apply(rule sty_optionI, simp+)
   apply(clarsimp, hypsubst_thin) apply(rule) apply(rule) apply(rule wf_objectI) apply(clarsimp) apply(rule sty_optionI, simp+)
   apply(rule) apply(erule disjE)
-   apply(clarsimp) apply(drule map_of_is_SomeD) apply(clarsimp) apply(rename_tac y_k cl_k var_k var'_k v_k y'_k ty_k)
+   apply(clarsimp) apply(drule map_of_SomeD) apply(clarsimp) apply(rename_tac y_k cl_k var_k var'_k v_k y'_k ty_k)
    apply(frule_tac x = "(y_k, cl_k, var_k, var'_k, v_k)" in bspec) apply(force simp add: set_zip) apply(clarsimp)
    apply(subgoal_tac "map_of (map (\<lambda>(y, cl, var, var', v). (x_var var', v)) y_cl_var_var'_v_list) (x_var var'_k) = Some v_k")
    apply(clarsimp) apply(drule map_y) apply(simp) apply(drule_tac x = "(y_k, ty_k)" in bspec, assumption) apply(clarsimp)
@@ -1766,7 +1766,7 @@ apply(subgoal_tac "x_var var \<in> dom \<Gamma>")
   apply(case_tac "map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)) x_G")
    apply(frule map_of_map_zip_none, simp+) apply(simp add: map_add_def)
   apply(frule map_of_map_zip_some, simp+) apply(clarsimp)
-  apply(drule map_of_is_SomeD) apply(drule map_of_is_SomeD) apply(clarsimp simp add: set_zip)
+  apply(drule map_of_SomeD) apply(drule map_of_SomeD) apply(clarsimp simp add: set_zip)
   apply(frule same_el, simp+) apply(drule_tac s = "(aa, ab, ac, ai, b)" in sym)
   apply(clarsimp) apply(rename_tac y_k cl_k var_k v_k y'_k ty_k var'_k i)
   apply(frule_tac y_k = y_k and cl_k = cl_k and var_k = var_k and var'_k = var'_k and v_k = v_k in same_y, simp+) apply(clarsimp)
@@ -1788,8 +1788,8 @@ apply(subgoal_tac "x_var var \<in> dom \<Gamma>")
   (* y != this *)
   apply(erule sty_option.cases) apply(clarsimp split del: split_if)
   apply(frule_tac var_k = ya and ty_k = tya in exists_var') apply(drule map_of_vd) apply(assumption+) apply(erule exE) apply(clarsimp)
-  apply(drule_tac y = "x_var var'_k" in map_of_is_SomeD) apply(clarsimp split del: split_if) apply(rename_tac y_k cl_k var_k var'_k v_k)
-  apply(frule x'_not_in_list, assumption+) apply(clarsimp) apply(drule map_of_is_SomeD)
+  apply(drule_tac y = "x_var var'_k" in map_of_SomeD) apply(clarsimp split del: split_if) apply(rename_tac y_k cl_k var_k var'_k v_k)
+  apply(frule x'_not_in_list, assumption+) apply(clarsimp) apply(drule map_of_SomeD)
   apply(clarsimp split del: split_if) apply(rename_tac cl_k' var_k ty_k) apply(case_tac ctx, clarify) apply(frule mty_preservation, assumption+)
   apply(clarsimp split del: split_if) apply(drule map_of_vd) apply(frule map_of_ty_k, assumption+)
   apply(rule_tac ty = ty_k and ty' = ty_var in sty_optionI) apply(simp add: map_add_def) apply(simp) apply(simp)

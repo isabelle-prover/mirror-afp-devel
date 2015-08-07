@@ -14,15 +14,6 @@ text {*
   Also, a little bit of setup happens.
 *}
 
-text {*
-  We employ filters and the @{term eventually} predicate to deal with the
-  @{term "\<exists>N. \<forall>n\<ge>N. P n"} cases. To make this more convenient, introduce
-  a shorter syntax.
-*}
-
-abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
-  "evseq P \<equiv> eventually P sequentially"
-
 subsection {* Numbers *}
 
 lemma enat_in_Inf:
@@ -58,21 +49,7 @@ lemma enat_less_INF_I:
   fixes f :: "'a \<Rightarrow> enat"
   assumes not_inf: "x \<noteq> \<infinity>" and less: "\<And>y. y \<in> S \<Longrightarrow> x < f y"
   shows "x < (INF y:S. f y)"
-proof (rule ccontr)
-  assume A: "\<not>?thesis"
-  then show False
-  proof (cases "x = (INF y:S. f y)")
-    case True
-    with assms have "(INF y:S. f y) \<noteq> top" by (simp add: top_enat_def)
-    then obtain z where "z \<in> S" "f z = x"
-      by (rule enat_in_INF) (auto simp: True)
-    then show False using less by auto
-  next
-    case False
-    with A have "(INF y:S. f y) < x" by simp
-    with less show False by (auto simp: INF_less_iff intro: order_less_asym)
-  qed
-qed
+  using assms by (auto simp: Suc_ile_eq[symmetric] INF_greatest)
 
 lemma enat_le_Sup_iff:
   "enat k \<le> Sup M \<longleftrightarrow> k = 0 \<or> (\<exists>m \<in> M. enat k \<le> m)" (is "?L \<longleftrightarrow> ?R")
@@ -169,24 +146,25 @@ lemma card_Ex_subset:
   "k \<le> card M \<Longrightarrow> \<exists>N. N \<subseteq> M \<and> card N = k"
 by (induct rule: inc_induct) (auto simp: card_Suc_eq)
 
-lemma card_0_iff: "card A = 0 \<longleftrightarrow> A = {} \<or> \<not>finite A"
-  by auto
 
 
 subsection {* Limits and eventually *}
+
+text {*
+  We employ filters and the @{term eventually} predicate to deal with the
+  @{term "\<exists>N. \<forall>n\<ge>N. P n"} cases. To make this more convenient, introduce
+  a shorter syntax.
+*}
+
+abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
+  "evseq P \<equiv> eventually P sequentially"
 
 lemma eventually_le_le:
   fixes P :: "'a => ('b :: preorder)"
   assumes "eventually (\<lambda>x. P x \<le> Q x) net"
   assumes "eventually (\<lambda>x. Q x \<le> R  x) net"
   shows "eventually (\<lambda>x. P x \<le> R x) net"
-using assms by (rule eventually_elim2) (rule order_trans)
-
-lemma eventually_sequentially_lessI:
-  assumes "\<And>x. c < x \<Longrightarrow> P x"
-  shows "eventually P sequentially"
-unfolding eventually_sequentially
-by (rule exI[where x="Suc c"]) (auto intro: assms)
+using assms by eventually_elim (rule order_trans)
 
 lemma LIMSEQ_neg_powr:
   assumes s: "s < 0"

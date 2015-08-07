@@ -149,7 +149,7 @@ fun register_comparator_of tyco lthy =
   let 
     val T = Type (tyco, [])
     val comp = Const (@{const_name comparator_of}, compT T)
-    val comp_thm = Drule.instantiate' [SOME (Thm.ctyp_of lthy T)] 
+    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)] 
       [] @{thm comparator_of}
   in register_foreign_comparator T comp comp_thm lthy end
 
@@ -470,7 +470,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 THEN resolve_tac ctxt @{thms comp_lex_sym} 1
                 THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                 THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
-                  resolve_tac ctxt [Ctr_Sugar_Util.cterm_instantiate_pos 
+                  resolve_tac ctxt' [infer_instantiate' ctxt'
                     [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}] 1
                   THEN recursor_tac SYM pre_cond (nth xs_tys k) (nth IHs k) ctxt')
               else 
@@ -523,7 +523,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                         THEN resolve_tac ctxt @{thms comp_lex_trans} 1
                         THEN unfold_tac ctxt (@{thms length_nth_simps forall_finite})
                         THEN conjI_tac @{thms conjI} ctxt xs (fn ctxt' => fn k =>
-                          resolve_tac ctxt [Ctr_Sugar_Util.cterm_instantiate_pos 
+                          resolve_tac ctxt' [infer_instantiate' ctxt'
                             [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}] 1
                           THEN recursor_tac TRANS pre_cond (nth xs_tys k) (nth IHs k) ctxt')
                       else 

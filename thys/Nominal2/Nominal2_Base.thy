@@ -1895,7 +1895,7 @@ simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") =
         val cty_inst =
           [SOME (Thm.ctyp_of ctxt (fastype_of argx)), SOME (Thm.ctyp_of ctxt (fastype_of f))]
         val ctrm_inst = [NONE, SOME (Thm.cterm_of ctxt absf), SOME (Thm.cterm_of ctxt argx)] 
-        val thm = Drule.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
+        val thm = Thm.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
       in
         SOME(thm RS @{thm Eq_TrueI}) 
       end  

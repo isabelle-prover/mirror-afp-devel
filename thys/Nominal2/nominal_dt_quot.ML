@@ -158,9 +158,9 @@ fun unraw_vars_thm ctxt thm =
     fun unraw_var_str ((s, i), T) = ((unraw_str s, i), T)
 
     val vars = Term.add_vars (Thm.prop_of thm) []
-    val vars' = map (Var o unraw_var_str) vars
+    val vars' = map (Thm.cterm_of ctxt o Var o unraw_var_str) vars
   in
-    Thm.certify_instantiate ctxt ([], (vars ~~ vars')) thm
+    Thm.instantiate ([], (vars ~~ vars')) thm
   end
 
 fun unraw_bounds_thm th =
@@ -726,12 +726,10 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
           val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
           val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
-          val vs_ctrms = map (Thm.cterm_of ctxt' o Var) vs
           val assigns = map (lookup ty_parms) vs_tys          
-          
-          val thm' = cterm_instantiate (vs_ctrms ~~ assigns) thm
+          val thm' = infer_instantiate ctxt' (map #1 vs ~~ assigns) thm
         in
-          resolve_tac ctxt [thm'] 1
+          resolve_tac ctxt' [thm'] 1
         end) ctxt
       THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
  

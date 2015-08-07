@@ -25,10 +25,10 @@ fun mk_cminus p =
   Thm.apply @{cterm "uminus :: perm => perm"} p
 
 fun minus_permute_intro_tac ctxt p =
-  resolve_tac ctxt [Drule.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE}]
+  resolve_tac ctxt [Thm.instantiate' [] [SOME (mk_cminus p)] @{thm permute_boolE}]
 
 fun minus_permute_elim p thm =
-  thm RS (Drule.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
+  thm RS (Thm.instantiate' [] [NONE, SOME (mk_cminus p)] @{thm permute_boolI})
 
 (* fixme: move to nominal_library *)
 fun real_head_of (@{term Trueprop} $ t) = real_head_of t
@@ -156,7 +156,7 @@ end
 val all_elims = 
   let
     fun spec' ct =
-      Drule.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
+      Thm.instantiate' [SOME (Thm.ctyp_of_cterm ct)] [NONE, SOME ct] @{thm spec}
   in
     fold (fn ct => fn th => th RS spec' ct)
   end
@@ -183,7 +183,7 @@ fun non_binder_tac prem intr_cvars Ps ctxt =
       val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
       val p_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 p ct2) cperms prms 
       val prem' = prem
-        |> cterm_instantiate (intr_cvars ~~ p_prms) 
+        |> infer_instantiate ctxt' (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ p_prms) 
         |> eqvt_srule ctxt'
 
       (* for inductive-premises*)
@@ -239,7 +239,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val avoid_trm' = subst_free (param_trms ~~ prm_trms) avoid_trm 
       val concl_args' = map (subst_free (param_trms ~~ prm_trms)) concl_args 
       
-      val user_thm' = map (cterm_instantiate (intr_cvars ~~ prms)) user_thm
+      val user_thm' = map (infer_instantiate ctxt (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ prms)) user_thm
         |> map (full_simplify (put_simpset HOL_ss ctxt addsimps (@{thm fresh_star_Pair}::prems)))
       
       val fthm = fresh_thm ctxt user_thm' (Thm.term_of p) (Thm.term_of c) concl_args' avoid_trm'
@@ -258,7 +258,7 @@ fun binder_tac prem intr_cvars param_trms Ps user_thm avoid_trm concl_args ctxt 
       val cperms = map (Thm.cterm_of ctxt' o perm_const) prm_tys
       val qp_prms = map2 (fn ct1 => fn ct2 => Thm.mk_binop ct1 (mk_cplus q p) ct2) cperms prms 
       val prem' = prem
-        |> cterm_instantiate (intr_cvars ~~ qp_prms)
+        |> infer_instantiate ctxt' (map (#1 o dest_Var o Thm.term_of) intr_cvars ~~ qp_prms)
         |> eqvt_srule ctxt'
 
       val fprop' = eqvt_srule ctxt' fprop 

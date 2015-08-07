@@ -160,7 +160,7 @@ next
 case (Application y \<Gamma> e x L \<Delta> \<Theta> z e') thus ?case by auto
 next
 case (Variable \<Gamma> x e L \<Delta> z)
-   from Variable(1) have "x \<in> domA \<Gamma>" by (metis domA_from_set map_of_is_SomeD)
+   from Variable(1) have "x \<in> domA \<Gamma>" by (metis domA_from_set map_of_SomeD)
    with Variable
    show ?case by auto
 next
@@ -227,7 +227,7 @@ case(Variable \<Gamma> v e L \<Delta> z)
   from fresh_delete[OF this(1)]
   have "atom x \<sharp> delete v \<Gamma>".
   moreover
-  have "v \<in> domA \<Gamma>" using Variable.hyps(1) by (metis domA_from_set map_of_is_SomeD)
+  have "v \<in> domA \<Gamma>" using Variable.hyps(1) by (metis domA_from_set map_of_SomeD)
   from fresh_map_of[OF this  `atom x \<sharp> \<Gamma>`]
   have "atom x \<sharp> the (map_of \<Gamma> v)".
   hence "atom x \<sharp> e" using `map_of \<Gamma> v = Some e` by simp

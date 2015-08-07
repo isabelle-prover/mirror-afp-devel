@@ -175,7 +175,7 @@ text{*
   flattening, we have four different forms of policy composition: *}
 definition
   comp_orA :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orA" 55) where
-  "p2 o_orA p1 \<equiv> (map_option flat_orA) o (lift p2 o_m p1)"
+  "p2 o_orA p1 \<equiv> (map_option flat_orA) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation (xsymbols)
   comp_orA  (infixl "\<circ>\<^sub>\<or>\<^sub>A" 55)
@@ -188,7 +188,7 @@ lemma mt_comp_orA[simp]:"\<emptyset> \<circ>\<^sub>\<or>\<^sub>A p = \<emptyset>
 
 definition
   comp_orD :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orD" 55) where
-  "p2 o_orD p1 \<equiv> (map_option flat_orD) o (lift p2 o_m p1)"
+  "p2 o_orD p1 \<equiv> (map_option flat_orD) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation (xsymbols)
   comp_orD  (infixl "\<circ>\<^sub>orD" 55)
@@ -201,7 +201,7 @@ lemma mt_comp_orD[simp]:"\<emptyset> o_orD p = \<emptyset>"
 
 definition
   comp_1 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_1" 55) where
-  "p2 o_1 p1 \<equiv> (map_option flat_1) o (lift p2 o_m p1)"
+  "p2 o_1 p1 \<equiv> (map_option flat_1) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation (xsymbols)
   comp_1  (infixl "\<circ>\<^sub>1" 55)
@@ -214,7 +214,7 @@ lemma mt_comp_1[simp]:"\<emptyset> \<circ>\<^sub>1 p = \<emptyset>"
 
 definition
   comp_2 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_2" 55) where
-  "p2 o_2 p1 \<equiv> (map_option flat_2) o (lift p2 o_m p1)"
+  "p2 o_2 p1 \<equiv> (map_option flat_2) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation (xsymbols)
   comp_2  (infixl "\<circ>\<^sub>2" 55)

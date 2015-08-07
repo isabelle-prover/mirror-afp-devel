@@ -160,7 +160,7 @@ ML {*
     fun mk_ANNOT_conv a ct = let
       val Tt = Thm.ctyp_of_cterm ct
 
-      val thm = Drule.instantiate' [SOME Tt] [SOME ct,SOME a] 
+      val thm = Thm.instantiate' [SOME Tt] [SOME ct,SOME a] 
         @{thm ANNOT_def[symmetric]}
     in
       thm
@@ -171,7 +171,7 @@ ML {*
       val (Tc,Ta) = HOLogic.dest_setT T 
         |> HOLogic.dest_prodT 
         |> apply2 (Thm.ctyp_of ctxt)
-      val thm = Drule.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
+      val thm = Thm.instantiate' [SOME Ta, SOME Tc] [SOME ct,SOME a] 
         @{thm rel_ANNOT_eq}
     in
       thm

@@ -88,7 +88,7 @@ datatype 'a breadcrumb = LEFT of 'a | RIGHT of 'a
 
 fun inverse T = Const (@{const_name Fields.inverse}, T --> T)
 fun mult T = Const (@{const_name Groups.times}, T --> T --> T)
-fun divide T = Const (@{const_name Fields.divide}, T --> T --> T)
+fun divide T = Const (@{const_name Rings.divide_class.divide}, T --> T --> T)
 
 fun map_crumb f (LEFT x) = LEFT (f x)
   | map_crumb f (RIGHT x) = RIGHT (f x)
@@ -113,7 +113,7 @@ fun pick_leaf t T =
   let 
     fun go ((Const (@{const_name "Groups.times"}, _)) $ a $ b) neg crumbs acc =
             acc |> go b neg (RIGHT (MULT,a) :: crumbs) |> go a neg (LEFT (MULT,b) :: crumbs)
-        | go ((Const (@{const_name "Fields.divide"}, _)) $ a $ b) neg crumbs acc =
+        | go ((Const (@{const_name "Rings.divide_class.divide"}, _)) $ a $ b) neg crumbs acc =
             acc |> go b (not neg) (RIGHT (DIVIDE,a) :: crumbs) |> go a neg (LEFT (DIVIDE,b) :: crumbs)
         | go a neg crumbs acc =
             let
@@ -256,7 +256,7 @@ in
         let
           fun tac {context = ctxt, ...} =
                 Simplifier.asm_full_simp_tac ctxt 1
-                THEN TRY (rtac @{thm TrueI} 1)
+                THEN TRY (resolve_tac ctxt @{thms TrueI} 1)
           val prop = HOLogic.mk_Trueprop (mk_in_smallo S T l r)
         in
           case try (fn () => Goal.prove ctxt [] [] prop tac) () of

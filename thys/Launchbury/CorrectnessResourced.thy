@@ -70,7 +70,7 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
 next
 case (Variable \<Gamma> x e L \<Delta> z)
   hence [simp]:"x \<in> domA \<Gamma>"
-    by (metis domA_from_set map_of_is_SomeD)
+    by (metis domA_from_set map_of_SomeD)
 
   case 2
 

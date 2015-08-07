@@ -262,7 +262,7 @@ lemma lm_to_map_vardict_inv:
   shows "vardict_inv ss proc (lm.to_map xs)"
 using assms
 unfolding vardict_inv_def
-by (auto simp add: lm.correct dest: map_of_is_SomeD)
+by (auto simp add: lm.correct dest: map_of_SomeD)
 
 subsection {* Invariants of a process *}
 

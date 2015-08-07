@@ -221,13 +221,10 @@ ML {*
 
     (* Internal use for hom-patterns, f and R are unified *)
     fun mk_CONSTRAINT_rl_atom ctxt (f,R) = let
-      open Refine_Util
       val ts = map (SOME o Thm.cterm_of ctxt) [f,R]
       val idx = Term.maxidx_term f (Term.maxidx_of_term R) + 1
-      val thm = cterm_instantiate' ts 
-        (Thm.incr_indexes idx @{thm CONSTRAINTI})
     in 
-      thm
+      infer_instantiate' ctxt ts (Thm.incr_indexes idx @{thm CONSTRAINTI})
     end;
 
     fun insert_CONSTRAINTS_tac ctxt i st = let

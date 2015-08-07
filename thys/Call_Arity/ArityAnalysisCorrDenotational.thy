@@ -206,7 +206,7 @@ next
         hence "Aexp e'\<cdot>a' \<sqsubseteq> Aheap \<Gamma> e\<cdot>a \<squnion> Aexp (Let \<Gamma> e)\<cdot>a" using `map_of _ _ = _` by (rule Aexp_heap_below_Aheap)
         hence "eq\<rho> (Aexp e'\<cdot>a') \<rho>1' \<rho>2'" using step(1) by (rule eq\<rho>_mono)
         hence "eq a' (\<lbrakk> e' \<rbrakk>\<^bsub>\<rho>1'\<^esub>) (\<lbrakk> e' \<rbrakk>\<^bsub>\<rho>2'\<^esub>)"
-          by (rule Let(1)[OF map_of_is_SomeD[OF `map_of _ _ = _`]])
+          by (rule Let(1)[OF map_of_SomeD[OF `map_of _ _ = _`]])
         thus ?thesis by (simp add: lookupEvalHeap')
       next
         case [simp]: False
@@ -283,7 +283,7 @@ next
           also have "eq a' \<dots> (\<lbrakk>transform a' e'\<rbrakk>\<^bsub>\<rho>1\<^esub>)"
             by (rule eq_Aeta_expand)
           also have "eq a' \<dots> (\<lbrakk>e'\<rbrakk>\<^bsub>\<rho>1\<^esub>)"
-            by (rule Let(1)[OF map_of_is_SomeD[OF `map_of _ _ = _`]])
+            by (rule Let(1)[OF map_of_SomeD[OF `map_of _ _ = _`]])
           also have "eq a' \<dots> (\<lbrakk>e'\<rbrakk>\<^bsub>\<rho>2\<^esub>)"
           proof (rule Aexp_correct)
             from ass' `map_of _ _ = _`

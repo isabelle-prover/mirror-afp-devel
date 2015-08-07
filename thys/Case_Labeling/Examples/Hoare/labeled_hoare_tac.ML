@@ -148,9 +148,9 @@ fun split_simp_tac ctxt =
 fun set_to_pred_tac ctxt var_names = SUBGOAL (fn (_, i) =>
   before_set2pred_simp_tac ctxt i THEN_MAYBE
   EVERY [
-    rtac subsetI i,
-    rtac CollectI i,
-    dtac CollectD i,
+    resolve_tac ctxt [subsetI] i,
+    resolve_tac ctxt [CollectI] i,
+    dresolve_tac ctxt [CollectD] i,
     TRY (split_all_tac ctxt i) THEN_MAYBE
      (rename_tac var_names i THEN
       full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) i)]);
@@ -164,7 +164,7 @@ fun set_to_pred_tac ctxt var_names = SUBGOAL (fn (_, i) =>
 (*******************************************************************************)
 
 fun max_simp_tac ctxt var_names tac =
-  FIRST' [rtac subset_refl, set_to_pred_tac ctxt var_names THEN_MAYBE' tac];
+  FIRST' [resolve_tac ctxt [subset_refl], set_to_pred_tac ctxt var_names THEN_MAYBE' tac];
 
 fun basic_simp_tac ctxt var_names tac =
   wrap_label_tac ctxt (
@@ -181,26 +181,28 @@ fun hoare_rule_tac ctxt (vars, Mlem) tac =
   let
     val var_names = map (fst o dest_Free) vars;
     fun wlp_tac i =
-      rtac @{thm LSeqRule} i THEN rule_tac false (i + 1)
+      resolve_tac ctxt @{thms LSeqRule} i THEN rule_tac false (i + 1)
     and rule_tac pre_cond i st = st |> (*abstraction over st prevents looping*)
       ((wlp_tac i THEN rule_tac pre_cond i)
         ORELSE
         TRY (FIRST [
-          rtac @{thm LSkipRule} i,
-          rtac @{thm LAbortRule} i,
+          resolve_tac ctxt @{thms LSkipRule} i,
+          resolve_tac ctxt @{thms LAbortRule} i,
           EVERY [
-            rtac @{thm LBasicRule} i,
-            wrap_label_tac ctxt (rtac Mlem) i,
+            resolve_tac ctxt @{thms LBasicRule} i,
+            wrap_label_tac ctxt (resolve_tac ctxt [Mlem]) i,
             split_simp_tac ctxt i],
           EVERY [
-            rtac @{thm LCondRule} i,
+            resolve_tac ctxt @{thms LCondRule} i,
             rule_tac false (i + 2),
             rule_tac false (i + 1)],
           EVERY [
-            rtac @{thm LWhileRule} i,
+            resolve_tac ctxt @{thms LWhileRule} i,
             basic_simp_tac ctxt var_names tac (i + 2),
             rule_tac true (i + 1)]]
-         THEN (if pre_cond then basic_simp_tac ctxt var_names tac i else wrap_label_tac ctxt (rtac subset_refl) i)
+         THEN
+          (if pre_cond then basic_simp_tac ctxt var_names tac i
+           else wrap_label_tac ctxt (resolve_tac ctxt [subset_refl]) i)
         )
       );
   in rule_tac end;
@@ -212,8 +214,9 @@ fun hoare_rule_tac ctxt (vars, Mlem) tac =
 fun hoare_tac ctxt tac = SUBGOAL (fn (goal, i) =>
   let val mset = Mset ctxt goal
   in
-    SELECT_GOAL (rtac @{thm Initial_Label} 1 THEN hoare_rule_tac ctxt mset tac true 1) i
+    SELECT_GOAL
+     (resolve_tac ctxt @{thms Initial_Label} 1 THEN
+      hoare_rule_tac ctxt mset tac true 1) i
   end);
 
 end;
-

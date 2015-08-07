@@ -63,7 +63,6 @@
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
 <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
-<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
@@ -408,6 +407,13 @@
 <div class="list">
 <a href="entries/FunWithFunctions.shtml">FunWithFunctions</a> &nbsp;
 <a href="entries/FunWithTilings.shtml">FunWithTilings</a> &nbsp;
+</div>
+
+<h2>Tools</h2>
+
+<div class="list">
+<a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
+<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 </div>
 
 

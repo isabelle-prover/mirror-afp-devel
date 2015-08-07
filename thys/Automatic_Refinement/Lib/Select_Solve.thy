@@ -161,7 +161,7 @@ structure Select_Solve :SELECT_SOLVE = struct
           val Q = Thm.instantiate_cterm inst Q
         in
           @{thm retrofit_no_prems}
-          |> instantiate' [] [SOME P, SOME Q, SOME TAG'] 
+          |> Thm.instantiate' [] [SOME P, SOME Q, SOME TAG'] 
           |> Conv.fconv_rule (Thm.beta_conversion true)
           |> elim_implies st
           |> elim_implies thm
@@ -177,7 +177,7 @@ structure Select_Solve :SELECT_SOLVE = struct
           val Q = Thm.instantiate_cterm inst Q
         in 
           @{thm retrofit_with_prems}
-          |> instantiate' [] [SOME P, SOME Q, SOME R, SOME TAG']
+          |> Thm.instantiate' [] [SOME P, SOME Q, SOME R, SOME TAG']
           |> Conv.fconv_rule (Thm.beta_conversion true)
           |> elim_implies st
           |> elim_implies thm

@@ -218,8 +218,7 @@ ML {*
       val mc_thm = meta_cong_rl;
       val fpat = mc_thm |> Thm.cprop_of |> Drule.strip_imp_concl 
         |> Thm.dest_arg1 |> chead_of;
-      val inst = Drule.cterm_instantiate 
-        [(fpat,ct)] mc_thm;
+      val inst = infer_instantiate ctxt [(#1 (dest_Var (Thm.term_of fpat)), ct)] mc_thm;
       val inst' = singleton (Variable.export ctxt' ctxt) inst;
     in inst' end
 

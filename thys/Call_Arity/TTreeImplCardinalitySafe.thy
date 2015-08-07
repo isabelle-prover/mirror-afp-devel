@@ -29,7 +29,7 @@ begin
   apply (auto split: option.split simp add: empty_is_bottom[symmetric] )
   apply (case_tac "ae x")
   apply (auto simp add: empty_is_bottom[symmetric] carrier_Fexp dest!: set_mp[OF Aexp_edom])
-  by (metis (poly_guards_query) contra_subsetD domA_from_set map_of_fv_subset map_of_is_SomeD option.sel)
+  by (metis (poly_guards_query) contra_subsetD domA_from_set map_of_fv_subset map_of_SomeD option.sel)
 end
 
 context TTreeAnalysisSafe

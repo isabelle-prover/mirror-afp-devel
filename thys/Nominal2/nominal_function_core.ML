@@ -520,7 +520,7 @@ fun mk_uniqueness_case ctxt
     val P2 = Thm.cterm_of ctxt (lambda y (G $ lhs $ y)) (* P2 y := (lhs, y): G *)
 
     val exactly_one =
-      ex1I |> instantiate' [SOME (Thm.ctyp_of ctxt ranT)] [SOME P2, SOME (Thm.cterm_of ctxt rhsC)]
+      ex1I |> Thm.instantiate' [SOME (Thm.ctyp_of ctxt ranT)] [SOME P2, SOME (Thm.cterm_of ctxt rhsC)]
       |> curry (op COMP) existence
       |> curry (op COMP) uniqueness
       |> simplify (put_simpset HOL_basic_ss ctxt addsimps [case_hyp RS sym])
@@ -556,7 +556,7 @@ fun prove_stuff ctxt
     val ihyp_thm = Thm.assume ihyp |> Thm.forall_elim_vars 0
     val ih_intro = ihyp_thm RS (f_def RS ex1_implies_ex)
     val ih_elim = ihyp_thm RS (f_def RS ex1_implies_un)
-      |> instantiate' [] [NONE, SOME (Thm.cterm_of ctxt h)]
+      |> Thm.instantiate' [] [NONE, SOME (Thm.cterm_of ctxt h)]
     val ih_eqvt = ihyp_thm RS (G_eqvt RS (f_def RS @{thm fundef_ex1_eqvt_at}))
     val ih_inv =  ihyp_thm RS (invariant COMP (f_def RS @{thm fundef_ex1_prop}))
 
@@ -851,7 +851,7 @@ fun mk_partial_induct_rule ctxt globals R complete_thm clauses =
       |> Thm.forall_elim (Thm.cterm_of ctxt acc_R)
       |> assume_tac ctxt 1 |> Seq.hd
       |> (curry op COMP) (acc_downward
-        |> (instantiate' [SOME (Thm.ctyp_of ctxt domT)]
+        |> (Thm.instantiate' [SOME (Thm.ctyp_of ctxt domT)]
              (map (SOME o Thm.cterm_of ctxt) [R, x, z]))
         |> Thm.forall_intr (Thm.cterm_of ctxt z)
         |> Thm.forall_intr (Thm.cterm_of ctxt x))

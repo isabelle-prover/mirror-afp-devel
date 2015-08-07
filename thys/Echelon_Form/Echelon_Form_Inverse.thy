@@ -24,16 +24,19 @@ lemma matrix_mul_mat:
   shows "A ** mat x = x *k A"
   by (simp add: matrix_matrix_mult_def mat_def if_distrib setsum.If_cases matrix_scalar_mult_def vec_eq_iff ac_simps)
 
+lemma mult_adjugate_det: "A ** adjugate A = mat (det A)"
+  using mult_adjugate_det[of "from_vec A"]
+  unfolding det_sq_matrix_eq adjugate_eq to_vec_eq_iff[symmetric] to_vec_matrix_matrix_mult to_vec_from_vec 
+  by (simp add: to_vec_diag)
+
+
 lemma invertible_imp_matrix_inv:
   assumes i: "invertible A"
   shows "matrix_inv A = ring_inv (det A) *k adjugate A"
 proof -
   let ?A = "adjugate A"
   have "A ** ?A = det A *k mat 1" 
-    using mult_adjugate_det[of "from_vec A"]
-    unfolding det_sq_matrix_eq adjugate_eq to_vec_eq_iff[symmetric] 
-      to_vec_matrix_matrix_mult to_vec_from_vec 
-    by (simp add: to_vec_diag scalar_mult_mat)
+    unfolding mult_adjugate_det by (simp add: scalar_mult_mat)
   hence "matrix_inv A ** (A ** ?A) = matrix_inv A ** (det A *k mat 1)"
     by auto
   hence "?A = det A *k matrix_inv A"

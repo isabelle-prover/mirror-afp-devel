@@ -49,7 +49,7 @@ definition msgs_to_lvs ::
   "(process \<rightharpoonup> msg)
   \<Rightarrow> (process, round \<times> val) map"
 where
-  "msgs_to_lvs msgs \<equiv> msg_to_val_stamp o_m msgs"
+  "msgs_to_lvs msgs \<equiv> msg_to_val_stamp \<circ>\<^sub>m msgs"
 
 definition smallest_proposal where
   "smallest_proposal (msgs::process \<rightharpoonup> msg) \<equiv>

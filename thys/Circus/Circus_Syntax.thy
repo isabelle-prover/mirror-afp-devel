@@ -137,7 +137,7 @@ fun define_channels (params, binding) typesyn channels thy =
       in (if c = c1 then mk_eq ((ev_equ $ t $ t1), @{term True}) else mk_eq ((ev_equ $ t $ t1), @{term False})) end)) constrs constrs;
 
   fun case_tac x ctxt =
-    resolve_tac ctxt [Drule.instantiate' [] [SOME x]
+    resolve_tac ctxt [Thm.instantiate' [] [SOME x]
       (#exhaust (BNF_LFP_Compat.the_info (Proof_Context.theory_of ctxt) [BNF_LFP_Compat.Keep_Nesting] dt_name))];
 
   fun proof ctxt = (Class.intro_classes_tac ctxt [] THEN

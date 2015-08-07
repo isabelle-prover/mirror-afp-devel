@@ -9,10 +9,16 @@ begin
 subsection \<open>Compatibility layer btw @{theory Square_Matrix} and @{theory Determinants2} \<close>
 
 hide_const (open) Square_Matrix.det
+hide_const (open) Square_Matrix.row
+hide_const (open) Square_Matrix.col
 hide_const (open) Square_Matrix.transpose
 hide_const (open) Square_Matrix.cofactor
 hide_const (open) Square_Matrix.adjugate
+
 hide_fact (open) det_upperdiagonal
+hide_fact (open) row_def
+hide_fact (open) col_def
+hide_fact (open) transpose_def
 
 lemma det_sq_matrix_eq: "Square_Matrix.det (from_vec A) = det A"
   unfolding Square_Matrix.det.rep_eq Determinants.det_def from_vec.rep_eq ..

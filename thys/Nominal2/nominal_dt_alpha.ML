@@ -553,7 +553,7 @@ val perm_inst_tac =
     let
       val (p, q) = apply2 snd (last2 params)
       val pq_inst = foldl1 (uncurry Thm.apply) [@{cterm "plus::perm => perm => perm"}, p, q]
-      val exi_inst = Drule.instantiate' [SOME (@{ctyp "perm"})] [NONE, SOME pq_inst] @{thm exI}
+      val exi_inst = Thm.instantiate' [SOME (@{ctyp "perm"})] [NONE, SOME pq_inst] @{thm exI}
     in
       HEADGOAL (resolve_tac ctxt [exi_inst])
     end)

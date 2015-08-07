@@ -1519,7 +1519,7 @@ proof (erule_tac a="C" and b="D" in converse_trancl_induct)
     from classC wf have cdecl:"wf_cdecl wf_md P (C,Bs,fs,ms)"
       by (rule class_wf)
     from classC mapMs have "(M,Ts,T,m)\<in>set ms"
-      by -(drule map_of_is_SomeD)
+      by -(drule map_of_SomeD)
     with cdecl base hasViaD have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
       by -(rule_tac Cs="[D]" in base_subtype,auto simp:appendPath_def) }
   thus "\<forall>Bs fs ms Ts T m. class P C = Some(Bs, fs, ms) \<and> map_of ms M = Some(Ts,T,m) 
@@ -1547,7 +1547,7 @@ next
     from classC wf have cdecl:"wf_cdecl wf_md P (C,Bs,fs,ms)"
       by (rule class_wf)
     from classC mapMs have "(M,Ts,T,m)\<in>set ms"
-      by -(drule map_of_is_SomeD)
+      by -(drule map_of_SomeD)
     with cdecl base hasVia have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
       by(rule base_subtype) }
   thus "\<forall>Bs fs ms Ts T m. class P C = Some(Bs, fs, ms) \<and> map_of ms M = Some(Ts,T,m) 

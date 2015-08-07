@@ -150,7 +150,7 @@ proof (induct A)
       by (auto intro: inj_onI split: split_if_asm)
     ultimately show ?thesis using insert Suc
       by (simp add: card_Un_disjoint card_image del: if_image_distrib)
-  qed (simp add: card_0_iff insert)
+  qed (simp add: card_eq_0_iff insert)
 qed simp
 
 lemma card_all_edges:

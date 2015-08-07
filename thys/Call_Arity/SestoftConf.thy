@@ -244,7 +244,7 @@ lemma heap_upds_ok_to_stack:
 
 lemma heap_upds_ok_to_stack':
   "map_of \<Gamma> x = Some e \<Longrightarrow> heap_upds_ok (\<Gamma>, S) \<Longrightarrow> heap_upds_ok (delete x \<Gamma>, Upd x #S)"
-  by (metis Domain.DomainI domA_def fst_eq_Domain heap_upds_ok_to_stack map_of_is_SomeD)
+  by (metis Domain.DomainI domA_def fst_eq_Domain heap_upds_ok_to_stack map_of_SomeD)
 
 lemma heap_upds_ok_delete:
   "heap_upds_ok (\<Gamma>, S) \<Longrightarrow> heap_upds_ok (delete x \<Gamma>, S)"

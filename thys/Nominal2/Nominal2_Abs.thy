@@ -933,7 +933,7 @@ fun alpha_single_simproc thm _ ctxt ctrm =
       |> Thm.cterm_of ctxt
     val cvrs_ty = Thm.ctyp_of_cterm cvrs
     val thm' = thm
-      |> Drule.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 
+      |> Thm.instantiate' [NONE, NONE, SOME cvrs_ty] [NONE, NONE, NONE, NONE, SOME cvrs] 
   in
     SOME thm'
   end

@@ -615,7 +615,7 @@ local_setup \<open>fn lthy =>
     fun tac n pc =
       let
         val {prems = prems, context = ctxt} = pc
-        val mono_thm = Drule.instantiate' 
+        val mono_thm = Thm.instantiate' 
             (map (SOME o Thm.ctyp_of ctxt) [@{typ 'a},@{typ 'b},@{typ 'c},@{typ 'd}]) 
             (map (SOME o Thm.cterm_of ctxt) [list2 n,x]) @{thm Xmlt.options_mono_gen}
       in 
