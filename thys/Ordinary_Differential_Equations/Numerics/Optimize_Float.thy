@@ -32,8 +32,9 @@ lemma compute_rapprox_posrat[code]:
   defines "l \<equiv> rat_precision prec x y"
   shows "rapprox_posrat prec x y = (let
      l = l ;
-     X = if 0 \<le> l then (int x * power_int 2 l, int y) else (int x, int y * power_int 2 (-l)) ;
-     (d, m) = divmod_int (fst X) (snd X)
+     (r, s) = if 0 \<le> l then (int x * power_int 2 l, int y) else (int x, int y * power_int 2 (-l)) ;
+     d = r div s ;
+     m = r mod s
    in normfloat (Float (d + (if m = 0 \<or> y = 0 then 0 else 1)) (- l)))"
   by (auto simp add: l_def Float.compute_rapprox_posrat power_int_def Let_def zdiv_int int_power int_mult)
 
