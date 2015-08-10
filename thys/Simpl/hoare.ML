@@ -1108,7 +1108,7 @@ fun add_variable_statespaces (cname,pars as (inpars,outpars,locvars)) thy =
     fun prep_comp (n, T) env =
       let
         val (T', env') = read_typ thy T env handle ERROR msg =>
-          cat_error msg ("The error(s) above occured in component " ^ quote n)
+          cat_error msg ("The error(s) above occurred in component " ^ quote n)
       in ((n, T'), env') end;
 
     val (in_outs,in_out_env) = fold_map prep_comp (distinct (op =) (inpars'@outpars')) [];

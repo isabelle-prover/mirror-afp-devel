@@ -45,7 +45,7 @@ text {*
   handlers (@{text find_handler}) in the frame stack results in 
   a conforming state (if there was no matching exception handler 
   in the current frame). We require that the exception is a valid
-  heap address, and that the state before the exception occured
+  heap address, and that the state before the exception occurred
   conforms. 
 *} term find_handler
 lemma uncaught_xcpt_correct:
