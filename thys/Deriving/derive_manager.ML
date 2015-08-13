@@ -29,7 +29,7 @@ val derive_options =
 fun print_info thy =
   let
     val _ = writeln "The following sorts can be derived"
-    val _ = derive_options thy |> sort_wrt fst |> map (fn (id,descr) => writeln (id ^ ": " ^ descr))
+    val _ = derive_options thy |> sort_by fst |> map (fn (id,descr) => writeln (id ^ ": " ^ descr))
   in () end
 
 fun register_derive id descr f thy =
