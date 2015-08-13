@@ -625,7 +625,8 @@ proof (cases "b = 0")
   moreover have "convolution (b \<delta> a) f = 0"
   proof-
     from True have "convolution (b \<delta> a) f = convolution 0 f"
-      using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"] by force
+      using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"]
+      by (simp add: `0 \<delta> a = 0` `b = 0`)
     thus ?thesis using convolution_zero by auto
   qed
   ultimately show ?thesis by auto
@@ -645,7 +646,8 @@ proof (cases "b = 0")
   moreover have "convolution f (b \<delta> a) = 0"
   proof-
     from True have "convolution f (b \<delta> a) = convolution f 0"
-      using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"] by force
+      using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"] 
+      by (simp add: `0 \<delta> a = 0`)
     thus ?thesis using convolution_zero by auto
   qed
   ultimately show ?thesis by auto
