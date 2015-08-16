@@ -2,8 +2,10 @@ section "Splay Heap"
 
 theory Splay_Heap
 imports
-  Amor
   "~~/src/HOL/Library/Tree_Multiset"
+  Amor
+  Priority_Queue_ops
+  Lemmas_log
 begin
 
 text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
@@ -210,29 +212,6 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l a r) = \<Phi> l + \<Phi> r + \<phi> (Node l a r)"
 
-lemma add_log_log1:
-  assumes "x > 0" "y > 0" shows "1 + log 2 x + log 2 y < 2 * log 2 (x+y)"
-proof -
-  have 1: "2*x*y < (x+y)^2" using assms
-    by(simp add: numeral_eq_Suc algebra_simps add_pos_pos)
-  show ?thesis
-    apply(rule powr_less_cancel_iff[of 2, THEN iffD1])
-     apply simp
-    using assms 1 by(simp add: powr_add log_powr[symmetric] powr_numeral)
-qed
-
-lemma add_log_log2: assumes "x \<ge> 2" "y \<ge> 2"
-  shows "1 + log 2 x + log 2 y \<le> 2 * log 2 (x + y - 1)"
-proof-
-  from assms have "2*x \<le> x*x" "2*y \<le> y*y" by simp_all
-  hence 1: "2 * x * y \<le> (x + y - 1)^2"
-    by(simp add: numeral_eq_Suc algebra_simps)
-  show ?thesis
-    apply(rule powr_le_cancel_iff[of 2, THEN iffD1])
-     apply simp
-    using assms 1 by(simp add: powr_add log_powr[symmetric] powr_numeral)
-qed
-
 lemma amor_del_min: "t_dm t + \<Phi> (del_min t) - \<Phi> t \<le> 2 * \<phi> t + 1"
 proof(induction t rule: t_dm.induct)
   case (3 ll a lr b r)
@@ -263,7 +242,7 @@ proof(induction t rule: t_dm.induct)
       using 3 ll by linarith
     also have "\<dots> = 2 + 2 * \<phi> ll + \<phi> ?t' + \<phi> ?s' - \<phi> ?t - \<phi> ?s" by(simp)
     also have "\<dots> \<le> 2 + \<phi> ll + \<phi> ?s'" using 0 1 by linarith
-    also have "\<dots> < 2 * \<phi> ?t + 1" using 2 add_log_log1[of "size1 ll" "size1 ?s'"]
+    also have "\<dots> < 2 * \<phi> ?t + 1" using 2 ld_ld_1_less[of "size1 ll" "size1 ?s'"]
       by (simp add: size1_def real_of_nat_Suc)
     finally show ?case by simp
   qed
@@ -279,7 +258,7 @@ proof -
   have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_def)
   have 2: "log 2 (real (size1 s + size1 u + size1 r1')) \<le> \<phi> t"
     using assms(3) by (simp add: t_def size1_def)
-  from add_log_log1[of "size1 s + size1 u" "size1 r"] 
+  from ld_ld_1_less[of "size1 s + size1 u" "size1 r"] 
   have "1 + \<phi> r + log 2 (size1 s + size1 u) \<le> 2 * log 2 (size1 s + size1 u + size1 r)"
     by(simp add: size1_def real_of_nat_Suc)
   thus ?thesis using assms 1 2 by (simp add: real_of_nat_Suc algebra_simps)
@@ -294,7 +273,7 @@ shows "t_part p r + 1 + \<Phi> t1' + \<Phi> t2' - \<Phi> t \<le> 2 * \<phi> t + 
 proof -
   have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_def)
   have 2: "\<phi> r \<le> \<phi> t" by (simp add: t_def size1_def)
-  from add_log_log2[of "size1 s + size1 r1'" "size1 u + size1 r2'"] 
+  from ld_ld_less2[of "size1 s + size1 r1'" "size1 u + size1 r2'"] 
   have "1 + log 2 (size1 s + size1 r1') + log 2 (size1 u + size1 r2') \<le> 2 * \<phi> t"
     by(simp add: assms(4) size1_def real_of_nat_Suc t_def ac_simps)
   thus ?thesis using assms 1 2 by (simp add: real_of_nat_Suc algebra_simps)
@@ -370,20 +349,18 @@ next
   qed
 qed
 
-datatype 'a op\<^sub>p\<^sub>q = Insert 'a | Delmin
-
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "nxt\<^sub>p\<^sub>q (Insert a) h = insert a h" |
-"nxt\<^sub>p\<^sub>q Delmin h = del_min h"
+"nxt\<^sub>p\<^sub>q Del_min h = del_min h"
 
 fun t\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t\<^sub>p\<^sub>q (Insert a) h = t_in a h" |
-"t\<^sub>p\<^sub>q Delmin h = t_dm h"
+"t\<^sub>p\<^sub>q Del_min h = t_dm h"
 
 interpretation splay_heap: amor
 where init = "Leaf" and nxt = "nxt\<^sub>p\<^sub>q" and inv = "bst_eq"
 and t = t\<^sub>p\<^sub>q and \<Phi> = \<Phi>
-and U = "\<lambda>f s. case f of Delmin \<Rightarrow> 2 * \<phi> s + 1 | Insert _ \<Rightarrow> 3 * log 2 (size1 s + 1) + 1"
+and U = "\<lambda>f s. case f of Del_min \<Rightarrow> 2 * \<phi> s + 1 | Insert _ \<Rightarrow> 3 * log 2 (size1 s + 1) + 1"
 proof
   case goal1 show ?case by simp
 next
@@ -398,7 +375,7 @@ next
   case goal5
   show ?case
   proof (cases f)
-    case Delmin with goal5 show ?thesis by(simp add: amor_del_min)
+    case Del_min with goal5 show ?thesis by(simp add: amor_del_min)
   next
     case (Insert x)
     { fix l r assume 1: "partition x s = (l,r)"

@@ -42,7 +42,7 @@ proof -
     using IH prems(2) by(auto simp: algebra_simps)
   also have "\<dots> \<le> \<phi> lb + \<phi> B' + \<phi> A' - 3 * \<phi> X + 1" by(simp)
   also have "\<dots> \<le> \<phi> B' + 2 * \<phi> t - 3 * \<phi> X "
-    using prems add_log_log1[of "size1 lb" "size1 A'"]
+    using prems ld_ld_1_less[of "size1 lb" "size1 A'"]
     by(simp add: size_if_splay real_of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> t - 3 * \<phi> X"
     using prems by(simp add: size_if_splay)
@@ -101,7 +101,7 @@ next
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp add_log_log1[of "size1 ?R" "size1 ?A'"]
+    using sp ld_ld_1_less[of "size1 ?R" "size1 ?A'"]
     by(simp add: size_if_splay real_of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
@@ -125,7 +125,7 @@ next
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> rb + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> rb + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp add_log_log1[of "size1 ?B'" "size1 ?A'"]
+    using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
     by(simp add: size_if_splay real_of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
@@ -148,7 +148,7 @@ next
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?R + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp add_log_log1[of "size1 ?B'" "size1 ?A'"]
+    using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
     by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
@@ -171,7 +171,7 @@ next
     using sp by(simp add: size_if_splay)
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp add_log_log1[of "size1 ?R" "size1 ?A'"]
+    using sp ld_ld_1_less[of "size1 ?R" "size1 ?A'"]
     by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
@@ -238,7 +238,7 @@ next
     also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 1" by simp
     also have "\<dots> \<le> \<phi> rr + \<phi> ?B' + \<phi> ?C' - 1" by simp
     also have "\<dots> \<le> 2 * \<phi> ?B + \<phi> ?C' - 2"
-      using add_log_log1[of "size1 ?B'" "size1 rr"] by(simp add: real_of_nat_Suc)
+      using ld_ld_1_less[of "size1 ?B'" "size1 rr"] by(simp add: real_of_nat_Suc)
     also have "\<dots> \<le> 3 * \<phi> ?B - 2" using 1 by simp
     finally show ?case by simp
   qed

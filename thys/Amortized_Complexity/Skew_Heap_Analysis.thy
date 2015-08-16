@@ -1,7 +1,7 @@
 section{* Amortized Analysis of Skew Heaps *}
 
 theory Skew_Heap_Analysis
-imports "../Skew_Heap/Skew_Heap" Amor
+imports "../Skew_Heap/Skew_Heap" Amor Priority_Queue_ops
 begin
 
 text{* The following proof is a simplified version of the one by Kaldewaij and
@@ -110,8 +110,6 @@ proof -
   finally show ?thesis by(simp add: real_of_nat_Suc)
 qed
 
-datatype 'a op\<^sub>p\<^sub>q = Insert 'a | Delmin
-
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "nxt\<^sub>p\<^sub>q (Insert a) h = Skew_Heap.insert a h" |
 "nxt\<^sub>p\<^sub>q Delmin h = del_min h"
@@ -143,15 +141,15 @@ next
    thus ?thesis using a_meld_ub[of "Node Leaf a Leaf" "s"]
      by (simp add: numeral_eq_Suc insert_def)
   next
-    case Delmin
+    case Del_min
     thus ?thesis
     proof (cases s)
-      case Leaf with Delmin show ?thesis by simp
+      case Leaf with Del_min show ?thesis by simp
     next
       case (Node t1 _ t2)
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
-      from Delmin Node show ?thesis using a_meld_ub[of t1 t2]
+      from Del_min Node show ?thesis using a_meld_ub[of t1 t2]
         by (simp add: real_of_nat_Suc size1_def)
     qed
   qed
