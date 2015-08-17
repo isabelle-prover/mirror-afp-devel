@@ -46,8 +46,11 @@ fun del_min :: "'a :: linorder heap \<Rightarrow> 'a heap" where
   "del_min None = None"
 | "del_min (Some(Hp x hs)) = pass\<^sub>2 (pass\<^sub>1 hs)"
 
-fun ld :: "nat \<Rightarrow> real" where
+definition ld :: "nat \<Rightarrow> real" where
 "ld x = (if x = 0 then 0 else log 2 x)"
+
+lemma [simp]: "n \<noteq> 0 \<Longrightarrow> ld n = log 2 n"
+by (simp add: ld_def)
 
 fun szs :: "'a hp list \<Rightarrow> nat" where
 "szs(Hp x hsl # hsr) = szs hsl + szs hsr + 1" |
@@ -148,7 +151,7 @@ qed simp_all
 lemma \<Delta>\<Phi>_pass1: "\<phi> (pass\<^sub>1 h) - \<phi> h \<le> 2*ld(szs h) - length h + 2"
 proof - 
   have "sum_ub h \<le> 2*ld(szs h) - length h + 2" 
-    by (induct h rule: sum_ub.induct) simp_all
+    by (induct h rule: sum_ub.induct) (simp_all add: ld_def)
   thus ?thesis using \<Delta>\<Phi>_pass1_sum_ub[of h] by linarith
 qed
 
@@ -170,7 +173,7 @@ proof (induction hs)
       from szs_pass2[OF Some] Cons show ?thesis by(auto simp: add_mono)
     qed simp
   qed
-qed simp
+qed (simp add: ld_def)
 
 lemma \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n:  "\<Phi>o (del_min (Some h)) - \<Phi>o (Some h) 
   \<le> 3*ld(szs(hps h)) - length(hps h) + 2"
@@ -232,7 +235,7 @@ next
         hence  "t f s \<le> 1 + \<dots>" by simp
         moreover have  "\<Phi>o (del_min s) - \<Phi>o s \<le> 3*ld(szs hs) - length hs + 2"
           using  \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n[of h] by simp
-        moreover have "ld(szs hs) \<le> ld (szo s + 1)" by simp
+        moreover have "ld(szs hs) \<le> ld (szo s + 1)" by (simp add: ld_def)
         ultimately show ?thesis by simp
       qed
     qed simp
