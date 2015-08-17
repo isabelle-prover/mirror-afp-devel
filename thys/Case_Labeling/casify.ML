@@ -40,6 +40,10 @@ val dest_ct =
 fun dest_VC (Const (@{const_name Case_Labeling.VC}, _) $ ct $ t) = (dest_ct ct, t)
   | dest_VC t = ([], t)
 
+fun try_dest_Trueprop t = case try HOLogic.dest_Trueprop t of
+    NONE => t
+  | SOME t' => t'
+
 fun dest_BIND (Const (@{const_name Case_Labeling.BIND}, _) $ na $ ic $ t) =
     let
       val s = HOLogic.dest_string na
@@ -62,7 +66,7 @@ fun parse_label prop =
     val vars = Term.strip_all_vars prop
     val ((prems, label), _) = prop
       |> (Logic.strip_horn o Term.strip_all_body)
-      ||> HOLogic.dest_Trueprop
+      ||> try_dest_Trueprop
       ||>> dest_VC
   in { vars=vars, label=label, prems=prems} end
 
@@ -71,7 +75,7 @@ fun parse_prem prop =
     val vars = Term.strip_all_vars prop
     val (prems, (hier, concl)) = prop
       |> (Logic.strip_horn o Term.strip_all_body)
-      ||> HOLogic.dest_Trueprop
+      ||> try_dest_Trueprop
       ||> dest_HIER
     val prop' = Logic.list_all (vars, Logic.list_implies (prems, HOLogic.mk_Trueprop concl))
   in (hier, prop') end
@@ -99,7 +103,7 @@ fun strip_prg_ctxt n ((params, t), _) =
 
     val (asms, (label, concl)) = t
       |> Logic.strip_horn
-      ||> HOLogic.dest_Trueprop
+      ||> try_dest_Trueprop
       ||> dest_VC
 
     val prg_ctxt = upd_label_vars (build_param_map params) label
@@ -128,8 +132,8 @@ fun unique_names xs = fst (fold_map (Util.infst Name.variant) xs Name.context)
 fun build_precase (prg_ctxt, (prems, t))=
   let
     val sorted_prems = prems
-      |> map (apsnd (fn t => (fst (dest_BIND t), t)))
-      |> sort (prod_ord int_ord (prod_ord (option_ord (prod_ord fast_string_ord int_ord)) Term_Ord.fast_term_ord))
+      |> map (apsnd (fn t => (fst (dest_BIND (try_dest_Trueprop t)), t)))
+      |> sort (prod_ord int_ord (prod_ord (option_ord (prod_ord fast_string_ord int_ord)) (K EQUAL)))
 
     fun drop_labels (Const (@{const_name "Case_Labeling.BIND"}, _) $ _ $ _ $ t ) = drop_labels t
       | drop_labels (t1 $ t2) = drop_labels t1 $ drop_labels t2

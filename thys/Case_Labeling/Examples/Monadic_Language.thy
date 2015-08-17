@@ -167,7 +167,7 @@ print_nested_cases
         by (metis dvd_div_mult_self dvd_mult_left)
       moreover
       { fix m assume "odd m" "m dvd a" 
-        then have "m dvd n" using conseq(2) by simp
+        then have "m dvd n" using conseq.inv_pre(3) by simp
         moreover note \<open>even n\<close>
         moreover from \<open>odd m\<close> have "coprime m 2"
          by (metis dvd_eq_mod_eq_0 invertible_coprime_int mult_cancel_left2 not_mod_2_eq_1_eq_0)
