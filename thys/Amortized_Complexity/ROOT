@@ -19,6 +19,7 @@ session Amortized_Complexity (AFP) = HOL +
     Splay_Tree_Analysis_Optimal
     Splay_Heap
     Pairing_Heap
+    Pairing_Heap_List
     Move_to_Front
 
   document_files
