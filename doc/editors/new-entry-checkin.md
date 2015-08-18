@@ -13,7 +13,7 @@ current release branch and development version.
         hg clone ssh://hg@bitbucket.org/isa-afp/afp-20XX release
 
 -   for development
-    
+
         hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel devel
 
 You might need to set up ssh keys on Bitbucket for this to work. This can
@@ -42,7 +42,7 @@ Everything happens in the release branch `afp/release`.
             chapter AFP
 
             session foo (AFP) = bar +
-          
+
 
 4.  to check, run in `afp/release/thys`
 
@@ -68,7 +68,8 @@ Everything happens in the release branch `afp/release`.
     changes aren't pushed.
 12. to publish the changes to the web, run
 
-         cd ../admin ./publish -r Isabelle201X <name>
+         cd ../admin
+         ./publish -r Isabelle201X <name>
 
     This will check out the Isabelle201X (=release) version of the
     archive from bitbucket, will run the session `name` to generate
