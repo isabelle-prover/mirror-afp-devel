@@ -3092,3 +3092,11 @@ topic = Mathematics/Algebra
 author = Jeremy Sylvestre <http://www.ualberta.ca/~jsylvest/>
 date = 2015-08-12
 abstract = We provide a formal framework for the theory of representations of finite groups, as modules over the group ring. Along the way, we develop the general theory of groups (relying on the group_add class for the basics), modules, and vector spaces, to the extent required for theory of group representations. We then provide formal proofs of several important introductory theorems in the subject, including Maschke's theorem, Schur's lemma, and Frobenius reciprocity. We also prove that every irreducible representation is isomorphic to a submodule of the group ring, leading to the fact that for a finite group there are only finitely many isomorphism classes of irreducible representations. In all of this, no restriction is made on the characteristic of the ring or field of scalars until the definition of a group representation, and then the only restriction made is that the characteristic must not divide the order of the group.
+
+[Noninterference_Inductive_Unwinding]
+title = The Inductive Unwinding Theorem for CSP Noninterference Security
+topic = Computer Science/Security
+author = Pasquale Noce <pasquale.noce.lavoro@gmail.com>
+date = 2015-08-18
+abstract = The necessary and sufficient condition for CSP noninterference security stated by the Ipurge Unwinding Theorem, which is expressed in terms of a pair of event lists varying over the set of process traces. This does not render it suitable for the subsequent application of rule induction in the case of a process defined inductively, since rule induction may rather be applied to a single variable ranging over an inductively defined set. Starting from the Ipurge Unwinding Theorem, this paper derives a necessary and sufficient condition for CSP noninterference security that involves a single event list varying over the set of process traces, and is thus suitable for rule induction; hence its name, Inductive Unwinding Theorem. Similarly to the Ipurge Unwinding Theorem, the new theorem only requires to consider individual accepted and refused events for each process trace, and applies to the general case of a possibly intransitive noninterference policy. Specific variants of this theorem are additionally proven for deterministic processes and trace set processes.
+
