@@ -283,7 +283,7 @@ proof -
   then have "\<And>c. c \<in> vc \<Longrightarrow> card c \<le> \<alpha> G"
     using vc_vc fin_vc_elems by (subst le_\<alpha>_iff) (auto simp add: vertex_colorings_def)
   then have "(\<Sum>c\<in>vc. card c) \<le> card vc * \<alpha> G"
-    using setsum_bounded[of vc card "\<alpha> G"]
+    using setsum_bounded_above[of vc card "\<alpha> G"]
     by (simp add: of_nat_eq_enat[symmetric] of_nat_setsum)
   then have "ereal_of_enat (card (uverts G)) \<le> ereal_of_enat (\<alpha> G) * ereal_of_enat (card vc)"
     by (simp add: sum_vc_card ereal_of_enat_pushout ac_simps del: ereal_of_enat_simps)
