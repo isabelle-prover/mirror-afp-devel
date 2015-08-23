@@ -1,0 +1,63 @@
+chapter AFP
+
+session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
+  options [timeout = 600]
+  theories
+    Missing_Unsorted
+    Missing_Ring
+    Missing_Polynomial
+    Missing_Permutations
+    Missing_Abstract_Rewriting
+    Missing_IArray_Haskell
+  theories
+    Matrix_Impl
+    Matrix_Complexity
+  document_files
+    "root.bib"
+    "root.tex"
+
+session "JNF-HOL-Lib" in "~~/src/HOL/Library" = "HOL-Algebra" +
+  description {* Theories that are not part of HOL but are used by this entry *}
+  options [document = false]
+  theories
+    AList
+    Cardinality
+    Char_ord
+    Code_Char
+    Code_Binary_Nat
+    Code_Target_Numeral
+    DAList
+    DAList_Multiset
+    Fundamental_Theorem_Algebra
+    Infinite_Set
+    Lattice_Syntax
+    List_lexord
+    Mapping
+    Monad_Syntax
+    More_List
+    Multiset
+    Permutation
+    Permutations
+    Polynomial
+    IArray
+    Phantom_Type
+    Ramsey
+    RBT_Impl
+    Simps_Case_Conv
+    While_Combinator
+    "~~/src/HOL/Number_Theory/UniqueFactorization"
+    "~~/src/HOL/Cardinals/Order_Union"
+    "~~/src/HOL/Cardinals/Wellorder_Extension"
+
+session "JNF-AFP-Lib" = "JNF-HOL-Lib" +
+  description {* Theories from the Archive of Formal Proofs that are used by this entry *}
+  options [document = false]
+  theories
+    "../Containers/Set_Impl"
+    "../Gauss_Jordan/IArray_Haskell"
+    "../Matrix/Utility"
+    "../Matrix/Ordered_Semiring"
+    "../Abstract-Rewriting/SN_Order_Carrier"
+    "../Abstract-Rewriting/Relative_Rewriting"
+    "../Show/Show_Instances"
+
