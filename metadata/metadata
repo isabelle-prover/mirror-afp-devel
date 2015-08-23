@@ -3115,3 +3115,20 @@ abstract =
   </p><p>
   Starting from the Ipurge Unwinding Theorem, this paper derives a necessary and sufficient condition for CSP noninterference security that involves a single event list varying over the set of process traces, and is thus suitable for rule induction; hence its name, Inductive Unwinding Theorem. Similarly to the Ipurge Unwinding Theorem, the new theorem only requires to consider individual accepted and refused events for each process trace, and applies to the general case of a possibly intransitive noninterference policy. Specific variants of this theorem are additionally proven for deterministic processes and trace set processes.
   </p>
+
+[Jordan_Normal_Form]
+title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
+topic = Mathematics/Algebra
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+date = 2015-08-21
+depends-on = Containers, Gauss_Jordan, Matrix, Abstract-Rewriting, Show
+abstract =
+  <p>
+  Matrix interpretations are useful as measure functions in termination proving. In order to use these interpretations also for complexity analysis, the growth rate of matrix powers has to examined. Here, we formalized a central result of spectral radius theory, namely that the growth rate is polynomially bounded if and only if the spectral radius of a matrix is at most one.
+  </p><p>
+  To formally prove this result we first studied the growth rates of matrices in Jordan normal form, and partially prove the result that every complex matrix has a Jordan normal form: we are restricted to upper-triangular matrices since we did not yet formalize the Schur decomposition.
+  </p><p>
+  The whole development is based on a new abstract type for matrices, which is also executable by a suitable setup of the code generator. It completely subsumes our former AFP-entry on executable matrices, and its main advantage is its close connection to the HMA-representation which allowed us to easily adapt existing proofs on determinants.
+  </p><p>
+  All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
+  </p>
