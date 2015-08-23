@@ -2777,6 +2777,15 @@ date = 2013-11-01
 topic = Logic/Rewriting
 abstract = This theory contains a formalization of decreasing diagrams showing that any locally decreasing abstract rewrite system is confluent. We consider the valley (van Oostrom, TCS 1994) and the conversion version (van Oostrom, RTA 2008) and closely follow the original proofs. As an application we prove Newman's lemma.
 
+[Decreasing-Diagrams-II]
+title = Decreasing Diagrams II
+author = Bertram Felgenhauer <mailto:bertram.felgenhauer@uibk.ac.at>
+license = LGPL
+depends-on = Abstract-Rewriting
+date = 2015-08-20
+topic = Logic/Rewriting
+abstract = This theory formalizes the commutation version of decreasing diagrams for Church-Rosser modulo. The proof follows Felgenhauer and van Oostrom (RTA 2013). The theory also provides important specializations, in particular van Oostrom’s conversion version (TCS 2008) of decreasing diagrams.
+
 [FocusStreamsCaseStudies]
 title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
 author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>

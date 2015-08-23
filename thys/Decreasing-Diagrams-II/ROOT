@@ -1,0 +1,15 @@
+chapter AFP
+
+session "Decreasing-Diagrams-II" (AFP) = "Abstract-Rewriting" +
+  options [timeout = 600]
+
+  theories [document = false]
+    "~~/src/HOL/Cardinals/Wellorder_Extension"
+    "../Well_Quasi_Orders/Multiset_Extension"
+    "../Well_Quasi_Orders/Well_Quasi_Orders"
+
+  theories
+    Decreasing_Diagrams_II
+
+  document_files
+    "root.tex" "root.bib"
