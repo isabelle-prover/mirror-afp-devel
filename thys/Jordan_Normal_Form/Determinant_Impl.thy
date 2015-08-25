@@ -213,7 +213,7 @@ proof -
     thus ?case
       using Suc assms mute_preserves_triangle[OF rA'] rA'' by auto
   qed (insert assms,auto)
-qed auto
+qed 
 
 lemma sub1_makes_0s:
   assumes "sub1 k l (r,A) = (r',A')"
@@ -258,7 +258,7 @@ proof -
       }
     qed
   qed auto
-qed auto
+qed
 
 lemma sub1_triangulizes_column:
   assumes rA': "sub1 (dim\<^sub>r A - Suc l) l (r,A) = (r',A')"
@@ -583,7 +583,7 @@ proof -
       show "triangular_to (Suc l) A'"
         using sub2_grows_triangle[OF rA'] lr lc rA'' IH by auto
   qed auto
-qed auto
+qed
 
 subsection {* Triangulization *}
 

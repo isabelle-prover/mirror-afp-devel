@@ -50,7 +50,7 @@ proof (rule ccontr)
   then obtain n where lt: "cc / bbb < of_nat n" by auto
   from not have "\<not> b ^ n \<le> c" by auto
   hence bnc: "b ^ n > c" by simp
-  have "bb ^ n = inverse (b ^ n)" unfolding bb_def by (rule sym, rule power_inverse)
+  have "bb ^ n = inverse (b ^ n)" unfolding bb_def by (rule power_inverse)
   also have "\<dots> < cc" unfolding cc_def
     by (rule less_imp_inverse_less[OF bnc c])
   also have "\<dots> < bbb * of_nat n" using lt bbb by (metis mult.commute pos_divide_less_eq)
@@ -206,35 +206,33 @@ lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}" by auto
 lemma setprod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
   by (induct n, auto simp: set_upt_Suc)
 
-
-text \<open>For determinant computation, we require the @{const div}-operation.
+text \<open>For determinant computation, we require the @{class ring_div}-class.
 In order to also support rational and real numbers, we therefore provide the
-following class which has both @{const div} and @{const divide}.\<close>
+following class which defines @{const mod} for fields and will be a subclass
+of @{class ring_div}.\<close>
+
 
 class ring_div_field = field + div +
-  assumes div: "(op div :: 'a \<Rightarrow> 'a \<Rightarrow> 'a) = op /"
-  and mod: "(x :: 'a) mod y = (if y = 0 then x else 0)"
+  assumes mod: "(x :: 'a) mod y = (if y = 0 then x else 0)"
 begin
 
 subclass ring_div
-  by (unfold_locales, auto simp: div mod field_simps)
+  by (unfold_locales, auto simp: mod field_simps)
 
 end
 
 instantiation rat :: ring_div_field
 begin
-definition "div_rat = (op / :: rat \<Rightarrow> rat \<Rightarrow> rat)"
 definition "mod_rat (x :: rat) (y :: rat) = (if y = 0 then x else 0)"
 instance
-  by (intro_classes, auto simp: div_rat_def mod_rat_def)
+  by (intro_classes, auto simp: mod_rat_def)
 end
 
 instantiation real :: ring_div_field
 begin
-definition "div_real = (op / :: real \<Rightarrow> real \<Rightarrow> real)"
 definition "mod_real (x :: real) (y :: real) = (if y = 0 then x else 0)"
 instance
-  by (intro_classes, auto simp: div_real_def mod_real_def)
+  by (intro_classes, auto simp: mod_real_def)
 end
 
 end

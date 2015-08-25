@@ -293,8 +293,7 @@ proof -
     show "c * b ^ x * max 1 ?exp \<le> max p c"
     proof (cases "x = 0")
       case False
-      hence "?exp \<noteq> of_nat 0"
-        unfolding of_nat_eq_iff power_eq_0_nat_iff by simp
+      hence "?exp \<noteq> of_nat 0" by simp
       hence "?exp \<ge> 1" by (metis less_one not_less of_nat_1 of_nat_less_iff of_nat_power)
       hence "max 1 ?exp = ?exp" by simp
       thus ?thesis using p[of x] by simp
