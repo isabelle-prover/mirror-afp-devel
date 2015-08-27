@@ -42,7 +42,7 @@ where
     case l of (y,ys) \<Rightarrow> (y, case fst y of Acute \<Rightarrow> ys @ zs | Grave \<Rightarrow> xs @ ys | Macron \<Rightarrow> ys)"
 
 definition ms_of_greek :: "'a greek \<Rightarrow> ('a letter \<times> 'a greek) multiset" where
-  "ms_of_greek as = multiset_of
+  "ms_of_greek as = mset
     (map (\<lambda>(xs, y, zs) \<Rightarrow> adj_msog xs zs (y, [])) (list_splits as))"
 
 lemma adj_msog_adj_msog[simp]:
@@ -57,7 +57,7 @@ lemma adj_msog_single:
 by (simp add: adj_msog_def split: accent.splits)
 
 lemma ms_of_greek_elem:
-  assumes "(x,xs) \<in> set_of (ms_of_greek ys)"
+  assumes "(x,xs) \<in> set_mset (ms_of_greek ys)"
   shows "x \<in> set ys"
 using assms by (auto dest: elem_list_splits_elem simp: adj_msog_def ms_of_greek_def)
 
@@ -69,7 +69,7 @@ by (auto simp: elem_list_splits_length adj_msog_def split: accent.splits)
 
 lemma msog_append: "ms_of_greek (xs @ ys) = image_mset (adj_msog [] ys) (ms_of_greek xs) +
   image_mset (adj_msog xs []) (ms_of_greek ys)"
-by (auto simp: ms_of_greek_def list_splits_append multiset_of_map multiset.map_comp comp_def
+by (auto simp: ms_of_greek_def list_splits_append mset_map multiset.map_comp comp_def
   prod.case_distrib)
 
 definition nest :: "('a \<times> 'a) set \<Rightarrow> ('a greek \<times> 'a greek) set \<Rightarrow> ('a greek \<times> 'a greek) set" where
@@ -184,8 +184,8 @@ by (simp add: inv_msog_def multiset.map_comp comp_def case_prod_distrib)
 
 lemma ms_of_greek_inv_greek:
   "ms_of_greek (inv_greek M) = inv_msog (ms_of_greek M)"
-unfolding inv_msog_def inv_greek_def ms_of_greek_def list_splits_rev list_splits_map multiset_of_map
-  multiset.map_comp multiset_of_rev inv_letter_def adj_msog_def
+unfolding inv_msog_def inv_greek_def ms_of_greek_def list_splits_rev list_splits_map mset_map
+  multiset.map_comp mset_rev inv_letter_def adj_msog_def
 by (rule cong[OF cong[OF refl[of "image_mset"]] refl]) (auto split: accent.splits)
 
 lemma inv_greek_mono:
@@ -336,7 +336,7 @@ qed
 subsection \<open>Basic Comparisons\<close>
 
 lemma pairwise_imp_mult:
-  assumes "trans r" and  "N \<noteq> {#}" and "\<forall>x \<in> set_of M. \<exists>y \<in> set_of N. (x, y) \<in> r"
+  assumes "trans r" and  "N \<noteq> {#}" and "\<forall>x \<in> set_mset M. \<exists>y \<in> set_mset N. (x, y) \<in> r"
   shows "(M, N) \<in> mult r"
 using assms one_step_implies_mult[of _ _ _ "{#}"] by auto
 
@@ -345,7 +345,7 @@ lemma singleton_greek_less:
   shows "(as, [(a,b)]) \<in> greek_less r"
 proof -
   {
-    fix e assume "e \<in> set_of (ms_of_greek as)"
+    fix e assume "e \<in> set_mset (ms_of_greek as)"
     with as ms_of_greek_elem[of _ _ as]
     have "(e, ((a,b),[])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (fastforce simp: adj_msog_def under_def)
@@ -371,40 +371,40 @@ proof -
   next
     (* we distinguish 5 cases depending on where in xs an element e originates *)
     {
-      fix e assume "e \<in> set_of (ms_of_greek as)"
+      fix e assume "e \<in> set_mset (ms_of_greek as)"
       with as ms_of_greek_elem[of _ _ as]
       have "(adj_msog [] (b' @ cs @ a' @ bs) e, (?A,[?B])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def under_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek b')"
+      fix e assume "e \<in> set_mset (ms_of_greek b')"
       with b' singleton_greek_less[OF `trans r` as] ms_of_greek_elem[of _ _ b']
       have "(adj_msog as (cs @ a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek cs)"
+      fix e assume "e \<in> set_mset (ms_of_greek cs)"
       with cs ms_of_greek_elem[of _ _ cs]
       have "(adj_msog (as @ b') (a' @ bs) e, (?A,[?B])) \<in> letter_less r <*lex*> greek_less r \<or>
             (adj_msog (as @ b') (a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def under_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek a')"
+      fix e assume "e \<in> set_mset (ms_of_greek a')"
       with a' singleton_greek_less[OF `trans r` bs] ms_of_greek_elem[of _ _ a']
       have "(adj_msog (as @ b' @ cs) bs e, (?A,[?B])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek bs)"
+      fix e assume "e \<in> set_mset (ms_of_greek bs)"
       with bs ms_of_greek_elem[of _ _ bs]
       have "(adj_msog (as @ b' @ cs @ a') [] e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def under_def)
     }
     moreover have "ms_of_greek [?A,?B] = {# (?B,[?A]), (?A,[?B]) #}"
     by (simp add: adj_msog_def ms_of_greek_def)
-    ultimately show "\<forall>x\<in>set_of (ms_of_greek (as @ b' @ cs @ a' @ bs)).
-      \<exists>y\<in>set_of (ms_of_greek [?A,?B]). (x, y) \<in> letter_less r <*lex*> greek_less r"
+    ultimately show "\<forall>x\<in>set_mset (ms_of_greek (as @ b' @ cs @ a' @ bs)).
+      \<exists>y\<in>set_mset (ms_of_greek [?A,?B]). (x, y) \<in> letter_less r <*lex*> greek_less r"
     by (auto simp: msog_append) blast
   qed (auto simp: ms_of_greek_def)
   then show ?thesis by (subst greek_less_unfold) auto
@@ -426,33 +426,33 @@ proof -
   using `trans r` trans_letter_less by auto
   (* we distinguish 5 cases depending on where in xs an element e originates *)
   {
-    fix e assume "e \<in> set_of (ms_of_greek as)"
+    fix e assume "e \<in> set_mset (ms_of_greek as)"
     with as ms_of_greek_elem[of _ _ as]
     have "(adj_msog [] (b' @ cs @ a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (force simp: adj_msog_def under_def)
   }
   moreover {
-    fix e assume "e \<in> set_of (ms_of_greek b')"
+    fix e assume "e \<in> set_mset (ms_of_greek b')"
     with b' singleton_greek_less[OF `trans r`] as ms_of_greek_elem[of _ _ b']
     have "(adj_msog as (cs @ a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
   }
   moreover {
-    fix e assume "e \<in> set_of (ms_of_greek cs)"
+    fix e assume "e \<in> set_mset (ms_of_greek cs)"
     with cs ms_of_greek_elem[of _ _ cs]
     have "(adj_msog (as @ b') (a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (fastforce simp: adj_msog_def under_def)
   }
   moreover {
-    fix e assume "e \<in> set_of (ms_of_greek bs)"
+    fix e assume "e \<in> set_mset (ms_of_greek bs)"
     with bs ms_of_greek_elem[of _ _ bs]
     have "(adj_msog (as @ b' @ cs @ a') [] e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (fastforce simp: adj_msog_def under_def)
   }
   moreover have "ms_of_greek [?A,?B] = {# (?B,[?A]), (?A,[]) #}"
   by (simp add: adj_msog_def ms_of_greek_def)
-  ultimately have "\<forall>x\<in>set_of (ms_of_greek (as @ b' @ cs @ a' @ bs) - {#(?A,[])#}).
-    \<exists>y\<in>set_of (ms_of_greek [?A,?B] - {#(?A,[])#}). (x, y) \<in> letter_less r <*lex*> greek_less r"
+  ultimately have "\<forall>x\<in>set_mset (ms_of_greek (as @ b' @ cs @ a' @ bs) - {#(?A,[])#}).
+    \<exists>y\<in>set_mset (ms_of_greek [?A,?B] - {#(?A,[])#}). (x, y) \<in> letter_less r <*lex*> greek_less r"
   unfolding msog_append by (auto simp: a' msog_append ac_simps * adj_msog_single)
   from one_step_implies_mult[OF *** ** this,of "{#(?A,[])#}"]
   have "(ms_of_greek (as @ b' @ cs @ a' @ bs), ms_of_greek [?A,?B]) \<in> mult (letter_less r <*lex*> greek_less r)"
@@ -475,19 +475,19 @@ proof -
   next
     (* we distinguish 3 cases depending on where in xs an element e originates *)
     {
-      fix e assume "e \<in> set_of (ms_of_greek as)"
+      fix e assume "e \<in> set_mset (ms_of_greek as)"
       with as ms_of_greek_elem[of _ _ as]
       have "(adj_msog [] (b' @ cs) e, (?A,[])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def under_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek b')"
+      fix e assume "e \<in> set_mset (ms_of_greek b')"
       with b' singleton_greek_less[OF `trans r` as] ms_of_greek_elem[of _ _ b']
       have "(adj_msog as (cs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
     moreover {
-      fix e assume "e \<in> set_of (ms_of_greek cs)"
+      fix e assume "e \<in> set_mset (ms_of_greek cs)"
       with cs ms_of_greek_elem[of _ _ cs]
       have "(adj_msog (as @ b') [] e, (?A,[])) \<in> letter_less r <*lex*> greek_less r \<or>
             (adj_msog (as @ b') [] e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
@@ -495,8 +495,8 @@ proof -
     }
     moreover have *: "ms_of_greek [?A,?B] = {# (?B,[?A]), (?A,[]) #}"
     by (simp add: adj_msog_def ms_of_greek_def)
-    ultimately show "\<forall>x\<in>set_of (ms_of_greek (as @ b' @ cs)).
-      \<exists>y\<in>set_of (ms_of_greek [?A,?B]). (x, y) \<in> letter_less r <*lex*> greek_less r"
+    ultimately show "\<forall>x\<in>set_mset (ms_of_greek (as @ b' @ cs)).
+      \<exists>y\<in>set_mset (ms_of_greek [?A,?B]). (x, y) \<in> letter_less r <*lex*> greek_less r"
     by (auto simp: msog_append adj_msog_single ac_simps *) blast
   qed (auto simp: ms_of_greek_def)
   then show ?thesis by (subst greek_less_unfold) auto

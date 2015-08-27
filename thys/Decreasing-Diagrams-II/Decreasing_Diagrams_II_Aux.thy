@@ -126,13 +126,13 @@ lemma mulex_iff_mult: "mulex r M N \<longleftrightarrow> (M,N) \<in> mult {(M,N)
 by (auto simp add: mulex_on_def restrict_to_def mult_def mulex1_def tranclp_unfold)
 
 lemma multI:
-  assumes "trans r" "M = I + K" "N = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_of K. \<exists>j \<in> set_of J. (k,j) \<in> r"
+  assumes "trans r" "M = I + K" "N = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k,j) \<in> r"
   shows "(M,N) \<in> mult r"
 using assms one_step_implies_mult by blast
 
 lemma multE:
   assumes "trans r" and "(M,N) \<in> mult r"
-  obtains I J K where "M = I + K" "N = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_of K. \<exists>j \<in> set_of J. (k,j) \<in> r"
+  obtains I J K where "M = I + K" "N = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k,j) \<in> r"
 using mult_implies_one_step[OF assms] by blast
 
 lemma mult_on_union: "(M,N) \<in> mult r \<Longrightarrow> (K + M, K + N) \<in> mult r"
@@ -160,10 +160,10 @@ proof -
   show "irrefl (mult R)" unfolding irrefl_def
   proof (intro allI notI, elim multE[OF `trans R`])
     fix M I J K
-    assume "M = I + J" "M = I + K" "J \<noteq> {#}" and *: "\<forall>k \<in> set_of K. \<exists>j \<in> set_of J. (k, j) \<in> R"
+    assume "M = I + J" "M = I + K" "J \<noteq> {#}" and *: "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k, j) \<in> R"
     from `M = I + J` and `M = I + K` have "J = K" by simp
-    have "finite (set_of J)" by simp
-    then have "set_of J = {}" using * unfolding `J = K`
+    have "finite (set_mset J)" by simp
+    then have "set_mset J = {}" using * unfolding `J = K`
       by (induct rule: finite_induct)
          (simp, metis assms insert_absorb insert_iff insert_not_empty irrefl_def transD)
     then show "False" using `J \<noteq> {#}` by simp
@@ -172,14 +172,14 @@ qed (simp add: trans_mult)
 
 lemma mult_of_image_mset:
   assumes "trans R" and "trans R'"
-  and "\<And>x y. x \<in> set_of N \<Longrightarrow> y \<in> set_of M \<Longrightarrow> (x,y) \<in> R \<Longrightarrow> (f x, f y) \<in> R'"
+  and "\<And>x y. x \<in> set_mset N \<Longrightarrow> y \<in> set_mset M \<Longrightarrow> (x,y) \<in> R \<Longrightarrow> (f x, f y) \<in> R'"
   and "(N, M) \<in> mult R"
   shows "(image_mset f N, image_mset f M) \<in> mult R'"
 proof (insert assms(4), elim multE[OF assms(1)])
   fix I J K
-  assume "N = I + K" "M = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_of K. \<exists>j \<in> set_of J. (k, j) \<in> R"
+  assume "N = I + K" "M = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k, j) \<in> R"
   thus "(image_mset f N, image_mset f M) \<in> mult R'" using assms(2,3)
-  by (intro multI, auto simp del: mem_set_of_iff) blast
+  by (intro multI, auto simp del: mem_set_mset_iff) blast
 qed
 
 
