@@ -15,7 +15,7 @@ type_synonym ('s,'e,'d)hactl    = "(('s,'e,'d)status,('s,'e,'d)atomar)ctl"
 
 definition
   LabelFunSem :: "('s,'e,'d)hierauto
-              => (('s,'e,'d)status ~=> ((('s,'e,'d) atomar) set))" where
+              => (('s,'e,'d)status \<rightharpoonup> ((('s,'e,'d) atomar) set))" where
   "LabelFunSem a = (\<lambda> ST.
          (if (HA ST = a) then
               (let

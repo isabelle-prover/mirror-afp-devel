@@ -14,8 +14,8 @@ text {*
   We consider the following operations:
 \begin{verbatim}
 makeAFS     :: AFile
-afsRead     :: "AFile => nat ~=> byte"
-afsWrite    :: "AFile => nat => byte ~=> AFile"
+afsRead     :: "AFile => nat \<rightharpoonup> byte"
+afsWrite    :: "AFile => nat => byte \<rightharpoonup> AFile"
 afsFileSize :: "AFile => nat"
 \end{verbatim}
 *}
@@ -47,12 +47,12 @@ definition afSize :: "AFile => nat" where
   -- "file size is the length of the resizable array"
   "afSize afile == fst afile"
 
-definition afRead :: "AFile => nat ~=> byte" where
+definition afRead :: "AFile => nat \<rightharpoonup> byte" where
   -- "reading from a file looks up the byte, reporting @{term None} if the index is out of file bounds"
   "afRead afile byteIndex == 
    if byteIndex < fst afile then Some ((snd afile) byteIndex) else None"
 
-definition afWrite :: "AFile => nat => byte ~=> AFile" where
+definition afWrite :: "AFile => nat => byte \<rightharpoonup> AFile" where
   -- "writing to a file updates the file content and extends the file if there is enough space"
   "afWrite afile byteIndex value == 
    if byteIndex div blockSize < numBlocks then
@@ -81,7 +81,7 @@ definition cfSize :: "CFile => nat" where
   "cfSize cfile == fileSize cfile"
 
 
-definition cfRead :: "CFile => nat ~=> byte" where
+definition cfRead :: "CFile => nat \<rightharpoonup> byte" where
   -- {* Looks up correct data block and reads its content,
         if byteIndex is within bounds, else returns None. *}
   "cfRead cfile byteIndex ==
@@ -115,7 +115,7 @@ definition cfExtendFile :: "CFile => nat => CFile" where
 
 text {* The main file write operation. *}
 
-definition cfWrite :: "CFile => nat => byte ~=> CFile" where
+definition cfWrite :: "CFile => nat => byte \<rightharpoonup> CFile" where
   -- {* Writes the file at byte location byteIndex, automatically extending
    the file to that byte location if byteIndex is not within bounds.  *}
   "cfWrite cfile byteIndex value ==

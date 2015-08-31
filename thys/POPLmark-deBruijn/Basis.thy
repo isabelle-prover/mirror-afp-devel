@@ -118,7 +118,7 @@ no_syntax
   "_constrain" :: "[logic, type] => 'a"  ("_\<Colon>_" [4, 0] 3)
   "_idtyp" :: "[id, type] => idt"  ("_\<Colon>_" [] 0)
   "_idtypdummy" :: "type => idt"  ("'_()\<Colon>_" [] 0)
-  "_Map" :: "maplets => 'a ~=> 'b"  ("(1[_])")
+  "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  ("(1[_])")
 
 
 end

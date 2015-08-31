@@ -15,12 +15,12 @@ subsection {* Definitions *}
 
 definition
   RootEx :: "[(('s,'e,'d)seqauto) set,
-              's ~=>  ('s,'e,'d) seqauto set] => bool" where
+              's \<rightharpoonup>  ('s,'e,'d) seqauto set] => bool" where
   "RootEx F G = (\<exists>! A. A \<in> F \<and> A \<notin> \<Union> (ran G))"
 
 definition
   Root :: "[(('s,'e,'d)seqauto) set,
-            's ~=> ('s,'e,'d) seqauto set]
+            's \<rightharpoonup> ('s,'e,'d) seqauto set]
            => ('s,'e,'d) seqauto" where
   "Root F G = (@ A. A \<in> F \<and>  A \<notin> \<Union> (ran G))"
 
@@ -35,7 +35,7 @@ definition
 
 definition
  OneAncestor :: "[(('s,'e,'d)seqauto) set,
-                   's ~=> ('s,'e,'d) seqauto set] => bool" where
+                   's \<rightharpoonup> ('s,'e,'d) seqauto set] => bool" where
  "OneAncestor F G =
                 (\<forall> A \<in> F - {Root F G} .
                     \<exists>! s. s \<in> (\<Union> A' \<in> F - {A} . States A') \<and> 
@@ -45,7 +45,7 @@ definition
 
 definition
   NoCycles :: "[(('s,'e,'d)seqauto) set,
-                   's ~=> ('s,'e,'d) seqauto set] => bool" where
+                   's \<rightharpoonup> ('s,'e,'d) seqauto set] => bool" where
   "NoCycles F G =
        (\<forall> S \<in> Pow (\<Union> A \<in> F. States A).
            S \<noteq> {} \<longrightarrow>  (\<exists> s \<in> S. S \<inter> (\<Union> A \<in> the (G s). States A) = {}))"
@@ -54,7 +54,7 @@ definition
 
 definition
   IsCompFun :: "[(('s,'e,'d)seqauto) set,
-                    's ~=> ('s,'e,'d) seqauto set] => bool" where
+                    's \<rightharpoonup> ('s,'e,'d) seqauto set] => bool" where
   "IsCompFun F G = ((dom G = (\<Union> A \<in> F. States A)) \<and> 
                     (\<Union> (ran G) = (F - {Root F G})) \<and> 
                     (RootEx F G) \<and> 
@@ -67,7 +67,7 @@ definition
   HierAuto :: "['d data,
                  (('s,'e,'d)seqauto) set,
                 'e set,
-                's ~=> (('s,'e,'d)seqauto) set]
+                's \<rightharpoonup> (('s,'e,'d)seqauto) set]
                 => bool" where
   "HierAuto D F E G = ((\<Union> A \<in> F. SAEvents A) \<subseteq> E \<and> 
                        MutuallyDistinct F \<and> 
@@ -88,11 +88,11 @@ definition
         (D::'d data)
         (F::(('s,'e,'d) seqauto) set)
         (E::('e set))
-        (G::('s ~=> (('s,'e,'d) seqauto) set)).
+        (G::('s \<rightharpoonup> (('s,'e,'d) seqauto) set)).
                                 HierAuto D F E G}"
 
 typedef ('s,'e,'d) hierauto =
-    "hierauto :: ('d data * ('s,'e,'d) seqauto set * 'e set * ('s ~=> ('s,'e,'d) seqauto set)) set"
+    "hierauto :: ('d data * ('s,'e,'d) seqauto set * 'e set * ('s \<rightharpoonup> ('s,'e,'d) seqauto set)) set"
   unfolding hierauto_def
   apply (rule exI)
   apply (rule HierAuto_EmptySet)
@@ -107,7 +107,7 @@ definition
   "HAEvents = fst o snd o snd o Rep_hierauto"
 
 definition
-  CompFun :: "(('s,'e,'d) hierauto) => ('s ~=> ('s,'e,'d) seqauto set)" where
+  CompFun :: "(('s,'e,'d) hierauto) => ('s \<rightharpoonup> ('s,'e,'d) seqauto set)" where
   "CompFun = (snd o snd o snd o Rep_hierauto)"
 
 definition

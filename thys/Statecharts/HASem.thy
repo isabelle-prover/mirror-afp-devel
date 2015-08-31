@@ -12,12 +12,12 @@ begin
 subsection {* Definitions *}
 
 definition
-  RootExSem :: "[(('s,'e,'d)seqauto) set, 's ~=> ('s,'e,'d)seqauto set,
+  RootExSem :: "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
                  's set] => bool" where
   "RootExSem F G C == (\<exists>! S. S \<in> States (Root F G) \<and> S \<in> C)"
 
 definition
-  UniqueSucStates ::  "[(('s,'e,'d)seqauto) set, 's ~=> ('s,'e,'d)seqauto set,
+  UniqueSucStates ::  "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
                         's set] \<Rightarrow> bool" where
   "UniqueSucStates F G C  == \<forall> S \<in> (UNION F States).
                                    \<forall> A \<in> the (G S).
@@ -27,7 +27,7 @@ definition
                                        \<forall> S \<in> States A. S \<notin> C"
 
 definition
-  IsConfSet :: "[(('s,'e,'d)seqauto) set, 's ~=> ('s,'e,'d)seqauto set,
+  IsConfSet :: "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
                  's set] => bool" where
   "IsConfSet F G C ==
                 C \<subseteq> (UNION F States) &

@@ -11,7 +11,7 @@ begin
 subsection "Constructing a Composition Function for a PseudoHA"
 
 definition
-  EmptyMap :: "'s set => ('s ~=> (('s,'e,'d)seqauto) set)" where
+  EmptyMap :: "'s set => ('s \<rightharpoonup> (('s,'e,'d)seqauto) set)" where
   "EmptyMap S = (\<lambda> a . if a \<in> S then Some {} else None)"
 
 lemma EmptyMap_dom [simp]:
@@ -96,8 +96,8 @@ by (unfold hierauto_def HierAuto_def, auto)
 subsection "Extending a Composition Function by a SA"
 
 definition
-  FAddSA :: "[('s ~=> (('s,'e,'d)seqauto) set), 's * ('s,'e,'d)seqauto]
-             => ('s ~=> (('s,'e,'d)seqauto) set)"
+  FAddSA :: "[('s \<rightharpoonup> (('s,'e,'d)seqauto) set), 's * ('s,'e,'d)seqauto]
+             => ('s \<rightharpoonup> (('s,'e,'d)seqauto) set)"
            ("(_ [f+]/ _)" [10,11]10) where
   "FAddSA G SSA = (let  (S,SA) = SSA
                    in
@@ -144,19 +144,19 @@ done
 
 lemma FAddSA_dom_dom_States [simp]:
   "\<lbrakk> S \<in> (dom F); S \<notin> States SA \<rbrakk> \<Longrightarrow> 
-    (dom ((F::('a ~=> (('a,'b,'d)seqauto) set)) [f+] (S, SA))) = 
+    (dom ((F::('a \<rightharpoonup> (('a,'b,'d)seqauto) set)) [f+] (S, SA))) = 
     ((dom F) \<union> (States (SA::('a,'b,'d)seqauto)))"
 by (unfold FAddSA_def Let_def, auto)
 
 lemma FAddSA_dom_dom [simp]:
   "S \<notin> (dom F) \<Longrightarrow>   
-   (dom ((F::('a ~=> (('a,'b,'d)seqauto) set)) [f+] 
+   (dom ((F::('a \<rightharpoonup> (('a,'b,'d)seqauto) set)) [f+] 
        (S,(SA::('a,'b,'d)seqauto)))) = (dom F)"
 by (unfold FAddSA_def Let_def, auto)
 
 lemma FAddSA_States_dom [simp]:
   "S \<in> (States SA) \<Longrightarrow>  
-   (dom ((F::('a ~=> (('a,'b,'d)seqauto) set)) [f+] 
+   (dom ((F::('a \<rightharpoonup> (('a,'b,'d)seqauto) set)) [f+] 
         (S,(SA::('a,'b,'d)seqauto)))) = (dom F)"
 by (unfold FAddSA_def Let_def, auto)
 

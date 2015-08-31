@@ -9,7 +9,7 @@ text{*Some basic properties of our variable environments.*}
 
 (* We use a wrapped map and an error element *)
 datatype 'a environment = 
-  Env "(string ~=> 'a)"
+  Env "(string \<rightharpoonup> 'a)"
 | Malformed
 
 (* Adding an entry to an environment. Overwriting an entry switches to the error state*)

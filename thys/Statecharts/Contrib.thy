@@ -30,7 +30,7 @@ translations
 
 subsubsection {* Maps *}                  
 
-definition chg_map :: "('b => 'b) => 'a => ('a ~=> 'b) => ('a ~=> 'b)" where  
+definition chg_map :: "('b => 'b) => 'a => ('a \<rightharpoonup> 'b) => ('a \<rightharpoonup> 'b)" where  
  "chg_map f a m = (case m a of None => m | Some b => m(a|->f b))"
 
 lemma map_some_list [simp]:

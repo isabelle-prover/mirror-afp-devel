@@ -12,7 +12,7 @@ section {* Finite maps with axclasses *}
 
 theory FMap imports ListPre begin
 
-type_synonym ('a, 'b) fmap = "('a :: finite) ~=> 'b" (infixl "-~>" 50)
+type_synonym ('a, 'b) fmap = "('a :: finite) \<rightharpoonup> 'b" (infixl "-~>" 50)
 
 class inftype =
 assumes infinite: "\<not>finite UNIV"

@@ -14,7 +14,7 @@ definition
   Kripke :: "['s set,
               's set,
               ('s * 's) set,
-              ('s ~=> 'a set)]
+              ('s \<rightharpoonup> 'a set)]
              => bool" where
 
   "Kripke S S0 R L =
@@ -34,11 +34,11 @@ definition
         (S::('s set))
         (S0::('s set))
         (T::(('s * 's) set))
-        (L::('s ~=> ('a  set))).
+        (L::('s \<rightharpoonup> ('a  set))).
                       Kripke S S0 T L}"
 
 typedef ('s,'a) kripke =
-    "kripke :: ('s set * 's set * ('s * 's) set * ('s ~=> 'a set)) set"
+    "kripke :: ('s set * 's set * ('s * 's) set * ('s \<rightharpoonup> 'a set)) set"
   unfolding kripke_def
   apply (rule exI)
   apply (rule Kripke_EmptySet)
@@ -57,7 +57,7 @@ definition
   "StepRel == fst o snd o snd o Rep_kripke"
 
 definition
-   LabelFun :: "('s,'a) kripke => ('s ~=> 'a set)" where
+   LabelFun :: "('s,'a) kripke => ('s \<rightharpoonup> 'a set)" where
   "LabelFun == snd o snd o snd o Rep_kripke"
 
 definition

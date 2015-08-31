@@ -50,7 +50,7 @@ definition Llt :: "[Label, Label] \<Rightarrow> bool" (infixl "<" 50) where
 definition Lle :: "[Label, Label] \<Rightarrow> bool" (infixl "\<le>" 50) where
   "Lle a b == Rep_Label a \<le> Rep_Label b"
 
-definition Ltake_eq :: "[Label set, (Label ~=> 'a),  (Label ~=> 'a)] \<Rightarrow> bool"
+definition Ltake_eq :: "[Label set, (Label \<rightharpoonup> 'a),  (Label \<rightharpoonup> 'a)] \<Rightarrow> bool"
 where  "Ltake_eq L f g  == \<forall>l\<in>L. f l = g l"
 
 lemma Ltake_eq_all:

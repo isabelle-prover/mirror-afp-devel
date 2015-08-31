@@ -1074,7 +1074,7 @@ definition "sz = (2::nat)"
 text {* Restrict locale @{text hoare} to the required type. *}
 
 locale hoare_ex =
-  hoare \<Gamma> for \<Gamma> :: "'c ~=> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, 'd) com"
+  hoare \<Gamma> for \<Gamma> :: "'c \<rightharpoonup> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, 'd) com"
 
 lemma (in hoare_ex)
   "\<Gamma>\<turnstile> \<lbrace>\<acute>i = 0 \<and> \<acute>first = Null \<and> n*sz \<le> \<acute>free\<rbrace>
@@ -1173,7 +1173,7 @@ access unallocated memory, we have to add some guards.
 *}
 
 locale hoare_ex_guard =
-  hoare \<Gamma> for \<Gamma> :: "'c ~=> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, bool) com"
+  hoare \<Gamma> for \<Gamma> :: "'c \<rightharpoonup> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, bool) com"
 
 lemma 
   (in hoare_ex_guard)

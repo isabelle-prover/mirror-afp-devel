@@ -396,7 +396,7 @@ apply (clarsimp simp: map_upd_submap simp del:o_apply fun_upd_apply)
 apply simp
 done
 
-primrec pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+primrec pr_iso_test0 :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
   "pr_iso_test0 m [] Fs\<^sub>2 = (Fs\<^sub>2 = [])"
 | "pr_iso_test0 m (F\<^sub>1#Fs\<^sub>1) Fs\<^sub>2 =
    (\<exists>F\<^sub>2 \<in> set Fs\<^sub>2. length F\<^sub>1 = length F\<^sub>2 \<and>
@@ -550,7 +550,7 @@ text{* Now we bound the number of rotations needed. We have to exclude
 the empty face @{term"[]"} to be able to restrict the search to
 @{prop"n < length xs"} (which would otherwise be vacuous). *}
 
-primrec pr_iso_test1 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+primrec pr_iso_test1 :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
   "pr_iso_test1 m [] Fs\<^sub>2 = (Fs\<^sub>2 = [])"
 | "pr_iso_test1 m (F\<^sub>1#Fs\<^sub>1) Fs\<^sub>2 =
    (\<exists>F\<^sub>2 \<in> set Fs\<^sub>2. length F\<^sub>1 = length F\<^sub>2 \<and>
