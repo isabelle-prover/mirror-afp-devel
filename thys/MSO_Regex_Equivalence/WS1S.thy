@@ -323,7 +323,7 @@ definition "positions_in_row s i =
   Option.these (sset (smap2 (\<lambda>p (_, bs). if nth bs i then Some p else None) nats s))"
 
 lemma positions_in_row: "positions_in_row s i = {p. snd (s !! p) ! i}"
-  unfolding positions_in_row_def these_def smap2_szip stream.set_map sset_range
+  unfolding positions_in_row_def Option.these_def smap2_szip stream.set_map sset_range
   by (auto split: split_if_asm intro!: image_eqI[of _ the] split: prod.splits)
 
 lemma positions_in_row_unique: "\<exists>!p. snd (s !! p) ! i \<Longrightarrow>

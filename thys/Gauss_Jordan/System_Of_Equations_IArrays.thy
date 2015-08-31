@@ -30,7 +30,7 @@ qed
 
 corollary vec_to_iarray_exists':
 shows "(\<exists>b. A $ b \<noteq> 0) = IArray_Addenda.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray (rev [0..<IArray.length (vec_to_iarray A)]))"
-by (simp add: vec_to_iarray_exists is_none_def find_None_iff)
+by (simp add: vec_to_iarray_exists Option.is_none_def find_None_iff)
 
 lemma not_is_zero_iarray_eq_iff: "(\<exists>b. A $ b \<noteq> 0) = (\<not> is_zero_iarray (vec_to_iarray A))"
 by (metis (full_types) is_zero_iarray_eq_iff vec_eq_iff zero_index)
@@ -341,7 +341,7 @@ show "None = solve_iarrays (matrix_to_iarray A) (vec_to_iarray b)"
       def GJ_P == "Gauss_Jordan_iarrays_PA (matrix_to_iarray A)"
       def P_mult_b == "fst GJ_P *iv vec_to_iarray b"
       def rank_A == "length [x\<leftarrow>IArray.list_of (snd GJ_P) . \<not> is_zero_iarray x]"
-      have "\<not> consistent A b" using none_solve_Ab unfolding solve_def unfolding is_none_def by auto
+      have "\<not> consistent A b" using none_solve_Ab unfolding solve_def unfolding Option.is_none_def by auto
       hence "\<not> consistent_iarrays (matrix_to_iarray A) (vec_to_iarray b)" using matrix_to_iarray_consistent by auto
       hence "\<not> (if \<not> is_zero_iarray P_mult_b then greatest_not_zero P_mult_b + 1 else 0) \<le> rank_A"
         unfolding GJ_P_def P_mult_b_def rank_A_def
@@ -358,7 +358,7 @@ proof -
   def GJ_transpose == "Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))"
   def basis == "set (map (\<lambda>i. row_iarray i (fst GJ_transpose)) [rank_A..<ncols_iarray (matrix_to_iarray A)])"
   def P_mult_b == "fst GJ_P *iv vec_to_iarray b"
-  have consistent_Ab: "consistent A b" using not_none unfolding solve_def unfolding is_none_def by metis
+  have consistent_Ab: "consistent A b" using not_none unfolding solve_def unfolding Option.is_none_def by metis
   hence "consistent_iarrays (matrix_to_iarray A) (vec_to_iarray b)" using matrix_to_iarray_consistent by auto
   hence "(if \<not> is_zero_iarray P_mult_b then greatest_not_zero P_mult_b + 1 else 0) \<le> rank_A"
       unfolding GJ_P_def P_mult_b_def rank_A_def

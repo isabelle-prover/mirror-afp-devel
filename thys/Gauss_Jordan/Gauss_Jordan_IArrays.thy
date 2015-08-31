@@ -42,7 +42,7 @@ subsection{*Proving the equivalence between Gauss-Jordan algorithm over nested i
 lemma vector_all_zero_from_index_eq:
 fixes A::"'a::{zero}^'n::{mod_type}"
 shows "(\<forall>m\<ge>i. A $ m = 0) = (vector_all_zero_from_index (to_nat i, vec_to_iarray A))"
-proof (auto simp add: vector_all_zero_from_index_def Let_def is_none_def find_None_iff)
+proof (auto simp add: vector_all_zero_from_index_def Let_def Option.is_none_def find_None_iff)
   fix x
   assume zero: "\<forall>m\<ge>i. A $ m = 0"
     and x_length: "x<length (IArray.list_of (vec_to_iarray A))" and i_le_x: "to_nat i \<le> x"

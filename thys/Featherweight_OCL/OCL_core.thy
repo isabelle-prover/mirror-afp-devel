@@ -584,7 +584,7 @@ text{* Thus, the weak equality is \emph{not} reflexive. *}
 
 lemma null_non_false [simp,code_unfold]:"(null \<doteq> false) = false"
  apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) is_none_def valid4
+by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) Option.is_none_def valid4
           bot_option_def null_fun_def null_option_def)
 
 lemma null_non_true [simp,code_unfold]:"(null \<doteq> true) = false"
@@ -593,7 +593,7 @@ by(simp add: true_def bot_option_def null_fun_def null_option_def)
 
 lemma false_non_null [simp,code_unfold]:"(false \<doteq> null) = false"
  apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) is_none_def valid4
+by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) Option.is_none_def valid4
           bot_option_def null_fun_def null_option_def )
 
 lemma true_non_null [simp,code_unfold]:"(true \<doteq> null) = false"

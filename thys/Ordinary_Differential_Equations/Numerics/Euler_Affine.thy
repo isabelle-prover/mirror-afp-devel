@@ -1128,7 +1128,7 @@ qed simp
 
 lemma summarize_option_map_filter_aux: "(case f xs of None \<Rightarrow> [] | Some x \<Rightarrow> [set_res_of_ivl_res x]) =
      (map set_res_of_ivl_res (map the (filter (- Option.is_none) (map f [xs]))))"
-   by (auto split: option.split simp: is_none_def)
+   by (auto split: option.split simp: Option.is_none_def)
 
 lemma enclosure_Cons_splitI:
   "enclosure f t0 t1 (map set_res_of_ivl_res (map the (filter (- Option.is_none) ([X])))) \<Longrightarrow>

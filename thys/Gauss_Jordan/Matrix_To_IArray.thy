@@ -184,9 +184,9 @@ lemma is_zero_iarray_eq_iff:
   fixes A::"'a::{zero}^'n::{mod_type}"
   shows "(A = 0) = (is_zero_iarray (vec_to_iarray A))"
 proof (auto)
-  show "is_zero_iarray (vec_to_iarray 0)" by (simp add: vec_to_iarray_def is_zero_iarray_def is_none_def find_None_iff)
+  show "is_zero_iarray (vec_to_iarray 0)" by (simp add: vec_to_iarray_def is_zero_iarray_def Option.is_none_def find_None_iff)
   show "is_zero_iarray (vec_to_iarray A) \<Longrightarrow> A = 0"
-  proof (simp add: vec_to_iarray_def is_zero_iarray_def is_none_def find_None_iff vec_eq_iff, clarify)
+  proof (simp add: vec_to_iarray_def is_zero_iarray_def Option.is_none_def find_None_iff vec_eq_iff, clarify)
     fix i::'n
     assume "\<forall>i\<in>{0..<CARD('n)}. A $ mod_type_class.from_nat i = 0"
     hence eq_zero: "\<forall>x<CARD('n). A $ from_nat x = 0" by force

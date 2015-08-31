@@ -128,7 +128,7 @@ definition FV0 :: "unit \<Rightarrow> presb \<Rightarrow> nat set" where
 
 lemma FV0_code[code]:
   "FV0 x (Eq is i off) = Option.these (set (map_index (\<lambda>i x. if x = 0 then None else Some i) is))"
-  unfolding FV0_def by (force simp: these_def image_iff)
+  unfolding FV0_def by (force simp: Option.these_def image_iff)
 
 primrec wf0 :: "nat \<Rightarrow> presb \<Rightarrow> bool" where
   "wf0 idx (Eq is _ _) = (length is = idx)"

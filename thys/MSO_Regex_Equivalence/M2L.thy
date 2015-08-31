@@ -51,7 +51,7 @@ definition "dec_interp n FO (w :: ('a \<times> bool list) list) \<equiv> map (\<
   else Inr (positions_in_row w i)) [0..<n]"
 
 lemma positions_in_row: "positions_in_row w i = {p. p < length w \<and> snd (w ! p) ! i}"
-  unfolding positions_in_row_def these_def by (auto intro!: image_eqI[of _ the])
+  unfolding positions_in_row_def Option.these_def by (auto intro!: image_eqI[of _ the])
 
 lemma positions_in_row_unique: "\<exists>!p. p < length w \<and> snd (w ! p) ! i \<Longrightarrow>
   the_elem (positions_in_row w i) = (THE p. p < length w \<and> snd (w ! p) ! i)"
