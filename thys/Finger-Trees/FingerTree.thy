@@ -1167,7 +1167,7 @@ next
   fix v va
   assume 
     "is_measured_node v \<and> is_leveln_node n (v:: ('a,'b) Node) \<and>
-    length  (va\<Colon>('a, 'b) Node list) \<le> 3 \<and> 
+    length  (va::('a, 'b) Node list) \<le> 3 \<and> 
     (\<forall>x\<in>set va. is_measured_node x \<and> is_leveln_node n x \<and> length va \<le> 3)"
   thus "is_leveln_digit n (nlistToDigit (v # va)) 
        \<and> is_measured_digit (nlistToDigit (v # va))"
@@ -1254,7 +1254,7 @@ next
   fix v va
   assume 
     "is_measured_node v \<and> is_leveln_node n (v:: ('a,'b) Node) \<and>
-    length  (va\<Colon>('a, 'b) Node list) \<le> 3 \<and> 
+    length  (va::('a, 'b) Node list) \<le> 3 \<and> 
     (\<forall>x\<in>set va. is_measured_node x \<and> is_leveln_node n x \<and> length va \<le> 3)"
   thus "is_leveln_digit n (nlistToDigit (v # va)) \<and> 
         is_measured_digit (nlistToDigit (v # va))"

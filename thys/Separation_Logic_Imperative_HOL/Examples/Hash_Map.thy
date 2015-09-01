@@ -64,14 +64,14 @@ subsection {* Main Definitions and Lemmas *}
 definition is_hashmap' 
   :: "('k, 'v) map 
     \<Rightarrow> ('k \<times> 'v) list list 
-    \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable
+    \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable
     \<Rightarrow> assn" 
   where
   "is_hashmap' m l ht = is_hashtable l ht * \<up> (map_of (concat l) = m)"
 
 
 definition is_hashmap 
-  :: "('k, 'v) map \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable \<Rightarrow> assn" 
+  :: "('k, 'v) map \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable \<Rightarrow> assn" 
   where
   "is_hashmap m ht = (\<exists>\<^sub>Al. is_hashmap' m l ht)"
 
@@ -91,7 +91,7 @@ lemma is_hashmap_prec: "precise is_hashmap"
 abbreviation "hm_new \<equiv> ht_new"
 lemma hm_new_rule': 
   "<emp> 
-  hm_new::('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable Heap 
+  hm_new::('k::{heap,hashable}, 'v::heap) hashtable Heap 
   <is_hashmap' Map.empty (replicate (def_hashmap_size TYPE('k)) [])>"
   apply (rule cons_post_rule)
   using complete_ht_new

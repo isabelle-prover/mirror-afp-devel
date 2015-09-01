@@ -2137,7 +2137,7 @@ proof
   show " \<And>x. Sup {} \<cdot> x = Sup {}"
 proof -
   fix x :: 'a
-  have "\<forall>A a. {} \<noteq> A \<or> {} = {aa. \<exists>ab. (aa\<Colon>'a) = ab \<cdot> a \<and> ab \<in> A}"
+  have "\<forall>A a. {} \<noteq> A \<or> {} = {aa. \<exists>ab. (aa::'a) = ab \<cdot> a \<and> ab \<in> A}"
     by fastforce
   thus "Sup {} \<cdot> x = Sup {}"
     using local.Sup_mult_distr by presburger

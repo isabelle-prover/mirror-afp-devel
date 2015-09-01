@@ -114,7 +114,7 @@ lemmas PolSimps = valid_SE_def unit_SE_def bind_SE_def if_splits policy2MON_def
 lemma "SE_LR_RBAC_Policy ((createSCR alice Clerical patient1),\<sigma>0)= Some (deny ())"
 by (simp add: PolSimps)
 
-lemma exBool[simp]: "\<exists>a\<Colon>bool. a"  by auto
+lemma exBool[simp]: "\<exists>a::bool. a"  by auto
 
 lemma deny_allow[simp]: " \<lfloor>deny ()\<rfloor> \<notin> Some ` range allow"  by auto
 

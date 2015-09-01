@@ -352,11 +352,11 @@ next
   hence "size (tree_to_multiset x) = 2 ^ rank x" by (simp add: size_mset_tree)
   finally have 
     eq: "size (queue_to_multiset (xs @ [x])) = 
-         size (queue_to_multiset xs) + (2\<Colon>nat)^(rank x)" .
+         size (queue_to_multiset xs) + (2::nat)^(rank x)" .
   from invar_length[OF snoc.prems] have "length xs \<le> rank x" by simp
   hence snd: "(2::nat) ^ length xs \<le> (2::nat) ^ rank x" by simp
   have
-    "(2\<Colon>nat) ^ length (xs @ [x]) = (2\<Colon>nat) ^ (length xs) + (2\<Colon>nat) ^ (length xs)"
+    "(2::nat) ^ length (xs @ [x]) = (2::nat) ^ (length xs) + (2::nat) ^ (length xs)"
     by simp
   with IH have 
     "2 ^ length (xs @ [x]) \<le> Suc (size (queue_to_multiset xs)) + 2 ^ length xs" 

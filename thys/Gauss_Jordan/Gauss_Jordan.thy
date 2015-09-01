@@ -83,9 +83,9 @@ lemma greatest_plus_one_eq_0:
   assumes "Suc (to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)) = nrows A"
   shows "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1 = 0"
 proof -
-  have "to_nat (GREATEST' R. \<not> is_zero_row_upt_k R k A) + 1 = card (UNIV\<Colon>'rows set)"
+  have "to_nat (GREATEST' R. \<not> is_zero_row_upt_k R k A) + 1 = card (UNIV::'rows set)"
     using assms unfolding nrows_def by fastforce
-  thus "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + (1\<Colon>'rows) = (0\<Colon>'rows)"
+  thus "(GREATEST' n. \<not> is_zero_row_upt_k n k A) + (1::'rows) = (0::'rows)"
     using to_nat_plus_one_less_card by fastforce
 qed
 

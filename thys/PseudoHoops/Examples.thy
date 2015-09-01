@@ -101,7 +101,7 @@ lemma [simp]: "(1::'a G) * a = a"
   apply (simp add: one_def times_def)
   apply (cut_tac y = "u::'a" in Abs_G_inverse)
   apply simp_all
-  apply (subgoal_tac "sup (Rep_G a) (0\<Colon>'a) = Rep_G a")
+  apply (subgoal_tac "sup (Rep_G a) (0::'a) = Rep_G a")
   apply (simp add: Rep_G_inverse)
   apply (cut_tac x = a in Rep_G)
   apply (rule antisym)
@@ -112,16 +112,16 @@ lemma [simp]: "a * (1::'a G) = a"
   apply (simp add: one_def times_def)
   apply (cut_tac y = "u::'a" in Abs_G_inverse)
   apply (simp_all add: diff_minus add.assoc)
-  apply (subgoal_tac "sup (Rep_G a) (0\<Colon>'a) = Rep_G a")
+  apply (subgoal_tac "sup (Rep_G a) (0::'a) = Rep_G a")
   apply (simp add: Rep_G_inverse)
   apply (cut_tac x = a in Rep_G)
   apply (rule antisym)
   by (simp_all add: G_def)
 
-lemma [simp]: "a l\<rightarrow> a = (1\<Colon>'a G)"
+lemma [simp]: "a l\<rightarrow> a = (1::'a G)"
   by (simp add: one_def impl_def)
 
-lemma [simp]: "a r\<rightarrow> a = (1\<Colon>'a G)"
+lemma [simp]: "a r\<rightarrow> a = (1::'a G)"
   by (simp add: one_def impr_def diff_minus add.assoc)
 
 lemma [simp]: "a \<in> G \<Longrightarrow> Rep_G (Abs_G a) = a"
@@ -415,7 +415,7 @@ lemma normal_1: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply (simp add: times_set_def)
   apply (rule_tac x = "Abs_G (inf (sup (aa + u) 0) u)" in bexI)
   apply (subgoal_tac "aa =  Rep_G a - u + Rep_G y - Rep_G a")
-  apply (subgoal_tac "inf (sup (aa + u) (0\<Colon>'a)) u \<in> G")
+  apply (subgoal_tac "inf (sup (aa + u) (0::'a)) u \<in> G")
   apply safe
   apply simp
   apply (simp add: times_def)
@@ -426,7 +426,7 @@ lemma normal_1: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply simp
   (*apply (subst sup_assoc) - why it does not work*)
   apply (subst sup_assoc_lgroup)
-  apply (subgoal_tac "(sup (- u + Rep_G a) (0\<Colon>'a)) = 0")
+  apply (subgoal_tac "(sup (- u + Rep_G a) (0::'a)) = 0")
   apply simp
   apply (rule antisym)
   apply simp
@@ -453,7 +453,7 @@ lemma normal_1: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply (simp add: diff_minus)
   apply (simp add: add.assoc)
   apply (simp add: F_def)
-  apply (subgoal_tac "inf (sup (aa + u) (0\<Colon>'a)) u \<in> G")
+  apply (subgoal_tac "inf (sup (aa + u) (0::'a)) u \<in> G")
   apply simp
   apply (simp add: diff_minus minus_add add.assoc [THEN sym])
   apply (subst (asm) convex_def)
@@ -471,7 +471,7 @@ lemma normal_1: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply simp
   apply (subst (asm) lsubgroup_def)
   apply simp
-  apply (subgoal_tac "sup (inf (- aa) u) (0\<Colon>'a) \<in> |[ 0\<Colon>'a , sup (- aa) (0\<Colon>'a) ]|")
+  apply (subgoal_tac "sup (inf (- aa) u) (0::'a) \<in> |[ 0::'a , sup (- aa) (0::'a) ]|")
   apply blast
   apply (subst closed_interval_def)
   apply safe
@@ -521,7 +521,7 @@ lemma normal_2: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply simp
   (*apply (subst sup_assoc) - why it does not work*)
   apply (subst sup_assoc_lgroup)
-  apply (subgoal_tac "(sup (Rep_G a + - u) (0\<Colon>'a)) = 0")
+  apply (subgoal_tac "(sup (Rep_G a + - u) (0::'a)) = 0")
   apply simp
   apply (rule antisym)
   apply simp
@@ -548,7 +548,7 @@ lemma normal_2: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply (simp add: diff_minus)
   apply (simp add: add.assoc)
   apply (simp add: F_def2)
-  apply (subgoal_tac "inf (sup (u + b) (0\<Colon>'a)) u \<in> G")
+  apply (subgoal_tac "inf (sup (u + b) (0::'a)) u \<in> G")
   apply simp
   apply (simp add: diff_minus minus_add add.assoc [THEN sym])
   apply (subst (asm) convex_def)
@@ -567,7 +567,7 @@ lemma normal_2: "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarro
   apply (subst (asm) lsubgroup_def)
   apply simp
   apply (simp add: add.assoc)
-  apply (subgoal_tac "sup (inf (- b) u) (0\<Colon>'a) \<in> |[ 0\<Colon>'a , sup (-b) 0]|")
+  apply (subgoal_tac "sup (inf (- b) u) (0::'a) \<in> |[ 0::'a , sup (-b) 0]|")
   apply blast
   apply (subst closed_interval_def)
   apply safe
@@ -604,7 +604,7 @@ lemma "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarrow> K \<in>
   apply (drule_tac x = 0 in spec)
   apply (drule_tac x = "(u - Rep_G b) + (u - Rep_G a) " in spec)
   apply simp
-  apply (subgoal_tac "u - Rep_G (a * b) \<in> |[ 0\<Colon>'a , u - Rep_G b + (u - Rep_G a) ]|")
+  apply (subgoal_tac "u - Rep_G (a * b) \<in> |[ 0::'a , u - Rep_G b + (u - Rep_G a) ]|")
   apply blast
   apply (simp add: closed_interval_def)
   apply safe
@@ -624,7 +624,7 @@ lemma "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarrow> K \<in>
   apply (drule_tac x = 0 in spec)
   apply (drule_tac x = " u - Rep_G a" in spec)
   apply simp
-  apply (subgoal_tac "u - Rep_G b \<in> |[ 0\<Colon>'a , u - Rep_G a ]|")
+  apply (subgoal_tac "u - Rep_G b \<in> |[ 0::'a , u - Rep_G a ]|")
   apply blast
   apply (subst closed_interval_def)
   apply simp
@@ -725,7 +725,7 @@ lemma order_Rep_N:
   "((a::'a N) \<le> b) = (Rep_N a \<le> Rep_N b)"
   apply (subst order_N_def)
   apply (simp add: impl_N_def one_N_def)
-  apply (subgoal_tac "(Abs_N (inf (Rep_N b - Rep_N a) (0\<Colon>'a)) = Abs_N (0\<Colon>'a)) = ((Rep_N (Abs_N (inf (Rep_N b - Rep_N a) (0\<Colon>'a))) = Rep_N(Abs_N (0\<Colon>'a))))")
+  apply (subgoal_tac "(Abs_N (inf (Rep_N b - Rep_N a) (0::'a)) = Abs_N (0::'a)) = ((Rep_N (Abs_N (inf (Rep_N b - Rep_N a) (0::'a))) = Rep_N(Abs_N (0::'a))))")
   apply simp
   apply (drule drop_assumption)
   apply (simp add: Abs_N_inverse)
@@ -733,7 +733,7 @@ lemma order_Rep_N:
   apply (subgoal_tac "0 \<le> Rep_N b - Rep_N a")
   apply (drule_tac v = "Rep_N a" in add_order_preserving_right)
   apply (simp add: diff_minus add.assoc)
-  apply (rule_tac y = "inf (Rep_N b - Rep_N a) (0\<Colon>'a)" in order_trans)
+  apply (rule_tac y = "inf (Rep_N b - Rep_N a) (0::'a)" in order_trans)
   apply simp
   apply (drule drop_assumption)
   apply simp
@@ -753,7 +753,7 @@ lemma order_Abs_N:
   apply (simp add: impl_N_def one_N_def)
   apply (simp add: Abs_N_inverse)
   apply (subgoal_tac "inf (b - a) 0 \<in> N")
-  apply (subgoal_tac "(Abs_N (inf (b - a) (0\<Colon>'a)) = Abs_N (0\<Colon>'a)) = (Rep_N (Abs_N (inf (b - a) (0\<Colon>'a))) = Rep_N (Abs_N (0\<Colon>'a)))")
+  apply (subgoal_tac "(Abs_N (inf (b - a) (0::'a)) = Abs_N (0::'a)) = (Rep_N (Abs_N (inf (b - a) (0::'a))) = Rep_N (Abs_N (0::'a)))")
   apply simp
   apply (simp add: Abs_N_inverse)
   apply (drule drop_assumption)
@@ -770,7 +770,7 @@ lemma order_Abs_N:
   apply (subgoal_tac "0 \<le> b - a")
   apply (drule_tac v = "a" in add_order_preserving_right)
   apply (simp add: diff_minus add.assoc)
-  apply (rule_tac y = "inf (b - a) (0\<Colon>'a)" in order_trans)
+  apply (rule_tac y = "inf (b - a) (0::'a)" in order_trans)
   apply simp
   apply (drule drop_assumption)
   apply simp
@@ -813,7 +813,7 @@ lemma impr_impl_times: "(a l\<rightarrow> b) * a = (a::'a N) * (a r\<rightarrow>
 
 lemma impl_ded: "(a::'a N) * b l\<rightarrow> c = a l\<rightarrow> b l\<rightarrow> c"
   apply (simp add: impl_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
-  apply (subgoal_tac "inf (Rep_N c - (Rep_N a + Rep_N b)) (0\<Colon>'a) = inf (inf (Rep_N c - Rep_N b - Rep_N a) (- Rep_N a)) (0\<Colon>'a)")
+  apply (subgoal_tac "inf (Rep_N c - (Rep_N a + Rep_N b)) (0::'a) = inf (inf (Rep_N c - Rep_N b - Rep_N a) (- Rep_N a)) (0::'a)")
   apply simp
   apply (rule antisym)
   apply simp_all
@@ -835,7 +835,7 @@ lemma impl_ded: "(a::'a N) * b l\<rightarrow> c = a l\<rightarrow> b l\<rightarr
 
 lemma impr_ded: "(a::'a N) * b r\<rightarrow> c = b r\<rightarrow> a r\<rightarrow> c"
   apply (simp add: impr_N_def impr_N_def times_N_def Abs_N_inverse Rep_N_inverse) 
-  apply (subgoal_tac "inf (- (Rep_N a + Rep_N b) + Rep_N c) (0\<Colon>'a) = inf (inf (- Rep_N b + (- Rep_N a + Rep_N c)) (- Rep_N b)) (0\<Colon>'a)")
+  apply (subgoal_tac "inf (- (Rep_N a + Rep_N b) + Rep_N c) (0::'a) = inf (inf (- Rep_N b + (- Rep_N a + Rep_N c)) (- Rep_N b)) (0::'a)")
   apply simp
   apply (rule antisym)
   apply simp_all
@@ -996,8 +996,8 @@ lemma prod_2: "((a::'a N) r\<rightarrow> b) r\<rightarrow> c \<le> ((b r\<righta
   apply simp
   apply (subst Abs_N_inverse)
   apply simp
-  apply (subgoal_tac "inf (- inf (- inf (- Rep_N a + Rep_N b) (0\<Colon>'a) + Rep_N c) (0\<Colon>'a) + inf (- inf (- inf (- Rep_N b + Rep_N a) (0\<Colon>'a) + Rep_N c) (0\<Colon>'a) + Rep_N c) (0\<Colon>'a))
-            (0\<Colon>'a) = 0")
+  apply (subgoal_tac "inf (- inf (- inf (- Rep_N a + Rep_N b) (0::'a) + Rep_N c) (0::'a) + inf (- inf (- inf (- Rep_N b + Rep_N a) (0::'a) + Rep_N c) (0::'a) + Rep_N c) (0::'a))
+            (0::'a) = 0")
   apply simp
   apply (rule antisym)
   apply simp
@@ -1039,7 +1039,7 @@ lemma prod_3: "(b::'a N) l\<rightarrow> b * b \<le> a \<sqinter> (a l\<rightarro
   apply (simp add: add.assoc N_def)
   apply (subst Abs_N_inverse)
   apply (simp add: add.assoc N_def)
-  apply (subgoal_tac "inf (inf (sup (Rep_N b - Rep_N a) (sup (Rep_N b - (Rep_N b - Rep_N a)) (Rep_N b))) (0\<Colon>'a) - inf (Rep_N b + Rep_N b - Rep_N b) (0\<Colon>'a)) (0\<Colon>'a) = 0")
+  apply (subgoal_tac "inf (inf (sup (Rep_N b - Rep_N a) (sup (Rep_N b - (Rep_N b - Rep_N a)) (Rep_N b))) (0::'a) - inf (Rep_N b + Rep_N b - Rep_N b) (0::'a)) (0::'a) = 0")
   apply simp
   apply (rule antisym)
   apply simp
@@ -1326,42 +1326,42 @@ lemma "Second \<in> normalfilters"
   apply (rule_tac x = "ba * bb" in exI)
   apply (simp add: times_OrdSum_def second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (rule_tac x = "second b" in exI)
-  apply (subgoal_tac "Abs_OrdSum (1\<Colon>'a, second b) = Abs_OrdSum (first b, second b)")
+  apply (subgoal_tac "Abs_OrdSum (1::'a, second b) = Abs_OrdSum (first b, second b)")
   apply simp
   apply (simp add: first_def second_def Rep_OrdSum_inverse)
   apply (subgoal_tac "first b = 1")
   apply simp
   apply (simp add: order_OrdSum_def one_OrdSum_def impl_OrdSum_def second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (unfold second_def first_def)
-  apply (case_tac "ba = (1\<Colon>'b) \<and> snd (Rep_OrdSum b) = (1\<Colon>'b)")
+  apply (case_tac "ba = (1::'b) \<and> snd (Rep_OrdSum b) = (1::'b)")
   apply simp
   apply (simp add: Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum b), 1\<Colon>'b)) = Rep_OrdSum (Abs_OrdSum (1\<Colon>'a, 1\<Colon>'b))")
+  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum b), 1::'b)) = Rep_OrdSum (Abs_OrdSum (1::'a, 1::'b))")
   apply (drule drop_assumption)
   apply (simp add: Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply simp
   apply simp
   apply (simp add: Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (case_tac "fst (Rep_OrdSum b) = (1\<Colon>'a)")
+  apply (case_tac "fst (Rep_OrdSum b) = (1::'a)")
   apply simp
   apply simp
   apply (simp add: Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (case_tac "snd (Rep_OrdSum b) = (1\<Colon>'b)")
+  apply (case_tac "snd (Rep_OrdSum b) = (1::'b)")
   apply simp_all
   apply (simp add: Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (simp add: impr_OrdSum_def impl_OrdSum_def second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply safe
   apply (unfold second_def first_def)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (case_tac "snd (Rep_OrdSum a) = (1\<Colon>'b)")
+  apply (case_tac "snd (Rep_OrdSum a) = (1::'b)")
   apply simp_all
   apply auto
-  apply (case_tac "snd (Rep_OrdSum a) = (1\<Colon>'b)")
+  apply (case_tac "snd (Rep_OrdSum a) = (1::'b)")
   apply auto
   apply (rule_tac x = 1 in exI) 
   apply (rule Rep_OrdSum_eq)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) l\<rightarrow> fst (Rep_OrdSum b), 1\<Colon>'b)) = Rep_OrdSum (Abs_OrdSum (1\<Colon>'a, ba))")
+  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) l\<rightarrow> fst (Rep_OrdSum b), 1::'b)) = Rep_OrdSum (Abs_OrdSum (1::'a, ba))")
   apply (drule drop_assumption)
   apply (simp add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (simp add: left_lesseq [THEN sym] right_lesseq [THEN sym])
@@ -1369,7 +1369,7 @@ lemma "Second \<in> normalfilters"
   apply (rule_tac x = 1 in exI) 
   apply (rule Rep_OrdSum_eq)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) l\<rightarrow> fst (Rep_OrdSum b), 1\<Colon>'b)) = Rep_OrdSum (Abs_OrdSum (1\<Colon>'a, ba))")
+  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) l\<rightarrow> fst (Rep_OrdSum b), 1::'b)) = Rep_OrdSum (Abs_OrdSum (1::'a, ba))")
   apply (drule drop_assumption)
   apply (simp add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (simp add: left_lesseq [THEN sym] right_lesseq [THEN sym])
@@ -1379,15 +1379,15 @@ lemma "Second \<in> normalfilters"
   apply safe
   apply (unfold second_def first_def)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (case_tac "snd (Rep_OrdSum a) = (1\<Colon>'b)")
+  apply (case_tac "snd (Rep_OrdSum a) = (1::'b)")
   apply simp_all
   apply auto
-  apply (case_tac "snd (Rep_OrdSum a) = (1\<Colon>'b)")
+  apply (case_tac "snd (Rep_OrdSum a) = (1::'b)")
   apply auto
   apply (rule_tac x = 1 in exI) 
   apply (rule Rep_OrdSum_eq)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) r\<rightarrow> fst (Rep_OrdSum b), 1\<Colon>'b)) = Rep_OrdSum (Abs_OrdSum (1\<Colon>'a, ba))")
+  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) r\<rightarrow> fst (Rep_OrdSum b), 1::'b)) = Rep_OrdSum (Abs_OrdSum (1::'a, ba))")
   apply (drule drop_assumption)
   apply (simp add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (simp add: left_lesseq [THEN sym] right_lesseq [THEN sym])
@@ -1395,7 +1395,7 @@ lemma "Second \<in> normalfilters"
   apply (rule_tac x = 1 in exI) 
   apply (rule Rep_OrdSum_eq)
   apply (simp_all add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
-  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) r\<rightarrow> fst (Rep_OrdSum b), 1\<Colon>'b)) = Rep_OrdSum (Abs_OrdSum (1\<Colon>'a, ba))")
+  apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum (fst (Rep_OrdSum a) r\<rightarrow> fst (Rep_OrdSum b), 1::'b)) = Rep_OrdSum (Abs_OrdSum (1::'a, ba))")
   apply (drule drop_assumption)
   apply (simp add: second_def first_def Abs_OrdSum_inverse Rep_OrdSum_inverse)
   apply (simp add: left_lesseq [THEN sym] right_lesseq [THEN sym])
@@ -1499,7 +1499,7 @@ lemma "class.pseudo_hoop_algebra op * op \<sqinter> op l\<rightarrow> op \<le> o
   apply (simp add: impl_OrdSum_first_second)
   apply (unfold order_OrdSum_def one_OrdSum_def one_bool_def impl_OrdSum_second impl_bool_def ) [1]
   apply simp
-  apply (cut_tac x = "(1\<Colon>'a, False)" and y = "(1\<Colon>'a, True)" in  Abs_OrdSum_eq)
+  apply (cut_tac x = "(1::'a, False)" and y = "(1::'a, True)" in  Abs_OrdSum_eq)
   apply simp_all
   apply (unfold left_lesseq)
   by simp

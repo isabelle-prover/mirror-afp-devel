@@ -10,9 +10,9 @@ to $S2$ using the data abstractions $R$ and $R'$.
 *}
 
 definition
-  DataRefinement :: "('a\<Colon>type \<Rightarrow> 'b\<Colon>type)
-     \<Rightarrow> ('b\<Colon>type \<Rightarrow> 'c\<Colon>ord) \<Rightarrow> ('a\<Colon>type \<Rightarrow> 'd\<Colon>type) 
-     \<Rightarrow> ('d\<Colon>type \<Rightarrow> 'c\<Colon>ord) \<Rightarrow> bool" where
+  DataRefinement :: "('a::type \<Rightarrow> 'b::type)
+     \<Rightarrow> ('b::type \<Rightarrow> 'c::ord) \<Rightarrow> ('a::type \<Rightarrow> 'd::type) 
+     \<Rightarrow> ('d::type \<Rightarrow> 'c::ord) \<Rightarrow> bool" where
   "DataRefinement S1 R R' S2 = ((R o S1) \<le> (S2 o R'))"
 
 text{*

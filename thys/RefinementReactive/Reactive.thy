@@ -180,7 +180,7 @@ begin
               by (rule INF_lower, simp)
             also have "... \<le>  S y (S' y' x)"
               by simp
-            finally show "(INF u\<Colon>'a \<Rightarrow> 'c \<times> 'b:zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S y (S' y' x)"
+            finally show "(INF u::'a \<Rightarrow> 'c \<times> 'b:zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S y (S' y' x)"
               by simp
           qed
         have "local_init init S (local_init init' S' x) = (INF y : init. S y (INF y' : init'. S' y' x)) "
@@ -191,7 +191,7 @@ begin
          by (rule antisym, auto)
         also have "... = local_init (zip_set init init') (\<lambda> u . (S (fst o u)) o (S' (snd o u))) x"
           by (simp add: local_init_def)
-        finally show "local_init init S (local_init init' S' x) = local_init (zip_set init init') (\<lambda>u\<Colon>'a \<Rightarrow> 'c \<times> 'b. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"
+        finally show "local_init init S (local_init init' S' x) = local_init (zip_set init init') (\<lambda>u::'a \<Rightarrow> 'c \<times> 'b. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"
           by simp
       qed
 
@@ -236,8 +236,8 @@ begin
         ([: z \<leadsto> u, x . u \<in> init' \<and> z = x :] \<circ> {.x, y. prec_st p' r' x y.} \<circ>
         [: id (\<lambda>(u, x). id ((\<box> lft_rel_st r') u x)) :])"
         by (unfold SymSystem_def, simp)
-      also have "... =  local_init init (\<lambda>u\<Colon>nat \<Rightarrow> 'e. {. id (prec_st p r u) .} \<circ> [: id (\<lambda>x. id ((\<box> lft_rel_st r) u x)) :]) \<circ>
-          local_init init' (\<lambda>u. {. id (prec_st p' r' u) .} \<circ> [: id (\<lambda>x\<Colon>nat \<Rightarrow> 'd. id ((\<box> lft_rel_st r') u x)) :])"
+      also have "... =  local_init init (\<lambda>u::nat \<Rightarrow> 'e. {. id (prec_st p r u) .} \<circ> [: id (\<lambda>x. id ((\<box> lft_rel_st r) u x)) :]) \<circ>
+          local_init init' (\<lambda>u. {. id (prec_st p' r' u) .} \<circ> [: id (\<lambda>x::nat \<Rightarrow> 'd. id ((\<box> lft_rel_st r') u x)) :])"
         by (unfold local_demonic_init [THEN sym], simp)
       also from A have "... = local_init (zip_set init init')
             (\<lambda>u. {. prec_st p r (fst \<circ> u) .} \<circ> [: (\<box> lft_rel_st r) (fst \<circ> u) :] \<circ> ({. prec_st p' r' (snd \<circ> u) .} \<circ> [: (\<box> lft_rel_st r') (snd \<circ> u) :]))"
@@ -250,8 +250,8 @@ begin
             [: (\<box> lft_rel_st (\<lambda>(u, v) (u', v'). r u u' OO r' v v')) u :]) "
          by (simp add: assert_demonic_comp always_lft_rel_comp)
     also have "... = local_init (zip_set init init')
-     (\<lambda>u.{.x. prec_st p r (fst \<circ> u) x \<and> (\<forall>y\<Colon>nat \<Rightarrow> 'd. (\<box> lft_rel_st r) (fst \<circ> u) x y \<longrightarrow> prec_st p' r' (snd \<circ> u) y).} \<circ>
-         [: id (\<lambda>x\<Colon>nat \<Rightarrow> 'c. id ((\<box> lft_rel_st (\<lambda>(u, v) (u', v'). r u u' OO r' v v')) u x)) :])"
+     (\<lambda>u.{.x. prec_st p r (fst \<circ> u) x \<and> (\<forall>y::nat \<Rightarrow> 'd. (\<box> lft_rel_st r) (fst \<circ> u) x y \<longrightarrow> prec_st p' r' (snd \<circ> u) y).} \<circ>
+         [: id (\<lambda>x::nat \<Rightarrow> 'c. id ((\<box> lft_rel_st (\<lambda>(u, v) (u', v'). r u u' OO r' v v')) u x)) :])"
        by simp
     also have "... = ?T"
      by (unfold local_demonic_init, simp add: zip_set_def)
@@ -277,7 +277,7 @@ begin
         by (auto simp add: fun_eq_iff)
 
       from A have "?S = {.x . \<forall>u . u \<in> init \<longrightarrow> prec_st p r u x.} \<circ> 
-            [: x \<leadsto> y . \<exists>u\<Colon>nat \<Rightarrow> 'e. u \<in> init \<and> (\<box> lft_rel_st r) u x y :] \<circ>
+            [: x \<leadsto> y . \<exists>u::nat \<Rightarrow> 'e. u \<in> init \<and> (\<box> lft_rel_st r) u x y :] \<circ>
             ({.x. \<forall>u . u \<in> init' \<longrightarrow> prec_st p' r' u x.} \<circ> [: x \<leadsto> y . \<exists>u . u \<in> init' \<and> (\<box> lft_rel_st r') u x y :])"
         by (simp add: SymSystem_rel)
        also have "... = {. \<lambda>x . \<forall>u . u \<in> init \<longrightarrow> prec_st p r u x .} \<circ> [: x \<leadsto> y . \<exists>u . u \<in> init \<and> (\<box> lft_rel_st r) u x y :] \<circ> 
@@ -370,7 +370,7 @@ begin
   lemma "grd (SymSystem init p r) = SUPREMUM init (-prec_st p r \<squnion> (\<box> (lft_pred_st (inpt_st r))))"
     proof (unfold fun_eq_iff, auto simp add: grd_def SymSystem_rel demonic_def assert_def)
       fix x :: "nat \<Rightarrow> 'a" and  xa :: "nat \<Rightarrow> 'b" and  u :: "nat \<Rightarrow> 'c"
-      assume "\<forall>xa\<Colon>nat \<Rightarrow> 'c\<in>init. prec_st p r xa x \<and> \<not> (\<box> lft_pred_st (inpt_st r)) xa x"
+      assume "\<forall>xa::nat \<Rightarrow> 'c\<in>init. prec_st p r xa x \<and> \<not> (\<box> lft_pred_st (inpt_st r)) xa x"
       and "u \<in> init"
       and "(\<box> lft_rel_st r) u x xa"
       then show "False"
@@ -498,7 +498,7 @@ begin
       fix n:: nat and y :: 'c
       assume A: "(\<box> lft_pred_st (inpt_st r)) (fst \<circ> u) x"
       assume B: "r (fst (u n)) (fst (u (Suc n))) (x n) y"
-      assume C: "\<forall>i<n. inpt_st (\<lambda>(u\<Colon>'a, v\<Colon>'d) (u'\<Colon>'a, v'\<Colon>'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)"
+      assume C: "\<forall>i<n. inpt_st (\<lambda>(u::'a, v::'d) (u'::'a, v'::'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)"
       let ?y = "\<lambda> i . (if i = n then y else (SOME y . r ((fst o u) i) ((fst o u) (Suc i)) (x i) y))"
       assume "\<forall>y . (\<box> lft_rel_st r) (fst \<circ> u) x y \<longrightarrow> (\<box> lft_pred_st (inpt_st r')) (snd \<circ> u) y"
       then have D: "(\<box> lft_rel_st r) (fst \<circ> u) x ?y \<longrightarrow> (\<box> lft_pred_st (inpt_st r')) (snd \<circ> u) ?y"
@@ -514,16 +514,16 @@ begin
         apply (drule_tac x = n in spec)
         by (drule_tac x = n in spec, simp)
     next
-      assume "\<forall> n . (\<forall>i<n. inpt_st (\<lambda>(u\<Colon>'a, v\<Colon>'d) (u'\<Colon>'a, v'\<Colon>'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)) \<longrightarrow>
-            inpt_st r (fst (u n)) (fst (u (Suc n))) (x n) \<and> (\<forall>y\<Colon>'c. r (fst (u n)) (fst (u (Suc n))) (x n) y \<longrightarrow> inpt_st r' (snd (u n)) (snd (u (Suc n))) y)"
+      assume "\<forall> n . (\<forall>i<n. inpt_st (\<lambda>(u::'a, v::'d) (u'::'a, v'::'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)) \<longrightarrow>
+            inpt_st r (fst (u n)) (fst (u (Suc n))) (x n) \<and> (\<forall>y::'c. r (fst (u n)) (fst (u (Suc n))) (x n) y \<longrightarrow> inpt_st r' (snd (u n)) (snd (u (Suc n))) y)"
       then show "(\<box> lft_pred_st (inpt_st r)) (fst \<circ> u) x"
         apply (auto simp add: always_def lft_pred_st_def at_fun_def)
         apply (drule inpt_str_comp_aux_a)
         by auto
    next
       fix y::"nat \<Rightarrow> 'c"
-      assume "\<forall> n . (\<forall>i<n. inpt_st (\<lambda>(u\<Colon>'a, v\<Colon>'d) (u'\<Colon>'a, v'\<Colon>'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)) \<longrightarrow>
-            inpt_st r (fst (u n)) (fst (u (Suc n))) (x n) \<and> (\<forall>y\<Colon>'c. r (fst (u n)) (fst (u (Suc n))) (x n) y \<longrightarrow> inpt_st r' (snd (u n)) (snd (u (Suc n))) y)"
+      assume "\<forall> n . (\<forall>i<n. inpt_st (\<lambda>(u::'a, v::'d) (u'::'a, v'::'d). r u u' OO r' v v') (u i) (u (Suc i)) (x i)) \<longrightarrow>
+            inpt_st r (fst (u n)) (fst (u (Suc n))) (x n) \<and> (\<forall>y::'c. r (fst (u n)) (fst (u (Suc n))) (x n) y \<longrightarrow> inpt_st r' (snd (u n)) (snd (u (Suc n))) y)"
       moreover assume " (\<box> lft_rel_st r) (fst \<circ> u) x y"
       ultimately show "(\<box> lft_pred_st (inpt_st r')) (snd \<circ> u) y"
         apply (auto simp add: always_def lft_pred_st_def at_fun_def)
@@ -544,7 +544,7 @@ begin
       then obtain y where B: "r ((fst \<circ> u) m) ((fst \<circ> u) (Suc m)) (x m) y" by (auto simp add: inpt_st_def)
       from A have "?r m"
         by (drule_tac n = m in inpt_str_comp_aux_a, simp)
-      from this B show "inpt_st (\<lambda>(u, v) (u', v') (x\<Colon>'c) z. inpt_st r u u' x \<and> (\<forall>y. r u u' x y 
+      from this B show "inpt_st (\<lambda>(u, v) (u', v') (x::'c) z. inpt_st r u u' x \<and> (\<forall>y. r u u' x y 
           \<longrightarrow> inpt_st r' v v' y) \<and> (r u u' OO r' v v') x z) (u m) (u (Suc m)) (x m)"
       apply (case_tac "u m")
       apply (case_tac "u (Suc m)")     
@@ -582,7 +582,7 @@ begin
         =  (\<lambda>(x, y). (\<box> lft_rel_st (rel_st r r')) x y)" (is "?a = ?b")
         proof (auto simp add: fun_eq_iff always_def at_fun_def lft_pred_st_def lft_rel_st_def rel_st_def inpt_st_def)
           fix a :: "nat \<Rightarrow> 'e \<times> 'a" and  b :: "nat \<Rightarrow> 'c" and  x :: "nat \<Rightarrow> 'b" and  xa :: nat
-          assume "\<forall>xa\<Colon>nat. (case a xa of (u\<Colon>'e, v\<Colon>'a) \<Rightarrow> \<lambda>(u'\<Colon>'e, v'\<Colon>'a). r u u' OO r' v v') (a (Suc xa)) (b xa) (x xa)" (is "\<forall> xa . ?P xa")
+          assume "\<forall>xa::nat. (case a xa of (u::'e, v::'a) \<Rightarrow> \<lambda>(u'::'e, v'::'a). r u u' OO r' v v') (a (Suc xa)) (b xa) (x xa)" (is "\<forall> xa . ?P xa")
           then have A: "?P xa" by simp
           assume "\<forall>x . Ex ((case a x of (u, v) \<Rightarrow> \<lambda>(u', v') (x) z. Ex (r u u' x) \<and> (\<forall>y. r u u' x y \<longrightarrow> Ex (r' v v' y)) \<and> (r u u' OO r' v v') x z) (a (Suc x)) (b x))" (is "\<forall> xa . ?Q xa")
           then have "?Q xa" by simp
@@ -590,14 +590,14 @@ begin
             by (case_tac "a xa", case_tac "a (Suc xa)", simp)
         next
           fix a :: "nat \<Rightarrow> 'e \<times> 'a" and  b :: "nat \<Rightarrow> 'c" and  x :: "nat \<Rightarrow> 'b" and xa :: nat
-          assume "\<forall>xa . (case a xa of (u\<Colon>'e, v\<Colon>'a) \<Rightarrow> \<lambda>(u'\<Colon>'e, v'\<Colon>'a) (x\<Colon>'c) z\<Colon>'b. Ex (r u u' x) \<and> (\<forall>y\<Colon>'d. r u u' x y \<longrightarrow> Ex (r' v v' y)) \<and> (r u u' OO r' v v') x z) (a (Suc xa)) (b xa) (x xa)" (is "\<forall> xa . ?Q xa")
+          assume "\<forall>xa . (case a xa of (u::'e, v::'a) \<Rightarrow> \<lambda>(u'::'e, v'::'a) (x::'c) z::'b. Ex (r u u' x) \<and> (\<forall>y::'d. r u u' x y \<longrightarrow> Ex (r' v v' y)) \<and> (r u u' OO r' v v') x z) (a (Suc xa)) (b xa) (x xa)" (is "\<forall> xa . ?Q xa")
           then have "?Q xa" by simp
-          then show "(case a xa of (u\<Colon>'e, v\<Colon>'a) \<Rightarrow> \<lambda>(u'\<Colon>'e, v'\<Colon>'a). r u u' OO r' v v') (a (Suc xa)) (b xa) (x xa)"
+          then show "(case a xa of (u::'e, v::'a) \<Rightarrow> \<lambda>(u'::'e, v'::'a). r u u' OO r' v v') (a (Suc xa)) (b xa) (x xa)"
           by (case_tac "a xa", case_tac "a (Suc xa)", simp)
         qed
       
      from A have "SymSystem init (inpt_st r) r o SymSystem init'(inpt_st r') r' = [: z \<leadsto> u, x . fst \<circ> u \<in> init \<and> snd \<circ> u \<in> init' \<and> z = x :] \<circ>
-      ({.u, x . prec_st (inpt_st r) r (fst \<circ> u) x \<and> (\<forall>y\<Colon>nat \<Rightarrow> 'd. (\<box> lft_rel_st r) (fst \<circ> u) x y \<longrightarrow> prec_st (inpt_st r') r' (snd \<circ> u) y).} \<circ>
+      ({.u, x . prec_st (inpt_st r) r (fst \<circ> u) x \<and> (\<forall>y::nat \<Rightarrow> 'd. (\<box> lft_rel_st r) (fst \<circ> u) x y \<longrightarrow> prec_st (inpt_st r') r' (snd \<circ> u) y).} \<circ>
       [:  (\<lambda>(u, x).  ((\<box> lft_rel_st (\<lambda>(u, v) (u', v'). r u u' OO r' v v')) u x)) :])"
       by (unfold SymSystem_comp, simp add: comp_assoc)
       also have "... = [: z \<leadsto> u, x . fst \<circ> u \<in> init \<and> snd \<circ> u \<in> init' \<and> z = x :] \<circ> ({. x, y . (\<box> lft_pred_st (inpt_st (rel_st r r'))) x y .} \<circ> [: ?b :])"
@@ -664,7 +664,7 @@ begin
         {fix j::nat
           assume "\<forall>i<Suc n. (x i \<longrightarrow> u (Suc i) = Suc (u i)) \<and> (\<not> x i \<longrightarrow> u (Suc i) = u i)"
           and "j < Suc n"
-          and "u (0\<Colon>nat) = (0\<Colon>nat)"
+          and "u (0::nat) = (0::nat)"
           from this and Suc have "count x j = u (Suc j)"
             by (case_tac j, auto)
         }
@@ -680,7 +680,7 @@ begin
 
   lemma "COUNTER = Counter_global"
     proof -
-      have A:"(\<lambda>x y . \<exists>u\<Colon>nat \<Rightarrow> nat. u (0\<Colon>nat) = (0\<Colon>nat) \<and> (\<box> lft_rel_st rel_count) u x y)
+      have A:"(\<lambda>x y . \<exists>u::nat \<Rightarrow> nat. u (0::nat) = (0::nat) \<and> (\<box> lft_rel_st rel_count) u x y)
         = (\<lambda> x y . y = count x)"
         proof (simp add: fun_eq_iff lft_rel_st_def rel_count_def always_def at_fun_def, safe)
           fix x :: "nat \<Rightarrow> bool" and  xa :: "nat \<Rightarrow> nat" and u:: "nat \<Rightarrow> nat" and xb :: nat
@@ -692,18 +692,18 @@ begin
         next
           fix x::"nat \<Rightarrow> bool" and xa::"nat \<Rightarrow> nat"
           def A: u == "\<lambda> i . if i = 0 then 0 else count x (i - 1)"
-          assume B: "\<forall>xb\<Colon>nat. xa xb = count x xb"
+          assume B: "\<forall>xb::nat. xa xb = count x xb"
           {fix xb::nat
           from A and B have "u 0 = 0 \<and> ( (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> xa xb = u (Suc xb))"
             by (case_tac xb, auto)
           }
-          then show "\<exists>u\<Colon>nat \<Rightarrow> nat. u 0 = 0 \<and> (\<forall>xb. (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> 
+          then show "\<exists>u::nat \<Rightarrow> nat. u 0 = 0 \<and> (\<forall>xb. (x xb \<longrightarrow> u (Suc xb) = Suc (u xb)) \<and> (\<not> x xb \<longrightarrow> u (Suc xb) = u xb) \<and> 
               xa xb = u (Suc xb))"
           by auto
        qed
       {fix x :: nat
-        have "(\<lambda>xa . \<forall>u . u (0\<Colon>nat) = (0\<Colon>nat) \<longrightarrow> prec_st (prec_count x) rel_count u xa) = 
-          (\<lambda>xa\<Colon>nat \<Rightarrow> bool. \<forall>k\<Colon>nat. count xa k \<le> x)"
+        have "(\<lambda>xa . \<forall>u . u (0::nat) = (0::nat) \<longrightarrow> prec_st (prec_count x) rel_count u xa) = 
+          (\<lambda>xa::nat \<Rightarrow> bool. \<forall>k::nat. count xa k \<le> x)"
         proof (simp add: fun_eq_iff lft_rel_st_def  prec_st_def until_def 
             lft_pred_st_def prec_count_def at_fun_def inpt_st_def rel_count_def, safe)
           fix xa::"nat \<Rightarrow> bool" and k:: nat
@@ -721,8 +721,8 @@ begin
              by (case_tac xb, auto)
         next 
           fix xa:: "nat \<Rightarrow> bool" and  u::"nat \<Rightarrow> nat" and xaa::nat
-          assume C: "\<forall>k\<Colon>nat. count xa k \<le> x"
-          assume A: "u (0\<Colon>nat) = (0\<Colon>nat)"
+          assume C: "\<forall>k::nat. count xa k \<le> x"
+          assume A: "u (0::nat) = (0::nat)"
           assume B: "\<not> u xaa \<le> x"
           from A and B have D: "xaa > 0"
             by (metis le0 neq0_conv)
@@ -792,20 +792,20 @@ thm fusion_spec_local_a
         by (metis "0.prems"(1) le_minus_one_simps(1) minus_zero zero_le_one zero_neq_neg_one)
     next
       case (Suc n)
-      {assume "a (Suc n) = - (1\<Colon>int)" from this and Suc have "xa (Suc n)"
+      {assume "a (Suc n) = - (1::int)" from this and Suc have "xa (Suc n)"
         by (metis add.commute add_le_same_cancel2 not_one_le_zero zero_neq_neg_one)}
       note A = this
-      {assume "a (Suc n) = (1\<Colon>int)" and "xa (Suc n)" from this and Suc have "False"
+      {assume "a (Suc n) = (1::int)" and "xa (Suc n)" from this and Suc have "False"
         by (metis eq_iff le_iff_diff_le_0 not_one_le_zero)}
       note B = this
-      {assume "a n \<noteq> - (1\<Colon>int)" from this and Suc have " - (1\<Colon>int) \<le> a (Suc n)" 
+      {assume "a n \<noteq> - (1::int)" from this and Suc have " - (1::int) \<le> a (Suc n)" 
          by (metis add.commute monoid_add_class.add.left_neutral le_less not_le right_minus uminus_add_conv_diff zle_add1_eq_le)}
       note C = this
-      {assume "a n = - (1\<Colon>int)" from this and Suc have " - (1\<Colon>int) \<le> a (Suc n)"
+      {assume "a n = - (1::int)" from this and Suc have " - (1::int) \<le> a (Suc n)"
         by (metis add.commute le_minus_one_simps(4) monoid_add_class.add.right_neutral not_le right_minus zle_add1_eq_le)}
       note D = this
-      from C and D and Suc have  E: " - (1\<Colon>int) \<le> a (Suc n)" by auto
-      from Suc have F: "a (Suc n) \<le> (1\<Colon>int)"
+      from C and D and Suc have  E: " - (1::int) \<le> a (Suc n)" by auto
+      from Suc have F: "a (Suc n) \<le> (1::int)"
         by (metis eq_iff int_one_le_iff_zero_less le_iff_diff_le_0 le_less not_le zle_add1_eq_le)
       from A B E F show ?case by auto
     qed
@@ -820,7 +820,7 @@ thm fusion_spec_local_a
       fix z::"nat \<Rightarrow> bool" and u :: "nat \<Rightarrow> int" and x::"nat \<Rightarrow> bool"
       assume A: "u 0 = 0"
       assume "(\<box> preca_ex) z"
-      then have B: "\<forall>x\<Colon>nat. z (Suc x) = (\<not> z x)"  
+      then have B: "\<forall>x::nat. z (Suc x) = (\<not> z x)"  
         by (auto simp add: preca_ex_def lft_rel_st_def rel_ex_def always_def at_fun_def)
       assume "(\<box> lft_rel_st rel_ex) u z x"
       then have C: "\<forall>xa . (z xa \<and> u (Suc xa) = u xa + 1 \<or> \<not> z xa \<and> u (Suc xa) = u xa - 1 \<or> u (Suc xa) = 0) \<and> x xa = (u (Suc xa) = 0)"

@@ -21,8 +21,8 @@ begin
     will fail with
 *** exception TYPE raised (line 414 of "type.ML"):
 *** Type variable "?'a" has two distinct sorts
-*** ?'a\<Colon>type
-*** ?'a\<Colon>hashable
+*** ?'a::type
+*** ?'a::hashable
 
   The problem seems difficult to track down, as it, e.g., does not iccur for 
   sets.

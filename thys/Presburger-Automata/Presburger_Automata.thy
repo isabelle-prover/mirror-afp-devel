@@ -1284,7 +1284,7 @@ lemma mk_eqcl_fixpt_fst_bound:
   shows "fst (mk_eqcl (replicate (length (fst M)) None) [] 0 (fixpt M (init_tr M))) ! i < length (snd (mk_eqcl (replicate (length (fst M)) None) [] 0 (fixpt M (init_tr M))))"
   (is "fst ?M ! i < length (snd ?M)")
 proof -
-  { fix x k assume H: "x \<in> set (replicate (length (fst M)) (None\<Colon>nat option))" "x = Some k"
+  { fix x k assume H: "x \<in> set (replicate (length (fst M)) (None::nat option))" "x = Some k"
     hence "k < length []" by (cases "length (fst M) = 0") simp+
   } moreover
   from assms have "fst ?M ! i \<in> set (fst ?M)" by (simp add: dfa_is_node_def mk_eqcl_len_fst)
@@ -1322,7 +1322,7 @@ proof -
       with H' assms D show "\<not> tr_lookup (fixpt M (init_tr M)) a c" by (simp add: fixpt_dist_nodes[symmetric])
     qed
     moreover have "\<And>x k. \<lbrakk>x \<in> set (replicate (length (fst M)) None); x = Some k\<rbrakk> \<Longrightarrow> k < length []" proof -
-      fix x k assume "x \<in> set (replicate (length (fst M)) (None\<Colon>nat option))" "x = Some k"
+      fix x k assume "x \<in> set (replicate (length (fst M)) (None::nat option))" "x = Some k"
       thus "k < length []" by (cases "length (fst M) = 0") simp+
     qed
     moreover from WF assms have "length (replicate (length (fst M)) None) + 0 = length (fixpt M (init_tr M)) + 1" by (simp add: wf_tr_def wf_dfa_def)
@@ -1406,7 +1406,7 @@ lemma mk_eqcl_fixpt_startnode:
 proof -
   from assms obtain k where K: "length (fst M) = Suc k" by (cases "length (fst M)") simp+
   from K have "length (snd ?M) = length (snd (mk_eqcl (mk_eqcl' (replicate k None) 0 (Suc 0) 0 (fixpt M (init_tr M))) [0] (Suc 0) (fixpt M (init_tr M))))" by (simp add: split_beta)
-  also have "\<dots> \<ge> length [0\<Colon>nat]" by (simp only: mk_eqcl_len_snd)
+  also have "\<dots> \<ge> length [0::nat]" by (simp only: mk_eqcl_len_snd)
   finally have "length (snd ?M) > 0" by auto
   with K show ?thesis by (simp add: split_beta mk_eqcl_snd_nth)
 qed

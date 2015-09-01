@@ -28,7 +28,7 @@ lemma override_on_cont2cont[simp, cont2cont]:
 by (rule cont_apply[OF assms(1) override_on_cont1 cont_compose[OF override_on_cont2 assms(2)]])
 
 lemma override_on_mono:
-  assumes "x1 \<sqsubseteq> (x2 :: 'a\<Colon>type \<Rightarrow> 'b\<Colon>cpo)"
+  assumes "x1 \<sqsubseteq> (x2 :: 'a::type \<Rightarrow> 'b::cpo)"
   assumes "y1 \<sqsubseteq> y2"
   shows "x1 ++\<^bsub>S\<^esub> y1 \<sqsubseteq> x2 ++\<^bsub>S\<^esub> y2"
 by (rule below_trans[OF cont2monofunE[OF override_on_cont1 assms(1)] cont2monofunE[OF override_on_cont2 assms(2)]])

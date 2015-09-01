@@ -291,7 +291,7 @@ proof -
              simp add: range_in_span_fW independent_fW image_mono)
      -- "Now, it has to be proved that any other basis of the subspace 
           range of $f$ has equal cardinality:"
-     show "\<And>n\<Colon>nat. \<exists>B\<subseteq>range f. l.C.independent B \<and> range f \<subseteq> l.C.span B \<and> card B = n 
+     show "\<And>n::nat. \<exists>B\<subseteq>range f. l.C.independent B \<and> range f \<subseteq> l.C.span B \<and> card B = n 
       \<Longrightarrow> card (f ` W) = n"
      proof (clarify)
         fix S :: "'c set"

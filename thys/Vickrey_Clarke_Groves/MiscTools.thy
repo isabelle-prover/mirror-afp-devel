@@ -1216,7 +1216,7 @@ lemma lm155:
   assumes "runiq f" "X \<subseteq> Domain f" 
   shows "graph X (toFunction f) = (f||X)" 
 proof -
-  have "\<And>v w. (v\<Colon>'a set) \<subseteq> w \<longrightarrow> w \<inter> v = v" by (simp add: Int_commute inf.absorb1)
+  have "\<And>v w. (v::'a set) \<subseteq> w \<longrightarrow> w \<inter> v = v" by (simp add: Int_commute inf.absorb1)
   thus "graph X (toFunction f) = f || X" by (metis assms(1) assms(2) doubleRestriction lm004 lm153)
 qed
 

@@ -90,7 +90,7 @@ next
     apply (simp add: fun_eq_iff)
     done
 next
-  show "(1\<Colon>'a MonoTran) ^ o = 1"
+  show "(1::'a MonoTran) ^ o = 1"
     apply transfer
     apply (simp add: fun_eq_iff)
     done
@@ -844,17 +844,17 @@ lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
 
 lemma INF_comp: "(INFIMUM A f) * z = (INF a : A . (f a) * z)"
   unfolding INF_def Inf_comp
-  apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
+  apply (subgoal_tac "((\<lambda>x::'a. x * z) ` f ` A) = ((\<lambda>a::'b. f a * z) ` A)")
   by auto
 
 lemma dual_INF: "(INFIMUM A f) ^ o = (SUP a : A . (f a) ^ o)"
   unfolding INF_def SUP_def Inf_comp dual_Inf
-  apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
+  apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a::'b. f a ^ o) ` A)")
   by auto
 
 lemma dual_SUP: "(SUPREMUM A f) ^ o = (INF a : A . (f a) ^ o)"
   unfolding INF_def dual_Sup SUP_def
-  apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a\<Colon>'b. f a ^ o) ` A)")
+  apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a::'b. f a ^ o) ` A)")
   by auto
 
 lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
@@ -863,7 +863,7 @@ lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
 
 lemma SUP_comp: "(SUPREMUM A f) * z = (SUP a : A . (f a) * z)"
   unfolding SUP_def Sup_comp
-  apply (subgoal_tac "((\<lambda>x\<Colon>'a. x * z) ` f ` A) = ((\<lambda>a\<Colon>'b. f a * z) ` A)")
+  apply (subgoal_tac "((\<lambda>x::'a. x * z) ` f ` A) = ((\<lambda>a::'b. f a * z) ` A)")
   by auto
 
 

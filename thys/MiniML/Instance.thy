@@ -29,7 +29,7 @@ definition
   le_type_scheme_def: "sch' <= (sch::type_scheme) \<longleftrightarrow> (!t. t <| sch' --> t <| sch)"
 
 definition
-  "(sch' < (sch \<Colon> type_scheme)) \<longleftrightarrow> sch' \<le> sch \<and> sch' \<noteq> sch"
+  "(sch' < (sch :: type_scheme)) \<longleftrightarrow> sch' \<le> sch \<and> sch' \<noteq> sch"
 
 instance ..
 
@@ -46,7 +46,7 @@ definition
   le_env_def: "A \<le> B \<longleftrightarrow> length B = length A \<and> (!i. i < length A --> A!i <= B!i)"
 
 definition
-  "(A < (B \<Colon> 'a list)) \<longleftrightarrow> A \<le> B \<and> A \<noteq> B"
+  "(A < (B :: 'a list)) \<longleftrightarrow> A \<le> B \<and> A \<noteq> B"
 
 instance ..
 

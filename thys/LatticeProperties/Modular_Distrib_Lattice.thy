@@ -349,7 +349,7 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice op \<sqinter> ((op \<le>
       apply simp_all
       proof
         fix x y z::'a
-        assume A: "\<forall>(a\<Colon>'a) (b\<Colon>'a) c\<Colon>'a. \<not> a \<sqinter> b \<squnion> a \<sqinter> c < a \<sqinter> (b \<squnion> c)"
+        assume A: "\<forall>(a::'a) (b::'a) c::'a. \<not> a \<sqinter> b \<squnion> a \<sqinter> c < a \<sqinter> (b \<squnion> c)"
         show "x \<squnion> y \<sqinter> z = (x \<squnion> y) \<sqinter> (x \<squnion> z)"
           apply (cut_tac A)
           apply (rule distrib_imp1)
@@ -367,10 +367,10 @@ lemma not_distrib_N5_M5: "(\<not> class.distrib_lattice op \<sqinter> ((op \<le>
           apply (cut_tac a = a and b = b and c = c in  modular.M5_modular)
           apply (unfold no_distrib_def)
           by (simp_all add: A inf_commute)
-        from H show "\<exists>a b c\<Colon>'a. M5_lattice a b c" by blast
+        from H show "\<exists>a b c::'a. M5_lattice a b c" by blast
      qed
    next
-     assume A: "\<not> class.modular_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion> \<or> (\<exists>(a\<Colon>'a) (b\<Colon>'a) c\<Colon>'a. M5_lattice a b c)"
+     assume A: "\<not> class.modular_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion> \<or> (\<exists>(a::'a) (b::'a) c::'a. M5_lattice a b c)"
      show "\<not> class.distrib_lattice op \<sqinter> ((op \<le>)::'a \<Rightarrow> 'a \<Rightarrow> bool) op < op \<squnion>"
        apply (cut_tac A)
        apply safe

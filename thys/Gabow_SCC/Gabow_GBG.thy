@@ -1549,7 +1549,7 @@ begin
           that replaces the following smt-call:
         by (smt GS.seg_start_def `seg_start (find_seg j) \<le> j`)*)
       proof -
-        have f1: "\<And>x\<^sub>1 x. \<not> (x\<^sub>1\<Colon>nat) < x\<^sub>1 - x"
+        have f1: "\<And>x\<^sub>1 x. \<not> (x\<^sub>1::nat) < x\<^sub>1 - x"
           using less_imp_diff_less by blast
         have "j \<le> last B"
           by (metis `j < last B` less_le)

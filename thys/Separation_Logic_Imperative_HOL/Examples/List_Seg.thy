@@ -13,15 +13,15 @@ text {*
   a datatype.
 *}
 setup {* Sign.add_const_constraint 
-  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a\<Colon>type ref"}) *}
+  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::type ref"}) *}
 
 datatype 'a node = Node "'a" "'a node ref option"
 
 setup {* Sign.add_const_constraint 
-  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a\<Colon>heap ref"}) *}
+  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::heap ref"}) *}
 
 setup {* Sign.add_const_constraint (@{const_name Node}, 
-  SOME @{typ "'a\<Colon>heap \<Rightarrow> 'a node ref option \<Rightarrow> 'a node"}) *}
+  SOME @{typ "'a::heap \<Rightarrow> 'a node ref option \<Rightarrow> 'a node"}) *}
 
 text {* Selector Functions *}
 primrec val :: "'a::heap node \<Rightarrow> 'a" where
@@ -32,7 +32,7 @@ primrec "next" :: "'a::heap node \<Rightarrow> 'a node ref option" where
 
 text {* Encoding to natural numbers, as required by Imperative/HOL*}
 fun
-  node_encode :: "'a\<Colon>heap node \<Rightarrow> nat"
+  node_encode :: "'a::heap node \<Rightarrow> nat"
 where
   "node_encode (Node x r) = to_nat (x, r)"
 

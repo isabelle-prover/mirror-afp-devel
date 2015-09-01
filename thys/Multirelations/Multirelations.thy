@@ -434,7 +434,7 @@ proof
       obtain BB :: "'b set" and BBa :: "'b \<Rightarrow> 'b set" where
         ff1: "(a, BB) \<in> x \<and> {} \<noteq> BB \<and> (\<forall>b. b \<notin> BB \<or> {} \<noteq> BBa b) \<and> UNION BB BBa = b"
         by (metis (full_types) a1)
-      hence "\<forall>B. (\<Union>b\<in>BB. (B\<Colon>'b set)) = B"
+      hence "\<forall>B. (\<Union>b\<in>BB. (B::'b set)) = B"
         by force
       hence "\<exists>B Ba. B \<union> Ba = b \<and> (\<exists>Bb. (a, Bb) \<in> x \<and> {} \<noteq> Bb \<and> (\<exists>f. (bb B Ba Bb f \<notin> Bb \<or> {} = f (bb B Ba Bb f)) \<and> UNION Bb f = B)) \<and> {} \<noteq> Ba"
         by (metis ff1 SUP_bot_conv(2) sup_bot.left_neutral) }

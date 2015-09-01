@@ -84,7 +84,7 @@ proof
   fix a b c::"'a iarray"
   have max_eq: "(max (IArray.length 0) (IArray.length a)) =(IArray.length a) "
   proof -
-    have "max (length (IArray.list_of (0\<Colon>'a iarray))) (length (IArray.list_of a)) = length (IArray.list_of a)"
+    have "max (length (IArray.list_of (0::'a iarray))) (length (IArray.list_of a)) = length (IArray.list_of a)"
       by (metis list.size(3) list_of.simps max_0L zero_iarray_def)
     thus "max (IArray.length 0) (IArray.length a) = IArray.length a"
       by (metis length_def list.size(3) list_of.simps zero_iarray_def)

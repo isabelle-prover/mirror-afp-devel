@@ -36,14 +36,14 @@ subsection {* Assertions *}
 subsubsection {* Assertion for Hashtable *}
 
 definition ht_table 
-  :: "('k\<Colon>heap \<times> 'v\<Colon>heap) list list \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> assn" 
+  :: "('k::heap \<times> 'v::heap) list list \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> assn" 
   where
   "ht_table l ht = (the_array ht) \<mapsto>\<^sub>a l"
 
 definition ht_size :: "'a list list \<Rightarrow> nat \<Rightarrow> bool" where
   "ht_size l n \<equiv> n = listsum (map length l)"
 
-definition ht_hash :: "('k\<Colon>hashable \<times> 'v) list list \<Rightarrow> bool" where
+definition ht_hash :: "('k::hashable \<times> 'v) list list \<Rightarrow> bool" where
   "ht_hash l 
   \<equiv> \<forall>i<length l. \<forall>x\<in>set (l!i). 
       bounded_hashcode_nat (length l) (fst x) = i"
@@ -53,7 +53,7 @@ definition ht_distinct :: "('k \<times> 'v) list list \<Rightarrow> bool" where
 
 
 definition is_hashtable 
-  :: "('k\<Colon>{heap,hashable} \<times> 'v\<Colon>heap) list list 
+  :: "('k::{heap,hashable} \<times> 'v::heap) list list 
     \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> assn" 
   where 
   "is_hashtable l ht = 
@@ -94,14 +94,14 @@ subsection {* New *}
 subsubsection {* Definition *}
 
 definition ht_new_sz 
-  :: "nat \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable Heap" 
+  :: "nat \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable Heap" 
   where
   "ht_new_sz n \<equiv> do { let l = replicate n []; 
   a \<leftarrow> Array.of_list l;
   return (HashTable a 0) }"
 
 
-definition ht_new :: "('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable Heap" 
+definition ht_new :: "('k::{heap,hashable}, 'v::heap) hashtable Heap" 
   where "ht_new \<equiv> ht_new_sz (def_hashmap_size TYPE('k))"
 
 
@@ -139,7 +139,7 @@ lemma complete_ht_new_sz:
 lemma complete_ht_new:
   shows 
   "<emp> 
-     ht_new::('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable Heap 
+     ht_new::('k::{heap,hashable}, 'v::heap) hashtable Heap 
    <is_hashtable (replicate (def_hashmap_size TYPE('k)) [])>"
   unfolding ht_new_def
   by (simp add: complete_ht_new_sz[OF def_hashmap_size])
@@ -153,7 +153,7 @@ fun ls_lookup :: "'k \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 'v option
   "ls_lookup x ((k, v) # l) = (if x = k then Some v else ls_lookup x l)"
 
 definition ht_lookup 
-  :: "'k \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable \<Rightarrow> 'v option Heap"
+  :: "'k \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable \<Rightarrow> 'v option Heap"
   where
   "ht_lookup x ht = do {
     m \<leftarrow> Array.len (the_array ht);
@@ -205,7 +205,7 @@ fun ls_update :: "'k \<Rightarrow> 'v \<Rightarrow> ('k \<times> 'v) list \<Righ
   )"
 
 definition abs_update 
-  :: "'k\<Colon>hashable \<Rightarrow> 'v \<Rightarrow> ('k \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list"
+  :: "'k::hashable \<Rightarrow> 'v \<Rightarrow> ('k \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list"
   where
   "abs_update k v l = 
     l[bounded_hashcode_nat (length l) k 
@@ -265,7 +265,7 @@ lemma ls_update_length_snd_False:
 
 definition ht_upd 
   :: "'k \<Rightarrow> 'v 
-    \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable 
+    \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable 
     \<Rightarrow> ('k, 'v) hashtable Heap" 
   where
   "ht_upd k v ht = do {
@@ -491,7 +491,7 @@ lemma ls_delete_length_snd_False:
 
 definition ht_delete 
   :: "'k 
-    \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable 
+    \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable 
     \<Rightarrow> ('k, 'v) hashtable Heap" 
   where
   "ht_delete k ht = do {
@@ -651,14 +651,14 @@ subsubsection {* Auxiliary Functions *}
 text {* \paragraph{Insert List} *}
 fun ht_insls 
   :: "('k \<times> 'v) list 
-    \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable 
-    \<Rightarrow> ('k, 'v\<Colon>heap) hashtable Heap" 
+    \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable 
+    \<Rightarrow> ('k, 'v::heap) hashtable Heap" 
   where
   "ht_insls [] ht = return ht" |
   "ht_insls ((k, v) # l) ht = do { h \<leftarrow> ht_upd k v ht; ht_insls l h }"
 
 text "Abstract version"
-fun ls_insls :: "('k\<Colon>hashable \<times> 'v) list 
+fun ls_insls :: "('k::hashable \<times> 'v) list 
   \<Rightarrow> ('k \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list" where
   "ls_insls [] l = l" |
   "ls_insls ((k, v) # ls) l = 
@@ -711,7 +711,7 @@ next
 qed
 
 text {* \paragraph{Copy} *}
-fun ht_copy :: "nat \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable 
+fun ht_copy :: "nat \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable 
   \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> ('k, 'v) hashtable Heap" 
   where
   "ht_copy 0 src dst = return dst" |
@@ -722,7 +722,7 @@ fun ht_copy :: "nat \<Rightarrow> ('k\<Colon>{heap,hashable}, 'v\<Colon>heap) ha
   }"
 
 text "Abstract version"
-fun ls_copy :: "nat \<Rightarrow> ('k\<Colon>hashable \<times> 'v) list list 
+fun ls_copy :: "nat \<Rightarrow> ('k::hashable \<times> 'v) list list 
   \<Rightarrow> ('k \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list" 
   where
   "ls_copy 0 ss ds = ds" |
@@ -805,7 +805,7 @@ next
 qed
     
 definition ht_rehash 
-  :: "('k\<Colon>{heap,hashable}, 'v\<Colon>heap) hashtable \<Rightarrow> ('k, 'v) hashtable Heap"
+  :: "('k::{heap,hashable}, 'v::heap) hashtable \<Rightarrow> ('k, 'v) hashtable Heap"
   where
   "ht_rehash ht = do { 
     n \<leftarrow> Array.len (the_array ht); 
@@ -815,7 +815,7 @@ definition ht_rehash
 
 text "Operation on Abstraction"
 definition ls_rehash 
-  :: "('k\<Colon>hashable \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list" 
+  :: "('k::hashable \<times> 'v) list list \<Rightarrow> ('k \<times> 'v) list list" 
   where "ls_rehash l 
   = ls_copy (List.length l) l (replicate (2 * length l) [])"
 
@@ -859,7 +859,7 @@ definition load_factor :: nat -- "in percent"
   where "load_factor = 75"
 
 definition ht_update 
-  :: "'k\<Colon>{heap,hashable} \<Rightarrow> 'v\<Colon>heap \<Rightarrow> ('k, 'v) hashtable 
+  :: "'k::{heap,hashable} \<Rightarrow> 'v::heap \<Rightarrow> ('k, 'v) hashtable 
   \<Rightarrow> ('k, 'v) hashtable Heap" 
   where
   "ht_update k v ht = do { 
@@ -894,7 +894,7 @@ lemma complete_ht_update_rehash:
 
 subsection {* Conversion to List *}
 definition ht_to_list :: 
-  "('k\<Colon>heap, 'v\<Colon>heap) hashtable \<Rightarrow> ('k \<times> 'v) list Heap" where
+  "('k::heap, 'v::heap) hashtable \<Rightarrow> ('k \<times> 'v) list Heap" where
   "ht_to_list ht = do { 
     l \<leftarrow> (Array.freeze (the_array ht)); 
     return (concat l) 

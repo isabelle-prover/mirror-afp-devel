@@ -2061,9 +2061,9 @@ proof -
               proof (unfold xa, rule induct_step)
                 show a_p: "a<p" unfolding a_def using p2 unfolding ncols_def 
                 proof -
-                  have "x < from_nat (to_nat s + to_nat (from_nat p\<Colon>'n))"
+                  have "x < from_nat (to_nat s + to_nat (from_nat p::'n))"
                     by (metis (no_types) True add_to_nat_def)
-                  hence "to_nat x - to_nat s < to_nat (from_nat p\<Colon>'n)"
+                  hence "to_nat x - to_nat s < to_nat (from_nat p::'n)"
                     by (simp add: add.commute less_diff_conv2 less_imp_le to_nat_le x_g_s)
                   thus "to_nat x - to_nat s < p"
                     by (metis (no_types) from_nat_eq_imp_eq from_nat_to_nat_id le_less_trans 

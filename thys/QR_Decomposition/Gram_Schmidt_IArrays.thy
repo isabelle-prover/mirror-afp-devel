@@ -235,14 +235,14 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_d
     unfolding matrix_to_iarray_def Gram_Schmidt_column_k_iarrays_def tabulate2_def 
     unfolding nrows_iarray_def ncols_iarray_def o_def
   proof (auto)
-    have f1: "i < card (UNIV\<Colon>'rows set)"
+    have f1: "i < card (UNIV::'rows set)"
       by (metis i length_eq_card_rows)
     have f2: "\<And>x\<^sub>5. IArray.list_of (vec_to_iarray x\<^sub>5) 
-      = List.map (\<lambda>uua. x\<^sub>5 $ (from_nat uua\<Colon>'cols)\<Colon>real) [0..<card (UNIV\<Colon>'cols set)]"
+      = List.map (\<lambda>uua. x\<^sub>5 $ (from_nat uua::'cols)::real) [0..<card (UNIV::'cols set)]"
       by (metis list_of.simps of_fun_def vec_to_iarray_def)
-    thus "length (IArray.list_of (List.map (\<lambda>x. vec_to_iarray (Gram_Schmidt_column_k A k $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)] ! i)) 
-    = length (IArray.list_of (List.map (\<lambda>i. IArray (List.map (\<lambda>b. IArray.list_of (if b = k then column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) 
-    - (\<Sum>x\<in>set (List.map (\<lambda>n. column_iarray n (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) [0..< b]). (column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)])) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) else column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV\<Colon>'rows set)]))) ! i) [0..< length (IArray.list_of (vec_to_iarray (A $ from_nat 0)))])) [0..<card (UNIV\<Colon>'rows set)] ! i))"
+    thus "length (IArray.list_of (List.map (\<lambda>x. vec_to_iarray (Gram_Schmidt_column_k A k $ from_nat x)) [0..<card (UNIV::'rows set)] ! i)) 
+    = length (IArray.list_of (List.map (\<lambda>i. IArray (List.map (\<lambda>b. IArray.list_of (if b = k then column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)])) 
+    - (\<Sum>x\<in>set (List.map (\<lambda>n. column_iarray n (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)]))) [0..< b]). (column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)])) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) else column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)]))) ! i) [0..< length (IArray.list_of (vec_to_iarray (A $ from_nat 0)))])) [0..<card (UNIV::'rows set)] ! i))"
       using f1 by auto
   qed
 next
@@ -316,7 +316,7 @@ next
         show "\<forall>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. i < IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i x/ (x \<bullet>i x)) *\<^sub>R x)"
         proof (unfold column_iarray_def, auto)
           fix x :: nat
-          have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> op $ A \<circ> mod_type_class.from_nat) [0..<card (UNIV\<Colon>'rows set)])))"
+          have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> op $ A \<circ> mod_type_class.from_nat) [0..<card (UNIV::'rows set)])))"
             by (metis i_nrows_iarray length_def matrix_to_iarray_def nrows_iarray_def)
           thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
             by (simp add: matrix_to_iarray_def scaleR_iarray_def)
@@ -380,7 +380,7 @@ next
         proof (rule bexI[of _ "?c"])
           show "i < ?c"           
           proof (unfold column_iarray_def, auto)
-            have "i < card (UNIV\<Colon>'rows set)"
+            have "i < card (UNIV::'rows set)"
               by (metis (no_types) i_nrows nrows_def)
             thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! 0) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
               by (simp add: matrix_to_iarray_def scaleR_iarray_def)

@@ -13,11 +13,11 @@ begin
 subsection \<open>The Algorithm\<close>
 
 abbreviation
-  array_update :: "'a\<Colon>heap array \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a array Heap" ("(_.'(_') \<leftarrow>/ _)" [1000, 0, 13] 14)
+  array_update :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a array Heap" ("(_.'(_') \<leftarrow>/ _)" [1000, 0, 13] 14)
 where
   "a.(i) \<leftarrow> x \<equiv> Array.upd i x a"
 
-abbreviation array_nth :: "'a\<Colon>heap array \<Rightarrow> nat \<Rightarrow> 'a Heap" ("_.'(_')" [1000, 0] 14)
+abbreviation array_nth :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a Heap" ("_.'(_')" [1000, 0] 14)
 where
   "a.(i) \<equiv> Array.nth a i"
 
@@ -54,7 +54,7 @@ definition
 text \<open>
   The following definitions decompose the nested loops of the algorithm into more manageable chunks.
 \<close>
-definition "shiftr_p a (key\<Colon>'a\<Colon>{heap, linorder}) i =
+definition "shiftr_p a (key::'a::{heap, linorder}) i =
   (do {i' \<leftarrow> ! i; if i' > 0 then do {x \<leftarrow> a.(i' - 1); return (x > key)} else return False})"
 
 definition "shiftr_f a i = do {

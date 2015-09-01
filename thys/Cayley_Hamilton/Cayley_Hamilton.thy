@@ -167,7 +167,7 @@ lemma degree_det:
   by (subst degree_setsum_unique[where i=id])
      (simp_all add: sign_permut permutes_id assms)
 
-definition max_degree :: "'a\<Colon>zero poly^^'n \<Rightarrow> nat" where
+definition max_degree :: "'a::zero poly^^'n \<Rightarrow> nat" where
   "max_degree A = Max (range (\<lambda>(i, j). degree (to_fun A i j)))"
 
 lemma degree_le_max_degree: "degree (to_fun A i j) \<le> max_degree A"

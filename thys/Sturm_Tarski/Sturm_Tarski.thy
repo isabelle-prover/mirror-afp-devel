@@ -453,7 +453,7 @@ next
   case (Suc n)
   have "pderiv ([:-a,1:]^Suc n) = smult (Suc n) ([:-a,1:]^n)" 
     proof -
-      have "pderiv [:- a, 1\<Colon>real:] = 1"   
+      have "pderiv [:- a, 1::real:] = 1"   
         by (metis monoid_add_class.add.right_neutral one_poly_def pCons_0_0 pderiv_pCons 
           pderiv_singleton)
       thus ?thesis unfolding pderiv_power_Suc by (metis mult_cancel_left1 real_of_nat_def)
@@ -930,7 +930,7 @@ lemma cindex_smult_1:
   shows "cindex a b (smult c q) p =  (sign c) * cindex a b q p"
 unfolding cindex_def
 using setsum_right_distrib[THEN sym, of "sign c" "\<lambda>x. jump q p x" 
-    "{x. poly p x = (0\<Colon>real) \<and> a < x \<and> x < b}"] jump_smult_1[OF `p\<noteq>0`] 
+    "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"] jump_smult_1[OF `p\<noteq>0`] 
   by auto
 
 lemma cindex_smult_2: 
@@ -939,7 +939,7 @@ lemma cindex_smult_2:
   shows "cindex a b q (smult c p) =  (sgn c) * cindex a b q p"
 unfolding cindex_def real_of_int_setsum jump_smult_2[OF `p\<noteq>0` `c\<noteq>0`,of q]  
 using setsum_right_distrib[THEN sym, of "sgn c" "\<lambda>x. jump q p x" 
-    "{x. poly p x = (0\<Colon>real) \<and> a < x \<and> x < b}"] 
+    "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"] 
   by (simp add: `c\<noteq>0`)
 
 lemma cindex_mod:

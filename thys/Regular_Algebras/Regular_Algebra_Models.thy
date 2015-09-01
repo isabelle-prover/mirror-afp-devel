@@ -110,7 +110,7 @@ context K1_algebra
 begin
 
 lemma power_dual_transfer [simp]: 
-  "power.power (1\<Colon>'a) op \<odot> x n = x\<^bsup>n\<^esup>"
+  "power.power (1::'a) op \<odot> x n = x\<^bsup>n\<^esup>"
   by (induct n, simp_all, metis opp_mult_def power_commutes)
 
 lemma aarden_aux_l:
@@ -168,11 +168,11 @@ proof -
     by (metis ab_near_semiring_one_class.mult_onel kleene_algebra_class.dual.add_zerol)
   have two: "(1::'a lan) \<noteq> 1\<^sup>\<star> \<cdot> 0"
   proof -
-    have "\<exists>x\<^sub>1. (0\<Colon>'a list set) \<noteq> x\<^sub>1"
+    have "\<exists>x\<^sub>1. (0::'a list set) \<noteq> x\<^sub>1"
       by auto
-    hence "(1\<Colon>'a list set) \<noteq> 0"
+    hence "(1::'a list set) \<noteq> 0"
       by (metis kleene_algebra_class.dual.annir kleene_algebra_class.dual.mult.right_neutral)
-    thus "(1\<Colon>'a list set) \<noteq> 1\<^sup>\<star> \<cdot> 0"
+    thus "(1::'a list set) \<noteq> 1\<^sup>\<star> \<cdot> 0"
       by simp
   qed
   show ?thesis using one and two
@@ -185,11 +185,11 @@ proof -
     by (metis ab_near_semiring_one_class.mult_onel kleene_algebra_class.dual.add_zerol)
   have two: "(1::'a lan) \<noteq> 0 \<cdot> 1\<^sup>\<star>"
   proof -
-    have "\<exists>x\<^sub>1. (0\<Colon>'a list set) \<noteq> x\<^sub>1"
+    have "\<exists>x\<^sub>1. (0::'a list set) \<noteq> x\<^sub>1"
       by auto
-    hence "(1\<Colon>'a list set) \<noteq> 0"
+    hence "(1::'a list set) \<noteq> 0"
       by (metis kleene_algebra_class.dual.annir kleene_algebra_class.dual.mult.right_neutral)
-    thus "(1\<Colon>'a list set) \<noteq> 0 \<cdot> 1\<^sup>\<star>"
+    thus "(1::'a list set) \<noteq> 0 \<cdot> 1\<^sup>\<star>"
       by simp
   qed
   show ?thesis using one and two

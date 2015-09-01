@@ -22,7 +22,7 @@ lemma add_setsum_int:
 
 subsection {* The shift operator *}
 
-definition \<Delta> :: "('b\<Colon>ring_1 \<Rightarrow> 'a\<Colon>ab_group_add) \<Rightarrow> int \<Rightarrow> 'a"
+definition \<Delta> :: "('b::ring_1 \<Rightarrow> 'a::ab_group_add) \<Rightarrow> int \<Rightarrow> 'a"
 where
   "\<Delta> f k = f (of_int (k + 1)) - f (of_int k)"
 
@@ -70,7 +70,7 @@ lemma \<Delta>_factor:
 
 subsection {* The formal sum operator *}
 
-definition \<Sigma> :: "('b\<Colon>ring_1 \<Rightarrow> 'a\<Colon>ab_group_add) \<Rightarrow> int \<Rightarrow> int \<Rightarrow> 'a"
+definition \<Sigma> :: "('b::ring_1 \<Rightarrow> 'a::ab_group_add) \<Rightarrow> int \<Rightarrow> int \<Rightarrow> 'a"
 where
   "\<Sigma> f j l = (if j < l then setsum (f \<circ> of_int) {j..<l}
     else if j > l then - setsum (f \<circ> of_int) {l..<j}

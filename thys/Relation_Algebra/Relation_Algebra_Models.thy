@@ -121,7 +121,7 @@ text {* Finally the main result of this section. *}
 interpretation matrix_ra: relation_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "op \<sqinter>" "op \<le>" "op <" "op \<oplus>" "\<lambda>i j. False" \<tau> "op \<otimes>" mat_transpose \<epsilon>
 proof
   fix x y z :: "'a::finite \<Rightarrow> 'a \<Rightarrow> bool"
-  show "(\<lambda>(i\<Colon>'a) j\<Colon>'a. False) \<le> x"
+  show "(\<lambda>(i::'a) j::'a. False) \<le> x"
     by (metis predicate2I)
   show "x \<sqinter> x\<^sup>c = (\<lambda>i j. False)"
     by (metis matrix_ba.bot.extremum matrix_ba.inf_compl_bot rev_predicate2D)

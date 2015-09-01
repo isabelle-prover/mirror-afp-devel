@@ -28,7 +28,7 @@ lemma structInduct: assumes "P []" and "\<forall>x xs. P (xs) \<longrightarrow> 
       using assms list_nonempty_induct by (metis)
 
 text {* the subset of elements of a set where a function reaches its maximum *}
-fun argmax :: "('a \<Rightarrow> 'b\<Colon>linorder) \<Rightarrow> 'a set \<Rightarrow> 'a set"
+fun argmax :: "('a \<Rightarrow> 'b::linorder) \<Rightarrow> 'a set \<Rightarrow> 'a set"
     where "argmax f A = { x \<in> A . f x = Max (f ` A) }"
 
 (* For reasons we do not understand we have to duplicate the definition as a lemma 

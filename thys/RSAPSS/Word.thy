@@ -344,7 +344,7 @@ lemma int_wf_ge_induct:
   shows          "P i"
 proof (rule wf_induct_rule [OF wf_int_ge_less_than])
   fix x
-  assume ih: "(\<And>y\<Colon>int. (y, x) \<in> int_ge_less_than k \<Longrightarrow> P y)"
+  assume ih: "(\<And>y::int. (y, x) \<in> int_ge_less_than k \<Longrightarrow> P y)"
   thus "P x"
     by (rule ind) (simp add: int_ge_less_than_def)
 qed

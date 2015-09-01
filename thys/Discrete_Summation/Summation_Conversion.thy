@@ -16,8 +16,8 @@ declare
   \<Sigma>_factor [summation] monomial_ffact [summation]
 
 lemma intervall_simps [summation]:
-  "(\<Sum>k\<Colon>nat = 0..0. f k) = f 0"
-  "(\<Sum>k\<Colon>nat = 0..Suc n. f k) = f (Suc n) + (\<Sum>k\<Colon>nat = 0..n. f k)"
+  "(\<Sum>k::nat = 0..0. f k) = f 0"
+  "(\<Sum>k::nat = 0..Suc n. f k) = f (Suc n) + (\<Sum>k::nat = 0..n. f k)"
   by (simp_all add: add.commute)
 
 lemma \<Delta>_ffact:

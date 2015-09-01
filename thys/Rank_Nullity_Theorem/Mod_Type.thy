@@ -118,40 +118,40 @@ qed
 
 lemma bij_from_nat: "bij_betw (from_nat) {0..<CARD('a)} (UNIV::'a set)"
 proof (unfold bij_betw_def, rule conjI)
-  have set_eq: "{0\<Colon>int..<int CARD('a)} = int` {0..<CARD('a)}" apply (auto)
+  have set_eq: "{0::int..<int CARD('a)} = int` {0..<CARD('a)}" apply (auto)
   proof - 
-    fix x::int  assume x1: "(0\<Colon>int) \<le> x" and x2: "x < int CARD('a)" show "x \<in> int ` {0\<Colon>nat..<CARD('a)}"
+    fix x::int  assume x1: "(0::int) \<le> x" and x2: "x < int CARD('a)" show "x \<in> int ` {0::nat..<CARD('a)}"
     proof (unfold image_def, auto, rule bexI[of _ "nat x"])
       show " x = int (nat x)" using x1 by auto
-      show "nat x \<in> {0\<Colon>nat..<CARD('a)}" using x1 x2 by auto
+      show "nat x \<in> {0::nat..<CARD('a)}" using x1 x2 by auto
     qed
   qed
-  show "inj_on (from_nat::nat\<Rightarrow>'a) {0\<Colon>nat..<CARD('a)}"
+  show "inj_on (from_nat::nat\<Rightarrow>'a) {0::nat..<CARD('a)}"
   proof (unfold from_nat_def , rule comp_inj_on)
-    show "inj_on int {0\<Colon>nat..<CARD('a)}" by (metis inj_of_nat subset_inj_on top_greatest)
-    show "inj_on (Abs'::int=>'a) (int ` {0\<Colon>nat..<CARD('a)})" 
+    show "inj_on int {0::nat..<CARD('a)}" by (metis inj_of_nat subset_inj_on top_greatest)
+    show "inj_on (Abs'::int=>'a) (int ` {0::nat..<CARD('a)})" 
       using bij_Abs unfolding bij_betw_def set_eq 
       by (metis (hide_lams, no_types) Abs'_def Abs_inverse Rep_inverse Rep_mod inj_on_def set_eq)
   qed
-  show "(from_nat::nat=>'a)` {0\<Colon>nat..<CARD('a)} = UNIV" 
+  show "(from_nat::nat=>'a)` {0::nat..<CARD('a)} = UNIV" 
     unfolding from_nat_def using bij_Abs' 
     unfolding bij_betw_def set_eq o_def by blast
 qed
 
 lemma to_nat_is_inv: "the_inv_into {0..<CARD('a)} (from_nat::nat=>'a) = (to_nat::'a=>nat)"
 proof (unfold the_inv_into_def fun_eq_iff from_nat_def to_nat_def o_def, clarify)
-  fix x::"'a" show "(THE y\<Colon>nat. y \<in> {0\<Colon>nat..<CARD('a)} \<and> Abs' (int y) = x) = nat (Rep x)"
+  fix x::"'a" show "(THE y::nat. y \<in> {0::nat..<CARD('a)} \<and> Abs' (int y) = x) = nat (Rep x)"
   proof (rule the_equality, auto)
     show " Abs' (Rep x) = x" by (metis Abs'_def Rep_inverse Rep_mod)
     show "nat (Rep x) < CARD('a)" by (metis (full_types) Rep_less_n nat_int size0 zless_nat_conj)
-    assume x:  "\<not> (0\<Colon>int) \<le> Rep x" show "(0\<Colon>nat) < CARD('a)" and "Abs' (0\<Colon>int) = x" 
+    assume x:  "\<not> (0::int) \<le> Rep x" show "(0::nat) < CARD('a)" and "Abs' (0::int) = x" 
       using Rep_ge_0 x by auto
   next
     fix y::nat assume y: "y < CARD('a)" 
     have "(Rep(Abs'(int y)::'a)) = (Rep((Abs(int y mod int CARD('a)))::'a))" unfolding Abs'_def .. 
     also have "... =  (Rep (Abs (int y)::'a))" using zmod_int[of y "CARD('a)"] 
       using y mod_less by auto
-    also have "... =  (int y)" proof (rule Abs_inverse) show "int y \<in> {0\<Colon>int..<int CARD('a)}" 
+    also have "... =  (int y)" proof (rule Abs_inverse) show "int y \<in> {0::int..<int CARD('a)}" 
       using y by auto qed
     finally show "y = nat (Rep (Abs' (int y)::'a))" by (metis nat_int)
   qed
@@ -171,7 +171,7 @@ proof (rule Least_equality, auto)
   have "(0::'a) \<le> Abs (Rep y mod int CARD('a))" using strict_mono_Rep unfolding strict_mono_def 
   by (metis (hide_lams, mono_tags) Rep_0 Rep_ge_0 strict_mono_Rep strict_mono_less_eq)
   also have "... = y" by (metis Rep_inverse Rep_mod)
-  finally show "(0\<Colon>'a) \<le> y" .
+  finally show "(0::'a) \<le> y" .
 qed
 
 lemma add_to_nat_def: "x + y = from_nat (to_nat x + to_nat y)"
@@ -337,7 +337,7 @@ proof -
     thus "to_nat (a + 1) \<le> to_nat b" by (metis `to_nat a + 1 \<le> to_nat b` to_nat_suc)
   qed
   also have "... = b" by (metis from_nat_to_nat_id)
-  finally show "a + (1\<Colon>'a) \<le> b" .
+  finally show "a + (1::'a) \<le> b" .
 qed
 
 lemma le_Suc':
@@ -495,15 +495,15 @@ instance
 proof
   show "(0::'a bit0) = Abs (0::int)" unfolding Abs_bit0_def Abs_bit0'_def zero_bit0_def by auto
   show "(1::int) < int CARD('a bit0)" by (metis bit0.size1)
-  show "type_definition (Rep::'a bit0 => int) (Abs:: int => 'a bit0) {0\<Colon>int..<int CARD('a bit0)}"
+  show "type_definition (Rep::'a bit0 => int) (Abs:: int => 'a bit0) {0::int..<int CARD('a bit0)}"
   proof (unfold type_definition_def Rep_bit0_def [abs_def] 
       Abs_bit0_def [abs_def] Abs_bit0'_def, intro conjI)
-    show "\<forall>x\<Colon>'a bit0. Rep_bit0 x \<in> {0\<Colon>int..<int CARD('a bit0)}"
+    show "\<forall>x::'a bit0. Rep_bit0 x \<in> {0::int..<int CARD('a bit0)}"
       unfolding card_bit0 unfolding int_mult
       using Rep_bit0 [where ?'a = "'a"] by simp
-    show "\<forall>x\<Colon>'a bit0. Abs_bit0 (Rep_bit0 x mod int CARD('a bit0)) = x"
+    show "\<forall>x::'a bit0. Abs_bit0 (Rep_bit0 x mod int CARD('a bit0)) = x"
       by (metis Rep_bit0_inverse bit0.Rep_mod)
-    show "\<forall>y\<Colon>int. y \<in> {0\<Colon>int..<int CARD('a bit0)} 
+    show "\<forall>y::int. y \<in> {0::int..<int CARD('a bit0)} 
       \<longrightarrow> Rep_bit0 ((Abs_bit0::int => 'a bit0) (y mod int CARD('a bit0))) = y"
       by (metis bit0.Abs_inverse bit0.Rep_mod)
   qed
@@ -531,17 +531,17 @@ proof
     unfolding Abs_bit1_def Rep_bit1_def minus_bit1_def Abs_bit1'_def by fastforce
   show "- x = Abs (- Rep x mod int CARD('a bit1))" 
     unfolding Abs_bit1_def Rep_bit1_def uminus_bit1_def Abs_bit1'_def by fastforce
-  show "type_definition (Rep::'a bit1 => int) (Abs:: int => 'a bit1) {0\<Colon>int..<int CARD('a bit1)}"
+  show "type_definition (Rep::'a bit1 => int) (Abs:: int => 'a bit1) {0::int..<int CARD('a bit1)}"
   proof (unfold type_definition_def Rep_bit1_def [abs_def] 
       Abs_bit1_def [abs_def] Abs_bit1'_def, intro conjI)
     have int_2: "int 2 = 2" by auto
-   show "\<forall>x\<Colon>'a bit1. Rep_bit1 x \<in> {0\<Colon>int..<int CARD('a bit1)}"
+   show "\<forall>x::'a bit1. Rep_bit1 x \<in> {0::int..<int CARD('a bit1)}"
       unfolding card_bit1
       unfolding int_Suc int_mult
       using Rep_bit1 [where ?'a = "'a"] unfolding int_2 unfolding add.commute ..      
-   show "\<forall>x\<Colon>'a bit1. Abs_bit1 (Rep_bit1 x mod int CARD('a bit1)) = x"
+   show "\<forall>x::'a bit1. Abs_bit1 (Rep_bit1 x mod int CARD('a bit1)) = x"
       by (metis Rep_bit1_inverse bit1.Rep_mod)
-   show "\<forall>y\<Colon>int. y \<in> {0\<Colon>int..<int CARD('a bit1)} 
+   show "\<forall>y::int. y \<in> {0::int..<int CARD('a bit1)} 
     \<longrightarrow> Rep_bit1 ((Abs_bit1::int => 'a bit1) (y mod int CARD('a bit1))) = y"  
    by (metis bit1.Abs_inverse bit1.Rep_mod)
   qed

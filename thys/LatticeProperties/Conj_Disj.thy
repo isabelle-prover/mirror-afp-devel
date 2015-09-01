@@ -105,9 +105,9 @@ lemma "Apply.Conjunctive = Comp.Conjunctive"
   apply (drule_tac x = "{x . \<exists> y \<in> X . x = (\<lambda> u . y)}" in spec)
   apply (simp add: fun_eq_iff  Inf_fun_def comp_def image_def)
   apply (drule_tac x = "bot" in spec)
-  apply (subgoal_tac "{y\<Colon>'a. \<exists>f . (\<exists>y \<in> X. \<forall>x::'a . f x = y) \<and> y = f bot} = X \<and> 
-      {y\<Colon>'a. \<exists>f. (\<exists>xa. (\<exists>y \<in> X. \<forall>x\<Colon>'a. xa x = y) \<and> 
-      (\<forall>xb\<Colon>'a. f xb = x (xa xb))) \<and> y = f bot} = {y\<Colon>'a. \<exists>xa\<Colon>'a\<in>X. y = x xa}")
+  apply (subgoal_tac "{y::'a. \<exists>f . (\<exists>y \<in> X. \<forall>x::'a . f x = y) \<and> y = f bot} = X \<and> 
+      {y::'a. \<exists>f. (\<exists>xa. (\<exists>y \<in> X. \<forall>x::'a. xa x = y) \<and> 
+      (\<forall>xb::'a. f xb = x (xa xb))) \<and> y = f bot} = {y::'a. \<exists>xa::'a\<in>X. y = x xa}")
   apply (simp add: INF_def image_def, safe)
   apply simp_all
   apply auto

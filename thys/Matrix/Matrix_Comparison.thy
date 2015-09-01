@@ -1243,7 +1243,7 @@ proof (induct n arbitrary: m1 m2)
     by (induct m2, auto)
   with 0(3) 0(4) have m1: "m1 = []" and m2: "m2 = replicate nc []" unfolding mat_def  
     by (auto simp: vec_def)
-  have "linear_norm (mat_mult nr m1 m2) = listsum (concat (replicate nc (replicate nr (0\<Colon>'a))))" unfolding m1 m2
+  have "linear_norm (mat_mult nr m1 m2) = listsum (concat (replicate nc (replicate nr (0::'a))))" unfolding m1 m2
     by (simp add: linear_norm_def mat_multI_def matT_vec_multI_def scalar_prodI_def) 
   also have "... = 0"
   proof (induct nc)
@@ -1502,7 +1502,7 @@ lemma upper_triangular_mat_pow_value: assumes mat: "mat d d (m :: ('a :: poly_ca
   shows "\<exists> c. c \<ge> 0 \<and> (\<forall> n > 0. (c * of_nat (n ^ (d - Suc 0))) \<ge> (linear_norm (mat_pow d m n)))"
 proof -
   from upper_triangular_mat_pow_index[OF mat tri ge0]
-  obtain c where "c \<ge> (0\<Colon>'a) \<and>
+  obtain c where "c \<ge> (0::'a) \<and>
          (\<forall>n>0. \<forall>i<d. \<forall>j<d. c * of_nat n ^ (d - Suc 0) \<ge>
                             mat_pow d m n ! i ! j)" ..
   hence c: "(c :: 'a) \<ge> 0" and ge: "\<And> n i j. n > 0 \<Longrightarrow> i < d \<Longrightarrow> j < d \<Longrightarrow> c * of_nat n ^ (d - Suc 0) \<ge> mat_pow d m n ! i ! j" by auto

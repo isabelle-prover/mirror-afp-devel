@@ -57,12 +57,12 @@ lemma mat2matofpoly_row_code [code abstract]:
 lemma [code abstract]: "vec_nth (mat2matofpoly k) = mat2matofpoly_row k"
   unfolding mat2matofpoly_def unfolding mat2matofpoly_row_def[abs_def] by auto
 
-primrec matpow :: "'a\<Colon>semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n" where
+primrec matpow :: "'a::semiring_1^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n" where
   matpow_0:   "matpow A 0 = mat 1" |
   matpow_Suc: "matpow A (Suc n) = A ** (matpow A n)"
 
-definition evalmat :: "'a\<Colon>comm_ring_1 poly \<Rightarrow> 'a^'n^'n \<Rightarrow> 'a^'n^'n" where
-  "evalmat P A = (\<Sum> i \<in> { n\<Colon>nat . n \<le> ( degree P ) } . (coeff P i) *k (matpow A i) )"
+definition evalmat :: "'a::comm_ring_1 poly \<Rightarrow> 'a^'n^'n \<Rightarrow> 'a^'n^'n" where
+  "evalmat P A = (\<Sum> i \<in> { n::nat . n \<le> ( degree P ) } . (coeff P i) *k (matpow A i) )"
 
 lemma evalmat_code[code]:
   "evalmat P A = listsum (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"
@@ -78,12 +78,12 @@ proof -
   finally show ?thesis .
 qed
 
-definition coeffM_zero :: "'a poly^'n^'n \<Rightarrow> 'a\<Colon>zero^'n^'n" where
+definition coeffM_zero :: "'a poly^'n^'n \<Rightarrow> 'a::zero^'n^'n" where
   "coeffM_zero A = (\<chi> i j. (coeff (A $ i $ j) 0))"
 
 definition "coeffM_zero_row A i = (\<chi> j. (coeff (A $ i $ j) 0))"
 
-definition coeffM :: "'a poly^'n^'n \<Rightarrow> nat \<Rightarrow> 'a\<Colon>zero^'n^'n" where
+definition coeffM :: "'a poly^'n^'n \<Rightarrow> nat \<Rightarrow> 'a::zero^'n^'n" where
   "coeffM A n = (\<chi> i j. coeff (A $ i $ j) n)"
 
 lemma coeffM_zero_row_code [code abstract]:

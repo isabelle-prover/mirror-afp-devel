@@ -1320,7 +1320,7 @@ resembles the lexicographic order on $$(\SN,\mapsto) \times (\SN,\mapsto) \times
 lemma triple_induct[consumes 2]: 
   assumes a: "SN (p)"
   and b: "SN (q)"
-  and hyp: "\<And> (p\<Colon>trm) (q\<Colon>trm) (k\<Colon>stack) . 
+  and hyp: "\<And> (p::trm) (q::trm) (k::stack) . 
   \<lbrakk> \<And> p' . p \<mapsto> p' \<Longrightarrow> P p' q k ; 
     \<And> q' k . q \<mapsto> q' \<Longrightarrow> P p q' k; 
     \<And> k' .  |k'| < |k| \<Longrightarrow> P p q k' \<rbrakk> \<Longrightarrow> P p q k "

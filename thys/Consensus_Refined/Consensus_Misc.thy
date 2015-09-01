@@ -111,7 +111,7 @@ next
     by(blast intro!: Max_by_in)
   also have "(Max_by cmp_f ` S) \<subseteq> A"
   proof -
-    have f1: "\<forall>v0 v1. (\<not> finite v0 \<or> v0 = {}) \<or> Max_by (v1\<Colon>'a \<Rightarrow> 'b) v0 \<in> v0" using Max_by_in by blast
+    have f1: "\<forall>v0 v1. (\<not> finite v0 \<or> v0 = {}) \<or> Max_by (v1::'a \<Rightarrow> 'b) v0 \<in> v0" using Max_by_in by blast
     have "\<forall>v1. v1 \<notin> S \<or> finite v1" using assms(1) assms(2) finite_UN_D by blast
     then obtain v2_13 :: "'a set set \<Rightarrow> 'a \<Rightarrow> 'a set" where "Max_by cmp_f ` S \<subseteq> \<Union>S" using f1 assms(3) by blast
     thus "Max_by cmp_f ` S \<subseteq> A" using assms(2) by presburger

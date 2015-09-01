@@ -758,7 +758,7 @@ theorem all_partitions_paper_equiv_alg:
 
 text {* The function that we will be using in practice to compute all partitions of a set,
   a set-oriented front-end to @{const all_partitions_list} *}
-definition all_partitions_alg :: "'a\<Colon>linorder set \<Rightarrow> 'a set list list"
+definition all_partitions_alg :: "'a::linorder set \<Rightarrow> 'a set list list"
   where "all_partitions_alg X = all_partitions_list (sorted_list_of_set X)"
 
 end

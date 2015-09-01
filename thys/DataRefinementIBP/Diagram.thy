@@ -290,7 +290,7 @@ lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
   apply (simp add: grd_def step_def)
   apply (unfold step_def INF_def uminus_Inf)
-  apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
+  apply (case_tac "(uminus ` range (\<lambda>j::'b. D (i, j) \<bottom>)) = {P::'a. \<exists>j::'b. P = - D (i, j) \<bottom>}")
   apply auto
   done
 

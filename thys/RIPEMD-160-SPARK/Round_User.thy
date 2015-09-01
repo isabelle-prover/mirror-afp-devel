@@ -550,7 +550,7 @@ lemma goal76'1:
 proof -
   have steps_to_steps':
     "steps
-       (\<lambda>n\<Colon>nat. word_of_int (x'' (int n)))
+       (\<lambda>n::nat. word_of_int (x'' (int n)))
        (from_chain INIT_CHAIN, from_chain INIT_CHAIN)
        80 =
     from_chain_pair (

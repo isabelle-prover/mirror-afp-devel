@@ -16,7 +16,7 @@ begin
 subsection{*Implementations over immutable arrays of some definitions 
   presented in the Cayley-Hamilton development*}
 
-definition scalar_matrix_mult_iarrays :: "('a\<Colon>ab_semigroup_mult) \<Rightarrow> ('a iarray iarray) \<Rightarrow> ('a iarray iarray)" 
+definition scalar_matrix_mult_iarrays :: "('a::ab_semigroup_mult) \<Rightarrow> ('a iarray iarray) \<Rightarrow> ('a iarray iarray)" 
   (infixl "*ssi" 70) where "c *ssi A = tabulate2 (nrows_iarray A) (ncols_iarray A) (% i j. c * (A !! i !! j))"
 
 definition "minorM_iarrays A i j = tabulate2  (nrows_iarray A) (ncols_iarray A) 

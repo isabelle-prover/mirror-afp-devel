@@ -330,7 +330,7 @@ proof -
     also have "... = A ** (mat 1 ** A')" unfolding BB' ..
     also have "... = A ** A'" unfolding matrix_mul_lid ..
     also have "... = mat 1" unfolding AA' ..
-    finally show "A ** B ** (B' ** A') = mat (1\<Colon>'a)" .    
+    finally show "A ** B ** (B' ** A') = mat (1::'a)" .    
     have "B' ** A' ** (A ** B) = B' ** (A' ** (A ** B))" using matrix_mul_assoc[of B' A' "(A ** B)", symmetric] .
     also have "... =  B' ** (A' ** A ** B)" unfolding matrix_mul_assoc[of A' A B] ..
     also have "... =  B' ** (mat 1 ** B)" unfolding A'A ..
@@ -349,9 +349,9 @@ lemma matrix_inv_unique:
   assumes AB: "A ** B = mat 1" and BA: "B ** A = mat 1"
   shows "matrix_inv A = B" 
 proof (unfold matrix_inv_def, rule some_equality)
-  show "A ** B = mat (1\<Colon>'a) \<and> B ** A = mat (1\<Colon>'a)" using AB BA by simp
-  fix C assume "A ** C = mat (1\<Colon>'a) \<and> C ** A = mat (1\<Colon>'a)"
-  hence AC: "A ** C = mat (1\<Colon>'a)" and CA: "C ** A = mat (1\<Colon>'a)" by auto  
+  show "A ** B = mat (1::'a) \<and> B ** A = mat (1::'a)" using AB BA by simp
+  fix C assume "A ** C = mat (1::'a) \<and> C ** A = mat (1::'a)"
+  hence AC: "A ** C = mat (1::'a)" and CA: "C ** A = mat (1::'a)" by auto  
   have "B = B ** (mat 1)" unfolding matrix_mul_rid ..
   also have "... = B ** (A**C)" unfolding AC ..
   also have "... = B ** A ** C" unfolding matrix_mul_assoc ..
@@ -446,8 +446,8 @@ instance proof
   fix a::"'a \<Rightarrow> 'b" and b::"'a \<Rightarrow> 'b" and c::"'a \<Rightarrow> 'b"
   show "a + b + c = a + (b + c)" unfolding fun_eq_iff unfolding plus_fun_def by auto
   show "a + b = b + a" unfolding fun_eq_iff unfolding plus_fun_def by auto
-  show " (0\<Colon>'a \<Rightarrow> 'b) + a = a"  unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
-  show "- a + a = (0\<Colon>'a \<Rightarrow> 'b)" unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
+  show " (0::'a \<Rightarrow> 'b) + a = a"  unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
+  show "- a + a = (0::'a \<Rightarrow> 'b)" unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
   show "a - b = a + - b" unfolding fun_eq_iff unfolding plus_fun_def zero_fun_def by auto
 next
   fix a::real and x::"('a \<Rightarrow> 'b)" and y::"'a \<Rightarrow> 'b"
@@ -458,7 +458,7 @@ next
   show "(a + b) *\<^sub>R x = a *\<^sub>R x + b *\<^sub>R x" 
     unfolding fun_eq_iff unfolding plus_fun_def scaleR_fun_def unfolding  scaleR_left.add by auto
   show " a *\<^sub>R b *\<^sub>R x = (a * b) *\<^sub>R x" unfolding fun_eq_iff unfolding scaleR_fun_def by auto
-  show "(1\<Colon>real) *\<^sub>R x = x" unfolding fun_eq_iff unfolding scaleR_fun_def by auto
+  show "(1::real) *\<^sub>R x = x" unfolding fun_eq_iff unfolding scaleR_fun_def by auto
 qed
 end
 

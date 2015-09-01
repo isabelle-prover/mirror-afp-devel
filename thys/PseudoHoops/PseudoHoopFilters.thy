@@ -109,7 +109,7 @@ lemma prop_3_2_i:
   apply safe
   apply (subgoal_tac "{a . \<exists> n x . x \<in> X *^ n \<and> x \<le> a} \<in> filters")
   apply (simp add: filterof_def)
-  apply (drule_tac x = "{a\<Colon>'a. \<exists>(n\<Colon>nat) x\<Colon>'a. x \<in> X *^ n \<and> x \<le> a}" in spec)
+  apply (drule_tac x = "{a::'a. \<exists>(n::nat) x::'a. x \<in> X *^ n \<and> x \<le> a}" in spec)
   apply safe
   apply (rule_tac x = "1::nat" in exI)
   apply (rule_tac x = "xa" in exI)
@@ -236,7 +236,7 @@ lemma filterof_supremum:
   apply (subst prop_3_2_i)
   apply simp
   apply (rule_tac x = "n + na" in exI)
-  apply (subgoal_tac "infimum ((\<lambda>xa\<Colon>'a. xa r\<rightarrow> x) ` ({a, b} *^ (n + na))) = {1}")
+  apply (subgoal_tac "infimum ((\<lambda>xa::'a. xa r\<rightarrow> x) ` ({a, b} *^ (n + na))) = {1}")
   apply simp
   apply (simp add: right_lesseq)
   apply (subst infimum_unique)
@@ -819,7 +819,7 @@ lemma lemma_3_12_i_ii:
   apply clarify
   apply (subst (asm) lemma_3_11_i)
   apply assumption
-  apply (subgoal_tac "a \<in> {a\<Colon>'a. \<exists>(n\<Colon>nat) h\<Colon>'a. h \<in> H \<and> h * x ^ n \<le> a}")
+  apply (subgoal_tac "a \<in> {a::'a. \<exists>(n::nat) h::'a. h \<in> H \<and> h * x ^ n \<le> a}")
   apply clarify
   apply (rule_tac x = n in exI)
   apply (simp add: left_residual)
@@ -857,7 +857,7 @@ lemma lemma_3_12_i_iii:
   apply clarify
   apply (subst (asm) lemma_3_11_ii)
   apply assumption
-  apply (subgoal_tac "a \<in> {a\<Colon>'a. \<exists>(n\<Colon>nat) h\<Colon>'a. h \<in> H \<and> (x ^ n) * h \<le> a}")
+  apply (subgoal_tac "a \<in> {a::'a. \<exists>(n::nat) h::'a. h \<in> H \<and> (x ^ n) * h \<le> a}")
   apply clarify
   apply (rule_tac x = n in exI)
   apply (simp add: right_residual)

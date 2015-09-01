@@ -144,9 +144,9 @@ local_setup {*
 derive "show" option sum prod unit bool nat int rat
 
 export_code
-  "shows_prec :: 'a\<Colon>show option showsp"
-  "shows_prec :: ('a\<Colon>show, 'b\<Colon>show) sum showsp"
-  "shows_prec :: ('a\<Colon>show \<times> 'b\<Colon>show) showsp"
+  "shows_prec :: 'a::show option showsp"
+  "shows_prec :: ('a::show, 'b::show) sum showsp"
+  "shows_prec :: ('a::show \<times> 'b::show) showsp"
   "shows_prec :: unit showsp"
   "shows_prec :: char showsp"
   "shows_prec :: bool showsp"

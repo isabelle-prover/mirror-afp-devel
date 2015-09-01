@@ -48,7 +48,7 @@ fun neg\<^sub>d\<^sub>l\<^sub>o :: "atom \<Rightarrow> atom fm" where
 "neg\<^sub>d\<^sub>l\<^sub>o (Less i j) = Or (Atom(Less j i)) (Atom(Eq i j))" |
 "neg\<^sub>d\<^sub>l\<^sub>o (Eq i j) = Or (Atom(Less i j)) (Atom(Less j i))"
 
-fun I\<^sub>d\<^sub>l\<^sub>o :: "atom \<Rightarrow> 'a\<Colon>dlo list \<Rightarrow> bool" where
+fun I\<^sub>d\<^sub>l\<^sub>o :: "atom \<Rightarrow> 'a::dlo list \<Rightarrow> bool" where
 "I\<^sub>d\<^sub>l\<^sub>o (Eq i j) xs = (xs!i = xs!j)" |
 "I\<^sub>d\<^sub>l\<^sub>o (Less i j) xs = (xs!i < xs!j)"
 

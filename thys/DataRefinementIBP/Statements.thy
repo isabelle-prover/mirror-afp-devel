@@ -76,7 +76,7 @@ in $s$.
 *}
 
 definition
-  demonic :: "('a \<Rightarrow> 'b\<Colon>ord) \<Rightarrow> 'b\<Colon>ord \<Rightarrow> 'a set" ("[: _ :]" [0] 1000) where
+  demonic :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> 'b::ord \<Rightarrow> 'a set" ("[: _ :]" [0] 1000) where
   "[:Q:] p = {s . Q s \<le> p}"
 
 lemma mono_demonic [simp]: "mono [:Q:]"
@@ -107,7 +107,7 @@ such that $Q\ s \ s'$, then the angelic update of $Q$ fails in $s$.
 *}
 
 definition
-  angelic :: "('a \<Rightarrow> 'b\<Colon>{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
+  angelic :: "('a \<Rightarrow> 'b::{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
                ("{: _ :}" [0] 1000) where
   "{:Q:} p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
 

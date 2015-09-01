@@ -16,7 +16,7 @@ lemma tl_set:
 subsection {* Type of abstract priority queues *}
 
 typedef ('a, 'b::linorder) pq =
-  "{xs \<Colon> ('a \<times> 'b) list. distinct (map fst xs) \<and> sorted (map snd xs)}"
+  "{xs :: ('a \<times> 'b) list. distinct (map fst xs) \<and> sorted (map snd xs)}"
   morphisms alist_of Abs_pq
 proof -
   have "[] \<in> ?pq" by simp
@@ -53,7 +53,7 @@ proof -
   thus "p = q" by (simp add: alist_of_inverse)
 qed
 
-definition "values" :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> 'a list" ("|(_)|") where
+definition "values" :: "('a, 'b::linorder) pq \<Rightarrow> 'a list" ("|(_)|") where
   "values q = map fst (alist_of q)"
 
 definition priorities :: "('a, 'b::linorder) pq \<Rightarrow> 'b list" ("\<parallel>(_)\<parallel>") where
@@ -67,16 +67,16 @@ lemma priorities_set:
   "set \<parallel>q\<parallel> = snd ` set (alist_of q)"
   by (simp add: priorities_def)
 
-definition is_empty :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> bool" where
+definition is_empty :: "('a, 'b::linorder) pq \<Rightarrow> bool" where
   "is_empty q \<longleftrightarrow> alist_of q = []"
 
-definition priority :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> 'a \<Rightarrow> 'b option" where
+definition priority :: "('a, 'b::linorder) pq \<Rightarrow> 'a \<Rightarrow> 'b option" where
   "priority q = map_of (alist_of q)"
 
-definition min :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> 'a" where
+definition min :: "('a, 'b::linorder) pq \<Rightarrow> 'a" where
   "min q = fst (hd (alist_of q))"
 
-definition empty :: "('a, 'b\<Colon>linorder) pq" where 
+definition empty :: "('a, 'b::linorder) pq" where 
   "empty = Abs_pq []"
 
 lemma is_empty_alist_of [dest]:
@@ -163,7 +163,7 @@ lemma priority_Min_priorities:
   using assms
     by (simp add: priority_Min image_snd_alist_of priorities_def)
 
-definition push :: "'a \<Rightarrow> 'b\<Colon>linorder \<Rightarrow> ('a, 'b) pq \<Rightarrow> ('a, 'b) pq" where
+definition push :: "'a \<Rightarrow> 'b::linorder \<Rightarrow> ('a, 'b) pq \<Rightarrow> ('a, 'b) pq" where
   "push k p q = Abs_pq (if k \<notin> set (values q)
            then insort_key snd (k, p) (alist_of q)
            else alist_of q)"
@@ -213,7 +213,7 @@ lemma push_commute:
   shows "push w b (push v a q) = push v a (push w b q)"
   using assms by (auto intro!: alist_of_eqI insort_key_left_comm)
 
-definition remove_min :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> ('a, 'b\<Colon>linorder) pq" where
+definition remove_min :: "('a, 'b::linorder) pq \<Rightarrow> ('a, 'b::linorder) pq" where
   "remove_min q = (if is_empty q then empty else Abs_pq (tl (alist_of q)))"
 
 lemma alift_of_remove_min_if [code abstract]:
@@ -237,7 +237,7 @@ lemma set_alist_of_remove_min:
     set (alist_of q) - {(min q, the (priority q (min q)))}"
   by (simp add: tl_set hd_construct)
 
-definition pop :: "('a, 'b\<Colon>linorder) pq \<Rightarrow> ('a \<times> ('a, 'b) pq) option" where
+definition pop :: "('a, 'b::linorder) pq \<Rightarrow> ('a \<times> ('a, 'b) pq) option" where
   "pop q = (if is_empty q then None else Some (min q, remove_min q))"
 
 lemma pop_simps [simp]:

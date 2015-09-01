@@ -109,8 +109,8 @@ qed simp_all
 
 lemma filter_filter: "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>xs) = lfilter\<cdot>(\<Lambda> x. q\<cdot>x andalso p\<cdot>x)\<cdot>xs"
 proof(induct xs)
-  fix a l assume "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>l) = lfilter\<cdot>(\<Lambda>(x\<Colon>'a). q\<cdot>x andalso p\<cdot>x)\<cdot>l"
-  thus "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>(a :@ l)) = lfilter\<cdot>(\<Lambda>(x\<Colon>'a). q\<cdot>x andalso p\<cdot>x)\<cdot>(a :@ l)"
+  fix a l assume "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>l) = lfilter\<cdot>(\<Lambda>(x::'a). q\<cdot>x andalso p\<cdot>x)\<cdot>l"
+  thus "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>(a :@ l)) = lfilter\<cdot>(\<Lambda>(x::'a). q\<cdot>x andalso p\<cdot>x)\<cdot>(a :@ l)"
     by (cases "q\<cdot>a" rule: trE, simp_all)
 qed simp_all
 

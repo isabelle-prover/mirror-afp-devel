@@ -473,7 +473,7 @@ text{* The core of an own type construction is done via a type
   is shown that this type ``fits'' indeed into the abstract type
   interface discussed in the previous section. *}
 
-typedef '\<alpha> Set_0 ="{X::('\<alpha>\<Colon>null) set option option.
+typedef '\<alpha> Set_0 ="{X::('\<alpha>::null) set option option.
                       X = bot \<or> X = null \<or> (\<forall>x\<in>\<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
           by (rule_tac x="bot" in exI, simp)
 
@@ -482,7 +482,7 @@ begin
 
    definition bot_Set_0_def: "(bot::('a::null) Set_0) \<equiv> Abs_Set_0 None"
 
-   instance proof show "\<exists>x\<Colon>'a Set_0. x \<noteq> bot"
+   instance proof show "\<exists>x::'a Set_0. x \<noteq> bot"
                   apply(rule_tac x="Abs_Set_0 \<lfloor>None\<rfloor>" in exI)
                   apply(simp add:bot_Set_0_def)
                   apply(subst Abs_Set_0_inject)
@@ -1271,7 +1271,7 @@ oops
 lemma cp_OclForall2 [simp,intro!]:
 "\<lbrakk> cp (\<lambda> X St.(\<lambda>x. P (\<lambda>\<tau>. x) X St));
    cp (S :: (('a,'c)VAL \<Rightarrow> ('a,('b::bot))Set)) \<rbrakk>
- \<Longrightarrow> cp(\<lambda>X. \<MathOclForAll> Y \<in> S X \<bullet> P (Y\<Colon>'a \<Rightarrow> 'b) X) "
+ \<Longrightarrow> cp(\<lambda>X. \<MathOclForAll> Y \<in> S X \<bullet> P (Y::'a \<Rightarrow> 'b) X) "
 apply(simp only: cp_def OclForAll_def)
 apply(erule exE)+
 apply(rule exI, rule allI, rule allI)

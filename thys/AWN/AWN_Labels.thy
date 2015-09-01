@@ -231,7 +231,7 @@ begin
 fun less_eq_label :: "'a label \<Rightarrow> 'a label \<Rightarrow> bool"
 where "(l1-:n1) \<le> (l2-:n2) = (l1 = l2 \<and> n1 \<le> n2)"
 
-definition less_label: "(l1\<Colon>'a label) < l2 \<longleftrightarrow> l1 \<le> l2 \<and> \<not> (l1 \<le> l2)"
+definition less_label: "(l1::'a label) < l2 \<longleftrightarrow> l1 \<le> l2 \<and> \<not> (l1 \<le> l2)"
 
 instance ..
 end

@@ -14,7 +14,7 @@ primrec rat_pair where "rat_pair (a, b) = (of_rat a, of_rat b)"
 declare rat_pair.simps [simp del]
 
 definition
-   zipWithA :: "('a\<Colon>heap \<Rightarrow> 'b\<Colon>heap \<Rightarrow> 'a\<Colon>heap) \<Rightarrow> 'a array \<Rightarrow> 'b array \<Rightarrow> 'a array Heap"
+   zipWithA :: "('a::heap \<Rightarrow> 'b::heap \<Rightarrow> 'a::heap) \<Rightarrow> 'a array \<Rightarrow> 'b array \<Rightarrow> 'a array Heap"
 where
   "zipWithA f a b = do {
      n \<leftarrow> Array.len a;
@@ -55,7 +55,7 @@ proof -
     by (sep_auto simp add: assms)
 qed
 
-definition copy_array :: "'a\<Colon>heap array \<Rightarrow> ('a\<Colon>heap array) Heap" where
+definition copy_array :: "'a::heap array \<Rightarrow> ('a::heap array) Heap" where
   "copy_array a = Array.freeze a \<guillemotright>= Array.of_list"
 
 theorem copy_array [sep_heap_rules]:

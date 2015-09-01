@@ -61,7 +61,7 @@ proof
     *)
     proof(induct x rule:int_induct[of _ "0::int"])
     case base
-      have "\<one>\<^bsub>int_group\<^esub> \<in> \<langle>{1\<Colon>int}\<rangle>\<^bsub>int_group\<^esub>"
+      have "\<one>\<^bsub>int_group\<^esub> \<in> \<langle>{1::int}\<rangle>\<^bsub>int_group\<^esub>"
         by (rule gen_span.gen_one)
       thus"0 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
         by simp

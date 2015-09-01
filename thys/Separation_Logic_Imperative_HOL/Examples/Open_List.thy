@@ -6,7 +6,7 @@ begin
 subsection {* Definitions *}
 type_synonym 'a os_list = "'a node ref option"
 
-abbreviation os_list :: "'a list \<Rightarrow> ('a\<Colon>heap) os_list \<Rightarrow> assn" where
+abbreviation os_list :: "'a list \<Rightarrow> ('a::heap) os_list \<Rightarrow> assn" where
   "os_list l p \<equiv> lseg l p None"
 
 subsection {* Precision *}
@@ -23,7 +23,7 @@ interpretation os!: imp_list os_list by (rule os_imp_list_impl)
 subsection {* Operations *}
 subsubsection {* Allocate Empty List *}
 
-definition os_empty :: "'a\<Colon>heap os_list Heap" where
+definition os_empty :: "'a::heap os_list Heap" where
   "os_empty \<equiv> return None"
 
 lemma os_empty_rule: "<emp> os_empty <os_list []>"
@@ -40,7 +40,7 @@ interpretation os!: imp_list_empty os_list os_empty by (rule os_empty_impl)
 subsubsection {* Emptiness check *}
 text {* A linked list is empty, iff it is the null pointer. *}
 
-definition os_is_empty :: "'a\<Colon>heap os_list \<Rightarrow> bool Heap" where
+definition os_is_empty :: "'a::heap os_list \<Rightarrow> bool Heap" where
   "os_is_empty b \<equiv> return (b = None)"
 
 lemma os_is_empty_rule: 
@@ -62,7 +62,7 @@ text {* To push an element to the front of a list we allocate a new node which
   stores the element and the old list as successor. The new list is the new 
   allocated reference. *}
 
-definition os_prepend :: "'a \<Rightarrow> 'a\<Colon>heap os_list \<Rightarrow> 'a os_list Heap" where
+definition os_prepend :: "'a \<Rightarrow> 'a::heap os_list \<Rightarrow> 'a os_list Heap" where
   "os_prepend a n = do { p \<leftarrow> ref (Node a n); return (Some p) }"
 
 lemma os_prepend_rule:
@@ -82,7 +82,7 @@ subsubsection{* Pop *}
 text {* To pop the first element out of the list we look up the value and the
   reference of the node and return the pair of those. *}
 
-fun os_pop :: "'a\<Colon>heap os_list \<Rightarrow> ('a \<times> 'a os_list) Heap" where
+fun os_pop :: "'a::heap os_list \<Rightarrow> ('a \<times> 'a os_list) Heap" where
   "os_pop None   = raise ''Empty Os_list''" |
   "os_pop (Some p) = do {m \<leftarrow> !p; return (val m, next m)}"
 
@@ -111,7 +111,7 @@ text {* The following reversal function is equivalent to the one from
   Imperative HOL. And gives a more difficult example. *}
 
 partial_function (heap) os_reverse_aux 
-  :: "'a\<Colon>heap os_list \<Rightarrow> 'a os_list \<Rightarrow> 'a os_list Heap" 
+  :: "'a::heap os_list \<Rightarrow> 'a os_list \<Rightarrow> 'a os_list Heap" 
   where [code]:
   "os_reverse_aux q p = (case p of 
     None \<Rightarrow> return q |

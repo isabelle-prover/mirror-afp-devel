@@ -31,8 +31,8 @@ qed
 
 lemma wf_wellorderI2:
   assumes wf: "wf {(x::'a::ord, y). y < x}"
-  assumes lin: "class.linorder (\<lambda>(x\<Colon>'a) y\<Colon>'a. y \<le> x) (\<lambda>(x\<Colon>'a) y\<Colon>'a. y < x)"
-  shows "class.wellorder (\<lambda>(x\<Colon>'a) y\<Colon>'a. y \<le> x) (\<lambda>(x\<Colon>'a) y\<Colon>'a. y < x)"
+  assumes lin: "class.linorder (\<lambda>(x::'a) y::'a. y \<le> x) (\<lambda>(x::'a) y::'a. y < x)"
+  shows "class.wellorder (\<lambda>(x::'a) y::'a. y \<le> x) (\<lambda>(x::'a) y::'a. y < x)"
   using lin unfolding class.wellorder_def apply (rule conjI)
   apply (rule class.wellorder_axioms.intro) by (blast intro: wf_induct_rule [OF wf])
 
@@ -44,20 +44,20 @@ interpretation dual_wellorder: wellorder "(op \<ge>)::('a::{linorder, finite}=>'
 proof (rule wf_wellorderI2)
   show "wf {(x :: 'a, y). y < x}"
     by(auto simp add: trancl_def tranclp_less' intro!: finite_acyclic_wf acyclicI)
-  show "class.linorder (\<lambda>(x\<Colon>'a) y\<Colon>'a. y \<le> x) (\<lambda>(x\<Colon>'a) y\<Colon>'a. y < x)"
+  show "class.linorder (\<lambda>(x::'a) y::'a. y \<le> x) (\<lambda>(x::'a) y::'a. y < x)"
     unfolding class.linorder_def unfolding class.linorder_axioms_def unfolding class.order_def 
     unfolding class.preorder_def unfolding class.order_axioms_def by auto  
 qed
 
 subsection{*Computable greatest operator*}
 
-definition Greatest' :: "('a\<Colon>order \<Rightarrow> bool) \<Rightarrow> 'a\<Colon>order" (binder "GREATEST' " 10)
+definition Greatest' :: "('a::order \<Rightarrow> bool) \<Rightarrow> 'a::order" (binder "GREATEST' " 10)
   where "Greatest' P = dual_order.Least P"
 
 text{*The following THE operator will be computable when the underlying type belongs to a suitable 
       class (for example, Enum).*}
 
-lemma [code]: "Greatest' P = (THE x::'a\<Colon>order. P x \<and> (\<forall>y::'a\<Colon>order. P y \<longrightarrow> y \<le> x))"
+lemma [code]: "Greatest' P = (THE x::'a::order. P x \<and> (\<forall>y::'a::order. P y \<longrightarrow> y \<le> x))"
   unfolding Greatest'_def ord.Least_def by fastforce
 
 lemmas Greatest'I2_order = dual_order.LeastI2_order[folded Greatest'_def]

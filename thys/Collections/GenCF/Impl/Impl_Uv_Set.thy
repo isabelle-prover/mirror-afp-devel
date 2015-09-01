@@ -21,7 +21,7 @@ begin
       else lookup (n - len_of TYPE('a) * length w1) w2)"
     by (induction w1 arbitrary: n) auto
 
-  lemma lookup_zeroes[simp]: "lookup i (replicate n (0\<Colon>'a::len word)) = False"
+  lemma lookup_zeroes[simp]: "lookup i (replicate n (0::'a::len word)) = False"
     by (induction n arbitrary: i) auto
 
   lemma lookup_out_of_bound: 

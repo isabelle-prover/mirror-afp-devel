@@ -1643,7 +1643,7 @@ proof -
     unfolding i using not_all_zero by auto
   have not_zero_aA: "\<not> is_zero_row_upt_k a k A"  
   proof -
-    have "\<And>x\<^sub>1 x\<^sub>2. from_nat (to_nat (x\<^sub>1\<Colon>'rows) + 1) \<le> x\<^sub>2 \<or> \<not> x\<^sub>1 < x\<^sub>2" 
+    have "\<And>x\<^sub>1 x\<^sub>2. from_nat (to_nat (x\<^sub>1::'rows) + 1) \<le> x\<^sub>2 \<or> \<not> x\<^sub>1 < x\<^sub>2" 
       by (metis (no_types) add_to_nat_def le_Suc to_nat_1)
     moreover
     { assume "\<not> is_zero_row_upt_k b k A"

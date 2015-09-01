@@ -573,21 +573,21 @@ definition
 where
   "tabulate ks f = ODList (List.map (\<lambda>k. (k, f k)) (toList ks))"
 
-definition (in order) mono_on :: "('a \<Rightarrow> 'b\<Colon>order) \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition (in order) mono_on :: "('a \<Rightarrow> 'b::order) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "mono_on f X \<longleftrightarrow> (\<forall>x\<in>X. \<forall>y\<in>X. x \<le> y \<longrightarrow> f x \<le> f y)"
 
 lemma (in order) mono_onI [intro?]:
-  fixes f :: "'a \<Rightarrow> 'b\<Colon>order"
+  fixes f :: "'a \<Rightarrow> 'b::order"
   shows "(\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> x \<le> y \<Longrightarrow> f x \<le> f y) \<Longrightarrow> mono_on f X"
   unfolding mono_on_def by simp
 
 lemma (in order) mono_onD [dest?]:
-  fixes f :: "'a \<Rightarrow> 'b\<Colon>order"
+  fixes f :: "'a \<Rightarrow> 'b::order"
   shows "mono_on f X \<Longrightarrow> x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> x \<le> y \<Longrightarrow> f x \<le> f y"
   unfolding mono_on_def by simp
 
 lemma (in order) mono_on_subset:
-  fixes f :: "'a \<Rightarrow> 'b\<Colon>order"
+  fixes f :: "'a \<Rightarrow> 'b::order"
   shows "mono_on f X \<Longrightarrow> Y \<subseteq> X \<Longrightarrow> mono_on f Y"
   unfolding mono_on_def by auto
 

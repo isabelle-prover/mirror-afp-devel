@@ -301,7 +301,7 @@ lemma C3_a: "x l\<rightarrow> 0 = -l x"
       apply (cut_tac x = "-l x" and y = "-l (-r 1)" in P6_a)
       apply (cut_tac a = "-r 1" and b = "x" in W5a)
       apply (unfold zero_r_def)
-      apply (rule_tac y = " -l (-r (1\<Colon>'a)) r\<rightarrow> -l x" in P5_a)
+      apply (rule_tac y = " -l (-r (1::'a)) r\<rightarrow> -l x" in P5_a)
       by simp_all
     have B: "(x l\<rightarrow> 0) r\<rightarrow> -l x = 1"
       apply (cut_tac a = "-l x r\<rightarrow> 0" and b = x and c = 0 in W3a)
@@ -325,7 +325,7 @@ lemma C3_b: "x r\<rightarrow> 0 = -r x"
   apply (cut_tac x = "-r x" and y = "-r (-l 1)" in P6_b)
   apply (cut_tac a = "-l 1" and b = "x" in W5b)
   apply (unfold zero_def order_r)
-  apply (rule_tac y = " -r (-l (1\<Colon>'a)) l\<rightarrow> -r x" in P5_b)
+  apply (rule_tac y = " -r (-l (1::'a)) l\<rightarrow> -r x" in P5_b)
   by (simp_all add: P10)
 
 lemma C4_a [simp]: "-r (-l x) = x" 

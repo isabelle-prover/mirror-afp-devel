@@ -127,7 +127,7 @@ corollary lm002:
 corollary lm003: 
   "{(x,{y})} \<in> allocationsUniverse" 
 proof -
-  have "\<And>x1. {} - {x1\<Colon>'a \<times> 'b set} = {}" by simp
+  have "\<And>x1. {} - {x1::'a \<times> 'b set} = {}" by simp
   thus "{(x, {y})} \<in> allocationsUniverse" 
   by (metis (no_types) allocationUniverseProperty empty_iff insert_Diff_if insert_iff prod.inject)
 qed
@@ -831,7 +831,7 @@ corollary lm090:
   shows "chosenAllocation N G bids random \<in> winningAllocationsRel N (set G) bids"
 proof -
   have "\<And>x\<^sub>1 b_x x. set x\<^sub>1 = {} 
-        \<or> (randomEl x\<^sub>1 b_x\<Colon>('a \<times> 'b set) set) \<in> x 
+        \<or> (randomEl x\<^sub>1 b_x::('a \<times> 'b set) set) \<in> x 
         \<or> \<not> set x\<^sub>1 \<subseteq> x" by (metis (no_types) randomElLemma subsetCE)
   thus "winningAllocationRel N (set G) 
           (op \<in> (randomEl (takeAll (\<lambda>x. winningAllocationRel N (set G) (op \<in> x) bids)

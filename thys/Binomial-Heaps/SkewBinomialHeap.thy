@@ -554,14 +554,14 @@ next
     from size_mset_tree_lower[OF this] 
     have "2 ^ (rank x) \<le> size (tree_to_multiset x)" .
     ultimately have 
-      eq: "size (queue_to_multiset xs) + (2\<Colon>nat)^(rank x) \<le> 
+      eq: "size (queue_to_multiset xs) + (2::nat)^(rank x) \<le> 
       size (queue_to_multiset (xs @ [x]))" by simp
     from invar_length[OF snoc.prems] have "length xs \<le> (rank x + 1)" by simp
     hence snd: "(2::nat) ^ (length xs - 1) \<le> (2::nat) ^ ((rank x))" 
       by (simp del: power.simps)
     have
-      "(2\<Colon>nat) ^ (length (xs @ [x]) - 1) = 
-      (2\<Colon>nat) ^ (length xs - 1) + (2\<Colon>nat) ^ (length xs - 1)"
+      "(2::nat) ^ (length (xs @ [x]) - 1) = 
+      (2::nat) ^ (length xs - 1) + (2::nat) ^ (length xs - 1)"
       by auto
     with IH have 
       "2 ^ (length (xs @ [x]) - 1) \<le> 

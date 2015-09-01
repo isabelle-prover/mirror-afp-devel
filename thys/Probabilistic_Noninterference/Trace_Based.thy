@@ -63,7 +63,7 @@ proof -
 qed
 
 lemma field_abs_le_zero_epsilon:
-  fixes x :: "'a\<Colon>{linordered_field}"
+  fixes x :: "'a::{linordered_field}"
   assumes epsilon: "\<And>e. 0 < e \<Longrightarrow> \<bar>x\<bar> \<le> e"
   shows "\<bar>x\<bar> = 0"
 proof (rule antisym)

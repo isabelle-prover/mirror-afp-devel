@@ -29,7 +29,7 @@ text{*
     "[.p.] q \<equiv>  (-p \<squnion> q)"
 
   definition
-    angelic :: "('a \<Rightarrow> 'b\<Colon>{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("{: _ :}" [0] 1000) where
+    angelic :: "('a \<Rightarrow> 'b::{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("{: _ :}" [0] 1000) where
     "{:Q:} p s = (Q s \<sqinter> p \<noteq> \<bottom>)"
 
   syntax
