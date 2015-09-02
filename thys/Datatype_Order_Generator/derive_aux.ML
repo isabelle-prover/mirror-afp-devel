@@ -275,7 +275,7 @@ fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info
 
 val my_simp_set =
   simpset_of (@{context}
-    delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd |> map (Thm.transfer @{theory}))
+    delsimps (simpset_of @{context} |> dest_ss |> #simps |> map snd)
     addsimps @{thms HOL.simp_thms})
 
 fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype_Aux.info) prop_gen sort same_constructor_tac =
