@@ -3348,8 +3348,8 @@ local
 
 val ss =
   simpset_of
-    (@{theory_context Fun}
-    addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
+    (put_simpset (simpset_of @{theory_context Fun}) @{context}
+      addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
       :: @{thms list.inject} @ @{thms char.inject}
       @ @{thms list.distinct} @ @{thms simp_thms})
     addsimprocs [Record.simproc, StateFun.lazy_conj_simproc]
