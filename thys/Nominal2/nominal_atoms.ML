@@ -12,7 +12,7 @@ sig
   val add_atom_decl: (binding * (binding option)) -> theory -> theory
 end;
 
-structure Atom_Decl :> ATOM_DECL =
+structure Atom_Decl : ATOM_DECL =
 struct
 
 val simp_attr = Attrib.internal (K Simplifier.simp_add)
@@ -34,7 +34,7 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
     val set = atom_decl_set str;
     fun tac ctxt = resolve_tac ctxt @{thms exists_eq_simple_sort} 1;
     val ((full_tname, info as ({Rep_name, Abs_name, ...}, {type_definition, ...})), thy) =
-      Typedef.add_typedef_global false (name, [], NoSyn) set NONE tac thy;
+      Typedef.add_typedef_global (name, [], NoSyn) set NONE tac thy;
 
     (* definition of atom and permute *)
     val newT = #abs_type (fst info);

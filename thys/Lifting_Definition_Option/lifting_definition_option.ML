@@ -228,9 +228,8 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> bool_ty) $ lam
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
         fun tac ctxt = resolve_tac ctxt [ex_thm] 1 THEN blast_tac ctxt 1
-        val concealed = false
         val (info, lthy) =
-          Typedef.add_typedef concealed
+          Typedef.add_typedef
             (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix)
             (t_fresh collect)
             NONE tac lthy
