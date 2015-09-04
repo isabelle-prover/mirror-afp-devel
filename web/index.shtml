@@ -50,6 +50,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2015-09-04:
+<a href="entries/LTL_to_DRA.shtml">Converting Linear Temporal Logic to Deterministic (Generalised) Rabin Automata</a>
+<br>Author:
+Salomon Sickert
+</td></tr>
+
+<tr><td class="entry">
 2015-08-21:
 <a href="entries/Jordan_Normal_Form.shtml">Matrices, Jordan Normal Forms, and Spectral Radius Theory</a>
 <br>Author:
