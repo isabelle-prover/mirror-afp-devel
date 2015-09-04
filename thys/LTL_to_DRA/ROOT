@@ -1,0 +1,17 @@
+chapter AFP
+
+session LTL_to_DRA (AFP) = "HOL-Library" +
+  options
+    [timeout = 600]
+  theories
+    [document = false]
+    "../Boolean_Expression_Checkers/Boolean_Expression_Checkers"
+    "../Automatic_Refinement/Lib/Words"
+    "../KBPs/DFS"
+  theories
+    "LTL_Rabin"
+    "LTL_Rabin_Unfold_Opt"
+    "Impl/Export_Code"
+  document_files
+    "root.tex"
+    "root.bib"
