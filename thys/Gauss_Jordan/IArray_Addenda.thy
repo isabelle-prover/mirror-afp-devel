@@ -35,7 +35,7 @@ subsubsection{*Lemmas*}
 lemma of_fun_nth:
   assumes i: "i<n"
   shows "(IArray.of_fun f n) !! i = f i"
-  unfolding of_fun_def using map_nth i by auto
+  unfolding IArray.of_fun_def using map_nth i by auto
 
 subsubsection{*Definitions*}
 

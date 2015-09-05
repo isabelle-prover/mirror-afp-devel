@@ -165,7 +165,7 @@ lemma length_zero_iarray: "IArray.length 0 = 0"
 lemma minus_zero_iarray:
   fixes A::"'a::{group_add} iarray"
   shows "A - 0 = A" 
-proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold length_def[symmetric] sub_def[symmetric])
+proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric])
   have max_eq: "(max (IArray.length A) (IArray.length 0))= IArray.length A"
     unfolding zero_iarray_def by auto
   show length_eq: "IArray.length (A - 0) = IArray.length A"
@@ -189,7 +189,7 @@ definition inner_iarray :: "real iarray => real iarray => real"  (infixl "\<bull
 
 lemma vec_to_iarray_inner:
   "a \<bullet> b = vec_to_iarray a \<bullet>i vec_to_iarray b" 
-proof (unfold inner_iarray_def inner_vec_def, auto, unfold sub_def[symmetric] length_def[symmetric])
+proof (unfold inner_iarray_def inner_vec_def, auto, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
   have set_rw: "{0..<IArray.length (vec_to_iarray a)}  = (to_nat)`(UNIV::'a set)"
     unfolding vec_to_iarray_def 
     using to_nat_less_card using bij_to_nat[where ?'a='a]
@@ -226,7 +226,7 @@ lemma matrix_to_iarray_Gram_Schmidt_column_k:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"
   shows "matrix_to_iarray (Gram_Schmidt_column_k A k) = Gram_Schmidt_column_k_iarrays (matrix_to_iarray A) k"
-proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_def[symmetric] length_def[symmetric])
+proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
   show "IArray.length (matrix_to_iarray (Gram_Schmidt_column_k A k)) = IArray.length (Gram_Schmidt_column_k_iarrays (matrix_to_iarray A) k)"
     unfolding matrix_to_iarray_def Gram_Schmidt_column_k_iarrays_def tabulate2_def unfolding nrows_iarray_def by auto
   fix i assume i: "i < IArray.length (matrix_to_iarray (Gram_Schmidt_column_k A k))"
@@ -239,7 +239,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_d
       by (metis i length_eq_card_rows)
     have f2: "\<And>x\<^sub>5. IArray.list_of (vec_to_iarray x\<^sub>5) 
       = List.map (\<lambda>uua. x\<^sub>5 $ (from_nat uua::'cols)::real) [0..<card (UNIV::'cols set)]"
-      by (metis list_of.simps of_fun_def vec_to_iarray_def)
+      by (metis list_of.simps IArray.of_fun_def vec_to_iarray_def)
     thus "length (IArray.list_of (List.map (\<lambda>x. vec_to_iarray (Gram_Schmidt_column_k A k $ from_nat x)) [0..<card (UNIV::'rows set)] ! i)) 
     = length (IArray.list_of (List.map (\<lambda>i. IArray (List.map (\<lambda>b. IArray.list_of (if b = k then column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)])) 
     - (\<Sum>x\<in>set (List.map (\<lambda>n. column_iarray n (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)]))) [0..< b]). (column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)])) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) else column_iarray b (IArray (List.map (\<lambda>x. vec_to_iarray (A $ from_nat x)) [0..<card (UNIV::'rows set)]))) ! i) [0..< length (IArray.list_of (vec_to_iarray (A $ from_nat 0)))])) [0..<card (UNIV::'rows set)] ! i))"
@@ -262,7 +262,7 @@ next
     unfolding tabulate2_def
     unfolding of_fun_nth[OF i_nrows_iarray]
     unfolding of_fun_nth[OF ia_ncols_iarray]
-  proof (unfold proj_onto_def proj_def[abs_def], auto, unfold sub_def[symmetric])
+  proof (unfold proj_onto_def proj_def[abs_def], auto, unfold IArray.sub_def[symmetric])
     have inj: "inj_on vec_to_iarray {column i A |i. i < from_nat k}" unfolding inj_on_def
       by (auto, metis vec_to_iarray_morph)
     have set_rw: "{column i A |i. i < from_nat k} = (\<lambda>n. column n A)` {0..<from_nat k}"
@@ -317,7 +317,7 @@ next
         proof (unfold column_iarray_def, auto)
           fix x :: nat
           have "i < length (IArray.list_of (IArray (map (vec_to_iarray \<circ> op $ A \<circ> mod_type_class.from_nat) [0..<card (UNIV::'rows set)])))"
-            by (metis i_nrows_iarray length_def matrix_to_iarray_def nrows_iarray_def)
+            by (metis i_nrows_iarray IArray.length_def matrix_to_iarray_def nrows_iarray_def)
           thus "i < length (IArray.list_of ((IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! k) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) / (IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]) \<bullet>i IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))]))) *\<^sub>R IArray (map (\<lambda>n. IArray.list_of (IArray.list_of (matrix_to_iarray A) ! n) ! x) [0..<length (IArray.list_of (matrix_to_iarray A))])))"
             by (simp add: matrix_to_iarray_def scaleR_iarray_def)
         qed
@@ -373,7 +373,7 @@ next
         let ?c="IArray.length ((column_iarray k (matrix_to_iarray A) \<bullet>i ?x / (?x \<bullet>i ?x)) *\<^sub>R ?x)"
         show "i < IArray.length (column_iarray k (matrix_to_iarray A))"
           unfolding column_iarray_def
-          by (auto, metis i_nrows_iarray length_def nrows_iarray_def)
+          by (auto, metis i_nrows_iarray IArray.length_def nrows_iarray_def)
         show "i < IArray.length (\<Sum>x\<in>(\<lambda>n. column_iarray n (matrix_to_iarray A)) ` {0..<k}. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x)"
           unfolding length_setsum_iarray[OF finite not_empty]
           unfolding Max_gr_iff[OF finite_C not_empty_C]
