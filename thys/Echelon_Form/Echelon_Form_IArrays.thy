@@ -80,8 +80,8 @@ proof -
     unfolding matrix_to_iarray_def bezout_matrix_iarrays_def tabulate2_def 
     apply auto unfolding n apply (rule map_ext, auto simp add: bezout_matrix_def Let_def)
     unfolding o_def vec_to_iarray_def  Let_def 
-    unfolding sub_def[symmetric] rw1 rw2 rw3 rw4
-    unfolding of_fun_def iarray.inject
+    unfolding IArray.sub_def[symmetric] rw1 rw2 rw3 rw4
+    unfolding IArray.of_fun_def iarray.inject
     apply (rule map_ext) unfolding vec_lambda_beta
   proof -
     fix x xa 

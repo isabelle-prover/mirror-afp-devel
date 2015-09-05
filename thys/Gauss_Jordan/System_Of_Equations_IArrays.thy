@@ -19,13 +19,13 @@ definition greatest_not_zero :: "'a::{zero} iarray => nat"
 
 lemma vec_to_iarray_exists:
 shows "(\<exists>b. A $ b \<noteq> 0) = IArray_Addenda.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray[0..<IArray.length (vec_to_iarray A)])"
-proof (unfold IArray_Addenda.exists.simps length_vec_to_iarray, auto simp del: sub_def)
-     fix b assume Ab: "A $ b \<noteq> 0"
-     show "\<exists>b\<in>{0..<CARD('a)}. vec_to_iarray A !! b \<noteq> 0"
-     by (rule bexI[of _ "to_nat b"], unfold vec_to_iarray_nth', auto simp add: Ab to_nat_less_card[of b])
-     next
-     fix b assume b: "b < CARD('a)" and Ab_vec: "vec_to_iarray A !! b \<noteq> 0"
-     show "\<exists>b. A $ b \<noteq> 0" by (rule exI[of _ "from_nat b"], metis Ab_vec vec_to_iarray_nth[OF b])
+proof (unfold IArray_Addenda.exists.simps length_vec_to_iarray, auto simp del: IArray.sub_def)
+  fix b assume Ab: "A $ b \<noteq> 0"
+  show "\<exists>b\<in>{0..<CARD('a)}. vec_to_iarray A !! b \<noteq> 0"
+    by (rule bexI[of _ "to_nat b"], unfold vec_to_iarray_nth', auto simp add: Ab to_nat_less_card[of b])
+next
+   fix b assume b: "b < CARD('a)" and Ab_vec: "vec_to_iarray A !! b \<noteq> 0"
+   show "\<exists>b. A $ b \<noteq> 0" by (rule exI[of _ "from_nat b"], metis Ab_vec vec_to_iarray_nth[OF b])
 qed
 
 corollary vec_to_iarray_exists':
@@ -45,7 +45,7 @@ have "\<exists>a. (List.find ?P ?xs) = Some a"
   proof(rule ccontr, simp, unfold find_None_iff)
     assume "\<not> (\<exists>x. x \<in> set (rev [0..<length (IArray.list_of (vec_to_iarray A))]) \<and> IArray.list_of (vec_to_iarray A) ! x \<noteq> 0)"
     thus False using ex_b 
-    unfolding set_rev by (auto, unfold length_def[symmetric] sub_def[symmetric] length_vec_to_iarray,metis to_nat_less_card vec_to_iarray_nth')
+    unfolding set_rev by (auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric] length_vec_to_iarray,metis to_nat_less_card vec_to_iarray_nth')
   qed
 from this obtain a where a: "(List.find ?P ?xs) = Some a" by blast
 from this obtain ia where ia_less_length: "ia<length ?xs"
@@ -79,12 +79,12 @@ have "(GREATEST' b. A $ b \<noteq> 0) = from_nat a"
       by (metis diff_0_eq_0 diff_Suc_eq_diff_pred diff_Suc_less diff_right_commute ia_eq ia_less_length' neq0_conv)
       have suc_i_le: "IArray.length (vec_to_iarray A)\<ge>Suc (to_nat y)" unfolding vec_to_iarray_def  using to_nat_less_card[of y] by auto
       have "?xs ! ja = [0..<IArray.length (vec_to_iarray A)] ! (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" unfolding rev_nth[OF ja_less_length] ..
-      also have "... = 0 + (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" apply (rule nth_upt, auto simp del: length_def) unfolding ja_def     
+      also have "... = 0 + (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" apply (rule nth_upt, auto simp del: IArray.length_def) unfolding ja_def     
       by (metis diff_Suc_less ia_less_length' length_upt less_nat_zero_code minus_nat.diff_0 neq0_conv)
       also have "... = (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" by simp
       also have "... = to_nat y" unfolding ja_def using suc_i_le by force
       finally have xs_ja_eq_y: "?xs ! ja = to_nat y" .
-      have ja_less_ia: "ja < ia" unfolding ja_def ia_eq by (auto simp del: length_def, metis Suc_leI suc_i_le diff_less_mono2 le_imp_less_Suc less_le_trans y_greater_a')
+      have ja_less_ia: "ja < ia" unfolding ja_def ia_eq by (auto simp del: IArray.length_def, metis Suc_leI suc_i_le diff_less_mono2 le_imp_less_Suc less_le_trans y_greater_a')
       hence eq_0: "vec_to_iarray A !! (?xs ! ja) = 0" using all_zero by simp
       hence "A $ y = 0" using vec_to_iarray_nth'[of A y] unfolding xs_ja_eq_y by simp
       thus False using Ay by contradiction
@@ -141,7 +141,7 @@ show "IArray_Addenda.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1
      (IArray [0..<nrows_iarray (matrix_to_iarray A)])"
      unfolding IArray_Addenda.exists.simps find_Some_iff
      apply (rule bexI[of _ "to_nat i"])+
-     proof (auto, unfold sub_def[symmetric])
+     proof (auto, unfold IArray.sub_def[symmetric])
       show "to_nat i < nrows_iarray (matrix_to_iarray A)" unfolding matrix_to_iarray_nrows[symmetric] nrows_def using to_nat_less_card by fast
                have "to_nat j = to_nat (LEAST n. A $ i $ n \<noteq> 0)" unfolding j_eq by simp
          also have "... = to_nat (LEAST n. A $ i $ n \<noteq> 0 \<and> 0\<le>n)" by (metis least_mod_type)
@@ -160,7 +160,7 @@ assume ex_eq: "IArray_Addenda.exists (\<lambda>i. matrix_to_iarray A !! i !! to_
      (IArray [0..<nrows_iarray (matrix_to_iarray A)])"
 have "\<exists>y. List.find (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
          [0..<nrows_iarray (matrix_to_iarray A)] = Some y"
-         proof (rule ccontr, simp del: length_def sub_def, unfold find_None_iff)
+         proof (rule ccontr, simp del: IArray.length_def IArray.sub_def, unfold find_None_iff)
          assume" \<not> (\<exists>x. x \<in> set [0..<nrows_iarray (matrix_to_iarray A)] \<and>
             matrix_to_iarray A !! x !! mod_type_class.to_nat j = 1 \<and> mod_type_class.to_nat j = least_non_zero_position_of_vector (row_iarray x (matrix_to_iarray A)))"
             thus False using ex_eq unfolding IArray_Addenda.exists.simps by auto
@@ -243,7 +243,7 @@ lemma vec_to_iarray_solve_consistent_rref:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes rref: "reduced_row_echelon_form A"
 shows "vec_to_iarray (solve_consistent_rref A b) = solve_consistent_rref_iarrays (matrix_to_iarray A) (vec_to_iarray b)"
-proof(unfold iarray_exhaust2 list_eq_iff_nth_eq length_def[symmetric] sub_def[symmetric], rule conjI)
+proof(unfold iarray_exhaust2 list_eq_iff_nth_eq IArray.length_def[symmetric] IArray.sub_def[symmetric], rule conjI)
   show "IArray.length (vec_to_iarray (solve_consistent_rref A b)) = IArray.length (solve_consistent_rref_iarrays (matrix_to_iarray A) (vec_to_iarray b))"
   unfolding solve_consistent_rref_def solve_consistent_rref_iarrays_def 
   unfolding ncols_iarray_def matrix_to_iarray_def by (simp add: vec_to_iarray_def)

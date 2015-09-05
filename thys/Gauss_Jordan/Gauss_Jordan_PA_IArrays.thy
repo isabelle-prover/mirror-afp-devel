@@ -57,7 +57,7 @@ by (metis assms matrix_to_iarray_Gauss_Jordan_in_ij snd_Gauss_Jordan_in_ij_PA_eq
 lemma matrix_to_iarray_fst_Gauss_Jordan_in_ij_iarrays_PA:
  assumes not_all_zero: "\<not> vector_all_zero_from_index (to_nat i, vec_to_iarray (column j A))"
  shows "matrix_to_iarray (fst (Gauss_Jordan_in_ij_PA (P,A) i j)) = fst (Gauss_Jordan_in_ij_iarrays_PA (matrix_to_iarray P,matrix_to_iarray A) (to_nat i) (to_nat j))" 
-proof (unfold Gauss_Jordan_in_ij_PA_def Gauss_Jordan_in_ij_iarrays_PA_def Let_def fst_conv snd_conv, rule matrix_to_iarray_eq_of_fun, auto simp del: length_def sub_def)
+proof (unfold Gauss_Jordan_in_ij_PA_def Gauss_Jordan_in_ij_iarrays_PA_def Let_def fst_conv snd_conv, rule matrix_to_iarray_eq_of_fun, auto simp del: IArray.length_def IArray.sub_def)
 show "vec_to_iarray (mult_row (interchange_rows P i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j) $ i) =
     mult_row_iarray (interchange_rows_iarray (matrix_to_iarray P) (to_nat i)
        (least_non_zero_position_of_vector_from_index (column_iarray (to_nat j) (matrix_to_iarray A)) (to_nat i))) (to_nat i)

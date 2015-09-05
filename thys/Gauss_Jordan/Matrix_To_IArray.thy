@@ -105,7 +105,7 @@ lemma matrix_to_iarray_eq_of_fun:
   assumes vec_eq_f: "\<forall>i. vec_to_iarray (A $ i) = f (to_nat i)"
   and n_eq_length: "n=IArray.length (matrix_to_iarray A)"
   shows "matrix_to_iarray A = IArray.of_fun f n"
-proof (unfold of_fun_def matrix_to_iarray_def iarray.inject list_eq_iff_nth_eq, auto)
+proof (unfold IArray.of_fun_def matrix_to_iarray_def iarray.inject list_eq_iff_nth_eq, auto)
   show *: "CARD('rows) = n" using n_eq_length unfolding matrix_to_iarray_def by auto
   fix i assume i: "i < CARD('rows)"
   hence i_less_n: "i<n" using * i by simp
@@ -199,7 +199,7 @@ qed
 lemma mult_iarray_works:
   assumes "a<IArray.length A" shows "mult_iarray A q !! a = q * A!!a"
   unfolding mult_iarray_def
-  unfolding of_fun_def unfolding sub_def
+  unfolding IArray.of_fun_def unfolding sub_def
   using assms by simp
 
 lemma length_eq_card_rows:
@@ -234,11 +234,11 @@ lemma matrix_to_iarray_ncols:
 
 lemma vec_to_iarray_row[code_unfold]: "vec_to_iarray (row i A) = row_iarray (to_nat i) (matrix_to_iarray A)"
   unfolding row_def row_iarray_def vec_to_iarray_def
-  by (auto, metis IArray.sub_def of_fun_def vec_matrix vec_to_iarray_def)
+  by (auto, metis IArray.sub_def IArray.of_fun_def vec_matrix vec_to_iarray_def)
 
 lemma vec_to_iarray_row': "vec_to_iarray (row i A) = (matrix_to_iarray A) !! (to_nat i)"
   unfolding row_def vec_to_iarray_def
-  by (auto, metis IArray.sub_def of_fun_def vec_matrix vec_to_iarray_def)
+  by (auto, metis IArray.sub_def IArray.of_fun_def vec_matrix vec_to_iarray_def)
 
 lemma vec_to_iarray_column[code_unfold]: "vec_to_iarray (column i A) = column_iarray (to_nat i) (matrix_to_iarray A)"
   unfolding column_def vec_to_iarray_def column_iarray_def length_eq_card_rows

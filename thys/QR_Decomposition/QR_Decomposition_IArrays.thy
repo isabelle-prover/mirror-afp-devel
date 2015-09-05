@@ -30,7 +30,7 @@ lemma vec_to_iarray_norm[code_unfold]:
 lemma matrix_to_iarray_divide_by_norm[code_unfold]:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   shows "matrix_to_iarray (divide_by_norm A) = divide_by_norm_iarray (matrix_to_iarray A)"
-proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_def[symmetric] length_def[symmetric])
+proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
   show"IArray.length (matrix_to_iarray (divide_by_norm A)) = IArray.length (divide_by_norm_iarray (matrix_to_iarray A))"
     unfolding matrix_to_iarray_def divide_by_norm_iarray_def tabulate2_def unfolding nrows_iarray_def by auto
   fix i assume i:"i < IArray.length (matrix_to_iarray (divide_by_norm A))"
@@ -70,7 +70,7 @@ qed
 
 lemma matrix_to_iarray_fst_QR_decomposition[code_unfold]:
   shows "matrix_to_iarray (fst (QR_decomposition A)) = fst (QR_decomposition_iarrays (matrix_to_iarray A))"
-proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_def[symmetric] length_def[symmetric])
+proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
   fix i ia
   show "IArray.length (matrix_to_iarray (fst (QR_decomposition A))) 
     = IArray.length (fst (QR_decomposition_iarrays (matrix_to_iarray A)))"
@@ -86,7 +86,7 @@ qed
 
 lemma matrix_to_iarray_snd_QR_decomposition[code_unfold]:
   shows "matrix_to_iarray (snd (QR_decomposition A)) = snd (QR_decomposition_iarrays (matrix_to_iarray A))"
-proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold sub_def[symmetric] length_def[symmetric])
+proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
   fix i ia
   show "IArray.length (matrix_to_iarray (snd (QR_decomposition A)))
     = IArray.length (snd (QR_decomposition_iarrays (matrix_to_iarray A)))"

@@ -350,8 +350,8 @@ declare [[code drop:
   ]]
 
 declare 
-  finite'_def[code]
-  card'_def[code]
+  Cardinality.finite'_def[code]
+  Cardinality.card'_def[code]
 
 subsection {* Set implementations *}
 

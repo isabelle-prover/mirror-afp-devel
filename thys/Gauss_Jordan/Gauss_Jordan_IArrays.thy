@@ -63,7 +63,7 @@ next
   have to_nat_i_le_m:"to_nat i \<le> to_nat m" using to_nat_mono'[OF i_le_m] .
   have m_le_length: "to_nat m < IArray.length (vec_to_iarray A)" unfolding vec_to_iarray_def using to_nat_less_card by auto
   have "A $ m = vec_to_iarray A !! (to_nat m)" unfolding vec_to_iarray_nth' ..
-  also have "... = 0" using zero to_nat_i_le_m m_le_length unfolding nrows_iarray_def by (metis IArray.sub_def length_def)
+  also have "... = 0" using zero to_nat_i_le_m m_le_length unfolding nrows_iarray_def by (metis IArray.sub_def IArray.length_def)
   finally show "A $ m = 0" .
 qed
 
@@ -79,12 +79,12 @@ assumes not_all_zero: "\<not> (vector_all_zero_from_index (to_nat i,  vec_to_iar
 shows "least_non_zero_position_of_vector_from_index (vec_to_iarray A) (to_nat i) = to_nat (LEAST n. A $ n \<noteq> 0 \<and> i \<le> n)"
 proof -
   have "\<exists>a. List.find (\<lambda>x. vec_to_iarray A !! x \<noteq> 0) [to_nat i..<IArray.length (vec_to_iarray A)] = Some a"
-    proof (rule ccontr, simp, unfold sub_def[symmetric] length_def[symmetric])
+    proof (rule ccontr, simp, unfold IArray.sub_def[symmetric] IArray.length_def[symmetric])
       assume "List.find (\<lambda>x. (vec_to_iarray A) !! x \<noteq> 0) [to_nat i..<IArray.length (vec_to_iarray A)] = None"
       hence "\<not> (\<exists>x. x \<in> set [mod_type_class.to_nat i..<IArray.length (vec_to_iarray A)] \<and> vec_to_iarray A !! x \<noteq> 0)" 
         unfolding find_None_iff .
       thus False using not_all_zero unfolding vector_all_zero_from_index_eq[symmetric]
-      by (simp del: length_def sub_def, unfold length_vec_to_iarray, metis to_nat_less_card to_nat_mono' vec_to_iarray_nth')
+      by (simp del: IArray.length_def IArray.sub_def, unfold length_vec_to_iarray, metis to_nat_less_card to_nat_mono' vec_to_iarray_nth')
      qed
   from this obtain a where a: "List.find (\<lambda>x. vec_to_iarray A !! x \<noteq> 0) [to_nat i..<IArray.length (vec_to_iarray A)] = Some a"
     by blast
@@ -147,7 +147,7 @@ lemma matrix_to_iarray_Gauss_Jordan_in_ij[code_unfold]:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}"
   assumes not_all_zero: "\<not> (vector_all_zero_from_index (to_nat i, vec_to_iarray (column j A)))"
   shows "matrix_to_iarray (Gauss_Jordan_in_ij A i j) = Gauss_Jordan_in_ij_iarrays (matrix_to_iarray A) (to_nat i) (to_nat j)"
-proof (unfold Gauss_Jordan_in_ij_def Gauss_Jordan_in_ij_iarrays_def Let_def, rule matrix_to_iarray_eq_of_fun, auto simp del: sub_def length_def)
+proof (unfold Gauss_Jordan_in_ij_def Gauss_Jordan_in_ij_iarrays_def Let_def, rule matrix_to_iarray_eq_of_fun, auto simp del: IArray.sub_def IArray.length_def)
   show "vec_to_iarray (mult_row (interchange_rows A i (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n)) i (1 / A $ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $ j) $ i) =
     mult_row_iarray
      (interchange_rows_iarray (matrix_to_iarray A) (to_nat i)
@@ -343,7 +343,7 @@ lemma rank_eq_card_iarrays_code:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}"
   shows "rank A = (let A' = (Gauss_Jordan_iarrays (matrix_to_iarray A)) in card {i::'rows. \<not> is_zero_iarray (A' !! (to_nat i))})" 
 proof (unfold rank_eq_card_iarrays' Let_def, rule bij_betw_same_card[symmetric, of "\<lambda>i. row_iarray (to_nat i) (Gauss_Jordan_iarrays (matrix_to_iarray A))"],
-    unfold bij_betw_def inj_on_def, auto, unfold sub_def[symmetric]) 
+    unfold bij_betw_def inj_on_def, auto, unfold IArray.sub_def[symmetric]) 
   fix x y::'rows
   assume x: "\<not> is_zero_iarray (Gauss_Jordan_iarrays (matrix_to_iarray A) !! to_nat x)"
     and y: "\<not> is_zero_iarray (Gauss_Jordan_iarrays (matrix_to_iarray A) !! to_nat y)"
@@ -375,7 +375,7 @@ lemma matrix_to_iarray_rank[code_unfold]:
   apply (rule bij_betw_same_card[of "to_nat"])
   unfolding bij_betw_def
   apply auto
-  unfolding length_def[symmetric] sub_def[symmetric] apply (metis inj_onI to_nat_eq)
+  unfolding IArray.length_def[symmetric] IArray.sub_def[symmetric] apply (metis inj_onI to_nat_eq)
   unfolding  matrix_to_iarray_Gauss_Jordan[symmetric] length_eq_card_rows
   using bij_to_nat[where ?'a='c] unfolding bij_betw_def by auto
 

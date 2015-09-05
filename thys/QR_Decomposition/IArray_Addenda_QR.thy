@@ -50,7 +50,7 @@ lemma iarray_exhaust2:
 lemma of_fun_nth:
   assumes i: "i<n"
   shows "(IArray.of_fun f n) !! i = f i"
-  unfolding of_fun_def using map_nth i by auto
+  unfolding IArray.of_fun_def using map_nth i by auto
 
 subsection{*Some previous instances*}
 
@@ -87,11 +87,11 @@ proof
     have "max (length (IArray.list_of (0::'a iarray))) (length (IArray.list_of a)) = length (IArray.list_of a)"
       by (metis list.size(3) list_of.simps max_0L zero_iarray_def)
     thus "max (IArray.length 0) (IArray.length a) = IArray.length a"
-      by (metis length_def list.size(3) list_of.simps zero_iarray_def)
+      by (metis IArray.length_def list.size(3) list_of.simps zero_iarray_def)
   qed
   have length0: "IArray.length 0 = 0" unfolding zero_iarray_def by auto
   show "0 + a = a" 
-  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold length_def[symmetric] sub_def[symmetric])
+  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric])
     show length_eq: "IArray.length (0 + a) = IArray.length a" unfolding plus_iarray_def Let_def using max_eq by auto
     fix i assume i: "i < IArray.length (0 + a)"
     have i2: "i < IArray.length a" by (metis length_eq i)
@@ -106,7 +106,7 @@ proof
     finally show "(0 + a) !! i =  a !! i" .
   qed
   show "a + b = b + a"
-  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold length_def[symmetric] sub_def[symmetric])
+  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric])
     have max_eq: "(max (IArray.length a) (IArray.length b)) = IArray.length (a + b)" 
       unfolding plus_iarray_def Let_def by auto
     show length_eq: "IArray.length (a + b) = IArray.length (b + a)"
@@ -122,7 +122,7 @@ proof
       unfolding add.commute ..
   qed
   show "a + b + c = a + (b + c)"
-  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold length_def[symmetric] sub_def[symmetric])
+  proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric])
     show length_eq: "IArray.length (a + b + c) = IArray.length (a + (b + c))"
       unfolding plus_iarray_def Let_def by auto
     fix i assume i: "i < IArray.length (a + b + c)"
