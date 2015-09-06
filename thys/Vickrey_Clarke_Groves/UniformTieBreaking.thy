@@ -161,7 +161,7 @@ corollary lm009:
 proof -
   have "{(G,n)} \<in> injections {G} N" using assms lm008 by fast
   moreover have "{G} \<in> all_partitions G" using assms lm006 by metis
-  ultimately show ?thesis using possible_allocations_rel_def by auto
+  ultimately show ?thesis by auto
 qed
 
 corollary lm010: 

@@ -34,7 +34,7 @@ fun argmax :: "('a \<Rightarrow> 'b::linorder) \<Rightarrow> 'a set \<Rightarrow
 (* For reasons we do not understand we have to duplicate the definition as a lemma 
    in order to prove lm16 in CombinatorialAuctions.thy. *)
 lemma argmaxLemma: "argmax f A = { x \<in> A . f x = Max (f ` A) }" 
-      using argmax_def by simp
+  by simp
 
 lemma maxLemma: 
   assumes "x \<in> X" "finite X" 

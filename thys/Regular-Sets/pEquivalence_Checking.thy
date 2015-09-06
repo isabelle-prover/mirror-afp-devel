@@ -170,7 +170,7 @@ proof-
   ultimately have pre_Bisim_ps: "pre_Bisim as R S ([],ps)"
     by (rule while_option_rule[OF _ result[unfolded closure_def]])
   then have "is_Bisimulation as ps" "(R,S) \<in> set ps"
-    by (auto simp: pre_Bisim_def is_Bisimulation_def test_def)
+    by (auto simp: pre_Bisim_def is_Bisimulation_def)
   thus "Lang R = Lang S" by (rule Bisim_Lang_eq)
 qed
 

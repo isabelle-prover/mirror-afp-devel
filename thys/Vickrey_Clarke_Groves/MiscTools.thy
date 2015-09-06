@@ -59,7 +59,7 @@ definition
 (* toFunction = eval_rel *)
 lemma 
   "toFunction = eval_rel" 
-  using toFunction_def eval_rel_def by blast
+  using toFunction_def by blast
 
 lemma lm001: 
   "((P \<union> Q) || X) = ((P || X) \<union> (Q||X))" 
@@ -325,7 +325,7 @@ lemma lm030:
 
 lemma lm031: 
   "argmax f {x} = {x}" 
-  using argmax_def by auto
+  by auto
 
 lemma sortingSameSet: 
   assumes "finite X" 
@@ -983,7 +983,7 @@ abbreviation
 lemma permutationNotEmpty: 
   assumes "l \<noteq> []" 
   shows "perm2 l n \<noteq> []" 
-  using assms perm2_def perm2.simps(2) rotate_is_Nil_conv by (metis neq_Nil_conv)
+  using assms perm2.simps(2) rotate_is_Nil_conv by (metis neq_Nil_conv)
 
 lemma lm124: 
   "set (takeAll P list) = ((nth list) ` set (filterpositions2 P list))" 
@@ -1012,7 +1012,7 @@ lemma lm127:
 lemma lm128: 
   assumes "\<forall>n. (set (perm2 l n) = set l)" 
   shows "set (perm2 (x#l) n) = {x} \<union> set l" 
-  using assms perm2_def lm126 by force
+  using assms lm126 by force
 
 (* Combining the previous two lemmas we get inductively that the set of elements in a permuted list are the same as the elements in the original list. This is weaker than saying (perm2 l n) is a permutation of l, but suffices for our purposes. *) 
 corollary permutationInvariance: 

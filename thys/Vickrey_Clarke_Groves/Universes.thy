@@ -120,7 +120,7 @@ lemma allocationRightUniqueRangeDomain:
          Range a \<subseteq> N" 
 proof -
   obtain Y where
-  0: "a \<in> injections Y N & Y \<in> all_partitions G" using assms possible_allocations_rel_def by auto
+  0: "a \<in> injections Y N & Y \<in> all_partitions G" using assms by auto
   show ?thesis using 0 injections_def all_partitions_def mem_Collect_eq by fastforce
 qed
 
@@ -132,7 +132,7 @@ proof -
   have "a \<in> injections (Domain a) N" unfolding injections_def 
     using assms(1) assms(2)  assms(4) by blast
   moreover have "Domain a \<in> all_partitions G" using assms(3) all_partitions_def by fast
-  ultimately show ?thesis using assms(1) possible_allocations_rel_def by auto
+  ultimately show ?thesis using assms(1) by auto
 qed
 
 (* lemma allocationRightUniqueRangeDomain and lm010 combined *)
@@ -147,7 +147,7 @@ lemma lm011:
 
 lemma lm012: 
   "possible_allocations_rel G N \<subseteq> {a. (Range a) \<subseteq> N & (Domain a) \<in> all_partitions G}"
-  using assms possible_allocations_rel_def injections_def by fastforce
+  using assms injections_def by fastforce
 
 lemma lm013: 
   "injections X Y = injections X Y" 
@@ -162,7 +162,7 @@ lemma lm015:
   (is "?A=?B")
 proof -
   have "?B=\<Union> { injections Y B | Y . Y \<in> all_partitions A }"
-    using possible_allocations_rel_def by auto 
+    by auto 
   moreover have "... = ?A" using lm014 by metis
   ultimately show ?thesis by presburger
 qed
@@ -170,12 +170,12 @@ qed
 lemma lm016: 
   "possible_allocations_rel G N \<subseteq> 
    injectionsUniverse \<inter> {a. Range a \<subseteq> N & Domain a \<in> all_partitions G}"
-  using assms lm012 lm011 possible_allocations_rel_def injections_def by fastforce
+  using assms lm012 lm011 injections_def by fastforce
 
 lemma lm017: 
   "possible_allocations_rel G N \<supseteq> 
    injectionsUniverse \<inter> {a. Domain a \<in> all_partitions G & Range a \<subseteq> N}"
-  using possible_allocations_rel_def injections_def by auto
+  using injections_def by auto
 
 (* combination of the previous two lemmas *)
 lemma lm018: 
@@ -1162,7 +1162,7 @@ fun injectionsAlg
 corollary lm096: 
   "set (injectionsAlg (x # xs) Y) = 
    (\<Union> f \<in> set (injectionsAlg xs Y). {f \<union> {(x,y)} | y . y \<in> (set Y) - (Range f)})" 
-  using lm093 injectionsAlg_def by auto
+  using lm093 by auto
 
 corollary lm097: 
   assumes "set (injectionsAlg xs Y) = injections (set xs) (set Y)" 
@@ -1182,7 +1182,7 @@ lemma lm099:
 
 lemma injectionsFromEmptyIsEmpty: 
   "injectionsAlg [] Y  =  [{}]" 
-  using injectionsAlg_def by simp
+  by simp
 
 (* Relation between classical and algorithm definition of injections for induction step *)
 lemma lm100: 
@@ -1233,7 +1233,7 @@ qed
 lemma lm102: 
   assumes "l \<in> set (all_partitions_list G)" "distinct G" 
   shows   "distinct l" 
-  using assms all_partitions_list_def by (metis all_partitions_equivalence')
+  using assms by (metis all_partitions_equivalence')
 
 (* apply bridging theorem injections_equiv to the partitions of all goods *)
 lemma bridgingInjection: 
@@ -1279,7 +1279,7 @@ proof -
   let ?RR = "\<Union> (set [set (injections_alg l N) . l \<leftarrow> all_partitions_list G])"
   have "?LL = ?RR" using assms by (rule lm104)
   then have "converse ` ?LL = converse ` ?RR" by simp
-  thus ?thesis using possible_allocations_rel_def by force
+  thus ?thesis by force
 qed
 
 end

@@ -773,7 +773,7 @@ proof (induct \<phi> arbitrary: n)
     hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
       by (intro encD) auto
     from FQ(1) *(2,4) obtain p where p: "I ! m = Inl p"
-      by (auto simp: all_set_conv_all_nth enc_def split: sum.splits)
+      by (auto simp: all_set_conv_all_nth split: sum.splits)
     with FQ(1) * have p_less: "p < length x"
       by (auto simp del: stream_enc.simps intro: trans_less_add1[OF less_length_cut_same_Inl])
     hence enc_atom: "x ! p = enc_atom I p ((w @- sconst any) !! p)" (is "_ = enc_atom _ _ ?p")
@@ -845,7 +845,7 @@ next
       hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
         by (intro encD) auto
       from FLess(1) *(2,4) obtain p q where pq: "I ! m = Inl p" "I ! m' = Inl q" "p < q"
-        by (auto simp: all_set_conv_all_nth enc_def split: sum.splits)
+        by (auto simp: all_set_conv_all_nth split: sum.splits)
       with FLess(1) *(1,2,3) have pq_less: "p < length x" "q < length x"
         by (auto simp del: stream_enc.simps intro!: trans_less_add1[OF less_length_cut_same_Inl])
       hence enc_atom: "x ! p = enc_atom I p ((w @- sconst any) !! p)" (is "_ = enc_atom _ _ ?p")
@@ -931,7 +931,7 @@ next
     hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
       by (intro encD) auto
     from FIn(1) *(2,4) obtain p P where p: "I ! m = Inl p" "I ! M = Inr P" "p \<in> P"
-      by (auto simp: all_set_conv_all_nth enc_def split: sum.splits)
+      by (auto simp: all_set_conv_all_nth split: sum.splits)
     with FIn(1) *(1,2,3) have p_less: "p < length x" "\<forall>p \<in> P. p < length x"
       by (auto simp del: stream_enc.simps intro: trans_less_add1[OF less_length_cut_same_Inl]
         trans_less_add1[OF bspec[OF less_length_cut_same_Inr]])

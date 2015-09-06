@@ -417,7 +417,7 @@ proof (intro impI allI)
   fix a b 
   show "a \<le> y \<Longrightarrow> a + b \<le> y"
     apply (induct a b rule: p_less.induct)
-    apply (auto simp add: p_less_eq_def plus_def)
+    apply (auto simp add: plus_def)
     apply (metis linorder_linear order_trans 
       p_linear p_min.simps(4) p_min_mon plus_def prio_selects_one)
     apply (metis order_trans p_linear p_min_mon p_min_re_neut plus_def)

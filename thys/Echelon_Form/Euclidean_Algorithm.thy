@@ -1842,7 +1842,7 @@ lemma bezout: "\<exists>s t. s * x + t * y = gcd_eucl x y"
   using euclid_ext'_correct by blast
 
 lemma euclid_ext'_0 [simp]: "euclid_ext' x 0 = (ring_inv (normalisation_factor x), 0)" 
-  by (simp add: bezw_def euclid_ext'_def euclid_ext_0)
+  by (simp add: euclid_ext'_def euclid_ext_0)
 
 lemma euclid_ext'_non_0: "y \<noteq> 0 \<Longrightarrow> euclid_ext' x y = (snd (euclid_ext' y (x mod y)),
   fst (euclid_ext' y (x mod y)) - snd (euclid_ext' y (x mod y)) * (x div y))"

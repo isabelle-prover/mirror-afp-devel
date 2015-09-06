@@ -450,7 +450,7 @@ lemma vcgaIsMaximalAux1:
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" 
   shows "EX a. ((a \<in> (maximalStrictAllocations N (set \<Omega>) b))  &  (vcga' N \<Omega> b r = a -- seller)  &
                 (a \<in> argmax (setsum b) (allAllocations ({seller}\<union>N) (set \<Omega>))))" 
-  using assms winningAllocationIsMaximalWithoutSeller argmax_def by fast
+  using assms winningAllocationIsMaximalWithoutSeller by fast
 
 lemma vcgaIsMaximalAux2: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" 
@@ -590,10 +590,10 @@ theorem OnlyGoodsAllocated:
 proof - 
   let ?a = "vcga' N \<Omega> b r" 
   have "?a \<in> allocationsUniverse" using assms(1,2,3) vcgaIsAllocationAllocatingGoodsOnly by blast
-  then have "runiq ?a" using assms(1,2,3) by blast
-  moreover have "n \<in> Domain ?a" using assms eval_rel_def vcgaEquivalence by fast
-  ultimately moreover have "?a,,n \<in> Range ?a" using eval_runiq_in_Range by fast 
-  ultimately have "?a,,,n \<in> Range ?a" using imageEquivalence by fastforce
+  then have 1: "runiq ?a" using assms(1,2,3) by blast
+  have 2: "n \<in> Domain ?a" using assms vcgaEquivalence by fast
+  with 1 have "?a,,n \<in> Range ?a" using eval_runiq_in_Range by fast 
+  with 1 2 have "?a,,,n \<in> Range ?a" using imageEquivalence by fastforce
   then have "g \<in> \<Union> Range ?a" using assms vcgaEquivalence by blast 
   moreover have "\<Union> Range ?a \<subseteq> set \<Omega>" using assms(1,2,3) vcgaIsAllocationAllocatingGoodsOnly by fast
   ultimately show ?thesis by blast
