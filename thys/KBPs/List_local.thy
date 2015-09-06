@@ -142,26 +142,19 @@ proof -
     moreover
     from XZ P s have "?P1 (?c (A, B))"
       unfolding partition_aux_body_def
-      apply clarsimp
-      apply (cases A)
-       apply simp
-      apply simp
-      apply (case_tac "partition_split r aa list")
-      apply (simp add: partition_split')
-      apply auto
-      done
+      by (auto simp add: partition_split' split: list.split prod.split)
 
     moreover
     from equiv XZ P s have "?P2 (?c s)"
-      unfolding partition_aux_body_def
-      apply clarsimp
       apply (cases A)
-       apply simp
-      apply simp
-      apply (case_tac "partition_split r aa list")
-      apply (simp add: partition_split')
-      unfolding equiv_def
-      apply (auto dest: symD transD elim: quotientE)
+      unfolding partition_aux_body_def
+      apply simp_all
+      subgoal for a as
+        apply (cases "partition_split r a as")
+        apply (simp add: partition_split')
+        unfolding equiv_def
+        apply (auto dest: symD transD elim: quotientE)
+        done
       done
 
     moreover
@@ -170,13 +163,14 @@ proof -
       from b s obtain x where x: "x \<in> set A" by (cases A) (auto iff: null_def)
       with XZ equiv P b s x
       show ?thesis
+      
         unfolding partition_aux_body_def
         apply clarsimp
         apply (erule equivE)
         apply (cases A)
          apply simp
         apply simp
-        apply (case_tac "partition_split r aa list")
+        apply (case_tac "partition_split r a list")
         apply clarsimp
         apply (simp add: partition_split')
 
@@ -188,7 +182,7 @@ proof -
         apply rule
          apply clarsimp
          apply rule
-          apply (rule_tac x=aa in quotientI2)
+          apply (rule_tac x=a in quotientI2)
            apply (blast dest: refl_onD)
           using XZ
           apply (auto dest: refl_onD)[1]
@@ -203,19 +197,19 @@ proof -
          apply rule
           apply rule
           apply clarsimp
-          apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=aa and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
+          apply (cut_tac X="insert a (set list)" and Y="set xs" and x=xa and y=a and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
           apply simp_all
           using equiv
           apply blast
          apply clarsimp
-         apply (cut_tac X="insert aa (set list)" and Y="set xs" and x=xa and y=xb and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
+         apply (cut_tac X="insert a (set list)" and Y="set xs" and x=xa and y=xb and r="rel_ext r \<inter> set xs \<times> set xs" in equiv_subseteq_in_sym)
          apply simp_all
          using equiv
          apply blast
 
         apply (rule subsetI)
         apply (erule quotientE)
-        apply (case_tac "xaa = aa")
+        apply (case_tac "xaa = a")
          apply auto[1]
         apply clarsimp
 
@@ -374,7 +368,7 @@ lemma map_prod_eq:
   assumes f: "map fst xs = map fst ys"
       and s: "map snd xs = map snd ys"
   shows "xs = ys"
-  using assms by (induct rule: list_induct2[OF map_eq_imp_length_eq[OF f]]) (simp_all add: prod_eqI)
+  using assms by (fact pair_list_eqI)
 
 lemma list_choose_hd:
   assumes "\<forall>x \<in> set xs. P x"
