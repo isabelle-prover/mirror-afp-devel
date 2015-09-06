@@ -84,7 +84,7 @@ parse_translation {*
       in tr 0 end;
 
     fun quote_tr ctxt [t] =
-          Syntax.const @{const_name case_prod} $
+          Syntax.const @{const_name uncurry} $
             Abs ("A", dummyT, Abs ("A'", dummyT, antiquote_tr ctxt (Term.incr_boundvars 2 t)))
       | quote_tr _ ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_circus_schema"}, quote_tr)] end

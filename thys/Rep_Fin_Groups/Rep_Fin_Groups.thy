@@ -156,13 +156,13 @@ qed simp
 lemma listsum_const_mult_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "r * (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. r * (f x y))"
-  using listsum_const_mult[of r "split f"] case_prod_distrib[of "\<lambda>x. r*x" f]
+  using listsum_const_mult[of r "split f"] uncurry_distrib[of "\<lambda>x. r*x" f]
   by    simp
 
 lemma listsum_mult_const_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "(\<Sum>(x,y)\<leftarrow>xys. f x y) * r = (\<Sum>(x,y)\<leftarrow>xys. (f x y) * r)"
-  using listsum_mult_const[of "split f" r] case_prod_distrib[of "\<lambda>x. x*r" f]
+  using listsum_mult_const[of "split f" r] uncurry_distrib[of "\<lambda>x. x*r" f]
   by    simp
 
 lemma listsum_update :
@@ -1338,7 +1338,7 @@ lemma aezfun_setspan_proj_listsum_prod :
   "aezfun_setspan_proj A (\<Sum>(x,y)\<leftarrow>xys. f x y)
         = (\<Sum>(x,y)\<leftarrow>xys. aezfun_setspan_proj A (f x y))"
   using aezfun_setspan_proj_listsum[of A "\<lambda>xy. split f xy"]
-        case_prod_distrib[of "aezfun_setspan_proj A" f]
+        uncurry_distrib[of "aezfun_setspan_proj A" f]
   by    simp
 
 

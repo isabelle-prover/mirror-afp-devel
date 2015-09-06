@@ -225,7 +225,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val imp = HOLogic.mk_imp (c, P $ b)
         val lam = lambda b (lambda c imp)
         val lam_ty = Term.fastype_of lam
-        val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> bool_ty) $ lam
+        val caset = Const (@{const_name uncurry}, lam_ty --> pair_ty --> bool_ty) $ lam
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
         fun tac ctxt = resolve_tac ctxt [ex_thm] 1 THEN blast_tac ctxt 1
         val (info, lthy) =
@@ -282,7 +282,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
       val binding = Binding.name restr_c_restr_name
       val lam = lambda b (lambda c (mk_if c b wit))
       val lam_ty = Term.fastype_of lam
-      val caset = Const (@{const_name case_prod}, lam_ty --> pair_ty --> base_ty) $ lam
+      val caset = Const (@{const_name uncurry}, lam_ty --> pair_ty --> base_ty) $ lam
       fun tac ctxt = Subgoal.FOCUS (fn focus as {context = ctxt', params, prems, ...} =>
              mk_case_tac ctxt' [[SOME (params |> hd |> snd |> Thm.term_of)]]
               @{thm prod.exhaust}

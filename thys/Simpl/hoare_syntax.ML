@@ -1236,7 +1236,7 @@ fun split_Let' ((l as Const (@{const_syntax Let'}, _)) $ x $ t) =
         then (I, t') (* Get rid of last abstraction *)
         else (fn t => Abs (x, T, recomb t), t')
      end
-  | split_Let' ((s as Const (@{const_syntax case_prod},_)) $ t) =
+  | split_Let' ((s as Const (@{const_syntax uncurry},_)) $ t) =
      let val (recomb, t') = split_Let' t
      in (fn t => s $ recomb t, t') end
   | split_Let' t = (I, t)

@@ -180,7 +180,7 @@ definition inv_msog :: "('a letter \<times> 'a greek) multiset \<Rightarrow> ('a
 
 lemma inv_msog_invol[simp]:
   "inv_msog (inv_msog M) = M"
-by (simp add: inv_msog_def multiset.map_comp comp_def case_prod_distrib)
+by (simp add: inv_msog_def multiset.map_comp comp_def uncurry_distrib)
 
 lemma ms_of_greek_inv_greek:
   "ms_of_greek (inv_greek M) = inv_msog (ms_of_greek M)"
