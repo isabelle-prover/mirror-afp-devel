@@ -716,7 +716,7 @@ interpretation lifting_syntax .
 
 lemma product_parametric [transfer_rule]:
   "((A ===> B ===> C ===> B) ===> (A ===> rel_option B) ===> C ===> A ===> rel_option B) product product"
-  by (auto simp add: is_none_def rel_fun_def rel_option_iff split: option.split)
+  by (auto simp add: Option.is_none_def rel_fun_def rel_option_iff split: option.split)
 
 lemma run_parametric [transfer_rule]:
   "((A ===> B ===> A) ===> A ===> ((op =) ===> B) ===> (op =) ===> A) run run"
