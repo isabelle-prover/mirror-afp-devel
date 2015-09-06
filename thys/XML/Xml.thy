@@ -282,6 +282,11 @@ proof
   qed simp
 qed
 
+context
+begin
+
+declare [[function_defs]]
+
 function parse_nodes :: "xml list parser"
 where
   "parse_nodes ts = 
@@ -310,6 +315,8 @@ where
         }) ts')
     }) ts)"
   by pat_completeness auto
+
+end
 
 lemma parse_nodes_help:
   "parse_nodes_dom s \<and> (\<forall> x r. parse_nodes s = Inr (x, r) \<longrightarrow> length r \<le> length s)" (is "?prop s")

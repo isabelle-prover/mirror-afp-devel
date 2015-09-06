@@ -1012,9 +1012,16 @@ where
 definition ldropn :: "nat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where "ldropn n xs = (ltl ^^ n) xs"
 
+context
+begin
+
+declare [[function_defs]]
+
 partial_function (llist) ldrop :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
   "ldrop n xs = (case n of 0 \<Rightarrow> xs | eSuc n' \<Rightarrow> case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> ldrop n' xs')"
+
+end
 
 primcorec ltakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
