@@ -1012,10 +1012,8 @@ where
 definition ldropn :: "nat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where "ldropn n xs = (ltl ^^ n) xs"
 
-context
+context notes [[function_defs]]
 begin
-
-declare [[function_defs]]
 
 partial_function (llist) ldrop :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
@@ -1029,7 +1027,9 @@ where
 | "lhd (ltakeWhile P xs) = lhd xs"
 | "ltl (ltakeWhile P xs) = ltakeWhile P (ltl xs)"
 
-context fixes P :: "'a \<Rightarrow> bool" begin
+context fixes P :: "'a \<Rightarrow> bool"
+  notes [[function_defs]]
+begin
 
 partial_function (llist) ldropWhile :: "'a llist \<Rightarrow> 'a llist"
 where "ldropWhile xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> if P x then ldropWhile xs' else xs)"
@@ -1085,8 +1085,13 @@ where
 | llexord_LCons_less: "r x y \<Longrightarrow> llexord r (LCons x xs) (LCons y ys)"
 | llexord_LNil [simp, intro!]: "llexord r LNil ys"
 
+context notes [[function_defs]]
+begin
+
 partial_function (llist) lconcat :: "'a llist llist \<Rightarrow> 'a llist"
 where "lconcat xss = (case xss of LNil \<Rightarrow> LNil | LCons xs xss' \<Rightarrow> lappend xs (lconcat xss'))"
+
+end
 
 definition lsublist :: "'a llist \<Rightarrow> nat set \<Rightarrow> 'a llist"
 where "lsublist xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0)))"

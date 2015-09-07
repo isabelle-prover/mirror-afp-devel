@@ -282,10 +282,8 @@ proof
   qed simp
 qed
 
-context
+context notes [[function_defs]]
 begin
-
-declare [[function_defs]]
 
 function parse_nodes :: "xml list parser"
 where

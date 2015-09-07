@@ -11,7 +11,9 @@ begin
 context fixes b :: 'b begin
 interpretation tllist_pf b .
 
-context fixes P :: "'a \<Rightarrow> bool" begin
+context fixes P :: "'a \<Rightarrow> bool"
+  notes [[function_defs]]
+begin
 
 partial_function (tllist) tfilter :: "('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 where

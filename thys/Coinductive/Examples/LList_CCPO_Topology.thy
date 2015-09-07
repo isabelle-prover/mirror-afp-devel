@@ -527,8 +527,13 @@ lemma lsorted_lup: "lsorted (lup (a::'a::linorder) l)"
   by (rule tendsto_closed[OF closed_lsorted', OF isCont_lup])
      (auto intro!: sorted_up simp: lprefix_conv_lappend)
 
+context notes [[function_defs]]
+begin
+
 partial_function (llist) lup' :: "'a :: ord \<Rightarrow> 'a llist \<Rightarrow> 'a llist" where
   "lup' a xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> if a < x then LCons x (lup' x xs) else lup' a xs)"
+
+end
 
 declare lup'.mono[cont_intro]
 
