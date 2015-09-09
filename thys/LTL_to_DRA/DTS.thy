@@ -315,7 +315,7 @@ proof -
     hence "y \<in> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0"
     proof induction
       case base
-        have "\<forall>p ps. list_all p ps = (\<forall>pa. (pa\<Colon>'a \<times> 'b \<times> 'a) \<in> set ps \<longrightarrow> p pa)"
+        have "\<forall>p ps. list_all p ps = (\<forall>pa. (pa::'a \<times> 'b \<times> 'a) \<in> set ps \<longrightarrow> p pa)"
           by (meson list_all_iff)
         hence "x \<in> {(foldl \<delta> (foldl \<delta> q\<^sub>0 []) bs, b, foldl \<delta> (foldl \<delta> q\<^sub>0 []) (bs @ [b])) | bs b. set bs \<subseteq> set \<Sigma> \<and> b \<in> set \<Sigma>}"
           using base by (metis (no_types) Nil2 list_all_init reach\<^sub>t_foldl_def)
