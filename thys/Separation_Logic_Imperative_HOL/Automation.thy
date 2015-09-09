@@ -315,7 +315,8 @@ named_theorems sep_decon_rules "Seplogic: VCG deconstruct rules"
 ML {*
 infix 1 THEN_IGNORE_NEWGOALS
 
-structure Seplogic_Auto = struct
+structure Seplogic_Auto =
+struct
 
   (***********************************)
   (*             Tools               *)
@@ -490,14 +491,14 @@ structure Seplogic_Auto = struct
       (tracing ("assn_simproc failed with exception\n:" ^ Runtime.exn_message exc);
         NONE) (* Fail silently *);
   
-  val assn_simproc = Simplifier.make_simproc {
-    lhss = [@{cpat "?h\<Turnstile>?P"},@{cpat "?P \<Longrightarrow>\<^sub>A ?Q"},
-            @{cpat "Hoare_Triple.hoare_triple ?P ?c ?Q"},
-            @{cpat "(?P::assn) = ?Q"}],
-    name = "assn_simproc",
-    proc = K assn_simproc_fun,
-    identifier = []
-  };
+  val assn_simproc =
+    Simplifier.make_simproc @{context} "assn_simproc"
+     {lhss =
+      [@{term "h \<Turnstile> P"},
+       @{term "P \<Longrightarrow>\<^sub>A Q"},
+       @{term "Hoare_Triple.hoare_triple P c Q"},
+       @{term "(P::assn) = Q"}],
+      proc = K assn_simproc_fun, identifier = []};
 
 
 
