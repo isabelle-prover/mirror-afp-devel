@@ -114,10 +114,6 @@ lemma map_assoc_None [simp]:
   by (induct ps) auto
 
 no_syntax
-  "_ofsort" :: "[tid, sort] => type"  ("_\<Colon>_" [1000, 0] 1000)
-  "_constrain" :: "[logic, type] => 'a"  ("_\<Colon>_" [4, 0] 3)
-  "_idtyp" :: "[id, type] => idt"  ("_\<Colon>_" [] 0)
-  "_idtypdummy" :: "type => idt"  ("'_()\<Colon>_" [] 0)
   "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  ("(1[_])")
 
 
