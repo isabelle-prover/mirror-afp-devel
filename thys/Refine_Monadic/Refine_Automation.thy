@@ -516,13 +516,13 @@ lemma gen_code_thm_REC:
 
 setup {*
   Refine_Automation.add_extraction "nres" {
-    pattern = Thm.term_of @{cpat "REC _"},
+    pattern = Logic.varify_global @{term "REC x"},
     gen_thm = @{thm gen_code_thm_REC},
     gen_tac = Refine_Mono_Prover.mono_tac
   }
   #> 
   Refine_Automation.add_extraction "nres" {
-    pattern = Thm.term_of @{cpat "RECT _"},
+    pattern = Logic.varify_global @{term "RECT x"},
     gen_thm = @{thm gen_code_thm_RECT},
     gen_tac = Refine_Mono_Prover.mono_tac
   }
