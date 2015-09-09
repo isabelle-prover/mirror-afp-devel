@@ -11,28 +11,29 @@ begin
 text {* Contains the Monadic Refinement Framework, the generic collection 
   framework and the original Isabelle Collection Framework *}
 
-declaration {* let open Autoref_Fix_Rel in fn phi =>
-  I 
-  #> declare_prio "Gen-RBT-set" @{cpat "\<langle>?R\<rangle>dflt_rs_rel"} PR_LAST phi
-  #> declare_prio "RBT-set" @{cpat "\<langle>?R\<rangle>rs.rel"} PR_LAST phi
-  #> declare_prio "Hash-set" @{cpat "\<langle>?R\<rangle>hs.rel"} PR_LAST phi
-  #> declare_prio "List-set" @{cpat "\<langle>?R\<rangle>lsi.rel"} PR_LAST phi
-end *}
+local_setup {*
+  let open Autoref_Fix_Rel in
+    declare_prio "Gen-RBT-set" @{term "\<langle>R\<rangle>dflt_rs_rel"} PR_LAST #>
+    declare_prio "RBT-set" @{term "\<langle>R\<rangle>rs.rel"} PR_LAST #>
+    declare_prio "Hash-set" @{term "\<langle>R\<rangle>hs.rel"} PR_LAST #>
+    declare_prio "List-set" @{term "\<langle>R\<rangle>lsi.rel"} PR_LAST
+  end
+*}
 
-declaration {* let open Autoref_Fix_Rel in fn phi =>
-  I 
-  #> declare_prio "RBT-map" @{cpat "\<langle>?Rk,?Rv\<rangle>rm.rel"} PR_LAST phi
-  #> declare_prio "Hash-map" @{cpat "\<langle>?Rk,?Rv\<rangle>hm.rel"} PR_LAST phi
-  (*#> declare_prio "Gen-RBT-map" @{cpat "\<langle>?Rk,?Rv\<rangle>rbt_map_rel ?cmp"} PR_LAST phi*)
-  #> declare_prio "List-map" @{cpat "\<langle>?Rk,?Rv\<rangle>lmi.rel"} PR_LAST phi
-end *}
+local_setup {*
+  let open Autoref_Fix_Rel in
+    declare_prio "RBT-map" @{term "\<langle>Rk,Rv\<rangle>rm.rel"} PR_LAST #>
+    declare_prio "Hash-map" @{term "\<langle>Rk,Rv\<rangle>hm.rel"} PR_LAST #>
+    (* declare_prio "Gen-RBT-map" @{term "\<langle>Rk,Rv\<rangle>rbt_map_rel ?cmp"} PR_LAST #>*)
+    declare_prio "List-map" @{term "\<langle>Rk,Rv\<rangle>lmi.rel"} PR_LAST
+  end
+*}
 
 text "Fallbacks"
-declaration {*
-  let open Autoref_Fix_Rel in fn phi =>
-    I
-    #> declare_prio "Gen-List-Set" @{cpat "\<langle>?R\<rangle>list_set_rel"} PR_LAST phi
-    #>  declare_prio "Gen-List-Map" @{cpat "\<langle>?Rk,?Rv\<rangle>list_map_rel"} PR_LAST phi
+local_setup {*
+  let open Autoref_Fix_Rel in
+    declare_prio "Gen-List-Set" @{term "\<langle>R\<rangle>list_set_rel"} PR_LAST #>
+    declare_prio "Gen-List-Map" @{term "\<langle>Rk,Rv\<rangle>list_map_rel"} PR_LAST
   end
 *}
 

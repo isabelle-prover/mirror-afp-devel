@@ -20,23 +20,23 @@ lemmas tyrel_dflt_nat_map[autoref_tyrel] =
 lemmas tyrel_dflt = tyrel_dflt_nat_set tyrel_dflt_bool_set tyrel_dflt_nat_map
 
 
-declaration {* let open Autoref_Fix_Rel in fn phi =>
-  I 
-  #> declare_prio "Gen-AHM-map-hashable" 
-    @{cpat "\<langle>?Rk::(_\<times>_::hashable) set,?Rv\<rangle>ahm_rel ?bhc"} PR_LAST phi
-  #> declare_prio "Gen-RBT-map-linorder" 
-    @{cpat "\<langle>?Rk::(_\<times>_::linorder) set,?Rv\<rangle>rbt_map_rel ?lt"} PR_LAST phi
-  #> declare_prio "Gen-AHM-map" @{cpat "\<langle>?Rk,?Rv\<rangle>ahm_rel ?bhc"} PR_LAST phi
-  #> declare_prio "Gen-RBT-map" @{cpat "\<langle>?Rk,?Rv\<rangle>rbt_map_rel ?lt"} PR_LAST phi
-end *}
+local_setup {*
+  let open Autoref_Fix_Rel in
+    declare_prio "Gen-AHM-map-hashable" 
+      @{term "\<langle>Rk::(_\<times>_::hashable) set,Rv\<rangle>ahm_rel bhc"} PR_LAST #>
+    declare_prio "Gen-RBT-map-linorder" 
+      @{term "\<langle>Rk::(_\<times>_::linorder) set,Rv\<rangle>rbt_map_rel lt"} PR_LAST #>
+    declare_prio "Gen-AHM-map" @{term "\<langle>Rk,Rv\<rangle>ahm_rel bhc"} PR_LAST #>
+    declare_prio "Gen-RBT-map" @{term "\<langle>Rk,Rv\<rangle>rbt_map_rel lt"} PR_LAST
+  end
+*}
 
 
 text "Fallbacks"
-declaration {*
-  let open Autoref_Fix_Rel in fn phi =>
-    I
-    #> declare_prio "Gen-List-Set" @{cpat "\<langle>?R\<rangle>list_set_rel"} PR_LAST phi
-    #>  declare_prio "Gen-List-Map" @{cpat "\<langle>?R\<rangle>list_map_rel"} PR_LAST phi
+local_setup {*
+  let open Autoref_Fix_Rel in
+    declare_prio "Gen-List-Set" @{term "\<langle>R\<rangle>list_set_rel"} PR_LAST #>
+    declare_prio "Gen-List-Map" @{term "\<langle>R\<rangle>list_map_rel"} PR_LAST
   end
 *}
 

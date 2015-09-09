@@ -111,9 +111,8 @@ ML {*
     | PR_BEFORE of string 
     | PR_AFTER of string
 
-    val declare_prio: string -> cterm -> prio_relpos -> morphism -> 
-      Context.generic -> Context.generic
-    val delete_prio: string -> morphism -> Context.generic -> Context.generic
+    val declare_prio: string -> term -> prio_relpos -> local_theory -> local_theory
+    val delete_prio: string -> local_theory -> local_theory
 
     val print_prios: Proof.context -> unit
 
@@ -331,21 +330,26 @@ ML {*
     | PR_BEFORE of string 
     | PR_AFTER of string
 
-    fun declare_prio name cpat relpos phi = 
+    fun declare_prio name pat0 relpos lthy = 
       let
-        val item = (name,Thm.term_of (Morphism.cterm phi cpat))
+        val pat1 = Proof_Context.cert_term lthy pat0
+        val pat2 = singleton (Variable.export_terms (Variable.auto_fixes pat1 lthy) lthy) pat1
       in
-        Rel_Prio.map (fn rpl =>
-          case relpos of
-            PR_FIRST => Rel_Prio_List.add_first rpl item
-          | PR_LAST => Rel_Prio_List.add_last rpl item
-          | PR_BEFORE n => Rel_Prio_List.add_before rpl item (n,Term.dummy)
-          | PR_AFTER n => Rel_Prio_List.add_after rpl item (n,Term.dummy)
-        )
+        lthy |> Local_Theory.declaration {syntax = false, pervasive = false}
+          (fn phi =>
+            let val item = (name, Morphism.term phi pat2) in
+              Rel_Prio.map (fn rpl =>
+                case relpos of
+                  PR_FIRST => Rel_Prio_List.add_first rpl item
+                | PR_LAST => Rel_Prio_List.add_last rpl item
+                | PR_BEFORE n => Rel_Prio_List.add_before rpl item (n,Term.dummy)
+                | PR_AFTER n => Rel_Prio_List.add_after rpl item (n,Term.dummy)
+              )
+            end)
       end
 
-    fun delete_prio name (_:morphism) = 
-      Rel_Prio.map (Rel_Prio_List.delete (name,Term.dummy))
+    fun delete_prio name = Local_Theory.declaration {syntax = false, pervasive = false}
+      (fn phi => Rel_Prio.map (Rel_Prio_List.delete (name, Term.dummy)))
 
     local
       fun relators_of R = let
