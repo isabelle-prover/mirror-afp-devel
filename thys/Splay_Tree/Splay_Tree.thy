@@ -8,36 +8,26 @@ text{* Splay trees were invented by Sleator and
 Tarjan~\cite{SleatorT-JACM85}. *}
 
 text{* This compensates for an incompleteness of the partial order prover: *}
-setup {*
-let
+simproc_setup less_False ("(x::'a::order) < y") = {* fn _ => fn ctxt => fn ct =>
+  let
+    fun prp t thm = Thm.full_prop_of thm aconv t;
 
-fun prp t thm = Thm.prop_of thm = t;
+    val eq_False_if_not = @{thm eq_False} RS iffD2
 
-val eq_False_if_not = @{thm eq_False} RS iffD2
-
-fun prove_less_False ctxt ((less as Const(_,T)) $ r $ s) =
-  let val prems = Simplifier.prems_of ctxt;
-      val le = Const (@{const_name less_eq}, T);
-      val t = HOLogic.mk_Trueprop(le $ s $ r);
-  in case find_first (prp t) prems of
-       NONE =>
-         let val t = HOLogic.mk_Trueprop(less $ s $ r)
-         in case find_first (prp t) prems of
-              NONE => NONE
-            | SOME thm => SOME(mk_meta_eq((thm RS @{thm less_not_sym}) RS eq_False_if_not))
-         end
-     | SOME thm => NONE
-  end;
-
-fun add_simprocs procs thy =
-  map_theory_simpset (fn ctxt => ctxt
-    addsimprocs (map (fn (name, raw_ts, proc) =>
-      Simplifier.simproc_global thy name raw_ts proc) procs)) thy;
-
-in
-  add_simprocs [
-       ("less False", ["(x::'a::order) < y"], prove_less_False) ]
-end
+    fun prove_less_False ((less as Const(_,T)) $ r $ s) =
+      let val prems = Simplifier.prems_of ctxt;
+          val le = Const (@{const_name less_eq}, T);
+          val t = HOLogic.mk_Trueprop(le $ s $ r);
+      in case find_first (prp t) prems of
+           NONE =>
+             let val t = HOLogic.mk_Trueprop(less $ s $ r)
+             in case find_first (prp t) prems of
+                  NONE => NONE
+                | SOME thm => SOME(mk_meta_eq((thm RS @{thm less_not_sym}) RS eq_False_if_not))
+             end
+         | SOME thm => NONE
+      end;
+  in prove_less_False (Thm.term_of ct) end
 *}
 
 subsection "Function @{text splay}"
