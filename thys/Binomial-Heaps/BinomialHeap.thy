@@ -412,7 +412,7 @@ next
     apply(simp add: union_ac)
     apply(cases "rank t = rank a") defer
     apply(simp add: union_ac)
-  proof goals
+  proof goal_cases
     case prems: 1
     from prems(3) have inv_a: "tree_invar a" by (simp)
     from prems(3) have inv_q: "queue_invar q" by (simp)
@@ -463,12 +463,12 @@ lemma  rank_ins: "(rank_invar (t # bq) \<Longrightarrow>
   apply(auto)
   apply(induct bq arbitrary: t t')
   apply(simp add: rank_link)
-proof goals
+proof goal_cases
   case prems: (1 a bq t t')
   thus ?case
     apply(cases "rank (link t' t) = rank a")
     apply(auto simp add: rank_link)
-  proof goals
+  proof goal_cases
     case 1
     note * = this and `\<And>t' t. \<lbrakk>rank_invar (t # bq); rank t' = rank t\<rbrakk>
       \<Longrightarrow> rank t \<le> rank (hd (ins (link t' t) bq))`[of a "(link t' t)"] 
@@ -490,7 +490,7 @@ lemma rank_ins2: "rank_invar bq \<Longrightarrow>
   (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])"
   apply(induct bq arbitrary: t)
   apply(auto)
-proof goals
+proof goal_cases
   case prems: (1 a bq t)
   hence r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
   from prems r and prems(1)[of "(link t a)"] show ?case by (cases bq) auto
@@ -500,7 +500,7 @@ lemma rank_invar_ins: "rank_invar bq \<Longrightarrow> rank_invar (ins t bq)"
   apply(induct bq arbitrary: t)
   apply(simp)
   apply(auto)
-proof goals
+proof goal_cases
   case prems: (1 a bq t)
   hence inv: "rank_invar (ins t bq)" by (cases bq) simp_all
   from prems have hd: "bq \<noteq> [] \<Longrightarrow> rank a < rank (hd bq)"  
@@ -589,7 +589,7 @@ lemma rank_ins_min: "rank_invar bq \<Longrightarrow>
   rank (hd (ins t bq)) \<ge> min (rank t) (rank (hd bq))"
   apply(induct bq arbitrary: t)
   apply(auto)
-proof goals
+proof goal_cases
   case prems: (1 a bq t)
   hence inv: "rank_invar bq" by (cases bq) simp_all
   from prems have r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
@@ -611,7 +611,7 @@ next
   from 3 have inv2: "rank_invar bq2" by (cases bq2) simp_all
   
   from inv1 and inv2 and 3 show ?case
-  proof (auto, goals)
+  proof (auto, goal_cases)
     let ?t = "t2"
     let ?bq = "bq2"
     let ?meld = "rank t2 < rank (hd (meld (t1 # bq1) bq2))"
@@ -758,7 +758,7 @@ lemma getMinTree_min_tree:
   apply simp   
   defer
   apply simp
-proof goals
+proof goal_cases
   case prems: (1 t v va ta)
   thus ?case
     apply (cases "ta = t")

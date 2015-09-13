@@ -621,7 +621,7 @@ next
     apply (simp add: union_ac)
     apply (cases "rank t = rank a") defer
     apply (simp add: union_ac)
-  proof goals
+  proof goal_cases
     case prems: 1
     from prems(3) have inv_a: "tree_invar a" by simp
     from prems(3) have inv_q: "queue_invar q" by simp
@@ -651,7 +651,7 @@ next
     apply (cases "rank t = rank a")
     defer
     using iv[of "t"] apply simp
-  proof goals
+  proof goal_cases
     case prems: 1
     from prems(2) have inv_a: "tree_invar a" by simp
     from prems(2) have inv_q: "queue_invar q" by simp
@@ -688,7 +688,7 @@ lemma rank_ins2:
     \<or> (rank (hd (ins t bq)) = rank (hd bq) \<and> bq \<noteq> [])"
   apply (induct bq arbitrary: t)
   apply auto
-proof goals
+proof goal_cases
   case prems: (1 a bq t)
   hence r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
   with prems and prems(1)[of "(link t a)"] show ?case
@@ -709,7 +709,7 @@ proof (cases q, simp)
       apply(cases "rank t = rank t'") defer 
       apply (auto intro: gr0I)[1]
       apply (simp del: skewlink.simps)
-    proof goals
+    proof goal_cases
       case prems: 1
       with rank_invar_cons_down[of "t'" "q'"] have "rank_invar q'" by simp
       show ?case
@@ -894,7 +894,7 @@ next
   case (Cons a bq)
   then show ?case
     apply auto
-  proof goals
+  proof goal_cases
     case prems: 1
     hence inv: "rank_invar (ins t bq)" by (cases bq) simp_all
     from prems have hd: "bq \<noteq> [] \<Longrightarrow> rank a < rank (hd bq)"  by (cases bq) auto
@@ -932,7 +932,7 @@ next
   case (Cons a bq)
   then show ?case
     apply auto
-  proof goals
+  proof goal_cases
     case prems: 1
     hence inv: "rank_invar bq" by (cases bq) simp_all
     from prems have r: "rank (link t a) = rank a + 1" by (simp add: rank_link)
@@ -961,7 +961,7 @@ next
   
   from inv1 and inv2 and 3 show ?case
     apply auto
-  proof goals
+  proof goal_cases
     let ?t = "t2"
     let ?bq = "bq2"
     let ?meldUniq = "rank t2 < rank (hd (meldUniq (t1 # bq1) bq2))"
@@ -1260,7 +1260,7 @@ lemma deleteMin_queue_invar:
   "\<lbrakk>queue_invar q; queue_to_multiset q \<noteq> {#}\<rbrakk> \<Longrightarrow> 
   queue_invar (deleteMin q)"
   unfolding deleteMin_def Let_def
-proof goals
+proof goal_cases
   case prems: 1
   from prems(2) have q_ne: "q \<noteq> []" by auto
   with prems(1) mintree_exists[of q]
@@ -1354,7 +1354,7 @@ next
   case (Cons a q)
   show ?case
     apply (unfold insertList.simps)
-  proof goals
+  proof goal_cases
     case 1
     from Cons(2) insert_rank_invar[of "q" "val a" "prio a"]
     have a1: "rank_skew_invar (insert (val a) (prio a) q)" 
@@ -2105,7 +2105,7 @@ lemma findMin_correct:
   apply simp_all
   apply (force dest: bsmap_fs_depD)
   apply auto
-proof goals
+proof goal_cases
   case prems: (1 a b)
   from prems(3) have "(a, eprio a) \<in># queue_to_multiset_aux q"
     apply -
