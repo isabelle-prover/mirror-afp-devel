@@ -8,6 +8,6 @@ begin
   hide_const (open) Array
   hide_type (open) array
 
-  hide_type (open) Words.word
+  hide_type (open) Omega_Words_Fun.word
 
 end

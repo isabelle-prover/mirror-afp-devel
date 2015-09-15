@@ -10,7 +10,6 @@ session "CAVA_Base" (AFP) in "CAVA_Base" = "Collections" +
 session "CAVA_Automata" (AFP) = "CAVA_Base" +
   options [timeout = 1200]
   theories
-    Words
     Digraph
     Automata
     Lasso

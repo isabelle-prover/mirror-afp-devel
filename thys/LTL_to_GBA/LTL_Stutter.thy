@@ -17,7 +17,7 @@ begin
 
   lemma PLTL_suffix_cnv[simp]: "Samplers.suffix = (\<lambda>w i. suffix i w)"
     apply (intro ext)
-    unfolding Samplers.suffix_def Words.suffix_def ..
+    unfolding Samplers.suffix_def Omega_Words_Fun.suffix_def ..
 
   hide_const (open) PLTL.next_free
 

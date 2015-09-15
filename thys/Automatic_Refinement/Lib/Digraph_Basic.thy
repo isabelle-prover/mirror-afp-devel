@@ -3,7 +3,7 @@ theory Digraph_Basic
 imports   
   "Misc"
   "Refine_Util"
-  "Words"
+  "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 text \<open>

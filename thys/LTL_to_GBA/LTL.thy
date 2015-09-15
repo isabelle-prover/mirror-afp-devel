@@ -2,7 +2,7 @@ section {* Linear Temporal Logic *}
 (* Author: Alexander Schimpf *)
 theory LTL
 imports 
-  "../CAVA_Automata/Words" Refine_Util
+  "~~/src/HOL/Library/Omega_Words_Fun" Refine_Util
 begin
 
 subsection "LTL formulas"

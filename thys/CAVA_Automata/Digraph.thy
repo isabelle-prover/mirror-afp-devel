@@ -3,7 +3,7 @@ section {* Directed Graphs *}
 theory Digraph
   imports 
   "CAVA_Base/CAVA_Base"
-  "Words"
+  "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 subsection "Directed Graphs with Explicit Node Set and Set of Initial Nodes"
