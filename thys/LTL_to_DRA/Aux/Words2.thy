@@ -6,7 +6,7 @@
 section \<open>Auxiliary $\omega$-Word Facts\<close>
 
 theory Words2
-  imports "Main" "../../Automatic_Refinement/Lib/Words" 
+imports Main Omega_Words_Fun
 begin 
 
 subsection \<open>Prefix\<close>
