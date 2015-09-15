@@ -59,6 +59,9 @@ where "trace_toString = toString"
 code_identifier
   code_module Cardinality \<rightharpoonup> (SML) Set
 | code_module Conditionally_Complete_Lattices \<rightharpoonup> (SML) Set
+| code_module List \<rightharpoonup> (SML) Set
+| code_module Predicate \<rightharpoonup> (SML) Set
+| constant member_i_i \<rightharpoonup> (SML) "Set.member_i_i"
 code_identifier 
   code_module Bit_Representation => (SML) Bit_Int
 | code_module Bool_List_Representation => (SML) Bit_Int
