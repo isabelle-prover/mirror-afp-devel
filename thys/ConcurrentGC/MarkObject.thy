@@ -821,7 +821,7 @@ lemma (in sys) mut_store_ins_mark_object_invL[intro]:
    \<lbrace> mut_store_ins.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def)
   apply (fastforce simp: do_write_action_def o_def
-            split: mem_write_action.splits obj_at_splits)+
+            split: mem_write_action.splits obj_at_splits)+   (* slow *)
 done
 
 lemma (in sys) mut_get_roots_mark_object_invL[intro]:
@@ -836,7 +836,7 @@ lemma (in sys) mut_get_roots_mark_object_invL[intro]:
 apply (vcg_ni simp: not_blocked_def p_not_sys
              dest!: mut_m.handshake_phase_invD[where m=m])
 apply (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def
-                split: mem_write_action.splits if_splits obj_at_splits)+
+                split: mem_write_action.splits if_splits obj_at_splits)+   (* slow *)
 done
 
 lemma (in sys) mut_store_del_mark_object_invL[intro]:
@@ -851,7 +851,7 @@ lemma (in sys) mut_store_del_mark_object_invL[intro]:
    \<lbrace> mut_store_del.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def)
 apply (fastforce simp: do_write_action_def
-            split: mem_write_action.splits obj_at_splits)+
+            split: mem_write_action.splits obj_at_splits)+   (* slow *)
 done
 
 lemma (in mut_m) mut_store_del_mark_object_invL[intro]:
@@ -1036,7 +1036,7 @@ lemma (in sys) gc_mark_mark_object_invL[intro]:
 apply vcg_ni
 apply (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)+
+             split: mem_write_action.splits if_splits)+   (* slow *)
 done
 
 (*>*)

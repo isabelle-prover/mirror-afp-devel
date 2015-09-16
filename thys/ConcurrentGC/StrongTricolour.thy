@@ -2285,73 +2285,82 @@ apply (simp_all add: sys_phase_inv_aux_case heap_colours_colours
               split: handshake_phase.splits if_splits)
 
 (* alloc *)
-apply (clarsimp simp: fA_rel_def fM_rel_def no_black_refs_def
+subgoal by (clarsimp simp: fA_rel_def fM_rel_def no_black_refs_def
                dest!: handshake_phase_invD phase_rel_invD
                split: handshake_phase.splits)
 
 (* store_ins_mo_co_mark *)
-apply (fastforce simp: fA_rel_def fM_rel_def hp_step_rel_def
+subgoal by (fastforce simp: fA_rel_def fM_rel_def hp_step_rel_def
                 dest!: handshake_phase_invD phase_rel_invD)
-
-apply (drule spec[where x=m])
-apply (rule conjI)
- apply (clarsimp simp: hp_step_rel_def phase_rel_def conj_disj_distribR[symmetric]
-                dest!: handshake_phase_invD phase_rel_invD)
- apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
-apply (clarsimp simp: hp_step_rel_def phase_rel_def
-               dest!: handshake_phase_invD phase_rel_invD)
-apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
-apply clarsimp
-apply (elim disjE, simp_all add: no_grey_refs_not_rootD filter_empty_conv)[1]
-apply fastforce
+subgoal
+  apply (drule spec[where x=m])
+  apply (rule conjI)
+   apply (clarsimp simp: hp_step_rel_def phase_rel_def conj_disj_distribR[symmetric]
+                  dest!: handshake_phase_invD phase_rel_invD)
+   apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def
+                 dest!: handshake_phase_invD phase_rel_invD)
+  apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
+  apply clarsimp
+  apply (elim disjE, simp_all add: no_grey_refs_not_rootD filter_empty_conv)[1]
+  apply fastforce
+  done
 
 (* store_del_mo_co_unlock *)
-apply (fastforce simp: fA_rel_def fM_rel_def hp_step_rel_def
+subgoal by (fastforce simp: fA_rel_def fM_rel_def hp_step_rel_def
                 dest!: handshake_phase_invD phase_rel_invD)
 
-apply (drule spec[where x=m])
-apply (rule conjI)
- apply (clarsimp simp: hp_step_rel_def phase_rel_def conj_disj_distribR[symmetric] no_grey_refs_not_rootD
-                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def phase_rel_def
-               dest!: handshake_phase_invD phase_rel_invD)
-apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
-apply clarsimp
-apply (elim disjE, simp_all add: no_grey_refs_not_rootD filter_empty_conv)[1]
-apply fastforce
+subgoal
+  apply (drule spec[where x=m])
+  apply (rule conjI)
+   apply (clarsimp simp: hp_step_rel_def phase_rel_def conj_disj_distribR[symmetric] no_grey_refs_not_rootD
+                  dest!: handshake_phase_invD phase_rel_invD)
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def
+                 dest!: handshake_phase_invD phase_rel_invD)
+  apply (elim disjE, simp_all add: no_grey_refs_not_rootD)[1]
+  apply clarsimp
+  apply (elim disjE, simp_all add: no_grey_refs_not_rootD filter_empty_conv)[1]
+  apply fastforce
+  done
 
 (* hs_get_roots_done *)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
+subgoal
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
                dest!: handshake_phase_invD phase_rel_invD)
-apply auto[1]
+  apply auto[1]
+  done
 
 (* hs_get_roots_loop_mo_co_mark *)
-apply (clarsimp simp: hp_step_rel_def
-               dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
-               dest!: handshake_phase_invD phase_rel_invD)
-apply auto[1]
+subgoal by (clarsimp simp: hp_step_rel_def
+                 dest!: handshake_phase_invD phase_rel_invD)
+subgoal
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
+                 dest!: handshake_phase_invD phase_rel_invD)
+  apply auto[1]
+  done
 
 (* hs_get_work_done *)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def
+subgoal by (clarsimp simp: hp_step_rel_def
                dest!: handshake_phase_invD phase_rel_invD)
-apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
+subgoal
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
                dest!: handshake_phase_invD phase_rel_invD)
-apply auto[1]
+  apply auto[1]
+  done
 done
 
 lemma (in sys) black_heap_dequeue_mark[simp]:
@@ -2458,64 +2467,43 @@ lemma (in gc) valid_W_inv[intro]:
 apply (vcg_jackhammer simp: fM_rel_def)
 
 (* sweep loop free: what's with the case splitting? *)
-apply (subst valid_W_inv_def)
-apply (intro allI conjI impI, simp_all add: p_not_sys split: if_splits)[1]
-        apply (auto split: obj_at_splits)[1]
-       apply (auto split: obj_at_splits dest: no_grey_refsD)[1]
+subgoal for s s'
+  apply (subst valid_W_inv_def)
+  apply (intro allI conjI impI, simp_all add: p_not_sys split: if_splits)[1]
+          apply (auto split: obj_at_splits)[1]
+         apply (auto split: obj_at_splits dest: no_grey_refsD)[1]
+        apply auto[1]
+       apply auto[1]
       apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply (rename_tac s s' x xb xc)
-   apply (case_tac x, auto)[1]
-   apply (rename_tac s s' x xb xc)
-  apply (case_tac x, auto)[1]
- apply (rename_tac s s' x xb xc)
- apply (case_tac x, auto simp: no_grey_refs_def)[1]
-apply auto[1]
+     apply (rename_tac x xb xc)
+     apply (case_tac x, auto)[1]
+     apply (rename_tac x xb xc)
+    apply (case_tac x, auto)[1]
+   apply (rename_tac x xb xc)
+   apply (case_tac x, auto simp: no_grey_refs_def)[1]
+  apply auto[1]
+  done
 
 (* mark_loop_get_work_load_W *)
 apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib split: process_name.splits)[1]
+subgoal by (auto simp: all_conj_distrib split: process_name.splits)[1]
 
 (* mark_loop_blacken *)
 apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib)[1]
+subgoal by (auto simp: all_conj_distrib)[1]
 
 (* mark_loop_mo_co_W *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-            apply auto[1]
-           apply auto[1]
-          apply auto[1]
-         apply auto[1]
-        apply clarsimp
-        apply (drule valid_W_invD(7)[where q=gc], simp_all add: WL_def)[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
-
-(* mark_loop_mo_co_unlock *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib iff: p_not_sys split: if_splits)[1]
-
-(* mark_loop_mo_co_mark *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-                apply auto[1]
-               apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
               apply auto[1]
              apply auto[1]
-            apply (frule (2) valid_W_inv_mark, auto)[1]
-           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-          apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-         apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+            apply auto[1]
+           apply auto[1]
+          apply clarsimp
+          apply (drule valid_W_invD(7)[where q=gc], simp_all add: WL_def)[1]
+         apply auto[1]
         apply auto[1]
        apply auto[1]
       apply auto[1]
@@ -2523,16 +2511,49 @@ apply (intro allI conjI impI)
     apply auto[1]
    apply auto[1]
   apply auto[1]
- apply auto[1]
-apply auto[1]
+  done
+
+(* mark_loop_mo_co_unlock *)
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib iff: p_not_sys split: if_splits)[1]
+  done
+
+(* mark_loop_mo_co_mark *)
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+                  apply auto[1]
+                 apply auto[1]
+                apply auto[1]
+               apply auto[1]
+              apply (frule (2) valid_W_inv_mark, auto)[1]
+             apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+            apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+          apply auto[1]
+         apply auto[1]
+        apply auto[1]
+       apply auto[1]
+      apply auto[1]
+     apply auto[1]
+    apply auto[1]
+   apply auto[1]
+  apply auto[1]
+  done
 
 (* mark_loop_mo_co_lock *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib)[1]
+  done
 
 (* ''mark_loop_get_roots_load_W'' *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib split: process_name.splits)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib split: process_name.splits)[1]
+  done
 
 done
 
@@ -2551,196 +2572,228 @@ lemma (in mut_m) valid_W_inv[intro]:
 apply (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def)
 
 (* alloc *)
-apply (subst valid_W_inv_def)
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply auto[1]
+  done
 
 (* store ins mo co W *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-            apply auto[1]
-           apply auto[1]
-          apply auto[1]
-         apply auto[1]
-        apply clarsimp
-        apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+              subgoal by auto
+             subgoal by auto
+            subgoal by auto
+           subgoal by auto
+          apply clarsimp
+          apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store ins mo co unlock *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-      apply auto[1]
-     apply auto[1]
-    apply (rename_tac s s' y x xa)
-    apply (case_tac "x = mutator m")
-     apply (auto split: if_splits)[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal for s s' y
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+        subgoal by auto
+       subgoal by auto
+      apply (rename_tac x xa)
+      apply (case_tac "x = mutator m")
+       apply (auto split: if_splits)[1]
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store ins mo co mark *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-                apply auto[1]
-               apply auto[1]
-              apply auto[1]
-             apply auto[1]
-            apply (frule (2) valid_W_inv_mark, auto)[1]
-           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-          apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-         apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+                  subgoal by auto
+                 subgoal by auto
+                subgoal by auto
+               subgoal by auto
+              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
+             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+          subgoal by auto
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store ins mo co lock *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib)[1]
+  done
 
 (* store del mo co W *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-            apply auto[1]
-           apply auto[1]
-          apply auto[1]
-         apply auto[1]
-        apply clarsimp
-        apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+              subgoal by auto
+             subgoal by auto
+            subgoal by auto
+           subgoal by auto
+          apply clarsimp
+          apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store del mo co unlock *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-      apply auto[1]
-     apply auto[1]
-    apply (rename_tac s s' y x xa)
-    apply (case_tac "x = mutator m")
-     apply (auto split: if_splits)[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal for s s' y
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+        subgoal by auto
+       subgoal by auto
+      apply (rename_tac x xa)
+      apply (case_tac "x = mutator m")
+       apply (auto split: if_splits)[1]
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store del mo co mark *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-                apply auto[1]
-               apply auto[1]
-              apply auto[1]
-             apply auto[1]
-            apply (frule (2) valid_W_inv_mark, auto)[1]
-           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-          apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-         apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+                  subgoal by auto
+                 subgoal by auto
+                subgoal by auto
+               subgoal by auto
+              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
+             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+          subgoal by auto
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* store del mo co lock *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib)[1]
+  done
 
 (* get roots done *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+  done
 
 (* hs get roots loop mo co W *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-            apply auto[1]
-           apply auto[1]
-          apply auto[1]
-         apply auto[1]
-        apply clarsimp
-        apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+              subgoal by auto
+             subgoal by auto
+            subgoal by auto
+           subgoal by auto
+          subgoal
+            apply clarsimp
+            apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
+            done
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* hs get roots loop mo co unlock *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-      apply auto[1]
-     apply auto[1]
-    apply (rename_tac s s' y x xa)
-    apply (case_tac "x = mutator m")
-     apply (auto split: if_splits)[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal for s s' y
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+        subgoal by auto
+       subgoal by auto
+      apply (rename_tac x xa)
+      apply (case_tac "x = mutator m")
+       apply (auto split: if_splits)[1]
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* hs get roots loop mo co mark *)
-apply (subst valid_W_inv_def)
-apply (clarsimp simp: all_conj_distrib)
-apply (intro allI conjI impI)
-                apply auto[1]
-               apply auto[1]
-              apply auto[1]
-             apply auto[1]
-            apply (frule (2) valid_W_inv_mark, auto)[1]
-           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-          apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-         apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+                  subgoal by auto
+                 subgoal by auto
+                subgoal by auto
+               subgoal by auto
+              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
+             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+          subgoal by auto
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by auto
+     subgoal by auto
+    subgoal by auto
+   subgoal by auto
+  subgoal by auto
+  done
 
 (* hs get roots loop mo co lock *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib)[1]
+  done
 
 (* hs get work done *)
-apply (subst valid_W_inv_def)
-apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+subgoal
+  apply (subst valid_W_inv_def)
+  apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+  done
 
 done
 
@@ -2775,31 +2828,32 @@ apply (intro allI conjI impI)
 apply auto[1]
 
 (* mw_Mutate, mw_fA *)
-apply (intro allI conjI impI, auto)[1]
-apply (intro allI conjI impI, auto)[1]
+subgoal by (intro allI conjI impI, auto)[1]
+subgoal by (intro allI conjI impI, auto)[1]
 
 (* mw_fM *)
-apply (clarsimp simp: fM_rel_def)
-apply (rule disjE[OF iffD1[OF p_not_sys]], assumption)
- prefer 2
- apply clarsimp
-apply (rename_tac s s' p ws bool)
-apply (case_tac "sys_ghost_handshake_phase s\<down> = hp_Idle", simp_all)
-apply clarsimp
-apply (intro allI conjI impI)
-            apply auto[1]
-           apply auto[1]
-          apply auto[1]
-         apply auto[1]
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
-   apply auto[1]
-  apply auto[1]
- apply (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
-apply auto[1]
+subgoal for s s' p ws bool
+  apply (clarsimp simp: fM_rel_def)
+  apply (rule disjE[OF iffD1[OF p_not_sys]], assumption)
+   prefer 2
+   apply clarsimp
+  apply (case_tac "sys_ghost_handshake_phase s\<down> = hp_Idle", simp_all)
+  apply clarsimp
+  apply (intro allI conjI impI)
+              subgoal by auto
+             subgoal by auto
+            subgoal by auto
+           subgoal by auto
+          subgoal by auto
+         subgoal by auto
+        subgoal by auto
+       subgoal by auto
+      subgoal by (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
+     subgoal by auto
+    subgoal by auto
+   subgoal by (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
+  subgoal by auto
+  done
 
 (* mw_Phase *)
 apply (intro allI conjI impI, auto)[1]
@@ -2879,10 +2933,12 @@ apply (clarsimp simp: do_write_action_def fM_rel_inv_def
 apply (rename_tac ref field)
 
 (* mw_Mark *)
-apply (frule (1) valid_W_invD2)
-apply clarsimp
-apply (case_tac "x = ref", simp_all)
-apply (clarsimp simp: grey_def WL_def)
+subgoal for s s' p ws x xa ref field
+  apply (frule (1) valid_W_invD2)
+  apply clarsimp
+  apply (case_tac "x = ref", simp_all)
+  apply (clarsimp simp: grey_def WL_def)
+  done
 
 (* mw_Mutate *)
 apply (elim disjE, simp_all)
@@ -3012,139 +3068,149 @@ lemma (in sys) mut_mark_object_invL[intro]:
 apply vcg_nihe
 apply vcg_ni
 
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+subgoal by (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
                dest!: valid_W_invD2
                elim!: obj_at_weakenE
                split: mem_write_action.splits)
 
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+subgoal by (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
                dest!: valid_W_invD2
                elim!: obj_at_weakenE
                split: mem_write_action.splits)
 
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
+subgoal by (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
                dest!: valid_W_invD2
                elim!: obj_at_weakenE
                split: mem_write_action.splits)
 
-apply (drule phase_rel_invD)
-apply (drule mut_m.handshake_phase_invD[where m=m])
-apply (clarsimp simp: p_not_sys)
-apply (erule disjE)
- apply (clarsimp simp: hp_step_rel_def)
- apply (elim disjE, simp_all add: phase_rel_def)[1]
-apply force
-
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc fM_rel_inv_def
-               dest!: valid_W_invD2
-               elim!: obj_at_weakenE
-               split: mem_write_action.splits)
-  apply (rule conjI)
-   apply (clarsimp elim!: obj_at_weakenE)[1]
-  apply clarsimp
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (erule disjE)
-  apply (auto simp: fM_rel_def hp_step_rel_def)[1]
- apply force
-apply (erule disjE)
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule phase_rel_invD)
- apply (clarsimp simp: hp_step_rel_def)
- apply (auto simp: phase_rel_def)[1]
-apply force
-
-apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
-apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
-               split: mem_write_action.splits if_splits)
-     apply (drule (1) valid_W_invD2)
-     apply (erule obj_at_field_on_heap_weakenE)
-     apply (fastforce split: obj_at_splits)
-    apply (drule (1) valid_W_invD2)
-    apply (erule obj_at_field_on_heap_weakenE)
-    apply (fastforce split: obj_at_splits)
-   apply (drule spec[where x=m])
-   apply (frule (1) mut_phase_inv)
-   apply (rename_tac s s' ws refa fielda option)
-   apply (frule_tac y="refa" in valid_refs_invD3, simp_all)[1]
-   apply (frule_tac y="tmp_ref (s\<down> (mutator m))" in valid_refs_invD(2), simp_all)[1]
-   apply (clarsimp split: obj_at_splits option.splits)
-    apply auto[1]
-   apply (frule (1) marked_insertionsD)
-   apply (auto split: obj_at_splits)[1]
-  apply (erule disjE) (* super messy case *)
-   apply force
-  apply (rule conjI)
-   apply (erule obj_at_field_on_heap_imp_valid_ref)
-  apply (clarsimp split: option.splits)
+subgoal
   apply (drule phase_rel_invD)
-  apply (frule mut_m.handshake_phase_invD[where m=m])
-  apply (rename_tac s s' ws ma x2)
-  apply (drule_tac m=ma in mut_m.handshake_phase_invD)
-  apply (frule spec[where x=m])
-  apply (drule_tac x=ma in spec)
-  apply (clarsimp simp: hp_step_rel_def)
-  apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD)[1]
- apply (erule disjE)
   apply (drule mut_m.handshake_phase_invD[where m=m])
-  apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
- apply force
-apply (erule disjE)
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule phase_rel_invD)
- apply (clarsimp simp: hp_step_rel_def phase_rel_def)
-apply force
-
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
-               split: mem_write_action.splits if_splits)
-  apply (auto split: obj_at_splits)[1]
- apply (erule disjE)
-  apply (drule mut_m.handshake_phase_invD[where m=m])
-  apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
- apply force
-apply (erule disjE)
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule phase_rel_invD)
- apply (clarsimp simp: hp_step_rel_def phase_rel_def)
-apply force
-
-apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
-apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-apply (subst do_write_action_fM[where m=m], simp_all)[1]
- apply (elim disjE, simp_all)[1]
-apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
-               split: mem_write_action.splits if_splits)
-    apply (erule obj_at_field_on_heap_weakenE, auto)[1]
-   apply (erule obj_at_field_on_heap_weakenE, auto split: obj_at_splits)[1]
-  apply (drule spec[where x=m])
-  apply (frule (1) mut_phase_inv)
-  apply (rename_tac s s' ws refa fielda option)
-  apply (frule_tac y="refa" in valid_refs_invD3, simp_all)[1]
-  apply (frule_tac y="tmp_ref (s\<down> (mutator m))" in valid_refs_invD(2), simp_all)[1]
-  apply (clarsimp split: obj_at_splits option.splits)
-   apply auto[1]
-  apply (frule (1) marked_insertionsD)
-  apply (auto split: obj_at_splits)[1]
- apply (erule disjE) (* super messy case *)
+  apply (clarsimp simp: p_not_sys)
+  apply (erule disjE)
+   apply (clarsimp simp: hp_step_rel_def)
+   apply (elim disjE, simp_all add: phase_rel_def)[1]
   apply force
- apply (rule conjI)
-  apply (erule obj_at_field_on_heap_imp_valid_ref)
- apply (clarsimp split: option.splits)
- apply (drule phase_rel_invD)
- apply (frule mut_m.handshake_phase_invD[where m=m])
- apply (rename_tac s s' ws ma x2)
- apply (drule_tac m=ma in mut_m.handshake_phase_invD)
- apply (frule spec[where x=m])
- apply (drule_tac x=ma in spec)
- apply (clarsimp simp: hp_step_rel_def)
- apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD)[1]
-apply (erule disjE)
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule phase_rel_invD)
- apply (clarsimp simp: hp_step_rel_def phase_rel_def)
-apply force
+  done
+
+subgoal
+  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc fM_rel_inv_def
+                 dest!: valid_W_invD2
+                 elim!: obj_at_weakenE
+                 split: mem_write_action.splits)
+    apply (rule conjI)
+     apply (clarsimp elim!: obj_at_weakenE)[1]
+    apply clarsimp
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (erule disjE)
+    apply (auto simp: fM_rel_def hp_step_rel_def)[1]
+   apply force
+  apply (erule disjE)
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule phase_rel_invD)
+   apply (clarsimp simp: hp_step_rel_def)
+   apply (auto simp: phase_rel_def)[1]
+  apply force
+  done
+
+subgoal for s s' p w ws
+  apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
+  apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+  apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
+                 split: mem_write_action.splits if_splits)
+       apply (drule (1) valid_W_invD2)
+       apply (erule obj_at_field_on_heap_weakenE)
+       apply (fastforce split: obj_at_splits)
+      apply (drule (1) valid_W_invD2)
+      apply (erule obj_at_field_on_heap_weakenE)
+      apply (fastforce split: obj_at_splits)
+     apply (drule spec[where x=m])
+     apply (frule (1) mut_phase_inv)
+     apply (rename_tac refa fielda option)
+     apply (frule_tac y="refa" in valid_refs_invD3, simp_all)[1]
+     apply (frule_tac y="tmp_ref (s\<down> (mutator m))" in valid_refs_invD(2), simp_all)[1]
+     apply (clarsimp split: obj_at_splits option.splits)
+      apply auto[1]
+     apply (frule (1) marked_insertionsD)
+     apply (auto split: obj_at_splits)[1]
+    apply (erule disjE) (* super messy case *)
+     apply force
+    apply (rule conjI)
+     apply (erule obj_at_field_on_heap_imp_valid_ref)
+    apply (clarsimp split: option.splits)
+    apply (drule phase_rel_invD)
+    apply (frule mut_m.handshake_phase_invD[where m=m])
+    apply (rename_tac ma x2)
+    apply (drule_tac m=ma in mut_m.handshake_phase_invD)
+    apply (frule spec[where x=m])
+    apply (drule_tac x=ma in spec)
+    apply (clarsimp simp: hp_step_rel_def)
+    apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD)[1]
+   apply (erule disjE)
+    apply (drule mut_m.handshake_phase_invD[where m=m])
+    apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
+   apply force
+  apply (erule disjE)
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule phase_rel_invD)
+   apply (clarsimp simp: hp_step_rel_def phase_rel_def)
+  apply force
+  done
+
+subgoal for s s' p w ws y
+  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+                 split: mem_write_action.splits if_splits)
+    apply (auto split: obj_at_splits)[1]
+   apply (erule disjE)
+    apply (drule mut_m.handshake_phase_invD[where m=m])
+    apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
+   apply force
+  apply (erule disjE)
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule phase_rel_invD)
+   apply (clarsimp simp: hp_step_rel_def phase_rel_def)
+  apply force
+  done
+
+subgoal for s s' p w ws
+  apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
+  apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+  apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+  apply (subst do_write_action_fM[where m=m], simp_all)[1]
+   apply (elim disjE, simp_all)[1]
+  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+                 split: mem_write_action.splits if_splits)
+      apply (erule obj_at_field_on_heap_weakenE, auto)[1]
+     apply (erule obj_at_field_on_heap_weakenE, auto split: obj_at_splits)[1]
+    apply (drule spec[where x=m])
+    apply (frule (1) mut_phase_inv)
+    apply (rename_tac refa fielda option)
+    apply (frule_tac y="refa" in valid_refs_invD3, simp_all)[1]
+    apply (frule_tac y="tmp_ref (s\<down> (mutator m))" in valid_refs_invD(2), simp_all)[1]
+    apply (clarsimp split: obj_at_splits option.splits)
+     apply auto[1]
+    apply (frule (1) marked_insertionsD)
+    apply (auto split: obj_at_splits)[1]
+   apply (erule disjE) (* super messy case *)
+    apply force
+   apply (rule conjI)
+    apply (erule obj_at_field_on_heap_imp_valid_ref)
+   apply (clarsimp split: option.splits)
+   apply (drule phase_rel_invD)
+   apply (frule mut_m.handshake_phase_invD[where m=m])
+   apply (rename_tac ma x2)
+   apply (drule_tac m=ma in mut_m.handshake_phase_invD)
+   apply (frule spec[where x=m])
+   apply (drule_tac x=ma in spec)
+   apply (clarsimp simp: hp_step_rel_def)
+   apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD)[1]
+  apply (erule disjE)
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule phase_rel_invD)
+   apply (clarsimp simp: hp_step_rel_def phase_rel_def)
+  apply force
+  done
 done
 
 lemma (in gc) mut_mark_object_invL[intro]:
@@ -3158,41 +3224,49 @@ lemma (in gc) mut_mark_object_invL[intro]:
          \<lbrace> mut_m.mark_object_invL m \<rbrace>"
 apply vcg_nihe
 apply vcg_ni
- apply (drule (1) mut_m_handshake_invL_get_roots)
- apply clarsimp
+  subgoal
+   apply (drule (1) mut_m_handshake_invL_get_roots)
+   apply clarsimp
+   done
 
- apply (simp add: mut_m.handshake_invL_def)
+ subgoal by (simp add: mut_m.handshake_invL_def)
 
- apply (fastforce simp: fM_rel_inv_def fM_rel_def hp_step_rel_def split: obj_at_splits)
+ subgoal by (fastforce simp: fM_rel_inv_def fM_rel_def hp_step_rel_def split: obj_at_splits)
 
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule spec[where x=m])
- apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
- apply (drule (1) mut_m.reachable_blackD)
-  apply blast
- apply (clarsimp split: obj_at_splits)
+ subgoal
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule spec[where x=m])
+   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+   apply (drule (1) mut_m.reachable_blackD)
+    apply blast
+   apply (clarsimp split: obj_at_splits)
+   done
 
- apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
- apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
- apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule spec[where x=m])
- apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
- apply (drule (1) mut_m.reachable_blackD)
-  apply blast
- apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+ subgoal
+   apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
+   apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule spec[where x=m])
+   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+   apply (drule (1) mut_m.reachable_blackD)
+    apply blast
+   apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+   done
 
- apply (clarsimp split: obj_at_splits)
+ subgoal by (clarsimp split: obj_at_splits)
 
- apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
- apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
- apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
- apply (drule mut_m.handshake_phase_invD[where m=m])
- apply (drule spec[where x=m])
- apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
- apply (drule (1) mut_m.reachable_blackD)
-  apply blast
- apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+ subgoal
+   apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
+   apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+   apply (drule mut_m.handshake_phase_invD[where m=m])
+   apply (drule spec[where x=m])
+   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+   apply (drule (1) mut_m.reachable_blackD)
+    apply blast
+   apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+  done
 done
 
 lemma (in gc) mut_store_old_mark_object_invL[intro]:
@@ -3322,12 +3396,13 @@ apply (vcg_ni simp: p_not_sys fM_rel_inv_def)
  apply (clarsimp simp: do_write_action_def
                 split: mem_write_action.splits)
    (* mark *)
-   apply (frule (1) valid_W_invD2)
-   apply (rename_tac s s' p ws x ref bool)
-   apply (drule_tac x=x in spec)
-   apply clarsimp
-   apply (erule obj_at_field_on_heap_weakenE)
-   apply (clarsimp split: obj_at_splits)
+   subgoal for s s' p ws x ref bool
+     apply (frule (1) valid_W_invD2)
+     apply (drule_tac x=x in spec)
+     apply clarsimp
+     apply (erule obj_at_field_on_heap_weakenE)
+     apply (clarsimp split: obj_at_splits)
+     done
   (* ref *)
   apply (erule disjE, clarsimp+)[1]
   apply (rename_tac s s' ws x option m)
@@ -3336,21 +3411,24 @@ apply (vcg_ni simp: p_not_sys fM_rel_inv_def)
   apply (drule_tac x=x in spec, clarsimp)
   apply (auto split: option.splits)[1]
  (* fM *)
- apply (erule disjE)
-  apply (auto simp: fM_rel_def filter_empty_conv)[1]
- apply clarsimp
+ subgoal for s s' p ws x x4
+   apply (erule disjE)
+    apply (auto simp: fM_rel_def filter_empty_conv)[1]
+   apply clarsimp
+   done
 
- apply (clarsimp simp: gc.obj_fields_marked_inv_def)
- apply (frule (1) mark_loop_mo_mark_loop_field_done_hp_phaseD)
- apply (clarsimp simp: do_write_action_def
-                split: mem_write_action.splits)
+ subgoal for s s' p w ws
+   apply (clarsimp simp: gc.obj_fields_marked_inv_def)
+   apply (frule (1) mark_loop_mo_mark_loop_field_done_hp_phaseD)
+   apply (clarsimp simp: do_write_action_def
+                  split: mem_write_action.splits)
    (* mark *)
    apply (frule (1) valid_W_invD2)
    apply (erule obj_at_field_on_heap_weakenE)
    apply (clarsimp split: obj_at_splits)
   (* ref *)
   apply (erule disjE, clarsimp+)[1]
-  apply (rename_tac s s' ws option m)
+  apply (rename_tac option m)
   apply (drule_tac m=m in mut_m.handshake_phase_invD, clarsimp simp: hp_step_rel_def conj_disj_distribR[symmetric])
   apply (drule_tac x=m in spec, clarsimp)
   apply (rule conjI)
@@ -3360,21 +3438,25 @@ apply (vcg_ni simp: p_not_sys fM_rel_inv_def)
  apply (erule disjE)
   apply (auto simp: fM_rel_def filter_empty_conv)[1]
  apply clarsimp
+ done
 
  apply (clarsimp simp: do_write_action_def
                 split: mem_write_action.splits)
   (* mark *)
-  apply (rename_tac s s' p ws x y ref bool)
-  apply (drule_tac x=x in spec)
-  apply (drule mp, erule predicate2D[OF rtranclp_mono[OF predicate2I], rotated])
-   apply clarsimp
-  apply assumption
+  subgoal for s s' p ws x y ref bool
+    apply (drule_tac x=x in spec)
+    apply (drule mp, erule predicate2D[OF rtranclp_mono[OF predicate2I], rotated])
+     apply clarsimp
+    apply assumption
+    done
  (* ref *)
- apply (clarsimp simp: atS_un)
- apply (erule disjE)
-  apply fastforce
- apply clarsimp
- apply (erule gc_marking_reaches_mw_Mutate, simp_all)[1]
+ subgoal for s s' p ws x y x21 x22 x23
+   apply (clarsimp simp: atS_un)
+   apply (erule disjE)
+    apply fastforce
+   apply clarsimp
+   apply (erule gc_marking_reaches_mw_Mutate, simp_all)[1]
+   done
 
 (* mark loop mark field done *)
 apply (clarsimp simp: do_write_action_def
@@ -3482,37 +3564,41 @@ lemma (in mut_m) valid_refs_inv[intro]:
 apply vcg_jackhammer
 
 (* store ins mo co mark - FIXME some elim/dest rule really gets in the way here *)
-apply (subst valid_refs_inv_def)
-apply clarsimp
-apply (rule conjI)
- apply clarsimp
- apply (erule (1) valid_refs_invD)
-apply (clarsimp simp: grey_reachable_def)
-apply (erule disjE)
- apply (erule (1) valid_refs_invD, simp)
-apply clarsimp
-apply (erule (1) valid_refs_invD, simp)
+subgoal
+  apply (subst valid_refs_inv_def)
+  apply clarsimp
+  apply (rule conjI)
+   apply clarsimp
+   apply (erule (1) valid_refs_invD)
+  apply (clarsimp simp: grey_reachable_def)
+  apply (erule disjE)
+   apply (erule (1) valid_refs_invD, simp)
+  apply clarsimp
+  apply (erule (1) valid_refs_invD, simp)
+  done
 
 (* store del mo co mark *)
-apply (subst valid_refs_inv_def)
-apply clarsimp
-apply (rule conjI)
- apply clarsimp
- apply (erule (1) valid_refs_invD)
-apply (clarsimp simp: grey_reachable_def)
-apply (erule disjE)
- apply (erule (1) valid_refs_invD, simp)
-apply clarsimp
-apply (erule (1) valid_refs_invD, simp)
+subgoal
+  apply (subst valid_refs_inv_def)
+  apply clarsimp
+  apply (rule conjI)
+   apply clarsimp
+   apply (erule (1) valid_refs_invD)
+  apply (clarsimp simp: grey_reachable_def)
+  apply (erule disjE)
+   apply (erule (1) valid_refs_invD, simp)
+  apply clarsimp
+  apply (erule (1) valid_refs_invD, simp)
+  done
 
 (* get roots done *)
-apply (clarsimp simp: valid_refs_inv_def grey_reachable_def)
+subgoal by (clarsimp simp: valid_refs_inv_def grey_reachable_def)
 
 (* get roots loop mo co mark *)
-apply (auto simp: valid_refs_inv_def grey_reachable_def)[1]
+subgoal by (auto simp: valid_refs_inv_def grey_reachable_def)[1]
 
 (* get work done *)
-apply (clarsimp simp: valid_refs_inv_def grey_reachable_def)
+subgoal by (clarsimp simp: valid_refs_inv_def grey_reachable_def)
 
 done
 
