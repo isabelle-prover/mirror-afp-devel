@@ -140,8 +140,8 @@ qed
 
   lemma glist_member_id_impl: 
     "(glist_member op =, op \<in>) \<in> Id \<rightarrow> br set distinct \<rightarrow> Id"
-  proof (intro fun_relI)
-    case (goal1 x x' l s') thus ?case
+  proof (intro fun_relI, goal_cases)
+    case (1 x x' l s') thus ?case
       by (induct l arbitrary: s') (auto simp: br_def)
   qed
 

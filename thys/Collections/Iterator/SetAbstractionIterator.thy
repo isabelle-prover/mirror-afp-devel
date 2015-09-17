@@ -121,26 +121,27 @@ begin
        "inj_on \<alpha> S0'" "S0 = \<alpha> ` S0'" "\<And>x. x \<in> S0' \<Longrightarrow> invar x" by (metis remove_abs2)
   
     show ?thesis
-    proof (rule set_iterator_genord.iteratei_rule_P[OF S0'_props(1), of "\<lambda>S \<sigma>. I (\<alpha> ` S) \<sigma>" \<sigma>0 c])
-      case goal1 thus ?case using S0'_props pre by simp   
+    proof (rule set_iterator_genord.iteratei_rule_P[OF S0'_props(1), of "\<lambda>S \<sigma>. I (\<alpha> ` S) \<sigma>" \<sigma>0 c], goal_cases)
+      case 1
+      thus ?case using S0'_props pre by simp   
     next
-      case goal3 thus ?case using S0'_props pre by simp   
+      case 3 thus ?case using S0'_props pre by simp   
     next
-      case (goal2 S \<sigma> x) note assms = this
+      case prems: (2 S \<sigma> x)
 
-      from assms S0'_props have inv_x: "invar x" by blast
-      from assms(4) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
-      from S0'_props assms(2,4)
+      from prems S0'_props have inv_x: "invar x" by blast
+      from prems(4) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
+      from S0'_props prems(2,4)
       have diff_alpha: "\<alpha> ` S - {\<alpha> x} = \<alpha> ` (S - {x})" "\<alpha> ` S0' - \<alpha> ` S = \<alpha> ` (S0' - S)"
        by (auto simp add: inj_on_def subset_iff Ball_def)
 
       show ?case 
         using pre(2)[of \<sigma> x "\<alpha> ` S"] S0'_props(3)  
-        by (simp add: inv_x assms subs_alpha diff_alpha)
+        by (simp add: inv_x prems subs_alpha diff_alpha)
     next
-      case (goal4 \<sigma> S) note assms = this
+      case prems: (4 \<sigma> S)
       show ?case
-        using pre(4)[of "\<alpha> ` S" \<sigma>] assms S0'_props
+        using pre(4)[of "\<alpha> ` S" \<sigma>] prems S0'_props
         by auto
     qed
   qed
@@ -160,39 +161,41 @@ begin
        "inj_on \<alpha> S0'" "S0 = \<alpha> ` S0'" "\<And>x. x \<in> S0' \<Longrightarrow> invar x" by (metis remove_abs2)
   
     show ?thesis
-    proof (rule set_iterator_genord.iteratei_rule_insert_P[OF S0'_props(1), of "\<lambda>S \<sigma>. I (\<alpha> ` S) \<sigma>" \<sigma>0 c])
-      case goal1 thus ?case using S0'_props pre by simp   
+    proof (rule set_iterator_genord.iteratei_rule_insert_P[OF S0'_props(1), of "\<lambda>S \<sigma>. I (\<alpha> ` S) \<sigma>" \<sigma>0 c], goal_cases)
+      case 1
+      thus ?case using S0'_props pre by simp   
     next
-      case goal3 thus ?case using S0'_props pre by simp   
+      case 3
+      thus ?case using S0'_props pre by simp   
     next
-      case (goal2 S \<sigma> x) note assms = this
+      case prems: (2 S \<sigma> x)
 
-      from assms S0'_props have inv_x: "invar x" by blast
-      from assms(4) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
-      from S0'_props assms(2,4)
+      from prems S0'_props have inv_x: "invar x" by blast
+      from prems(4) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
+      from S0'_props prems(2,4)
       have diff_alpha: "\<alpha> ` (S0' - S) - {\<alpha> x} = \<alpha> ` ((S0' - S) - {x})" "\<alpha> ` S0' - \<alpha> ` S = \<alpha> ` (S0' - S)"
        by (auto simp add: inj_on_def subset_iff Ball_def)
       
       show ?case 
-        using pre(2)[of \<sigma> x "\<alpha> ` S"] assms S0'_props(3)  
+        using pre(2)[of \<sigma> x "\<alpha> ` S"] prems S0'_props(3)  
         by (simp add: diff_alpha inv_x subs_alpha)
     next
-      case (goal4 \<sigma> S) note assms = this
+      case prems: (4 \<sigma> S)
 
-      from assms(1) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
+      from prems(1) have subs_alpha: "\<alpha> ` S \<subseteq> \<alpha> ` S0'" by auto
 
-      from S0'_props assms
+      from S0'_props prems
       have diff_alpha: "\<alpha> ` S0' - \<alpha> ` S = \<alpha> ` (S0' - S)"
        by (auto simp add: inj_on_def subset_iff Ball_def)
 
-      from assms(1,2) S0'_props(2,3)
+      from prems(1,2) S0'_props(2,3)
       have alpha_eq: "\<alpha> ` S \<noteq> \<alpha> ` S0'"
         apply (simp add: inj_on_def set_eq_iff image_iff Bex_def subset_iff)
         apply blast
       done
 
       show ?case
-        using pre(4)[of "\<alpha> ` S" \<sigma>] S0'_props assms
+        using pre(4)[of "\<alpha> ` S" \<sigma>] S0'_props prems
         by (auto simp add: subs_alpha diff_alpha alpha_eq)
     qed
   qed
@@ -357,19 +360,21 @@ proof -
     unfolding m'_props by (simp add: dom_def)
 
   show ?thesis
-  proof (rule map_iterator_genord_rule_P[OF m'_props(1), of I])
-    case goal1 thus ?case using I0 by (simp add: dom_m'_eq)   
+  proof (rule map_iterator_genord_rule_P[OF m'_props(1), of I], goal_cases)
+    case 1
+    thus ?case using I0 by (simp add: dom_m'_eq)   
   next
-    case goal3 thus ?case using IF by simp   
+    case 3
+    thus ?case using IF by simp   
   next
-    case (goal2 k v S \<sigma>) note assms = this
-    from IP [of \<sigma> k S v] assms
+    case prems: (2 k v S \<sigma>)
+    from IP [of \<sigma> k S v] prems
     show ?case
       by (simp add: m'_props) metis
   next
-    case (goal4 \<sigma> S) note assms = this
+    case prems: (4 \<sigma> S)
     show ?case
-      using II[of S \<sigma>] assms
+      using II[of S \<sigma>] prems
       by (simp add: m'_props) metis
   qed
 qed
@@ -401,19 +406,21 @@ proof -
     unfolding m'_props by (simp add: dom_def)
 
   show ?thesis
-  proof (rule map_iterator_genord_rule_insert_P[OF m'_props(1), of I])
-    case goal1 thus ?case using I0 by simp   
+  proof (rule map_iterator_genord_rule_insert_P[OF m'_props(1), of I], goal_cases)
+    case 1
+    thus ?case using I0 by simp   
   next
-    case goal3 thus ?case using IF by (simp add: dom_m'_eq)   
+    case 3
+    thus ?case using IF by (simp add: dom_m'_eq)   
   next
-    case (goal2 k v S \<sigma>) note assms = this
-    from IP [of \<sigma> k S v] assms
+    case prems: (2 k v S \<sigma>)
+    from IP [of \<sigma> k S v] prems
     show ?case 
       by (simp add: m'_props) metis
   next
-    case (goal4 \<sigma> S) note assms = this
+    case prems: (4 \<sigma> S)
     show ?case
-      using II[of S \<sigma>] assms
+      using II[of S \<sigma>] prems
       by (simp add: m'_props) metis
   qed
 qed

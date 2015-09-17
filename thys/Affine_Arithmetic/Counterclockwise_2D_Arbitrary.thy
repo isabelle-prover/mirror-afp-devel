@@ -284,8 +284,8 @@ subsection {* Contradictions *}
 lemma
   assumes d: "distinct4 s p q r"
   shows contra1: "\<not>(lex p q \<and> lex q r \<and> lex r s \<and> indelta s p q r)" (is ?th1)
-  and contra2: "\<not>(lex s p \<and> lex p q \<and> lex q r \<and> indelta s p q r)" (is ?th2)
-  and contra3: "\<not>(lex p r \<and> lex p s \<and> lex q r \<and> lex q s \<and> insquare p r q s)" (is ?th3)
+    and contra2: "\<not>(lex s p \<and> lex p q \<and> lex q r \<and> indelta s p q r)" (is ?th2)
+    and contra3: "\<not>(lex p r \<and> lex p s \<and> lex q r \<and> lex q s \<and> insquare p r q s)" (is ?th3)
 proof -
   {
     assume "det3 s p q = 0" "det3 s q r = 0" "det3 s r p = 0" "det3 p q r = 0"
@@ -301,8 +301,8 @@ proof -
       assume dp: "det3 p q r \<noteq> 0"
       have "?th1 \<and> ?th2"
         unfolding de_Morgan_disj[symmetric]
-      proof
-        case goal1
+      proof (rule notI, goal_cases)
+        case prems: 1
         hence **: "indelta s p q r" by auto
         hence nonnegs: "det3 p q r \<ge> 0" "0 \<le> det3 s q r" "0 \<le> det3 p s r" "0 \<le> det3 p q s"
           by (auto simp: ccw_def ccw'_def det3_def' algebra_simps)
@@ -314,19 +314,19 @@ proof -
           using det_pos by (auto simp: field_simps)
         from lex_convex3[OF _ _ _ _ _ det_div_eq convex_comb_dets[OF det_pos, of s]]
         have "lex p s" "lex s r"
-          using goal1 by (auto simp: nonnegs)
-        with goal1 d show False by (simp add: lex_sym_eq_iff)
+          using prems by (auto simp: nonnegs)
+        with prems d show False by (simp add: lex_sym_eq_iff)
       qed
     } moreover have ?th3
-    proof safe
-      case goal1
+    proof (safe, goal_cases)
+      case prems: 1
       have nonnegs: "det3 p r q \<ge> 0" "det3 r q s \<ge> 0" "det3 s p r \<ge> 0" "det3 q s p \<ge> 0"
-        using goal1
+        using prems
         by (auto simp add: ccw_def ccw'_def less_eq_real_def)
       have dets_eq: "det3 p r q + det3 q s p = det3 r q s + det3 s p r"
         by (auto simp: det3_def')
       hence **: "det3 p r q = 0 \<and> det3 q s p = 0 \<Longrightarrow> det3 r q s = 0 \<and> det3 s p r = 0"
-        using goal1
+        using prems
         by (auto simp: ccw_def ccw'_def)
       moreover
       {
@@ -375,8 +375,8 @@ proof -
       from dets_eq have 1: "det3 q s p + det3 p r q = det3 s p r + det3 r q s"
         by simp
       from d have d': "distinct4 r q p s" by auto
-      note wlog[of q s p r, OF _ 1 nonnegs(3,2,1) goal1(4,3,2,1) d']
-        wlog[of p r q s, OF _ dets_eq nonnegs(2,3,4) goal1(1-4) d]
+      note wlog[of q s p r, OF _ 1 nonnegs(3,2,1) prems(4,3,2,1) d']
+        wlog[of p r q s, OF _ dets_eq nonnegs(2,3,4) prems(1-4) d]
       ultimately show False using nonnegs d *
         by (auto simp: less_eq_real_def det3_def' algebra_simps)
     qed

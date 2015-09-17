@@ -53,11 +53,11 @@ proof (induct z rule:C.take_induct)
 qed auto
 
 instance C :: cont_binary_meet
-proof
+proof (standard, goal_cases)
   have [simp]:"\<And> x y. x \<sqinter> y = C_meet\<cdot>x\<cdot>y"
     using C_meet_is_meet
     by (blast intro: is_meetI)
-  case goal1 thus ?case
+  case 1 thus ?case
     by (simp add: ch2ch_Rep_cfunR contlub_cfun_arg contlub_cfun_fun)
 qed
 

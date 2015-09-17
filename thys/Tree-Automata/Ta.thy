@@ -857,13 +857,13 @@ where
 lemma f_accessible_alt: "f_accessible \<delta> Q0 = f_accessible_alt \<delta> Q0"
   apply (unfold f_accessible_def f_succ_alt)
   apply auto
-proof -
-  case goal1 thus ?case
+proof goal_cases
+  case 1 thus ?case
     apply (induct rule: rtrancl_induct)
     apply (auto intro: f_accessible_alt.intros)
     done
 next
-  case goal2 thus ?case
+  case 2 thus ?case
     apply (induct rule: f_accessible_alt.induct)
     apply (auto simp add: Image_def intro: rtrancl.intros)
     done
@@ -1511,18 +1511,18 @@ begin
   qed
 
   theorem completeTA_is_ta: "complete_tree_automaton completeTA A"
-  proof
-    case goal1 thus ?case by (simp add: completeTA_def)
+  proof (standard, goal_cases)
+    case 1 thus ?case by (simp add: completeTA_def)
   next
-    case goal2  thus ?case by (simp add: completeTA_def)
+    case 2 thus ?case by (simp add: completeTA_def)
   next
-    case goal3 thus ?case
+    case 3 thus ?case
       apply (auto simp add: completeTA_def \<delta>complete_def)
       apply (case_tac x)
       apply (auto intro: ranked)
       done
   next
-    case goal4 thus ?case
+    case 4 thus ?case
       apply (auto simp add: completeTA_def \<delta>complete_def)
       apply (case_tac x, case_tac xa)
       apply (auto intro: deterministic) [1]
@@ -1532,7 +1532,7 @@ begin
       apply auto [1]
       done
   next
-    case goal5 
+    case prems: (5 qs f)
     {
       fix qo qso
       assume R: "(qo \<rightarrow> f qso)\<in>\<delta>" and [simp]: "qs=map Some qso"
@@ -1546,10 +1546,10 @@ begin
         apply (simp add: Qcomplete_def ta_rstates_def)
         done
 
-      with goal5 have B: "qs\<in>lists Qcomplete"
+      with prems have B: "qs\<in>lists Qcomplete"
         by (auto simp add: completeTA_def ta_rstates_def)
 
-      from A B goal5(2) have ?case
+      from A B prems(2) have ?case
         apply (rule_tac x=None in exI)
         apply (simp add: completeTA_def \<delta>complete_def)
         done
@@ -1784,8 +1784,8 @@ qed
 theorem rtl_inter_closed: 
   "\<lbrakk>L1\<in>regular_languages A; L2\<in>regular_languages A\<rbrakk> \<Longrightarrow> 
     L1\<inter>L2 \<in> regular_languages A" 
-proof (elim rtlE)
-  case (goal1 TA1 TA2)
+proof (elim rtlE, goal_cases)
+  case (1 TA1 TA2)
   with ta_prod_correct[of TA1 TA2] ta_prod_rta[of TA1 A TA2] have 
      L: "ta_lang (ta_prod TA1 TA2) = L1\<inter>L2"  and
      A: "ranked_tree_automaton (ta_prod TA1 TA2) A"
@@ -1796,8 +1796,8 @@ qed
 
 theorem rtl_complement_closed:
   "L\<in>regular_languages A \<Longrightarrow> ranked_trees A - L \<in> regular_languages A"
-proof (elim rtlE_complete)
-  case goal1
+proof (elim rtlE_complete, goal_cases)
+  case prems: (1 TA)
   then interpret ta: complete_tree_automaton TA A by simp
   
   from ta.complementTA_correct have
@@ -1805,7 +1805,7 @@ proof (elim rtlE_complete)
     CTA: "complete_tree_automaton ta.complementTA A" by auto
   interpret cta: complete_tree_automaton ta.complementTA A using CTA .
   
-  from cta.rtlI goal1(1) show ?case by simp
+  from cta.rtlI prems(1) show ?case by simp
 qed
 
 theorem (in finite_alphabet) rtl_univ: 

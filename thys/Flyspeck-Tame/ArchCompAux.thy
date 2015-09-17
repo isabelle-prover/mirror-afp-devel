@@ -48,14 +48,14 @@ definition pre_iso_test :: "vertex fgraph \<Rightarrow> bool" where
 
 interpretation map:
   maps "Trie None []" update_trie lookup_tries invar_trie
-proof
-  case goal1 show ?case by(rule ext) simp
+proof (standard, goal_cases)
+  case 1 show ?case by(rule ext) simp
 next
-  case goal2 show ?case by(rule ext) (simp add: lookup_update)
+  case 2 show ?case by(rule ext) (simp add: lookup_update)
 next
-  case goal3 show ?case by(simp)
+  case 3 show ?case by(simp)
 next
-  case goal4 thus ?case by (simp add: invar_trie_update)
+  case 4 thus ?case by (simp add: invar_trie_update)
 qed
 
 lemma set_of_conv: "set_tries = maps.set_of lookup_tries"

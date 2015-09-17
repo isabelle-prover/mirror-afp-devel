@@ -16,8 +16,8 @@ begin
   iterator-optimizations! cf Gen_Set for how to do this! *)
   lemma foldli_add: "det_fold_map X 
     (\<lambda>_. True) (\<lambda>(k,v) m. op_map_update k v m) m (op ++ m)"
-  proof
-    case (goal1 l) thus ?case
+  proof (rule, goal_cases)
+    case (1 l) thus ?case
       apply (induct l arbitrary: m) 
       apply (auto simp: map_of_distinct_upd[symmetric])
       done

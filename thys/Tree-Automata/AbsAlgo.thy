@@ -539,17 +539,17 @@ lemma br'_rcm_aux':
   "\<lbrakk> (Q,W,rcm)\<in>br'_invar \<delta>; q\<in>W \<rbrakk> 
     \<Longrightarrow> {r \<in> \<delta>. q \<in> set (rhsq r) \<and> the (rcm r) \<le> Suc 0} 
          = {r\<in>\<delta>. q\<in>set (rhsq r) \<and> set (rhsq r) \<subseteq> (Q - (W-{q}))}"
-proof (intro subsetI equalityI)
-  case (goal1 r)
+proof (intro subsetI equalityI, goal_cases)
+  case prems: (1 r)
   hence  B: "r\<in>\<delta>" "q\<in>set (rhsq r)" "the (rcm r) \<le> Suc 0" by auto
-  from B(1,3) goal1(1)[unfolded br'_invar_def br'_invar_add_def] have 
+  from B(1,3) prems(1)[unfolded br'_invar_def br'_invar_add_def] have 
     CARD: "card (set (rhsq r) - (Q - W)) \<le> Suc 0" 
     by auto
-  from goal1(1)[unfolded br'_invar_def br_invar_def br'_\<alpha>_def] have WSQ: "W\<subseteq>Q" 
+  from prems(1)[unfolded br'_invar_def br_invar_def br'_\<alpha>_def] have WSQ: "W\<subseteq>Q" 
     by auto
   have "set (rhsq r) - (Q - W) = {q}" 
   proof -
-    from B(2) goal1(2) have R1: "q\<in>set (rhsq r) - (Q - W)" by auto
+    from B(2) prems(2) have R1: "q\<in>set (rhsq r) - (Q - W)" by auto
     moreover
     {
       fix x
@@ -561,12 +561,12 @@ proof (intro subsetI equalityI)
     }
     ultimately show ?thesis by auto
   qed
-  with goal1(2) WSQ have "set (rhsq r) \<subseteq> Q - (W - {q})" by auto
+  with prems(2) WSQ have "set (rhsq r) \<subseteq> Q - (W - {q})" by auto
   thus ?case using B(1,2) by auto 
 next
-  case (goal2 r)
+  case prems: (2 r)
   hence B: "r\<in>\<delta>" "q\<in>set (rhsq r)" "set (rhsq r) \<subseteq> Q - (W - {q})" by auto
-  with goal2(1)[unfolded br'_invar_def br'_invar_add_def 
+  with prems(1)[unfolded br'_invar_def br'_invar_add_def 
                          br'_\<alpha>_def br_invar_def] 
   have 
     IC: "W\<subseteq>Q" "the (rcm r) = card (set (rhsq r) - (Q - W))" 
@@ -947,9 +947,9 @@ lemma brw_invar_initial: "brw_initial \<delta> \<subseteq> brw_invar_add \<delta
   apply (erule brw_initial.cases)
   apply (erule brw_iq.cases)
   apply auto
-proof -
-  case (goal1 q t rcm Q)
-  from goal1(3)[rule_format, OF goal1(1)] obtain r where 
+proof goal_cases
+  case prems: (1 q t rcm Q)
+  from prems(3)[rule_format, OF prems(1)] obtain r where 
     [simp]: "r\<in>\<delta>" "rhsq r = []" "q=lhs r" "t=NODE (rhsl r) []" 
     by blast
   have RF[simplified]: "r=((lhs r) \<rightarrow> (rhsl r) (rhsq r))" by (cases r) simp
@@ -1171,15 +1171,16 @@ proof -
         by (blast dest: construct_witness_eq)
 
       from DSS C(2) have [simp]: "Q (lhs r) = None" "Qh (lhs r) = None" by auto
-      have G1: ?G1 proof (intro allI impI)
-        case goal1 
+      have G1: ?G1
+      proof (intro allI impI, goal_cases)
+        case prems: (1 q t)
         {
           assume [simp]: "q=lhs r"
-          from goal1 Q'F have [simp]: "t = (construct_witness Qh r)" by simp
+          from prems Q'F have [simp]: "t = (construct_witness Qh r)" by simp
           from RI have ?case by auto
         } moreover {
           assume "q\<noteq>lhs r"
-          with Q'F goal1 have "Qh q = Some t" by auto
+          with Q'F prems have "Qh q = Some t" by auto
           with INVHF(3) have ?case by auto
         } ultimately show ?case by blast
       qed

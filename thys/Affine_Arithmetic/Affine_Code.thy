@@ -52,8 +52,8 @@ lemma degree_slist_eq_zeroD: "degree_slist xs = 0 \<Longrightarrow> degree (Pdev
   by transfer (auto dest: degree_list_eq_zeroD simp: Pdevs_raw_def)
 
 lemma degree_slist_eq_SucD: "degree_slist xs = Suc n \<Longrightarrow> pdevs_apply (Pdevs xs) n \<noteq> 0"
-proof transfer
-  case goal1
+proof (transfer, goal_cases)
+  case (1 xs n)
   thus ?case
     by (induct xs)
       (auto simp: Pdevs_raw_def sorted_append map_of_eq_None_iff[symmetric]
@@ -62,8 +62,8 @@ qed
 
 lemma degree_slist_zero:
   "degree_slist xs = n \<Longrightarrow> n \<le> j \<Longrightarrow> pdevs_apply (Pdevs xs) j = 0"
-proof transfer
-  case goal1
+proof (transfer, goal_cases)
+  case (1 xs n j)
   thus ?case
     by (induct xs)
       (auto simp: Pdevs_raw_def sorted_append split: split_if_asm option.split)
@@ -187,19 +187,19 @@ proof -
     by (simp add: list_of_pdevs_def)
   also have "(sorted_list_of_set (pdevs_domain (Pdevs xs))) = rev (map fst (list_of_slist xs))"
     unfolding compute_pdevs_domain sorted_list_of_set_sort_remdups
-  proof transfer
-    case goal1
+  proof (transfer, goal_cases)
+    case prems: (1 xs)
     hence distinct: "distinct (map fst [x\<leftarrow>xs . snd x \<noteq> 0])"
       by (auto simp: filter_map distinct_map intro: subset_inj_on)
-    with goal1 show ?case
+    with prems show ?case
       using sort_rev_eq_sort[symmetric, OF distinct]
       by (auto simp: rev_map rev_filter distinct_map distinct_remdups_id
         intro!: sorted_sort_id sorted_filter)
   qed
   also
   have "map (\<lambda>i. (i, pdevs_apply (Pdevs xs) i)) (rev \<dots>) = list_of_slist xs"
-  proof transfer
-    case goal1
+  proof (transfer, goal_cases)
+    case (1 xs)
     thus ?case
       unfolding Pdevs_raw_def o_def rev_rev_ident map_map
       by (subst map_cong[where g="\<lambda>x. x"]) (auto simp: map_filter_map_filter)
@@ -282,27 +282,27 @@ qed simp
 
 lift_definition msum_slist::"nat \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist"
   is "\<lambda>m xs ys. map (apfst (\<lambda>n. n + m)) ys @ dropWhile (\<lambda>(i, x). i \<ge> m) xs"
-proof safe
-  case (goal1 n l1 l2)
+proof (safe, goal_cases)
+  case (1 n l1 l2)
   thus ?case
     by (auto dest: set_dropWhileD
       simp: dropWhile_rsorted_eq_filter sorted_append rev_map rev_filter sorted_filter distinct_map
       intro!: comp_inj_on
         subset_inj_on[where A="{x \<in> set l1. case x of (i, x) \<Rightarrow> i < n}" and B="set l1"])
 next
-  case (goal2 n l1 l2)
+  case prems: (2 n l1 l2)
   hence "sorted (map ((\<lambda>na. na + n) \<circ> fst) (rev l2))"
     unfolding rev_map
     by (intro sorted_nth_monoI) (auto dest!: sorted_nth_mono)
-  with goal2 show ?case
+  with prems show ?case
     by (auto simp: sorted_append dropWhile_rsorted_eq_filter rev_map rev_filter sorted_filter)
 qed
 
 lemma slist_apply_msum_slist:
   "slist_apply (msum_slist m xs ys) i =
     (if i < m then slist_apply xs i else slist_apply ys (i - m))"
-proof transfer
-  case goal1
+proof (transfer, goal_cases)
+  case prems: (1 m xs ys i)
   thus ?case
   proof (cases "i \<in> dom (map_of (map (\<lambda>(x, y). (x + m, y)) ys))")
     case False
@@ -311,7 +311,7 @@ proof transfer
       "\<And>a. m \<le> i \<Longrightarrow> i \<notin> fst ` (\<lambda>(x, y). (x + m, y)) ` set ys \<Longrightarrow> (i - m, a) \<notin> set ys"
        by force+
     thus ?thesis
-      using goal1 False
+      using prems False
       by (auto simp add: dropWhile_rsorted_eq_filter map_of_eq_None_iff distinct_map_fst_snd_eqD
         split: option.split dest!: map_of_SomeD)
   qed (force simp: map_of_eq_None_iff distinct_map_fst_snd_eqD
@@ -458,8 +458,8 @@ lemma set_update_list_eq: "distinct (map fst xs) \<Longrightarrow> rsorted (map 
   by (auto intro!: in_set_update_listI dest: in_set_update_listD simp: insert_update_list)
 
 lift_definition update_slist::"nat \<Rightarrow> 'a \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist" is update_list
-proof -
-  case (goal1 n a l)
+proof goal_cases
+  case (1 n a l)
   thus ?case
     by (induct l) (force simp: sorted_append distinct_map not_less dest!: in_set_update_listD)+
 qed

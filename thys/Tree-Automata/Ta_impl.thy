@@ -772,8 +772,8 @@ proof -
       apply blast
     -- "Final"
     apply force
-  proof -
-    case (goal1 r1 it1 resxh r2 it2 resh)
+  proof goal_cases
+    case prems: (1 r1 it1 resxh r2 it2 resh)
     -- "Resolve lookup-operations"
     hence G': 
       "it1 \<subseteq> {r \<in> ls_\<alpha> (hta_\<delta> H1). lhs r = q1}" 
@@ -781,16 +781,16 @@ proof -
       by (simp_all add: h1.hta_lookup_s_correct h2.hta_lookup_sf_correct)
 
     -- "Basic reasoning setup"
-    from goal1(1,4) G' have 
+    from prems(1,4) G' have 
       [simp]: "ls_\<alpha> (hta_\<delta> H2) - (it2 - {r2}) = (ls_\<alpha> (hta_\<delta> H2) - it2) \<union> {r2}"
       by auto
     obtain Qh Wh \<delta>dh Q' W' \<delta>d' where [simp]: "resh=(Qh,Wh,\<delta>dh)" 
       by (cases resh) fastforce
-    from goal1(6) have INVAH[simp]: "hs_invar Qh" "ls_invar \<delta>dh" 
+    from prems(6) have INVAH[simp]: "hs_invar Qh" "ls_invar \<delta>dh" 
       by (auto simp add: inv_def)
 
     -- "The involved rules have the same label, and their lhs is determined"
-    from goal1(1,4) G' obtain l qs1 qs2 where 
+    from prems(1,4) G' obtain l qs1 qs2 where 
       RULE_FMT: "r1 = (q1 \<rightarrow> l qs1)" "r2=(q2 \<rightarrow> l qs2)"
       apply (cases r1, cases r2)
       apply force
@@ -803,7 +803,7 @@ proof -
       hence [simp]: "\<delta>_prod_sng2 {r1} r2 = {}"
         by (auto simp add: \<delta>_prod_sng2_def split: ta_rule.split)
 
-      have ?case using goal1 
+      have ?case using prems 
         by (simp add: LEN \<delta>_prod_insert)
     } moreover {
       -- "If the rhs have the same length, the rule is inserted"
@@ -811,11 +811,11 @@ proof -
       hence [simp]: "length qs1 = length qs2" by (simp add: RULE_FMT)
 
       hence [simp]: "\<delta>_prod_sng2 {r1} r2 = {(q1,q2) \<rightarrow> l (zip qs1 qs2)}"
-        using goal1(1,4) G'
+        using prems(1,4) G'
         by (auto simp add: \<delta>_prod_sng2_def RULE_FMT)
 
       -- "Obtain invariant of previous state"
-      from goal1(6)[unfolded inv_def, simplified] obtain Wn where INVH:
+      from prems(6)[unfolded inv_def, simplified] obtain Wn where INVH:
         "distinct Wn"
         "set Wn = f_succ (\<delta>_prod (ls_\<alpha> (hta_\<delta> H1) - it1) (ls_\<alpha> (hta_\<delta> H2)) 
                           \<union> \<delta>_prod {r1} (ls_\<alpha> (hta_\<delta> H2) - it2)) 
@@ -844,17 +844,17 @@ proof -
         proof
           assume "r_prod r1 r2 \<in> ls_\<alpha> \<delta>d"
           with LSDD have "lhs (r_prod r1 r2) \<notin> set W" by auto
-          moreover from goal1(1,4) G' have "lhs (r_prod r1 r2) = (q1,q2)" 
+          moreover from prems(1,4) G' have "lhs (r_prod r1 r2) = (q1,q2)" 
             by (cases r1, cases r2) auto
           ultimately show False by simp
         qed
-        moreover from goal1(6) have "ls_\<alpha> \<delta>dh = 
+        moreover from prems(6) have "ls_\<alpha> \<delta>dh = 
           ls_\<alpha> \<delta>d \<union> 
           {r. ( r \<in> \<delta>_prod (ls_\<alpha> (hta_\<delta> H1) - it1) (ls_\<alpha> (hta_\<delta> H2)) 
                 \<or> r \<in> \<delta>_prod {r1} (ls_\<alpha> (hta_\<delta> H2) - it2)
               ) \<and> lhs r = (q1, q2)}" (is "_= _ \<union> ?s")
           by (simp add: inv_def)
-        moreover have "r_prod r1 r2 \<notin> ?s" using goal1(1,4) G'(2) LEN
+        moreover have "r_prod r1 r2 \<notin> ?s" using prems(1,4) G'(2) LEN
           apply (cases r1, cases r2)
           apply (auto simp add: \<delta>_prod_def)
           done
@@ -1083,8 +1083,8 @@ definition "hta_states H ==
 lemma (in hashedTa) hta_\<delta>_states_correct:
   "hs_\<alpha> (hta_\<delta>_states H) = \<delta>_states (ta_rules (hta_\<alpha> H))"
   "hs_invar (hta_\<delta>_states H)"
-proof (simp_all add: hta_\<alpha>_def hta_\<delta>_states_def)
-  case goal1
+proof (simp_all add: hta_\<alpha>_def hta_\<delta>_states_def, goal_cases)
+  case 1
   have 
     [simp]: "ls_\<alpha> (ll_set_xy.g_image_filter (\<lambda>x. Some (rule_states_l x)) \<delta>) 
              = rule_states_l ` ls_\<alpha> \<delta>"

@@ -59,8 +59,8 @@ next
     fix \<rho>' :: "var \<Rightarrow> Value" and \<sigma>' :: "var \<Rightarrow> CValue"
     assume "\<rho>' \<triangleleft>\<triangleright>\<^sup>* \<sigma>'"
     show "\<rho> ++\<^bsub>domA as\<^esub> \<^bold>\<lbrakk> as \<^bold>\<rbrakk>\<^bsub>\<rho>'\<^esub> \<triangleleft>\<triangleright>\<^sup>* \<sigma> ++\<^bsub>domA as\<^esub> evalHeap as (\<lambda>e. \<N>\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>'\<^esub>)"
-    proof(rule pointwiseI)
-      case (goal1 x)
+    proof(rule pointwiseI, goal_cases)
+      case (1 x)
       show ?case using `\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>`
         by (auto simp add: lookup_override_on_eq lookupEvalHeap elim: Let(1)[OF _  `\<rho>' \<triangleleft>\<triangleright>\<^sup>* \<sigma>'`] )
     qed

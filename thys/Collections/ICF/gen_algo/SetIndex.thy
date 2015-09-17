@@ -92,10 +92,10 @@ begin
     shows 
       "s.\<alpha> (lookup i idx) = index f s i"
       "s.invar (lookup i idx)"
-  proof -
-    case goal2 thus ?case using I by (simp add: is_index_def lookup_invar')
+  proof goal_cases
+    case 2 thus ?case using I by (simp add: is_index_def lookup_invar')
   next
-    case goal1 
+    case 1 
     have [simp, intro!]: "m.invar idx" 
       using ci_impl_minvar[OF is_index_invar[OF I]] 
       by simp
@@ -163,10 +163,10 @@ begin
         split: option.split) [1]
         
       apply (rule ext)
-    proof -
-      case (goal1 x it m i)
+    proof goal_cases
+      case prems: (1 x it m i)
       hence INV[simp, intro!]: "m.invar m" by (simp add: ci_invar_def)
-      from goal1 have 
+      from prems have 
         INVS[simp, intro]: "!!q s. m.\<alpha> m q = Some s \<Longrightarrow> s.invar s" 
         by (simp add: ci_invar_def)
       
@@ -184,13 +184,13 @@ begin
           also {
             have "None = ci_\<alpha>' m (f x)" 
               by (simp add: ci_\<alpha>'_def)
-            also from goal1(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
+            also from prems(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
             finally have E: "{xa \<in> t.\<alpha> t - it. f xa = i} = {}" 
               by (simp add: index_map_def index_def split: split_if_asm)
             moreover have 
               "{xa \<in> t.\<alpha> t - (it - {x}). f xa = i} 
                = {xa \<in> t.\<alpha> t - it. f xa = i} \<union> {x}"
-              using goal1(2,3) by auto
+              using prems(2,3) by auto
             ultimately have "Some {x} = index_map f (t.\<alpha> t - (it - {x})) i"
               by (unfold index_map_def index_def) auto
           } finally show ?thesis .
@@ -205,13 +205,13 @@ begin
           also {
               have "Some (s.\<alpha> ss) = ci_\<alpha>' m (f x)" 
                 by (simp add: ci_\<alpha>'_def)
-            also from goal1(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
+            also from prems(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
             finally have E: "{xa \<in> t.\<alpha> t - it. f xa = i} = s.\<alpha> ss" 
               by (simp add: index_map_def index_def split: split_if_asm)
             moreover have 
               "{xa \<in> t.\<alpha> t - (it - {x}). f xa = i} 
                = {xa \<in> t.\<alpha> t - it. f xa = i} \<union> {x}"
-              using goal1(2,3) by auto
+              using prems(2,3) by auto
             ultimately have 
               "Some (insert x (s.\<alpha> ss)) = index_map f (t.\<alpha> t - (it - {x})) i"
               by (unfold index_map_def index_def) auto
@@ -227,11 +227,11 @@ begin
             add: Let_def m.lookup_correct m.update_correct 
                  s.ins_correct s.empty_correct C)
           done
-        also from goal1(4) have "ci_\<alpha>' m i = index_map f (t.\<alpha> t - it) i" 
+        also from prems(4) have "ci_\<alpha>' m i = index_map f (t.\<alpha> t - it) i" 
           by simp
         also have 
           "{xa \<in> t.\<alpha> t - (it - {x}). f xa = i} = {xa \<in> t.\<alpha> t - it. f xa = i}"
-          using goal1(2,3) C by auto
+          using prems(2,3) C by auto
         hence "index_map f (t.\<alpha> t - it) i = index_map f (t.\<alpha> t - (it-{x})) i"
           by (unfold index_map_def index_def) simp
         finally show ?thesis .

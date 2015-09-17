@@ -149,15 +149,15 @@ text {*
 *}
 lemma bezout_poly:
   "gcd p q = fst (bezw_poly p q) * p + snd (bezw_poly p q) * q"
-proof (induction p q rule: gcd_poly.induct)
-  case (goal1 p)
+proof (induction p q rule: gcd_poly.induct, goal_cases)
+  case (1 p)
     show ?case by (subst bezw_poly.simps, simp add: gcd_poly.simps(1))
 next
-  case (goal2 q p)
+  case prems: (2 q p)
     let ?b = "bezw_poly q (p mod q)"
     let ?b' = "bezw_poly p q"
     
-    from goal2 have b'_b: "fst ?b' = snd ?b" 
+    from prems have b'_b: "fst ?b' = snd ?b" 
                           "snd ?b' = fst ?b - snd ?b * (p div q)"
         by (subst bezw_poly.simps, simp split: prod.split)+
     hence "fst ?b' * p + snd ?b' * q =
@@ -167,9 +167,9 @@ next
     also have "p - p div q * q = p mod q" 
         using mod_div_equality[of p q] by (simp add: algebra_simps)
     also have "fst ?b * q + snd ?b * (p mod q) = gcd q (p mod q)"
-        using goal2 by simp
+        using prems by simp
     also have "... = gcd p q"
-        using goal2 by (subst gcd_poly.simps(2)[of q p], simp_all)
+        using prems by (subst gcd_poly.simps(2)[of q p], simp_all)
     finally show ?case ..
 qed
 
@@ -746,17 +746,17 @@ lemma polys_inf_sign_thresholds:
               {x. l < x \<and> x \<le> u \<and> poly p x = 0} = {x. poly p x = 0}"
     and "\<And>p x. \<lbrakk>p \<in> ps; x \<ge> u\<rbrakk> \<Longrightarrow> sgn (poly p x) = poly_inf p"
     and "\<And>p x. \<lbrakk>p \<in> ps; x \<le> l\<rbrakk> \<Longrightarrow> sgn (poly p x) = poly_neg_inf p"
-proof-
-  case goal1
+proof goal_cases
+  case prems: 1
   have "\<exists>l u. l \<le> u \<and> (\<forall>p x. p \<in> ps \<and> x \<ge> u \<longrightarrow> sgn (poly p x) = poly_inf p) \<and>
               (\<forall>p x. p \<in> ps \<and> x \<le> l \<longrightarrow> sgn (poly p x) = poly_neg_inf p)"
       (is "\<exists>l u. ?P ps l u")
-  proof (induction rule: finite_subset_induct[OF assms(1), where A = UNIV], simp)
-    case goal1
+  proof (induction rule: finite_subset_induct[OF assms(1), where A = UNIV], simp, goal_cases)
+    case 1
       show ?case by (intro exI[of _ 42], simp)
   next
-    case (goal2 p ps)
-      from goal2(4) obtain l u where lu_props: "?P ps l u" by blast
+    case prems: (2 p ps)
+      from prems(4) obtain l u where lu_props: "?P ps l u" by blast
       from poly_lim_inf obtain u' 
           where u'_props: "\<forall>x\<ge>u'. sgn (poly p x) = poly_inf p"
           by (force simp add: eventually_at_top_linorder)
@@ -780,7 +780,7 @@ proof-
                  {x. l < x \<and> x \<le> u \<and> poly p x = 0} = {x. poly p x = 0}" 
       by (auto dest: A)
 
-  from goal1[OF lu_props(1) this lu_props(2,3)] show thesis .
+  from prems[OF lu_props(1) this lu_props(2,3)] show thesis .
 qed
 
 

@@ -65,9 +65,8 @@ lemma param_case_nat[param]:
 
 lemma param_rec_nat[param]: 
   "(rec_nat,rec_nat) \<in> R \<rightarrow> (Id \<rightarrow> R \<rightarrow> R) \<rightarrow> Id \<rightarrow> R"
-  apply (intro fun_relI)
-proof -
-  case (goal1 s s' f f' n n') thus ?case
+proof (intro fun_relI, goal_cases)
+  case (1 s s' f f' n n') thus ?case
     apply (induct n' arbitrary: n s s')
     apply (fastforce simp: fun_rel_def)+
     done
@@ -249,10 +248,10 @@ lemma param_list1[param]:
 lemma param_rec_list[param]: 
   "(rec_list,rec_list) 
   \<in> Ra \<rightarrow> (Rb \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra \<rightarrow> Ra) \<rightarrow> \<langle>Rb\<rangle>list_rel \<rightarrow> Ra"
-proof (intro fun_relI)
-  case (goal1 a a' f f' l l')
-  from goal1(3) show ?case
-    using goal1(1,2)
+proof (intro fun_relI, goal_cases)
+  case prems: (1 a a' f f' l l')
+  from prems(3) show ?case
+    using prems(1,2)
     apply (induct arbitrary: a a')
     apply simp
     apply (fastforce dest: fun_relD)
@@ -300,15 +299,14 @@ fun list_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \
 lemma param_list_eq[param]: "
   (list_eq,list_eq) \<in> 
     (R \<rightarrow> R \<rightarrow> Id) \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Id"
-proof (intro fun_relI)
-  case (goal1 eq eq' l1 l1' l2 l2')
+proof (intro fun_relI, goal_cases)
+  case prems: (1 eq eq' l1 l1' l2 l2')
   thus ?case
     apply -
     apply (induct eq' l1' l2' arbitrary: l1 l2 rule: list_eq.induct)
     apply (simp_all only: list_eq.simps |
       elim list_relE |
-      parametricity 
-    )+
+      parametricity)+
     done
 qed
 

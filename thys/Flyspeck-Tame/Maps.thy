@@ -40,16 +40,16 @@ end
 sublocale
   set_mod_maps <
   set_by_maps: set_modulo qle empty insert_mod set_of I M
-proof
-  case goal1 show ?case by(simp add:set_of_def map_empty)
+proof (standard, goal_cases)
+  case 1 show ?case by(simp add:set_of_def map_empty)
 next
-  case goal2 thus ?case
+  case 2 thus ?case
     by (auto simp: Let_def insert_mod_def set_of_def map_up equiv_iff_qle
       split:split_if_asm)
 next
-  case goal3 show ?case by(simp add: M_empty)
+  case 3 show ?case by(simp add: M_empty)
 next
-  case goal4 thus ?case
+  case 4 thus ?case
     by(simp add: insert_mod_def Let_def M_up)
 qed
 

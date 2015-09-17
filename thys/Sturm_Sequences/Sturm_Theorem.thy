@@ -41,12 +41,15 @@ lemma sign_changes_cong:
   shows "sign_changes ps x = sign_changes ps' y"
 proof-
  from assms(2) have A: "map (\<lambda>p. sgn (poly p x)) ps = map (\<lambda>p. sgn (poly p y)) ps'"
-  proof (induction rule: list_induct2[OF assms(1)], simp)
-    case (goal1 p ps p' ps')
-      from goal1(3)
+  proof (induction rule: list_induct2[OF assms(1)])
+    case 1
+      then show ?case by simp
+  next
+    case (2 p ps p' ps')
+      from 2(3)
       have "\<forall>i<length ps. sgn (poly (ps ! i) x) = 
                          sgn (poly (ps' ! i) y)" by auto
-      from goal1(2)[OF this] goal1(3) show ?case by auto
+      from 2(2)[OF this] 2(3) show ?case by auto
   qed
   show ?thesis unfolding sign_changes_def by (simp add: A)
 qed
@@ -233,28 +236,28 @@ lemma (in quasi_sturm_seq) split_sign_changes_induct:
         poly q x \<noteq> 0 \<Longrightarrow> P (q#r#ps) x;
         poly p x = 0 \<Longrightarrow> P (q#r#ps) x\<rbrakk> 
            \<Longrightarrow> P (p#q#r#ps) x\<rbrakk> \<Longrightarrow> P ps x"
-proof-
-  case goal1
+proof goal_cases
+  case prems: 1
   have "quasi_sturm_seq ps" ..
-  with goal1 show ?thesis
+  with prems show ?thesis
   proof (induction ps x rule: split_sign_changes.induct)
-    case (goal3 p q r ps x)
+    case (3 p q r ps x)
       show ?case
-      proof (rule goal3(5)[OF goal3(6)])
+      proof (rule 3(5)[OF 3(6)])
         assume A: "poly p x \<noteq> 0" "poly q x = 0"
-        from goal3(6) have "quasi_sturm_seq (r#ps)" 
+        from 3(6) have "quasi_sturm_seq (r#ps)" 
             by (force dest: quasi_sturm_seq_Cons)
-        with goal3 A show "P (r # ps) x" by blast
+        with 3 A show "P (r # ps) x" by blast
       next
         assume A: "poly q x \<noteq> 0"
-        from goal3(6) have "quasi_sturm_seq (q#r#ps)"
+        from 3(6) have "quasi_sturm_seq (q#r#ps)"
             by (force dest: quasi_sturm_seq_Cons)
-        with goal3 A show "P (q # r # ps) x" by blast
+        with 3 A show "P (q # r # ps) x" by blast
       next
         assume A: "poly p x = 0"
-        from goal3(6) have "quasi_sturm_seq (q#r#ps)"
+        from 3(6) have "quasi_sturm_seq (q#r#ps)"
             by (force dest: quasi_sturm_seq_Cons)
-        with goal3 A show "P (q # r # ps) x" by blast
+        with 3 A show "P (q # r # ps) x" by blast
       qed
   qed simp_all  
 qed
@@ -270,21 +273,21 @@ lemma (in quasi_sturm_seq) split_sign_changes_correct:
   shows "sign_changes' ps x\<^sub>0 = sign_changes ps x\<^sub>0"
 using assms(1)
 proof (induction x\<^sub>0 rule: split_sign_changes_induct)
-case (goal3 p q r ps x\<^sub>0)
+case (3 p q r ps x\<^sub>0)
   hence "poly p x\<^sub>0 \<noteq> 0" by simp
-  note IH = goal3(2,3,4)
+  note IH = 3(2,3,4)
   show ?case
   proof (cases "poly q x\<^sub>0 = 0")
     case True
-      from goal3 interpret quasi_sturm_seq "p#q#r#ps" by simp
+      from 3 interpret quasi_sturm_seq "p#q#r#ps" by simp
       from signs[of 0] and True have 
            sgn_r_x0: "poly r x\<^sub>0 * poly p x\<^sub>0 < 0" by simp
-      with goal3 have "poly r x\<^sub>0 \<noteq> 0" by force
+      with 3 have "poly r x\<^sub>0 \<noteq> 0" by force
       from sign_changes_distrib[OF this, of "[p,q]" ps]
         have "sign_changes (p#q#r#ps) x\<^sub>0 =
                   sign_changes ([p, q, r]) x\<^sub>0 + sign_changes (r # ps) x\<^sub>0" by simp
       also have "sign_changes (r#ps) x\<^sub>0 = sign_changes' (r#ps) x\<^sub>0"
-          using `poly q x\<^sub>0 = 0` `poly p x\<^sub>0 \<noteq> 0` goal3(5)`poly r x\<^sub>0 \<noteq> 0`
+          using `poly q x\<^sub>0 = 0` `poly p x\<^sub>0 \<noteq> 0` 3(5)`poly r x\<^sub>0 \<noteq> 0`
           by (intro IH(1)[symmetric], simp_all)
       finally show ?thesis unfolding sign_changes'_def 
           using True `poly p x\<^sub>0 \<noteq> 0` by simp
@@ -294,7 +297,7 @@ case (goal3 p q r ps x\<^sub>0)
           have "sign_changes (p#q#r#ps) x\<^sub>0 = 
                   sign_changes ([p,q]) x\<^sub>0 + sign_changes (q#r#ps) x\<^sub>0" by simp
       also have "sign_changes (q#r#ps) x\<^sub>0 = sign_changes' (q#r#ps) x\<^sub>0"
-          using `poly q x\<^sub>0 \<noteq> 0` `poly p x\<^sub>0 \<noteq> 0` goal3(5)
+          using `poly q x\<^sub>0 \<noteq> 0` `poly p x\<^sub>0 \<noteq> 0` 3(5)
           by (intro IH(2)[symmetric], simp_all)
       finally show ?thesis unfolding sign_changes'_def 
           using False by simp
@@ -312,8 +315,8 @@ lemma (in quasi_sturm_seq) split_sign_changes_correct_nbh:
   defines "sign_changes' \<equiv> \<lambda>x\<^sub>0 ps x. 
                \<Sum>ps'\<leftarrow>split_sign_changes ps x\<^sub>0. sign_changes ps' x"
   shows "eventually (\<lambda>x. sign_changes' x\<^sub>0 ps x = sign_changes ps x) (at x\<^sub>0)"
-proof (rule eventually_mono)
-  case goal1
+proof (rule eventually_mono, goal_cases)
+  case 1
   let ?ps_nz = "{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}"
   show "eventually (\<lambda>x. \<forall>p\<in>?ps_nz. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
       by (rule eventually_ball_finite, auto intro: poly_neighbourhood_same_sign)
@@ -324,33 +327,33 @@ proof (rule eventually_mono)
     fix x assume nbh: "\<forall>p\<in>?ps_nz. sgn (poly p x) = sgn (poly p x\<^sub>0)"
     thus "sign_changes' x\<^sub>0 ps x = sign_changes ps x" using assms(1)
     proof (induction x\<^sub>0 rule: split_sign_changes_induct)
-    case (goal3 p q r ps x\<^sub>0)
+    case (3 p q r ps x\<^sub>0)
       hence "poly p x\<^sub>0 \<noteq> 0" by simp
-      note IH = goal3(2,3,4)
+      note IH = 3(2,3,4)
       show ?case
       proof (cases "poly q x\<^sub>0 = 0")
         case True
-          from goal3 interpret quasi_sturm_seq "p#q#r#ps" by simp
+          from 3 interpret quasi_sturm_seq "p#q#r#ps" by simp
           from signs[of 0] and True have 
                sgn_r_x0: "poly r x\<^sub>0 * poly p x\<^sub>0 < 0" by simp
-          with goal3 have "poly r x\<^sub>0 \<noteq> 0" by force
-          with nbh goal3(5) have "poly r x \<noteq> 0" by (auto simp: sgn_zero_iff)
+          with 3 have "poly r x\<^sub>0 \<noteq> 0" by force
+          with nbh 3(5) have "poly r x \<noteq> 0" by (auto simp: sgn_zero_iff)
           from sign_changes_distrib[OF this, of "[p,q]" ps]
             have "sign_changes (p#q#r#ps) x =
                       sign_changes ([p, q, r]) x + sign_changes (r # ps) x" by simp
           also have "sign_changes (r#ps) x = sign_changes' x\<^sub>0 (r#ps) x"
-              using `poly q x\<^sub>0 = 0` nbh `poly p x\<^sub>0 \<noteq> 0` goal3(5)`poly r x\<^sub>0 \<noteq> 0`
+              using `poly q x\<^sub>0 = 0` nbh `poly p x\<^sub>0 \<noteq> 0` 3(5)`poly r x\<^sub>0 \<noteq> 0`
               by (intro IH(1)[symmetric], simp_all)
           finally show ?thesis unfolding sign_changes'_def 
               using True `poly p x\<^sub>0 \<noteq> 0`by simp
       next
         case False
-          with nbh goal3(5) have "poly q x \<noteq> 0" by (auto simp: sgn_zero_iff)
+          with nbh 3(5) have "poly q x \<noteq> 0" by (auto simp: sgn_zero_iff)
           from sign_changes_distrib[OF this, of "[p]" "r#ps"]
               have "sign_changes (p#q#r#ps) x = 
                       sign_changes ([p,q]) x + sign_changes (q#r#ps) x" by simp
           also have "sign_changes (q#r#ps) x = sign_changes' x\<^sub>0 (q#r#ps) x"
-              using `poly q x\<^sub>0 \<noteq> 0` nbh `poly p x\<^sub>0 \<noteq> 0` goal3(5)
+              using `poly q x\<^sub>0 \<noteq> 0` nbh `poly p x\<^sub>0 \<noteq> 0` 3(5)
               by (intro IH(2)[symmetric], simp_all)
           finally show ?thesis unfolding sign_changes'_def 
               using False by simp
@@ -366,13 +369,13 @@ lemma (in quasi_sturm_seq) hd_nonzero_imp_sign_changes_const_aux:
   shows "eventually (\<lambda>x. sign_changes ps' x = sign_changes ps' x\<^sub>0) (at x\<^sub>0)"
 using assms
 proof (induction x\<^sub>0 rule: split_sign_changes_induct)
-  case (goal1 p x)
+  case (1 p x)
     thus ?case by (simp add: sign_changes_def)
 next
-  case (goal2 p q x\<^sub>0)
+  case (2 p q x\<^sub>0)
     hence [simp]: "ps' = [p,q]" by simp
-    from goal2 have "poly p x\<^sub>0 \<noteq> 0" by simp
-    from goal2(1) interpret quasi_sturm_seq "[p,q]" .
+    from 2 have "poly p x\<^sub>0 \<noteq> 0" by simp
+    from 2(1) interpret quasi_sturm_seq "[p,q]" .
     from poly_neighbourhood_same_sign[OF `poly p x\<^sub>0 \<noteq> 0`]
         have "eventually (\<lambda>x. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)" .
     moreover from last_ps_sgn_const
@@ -382,11 +385,11 @@ next
     thus ?case by (force intro: eventually_mono[OF _ A] 
                                 sign_changes_cong')
 next
-  case (goal3 p q r ps'' x\<^sub>0)
+  case (3 p q r ps'' x\<^sub>0)
     hence p_not_0: "poly p x\<^sub>0 \<noteq> 0" by simp
-    note sturm = goal3(1)
-    note IH = goal3(2,3)
-    note ps''_props = goal3(6)
+    note sturm = 3(1)
+    note IH = 3(2,3)
+    note ps''_props = 3(6)
     show ?case
     proof (cases "poly q x\<^sub>0 = 0")
       case True
@@ -530,12 +533,12 @@ proof-
                    sign_changes (q#ps') x = sign_changes (q#ps') x\<^sub>0) (at x\<^sub>0)" 
            by (simp only: `ps!1 = q`, intro eventually_conj)
   show ?thesis
-  proof (rule eventually_mono[OF _ A], clarify)
-    case (goal1 x)
+  proof (rule eventually_mono[OF _ A], clarify, goal_cases)
+    case prems: (1 x)
     from zero_less_mult_pos have zero_less_mult_pos':
         "\<And>a b. \<lbrakk>(0::real) < a*b; 0 < b\<rbrakk> \<Longrightarrow> 0 < a"
         by (subgoal_tac "a*b = b*a", auto)
-    from goal1 have "poly q x \<noteq> 0" and q_sgn: "sgn (poly q x) = 
+    from prems have "poly q x \<noteq> 0" and q_sgn: "sgn (poly q x) = 
               (if x < x\<^sub>0 then -sgn (poly p x) else sgn (poly p x))"
         by (auto simp add: sgn_real_def elim: linorder_neqE_linordered_idom
                  dest: mult_neg_neg zero_less_mult_pos 
@@ -546,7 +549,7 @@ proof-
     also from q_sgn and `poly p x \<noteq> 0` 
         have "sign_changes [p,q] x = (if x<x\<^sub>0 then 1 else 0)"
         by (simp add: sign_changes_def sgn_zero_iff split: split_if_asm)
-    also note goal1(4)
+    also note prems(4)
     also from assms(1) have "sign_changes (q#ps') x\<^sub>0 = sign_changes ps x\<^sub>0"
         by (simp add: sign_changes_def)
     finally show ?case by simp
@@ -865,31 +868,31 @@ proof-
   have "\<lbrakk>ps = sturm_aux p q; i < length ps - 2\<rbrakk>
             \<Longrightarrow> ps!(i+2) = -(ps!i mod ps!(i+1))"
   proof (induction p q arbitrary: ps i rule: sturm_aux.induct)
-    case (goal1 p q)
+    case (1 p q)
       show ?case
       proof (cases "i = 0")
         case False
           then obtain i' where [simp]: "i = Suc i'" by (cases i, simp_all)
-          hence "length ps \<ge> 4" using goal1 by simp
-          with goal1(2) have deg: "degree q \<noteq> 0" 
+          hence "length ps \<ge> 4" using 1 by simp
+          with 1(2) have deg: "degree q \<noteq> 0" 
               by (subst (asm) sturm_aux.simps, simp split: split_if_asm)
-          with goal1(2) obtain ps' where [simp]: "ps = p # ps'" 
+          with 1(2) obtain ps' where [simp]: "ps = p # ps'" 
               by (subst (asm) sturm_aux.simps, simp)
-          with goal1(2) deg have ps': "ps' = sturm_aux q (-(p mod q))"
+          with 1(2) deg have ps': "ps' = sturm_aux q (-(p mod q))"
               by (subst (asm) sturm_aux.simps, simp)
-          from `length ps \<ge> 4` and `ps = p # ps'`goal1(3) False
+          from `length ps \<ge> 4` and `ps = p # ps'` 1(3) False
               have "i - 1 < length ps' - 2" by simp
-          from goal1(1)[OF deg ps' this]
+          from 1(1)[OF deg ps' this]
               show ?thesis by simp
       next
         case True
-          with goal1(3) have "length ps \<ge> 3" by simp
-          with goal1(2) have "degree q \<noteq> 0"
+          with 1(3) have "length ps \<ge> 3" by simp
+          with 1(2) have "degree q \<noteq> 0"
               by (subst (asm) sturm_aux.simps, simp split: split_if_asm)
-          with goal1(2) have [simp]: "sturm_aux p q ! Suc (Suc 0) = -(p mod q)"
+          with 1(2) have [simp]: "sturm_aux p q ! Suc (Suc 0) = -(p mod q)"
               by (subst sturm_aux.simps, simp)
           from True have "ps!i = p" "ps!(i+1) = q" "ps!(i+2) = -(p mod q)" 
-              by (simp_all add: goal1(2))
+              by (simp_all add: 1(2))
           thus ?thesis by simp
       qed
     qed}
@@ -905,22 +908,22 @@ text {*
 
 lemma sturm_aux_gcd: "r \<in> set (sturm_aux p q) \<Longrightarrow> gcd p q dvd r"
 proof (induction p q rule: sturm_aux.induct)
-  case (goal1 p q)
+  case (1 p q)
     show ?case
     proof (cases "r = p")
       case False
-        with goal1(2) have r: "r \<in> set (sturm_aux q (-(p mod q)))" 
+        with 1(2) have r: "r \<in> set (sturm_aux q (-(p mod q)))" 
           by (subst (asm) sturm_aux.simps, simp split: split_if_asm,
               subst sturm_aux.simps, simp)
         show ?thesis
         proof (cases "degree q = 0")
           case False
             hence "q \<noteq> 0" by force
-            from goal1(1)[OF False r] show ?thesis 
+            from 1(1)[OF False r] show ?thesis 
                 by (subst gcd_poly.simps(2)[OF `q \<noteq> 0`], simp)
         next
           case True
-            with goal1(2) and `r \<noteq> p` have "r = q"
+            with 1(2) and `r \<noteq> p` have "r = q"
                 by (subst (asm) sturm_aux.simps, simp)
             thus ?thesis by simp
         qed
@@ -941,15 +944,15 @@ lemma sturm_adjacent_root_propagate_left:
       and "poly (sturm p ! (i + 1)) x = 0"
   shows "\<forall>j\<le>i+1. poly (sturm p ! j) x = 0"
 using assms(2)
-proof (intro sturm_adjacent_root_aux[OF assms(1,2,3)])
-  case (goal1 i x)
+proof (intro sturm_adjacent_root_aux[OF assms(1,2,3)], goal_cases)
+  case prems: (1 i x)
     let ?p = "sturm p ! i"
     let ?q = "sturm p ! (i + 1)"
     let ?r = "sturm p ! (i + 2)"
-    from sturm_indices[OF goal1(2)] have "?p = ?p div ?q * ?q - ?r" 
+    from sturm_indices[OF prems(2)] have "?p = ?p div ?q * ?q - ?r" 
         by (simp add: mod_div_equality)
     hence "poly ?p x = poly (?p div ?q * ?q - ?r) x" by simp
-    hence "poly ?p x = -poly ?r x" using goal1(3) by simp
+    hence "poly ?p x = -poly ?r x" using prems(3) by simp
     thus ?case by (simp add: sgn_minus)
 qed
 
@@ -1192,21 +1195,21 @@ lemma sturm_squarefree'_adjacent_root_propagate_left:
   assumes "poly (sturm_squarefree' p ! i) x = 0"
       and "poly (sturm_squarefree' p ! (i + 1)) x = 0"
   shows "\<forall>j\<le>i+1. poly (sturm_squarefree' p ! j) x = 0"
-proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)])
-  case (goal1 i x)
+proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
+  case prems: (1 i x)
     def q \<equiv> "sturm p ! i" 
     def r \<equiv> "sturm p ! (Suc i)"
     def s \<equiv> "sturm p ! (Suc (Suc i))"
     def d \<equiv> "gcd p (pderiv p)"
     def q' \<equiv> "q div d" and r' \<equiv> "r div d" and s' \<equiv> "s div d"
     from `p \<noteq> 0` have "d \<noteq> 0" unfolding d_def by simp
-    from goal1(1) have i_in_range: "i < length (sturm p) - 2"
+    from prems(1) have i_in_range: "i < length (sturm p) - 2"
         unfolding sturm_squarefree'_def Let_def by simp
     have [simp]: "d dvd q" "d dvd r" "d dvd s" unfolding q_def r_def s_def d_def
         using i_in_range by (auto intro: sturm_gcd)
     hence qrs_simps: "q = q' * d" "r = r' * d" "s = s' * d" 
         unfolding q'_def r'_def s'_def by (simp_all)
-    with goal1(2) i_in_range have r'_0: "poly r' x = 0" 
+    with prems(2) i_in_range have r'_0: "poly r' x = 0" 
         unfolding r'_def r_def d_def sturm_squarefree'_def Let_def by simp
     hence r_0: "poly r x = 0" by (simp add: `r = r' * d`)
     from sturm_indices[OF i_in_range] have "q = q div r * r - s"
@@ -1353,19 +1356,19 @@ proof
 
   show "eventually (\<lambda>x. sgn (poly (p div d * sturm_squarefree' p ! 1) x) =
                         (if x\<^sub>0 < x then 1 else -1)) (at x\<^sub>0)"
-  proof (rule eventually_mono[OF _ ev], clarify)
+  proof (rule eventually_mono[OF _ ev], clarify, goal_cases)
       have [intro]:
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a < 0 \<Longrightarrow> a / (b * b) < 0"
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a > 0 \<Longrightarrow> a / (b * b) > 0"
           by ((case_tac "b > 0", 
               auto simp: mult_neg_neg field_simps) [])+
-    case (goal1 x)
+    case prems: (1 x)
       hence  [simp]: "poly d x * poly d x > 0" 
            by (cases "poly d x > 0", auto simp: mult_neg_neg)
       from poly_div_gcd_squarefree_aux(2)[OF `pderiv p \<noteq> 0`]
           have "poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" by (simp add: d_def)
       moreover have "d dvd p" "d dvd pderiv p" unfolding d_def by simp_all
-      ultimately show ?case using goal1
+      ultimately show ?case using prems
           by (auto simp: sgn_real_def poly_div not_less[symmetric] 
                          zero_less_divide_iff split: split_if_asm)
   qed

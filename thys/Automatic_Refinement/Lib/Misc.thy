@@ -220,11 +220,11 @@ qed
   subsubsection {* Finite Sets *}
 
   lemma card_1_singletonI: "\<lbrakk>finite S; card S = 1; x\<in>S\<rbrakk> \<Longrightarrow> S={x}"
-  proof (safe, rule ccontr)
-    case (goal1 x')
+  proof (safe, rule ccontr, goal_cases)
+    case prems: (1 x')
     hence "finite (S-{x})" "S-{x} \<noteq> {}" by auto
     hence "card (S-{x}) \<noteq> 0" by auto
-    moreover from goal1(1-3) have "card (S-{x}) = 0" by auto
+    moreover from prems(1-3) have "card (S-{x}) = 0" by auto
     ultimately have False by simp
     thus ?case ..
   qed
@@ -1576,13 +1576,14 @@ lemma (in linorder) sorted_hd_min:
 
 lemma sorted_append_bigger: 
   "\<lbrakk>sorted xs; \<forall>x \<in> set xs. x \<le> y\<rbrakk> \<Longrightarrow> sorted (xs @ [y])"
-  apply (induct xs)
-  apply simp
-proof -
-  case goal1
-  from goal1 have s: "sorted xs" by (cases xs) simp_all
-  from goal1 have a: "\<forall>x\<in>set xs. x \<le> y" by simp
-  from goal1(1)[OF s a] goal1(2-) show ?case by (cases xs) simp_all
+proof (induct xs)
+  case Nil
+  then show ?case by simp
+next
+  case (Cons x xs)
+  then have s: "sorted xs" by (cases xs) simp_all
+  from Cons have a: "\<forall>x\<in>set xs. x \<le> y" by simp
+  from Cons(1)[OF s a] Cons(2-) show ?case by (cases xs) simp_all
 qed
 
 lemma sorted_filter':
@@ -1776,13 +1777,14 @@ lemma zip_inj: "\<lbrakk>length a = length b; length a' = length b'; zip a b = z
   apply simp
   apply (case_tac b')
   apply simp
-proof -
-  case goal1
-  note [simp] = goal1(5,6)
-  from goal1(4) have C: "x=a" "y=aa" "zip xs ys = zip list lista" by simp_all
-  from goal1(2)[OF _ C(3)] goal1(3) have "xs=list \<and> ys = lista" by simp_all
-  thus ?case using C(1,2) by simp
-qed
+  subgoal premises prems for x xs y ys a' b' a list aa lista
+  proof -
+    note [simp] = prems(5,6)
+    from prems(4) have C: "x=a" "y=aa" "zip xs ys = zip list lista" by simp_all
+    from prems(2)[OF _ C(3)] prems(3) have "xs=list \<and> ys = lista" by simp_all
+    thus ?thesis using C(1,2) by simp
+  qed
+  done
 
 lemma zip_eq_zip_same_len[simp]: 
   "\<lbrakk> length a = length b; length a' = length b' \<rbrakk> \<Longrightarrow> 
@@ -3784,13 +3786,13 @@ lemma dom_ran_disj_comp[simp]: "Domain R \<inter> Range R = {} \<Longrightarrow>
     *}
   lemma trancl_multi_insert2[cases set, case_names orig via]: 
     "\<lbrakk>(a,b)\<in>(r\<union>{m}\<times>X)\<^sup>+; (a,b)\<in>r\<^sup>+ \<Longrightarrow> P; !!x. \<lbrakk> x\<in>X; (a,m)\<in>r\<^sup>*; (x,b)\<in>r\<^sup>* \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  proof -
-    case goal1 from goal1(1) have "(b,a)\<in>((r\<union>{m}\<times>X)\<^sup>+)\<inverse>" by simp
+  proof goal_cases
+    case prems: 1 from prems(1) have "(b,a)\<in>((r\<union>{m}\<times>X)\<^sup>+)\<inverse>" by simp
     also have "((r\<union>{m}\<times>X)\<^sup>+)\<inverse> = (r\<inverse>\<union>X\<times>{m})\<^sup>+" by (simp add: converse_add_simps)
     finally have "(b, a) \<in> (r\<inverse> \<union> X \<times> {m})\<^sup>+" .
     thus ?case 
       by (auto elim!: trancl_multi_insert 
-               intro: goal1(2,3) 
+               intro: prems(2,3) 
             simp add: trancl_converse rtrancl_converse
     )
   qed
@@ -4097,8 +4099,9 @@ subsubsection {* Miscellaneous *}
   proof -
     assume A: "finite R" "finite A"
     have "(R\<^sup>* `` A) \<subseteq> Range R \<union> A"
-    proof safe
-      case goal1 thus ?case by (induct rule: rtrancl_induct) auto
+    proof (safe, goal_cases)
+      case prems: 1
+      thus ?case by (induct rule: rtrancl_induct) auto
     qed
     thus ?thesis
       apply (erule_tac finite_subset)

@@ -1801,10 +1801,11 @@ locale robdd_locale =
         and bs1'_OK: "bs1 \<subseteq> bs1'" "robdd_invar_ids bs1'" "\<And>b. b \<in> bs1' \<Longrightarrow> robdd_invar b"
         and bs2'_OK: "bs2 \<subseteq> bs2'" "robdd_invar_ids bs2'" "\<And>b. b \<in> bs2' \<Longrightarrow> robdd_invar b"
     shows "apply_map_invar bop bs bs1' bs2' apply_map"
-  proof (rule apply_map_invar_I)
-    case goal1 thus ?case using apply_map_invar_D1[OF invar] .
+  proof (rule apply_map_invar_I, goal_cases)
+    case 1
+    thus ?case using apply_map_invar_D1[OF invar] .
   next
-    case goal2 note lookup_eq = this
+    case lookup_eq: (2 i1 i2 b)
   
     from apply_map_invar_D2[OF invar lookup_eq]
     obtain b1 b2 where
@@ -2557,13 +2558,12 @@ locale robdd_locale =
             note c_invar = restrict_map_invar_D1[OF invar_res_map'']
   
             show ?thesis 
-            proof (rule restrict_map_invar_I)
+            proof (rule restrict_map_invar_I, goal_cases)
               from restrict_map_invar_D1[OF invar_res_map'']
               show "c_invar (c_update (rv, i) b3 res_map'')" by (simp add: c.update_correct)
             next
-              case (goal2 i' v' b')
-              note lookup_eq = goal2(1)
-
+              case prems: (2 i' v' b')
+              note lookup_eq = prems(1)
      
               show ?case
               proof (cases "i' = i \<and> v' = rv")
@@ -2583,11 +2583,11 @@ locale robdd_locale =
                   "\<forall>a. robdd_\<alpha> b' a = robdd_\<alpha> b'' (a(v' := f))" by auto
  
                show ?thesis
-                  apply (rule_tac exI[where x = b''])
-                  apply (simp add: id_map_eq map_add_Some_iff b''_props)
-                  apply (insert b3_invar b''_props(3))
-                  apply (simp add: robdd_invar_ext_def)
-               done             
+                 apply (rule_tac exI[where x = b''])
+                 apply (simp add: id_map_eq map_add_Some_iff b''_props)
+                 apply (insert b3_invar b''_props(3))
+                 apply (simp add: robdd_invar_ext_def)
+                 done             
               qed
             qed
           qed
@@ -2708,10 +2708,11 @@ assumes invar: "robdd_invar_vars_greater n b" "robdd_invar_reduced b"
 shows "robdd_list_\<alpha> b n l \<longleftrightarrow> (\<forall>a \<in> (list_to_assignment_set l). robdd_\<alpha> b (\<lambda>v. a (v - n)))"
 using invar
 proof (induct b n l rule: robdd_list_\<alpha>.induct)
-  case goal1 with list_to_assignment_set_not_empty[of l] show ?case by auto
+  case (1 f n l)
+  with list_to_assignment_set_not_empty[of l] show ?case by auto
 next
-  case (goal2 i ll v rr n)
-  note invar = goal2(1,2)
+  case prems: (2 i ll v rr n)
+  note invar = prems(1,2)
 
   from invar have "robdd_\<alpha> ll \<noteq> robdd_\<alpha> rr"
     by (metis robdd_equiv_alt_def_full robdd_invar_reduced.simps(2) 
@@ -2723,12 +2724,12 @@ next
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc v"]) 
     apply (simp_all add: aa_def)
     apply auto
-  done
+    done
   from invar(1) have rr_sem: "\<And>b. robdd_\<alpha> rr (\<lambda>v'. (aa(v - n := b)) (v' - n)) = robdd_\<alpha> rr a"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc v"]) 
     apply (simp_all add: aa_def)
     apply auto
-  done
+    done
     
   show ?case
   proof (cases "robdd_\<alpha> ll a")
@@ -2736,43 +2737,43 @@ next
       apply (simp)
       apply (rule_tac exI[where x = "aa(v-n := False)"]) 
       apply simp
-    done
+      done
   next
     case False with a_sem_neq ll_sem show ?thesis 
       apply (simp)
       apply (rule_tac exI[where x = "aa(v-n := True)"]) 
       apply simp
-    done
+      done
   qed
 next
-  case (goal3 i ll v rr n b bs)
+  case prems: (3 i ll v rr n b bs)
 
-  note invar = goal3(6,7)
+  note invar = prems(6,7)
   hence invar_rr: "robdd_invar_vars_greater (Suc n) rr" and red_ll: "robdd_invar_reduced ll"
     and invar_ll: "robdd_invar_vars_greater (Suc n) ll" and red_rr: "robdd_invar_reduced rr"
     and invar_n: "n \<noteq> v \<Longrightarrow> robdd_invar_vars_greater (Suc n) (robdd_var i ll v rr)"
     and n_le: "n \<le> v"
   using robdd_invar_vars_greater___weaken [of "Suc v" _ "Suc n"] by simp_all
 
-  note indhyp_1 = goal3(1)[OF _ _ invar_ll red_ll]
-  note indhyp_2 = goal3(2)[OF _ _ invar_rr red_rr]
-  note indhyp_3 = goal3(3)[of True, OF _ _ _ invar_ll red_ll, simplified]
-  note indhyp_4 = goal3(4)[of False, OF _ _ _ invar_rr red_rr, simplified]
-  note indhyp_5 = goal3(5)[OF _ invar_n invar(2), simplified]
+  note indhyp_1 = prems(1)[OF _ _ invar_ll red_ll]
+  note indhyp_2 = prems(2)[OF _ _ invar_rr red_rr]
+  note indhyp_3 = prems(3)[of True, OF _ _ _ invar_ll red_ll, simplified]
+  note indhyp_4 = prems(4)[of False, OF _ _ _ invar_rr red_rr, simplified]
+  note indhyp_5 = prems(5)[OF _ invar_n invar(2), simplified]
 
   from invar_ll have ll_sem: "\<And>a b. robdd_\<alpha> ll (\<lambda>v. case_nat b a (v - n)) = robdd_\<alpha> ll 
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
     apply (metis diff_Suc nat.case(2))
-  done
+    done
 
   from invar_rr have rr_sem: "\<And>a b. robdd_\<alpha> rr (\<lambda>v. case_nat b a (v - n)) = robdd_\<alpha> rr 
                                      (\<lambda>v. a (v - Suc n))"
     apply (rule_tac robdd_\<alpha>_invar_greater [of "Suc n"]) 
     apply (simp_all split: nat.splits)
     apply (metis diff_Suc nat.case(2))
-  done
+    done
 
   show ?case
   proof (cases "n = v")

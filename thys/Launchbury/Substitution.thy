@@ -21,7 +21,7 @@ where
  |"(scrut ? e1 : e2)[y ::= z] = (scrut[y ::= z] ? e1[y ::= z] : e2[y ::= z])"
  |"[][y ::h= z] = []"
  |"((v,e)# as)[y ::h= z] = (v, e[y ::= z])# (as[y ::h= z])"
-proof-
+proof goal_cases
 
 have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_heap_sumC (Inl (e, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst a b c) (e, y, z)"
   apply(simp add: eqvt_at_def subst_def)
@@ -108,21 +108,21 @@ done
 
 {
 (* Equivariance of the graph *)
-case goal1 thus ?case
+case 1 thus ?case
   unfolding eqvt_def subst_subst_heap_graph_aux_def
   by simp
 
 (* The invariant *)
-next case goal2 thus ?case
+next case 2 thus ?case
   by (induct rule: subst_subst_heap_graph.induct)(auto simp add: exp_assn.bn_defs fresh_star_insert)
 
 (* Exhaustiveness *)
-next case (goal3 P x) show ?case
+next case prems: (3 P x) show ?case
   proof(cases x)
   case (Inl a) thus P
     proof(cases a)
     case (fields a1 a2 a3)
-    thus P using Inl goal3
+    thus P using Inl prems
       apply (rule_tac y ="a1" and c ="(a2, a3)" in exp_strong_exhaust)
       apply (auto simp add: fresh_star_def)
     done
@@ -131,12 +131,12 @@ next case (goal3 P x) show ?case
   case (Inr a) thus P
     proof (cases a)
     case (fields a1 a2 a3)
-    thus P using Inr goal3
+    thus P using Inr prems
       by (metis heapToAssn.cases)
   qed
 qed
 
-next case (goal19 e y2 z2 as e2 y z as2) thus ?case
+next case (19 e y2 z2 as e2 y z as2) thus ?case
   apply -
   apply (drule eqvt_at_subst)+
   apply (drule eqvt_at_subst_heap)+
@@ -157,7 +157,7 @@ next case (goal19 e y2 z2 as e2 y z as2) thus ?case
   apply (simp add: eqvt_at_def)
   done
 
-next case (goal25 x2 y2 z2 e2 x y z e) thus ?case
+next case (25 x2 y2 z2 e2 x y z e) thus ?case
   apply -
   apply (drule eqvt_at_subst)+
   apply (simp only: Abs_fresh_iff meta_eq_to_obj_eq[OF subst_def, symmetric, unfolded fun_eq_iff])

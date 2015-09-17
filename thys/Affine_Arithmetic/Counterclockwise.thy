@@ -298,22 +298,21 @@ begin
 lemmas ccw_axioms = cyclic nondegenerate ccw_antisym transitive
 
 sublocale ccw_system1235'
-(*  by (unfold_locales, smt cyclic transitive nondegenerate) *)
-proof (unfold_locales, rule ccontr)
-  case goal1
+proof (unfold_locales, rule ccontr, goal_cases)
+  case prems: (1 p q r s t)
   hence "ccw s p q \<Longrightarrow> ccw s r p"
-    by (metis ccw_axioms goal1)
+    by (metis ccw_axioms prems)
   moreover
   have "ccw s r p \<Longrightarrow> ccw s q r"
-    by (metis ccw_axioms goal1)
+    by (metis ccw_axioms prems)
   moreover
   have "ccw s q r \<Longrightarrow> ccw s p q"
-    by (metis ccw_axioms goal1)
+    by (metis ccw_axioms prems)
   ultimately
   have "ccw s p q \<and> ccw s r p \<and> ccw s q r \<or> ccw s q p \<and> ccw s p r \<and> ccw s r q"
-    by (metis ccw_axioms goal1)
+    by (metis ccw_axioms prems)
   thus False
-    by (metis ccw_axioms goal1)
+    by (metis ccw_axioms prems)
 qed
 
 end
