@@ -44,24 +44,25 @@ definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 
 interpretation Z!:
   ATOM neg\<^sub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^sub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^sub>Z
   where "ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^sub>0"
-proof-
-  case goal1
+proof goal_cases
+  case 1
   thus ?case
-apply(unfold_locales)
-apply(case_tac a)
-apply simp_all
-apply(case_tac a)
-apply simp_all
-apply(case_tac a)
-apply (simp_all)
-apply arith
-apply(case_tac a)
-apply(simp_all add: split: list.splits)
-apply(case_tac a)
-apply simp_all
-done
+    apply(unfold_locales)
+    apply(case_tac a)
+    apply simp_all
+    apply(case_tac a)
+    apply simp_all
+    apply(case_tac a)
+    apply (simp_all)
+    apply arith
+    apply(case_tac a)
+    apply(simp_all add: split: list.splits)
+    apply(case_tac a)
+    apply simp_all
+    done
 next
-  case goal2 thus ?case by(simp add:atoms\<^sub>0_def)
+  case 2
+  thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
 setup {* Sign.revert_abbrev "" @{const_abbrev Z.I} *}

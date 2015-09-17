@@ -49,8 +49,8 @@ definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 depends\<^sub>R"
 
 interpretation R!: ATOM neg\<^sub>R "(\<lambda>a. True)" I\<^sub>R depends\<^sub>R decr\<^sub>R
   where "ATOM.atoms\<^sub>0 depends\<^sub>R = atoms\<^sub>0"
-proof -
-  case goal1
+proof goal_cases
+  case 1
   thus ?case
     apply(unfold_locales)
         apply(case_tac a)
@@ -63,7 +63,7 @@ proof -
     apply(simp_all add:depends\<^sub>R_def split:list.splits)
     done
 next
-  case goal2
+  case 2
   thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
