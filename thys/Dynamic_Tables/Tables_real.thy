@@ -220,23 +220,23 @@ fun invar where
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<Rightarrow> ad+1"
 
 interpretation tb: amor
-where init = "(0,l0)" and nxt = nxt
-and inv = invar
-and t = t and \<Phi> = \<Phi>
-and U = U
-proof
-  case goal1 show ?case by (auto simp: field_simps)
+  where init = "(0,l0)" and nxt = nxt
+  and inv = invar
+  and t = t and \<Phi> = \<Phi>
+  and U = U
+proof (standard, goal_cases)
+  case 1 show ?case by (auto simp: field_simps)
 next
-  case goal2
+  case (2 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
-  from goal2 have "l0 \<le> l" and "n \<le> f2*l" by auto
+  from 2 have "l0 \<le> l" and "n \<le> f2*l" by auto
   hence [arith]: "l > 0" by arith
   show ?case
   proof (cases f)
     case [simp]: Ins
     show ?thesis
     proof cases
-      assume "n+1 \<le> f2*l" thus ?thesis using goal2 by (auto)
+      assume "n+1 \<le> f2*l" thus ?thesis using 2 by (auto)
     next
       assume 0: "\<not> n+1 \<le> f2*l"
       have f1: "f1 * (e*l) \<le> n+1"
@@ -262,13 +262,13 @@ next
     show ?thesis
     proof cases
       assume "f1*l \<le> real (n - 1)"
-      thus ?thesis using goal2 by(auto)
+      thus ?thesis using 2 by(auto)
     next
       assume 0: "\<not> f1*l \<le> real (n - 1)"
       show ?thesis
       proof cases
         assume l: "l0 \<le> l/c"
-        hence f1: "f1*(l/c) \<le> n-1" using f1_l0[OF l] goal2 by simp linarith
+        hence f1: "f1*(l/c) \<le> n-1" using f1_l0[OF l] 2 by simp linarith
         have "n - 1 \<le> f2 * (l/c)"
         proof -
           have "f1*l \<le> f2*(l/c)" using f1cf2 by (simp add: field_simps)
@@ -277,18 +277,18 @@ next
         with l 0 f1 show ?thesis by (auto)
       next
         assume "\<not> l0 \<le> l/c"
-        with goal2 show ?thesis by (auto simp add: field_simps)
+        with 2 show ?thesis by (auto simp add: field_simps)
       qed
     qed
   qed
 next
-  case goal3 thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
-  case goal4 show ?case by(simp add: field_simps not_le)
+  case 4 show ?case by(simp add: field_simps not_le)
 next
-  case goal5
+  case (5 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
-  have [arith]: "l \<ge> l0"  "n \<le> f2*l" using goal5 by auto
+  have [arith]: "l \<ge> l0"  "n \<le> f2*l" using 5 by auto
   show ?case
   proof (cases f)
     case [simp]: Ins
@@ -327,7 +327,7 @@ next
     case [simp]: Del
     show ?thesis (is "?A \<le> _")
     proof cases
-      assume "n=0" with goal5 show ?thesis
+      assume "n=0" with 5 show ?thesis
         by(simp add: mult_le_0_iff field_simps)
     next
       assume [arith]: "n\<noteq>0"
@@ -339,7 +339,7 @@ next
       next
         assume "\<not> (real n - 1 \<ge> f1*l \<or> l/c < l0)"
         hence [arith]: "real n - 1 < f1*l" "l/c \<ge> l0" by linarith+
-        hence "l \<ge> l0*c" and "l/c \<ge> l0" and "f1*l \<le> n" using goal5
+        hence "l \<ge> l0*c" and "l/c \<ge> l0" and "f1*l \<le> n" using 5
           by (auto simp: field_simps)
         have "f1*l \<le> f2'*l/c" using f1f2'c by(simp add: field_simps)
         hence f2: "n-1 < f2'*l/c" by linarith
@@ -403,22 +403,32 @@ qed
 
 interpretation Table
 where f1="f2/(e*c)" and f2=f2 and e=e and c=c and f1'="f2/e" and f2'="f2/e" and l0=l0
-proof
-  case goal1 show ?case by(rule e1)
-  case goal2 show ?case by(rule c1)
-  case goal3 show ?case by(simp)
-  case goal4 show ?case by(simp add: field_simps)
-  case goal5 show ?case by(simp add: field_simps)
-  case goal6 show ?case by(simp)
-  case goal7 show ?case by(simp)
-  case goal8 show ?case using l0e less_1_mult[OF c1 e1] by(simp add: field_simps)
-  case goal9 show ?case using l0c by(simp)
-  case goal10 show ?case
+proof (standard, goal_cases)
+  case 1 show ?case by(rule e1)
+next
+  case 2 show ?case by(rule c1)
+next
+  case 3 show ?case by(simp)
+next
+  case 4 show ?case by(simp add: field_simps)
+next
+  case 5 show ?case by(simp add: field_simps)
+next
+  case 6 show ?case by(simp)
+next
+  case 7 show ?case by(simp)
+next
+  case 8 show ?case using l0e less_1_mult[OF c1 e1] by(simp add: field_simps)
+next
+  case 9 show ?case using l0c by(simp)
+next
+  case 10 show ?case
   proof-
     have 1: "c*e>e" by (simp)
     show ?thesis using l0e apply(simp add: field_simps) using 1 by linarith
   qed
-  case goal11 show ?case
+next
+  case 11 show ?case
   proof-
     have 1: "c*e>e" by (simp)
     show ?thesis using l0c

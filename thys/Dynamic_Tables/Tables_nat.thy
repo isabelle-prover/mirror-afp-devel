@@ -166,21 +166,21 @@ by(simp)
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 + f1'*ad | Del \<Rightarrow> ad+1 + f2'*ai"
 
 interpretation tb: amor
-where init = "(0,l0)" and nxt = nxt
-and inv = invar
-and t = t and \<Phi> = \<Phi>
-and U = U
-proof
-  case goal1 show ?case by (fact invar_init)
+  where init = "(0,l0)" and nxt = nxt
+  and inv = invar
+  and t = t and \<Phi> = \<Phi>
+  and U = U
+proof (standard, goal_cases)
+  case 1 show ?case by (fact invar_init)
 next
-  case goal2 thus ?case by(fact invar_pres)
+  case 2 thus ?case by(fact invar_pres)
 next
-  case goal3 thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
-  case goal4 show ?case
+  case 4 show ?case
     by(auto simp: field_simps mult_le_0_iff le_floor_iff real_eq_of_nat)
 next
-  case goal5
+  case (5 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
@@ -192,7 +192,7 @@ next
       thus ?thesis by simp
     next
       assume [arith]: "\<not> n+1 \<le> f2*l"
-      have [arith]: "l \<ge> l0"  "n \<le> f2*l" using goal5 by auto
+      have [arith]: "l \<ge> l0"  "n \<le> f2*l" using 5 by auto
       have "(f2 - f2')*l \<ge> 1"
         using mult_mono[OF order_refl, of l0 l "f2-f2'"] f2'_less_f2 f2f2'
         by (simp add: field_simps)
@@ -244,10 +244,10 @@ next
     qed
   next
     case [simp]: Del
-    have [arith]: "l \<ge> l0" using goal5 by simp
+    have [arith]: "l \<ge> l0" using 5 by simp
     show ?thesis
     proof cases
-      assume "n=0" with goal5 show ?thesis
+      assume "n=0" with 5 show ?thesis
         by(simp add: mult_le_0_iff field_simps)
     next
       assume [arith]: "n\<noteq>0"
@@ -357,21 +357,21 @@ by(simp)
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<Rightarrow> ad+1"
 
 interpretation tb: amor
-where init = "(0,l0)" and nxt = nxt
-and inv = invar
-and t = t and \<Phi> = \<Phi>
-and U = U
-proof
-  case goal1 show ?case by (fact invar_init)
+  where init = "(0,l0)" and nxt = nxt
+  and inv = invar
+  and t = t and \<Phi> = \<Phi>
+  and U = U
+proof (standard, goal_cases)
+  case 1 show ?case by (fact invar_init)
 next
-  case goal2 thus ?case by(fact invar_pres)
+  case 2 thus ?case by(fact invar_pres)
 next
-  case goal3 thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
-  case goal4 show ?case
+  case 4 show ?case
     by(auto simp: field_simps mult_le_0_iff le_floor_iff real_eq_of_nat)
 next
-  case goal5
+  case (5 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
   show ?case
   proof (cases f)
@@ -382,7 +382,7 @@ next
       thus ?thesis by(simp del: \<Phi>.simps \<Psi>.simps add: Phi_Psi Psi_diff_Ins)
     next
       assume [arith]: "\<not> n+1 \<le> f2*l"
-      have [arith]: "l \<ge> l0"  "n \<le> f2*l" using goal5 by auto
+      have [arith]: "l \<ge> l0"  "n \<le> f2*l" using 5 by auto
       have "l0 \<le> e*l" using `l0 \<le> l` e1 mult_mono[of 1 e l0 l] by simp
       have "(f2 - f2'')*l \<ge> 1"
         using mult_mono[OF order_refl, of l0 l "f2-f2''"] f2''_less_f2 f2f2''
@@ -420,10 +420,10 @@ next
     qed
   next
     case [simp]: Del
-    have [arith]: "l \<ge> l0" using goal5 by simp
+    have [arith]: "l \<ge> l0" using 5 by simp
     show ?thesis
     proof cases
-      assume "n=0" with goal5 show ?thesis
+      assume "n=0" with 5 show ?thesis
         by(simp add: mult_le_0_iff field_simps)
     next
       assume [arith]: "n\<noteq>0"
