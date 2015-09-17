@@ -112,9 +112,9 @@ proof (rule finite_subset)
     then interpret \<HH>: semi_mojmir \<Sigma> \<delta> q\<^sub>0 "(w \<frown> (\<lambda>i. a))"
       using wellformed_F finite_reach finite_\<Sigma> by (unfold_locales; simp_all)
     have "x = (\<lambda>q. \<HH>.state_rank q (length w))" 
-      unfolding \<HH>.state_rank_step_foldl x_def using  prefix.elims prefix_conc by metis
+      unfolding \<HH>.state_rank_step_foldl x_def subsequence_def[symmetric] by simp
     thus "x \<in> ?R"
-      using \<HH>.state_rank_in_function_set `range (w \<frown> (\<lambda>i. a)) \<subseteq> \<Sigma>` by simp
+      using \<HH>.state_rank_in_function_set `range (w \<frown> (\<lambda>i. a)) \<subseteq> \<Sigma>` by presburger
   qed
 
   have "finite ({None} \<union> Some ` {0..<max_rank})"

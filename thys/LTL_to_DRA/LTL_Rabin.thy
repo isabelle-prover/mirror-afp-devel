@@ -89,7 +89,7 @@ lemma Rep_token_run_af:
   "Rep (token_run x n) \<equiv>\<^sub>P af\<^sub>G \<phi> (w [x \<rightarrow> n])"
 proof -
   have "token_run x n = Abs (af\<^sub>G \<phi> ((suffix x w) [0 \<rightarrow> (n - x)]))"
-    by (simp add: run_foldl; metis af_G_abs.f_foldl_abs.abs_eq af_G_abs.f_foldl_abs_alt_def af_G_letter_abs_def) 
+    by (simp add: run_foldl subsequence_def; metis af_G_abs.f_foldl_abs.abs_eq af_G_abs.f_foldl_abs_alt_def af_G_letter_abs_def) 
   hence "Rep (token_run x n) \<equiv>\<^sub>P af\<^sub>G \<phi> ((suffix x w) [0 \<rightarrow> (n - x)])"
     using ltl\<^sub>P_abs_rep ltl_prop_equiv_quotient.abs_eq_iff by auto
   thus ?thesis
@@ -124,10 +124,10 @@ proof -
   {
     fix i
     have "(\<exists>j. \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (map w [i + 0..<i + (j - i)])) = \<PP> \<phi> \<G> w i"
-        by (auto, metis add_diff_cancel_left' le_Suc_ex nat_le_linear upt_conv_Nil)
+        by (auto simp: subsequence_def, metis add_diff_cancel_left' le_Suc_ex nat_le_linear upt_conv_Nil)
     hence "(\<exists>j. \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j])) \<longleftrightarrow> (\<exists>j. \<G> \<Turnstile>\<^sub>P run af_G_letter \<phi> (suffix i w) (j-i))" 
       (is "?l \<longleftrightarrow> _") 
-      unfolding run_foldl subsequence_shift[symmetric, unfolded subsequence.simps] by presburger
+      unfolding run_foldl subsequence_shift[symmetric, unfolded subsequence_def] by presburger
     also
     have "\<dots> \<longleftrightarrow> (\<exists>j. \<G> \<Turnstile>\<^sub>P Rep (run \<up>af\<^sub>G(Abs \<phi>) (suffix i w) (j-i)))"
       using Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_rep_abs] 

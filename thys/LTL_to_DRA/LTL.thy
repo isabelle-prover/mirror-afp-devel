@@ -6,7 +6,7 @@
 section \<open>LTL (in Negation-Normal-Form)\<close>
 
 theory LTL
-  imports Main "Aux/Words2"
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 text \<open>Inspired/Based on schimpf/LTL\<close>

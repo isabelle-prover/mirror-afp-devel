@@ -43,6 +43,7 @@ definition reach\<^sub>t :: "'a set \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b 
 where
   "reach\<^sub>t \<Sigma> \<delta> q\<^sub>0 = {run\<^sub>t \<delta> q\<^sub>0 w n | w n. range w \<subseteq> \<Sigma>}"
 
+  
 lemma reach_foldl_def:
   assumes "\<Sigma> \<noteq> {}"
   shows "reach \<Sigma> \<delta> q\<^sub>0 = {foldl \<delta> q\<^sub>0 w | w. set w \<subseteq> \<Sigma>}"
@@ -55,9 +56,9 @@ proof -
     ultimately
     have "foldl \<delta> q\<^sub>0 w = foldl \<delta> q\<^sub>0 (prefix (length w) (w \<frown> (iter [a])))" 
       and "range (w \<frown> (iter [a])) \<subseteq> \<Sigma>"
-      by (unfold prefix_conc, auto simp add: iter_def conc_def) 
+      by (simp add: iter_def image_constant_conv)+
     hence "\<exists>w' n. foldl \<delta> q\<^sub>0 w = run \<delta> q\<^sub>0 w' n \<and> range w' \<subseteq> \<Sigma>"
-      unfolding run_foldl by auto
+      unfolding run_foldl by (metis subsequence_def)
   }
   thus ?thesis
     by (fastforce simp add: reach_def run_foldl)
@@ -79,16 +80,16 @@ proof (cases "\<Sigma> \<noteq> {}")
           by (simp add: nth_equalityI)  
         ultimately
         have "foldl \<delta> q\<^sub>0 w = foldl \<delta> q\<^sub>0 (prefix (length w) ((w @ [\<nu>]) \<frown> (iter [a])))" 
-          and"foldl \<delta> q\<^sub>0 (w @ [\<nu>]) = foldl \<delta> q\<^sub>0 (prefix (length (w @ [\<nu>])) ((w @ [\<nu>]) \<frown> (iter [a])))" 
+          and "foldl \<delta> q\<^sub>0 (w @ [\<nu>]) = foldl \<delta> q\<^sub>0 (prefix (length (w @ [\<nu>])) ((w @ [\<nu>]) \<frown> (iter [a])))" 
           and "range ((w @ [\<nu>]) \<frown> (iter [a])) \<subseteq> \<Sigma>"
-          by (simp_all only: prefix_conc conc_conc[symmetric] iter_def)
+          by (simp_all add: conc_conc[symmetric] iter_def)
              (auto simp add: conc_def upt_Suc_append[OF le0])
         moreover
         have "((w @ [\<nu>]) \<frown> (iter [a])) (length w) = \<nu>"
           by (simp add: conc_def)
         ultimately
         have "\<exists>w' n. (foldl \<delta> q\<^sub>0 w, \<nu>, foldl \<delta> q\<^sub>0 (w @ [\<nu>])) = run\<^sub>t \<delta> q\<^sub>0 w' n \<and> range w' \<subseteq> \<Sigma>"
-          unfolding run\<^sub>t_foldl by fastforce
+          unfolding run\<^sub>t_foldl by (metis length_append_singleton subsequence_def)
       }
       thus "?lhs \<supseteq> ?rhs"
         unfolding reach\<^sub>t_def run\<^sub>t.simps by blast

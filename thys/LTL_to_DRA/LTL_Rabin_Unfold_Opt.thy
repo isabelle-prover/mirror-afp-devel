@@ -299,22 +299,22 @@ proof -
   have "x + (n - x) = n" and "x + (Suc n - x) = Suc n"
    using assms by arith+
   have "w [x \<rightarrow> Suc n] = w [x \<rightarrow> n] @ [w n]"
-    unfolding subsequence.simps upt_Suc using assms by simp
+    unfolding subsequence_def upt_Suc using assms by simp
 
   have "af\<^sub>G \<phi> (w [x \<rightarrow> Suc n]) = step (af\<^sub>G\<^sub>\<UU> (Unf\<^sub>G \<phi>) (w [x \<rightarrow> n])) (w n)" (is "?l = ?r")
     unfolding af_to_af_opt[symmetric] `w [x \<rightarrow> Suc n] = w [x \<rightarrow> n] @ [w n]` foldl_append
     using af_letter_alt_def by auto
   moreover
   have "?lhs = Abs ?l"
-    unfolding \<MM>.token_run.simps run_foldl subsequence.simps[symmetric] 
-    unfolding subsequence_shift[symmetric] `x + (Suc n - x) = Suc n` Nat.add_0_right  
+    unfolding \<MM>.token_run.simps run_foldl subsequence_def[symmetric]
+    unfolding subsequence_shift `x + (Suc n - x) = Suc n` Nat.add_0_right   
     by (metis af_G_abs.f_foldl_abs_alt_def af_G_abs.f_foldl_abs.abs_eq af_G_letter_abs_def) 
   moreover
   have "Abs ?r = ?rhs"
-    unfolding \<UU>.token_run.simps run_foldl subsequence.simps[symmetric] 
-    unfolding subsequence_shift[symmetric] `x + (n - x) = n` Nat.add_0_right af_G_letter_abs_opt_def
-    unfolding af_G_abs_opt.f_foldl_abs_alt_def[unfolded af_G_abs_opt.f_foldl_abs.abs_eq, symmetric]  
-    unfolding step_Abs_eq by simp 
+    unfolding \<UU>.token_run.simps run_foldl 
+    unfolding  `x + (n - x) = n` Nat.add_0_right af_G_letter_abs_opt_def  
+    unfolding step_Abs_eq  af_G_abs_opt.f_foldl_abs_alt_def[unfolded af_G_abs_opt.f_foldl_abs.abs_eq] 
+    using subsequence_prefix_suffix subsequence_def by metis
   ultimately
   show "?lhs = ?rhs"
     by presburger

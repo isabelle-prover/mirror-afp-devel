@@ -429,8 +429,8 @@ proof (induction w arbitrary: \<phi> w')
 qed simp
 
 lemma af_ltl_continuation_suffix:
-  "w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af \<phi> (w[0 \<rightarrow> i])"
-  using af_ltl_continuation prefix_suffix2 prefix_is_subsequence by metis
+  "w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af \<phi> (w [0 \<rightarrow> i])"
+  using af_ltl_continuation[of "prefix i w" "suffix i w"] by simp
 
 lemma af_G_ltl_continuation:
   "\<forall>\<psi> \<in> \<^bold>G \<phi>. w' \<Turnstile> \<psi> = (w \<frown> w') \<Turnstile> \<psi> \<Longrightarrow> (w \<frown> w') \<Turnstile> \<phi> \<longleftrightarrow> w' \<Turnstile> af\<^sub>G \<phi> w"
@@ -440,7 +440,7 @@ proof (induction w arbitrary: w' \<phi>)
       fix \<psi> :: "'a ltl" fix  w w' w'' 
       assume "w'' \<Turnstile> G \<psi> = ((w @ w') \<frown> w'') \<Turnstile> G \<psi>"
       hence "w'' \<Turnstile> G \<psi> = (w' \<frown>  w'') \<Turnstile> G \<psi>" and "(w' \<frown> w'') \<Turnstile> G \<psi> = ((w @ w') \<frown> w'') \<Turnstile> G \<psi>"
-        by (induction w' arbitrary: w) (metis LTL_suffix_G suffix_conc conc_conc)+
+        by (induction w' arbitrary: w) (metis LTL_suffix_G conc_conc suffix_conc_length)+
     }
     note G_stable = this
     have A: "\<forall>\<psi>\<in>\<^bold>G (af\<^sub>G \<phi> [x]). w' \<Turnstile> \<psi> = (xs conc w') \<Turnstile> \<psi>"
@@ -451,14 +451,14 @@ proof (induction w arbitrary: w' \<phi>)
     proof (induction \<phi>)
       case (LTLFinal \<phi>)
         thus ?case
-          unfolding LTL_F_one_step_unfolding
-          by (auto simp add: suffix_conc[of "[x]", simplified])
+          unfolding LTL_F_one_step_unfolding 
+          by (auto simp add: suffix_conc_length[of "[x]", simplified])
     next
       case (LTLUntil \<phi> \<psi>)
         thus ?case
           unfolding LTL_U_one_step_unfolding
-          by (auto simp add: suffix_conc[of "[x]", simplified])
-    qed (auto simp add: conc_fst[of 0 "[x]"] suffix_conc[of "[x]", simplified])
+          by (auto simp add: suffix_conc_length[of "[x]", simplified])
+    qed (auto simp add: conc_fst[of 0 "[x]"] suffix_conc_length[of "[x]", simplified]) 
     also
     have "... = w' \<Turnstile> af\<^sub>G \<phi> (x # xs)"
       using Cons.IH[of "af\<^sub>G \<phi> [x]" w'] A by simp
@@ -469,6 +469,6 @@ qed simp
 
 lemma af\<^sub>G_ltl_continuation_suffix:
   "\<forall>\<psi> \<in> \<^bold>G \<phi>. w \<Turnstile> \<psi> = (suffix i w) \<Turnstile> \<psi> \<Longrightarrow> w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af\<^sub>G \<phi> (w [0 \<rightarrow> i])"  
-  by (metis af_G_ltl_continuation[of \<phi> "suffix i w"] diff_zero prefix_suffix2 subsequence_prefix_suffix suffix_0)
+  using af_G_ltl_continuation[of \<phi> "suffix i w"] by force
 
 end
