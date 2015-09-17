@@ -73,12 +73,10 @@ lemma success_run:
   assumes "success f h"
   obtains h' r where "run f (Some h) (Some h') r" 
 proof -
-  case goal1
-  from assms(1) obtain r h' 
+  from assms obtain r h' 
     where "Heap_Monad.execute f h = Some (r, h')" 
     unfolding success_def by auto
-  from goal1[OF regular[of "Some h", simplified, OF this]] 
-  show ?thesis .
+  then show thesis by (rule that[OF regular[of "Some h", simplified]])
 qed
 
 
@@ -184,11 +182,12 @@ lemma run_heap[run_elims]:
   
   apply (simp only: execute_simps)
   apply hypsubst_thin
-proof -
-  case goal1
-  from goal1(2) have "h' = snd (f a)" "res = fst (f a)" by simp_all
-  from goal1(1)[OF this] show ?case .
-qed
+  subgoal premises prems for a h'
+  proof -
+    from prems(2) have "h' = snd (f a)" "res = fst (f a)" by simp_all
+    from prems(1)[OF this] show ?thesis .
+  qed
+  done
 
 subsection {* Array Commands*}
 
@@ -214,12 +213,13 @@ lemma run_new_array[run_elims]:
   apply (simp add: execute_simps)
   apply (simp add: Array.get_alloc)
   apply hypsubst_thin
-proof -
-  case goal1
-  from goal1(2) have "h' = snd (Array.alloc (replicate n x) a)" 
-    "r = fst (Array.alloc (replicate n x) a)" by (auto simp add: execute_simps)
-  from goal1(1)[OF this] show ?case .
-qed
+  subgoal premises prems for a h'
+  proof -
+    from prems(2) have "h' = snd (Array.alloc (replicate n x) a)" 
+      "r = fst (Array.alloc (replicate n x) a)" by (auto simp add: execute_simps)
+    then show ?thesis by (rule prems(1))
+  qed
+  done
 
 
 lemma run_upd[run_elims]:
@@ -240,11 +240,12 @@ lemma run_upd[run_elims]:
   prefer 3
   apply auto[2]
   apply hypsubst_thin
-proof -
-  case (goal1 aa h')
-  from goal1(3) have "h' = Array.update a i x aa" "res = a" by auto
-  from goal1(1)[OF this] show ?case .
-qed
+  subgoal premises prems for aa h'
+  proof -
+    from prems(3) have "h' = Array.update a i x aa" "res = a" by auto
+    then show ?thesis by (rule prems(1))
+  qed
+  done
 
 
 lemma run_nth[run_elims]:
@@ -266,11 +267,12 @@ lemma run_nth[run_elims]:
   prefer 3
   apply auto[2]
   apply hypsubst_thin
-proof -
-  case (goal1 aa h')
-  from goal1(3) have "r = Array.get aa a ! i" "h' = aa" by auto
-  from goal1(1)[OF this] show ?case .
-qed 
+  subgoal premises prems for aa h'
+  proof -
+    from prems(3) have "r = Array.get aa a ! i" "h' = aa" by auto
+    then show ?thesis by (rule prems(1))
+  qed
+  done
 
 
 lemma run_of_list[run_elims]:
@@ -286,12 +288,13 @@ lemma run_of_list[run_elims]:
   apply (simp add: execute_simps)
   apply (simp add: Array.get_alloc)
   apply hypsubst_thin
-proof -
-  case goal1
-  from goal1(2) have "h' = snd (Array.alloc xs a)" 
-    "r = fst (Array.alloc xs a)" by (auto simp add: execute_simps)
-  from goal1(1)[OF this] show ?case .
-qed
+  subgoal premises prems for a h'
+  proof -
+    from prems(2) have "h' = snd (Array.alloc xs a)" 
+      "r = fst (Array.alloc xs a)" by (auto simp add: execute_simps)
+    then show ?thesis by (rule prems(1))
+  qed
+  done
 
 lemma run_freeze[run_elims]:
   assumes "run (Array.freeze a) \<sigma> \<sigma>' r"
@@ -318,14 +321,15 @@ lemma run_new_ref[run_elims]:
   apply (auto simp add: run.simps)
   apply (simp add: execute_simps)
   apply hypsubst_thin
-proof -
-  case goal1
-  from goal1(2) have 
-    "h' = snd (Ref.alloc x a)" 
-    "r = fst (Ref.alloc x a)"
-    by (auto simp add: execute_simps)
-  from goal1(1)[OF this] show ?case .
-qed
+  subgoal premises prems for a h'
+  proof -
+    from prems(2) have 
+      "h' = snd (Ref.alloc x a)" 
+      "r = fst (Ref.alloc x a)"
+      by (auto simp add: execute_simps)
+    then show ?thesis by (rule prems(1))
+  qed
+  done
 
 lemma "fst (Ref.alloc x h) = Ref (lim h)"
   unfolding alloc_def

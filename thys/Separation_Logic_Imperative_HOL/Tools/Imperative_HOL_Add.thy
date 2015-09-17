@@ -20,15 +20,12 @@ text {* A stronger elimination rule for @{text ref} *}
 
 lemma effect_ref[effect_elims]:
   assumes "effect (ref (x::('a::heap))) h h' r"
-  obtains "r = fst (Ref.alloc x h)"
-  and "h' = snd (Ref.alloc x h)"
-  using assms
-  unfolding effect_def
+  obtains "r = fst (Ref.alloc x h)" and "h' = snd (Ref.alloc x h)"
 proof -
-  case goal1
-  from goal1(2) have "r = fst (Ref.alloc x h)" "h' = snd (Ref.alloc x h)" 
+  from assms have "execute (ref x) h = Some (r, h')" by (unfold effect_def)
+  then have "r = fst (Ref.alloc x h)" "h' = snd (Ref.alloc x h)" 
     by (auto simp add: execute_simps)
-  from goal1(1)[OF this] show ?thesis by simp
+  then show thesis ..
 qed
 
 

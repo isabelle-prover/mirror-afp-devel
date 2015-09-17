@@ -142,20 +142,20 @@ lemma lseg_prec1:
       (lseg l p (Some q) * q \<mapsto>\<^sub>r x * F1) 
        \<and>\<^sub>A (lseg l' p (Some q) * q \<mapsto>\<^sub>r x * F2)) 
     \<longrightarrow> l=l'"
-proof (intro allI)
-  case goal1 thus ?case
+  apply (intro allI)
+  subgoal for l l'
   proof (induct l arbitrary: p l' F1 F2)
     case Nil thus ?case
       apply simp_all
       apply (cases l')
       apply simp
-      apply (auto simp: mod_dist)
+      apply auto
       done
   next
     case (Cons y l)
     from Cons.prems show ?case
       apply (cases l')
-      apply (auto simp add: mod_dist) []
+      apply auto []
       apply (cases p)
       apply simp
       
@@ -173,21 +173,21 @@ proof (intro allI)
       apply simp
       done
   qed
-qed
+  done
 
 lemma lseg_prec2: 
   "\<forall>l l'. (h\<Turnstile>
       (lseg l p None * F1) \<and>\<^sub>A (lseg l' p None * F2)) 
     \<longrightarrow> l=l'"
-proof (intro allI)
-  case goal1 thus ?case
+  apply (intro allI)
+  subgoal for l l'
   proof (induct l arbitrary: p l' F1 F2)
     case Nil thus ?case
       apply simp_all
       apply (cases l')
       apply simp
       apply (cases p)
-      apply (auto simp: mod_dist)
+      apply auto
       done
   next
     case (Cons y l)
@@ -195,7 +195,7 @@ proof (intro allI)
       apply (cases p)
       apply simp
       apply (cases l')
-      apply (auto simp add: mod_dist) []
+      apply (auto) []
       
       apply (clarsimp)
 
@@ -211,7 +211,7 @@ proof (intro allI)
       apply simp
       done
   qed
-qed
+  done
 
 lemma lseg_prec3: 
   "\<forall>q q'. h \<Turnstile> (lseg l p q * F1) \<and>\<^sub>A (lseg l p q' * F2) \<longrightarrow> q=q'"

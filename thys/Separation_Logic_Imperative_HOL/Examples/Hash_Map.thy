@@ -29,11 +29,10 @@ lemma map_of_concat':
   done
 
 lemma map_of_concat''':
-  "\<exists>i. k \<in> dom (map_of(l!i)) \<and> i < length l 
-  \<Longrightarrow> k \<in> dom (map_of(concat l))"
+  assumes "\<exists>i. k \<in> dom (map_of(l!i)) \<and> i < length l"
+  shows "k \<in> dom (map_of(concat l))"
 proof -
-  case goal1
-  from this obtain i where "k \<in> dom (map_of (l ! i)) \<and> i < length l" by blast
+  from assms obtain i where "k \<in> dom (map_of (l ! i)) \<and> i < length l" by blast
   from map_of_concat'[OF this] show ?thesis .
 qed
  
@@ -183,25 +182,19 @@ lemma ht_hash_ht_distinct_in_dom_unique_value:
 proof -
   from assms(4) have ex: "\<exists>v. (k,v) \<in> set (concat l)"  
     by (auto dest!: map_of_SomeD)
-  have "\<forall>v w. (k,v) \<in> set (concat l) \<and> (k,w) \<in> set (concat l) 
-    \<longrightarrow> v = w"
-  proof (intro allI impI, elim conjE)
-    case goal1
+  have "v = w" if kv: "(k,v) \<in> set (concat l)" and kw: "(k,w) \<in> set (concat l)" for v w
+  proof -
     from ht_hash_in_dom_in_dom_bounded_hashcode_nat[OF assms(1,4)] 
     have a: "k \<in> dom (map_of (l ! bounded_hashcode_nat (length l) k))" .
-    have "\<forall>i. i < length l \<and> i \<noteq> bounded_hashcode_nat (length l) k 
-      \<longrightarrow> k \<notin> dom(map_of(l!i))"
-    proof (intro allI impI, elim conjE)
-      case goal1
-      from ht_hash_in_bounded_hashcode_nat_not_i_not_in_dom_i[
-        OF assms(1,3) goal1]
-      show ?case .
+    have "k \<notin> dom(map_of(l!i))"
+      if "i < length l" and "i \<noteq> bounded_hashcode_nat (length l) k" for i
+    proof -
+      from ht_hash_in_bounded_hashcode_nat_not_i_not_in_dom_i[OF assms(1,3) that]
+      show ?thesis .
     qed
-    from goal1(1) a 
     have v: "(k,v) \<in> set (l ! bounded_hashcode_nat (length l) k)"
     proof -
-      case goal1
-      from goal1(1) have "\<exists>i. i < length l \<and> (k, v) \<in> set (l!i)" 
+      from kv have "\<exists>i. i < length l \<and> (k, v) \<in> set (l!i)" 
         by auto (metis in_set_conv_nth)
       from this obtain i where i: "i < length l \<and> (k, v) \<in> set (l!i)"
         by blast
@@ -209,13 +202,11 @@ proof -
         by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
       from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
       have "i = bounded_hashcode_nat (length l) k" by simp
-      with i show ?case by simp
+      with i show ?thesis by simp
     qed
-    from goal1(2) a 
     have w: "(k,w) \<in> set (l ! bounded_hashcode_nat (length l) k)"
     proof -
-      case goal1
-      from goal1(1) have "\<exists>i. i < length l \<and> (k, w) \<in> set (l!i)" 
+      from kw have "\<exists>i. i < length l \<and> (k, w) \<in> set (l!i)" 
         by auto (metis in_set_conv_nth)
       from this obtain i where i: "i < length l \<and> (k, w) \<in> set (l!i)"
         by blast
@@ -223,7 +214,7 @@ proof -
         by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
       from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
       have "i = bounded_hashcode_nat (length l) k" by simp
-      with i show ?case by simp
+      with i show ?thesis by simp
     qed
     from assms(2,3) have 
       "distinct (map fst (l ! bounded_hashcode_nat (length l) k))"
@@ -429,24 +420,25 @@ lemma ls_insls_map_of:
   assumes "ht_distinct ld"
   assumes "1 < length ld"
   assumes "distinct (map fst xs)"
-  shows "map_of (concat (ls_insls xs ld)) 
-    = map_of (concat ld) ++ map_of xs"
+  shows "map_of (concat (ls_insls xs ld)) = map_of (concat ld) ++ map_of xs"
   using assms
   apply (induct xs arbitrary: ld)
   apply simp
   apply (case_tac a)
   apply (simp only: ls_insls.simps)
-proof -
-  case goal1
-  from goal1(5) goal1(1)[OF ht_hash_update[OF goal1(2)] 
-    ht_distinct_update[OF goal1(3)] 
-    length_update[OF goal1(4)]] 
-    abs_update_map_of[OF goal1(2-4)] 
-  show ?case
-    apply simp
-    apply (rule map_add_upd2)
-    by (metis dom_map_of_conv_image_fst)
-qed
+  subgoal premises prems
+  proof -
+    from prems(5) prems(1)[OF ht_hash_update[OF prems(2)] 
+      ht_distinct_update[OF prems(3)] 
+      length_update[OF prems(4)]] 
+      abs_update_map_of[OF prems(2-4)] 
+    show ?thesis
+      apply simp
+      apply (rule map_add_upd2)
+      apply (metis dom_map_of_conv_image_fst)
+      done
+  qed
+  done
 
 lemma ls_insls_map_of':
   assumes "ht_hash ls"
@@ -472,23 +464,22 @@ lemma ls_copy_map_of:
   assumes "ht_distinct ld"
   assumes "1 < length ld"
   assumes "n \<le> length ls"
-  shows "map_of (concat (ls_copy n ls ld)) 
-  = map_of (concat ld) ++ map_of (concat (take n ls))"
+  shows "map_of (concat (ls_copy n ls ld)) = map_of (concat ld) ++ map_of (concat (take n ls))"
   using assms
   apply (induct n arbitrary: ld)
   apply simp
-proof -
-  case goal1
-  thm ht_hash_ls_insls[OF goal1(4)]
-  note a = ht_hash_ls_insls[OF goal1(4), of "ls ! n"]
-  note b = ht_distinct_ls_insls[OF goal1(5), of "ls ! n"]
-  note c = length_ls_insls[OF goal1(6), of "ls ! n"]
-  from goal1 have "n < length ls" by simp
-  with 
-    ls_insls_map_of'[OF goal1(2-6) this] 
-    goal1(1)[OF assms(1,2) a b c]
-  show ?case by simp
-qed
+  subgoal premises prems for n ld
+  proof -
+    note a = ht_hash_ls_insls[OF prems(4), of "ls ! n"]
+    note b = ht_distinct_ls_insls[OF prems(5), of "ls ! n"]
+    note c = length_ls_insls[OF prems(6), of "ls ! n"]
+    from prems have "n < length ls" by simp
+    with 
+      ls_insls_map_of'[OF prems(2-6) this] 
+      prems(1)[OF assms(1,2) a b c]
+    show ?thesis by simp
+  qed
+  done
 
 
 lemma ls_rehash_map_of:
@@ -677,28 +668,28 @@ lemma ht_hash_dom_map_of_disj:
 lemma ht_hash_dom_map_of_disj_drop:
   assumes "ht_hash l"
   assumes "i < length l"
-  shows "dom (map_of (l!i)) \<inter> dom (map_of (concat (drop (Suc i) l)))
-    = {}"
+  shows "dom (map_of (l!i)) \<inter> dom (map_of (concat (drop (Suc i) l))) = {}"
   apply auto
-proof -
-  case goal1
-  from goal1(2) have "x \<in> dom (map_of (concat (drop (Suc i) l)))"
-    by auto
-  hence "\<exists>j. j < length (drop (Suc i) l) 
-    \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))"
-    by (metis Hash_Map.map_of_concat 
-      `x \<in> dom (map_of (concat (drop (Suc i) l)))` length_drop)
-  from this obtain j where 
-    j: "j < length (drop (Suc i) l) 
-      \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))" 
-    by blast
-  hence length: "(Suc i + j) < length l" by auto
-  from j have neq: "i \<noteq> (Suc i + j)" by simp
-  from j have in_dom: "x \<in> dom (map_of (l!(Suc i + j)))" by auto
-  from goal1(1) have in_dom2: "x \<in> dom (map_of (l ! i))" by auto
-  from ht_hash_dom_map_of_disj[OF assms length neq] in_dom in_dom2
-  show ?case by auto
-qed
+  subgoal premises prems for x y z
+  proof -
+    from prems(2) have "x \<in> dom (map_of (concat (drop (Suc i) l)))"
+      by auto
+    hence "\<exists>j. j < length (drop (Suc i) l) 
+      \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))"
+      by (metis Hash_Map.map_of_concat 
+        `x \<in> dom (map_of (concat (drop (Suc i) l)))` length_drop)
+    from this obtain j where 
+      j: "j < length (drop (Suc i) l) 
+        \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))" 
+      by blast
+    hence length: "(Suc i + j) < length l" by auto
+    from j have neq: "i \<noteq> (Suc i + j)" by simp
+    from j have in_dom: "x \<in> dom (map_of (l!(Suc i + j)))" by auto
+    from prems(1) have in_dom2: "x \<in> dom (map_of (l ! i))" by auto
+    from ht_hash_dom_map_of_disj[OF assms length neq] in_dom in_dom2
+    show ?thesis by auto
+  qed
+  done
 
 lemma listsum_length_card_dom_map_of_concat:
   assumes "ht_hash l"
