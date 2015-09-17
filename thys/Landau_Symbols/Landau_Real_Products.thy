@@ -313,20 +313,23 @@ lemma dominating_chain_imp_dominating_chain':
   "(\<And>g. g \<in> set gs \<Longrightarrow> filterlim g at_top at_top) \<Longrightarrow>
      landau_dominating_chain gs \<Longrightarrow> landau_dominating_chain' gs"
 proof (induction gs rule: landau_dominating_chain.induct)
-  case (goal2 f)
+  case (1 f g gs)
+  from 1 show ?case 
+    by (auto intro!: landau_function_family_pair_trans_powr simp add: dominates_def)
+next
+  case (2 f)
   then interpret F: landau_function_family "powr_closure f"
     by (intro landau_function_family_powr_closure) simp_all
-  from goal2 have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top)
+  from 2 have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top)
   hence "o(\<lambda>x. f x powr 1) = o(\<lambda>x. f x)" 
     by (intro landau_o.small.cong) (auto elim!: eventually_elim1)
-  with goal2 have "landau_function_family_pair (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
+  with 2 have "landau_function_family_pair (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
     by unfold_locales (auto intro: powr_closureI)
   thus ?case by (simp add: one_fun_def)
 next
-  case (goal1 f g gs)
-  from goal1 show ?case 
-    by (auto intro!: landau_function_family_pair_trans_powr simp add: dominates_def)
-qed simp
+  case 3
+  then show ?case by simp
+qed
 
 
 locale landau_function_family_chain = 
@@ -372,14 +375,14 @@ proof-
     by (rule sym, intro landau_o.small.in_cong gs_powr_0_eq_one) 
   also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> pos_list (map get_param gs)"
   proof (induction gs)
-    case goal1
+    case Nil
     have "(\<lambda>x::'b. 1::real) \<notin> o(\<lambda>x. 1)" by (auto dest!: landau_o.small_big_asymmetric)
     thus ?case by simp
   next
-    case (goal2 g gs)
+    case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
        "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from goal2 show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.smallo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
   qed
@@ -394,13 +397,16 @@ proof-
     by (rule sym, intro landau_o.big.in_cong gs_powr_0_eq_one) 
   also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> nonneg_list (map get_param gs)"
   proof (induction gs)
-    case (goal2 g gs)
+    case Nil
+    then show ?case by (simp add: func_one)
+  next
+    case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
        "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from goal2 show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.bigo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
-  qed (simp add: func_one)
+  qed
   finally show ?thesis .
 qed
 
@@ -412,13 +418,16 @@ proof-
     by (rule sym, intro landau_theta.in_cong gs_powr_0_eq_one) 
   also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
   proof (induction gs)
-    case (goal2 g gs)
+    case Nil
+    then show ?case by (simp add: func_one)
+  next
+    case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
        "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
-    from goal2 show ?case using listmap_gs_in_listmap[of get_fun _ gs]
+    from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.bigtheta_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
-  qed (simp add: func_one)
+  qed
   finally show ?thesis .
 qed
 
@@ -478,23 +487,27 @@ datatype primfun = LnChain nat
 
 instantiation primfun :: linorder
 begin  
+
 fun less_eq_primfun :: "primfun \<Rightarrow> primfun \<Rightarrow> bool" where
   "LnChain x \<le> LnChain y \<longleftrightarrow> x \<le> y"
+
 fun less_primfun :: "primfun \<Rightarrow> primfun \<Rightarrow> bool" where
   "LnChain x < LnChain y \<longleftrightarrow> x < y"
+
 instance
-proof
-  case (goal1 x y) show ?case by (induction x y rule: less_eq_primfun.induct) auto
+proof (standard, goal_cases)
+  case (1 x y) show ?case by (induction x y rule: less_eq_primfun.induct) auto
 next
-  case (goal2 x) show ?case by (cases x) auto
+  case (2 x) show ?case by (cases x) auto
 next
-  case (goal3 x) thus ?case 
+  case (3 x y z) thus ?case 
     by (induction x y rule: less_eq_primfun.induct, cases z) auto
 next
-  case (goal4 x y) thus ?case by (induction x y rule: less_eq_primfun.induct) auto
+  case (4 x y) thus ?case by (induction x y rule: less_eq_primfun.induct) auto
 next
-  case (goal5 x y) thus ?case by (induction x y rule: less_eq_primfun.induct) auto
+  case (5 x y) thus ?case by (induction x y rule: less_eq_primfun.induct) auto
 qed
+
 end
 
 
@@ -745,15 +758,15 @@ lemma list_ConsCons_induct:
   assumes "P []" "\<And>x. P [x]" "\<And>x y xs. P (y#xs) \<Longrightarrow> P (x#y#xs)"
   shows   "P xs"
 proof (induction xs rule: length_induct)
-  case (goal1 xs)
+  case (1 xs)
   show ?case
   proof (cases xs)
     case (Cons x xs')
     note A = this
-    from assms goal1 show ?thesis
+    from assms 1 show ?thesis
     proof (cases xs')
       case (Cons y xs'')
-      with goal1 A have "P (y#xs'')" by simp
+      with 1 A have "P (y#xs'')" by simp
       with Cons A assms show ?thesis by simp
     qed (simp add: assms A)
   qed (simp add: assms)
@@ -764,33 +777,33 @@ lemma landau_function_family_chain_primfuns:
   assumes "sorted (map fst fs)"
   assumes "distinct (map fst fs)"
   shows   "landau_function_family_chain fs (eval_primfun' o fst)"
-proof
-  case goal2
+proof (standard, goal_cases)
+  case 2
   from assms show ?case
   proof (induction fs rule: list_ConsCons_induct)
-    case (goal2 g)
+    case (2 g)
     from eval_primfun'_at_top[of "fst g"] 
       have "eval_primfun' (fst g) \<in> \<omega>(\<lambda>_. 1)" by (intro smallomegaI_filterlim_at_top') simp
     thus ?case by (simp add: smallomega_iff_smallo)
   next
-    case (goal3 f g gs)
+    case (3 f g gs)
     thus ?case by (auto simp: primfun_dominates sorted_Cons)
   qed simp
 qed (auto simp: eval_primfun'_at_top)
 
 interpretation groupsort_primfun!: groupsort fst merge_primfun eval_primfuns
-proof
-  case (goal1 x y)
+proof (standard, goal_cases)
+  case (1 x y)
   thus ?case by (induction x y rule: merge_primfun.induct) simp_all
 next
-  case (goal2 fs gs)
+  case (2 fs gs)
   show ?case
   proof
     fix x
     have "eval_primfuns fs x = fold op* (map (\<lambda>f. eval_primfun f x) fs) 1"
       unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
     also have "fold op* (map (\<lambda>f. eval_primfun f x) fs) = fold op* (map (\<lambda>f. eval_primfun f x) gs)"
-      using goal2 by (intro fold_multiset_equiv ext) (auto simp: mset_map)
+      using 2 by (intro fold_multiset_equiv ext) (auto simp: mset_map)
     also have "... 1 = eval_primfuns gs x"
       unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
     finally show "eval_primfuns fs x = eval_primfuns gs x" .

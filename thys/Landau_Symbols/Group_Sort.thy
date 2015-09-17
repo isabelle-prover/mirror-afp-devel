@@ -46,13 +46,13 @@ where
 | "f x < p \<Longrightarrow> part_aux p (x#xs) (ls, eq, gs) = part_aux p xs (x#ls, eq, gs)"
 | "f x > p \<Longrightarrow> part_aux p (x#xs) (ls, eq, gs) = part_aux p xs (ls, eq, x#gs)"
 | "f x = p \<Longrightarrow> part_aux p (x#xs) (ls, eq, gs) = part_aux p xs (ls, eq@[x], gs)"
-proof (clarify)
-  case (goal1 P p xs ls eq gs)
+proof (clarify, goal_cases)
+  case prems: (1 P p xs ls eq gs)
   show ?case
   proof (cases xs)
     fix x xs' assume "xs = x # xs'"
-    thus ?thesis using goal1 by (cases "f x" p rule: linorder_cases) auto
-  qed (auto intro: goal1(1))
+    thus ?thesis using prems by (cases "f x" p rule: linorder_cases) auto
+  qed (auto intro: prems(1))
 qed simp_all
 termination by (relation "Wellfounded.measure (size \<circ> fst \<circ> snd)") simp_all
 
@@ -99,9 +99,9 @@ private lemma filter_mset_union:
 
 private lemma multiset_of_sort: "mset (sort xs) = mset xs"
 proof (induction xs rule: sort.induct)
-  case (goal2 x xs)
+  case (2 x xs)
   let ?M = "\<lambda>oper. {#y:# mset xs. oper (f y) (f x)#}"
-  from goal2 have "mset (sort (x#xs)) = ?M (op <) + ?M (op =) + ?M (op >) + {#x#}"
+  from 2 have "mset (sort (x#xs)) = ?M (op <) + ?M (op =) + ?M (op >) + {#x#}"
     by (simp add: part Multiset.union_assoc mset_filter)
   also have "?M (op <) + ?M (op =) + ?M (op >) = mset xs"
     by ((subst filter_mset_union, force)+, subst multiset_eq_iff, force)
@@ -136,7 +136,7 @@ private lemma f_fold_merge: "(\<And>y. y \<in> set xs \<Longrightarrow> f y = f 
 
 private lemma f_group: "x \<in> set (group xs) \<Longrightarrow> \<exists>x'\<in>set xs. f x = f x'"
 proof (induction xs rule: group.induct)
-  case (goal2 x' xs)
+  case (2 x' xs)
   hence "x = fold merge [y\<leftarrow>xs . f y = f x'] x' \<or> x \<in> set (group [xa\<leftarrow>xs . f xa \<noteq> f x'])"
     by (auto simp: o_def)
   thus ?case
@@ -146,31 +146,31 @@ proof (induction xs rule: group.induct)
     finally show ?thesis by simp
   next
     assume "x \<in> set (group [xa\<leftarrow>xs . f xa \<noteq> f x'])"
-    from goal2(1)[OF _ this] have "\<exists>x'\<in>set [xa\<leftarrow>xs . f xa \<noteq> f x']. f x = f x'" by (simp add: o_def)
+    from 2(1)[OF _ this] have "\<exists>x'\<in>set [xa\<leftarrow>xs . f xa \<noteq> f x']. f x = f x'" by (simp add: o_def)
     thus ?thesis by force
   qed
 qed simp
 
 private lemma sorted_group: "sorted (map f xs) \<Longrightarrow> sorted (map f (group xs))"
 proof (induction xs rule: group.induct)
-  case (goal2 x xs)
+  case (2 x xs)
   {
     fix x' assume x': "x' \<in> set (group [y\<leftarrow>xs . f y \<noteq> f x])"
     with f_group obtain x'' where x'': "x'' \<in> set xs" "f x' = f x''" by force
     have "f (fold merge [y\<leftarrow>xs . f y = f x] x) = f x"
       by (subst f_fold_merge) simp_all
-    also from goal2(2) x'' have "... \<le> f x'" by (auto simp: sorted_Cons) 
+    also from 2(2) x'' have "... \<le> f x'" by (auto simp: sorted_Cons) 
     finally have "f (fold merge [y\<leftarrow>xs . f y = f x] x) \<le> f x'" .
   }
-  moreover from goal2(2) have "sorted (map f (group [xa\<leftarrow>xs . f xa \<noteq> f x]))"
-    by (intro goal2 sorted_filter) (simp_all add: sorted_Cons o_def)
+  moreover from 2(2) have "sorted (map f (group [xa\<leftarrow>xs . f xa \<noteq> f x]))"
+    by (intro 2 sorted_filter) (simp_all add: sorted_Cons o_def)
   ultimately show ?case by (simp add: o_def sorted_Cons)
 qed simp_all
 
 private lemma distinct_group: "distinct (map f (group xs))"
 proof (induction xs rule: group.induct)
-  case (goal2 x xs)
-  have "distinct (map f (group [xa\<leftarrow>xs . f xa \<noteq> f x]))" by (intro goal2) (simp_all add: o_def)
+  case (2 x xs)
+  have "distinct (map f (group [xa\<leftarrow>xs . f xa \<noteq> f x]))" by (intro 2) (simp_all add: o_def)
   moreover have "f (fold merge [y\<leftarrow>xs . f y = f x] x) \<notin> set (map f (group [xa\<leftarrow>xs . f xa \<noteq> f x]))"
     by (rule notI, subst (asm) f_fold_merge) (auto dest: f_group)
   ultimately show ?case by (simp add: o_def)
@@ -195,13 +195,13 @@ qed simp
 
 private lemma g_group: "g (group xs) = g xs"
 proof (induction xs rule: group.induct)
-  case (goal2 x xs)
+  case (2 x xs)
   have "g (group (x#xs)) = g (fold merge [y\<leftarrow>xs . f y = f x] x # group [xa\<leftarrow>xs . f xa \<noteq> f x])"
     by (simp add: o_def)
   also have "... = g (x # [y\<leftarrow>xs . f y = f x] @ group [y\<leftarrow>xs . f y \<noteq> f x])"
     by (intro g_fold_same) simp_all
   also have "... = g ((x # [y\<leftarrow>xs . f y = f x]) @ group [y\<leftarrow>xs . f y \<noteq> f x])" (is "_ = ?A") by simp
-  also from goal2 have "g (group [y\<leftarrow>xs . f y \<noteq> f x]) = g [y\<leftarrow>xs . f y \<noteq> f x]" by (simp add: o_def)
+  also from 2 have "g (group [y\<leftarrow>xs . f y \<noteq> f x]) = g [y\<leftarrow>xs . f y \<noteq> f x]" by (simp add: o_def)
   hence "?A = g ((x # [y\<leftarrow>xs . f y = f x]) @ [y\<leftarrow>xs . f y \<noteq> f x])"
     by (intro g_append_cong) simp_all
   also have "... = g (x#xs)" by (intro g_cong) simp_all
@@ -216,13 +216,13 @@ where
 | "f x < p \<Longrightarrow> group_part_aux p (x#xs) (ls, eq, gs) = group_part_aux p xs (x#ls, eq, gs)"
 | "f x > p \<Longrightarrow> group_part_aux p (x#xs) (ls, eq, gs) = group_part_aux p xs (ls, eq, x#gs)"
 | "f x = p \<Longrightarrow> group_part_aux p (x#xs) (ls, eq, gs) = group_part_aux p xs (ls, merge x eq, gs)"
-proof (clarify)
-  case (goal1 P p xs ls eq gs)
+proof (clarify, goal_cases)
+  case prems: (1 P p xs ls eq gs)
   show ?case
   proof (cases xs)
     fix x xs' assume "xs = x # xs'"
-    thus ?thesis using goal1 by (cases "f x" p rule: linorder_cases) auto
-  qed (auto intro: goal1(1))
+    thus ?thesis using prems by (cases "f x" p rule: linorder_cases) auto
+  qed (auto intro: prems(1))
 qed simp_all
 termination by (relation "Wellfounded.measure (size \<circ> fst \<circ> snd)") simp_all
 
@@ -268,7 +268,7 @@ private lemma group_append:
   shows   "group (xs @ ys) = group xs @ group ys"
 using assms
 proof (induction xs arbitrary: ys rule: length_induct)
-  case (goal1 xs')
+  case (1 xs')
   hence IH: "\<And>x xs ys. length xs < length xs' \<Longrightarrow> (\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set ys \<Longrightarrow> f x \<noteq> f y)
                 \<Longrightarrow> group (xs @ ys) = group xs @ group ys" by blast
   show ?case
@@ -277,11 +277,11 @@ proof (induction xs arbitrary: ys rule: length_induct)
     note [simp] = this
     have "group (xs' @ ys) = fold merge [y\<leftarrow>xs@ys . f y = f x] x #
             group ([xa\<leftarrow>xs . f xa \<noteq> f x] @ [xa\<leftarrow>ys . f xa \<noteq> f x])" by (simp add: o_def)
-    also from goal1(2) have "[y\<leftarrow>xs@ys . f y = f x] = [y\<leftarrow>xs . f y = f x]"
+    also from 1(2) have "[y\<leftarrow>xs@ys . f y = f x] = [y\<leftarrow>xs . f y = f x]"
       by (force simp: filter_empty_conv)
-    also from goal1(2) have "[xa\<leftarrow>ys . f xa \<noteq> f x] = ys" by (force simp: filter_id_conv)
+    also from 1(2) have "[xa\<leftarrow>ys . f xa \<noteq> f x] = ys" by (force simp: filter_id_conv)
     also have "group ([xa\<leftarrow>xs . f xa \<noteq> f x] @ ys) =
-               group [xa\<leftarrow>xs . f xa \<noteq> f x] @ group ys" using goal1(2)
+               group [xa\<leftarrow>xs . f xa \<noteq> f x] @ group ys" using 1(2)
       by (intro IH) (simp_all add: less_Suc_eq_le)
     finally show ?thesis by (simp add: o_def)
   qed simp
@@ -292,14 +292,14 @@ private lemma group_empty_iff [simp]: "group xs = [] \<longleftrightarrow> xs = 
 
 lemma group_sort_correct: "group_sort xs = group (sort xs)"
 proof (induction xs rule: group_sort.induct)
-  case (goal2 x xs)
+  case (2 x xs)
   have "group_sort (x#xs) = 
           group_sort (rev [xa\<leftarrow>xs . f xa < f x]) @ group (x#[xa\<leftarrow>xs . f xa = f x]) @
           group_sort (rev [xa\<leftarrow>xs . f x < f xa])" by (simp add: group_part)
   also have "group_sort (rev [xa\<leftarrow>xs . f xa < f x]) = group (sort (rev [xa\<leftarrow>xs . f xa < f x]))"
-    by (rule goal2) (simp_all add: group_part)
+    by (rule 2) (simp_all add: group_part)
   also have "group_sort (rev [xa\<leftarrow>xs . f xa > f x]) = group (sort (rev [xa\<leftarrow>xs . f xa > f x]))"
-    by (rule goal2) (simp_all add: group_part)
+    by (rule 2) (simp_all add: group_part)
   also have "group (x#[xa\<leftarrow>xs . f xa = f x]) @ group (sort (rev [xa\<leftarrow>xs . f xa > f x])) =
              group ((x#[xa\<leftarrow>xs . f xa = f x]) @ sort (rev [xa\<leftarrow>xs . f xa > f x]))"
     by (intro group_append[symmetric]) (auto simp: set_sort)
