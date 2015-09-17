@@ -79,8 +79,8 @@ by auto
 
 lift_definition tSup :: "('a, 'b) tllist set \<Rightarrow> ('a, 'b) tllist"
 is "\<lambda>A. (lSup (fst ` A), flat_lub b (snd ` (A \<inter> {(xs, _). lfinite xs})))"
-proof -
-  case (goal1 A1 A2)
+proof goal_cases
+  case (1 A1 A2)
   hence "fst ` A1 = fst ` A2" "snd ` (A1 \<inter> {(xs, _). lfinite xs}) = snd ` (A2 \<inter> {(xs, _). lfinite xs})"
     by(auto 4 3 simp add: rel_set_def intro: rev_image_eqI)
   thus ?case by simp
@@ -265,10 +265,10 @@ lemma ttl_tSup:
   "\<lbrakk> Complete_Partial_Order.chain tllist_ord Y; \<exists>xs \<in> Y. \<not> is_TNil xs \<rbrakk>
   \<Longrightarrow> ttl (tSup Y) = tSup (ttl ` (Y \<inter> {xs. \<not> is_TNil xs}))"
 unfolding ex_TCons_iff[symmetric] retain_TCons_conv[symmetric]
-proof transfer
-  case (goal1 Y)
+proof (transfer, goal_cases)
+  case prems: (1 Y)
   then obtain xs b' where xsb: "(xs, b') \<in> Y" "\<not> lnull xs" by blast
-  note chain = goal1(1)
+  note chain = prems(1)
 
   have "flat_lub b (snd ` (Y \<inter> {(xs, _). lfinite xs})) = flat_lub b (insert b (snd ` (Y \<inter> {(xs, _). lfinite xs})))"
     by(auto simp add: flat_lub_def)
@@ -283,7 +283,7 @@ proof transfer
   also
   have "ltl ` (fst ` Y \<inter> {xs. \<not> lnull xs}) = fst ` apfst ltl ` (Y \<inter> {(xs, b). \<not> lnull xs})"
     by(auto simp add: image_image)
-  ultimately show ?case using goal1 by clarsimp
+  ultimately show ?case using prems by clarsimp
 qed
 
 lemma tSup_TCons: "A \<noteq> {} \<Longrightarrow> tSup (TCons x ` A) = TCons x (tSup A)"

@@ -140,19 +140,19 @@ lemma is_sublist_rec:
 "is_sublist xs ys =
  (if length xs > length ys then False else
   if xs = take (length xs) ys then True else is_sublist xs (tl ys))"
-proof (simp add:is_sublist_def)
-  case goal1 show ?case
-  proof
-    case goal1 show ?case
-    proof
-      case goal1 note xs = goal1
+proof (simp add:is_sublist_def, goal_cases)
+  case 1 show ?case
+  proof (standard, goal_cases)
+    case 1 show ?case
+    proof (standard, goal_cases)
+      case xs: 1
       show ?case
-      proof
-        case goal1 show ?case by auto
+      proof (standard, goal_cases)
+        case 1 show ?case by auto
       next
-        case goal2 show ?case
-        proof
-          case goal1
+        case 2 show ?case
+        proof (standard, goal_cases)
+          case 1
           have "ys = take |xs| ys @ drop |xs| ys" by simp
           also have "\<dots> = [] @ xs @ drop |xs| ys" by(simp add:xs[symmetric])
           finally show ?case by blast
@@ -160,18 +160,18 @@ proof (simp add:is_sublist_def)
       qed
     qed
   next
-    case goal2 show ?case
-    proof
-      case goal1 note xs_neq = this
+    case 2 show ?case
+    proof (standard, goal_cases)
+      case xs_neq: 1
       show ?case
-      proof
-        case goal1 show ?case by auto
+      proof (standard, goal_cases)
+        case 1 show ?case by auto
       next
-        case goal2 show ?case
-        proof
-          case goal1 note not_less = this show ?case
-          proof
-            case goal1
+        case 2 show ?case
+        proof (standard, goal_cases)
+          case not_less: 1 show ?case
+          proof (standard, goal_cases)
+            case 1
             then obtain as bs where ys: "ys = as @ xs @ bs" by blast
             have "as \<noteq> []" using xs_neq ys by auto
             then obtain a as' where "as = a # as'"
@@ -179,7 +179,7 @@ proof (simp add:is_sublist_def)
             hence "tl ys = as' @ xs @ bs" by(simp add:ys)
             thus ?case by blast
           next
-            case goal2
+            case 2
             then obtain as bs where ys: "tl ys = as @ xs @ bs" by blast
             have "ys \<noteq> []" using xs_neq not_less by auto
             then obtain y ys' where "ys = y # ys'"

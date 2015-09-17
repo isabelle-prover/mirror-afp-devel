@@ -306,11 +306,11 @@ begin
     shows "bfs_invar' src dst 
             (False, V \<union> succ v, C - {v}, N \<union> (succ v - V), d)"
     using assms
-  proof (simp (no_asm_use) add: bfs_invar'_def, intro conjI)
-    case goal6 then show ?case
+  proof (simp (no_asm_use) add: bfs_invar'_def, intro conjI, goal_cases)
+    case 6 then show ?case
       by (metis Un_iff Diff_iff connI_succ le_SucE min_dist_succ)
   next
-    case goal7 then show ?case
+    case 7 then show ?case
       by (metis Un_iff connI_succ min_dist_succ)
   qed blast+
 
@@ -325,17 +325,17 @@ begin
     assumes "bfs_invar' src dst (False, V, {}, N, d)"
     shows "bfs_invar' src dst (False, V, N, {}, Suc d)"
     using assms
-  proof (simp (no_asm_use) add: bfs_invar'_def, intro conjI impI allI)
-    case goal3 then show ?case
+  proof (simp (no_asm_use) add: bfs_invar'_def, intro conjI impI allI, goal_cases)
+    case 3 then show ?case
       by (metis le_SucI)
   next
-    case goal4 then show ?case
+    case 4 then show ?case
       by (metis le_SucE subsetD)
   next
-    case (goal5 v) then show ?case
+    case (5 v) then show ?case
       using min_dist_suc[of src v "Suc d"] by metis
   next
-    case goal6 then show ?case
+    case 6 then show ?case
       by (metis Suc_n_not_le_n)
   qed blast+
 

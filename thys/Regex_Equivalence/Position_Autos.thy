@@ -152,16 +152,16 @@ permanent_interpretation before: rexp_DFA init_b delta_b final_b L_b
     and reachable_b = "rexp_DA.reachable (init_b :: 'a rexp \<Rightarrow> (bool \<times> 'a) rexp \<times> bool) delta_b"
     and automaton_b = "rexp_DA.automaton (init_b :: 'a rexp \<Rightarrow> (bool \<times> 'a) rexp \<times> bool) delta_b"
     and match_b = "rexp_DA.match (init_b :: 'a rexp \<Rightarrow> (bool \<times> 'a) rexp \<times> bool) delta_b final_b"
-proof
-  case goal1 show "L_b (init_b r) = lang r"
+proof (standard, goal_cases)
+  case (1 r) show "L_b (init_b r) = lang r"
     by(auto simp add: init_b_def Lm_follow Lm_empty map_map_rexp nullable_iff)
 next
-  case (goal2 a rb) show "L_b (delta_b a rb) = Deriv a (L_b rb)"
+  case (2 a rb) show "L_b (delta_b a rb) = Deriv a (L_b rb)"
     by (cases rb) (auto simp add: Deriv_def final_read_Lm image_def Lm_read Lm_follow)
 next
-  case (goal3 rb) show  "final_b rb \<longleftrightarrow> [] \<in> L_b rb" by (cases rb) simp
+  case (3 rb) show  "final_b rb \<longleftrightarrow> [] \<in> L_b rb" by (cases rb) simp
 next
-  case goal4
+  case (4 s)
   have "{fold delta_b w (init_b s) |w. True} \<subseteq> mrexps s \<times> UNIV"
     by (intro subsetI, elim CollectE exE) (simp only: fold_delta_b_init_b_mrexps)
   then show "finite {fold delta_b w (init_b s) |w. True}" by (rule finite_subset) simp
@@ -207,17 +207,17 @@ permanent_interpretation after: rexp_DFA init_a delta_a final_a L_a
     and reachable_a = "rexp_DA.reachable (init_a :: 'a rexp \<Rightarrow> bool \<times> (bool \<times> 'a) rexp) delta_a"
     and automaton_a = "rexp_DA.automaton (init_a :: 'a rexp \<Rightarrow> bool \<times> (bool \<times> 'a) rexp) delta_a"
     and match_a = "rexp_DA.match (init_a :: 'a rexp \<Rightarrow> bool \<times> (bool \<times> 'a) rexp) delta_a final_a"
-proof
-  case goal1 show "L_a (init_a r) = lang r"
+proof (standard, goal_cases)
+  case (1 r) show "L_a (init_a r) = lang r"
     by (auto simp: init_a_def nonfinal_empty_mrexp Lm_follow Lm_empty map_map_rexp nullable_iff)
 next
-  case (goal2 a br) show "L_a (delta_a a br) = Deriv a (L_a br)"
+  case (2 a br) show "L_a (delta_a a br) = Deriv a (L_a br)"
     by (cases br) (simp add: Deriv_def final_read_Lm Lm_read Lm_follow,
       fastforce simp: image_def neq_Nil_conv)
 next
-  case (goal3 br) show  "final_a br \<longleftrightarrow> [] \<in> L_a br" by (cases br) simp
+  case (3 br) show  "final_a br \<longleftrightarrow> [] \<in> L_a br" by (cases br) simp
 next
-  case goal4
+  case (4 s)
   have "{fold delta_a w (init_a s) |w. True} \<subseteq> UNIV \<times> mrexps s"
     by (intro subsetI, elim CollectE exE) (simp only: fold_delta_a_init_a_mrexps)
   then show "finite {fold delta_a w (init_a s) |w. True}" by (rule finite_subset) simp

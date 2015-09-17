@@ -207,21 +207,21 @@ permanent_interpretation before2: rexp_DFA init_okm delta_okm nullable_okm lang_
     and reachable_b2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"
     and automaton_b2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"
     and match_b2 = "rexp_DA.match init_okm delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
-proof
-  case goal1 show "lang_okm (init_okm r) = lang r"
+proof (standard, goal_cases)
+  case (1 r) show "lang_okm (init_okm r) = lang r"
     by transfer (auto simp: split_beta init_a_def nonfinal_empty_mrexp Lm_follow Lm_empty
       map_map_rexp nullable_iff ok3_empty_mrexp3)
 next
-  case (goal2 a br) show "lang_okm (delta_okm a br) = Deriv a (lang_okm br)"
+  case (2 a br) show "lang_okm (delta_okm a br) = Deriv a (lang_okm br)"
     apply transfer
     unfolding split_beta fst_conv snd_conv mem_Collect_eq before.L_delta[symmetric] delta_b.simps
       move_follow_read[symmetric] final_read_final1 Let_def
     by (subst strip3_move3) simp_all
 next
-  case (goal3 br) show  "nullable_okm br = ([] \<in> lang_okm br)"
+  case (3 br) show  "nullable_okm br = ([] \<in> lang_okm br)"
     by transfer (simp add: split_beta)
 next
-  case (goal4 s)
+  case (4 s)
   have "{fold (\<lambda>a (r, m). (move3 a r False, a \<in> fin1 r)) w (init_m s) |w. True} \<subseteq>
     mrexps3 s \<times> UNIV"
   proof (intro subsetI, elim CollectE exE conjE, hypsubst)

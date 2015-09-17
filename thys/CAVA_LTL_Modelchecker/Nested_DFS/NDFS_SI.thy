@@ -805,9 +805,9 @@ proof -
       unfolding post_def add_inv_def cyc_post_def
       apply (clarsimp)
       apply (intro conjI)
-    proof -
+    proof goal_cases
       from PRE FEI show OS0[symmetric]: "onstack - {u0} = onstack0"
-        by (auto simp: pre_def fe_inv_def add_inv_def gen_dfs_pre_def) []
+        by (auto simp: pre_def fe_inv_def add_inv_def gen_dfs_pre_def)
 
       from PRE FEI have "u0\<in>onstack"
         unfolding pre_def gen_dfs_pre_def fe_inv_def gen_dfs_fe_inv_def
@@ -818,11 +818,13 @@ proof -
         (init_wit_blue u0 rcyc \<noteq> NO_CYC)" 
         by (auto simp: pre_def fe_inv_def intro: gen_dfs_fe_inv_imp_post)
 
+      case 3
+
       from FEI have [simp]: "onstack=insert u0 onstack0" 
         unfolding fe_inv_def by auto
       from FEI have "u0\<in>blues" unfolding fe_inv_def gen_dfs_fe_inv_def by auto
 
-      case goal3 show ?case
+      show ?case
         apply (cases rcyc)
         apply (simp_all add: split_paired_all)
       proof -

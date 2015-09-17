@@ -4,8 +4,8 @@ imports "../Intf/Intf_Set" "../../Iterator/Iterator"
 begin
 
   lemma foldli_union: "det_fold_set X (\<lambda>_. True) insert a (op \<union> a)"
-  proof
-    case (goal1 l) thus ?case
+  proof (rule, goal_cases)
+    case (1 l) thus ?case
       by (induct l arbitrary: a) auto
   qed
 
@@ -71,8 +71,8 @@ begin
  
   lemma foldli_diff: 
     "det_fold_set X (\<lambda>_. True) (\<lambda>x s. op_set_delete x s) s (op - s)"
-  proof
-    case (goal1 l) thus ?case
+  proof (rule, goal_cases)
+    case (1 l) thus ?case
       by (induct l arbitrary: s) auto
   qed
 
@@ -544,8 +544,8 @@ context begin interpretation autoref_syn .
 end
 
 lemma foldli_Union: "det_fold_set X (\<lambda>_. True) (op \<union>) {} Union"
-proof
-  case (goal1 l)
+proof (rule, goal_cases)
+  case (1 l)
   have "\<forall>a. foldli l (\<lambda>_. True) op \<union> a = a \<union> \<Union>set l"
     by (induct l) auto
   thus ?case by auto

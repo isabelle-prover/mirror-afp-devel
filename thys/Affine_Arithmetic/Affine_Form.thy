@@ -773,26 +773,26 @@ lemma independent_aform_Joints:
   shows "[x, y] \<in> Joints [X, independent_aform X Y]"
   using assms
   unfolding Affine_def valuate_def Joints_def
-proof safe
-  case goal1
-  thus ?case
+  apply safe
+  subgoal premises prems for e ea
+    using prems
     by (intro image_eqI[where x="\<lambda>i. if i < degree_aform X then e i else ea (i - degree_aform X)"])
       (auto simp: aform_val_def pdevs_val_msum_pdevs Pi_iff
       independent_aform_def intro!: pdevs_val_degree_cong)
-qed
+  done
 
 lemma Affine_msum_aform:
   assumes "d \<ge> degree_aform X"
   shows "Affine (msum_aform d X Y) = {x + y |x y. x \<in> Affine X \<and> y \<in> Affine Y}"
   unfolding Affine_def valuate_def
-proof safe
-  case goal1
+proof (safe, goal_cases)
+  case (1 x e)
   thus ?case
     using assms
     by (intro exI[where x = "aform_val e X"] exI[where x = "aform_val ((\<lambda>i. e (i + d))) Y"])
       (auto simp add: aform_val_def pdevs_val_msum_pdevs)
 next
-  case goal2
+  case (2 x xa y e ea)
   thus ?case using assms
     by (intro image_eqI[where x="\<lambda>i. if i < d then e i else ea (i - d)"])
       (force simp: aform_val_def pdevs_val_msum_pdevs intro!: pdevs_val_degree_cong)+

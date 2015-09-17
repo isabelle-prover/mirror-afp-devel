@@ -1017,8 +1017,8 @@ lemma param_nfoldli[param]:
   shows "(nfoldli,nfoldli) \<in> 
     \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb\<rightarrow>Id) \<rightarrow> (Ra\<rightarrow>Rb\<rightarrow>\<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
   apply (intro fun_relI)
-proof -
-  case (goal1 l l' c c' f f' s s')
+proof goal_cases
+  case (1 l l' c c' f f' s s')
   thus ?case
     apply (induct arbitrary: s s')
     using assms

@@ -272,16 +272,15 @@ lemma poly_no_roots_less_less:
   "(\<forall>x. a < x \<and> x < b \<longrightarrow> poly p x \<noteq> 0) \<longleftrightarrow> 
    ((a \<ge> b \<or> p \<noteq> 0 \<and> count_roots_between p a b = 
        (if poly p b = 0 then 1 else 0)))"
-proof
-  case goal1
-    note A = this
+proof (standard, goal_cases)
+  case A: 1
     thus ?case
-    proof (cases "a \<ge> b", simp)
-      case goal1
+    proof (cases "a \<ge> b", simp, goal_cases)
+      case prems: 1
       with A have [simp]: "p \<noteq> 0" using dense[of a b] by auto
       have B: "{x. a < x \<and> x \<le> b \<and> poly p x = 0} =
                 {x. a < x \<and> x < b \<and> poly p x = 0} \<union>
-                (if poly p b = 0 then {b} else {})" using goal1 by auto
+                (if poly p b = 0 then {b} else {})" using prems by auto
       have "count_roots_between p a b =
                  card {x. a < x \<and> x < b \<and> poly p x = 0} +
                 (if poly p b = 0 then 1 else 0)"
@@ -291,10 +290,10 @@ proof
       finally show ?thesis by auto
     qed
 next
-  case goal2
+  case prems: 2
     hence "card {x. a < x \<and> x < b \<and> poly p x = 0} = 0"
         by (subst poly_card_roots_less_less, auto simp: count_roots_between_def)
-    thus ?case using goal2
+    thus ?case using prems
         by (cases "p = 0", simp, subst (asm) card_eq_0_iff, 
             auto dest: poly_roots_finite)
 qed
@@ -310,15 +309,15 @@ lemma poly_no_roots_leq_less:
   "(\<forall>x. a \<le> x \<and> x < b \<longrightarrow> poly p x \<noteq> 0) \<longleftrightarrow>
    ((a \<ge> b \<or> p \<noteq> 0 \<and> poly p a \<noteq> 0 \<and> count_roots_between p a b = 
        (if a < b \<and> poly p b = 0 then 1 else 0)))"
-proof
-  case goal1
+proof (standard, goal_cases)
+  case prems: 1
     hence "\<forall>x. a < x \<and> x < b \<longrightarrow> poly p x \<noteq> 0" by simp
-    thus ?case using goal1 by (subst (asm) poly_no_roots_less_less, auto)
+    thus ?case using prems by (subst (asm) poly_no_roots_less_less, auto)
 next
-  case goal2
+  case prems: 2
     hence "(b \<le> a \<or> p \<noteq> 0 \<and> count_roots_between p a b = 
                (if poly p b = 0 then 1 else 0))" by auto
-    thus ?case using goal2 unfolding Let_def
+    thus ?case using prems unfolding Let_def
         by (subst (asm) poly_no_roots_less_less[symmetric, unfolded Let_def], 
         auto split: split_if_asm simp: less_eq_real_def) 
 qed
@@ -362,14 +361,14 @@ lemma poly_pos_leq:
 lemma poly_no_roots_geq:
   "(\<forall>x. x \<ge> a \<longrightarrow> poly p x \<noteq> 0) \<longleftrightarrow>
        ( (p \<noteq> 0 \<and> poly p a \<noteq> 0 \<and> count_roots_above p a = 0))"
-proof
-  case goal1
+proof (standard, goal_cases)
+  case prems: 1
   hence "\<forall>x>a. poly p x \<noteq> 0" by simp
-  thus ?case using goal1 by (subst (asm) poly_no_roots_greater, auto)
+  thus ?case using prems by (subst (asm) poly_no_roots_greater, auto)
 next
-  case goal2
+  case prems: 2
   hence "(p \<noteq> 0 \<and> count_roots_above p a = 0)" by simp
-  thus ?case using goal2 
+  thus ?case using prems 
       by (subst (asm) poly_no_roots_greater[symmetric, unfolded Let_def], 
           auto simp: less_eq_real_def)
 qed
@@ -382,22 +381,22 @@ lemma poly_pos_geq:
 lemma poly_no_roots_less:
   "(\<forall>x. x < a \<longrightarrow> poly p x \<noteq> 0) \<longleftrightarrow>
        ((p \<noteq> 0 \<and> count_roots_below p a = (if poly p a = 0 then 1 else 0)))"
-proof
-  case goal1
+proof (standard, goal_cases)
+  case prems: 1
   hence "{x. x \<le> a \<and> poly p x = 0} = (if poly p a = 0 then {a} else {})"
       by (auto simp: less_eq_real_def)
   moreover have "\<forall>x. \<not> x < a \<Longrightarrow> False" by (metis lt_ex)
-  ultimately show ?case using goal1 by (auto simp: count_roots_below_correct)
+  ultimately show ?case using prems by (auto simp: count_roots_below_correct)
 next
-  case goal2
+  case prems: 2
   have A: "{x. x \<le> a \<and> poly p x = 0} = {x. x < a \<and> poly p x = 0} \<union> 
             (if poly p a = 0 then {a} else {})" by (auto simp: less_eq_real_def)
   have "count_roots_below p a = card {x. x < a \<and> poly p x = 0} +
-            (if poly p a = 0 then 1 else 0)" using goal2
+            (if poly p a = 0 then 1 else 0)" using prems
       by (subst count_roots_below_correct, subst A, subst card_Un_disjoint,
           auto intro: poly_roots_finite)
-  with goal2 have "card {x. x < a \<and> poly p x = 0} = 0" by simp
-  thus ?case using goal2
+  with prems have "card {x. x < a \<and> poly p x = 0} = 0" by simp
+  thus ?case using prems
       by (subst (asm) card_eq_0_iff, auto intro: poly_roots_finite)
 qed
 

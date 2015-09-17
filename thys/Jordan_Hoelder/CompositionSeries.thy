@@ -688,16 +688,13 @@ next
   qed
 qed
 
-(* This lemma will be there in future versions of List.thy *)
-(* This proof is by Manuel Eberl. *)
-
 lemma hd_remdups_adj[simp]: "hd (remdups_adj xs) = hd xs"
   by (induction xs rule: remdups_adj.induct) simp_all
 
 lemma remdups_adj_adjacent:
   "Suc i < length (remdups_adj xs) \<Longrightarrow> remdups_adj xs ! i \<noteq> remdups_adj xs ! Suc i"
 proof (induction xs arbitrary: i rule: remdups_adj.induct)
-  case (goal3 x y xs i)
+  case (3 x y xs i)
   thus ?case by (cases i, cases "x = y") (simp, auto simp: hd_conv_nth[symmetric])
 qed simp_all
 

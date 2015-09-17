@@ -215,31 +215,31 @@ holds for the limit of a chain, given that it holds for all elements.
 *}
 
 lemma similar'_base_adm: "adm (\<lambda> x. similar'_base (fst x) (snd x))"
-proof (rule admI)
-  case (goal1 Y)
-  from goal1 have "Y = (\<lambda> _ . \<bottom>)" by (metis PairE fst_eqD inst_prod_pcpo similar'_base.simps snd_eqD)
+proof (rule admI, goal_cases)
+  case (1 Y)
+  then have "Y = (\<lambda> _ . \<bottom>)" by (metis PairE fst_eqD inst_prod_pcpo similar'_base.simps snd_eqD)
   thus ?case by auto
 qed
 
 lemma similar'_step_adm:
   assumes "adm (\<lambda> x. s (fst x) (snd x))"
   shows "adm (\<lambda> x. similar'_step s (fst x) (snd x))"
-proof (rule admI)
-  case (goal1 Y)
+proof (rule admI, goal_cases)
+  case prems: (1 Y)
   from `chain Y`
   have "chain (\<lambda> i. fst (Y i))" by (rule ch2ch_fst)
   thus ?case
   proof(cases rule: Value_chainE)
   case bot
     hence *: "\<And> i. fst (Y i) = \<bottom>" by metis
-    with goal1(2)[unfolded split_beta]
-    have "\<And> i. snd (Y i) = \<bottom>" by auto
+    with prems(2)[unfolded split_beta]
+    have "\<And>i. snd (Y i) = \<bottom>" by auto
     hence "Y = (\<lambda> i. (\<bottom>, \<bottom>))" using * by (metis surjective_pairing)
     thus ?thesis by auto
   next
   case (B n b)
-    hence "\<forall> i. fst (Y (i + n)) = B\<cdot>b" by (metis add.commute not_add_less1)
-    with goal1(2)
+    hence "\<forall>i. fst (Y (i + n)) = B\<cdot>b" by (metis add.commute not_add_less1)
+    with prems(2)
     have "\<forall>i. Y (i + n) = (B\<cdot>b, CB\<cdot>b)"
       apply auto
       apply (erule_tac x = "i + n" in allE)
@@ -255,11 +255,11 @@ proof (rule admI)
     fix Y'
     assume "chain Y'" and "(\<lambda>i. fst (Y i)) = (\<lambda> m. (if m < n then \<bottom> else Fn\<cdot>(Y' (m-n))))"
     hence Y': "\<And> i. fst (Y (i+n)) = Fn\<cdot>(Y' i)" by (metis add_diff_cancel_right' not_add_less2)
-    with goal1(2)[unfolded split_beta]
-    have "\<And> i. \<exists> g'. snd (Y (i+n)) = CFn\<cdot>g'"
+    with prems(2)[unfolded split_beta]
+    have "\<And>i. \<exists> g'. snd (Y (i+n)) = CFn\<cdot>g'"
       by -(erule_tac x = "i + n" in allE, auto elim!: similar'_step.cases)
     then obtain Y'' where Y'': "\<And> i. snd (Y (i+n)) = CFn\<cdot>(Y'' i)" by metis
-    from goal1(1) have "\<And>i. Y i \<sqsubseteq> Y (Suc i)"
+    from prems(1) have "\<And>i. Y i \<sqsubseteq> Y (Suc i)"
       by (simp add: po_class.chain_def)
     then have *: "\<And>i. Y (i + n) \<sqsubseteq> Y (Suc i + n)"
       by simp
@@ -274,7 +274,7 @@ proof (rule admI)
     have "similar'_step s (Fn\<cdot>(\<Squnion> i. (Y' i))) (CFn \<cdot> (\<Squnion> i. Y'' i))"
     proof (rule Fun_similar'_step)
       fix x y
-      from goal1(2) Y' Y''
+      from prems(2) Y' Y''
       have "\<And>i. similar'_step s (Fn\<cdot>(Y' i)) (CFn\<cdot>(Y'' i))" by metis
       moreover
       assume "s x (y\<cdot>C\<^sup>\<infinity>)"
@@ -291,7 +291,7 @@ proof (rule admI)
     qed
     hence "similar'_step s (fst (\<Squnion> i. Y (i+n))) (snd (\<Squnion> i. Y (i+n)))"
       by (simp add: Y' Y''
-          cont2contlubE[OF cont_fst chain_shift[OF goal1(1)]]  cont2contlubE[OF cont_snd chain_shift[OF goal1(1)]]
+          cont2contlubE[OF cont_fst chain_shift[OF prems(1)]]  cont2contlubE[OF cont_snd chain_shift[OF prems(1)]]
            contlub_cfun_arg[OF `chain Y''`] contlub_cfun_arg[OF `chain Y'`])
     thus "similar'_step s (fst (\<Squnion> i. Y i)) (snd (\<Squnion> i. Y i))"
       by (simp add: lub_range_shift[OF `chain Y`])

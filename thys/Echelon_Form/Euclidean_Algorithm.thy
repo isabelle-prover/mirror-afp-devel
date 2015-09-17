@@ -1860,8 +1860,8 @@ definition [simp]:
 definition [simp]:
   "normalisation_factor_nat (n::nat) = (if n = 0 then 0 else 1 :: nat)"
 
-instance proof
-qed (simp_all add: is_unit_def)
+instance
+  by standard (simp_all add: is_unit_def)
 
 end
 
@@ -1874,14 +1874,19 @@ definition [simp]:
 definition [simp]:
   "normalisation_factor_int = (sgn :: int \<Rightarrow> int)"
 
-instance proof
-  case goal2 then show ?case by (auto simp add: abs_mult nat_mult_distrib)
+instance
+proof (standard, goal_cases)
+  case 2
+  then show ?case by (auto simp add: abs_mult nat_mult_distrib)
 next
-  case goal3 then show ?case by (simp add: zsgn_def is_unit_def)
+  case 3
+  then show ?case by (simp add: zsgn_def is_unit_def)
 next
-  case goal5 then show ?case by (auto simp: zsgn_def is_unit_def)
+  case 5
+  then show ?case by (auto simp: zsgn_def is_unit_def)
 next
-  case goal6 then show ?case by (auto split: abs_split simp: zsgn_def is_unit_def) 
+  case 6
+  then show ?case by (auto split: abs_split simp: zsgn_def is_unit_def) 
 qed (auto simp: sgn_times split: abs_split)
 
 end
@@ -2039,7 +2044,6 @@ end
 context euclidean_ring_gcd
 begin
 
-
 lemmas gcd_neg1 = gcd_eucl_neg1[unfolded gcd_gcd_eucl[symmetric]]
 lemmas gcd_neg2 = gcd_eucl_neg2[unfolded gcd_gcd_eucl[symmetric]]
 lemmas gcd_neg_numeral_1 = gcd_eucl_neg_numeral_1[unfolded gcd_gcd_eucl[symmetric]]
@@ -2061,5 +2065,3 @@ lemmas bezout = bezout[unfolded gcd_gcd_eucl[symmetric]]
 end
 
 end
-
-

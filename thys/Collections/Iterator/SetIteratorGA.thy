@@ -116,8 +116,8 @@ assumes it: "set_iterator it S0"
 shows "iterate_size_abort it n = (min n (card S0)) \<and> finite S0"
 unfolding iterate_size_abort_def
 proof (rule set_iterator_rule_insert_P [OF it,
-   where I = "\<lambda>S \<sigma>. \<sigma> = (min n (card S)) \<and> finite S"])
-  case (goal4 \<sigma> S)
+   where I = "\<lambda>S \<sigma>. \<sigma> = (min n (card S)) \<and> finite S"], goal_cases)
+  case (4 \<sigma> S)
   assume "S \<subseteq> S0" "S \<noteq> S0" "\<not> \<sigma> < n" "\<sigma> = min n (card S) \<and> finite S" 
 
   from `\<sigma> = min n (card S) \<and> finite S` `\<not> \<sigma> < n` 

@@ -35,10 +35,12 @@ lemma HSem_below:
   assumes rho: "\<And>x. x \<notin> domA h \<Longrightarrow> \<rho> x \<sqsubseteq> r x"
   assumes h: "\<And>x. x \<in> domA h \<Longrightarrow> \<lbrakk>the (map_of h x)\<rbrakk>\<^bsub>r\<^esub> \<sqsubseteq> r x"
   shows "\<lbrace>h\<rbrace>\<rho> \<sqsubseteq> r"
-proof (rule HSem_ind)
-  case goal1 show ?case by (auto)
-  case goal2 show ?case by (rule minimal)
-  case (goal3 \<rho>')
+proof (rule HSem_ind, goal_cases)
+  case 1 show ?case by (auto)
+next
+  case 2 show ?case by (rule minimal)
+next
+  case (3 \<rho>')
     show ?case
     by (rule override_on_belowI)
        (auto simp add: lookupEvalHeap  below_trans[OF monofun_cfun_arg[OF `\<rho>' \<sqsubseteq> r`] h] rho)
@@ -193,22 +195,21 @@ proof (rule below_antisym)
   by (rule HSem_below)
      (auto simp add: lookup_HSem_heap fun_belowD[OF env_restr_below_itself])
 
-
   show "?RHS \<sqsubseteq> ?LHS"
-  proof(rule HSem_below)
-  case goal1
+  proof(rule HSem_below, goal_cases)
+    case (1 x)
     thus ?case
-    by (case_tac "x \<notin> edom \<rho>") (auto simp add: lookup_HSem_other dest:lookup_not_edom)
+      by (cases "x \<notin> edom \<rho>") (auto simp add: lookup_HSem_other dest:lookup_not_edom)
   next
-  case (goal2 x)
+    case prems: (2 x)
     thus ?case
     proof(cases "x \<in> domA \<Gamma>")
     case True
       thus ?thesis by (auto simp add: lookup_HSem_heap)
     next
     case False
-      hence delta: "x \<in> domA \<Delta>" using goal2 by auto
-      with False  `?LHS \<sqsubseteq> ?RHS`
+      hence delta: "x \<in> domA \<Delta>" using prems by auto
+      with False `?LHS \<sqsubseteq> ?RHS`
       show ?thesis by (auto simp add: lookup_HSem_other lookup_HSem_heap monofun_cfun_arg)
     qed
   qed
@@ -379,10 +380,12 @@ lemma HSem_add_fresh':
   assumes "x \<notin> edom \<rho>"
   assumes step: "\<And>e \<rho>'. e \<in> snd ` set \<Gamma> \<Longrightarrow> \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub> = \<lbrakk> e \<rbrakk>\<^bsub>env_delete x \<rho>'\<^esub>"
   shows  "env_delete x (\<lbrace>(x, e) # \<Gamma>\<rbrace>\<rho>) = \<lbrace>\<Gamma>\<rbrace>\<rho>"
-proof (rule parallel_HSem_ind)
-case goal1 show ?case by simp
-case goal2 show ?case by auto
-case (goal3 y z)
+proof (rule parallel_HSem_ind, goal_cases)
+  case 1 show ?case by simp
+next
+  case 2 show ?case by auto
+next
+  case prems: (3 y z)
   have "env_delete x \<rho> = \<rho>" using `x \<notin> edom \<rho>` by (rule env_delete_noop)
   moreover
   from fresh have "x \<notin> domA \<Gamma>" by (metis domA_not_fresh)
@@ -392,7 +395,8 @@ case (goal3 y z)
   have "\<dots> = \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>z\<^esub>"
     apply (rule evalHeap_cong[OF refl])
     apply (subst (1) step, assumption)
-    using goal3(1) by auto
+    using prems(1) apply auto
+    done
   ultimately
   show ?case using `x \<notin> domA \<Gamma>`
     by (simp add: env_delete_add)
@@ -402,8 +406,8 @@ lemma HSem_add_fresh:
   assumes "atom x \<sharp> \<Gamma>"
   assumes "x \<notin> edom \<rho>"
   shows  "env_delete x (\<lbrace>(x, e) # \<Gamma>\<rbrace>\<rho>) = \<lbrace>\<Gamma>\<rbrace>\<rho>"
-proof(rule HSem_add_fresh'[OF assms])
-case (goal1 e \<rho>')
+proof(rule HSem_add_fresh'[OF assms], goal_cases)
+  case (1 e \<rho>')
   assume "e \<in> snd ` set \<Gamma>"
   hence "atom x \<sharp> e" by (metis assms(1) fresh_heap_expr')
   hence "x \<notin> fv e" by (simp add: fv_def fresh_def)

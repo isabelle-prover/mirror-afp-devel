@@ -23,14 +23,14 @@ permanent_interpretation brzozowski: rexp_DFA "\<lambda>r. \<guillemotleft>r\<gu
     and reachable_brz = "rexp_DA.reachable (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
     and automaton_brz = "rexp_DA.automaton (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
     and match_brz = "rexp_DA.match (\<lambda>r. \<guillemotleft>r\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
-proof unfold_locales
-  case goal1 show ?case by (rule lang_ACI_norm)
+proof (unfold_locales, goal_cases)
+  case 1 show ?case by (rule lang_ACI_norm)
 next
-  case goal2 show ?case by (rule trans[OF lang_ACI_norm lang_deriv])
+  case 2 show ?case by (rule trans[OF lang_ACI_norm lang_deriv])
 next
-  case goal3 show ?case by (rule nullable_iff)
+  case 3 show ?case by (rule nullable_iff)
 next
-  case goal4 show ?case by (simp only: ACI_norm_derivs_alt[symmetric] finite_derivs)
+  case 4 show ?case by (simp only: ACI_norm_derivs_alt[symmetric] finite_derivs)
 qed
 
 subsection {* Brzozowski Derivatives Modulo ACI Operating on the Quotient Type *}
@@ -82,14 +82,14 @@ permanent_interpretation brzozowski_quotient: rexp_DFA ACI_class ACI_deriv ACI_n
     and reachable_brzq = "rexp_DA.reachable (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
     and automaton_brzq = "rexp_DA.automaton (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
     and match_brzq = "rexp_DA.match (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv ACI_nullable"
-proof unfold_locales
-  case goal1 show ?case by transfer (rule refl)
+proof (unfold_locales, goal_cases)
+  case 1 show ?case by transfer (rule refl)
 next
-  case goal2 show ?case by transfer (rule lang_deriv)
+  case 2 show ?case by transfer (rule lang_deriv)
 next
-  case goal3 show ?case by transfer (rule nullable_iff)
+  case 3 show ?case by transfer (rule nullable_iff)
 next
-  case goal4 show ?case by transfer
+  case 4 show ?case by transfer
     (auto simp: ACI_decidable derivs_alt intro!: finite_subset[OF _ finite_derivs])
 qed
 
@@ -102,12 +102,12 @@ permanent_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable la
     and reachable_n = "rexp_DA.reachable (\<lambda>r :: 'a rexp. norm r) nderiv"
     and automaton_n = "rexp_DA.automaton (\<lambda>r :: 'a rexp. norm r) nderiv"
     and match_n = "rexp_DA.match (\<lambda>r. norm r) nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
-proof unfold_locales
-  case goal1 show ?case by simp
+proof (unfold_locales, goal_cases)
+  case 1 show ?case by simp
 next
-  case goal2 show ?case by (rule lang_nderiv)
+  case 2 show ?case by (rule lang_nderiv)
 next
-  case goal3 show ?case by (rule nullable_iff)
+  case 3 show ?case by (rule nullable_iff)
 qed
 
 
@@ -119,14 +119,14 @@ permanent_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda
     and reachable_p = "rexp_DA.reachable (\<lambda>r :: 'a rexp. {r}) pderiv_set"
     and automaton_p = "rexp_DA.automaton (\<lambda>r :: 'a rexp. {r}) pderiv_set"
     and match_p = "rexp_DA.match (\<lambda>r :: 'a rexp. {r}) pderiv_set (\<lambda>P. EX p:P. nullable p)"
-proof unfold_locales
-  case goal1 show ?case by simp
+proof (unfold_locales, goal_cases)
+  case 1 show ?case by simp
 next
-  case goal2 show ?case by (simp add: Deriv_pderiv)
+  case 2 show ?case by (simp add: Deriv_pderiv)
 next
-  case goal3 show ?case by (simp add: nullable_iff)
+  case 3 show ?case by (simp add: nullable_iff)
 next
-  case goal4 note pderivs_lang_def[simp]
+  case (4 s) note pderivs_lang_def[simp]
   { fix w :: "'a list"
     have "fold pderiv_set w = Union o image (pderivs_lang {w})" by (induct w) auto
   }
@@ -140,14 +140,14 @@ permanent_interpretation pnderiv: rexp_DFA "\<lambda>r. r" pnderiv nullable lang
     and reachable_pn = "rexp_DA.reachable (\<lambda>r :: 'a rexp. r) pnderiv"
     and automaton_pn = "rexp_DA.automaton (\<lambda>r :: 'a rexp. r) pnderiv"
     and match_pn = "rexp_DA.match (\<lambda>r :: 'a rexp. r) pnderiv nullable"
-proof unfold_locales
-  case goal1 show ?case by simp
+proof (unfold_locales, goal_cases)
+  case 1 show ?case by simp
 next
-  case goal2 show ?case by (simp add: pnorm_def pset_deriv Deriv_pderiv pnderiv_alt)
+  case 2 show ?case by (simp add: pnorm_def pset_deriv Deriv_pderiv pnderiv_alt)
 next
-  case goal3 show ?case by (simp add: nullable_iff)
+  case 3 show ?case by (simp add: nullable_iff)
 next
-  case goal4
+  case (4 s)
   then show ?case unfolding pnderiv_alt[abs_def]
     by (rule finite_surj[OF pderiv.fin, of _ "flatten PLUS" s]) (auto simp: fold_pnorm_deriv)
 qed
@@ -160,8 +160,8 @@ lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
   by (induct w arbitrary: L) simp_all
 
 interpretation language: rexp_DFA lang Deriv "\<lambda>L. [] \<in> L" id
-proof unfold_locales
-  case goal4
+proof (unfold_locales, goal_cases)
+  case (4 s)
   have "{fold Deriv w (lang s) |w. True} \<subseteq> (\<lambda>X. UNION X lang) ` Pow (pderivs_lang UNIV s)"
     by (auto simp: sym[OF Derivs_alt_def] Derivs_pderivs pderivs_lang_def)
   then show ?case by (rule finite_surj[OF iffD2[OF finite_Pow_iff finite_pderivs_lang_UNIV]])

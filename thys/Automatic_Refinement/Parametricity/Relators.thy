@@ -210,15 +210,16 @@ lemma list_rel_induct[induct set,consumes 1, case_names Nil Cons]:
 
 lemma list_rel_eq_listrel: "list_rel = listrel"
   apply (rule ext)
-proof safe
-  case goal1 thus ?case
+  apply safe
+proof goal_cases
+  case (1 x a b) thus ?case
     unfolding list_rel_def_internal
     apply simp
     apply (induct a b rule: list_all2_induct)
     apply (auto intro: listrel.intros)
     done
 next
-  case goal2 thus ?case
+  case 2 thus ?case
     apply (induct)
     apply (auto simp: list_rel_def_internal)
     done

@@ -436,9 +436,9 @@ lemma nodeToDigit_list: "digitToList (nodeToDigit nd) = nodeToList nd"
 lemma viewLn_empty: "t \<noteq> Empty \<longleftrightarrow> (viewLn t) \<noteq> None"
 proof (cases t)
   case Empty thus ?thesis by simp
-  next
+next
   case (Single Node) thus ?thesis by simp
-  next
+next
   case (Deep a l x r) thus ?thesis 
   apply(auto)
   apply(case_tac l)
@@ -470,7 +470,7 @@ proof -
   thus "is_measured_ftree s \<and>
           is_measured_node nd \<and> is_leveln_ftree n s \<and> is_leveln_node n nd"
   proof (cases "viewLn m" rule: viewnres_cases)
-  case Nil
+    case Nil
     with av(4) have v1: "nd = a" "s = digitToTree sf"
     by auto
     from v1 av(2,3) show "is_measured_ftree s \<and>
@@ -478,8 +478,8 @@ proof -
        apply(auto)
        apply(auto simp add: digitToTree_inv)
     done
-    next
-  case (Cons b m2)
+  next
+    case (Cons b m2)
     with av(4) have v2: "nd = a" "s = (deep (nodeToDigit b) m2 sf)" 
     apply (auto simp add: deep_def)
     done
@@ -514,35 +514,33 @@ lemma viewLn_list: " viewLn t = Some (nd, s)
   apply(simp add: deep_def)
   apply(auto simp add: toList_def)[1]
   apply(simp)
-proof -
-  case goal1
-  thus ?case 
+  subgoal premises prems for a m sf nd s
+    using prems
   proof (cases "viewLn m" rule: viewnres_cases)
     case Nil
     hence av: "m = Empty" by (metis viewLn_empty)  
-    from av goal1 
+    from av prems
     show "nodeToList a @ toList m @ digitToList sf = nodeToList nd @ toList s"
-      apply (auto simp add: digitToTree_list)
-      done        
+      by (auto simp add: digitToTree_list)
   next        
     case (Cons b m2)
-    with goal1 have bv: "nd = a" "s = (deep (nodeToDigit b) m2 sf)"
-      apply(auto simp add: deep_def) done
-    with Cons goal1 
+    with prems have bv: "nd = a" "s = (deep (nodeToDigit b) m2 sf)"
+      by (auto simp add: deep_def)
+    with Cons prems
     show "nodeToList a @ toList m @ digitToList sf = nodeToList nd @ toList s"
       apply(simp)
       apply(simp add: deep_def)
       apply(simp add: deep_def nodeToDigit_list)
       done
   qed
-qed
+  done
 
 lemma viewRn_empty: "t \<noteq> Empty \<longleftrightarrow> (viewRn t) \<noteq> None"
 proof (cases t)
   case Empty thus ?thesis by simp
-  next
+next
   case (Single Node) thus ?thesis by simp
-  next
+next
   case (Deep a l x r) thus ?thesis 
   apply(auto)
   apply(case_tac r)
@@ -574,7 +572,7 @@ proof -
   thus "is_measured_ftree s \<and>
           is_measured_node nd \<and> is_leveln_ftree n s \<and> is_leveln_node n nd"
   proof (cases "viewRn m" rule: viewnres_cases)
-  case Nil
+    case Nil
     with av(4) have v1: "nd = a" "s = digitToTree pr"
     by auto
     from v1 av(2,3) show "is_measured_ftree s \<and>
@@ -582,8 +580,8 @@ proof -
        apply(auto)
        apply(auto simp add: digitToTree_inv)
     done
-    next
-  case (Cons b m2)
+  next
+    case (Cons b m2)
     with av(4) have v2: "nd = a" "s = (deep pr m2 (nodeToDigit b))" 
     apply (auto simp add: deep_def)
     done
@@ -618,32 +616,25 @@ lemma viewRn_list: "viewRn t = Some (nd, s)
   apply(simp add: deep_def)
   apply(auto simp add: toList_def)[1]
   apply(simp)
-  proof -
-    case goal1
-    thus ?case 
-    proof (cases "viewRn m" rule: viewnres_cases)
-      case Nil
-        from Nil have av: "m = Empty" by (metis viewRn_empty)  
-        from av goal1 show 
-          "digitToList pr @ toList m @ nodeToList a = toList s @ nodeToList nd"
-        apply (auto simp add: digitToTree_list)
-        
-        done        
-        next        
-      case (Cons b m2)
-        with goal1 have bv: "nd = a" "s = (deep pr m2 (nodeToDigit b))"
-        apply(auto simp add: deep_def) done
-        with Cons goal1 show 
-          "digitToList pr @ toList m @ nodeToList a = toList s @ nodeToList nd"
-        apply(simp)
-        apply(simp add: deep_def)
-          apply(simp add: deep_def nodeToDigit_list)
-       done
-     qed
+  subgoal premises prems for pr m a nd s
+  proof (cases "viewRn m" rule: viewnres_cases)
+    case Nil
+    from Nil have av: "m = Empty" by (metis viewRn_empty)  
+    from av prems
+    show "digitToList pr @ toList m @ nodeToList a = toList s @ nodeToList nd"
+      by (auto simp add: digitToTree_list)
+  next        
+    case (Cons b m2)
+    with prems have bv: "nd = a" "s = (deep pr m2 (nodeToDigit b))"
+    apply(auto simp add: deep_def) done
+    with Cons prems
+    show "digitToList pr @ toList m @ nodeToList a = toList s @ nodeToList nd"
+      apply(simp)
+      apply(simp add: deep_def)
+      apply(simp add: deep_def nodeToDigit_list)
+     done
   qed
-
-
-
+  done
 
 
 type_synonym ('e,'a) viewres = "(('e \<times>'a) \<times> ('e,'a) FingerTreeStruc) option"
@@ -1194,7 +1185,8 @@ lemma deepL_list:
   shows "toList (deepL pr m sf) = nlistToList pr @ toList m @ digitToList sf"
 proof (insert assms, induct "pr" m sf rule: deepL.induct)
   case (1 m sf)
-  thus ?case proof (auto split: viewnres_split simp add: deep_def)
+  thus ?case
+  proof (auto split: viewnres_split simp add: deep_def)
     assume "viewLn m = None"
     hence "m = Empty" by (metis viewLn_empty)
     hence "toList m = []" by simp
@@ -1269,7 +1261,8 @@ lemma deepR_list:
   shows "toList (deepR pr m sf) = digitToList pr @ toList m @ nlistToList sf"
 proof (insert assms, induct "pr" m sf rule: deepR.induct)
   case (1 "pr" m)
-  thus ?case proof (auto split: viewnres_split simp add: deep_def)
+  thus ?case
+  proof (auto split: viewnres_split simp add: deep_def)
     assume "viewRn m = None"
     hence "m = Empty" by (metis viewRn_empty)
     hence "toList m = []" by simp
@@ -1314,11 +1307,11 @@ lemma splitNlist_correct:" \<lbrakk>
   nl = l @ n # r
   "
 proof (induct p i nl arbitrary: l n r rule: splitNlist.induct)
-  thm splitNlist.induct
   case 1 thus ?case by simp
 next
   case (2 p i a v va l n r) note IV = this 
-  show ?case proof  (cases "p (i + (gmn a))")
+  show ?case
+  proof (cases "p (i + (gmn a))")
     case True with IV show ?thesis by simp
   next
     case False note IV2 = this IV  thus ?thesis
@@ -1739,7 +1732,7 @@ next
       proof -
         obtain l1 x r1 where 
           l1_x_r1 :"nsplitTree p (i + gmd pr) m = (l1, x, r1)"
-          by (cases "nsplitTree p (i + gmd pr) m", blast)
+          by (cases "nsplitTree p (i + gmd pr) m") blast
         from 3(2,3) have 
           pr_m_sf_inv: "is_leveln_digit n pr \<and> is_measured_digit pr"
           "is_leveln_ftree (Suc n) m \<and> is_measured_ftree m"

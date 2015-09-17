@@ -404,18 +404,18 @@ by (induction x rule: f2'.induct)
                
 lemma f2'_le_f: "x \<ge> x\<^sub>0 \<Longrightarrow> gc2 * f2' x \<le> f x"
 proof (induction rule: f2'.induct)
-  case (goal1 x)
+  case (1 x)
   with gc2 f_nonneg show ?case by (simp add: max_def field_simps)
 next
-  case (goal2 x)
+  case prems: (2 x)
   with gx0 gx0_le_gx1 have "gc2 * g' (real x) \<le> g x" by force
-  moreover from step_ge_x0 goal2(1) gx0_ge_x1 gx0_le_gx1
+  moreover from step_ge_x0 prems(1) gx0_ge_x1 gx0_le_gx1
     have "\<And>i. i < k \<Longrightarrow> x\<^sub>0 \<le> (ts!i) x" by simp
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc2 * f2' ((ts!i) x)) \<le> as!i * f ((ts!i) x)"
-    using goal2(1) by (intro mult_left_mono a_ge_0 goal2(2)) auto
+    using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc2 * (\<Sum>i<k. as!i*f2' ((ts!i) x)) \<le> (\<Sum>i<k. as!i*f ((ts!i) x))"
     by (subst setsum_right_distrib, intro setsum_mono) (simp_all add: algebra_simps)
-  ultimately show ?case using goal2(1) gx0_ge_x1 gx0_le_gx1
+  ultimately show ?case using prems(1) gx0_ge_x1 gx0_le_gx1
     by (simp_all add: algebra_simps f_rec)
 qed
 
@@ -424,22 +424,22 @@ proof (subst eventually_at_top_linorder, intro exI allI impI)
   fix x :: nat assume "x \<ge> gx0"
   thus "f2' x > 0"
   proof (induction x rule: f2'.induct)
-    case (goal1 x)
+    case (1 x)
     with gc2 gx0(2)[of x] show ?case by (simp add: max_def field_simps)
   next
-    case (goal2 x)
+    case prems: (2 x)
     have "(\<Sum>i<k. as!i*f2' ((ts!i) x)) > 0"
     proof (rule setsum_pos')
       from ex_pos_a' guess i by (elim exE conjE) note i = this
-      with goal2(1) gx0 gx1 have "as!i * f2' ((ts!i) x) > 0"
-        by (intro mult_pos_pos goal2(2)) simp_all
+      with prems(1) gx0 gx1 have "as!i * f2' ((ts!i) x) > 0"
+        by (intro mult_pos_pos prems(2)) simp_all
       with i show "\<exists>i\<in>{..<k}. as!i * f2' ((ts!i) x) > 0" by blast
     next
       fix i assume i: "i \<in> {..<k}"
-      with goal2(1) have "f2' ((ts!i) x) > 0" by (intro goal2(2) gx1) simp_all
+      with prems(1) have "f2' ((ts!i) x) > 0" by (intro prems(2) gx1) simp_all
       with i show "as!i * f2' ((ts!i) x) \<ge> 0" by (intro mult_nonneg_nonneg[OF a_ge_0]) simp_all
     qed simp_all
-    with goal2(1) gx0_le_gx1 show ?case by (auto intro!: add_nonneg_pos gx0)
+    with prems(1) gx0_le_gx1 show ?case by (auto intro!: add_nonneg_pos gx0)
   qed
 qed
 
@@ -530,7 +530,7 @@ proof-
   proof-
     fix x :: nat show "abr.f' (real (x::nat)) = f2' x"
     proof (induction "real x" arbitrary: x rule: abr.f'.induct)
-      case (goal2 x)
+      case (2 x)
       note x = this(1) and IH = this(2)
       from x have "abr.f' (real x) = g' (real x) + (\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x))"
         by (auto simp: gt_x1'D hs'_real g_real_def intro!: setsum.cong)
@@ -667,18 +667,18 @@ termination by (relation "Wellfounded.measure (\<lambda>x. x)")
 
 lemma f'_ge_f: "x \<ge> x\<^sub>0 \<Longrightarrow> gc1 * f' x \<ge> f x"
 proof (induction rule: f'.induct)
-  case (goal1 x)
+  case (1 x)
   with gc1 f_nonneg show ?case by (simp add: max_def field_simps)
 next
-  case (goal2 x)
+  case prems: (2 x)
   with gx3 have "gc1 * g' (real x) \<ge> g x" by force
-  moreover from step_ge_x0 goal2(1) gx3_ge_x1
+  moreover from step_ge_x0 prems(1) gx3_ge_x1
     have "\<And>i. i < k \<Longrightarrow> x\<^sub>0 \<le> nat \<lfloor>(ts!i) x\<rfloor>" by (intro le_nat_floor) simp
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc1 * f' ((ts!i) x)) \<ge> as!i * f ((ts!i) x)"
-    using goal2(1) by (intro mult_left_mono a_ge_0 goal2(2)) auto
+    using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc1 * (\<Sum>i<k. as!i*f' ((ts!i) x)) \<ge> (\<Sum>i<k. as!i*f ((ts!i) x))"
     by (subst setsum_right_distrib, intro setsum_mono) (simp_all add: algebra_simps)
-  ultimately show ?case using goal2(1) gx3_ge_x1
+  ultimately show ?case using prems(1) gx3_ge_x1
     by (simp_all add: algebra_simps f_rec)
 qed
 
@@ -763,7 +763,7 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
   proof-
     fix x :: nat show "abr.f' (real (x::nat)) = f' x"
     proof (induction "real x" arbitrary: x rule: abr.f'.induct)
-      case (goal2 x)
+      case (2 x)
       note x = this(1) and IH = this(2)
       from x have "abr.f' (real x) = g' (real x) + (\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x))"
         by (auto simp: gt_x1'D hs'_real intro!: setsum.cong)

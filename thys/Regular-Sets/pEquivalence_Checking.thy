@@ -142,24 +142,24 @@ proof-
   { fix st
     have "pre_Bisim as R S st \<Longrightarrow> test st \<Longrightarrow> pre_Bisim as R S (step as st)"
     unfolding pre_Bisim_def
-    proof(split prod.splits, elim case_prodE conjE, intro allI impI conjI)
-      case goal1 thus ?case by(auto split: list.splits)
+    proof(split prod.splits, elim case_prodE conjE, intro allI impI conjI, goal_cases)
+      case 1 thus ?case by(auto split: list.splits)
     next
-      case (goal2 ws ps ws' ps')
-      note goal2(2)[simp]
+      case prems: (2 ws ps ws' ps')
+      note prems(2)[simp]
       from `test st` obtain wstl R S where [simp]: "ws = (R,S)#wstl"
         by (auto split: list.splits)
       from `step as st = (ws',ps')` obtain P where [simp]: "ps' = (R,S) # ps"
         and [simp]: "ws' = remdups(filter P (map (\<lambda>a. (Pderiv a R, Pderiv a S)) as)) @ wstl"
         by auto
       have "\<forall>(R',S')\<in>set wstl \<union> set ps'. Atoms R' \<union> Atoms S' \<subseteq> set as"
-        using goal2(4) by auto
+        using prems(4) by auto
       moreover
       have "\<forall>a\<in>set as. Atoms(Pderiv a R) \<union> Atoms(Pderiv a S) \<subseteq> set as"
-        using goal2(4) by simp (metis (lifting) Atoms_Pderiv order_trans)
+        using prems(4) by simp (metis (lifting) Atoms_Pderiv order_trans)
       ultimately show ?case by simp blast
     next
-      case goal3 thus ?case
+      case 3 thus ?case
         apply (clarsimp simp: image_iff split: prod.splits list.splits)
         by hypsubst_thin metis
     qed
@@ -238,14 +238,14 @@ proof(unfold closure_def)
     let ?new = "filter (\<lambda>p. p \<notin> set bs \<union> set ws) ?succs"
     let ?ws' = "remdups ?new @ ws'"
     have "?Inv (step as s)" and "?m2(step as s) < ?m2 s"
-    proof-
-      case goal1
+    proof goal_cases
+      case 1
       from `?Inv s` have "distinct ?ws'" by auto
       have "ALL (R,S) : set ?ws'. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set ?bs'" using `?Inv s`
         by(simp add: Ball_def image_iff) (metis Pderiv_PDERIVS)
       with `distinct ?ws'` show ?case by(simp)
     next
-      case goal2
+      case 2
       have "finite(?m1 bs)"
         by(metis assms finite_Diff finite_PDERIVS finite_cartesian_product finite_Pow_iff)
       moreover have "?m2(step as s) < ?m2 s" using `?Inv s`

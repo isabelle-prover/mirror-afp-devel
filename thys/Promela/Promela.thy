@@ -1412,17 +1412,17 @@ definition setUp :: "ast \<Rightarrow> program \<times> gState" where
 
 lemma setUp_program_inv':
   "program_inv (fst (setUp ast))"
-proof (rule program_invI)
-  case goal1 show ?case by (simp add: setUp_def split: prod.split)
+proof (rule program_invI, goal_cases)
+  case 1 show ?case by (simp add: setUp_def split: prod.split)
 next
-  case goal2 show ?case by (simp add: setUp_def split: prod.split)
+  case 2 show ?case by (simp add: setUp_def split: prod.split)
 next
-  case goal3 thus ?case
+  case 3 thus ?case
     by (auto simp add: setUp_def o_def  
              split: prod.splits 
              dest!: toProcess_states_nonempty)
 next
-  case goal4 thus ?case
+  case 4 thus ?case
     unfolding setUp_def
     by (auto simp add: lm.correct o_def in_set_enumerate_eq nth_enumerate_eq 
             dest!: subsetD[OF Misc.ran_map_of] toProcess_sidx 
@@ -1430,7 +1430,7 @@ next
   (* TODO: Change name Misc.ran_map_of \<longrightarrow> ran_map_of_ss, as it collides 
       with AList.ran_map_of *)
 next
-  case goal5 thus ?case
+  case 5 thus ?case
     apply (auto simp add: setUp_def o_def split: prod.splits)
     apply (frule toProcess_sidx)
     apply (frule toProcess_start)

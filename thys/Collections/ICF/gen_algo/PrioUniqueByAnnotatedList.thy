@@ -543,33 +543,33 @@ proof -
   interpret al_app \<alpha> invar app by fact
   interpret al_consr \<alpha> invar consr by fact
   show ?thesis 
-  proof (unfold_locales,unfold aluprio_defs)
-    case goal1 note g1asms = this
+  proof (unfold_locales, unfold aluprio_defs, goal_cases)
+    case g1asms: (1 s e a)
     thus ?case proof (cases "e_less_eq e (annot s) \<and> \<not> isEmpty s")
       case False with g1asms show  ?thesis
         apply (auto simp add: consr_correct )
-      proof -
-        case goal1
+      proof goal_cases
+        case prems: 1
         with assms(2) have  
           "\<forall>x \<in> set (map (fst \<circ> (p_unwrap \<circ> snd)) (\<alpha> s)). x < e"
           by (simp add: e_less_eq_annot)
-        with goal1(3) show ?case
+        with prems(3) show ?case
           by(auto simp add: sorted_append)
       next
-        case goal2
+        case prems: 2
         hence "annot s = listsum (map snd (\<alpha> s))" 
           by (simp add: annot_correct)
-        with goal2
+        with prems
         show ?case 
           by (auto simp add: e_less_eq_listsum2)
       next
-        case goal3
+        case prems: 3
         hence "\<alpha> s = []" by (auto simp add: isEmpty_correct)
         thus ?case by simp
       next
-        case goal4
+        case prems: 4
         hence "\<alpha> s = []" by (auto simp add: isEmpty_correct)
-        with goal4 show ?case by simp
+        with prems show ?case by simp
       qed
     next
       case True note T1 = this
@@ -697,12 +697,12 @@ proof -
       qed
     qed
   next
-    case goal2 note g1asms = this
+    case g1asms: (2 s e a)
     thus ?case proof (cases "e_less_eq e (annot s) \<and> \<not> isEmpty s")
       case False with g1asms show  ?thesis
         apply (auto simp add: consr_correct)
-      proof -
-        case goal1
+      proof goal_cases
+        case prems: 1
         with assms(2) have  
           "\<forall>x \<in> set (map (fst \<circ> (p_unwrap \<circ> snd)) (\<alpha> s)). x < e"
           by (simp add: e_less_eq_annot)
@@ -711,7 +711,7 @@ proof -
         thus ?case
           by (auto simp add: map_of_distinct_upd)
       next
-        case goal2
+        case prems: 2
         hence "\<alpha> s = []" by (auto simp add: isEmpty_correct)
         thus ?case
           by simp

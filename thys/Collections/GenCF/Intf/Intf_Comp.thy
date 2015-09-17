@@ -736,13 +736,11 @@ proof -
     apply (rule eq_linorder_on.intro)
     apply rule
     apply unfold_locales
-  proof -
-    case (goal1 l m)
-    thus ?case 
+    subgoal for l m
       apply (induct cmp\<equiv>cmp l m rule: cmp_lex.induct)
       apply (auto split: comp_res.splits)
       done
-  qed
+    done
 qed
 
 lemma prod_eq_linorder[intro?]:

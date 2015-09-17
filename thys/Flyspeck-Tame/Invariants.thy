@@ -2172,8 +2172,8 @@ proof -
     finally show ?thesis .
   qed
   show ?thesis
-  proof (auto del: disjCI simp:one_final_but_def F)
-    case (goal1 a b)
+  proof (auto del: disjCI simp:one_final_but_def F, goal_cases)
+    case prems: (1 a b)
     have ab: "(a,b) \<in> \<E> f\<^sub>1"
       and nab: "(a,b) \<notin> Edges (r # ?f\<^sub>2rv @ [v])" by fact+
     have "(a,b) \<in> Edges (v # rev vs @ [u]) \<or>
@@ -2220,7 +2220,7 @@ proof -
       thus ?case ..
     qed
   next
-    case (goal2  f' a b)
+    case (2 f' a b)
     have f': "f' \<in> set (replace f [f\<^sub>2] (faces g))"
       and nf': "\<not> final f'" and abf': "(a,b) \<in> \<E> f'"
       and nab: "(a,b) \<notin> Edges (r # between (vertices f\<^sub>2) r v @ [v])" by fact+
