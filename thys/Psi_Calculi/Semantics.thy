@@ -5786,8 +5786,8 @@ proof(cases rule: semanticsCasesAux[where C="(xvec1, xvec2, xvec3, xvec4, xvec5,
     using `xvec \<sharp>* xvec1` `distinct xvec` `distinct xvec1`
     by(rule_tac constructPerm[where xvec=xvec and yvec=xvec1]) auto
   show ?thesis
-  proof(rule rInput[where M=M and K=K and N = "p \<bullet> N" and Tvec=Tvec and P="p \<bullet> P"])
-    case goal1
+  proof(rule rInput[where M=M and K=K and N = "p \<bullet> N" and Tvec=Tvec and P="p \<bullet> P"], goal_cases)
+    case 1
     from B `xvec \<sharp>* xvec1` `xvec1 \<sharp>* cP` have "xvec1 \<sharp>* N" and "xvec1 \<sharp>* P"
       by(auto simp add: fresh_star_def inputChainFresh name_list_supp) (auto simp add: fresh_def)
 
@@ -5837,8 +5837,8 @@ next
     using `bn \<alpha> \<sharp>* xvec2` `distinct(bn \<alpha>)` `distinct xvec2`
     by(rule_tac constructPerm[where xvec="bn \<alpha>" and yvec=xvec2]) (auto simp add: eqvts)
   show ?thesis
-  proof(rule rPar1[where P=P and Q=Q and \<alpha>="p \<bullet> \<alpha>" and P'="p \<bullet> P'" and A\<^sub>Q=A\<^sub>Q and \<Psi>\<^sub>Q=\<Psi>\<^sub>Q])
-    case goal1
+  proof(rule rPar1[where P=P and Q=Q and \<alpha>="p \<bullet> \<alpha>" and P'="p \<bullet> P'" and A\<^sub>Q=A\<^sub>Q and \<Psi>\<^sub>Q=\<Psi>\<^sub>Q], goal_cases)
+    case 1
     note `cP = P \<parallel> Q`
     moreover from B C S `bn \<alpha> \<sharp>* xvec2` `xvec2 \<sharp>* cRs` `xvec2 = bn(p \<bullet> \<alpha>)` `bn \<alpha> \<sharp>* subject \<alpha>` `xvec2 \<sharp>* cP` `bn \<alpha> \<sharp>* Q`
     have "cRs = (p \<bullet> \<alpha>) \<prec> (p \<bullet> P') \<parallel> Q"
@@ -5869,8 +5869,8 @@ next
     using `bn \<alpha> \<sharp>* xvec3` `distinct(bn \<alpha>)` `distinct xvec3`
     by(rule_tac constructPerm[where xvec="bn \<alpha>" and yvec=xvec3]) (auto simp add: eqvts)
   show ?thesis
-  proof(rule rPar2[where P=P and Q=Q and \<alpha>="p \<bullet> \<alpha>" and Q'="p \<bullet> Q'" and A\<^sub>P=A\<^sub>P and \<Psi>\<^sub>P=\<Psi>\<^sub>P])
-    case goal1
+  proof(rule rPar2[where P=P and Q=Q and \<alpha>="p \<bullet> \<alpha>" and Q'="p \<bullet> Q'" and A\<^sub>P=A\<^sub>P and \<Psi>\<^sub>P=\<Psi>\<^sub>P], goal_cases)
+    case 1
     note `cP = P \<parallel> Q`
     moreover from B C S `bn \<alpha> \<sharp>* xvec3` `xvec3 \<sharp>* cRs` `xvec3 = bn(p \<bullet> \<alpha>)` `bn \<alpha> \<sharp>* subject \<alpha>` `xvec3 \<sharp>* cP` `bn \<alpha> \<sharp>* P`
     have "cRs = (p \<bullet> \<alpha>) \<prec> P \<parallel> (p \<bullet> Q')"
@@ -5918,8 +5918,8 @@ next
     by(metis constructPerm)
 
   show ?thesis
-  proof(rule rOpen[where P="([(x, x1)] \<bullet> P)" and xvec="p \<bullet> xvec" and y="y" and yvec="q \<bullet> yvec" and N="(p@(x1, x)#q) \<bullet> N" and P'="(p@(x1, x)#q) \<bullet> P'" and M=M])
-    case goal1
+  proof(rule rOpen[where P="([(x, x1)] \<bullet> P)" and xvec="p \<bullet> xvec" and y="y" and yvec="q \<bullet> yvec" and N="(p@(x1, x)#q) \<bullet> N" and P'="(p@(x1, x)#q) \<bullet> P'" and M=M], goal_cases)
+    case 1
     from `xvec \<sharp>* xvec4` `x \<sharp> xvec4` `x1 \<sharp> xvec4` `yvec \<sharp>* xvec4` D E F
     have "x \<noteq> y" and "x1 \<noteq> y" and "x1 \<sharp> p \<bullet> xvec" and "x1 \<sharp> q \<bullet> yvec" by simp+
     from `xvec4 \<sharp>* cRs` `x1 \<sharp> cRs` C have "xvec4 \<sharp>* M" and "x1 \<sharp> M" by simp+
@@ -5968,8 +5968,8 @@ next
     using `bn \<alpha> \<sharp>* xvec5` `distinct(bn \<alpha>)` `distinct xvec5`
     by(rule_tac constructPerm[where xvec="bn \<alpha>" and yvec=xvec5]) (auto simp add: eqvts)
   show ?thesis
-  proof(rule rScope[where P="[(x, x2)] \<bullet> P" and \<alpha>="[(x, x2)] \<bullet> p \<bullet> \<alpha>" and P'="[(x, x2)] \<bullet> p \<bullet> P'"])
-    case goal1
+  proof(rule rScope[where P="[(x, x2)] \<bullet> P" and \<alpha>="[(x, x2)] \<bullet> p \<bullet> \<alpha>" and P'="[(x, x2)] \<bullet> p \<bullet> P'"], goal_cases)
+    case 1
     from `x2 \<sharp> cRs` C `x2 \<sharp> bn \<alpha>` `x \<noteq> x2` have "x2 \<sharp> \<alpha>" and "x2 \<sharp> P'" by(auto simp add: abs_fresh)
     from `cP = \<lparr>\<nu>x\<rparr>P` `x2 \<sharp> cP` `x \<noteq> x2` have "cP = \<lparr>\<nu>x2\<rparr>([(x, x2)] \<bullet> P)"
       by(simp add: alphaRes abs_fresh)
