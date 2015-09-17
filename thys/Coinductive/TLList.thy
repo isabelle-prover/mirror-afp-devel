@@ -583,12 +583,14 @@ apply(transfer fixing: P R)
 apply clarsimp
 apply(rule conjI)
  apply(erule llist_all2_coinduct, blast, blast)
-proof(rule impI)
-  case (goal1 X xs b ys c)
+apply (rule impI)
+subgoal premises prems for X xs b ys c
+proof -
   from `lfinite xs` `X (xs, b) (ys, c)`
   show "R b c"
-    by(induct arbitrary: ys rule: lfinite_induct)(auto dest: goal1(2))
+    by(induct arbitrary: ys rule: lfinite_induct)(auto dest: prems(2))
 qed
+done
 
 lemma tllist_all2_cases[consumes 1, case_names TNil TCons, cases pred]:
   assumes "tllist_all2 P Q xs ys"
