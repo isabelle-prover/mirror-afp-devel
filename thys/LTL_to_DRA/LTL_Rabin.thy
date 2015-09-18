@@ -241,12 +241,12 @@ lemma ltl_FG_to_generalised_rabin_wellformed:
 proof (cases "\<Sigma> = {}")
   case False
     have "finite (reach \<Sigma> (\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>))) (fst (snd (\<P> \<phi>))))"
-    proof (rule finite_reach_product)
-      case goal1
+    proof (rule finite_reach_product, goal_cases)
+      case 1
         show ?case
           using G_nested_finite(1) by (auto simp add: dom_def LTL_Rabin.product_initial_state.simps) 
     next
-      case goal2
+      case (2 x)
         hence "the (fst (snd (\<P> \<phi>)) x) = ltl_FG_to_rabin_def.q\<^sub>R (theG x)" 
           by (auto simp add: LTL_Rabin.product_initial_state.simps) 
         thus ?case

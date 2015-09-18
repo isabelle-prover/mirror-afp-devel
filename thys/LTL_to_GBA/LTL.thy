@@ -351,33 +351,33 @@ lemma ltl_double_neg_struct:
   shows "\<exists>n \<psi>. \<phi> = ((\<lambda>\<xi>. not not \<xi>) ^^ n) \<psi> \<and> (\<forall>\<nu>. \<psi> \<noteq> not not \<nu>)" 
   (is "\<exists>n \<psi>. ?Q \<phi> n \<psi>")
 proof(cases "\<forall>\<nu>. \<phi> \<noteq> not \<nu>")
-  case goal1
+  case True
     hence "?Q \<phi> 0 \<phi>" by auto
     thus ?thesis by blast
 next
-  case goal2
+  case False
     thus ?thesis
     proof(induct \<phi>)
       case (LTLNeg \<phi>')
-        thus ?case
+        show ?case
         proof(cases "\<forall>\<nu>. \<phi>' \<noteq> not \<nu>")
-          case goal1
-            hence "?Q (not \<phi>') 0 (not \<phi>')" by auto
-            thus ?case by blast
+          case True
+            with LTLNeg have "?Q (not \<phi>') 0 (not \<phi>')" by auto
+            thus ?thesis by blast
         next
-          case goal2
-            then obtain n' \<psi>' where "?Q \<phi>' n' \<psi>'" by auto
-            thus ?case
+          case False
+            with LTLNeg obtain n' \<psi>' where Q: "?Q \<phi>' n' \<psi>'" by auto
+            show ?thesis
             proof(cases "\<exists>\<psi>''. \<psi>' = not \<psi>''")
-              case goal1
+              case True
                 then obtain \<psi>''
                       where "\<psi>' = not \<psi>''" by auto
-                hence "?Q (not \<phi>') (n'+1) \<psi>''" using goal1 by auto
-                thus ?case by blast
+                with Q have "?Q (not \<phi>') (n'+1) \<psi>''" by auto
+                thus ?thesis by blast
             next
-              case goal2
-                hence "?Q (not \<phi>') n' (not \<psi>')" by auto
-                thus ?case by blast
+              case False
+                with Q have "?Q (not \<phi>') n' (not \<psi>')" by auto
+                thus ?thesis by blast
             qed
         qed
     qed auto
@@ -502,21 +502,21 @@ proof(cases "\<psi> = ltl_pushneg \<phi>")
 next
   case False thus ?thesis using assms
   proof(induct \<phi> rule:ltl_pushneg.induct)
-    case goal1 thus ?case using subformula_size by force
+    case 1 thus ?case using subformula_size by force
   next
-    case goal2 thus ?case using subformula_size by force
+    case 2 thus ?case using subformula_size by force
   next
-    case goal3 thus ?case using subformula_size by force
+    case 3 thus ?case using subformula_size by force
   next
-    case goal4 thus ?case using subformula_size by force
+    case 4 thus ?case using subformula_size by force
   next
-    case goal5 thus ?case using subformula_size by force
+    case 5 thus ?case using subformula_size by force
   next
-    case (goal6 q)
+    case (6 q)
       let ?frml = "not prop(q)"
       from rtrancl_eq_or_trancl[to_pred, of subfrml]
       have t_prm: "subfrml\<^sup>+\<^sup>+ \<psi> ?frml"
-      using goal6 by auto
+      using 6 by auto
       obtain \<mu>
        where sf_prm: "subfrml \<psi>  \<mu>"
          and rt_prm: "\<mu> is_subformula_of ?frml"
@@ -537,16 +537,16 @@ next
         show ?thesis by auto
       qed
   next
-    case goal7 thus ?case by auto
+    case 7 thus ?case by auto
   next
-    case (goal8 \<nu> \<mu>)
+    case (8 \<nu> \<mu>)
       let ?frml = "not (\<nu> and \<mu>)"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal8 by auto
+       using 8 by auto
       hence z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
@@ -559,17 +559,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal8 z_is by auto
+        thus ?thesis using 8 z_is by auto
       qed
   next
-    case (goal9 \<nu> \<mu>)
+    case (9 \<nu> \<mu>)
       let ?frml = "not (\<nu> or \<mu>)"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal9 by auto
+       using 9 by auto
       hence z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
@@ -582,17 +582,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal9 z_is by auto
+        thus ?thesis using 9 z_is by auto
       qed
   next
-    case (goal10 \<mu>)
+    case (10 \<mu>)
       let ?frml = "not (X \<mu>)"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal10 by auto
+       using 10 by auto
       hence z_is: "z = ltl_pushneg (not \<mu>)"
       by (cases z) auto
       show ?case
@@ -604,17 +604,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal10 z_is by auto
+        thus ?thesis using 10 z_is by auto
       qed
   next
-    case (goal11 \<nu> \<mu>)
+    case (11 \<nu> \<mu>)
       let ?frml = "not (\<nu> U \<mu>)"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal11 by auto
+       using 11 by auto
       hence z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
@@ -627,17 +627,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal11 z_is by auto
+        thus ?thesis using 11 z_is by auto
       qed
   next
-    case (goal12 \<nu> \<mu>)
+    case (12 \<nu> \<mu>)
       let ?frml = "not (\<nu> V \<mu>)"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal12 by auto
+       using 12 by auto
       hence z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
@@ -650,17 +650,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal12 z_is by auto
+        thus ?thesis using 12 z_is by auto
       qed
   next
-    case (goal13 \<nu> \<mu>)
+    case (13 \<nu> \<mu>)
       let ?frml = "\<nu> and \<mu>"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal13 by auto
+       using 13 by auto
       hence z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
@@ -673,17 +673,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal13 z_is by auto
+        thus ?thesis using 13 z_is by auto
       qed
   next
-    case (goal14 \<nu> \<mu>)
+    case (14 \<nu> \<mu>)
       let ?frml = "\<nu> or \<mu>"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal14 by auto
+       using 14 by auto
       hence z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
@@ -696,17 +696,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal14 z_is by auto
+        thus ?thesis using 14 z_is by auto
       qed
   next
-    case (goal15 \<mu>)
+    case (15 \<mu>)
       let ?frml = "X \<mu>"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal15 by auto
+       using 15 by auto
       hence z_is: "z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -717,17 +717,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal15 z_is by auto
+        thus ?thesis using 15 z_is by auto
       qed
   next
-    case (goal16 \<nu> \<mu>)
+    case (16 \<nu> \<mu>)
       let ?frml = "\<nu> U \<mu>"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal16 by auto
+       using 16 by auto
       hence z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
@@ -740,17 +740,17 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal16 z_is by auto
+        thus ?thesis using 16 z_is by auto
       qed
   next
-    case (goal17 \<nu> \<mu>)
+    case (17 \<nu> \<mu>)
       let ?frml = "\<nu> V \<mu>"
       from tranclD2[to_pred, of subfrml \<psi> "ltl_pushneg ?frml"]
            rtrancl_eq_or_trancl[to_pred, of subfrml]
       obtain z
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
-       using goal17 by auto
+       using 17 by auto
       hence z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
@@ -763,7 +763,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using goal17 z_is by auto
+        thus ?thesis using 17 z_is by auto
       qed
   qed
 qed
@@ -832,13 +832,16 @@ proof -
                 by blast
   have "?Q \<phi>"
   proof(rule ccontr)
-    assume "\<not> ?Q \<phi>"
-    thus "False"
+    assume *: "\<not> ?Q \<phi>"
+    show "False"
     proof(cases "\<exists>\<mu>. \<phi> = not \<mu>")
-      case goal1
+      case True
         then obtain \<mu> where "\<phi> = not \<mu>" by blast
-        with goal1 dblneg \<phi>_neq show ?case by auto
-    qed auto
+        with * dblneg \<phi>_neq show ?thesis by auto
+    next
+      case False
+        with * show ?thesis by auto
+    qed
   qed
   with dblneg \<phi>_neq
        ltl_pushneg_double_neg[of n \<phi>]
@@ -850,107 +853,120 @@ qed
 lemma ltl_pushneg_size_lin_help:
   assumes "\<psi> = ltl_pushneg \<phi>"
     shows "size \<psi> + 1 \<le> size \<phi> + leafcnt \<phi>"
-using assms proof (induct \<psi> arbitrary: \<phi>)
-  case goal1 show ?case by (cases \<phi>) auto
+  using assms
+proof (induct \<psi> arbitrary: \<phi>)
+  case LTLTrue show ?case by (cases \<phi>) auto
 next
-  case goal2 show ?case by (cases \<phi>) auto
+  case LTLFalse show ?case by (cases \<phi>) auto
 next
-  case goal3 show ?case by (cases \<phi>) auto
+  case LTLProp show ?case by (cases \<phi>) auto
 next
-  case (goal4 \<psi>')
-    with ltl_pushneg_neg_struct[of \<phi> \<psi>'] obtain q where "\<psi>' = prop(q)" by auto
-    moreover
-    with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    ultimately show ?case using goal4
+  case (LTLNeg \<psi>')
+    with ltl_pushneg_neg_struct[of \<phi> \<psi>'] obtain q where q: "\<psi>' = prop(q)" by auto
+    with ltl_pushneg_help[of \<phi>] obtain \<phi>' where \<phi>':
+        "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+        "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+        "size \<phi>' \<le> size \<phi>"
+        "leafcnt \<phi>' = leafcnt \<phi>"
+      by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
+      case True
         then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        thus ?case using goal1 by (cases \<nu>) auto
+        with q \<phi>' show ?thesis using LTLNeg by (cases \<nu>) auto
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+      with \<phi>' LTLNeg show ?thesis by (cases \<phi>') force+
     qed
 next
-  case (goal5 f g)
+  case (LTLAnd f g)
     with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    with goal5 show ?case
+    obtain \<phi>' where \<phi>':
+        "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+        "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+        "size \<phi>' \<le> size \<phi>"
+        "leafcnt \<phi>' = leafcnt \<phi>"
+      by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
-        then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        hence "size (f and g) \<le> size \<nu> + leafcnt \<nu>" using goal1 by (cases \<nu>) force+
-        thus ?case using goal1 \<phi>'is by auto
+      case True
+        then obtain \<nu> where \<phi>'is: "\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
+        with LTLAnd \<phi>' have "size (f and g) \<le> size \<nu> + leafcnt \<nu>" by (cases \<nu>) force+
+        with \<phi>' \<phi>'is show ?thesis by auto
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+        with LTLAnd \<phi>' show ?thesis by (cases \<phi>') force+
     qed
 next
-  case (goal6 f g)
+  case (LTLOr f g)
     with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    with goal6 show ?case
+    obtain \<phi>' where \<phi>':
+      "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+      "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+      "size \<phi>' \<le> size \<phi>"
+      "leafcnt \<phi>' = leafcnt \<phi>" by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
-        then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        hence "size (f or g) \<le> size \<nu> + leafcnt \<nu>" using goal1 by (cases \<nu>) force+
-        thus ?case using goal1 \<phi>'is by auto
+      case True
+        then obtain \<nu> where \<phi>'is: "\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
+        with LTLOr \<phi>' have "size (f or g) \<le> size \<nu> + leafcnt \<nu>" by (cases \<nu>) force+
+        with \<phi>' \<phi>'is show ?thesis by auto
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+      with LTLOr \<phi>' show ?thesis by (cases \<phi>') force+
     qed
 next
-  case (goal7 f)
+  case (LTLNext f)
     with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    with goal7 show ?case
+    obtain \<phi>' where \<phi>':
+      "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+      "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+      "size \<phi>' \<le> size \<phi>"
+      "leafcnt \<phi>' = leafcnt \<phi>" by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
-        then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        with goal1 show ?case by (cases \<nu>) force+
+      case True
+        then obtain \<nu> where \<phi>'is: "\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
+        with LTLNext \<phi>' show ?thesis by (cases \<nu>) force+
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+        with LTLNext \<phi>' show ?thesis by (cases \<phi>') force+
     qed
 next
-  case (goal8 f g)
+  case (LTLUntil f g)
     with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    with goal8 show ?case
+    obtain \<phi>' where \<phi>':
+      "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+     "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+     "size \<phi>' \<le> size \<phi>"
+     "leafcnt \<phi>' = leafcnt \<phi>" by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
-        then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        hence "size (f U g) \<le> size \<nu> + leafcnt \<nu>" using goal1 by (cases \<nu>) force+
-        thus ?case using goal1 \<phi>'is by auto
+      case True
+        then obtain \<nu> where \<phi>'is: "\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
+        with LTLUntil \<phi>' have "size (f U g) \<le> size \<nu> + leafcnt \<nu>" by (cases \<nu>) force+
+        with LTLUntil \<phi>' \<phi>'is show ?thesis by auto
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+        with LTLUntil \<phi>' show ?thesis by (cases \<phi>') force+
     qed
 next
-  case (goal9 f g)
+  case (LTLRelease f g)
     with ltl_pushneg_help[of \<phi>]
-    obtain \<phi>' where "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
-                and "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
-                and "size \<phi>' \<le> size \<phi>"
-                and "leafcnt \<phi>' = leafcnt \<phi>" by auto
-    with goal9 show ?case
+    obtain \<phi>' where \<phi>':
+      "ltl_pushneg \<phi> = ltl_pushneg \<phi>'"
+      "(\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)) \<or> (\<forall>\<mu>. \<phi>' \<noteq> not \<mu>)"
+      "size \<phi>' \<le> size \<phi>"
+      "leafcnt \<phi>' = leafcnt \<phi>" by auto
+    show ?case
     proof(cases "\<exists>\<nu>. \<phi>' = not \<nu> \<and> (\<forall>\<mu>. \<nu> \<noteq> not \<mu>)")
-      case goal1
+      case True
         then obtain \<nu> where \<phi>'is:"\<phi>' = not \<nu>" and "\<forall>\<mu>. \<nu> \<noteq> not \<mu>" by auto
-        hence "size (f V g) \<le> size \<nu> + leafcnt \<nu>" using goal1 by (cases \<nu>) force+
-        thus ?case using goal1 \<phi>'is by auto
+        with LTLRelease \<phi>' have "size (f V g) \<le> size \<nu> + leafcnt \<nu>" by (cases \<nu>) force+
+        with LTLRelease \<phi>' \<phi>'is show ?thesis by auto
     next
-      case goal2 thus ?case by (cases \<phi>') force+
+      case False
+        with LTLRelease \<phi>' show ?thesis by (cases \<phi>') force+
     qed
 qed
 
@@ -1039,21 +1055,22 @@ where
 lemma ltl_to_ltln_on_ltl_pushneg_equiv:
   assumes "\<phi> = ltl_pushneg \<psi>"
   shows "\<xi> \<Turnstile> \<phi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>"
-using assms proof(induct \<phi> arbitrary: \<xi> \<psi>)
-  case goal1 show ?case by auto
+  using assms
+proof(induct \<phi> arbitrary: \<xi> \<psi>)
+  case LTLTrue show ?case by auto
 next
-  case goal2 show ?case by auto
+  case LTLFalse show ?case by auto
 next
-  case goal3 show ?case by auto
+  case LTLProp show ?case by auto
 next
-  case (goal4 \<phi>)
+  case (LTLNeg \<phi>)
     with ltl_pushneg_neg_struct[of \<psi> \<phi>]
     obtain q
      where "\<phi> = prop(q)"
         by auto
     thus ?case by auto
 next
-  case (goal5 f g \<xi> \<psi>)
+  case (LTLAnd f g \<xi> \<psi>)
     hence frml_eq: "ltl_pushneg \<psi> = f and g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
@@ -1067,10 +1084,10 @@ next
     ultimately
     have "\<xi> \<Turnstile> f = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<xi> \<Turnstile> g = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
-    using goal5 by auto
+    using LTLAnd by auto
     thus ?case by auto
 next
-  case (goal6 f g \<xi> \<psi>)
+  case (LTLOr f g \<xi> \<psi>)
     hence frml_eq: "ltl_pushneg \<psi> = f or g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
@@ -1084,7 +1101,7 @@ next
     ultimately
     have "\<xi> \<Turnstile> f = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<xi> \<Turnstile> g = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
-    using goal6 by auto
+    using LTLOr by auto
     thus ?case by auto
 next
   case (goal7 \<phi> \<xi> \<psi>)
@@ -1093,8 +1110,8 @@ next
     obtain \<mu>
      where "\<phi> = ltl_pushneg \<mu>"
         by (auto intro: subfrml.intros)
-    hence "suffix 1 \<xi> \<Turnstile> \<phi> = suffix 1 \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>"
-    using goal7 by auto
+    with goal7 have "suffix 1 \<xi> \<Turnstile> \<phi> = suffix 1 \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>"
+      by auto
     thus ?case by auto
 next
   case (goal8 f g \<xi> \<psi>)

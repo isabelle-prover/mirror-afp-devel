@@ -53,17 +53,17 @@ bnf "('a, 'b, 'k) var"
   sets: set1_var set2_var
   bd: "bd_pre_var0 :: 'k var0_pre_var0_bdT rel"
   rel: rel_var
-proof
-  case goal1 then show ?case
+proof (standard, goal_cases)
+  case 1 then show ?case
     by transfer (auto simp add: var0.map_id)
 next
-  case goal2 then show ?case
+  case 2 then show ?case
     apply (rule ext)
     apply transfer
     apply (auto simp add: var0.map_comp)
     done
 next
-  case goal3 then show ?case
+  case 3 then show ?case
     apply transfer
     apply (subst var0.map_cong0)
     apply assumption
@@ -71,32 +71,32 @@ next
     apply auto
     done
 next
-  case goal4 then show ?case
+  case 4 then show ?case
     apply (rule ext)
     apply transfer
     apply (simp add: var0.set_map0)
     done
 next
-  case goal5 then show ?case
+  case 5 then show ?case
     apply (rule ext)
     apply transfer
     apply (simp add: var0.set_map0)
     done
 next
-  case goal6 then show ?case by (rule var0.bd_card_order)
+  case 6 then show ?case by (rule var0.bd_card_order)
 next
-  case goal7 then show ?case
+  case 7 then show ?case
     by (simp add: var0.bd_cinfinite)
 next
-  case (goal8 x) then show ?case
+  case (8 x) then show ?case
     unfolding subset_eq set1_var_def by (simp add: var0.set_bd(1)) 
 next
-  case (goal9 x) then show ?case
+  case (9 x) then show ?case
     unfolding subset_eq set2_var_def by (simp add: var0.set_bd(2)) 
 next
-  case goal10 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
+  case 10 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
 next
-  case goal11 then show ?case
+  case 11 then show ?case
       unfolding OO_Grp_alt rel_var.simps[abs_def] by (auto simp: fun_eq_iff)
 qed
 

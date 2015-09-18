@@ -87,37 +87,38 @@ bnf "'k bset"
   sets: set_bset
   bd: natLeq
   rel: rel_bset
-proof
-  case goal1 then show ?case
+proof (standard, goal_cases)
+  case 1 then show ?case
     by transfer simp
 next
-  case goal2 then show ?case
+  case 2 then show ?case
     apply (rule ext)
     apply transfer
     apply auto
     done
 next
-  case goal3 then show ?case
+  case 3 then show ?case
     apply transfer
     apply (auto simp: image_iff)
     done
 next
-  case goal4 then show ?case
+  case 4 then show ?case
     apply (rule ext)
     apply transfer
     apply simp
     done
 next
-  case goal5 then show ?case by (simp add: card_order_csum natLeq_card_order)
+  case 5 then show ?case by (simp add: card_order_csum natLeq_card_order)
 next
-  case goal6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
+  case 6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
 next
-  case goal7 then show ?case
+  case 7 then show ?case
     apply transfer
     apply (erule ordLeq_transitive[OF _ ordLess_imp_ordLeq[OF ctwo_ordLess_natLeq]])
     done
 next
-  case goal8 then show ?case
+  case (8 R S)
+  then show ?case
   proof (safe elim!: rel_bset.cases, unfold rel_bset.simps)
     fix z1 z2
     assume "set_bset z1 \<subseteq> {(x, y). R x y}" "set_bset z2 \<subseteq> {(x, y). S x y}" "map_bset snd z1 = map_bset fst z2"
@@ -128,7 +129,8 @@ next
         dest: spec[of _ "bdoubleton (a, b) (c, d)" for a b c d])+
   qed
 next
-  case goal9 then show ?case
+  case (9 R)
+  then show ?case
       unfolding OO_Grp_alt by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed
 

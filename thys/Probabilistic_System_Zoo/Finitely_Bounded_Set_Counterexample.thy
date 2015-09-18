@@ -38,40 +38,40 @@ bnf "('a, 'k) bset"
   sets: set_bset
   bd: "|UNIV :: 'k set| +c natLeq"
   rel: rel_bset
-proof
-  case goal1 then show ?case
+proof (standard, goal_cases)
+  case 1 then show ?case
     by transfer simp
 next
-  case goal2 then show ?case
+  case 2 then show ?case
     apply (rule ext)
     apply transfer
     apply auto
     done
 next
-  case goal3 then show ?case
+  case 3 then show ?case
     apply transfer
     apply (auto simp: image_iff)
     done
 next
-  case goal4 then show ?case
+  case 4 then show ?case
     apply (rule ext)
     apply transfer
     apply simp
     done
 next
-  case goal5 then show ?case by (simp add: card_order_csum natLeq_card_order)
+  case 5 then show ?case by (simp add: card_order_csum natLeq_card_order)
 next
-  case goal6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
+  case 6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
 next
-  case goal7 then show ?case
+  case 7 then show ?case
     apply transfer
     apply (erule ordLeq_transitive[OF ordLess_imp_ordLeq ordLeq_csum1])
     apply simp
     done
 next
-  case goal8 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
+  case 8 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
 next
-  case goal9 then show ?case
+  case 9 then show ?case
       unfolding OO_Grp_alt by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed
 

@@ -238,14 +238,14 @@ proof -
     by (intro picard_approx_ivl[OF Y(1) refl refl x cont]) auto
   also have "\<dots> \<subseteq> {x + y |x y. x \<in> set_of_appr X0 \<and>
       y \<in> {inf 0 ((t1 - t0) *\<^sub>R inf_of_appr Y) .. sup 0 ((t1 - t0) *\<^sub>R sup_of_appr Y)}}"
-  proof safe
-    case goal1
-    show ?case
+    apply safe
+    subgoal for x
       apply (rule exI[where x=x0])
       apply (rule exI[where x="x - x0"])
-      using goal1 assms
-      by (simp add: algebra_simps)
-  qed
+      using assms
+      apply (simp add: algebra_simps)
+      done
+    done
   also have "\<dots> \<subseteq> {x + y |x y. x \<in> set_of_appr X0 \<and> y \<in> {inf 0 (h *\<^sub>R inf_of_appr Y) .. sup 0 (h *\<^sub>R sup_of_appr Y)}}"
     using assms
     by (intro msum_subsetI) (auto simp: eucl_le[where 'a='a] inner_Basis_inf_left inf_real_def

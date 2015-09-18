@@ -873,9 +873,9 @@ lemma proc\<^sub>2_correct:
   assumes High: "high_proc\<^sub>2 s\<^sub>H"
   assumes HighSame: "high_proc_no_low_output_change s\<^sub>H"
   shows "low_proc_non0\<^sub>1 p \<and> low_proc_0\<^sub>1 p \<and> high_proc\<^sub>1 p"
-proof auto
+proof (auto, goal_cases)
   -- {* Processing of non-0 low input: *}
-  case goal1
+  case 1
   show ?case
   proof (auto simp: low_proc_non0\<^sub>1_def)
     fix \<sigma> \<sigma>'
@@ -897,7 +897,7 @@ proof auto
   qed
 next
   -- {* Processing of 0 low input: *}
-  case goal2
+  case 2
   show ?case
   proof (auto simp: low_proc_0\<^sub>1_def)
     fix \<sigma> u
@@ -924,7 +924,7 @@ next
   qed
 next
   -- {* Processing of high input: *}
-  case goal3
+  case 3
   show ?case
   proof (auto simp: high_proc\<^sub>1_def)
     fix \<sigma> \<sigma>'

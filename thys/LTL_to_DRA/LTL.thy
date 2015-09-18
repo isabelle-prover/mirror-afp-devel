@@ -503,10 +503,13 @@ lemma And_prop_entailment:
 lemma And_propos:
   "propos (And xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case (goal2 x)
-    thus ?thesis
-      using propos_foldl[of LTLAnd x] by auto
-qed simp
+  case Nil
+  thus ?thesis by simp
+next
+  case (Cons x xs)
+  thus ?thesis
+    using propos_foldl[of LTLAnd x] by auto
+qed
 
 lemma And_semantics:
   "w \<Turnstile> And xs = (\<forall>x \<in> set xs. w \<Turnstile> x)"
@@ -577,10 +580,13 @@ lemma Or_prop_entailment:
 lemma Or_propos:
   "propos (Or xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case (goal2 x)
-    thus ?thesis
-      using propos_foldl[of LTLOr x] by auto
-qed simp
+  case Nil
+  thus ?thesis by simp
+next
+  case (Cons x xs)
+  thus ?thesis
+    using propos_foldl[of LTLOr x] by auto
+qed
 
 lemma Or_semantics:
   "w \<Turnstile> Or xs = (\<exists>x \<in> set xs. w \<Turnstile> x)"
@@ -697,8 +703,8 @@ lemma sat_models_finite_image:
   shows "finite (sat_models ` {Abs \<phi> | \<phi>. nested_propos \<phi> \<subseteq> P})"
 proof -
   have "\<And>\<phi>. nested_propos \<phi> \<subseteq> P \<Longrightarrow> sat_models (Abs \<phi>) = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-  proof
-    case (goal2 \<phi>)
+  proof (standard, goal_cases)
+    case (2 \<phi>)
       have "\<And>A B. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<union> B \<in> sat_models (Abs \<phi>)"
         unfolding sat_models_invariant by blast
       moreover
@@ -708,12 +714,12 @@ proof -
       show ?case
         by blast
   next
-    case (goal1 \<phi>)
+    case (1 \<phi>)
       hence "propos \<phi> \<subseteq> P"
         using propos_subset by blast
       have "\<And>A. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-      proof
-        case (goal1 A)
+      proof (standard, goal_cases)
+        case (1 A)
           then have "A \<Turnstile>\<^sub>P \<phi>"
             using sat_models_invariant by blast
           then obtain C D where "C = (A \<inter> P)" and "D = A - P" and "A = C \<union> D"
@@ -750,8 +756,8 @@ proof -
     -- \<open>Prove that S' can be embedded into S using ?map\<close>
 
     have "S' \<subseteq> {?map P A | A. A \<in> S}"
-    proof
-      case (goal1 A)
+    proof (standard, goal_cases)
+      case (1 A)
         then obtain \<phi> where "nested_propos \<phi> \<subseteq> P" 
           and "A = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
           using S'_def by blast
