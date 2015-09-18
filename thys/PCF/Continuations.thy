@@ -633,7 +633,7 @@ lemma (in at_least_two_elements) min_inv_lr:
 
 (*>*)
 sublocale at_least_two_elements < F!: DomSolP ValD_copy_rec ValK_copy_rec lr
-  apply default
+  apply standard
          apply (rule mono_lr)
         apply (rule fix_ValD_copy_rec_ID)
        apply (rule fix_ValK_copy_rec_ID)
@@ -842,7 +842,7 @@ locale value_retraction =
   assumes OV: "OtoV oo VtoO = ID"
 
 sublocale value_retraction < at_least_two_elements "VtoO\<cdot>(ValKN\<cdot>0)"
-using OV by - (default, simp add: injection_defined cfcomp1 cfun_eq_iff)
+using OV by - (standard, simp add: injection_defined cfcomp1 cfun_eq_iff)
 
 context value_retraction
 begin

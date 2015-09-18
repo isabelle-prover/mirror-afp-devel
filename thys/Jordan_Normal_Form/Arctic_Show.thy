@@ -29,7 +29,8 @@ lemma shows_prec_artic_append [show_law_simps]:
 
 definition "shows_list (as :: arctic list) = showsp_list shows_prec 0 as"
 
-instance by (default) (simp_all add: shows_list_arctic_def show_law_simps)
+instance
+  by standard (simp_all add: shows_list_arctic_def show_law_simps)
 
 end
 
@@ -49,7 +50,9 @@ lemma shows_prec_arctic_delta_append [show_law_simps]:
 
 definition "shows_list (ps :: 'a arctic_delta list) = showsp_list shows_prec 0 ps"
 
-instance by (default) (simp_all add: shows_list_arctic_delta_def show_law_simps)
+instance
+  by standard (simp_all add: shows_list_arctic_delta_def show_law_simps)
+
 end
 
 end

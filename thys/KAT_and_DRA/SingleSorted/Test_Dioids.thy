@@ -285,8 +285,10 @@ text {*
 *}
 
 lemma test_eq1: "test p \<Longrightarrow> y \<le> x \<longleftrightarrow> p\<cdot>y \<le> x \<and> !p\<cdot>y \<le> x"
-  apply (default, metis order_trans test_comp_closed_var test_restrictl)
-  by (metis add_iso_var add_idem' distrib_right' mult_onel test_comp_add)
+  apply standard
+  apply (metis order_trans test_comp_closed_var test_restrictl)
+  apply (metis add_iso_var add_idem' distrib_right' mult_onel test_comp_add)
+  done
 
 text {* Nitpick refutes the next four lemmas. *}
 
@@ -303,9 +305,10 @@ lemma "\<lbrakk>test p; test q; x\<cdot>!q = !p\<cdot>x\<cdot>!q\<rbrakk> \<Long
   (* nitpick *) oops
 
 lemma test_eq4: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> x\<cdot>!q = !p\<cdot>x\<cdot>!q \<longleftrightarrow> p\<cdot>x\<cdot>!q = 0"
-  apply default
+  apply standard
   apply (metis annil mult.assoc test_comp_mult)
-  by (metis add_zerol distrib_right' mult_onel test_comp_add)
+  apply (metis add_zerol distrib_right' mult_onel test_comp_add)
+  done
 
 lemma test2: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>q\<cdot>p = p\<cdot>q"
   by (metis mult.assoc test_mult_comm_var test_mult_idem_var)
@@ -458,9 +461,10 @@ lemma test_restrictr: "test p \<Longrightarrow> x \<cdot> p \<le> x"
   by (metis mult_oner subdistl test_comp_uniq)
 
 lemma test_eq3: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q \<longleftrightarrow> p\<cdot>x \<le> x\<cdot>q"
-  apply default
+  apply standard
   apply (metis mult.assoc test_restrictl)
-  by (metis eq_iff mult.assoc mult_isol test_mult_idem_var test_restrictr)
+  apply (metis eq_iff mult.assoc mult_isol test_mult_idem_var test_restrictr)
+  done
 
 lemma test1: "\<lbrakk>test p; test q; p\<cdot>x\<cdot>!q = 0\<rbrakk> \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>q"
   (* nitpick *) oops
@@ -554,9 +558,10 @@ lemma "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x\<cdot>!q = 
   (* nitpick *) oops
 
 lemma comm_eq1: "test b \<Longrightarrow> (p\<cdot>b = b\<cdot>p) = (b\<cdot>p\<cdot>!b + !b\<cdot>p\<cdot>b = 0)"
-  apply default
+  apply standard
   apply (metis add_0_left annil annir test_double_comp_var test_mult_comp mult.assoc)
-  by (metis add_0_left ba6 de_morgan1 distrib_right' test_double_comp_var kat_eq1 test_one mult.assoc mult_onel no_trivial_inverse test_comp_closed_var test_not_one)
+  apply (metis add_0_left ba6 de_morgan1 distrib_right' test_double_comp_var kat_eq1 test_one mult.assoc mult_onel no_trivial_inverse test_comp_closed_var test_not_one)
+  done
 
 lemma comm_eq2: "test b \<Longrightarrow> (p\<cdot>!b = !b\<cdot>p) = (b\<cdot>p\<cdot>!b + !b\<cdot>p\<cdot>b = 0)"
   by (metis add_comm comm_eq1 test_comp_closed_var test_double_comp_var)
@@ -565,8 +570,10 @@ lemma comm_eq3: "test b \<Longrightarrow> (p\<cdot>b = b\<cdot>p) = (p\<cdot>!b 
   by (metis comm_eq1 comm_eq2)
 
 lemma comm_pres: "test p \<Longrightarrow> p\<cdot>x = p\<cdot>x\<cdot>p \<and> !p\<cdot>x = !p\<cdot>x\<cdot>!p \<longleftrightarrow> p\<cdot>x = x\<cdot>p"
-  apply (default, metis comm_eq3 kat_eq3)
-  by (metis annil ba6 comm_eq3 mult.assoc test_eq4 test_mult_idem_var)
+  apply standard
+  apply (metis comm_eq3 kat_eq3)
+  apply (metis annil ba6 comm_eq3 mult.assoc test_eq4 test_mult_idem_var)
+  done
 
 end
 

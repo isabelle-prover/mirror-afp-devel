@@ -74,8 +74,10 @@ lemma assertion_iso: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> x\<cdot
   by (metis assertion_isol assertion_isor mult.assoc)
 
 lemma total_correctness: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> p\<cdot>x\<cdot>!q = 0 \<longleftrightarrow> x\<cdot>!q \<le> !p\<cdot>\<top>"
-  apply (default, metis mult.assoc test_eq1 top_elim zero_least)
-  by (metis annil test_comp_mult zero_unique mult.assoc mult_isol)
+  apply standard
+  apply (metis mult.assoc test_eq1 top_elim zero_least)
+  apply (metis annil test_comp_mult zero_unique mult.assoc mult_isol)
+  done
 
 lemma test_iteration_sim: "\<lbrakk>test p; p\<cdot>x \<le> x\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>\<cdot>p"
   by (metis iteration_sim)

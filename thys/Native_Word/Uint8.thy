@@ -38,13 +38,13 @@ lift_definition uminus_uint8 :: "uint8 \<Rightarrow> uint8" is uminus .
 lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op *" .
 lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op div" .
 lift_definition mod_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op mod" .
-instance by default (transfer, simp add: algebra_simps)+
+instance by standard (transfer, simp add: algebra_simps)+
 end
 
 instantiation uint8 :: linorder begin
 lift_definition less_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "op <" .
 lift_definition less_eq_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "op \<le>" .
-instance by(default)(transfer, simp add: less_le_not_le linear)+
+instance by standard (transfer, simp add: less_le_not_le linear)+
 end
 
 lemmas [code] = less_uint8.rep_eq less_eq_uint8.rep_eq
@@ -68,7 +68,7 @@ lemmas [code] = test_bit_uint8.rep_eq lsb_uint8.rep_eq msb_uint8.rep_eq
 
 instantiation uint8 :: equal begin
 lift_definition equal_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "equal_class.equal" .
-instance by default(transfer, simp add: equal_eq)
+instance by standard (transfer, simp add: equal_eq)
 end
 
 lemmas [code] = equal_uint8.rep_eq

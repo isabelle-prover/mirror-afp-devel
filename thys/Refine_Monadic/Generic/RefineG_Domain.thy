@@ -79,7 +79,7 @@ begin
     done
 
   interpretation flat_le_mono_setup: mono_setup_loc "flat_ord b"
-    by default auto
+    by standard auto
 
   subsubsection {* Flat function Ordering *}
   abbreviation "flatf_ord b == fun_ord (flat_ord b)"

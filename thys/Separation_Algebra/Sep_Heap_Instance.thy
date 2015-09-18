@@ -42,7 +42,7 @@ definition
   sep_disj_fun_def: "sep_disj m1 m2 \<equiv> domain m1 \<inter> domain m2 = {}"
 
 instance
-  apply default
+  apply standard
         apply (simp add: sep_disj_fun_def domain_def zero_fun_def)
        apply (fastforce simp: sep_disj_fun_def)
       apply (simp add: plus_fun_def zero_fun_def)

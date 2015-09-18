@@ -735,7 +735,8 @@ permanent_interpretation Presb: Word_Formula
     (op =)"
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
-by default (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
+  by standard (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
+
   Formula_Operations.lformula.simps Formula_Operations.satisfies_gen.simps Formula_Operations.wf.simps
   dest: satisfies0_cong split: presb.splits if_splits)
 

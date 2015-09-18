@@ -183,7 +183,7 @@ lemma Rep_perm_uminus:
   by (simp add: Abs_perm_inverse perm_inv Rep_perm)
 
 instance
-apply default
+apply standard
 unfolding Rep_perm_inject [symmetric]
 unfolding minus_perm_def
 unfolding Rep_perm_add
@@ -325,7 +325,7 @@ definition
   "p \<bullet> a = (Rep_perm p) a"
 
 instance 
-apply(default)
+apply standard
 apply(simp_all add: permute_atom_def Rep_perm_simps)
 done
 
@@ -363,7 +363,7 @@ definition
   "p \<bullet> q = p + q - p"
 
 instance
-apply default
+apply standard
 apply (simp add: permute_perm_def)
 apply (simp add: permute_perm_def algebra_simps)
 done
@@ -390,7 +390,7 @@ definition
   "p \<bullet> f = (\<lambda>x. p \<bullet> (f (- p \<bullet> x)))"
 
 instance
-apply default
+apply standard
 apply (simp add: permute_fun_def)
 apply (simp add: permute_fun_def minus_add)
 done
@@ -413,7 +413,7 @@ begin
 definition "p \<bullet> (b::bool) = b"
 
 instance
-apply(default) 
+apply standard
 apply(simp_all add: permute_bool_def)
 done
 
@@ -438,7 +438,7 @@ definition
   "p \<bullet> X = {p \<bullet> x | x. x \<in> X}" 
 
 instance
-apply default
+apply standard
 apply (auto simp: permute_set_def)
 done
 
@@ -510,7 +510,7 @@ begin
 definition "p \<bullet> (u::unit) = u"
 
 instance 
-by (default) (simp_all add: permute_unit_def)
+  by standard (simp_all add: permute_unit_def)
 
 end
 
@@ -526,7 +526,7 @@ where
   Pair_eqvt: "p \<bullet> (x, y) = (p \<bullet> x, p \<bullet> y)"
 
 instance
-by default auto
+  by standard auto
 
 end
 
@@ -542,7 +542,7 @@ where
 | Inr_eqvt: "p \<bullet> (Inr y) = Inr (p \<bullet> y)"
 
 instance 
-by (default) (case_tac [!] x, simp_all)
+  by standard (case_tac [!] x, simp_all)
 
 end
 
@@ -558,7 +558,7 @@ where
 | Cons_eqvt: "p \<bullet> (x # xs) = p \<bullet> x # p \<bullet> xs"
 
 instance 
-by (default) (induct_tac [!] x, simp_all)
+  by standard (induct_tac [!] x, simp_all)
 
 end
 
@@ -580,7 +580,7 @@ where
 | Some_eqvt: "p \<bullet> (Some x) = Some (p \<bullet> x)"
 
 instance 
-by (default) (induct_tac [!] x, simp_all)
+  by standard (induct_tac [!] x, simp_all)
 
 end
 
@@ -667,7 +667,7 @@ is
   done
 
 instance
-apply(default)
+apply standard
 apply(transfer)
 apply(simp)
 apply(transfer)
@@ -685,7 +685,7 @@ begin
 definition "p \<bullet> (c::char) = c"
 
 instance 
-by (default) (simp_all add: permute_char_def)
+  by standard (simp_all add: permute_char_def)
 
 end
 
@@ -695,7 +695,7 @@ begin
 definition "p \<bullet> (n::nat) = n"
 
 instance 
-by (default) (simp_all add: permute_nat_def)
+  by standard (simp_all add: permute_nat_def)
 
 end
 
@@ -705,7 +705,7 @@ begin
 definition "p \<bullet> (i::int) = i"
 
 instance 
-by (default) (simp_all add: permute_int_def)
+  by standard (simp_all add: permute_int_def)
 
 end
 
@@ -729,22 +729,22 @@ proof qed (rule permute_bool_def)
 text {* Other type constructors preserve purity. *}
 
 instance "fun" :: (pure, pure) pure
-by default (simp add: permute_fun_def permute_pure)
+  by standard (simp add: permute_fun_def permute_pure)
 
 instance set :: (pure) pure
-by default (simp add: permute_set_def permute_pure)
+  by standard (simp add: permute_set_def permute_pure)
 
 instance prod :: (pure, pure) pure
-by default (induct_tac x, simp add: permute_pure)
+  by standard (induct_tac x, simp add: permute_pure)
 
 instance sum :: (pure, pure) pure
-by default (induct_tac x, simp_all add: permute_pure)
+  by standard (induct_tac x, simp_all add: permute_pure)
 
 instance list :: (pure) pure
-by default (induct_tac x, simp_all add: permute_pure)
+  by standard (induct_tac x, simp_all add: permute_pure)
 
 instance option :: (pure) pure
-by default (induct_tac x, simp_all add: permute_pure)
+  by standard (induct_tac x, simp_all add: permute_pure)
 
 
 subsection {* Types @{typ char}, @{typ nat}, and @{typ int} *}
@@ -1069,7 +1069,7 @@ instantiation bool :: le_eqvt
 begin
 
 instance 
-apply(default)
+apply standard
 unfolding le_bool_def
 apply(perm_simp)
 apply(rule refl)
@@ -1081,7 +1081,7 @@ instantiation "fun" :: (pt, le_eqvt) le_eqvt
 begin
 
 instance 
-apply(default)
+apply standard
 unfolding le_fun_def
 apply(perm_simp)
 apply(rule refl)
@@ -1093,7 +1093,7 @@ instantiation bool :: inf_eqvt
 begin
 
 instance 
-apply(default)
+apply standard
 unfolding Inf_bool_def
 apply(perm_simp)
 apply(rule refl)
@@ -1105,7 +1105,7 @@ instantiation "fun" :: (pt, inf_eqvt) inf_eqvt
 begin
 
 instance 
-apply(default)
+apply standard
 unfolding Inf_fun_def INF_def
 apply(perm_simp)
 apply(rule refl)
@@ -1456,7 +1456,7 @@ lemma pure_fresh:
   unfolding fresh_def by (simp add: pure_supp)
 
 instance pure < fs
-by default (simp add: pure_supp)
+  by standard (simp add: pure_supp)
 
 
 subsection  {* Type @{typ atom} is finitely-supported. *}
@@ -1474,7 +1474,7 @@ lemma fresh_atom:
   unfolding fresh_def supp_atom by simp
 
 instance atom :: fs
-by default (simp add: supp_atom)
+  by standard (simp add: supp_atom)
 
 
 section {* Type @{typ perm} is finitely-supported. *}
@@ -1623,7 +1623,7 @@ lemma perm_eq_iff2:
 
 
 instance perm :: fs
-by default (simp add: supp_perm finite_perm_lemma)
+  by standard (simp add: supp_perm finite_perm_lemma)
 
 
 
@@ -1649,7 +1649,7 @@ lemma fresh_Unit:
   by (simp add: fresh_def supp_Unit)
 
 instance prod :: (fs, fs) fs
-apply default
+apply standard
 apply (case_tac x)
 apply (simp add: supp_Pair finite_supp)
 done
@@ -1674,7 +1674,7 @@ lemma fresh_Inr:
   by (simp add: fresh_def supp_Inr)
 
 instance sum :: (fs, fs) fs
-apply default
+apply standard
 apply (case_tac x)
 apply (simp_all add: supp_Inl supp_Inr finite_supp)
 done
@@ -1699,7 +1699,7 @@ lemma fresh_Some:
   by (simp add: fresh_def supp_Some)
 
 instance option :: (fs) fs
-apply default
+apply standard
 apply (induct_tac x)
 apply (simp_all add: supp_None supp_Some finite_supp)
 done
@@ -1752,7 +1752,7 @@ by (induct as)
    (simp_all add: supp_Nil supp_Cons supp_atom)
 
 instance list :: (fs) fs
-apply default
+apply standard
 apply (induct_tac x)
 apply (simp_all add: supp_Nil supp_Cons finite_supp)
 done
@@ -2199,9 +2199,7 @@ lemma supp_empty_mset [simp]:
   by simp
 
 instance multiset :: (fs) fs
-  apply (default)
-  apply (rule multisets_supp_finite)
-  done
+  by standard (rule multisets_supp_finite)
 
 subsection {* Type @{typ "'a fset"} is finitely supported *}
 
@@ -2252,9 +2250,7 @@ unfolding fresh_def
 by (simp add: supp_union_fset)
 
 instance fset :: (fs) fs
-  apply (default)
-  apply (rule fset_finite_supp)
-  done
+  by standard (rule fset_finite_supp)
 
 
 subsection {* Type @{typ "('a, 'b) finfun"} is finitely supported *}
@@ -2279,7 +2275,7 @@ using fresh_finfun_update
 by (auto simp: fresh_def supp_Pair)
     
 instance finfun :: (fs, fs) fs
-  apply(default)
+  apply standard
   apply(induct_tac x rule: finfun_weak_induct)
   apply(simp add: supp_finfun_const finite_supp)
   apply(rule finite_subset)

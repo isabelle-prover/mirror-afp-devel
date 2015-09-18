@@ -381,7 +381,7 @@ text {* We continue verifying other c-lattice axioms *}
 lemma cl8_var: "d R \<cdot> S = (R \<cdot> 1\<^sub>\<pi>) \<parallel> S"
   apply (rule set_eqI)
   apply (clarsimp simp: mrd_simp)
-  apply default
+  apply standard
   apply (metis SUP_bot sup.commute sup_bot.right_neutral)
   by auto
 
@@ -425,7 +425,7 @@ proof
   show "x \<inter> NC \<cdot> 1\<^sub>\<pi> \<parallel> NC = x \<inter> NC \<cdot> NC"
     apply (rule set_eqI)
     apply (clarsimp simp: d_def U_def p_id_def p_prod_def s_prod_im)
-    apply default
+    apply standard
     apply (metis (no_types, lifting) UN_extend_simps(2) Un_empty)
   proof -
     fix a :: 'b and b :: "'b set"
@@ -466,7 +466,10 @@ lemma test_p_prod_is_meet:
 assumes "R \<subseteq> 1\<^sub>\<sigma>"
 and "S \<subseteq> 1\<^sub>\<sigma>"
 shows "R \<parallel> S = R \<inter> S"
-  apply default using assms by (auto simp: mr_simp, force+)
+  apply standard
+  using assms
+  apply (auto simp: mr_simp, force+)
+  done
 
 lemma test_multipliciativer:
 assumes "R \<subseteq> 1\<^sub>\<sigma>"
@@ -578,7 +581,7 @@ qed
 lemma tarski: 
 assumes "R - 1\<^sub>\<pi> \<noteq> {}"
 shows "NC \<cdot> ((R - 1\<^sub>\<pi>) \<cdot> NC) = NC"
-  by (default, simp add: U_def p_id_def s_prod_im, force, metis assms tarski_aux subrelI)
+  by standard (simp add: U_def p_id_def s_prod_im, force, metis assms tarski_aux subrelI)
 
 text {* Next we verify the assumptions of Proposition 9.8. *}
 

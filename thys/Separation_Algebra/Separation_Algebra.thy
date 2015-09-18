@@ -662,7 +662,7 @@ begin
 lemma sep_disj_add_eq [simp]: "x ## y \<Longrightarrow> x + y ## z = (x ## z \<and> y ## z)"
   by (metis sep_add_disj_eq sep_disj_commute)
 
-subclass sep_algebra by default auto
+subclass sep_algebra by standard auto
 
 end
 

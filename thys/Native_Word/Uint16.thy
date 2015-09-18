@@ -47,13 +47,13 @@ lift_definition uminus_uint16 :: "uint16 \<Rightarrow> uint16" is uminus .
 lift_definition times_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "op *" .
 lift_definition divide_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "op div" .
 lift_definition mod_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "op mod" .
-instance by default (transfer, simp add: algebra_simps)+
+instance by standard (transfer, simp add: algebra_simps)+
 end
 
 instantiation uint16 :: linorder begin
 lift_definition less_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "op <" .
 lift_definition less_eq_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "op \<le>" .
-instance by(default)(transfer, simp add: less_le_not_le linear)+
+instance by standard (transfer, simp add: less_le_not_le linear)+
 end
 
 lemmas [code] = less_uint16.rep_eq less_eq_uint16.rep_eq
@@ -77,7 +77,7 @@ lemmas [code] = test_bit_uint16.rep_eq lsb_uint16.rep_eq msb_uint16.rep_eq
 
 instantiation uint16 :: equal begin
 lift_definition equal_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> bool" is "equal_class.equal" .
-instance by default(transfer, simp add: equal_eq)
+instance by standard (transfer, simp add: equal_eq)
 end
 
 lemmas [code] = equal_uint16.rep_eq

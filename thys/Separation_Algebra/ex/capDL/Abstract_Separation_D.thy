@@ -673,7 +673,7 @@ definition "(op +) \<equiv> sep_state_add"
  **********************************************)
 
 instance
-  apply default
+  apply standard
 (* x ## 0 *)
        apply (simp add: sep_disj_sep_state_def sep_state_disj_def zero_sep_state_def)
 (* x ## y \<Longrightarrow> y ## x *)

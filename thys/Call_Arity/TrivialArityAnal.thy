@@ -21,11 +21,12 @@ lemma below_Trivial_Aexp[simp]: "(ae \<sqsubseteq> Trivial_Aexp e \<cdot> n) \<l
 
 
 interpretation ArityAnalysis Trivial_Aexp.
-interpretation EdomArityAnalysis Trivial_Aexp  by default simp
+interpretation EdomArityAnalysis Trivial_Aexp
+  by standard simp
 
 
 interpretation ArityAnalysisSafe Trivial_Aexp
-proof default
+proof
 (*
   fix \<pi>
   show "\<pi> \<bullet> Trivial_Aexp = Trivial_Aexp" by perm_simp rule
@@ -73,7 +74,7 @@ lemma Trivial_Abinds_below_fv: "ABinds \<Gamma>\<cdot>ae \<sqsubseteq> (\<lambda
      (auto simp add: join_below_iff intro!: below_trans[OF Trivial_fup_Aexp_below_fv] env_restr_mono2 elim: below_trans dest: set_mp[OF fv_delete_subset] simp del: fun_meet_simp)
 
 interpretation ArityAnalysisLetSafe Trivial_Aexp Trivial_Aheap
-proof default
+proof
   fix \<pi>
   show "\<pi> \<bullet> Trivial_Aheap = Trivial_Aheap" by perm_simp rule  
 next

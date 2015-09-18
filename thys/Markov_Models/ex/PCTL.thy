@@ -27,7 +27,7 @@ lemma measurable_\<rho>[measurable]: "\<rho> \<in> borel_measurable (count_space
   by simp
 
 sublocale R: MC_with_rewards K \<iota> \<rho>
-  by default (auto intro: \<iota>_nonneg \<rho>_nonneg)
+  by standard (auto intro: \<iota>_nonneg \<rho>_nonneg)
 
 lemma single_l:
   fixes s and x :: real assumes "s \<in> S"

@@ -162,7 +162,7 @@ definition [code]:
   "HOL.equal A B \<longleftrightarrow> odlist_equal (toList A) (toList B)"
 
 instance
-  by default (simp add: equal_odlist_def)
+  by standard (simp add: equal_odlist_def)
 
 end
 (*>*)

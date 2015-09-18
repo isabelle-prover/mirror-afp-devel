@@ -79,16 +79,16 @@ To please @{theory HOLCF}, we declare the discrete partial order for our types:
 instantiation contour :: discrete_cpo
 begin
 definition [simp]: "(x::contour) \<sqsubseteq> y \<longleftrightarrow> x = y"
-instance by default simp
+instance by standard simp
 end
 instantiation d :: discrete_cpo begin
 definition  [simp]: "(x::d) \<sqsubseteq> y \<longleftrightarrow> x = y"
-instance by default simp
+instance by standard simp
 end
 
 instantiation call :: discrete_cpo begin
 definition  [simp]: "(x::call) \<sqsubseteq> y \<longleftrightarrow> x = y"
-instance by default simp
+instance by standard simp
 end
 
 text {*

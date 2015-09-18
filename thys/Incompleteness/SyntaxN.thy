@@ -12,7 +12,7 @@ instantiation hf :: pt
 begin
   definition "p \<bullet> (s::hf) = s"
   instance
-    by default (simp_all add: permute_hf_def)
+    by standard (simp_all add: permute_hf_def)
 end
 
 instance hf :: pure

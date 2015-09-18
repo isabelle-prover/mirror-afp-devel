@@ -49,7 +49,7 @@ end (* context ProblemIkTpart *)
 
 sublocale ProblemIkTpart < TE : Signature
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
-apply default
+apply standard
 using countable_tp countable_TE_wtFsym countable_wtPsym by auto
 
 
@@ -188,7 +188,7 @@ end (* context ModelIkTpart *)
 
 sublocale ModelIkTpart < TE : Struct
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf and intF = TE_intF
-proof default
+proof
   fix ef al assume "TE_wtFsym ef" and "list_all2 intT (TE_arOf ef) al"
   thus "intT (TE_resOf ef) (TE_intF ef al)"
   using intF by (cases ef, auto)
@@ -235,7 +235,7 @@ unfolding TE.SAT_def tPB_def using SAT unfolding Ik.SAT_def by auto
 
 theorem T_soundness:
 "Model TE_wtFsym wtPsym TE_arOf TE_resOf parOf tPB intT TE_intF intP"
-apply default using wtPB_tPB soundness by auto
+apply standard using wtPB_tPB soundness by auto
 
 end (* context ModelIkTpart *)
 
@@ -247,7 +247,7 @@ problem: *)
 sublocale ModelIkTpart < TE : Model
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB and intF = TE_intF
-apply default using wtPB_tPB soundness by auto
+apply standard using wtPB_tPB soundness by auto
 
 
 subsection{* Completeness *}
@@ -446,7 +446,7 @@ proof-
 qed
 
 lemma Struct: "Struct wtFsym wtPsym arOf resOf intT intF intP"
-apply default using NE_intT_forget wt_intF by auto
+apply standard using NE_intT_forget wt_intF by auto
 
 end (* context ProblemIkTpart_TEModel *)
 
@@ -620,7 +620,7 @@ unfolding Ik.SAT_def proof safe
 qed
 
 lemma T_completeness: "Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP"
-apply default using completeness .
+by standard (rule completeness)
 
 end (* context ProblemIkTpart_TEModel *)
 
@@ -643,12 +643,12 @@ This is an interesting dependency, not spotted in the paper. *)
 sublocale ProblemIkTpart < TE : Problem
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
-apply default by auto
+apply standard by auto
 
 sublocale ProblemIkTpart < TE : ProblemIk
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
-proof default
+proof
   fix \<sigma> eintT eintF eintP a  assume \<sigma>: "infTp \<sigma>"
   assume M: "Model TE_wtFsym wtPsym TE_arOf TE_resOf parOf tPB eintT eintF eintP"
   let ?TE_intT = "ProblemIkTpart_TEModel.intT prot protFw eintT eintF"
@@ -656,7 +656,7 @@ proof default
   let ?TE_intP = "ProblemIkTpart_TEModel.intP parOf prot protFw eintT eintF eintP"
   have 0: "ProblemIkTpart_TEModel wtFsym wtPsym arOf resOf parOf
                                    \<Phi> infTp prot protFw eintT eintF eintP"
-  using M unfolding ProblemIkTpart_TEModel_def apply safe by default
+  using M unfolding ProblemIkTpart_TEModel_def apply safe apply standard done
   hence MM: "Ik.MModel ?TE_intT ?TE_intF ?TE_intP"
   by (rule ProblemIkTpart_TEModel.T_completeness)
   have "infinite {a. ?TE_intT \<sigma> a}" using infTp[OF \<sigma> MM] .
@@ -713,7 +713,7 @@ end (* context ProblemIkTpart *)
 sublocale ProblemIkTpart < TE: ProblemIkMcalc
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
-proof default
+proof
   fix \<sigma> c assume "c \<in> tPB"
   thus "TE.mcalc \<sigma> c" unfolding tPB_def proof safe
     fix d assume d: "d \<in> \<Phi>" thus "TE.mcalc \<sigma> (tC d)"
@@ -727,8 +727,7 @@ problem *)
 context ProblemIkTpart begin
 
 theorem T_monotonic:
-"MonotProblem TE_wtFsym wtPsym TE_arOf TE_resOf parOf tPB"
-by default
+"MonotProblem TE_wtFsym wtPsym TE_arOf TE_resOf parOf tPB" ..
 
 end (* context ProblemIkTpart *)
 

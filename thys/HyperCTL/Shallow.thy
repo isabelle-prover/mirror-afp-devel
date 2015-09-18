@@ -384,7 +384,7 @@ and 2: "\<lbrakk>\<phi> \<pi>l; wuntil \<phi> \<psi> (map stl \<pi>l)\<rbrakk> \
 shows \<chi>
 proof(cases "alw \<phi> \<pi>l")
   case True
-  thus ?thesis apply default using 2 unfolding wuntil_def by auto
+  thus ?thesis apply standard using 2 unfolding wuntil_def by auto
 next
   case False
   hence "until \<phi> \<psi> \<pi>l" using w unfolding wuntil_def dis_def by auto

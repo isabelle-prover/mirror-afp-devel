@@ -32,7 +32,7 @@ lemma Aeta_expand_fresh[simp]: "a \<sharp> Aeta_expand n e = a \<sharp> e" by tr
 lemma Aeta_expand_fresh_star[simp]: "a \<sharp>* Aeta_expand n e = a \<sharp>* e" by (auto simp add: fresh_star_def)
 
 interpretation supp_bounded_transform Aeta_expand
-  apply default
+  apply standard
   using Aeta_expand_fresh
   apply (auto simp add: fresh_def)
   done

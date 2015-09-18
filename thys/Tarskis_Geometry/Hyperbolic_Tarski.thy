@@ -1815,7 +1815,7 @@ proof -
   with `card {r,p,q} = 3` have "card {?s,r,p,q} = 4" by simp
 
   have "\<forall> t\<in>?T. \<not> proj2_set_Col (?T - {t})"
-  proof default+
+  proof standard+
     fix t
     assume "t \<in> ?T"
     assume "proj2_set_Col (?T - {t})"
@@ -2117,7 +2117,7 @@ proof -
     by fast+
 
   have "\<forall> i . \<forall> u. proj2_incident u (?m$i) \<longrightarrow> \<not> (u = ?p$i \<or> u = ?q$i)"
-  proof default+
+  proof standard+
     fix i :: 2
     fix u :: proj2
     assume "proj2_incident u (?m$i)"
@@ -2365,7 +2365,7 @@ proof -
 qed
 
 theorem hyp2_axiom1: "\<forall> a b. a b \<congruent>\<^sub>K b a"
-proof default+
+proof standard+
   fix a b
   let ?a' = "Rep_hyp2 a"
   let ?b' = "Rep_hyp2 b"
@@ -2383,7 +2383,7 @@ proof default+
 qed
 
 theorem hyp2_axiom2: "\<forall> a b p q r s. a b \<congruent>\<^sub>K p q \<and> a b \<congruent>\<^sub>K r s \<longrightarrow> p q \<congruent>\<^sub>K r s"
-proof default+
+proof standard+
   fix a b p q r s
   assume "a b \<congruent>\<^sub>K p q \<and> a b \<congruent>\<^sub>K r s"
   then obtain G and H where "is_K2_isometry G" and "is_K2_isometry H"
@@ -2411,7 +2411,7 @@ proof default+
 qed
 
 theorem hyp2_axiom3: "\<forall> a b c. a b \<congruent>\<^sub>K c c \<longrightarrow> a = b"
-proof default+
+proof standard+
   fix a b c
   assume "a b \<congruent>\<^sub>K c c"
   then obtain J where "is_K2_isometry J"
@@ -5395,7 +5395,7 @@ theorem hyp2_axiom5:
   a \<noteq> b \<and> B\<^sub>K a b c \<and> B\<^sub>K a' b' c' \<and> a b \<congruent>\<^sub>K a' b' \<and> b c \<congruent>\<^sub>K b' c'
     \<and> a d \<congruent>\<^sub>K a' d' \<and> b d \<congruent>\<^sub>K b' d'
   \<longrightarrow> c d \<congruent>\<^sub>K c' d'"
-proof default+
+proof standard+
   fix a b c d a' b' c' d'
   assume "a \<noteq> b \<and> B\<^sub>K a b c \<and> B\<^sub>K a' b' c' \<and> a b \<congruent>\<^sub>K a' b' \<and> b c \<congruent>\<^sub>K b' c'
     \<and> a d \<congruent>\<^sub>K a' d' \<and> b d \<congruent>\<^sub>K b' d'"
@@ -5439,7 +5439,7 @@ interpretation hyp2: tarski_first5 real_hyp2_C real_hyp2_B
 subsection {* The Klein--Beltrami model satisfies axioms 6, 7, and 11 *}
 
 theorem hyp2_axiom6: "\<forall> a b. B\<^sub>K a b a \<longrightarrow> a = b"
-proof default+
+proof standard+
   fix a b
   let ?ca = "cart2_pt (Rep_hyp2 a)"
     and ?cb = "cart2_pt (Rep_hyp2 b)"

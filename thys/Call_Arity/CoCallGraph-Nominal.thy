@@ -7,13 +7,13 @@ begin
   lift_definition permute_CoCalls :: "perm \<Rightarrow> CoCalls \<Rightarrow> CoCalls" is "permute"
     by (auto intro!: symI elim: symE simp add: mem_permute_set)
 instance
-  apply default
+  apply standard
   apply (transfer, simp)+
   done
 end
 
 instance CoCalls :: cont_pt
-  apply default
+  apply standard
   apply (rule contI2)
   apply (rule monofunI)
   apply transfer

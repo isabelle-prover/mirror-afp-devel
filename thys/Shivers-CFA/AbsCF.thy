@@ -22,7 +22,7 @@ instantiation unit :: contour
 begin
 definition "\<anb> _ _ = ()"
 definition "\<abinit> = ()"
-instance by default auto
+instance by standard auto
 end
 
 text {*

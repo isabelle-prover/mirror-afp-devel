@@ -36,7 +36,8 @@ begin
   lift_definition plus_relation :: "'a relation \<Rightarrow> 'a relation \<Rightarrow> 'a relation" is "op \<union>" done
 
   instance
-    by default (transfer, auto simp: o_def rel_kleene_algebra.star_inductl rel_kleene_algebra.star_inductr)+
+    by standard (transfer, auto simp: o_def rel_kleene_algebra.star_inductl rel_kleene_algebra.star_inductr)+
+
 end
 
 end

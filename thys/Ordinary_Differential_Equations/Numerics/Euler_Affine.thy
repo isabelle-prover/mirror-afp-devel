@@ -488,10 +488,10 @@ interpretation continuous T X f
     intro!: continuous_on_compose2[of _ ode _ snd] has_derivative_continuous_on[OF fderiv] continuous_intros)
 
 interpretation compact_domain X
-  by default (auto simp: step_ivp_def set_of_appr_eq compact_interval)
+  by standard (auto simp: step_ivp_def set_of_appr_eq compact_interval)
 
 interpretation derivative_on_convex T X f "\<lambda>(t, x) (dt, dx). ode_d x dx"
-  by default
+  by standard
     (auto simp: step_ivp_def step_less set_of_appr_eq  nonneg_step less_imp_le convex_real_interval
       convex_closed_interval
       simp del: inf_of_appr sup_of_appr
@@ -626,7 +626,7 @@ proof -
   finally show ?thesis unfolding RES .
 qed
 
-lemma unique_solution_step_ivp: "unique_solution (step_ivp t0 x0 t1 CX)" by default
+lemma unique_solution_step_ivp: "unique_solution (step_ivp t0 x0 t1 CX)" ..
 
 lemma error_overapproximation_ivl:
   assumes h': "h' \<in> {0..h}"
@@ -918,7 +918,7 @@ proof (induct i arbitrary: t0 ress t2 X2 j)
   case 0
   let ?triv = "euler_ivp t2 x0 t2"
   interpret triv: ivp ?triv
-    by default auto
+    by standard auto
   have triv: "unique_solution ?triv"
     by (rule triv.singleton_unique_solutionI) auto
   then interpret triv: unique_solution ?triv .

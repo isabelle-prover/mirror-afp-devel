@@ -33,7 +33,7 @@ done
 subsection {* Class instance proofs *}
 
 instance btree :: "functor"
-apply default
+apply standard
 apply (induct_tac xs rule: btree.induct, simp_all)
 done
 

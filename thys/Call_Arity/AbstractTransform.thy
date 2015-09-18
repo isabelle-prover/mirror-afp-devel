@@ -199,7 +199,7 @@ begin
       AnalLet_eqvt[eqvt_raw] PropLetHeapTrans_eqvt[eqvt] TransBound_eqvt[eqvt]
   case goal1
   show ?case
-  apply default
+  apply standard
   apply ((perm_simp, rule)+)[4]
   apply (auto simp add: exp_assn.supp supp_at_base)[1]
   apply (auto simp add: Let_supp supp_Pair supp_at_base dest: set_mp[OF supp_map_transform])[1]
@@ -229,7 +229,7 @@ begin
        TransBound_eqvt[eqvt]
   case goal1
   show ?case
-  apply default
+  apply standard
   apply simp_all[3]
   apply (simp del: Let_eq_iff)
   apply (rule arg_cong[where f = "\<lambda> x. Let x y" for y])

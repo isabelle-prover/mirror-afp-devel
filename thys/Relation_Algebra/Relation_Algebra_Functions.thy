@@ -209,7 +209,7 @@ by (metis inf.commute inf_absorb2 inf_top_left maddux_23 p_fun_compl)
 text {* The next property is a Galois connection. *}
 
 lemma ss43iii: "is_map x \<longleftrightarrow> (\<forall>y. x ; -y = -(x ; y))"
-by (default, metis inf_top_left is_map_def ss_422v total_one, metis is_maprop mult.right_neutral)
+by standard (metis inf_top_left is_map_def ss_422v total_one, metis is_maprop mult.right_neutral)
 
 text {* Next we prove a lemma from Schmidt and Str\"ohlein's book and some of
 its consequences. We show the proof in detail since the textbook proof uses
@@ -242,7 +242,7 @@ lemma is_maprop1: "is_map x \<Longrightarrow> (y \<le> x ; z ; x\<^sup>\<smile> 
 by (metis ss423)
 
 lemma is_maprop2: "is_map x \<Longrightarrow> (y ; x \<le> x ; z \<longleftrightarrow> x\<^sup>\<smile> ; y; x \<le> z)"
-by (default, metis galois_aux2 inf_commute mult.assoc schroeder_1 ss43iii, metis conv_contrav conv_invol conv_iso mult.assoc ss423)
+by standard (metis galois_aux2 inf_commute mult.assoc schroeder_1 ss43iii, metis conv_contrav conv_invol conv_iso mult.assoc ss423)
 
 lemma is_maprop3: "is_map x \<Longrightarrow> (x\<^sup>\<smile> ; y; x \<le> z \<longleftrightarrow> x\<^sup>\<smile> ; y \<le> z ; x\<^sup>\<smile>)"
 by (metis ss423)
@@ -329,7 +329,7 @@ lemma a_3 [simp]: "a x + d x = 1'"
 by (metis antidom_def aux4 dom_def_aux double_compl)
 
 lemma test_domain: "x = d x \<longleftrightarrow> x \<le> 1'"
-apply default
+apply standard
  apply (metis dom_def_aux inf_le1)
 apply (metis dom_def_aux inf.commute mult.right_neutral test_1 is_test_def)
 done

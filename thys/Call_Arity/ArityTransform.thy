@@ -13,7 +13,7 @@ begin
     "\<lambda> _. 0"
     "Aeta_expand"
     "snd"
-  apply default
+  apply standard
   apply (((rule eq_reflection)?, perm_simp, rule)+)
   done
 end

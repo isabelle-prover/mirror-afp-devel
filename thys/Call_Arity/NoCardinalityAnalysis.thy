@@ -44,7 +44,7 @@ lemma cHeap_simp[simp]: "cHeap \<Gamma> e\<cdot>a = ae2ce (Aheap \<Gamma> e\<cdo
 sublocale CardinalityHeap cHeap.
 
 sublocale CardinalityHeapSafe cHeap Aheap
-  apply default
+  apply standard
   apply (erule Aheap_thunk)
   apply simp
   done
@@ -124,7 +124,7 @@ next
 qed
 
 sublocale CardinalityPrognosisIfThenElse prognosis
-proof default
+proof
   case goal1
   have "edom (Aexp scrut\<cdot>0 \<squnion> Aexp e1\<cdot>a \<squnion> Aexp e2\<cdot>a) \<subseteq> edom (Aexp (scrut ? e1 : e2)\<cdot>a)"
     by (rule edom_mono[OF Aexp_IfThenElse])
@@ -164,7 +164,7 @@ proof
 qed
 
 sublocale CardinalityPrognosisEdom prognosis
-  by default (auto dest: set_mp[OF Aexp_edom] set_mp[OF ap_fv_subset] set_mp[OF edom_AnalBinds]  set_mp[OF edom_AEstack])
+  by standard (auto dest: set_mp[OF Aexp_edom] set_mp[OF ap_fv_subset] set_mp[OF edom_AnalBinds]  set_mp[OF edom_AEstack])
 
 
 sublocale CardinalityPrognosisSafe prognosis cHeap Aheap Aexp..

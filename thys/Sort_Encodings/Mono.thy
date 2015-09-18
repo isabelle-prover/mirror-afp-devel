@@ -131,7 +131,9 @@ locale MonotModel = M : MonotProblem + M : Model
 context MonotModel begin
 
 lemma InfModelI: "IInfModel intTI intFI intPI"
-apply(rule MonotProblem.InfModel_intTI_intFI_intPI) by default
+apply(rule MonotProblem.InfModel_intTI_intFI_intPI)
+apply standard
+done
 
 end
 

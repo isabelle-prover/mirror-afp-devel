@@ -50,7 +50,7 @@ begin
       apply (subst beta_cfun, intro cont2cont cont2cont_lambda cont2cont_fun)+
       ..
   instance
-  apply default
+  apply standard
   proof(intro compatibleI exI conjI strip)
     fix x y
     show "x \<sqsubseteq> fun_join\<cdot>x\<cdot>y"  by (auto simp add: fun_below_iff)
@@ -70,7 +70,7 @@ begin
       apply (subst beta_cfun, intro cont2cont cont2cont_lambda cont2cont_fun)+
       ..
   instance
-  apply default
+  apply standard
   proof(intro compatibleI exI conjI strip)
     fix x y
     show "x \<sqsubseteq> cfun_join\<cdot>x\<cdot>y"  by (auto simp add: cfun_below_iff)
@@ -105,7 +105,7 @@ qed
 
 
 instance u :: (Finite_Join_cpo) Finite_Join_cpo
-proof default
+proof
   fix x y :: "'a\<^sub>\<bottom>"
   show "compatible x y"
   apply (cases x, simp)
@@ -118,12 +118,16 @@ class is_unit = fixes unit assumes is_unit: "\<And> x. x = unit"
 
 instantiation unit :: is_unit
 begin
-  definition "unit \<equiv> ()"
-instance by default auto
+
+definition "unit \<equiv> ()"
+
+instance
+  by standard auto
+
 end
 
 instance lift :: (is_unit) Finite_Join_cpo
-proof default
+proof
   fix x y :: "'a lift"
   show "compatible x y"
   apply (cases x, simp)
@@ -136,7 +140,7 @@ proof default
 qed
 
 instance prod :: (Finite_Join_cpo, Finite_Join_cpo) Finite_Join_cpo
-proof default
+proof
   fix x y :: "('a \<times> 'b)"
   let ?z = "(fst x \<squnion> fst y, snd x \<squnion> snd y)"
   show "compatible x y"
@@ -210,8 +214,8 @@ class Join_cpo = cpo +
 
 context Join_cpo
 begin
-  subclass   Finite_Join_cpo
-    apply default
+  subclass Finite_Join_cpo
+    apply standard
     unfolding compatible_def
     apply (rule exists_lub)
   done
@@ -229,7 +233,7 @@ by (metis exists_lub is_lub_thelub_ex is_ub_def)
 
 (* subclass (in Join_cpo)  pcpo *)
 instance Join_cpo \<subseteq> pcpo
-  apply default
+  apply standard
   apply (rule exI[where x = "lub {}"])
   apply auto
   done

@@ -254,7 +254,7 @@ instantiation assn :: comm_monoid_mult begin
     done
 
   instance 
-    apply default
+    apply standard
     apply (rule assn_times_assoc)
     apply (rule assn_times_comm)
     apply (rule assn_one_left)
@@ -328,7 +328,7 @@ instantiation assn :: boolean_algebra begin
   [simp]: "(a::assn) - b \<equiv> inf a (-b)"
 
   instance
-    apply default
+    apply standard
     unfolding 
       top_assn_def bot_assn_def sup_assn_def inf_assn_def uminus_assn_def
       less_eq_assn_def less_assn_def minus_assn_def

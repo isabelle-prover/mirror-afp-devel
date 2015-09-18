@@ -13,11 +13,11 @@ instantiation bool :: po
 begin
 definition
   "x \<sqsubseteq> y \<longleftrightarrow> (x \<longrightarrow> y)"
-instance by (default, unfold below_bool_def, fast+)
+instance by standard (unfold below_bool_def, fast+)
 end
 
 instance bool :: chfin
-apply default
+apply standard
 apply (drule finite_range_imp_finch)
 apply (rule finite)
 apply (simp add: finite_chain_def)
@@ -46,7 +46,7 @@ instantiation set :: (type) po
 begin
 definition
   "A \<sqsubseteq> B \<longleftrightarrow> A \<subseteq> B"
-instance by (default, unfold below_set_def, fast+)
+instance by standard (unfold below_set_def, fast+)
 end
 
 lemma sqsubset_is_subset: "A \<sqsubseteq> B \<longleftrightarrow> A \<subseteq> B"
@@ -59,13 +59,13 @@ lemma lub_is_union: "lub S = \<Union>S"
   using is_lub_set by (rule lub_eqI)
 
 instance set :: (type) cpo
-  by (default, fast intro: is_lub_set)
+  by standard (fast intro: is_lub_set)
 
 lemma emptyset_is_bot[simp]: "{} \<sqsubseteq> S"
   by (simp add:sqsubset_is_subset)
 
 instance set :: (type) pcpo
-  by (default, fast intro: emptyset_is_bot)
+  by standard (fast intro: emptyset_is_bot)
 
 lemma bot_bool_is_emptyset[simp]: "\<bottom> = {}"
   using emptyset_is_bot by (rule bottomI [symmetric])

@@ -19,10 +19,10 @@ class pcpo_pt =
   pcpo
 
 instance pcpo_pt \<subseteq> cont_pt
- by (default, auto intro: perm_cont)
+ by standard (auto intro: perm_cont)
 
 instance discr_pt \<subseteq> cont_pt
- by (default, auto)
+ by standard auto
 
 lemma (in cont_pt) perm_cont_simp[simp]: "\<pi> \<bullet> x \<sqsubseteq> \<pi> \<bullet> y \<longleftrightarrow> x \<sqsubseteq> y"
   apply rule
@@ -96,7 +96,7 @@ begin
   definition "p \<bullet> (f :: 'a  \<rightarrow> 'b) = (\<Lambda> x. p \<bullet> (f \<cdot> (- p \<bullet> x)))"
 
   instance
-  apply(default)
+  apply standard
   apply (simp add: permute_cfun_def eta_cfun)
   apply (simp add: permute_cfun_def cfun_eqI minus_add)
   done
@@ -129,13 +129,13 @@ lemma ID_eqvt[eqvt]: "\<pi> \<bullet> ID = ID"
   done
 
 instance "cfun" :: (cont_pt, cont_pt) cont_pt
-  by (default,subst permute_cfun_eq, auto)
+  by standard (subst permute_cfun_eq, auto)
 
 instance "cfun" :: ("{pure,cont_pt}", "{pure,cont_pt}") pure
-  by default (auto  simp add: permute_cfun_def permute_pure Cfun.cfun.Rep_cfun_inverse)
+  by standard (auto  simp add: permute_cfun_def permute_pure Cfun.cfun.Rep_cfun_inverse)
 
 instance "cfun" :: (cont_pt, pcpo_pt) pcpo_pt
-  by (default)
+  by standard
 
 subsubsection {* Instance for @{type fun} *}
 
@@ -143,7 +143,7 @@ lemma permute_fun_eq: "permute p = (\<lambda> f. (permute p) \<circ> f \<circ> (
   by (rule, rule, metis comp_apply eqvt_lambda unpermute_def)
 
 instance "fun" :: (pt, cont_pt) cont_pt
-  apply (default)
+  apply standard
   apply (rule cont2cont_lambda)
   apply (subst permute_fun_def)
   apply (rule perm_cont2cont)
@@ -165,11 +165,11 @@ subsubsection {* Instance for @{type u} *}
 instantiation u :: (cpo) pt
 begin
   definition "p \<bullet> (x :: 'a u) = x"
-  instance by default (auto simp add: permute_u_def)
+  instance by standard (auto simp add: permute_u_def)
 end
-instance u :: (cpo) pure by default (simp add: permute_u_def)
-instance u :: (cpo) cont_pt by default (simp add: pure_permute_id)
-instance u :: (cpo) pcpo_pt by default
+instance u :: (cpo) pure by standard (simp add: permute_u_def)
+instance u :: (cpo) cont_pt by standard (simp add: pure_permute_id)
+instance u :: (cpo) pcpo_pt ..
 *)
 
 
@@ -177,14 +177,14 @@ instantiation u :: (cont_pt) pt
 begin
   definition "p \<bullet> (x :: 'a u) = fup\<cdot>(\<Lambda> x. up\<cdot>(p \<bullet> x))\<cdot>x"
   instance
-  apply default
+  apply standard
   apply (case_tac x) apply (auto simp add: permute_u_def)
   apply (case_tac x) apply (auto simp add: permute_u_def)
   done
 end
 
 instance u :: (cont_pt) cont_pt
-proof default
+proof
   fix p
   (* Fighting eta contraction... *)
   have "permute p = (\<lambda> x. fup\<cdot>(\<Lambda> x. up\<cdot>(p \<bullet> x))\<cdot>(x:: 'a u))" 
@@ -193,13 +193,14 @@ proof default
   ultimately show "cont (permute p :: 'a u \<Rightarrow> 'a u)" by simp
 qed
 
-instance u :: (cont_pt) pcpo_pt by default
+instance u :: (cont_pt) pcpo_pt ..
 
 class pure_cont_pt = pure + cont_pt
 
 instance u :: (pure_cont_pt) pure
-  apply default
-  apply (case_tac x) apply (auto simp add: permute_u_def permute_pure)
+  apply standard
+  apply (case_tac x)
+  apply (auto simp add: permute_u_def permute_pure)
   done  
 
 
@@ -225,14 +226,14 @@ instantiation lift :: (pt) pt
 begin
   definition "p \<bullet> (x :: 'a lift) = case_lift \<bottom> (\<lambda> x. Def (p \<bullet> x)) x"
   instance
-  apply default
+  apply standard
   apply (case_tac x) apply (auto simp add: permute_lift_def)
   apply (case_tac x) apply (auto simp add: permute_lift_def)
   done
 end
 
 instance lift :: (pt) cont_pt
-proof default
+proof
   fix p
   (* Fighting eta contraction... *)
   have "permute p = (\<lambda> x. case_lift \<bottom> (\<lambda> x. Def (p \<bullet> x)) (x::'a lift))" 
@@ -241,11 +242,12 @@ proof default
   ultimately show "cont (permute p :: 'a lift \<Rightarrow> 'a lift)" by simp
 qed
 
-instance lift :: (pt) pcpo_pt by default
+instance lift :: (pt) pcpo_pt ..
 
 instance lift :: (pure) pure
-  apply default
-  apply (case_tac x) apply (auto simp add: permute_lift_def permute_pure)
+  apply standard
+  apply (case_tac x)
+  apply (auto simp add: permute_lift_def permute_pure)
   done  
 
 lemma Def_eqvt[eqvt]: "\<pi> \<bullet> (Def x) = Def (\<pi> \<bullet> x)"
@@ -257,7 +259,7 @@ lemma case_lift_eqvt[eqvt]: "\<pi> \<bullet> case_lift d f x = case_lift (\<pi> 
 subsubsection {* Instance for @{type prod} *}
 
 instance prod :: (cont_pt, cont_pt) cont_pt
-proof default
+proof
   fix p
   (* Fighting eta contraction... *)
   have "permute p = (\<lambda> (x :: ('a, 'b) prod). (p \<bullet> fst x, p \<bullet> snd x))"  by auto

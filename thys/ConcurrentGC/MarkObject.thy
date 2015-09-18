@@ -561,10 +561,14 @@ use it in the other process locales.
 This interpretation promotes the [inv] attribute to the top-level.
 
 *)
-interpretation gc_mark!: mark_object "gc" "''mark_loop''" "\<langle>True\<rangle>" by default (simp add: eq_imp_def)
+interpretation gc_mark!: mark_object "gc" "''mark_loop''" "\<langle>True\<rangle>"
+  by standard (simp add: eq_imp_def)
+
 lemmas gc_mark_mark_object_invL_def2[inv] = gc_mark.mark_object_invL_def[simplified]
 
-interpretation mut_get_roots!: mark_object "mutator m" "''hs_get_roots_loop''" "\<langle>True\<rangle>" for m by default (simp add: eq_imp_def)
+interpretation mut_get_roots!: mark_object "mutator m" "''hs_get_roots_loop''" "\<langle>True\<rangle>" for m
+  by standard (simp add: eq_imp_def)
+
 lemmas mut_get_roots_mark_object_invL_def2[inv] = mut_get_roots.mark_object_invL_def[simplified]
 
 text{*
@@ -576,10 +580,14 @@ by an @{const "fM"} flip.
 
 *}
 
-interpretation mut_store_del!: mark_object "mutator m" "''store_del''" "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m by default (simp add: eq_imp_def)
+interpretation mut_store_del!: mark_object "mutator m" "''store_del''" "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m
+  by standard (simp add: eq_imp_def)
+
 lemmas mut_store_del_mark_object_invL_def2[inv] = mut_store_del.mark_object_invL_def[simplified]
 
-interpretation mut_store_ins!: mark_object "mutator m" "''store_ins''"  "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m by default (simp add: eq_imp_def)
+interpretation mut_store_ins!: mark_object "mutator m" "''store_ins''"  "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m
+  by standard (simp add: eq_imp_def)
+
 lemmas mut_store_ins_mark_object_invL_def2[inv] = mut_store_ins.mark_object_invL_def[simplified]
 
 (* **************************************** *)

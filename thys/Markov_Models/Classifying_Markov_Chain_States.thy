@@ -1763,7 +1763,7 @@ proof -
   ultimately have "emeasure (stat C) (space (stat C)) = 1"
     using plus_emeasure[of C "stat C" "UNIV - C"] by (simp add: Diff_subset Un_absorb1)
   interpret stat: prob_space "stat C"
-    by default fact
+    by standard fact
 
   show "measure_pmf N = stat C"
   proof (rule measure_eqI_countable_AE)
@@ -2328,8 +2328,7 @@ proof -
     by (simp add: D_def c0)
 
   let ?N' = "map_pmf Some N"
-  interpret NP: pair_prob_space N ?N'
-    by default
+  interpret NP: pair_prob_space N ?N' ..
 
   have pos_recurrent: "\<forall>x\<in>C \<times> Some ` C. KN.pos_recurrent x"
   proof (rule KN.stationary_distributionD(1)[OF KN_essential _ KN.stationary_distributionI_pair[OF N(1)]])

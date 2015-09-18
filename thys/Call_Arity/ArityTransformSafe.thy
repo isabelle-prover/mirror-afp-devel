@@ -13,7 +13,7 @@ begin
     "\<lambda> _. 0"
     "Aeta_expand"
     "snd"
-  apply default
+  apply standard
   apply (simp add: Aheap_subst)
   apply (rule subst_Aeta_expand)
   done
@@ -24,7 +24,7 @@ begin
     by (induction rule: transform.induct)
        (auto simp add: exp_assn.supp Let_supp dest!: set_mp[OF supp_map_transform] set_mp[OF supp_map_transform_step] )
   interpretation supp_bounded_transform transform
-    by default (auto simp add: fresh_def supp_transform) 
+    by standard (auto simp add: fresh_def supp_transform) 
 
   fun transform_alts :: "Arity list \<Rightarrow> stack \<Rightarrow> stack"
     where 

@@ -199,11 +199,11 @@ next
 qed auto
    
 sublocale ArityAnalysisSafe Aexp
-  by default (simp_all add:Aexp_restr_subst)
+  by standard (simp_all add:Aexp_restr_subst)
 
 
 sublocale ArityAnalysisLetSafe Aexp Aheap
-proof default
+proof
   fix \<Gamma> e a
   show "edom (Aheap \<Gamma> e\<cdot>a) \<subseteq> domA \<Gamma>"
     by (cases "nonrec \<Gamma>")

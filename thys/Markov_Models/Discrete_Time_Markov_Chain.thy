@@ -476,8 +476,7 @@ lemma AE_T_enabled: "AE \<omega> in T s. enabled s \<omega>"
 
 sublocale T!: prob_space "T s" for s
 proof -
-  interpret P: product_prob_space K UNIV
-    by default
+  interpret P: product_prob_space K UNIV ..
   interpret prob_space "stream_space (\<Pi>\<^sub>M s\<in>UNIV. K s)"
     by (rule P.prob_space_stream_space)
   fix s show "prob_space (T s)"
@@ -491,8 +490,7 @@ lemma nn_integral_T:
   assumes f[measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+X. f X \<partial>T s) = (\<integral>\<^sup>+t. (\<integral>\<^sup>+\<omega>. f (t ## \<omega>) \<partial>T t) \<partial>K s)"
 proof -
-  interpret product_prob_space K UNIV
-    by default
+  interpret product_prob_space K UNIV ..
   interpret D: prob_space "stream_space (\<Pi>\<^sub>M s\<in>UNIV. K s)"
     by (rule prob_space_stream_space)
 

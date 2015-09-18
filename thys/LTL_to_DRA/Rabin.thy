@@ -121,7 +121,7 @@ lemma accept\<^sub>G\<^sub>R_restrict:
   apply (simp only: accept\<^sub>G\<^sub>R_simp)  
   apply (subst accepting_pair\<^sub>G\<^sub>R_restrict[OF assms, simplified]) 
   apply simp
-  apply default 
+  apply standard 
   apply (metis (no_types, lifting) imageE) 
   apply fastforce
   done

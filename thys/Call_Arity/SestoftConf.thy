@@ -8,7 +8,7 @@ instantiation stack_elem :: pt
 begin
 definition  "\<pi> \<bullet> x = (case x of (Alts e1 e2) \<Rightarrow> Alts (\<pi> \<bullet> e1) (\<pi> \<bullet> e2) | (Arg v) \<Rightarrow> Arg (\<pi> \<bullet> v) | (Upd v) \<Rightarrow> Upd (\<pi> \<bullet> v) | (Dummy v) \<Rightarrow> Dummy (\<pi> \<bullet> v))"
 instance
-  by default (auto simp add: permute_stack_elem_def split:stack_elem.split)
+  by standard (auto simp add: permute_stack_elem_def split:stack_elem.split)
 end
 
 lemma Alts_eqvt[eqvt]: "\<pi> \<bullet> (Alts e1 e2) = Alts (\<pi> \<bullet> e1) (\<pi> \<bullet> e2)"
@@ -31,7 +31,8 @@ lemma fv_Arg[simp]: "fv (Arg v) = fv v"  unfolding fv_def by auto
 lemma fv_Upd[simp]: "fv (Upd v) = fv v"  unfolding fv_def by auto
 lemma fv_Dummy[simp]: "fv (Dummy v) = fv v"  unfolding fv_def by auto
 
-instance stack_elem :: fs  by (default, case_tac x) (auto simp add: finite_supp)
+instance stack_elem :: fs
+  by standard (case_tac x, auto simp add: finite_supp)
 
 type_synonym stack = "stack_elem list"
 

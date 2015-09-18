@@ -141,11 +141,11 @@ next
   show ?L by unfold_locales
 qed
 
-lemma (in pair_fin_digraph) pair_fin_digraph[intro!]: "pair_fin_digraph G" by default
+lemma (in pair_fin_digraph) pair_fin_digraph[intro!]: "pair_fin_digraph G" ..
 
 context pair_digraph begin
 
-lemma pair_digraph[intro!]: "pair_digraph G" by default
+lemma pair_digraph[intro!]: "pair_digraph G" ..
 
 lemma no_loops':
   "(u,v) \<in> parcs G \<Longrightarrow> u \<noteq> v"
@@ -175,7 +175,7 @@ qed
 
 context pair_pseudo_graph begin
 
-lemma pair_pseudo_graph[intro]: "pair_pseudo_graph G" by default
+lemma pair_pseudo_graph[intro]: "pair_pseudo_graph G" ..
 
 lemma arcs_symmetric:
   "(a,b) \<in> parcs G \<Longrightarrow> (b,a) \<in> parcs G"
@@ -183,7 +183,7 @@ lemma arcs_symmetric:
 
 end
 
-lemma (in pair_graph) pair_graph[intro]: "pair_graph G" by default
+lemma (in pair_graph) pair_graph[intro]: "pair_graph G" ..
 
 
 

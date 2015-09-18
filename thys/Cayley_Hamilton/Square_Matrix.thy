@@ -93,7 +93,8 @@ lift_definition plus_sq_matrix :: "'a^^'b \<Rightarrow> 'a^^'b \<Rightarrow> 'a^
   "\<lambda>A B i j. A i j + B i j" .
 
 instance
-  by default (transfer, simp add: field_simps)
+  by standard (transfer, simp add: field_simps)
+
 end
 
 lemma map_sq_matrix_add:
@@ -109,7 +110,8 @@ begin
 lift_definition zero_sq_matrix :: "'a^^'b" is "\<lambda>i j. 0" .
 
 instance
-  by default (transfer, simp)+
+  by standard (transfer, simp)+
+
 end
 
 lemma diag_0: "diag 0 = 0"
@@ -125,7 +127,7 @@ lemma map_sq_matrix_0[simp]: "map_sq_matrix (\<lambda>x. 0) A = 0"
   by transfer simp
 
 instance sq_matrix :: (ab_semigroup_add, finite) ab_semigroup_add
-  by default (transfer, simp add: field_simps)+
+  by standard (transfer, simp add: field_simps)+
 
 instantiation sq_matrix :: (minus, finite) minus
 begin
@@ -143,7 +145,8 @@ lift_definition uminus_sq_matrix :: "'a^^'b \<Rightarrow> 'a^^'b" is
   "uminus" .
 
 instance
-  by default (transfer, simp)+
+  by standard (transfer, simp)+
+
 end
 
 lemma map_sq_matrix_diff:
@@ -154,13 +157,13 @@ lemma smult_diff: fixes a :: "'a::comm_ring_1" shows "a *\<^sub>S (A - B) = a *\
   by transfer (simp add: field_simps)
 
 instance sq_matrix :: (cancel_semigroup_add, finite) cancel_semigroup_add
-  by (default; transfer, simp add: field_simps fun_eq_iff)
+  by (standard; transfer, simp add: field_simps fun_eq_iff)
 
 instance sq_matrix :: (cancel_ab_semigroup_add, finite) cancel_ab_semigroup_add
-  by (default; transfer, simp add: field_simps)
+  by (standard; transfer, simp add: field_simps)
 
 instance sq_matrix :: (comm_monoid_add, finite) comm_monoid_add
-  by (default; transfer, simp add: field_simps)
+  by (standard; transfer, simp add: field_simps)
 
 lemma map_sq_matrix_setsum:
   "f 0 = 0 \<Longrightarrow> (\<And>a b. f (a + b) = f a + f b) \<Longrightarrow>
@@ -182,7 +185,7 @@ lemma smult_setsum: fixes a :: "'a::ring_1" shows "(\<Sum>i\<in>I. a *\<^sub>S f
      (simp_all add: smult_right_add vec_eq_iff)
 
 instance sq_matrix :: (ab_group_add, finite) ab_group_add
-  by default (transfer, simp add: field_simps)+
+  by standard (transfer, simp add: field_simps)+
 
 instantiation sq_matrix :: ("semiring_0", finite) semiring_0
 begin
@@ -234,7 +237,7 @@ lift_definition one_sq_matrix :: "'a^^'b" is
   "\<lambda>i j. if i = j then 1 else 0" .
 
 instance
-  by default (transfer, simp add: fun_eq_iff setsum.If_cases
+  by standard (transfer, simp add: fun_eq_iff setsum.If_cases
        if_distrib[where f="\<lambda>x. x * b" for b] if_distrib[where f="\<lambda>x. b * x" for b])+
 end
 
@@ -245,10 +248,10 @@ lemma diag_1_eq: "diag x = 1 \<longleftrightarrow> x = 1"
   by transfer (simp add: fun_eq_iff)
 
 instance sq_matrix :: ("ring_1", finite) ring_1
-  by default simp_all
+  by standard simp_all
 
 interpretation sq_matrix!: vector_space smult_sq_matrix
-  by default (transfer, simp add: vec_eq_iff field_simps)+
+  by standard (transfer, simp add: vec_eq_iff field_simps)+
 
 instantiation sq_matrix :: (real_vector, finite) real_vector
 begin
@@ -257,7 +260,8 @@ lift_definition scaleR_sq_matrix :: "real \<Rightarrow> 'a^^'b \<Rightarrow> 'a^
   "\<lambda>r A i j. r *\<^sub>R A i j" .
 
 instance
-  by default (transfer, simp add: scaleR_add_right scaleR_add_left)+
+  by standard (transfer, simp add: scaleR_add_right scaleR_add_left)+
+
 end
 
 instance sq_matrix :: ("semiring_1", finite) Rings.dvd ..

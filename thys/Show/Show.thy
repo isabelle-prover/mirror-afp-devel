@@ -138,7 +138,8 @@ begin
 
 definition "shows_prec p (c::char) = op # c"
 definition "shows_list (cs::string) = shows_string cs"
-instance by (default) (simp_all add: shows_prec_char_def shows_list_char_def show_law_simps)
+instance
+  by standard (simp_all add: shows_prec_char_def shows_list_char_def show_law_simps)
 
 end
 
@@ -181,7 +182,8 @@ begin
 definition "shows_prec (p :: nat) (xs :: 'a list) = shows_list xs"
 definition "shows_list (xss :: 'a list list) = showsp_list shows_prec 0 xss"
 
-instance by (default) (simp_all add: show_law_simps shows_prec_list_def shows_list_list_def)
+instance
+  by standard (simp_all add: show_law_simps shows_prec_list_def shows_list_list_def)
 
 end
 

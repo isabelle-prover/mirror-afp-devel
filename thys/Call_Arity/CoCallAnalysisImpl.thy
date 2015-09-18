@@ -193,7 +193,7 @@ lemma cc_restr_fup_ccExp_useless[simp]: "cc_restr (fv e) (fup\<cdot>(CCexp e)\<c
   by (rule cc_restr_noop[OF ccField_fup_CCexp])
 
 
-sublocale EdomArityAnalysis Aexp by default (rule Aexp_edom')
+sublocale EdomArityAnalysis Aexp by standard (rule Aexp_edom')
 
 
 

@@ -354,13 +354,16 @@ lemma "Thm \<Phi> \<Longrightarrow> satisfies I1 I2 \<Phi>"
 setup_lifting type_definition_fo
 setup_lifting type_definition_so
 
-instantiation fo :: equal begin
+instantiation fo :: equal
+begin
   lift_definition equal_fo :: "fo \<Rightarrow> fo \<Rightarrow> bool" is "op =" .
-  instance by (default, transfer) simp
+  instance by (standard, transfer) simp
 end
-instantiation so :: equal begin
+
+instantiation so :: equal
+begin
   lift_definition equal_so :: "so \<Rightarrow> so \<Rightarrow> bool" is "op =" .
-  instance by (default, transfer) simp
+  instance by (standard, transfer) simp
 end
 
 (*<*)

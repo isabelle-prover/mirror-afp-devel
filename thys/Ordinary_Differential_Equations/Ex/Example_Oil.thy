@@ -31,7 +31,7 @@ interpretation oil!: aform_approximate_ivp
   "\<lambda>(y::real, z::real). (z, z*z + -3 * inverse (inverse 1000 + y*y))"
   "\<lambda>(y::real, z) (dy, dz).
     (dz, 2 * dz * z  + 6 * (inverse (inverse 1000 + y*y) * (dy * (y * inverse (inverse 1000 + y*y)))))"
-  apply default
+  apply standard
   apply (rule oil[THEN Joints2_JointsI])
   unfolding list.sel
   apply assumption apply assumption

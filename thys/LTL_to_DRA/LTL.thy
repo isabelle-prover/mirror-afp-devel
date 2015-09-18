@@ -435,7 +435,7 @@ definition
   eq: "equal_class.equal \<equiv> ltl_prop_equiv_quotient_eq_test"
 
 instance    
-  by (default, simp add: eq ltl_prop_equiv_quotient_eq_test.rep_eq, metis Quotient_ltl_prop_equiv_quotient Quotient_rel_rep)
+  by standard (simp add: eq ltl_prop_equiv_quotient_eq_test.rep_eq, metis Quotient_ltl_prop_equiv_quotient Quotient_rel_rep)
   
 end
 

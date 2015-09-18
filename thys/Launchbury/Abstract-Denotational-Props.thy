@@ -51,7 +51,7 @@ next
 qed auto
 
 sublocale has_ignore_fresh_ESem ESem
-  by default (rule fv_supp_exp, rule ESem_considers_fv')
+  by standard (rule fv_supp_exp, rule ESem_considers_fv')
 
 subsubsection {* Nicer equations for ESem, without freshness requirements *}
 

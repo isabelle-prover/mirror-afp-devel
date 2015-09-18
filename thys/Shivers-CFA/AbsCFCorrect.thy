@@ -26,7 +26,7 @@ class contour_a = contour +
 instantiation unit :: contour_a
 begin
 definition "abs_cnt _ = ()"
-instance by default auto
+instance by standard auto
 end
 
 text {*

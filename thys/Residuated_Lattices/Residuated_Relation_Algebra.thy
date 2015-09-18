@@ -87,7 +87,7 @@ class residuated_ra = residuated_boolean_monoid +
 begin
 
 subclass nra
-proof (default, fact conv)
+proof (standard, fact conv)
   fix x y show "x \<lhd> y = x\<cdot>(1 \<lhd> y)"
     by (metis conv jonsson4)
 qed

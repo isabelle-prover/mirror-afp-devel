@@ -1107,9 +1107,7 @@ begin
   definition "def_hashmap_size (_::('a,'b) assoc_list itself) \<equiv> (10 :: nat)"
   definition [simp]: "hashcode \<equiv> hashcode \<circ> Assoc_List.impl_of"
   instance 
-    apply default
-    apply (simp_all add: def_hashmap_size_assoc_list_def)
-    done
+    by standard (simp_all add: def_hashmap_size_assoc_list_def)
 end
 
 (*
@@ -1125,7 +1123,7 @@ begin
     where "def_hashmap_size_XXX \<equiv> def_hashmap_size_uint"
 
   instance
-    apply default
+    apply standard
     unfolding def_hashmap_size_XXX_def bounded_hashcode_XXX_def
     using hashable_from_hashable_uint by auto
 end
@@ -1137,7 +1135,7 @@ begin
   definition [simp]: "less_assoc_list (a :: ('a,'b) assoc_list) (b :: ('a,'b) assoc_list) \<longleftrightarrow> lexlist (Assoc_List.impl_of a) < lexlist (Assoc_List.impl_of b)"
 
   instance 
-    apply default 
+    apply standard 
     apply (auto)
     apply (metis assoc_list_ext lexlist_ext lexlist_def)
     done
@@ -1150,7 +1148,7 @@ begin
   definition [simp]: "less_iarray (a :: 'a iarray) (b :: 'a iarray) \<longleftrightarrow> lexlist (IArray.list_of a) < lexlist (IArray.list_of b)"
 
   instance 
-    apply default 
+    apply standard 
     apply auto
     apply (metis iarray.exhaust list_of.simps lexlist_ext lexlist_def)
     done
@@ -1205,7 +1203,7 @@ instantiation iarray :: (hashable) hashable
 begin
   definition [simp]: "hashcode a = foldl (\<lambda>h v. h * 33 + hashcode v) 0 (IArray.list_of a)"
   definition "def_hashmap_size = (\<lambda>_ :: 'a iarray itself. 10)"
-  instance by default (simp_all add: def_hashmap_size_iarray_def)
+  instance by standard (simp_all add: def_hashmap_size_iarray_def)
 
   lemma [code]: "hashcode a = walk_iarray (\<lambda>h v. h * 33 + hashcode v) a 0"
     by (simp add: walk_iarray_foldl)
@@ -1219,7 +1217,7 @@ begin
   definition [simp]: "less_array (a :: 'a array) (b :: 'a array) \<longleftrightarrow> lexlist (list_of_array a) < lexlist (list_of_array b)"
 
   instance 
-    apply default 
+    apply standard 
     apply auto
     apply (metis array.exhaust list_of_array.simps lexlist_ext lexlist_def)
     done
@@ -1259,7 +1257,7 @@ instantiation array :: (hashable) hashable
 begin
   definition [simp]: "hashcode a = foldl (\<lambda>h v. h * 33 + hashcode v) 0 (list_of_array a)"
   definition "def_hashmap_size = (\<lambda>_ :: 'a array itself. 10)"
-  instance by default (simp_all add: def_hashmap_size_array_def)
+  instance by standard (simp_all add: def_hashmap_size_array_def)
 
   lemma [code]: "hashcode a = walk_array (\<lambda>h v. h * 33 + hashcode v) a 0"
     by (simp add: walk_array_foldl)
@@ -1279,7 +1277,7 @@ begin
     "hashcode_varType (VTBounded i1 i2) = hashcode (i1,i2)" |
     "hashcode_varType VTChan = 23"
 
-  instance by default (simp add: def_hashmap_size_varType_def)
+  instance by standard (simp add: def_hashmap_size_varType_def)
 end
 
 instantiation variable :: hashable
@@ -1291,7 +1289,7 @@ begin
     "hashcode_variable (Var i1 i2) = hashcode (i1,i2)" |
     "hashcode_variable (VArray i1 i2 ia) = hashcode (i1,i2,ia)"
 
-  instance by default (simp add: def_hashmap_size_variable_def)
+  instance by standard (simp add: def_hashmap_size_variable_def)
 end
 
 fun channel_to_tuple where
@@ -1305,7 +1303,7 @@ begin
   definition [simp]: "less_channel xs ys \<longleftrightarrow> channel_to_tuple xs < channel_to_tuple ys"
 
   instance
-    apply default
+    apply standard
     apply (auto)
     apply (case_tac x)
     apply (case_tac [!] y)
@@ -1325,7 +1323,7 @@ begin
   | "hashcode_channel (HSChannel vs) = 42 * hashcode vs"
   | "hashcode_channel InvChannel = 4711"
 
-  instance by default (simp add: def_hashmap_size_channel_def)
+  instance by standard (simp add: def_hashmap_size_channel_def)
 end
 
 function pState2HASH where
@@ -1342,7 +1340,7 @@ begin
   definition [simp]: "less_eq_pState_ext (a :: 'a pState_ext) (b :: 'a pState_ext) \<longleftrightarrow> pState2HASH a \<le> pState2HASH b"
   definition [simp]: "less_pState_ext (a :: 'a pState_ext) (b :: 'a pState_ext) \<longleftrightarrow> pState2HASH a < pState2HASH b"
 
-  instance by default (auto simp: pState2HASH_eq)
+  instance by standard (auto simp: pState2HASH_eq)
 end
 
 instantiation pState_ext :: (hashable) hashable
@@ -1350,7 +1348,7 @@ begin
   definition "def_hashmap_size_pState_ext (_::'a pState_ext itself) \<equiv> (10::nat)"
   definition [simp]: "hashcode \<equiv> hashcode \<circ> pState2HASH"
 
-  instance by default (simp_all add: def_hashmap_size_pState_ext_def)
+  instance by standard (simp_all add: def_hashmap_size_pState_ext_def)
 end
 
 function gState2HASH where
@@ -1367,7 +1365,7 @@ begin
   definition [simp]: "less_eq_gState_ext (a :: 'a gState_ext) (b :: 'a gState_ext) \<longleftrightarrow> gState2HASH a \<le> gState2HASH b"
   definition [simp]: "less_gState_ext (a :: 'a gState_ext) (b :: 'a gState_ext) \<longleftrightarrow> gState2HASH a < gState2HASH b"
 
-  instance by default (auto simp: gState2HASH_eq)
+  instance by standard (auto simp: gState2HASH_eq)
 end
 
 instantiation gState_ext :: (hashable) hashable
@@ -1375,7 +1373,7 @@ begin
   definition "def_hashmap_size_gState_ext (_::'a gState_ext itself) \<equiv> (10::nat)"
   definition [simp]: "hashcode \<equiv> hashcode \<circ> gState2HASH"
 
-  instance by default (simp_all add: def_hashmap_size_gState_ext_def)
+  instance by standard (simp_all add: def_hashmap_size_gState_ext_def)
 end
 
 (*>*)

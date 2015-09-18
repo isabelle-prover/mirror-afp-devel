@@ -23,7 +23,7 @@ interpretation exp_ivp!: aform_approximate_ivp
   exp_d_ivp
   "\<lambda>(y\<^sub>1, y\<^sub>2). (y\<^sub>1, y\<^sub>2)"
   "\<lambda>(a, b) (h\<^sub>1, h\<^sub>2). (h\<^sub>1, h\<^sub>2 + 0 *a*b)"
-  apply default
+  apply standard
   apply (rule exp_affine[THEN Joints2_JointsI])
   unfolding list.sel
   apply assumption apply assumption

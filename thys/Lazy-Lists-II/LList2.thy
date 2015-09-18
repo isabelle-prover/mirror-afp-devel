@@ -916,9 +916,10 @@ lemma llist_less_le_not_le:
   shows "(s < t) = (s \<le> t \<and> \<not> t \<le> s)"
   by (auto simp add: llist_less_def dest: llist_le_anti_sym)
 
-instance by default
-  (assumption | rule llist_le_refl
-    llist_le_trans llist_le_anti_sym llist_less_le_not_le)+
+instance
+  by standard
+    (assumption | rule llist_le_refl
+      llist_le_trans llist_le_anti_sym llist_less_le_not_le)+
 
 end
 

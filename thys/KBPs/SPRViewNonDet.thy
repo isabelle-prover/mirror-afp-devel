@@ -615,7 +615,7 @@ sublocale FiniteBroadcastEnvironment
                                        spr_jview envObs spr_jviewInit spr_jviewIncr
                                        spr_sim spr_simRels spr_simVal
 (*<*)
-  by default (simp add: spr_sim)
+  by standard (simp add: spr_sim)
 
 (*>*)
 text{*

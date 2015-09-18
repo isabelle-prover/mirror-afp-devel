@@ -103,7 +103,7 @@ end (* context ProblemIkTpartG *)
 sublocale ProblemIkTpartG < GE : Signature
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
-apply default
+apply standard
 using countable_tp countable_GE_wtFsym countable_GE_wtPsym by auto
 
 
@@ -297,7 +297,7 @@ sublocale ModelIkTpartG < GE : Struct
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym and
 arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and intF = GE_intF and intP = GE_intP
-proof default
+proof
   fix ef al assume "GE_wtFsym ef" and "list_all2 intT (GE_arOf ef) al"
   thus "intT (GE_resOf ef) (GE_intF ef al)"
   using intF by (cases ef, auto)
@@ -346,7 +346,7 @@ unfolding GE.SAT_def gPB_def using SAT unfolding Ik.SAT_def by auto
 
 theorem G_soundness:
 "Model GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf gPB intT GE_intF GE_intP"
-apply default using wtPB_tPB soundness by auto
+apply standard using wtPB_tPB soundness by auto
 
 end (* context ModelIkTpartG *)
 
@@ -536,7 +536,7 @@ proof-
 qed
 
 lemma Struct: "Struct wtFsym wtPsym arOf resOf intT intF intP"
-apply default using NE_intT_forget wt_intF by auto
+apply standard using NE_intT_forget wt_intF by auto
 
 end (* context ProblemIkTpartG_GEModel *)
 
@@ -616,7 +616,7 @@ unfolding Ik.SAT_def proof safe
 qed
 
 lemma G_completeness: "Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP"
-apply default using completeness .
+apply standard using completeness .
 
 end (* context ProblemIkTpartG_GEModel *)
 
@@ -637,13 +637,15 @@ sublocale ProblemIkTpartG < GE : Problem
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB
-apply default by auto
+apply standard
+apply auto
+done
 
 sublocale ProblemIkTpartG < GE : ProblemIk
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB
-proof default
+proof
   fix \<sigma> eintT eintF eintP a  assume \<sigma>: "infTp \<sigma>"
   assume M: "Model GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf gPB eintT eintF eintP"
   let ?GE_intT = "ProblemIkTpartG_GEModel.intT prot protFw eintT eintP"
@@ -651,7 +653,7 @@ proof default
   let ?GE_intP = "ProblemIkTpartG_GEModel.intP eintP"
   have 0: "ProblemIkTpartG_GEModel wtFsym wtPsym arOf resOf parOf
                                    \<Phi> infTp prot protFw protCl eintT eintF eintP"
-  using M unfolding ProblemIkTpartG_GEModel_def apply safe by default
+  using M unfolding ProblemIkTpartG_GEModel_def apply safe ..
   hence MM: "Ik.MModel ?GE_intT ?GE_intF ?GE_intP"
   by (rule ProblemIkTpartG_GEModel.G_completeness)
   have "infinite {a. ?GE_intT \<sigma> a}" using infTp[OF \<sigma> MM] .
@@ -680,7 +682,7 @@ end
 sublocale ProblemIkTpartG < GE: ProblemIkPol
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
-and \<Phi> = gPB and pol = pol and grdOf = grdOf by default
+and \<Phi> = gPB and pol = pol and grdOf = grdOf ..
 
 context ProblemIkTpartG begin
 
@@ -788,7 +790,9 @@ sublocale ProblemIkTpartG < GE: ProblemIkPolMcalc2C
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB and pol = pol and grdOf = grdOf
-apply default using grdOf mcalc2 by (auto simp: pol_ct)
+apply standard using grdOf mcalc2
+apply (auto simp: pol_ct)
+done
 
 (* We already know that ProblemIkMcalc < MonotProblem, so by transitivity we obtain
 the following main theorem, stating that the guard translation yields a monotonic
@@ -797,8 +801,7 @@ problem *)
 context ProblemIkTpartG begin
 
 theorem G_monotonic:
-"MonotProblem GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf gPB"
-by default
+"MonotProblem GE_wtFsym GE_wtPsym GE_arOf GE_resOf GE_parOf gPB" ..
 
 end (* context ProblemIkTpartG *)
 

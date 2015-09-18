@@ -95,7 +95,7 @@ begin
   qed
 
   sublocale CardinalityPrognosisApp prognosis
-  proof default
+  proof
     fix ae as a \<Gamma> e x S
     have "Texp e\<cdot>(inc\<cdot>a)  \<otimes>\<otimes> many_calls x \<otimes>\<otimes> Fstack as S = many_calls x  \<otimes>\<otimes> (Texp e)\<cdot>(inc\<cdot>a) \<otimes>\<otimes> Fstack as S"
       by (metis both_assoc both_comm)
@@ -104,7 +104,7 @@ begin
   qed
 
   sublocale CardinalityPrognosisLam prognosis
-  proof default
+  proof
     fix ae as a \<Gamma> e y x S
     have "Texp e[y::=x]\<cdot>(pred\<cdot>a) \<sqsubseteq> many_calls x  \<otimes>\<otimes> Texp (Lam [y]. e)\<cdot>a"
       by (rule below_trans[OF Texp_subst both_mono2'[OF Texp_Lam]])
@@ -116,7 +116,7 @@ begin
   qed
 
   sublocale CardinalityPrognosisVar prognosis
-  proof default
+  proof
     fix \<Gamma> :: heap and e :: exp and x :: var and ae :: AEnv and as u a S
     assume "map_of \<Gamma> x = Some e"
     assume "ae x = up\<cdot>u"
@@ -196,7 +196,7 @@ begin
   qed
 
   sublocale CardinalityPrognosisIfThenElse prognosis
-  proof default
+  proof
     fix ae as \<Gamma> scrut e1 e2 S a
     have "Texp scrut\<cdot>0 \<otimes>\<otimes> (Texp e1\<cdot>a \<oplus>\<oplus> Texp e2\<cdot>a) \<sqsubseteq> Texp (scrut ? e1 : e2)\<cdot>a"
       by (rule Texp_IfThenElse)
@@ -345,7 +345,7 @@ begin
       by (simp add: cHeap_def del: fun_meet_simp) 
   qed
 
-  sublocale CardinalityPrognosisSafe prognosis cHeap Aheap Aexp by default
+  sublocale CardinalityPrognosisSafe prognosis cHeap Aheap Aexp ..
 end
 
 

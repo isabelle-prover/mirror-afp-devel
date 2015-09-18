@@ -127,7 +127,7 @@ begin
     by (metis (hide_lams, no_types) Un_left_commute sup_assoc)
 
   instance
-    by default (transfer, auto simp: fun_order_def fun_strict_order_def fun_union_def bot_def)+
+    by standard (transfer, auto simp: fun_order_def fun_strict_order_def fun_union_def bot_def)+
 
 end
 
@@ -137,7 +137,7 @@ begin
     by (auto simp: N_def fun_inter_def adjoint_def bot_def fun_union_def mono_def)
 
   instance
-    by default (transfer, auto simp: N_def fun_inter_def adjoint_def bot_def fun_union_def)+
+    by standard (transfer, auto simp: N_def fun_inter_def adjoint_def bot_def fun_union_def)+
 end
 
 definition fun_star :: "'a bfun \<Rightarrow> 'a bfun" where

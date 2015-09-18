@@ -120,7 +120,7 @@ proof
 qed
 
 instance dual :: (order) order
-  by default (auto simp: less_eq_dual_def undual_equality)
+  by standard (auto simp: less_eq_dual_def undual_equality)
 
 
 subsection {* Binary infimum and supremum *}
@@ -139,7 +139,7 @@ definition
   "inf f g = dual (sup (undual f) (undual g))"
 
 instance
-  by default (auto simp: inf_dual_def less_eq_dual_def)
+  by standard (auto simp: inf_dual_def less_eq_dual_def)
 
 end
 
@@ -150,7 +150,7 @@ definition
   "sup f g = dual (inf (undual f) (undual g))"
 
 instance
-  by default (auto simp: sup_dual_def less_eq_dual_def)
+  by standard (auto simp: sup_dual_def less_eq_dual_def)
 
 end
 
@@ -188,7 +188,7 @@ theorem dual_sup' [iff?]:
   by (cases s) (simp add: sup_dual_def)
 
 instance dual :: (distrib_lattice) distrib_lattice
-  by default (simp add: inf_dual_def sup_dual_def inf_sup_distrib1)
+  by standard (simp add: inf_dual_def sup_dual_def inf_sup_distrib1)
 
 
 subsection {* Top and bottom elements *}
@@ -200,7 +200,7 @@ definition
   "bot = dual top"
 
 instance
-  by default (simp add: bot_dual_def less_eq_dual_def)
+  by standard (simp add: bot_dual_def less_eq_dual_def)
 
 end
 
@@ -211,7 +211,7 @@ definition
   "top = dual bot"
 
 instance
-  by default (simp add: top_dual_def less_eq_dual_def)
+  by standard (simp add: top_dual_def less_eq_dual_def)
 
 end
 
@@ -258,7 +258,7 @@ definition
   "(x::'a dual) - y = inf x (- y)"
 
 instance
-  by default
+  by standard
     (auto simp: dual_eq_iff sup_compl_top inf_compl_bot minus_dual_def)
 
 end

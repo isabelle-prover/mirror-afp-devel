@@ -27,7 +27,7 @@ done
 subsection {* Class instance proofs *}
 
 instance lifted :: "functor"
-  by default (induct_tac xs rule: lifted.induct, simp_all)
+  by standard (induct_tac xs rule: lifted.induct, simp_all)
 
 instantiation lifted :: monad
 begin

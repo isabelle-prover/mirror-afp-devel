@@ -22,8 +22,7 @@ class monad_plus = plusU + monad +
     "plusU\<cdot>(plusU\<cdot>a\<cdot>b)\<cdot>c = plusU\<cdot>a\<cdot>(plusU\<cdot>b\<cdot>c)"
 
 instance monad_plus \<subseteq> functor_plus
-by default
-  (simp_all only: fmapU_eq_bindU bindU_plusU plusU_assoc')
+by standard (simp_all only: fmapU_eq_bindU bindU_plusU plusU_assoc')
 
 definition fplus :: "'a\<cdot>'f::functor_plus \<rightarrow> 'a\<cdot>'f \<rightarrow> 'a\<cdot>'f"
   where "fplus = coerce\<cdot>(plusU :: udom\<cdot>'f \<rightarrow> _)"

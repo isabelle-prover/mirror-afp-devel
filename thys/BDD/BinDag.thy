@@ -129,7 +129,7 @@ lemma dag_less_le:
   by (auto simp add: less_dag_def le_dag_def dest: subdag_neq)
  
 instance
-  by default (auto simp add: dag_less_le le_dag_refl intro: le_dag_trans dest: le_dag_antisym)
+  by standard (auto simp add: dag_less_le le_dag_refl intro: le_dag_trans dest: le_dag_antisym)
 
 end
 

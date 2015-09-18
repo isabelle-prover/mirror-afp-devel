@@ -158,7 +158,7 @@ definition
   "enum_class.enum_ex P = (P Child0 \<or> P Child1 \<or> P Child2)"
 
 instance
-  apply default
+  apply standard
   unfolding enum_Agent_def enum_all_Agent_def enum_ex_Agent_def
   by auto (case_tac x, auto)+
 
@@ -172,7 +172,7 @@ lemma Act_univ: "(UNIV :: ChildAct set) = {SayIKnow, SayNothing}"
   done
 
 instance ChildAct :: finite
-  by default (auto iff: Act_univ)
+  by standard (auto iff: Act_univ)
 
 instantiation ChildAct :: enum
 begin
@@ -187,7 +187,7 @@ definition
   "enum_class.enum_ex P = (P SayIKnow \<or> P SayNothing)"
 
 instance
-  apply default
+  apply standard
   unfolding enum_ChildAct_def enum_all_ChildAct_def enum_ex_ChildAct_def
   by auto (case_tac x, auto)+
 

@@ -97,7 +97,7 @@ lemma conf_trace_induct_final[consumes 1, case_names trace_nil trace_cons]:
   by (induction "(\<Gamma>, e, S)" T final arbitrary: \<Gamma> e S rule: trace_induct_final) auto
 
 interpretation balance_trace step  stack
-  apply default
+  apply standard
   apply (erule step.cases)
   apply auto
   done

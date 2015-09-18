@@ -279,7 +279,7 @@ lemma Sup_sup: "\<forall>X. f(\<Squnion> X) = \<Squnion>{f x | x. x \<in> X} \<L
   by (force intro: Sup_eqI)
 
 lemma Sup_residuatedI: "\<forall>X. f(\<Squnion> X) = \<Squnion>{f x | x. x \<in> X} \<Longrightarrow> residuated f"
-proof (unfold residuated_def residuated_pair_def, default+)
+proof (unfold residuated_def residuated_pair_def, standard+)
   fix x y
   assume "f x \<le> y"
   thus "x \<le> \<Squnion>{x. f x \<le> y}"
@@ -304,7 +304,7 @@ lemma Inf_inf: "\<forall>X. f(\<Sqinter> X) = \<Sqinter>{f x | x. x \<in> X} \<L
   by (force intro: Inf_eqI)
 
 lemma Inf_residuatedI: "\<forall>X. \<Sqinter>{g x | x. x \<in> X} = g (\<Sqinter> X) \<Longrightarrow> \<exists>f. residuated_pair f g"
-proof (unfold residuated_pair_def, default+)
+proof (unfold residuated_pair_def, standard+)
   fix x y
   assume "x \<le> g y"
   thus "\<Sqinter>{y. x \<le> g y} \<le> y"

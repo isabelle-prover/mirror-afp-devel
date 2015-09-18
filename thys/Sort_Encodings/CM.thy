@@ -23,8 +23,8 @@ and resOf and parOf :: "'psym \<Rightarrow> 'tp list" and \<Phi>
 and intT :: "'tp \<Rightarrow> univ \<Rightarrow> bool"
 and intF and intP
 
-sublocale Struct < Tstruct by default
-sublocale Model < Struct by default
+sublocale Struct < Tstruct ..
+sublocale Model < Struct ..
 
 
 end

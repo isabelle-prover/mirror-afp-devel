@@ -89,7 +89,7 @@ by (rule hcomp_conc_unit2[Transfer.transferred])
 
 lemma comp_fun_commute_hcomp:
   "comp_fun_commute (op \<otimes>)"
-by default (simp add: hcomp_assoc fun_eq_iff, metis hcomp_comm)
+by standard (simp add: hcomp_assoc fun_eq_iff, metis hcomp_comm)
 
 subsection {* An iterated horizontal-composition operator *}
 

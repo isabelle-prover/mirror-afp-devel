@@ -23,7 +23,8 @@ definition "shows_prec p (A :: 'a mat) \<equiv> shows_mat A"
 definition "shows_list (As :: 'a mat list) \<equiv> shows_sep shows_mat (shows '', '') As"
 
 instance 
-  by default (simp_all add: shows_mat_def show_law_simps shows_prec_mat_def shows_list_mat_def)
+  by standard (simp_all add: shows_mat_def show_law_simps shows_prec_mat_def shows_list_mat_def)
+
 end
 
 end

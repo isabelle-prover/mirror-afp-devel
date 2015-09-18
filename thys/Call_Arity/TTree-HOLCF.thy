@@ -24,7 +24,7 @@ lemma paths_belowI: "(\<And> x xs. x#xs \<in> paths t \<Longrightarrow> x#xs \<i
   done
 
 instance ttree :: (type) po
- by default (transfer, simp)+
+ by standard (transfer, simp)+
 
 lemma is_lub_ttree:
   "S <<| Either S"
@@ -35,13 +35,13 @@ lemma lub_is_either: "lub S = Either S"
   using is_lub_ttree by (rule lub_eqI)
 
 instance ttree :: (type) cpo
-  by default (rule exI, rule is_lub_ttree)
+  by standard (rule exI, rule is_lub_ttree)
 
 lemma minimal_ttree[simp, intro!]: "empty \<sqsubseteq> S"
   by transfer simp
 
 instance ttree :: (type) pcpo
-  by default (rule+)
+  by standard (rule+)
 
 lemma empty_is_bottom: "empty = \<bottom>"
   by (metis below_bottom_iff minimal_ttree)
@@ -262,7 +262,7 @@ lemmas cont_ccTTree = cont_compose2[where c = ttree_restr, OF cont_ccTTree1 cont
 
 
 instance ttree :: (type) Finite_Join_cpo
-proof default
+proof
   fix x y :: "'a ttree"
   show "compatible x y"
     unfolding compatible_def

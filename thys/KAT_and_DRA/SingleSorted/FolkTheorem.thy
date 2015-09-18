@@ -152,15 +152,19 @@ text {*
   Kleene algebras with tests form pre-Conway algebras, therefore the transformation theorem is valid for KAT as well.
 *}
 sublocale  kat \<subseteq> pre_conway star
-  apply (default, simp_all only: star_prod_unfold star_sim2)
-  by (metis star_denest_var star_slide)
+  apply standard
+  apply (simp_all only: star_prod_unfold star_sim2)
+  apply (metis star_denest_var star_slide)
+  done
 
 text {*
   Demonic refinement algebras form pre-Conway algebras, therefore the transformation theorem is valid for DRA as well.
 *}
 sublocale  dra_tests \<subseteq> pre_conway strong_iteration
-  apply (default, metis iteration_denest iteration_slide)
-  by (metis iteration_prod_unfold, metis iteration_sim)
+  apply standard
+  apply (metis iteration_denest iteration_slide)
+  apply (metis iteration_prod_unfold, metis iteration_sim)
+  done
   
 text {*
   We do not currently consider an expansion of probabilistic Kleene algebra.

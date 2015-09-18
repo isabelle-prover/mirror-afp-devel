@@ -9,7 +9,7 @@ instantiation C :: Finite_Meet_cpo begin
   lemma[simp]: "C_meet\<cdot>\<bottom>\<cdot>y = \<bottom>" "C_meet\<cdot>x\<cdot>\<bottom> = \<bottom>" by (fixrec_simp, cases x, fixrec_simp+)  
 
   instance
-  apply default
+  apply standard
   proof(intro exI conjI strip)
     fix x y
     {

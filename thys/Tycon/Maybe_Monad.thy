@@ -32,7 +32,7 @@ done
 subsection {* Class instance proofs *}
 
 instance maybe :: "functor"
-apply default
+apply standard
 apply (induct_tac xs rule: maybe.induct, simp_all)
 done
 

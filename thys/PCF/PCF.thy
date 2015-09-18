@@ -806,7 +806,7 @@ lemma min_inv_POR_lf:
   done
 
 interpretation POR!: DomSolV ValD_copy_rec POR_lf
-  apply default
+  apply standard
     apply (rule ValD_copy_ID)
    apply (rule mono_POR_lf)
   apply (erule min_inv_POR_lf)
@@ -1188,7 +1188,7 @@ lemma min_inv_PE_lf:
   done
 
 interpretation PE!: DomSolV ValD_copy_rec PE_lf
-  apply default
+  apply standard
     apply (rule ValD_copy_ID)
    apply (rule mono_PE_lf)
   apply (erule min_inv_PE_lf)

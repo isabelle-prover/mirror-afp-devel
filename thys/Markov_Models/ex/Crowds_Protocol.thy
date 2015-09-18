@@ -718,7 +718,7 @@ proof -
     using emeasure_hit_C_not_0
     by (intro prob_space_uniform_measure) auto
   show "information_space hC 2"
-    by default simp
+    by standard simp
 qed
 
 abbreviation

@@ -10,13 +10,13 @@ instantiation Arity :: pure
 begin
   definition "p \<bullet> (a::Arity) = a"
 instance
-  apply default
+  apply standard
   apply (auto simp add: permute_Arity_def)
   done
 end
 
 
-instance Arity :: cont_pt by default (simp add: pure_permute_id)
-instance Arity :: pure_cont_pt by default
+instance Arity :: cont_pt by standard (simp add: pure_permute_id)
+instance Arity :: pure_cont_pt ..
 
 end

@@ -478,8 +478,11 @@ text {*
 *}
 
 lemma jonsson1a: "(\<exists>f. \<forall>x y. x \<rhd> y = f(x)\<cdot>y) \<longleftrightarrow> (\<forall>x y. x \<rhd> y = (x \<rhd> 1)\<cdot>y)"
-  apply (default, force)
-  by (rule_tac x="\<lambda>x. x \<rhd> 1" in exI) force
+  apply standard
+  apply force
+  apply (rule_tac x="\<lambda>x. x \<rhd> 1" in exI)
+  apply force
+  done
   
 lemma jonsson1b: "(\<forall>x y. x \<rhd> y = (x \<rhd> 1)\<cdot>y) \<longleftrightarrow> (\<forall>x y. x\<cdot>y = (x \<rhd> 1) \<rhd> y)"
 proof safe
@@ -520,8 +523,11 @@ next
 qed
 
 lemma jonsson2a: "(\<exists>g. \<forall>x y. x \<lhd> y = x\<cdot>g(y)) \<longleftrightarrow> (\<forall>x y. x \<lhd> y = x\<cdot>(1 \<lhd> y))"
-  apply (default, force)
-  by (rule_tac x="\<lambda>x. 1 \<lhd> x" in exI) force
+  apply standard
+  apply force
+  apply (rule_tac x="\<lambda>x. 1 \<lhd> x" in exI)
+  apply force
+  done
   
 lemma jonsson2b: "(\<forall>x y. x \<lhd> y = x\<cdot>(1 \<lhd> y)) \<longleftrightarrow> (\<forall>x y. x\<cdot>y = x \<lhd> (1 \<lhd> y))"
 proof safe
@@ -625,7 +631,7 @@ class residuated_boolean_monoid = residuated_boolean_algebra + monoid_mult
 begin
 
 subclass unital_residuated_boolean
-  by default auto
+  by standard auto
 
 subclass residuated_lmonoid ..
 

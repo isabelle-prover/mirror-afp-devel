@@ -58,7 +58,7 @@ fun
      = VMSepState (x ++ y, r \<union> r')"
 
 instance
-  apply default
+  apply standard
         apply (simp add: zero_vm_sep_state_def sep_disj_vm_sep_state_def)
        apply (fastforce simp: sep_disj_vm_sep_state_def map_disj_def)
       apply (case_tac x, clarsimp simp: zero_vm_sep_state_def)

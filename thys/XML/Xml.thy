@@ -80,7 +80,8 @@ lemma shows_prec_xml_append [show_law_simps]:
   "shows_prec d (xml::xml) (r @ s) = shows_prec d xml r @ s"
   unfolding shows_prec_xml_def by (rule append_xml')
 
-instance by (default) (simp_all add: show_law_simps shows_list_xml_def)
+instance
+  by standard (simp_all add: show_law_simps shows_list_xml_def)
 
 end
 
@@ -98,7 +99,8 @@ lemma shows_prec_xmldoc_append [show_law_simps]:
   "shows_prec d (x::xmldoc) (r @ s) = shows_prec d x r @ s"
   by (cases x) (auto simp: shows_prec_xmldoc_def show_law_simps)
 
-instance by (default) (simp_all add: show_law_simps shows_list_xmldoc_def)
+instance
+  by standard (simp_all add: show_law_simps shows_list_xmldoc_def)
 
 end
 

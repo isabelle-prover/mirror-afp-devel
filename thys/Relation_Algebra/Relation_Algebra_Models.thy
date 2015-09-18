@@ -62,7 +62,7 @@ begin
     "plus_bool \<equiv> op \<or>"
 
   instance
-  by default (auto simp: plus_bool_def times_bool_def one_bool_def zero_bool_def)
+  by standard (auto simp: plus_bool_def times_bool_def one_bool_def zero_bool_def)
 
 end
 
@@ -72,7 +72,7 @@ lemma le_funI2: "(\<And>i j. f i j \<le> g i j) \<Longrightarrow> f \<le> g"
 by (metis le_funI)
 
 interpretation matrix_ba: boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "op \<sqinter>" "op \<le>" "op <" mat_add mat_zero mat_top
-by default (force intro!: le_funI simp: mat_inter_def plus_bool_def mat_add_def mat_zero_def zero_bool_def mat_top_def mat_complement_def)+
+by standard (force intro!: le_funI simp: mat_inter_def plus_bool_def mat_add_def mat_zero_def zero_bool_def mat_top_def mat_complement_def)+
 
 text {* We continue working towards the main result of this section, that
 infinite Boolean matrices form a relation algebra. *}

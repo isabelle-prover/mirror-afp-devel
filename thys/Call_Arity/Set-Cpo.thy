@@ -11,7 +11,7 @@ instance..
 end
 
 instance set :: (type) po
-  by default (auto simp add: below_set_def)
+  by standard (auto simp add: below_set_def)
 
 lemma is_lub_set:
   "S <<| \<Union>S"
@@ -21,13 +21,13 @@ lemma lub_set: "lub S = \<Union>S"
   by (metis is_lub_set lub_eqI)
   
 instance set  :: (type) cpo
-  by default (rule exI, rule is_lub_set)
+  by standard (rule exI, rule is_lub_set)
 
 lemma minimal_set: "{} \<sqsubseteq> S"
   unfolding below_set_def by simp
 
 instance set  :: (type) pcpo
-  by default (rule+, rule minimal_set)
+  by standard (rule+, rule minimal_set)
 
 lemma set_contI:
   assumes  "\<And> Y. chain Y \<Longrightarrow> f (\<Squnion> i. Y i) = \<Union> (f ` range Y)"

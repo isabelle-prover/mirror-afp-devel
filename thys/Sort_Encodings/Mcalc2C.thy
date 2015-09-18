@@ -128,13 +128,13 @@ unfolding I_intT_def I_intF_def apply safe apply(rule intF[OF f])
 using al unfolding list_all2_length by auto
 
 lemma Tstruct_I_intT: "Tstruct I_intT"
-apply default using NE_I_intT .
+by standard (rule NE_I_intT)
 
 lemma inf_I_intT: "infinite {a. I_intT \<sigma> a}"
 by (cases "infTp \<sigma>", auto)
 
 lemma InfStruct: "IInfStruct I_intT I_intF I_intP"
-apply default using NE_I_intT I_intF Tstruct_I_intT inf_I_intT by auto
+apply standard using NE_I_intT I_intF Tstruct_I_intT inf_I_intT by auto
 
 end (* context ModelIkPolMcalc2C *)
 
@@ -386,7 +386,7 @@ lemma I_SAT: "I.SAT \<Phi>"
 unfolding I.SAT_def by simp
 
 lemma InfModel: "IInfModel I_intT I_intF I_intP"
-apply default using I_SAT .
+  by standard (rule I_SAT)
 
 end (* context ModelIkPolMcalc2C *)
 
@@ -403,7 +403,7 @@ theorem monot: monot
 unfolding monot_def proof safe
   fix intT intF intP assume "MModel intT intF intP"
   hence M: "MModelIkPolMcalc2C intT intF intP"
-  unfolding ModelIkPolMcalc2C_def ModelIk_def apply safe by default
+  unfolding ModelIkPolMcalc2C_def ModelIk_def apply safe ..
   show "\<exists> intTI intFI intPI. IInfModel intTI intFI intPI"
   using ModelIkPolMcalc2C.InfModel[OF M] by auto
 qed
@@ -413,7 +413,6 @@ end (* context ProblemIkPolMcalc2 *)
 text{* Final theorem in sublocale form: Any problem that passes the
   monotonicity calculus is monotonic:  *}
 sublocale ProblemIkPolMcalc2C < MonotProblem
-apply default using monot .
-
+by standard (rule monot)
 
 end

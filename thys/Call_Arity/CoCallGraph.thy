@@ -14,7 +14,7 @@ instantiation CoCalls :: po
 begin
 lift_definition below_CoCalls :: "CoCalls \<Rightarrow> CoCalls \<Rightarrow> bool" is "op \<subseteq>".
 instance
-  apply default
+  apply standard
   apply ((transfer, auto)+)
   done
 end
@@ -34,7 +34,7 @@ next
 qed
 
 instance CoCalls :: cpo
-proof default
+proof
   fix S :: "nat \<Rightarrow> CoCalls"
   show "\<exists>x. range S <<| x" using coCallsLub_is_lub..
 qed
@@ -85,7 +85,7 @@ lemma ccEmpty_below[simp]: "ccEmpty \<sqsubseteq> G"
   by transfer auto
 
 instance CoCalls :: pcpo
-proof default
+proof
   have "\<forall>y . ccEmpty \<sqsubseteq> y" by transfer simp
   thus "\<exists>x. \<forall>y. (x::CoCalls) \<sqsubseteq> y"..
 qed
@@ -353,7 +353,7 @@ lemma ccNeighbors_disjoint_empty[simp]:
   by transfer (auto simp add: Field_def)
 
 instance CoCalls :: Join_cpo
-  by default (metis coCallsLub_is_lub)
+  by standard (metis coCallsLub_is_lub)
 
 lemma ccNeighbors_lub[simp]: "ccNeighbors x (lub Gs) = lub (ccNeighbors x ` Gs)"
   by transfer (auto simp add: lub_set)

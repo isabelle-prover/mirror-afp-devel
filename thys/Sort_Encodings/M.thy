@@ -463,7 +463,7 @@ lemma Struct_upd:
 assumes "Struct wtFsym wtPsym arOf resOf intT intF intP"
 and "\<And> al. list_all2 intT (arOf ef) al \<Longrightarrow> intT (resOf ef) (EF al)"
 shows "Struct wtFsym wtPsym arOf resOf intT (intF (ef := EF)) intP"
-apply default using assms
+apply standard using assms
 unfolding Struct_def Struct_axioms_def Tstruct_def by auto
 
 end (* context Signature *)

@@ -60,7 +60,7 @@ instantiation stateT :: ("functor", "domain") "functor"
 begin
 
 instance
-apply default
+apply standard
 apply (induct_tac xs rule: stateT_induct)
 apply (simp_all add: fmap_fmap ID_def csplit_def)
 done

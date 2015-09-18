@@ -72,9 +72,7 @@ definition
   "x < y \<equiv> unlr x \<subset> unlr y"
 
 instance
-apply default
-apply (auto simp add: less_eq_admS_def less_admS_def admS.unlr_inject)
-done
+  by standard (auto simp add: less_eq_admS_def less_admS_def admS.unlr_inject)
 
 end
 
@@ -147,11 +145,10 @@ lemma INT_admS_bot [simp]:
 by (auto, metis singletonE unlr_bot)
 
 instance
-apply default
-apply (auto simp add:
- less_eq_admS_def mklr_Inf Sup_admS_def
- Inf_admS_def bot_admS_def top_admS_def admS_def)
-done
+  by standard
+    (auto simp add:
+      less_eq_admS_def mklr_Inf Sup_admS_def
+      Inf_admS_def bot_admS_def top_admS_def admS_def)
 
 end
 (*>*)
@@ -419,9 +416,7 @@ definition
   "x < y \<equiv> unsynlr x < unsynlr y"
 
 instance
-apply default
-apply (auto simp add: less_eq_synlr_def less_synlr_def synlr.unsynlr_inject)
-done
+  by standard (auto simp add: less_eq_synlr_def less_synlr_def synlr.unsynlr_inject)
 
 end
 
@@ -497,7 +492,7 @@ apply (metis bot_synlr_def mem_Sigma_iff singletonE unsynlr_bot)
 done
 
 instance
-apply default
+apply standard
 apply (auto simp add: less_eq_synlr_def mksynlr_Inf Sup_synlr_def)
 apply (auto simp add: Inf_synlr_def bot_synlr_def top_synlr_def)
 done

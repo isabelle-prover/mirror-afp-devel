@@ -2094,7 +2094,7 @@ qed
 text {* Proposition 13.12. *}
 
 lemma wf_eq_defl: "(\<forall>y. d y \<le> d (x \<cdot> y) \<longrightarrow> d y = 0) \<longleftrightarrow> (\<forall>y. y \<le> x \<cdot> y \<longrightarrow> y = 0)"
-  apply default
+  apply standard
   apply (metis local.d_add_ax local.d_rest_ax local.less_eq_def local.s_prod_annil)
   by (metis local.c2_d local.c4 local.d_def local.mult_commute local.mult_onel local.p_rpd_annir local.s_prod_isor)
 

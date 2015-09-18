@@ -537,7 +537,7 @@ lemma permute_Abs_set[simp]:
   by (lifting permute_prod.simps[where 'a="atom set" and 'b="'a"])
 
 instance
-  apply(default)
+  apply standard
   apply(case_tac [!] x)
   apply(simp_all)
   done
@@ -559,7 +559,7 @@ lemma permute_Abs_res[simp]:
   by (lifting permute_prod.simps[where 'a="atom set" and 'b="'a"])
 
 instance
-  apply(default)
+  apply standard
   apply(case_tac [!] x)
   apply(simp_all)
   done
@@ -581,7 +581,7 @@ lemma permute_Abs_lst[simp]:
   by (lifting permute_prod.simps[where 'a="atom list" and 'b="'a"])
 
 instance
-  apply(default)
+  apply standard
   apply(case_tac [!] x)
   apply(simp_all)
   done
@@ -700,19 +700,19 @@ lemma supp_Abs:
 by (simp_all add: Abs_finite_supp finite_supp)
 
 instance abs_set :: (fs) fs
-  apply(default)
+  apply standard
   apply(case_tac x)
   apply(simp add: supp_Abs finite_supp)
   done
 
 instance abs_res :: (fs) fs
-  apply(default)
+  apply standard
   apply(case_tac x)
   apply(simp add: supp_Abs finite_supp)
   done
 
 instance abs_lst :: (fs) fs
-  apply(default)
+  apply standard
   apply(case_tac x)
   apply(simp add: supp_Abs finite_supp)
   done

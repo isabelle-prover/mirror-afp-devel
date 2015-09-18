@@ -26,13 +26,13 @@ and resOf and parOf and intT and intF and intP and \<Phi>
 locale M_FullStruct = M : FullStruct
 locale M_FullModel = M : FullModel
 
-sublocale M_FullStruct < M_Signature by default
-sublocale M_Problem < M_Signature by default
-sublocale M_FullModel < M_FullStruct by default
+sublocale M_FullStruct < M_Signature ..
+sublocale M_Problem < M_Signature ..
+sublocale M_FullModel < M_FullStruct ..
 sublocale M_MonotModel < M_FullStruct where
-intT = intTF and intF = intFF and intP = intPF by default
+intT = intTF and intF = intFF and intP = intPF ..
 sublocale M_MonotModel < M_FullModel where
-intT = intTF and intF = intFF and intP = intPF by default
+intT = intTF and intF = intFF and intP = intPF ..
 
 
 context Sig.Signature begin
@@ -44,7 +44,7 @@ subsection{* The translation *}
 
 sublocale M_Signature < U.Signature
 where arOf = "length o arOf" and parOf = "length o parOf"
-by default(auto simp: countable_wtFsym countable_wtPsym)
+by standard (auto simp: countable_wtFsym countable_wtPsym)
 
 
 (* In our implicitly-typed setting, ``e" is just the identity. *)
@@ -84,7 +84,7 @@ and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and D and intF and intP
 
 sublocale UM_Struct < M : M.Struct where intT = "\<lambda> \<sigma>. D"
-apply default
+  apply standard
   apply(rule NE_D)
   unfolding list_all2_list_all apply(rule intF) by auto
 
@@ -128,7 +128,7 @@ and resOf and parOf and \<Phi> and D and intF and intP
 begin
 
 theorem M_U_completeness: "MModel (\<lambda>\<sigma>::'tp. D) intF intP"
-apply default apply(rule completeness[OF SAT]) .
+apply standard apply(rule completeness[OF SAT]) .
 
 end (* context UM_Model *)
 
@@ -143,7 +143,7 @@ subsection{* Soundness for monotonic problems *}
 
 sublocale M_FullStruct < U : CU.Struct
 where arOf = "length o arOf" and parOf = "length o parOf" and D = "intT any"
-apply default
+apply standard
   apply(rule NE_intT)
   apply (rule full2)
   unfolding full_True list_all2_list_all by auto
@@ -177,7 +177,7 @@ unfolding U.SAT_def using sat_\<Phi> satPB_e by auto
 
 lemma U_Model:
 "CU.Model wtFsym wtPsym (length \<circ> arOf) (length \<circ> parOf) \<Phi> (intT any) intF intP"
-by (default, rule wtPB[OF wt_\<Phi>], rule soundness)
+by standard (rule wtPB[OF wt_\<Phi>], rule soundness)
 
 end (* context M_FullModel *)
 
@@ -194,7 +194,7 @@ theorem M_U_soundness:
   (InfModel.intFF arOf resOf intTI intFI) (InfModel.intPF parOf intTI intPI)"
 apply(rule M_FullModel.U_Model)
 unfolding M_FullModel_def apply(rule InfModel.FullModel)
-apply(rule MonotModel.InfModelI) by default
+apply(rule MonotModel.InfModelI) ..
 
 end (* context M_MonotModel *)
 

@@ -307,7 +307,7 @@ lemma scalar_matrix_assoc:
   shows "k *\<^sub>R (A ** B) = (k *\<^sub>R A) ** B"
 proof -
   have "\<forall> i j. (k *\<^sub>R (A ** B))$i$j = ((k *\<^sub>R A) ** B)$i$j"
-  proof default+
+  proof standard+
     fix i j
     have "(k *\<^sub>R (A ** B))$i$j = k * (\<Sum> l\<in>UNIV. A$i$l * B$l$j)"
       unfolding matrix_matrix_mult_def

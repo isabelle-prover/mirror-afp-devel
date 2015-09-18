@@ -230,7 +230,7 @@ qed
 end
 
 interpretation ZC!: Zeroconf_Analysis 2 "16 / 65024 :: real" "0.01" "0.002" "3600"
-  by default auto
+  by standard auto
 
 lemma "ZC.P_err start \<le> 1 / 10^12"
   unfolding ZC.P_err_start by (simp add: power_one_over[symmetric])

@@ -8,12 +8,12 @@ instantiation Value :: pure
 begin
   definition "p \<bullet> (v::Value) = v"
 instance
-  apply default
+  apply standard
   apply (auto simp add: permute_Value_def)
   done
 end
 
 instance Value :: pcpo_pt
-  by default (simp add: pure_permute_id)
+  by standard (simp add: pure_permute_id)
 
 end

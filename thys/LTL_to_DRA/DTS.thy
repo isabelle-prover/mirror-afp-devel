@@ -737,7 +737,7 @@ lemma reach_parametric [transfer_rule]:
   assumes "bi_total B"
   assumes "bi_unique B"
   shows "(rel_set B ===> (A ===> B ===> A) ===> A ===> rel_set A) reach reach"
-proof (default+)
+proof (standard+)
   fix \<Sigma> \<Sigma>' \<delta> \<delta>' q q'
   assume "rel_set B \<Sigma> \<Sigma>'" "(A ===> B ===> A) \<delta> \<delta>'" "A q q'"
 

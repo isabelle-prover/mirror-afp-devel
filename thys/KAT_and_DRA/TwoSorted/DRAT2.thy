@@ -113,11 +113,12 @@ lemma test_comp_mult2 [simp]: "`p \<cdot> !p = 0`"
   by (metis inf_compl_bot test_bot test_inf test_not)
 
 lemma test_eq1: "`y \<le> x` \<longleftrightarrow> `p\<cdot>y \<le> x` \<and> `!p\<cdot>y \<le> x`"
-  apply default
+  apply standard
   apply (metis mult_isol_var mult_onel test_not test_one_top)
   apply (subgoal_tac "`(p + !p)\<cdot>y \<le> x`")
   apply (metis mult_onel sup_compl_top test_not test_sup test_top)
-  by (metis add_lub distrib_right')
+  apply (metis add_lub distrib_right')
+  done
 
 lemma "`p\<cdot>x = p\<cdot>x\<cdot>q` \<Longrightarrow> `p\<cdot>x\<cdot>!q = 0`"
   nitpick oops
@@ -135,9 +136,10 @@ lemma test4: "`!p\<cdot>q\<cdot>p = 0`"
   by (metis double_compl test3 test_not)
 
 lemma total_correctness: "`p\<cdot>x\<cdot>!q = 0` \<longleftrightarrow> `x\<cdot>!q \<le> !p\<cdot>\<top>`"
-  apply default
+  apply standard
   apply (metis mult.assoc test_eq1 top_elim zero_least)
-  by (metis annil test_comp_mult2 zero_unique mult.assoc mult_isol)
+  apply (metis annil test_comp_mult2 zero_unique mult.assoc mult_isol)
+  done
 
 lemma test_iteration_sim: "`p\<cdot>x \<le> x\<cdot>p` \<Longrightarrow> `p\<cdot>x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>\<cdot>p`"
   by (metis iteration_sim)

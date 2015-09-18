@@ -458,7 +458,7 @@ proof
       hence "(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0" by simp
       have "\<exists> h j k. h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0
         \<and> (h \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0)"
-      proof default+
+      proof standard+
         from `(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0`
         show "(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0" .
         show "j * i \<noteq> 0 \<or> j \<noteq> 0 \<or> (-1::real) \<noteq> 0" by simp
