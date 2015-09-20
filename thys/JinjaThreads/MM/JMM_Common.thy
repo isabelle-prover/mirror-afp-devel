@@ -554,8 +554,8 @@ lemma heap_copy_loc_non_speculative_read:
                     obs' ! i = ReadMem a'' al'' v' \<and> length obs' \<le> length obs \<and> 
                     non_speculative P vs (llist_of (map NormalAction obs'))"
 using copy
-proof(cases)
-  case (goal1 v'')
+proof(cases, goal_cases)
+  case prems: (1 v'')
   with read i have [simp]: "i = 0" "v'' = v" "a'' = a" "al'' = al"
     by(simp_all add: nth_Cons split: nat.split_asm)
   from v have "v' \<in> vs (a, al)" by simp
@@ -565,7 +565,7 @@ proof(cases)
   moreover from heap_write_total[OF hconf type(2) conf] 
   obtain h'' where "heap_write h a' al v' h''" ..
   ultimately have "heap_copy_loc a a' al h ?obs'' h''" ..
-  thus ?thesis using goal1 `v' \<in> vs (a, al)` by(auto)
+  thus ?thesis using prems `v' \<in> vs (a, al)` by(auto)
 qed
 
 lemma heap_copies_non_speculative_read:

@@ -496,8 +496,8 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
   from red2 have fin': "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread ?s2 t"
     by(rule r2.\<tau>mRedT_preserves_final_thread)(rule fin)
   have "r2.deadlock ?s2"
-  proof(rule r2.deadlockI)
-    case (goal1 t x2)
+  proof(rule r2.deadlockI, goal_cases)
+    case (1 t x2)
     note ts2t = `thr ?s2 t = \<lfloor>(x2, no_wait_locks)\<rfloor>`
     with mbisim obtain x1 where ts1t: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and bisim: "t \<turnstile> (x1, shr s1) \<approx> (x2, m2)" by(auto dest: mbisim_thrD2)
@@ -597,7 +597,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
       with lt have "\<exists>lt\<in>LT. r2.must_wait ?s2 t lt (dom (thr ?s2))" by blast }
     ultimately show ?case by fastforce
   next
-    case (goal2 t x2 ln l)
+    case (2 t x2 ln l)
     note dead moreover
     from mbisim `thr ?s2 t = \<lfloor>(x2, ln)\<rfloor>`
     obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" by(auto dest: mbisim_thrD2)
@@ -608,7 +608,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
       by(rule r1.deadlockD2)
     thus ?case using mbisim_thrNone_eq[OF mbisim, of t'] mbisim by(auto simp add: mbisim_def)
   next
-    case (goal3 t x2 w)
+    case (3 t x2 w)
     from mbisim_thrD2[OF mbisim this]
     obtain x1 where "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>" by auto
     with dead have "wset s1 t \<noteq> \<lfloor>PostWS w\<rfloor>" by(rule r1.deadlockD3[rule_format])

@@ -202,21 +202,21 @@ proof -
   let ?v = "\<lambda>h a al. default_val (THE T. heap_base.addr_loc_type typeof_addr P h a al T)"
 
   have "(?red' \<longrightarrow> ?aok \<longrightarrow> ?concl) \<and> (?reds' \<longrightarrow> ?aoks \<longrightarrow> ?concls)"
-  proof(induct rule: J_heap_base.red_reds.induct)
-    case goal23 (* RedAAcc *)
+  proof(induct rule: J_heap_base.red_reds.induct, goal_cases)
+    case (23 h a T n i v l) (* RedAAcc *)
     thus ?case by(auto 4 6 intro: J_heap_base.red_reds.RedAAcc[where v="?v h a (ACell (nat (sint i)))"])
   next
-    case goal35 (* RedFAcc *)
+    case (35 h a D F v l) (* RedFAcc *)
     thus ?case by(auto 4 5 intro: J_heap_base.red_reds.RedFAcc[where v="?v h a (CField D F)"])
   next
-    case goal44 (* RedCallExternal *)
+    case (44 s a hU M Ts T D vs ta va h' ta' e' s') (* RedCallExternal *)
     thus ?case
       apply clarify
       apply(drule jmm'_red_externalI, simp)
       apply(auto 4 4 intro: J_heap_base.red_reds.RedCallExternal)
       done
   next
-    case goal46 (* BlockRed *)
+    case (46 e h l V vo ta e' h' l' T) (* BlockRed *)
     thus ?case
       by(clarify)(iprover intro: J_heap_base.red_reds.BlockRed)
   qed(blast intro: J_heap_base.red_reds.intros)+

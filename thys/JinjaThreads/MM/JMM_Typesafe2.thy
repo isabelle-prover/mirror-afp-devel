@@ -225,14 +225,14 @@ lemma jmm'_red_externalI:
   \<lbrakk> heap_base.red_external addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr jmm_heap_read jmm_heap_write P t h a M vs ta va h';
      final_thread.actions_ok final s t ta \<rbrakk>
   \<Longrightarrow> \<exists>ta va h'. heap_base.red_external addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_base.heap_read_typed typeof_addr jmm_heap_read P) jmm_heap_write P t h a M vs ta va h' \<and> final_thread.actions_ok final s t ta"
-proof(erule heap_base.red_external.cases)
-  case goal19 (* RedClone *)
+proof(erule heap_base.red_external.cases, goal_cases)
+  case 19 (* RedClone *)
   thus ?case apply -
     apply(drule jmm'_heap_cloneI, clarify)
     apply(rename_tac obsa', case_tac obsa')
     by(auto 4 4 intro: heap_base.red_external.intros simp add: final_thread.actions_ok_iff simp del: split_paired_Ex)
 next
-  case goal20 (* RedCloneFail *)
+  case 20 (* RedCloneFail *)
   thus ?case apply -
     apply(drule jmm'_heap_cloneI, clarify)
     apply(rename_tac obsa', case_tac obsa')
