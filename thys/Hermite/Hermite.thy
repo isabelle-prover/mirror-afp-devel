@@ -563,7 +563,7 @@ The algorithm is parameterised by three functions:
 \begin{itemize}
   \item The function that computes de B\'ezout identity (necessary to compute the echelon form).
   \item The function that given an element, it returns its representative element in the associated equivalent class,
-	which will be an element in the complete set of nonassociates.
+        which will be an element in the complete set of nonassociates.
   \item The function that given two elements $a$ and $b$, it returns its representative 
         element in the congruent equivalent class of $b$, which will be an element in the complete set of residues of $b$.
 \end{itemize}
