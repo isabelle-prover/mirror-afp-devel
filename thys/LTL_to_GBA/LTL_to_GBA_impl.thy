@@ -56,7 +56,7 @@ lemma ltln_rel_sv[relator_props]:
 proof (intro single_valuedI allI impI)
   fix x y z
   assume "(x, y) \<in> \<langle>R\<rangle>ltln_rel" "(x, z) \<in> \<langle>R\<rangle>ltln_rel"
-  thus "y=z"
+  then show "y=z"
     apply (induction arbitrary: z)
     apply (simp (no_asm_use) only: ltln_rel_left_simps 
       | blast intro: single_valuedD[OF SV])+
@@ -67,7 +67,7 @@ lemma ltln_rel_id[relator_props]: "\<lbrakk> R = Id \<rbrakk> \<Longrightarrow> 
 proof (intro equalityI subsetI, clarsimp_all)
   fix a b
   assume "(a,b)\<in>\<langle>Id\<rangle>ltln_rel"
-  thus "a=b"
+  then show "a=b"
     by induction auto
 next
   fix a
@@ -170,7 +170,7 @@ lemma ltln_eq_autoref[autoref_rules]:
 proof (intro fun_relI)
   fix \<mu>' \<mu> \<nu>' \<nu>
   assume "(\<mu>',\<mu>)\<in>\<langle>R\<rangle>ltln_rel" and "(\<nu>',\<nu>)\<in>\<langle>R\<rangle>ltln_rel"
-  thus "(ltln_eq eq \<mu>' \<nu>', \<mu>=\<nu>)\<in>bool_rel"
+  then show "(ltln_eq eq \<mu>' \<nu>', \<mu>=\<nu>)\<in>bool_rel"
     apply (induction arbitrary: \<nu>' \<nu>)
     apply (erule ltln_rel_cases, simp_all) []
     apply (erule ltln_rel_cases, simp_all) []
@@ -451,7 +451,7 @@ proof -
   {
     fix n :: "'a node" and ns and n' ns'
     assume "((n', ns'), (n, ns)) \<in> R'"
-    hence "(RETURN (name n', ns') \<le> \<Down> R (RETURN (name n, ns)))"
+    then have "(RETURN (name n', ns') \<le> \<Down> R (RETURN (name n, ns)))"
       by (auto simp: R_def R'_def pw_le_iff refine_pw_simps)
   } note aux = this
 
@@ -586,7 +586,7 @@ lemma build_succ_aux2:
 proof (intro ext equalityI subsetI)
   fix qn x
   assume "x\<in>?R qn"
-  thus "x\<in>?L qn" using NINIT
+  then show "x\<in>?L qn" using NINIT
     by (force simp: succ_of_E_def)
 next
   fix qn x
@@ -943,8 +943,8 @@ proof (elim conjE, rule conjI)
   assume [autoref_rules]: "(n', n) \<in> R" "(ns', ns) \<in> \<langle>R\<rangle>list_set_rel"
   assume "name n \<notin> name ` ns"
     and "inj_on name ns"
-  hence "n \<notin> ns" by (auto)
-  thus "(n' # ns', insert n ns) \<in> \<langle>R\<rangle>list_set_rel"
+  then have "n \<notin> ns" by (auto)
+  then show "(n' # ns', insert n ns) \<in> \<langle>R\<rangle>list_set_rel"
     by autoref
 qed auto
 

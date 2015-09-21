@@ -63,7 +63,7 @@ begin
     {
       fix r r'
       assume eq: "r \<approx> r'" and holds: "r \<Turnstile> \<phi>"
-      hence "holds_of r (cnv \<phi>)" by simp
+      then have "holds_of r (cnv \<phi>)" by simp
       
       from next_free_stutter_invariant[of "cnv \<phi>"] next_free 
       have "PLTL.stutter_invariant (cnv \<phi>)" by simp

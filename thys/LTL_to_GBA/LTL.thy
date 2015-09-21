@@ -288,7 +288,7 @@ proof
   show ?rhs
   proof(cases i)
     case 0
-    thus ?rhs using psi_is by auto
+    then show ?rhs using psi_is by auto
   next
     case (Suc k)
     with phi_is have "\<xi> \<Turnstile> \<phi>" by auto
@@ -302,16 +302,16 @@ next
   show ?lhs
   proof(cases "\<xi> \<Turnstile> \<psi>")
     case True
-    hence "suffix 0 \<xi> \<Turnstile> \<psi>" by auto
+    then have "suffix 0 \<xi> \<Turnstile> \<psi>" by auto
     moreover
     have "\<forall>j<0. suffix j \<xi> \<Turnstile> \<phi>" by auto
     ultimately
     have "\<exists>i. suffix i \<xi> \<Turnstile> \<psi>
               \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile> \<phi>)" by blast
-    thus ?lhs by auto
+    then show ?lhs by auto
   next
     case False
-    hence phi_is: "\<xi> \<Turnstile> \<phi>"
+    then have phi_is: "\<xi> \<Turnstile> \<phi>"
       and "\<xi> \<Turnstile> X (\<phi> U \<psi>)" using rhs by auto
     then obtain i
           where psi_suc_is: "suffix (Suc i) \<xi> \<Turnstile> \<psi>"
@@ -323,14 +323,14 @@ next
       show "suffix j \<xi> \<Turnstile> \<phi>"
       proof (cases j)
         assume "j=0"
-        thus ?thesis using phi_is by auto
+        then show ?thesis using phi_is by auto
       next
         fix k
         assume "j=Suc k"
-        thus ?thesis using j_less phi_suc_is by auto
+        then show ?thesis using j_less phi_suc_is by auto
       qed
     qed
-    thus ?lhs using psi_suc_is phi_is by auto
+    then show ?lhs using psi_suc_is phi_is by auto
   qed
 qed
 
@@ -352,18 +352,18 @@ lemma ltl_double_neg_struct:
   (is "\<exists>n \<psi>. ?Q \<phi> n \<psi>")
 proof(cases "\<forall>\<nu>. \<phi> \<noteq> not \<nu>")
   case True
-    hence "?Q \<phi> 0 \<phi>" by auto
-    thus ?thesis by blast
+    then have "?Q \<phi> 0 \<phi>" by auto
+    then show ?thesis by blast
 next
   case False
-    thus ?thesis
+    then show ?thesis
     proof(induct \<phi>)
       case (LTLNeg \<phi>')
         show ?case
         proof(cases "\<forall>\<nu>. \<phi>' \<noteq> not \<nu>")
           case True
             with LTLNeg have "?Q (not \<phi>') 0 (not \<phi>')" by auto
-            thus ?thesis by blast
+            then show ?thesis by blast
         next
           case False
             with LTLNeg obtain n' \<psi>' where Q: "?Q \<phi>' n' \<psi>'" by auto
@@ -373,11 +373,11 @@ next
                 then obtain \<psi>''
                       where "\<psi>' = not \<psi>''" by auto
                 with Q have "?Q (not \<phi>') (n'+1) \<psi>''" by auto
-                thus ?thesis by blast
+                then show ?thesis by blast
             next
               case False
                 with Q have "?Q (not \<phi>') n' (not \<psi>')" by auto
-                thus ?thesis by blast
+                then show ?thesis by blast
             qed
         qed
     qed auto
@@ -389,7 +389,7 @@ lemma ltl_size_double_neg:
 using assms proof (induct n arbitrary:\<phi> \<psi>)
   case (Suc k)
     obtain \<mu> where \<mu>_eq: "\<mu> = ((\<lambda>\<mu>. not not \<mu>) ^^ k) \<phi>" by auto
-    hence "\<psi> = not not \<mu>" using Suc by auto
+    then have "\<psi> = not not \<mu>" using Suc by auto
     moreover have "size \<phi> \<le> size \<mu>" using Suc \<mu>_eq by auto
     ultimately show ?case by auto
 qed auto
@@ -454,9 +454,9 @@ proof -
   obtain n \<mu> where \<phi>_eq: "\<phi> = ((\<lambda>\<mu>. not not \<mu>) ^^ n) \<mu>"
                and \<mu>_neq: "(\<forall>\<nu>. \<mu> \<noteq> not not \<nu>)" by blast
   with ltl_pushneg_double_neg have "ltl_pushneg \<phi> = ltl_pushneg \<mu>" by auto
-  thus ?thesis using \<phi>_eq assms \<mu>_neq
+  then show ?thesis using \<phi>_eq assms \<mu>_neq
   proof(induct \<mu>)
-    case (LTLNeg f) thus ?case by (cases f) auto
+    case (LTLNeg f) then show ?case by (cases f) auto
   qed auto
 qed
 
@@ -486,11 +486,11 @@ lemma subformula_size:
   assumes "\<psi> is_subformula_of \<phi>"
     shows "size \<psi> < size \<phi> \<or> \<psi> = \<phi>"
 using assms proof(induct \<phi>)
-  case base thus ?case by auto
+  case base then show ?case by auto
 next
   case (step \<nu> \<mu>)
-    hence "size \<nu> < size \<mu>" by (rule_tac subfrml_size)
-    thus ?case using step by auto
+    then have "size \<nu> < size \<mu>" by (rule_tac subfrml_size)
+    then show ?case using step by auto
 qed
 
 
@@ -498,19 +498,19 @@ lemma subformula_on_ltl_pushneg:
   assumes "\<psi> is_subformula_of (ltl_pushneg \<phi>)"
     shows "\<exists>\<mu>. \<psi> = ltl_pushneg \<mu>"
 proof(cases "\<psi> = ltl_pushneg \<phi>")
-  case True thus ?thesis by blast
+  case True then show ?thesis by blast
 next
-  case False thus ?thesis using assms
+  case False then show ?thesis using assms
   proof(induct \<phi> rule:ltl_pushneg.induct)
-    case 1 thus ?case using subformula_size by force
+    case 1 then show ?case using subformula_size by force
   next
-    case 2 thus ?case using subformula_size by force
+    case 2 then show ?case using subformula_size by force
   next
-    case 3 thus ?case using subformula_size by force
+    case 3 then show ?case using subformula_size by force
   next
-    case 4 thus ?case using subformula_size by force
+    case 4 then show ?case using subformula_size by force
   next
-    case 5 thus ?case using subformula_size by force
+    case 5 then show ?case using subformula_size by force
   next
     case (6 q)
       let ?frml = "not prop(q)"
@@ -526,7 +526,7 @@ next
         assume "\<mu> = ?frml"
         with sf_prm have "\<psi> = ltl_pushneg prop(q)"
         by (cases \<psi>) auto
-        thus ?thesis by blast
+        then show ?thesis by blast
       next
         assume "\<mu> \<noteq> ?frml"
         with rtranclpD[OF rt_prm]
@@ -537,7 +537,7 @@ next
         show ?thesis by auto
       qed
   next
-    case 7 thus ?case by auto
+    case 7 then show ?case by auto
   next
     case (8 \<nu> \<mu>)
       let ?frml = "not (\<nu> and \<mu>)"
@@ -547,7 +547,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 8 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
@@ -559,7 +559,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 8 z_is by auto
+        then show ?thesis using 8 z_is by auto
       qed
   next
     case (9 \<nu> \<mu>)
@@ -570,7 +570,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 9 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
@@ -582,7 +582,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 9 z_is by auto
+        then show ?thesis using 9 z_is by auto
       qed
   next
     case (10 \<mu>)
@@ -593,7 +593,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 10 by auto
-      hence z_is: "z = ltl_pushneg (not \<mu>)"
+      then have z_is: "z = ltl_pushneg (not \<mu>)"
       by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -604,7 +604,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 10 z_is by auto
+        then show ?thesis using 10 z_is by auto
       qed
   next
     case (11 \<nu> \<mu>)
@@ -615,7 +615,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 11 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
@@ -627,7 +627,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 11 z_is by auto
+        then show ?thesis using 11 z_is by auto
       qed
   next
     case (12 \<nu> \<mu>)
@@ -638,7 +638,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 12 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg (not \<nu>) \<or> 
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
@@ -650,7 +650,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 12 z_is by auto
+        then show ?thesis using 12 z_is by auto
       qed
   next
     case (13 \<nu> \<mu>)
@@ -661,7 +661,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 13 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
@@ -673,7 +673,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 13 z_is by auto
+        then show ?thesis using 13 z_is by auto
       qed
   next
     case (14 \<nu> \<mu>)
@@ -684,7 +684,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 14 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
@@ -696,7 +696,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 14 z_is by auto
+        then show ?thesis using 14 z_is by auto
       qed
   next
     case (15 \<mu>)
@@ -707,7 +707,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 15 by auto
-      hence z_is: "z = ltl_pushneg \<mu>" by (cases z) auto
+      then have z_is: "z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
         assume "\<psi> = z"
@@ -717,7 +717,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 15 z_is by auto
+        then show ?thesis using 15 z_is by auto
       qed
   next
     case (16 \<nu> \<mu>)
@@ -728,7 +728,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 16 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
@@ -740,7 +740,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 16 z_is by auto
+        then show ?thesis using 16 z_is by auto
       qed
   next
     case (17 \<nu> \<mu>)
@@ -751,7 +751,7 @@ next
        where "subfrml z (ltl_pushneg ?frml)"
          and rt_prm: "\<psi> is_subformula_of z"
        using 17 by auto
-      hence z_is:
+      then have z_is:
             "z = ltl_pushneg \<nu> \<or> 
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
@@ -763,7 +763,7 @@ next
         with rtranclpD[OF rt_prm]
              tranclp_into_rtranclp
         have "\<psi> is_subformula_of z" by auto
-        thus ?thesis using 17 z_is by auto
+        then show ?thesis using 17 z_is by auto
       qed
   qed
 qed
@@ -976,7 +976,7 @@ proof -
   have "leafcnt \<phi> \<le> size \<phi> + 1" by (induct \<phi>) auto
   with ltl_pushneg_size_lin_help[of _ \<phi>]
   have "size (ltl_pushneg \<phi>) + 1 \<le> size \<phi> + size \<phi> + 1" by force
-  thus ?thesis by auto
+  then show ?thesis by auto
 qed
 
 end
@@ -1068,10 +1068,10 @@ next
     obtain q
      where "\<phi> = prop(q)"
         by auto
-    thus ?case by auto
+    then show ?case by auto
 next
   case (LTLAnd f g \<xi> \<psi>)
-    hence frml_eq: "ltl_pushneg \<psi> = f and g" by auto
+    then have frml_eq: "ltl_pushneg \<psi> = f and g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
      where "f = ltl_pushneg \<mu>"
@@ -1085,10 +1085,10 @@ next
     have "\<xi> \<Turnstile> f = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<xi> \<Turnstile> g = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
     using LTLAnd by auto
-    thus ?case by auto
+    then show ?case by auto
 next
   case (LTLOr f g \<xi> \<psi>)
-    hence frml_eq: "ltl_pushneg \<psi> = f or g" by auto
+    then have frml_eq: "ltl_pushneg \<psi> = f or g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
      where "f = ltl_pushneg \<mu>"
@@ -1102,20 +1102,20 @@ next
     have "\<xi> \<Turnstile> f = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<xi> \<Turnstile> g = \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
     using LTLOr by auto
-    thus ?case by auto
+    then show ?case by auto
 next
   case (goal7 \<phi> \<xi> \<psi>)
-    hence "ltl_pushneg \<psi> = X \<phi>" by auto
+    then have "ltl_pushneg \<psi> = X \<phi>" by auto
     with subformula_on_ltl_pushneg[of \<phi> \<psi>]
     obtain \<mu>
      where "\<phi> = ltl_pushneg \<mu>"
         by (auto intro: subfrml.intros)
     with goal7 have "suffix 1 \<xi> \<Turnstile> \<phi> = suffix 1 \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>"
       by auto
-    thus ?case by auto
+    then show ?case by auto
 next
   case (goal8 f g \<xi> \<psi>)
-    hence frml_eq: "ltl_pushneg \<psi> = f U g" by auto
+    then have frml_eq: "ltl_pushneg \<psi> = f U g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
      where "f = ltl_pushneg \<mu>"
@@ -1129,10 +1129,10 @@ next
     have "\<forall>i. suffix i \<xi> \<Turnstile> f = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<forall>i. suffix i \<xi> \<Turnstile> g = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
     using goal8 by auto
-    thus ?case by auto
+    then show ?case by auto
 next   
   case (goal9 f g \<xi> \<psi>)
-    hence frml_eq: "ltl_pushneg \<psi> = f V g" by auto
+    then have frml_eq: "ltl_pushneg \<psi> = f V g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
      where "f = ltl_pushneg \<mu>"
@@ -1146,7 +1146,7 @@ next
     have "\<forall>i. suffix i \<xi> \<Turnstile> f = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<forall>i. suffix i \<xi> \<Turnstile> g = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
     using goal9 by auto
-    thus ?case by auto
+    then show ?case by auto
 qed
 
 
@@ -1190,7 +1190,7 @@ lemma frmlset_sumn_diff_less[intro!]:
     shows "frmlset_sumn (S - A) < frmlset_sumn S"
 proof -
   have finA: "finite A" using assms by (rule_tac finite_subset)
-  hence "frmlset_sumn A > 0" using assms size_frmln_gt_zero by (induct rule:finite_induct) auto
+  then have "frmlset_sumn A > 0" using assms size_frmln_gt_zero by (induct rule:finite_induct) auto
   moreover
   have "frmlset_sumn A \<le> frmlset_sumn S" using assms size_frmln_gt_zero by (rule_tac setsum_mono2) auto
   ultimately show ?thesis using setsum_diff_nat[OF finA, of S size_frmln] assms by auto
@@ -1209,7 +1209,7 @@ proof
   show ?rhs
   proof(cases i)
     assume "i=0"
-    thus ?rhs using psi_is by auto
+    then show ?rhs using psi_is by auto
   next
     fix k
     assume i_eq: "i = Suc k"
@@ -1224,16 +1224,16 @@ next
   show ?lhs
   proof(cases "\<xi> \<Turnstile>\<^sub>n \<psi>")
     assume "\<xi> \<Turnstile>\<^sub>n \<psi>"
-    hence "suffix 0 \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
+    then have "suffix 0 \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
     moreover
     have "\<forall>j<0. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
     ultimately
     have "\<exists>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi>
               \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>)" by blast
-    thus ?lhs by auto
+    then show ?lhs by auto
   next
     assume "\<not> \<xi> \<Turnstile>\<^sub>n \<psi>"
-    hence phi_is: "\<xi> \<Turnstile>\<^sub>n \<phi>"
+    then have phi_is: "\<xi> \<Turnstile>\<^sub>n \<phi>"
       and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)" using rhs by auto
     then obtain i
           where psi_suc_is: "suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>"
@@ -1245,14 +1245,14 @@ next
       show "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
       proof (cases j)
         assume "j=0"
-        thus ?thesis using phi_is by auto
+        then show ?thesis using phi_is by auto
       next
         fix k
         assume "j=Suc k"
-        thus ?thesis using j_less phi_suc_is by auto
+        then show ?thesis using j_less phi_suc_is by auto
       qed
     qed
-    thus ?lhs using psi_suc_is phi_is by auto
+    then show ?lhs using psi_suc_is phi_is by auto
   qed
 qed
 
@@ -1260,7 +1260,7 @@ lemma ltln_expand_Release:
   "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<psi> = (\<xi> \<Turnstile>\<^sub>n \<psi> and\<^sub>n (\<phi> or\<^sub>n (X\<^sub>n (\<phi> V\<^sub>n \<psi>))))" (is "?lhs = ?rhs")
 proof
   assume lhs: ?lhs
-  hence psi_is: "\<xi> \<Turnstile>\<^sub>n \<psi>" by force
+  then have psi_is: "\<xi> \<Turnstile>\<^sub>n \<psi>" by force
 
   have "\<And>i. \<lbrakk>\<not> \<xi> \<Turnstile>\<^sub>n \<phi>; \<not> suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>\<rbrakk>
             \<Longrightarrow> (\<exists>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>)"
@@ -1271,23 +1271,23 @@ proof
     then obtain j
           where "j<Suc i"
             and "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" using lhs by auto
-    hence "j - 1 < i \<and> suffix (Suc (j - 1)) \<xi> \<Turnstile>\<^sub>n \<phi>"
+    then have "j - 1 < i \<and> suffix (Suc (j - 1)) \<xi> \<Turnstile>\<^sub>n \<phi>"
     using phi_nis by (cases j) auto
-    thus "\<exists>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
+    then show "\<exists>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
   qed
-  thus ?rhs using psi_is by auto
+  then show ?rhs using psi_is by auto
 next
   assume rhs: ?rhs
-  hence psi_is: "\<xi> \<Turnstile>\<^sub>n \<psi>" by auto
+  then have psi_is: "\<xi> \<Turnstile>\<^sub>n \<psi>" by auto
 
   show ?lhs
   proof(cases "\<xi> \<Turnstile>\<^sub>n \<phi>")
     assume "\<xi> \<Turnstile>\<^sub>n \<phi>"
-    thus ?thesis using psi_is by force
+    then show ?thesis using psi_is by force
   next
     assume phi_nis: "\<not> \<xi> \<Turnstile>\<^sub>n \<phi>"
 
-    hence "\<forall>i. suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>
+    then have "\<forall>i. suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>
                \<or> (\<exists>j<Suc i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>)"
     using rhs by auto
 
@@ -1306,7 +1306,7 @@ next
         with psi_suf_nis rhs show ?thesis by force
       qed
     qed
-    thus ?thesis by auto
+    then show ?thesis by auto
   qed
 qed
 
@@ -1327,8 +1327,8 @@ next
   assume ?rhs
   { assume "\<not> \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<psi>"
     with `?rhs` obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> and\<^sub>n \<psi>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
-    hence ?lhs by (auto, metis nat_neq_iff) }
-  thus ?lhs using `?rhs` by auto
+    then have ?lhs by (auto, metis nat_neq_iff) }
+  then show ?lhs using `?rhs` by auto
 qed
 
 
