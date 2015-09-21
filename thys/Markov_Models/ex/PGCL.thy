@@ -6,23 +6,15 @@ theory PGCL
   imports "../Markov_Decision_Process"
 begin
 
-datatype (discs_sels) 's pgcl =
+datatype 's pgcl =
     Skip
   | Abort
-  | Assign (update: "'s \<Rightarrow> 's")
-  | Seq (left: "'s pgcl") (right: "'s pgcl")
-  | Par (left: "'s pgcl") (right: "'s pgcl")
-  | If (cond: "'s \<Rightarrow> bool") (left: "'s pgcl") (right: "'s pgcl")
-  | Prob "bool pmf" (left: "'s pgcl") (right: "'s pgcl")
-  | While (cond: "'s \<Rightarrow> bool") (left: "'s pgcl")
-  where
-    "left Skip = Skip"
-  | "right Skip = Skip"
-  | "left Abort = Abort"
-  | "right Abort = Abort"
-  | "left (Assign v) = Skip"
-  | "right (Assign v) = Skip"
-  | "right (While s b) = Skip"
+  | Assign "'s \<Rightarrow> 's"
+  | Seq "'s pgcl" "'s pgcl"
+  | Par "'s pgcl" "'s pgcl"
+  | If "'s \<Rightarrow> bool" "'s pgcl" "'s pgcl"
+  | Prob "bool pmf" "'s pgcl" "'s pgcl"
+  | While "'s \<Rightarrow> bool" "'s pgcl"
 
 primrec wp :: "'s pgcl \<Rightarrow> ('s \<Rightarrow> ereal) \<Rightarrow> ('s \<Rightarrow> ereal)" where
   "wp Skip f          = f"
@@ -52,7 +44,7 @@ proof (induction c arbitrary: f s)
     by (simp add: le_fun_def)
 qed (auto intro!: ereal_add_nonneg_nonneg ereal_0_le_mult pmf_nonneg)
 
-abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" ("\<lless> _, _ \<ggreater>")where
+abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" ("\<lless> _, _ \<ggreater>") where
   "det c s \<equiv> {return_pmf (c, s)}" 
 
 fun step :: "('s pgcl \<times> 's) \<Rightarrow> ('s pgcl \<times> 's) pmf set" where
