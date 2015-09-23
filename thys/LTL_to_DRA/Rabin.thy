@@ -90,8 +90,12 @@ proof -
     using assms unfolding `R = (\<delta>, q\<^sub>0, \<alpha>)` by auto
 qed
 
-lemma accept\<^sub>G\<^sub>R_LTS_push:
-  "accept\<^sub>G\<^sub>R_LTS (\<delta>, q\<^sub>0, {(F, \<I>)}) w \<Longrightarrow> (F, \<I>) \<in> \<alpha> \<Longrightarrow> accept\<^sub>G\<^sub>R_LTS (\<delta>, q\<^sub>0, \<alpha>) w"
+lemma accept\<^sub>G\<^sub>R_LTS_I:
+  "accepting_pair\<^sub>G\<^sub>R_LTS \<delta> q\<^sub>0 (F, \<I>) w \<Longrightarrow> (F, \<I>) \<in> \<alpha> \<Longrightarrow> accept\<^sub>G\<^sub>R_LTS (\<delta>, q\<^sub>0, \<alpha>) w"
+  by auto
+
+lemma accept\<^sub>G\<^sub>R_I:
+  "accepting_pair\<^sub>G\<^sub>R \<delta> q\<^sub>0 (F, \<I>) w \<Longrightarrow> (F, \<I>) \<in> \<alpha> \<Longrightarrow> accept\<^sub>G\<^sub>R (\<delta>, q\<^sub>0, \<alpha>) w"
   by auto
 
 lemma transfer_accept:
@@ -121,7 +125,7 @@ lemma accept\<^sub>G\<^sub>R_restrict:
   apply (simp only: accept\<^sub>G\<^sub>R_simp)  
   apply (subst accepting_pair\<^sub>G\<^sub>R_restrict[OF assms, simplified]) 
   apply simp
-  apply standard 
+  apply standard
   apply (metis (no_types, lifting) imageE) 
   apply fastforce
   done
@@ -142,11 +146,10 @@ lemma accepting_pair\<^sub>G\<^sub>R_abstract:
   assumes "finite (reach\<^sub>t \<Sigma> \<delta> q\<^sub>0)" 
       and "finite (reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0')"
   assumes "range w \<subseteq> \<Sigma>"
-  assumes "run \<delta> q\<^sub>0 w = f o (run \<delta>' q\<^sub>0' w)"
-  assumes "\<forall>q \<nu> p. (f q, \<nu>, f p) \<in> F \<longleftrightarrow> (q, \<nu>, p) \<in> F'"
-  assumes "\<forall>I \<in> \<I>. \<exists>I' \<in> \<I>'. \<forall>q \<nu> p. (f q, \<nu>, f p) \<in> I \<longleftrightarrow> (q, \<nu>, p) \<in> I'"
-  assumes "\<forall>I' \<in> \<I>'. \<exists>I \<in> \<I>. \<forall>q \<nu> p. (f q, \<nu>, f p) \<in> I \<longleftrightarrow> (q, \<nu>, p) \<in> I'"
-  shows "accepting_pair\<^sub>G\<^sub>R \<delta> q\<^sub>0 (F, \<I>) w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R \<delta>' q\<^sub>0' (F', \<I>') w"
+  assumes "run\<^sub>t \<delta> q\<^sub>0 w = f o (run\<^sub>t \<delta>' q\<^sub>0' w)"
+  assumes "\<And>t. t \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0' \<Longrightarrow> f t \<in> F \<longleftrightarrow> t \<in> F'"
+  assumes "\<And>t i. i \<in> \<I> \<Longrightarrow> t \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0' \<Longrightarrow> f t \<in> I i \<longleftrightarrow> t \<in> I' i"
+  shows "accepting_pair\<^sub>G\<^sub>R \<delta> q\<^sub>0 (F, {I i | i. i \<in> \<I>}) w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R \<delta>' q\<^sub>0' (F', {I' i | i. i \<in> \<I>}) w"
 proof -
   have "finite (range (run\<^sub>t \<delta> q\<^sub>0 w))" (is "_ (range ?r)") 
     and "finite (range (run\<^sub>t \<delta>' q\<^sub>0' w))" (is "_ (range ?r')")
@@ -154,48 +157,24 @@ proof -
   then obtain k where 1: "limit ?r = range (suffix k ?r)"
     and 2: "limit ?r' = range (suffix k ?r')"
     using common_range_limit by blast
-  have X: "limit (run\<^sub>t \<delta> q\<^sub>0 w) = (\<lambda>(q, \<nu>, p). (f q, \<nu>, f p)) ` limit (run\<^sub>t \<delta>' q\<^sub>0' w)"
-    unfolding 1 2 suffix_def run\<^sub>t.simps assms(4) image_def by auto
+  have X: "limit (run\<^sub>t \<delta> q\<^sub>0 w) = f ` limit (run\<^sub>t \<delta>' q\<^sub>0' w)"
+    unfolding 1 2 suffix_def by (auto simp add: assms(4))
   have 3: "(limit ?r \<inter> F = {}) \<longleftrightarrow> (limit ?r' \<inter> F' = {})"
-    and 4: "(\<forall>I \<in> \<I>. limit ?r \<inter> I \<noteq> {}) \<longleftrightarrow> (\<forall>I' \<in> \<I>'. limit ?r' \<inter> I' \<noteq> {})"
-    using assms(5,6,7) by (unfold X; fast)+ 
-  thus ?thesis 
-    unfolding accepting_pair\<^sub>G\<^sub>R_simp by meson
-qed
-
-lemma accepting_pair\<^sub>G\<^sub>R_abstract':
-  assumes "finite (reach\<^sub>t \<Sigma> \<delta> q\<^sub>0)" 
-      and "finite (reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0')"
-  assumes "range w \<subseteq> \<Sigma>"
-  assumes "run \<delta> q\<^sub>0 w = f o (run \<delta>' q\<^sub>0' w)"
-  assumes "\<forall>(q, \<nu>, p) \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0'. ((f q, \<nu>, f p) \<in> F \<longleftrightarrow> (q, \<nu>, p) \<in> F')"
-  assumes "\<forall>I \<in> \<I>. \<exists>I' \<in> \<I>'. \<forall>(q, \<nu>, p) \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0'. (f q, \<nu>, f p) \<in> I \<longleftrightarrow> (q, \<nu>, p) \<in> I'"
-  assumes "\<forall>I' \<in> \<I>'. \<exists>I \<in> \<I>. \<forall>(q, \<nu>, p) \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0'. (f q, \<nu>, f p) \<in> I \<longleftrightarrow> (q, \<nu>, p) \<in> I'"
-  shows "accepting_pair\<^sub>G\<^sub>R \<delta> q\<^sub>0 (F, \<I>) w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R \<delta>' q\<^sub>0' (F', \<I>') w"
-proof -
-  have "finite (range (run\<^sub>t \<delta> q\<^sub>0 w))" (is "_ (range ?r)") 
-    and "finite (range (run\<^sub>t \<delta>' q\<^sub>0' w))" (is "_ (range ?r')")
-    using assms(1,2,3) run_subseteq_reach(2) by (metis finite_subset)+
-  then obtain k where 1: "limit ?r = range (suffix k ?r)"
-    and 2: "limit ?r' = range (suffix k ?r')"
-    using common_range_limit by blast
-  have X: "limit (run\<^sub>t \<delta> q\<^sub>0 w) = (\<lambda>(q, \<nu>, p). (f q, \<nu>, f p)) ` limit (run\<^sub>t \<delta>' q\<^sub>0' w)"
-    unfolding 1 2 suffix_def run\<^sub>t.simps assms(4) image_def by auto
-  have 3: "(limit ?r \<inter> F = {}) \<longleftrightarrow> (limit ?r' \<inter> F' = {})"
-    and 4: "(\<forall>I \<in> \<I>. limit ?r \<inter> I \<noteq> {}) \<longleftrightarrow> (\<forall>I' \<in> \<I>'. limit ?r' \<inter> I' \<noteq> {})"
-    using assms(5,6,7) limit_subseteq_reach(2)[OF assms(3)] by (unfold X; fast)+ 
+    and 4: "(\<forall>i \<in> \<I>. limit ?r \<inter> I i \<noteq> {}) \<longleftrightarrow> (\<forall>i \<in> \<I>. limit ?r' \<inter> I' i \<noteq> {})"
+    using assms(5,6) limit_subseteq_reach(2)[OF assms(3)] by (unfold X; fastforce)+
   thus ?thesis
-    unfolding accepting_pair\<^sub>G\<^sub>R_simp by meson
+    unfolding accepting_pair\<^sub>G\<^sub>R_simp by blast
 qed
 
 lemma accepting_pair\<^sub>R_abstract:
   assumes "finite (reach\<^sub>t \<Sigma> \<delta> q\<^sub>0)" 
       and "finite (reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0')"
   assumes "range w \<subseteq> \<Sigma>"
-  assumes "run \<delta> q\<^sub>0 w  = f o (run \<delta>' q\<^sub>0' w)"
-  assumes "\<forall>q \<nu> p. ((f q, \<nu>, f p) \<in> F \<longleftrightarrow> (q, \<nu>, p) \<in> F') \<and> ((f q, \<nu>, f p) \<in> I \<longleftrightarrow> (q, \<nu>, p) \<in> I')"
+  assumes "run\<^sub>t \<delta> q\<^sub>0 w  = f o (run\<^sub>t \<delta>' q\<^sub>0' w)"
+  assumes "\<And>t. t \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0' \<Longrightarrow> f t \<in> F \<longleftrightarrow> t \<in> F'"
+  assumes "\<And>t. t \<in> reach\<^sub>t \<Sigma> \<delta>' q\<^sub>0' \<Longrightarrow> f t \<in> I \<longleftrightarrow> t \<in> I'"
   shows "accepting_pair\<^sub>R \<delta> q\<^sub>0 (F, I) w \<longleftrightarrow> accepting_pair\<^sub>R \<delta>' q\<^sub>0' (F', I') w"
-  using accepting_pair\<^sub>G\<^sub>R_abstract[OF assms(1-4), of F F' "{I}" "{I'}"] assms(5) by simp
+  using accepting_pair\<^sub>G\<^sub>R_abstract[OF assms(1-5), of UNIV "\<lambda>_. I" "\<lambda>_. I'"] assms(6) by simp
 
 subsection \<open>LTS Lemmas\<close>
 

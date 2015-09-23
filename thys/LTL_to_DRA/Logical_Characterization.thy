@@ -135,7 +135,7 @@ proof (rule ccontr)
     using `k > k' + i` by arith+
   show False
     using threshold_properties(1)[OF assms(1) `0 < k`] threshold_properties(2)[OF assms(2), of "k' + j", OF le_add1] 
-    unfolding subsequence_shift[symmetric] `k = k' + i + Suc j` `k' + i + Suc j - 1 = i + (k' + j)` by simp
+    unfolding subsequence_shift `k = k' + i + Suc j` `k' + i + Suc j - 1 = i + (k' + j)` by blast
 qed
 
 subsubsection \<open>Relation to LTL semantics\<close>
@@ -145,13 +145,13 @@ lemma ltl_implies_provable:
 proof (induction \<phi> arbitrary: w)
   case (LTLProp a)
     hence "{} \<Turnstile>\<^sub>P af\<^sub>G (p(a)) (w [0 \<rightarrow> 1])"
-      by simp
+      by (simp add: subsequence_def)
     thus ?case 
       by blast
 next
   case (LTLPropNeg a)
     hence "{} \<Turnstile>\<^sub>P af\<^sub>G (np(a)) (w [0 \<rightarrow> 1])"
-      by simp
+      by (simp add: subsequence_def)
     thus ?case 
       by blast
 next
@@ -159,8 +159,8 @@ next
     obtain i\<^sub>1 i\<^sub>2 where "(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>1 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>1 (w [0 \<rightarrow> i\<^sub>1])" and "(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>2 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>2 (w [0 \<rightarrow> i\<^sub>2])"
       using LTLAnd unfolding ltl_semantics.simps by blast
     have "(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>1 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>1 (w [0 \<rightarrow> i\<^sub>1 + i\<^sub>2])" and "(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>2 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>2 (w [0 \<rightarrow> i\<^sub>2 + i\<^sub>1])"
-      using af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G _ `(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>1 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>1 (w [0 \<rightarrow> i\<^sub>1])`]
-      using af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G _ `(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>2 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>2 (w [0 \<rightarrow> i\<^sub>2])`]
+      using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G _ `(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>1 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>1 (w [0 \<rightarrow> i\<^sub>1])`]
+      using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G _ `(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>2 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>2 (w [0 \<rightarrow> i\<^sub>2])`]
       by simp+
     thus ?case 
       unfolding af\<^sub>G_decompose add.commute by auto
@@ -174,7 +174,7 @@ next
       using LTLNext(1)[OF LTLNext(2)[unfolded ltl_semantics.simps]] 
       unfolding \<G>\<^sub>F\<^sub>G_suffix by blast
     hence "(\<G>\<^sub>F\<^sub>G (X \<phi>) w) \<Turnstile>\<^sub>P af\<^sub>G (X \<phi>) (w [0 \<rightarrow> 1 + i])"  
-      unfolding subsequence_shift[symmetric] subsequence_append by simp
+      unfolding subsequence_shift subsequence_append by (simp add: subsequence_def)
     thus ?case
       by blast
 next
@@ -184,9 +184,9 @@ next
     then obtain j where "\<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (suffix i w [0 \<rightarrow> j])"
       using LTLFinal \<G>\<^sub>F\<^sub>G_suffix by blast
     hence A: "\<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (suffix i w [0 \<rightarrow> Suc j])"
-      using af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G, of j "Suc j", OF le_SucI] by blast
+      using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G, of j "Suc j", OF le_SucI] by blast
     from af\<^sub>G_keeps_F_and_S[OF _ A] have "\<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G (F \<phi>) (w [0 \<rightarrow> Suc (i + j)])"  
-      unfolding subsequence_shift[symmetric] subsequence_append Suc_eq_plus1 by simp
+      unfolding subsequence_shift subsequence_append Suc_eq_plus1 by simp
     thus ?case
       using \<G>\<^sub>F\<^sub>G.simps(7) by blast
 next
@@ -197,9 +197,9 @@ next
     proof (induction k arbitrary: w)
       case 0
         then obtain i where "\<G>\<^sub>F\<^sub>G \<psi> w \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [0 \<rightarrow> i])"
-          using LTLUntil by (metis diff_zero subsequence_prefix_suffix suffix_0) 
+          using LTLUntil by (metis suffix_0) 
         hence "\<G>\<^sub>F\<^sub>G \<psi> w \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [0 \<rightarrow> Suc i])"
-          using af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G, of i "Suc i", OF  le_SucI] by auto
+          using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G, of i "Suc i", OF  le_SucI] by auto
         hence "\<G>\<^sub>F\<^sub>G (\<phi> U \<psi>) w \<Turnstile>\<^sub>P af\<^sub>G (\<phi> U \<psi>) (w [0 \<rightarrow> Suc i])"
           unfolding af\<^sub>G_subsequence_U ltl_prop_entailment.simps \<G>\<^sub>F\<^sub>G.simps by blast  
         thus ?case
@@ -216,12 +216,12 @@ next
           by auto
 
         hence "\<G>\<^sub>F\<^sub>G (\<phi> U \<psi>) w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> j + (i + 1)])"
-          by (blast intro: af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G le_add1])
+          by (blast intro: af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G le_add1])
         moreover
         have "1 + (i + j) = j + (i + 1)"
           by arith
         have "\<G>\<^sub>F\<^sub>G (\<phi> U \<psi>) w \<Turnstile>\<^sub>P af\<^sub>G (\<phi> U \<psi>) (w [1 \<rightarrow> j + (i + 1)])"
-          using  af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G le_add1 i_def, of j]
+          using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G le_add1 i_def, of j]
           unfolding subsequence_shift \<G>\<^sub>F\<^sub>G_suffix `1 + (i + j) = j + (i + 1)` by simp
         ultimately
         have "\<G>\<^sub>F\<^sub>G (\<phi> U \<psi>) w \<Turnstile>\<^sub>P af\<^sub>G (\<phi> U \<psi>) (w [1 \<rightarrow> Suc (j + i)]) and af\<^sub>G \<phi> (w [0 \<rightarrow> Suc (j + i)])"
@@ -235,7 +235,7 @@ qed simp+
 
 lemma ltl_implies_provable_almost_all:
   "w \<Turnstile> \<phi> \<Longrightarrow> \<forall>\<^sub>\<infinity>i. \<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> i])"
-  using ltl_implies_provable af\<^sub>G_sat_core_generalised[OF \<G>\<^sub>F\<^sub>G_Only_G] 
+  using ltl_implies_provable af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G] 
   unfolding MOST_nat_le by metis
 
 subsubsection \<open>Closed Sets\<close>
@@ -312,7 +312,7 @@ proof -
         hence Stable: "\<forall>\<psi> \<in> \<^bold>G \<psi>'. suffix i w \<Turnstile> \<psi> = suffix j (suffix i w) \<Turnstile> \<psi>"
           using k1_def k1_def[of _ "c + j"] unfolding suffix_suffix add.assoc[symmetric] by blast
         from Suffix have "suffix i w \<Turnstile> \<psi>'"
-          unfolding suffix_suffix af\<^sub>G_ltl_continuation_suffix[OF Stable] by simp
+          unfolding suffix_suffix subsequence_shift af\<^sub>G_ltl_continuation_suffix[OF Stable] by simp
       }
       hence "w \<Turnstile> F G \<psi>'"
         unfolding MOST_nat_le LTL_FG_almost_all_suffixes by blast 
@@ -341,7 +341,7 @@ proof (induction \<phi>)
             using assms LTL_FG_suffix 
             by (blast dest: ltl_implies_provable[unfolded \<G>\<^sub>F\<^sub>G_alt_def])
           hence "\<PP> \<phi> {G \<psi> |\<psi>. w \<Turnstile> F G \<psi>} w k"
-            by auto
+            unfolding subsequence_shift by auto
         }
         hence "\<PP>\<^sub>\<infinity> \<phi> {G \<psi> | \<psi>. w \<Turnstile> F G \<psi>} w"
           using almost_all_eventually_provable_def[of \<phi> _ w]
@@ -397,7 +397,8 @@ proof -
       proof (cases "j'' \<le> j")
         case True
           hence "\<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j])"
-            by (metis (no_types) Nat.add_0_right True af\<^sub>G_sat_core_generalised[OF `Only_G \<G>`, of _ j' \<phi> "suffix i w"] `\<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j''])` le_Suc_ex[OF `i \<le> j''`] `j = i + j'` nat_add_left_cancel_le subsequence_shift)
+            using af\<^sub>G_sat_core_generalized[OF `Only_G \<G>`, of _ j' \<phi> "suffix i w"] le_Suc_ex[OF `i \<le> j''`] le_Suc_ex[OF `j'' \<le> j`]  
+            by (metis add.right_neutral subsequence_shift `j = i + j'` `\<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j''])` nat_add_left_cancel_le ) 
           hence "\<G> \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> (w [i \<rightarrow> j]))"
             unfolding eval\<^sub>G_prop_entailment .
           moreover
@@ -412,7 +413,7 @@ proof -
         case False
           hence "\<G> \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G (af\<^sub>G \<phi> (w [i \<rightarrow> j])) (w [j \<rightarrow> j'']))"
             unfolding foldl_append[symmetric] eval\<^sub>G_prop_entailment
-            by (metis `\<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j''])` Nat.le_iff_add `i \<le> j` map_append nat_le_linear subsequence_def upt_add_eq_append) 
+            by (metis le_iff_add `i \<le> j` map_append upt_add_eq_append nat_le_linear subsequence_def `\<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j''])`) 
           hence "\<G> \<Turnstile>\<^sub>P af\<^sub>G (eval\<^sub>G \<G> (af\<^sub>G \<phi> (w [i \<rightarrow> j]))) (w [j \<rightarrow> j''])" (is "\<G> \<Turnstile>\<^sub>P ?af\<^sub>G")
             using af\<^sub>G_eval\<^sub>G[OF `Only_G \<G>`] by blast
           moreover
@@ -436,8 +437,8 @@ proof -
           }
           ultimately
           show ?thesis
-            using af\<^sub>G_ltl_continuation_suffix[of "eval\<^sub>G \<G> (af\<^sub>G \<phi> (w [i \<rightarrow> j]))" "suffix j w", unfolded suffix_suffix ]
-            using False le_Suc_ex nat_le_linear unfolding subsequence_prefix_suffix[of i w j, symmetric] by simp blast
+            using af\<^sub>G_ltl_continuation_suffix[of "eval\<^sub>G \<G> (af\<^sub>G \<phi> (w [i \<rightarrow> j]))" "suffix j w", unfolded suffix_suffix]
+            by (metis False le_Suc_ex nat_le_linear add_diff_cancel_left' subsequence_prefix_suffix)
       qed   
     }
     hence "suffix j w \<Turnstile> And (map (\<lambda>i. eval\<^sub>G \<G> (af\<^sub>G \<phi> (w [i \<rightarrow> j]))) [k..<Suc j])"
@@ -463,7 +464,7 @@ proof -
     using assms(2) unfolding MOST_nat_le by force
 qed
 
-lemma almost_all_suffixes_model_\<F>_generalised:
+lemma almost_all_suffixes_model_\<F>_generalized:
   assumes "closed \<G> w"
   shows "\<forall>\<^sub>\<infinity>j. \<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> suffix j w \<Turnstile> eval\<^sub>G \<G> (\<F> \<psi> w \<G> j)"
   using almost_all_suffixes_model_\<F>[OF assms] almost_all_commutative''[of \<G>] assms by fast
@@ -527,7 +528,7 @@ proof -
     by simp+
   moreover
   hence "k \<le> i + j \<Longrightarrow> S \<Turnstile>\<^sub>P \<phi>"
-    using `S \<Turnstile>\<^sub>P \<F> \<phi> w \<G>' (i + j)` unfolding \<F>_def And_semantics And_prop_entailment by simp
+    using `S \<Turnstile>\<^sub>P \<F> \<phi> w \<G>' (i + j)` unfolding \<F>_def And_semantics And_prop_entailment by (simp add: subsequence_def)
   moreover
   have "k' \<le> j \<Longrightarrow> k \<le> i + j"
     using k_def k'_def threshold_suffix by fastforce 
@@ -543,7 +544,7 @@ proof -
     hence "(i + pos) \<in> set [k..<Suc (i + j)]"
       using `pos \<le> j` by auto
     hence "af\<^sub>G \<phi> ((suffix i w) [pos \<rightarrow> j]) \<in> set (map (\<lambda>ia. af\<^sub>G \<phi> (subsequence w ia (i + j))) [k..<Suc (i + j)])"
-      unfolding subsequence_shift[symmetric] set_map by auto
+      unfolding subsequence_shift set_map by blast
     hence "S \<Turnstile>\<^sub>P af\<^sub>G \<phi> ((suffix i w) [pos \<rightarrow> j])"  
       using assms(2) unfolding \<F>_def And_prop_entailment k_def_2 by (cases "k \<le> i + j") auto
   }
@@ -573,7 +574,7 @@ proof -
     {
       have "\<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> j])"
         using `\<G>\<^sub>F\<^sub>G \<phi> w \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> i])` `j \<ge> i` 
-        by (metis af\<^sub>G_sat_core_generalised \<G>\<^sub>F\<^sub>G_Only_G) 
+        by (metis af\<^sub>G_sat_core_generalized \<G>\<^sub>F\<^sub>G_Only_G) 
       moreover
       have "\<G>\<^sub>F\<^sub>G \<phi> w \<subseteq> S"
         using assm2 unfolding \<G>\<^sub>F\<^sub>G_alt_def by auto
@@ -687,7 +688,7 @@ next
     (\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> S \<Turnstile>\<^sub>P G \<psi> \<and> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (\<F> \<psi> w \<G> j')) \<longrightarrow> S \<Turnstile>\<^sub>P af \<phi> (w [0 \<rightarrow> j'])"
     using `accept\<^sub>M \<phi> \<G> w` unfolding accept\<^sub>M_def MOST_nat_le by presburger
   obtain j' where lemma19: "\<And>j \<psi>. j \<ge> j' \<Longrightarrow> G \<psi> \<in> \<G> \<Longrightarrow> suffix j w \<Turnstile> eval\<^sub>G \<G> (\<F> \<psi> w \<G> j)"
-    using almost_all_suffixes_model_\<F>_generalised[OF `closed \<G> w`] unfolding MOST_nat_le by blast
+    using almost_all_suffixes_model_\<F>_generalized[OF `closed \<G> w`] unfolding MOST_nat_le by blast
   
   (* Define new constants *)
   def k \<equiv> "max (max i j) j'"

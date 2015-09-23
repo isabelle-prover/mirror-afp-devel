@@ -33,22 +33,22 @@ lemma mapping_equal:
   "Mapping.keys m = Mapping.keys m' \<Longrightarrow> (\<And>x. x \<in> Mapping.keys m \<Longrightarrow> Mapping.lookup m x = Mapping.lookup m' x) \<Longrightarrow> m = m'"
   by (transfer; blast intro: map_equal)
 
-fun mapping_generator :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> ('a, 'b) mapping set"
+fun mapping_generator :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) mapping set"
 where
-  "mapping_generator [] V = {Mapping.empty}"
-| "mapping_generator (k#ks) V = {Mapping.update k v m | v m.  v \<in> set (V k) \<and> m \<in> mapping_generator ks V}"
+  "mapping_generator V [] = {Mapping.empty}"
+| "mapping_generator V (k#ks) = {Mapping.update k v m | v m.  v \<in> set (V k) \<and> m \<in> mapping_generator V ks}"
 
-fun mapping_generator_list :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> ('a, 'b) mapping list"
+fun mapping_generator_list :: "('a \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) mapping list"
 where
-  "mapping_generator_list [] V = [Mapping.empty]"
-| "mapping_generator_list (k#ks) V = concat (map (\<lambda>m. map (\<lambda>v. Mapping.update k v m) (V k)) (mapping_generator_list ks V))"
+  "mapping_generator_list V [] = [Mapping.empty]"
+| "mapping_generator_list V (k#ks) = concat (map (\<lambda>m. map (\<lambda>v. Mapping.update k v m) (V k)) (mapping_generator_list V ks))"
 
 lemma mapping_generator_code [code]:
-  "mapping_generator K V = set (mapping_generator_list K V)"
+  "mapping_generator V K = set (mapping_generator_list V K)"
   by (induction K) auto 
 
 lemma mapping_generator_set_eq:
-  "mapping_generator K V = {m. Mapping.keys m = set K \<and> (\<forall>k \<in> (set K). the (Mapping.lookup m k) \<in> set (V k))}"
+  "mapping_generator V K = {m. Mapping.keys m = set K \<and> (\<forall>k \<in> (set K). the (Mapping.lookup m k) \<in> set (V k))}"
 proof (induction K)
   case (Cons k ks)
     let ?l = "{m(k \<mapsto> v) |v m. v \<in> set (V k) \<and>  m \<in> {m. dom m = set ks \<and> (\<forall>k\<in>set ks. the (m k) \<in> set (V k))}}"

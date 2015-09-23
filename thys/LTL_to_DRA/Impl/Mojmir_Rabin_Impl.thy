@@ -23,7 +23,7 @@ where
 
 fun rk :: "'a list \<Rightarrow> 'a \<Rightarrow> nat option"
 where
-  "rk qs = find_first_index qs 0"
+  "rk qs q = (let i = index qs q in if i \<noteq> length qs then Some i else None)"
 
 --\<open>Instead of computing the whole sets for fail, merge, and succeed, we define filters (a.k.a. characteristic functions)\<close> 
 
@@ -59,15 +59,18 @@ lemma nxt_run_sink_free:
 
 subsubsection \<open>rk Properties\<close>
 
+lemma rk_bounded:
+  "rk xs x = Some i \<Longrightarrow> i < length xs"
+  by (simp add: Let_def) (metis index_conv_size_if_notin index_less_size_conv option.distinct(1) option.inject)
+
 lemma rk_facts:
-  "x \<notin> set xs \<longleftrightarrow> rk xs x = None"
   "x \<in> set xs \<longleftrightarrow> rk xs x \<noteq> None"
   "x \<in> set xs \<longleftrightarrow> (\<exists>i. rk xs x = Some i)"
-  using find_first_index_facts[of x "xs"] by simp+
+  using rk_bounded by (simp add: index_size_conv)+
 
 lemma rk_split:
   "y \<notin> set xs \<Longrightarrow> rk (xs @ y # zs) y = Some (length xs)"
-  using find_first_index_split[of y] by simp
+  by (induction xs) auto
 
 lemma rk_split_card:
   "y \<notin> set xs \<Longrightarrow> distinct xs \<Longrightarrow> rk (xs @ y # zs) y = Some (card (set xs))"
@@ -98,18 +101,11 @@ proof (induction i arbitrary: xs)
     thus ?case
     proof (induction xs)
       case (Cons x xs)
-        have shift: "\<And>k i x. find_first_index xs 0 x = Some i \<longleftrightarrow> find_first_index xs k x = Some (k+i)"
-          by (metis add.left_neutral add_left_cancel find_first_index_facts(1) find_first_index_takeWhile option.distinct(2) option.sel)
-        have ex_shift: "\<And>q. (\<exists>j < i. find_first_index xs 1 q = Some (1 + j)) = (\<exists>j < Suc i. find_first_index xs 1 q = Some j)"
-          by (induction xs) (simp_all add: less_Suc_eq_0_disj, fastforce dest: find_first_index_bounds(1))
         have "set (take (Suc i) (x # xs)) = {x} \<union> set (take i xs)"
           by simp
         also
         have "\<dots> = {x} \<union> {q. \<exists>j < i. rk xs q = Some j}"
           using Cons by simp
-        also
-        have "\<dots> = {x} \<union> {q. \<exists>j < Suc i. find_first_index xs 1 q = Some j}"
-          by (simp; unfold shift[of _ _ 1] ex_shift; simp)
         finally
         show ?case 
           by force
@@ -121,7 +117,7 @@ lemma drop_rk:
   shows "set (drop i xs) = {q. \<exists>j \<ge> i. rk xs q = Some j}" 
 proof -
   have "set xs = {q. \<exists>j. rk xs q = Some j}" (is "_ = ?U")
-    using rk_facts(3)[of _ xs] by blast
+    using rk_facts(2)[of _ xs] by blast
   moreover
   have "?U = {q. \<exists>j \<ge> i. rk xs q = Some j} \<union> {q. \<exists>j < i. rk xs q = Some j}"
     and "{} = {q. \<exists>j \<ge> i. rk xs q = Some j} \<inter> {q. \<exists>j < i. rk xs q = Some j}"
@@ -215,7 +211,7 @@ proof (induction n)
           hence "q\<^sub>0 \<notin> set (filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) (r n)))"
             using `p \<notin> set zs \<union> set zs' \<union> {q}`  unfolding `p = q\<^sub>0` sink_def by simp
           hence "q\<^sub>0 \<notin> (\<lambda>q. \<delta> q (w n)) ` {q'. configuration q' n \<noteq> {}}"
-            using nxt_run_configuration wellformed_w unfolding set_map set_filter r_def sink_def init.simps by blast
+            using nxt_run_configuration bounded_w unfolding set_map set_filter r_def sink_def init.simps by blast
           hence "configuration p (Suc n) = {Suc n}" using assms
             unfolding `p = q\<^sub>0` using configuration_step_eq_q\<^sub>0 by blast
           hence "?f_Suc_n p = Suc n"
@@ -461,7 +457,7 @@ qed
 lemma (in semi_mojmir) nxt_run_state_rank:
   "state_rank q n = rk (run (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0) w n) q"
   by (cases "\<not>sink q \<and> configuration q n \<noteq> {}", unfold state_rank.simps) 
-     (metis nxt_run_senior_states rk_split_card_takeWhile nxt_run_distinct nxt_run_configuration, metis nxt_run_configuration rk_facts(2))
+     (metis nxt_run_senior_states rk_split_card_takeWhile nxt_run_distinct nxt_run_configuration, metis nxt_run_configuration rk_facts(1))
 
 lemma (in semi_mojmir) nxt_foldl_state_rank:
   "state_rank q n = rk (foldl (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0) (map w [0..<n])) q"
@@ -469,7 +465,7 @@ lemma (in semi_mojmir) nxt_foldl_state_rank:
 
 lemma (in semi_mojmir) nxt_run_step_run:
   "run step initial w = rk o (run (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0) w)"
-  using nxt_run_state_rank run_foldl state_rank_step_foldl unfolding comp_def by force
+  using nxt_run_state_rank state_rank_step_foldl[unfolded run_foldl[symmetric]] unfolding comp_def by presburger  
 
 definition (in semi_mojmir_def) Q\<^sub>E
 where
@@ -507,7 +503,7 @@ lemma (in mojmir_to_rabin_def) filt_equiv:
   "(rk x, \<nu>, y) \<in> fail\<^sub>R \<longleftrightarrow> fail_filt \<Sigma> \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) (x, \<nu>, y')"
   "(rk x, \<nu>, y) \<in> succeed\<^sub>R i \<longleftrightarrow> succeed_filt \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) i (x, \<nu>, y')"
   "(rk x, \<nu>, y) \<in> merge\<^sub>R i \<longleftrightarrow> merge_filt \<delta> q\<^sub>0 (\<lambda>x. x \<in> F) i (x, \<nu>, y')"
-  by (simp add: fail\<^sub>R_def succeed\<^sub>R_def merge\<^sub>R_def del: rk.simps; metis (no_types, lifting) option.sel rk_facts(3))+
+  by (simp add: fail\<^sub>R_def succeed\<^sub>R_def merge\<^sub>R_def del: rk.simps; metis (no_types, lifting) option.sel rk_facts(2))+
 
 lemma fail_filt_eq: 
   "fail_filt \<Sigma> \<delta> q\<^sub>0 P (x, \<nu>, y) \<longleftrightarrow> (rk x, \<nu>, y') \<in> mojmir_to_rabin_def.fail\<^sub>R \<Sigma> \<delta> q\<^sub>0 {x. P x}"
@@ -530,10 +526,14 @@ proof -
   moreover
   have "finite (reach\<^sub>t \<Sigma> (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0))"
     using finite_Q finite_\<Sigma> finite_reach\<^sub>t by (auto simp add: Q\<^sub>E_def) 
+  moreover
+  have "run\<^sub>t step initial w = (\<lambda>(x, \<nu>, y). (rk x, \<nu>, rk y)) o (run\<^sub>t (nxt \<Sigma> \<delta> q\<^sub>0) (init q\<^sub>0) w)"
+    using nxt_run_step_run by auto
+  moreover
+  note bounded_w filt_equiv 
   ultimately
   show ?thesis
-    using accepting_pair\<^sub>R_abstract[OF _ _ wellformed_w nxt_run_step_run, of ?F ?F' ?I ?I']  
-    unfolding Un_iff using filt_equiv by blast
+    by (intro accepting_pair\<^sub>R_abstract) auto
 qed
 
 subsection \<open>Compute Rabin Automata List Representation\<close>
@@ -553,17 +553,37 @@ where
 
 subsection \<open>Code Generation\<close>
 
-(* Setup missing equations for code generator *)
+-- \<open>Setup missing equations for code generator\<close>
 declare semi_mojmir_def.sink_def [code]
 
-(* Check export *)
-export_code init nxt fail_filt succeed_filt merge_filt in SML
-export_code mojmir_to_rabin_exec in SML module_name Blob
-value [code] "init (0::int)"
-value [code] "nxt {0, 1, 2} (\<lambda>x y. x + y) (0::int) [1,2,1] 1"
-value [code] "nxt {0, 1, 2} (\<lambda>x y. x - y) (1::nat) [1] 1"
-value [code] "fail_filt {0, 1, 2} (\<lambda>x y. x - y)  (1::nat) odd ([1], 1, [])"
-value [code] "mojmir_to_rabin_exec [1, 2::nat] (\<lambda>q i. max (q - i) 0) 3 (\<lambda>q. q = 0)"
+-- \<open>Drop computation of length by different code equation\<close>
+fun index_option ::  "nat \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> nat option"
+where
+  "index_option n [] y = None"
+| "index_option n (x # xs) y = (if x = y then Some n else index_option (Suc n) xs y)"
+
+declare rk.simps [code del]
+
+lemma rk_eq_index_option [code]:
+  "rk xs x = index_option 0 xs x"
+proof -
+  have A: "\<And>n. x \<in> set xs \<Longrightarrow> index xs x + n = the (index_option n xs x)"
+   and B: "\<And>n. x \<notin> set xs \<longleftrightarrow> index_option n xs x = None"
+   by (induction xs) (auto, metis add_Suc_right)
+  thus ?thesis
+  proof (cases "x \<in> set xs")
+    case True
+      moreover
+      hence "index xs x = the (index_option 0 xs x)"
+        using A[OF True, of 0] by simp
+      ultimately
+      show ?thesis
+        unfolding rk.simps by (metis (mono_tags, lifting) B True index_less_size_conv less_irrefl option.collapse)
+  qed simp
+qed
+
+-- \<open>Check Code Export\<close> 
+export_code init nxt fail_filt succeed_filt merge_filt mojmir_to_rabin_exec checking
 
 lemma (in mojmir) max_rank_card:
   assumes "\<Sigma> = set \<Sigma>'"
@@ -601,9 +621,9 @@ proof -
   moreover 
 
   have "\<dots> \<longleftrightarrow> ?rhs"
-    apply (subst accept\<^sub>R_restrict[OF wellformed_w])
+    apply (subst accept\<^sub>R_restrict[OF bounded_w])
     unfolding 3[unfolded mojmir_to_rabin_exec.simps Let_def snd_conv, symmetric] assms[symmetric] mojmir_to_rabin_exec.simps Let_def unfolding assms \<delta>'_Def[unfolded assms]
-    unfolding accept\<^sub>R_LTS[OF wellformed_w[unfolded assms], symmetric, unfolded assms] by simp
+    unfolding accept\<^sub>R_LTS[OF bounded_w[unfolded assms], symmetric, unfolded assms] by simp
   
   ultimately
  

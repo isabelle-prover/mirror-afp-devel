@@ -5,69 +5,9 @@
 
 section \<open>Auxiliary List Facts\<close>
 
-theory List2
-  imports Main
+theory List2                  
+  imports Main "../../List-Index/List_Index"
 begin
-
-subsection \<open>find\_first\_index\<close>
--- \<open>Find the first occurrence of an element in a list\<close>
-
-fun find_first_index :: "'a list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat option"
-where
-  "find_first_index [] n     = (\<lambda>q. None)"
-| "find_first_index (x#xs) n = (\<lambda>q. if q=x then Some n else find_first_index xs (Suc n) q)"
-
-lemma find_first_index_facts:
-  "x \<notin> set xs \<longleftrightarrow> find_first_index xs n x = None"
-  "x \<in> set xs \<longleftrightarrow> (\<exists>i. find_first_index xs n x = Some i)"
-  by (induction xs arbitrary: n) simp_all
-
-lemma find_first_index_split:
-  "y \<notin> set xs \<Longrightarrow> find_first_index (xs @ y # zs) n y = Some (n + length xs)"
-  by (induction xs arbitrary: n) simp_all
-
-lemma find_first_index_bounds:
-  "find_first_index xs n x = Some i \<Longrightarrow> n \<le> i"
-  "find_first_index xs n x = Some i \<Longrightarrow> i < n + length xs"
-  by (induction xs arbitrary: n i) (simp_all, (metis le_trans lessI less_or_eq_imp_le option.sel), (metis add_Suc add_lessD1 lessI option.sel))
-
-lemma find_first_index_nth:
-  "find_first_index xs n y = Some (n + i) \<Longrightarrow> xs ! i = y" 
-proof (induction xs arbitrary: i n)
-  case (Cons x xs)
-    thus ?case
-    proof (cases "x = y")
-      case False
-        hence Prems: "find_first_index xs (Suc n) y = Some (n + i)"
-          using Cons.prems by simp     
-        have "i > 0"
-          using find_first_index_bounds[OF Prems] by linarith  
-        then obtain i' where "i = Suc i'"
-          using Nat.lessE by meson
-        show ?thesis
-          using Prems Cons.IH[of "Suc n"] unfolding `i = Suc i'` by simp
-    qed simp
-qed simp
-
-lemma find_first_index_range_upper_bound:
-  "range (find_first_index xs n) \<subseteq> {None} \<union> Some ` {n..<n+length xs}"
-  (is "?lhs \<subseteq> ?rhs")
-proof 
-  fix e
-  assume "e \<in> ?lhs"
-  thus "e \<in> ?rhs"
-  proof (cases e)
-    case (Some i)
-      then obtain y where y_def: "find_first_index xs n y = Some i"
-        using `e \<in> ?lhs` by force
-      show ?thesis
-        using find_first_index_bounds[OF y_def] Some by auto
-  qed simp
-qed
-
-lemma find_first_index_takeWhile: 
-  "x \<in> set xs \<Longrightarrow> find_first_index xs n x = Some (n + length (takeWhile (\<lambda>y. y \<noteq> x) xs))"
-  by (induction xs arbitrary: n) auto
 
 subsection \<open>remdups\_fwd\<close>
 -- \<open>Remove duplicates of a list in a forward moving direction\<close>
@@ -75,7 +15,7 @@ subsection \<open>remdups\_fwd\<close>
 fun remdups_fwd_acc 
 where
   "remdups_fwd_acc Acc [] = []"
-| "remdups_fwd_acc Acc (x#xs) = (if x \<in> Acc then [] else [x]) @ remdups_fwd_acc (Acc \<union> {x}) xs"
+| "remdups_fwd_acc Acc (x#xs) = (if x \<in> Acc then [] else [x]) @ remdups_fwd_acc (insert x Acc) xs"
 
 lemma remdups_fwd_acc_append[simp]:
   "remdups_fwd_acc Acc (xs@ys) = (remdups_fwd_acc Acc xs) @ (remdups_fwd_acc (Acc \<union> set xs) ys)"

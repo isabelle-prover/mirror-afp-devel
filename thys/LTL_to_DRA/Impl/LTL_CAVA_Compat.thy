@@ -36,7 +36,7 @@ notation
   and LTLcAnd      ("_ and\<^sub>c _" [82,82] 81)
   and LTLcOr       ("_ or\<^sub>c _" [81,81] 80)
   and LTLcImplies  ("_ implies\<^sub>c _" [81,81] 80)
-  and LTLcIff      (" _ iff\<^sub>c _" [81,81] 80)
+  and LTLcIff      ("_ iff\<^sub>c _" [81,81] 80)
   and LTLcNext     ("X\<^sub>c _" [88] 87)
   and LTLcFinal    ("F\<^sub>c _" [88] 87)
   and LTLcGlobal   ("G\<^sub>c _" [88] 87)

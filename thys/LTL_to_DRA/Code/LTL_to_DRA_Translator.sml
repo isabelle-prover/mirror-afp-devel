@@ -1,14 +1,40 @@
 structure LTL_to_DRA_Translator : sig
-  type 'a ltl
-  type 'a set
-  type ('a, 'b) mapping
-  type 'a ltl_prop_equiv_quotient
+  datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLPropNeg of 'a |
+    LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
+    LTLGlobal of 'a ltl | LTLFinal of 'a ltl | LTLUntil of 'a ltl * 'a ltl
+  datatype 'a set = Set of 'a list | Coset of 'a list
+  datatype ('a, 'b) mapping = Mapping of ('a * 'b) list
+  datatype 'a ltl_prop_equiv_quotient = Abs of 'a ltl
   datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc
     | LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
     LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
     LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
     LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc
   val ltlc_to_rabin :
+    string ltlc ->
+      ((string ltl_prop_equiv_quotient *
+         (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+        (string set *
+          (string ltl_prop_equiv_quotient *
+            (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
+        set *
+        ((string ltl_prop_equiv_quotient *
+           (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+          (((string ltl_prop_equiv_quotient *
+              (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+             (string set *
+               (string ltl_prop_equiv_quotient *
+                 (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
+             set *
+            ((string ltl_prop_equiv_quotient *
+               (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+              (string set *
+                (string ltl_prop_equiv_quotient *
+                  (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
+              set
+              set)
+            set)
+  val ltlc_to_rabin_UU :
     string ltlc ->
       ((string ltl_prop_equiv_quotient *
          (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
@@ -231,12 +257,6 @@ val ord_integer =
     less = (fn a => fn b => IntInf.< (a, b))}
   : IntInf.int ord;
 
-datatype 'a bool_expr = Const_bool_expr of bool | Atom_bool_expr of 'a |
-  Neg_bool_expr of 'a bool_expr | And_bool_expr of 'a bool_expr * 'a bool_expr |
-  Or_bool_expr of 'a bool_expr * 'a bool_expr |
-  Imp_bool_expr of 'a bool_expr * 'a bool_expr |
-  Iff_bool_expr of 'a bool_expr * 'a bool_expr;
-
 datatype 'a ifex = Trueif | Falseif | IF of 'a * 'a ifex * 'a ifex;
 
 fun equal_ifex A_ Falseif (IF (x31, x32, x33)) = false
@@ -252,61 +272,51 @@ fun equal_ifex A_ Falseif (IF (x31, x32, x33)) = false
 
 fun mkIF A_ x t1 t2 = (if equal_ifex A_ t1 t2 then t1 else IF (x, t1, t2));
 
-fun reduce A_ env (IF (x, t1, t2)) =
-  (case map_of A_ env x
+fun reduce_alist A_ xs (IF (x, t1, t2)) =
+  (case map_of A_ xs x
     of NONE =>
-      mkIF A_ x (reduce A_ ((x, true) :: env) t1)
-        (reduce A_ ((x, false) :: env) t2)
-    | SOME b => reduce A_ env (if b then t1 else t2))
-  | reduce A_ uu Trueif = Trueif
-  | reduce A_ uu Falseif = Falseif;
+      mkIF A_ x (reduce_alist A_ ((x, true) :: xs) t1)
+        (reduce_alist A_ ((x, false) :: xs) t2)
+    | SOME b => reduce_alist A_ xs (if b then t1 else t2))
+  | reduce_alist A_ uu Trueif = Trueif
+  | reduce_alist A_ uu Falseif = Falseif;
 
-fun normif A_ env Trueif t1 t2 = reduce A_ env t1
-  | normif A_ env Falseif t1 t2 = reduce A_ env t2
-  | normif A_ env (IF (x, t1, t2)) t3 t4 =
-    (case map_of A_ env x
+fun normif_alist A_ xs Trueif t1 t2 = reduce_alist A_ xs t1
+  | normif_alist A_ xs Falseif t1 t2 = reduce_alist A_ xs t2
+  | normif_alist A_ xs (IF (x, t1, t2)) t3 t4 =
+    (case map_of A_ xs x
       of NONE =>
-        mkIF A_ x (normif A_ ((x, true) :: env) t1 t3 t4)
-          (normif A_ ((x, false) :: env) t2 t3 t4)
-      | SOME true => normif A_ env t1 t3 t4
-      | SOME false => normif A_ env t2 t3 t4);
+        mkIF A_ x (normif_alist A_ ((x, true) :: xs) t1 t3 t4)
+          (normif_alist A_ ((x, false) :: xs) t2 t3 t4)
+      | SOME true => normif_alist A_ xs t1 t3 t4
+      | SOME false => normif_alist A_ xs t2 t3 t4);
 
-fun ifex_of A_ (Const_bool_expr b) = (if b then Trueif else Falseif)
-  | ifex_of A_ (Atom_bool_expr x) = IF (x, Trueif, Falseif)
-  | ifex_of A_ (Neg_bool_expr b) = normif A_ [] (ifex_of A_ b) Falseif Trueif
-  | ifex_of A_ (And_bool_expr (b1, b2)) =
-    normif A_ [] (ifex_of A_ b1) (ifex_of A_ b2) Falseif
-  | ifex_of A_ (Or_bool_expr (b1, b2)) =
-    normif A_ [] (ifex_of A_ b1) Trueif (ifex_of A_ b2)
-  | ifex_of A_ (Imp_bool_expr (b1, b2)) =
-    normif A_ [] (ifex_of A_ b1) (ifex_of A_ b2) Trueif
-  | ifex_of A_ (Iff_bool_expr (b1, b2)) =
-    let
-      val t1 = ifex_of A_ b1;
-      val t2 = ifex_of A_ b2;
-    in
-      normif A_ [] t1 t2 (normif A_ [] t2 Falseif Trueif)
-    end;
+fun equiv_test B_ ifex_of b1 b2 =
+  let
+    val t1 = ifex_of b1;
+    val t2 = ifex_of b2;
+  in
+    equal_ifex B_ Trueif
+      (normif_alist B_ [] t1 t2 (normif_alist B_ [] t2 Falseif Trueif))
+  end;
 
-fun taut_test A_ b = equal_ifex A_ (ifex_of A_ b) Trueif;
-
-fun equiv_test A_ b1 b2 = taut_test A_ (Iff_bool_expr (b1, b2));
-
-fun bool_expr_of_ltl LTLTrue = Const_bool_expr true
-  | bool_expr_of_ltl LTLFalse = Const_bool_expr false
-  | bool_expr_of_ltl (LTLAnd (phi, psi)) =
-    And_bool_expr (bool_expr_of_ltl phi, bool_expr_of_ltl psi)
-  | bool_expr_of_ltl (LTLOr (phi, psi)) =
-    Or_bool_expr (bool_expr_of_ltl phi, bool_expr_of_ltl psi)
-  | bool_expr_of_ltl (LTLProp v) = Atom_bool_expr (LTLProp v)
-  | bool_expr_of_ltl (LTLPropNeg v) = Atom_bool_expr (LTLPropNeg v)
-  | bool_expr_of_ltl (LTLNext v) = Atom_bool_expr (LTLNext v)
-  | bool_expr_of_ltl (LTLGlobal v) = Atom_bool_expr (LTLGlobal v)
-  | bool_expr_of_ltl (LTLFinal v) = Atom_bool_expr (LTLFinal v)
-  | bool_expr_of_ltl (LTLUntil (v, va)) = Atom_bool_expr (LTLUntil (v, va));
+fun ifex_of_ltl A_ LTLTrue = Trueif
+  | ifex_of_ltl A_ LTLFalse = Falseif
+  | ifex_of_ltl A_ (LTLAnd (phi, psi)) =
+    normif_alist (equal_ltl A_) [] (ifex_of_ltl A_ phi) (ifex_of_ltl A_ psi)
+      Falseif
+  | ifex_of_ltl A_ (LTLOr (phi, psi)) =
+    normif_alist (equal_ltl A_) [] (ifex_of_ltl A_ phi) Trueif
+      (ifex_of_ltl A_ psi)
+  | ifex_of_ltl A_ (LTLProp v) = IF (LTLProp v, Trueif, Falseif)
+  | ifex_of_ltl A_ (LTLPropNeg v) = IF (LTLPropNeg v, Trueif, Falseif)
+  | ifex_of_ltl A_ (LTLNext v) = IF (LTLNext v, Trueif, Falseif)
+  | ifex_of_ltl A_ (LTLGlobal v) = IF (LTLGlobal v, Trueif, Falseif)
+  | ifex_of_ltl A_ (LTLFinal v) = IF (LTLFinal v, Trueif, Falseif)
+  | ifex_of_ltl A_ (LTLUntil (v, va)) = IF (LTLUntil (v, va), Trueif, Falseif);
 
 fun ltl_prop_equiv A_ phi psi =
-  equiv_test (equal_ltl A_) (bool_expr_of_ltl phi) (bool_expr_of_ltl psi);
+  equiv_test (equal_ltl A_) (ifex_of_ltl A_) phi psi;
 
 datatype 'a ltl_prop_equiv_quotient = Abs of 'a ltl;
 
@@ -326,6 +336,20 @@ datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc |
   LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
   LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
   LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc;
+
+fun id x = (fn xa => xa) x;
+
+fun unf (LTLFinal phi) = LTLOr (LTLFinal phi, unf phi)
+  | unf (LTLGlobal phi) = LTLAnd (LTLGlobal phi, unf phi)
+  | unf (LTLUntil (phi, psi)) =
+    LTLOr (LTLAnd (LTLUntil (phi, psi), unf phi), unf psi)
+  | unf (LTLAnd (phi, psi)) = LTLAnd (unf phi, unf psi)
+  | unf (LTLOr (phi, psi)) = LTLOr (unf phi, unf psi)
+  | unf LTLTrue = LTLTrue
+  | unf LTLFalse = LTLFalse
+  | unf (LTLProp v) = LTLProp v
+  | unf (LTLPropNeg v) = LTLPropNeg v
+  | unf (LTLNext v) = LTLNext v;
 
 fun plus_nat m n = Nat (IntInf.+ (integer_of_nat m, integer_of_nat n));
 
@@ -394,160 +418,6 @@ fun gen_dfs succs ins memb s (x :: xs) =
 fun and_absa (Abs xa) (Abs x) = Abs (LTLAnd (xa, x));
 
 fun and_abs xs = foldl and_absa (Abs LTLTrue) xs;
-
-fun update A_ k v [] = [(k, v)]
-  | update A_ k v (p :: ps) =
-    (if eq A_ (fst p) k then (k, v) :: ps else p :: update A_ k v ps);
-
-fun theG (LTLGlobal x8) = x8;
-
-fun remdups A_ [] = []
-  | remdups A_ (x :: xs) =
-    (if membera A_ xs x then remdups A_ xs else x :: remdups A_ xs);
-
-fun keys (Mapping xs) = Set (map fst xs);
-
-fun af_letter A_ LTLTrue nu = LTLTrue
-  | af_letter A_ LTLFalse nu = LTLFalse
-  | af_letter A_ (LTLProp a) nu = (if member A_ a nu then LTLTrue else LTLFalse)
-  | af_letter A_ (LTLPropNeg a) nu =
-    (if not (member A_ a nu) then LTLTrue else LTLFalse)
-  | af_letter A_ (LTLAnd (phi, psi)) nu =
-    LTLAnd (af_letter A_ phi nu, af_letter A_ psi nu)
-  | af_letter A_ (LTLOr (phi, psi)) nu =
-    LTLOr (af_letter A_ phi nu, af_letter A_ psi nu)
-  | af_letter A_ (LTLNext phi) nu = phi
-  | af_letter A_ (LTLGlobal phi) nu =
-    LTLAnd (LTLGlobal phi, af_letter A_ phi nu)
-  | af_letter A_ (LTLFinal phi) nu = LTLOr (LTLFinal phi, af_letter A_ phi nu)
-  | af_letter A_ (LTLUntil (phi, psi)) nu =
-    LTLOr (LTLAnd (LTLUntil (phi, psi), af_letter A_ phi nu),
-            af_letter A_ psi nu);
-
-fun map_ran f = map (fn (k, v) => (k, f k v));
-
-val bot_set : 'a set = Set [];
-
-fun q_L B_ sigma delta q_0 =
-  (if not (null sigma)
-    then gen_dfs (fn q => map (delta q) sigma) (insert B_) (member B_) bot_set
-           [q_0]
-    else bot_set);
-
-fun sublists [] = [[]]
-  | sublists (x :: xs) =
-    let
-      val xss = sublists xs;
-    in
-      map (fn a => x :: a) xss @ xss
-    end;
-
-val empty : ('a, 'b) mapping = Mapping [];
-
-fun lookup A_ (Mapping xs) = map_of A_ xs;
-
-fun updatea A_ k v (Mapping xs) = Mapping (update A_ k v xs);
-
-fun af_G_letter A_ LTLTrue nu = LTLTrue
-  | af_G_letter A_ LTLFalse nu = LTLFalse
-  | af_G_letter A_ (LTLProp a) nu =
-    (if member A_ a nu then LTLTrue else LTLFalse)
-  | af_G_letter A_ (LTLPropNeg a) nu =
-    (if not (member A_ a nu) then LTLTrue else LTLFalse)
-  | af_G_letter A_ (LTLAnd (phi, psi)) nu =
-    LTLAnd (af_G_letter A_ phi nu, af_G_letter A_ psi nu)
-  | af_G_letter A_ (LTLOr (phi, psi)) nu =
-    LTLOr (af_G_letter A_ phi nu, af_G_letter A_ psi nu)
-  | af_G_letter A_ (LTLNext phi) nu = phi
-  | af_G_letter A_ (LTLGlobal phi) nu = LTLGlobal phi
-  | af_G_letter A_ (LTLFinal phi) nu =
-    LTLOr (LTLFinal phi, af_G_letter A_ phi nu)
-  | af_G_letter A_ (LTLUntil (phi, psi)) nu =
-    LTLOr (LTLAnd (LTLUntil (phi, psi), af_G_letter A_ phi nu),
-            af_G_letter A_ psi nu);
-
-fun product_abs f (Mapping xs) c =
-  Mapping (map_ran (fn a => fn b => f a b c) xs);
-
-fun gen_length n (x :: xs) = gen_length (suc n) xs
-  | gen_length n [] = n;
-
-fun size_list x = gen_length zero_nat x;
-
-fun card A_ (Set xs) = size_list (remdups A_ xs);
-
-fun g_list A_ (LTLAnd (phi, psi)) =
-  union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
-  | g_list A_ (LTLOr (phi, psi)) =
-    union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
-  | g_list A_ (LTLFinal phi) = g_list A_ phi
-  | g_list A_ (LTLGlobal phi) =
-    inserta (equal_ltl A_) (LTLGlobal phi) (g_list A_ phi)
-  | g_list A_ (LTLNext phi) = g_list A_ phi
-  | g_list A_ (LTLUntil (phi, psi)) =
-    union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
-  | g_list A_ LTLTrue = []
-  | g_list A_ LTLFalse = []
-  | g_list A_ (LTLProp v) = []
-  | g_list A_ (LTLPropNeg v) = [];
-
-fun eval_G A_ s (LTLAnd (phi, psi)) = LTLAnd (eval_G A_ s phi, eval_G A_ s psi)
-  | eval_G A_ s (LTLOr (phi, psi)) = LTLOr (eval_G A_ s phi, eval_G A_ s psi)
-  | eval_G A_ s (LTLGlobal phi) =
-    (if member (equal_ltl A_) (LTLGlobal phi) s then LTLTrue else LTLFalse)
-  | eval_G A_ s LTLTrue = LTLTrue
-  | eval_G A_ s LTLFalse = LTLFalse
-  | eval_G A_ s (LTLProp v) = LTLProp v
-  | eval_G A_ s (LTLPropNeg v) = LTLPropNeg v
-  | eval_G A_ s (LTLNext v) = LTLNext v
-  | eval_G A_ s (LTLFinal v) = LTLFinal v
-  | eval_G A_ s (LTLUntil (v, va)) = LTLUntil (v, va);
-
-fun tabulate ks f = Mapping (map (fn k => (k, f k)) ks);
-
-fun sup_set A_ (Coset xs) a = Coset (filtera (fn x => not (member A_ x a)) xs)
-  | sup_set A_ (Set xs) a = fold (insert A_) xs a;
-
-fun remdups_fwd_acc A_ acc [] = []
-  | remdups_fwd_acc A_ acc (x :: xs) =
-    (if member A_ x acc then [] else [x]) @
-      remdups_fwd_acc A_ (sup_set A_ acc (insert A_ x bot_set)) xs;
-
-fun remdups_fwd A_ xs = remdups_fwd_acc A_ bot_set xs;
-
-fun the (SOME x2) = x2;
-
-fun simple_product delta_1 delta_2 =
-  (fn (q_1, q_2) => fn nu => (delta_1 q_1 nu, delta_2 q_2 nu));
-
-fun vars_list A_ (LTLAnd (phi, psi)) =
-  union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLOr (phi, psi)) =
-    union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLFinal phi) = vars_list A_ phi
-  | vars_list A_ (LTLGlobal phi) = vars_list A_ phi
-  | vars_list A_ (LTLNext phi) = vars_list A_ phi
-  | vars_list A_ (LTLUntil (phi, psi)) =
-    union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLProp a) = [a]
-  | vars_list A_ (LTLPropNeg a) = [a]
-  | vars_list A_ LTLTrue = []
-  | vars_list A_ LTLFalse = [];
-
-fun delta_L A_ B_ sigma delta q_0 =
-  let
-    val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
-    val succ = (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
-  in
-    gen_dfs succ (insert (equal_prod B_ (equal_prod A_ B_)))
-      (member (equal_prod B_ (equal_prod A_ B_))) bot_set start
-  end;
-
-fun eval_G_abs A_ xa (Abs x) = Abs (eval_G A_ xa x);
-
-fun ltl_prop_implies A_ phi psi =
-  taut_test (equal_ltl A_)
-    (Imp_bool_expr (bool_expr_of_ltl phi, bool_expr_of_ltl psi));
 
 fun remove_constants_P (LTLAnd (phi, psi)) =
   (case remove_constants_P phi of LTLTrue => remove_constants_P psi
@@ -756,11 +626,1166 @@ fun remove_constants_P (LTLAnd (phi, psi)) =
   | remove_constants_P (LTLFinal v) = LTLFinal v
   | remove_constants_P (LTLUntil (v, va)) = LTLUntil (v, va);
 
-fun af_G_letter_abs A_ (Abs phi) nu =
-  Abs (remove_constants_P (af_G_letter A_ phi nu));
+fun in_and A_ x (LTLAnd (y, z)) = in_and A_ x y orelse in_and A_ x z
+  | in_and A_ x LTLTrue = equal_ltla A_ x LTLTrue
+  | in_and A_ x LTLFalse = equal_ltla A_ x LTLFalse
+  | in_and A_ x (LTLProp v) = equal_ltla A_ x (LTLProp v)
+  | in_and A_ x (LTLPropNeg v) = equal_ltla A_ x (LTLPropNeg v)
+  | in_and A_ x (LTLOr (v, va)) = equal_ltla A_ x (LTLOr (v, va))
+  | in_and A_ x (LTLNext v) = equal_ltla A_ x (LTLNext v)
+  | in_and A_ x (LTLGlobal v) = equal_ltla A_ x (LTLGlobal v)
+  | in_and A_ x (LTLFinal v) = equal_ltla A_ x (LTLFinal v)
+  | in_and A_ x (LTLUntil (v, va)) = equal_ltla A_ x (LTLUntil (v, va));
+
+fun mk_and B_ f x y =
+  (case f x of LTLTrue => f y | LTLFalse => LTLFalse
+    | LTLProp a =>
+      (case f y of LTLTrue => LTLProp a | LTLFalse => LTLFalse
+        | LTLProp aa =>
+          (if in_and B_ (LTLProp a) (LTLProp aa) then LTLProp aa
+            else (if in_and B_ (LTLProp aa) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLProp aa)))
+        | LTLPropNeg aa =>
+          (if in_and B_ (LTLProp a) (LTLPropNeg aa) then LTLPropNeg aa
+            else (if in_and B_ (LTLPropNeg aa) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLPropNeg aa)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_and B_ (LTLProp a) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_and B_ (LTLProp a) (LTLOr (ltl1, ltl2)) then LTLOr (ltl1, ltl2)
+            else (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLOr (ltl1, ltl2))))
+        | LTLNext ltl =>
+          (if in_and B_ (LTLProp a) (LTLNext ltl) then LTLNext ltl
+            else (if in_and B_ (LTLNext ltl) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_and B_ (LTLProp a) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_and B_ (LTLGlobal ltl) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_and B_ (LTLProp a) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_and B_ (LTLFinal ltl) (LTLProp a) then LTLProp a
+                   else LTLAnd (LTLProp a, LTLFinal ltl)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_and B_ (LTLProp a) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLProp a)
+                   then LTLProp a
+                   else LTLAnd (LTLProp a, LTLUntil (ltl1, ltl2)))))
+    | LTLPropNeg a =>
+      (case f y of LTLTrue => LTLPropNeg a | LTLFalse => LTLFalse
+        | LTLProp aa =>
+          (if in_and B_ (LTLPropNeg a) (LTLProp aa) then LTLProp aa
+            else (if in_and B_ (LTLProp aa) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLProp aa)))
+        | LTLPropNeg aa =>
+          (if in_and B_ (LTLPropNeg a) (LTLPropNeg aa) then LTLPropNeg aa
+            else (if in_and B_ (LTLPropNeg aa) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLPropNeg aa)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_and B_ (LTLPropNeg a) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_and B_ (LTLPropNeg a) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLOr (ltl1, ltl2))))
+        | LTLNext ltl =>
+          (if in_and B_ (LTLPropNeg a) (LTLNext ltl) then LTLNext ltl
+            else (if in_and B_ (LTLNext ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_and B_ (LTLPropNeg a) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_and B_ (LTLGlobal ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_and B_ (LTLPropNeg a) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_and B_ (LTLFinal ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLFinal ltl)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_and B_ (LTLPropNeg a) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLAnd (LTLPropNeg a, LTLUntil (ltl1, ltl2)))))
+    | LTLAnd (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLAnd (ltl1, ltl2) | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_and B_ (LTLAnd (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_and B_ (LTLOr (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_and B_ (LTLNext ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_and B_ (LTLGlobal ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_and B_ (LTLFinal ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_and B_ (LTLUntil (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLAnd (LTLAnd (ltl1, ltl2), LTLUntil (ltl1a, ltl2a)))))
+    | LTLOr (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLOr (ltl1, ltl2) | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_and B_ (LTLAnd (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_and B_ (LTLOr (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_and B_ (LTLNext ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_and B_ (LTLGlobal ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_and B_ (LTLFinal ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_and B_ (LTLUntil (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLAnd (LTLOr (ltl1, ltl2), LTLUntil (ltl1a, ltl2a)))))
+    | LTLNext ltl =>
+      (case f y of LTLTrue => LTLNext ltl | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLNext ltl) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLNext ltl) then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLNext ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLNext ltl) then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_and B_ (LTLNext ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_and B_ (LTLNext ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_and B_ (LTLNext ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_and B_ (LTLNext ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_and B_ (LTLNext ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_and B_ (LTLGlobal ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_and B_ (LTLNext ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_and B_ (LTLFinal ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_and B_ (LTLNext ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLAnd (LTLNext ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLGlobal ltl =>
+      (case f y of LTLTrue => LTLGlobal ltl | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLGlobal ltl) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLGlobal ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_and B_ (LTLGlobal ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_and B_ (LTLGlobal ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_and B_ (LTLGlobal ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_and B_ (LTLNext ltla) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_and B_ (LTLGlobal ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_and B_ (LTLGlobal ltla) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_and B_ (LTLGlobal ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_and B_ (LTLFinal ltla) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_and B_ (LTLGlobal ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLAnd (LTLGlobal ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLFinal ltl =>
+      (case f y of LTLTrue => LTLFinal ltl | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLFinal ltl) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLFinal ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_and B_ (LTLFinal ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_and B_ (LTLAnd (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_and B_ (LTLFinal ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_and B_ (LTLOr (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_and B_ (LTLFinal ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_and B_ (LTLNext ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_and B_ (LTLFinal ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_and B_ (LTLGlobal ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_and B_ (LTLFinal ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_and B_ (LTLFinal ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_and B_ (LTLFinal ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLAnd (LTLFinal ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLUntil (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLUntil (ltl1, ltl2) | LTLFalse => LTLFalse
+        | LTLProp a =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_and B_ (LTLProp a) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_and B_ (LTLPropNeg a) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_and B_ (LTLAnd (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_and B_ (LTLOr (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_and B_ (LTLNext ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLGlobal ltl)
+            then LTLGlobal ltl
+            else (if in_and B_ (LTLGlobal ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_and B_ (LTLFinal ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd (LTLUntil (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_and B_ (LTLUntil (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_and B_ (LTLUntil (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLAnd
+                          (LTLUntil (ltl1, ltl2), LTLUntil (ltl1a, ltl2a))))));
+
+fun in_or A_ x (LTLOr (y, z)) = in_or A_ x y orelse in_or A_ x z
+  | in_or A_ x LTLTrue = equal_ltla A_ x LTLTrue
+  | in_or A_ x LTLFalse = equal_ltla A_ x LTLFalse
+  | in_or A_ x (LTLProp v) = equal_ltla A_ x (LTLProp v)
+  | in_or A_ x (LTLPropNeg v) = equal_ltla A_ x (LTLPropNeg v)
+  | in_or A_ x (LTLAnd (v, va)) = equal_ltla A_ x (LTLAnd (v, va))
+  | in_or A_ x (LTLNext v) = equal_ltla A_ x (LTLNext v)
+  | in_or A_ x (LTLGlobal v) = equal_ltla A_ x (LTLGlobal v)
+  | in_or A_ x (LTLFinal v) = equal_ltla A_ x (LTLFinal v)
+  | in_or A_ x (LTLUntil (v, va)) = equal_ltla A_ x (LTLUntil (v, va));
+
+fun mk_or B_ f x y =
+  (case f x of LTLTrue => LTLTrue | LTLFalse => f y
+    | LTLProp a =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLProp a
+        | LTLProp aa =>
+          (if in_or B_ (LTLProp a) (LTLProp aa) then LTLProp aa
+            else (if in_or B_ (LTLProp aa) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLProp aa)))
+        | LTLPropNeg aa =>
+          (if in_or B_ (LTLProp a) (LTLPropNeg aa) then LTLPropNeg aa
+            else (if in_or B_ (LTLPropNeg aa) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLPropNeg aa)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_or B_ (LTLProp a) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_or B_ (LTLProp a) (LTLOr (ltl1, ltl2)) then LTLOr (ltl1, ltl2)
+            else (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLOr (ltl1, ltl2))))
+        | LTLNext ltl =>
+          (if in_or B_ (LTLProp a) (LTLNext ltl) then LTLNext ltl
+            else (if in_or B_ (LTLNext ltl) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_or B_ (LTLProp a) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_or B_ (LTLGlobal ltl) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_or B_ (LTLProp a) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_or B_ (LTLFinal ltl) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLFinal ltl)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_or B_ (LTLProp a) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLProp a) then LTLProp a
+                   else LTLOr (LTLProp a, LTLUntil (ltl1, ltl2)))))
+    | LTLPropNeg a =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLPropNeg a
+        | LTLProp aa =>
+          (if in_or B_ (LTLPropNeg a) (LTLProp aa) then LTLProp aa
+            else (if in_or B_ (LTLProp aa) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLProp aa)))
+        | LTLPropNeg aa =>
+          (if in_or B_ (LTLPropNeg a) (LTLPropNeg aa) then LTLPropNeg aa
+            else (if in_or B_ (LTLPropNeg aa) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLPropNeg aa)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_or B_ (LTLPropNeg a) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_or B_ (LTLPropNeg a) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLOr (ltl1, ltl2))))
+        | LTLNext ltl =>
+          (if in_or B_ (LTLPropNeg a) (LTLNext ltl) then LTLNext ltl
+            else (if in_or B_ (LTLNext ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_or B_ (LTLPropNeg a) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_or B_ (LTLGlobal ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_or B_ (LTLPropNeg a) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_or B_ (LTLFinal ltl) (LTLPropNeg a) then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLFinal ltl)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_or B_ (LTLPropNeg a) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLPropNeg a)
+                   then LTLPropNeg a
+                   else LTLOr (LTLPropNeg a, LTLUntil (ltl1, ltl2)))))
+    | LTLAnd (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLAnd (ltl1, ltl2)
+        | LTLProp a =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_or B_ (LTLAnd (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_or B_ (LTLOr (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_or B_ (LTLNext ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_or B_ (LTLGlobal ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_or B_ (LTLFinal ltl) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_or B_ (LTLUntil (ltl1a, ltl2a)) (LTLAnd (ltl1, ltl2))
+                   then LTLAnd (ltl1, ltl2)
+                   else LTLOr (LTLAnd (ltl1, ltl2), LTLUntil (ltl1a, ltl2a)))))
+    | LTLOr (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLOr (ltl1, ltl2)
+        | LTLProp a =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_or B_ (LTLAnd (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_or B_ (LTLOr (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_or B_ (LTLNext ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLGlobal ltl) then LTLGlobal ltl
+            else (if in_or B_ (LTLGlobal ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_or B_ (LTLFinal ltl) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_or B_ (LTLUntil (ltl1a, ltl2a)) (LTLOr (ltl1, ltl2))
+                   then LTLOr (ltl1, ltl2)
+                   else LTLOr (LTLOr (ltl1, ltl2), LTLUntil (ltl1a, ltl2a)))))
+    | LTLNext ltl =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLNext ltl
+        | LTLProp a =>
+          (if in_or B_ (LTLNext ltl) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLNext ltl) then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLNext ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLNext ltl) then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_or B_ (LTLNext ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_or B_ (LTLNext ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_or B_ (LTLNext ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_or B_ (LTLNext ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_or B_ (LTLNext ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_or B_ (LTLGlobal ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_or B_ (LTLNext ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_or B_ (LTLFinal ltla) (LTLNext ltl) then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_or B_ (LTLNext ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLNext ltl)
+                   then LTLNext ltl
+                   else LTLOr (LTLNext ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLGlobal ltl =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLGlobal ltl
+        | LTLProp a =>
+          (if in_or B_ (LTLGlobal ltl) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLGlobal ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_or B_ (LTLGlobal ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_or B_ (LTLGlobal ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_or B_ (LTLGlobal ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_or B_ (LTLNext ltla) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_or B_ (LTLGlobal ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_or B_ (LTLGlobal ltla) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_or B_ (LTLGlobal ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_or B_ (LTLFinal ltla) (LTLGlobal ltl) then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_or B_ (LTLGlobal ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLGlobal ltl)
+                   then LTLGlobal ltl
+                   else LTLOr (LTLGlobal ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLFinal ltl =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLFinal ltl
+        | LTLProp a =>
+          (if in_or B_ (LTLFinal ltl) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLFinal ltl) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLPropNeg a)))
+        | LTLAnd (ltl1, ltl2) =>
+          (if in_or B_ (LTLFinal ltl) (LTLAnd (ltl1, ltl2))
+            then LTLAnd (ltl1, ltl2)
+            else (if in_or B_ (LTLAnd (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLAnd (ltl1, ltl2))))
+        | LTLOr (ltl1, ltl2) =>
+          (if in_or B_ (LTLFinal ltl) (LTLOr (ltl1, ltl2))
+            then LTLOr (ltl1, ltl2)
+            else (if in_or B_ (LTLOr (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLOr (ltl1, ltl2))))
+        | LTLNext ltla =>
+          (if in_or B_ (LTLFinal ltl) (LTLNext ltla) then LTLNext ltla
+            else (if in_or B_ (LTLNext ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLNext ltla)))
+        | LTLGlobal ltla =>
+          (if in_or B_ (LTLFinal ltl) (LTLGlobal ltla) then LTLGlobal ltla
+            else (if in_or B_ (LTLGlobal ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLGlobal ltla)))
+        | LTLFinal ltla =>
+          (if in_or B_ (LTLFinal ltl) (LTLFinal ltla) then LTLFinal ltla
+            else (if in_or B_ (LTLFinal ltla) (LTLFinal ltl) then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLFinal ltla)))
+        | LTLUntil (ltl1, ltl2) =>
+          (if in_or B_ (LTLFinal ltl) (LTLUntil (ltl1, ltl2))
+            then LTLUntil (ltl1, ltl2)
+            else (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLFinal ltl)
+                   then LTLFinal ltl
+                   else LTLOr (LTLFinal ltl, LTLUntil (ltl1, ltl2)))))
+    | LTLUntil (ltl1, ltl2) =>
+      (case f y of LTLTrue => LTLTrue | LTLFalse => LTLUntil (ltl1, ltl2)
+        | LTLProp a =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLProp a) then LTLProp a
+            else (if in_or B_ (LTLProp a) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLProp a)))
+        | LTLPropNeg a =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLPropNeg a) then LTLPropNeg a
+            else (if in_or B_ (LTLPropNeg a) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLPropNeg a)))
+        | LTLAnd (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLAnd (ltl1a, ltl2a))
+            then LTLAnd (ltl1a, ltl2a)
+            else (if in_or B_ (LTLAnd (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLAnd (ltl1a, ltl2a))))
+        | LTLOr (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLOr (ltl1a, ltl2a))
+            then LTLOr (ltl1a, ltl2a)
+            else (if in_or B_ (LTLOr (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLOr (ltl1a, ltl2a))))
+        | LTLNext ltl =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLNext ltl) then LTLNext ltl
+            else (if in_or B_ (LTLNext ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLNext ltl)))
+        | LTLGlobal ltl =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLGlobal ltl)
+            then LTLGlobal ltl
+            else (if in_or B_ (LTLGlobal ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLGlobal ltl)))
+        | LTLFinal ltl =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLFinal ltl) then LTLFinal ltl
+            else (if in_or B_ (LTLFinal ltl) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2), LTLFinal ltl)))
+        | LTLUntil (ltl1a, ltl2a) =>
+          (if in_or B_ (LTLUntil (ltl1, ltl2)) (LTLUntil (ltl1a, ltl2a))
+            then LTLUntil (ltl1a, ltl2a)
+            else (if in_or B_ (LTLUntil (ltl1a, ltl2a)) (LTLUntil (ltl1, ltl2))
+                   then LTLUntil (ltl1, ltl2)
+                   else LTLOr (LTLUntil (ltl1, ltl2),
+                                LTLUntil (ltl1a, ltl2a))))));
+
+fun step_simp A_ (LTLProp a) nu = (if member A_ a nu then LTLTrue else LTLFalse)
+  | step_simp A_ (LTLPropNeg a) nu =
+    (if not (member A_ a nu) then LTLTrue else LTLFalse)
+  | step_simp A_ (LTLAnd (phi, psi)) nu =
+    mk_and A_ id (step_simp A_ phi nu) (step_simp A_ psi nu)
+  | step_simp A_ (LTLOr (phi, psi)) nu =
+    mk_or A_ id (step_simp A_ phi nu) (step_simp A_ psi nu)
+  | step_simp A_ (LTLNext phi) nu = remove_constants_P phi
+  | step_simp A_ LTLTrue nu = LTLTrue
+  | step_simp A_ LTLFalse nu = LTLFalse
+  | step_simp A_ (LTLGlobal v) nu = LTLGlobal v
+  | step_simp A_ (LTLFinal v) nu = LTLFinal v
+  | step_simp A_ (LTLUntil (v, va)) nu = LTLUntil (v, va);
+
+fun step_abs A_ (Abs phi) nu = Abs (step_simp A_ phi nu);
+
+fun update A_ k v [] = [(k, v)]
+  | update A_ k v (p :: ps) =
+    (if eq A_ (fst p) k then (k, v) :: ps else p :: update A_ k v ps);
+
+fun theG (LTLGlobal x8) = x8;
+
+fun remdups A_ [] = []
+  | remdups A_ (x :: xs) =
+    (if membera A_ xs x then remdups A_ xs else x :: remdups A_ xs);
+
+fun keys (Mapping xs) = Set (map fst xs);
+
+fun map_ran f = map (fn (k, v) => (k, f k v));
+
+val bot_set : 'a set = Set [];
+
+fun q_L B_ sigma delta q_0 =
+  (if not (null sigma)
+    then gen_dfs (fn q => map (delta q) sigma) (insert B_) (member B_) bot_set
+           [q_0]
+    else bot_set);
+
+fun sublists [] = [[]]
+  | sublists (x :: xs) =
+    let
+      val xss = sublists xs;
+    in
+      map (fn a => x :: a) xss @ xss
+    end;
+
+fun lookup A_ (Mapping xs) = map_of A_ xs;
+
+fun updatea A_ k v (Mapping xs) = Mapping (update A_ k v xs);
+
+fun unf_G (LTLFinal phi) = LTLOr (LTLFinal phi, unf_G phi)
+  | unf_G (LTLGlobal phi) = LTLGlobal phi
+  | unf_G (LTLUntil (phi, psi)) =
+    LTLOr (LTLAnd (LTLUntil (phi, psi), unf_G phi), unf_G psi)
+  | unf_G (LTLAnd (phi, psi)) = LTLAnd (unf_G phi, unf_G psi)
+  | unf_G (LTLOr (phi, psi)) = LTLOr (unf_G phi, unf_G psi)
+  | unf_G LTLTrue = LTLTrue
+  | unf_G LTLFalse = LTLFalse
+  | unf_G (LTLProp v) = LTLProp v
+  | unf_G (LTLPropNeg v) = LTLPropNeg v
+  | unf_G (LTLNext v) = LTLNext v;
+
+fun product_abs f (Mapping xs) c =
+  Mapping (map_ran (fn a => fn b => f a b c) xs);
+
+fun gen_length n (x :: xs) = gen_length (suc n) xs
+  | gen_length n [] = n;
+
+fun size_list x = gen_length zero_nat x;
+
+fun card A_ (Set xs) = size_list (remdups A_ xs);
+
+fun g_list A_ (LTLAnd (phi, psi)) =
+  union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
+  | g_list A_ (LTLOr (phi, psi)) =
+    union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
+  | g_list A_ (LTLFinal phi) = g_list A_ phi
+  | g_list A_ (LTLGlobal phi) =
+    inserta (equal_ltl A_) (LTLGlobal phi) (g_list A_ phi)
+  | g_list A_ (LTLNext phi) = g_list A_ phi
+  | g_list A_ (LTLUntil (phi, psi)) =
+    union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
+  | g_list A_ LTLTrue = []
+  | g_list A_ LTLFalse = []
+  | g_list A_ (LTLProp v) = []
+  | g_list A_ (LTLPropNeg v) = [];
+
+fun mk_ora x y =
+  (case y of LTLTrue => LTLTrue | LTLFalse => x | LTLProp _ => LTLOr (x, y)
+    | LTLPropNeg _ => LTLOr (x, y) | LTLAnd (_, _) => LTLOr (x, y)
+    | LTLOr (_, _) => LTLOr (x, y) | LTLNext _ => LTLOr (x, y)
+    | LTLGlobal _ => LTLOr (x, y) | LTLFinal _ => LTLOr (x, y)
+    | LTLUntil (_, _) => LTLOr (x, y));
+
+fun eval_G A_ s (LTLAnd (phi, psi)) = LTLAnd (eval_G A_ s phi, eval_G A_ s psi)
+  | eval_G A_ s (LTLOr (phi, psi)) = LTLOr (eval_G A_ s phi, eval_G A_ s psi)
+  | eval_G A_ s (LTLGlobal phi) =
+    (if member (equal_ltl A_) (LTLGlobal phi) s then LTLTrue else LTLFalse)
+  | eval_G A_ s LTLTrue = LTLTrue
+  | eval_G A_ s LTLFalse = LTLFalse
+  | eval_G A_ s (LTLProp v) = LTLProp v
+  | eval_G A_ s (LTLPropNeg v) = LTLPropNeg v
+  | eval_G A_ s (LTLNext v) = LTLNext v
+  | eval_G A_ s (LTLFinal v) = LTLFinal v
+  | eval_G A_ s (LTLUntil (v, va)) = LTLUntil (v, va);
+
+fun mk_anda x y =
+  (case y of LTLTrue => x | LTLFalse => LTLFalse | LTLProp _ => LTLAnd (x, y)
+    | LTLPropNeg _ => LTLAnd (x, y) | LTLAnd (_, _) => LTLAnd (x, y)
+    | LTLOr (_, _) => LTLAnd (x, y) | LTLNext _ => LTLAnd (x, y)
+    | LTLGlobal _ => LTLAnd (x, y) | LTLFinal _ => LTLAnd (x, y)
+    | LTLUntil (_, _) => LTLAnd (x, y));
+
+fun tabulate ks f = Mapping (map (fn k => (k, f k)) ks);
+
+fun af_letter_simp A_ LTLTrue nu = LTLTrue
+  | af_letter_simp A_ LTLFalse nu = LTLFalse
+  | af_letter_simp A_ (LTLProp a) nu =
+    (if member A_ a nu then LTLTrue else LTLFalse)
+  | af_letter_simp A_ (LTLPropNeg a) nu =
+    (if not (member A_ a nu) then LTLTrue else LTLFalse)
+  | af_letter_simp A_ (LTLAnd (phi, psi)) nu =
+    (case phi of LTLTrue => af_letter_simp A_ psi nu | LTLFalse => LTLFalse
+      | LTLProp a =>
+        (if member A_ a nu then af_letter_simp A_ psi nu else LTLFalse)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then af_letter_simp A_ psi nu else LTLFalse)
+      | LTLAnd (_, _) =>
+        mk_and A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_and A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_and A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLGlobal phia =>
+        let
+          val phiaa = af_letter_simp A_ phia nu;
+          val psia = af_letter_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_anda (LTLGlobal phia) phiaa
+            else mk_and A_ id (mk_anda (LTLGlobal phia) phiaa) psia)
+        end
+      | LTLFinal _ =>
+        mk_and A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLUntil (_, _) =>
+        mk_and A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu))
+  | af_letter_simp A_ (LTLOr (phi, psi)) nu =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => af_letter_simp A_ psi nu
+      | LTLProp a =>
+        (if member A_ a nu then LTLTrue else af_letter_simp A_ psi nu)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then LTLTrue else af_letter_simp A_ psi nu)
+      | LTLAnd (_, _) =>
+        mk_or A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_or A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_or A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_or A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu)
+      | LTLFinal phia =>
+        let
+          val phiaa = af_letter_simp A_ phia nu;
+          val psia = af_letter_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) =>
+        mk_or A_ id (af_letter_simp A_ phi nu) (af_letter_simp A_ psi nu))
+  | af_letter_simp A_ (LTLNext phi) nu = phi
+  | af_letter_simp A_ (LTLGlobal phi) nu =
+    mk_anda (LTLGlobal phi) (af_letter_simp A_ phi nu)
+  | af_letter_simp A_ (LTLFinal phi) nu =
+    mk_ora (LTLFinal phi) (af_letter_simp A_ phi nu)
+  | af_letter_simp A_ (LTLUntil (phi, psi)) nu =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (af_letter_simp A_ phi nu))
+      (af_letter_simp A_ psi nu);
+
+fun remove_and_or A_ (LTLOr (z, y)) =
+  (case z of LTLTrue => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLFalse => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLProp _ => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLPropNeg _ => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLTrue, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLFalse, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLProp _, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLPropNeg _, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLAnd (_, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLTrue, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLFalse, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLProp _, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLPropNeg _, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLAnd (za, xa), ya), x) =>
+      (if equal_ltla A_ x xa andalso equal_ltla A_ y ya
+        then LTLOr (LTLAnd (za, xa), ya)
+        else LTLOr (remove_and_or A_ z, remove_and_or A_ y))
+    | LTLAnd (LTLOr (LTLOr (_, _), _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLNext _, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLGlobal _, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLFinal _, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLOr (LTLUntil (_, _), _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLNext _, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLGlobal _, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLFinal _, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLAnd (LTLUntil (_, _), _) =>
+      LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLOr (_, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLNext _ => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLGlobal _ => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLFinal _ => LTLOr (remove_and_or A_ z, remove_and_or A_ y)
+    | LTLUntil (_, _) => LTLOr (remove_and_or A_ z, remove_and_or A_ y))
+  | remove_and_or A_ (LTLAnd (x, y)) =
+    LTLAnd (remove_and_or A_ x, remove_and_or A_ y)
+  | remove_and_or A_ LTLTrue = LTLTrue
+  | remove_and_or A_ LTLFalse = LTLFalse
+  | remove_and_or A_ (LTLProp v) = LTLProp v
+  | remove_and_or A_ (LTLPropNeg v) = LTLPropNeg v
+  | remove_and_or A_ (LTLNext v) = LTLNext v
+  | remove_and_or A_ (LTLGlobal v) = LTLGlobal v
+  | remove_and_or A_ (LTLFinal v) = LTLFinal v
+  | remove_and_or A_ (LTLUntil (v, va)) = LTLUntil (v, va);
 
 fun af_letter_abs A_ (Abs phi) nu =
-  Abs (remove_constants_P (af_letter A_ phi nu));
+  Abs (remove_and_or A_ (af_letter_simp A_ phi nu));
+
+fun unf_simp A_ (LTLAnd (phi, psi)) =
+  (case phi of LTLTrue => unf_simp A_ psi | LTLFalse => LTLFalse
+    | LTLProp _ => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLPropNeg _ => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLAnd (_, _) => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLOr (_, _) => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLNext _ => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLGlobal phia =>
+      let
+        val phiaa = unf_simp A_ phia;
+        val psia = unf_simp A_ psi;
+      in
+        (if equal_ltla A_ phiaa psia then mk_anda (LTLGlobal phia) phiaa
+          else mk_and A_ id (mk_anda (LTLGlobal phia) phiaa) psia)
+      end
+    | LTLFinal _ => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+    | LTLUntil (_, _) => mk_and A_ id (unf_simp A_ phi) (unf_simp A_ psi))
+  | unf_simp A_ (LTLOr (phi, psi)) =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => unf_simp A_ psi
+      | LTLProp _ => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLPropNeg _ => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLAnd (_, _) => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLOr (_, _) => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLNext _ => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLGlobal _ => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi)
+      | LTLFinal phia =>
+        let
+          val phiaa = unf_simp A_ phia;
+          val psia = unf_simp A_ psi;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) => mk_or A_ id (unf_simp A_ phi) (unf_simp A_ psi))
+  | unf_simp A_ (LTLGlobal phi) = mk_anda (LTLGlobal phi) (unf_simp A_ phi)
+  | unf_simp A_ (LTLFinal phi) = mk_ora (LTLFinal phi) (unf_simp A_ phi)
+  | unf_simp A_ (LTLUntil (phi, psi)) =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (unf_simp A_ phi)) (unf_simp A_ psi)
+  | unf_simp A_ LTLTrue = LTLTrue
+  | unf_simp A_ LTLFalse = LTLFalse
+  | unf_simp A_ (LTLProp v) = LTLProp v
+  | unf_simp A_ (LTLPropNeg v) = LTLPropNeg v
+  | unf_simp A_ (LTLNext v) = LTLNext v;
+
+fun remdups_fwd_acc A_ acc [] = []
+  | remdups_fwd_acc A_ acc (x :: xs) =
+    (if member A_ x acc then [] else [x]) @
+      remdups_fwd_acc A_ (insert A_ x acc) xs;
+
+fun remdups_fwd A_ xs = remdups_fwd_acc A_ bot_set xs;
+
+fun the (SOME x2) = x2;
+
+fun simple_product delta_1 delta_2 =
+  (fn (q_1, q_2) => fn nu => (delta_1 q_1 nu, delta_2 q_2 nu));
+
+fun vars_list A_ (LTLAnd (phi, psi)) =
+  union A_ (vars_list A_ phi) (vars_list A_ psi)
+  | vars_list A_ (LTLOr (phi, psi)) =
+    union A_ (vars_list A_ phi) (vars_list A_ psi)
+  | vars_list A_ (LTLFinal phi) = vars_list A_ phi
+  | vars_list A_ (LTLGlobal phi) = vars_list A_ phi
+  | vars_list A_ (LTLNext phi) = vars_list A_ phi
+  | vars_list A_ (LTLUntil (phi, psi)) =
+    union A_ (vars_list A_ phi) (vars_list A_ psi)
+  | vars_list A_ (LTLProp a) = [a]
+  | vars_list A_ (LTLPropNeg a) = [a]
+  | vars_list A_ LTLTrue = []
+  | vars_list A_ LTLFalse = [];
+
+fun af_G_letter_simp A_ LTLTrue nu = LTLTrue
+  | af_G_letter_simp A_ LTLFalse nu = LTLFalse
+  | af_G_letter_simp A_ (LTLProp a) nu =
+    (if member A_ a nu then LTLTrue else LTLFalse)
+  | af_G_letter_simp A_ (LTLPropNeg a) nu =
+    (if not (member A_ a nu) then LTLTrue else LTLFalse)
+  | af_G_letter_simp A_ (LTLAnd (phi, psi)) nu =
+    (case phi of LTLTrue => af_G_letter_simp A_ psi nu | LTLFalse => LTLFalse
+      | LTLProp a =>
+        (if member A_ a nu then af_G_letter_simp A_ psi nu else LTLFalse)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then af_G_letter_simp A_ psi nu else LTLFalse)
+      | LTLAnd (_, _) =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLFinal _ =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLUntil (_, _) =>
+        mk_and A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu))
+  | af_G_letter_simp A_ (LTLOr (phi, psi)) nu =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => af_G_letter_simp A_ psi nu
+      | LTLProp a =>
+        (if member A_ a nu then LTLTrue else af_G_letter_simp A_ psi nu)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then LTLTrue else af_G_letter_simp A_ psi nu)
+      | LTLAnd (_, _) =>
+        mk_or A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_or A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_or A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_or A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu)
+      | LTLFinal phia =>
+        let
+          val phiaa = af_G_letter_simp A_ phia nu;
+          val psia = af_G_letter_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) =>
+        mk_or A_ id (af_G_letter_simp A_ phi nu) (af_G_letter_simp A_ psi nu))
+  | af_G_letter_simp A_ (LTLNext phi) nu = phi
+  | af_G_letter_simp A_ (LTLGlobal phi) nu = LTLGlobal phi
+  | af_G_letter_simp A_ (LTLFinal phi) nu =
+    mk_ora (LTLFinal phi) (af_G_letter_simp A_ phi nu)
+  | af_G_letter_simp A_ (LTLUntil (phi, psi)) nu =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (af_G_letter_simp A_ phi nu))
+      (af_G_letter_simp A_ psi nu);
+
+fun af_G_letter_abs A_ (Abs phi) nu =
+  Abs (remove_and_or A_ (af_G_letter_simp A_ phi nu));
+
+fun delta_L A_ B_ sigma delta q_0 =
+  let
+    val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
+    val succ = (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
+  in
+    gen_dfs succ (insert (equal_prod B_ (equal_prod A_ B_)))
+      (member (equal_prod B_ (equal_prod A_ B_))) bot_set start
+  end;
+
+fun eval_G_abs A_ xa (Abs x) = Abs (eval_G A_ xa x);
+
+fun impl_test B_ ifex_of b1 b2 =
+  equal_ifex B_ (normif_alist B_ [] (ifex_of b1) (ifex_of b2) Trueif) Trueif;
+
+fun ltl_prop_implies A_ phi psi =
+  impl_test (equal_ltl A_) (ifex_of_ltl A_) phi psi;
+
+fun index_option A_ n [] y = NONE
+  | index_option A_ n (x :: xs) y =
+    (if eq A_ x y then SOME n else index_option A_ (suc n) xs y);
+
+fun rk A_ xs x = index_option A_ zero_nat xs x;
+
+fun af_letter_opt_simp A_ LTLTrue nu = LTLTrue
+  | af_letter_opt_simp A_ LTLFalse nu = LTLFalse
+  | af_letter_opt_simp A_ (LTLProp a) nu =
+    (if member A_ a nu then LTLTrue else LTLFalse)
+  | af_letter_opt_simp A_ (LTLPropNeg a) nu =
+    (if not (member A_ a nu) then LTLTrue else LTLFalse)
+  | af_letter_opt_simp A_ (LTLAnd (phi, psi)) nu =
+    (case phi of LTLTrue => af_letter_opt_simp A_ psi nu | LTLFalse => LTLFalse
+      | LTLProp a =>
+        (if member A_ a nu then af_letter_opt_simp A_ psi nu else LTLFalse)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then af_letter_opt_simp A_ psi nu
+          else LTLFalse)
+      | LTLAnd (_, _) =>
+        mk_and A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_and A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_and A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLGlobal phia =>
+        let
+          val phiaa = unf_simp A_ phia;
+          val psia = af_letter_opt_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_anda (LTLGlobal phia) phiaa
+            else mk_and A_ id (mk_anda (LTLGlobal phia) phiaa) psia)
+        end
+      | LTLFinal _ =>
+        mk_and A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLUntil (_, _) =>
+        mk_and A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu))
+  | af_letter_opt_simp A_ (LTLOr (phi, psi)) nu =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => af_letter_opt_simp A_ psi nu
+      | LTLProp a =>
+        (if member A_ a nu then LTLTrue else af_letter_opt_simp A_ psi nu)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then LTLTrue else af_letter_opt_simp A_ psi nu)
+      | LTLAnd (_, _) =>
+        mk_or A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_or A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_or A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_or A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu)
+      | LTLFinal phia =>
+        let
+          val phiaa = unf_simp A_ phia;
+          val psia = af_letter_opt_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) =>
+        mk_or A_ id (af_letter_opt_simp A_ phi nu)
+          (af_letter_opt_simp A_ psi nu))
+  | af_letter_opt_simp A_ (LTLNext phi) nu = unf_simp A_ phi
+  | af_letter_opt_simp A_ (LTLGlobal phi) nu =
+    mk_anda (LTLGlobal phi) (unf_simp A_ phi)
+  | af_letter_opt_simp A_ (LTLFinal phi) nu =
+    mk_ora (LTLFinal phi) (unf_simp A_ phi)
+  | af_letter_opt_simp A_ (LTLUntil (phi, psi)) nu =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (unf_simp A_ phi)) (unf_simp A_ psi);
+
+fun af_letter_abs_opt A_ (Abs phi) nu =
+  Abs (remove_and_or A_ (af_letter_opt_simp A_ phi nu));
 
 fun sink B_ sigma delta q_0 q =
   not (eq B_ q_0 q) andalso ball sigma (fn nu => eq B_ (delta q nu) q);
@@ -772,21 +1797,110 @@ fun nxt B_ sigma delta q_0 =
          (map (fn q => delta q nu) qs) @
         [q_0]));
 
-fun delta A_ sigma =
-  simple_product (af_letter_abs A_)
-    (product_abs
-      (nxt (equal_ltl_prop_equiv_quotient A_) sigma (af_G_letter_abs A_) o Abs o
-        theG));
-
-fun find_first_index A_ [] n = (fn _ => NONE)
-  | find_first_index A_ (x :: xs) n =
-    (fn q => (if eq A_ q x then SOME n else find_first_index A_ xs (suc n) q));
-
-fun rk A_ qs = find_first_index A_ qs zero_nat;
-
 fun init q_0 = [q_0];
 
-fun initial A_ phi = (Abs phi, tabulate (g_list A_ phi) (init o Abs o theG));
+fun unf_G_simp A_ (LTLAnd (phi, psi)) =
+  mk_and A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+  | unf_G_simp A_ (LTLOr (phi, psi)) =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => unf_G_simp A_ psi
+      | LTLProp _ => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLPropNeg _ => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLAnd (_, _) => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLOr (_, _) => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLNext _ => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLGlobal _ => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi)
+      | LTLFinal phia =>
+        let
+          val phiaa = unf_G_simp A_ phia;
+          val psia = unf_G_simp A_ psi;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) => mk_or A_ id (unf_G_simp A_ phi) (unf_G_simp A_ psi))
+  | unf_G_simp A_ (LTLFinal phi) = mk_ora (LTLFinal phi) (unf_G_simp A_ phi)
+  | unf_G_simp A_ (LTLUntil (phi, psi)) =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (unf_G_simp A_ phi))
+      (unf_G_simp A_ psi)
+  | unf_G_simp A_ LTLTrue = LTLTrue
+  | unf_G_simp A_ LTLFalse = LTLFalse
+  | unf_G_simp A_ (LTLProp v) = LTLProp v
+  | unf_G_simp A_ (LTLPropNeg v) = LTLPropNeg v
+  | unf_G_simp A_ (LTLNext v) = LTLNext v
+  | unf_G_simp A_ (LTLGlobal v) = LTLGlobal v;
+
+fun af_G_letter_opt_simp A_ LTLTrue nu = LTLTrue
+  | af_G_letter_opt_simp A_ LTLFalse nu = LTLFalse
+  | af_G_letter_opt_simp A_ (LTLProp a) nu =
+    (if member A_ a nu then LTLTrue else LTLFalse)
+  | af_G_letter_opt_simp A_ (LTLPropNeg a) nu =
+    (if not (member A_ a nu) then LTLTrue else LTLFalse)
+  | af_G_letter_opt_simp A_ (LTLAnd (phi, psi)) nu =
+    (case phi of LTLTrue => af_G_letter_opt_simp A_ psi nu
+      | LTLFalse => LTLFalse
+      | LTLProp a =>
+        (if member A_ a nu then af_G_letter_opt_simp A_ psi nu else LTLFalse)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then af_G_letter_opt_simp A_ psi nu
+          else LTLFalse)
+      | LTLAnd (_, _) =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLFinal _ =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLUntil (_, _) =>
+        mk_and A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu))
+  | af_G_letter_opt_simp A_ (LTLOr (phi, psi)) nu =
+    (case phi of LTLTrue => LTLTrue | LTLFalse => af_G_letter_opt_simp A_ psi nu
+      | LTLProp a =>
+        (if member A_ a nu then LTLTrue else af_G_letter_opt_simp A_ psi nu)
+      | LTLPropNeg a =>
+        (if not (member A_ a nu) then LTLTrue
+          else af_G_letter_opt_simp A_ psi nu)
+      | LTLAnd (_, _) =>
+        mk_or A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLOr (_, _) =>
+        mk_or A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLNext _ =>
+        mk_or A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLGlobal _ =>
+        mk_or A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu)
+      | LTLFinal phia =>
+        let
+          val phiaa = unf_G_simp A_ phia;
+          val psia = af_G_letter_opt_simp A_ psi nu;
+        in
+          (if equal_ltla A_ phiaa psia then mk_ora (LTLFinal phia) phiaa
+            else mk_or A_ id (mk_ora (LTLFinal phia) phiaa) psia)
+        end
+      | LTLUntil (_, _) =>
+        mk_or A_ id (af_G_letter_opt_simp A_ phi nu)
+          (af_G_letter_opt_simp A_ psi nu))
+  | af_G_letter_opt_simp A_ (LTLNext phi) nu = unf_G_simp A_ phi
+  | af_G_letter_opt_simp A_ (LTLGlobal phi) nu = LTLGlobal phi
+  | af_G_letter_opt_simp A_ (LTLFinal phi) nu =
+    mk_ora (LTLFinal phi) (unf_G_simp A_ phi)
+  | af_G_letter_opt_simp A_ (LTLUntil (phi, psi)) nu =
+    mk_ora (mk_anda (LTLUntil (phi, psi)) (unf_G_simp A_ phi))
+      (unf_G_simp A_ psi);
+
+fun af_G_letter_abs_opt A_ (Abs phi) nu =
+  Abs (remove_and_or A_ (af_G_letter_opt_simp A_ phi nu));
 
 fun ltl_prop_entailment A_ a LTLTrue = true
   | ltl_prop_entailment A_ a LTLFalse = false
@@ -804,47 +1918,18 @@ fun ltl_prop_entailment A_ a LTLTrue = true
   | ltl_prop_entailment A_ a (LTLUntil (v, va)) =
     member (equal_ltl A_) (LTLUntil (v, va)) a;
 
-fun sup_seta A_ (Set xs) = fold (sup_set A_) xs bot_set;
-
-fun mapping_generator_list A_ [] v = [empty]
-  | mapping_generator_list A_ (k :: ks) v =
-    maps (fn m => map (fn va => updatea A_ k va m) (v k))
-      (mapping_generator_list A_ ks v);
-
-fun mapping_generator A_ k v = Set (mapping_generator_list A_ k v);
-
-fun max_rank_of A_ sigma psi =
-  card (equal_ltl_prop_equiv_quotient A_)
-    (filter
-      (not o
-        sink (equal_ltl_prop_equiv_quotient A_) (Set sigma) (af_G_letter_abs A_)
-          (Abs psi))
-      (q_L (equal_ltl_prop_equiv_quotient A_) sigma (af_G_letter_abs A_)
-        (Abs psi)));
-
-fun mappings A_ sigma phi =
-  let
-    val gs = g_list A_ phi;
-    val max_rank =
-      lookup (equal_ltl A_) (tabulate gs (max_rank_of A_ sigma o theG));
-  in
-    sup_seta (equal_mapping (equal_ltl A_) equal_nat)
-      (Set (map (fn xs =>
-                  mapping_generator (equal_ltl A_) xs
-                    (fn x => upt zero_nat (the (max_rank x))))
-             (sublists gs)))
-  end;
-
 fun ltl_prop_entails_abs A_ xb (Abs x) = ltl_prop_entailment A_ xb x;
 
 fun ltl_prop_implies_abs A_ (Abs xb) (Abs x) = ltl_prop_implies A_ xb x;
 
-fun reachable_transitions A_ sigma phi =
-  delta_L (equal_set A_)
-    (equal_prod (equal_ltl_prop_equiv_quotient A_)
-      (equal_mapping (equal_ltl A_)
-        (equal_list (equal_ltl_prop_equiv_quotient A_))))
-    sigma (delta A_ (Set sigma)) (initial A_ phi);
+fun max_rank_of_C A_ delta_M q_0_M sigma psi =
+  card (equal_ltl_prop_equiv_quotient A_)
+    (filter
+      (not o
+        sink (equal_ltl_prop_equiv_quotient A_) (Set sigma) delta_M
+          (q_0_M (theG psi)))
+      (q_L (equal_ltl_prop_equiv_quotient A_) sigma delta_M
+        (q_0_M (theG psi))));
 
 fun succeed_filt A_ delta q_0 f i (r, (nu, uu)) =
   list_ex
@@ -857,14 +1942,13 @@ fun succeed_filt A_ delta q_0 f i (r, (nu, uu)) =
       end)
     r;
 
-fun acc_inf_filter_exec A_ pi chi ((uu, m), (nu, uv)) =
+fun acc_inf_C A_ delta_M q_0_M pi chi ((uu, m), (nu, uv)) =
   let
     val t = (the (lookup (equal_ltl A_) m chi), (nu, []));
     val g = keys pi;
   in
-    succeed_filt (equal_ltl_prop_equiv_quotient A_) (af_G_letter_abs A_)
-      (Abs (theG chi)) (ltl_prop_entails_abs A_ g)
-      (the (lookup (equal_ltl A_) pi chi)) t
+    succeed_filt (equal_ltl_prop_equiv_quotient A_) delta_M (q_0_M (theG chi))
+      (ltl_prop_entails_abs A_ g) (the (lookup (equal_ltl A_) pi chi)) t
   end;
 
 fun merge_filt A_ delta q_0 f i (r, (nu, uu)) =
@@ -891,55 +1975,85 @@ fun fail_filt B_ sigma delta q_0 f (r, (nu, uu)) =
       end)
     r;
 
-fun acc_fin_filter_exec A_ sigma pi chi ((uu, m), (nu, uv)) =
+fun acc_fin_C A_ delta_M q_0_M sigma pi chi ((uu, m), (nu, uv)) =
   let
     val t = (the (lookup (equal_ltl A_) m chi), (nu, []));
     val g = keys pi;
   in
-    fail_filt (equal_ltl_prop_equiv_quotient A_) sigma (af_G_letter_abs A_)
-      (Abs (theG chi)) (ltl_prop_entails_abs A_ g) t orelse
-      merge_filt (equal_ltl_prop_equiv_quotient A_) (af_G_letter_abs A_)
-        (Abs (theG chi)) (ltl_prop_entails_abs A_ g)
-        (the (lookup (equal_ltl A_) pi chi)) t
+    fail_filt (equal_ltl_prop_equiv_quotient A_) sigma delta_M
+      (q_0_M (theG chi)) (ltl_prop_entails_abs A_ g) t orelse
+      merge_filt (equal_ltl_prop_equiv_quotient A_) delta_M (q_0_M (theG chi))
+        (ltl_prop_entails_abs A_ g) (the (lookup (equal_ltl A_) pi chi)) t
   end;
 
-fun m_fin_filter_exec A_ phia pi ((phi, m), uu) =
-  let
-    val ma = lookup (equal_ltl A_) m;
-    val g = keys pi;
-    val g_L = filtera (fn x => member (equal_ltl A_) x g) (g_list A_ phia);
-  in
-    not (ltl_prop_implies_abs A_
-          (and_abs
-            (map Abs g_L @
-              map (eval_G_abs A_ g)
-                (foldl
-                  (fn a => fn x =>
-                    a @ drop (the (lookup (equal_ltl A_) pi x)) (the (ma x)))
-                  [] g_L)))
-          phi)
-  end;
+fun mapping_generator_list A_ v [] = [Mapping []]
+  | mapping_generator_list A_ v (k :: ks) =
+    maps (fn m => map (fn va => updatea A_ k va m) (v k))
+      (mapping_generator_list A_ v ks);
 
-fun ltl_to_rabin_exec A_ sigma phi =
+fun ltl_to_generalized_rabin_C A_ delta delta_M q_0 q_0_M m_fin_C sigma phi =
   let
-    val delta_LTS = reachable_transitions A_ sigma phi;
+    val delta_LTS =
+      delta_L (equal_set A_)
+        (equal_prod (equal_ltl_prop_equiv_quotient A_)
+          (equal_mapping (equal_ltl A_)
+            (equal_list (equal_ltl_prop_equiv_quotient A_))))
+        sigma
+        (simple_product delta
+          (product_abs
+            (nxt (equal_ltl_prop_equiv_quotient A_) (Set sigma) delta_M o
+               q_0_M o
+              theG)))
+        (q_0 phi, tabulate (g_list A_ phi) (init o q_0_M o theG));
     val alpha_fin_filter =
       (fn pi => fn t =>
-        m_fin_filter_exec A_ phi pi t orelse
+        m_fin_C phi pi t orelse
           bex (keys pi)
-            (fn chi => acc_fin_filter_exec A_ (Set sigma) pi chi t));
+            (fn chi => acc_fin_C A_ delta_M q_0_M (Set sigma) pi chi t));
     val to_pair =
       (fn pi =>
         (filter (alpha_fin_filter pi) delta_LTS,
-          image (fn chi => filter (acc_inf_filter_exec A_ pi chi) delta_LTS)
+          image (fn chi => filter (acc_inf_C A_ delta_M q_0_M pi chi) delta_LTS)
             (keys pi)));
-    val alpha = image to_pair (mappings A_ sigma phi);
+    val alpha =
+      image to_pair
+        let
+          val gs = g_list A_ phi;
+          val max_rank =
+            lookup (equal_ltl A_)
+              (tabulate gs (max_rank_of_C A_ delta_M q_0_M sigma));
+        in
+          Set (maps (mapping_generator_list (equal_ltl A_)
+                      (fn x => upt zero_nat (the (max_rank x))))
+                (sublists gs))
+        end;
   in
-    (delta_LTS, (initial A_ phi, alpha))
+    (delta_LTS,
+      ((q_0 phi, tabulate (g_list A_ phi) (init o q_0_M o theG)), alpha))
   end;
 
-fun ltl_to_rabin_exec_simp A_ phi =
-  ltl_to_rabin_exec A_ (map Set (sublists (vars_list A_ phi))) phi;
+fun m_fin_C_af A_ phia pi ((phi, m), uu) =
+  not (ltl_prop_implies_abs A_
+        let
+          val g = keys pi;
+          val g_L =
+            filtera (fn x => member (equal_ltl A_) x g) (g_list A_ phia);
+          val mk_conj =
+            (fn chi =>
+              foldl (fn a => fn x => and_absa a (eval_G_abs A_ g x)) (Abs chi)
+                (drop (the (lookup (equal_ltl A_) pi chi))
+                  (the (lookup (equal_ltl A_) m chi))));
+        in
+          and_abs (map mk_conj g_L)
+        end
+        phi);
+
+fun ltl_to_generalized_rabin_C_af A_ =
+  ltl_to_generalized_rabin_C A_ (af_letter_abs A_) (af_G_letter_abs A_) Abs Abs
+    (m_fin_C_af A_);
+
+fun ltl_to_generalized_rabin_C_af_simp A_ phi =
+  ltl_to_generalized_rabin_C_af A_ (map Set (sublists (vars_list A_ phi))) phi;
 
 fun ltlc_to_ltl false LTLcTrue = LTLTrue
   | ltlc_to_ltl false LTLcFalse = LTLFalse
@@ -989,6 +2103,36 @@ fun ltlc_to_ltl false LTLcTrue = LTLTrue
   | ltlc_to_ltl b (LTLcNext phi) = LTLNext (ltlc_to_ltl b phi);
 
 fun ltlc_to_rabin phi =
-  ltl_to_rabin_exec_simp equal_literal (ltlc_to_ltl false phi);
+  ltl_to_generalized_rabin_C_af_simp equal_literal (ltlc_to_ltl false phi);
+
+fun m_fin_C_af_UU A_ phia pi ((phi, m), (nu, uu)) =
+  not (ltl_prop_implies_abs A_
+        let
+          val g = keys pi;
+          val g_L =
+            filtera (fn x => member (equal_ltl A_) x g) (g_list A_ phia);
+          val mk_conj =
+            (fn chi =>
+              foldl (fn a => fn x =>
+                      and_absa a
+                        ((eval_G_abs A_ g o (fn q => step_abs A_ q nu)) x))
+                (and_absa (Abs chi) (eval_G_abs A_ g (Abs (theG chi))))
+                (drop (the (lookup (equal_ltl A_) pi chi))
+                  (the (lookup (equal_ltl A_) m chi))));
+        in
+          and_abs (map mk_conj g_L)
+        end
+        (step_abs A_ phi nu));
+
+fun ltl_to_generalized_rabin_C_af_UU A_ =
+  ltl_to_generalized_rabin_C A_ (af_letter_abs_opt A_) (af_G_letter_abs_opt A_)
+    (Abs o unf) (Abs o unf_G) (m_fin_C_af_UU A_);
+
+fun ltl_to_generalized_rabin_C_af_UU_simp A_ phi =
+  ltl_to_generalized_rabin_C_af_UU A_ (map Set (sublists (vars_list A_ phi)))
+    phi;
+
+fun ltlc_to_rabin_UU phi =
+  ltl_to_generalized_rabin_C_af_UU_simp equal_literal (ltlc_to_ltl false phi);
 
 end; (*struct LTL_to_DRA_Translator*)

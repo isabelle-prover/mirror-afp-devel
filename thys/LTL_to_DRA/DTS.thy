@@ -43,7 +43,6 @@ definition reach\<^sub>t :: "'a set \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b 
 where
   "reach\<^sub>t \<Sigma> \<delta> q\<^sub>0 = {run\<^sub>t \<delta> q\<^sub>0 w n | w n. range w \<subseteq> \<Sigma>}"
 
-  
 lemma reach_foldl_def:
   assumes "\<Sigma> \<noteq> {}"
   shows "reach \<Sigma> \<delta> q\<^sub>0 = {foldl \<delta> q\<^sub>0 w | w. set w \<subseteq> \<Sigma>}"
@@ -56,9 +55,9 @@ proof -
     ultimately
     have "foldl \<delta> q\<^sub>0 w = foldl \<delta> q\<^sub>0 (prefix (length w) (w \<frown> (iter [a])))" 
       and "range (w \<frown> (iter [a])) \<subseteq> \<Sigma>"
-      by (simp add: iter_def image_constant_conv)+
+      by (unfold prefix_conc_length, auto simp add: iter_def conc_def) 
     hence "\<exists>w' n. foldl \<delta> q\<^sub>0 w = run \<delta> q\<^sub>0 w' n \<and> range w' \<subseteq> \<Sigma>"
-      unfolding run_foldl by (metis subsequence_def)
+      unfolding run_foldl subsequence_def by blast
   }
   thus ?thesis
     by (fastforce simp add: reach_def run_foldl)
@@ -80,16 +79,16 @@ proof (cases "\<Sigma> \<noteq> {}")
           by (simp add: nth_equalityI)  
         ultimately
         have "foldl \<delta> q\<^sub>0 w = foldl \<delta> q\<^sub>0 (prefix (length w) ((w @ [\<nu>]) \<frown> (iter [a])))" 
-          and "foldl \<delta> q\<^sub>0 (w @ [\<nu>]) = foldl \<delta> q\<^sub>0 (prefix (length (w @ [\<nu>])) ((w @ [\<nu>]) \<frown> (iter [a])))" 
+          and"foldl \<delta> q\<^sub>0 (w @ [\<nu>]) = foldl \<delta> q\<^sub>0 (prefix (length (w @ [\<nu>])) ((w @ [\<nu>]) \<frown> (iter [a])))" 
           and "range ((w @ [\<nu>]) \<frown> (iter [a])) \<subseteq> \<Sigma>"
-          by (simp_all add: conc_conc[symmetric] iter_def)
-             (auto simp add: conc_def upt_Suc_append[OF le0])
+          by (simp_all only: prefix_conc_length conc_conc[symmetric] iter_def)
+             (auto simp add: subsequence_def conc_def upt_Suc_append[OF le0])
         moreover
         have "((w @ [\<nu>]) \<frown> (iter [a])) (length w) = \<nu>"
           by (simp add: conc_def)
         ultimately
         have "\<exists>w' n. (foldl \<delta> q\<^sub>0 w, \<nu>, foldl \<delta> q\<^sub>0 (w @ [\<nu>])) = run\<^sub>t \<delta> q\<^sub>0 w' n \<and> range w' \<subseteq> \<Sigma>"
-          unfolding run\<^sub>t_foldl by (metis length_append_singleton subsequence_def)
+          by (metis run\<^sub>t_foldl length_append_singleton subsequence_def)
       }
       thus "?lhs \<supseteq> ?rhs"
         unfolding reach\<^sub>t_def run\<^sub>t.simps by blast
@@ -316,7 +315,7 @@ proof -
     hence "y \<in> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0"
     proof induction
       case base
-        have "\<forall>p ps. list_all p ps = (\<forall>pa. (pa::'a \<times> 'b \<times> 'a) \<in> set ps \<longrightarrow> p pa)"
+        have "\<forall>p ps. list_all p ps = (\<forall>pa. pa \<in> set ps \<longrightarrow> p pa)"
           by (meson list_all_iff)
         hence "x \<in> {(foldl \<delta> (foldl \<delta> q\<^sub>0 []) bs, b, foldl \<delta> (foldl \<delta> q\<^sub>0 []) (bs @ [b])) | bs b. set bs \<subseteq> set \<Sigma> \<and> b \<in> set \<Sigma>}"
           using base by (metis (no_types) Nil2 list_all_init reach\<^sub>t_foldl_def)
@@ -481,8 +480,6 @@ next
     show ?case
       by (rule finite_subset)
 qed
-
-(* move to DTS *)
 
 subsection \<open>Simple Product Construction Helper Functions and Lemmas\<close>
 
@@ -717,7 +714,7 @@ interpretation lifting_syntax .
 
 lemma product_parametric [transfer_rule]:
   "((A ===> B ===> C ===> B) ===> (A ===> rel_option B) ===> C ===> A ===> rel_option B) product product"
-  by (auto simp add: Option.is_none_def rel_fun_def rel_option_iff split: option.split)
+  by (auto simp add: rel_fun_def rel_option_iff split: option.split)
 
 lemma run_parametric [transfer_rule]:
   "((A ===> B ===> A) ===> A ===> ((op =) ===> B) ===> (op =) ===> A) run run"
@@ -737,7 +734,7 @@ lemma reach_parametric [transfer_rule]:
   assumes "bi_total B"
   assumes "bi_unique B"
   shows "(rel_set B ===> (A ===> B ===> A) ===> A ===> rel_set A) reach reach"
-proof (standard+)
+proof standard+
   fix \<Sigma> \<Sigma>' \<delta> \<delta>' q q'
   assume "rel_set B \<Sigma> \<Sigma>'" "(A ===> B ===> A) \<delta> \<delta>'" "A q q'"
 

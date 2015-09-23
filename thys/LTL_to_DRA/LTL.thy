@@ -6,7 +6,7 @@
 section \<open>LTL (in Negation-Normal-Form)\<close>
 
 theory LTL
-  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
+  imports Main "Aux/Words2"
 begin
 
 text \<open>Inspired/Based on schimpf/LTL\<close>
@@ -435,7 +435,7 @@ definition
   eq: "equal_class.equal \<equiv> ltl_prop_equiv_quotient_eq_test"
 
 instance    
-  by standard (simp add: eq ltl_prop_equiv_quotient_eq_test.rep_eq, metis Quotient_ltl_prop_equiv_quotient Quotient_rel_rep)
+  by (standard; simp add: eq ltl_prop_equiv_quotient_eq_test.rep_eq, metis Quotient_ltl_prop_equiv_quotient Quotient_rel_rep)
   
 end
 
@@ -479,9 +479,13 @@ lemma subst_respects_ltl_prop_entailment:
   "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> subst \<phi> m \<equiv>\<^sub>P subst \<psi> m"
   unfolding ltl_prop_equiv_def ltl_prop_implies_def ltl_prop_equiv_subst_S by blast+
 
-lemma subst_respects_ltl_prop_entailment_generalised:
+lemma subst_respects_ltl_prop_entailment_generalized:
   "(\<And>\<A>. (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P x) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P y) \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P subst x m) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P subst y m"
   unfolding ltl_prop_equiv_subst_S by simp
+
+lemma decomposable_function_subst:
+  "\<lbrakk>f true = true; f false = false; \<And>\<phi> \<psi>. f (\<phi> and \<psi>) = f \<phi> and f \<psi>; \<And>\<phi> \<psi>. f (\<phi> or \<psi>) = f \<phi> or f \<psi>\<rbrakk> \<Longrightarrow> f \<phi> = subst \<phi> (\<lambda>\<chi>. Some (f \<chi>))"
+  by (induction \<phi>) auto
 
 subsection \<open>Additional Operators\<close>
 
@@ -503,13 +507,10 @@ lemma And_prop_entailment:
 lemma And_propos:
   "propos (And xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case Nil
-  thus ?thesis by simp
-next
-  case (Cons x xs)
-  thus ?thesis
-    using propos_foldl[of LTLAnd x] by auto
-qed
+  case (goal2 x)
+    thus ?thesis
+      using propos_foldl[of LTLAnd x] by auto
+qed simp
 
 lemma And_semantics:
   "w \<Turnstile> And xs = (\<forall>x \<in> set xs. w \<Turnstile> x)"
@@ -562,6 +563,10 @@ lemma And_prop_entailment_abs:
   "S \<up>\<Turnstile>\<^sub>P \<up>And xs = (\<forall>x \<in> set xs. S \<up>\<Turnstile>\<^sub>P x)"
   by (simp add: foldl_LTLAnd_prop_entailment_abs ltl_prop_entails_abs.abs_eq)
 
+lemma and_abs_conjunction: 
+  "S \<up>\<Turnstile>\<^sub>P \<phi> \<up>and \<psi> \<longleftrightarrow> S \<up>\<Turnstile>\<^sub>P \<phi> \<and> S \<up>\<Turnstile>\<^sub>P \<psi>" 
+  by (metis and_abs.abs_eq ltl\<^sub>P_abs_rep ltl_prop_entailment.simps(3) ltl_prop_entails_abs.abs_eq)
+
 subsubsection \<open>Or\<close>
 
 lemma foldl_LTLOr_prop_entailment:
@@ -580,13 +585,10 @@ lemma Or_prop_entailment:
 lemma Or_propos:
   "propos (Or xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case Nil
-  thus ?thesis by simp
-next
-  case (Cons x xs)
-  thus ?thesis
-    using propos_foldl[of LTLOr x] by auto
-qed
+  case (goal2 x)
+    thus ?thesis
+      using propos_foldl[of LTLOr x] by auto
+qed simp
 
 lemma Or_semantics:
   "w \<Turnstile> Or xs = (\<exists>x \<in> set xs. w \<Turnstile> x)"
@@ -669,9 +671,9 @@ lemma eval\<^sub>G_respectfulness:
   "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> eval\<^sub>G S \<phi> \<equiv>\<^sub>P eval\<^sub>G S \<psi>"
   using subst_respects_ltl_prop_entailment eval\<^sub>G_subst by metis+
 
-lemma eval\<^sub>G_respectfulness_generalised:
+lemma eval\<^sub>G_respectfulness_generalized:
   "(\<And>\<A>. (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P x) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P y) \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P eval\<^sub>G P x) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P eval\<^sub>G P y"
-  using subst_respects_ltl_prop_entailment_generalised[of S y \<A>] eval\<^sub>G_subst[of P] by metis
+  using subst_respects_ltl_prop_entailment_generalized[of S y \<A>] eval\<^sub>G_subst[of P] by metis
 
 lift_definition eval\<^sub>G_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>eval\<^sub>G") is eval\<^sub>G
   by (insert eval\<^sub>G_respectfulness(2))
@@ -703,8 +705,8 @@ lemma sat_models_finite_image:
   shows "finite (sat_models ` {Abs \<phi> | \<phi>. nested_propos \<phi> \<subseteq> P})"
 proof -
   have "\<And>\<phi>. nested_propos \<phi> \<subseteq> P \<Longrightarrow> sat_models (Abs \<phi>) = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-  proof (standard, goal_cases)
-    case (2 \<phi>)
+  proof
+    case (goal2 \<phi>)
       have "\<And>A B. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<union> B \<in> sat_models (Abs \<phi>)"
         unfolding sat_models_invariant by blast
       moreover
@@ -714,12 +716,12 @@ proof -
       show ?case
         by blast
   next
-    case (1 \<phi>)
+    case (goal1 \<phi>)
       hence "propos \<phi> \<subseteq> P"
         using propos_subset by blast
       have "\<And>A. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-      proof (standard, goal_cases)
-        case (1 A)
+      proof
+        case (goal1 A)
           then have "A \<Turnstile>\<^sub>P \<phi>"
             using sat_models_invariant by blast
           then obtain C D where "C = (A \<inter> P)" and "D = A - P" and "A = C \<union> D"
@@ -756,8 +758,8 @@ proof -
     -- \<open>Prove that S' can be embedded into S using ?map\<close>
 
     have "S' \<subseteq> {?map P A | A. A \<in> S}"
-    proof (standard, goal_cases)
-      case (1 A)
+    proof
+      case (goal1 A)
         then obtain \<phi> where "nested_propos \<phi> \<subseteq> P" 
           and "A = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
           using S'_def by blast

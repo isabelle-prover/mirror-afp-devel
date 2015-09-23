@@ -3,167 +3,13 @@
     License:     BSD
 *)
 
-section \<open>Unfolding Optimisation\<close>
+section \<open>Eager Unfolding Optimisation\<close>
 
 theory LTL_Rabin_Unfold_Opt
   imports Main LTL_Rabin
 begin
 
-subsection \<open>Transition Functions\<close>
-
-subsubsection \<open>Unfolding\<close>
-
-fun Unf :: "'a ltl \<Rightarrow> 'a ltl"
-where
-  "Unf (F \<phi>) = F \<phi> or Unf \<phi>"
-| "Unf (G \<phi>) = G \<phi> and Unf \<phi>" 
-| "Unf (\<phi> U \<psi>) = (\<phi> U \<psi> and Unf \<phi>) or Unf \<psi>"
-| "Unf (\<phi> and \<psi>) = Unf \<phi> and Unf \<psi>"
-| "Unf (\<phi> or \<psi>) = Unf \<phi> or Unf \<psi>"
-| "Unf \<phi> = \<phi>"
-
-fun Unf\<^sub>G :: "'a ltl \<Rightarrow> 'a ltl"
-where
-  "Unf\<^sub>G (F \<phi>) = F \<phi> or Unf\<^sub>G \<phi>"
-| "Unf\<^sub>G (G \<phi>) = G \<phi>" 
-| "Unf\<^sub>G (\<phi> U \<psi>) = (\<phi> U \<psi> and Unf\<^sub>G \<phi>) or Unf\<^sub>G \<psi>"
-| "Unf\<^sub>G (\<phi> and \<psi>) = Unf\<^sub>G \<phi> and Unf\<^sub>G \<psi>"
-| "Unf\<^sub>G (\<phi> or \<psi>) = Unf\<^sub>G \<phi> or Unf\<^sub>G \<psi>"
-| "Unf\<^sub>G \<phi> = \<phi>"
-
-subsubsection \<open>Step\<close>
-
-fun step :: "'a ltl \<Rightarrow> 'a set \<Rightarrow> 'a ltl"
-where
-  "step p(a) \<nu> = (if a \<in> \<nu> then true else false)"
-| "step (np(a)) \<nu> = (if a \<notin> \<nu> then true else false)"
-| "step (X \<phi>) \<nu> = \<phi>"
-| "step (\<phi> and \<psi>) \<nu> = step \<phi> \<nu> and step \<psi> \<nu>"
-| "step (\<phi> or \<psi>) \<nu> = step \<phi> \<nu> or step \<psi> \<nu>"
-| "step \<phi> \<nu> = \<phi>"
-
-fun af_letter_opt
-where
-  "af_letter_opt \<phi> \<nu> = Unf (step \<phi> \<nu>)"
-
-fun af_G_letter_opt
-where
-  "af_G_letter_opt \<phi> \<nu> = Unf\<^sub>G (step \<phi> \<nu>)"
-
-subsubsection \<open>Combinations\<close>
-
-abbreviation af_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>\<UU>")
-where
-  "af\<^sub>\<UU> \<phi> w \<equiv> (foldl af_letter_opt \<phi> w)"
-
-abbreviation af_G_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>G\<^sub>\<UU>")
-where
-  "af\<^sub>G\<^sub>\<UU> \<phi> w \<equiv> (foldl af_G_letter_opt \<phi> w)"
-
-lemma af_letter_alt_def:
-  "af_letter \<phi> \<nu> = step (Unf \<phi>) \<nu>"
-  "af_G_letter \<phi> \<nu> = step (Unf\<^sub>G \<phi>) \<nu>"
-  by (induction \<phi>) simp_all
-
-lemma af_to_af_opt:
-  "Unf (af \<phi> w) = af\<^sub>\<UU> (Unf \<phi>) w"
-  "Unf\<^sub>G (af\<^sub>G \<phi> w) = af\<^sub>G\<^sub>\<UU> (Unf\<^sub>G \<phi>) w"
-  by (induction w arbitrary: \<phi>)
-     (simp_all add: af_letter_alt_def)
-
-lemma decomposable_function_subst:
-  assumes "f true = true"
-      and "f false = false"
-      and "(\<And>\<phi> \<psi>. f (\<phi> and \<psi>) = f \<phi> and f \<psi>)"
-      and "(\<And>\<phi> \<psi>. f (\<phi> or \<psi>) = f \<phi> or f \<psi>)"
-  shows "f \<phi> = subst \<phi> (\<lambda>\<chi>. Some (f \<chi>))"
-  using assms by (induction \<phi>) simp_all
-
-lemma af_opt_respectfulness:
-  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> af_letter_opt \<phi> \<nu> \<longrightarrow>\<^sub>P af_letter_opt \<psi> \<nu>"
-  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> af_letter_opt \<phi> \<nu> \<equiv>\<^sub>P af_letter_opt \<psi> \<nu>"
-  using decomposable_function_subst[of "\<lambda>\<chi>. af_letter_opt \<chi> \<nu>", simplified] 
-  using subst_respects_ltl_prop_entailment af_letter_opt.simps by metis+
-
-lemma af_G_opt_respectfulness:
-  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> af_G_letter_opt \<phi> \<nu> \<longrightarrow>\<^sub>P af_G_letter_opt \<psi> \<nu>"
-  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> af_G_letter_opt \<phi> \<nu> \<equiv>\<^sub>P af_G_letter_opt \<psi> \<nu>"
-  using decomposable_function_subst[of "\<lambda>\<chi>. af_G_letter_opt \<chi> \<nu>", simplified] 
-  using subst_respects_ltl_prop_entailment af_G_letter_opt.simps by metis+
-
-lemma step_respectfulness:
-  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> step \<phi> \<nu> \<longrightarrow>\<^sub>P step \<psi> \<nu>"
-  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> step \<phi> \<nu> \<equiv>\<^sub>P step \<psi> \<nu>"
-  using decomposable_function_subst[of "\<lambda>\<chi>. step \<chi> \<nu>", simplified] 
-  using subst_respects_ltl_prop_entailment by metis+
-
-lemma Unf\<^sub>G_respectfulness:
-  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> Unf\<^sub>G \<phi> \<longrightarrow>\<^sub>P Unf\<^sub>G \<psi>"
-  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> Unf\<^sub>G \<phi> \<equiv>\<^sub>P Unf\<^sub>G \<psi>"
-  using decomposable_function_subst[of Unf\<^sub>G, simplified] 
-  using subst_respects_ltl_prop_entailment by metis+
-
-lemma step_nested_propos:
-  "nested_propos (step \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
-  by (induction \<phi>) auto
-
-lemma Unf_nested_propos:
-  "nested_propos (Unf \<phi>) \<subseteq> nested_propos \<phi>"
-  "nested_propos (Unf\<^sub>G \<phi>) \<subseteq> nested_propos \<phi>"
-  by (induction \<phi>) auto
-
-lemma af_opt_nested_propos:
-  "nested_propos (af_letter_opt \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
-  "nested_propos (af_G_letter_opt \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
-  using step_nested_propos Unf_nested_propos by force+
-
-lemma af_equiv:
-  "af \<phi> (w @ [\<nu>]) = step (af\<^sub>\<UU> (Unf \<phi>) w) \<nu>"
-  using af_to_af_opt(1) by (metis af_letter_alt_def(1) foldl_Cons foldl_Nil foldl_append)
-
-lemma af_equiv':
-  "af \<phi> (w [0 \<rightarrow> Suc i]) = step (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i])) (w i)"
-  using af_equiv by auto
-
-text \<open>Lift transformer and bind to a new name\<close>
-
-interpretation af_abs_opt: lift_ltl_transformer af_letter_opt
-  using lift_ltl_transformer_def af_opt_respectfulness af_opt_nested_propos by blast
-
-definition af_letter_abs_opt ("\<up>af\<^sub>\<UU>")
-where
-  "\<up>af\<^sub>\<UU> \<equiv> af_abs_opt.f_abs"
-
-interpretation af_G_abs_opt: lift_ltl_transformer af_G_letter_opt
-  using lift_ltl_transformer_def af_G_opt_respectfulness af_opt_nested_propos by blast
-
-definition af_G_letter_abs_opt ("\<up>af\<^sub>G\<^sub>\<UU>")
-where
-  "\<up>af\<^sub>G\<^sub>\<UU> \<equiv> af_G_abs_opt.f_abs"
-
-interpretation step_abs: lift_ltl_transformer step
-  using lift_ltl_transformer_def step_respectfulness step_nested_propos by blast
-
-definition step_abs ("\<up>step")
-where
-  "\<up>step \<equiv> step_abs.f_abs"
-
-lift_definition Unf\<^sub>G_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>Unf\<^sub>G") is Unf\<^sub>G
-  by (insert Unf\<^sub>G_respectfulness)
-
-lemma af_G_letter_abs_opt_split:
-  "\<up>Unf\<^sub>G (\<up>step \<Phi> \<nu>) = \<up>af\<^sub>G\<^sub>\<UU> \<Phi> \<nu>"
-  unfolding af_G_letter_abs_opt_def step_abs_def comp_def af_G_abs_opt.f_abs_def step_abs.f_abs_def
-  using map_fun_apply Unf\<^sub>G_abs.abs_eq af_G_letter_opt.simps by auto
-
-lemma af_G_letter_opt_sat_core:
-  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P af_G_letter_opt \<phi> \<nu>"
-  by (induction \<phi>) auto 
-
-lemma af_G_letter_opt_sat_core_lifted:
-  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep (\<up>af\<^sub>G\<^sub>\<UU> \<phi> \<nu>)"
-  unfolding af_G_letter_abs_opt_def
-  by (metis af_G_letter_opt_sat_core Quotient_ltl_prop_equiv_quotient[THEN Quotient_rep_abs] Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_abs_rep] af_G_abs_opt.f_abs.abs_eq ltl_prop_equiv_def) 
+subsection \<open>Preliminary Facts\<close>
 
 lemma finite_reach_af_opt:
   "finite (reach \<Sigma> \<up>af\<^sub>\<UU> (Abs \<phi>))"
@@ -198,23 +44,6 @@ proof -
   thus "?thesis"
     using finite_reach_af_G_opt assms by (unfold_locales; auto)
 qed
- 
-lemma Rep_Abs_equiv: "Rep (Abs \<phi>) \<equiv>\<^sub>P \<phi>"
-  using Rep_Abs_prop_entailment unfolding ltl_prop_equiv_def by auto
-
-lemma Rep_step: "Rep (\<up>step \<Phi> \<nu>) \<equiv>\<^sub>P step (Rep \<Phi>) \<nu>"
-  by (metis step_abs_def Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient ltl_prop_equiv_quotient.abs_eq_iff step_abs.f_abs.abs_eq)
-
-lemma Rep_unf: "Rep (Unf\<^sub>G_abs \<Phi>) \<equiv>\<^sub>P Unf\<^sub>G (Rep \<Phi>)"
-  by (simp add: Rep_Abs_equiv Unf\<^sub>G_abs_def)
-
-lemma step_\<G>:
-  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P step \<phi> \<nu>"
-  by (induction \<phi>) auto
-
-lemma Unf\<^sub>G_\<G>:
-  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Unf\<^sub>G \<phi>"
-  by (induction \<phi>) auto
 
 locale ltl_FG_to_rabin_opt_def = 
   fixes 
@@ -229,21 +58,13 @@ begin
 
 sublocale mojmir_to_rabin_def \<Sigma> "\<up>af\<^sub>G\<^sub>\<UU>" "Abs (Unf\<^sub>G \<phi>)" w "{q. \<G> \<Turnstile>\<^sub>P Rep q}" .
 
---\<open>Import abbreviations from parent locale to simplify terms\<close>
-abbreviation "\<delta>\<^sub>R \<equiv> step"
-abbreviation "q\<^sub>R \<equiv> initial"
-abbreviation "Acc\<^sub>R j \<equiv> (fail\<^sub>R \<union> merge\<^sub>R j, succeed\<^sub>R j)"
-abbreviation "max_rank\<^sub>R \<equiv> max_rank"
-abbreviation "smallest_accepting_rank\<^sub>R \<equiv> smallest_accepting_rank"
-abbreviation "accept\<^sub>R' \<equiv> accept"
-
 end
 
 locale ltl_FG_to_rabin_opt = ltl_FG_to_rabin_opt_def +
   assumes 
     wellformed_\<G>: "Only_G \<G>"
   assumes
-    wellformed_w: "range w \<subseteq> \<Sigma>"
+    bounded_w: "range w \<subseteq> \<Sigma>"
   assumes
     finite_\<Sigma>: "finite \<Sigma>"
 begin
@@ -253,22 +74,14 @@ proof
   show "\<And>q \<nu>. q \<in> {q. \<G> \<Turnstile>\<^sub>P Rep q} \<Longrightarrow> \<up>af\<^sub>G\<^sub>\<UU> q \<nu> \<in> {q. \<G> \<Turnstile>\<^sub>P Rep q}"
     using wellformed_\<G> af_G_letter_opt_sat_core_lifted by auto
   have nonempty_\<Sigma>: "\<Sigma> \<noteq> {}"
-    using wellformed_w by blast
+    using bounded_w by blast
   show "finite (reach \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G \<phi>)))" (is "finite ?A")
     using finite_reach_af_G_opt wellformed_\<G> by blast
-qed (insert finite_\<Sigma> wellformed_w)
-
---\<open>Import lemmas from parent locale to simplify assumptions\<close>
-lemmas state_rank_step_foldl = state_rank_step_foldl
-lemmas wellformed_\<R> = wellformed_\<R>
+qed (insert finite_\<Sigma> bounded_w)
 
 end
 
-lemma step_Abs_eq:
-  "Abs (step \<phi> \<nu>) = \<up>step (Abs \<phi>) \<nu>"
-  by (simp add: step_abs.f_abs.abs_eq step_abs_def)
-
-subsection \<open>Equivalences between the standard and the optimised Mojmir construction\<close>
+subsection \<open>Equivalences between the standard and the eager Mojmir construction\<close>
 
 context
   fixes 
@@ -285,11 +98,11 @@ begin
 
 --\<open>Create an interpretation of the mojmir locale for the standard construction\<close>
 interpretation \<MM>: ltl_FG_to_rabin \<Sigma> \<phi> \<G> w
-  apply unfold_locales using context_assms by auto
+  by (unfold_locales; insert context_assms; auto)
 
 --\<open>Create an interpretation of the mojmir locale for the optimised construction\<close>
 interpretation \<UU>: ltl_FG_to_rabin_opt \<Sigma> \<phi> \<G> w
-  apply unfold_locales using context_assms by auto
+  by (unfold_locales; insert context_assms; auto)
 
 lemma unfold_token_run_eq:
   assumes "x \<le> n"
@@ -299,22 +112,22 @@ proof -
   have "x + (n - x) = n" and "x + (Suc n - x) = Suc n"
    using assms by arith+
   have "w [x \<rightarrow> Suc n] = w [x \<rightarrow> n] @ [w n]"
-    unfolding subsequence_def upt_Suc using assms by simp
+    unfolding upt_Suc subsequence_def using assms by simp
 
   have "af\<^sub>G \<phi> (w [x \<rightarrow> Suc n]) = step (af\<^sub>G\<^sub>\<UU> (Unf\<^sub>G \<phi>) (w [x \<rightarrow> n])) (w n)" (is "?l = ?r")
     unfolding af_to_af_opt[symmetric] `w [x \<rightarrow> Suc n] = w [x \<rightarrow> n] @ [w n]` foldl_append
     using af_letter_alt_def by auto
   moreover
   have "?lhs = Abs ?l"
-    unfolding \<MM>.token_run.simps run_foldl subsequence_def[symmetric]
-    unfolding subsequence_shift `x + (Suc n - x) = Suc n` Nat.add_0_right   
+    unfolding \<MM>.token_run.simps run_foldl 
+    using subsequence_shift `x + (Suc n - x) = Suc n` Nat.add_0_right subsequence_def 
     by (metis af_G_abs.f_foldl_abs_alt_def af_G_abs.f_foldl_abs.abs_eq af_G_letter_abs_def) 
   moreover
   have "Abs ?r = ?rhs"
-    unfolding \<UU>.token_run.simps run_foldl 
-    unfolding  `x + (n - x) = n` Nat.add_0_right af_G_letter_abs_opt_def  
-    unfolding step_Abs_eq  af_G_abs_opt.f_foldl_abs_alt_def[unfolded af_G_abs_opt.f_foldl_abs.abs_eq] 
-    using subsequence_prefix_suffix subsequence_def by metis
+    unfolding \<UU>.token_run.simps run_foldl subsequence_def[symmetric]
+    unfolding subsequence_shift `x + (n - x) = n` Nat.add_0_right af_G_letter_abs_opt_def
+    unfolding af_G_abs_opt.f_foldl_abs_alt_def[unfolded af_G_abs_opt.f_foldl_abs.abs_eq, symmetric]  
+    by (simp add: step_abs.abs_eq)
   ultimately
   show "?lhs = ?rhs"
     by presburger
@@ -340,7 +153,7 @@ proof
     unfolding af_G_letter_abs_opt_split by simp
   
   hence "\<G> \<Turnstile>\<^sub>P Rep (\<UU>.token_run x (Suc n))"
-    using 1 Unf\<^sub>G_\<G>[OF `Only_G \<G>`] Rep_unf[unfolded ltl_prop_equiv_def] by auto
+    using 1 Unf\<^sub>G_\<G>[OF `Only_G \<G>`] by (simp add: Rep_Abs_equiv Unf\<^sub>G_abs_def)
   thus "\<UU>.token_succeeds x"
     unfolding \<UU>.token_succeeds_def by blast
 next
@@ -480,276 +293,41 @@ end
 
 subsection \<open>Automaton Definition\<close>
 
-fun ltl_to_generalised_rabin_unf_initial_state ("\<iota>\<^sub>\<UU>")
-where
-  "\<iota>\<^sub>\<UU> \<phi> = (Abs (Unf \<phi>), \<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. ltl_FG_to_rabin_opt_def.q\<^sub>R (theG \<chi>)))"
-
-fun ltl_to_generalised_rabin_unf_transition_function ("\<delta>\<^sub>\<UU>")
-where
-  "\<delta>\<^sub>\<UU> \<Sigma> = \<up>af\<^sub>\<UU> \<times> (\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_opt_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>)))"
-
-context
-  fixes 
-    \<Sigma> :: "'a set set"
-begin
-
-fun Acc\<^sub>\<UU>_fin
-where
-  "Acc\<^sub>\<UU>_fin \<pi> \<chi> = \<Union>(embed_transition_snd ` \<Union>(embed_transition \<chi> ` (fst (ltl_FG_to_rabin_opt_def.Acc\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) (the (\<pi> \<chi>))))))"
-
-fun Acc\<^sub>\<UU>_inf
-where
-  "Acc\<^sub>\<UU>_inf \<pi> \<chi> = \<Union>(embed_transition_snd ` \<Union>(embed_transition \<chi> ` (snd (ltl_FG_to_rabin_opt_def.Acc\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) (the (\<pi> \<chi>))))))"
-
 fun M\<^sub>\<UU>_fin :: "('a ltl \<rightharpoonup> nat) \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) transition set"
 where
   "M\<^sub>\<UU>_fin \<pi> = {((\<phi>', m), \<nu>, p). \<not>(\<forall>S. (\<forall>\<chi> \<in> (dom \<pi>). S \<up>\<Turnstile>\<^sub>P Abs \<chi> \<and> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (Abs (theG \<chi>)) \<and> (\<forall>q. (\<exists>j \<ge> the (\<pi> \<chi>). the (m \<chi>) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (\<up>step q \<nu>))) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P (\<up>step \<phi>' \<nu>))}"
 
-fun ltl_to_generalised_rabin_unf_acceptance_condition :: "'a ltl \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) generalized_rabin_condition" ("F\<^sub>\<UU>")
-where
-  "F\<^sub>\<UU> \<phi> = {(M\<^sub>\<UU>_fin \<pi> \<union> \<Union>{Acc\<^sub>\<UU>_fin \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc\<^sub>\<UU>_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}) | \<pi>. dom \<pi> \<subseteq> \<^bold>G \<phi> \<and> (\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>))}"
+locale ltl_to_rabin_af_unf = ltl_to_rabin_base "\<up>af\<^sub>\<UU>" "\<up>af\<^sub>G\<^sub>\<UU>" "Abs o Unf" "Abs o Unf\<^sub>G" M\<^sub>\<UU>_fin begin
 
-fun ltl_to_generalised_rabin_opt :: "'a ltl \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) generalized_rabin_automaton" ("\<A>\<^sub>\<UU>")
-where
-  "\<A>\<^sub>\<UU> \<phi> = (\<delta>\<^sub>\<UU> \<Sigma>, \<iota>\<^sub>\<UU> \<phi>, F\<^sub>\<UU> \<phi>)"
-
-abbreviation Acc\<^sub>\<UU>
-where
-  "Acc\<^sub>\<UU> \<pi> \<chi> \<equiv> (Acc\<^sub>\<UU>_fin \<pi> \<chi>, Acc\<^sub>\<UU>_inf \<pi> \<chi>)" 
+abbreviation "\<delta>\<^sub>\<UU> \<equiv> delta"
+abbreviation "\<iota>\<^sub>\<UU> \<equiv> initial"
+abbreviation "Acc\<^sub>\<UU>_fin \<equiv> Acc_fin"
+abbreviation "Acc\<^sub>\<UU>_inf \<equiv> Acc_inf"
+abbreviation "F\<^sub>\<UU> \<equiv> rabin_pairs"
+abbreviation "Acc\<^sub>\<UU> \<equiv> Acc" 
+abbreviation "\<A>\<^sub>\<UU> \<equiv> ltl_to_generalized_rabin"
 
 subsection \<open>Properties\<close>
-
-context
-  fixes 
-    \<phi> :: "'a ltl"
-  fixes 
-    w :: "'a set word"
-  assumes 
-    finite_\<Sigma>: "finite \<Sigma>"
-  assumes
-    bounded_w: "range w \<subseteq> \<Sigma>"
-begin
-
-lemma ltl_to_generalised_rabin_unf_wellformed:
-  "finite (reach \<Sigma> (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>))"
-  apply (cases "\<Sigma> = {}")
-    apply (simp add: reach_def)
-    apply (simp only: ltl_to_generalised_rabin_unf_initial_state.simps ltl_to_generalised_rabin_unf_transition_function.simps)
-    apply (rule finite_reach_simple_product[OF finite_reach_af_opt finite_reach_product])
-      apply (auto simp add: dom_def intro: G_nested_finite finite_\<Sigma> ltl_FG_to_rabin_opt.wellformed_\<R>[unfolded ltl_FG_to_rabin_opt_def])
-  done
-
-lemma run_limit_not_empty:
-  "limit (run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w) \<noteq> {}"
-  by (metis bounded_w emptyE finite_\<Sigma> limit_nonemptyE ltl_to_generalised_rabin_unf_wellformed run\<^sub>t_finite) 
-
-lemma accept\<^sub>G\<^sub>R_\<UU>_I:
-  assumes "accept\<^sub>G\<^sub>R (\<A>\<^sub>\<UU> \<phi>) w"
-  obtains \<pi> where "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
-    and "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-    and "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>, UNIV) w"
-    and "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> \<chi>) w"
-proof -
-  from assms obtain P where "P \<in> F\<^sub>\<UU> \<phi>" and "accepting_pair\<^sub>G\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) P w"
-    unfolding accept\<^sub>G\<^sub>R_def ltl_to_generalised_rabin_opt.simps fst_conv snd_conv by blast 
-  moreover
-  then obtain \<pi> where "dom \<pi> \<subseteq> \<^bold>G \<phi>" and "\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-    and P_def: "P = (M\<^sub>\<UU>_fin \<pi> \<union> \<Union>{Acc\<^sub>\<UU>_fin \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc\<^sub>\<UU>_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>})"
-    by auto
-  have "limit (run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w) \<inter> UNIV \<noteq> {}"
-    using run_limit_not_empty by simp
-  ultimately
-  have "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>, UNIV) w" 
-    and "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> \<chi>) w"
-    unfolding P_def accepting_pair\<^sub>G\<^sub>R_simp accepting_pair\<^sub>R_simp by blast+ (* Slow... *)
-  thus ?thesis
-    using that `dom \<pi> \<subseteq> \<^bold>G \<phi>` `\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)` by blast
-qed
-
-lemma \<UU>_run:
-  defines "r \<equiv> run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
-  shows "fst (fst (r i)) = Abs (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i]))" (is "?t1")
-    and "\<And>\<chi> q. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> the (snd (fst (r i)) \<chi>) q = semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w q i"
-proof -
-  have "run (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w i = 
-    (Abs (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i])), \<lambda>\<chi>. if \<chi> \<in> \<^bold>G \<phi> then Some (\<lambda>\<psi>. foldl (ltl_FG_to_rabin_opt_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>)) (ltl_FG_to_rabin_opt_def.q\<^sub>R (theG \<chi>)) (map w [0..< i]) \<psi>) else None)"
-  proof (induction i)
-    case (Suc i) 
-      have X: "Abs (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> Suc i])) = \<up>af\<^sub>\<UU> (Abs (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i]))) (w i)"
-        by (simp add: af_abs_opt.f_abs.abs_eq af_letter_abs_opt_def) 
-      show ?case 
-        unfolding run_foldl upt_Suc list.simps less_eq_nat.simps(1) if_True map_append foldl_append Suc[unfolded run_foldl] X by auto
-  qed (unfold run_foldl upt_0 list.simps foldl.simps, force)
-  moreover
-  have X: "ltl_FG_to_rabin_opt \<Sigma> {} w"
-    using `finite \<Sigma>` `range w \<subseteq> \<Sigma>` ltl_FG_to_rabin_opt_def by auto
-  ultimately
-  have state_run: "run (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w i = 
-    (Abs (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i])), \<lambda>\<chi>. if \<chi> \<in> \<^bold>G \<phi> then Some (\<lambda>\<psi>. semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w \<psi> i) else None)" 
-    using ltl_FG_to_rabin_opt.state_rank_step_foldl[OF X] by auto
-   
-  show ?t1
-    unfolding r_def run\<^sub>t.simps using state_run by fastforce
-  show "\<And>\<chi> q. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> the (snd (fst (r i)) \<chi>) q = semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w q i"
-    unfolding r_def run\<^sub>t.simps state_run by force
-qed
-
-context
-  fixes 
-    \<psi> :: "'a ltl"
-  fixes 
-    \<pi> :: "'a ltl \<Rightarrow> nat option"
-  assumes
-    "G \<psi> \<in> dom \<pi>"
-  assumes
-    "dom \<pi> \<subseteq> \<^bold>G \<phi>"
-begin
-
-interpretation ltl_FG_to_rabin_opt \<Sigma> \<psi> "dom \<pi>"
-  by (unfold_locales; insert finite_\<Sigma> bounded_w `dom \<pi> \<subseteq> \<^bold>G \<phi>` \<G>_elements; blast)
-
-lemma \<UU>_Acc_property:
-  "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> (G \<psi>)) w \<longleftrightarrow> accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) w"
-  (is "?Acc = ?Acc\<^sub>\<R>")
-proof -  
-  def r \<equiv> "run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w" and r\<^sub>\<psi> \<equiv> "run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
-  hence "finite (range r)"
-    using run\<^sub>t_finite[OF ltl_to_generalised_rabin_unf_wellformed] `range w \<subseteq> \<Sigma>` `finite \<Sigma>`
-    by (blast dest: finite_subset) 
-
-  have "\<And>S. limit r\<^sub>\<psi> \<inter> S = {} \<longleftrightarrow> limit r \<inter> \<Union>(embed_transition_snd ` (\<Union> ((embed_transition (G \<psi>)) ` S))) = {}"
-  proof -
-    fix S
-    have 1: "snd (\<iota>\<^sub>\<UU> \<phi>) (G \<psi>) = Some q\<^sub>\<R>"
-      using `G \<psi> \<in> dom \<pi>` `dom \<pi> \<subseteq> \<^bold>G \<phi>` by auto
-    have 2: "finite (range (run\<^sub>t (\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_opt_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>))) (snd (\<iota>\<^sub>\<UU> \<phi>)) w))"
-      using `finite (range r)` r_def by (auto intro: product_run_finite_snd)
-    show "?thesis S"
-      unfolding r_def r\<^sub>\<psi>_def product_run_embed_limit_finiteness[OF 1 2, unfolded ltl.sel, symmetric] ltl_to_generalised_rabin_unf_initial_state.simps ltl_to_generalised_rabin_unf_transition_function.simps
-      using product_run_embed_limit_finiteness_snd[OF `finite (range r)`[unfolded r_def ltl_to_generalised_rabin_unf_initial_state.simps ltl_to_generalised_rabin_unf_transition_function.simps]] by auto
-  qed
-  hence "limit r \<inter> fst (Acc\<^sub>\<UU> \<pi> (G \<psi>)) = {} \<and> limit r \<inter> snd (Acc\<^sub>\<UU> \<pi> (G \<psi>)) \<noteq> {} 
-     \<longleftrightarrow> limit r\<^sub>\<psi> \<inter> fst (Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) = {} \<and> limit r\<^sub>\<psi> \<inter> snd (Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) \<noteq> {}"
-    by force
-  thus "?Acc \<longleftrightarrow> ?Acc\<^sub>\<R>" 
-    unfolding r\<^sub>\<psi>_def r_def accepting_pair\<^sub>R_def by blast 
-qed
-
-lemma \<UU>_Acc_to_rabin_accept:
-  "\<lbrakk>accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> (G \<psi>)) w; the (\<pi> (G \<psi>)) < max_rank\<rbrakk> \<Longrightarrow> accept\<^sub>R \<R> w"
-  unfolding \<UU>_Acc_property by auto
-
-lemma \<UU>_Acc_to_mojmir_accept:
-  "\<lbrakk>accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> (G \<psi>)) w; the (\<pi> (G \<psi>)) < max_rank\<rbrakk> \<Longrightarrow> accept"
-  using \<UU>_Acc_to_rabin_accept unfolding mojmir_accept_iff_rabin_accept by auto
-
-lemma \<UU>_rabin_accept_to_Acc:
-  "\<lbrakk>accept\<^sub>R \<R> w; \<pi> (G \<psi>) = smallest_accepting_rank\<rbrakk> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> (G \<psi>)) w"
-  unfolding \<UU>_Acc_property Mojmir_rabin_smallest_accepting_rank 
-  using smallest_accepting_rank\<^sub>\<R>_properties smallest_accepting_rank\<^sub>\<R>_def  
-  by (metis (no_types, lifting) option.sel)
-
-lemma \<UU>_mojmir_accept_to_Acc:
-  "\<lbrakk>accept; \<pi> (G \<psi>) = smallest_accepting_rank\<rbrakk> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> (G \<psi>)) w"
-  unfolding mojmir_accept_iff_rabin_accept by (blast dest: \<UU>_rabin_accept_to_Acc)
-
-end
-
-lemma \<UU>_normalise_\<pi>:
-  assumes dom_subset: "dom \<pi> \<subseteq> \<^bold>G \<phi>"
-  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-  assumes "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>, UNIV) w"
-  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> \<chi>) w"
-  obtains \<pi>\<^sub>\<A> where "dom \<pi> = dom \<pi>\<^sub>\<A>"
-    and "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = ltl_FG_to_rabin_opt_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>\<^sub>\<A>) w"
-    and "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<A>, UNIV) w" 
-    and "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi>\<^sub>\<A> \<chi>) w"
-proof -
-  def \<G> \<equiv> "dom \<pi>"
-  note \<G>_properties[OF dom_subset]
-
-  def \<pi>\<^sub>\<A> \<equiv> "(\<lambda>\<chi>. ltl_FG_to_rabin_opt_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) w) |` \<G>"
-
-  moreover
-  
-  {
-    fix \<chi> assume "\<chi> \<in> dom \<pi>"
-  
-    interpret ltl_FG_to_rabin_opt \<Sigma> "theG \<chi>" "dom \<pi>"
-      apply (unfold_locales)
-      using `finite \<Sigma>` dom_subset \<G>_elements bounded_w by (auto, blast)
-  
-    from `\<chi> \<in> dom \<pi>` have "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> \<chi>) w"
-      using assms(4) by blast
-    hence "accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> (the (\<pi> \<chi>))) w" 
-      by (metis `\<chi> \<in> dom \<pi>` \<UU>_Acc_property[OF _ dom_subset] `Only_G (dom \<pi>)` ltl.sel(8))
-    moreover
-    hence "accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {Acc\<^sub>\<R> j | j. j < max_rank}) w"
-      using assms(2)[OF `\<chi> \<in> dom \<pi>`]by auto
-    ultimately
-    have "the (smallest_accepting_rank\<^sub>\<R>) \<le> the (\<pi> \<chi>)" and "smallest_accepting_rank \<noteq> None"
-      using Least_le[of _ "the (\<pi> \<chi>)"] assms(2)[OF `\<chi> \<in> dom \<pi>`] mojmir_accept_iff_rabin_accept option.distinct(1) smallest_accepting_rank_def 
-      by (simp add: smallest_accepting_rank\<^sub>\<R>_def)+
-    hence "the (\<pi>\<^sub>\<A> \<chi>) \<le> the (\<pi> \<chi>)" and "\<chi> \<in> dom \<pi>\<^sub>\<A>"
-      unfolding \<pi>\<^sub>\<A>_def dom_restrict using assms(2) `\<chi> \<in> dom \<pi>` by (simp add: Mojmir_rabin_smallest_accepting_rank \<G>_def, subst dom_def, simp add: \<G>_def)
-  }
-  
-  hence "dom \<pi> = dom \<pi>\<^sub>\<A>"
-    unfolding \<pi>\<^sub>\<A>_def dom_restrict \<G>_def by auto
-  
-  moreover
-  
-  note \<G>_properties[OF dom_subset, unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`]
-  
-  have "M\<^sub>\<UU>_fin \<pi>\<^sub>\<A> \<subseteq> M\<^sub>\<UU>_fin \<pi>" 
-    using `\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi>\<^sub>\<A> \<chi>) \<le> the (\<pi> \<chi>)` unfolding M\<^sub>\<UU>_fin.simps `dom \<pi> = dom \<pi>\<^sub>\<A>` apply simp unfolding Collect_mono_iff case_prod_beta by (meson le_trans) 
-  hence "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<A>, UNIV) w"
-    using assms unfolding accepting_pair\<^sub>R_simp by blast
-   
-  moreover
-
-  --\<open>Goal 2\<close>
-  {
-    fix \<chi> assume "\<chi> \<in> dom \<pi>\<^sub>\<A>"
-    hence "\<chi> = G (theG \<chi>)"
-      unfolding `dom \<pi> = dom \<pi>\<^sub>\<A>`[symmetric] `Only_G (dom \<pi>)` by (metis `Only_G (dom \<pi>\<^sub>\<A>)` `\<chi> \<in> dom \<pi>\<^sub>\<A>` ltl.collapse(6) ltl.disc(58)) 
-    moreover
-    hence "G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>"
-      using `\<chi> \<in> dom \<pi>\<^sub>\<A>` by simp
-    moreover
-    hence X: "ltl_FG_to_rabin_opt_def.accept\<^sub>R' (theG \<chi>) (dom \<pi>) w"
-      by (metis (no_types, lifting) assms(1,2,4) `dom \<pi> \<subseteq> \<^bold>G \<phi>` ltl.sel(8) \<UU>_Acc_to_mojmir_accept `dom \<pi> = dom \<pi>\<^sub>\<A>`) 
-    have Y: "\<pi>\<^sub>\<A> (G theG \<chi>) = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
-      using `G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>` `\<chi> = G (theG \<chi>)` \<pi>\<^sub>\<A>_def `dom \<pi> = dom \<pi>\<^sub>\<A>`[symmetric] by simp
-    ultimately
-    have "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi>\<^sub>\<A> \<chi>) w"
-      using \<UU>_mojmir_accept_to_Acc[OF `G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>` `dom \<pi> \<subseteq> \<^bold>G \<phi>`[unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`] X[unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`] Y] by simp
-  }
-
-  ultimately
-
-  show ?thesis
-    using that[of \<pi>\<^sub>\<A>] restrict_in unfolding `dom \<pi> = dom \<pi>\<^sub>\<A>` \<G>_def 
-    by (metis (no_types, lifting))
-qed
 
 subsection \<open>Correctness Theorem\<close>
 
 lemma unfold_optimisation_correct_M:
   assumes "dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>"
   assumes "dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>"
-  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
-  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<Turnstile>\<^sub>P Rep q}"
-  shows "accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w \<longleftrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w"
+  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<up>\<Turnstile>\<^sub>P q}"
+  assumes "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<up>\<Turnstile>\<^sub>P q}"
+  shows "accepting_pair\<^sub>R (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w \<longleftrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w"
 proof -
   --\<open>Preliminary Facts\<close>
   note \<G>_properties[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`]
 
+  interpret \<A>: ltl_to_rabin_af
+    using ltl_to_generalized_rabin_af_wellformed bounded_w finite_\<Sigma> by auto
+
   --\<open>Define constants for both runs\<close>
-  def r\<^sub>\<A> \<equiv> "run\<^sub>t (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) w" and r\<^sub>\<UU> \<equiv> "run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
+  def r\<^sub>\<A> \<equiv> "run\<^sub>t (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) w" and r\<^sub>\<UU> \<equiv> "run\<^sub>t (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) w"
   hence "finite (range r\<^sub>\<A>)" and "finite (range r\<^sub>\<UU>)"
-    using run\<^sub>t_finite[OF ltl_to_generalised_rabin_wellformed] run\<^sub>t_finite[OF ltl_to_generalised_rabin_unf_wellformed] 
-    using `range w \<subseteq> \<Sigma>` `finite \<Sigma>` by (blast dest: finite_subset)+
+    using run\<^sub>t_finite[OF \<A>.finite_reach] run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma> by simp+
 
   --\<open>Prove that the limit of both runs behave the same in respect to the M acceptance condition\<close>
   have "limit r\<^sub>\<A> \<inter> M_fin \<pi>\<^sub>\<A> = {} \<longleftrightarrow> limit r\<^sub>\<UU> \<inter> M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU> = {}"
@@ -757,7 +335,7 @@ proof -
     have "ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w"
       by (unfold_locales; insert \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w) 
     hence X: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> mojmir_def.accept \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
-      by (metis assms(3) ltl_FG_to_rabin.smallest_accepting_rank_properties(1) domD)
+      by (metis assms(3)[unfolded ltl_prop_entails_abs.rep_eq] ltl_FG_to_rabin.smallest_accepting_rank_properties(1) domD)
     have "\<forall>\<^sub>\<infinity>i. \<forall>\<chi> \<in> dom \<pi>\<^sub>\<A>. mojmir_def.\<S> \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q} (Suc i)
        = (\<lambda>q. step_abs q (w i)) ` (mojmir_def.\<S> \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q} i) \<union> {Abs (theG \<chi>)} \<union> {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
       using almost_all_commutative'[OF `finite (dom \<pi>\<^sub>\<A>)`] X unfold_\<S>_eq[OF `Only_G (dom \<pi>\<^sub>\<A>)`] finite_\<Sigma> bounded_w by simp
@@ -786,15 +364,17 @@ proof -
         unfolding r\<^sub>\<UU>_def run\<^sub>t.simps using PairE by fastforce
 
       have m\<^sub>\<A>_def: "\<And>\<chi> q. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> the (m\<^sub>\<A> \<chi>) q = semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w q (Suc j)"
-        using \<A>_run(2)[OF finite_\<Sigma> bounded_w, of _ \<phi> "Suc j"] unfolding r\<^sub>\<A>_def'[unfolded r\<^sub>\<A>_def] prod.sel by simp
+        using \<A>.run_properties(2)[of _ \<phi> "Suc j"] r\<^sub>\<A>_def'[unfolded r\<^sub>\<A>_def] prod.sel  by simp
 
       have m\<^sub>\<UU>_def: "\<And>\<chi> q. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> the (m\<^sub>\<UU> \<chi>) q = semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w q j"
-        using \<UU>_run(2)[of _ j] unfolding r\<^sub>\<UU>_def'[unfolded r\<^sub>\<UU>_def] prod.sel by simp
+        using run_properties(2)[of _ \<phi> j] r\<^sub>\<UU>_def'[unfolded r\<^sub>\<UU>_def] prod.sel by simp
 
       {
+        have upt_Suc_0: "[0..<Suc j] = [0..<j] @ [j]"
+          by simp
         have "Rep (fst (fst (r\<^sub>\<A> (Suc j)))) \<equiv>\<^sub>P step (Rep (fst (fst (r\<^sub>\<UU> j)))) (w j)"
-          using \<A>_run(1)[OF finite_\<Sigma> bounded_w, of \<phi> "Suc j"] \<UU>_run(1) step_abs.f_abs.abs_eq r\<^sub>\<A>_def r\<^sub>\<UU>_def 
-          by (metis Rep_step `fst (fst (run\<^sub>t (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) w (Suc j))) = Abs (af \<phi> (w [0 \<rightarrow> Suc j]))` af_equiv' step_abs_def)
+          unfolding r\<^sub>\<A>_def r\<^sub>\<UU>_def run\<^sub>t.simps fst_conv \<A>.run_properties(1)[of \<phi> "Suc j"] run_properties(1) comp_apply 
+          unfolding subsequence_def upt_Suc_0 map_append map_def list.map af_abs_equiv Unf_abs.abs_eq using Rep_step by auto
         hence A: "\<And>S. S \<Turnstile>\<^sub>P Rep \<phi>\<^sub>\<A> \<longleftrightarrow> S \<Turnstile>\<^sub>P step (Rep \<phi>\<^sub>\<UU>) (w j)"
           unfolding r\<^sub>\<A>_def' r\<^sub>\<UU>_def' prod.sel ltl_prop_equiv_def ..
         
@@ -828,7 +408,7 @@ proof -
             have 1: "\<MM>.smallest_accepting_rank = (\<pi>\<^sub>\<A> \<chi>)"
               and 2: "\<UU>.smallest_accepting_rank = (\<pi>\<^sub>\<UU> \<chi>)"
               and 3: "\<chi> \<in> \<^bold>G \<phi>"
-              using `\<chi> \<in> dom \<pi>\<^sub>\<A>` assms by auto
+              using `\<chi> \<in> dom \<pi>\<^sub>\<A>` assms[unfolded ltl_prop_entails_abs.rep_eq] by auto
             ultimately
             have "(\<forall>q \<in> \<MM>.\<S> (Suc j). ?P q) = (\<forall>q \<in> (\<lambda>q. step_abs q (w j)) ` (\<UU>.\<S> j) \<union> {Abs (theG \<chi>)}. ?P q)"
               unfolding Y by blast
@@ -849,7 +429,7 @@ proof -
           unfolding assms by auto
       }
       hence "((\<phi>\<^sub>\<A>, m\<^sub>\<A>), w (Suc j), x) \<in> M_fin \<pi>\<^sub>\<A> \<longleftrightarrow> ((\<phi>\<^sub>\<UU>, m\<^sub>\<UU>), w j, y) \<in> M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>"
-        unfolding M_fin.simps M\<^sub>\<UU>_fin.simps ltl_prop_entails_abs.abs_eq[symmetric] eval\<^sub>G_abs.abs_eq[symmetric] step_Abs_eq ltl\<^sub>P_abs_rep by blast
+        unfolding M_fin.simps M\<^sub>\<UU>_fin.simps ltl_prop_entails_abs.abs_eq[symmetric] eval\<^sub>G_abs.abs_eq[symmetric] ltl\<^sub>P_abs_rep step_abs.abs_eq[symmetric] by blast
       thus "?thesis j" 
         unfolding r\<^sub>\<A>_def' r\<^sub>\<UU>_def' .
     qed 
@@ -869,106 +449,135 @@ proof -
     unfolding accepting_pair\<^sub>R_def fst_conv snd_conv r\<^sub>\<A>_def[symmetric] r\<^sub>\<UU>_def[symmetric] Let_def by blast
 qed
 
-theorem unfold_optimisation_correct:
-  "accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin \<Sigma> \<phi>) w \<longleftrightarrow> accept\<^sub>G\<^sub>R (\<A>\<^sub>\<UU> \<phi>) w" (is "?lhs \<longleftrightarrow> ?rhs")
-proof
-  assume ?lhs
-  then obtain \<pi> where I: "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
-    and II:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-    and III: "accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>, UNIV) w"
-    and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (Acc \<Sigma> \<pi> \<chi>) w"
-    by (blast intro: accept\<^sub>G\<^sub>R_\<A>_I[OF finite_\<Sigma> bounded_w])
+theorem ltl_to_generalized_rabin_correct:
+  "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R (\<A>\<^sub>\<UU> \<Sigma> \<phi>) w" 
+  (is "_ \<longleftrightarrow> ?rhs")
+proof (unfold ltl_to_generalized_rabin_af_correct[OF finite_\<Sigma> bounded_w], standard)
+  let ?lhs = "accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin_af \<Sigma> \<phi>) w"
 
-  --\<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
-  then obtain \<pi>\<^sub>\<A> where A: "dom \<pi> = dom \<pi>\<^sub>\<A>"
-    and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
-    and C: "accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
-    and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
-    using \<A>_normalise_\<pi>[OF finite_\<Sigma> bounded_w ] by blast
-
-  --\<open>Properties about the domain of @{text \<pi>}\<close>
-  note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
-  hence \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs (Abs (theG \<chi>)) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q}"
-    using I II IV \<A>_Acc_to_mojmir_accept[OF finite_\<Sigma> bounded_w] by (metis ltl.sel(8)) 
-  hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q}"
-    using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w] by blast
-
-  --\<open>Define @{text \<pi>} for the other automaton\<close>
-  def \<pi>\<^sub>\<UU> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q} else None"
+  interpret \<A>: ltl_to_rabin_af \<Sigma> w
+    using ltl_to_generalized_rabin_af_wellformed bounded_w finite_\<Sigma> by auto
+   
+  {
+    assume ?lhs
+    then obtain \<pi> where I: "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
+      and II:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < \<A>.max_rank_of \<Sigma> \<chi>"
+      and III: "accepting_pair\<^sub>R (ltl_to_rabin_af.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>, UNIV) w"
+      and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (ltl_to_rabin_af.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi> \<chi>) w"
+      by (unfold ltl_to_generalized_rabin_af.simps; blast intro: \<A>.accept\<^sub>G\<^sub>R_I)
+ 
+    --\<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
+    then obtain \<pi>\<^sub>\<A> where A: "dom \<pi> = dom \<pi>\<^sub>\<A>"
+      and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<up>\<Turnstile>\<^sub>P q}"
+      and C: "accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
+      and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
+      using \<A>.normalize_\<pi> by blast
   
-  have 1: "dom \<pi>\<^sub>\<UU> = dom \<pi>"
-    using \<UU>_Accept by (auto simp add: \<pi>\<^sub>\<UU>_def dom_def mojmir_def.smallest_accepting_rank_def)   
-  hence "dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>" and "dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>" and "dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>"
-    using A `dom \<pi> \<subseteq> \<^bold>G \<phi>` by blast+
-  have 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<Turnstile>\<^sub>P Rep q}"
-    using 1 unfolding `dom \<pi>\<^sub>\<UU> = dom \<pi>` \<pi>\<^sub>\<UU>_def by simp
-  hence 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> the (\<pi>\<^sub>\<UU> \<chi>) < semi_mojmir_def.max_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) "
-    using wellformed_mojmir_opt[OF \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w, THEN mojmir.smallest_accepting_rank_properties(6)] by fastforce
-
-  --\<open>Use correctness of the translation of individual accepting pairs\<close>
-  have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi>\<^sub>\<UU> \<chi>) w"
-    using \<UU>_mojmir_accept_to_Acc[OF _ `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] 
-    using 1 2[of "G _"] 3[of "G _"] \<UU>_Accept[of "G _"] ltl.sel(8) by metis 
-  have M: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w"
-    using unfold_optimisation_correct_M[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` B 2] C
-    using `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` by blast+
-
-  show ?rhs
-    using Acc 3 `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>` combine_rabin_pairs_UNIV[OF M combine_rabin_pairs] 
-    by (simp only: ltl_to_generalised_rabin_opt.simps accept\<^sub>G\<^sub>R_def fst_conv snd_conv ltl_to_generalised_rabin_unf_acceptance_condition.simps) blast
-next
-  assume ?rhs
-  then obtain \<pi> where I: "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
-    and II:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_opt_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-    and III: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>, UNIV) w"
-    and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi> \<chi>) w"
-    by (blast intro: accept\<^sub>G\<^sub>R_\<UU>_I)
-
-  --\<open>Normalise @{text \<pi>} to the smallest accepting ranks\<close>
-  then obtain \<pi>\<^sub>\<UU> where A: "dom \<pi> = dom \<pi>\<^sub>\<UU>"
-    and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<Turnstile>\<^sub>P Rep q}"
-    and C: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w" 
-    and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<pi>\<^sub>\<UU> \<chi>) w"
-    using \<UU>_normalise_\<pi> by blast
-
-  --\<open>Properties about the domain of @{text \<pi>}\<close>
-  note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
-  hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q}"
-    using I II IV \<UU>_Acc_to_mojmir_accept by (metis ltl.sel(8)) 
-  hence \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs (Abs (theG \<chi>)) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q}"
-    using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w] by blast
-
-  --\<open>Define @{text \<pi>} for the other automaton\<close>
-  def \<pi>\<^sub>\<A> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi> \<Turnstile>\<^sub>P Rep q} else None"
+    --\<open>Properties about the domain of @{text \<pi>}\<close>
+    note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
+    hence \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
+      using I II IV \<A>.Acc_to_mojmir_accept unfolding ltl_to_rabin_base_def.max_rank_of_def by (metis ltl.sel(8)) 
+    hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
+      using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w] unfolding ltl_prop_entails_abs.rep_eq by blast
   
-  have 1: "dom \<pi>\<^sub>\<A> = dom \<pi>"
-    using \<MM>_Accept by (auto simp add: \<pi>\<^sub>\<A>_def dom_def mojmir_def.smallest_accepting_rank_def)   
-  hence "dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>" and "dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>" and "dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>"
-    using A `dom \<pi> \<subseteq> \<^bold>G \<phi>` by blast+
-  hence "ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w"
-    by (unfold_locales; insert \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w) 
-  have 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<Turnstile>\<^sub>P Rep q}"
-    using 1 unfolding `dom \<pi>\<^sub>\<A> = dom \<pi>` \<pi>\<^sub>\<A>_def by simp
-  hence 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> the (\<pi>\<^sub>\<A> \<chi>) < semi_mojmir_def.max_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>))"
-    using ltl_FG_to_rabin.smallest_accepting_rank_properties(6)[OF `ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w`] by fastforce
+    --\<open>Define @{text \<pi>} for the other automaton\<close>
+    def \<pi>\<^sub>\<UU> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None"
+    
+    have 1: "dom \<pi>\<^sub>\<UU> = dom \<pi>"
+      using \<UU>_Accept by (auto simp add: \<pi>\<^sub>\<UU>_def dom_def mojmir_def.smallest_accepting_rank_def)   
+    hence "dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>" and "dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>" and "dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>"
+      using A `dom \<pi> \<subseteq> \<^bold>G \<phi>` by blast+
+    have 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<up>\<Turnstile>\<^sub>P q}"
+      using 1 unfolding `dom \<pi>\<^sub>\<UU> = dom \<pi>` \<pi>\<^sub>\<UU>_def by simp
+    hence 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> the (\<pi>\<^sub>\<UU> \<chi>) < semi_mojmir_def.max_rank \<Sigma> af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) "
+      using wellformed_mojmir_opt[OF \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w, THEN mojmir.smallest_accepting_rank_properties(6)]
+       unfolding ltl_prop_entails_abs.rep_eq by fastforce
+  
+    --\<open>Use correctness of the translation of individual accepting pairs\<close>
+    have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi>\<^sub>\<UU> \<chi>) w"
+      using mojmir_accept_to_Acc[OF _ `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>`] 
+      using 1 2[of "G _"] 3[of "G _"] \<UU>_Accept[of "G _"] ltl.sel(8) unfolding comp_apply by metis
+    have M: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w"
+      using unfold_optimisation_correct_M[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` B 2] C
+      using `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` by blast+
+  
+    show ?rhs
+      using Acc 3 `dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>` combine_rabin_pairs_UNIV[OF M combine_rabin_pairs] 
+      by (simp only: accept\<^sub>G\<^sub>R_def fst_conv snd_conv ltl_to_generalized_rabin.simps rabin_pairs.simps max_rank_of_def comp_apply) blast 
+  }
 
-  --\<open>Use correctness of the translation of individual accepting pairs\<close>
-  have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
-    using \<A>_mojmir_accept_to_Acc[OF finite_\<Sigma> bounded_w _ `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] 
-    using 1 2[of "G _"] 3[of "G _"] \<MM>_Accept[of "G _"] ltl.sel(8) by metis 
-  have M: "accepting_pair\<^sub>R (\<delta>\<^sub>\<A> \<Sigma>) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
-    using unfold_optimisation_correct_M[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` 2 B] C
-    using `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` by blast+
-
-  show ?lhs
-    using Acc 3 `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` combine_rabin_pairs_UNIV[OF M combine_rabin_pairs]
-    by (simp only: ltl_to_generalized_rabin.simps accept\<^sub>G\<^sub>R_def fst_conv snd_conv ltl_to_generalised_rabin_acceptance_condition.simps) blast
+  {
+    assume ?rhs
+    then obtain \<pi> where I: "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
+      and II:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < max_rank_of \<Sigma> \<chi>"
+      and III: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>, UNIV) w"
+      and IV:  "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi> \<chi>) w"
+      by (blast intro: accept\<^sub>G\<^sub>R_I)
+  
+    --\<open>Normalize @{text \<pi>} to the smallest accepting ranks\<close>
+    then obtain \<pi>\<^sub>\<UU> where A: "dom \<pi> = dom \<pi>\<^sub>\<UU>"
+      and B: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> \<pi>\<^sub>\<UU> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G\<^sub>\<UU> (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi>\<^sub>\<UU> \<up>\<Turnstile>\<^sub>P q}"
+      and C: "accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>, UNIV) w" 
+      and D: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<UU> \<Longrightarrow> accepting_pair\<^sub>R (\<delta>\<^sub>\<UU> \<Sigma>) (\<iota>\<^sub>\<UU> \<phi>) (Acc\<^sub>\<UU> \<Sigma> \<pi>\<^sub>\<UU> \<chi>) w"
+      using normalize_\<pi> unfolding comp_apply by blast
+  
+    --\<open>Properties about the domain of @{text \<pi>}\<close>
+    note \<G>_properties[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`]
+    hence \<UU>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs_opt (Abs (Unf\<^sub>G (theG \<chi>))) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
+      using I II IV Acc_to_mojmir_accept unfolding max_rank_of_def comp_apply by (metis ltl.sel(8)) 
+    hence \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> mojmir_def.accept af_G_letter_abs (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
+      using unfold_accept_eq[OF `Only_G (dom \<pi>)` finite_\<Sigma> bounded_w]
+      unfolding ltl_prop_entails_abs.rep_eq by blast
+  
+    --\<open>Define @{text \<pi>} for the other automaton\<close>
+    def \<pi>\<^sub>\<A> \<equiv> "\<lambda>\<chi>. if \<chi> \<in> dom \<pi> then mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} else None"
+    
+    have 1: "dom \<pi>\<^sub>\<A> = dom \<pi>"
+      using \<MM>_Accept by (auto simp add: \<pi>\<^sub>\<A>_def dom_def mojmir_def.smallest_accepting_rank_def)   
+    hence "dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>" and "dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>" and "dom \<pi>\<^sub>\<UU> \<subseteq> \<^bold>G \<phi>"
+      using A `dom \<pi> \<subseteq> \<^bold>G \<phi>` by blast+
+    hence "ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w"
+      by (unfold_locales; insert \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] finite_\<Sigma> bounded_w) 
+    have 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> \<pi>\<^sub>\<A> \<chi> = mojmir_def.smallest_accepting_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<up>\<Turnstile>\<^sub>P q}"
+      using 1 unfolding `dom \<pi>\<^sub>\<A> = dom \<pi>` \<pi>\<^sub>\<A>_def by simp
+    hence 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> the (\<pi>\<^sub>\<A> \<chi>) < semi_mojmir_def.max_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>))"
+      using ltl_FG_to_rabin.smallest_accepting_rank_properties(6)[OF `ltl_FG_to_rabin \<Sigma> (dom \<pi>\<^sub>\<A>) w`]
+      unfolding ltl_prop_entails_abs.rep_eq by fastforce
+  
+    --\<open>Use correctness of the translation of individual accepting pairs\<close>
+    have Acc: "\<And>\<chi>. \<chi> \<in> dom \<pi>\<^sub>\<A> \<Longrightarrow> accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (\<A>.Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
+      using \<A>.mojmir_accept_to_Acc[OF _ `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] \<G>_elements[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>`] 
+      using 1 2[of "G _"] 3[of "G _"] \<MM>_Accept[of "G _"] ltl.sel(8) by metis 
+    have M: "accepting_pair\<^sub>R (\<A>.\<delta>\<^sub>\<A> \<Sigma>) (\<A>.\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w" 
+      using unfold_optimisation_correct_M[OF `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` 2 B] C
+      using `dom \<pi>\<^sub>\<UU> = dom \<pi>\<^sub>\<A>` by blast+
+  
+    show ?lhs
+      using Acc 3 `dom \<pi>\<^sub>\<A> \<subseteq> \<^bold>G \<phi>` combine_rabin_pairs_UNIV[OF M combine_rabin_pairs]
+      by (simp only: accept\<^sub>G\<^sub>R_def fst_conv snd_conv \<A>.ltl_to_generalized_rabin.simps \<A>.rabin_pairs.simps
+                     ltl_to_generalized_rabin_af.simps  \<A>.max_rank_of_def comp_apply) blast 
+  }
 qed
 
 end
 
-end
+fun ltl_to_generalized_rabin_af\<^sub>\<UU>
+where
+  "ltl_to_generalized_rabin_af\<^sub>\<UU> \<Sigma> \<phi> = ltl_to_rabin_base_def.ltl_to_generalized_rabin \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) M\<^sub>\<UU>_fin \<Sigma> \<phi>"  
 
-thm unfold_optimisation_correct
+lemma ltl_to_generalized_rabin_af\<^sub>\<UU>_wellformed:
+  "finite \<Sigma> \<Longrightarrow> range w \<subseteq> \<Sigma> \<Longrightarrow> ltl_to_rabin_af_unf \<Sigma> w"
+  apply (unfold_locales)
+  apply (auto simp add: af_G_letter_opt_sat_core_lifted ltl_prop_entails_abs.rep_eq intro: finite_reach_af_opt finite_reach_af_G_opt) 
+  apply (meson le_trans ltl_semi_mojmir[unfolded semi_mojmir_def])+
+  done
+
+theorem ltl_to_generalized_rabin_af\<^sub>\<UU>_correct:
+  assumes "finite \<Sigma>"
+  assumes "range w \<subseteq> \<Sigma>"
+  shows "w \<Turnstile> \<phi> = accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin_af\<^sub>\<UU> \<Sigma> \<phi>) w"
+  using ltl_to_generalized_rabin_af\<^sub>\<UU>_wellformed[OF assms, THEN ltl_to_rabin_af_unf.ltl_to_generalized_rabin_correct] by simp
+
+thm ltl_FG_to_generalized_rabin_correct ltl_to_generalized_rabin_af_correct ltl_to_generalized_rabin_af\<^sub>\<UU>_correct
 
 end

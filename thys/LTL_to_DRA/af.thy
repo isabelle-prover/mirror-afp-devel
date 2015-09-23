@@ -26,7 +26,7 @@ where
 
 abbreviation af :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af")
 where
-  "af \<phi> w \<equiv> (foldl af_letter \<phi> w)"
+  "af \<phi> w \<equiv> foldl af_letter \<phi> w"
 
 lemma af_decompose:
   "af (\<phi> and \<psi>) w = (af \<phi> w) and (af \<psi> w)"
@@ -92,7 +92,7 @@ lemma af_nested_propos:
   "nested_propos (af_letter \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
   by (induction \<phi>) auto
 
-subsection \<open>$af_G$\<close>
+subsection \<open>@{term af\<^sub>G}\<close>
 
 fun af_G_letter :: "'a ltl \<Rightarrow> 'a set \<Rightarrow> 'a ltl"
 where
@@ -144,7 +144,7 @@ lemma af\<^sub>G_subsequence_U:
   "af\<^sub>G (\<phi> U \<psi>) (w [0 \<rightarrow> Suc n]) = (af\<^sub>G (\<phi> U \<psi>) (w [1 \<rightarrow> Suc n]) and af\<^sub>G \<phi> (w [0 \<rightarrow> Suc n])) or af\<^sub>G \<psi> (w [0 \<rightarrow> Suc n])"
 proof -
   have "\<And>n. w [0 \<rightarrow> Suc n] = w 0 # w [1 \<rightarrow> Suc n]"
-    using subsequence_empty subsequence_append[of w 1] by (simp add: upt_conv_Cons) 
+    using subsequence_append[of w 1] by (simp add: subsequence_def upt_conv_Cons) 
   thus ?thesis
     using af\<^sub>G_U by metis
 qed
@@ -180,7 +180,7 @@ lemma af\<^sub>G_sat_core:
   "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> w"
   using af_G_letter_sat_core by (induction w rule: rev_induct) (simp_all, blast)
 
-lemma af\<^sub>G_sat_core_generalised:
+lemma af\<^sub>G_sat_core_generalized:
   "Only_G \<G> \<Longrightarrow> i \<le> j \<Longrightarrow> \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> i]) \<Longrightarrow> \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [0 \<rightarrow> j])"
   by (metis af\<^sub>G_sat_core foldl_append subsequence_append le_add_diff_inverse)
 
@@ -290,7 +290,7 @@ proof (induction \<phi> arbitrary: w)
       then obtain w' where "x = af \<phi> w'" and "w' \<in> set (suffixes w)"
         by auto
       then obtain i where "w' = drop i w" and "i < length w"
-        unfolding suffixes_alt_def set_rev by auto
+        by (auto simp add: suffixes_alt_def subsequence_def)
       hence "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')"
         using LTLGlobal.prems `G \<phi> \<in> \<G>` by simp
       hence "S \<Turnstile>\<^sub>P x"
@@ -311,7 +311,7 @@ next
         then obtain w' where "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')" and "w' \<in> set (suffixes w)"
           using x_def `S \<Turnstile>\<^sub>P x` by auto
         hence "\<And>\<psi> i. G \<psi> \<in> \<G> \<Longrightarrow> i < length w' \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<psi> (drop i w'))"
-          using LTLFinal.prems unfolding suffixes_alt_def set_rev by auto
+          using LTLFinal.prems by (auto simp add: suffixes_alt_def subsequence_def)
         moreover
         have "\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (G \<psi>)"
           using LTLFinal by simp
@@ -429,8 +429,8 @@ proof (induction w arbitrary: \<phi> w')
 qed simp
 
 lemma af_ltl_continuation_suffix:
-  "w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af \<phi> (w [0 \<rightarrow> i])"
-  using af_ltl_continuation[of "prefix i w" "suffix i w"] by simp
+  "w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af \<phi> (w[0 \<rightarrow> i])"
+  using af_ltl_continuation prefix_suffix subsequence_def by metis
 
 lemma af_G_ltl_continuation:
   "\<forall>\<psi> \<in> \<^bold>G \<phi>. w' \<Turnstile> \<psi> = (w \<frown> w') \<Turnstile> \<psi> \<Longrightarrow> (w \<frown> w') \<Turnstile> \<phi> \<longleftrightarrow> w' \<Turnstile> af\<^sub>G \<phi> w"
@@ -440,7 +440,7 @@ proof (induction w arbitrary: w' \<phi>)
       fix \<psi> :: "'a ltl" fix  w w' w'' 
       assume "w'' \<Turnstile> G \<psi> = ((w @ w') \<frown> w'') \<Turnstile> G \<psi>"
       hence "w'' \<Turnstile> G \<psi> = (w' \<frown>  w'') \<Turnstile> G \<psi>" and "(w' \<frown> w'') \<Turnstile> G \<psi> = ((w @ w') \<frown> w'') \<Turnstile> G \<psi>"
-        by (induction w' arbitrary: w) (metis LTL_suffix_G conc_conc suffix_conc_length)+
+        by (induction w' arbitrary: w) (metis LTL_suffix_G suffix_conc_length conc_conc)+
     }
     note G_stable = this
     have A: "\<forall>\<psi>\<in>\<^bold>G (af\<^sub>G \<phi> [x]). w' \<Turnstile> \<psi> = (xs conc w') \<Turnstile> \<psi>"
@@ -451,14 +451,14 @@ proof (induction w arbitrary: w' \<phi>)
     proof (induction \<phi>)
       case (LTLFinal \<phi>)
         thus ?case
-          unfolding LTL_F_one_step_unfolding 
+          unfolding LTL_F_one_step_unfolding
           by (auto simp add: suffix_conc_length[of "[x]", simplified])
     next
       case (LTLUntil \<phi> \<psi>)
         thus ?case
           unfolding LTL_U_one_step_unfolding
           by (auto simp add: suffix_conc_length[of "[x]", simplified])
-    qed (auto simp add: conc_fst[of 0 "[x]"] suffix_conc_length[of "[x]", simplified]) 
+    qed (auto simp add: conc_fst[of 0 "[x]"] suffix_conc_length[of "[x]", simplified])
     also
     have "... = w' \<Turnstile> af\<^sub>G \<phi> (x # xs)"
       using Cons.IH[of "af\<^sub>G \<phi> [x]" w'] A by simp
@@ -469,6 +469,187 @@ qed simp
 
 lemma af\<^sub>G_ltl_continuation_suffix:
   "\<forall>\<psi> \<in> \<^bold>G \<phi>. w \<Turnstile> \<psi> = (suffix i w) \<Turnstile> \<psi> \<Longrightarrow> w \<Turnstile> \<phi> \<longleftrightarrow> suffix i w \<Turnstile> af\<^sub>G \<phi> (w [0 \<rightarrow> i])"  
-  using af_G_ltl_continuation[of \<phi> "suffix i w"] by force
+  by (metis af_G_ltl_continuation[of \<phi> "suffix i w"] prefix_suffix subsequence_def)
+
+subsection \<open>Eager Unfolding @{term af} and @{term af\<^sub>G}\<close> 
+
+fun Unf :: "'a ltl \<Rightarrow> 'a ltl"
+where
+  "Unf (F \<phi>) = F \<phi> or Unf \<phi>"
+| "Unf (G \<phi>) = G \<phi> and Unf \<phi>" 
+| "Unf (\<phi> U \<psi>) = (\<phi> U \<psi> and Unf \<phi>) or Unf \<psi>"
+| "Unf (\<phi> and \<psi>) = Unf \<phi> and Unf \<psi>"
+| "Unf (\<phi> or \<psi>) = Unf \<phi> or Unf \<psi>"
+| "Unf \<phi> = \<phi>"
+
+fun Unf\<^sub>G :: "'a ltl \<Rightarrow> 'a ltl"
+where
+  "Unf\<^sub>G (F \<phi>) = F \<phi> or Unf\<^sub>G \<phi>"
+| "Unf\<^sub>G (G \<phi>) = G \<phi>" 
+| "Unf\<^sub>G (\<phi> U \<psi>) = (\<phi> U \<psi> and Unf\<^sub>G \<phi>) or Unf\<^sub>G \<psi>"
+| "Unf\<^sub>G (\<phi> and \<psi>) = Unf\<^sub>G \<phi> and Unf\<^sub>G \<psi>"
+| "Unf\<^sub>G (\<phi> or \<psi>) = Unf\<^sub>G \<phi> or Unf\<^sub>G \<psi>"
+| "Unf\<^sub>G \<phi> = \<phi>"
+
+fun step :: "'a ltl \<Rightarrow> 'a set \<Rightarrow> 'a ltl"
+where
+  "step p(a) \<nu> = (if a \<in> \<nu> then true else false)"
+| "step (np(a)) \<nu> = (if a \<notin> \<nu> then true else false)"
+| "step (X \<phi>) \<nu> = \<phi>"
+| "step (\<phi> and \<psi>) \<nu> = step \<phi> \<nu> and step \<psi> \<nu>"
+| "step (\<phi> or \<psi>) \<nu> = step \<phi> \<nu> or step \<psi> \<nu>"
+| "step \<phi> \<nu> = \<phi>"
+
+fun af_letter_opt
+where
+  "af_letter_opt \<phi> \<nu> = Unf (step \<phi> \<nu>)"
+
+fun af_G_letter_opt
+where
+  "af_G_letter_opt \<phi> \<nu> = Unf\<^sub>G (step \<phi> \<nu>)"
+
+abbreviation af_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>\<UU>")
+where
+  "af\<^sub>\<UU> \<phi> w \<equiv> (foldl af_letter_opt \<phi> w)"
+
+abbreviation af_G_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>G\<^sub>\<UU>")
+where
+  "af\<^sub>G\<^sub>\<UU> \<phi> w \<equiv> (foldl af_G_letter_opt \<phi> w)"
+
+lemma af_letter_alt_def:
+  "af_letter \<phi> \<nu> = step (Unf \<phi>) \<nu>"
+  "af_G_letter \<phi> \<nu> = step (Unf\<^sub>G \<phi>) \<nu>"
+  by (induction \<phi>) simp_all
+
+lemma af_to_af_opt:
+  "Unf (af \<phi> w) = af\<^sub>\<UU> (Unf \<phi>) w"
+  "Unf\<^sub>G (af\<^sub>G \<phi> w) = af\<^sub>G\<^sub>\<UU> (Unf\<^sub>G \<phi>) w"
+  by (induction w arbitrary: \<phi>)
+     (simp_all add: af_letter_alt_def)
+
+lemma af_equiv:
+  "af \<phi> (w @ [\<nu>]) = step (af\<^sub>\<UU> (Unf \<phi>) w) \<nu>"
+  using af_to_af_opt(1) by (metis af_letter_alt_def(1) foldl_Cons foldl_Nil foldl_append)
+
+lemma af_equiv':
+  "af \<phi> (w [0 \<rightarrow> Suc i]) = step (af\<^sub>\<UU> (Unf \<phi>) (w [0 \<rightarrow> i])) (w i)"
+  using af_equiv unfolding subsequence_def by auto
+
+subsection \<open>Lifted Functions\<close>
+
+lemma respectfulness:
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> af_letter_opt \<phi> \<nu> \<longrightarrow>\<^sub>P af_letter_opt \<psi> \<nu>"
+  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> af_letter_opt \<phi> \<nu> \<equiv>\<^sub>P af_letter_opt \<psi> \<nu>"
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> af_G_letter_opt \<phi> \<nu> \<longrightarrow>\<^sub>P af_G_letter_opt \<psi> \<nu>"
+  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> af_G_letter_opt \<phi> \<nu> \<equiv>\<^sub>P af_G_letter_opt \<psi> \<nu>"
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> step \<phi> \<nu> \<longrightarrow>\<^sub>P step \<psi> \<nu>"
+  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> step \<phi> \<nu> \<equiv>\<^sub>P step \<psi> \<nu>"
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> Unf \<phi> \<longrightarrow>\<^sub>P Unf \<psi>"
+  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> Unf \<phi> \<equiv>\<^sub>P Unf \<psi>"
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> Unf\<^sub>G \<phi> \<longrightarrow>\<^sub>P Unf\<^sub>G \<psi>"
+  "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> Unf\<^sub>G \<phi> \<equiv>\<^sub>P Unf\<^sub>G \<psi>"
+  using decomposable_function_subst[of "\<lambda>\<chi>. af_letter_opt \<chi> \<nu>", simplified] af_letter_opt.simps
+  using decomposable_function_subst[of "\<lambda>\<chi>. af_G_letter_opt \<chi> \<nu>", simplified] af_G_letter_opt.simps
+  using decomposable_function_subst[of "\<lambda>\<chi>. step \<chi> \<nu>", simplified]
+  using decomposable_function_subst[of Unf, simplified] 
+  using decomposable_function_subst[of Unf\<^sub>G, simplified]
+  using subst_respects_ltl_prop_entailment by metis+
+
+lemma nested_propos:
+  "nested_propos (step \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
+  "nested_propos (Unf \<phi>) \<subseteq> nested_propos \<phi>"
+  "nested_propos (Unf\<^sub>G \<phi>) \<subseteq> nested_propos \<phi>"
+  "nested_propos (af_letter_opt \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
+  "nested_propos (af_G_letter_opt \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
+  by (induction \<phi>) auto
+
+text \<open>Lift functions and bind to new names\<close>
+
+interpretation af_abs: lift_ltl_transformer af_letter
+  using lift_ltl_transformer_def af_respectfulness af_nested_propos by blast
+
+definition af_letter_abs ("\<up>af")
+where
+  "\<up>af \<equiv> af_abs.f_abs"
+
+interpretation af_G_abs: lift_ltl_transformer af_G_letter
+  using lift_ltl_transformer_def af_G_respectfulness af_G_nested_propos by blast
+
+definition af_G_letter_abs ("\<up>af\<^sub>G")
+where
+  "\<up>af\<^sub>G \<equiv> af_G_abs.f_abs"
+
+interpretation af_abs_opt: lift_ltl_transformer af_letter_opt
+  using lift_ltl_transformer_def respectfulness nested_propos by blast
+
+definition af_letter_abs_opt ("\<up>af\<^sub>\<UU>")
+where
+  "\<up>af\<^sub>\<UU> \<equiv> af_abs_opt.f_abs"
+
+interpretation af_G_abs_opt: lift_ltl_transformer af_G_letter_opt
+  using lift_ltl_transformer_def respectfulness nested_propos by blast
+
+definition af_G_letter_abs_opt ("\<up>af\<^sub>G\<^sub>\<UU>")
+where
+  "\<up>af\<^sub>G\<^sub>\<UU> \<equiv> af_G_abs_opt.f_abs"
+
+lift_definition step_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a set \<Rightarrow> 'a ltl\<^sub>P" ("\<up>step") is step
+  by (insert respectfulness)
+
+lift_definition Unf_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>Unf") is Unf
+  by (insert respectfulness)
+
+lift_definition Unf\<^sub>G_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>Unf\<^sub>G") is Unf\<^sub>G
+  by (insert respectfulness)
+
+subsubsection \<open>Properties\<close>
+
+lemma af_G_letter_opt_sat_core:
+  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P af_G_letter_opt \<phi> \<nu>"
+  by (induction \<phi>) auto 
+
+lemma af_G_letter_sat_core_lifted:
+  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep (af_G_letter_abs \<phi> \<nu>)"
+  by (metis af_G_letter_sat_core Quotient_ltl_prop_equiv_quotient[THEN Quotient_rep_abs] Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_abs_rep] af_G_abs.f_abs.abs_eq ltl_prop_equiv_def af_G_letter_abs_def) 
+
+lemma af_G_letter_opt_sat_core_lifted:
+  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Rep (\<up>af\<^sub>G\<^sub>\<UU> \<phi> \<nu>)"
+  unfolding af_G_letter_abs_opt_def
+  by (metis af_G_letter_opt_sat_core Quotient_ltl_prop_equiv_quotient[THEN Quotient_rep_abs] Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_abs_rep] af_G_abs_opt.f_abs.abs_eq ltl_prop_equiv_def) 
+
+lemma af_G_letter_abs_opt_split:
+  "\<up>Unf\<^sub>G (\<up>step \<Phi> \<nu>) = \<up>af\<^sub>G\<^sub>\<UU> \<Phi> \<nu>"
+  unfolding af_G_letter_abs_opt_def step_abs_def comp_def af_G_abs_opt.f_abs_def 
+  using map_fun_apply Unf\<^sub>G_abs.abs_eq af_G_letter_opt.simps by auto
+
+lemma af_unfold: 
+  "\<up>af = (\<lambda>\<phi> \<nu>. \<up>step (\<up>Unf \<phi>) \<nu>)" 
+  by (metis Unf_abs_def af_abs.f_abs.abs_eq af_letter_abs_def af_letter_alt_def(1) ltl\<^sub>P_abs_rep map_fun_apply step_abs.abs_eq)
+ 
+lemma af_opt_unfold: 
+  "\<up>af\<^sub>\<UU> = (\<lambda>\<phi> \<nu>. \<up>Unf (\<up>step \<phi> \<nu>))"
+  by (metis (no_types, lifting) Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient Unf_abs.abs_eq af_abs_opt.f_abs.abs_eq af_letter_abs_opt_def af_letter_opt.elims id_apply map_fun_apply  step_abs_def)
+
+lemma af_abs_equiv:
+  "foldl \<up>af \<psi> (xs @ [x]) = \<up>step (foldl \<up>af\<^sub>\<UU> (\<up>Unf \<psi>) xs) x" 
+  unfolding af_unfold af_opt_unfold by (induction xs arbitrary: x \<psi> rule: rev_induct) simp+
+
+lemma Rep_Abs_equiv: 
+  "Rep (Abs \<phi>) \<equiv>\<^sub>P \<phi>"
+  using Rep_Abs_prop_entailment unfolding ltl_prop_equiv_def by auto
+
+lemma Rep_step: 
+  "Rep (\<up>step \<Phi> \<nu>) \<equiv>\<^sub>P step (Rep \<Phi>) \<nu>"
+  by (metis Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient ltl_prop_equiv_quotient.abs_eq_iff step_abs.abs_eq)
+
+lemma step_\<G>:
+  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P step \<phi> \<nu>"
+  by (induction \<phi>) auto
+
+lemma Unf\<^sub>G_\<G>:
+  "Only_G \<G> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P \<phi> \<Longrightarrow> \<G> \<Turnstile>\<^sub>P Unf\<^sub>G \<phi>"
+  by (induction \<phi>) auto
+
+hide_fact (open) respectfulness nested_propos
 
 end

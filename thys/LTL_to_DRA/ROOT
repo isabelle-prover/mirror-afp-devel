@@ -1,11 +1,15 @@
 chapter AFP
 
 session LTL_to_DRA (AFP) = "HOL-Library" +
-  options [timeout = 600]
-  theories [document = false]
+  options 
+    [timeout = 900, document = pdf]
+  theories 
+    [document = false]
     "../Boolean_Expression_Checkers/Boolean_Expression_Checkers"
+    "../List-Index/List_Index"
     "../KBPs/DFS"
-  theories
+  theories 
+    [document = pdf]
     "LTL_Rabin"
     "LTL_Rabin_Unfold_Opt"
     "Impl/Export_Code"

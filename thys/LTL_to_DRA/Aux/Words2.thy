@@ -6,11 +6,12 @@
 section \<open>Auxiliary $\omega$-Word Facts\<close>
 
 theory Words2
-imports Main "~~/src/HOL/Library/Omega_Words_Fun"
+  imports "Main" "~~/src/HOL/Library/Omega_Words_Fun" 
 begin 
 
 subsection \<open>Suffixes\<close>
--- \<open>Compute non empty suffixes of finite words\<close>
+
+-- \<open>Non empty suffixes of finite words - specialised!\<close>
 
 fun suffixes
 where
@@ -18,32 +19,19 @@ where
 | "suffixes (x#xs) = (suffixes xs) @ [x#xs]"
 
 lemma suffixes_append:
-  "suffixes (xs @ ys) = (suffixes ys) @ (map (\<lambda>xss. xss @ ys) (suffixes xs))"
+  "suffixes (xs @ ys) = (suffixes ys) @ (map (\<lambda>zs. zs @ ys) (suffixes xs))"
   by (induction xs) simp_all
 
 lemma suffixes_alt_def:
-  "suffixes xs = rev (map (\<lambda>i. drop i xs) [0..<length xs])"  
+  "suffixes xs = rev (prefix (length xs) (\<lambda>i. drop i xs))"
 proof (induction xs rule: rev_induct)
   case (snoc x xs)
-    have "suffixes (xs @ [x]) = [x] # (map (\<lambda>xss. xss @ [x]) (suffixes xs))"
-      unfolding suffixes_append by simp
-    also
-    have "\<dots> = rev ([[x]]) @ rev (map (\<lambda>xss. xss @ [x]) (map (\<lambda>i. drop i xs) [0..<length xs]))"
-      using rev.simps(2) rev_map rev_rev_ident rev_append snoc.IH by metis
-    also
-    have "\<dots> = rev (map (\<lambda>xss. xss @ [x]) (map (\<lambda>i. drop i xs) [0..<length xs]) @ [[x]])"
-      using rev_append by fastforce
-    also
-    have "\<dots> = rev (map (\<lambda>i. drop i (xs @ [x])) [0..<length xs] @ [[x]])"
-      unfolding map_map comp_def using drop_append by simp
-    also
-    have "\<dots> = rev (map (\<lambda>i. drop i (xs @ [x])) [0..<length (xs @ [x])])"
-      unfolding length_append_singleton upt_Suc_append[OF le0] by simp
-    finally
-    show ?case .
+    show ?case
+      by (simp add: subsequence_def suffixes_append snoc rev_map)
 qed simp
 
 subsection \<open>Limit\<close>
+
 
 lemma limit_range_suffix:
   assumes "limit r = range (suffix i r)"

@@ -30,6 +30,8 @@ definition sink :: "'b \<Rightarrow> bool"
 where 
   "sink q \<equiv> (q\<^sub>0 \<noteq> q) \<and> (\<forall>\<nu> \<in> \<Sigma>. \<delta> q \<nu> = q)"
 
+declare sink_def [code]
+
 fun token_run :: "nat \<Rightarrow> nat \<Rightarrow> 'b"
 where
   "token_run x n = run \<delta> q\<^sub>0 (suffix x w) (n - x)"
@@ -105,14 +107,14 @@ locale semi_mojmir = semi_mojmir_def +
     finite_reach: "finite (reach \<Sigma> \<delta> q\<^sub>0)"
   assumes
     --\<open>w only contains letters from the alphabet\<close>
-    wellformed_w: "range w \<subseteq> \<Sigma>"
+    bounded_w: "range w \<subseteq> \<Sigma>"
 begin
 
 lemma nonempty_\<Sigma>: "\<Sigma> \<noteq> {}" 
-  using wellformed_w by blast
+  using bounded_w by blast
 
-lemma wellformed_w': "w i \<in> \<Sigma>"
-  using wellformed_w by blast
+lemma bounded_w': "w i \<in> \<Sigma>"
+  using bounded_w by blast
 
 --\<open>Naming Scheme: 
 
@@ -126,7 +128,7 @@ This theory uses the following naming scheme to consistently name variables.
 lemma sink_rev_step:
   "\<not>sink q \<Longrightarrow> q = \<delta> q' \<nu> \<Longrightarrow> \<nu> \<in> \<Sigma> \<Longrightarrow> \<not>sink q'"
   "\<not>sink q \<Longrightarrow> q = \<delta> q' (w i) \<Longrightarrow> \<not>sink q'"
-  using wellformed_w' by (force simp only: sink_def)+
+  using bounded_w' by (force simp only: sink_def)+
 
 subsection \<open>Token Run\<close>
 
@@ -147,7 +149,7 @@ proof (cases "x \<le> n")
           using True by simp
         moreover
         have "\<And>x. w x \<in> \<Sigma>"
-          using wellformed_w by auto
+          using bounded_w by auto
         ultimately
         have "\<And>t. token_run x (n + m)  = q \<Longrightarrow> token_run x (n + m + 1) = q" 
           using `sink q`[unfolded sink_def] upt_add_eq_append[OF le0, of "n + m" 1]
@@ -853,7 +855,7 @@ proof -
   let ?S3 = "{s. \<exists>x. s = senior x n \<and> \<not>(sink (token_run s n))}"
 
   have "?S1 \<subseteq> ?S0"
-    unfolding reach_def token_run.simps using wellformed_w by fastforce
+    unfolding reach_def token_run.simps using bounded_w by fastforce
   hence "finite ?S1" and C1: "card ?S1 \<le> card ?S0"
     using finite_reach card_mono finite_subset 
    apply (simp add: finite_subset) by (metis `{token_run x n |x n. True} - Collect sink \<subseteq> reach \<Sigma> \<delta> q\<^sub>0 - Collect sink` card_mono finite_Diff local.finite_reach) 
@@ -1346,7 +1348,7 @@ proof -
     fix x 
     assume "x \<notin> reach \<Sigma> \<delta> q\<^sub>0"
     hence "\<And>token. x \<noteq> token_run token t"
-      unfolding reach_def token_run.simps using wellformed_w by fastforce
+      unfolding reach_def token_run.simps using bounded_w by fastforce
     hence "state_rank x t = None"
       using pull_up_configuration_state_rank assms by auto
   }
@@ -1594,7 +1596,7 @@ next
     then obtain q' where "token_run token n = q'" and "q = \<delta> q' (w n)"
       using `token_run token (Suc n) = q` unfolding token_run.simps Suc_diff_le[OF `token \<le> n`] by fastforce
     hence "\<not>sink q'"
-      using `\<not>sink q` sink_rev_step wellformed_w by blast
+      using `\<not>sink q` sink_rev_step bounded_w by blast
     then obtain r where "state_rank q' n = Some r" 
       using `\<not>sink q` configuration_non_empty[OF `token \<le> n`] unfolding `token_run token n = q'` by simp
     with `q = \<delta> q' (w n)` have ?lhs
@@ -1626,7 +1628,7 @@ proof
       fix q'
       assume "q = \<delta> q' (w n)"
       hence "\<not>sink q'"
-        using `\<not>sink q` wellformed_w unfolding sink_def 
+        using `\<not>sink q` bounded_w unfolding sink_def 
         using calculation by blast
       {
         fix i
@@ -1695,7 +1697,7 @@ lemma pre_ranks_pre_oldest_token_Min_state:
 proof 
   from assms have "pre_oldest_tokens q n \<noteq> {}" and "\<not>sink q'"
     and "pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {}" 
-    using pre_ranks_tokens pre_oldest_configuration_tokens wellformed_w unfolding sink_def 
+    using pre_ranks_tokens pre_oldest_configuration_tokens bounded_w unfolding sink_def 
     by (simp_all, metis rangeI subset_iff)
 
   {
@@ -1714,7 +1716,7 @@ proof
             moreover
             have "\<not>sink q''"
               using `q = \<delta> q'' (w n)` assms unfolding sink_def 
-              by (metis rangeI subset_eq wellformed_w) 
+              by (metis rangeI subset_eq bounded_w) 
             then obtain r'' where "state_rank q'' n = Some r''"
               using `oldest_token q'' n = Some ot''` by (metis state_rank_Some)
             moreover
@@ -1811,7 +1813,7 @@ proof
   have pre_oldest_configuration_Min: "\<And>x. (x < Min (pre_oldest_tokens q n)) = (\<forall>a\<in>pre_oldest_tokens q n. x < a)"
     using assms pre_oldest_configuration_finite Min.bounded_iff pre_oldest_configuration_tokens by simp
   have "\<And>x. w x \<in> \<Sigma>"
-    using wellformed_w by auto
+    using bounded_w by auto
 
   {
     let ?min_i = "Min (pre_ranks r (w n) p)"

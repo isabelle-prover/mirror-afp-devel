@@ -6,82 +6,126 @@
 section \<open>Executable Translation from LTL to Rabin Automata\<close>
 
 theory LTL_Rabin_Impl
-  imports Main "../Aux/Map2" "../Aux/AList_Mapping2" "../LTL_Rabin" LTL_Impl Mojmir_Rabin_Impl
+  imports Main "../Aux/Map2" "../LTL_Rabin" "../LTL_Rabin_Unfold_Opt" af_Impl Mojmir_Rabin_Impl
 begin
 
-subsection \<open>Simple FG-case\<close>
+subsection \<open>Template\<close>
 
-fun ltl_FG_to_rabin_exec (* Not exported *)
+subsubsection \<open>Definition\<close>
+
+locale ltl_to_rabin_base_code_def = ltl_to_rabin_base_def +
+  fixes
+    M_fin\<^sub>C :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl, 'a ltl\<^sub>P list) mapping, 'a set) transition \<Rightarrow> bool"
+begin
+
+-- \<open>Transition Function and Initial State\<close>
+
+fun delta\<^sub>C
 where
-  "ltl_FG_to_rabin_exec \<Sigma> \<phi> \<G> = mojmir_to_rabin_exec \<Sigma> \<up>af\<^sub>G (Abs \<phi>) (\<lambda>\<psi>. \<G> \<up>\<Turnstile>\<^sub>P \<psi>)"
+  "delta\<^sub>C \<Sigma> = \<delta> \<times> \<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)"
 
-subsection \<open>General Case\<close>
-
-subsubsection \<open>Automaton Definition\<close>
-
-fun initial
+fun initial\<^sub>C
 where
-  "initial \<phi> = (Abs \<phi>, Mapping.tabulate (G_list \<phi>) (init o Abs o theG))"
+  "initial\<^sub>C \<phi> = (q\<^sub>0 \<phi>, Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG))"
 
-fun delta
-where
-  "delta \<Sigma> = \<up>af \<times> \<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<up>af\<^sub>G o Abs o theG)"
+-- \<open>Acceptance Condition\<close>
 
-fun reachable_transitions
+definition max_rank_of\<^sub>C
 where
-  "reachable_transitions \<Sigma> \<phi> = DTS.reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)"
+  "max_rank_of\<^sub>C \<Sigma> \<psi> = card (Set.filter (Not o semi_mojmir_def.sink (set \<Sigma>) \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<psi>))) (Q\<^sub>L \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<psi>))))"
 
-definition max_rank_of
+fun Acc_fin\<^sub>C
 where
-  "max_rank_of \<Sigma> \<psi> \<equiv> semi_mojmir_def.max_rank (set \<Sigma>) \<up>af\<^sub>G (Abs \<psi>)"
-
-definition mappings :: "'a set list \<Rightarrow> 'a ltl \<Rightarrow> ('a ltl, nat) mapping set"
-where
-  "mappings \<Sigma> \<phi> \<equiv> {\<pi>. Mapping.keys \<pi> \<subseteq> \<^bold>G \<phi> \<and> (\<forall>\<chi> \<in> (Mapping.keys \<pi>). the (Mapping.lookup \<pi> \<chi>) < max_rank_of \<Sigma> (theG \<chi>))}"
-
-fun M_fin_filter_exec :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl\<^sub>P \<times> (('a ltl, ('a ltl\<^sub>P list)) mapping), 'a set) transition \<Rightarrow> bool"
-where
-  "M_fin_filter_exec \<phi> \<pi> ((\<phi>', m'), _) = (
-    let
-      m = Mapping.lookup m';
-      \<G> = Mapping.keys \<pi>;
-      \<G>\<^sub>L = filter (\<lambda>x. x \<in> \<G>) (G_list \<phi>)
-    in
-      Not ((\<up>And ((map Abs \<G>\<^sub>L) @ (map (\<up>eval\<^sub>G \<G>) (foldl (op @) [] (map (\<lambda>\<chi>. drop (the (Mapping.lookup \<pi> \<chi>)) (the (m \<chi>))) \<G>\<^sub>L))))) \<up>\<longrightarrow>\<^sub>P  \<phi>'))"
-
-fun Acc_fin_filter_exec
-where
-  "Acc_fin_filter_exec \<Sigma> \<pi> \<chi> ((_, m'), \<nu>, _) = (
+  "Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> ((_, m'), \<nu>, _) = (
     let 
-      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass dummy value. *)
+      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass a dummy value. *)
       \<G> = Mapping.keys \<pi>
     in 
-      fail_filt \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs \<G>) t 
-    \<or> merge_filt \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs \<G>) (the (Mapping.lookup \<pi> \<chi>)) t)"
+      fail_filt \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs \<G>) t 
+    \<or> merge_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs \<G>) (the (Mapping.lookup \<pi> \<chi>)) t)"
 
-fun Acc_inf_filter_exec
+fun Acc_inf\<^sub>C
 where
-  "Acc_inf_filter_exec \<pi> \<chi> ((_, m'), \<nu>, _) = (
+  "Acc_inf\<^sub>C \<pi> \<chi> ((_, m'), \<nu>, _) = (
     let 
-      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass dummy value. *)
+      t = (the (Mapping.lookup m' \<chi>), \<nu>, []); (* Third element is unused. Hence it is safe to pass a dummy value. *)
       \<G> = Mapping.keys \<pi>
     in 
-      succeed_filt \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs \<G>) (the (Mapping.lookup \<pi> \<chi>)) t)"
+      succeed_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs \<G>) (the (Mapping.lookup \<pi> \<chi>)) t)"
 
-fun ltl_to_rabin_exec
+definition mappings\<^sub>C :: "'a set list \<Rightarrow> 'a ltl \<Rightarrow> ('a ltl, nat) mapping set"
 where
-  "ltl_to_rabin_exec \<Sigma> \<phi> = (
+  "mappings\<^sub>C \<Sigma> \<phi> \<equiv> {\<pi>. Mapping.keys \<pi> \<subseteq> \<^bold>G \<phi> \<and> (\<forall>\<chi> \<in> (Mapping.keys \<pi>). the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)}"
+
+definition reachable_transitions\<^sub>C
+where
+  "reachable_transitions\<^sub>C \<Sigma> \<phi> \<equiv> \<delta>\<^sub>L \<Sigma> (delta\<^sub>C (set \<Sigma>)) (initial\<^sub>C \<phi>)"
+
+fun ltl_to_generalized_rabin\<^sub>C
+where
+  "ltl_to_generalized_rabin\<^sub>C \<Sigma> \<phi> = (
     let
-      \<delta>_LTS = reachable_transitions \<Sigma> \<phi>; 
-      \<alpha>_fin_filter = \<lambda>\<pi> t. M_fin_filter_exec \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin_filter_exec (set \<Sigma>) \<pi> \<chi> t);
-      to_pair = \<lambda>\<pi>. (Set.filter (\<alpha>_fin_filter \<pi>) \<delta>_LTS, (\<lambda>\<chi>. Set.filter (Acc_inf_filter_exec \<pi> \<chi>) \<delta>_LTS) ` Mapping.keys \<pi>);
-      \<alpha> = to_pair ` (mappings \<Sigma> \<phi>) (* Multi-thread here! *)
+      \<delta>_LTS = reachable_transitions\<^sub>C \<Sigma> \<phi>; 
+      \<alpha>_fin_filter = \<lambda>\<pi> t. M_fin\<^sub>C \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin\<^sub>C (set \<Sigma>) \<pi> \<chi> t);
+      to_pair = \<lambda>\<pi>. (Set.filter (\<alpha>_fin_filter \<pi>) \<delta>_LTS, (\<lambda>\<chi>. Set.filter (Acc_inf\<^sub>C \<pi> \<chi>) \<delta>_LTS) ` Mapping.keys \<pi>);
+      \<alpha> = to_pair ` (mappings\<^sub>C \<Sigma> \<phi>) (* Multi-thread here!, prove mappings (set ... ) equation *)
     in
-      (\<delta>_LTS, initial \<phi>, \<alpha>))"
+      (\<delta>_LTS, initial\<^sub>C \<phi>, \<alpha>))"
 
-subsubsection \<open>Correctness Proof\<close>
+lemma mappings\<^sub>C_code:
+  "mappings\<^sub>C \<Sigma> \<phi> = (
+    let 
+      Gs = G_list \<phi>; 
+      max_rank = Mapping.lookup (Mapping.tabulate Gs (max_rank_of\<^sub>C \<Sigma>))
+    in 
+      set (concat (map (mapping_generator_list (\<lambda>x. [0 ..< the (max_rank x)])) (sublists Gs))))"
+  (is "?lhs = ?rhs")
+proof -
+  {
+    fix xs :: "'a ltl list"
+    have subset_G: "\<And>x. x \<in> set (sublists (xs)) \<Longrightarrow> set x \<subseteq> set xs"
+      apply (induction xs)
+      apply (simp)
+      by (insert sublists_powset; blast)
+  }
+  hence subset_G: "\<And>x. x \<in> set (sublists (G_list \<phi>)) \<Longrightarrow> set x \<subseteq> \<^bold>G \<phi>"
+    unfolding G_eq_G_list by auto
 
-fun abstract_state :: "'a \<times> ('b, 'c list) mapping \<Rightarrow> 'a \<times> ('b \<rightharpoonup> 'c \<rightharpoonup> nat)" 
+  have "?lhs = \<Union>{{\<pi>. Mapping.keys \<pi> = xs \<and> (\<forall>\<chi>\<in>Mapping.keys \<pi>. the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)} | xs. xs \<in> set ` (set (sublists (G_list \<phi>)))}"
+    unfolding mappings\<^sub>C_def G_eq_G_list sublists_powset by auto
+  also
+  have "\<dots> = \<Union>{{\<pi>. Mapping.keys \<pi> = set xs \<and> (\<forall>\<chi> \<in> set xs. the (Mapping.lookup \<pi> \<chi>) < max_rank_of\<^sub>C \<Sigma> \<chi>)} |
+       xs. xs \<in> set (sublists (G_list \<phi>))}"
+    by auto
+  also
+  have "\<dots> = ?rhs"
+    using subset_G by (simp add: Let_def mapping_generator_code[symmetric] lookup_tabulate G_eq_G_list[symmetric] mapping_generator_set_eq; blast)
+  finally
+  show ?thesis
+    by simp
+qed
+
+lemma reach_delta_initial:
+  assumes "(x, y) \<in> reach \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
+  assumes "\<chi> \<in> \<^bold>G \<phi>"
+  shows "Mapping.lookup y \<chi> \<noteq> None" (is ?t1)
+    and "distinct (the (Mapping.lookup y \<chi>))" (is ?t2)
+proof -
+  from assms(1) obtain w i where y_def: "y = run (\<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)) (Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG)) w i"
+    unfolding reach_def delta\<^sub>C.simps initial\<^sub>C.simps simple_product_run by fast
+  from assms(2) nxt_run_distinct show ?t1 
+    unfolding y_def using product_abs_run_Some[of "Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG)" \<chi>] unfolding G_eq_G_list 
+    unfolding lookup_tabulate by fastforce
+  with nxt_run_distinct show ?t2
+    unfolding y_def using lookup_tabulate  
+    by (metis (no_types) G_eq_G_list assms(2) comp_eq_dest_lhs option.sel product_abs_run_Some) 
+qed
+
+end
+
+subsubsection \<open>Correctness\<close>
+
+fun abstract_state :: "'x \<times> ('y, 'z list) mapping \<Rightarrow> 'x \<times> ('y \<rightharpoonup> 'z \<rightharpoonup> nat)" 
 where
   "abstract_state (a, b) = (a, (map_option rk) o (Mapping.lookup b))"
 
@@ -89,69 +133,56 @@ fun abstract_transition
 where
   "abstract_transition (q, \<nu>, q') = (abstract_state q, \<nu>, abstract_state q')"
 
-lemma finite_\<Delta>:
-  "finite (reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>))"
-proof (cases "\<Sigma> \<noteq> []")
-  case True
-    have "finite (reach (set \<Sigma>) \<up>af (Abs \<phi>))"
-      by (simp add: finite_reach_af)
-    moreover
-    have R: "range (\<lambda>_. hd \<Sigma>) \<subseteq> set \<Sigma>"
-      using True by auto
-    have "(\<And>x. x \<in> \<^bold>G \<phi> \<Longrightarrow> finite (reach (set \<Sigma>) ((nxt (set \<Sigma>) \<up>af\<^sub>G o Abs o theG) x) ((init o Abs o theG) x)))"
-      using semi_mojmir.finite_Q[OF ltl_semi_mojmir[OF finite_set], OF R] unfolding G_eq_G_list semi_mojmir_def.Q\<^sub>E_def by simp 
-    hence "finite (reach (set \<Sigma>) (\<up>\<Delta>\<^sub>\<times> (nxt (set \<Sigma>) \<up>af\<^sub>G o Abs o theG)) (Mapping.tabulate (G_list \<phi>) (init o Abs o theG)))"
-      by (metis (no_types) finite_reach_product_abs[OF finite_keys_tabulate] G_eq_G_list  keys_tabulate lookup_tabulate_Some)
-    ultimately
-    have "finite (reach (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>))"
-      using finite_reach_simple_product semi_mojmir.finite_Q ltl_semi_mojmir[OF finite_set] by fastforce 
-    thus ?thesis
-      by (simp add: finite_reach\<^sub>t) 
-qed (simp add: reach\<^sub>t_def) 
+locale ltl_to_rabin_base_code = ltl_to_rabin_base + ltl_to_rabin_base_code_def + 
+  assumes 
+    M_fin\<^sub>C_correct: "\<lbrakk>t \<in> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>); dom \<pi> \<subseteq> \<^bold>G \<phi>\<rbrakk> \<Longrightarrow>
+      abstract_transition t \<in> M_fin \<pi> = M_fin\<^sub>C \<phi> (Mapping.Mapping \<pi>) t"
+begin
 
-lemma reach_delta_initial:
-  assumes "(x, y) \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-  assumes "\<chi> \<in> \<^bold>G \<phi>"
-  shows "Mapping.lookup y \<chi> \<noteq> None" (is ?t1)
-    and "distinct (the (Mapping.lookup y \<chi>))" (is ?t2)
+lemma finite_reach\<^sub>C:
+  "finite (reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>))"
 proof -
-  from assms(1) obtain w i where y_def: "y = run (\<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<up>af\<^sub>G o Abs o theG)) (Mapping.tabulate (G_list \<phi>) (init o Abs o theG)) w i"
-    unfolding reach_def delta.simps initial.simps simple_product_run by fast
-  from assms(2) nxt_run_distinct show ?t1 
-    unfolding y_def using product_abs_run_Some[of "(Mapping.tabulate (G_list \<phi>) (init o Abs o theG))" \<chi>] unfolding G_eq_G_list 
-    unfolding lookup_tabulate by fastforce
-  with nxt_run_distinct show ?t2
-    unfolding y_def using lookup_tabulate  
-    by (metis (no_types) G_eq_G_list assms(2) comp_eq_dest_lhs option.sel product_abs_run_Some) 
+  note finite_reach'
+  moreover
+  have "(\<And>x. x \<in> \<^bold>G \<phi> \<Longrightarrow> finite (reach \<Sigma> ((nxt \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG) x) ((init o q\<^sub>0\<^sub>M o theG) x)))"
+    using semi_mojmir.finite_Q[OF semi_mojmir] unfolding G_eq_G_list semi_mojmir_def.Q\<^sub>E_def by simp 
+  hence "finite (reach \<Sigma> (\<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)) (Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG)))"
+    by (metis (no_types) finite_reach_product_abs[OF finite_keys_tabulate] G_eq_G_list  keys_tabulate lookup_tabulate_Some)
+  ultimately
+  have "finite (reach \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>))"
+    using finite_reach_simple_product by fastforce 
+  thus ?thesis
+    using finite_\<Sigma> by (simp add: finite_reach\<^sub>t) 
+qed 
+
+lemma max_rank_of\<^sub>C_eq:
+  assumes "\<Sigma> = set \<Sigma>'"
+  shows "max_rank_of\<^sub>C \<Sigma>' \<psi> = max_rank_of \<Sigma> \<psi>"
+proof -
+  interpret \<MM>: semi_mojmir "set \<Sigma>'" \<delta>\<^sub>M "q\<^sub>0\<^sub>M (theG \<psi>)" w
+    using semi_mojmir assms by force
+  show ?thesis
+    unfolding max_rank_of_def max_rank_of\<^sub>C_def Q\<^sub>L_reach[OF \<MM>.finite_reach] semi_mojmir_def.max_rank_def
+    by (simp add: Set.filter_def set_diff_eq assms)
 qed
 
+lemma reachable_transitions\<^sub>C_eq:
+  assumes "\<Sigma> = set \<Sigma>'"
+  shows "reachable_transitions\<^sub>C \<Sigma>' \<phi> = reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
+  by (simp only: reachable_transitions\<^sub>C_def \<delta>\<^sub>L_reach[OF finite_reach\<^sub>C[unfolded assms]] assms)
+
 lemma run_abstraction_correct:
-  assumes "range w \<subseteq> \<Sigma>"
-  assumes "finite \<Sigma>"
-  fixes \<phi>
-  defines "\<delta> \<equiv> \<delta>\<^sub>\<A> \<Sigma>"
-  defines "q\<^sub>0 \<equiv> \<iota>\<^sub>\<A> \<phi>"
-  shows "run \<delta> q\<^sub>0 w = abstract_state o (run (delta \<Sigma>) (initial \<phi>) w)"
+  "run (delta \<Sigma>) (initial \<phi>) w = abstract_state o (run (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>) w)"
 proof -
   {
     fix i
- 
-    let ?\<delta>\<^sub>2 = "\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>))"    
-    let ?q\<^sub>2 = "\<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. ltl_FG_to_rabin_def.q\<^sub>R (theG \<chi>))"
- 
-    let ?\<delta>\<^sub>2' = "\<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<up>af\<^sub>G o Abs o theG)"    
-    let ?q\<^sub>2' = "Mapping.tabulate (G_list \<phi>) (init o Abs o theG)"
-    
-    have sm: "\<And>\<psi>. semi_mojmir \<Sigma> \<up>af\<^sub>G (Abs \<psi>) w"
-    proof 
-      fix \<psi>
-      have nonempty_\<Sigma>: "\<Sigma> \<noteq> {}"
-        using assms by auto
-      show "finite (reach \<Sigma> \<up>af\<^sub>G (Abs \<psi>))" (is "finite ?A")
-        using af_G_abs.finite_abs_reach finite_subset[where A = ?A, where B = "lift_ltl_transformer.abs_reach af_G_letter (Abs \<psi>)"]
-        unfolding af_G_abs.abs_reach_def af_G_letter_abs_def reach_foldl_def[OF nonempty_\<Sigma>] by blast
-    qed (insert assms, auto)
 
+    let ?\<delta>\<^sub>2 = "\<Delta>\<^sub>\<times> (\<lambda>\<chi>. semi_mojmir_def.step \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)))"
+    let ?q\<^sub>2 = "\<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. semi_mojmir_def.initial (q\<^sub>0\<^sub>M (theG \<chi>)))"
+
+    let ?\<delta>\<^sub>2' = "\<up>\<Delta>\<^sub>\<times> (nxt \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)"    
+    let ?q\<^sub>2' = "Mapping.tabulate (G_list \<phi>) (init o q\<^sub>0\<^sub>M o theG)"
+    
     {
       fix q
       assume "q \<notin> \<^bold>G \<phi>"
@@ -166,12 +197,14 @@ proof -
     {
       fix q j
       assume "q \<in> \<^bold>G \<phi>"
-      hence init: "?q\<^sub>2 q = Some (semi_mojmir_def.initial (Abs (theG q)))" 
-        and "Mapping.lookup (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i) q = Some (run ((nxt \<Sigma> \<up>af\<^sub>G \<circ> Abs \<circ> theG) q) ((init \<circ> Abs \<circ> theG) q) w i)"
-        unfolding G_eq_G_list by (simp, metis (no_types, lifting) G_eq_G_list `q \<in> \<^bold>G \<phi>` lookup_tabulate product_abs_run_Some)
+      hence init: "?q\<^sub>2 q = Some (semi_mojmir_def.initial (q\<^sub>0\<^sub>M (theG q)))" 
+        and "Mapping.lookup (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i) q = Some (run ((nxt \<Sigma> \<delta>\<^sub>M \<circ> q\<^sub>0\<^sub>M \<circ> theG) q) ((init \<circ> q\<^sub>0\<^sub>M \<circ> theG) q) w i)"
+        apply (simp del: nxt.simps)  
+        apply (metis G_eq_G_list `q \<in> \<^bold>G \<phi>` lookup_tabulate product_abs_run_Some) 
+        done
       hence "run ?\<delta>\<^sub>2 ?q\<^sub>2 w i q = (\<lambda>m. (map_option rk) o (Mapping.lookup m)) (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i) q"
-        unfolding product_run_Some[of "\<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. semi_mojmir_def.initial (Abs (theG \<chi>)))" q, OF init] 
-        by (simp del: product.simps nxt.simps rk.simps; unfold map_of_map semi_mojmir.nxt_run_step_run[OF sm]; simp) 
+        unfolding product_run_Some[of "\<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. semi_mojmir_def.initial (q\<^sub>0\<^sub>M (theG \<chi>)))" q, OF init] 
+        by (simp del: product.simps nxt.simps rk.simps; unfold map_of_map semi_mojmir.nxt_run_step_run[OF semi_mojmir]; simp) 
     }
 
     ultimately
@@ -179,227 +212,88 @@ proof -
     have "run ?\<delta>\<^sub>2 ?q\<^sub>2 w i = (\<lambda>m. (map_option rk) o (Mapping.lookup m)) (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i)"
       by blast
   }
-  hence "\<And>i. run \<delta> q\<^sub>0 w i = abstract_state (run (delta \<Sigma>) (initial \<phi>) w i)"
-    by (simp add: simple_product_run assms del: simple_product.simps)
+  hence "\<And>i. run (delta \<Sigma>) (initial \<phi>) w i = abstract_state (run (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>) w i)"
+    using finite_\<Sigma> bounded_w by (simp add: simple_product_run comp_def del: simple_product.simps)
   thus ?thesis
     by auto
 qed
 
-lemma Acc_fin_filter_correct:
-  assumes "((x, y), \<nu>, (z, z')) \<in> reach\<^sub>t \<Sigma> (delta \<Sigma>) (initial \<phi>)"
+lemma 
+  assumes "t \<in> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
   assumes "\<chi> \<in> \<^bold>G \<phi>"
-  shows "(abstract_state (x, y), \<nu>, abstract_state (z, z')) \<in> fst (Acc \<Sigma> (Mapping.lookup \<pi>) \<chi>) = Acc_fin_filter_exec \<Sigma> \<pi> \<chi> ((x, y), \<nu>, (z, z'))"
+  shows Acc_fin\<^sub>C_correct: 
+    "abstract_transition t \<in> Acc_fin \<Sigma> \<pi> \<chi> \<longleftrightarrow> Acc_fin\<^sub>C \<Sigma> (Mapping.Mapping \<pi>) \<chi> t" (is ?t1)
+    and Acc_inf\<^sub>C_correct: 
+    "abstract_transition t \<in> Acc_inf \<pi> \<chi> \<longleftrightarrow> Acc_inf\<^sub>C (Mapping.Mapping \<pi>) \<chi> t" (is ?t2)
 proof -
-  have "(x, y) \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    and "(z, z') \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    using assms(1) unfolding reach\<^sub>t_def reach_def run\<^sub>t.simps by blast+
-  hence "Mapping.lookup y \<chi> \<noteq> None"
-    and "Mapping.lookup z' \<chi> \<noteq> None"
+  obtain x y \<nu> z z' where t_def [simp]: "t = ((x, y), \<nu>, (z, z'))"
+    by (metis prod.collapse)
+  have "(x, y) \<in> reach \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
+    and "(z, z') \<in> reach \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
+    using assms(1) unfolding reach\<^sub>t_def reach_def run\<^sub>t.simps t_def by blast+
+  then obtain m m' where [simp]: "Mapping.lookup y \<chi> = Some m" 
+    and "Mapping.lookup y \<chi> \<noteq> None" 
+    and [simp]: "Mapping.lookup z' \<chi> = Some m'"
     using assms(2) by (blast dest: reach_delta_initial)+
 
-  have FF: "fail_filt \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs (Mapping.keys \<pi>)) (the (Mapping.lookup y \<chi>), \<nu>, []) 
-    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.fail\<^sub>R \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) {q. Mapping.keys \<pi> \<Turnstile>\<^sub>P Rep q})"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] fail_filt_eq[where y = "[]", symmetric] by (simp add: ltl_prop_entails_abs.rep_eq)  
+  have FF [simp]: "fail_filt \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) (the (Mapping.lookup y \<chi>), \<nu>, []) 
+    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.fail\<^sub>R \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q})"
+    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] fail_filt_eq[where y = "[]", symmetric] by simp  
 
-  have MF: "\<And>i. merge_filt \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs (Mapping.keys \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
-    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.merge\<^sub>R \<up>af\<^sub>G (Abs (theG \<chi>)) {q. Mapping.keys \<pi> \<Turnstile>\<^sub>P Rep q} i)"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] merge_filt_eq[where y = "[]", symmetric] by (simp add: ltl_prop_entails_abs.rep_eq)  
+  have MF [simp]: "\<And>i. merge_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
+    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.merge\<^sub>R \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} i)"
+    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] merge_filt_eq[where y = "[]", symmetric] by simp  
 
-  show ?thesis
-    apply (unfold Acc_fin_filter_exec.simps Let_def FF MF)
-    apply (simp add: mojmir_to_rabin_def.fail\<^sub>R_def mojmir_to_rabin_def.merge\<^sub>R_def map_of_map del: rk.simps) 
-    apply (insert `Mapping.lookup z' \<chi> \<noteq> None` `Mapping.lookup y \<chi> \<noteq> None`)
-    unfolding keys_dom_lookup[symmetric] by force
+  have SF [simp]: "\<And>i. succeed_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
+    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.succeed\<^sub>R \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} i)"
+    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] succeed_filt_eq[where y = "[]", symmetric] by simp  
+
+  note mojmir_to_rabin_def.fail\<^sub>R_def [simp] 
+  note mojmir_to_rabin_def.merge\<^sub>R_def [simp]
+  note mojmir_to_rabin_def.succeed\<^sub>R_def [simp]
+
+  show ?t1 and ?t2 
+    by (simp_all add: Let_def keys.abs_eq lookup.abs_eq del: rk.simps) 
+       (rule; metis option.distinct(1) option.sel option.collapse rk_facts(1))+
 qed
 
-lemma Acc_inf_filter_correct:
-  assumes "((x, y), \<nu>, (z, z')) \<in> reach\<^sub>t \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-  assumes "\<chi> \<in> \<^bold>G \<phi>"
-  shows "(abstract_state (x, y), \<nu>, abstract_state (z, z')) \<in> snd (Acc \<Sigma> (Mapping.lookup \<pi>) \<chi>) = Acc_inf_filter_exec \<pi> \<chi> ((x, y), \<nu>, (z, z'))"
-proof -
-  have "(x, y) \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    and "(z, z') \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    using assms(1) unfolding reach\<^sub>t_def reach_def run\<^sub>t.simps by blast+
-  hence "Mapping.lookup y \<chi> \<noteq> None"
-    and "Mapping.lookup z' \<chi> \<noteq> None"
-    using assms(2) by (blast dest: reach_delta_initial)+
 
-  have SF: "\<And>i. succeed_filt \<up>af\<^sub>G (Abs (theG \<chi>)) (ltl_prop_entails_abs (Mapping.keys \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
-    = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.succeed\<^sub>R \<up>af\<^sub>G (Abs (theG \<chi>)) {q. Mapping.keys \<pi> \<Turnstile>\<^sub>P Rep q} i)"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] succeed_filt_eq[where y = "[]", symmetric] by (simp add: ltl_prop_entails_abs.rep_eq)  
-
-  show ?thesis
-    apply (unfold Acc_inf_filter_exec.simps Let_def SF)
-    apply (simp add: mojmir_to_rabin_def.succeed\<^sub>R_def map_of_map del: rk.simps) 
-    apply (insert `Mapping.lookup z' \<chi> \<noteq> None` `Mapping.lookup y \<chi> \<noteq> None`)
-    unfolding keys_dom_lookup[symmetric] by force
-qed
-  
-lemma M_filter_correct:
-  assumes "((x, y), \<nu>, (z, z')) \<in> reach\<^sub>t \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-  assumes "dom \<pi> \<subseteq> \<^bold>G \<phi>"
-  assumes "\<And>\<chi>. \<chi> \<in> (dom \<pi>) \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-  shows "(abstract_state (x, y), \<nu>, abstract_state (z, z')) \<in> M_fin \<pi> = M_fin_filter_exec \<phi> (Mapping.Mapping \<pi>) ((x, y), \<nu>, (z, z'))"
-proof -
-  have "(x, y) \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    and "(z, z') \<in> reach \<Sigma> (delta \<Sigma>) (initial \<phi>)"
-    using assms(1) unfolding reach\<^sub>t_def reach_def run\<^sub>t.simps by blast+
-  hence N1: "\<And>\<chi>. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> Mapping.lookup y \<chi> \<noteq> None"
-    and D1: "\<And>\<chi>. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> distinct (the (Mapping.lookup y \<chi>))"
-    and N2: "\<And>\<chi>. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> Mapping.lookup z' \<chi> \<noteq> None"
-    and D2: "\<And>\<chi>. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> distinct (the (Mapping.lookup z' \<chi>))"
-    by (blast dest: reach_delta_initial)+
-
-  {
-    fix x P S
-    assume "x \<in> dom \<pi>"
-    hence "x \<in> \<^bold>G \<phi>"
-      using assms(2) by blast
-     
-    have "(\<forall>q. (\<exists>j\<ge>the (\<pi> x). the (map_option rk (Mapping.lookup y x)) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q)
-        = (\<forall>q \<in> set (drop (the (\<pi> x)) (the (Mapping.lookup y x))). S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q)"
-      using D1[THEN drop_rk, symmetric, of x "the (\<pi> x)", OF `x \<in> \<^bold>G \<phi>`] unfolding option.map_sel[OF N1, OF `x \<in> \<^bold>G \<phi>`] by auto
-  }
-  hence FOLDER: "\<And>x P S. (x \<in> (dom \<pi>) \<longrightarrow> P \<and> (\<forall>q. (\<exists>j\<ge>the (\<pi> x). the (map_option rk (Mapping.lookup y x)) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q)) 
-     = (x \<in> (dom \<pi>) \<longrightarrow> P \<and> (\<forall>q \<in> (set (drop (the (\<pi> x)) (the (Mapping.lookup y x)))). S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q))"
-    by presburger
-
-  have rewrite: "\<And>xs y. ((\<up>And xs) \<up>\<longrightarrow>\<^sub>P y) = (\<forall>S. (\<forall>x \<in> set xs. (S \<up>\<Turnstile>\<^sub>P x)) \<longrightarrow> (S \<up>\<Turnstile>\<^sub>P y))" 
-    unfolding And_prop_entailment_abs[symmetric] unfolding ltl_prop_entails_abs.rep_eq ltl_prop_implies_def[symmetric] ltl_prop_implies_abs.rep_eq by simp
-
-  have G_dom_simp: "\<And>x P. (x \<in> \<^bold>G \<phi> \<and> x \<in> dom \<pi> \<and> P) = (x \<in> dom \<pi> \<and> P)"
-      using assms by auto
-
-  {
-    fix S
-    have "((\<forall>x. (\<exists>y. \<pi> x = Some y) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P Abs x \<and> (\<forall>q\<in>set (drop (the (\<pi> x)) (the (Mapping.lookup y x))). S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q)) \<and> \<not> S \<up>\<Turnstile>\<^sub>P x) 
-      = ((\<forall>x. ((\<exists>xa. xa \<in> dom \<pi> \<and> x = Abs xa) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P x) \<and> ((\<exists>ya. (\<exists>x. ya = set x \<and>
-                          (\<exists>xa. xa \<in> dom \<pi> \<and> x = drop (the (\<pi> xa)) (the (Mapping.lookup y xa)))) \<and>
-                     (\<exists>xa\<in>ya. x = \<up>eval\<^sub>G (dom \<pi>) xa)) \<longrightarrow>
-               S \<up>\<Turnstile>\<^sub>P x)) \<and>
-         \<not> S \<up>\<Turnstile>\<^sub>P x)" (is "?s1 = _") by blast
-      
-    also
-    have "\<dots> = ((\<forall>x. ((\<exists>xa. xa \<in> \<^bold>G \<phi> \<and> xa \<in> dom \<pi> \<and> x = Abs xa) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P x) \<and> ((\<exists>ya. (\<exists>x. ya = set x \<and>
-                          (\<exists>xa. xa \<in> \<^bold>G \<phi> \<and> xa \<in> dom \<pi> \<and> x = drop (the (\<pi> xa)) (the (Mapping.lookup y xa)))) \<and>
-                     (\<exists>xa\<in>ya. x = \<up>eval\<^sub>G (dom \<pi>) xa)) \<longrightarrow>
-               S \<up>\<Turnstile>\<^sub>P x)) \<and>
-         \<not> S \<up>\<Turnstile>\<^sub>P x)" (is "_ = ?sn")
-         unfolding G_dom_simp by simp
-     finally
-     have "?s1 = ?sn"
-       by blast
-  }
-  note lastStep = this
-
-  show ?thesis
-    apply (simp add: image_def ltl_prop_implies_def G_eq_G_list[symmetric] del: rk.simps not_all And_abs.simps) 
-    unfolding rewrite Ball_def set_append set_map set_foldl_append G_eq_G_list[symmetric]
-    apply (simp del: rk.simps)  
-    unfolding case_prod_beta option.case_eq_if G_eq_G_list[symmetric]
-    unfolding map_of_map comp_def FOLDER G_eq_G_list[symmetric]
-    unfolding image_def G_eq_G_list[symmetric] keys_dom_lookup domIff Mapping.lookup.abs_eq
-    apply (simp add: Let_def)
-    using lastStep by simp  
-qed 
-
-theorem ltl_to_rabin_exec_correct:
-  assumes "range w \<subseteq> set \<Sigma>"
-  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_rabin_exec \<Sigma> \<phi>) w" 
+theorem ltl_to_generalized_rabin\<^sub>C_correct:
+  assumes "\<Sigma> = set \<Sigma>'"
+  shows "accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin \<Sigma> \<phi>) w \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C \<Sigma>' \<phi>) w" 
   (is "?lhs \<longleftrightarrow> ?rhs")
-proof -
-  have ERSTER: "?lhs \<longleftrightarrow> accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin (set \<Sigma>) \<phi>) w" (is "_ \<longleftrightarrow> ?l1")
-    by (meson assms List.finite_set ltl_to_generalised_rabin_correct)
+proof
+  let ?\<delta> = "delta \<Sigma>"
+  let ?q\<^sub>0 = "initial \<phi>"
  
-  let ?q\<^sub>0' = "initial \<phi>"
-  let ?\<delta>' = "delta (set \<Sigma>)"
+  let ?\<delta>\<^sub>C = "delta\<^sub>C \<Sigma>"
+  let ?q\<^sub>0\<^sub>C = "initial\<^sub>C \<phi>"
+  let ?reach\<^sub>C = "reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)"
+
+  note reachable_transitions\<^sub>C_simp[simp] = reachable_transitions\<^sub>C_eq[OF assms] 
+  note max_rank_of\<^sub>C_simp[simp] = max_rank_of\<^sub>C_eq[OF assms]
 
   {
-    fix \<pi>
+    fix \<pi> :: "'a ltl \<Rightarrow> nat option"
     assume \<pi>_wellformed: "dom \<pi> \<subseteq> \<^bold>G \<phi>"
-      "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R (set \<Sigma>) (theG \<chi>)"
        
-    let ?q\<^sub>0 = "\<iota>\<^sub>\<A> \<phi>"
-    let ?\<delta> = "ltl_to_generalised_rabin_transition_function (set \<Sigma>)"
-    let ?F = "(M_fin \<pi> \<union> \<Union>{Acc_fin (set \<Sigma>) \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf (set \<Sigma>) \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>})"
+    let ?F = "(M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>})"
+    let ?fin = "{t. M_fin\<^sub>C \<phi> (Mapping.Mapping \<pi>) t} \<union> {t. \<exists>\<chi> \<in> dom \<pi>. Acc_fin\<^sub>C \<Sigma> (Mapping.Mapping \<pi>) \<chi> t}"
+    let ?inf = "{{t. Acc_inf\<^sub>C (Mapping.Mapping \<pi>) \<chi> t} | \<chi>. \<chi> \<in> dom \<pi>}"
+    
+    have finite_reach': "finite (reach\<^sub>t \<Sigma> (delta \<Sigma>) (initial \<phi>))"
+      by (meson finite_reach finite_\<Sigma> finite_reach\<^sub>t) 
 
-    let ?fin = "{t. M_fin_filter_exec \<phi> (Mapping.Mapping \<pi>) t} \<union> {t. \<exists>\<chi> \<in> dom \<pi>. Acc_fin_filter_exec (set \<Sigma>) (Mapping.Mapping \<pi>) \<chi> t}"
-    let ?inf = "{{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} | \<chi>. \<chi> \<in> dom \<pi>}"
-    let ?F' = "(?fin, ?inf)"
+    have run_abstraction_correct': 
+      "run\<^sub>t (delta \<Sigma>) (initial \<phi>) w = abstract_transition o (run\<^sub>t (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>) w)"
+      using run_abstraction_correct comp_def by auto
 
-    let ?reach' = "reach\<^sub>t (set \<Sigma>) ?\<delta>' ?q\<^sub>0'"
-
-    have F1: "finite (reach\<^sub>t (set \<Sigma>) ?\<delta> ?q\<^sub>0)"
-      by (meson List.finite_set finite_reach\<^sub>t ltl_to_generalised_rabin_wellformed)
- 
-    have R: "run ?\<delta> ?q\<^sub>0 w = abstract_state o (run ?\<delta>' ?q\<^sub>0' w)"
-      using run_abstraction_correct[OF assms] by simp
-
-    {
-      fix q \<nu> p
-      assume "(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)"
-      hence 1: "((fst q, snd q), \<nu>, (fst p, snd p)) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)"
-        by simp
-      have "((abstract_state q, \<nu>, abstract_state p) \<in> (M_fin \<pi> \<union> \<Union>{Acc_fin (set \<Sigma>) \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>})) =
-     ((q, \<nu>, p) \<in> fst ({t. M_fin_filter_exec \<phi> (Mapping.Mapping \<pi>) t} \<union> {t. \<exists>\<chi>\<in> dom \<pi>. Acc_fin_filter_exec (set \<Sigma>) (Mapping.Mapping \<pi>) \<chi> t},
-              {{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} |\<chi>. \<chi> \<in> dom \<pi>}))"
-      using M_filter_correct[OF 1 \<pi>_wellformed] Acc_fin_filter_correct[OF 1, of _ "Mapping.Mapping \<pi>"] 1 `dom \<pi> \<subseteq> \<^bold>G \<phi>` 
-      unfolding fst_conv snd_conv unfolding pair_collapse Mapping.lookup.abs_eq by blast
-    }
-    note FIN = this
-
-    {
-      fix I :: "('a ltl\<^sub>P \<times> ('a ltl \<Rightarrow> ('a ltl\<^sub>P \<Rightarrow> nat option) option), 'a set) transition set"
-      assume "I \<in> {Acc_inf (set \<Sigma>) \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}"
-      then obtain \<chi> where I'_def: "I = Acc_inf (set \<Sigma>) \<pi> \<chi>" and "\<chi> \<in> dom \<pi>"
-        by auto
-      
-      have "\<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> I) = ((q, \<nu>, p) \<in> Collect (Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi>))"
-        using Acc_inf_filter_correct[OF _ subsetD[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`], of _ _ _ _ _ "set \<Sigma>" _ "Mapping.Mapping \<pi>", OF _ `\<chi> \<in> dom \<pi>`]  
-        unfolding combine_pairs.simps fst_conv snd_conv image_Un 
-        unfolding pair_collapse Mapping.lookup.abs_eq  I'_def by fast
-      hence "\<exists>I'\<in>{Collect (Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi>) |\<chi>. \<chi> \<in> dom \<pi>}.
-        \<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> I) = ((q, \<nu>, p) \<in> I')"
-          using  `\<chi> \<in> dom \<pi>` by blast    
-    }
-    hence INF1: "\<forall>I\<in> {Acc_inf (set \<Sigma>) \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}. \<exists>I'\<in>{Collect (Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi>) |\<chi>. \<chi> \<in> dom \<pi>}.
-      \<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> I) = ((q, \<nu>, p) \<in> I')"
-      by simp
-
-    {
-      fix I' :: "('a ltl\<^sub>P \<times> (('a ltl, ('a ltl\<^sub>P list)) mapping), 'a set) transition set"
-      assume "I' \<in> {{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} | \<chi>. \<chi> \<in> dom \<pi>}"
-      then obtain \<chi> where I'_def: "I' = {t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t}" and "\<chi> \<in> dom \<pi>"
-        by auto
-      
-      have "\<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> (Acc_inf (set \<Sigma>) \<pi> \<chi>)) = ((q, \<nu>, p) \<in> I')"
-          using Acc_inf_filter_correct[OF _ subsetD[OF `dom \<pi> \<subseteq> \<^bold>G \<phi>`], of _ _ _ _ _ "set \<Sigma>" \<chi> "Mapping.Mapping \<pi>", OF _ `\<chi> \<in> dom \<pi>`]  
-      unfolding combine_pairs.simps fst_conv snd_conv image_Un 
-      unfolding pair_collapse Mapping.lookup.abs_eq I'_def by fast   
-       hence INF2: "
-            \<exists>I \<in> {Acc_inf (set \<Sigma>) \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}.
-            \<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> I) = ((q, \<nu>, p) \<in> I')"
-          using  `\<chi> \<in> dom \<pi>` by blast
-    }
-    hence INF2: "\<forall>I' \<in> {{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} | \<chi>. \<chi> \<in> dom \<pi>}.
-            \<exists>I \<in> {Acc_inf (set \<Sigma>) \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}.
-            \<forall>(q, \<nu>, p) \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>). ((abstract_state q, \<nu>, abstract_state p) \<in> I) = ((q, \<nu>, p) \<in> I')"
-      by simp
- 
-    have "accepting_pair\<^sub>G\<^sub>R ?\<delta> ?q\<^sub>0 ?F w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R ?\<delta>' ?q\<^sub>0' ?F' w" (is "?l \<longleftrightarrow> _")
-      using accepting_pair\<^sub>G\<^sub>R_abstract'[OF F1 finite_\<Delta> assms R, of "fst ?F" "fst ?F'" "snd ?F" "snd ?F'", unfolded fst_conv snd_conv, OF _ INF1 INF2]  FIN 
-      unfolding fst_conv snd_conv pair_collapse by blast
-  
+    have "accepting_pair\<^sub>G\<^sub>R ?\<delta> ?q\<^sub>0 ?F w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R ?\<delta>\<^sub>C  ?q\<^sub>0\<^sub>C (?fin, ?inf) w" (is "?l \<longleftrightarrow> _")
+      by (rule accepting_pair\<^sub>G\<^sub>R_abstract[OF finite_reach' finite_reach\<^sub>C bounded_w];
+          insert `dom \<pi> \<subseteq> \<^bold>G \<phi>` M_fin\<^sub>C_correct Acc_fin\<^sub>C_correct Acc_inf\<^sub>C_correct run_abstraction_correct'; blast)
     also 
-
-    have "\<dots> \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R ?\<delta>' ?q\<^sub>0' (?fin \<inter> ?reach', (\<lambda>I. I \<inter> ?reach') ` ?inf) w"
-      unfolding accepting_pair\<^sub>G\<^sub>R_restrict[OF assms, symmetric] by simp
-
-    also 
-
-    have "\<dots> \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R_LTS (reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)) ?q\<^sub>0' (?fin \<inter> ?reach', (\<lambda>I. I \<inter> ?reach') ` ?inf) w" (is "_ \<longleftrightarrow> ?r")
-      unfolding accepting_pair\<^sub>G\<^sub>R_LTS[OF assms] by simp
-
+    have "\<dots> \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C ?q\<^sub>0\<^sub>C (?fin \<inter> ?reach\<^sub>C, (\<lambda>I. I \<inter> ?reach\<^sub>C) ` ?inf) w" (is "_ \<longleftrightarrow> ?r")
+      using bounded_w by (simp only: accepting_pair\<^sub>G\<^sub>R_LTS[symmetric] accepting_pair\<^sub>G\<^sub>R_restrict[symmetric])
     finally
     have "?l \<longleftrightarrow> ?r" .
   }
@@ -409,165 +303,223 @@ proof -
   {
     assume ?lhs
     then obtain \<pi> where 1: "dom \<pi> \<subseteq> \<^bold>G \<phi>" 
-      and 2: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R (set \<Sigma>) (theG \<chi>)"
-      and 3: "accepting_pair\<^sub>G\<^sub>R (\<delta>\<^sub>\<A> (set \<Sigma>)) (\<iota>\<^sub>\<A> \<phi>) (M_fin \<pi> \<union> \<Union>{Acc_fin (set \<Sigma>) \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf (set \<Sigma>) \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}) w"
-      unfolding ltl_to_generalised_rabin_correct[OF finite_set assms] by auto
+      and 2: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi> \<chi>) < max_rank_of \<Sigma> \<chi>"
+      and 3: "accepting_pair\<^sub>G\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> |\<chi>. \<chi> \<in> dom \<pi>}) w" 
+      by auto
     
-    hence 31: "accept\<^sub>G\<^sub>R_LTS (reach\<^sub>t (set \<Sigma>) ?\<delta>' ?q\<^sub>0', ?q\<^sub>0', {(({t. M_fin_filter_exec \<phi> (Mapping.Mapping \<pi>) t} \<union> {t. \<exists>\<chi>\<in>dom \<pi>. Acc_fin_filter_exec (set \<Sigma>) (Mapping.Mapping \<pi>) \<chi> t}) \<inter> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>),
-        (\<lambda>I. I \<inter> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)) ` {{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} |\<chi>. \<chi> \<in> dom \<pi>})}) w"
-      using X by simp
     def \<pi>' \<equiv> "Mapping.Mapping \<pi>"
-    hence "\<pi> = Mapping.rep \<pi>'" and "dom \<pi> = Mapping.keys \<pi>'" 
-      by (simp add: Mapping_inverse keys.abs_eq)+
-    hence "finite (dom \<pi>)"
-      using \<G>_properties[OF 1] by blast
-    have FOO: "(({t. M_fin_filter_exec \<phi> (Mapping.Mapping \<pi>) t} \<union>
-      {t. \<exists>\<chi>\<in>dom \<pi>.
-             Acc_fin_filter_exec (set \<Sigma>) (Mapping.Mapping \<pi>) \<chi>
-              t}) \<inter>
-     reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>),
-     (\<lambda>I. I \<inter> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)) `
-     {{t. Acc_inf_filter_exec (Mapping.Mapping \<pi>) \<chi> t} |\<chi>.
-      \<chi> \<in> dom \<pi>}) \<in> (\<lambda>\<pi>. ({a \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>).
-             M_fin_filter_exec \<phi> \<pi> a \<or>
-             (\<exists>\<chi>\<in>dom (Mapping.rep \<pi>).
-                 Acc_fin_filter_exec (set \<Sigma>) \<pi> \<chi> a)},
-            (\<lambda>\<chi>. {a \<in>
-                   reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>))
-                    (initial \<phi>).
-                   Acc_inf_filter_exec \<pi> \<chi> a}) `
-            dom (Mapping.rep \<pi>))) `
-      {\<pi>. dom (Mapping.rep \<pi>) \<subseteq> \<^bold>G \<phi> \<and> (\<forall>\<chi>\<in>dom (Mapping.rep \<pi>). the (Mapping.rep \<pi> \<chi>) < semi_mojmir_def.max_rank (set \<Sigma>) \<up>af\<^sub>G (Abs (theG \<chi>)))}" 
-      using 1 2 unfolding `\<pi> = Mapping.rep \<pi>'` apply (simp del: Acc_fin_filter_exec.simps Acc_inf_filter_exec.simps M_fin_filter_exec.simps delta.simps initial.simps add:  Set.filter_def image_def)
-      unfolding Mapping.mapping.rep_inverse  by auto  
-    hence "?rhs"
-      using accept\<^sub>G\<^sub>R_LTS_push[OF 31 FOO]
-      unfolding ltl_to_rabin_exec.simps Let_def fst_conv snd_conv max_rank_of_def mappings_def 
-      unfolding keys_dom_lookup Set.filter_def Mapping.lookup.rep_eq by simp
+    
+    have "dom \<pi> = Mapping.keys \<pi>'" and "\<pi> = Mapping.lookup \<pi>'"
+      by (simp_all add: keys.abs_eq lookup.abs_eq \<pi>'_def)
+
+    have acc_pair_LTS: "accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C ?q\<^sub>0\<^sub>C (({t. M_fin\<^sub>C \<phi> \<pi>' t} \<union> {t. \<exists>\<chi> \<in> Mapping.keys \<pi>'. Acc_fin\<^sub>C \<Sigma> \<pi>' \<chi> t}) \<inter> ?reach\<^sub>C,
+        (\<lambda>I. I \<inter> ?reach\<^sub>C) ` {{t. Acc_inf\<^sub>C \<pi>' \<chi> t} | \<chi>. \<chi> \<in> Mapping.keys \<pi>'}) w"
+      using 3 unfolding X[OF 1] unfolding `dom \<pi> = Mapping.keys \<pi>'` \<pi>'_def[symmetric] by simp
+
+    show ?rhs
+      apply (unfold ltl_to_generalized_rabin\<^sub>C.simps Let_def)
+      apply (intro accept\<^sub>G\<^sub>R_LTS_I)
+      apply (insert acc_pair_LTS; auto simp add: assms[symmetric] mappings\<^sub>C_def)
+      apply (insert 1 2; unfold  `dom \<pi> = Mapping.keys \<pi>'`; unfold `\<pi> = Mapping.lookup \<pi>'`)
+      by (auto simp add: assms[symmetric] Set.filter_def image_def mappings\<^sub>C_def)
   }
   
   moreover 
 
   {
-    assume ?rhs (is "accept\<^sub>G\<^sub>R_LTS ?A w")
-    then obtain Fin Inf where "(Fin, Inf) \<in> snd (snd ?A)"
-      and 4: "accepting_pair\<^sub>G\<^sub>R_LTS (fst ?A) (fst (snd ?A)) (Fin, Inf) w"
-      using accept\<^sub>G\<^sub>R_LTS_E by blast
-    then obtain \<pi> where Y: "(Fin, Inf) = (Set.filter (\<lambda>t. M_fin_filter_exec \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin_filter_exec (set \<Sigma>) \<pi> \<chi> t)) (reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)),
-                  (\<lambda>\<chi>. Set.filter (Acc_inf_filter_exec \<pi> \<chi>) (reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>))) ` (Mapping.keys \<pi>))"
-        and 1: "Mapping.keys \<pi> \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> Mapping.keys \<pi> \<Longrightarrow> the (Mapping.lookup \<pi> \<chi>) < semi_mojmir_def.max_rank (set \<Sigma>) \<up>af\<^sub>G (Abs (theG \<chi>))"
-     unfolding ltl_to_rabin_exec.simps Let_def fst_conv snd_conv max_rank_of_def mappings_def reach\<^sub>t_def reachable_transitions.simps by auto
-    def \<pi>' \<equiv> "Mapping.rep \<pi>"
-    have 1: "dom \<pi>' \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> the (\<pi>' \<chi>) < semi_mojmir_def.max_rank (set \<Sigma>) \<up>af\<^sub>G (Abs (theG \<chi>))"
-      using 1 2 unfolding  \<pi>'_def Mapping.keys.rep_eq Mapping.mapping.rep_inverse by (simp add: lookup.rep_eq)+
-    hence "(M_fin \<pi>' \<union> \<Union>{Acc_fin (set \<Sigma>) \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}, {Acc_inf (set \<Sigma>) \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}) \<in> ltl_to_generalised_rabin_acceptance_condition (set \<Sigma>) \<phi>"
-      (is "?Acc \<in> _") by auto
-    moreover
-    have "(({t. M_fin_filter_exec \<phi> \<pi> t} \<union>
-       {t. \<exists>\<chi>\<in>dom (Mapping.rep \<pi>).
-              Acc_fin_filter_exec (set \<Sigma>) \<pi> \<chi> t}) \<inter>
-      reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>),
-      (\<lambda>I. I \<inter> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>)) `
-      {{t. Acc_inf_filter_exec \<pi> \<chi> t} |\<chi>.
-       \<chi> \<in> dom (Mapping.rep \<pi>)}) = ({a \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>).
-       M_fin_filter_exec \<phi> \<pi> a \<or>
-       (\<exists>\<chi>\<in>dom (Mapping.rep \<pi>).
-           Acc_fin_filter_exec (set \<Sigma>) \<pi> \<chi> a)},
-      (\<lambda>\<chi>. {a \<in> reach\<^sub>t (set \<Sigma>) (delta (set \<Sigma>)) (initial \<phi>).
-             Acc_inf_filter_exec \<pi> \<chi> a}) `
-      dom (Mapping.rep \<pi>))" unfolding image_def by auto
-    hence "accepting_pair\<^sub>G\<^sub>R (\<delta>\<^sub>\<A> (set \<Sigma>)) (\<iota>\<^sub>\<A> \<phi>) ?Acc w"
-      using X[OF 1 2] 4 unfolding ltl_to_rabin_exec.simps Let_def fst_conv snd_conv Y Set.filter_def \<pi>'_def Mapping.keys.rep_eq Mapping.mapping.rep_inverse by simp      
-    ultimately
-    have ?lhs  
-      unfolding ERSTER ltl_to_generalized_rabin.simps accept\<^sub>G\<^sub>R_def fst_conv snd_conv by blast
-   }
-
-  ultimately
+    assume ?rhs
+    obtain Fin Inf where "(Fin, Inf) \<in> snd (snd (ltl_to_generalized_rabin\<^sub>C \<Sigma>' \<phi>))"
+      and 4: "accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C (initial\<^sub>C \<phi>) (Fin, Inf) w"
+       using accept\<^sub>G\<^sub>R_LTS_E[OF `?rhs`] apply (simp add: Let_def assms del: accept\<^sub>G\<^sub>R_LTS.simps) by auto
     
-  show ?thesis
-    ..
-qed
-
-subsubsection \<open>Code Equations\<close>
-
-lemma [code]: 
-  "\<up>af (Abs \<phi>) \<nu> = Abs (remove_constants\<^sub>P (af_letter \<phi> \<nu>))"
-  using LTL_Rabin.af_abs.f_abs.abs_eq af_letter_abs_def remove_constants_correct 
-  using Quotient3_ltl_prop_equiv_quotient Quotient3_rel ltl_prop_equiv_def by metis
-
-lemma [code]:
-  "\<up>af\<^sub>G (Abs \<phi>) \<nu> = Abs (remove_constants\<^sub>P (af_G_letter \<phi> \<nu>))"
-  using LTL_Rabin.af_G_abs.f_abs.abs_eq af_G_letter_abs_def remove_constants_correct 
-  using Quotient3_ltl_prop_equiv_quotient Quotient3_rel ltl_prop_equiv_def by metis
-
-lemma [code]:
-  "\<up>\<Delta>\<^sub>\<times> f (AList_Mapping.Mapping xs) c = AList_Mapping.Mapping (map_ran (\<lambda>a b. f a b c) xs)"
-proof -
-  have "\<And>x. (\<Delta>\<^sub>\<times> f (map_of xs) c) x = (map_of (map (\<lambda>(k, v). (k, f k v c)) xs)) x"
-    by (induction xs) auto
-  thus ?thesis
-    by (transfer; simp add: map_ran_def)
-qed
-
-lemma [code]:
-  "max_rank_of \<Sigma> \<psi> = card (Set.filter (Not o semi_mojmir_def.sink (set \<Sigma>) \<up>af\<^sub>G (Abs \<psi>)) (Q\<^sub>L \<Sigma> \<up>af\<^sub>G (Abs \<psi>)))"
-proof (cases "\<Sigma> \<noteq> []")
-  case True
-    then interpret semi_mojmir "set \<Sigma>" "\<up>af\<^sub>G" "Abs \<psi>" "\<lambda>_. hd \<Sigma>"
-      using ltl_semi_mojmir[of "set \<Sigma>"] by force
-    show ?thesis
-      unfolding max_rank_of_def max_rank_def Q\<^sub>L_reach[OF finite_reach] 
-      by (simp add: Set.filter_def set_diff_eq)
-qed (simp add: max_rank_of_def semi_mojmir_def.max_rank_def reach_def Set.filter_def) 
-
-lemma [code]:
-  "reachable_transitions \<Sigma> \<phi> = \<delta>\<^sub>L \<Sigma> (delta (set \<Sigma>)) (initial \<phi>)"
-  using finite_\<Delta> reachable_transitions.simps \<delta>\<^sub>L_reach by metis
-  
-lemma [code]:
-  "mappings \<Sigma> \<phi> = (
-    let 
-      Gs = G_list \<phi>; 
-      max_rank = Mapping.lookup (Mapping.tabulate Gs ((max_rank_of \<Sigma>) o theG))
-    in 
-      \<Union>(set (map (\<lambda>xs. mapping_generator xs (\<lambda>x. [0 ..< the (max_rank x)])) (sublists Gs))))"
-  (is "?lhs = ?rhs")
-proof -
-  {
-    fix xs :: "'a ltl list"
-    have subset_G: "\<And>x. x \<in> set (sublists (xs)) \<Longrightarrow> set x \<subseteq> set xs"
-      apply (induction xs)
-      apply (simp)
-      by (insert sublists_powset; blast)
+    then obtain \<pi> where Y: "(Fin, Inf) = (Set.filter (\<lambda>t. M_fin\<^sub>C \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> t)) ?reach\<^sub>C,
+        (\<lambda>\<chi>. Set.filter (Acc_inf\<^sub>C \<pi> \<chi>) ?reach\<^sub>C) ` (Mapping.keys \<pi>))"
+        and 1: "Mapping.keys \<pi> \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> Mapping.keys \<pi> \<Longrightarrow> the (Mapping.lookup \<pi> \<chi>) < max_rank_of \<Sigma> \<chi>"
+      unfolding ltl_to_generalized_rabin\<^sub>C.simps Let_def fst_conv snd_conv mappings\<^sub>C_def assms reachable_transitions\<^sub>C_simp max_rank_of\<^sub>C_simp by auto
+    def \<pi>' \<equiv> "Mapping.rep \<pi>"
+    have "dom \<pi>' = Mapping.keys \<pi>" and "Mapping.Mapping \<pi>' = \<pi>"
+      by (simp_all add: \<pi>'_def mapping.rep_inverse keys.rep_eq)
+    have 1: "dom \<pi>' \<subseteq> \<^bold>G \<phi>" and 2: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> the (\<pi>' \<chi>) < max_rank_of \<Sigma> \<chi>"
+      using 1 2 unfolding  \<pi>'_def Mapping.keys.rep_eq Mapping.mapping.rep_inverse by (simp add: lookup.rep_eq)+
+    moreover
+    have "({a \<in> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>). M_fin\<^sub>C \<phi> \<pi> a \<or> (\<exists>\<chi>\<in>Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> a)}, {y. \<exists>x\<in>Mapping.keys \<pi>. y = {a \<in> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>). Acc_inf\<^sub>C \<pi> x a}})
+      = ((Collect (M_fin\<^sub>C \<phi> \<pi>) \<union> {t. \<exists>\<chi>\<in>Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> t}) \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>), {y. \<exists>x\<in>{Collect (Acc_inf\<^sub>C \<pi> \<chi>) |\<chi>. \<chi> \<in> Mapping.keys \<pi>}. y = x \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)})" 
+      by auto
+    hence "accepting_pair\<^sub>G\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi>' \<union> \<Union>{Acc_fin \<Sigma> \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}, {Acc_inf \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}) w"
+      unfolding X[OF 1] using 4 unfolding Y Set.filter_def unfolding `dom \<pi>' = Mapping.keys \<pi>` `Mapping.Mapping \<pi>' = \<pi>` image_def by simp    
+    ultimately
+    show ?lhs  
+      unfolding ltl_to_generalized_rabin.simps
+      by (intro Rabin.accept\<^sub>G\<^sub>R_I, blast; auto) 
   }
-  hence subset_G: "\<And>x. x \<in> set (sublists (G_list \<phi>)) \<Longrightarrow> set x \<subseteq> \<^bold>G \<phi>"
-    unfolding G_eq_G_list by auto
-
-  have "?lhs = \<Union>{{\<pi>. Mapping.keys \<pi> = xs \<and> (\<forall>\<chi>\<in>Mapping.keys \<pi>. the (Mapping.lookup \<pi> \<chi>) < max_rank_of \<Sigma> (theG \<chi>))} | xs. xs \<in> set ` (set (sublists (G_list \<phi>)))}"
-    unfolding mappings_def G_eq_G_list sublists_powset
-    unfolding G_eq_G_list[symmetric] by auto
-  also
-  have "\<dots> = \<Union>{{\<pi>. Mapping.keys \<pi> = set xs \<and> (\<forall>\<chi> \<in> set xs. the (Mapping.lookup \<pi> \<chi>) < max_rank_of \<Sigma> (theG \<chi>))} |
-       xs. xs \<in> set (sublists (G_list \<phi>))}"
-    by auto
-  also
-  have "\<dots> = ?rhs"
-    unfolding Let_def set_map mapping_generator_set_eq lookup_tabulate G_eq_G_list set_upt image_def apply simp 
-    using subset_G unfolding G_eq_G_list[symmetric] by blast
-  finally
-  show ?thesis
-    by simp
 qed
 
-subsubsection \<open>Simplified Interface\<close>
+end 
 
-fun ltl_to_rabin_exec_simp 
-where 
-  "ltl_to_rabin_exec_simp \<phi> = ltl_to_rabin_exec (map set (sublists (vars_list \<phi>))) \<phi>"
+subsection \<open>Generalized Deterministic Rabin Automaton (af)\<close>
 
-theorem ltl_to_rabin_exec_simp_correct:
-  "range w \<subseteq> Pow (vars \<phi>) \<Longrightarrow> w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_rabin_exec_simp \<phi>) w"
-  by (metis ltl_to_rabin_exec_simp.simps list.set_map ltl_to_rabin_exec_correct sublists_powset vars_eq_vars_list)  
+definition M_fin\<^sub>C_af_lhs :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl, ('a ltl\<^sub>P list)) mapping \<Rightarrow> 'a ltl\<^sub>P"
+where
+  "M_fin\<^sub>C_af_lhs \<phi> \<pi> m' \<equiv> 
+    let
+      \<G> = Mapping.keys \<pi>;
+      \<G>\<^sub>L = filter (\<lambda>x. x \<in> \<G>) (G_list \<phi>);
+      mk_conj = \<lambda>\<chi>. foldl and_abs (Abs \<chi>) (map (\<up>eval\<^sub>G \<G>) (drop (the (Mapping.lookup \<pi> \<chi>)) (the (Mapping.lookup m' \<chi>))))
+    in 
+      \<up>And (map mk_conj \<G>\<^sub>L)"
+
+fun M_fin\<^sub>C_af :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl\<^sub>P \<times> (('a ltl, ('a ltl\<^sub>P list)) mapping), 'a set) transition \<Rightarrow> bool"
+where
+  "M_fin\<^sub>C_af \<phi> \<pi> ((\<phi>', m'), _) = Not ((M_fin\<^sub>C_af_lhs \<phi> \<pi> m') \<up>\<longrightarrow>\<^sub>P  \<phi>')"
+
+lemma M_fin\<^sub>C_af_correct:
+  assumes "t \<in> reach\<^sub>t \<Sigma> (ltl_to_rabin_base_code_def.delta\<^sub>C \<up>af \<up>af\<^sub>G Abs \<Sigma>) (ltl_to_rabin_base_code_def.initial\<^sub>C Abs Abs \<phi>)"
+  assumes "dom \<pi> \<subseteq> \<^bold>G \<phi>"
+  shows "abstract_transition t \<in> M_fin \<pi> = M_fin\<^sub>C_af \<phi> (Mapping.Mapping \<pi>) t"
+proof -
+  let ?delta = "ltl_to_rabin_base_code_def.delta\<^sub>C \<up>af \<up>af\<^sub>G Abs \<Sigma>"
+  let ?initial = "ltl_to_rabin_base_code_def.initial\<^sub>C Abs Abs \<phi>"
+  
+  obtain x y \<nu> z z' where t_def [simp]: "t = ((x, y), \<nu>, (z, z'))"
+    by (metis prod.collapse)
+  have "(x, y) \<in> reach \<Sigma> ?delta ?initial"
+    using assms(1) by (simp add: reach\<^sub>t_def reach_def; blast)
+  hence N1: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> Mapping.lookup y \<chi> \<noteq> None"
+    and D1: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> distinct (the (Mapping.lookup y \<chi>))"
+    using assms(2) by (blast dest: ltl_to_rabin_base_code_def.reach_delta_initial)+
+
+  {
+    fix S
+    let ?m' = "\<lambda>\<chi>. map_option rk (Mapping.lookup y \<chi>)"
+    
+    {
+      fix \<chi>
+      assume "\<chi> \<in> dom \<pi>"
+      hence "S \<up>\<Turnstile>\<^sub>P (foldl and_abs (Abs \<chi>) (map (\<up>eval\<^sub>G (dom \<pi>)) (drop (the (\<pi> \<chi>)) (the (Mapping.lookup y \<chi>)))))
+         \<longleftrightarrow> S \<up>\<Turnstile>\<^sub>P (Abs \<chi>) \<and> (\<forall>q. (\<exists>j \<ge> the (\<pi> \<chi>). the (?m' \<chi>) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q)"
+        using D1[THEN drop_rk, of _ "the (\<pi> \<chi>)"] N1[THEN option.map_sel, of _ rk]
+        by (auto simp add: foldl_LTLAnd_prop_entailment_abs)
+    }
+
+    hence "S \<up>\<Turnstile>\<^sub>P (M_fin\<^sub>C_af_lhs \<phi> (Mapping.Mapping \<pi>) y)
+      \<longleftrightarrow> (\<forall>\<chi> \<in> dom \<pi>. S \<up>\<Turnstile>\<^sub>P (Abs \<chi>) \<and> (\<forall>q. (\<exists>j \<ge> the (\<pi> \<chi>). the (?m' \<chi>) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) q))"
+      unfolding M_fin\<^sub>C_af_lhs_def Let_def And_prop_entailment_abs set_map Ball_def keys.abs_eq lookup.abs_eq 
+      using assms(2) by (simp add: image_def inter_set_filter[symmetric] G_eq_G_list[symmetric]; blast)
+  }
+  thus ?thesis
+    by (simp add: ltl_prop_implies_def ltl_prop_implies_abs_def ltl_prop_entails_abs_def)
+qed 
+
+definition 
+  "ltl_to_generalized_rabin\<^sub>C_af \<equiv> ltl_to_rabin_base_code_def.ltl_to_generalized_rabin\<^sub>C \<up>af \<up>af\<^sub>G Abs Abs M_fin\<^sub>C_af"
+
+definition
+  "ltl_to_generalized_rabin\<^sub>C_af_simp \<phi> \<equiv> ltl_to_generalized_rabin\<^sub>C_af (map set (sublists (vars_list \<phi>))) \<phi>"
+
+theorem ltl_to_generalized_rabin\<^sub>C_af_correct:
+  assumes "range w \<subseteq> set \<Sigma>"
+  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af \<Sigma> \<phi>) w" 
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof -
+  have X: "ltl_to_rabin_base_code \<up>af \<up>af\<^sub>G Abs Abs M_fin (set \<Sigma>) w M_fin\<^sub>C_af"
+    using ltl_to_generalized_rabin_af_wellformed[OF finite_set assms] M_fin\<^sub>C_af_correct assms
+    unfolding ltl_to_rabin_af_def ltl_to_rabin_base_code_def ltl_to_rabin_base_code_axioms_def by blast
+  have "?lhs \<longleftrightarrow> accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin_af (set \<Sigma>) \<phi>) w"
+    using assms ltl_to_generalized_rabin_af_correct by auto
+  also 
+  have "\<dots> \<longleftrightarrow> ?rhs"
+    using ltl_to_rabin_base_code.ltl_to_generalized_rabin\<^sub>C_correct[OF X]
+    unfolding ltl_to_generalized_rabin\<^sub>C_af_def by simp
+  finally
+  show ?thesis .
+qed
+
+theorem ltl_to_generalized_rabin\<^sub>C_af_simp_correct:
+  assumes "range w \<subseteq> Pow (vars \<phi>)"
+  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af_simp \<phi>) w" 
+  by (metis assms vars_eq_vars_list ltl_to_generalized_rabin\<^sub>C_af_simp_def list.set_map ltl_to_generalized_rabin\<^sub>C_af_correct sublists_powset)
+
+subsection \<open>Generalized Deterministic Rabin Automaton (eager af)\<close>
+
+definition M_fin\<^sub>C_af\<^sub>\<UU>_lhs :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl, ('a ltl\<^sub>P list)) mapping \<Rightarrow> 'a set \<Rightarrow> 'a ltl\<^sub>P"
+where
+  "M_fin\<^sub>C_af\<^sub>\<UU>_lhs \<phi> \<pi> m' \<nu> \<equiv> 
+    let
+      \<G> = Mapping.keys \<pi>;
+      \<G>\<^sub>L = filter (\<lambda>x. x \<in> \<G>) (G_list \<phi>);
+      mk_conj = \<lambda>\<chi>. foldl and_abs (and_abs (Abs \<chi>) (\<up>eval\<^sub>G \<G> (Abs (theG \<chi>)))) (map (\<up>eval\<^sub>G \<G> o (\<lambda>q. \<up>step q \<nu>)) (drop (the (Mapping.lookup \<pi> \<chi>)) (the (Mapping.lookup m' \<chi>))))
+    in 
+      \<up>And (map mk_conj \<G>\<^sub>L)"
+
+fun M_fin\<^sub>C_af\<^sub>\<UU> :: "'a ltl \<Rightarrow> ('a ltl, nat) mapping \<Rightarrow> ('a ltl\<^sub>P \<times> (('a ltl, ('a ltl\<^sub>P list)) mapping), 'a set) transition \<Rightarrow> bool"
+where
+  "M_fin\<^sub>C_af\<^sub>\<UU> \<phi> \<pi> ((\<phi>', m'), \<nu>, _) = Not ((M_fin\<^sub>C_af\<^sub>\<UU>_lhs \<phi> \<pi> m' \<nu>) \<up>\<longrightarrow>\<^sub>P (\<up>step \<phi>' \<nu>))"
+
+lemma M_fin\<^sub>C_af\<^sub>\<UU>_correct:
+  assumes "t \<in> reach\<^sub>t \<Sigma> (ltl_to_rabin_base_code_def.delta\<^sub>C \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf\<^sub>G) \<Sigma>) (ltl_to_rabin_base_code_def.initial\<^sub>C (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) \<phi>)"
+  assumes "dom \<pi> \<subseteq> \<^bold>G \<phi>"
+  shows "abstract_transition t \<in> M\<^sub>\<UU>_fin \<pi> = M_fin\<^sub>C_af\<^sub>\<UU> \<phi> (Mapping.Mapping \<pi>) t"
+proof -
+  let ?delta = "ltl_to_rabin_base_code_def.delta\<^sub>C \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf\<^sub>G) \<Sigma>"
+  let ?initial = "ltl_to_rabin_base_code_def.initial\<^sub>C (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) \<phi>"
+  
+  obtain x y \<nu> z z' where t_def [simp]: "t = ((x, y), \<nu>, (z, z'))"
+    by (metis prod.collapse)
+  have "(x, y) \<in> reach \<Sigma> ?delta ?initial"
+    using assms(1) by (simp add: reach\<^sub>t_def reach_def; blast)
+  hence N1: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> Mapping.lookup y \<chi> \<noteq> None"
+    and D1: "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> distinct (the (Mapping.lookup y \<chi>))"
+    using assms(2) by (blast dest: ltl_to_rabin_base_code_def.reach_delta_initial)+
+
+  {
+    fix S
+    let ?m' = "\<lambda>\<chi>. map_option rk (Mapping.lookup y \<chi>)"
+    
+    {
+      fix \<chi>
+      assume "\<chi> \<in> dom \<pi>"
+      hence "S \<up>\<Turnstile>\<^sub>P (foldl and_abs (and_abs (Abs \<chi>) (\<up>eval\<^sub>G (dom \<pi>) (Abs (theG \<chi>)))) (map (\<up>eval\<^sub>G (dom \<pi>) o (\<lambda>q. \<up>step q \<nu>)) (drop (the (\<pi> \<chi>)) (the (Mapping.lookup y \<chi>)))))
+         \<longleftrightarrow> S \<up>\<Turnstile>\<^sub>P Abs \<chi> \<and> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (Abs (theG \<chi>)) \<and> (\<forall>q. (\<exists>j \<ge> the (\<pi> \<chi>). the (?m' \<chi>) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (\<up>step q \<nu>))"
+        using D1[THEN drop_rk, of _ "the (\<pi> \<chi>)"] N1[THEN option.map_sel, of _ rk]
+        by (auto simp add: foldl_LTLAnd_prop_entailment_abs and_abs_conjunction simp del: rk.simps)
+    }
+
+    hence "S \<up>\<Turnstile>\<^sub>P (M_fin\<^sub>C_af\<^sub>\<UU>_lhs \<phi> (Mapping.Mapping \<pi>) y \<nu>)
+      \<longleftrightarrow> ((\<forall>\<chi> \<in> dom \<pi>. (S \<up>\<Turnstile>\<^sub>P Abs \<chi> \<and> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (Abs (theG \<chi>)) \<and> (\<forall>q. (\<exists>j \<ge> the (\<pi> \<chi>). the (?m' \<chi>) q = Some j) \<longrightarrow> S \<up>\<Turnstile>\<^sub>P \<up>eval\<^sub>G (dom \<pi>) (\<up>step q \<nu>)))))"
+      unfolding M_fin\<^sub>C_af\<^sub>\<UU>_lhs_def Let_def And_prop_entailment_abs set_map Ball_def keys.abs_eq lookup.abs_eq 
+      using assms(2) by (simp add: image_def inter_set_filter[symmetric] G_eq_G_list[symmetric]; blast)
+  }
+  thus ?thesis
+    by (simp add: ltl_prop_implies_def ltl_prop_implies_abs_def ltl_prop_entails_abs_def)
+qed 
+
+definition 
+  "ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<equiv> ltl_to_rabin_base_code_def.ltl_to_generalized_rabin\<^sub>C \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) M_fin\<^sub>C_af\<^sub>\<UU>"
+
+definition
+  "ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp \<phi> \<equiv> ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> (map set (sublists (vars_list \<phi>))) \<phi>"
+
+theorem ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_correct:
+  assumes "range w \<subseteq> set \<Sigma>"
+  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<Sigma> \<phi>) w" 
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof -
+  have X: "ltl_to_rabin_base_code \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) M\<^sub>\<UU>_fin (set \<Sigma>) w M_fin\<^sub>C_af\<^sub>\<UU>"
+    using ltl_to_generalized_rabin_af\<^sub>\<UU>_wellformed[OF finite_set assms] M_fin\<^sub>C_af\<^sub>\<UU>_correct assms
+    unfolding ltl_to_rabin_af_unf_def ltl_to_rabin_base_code_def ltl_to_rabin_base_code_axioms_def by blast
+  have "?lhs \<longleftrightarrow> accept\<^sub>G\<^sub>R (ltl_to_generalized_rabin_af\<^sub>\<UU> (set \<Sigma>) \<phi>) w"
+    using assms ltl_to_generalized_rabin_af\<^sub>\<UU>_correct by auto
+  also 
+  have "\<dots> \<longleftrightarrow> ?rhs"
+    using ltl_to_rabin_base_code.ltl_to_generalized_rabin\<^sub>C_correct[OF X]
+    unfolding ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_def by simp
+  finally
+  show ?thesis .
+qed
+
+theorem ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp_correct:
+  assumes "range w \<subseteq> Pow (vars \<phi>)"
+  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp \<phi>) w" 
+  by (metis assms vars_eq_vars_list ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp_def list.set_map ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_correct sublists_powset)
 
 end

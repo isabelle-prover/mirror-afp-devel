@@ -47,8 +47,7 @@ where
 
 end
 
-locale mojmir_to_rabin = mojmir + mojmir_to_rabin_def
-begin
+
 
 subsection \<open>Well-formedness\<close>
 
@@ -93,8 +92,8 @@ next
       unfolding insert_def by simp
 qed
 
-lemma wellformed_\<R>:
-  shows "finite Q\<^sub>R"
+lemma (in semi_mojmir) wellformed_\<R>:
+  shows "finite (reach \<Sigma> step initial)"
 proof (rule finite_subset)
   let ?R = "{f. (\<forall>x. x \<notin> reach \<Sigma> \<delta> q\<^sub>0 \<longrightarrow> f x = None) \<and> 
     (\<forall>x. x \<in> reach \<Sigma> \<delta> q\<^sub>0 \<longrightarrow> f x \<in> {None} \<union> Some ` {0..<max_rank})}"
@@ -110,11 +109,11 @@ proof (rule finite_subset)
     have "range (w \<frown> (\<lambda>i. a)) \<subseteq> \<Sigma>"
       using `set w \<subseteq> \<Sigma>` `a \<in> \<Sigma>` unfolding conc_def by auto
     then interpret \<HH>: semi_mojmir \<Sigma> \<delta> q\<^sub>0 "(w \<frown> (\<lambda>i. a))"
-      using wellformed_F finite_reach finite_\<Sigma> by (unfold_locales; simp_all)
+      using finite_reach finite_\<Sigma> by (unfold_locales; simp_all)
     have "x = (\<lambda>q. \<HH>.state_rank q (length w))" 
-      unfolding \<HH>.state_rank_step_foldl x_def subsequence_def[symmetric] by simp
+      unfolding \<HH>.state_rank_step_foldl x_def using prefix_conc_length subsequence_def by metis
     thus "x \<in> ?R"
-      using \<HH>.state_rank_in_function_set `range (w \<frown> (\<lambda>i. a)) \<subseteq> \<Sigma>` by presburger
+      using \<HH>.state_rank_in_function_set by meson
   qed
 
   have "finite ({None} \<union> Some ` {0..<max_rank})"
@@ -122,6 +121,8 @@ proof (rule finite_subset)
   thus "finite ?R"
     using finite_reach by (blast intro: function_set_finite)
 qed
+
+locale mojmir_to_rabin = mojmir + mojmir_to_rabin_def begin
 
 subsection \<open>Correctness\<close>
 
@@ -177,7 +178,7 @@ proof -
   {
     fix n
     have "\<And>n. w n \<in> \<Sigma>" and "set (map w [0..<n]) \<subseteq> \<Sigma>" and "set ( map w [0..<Suc n]) \<subseteq> \<Sigma>"
-      using wellformed_w by auto 
+      using bounded_w by auto 
     hence "r n \<in> Q\<^sub>R \<times> \<Sigma> \<times> Q\<^sub>R"
       unfolding run\<^sub>t.simps run_foldl reach_foldl_def[OF nonempty_\<Sigma>] r_def 
       unfolding fst_conv comp_def snd_conv by blast
