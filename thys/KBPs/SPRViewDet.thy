@@ -44,7 +44,8 @@ text_raw{*
 \begin{figure}[tb]
 \begin{isabellebody}%
 *}
-record ('a, 'es, 'ps) BEState =
+
+record (overloaded) ('a, 'es, 'ps) BEState =
   es :: "'es"
   ps :: "('a \<times> 'ps) odlist"
 
@@ -269,7 +270,7 @@ Kripke structure:
 
 *}
 
-record ('a, 'es, 'as) spr_simWorld =
+record (overloaded) ('a, 'es, 'as) spr_simWorld =
   sprFst :: "('a, 'es, 'as) BEState"
   sprLst :: "('a, 'es, 'as) BEState"
   sprCRel :: "('a, 'es, 'as) BEState Relation"

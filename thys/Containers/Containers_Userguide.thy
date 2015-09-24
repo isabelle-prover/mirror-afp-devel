@@ -704,7 +704,7 @@ text {*
 
   In our example, we require that all keys in the trie represent encoded values.
 *}
-typedef ('k :: cbl, 'v) trie = 
+typedef (overloaded) ('k :: cbl, 'v) trie = 
   "{t :: 'v trie_raw. 
     trie_keys t \<subseteq> range (to_bl :: 'k \<Rightarrow> trie_key) \<or> ID (cbl :: 'k cbl) = None}"
 proof

@@ -58,7 +58,7 @@ and a function which accesses the internal number,
 which is then guaranteed to be positive.
 \<close>
 
-typedef 'a pos_num = "{ x :: 'a :: linordered_field. x > 0}" morphisms num pos
+typedef (overloaded) 'a pos_num = "{ x :: 'a :: linordered_field. x > 0}" morphisms num pos
   by (rule exI[of _ 1], auto)
 
 setup_lifting type_definition_pos_num
@@ -93,7 +93,8 @@ which requires an additional type definition, and some auxiliary definitions,
 to in the end define @{term create_pos} in a way that is amenable for code-generation.
 \<close>
 
-typedef 'a num_bit = "{ (x :: 'a :: linordered_field, b). b \<longrightarrow> x > 0}" by auto
+typedef (overloaded) 'a num_bit =
+  "{ (x :: 'a :: linordered_field, b). b \<longrightarrow> x > 0}" by auto
 
 setup_lifting type_definition_num_bit
 
@@ -123,9 +124,14 @@ In this AFP entry we now turned this canonical way into a dedicated method
 generates the types and auxiliary functions of Breitner's construction. As a result it suffices
 to write:\<close>
 
+context notes [[typedef_overloaded]]
+begin
+
 lift_definition_option create_pos :: "'a :: linordered_field \<Rightarrow> 'a pos_num option" is
   "\<lambda> x :: 'a. if x > 0 then Some x else None" 
   by auto
+
+end
 
 text \<open>Afterwards, we can directly generate code.\<close>
 

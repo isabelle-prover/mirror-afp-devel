@@ -13,6 +13,9 @@ keywords
   "atom_decl" "equivariance" :: thy_decl 
 begin
 
+declare [[typedef_overloaded]]
+
+
 section {* Atoms and Sorts *}
 
 text {* A simple implementation for atom_sorts is strings. *}

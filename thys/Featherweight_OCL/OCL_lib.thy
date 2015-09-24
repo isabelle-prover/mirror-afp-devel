@@ -473,7 +473,7 @@ text{* The core of an own type construction is done via a type
   is shown that this type ``fits'' indeed into the abstract type
   interface discussed in the previous section. *}
 
-typedef '\<alpha> Set_0 ="{X::('\<alpha>::null) set option option.
+typedef (overloaded) '\<alpha> Set_0 ="{X::('\<alpha>::null) set option option.
                       X = bot \<or> X = null \<or> (\<forall>x\<in>\<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
           by (rule_tac x="bot" in exI, simp)
 

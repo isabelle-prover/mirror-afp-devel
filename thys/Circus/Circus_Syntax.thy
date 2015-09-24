@@ -315,7 +315,8 @@ fun gen_circus_process prep_constraint prep_typ
 
     val thy1 = thy
       |> not (null fields) ?
-        Record.add_record (params', Binding.suffix_name "_alphabet" binding) NONE fields;
+        Record.add_record {overloaded = false}
+          (params', Binding.suffix_name "_alphabet" binding) NONE fields;
     val (channel_constrs, thy2) =
       if not (null channels) orelse is_some typesyn
       then apfst snd (define_channels (params', binding) typesyn channels thy1)

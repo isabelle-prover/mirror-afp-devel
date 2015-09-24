@@ -19,7 +19,7 @@ class lgroup_with_const = lgroup +
   assumes [simp]: "0 \<le> u"
 
 definition "G = {a::'a::lgroup_with_const. (0 \<le> a \<and> a \<le> u)}"
-typedef 'a G = "G::'a::lgroup_with_const set"
+typedef (overloaded) 'a G = "G::'a::lgroup_with_const set"
 proof
   show "0 \<in> G" by (simp add: G_def)
 qed
@@ -646,7 +646,7 @@ lemma "K \<in> normal \<Longrightarrow> K \<in> convex \<Longrightarrow> K \<in>
   by simp_all
     
 definition "N = {a::'a::lgroup. a \<le> 0}"
-typedef ('a::lgroup) N = "N :: 'a::lgroup set"
+typedef (overloaded) ('a::lgroup) N = "N :: 'a::lgroup set"
 proof
   show "0 \<in> N" by (simp add: N_def)
 qed
@@ -1120,7 +1120,7 @@ end
 
 definition "OrdSum =
   {x. (\<exists>a::'a::pseudo_hoop_algebra. x = (a, 1::'b::pseudo_hoop_algebra)) \<or> (\<exists>b::'b. x = (1::'a, b))}"
-typedef ('a, 'b) OrdSum = "OrdSum :: ('a::pseudo_hoop_algebra \<times> 'b::pseudo_hoop_algebra) set"
+typedef (overloaded) ('a, 'b) OrdSum = "OrdSum :: ('a::pseudo_hoop_algebra \<times> 'b::pseudo_hoop_algebra) set"
 proof
   show "(1, 1) \<in> OrdSum" by (simp add: OrdSum_def)
 qed

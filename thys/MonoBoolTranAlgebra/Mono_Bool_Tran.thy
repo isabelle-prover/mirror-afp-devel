@@ -135,7 +135,7 @@ proof
   then show "(\<Squnion>A) a \<le> (\<Squnion>A) b" by simp
 qed
 
-typedef 'a MonoTran = "{f::'a::order \<Rightarrow> 'a . mono f}"
+typedef (overloaded) 'a MonoTran = "{f::'a::order \<Rightarrow> 'a . mono f}"
 proof
   show "id \<in> ?MonoTran" by simp
 qed

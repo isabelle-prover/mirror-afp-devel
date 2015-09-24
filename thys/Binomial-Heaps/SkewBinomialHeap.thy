@@ -2436,7 +2436,7 @@ interpretation BsSkewBinomialHeapStruc: Bootstrapped .
 subsection "Hiding the Invariant"
 
 subsubsection "Datatype"
-typedef ('e, 'a) SkewBinomialHeap =
+typedef (overloaded) ('e, 'a) SkewBinomialHeap =
   "{q :: ('e,'a::linorder) BsSkewBinomialHeapStruc.BsSkewHeap. BsSkewBinomialHeapStruc.bs_invar q }"
   apply (rule_tac x="BsSkewBinomialHeapStruc.bs_empty" in exI)
   apply (auto)
