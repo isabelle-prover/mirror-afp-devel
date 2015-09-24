@@ -4,7 +4,7 @@ begin
 
 section \<open>Example\<close>
 
-text \<open>Example usage of checkers. We have our own type of boolean expressions with its own evaluation function:\<close>
+text \<open>Example usage of checkers. We have our own type of Boolean expressions with its own evaluation function:\<close>
 
 datatype 'a bexp =
   Const bool |

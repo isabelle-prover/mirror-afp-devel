@@ -33,7 +33,6 @@ lemma agree_Nil:
   "agree s Mapping.empty"
   by (simp add: agree_def lookup_empty)
 
-(* TODO: Move to Mapping.thy *)
 lemma lookup_update_unfold: 
   "Mapping.lookup (Mapping.update k v m) k' = (if k = k' then Some v else Mapping.lookup m k')"
   using lookup_update lookup_update_neq by metis
@@ -172,7 +171,7 @@ qed (auto simp: reduced_reduce)
 subsubsection \<open>Checkers Based on Reduced Binary Decision Trees\<close>
 
 text \<open>The checkers are parameterized over the translation function to binary decision trees. 
-  They rely on the fact that {@term ifex_of} produces reduced trees\<close>
+  They rely on the fact that @{term ifex_of} produces reduced trees\<close>
 
 definition taut_test :: "('a \<Rightarrow> 'b ifex) \<Rightarrow> 'a \<Rightarrow> bool" 
 where
@@ -305,7 +304,7 @@ end
 
 subsection \<open>Boolean Expressions\<close>
 
-text \<open>This is the simplified interface to the tautology checker. If you have your own type of boolean 
+text \<open>This is the simplified interface to the tautology checker. If you have your own type of Boolean 
 expressions you can either define your own translation to reduced binary decision trees or you can just 
 translate into this type.\<close>
 

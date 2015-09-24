@@ -3,13 +3,13 @@
   Author: Tobias Nipkow
 *)
 
-section{* Tweaks for AListMapping *}
-
 theory Boolean_Expression_Checkers_AList_Mapping
   imports Main "~~/src/HOL/Library/AList_Mapping" Boolean_Expression_Checkers
 begin
 
--- \<open>If mappings are implemented by AListMapping, the functions @{const reduce} and @{const normif} 
+section{* Tweaks for @{const AList_Mapping.Mapping} *}
+                                                       
+-- \<open>If mappings are implemented by @{const AList_Mapping.Mapping}, the functions @{const reduce} and @{const normif} 
     search for x twice. The following code equations remove this redundant operation\<close>
 
 lemma AList_Mapping_update: 
