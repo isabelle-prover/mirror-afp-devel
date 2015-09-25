@@ -2118,7 +2118,8 @@ proof -
       show "apply_cltn2 (p$0$j) ?C = p$1$j" by simp
     next
       assume "j \<noteq> 3"
-      with eq_3_or_of_3 obtain j' :: 3 where "j = of_int (Rep_bit1 j')" by auto
+      with eq_3_or_of_3 obtain j' :: 3 where "j = of_int (Rep_bit1 j')"
+        by metis
       with `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$0) = ?q$0$j'`
         and `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$1) = ?q$1$j'`
       have "p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)"

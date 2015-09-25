@@ -177,7 +177,8 @@ proof -
       hence "(b,b') : F Q" using u `Q : Prof` by(simp add:unanimity_def)
     }
     ultimately have "(a',b') : F Q" using `F Q : Lin`
-      unfolding slo_defs trans_def by blast
+      unfolding slo_defs trans_def 
+      by safe metis
     moreover
     have "\<forall>i. (a',b') : Q i \<longleftrightarrow> (a',b') : P' i" using d1 d2 `P : Prof` 1
       by(simp add:Q_def in_below in_above Prof_def Pi_def below_Lin) blast
