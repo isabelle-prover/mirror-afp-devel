@@ -1,0 +1,143 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">A</font>
+<font class="first">M</font>eta-Model
+for
+the
+<font class="first">I</font>sabelle
+<font class="first">A</font>PI
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">A Meta-Model for the Isabelle API</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.lri.fr/~tuong/">Frédéric Tuong</a> and <a href="http://www.lri.fr/~wolff/">Burkhart Wolff</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2015-09-16</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+We represent a theory of (a fragment of) Isabelle/HOL
+in Isabelle/HOL. The purpose of this exercise is to write packages for
+domain-specific specifications such as class models, B-machines, ...,
+and generally any languages that can be described with a sequence of datatypes
+in HOL itself; the Isabelle code-generator can then be used to generate
+tactic code.
+<p>
+Consequently the package is geared towards
+parsing, printing and code-generation to the Isabelle API.
+It is at the moment not sufficiently rich for doing meta theory on
+Isabelle itself. Extensions in this direction are possible though.
+<p>
+Moreover, the chosen fragment is fairly rudimentary. However it should be
+easily adapted to one's needs if a package is written on top of it.
+The supported API contains types, terms, transformation of
+global context like definitions and data-type declarations as well
+as infrastructure for Isar-setups.
+<p>
+This theory is drawn from the Featherweight OCL project where
+it is used to construct a package for object-oriented data-type theories
+generated from UML class diagrams. The Featherweight OCL, for example, allows for
+both the direct execution of compiled tactic code by the Isabelle API
+as well as the generation of ".thy"-files for debugging purposes.
+<p>
+Gained experience from this project shows that the compiled code is sufficiently
+efficient for practical purposes while being based on a formal "model"
+on which properties of the package can be proven such as termination of certain
+transformations, correctness, etc.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Isabelle_Meta_Model-AFP,
+  author  = {Frédéric Tuong and Burkhart Wolff},
+  title   = {A Meta-Model for the Isabelle API},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Isabelle_Meta_Model.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Isabelle_Meta_Model" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
