@@ -307,7 +307,7 @@ ML {*
 
       fun pretty_typ_thms l = 
         l
-        |> map (Display.pretty_thm ctxt)
+        |> map (Thm.pretty_thm ctxt)
         |> Pretty.fbreaks |> Pretty.block
 
 
@@ -504,7 +504,7 @@ ML {*
           Pretty.block [
             Pretty.str "Adding overloaded interface type to constant:",
             Pretty.brk 1,
-            Display.pretty_thm ctxt thm
+            Thm.pretty_thm ctxt thm
           ] |> Pretty.string_of
         ); true);
         intf_types.add_thm thm context 

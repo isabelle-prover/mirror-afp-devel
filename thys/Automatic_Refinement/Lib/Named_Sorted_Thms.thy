@@ -45,7 +45,7 @@ ML {*
           Pretty.block 
             [Pretty.str "(",Pretty.str (string_of_int i),Pretty.str ")"],
           Pretty.brk 1,
-          Pretty.block (Pretty.fbreaks (map (Display.pretty_thm ctxt) thms))
+          Pretty.block (Pretty.fbreaks (map (Thm.pretty_thm ctxt) thms))
         ]
       in
         warning (Pretty.string_of pt)

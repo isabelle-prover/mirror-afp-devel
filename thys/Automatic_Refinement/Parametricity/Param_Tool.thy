@@ -189,7 +189,7 @@ begin
         NONE => 
           let 
             val msg = "Ignoring invalid parametricity theorem: "
-              ^ Display.string_of_thm (Context.proof_of context) thm
+              ^ Thm.string_of_thm (Context.proof_of context) thm
             val _ = warning msg
           in I end
       | SOME p => f p
