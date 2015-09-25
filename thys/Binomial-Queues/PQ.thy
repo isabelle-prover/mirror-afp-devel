@@ -15,7 +15,7 @@ lemma tl_set:
 
 subsection {* Type of abstract priority queues *}
 
-typedef ('a, 'b::linorder) pq =
+typedef (overloaded) ('a, 'b::linorder) pq =
   "{xs :: ('a \<times> 'b) list. distinct (map fst xs) \<and> sorted (map snd xs)}"
   morphisms alist_of Abs_pq
 proof -

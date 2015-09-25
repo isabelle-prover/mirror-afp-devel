@@ -1,7 +1,6 @@
 chapter AFP
 
 session UpDown_Scheme (AFP) = "HOL-Probability" +
-  options [document = pdf]
   theories [document = false]
     "../Separation_Logic_Imperative_HOL/Sep_Main"
   theories

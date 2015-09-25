@@ -71,7 +71,7 @@ ML {*
     fun EFF_ATTR f cxt = (f cxt; (NONE,NONE))
 
     fun WARN_ATTR context msg = EFF_ATTR (fn (_,thm) => warning (msg ^ ": " 
-      ^ Display.string_of_thm (Context.proof_of context) thm))
+      ^ Thm.string_of_thm (Context.proof_of context) thm))
 
     fun TRACE_ATTR msg a cxt = let
       val _ = tracing (msg ^ "\n" ^ @{make_string} cxt)

@@ -116,7 +116,7 @@ qed
 
 subsection {* Partial Deviations *}
 
-typedef 'a pdevs = "{x::nat \<Rightarrow> 'a::zero. finite {i. x i \<noteq> 0}}"
+typedef (overloaded) 'a pdevs = "{x::nat \<Rightarrow> 'a::zero. finite {i. x i \<noteq> 0}}"
   morphisms pdevs_apply Abs_pdev
   by (auto intro!: exI[where x="\<lambda>x. 0"])
 

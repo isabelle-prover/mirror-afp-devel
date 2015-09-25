@@ -16,7 +16,7 @@ text_raw {*\label{thy:HashMap}*}
 
 subsection "Type definition"
 
-typedef ('k, 'v) hashmap = "{hm :: ('k :: hashable, 'v) hm_impl. HashMap_Impl.invar hm}"
+typedef (overloaded) ('k, 'v) hashmap = "{hm :: ('k :: hashable, 'v) hm_impl. HashMap_Impl.invar hm}"
   morphisms impl_of_RBT_HM RBT_HM
 proof
   show "HashMap_Impl.empty () \<in> {hm. HashMap_Impl.invar hm}"

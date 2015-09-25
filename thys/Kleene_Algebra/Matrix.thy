@@ -17,7 +17,7 @@ algebra~\cite{conway71regular}. *}
 
 subsection {* Type Definition *}
 
-typedef 'a atMost = "{..<len_of TYPE('a::len)}"
+typedef (overloaded) 'a atMost = "{..<len_of TYPE('a::len)}"
 by auto
 
 declare Rep_atMost_inject [simp]
@@ -39,9 +39,14 @@ matrices, and (ii)~in the definition of operations, e.g., matrix
 multiplication, we impose weaker sort requirements on the element
 type. *}
 
+context notes [[typedef_overloaded]]
+begin
+
 datatype ('a,'m,'n) matrix = Matrix "'m atMost \<Rightarrow> 'n atMost \<Rightarrow> 'a"
 
 datatype ('a,'m) sqmatrix = SqMatrix "'m atMost \<Rightarrow> 'm atMost \<Rightarrow> 'a"
+
+end
 
 fun sqmatrix_of_matrix where
   "sqmatrix_of_matrix (Matrix A) = SqMatrix A"

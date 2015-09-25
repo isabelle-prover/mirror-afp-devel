@@ -8,7 +8,7 @@ text {* Implementing partial deviations as sorted lists of coefficients. *}
 
 subsection {* Reverse Sorted, Distinct Association Lists *}
 
-typedef ('a, 'b) slist =
+typedef (overloaded) ('a, 'b) slist =
   "{xs::('a::linorder \<times> 'b) list. distinct (map fst xs) \<and> sorted (rev (map fst xs))}"
   by (auto intro!: exI[where x="[]"])
 

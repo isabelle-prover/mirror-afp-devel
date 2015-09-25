@@ -207,7 +207,7 @@ ML {*
       fun pretty_solver (ts,name,desc,_) = Pretty.block (
         Pretty.str (name ^ ": " ^ desc) :: Pretty.fbrk 
         :: Pretty.str ("Triggers: ")
-        :: Pretty.commas (map (Display.pretty_thm ctxt) ts))
+        :: Pretty.commas (map (Thm.pretty_thm ctxt) ts))
 
       val solvers = get_solvers ctxt
     in

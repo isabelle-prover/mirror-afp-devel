@@ -112,7 +112,7 @@ by(unfold_locales)(clarsimp simp add: ID_ceq)
 
 subsection {* The type of distinct lists *}
 
-typedef 'a :: ceq set_dlist =
+typedef (overloaded) 'a :: ceq set_dlist =
   "{xs::'a list. equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None}"
   morphisms list_of_dlist Abs_dlist'
 proof

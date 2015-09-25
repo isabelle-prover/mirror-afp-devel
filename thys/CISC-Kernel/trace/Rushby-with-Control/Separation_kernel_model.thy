@@ -58,7 +58,7 @@ text {* To simplify formulations, we include the state invariant
  initial state @{term s0} serves at witness that @{term rstate_t} 
  is non-empty. *}
 
-typedef rstate_t = "{ s . atomic_step_invariant s }"
+typedef (overloaded) rstate_t = "{ s . atomic_step_invariant s }"
   using initial_invariant by auto
 
 definition abs :: "state_t \<Rightarrow> rstate_t" ("\<up> _") where "abs = Abs_rstate_t"

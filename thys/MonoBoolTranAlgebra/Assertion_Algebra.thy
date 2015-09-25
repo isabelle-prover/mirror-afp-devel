@@ -13,7 +13,7 @@ a complete monotonic boolean transformers algebra is a complete boolean
 algebra.
 *}
 
-typedef ('a::mbt_algebra) Assertion = "assertion::'a set"
+typedef (overloaded) ('a::mbt_algebra) Assertion = "assertion::'a set"
   apply (rule_tac x = "\<bottom>" in exI)
   by (unfold assertion_def, simp)
 

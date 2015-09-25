@@ -275,7 +275,7 @@ ML {*
           warning (
             "Could not infer unique higher-order relator for "
             ^ "refinement rule: \n"
-            ^ Display.string_of_thm ctxt thm
+            ^ Thm.string_of_thm ctxt thm
             ^ "\n for argument: " 
             ^ Syntax.string_of_term ctxt t
           ); 
@@ -406,7 +406,7 @@ ML {*
           open Autoref_Tagging  Conv
 
           fun warn () = warning ("Error annotating refinement theorem: "
-            ^ Display.string_of_thm ctxt thm
+            ^ Thm.string_of_thm ctxt thm
           )
 
           val R_cert = Thm.cterm_of ctxt R
@@ -701,7 +701,7 @@ ML {*
         NONE => Pretty.str "NONE"
       | SOME c => pretty_constraint ctxt c,
       Pretty.brk 2, Pretty.str "---", Pretty.brk 2,
-      Display.pretty_thm ctxt thm
+      Thm.pretty_thm ctxt thm
     ]
 
     fun pretty_thm_pairs ctxt pairs = Pretty.big_list "Thm-Pairs"

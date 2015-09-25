@@ -128,7 +128,7 @@ text {*
   several (optional) rule indices.
   *}
 
-record ('q,'l) hashedTa =
+record (overloaded) ('q,'l) hashedTa =
     -- "Initial states"
   hta_Qi :: "'q hs"           
     -- "Rules"

@@ -21,7 +21,7 @@ by(induct xs)(auto simp add: map_of_eq_None_iff split: option.split)
 
 subsection {* Type definition *}
 
-typedef ('a, 'b) mapping_rbt
+typedef (overloaded) ('a, 'b) mapping_rbt
   = "{t :: ('a :: ccompare, 'b) RBT_Impl.rbt. ord.is_rbt cless t \<or> ID CCOMPARE('a) = None}"
   morphisms impl_of Mapping_RBT'
 proof

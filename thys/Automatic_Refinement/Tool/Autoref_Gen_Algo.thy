@@ -25,7 +25,7 @@ ML {*
         Pretty.str msg, 
         Pretty.brk 1,
         Pretty.str "(",
-        Display.pretty_thm ctxt rl,
+        Thm.pretty_thm ctxt rl,
         Pretty.str ")"
         ]
       |> Pretty.string_of |> warning

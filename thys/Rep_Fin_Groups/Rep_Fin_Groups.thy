@@ -815,7 +815,7 @@ qed
 
 subsubsection {* Type definition, instantiations, and instances *}
 
-typedef ('a::zero,'b) aezfun = "aezfun_set :: ('b\<Rightarrow>'a) set"
+typedef (overloaded) ('a::zero,'b) aezfun = "aezfun_set :: ('b\<Rightarrow>'a) set"
   morphisms aezfun Abs_aezfun
   using     zerofun_is_aezfun
   by        fast

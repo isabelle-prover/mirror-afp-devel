@@ -229,7 +229,7 @@ fun lift_def_opt_main (raw_var,fin_rhs) (lthy1 : local_theory) =
         val collect = Const (@{const_name Collect}, (pair_ty --> bool_ty) --> HOLogic.mk_setT pair_ty) $ caset
         fun tac ctxt = resolve_tac ctxt [ex_thm] 1 THEN blast_tac ctxt 1
         val (info, lthy) =
-          Typedef.add_typedef
+          Typedef.add_typedef {overloaded = false}
             (Binding.name restr_c_name, map dest_TFree fresh_ty_vars, mixfix)
             (t_fresh collect)
             NONE tac lthy
