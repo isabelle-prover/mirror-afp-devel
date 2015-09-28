@@ -33,33 +33,22 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ******************************************************************************)
-(* $Id:$ *)
+ *****************************************************************************)
 
 chapter AFP
-
-session Meta_Isabelle (AFP) = HOL +
-  description {* Meta_Isabelle *}
+   
+session Isabelle_Meta_Model (AFP) = "HOL-Library" +
+  description {* Isabelle_Meta_Model containing a Toy Example *}
   options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/Code_Char"
     "isabelle_home/src/HOL/Isabelle_Main0"
     "isabelle_home/src/HOL/Isabelle_Main1"
+    "isabelle_home/src/HOL/Isabelle_Main2"
   theories
     "meta_isabelle/Parser_Pure"
     "meta_isabelle/Meta_Isabelle"
     "meta_isabelle/Printer_Isabelle"
-  document_files
-    "root.bib"
-    "root.tex"
-
-session Isabelle_Meta_Model (AFP) = Meta_Isabelle +
-  description {* Toy_Example *}
-  options [timeout = 600]
   theories [document = false]
-    "~~/src/HOL/Library/List_lexord"
-    "~~/src/HOL/Library/RBT"
-    "isabelle_home/src/HOL/Isabelle_Main2"
     "toy_example/embedding/Printer"
   theories
     "toy_example/embedding/Generator_static"
