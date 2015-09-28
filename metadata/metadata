@@ -1546,6 +1546,56 @@ date = 2011-02-23
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
 
+[FocusStreamsCaseStudies]
+title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
+author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
+date = 2013-11-14
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
+        in Focus,
+	a framework for formal specification and development of interactive systems.
+	This is an extended and updated version of the formalisation, which was
+	elaborated within the methodology "Focus on Isabelle".
+	In addition, we also applied the formalisation on three case studies
+	that cover different application areas: process control (Steam Boiler System),
+	data transmission (FlexRay communication protocol),
+	memory and processing components (Automotive-Gateway System).
+
+[Isabelle_Meta_Model]
+title = A Meta-Model for the Isabelle API
+author = Frédéric Tuong <http://www.lri.fr/~tuong/>, Burkhart Wolff <http://www.lri.fr/~wolff/>
+date = 2015-09-16
+topic = Computer Science/Programming Languages/Language Definitions
+abstract =
+  We represent a theory of (a fragment of) Isabelle/HOL
+  in Isabelle/HOL. The purpose of this exercise is to write packages for
+  domain-specific specifications such as class models, B-machines, ...,
+  and generally any languages that can be described with a sequence of datatypes
+  in HOL itself; the Isabelle code-generator can then be used to generate
+  tactic code.
+  <p>
+  Consequently the package is geared towards
+  parsing, printing and code-generation to the Isabelle API.
+  It is at the moment not sufficiently rich for doing meta theory on
+  Isabelle itself. Extensions in this direction are possible though.
+  <p>
+  Moreover, the chosen fragment is fairly rudimentary. However it should be
+  easily adapted to one's needs if a package is written on top of it.
+  The supported API contains types, terms, transformation of
+  global context like definitions and data-type declarations as well
+  as infrastructure for Isar-setups.
+  <p>
+  This theory is drawn from the Featherweight OCL project where
+  it is used to construct a package for object-oriented data-type theories
+  generated from UML class diagrams. The Featherweight OCL, for example, allows for
+  both the direct execution of compiled tactic code by the Isabelle API
+  as well as the generation of ".thy"-files for debugging purposes.
+  <p>
+  Gained experience from this project shows that the compiled code is sufficiently
+  efficient for practical purposes while being based on a formal "model"
+  on which properties of the package can be proven such as termination of certain
+  transformations, correctness, etc.
+
 [PCF]
 title = Logical Relations for PCF
 author = Peter Gammie <mailto:peteg42@gmail.com>
@@ -2787,21 +2837,6 @@ depends-on = Abstract-Rewriting
 date = 2015-08-20
 topic = Logic/Rewriting
 abstract = This theory formalizes the commutation version of decreasing diagrams for Church-Rosser modulo. The proof follows Felgenhauer and van Oostrom (RTA 2013). The theory also provides important specializations, in particular van Oostrom’s conversion version (TCS 2008) of decreasing diagrams.
-
-[FocusStreamsCaseStudies]
-title = Stream Processing Components: Isabelle/HOL Formalisation and Case Studies
-author = Maria Spichkova <mailto:maria.spichkova@rmit.edu.au>
-date = 2013-11-14
-topic = Computer Science/Programming Languages/Language Definitions
-abstract = This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
-        in Focus,
-	a framework for formal specification and development of interactive systems.
-	This is an extended and updated version of the formalisation, which was
-	elaborated within the methodology "Focus on Isabelle".
-	In addition, we also applied the formalisation on three case studies
-	that cover different application areas: process control (Steam Boiler System),
-	data transmission (FlexRay communication protocol),
-	memory and processing components (Automotive-Gateway System).
 
 [GoedelGod]
 title = Gödel's God in Isabelle/HOL
