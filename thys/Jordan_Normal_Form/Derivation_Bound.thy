@@ -14,7 +14,6 @@ This theory contains the notion of a derivation bound.\<close>
 theory Derivation_Bound
 imports
   "../Abstract-Rewriting/Abstract_Rewriting"
-  Missing_Abstract_Rewriting
 begin
 
 definition deriv_bound :: "'a rel \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> bool"

@@ -25,7 +25,7 @@ text \<open>In this theory we implement matrices as arrays of arrays.
 theory Matrix_IArray_Impl
 imports
   Matrix
-  Missing_IArray_Haskell
+  "../Gauss_Jordan/IArray_Haskell"
   "../Containers/Set_Impl"
 begin
 

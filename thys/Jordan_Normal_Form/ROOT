@@ -7,8 +7,6 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     Missing_Ring
     Missing_Polynomial
     Missing_Permutations
-    Missing_Abstract_Rewriting
-    Missing_IArray_Haskell
   theories
     Matrix_Impl
     Matrix_Complexity

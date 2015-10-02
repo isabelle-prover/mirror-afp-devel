@@ -112,4 +112,7 @@ code_printing
    constant IArray_Addenda.exists \<rightharpoonup> (Haskell) "IArray.existsIArray"
   | constant IArray_Addenda.all \<rightharpoonup> (Haskell) "IArray.allIArray"
 
+code_printing
+  class_instance iarray :: "HOL.equal" \<rightharpoonup> (Haskell) -
+
 end
