@@ -235,16 +235,17 @@ next
     from `a \<le> b` have A: "?A i \<inter> {a..b} = {max ?a a..b}" (is "?E = ?F") by auto
     hence "emeasure ?M1 ?E = emeasure ?M1 ?F" by simp
     also have "strict_mono_on ln {max (inverse (real (Suc i))) a..b}"
-      by (rule strict_mono_onI, subst ln_less_cancel_iff) (auto dest: inv_le)
+      by (rule strict_mono_onI, subst ln_less_cancel_iff) 
+         (auto dest: inv_le simp del: real_of_nat_Suc)
     with `a \<le> b` True dens 
       have "emeasure ?M1 ?F = emeasure (density lborel (\<lambda>x. f (ln x) * inverse x)) ?F"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less not_le range_exp dest: has_subprob_densityD dest!: inv_le
-               intro!: DERIV_ln continuous_on_inverse continuous_on_id)
+               intro!: DERIV_ln continuous_on_inverse continuous_on_id simp del: real_of_nat_Suc)
     also note A[symmetric]
     also have "emeasure (density lborel (\<lambda>x. f (ln x) * inverse x)) ?E = emeasure ?M2 ?E"
       by (subst (1 2) emeasure_density) 
-         (auto simp: Mg Mg' intro!: nn_integral_cong split: split_indicator dest!: inv_le)
+         (auto simp: Mg Mg' intro!: nn_integral_cong split: split_indicator dest!: inv_le simp del: real_of_nat_Suc)
     finally show "emeasure ?M1 (?A i \<inter> {a..b}) = emeasure ?M2 (?A i \<inter> {a..b})" .
   qed simp
   hence "(SUP i. emeasure ?M1 (?A i \<inter> {a..b})) = (SUP i. emeasure ?M2 (?A i \<inter> {a..b}))" by simp
@@ -252,7 +253,7 @@ next
     by (rule SUP_emeasure_incseq)
        (auto simp: incseq_def max_def not_le dest: order.strict_trans1)
   also have "emeasure ?M2 ?C + emeasure ?M2 ?D = emeasure ?M2 (?C \<union> ?D)"
-    by (rule plus_emeasure) (auto dest: inv_le)
+    by (rule plus_emeasure) (auto dest: inv_le simp del: real_of_nat_Suc)
   also note decomp[symmetric]
   finally show "emeasure ?M1 {a..b} = emeasure ?M2 {a..b}" .
 qed simp
@@ -285,7 +286,7 @@ next
                       (auto intro!: always_eventually less_imp_le simp: not_le)
     with `x > 0` show False by simp
   qed
-  hence A: "(\<Union>i. ?A2 i) = {0<..}" by (auto dest: inv_le)
+  hence A: "(\<Union>i. ?A2 i) = {0<..}" by (auto dest: inv_le simp del: real_of_nat_Suc)
   moreover have "\<And>x. x < 0 \<Longrightarrow> \<exists>i. x \<le> -inverse (Suc i)"
   proof (rule ccontr)
     fix x :: real assume "x < 0" "\<not>(\<exists>i. x \<le> -inverse (Suc i))"
@@ -294,7 +295,8 @@ next
          (auto intro!: always_eventually less_imp_le LIMSEQ_inverse_real_of_nat_add_minus simp: not_le)
     with `x < 0` show False by simp
   qed
-  hence B: "(\<Union>i. ?A1 i) = {..<0}" by (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le)
+  hence B: "(\<Union>i. ?A1 i) = {..<0}" 
+    by (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: real_of_nat_Suc)
   ultimately have C: "UNIV = (\<Union>i. ?A1 i) \<union> (\<Union>i. ?A2 i) \<union> {0}" by (subst A, subst B) force
   have UN_Int_distrib: "\<And>f A. (\<Union>i. f i) \<inter> A = (\<Union>i. f i \<inter> A)" by blast
   have decomp: "{a..b} = (\<Union>i. ?A1 i \<inter> {a..b}) \<union> (\<Union>i. ?A2 i \<inter> {a..b}) \<union> ?C" (is "_ = ?D \<union> ?E \<union> _")
@@ -304,7 +306,7 @@ next
     apply (subst decomp)
     apply (subst plus_emeasure[symmetric], simp, simp, simp)
     apply (subst plus_emeasure[symmetric])
-    apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x])
+    apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x] simp del: real_of_nat_Suc)
     done
   also have "(\<lambda>x. - inverse x) -` {0 :: real} = {0}" by (auto simp: field_simps)
   hence "emeasure ?M1 ?C = 0" 
@@ -322,7 +324,8 @@ next
     from `a \<le> b` have A: "?A1 i \<inter> {a..b} = {a..min ?a b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {a..min ?a b}"
-      by (rule strict_mono_onI) (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le)
+      by (rule strict_mono_onI) 
+         (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: real_of_nat_Suc)
     with `a \<le> b` True dens 
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
@@ -345,7 +348,7 @@ next
     from `a \<le> b` have A: "?A2 i \<inter> {a..b} = {max ?a a..b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {max ?a a..b}"
-      by (rule strict_mono_onI) (auto dest!: inv_le simp: not_le)
+      by (rule strict_mono_onI) (auto dest!: inv_le simp: not_le simp del: real_of_nat_Suc)
     with `a \<le> b` True dens 
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
@@ -361,7 +364,7 @@ next
   also have "emeasure ?M2 ?D + emeasure ?M2 ?E + emeasure ?M2 ?C = emeasure ?M2 {a..b}"
     apply (subst (4) decomp)
     apply (subst plus_emeasure, simp, simp)
-    apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x]) []
+    apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x] simp del: real_of_nat_Suc)
     apply (subst plus_emeasure)
     apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x])
     done

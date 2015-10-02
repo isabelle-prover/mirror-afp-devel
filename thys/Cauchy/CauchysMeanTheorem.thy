@@ -114,7 +114,7 @@ next
         apply -
         apply (drule meta_spec [of _ "length ys"])
         apply (subst(asm) eq_sym_conv)
-        by simp
+        by (simp del: real_of_nat_Suc)
       hence "\<Sum>:(y#ys) < m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
@@ -151,7 +151,7 @@ next
         apply -
         apply (drule meta_spec [of _ "length ys"])
         apply (subst(asm) eq_sym_conv)
-        by simp
+        by (simp del: real_of_nat_Suc)
       hence "\<Sum>:(y#ys) > m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
@@ -529,8 +529,6 @@ lemma list_eq_sum [simp]:
   shows "\<Sum>:(list_eq xs m) = (m * (real (length (list_eq xs m))))"
 apply (induct_tac xs)
 apply simp
-apply clarsimp
-apply (subst real_of_nat_Suc)
 apply (simp add:field_simps)
 done
 

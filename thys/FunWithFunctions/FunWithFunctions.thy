@@ -131,7 +131,8 @@ proof -
       have "real(Suc(Suc n))*r + real(Suc n) =
             r + (real(Suc n)*r + real n) + 1" (is "?a = ?b")
         by(simp add:real_of_nat_Suc field_simps)
-      hence "f ?a = f ?b" by simp
+      hence "f ?a = f ?b"
+        by presburger
       also have "\<dots> = f r + f(real(Suc n)*r + real n)" by(rule f_add)
       also have "\<dots> = f r + real(Suc n) * f r" by(simp only:Suc)
       finally show ?case by(simp add:real_of_nat_Suc field_simps)
@@ -142,7 +143,7 @@ proof -
     proof(cases n)
       case 0 thus ?thesis using `n\<noteq>0` by simp
     next
-      case Suc thus ?thesis using `n\<noteq>0` by (simp add:1)
+      case Suc thus ?thesis using `n\<noteq>0` using "1" by auto
     qed }
   note f_mult = this
   from `r:\<rat>` obtain i::int and n::nat where r: "r = real i/real n" and "n\<noteq>0"

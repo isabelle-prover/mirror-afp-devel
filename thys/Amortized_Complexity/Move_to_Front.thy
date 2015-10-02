@@ -951,7 +951,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
       have 0: "2*real(?on n) \<ge> 0" by simp
-      have 1: "0 < real ((l + 1) * (n + 1))" by(simp)
+      have 1: "0 < real ((l + 1) * (n + 1))" by (simp del: real_of_nat_Suc)
       have "?off n \<ge> length(?cruel n)"
         by(rule T_ge_len) (simp add: adv_def)
       hence "?off n > n" by simp

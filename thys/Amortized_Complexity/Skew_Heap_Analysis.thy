@@ -31,7 +31,7 @@ corollary Glog: "G h \<le> log 2 (size1 h)"
 proof -
   have "G h = log 2 (2 ^ G h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ G h) \<le> log 2 (size h + 1)"
-    by(simp del: G.simps) (metis Gexp Suc_eq_plus1)
+    by(simp del: G.simps real_of_nat_Suc) (metis Gexp Suc_eq_plus1)
   finally show ?thesis by(simp add: size1_def)
 qed
 
@@ -42,7 +42,7 @@ corollary Dlog: "D h \<le> log 2 (size1 h)"
 proof -
   have "D h = log 2 (2 ^ D h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ D h) \<le> log 2 (size h + 1)"
-    by(simp del: D.simps) (metis Dexp Suc_eq_plus1)
+    by(simp del: D.simps real_of_nat_Suc) (metis Dexp Suc_eq_plus1)
   finally show ?thesis by(simp add: size1_def)
 qed
 
@@ -73,7 +73,7 @@ fun \<Phi> :: "'a heap \<Rightarrow> nat" where
 corollary amor_eq: "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d2 t1 t2 + \<Phi>(meld2 t1 t2) - \<Phi> t1 - \<Phi> t2 =
   G(meld2 t1 t2) + D t1 + D t2 + 1"
 apply(induction t1 t2 rule: meld2.induct)
-apply(auto simp: max_def)
+apply(auto simp: max_def)  (*slow*)
 done
 
 lemma plus_log_le_2log_plus: assumes [arith]: "x \<ge> 1" " y\<ge> 1" "b > 1"

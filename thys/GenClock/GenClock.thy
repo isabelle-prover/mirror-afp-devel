@@ -411,7 +411,7 @@ proof (rule ccontr)
           have Eq2: "real i + 1 = real (i+1)" by simp
           from Eq1 Eq2 
           have Eq3: "real i * rmin + rmin = real (i+1) * rmin"
-            by(simp)
+            by presburger
 
           from F2 have cp1: "correct p (te p (i+1))"
             by simp
