@@ -95,7 +95,7 @@ fun fun_of_map_fun :: "('a \<Rightarrow> 'b option) \<Rightarrow> ('a \<Rightarr
 lift_definition(code_dt) af_of :: "'f af_impl \<Rightarrow> 'f af option" is
   "\<lambda> s :: 'f af_impl. if (\<forall> fidx \<in> set s. (\<forall> i \<in> set (snd fidx). i < snd (fst fidx)))
      then Some (fun_of_map_fun (map_of s) (\<lambda> (f,n). [0 ..< n])) else None"
-using map_of_is_SomeD by (fastforce split: option.splits)
+using map_of_SomeD by (fastforce split: option.splits)
 
 subsection \<open>Code generation tests and derived theorems\<close>
 export_code 
