@@ -237,21 +237,22 @@ proof(unfold closure_def)
     let ?succs = "map (\<lambda>a. (Pderiv a R, Pderiv a S)) as"
     let ?new = "filter (\<lambda>p. p \<notin> set bs \<union> set ws) ?succs"
     let ?ws' = "remdups ?new @ ws'"
-    have "?Inv (step as s)" and "?m2(step as s) < ?m2 s"
-    proof goal_cases
-      case 1
+    have *: "?Inv (step as s)"
+    proof -
       from `?Inv s` have "distinct ?ws'" by auto
       have "ALL (R,S) : set ?ws'. R \<subseteq> PDERIVS R0 \<and> S \<subseteq> PDERIVS S0 \<and> (R,S) \<notin> set ?bs'" using `?Inv s`
         by(simp add: Ball_def image_iff) (metis Pderiv_PDERIVS)
-      with `distinct ?ws'` show ?case by(simp)
-    next
-      case 2
+      with `distinct ?ws'` show ?thesis by(simp)
+    qed
+    have "?m2(step as s) < ?m2 s"
+    proof -
       have "finite(?m1 bs)"
         by(metis assms finite_Diff finite_PDERIVS finite_cartesian_product finite_Pow_iff)
       moreover have "?m2(step as s) < ?m2 s" using `?Inv s`
         by(auto intro: psubset_card_mono[OF `finite(?m1 bs)`])
-      then show ?case using `?Inv s` by simp
+      then show ?thesis using `?Inv s` by simp
     qed
+    note * and this
   } note step = this
   show "\<exists>p. while_option test (step as) ([(R0, S0)], []) = Some p" 
     by(rule measure_while_option_Some [where P = ?Inv and f = ?m2, OF _ Inv0])(simp add: step)

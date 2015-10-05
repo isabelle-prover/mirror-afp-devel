@@ -274,13 +274,16 @@ lemma poly_no_roots_less_less:
        (if poly p b = 0 then 1 else 0)))"
 proof (standard, goal_cases)
   case A: 1
-    thus ?case
-    proof (cases "a \<ge> b", simp, goal_cases)
-      case prems: 1
+    show ?case
+    proof (cases "a \<ge> b")
+      case True
+      with A show ?thesis by simp
+    next
+      case False
       with A have [simp]: "p \<noteq> 0" using dense[of a b] by auto
       have B: "{x. a < x \<and> x \<le> b \<and> poly p x = 0} =
                 {x. a < x \<and> x < b \<and> poly p x = 0} \<union>
-                (if poly p b = 0 then {b} else {})" using prems by auto
+                (if poly p b = 0 then {b} else {})" using A False by auto
       have "count_roots_between p a b =
                  card {x. a < x \<and> x < b \<and> poly p x = 0} +
                 (if poly p b = 0 then 1 else 0)"

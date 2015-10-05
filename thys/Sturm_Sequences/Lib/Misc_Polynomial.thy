@@ -149,7 +149,7 @@ text {*
 *}
 lemma bezout_poly:
   "gcd p q = fst (bezw_poly p q) * p + snd (bezw_poly p q) * q"
-proof (induction p q rule: gcd_poly.induct, goal_cases)
+proof (induction p q rule: gcd_poly.induct)
   case (1 p)
     show ?case by (subst bezw_poly.simps, simp add: gcd_poly.simps(1))
 next
@@ -751,11 +751,14 @@ proof goal_cases
   have "\<exists>l u. l \<le> u \<and> (\<forall>p x. p \<in> ps \<and> x \<ge> u \<longrightarrow> sgn (poly p x) = poly_inf p) \<and>
               (\<forall>p x. p \<in> ps \<and> x \<le> l \<longrightarrow> sgn (poly p x) = poly_neg_inf p)"
       (is "\<exists>l u. ?P ps l u")
-  proof (induction rule: finite_subset_induct[OF assms(1), where A = UNIV], simp, goal_cases)
+  proof (induction rule: finite_subset_induct[OF assms(1), where A = UNIV])
     case 1
+      show ?case by simp
+  next
+    case 2
       show ?case by (intro exI[of _ 42], simp)
   next
-    case prems: (2 p ps)
+    case prems: (3 p ps)
       from prems(4) obtain l u where lu_props: "?P ps l u" by blast
       from poly_lim_inf obtain u' 
           where u'_props: "\<forall>x\<ge>u'. sgn (poly p x) = poly_inf p"

@@ -202,7 +202,7 @@ proof -
   let ?v = "\<lambda>h a al. default_val (THE T. heap_base.addr_loc_type typeof_addr P h a al T)"
 
   have "(?red' \<longrightarrow> ?aok \<longrightarrow> ?concl) \<and> (?reds' \<longrightarrow> ?aoks \<longrightarrow> ?concls)"
-  proof(induct rule: J_heap_base.red_reds.induct, goal_cases)
+  proof(induct rule: J_heap_base.red_reds.induct)
     case (23 h a T n i v l) (* RedAAcc *)
     thus ?case by(auto 4 6 intro: J_heap_base.red_reds.RedAAcc[where v="?v h a (ACell (nat (sint i)))"])
   next

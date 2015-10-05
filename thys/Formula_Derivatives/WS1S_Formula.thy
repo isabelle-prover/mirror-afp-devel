@@ -523,7 +523,7 @@ next
    assume "lformula0 a" "wf0 (#\<^sub>V \<AA>) a" "#\<^sub>V \<AA> = size_atom x"
    then show "Formula_Operations.satisfies Extend Length satisfies0 \<AA> (lderiv0 x a) =
      satisfies0 (CONS x \<AA>) a"
-   proof (induct a, goal_cases)
+   proof (induct a)
      case 18
      then show ?case
        apply (auto simp: setsum_pow2_image_Suc setsum_pow2_insert0 image_iff split: prod.splits)
@@ -536,7 +536,7 @@ next
    assume "lformula0 a" "wf0 (#\<^sub>V \<AA>) a" "#\<^sub>V \<AA> = size_atom x"
    then show "Formula_Operations.satisfies_bounded Extend Length len satisfies0 \<AA> (lderiv0 x a) =
      satisfies0 (CONS x \<AA>) a"
-   proof (induct a, goal_cases)
+   proof (induct a)
      case 18
      then show ?case
        apply (auto simp: setsum_pow2_image_Suc setsum_pow2_insert0 image_iff split: prod.splits)
