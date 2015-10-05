@@ -1880,7 +1880,7 @@ subsection {* Continuous Generalization *}
 lemma LIMSEQ_minus_fract_mult:
   "(\<lambda>n. r * (1 - 1 / real (Suc (Suc n)))) ----> r"
   by (rule tendsto_eq_rhs[OF tendsto_mult[where a=r and b = 1]])
-    (auto simp: inverse_eq_divide[symmetric]
+    (auto simp: inverse_eq_divide[symmetric] simp del: real_of_nat_Suc
       intro: filterlim_compose[OF LIMSEQ_inverse_real_of_nat filterlim_Suc] tendsto_eq_intros)
 
 lemma det3_nonneg_segments_of_aform:
