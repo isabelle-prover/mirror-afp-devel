@@ -74,7 +74,7 @@ lemma weaken_post:
 by(erule thoare.Conseq, blast)
 
 
-theorems tvalid_defs = tvalid_def ctvalid_def valid_defs
+lemmas tvalid_defs = tvalid_def ctvalid_def valid_defs
 
 lemma [iff]:
 "(\<Turnstile>\<^sub>t {\<lambda>z s. \<exists>n. P n z s}c{Q}) = (\<forall>n. \<Turnstile>\<^sub>t {P n}c{Q})"

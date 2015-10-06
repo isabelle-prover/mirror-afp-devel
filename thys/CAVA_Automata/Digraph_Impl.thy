@@ -91,7 +91,7 @@ lemma graph_restrict_right_aimpl: "op_graph_restrict_right Vr E =
   E_of_succ (\<lambda>v. {x \<in> E``{v}. x\<in>Vr})"
   by (auto simp: E_of_succ_def succ_of_E_def split: split_if_asm)
 
-schematic_lemma graph_restrict_impl_aux:
+schematic_goal graph_restrict_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
   assumes [autoref_rules]: "(meml, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
@@ -101,7 +101,7 @@ schematic_lemma graph_restrict_impl_aux:
   apply (autoref (keep_goal))
   done
 
-schematic_lemma graph_restrict_left_impl_aux:
+schematic_goal graph_restrict_left_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
   assumes [autoref_rules]: "(meml, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsl \<rightarrow> bool_rel"
@@ -110,7 +110,7 @@ schematic_lemma graph_restrict_left_impl_aux:
   apply (autoref (keep_goal, trace))
   done
 
-schematic_lemma graph_restrict_right_impl_aux:
+schematic_goal graph_restrict_right_impl_aux:
   fixes Rsl Rsr
   notes [autoref_rel_intf] = REL_INTFI[of Rsl i_set] REL_INTFI[of Rsr i_set]
   assumes [autoref_rules]: "(memr, op \<in>) \<in> R \<rightarrow> \<langle>R\<rangle>Rsr \<rightarrow> bool_rel"
@@ -136,7 +136,7 @@ lemmas [autoref_rules_raw] =
   graph_restrict_left_impl.refine[OF GEN_OP_D]
   graph_restrict_right_impl.refine[OF GEN_OP_D]
 
-schematic_lemma "(?c::?'c, \<lambda>(E::nat digraph) x. E``{x}) \<in> ?R"
+schematic_goal "(?c::?'c, \<lambda>(E::nat digraph) x. E``{x}) \<in> ?R"
   apply (autoref (keep_goal))
   done
 
@@ -145,7 +145,7 @@ lemma graph_minus_aimpl:
   shows "E1-E2 = E_of_succ (\<lambda>x. E1``{x} - E2``{x})"
   by (auto simp: E_of_succ_def)
 
-schematic_lemma graph_minus_impl_aux:
+schematic_goal graph_minus_impl_aux:
   fixes R :: "('vi\<times>'v) set"
   assumes [autoref_rules]: "(eq,op =)\<in>R\<rightarrow>R\<rightarrow>bool_rel"
   shows "(?c, op -) \<in> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>R\<rangle>slg_rel"
@@ -161,7 +161,7 @@ lemma graph_minus_set_aimpl:
   shows "E1-E2 = E_of_succ (\<lambda>u. {v\<in>E1``{u}. (u,v)\<notin>E2})"
   by (auto simp: E_of_succ_def)
 
-schematic_lemma graph_minus_set_impl_aux:
+schematic_goal graph_minus_set_impl_aux:
   fixes R :: "('vi\<times>'v) set"
   assumes [autoref_rules]: "(eq,op =)\<in>R\<rightarrow>R\<rightarrow>bool_rel"
   assumes [autoref_rules]: "(mem,op \<in>) \<in> R \<times>\<^sub>r R \<rightarrow> \<langle>R \<times>\<^sub>r R\<rangle>Rs \<rightarrow> bool_rel"
@@ -305,17 +305,17 @@ lemma [autoref_hom]:
   by simp
 
 
-schematic_lemma "(?c::?'c, \<lambda>G x. g_E G `` {x})\<in>?R"
+schematic_goal "(?c::?'c, \<lambda>G x. g_E G `` {x})\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma "(?c,\<lambda>V0 E.
+schematic_goal "(?c,\<lambda>V0 E.
    \<lparr> g_V = UNIV, g_E = E, g_V0 = V0 \<rparr>  )
   \<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>unit_rel,R\<rangle>g_impl_rel_ext"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma "(?c,\<lambda>V V0 E.
+schematic_goal "(?c,\<lambda>V V0 E.
    \<lparr> g_V = V, g_E = E, g_V0 = V0 \<rparr>  )
   \<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> \<langle>unit_rel,R\<rangle>frgv_impl_rel_ext"
   apply (autoref (keep_goal))
@@ -366,7 +366,7 @@ lemma the_inv_into_map_impl_correct:
   apply simp
   done
 
-schematic_lemma the_inv_into_map_code_aux:
+schematic_goal the_inv_into_map_code_aux:
   fixes Rv' :: "('vti \<times> 'vt) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv' eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('vti) (def_size)"
@@ -409,7 +409,7 @@ qed
 
 end
 
-schematic_lemma "(?c::?'c, do { 
+schematic_goal "(?c::?'c, do { 
   let s = {1,2,3::nat}; 
   (*ASSERT (inj_on Suc s); *)
   RETURN (the_inv_into_map s Suc) }) \<in> ?R"
@@ -484,7 +484,7 @@ context g_rename_precond begin
 end
 
 term frv_rename_ext_aimpl
-schematic_lemma fr_rename_ext_impl_aux:
+schematic_goal fr_rename_ext_impl_aux:
   fixes Rv' :: "('vti \<times> 'vt) set"
   assumes [autoref_rules]: "(eq, op =) \<in> Rv' \<rightarrow> Rv' \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv' eq bhc"
@@ -543,7 +543,7 @@ proof -
 qed
 
 
-schematic_lemma succ_of_list_impl:
+schematic_goal succ_of_list_impl:
   notes [autoref_tyrel] = 
     ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel" for R]
     ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel"]

@@ -293,7 +293,7 @@ begin
   lemmas [autoref_op_pat] = uprio_pats[where 'e = 'V and 'a = "'W infty"]
 
 
-  schematic_lemma cdijkstra_refines_aux:
+  schematic_goal cdijkstra_refines_aux:
     shows "(?c::?'c, 
       mdijkstra
     ) \<in> ?R"

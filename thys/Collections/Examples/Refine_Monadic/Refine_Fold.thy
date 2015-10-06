@@ -126,7 +126,7 @@ begin
     apply (simp_all add: refine_hsimp refine_rel_defs)
     done
 
-  schematic_lemma pick_sum_code_aux: "RETURN ?f \<le> pick_sum_impl s0 l"
+  schematic_goal pick_sum_code_aux: "RETURN ?f \<le> pick_sum_impl s0 l"
     unfolding pick_sum_impl_def
     apply refine_transfer
     done

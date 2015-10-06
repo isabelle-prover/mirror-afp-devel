@@ -376,7 +376,7 @@ text {*
 
   Thus, we have to construct a function @{text "?sum_max_code"} such that:
 *}
-schematic_lemma sum_max_code_aux: "nres_of ?sum_max_code \<le> sum_max_impl V"
+schematic_goal sum_max_code_aux: "nres_of ?sum_max_code \<le> sum_max_impl V"
   txt {* This is done automatically by the transfer procedure of
     our framework. *}
   unfolding sum_max_impl_def
@@ -417,7 +417,7 @@ theorem sum_max_code_correct:
 text {* For total correctness, the approach is the same. The 
   only difference is, that we use @{const "RETURN"} instead 
   of @{const "nres_of"}: *}
-schematic_lemma sum_max'_code_aux: 
+schematic_goal sum_max'_code_aux: 
   "RETURN ?sum_max'_code \<le> sum_max'_impl V"
   unfolding sum_max'_impl_def
   apply (refine_transfer)
@@ -438,7 +438,7 @@ text {*
   deterministic monad, and then extracts the result.
 *}
 
-schematic_lemma sum_max''_code_aux: 
+schematic_goal sum_max''_code_aux: 
   "RETURN ?sum_max''_code \<le> sum_max'_impl V"
   unfolding sum_max'_impl_def
   apply (refine_transfer the_resI) -- 
@@ -506,7 +506,7 @@ lemma sum_max_it_impl_refine:
   apply (auto simp: refine_hsimp refine_rel_defs)
   done
 
-schematic_lemma sum_max_it_code_aux: 
+schematic_goal sum_max_it_code_aux: 
   "RETURN ?sum_max_it_code \<le> sum_max_it_impl V"
   unfolding sum_max_it_impl_def
   apply (refine_transfer)

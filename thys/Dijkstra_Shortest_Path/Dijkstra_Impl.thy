@@ -81,7 +81,7 @@ locale dijkstraC_fixg = dijkstraC g_ops mr_ops qw_ops +
   fixes g :: 'G
   assumes g_rel: "(g,ga)\<in>br g.\<alpha> g.invar"
 begin
-  schematic_lemma cdinit_refines: 
+  schematic_goal cdinit_refines: 
     notes [refine] = inj_on_id
     shows "cdinit g v0 \<le>\<Down>?R mdinit"
     using g_rel
@@ -92,7 +92,7 @@ begin
       qw.correct mr.correct refine_hsimp)
     done
 
-  schematic_lemma cpop_min_refines:
+  schematic_goal cpop_min_refines:
     "(\<sigma>,\<sigma>') \<in> build_rel \<alpha>sc dinvarC_add
       \<Longrightarrow> cpop_min \<sigma> \<le> \<Down>?R (mpop_min \<sigma>')"
     unfolding cpop_min_def mpop_min_def
@@ -102,7 +102,7 @@ begin
     apply (simp add: \<alpha>sc_def dinvarC_add_def refine_hsimp refine_rel_defs)
     done
 
-  schematic_lemma cupdate_refines:
+  schematic_goal cupdate_refines:
     notes [refine] = inj_on_id
     shows "(\<sigma>,\<sigma>')\<in>build_rel \<alpha>sc dinvarC_add \<Longrightarrow> v=v' \<Longrightarrow> wv=wv' \<Longrightarrow> 
     cupdate g v wv \<sigma> \<le> \<Down>?R (mupdate v' wv' \<sigma>')"
@@ -136,7 +136,7 @@ begin
 
   thm g.nodes_it_is_iterator
 
-  schematic_lemma idijkstra_refines_aux: 
+  schematic_goal idijkstra_refines_aux: 
     assumes "g.invar g"
     shows "RETURN ?f \<le> cdijkstra g v0"
     using assms

@@ -128,7 +128,7 @@ begin
     for nontermination. Inside this option-type, there is the option type
     that encodes whether we return with failure or a distance.
     *}
-  schematic_lemma bfs_code_refine_aux: 
+  schematic_goal bfs_code_refine_aux: 
     "nres_of ?bfs_code \<le> bfs_impl succ src dst"
     unfolding bfs_impl_def
     apply (refine_transfer)

@@ -90,7 +90,7 @@ theorem faccs_correct1: "q\<in>faccs \<delta> n \<Longrightarrow> accs \<delta> 
 theorem faccs_correct2: "accs \<delta> n q \<Longrightarrow> q\<in>faccs \<delta> n" 
   by (simp add: faccs_correct_aux)
 
-theorems faccs_correct = faccs_correct1 faccs_correct2
+lemmas faccs_correct = faccs_correct1 faccs_correct2
 
 lemma faccs_alt: "faccs \<delta> t = {q. accs \<delta> t q}" by (auto intro: faccs_correct)
 
@@ -685,7 +685,7 @@ theorem br'_while_algo:
 
 lemma fst_br'_\<alpha>: "fst (br'_\<alpha> s) = fst s" by (cases s) (simp add: br'_\<alpha>_def)
 
-theorems br'_invar_final = 
+lemmas br'_invar_final = 
   br'_pref.transfer_correctness[OF br_invar_final, unfolded fst_br'_\<alpha>]
 
 theorem bre'_pref_br: "wa_precise_refine (bre'_algo Qi \<delta>) (bre_algo Qi \<delta>) br'_\<alpha>"
@@ -708,7 +708,7 @@ theorem bre'_while_algo:
   apply (simp add: br'_invar_initial)
   done
 
-theorems bre'_invar_final = 
+lemmas bre'_invar_final = 
   bre'_pref.transfer_correctness[OF bre_invar_final, unfolded fst_br'_\<alpha>]
 
 text_raw {* \paragraph{Implementing a Step} *}

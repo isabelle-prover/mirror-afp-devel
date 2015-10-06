@@ -58,7 +58,7 @@ definition succ_of_list :: "(nat\<times>nat) list \<Rightarrow> nat \<Rightarrow
     
 "
     
-schematic_lemma succ_of_list_impl:
+schematic_goal succ_of_list_impl:
   notes [autoref_tyrel] = 
     ty_REL[where 'a="nat\<rightharpoonup>nat set" and R="\<langle>nat_rel,R\<rangle>iam_map_rel" for R]
     ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>list_set_rel"]
@@ -74,7 +74,7 @@ export_code succ_of_list_impl in SML
 definition acc_of_list :: "nat list \<Rightarrow> nat set" 
   where "acc_of_list l \<equiv> fold insert l {}"
 
-schematic_lemma acc_of_list_impl:
+schematic_goal acc_of_list_impl:
   notes [autoref_tyrel] = 
     ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel" for R]
 

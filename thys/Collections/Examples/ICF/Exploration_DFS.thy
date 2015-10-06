@@ -166,10 +166,10 @@ proof -
 qed
     
 -- "Show that concrete algo is a deterministic while-algo"
-theorems hs_dfs_det_while_algo = det_while_algo_intro[OF hs_dfs_while_algo]
+lemmas hs_dfs_det_while_algo = det_while_algo_intro[OF hs_dfs_while_algo]
 
   -- "Transferred correctness theorem"
-theorems hs_dfs_invar_final = 
+lemmas hs_dfs_invar_final = 
   wa_precise_refine.transfer_correctness[OF
      hs_dfs_pref_dfs dfs_invar_final]
 

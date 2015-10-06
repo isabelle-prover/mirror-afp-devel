@@ -277,15 +277,15 @@ lemma param_fold[param]:
   unfolding List.fold_def List.foldr_def List.foldl_def
   by (parametricity)+
 
-schematic_lemma param_take[param]: "(take,take)\<in>(?R::(_\<times>_) set)"
+schematic_goal param_take[param]: "(take,take)\<in>(?R::(_\<times>_) set)"
   unfolding take_def 
   by (parametricity)
 
-schematic_lemma param_drop[param]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
+schematic_goal param_drop[param]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
   unfolding drop_def 
   by (parametricity)
 
-schematic_lemma param_length[param]: 
+schematic_goal param_length[param]: 
   "(length,length)\<in>(?R::(_\<times>_) set)"
   unfolding size_list_overloaded_def size_list_def 
   by (parametricity)

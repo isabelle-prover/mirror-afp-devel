@@ -317,7 +317,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_Root_CTRL)
 done
 
-schematic_lemma Events_Root_CTRL:
+schematic_goal Events_Root_CTRL:
   "SAEvents Root_CTRL = ?X"
 apply (unfold SAEvents_def expr_def)
 apply (rule trans)
@@ -361,7 +361,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_CDPlayer_CTRL)
 done
 
-schematic_lemma Events_CDPlayer_CTRL:
+schematic_goal Events_CDPlayer_CTRL:
   "SAEvents CDPlayer_CTRL = ?X"
 apply (unfold SAEvents_def)
 apply (rule trans)
@@ -405,7 +405,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_AudioPlayer_CTRL)
 done
 
-schematic_lemma Events_AudioPlayer_CTRL:
+schematic_goal Events_AudioPlayer_CTRL:
   "SAEvents AudioPlayer_CTRL = ?X"
 apply (unfold SAEvents_def)
 apply (rule trans)
@@ -449,7 +449,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_On_CTRL)
 done
 
-schematic_lemma Events_On_CTRL:
+schematic_goal Events_On_CTRL:
   "SAEvents On_CTRL = ?X"
 apply (unfold SAEvents_def)
 apply (rule trans)
@@ -493,7 +493,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_TunerMode_CTRL)
 done
 
-schematic_lemma Events_TunerMode_CTRL:
+schematic_goal Events_TunerMode_CTRL:
   "SAEvents TunerMode_CTRL = ?X"
 apply (unfold SAEvents_def)
 apply (rule trans)
@@ -537,7 +537,7 @@ apply (unfold Delta_def)
 apply (simp add: Abs_seqauto_inverse check_CDMode_CTRL)
 done
 
-schematic_lemma Events_CDMode_CTRL:
+schematic_goal Events_CDMode_CTRL:
   "SAEvents CDMode_CTRL = ?X"
 apply (unfold SAEvents_def)
 apply (rule trans)
@@ -566,7 +566,7 @@ lemmas CarAudioSystemthms = CarAudioSystemStates CarAudioSystemEvents CarAudioSy
 (*                  States of \<guillemotright> CarAudioSystem \<guillemotleft>                  *)
 (* -------------------------------------------------------------- *)
 
-schematic_lemma CarAudioSystem_StatesRoot:
+schematic_goal CarAudioSystem_StatesRoot:
   "HAStates (PseudoHA Root_CTRL (LiftInitData [V0 0, V1 0])) = ?X"
 apply (wellformed CarAudioSystemthms)+
 done
@@ -574,7 +574,7 @@ done
 lemmas CarAudioSystemthms_1 = CarAudioSystemthms CarAudioSystem_StatesRoot
 
 
-schematic_lemma CarAudioSystem_StatesCDPlayer:
+schematic_goal CarAudioSystem_StatesCDPlayer:
   "HAStates (PseudoHA Root_CTRL (LiftInitData [V0 0, V1 0]) [++] 
             (''CarAudioSystem'',CDPlayer_CTRL)) = ?X"
 apply (wellformed CarAudioSystemthms_1)+
@@ -582,7 +582,7 @@ done
 
 lemmas CarAudioSystemthms_2 = CarAudioSystemthms_1 CarAudioSystem_StatesCDPlayer
 
-schematic_lemma CarAudioSystem_StatesAudioPlayer:
+schematic_goal CarAudioSystem_StatesAudioPlayer:
   "HAStates (PseudoHA Root_CTRL (LiftInitData [V0 0, V1 0])
                   [++] (''CarAudioSystem'',CDPlayer_CTRL)
                   [++] (''CarAudioSystem'',AudioPlayer_CTRL)) = ?X"
@@ -591,7 +591,7 @@ done
 
 lemmas CarAudioSystemthms_3 = CarAudioSystemthms_2 CarAudioSystem_StatesAudioPlayer
 
-schematic_lemma CarAudioSystem_StatesTunerMode:
+schematic_goal CarAudioSystem_StatesTunerMode:
   "HAStates (PseudoHA Root_CTRL (LiftInitData [V0 0, V1 0])
                   [++] (''CarAudioSystem'',CDPlayer_CTRL)
                   [++] (''CarAudioSystem'',AudioPlayer_CTRL)
@@ -601,7 +601,7 @@ done
 
 lemmas CarAudioSystemthms_4 = CarAudioSystemthms_3 CarAudioSystem_StatesTunerMode
 
-schematic_lemma CarAudioSystem_StatesCDMode:
+schematic_goal CarAudioSystem_StatesCDMode:
   "HAStates (PseudoHA Root_CTRL (LiftInitData [V0 0, V1 0])
                   [++] (''CarAudioSystem'',CDPlayer_CTRL)
                   [++] (''CarAudioSystem'',AudioPlayer_CTRL)
@@ -612,47 +612,47 @@ done
 
 lemmas CarAudioSystemthms_5 = CarAudioSystemthms_4 CarAudioSystem_StatesCDMode
 
-schematic_lemma SAsCarAudioSystem:
+schematic_goal SAsCarAudioSystem:
   "SAs CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma EventsCarAudioSystem:
+schematic_goal EventsCarAudioSystem:
  "HAEvents CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma CompFunCarAudioSystem:
+schematic_goal CompFunCarAudioSystem:
   "CompFun CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma StatesCarAudioSystem:
+schematic_goal StatesCarAudioSystem:
   "HAStates CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma ValueCarAudioSystem:
+schematic_goal ValueCarAudioSystem:
   "HAInitValue CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma HAInitStatesCarAudioSystem:
+schematic_goal HAInitStatesCarAudioSystem:
   "HAInitStates CarAudioSystem = ?X"
 by (simp add: HAInitStates_def SAsCarAudioSystem CarAudioSystemInitState)
 
-schematic_lemma HARootCarAudioSystem:
+schematic_goal HARootCarAudioSystem:
   "HARoot CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma HAInitStateCarAudioSystem:
+schematic_goal HAInitStateCarAudioSystem:
   "HAInitState CarAudioSystem = ?X"
 by (simp add: HARootCarAudioSystem HAInitState_def CarAudioSystemInitState)
 
@@ -785,7 +785,7 @@ apply (subst AddSA_CompFun_the2)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma CompFunCarAudioSystem_ran:
+schematic_goal CompFunCarAudioSystem_ran:
   "ran (CompFun CarAudioSystem) = ?X"
 apply (unfold CarAudioSystem_def)
 apply (rule AddSA_CompFun_ran3_IFF)
@@ -856,7 +856,7 @@ apply (rule SA_States_disjunct)
 apply (wellformed CarAudioSystemthms_5)+
 done
 
-schematic_lemma Chi_CarAudioSystem:
+schematic_goal Chi_CarAudioSystem:
   "Chi CarAudioSystem ''CarAudioSystem'' = ?X"
 apply (unfold Chi_def)
 apply (rule trans)
@@ -866,7 +866,7 @@ apply (simp add: not_sym)
 apply (simp add: CarAudioSystemStates insert_or)
 done
 
-schematic_lemma Chi_CarAudioSystem_On:
+schematic_goal Chi_CarAudioSystem_On:
   "Chi CarAudioSystem ''On'' = ?X"
 apply (unfold Chi_def)
 apply (rule trans)
@@ -876,13 +876,13 @@ apply (simp add: not_sym)
 apply (simp add: CarAudioSystemStates insert_or)
 done
 
-schematic_lemma Chi_CarAudioSystem_Off:
+schematic_goal Chi_CarAudioSystem_Off:
   "Chi CarAudioSystem ''Off'' = ?X"
 apply (unfold Chi_def)
 apply (simp add: SAsCarAudioSystem StatesCarAudioSystem restrict_def CompFunCarAudioSystem_the3)
 done
 
-schematic_lemma InitConf_CarAudioSystem:
+schematic_goal InitConf_CarAudioSystem:
   "InitConf CarAudioSystem = ?X"
 apply (unfold CarAudioSystem_def)
 apply (rule AddSA_InitConf_IFF)+

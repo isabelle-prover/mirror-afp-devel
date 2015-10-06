@@ -48,7 +48,7 @@ lemma
 consts
   update :: "p \<Rightarrow> val \<Rightarrow> heap \<Rightarrow> heap"
 
-schematic_lemma
+schematic_goal
   assumes a: "\<And>P. (stuff p ** P) H \<Longrightarrow> (other_stuff p v ** P) (update p v H)"
   shows "(X ** Y ** other_stuff p ?v) (update p v H)"
   apply (sep_rule a)
@@ -98,7 +98,7 @@ lemma "\<lbrakk> (A ** B) sa ; (A ** Y) s \<rbrakk> \<Longrightarrow> (\<lambda>
   apply (sep_cancel)
   oops
 
-schematic_lemma "\<lbrakk> (B ** A ** C) s \<rbrakk> \<Longrightarrow> (\<lambda>s. (A ** ?X) s) s"
+schematic_goal "\<lbrakk> (B ** A ** C) s \<rbrakk> \<Longrightarrow> (\<lambda>s. (A ** ?X) s) s"
   by (sep_cancel)
 
 (* test backtracking on premises with same state *)

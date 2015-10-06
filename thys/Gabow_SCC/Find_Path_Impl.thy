@@ -270,7 +270,7 @@ begin
     done
 
   section {* Refinement to efficient data structures *}
-  schematic_lemma wset_find_path'_refine_aux:
+  schematic_goal wset_find_path'_refine_aux:
     fixes U0::"'a::hashable set" and P::"'a \<Rightarrow> bool" and E::"('a\<times>'a) set"
     assumes [autoref_rules]: 
       "(succi,E)\<in>\<langle>Id\<rangle>slg_rel"
@@ -315,7 +315,7 @@ begin
     qed
   end
     
-  schematic_lemma wset_find_path_transfer_aux: 
+  schematic_goal wset_find_path_transfer_aux: 
     "RETURN ?c \<le> wset_find_path_impl E U0 P"
     unfolding wset_find_path_impl_def
     by (refine_transfer (post))
@@ -343,7 +343,7 @@ lemma find_path1_gen_correct: "find_path1_gen E u0 P \<le> find_path1 E u0 P"
   )
   done
 
-schematic_lemma find_path1_impl_aux:
+schematic_goal find_path1_impl_aux:
   shows "(?c::?'c,find_path1_gen::(_\<times>_::hashable) set \<Rightarrow> _)\<in>?R"
   unfolding find_path1_gen_def[abs_def]
   apply (autoref (keep_goal))
@@ -365,7 +365,7 @@ lemma find_path1_autoref[autoref_rules]:
   apply (simp add: find_path1_gen_correct)
   done
   
-schematic_lemma find_path1_transfer_aux: 
+schematic_goal find_path1_transfer_aux: 
   "RETURN ?c \<le> find_path1_impl E u P"
   unfolding find_path1_impl_def
   by refine_transfer

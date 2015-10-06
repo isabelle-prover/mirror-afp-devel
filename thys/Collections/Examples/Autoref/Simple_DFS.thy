@@ -68,7 +68,7 @@ text {*
   executable algorithm. The edges function
   is refined to a successor function returning a list-set.
 *}
-schematic_lemma dfs_impl_refine_aux:
+schematic_goal dfs_impl_refine_aux:
   fixes succi and succ :: "nat \<Rightarrow> nat set" and vd v0 :: nat
   assumes [autoref_rules]: "(succi,succ)\<in>Id\<rightarrow>\<langle>Id\<rangle>list_set_rel"
   notes [autoref_rules] = IdI[of v0] IdI[of vd]
@@ -79,7 +79,7 @@ schematic_lemma dfs_impl_refine_aux:
 
 text {* We can configure our tool to use different implementations.
   Here, we use lists for sets of natural numbers. *}
-schematic_lemma dfs_impl_refine_aux2:
+schematic_goal dfs_impl_refine_aux2:
   fixes succi and succ :: "nat \<Rightarrow> nat set" and vd v0 :: nat
   assumes [autoref_rules]: "(succi,succ)\<in>Id\<rightarrow>\<langle>Id\<rangle>dflt_rs_rel" 
   notes [autoref_rules] = IdI[of v0] IdI[of vd]
@@ -101,7 +101,7 @@ text {* We can also leave the type of the nodes and its implementation
 *)
 
 
-schematic_lemma dfs_impl_refine_aux3:
+schematic_goal dfs_impl_refine_aux3:
   fixes succi and succ :: "'a::linorder \<Rightarrow> 'a set" 
     and Rv :: "('ai\<times>'a) set"
   assumes [autoref_rules_raw]: "(cmpk, dflt_cmp op \<le> op <)\<in>(Rv\<rightarrow>Rv\<rightarrow>Id)"

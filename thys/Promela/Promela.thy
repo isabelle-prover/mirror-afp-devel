@@ -2075,7 +2075,7 @@ lemma executable_edgeSet':
 using executable_edgeSet[where ss = "states prog"] assms
 by simp
 
-schematic_lemma executable_refine:
+schematic_goal executable_refine:
   "RETURN (?ex s g) \<le> executable s g"
 unfolding executable_def
 by (refine_transfer)
@@ -2296,7 +2296,7 @@ apply (force intro!: checkDeadProcs_gState_progress_rel)
 apply (blast intro!: gState_progress_rel_trans)
 done
 
-schematic_lemma applyEdge_refine:
+schematic_goal applyEdge_refine:
   "RETURN (?ae prog e p g) \<le> applyEdge prog e p g"
 unfolding applyEdge_def
 by (refine_transfer)
@@ -2418,7 +2418,7 @@ lemma applyEdge_dRETURN:
 using applyEdge_impl.refine
 by (simp add: RETURN_dRETURN)
 
-schematic_lemma nexts_code_aux:
+schematic_goal nexts_code_aux:
   "nres_of (?nexts prog g) \<le> nexts prog g"
   unfolding nexts_def 
   by (refine_transfer the_resI executable_dRETURN applyEdge_dRETURN)
@@ -2562,7 +2562,7 @@ lemma abort_refine[refine_transfer]:
   "f() \<noteq> dSUCCEED \<Longrightarrow> abort s f \<noteq> dSUCCEED"
 by auto
 
-schematic_lemma replay_code_aux:
+schematic_goal replay_code_aux:
   "RETURN (?replay prog g\<^sub>1 g\<^sub>2) \<le> replay prog g\<^sub>1 g\<^sub>2"
 unfolding replay_def applyEdge_def
 by (refine_transfer the_resI executable_dRETURN)

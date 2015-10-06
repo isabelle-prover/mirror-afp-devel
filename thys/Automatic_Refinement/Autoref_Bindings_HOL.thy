@@ -470,11 +470,11 @@ context begin interpretation autoref_syn .
     unfolding List.fold_def List.foldr_def List.foldl_def
     by (autoref)+
 
-  schematic_lemma autoref_take[autoref_rules]: "(take,take)\<in>(?R::(_\<times>_) set)"
+  schematic_goal autoref_take[autoref_rules]: "(take,take)\<in>(?R::(_\<times>_) set)"
     unfolding take_def by autoref
-  schematic_lemma autoref_drop[autoref_rules]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
+  schematic_goal autoref_drop[autoref_rules]: "(drop,drop)\<in>(?R::(_\<times>_) set)"
     unfolding drop_def by autoref
-  schematic_lemma autoref_length[autoref_rules]: 
+  schematic_goal autoref_length[autoref_rules]: 
     "(length,length)\<in>(?R::(_\<times>_) set)"
     unfolding size_list_overloaded_def size_list_def 
     by (autoref)
@@ -612,11 +612,11 @@ subsection "Examples"
 text {* Be careful to make the concrete type a schematic type variable.
   The default behaviour of @{text "schematic_lemma"} makes it a fixed variable,
   that will not unify with the infered term! *}
-schematic_lemma 
+schematic_goal 
   "(?f::?'c,[1,2,3]@[4::nat])\<in>?R"
   by autoref
 
-schematic_lemma 
+schematic_goal 
   "(?f::?'c,[1::nat,
     2,3,4,5,6,7,8,9,0,1,43,5,5,435,5,1,5,6,5,6,5,63,56
   ]
@@ -624,7 +624,7 @@ schematic_lemma
   apply (autoref)
   done
 
-schematic_lemma 
+schematic_goal 
   "(?f::?'c,[1,2,3] = [])\<in>?R"
   by autoref
 
@@ -635,7 +635,7 @@ text {*
   the actual goal, as shown below!
 *}
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_rules] = IdI[where 'a="'a"]
   notes [autoref_itype] = itypeI[where 't="'a::numeral" and I=i_std]
   shows "(?f::?'c, hd [a,b,c::'a::numeral])\<in>?R"
@@ -648,7 +648,7 @@ schematic_lemma
 
 text {* Here comes the correct version. Note the duplicate sort annotation
   of type @{text "'a"}: *}
-schematic_lemma 
+schematic_goal 
   notes [autoref_rules_raw] = IdI[where 'a="'a::numeral"]
   notes [autoref_itype] = itypeI[where 't="'a::numeral" and I=i_std]
   shows "(?f::?'c, hd [a,b,c::'a::numeral])\<in>?R"
@@ -656,7 +656,7 @@ schematic_lemma
 
 text {* Special cases of equality: Note that we do not require equality
   on the element type! *}
-schematic_lemma 
+schematic_goal 
   (*notes [autoref_itype] = itypeI[of a "\<langle>I\<rangle>\<^sub>ii_option"]*)
   assumes [autoref_rules]: "(ai,a)\<in>\<langle>R\<rangle>option_rel"
   shows "(?f::?'c, a = None)\<in>?R"
@@ -664,14 +664,14 @@ schematic_lemma
   done
 
 
-schematic_lemma 
+schematic_goal 
   (*notes [autoref_itype] = itypeI[of a "\<langle>I\<rangle>\<^sub>ii_list"]*)
   assumes [autoref_rules]: "(ai,a)\<in>\<langle>R\<rangle>list_rel"  
   shows "(?f::?'c, [] = a)\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   shows "(?f::?'c, [1,2] = [2,3::nat])\<in>?R"
   apply (autoref (keep_goal))
   done

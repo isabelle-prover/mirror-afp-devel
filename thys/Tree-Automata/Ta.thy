@@ -1449,7 +1449,7 @@ begin
     with A(1) show "\<exists>s\<subseteq>Q. s \<inter> Qi \<noteq> {} \<and> accs \<delta>ss t s" by blast
   qed
     
-  theorems detTA_correct = detTA_is_ta detTA_lang
+  lemmas detTA_correct = detTA_is_ta detTA_lang
 end
 
 subsubsection "Completion"
@@ -1609,7 +1609,7 @@ begin
     thus "t\<in>ta_lang TA" using QI by (auto simp add: ta_lang_def)
   qed
         
-  theorems completeTA_correct = completeTA_is_ta completeTA_lang
+  lemmas completeTA_correct = completeTA_is_ta completeTA_lang
 end
 
 subsubsection "Complement"
@@ -1839,7 +1839,7 @@ proof -
 qed
 
 
-theorems rtl_closed = finite_alphabet.rtl_empty finite_alphabet.rtl_univ 
+lemmas rtl_closed = finite_alphabet.rtl_empty finite_alphabet.rtl_univ 
   rtl_complement_closed
   rtl_inter_closed rtl_union_closed rtl_diff_closed
 

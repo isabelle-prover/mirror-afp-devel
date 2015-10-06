@@ -1103,7 +1103,7 @@ lemma Un_set_drop_impl_correct:
   apply (auto simp: take_Suc_conv_app_nth)
   done
 
-schematic_lemma Un_set_drop_code_aux: 
+schematic_goal Un_set_drop_code_aux: 
   assumes [autoref_rules]: "(es_impl,{})\<in>\<langle>R\<rangle>Rs"
   assumes [autoref_rules]: "(un_impl,op \<union>)\<in>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs\<rightarrow>\<langle>R\<rangle>Rs"
   shows "(?c,Un_set_drop_impl)\<in>nat_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>as_rel \<rightarrow> \<langle>\<langle>R\<rangle>Rs\<rangle>nres_rel"
@@ -1112,7 +1112,7 @@ schematic_lemma Un_set_drop_code_aux:
   done
 concrete_definition Un_set_drop_code uses Un_set_drop_code_aux
 
-schematic_lemma Un_set_drop_tr_aux: 
+schematic_goal Un_set_drop_tr_aux: 
   "RETURN ?c \<le> Un_set_drop_code es_impl un_impl i A"
   unfolding Un_set_drop_code_def
   by refine_transfer

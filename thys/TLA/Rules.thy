@@ -431,15 +431,15 @@ text {*
   Firstly, STL1 is the same as @{thm alw} derived above.
 *}
 
-theorems STL1 = alw
+lemmas STL1 = alw
 
 text {*
   STL2 and STL3 have also already been derived.
 *}
 
-theorems STL2 = ax1 
+lemmas STL2 = ax1 
 
-theorems STL3 = T1
+lemmas STL3 = T1
 
 text {*
   As with the derivation of @{thm alw}, a purely syntactic derivation of 
@@ -649,8 +649,8 @@ theorem dualization:
   "\<turnstile> \<not>\<diamond>\<langle>A\<rangle>_v = \<box>[\<not>A]_v"
   unfolding eventually_def angle_action_def by simp_all 
 
-theorems dualization_rew = dualization[int_rewrite]
-theorems dualization_unl = dualization[unlifted]
+lemmas dualization_rew = dualization[int_rewrite]
+lemmas dualization_unl = dualization[unlifted]
 
 theorem E1: "\<turnstile> \<diamond>(F \<or> G) = (\<diamond>F \<or> \<diamond>G)"
 proof -

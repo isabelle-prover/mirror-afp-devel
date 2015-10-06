@@ -253,7 +253,7 @@ definition DFT :: "nat => (nat => complex) => (nat => complex)" where
 definition IDFT :: "nat => (nat => complex) => (nat => complex)" where
   "IDFT n a == (%i. (\<Sum>k=0..<n. (a k) / (root n) ^ (i * k)))"
 
-schematic_lemma "map (DFT 4 a) [0, 1, 2, 3] = ?x"
+schematic_goal "map (DFT 4 a) [0, 1, 2, 3] = ?x"
   by(simp add: DFT_def Sum4)
 
 text {* Lemmas for the correctness proof. *}
@@ -510,7 +510,7 @@ next
   qed
 qed
 
-schematic_lemma "map (FFT (Suc (Suc 0)) a) [0, 1, 2, 3] = ?x"
+schematic_goal "map (FFT (Suc (Suc 0)) a) [0, 1, 2, 3] = ?x"
   by simp
 
 end

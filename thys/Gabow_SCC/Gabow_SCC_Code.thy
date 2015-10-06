@@ -9,7 +9,7 @@ begin
 section {* Automatic Refinement to Efficient Data Structures *}
 context fr_graph_impl_loc
 begin
-  schematic_lemma last_seg_code_aux: 
+  schematic_goal last_seg_code_aux: 
     "(?c,last_seg_impl)\<in>GSi_rel \<rightarrow> \<langle>\<langle>node_rel\<rangle>list_set_rel\<rangle>nres_rel"
     unfolding last_seg_impl_def_opt[abs_def] 
     using [[autoref_trace_failed_id]]
@@ -26,7 +26,7 @@ begin
       by simp_all
   end
 
-  schematic_lemma compute_SCC_code_aux:
+  schematic_goal compute_SCC_code_aux:
     "(?c,compute_SCC_impl) \<in> \<langle>\<langle>\<langle>node_rel\<rangle>list_set_rel\<rangle>list_rel\<rangle>nres_rel"
     unfolding compute_SCC_impl_def[abs_def] initial_impl_def GS_initial_impl_def
     unfolding path_is_empty_impl_def is_on_stack_impl_def is_done_impl_def 
@@ -40,12 +40,12 @@ begin
     uses fr_graph_impl_loc.compute_SCC_code_aux
   lemmas [autoref_rules] = compute_SCC_code.refine[OF locale_this] 
 
-  schematic_lemma last_seg_tr_aux: "RETURN ?c \<le> last_seg_code s"
+  schematic_goal last_seg_tr_aux: "RETURN ?c \<le> last_seg_code s"
     unfolding last_seg_code_def by refine_transfer
   concrete_definition (in -) last_seg_tr uses fr_graph_impl_loc.last_seg_tr_aux
   lemmas [refine_transfer] = last_seg_tr.refine[OF locale_this]
 
-  schematic_lemma compute_SCC_tr_aux: "RETURN ?c \<le> compute_SCC_code g"
+  schematic_goal compute_SCC_tr_aux: "RETURN ?c \<le> compute_SCC_code g"
     unfolding compute_SCC_code_def by refine_transfer
   concrete_definition (in -) compute_SCC_tr 
     uses fr_graph_impl_loc.compute_SCC_tr_aux
@@ -78,7 +78,7 @@ qed
 
 section {* Extraction of Benchmark Code *}
 
-schematic_lemma list_set_of_list_aux: 
+schematic_goal list_set_of_list_aux: 
   "(?c,set)\<in>\<langle>nat_rel\<rangle>list_rel \<rightarrow> \<langle>nat_rel\<rangle>list_set_rel"
   by autoref
 concrete_definition list_set_of_list uses list_set_of_list_aux

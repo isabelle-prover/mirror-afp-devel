@@ -67,7 +67,7 @@ by(cases xs) auto
 
 text {* induction rules *}
 
-theorems stream_set_induct = sset_induct
+lemmas stream_set_induct = sset_induct
 
 subsection {* Lemmas about operations from @{theory Stream} *}
 

@@ -1283,7 +1283,7 @@ term "map2set_rel (rbt_map_rel ord)"
 
 term rbt_set_rel
 
-schematic_lemma red_dfs_refine_aux[OF TERMI]:
+schematic_goal red_dfs_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::linorder))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1305,7 +1305,7 @@ lemma impl_red_dfs_autoref[autoref_rules]:
 
 thm autoref_itype(1-10)
 
-schematic_lemma code_red_dfs_aux:
+schematic_goal code_red_dfs_aux:
   shows "RETURN ?c \<le> impl_red_dfs E onstack V u"
   unfolding impl_red_dfs_def
   by (refine_transfer (post) the_resI)
@@ -1315,7 +1315,7 @@ declare code_red_dfs.refine[refine_transfer]
 
 export_code code_red_dfs checking SML
 
-schematic_lemma red_dfs_hash_refine_aux[OF TERMI]:
+schematic_goal red_dfs_hash_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1337,7 +1337,7 @@ lemma impl_red_dfs_hash_autoref[autoref_rules]:
     \<rightarrow> \<langle>\<langle>R\<rangle>hs.rel \<times>\<^sub>r red_wit_rel R\<rangle>nres_rel"
   using assms impl_red_dfs_hash.refine by simp
 
-schematic_lemma code_red_dfs_hash_aux:
+schematic_goal code_red_dfs_hash_aux:
   shows "RETURN ?c \<le> impl_red_dfs_hash E onstack V u"
   unfolding impl_red_dfs_hash_def
   by (refine_transfer (post) the_resI)
@@ -1347,7 +1347,7 @@ declare code_red_dfs_hash.refine[refine_transfer]
 
 export_code code_red_dfs_hash checking SML
 
-schematic_lemma red_dfs_ahs_refine_aux[OF TERMI]:
+schematic_goal red_dfs_ahs_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1367,7 +1367,7 @@ lemma impl_red_dfs_ahs_autoref[autoref_rules]:
     \<rightarrow> \<langle>\<langle>R\<rangle>ahs.rel \<times>\<^sub>r red_wit_rel R\<rangle>nres_rel"
   using assms impl_red_dfs_ahs.refine by simp
 
-schematic_lemma code_red_dfs_ahs_aux:
+schematic_goal code_red_dfs_ahs_aux:
   shows "RETURN ?c \<le> impl_red_dfs_ahs E onstack V u"
   unfolding impl_red_dfs_ahs_def
   by (refine_transfer the_resI)
@@ -1379,7 +1379,7 @@ export_code code_red_dfs_ahs checking SML
 
 (*abbreviation "blue_dfs_annot E A u \<equiv> blue_dfs E (A:::\<^sub>r\<langle>Id\<rangle>fun_set_rel) u"*)
 
-schematic_lemma blue_dfs_refine_aux[OF TERMI]:
+schematic_goal blue_dfs_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::linorder))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1402,7 +1402,7 @@ lemma impl_blue_dfs_autoref[autoref_rules]:
    \<rightarrow> \<langle>\<langle>\<langle>R\<rangle>list_rel \<times>\<^sub>r \<langle>R\<rangle>list_rel\<rangle>Relators.option_rel\<rangle>nres_rel"
   using assms impl_blue_dfs.refine by simp
 
-schematic_lemma code_blue_dfs_aux:
+schematic_goal code_blue_dfs_aux:
   shows "RETURN ?c \<le> impl_blue_dfs G"
   unfolding impl_blue_dfs_def
   apply (refine_transfer (post) the_resI
@@ -1414,7 +1414,7 @@ declare code_blue_dfs.refine[refine_transfer]
 
 export_code code_blue_dfs checking SML
 
-schematic_lemma blue_dfs_hash_refine_aux[OF TERMI]:
+schematic_goal blue_dfs_hash_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1435,7 +1435,7 @@ lemma impl_blue_dfs_hash_autoref[autoref_rules]:
     \<rightarrow> \<langle>\<langle>\<langle>R\<rangle>list_rel \<times>\<^sub>r \<langle>R\<rangle>list_rel\<rangle>Relators.option_rel\<rangle>nres_rel"
   using assms impl_blue_dfs_hash.refine by simp
 
-schematic_lemma code_blue_dfs_hash_aux:
+schematic_goal code_blue_dfs_hash_aux:
   shows "RETURN ?c \<le> impl_blue_dfs_hash G"
   unfolding impl_blue_dfs_hash_def
   apply (refine_transfer the_resI
@@ -1447,7 +1447,7 @@ declare code_blue_dfs_hash.refine[refine_transfer]
 
 export_code code_blue_dfs_hash checking SML
 
-schematic_lemma blue_dfs_ahs_refine_aux[OF TERMI]:
+schematic_goal blue_dfs_ahs_refine_aux[OF TERMI]:
   assumes "TERM (TYPE ('a::hashable))" (* Some magic is required to avoid
     a low-level exception on the sort-constrained 'a here *)
   notes [autoref_tyrel] = 
@@ -1470,7 +1470,7 @@ lemma impl_blue_dfs_ahs_autoref[autoref_rules]:
 
 thm impl_blue_dfs_ahs_def
 
-schematic_lemma code_blue_dfs_ahs_aux:
+schematic_goal code_blue_dfs_ahs_aux:
   shows "RETURN ?c \<le> impl_blue_dfs_ahs G"
   unfolding impl_blue_dfs_ahs_def
   apply (refine_transfer the_resI
@@ -1551,7 +1551,7 @@ theorem code_blue_dfs_ahs_correct':
 
 text {* Export for benchmarking *}
 
-schematic_lemma acc_of_list_impl_hash:
+schematic_goal acc_of_list_impl_hash:
   notes [autoref_tyrel] = 
     ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel"]
 

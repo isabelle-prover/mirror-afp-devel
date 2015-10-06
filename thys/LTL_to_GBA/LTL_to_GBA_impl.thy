@@ -788,7 +788,7 @@ subsection {* Refinement to Efficient Data Structures *}
 
 subsubsection {* Creation of GBA from Nodes *}
 
-schematic_lemma until_frmlsn_impl_aux:
+schematic_goal until_frmlsn_impl_aux:
   assumes [relator_props, simp]: "R=Id"
   shows "(?c,until_frmlsn) 
   \<in> \<langle>(R::(_\<times>_::linorder) set)\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel \<times>\<^sub>r \<langle>R\<rangle>ltln_rel\<rangle>dflt_rs_rel"
@@ -801,7 +801,7 @@ lemmas [autoref_rules] = until_frmlsn_impl.refine[OF PREFER_id_D]
 
 
 
-schematic_lemma build_succ_impl_aux:
+schematic_goal build_succ_impl_aux:
   shows "(?c,build_succ) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel 
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>nat_rel\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
@@ -814,7 +814,7 @@ concrete_definition build_succ_impl uses build_succ_impl_aux
 lemmas [autoref_rules] = build_succ_impl.refine
 
 (* TODO: Post-processing should be on by default! *)
-schematic_lemma build_succ_code_aux: "RETURN ?c \<le> build_succ_impl x"
+schematic_goal build_succ_code_aux: "RETURN ?c \<le> build_succ_impl x"
   unfolding build_succ_impl_def
   apply (refine_transfer (post))
   done
@@ -825,7 +825,7 @@ lemmas [refine_transfer] = build_succ_code.refine
 
 
 
-schematic_lemma build_F_impl_aux:
+schematic_goal build_F_impl_aux:
   assumes [relator_props]:  "R = Id"
   shows "(?c,build_F) \<in> 
     \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>nat_rel\<rangle>list_set_rel\<rangle>list_set_rel"
@@ -840,7 +840,7 @@ lemmas [autoref_rules] = build_F_impl.refine[OF PREFER_id_D]
 
 
 
-schematic_lemma pn_map_impl_aux:
+schematic_goal pn_map_impl_aux:
   shows "(?c,pn_map) \<in> 
     \<langle>\<langle>Rm,Id\<rangle>node_rel\<rangle>list_set_rel 
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>Id\<rangle>list_set_rel \<times>\<^sub>r \<langle>Id\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
@@ -857,7 +857,7 @@ lemma pn_map_impl_autoref[autoref_rules]:
     \<rightarrow> \<langle>\<langle>nat_rel,\<langle>R\<rangle>list_set_rel \<times>\<^sub>r \<langle>R\<rangle>list_set_rel\<rangle>iam_map_rel\<rangle>nres_rel"
   using assms pn_map_impl.refine by simp
 
-schematic_lemma pn_map_code_aux: "RETURN ?c \<le> pn_map_impl x"
+schematic_goal pn_map_code_aux: "RETURN ?c \<le> pn_map_impl x"
   unfolding pn_map_impl_def
   apply (refine_transfer (post))
   done
@@ -870,7 +870,7 @@ lemmas [refine_transfer] = pn_map_code.refine
 thm autoref_tyrel
 
 
-schematic_lemma cr_rename_gba_impl_aux:
+schematic_goal cr_rename_gba_impl_aux:
   assumes ID[relator_props]: "R=Id"
   notes [autoref_tyrel del] = TYRELI[of "\<langle>nat_rel\<rangle>dflt_rs_rel"]
   shows "(?c,cr_rename_gba) \<in> 
@@ -892,7 +892,7 @@ lemma cr_rename_gba_autoref[autoref_rules]:
   using assms cr_rename_gba_impl.refine[of R Rm] by simp
 
 
-schematic_lemma cr_rename_gba_code_aux: "RETURN ?c \<le> cr_rename_gba_impl x y"
+schematic_goal cr_rename_gba_code_aux: "RETURN ?c \<le> cr_rename_gba_impl x y"
   unfolding cr_rename_gba_impl_def
   apply (refine_transfer (post))
   done
@@ -1000,7 +1000,7 @@ lemma [autoref_itype]:
 end
 
 term upd_incoming
-schematic_lemma upd_incoming_impl_aux:
+schematic_goal upd_incoming_impl_aux:
   assumes "REL_IS_ID R"
   shows "(?c, upd_incoming)\<in>\<langle>Rm1,R\<rangle>node_rel 
   \<rightarrow> \<langle>\<langle>Rm2,R\<rangle>node_rel\<rangle>ls_nds_rel 
@@ -1015,7 +1015,7 @@ concrete_definition upd_incoming_impl uses upd_incoming_impl_aux
 lemmas [autoref_rules] = upd_incoming_impl.refine[OF PREFER_D[of REL_IS_ID]]
 
 
-schematic_lemma expand_impl_aux: "(?c, expand_aimpl) \<in> 
+schematic_goal expand_impl_aux: "(?c, expand_aimpl) \<in> 
   \<langle>unit_rel,Id\<rangle>node_rel \<times>\<^sub>r \<langle>\<langle>unit_rel,Id\<rangle>node_rel\<rangle>ls_nds_rel 
   \<rightarrow> \<langle>nat_rel \<times>\<^sub>r \<langle>\<langle>unit_rel,Id\<rangle>node_rel\<rangle>ls_nds_rel\<rangle>nres_rel"
   unfolding expand_aimpl_def[abs_def] expand_new_name_def
@@ -1079,7 +1079,7 @@ qed
 end
 
 
-schematic_lemma expand_code_aux: "RETURN ?c \<le> expand_impl n_ns"
+schematic_goal expand_code_aux: "RETURN ?c \<le> expand_impl n_ns"
   unfolding expand_impl_def
   by (refine_transfer the_resI)
 concrete_definition expand_code uses expand_code_aux
@@ -1087,7 +1087,7 @@ prepare_code_thms expand_code_def
 lemmas [refine_transfer] = expand_code.refine 
 
 
-schematic_lemma create_graph_impl_aux: 
+schematic_goal create_graph_impl_aux: 
   assumes ID: "R=Id"
   shows "(?c, create_graph_aimpl) 
     \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>\<langle>unit_rel,R\<rangle>node_rel\<rangle>list_set_rel\<rangle>nres_rel"
@@ -1100,14 +1100,14 @@ concrete_definition create_graph_impl uses create_graph_impl_aux
 
 lemmas [autoref_rules] = create_graph_impl.refine[OF PREFER_id_D]
 
-schematic_lemma create_graph_code_aux: "RETURN ?c \<le> create_graph_impl \<phi>" 
+schematic_goal create_graph_code_aux: "RETURN ?c \<le> create_graph_impl \<phi>" 
   unfolding create_graph_impl_def
   by refine_transfer
 concrete_definition create_graph_code uses create_graph_code_aux
 lemmas [refine_transfer] = create_graph_code.refine
 
 
-schematic_lemma create_name_gba_impl_aux: 
+schematic_goal create_name_gba_impl_aux: 
   "(?c, (create_name_gba_aimpl:: 'a::linorder ltln \<Rightarrow> _)) 
   \<in> \<langle>Id\<rangle>ltln_rel \<rightarrow> (?R::(?'c\<times>_) set)"
   unfolding create_name_gba_aimpl_def[abs_def]
@@ -1132,13 +1132,13 @@ proof (intro fun_relI nres_relI)
   finally show "create_name_gba_impl \<phi> \<le> \<Down> ?R (create_name_gba \<phi>')" by simp
 qed
  
-schematic_lemma create_name_gba_code_aux: "RETURN ?c \<le> create_name_gba_impl \<phi>" 
+schematic_goal create_name_gba_code_aux: "RETURN ?c \<le> create_name_gba_impl \<phi>" 
   unfolding create_name_gba_impl_def
   by (refine_transfer (post))
 concrete_definition create_name_gba_code uses create_name_gba_code_aux
 lemmas [refine_transfer] = create_name_gba_code.refine
 
-schematic_lemma create_name_igba_impl_aux: 
+schematic_goal create_name_igba_impl_aux: 
   assumes RID: "R=Id"
   shows "(?c,create_name_igba)\<in>
   \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>igbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"
@@ -1150,7 +1150,7 @@ schematic_lemma create_name_igba_impl_aux:
 concrete_definition create_name_igba_impl uses create_name_igba_impl_aux
 lemmas [autoref_rules] = create_name_igba_impl.refine[OF PREFER_id_D]
 
-schematic_lemma create_name_igba_code_aux: "RETURN ?c \<le> create_name_igba_impl \<phi>" 
+schematic_goal create_name_igba_code_aux: "RETURN ?c \<le> create_name_igba_impl \<phi>" 
   unfolding create_name_igba_impl_def
   by (refine_transfer (post))
 concrete_definition create_name_igba_code uses create_name_igba_code_aux

@@ -586,7 +586,7 @@ lemma atLeastLessThan_impl_correct:
     ])
   by auto
 
-schematic_lemma atLeastLessThan_code_aux:
+schematic_goal atLeastLessThan_code_aux:
   notes [autoref_rules] = IdI[of a] IdI[of b]
   assumes [autoref_rules]: "(emp,{})\<in>Rs"
   assumes [autoref_rules]: "(ins,insert)\<in>nat_rel \<rightarrow> Rs \<rightarrow> Rs"
@@ -597,7 +597,7 @@ schematic_lemma atLeastLessThan_code_aux:
   done
 concrete_definition atLeastLessThan_code uses atLeastLessThan_code_aux
 
-schematic_lemma atLeastLessThan_tr_aux:
+schematic_goal atLeastLessThan_tr_aux:
   "RETURN ?c \<le> atLeastLessThan_code emp ins a b"
   unfolding atLeastLessThan_code_def
   by (refine_transfer (post))

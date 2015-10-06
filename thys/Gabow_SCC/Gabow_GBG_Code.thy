@@ -50,7 +50,7 @@ section {* Automatic Refinement *}
 context impl_lasso_loc
 begin
 
-  schematic_lemma goinitial_code_aux: "(?c,goinitial_impl)\<in>goGSi_rel"
+  schematic_goal goinitial_code_aux: "(?c,goinitial_impl)\<in>goGSi_rel"
     unfolding goinitial_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
     by (autoref (trace,keep_goal))
@@ -60,7 +60,7 @@ begin
 
 
   term ginitial_impl
-  schematic_lemma ginitial_code_aux: 
+  schematic_goal ginitial_code_aux: 
     "(?c,ginitial_impl)\<in>node_rel \<rightarrow> goGSi_rel \<rightarrow> gGSi_rel"
     unfolding ginitial_impl_def[abs_def] initial_impl_def GS_initial_impl_def
       (* TODO: Declare autoref-rule for initial*)
@@ -69,7 +69,7 @@ begin
   concrete_definition (in -) ginitial_code uses impl_lasso_loc.ginitial_code_aux
   lemmas [autoref_rules] = ginitial_code.refine[OF locale_this]
 
-  schematic_lemma gpath_is_empty_code_aux: 
+  schematic_goal gpath_is_empty_code_aux: 
     "(?c,gpath_is_empty_impl)\<in>gGSi_rel\<rightarrow>bool_rel"
     unfolding gpath_is_empty_impl_def[abs_def] path_is_empty_impl_def
       (* TODO: Declare autoref-rule for path_is_empty*)
@@ -80,7 +80,7 @@ begin
   lemmas [autoref_rules] = gpath_is_empty_code.refine[OF locale_this]
 
   term goBrk
-  schematic_lemma goBrk_code_aux: "(?c,goBrk_impl)\<in>goGSi_rel\<rightarrow>ce_rel"
+  schematic_goal goBrk_code_aux: "(?c,goBrk_impl)\<in>goGSi_rel\<rightarrow>ce_rel"
     unfolding goBrk_impl_def[abs_def] goBrk_impl_def
     using [[autoref_trace_failed_id]]
     by (autoref (trace,keep_goal))
@@ -89,7 +89,7 @@ begin
   thm autoref_itype(1)
 
   term gto_outer_impl
-  schematic_lemma gto_outer_code_aux: 
+  schematic_goal gto_outer_code_aux: 
     "(?c,gto_outer_impl)\<in>ce_rel \<rightarrow> gGSi_rel\<rightarrow>goGSi_rel"
     unfolding gto_outer_impl_def[abs_def] gto_outer_impl_def
     using [[autoref_trace_failed_id]]
@@ -99,7 +99,7 @@ begin
   lemmas [autoref_rules] = gto_outer_code.refine[OF locale_this]
 
   term go_is_done_impl
-  schematic_lemma go_is_done_code_aux: 
+  schematic_goal go_is_done_code_aux: 
     "(?c,go_is_done_impl)\<in>node_rel \<rightarrow> goGSi_rel \<rightarrow> bool_rel"
     unfolding go_is_done_impl_def[abs_def] is_done_oimpl_def
     using [[autoref_trace_failed_id]]
@@ -108,7 +108,7 @@ begin
     uses impl_lasso_loc.go_is_done_code_aux
   lemmas [autoref_rules] = go_is_done_code.refine[OF locale_this]
 
-  schematic_lemma go_is_no_brk_code_aux: 
+  schematic_goal go_is_no_brk_code_aux: 
     "(?c,go_is_no_brk_impl)\<in>goGSi_rel\<rightarrow>bool_rel"
     unfolding go_is_no_brk_impl_def[abs_def] go_is_no_brk_impl_def
     using [[autoref_trace_failed_id]]
@@ -126,7 +126,7 @@ begin
   lemmas [autoref_rules] = XXX_code.refine[OF locale_this]
 *)
 
-  schematic_lemma gselect_edge_code_aux: "(?c,gselect_edge_impl)
+  schematic_goal gselect_edge_code_aux: "(?c,gselect_edge_impl)
     \<in> gGSi_rel \<rightarrow> \<langle>\<langle>node_rel\<rangle>option_rel \<times>\<^sub>r gGSi_rel\<rangle>nres_rel"
     unfolding gselect_edge_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -136,7 +136,7 @@ begin
   lemmas [autoref_rules] = gselect_edge_code.refine[OF locale_this]
 
   term gis_on_stack_impl
-  schematic_lemma gis_on_stack_code_aux: 
+  schematic_goal gis_on_stack_code_aux: 
     "(?c,gis_on_stack_impl)\<in>node_rel \<rightarrow> gGSi_rel \<rightarrow> bool_rel"
     unfolding gis_on_stack_impl_def[abs_def] is_on_stack_impl_def[abs_def] 
       GS.is_on_stack_impl_def[abs_def]
@@ -148,7 +148,7 @@ begin
   lemmas [autoref_rules] = gis_on_stack_code.refine[OF locale_this]
 
   term gcollapse_impl
-  schematic_lemma gcollapse_code_aux: "(?c,gcollapse_impl)\<in>node_rel \<rightarrow> gGSi_rel 
+  schematic_goal gcollapse_code_aux: "(?c,gcollapse_impl)\<in>node_rel \<rightarrow> gGSi_rel 
     \<rightarrow> \<langle>gGSi_rel\<rangle>nres_rel"
     unfolding gcollapse_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -157,7 +157,7 @@ begin
     uses impl_lasso_loc.gcollapse_code_aux
   lemmas [autoref_rules] = gcollapse_code.refine[OF locale_this]
 
-  schematic_lemma last_is_acc_code_aux: 
+  schematic_goal last_is_acc_code_aux: 
     "(?c,last_is_acc_impl)\<in>gGSi_rel\<rightarrow>\<langle>bool_rel\<rangle>nres_rel"
     unfolding last_is_acc_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -166,7 +166,7 @@ begin
     uses impl_lasso_loc.last_is_acc_code_aux
   lemmas [autoref_rules] = last_is_acc_code.refine[OF locale_this]
 
-  schematic_lemma ce_code_aux: "(?c,ce_impl)
+  schematic_goal ce_code_aux: "(?c,ce_impl)
     \<in>gGSi_rel\<rightarrow>\<langle>ce_rel \<times>\<^sub>r gGSi_rel\<rangle>nres_rel"
     unfolding ce_impl_def[abs_def] on_stack_less_def[abs_def] 
       on_stack_ge_def[abs_def]
@@ -175,7 +175,7 @@ begin
   concrete_definition (in -) ce_code uses impl_lasso_loc.ce_code_aux
   lemmas [autoref_rules] = ce_code.refine[OF locale_this]
 
-  schematic_lemma gis_done_code_aux: 
+  schematic_goal gis_done_code_aux: 
     "(?c,gis_done_impl)\<in>node_rel\<rightarrow>gGSi_rel\<rightarrow>bool_rel"
     unfolding gis_done_impl_def[abs_def] is_done_impl_def GS.is_done_impl_def
     (* TODO: Autoref rule for is_done *)
@@ -184,7 +184,7 @@ begin
   concrete_definition (in -) gis_done_code uses impl_lasso_loc.gis_done_code_aux
   lemmas [autoref_rules] = gis_done_code.refine[OF locale_this]
 
-  schematic_lemma gpush_code_aux: 
+  schematic_goal gpush_code_aux: 
     "(?c,gpush_impl)\<in>node_rel \<rightarrow> gGSi_rel\<rightarrow>gGSi_rel"
     unfolding gpush_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -192,7 +192,7 @@ begin
   concrete_definition (in -) gpush_code uses impl_lasso_loc.gpush_code_aux
   lemmas [autoref_rules] = gpush_code.refine[OF locale_this]
 
-  schematic_lemma gpop_code_aux: "(?c,gpop_impl)\<in>gGSi_rel\<rightarrow>\<langle>gGSi_rel\<rangle>nres_rel"
+  schematic_goal gpop_code_aux: "(?c,gpop_impl)\<in>gGSi_rel\<rightarrow>\<langle>gGSi_rel\<rangle>nres_rel"
     unfolding gpop_impl_def[abs_def]
     using [[autoref_trace_failed_id]]
     by (autoref (trace,keep_goal))
@@ -202,7 +202,7 @@ begin
 
 
 
-  schematic_lemma find_ce_code_aux: "(?c,find_ce_impl)\<in>\<langle>ce_rel\<rangle>nres_rel"
+  schematic_goal find_ce_code_aux: "(?c,find_ce_impl)\<in>\<langle>ce_rel\<rangle>nres_rel"
     unfolding find_ce_impl_def[abs_def] 
     using [[autoref_trace_failed_id]]
     apply (autoref (trace,keep_goal))
@@ -211,7 +211,7 @@ begin
     uses impl_lasso_loc.find_ce_code_aux
   lemmas [autoref_rules] = find_ce_code.refine[OF locale_this]
 
-  schematic_lemma find_ce_tr_aux: "RETURN ?c \<le> find_ce_code G_impl"
+  schematic_goal find_ce_tr_aux: "RETURN ?c \<le> find_ce_code G_impl"
     unfolding
       find_ce_code_def
       ginitial_code_def
@@ -260,7 +260,7 @@ begin
       by auto
   end
 
-  schematic_lemma reconstruct_reach_code_aux:
+  schematic_goal reconstruct_reach_code_aux:
     shows "(?c, reconstruct_reach)\<in>\<langle>node_rel\<rangle>fun_set_rel \<rightarrow>
     \<langle>node_rel\<rangle>fun_set_rel \<rightarrow>
     \<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r node_rel\<rangle>nres_rel"
@@ -274,7 +274,7 @@ begin
   lemmas [autoref_rules] = reconstruct_reach_code.refine[OF locale_this]
 
 
-  schematic_lemma reconstruct_lasso_code_aux:
+  schematic_goal reconstruct_lasso_code_aux:
     shows "(?c, reconstruct_lasso)\<in>\<langle>node_rel\<rangle>fun_set_rel \<rightarrow>
     \<langle>node_rel\<rangle>fun_set_rel \<rightarrow>
     \<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r \<langle>node_rel\<rangle>list_rel\<rangle>nres_rel"
@@ -287,7 +287,7 @@ begin
     uses impl_lasso_loc.reconstruct_lasso_code_aux
   lemmas [autoref_rules] = reconstruct_lasso_code.refine[OF locale_this]
 
-  schematic_lemma reconstruct_lasso_tr_aux: 
+  schematic_goal reconstruct_lasso_tr_aux: 
     "RETURN ?c \<le> reconstruct_lasso_code G_impl Vr Vl"
     unfolding reconstruct_lasso_code_def reconstruct_reach_code_def 
     apply (refine_transfer (post))
@@ -296,7 +296,7 @@ begin
     uses impl_lasso_loc.reconstruct_lasso_tr_aux
   lemmas [refine_transfer] = reconstruct_lasso_tr.refine[OF locale_this]
   
-  schematic_lemma find_lasso_code_aux:
+  schematic_goal find_lasso_code_aux:
     shows "(?c::?'c, find_lasso)\<in>?R"
     unfolding find_lasso_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -306,7 +306,7 @@ begin
     uses impl_lasso_loc.find_lasso_code_aux
   lemmas [autoref_rules] = find_lasso_code.refine[OF locale_this]
 
-  schematic_lemma find_lasso_tr_aux: 
+  schematic_goal find_lasso_tr_aux: 
     "RETURN ?c \<le> find_lasso_code G_impl"
     unfolding find_lasso_code_def
     apply (refine_transfer (post))

@@ -48,7 +48,7 @@ lemma frv_edge_set_aimpl_correct:
   apply auto []
   done
 
-schematic_lemma frv_edge_set_impl_aux:
+schematic_goal frv_edge_set_impl_aux:
   assumes [autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
   assumes [relator_props]: "single_valued R"
   shows "(?c, frv_edge_set_aimpl) \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext \<rightarrow> \<langle>\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel\<rangle>nres_rel"
@@ -58,7 +58,7 @@ schematic_lemma frv_edge_set_impl_aux:
 concrete_definition frv_edge_set_impl uses frv_edge_set_impl_aux
 lemmas [autoref_rules] = frv_edge_set_impl.refine[OF GEN_OP_D PREFER_sv_D]
 
-schematic_lemma frv_edge_set_code_aux: "RETURN ?c \<le> frv_edge_set_impl eq G"
+schematic_goal frv_edge_set_code_aux: "RETURN ?c \<le> frv_edge_set_impl eq G"
   unfolding frv_edge_set_impl_def by (refine_transfer (post))
 concrete_definition frv_edge_set_code for eq G uses frv_edge_set_code_aux
 lemmas [refine_transfer] = frv_edge_set_code.refine
@@ -91,7 +91,7 @@ definition "frv_export G \<equiv> do {
   RETURN (nodes,V0,E)
   }"
 
-schematic_lemma frv_export_impl_aux:
+schematic_goal frv_export_impl_aux:
   fixes R :: "('vi \<times> 'v) set"
   notes [autoref_tyrel] = TYRELI[where R = "\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel"]
   assumes EQ[autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
@@ -107,7 +107,7 @@ schematic_lemma frv_export_impl_aux:
 concrete_definition frv_export_impl for eq uses frv_export_impl_aux
 lemmas [autoref_rules] = frv_export_impl.refine[OF GEN_OP_D PREFER_sv_D]
 
-schematic_lemma frv_export_code_aux: "RETURN ?c \<le> frv_export_impl eq G"
+schematic_goal frv_export_code_aux: "RETURN ?c \<le> frv_export_impl eq G"
   unfolding frv_export_impl_def
   apply (refine_transfer (post))
   done
@@ -299,7 +299,7 @@ proof (refine_rcg SPEC_refine refine_vcg)
 qed
 
 
-schematic_lemma ndfs_find_ce_impl_aux: "(?c, ndfs_find_ce) 
+schematic_goal ndfs_find_ce_impl_aux: "(?c, ndfs_find_ce) 
   \<in> igbg_impl_rel_ext Rm Id 
   \<rightarrow> \<langle>
     \<langle>\<langle>\<langle>unit_rel,Id::('a::hashable\<times>_) set\<rangle>lasso_rel_ext\<rangle>option_rel\<rangle>option_rel
@@ -310,7 +310,7 @@ schematic_lemma ndfs_find_ce_impl_aux: "(?c, ndfs_find_ce)
   done
 concrete_definition ndfs_find_ce_impl uses ndfs_find_ce_impl_aux
 
-schematic_lemma ndfs_find_ce_code_aux: "RETURN ?c \<le> ndfs_find_ce_impl G"
+schematic_goal ndfs_find_ce_code_aux: "RETURN ?c \<le> ndfs_find_ce_impl G"
   unfolding ndfs_find_ce_impl_def
   by (refine_transfer (post))
 concrete_definition ndfs_find_ce_code uses ndfs_find_ce_code_aux
@@ -390,7 +390,7 @@ begin
     apply (auto simp: succ_of_E_def E_of_succ_def split: split_if_asm)
     done
 
-  schematic_lemma vf_prod_impl_aux_cava_reorder:
+  schematic_goal vf_prod_impl_aux_cava_reorder:
     shows "(?c, prod) \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs)"
     unfolding prod_impl_aux_alt_cava_reorder[abs_def]
     using [[autoref_trace_failed_id]]
@@ -447,7 +447,7 @@ begin
       done
   qed
 
-  schematic_lemma dflt_inter_impl_aux: 
+  schematic_goal dflt_inter_impl_aux: 
     shows "(?c, dflt_inter) 
     \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs) \<times>\<^sub>r (Rq \<times>\<^sub>r Rs \<rightarrow> Rs)"
     unfolding dflt_inter_def[abs_def]

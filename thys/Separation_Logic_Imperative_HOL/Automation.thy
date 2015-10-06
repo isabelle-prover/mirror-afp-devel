@@ -937,7 +937,7 @@ lemma
   by (rule assms)
 
 
-schematic_lemma 
+schematic_goal 
   "P1 * P2 * P3 * P4 \<Longrightarrow>\<^sub>A P3 * ?R1"
   "P1 * (P2 * (P3 * P4)) \<Longrightarrow>\<^sub>A P1 * ?R2"
   "P4 * (P2 * (P1 * P3)) \<Longrightarrow>\<^sub>A P1 * ?R2'"

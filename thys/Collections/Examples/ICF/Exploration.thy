@@ -289,7 +289,7 @@ proof -
 qed
 
   -- "The result of the DFS-algorithm is correct"
-theorems dfs_invar_final = 
+lemmas dfs_invar_final = 
   wa_precise_refine.transfer_correctness[OF dfs_pref_sse sse_invar_final]
 
 end

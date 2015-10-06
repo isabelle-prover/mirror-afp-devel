@@ -21,7 +21,7 @@ lemma "(x::real) > 1 \<Longrightarrow> x^3 > 1" by sturm
 
 lemma "\<forall>x::real. x*x \<noteq> -1" by sturm
 
-schematic_lemma A:
+schematic_goal A:
 "card {x::real. -0.010831 < x \<and> x < 0.010831 \<and> 
     1/120*x^5 + 1/24*x^4 +1/6*x^3 - 49/16777216*x^2 - 17/2097152*x = 0} 
   = ?n"
@@ -31,7 +31,7 @@ lemma "card {x::real. x^3 + x = 2*x^2 \<and> x^3 - 6*x^2 + 11*x = 6} = 1"
 by sturm
 
 
-schematic_lemma "card {x::real. x^3 + x = 2*x^2 \<or> x^3 - 6*x^2 + 11*x = 6} = ?n" by sturm
+schematic_goal "card {x::real. x^3 + x = 2*x^2 \<or> x^3 - 6*x^2 + 11*x = 6} = ?n" by sturm
 
 lemma
   "card {x::real. -0.010831 < x \<and> x < 0.010831 \<and> 
@@ -51,7 +51,7 @@ lemma fixes x::real
   shows "0 < x^6 + 42*x^5 + 840*x^4 + 10080*x^3 + 75600*x\<^sup>2 + 332640*x + 665280"
 by sturm
 
-schematic_lemma "card {x::real. x^7 + 56*x^6 + 1512*x^5 + 25200*x^4 + 277200*x^3 + 1995840*x^2 + 8648640*x = -17297280} = ?n" 
+schematic_goal "card {x::real. x^7 + 56*x^6 + 1512*x^5 + 25200*x^4 + 277200*x^3 + 1995840*x^2 + 8648640*x = -17297280} = ?n" 
 by sturm
 
 end

@@ -122,14 +122,14 @@ end
 
 
 
-schematic_lemma "(?c::?'c, 
+schematic_goal "(?c::?'c, 
     \<lambda>G x. if igbg_num_acc G = 0 \<and> 1\<in>igbg_acc G x then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
 
 
-schematic_lemma "(?c, 
+schematic_goal "(?c, 
   \<lambda>V0 E num_acc acc. 
     \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
   )\<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> nat_rel \<rightarrow> (R \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel) 
@@ -137,7 +137,7 @@ schematic_lemma "(?c,
   apply (autoref (keep_goal))
   done
 
-schematic_lemma "(?c, 
+schematic_goal "(?c, 
   \<lambda>V0 E num_acc acc. 
     \<lparr> g_V = {}, g_E = E, g_V0 = V0, igbg_num_acc = num_acc, igbg_acc = acc \<rparr>
   )\<in>\<langle>R\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>slg_rel \<rightarrow> nat_rel \<rightarrow> (R \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel) 
@@ -259,12 +259,12 @@ end
 
 thm autoref_itype
 
-schematic_lemma 
+schematic_goal 
   "(?c::?'c, \<lambda>G x l. if igba_L G x l then (g_E G `` {x}) else {} )\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) num_acc acc L. 
   \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, 
@@ -273,7 +273,7 @@ schematic_lemma
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) num_acc acc L. 
   \<lparr> g_V = V0, g_E = E, g_V0 = V0, 
@@ -382,27 +382,27 @@ lemmas [autoref_rules] = gen_gbg_refine[
   folded g_impl_rel_ext_def gbg_impl_rel_eext_def]
 end
 
-schematic_lemma "(?c::?'c, 
+schematic_goal "(?c::?'c, 
     \<lambda>G x. if gbg_F G = {} then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
     \<lparr> g_V = {}, g_E = E, g_V0 = V0, gbg_F = F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
     \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, gbg_F = insert {} F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma "(?c::?'c, it_to_sorted_list (\<lambda>_ _. True) {1,2::nat} )\<in>?R"
+schematic_goal "(?c::?'c, it_to_sorted_list (\<lambda>_ _. True) {1,2::nat} )\<in>?R"
   apply (autoref (keep_goal))
   done
 
@@ -511,12 +511,12 @@ end
 
 thm autoref_itype
 
-schematic_lemma 
+schematic_goal 
   "(?c::?'c, \<lambda>G x l. if gba_L G x l then (g_E G `` {x}) else {} )\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F L. 
   \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, 
@@ -525,7 +525,7 @@ schematic_lemma
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F L. 
   \<lparr> g_V = V0, g_E = E, g_V0 = V0, 
@@ -633,20 +633,20 @@ lemmas [autoref_rules] = gen_bg_refine[
   folded g_impl_rel_ext_def bg_impl_rel_eext_def]
 end
 
-schematic_lemma "(?c::?'c, 
+schematic_goal "(?c::?'c, 
     \<lambda>G x. if x \<in> bg_F G then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
     \<lparr> g_V = {}, g_E = E, g_V0 = V0, bg_F = F \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) F. 
     \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, bg_F = F \<rparr>)\<in>?R"
@@ -759,20 +759,20 @@ lemmas [autoref_rules] = gen_sa_refine[
   folded g_impl_rel_ext_def sa_impl_rel_eext_def]
 end
 
-schematic_lemma "(?c::?'c, 
+schematic_goal "(?c::?'c, 
     \<lambda>G x l. if sa_L G x = l then (g_E G `` {x}) else {} 
   )\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) L. 
     \<lparr> g_V = {}, g_E = E, g_V0 = V0, sa_L = L \<rparr>)\<in>?R"
   apply (autoref (keep_goal))
   done
 
-schematic_lemma 
+schematic_goal 
   notes [autoref_tyrel] = TYRELI[of "Id :: ('a\<times>'a) set"]
   shows "(?c::?'c, \<lambda>E (V0::'a set) L. 
     \<lparr> g_V = UNIV, g_E = E, g_V0 = V0, sa_L = L \<rparr>)\<in>?R"
@@ -781,7 +781,7 @@ schematic_lemma
 
 subsection {* Index Conversion *}
 
-schematic_lemma gbg_to_idx_ext_impl_aux:
+schematic_goal gbg_to_idx_ext_impl_aux:
   fixes Rv :: "('qi \<times> 'q) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
@@ -800,7 +800,7 @@ lemmas [autoref_rules] =
   gbg_to_idx_ext_impl.refine[ 
   OF SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
 
-schematic_lemma gbg_to_idx_ext_code_aux: 
+schematic_goal gbg_to_idx_ext_code_aux: 
   "RETURN ?c \<le> gbg_to_idx_ext_impl eq bhc def_size ecnv G"
   unfolding gbg_to_idx_ext_impl_def
   by (refine_transfer)
@@ -814,7 +814,7 @@ context begin interpretation autoref_syn .
   lemma [autoref_op_pat]: "gba_to_idx_ext ecnv \<equiv> OP gba_to_idx_ext $ ecnv" by simp
 end
 
-schematic_lemma gba_to_idx_ext_impl_aux:
+schematic_goal gba_to_idx_ext_impl_aux:
   fixes Rv :: "('qi \<times> 'q) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
@@ -829,7 +829,7 @@ concrete_definition gba_to_idx_ext_impl for eq bhc uses gba_to_idx_ext_impl_aux
 lemmas [autoref_rules] = 
   gba_to_idx_ext_impl.refine[OF SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
 
-schematic_lemma gba_to_idx_ext_code_aux: 
+schematic_goal gba_to_idx_ext_code_aux: 
   "RETURN ?c \<le> gba_to_idx_ext_impl eq bhc def_size ecnv G"
   unfolding gba_to_idx_ext_impl_def
   by (refine_transfer)
@@ -868,7 +868,7 @@ lemma degen_impl_aux_alt: "degeneralize_ext ecnv = (
   apply (fastforce simp: E_of_succ_def succ_of_E_def split: split_if_asm) []
   done
 
-schematic_lemma degeneralize_ext_impl_aux:
+schematic_goal degeneralize_ext_impl_aux:
   assumes [autoref_rules]: "(Gi,G) \<in> igbg_impl_rel_ext Re Rv"
   shows "(?c, degeneralize_ext) 
   \<in> (igbg_impl_rel_ext Re Rv \<rightarrow> Re') \<rightarrow> bg_impl_rel_ext Re' (Rv \<times>\<^sub>r nat_rel)"
@@ -915,7 +915,7 @@ qed
 end
 thm autoref_itype(1)
 
-schematic_lemma
+schematic_goal
   assumes [simp]: "igb_graph G"
   assumes [autoref_rules]: "(Gi,G)\<in>igbg_impl_rel_ext unit_rel nat_rel"
   shows "(?c::?'c, igb_graph.degeneralize_ext G (\<lambda>_. ())) \<in> ?R"
@@ -943,7 +943,7 @@ lemma prod_impl_aux_alt:
   apply (auto simp: succ_of_E_def E_of_succ_def split: split_if_asm)
   done
 
-schematic_lemma prod_impl_aux:
+schematic_goal prod_impl_aux:
   (*assumes [autoref_rules]: "(eqq,op =) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
   assumes [autoref_rules]: "(eqs,op =) \<in> Rs \<rightarrow> Rs \<rightarrow> bool_rel"*)
   assumes [autoref_rules]: "(Gi,G) \<in> igba_impl_rel_ext Re Rq Rl"
@@ -993,7 +993,7 @@ qed
 
 end
 
-schematic_lemma
+schematic_goal
   assumes [simp]: "igba G" "sa S"
   assumes [autoref_rules]: "(Gi,G)\<in>igba_impl_rel_ext unit_rel Rq Rl"
   assumes [autoref_rules]: "(Si,S)\<in>sa_impl_rel_ext unit_rel Rs Rl"

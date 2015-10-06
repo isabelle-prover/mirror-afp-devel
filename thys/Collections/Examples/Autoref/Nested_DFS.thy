@@ -1047,7 +1047,7 @@ subsubsection {* Actual Refinement*}
 
 
 
-schematic_lemma red_dfs_impl_refine_aux:
+schematic_goal red_dfs_impl_refine_aux:
   (*notes [[goals_limit = 1]]*)
   fixes u'::"nat" and V'::"nat set"
   notes [autoref_tyrel] = 
@@ -1067,7 +1067,7 @@ concrete_definition red_dfs_impl uses red_dfs_impl_refine_aux
 prepare_code_thms red_dfs_impl_def
 declare red_dfs_impl.refine[autoref_higher_order_rule, autoref_rules]
 
-schematic_lemma ndfs_impl_refine_aux:
+schematic_goal ndfs_impl_refine_aux:
   fixes s::"nat"
   notes [autoref_tyrel] = 
     ty_REL[where 'a="nat set" and R="\<langle>nat_rel\<rangle>iam_set_rel"]
@@ -1110,7 +1110,7 @@ ML_val {*
 *}
 
 
-schematic_lemma ndfs_impl_refine_aux_old:
+schematic_goal ndfs_impl_refine_aux_old:
   fixes s::"nat"
   assumes [autoref_rules]: 
     "(succi,E)\<in>\<langle>nat_rel\<rangle>slg_rel"

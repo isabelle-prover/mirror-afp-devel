@@ -124,7 +124,7 @@ section {* Generating the Code *}
 
 context fr_graph_impl_loc
 begin
-  schematic_lemma push_code_aux: "(?c,push_impl)\<in>node_rel \<rightarrow> GSi_rel \<rightarrow> GSi_rel"
+  schematic_goal push_code_aux: "(?c,push_impl)\<in>node_rel \<rightarrow> GSi_rel \<rightarrow> GSi_rel"
     unfolding push_impl_def_opt[abs_def]
     using [[autoref_trace_failed_id]]
     apply (autoref (keep_goal))
@@ -132,7 +132,7 @@ begin
   concrete_definition (in -) push_code uses fr_graph_impl_loc.push_code_aux
   lemmas [autoref_rules] = push_code.refine[OF locale_this]
   
-  schematic_lemma pop_code_aux: "(?c,pop_impl)\<in>GSi_rel \<rightarrow> \<langle>GSi_rel\<rangle>nres_rel"
+  schematic_goal pop_code_aux: "(?c,pop_impl)\<in>GSi_rel \<rightarrow> \<langle>GSi_rel\<rangle>nres_rel"
     unfolding pop_impl_def_opt[abs_def]
     unfolding GS.mark_as_done_def
     using [[autoref_trace_failed_id]]
@@ -141,7 +141,7 @@ begin
   concrete_definition (in -) pop_code uses fr_graph_impl_loc.pop_code_aux
   lemmas [autoref_rules] = pop_code.refine[OF locale_this]
 
-  schematic_lemma S_idx_of_code_aux: 
+  schematic_goal S_idx_of_code_aux: 
     notes [autoref_rules] = IdI[of "undefined::nat"] (* TODO: hack!*)
     shows "(?c,GS.S_idx_of)\<in>GSi_rel \<rightarrow> node_rel \<rightarrow> nat_rel"
     unfolding GS.S_idx_of_def[abs_def]
@@ -152,7 +152,7 @@ begin
     uses fr_graph_impl_loc.S_idx_of_code_aux
   lemmas [autoref_rules] = S_idx_of_code.refine[OF locale_this] 
 
-  schematic_lemma idx_of_code_aux:
+  schematic_goal idx_of_code_aux:
     notes [autoref_rules] = IdI[of "undefined::nat"] (* TODO: hack!*)
     shows "(?c,GS.idx_of_impl)\<in> GSi_rel \<rightarrow> node_rel \<rightarrow> \<langle>nat_rel\<rangle>nres_rel"
     unfolding 
@@ -164,7 +164,7 @@ begin
   concrete_definition (in -) idx_of_code uses fr_graph_impl_loc.idx_of_code_aux
   lemmas [autoref_rules] = idx_of_code.refine[OF locale_this] 
 
-  schematic_lemma collapse_code_aux: 
+  schematic_goal collapse_code_aux: 
     "(?c,collapse_impl)\<in>node_rel \<rightarrow> GSi_rel \<rightarrow> \<langle>GSi_rel\<rangle>nres_rel"
     unfolding collapse_impl_def_opt[abs_def] 
     using [[autoref_trace_failed_id]]
@@ -175,7 +175,7 @@ begin
   lemmas [autoref_rules] = collapse_code.refine[OF locale_this] 
 
   term select_edge_impl
-  schematic_lemma select_edge_code_aux:
+  schematic_goal select_edge_code_aux:
     "(?c,select_edge_impl) 
       \<in> GSi_rel \<rightarrow> \<langle>\<langle>node_rel\<rangle>option_rel \<times>\<^sub>r GSi_rel\<rangle>nres_rel"
     unfolding select_edge_impl_def_opt[abs_def] 
@@ -200,7 +200,7 @@ begin
   
   end
 
-  schematic_lemma skeleton_code_aux:
+  schematic_goal skeleton_code_aux:
     "(?c,skeleton_impl) \<in> \<langle>oGSi_rel\<rangle>nres_rel"
     unfolding skeleton_impl_def[abs_def] initial_impl_def GS_initial_impl_def
     unfolding path_is_empty_impl_def is_on_stack_impl_def is_done_impl_def 
@@ -215,28 +215,28 @@ begin
   lemmas [autoref_rules] = skeleton_code.refine[OF locale_this] 
   
 
-  schematic_lemma pop_tr_aux: "RETURN ?c \<le> pop_code s"
+  schematic_goal pop_tr_aux: "RETURN ?c \<le> pop_code s"
     unfolding pop_code_def by refine_transfer
   concrete_definition (in -) pop_tr uses fr_graph_impl_loc.pop_tr_aux
   lemmas [refine_transfer] = pop_tr.refine[OF locale_this]
 
-  schematic_lemma select_edge_tr_aux: "RETURN ?c \<le> select_edge_code s"
+  schematic_goal select_edge_tr_aux: "RETURN ?c \<le> select_edge_code s"
     unfolding select_edge_code_def by refine_transfer
   concrete_definition (in -) select_edge_tr 
     uses fr_graph_impl_loc.select_edge_tr_aux
   lemmas [refine_transfer] = select_edge_tr.refine[OF locale_this]
 
-  schematic_lemma idx_of_tr_aux: "RETURN ?c \<le> idx_of_code v s"
+  schematic_goal idx_of_tr_aux: "RETURN ?c \<le> idx_of_code v s"
     unfolding idx_of_code_def by refine_transfer
   concrete_definition (in -) idx_of_tr uses fr_graph_impl_loc.idx_of_tr_aux
   lemmas [refine_transfer] = idx_of_tr.refine[OF locale_this]
 
-  schematic_lemma collapse_tr_aux: "RETURN ?c \<le> collapse_code v s"
+  schematic_goal collapse_tr_aux: "RETURN ?c \<le> collapse_code v s"
     unfolding collapse_code_def by refine_transfer
   concrete_definition (in -) collapse_tr uses fr_graph_impl_loc.collapse_tr_aux
   lemmas [refine_transfer] = collapse_tr.refine[OF locale_this]
 
-  schematic_lemma skeleton_tr_aux: "RETURN ?c \<le> skeleton_code g"
+  schematic_goal skeleton_tr_aux: "RETURN ?c \<le> skeleton_code g"
     unfolding skeleton_code_def by refine_transfer
   concrete_definition (in -) skeleton_tr uses fr_graph_impl_loc.skeleton_tr_aux
   lemmas [refine_transfer] = skeleton_tr.refine[OF locale_this]
