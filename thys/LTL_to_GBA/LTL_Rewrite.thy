@@ -1,4 +1,4 @@
-section {* Rewriting LTL formulas *}
+section \<open>Rewriting LTL formulas\<close>
 (* Author: Alexander Schimpf *)
 theory LTL_Rewrite
 imports 
@@ -163,7 +163,7 @@ next
             then obtain j' where "i = j + j'" by (metis less_imp_add_positive)
             then have "suffix j' (suffix j \<xi>) \<Turnstile>\<^sub>n \<mu>" 
               and "\<forall>k<j'. suffix k (suffix j \<xi>) \<Turnstile>\<^sub>n \<nu>"
-            using \<mu>_suf_i by auto (metis \<nu>_less_i `i = j + j'` 
+            using \<mu>_suf_i by auto (metis \<nu>_less_i \<open>i = j + j'\<close> 
               add_less_cancel_right add.commute)
             then show ?case by auto
         qed
@@ -200,7 +200,7 @@ next
                   le_neq_implies_less less_nat_zero_code) }
             ultimately show ?case by (metis less_or_eq_imp_le linorder_neqE_nat)
         qed
-        with `suffix (i+k) \<xi> \<Turnstile>\<^sub>n \<phi>` have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" 
+        with \<open>suffix (i+k) \<xi> \<Turnstile>\<^sub>n \<phi>\<close> have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" 
           by (auto, metis linorder_not_less) }
       ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by auto }
     ultimately show ?case by fast
@@ -225,8 +225,8 @@ next
       moreover
       { assume assm: "\<not> \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<mu>"
         then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n (\<nu> and\<^sub>n \<mu>)" 
-          using ltln_Release_alterdef[of \<xi> \<nu> \<mu>] `\<xi> \<Turnstile>\<^sub>n ?\<psi>` by auto
-        then have "\<xi> \<Turnstile>\<^sub>n \<mu>" using `\<xi> \<Turnstile>\<^sub>n ?\<psi>`  by (auto, metis calculation(1) goal5(4))
+          using ltln_Release_alterdef[of \<xi> \<nu> \<mu>] \<open>\<xi> \<Turnstile>\<^sub>n ?\<psi>\<close> by auto
+        then have "\<xi> \<Turnstile>\<^sub>n \<mu>" using \<open>\<xi> \<Turnstile>\<^sub>n ?\<psi>\<close>  by (auto, metis calculation(1) goal5(4))
         with goal5(4)[of \<xi> \<phi>] have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<mu>" by auto
         then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n (\<phi> and\<^sub>n \<mu>)" 
           using assm ltln_Release_alterdef[of \<xi> \<phi> \<mu>] by auto
@@ -234,14 +234,14 @@ next
           where "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> and\<^sub>n \<mu>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>" 
           by auto
         moreover then have "\<forall>j\<le>i. suffix j \<xi> \<Turnstile>\<^sub>n \<nu> V\<^sub>n \<mu>"
-          by (metis `\<xi> \<Turnstile>\<^sub>n \<mu>` assm goal5(4))
+          by (metis \<open>\<xi> \<Turnstile>\<^sub>n \<mu>\<close> assm goal5(4))
         ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by (auto, metis linorder_not_le) }
       ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by fast }
     ultimately show ?case by fast
 qed
 
 
-text{* Some simple rewrite rules *}
+text\<open>Some simple rewrite rules\<close>
 
 fun ltln_rewrite_step :: "'a ltln \<Rightarrow> 'a ltln"
 where

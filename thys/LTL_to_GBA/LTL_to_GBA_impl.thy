@@ -1,4 +1,4 @@
-section {* Refinement to Efficient Code *}
+section \<open>Refinement to Efficient Code\<close>
 (*
   Author: Peter Lammich
   Inspired by previous version of Alexander Schimpf.
@@ -11,9 +11,9 @@ imports
   "../CAVA_Automata/CAVA_Base/CAVA_Code_Target"
 begin
 
-subsection {* Parametricity Setup Boilerplate *}
+subsection \<open>Parametricity Setup Boilerplate\<close>
 
-subsubsection {* LTL Formulas *}
+subsubsection \<open>LTL Formulas\<close>
 derive linorder ltln
 
 inductive_set ltln_rel for R where
@@ -245,7 +245,7 @@ lemma [refine_transfer]:
   done
 
 
-subsubsection {* Nodes *}
+subsubsection \<open>Nodes\<close>
 
 record 'a node_impl =
   name_impl   :: node_name_impl
@@ -360,17 +360,17 @@ lemma [autoref_rules]:
   unfolding node_rel_def by auto
 
 
-subsection {* Massaging the Abstract Algorithm *}
-text {*
+subsection \<open>Massaging the Abstract Algorithm\<close>
+text \<open>
   In a first step, we do some refinement steps on the abstract data structures,
   with the goal to make the algorithm more efficient.
-*}
+\<close>
 
-subsubsection {* Creation of the Nodes *}
-text {*
+subsubsection \<open>Creation of the Nodes\<close>
+text \<open>
   In the expand-algorithm, we replace nested conditionals by case-distinctions,
   and slightly stratify the code.
-*}
+\<close>
 
 abbreviation (input) "expand2 exp n ns \<phi> n1 nx1 n2 \<equiv> do {
     (nm, nds) \<leftarrow> exp (
@@ -505,11 +505,11 @@ lemma create_graph_aimpl_refine: "create_graph_aimpl \<phi> \<le> \<Down>Id (cre
   apply auto
   done
 
-subsubsection {* Creation of GBA from Nodes *}
+subsubsection \<open>Creation of GBA from Nodes\<close>
 
-text {*
+text \<open>
   We summarize creation of the GBA and renaming of the nodes into one step
-*}
+\<close>
 lemma create_name_gba_alt: "create_name_gba \<phi> = do {
   nds \<leftarrow> create_graph\<^sub>T \<phi>;
   ASSERT (nds_invars nds);
@@ -524,11 +524,11 @@ proof -
     by simp
 qed
 
-text {* In the following, we implement the componenents of the
+text \<open>In the following, we implement the componenents of the
   renamed GBA separately.
-*}
+\<close>
 
-text {* \paragraph{Successor Function} *}
+text \<open>\paragraph{Successor Function}\<close>
 
 definition "build_succ nds = 
   FOREACH 
@@ -626,7 +626,7 @@ proof -
     by (rule order_trans) auto
 qed
 
-text {* \paragraph{ Accepting Sets} *}
+text \<open>\paragraph{ Accepting Sets}\<close>
 
 context begin interpretation LTL_Syntax .
 primrec until_frmlsn :: "'a frml \<Rightarrow> ('a frml \<times> 'a frml) set" where
@@ -667,7 +667,7 @@ proof -
     unfolding build_F_def by simp
 qed
 
-text {* \paragraph{ Labeling Function }*}
+text \<open>\paragraph{ Labeling Function }\<close>
 definition "pn_props ps \<equiv> FOREACHi 
   (\<lambda>it (P,N). P = {p. LTLnProp p \<in> ps - it} \<and> N = {p. LTLnNProp p \<in> ps - it}) 
   ps (\<lambda>p (P,N). 
@@ -721,7 +721,7 @@ lemma pn_map_correct:
   done
 
  
-text {* \paragraph{ Assembling the Implementation } *}
+text \<open>\paragraph{ Assembling the Implementation }\<close>
   
 definition "cr_rename_gba nds \<phi> \<equiv> do {
   let V = name ` nds;
@@ -784,9 +784,9 @@ lemma create_name_gba_aimpl_refine:
   apply (refine_rcg create_graph_aimpl_refine cr_rename_gba_refine)
   by auto
 
-subsection {* Refinement to Efficient Data Structures *}
+subsection \<open>Refinement to Efficient Data Structures\<close>
 
-subsubsection {* Creation of GBA from Nodes *}
+subsubsection \<open>Creation of GBA from Nodes\<close>
 
 schematic_goal until_frmlsn_impl_aux:
   assumes [relator_props, simp]: "R=Id"
@@ -900,14 +900,14 @@ concrete_definition cr_rename_gba_code uses cr_rename_gba_code_aux
 lemmas [refine_transfer] = cr_rename_gba_code.refine 
 
 
-subsubsection {* Creation of Graph *}
+subsubsection \<open>Creation of Graph\<close>
 
-text {*
+text \<open>
   The implementation of the node-set. The relation enforces that there are no
   different nodes with the same name. This effectively establishes an additional
   invariant, made explicit by an assertion in the refined program. This invariant
   allows for a more efficient implementation.
-*}
+\<close>
 definition ls_nds_rel_def_internal: 
   "ls_nds_rel R \<equiv> \<langle>R\<rangle>list_set_rel \<inter> {(_,s). inj_on name s}"
 lemma ls_nds_rel_def: "\<langle>R\<rangle>ls_nds_rel = \<langle>R\<rangle>list_set_rel \<inter> {(_,s). inj_on name s}"

@@ -1,10 +1,10 @@
-section {* Stutter Invariance of next-free LTL Formula *}
+section \<open>Stutter Invariance of next-free LTL Formula\<close>
 theory LTL_Stutter
 imports LTL "../Stuttering_Equivalence/PLTL"
 begin
-  text {* This theory builds on the AFP-entry by Stephan Merz *}
+  text \<open>This theory builds on the AFP-entry by Stephan Merz\<close>
 
-  text {* Get rid of overlapping notation *}
+  text \<open>Get rid of overlapping notation\<close>
   no_notation PLTL.holds_of ("_ \<Turnstile> _" [70,70] 40)
 
   hide_const (open) PLTL.false PLTL.atom PLTL.implies PLTL.next PLTL.until
@@ -32,7 +32,7 @@ begin
   | "ltl_next_free (LTLUntil \<phi> \<psi>) \<longleftrightarrow> ltl_next_free \<phi> \<and> ltl_next_free \<psi>"
   | "ltl_next_free (LTLRelease \<phi> \<psi>) \<longleftrightarrow> ltl_next_free \<phi> \<and> ltl_next_free \<psi>"
 
-  text {* Conversion between the two LTL formalizations *}
+  text \<open>Conversion between the two LTL formalizations\<close>
 
   primrec cnv :: "'a LTL.ltl \<Rightarrow> 'a set PLTL.pltl" where
     "cnv LTLTrue = PLTL.true"
@@ -57,8 +57,8 @@ begin
     assumes next_free: "ltl_next_free \<phi>"
     assumes eq: "r \<approx> r'"
     shows "r \<Turnstile> \<phi> \<longleftrightarrow> r' \<Turnstile> \<phi>"
-    -- {* A next free formula cannot distinguish between 
-      stutter-equivalent runs. *}
+    -- \<open>A next free formula cannot distinguish between 
+      stutter-equivalent runs.\<close>
   proof -
     {
       fix r r'
@@ -102,8 +102,8 @@ begin
     assumes next_free: "ltlc_next_free \<phi>"
     assumes eq: "r \<approx> r'"
     shows "r \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> r' \<Turnstile>\<^sub>c \<phi>"
-    -- {* A next free formula cannot distinguish between 
-      stutter-equivalent runs. *}
+    -- \<open>A next free formula cannot distinguish between 
+      stutter-equivalent runs.\<close>
   proof -
     note NF' = next_free[folded ltlc_to_ltl_next_free_iff]
     from next_free_stutter_invariant[OF NF' eq] show ?thesis

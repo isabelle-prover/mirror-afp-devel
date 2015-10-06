@@ -1,4 +1,4 @@
-section {* Linear Temporal Logic *}
+section \<open>Linear Temporal Logic\<close>
 (* Author: Alexander Schimpf *)
 theory LTL
 imports 
@@ -7,7 +7,7 @@ begin
 
 subsection "LTL formulas"
 
-subsubsection {* Syntax *}
+subsubsection \<open>Syntax\<close>
 
 datatype (plugins del: size)
  'a ltl = LTLTrue      
@@ -23,8 +23,8 @@ datatype (plugins del: size)
 instantiation ltl :: (type) size
 begin
 
-text {* The new datatype package would give a size of 1 to
-  @{const LTLProp}, which breaks some of the proofs below. *}
+text \<open>The new datatype package would give a size of 1 to
+  @{const LTLProp}, which breaks some of the proofs below.\<close>
 primrec size_ltl :: "'a ltl \<Rightarrow> nat" where
     "size LTLTrue = 0"
   | "size LTLFalse = 0"
@@ -40,8 +40,8 @@ instance ..
 
 end
 
-text {* The following locale defines syntactic sugar for 
-  parsing and printing LTL formulas in Isabelle *}
+text \<open>The following locale defines syntactic sugar for 
+  parsing and printing LTL formulas in Isabelle\<close>
 locale LTL_Syntax begin
 notation 
            LTLTrue     ("true")
@@ -55,9 +55,9 @@ notation
        and LTLRelease  ("_ V _" [83,83] 82)
 end
 
-subsubsection {* Semantics *}
-text {* We first provide an abstract semantics, that is parameterized with 
-  the semantics of atomic propositions *}
+subsubsection \<open>Semantics\<close>
+text \<open>We first provide an abstract semantics, that is parameterized with 
+  the semantics of atomic propositions\<close>
 
 context begin interpretation LTL_Syntax .
 
@@ -77,11 +77,11 @@ primrec ltl_semantics :: "'ap set word \<Rightarrow> 'ap ltl \<Rightarrow> bool"
 definition "ltl_language \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile> \<phi>}"
 end
 
-subsubsection {* Explicit Syntactic Sugar *}
-text {* In this section, we provide a formulation of LTL with
+subsubsection \<open>Explicit Syntactic Sugar\<close>
+text \<open>In this section, we provide a formulation of LTL with
   explicit syntactic sugar deeply embedded. This formalization
   serves as a reference semantics.
-*}
+\<close>
 datatype (ltlc_aprops: 'a)
     ltlc = LTLcTrue 
          | LTLcFalse
@@ -221,7 +221,7 @@ lemma map_ltlc_semantics_inv:
   apply (auto simp add: pw_eq_on_def ltlc.set_map map_aprops_def)
   by (metis DOM comp_apply contra_subsetD domD option.sel vimage_eq)
 
-text {* Conversion from LTL with common syntax to LTL *}
+text \<open>Conversion from LTL with common syntax to LTL\<close>
 
 fun ltlc_to_ltl :: "'a ltlc \<Rightarrow> 'a ltl"
 where
@@ -249,7 +249,7 @@ lemma ltlc_to_ltl_equiv:
 
 end
 
-subsection {* Semantic Preserving Syntax Transformations *}
+subsection \<open>Semantic Preserving Syntax Transformations\<close>
 
 context begin interpretation LTL_Syntax .
 
@@ -261,22 +261,22 @@ lemma ltl_false_true_con[simp]:
   "\<xi> \<Turnstile> not true \<longleftrightarrow> \<xi> \<Turnstile> false"
   by auto
 
-text{*
+text\<open>
   The negation symbol can be passed through the next operator.
-*}
+\<close>
 lemma ltl_Next_Neg_con[simp]:
   "\<xi> \<Turnstile> X (not \<phi>) \<longleftrightarrow> \<xi> \<Turnstile> not X \<phi>"
   by auto
 
-text{*
+text\<open>
   The connection between Until and Release
-*}
+\<close>
 lemma ltl_Release_Until_con:
  "\<xi> \<Turnstile> \<phi> V \<psi> \<longleftrightarrow> (\<not> \<xi> \<Turnstile> (not \<phi>) U (not \<psi>))"
   by auto
 
 
-text{* Expand strategy *}
+text\<open>Expand strategy\<close>
 
 lemma ltl_expand_Until:
   "\<xi> \<Turnstile> \<phi> U \<psi> \<longleftrightarrow> (\<xi> \<Turnstile> \<psi> or (\<phi> and (X (\<phi> U \<psi>))))" (is "?lhs = ?rhs")
@@ -341,7 +341,7 @@ proof -
   show ?thesis by auto
 qed
 
-text{* Double negation structure of an LTL formula *}
+text\<open>Double negation structure of an LTL formula\<close>
 
 lemma [simp]:
   "not ((\<lambda>\<mu>. not not \<mu>) ^^ n) \<phi> = ((\<lambda>\<mu>. not not \<mu>) ^^ n) (not \<phi>)" 
@@ -395,7 +395,7 @@ using assms proof (induct n arbitrary:\<phi> \<psi>)
 qed auto
 
 
-text{* Pushing negation to the top of a proposition *}
+text\<open>Pushing negation to the top of a proposition\<close>
 
 fun
   ltl_pushneg :: "'a ltl \<Rightarrow> 'a ltl"
@@ -419,10 +419,10 @@ fun
   | "ltl_pushneg (\<phi> V \<psi>) = (ltl_pushneg \<phi>) V (ltl_pushneg \<psi>)"
 
 
-text{*
+text\<open>
   In fact, the @{text ltl_pushneg} function does not change the 
   semantics of the input formula.
-*}
+\<close>
 
 lemma ltl_pushneg_neg:
   shows "\<xi> \<Turnstile> ltl_pushneg (not \<phi>) \<longleftrightarrow> \<xi> \<Turnstile> not ltl_pushneg \<phi>"
@@ -436,11 +436,11 @@ proof (induct \<phi> arbitrary: \<xi>)
 qed auto
 
 
-text{*
+text\<open>
   We can now show that @{text ltl_pushneg} does what it should do.
   Actually the negation occurs after the transformation
   only on top of a proposition.
-*} (* TODO (Alex): Formulation! Describe the 'what' in one or two sentences! *)
+\<close> (* TODO (Alex): Formulation! Describe the 'what' in one or two sentences! *)
 
 lemma ltl_pushneg_double_neg:
   shows "ltl_pushneg (((\<lambda>\<phi>. not not \<phi>) ^^ n) \<phi>) = ltl_pushneg \<phi>"
@@ -769,12 +769,12 @@ next
 qed
 
 
-text{*
+text\<open>
   The fact that after pushing the negation the structure of a
   formula changes, is shown by the following theorem.
   Indeed, after pushing the negation symbol inside a
   formula, it occurs at most on top of a proposition.
-*}
+\<close>
 
 theorem ltl_pushneg_struct:
   assumes "(not \<psi>) is_subformula_of (ltl_pushneg \<phi>)"
@@ -788,7 +788,7 @@ proof -
 qed
 
 
-text{*
+text\<open>
   Now we want to show that the size of the formula,
   which is transformed by @{text ltl_pushneg}, does not increase
   'too much', i.e. there is no exponential blowup
@@ -800,7 +800,7 @@ text{*
   pushing of negation can only increase the size of a
   formula by putting the negation symbol on top of every
   proposition inside the formula.
-*}
+\<close>
 
 fun leafcnt :: "'a ltl \<Rightarrow> nat"
 where
@@ -981,10 +981,10 @@ qed
 
 end
 
-subsection {* LTL formula in negation normal form (NNF) *}
-text{*
+subsection \<open>LTL formula in negation normal form (NNF)\<close>
+text\<open>
   We define a type of LTL formula in negation normal form (NNF)
-*}
+\<close>
 
 
 datatype
@@ -1035,9 +1035,9 @@ primrec ltln_semantics :: "['a set word, 'a ltln] \<Rightarrow> bool"
 
 definition "ltln_language \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>n \<phi>}"
 
-text{*
+text\<open>
   Conversion from LTL to LTL in NNF
-*}
+\<close>
 
 fun ltl_to_ltln :: "'a ltl \<Rightarrow> 'a ltln"
 where
@@ -1317,18 +1317,18 @@ proof
   { assume "\<not> (\<forall>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi>)"
     then obtain i where \<psi>_neq: "\<not> suffix i \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
     let ?k = "LEAST i. \<not> suffix i \<xi> \<Turnstile>\<^sub>n \<psi>"
-    from \<psi>_neq `?lhs` have "\<forall>j<?k. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>" by (metis not_less_Least)
+    from \<psi>_neq \<open>?lhs\<close> have "\<forall>j<?k. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>" by (metis not_less_Least)
     moreover
     have "\<not> suffix ?k \<xi> \<Turnstile>\<^sub>n \<psi>" by (rule LeastI, rule \<psi>_neq)
-    moreover then obtain j where "j<?k" and "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" using `?lhs` by auto
+    moreover then obtain j where "j<?k" and "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" using \<open>?lhs\<close> by auto
     ultimately have "\<xi> \<Turnstile>\<^sub>n \<psi> U\<^sub>n (\<phi> and\<^sub>n \<psi>)" by auto }
-  with `?lhs` show ?rhs by auto
+  with \<open>?lhs\<close> show ?rhs by auto
 next
   assume ?rhs
   { assume "\<not> \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<psi>"
-    with `?rhs` obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> and\<^sub>n \<psi>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
+    with \<open>?rhs\<close> obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> and\<^sub>n \<psi>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
     then have ?lhs by (auto, metis nat_neq_iff) }
-  then show ?lhs using `?rhs` by auto
+  then show ?lhs using \<open>?rhs\<close> by auto
 qed
 
 
