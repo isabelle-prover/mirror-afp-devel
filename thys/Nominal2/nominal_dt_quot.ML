@@ -91,7 +91,9 @@ fun define_qconsts qtys consts_specs lthy =
   let
     val (qconst_infos, lthy') = 
       fold_map (lift_raw_const qtys) consts_specs lthy
-    val phi = Proof_Context.export_morphism lthy' lthy
+    val phi =
+      Proof_Context.export_morphism lthy'
+        (Proof_Context.transfer (Proof_Context.theory_of lthy') lthy)
   in
     (map (Quotient_Info.transform_quotconsts phi) qconst_infos, lthy')
   end

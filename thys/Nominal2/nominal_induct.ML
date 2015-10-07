@@ -126,7 +126,9 @@ fun nominal_induct_tac ctxt simp def_insts avoiding fixings rules facts =
             |> Seq.maps (fn rule' =>
               CASES (rule_cases ctxt rule' cases)
                 (resolve_tac ctxt [rename_params_rule false [] rule'] i THEN
-                  PRIMITIVE (singleton (Proof_Context.export defs_ctxt ctxt))) st'))))
+                  PRIMITIVE
+                    (singleton (Proof_Context.export defs_ctxt
+                      (Proof_Context.transfer (Proof_Context.theory_of defs_ctxt) ctxt)))) st'))))
     THEN_ALL_NEW_CASES
       ((if simp then Induct.simplify_tac ctxt THEN' (TRY o Induct.trivial_tac ctxt)
         else K all_tac)

@@ -261,7 +261,9 @@ fun define_raw_fvs raw_dt_info bn_info bclausesss lthy =
  
     val {fs, simps, inducts, ...} = info; 
 
-    val morphism = Proof_Context.export_morphism lthy'' lthy
+    val morphism =
+      Proof_Context.export_morphism lthy''
+        (Proof_Context.transfer (Proof_Context.theory_of lthy'') lthy)
     val simps_exp = map (Morphism.thm morphism) (the simps)
     val inducts_exp = map (Morphism.thm morphism) (the inducts)
     
@@ -334,7 +336,9 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
 
       val {fs, simps, ...} = info;
 
-      val morphism = Proof_Context.export_morphism lthy'' lthy
+      val morphism =
+        Proof_Context.export_morphism lthy''
+          (Proof_Context.transfer (Proof_Context.theory_of lthy'') lthy)
       val simps_exp = map (Morphism.thm morphism) (the simps)
     in
       (fs, simps_exp, lthy'')

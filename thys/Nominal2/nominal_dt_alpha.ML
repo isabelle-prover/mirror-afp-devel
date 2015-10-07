@@ -257,7 +257,9 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
     val alpha_raw_induct_loc = #raw_induct alpha_info;
     val alpha_intros_loc = #intrs alpha_info;
     val alpha_cases_loc = #elims alpha_info;
-    val phi = Proof_Context.export_morphism lthy' lthy;
+    val phi =
+      Proof_Context.export_morphism lthy'
+        (Proof_Context.transfer (Proof_Context.theory_of lthy') lthy);
     
     val all_alpha_trms = all_alpha_trms_loc
       |> map (Morphism.term phi) 
