@@ -37,9 +37,6 @@
 (* $Id:$ *)
 
 theory   Isabelle_Main2
-imports  "../Provers/Isabelle_classical"
-         "../Pure/Isar/Isabelle_typedecl"
-         "../HOL/Tools/Metis/Isabelle_metis_tactic"
-         "../HOL/Tools/BNF/Isabelle_bnf_fp_def_sugar"
+imports  "../Pure/Isar/Isabelle_typedecl"
 begin
 end

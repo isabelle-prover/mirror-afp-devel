@@ -264,7 +264,7 @@ fun semi__method_simp_add_del_split (l_add, l_del, l_split) ctxt =
 
 fun semi__method expr = let open META open Method open META_overload in case expr of
     Method_rule o_s => Basic (fn ctxt =>
-      METHOD (HEADGOAL o Isabelle_Classical.rule_tac
+      METHOD (HEADGOAL o Classical.rule_tac
                            ctxt
                            (case o_s of NONE => []
                                       | SOME s => [semi__thm_attribute_single ctxt s])))
@@ -303,7 +303,7 @@ fun semi__method expr = let open META open Method open META_overload in case exp
                      | SOME lim => fn ctxt => SIMPLE_METHOD' (depth_tac ctxt (To_nat lim)))
   | Method_clarify => Basic (fn ctxt => (SIMPLE_METHOD' (fn i => CHANGED_PROP (clarify_tac ctxt i))))
   | Method_metis (l_opt, l) =>
-      Basic (fn ctxt => (METHOD oo Isabelle_Metis_Tactic.metis_method)
+      Basic (fn ctxt => (METHOD oo Metis_Tactic.metis_method)
                           ( (if l_opt = [] then NONE else SOME (map To_string0 l_opt), NONE)
                           , map (semi__thm_attribute_single ctxt) l)
                           ctxt)
@@ -370,7 +370,7 @@ end
 
 fun semi__theory in_theory in_local = let open META open META_overload in (*let val f = *)fn
   Theory_datatype (Datatype (n, l)) => in_local
-   (Isabelle_BNF_FP_Def_Sugar.co_datatype_cmd
+   (BNF_FP_Def_Sugar.co_datatype_cmd
       BNF_Util.Least_FP
       BNF_LFP.construct_lfp
       (Ctr_Sugar.default_ctr_options_cmd,
