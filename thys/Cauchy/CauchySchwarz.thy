@@ -80,9 +80,6 @@ definition
   norm :: "vector \<Rightarrow> real"                  ("\<parallel>_\<parallel>" 100) where
   "norm v = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2)"
 
-notation (HTML output)
-  "norm"  ("||_||" 100)
-
 text {* Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
 (v\<cdot>v)"}. We show that our definition leads to this one. *}
 

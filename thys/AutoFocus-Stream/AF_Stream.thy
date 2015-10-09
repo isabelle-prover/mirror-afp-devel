@@ -20,9 +20,6 @@ datatype
 notation (latex)
   NoMsg  ("\<NoMsg>") and
   Msg  ("\<Msg>")
-notation (HTML output)
-  NoMsg  ("\<NoMsg>") and
-  Msg  ("\<Msg>")
 
 text {* Abbreviation for finite streams *}
 type_synonym 'a fstream_af = "'a message_af list"
@@ -290,9 +287,6 @@ where
 
 
 notation (xsymbols)
-  f_expand  (infixl "\<odot>" 100) and
-  i_expand  (infixl "\<odot>" 100)
-notation (HTML output)
   f_expand  (infixl "\<odot>" 100) and
   i_expand  (infixl "\<odot>" 100)
 
@@ -852,9 +846,6 @@ where
 notation (xsymbols)
   f_shrink  (infixl "\<div>" 100) and
   i_shrink  (infixl "\<div>" 100)
-notation (HTML output)
-  f_shrink  (infixl "\<div>" 100) and
-  i_shrink  (infixl "\<div>" 100)
 
 
 lemmas f_shrink_defs = f_shrink_def f_aggregate_def
@@ -1363,9 +1354,6 @@ where
 notation (xsymbols)
   f_last_message_hold  (infixl "\<longmapsto>" 100) and
   i_last_message_hold  (infixl "\<longmapsto>" 100)
-notation (HTML output)
-  f_last_message_hold  (infixl "\<longmapsto>" 100) and
-  i_last_message_hold  (infixl "\<longmapsto>" 100)
 
 lemma f_last_message_hold_0[simp]: "xs \<longmapsto>\<^sub>f 0 = last_message_hold xs"
 by (simp add: f_last_message_hold_def list_slice2_0)
@@ -1532,9 +1520,6 @@ where
   "i_shrink_last f k \<equiv> i_aggregate f k last"
 
 notation (xsymbols)
-  f_shrink_last  (infixl "\<div>\<^sub>l" 100) and
-  i_shrink_last  (infixl "\<div>\<^sub>l" 100)
-notation (HTML output)
   f_shrink_last  (infixl "\<div>\<^sub>l" 100) and
   i_shrink_last  (infixl "\<div>\<^sub>l" 100)
 

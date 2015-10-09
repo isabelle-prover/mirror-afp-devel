@@ -439,10 +439,6 @@ notation (xsymbols)
   comp2  (infixl "\<circ>\<circ>" 55) and
   comp3  (infixl "\<circ>\<circ>\<circ>" 55)
 
-notation (HTML output)
-  comp2  (infixl "\<circ>\<circ>" 55) and
-  comp3  (infixl "\<circ>\<circ>\<circ>" 55)
-
 
 subsection {* Multisets *}
 

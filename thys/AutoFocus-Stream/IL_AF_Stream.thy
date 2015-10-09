@@ -27,9 +27,6 @@ consts
 notation (xsymbols)
   f_join  (infixl "\<Join>\<^sub>" 100) and
   i_join  (infixl "\<Join>\<^sub>" 100)
-notation (HTML output)
-  f_join  (infixl "\<Join>\<^sub>" 100) and
-  i_join  (infixl "\<Join>\<^sub>" 100)
 
 text {*
   The function @{text i_f_join} can be used for the case,
@@ -43,8 +40,6 @@ text {*
 consts
   i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
 notation (xsymbols)
-  i_f_join  (infixl "\<Join>\<^sub>" 100)
-notation (HTML output)
   i_f_join  (infixl "\<Join>\<^sub>" 100)
 
 text {* 

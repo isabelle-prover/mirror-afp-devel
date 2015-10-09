@@ -28,9 +28,6 @@ definition
 where
   "xs \<frown> f \<equiv> \<lambda>n. if n < length xs then xs ! n else f (n - length xs)"
 
-syntax (HTML output)
-  "i_append" :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr "\<frown>" 65)
-
 text {* 
   Synonym for the lemma @{text fun_eq_iff} 
   from the HOL library to unify lemma names for finite and infinite lists,
@@ -435,13 +432,6 @@ abbreviation (xsymbols)
   "i_drop'"  :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist"  (infixl "\<Up>" 100)
 where
   "f \<Up> n \<equiv> i_drop n f"
-
-syntax (HTML output)
-  "i_take'" :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl "\<Down>" 100)
-  "i_drop'" :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist" (infixl "\<Up>" 100)
-
-term "f \<Down> n"
-term "f \<Up> n"
 
 lemma "f \<Down> n = map f [0..<n]"
 by (simp add: i_take_def)
@@ -991,10 +981,6 @@ abbreviation (xsymbols)
   "g_drop'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist" (infixl "\<up>\<^sub>g" 100)
 where
   "a \<up>\<^sub>g n \<equiv> gdrop n a"
-syntax (HTML output)
-  "g_take'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"   (infixl "\<down>\<^sub>g" 100)
-  "g_drop'" :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"   (infixl "\<up>\<^sub>g" 100)
-
 
 
 subsubsection {* @{text glength} *}

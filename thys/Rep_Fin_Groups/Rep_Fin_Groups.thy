@@ -1520,9 +1520,6 @@ syntax
   ("(3OPLUS _<-_. _)" [0, 51, 10] 10)
 syntax (xsymbols)
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b" ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
-syntax (HTML output)
-  "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b" ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
-
 translations -- {* Beware of argument permutation! *}
   "OPLUS M<-Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
   "\<Oplus>M\<leftarrow>Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"

@@ -34,14 +34,6 @@ abbreviation (xsymbols)
   "f_drop'" :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list" (infixl "\<up>" 100)
 where
   "xs \<up> n \<equiv> drop n xs"
-syntax (HTML output)
-  "f_take'" :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"   (infixl "\<down>" 100)
-  "f_drop'" :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"   (infixl "\<up>" 100)
-
-term "xs \<down> n"
-term "xs \<up> n"
-
-
 
 thm List.append_Cons
 lemma append_eq_Cons: "[x] @ xs = x # xs" 

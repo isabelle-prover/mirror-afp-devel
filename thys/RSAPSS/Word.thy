@@ -64,12 +64,6 @@ notation (xsymbols)
   bitor  (infixr "\<or>\<^sub>b" 30) and
   bitxor (infixr "\<oplus>\<^sub>b" 30)
 
-notation (HTML output)
-  bitnot ("\<not>\<^sub>b _" [40] 40) and
-  bitand (infixr "\<and>\<^sub>b" 35) and
-  bitor  (infixr "\<or>\<^sub>b" 30) and
-  bitxor (infixr "\<oplus>\<^sub>b" 30)
-
 lemma bitnot_bitnot [simp]: "(bitnot (bitnot b)) = b"
   by (cases b) simp_all
 
