@@ -47,12 +47,13 @@ the
         <td class="abstract">
 
 
-We represent a theory of (a fragment of) Isabelle/HOL
-in Isabelle/HOL. The purpose of this exercise is to write packages for
+We represent a theory <i>of</i> (a fragment of) Isabelle/HOL <i>in</i>
+Isabelle/HOL. The purpose of this exercise is to write packages for
 domain-specific specifications such as class models, B-machines, ...,
-and generally any languages that can be described with a sequence of datatypes
-in HOL itself; the Isabelle code-generator can then be used to generate
-tactic code.
+and generally speaking, any domain-specific languages whose
+abstract syntax can be defined by a HOL "datatype". On this basis, the
+Isabelle code-generator can then be used to generate code for global
+context transformations as well as tactic code.
 <p>
 Consequently the package is geared towards
 parsing, printing and code-generation to the Isabelle API.
@@ -65,14 +66,16 @@ The supported API contains types, terms, transformation of
 global context like definitions and data-type declarations as well
 as infrastructure for Isar-setups.
 <p>
-This theory is drawn from the Featherweight OCL project where
+This theory is drawn from the
+<a href="http://afp.sourceforge.net/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
+project where
 it is used to construct a package for object-oriented data-type theories
 generated from UML class diagrams. The Featherweight OCL, for example, allows for
 both the direct execution of compiled tactic code by the Isabelle API
 as well as the generation of ".thy"-files for debugging purposes.
 <p>
 Gained experience from this project shows that the compiled code is sufficiently
-efficient for practical purposes while being based on a formal "model"
+efficient for practical purposes while being based on a formal <i>model</i>
 on which properties of the package can be proven such as termination of certain
 transformations, correctness, etc.
         </td></tr>

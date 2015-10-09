@@ -52,22 +52,27 @@ for
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-The Unified Modeling Language (UML) is one of the few modeling
-languages that is widely used in industry. While UML is mostly known
-as diagrammatic modeling language (e.g., visualizing class models),
-it is complemented by a textual language, called Object Constraint
-Language (OCL). OCL is based on a
-three-valued logic that turns UML into a formal language.
-Unfortunately the semantics of this specification language, captured
-in the "Annex A" of the OCL standard, leads to different
-interpretations of corner cases.  We formalize the core of OCL:
-denotational definitions, a logical calculus and
-operational rules that allow for the execution of OCL expressions by
-a mixture of term rewriting and code compilation.  Our formalization
-reveals several inconsistencies and contradictions in the current
-version of the OCL standard.  Overall, this document is
-intended to provide the basis for a machine-checked text "Annex A"
-of the OCL standard targeting at tool implementors.
+The Unified Modeling Language (UML) is one of the few
+modeling languages that is widely used in industry. While
+UML is mostly known as diagrammatic modeling language
+(e.g., visualizing class models), it is complemented by a
+textual language, called Object Constraint Language
+(OCL). The current version of OCL is based on a four-valued
+logic that turns UML into a formal language. Any type
+comprises the elements "invalid" and "null" which are
+propagated as strict and non-strict, respectively.
+Unfortunately, the former semi-formal semantics of this
+specification language, captured in the "Annex A" of the
+OCL standard, leads to different interpretations of corner
+cases. We formalize the core of OCL: denotational
+definitions, a logical calculus and operational rules that
+allow for the execution of OCL expressions by a mixture of
+term rewriting and code compilation. Our formalization
+reveals several inconsistencies and contradictions in the
+current version of the OCL standard. Overall, this document
+is intended to provide the basis for a machine-checked text
+"Annex A" of the OCL standard targeting at tool
+implementors.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
