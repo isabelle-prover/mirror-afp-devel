@@ -1567,32 +1567,35 @@ author = Frédéric Tuong <http://www.lri.fr/~tuong/>, Burkhart Wolff <http://ww
 date = 2015-09-16
 topic = Computer Science/Programming Languages/Language Definitions
 abstract =
-  We represent a theory of (a fragment of) Isabelle/HOL
-  in Isabelle/HOL. The purpose of this exercise is to write packages for
+  We represent a theory <i>of</i> (a fragment of) Isabelle/HOL <i>in</i>
+  Isabelle/HOL. The purpose of this exercise is to write packages for
   domain-specific specifications such as class models, B-machines, ...,
-  and generally any languages that can be described with a sequence of datatypes
-  in HOL itself; the Isabelle code-generator can then be used to generate
-  tactic code.
+  and generally speaking, any domain-specific languages whose
+  abstract syntax can be defined by a HOL "datatype". On this basis, the
+  Isabelle code-generator can then be used to generate code for global
+  context transformations as well as tactic code.
   <p>
-  Consequently the package is geared towards
+  Consequently the package is geared towards 
   parsing, printing and code-generation to the Isabelle API.
-  It is at the moment not sufficiently rich for doing meta theory on
+  It is at the moment not sufficiently rich for doing meta theory on 
   Isabelle itself. Extensions in this direction are possible though.
   <p>
-  Moreover, the chosen fragment is fairly rudimentary. However it should be
+  Moreover, the chosen fragment is fairly rudimentary. However it should be 
   easily adapted to one's needs if a package is written on top of it.
   The supported API contains types, terms, transformation of
   global context like definitions and data-type declarations as well
   as infrastructure for Isar-setups.
   <p>
-  This theory is drawn from the Featherweight OCL project where
+  This theory is drawn from the
+  <a href="http://afp.sourceforge.net/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
+  project where 
   it is used to construct a package for object-oriented data-type theories
-  generated from UML class diagrams. The Featherweight OCL, for example, allows for
+  generated from UML class diagrams. The Featherweight OCL, for example, allows for 
   both the direct execution of compiled tactic code by the Isabelle API
   as well as the generation of ".thy"-files for debugging purposes.
   <p>
   Gained experience from this project shows that the compiled code is sufficiently
-  efficient for practical purposes while being based on a formal "model"
+  efficient for practical purposes while being based on a formal <i>model</i>
   on which properties of the package can be proven such as termination of certain
   transformations, correctness, etc.
 
@@ -2876,22 +2879,27 @@ title = Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for
 author =  Achim D. Brucker <mailto:brucker@spamfence.net>, Frédéric Tuong <mailto:frederic.tuong@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>
 date = 2014-01-16
 topic = Computer Science/System Description Languages
-abstract = The Unified Modeling Language (UML) is one of the few modeling
-	 languages that is widely used in industry. While UML is mostly known
-	 as diagrammatic modeling language (e.g., visualizing class models),
-	 it is complemented by a textual language, called Object Constraint
-	 Language (OCL). OCL is based on a
-	 three-valued logic that turns UML into a formal language.
-	 Unfortunately the semantics of this specification language, captured
-	 in the "Annex A" of the OCL standard, leads to different
-	 interpretations of corner cases.  We formalize the core of OCL:
-	 denotational definitions, a logical calculus and
-	 operational rules that allow for the execution of OCL expressions by
-	 a mixture of term rewriting and code compilation.  Our formalization
-	 reveals several inconsistencies and contradictions in the current
-	 version of the OCL standard.  Overall, this document is
-	 intended to provide the basis for a machine-checked text "Annex A"
-	 of the OCL standard targeting at tool implementors.
+abstract = The Unified Modeling Language (UML) is one of the few
+           modeling languages that is widely used in industry. While
+           UML is mostly known as diagrammatic modeling language
+           (e.g., visualizing class models), it is complemented by a
+           textual language, called Object Constraint Language
+           (OCL). The current version of OCL is based on a four-valued
+           logic that turns UML into a formal language. Any type
+           comprises the elements "invalid" and "null" which are
+           propagated as strict and non-strict, respectively.
+           Unfortunately, the former semi-formal semantics of this
+           specification language, captured in the "Annex A" of the
+           OCL standard, leads to different interpretations of corner
+           cases. We formalize the core of OCL: denotational
+           definitions, a logical calculus and operational rules that
+           allow for the execution of OCL expressions by a mixture of
+           term rewriting and code compilation. Our formalization
+           reveals several inconsistencies and contradictions in the
+           current version of the OCL standard. Overall, this document
+           is intended to provide the basis for a machine-checked text
+           "Annex A" of the OCL standard targeting at tool
+           implementors.
 
 [Relation_Algebra]
 title = Relation Algebra
