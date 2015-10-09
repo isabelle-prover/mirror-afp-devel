@@ -34,7 +34,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id:$ *)
 
 section\<open>Instantiating the Printer for Isabelle\<close>
 
@@ -206,6 +205,19 @@ definition "(of_semi__attrib_genB :: (string list \<Rightarrow> String.literal)
 definition "of_semi__attrib = of_semi__attrib_genA of_semi__thm_l"
 definition "of_semi__attrib1 = of_semi__attrib_genB (\<lambda>l. String_concat \<open> \<close> (L.map To_string l))"
 
+definition "of_semi__method_simp (s :: (* polymorphism weakening needed by code_reflect *)
+                                       String.literal) =
+ (\<lambda> Method_simp_only l \<Rightarrow> \<open>%s only: %s\<close> s (of_semi__thm_l l)
+  | Method_simp_add_del_split l1 l2 [] \<Rightarrow> \<open>%s%s%s\<close>
+      s
+      (of_semi__attrib \<open>add\<close> l1)
+      (of_semi__attrib \<open>del\<close> l2)
+  | Method_simp_add_del_split l1 l2 l3 \<Rightarrow> \<open>%s%s%s%s\<close>
+      s
+      (of_semi__attrib \<open>add\<close> l1)
+      (of_semi__attrib \<open>del\<close> l2)
+      (of_semi__attrib \<open>split\<close> l3))"
+
 fun of_semi__method where "of_semi__method expr = (\<lambda>
     Method_rule o_s \<Rightarrow> \<open>rule%s\<close> (case o_s of None \<Rightarrow> \<open>\<close>
                                            | Some s \<Rightarrow> \<open> %s\<close> (of_semi__thm_attribute s))
@@ -223,22 +235,8 @@ fun of_semi__method where "of_semi__method expr = (\<lambda>
   | Method_plus t \<Rightarrow> \<open>(%s)+\<close> (String_concat \<open>, \<close> (List.map of_semi__method t))
   | Method_option t \<Rightarrow> \<open>(%s)?\<close> (String_concat \<open>, \<close> (List.map of_semi__method t))
   | Method_or t \<Rightarrow> \<open>(%s)\<close> (String_concat \<open> | \<close> (List.map of_semi__method t))
-  | Method_one (Method_simp_only l) \<Rightarrow> \<open>simp only: %s\<close> (of_semi__thm_l l)
-  | Method_one (Method_simp_add_del_split l1 l2 []) \<Rightarrow> \<open>simp%s%s\<close>
-      (of_semi__attrib \<open>add\<close> l1)
-      (of_semi__attrib \<open>del\<close> l2)
-  | Method_one (Method_simp_add_del_split l1 l2 l3) \<Rightarrow> \<open>simp%s%s%s\<close>
-      (of_semi__attrib \<open>add\<close> l1)
-      (of_semi__attrib \<open>del\<close> l2)
-      (of_semi__attrib \<open>split\<close> l3)
-  | Method_all (Method_simp_only l) \<Rightarrow> \<open>simp_all only: %s\<close> (of_semi__thm_l l)
-  | Method_all (Method_simp_add_del_split l1 l2 []) \<Rightarrow> \<open>simp_all%s%s\<close>
-      (of_semi__attrib \<open>add\<close> l1)
-      (of_semi__attrib \<open>del\<close> l2)
-  | Method_all (Method_simp_add_del_split l1 l2 l3) \<Rightarrow> \<open>simp_all%s%s%s\<close>
-      (of_semi__attrib \<open>add\<close> l1)
-      (of_semi__attrib \<open>del\<close> l2)
-      (of_semi__attrib \<open>split\<close> l3)
+  | Method_one s \<Rightarrow> of_semi__method_simp \<open>simp\<close> s
+  | Method_all s \<Rightarrow> of_semi__method_simp \<open>simp_all\<close> s
   | Method_auto_simp_add_split l_simp l_split \<Rightarrow> \<open>auto%s%s\<close>
       (of_semi__attrib \<open>simp\<close> l_simp)
       (of_semi__attrib1 \<open>split\<close> l_split)
@@ -419,6 +417,7 @@ lemmas [code] =
   Print.of_semi__attrib_genB_def
   Print.of_semi__attrib_def
   Print.of_semi__attrib1_def
+  Print.of_semi__method_simp_def
   Print.of_semi__command_final_def
   Print.of_semi__command_state_def
   Print.of_semi__command_proof_def

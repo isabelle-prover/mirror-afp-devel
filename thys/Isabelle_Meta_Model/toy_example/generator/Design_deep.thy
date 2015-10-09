@@ -34,7 +34,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id:$ *)
 
 section\<open>Example: A Class Model Converted into a Theory File\<close>
 subsection\<open>Introduction\<close>

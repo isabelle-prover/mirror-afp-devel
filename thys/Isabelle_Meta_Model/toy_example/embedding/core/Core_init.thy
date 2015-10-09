@@ -34,7 +34,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id:$ *)
 
 chapter\<open>Translating Meta-Models\<close>
 section\<open>General Environment for the Translation: Introduction\<close>

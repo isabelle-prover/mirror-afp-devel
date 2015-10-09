@@ -34,7 +34,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
-(* $Id:$ *)
 
 theory Init
 imports "~~/src/HOL/Library/Code_Char"
@@ -353,10 +352,9 @@ definition "textstr_of_str f_flatten f_char f_str str =
   else
     f_flatten (S.flatten [ \<open>(\<close>, str, \<open>)\<close> ]))"
 
-definition' \<open>escape_sml = String.replace_chars ((* (* ERROR code_reflect *)
-                                                \<lambda> Char Nibble2 Nibble2 \<Rightarrow> \<open>\"\<close> | x \<Rightarrow> \<degree>x\<degree>*)
-                                                \<lambda>x. if x = Char Nibble2 Nibble2 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
-
+definition' \<open>escape_sml = String.replace_chars (\<lambda>x. if x = Char Nibble2 Nibble2 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
+text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
+@{term "\<lambda> Char Nibble2 Nibble2 \<Rightarrow> \<open>\"\<close> | x \<Rightarrow> \<degree>x\<degree>"}.\<close>
 definition "mk_constr_name name = (\<lambda> x. S.flatten [String.isub name, \<open>_\<close>, String.isub x])"
 definition "mk_dot s1 s2 = S.flatten [\<open>.\<close>, s1, s2]"
 definition "mk_dot_par_gen dot l_s = S.flatten [dot, \<open>(\<close>, case l_s of [] \<Rightarrow> \<open>\<close> | x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. \<open>, \<close> @@ s) xs) ], \<open>)\<close>]"
