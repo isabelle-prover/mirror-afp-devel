@@ -328,7 +328,8 @@ end
 fun proof_show_gen f thes st = st
   |> Proof.enter_forward
   |> f
-  |> Isar_Cmd.show [((@{binding ""}, []), [(thes, [])])] true
+  |> Proof.show_cmd true NONE (K I) [] [] [((@{binding ""}, []), [(thes, [])])] true
+  |> snd
 
 val semi__command_state = let open META_overload in
   fn META.Command_apply_end l => (fn st => st |> Proof.apply_end_results (then_tactic l)
@@ -351,8 +352,11 @@ val semi__command_proof = let open META_overload
    | META.Command_let (e1, e2) =>
        proof_show (Proof.let_bind_cmd [([of_semi__term e1], of_semi__term e2)])
    | META.Command_have (n, b, e, e_pr) => proof_show (fn st => st
-       |> Isar_Cmd.have [( (To_sbinding n, if b then [Token.src ("simp", Position.none) []] else [])
-                         , [(of_semi__term e, [])])] true
+       |> Proof.have_cmd true NONE (K I) [] []
+                         [( (To_sbinding n, if b then [Token.src ("simp", Position.none) []] else [])
+                          , [(of_semi__term e, [])])]
+                         true
+       |> snd
        |> local_terminal_proof e_pr)
    | META.Command_fix_let (l, l_let, o_exp, _) =>
        proof_show_gen ( fold (fn (e1, e2) =>
@@ -423,14 +427,14 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     (snd o Specification.definition_cmd (def, ((@{binding ""}, []), of_semi__term e)) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
-   (fn lthy => (snd o Specification.theorems Thm.lemmaK
+   (fn lthy => (snd o Specification.theorems Thm.theoremK
       [((To_sbinding s, List.map (fn s => Attrib.check_src lthy (Token.src (s, Position.none) []))
                           (if simp then ["simp", "code_unfold"] else [])),
         List.map (fn x => ([semi__thm_attribute_single lthy x], [])) l)]
       []
       false) lthy)
 | Theory_lemmas (Lemmas_simp_thms (s, l)) => in_local
-   (fn lthy => (snd o Specification.theorems Thm.lemmaK
+   (fn lthy => (snd o Specification.theorems Thm.theoremK
       [((To_sbinding s, List.map (fn s => Attrib.check_src lthy (Token.src (s, Position.none) []))
                           ["simp", "code_unfold"]),
         List.map (fn x => (Proof_Context.get_thms lthy (To_string0 x), [])) l)]
@@ -438,7 +442,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       false) lthy)
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
-           Specification.theorem_cmd Thm.lemmaK NONE (K I)
+           Specification.theorem_cmd Thm.theoremK NONE (K I)
              (@{binding ""}, []) [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
@@ -447,7 +451,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
         |> global_terminal_proof o_by)
 | Theory_lemma (Lemma_assumes (n, l_spec, concl, l_apply, o_by)) => in_local
    (fn lthy => lthy
-        |> Specification.theorem_cmd Thm.lemmaK NONE (K I)
+        |> Specification.theorem_cmd Thm.theoremK NONE (K I)
              (To_sbinding n, [])
              []
              (List.map (fn (n, (b, e)) =>

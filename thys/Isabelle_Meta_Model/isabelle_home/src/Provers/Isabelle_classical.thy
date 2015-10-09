@@ -51,7 +51,7 @@ struct
 Theorem prover for classical reasoning, including predicate calculus, set
 theory, etc.
 
-Rules must be classified as intro, elim, safe, hazardous (unsafe).
+Rules must be classified as intro, elim, safe, unsafe.
 
 A rule is unsafe unless it can be applied blindly without harmful results.
 For a rule to be safe, its premises and conclusion should be logically
@@ -81,9 +81,9 @@ local
 
 fun some_rule_tac ctxt facts = SUBGOAL (fn (goal, i) =>
   let
-    val [rules1, rules2, rules4] = Context_Rules.find_rules false facts goal ctxt;
-    val {xtra_netpair, ...} = rep_claset_of ctxt;
-    val rules3 = Context_Rules.find_rules_netpair true facts goal xtra_netpair;
+    val [rules1, rules2, rules4] = Context_Rules.find_rules ctxt false facts goal;
+    val {extra_netpair, ...} = rep_claset_of ctxt;
+    val rules3 = Context_Rules.find_rules_netpair ctxt true facts goal extra_netpair;
     val rules = rules1 @ rules2 @ rules3 @ rules4;
     val ruleq = Drule.multi_resolves (SOME ctxt) facts rules;
     val _ = Method.trace ctxt rules;

@@ -66,8 +66,10 @@ open Basic_Code_Thingol;
 val trace = Attrib.setup_config_bool @{binding "code_runtime_trace"} (K false);
 
 fun exec ctxt verbose code =
-  (if Config.get ctxt trace then tracing code else ();
-  ML_Context.exec (fn () => Secure.use_text ML_Env.local_context (0, "generated code") verbose code));
+ (if Config.get ctxt trace then tracing code else ();
+  ML_Context.exec (fn () =>
+    Secure.use_text ML_Env.local_context
+      {line = 0, file = "generated code", verbose = verbose, debug = false} code));
 
 
 
