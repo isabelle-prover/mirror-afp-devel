@@ -81,12 +81,13 @@
 \maketitle
 
 \begin{abstract}
-We represent a theory \emph{of} (a fragment of) Isabelle/HOL 
-\emph{in} Isabelle/HOL. The purpose of this exercise is to write packages for
-domain-specific specifications such as class models, B-machines, \dots,
-and generally any languages that can be described with a sequence of ``datatype''
-in HOL itself; the Isabelle code-generator can then be used to generate
-tactic code.
+We represent a theory \emph{of} (a fragment of) Isabelle/HOL \emph{in}
+Isabelle/HOL. The purpose of this exercise is to write packages for
+domain-specific specifications such as class models, B-machines,
+\dots, and generally speaking, any domain-specific languages whose
+abstract syntax can be defined by a HOL ``datatype''. On this basis, the
+Isabelle code-generator can then be used to generate code for global
+context transformations as well as tactic code.
 
 Consequently the package is geared towards 
 parsing, printing and code-generation to the Isabelle API.
