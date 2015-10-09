@@ -93,7 +93,7 @@ definition "of_all_meta_embedding env =
 
 definition "of_boot_generation_syntax _ = (\<lambda> Boot_generation_syntax mode \<Rightarrow>
   \<open>generation_syntax [ shallow%s ]\<close>
-    (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l f = \<open> (generation_semantics [ %s ])\<close> in
+    (let f = \<open> (generation_semantics [ %s ])\<close> in
      case mode of Gen_only_design \<Rightarrow> f \<open>design\<close>
                 | Gen_only_analysis \<Rightarrow> f \<open>analysis\<close>
                 | Gen_default \<Rightarrow> \<open>\<close>))"

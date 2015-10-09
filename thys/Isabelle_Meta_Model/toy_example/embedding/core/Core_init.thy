@@ -78,18 +78,18 @@ definition "var_result = \<open>result\<close>"
 
 definition "find_class_ass env =
  (let (l_class, l_all_meta) =
-    partition (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l f = \<lambda>class. ClassRaw_clause class = [] in
+    partition (let f = \<lambda>class. ClassRaw_clause class = [] in
                \<lambda> META_class_raw Floor1 class \<Rightarrow> f class
                | META_association _ \<Rightarrow> True
                | META_ass_class Floor1 (ToyAssClass _ class) \<Rightarrow> f class
                | META_class_synonym _ \<Rightarrow> True
                | _ \<Rightarrow> False) (rev (D_input_meta env)) in
-  ( L.flatten [l_class, List.map_filter (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l f = \<lambda>class. class \<lparr> ClassRaw_clause := [] \<rparr> in
+  ( L.flatten [l_class, List.map_filter (let f = \<lambda>class. class \<lparr> ClassRaw_clause := [] \<rparr> in
                                        \<lambda> META_class_raw Floor1 c \<Rightarrow> Some (META_class_raw Floor1 (f c))
                                        | META_ass_class Floor1 (ToyAssClass ass class) \<Rightarrow> Some (META_ass_class Floor1 (ToyAssClass ass (f class)))
                                        | _ \<Rightarrow> None) l_all_meta]
   , L.flatten (L.map
-      (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l f = \<lambda>class. [ META_ctxt Floor1 (toy_ctxt_ext [] (ClassRaw_name class) (ClassRaw_clause class) ()) ] in
+      (let f = \<lambda>class. [ META_ctxt Floor1 (toy_ctxt_ext [] (ClassRaw_name class) (ClassRaw_clause class) ()) ] in
        \<lambda> META_class_raw Floor1 class \<Rightarrow> f class
        | META_ass_class Floor1 (ToyAssClass _ class) \<Rightarrow> f class
        | x \<Rightarrow> [x]) l_all_meta)))"

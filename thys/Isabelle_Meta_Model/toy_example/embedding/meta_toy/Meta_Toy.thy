@@ -259,7 +259,7 @@ function (sequential) class_unflat_aux where
    (case lookup rbt_cycle r of (None (* cycle detection *)) \<Rightarrow>
       ToyClass
         r
-        (case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l lookup rbt r of Some l \<Rightarrow> l)
+        (case lookup rbt r of Some l \<Rightarrow> l)
         (L.map
           (class_unflat_aux rbt rbt_inv (insert r () rbt_cycle))
           (case lookup rbt_inv r of None \<Rightarrow> [] | Some l \<Rightarrow> l)))"
@@ -270,13 +270,13 @@ function (sequential) class_unflat_aux where
 (case lookup rbt_cycle r of (None (* cycle detection *)) \<Rightarrow>
       ToyClass
         r
-        (case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l lookup rbt r of Some l \<Rightarrow> l)
+        (case lookup rbt r of Some l \<Rightarrow> l)
         ( ( [])))
 | Some l \<Rightarrow>
 (case lookup rbt_cycle r of (None (* cycle detection *)) \<Rightarrow>
       ToyClass
         r
-        (case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l lookup rbt r of Some l \<Rightarrow> l)
+        (case lookup rbt r of Some l \<Rightarrow> l)
         (L.map
           (class_unflat_aux rbt rbt_inv (insert r () rbt_cycle))
           ( l))))"
@@ -374,7 +374,7 @@ definition "class_unflat = (\<lambda> (l_class, l_ass).
     L.map snd (entries (List.fold (\<lambda> (ass_oid, ass) \<Rightarrow>
       let l_rel = ToyAss_relation' ass in
       fold_max
-        (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l n_rel = natural_of_nat (List.length l_rel) in
+        (let n_rel = natural_of_nat (List.length l_rel) in
          (\<lambda> (cpt_to, (name_to, category_to)).
            case TyRole category_to of
              Some role_to \<Rightarrow>

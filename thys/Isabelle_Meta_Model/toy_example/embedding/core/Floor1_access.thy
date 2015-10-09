@@ -49,7 +49,7 @@ definition "print_access_oid_uniq_gen Thy_def D_toy_oid_start_upd def_rewrite =
          let l_inh = L.map (\<lambda> ToyClass _ l _ \<Rightarrow> l) (of_inh l_inh) in
          let (l, cpt) = L.mapM (L.mapM
            (\<lambda> (attr, ToyTy_object (ToyTyObj (ToyTyCore ty_obj) _)) \<Rightarrow>
-                                            (let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l obj_oid = TyObj_ass_id ty_obj
+                                            (let obj_oid = TyObj_ass_id ty_obj
                                                ; obj_name_from_nat = TyObjN_ass_switch (TyObj_from ty_obj) in \<lambda>(cpt, rbt) \<Rightarrow>
              let (cpt_obj, cpt_rbt) =
                case RBT.lookup rbt obj_oid of
@@ -89,8 +89,8 @@ definition "print_access_choose = start_map'''' O.definition o (\<lambda>expr _.
   (let a = \<lambda>f x. Term_app f [x]
      ; b = \<lambda>s. Term_basic [s]
      ; lets = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> exp)
-     ; lets' = \<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>avar exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (b exp))
-     ; lets'' = \<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>avar exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (Term_lam \<open>l\<close> (\<lambda>var_l. Term_binop (b var_l) \<open>!\<close> (b exp))))
+     ; lets' = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (b exp))
+     ; lets'' = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> (Term_lam \<open>l\<close> (\<lambda>var_l. Term_binop (b var_l) \<open>!\<close> (b exp))))
      ; _(* ignored *) = 
         let l_flatten = \<open>L.flatten\<close> in
         [ lets l_flatten (let fun_foldl = \<lambda>f base.
@@ -111,7 +111,7 @@ definition "print_access_choose = start_map'''' O.definition o (\<lambda>expr _.
                       , (Term_some (b var_l0), a l_flatten (Term_list (L.map b [var_l0, var_l1])))])))
             , b \<open>Map.empty\<close>])] in
   L.flatten
-  [ let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l a = \<lambda>f x. Term_app f [x]
+  [ let a = \<lambda>f x. Term_app f [x]
       ; b = \<lambda>s. Term_basic [s]
       ; lets = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> exp)
       ; mk_var = \<lambda>i. b (S.flatten [\<open>x\<close>, String.of_natural i]) in

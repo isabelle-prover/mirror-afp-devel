@@ -379,6 +379,6 @@ lemmas [code] =
 
 (* *)
 
-definition "sml_apply s l = S.flatten [s, \<open> (\<close>, case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l l of x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. S.flatten [\<open>, \<close>, s]) xs)], \<open>)\<close> ]"
+definition "sml_apply s l = S.flatten [s, \<open> (\<close>, case l of x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. S.flatten [\<open>, \<close>, s]) xs)], \<open>)\<close> ]"
 
 end

@@ -366,27 +366,4 @@ definition "mk_dot_comment s1 s2 s3 = mk_dot s1 (S.flatten [s2, \<open> /*\<clos
 definition "hol_definition s = S.flatten [s, \<open>_def\<close>]"
 definition "hol_split s = S.flatten [s, \<open>.split\<close>]"
 
-section\<open>Miscellaneous\<close> (* section to be removed when errors will be fixed *)
-
-text\<open>Syntactic errors in target languages can appear during extraction,
-     so we explicitly output parenthesis around ambiguous expressions
-     (by enclosing them in a @{term id} scope for instance).\<close>
-
-syntax "_Let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l" :: "[letbinds, 'a] \<Rightarrow> 'a" ("(let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l (_)/ in (_))" [0, 10] 10)
-translations "_Let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l (_binds b bs) e" \<rightleftharpoons> "_Let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l b (_Let bs e)"
-             "let\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l x = a in e" \<rightleftharpoons> "CONST id (CONST Let a (%x. e))"
-
-syntax  "_case_syntax\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l" :: "['a, cases_syn] => 'b"  ("(case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l _ of/ _)" 10)
-translations "case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l v of w => x" \<rightleftharpoons> "CONST id (_case_syntax v (_case1 w x))"
-             "case\<^sub>O\<^sub>C\<^sub>a\<^sub>m\<^sub>l v of w => x | y => z" \<rightleftharpoons> "CONST id (_case_syntax v (_case2 (_case1 w x) (_case1 y z)))"
-
-syntax "_Lambda\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a" :: "[pttrn, bool] \<Rightarrow> 'a"  ("(3\<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a _./ _)" [0, 10] 10)
-       "_Lambda\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a" :: "[pttrn, pttrn, bool] \<Rightarrow> 'a"  ("(3\<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a _ _./ _)" [0, 0, 10] 10)
-translations "\<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a x y. P" \<rightleftharpoons> "CONST id (%x y. P)"
-             "\<lambda>\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a x. P" \<rightleftharpoons> "CONST id (%x. P)"
-
-syntax  "_case_syntax\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a" :: "['a, cases_syn] => 'b"  ("(case\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a _ of/ _)" 10)
-translations "case\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a v of w => x" \<rightleftharpoons> "CONST id (_case_syntax v (_case1 w x))"
-             "case\<^sub>S\<^sub>c\<^sub>a\<^sub>l\<^sub>a v of w => x | y => z" \<rightleftharpoons> "CONST id (_case_syntax v (_case2 (_case1 w x) (_case1 y z)))"
-
 end
