@@ -150,8 +150,8 @@ datatype semi__command_proof = Command_apply "semi__method list" (* apply (... '
                                             semi__command_final
                              | Command_fix_let "string list"
                                                "(semi__term (* name *) \<times> semi__term) list" (* let statements *) (* TODO merge recursively *)
-                                               "semi__term list option" (* None => ?thesis
-                                                                           Some l => "... ==> ..." *)
+                                               "( semi__term list (* show ... ==> ... *)
+                                                \<times> semi__term list (* when ... ... *)) option" (* None => ?thesis *)
                                                "semi__command_state list" (* qed apply_end ... *)
 
 datatype "lemma" = Lemma string (* name *) "semi__term list" (* specification to prove *)

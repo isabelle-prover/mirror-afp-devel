@@ -324,10 +324,20 @@ fun global_terminal_proof o_by = let open META in case o_by of
  | Command_by l_apply => Proof.global_terminal_proof (then_tactic l_apply, NONE)
 end
 
-fun proof_show_gen f thes st = st
-  |> Proof.enter_forward
+fun proof_show_gen f (thes, thes_when) st = st
+  |> Proof.proof_results
+       (SOME ( Method.Source (Token.src ("-", Position.none) [])
+             , (Position.none, Position.none)))
+  |> Seq.the_result ""
   |> f
-  |> Proof.show_cmd true NONE (K I) [] [] [((@{binding ""}, []), [(thes, [])])] true
+  |> Proof.show_cmd
+       (thes_when = [])
+       NONE
+       (K I)
+       []
+       (if thes_when = [] then [] else [((@{binding ""}, []), map (fn t => (t, [])) thes_when)])
+       [((@{binding ""}, []), [(thes, [])])]
+       true
   |> snd
 
 val semi__command_state = let open META_overload in
@@ -337,7 +347,7 @@ end
 
 val semi__command_proof = let open META_overload
                         val thesis = "?thesis"
-                        fun proof_show f = proof_show_gen f thesis in
+                        fun proof_show f = proof_show_gen f (thesis, []) in
   fn META.Command_apply l => (fn st => st |> Proof.apply_results (then_tactic l)
                                           |> Seq.the_result "")
    | META.Command_using l => (fn st =>
@@ -362,9 +372,10 @@ val semi__command_proof = let open META_overload
                                 Proof.let_bind_cmd [([of_semi__term e1], of_semi__term e2)])
                              l_let
                       o Proof.fix_cmd (List.map (fn i => (To_sbinding i, NONE, NoSyn)) l))
-                      (case o_exp of NONE => thesis | SOME l_spec => 
-                        (String.concatWith (" \<Longrightarrow> ")
-                                           (List.map of_semi__term l_spec)))
+                      ( case o_exp of NONE => thesis | SOME (l_spec, _) => 
+                         (String.concatWith (" \<Longrightarrow> ")
+                                            (List.map of_semi__term l_spec))
+                      , case o_exp of NONE => [] | SOME (_, l_when) => List.map of_semi__term l_when)
 end
 
 fun semi__theory in_theory in_local = let open META open META_overload in (*let val f = *)fn

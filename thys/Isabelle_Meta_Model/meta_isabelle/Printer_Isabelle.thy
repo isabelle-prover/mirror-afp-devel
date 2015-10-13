@@ -260,9 +260,14 @@ definition "of_semi__command_state = (
 
 definition' \<open>of_semi__command_proof = (
   let thesis = \<open>?thesis\<close>
-    ; scope_thesis_gen = \<open>  proof - %s show %s
-\<close>
-    ; scope_thesis = \<lambda>s. scope_thesis_gen s thesis in
+    ; scope_thesis_gen = \<lambda>proof show when. \<open>  proof - %s show %s%s
+\<close> proof
+  show
+  (if when = [] then
+     \<open>\<close>
+   else
+     \<open> when %s\<close> (String_concat \<open> \<close> (L.map (\<lambda>t. \<open>"%s"\<close> (of_semi__term t)) when)))
+    ; scope_thesis = \<lambda>s. scope_thesis_gen s thesis [] in
   \<lambda> Command_apply [] \<Rightarrow> \<open>\<close>
   | Command_apply l_apply \<Rightarrow> \<open>  apply(%s)
 \<close> (String_concat \<open>, \<close> (L.map of_semi__method l_apply))
@@ -281,7 +286,8 @@ definition' \<open>of_semi__command_proof = (
                                        \<open>          let %s = "%s"\<close> (of_semi__term e_name) (of_semi__term e_body))
                                      l_let)))
         (case o_show of None \<Rightarrow> thesis
-                      | Some l_show \<Rightarrow> \<open>"%s"\<close> (String_concat \<open> \<Longrightarrow> \<close> (L.map of_semi__term l_show))))\<close>
+                      | Some (l_show, _) \<Rightarrow> \<open>"%s"\<close> (String_concat \<open> \<Longrightarrow> \<close> (L.map of_semi__term l_show)))
+        (case o_show of None \<Rightarrow> [] | Some (_, l_when) \<Rightarrow> l_when))\<close>
 
 definition "of_lemma _ =
  (\<lambda> Lemma n l_spec l_apply tactic_last \<Rightarrow>
