@@ -1269,7 +1269,7 @@ proof-
       by auto
     hence "multiset t = {#m#}"
       using removeLeaf_multiset[of ?v1 ?t1 t] True assms(2)
-      by (metis empty_neutral(2) multiset.simps(1) pair_collapse)
+      by (metis empty_neutral(2) multiset.simps(1) prod.collapse)
     thus ?thesis
       using `{#m#} + multiset t' = {#m#}`
       by auto

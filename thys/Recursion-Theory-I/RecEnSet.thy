@@ -877,7 +877,7 @@ proof -
   def f_def: f \<equiv> "\<lambda> x. (c_fst x, c_snd x)"
   have f_inj: "inj f"
   proof (unfold f_def, rule inj_on_inverseI [where ?g="\<lambda> (u,v). c_pair u v"])
-    fix x assume "(x::nat) \<in> UNIV" show "split c_pair (c_fst x, c_snd x) = x" by simp
+    fix x assume "(x::nat) \<in> UNIV" show "case_prod c_pair (c_fst x, c_snd x) = x" by simp
   qed
   from f_inj have "f ` (A \<inter> B) = f ` A \<inter> f ` B" by (rule image_Int)
   then show ?thesis by (unfold f_def, unfold ce_set_to_rel_def, auto)

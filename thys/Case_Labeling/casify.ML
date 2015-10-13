@@ -260,7 +260,7 @@ fun extract_cases_tac ctxt st =
   in CASES (mk_cases' ctxt st) tac st end
 
 
-(* Splits the nth ALL into its components and simplifies any prod_case over this variable*)
+(* Splits the nth ALL into its components and simplifies any case_prod over this variable*)
 
 structure Splitsubst = Hypsubst
 (
@@ -282,15 +282,15 @@ fun SPLIT_subst_tac ctxt =
   REPEAT_ALL_NEW (REPEAT_ALL_NEW (ematch_tac ctxt @{thms SPLIT_prodE}) THEN' Splitsubst.hyp_subst_tac ctxt)
 
 local
-val prod_case_th = @{thm split_conv[THEN eq_reflection]}
+val case_prod_th = @{thm split_conv[THEN eq_reflection]}
 
-fun prod_case_conv ctxt =
+fun case_prod_conv ctxt =
   Conv.forall_conv (fn (x, ctxt) =>
   Conv.forall_conv (fn (y, ctxt) => fn ct =>
     let
       val insts = [NONE, SOME x, SOME y]
       val typ_insts = map (Option.map Thm.ctyp_of_cterm) insts
-      val th = Thm.instantiate' typ_insts insts prod_case_th
+      val th = Thm.instantiate' typ_insts insts case_prod_th
     in Conv.bottom_conv (fn _ => Conv.try_conv (Conv.rewr_conv th)) ctxt ct end
   ) ctxt) ctxt
 
@@ -302,7 +302,7 @@ fun split_nth_all_conv {right_only:bool} =
     fun conv ctxt 0 ct =
           desc_conv (
             Conv.rewr_conv @{thm split_paired_all}
-            then_conv prod_case_conv ctxt
+            then_conv case_prod_conv ctxt
             then_conv Conv.try_conv (conv ctxt 1)
           ) ct
       | conv ctxt n ct =
@@ -332,7 +332,7 @@ fun RAWCONV cv i st = Seq.single (Conv.gconv_rule cv i st)
 fun split_bind_all_tac {right_only: bool, simp_all_cases: bool} ctxt =
   let
     val rewr_tac = if simp_all_cases
-      then Raw_Simplifier.rewrite_goal_tac ctxt [prod_case_th] else K all_tac
+      then Raw_Simplifier.rewrite_goal_tac ctxt [case_prod_th] else K all_tac
   in
     RAWCONV (split_bind_all_conv {right_only = right_only} ctxt) THEN' rewr_tac
   end

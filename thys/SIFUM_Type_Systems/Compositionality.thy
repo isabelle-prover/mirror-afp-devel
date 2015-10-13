@@ -104,7 +104,7 @@ proof -
   assume "x \<in> (map snd cms ! i) GuarNoRead"
   ultimately show "doesnt_read (fst (cms !i)) x"
     apply (simp add: locally_sound_mode_use_def)
-    by (metis PairE `i < length cms` fst_conv loc_reach.refl nth_map snd_conv)
+    by (metis prod.exhaust `i < length cms` fst_conv loc_reach.refl nth_map snd_conv)
 qed
 
 lemma compat_different_vars:
@@ -244,8 +244,8 @@ lemma doesnt_read_mutually_exclusive:
   shows "\<not> (\<forall> v. \<langle>c, mds, mem (x := v)\<rangle> \<leadsto> \<langle>c', mds', mem'\<rangle>)"
   using assms
   apply (case_tac "mem' x = some_val")
-   apply (metis (full_types) Pair_eq deterministic different_values fun_upd_same)
-  by (metis (full_types) Pair_eq deterministic fun_upd_same)
+   apply (metis (full_types) prod.inject deterministic different_values fun_upd_same)
+  by (metis (full_types) prod.inject deterministic fun_upd_same)
 
 lemma doesnt_read_mutually_exclusive':
   assumes noread: "doesnt_read c x"
@@ -807,7 +807,7 @@ proof -
       by (metis globally_consistent_writable insertI1)
     from insert obtain v v' where "A x = Some (v, v')"
       unfolding globally_consistent_def globally_consistent_var_def
-      by (metis (no_types) domD insert_iff option.simps(5) splitE)
+      by (metis (no_types) domD insert_iff option.simps(5) case_prodE)
 
     have A_A': "\<And> y. y \<noteq> x \<Longrightarrow> A y = A' y"
       unfolding A'_def
@@ -1440,7 +1440,7 @@ proof -
           have "snd (cms\<^sub>1 ! k) = snd (cms\<^sub>2 ! k)"
             by (metis b equal_size modes_eq nth_map)
           have "(cms\<^sub>1 ! k, mem\<^sub>1) \<in> loc_reach (cms\<^sub>1 ! k, mem\<^sub>1)"
-            by (metis loc_reach.refl pair_collapse)
+            by (metis loc_reach.refl prod.collapse)
           hence guars:
                 "x \<in> snd (cms\<^sub>1 ! k) GuarNoWrite \<longrightarrow> doesnt_modify (fst (cms\<^sub>1 ! k)) x \<and>
                  x \<in> snd (cms\<^sub>2 ! k) GuarNoWrite \<longrightarrow> doesnt_modify (fst (cms\<^sub>1 ! k)) x"
@@ -1450,7 +1450,7 @@ proof -
 
           hence "x \<notin> snd (cms\<^sub>1 ! k) GuarNoWrite"
             using modified loc_modes locally_sound_mode_use_def
-            by (metis `snd (cms\<^sub>1 ! k) = snd (cms\<^sub>2 ! k)` loc_reach.refl pair_collapse)
+            by (metis `snd (cms\<^sub>1 ! k) = snd (cms\<^sub>2 ! k)` loc_reach.refl prod.collapse)
           moreover
           from sound_modes have "compatible_modes (map snd cms\<^sub>1)"
             by (metis globally_sound_modes_compatible sound_mode_use.simps)
@@ -1758,7 +1758,7 @@ proof -
 
     ultimately have "?mems\<^sub>1j [\<mapsto> \<sigma>] =\<^bsub>snd (cms\<^sub>1 ! j)\<^esub>\<^sup>l ?mems\<^sub>2j [\<mapsto> \<sigma>]"
       using modes_eq j_prop
-      by (metis pair_collapse mm_equiv_low_eq)
+      by (metis prod.collapse mm_equiv_low_eq)
     hence "?mems\<^sub>1j x = ?mems\<^sub>2j x"
       using x_low x_readable j_prop `dom \<sigma> = ?X j`
       unfolding low_mds_eq_def
@@ -1887,9 +1887,9 @@ proof -
         unfolding locally_sound_mode_use_def
         by (metis loc_reach.refl surjective_pairing)
       with eval have "\<And> x. x \<in> snd (cms ! i) AsmNoWrite \<longrightarrow> mem x = mem' x"
-        by (metis (no_types) doesnt_modify_def ev pair_collapse)
+        by (metis (no_types) doesnt_modify_def ev prod.collapse)
       then have "loc_reach (cms ! i, mem') = loc_reach (cms ! i, mem)"
-        by (metis loc_reach_mem_diff_eq pair_collapse)
+        by (metis loc_reach_mem_diff_eq prod.collapse)
       thus ?thesis
         using loc_sound i_le `length cms = length cms'`
         unfolding locally_sound_mode_use_def
@@ -1918,7 +1918,7 @@ proof -
   proof (induct "k" arbitrary: cms\<^sub>1' mem\<^sub>1')
     case 0
     hence "cms\<^sub>1' = cms\<^sub>1 \<and> mem\<^sub>1' = mem\<^sub>1"
-      by (metis Pair_eq meval_k.simps(1))
+      by (metis prod.inject meval_k.simps(1))
     thus ?case
       by (metis compat meval_k.simps(1) modes_eq sound_modes)
   next

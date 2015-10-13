@@ -36,7 +36,7 @@ lemmas [euclidean_Basis] =
   setsumE_insert setsumE_singleton
   setsum.insert setsum.empty
   finite_insert finite.emptyI
-  Pair_eq
+  prod.inject
   empty_iff insert_iff
   refl
   one_neq_zero

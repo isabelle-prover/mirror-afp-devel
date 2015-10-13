@@ -109,7 +109,7 @@ lemma isOK_update_error [simp]:
 
 lemma isOK_case_prod [simp]:
   "isOK (case lr of (l, r) \<Rightarrow> P l r) = (case lr of (l, r) \<Rightarrow> isOK (P l r))"
-  by (rule uncurry_distrib)
+  by (rule prod.case_distrib)
 
 lemma isOK_case_option [simp]:
   "isOK (case x of None \<Rightarrow> P | Some v \<Rightarrow> Q v) = (case x of None \<Rightarrow> isOK P | Some v \<Rightarrow> isOK (Q v))"

@@ -211,7 +211,7 @@ subsection {* Votes with maximum timestamps. *}
 (*******************************************************************)
 
 definition vote_set :: "('round \<Rightarrow> ('process, 'val)map) \<Rightarrow> 'process set \<Rightarrow> ('round \<times> 'val)set" where
-  "vote_set vs Q \<equiv> {(r, v)|a r v. ((r, a), v) \<in> map_graph (split vs) \<and> a \<in> Q}"
+  "vote_set vs Q \<equiv> {(r, v)|a r v. ((r, a), v) \<in> map_graph (case_prod vs) \<and> a \<in> Q}"
 
 lemma inj_on_fst_vote_set:
   "inj_on fst (vote_set v_hist {p})"
@@ -222,7 +222,7 @@ lemma finite_vote_set:
     "finite S"
   shows "finite (vote_set v_hist S)"
 proof-
-  def vs \<equiv> "{((r, a), v)|r a v. ((r, a), v) \<in> map_graph (split v_hist) \<and> a \<in> S}"
+  def vs \<equiv> "{((r, a), v)|r a v. ((r, a), v) \<in> map_graph (case_prod v_hist) \<and> a \<in> S}"
   have "vs
       = (\<Union>p\<in>S. ((\<lambda>(r, v). ((r, p), v)) ` (map_graph (\<lambda>r. v_hist r p))))"
       by(auto simp add: map_graph_def fun_graph_def vs_def)

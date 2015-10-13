@@ -1920,7 +1920,7 @@ proof (induct k)
   obtain P' where inv_P': "invertible P'" and Gk_eq_P'A: "Gauss_Jordan_upt_k A k = P' ** A" using Suc.hyps by force
   have g: "Gauss_Jordan_upt_k A k = snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])" unfolding Gauss_Jordan_upt_k_def by auto
   show ?case unfolding Gauss_Jordan_upt_k_def unfolding rw2 foldl_append foldl.simps
-    apply (subst pair_collapse[symmetric, of "(foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])", unfolded g[symmetric]]) 
+    apply (subst prod.collapse[symmetric, of "(foldl Gauss_Jordan_column_k (0, A) [0..<Suc k])", unfolded g[symmetric]]) 
     using invertible_Gauss_Jordan_column_k
     using Suc.hyps using invertible_mult matrix_mul_assoc by metis
 qed

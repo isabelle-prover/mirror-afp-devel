@@ -197,7 +197,7 @@ begin
 
 abbreviation step where
   "step \<equiv> (\<lambda>(p, q). map (\<lambda>(a, b). (delta1 a p, delta2 b q))
-    (filter (split letter_eq) (List.product alphabet1 alphabet2)))"
+    (filter (case_prod letter_eq) (List.product alphabet1 alphabet2)))"
 
 abbreviation closure :: "'s1 * 's2 \<Rightarrow> (('s1 * 's2) list * ('s1 * 's2) set) option" where
   "closure \<equiv> rtrancl_while (\<lambda>(p, q). accept1 p = accept2 q) step"

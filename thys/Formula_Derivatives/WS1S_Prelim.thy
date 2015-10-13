@@ -202,13 +202,13 @@ lemma nvars_SNOC[simp]:
 lemma assigns_CONS[simp]:
   assumes "#\<^sub>V \<AA> = size_atom bs1_bs2"
   shows "LESS ord x (#\<^sub>V \<AA>) \<Longrightarrow> x\<^bsup>CONS bs1_bs2 \<AA>\<^esup>ord =
-    (if split case_order bs1_bs2 ord ! x then finsert 0 (upshift (x\<^bsup>\<AA>\<^esup>ord)) else upshift (x\<^bsup>\<AA>\<^esup>ord))"
+    (if case_prod case_order bs1_bs2 ord ! x then finsert 0 (upshift (x\<^bsup>\<AA>\<^esup>ord)) else upshift (x\<^bsup>\<AA>\<^esup>ord))"
   by (insert assms, transfer) (auto simp: lift_def split: order.splits)
 
 lemma assigns_SNOC[simp]:
   assumes "#\<^sub>V \<AA> = size_atom bs1_bs2"
   shows "LESS ord x (#\<^sub>V \<AA>) \<Longrightarrow> x\<^bsup>SNOC bs1_bs2 \<AA>\<^esup>ord =
-    (if split case_order bs1_bs2 ord ! x then finsert (Length \<AA>) (x\<^bsup>\<AA>\<^esup>ord) else x\<^bsup>\<AA>\<^esup>ord)"
+    (if case_prod case_order bs1_bs2 ord ! x then finsert (Length \<AA>) (x\<^bsup>\<AA>\<^esup>ord) else x\<^bsup>\<AA>\<^esup>ord)"
   by (insert assms, transfer) (force simp: snoc_def Let_def split: order.splits)
 
 lemma map_index'_eq_conv[simp]:
@@ -295,7 +295,7 @@ qed
 
 lemma enc_inj[simp]: "#\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow> enc \<AA> = enc \<BB> \<Longrightarrow> \<AA> = \<BB>"
   using MSB_greater
-  by transfer (elim exE conjE, hypsubst, unfold prod.case Pair_eq Let_def, elim conjE, simp only:,
+  by transfer (elim exE conjE, hypsubst, unfold prod.case prod.inject Let_def, elim conjE, simp only:,
     subst (asm) append_replicate_inj,
     erule (2) last_enc_atom_MSB[OF sym sym], erule last_enc_atom_MSB[OF refl refl],
     auto simp: list_eq_iff_nth_eq, (metis less_max_iff_disj)+)
@@ -359,7 +359,7 @@ lemma assigns_less_Length[simp]: "x |\<in>| m1\<^bsup>\<AA>\<^esup>k \<Longright
 lemma Length_notin_assigns[simp]: "Length \<AA> |\<notin>| m\<^bsup>\<AA>\<^esup>k"
   by (metis assigns_less_Length less_not_refl)
 
-lemma nth_zero[simp]: "LESS ord m (#\<^sub>V \<AA>) \<Longrightarrow> \<not> split case_order (zero (#\<^sub>V \<AA>)) ord ! m"
+lemma nth_zero[simp]: "LESS ord m (#\<^sub>V \<AA>) \<Longrightarrow> \<not> case_prod case_order (zero (#\<^sub>V \<AA>)) ord ! m"
   by transfer (auto split: order.splits)
 
 lemma in_fimage_Suc[simp]: "x |\<in>| Suc |`| A \<longleftrightarrow> (\<exists>y. y |\<in>| A \<and> x = Suc y)"

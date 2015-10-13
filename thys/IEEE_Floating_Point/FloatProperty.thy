@@ -531,7 +531,7 @@ proof -
   have "Val (float_neg b) =
     valof float_format ((Sign (float_neg b)),(Exponent (float_neg b)), (Fraction (float_neg b)))"
     unfolding float_defs
-    by (metis PairE exponent.simps fraction.simps sign.simps)
+    by (metis prod.exhaust exponent.simps fraction.simps sign.simps)
   also have "... = valof float_format ((1 - (Sign b), Exponent b, Fraction b))"
     using float_neg_def fneg_def Abs_float_inverse
     by (cases b) (auto simp: float_defs is_valid_def)

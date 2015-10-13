@@ -74,7 +74,7 @@ fun lookup where
 lemma \<pi>_\<sigma>: "\<pi> ` (set o \<sigma> \<Sigma>) (n + 1) = (set o \<sigma> \<Sigma>) n"
   unfolding \<pi>_def \<sigma>_def set_map[symmetric] o_apply map_concat by auto
 
-locale formula = embed2 "set o (\<sigma> \<Sigma>)" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "split Singleton"
+locale formula = embed2 "set o (\<sigma> \<Sigma>)" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "case_prod Singleton"
 for \<Sigma> :: "'a :: linorder list" +
 assumes nonempty: "\<Sigma> \<noteq> []"
 begin

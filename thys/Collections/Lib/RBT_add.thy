@@ -123,7 +123,7 @@ next
   proof (rule map_iterator_linord_union_correct [OF kv_it r_it])
     fix kv kv'
     assume pre: "kv \<in> map_to_set [k \<mapsto> v]" "kv' \<in> map_to_set (rbt_lookup r)"
-    obtain k' v' where kv'_eq[simp]: "kv' = (k', v')" by (rule PairE)
+    obtain k' v' where kv'_eq[simp]: "kv' = (k', v')" by (rule prod.exhaust)
  
     from pre is_sort_t show "fst kv < fst kv'" 
       apply (simp add: map_to_set_lookup_entries split: prod.splits)
@@ -141,8 +141,8 @@ next
     assume pre: "kv1 \<in> map_to_set (rbt_lookup l)" 
                 "kv2 \<in> map_to_set [k \<mapsto> v] \<union> map_to_set (rbt_lookup r)" 
 
-    obtain k1 v1 where kv1_eq[simp]: "kv1 = (k1, v1)" by (rule PairE)
-    obtain k2 v2 where kv2_eq[simp]: "kv2 = (k2, v2)" by (rule PairE)
+    obtain k1 v1 where kv1_eq[simp]: "kv1 = (k1, v1)" by (rule prod.exhaust)
+    obtain k2 v2 where kv2_eq[simp]: "kv2 = (k2, v2)" by (rule prod.exhaust)
 
     from pre is_sort_t show "fst kv1 < fst kv2" 
       apply (simp add: map_to_set_lookup_entries split: prod.splits)
@@ -189,7 +189,7 @@ next
   proof (rule map_iterator_rev_linord_union_correct [OF kv_it l_it])
     fix kv kv'
     assume pre: "kv \<in> map_to_set [k \<mapsto> v]" "kv' \<in> map_to_set (rbt_lookup l)"
-    obtain k' v' where kv'_eq[simp]: "kv' = (k', v')" by (rule PairE)
+    obtain k' v' where kv'_eq[simp]: "kv' = (k', v')" by (rule prod.exhaust)
  
     from pre is_sort_t show "fst kv > fst kv'" 
       apply (simp add: map_to_set_lookup_entries split: prod.splits)
@@ -207,8 +207,8 @@ next
     assume pre: "kv1 \<in> map_to_set (rbt_lookup r)" 
                 "kv2 \<in> map_to_set [k \<mapsto> v] \<union> map_to_set (rbt_lookup l)" 
 
-    obtain k1 v1 where kv1_eq[simp]: "kv1 = (k1, v1)" by (rule PairE)
-    obtain k2 v2 where kv2_eq[simp]: "kv2 = (k2, v2)" by (rule PairE)
+    obtain k1 v1 where kv1_eq[simp]: "kv1 = (k1, v1)" by (rule prod.exhaust)
+    obtain k2 v2 where kv2_eq[simp]: "kv2 = (k2, v2)" by (rule prod.exhaust)
 
     from pre is_sort_t show "fst kv1 > fst kv2" 
       apply (simp add: map_to_set_lookup_entries split: prod.splits)

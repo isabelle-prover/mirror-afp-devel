@@ -159,7 +159,7 @@ text{* Homomorphisms preserve the set of nodes. *}
 lemma UN_subset_iff: "((\<Union>i\<in>I. f i) \<subseteq> B) = (\<forall>i\<in>I. f i \<subseteq> B)"
 by blast
 
-declare Image_Collect_split[simp del]
+declare Image_Collect_case_prod[simp del]
 
 lemma pr_Hom_pres_face_nodes:
  "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2 \<Longrightarrow> (\<Union>F\<in>Fs\<^sub>1. {\<phi> ` (set F)}) = (\<Union>F\<in>Fs\<^sub>2. {set F})"
@@ -332,7 +332,7 @@ apply(rule conjI)
  apply(subgoal_tac "{F\<^sub>2}//{\<cong>} = {map \<phi> F\<^sub>1}//{\<cong>}")
   prefer 2 apply(simp add:singleton_quotient)
  apply(subgoal_tac "\<forall>F\<in>Fs\<^sub>1'. \<not> (map \<phi> F) \<cong> (map \<phi> F\<^sub>1)")
-  apply(fastforce simp:Iso_def quotient_def Image_Collect_split simp del: Collect_congs_eq_iff
+  apply(fastforce simp:Iso_def quotient_def Image_Collect_case_prod simp del: Collect_congs_eq_iff
                  dest!: eq_equiv_class[OF _ equiv_EqF])
  apply clarify
  apply(subgoal_tac "inj_on \<phi> (set F \<union> set F\<^sub>1)")

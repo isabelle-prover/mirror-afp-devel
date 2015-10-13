@@ -323,7 +323,7 @@ proof safe
       also have "\<dots> = (\<lambda>e. ?f' ` e) ` ((\<lambda>e. f ` e) ` uedges G\<^sub>1)"
         by (rule image_image[symmetric])
       also have "\<dots> = (\<lambda>e. ?f' ` e) ` uedges G\<^sub>2"
-        using bij map by (metis map_ugraph.simps pair_collapse snd_eqD)
+        using bij map by (metis map_ugraph.simps prod.collapse snd_eqD)
       finally show ?thesis
         .
     qed

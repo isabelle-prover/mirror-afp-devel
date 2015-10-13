@@ -96,7 +96,7 @@ lemma addpreRT_welldefined:
     assume "s \<in> reachable (paodv i) TT"
     then obtain \<xi> p where "s = (\<xi>, p)"
                       and "(\<xi>, p) \<in> reachable (paodv i) TT"
-      by (metis PairE)
+      by (metis prod.exhaust)
     have "onl \<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V ?P (\<xi>, p)"
     proof (rule onlI)
       fix l

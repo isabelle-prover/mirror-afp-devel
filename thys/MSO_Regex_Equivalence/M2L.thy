@@ -98,7 +98,7 @@ lemma enc_atom_dec:
    enc_atom (dec_interp n FO w) p (fst (w ! p)) = w ! p"
   unfolding wf_word dec_interp_def map_filter_def Let_def
   by (auto 0 4 simp: comp_def \<sigma>_def set_n_lists positions_in_row dest: nth_mem[of p w]
-    intro!: trans[OF iffD2[OF Pair_eq] pair_collapse] nth_equalityI the_equality[symmetric]
+    intro!: trans[OF iffD2[OF prod.inject] prod.collapse] nth_equalityI the_equality[symmetric]
     intro: the1I2[of "\<lambda>p. p < length w \<and> snd (w ! p) ! i" "\<lambda>p. snd (w ! p) ! i" for i]
     elim!: contrapos_np[of _ False])
 

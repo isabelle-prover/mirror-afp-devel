@@ -29,7 +29,7 @@ locale ExtCategory =
   assumes CdomExt: "(Dom C) \<in> extensional (Mor C)"
   and     CcodExt: "(Cod C) \<in> extensional (Mor C)"
   and     CidExt:  "(Id C) \<in> extensional (Obj C)"
-  and     CcompExt:  "(split (Comp C)) \<in> extensional ({(f,g) | f g . f \<approx>> g})"
+  and     CcompExt:  "(case_prod (Comp C)) \<in> extensional ({(f,g) | f g . f \<approx>> g})"
 
 locale Category = ExtCategory +
   assumes Cdom : "f \<in> mor \<Longrightarrow> dom f \<in> obj"
@@ -48,7 +48,7 @@ definition
       Dom = restrict (Dom C) (Mor C) , 
       Cod = restrict (Cod C) (Mor C) , 
       Id  = restrict (Id C) (Obj C) , 
-      Comp = \<lambda> f g . (restrict (split (Comp C)) ({(f,g) | f g . f \<approx>>\<^bsub>C\<^esub> g})) (f,g), 
+      Comp = \<lambda> f g . (restrict (case_prod (Comp C)) ({(f,g) | f g . f \<approx>>\<^bsub>C\<^esub> g})) (f,g), 
       \<dots> = Category.more C
   \<rparr>"
 

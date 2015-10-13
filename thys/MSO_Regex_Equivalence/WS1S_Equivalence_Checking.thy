@@ -14,14 +14,14 @@ imports
 begin
 (*>*)
 
-permanent_interpretation embed2 "set o \<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "split Singleton"
+permanent_interpretation embed2 "set o \<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "case_prod Singleton"
   for \<Sigma> :: "'a :: linorder list"
   defining
       \<DD> = "embed.lderiv lookup (\<epsilon> \<Sigma>)"
   and Co\<DD> = "embed.lderiv_dual lookup (\<epsilon> \<Sigma>)"
   and r\<DD> = "embed.rderiv lookup (\<epsilon> \<Sigma>)"
   and r\<DD>_add = "embed2.rderiv_and_add lookup (\<epsilon> \<Sigma>)"
-  and \<QQ> = "embed2.samequot_exec lookup (\<epsilon> \<Sigma>) (split Singleton)"
+  and \<QQ> = "embed2.samequot_exec lookup (\<epsilon> \<Sigma>) (case_prod Singleton)"
   by unfold_locales (auto simp: \<sigma>_def \<pi>_def \<epsilon>_def set_n_lists)
 
 lemma enum_not_empty[simp]: "Enum.enum \<noteq> []" (is "?enum \<noteq> []")
@@ -44,7 +44,7 @@ permanent_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} li
   and ENC = \<Phi>.ENC
   and dec_interp = \<Phi>.stream_dec
   and any = \<Phi>.any
-  where "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a list)) (split Singleton) = \<QQ> Enum.enum"
+  where "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a list)) (case_prod Singleton) = \<QQ> Enum.enum"
   by unfold_locales (auto simp: \<sigma>_def \<pi>_def \<QQ>_def)
 
 lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of_norm = trans[OF sym[OF \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_norm] \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of]

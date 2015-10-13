@@ -89,14 +89,14 @@ lemma value_CValue_cases:
   by (metis CValue'.exhaust Discr_undiscr Value.exhaust)
 
 lemma Value_CValue_take_induct:
-  assumes "adm (split P)"
+  assumes "adm (case_prod P)"
   assumes "\<And> n. P (\<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>x) (\<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>y)"
   shows "P x y"
 proof-
-  have "split P (\<Squnion>n. (\<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>x, \<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>y))"
-    by (rule admD[OF `adm (split P)` ch2ch_Pair[OF ch2ch_Rep_cfunL[OF Value.chain_take] ch2ch_Rep_cfunL[OF CValue_chain_take]]])
+  have "case_prod P (\<Squnion>n. (\<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>x, \<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>y))"
+    by (rule admD[OF `adm (case_prod P)` ch2ch_Pair[OF ch2ch_Rep_cfunL[OF Value.chain_take] ch2ch_Rep_cfunL[OF CValue_chain_take]]])
        (simp add: assms(2))
-  hence "split P (x,y)"
+  hence "case_prod P (x,y)"
     by (simp add: lub_Pair[OF ch2ch_Rep_cfunL[OF Value.chain_take] ch2ch_Rep_cfunL[OF CValue_chain_take]]
                   Value.reach CValue_reach)
   thus ?thesis by simp
@@ -217,7 +217,7 @@ holds for the limit of a chain, given that it holds for all elements.
 lemma similar'_base_adm: "adm (\<lambda> x. similar'_base (fst x) (snd x))"
 proof (rule admI, goal_cases)
   case (1 Y)
-  then have "Y = (\<lambda> _ . \<bottom>)" by (metis PairE fst_eqD inst_prod_pcpo similar'_base.simps snd_eqD)
+  then have "Y = (\<lambda> _ . \<bottom>)" by (metis prod.exhaust fst_eqD inst_prod_pcpo similar'_base.simps snd_eqD)
   thus ?case by auto
 qed
 
@@ -280,7 +280,7 @@ proof (rule admI, goal_cases)
       assume "s x (y\<cdot>C\<^sup>\<infinity>)"
       ultimately
       have "\<And>i. s (Y' i\<cdot>x) (Y'' i\<cdot>y\<cdot>C\<^sup>\<infinity>)" by auto
-      hence "split s (\<Squnion> i. ((Y' i)\<cdot>x, (Y'' i)\<cdot>y\<cdot>C\<^sup>\<infinity>))"
+      hence "case_prod s (\<Squnion> i. ((Y' i)\<cdot>x, (Y'' i)\<cdot>y\<cdot>C\<^sup>\<infinity>))"
         apply -
         apply (rule admD[OF adm_case_prod[where P = "\<lambda>_ . s", OF assms]])
         apply (simp add:  `chain Y'`  `chain Y''`)

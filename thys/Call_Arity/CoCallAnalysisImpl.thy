@@ -21,7 +21,7 @@ lemma combined_restrict_cont:
   "cont (\<lambda>x. combined_restrict S x)"
 proof-
   have "cont (\<lambda>(env, G). combined_restrict S (env, G))" by simp
-  thus ?thesis by (metis split_eta)
+  then show ?thesis by (simp only: case_prod_eta) 
 qed
 lemmas cont_compose[OF combined_restrict_cont, cont2cont, simp]
 
@@ -198,7 +198,7 @@ sublocale EdomArityAnalysis Aexp by standard (rule Aexp_edom')
 
 
 definition Aheap where
-  "Aheap \<Gamma> e = (\<Lambda> a. if nonrec \<Gamma> then (split Aheap_nonrec (hd \<Gamma>))\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a) else  (Afix \<Gamma> \<cdot> (Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` domA \<Gamma>)"
+  "Aheap \<Gamma> e = (\<Lambda> a. if nonrec \<Gamma> then (case_prod Aheap_nonrec (hd \<Gamma>))\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a) else  (Afix \<Gamma> \<cdot> (Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` domA \<Gamma>)"
 
 lemma Aheap_simp1[simp]:
   "\<not> nonrec \<Gamma> \<Longrightarrow> Aheap \<Gamma> e \<cdot>a = (Afix \<Gamma> \<cdot> (Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` domA \<Gamma>"

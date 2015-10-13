@@ -135,7 +135,7 @@ text {* The following two lemmas will be useful later, when we
   start taking votes with the maximum timestamp. *}
 
 lemma Vinv1_finite_map_graph:
-   "s \<in> Vinv1 \<Longrightarrow> finite (map_graph (split (votes s)))"
+   "s \<in> Vinv1 \<Longrightarrow> finite (map_graph (case_prod (votes s)))"
   apply(rule finite_dom_finite_map_graph)
   apply(rule finite_subset[where B="{0..< v_state.next_round s} \<times> UNIV"])
    apply(auto simp add: Vinv1_def dom_def not_le[symmetric])

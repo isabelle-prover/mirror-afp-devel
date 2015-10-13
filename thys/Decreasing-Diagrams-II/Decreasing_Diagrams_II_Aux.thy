@@ -257,7 +257,7 @@ by (induct xs) auto
 
 lemma list_splits_rev:
   "list_splits (rev xs) = map (\<lambda>(xs, x, ys). (rev ys, x, rev xs)) (rev (list_splits xs))"
-by (induct xs) (auto simp add: list_splits_append comp_def uncurry_distrib rev_map)
+by (induct xs) (auto simp add: list_splits_append comp_def prod.case_distrib rev_map)
 
 lemma list_splits_map:
   "list_splits (map f xs) = map (\<lambda>(xs, x, ys). (map f xs, f x, map f ys)) (list_splits xs)"

@@ -424,7 +424,7 @@ proof -
     apply (simp add: Q_0)
     apply (simp add: Q_Suc)
     done
-  have "split P (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
+  have "case_prod P (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
     apply (rule admD)
     apply (simp add: split_def adm_P)
     apply simp
@@ -433,7 +433,7 @@ proof -
   then have P: "P x y"
     unfolding x y fix_def2
     by (simp add: lub_prod)
-  have "split Q (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
+  have "case_prod Q (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
     apply (rule admD)
     apply (simp add: split_def adm_Q)
     apply simp

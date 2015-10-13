@@ -43,7 +43,7 @@ next
       unfolding partition_split_def
       apply simp
       apply (subst partition_split_body_def)
-      apply (split split_split)
+      apply (split prod.split)
       apply clarsimp
       apply rule
        apply clarsimp
@@ -55,7 +55,7 @@ next
       unfolding partition_split_def
       apply simp
       apply (subst partition_split_body_def)
-      apply (split split_split)
+      apply (split prod.split)
       apply clarsimp
       apply rule
        apply clarsimp

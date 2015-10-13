@@ -403,7 +403,7 @@ apply (rule f)
 done
 
 lemma curry_forall_eq:
-  "(\<forall>f. P f) = (\<forall>f. P (split f))"
+  "(\<forall>f. P f) = (\<forall>f. P (case_prod f))"
   apply safe
    apply simp_all
   apply (rename_tac f)

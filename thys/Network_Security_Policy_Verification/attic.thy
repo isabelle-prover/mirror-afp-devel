@@ -51,7 +51,6 @@ qed
 
 
 lemma exCasePairSimp: "(\<exists>x. x \<in> A \<and> (case x of (e1, e2) \<Rightarrow> P e1 e2)) = (\<exists>(e1, e2) \<in> A. (P e1 e2))"
-  thm Pair_eq splitE splitI2
   by auto
 
 lemma exCasePairNotSimp: "(\<exists>x. x \<in> A \<and> \<not> (case x of (e1, e2) \<Rightarrow> P e1 e2)) = (\<exists>(e1, e2) \<in> A. \<not> (P e1 e2))"

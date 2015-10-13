@@ -92,7 +92,7 @@ where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = NoRefl_
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
    apply (simp add:graph_ops)
-   apply (simp split: split_split_asm split_split)
+   apply (simp split: prod.split_asm prod.split)
    apply(rule_tac x="\<lparr> nodes={vertex_1}, edges = {(vertex_1,vertex_1)} \<rparr>" in exI, simp)
    apply(rule conjI)
     apply(simp add: wf_graph_def)

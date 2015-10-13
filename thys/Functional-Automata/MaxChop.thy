@@ -46,7 +46,7 @@ lemma chop_rule: "reducing splitf ==>
                        else let (xss, zs) = chop splitf post
                             in (pre # xss,zs))"
 apply (simp add: chop.simps)
-apply (simp add: Let_def split: split_split)
+apply (simp add: Let_def split: prod.split)
 done
 
 lemma reducing_maxsplit: "reducing(%qs. maxsplit P ([],qs) [] qs)"
@@ -61,14 +61,14 @@ lemma chop_concat[rule_format]: "is_maxsplitter P splitf ==>
 apply (induct xs rule:length_induct)
 apply (simp (no_asm_simp) split del: split_if
             add: chop_rule[OF is_maxsplitter_reducing])
-apply (simp add: Let_def is_maxsplitter_def split: split_split)
+apply (simp add: Let_def is_maxsplitter_def split: prod.split)
 done
 
 lemma chop_nonempty: "is_maxsplitter P splitf ==>
   !yss zs. chop splitf xs = (yss,zs) --> (!ys : set yss. ys ~= [])"
 apply (induct xs rule:length_induct)
 apply (simp (no_asm_simp) add: chop_rule is_maxsplitter_reducing)
-apply (simp add: Let_def is_maxsplitter_def split: split_split)
+apply (simp add: Let_def is_maxsplitter_def split: prod.split)
 apply (intro allI impI)
 apply (rule ballI)
 apply (erule exE)
@@ -88,7 +88,7 @@ apply (rule iffI)
  apply (erule rev_mp)
  apply (subst prem[THEN is_maxsplitter_reducing[THEN chop_rule]])
  apply (simp add: Let_def prem[simplified is_maxsplitter_def]
-             split: split_split)
+             split: prod.split)
  apply clarify
  apply (rule conjI)
   apply (clarify)
@@ -98,7 +98,7 @@ apply (rule iffI)
  apply (clarify)
 apply (subst prem[THEN is_maxsplitter_reducing, THEN chop_rule])
 apply (simp add: Let_def prem[simplified is_maxsplitter_def]
-             split: split_split)
+             split: prod.split)
 apply (clarify)
 apply (rename_tac xs1 ys1 xss1 ys)
 apply (simp split: list.split_asm)

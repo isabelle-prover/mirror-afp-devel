@@ -44,7 +44,7 @@ lemma reachable_pair_induct [consumes, case_names init step]:
        and IH: "\<And>\<xi> p. s = (\<xi>, p) \<Longrightarrow> P \<xi> p"
     from this(1) obtain \<xi> p where "s = (\<xi>, p)"
                               and "(\<xi>, p) \<in> reachable A I"
-      by (metis pair_collapse)
+      by (metis prod.collapse)
     note this(2)
     moreover from IH and \<open>s = (\<xi>, p)\<close> have "P \<xi> p" .
     moreover from tr and \<open>s = (\<xi>, p)\<close> have "((\<xi>, p), a, (\<xi>', p')) \<in> trans A" by simp

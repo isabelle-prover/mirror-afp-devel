@@ -57,7 +57,7 @@ definition olv_ref_rel where
 
 
 lemma OV_inv2_finite_map_graph:
-   "s \<in> OV_inv2 \<Longrightarrow> finite (map_graph (split (obsv_state.obs s)))"
+   "s \<in> OV_inv2 \<Longrightarrow> finite (map_graph (case_prod (obsv_state.obs s)))"
   apply(rule finite_dom_finite_map_graph)
   apply(rule finite_subset[where B="{0..< v_state.next_round s} \<times> UNIV"])
    apply(auto simp add: OV_inv2_def dom_def not_le[symmetric])

@@ -193,7 +193,7 @@ lemma extgsimp [simp]:
 
 lemma extg_range_prod: "extg ` (i1 \<times> i2) = {(\<sigma>, (s1, s2))|\<sigma> s1 s2. (\<sigma>, s1) \<in> i1 \<and> s2 \<in> i2}"
   unfolding image_def extg_def
-  by (rule Collect_cong) (auto split: split_split)
+  by (rule Collect_cong) (auto split: prod.split)
 
 definition
   opar_comp :: "((ip \<Rightarrow> 's) \<times> 's1, 'm seq_action) automaton
@@ -207,7 +207,7 @@ where
 lemma opar_comp_def':
   "s \<langle>\<langle>\<^bsub>i\<^esub> t = \<lparr> init = {(\<sigma>, (s\<^sub>l, t\<^sub>l))|\<sigma> s\<^sub>l t\<^sub>l. (\<sigma>, s\<^sub>l) \<in> init s \<and> t\<^sub>l \<in> init t},
                 trans = oparp_sos i (trans s) (trans t) \<rparr>"
-  unfolding opar_comp_def extg_def image_def by (auto split: split_split)
+  unfolding opar_comp_def extg_def image_def by (auto split: prod.split)
 
 lemma trans_opar_comp [simp]:
   "trans (s \<langle>\<langle>\<^bsub>i\<^esub> t) = oparp_sos i (trans s) (trans t)"

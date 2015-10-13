@@ -177,7 +177,7 @@ schematic_goal system_responds_action_caseE:
   "\<lbrakk> (\<lbrace>l\<rbrace> Response action, afts) \<in> fragments (gc_pgms p) \<langle>False\<rangle>; v \<in> action (pname, req) s;
      \<lbrakk> p = sys; case_request_op ?P1 ?P2 ?P3 ?P4 ?P5 ?P6 ?P7 ?P8 ?P9 ?P10 ?P11 ?P12 ?P13 req \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (erule(1) system_responds_actionE)
-  apply (cases req, simp_all only: request_op.simps Pair_eq simp_thms fst_conv snd_conv)
+  apply (cases req, simp_all only: request_op.simps prod.inject simp_thms fst_conv snd_conv)
   apply (drule meta_mp[OF _ TrueI], erule meta_mp, erule_tac P="A \<and> B" for A B in triv)+
   done
 

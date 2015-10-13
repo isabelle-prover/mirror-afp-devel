@@ -95,7 +95,7 @@ proof(intro eq_reflection ext)
   qed
 qed
 
-lemma monotone_lmerge: "monotone (rel_prod lprefix lprefix) lprefix (split lmerge)"
+lemma monotone_lmerge: "monotone (rel_prod lprefix lprefix) lprefix (case_prod lmerge)"
 apply(rule llist.fixp_preserves_mono2[OF lmerge_mono lmerge_conv_fixp])
 apply(erule conjE|rule allI conjI cont_intro|simp|erule allE, erule llist.mono2mono)+
 done
@@ -108,7 +108,7 @@ lemma mono2mono_lmerge2 [THEN llist.mono2mono, cont_intro, simp]:
   shows monotone_lmerge2: "monotone lprefix lprefix (\<lambda>ys. lmerge xs ys)"
 by(simp add: monotone_lmerge[simplified])
 
-lemma mcont_lmerge: "mcont (prod_lub lSup lSup) (rel_prod lprefix lprefix) lSup lprefix (split lmerge)"
+lemma mcont_lmerge: "mcont (prod_lub lSup lSup) (rel_prod lprefix lprefix) lSup lprefix (case_prod lmerge)"
 apply(rule llist.fixp_preserves_mcont2[OF lmerge_mono lmerge_conv_fixp]) 
 apply(erule conjE|rule allI conjI cont_intro|simp|erule allE, erule llist.mcont2mcont)+
 done

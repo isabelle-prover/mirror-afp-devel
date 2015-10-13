@@ -531,7 +531,7 @@ proof -
 
   have "\<exists>p::'a \<times> 'a. {u,v} = {fst p, snd p}" by (rule exI[where x="(u,v)"]) auto
   then have "{u,v} = {fst (f {u,v}), snd (f {u,v})}"
-    unfolding f_def Eps_split by (rule someI_ex)
+    unfolding f_def Eps_case_prod by (rule someI_ex)
   then have "f {u,v} = (u,v) \<or> f {u,v} = (v,u)"
     by (auto simp: doubleton_eq_iff prod_eq_iff)
   then show ?thesis by (auto simp: direct_arc_def f_def)

@@ -143,7 +143,7 @@ lemma val_case_stock_measurable:
   assumes "\<And>b. t = BOOL \<Longrightarrow> g b \<in> space M"
   assumes "\<And>i. t = INTEG \<Longrightarrow> h i \<in> space M"
   assumes "t = REAL \<Longrightarrow> j \<in> measurable borel M"
-  assumes *: "\<And>t1 t2. t = PRODUCT t1 t2 \<Longrightarrow> split k \<in> measurable (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) M"
+  assumes *: "\<And>t1 t2. t = PRODUCT t1 t2 \<Longrightarrow> case_prod k \<in> measurable (stock_measure t1 \<Otimes>\<^sub>M stock_measure t2) M"
   shows "(\<lambda>x. case x of UnitVal \<Rightarrow> c | BoolVal b \<Rightarrow> g b | IntVal i \<Rightarrow> h i | RealVal r \<Rightarrow> j r
                 | PairVal y z \<Rightarrow> k y z) \<in> measurable t M"
 proof (cases t)
@@ -166,7 +166,7 @@ lemma inj_PairVal[simp]: "inj (\<lambda>(x, y). <| x ,  y |>)" by (auto intro: i
 
 lemma measurable_PairVal[measurable]: 
   fixes t1 t2 :: pdf_type
-  shows "split PairVal \<in> measurable (t1 \<Otimes>\<^sub>M t2) (PRODUCT t1 t2)"
+  shows "case_prod PairVal \<in> measurable (t1 \<Otimes>\<^sub>M t2) (PRODUCT t1 t2)"
 using assms measurable_embed_measure2[measurable] by simp
 
 lemma measurable_RealVal[measurable]: "RealVal \<in> measurable borel REAL"
@@ -249,11 +249,11 @@ lemma measurable_extract_bool[measurable]: "extract_bool \<in> measurable BOOL (
   by simp
 
 lemma map_int_pair_measurable[measurable]:
-  assumes f: "split f \<in> measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) M"
+  assumes f: "case_prod f \<in> measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) M"
   shows "map_int_pair f g \<in> measurable (PRODUCT INTEG INTEG) M"
 proof (subst measurable_cong)
   fix w assume "w \<in> space (PRODUCT INTEG INTEG)"
-  then show "map_int_pair f g w = (split f o extract_int_pair) w"
+  then show "map_int_pair f g w = (case_prod f o extract_int_pair) w"
     by (auto simp: space_embed_measure space_pair_measure)
 next
   show "(\<lambda>(x, y). f x y) \<circ> extract_int_pair \<in> measurable (stock_measure (PRODUCT INTEG INTEG)) M"
@@ -270,11 +270,11 @@ proof (subst measurable_cong)
 qed fact
 
 lemma map_real_pair_measurable[measurable]:
-  assumes f: "split f \<in> measurable (borel \<Otimes>\<^sub>M borel) M"
+  assumes f: "case_prod f \<in> measurable (borel \<Otimes>\<^sub>M borel) M"
   shows "map_real_pair f g \<in> measurable (PRODUCT REAL REAL) M"
 proof (subst measurable_cong)
   fix w assume "w \<in> space (PRODUCT REAL REAL)"
-  then show "map_real_pair f g w = (split f o extract_real_pair) w"
+  then show "map_real_pair f g w = (case_prod f o extract_real_pair) w"
     by (auto simp: space_embed_measure space_pair_measure)
 next
   show "(\<lambda>(x, y). f x y) \<circ> extract_real_pair \<in> measurable (stock_measure (PRODUCT REAL REAL)) M"
@@ -362,7 +362,7 @@ proof-
   have [simp]: "(\<lambda>(x, y). <| x ,  y |>) \<circ> (\<lambda>(x, y). (RealVal x, RealVal y)) = RealPairVal"
     unfolding RealPairVal_def by auto
   have "stock_measure (PRODUCT REAL REAL) = 
-            embed_measure (embed_measure lborel (\<lambda>(x, y). (RealVal x, RealVal y))) (split PairVal)"
+            embed_measure (embed_measure lborel (\<lambda>(x, y). (RealVal x, RealVal y))) (case_prod PairVal)"
     by (auto simp: embed_measure_prod sigma_finite_lborel lborel_prod)
   also have "... = embed_measure lborel RealPairVal"
     by (subst embed_measure_comp) (auto intro!: injI)
@@ -519,7 +519,7 @@ lemma split_apply: "(case x of (a, b) \<Rightarrow> f a b) y = (case x of (a, b)
   by (cases x) simp
 
 lemma measurable_lift_Comp_RealVal[measurable]:
-  assumes [measurable]: "Measurable.pred (borel \<Otimes>\<^sub>M borel) (split g)"
+  assumes [measurable]: "Measurable.pred (borel \<Otimes>\<^sub>M borel) (case_prod g)"
   shows "lift_Comp f g \<in> measurable (PRODUCT REAL REAL) BOOL" 
   unfolding lift_Comp_def by measurable
 
@@ -547,7 +547,7 @@ lemma measurable_lift_RealIntVal2_IntVal[measurable]:
   by (auto intro!: val_case_stock_measurable)
 
 lemma measurable_lift_RealIntVal2_RealVal[measurable]:
-  assumes [measurable]: "split g \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
+  assumes [measurable]: "case_prod g \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
   shows "lift_RealIntVal2 f g \<in> measurable (PRODUCT REAL REAL) REAL"
   unfolding lift_RealIntVal2_def by measurable
 
@@ -641,9 +641,9 @@ qed (subst space_stock_measure, simp)
 
 lemma distr_lift_RealPairVal: 
   fixes f f' g
-  assumes Mf[measurable]: "split f \<in> borel_measurable borel"
+  assumes Mf[measurable]: "case_prod f \<in> borel_measurable borel"
   assumes pdens: "has_subprob_density M (stock_measure (PRODUCT REAL REAL)) \<delta>"
-  assumes dens': "\<And>M \<delta>. has_subprob_density M lborel \<delta> \<Longrightarrow> has_density (distr M borel (split f)) lborel (g \<delta>)"
+  assumes dens': "\<And>M \<delta>. has_subprob_density M lborel \<delta> \<Longrightarrow> has_density (distr M borel (case_prod f)) lborel (g \<delta>)"
   defines "N \<equiv> distr M (stock_measure REAL) (lift_RealIntVal2 f' f)"
   shows "has_density N (stock_measure REAL) (g (\<lambda>x. \<delta> (RealPairVal x)) \<circ> extract_real)"
 proof (rule has_densityI)
@@ -653,16 +653,16 @@ proof (rule has_densityI)
     by (auto simp: has_subprob_densityD[OF pdens])
     
   have "N = distr M (stock_measure REAL) (lift_RealIntVal2 f' f)" by (simp add: N_def)
-  also have "... = distr M (stock_measure REAL) (RealVal \<circ> split f \<circ> extract_real_pair)"
+  also have "... = distr M (stock_measure REAL) (RealVal \<circ> case_prod f \<circ> extract_real_pair)"
     using sets_eq_imp_space_eq[OF sets_M]
     by (intro distr_cong) (auto simp: lift_RealIntVal2_def space_embed_measure space_pair_measure stock_measure.simps)
-  also have "... = distr (distr (distr M lborel extract_real_pair) borel (split f)) REAL RealVal"
+  also have "... = distr (distr (distr M lborel extract_real_pair) borel (case_prod f)) REAL RealVal"
     by (subst distr_distr) (simp_all add: distr_distr[OF _ measurable_comp[OF _ Mf]] comp_assoc)
-  also have dens'': "has_density (distr (distr M lborel extract_real_pair) borel (split f)) lborel 
+  also have dens'': "has_density (distr (distr M lborel extract_real_pair) borel (case_prod f)) lborel 
                       (g (\<delta> \<circ> RealPairVal))" using inj_RealPairVal embed_measure_RealPairVal
     by (intro dens' has_subprob_density_embed_measure'') 
        (insert pdens, simp_all add: RealPairVal_def split: prod.split)
-  hence "distr (distr M lborel extract_real_pair) borel (split f) = 
+  hence "distr (distr M lborel extract_real_pair) borel (case_prod f) = 
              density lborel (g (\<delta> \<circ> RealPairVal))" by (rule has_densityD)
   also have "distr ... (stock_measure REAL) RealVal = embed_measure ... RealVal" (is "_ = ?M")
     by (subst embed_measure_eq_distr[OF inj_RealVal], intro distr_cong)
@@ -687,7 +687,7 @@ lemma distr_lift_IntPairVal:
   fixes f f'
   assumes pdens: "has_density M (stock_measure (PRODUCT INTEG INTEG)) \<delta>"
   assumes dens': "\<And>M \<delta>. has_density M (count_space UNIV) \<delta> \<Longrightarrow> 
-                            has_density (distr M (count_space UNIV) (split f)) 
+                            has_density (distr M (count_space UNIV) (case_prod f)) 
                                         (count_space UNIV) (g \<delta>)"
   defines "N \<equiv> distr M (stock_measure INTEG) (lift_RealIntVal2 f f')"
   shows "has_density N (stock_measure INTEG) (g (\<lambda>x. \<delta> (IntPairVal x)) \<circ> extract_int)"
@@ -706,19 +706,19 @@ proof (rule has_densityI)
   
   have "N = distr M (stock_measure INTEG) (lift_RealIntVal2 f f')" by (simp add: N_def)
 
-  also have "... = distr M (stock_measure INTEG) (IntVal \<circ> split f \<circ> extract_int_pair)"
+  also have "... = distr M (stock_measure INTEG) (IntVal \<circ> case_prod f \<circ> extract_int_pair)"
     by (intro distr_cong) (auto simp: lift_RealIntVal2_def space_embed_measure space_pair_measure IntPairVal_def)
   also have "... = distr (distr (distr M (count_space UNIV) extract_int_pair) 
-                        (count_space UNIV) (split f)) (stock_measure INTEG) IntVal"
+                        (count_space UNIV) (case_prod f)) (stock_measure INTEG) IntVal"
     apply (subst distr_distr[of _ ?R, symmetric], simp, simp)
     apply (subst distr_distr[symmetric], subst stock_measure.simps, rule MIV, 
            simp_all add: assms(1) cong: distr_cong)
     done
-  also have dens'': "has_density (distr (distr M (count_space UNIV) extract_int_pair) ?R (split f)) ?R 
+  also have dens'': "has_density (distr (distr M (count_space UNIV) extract_int_pair) ?R (case_prod f)) ?R 
                       (g (\<delta> \<circ> IntPairVal))" using inj_IntPairVal embed_measure_IntPairVal
     by (intro dens' has_density_embed_measure'') 
        (insert dens, simp_all add: extract_int_def embed_measure_count_space IntPairVal_def split: prod.split)
-  hence "distr (distr M (count_space UNIV) extract_int_pair) ?R (split f) = 
+  hence "distr (distr M (count_space UNIV) extract_int_pair) ?R (case_prod f) = 
              density ?R (g (\<delta> \<circ> IntPairVal))" by (rule has_densityD)
   also have "distr ... (stock_measure INTEG) IntVal = embed_measure ... IntVal" (is "_ = ?M")
     by (subst embed_measure_eq_distr[OF inj_IntVal], intro distr_cong)

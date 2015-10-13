@@ -276,7 +276,7 @@ qed (simp_all add: state_measure_def inj_PairVal)
 lemma measurable_eval_cexpr[measurable]:
   assumes "case_nat t \<Gamma> \<turnstile>\<^sub>c e : REAL"
   assumes "free_vars e \<subseteq> shift_var_set V"
-  shows "split (eval_cexpr e) \<in> borel_measurable (state_measure V \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  shows "case_prod (eval_cexpr e) \<in> borel_measurable (state_measure V \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
   unfolding eval_cexpr_def[abs_def] using measurable_cexpr_sem[OF assms] by simp
 
 lemma cexpr_sem_Add:

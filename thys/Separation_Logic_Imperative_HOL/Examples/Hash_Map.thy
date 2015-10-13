@@ -199,7 +199,7 @@ proof -
       from this obtain i where i: "i < length l \<and> (k, v) \<in> set (l!i)"
         by blast
       hence "k \<in> dom (map_of (l!i))"
-        by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
+        by (metis (no_types) prod.exhaust a assms(1) fst_conv ht_hash_def) 
       from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
       have "i = bounded_hashcode_nat (length l) k" by simp
       with i show ?thesis by simp
@@ -211,7 +211,7 @@ proof -
       from this obtain i where i: "i < length l \<and> (k, w) \<in> set (l!i)"
         by blast
       hence "k \<in> dom (map_of (l!i))"
-        by (metis (no_types) PairE a assms(1) fst_conv ht_hash_def) 
+        by (metis (no_types) prod.exhaust a assms(1) fst_conv ht_hash_def) 
       from i ht_hash_in_dom_i_bounded_hashcode_nat_i[OF assms(1,3) _ this] 
       have "i = bounded_hashcode_nat (length l) k" by simp
       with i show ?thesis by simp

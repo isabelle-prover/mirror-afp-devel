@@ -305,7 +305,7 @@ lemma ccHeap_rec_eq:
 unfolding ccHeap_rec_def by simp
 
 definition ccHeap :: "heap \<Rightarrow> exp \<Rightarrow> Arity \<rightarrow> CoCalls"
-  where "ccHeap \<Gamma>  = (if nonrec \<Gamma> then split ccHeap_nonrec (hd \<Gamma>) else ccHeap_rec \<Gamma>)"
+  where "ccHeap \<Gamma>  = (if nonrec \<Gamma> then case_prod ccHeap_nonrec (hd \<Gamma>) else ccHeap_rec \<Gamma>)"
 
 lemma ccHeap_simp1:
   "\<not> nonrec \<Gamma> \<Longrightarrow> ccHeap \<Gamma> e\<cdot>a = CCfix \<Gamma>\<cdot>(Afix \<Gamma>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0) f|` (thunks \<Gamma>)), CCexp e\<cdot>a)"

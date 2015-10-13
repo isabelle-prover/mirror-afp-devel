@@ -249,7 +249,7 @@ lemma tl_enc[simp]:
 
 lemma encD:
   "\<lbrakk>v \<in> enc (w, I); (\<forall>x \<in> set I. case x of Inr P \<Rightarrow> finite P | _ \<Rightarrow> True)\<rbrakk> \<Longrightarrow>
-  v = map (split (enc_atom I)) (zip [0 ..< length v] (stake (length v) (w @- sconst any)))"
+  v = map (case_prod (enc_atom I)) (zip [0 ..< length v] (stake (length v) (w @- sconst any)))"
   by (erule box_equals[OF sym[OF arg_cong[of _ _ "stake (length v)" ,OF stream_enc_enc]]])
    (auto simp: stake_shift sdrop_shift stake_add[symmetric] map_replicate_const)
 
@@ -312,7 +312,7 @@ definition lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S :: "nat \<Rightarrow> 'a formula
   "lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi> = \<Union>{enc (w, I) | w I . length I = n \<and> wf_interp_for_formula (w, I) \<phi> \<and> (w, I) \<Turnstile> \<phi>}"
 
 lemma encD_ex: "\<lbrakk>x \<in> enc (w, I); (\<forall>x \<in> set I. case x of Inr P \<Rightarrow> finite P | _ \<Rightarrow> True)\<rbrakk> \<Longrightarrow>
-  \<exists>n. x = map (split (enc_atom I)) (zip [0 ..< n] (stake n (w @- sconst any)))"
+  \<exists>n. x = map (case_prod (enc_atom I)) (zip [0 ..< n] (stake n (w @- sconst any)))"
   by (auto dest!: encD simp del: enc.simps)
 
 lemma enc_set_\<sigma>: "\<lbrakk>x \<in> enc (w, I); (\<forall>x \<in> set I. case x of Inr P \<Rightarrow> finite P | _ \<Rightarrow> True);
@@ -365,7 +365,7 @@ lemma enc_atom_dec:
    enc_atom (stream_dec n FO s) p a = s !! p"
   unfolding stream_dec_def
   by (rule sym, subst surjective_pairing[of "s !! p"])
-    (auto intro!: nth_equalityI simp: positions_in_row simp del: pair_collapse split: split_if_asm,
+    (auto intro!: nth_equalityI simp: positions_in_row simp del: prod.collapse split: split_if_asm,
     (metis positions_in_row positions_in_row_nth)+)
 
 lemma length_stream_dec[simp]: "length (stream_dec n FO x) = n"
@@ -770,7 +770,7 @@ proof (induct \<phi> arbitrary: n)
     then obtain w I where
       *: "x \<in> enc (w, I)" "wf_interp_for_formula (w, I) (FQ a m)" "length I = n" "(w, I) \<Turnstile> FQ a m"
       unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by blast
-    hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
+    hence x_alt: "x = map (case_prod (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
       by (intro encD) auto
     from FQ(1) *(2,4) obtain p where p: "I ! m = Inl p"
       by (auto simp: all_set_conv_all_nth split: sum.splits)
@@ -842,7 +842,7 @@ next
       then obtain w I where
         *: "x \<in> enc (w, I)" "wf_interp_for_formula (w, I) (FLess m m')" "length I = n" "(w, I) \<Turnstile> FLess m m'"
         unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by blast
-      hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
+      hence x_alt: "x = map (case_prod (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
         by (intro encD) auto
       from FLess(1) *(2,4) obtain p q where pq: "I ! m = Inl p" "I ! m' = Inl q" "p < q"
         by (auto simp: all_set_conv_all_nth split: sum.splits)
@@ -928,7 +928,7 @@ next
     then obtain w I where
       *: "x \<in> enc (w, I)" "wf_interp_for_formula (w, I) (FIn m M)" "length I = n" "(w, I) \<Turnstile> FIn m M"
       unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by blast
-    hence x_alt: "x = map (split (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
+    hence x_alt: "x = map (case_prod (enc_atom I)) (zip [0 ..< length x] (stake (length x) (w @- sconst any)))"
       by (intro encD) auto
     from FIn(1) *(2,4) obtain p P where p: "I ! m = Inl p" "I ! M = Inr P" "p \<in> P"
       by (auto simp: all_set_conv_all_nth split: sum.splits)

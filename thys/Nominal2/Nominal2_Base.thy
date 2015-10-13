@@ -1148,7 +1148,7 @@ lemma snd_eqvt [eqvt]:
   by (cases x) simp
 
 lemma split_eqvt [eqvt]: 
-  shows "p \<bullet> (split P x) = split (p \<bullet> P) (p \<bullet> x)"
+  shows "p \<bullet> (case_prod P x) = case_prod (p \<bullet> P) (p \<bullet> x)"
   unfolding split_def
   by simp
 

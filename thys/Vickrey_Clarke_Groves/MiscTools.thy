@@ -438,8 +438,8 @@ lemma lm049:
 
 (* triples a can be bracket in any way, i.e., (1st, (2nd, 3rd)) \<rightarrow> ((1st, 2nd), 3rd).*)
 lemma lm050: 
-  "inj_on  (%a. ((fst a, fst (snd a)), snd (snd a))) UNIV" 
-  by (metis (lifting, mono_tags) Pair_fst_snd_eq Pair_inject injI)
+  "inj (\<lambda>a. ((fst a, fst (snd a)), snd (snd a)))"
+  by (auto intro: injI)
 
 lemma lm051: 
   assumes "finite X" "x > Max X" 
@@ -1250,7 +1250,7 @@ lemma cardOneTheElem:
 
 (* With split being the inverse of curry we have with g as swap f,  (g x y) = (f y x) *)
 abbreviation 
-  "swap f == curry ((split f) \<circ> flip)" (*swaps the two arguments of a function*)
+  "swap f == curry ((case_prod f) \<circ> flip)" (*swaps the two arguments of a function*)
 
 (* X is finite if and only if X is the set of elements of some list. *)
 lemma lm158: 

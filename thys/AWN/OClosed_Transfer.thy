@@ -1740,7 +1740,7 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
                             and "s' = (p', q')"
                             and "\<sigma> i  = fst (sr p)"
                             and "\<sigma>' i = fst (sr p')"
-      by (clarsimp split: split_split_asm)
+      by (clarsimp split: prod.split_asm)
     from this(1-2) and \<open>(s, a, s') \<in> trans (np i \<langle>\<langle> qp)\<close>
       have "((p, q), a, (p', q')) \<in> parp_sos (trans (np i)) (trans qp)" by simp
     hence "((\<sigma>, (snd (sr p), q)), a, (\<sigma>', (snd (sr p'), q'))) \<in> trans (onp i \<langle>\<langle>\<^bsub>i\<^esub> qp)"

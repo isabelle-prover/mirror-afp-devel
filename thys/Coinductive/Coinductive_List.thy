@@ -1491,7 +1491,7 @@ qed
 
 lemma fixes f F
   defines "F \<equiv> \<lambda>ltake n xs. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> case n of 0 \<Rightarrow> LNil | eSuc n \<Rightarrow> LCons x (ltake n xs)"
-  shows ltake_conv_fixp: "ltake \<equiv> curry (ccpo.fixp (fun_lub lSup) (fun_ord op \<sqsubseteq>) (\<lambda>ltake. split (F (curry ltake))))" (is "?lhs \<equiv> ?rhs")
+  shows ltake_conv_fixp: "ltake \<equiv> curry (ccpo.fixp (fun_lub lSup) (fun_ord op \<sqsubseteq>) (\<lambda>ltake. case_prod (F (curry ltake))))" (is "?lhs \<equiv> ?rhs")
   and ltake_mono: "\<And>nxs. mono_llist (\<lambda>ltake. case nxs of (n, xs) \<Rightarrow> F (curry ltake) n xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
   show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
@@ -1503,7 +1503,7 @@ proof(intro eq_reflection ext)
   qed
 qed
 
-lemma monotone_ltake: "monotone (rel_prod op \<le> op \<sqsubseteq>) op \<sqsubseteq> (split ltake)"
+lemma monotone_ltake: "monotone (rel_prod op \<le> op \<sqsubseteq>) op \<sqsubseteq> (case_prod ltake)"
 by(rule llist.fixp_preserves_mono2[OF ltake_mono ltake_conv_fixp]) simp
 
 lemma mono2mono_ltake1[THEN llist.mono2mono, cont_intro, simp]:
@@ -1514,7 +1514,7 @@ lemma mono2mono_ltake2[THEN llist.mono2mono, cont_intro, simp]:
   shows monotone_ltake2: "monotone op \<sqsubseteq> op \<sqsubseteq> (ltake n)"
 using monotone_ltake by auto
 
-lemma mcont_ltake: "mcont (prod_lub Sup lSup) (rel_prod op \<le> op \<sqsubseteq>) lSup op \<sqsubseteq> (split ltake)"
+lemma mcont_ltake: "mcont (prod_lub Sup lSup) (rel_prod op \<le> op \<sqsubseteq>) lSup op \<sqsubseteq> (case_prod ltake)"
 by(rule llist.fixp_preserves_mcont2[OF ltake_mono ltake_conv_fixp]) simp
 
 lemma mcont2mcont_ltake1 [THEN llist.mcont2mcont, cont_intro, simp]:
@@ -1642,14 +1642,14 @@ lemma monotone_enat_cocase [cont_intro, simp]:
   \<Longrightarrow> monotone op \<le> ord (\<lambda>n. case n of 0 \<Rightarrow> a | eSuc n' \<Rightarrow> f n' n)"
 by(rule monotone_enat_le_case)
 
-lemma monotone_ldrop: "monotone (rel_prod op = op \<sqsubseteq>) op \<sqsubseteq> (split ldrop)"
+lemma monotone_ldrop: "monotone (rel_prod op = op \<sqsubseteq>) op \<sqsubseteq> (case_prod ldrop)"
 by(rule llist.fixp_preserves_mono2[OF ldrop.mono ldrop_def]) simp
 
 lemma mono2mono_ldrop2 [THEN llist.mono2mono, cont_intro, simp]:
   shows monotone_ldrop2: "monotone op \<sqsubseteq> op \<sqsubseteq> (ldrop n)"
 by(simp add: monotone_ldrop[simplified])
 
-lemma mcont_ldrop: "mcont (prod_lub the_Sup lSup) (rel_prod op = op \<sqsubseteq>) lSup op \<sqsubseteq> (split ldrop)"
+lemma mcont_ldrop: "mcont (prod_lub the_Sup lSup) (rel_prod op = op \<sqsubseteq>) lSup op \<sqsubseteq> (case_prod ldrop)"
 by(rule llist.fixp_preserves_mcont2[OF ldrop.mono ldrop_def]) simp
 
 lemma mcont2monct_ldrop2 [THEN llist.mcont2mcont, cont_intro, simp]:
@@ -2481,7 +2481,7 @@ proof(intro eq_reflection ext)
   qed
 qed
 
-lemma monotone_lzip: "monotone (rel_prod op \<sqsubseteq> op \<sqsubseteq>) op \<sqsubseteq> (split lzip)"
+lemma monotone_lzip: "monotone (rel_prod op \<sqsubseteq> op \<sqsubseteq>) op \<sqsubseteq> (case_prod lzip)"
 by(rule llist.fixp_preserves_mono2[OF lzip_mono lzip_conv_fixp]) simp
 
 lemma mono2mono_lzip1 [THEN llist.mono2mono, cont_intro, simp]:
@@ -2492,7 +2492,7 @@ lemma mono2mono_lzip2 [THEN llist.mono2mono, cont_intro, simp]:
   shows monotone_lzip2: "monotone op \<sqsubseteq> op \<sqsubseteq> (\<lambda>ys. lzip xs ys)"
 by(simp add: monotone_lzip[simplified])
 
-lemma mcont_lzip: "mcont (prod_lub lSup lSup) (rel_prod op \<sqsubseteq> op \<sqsubseteq>) lSup op \<sqsubseteq> (split lzip)"
+lemma mcont_lzip: "mcont (prod_lub lSup lSup) (rel_prod op \<sqsubseteq> op \<sqsubseteq>) lSup op \<sqsubseteq> (case_prod lzip)"
 by(rule llist.fixp_preserves_mcont2[OF lzip_mono lzip_conv_fixp]) simp
 
 lemma mcont2mcont_lzip1 [THEN llist.mcont2mcont, cont_intro, simp]:

@@ -239,7 +239,7 @@ lemma REC_rule_arb2:
   shows "REC body x \<le> M arb arc x"
   apply (rule order_trans)
   apply (rule REC_rule_arb[
-    where pre="split pre" and M="split M" and arb="(arb, arc)", 
+    where pre="case_prod pre" and M="case_prod M" and arb="(arb, arc)", 
     OF M])
   by (auto intro: assms)
 
@@ -253,7 +253,7 @@ lemma REC_rule_arb3:
   shows "REC body x \<le> M arb arc ard x"
   apply (rule order_trans)
   apply (rule REC_rule_arb2[
-    where pre="split pre" and M="split M" and arb="(arb, arc)" and arc="ard", 
+    where pre="case_prod pre" and M="case_prod M" and arb="(arb, arc)" and arc="ard", 
     OF M])
   by (auto intro: assms)
 
@@ -269,7 +269,7 @@ lemma RECT_rule_arb2:
   shows "RECT body x \<le> M arb arc x"
   apply (rule order_trans)
   apply (rule RECT_rule_arb[
-    where pre="split pre" and M="split M" and arb="(arb, arc)", 
+    where pre="case_prod pre" and M="case_prod M" and arb="(arb, arc)", 
     OF M WF])
   by (auto intro: assms)
 
@@ -285,7 +285,7 @@ lemma RECT_rule_arb3:
   shows "RECT body x \<le> M arb arc ard x"
   apply (rule order_trans)
   apply (rule RECT_rule_arb2[
-    where pre="split pre" and M="split M" and arb="(arb, arc)" and arc="ard", 
+    where pre="case_prod pre" and M="case_prod M" and arb="(arb, arc)" and arc="ard", 
     OF M WF])
   by (auto intro: assms)
 

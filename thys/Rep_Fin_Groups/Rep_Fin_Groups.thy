@@ -73,7 +73,7 @@ lemma length_concat_map_split_zip :
   by (induct xs ys rule: list_induct2') auto
 
 lemma concat_map_split_eq_map_split_zip :
-  "[f x y. (x,y)\<leftarrow>zip xs ys] = map (split f) (zip xs ys)"
+  "[f x y. (x,y)\<leftarrow>zip xs ys] = map (case_prod f) (zip xs ys)"
   by (induct xs ys rule: list_induct2') auto
 
 lemma set_zip_map2 :
@@ -134,7 +134,7 @@ lemma const_listsum :
 lemma listsum_prod_cong :
   "\<forall>(x,y) \<in> set xys. f x y = g x y
         \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. g x y)"
-  using arg_cong[of "map (split f) xys" "map (split g) xys" listsum] by fastforce
+  using arg_cong[of "map (case_prod f) xys" "map (case_prod g) xys" listsum] by fastforce
 
 lemma listsum_prod_map2 :
   "(\<Sum>(a,y)\<leftarrow>zip as (map f bs). g a y) = (\<Sum>(a,b)\<leftarrow>zip as bs. g a (f b))"
@@ -156,13 +156,13 @@ qed simp
 lemma listsum_const_mult_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "r * (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. r * (f x y))"
-  using listsum_const_mult[of r "split f"] uncurry_distrib[of "\<lambda>x. r*x" f]
+  using listsum_const_mult[of r "case_prod f"] prod.case_distrib[of "\<lambda>x. r*x" f]
   by    simp
 
 lemma listsum_mult_const_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "(\<Sum>(x,y)\<leftarrow>xys. f x y) * r = (\<Sum>(x,y)\<leftarrow>xys. (f x y) * r)"
-  using listsum_mult_const[of "split f" r] uncurry_distrib[of "\<lambda>x. x*r" f]
+  using listsum_mult_const[of "case_prod f" r] prod.case_distrib[of "\<lambda>x. x*r" f]
   by    simp
 
 lemma listsum_update :
@@ -1337,8 +1337,8 @@ qed
 lemma aezfun_setspan_proj_listsum_prod :
   "aezfun_setspan_proj A (\<Sum>(x,y)\<leftarrow>xys. f x y)
         = (\<Sum>(x,y)\<leftarrow>xys. aezfun_setspan_proj A (f x y))"
-  using aezfun_setspan_proj_listsum[of A "\<lambda>xy. split f xy"]
-        uncurry_distrib[of "aezfun_setspan_proj A" f]
+  using aezfun_setspan_proj_listsum[of A "\<lambda>xy. case_prod f xy"]
+        prod.case_distrib[of "aezfun_setspan_proj A" f]
   by    simp
 
 
@@ -1643,7 +1643,7 @@ lemma listsum_closed : "set (map f as) \<subseteq> G \<Longrightarrow> (\<Sum>a\
   using zero_closed add_closed by (induct as) auto
 
 lemma listsum_closed_prod :
-  "set (map (split f) xys) \<subseteq> G \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) \<in> G"
+  "set (map (case_prod f) xys) \<subseteq> G \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) \<in> G"
   using listsum_closed by fast
 
 lemma set_plus_closed : "A \<subseteq> G \<Longrightarrow> B \<subseteq> G \<Longrightarrow> A + B \<subseteq> G"
@@ -2057,20 +2057,20 @@ lemma eq_im_imp_diff_in_Ker : "\<lbrakk> g \<in> G; h \<in> G; T g = T h \<rbrak
   using im_diff kerI diff_closed[of g h] by force
 
 lemma im_listsum_prod : 
-  "set (map (split f) xys) \<subseteq> G
+  "set (map (case_prod f) xys) \<subseteq> G
         \<Longrightarrow> T (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. T (f x y))"
 proof (induct xys)
   case Nil show ?case using im_zero by simp
 next
   case (Cons xy xys)
-  def Tf: Tf \<equiv> "T \<circ> (split f)"
-  have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y) = T ( (split f) xy + (\<Sum>(x,y)\<leftarrow>xys. f x y) )"
+  def Tf: Tf \<equiv> "T \<circ> (case_prod f)"
+  have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y) = T ( (case_prod f) xy + (\<Sum>(x,y)\<leftarrow>xys. f x y) )"
     by simp
-  moreover from Cons(2) have "(split f) xy \<in> G" "set (map (split f) xys) \<subseteq> G"
+  moreover from Cons(2) have "(case_prod f) xy \<in> G" "set (map (case_prod f) xys) \<subseteq> G"
     by auto
   ultimately have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y)
                         = Tf xy + (\<Sum>(x,y)\<leftarrow>xys. Tf (x,y))"
-    using Tf listsum_closed[of "split f"] hom Cons by auto
+    using Tf listsum_closed[of "case_prod f"] hom Cons by auto
   also have "\<dots> = (\<Sum>(x,y)\<leftarrow>(xy#xys). Tf (x,y))" by simp
   finally show ?case using Tf by simp
 qed
@@ -2743,7 +2743,7 @@ proof (intro_locales)
     fix x y assume xy: "x \<in> (\<Oplus>G\<leftarrow>Gs. G)" "y \<in> (\<Oplus>G\<leftarrow>Gs. G)"
     with assms(1,2) have "(\<Oplus>Gs\<leftarrow>(x+y)) = [x+y. (x,y)\<leftarrow>zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y)]"
       using AbGroup_inner_dirsum_el_decomp_plus by fast
-    hence "(\<Oplus>Gs\<leftarrow>(x+y)) = map (split op +) (zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y))"
+    hence "(\<Oplus>Gs\<leftarrow>(x+y)) = map (case_prod op +) (zip (\<Oplus>Gs\<leftarrow>x) (\<Oplus>Gs\<leftarrow>y))"
       using concat_map_split_eq_map_split_zip by simp
     moreover from assms xy
       have  "n < length (\<Oplus>Gs\<leftarrow>x)" "n < length (\<Oplus>Gs\<leftarrow>y)"
@@ -2886,7 +2886,7 @@ lemma RG_listsum_rddg_closed :
   shows   "(\<Sum>(r,g)\<leftarrow>rgs. r \<delta>\<delta> g) \<in> RG"
 proof (rule Ring1.listsum_closed_prod)
   from RG show "Ring1 RG" using Ring1_RG by fast
-  from assms show "set (map (split aezdeltafun) rgs) \<subseteq> RG"
+  from assms show "set (map (case_prod aezdeltafun) rgs) \<subseteq> RG"
     using RG_aezdeltafun_closed by fastforce
 qed
 
@@ -3133,7 +3133,7 @@ lemma smult_listsum_distrib :
   using smult_zero listsum_closed[of id] by (induct ms) auto
 
 lemma listsum_prod_map_smult_distrib :
-  "m \<in> M \<Longrightarrow> set (map (split f) xys) \<subseteq> R
+  "m \<in> M \<Longrightarrow> set (map (case_prod f) xys) \<subseteq> R
         \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) \<cdot> m = (\<Sum>(x,y)\<leftarrow>xys. f x y \<cdot> m)"
   using zero_smult R_scalars.listsum_closed_prod[of f]
   by    (induct xys) auto
@@ -6209,7 +6209,7 @@ lemma listsum_aezdeltafun_smult_distrib :
   assumes "v \<in> V" "set (map snd fgs) \<subseteq> G"
   shows   "(\<Sum>(f,g)\<leftarrow>fgs. f \<delta>\<delta> g) \<cdot> v = (\<Sum>(f,g)\<leftarrow>fgs. f \<sharp>\<cdot> g *\<cdot> v)"
 proof-
-  from assms(2) have "set (map (split aezdeltafun) fgs) \<subseteq> FG"
+  from assms(2) have "set (map (case_prod aezdeltafun) fgs) \<subseteq> FG"
     using FG_fddg_closed by auto
   with assms(1) have "(\<Sum>(f,g)\<leftarrow>fgs. f \<delta>\<delta> g) \<cdot> v =  (\<Sum>(f,g)\<leftarrow>fgs. (f \<delta>\<delta> g) \<cdot> v)"
     using listsum_prod_map_smult_distrib by auto
@@ -6333,8 +6333,8 @@ proof-
   with assms have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs
                         = listsum (map (op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y)) (zip as vs))"
     using set_zip_rightD fsmult_closed FG_fddg_closed[of g "1::'f"]
-          smult_listsum_distrib[of "1 \<delta>\<delta> g" "map (split op \<sharp>\<cdot>) (zip as vs)"]
-          map_map[of "op \<cdot> (1 \<delta>\<delta> g)" "split op \<sharp>\<cdot>" "zip as vs"]
+          smult_listsum_distrib[of "1 \<delta>\<delta> g" "map (case_prod op \<sharp>\<cdot>) (zip as vs)"]
+          map_map[of "op \<cdot> (1 \<delta>\<delta> g)" "case_prod op \<sharp>\<cdot>" "zip as vs"]
     by    fastforce
   moreover have "op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y) = (\<lambda>(x,y). (1 \<delta>\<delta> g) \<cdot> (x \<sharp>\<cdot> y))"
     by auto
@@ -7417,14 +7417,14 @@ next
                   "f (\<Sum>(a,h)\<leftarrow>fhs. a \<delta>\<delta> h) = (\<Sum>(a,h)\<leftarrow>fhs. f (a \<delta>\<delta> h))"
     by auto
   have "f (\<Sum>(a,h)\<leftarrow>fh#fhs. a \<delta>\<delta> h)
-              = f ((fst fh) \<delta>\<delta> (snd fh) + (\<Sum>ah\<leftarrow>fhs. split (\<lambda>a h. a \<delta>\<delta> h) ah))"
+              = f ((fst fh) \<delta>\<delta> (snd fh) + (\<Sum>ah\<leftarrow>fhs. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah))"
     using split_beta[of "\<lambda>a h. a \<delta>\<delta> h" fh] by simp
   moreover from prevcase(1) FH have "(fst fh) \<delta>\<delta> (snd fh) \<in> FH"
     using Supgroup.RG_aezdeltafun_closed by fast
   moreover from prevcase(2) FH
-    have  "(\<Sum>ah\<leftarrow>fhs. split (\<lambda>a h. a \<delta>\<delta> h) ah) \<in> FH"
+    have  "(\<Sum>ah\<leftarrow>fhs. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah) \<in> FH"
     using Supgroup.RG_aezdeltafun_closed
-          Ring1.listsum_closed[OF Ring1_FH, of "\<lambda>ah. split (\<lambda>a h. a \<delta>\<delta> h) ah" fhs]
+          Ring1.listsum_closed[OF Ring1_FH, of "\<lambda>ah. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah" fhs]
     by    fastforce
   ultimately have "f (\<Sum>(a,h)\<leftarrow>fh#fhs. a \<delta>\<delta> h)
                               = f ((fst fh) \<delta>\<delta> (snd fh)) + f (\<Sum>(a,h)\<leftarrow>fhs. a \<delta>\<delta> h)"
@@ -8670,13 +8670,13 @@ proof-
         using set_zip_rightD BaseRep.zero_smult by fastforce
       ultimately have "LHS = (\<Sum>(r,v)\<leftarrow>zip (css!j) vs. (0::'v))"
         using listsum_prod_cong[of _ "\<lambda>r v. r \<sharp>\<cdot> (0 \<cdot> v)"] by simp
-      hence "LHS = (\<Sum>rv\<leftarrow>zip (css!j) vs. split (\<lambda>r v. (0::'v)) rv)" by fastforce
+      hence "LHS = (\<Sum>rv\<leftarrow>zip (css!j) vs. case_prod (\<lambda>r v. (0::'v)) rv)" by fastforce
       with False show ?thesis by simp
     qed
   qed
 
   def terms:
-    terms \<equiv> "map (\<lambda>a. split (\<lambda>cs hfvs. (cs \<bullet>\<currency>\<currency> hfvs) (1 \<delta>\<delta> hs!i)) a) (zip css hfvss)"
+    terms \<equiv> "map (\<lambda>a. case_prod (\<lambda>cs hfvs. (cs \<bullet>\<currency>\<currency> hfvs) (1 \<delta>\<delta> hs!i)) a) (zip css hfvss)"
   and LHS: LHS \<equiv> "((concat css) \<bullet>\<currency>\<currency> (concat hfvss)) (1 \<delta>\<delta> (hs!i))"
   hence "LHS = listsum terms"
     using scalars

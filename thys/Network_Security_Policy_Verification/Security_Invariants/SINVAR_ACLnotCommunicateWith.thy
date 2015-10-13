@@ -78,7 +78,7 @@ and verify_globals = verify_globals
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split)
+  apply (simp split: prod.split_asm prod.split)
   apply(case_tac "otherbot = {}")
 
    apply(rule_tac x="\<lparr> nodes={vertex_1,vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)

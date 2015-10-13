@@ -1081,7 +1081,7 @@ lemma newman: assumes "WCR ars" and "SN ars" shows "CR ars"  proof -
     have ab: "(a,b) \<in> ars" and a_eq: "a = \<beta>" using alb unfolding lab_eq by auto
 
     from l2 obtain \<alpha> c where 2: "snd \<sigma> = [(\<alpha>,c)]" by(auto simp add: length_Suc_conv)
-    hence sigma: "\<sigma> = (a,[(\<alpha>,c)])" using ts by (metis fst_conv p pair_collapse tau)
+    hence sigma: "\<sigma> = (a,[(\<alpha>,c)])" using ts by (metis fst_conv p prod.collapse tau)
     hence alc: "(a,\<alpha>,c) \<in> lrs" using ts by (metis fst_conv insert_subset seq_tail1(2) snd_conv)
     hence ac: "(a,c) \<in> ars" and a_eq: "a = \<alpha>" using alb unfolding lab_eq by auto
 
@@ -1705,7 +1705,6 @@ lemma sound_conv: assumes "LD_conv L ars" shows "CR ars"
 hide_const (open) D
 hide_const (open) seq
 hide_const (open) measure
-hide_const (open) split
 
 hide_fact (open) split
 

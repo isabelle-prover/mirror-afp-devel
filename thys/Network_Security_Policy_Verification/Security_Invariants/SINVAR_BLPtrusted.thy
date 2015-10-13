@@ -25,7 +25,7 @@ definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
 lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
   apply(simp only: SecurityInvariant_withOffendingFlows.sinvar_mono_def)
   apply(clarify)
-  apply(simp split: split_split split_split_asm)
+  apply(simp split: prod.split prod.split_asm)
   by auto
 
 
@@ -37,8 +37,8 @@ and verify_globals = verify_globals
     apply(erule_tac exE)
     apply(rename_tac list_edges)
     apply(rule_tac ff="list_edges" in SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono])
-        apply(auto split: split_split split_split_asm)[6]
-   apply(simp add: SecurityInvariant_withOffendingFlows.is_offending_flows_def graph_ops split: split_split split_split_asm)[1]
+        apply(auto split: prod.split prod.split_asm)[6]
+   apply(simp add: SecurityInvariant_withOffendingFlows.is_offending_flows_def graph_ops split: prod.split prod.split_asm)[1]
    apply (metis prod.inject)
   apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_is_offending_flows_mono[OF sinvar_mono])
  done
@@ -55,7 +55,7 @@ lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarro
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split)
+  apply (simp split: prod.split_asm prod.split)
   apply(rule_tac x="\<lparr> nodes={vertex_1, vertex_2}, edges = {(vertex_1,vertex_2)} \<rparr>" in exI, simp)
   apply(rule conjI)
    apply(simp add: wf_graph_def)

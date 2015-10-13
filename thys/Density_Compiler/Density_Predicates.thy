@@ -170,13 +170,13 @@ subsection {* Parametrized probability densities *}
 
 definition 
   "has_parametrized_subprob_density M N R f \<equiv> 
-       (\<forall>x \<in> space M. has_subprob_density (N x) R (f x)) \<and> split f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
+       (\<forall>x \<in> space M. has_subprob_density (N x) R (f x)) \<and> case_prod f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
 
 lemma has_parametrized_subprob_densityI:
   assumes "\<And>x. x \<in> space M \<Longrightarrow> N x = density R (f x)"
   assumes "\<And>x y. x \<in> space M \<Longrightarrow> y \<in> space R \<Longrightarrow> f x y \<ge> 0"
   assumes "\<And>x. x \<in> space M \<Longrightarrow> subprob_space (N x)"
-  assumes "split f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
+  assumes "case_prod f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
   shows "has_parametrized_subprob_density M N R f"
   unfolding has_parametrized_subprob_density_def using assms
   by (intro ballI conjI has_subprob_densityI) simp_all
@@ -186,7 +186,7 @@ lemma has_parametrized_subprob_densityD:
   shows "\<And>x. x \<in> space M \<Longrightarrow> N x = density R (f x)"
     and "\<And>x y. x \<in> space M \<Longrightarrow> y \<in> space R \<Longrightarrow> f x y \<ge> 0"
     and "\<And>x. x \<in> space M \<Longrightarrow> subprob_space (N x)"
-    and [measurable_dest]: "split f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
+    and [measurable_dest]: "case_prod f \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
   using assms unfolding has_parametrized_subprob_density_def
   by (auto dest: has_subprob_densityD)
 
@@ -209,7 +209,7 @@ using assms unfolding has_parametrized_subprob_density_def by auto
 
 lemma has_parametrized_subprob_density_dens_AE:
   assumes "\<And>x. x \<in> space M \<Longrightarrow> AE y in R. f x y = f' x y"
-          "split f' \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
+          "case_prod f' \<in> borel_measurable (M \<Otimes>\<^sub>M R)"
           "\<And>x y. x \<in> space M \<Longrightarrow> y \<in> space R \<Longrightarrow> f' x y \<ge> 0"
           "has_parametrized_subprob_density M N R f"
   shows   "has_parametrized_subprob_density M N R f'"
@@ -241,7 +241,7 @@ qed
 lemma bind_density:
   assumes "sigma_finite_measure M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
-          "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
+          "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
   shows "(M \<guillemotright>= f) = density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (rule measure_eqI)
@@ -259,7 +259,7 @@ proof (rule measure_eqI)
         intro measurable_compose[OF measurable_fst borel_measurable_indicator])
   also {
     fix y assume "y \<in> space N"
-    have "(\<lambda>x. g x y) = split g \<circ> (\<lambda>x. (x, y))" by (rule ext) simp
+    have "(\<lambda>x. g x y) = case_prod g \<circ> (\<lambda>x. (x, y))" by (rule ext) simp
     also from `y \<in> space N` have "... \<in> borel_measurable M" 
       by (intro measurable_comp[OF _ assms(5)] measurable_Pair2')
     finally have "(\<lambda>x. g x y) \<in> borel_measurable M" .
@@ -275,7 +275,7 @@ qed
 lemma bind_has_density:
   assumes "sigma_finite_measure M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
-          "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
+          "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
   shows "has_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof
@@ -294,7 +294,7 @@ lemma bind_has_density':
       and sfR: "sigma_finite_measure R"
       and not_empty: "space M \<noteq> {}" and dens_M: "has_density M N \<delta>M" 
       and dens_f: "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) R (\<delta>f x)" 
-      and M\<delta>f: "split \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)"
+      and M\<delta>f: "case_prod \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)"
       and Mf: "f \<in> measurable N (subprob_algebra R)"
   shows "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof-
@@ -306,7 +306,7 @@ proof-
     by (rule bind_has_density) (auto simp: assms M_MR M_M)
   moreover {
     fix y assume A: "y \<in> space R"
-    have "(\<lambda>x. \<delta>f x y) = split \<delta>f \<circ> (\<lambda>x. (x,y))" by (rule ext) (simp add: o_def)
+    have "(\<lambda>x. \<delta>f x y) = case_prod \<delta>f \<circ> (\<lambda>x. (x,y))" by (rule ext) (simp add: o_def)
     also have "... \<in> borel_measurable N" by (intro measurable_comp[OF _ M\<delta>f] measurable_Pair2' A)
     finally have M_\<delta>f': "(\<lambda>x. \<delta>f x y) \<in> borel_measurable N" .
 
@@ -322,7 +322,7 @@ qed
 lemma bind_has_subprob_density:
   assumes "subprob_space M" "sigma_finite_measure N"
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
-          "split g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
+          "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
   shows "has_subprob_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (unfold has_subprob_density_def, intro conjI)
@@ -334,7 +334,7 @@ qed
 lemma bind_has_subprob_density':
   assumes "has_subprob_density M N \<delta>M" "space R \<noteq> {}" "sigma_finite_measure R"
           "\<And>x. x \<in> space M \<Longrightarrow> has_subprob_density (f x) R (\<delta>f x)" 
-          "split \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)" "f \<in> measurable N (subprob_algebra R)"
+          "case_prod \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)" "f \<in> measurable N (subprob_algebra R)"
   shows "has_subprob_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof (unfold has_subprob_density_def, intro conjI)
   from assms(1) have "space M \<noteq> {}" by (intro subprob_space.subprob_not_empty has_subprob_densityD)

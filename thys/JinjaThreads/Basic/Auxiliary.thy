@@ -576,7 +576,7 @@ lemma if_else_if_else_eq_if_else [simp]:
   "(if b then x else if b then y else z) = (if b then x else z)"
 by(simp)
 
-lemma rec_prod_split [simp]: "old.rec_prod = split"
+lemma rec_prod_split [simp]: "old.rec_prod = case_prod"
 by(simp add: fun_eq_iff)
 
 lemma inj_Pair_snd [simp]: "inj (Pair x)"

@@ -14,11 +14,11 @@ primrec map_index' :: "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> 'b)
 lemma length_map_index'[simp]: "length (map_index' n f xs) = length xs"
   by (induct xs arbitrary: n) auto
 
-lemma map_index'_map_zip: "map_index' n f xs = map (split f) (zip [n ..< n + length xs] xs)"
+lemma map_index'_map_zip: "map_index' n f xs = map (case_prod f) (zip [n ..< n + length xs] xs)"
 proof (induct xs arbitrary: n)
   case (Cons x xs)
-  hence "map_index' n f (x#xs) = f n x # map (split f) (zip [Suc n ..< n + length (x # xs)] xs)" by simp
-  also have "\<dots> =  map (split f) (zip (n # [Suc n ..< n + length (x # xs)]) (x # xs))" by simp
+  hence "map_index' n f (x#xs) = f n x # map (case_prod f) (zip [Suc n ..< n + length (x # xs)] xs)" by simp
+  also have "\<dots> =  map (case_prod f) (zip (n # [Suc n ..< n + length (x # xs)]) (x # xs))" by simp
   also have "(n # [Suc n ..< n + length (x # xs)]) = [n ..< n + length (x # xs)]" by (induct xs) auto
   finally show ?case by simp
 qed simp
@@ -40,12 +40,12 @@ lemma map_index_map[simp]: "map_index f (map g xs) = map_index (\<lambda>n x. f 
   unfolding map_index by (auto simp: map_zip_map2)
 
 lemma set_map_index[simp]: "x \<in> set (map_index f xs) = (\<exists>i < length xs. f i (xs ! i) = x)"
-  unfolding map_index by (auto simp: set_zip intro!: image_eqI[of _ "split f"])
+  unfolding map_index by (auto simp: set_zip intro!: image_eqI[of _ "case_prod f"])
 
 lemma set_map_index'[simp]: "x\<in>set (map_index' n f xs) 
   \<longleftrightarrow> (\<exists>i<length xs. f (n+i) (xs!i) = x) "
   unfolding map_index'_map_zip 
-  by (auto simp: set_zip intro!: image_eqI[of _ "split f"])
+  by (auto simp: set_zip intro!: image_eqI[of _ "case_prod f"])
 
 
 lemma nth_map_index[simp]: "p < length xs \<Longrightarrow> map_index f xs ! p = f p (xs ! p)"

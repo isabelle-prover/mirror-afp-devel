@@ -92,7 +92,7 @@ and verify_globals = verify_globals
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split)
+  apply (simp split: prod.split_asm prod.split)
   apply(simp add: List.neq_Nil_conv)
   apply(erule exE)
   apply(rename_tac canAccessThis)
