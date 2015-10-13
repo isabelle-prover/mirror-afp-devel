@@ -67,7 +67,7 @@ lemma distinct_map_snd_fst_eqD:
 
 lemma map_of_mapk_inj_on_SomeI:
   "inj_on f (fst ` (set t)) \<Longrightarrow> map_of t k = Some x \<Longrightarrow>
-    map_of (map (split (\<lambda>k. Pair (f k))) t) (f k) = Some x"
+    map_of (map (case_prod (\<lambda>k. Pair (f k))) t) (f k) = Some x"
   by (induct t) (auto simp add: inj_on_def dest!: map_of_SomeD split: split_if_asm)
 
 lemma map_abs_nonneg[simp]:

@@ -389,7 +389,7 @@ next
   thus "multiset t' + {#m#} = multiset t"
     using merge_multiset[of l r]
     using `(m, t') = hs_remove_max t`
-    by (metis Pair_eq multiset.simps(2) hs_remove_max.simps
+    by (metis prod.inject multiset.simps(2) hs_remove_max.simps
         union_assoc union_commute)
 next
   fix t m t'

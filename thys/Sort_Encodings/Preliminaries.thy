@@ -161,7 +161,7 @@ shows "lupd al (map F bl) G a1 = F (lupd al bl H a1)"
 using assms apply (induct arbitrary: F G H rule: list_induct2) by auto
 
 definition map2 where
-"map2 f xl yl \<equiv> map (split f) (zip xl yl)"
+"map2 f xl yl \<equiv> map (case_prod f) (zip xl yl)"
 
 lemma nth_map2[simp]:
 assumes "length bl = length al" and "i < length al"
@@ -253,8 +253,7 @@ by (metis (lifting) list_all2_length list_all_length)
 
 lemma list_all2_list_all_2[simp]:
 "list_all2 f xs xs \<longleftrightarrow> list_all (\<lambda> x. f x x) xs"
-unfolding list_all2_iff list_all_iff
-by (metis splitD splitI2 zip_same)
+by (auto simp add: list_all2_iff list_all_iff zip_same)
 
 lemma list_all2_map_map:
 "list_all2 \<phi> (map f Tl) (map g Tl) =

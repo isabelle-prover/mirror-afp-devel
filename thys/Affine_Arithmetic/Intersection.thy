@@ -521,7 +521,7 @@ proof atomize_elim
       assume ?c2
       hence "y \<in> set (independent_pdevs (snd (partition (coll 0 z) zs)))"
         by simp
-      from 2(1)[OF refl pair_collapse refl this]
+      from 2(1)[OF refl prod.collapse refl this]
       show ?case
         by auto
     next
@@ -657,7 +657,7 @@ next
   also
   have e_split: "(\<lambda>_. e 0) \<in> UNIV \<rightarrow> I" "?e0 \<in> UNIV \<rightarrow> I"
     using 2(2) by auto
-  from 2(1)[OF refl pair_collapse refl e_split(2)]
+  from 2(1)[OF refl prod.collapse refl e_split(2)]
   obtain e' where e': "e' \<in> UNIV \<rightarrow> I" and "?vnc = pdevs_val e' (pdevs_of_list ?ncoll)"
     by (auto simp add: o_def)
   note this(2)
@@ -2380,10 +2380,10 @@ proof safe
           det3_nonneg_segments_of_aformI[OF `e \<in> _` lh X2(1)])
 
     from in_set_segments_of_aform_aform_valE
-        [of "fst X1" "snd X1" X, unfolded pair_collapse, OF X1(1)]
+        [of "fst X1" "snd X1" X, unfolded prod.collapse, OF X1(1)]
     obtain e1s where e1s: "snd X1 = aform_val e1s X" "e1s \<in> UNIV \<rightarrow> {- 1..1}" .
     from previous_segments_of_aformE
-        [of "fst X1" "snd X1" X, unfolded pair_collapse, OF X1(1)]
+        [of "fst X1" "snd X1" X, unfolded prod.collapse, OF X1(1)]
     obtain fX0 where "(fX0, fst X1) \<in> set (segments_of_aform X)" .
     from in_set_segments_of_aform_aform_valE[OF this]
     obtain e1f where e1f: "fst X1 = aform_val e1f X" "e1f \<in> UNIV \<rightarrow> {- 1..1}" .
@@ -2394,10 +2394,10 @@ proof safe
       by (auto simp: Affine_def valuate_def closed_segment_commute)
 
     from in_set_segments_of_aform_aform_valE
-        [of "fst X2" "snd X2" X, unfolded pair_collapse, OF X2(1)]
+        [of "fst X2" "snd X2" X, unfolded prod.collapse, OF X2(1)]
     obtain e2s where e2s: "snd X2 = aform_val e2s X" "e2s \<in> UNIV \<rightarrow> {- 1..1}" .
     from previous_segments_of_aformE
-        [of "fst X2" "snd X2" X, unfolded pair_collapse, OF X2(1)]
+        [of "fst X2" "snd X2" X, unfolded prod.collapse, OF X2(1)]
     obtain fX02 where "(fX02, fst X2) \<in> set (segments_of_aform X)" .
     from in_set_segments_of_aform_aform_valE[OF this]
     obtain e2f where e2f: "fst X2 = aform_val e2f X" "e2f \<in> UNIV \<rightarrow> {- 1..1}" .
@@ -2407,12 +2407,12 @@ proof safe
     obtain ep2 where ep2: "ep2 \<in> UNIV \<rightarrow> {-1 .. 1}" "p2 = aform_val ep2 X"
       by (auto simp: Affine_def valuate_def)
 
-    from det3_nonneg_segments_of_aformI[OF ep2(1), of X "(fst X1, snd X1)", unfolded pair_collapse,
+    from det3_nonneg_segments_of_aformI[OF ep2(1), of X "(fst X1, snd X1)", unfolded prod.collapse,
         OF lh X1(1), unfolded ep2(2)[symmetric]]
     have c2: "det3 (fst X1) (snd X1) p2 \<ge> 0" .
     hence c12: "det3 (fst X1) p1 p2 \<ge> 0"
       using u by (cases "u = 0") (auto simp: u(1) det3_nonneg_scaleR_segment2)
-    from det3_nonneg_segments_of_aformI[OF ep1(1), of X "(fst X2, snd X2)", unfolded pair_collapse,
+    from det3_nonneg_segments_of_aformI[OF ep1(1), of X "(fst X2, snd X2)", unfolded prod.collapse,
         OF lh X2(1), unfolded ep1(2)[symmetric]]
     have c1: "det3 (fst X2) (snd X2) p1 \<ge> 0" .
     hence c21: "det3 (fst X2) p2 p1 \<ge> 0"

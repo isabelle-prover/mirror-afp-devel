@@ -647,19 +647,19 @@ end
 
 lemmas fixp_preserves_mono1 = fixp_preserves_mono_uc[of "\<lambda>x. x" _ "\<lambda>x. x", OF _ _ refl]
 lemmas fixp_preserves_mono2 =
-  fixp_preserves_mono_uc[of "split" _ "curry", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mono_uc[of "case_prod" _ "curry", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 lemmas fixp_preserves_mono3 =
-  fixp_preserves_mono_uc[of "\<lambda>f. split (split f)" _ "\<lambda>f. curry (curry f)", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mono_uc[of "\<lambda>f. case_prod (case_prod f)" _ "\<lambda>f. curry (curry f)", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 lemmas fixp_preserves_mono4 =
-  fixp_preserves_mono_uc[of "\<lambda>f. split (split (split f))" _ "\<lambda>f. curry (curry (curry f))", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mono_uc[of "\<lambda>f. case_prod (case_prod (case_prod f))" _ "\<lambda>f. curry (curry (curry f))", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 
 lemmas fixp_preserves_mcont1 = fixp_preserves_mcont_uc[of "\<lambda>x. x" _ "\<lambda>x. x", OF _ _ refl]
 lemmas fixp_preserves_mcont2 =
-  fixp_preserves_mcont_uc[of "split" _ "curry", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mcont_uc[of "case_prod" _ "curry", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 lemmas fixp_preserves_mcont3 =
-  fixp_preserves_mcont_uc[of "\<lambda>f. split (split f)" _ "\<lambda>f. curry (curry f)", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mcont_uc[of "\<lambda>f. case_prod (case_prod f)" _ "\<lambda>f. curry (curry f)", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 lemmas fixp_preserves_mcont4 =
-  fixp_preserves_mcont_uc[of "\<lambda>f. split (split (split f))" _ "\<lambda>f. curry (curry (curry f))", unfolded split_curry curry_split, OF _ _ refl]
+  fixp_preserves_mcont_uc[of "\<lambda>f. case_prod (case_prod (case_prod f))" _ "\<lambda>f. curry (curry (curry f))", unfolded case_prod_curry curry_case_prod, OF _ _ refl]
 
 end
 
@@ -1670,9 +1670,9 @@ lemmas parallel_fixp_induct_1_1 = parallel_fixp_induct_uc[
   OF _ _ _ _ _ _ refl refl]
 
 lemmas parallel_fixp_induct_2_2 = parallel_fixp_induct_uc[
-  of _ _ _ _ "split" _ "curry" "split" _ "curry",
+  of _ _ _ _ "case_prod" _ "curry" "case_prod" _ "curry",
   where P="\<lambda>f g. P (curry f) (curry g)",
-  unfolded split_curry curry_split curry_K,
+  unfolded case_prod_curry curry_case_prod curry_K,
   OF _ _ _ _ _ _ refl refl]
   for P
 

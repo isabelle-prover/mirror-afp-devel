@@ -325,7 +325,7 @@ thm wf_induct
 thm wf_induct[where r="{ (x,y). x \<in> I \<and> y \<in> I \<and> x < y }"]
 apply (rule_tac r="{ (x,y). x \<in> I \<and> y \<in> I \<and> x < y }" in wf_induct)
 apply (rule wf_less_interval)
-apply blast
+apply simp
 done
 corollary interval_induct_rule:"
   \<lbrakk> \<And>x. (\<And>y. (x\<in>(I::nat set) \<and> y \<in> I \<and> y < x \<Longrightarrow> P y)) \<Longrightarrow> P x \<rbrakk>

@@ -82,7 +82,7 @@ lemma heap_clone_code:
         {(h'', \<lfloor>(NewHeapElem a' (Array_type T n) # obs, a')\<rfloor>)}
       }
   | _ \<Rightarrow> {})"
-by(auto 4 3 elim!: execute.heap_clone.cases split: ty.splits prod.split_asm htype.splits intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta Pair_fst_snd_eq Bex_def)
+by(auto 4 3 elim!: execute.heap_clone.cases split: ty.splits prod.split_asm htype.splits intro: execute.heap_clone.intros simp add: eval_Fields_conv split_beta prod_eq_iff Bex_def)
 
 definition red_external_aggr :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap \<Rightarrow> 

@@ -56,7 +56,7 @@ lemma child_other: "d \<noteq> d' \<Longrightarrow> child p dir d ! d' = p ! d'"
 
 lemma child_invariant: assumes "d' < length p" shows "(child p dir d ! d' = p ! d') = (d \<noteq> d')"
 proof -
-  obtain l i where "p ! d' = (l, i)" using PairE .
+  obtain l i where "p ! d' = (l, i)" using prod.exhaust .
   with assms show ?thesis
     unfolding child_def ix_def lv_def by auto
 qed

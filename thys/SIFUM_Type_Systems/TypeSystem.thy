@@ -1146,7 +1146,7 @@ proof -
           by (metis (lifting) intro\<^sub>2 eval\<^sub>w.seq)
         moreover
         have "(\<langle>c\<^sub>1''' ;; cn, mds', mem\<^sub>1'\<rangle>, \<langle>?c\<^sub>2', mds', mem\<^sub>2'\<rangle>) \<in> \<R>\<^sub>3 \<Gamma>'"
-          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 c\<^sub>2'''_props intro\<^sub>2(2) mem_Collect_eq splitI)
+          by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 c\<^sub>2'''_props intro\<^sub>2(2) mem_Collect_eq case_prodI)
         ultimately show ?thesis
           using \<R>.intro\<^sub>3
           by (metis (lifting) \<R>\<^sub>3_aux.intro\<^sub>2 `c\<^sub>1' = c\<^sub>1''' ;; cn` c\<^sub>2'''_props intro\<^sub>2(2))
@@ -1161,7 +1161,7 @@ proof -
         then obtain c\<^sub>1'' where "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle>" "c\<^sub>1' = (c\<^sub>1'' ;; c)"
           by (metis intro\<^sub>3.prems seq_elim)
         then obtain c\<^sub>2'' mem\<^sub>2' where "\<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>" "\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>"
-          using intro\<^sub>3(2) mem_Collect_eq splitI
+          using intro\<^sub>3(2) mem_Collect_eq case_prodI
           by metis
         thus ?thesis
           apply (rule_tac x = "c\<^sub>2'' ;; c" in exI)

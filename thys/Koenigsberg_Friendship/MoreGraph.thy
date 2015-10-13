@@ -138,7 +138,7 @@ next
     proof -
     have "valid_unMultigraph (rem_unPath (x # xs) g) = valid_unMultigraph 
          (del_unEdge (fst x) (fst (snd x)) (snd (snd x)) (rem_unPath xs g))"
-      using rem_unPath_com by (metis pair_collapse rem_unPath.simps(2))
+      using rem_unPath_com by (metis prod.collapse rem_unPath.simps(2))
     also have "...=valid_unMultigraph (rem_unPath xs g)" 
       by (metis Cons.hyps Cons.prems del_unEdge_valid)
     also have "...=True" 
@@ -1948,7 +1948,7 @@ proof -
         using `nodes G1 \<inter> nodes G2={}` `n\<in>nodes G1`
         by auto
       hence "e\<notin>edges G2" using valid_graph.E_validD[OF `valid_graph G2`] `fst e=n` 
-        by (metis PairE fst_conv)  
+        by (metis prod.exhaust fst_conv)  
       ultimately have "e\<in>edges G1" using `edges G1 \<union> edges G2 =edges G` by auto
       thus "e \<in> {e \<in> edges G1. fst e = n}" using `fst e=n` by auto
     qed

@@ -394,7 +394,7 @@ qed
 
 lemma distr_convolution_real:
   assumes "has_density M lborel (f :: (real \<times> real) \<Rightarrow> ereal)"
-  shows "has_density (distr M borel (split op+)) lborel (\<lambda>z. \<integral>\<^sup>+x. f (x, z - x) \<partial>lborel)"
+  shows "has_density (distr M borel (case_prod op+)) lborel (\<lambda>z. \<integral>\<^sup>+x. f (x, z - x) \<partial>lborel)"
             (is "has_density ?M' _ ?f'")
 proof
   from has_densityD[OF assms] have Mf[measurable]: "f \<in> borel_measurable borel" by simp
@@ -404,13 +404,13 @@ proof
   hence [simp]: "space M = UNIV" by (subst sets_eq_imp_space_eq[OF sets_M]) simp
   from sets_M have [simp]: "measurable M = measurable borel" 
     by (intro ext measurable_cong_sets) simp_all
-  have M_add: "split op+ \<in> borel_measurable (borel :: (real \<times> real) measure)"
+  have M_add: "case_prod op+ \<in> borel_measurable (borel :: (real \<times> real) measure)"
     by (simp add: borel_prod[symmetric])
 
-  show "distr M borel (split op+) = density lborel ?f'"
+  show "distr M borel (case_prod op+) = density lborel ?f'"
   proof (rule measure_eqI)
-    fix X :: "real set" assume X: "X \<in> sets (distr M borel (split op+))"
-    hence "emeasure (distr M borel (split op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
+    fix X :: "real set" assume X: "X \<in> sets (distr M borel (case_prod op+))"
+    hence "emeasure (distr M borel (case_prod op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
       by (simp_all add: M_add emeasure_distr)
     also from X have "... = \<integral>\<^sup>+z. f z * indicator ((\<lambda>(x, y). x + y) -` X) z \<partial>(lborel \<Otimes>\<^sub>M lborel)"
       by (simp add: emeasure_density has_densityD[OF assms] 
@@ -445,14 +445,14 @@ proof
       by (rule nn_integral_cong) (simp split: split_indicator)
     also have "... = emeasure (density lborel ?f') X" using X
       by (simp add: emeasure_density)
-    finally show "emeasure (distr M borel (split op+)) X = emeasure (density lborel ?f') X" .
+    finally show "emeasure (distr M borel (case_prod op+)) X = emeasure (density lborel ?f') X" .
   qed (insert assms, auto dest: has_densityD)
 qed (simp_all add: nn_integral_nonneg)
 
 lemma distr_convolution_ring_count_space:
   assumes C: "countable (UNIV :: 'a set)"
   assumes "has_density M (count_space UNIV) (f :: (('a :: ring) \<times> 'a) \<Rightarrow> ereal)"
-  shows "has_density (distr M (count_space UNIV) (split op+)) (count_space UNIV) 
+  shows "has_density (distr M (count_space UNIV) (case_prod op+)) (count_space UNIV) 
              (\<lambda>z. \<integral>\<^sup>+x. f (x, z - x) \<partial>count_space UNIV)"
             (is "has_density ?M' _ ?f'")
 proof
@@ -465,10 +465,10 @@ proof
     by (intro ext measurable_cong_sets) (simp_all add: sets_M)
 
   interpret sigma_finite_measure ?CS by (rule sigma_finite_measure_count_space_countable[OF C])
-  show "distr M ?CS (split op+) = density ?CS ?f'"
+  show "distr M ?CS (case_prod op+) = density ?CS ?f'"
   proof (rule measure_eqI)
-    fix X :: "'a set" assume X: "X \<in> sets (distr M ?CS (split op+))"
-    hence "emeasure (distr M ?CS (split op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
+    fix X :: "'a set" assume X: "X \<in> sets (distr M ?CS (case_prod op+))"
+    hence "emeasure (distr M ?CS (case_prod op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
       by (simp_all add: emeasure_distr)
     also from X have "... = \<integral>\<^sup>+z. f z * indicator ((\<lambda>(x, y). x + y) -` X) z \<partial>(?CS \<Otimes>\<^sub>M ?CS)"
       by (simp add: emeasure_density has_densityD[OF assms(2)] 
@@ -489,7 +489,7 @@ proof
     also have "... = \<integral>\<^sup>+z. (\<integral>\<^sup>+x. f (x, z-x) \<partial>?CS) * indicator X z \<partial>?CS"
       by (rule nn_integral_cong) (simp split: split_indicator)
     also have "... = emeasure (density ?CS ?f') X" using X by (simp add: emeasure_density)
-    finally show "emeasure (distr M ?CS (split op+)) X = emeasure (density ?CS ?f') X" .
+    finally show "emeasure (distr M ?CS (case_prod op+)) X = emeasure (density ?CS ?f') X" .
   qed (insert assms, auto dest: has_densityD)
 qed (simp_all add: nn_integral_nonneg)
 

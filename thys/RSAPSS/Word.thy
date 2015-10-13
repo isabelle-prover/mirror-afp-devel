@@ -64,12 +64,6 @@ notation (xsymbols)
   bitor  (infixr "\<or>\<^sub>b" 30) and
   bitxor (infixr "\<oplus>\<^sub>b" 30)
 
-notation (HTML output)
-  bitnot ("\<not>\<^sub>b _" [40] 40) and
-  bitand (infixr "\<and>\<^sub>b" 35) and
-  bitor  (infixr "\<or>\<^sub>b" 30) and
-  bitxor (infixr "\<oplus>\<^sub>b" 30)
-
 lemma bitnot_bitnot [simp]: "(bitnot (bitnot b)) = b"
   by (cases b) simp_all
 
@@ -2277,7 +2271,7 @@ definition
   bv_mapzip :: "[bit => bit => bit,bit list, bit list] => bit list" where
   "bv_mapzip f w1 w2 =
     (let g = bv_extend (max (length w1) (length w2)) \<zero>
-     in map (split f) (zip (g w1) (g w2)))"
+     in map (case_prod f) (zip (g w1) (g w2)))"
 
 lemma bv_length_bv_mapzip [simp]:
     "length (bv_mapzip f w1 w2) = max (length w1) (length w2)"

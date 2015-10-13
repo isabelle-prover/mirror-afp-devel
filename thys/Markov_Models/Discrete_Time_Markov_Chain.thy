@@ -520,7 +520,7 @@ qed
 lemma nn_integral_T_gfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
-  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes [measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g[THEN inf_continuous_compose, order_continuous_intros]: "\<And>s. inf_continuous (g s)"
   assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
   assumes bnd_g: "\<And>f s. g s f \<le> b" "0 \<le> b" "b < \<infinity>"
@@ -555,7 +555,7 @@ qed (auto intro!: order_continuous_intros simp: l_def)
 lemma nn_integral_T_lfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
-  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes [measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g[THEN sup_continuous_compose, order_continuous_intros]: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f s. f \<in> borel_measurable S \<Longrightarrow> (\<integral>\<^sup>+\<omega>. g s (f \<omega>) \<partial>T s) = g s (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T s)"
   shows "(\<integral>\<^sup>+\<omega>. lfp l \<omega> \<partial>T s) = lfp (\<lambda>f s. \<integral>\<^sup>+t. g t (f t) \<partial>K s) s"
@@ -1612,7 +1612,7 @@ proof (rule T_bisim)
     apply (auto
          simp add: space_stream_space bind_assoc[where R=S and N=S] bind_return_distr[symmetric]
                    Kp_def T1K2.bind_rotate[where N=S] split_beta' set_pair_pmf space_subprob_algebra
-                   bind_pair_pmf[of "split M" for M, unfolded split, symmetric, where N=S] szip\<^sub>E_def
+                   bind_pair_pmf[of "case_prod M" for M, unfolded split, symmetric, where N=S] szip\<^sub>E_def
                    stream_eq_Stream_iff bind_return[where N=S] space_bind[where N=S]
          simp del: measurable_pmf_measure1
          intro!: bind_measure_pmf_cong[where N=S] subprob_space_bind[where N=S] subprob_space_measure_pmf

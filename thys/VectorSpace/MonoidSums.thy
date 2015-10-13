@@ -33,7 +33,7 @@ qed
 
 text {*Scalar multiplication distributes over scalar multiplication (on left). *}(*Add to module.*)
 lemma (in module) finsum_smult:
-  "[| c\<in> carrier R; g \<in> A -> carrier M |] ==>
+  "[| c\<in> carrier R; g \<in> A \<rightarrow> carrier M |] ==>
    (c \<odot>\<^bsub>M\<^esub> finsum M g A) = finsum M (%x. c \<odot>\<^bsub>M\<^esub> g x) A "
 proof (induct A rule: infinite_finite_induct)
   case (insert a A)
@@ -47,7 +47,7 @@ qed auto
 
 text {*Scalar multiplication distributes over scalar multiplication (on right). *}(*Add to module.*)
 lemma (in module) finsum_smult_r:
-  "[| v\<in> carrier M; f \<in> A -> carrier R |] ==>
+  "[| v\<in> carrier M; f \<in> A \<rightarrow> carrier R |] ==>
    (finsum R f A \<odot>\<^bsub>M\<^esub> v) = finsum M (%x. f x \<odot>\<^bsub>M\<^esub> v) A "
 proof (induct A rule: infinite_finite_induct)
   case (insert a A)

@@ -1152,7 +1152,7 @@ lemma bisim_compose_assoc [simp]:
 by(auto simp add: fun_eq_iff)
 
 lemma bisim_compose_conv_relcomp:
-  "split (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> relcomp (Collect (split bisim12)) (Collect (split bisim23)))"
+  "case_prod (bisim_compose bisim12 bisim23) = (\<lambda>x. x \<in> relcomp (Collect (case_prod bisim12)) (Collect (case_prod bisim23)))"
 by(auto simp add: relcomp_unfold)
 
 lemma list_all2_bisim_composeI:

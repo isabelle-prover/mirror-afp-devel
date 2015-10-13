@@ -67,7 +67,7 @@ subsubsection {* The concrete guard implies the abstract guard *}
 
 
 definition voters :: "(round \<Rightarrow> (process, val)map) \<Rightarrow> process set" where
-  "voters vs = {a|a r v. ((r, a), v) \<in> map_graph (split vs)}"
+  "voters vs = {a|a r v. ((r, a), v) \<in> map_graph (case_prod vs)}"
 
 lemma vote_set_as_Union:
   "vote_set vs Q = (\<Union>a\<in>(Q \<inter> voters vs). vote_set vs {a})"

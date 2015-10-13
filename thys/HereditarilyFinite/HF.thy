@@ -180,10 +180,6 @@ syntax
 syntax (xsymbols)
   "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("\<langle>(_,/ _)\<rangle>")
   "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
-syntax (HTML output)
-  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("\<langle>(_,/ _)\<rangle>")
-  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
-
 translations
   "<x, y, z>"    == "<x, <y, z>>"
   "<x, y>"       == "CONST hpair x y"
@@ -393,19 +389,11 @@ syntax
   "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1{|_ ./ _<: _|})" [51,0,51])
   "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3INT _<:_./ _)" 10)
   "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3UN _<:_./ _)" 10)
-
 syntax (xsymbols)
   "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1\<lbrace>_ ./ _ \<^bold>\<in> _, _\<rbrace>)")
   "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)" [51,0,51])
   "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Squnion>_\<^bold>\<in>_./ _)" 10)
   "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Sqinter>_\<^bold>\<in>_./ _)" 10)
-
-syntax (HTML output)
-  "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1\<lbrace>_ ./ _ \<^bold>\<in> _, _\<rbrace>)")
-  "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)" [51,0,51])
-  "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Squnion>_\<^bold>\<in>_./ _)" 10)
-  "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Sqinter>_\<^bold>\<in>_./ _)" 10)
-
 translations
   "{|y. x<:A, Q|}" == "CONST Replace A (%x y. Q)"
   "{|b. x<:A|}"    == "CONST RepFun A (%x. b)"
@@ -713,17 +701,10 @@ syntax
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL _<:_./ _)" [0, 0, 10] 10)
   "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX _<:_./ _)"  [0, 0, 10] 10)
   "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX! _<:_./ _)" [0, 0, 10] 10)
-
 syntax (xsymbols)
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!_\<^bold>\<in>_./ _)" [0, 0, 10] 10)
-
-syntax (HTML output)
-  "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
-  "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
-  "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!_\<^bold>\<in>_./ _)" [0, 0, 10] 10)
-
 translations
   "ALL x<:A. P" == "CONST HBall A (%x. P)"
   "EX x<:A. P" == "CONST HBex A (%x. P)"
@@ -918,17 +899,10 @@ syntax
   "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3PROD _<:_./ _)" 10)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3SUM _<:_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3lam _<:_./ _)" 10)
-
 syntax (xsymbols)
   "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
-
-syntax (HTML output)
-  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)
-  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)
-  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
-
 translations
   "PROD x<:A. B" == "CONST HPi A (%x. B)"
   "SUM x<:A. B"  == "CONST HSigma A (%x. B)"

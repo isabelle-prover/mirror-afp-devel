@@ -13,7 +13,7 @@ begin
 lemma measurable_subprob_algebra_density:
   assumes "sigma_finite_measure N"
   assumes "space N \<noteq> {}"
-  assumes [measurable]: "split f \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
+  assumes [measurable]: "case_prod f \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
   assumes "\<And>x. x \<in> space M \<Longrightarrow> (\<integral>\<^sup>+y. f x y \<partial>N) \<le> 1"
   shows "(\<lambda>x. density N (f x)) \<in> measurable M (subprob_algebra N)"
 proof (rule measurable_subprob_algebra)
@@ -42,7 +42,7 @@ definition bernoulli :: "val \<Rightarrow> val measure" where
   "bernoulli p = density BOOL (bernoulli_density (extract_real p) o extract_bool)"
 
 lemma measurable_bernoulli_density[measurable]:
-  "split bernoulli_density \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
+  "case_prod bernoulli_density \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
   unfolding bernoulli_density_def[abs_def] by measurable
 
 lemma measurable_bernoulli[measurable]: "bernoulli \<in> measurable REAL (subprob_algebra BOOL)"
@@ -59,14 +59,14 @@ definition uniform_int_density :: "int \<times> int \<Rightarrow> int \<Rightarr
   "uniform_int_density \<equiv> \<lambda>(a,b) x. (if x \<in> {a..b} then inverse (b - a + 1) else 0)"
 
 lemma measurable_uniform_density_int[measurable]:
-  "(split uniform_int_density)
+  "(case_prod uniform_int_density)
        \<in> borel_measurable ((count_space UNIV \<Otimes>\<^sub>M count_space UNIV) \<Otimes>\<^sub>M count_space UNIV)"
   by (simp add: pair_measure_countable)
 
 lemma measurable_uniform_density_real[measurable]:
-  "(split uniform_real_density) \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
+  "(case_prod uniform_real_density) \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
 proof-
-  have "(split uniform_real_density) =
+  have "(case_prod uniform_real_density) =
             (\<lambda>x. uniform_real_density (fst (fst x), snd (fst x)) (snd x))"
       by (rule ext) (simp split: prod.split)
   also have "... \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
@@ -125,9 +125,9 @@ definition gaussian_density :: "real \<times> real \<Rightarrow> real \<Rightarr
       \<lambda>(m,s) x. (if s > 0 then exp (-(x - m)\<^sup>2 / (2 * s\<^sup>2)) / sqrt (2 * pi * s\<^sup>2) else 0)"
 
 lemma measurable_gaussian_density[measurable]:
-  "split gaussian_density \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
+  "case_prod gaussian_density \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
 proof-
-  have "split gaussian_density = 
+  have "case_prod gaussian_density = 
               (\<lambda>(x,y). (if snd x > 0 then exp (-((y - fst x)^2) / (2 * snd x^2)) /
                              sqrt (2 * pi * snd x^2) else 0))"
     unfolding gaussian_density_def by (intro ext) (simp split: prod.split)
@@ -166,9 +166,9 @@ definition poisson_density' :: "real \<Rightarrow> int \<Rightarrow> ereal" wher
   "poisson_density' rate k = pmf (poisson_pmf rate) (nat k) * indicator ({0 <..} \<times> {0..}) (rate, k)"
 
 lemma measurable_poisson_density'[measurable]:
-    "split poisson_density' \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
+    "case_prod poisson_density' \<in> borel_measurable (borel \<Otimes>\<^sub>M count_space UNIV)"
 proof -
-  have "split poisson_density' =
+  have "case_prod poisson_density' =
     (\<lambda>(rate, k). rate ^ nat k / real_of_nat (fact (nat k)) * exp (-rate) * indicator ({0 <..} \<times> {0..}) (rate, k))"
     by (auto split: split_indicator simp: fun_eq_iff poisson_density'_def)
   then show ?thesis

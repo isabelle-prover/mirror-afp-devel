@@ -29,10 +29,10 @@ where
 theorem zipWithA [sep_heap_rules]:
   fixes xs ys :: "'a::heap list"
   assumes "length xs = length ys"
-  shows "< a \<mapsto>\<^sub>a xs * b \<mapsto>\<^sub>a ys > zipWithA f a b < \<lambda>r. (a \<mapsto>\<^sub>a map (split f) (zip xs ys)) * b \<mapsto>\<^sub>a ys * \<up>(a = r) >"
+  shows "< a \<mapsto>\<^sub>a xs * b \<mapsto>\<^sub>a ys > zipWithA f a b < \<lambda>r. (a \<mapsto>\<^sub>a map (case_prod f) (zip xs ys)) * b \<mapsto>\<^sub>a ys * \<up>(a = r) >"
 proof -
   { fix n and xs :: "'a list"
-    let ?part_res = "\<lambda>n xs. (map (split f) (zip (take n xs) (take n ys)) @ drop n xs)"
+    let ?part_res = "\<lambda>n xs. (map (case_prod f) (zip (take n xs) (take n ys)) @ drop n xs)"
     assume "n \<le> length xs" "length xs = length ys"
     then have "< a \<mapsto>\<^sub>a xs * b \<mapsto>\<^sub>a ys > Heap_Monad.fold_map (\<lambda>n. do {
          x \<leftarrow> Array.nth a n ;

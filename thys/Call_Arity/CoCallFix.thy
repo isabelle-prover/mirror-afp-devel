@@ -251,7 +251,7 @@ subsubsection {* Combining the cases *}
 context CoCallArityAnalysis
 begin
   definition cccFix_choose ::  "heap \<Rightarrow> ((AEnv \<times> CoCalls) \<rightarrow> (AEnv \<times> CoCalls))"
-    where "cccFix_choose \<Gamma> = (if nonrec \<Gamma> then split cccFix_nonrec (hd \<Gamma>) else cccFix \<Gamma>)"
+    where "cccFix_choose \<Gamma> = (if nonrec \<Gamma> then case_prod cccFix_nonrec (hd \<Gamma>) else cccFix \<Gamma>)"
 
   lemma cccFix_choose_simp1[simp]:
     "\<not> nonrec \<Gamma> \<Longrightarrow> cccFix_choose \<Gamma> = cccFix \<Gamma>"

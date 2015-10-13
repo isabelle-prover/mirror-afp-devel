@@ -11,15 +11,15 @@ begin
 
 lemma trans_fst_oclosed_fst1 [dest]:
   "(s, connect(i, i'), s') \<in> ocnet_sos (trans p) \<Longrightarrow> (s, connect(i, i'), s') \<in> trans p"
-  by (metis PairE oconnect_completeTE)
+  by (metis prod.exhaust oconnect_completeTE)
 
 lemma trans_fst_oclosed_fst2 [dest]:
   "(s, disconnect(i, i'), s') \<in> ocnet_sos (trans p) \<Longrightarrow> (s, disconnect(i, i'), s') \<in> trans p"
-  by (metis PairE odisconnect_completeTE)
+  by (metis prod.exhaust odisconnect_completeTE)
 
 lemma trans_fst_oclosed_fst3 [dest]:
   "(s, i:deliver(d), s') \<in> ocnet_sos (trans p) \<Longrightarrow>      (s, i:deliver(d), s') \<in> trans p"
-  by (metis PairE odeliver_completeTE)
+  by (metis prod.exhaust odeliver_completeTE)
 
 lemma oclosed_oreachable_inclosed:
   assumes "(\<sigma>, \<zeta>) \<in> oreachable (oclosed (opnet np p)) (\<lambda>_ _ _. True) U"

@@ -75,7 +75,7 @@ parse_translation {*
                 SOME c =>  c $ (tr i r) $ (Const ("Product_Type.Pair", dummyT) $ Bound (i + 1) $ Bound i)
               | NONE => t)
 (*          | tr i (t as (Const (c, rel_op_type) $ l $ r)) = print c
-              ((Syntax.const @{const_name prod_case} $
+              ((Syntax.const @{const_name case_prod} $
                 Abs ("B", dummyT, Abs ("B'", dummyT, Const (c, rel_op_type)))) $ tr i l $ tr i r)
                   $ (Const ("Product_Type.Pair", dummyT) $ Bound (i + 1) $ Bound i)*)
           | tr i (t $ u) = tr i t $ tr i u
@@ -84,7 +84,7 @@ parse_translation {*
       in tr 0 end;
 
     fun quote_tr ctxt [t] =
-          Syntax.const @{const_name uncurry} $
+          Syntax.const @{const_name case_prod} $
             Abs ("A", dummyT, Abs ("A'", dummyT, antiquote_tr ctxt (Term.incr_boundvars 2 t)))
       | quote_tr _ ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_circus_schema"}, quote_tr)] end

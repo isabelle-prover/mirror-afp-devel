@@ -452,7 +452,7 @@ locale round_robin_base =
 begin
 
 definition queue_rotate1 :: "'queue \<Rightarrow> 'queue"
-where "queue_rotate1 = split queue_enqueue \<circ> queue_dequeue"
+where "queue_rotate1 = case_prod queue_enqueue \<circ> queue_dequeue"
 
 primrec enqueue_new_thread :: "'queue \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> 'queue"
 where 

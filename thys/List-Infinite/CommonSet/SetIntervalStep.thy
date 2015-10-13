@@ -1363,13 +1363,9 @@ where
 (*
 syntax (xsymbols)
   "inext_nth" :: "nat set \<Rightarrow> nat \<Rightarrow> nat" ("(_ \<rightarrow> _)" [100, 100] 60)
-syntax (HTML output)
-  "inext_nth" :: "nat set \<Rightarrow> nat \<Rightarrow> nat" ("(_ \<rightarrow> _)" [100, 100] 60)
 *)
 (*>*)
 notation (xsymbols)
-  "inext_nth" ("(_ \<rightarrow> _)" [100, 100] 60)
-notation (HTML output)
   "inext_nth" ("(_ \<rightarrow> _)" [100, 100] 60)
 
 term "(I \<rightarrow> a) + b"
@@ -1878,13 +1874,9 @@ thm inext_iprev
 (*
 syntax (xsymbols)
   "iprev_nth" :: "nat set \<Rightarrow> nat \<Rightarrow> nat" ("(_ \<leftarrow> _)" [100, 100] 60)
-syntax (HTML output)
-  "iprev_nth" :: "nat set \<Rightarrow> nat \<Rightarrow> nat" ("(_ \<leftarrow> _)" [100, 100] 60)
 *)
 (*>*)
 notation (xsymbols)
-  "iprev_nth" ("(_ \<leftarrow> _)" [100, 100] 60)
-notation (HTML output)
   "iprev_nth" ("(_ \<leftarrow> _)" [100, 100] 60)
 
 lemma iprev_nth_closed: "\<lbrakk> finite I; I \<noteq> {} \<rbrakk> \<Longrightarrow> I \<leftarrow> n \<in> I"
@@ -1893,7 +1885,6 @@ apply (induct n)
 apply (simp add: iprev_closed)
 done
 
-thm iprev_image
 lemma iprev_nth_image: "
   \<lbrakk> finite I; I \<noteq> {}; strict_mono_on f I \<rbrakk> \<Longrightarrow> (f ` I) \<leftarrow> n = f (I \<leftarrow> n)"
 apply (induct n)
@@ -1901,7 +1892,6 @@ apply (induct n)
 apply (simp add: iprev_image iprev_nth_closed)
 done
 
-thm iprev_mono
 lemma iprev_nth_Suc_mono: "I \<leftarrow> (Suc n) \<le> I \<leftarrow> n"
 by (simp add: iprev_mono)
 lemma iprev_nth_mono: "a \<le> b \<Longrightarrow> I \<leftarrow> b \<le> I \<leftarrow> a"

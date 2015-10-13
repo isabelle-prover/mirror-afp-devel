@@ -501,13 +501,13 @@ next
     next case CFG_New_Exceptional_handle with V_notin_Def show ?thesis
         by (fastforce intro: Def_Exception Def_Exception_handle)
     next case CFG_Getfield_Update with V_notin_Def show ?thesis
-        by (fastforce intro: Def_Getfield split: split_split)
+        by (fastforce intro: Def_Getfield split: prod.split)
     next case CFG_Getfield_Exceptional_prop with V_notin_Def show ?thesis
         by (fastforce intro: Def_Exception)
     next case CFG_Getfield_Exceptional_handle with V_notin_Def show ?thesis
         by (fastforce intro: Def_Exception Def_Exception_handle)
     next case CFG_Putfield_Update with V_notin_Def show ?thesis
-        by (fastforce intro: Def_Putfield split: split_split)
+        by (fastforce intro: Def_Putfield split: prod.split)
     next case CFG_Putfield_Exceptional_prop with V_notin_Def show ?thesis
         by (fastforce intro: Def_Exception)
     next case CFG_Putfield_Exceptional_handle with V_notin_Def show ?thesis
@@ -573,13 +573,13 @@ next
     hence "Heap \<in> Use P (sourcenode a)"
       and "Stack (stkLength (P, C, M) pc - 1) \<in> Use P (sourcenode a)"
       by (fastforce intro: Use_Normal_Heap Use_Normal_Stack)+
-    with use_Eq CFG_Getfield_Update show ?thesis by (auto elim!: Def.cases split: split_split)
+    with use_Eq CFG_Getfield_Update show ?thesis by (auto elim!: Def.cases split: prod.split)
   next case (CFG_Putfield_Update C  M pc)
     hence "Heap \<in> Use P (sourcenode a)"
       and "Stack (stkLength (P, C, M) pc - 1) \<in> Use P (sourcenode a)"
       and "Stack (stkLength (P, C, M) pc - 2) \<in> Use P (sourcenode a)"
       by (fastforce intro: Use_Normal_Heap Use_Normal_Stack)+
-    with use_Eq CFG_Putfield_Update show ?thesis by (auto elim!: Def.cases split: split_split)
+    with use_Eq CFG_Putfield_Update show ?thesis by (auto elim!: Def.cases split: prod.split)
   next case (CFG_Throw_prop C  M pc)
     hence "Stack (stkLength (P, C, M) pc - 1) \<in> Use P (sourcenode a)"
       by (fastforce intro: Use_Exceptional_Stack)

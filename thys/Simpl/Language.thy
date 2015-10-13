@@ -537,7 +537,7 @@ lemma strip_guards_guaranteeStrip [simp]:
      else guaranteeStrip f g (strip_guards F c))"
   by (simp add: guaranteeStrip_def)
 
-lemma guaranteeStripPair_split_conv [simp]: "split c (guaranteeStripPair f g) = c f g"
+lemma guaranteeStripPair_split_conv [simp]: "case_prod c (guaranteeStripPair f g) = c f g"
   by (simp add: guaranteeStripPair_def)
 
 lemma strip_guards_guards [simp]: "strip_guards F (guards gs c) =

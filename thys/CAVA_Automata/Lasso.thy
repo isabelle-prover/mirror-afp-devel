@@ -168,7 +168,7 @@ begin
     qed
 
     lemma lasso_prpl_acc_run:
-      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr conc iter pl)"
+      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr \<frown> iter pl)"
       apply (clarsimp simp: is_lasso_prpl_conv)
       apply (drule lasso_accepted)
       apply (simp add: run_of_lasso_of_prpl)
@@ -291,7 +291,7 @@ begin
       done
 
     lemma lasso_prpl_acc_run:
-      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr conc iter pl)"
+      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr \<frown> iter pl)"
       apply (clarsimp simp: is_lasso_prpl_conv)
       apply (drule lasso_accepted)
       apply (simp add: run_of_lasso_of_prpl)
@@ -340,7 +340,7 @@ begin
     lemmas accepted_lasso = gbg.accepted_lasso[unfolded to_gbg_alt is_lasso_gbg]
 
     lemma lasso_prpl_acc_run:
-      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr conc iter pl)"
+      "is_lasso_prpl (pr, pl) \<Longrightarrow> is_acc_run (pr \<frown> iter pl)"
       apply (clarsimp simp: is_lasso_prpl_conv)
       apply (drule lasso_accepted)
       apply (simp add: run_of_lasso_of_prpl)

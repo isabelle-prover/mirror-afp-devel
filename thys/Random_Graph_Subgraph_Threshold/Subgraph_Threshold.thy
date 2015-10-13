@@ -284,7 +284,7 @@ next
       have 2: "finite_graph (f S)"
         using 0(3) 1(1,2) by (metis wellformed_finite)
       have 3: "nonempty_graph (f S)"
-        using 0(2) 1(1,2) by (metis card_eq_0_iff finite finite_graph_def isomorphic_cards(2) nonempty nonempty_graph_def pair_collapse snd_conv)
+        using 0(2) 1(1,2) by (metis card_eq_0_iff finite finite_graph_def isomorphic_cards(2) nonempty nonempty_graph_def prod.collapse snd_conv)
       note 0 1 2 3
     }
     note I = this

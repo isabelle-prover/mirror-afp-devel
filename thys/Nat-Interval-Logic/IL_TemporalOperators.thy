@@ -89,9 +89,6 @@ where
 syntax (xsymbols)
   "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
   "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
-syntax (HTML output)
-  "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
-  "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
 translations
    "\<box> t I. P" \<rightleftharpoons> "CONST iAll I (\<lambda>t. P)"
    "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
@@ -108,9 +105,6 @@ where
   "iLast t0 I P \<equiv> P (iprev t0 I)"
 
 syntax (xsymbols)
-  "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc> _ _ _./ _)" [0, 0, 10] 10)
-  "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
-syntax (HTML output)
   "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc> _ _ _./ _)" [0, 0, 10] 10)
   "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
 translations
@@ -142,11 +136,6 @@ where
   "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
 syntax (xsymbols)
-  "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
-  "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
-  "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
-  "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
-syntax (HTML output)
   "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
   "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
   "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)

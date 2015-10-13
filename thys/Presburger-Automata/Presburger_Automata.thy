@@ -400,7 +400,7 @@ lemma fixpt_induct:
   shows "P M T"
 proof (induct M T rule: fixpt.induct)
   case (1 M T)
-  show ?case by (rule H) (rule 1 [OF refl pair_collapse])
+  show ?case by (rule H) (rule 1 [OF refl prod.collapse])
 qed
 
 definition dist_nodes :: "dfa \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where

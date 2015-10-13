@@ -215,17 +215,6 @@ syntax (xsymbols)
   "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<in> _)" [50, 51] 50)
   "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<notin> _)" [50, 51] 50)
 
-syntax (HTML output)
-  "_liftNeq"    :: "[lift, lift] \<Rightarrow> lift"                (infixl "\<noteq>" 50)
-  "_liftNot"    :: "lift \<Rightarrow> lift"                        ("\<not> _" [90] 90)
-  "_liftAnd"    :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<and>" 35)
-  "_liftOr"     :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<or>" 30)
-  "_RAll"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<forall>_./ _)" [0, 10] 10)
-  "_REx"        :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>_./ _)" [0, 10] 10)
-  "_REx1"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>!_./ _)" [0, 10] 10)
-  "_liftLeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<le> _)" [50, 51] 50)
-  "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<in> _)" [50, 51] 50)
-  "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<notin> _)" [50, 51] 50)
 
 subsection {* Definitions *}
 

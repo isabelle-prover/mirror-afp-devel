@@ -156,7 +156,7 @@ have suc_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
 show ?case 
 unfolding Gauss_Jordan_upt_k_PA_def Let_def fst_conv snd_conv
 unfolding suc_rw unfolding foldl_append unfolding List.foldl.simps using Suc.hyps[unfolded Gauss_Jordan_upt_k_PA_def Let_def fst_conv snd_conv]
-by (metis fst_Gauss_Jordan_column_k_PA pair_collapse)
+by (metis fst_Gauss_Jordan_column_k_PA prod.collapse)
 qed
 
 lemma snd_foldl_Gauss_Jordan_column_k_eq:
@@ -444,7 +444,7 @@ def f\<equiv>"foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc k]"
 have f_rw: "f = (fst f, fst (snd f), snd (snd f))" by simp
 show ?case unfolding Gauss_Jordan_upt_k_PA_def Let_def fst_conv
 unfolding list_rw unfolding foldl_append unfolding List.foldl.simps using invertible_fst_Gauss_Jordan_column_k_PA
-by (metis (mono_tags) Gauss_Jordan_upt_k_PA_def Suc.hyps fst_conv pair_collapse)
+by (metis (mono_tags) Gauss_Jordan_upt_k_PA_def Suc.hyps fst_conv prod.collapse)
 qed
 
 lemma invertible_fst_Gauss_Jordan_PA:

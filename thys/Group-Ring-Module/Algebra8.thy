@@ -485,9 +485,10 @@ apply (rule impI)
  apply (drule_tac x = "(xa, ba)" in bspec, assumption, 
         drule_tac x = xb in bspec, assumption+)
  apply (erule disjE, simp)
- apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) xb", blast)
-
- apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) xb", blast,
+ apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) xb")
+ apply auto[1]
+ apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) xb")
+ apply (blast,
         cut_tac p = xb in PairE_lemma,
         (erule exE)+, simp, rule subsetI, simp add:image_def,
            erule exE, erule conjE,
@@ -497,7 +498,8 @@ apply (rule impI)
         thin_tac "xe \<le> Suc n", thin_tac "xe < Suc n",
         cut_tac c = xd and A = "{y. \<exists>x\<le>n. y = fa x}" and B = xc in
            subsetD, simp, simp, blast, assumption)
- apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) (xa, ba)", blast) 
+ apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) (xa, ba)")
+ apply auto[1]
    apply (simp, rule subsetI, simp add:image_def, erule exE, erule conjE,
          case_tac "xd = Suc n", simp,
          frule_tac m = xd and n = "Suc n" in noteq_le_less, assumption,
@@ -942,17 +944,26 @@ lemma (in Module) Chain_3_supset:"\<lbrakk>R module N; free_generator R M H;
     f \<in> H \<rightarrow> carrier N; C \<subseteq> fsps R M N f H; C \<noteq> {};
    \<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a; (a1, b1) \<in> C; (a2, b2) \<in> C;
    (a3, b3) \<in> C\<rbrakk> \<Longrightarrow> \<exists>(g, h)\<in>C. a1 \<subseteq> g \<and> a2 \<subseteq> g \<and> a3 \<subseteq> g"
-apply (frule_tac x = "(a1, b1)" in bspec, assumption,
-       rotate_tac -1,
-       frule_tac x = "(a2, b2)" in bspec, assumption,
-       drule_tac x = "(a3, b3)" in bspec, assumption)
-      
-apply (drule_tac x = "(a2, b2)" in bspec, assumption,
-       drule_tac x = "(a3, b3)" in bspec, assumption)
-
-apply (simp  del: Pi_split_insert_domain)
-apply ((erule disjE)+, blast+)
-done
+proof -
+  assume "(a1, b1) \<in> C"
+    "(a2, b2) \<in> C"
+    "(a3, b3) \<in> C"
+  then have A: "a1 \<in> fst ` C"
+    "a2 \<in> fst ` C"
+    "a3 \<in> fst ` C"
+    by (simp_all add: image_iff) force+
+  assume "\<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a"
+  with A have "a1 \<subseteq> a2 \<or> a2 \<subseteq> a1"
+    "a1 \<subseteq> a3 \<or> a3 \<subseteq> a1"
+    "a2 \<subseteq> a3 \<or> a3 \<subseteq> a2"
+    by auto
+  with A have "\<exists>a\<in>fst ` C. a1 \<subseteq> a \<and> a2 \<subseteq> a \<and> a3 \<subseteq> a"
+    by auto
+  then obtain a where "a \<in> fst ` C" and C: "a1 \<subseteq> a" "a2 \<subseteq> a" "a3 \<subseteq> a" by blast
+  then obtain b where "(a, b) \<in> C" by auto
+  with C show "\<exists>(a, b)\<in>C. a1 \<subseteq> a \<and> a2 \<subseteq> a \<and> a3 \<subseteq> a"
+    by auto
+qed
 
 lemma (in Module) fsps_chain_bound1:"\<lbrakk>R module N; free_generator R M H;  
        f \<in> H \<rightarrow> carrier N; C \<subseteq> fsps R M N f H;  

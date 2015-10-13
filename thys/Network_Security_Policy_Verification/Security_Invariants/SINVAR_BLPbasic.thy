@@ -47,7 +47,7 @@ lemma BLP_def_unique: "otherbot \<noteq> 0 \<Longrightarrow>
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split)
+  apply (simp split: prod.split_asm prod.split)
   apply(rule_tac x="\<lparr> nodes=set [vertex_1,vertex_2], edges = set [(vertex_1,vertex_2)] \<rparr>" in exI, simp)
   apply(rule conjI)
    apply(simp add: wf_graph_def)
@@ -73,9 +73,9 @@ and receiver_violation = receiver_violation
       SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def
       SecurityInvariant_withOffendingFlows.is_offending_flows_def)
   apply (simp add:graph_ops)
-  apply (simp split: split_split_asm split_split add:prod_case_beta)
+  apply (simp split: prod.split_asm prod.split add:case_prod_beta)
    apply(auto intro!:bexI)[1]
-   (*apply (smt image_iff offending_in_edges pair_collapse)*)
+   (*apply (smt image_iff offending_in_edges prod.collapse)*)
   apply(blast intro: BLP_def_unique)
 done
 *)

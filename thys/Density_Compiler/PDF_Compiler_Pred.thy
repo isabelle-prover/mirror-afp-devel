@@ -89,7 +89,7 @@ inductive expr_has_density :: "dens_ctxt \<Rightarrow> expr \<Rightarrow> (state
   hd_AE:   "\<lbrakk>(V,V',\<Gamma>,\<delta>) \<turnstile>\<^sub>d e \<Rightarrow> f; \<Gamma> \<turnstile> e : t;
              \<And>\<rho>. \<rho> \<in> space (state_measure V' \<Gamma>) \<Longrightarrow> 
                      AE x in stock_measure t. f \<rho> x = f' \<rho> x;
-             split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t);
+             case_prod f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t);
              \<And>\<rho> x. \<rho> \<in> space (state_measure V' \<Gamma>) \<Longrightarrow> x \<in> type_universe t
                        \<Longrightarrow> f' \<rho> x \<ge> 0\<rbrakk>
                 \<Longrightarrow> (V,V',\<Gamma>,\<delta>) \<turnstile>\<^sub>d e \<Rightarrow> f'"
@@ -189,12 +189,12 @@ next
                             \<integral>\<^sup>+x. f x * indicator (fst' -` X \<inter> space N) x \<partial>N"
     by (subst (1 2) M, subst space_density, subst emeasure_density)
        (erule has_subprob_densityD, erule measurable_sets, simp, simp)
-  also have "N = distr (N' \<Otimes>\<^sub>M stock_measure t2) N (split PairVal)" (is "_ = ?N") 
+  also have "N = distr (N' \<Otimes>\<^sub>M stock_measure t2) N (case_prod PairVal)" (is "_ = ?N") 
     unfolding N_def N'_def stock_measure.simps by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
   hence "\<And>f. nn_integral N f = nn_integral ... f" by simp
   also from dens and X 
     have "(\<integral>\<^sup>+x. f x * indicator (fst' -` X \<inter> space N) x \<partial>?N) = 
-              \<integral>\<^sup>+x. f (split PairVal x) * indicator (fst' -` X \<inter> space N) (split PairVal x) 
+              \<integral>\<^sup>+x. f (case_prod PairVal x) * indicator (fst' -` X \<inter> space N) (case_prod PairVal x) 
                 \<partial>(N' \<Otimes>\<^sub>M stock_measure t2)"
       by (intro nn_integral_distr) 
          (simp add: measurable_embed_measure2 N_def N'_def inj_PairVal, 
@@ -218,7 +218,7 @@ next
                  space_embed_measure space_pair_measure N'_def)
   have "?I = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f <|x,y|> * indicator X x \<partial>stock_measure t2 \<partial>N'"  (is "_ = ?I")
     by (intro nn_integral_cong) (simp add: A)
-  also have A: "\<And>x. x \<in> space N' \<Longrightarrow> (\<lambda>y. f <|x,y|>) = f \<circ> split PairVal \<circ> (\<lambda>y. (x,y))"
+  also have A: "\<And>x. x \<in> space N' \<Longrightarrow> (\<lambda>y. f <|x,y|>) = f \<circ> case_prod PairVal \<circ> (\<lambda>y. (x,y))"
     by (intro ext) simp
   from dens have "?I = \<integral>\<^sup>+x. (\<integral>\<^sup>+y. f <|x,y|> \<partial>stock_measure t2) * indicator X x \<partial>N'"
     by (intro nn_integral_cong nn_integral_multc, subst A)
@@ -248,7 +248,7 @@ next
     by (rule subprob_space_distr) (simp_all add: N'_def)
 
   interpret t1: sigma_finite_measure "stock_measure t1" by simp
-  have A: "(\<lambda>(x, y). f <| x ,  y |>) = f \<circ> split PairVal" 
+  have A: "(\<lambda>(x, y). f <| x ,  y |>) = f \<circ> case_prod PairVal" 
     by (intro ext) (simp add: o_def split: prod.split)
   have f[measurable]: "f \<in> borel_measurable (stock_measure (PRODUCT t1 t2))"
     using dens by (auto simp: has_subprob_density_def has_density_def N_def)
@@ -275,12 +275,12 @@ next
                             \<integral>\<^sup>+x. f x * indicator (snd' -` X \<inter> space N) x \<partial>N"
     by (subst (1 2) M, subst space_density, subst emeasure_density)
        (erule has_subprob_densityD, erule measurable_sets, simp, simp)
-  also have "N = distr (stock_measure t1 \<Otimes>\<^sub>M N') N (split PairVal)" (is "_ = ?N") 
+  also have "N = distr (stock_measure t1 \<Otimes>\<^sub>M N') N (case_prod PairVal)" (is "_ = ?N") 
     unfolding N_def N'_def stock_measure.simps by (rule embed_measure_eq_distr) (simp add: inj_PairVal)
   hence "\<And>f. nn_integral N f = nn_integral ... f" by simp
   also from dens and X 
     have "(\<integral>\<^sup>+x. f x * indicator (snd' -` X \<inter> space N) x \<partial>?N) = 
-              \<integral>\<^sup>+x. f (split PairVal x) * indicator (snd' -` X \<inter> space N) (split PairVal x) 
+              \<integral>\<^sup>+x. f (case_prod PairVal x) * indicator (snd' -` X \<inter> space N) (case_prod PairVal x) 
                 \<partial>(stock_measure t1 \<Otimes>\<^sub>M N')"
       by (intro nn_integral_distr) 
          (simp add: measurable_embed_measure2 N_def N'_def inj_PairVal, 
@@ -304,7 +304,7 @@ next
                  space_embed_measure space_pair_measure N'_def)
   have "?I = \<integral>\<^sup>+y. \<integral>\<^sup>+x. f <|x,y|> * indicator X y \<partial>stock_measure t1 \<partial>N'"  (is "_ = ?I")
     by (intro nn_integral_cong) (simp add: A)
-  also have A: "\<And>y. y \<in> space N' \<Longrightarrow> (\<lambda>x. f <|x,y|>) = f \<circ> split PairVal \<circ> (\<lambda>x. (x,y))"
+  also have A: "\<And>y. y \<in> space N' \<Longrightarrow> (\<lambda>x. f <|x,y|>) = f \<circ> case_prod PairVal \<circ> (\<lambda>x. (x,y))"
     by (intro ext) simp
   from dens have "?I = \<integral>\<^sup>+y. (\<integral>\<^sup>+x. f <|x,y|> \<partial>stock_measure t1) * indicator X y \<partial>N'"
     by (intro nn_integral_cong nn_integral_multc) (auto simp: N'_def)
@@ -444,11 +444,11 @@ proof-
 qed
 
 lemma addc_density_measurable:
-  assumes Mf: "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  assumes Mf: "case_prod f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
   assumes t_disj: "t = REAL \<or> t = INTEG" and t: "\<Gamma> \<turnstile> e' : t"
   assumes rf: "randomfree e'" and vars: "free_vars e' \<subseteq> V'"
   defines "f' \<equiv> (\<lambda>\<rho> x. f \<rho> (op_sem Add <|x, expr_sem_rf \<rho> (Minus $$ e')|>))"
-  shows "split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  shows "case_prod f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
 proof (insert t_disj, elim disjE)
   assume A: "t = REAL"
   from A and t have t': "\<Gamma> \<turnstile> e' : REAL" by simp
@@ -458,10 +458,10 @@ proof (insert t_disj, elim disjE)
   let ?f' = "\<lambda>\<sigma> x. let c = expr_sem_rf \<sigma> e'
                     in  f \<sigma> (RealVal (extract_real x - extract_real c))"
   note Mf[unfolded A, measurable] and rf[measurable] and vars[measurable] and t[unfolded A, measurable]
-  have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     unfolding Let_def A by measurable
-  also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
-                split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  also have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
+                case_prod f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     by (intro measurable_cong)
        (auto simp: Let_def space_pair_measure A space_embed_measure f'_def lift_RealIntVal2_def 
                    lift_RealIntVal_def extract_real_def 
@@ -476,12 +476,12 @@ next
   let ?f' = "\<lambda>\<sigma> x. let c = expr_sem_rf \<sigma> e'
                     in  f \<sigma> (IntVal (extract_int x - extract_int c))"
   note Mf[unfolded A, measurable] and rf[measurable] and vars[measurable] and t[unfolded A, measurable]
-  have Mdiff: "split (op - :: int \<Rightarrow> _) \<in> 
+  have Mdiff: "case_prod (op - :: int \<Rightarrow> _) \<in> 
                  measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV) (count_space UNIV)" by simp
-  have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     unfolding Let_def A by measurable
-  also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
-                split f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  also have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
+                case_prod f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     by (intro measurable_cong)
        (auto simp: Let_def space_pair_measure A space_embed_measure f'_def lift_RealIntVal2_def 
                    lift_RealIntVal_def extract_int_def 
@@ -674,7 +674,7 @@ lemma expr_has_density_sound_op:
   assumes dens_ctxt: "density_context V V' \<Gamma> \<delta>"
   assumes dens: "has_parametrized_subprob_density (state_measure V' \<Gamma>)
                    (\<lambda>\<rho>. dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) f"
-  assumes Mg: "split g \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
+  assumes Mg: "case_prod g \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
   assumes dens': "\<And>M \<rho>. has_subprob_density M (stock_measure t) (f \<rho>) \<Longrightarrow> 
                             has_density (distr M (stock_measure t') (op_sem oper)) 
                                         (stock_measure t') (g \<rho>)"
@@ -686,7 +686,7 @@ proof-
   interpret density_context V V' \<Gamma> \<delta> by fact
   show ?thesis unfolding has_parametrized_subprob_density_def
   proof (intro conjI ballI impI)
-    show "split g \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" by fact
+    show "case_prod g \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" by fact
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
     let ?M = "dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>"
@@ -984,7 +984,7 @@ next
   show ?case
   proof (unfold has_parametrized_subprob_density_def, intro ballI conjI impI)
     interpret sigma_finite_measure "stock_measure (dist_param_type dst)" by simp
-    show "split (apply_dist_to_dens dst f) \<in>
+    show "case_prod (apply_dist_to_dens dst f) \<in>
               borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       unfolding apply_dist_to_dens_def t2 by measurable
 
@@ -1172,7 +1172,7 @@ next
    unfolding has_parametrized_subprob_density_def
   proof (intro conjI ballI impI)
     interpret sigma_finite_measure "stock_measure t'" by simp
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1206,7 +1206,7 @@ next
    unfolding has_parametrized_subprob_density_def
   proof (intro conjI ballI impI)
     interpret sigma_finite_measure "stock_measure t" by simp
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
       by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1242,7 +1242,7 @@ next
   proof (intro has_parametrized_subprob_densityI)
     let ?f = "\<lambda>\<rho> y. \<integral>\<^sup>+x. (if op_sem oper x = y then 1 else 0) * f \<rho> x \<partial>stock_measure t"
     note sigma_finite_measure.borel_measurable_nn_integral[OF sigma_finite_stock_measure, measurable]
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')"
       using measurable_op_sem[OF t2] by measurable
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1292,7 +1292,7 @@ next
   proof (intro expr_has_density_sound_op[where t = t])
     from t2 have [measurable]: "lift_RealIntVal uminus uminus \<in> measurable (stock_measure t') (stock_measure t)"
       by (simp split: pdf_type.split_asm)
-    from dens have Mf[measurable]: "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+    from dens have Mf[measurable]: "case_prod f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
         by (blast dest: has_parametrized_subprob_densityD)
     show "(\<lambda>(\<rho>, x). f \<rho> (op_sem Minus x))
               \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" by simp
@@ -1345,11 +1345,11 @@ next
   proof (intro expr_has_density_sound_op[where t = REAL])
     from t2 have [measurable]: "lift_RealVal safe_ln \<in> measurable (stock_measure REAL) (stock_measure REAL)"
       by (simp split: pdf_type.split_asm)
-    from dens have Mf[measurable]: "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure REAL)"
+    from dens have Mf[measurable]: "case_prod f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure REAL)"
         by (blast dest: has_parametrized_subprob_densityD)
     let ?f = "\<lambda>\<rho> x. if extract_real x > 0 then 
                          f \<rho> (lift_RealVal safe_ln x) * inverse (extract_real x) else 0"
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" 
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" 
       unfolding t2 by measurable
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure REAL) (f \<rho>)"
     hence space_M: "space M = space (stock_measure REAL)" by (auto dest: has_subprob_densityD)
@@ -1377,11 +1377,11 @@ next
   proof (intro expr_has_density_sound_op[where t = REAL])
     from t2 have [measurable]: "lift_RealVal inverse \<in> measurable (stock_measure REAL) (stock_measure REAL)"
       by (simp split: pdf_type.split_asm)
-    from dens have Mf[measurable]: "split f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure REAL)"
+    from dens have Mf[measurable]: "case_prod f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure REAL)"
         by (blast dest: has_parametrized_subprob_densityD)
     let ?f = "\<lambda>\<rho> x. f \<rho> (op_sem Inverse x) * inverse (extract_real x) ^ 2"
     have [measurable]: "extract_real \<in> borel_measurable (stock_measure REAL)" by simp
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" by (simp add: t2)
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t')" by (simp add: t2)
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure REAL) (f \<rho>)"
     hence space_M: "space M = space (stock_measure REAL)" by (auto dest: has_subprob_densityD)
     have "has_density (distr M (stock_measure t') (lift_RealVal inverse)) (stock_measure t')
@@ -1411,7 +1411,7 @@ next
   show ?case (is "has_parametrized_subprob_density _ ?N _ ?f")
   proof (unfold has_parametrized_subprob_density_def has_subprob_density_def, intro conjI ballI)
     from t2 t_disj hd_addc.prems hd_addc.hyps
-      show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+      show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by (intro addc_density_measurable has_parametrized_subprob_densityD[OF dens]) auto
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1496,7 +1496,7 @@ next
   proof (unfold has_parametrized_subprob_density_def has_subprob_density_def, intro conjI ballI)
     let ?MR = "stock_measure t" and ?MP = "stock_measure (PRODUCT t t)"
     have M_mult[measurable]: "(op_sem Mult) \<in> measurable ?MP ?MR" by (simp add: measurable_op_sem t)
-    show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+    show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by measurable (insert t2, auto simp: t val_type_eq_REAL lift_RealVal_def)
 
     fix \<rho> assume \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
@@ -1564,12 +1564,12 @@ next
       using t_disj by auto
     note measurable_op_sem[measurable] t2[measurable]
     let ?f' = "\<lambda>\<rho> z. \<integral>\<^sup>+ x. f \<rho>  <|x , op_sem Add <|z, op_sem Minus x|>|> \<partial>stock_measure t"
-    have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+    have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by measurable
-    also have "split ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
-                    split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+    also have "case_prod ?f' \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t) \<longleftrightarrow>
+                    case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
       by (intro measurable_cong) (auto simp: space_pair_measure)
-    finally show "split ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)" .
+    finally show "case_prod ?f \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)" .
 
     fix M \<rho> assume dens': "has_subprob_density M (stock_measure (PRODUCT t t)) (f \<rho>)"
     hence Mf[measurable]: "f \<rho> \<in> borel_measurable (stock_measure (PRODUCT t t))" by (rule has_subprob_densityD)
@@ -1624,7 +1624,7 @@ proof (rule hd_AE[OF assms(1,3) AE_I2[OF assms(5)]])
   note dens' = has_parametrized_subprob_densityD[OF this]
   show "(\<lambda>(\<rho>, x). f' \<rho> x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     using assms(5) dens'(4)
-    by (subst measurable_cong[of _ _ "split f"]) (auto simp: space_pair_measure)
+    by (subst measurable_cong[of _ _ "case_prod f"]) (auto simp: space_pair_measure)
   fix \<rho> x assume "\<rho> \<in> space (state_measure V' \<Gamma>)" "x \<in> type_universe t"
   with dens'(2) assms(5) show "f' \<rho> x \<ge> 0" by simp
 qed auto

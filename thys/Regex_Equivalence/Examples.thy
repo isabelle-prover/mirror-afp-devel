@@ -37,25 +37,25 @@ definition "re_left n = Times (seq_left n (Plus (Atom True) One)) (seq_left n (A
 definition "re n = Times (seq n (Plus (Atom True) One)) (seq n (Atom True))"
 definition "M n = (re_left n, replicate n True)"
 
-lemma "split match_brz (M 128)" by eval
-lemma "split match_brzq (M 128)" by eval
-lemma "split match_n (M 64)" by eval
-lemma "split match_p (M 64)" by eval
-lemma "split match_pn (M 64)" by eval
-lemma "split match_a (M 512)" by eval
-lemma "split match_b (M 512)" by eval
-lemma "split match_a2 (M 2048)" by eval
-lemma "split match_b2 (M 2048)" by eval
+lemma "case_prod match_brz (M 128)" by eval
+lemma "case_prod match_brzq (M 128)" by eval
+lemma "case_prod match_n (M 64)" by eval
+lemma "case_prod match_p (M 64)" by eval
+lemma "case_prod match_pn (M 64)" by eval
+lemma "case_prod match_a (M 512)" by eval
+lemma "case_prod match_b (M 512)" by eval
+lemma "case_prod match_a2 (M 2048)" by eval
+lemma "case_prod match_b2 (M 2048)" by eval
 
 
-lemma "split check_eqv_brz (B 32)" by eval
-lemma "split check_eqv_brzq (B 16)" by eval
-lemma "split check_eqv_n (B 256)" by eval
-lemma "split check_eqv_p (B 256)" by eval
-lemma "split check_eqv_b (B 256)" by eval
-lemma "split check_eqv_a (B 256)" by eval
-lemma "split check_eqv_b2 (B 256)" by eval
-lemma "split check_eqv_a2 (B 256)" by eval
+lemma "case_prod check_eqv_brz (B 32)" by eval
+lemma "case_prod check_eqv_brzq (B 16)" by eval
+lemma "case_prod check_eqv_n (B 256)" by eval
+lemma "case_prod check_eqv_p (B 256)" by eval
+lemma "case_prod check_eqv_b (B 256)" by eval
+lemma "case_prod check_eqv_a (B 256)" by eval
+lemma "case_prod check_eqv_b2 (B 256)" by eval
+lemma "case_prod check_eqv_a2 (B 256)" by eval
 
 (*<*)
 end

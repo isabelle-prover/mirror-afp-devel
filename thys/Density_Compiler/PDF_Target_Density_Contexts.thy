@@ -259,8 +259,8 @@ proof-
        (auto intro!: borel_measurable_ereal measurable_compose[OF _ measurable_cexpr_sem'] 
              measurable_Pair simp: measurable_split_conv state_measure_def)
   hence "AE z in stock_measure (\<Gamma> x) \<Otimes>\<^sub>M stock_measure (\<Gamma> y). 
-          ereal (extract_real (cexpr_sem (case_nat (split PairVal z) \<rho>) (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) = 
-               marg_dens2 (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) x y \<rho> (split PairVal z)"
+          ereal (extract_real (cexpr_sem (case_nat (case_prod PairVal z) \<rho>) (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) = 
+               marg_dens2 (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) x y \<rho> (case_prod PairVal z)"
   proof (rule AE_mp[OF _ AE_I2[OF impI]])
     fix z assume z: "z \<in> space (stock_measure (\<Gamma> x) \<Otimes>\<^sub>M stock_measure (\<Gamma> y))"
     assume fin: "?P z"
@@ -288,7 +288,7 @@ proof-
     have nonneg: "nonneg_cexpr (set [z\<leftarrow>vs . z \<noteq> x \<and> z \<noteq> y] \<union> ({x, y} \<union> set vs')) \<Gamma> \<delta>"
       using invar by (subst B) simp
 
-    have "ereal (extract_real (cexpr_sem (case_nat (split PairVal z) \<rho>) (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) =
+    have "ereal (extract_real (cexpr_sem (case_nat (case_prod PairVal z) \<rho>) (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) =
             extract_real (cexpr_sem ((case_nat <|fst z, snd z|> \<rho>) (Suc x := fst z, Suc y := snd z) \<circ> Suc)
                                (integrate_vars \<Gamma> ?vs \<delta>))"
       unfolding marg_dens2_cexpr_def
@@ -301,13 +301,13 @@ proof-
       using invar assms by (intro cexpr_sem_integrate_vars'[OF \<rho>' _ _ nonneg integrable]) auto
     also have C: "set ?vs = set vs - {x, y}" by auto
     have "(\<integral>\<^sup>+xa. ?f (merge (set ?vs) ({x, y} \<union> set vs') (xa, \<rho>(x := fst z, y := snd z))) \<partial>?M) = 
-                 marg_dens2 (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) x y \<rho> (split PairVal z)" 
+                 marg_dens2 (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) x y \<rho> (case_prod PairVal z)" 
       unfolding marg_dens2_def 
       by (subst A[symmetric], subst C, simp only: dens_ctxt_\<alpha>_def prod.case)
          (auto intro!: nn_integral_cong split: prod.split)
-    finally show "ereal (extract_real (cexpr_sem (case_nat (split PairVal z) \<rho>) 
+    finally show "ereal (extract_real (cexpr_sem (case_nat (case_prod PairVal z) \<rho>) 
                                             (marg_dens2_cexpr \<Gamma> vs x y \<delta>))) =
-                      marg_dens2 (dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>)) x y \<rho> (split PairVal z)" .
+                      marg_dens2 (dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>)) x y \<rho> (case_prod PairVal z)" .
   qed
   thus ?thesis by (subst stock_measure.simps, subst AE_embed_measure[OF inj_PairVal]) simp
 qed

@@ -290,8 +290,8 @@ lemma if_eval_elim:
   apply (rule ccontr)
   apply (cases "ev\<^sub>B mem e")
    apply (insert if_eval_true deterministic)
-   apply (metis Pair_eq)
-  by (metis Pair_eq if_eval_false deterministic)
+   apply (metis prod.inject)
+  by (metis prod.inject if_eval_false deterministic)
 
 lemma if_eval_elim':
   "\<lbrakk> \<langle>If e c\<^sub>1 c\<^sub>2, mds, mem\<rangle> \<leadsto> \<langle>c', mds', mem'\<rangle> \<rbrakk> \<Longrightarrow>

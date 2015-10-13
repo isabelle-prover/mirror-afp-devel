@@ -236,7 +236,7 @@ section{*Correctness lemmata*}
       apply (cases f)
       apply (simp add: delete_edges_delete_edge_commute)
       apply (simp add: delete_edge_def)
-      apply (metis (lifting, full_types) prod.exhaust splitI split_conv)
+      apply (metis (lifting, full_types) prod.exhaust case_prodI split_conv)
       done
   qed simp
 

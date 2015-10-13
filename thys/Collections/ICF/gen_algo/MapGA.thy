@@ -199,7 +199,7 @@ begin
       unfolding A
       apply (simp add: Bex_def Ball_def image_iff map_to_set_def)
       apply clarify
-      apply (metis option.exhaust PairE)
+      apply (metis option.exhaust prod.exhaust)
       apply (simp add: Bex_def Ball_def image_iff map_to_set_def)
       done
   qed
@@ -581,7 +581,7 @@ begin
       have "Eps_Opt (vP k) = Some v \<longleftrightarrow> vP k v"
         using unique_f unfolding vP_def transforms_to_unique_keys_def 
         apply (rule_tac Eps_Opt_eq_Some)
-        apply (metis Pair_eq option.inject)
+        apply (metis prod.inject option.inject)
       done
     } note Eps_vP_elim[simp] = this
     have map_intro: "{y. \<exists>x. x \<in> map_to_set (m1.\<alpha> m) \<and> f x = Some y} 

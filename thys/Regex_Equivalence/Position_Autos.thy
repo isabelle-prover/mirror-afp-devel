@@ -20,8 +20,8 @@ primrec mrexps :: "'a rexp \<Rightarrow> ('a mrexp) set" where
   "mrexps Zero = {Zero}"
 | "mrexps One = {One}"
 | "mrexps (Atom a) = {Atom (True, a), Atom (False, a)}"
-| "mrexps (Plus r s) = split Plus ` (mrexps r \<times> mrexps s)"
-| "mrexps (Times r s) = split Times ` (mrexps r \<times> mrexps s)"
+| "mrexps (Plus r s) = case_prod Plus ` (mrexps r \<times> mrexps s)"
+| "mrexps (Times r s) = case_prod Times ` (mrexps r \<times> mrexps s)"
 | "mrexps (Star r) = Star ` mrexps r"
 
 lemma finite_mrexps[simp]: "finite (mrexps r)"

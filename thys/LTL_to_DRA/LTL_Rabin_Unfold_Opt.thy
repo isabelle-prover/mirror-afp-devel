@@ -358,10 +358,10 @@ proof -
       assume "j \<ge> i"
        
       obtain \<phi>\<^sub>\<A> m\<^sub>\<A> x where r\<^sub>\<A>_def': "r\<^sub>\<A> (Suc j) = ((\<phi>\<^sub>\<A>, m\<^sub>\<A>), w (Suc j), x)"
-        unfolding r\<^sub>\<A>_def run\<^sub>t.simps using PairE by fastforce
+        unfolding r\<^sub>\<A>_def run\<^sub>t.simps using prod.exhaust by fastforce
 
       obtain \<phi>\<^sub>\<UU> m\<^sub>\<UU> y where r\<^sub>\<UU>_def': "r\<^sub>\<UU> j = ((\<phi>\<^sub>\<UU>, m\<^sub>\<UU>), w j, y)"
-        unfolding r\<^sub>\<UU>_def run\<^sub>t.simps using PairE by fastforce
+        unfolding r\<^sub>\<UU>_def run\<^sub>t.simps using prod.exhaust by fastforce
 
       have m\<^sub>\<A>_def: "\<And>\<chi> q. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> the (m\<^sub>\<A> \<chi>) q = semi_mojmir_def.state_rank \<Sigma> \<up>af\<^sub>G (Abs (theG \<chi>)) w q (Suc j)"
         using \<A>.run_properties(2)[of _ \<phi> "Suc j"] r\<^sub>\<A>_def'[unfolded r\<^sub>\<A>_def] prod.sel  by simp

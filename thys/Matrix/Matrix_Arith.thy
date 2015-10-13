@@ -245,7 +245,7 @@ proof (induct m arbitrary: nc)
       assume mem: "(a,b) \<in> set (zip v (transpose nr m))"
       from mem have "b \<in> set (transpose nr m)" by (rule set_zip_rightD)
       with wfRec have "length b = ncc" unfolding mat_def using vec_def[of ncc] by auto
-      hence "length (split op # (a,b)) = Suc ncc" by auto
+      hence "length (case_prod op # (a,b)) = Suc ncc" by auto
     }
     thus ?thesis
       by (auto simp: vec_def nc)

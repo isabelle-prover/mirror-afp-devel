@@ -732,7 +732,7 @@ proof
   qed
 next
   show "sim_val ?M ?M' ?f"
-    by rule (simp add: spr_sim_def spr_simVal_def spr_repSim_def spr_repVal_def split: split_split)
+    by rule (simp add: spr_sim_def spr_simVal_def spr_repSim_def spr_repVal_def split: prod.split)
 next
   show "sim_f ?M ?M' ?f"
     by rule (auto iff: spr_sim_def simp: spr_simRels_def spr_repRels_def spr_repSim_def)
@@ -796,7 +796,7 @@ lemma spr_simInit:
 (*<*)
   using assms
   unfolding spr_simInit_def spr_simAbs_def spr_sim_def [abs_def]
-  apply (clarsimp simp: Let_def SPR.jviewInit split: split_split)
+  apply (clarsimp simp: Let_def SPR.jviewInit split: prod.split)
   apply rule
    apply clarsimp
    apply (rule_tac x="tInit s" in image_eqI)
@@ -1774,7 +1774,7 @@ proof
         and cec': "cec' = ODList.filter (\<lambda>s. envObsC (es (snd s)) = spr_simObsC envObsC aec') (fromList (spr_trans (fst ec) (fst ec)))"
       unfolding spr_simTrans_def
       using spr_trans_aec[OF assms]
-      apply (auto split: split_split_asm)
+      apply (auto split: prod.split_asm)
       apply (drule imageI[where f=set])
       apply (simp add: partition[OF envObs_rel_equiv subset_UNIV])
       apply (erule quotientE)
@@ -2038,7 +2038,7 @@ lemma (in FiniteDetBroadcastEnvironment) trans_MapOps[intro, simp]:
 proof
   fix k show "MapOps.lookup trans_MapOps (MapOps.empty trans_MapOps) k = None"
     unfolding trans_MapOps_def trans_MapOps_lookup_def
-    by (auto split: split_split)
+    by (auto split: prod.split)
 next
   fix e k k' M
   assume k: "(spr_simAbs (fst k), snd k) \<in> SPRdet.jkbpSEC \<times> (UNIV :: 'z set)"
@@ -2051,12 +2051,12 @@ next
       using inj_onD[OF spr_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto simp: lookup_update lookup_trie_update_with split: option.split split_split)
+      by (auto simp: lookup_update lookup_trie_update_with split: option.split prod.split)
   next
     have *: "\<And> y ya. y \<noteq> ya \<Longrightarrow> Mapping.lookup (Mapping.update y e Mapping.empty) ya = None" by transfer simp
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def
-      by (auto dest: map_prod_eq simp: lookup_trie_update_with split: option.split split_split intro!: lookup_update_neq *)
+      by (auto dest: map_prod_eq simp: lookup_trie_update_with split: option.split prod.split intro!: lookup_update_neq *)
   qed
 qed
 
@@ -2112,11 +2112,11 @@ next
       using inj_onD[OF spr_simAbs_inj_on] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto simp: lookup_trie_update_with lookup_trie_update split: option.split split_split)
+      by (auto simp: lookup_trie_update_with lookup_trie_update split: option.split prod.split)
   next
     case False thus ?thesis
       unfolding acts_MapOps_def acts_MapOps_lookup_def acts_MapOps_update_def
-      by (auto dest: map_prod_eq simp: lookup_trie_update_with lookup_trie_update split: option.split split_split)
+      by (auto dest: map_prod_eq simp: lookup_trie_update_with lookup_trie_update split: option.split prod.split)
   qed
 qed
 

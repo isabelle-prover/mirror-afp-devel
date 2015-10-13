@@ -616,8 +616,8 @@ fun last [] = raise Empty
   | last [x] = x
   | last (x::xs) = last xs;
 
-fun dest_splits (Const (@{const_name uncurry},_)$Abs (n,T,t)) = (n,T)::dest_splits t
-  | dest_splits (Const (@{const_name uncurry},_)$Abs (n,T,t)$_) = (n,T)::dest_splits t
+fun dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)) = (n,T)::dest_splits t
+  | dest_splits (Const (@{const_name case_prod},_)$Abs (n,T,t)$_) = (n,T)::dest_splits t
   | dest_splits (Abs (n,T,_)) = [(n,T)]
   | dest_splits _ = [];
 
@@ -2772,7 +2772,7 @@ fun while_tac ctxt state_kind inv cont_tac tac mode t i=
 fun dest_split (Abs (x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
      in ((x,T)::vs,fn t' => Abs (x,T,recomb t'),bdy) end
-  | dest_split (c as Const (@{const_name uncurry},_)$Abs(x,T,t)) =
+  | dest_split (c as Const (@{const_name case_prod},_)$Abs(x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
      in ((x,T)::vs,fn t' => c$Abs (x,T,recomb t'),bdy) end
   | dest_split t = ([],I,t);
@@ -2815,7 +2815,7 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
   in EVERY [resolve_tac ctxt rules' i,
             tac,
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
-                      addsimprocs [@{simproc split_beta}]) (i+2),
+                      addsimprocs [@{simproc case_prod_beta}]) (i+2),
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) (i+1),
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) i,
             REPEAT (resolve_tac ctxt [allI] (i+1)),
@@ -3582,7 +3582,7 @@ fun HoareRuleTac ctxt insts fixes st =
     val annotate_simp_tac =
       simp_tac (put_simpset HOL_basic_ss ctxt
         addsimps (anno_defs@normalize_simps)
-        addsimprocs [@{simproc split_beta}]);
+        addsimprocs [@{simproc case_prod_beta}]);
     fun is_com_eq (Const (@{const_name Trueprop},_)$(Const (@{const_name HOL.eq},T)$_$_)) =
           (case (binder_types T) of
              (Type (@{type_name Language.com},_)::_) => true

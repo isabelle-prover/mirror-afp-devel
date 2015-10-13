@@ -333,7 +333,7 @@ next
          R_S: "\<forall>kv'\<in>S - {kv}. R kv kv'" and
          R_not_S: "\<forall>kv'\<in>map_to_set m - S. R kv' kv"
   let ?S' = "fst ` S" 
-  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule PairE)
+  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule prod.exhaust)
 
   have "I (fst ` S - {k}) (f (k, v) \<sigma>)"
   proof (rule IP)

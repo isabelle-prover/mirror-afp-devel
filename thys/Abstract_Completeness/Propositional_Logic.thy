@@ -22,13 +22,13 @@ lemma max_depth_Suc: "max_depth \<phi> = Suc n = ((\<exists>\<psi>. \<phi> = Neg
 
 abbreviation "atoms \<equiv> smap Atom nats"
 abbreviation "depth1 \<equiv>
-  sinterleave (smap Neg atoms) (smap (split Conj) (sproduct atoms atoms))"
+  sinterleave (smap Neg atoms) (smap (case_prod Conj) (sproduct atoms atoms))"
 
 abbreviation "sinterleaves \<equiv> fold sinterleave"
 
 fun extendLevel where "extendLevel (belowN, N) =
   (let Next = sinterleaves
-    (map (smap (split Conj)) [sproduct belowN N, sproduct N belowN, sproduct N N])
+    (map (smap (case_prod Conj)) [sproduct belowN N, sproduct N belowN, sproduct N N])
     (smap Neg N)
   in (sinterleave belowN N, Next))"
 
@@ -85,7 +85,7 @@ qed
 datatype rule = Idle | Ax nat | NegL fmla | NegR fmla | ConjL fmla fmla | ConjR fmla fmla
 
 abbreviation "mkRules f \<equiv> smap f fmlas"
-abbreviation "mkRulePairs f \<equiv> smap (split f) (sproduct fmlas fmlas)"
+abbreviation "mkRulePairs f \<equiv> smap (case_prod f) (sproduct fmlas fmlas)"
 
 definition rules where
   "rules = Idle ## 

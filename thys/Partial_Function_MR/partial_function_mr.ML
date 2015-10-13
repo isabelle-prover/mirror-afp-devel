@@ -55,7 +55,7 @@ fun mk_curry f =
   | T => raise TYPE ("mk_curry", [T], [f]);
 
 fun curry_n arity = funpow (arity - 1) mk_curry;
-fun uncurry_n arity = funpow (arity - 1) HOLogic.mk_split;    
+fun uncurry_n arity = funpow (arity - 1) HOLogic.mk_case_prod;    
 (* end copy of partial_function.ML *)
 
 fun init mode mk_monad_map mk_monadT dest_monadT monad_map_comp monad_map_id phi =

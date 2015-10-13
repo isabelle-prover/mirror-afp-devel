@@ -138,7 +138,7 @@ definition if_dens_det :: "(state \<Rightarrow> ereal) \<Rightarrow> expr \<Righ
 
 lemma measurable_if_dens:
   assumes [measurable]: "\<delta> \<in> borel_measurable M"
-  assumes [measurable]: "split f \<in> borel_measurable (M \<Otimes>\<^sub>M count_space (range BoolVal))"
+  assumes [measurable]: "case_prod f \<in> borel_measurable (M \<Otimes>\<^sub>M count_space (range BoolVal))"
   shows "if_dens \<delta> f b \<in> borel_measurable M"
   unfolding if_dens_def by measurable
 
@@ -196,7 +196,7 @@ qed
 
 lemma measurable_marg_dens':
   assumes "x \<in> V"
-  shows "split (marg_dens \<Y> x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure (\<Gamma> x))"
+  shows "case_prod (marg_dens \<Y> x) \<in> borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure (\<Gamma> x))"
 proof-
   interpret sigma_finite_measure "state_measure (V - {x}) \<Gamma>"
     unfolding state_measure_def
@@ -213,7 +213,7 @@ qed
 
 lemma measurable_marg_dens2':
   assumes "x \<in> V" "y \<in> V"
-  shows "split (marg_dens2 \<Y> x y) \<in> 
+  shows "case_prod (marg_dens2 \<Y> x y) \<in> 
              borel_measurable (state_measure V' \<Gamma> \<Otimes>\<^sub>M stock_measure (PRODUCT (\<Gamma> x) (\<Gamma> y)))"
 proof-
   interpret sigma_finite_measure "state_measure (V - {x, y}) \<Gamma>"
@@ -339,7 +339,7 @@ proof-
   interpret product_sigma_finite "\<lambda>x. stock_measure (\<Gamma> x)"
     unfolding product_sigma_finite_def by simp
   from assms have "(\<integral>\<^sup>+ z. marg_dens2 \<Y> x y \<rho> z * indicator X z \<partial>?M) = 
-      \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (split PairVal z) * indicator X (split PairVal z) \<partial>?M'"
+      \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (case_prod PairVal z) * indicator X (case_prod PairVal z) \<partial>?M'"
     by (subst nn_integral_PairVal)
        (auto simp add: split_beta' intro!: borel_measurable_ereal_times measurable_marg_dens2)
 
@@ -392,7 +392,7 @@ proof-
                        \<partial>stock_measure (\<Gamma> x) \<partial>stock_measure (\<Gamma> y)"
     by (intro nn_integral_cong) (simp add: marg_dens2_def)
   also from assms(4) 
-    have "... = \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (split PairVal z) * indicator X (split PairVal z) 
+    have "... = \<integral>\<^sup>+z. marg_dens2 \<Y> x y \<rho> (case_prod PairVal z) * indicator X (case_prod PairVal z) 
                     \<partial>(stock_measure (\<Gamma> x) \<Otimes>\<^sub>M stock_measure (\<Gamma> y))"
       using assms
       by (subst pair_sigma_finite.nn_integral_snd[symmetric])
@@ -480,7 +480,7 @@ proof (rule measure_eqI)
 qed simp
 
 lemma measurable_insert_dens[measurable]:
-  assumes Mf[measurable]: "split f \<in> borel_measurable (state_measure (V \<union> V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  assumes Mf[measurable]: "case_prod f \<in> borel_measurable (state_measure (V \<union> V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
   shows "insert_dens V V' f \<delta>
              \<in> borel_measurable (state_measure (shift_var_set (V \<union> V')) (case_nat t \<Gamma>))"
 proof-
@@ -636,7 +636,7 @@ lemma emeasure_dens_ctxt_measure_insert':
 proof-
   let ?m = "\<lambda>x y. merge (insert 0 (Suc ` V)) (Suc ` V') (x(0 := y), \<rho>)"
   from dens have Mf: 
-      "split f \<in> borel_measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+      "case_prod f \<in> borel_measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
     by (rule has_parametrized_subprob_densityD)
   note [measurable] = Mf[unfolded state_measure_def]
   have meas_merge: "(\<lambda>x. merge (shift_var_set V) (Suc`V') (x, \<rho>))
@@ -820,7 +820,7 @@ qed (insert disjoint, auto simp: shift_var_set_def)
 lemma dens_ctxt_measure_insert:
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes meas_M: "M \<in> measurable (state_measure (V\<union>V') \<Gamma>) (subprob_algebra (stock_measure t))"
-  assumes meas_f[measurable]: "split f \<in> borel_measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
+  assumes meas_f[measurable]: "case_prod f \<in> borel_measurable (state_measure (V\<union>V') \<Gamma> \<Otimes>\<^sub>M stock_measure t)"
   assumes has_dens: "\<And>\<rho>. \<rho> \<in> space (state_measure (V\<union>V') \<Gamma>) \<Longrightarrow> 
                          has_subprob_density (M \<rho>) (stock_measure t) (f \<rho>)"
   shows "do {\<sigma> \<leftarrow> dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>; 

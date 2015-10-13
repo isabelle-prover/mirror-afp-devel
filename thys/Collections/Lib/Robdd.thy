@@ -1992,14 +1992,14 @@ locale robdd_locale =
           by (cases b1, case_tac [!] b2) simp_all
 
         obtain b1_l b1_r v'' b2_l b2_r where 
-          next_eq: "robdd_apply_next b1 b2 = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis PairE)
+          next_eq: "robdd_apply_next b1 b2 = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis prod.exhaust)
         obtain l apply_map' rev_map' where 
           apply_l_eq: "robdd_apply apply_map rev_map bop b1_l b2_l = (l, apply_map', rev_map')"
-          by (metis PairE)
+          by (metis prod.exhaust)
         obtain r apply_map'' rev_map'' where 
           apply_r_eq: "robdd_apply apply_map' rev_map' bop b1_r b2_r = (r, apply_map'', rev_map'')"
-          by (metis PairE)
-        obtain b' rev_map''' where const_eq: "robdd_construct rev_map'' l v'' r = (b', rev_map''')" by (metis PairE)
+          by (metis prod.exhaust)
+        obtain b' rev_map''' where const_eq: "robdd_construct rev_map'' l v'' r = (b', rev_map''')" by (metis prod.exhaust)
         def apply_map''' \<equiv> "c_update (robdd_get_id b1, robdd_get_id b2) b' apply_map''"
         note next_props = robdd_apply_next_correct [OF b1_invar b2_invar next_eq] not_leaf_b12
         note v''_eq = next_props(13)
@@ -2201,7 +2201,7 @@ locale robdd_locale =
      done
 
      obtain b1_l b1_r v'' b2_l b2_r where 
-       next_eq: "robdd_apply_next b robdd_one = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis PairE)
+       next_eq: "robdd_apply_next b robdd_one = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis prod.exhaust)
 
      from next_eq have b2_eq[simp]: "b2_l = robdd_one" "b2_r = robdd_one"
        by (case_tac[!] b) auto
@@ -2302,7 +2302,7 @@ locale robdd_locale =
      done
 
      obtain b1_l b1_r v'' b2_l b2_r where 
-       next_eq: "robdd_apply_next b robdd_one = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis PairE)
+       next_eq: "robdd_apply_next b robdd_one = (b1_l, b1_r, v'', b2_l, b2_r)" by (metis prod.exhaust)
 
      from next_eq have b2_eq[simp]: "b2_l = robdd_one" "b2_r = robdd_one"
        by (case_tac[!] b) auto
@@ -2490,13 +2490,13 @@ locale robdd_locale =
 
           obtain l' res_map' rev_map' where 
             res_l_eq: "robdd_restrict res_map rev_map f rv l = (l', res_map', rev_map')"
-            by (metis PairE)
+            by (metis prod.exhaust)
           obtain r' res_map'' rev_map'' where 
             res_r_eq: "robdd_restrict res_map' rev_map' f rv r = (r', res_map'', rev_map'')"
-            by (metis PairE)
+            by (metis prod.exhaust)
           obtain b3 rev_map''' where 
             const_eq: "robdd_construct rev_map'' l' v r' = (b3, rev_map''')"
-            by (metis PairE)
+            by (metis prod.exhaust)
 
           from b_invar b_sub indhyp_l [OF invar_rev_map invar_res_map, of "Suc v"]
           obtain bs' where

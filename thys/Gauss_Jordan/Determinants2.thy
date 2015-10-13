@@ -451,7 +451,7 @@ unfolding f_def[symmetric] g_def[symmetric]
 apply (subst f_rw)
 apply (subst g_rw)
 unfolding fst_snd snd_snd fst_det
-by (metis fst_snd pair_collapse snd_Gauss_Jordan_column_k_det_P_is_snd_Gauss_Jordan_column_k_PA snd_eqD snd_snd)
+by (metis fst_snd prod.collapse snd_Gauss_Jordan_column_k_det_P_is_snd_Gauss_Jordan_column_k_PA snd_eqD snd_snd)
 show "fst (snd (foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc (Suc k)])) = fst (snd (foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc (Suc k)]))"
 unfolding Gauss_Jordan_upt_k_det_P_def  
 unfolding Gauss_Jordan_upt_k_PA_def Let_def fst_conv

@@ -265,10 +265,10 @@ next
       have "map_prod id (f \<circ> the_inv_into gens1 f) xa
             = map_prod id (f \<circ> the_inv_into gens1 f) (fst xa, snd xa)" by simp
       also have "\<dots> = (fst xa, f (the_inv_into gens1 f (snd xa)))"
-        by (auto simp del:pair_collapse)
+        by (auto simp del:prod.collapse)
       also with `snd xa \<in> image f gens1` and `inj_on f gens1`
            have "\<dots> = (fst xa, snd xa)"
-           by (auto elim:f_the_inv_into_f simp del:pair_collapse)
+           by (auto elim:f_the_inv_into_f simp del:prod.collapse)
       also have "\<dots> = id xa" by simp
       finally show "map_prod id (f \<circ> the_inv_into gens1 f) xa = id xa".
     qed

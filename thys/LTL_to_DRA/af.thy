@@ -443,9 +443,9 @@ proof (induction w arbitrary: w' \<phi>)
         by (induction w' arbitrary: w) (metis LTL_suffix_G suffix_conc_length conc_conc)+
     }
     note G_stable = this
-    have A: "\<forall>\<psi>\<in>\<^bold>G (af\<^sub>G \<phi> [x]). w' \<Turnstile> \<psi> = (xs conc w') \<Turnstile> \<psi>"
+    have A: "\<forall>\<psi>\<in>\<^bold>G (af\<^sub>G \<phi> [x]). w' \<Turnstile> \<psi> = (xs \<frown> w') \<Turnstile> \<psi>"
       using G_stable(1)[of w' _ "[x]"] Cons.prems unfolding G_af\<^sub>G_simp conc_conc append.simps unfolding G_nested_propos_alt_def by blast
-    have B: "\<forall>\<psi>\<in>\<^bold>G \<phi>. ([x] \<frown> xs \<frown> w') \<Turnstile> \<psi> = (xs conc w') \<Turnstile> \<psi>"
+    have B: "\<forall>\<psi>\<in>\<^bold>G \<phi>. ([x] \<frown> xs \<frown> w') \<Turnstile> \<psi> = (xs \<frown> w') \<Turnstile> \<psi>"
       using G_stable(2)[of w' _ "[x]"] Cons.prems unfolding conc_conc append.simps unfolding G_nested_propos_alt_def by blast 
     hence "([x] \<frown> xs \<frown> w') \<Turnstile> \<phi> = (xs \<frown> w') \<Turnstile> af\<^sub>G \<phi> [x]"
     proof (induction \<phi>)

@@ -30,7 +30,7 @@ lemma oreachable_par_subnet_induct [consumes, case_names init other local]:
        and IH: "\<And>s t \<sigma>. st = (\<sigma>, SubnetS s t) \<Longrightarrow> P \<sigma> s t"
     from this(1) obtain s t \<sigma> where "st = (\<sigma>, SubnetS s t)"
                                 and "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) S U"
-      by (metis net_par_oreachable_is_subnet pair_collapse)
+      by (metis net_par_oreachable_is_subnet prod.collapse)
     note this(2)
     moreover from tr and \<open>st = (\<sigma>, SubnetS s t)\<close>
       have "((\<sigma>, SubnetS s t), a, (\<sigma>', SubnetS s' t')) \<in> trans (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2))" by simp
@@ -46,7 +46,7 @@ lemma oreachable_par_subnet_induct [consumes, case_names init other local]:
        and IH: "\<And>s t \<sigma>. st = (\<sigma>, SubnetS s t) \<Longrightarrow> P \<sigma> s t"
     from this(1,3) obtain \<sigma> where "st = (\<sigma>, SubnetS s t)"
                               and "(\<sigma>, SubnetS s t) \<in> oreachable (opnet onp (p\<^sub>1 \<parallel> p\<^sub>2)) S U"
-      by (metis pair_collapse)
+      by (metis prod.collapse)
     note this(2)
     moreover from \<open>U (fst st) \<sigma>'\<close> and \<open>st = (\<sigma>, SubnetS s t)\<close> have "U \<sigma> \<sigma>'" by simp
     moreover from IH and \<open>st = (\<sigma>, SubnetS s t)\<close> have "P \<sigma> s t" .

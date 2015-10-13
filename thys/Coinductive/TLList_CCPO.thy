@@ -244,7 +244,7 @@ by(auto 4 4 simp add: rel_fun_def dest: rel_setD1 rel_setD2 llist_all2_lnullD in
 
 lift_definition ex_TCons :: "('a, 'b) tllist set \<Rightarrow> bool"
 is "\<lambda>Y. \<exists>(xs, b) \<in> Y. \<not> lnull xs" parametric ex_TCons_raw_parametric
-by(auto dest: rel_setD1 rel_setD2)
+by (blast dest: rel_setD1 rel_setD2)+
 
 lemma ex_TCons_iff: "ex_TCons Y \<longleftrightarrow> (\<exists>xs \<in> Y. \<not> is_TNil xs)"
 by transfer auto

@@ -178,7 +178,7 @@ lemma nn_integral_T:
   by (simp add: T_def MC.nn_integral_T[of _ cfg] nn_integral_distr)
 
 lemma nn_integral_T_lfp:
-  assumes [measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes [measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable (stream_space (count_space UNIV)) \<Longrightarrow>
     (\<integral>\<^sup>+\<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T cfg)"
@@ -347,7 +347,7 @@ lemma E_sup_bot: "E_sup s \<bottom> = 0"
 lemma E_sup_lfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
-  assumes measurable_g[measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes measurable_g[measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
      (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"
@@ -511,7 +511,7 @@ text \<open>
 lemma E_inf_lfp:
   fixes g
   defines "l \<equiv> \<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))"
-  assumes measurable_g[measurable]: "split g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
+  assumes measurable_g[measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
      (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"

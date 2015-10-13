@@ -113,7 +113,7 @@ lemma [mono]:"
                     list_all (%b. b) (map g foo_list) "
    apply(induct_tac foo_list, auto) done
 
-lemma [mono]: "split f p = f (fst p) (snd p)" by (simp add: split_def)
+lemma [mono]: "case_prod f p = f (fst p) (snd p)" by (simp add: split_def)
 
 (** definitions *)
 (*defns class_name_def *)

@@ -262,7 +262,7 @@ lemma delta_neg_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 
@@ -272,7 +272,7 @@ lemma delta_pos_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 
@@ -579,7 +579,7 @@ lemma delta_neg_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 
@@ -589,7 +589,7 @@ lemma delta_pos_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def less_eq_prod_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 
@@ -768,7 +768,7 @@ lemma delta_neg_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 
@@ -778,7 +778,7 @@ lemma delta_pos_sol:
   apply (subst lfp_unfold)
    apply (rule monoI)
    apply (auto simp: less_eq_dual_def
-              split: split_split
+              split: prod.split
               intro: monoD[OF monoF])
   done
 

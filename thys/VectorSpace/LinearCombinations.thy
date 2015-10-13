@@ -56,7 +56,7 @@ qed
 
 lemma (in comm_monoid) finprod_cong2:
   "[| A = B; 
-      !!i. i \<in> B ==> f i = g i; f \<in> B -> carrier G|] ==> 
+      !!i. i \<in> B ==> f i = g i; f \<in> B \<rightarrow> carrier G|] ==> 
 finprod G f A = finprod G g B"
 by (intro finprod_cong, auto)
 

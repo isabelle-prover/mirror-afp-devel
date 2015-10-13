@@ -977,7 +977,7 @@ lemma (in FiniteSingleAgentEnvironment) trans_MapOps[intro, simp]:
 proof
   fix k show "MapOps.lookup trans_MapOps (MapOps.empty trans_MapOps) k = None"
     unfolding trans_MapOps_def trans_MapOps_lookup_def trie_odlist_lookup_def
-    by (auto split: split_split)
+    by (auto split: prod.split)
 next
   fix e k k' M
   assume k: "(spr_simAbs (fst k), snd k) \<in> SPRsingle.jkbpSEC \<times> (UNIV :: 'z set)"
@@ -990,11 +990,11 @@ next
       using injD[OF spr_simAbs_inj] k k' by (auto iff: prod_eqI)
     thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
-      by (simp add: lookup_trie_update_with lookup_update split: option.split split_split)
+      by (simp add: lookup_trie_update_with lookup_update split: option.split prod.split)
   next
     case False thus ?thesis
       unfolding trans_MapOps_def trans_MapOps_lookup_def trans_MapOps_update_def trie_odlist_lookup_def trie_odlist_update_with_def
-      by (auto simp: lookup_empty lookup_update_neq lookup_trie_update_with split: option.split split_split)
+      by (auto simp: lookup_empty lookup_update_neq lookup_trie_update_with split: option.split prod.split)
   qed
 qed
 

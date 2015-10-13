@@ -420,7 +420,7 @@ lemma open_closed_invariant:
         by (metis subreachableE)
     from \<open>A \<TTurnstile> (I \<rightarrow>) P\<close> and \<open>(\<sigma>', snd s') \<in> reachable A I\<close> have "P (\<sigma>', snd s')" ..
     with \<open>\<forall>j\<in>J. \<sigma>' j = (fst s') j\<close> show "P s'"
-      by (metis localp pair_collapse)
+      by (metis localp prod.collapse)
   next
     fix g g' l
     assume or: "(g, l) \<in> oreachable A (\<lambda>s s'. I) U"
@@ -678,14 +678,14 @@ definition global :: "((nat \<Rightarrow> 's) \<Rightarrow> bool) \<Rightarrow> 
 where "global P \<equiv> (\<lambda>(\<sigma>, _). P \<sigma>)"
 
 lemma globalsimp [simp]: "global P s = P (fst s)"
-  unfolding global_def by (simp split: split_split)
+  unfolding global_def by (simp split: prod.split)
 
 definition globala :: "((nat \<Rightarrow> 's, 'action) transition \<Rightarrow> bool)
                        \<Rightarrow> ((nat \<Rightarrow> 's) \<times> 'local, 'action) transition \<Rightarrow> bool"
 where "globala P \<equiv> (\<lambda>((\<sigma>, _), a, (\<sigma>', _)). P (\<sigma>, a, \<sigma>'))"
 
 lemma globalasimp [simp]: "globala P s = P (fst (fst s), fst (snd s), fst (snd (snd s)))"
-  unfolding globala_def by (simp split: split_split)
+  unfolding globala_def by (simp split: prod.split)
 
 end
 

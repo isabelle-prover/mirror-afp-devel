@@ -1365,7 +1365,7 @@ proof(induction s'' taking: g'' rule: unstream.induct)
 qed
 
 lemma unstream_maps_trans:
-  "unstream (maps_trans f g) (s, None) = List.maps (split unstream \<circ> f) (unstream g s)"
+  "unstream (maps_trans f g) (s, None) = List.maps (case_prod unstream \<circ> f) (unstream g s)"
 proof(induction s taking: g rule: unstream.induct)
   case (1 s)
   thus ?case

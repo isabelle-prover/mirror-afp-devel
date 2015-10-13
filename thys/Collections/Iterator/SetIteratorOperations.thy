@@ -753,8 +753,8 @@ proof -
        and g1_eq: "g x1 = Some y" 
        and g2_eq: "g x2 = Some y"
 
-    obtain k1 v1 where x1_eq[simp] : "x1 = (k1, v1)" by (rule PairE)
-    obtain k2 v2 where x2_eq[simp] : "x2 = (k2, v2)" by (rule PairE)
+    obtain k1 v1 where x1_eq[simp] : "x1 = (k1, v1)" by (rule prod.exhaust)
+    obtain k2 v2 where x2_eq[simp] : "x2 = (k2, v2)" by (rule prod.exhaust)
 
     from g1_eq g2_eq g_eq_Some have k1_eq: "k1 = k2" by simp 
     with x1_in x2_in have v1_eq: "v1 = v2"

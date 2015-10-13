@@ -109,7 +109,7 @@ proof (induct nr arbitrary: v1 v2)
   case (Suc nrr)
   from Suc obtain a1 w1 where v1: "v1 = a1 # w1" and lw1: "length w1 = nrr" by (cases v1, auto)
   from Suc obtain a2 w2 where v2: "v2 = a2 # w2" and lw2: "length w2 = nrr" by (cases v2, auto)
-  have rec: "(\<forall> a \<in> set (zip w1 w2). split r a) = (\<forall> i < nrr. r (w1 ! i) (w2 ! i))"
+  have rec: "(\<forall> a \<in> set (zip w1 w2). case_prod r a) = (\<forall> i < nrr. r (w1 ! i) (w2 ! i))"
     by (rule Suc, auto simp: Suc lw1 lw2)
   show ?case (is "?l = ?r")
   proof (rule iffI)
@@ -169,7 +169,7 @@ proof (induct nc arbitrary: m1 m2)
   from Suc obtain v2 mm2 where m2: "m2 = v2 # mm2" and lm2: "length mm2 = ncc \<and> (\<forall> a \<in> set mm2. vec nr a)" by (cases m2, auto)
   from Suc m1 have wf1: "vec nr v1" by simp
   from Suc m2 have wf2: "vec nr v2" by simp
-  have rec: "(\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all r) a) = (\<forall> i < ncc. \<forall> j < nr. r (mm1 ! i ! j) (mm2 ! i ! j))"
+  have rec: "(\<forall> a \<in> set (zip mm1 mm2). case_prod (vec_comp_all r) a) = (\<forall> i < ncc. \<forall> j < nr. r (mm1 ! i ! j) (mm2 ! i ! j))"
     by (rule Suc, auto simp: Suc lm1 lm2)
   show ?case (is "?l = ?r")
   proof (rule iffI)
@@ -177,7 +177,7 @@ proof (induct nc arbitrary: m1 m2)
     thus ?l using m1 m2 lm1 lm2 rec vec_comp_all_index[OF wf1 wf2] by auto
   next
     assume ?l
-    hence ge: "vec_comp_all r v1 v2" and "\<forall> a \<in> set (zip mm1 mm2). split (vec_comp_all r) a" using m1 m2 by auto
+    hence ge: "vec_comp_all r v1 v2" and "\<forall> a \<in> set (zip mm1 mm2). case_prod (vec_comp_all r) a" using m1 m2 by auto
     with rec have ge2: " (\<forall>i<ncc. \<forall>j<nr. r (mm1 ! i ! j) (mm2 ! i ! j))" by simp
     show ?r
     proof (rule allI, intro impI)

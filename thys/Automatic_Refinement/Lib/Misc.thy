@@ -439,10 +439,6 @@ notation (xsymbols)
   comp2  (infixl "\<circ>\<circ>" 55) and
   comp3  (infixl "\<circ>\<circ>\<circ>" 55)
 
-notation (HTML output)
-  comp2  (infixl "\<circ>\<circ>" 55) and
-  comp3  (infixl "\<circ>\<circ>\<circ>" 55)
-
 
 subsection {* Multisets *}
 
@@ -2017,7 +2013,7 @@ proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"])
     case (Cons x xs') note xs_eq[simp] = this
 
     obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
-      by (rule PairE)
+      by (rule prod.exhaust)
 
     from part_rev_eq[symmetric]
     have length_le: "length xs1 < length xs" "length xs2 < length xs"
@@ -2048,7 +2044,7 @@ proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"])
     case (Cons x xs') note xs_eq[simp] = this
 
     obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
-      by (rule PairE)
+      by (rule prod.exhaust)
 
     from part_rev_eq[symmetric] have xs'_multi_eq : "mset xs' = mset xs1 + mset xs2"
       unfolding partition_rev_filter_conv
@@ -2082,7 +2078,7 @@ proof (induct xs rule: measure_induct_rule[of "length"])
     case (Cons x xs') note xs_eq[simp] = this
 
     obtain xs1 xs2 where part_rev_eq[simp]: "partition_rev (\<lambda>y. R y x) ([], []) xs' = (xs1, xs2)"
-      by (rule PairE)
+      by (rule prod.exhaust)
 
     from part_rev_eq[symmetric] have xs1_props: "\<And>y. y \<in> set xs1 \<Longrightarrow> (R y x)" and 
                                      xs2_props: "\<And>y. y \<in> set xs2 \<Longrightarrow> \<not>(R y x)"
@@ -3341,7 +3337,7 @@ by (metis option.inject option.simps(2) someI_ex)
 
 subsection {* Product Type *}
 
-lemma nested_prod_case_simp: "(\<lambda>(a,b) c. f a b c) x y = 
+lemma nested_case_prod_simp: "(\<lambda>(a,b) c. f a b c) x y = 
   (case_prod (\<lambda>a b. f a b y) x)"
   by (auto split: prod.split)
 
@@ -4426,7 +4422,7 @@ assumes k_nin: "fst kv \<notin> fst ` S"
 shows "set_to_map (insert kv S) = (set_to_map S) (fst kv \<mapsto> snd kv)"
 proof 
   fix k'
-  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule PairE)
+  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule prod.exhaust)
 
   from k_nin have k_nin': "\<And>v'. (k, v') \<notin> S" 
     by (auto simp add: image_iff Ball_def)
@@ -4480,7 +4476,7 @@ proof (induct l arbitrary: m)
   case Nil thus ?case by (simp add: map_to_set_empty_iff) blast
 next
   case (Cons kv l m)
-  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule PairE)
+  obtain k v where kv_eq[simp]: "kv = (k, v)" by (rule prod.exhaust)
 
   from Cons(2) have dist_l: "distinct (map fst l)" and kv'_nin: "\<And>v'. (k, v') \<notin> set l"
     by (auto simp add: image_iff)
