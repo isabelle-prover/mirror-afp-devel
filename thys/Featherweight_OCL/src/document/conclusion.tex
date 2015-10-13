@@ -6,17 +6,23 @@
 We provided a typed and type-safe shallow embedding of the core of
 UML~\cite{omg:uml-infrastructure:2011,omg:uml-superstructure:2011} and
 OCL~\cite{omg:ocl:2012}. Shallow embedding means that types of OCL
-were injectively, \ie, mapped by the embedding one-to-one to types in
+were mapped by the embedding one-to-one to types in
 Isabelle/HOL~\cite{nipkow.ea:isabelle:2002}.  We followed the usual
 methodology to build up the theory uniquely by conservative extensions
 of all operators in a denotational style and to derive logical and
 algebraic (execution) rules from them; thus, we can guarantee the
 logical consistency of the library and instances of the class model
-construction, \ie, closed-world object-oriented datatype theories, as
+construction. The class models were given a closed-world interpretation 
+as object-oriented datatype theories, as
 long as it follows the described methodology.\footnote{Our two
-  examples of \inlineisar+Employee_DesignModel+ (see
-  \autoref{ex:employee-design}) sketch how this construction can
-  be captured by an automated process.}  Moreover, all derived
+  examples of \inlineisar+Employee_AnalysisModel+ and
+  \inlineisar+Employee_DesignModel+ (see
+  \autoref{ex:employee-analysis:uml} and
+  \autoref{ex:employee-analysis:ocl} as well as
+  \autoref{ex:employee-design:uml} and
+  \autoref{ex:employee-design:ocl}) sketch how this construction can
+  be captured by an automated process; its implementation is described 
+  elsewhere.}  Moreover, all derived
 execution rules are by construction type-safe (which would be an
 issue, if we had chosen to use an object universe construction in
 Zermelo-Fraenkel set theory as an alternative approach to subtyping.).
@@ -81,8 +87,8 @@ inherent messy and a semantically clean compilation of OCL formulae to
 a two-valued presentation, that is amenable to animators like
 KodKod~\cite{torlak.ea:kodkod:2007} or SMT-solvers like
 Z3~\cite{moura.ea:z3:2008} completely impractical. Concretely, if the
-expression \inlineocl{not(null)} is defined \inlineocl{invalid} (as is
-the case in the present standard~\cite{omg:ocl:2012}), than standard
+expression \inlineocl{not(null)} is defined \inlineocl{invalid} (as was
+the case in prior versions of the standard~\cite{omg:ocl:2012}), then standard
 involution does not hold, \ie, \inlineocl{not(not(A))} = \inlineocl{A}
 does not hold universally. Similarly, if \inlineocl{null and null} is
 \inlineocl{invalid}, then not even idempotence \inlineocl{X and X} =
@@ -93,7 +99,7 @@ respect to this semantical ``information ordering.''
 
 A similar experience with prior paper and pencil arguments was our
 investigation of the object-oriented data-models, in particular
-path-expressions ~\cite{DBLP:conf/models/BruckerLTW13}. The final
+path-expressions ~\cite{brucker.ea:path-expressions:2013}. The final
 presentation is again essentially correct, but the technical details
 concerning exception handling lead finally to a continuation-passing
 style of the (in future generated) definitions for accessors, casts
@@ -116,22 +122,16 @@ consequences of a four-valued logic (\ie, OCL versions that support,
 besides the truth values \inlineocl{true} and \inlineocl{false} also
 the two exception values \inlineocl{invalid} and \inlineocl{null}).
 
-In the following, we outline the necessary steps for turning
-Featherweight OCL into a fully fledged tool for OCL, \eg, similar to
-\holocl as well as for supporting test case generation similar to
-{HOL}-TestGen~\cite{brucker.ea:hol-testgen:2009}.  There are
+In the following, we outline the following future extensions to use
+Featherweight OCL for a concrete fully fledged tool for OCL.  There are
 essentially five extensions necessary:
 \begin{itemize}
-\item extension of the library to support all OCL data types, \eg,
-  \inlineocl{OrderedSet(T)} or \inlineocl{Sequence(T)}.  This
-  formalization of the OCL standard library can be used for checking
-  the consistency of the formal semantics (known as ``Annex A'') with
-  the informal and semi-formal requirements in the normative part of
-  the OCL standard.
 \item development of a compiler that compiles a textual or CASE
   tool representation (\eg, using XMI or the textual syntax of
   the USE tool~\cite{richters:precise:2002}) of class
-  models. Such compiler could also generate the necessary casts when
+  models into an object-oriented data type theory automatically.
+\item Full support of OCL standard syntax in a front-end parser;
+  Such a parser could also generate the necessary casts as well as
   converting standard OCL to Featherweight OCL as well as providing
   ``normalizations'' such as converting multiplicities of class
   attributes to into OCL class invariants.
@@ -142,8 +142,9 @@ essentially five extensions necessary:
   from the default multiplicity \inlineocl{1} of an attributes
   \inlineocl{x}, we can directly infer that for all valid states
   \inlineocl{x} is neither \inlineocl{invalid} nor \inlineocl{null}),
-  such a translation enables an efficient test case generation
-  approach.
+  such a translation enables both an integration of fast constraint solvers
+  such as Z3 as well as test-case generation scenarios as described in 
+  \cite{brucker.ea:ocl-testing:2010}.
 \item a setup in Featherweight OCL of the Nitpick
   animator~\cite{blanchette.ea:nitpick:2010}. It remains to be shown
   that the standard, Kodkod~\cite{torlak.ea:kodkod:2007} based

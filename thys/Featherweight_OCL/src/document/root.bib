@@ -1332,18 +1332,52 @@
 
 }
 
-@inproceedings{DBLP:conf/models/BruckerLTW13,
-  author    = {Achim D. Brucker and
-               Delphine Longuet and
-               Fr{\'e}d{\'e}ric Tuong and
-               Burkhart Wolff},
-  title     = {On the Semantics of Object-Oriented Data Structures and
-               Path Expressions},
-  booktitle = {OCL@MoDELS},
-  year      = {2013},
-  pages     = {23-32},
-  ee        = {http://ceur-ws.org/Vol-1092/brucker.pdf},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
+@InProceedings{	  brucker.ea:path-expressions:2013,
+  author	= {Achim D. Brucker and Delphine Longuet and Fr{\'e}d{\'e}ric
+		  Tuong and Burkhart Wolff},
+  title		= {On the Semantics of Object-oriented Data Structures and
+		  Path Expressions},
+  year		= 2013,
+  booktitle	= {Proceedings of the \acs{models} 2013 \acs{ocl} Workshop (\acs{ocl} 2013)},
+  location	= {Miami, \acs{usa}},
+  editor	= {Jordi Cabot and Martin Gogolla and Istv{\'a}n R{\'a}th and
+		  Edward D. Willink},
+  publisher	= {\acs{ceur-ws}.org},
+  series	= {\acs{ceur} Workshop Proceedings},
+  volume	= 1092,
+  ee		= {http://ceur-ws.org/Vol-1092},
+  pages		= {23--32},
+  abstract	= { \\acs{uml}/\\acs{ocl} is perceived as the de-facto standard for
+		  specifying object-oriented models in general and data
+		  models in particular. Since recently, all data types of
+		  \\acs{uml}/\\acs{ocl} comprise two different exception elements:
+		  \inlineocl{invalid} (``bottom'' in semantics terminology)
+		  and \inlineocl{null} (for ``non-existing element''). This
+		  has far-reaching consequences on both the logical and
+		  algebraic properties of \\acs{ocl} expressions as well as the
+		  path expressions over object-oriented data structures, \ie,
+		  class models.
+		  
+		  In this paper, we present a formal semantics for
+		  object-oriented data models in which all data types and,
+		  thus, all class attributes and path expressions, support
+		  \inlineocl{invalid} and \inlineocl{null}. Based on this
+		  formal semantics, we present a set of \\acs{ocl} test cases that
+		  can be used for evaluating the support of \inlineocl{null}
+		  and \inlineocl{invalid} in \\acs{ocl} tools.},
+  classification= {workshop},
+  categories	= {holocl},
+  areas		= {formal methods, software},
+  keywords	= {Object-oriented Data Structures, Path Expressions,
+		  Featherweight \acs{ocl}, Null, Invalid, Formal Semantics},
+  public	= {yes},
+  pdf		= {http://www.brucker.ch/bibliography/download/2013/brucker.ea-path-expressions-2013.pdf},
+  note		= {An extended version of this paper is available as \acs{lri}
+		  Technical Report 1565.},
+  filelabel	= {Extended Version},
+  file		= {http://www.brucker.ch/bibliography/download/2013/brucker.ea-path-expressions-2013-b.pdf},
+  url		= {http://www.brucker.ch/bibliography/abstract/brucker.ea-path-expressions-2013}
+		  
 }
 
 
@@ -1380,5 +1414,34 @@
   organization  = {Department of Computer Science, Iowa State University.},
   note          = {Available from \url{http://www.jmlspecs.org}},
   acknowledgement={brucker, 2007-04-23}
+}
+
+@InProceedings{	  haftmann.ea:constructive:2006,
+  author	= {Florian Haftmann and Makarius Wenzel},
+  title		= {Constructive Type Classes in Isabelle},
+  booktitle	= {Types for Proofs and Programs, International Workshop,
+		  {TYPES} 2006, Nottingham, UK, April 18-21, 2006, Revised
+		  Selected Papers},
+  year		= 2006,
+  pages		= {160--174},
+  crossref	= {altenkirch.ea:types:2007},
+  url		= {http://dx.doi.org/10.1007/978-3-540-74464-1_11},
+  doi		= {10.1007/978-3-540-74464-1_11},
+  timestamp	= {Thu, 04 Sep 2014 22:14:34 +0200},
+  biburl	= {http://dblp.uni-trier.de/rec/bib/conf/types/HaftmannW06}
+}
+
+@Proceedings{	  altenkirch.ea:types:2007,
+  editor	= {Thorsten Altenkirch and Conor McBride},
+  title		= {Types for Proofs and Programs, International Workshop,
+		  {TYPES} 2006, Nottingham, UK, April 18-21, 2006, Revised
+		  Selected Papers},
+  series	= {Lecture Notes in Computer Science},
+  year		= 2007,
+  volume	= 4502,
+  publisher	= {Springer},
+  isbn		= {978-3-540-74463-4},
+  timestamp	= {Thu, 04 Sep 2014 22:14:34 +0200},
+  biburl	= {http://dblp.uni-trier.de/rec/bib/conf/types/2006}
 }
 

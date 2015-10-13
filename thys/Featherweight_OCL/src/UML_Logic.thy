@@ -1,13 +1,13 @@
 (*****************************************************************************
- * Featherweight-OCL --- A Formal Semantics for UML-OCL Version OCL 2.4
+ * Featherweight-OCL --- A Formal Semantics for UML-OCL Version OCL 2.5
  *                       for the OMG Standard.
  *                       http://www.brucker.ch/projects/hol-testgen/
  *
- * OCL_core.thy --- Core definitions.
+ * UML_Logic.thy --- Core definitions.
  * This file is part of HOL-TestGen.
  *
- * Copyright (c) 2012-2013 Université Paris-Sud, France
- *               2013      IRT SystemX, France
+ * Copyright (c) 2012-2015 Université Paris-Saclay, Univ. Paris-Sud, France
+ *               2013-2015 IRT SystemX, France
  *
  * All rights reserved.
  *
@@ -40,220 +40,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Formalization I: Core Definitions *}
+chapter{* Formalization II: OCL Terms and Library Operations *}
 
-theory
-  OCL_core
-imports
-  Main
+theory  UML_Logic 
+imports UML_Types 
 begin
 
-section{* Preliminaries *}
-subsection{* Notations for the Option Type *}
-
-text{*
-  First of all, we will use a more compact notation for the library
-  option type which occur all over in our definitions and which will make
-  the presentation more like a textbook:
-*}
-notation Some ("\<lfloor>(_)\<rfloor>")
-notation None ("\<bottom>")
-
-text{*
-  The following function (corresponding to @{term the} in the Isabelle/HOL library)
-  is defined as the inverse of the injection @{term Some}.
-*}
-fun    drop :: "'\<alpha> option \<Rightarrow> '\<alpha>" ("\<lceil>(_)\<rceil>")
-where  drop_lift[simp]: "\<lceil>\<lfloor>v\<rfloor>\<rceil> = v"
-
-
-subsection{* Minimal Notions of State and State Transitions *}
-text{* Next we will introduce the foundational concept of an object id (oid),
-which is just some infinite set. *}
-
-text{* In order to assure executability of as much as possible formulas, we fixed the
-type of object id's to just natural numbers.*}
-type_synonym oid = nat
-
-text{* We refrained from the alternative:
-\begin{isar}[mathescape]
-$\text{\textbf{type-synonym}}$ $\mathit{oid = ind}$
-\end{isar}
-which is slightly more abstract but non-executable.
-*}
-
-text{*
-  States are just a partial map from oid's to elements of an object
-  universe @{text "'\<AA>"}, and state transitions pairs of states
-  \ldots
-*}
-record ('\<AA>)state =
-             heap   :: "oid \<rightharpoonup> '\<AA> "
-             assocs\<^sub>2 :: "oid  \<rightharpoonup> (oid \<times> oid) list"       (* binary associations *)
-             assocs\<^sub>3 :: "oid  \<rightharpoonup> (oid \<times> oid \<times> oid) list" (* ternary associations *)
-
-
-type_synonym ('\<AA>)st = "'\<AA> state \<times> '\<AA> state"
-
-subsection{* Prerequisite: An Abstract Interface for OCL Types *}
-
-text {*
-  To have the possibility to nest collection types,
-  such that we can give semantics to expressions like @{text "Set{Set{\<two>},null}"},
-  it is necessary to introduce a uniform interface for types having
-  the @{text "invalid"} (= bottom) element. The reason is that we impose
-  a data-invariant on raw-collection \inlineisar|types_code| which assures
-  that the @{text "invalid"} element is not allowed inside the collection;
-  all raw-collections of this form were identified with the @{text "invalid"} element
-  itself. The construction requires that the new collection type is
-  not comparable with the raw-types (consisting of nested option type constructions),
-  such that the data-invariant must be expressed in terms of the interface.
-  In a second step, our base-types will be shown to be instances of this interface.
- *}
-
-text{*
-  This uniform interface consists in a type class requiring the existence
-  of a bot and a null element. The construction proceeds by
-  abstracting the null (defined by @{text "\<lfloor> \<bottom> \<rfloor>"} on
-  @{text "'a option option"}) to a @{text null} element, which may
-  have an arbitrary semantic structure, and an undefinedness element @{text "\<bottom> "}
-  to an abstract undefinedness element @{text "bot"} (also written
-  @{text "\<bottom> "} whenever no confusion arises). As a consequence, it is necessary
-  to redefine the notions of invalid, defined, valuation etc.
-  on top of this interface. *}
-
-text{*
-  This interface consists in two abstract type classes @{text bot}
-  and @{text null} for the class of all types comprising a bot and a
-  distinct null element.  *}
-
-class   bot =
-   fixes  bot :: "'a"
-   assumes nonEmpty : "\<exists> x. x \<noteq> bot"
-   
-
-class      null = bot +
-   fixes   null :: "'a"
-   assumes null_is_valid : "null \<noteq> bot"
-
-
-subsection{* Accommodation of Basic Types to the Abstract Interface *}
-
-text{*
-  In the following it is shown that the ``option-option'' type is
-  in fact in the @{text null} class and that function spaces over these
-  classes again ``live'' in these classes. This motivates the default construction
-  of the semantic domain for the basic types (\inlineocl{Boolean},
-  \inlineocl{Integer}, \inlineocl{Real}, \ldots).
-*}
-
-instantiation   option  :: (type)bot
-begin
-   definition bot_option_def: "(bot::'a option) \<equiv> (None::'a option)"
-   instance proof show "\<exists>x::'a option. x \<noteq> bot"
-                  by(rule_tac x="Some x" in exI, simp add:bot_option_def)
-            qed
-end 
-
-
-instantiation   option  :: (bot)null
-begin
-   definition null_option_def: "(null::'a::bot option) \<equiv>  \<lfloor> bot \<rfloor>"
-   instance proof  show "(null::'a::bot option) \<noteq> bot"
-                   by( simp add:null_option_def bot_option_def)
-            qed
-end
-
-
-instantiation "fun"  :: (type,bot) bot
-begin
-   definition bot_fun_def: "bot \<equiv> (\<lambda> x. bot)"
-
-   instance proof  show "\<exists>(x::'a \<Rightarrow> 'b). x \<noteq> bot"
-                   apply(rule_tac x="\<lambda> _. (SOME y. y \<noteq> bot)" in exI, auto)
-                   apply(drule_tac x=x in fun_cong,auto simp:bot_fun_def)
-                   apply(erule contrapos_pp, simp)
-                   apply(rule some_eq_ex[THEN iffD2])
-                   apply(simp add: nonEmpty)
-                   done
-            qed
-end
-
-
-instantiation "fun"  :: (type,null) null
-begin
- definition null_fun_def: "(null::'a \<Rightarrow> 'b::null) \<equiv> (\<lambda> x. null)"
-
- instance proof
-              show "(null::'a \<Rightarrow> 'b::null) \<noteq> bot"
-              apply(auto simp: null_fun_def bot_fun_def)
-              apply(drule_tac x=x in fun_cong)
-              apply(erule contrapos_pp, simp add: null_is_valid)
-            done
-          qed
-end
-
-text{* A trivial consequence of this adaption of the interface is that
-abstract and concrete versions of null are the same on base types
-(as could be expected). *}
-
-subsection{* The Semantic Space of OCL Types: Valuations *}
-
-text{* Valuations are now functions from a state pair (built upon
-data universe @{typ "'\<AA>"}) to an arbitrary null-type (\ie, containing
-at least a destinguished @{text "null"} and @{text "invalid"} element). *}
-
-type_synonym ('\<AA>,'\<alpha>) val = "'\<AA> st \<Rightarrow> '\<alpha>::null"
-
-text{* The definitions for the constants and operations based on valuations
-will be geared towards a format that Isabelle can check to be a ``conservative''
-(\ie, logically safe) axiomatic definition. By introducing an explicit
-interpretation function (which happens to be defined just as the identity
-since we are using a shallow embedding of OCL into HOL), all these definitions
-can be rewritten into the conventional semantic textbook format  as follows: *}
-
-definition Sem :: "'a \<Rightarrow> 'a" ("I\<lbrakk>_\<rbrakk>")
-where "I\<lbrakk>x\<rbrakk> \<equiv> x"
-
-text{* As a consequence of semantic domain definition, any OCL type will
-have the two semantic constants @{text "invalid"} (for exceptional, aborted
-computation) and @{text "null"}:
- *}
-
-definition invalid :: "('\<AA>,'\<alpha>::bot) val"
-where     "invalid \<equiv> \<lambda> \<tau>. bot"
-
-text{* This conservative Isabelle definition of the polymorphic constant
-@{const invalid} is equivalent with the textbook definition: *}
-
-lemma textbook_invalid: "I\<lbrakk>invalid\<rbrakk>\<tau> = bot"
-by(simp add: invalid_def Sem_def)
-
-
-text {* Note that the definition :
-{\small
-\begin{isar}[mathescape]
-definition null    :: "('$\mathfrak{A}$,'\<alpha>::null) val"
-where     "null    \<equiv> \<lambda> \<tau>. null"
-\end{isar}
-} is not  necessary since we defined the entire function space over null types
-again as null-types; the crucial definition is @{thm "null_fun_def"}.
-Thus, the polymorphic constant @{const null} is simply the result of
-a general type class construction. Nevertheless, we can derive the
-semantic textbook definition for the OCL null constant based on the
-abstract null:
-*}
-
-lemma textbook_null_fun: "I\<lbrakk>null::('\<AA>,'\<alpha>::null) val\<rbrakk> \<tau> = (null::'\<alpha>::null)"
-by(simp add: null_fun_def Sem_def)
-
-
-section{* Definition of the Boolean Type *}
-
-text{* The semantic domain of the (basic) boolean type is now defined as the Standard:
-the space of valuation to @{typ "bool option option"}:*}
-
-type_synonym ('\<AA>)Boolean = "('\<AA>,bool option option) val"
+section{* The Operations of the Boolean Type and the OCL Logic*}
 
 subsection{* Basic Constants *}
 
@@ -270,7 +63,7 @@ where     "true \<equiv> \<lambda> \<tau>. \<lfloor>\<lfloor>True\<rfloor>\<rflo
 definition false :: "('\<AA>)Boolean"
 where     "false \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>False\<rfloor>\<rfloor>"
 
-lemma bool_split: "X \<tau> = invalid \<tau> \<or> X \<tau> = null \<tau> \<or>
+lemma bool_split_0: "X \<tau> = invalid \<tau> \<or> X \<tau> = null \<tau> \<or>
                    X \<tau> = true \<tau>    \<or> X \<tau> = false \<tau>"
 apply(simp add: invalid_def null_def true_def false_def)
 apply(case_tac "X \<tau>",simp_all add: null_fun_def null_option_def bot_option_def)
@@ -306,7 +99,7 @@ text {*
       @{thm [source] textbook_false} & @{thm [display=false] textbook_false} \\
       \bottomrule
    \end{tabu}
-   \caption{Basic semantic constant definitions of the logic (except @{term null})}
+   \caption{Basic semantic constant definitions of the logic}
    \label{tab:sem_basic_constants}
 \end{table}
 *}
@@ -314,7 +107,7 @@ text {*
 subsection{* Validity and Definedness *}
 
 text{* However, this has also the consequence that core concepts like definedness,
-validness and even cp have to be redefined on this type class:*}
+validity and even cp have to be redefined on this type class:*}
 
 definition valid :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<upsilon> _" [100]100)
 where   "\<upsilon> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau> then false \<tau> else true \<tau>"
@@ -322,24 +115,19 @@ where   "\<upsilon> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau> then
 lemma valid1[simp]: "\<upsilon> invalid = false"
   by(rule ext,simp add: valid_def bot_fun_def bot_option_def
                         invalid_def true_def false_def)
-
 lemma valid2[simp]: "\<upsilon> null = true"
   by(rule ext,simp add: valid_def bot_fun_def bot_option_def null_is_valid
                         null_fun_def invalid_def true_def false_def)
-
 lemma valid3[simp]: "\<upsilon> true = true"
   by(rule ext,simp add: valid_def bot_fun_def bot_option_def null_is_valid
                         null_fun_def invalid_def true_def false_def)
-
 lemma valid4[simp]: "\<upsilon> false = true"
   by(rule ext,simp add: valid_def bot_fun_def bot_option_def null_is_valid
                         null_fun_def invalid_def true_def false_def)
-
-
+text_raw{* \isatagafp *}
 lemma cp_valid: "(\<upsilon> X) \<tau> = (\<upsilon> (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: valid_def)
-
-
+text_raw{* \endisatagafp *}
 
 definition defined :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<delta> _" [100]100)
 where   "\<delta> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau>  \<or> X \<tau> = null \<tau> then false \<tau> else true \<tau>"
@@ -349,44 +137,35 @@ properties as the old ones : *}
 lemma defined1[simp]: "\<delta> invalid = false"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def
                         null_def invalid_def true_def false_def)
-
 lemma defined2[simp]: "\<delta> null = false"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def
                         null_def null_option_def null_fun_def invalid_def true_def false_def)
-
-
 lemma defined3[simp]: "\<delta> true = true"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def null_is_valid null_option_def
                         null_fun_def invalid_def true_def false_def)
-
 lemma defined4[simp]: "\<delta> false = true"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def null_is_valid null_option_def
                         null_fun_def invalid_def true_def false_def)
-
-
 lemma defined5[simp]: "\<delta> \<delta> X = true"
   by(rule ext,
      auto simp:           defined_def true_def false_def
                 bot_fun_def bot_option_def null_option_def null_fun_def)
-
 lemma defined6[simp]: "\<delta> \<upsilon> X = true"
   by(rule ext,
      auto simp: valid_def defined_def true_def false_def
                 bot_fun_def bot_option_def null_option_def null_fun_def)
-
 lemma valid5[simp]: "\<upsilon> \<upsilon> X = true"
   by(rule ext,
      auto simp: valid_def             true_def false_def
                 bot_fun_def bot_option_def null_option_def null_fun_def)
-
 lemma valid6[simp]: "\<upsilon> \<delta> X = true"
   by(rule ext,
      auto simp: valid_def defined_def true_def false_def
                 bot_fun_def bot_option_def null_option_def null_fun_def)
-
-
+text_raw{* \isatagafp *}
 lemma cp_defined:"(\<delta> X)\<tau> = (\<delta> (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: defined_def)
+text_raw{* \endisatagafp *}
 
 text{* The definitions above for the constants @{const defined} and @{const valid}
 can be rewritten into the conventional semantic "textbook" format  as follows: *}
@@ -402,9 +181,9 @@ lemma textbook_valid: "I\<lbrakk>\<upsilon>(X)\<rbrakk> \<tau> = (if I\<lbrakk>X
 by(simp add: Sem_def valid_def)
 
 
-text {* 
+text {*
 \autoref{tab:sem_definedness} and \autoref{tab:alglaws_definedness}
-summarize the results of this section. 
+summarize the results of this section.
 \begin{table}[htbp]
    \centering
    \begin{tabu}{lX[,c,]}
@@ -437,7 +216,7 @@ summarize the results of this section.
 \end{table}
 *}
 
-section{* The Equalities of OCL *}
+subsection{* The Equalities of OCL \label{sec:equality}*}
 text{*
   The OCL contains a particular version of equality, written in
   Standard documents \inlineocl+_ = _+ and \inlineocl+_ <> _+ for its
@@ -460,7 +239,7 @@ text{*
   these two.  *} text{* Strong equality has two motivations: a
   pragmatic one and a fundamental one.
   \begin{enumerate}
-  \item The pragmatic reason is fairly simple: users of object-oriented languages want 
+  \item The pragmatic reason is fairly simple: users of object-oriented languages want
     something like a ``shallow object value equality''.
     You will want to say
     \inlineisar+ a.boss \<triangleq>  b.boss@pre +
@@ -511,7 +290,7 @@ text{*
   they mean the same thing can therefore not be taken for granted.
 *}
 
-subsection{* Definition *}
+subsubsection{* Definition *}
 text{*
   The strict equality on basic types (actually on all types) must be
   exceptionally defined on @{term "null"}---otherwise the entire
@@ -541,66 +320,7 @@ lemma [simp,code_unfold]: "(false \<triangleq> true) = false"
 by(rule ext, auto simp: StrongEq_def)
 
 
-text{*
-  In contrast, referential equality behaves differently for all
-  types---on value types, it is basically strong equality for defined
-  values, but on object types it will compare references---we
-  introduce it as an \emph{overloaded} concept and will handle it for
-  each type instance individually.
-*}
-consts StrictRefEq :: "[('\<AA>,'a)val,('\<AA>,'a)val] \<Rightarrow> ('\<AA>)Boolean" (infixl "\<doteq>" 30)
-
-
-text{*
-  Here is a first instance of a definition of weak equality---for
-  the special case of the type @{typ "('\<AA>)Boolean"}, it is just
-  the strict extension of the logical
-  equality:
-*}
-defs (overloaded)   StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n[code_unfold] :
-      "(x::('\<AA>)Boolean) \<doteq> y \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
-                                    then (x \<triangleq> y)\<tau>
-                                    else invalid \<tau>"
-
-text{* which implies elementary properties like: *}                                    
-lemma [simp,code_unfold] : "(true \<doteq> false) = false"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n)
-lemma [simp,code_unfold] : "(false \<doteq> true) = false"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n)
-
-lemma [simp,code_unfold] : "(invalid \<doteq> false) = invalid"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n false_def true_def)
-lemma [simp,code_unfold] : "(invalid \<doteq> true) = invalid"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n false_def true_def)
-
-lemma [simp,code_unfold] : "(false \<doteq> invalid) = invalid"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n false_def true_def)
-lemma [simp,code_unfold] : "(true \<doteq> invalid) = invalid"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n false_def true_def)
-
-lemma [simp,code_unfold] : "((invalid::('\<AA>)Boolean) \<doteq> invalid) = invalid"
-by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n false_def true_def)
-text{* Thus, the weak equality is \emph{not} reflexive. *}
-
-lemma null_non_false [simp,code_unfold]:"(null \<doteq> false) = false"
- apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) Option.is_none_def valid4
-          bot_option_def null_fun_def null_option_def)
-
-lemma null_non_true [simp,code_unfold]:"(null \<doteq> true) = false"
- apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by(simp add: true_def bot_option_def null_fun_def null_option_def)
-
-lemma false_non_null [simp,code_unfold]:"(false \<doteq> null) = false"
- apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by (metis OCL_core.drop.simps cp_valid false_def is_none_code(2) Option.is_none_def valid4
-          bot_option_def null_fun_def null_option_def )
-
-lemma true_non_null [simp,code_unfold]:"(true \<doteq> null) = false"
- apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
-by(simp add: true_def bot_option_def null_fun_def null_option_def)
-
-subsection{* Fundamental Predicates on Strong Equality *}
+subsubsection{* Fundamental Predicates on Strong Equality *}
 
 text{* Equality reasoning in OCL is not humpty dumpty. While strong equality
 is clearly an equivalence: *}
@@ -655,7 +375,7 @@ lemma valid7[simp]: "\<upsilon> (X \<triangleq> Y) = true"
 lemma cp_StrongEq: "(X \<triangleq> Y) \<tau> = ((\<lambda> _. X \<tau>) \<triangleq> (\<lambda> _. Y \<tau>)) \<tau>"
 by(simp add: StrongEq_def)
 
-section{* Logical Connectives and their Universal Properties *}
+subsection{* Logical Connectives and their Universal Properties *}
 text{*
   It is a design goal to give OCL a semantics that is as closely as
   possible to a ``logical system'' in a known sense; a specification
@@ -686,15 +406,8 @@ where     "not X \<equiv>  \<lambda> \<tau> . case X \<tau> of
                            | \<lfloor> \<bottom> \<rfloor>   \<Rightarrow> \<lfloor> \<bottom> \<rfloor>
                            | \<lfloor>\<lfloor> x \<rfloor>\<rfloor>  \<Rightarrow> \<lfloor>\<lfloor> \<not> x \<rfloor>\<rfloor>"
 
-text{* with {term "not"} we can express the notation:*}
-                           
-syntax
-  "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix "<>" 40)
-translations
-  "a <> b" == "CONST OclNot( a \<doteq> b)"
 
 
-                           
 lemma cp_OclNot: "(not X)\<tau> = (not (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: OclNot_def)
 
@@ -914,7 +627,7 @@ lemma OclOr7[simp]: "(null or null) = null"
 by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 lemma OclOr8[simp]: "(null or invalid) = invalid"
-by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def 
+by(rule ext, simp add: OclOr_def OclNot_def OclAnd_def null_def invalid_def true_def false_def
                        bot_option_def null_fun_def null_option_def)
 
 lemma OclOr_idem[simp]: "(X or X) = X"
@@ -957,24 +670,31 @@ lemma OclOr_null2[simp]: "\<And>\<tau>. X \<tau> \<noteq> true \<tau> \<Longrigh
 lemma OclOr_assoc: "(X or (Y or Z)) = (X or Y or Z)"
   by(simp add: OclOr_def OclAnd_assoc)
 
-lemma OclImplies_true: "(X implies true) = true"
-  by (simp add: OclImplies_def OclOr_true2)
-
 lemma deMorgan1: "not(X and Y) = ((not X) or (not Y))"
   by(simp add: OclOr_def)
 
 lemma deMorgan2: "not(X or Y) = ((not X) and (not Y))"
   by(simp add: OclOr_def)
 
+lemma OclImplies_true1[simp]:"(true implies X) = X"
+  by(simp add: OclImplies_def)
 
-section{* A Standard Logical Calculus for OCL *}
+lemma OclImplies_true2[simp]: "(X implies true) = true"
+  by(simp add: OclImplies_def OclOr_true2)
+
+lemma OclImplies_false1[simp]:"(false implies X) = true"
+  by(simp add: OclImplies_def)
+
+subsection{* A Standard Logical Calculus for OCL *}
+
 definition OclValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ \<Turnstile> (_))" 50)
 where     "\<tau> \<Turnstile> P \<equiv> ((P \<tau>) = true \<tau>)"
 
-value "\<tau> \<Turnstile> true <> false"
-value "\<tau> \<Turnstile> false <> true"
+syntax OclNonValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ |\<noteq> (_))" 50)
 
-subsection{* Global vs. Local Judgements*}
+translations "\<tau> |\<noteq> P" == "\<not>(\<tau> \<Turnstile> P)" 
+
+subsubsection{* Global vs. Local Judgements*}
 lemma transform1: "P = true \<Longrightarrow> \<tau> \<Turnstile> P"
 by(simp add: OclValid_def)
 
@@ -992,8 +712,6 @@ apply(erule_tac x=b in allE)
 apply(auto simp: false_def true_def defined_def bot_Boolean_def null_Boolean_def
                  split: option.split_asm HOL.split_if_asm)
 done
-(* Something stronger is possible here (consider P null, Q invalid),
-   but this thingi should do for our purpose *)
 
 text{* However, certain properties (like transitivity) can not
        be \emph{transformed} from the global level to the local one,
@@ -1007,7 +725,7 @@ apply(rule H[THEN fun_cong])
 apply(rule ext)
 oops
 
-subsection{* Local Validity and Meta-logic*}
+subsubsection{* Local Validity and Meta-logic*}
 text{* \label{sec:localVal} *}
 
 lemma foundation1[simp]: "\<tau> \<Turnstile> true"
@@ -1022,16 +740,26 @@ by(auto simp: OclValid_def true_def false_def invalid_def bot_option_def)
 lemma foundation4[simp]: "\<not>(\<tau> \<Turnstile> null)"
 by(auto simp: OclValid_def true_def false_def null_def null_fun_def null_option_def bot_option_def)
 
-lemma bool_split_local[simp]:
+lemma bool_split[simp]:
 "(\<tau> \<Turnstile> (x \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (x \<triangleq> null)) \<or> (\<tau> \<Turnstile> (x \<triangleq> true)) \<or> (\<tau> \<Turnstile> (x \<triangleq> false))"
-apply(insert bool_split[of x \<tau>], auto)
+apply(insert bool_split_0[of x \<tau>], auto)
 apply(simp_all add: OclValid_def StrongEq_def true_def null_def invalid_def)
 done
 
-lemma def_split_local:
+lemma defined_split:
 "(\<tau> \<Turnstile> \<delta> x) = ((\<not>(\<tau> \<Turnstile> (x \<triangleq> invalid))) \<and> (\<not> (\<tau> \<Turnstile> (x \<triangleq> null))))"
 by(simp add:defined_def true_def false_def invalid_def null_def
                StrongEq_def OclValid_def bot_fun_def null_fun_def)
+
+lemma valid_bool_split: "(\<tau> \<Turnstile> \<upsilon> A) = ((\<tau> \<Turnstile> A \<triangleq> null) \<or> (\<tau> \<Turnstile> A) \<or>  (\<tau> \<Turnstile> not A)) "
+by(auto simp:valid_def true_def false_def invalid_def null_def OclNot_def
+             StrongEq_def OclValid_def bot_fun_def bot_option_def null_option_def null_fun_def)
+
+lemma defined_bool_split: "(\<tau> \<Turnstile> \<delta> A) = ((\<tau> \<Turnstile> A) \<or> (\<tau> \<Turnstile> not A))"
+by(auto simp:defined_def true_def false_def invalid_def null_def OclNot_def
+             StrongEq_def OclValid_def bot_fun_def bot_option_def null_option_def null_fun_def)
+
+
 
 lemma foundation5:
 "\<tau> \<Turnstile> (P and Q) \<Longrightarrow> (\<tau> \<Turnstile> P) \<and> (\<tau> \<Turnstile> Q)"
@@ -1062,33 +790,45 @@ text{*
   see below) by @{text invalid} or @{text null}. Strictness-reduction rules will
   usually reduce these substituted terms drastically.
 *}
+
+
 lemma foundation8:
 "(\<tau> \<Turnstile> \<delta> x) \<or> (\<tau> \<Turnstile> (x \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (x \<triangleq> null))"
 proof -
   have 1 : "(\<tau> \<Turnstile> \<delta> x) \<or> (\<not>(\<tau> \<Turnstile> \<delta> x))" by auto
   have 2 : "(\<not>(\<tau> \<Turnstile> \<delta> x)) = ((\<tau> \<Turnstile> (x \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (x \<triangleq> null)))"
-           by(simp only: def_split_local, simp)
+           by(simp only: defined_split, simp)
   show ?thesis by(insert 1, simp add:2)
 qed
 
+
 lemma foundation9:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> (\<tau> \<Turnstile> not x) = (\<not> (\<tau> \<Turnstile> x))"
-apply(simp add: def_split_local )
+apply(simp add: defined_split )
 by(auto simp: OclNot_def null_fun_def null_option_def bot_option_def
                  OclValid_def invalid_def true_def null_def StrongEq_def)
 
+lemma foundation9':
+"\<tau> \<Turnstile> not x \<Longrightarrow> \<not> (\<tau> \<Turnstile> x)"
+by(auto simp: foundation6 foundation9)
+
+lemma foundation9'':
+"            \<tau> \<Turnstile> not x \<Longrightarrow> \<tau> \<Turnstile> \<delta> x"
+by(metis OclNot3 OclNot_not OclValid_def cp_OclNot cp_defined defined4)
 
 lemma foundation10:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> \<tau> \<Turnstile> \<delta> y \<Longrightarrow> (\<tau> \<Turnstile> (x and y)) = ( (\<tau> \<Turnstile> x) \<and> (\<tau> \<Turnstile> y))"
-apply(simp add: def_split_local)
+apply(simp add: defined_split)
 by(auto simp: OclAnd_def OclValid_def invalid_def
               true_def null_def StrongEq_def null_fun_def null_option_def bot_option_def
         split:bool.split_asm)
 
+lemma foundation10': "(\<tau> \<Turnstile> (A and B)) = ((\<tau> \<Turnstile> A) \<and> (\<tau> \<Turnstile> B))" (* stronger than foundation !*)
+by(auto dest:foundation5 simp:foundation6 foundation10)
 
 lemma foundation11:
 "\<tau> \<Turnstile> \<delta> x \<Longrightarrow>  \<tau> \<Turnstile> \<delta> y \<Longrightarrow> (\<tau> \<Turnstile> (x or y)) = ( (\<tau> \<Turnstile> x) \<or> (\<tau> \<Turnstile> y))"
-apply(simp add: def_split_local)
+apply(simp add: defined_split)
 by(auto simp: OclNot_def OclOr_def OclAnd_def OclValid_def invalid_def
               true_def null_def StrongEq_def null_fun_def null_option_def bot_option_def
         split:bool.split_asm bool.split)
@@ -1096,15 +836,15 @@ by(auto simp: OclNot_def OclOr_def OclAnd_def OclValid_def invalid_def
 
 
 lemma foundation12:
-"\<tau> \<Turnstile> \<delta> x \<Longrightarrow>  \<tau> \<Turnstile> \<delta> y \<Longrightarrow> (\<tau> \<Turnstile> (x implies y)) = ( (\<tau> \<Turnstile> x) \<longrightarrow> (\<tau> \<Turnstile> y))"
-apply(simp add: def_split_local)
+"\<tau> \<Turnstile> \<delta> x \<Longrightarrow> (\<tau> \<Turnstile> (x implies y)) = ( (\<tau> \<Turnstile> x) \<longrightarrow> (\<tau> \<Turnstile> y))"
+apply(simp add: defined_split)
 by(auto simp: OclNot_def OclOr_def OclAnd_def OclImplies_def bot_option_def
               OclValid_def invalid_def true_def null_def StrongEq_def null_fun_def null_option_def
-        split:bool.split_asm bool.split)
+        split:bool.split_asm bool.split option.split_asm)
 
 lemma foundation13:"(\<tau> \<Turnstile> A \<triangleq> true)    = (\<tau> \<Turnstile> A)"
 by(auto simp: OclNot_def  OclValid_def invalid_def true_def null_def StrongEq_def
-           split:bool.split_asm bool.split)
+              split:bool.split_asm bool.split)
 
 lemma foundation14:"(\<tau> \<Turnstile> A \<triangleq> false)   = (\<tau> \<Turnstile> not A)"
 by(auto simp: OclNot_def  OclValid_def invalid_def false_def true_def null_def StrongEq_def
@@ -1121,27 +861,30 @@ lemma foundation16: "\<tau> \<Turnstile> (\<delta> X) = (X \<tau> \<noteq> bot \
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
         split:split_if_asm)
 
+lemma foundation16'': "\<not>(\<tau> \<Turnstile> (\<delta> X)) = ((\<tau> \<Turnstile> (X \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (X \<triangleq> null)))"
+apply(simp add: foundation16)
+by(auto simp:defined_def false_def true_def  bot_fun_def null_fun_def OclValid_def StrongEq_def invalid_def)
+
 (* correcter rule; the previous is deprecated *)
 lemma foundation16': "(\<tau> \<Turnstile> (\<delta> X)) = (X \<tau> \<noteq> invalid \<tau> \<and> X \<tau> \<noteq> null \<tau>)"
 apply(simp add:invalid_def null_def null_fun_def)
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
         split:split_if_asm)
 
-lemmas foundation17 = foundation16[THEN iffD1]
-(* correcter rule; the previous is deprecated *)
-lemmas foundation17' = foundation16'[THEN iffD1]
 
-lemma foundation18: "\<tau> \<Turnstile> (\<upsilon> X) = (X \<tau> \<noteq> invalid \<tau>)"
+
+lemma foundation18: "(\<tau> \<Turnstile> (\<upsilon> X)) = (X \<tau> \<noteq> invalid \<tau>)"
 by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def invalid_def
         split:split_if_asm)
 
 (*legacy*)
-lemma foundation18': "\<tau> \<Turnstile> (\<upsilon> X) = (X \<tau> \<noteq> bot)"
+lemma foundation18': "(\<tau> \<Turnstile> (\<upsilon> X)) = (X \<tau> \<noteq> bot)"
 by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def
         split:split_if_asm)
 
+lemma foundation18'': "(\<tau> \<Turnstile> (\<upsilon> X) )=  (\<not>(\<tau> \<Turnstile> (X \<triangleq> invalid)))"
+by(auto simp:foundation15)
 
-lemmas foundation19 = foundation18[THEN iffD1]
 
 lemma foundation20 : "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
 by(simp add: foundation18 foundation16 invalid_def)
@@ -1156,11 +899,29 @@ by(auto simp: StrongEq_def OclValid_def true_def)
 lemma foundation23: "(\<tau> \<Turnstile> P) = (\<tau> \<Turnstile> (\<lambda> _ . P \<tau>))"
 by(auto simp: OclValid_def true_def)
 
-lemmas cp_validity=foundation23
+
 
 lemma foundation24:"(\<tau> \<Turnstile> not(X \<triangleq> Y)) = (X \<tau> \<noteq> Y \<tau>)"
 by(simp add: StrongEq_def  OclValid_def OclNot_def true_def)
 
+lemma foundation25: "\<tau> \<Turnstile> P \<Longrightarrow> \<tau> \<Turnstile> (P or Q)"
+by(simp add: OclOr_def OclNot_def OclAnd_def OclValid_def true_def)
+
+lemma foundation25': "\<tau> \<Turnstile> Q \<Longrightarrow> \<tau> \<Turnstile> (P or Q)"
+by(subst OclOr_commute, simp add: foundation25)
+
+
+lemma foundation26:
+assumes defP: "\<tau> \<Turnstile> \<delta> P"
+assumes defQ: "\<tau> \<Turnstile> \<delta> Q"
+assumes H: "\<tau> \<Turnstile> (P or Q)"
+assumes P: "\<tau> \<Turnstile> P \<Longrightarrow> R"
+assumes Q: "\<tau> \<Turnstile> Q \<Longrightarrow> R"
+shows "R"
+by(insert H, subst (asm) foundation11[OF defP defQ], erule disjE, simp_all add: P Q)
+
+lemma foundation27: "\<tau> \<Turnstile> A \<Longrightarrow> (\<tau> \<Turnstile> A implies B) = (\<tau> \<Turnstile> B)" 
+by (simp add: foundation12 foundation6)
 
 lemma defined_not_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (not x)"
   by(auto simp: OclNot_def null_def invalid_def defined_def valid_def OclValid_def
@@ -1185,9 +946,13 @@ lemma valid_and_I :   "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow>  \<t
              split: option.split_asm HOL.split_if_asm)
   by(auto simp: null_option_def split: option.split bool.split)
 
+lemma defined_or_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<delta> (y) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (x or y)"
+by(simp add: OclOr_def defined_and_I defined_not_I)
 
+lemma valid_or_I :   "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<upsilon> (y) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (x or y)"
+by(simp add: OclOr_def valid_and_I valid_not_I)
 
-subsection{* Local Judgements and Strong Equality *}
+subsubsection{* Local Judgements and Strong Equality *}
 
 lemma StrongEq_L_refl: "\<tau> \<Turnstile> (x \<triangleq> x)"
 by(simp add: OclValid_def StrongEq_def)
@@ -1223,18 +988,31 @@ by(auto simp: OclValid_def StrongEq_def true_def cp_def)
 
 lemma StrongEq_L_subst2_rev: "\<tau> \<Turnstile> y \<triangleq> x \<Longrightarrow> cp P \<Longrightarrow> \<tau> \<Turnstile> P x \<Longrightarrow> \<tau> \<Turnstile> P y"
 apply(erule StrongEq_L_subst2)
-apply(erule StrongEq_L_sym)
+apply(erule StrongEq_L_sym)  
 by assumption
 
 lemma  StrongEq_L_subst3:
 assumes cp: "cp P"
-and     eq: "\<tau> \<Turnstile> x \<triangleq> y"
+and     eq: "\<tau> \<Turnstile> (x \<triangleq> y)"
 shows       "(\<tau> \<Turnstile> P x) = (\<tau> \<Turnstile> P y)"
 apply(rule iffI)
-apply(rule OCL_core.StrongEq_L_subst2[OF cp,OF eq],simp)
-apply(rule OCL_core.StrongEq_L_subst2[OF cp,OF eq[THEN StrongEq_L_sym]],simp)
+apply(rule StrongEq_L_subst2[OF cp,OF eq],simp)
+apply(rule StrongEq_L_subst2[OF cp,OF eq[THEN StrongEq_L_sym]],simp)
 done
 
+lemma  StrongEq_L_subst3_rev:
+assumes eq: "\<tau> \<Turnstile> (x \<triangleq> y)" 
+and     cp: "cp P"
+shows       "(\<tau> \<Turnstile> P x) = (\<tau> \<Turnstile> P y)"
+by(insert cp, erule StrongEq_L_subst3, rule eq)
+
+lemma  StrongEq_L_subst4_rev:
+assumes eq: "\<tau> \<Turnstile> (x \<triangleq> y)" 
+and     cp: "cp P"
+shows       "(\<not>(\<tau> \<Turnstile> P x)) = (\<not>(\<tau> \<Turnstile> P y))"
+thm arg_cong[of _ _ "Not"]
+apply(rule arg_cong[of _ _ "Not"])
+by(insert cp, erule StrongEq_L_subst3, rule eq)
 
 lemma cpI1:
 "(\<forall> X \<tau>. f X \<tau> = f(\<lambda>_. X \<tau>) \<tau>) \<Longrightarrow> cp P \<Longrightarrow> cp(\<lambda>X. f (P X))"
@@ -1248,7 +1026,7 @@ lemma cpI2:
 apply(auto simp: true_def cp_def)
 apply(rule exI, (rule allI)+)
 by(erule_tac x="P X" in allE, auto)
- 
+
 lemma cpI3:
 "(\<forall> X Y Z \<tau>. f X Y Z \<tau> = f(\<lambda>_. X \<tau>)(\<lambda>_. Y \<tau>)(\<lambda>_. Z \<tau>) \<tau>) \<Longrightarrow>
  cp P \<Longrightarrow> cp Q \<Longrightarrow> cp R \<Longrightarrow> cp(\<lambda>X. f (P X) (Q X) (R X))"
@@ -1263,12 +1041,22 @@ apply(auto simp: cp_def)
 apply(rule exI, (rule allI)+)
 by(erule_tac x="P X" in allE, auto)
 
+lemma cpI5:
+"(\<forall> V W X Y Z \<tau>. f V W X Y Z \<tau> = f(\<lambda>_. V \<tau>) (\<lambda>_. W \<tau>)(\<lambda>_. X \<tau>)(\<lambda>_. Y \<tau>)(\<lambda>_. Z \<tau>) \<tau>) \<Longrightarrow>
+ cp N \<Longrightarrow> cp P \<Longrightarrow> cp Q \<Longrightarrow> cp R \<Longrightarrow> cp S \<Longrightarrow> cp(\<lambda>X. f (N X) (P X) (Q X) (R X) (S X))"
+apply(auto simp: cp_def)
+apply(rule exI, (rule allI)+)
+by(erule_tac x="N X" in allE, auto)
+
+
 lemma cp_const : "cp(\<lambda>_. c)"
   by (simp add: cp_def, fast)
 
 lemma cp_id :     "cp(\<lambda>X. X)"
   by (simp add: cp_def, fast)
 
+text_raw{*  \isatagafp *}
+ 
 lemmas cp_intro[intro!,simp,code_unfold] =
        cp_const
        cp_id
@@ -1279,37 +1067,11 @@ lemmas cp_intro[intro!,simp,code_unfold] =
        cp_OclOr[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "op or"]]
        cp_OclImplies[THEN allI[THEN allI[THEN allI[THEN cpI2]], of "op implies"]]
        cp_StrongEq[THEN allI[THEN allI[THEN allI[THEN cpI2]],
-             of "StrongEq"]]
+                   of "StrongEq"]]
 
-subsection{* Laws to Establish Definedness ($\delta$-closure) *}
-
-text{* For the logical connectives, we have --- beyond
-@{thm foundation6} --- the following facts:  *}
-lemma OclNot_defargs:
-"\<tau> \<Turnstile> (not P) \<Longrightarrow> \<tau> \<Turnstile> \<delta> P"
-by(auto simp: OclNot_def OclValid_def true_def invalid_def defined_def false_def
-                 bot_fun_def bot_option_def null_fun_def null_option_def
-        split: bool.split_asm HOL.split_if_asm option.split option.split_asm)
-
-lemma OclNot_contrapos_nn:
- assumes "\<tau> \<Turnstile> \<delta> A"
- assumes "\<tau> \<Turnstile> not B"
- assumes "\<tau> \<Turnstile> A \<Longrightarrow> \<tau> \<Turnstile> B"
- shows   "\<tau> \<Turnstile> not A"
-proof -
- have change_not : "\<And>a b. (not a \<tau> = b \<tau>) = (a \<tau> = not b \<tau>)"
- by (metis OclNot_not cp_OclNot)
- show ?thesis
-  apply(insert assms, simp add: OclValid_def, subst change_not, subst (asm) change_not)
-  apply(simp add: OclNot_def true_def)
- by (metis OclValid_def bool_split defined_def false_def foundation2 true_def
-           bot_fun_def invalid_def)
-qed
-
-text{* So far, we have only one strict Boolean predicate (-family): the strict equality. *}
-
-section{* Miscellaneous *}
-
+text_raw{* \endisatagafp *}
+       
+       
 subsection{* OCL's if then else endif *}
 
 definition OclIf :: "[('\<AA>)Boolean , ('\<AA>,'\<alpha>::null) val, ('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) val"
@@ -1324,10 +1086,12 @@ where "(if C then B\<^sub>1 else B\<^sub>2 endif) = (\<lambda> \<tau>. if (\<del
 lemma cp_OclIf:"((if C then B\<^sub>1 else B\<^sub>2 endif) \<tau> =
                   (if (\<lambda> _. C \<tau>) then (\<lambda> _. B\<^sub>1 \<tau>) else (\<lambda> _. B\<^sub>2 \<tau>) endif) \<tau>)"
 by(simp only: OclIf_def, subst cp_defined, rule refl)
+text_raw{*  \isatagafp *}
 
 lemmas cp_intro'[intro!,simp,code_unfold] =
        cp_intro
        cp_OclIf[THEN allI[THEN allI[THEN allI[THEN allI[THEN cpI3]]], of "OclIf"]]
+text_raw{* \endisatagafp *}
 
 lemma OclIf_invalid [simp]: "(if invalid then B\<^sub>1 else B\<^sub>2 endif) = invalid"
 by(rule ext, auto simp: OclIf_def)
@@ -1341,6 +1105,9 @@ by(rule ext, auto simp: OclIf_def)
 lemma OclIf_true' [simp]: "\<tau> \<Turnstile> P \<Longrightarrow> (if P then B\<^sub>1 else B\<^sub>2 endif)\<tau> = B\<^sub>1 \<tau>"
 apply(subst cp_OclIf,auto simp: OclValid_def)
 by(simp add:cp_OclIf[symmetric])
+
+lemma OclIf_true'' [simp]: "\<tau> \<Turnstile> P \<Longrightarrow> \<tau> \<Turnstile> (if P then B\<^sub>1 else B\<^sub>2 endif) \<triangleq> B\<^sub>1"
+by(subst OclValid_def, simp add: StrongEq_def true_def)
 
 lemma OclIf_false [simp]: "(if false then B\<^sub>1 else B\<^sub>2 endif) = B\<^sub>2"
 by(rule ext, auto simp: OclIf_def)
@@ -1367,7 +1134,54 @@ lemma OclNot_if[simp]:
 by simp
 
 
-subsection{* A Side-calculus for (Boolean) Constant Terms *}
+       
+subsection{* Fundamental Predicates on Basic Types: Strict (Referential) Equality *}
+
+text{*
+  In contrast to logical equality, the OCL standard defines an equality operation
+  which we call ``strict referential equality''. It behaves differently for all
+  types---on value types, it is basically a strict version of strong equality, 
+  for defined values it behaves identical. But on object types it will compare 
+  their references within the store. We  introduce strict referential equality 
+  as an \emph{overloaded} concept and will handle it for
+  each type instance individually.
+*}
+consts StrictRefEq :: "[('\<AA>,'a)val,('\<AA>,'a)val] \<Rightarrow> ('\<AA>)Boolean" (infixl "\<doteq>" 30)
+
+text{* with {term "not"} we can express the notation:*}
+
+syntax
+  "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix "<>" 40)
+translations
+  "a <> b" == "CONST OclNot(a \<doteq> b)"
+       
+text{* We will define instances of this equality in a case-by-case basis.*}       
+       
+subsection{* Laws to Establish Definedness (\texorpdfstring{$\delta$}{d}-closure) *}
+
+text{* For the logical connectives, we have --- beyond
+@{thm foundation6} --- the following facts:  *}
+lemma OclNot_defargs:
+"\<tau> \<Turnstile> (not P) \<Longrightarrow> \<tau> \<Turnstile> \<delta> P"
+by(auto simp: OclNot_def OclValid_def true_def invalid_def defined_def false_def
+                 bot_fun_def bot_option_def null_fun_def null_option_def
+        split: bool.split_asm HOL.split_if_asm option.split option.split_asm)
+
+
+lemma OclNot_contrapos_nn:
+ assumes A: "\<tau> \<Turnstile> \<delta> A"
+ assumes B: "\<tau> \<Turnstile> not B"
+ assumes C: "\<tau> \<Turnstile> A \<Longrightarrow> \<tau> \<Turnstile> B"
+ shows      "\<tau> \<Turnstile> not A"
+proof -
+ have D : "\<tau> \<Turnstile> \<delta> B" by(rule B[THEN OclNot_defargs])
+ show ?thesis 
+    apply(insert B,simp add: A D foundation9)
+    by(erule contrapos_nn, auto intro: C)
+qed
+
+
+subsection{* A Side-calculus for Constant Terms *}
 
 definition "const X \<equiv> \<forall> \<tau> \<tau>'. X \<tau> = X \<tau>'"
 
@@ -1391,7 +1205,7 @@ proof -
       apply(insert cp_P, unfold cp_def)
       apply(elim exE, erule_tac x=Y in allE', erule_tac x=\<tau>' in allE)
       apply(erule_tac x="(\<lambda>_. Y \<tau>')" in allE, erule_tac x=\<tau>' in allE)
-      by simp   
+      by simp
    have C: "X \<tau>' = Y \<tau>'"
       apply(rule trans, subst const_charn[OF const_X],rule eq)
       by(rule const_charn[OF const_Y])
@@ -1403,17 +1217,17 @@ qed
 
 
 lemma const_imply2 :
- assumes "\<And>\<tau>1 \<tau>2. P \<tau>1 = P \<tau>2 \<Longrightarrow> Q \<tau>1 = Q \<tau>2"
+ assumes "\<And>\<tau> \<tau>'. P \<tau> = P \<tau>' \<Longrightarrow> Q \<tau> = Q \<tau>'"
  shows "const P \<Longrightarrow> const Q"
 by(simp add: const_def, insert assms, blast)
 
 lemma const_imply3 :
- assumes "\<And>\<tau>1 \<tau>2. P \<tau>1 = P \<tau>2 \<Longrightarrow> Q \<tau>1 = Q \<tau>2 \<Longrightarrow> R \<tau>1 = R \<tau>2"
+ assumes "\<And>\<tau> \<tau>'. P \<tau> = P \<tau>' \<Longrightarrow> Q \<tau> = Q \<tau>' \<Longrightarrow> R \<tau> = R \<tau>'"
  shows "const P \<Longrightarrow> const Q \<Longrightarrow> const R"
 by(simp add: const_def, insert assms, blast)
 
 lemma const_imply4 :
- assumes "\<And>\<tau>1 \<tau>2. P \<tau>1 = P \<tau>2 \<Longrightarrow> Q \<tau>1 = Q \<tau>2 \<Longrightarrow> R \<tau>1 = R \<tau>2 \<Longrightarrow> S \<tau>1 = S \<tau>2"
+ assumes "\<And>\<tau> \<tau>'. P \<tau> = P \<tau>' \<Longrightarrow> Q \<tau> = Q \<tau>' \<Longrightarrow> R \<tau> = R \<tau>' \<Longrightarrow> S \<tau> = S \<tau>'"
  shows "const P \<Longrightarrow> const Q \<Longrightarrow> const R \<Longrightarrow> const S"
 by(simp add: const_def, insert assms, blast)
 
@@ -1421,34 +1235,85 @@ lemma const_lam : "const (\<lambda>_. e)"
 by(simp add: const_def)
 
 
-lemma const_true : "const true"
+lemma const_true[simp] : "const true"
 by(simp add: const_def true_def)
 
-lemma const_false : "const false"
+lemma const_false[simp] : "const false"
 by(simp add: const_def false_def)
 
-lemma const_null : "const null"
+lemma const_null[simp] : "const null"
 by(simp add: const_def null_fun_def)
 
-lemma const_invalid : "const invalid"
+lemma const_invalid [simp]: "const invalid"
 by(simp add: const_def invalid_def)
 
-lemma const_bot : "const bot"
+lemma const_bot[simp] : "const bot"
 by(simp add: const_def bot_fun_def)
 
 
 
 lemma const_defined :
  assumes "const X"
- shows "const (\<delta> X)"
+ shows   "const (\<delta> X)"
 by(rule const_imply2[OF _ assms],
    simp add: defined_def false_def true_def bot_fun_def bot_option_def null_fun_def null_option_def)
 
 lemma const_valid :
  assumes "const X"
- shows "const (\<upsilon> X)"
+ shows   "const (\<upsilon> X)"
 by(rule const_imply2[OF _ assms],
    simp add: valid_def false_def true_def bot_fun_def null_fun_def assms)
+
+
+lemma const_OclAnd :
+  assumes "const X"
+  assumes "const X'"
+  shows   "const (X and X')"
+by(rule const_imply3[OF _ assms], subst (1 2) cp_OclAnd, simp add: assms OclAnd_def)
+
+
+lemma const_OclNot :
+    assumes "const X"
+    shows   "const (not X)"
+by(rule const_imply2[OF _ assms],subst cp_OclNot,simp add: assms OclNot_def)
+
+lemma const_OclOr :
+  assumes "const X"
+  assumes "const X'"
+  shows   "const (X or X')"
+by(simp add: assms OclOr_def const_OclNot const_OclAnd)
+
+lemma const_OclImplies :
+  assumes "const X"
+  assumes "const X'"
+  shows   "const (X implies X')"
+by(simp add: assms OclImplies_def const_OclNot const_OclOr)
+
+lemma const_StrongEq:
+  assumes "const X"
+  assumes "const X'"
+  shows   "const(X \<triangleq> X')"
+  apply(simp only: StrongEq_def const_def, intro allI)
+  apply(subst assms(1)[THEN const_charn])
+  apply(subst assms(2)[THEN const_charn])
+  by simp
+  
+  
+lemma const_OclIf :
+  assumes "const B"
+      and "const C1"
+      and "const C2"
+    shows "const (if B then C1 else C2 endif)"
+ apply(rule const_imply4[OF _ assms],
+       subst (1 2) cp_OclIf, simp only: OclIf_def cp_defined[symmetric])
+ apply(simp add: const_defined[OF assms(1), simplified const_def, THEN spec, THEN spec]
+                 const_true[simplified const_def, THEN spec, THEN spec]
+                 assms[simplified const_def, THEN spec, THEN spec]
+                 const_invalid[simplified const_def, THEN spec, THEN spec])
+by (metis (no_types) bot_fun_def OclValid_def const_def const_true defined_def 
+                 foundation16[THEN iffD1]  null_fun_def)
+
+       
 
 lemma const_OclValid1:
  assumes "const x"
@@ -1464,56 +1329,33 @@ lemma const_OclValid2:
  apply(subst const_valid[OF assms, THEN const_charn])
  by(simp add: true_def)
 
- 
-lemma const_OclAnd :
-  assumes "const X"
-  assumes "const X'"
-  shows   "const (X and X')"
-by(rule const_imply3[OF _ assms], subst (1 2) cp_OclAnd, simp add: assms OclAnd_def)
 
+lemma const_HOL_if : "const C \<Longrightarrow> const D \<Longrightarrow> const F \<Longrightarrow> const (\<lambda>\<tau>. if C \<tau> then D \<tau> else F \<tau>)"
+      by(auto simp: const_def)
+lemma const_HOL_and: "const C \<Longrightarrow> const D \<Longrightarrow> const (\<lambda>\<tau>. C \<tau> \<and> D \<tau>)"
+      by(auto simp: const_def)
+lemma const_HOL_eq : "const C \<Longrightarrow> const D \<Longrightarrow> const (\<lambda>\<tau>. C \<tau> = D \<tau>)" 
+      apply(auto simp: const_def)
+      apply(erule_tac x=\<tau> in allE)
+      apply(erule_tac x=\<tau> in allE)
+      apply(erule_tac x=\<tau>' in allE)
+      apply(erule_tac x=\<tau>' in allE)
+      apply simp
+      apply(erule_tac x=\<tau> in allE)
+      apply(erule_tac x=\<tau> in allE)
+      apply(erule_tac x=\<tau>' in allE)
+      apply(erule_tac x=\<tau>' in allE)
+      by simp
 
-
-lemma const_OclNot :
-    assumes "const X"
-    shows "const (not X)"
-by(rule const_imply2[OF _ assms],subst cp_OclNot,simp add: assms OclNot_def)
-
-lemma const_OclOr :
-  assumes "const X"
-  assumes "const X'"
-  shows "const (X or X')"
-by(simp add: assms OclOr_def const_OclNot const_OclAnd)
-
-lemma const_OclImplies :
-  assumes "const X"
-  assumes "const X'"
-  shows "const (X implies X')"
-by(simp add: assms OclImplies_def const_OclNot const_OclOr)
-
-lemma const_StrongEq:
-  assumes "const X"
-  assumes "const X'"
-  shows   "const(X \<triangleq> X')"
-  apply(simp only: StrongEq_def const_def, intro allI)
-  apply(subst assms(1)[THEN const_charn])
-  apply(subst assms(2)[THEN const_charn])
-  by simp
-  
-lemma const_OclIf :
-  assumes "const B"
-      and "const C1"
-      and "const C2"
-    shows "const (if B then C1 else C2 endif)"
- apply(rule const_imply4[OF _ assms], 
-       subst (1 2) cp_OclIf, simp only: OclIf_def cp_defined[symmetric])
- apply(simp add: const_defined[OF assms(1), simplified const_def, THEN spec, THEN spec]
-                 const_true[simplified const_def, THEN spec, THEN spec]
-                 assms[simplified const_def, THEN spec, THEN spec]
-                 const_invalid[simplified const_def, THEN spec, THEN spec])
-by (metis (no_types) OCL_core.bot_fun_def OclValid_def const_def const_true defined_def foundation17 
-                     null_fun_def)
 
 lemmas const_ss = const_bot const_null  const_invalid  const_false  const_true  const_lam
-                  const_defined const_valid const_StrongEq const_OclNot const_OclAnd 
+                  const_defined const_valid const_StrongEq const_OclNot const_OclAnd
                   const_OclOr const_OclImplies const_OclIf
+                  const_HOL_if const_HOL_and const_HOL_eq
+               
+
+text{* Miscellaneous: Overloading the syntax of ``bottom'' *}
+
+notation bot ("\<bottom>")
+
 end

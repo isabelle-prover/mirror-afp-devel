@@ -1,13 +1,13 @@
 (*****************************************************************************
- * Featherweight-OCL --- A Formal Semantics for UML-OCL Version OCL 2.4
+ * Featherweight-OCL --- A Formal Semantics for UML-OCL Version OCL 2.5
  *                       for the OMG Standard.
  *                       http://www.brucker.ch/projects/hol-testgen/
  *
- * Employee_DesignModel_UMLPart.thy --- OCL Contracts and an Example.
+ * Analysis_UML.thy --- OCL Contracts and an Example.
  * This file is part of HOL-TestGen.
  *
- * Copyright (c) 2012-2013 Universite Paris-Sud, France
- *               2013      IRT SystemX, France
+ * Copyright (c) 2012-2015 Université Paris-Saclay, Univ. Paris-Sud, France
+ *               2013-2015 IRT SystemX, France
  *
  * All rights reserved.
  *
@@ -40,18 +40,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* The Employee Design Model (UML) *}
+chapter{* Example: The Employee Analysis Model *} (* UML part *)
 
 theory
-  Employee_DesignModel_UMLPart
+  Analysis_UML
 imports
-  "../OCL_main"
+  "../../../src/UML_Main"
 begin
 
-text {* \label{ex:employee-design:uml} *}
+text {* \label{ex:employee-analysis:uml} *}
 
-subsection{* Introduction *}
-text{* 
+section{* Introduction *}
+text{*
   For certain concepts like classes and class-types, only a generic
   definition for its resulting semantics can be given. Generic means,
   there is a function outside HOL that ``compiles'' a concrete,
@@ -69,18 +69,29 @@ text{* Such generic function or ``compiler'' can be implemented in
   concepts of the compilation informally, and present a concrete
   example which is verified in Isabelle/HOL. *}
 
-subsubsection{* Outlining the Example *}
+subsection{* Outlining the Example *}
 
-text{* We are presenting here a ``design-model'' of the (slightly
+text{* We are presenting here an ``analysis-model'' of the (slightly
 modified) example Figure 7.3, page 20 of
-the OCL standard~\cite{omg:ocl:2012}. To be precise, this theory contains the formalization of
-the data-part covered by the UML class model (see \autoref{fig:person}):*}
+the OCL standard~\cite{omg:ocl:2012}.
+Here, analysis model means that associations
+were really represented as relation on objects on the state---as is
+intended by the standard---rather by pointers between objects as is
+done in our ``design model'' 
+\isatagafp
+(see \autoref{ex:employee-design:uml}).
+\endisatagafp
+\isatagannexa
+(see \url{http://afp.sourceforge.net/entries/Featherweight_OCL.shtml}).
+\endisatagannexa
+To be precise, this theory contains the formalization of the data-part
+covered by the UML class model (see \autoref{fig:person-ana}):*}
 
 text{*
 \begin{figure}
   \centering\scalebox{.3}{\includegraphics{figures/person.png}}%
   \caption{A simple UML class model drawn from Figure 7.3,
-  page 20 of~\cite{omg:ocl:2012}. \label{fig:person}}
+  page 20 of~\cite{omg:ocl:2012}. \label{fig:person-ana}}
 \end{figure}
 *}
 
@@ -90,23 +101,21 @@ by the attribute  \inlineocl+boss+ and the operation \inlineocl+employees+ (to b
 captured by the subsequent theory).
 *}
 
-subsection{* Example Data-Universe and its Infrastructure *}
+section{* Example Data-Universe and its Infrastructure *}
 text{* Ideally, the following is generated automatically from a UML class model.  *}
 
-(* @{text "'\<AA>"} -- \mathfrak{A} *)
 text{* Our data universe  consists in the concrete class diagram just of node's,
 and implicitly of the class object. Each class implies the existence of a class
 type defined for the corresponding object representations as follows: *}
 
 datatype type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n = mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid          (* the oid to the person itself *)
                             "int option" (* the attribute "salary" or null *)
-                            "oid option" (* the attribute "boss" or null *)
 
 
 datatype type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y = mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid          (* the oid to the oclany itself *)
-                            "(int option \<times> oid option) option"
-                                         (* the extensions to "person"; used to denote 
-                                            objects of actual type "person" casted to "oclany"; 
+                            "(int option) option"
+                                         (* the extensions to "person"; used to denote
+                                            objects of actual type "person" casted to "oclany";
                                             in case of existence of several subclasses
                                             of oclany, sums of extensions have to be provided. *)
 
@@ -135,7 +144,7 @@ to show that the object universe belongs to the type class ``oclany,'' \ie,
  each class type has to provide a function @{term oid_of} yielding the object id (oid) of the object. *}
 instantiation type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: object
 begin
-   definition oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def: "oid_of x = (case x of mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid _ _ \<Rightarrow> oid)"
+   definition oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def: "oid_of x = (case x of mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid _ \<Rightarrow> oid)"
    instance ..
 end
 
@@ -156,14 +165,14 @@ end
 
 
 
-subsection{* Instantiation of the Generic Strict Equality *}
+section{* Instantiation of the Generic Strict Equality *}
 text{* We instantiate the referential equality
 on @{text "Person"} and @{text "OclAny"} *}
 
 defs(overloaded)   StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n   : "(x::Person) \<doteq> y  \<equiv> StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x y"
 defs(overloaded)   StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y   : "(x::OclAny) \<doteq> y  \<equiv> StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x y"
 
-lemmas
+lemmas cps23 = 
     cp_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t[of "x::Person" "y::Person" "\<tau>",
                          simplified StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n[symmetric]]
     cp_intro(9)         [of "P::Person \<Rightarrow>Person""Q::Person \<Rightarrow>Person",
@@ -179,8 +188,6 @@ lemmas
                         [of "x::Person",
                          simplified StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n[symmetric]]
 
-
-
 text{* For each Class \emph{C}, we will have a casting operation \inlineocl{.oclAsType($C$)},
    a test on the actual type \inlineocl{.oclIsTypeOf($C$)} as well as its relaxed form
    \inlineocl{.oclIsKindOf($C$)} (corresponding exactly to Java's \verb+instanceof+-operator.
@@ -190,14 +197,14 @@ two operations to declare and to provide two overloading definitions for the two
 *}
 
 
-subsection{* OclAsType *}
-subsubsection{* Definition *}
+section{* OclAsType *}
+subsection{* Definition *}
 
 consts OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> OclAny" ("(_) .oclAsType'(OclAny')")
 consts OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Person" ("(_) .oclAsType'(Person')")
 
 definition "OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA> = (\<lambda>u. \<lfloor>case u of in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y a \<Rightarrow> a
-                                            | in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a b) \<Rightarrow> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>(a,b)\<rfloor>\<rfloor>)"
+                                             | in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a) \<Rightarrow> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor>\<rfloor>)"
 
 lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA>_some: "OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA> x \<noteq> None"
 by(simp add: OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA>_def)
@@ -210,11 +217,12 @@ defs (overloaded) OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Pers
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom>   \<Rightarrow> invalid \<tau>
                             | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> null \<tau>
-                            | \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a b \<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor>  (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>(a,b)\<rfloor>) \<rfloor>\<rfloor>)"
+                            | \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a \<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor>  (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor>) \<rfloor>\<rfloor>)"
 
-definition "OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_\<AA> = (\<lambda>u. case u of in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n p \<Rightarrow> \<lfloor>p\<rfloor>
-                                          | in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>(a,b)\<rfloor>) \<Rightarrow> \<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a b\<rfloor>
-                                          | _ \<Rightarrow> None)"
+definition "OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_\<AA> = 
+                   (\<lambda>u. case u of in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n p \<Rightarrow> \<lfloor>p\<rfloor>
+                            | in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor>) \<Rightarrow> \<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a\<rfloor>
+                            | _ \<Rightarrow> None)"
 
 defs (overloaded) OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny:
         "(X::OclAny) .oclAsType(Person) \<equiv>
@@ -222,17 +230,17 @@ defs (overloaded) OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclA
                               \<bottom>   \<Rightarrow> invalid \<tau>
                             | \<lfloor>\<bottom>\<rfloor> \<Rightarrow> null \<tau>
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow>  invalid \<tau>   (* down-cast exception *)
-                            | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>(a,b)\<rfloor> \<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a b \<rfloor>\<rfloor>)"
+                            | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor> \<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a\<rfloor>\<rfloor>)"
 
 defs (overloaded) OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person:
         "(X::Person) .oclAsType(Person) \<equiv> X "  (* to avoid identity for null ? *)
 
+text_raw{* \isatagafp *}
 
 lemmas [simp] =
  OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny
  OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person
-
-subsubsection{* Context Passing *}
+subsection{* Context Passing *}
 
 lemma cp_OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_Person: "cp P \<Longrightarrow> cp(\<lambda>X. (P (X::Person)::Person) .oclAsType(OclAny))"
 by(rule cpI1, simp_all add: OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
@@ -263,37 +271,26 @@ lemmas [simp] =
  cp_OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_OclAny
  cp_OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_Person
 
-subsubsection{* Execution with Invalid or Null as Argument *}
+text_raw{* \endisatagafp*}
 
-lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict : "(invalid::OclAny) .oclAsType(OclAny) = invalid"
-by(simp)
+subsection{* Execution with Invalid or Null as Argument *}
 
-lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_nullstrict : "(null::OclAny) .oclAsType(OclAny) = null"
-by(simp)
-
+lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict : "(invalid::OclAny) .oclAsType(OclAny) = invalid" by(simp)
+lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_nullstrict : "(null::OclAny) .oclAsType(OclAny) = null" by(simp)
 lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict[simp] : "(invalid::Person) .oclAsType(OclAny) = invalid"
-by(rule ext, simp add: bot_option_def invalid_def
-                       OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
-
+      by(rule ext, simp add: bot_option_def invalid_def OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 lemma OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_nullstrict[simp] : "(null::Person) .oclAsType(OclAny) = null"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def
-                       OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
-
+      by(rule ext, simp add: null_fun_def null_option_def bot_option_def OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict[simp] : "(invalid::OclAny) .oclAsType(Person) = invalid"
-by(rule ext, simp add: bot_option_def invalid_def
-                       OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
-
+      by(rule ext, simp add: bot_option_def invalid_def  OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
 lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_nullstrict[simp] : "(null::OclAny) .oclAsType(Person) = null"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def
-                       OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
+      by(rule ext, simp add: null_fun_def null_option_def bot_option_def  OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
+lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict : "(invalid::Person) .oclAsType(Person) = invalid"  by(simp)
+lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_nullstrict : "(null::Person) .oclAsType(Person) = null" by(simp)
 
-lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict : "(invalid::Person) .oclAsType(Person) = invalid"
-by(simp)
-lemma OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_nullstrict : "(null::Person) .oclAsType(Person) = null"
-by(simp)
+section{* OclIsTypeOf *}
 
-subsection{* OclIsTypeOf *}
-subsubsection{* Definition *}
+subsection{* Definition *}
 
 consts OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsTypeOf'(OclAny')")
 consts OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsTypeOf'(Person')")
@@ -306,6 +303,26 @@ defs (overloaded) OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Oc
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow> true \<tau>
                             | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>_\<rfloor> \<rfloor>\<rfloor> \<Rightarrow> false \<tau>)"
 
+lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny':
+         "(X::OclAny) .oclIsTypeOf(OclAny) = 
+                    (\<lambda> \<tau>. if \<tau> \<Turnstile> \<upsilon> X then (case X \<tau> of
+                                              \<lfloor>\<bottom>\<rfloor> \<Rightarrow> true \<tau>  (* invalid ?? *)
+                                           | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<bottom> \<rfloor>\<rfloor> \<Rightarrow> true \<tau>
+                                           | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>_\<rfloor> \<rfloor>\<rfloor> \<Rightarrow> false \<tau>)
+                                           else invalid \<tau>)"
+       apply(rule ext, simp add: OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
+       by(case_tac "\<tau> \<Turnstile> \<upsilon> X", auto simp: foundation18' bot_option_def)
+
+interpretation OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny : 
+       profile_mono_schemeV 
+       "OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y::OclAny \<Rightarrow> Boolean" 
+       "\<lambda> X. (case X of
+                    \<lfloor>None\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>True\<rfloor>\<rfloor>  (* invalid ?? *)
+                  | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid None \<rfloor>\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>True\<rfloor>\<rfloor>
+                  | \<lfloor>\<lfloor>mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>_\<rfloor> \<rfloor>\<rfloor> \<Rightarrow> \<lfloor>\<lfloor>False\<rfloor>\<rfloor>)"                     
+      apply(unfold_locales, simp add: atomize_eq, rule ext)
+      by(auto simp:  OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny' OclValid_def true_def false_def 
+              split: option.split type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y.split)
 
 defs (overloaded) OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person:
         "(X::Person) .oclIsTypeOf(OclAny) \<equiv>
@@ -326,9 +343,9 @@ defs (overloaded) OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Pe
         "(X::Person) .oclIsTypeOf(Person) \<equiv>
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom> \<Rightarrow> invalid \<tau>
-                            | _ \<Rightarrow> true \<tau>)"
-
-subsubsection{* Context Passing *}
+                            | _ \<Rightarrow> true \<tau>)" (* for (* \<lfloor>\<lfloor> _ \<rfloor>\<rfloor> \<Rightarrow> true \<tau> *) : must have actual type Node otherwise  *)
+text_raw{* \isatagafp *}
+subsection{* Context Passing *}
 
 lemma cp_OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_Person: "cp P \<Longrightarrow> cp(\<lambda>X.(P(X::Person)::Person).oclIsTypeOf(OclAny))"
 by(rule cpI1, simp_all add: OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
@@ -359,8 +376,9 @@ lemmas [simp] =
  cp_OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_Person
  cp_OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_OclAny
  cp_OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_Person
+text_raw{* \endisatagafp *}
 
-subsubsection{* Execution with Invalid or Null as Argument *}
+subsection{* Execution with Invalid or Null as Argument *}
 
 lemma OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict1[simp]:
      "(invalid::OclAny) .oclIsTypeOf(OclAny) = invalid"
@@ -395,7 +413,7 @@ lemma OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict2
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
                        OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
-subsubsection{* Up Down Casting *}
+subsection{* Up Down Casting *}
 
 lemma actualType_larger_staticType:
 assumes isdef: "\<tau> \<Turnstile> (\<delta> X)"
@@ -434,26 +452,28 @@ shows "((X::Person) .oclAsType(OclAny) .oclAsType(Person) = X)"
  apply(rule ext, rename_tac \<tau>)
  apply(rule foundation22[THEN iffD1])
  apply(case_tac "\<tau> \<Turnstile> (\<delta> X)", simp add: up_down_cast)
- apply(simp add: def_split_local, elim disjE)
+ apply(simp add: defined_split, elim disjE)
  apply(erule StrongEq_L_subst2_rev, simp, simp)+
 done
 
-lemma up_down_cast_Person_OclAny_Person': assumes "\<tau> \<Turnstile> \<upsilon> X"
-shows "\<tau> \<Turnstile> (((X :: Person) .oclAsType(OclAny) .oclAsType(Person)) \<doteq> X)"
+lemma up_down_cast_Person_OclAny_Person':
+assumes "\<tau> \<Turnstile> \<upsilon> X"
+shows   "\<tau> \<Turnstile> (((X :: Person) .oclAsType(OclAny) .oclAsType(Person)) \<doteq> X)"
  apply(simp only: up_down_cast_Person_OclAny_Person StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n)
 by(rule StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_sym, simp add: assms)
 
-lemma up_down_cast_Person_OclAny_Person'': assumes "\<tau> \<Turnstile> \<upsilon> (X :: Person)"
-shows "\<tau> \<Turnstile> (X .oclIsTypeOf(Person) implies (X .oclAsType(OclAny) .oclAsType(Person)) \<doteq> X)"
+lemma up_down_cast_Person_OclAny_Person'': 
+assumes "\<tau> \<Turnstile> \<upsilon> (X :: Person)"
+shows   "\<tau> \<Turnstile> (X .oclIsTypeOf(Person) implies (X .oclAsType(OclAny) .oclAsType(Person)) \<doteq> X)"
  apply(simp add: OclValid_def)
  apply(subst cp_OclImplies)
  apply(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_sym[OF assms, simplified OclValid_def])
  apply(subst cp_OclImplies[symmetric])
-by (simp add: OclImplies_true)
+by simp
 
 
-subsection{* OclIsKindOf *}
-subsubsection{* Definition *}
+section{* OclIsKindOf *}
+subsection{* Definition *}
 
 consts OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsKindOf'(OclAny')")
 consts OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsKindOf'(Person')")
@@ -469,6 +489,7 @@ defs (overloaded) OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Pe
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom> \<Rightarrow> invalid \<tau>
                             | _\<Rightarrow> true \<tau>)"
+(* for (* \<lfloor>\<lfloor>mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n e oid _ \<rfloor>\<rfloor> \<Rightarrow> true \<tau> *) :  must have actual type Person otherwise  *)
 
 defs (overloaded) OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny:
         "(X::OclAny) .oclIsKindOf(Person) \<equiv>
@@ -483,8 +504,8 @@ defs (overloaded) OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Pe
                    (\<lambda>\<tau>. case X \<tau> of
                               \<bottom> \<Rightarrow> invalid \<tau>
                             | _ \<Rightarrow> true \<tau>)"
-
-subsubsection{* Context Passing *}
+text_raw{* \isatagafp *}
+subsection{* Context Passing *}
 
 lemma cp_OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_Person: "cp P \<Longrightarrow> cp(\<lambda>X.(P(X::Person)::Person).oclIsKindOf(OclAny))"
 by(rule cpI1, simp_all add: OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
@@ -514,63 +535,56 @@ lemmas [simp] =
  cp_OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_Person
  cp_OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_OclAny
  cp_OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_Person
-
-subsubsection{* Execution with Invalid or Null as Argument *}
+text_raw{* \endisatagafp *}
+subsection{* Execution with Invalid or Null as Argument *}
 
 lemma OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict1[simp] : "(invalid::OclAny) .oclIsKindOf(OclAny) = invalid"
 by(rule ext, simp add: invalid_def bot_option_def
                        OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
-
 lemma OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny_strict2[simp] : "(null::OclAny) .oclIsKindOf(OclAny) = true"
 by(rule ext, simp add: null_fun_def null_option_def
                        OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
-
 lemma OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict1[simp] : "(invalid::Person) .oclIsKindOf(OclAny) = invalid"
 by(rule ext, simp add: bot_option_def invalid_def
                        OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
-
 lemma OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person_strict2[simp] : "(null::Person) .oclIsKindOf(OclAny) = true"
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def
                        OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
-
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict1[simp]: "(invalid::OclAny) .oclIsKindOf(Person) = invalid"
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
-
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny_strict2[simp]: "(null::OclAny) .oclIsKindOf(Person) = true"
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny)
-
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict1[simp]: "(invalid::Person) .oclIsKindOf(Person) = invalid"
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
-
 lemma OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person_strict2[simp]: "(null::Person) .oclIsKindOf(Person) = true"
 by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def
                        OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
-subsubsection{* Up Down Casting *}
+subsection{* Up Down Casting *}
 
 lemma actualKind_larger_staticKind:
 assumes isdef: "\<tau> \<Turnstile> (\<delta> X)"
-shows          "\<tau> \<Turnstile> (X::Person) .oclIsKindOf(OclAny) \<triangleq> true"
+shows          "\<tau> \<Turnstile>  ((X::Person) .oclIsKindOf(OclAny) \<triangleq> true)"
 using isdef
 by(auto simp : bot_option_def
                OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person foundation22 foundation16)
 
 lemma down_cast_kind:
-assumes isOclAny: "\<not> \<tau> \<Turnstile> (X::OclAny) .oclIsKindOf(Person)"
+assumes isOclAny: "\<not> (\<tau> \<Turnstile> ((X::OclAny).oclIsKindOf(Person)))"
 and     non_null: "\<tau> \<Turnstile> (\<delta> X)"
-shows             "\<tau> \<Turnstile> (X .oclAsType(Person)) \<triangleq> invalid"
+shows             "\<tau> \<Turnstile> ((X .oclAsType(Person)) \<triangleq> invalid)"
 using isOclAny non_null
 apply(auto simp : bot_fun_def null_fun_def null_option_def bot_option_def null_def invalid_def
                   OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny foundation22 foundation16
            split: option.split type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y.split type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n.split)
 by(simp add: OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny  OclValid_def false_def true_def)
 
-subsection{* OclAllInstances *}
+section{* OclAllInstances *}
 
-text{* To denote OCL-types occuring in OCL expressions syntactically---as, for example,  as 
+text{* To denote OCL-types occuring in OCL expressions syntactically---as, for example,  as
 ``argument'' of \inlineisar{oclAllInstances()}---we use the inverses of the injection
 functions into the object universes; we show that this is sufficient ``characterization.'' *}
 
@@ -579,7 +593,7 @@ definition "OclAny \<equiv> OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^
 lemmas [simp] = Person_def OclAny_def
 
 lemma OclAllInstances_generic\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_exec: "OclAllInstances_generic pre_post OclAny =
-             (\<lambda>\<tau>.  Abs_Set_0  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (pre_post \<tau>)) \<rfloor>\<rfloor>)"
+             (\<lambda>\<tau>.  Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (pre_post \<tau>)) \<rfloor>\<rfloor>)"
 proof -
  let ?S1 = "\<lambda>\<tau>. OclAny ` ran (heap (pre_post \<tau>))"
  let ?S2 = "\<lambda>\<tau>. ?S1 \<tau> - {None}"
@@ -590,143 +604,155 @@ proof -
 qed
 
 lemma OclAllInstances_at_post\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_exec: "OclAny .allInstances() =
-             (\<lambda>\<tau>.  Abs_Set_0  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (snd \<tau>)) \<rfloor>\<rfloor>)"
+             (\<lambda>\<tau>.  Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (snd \<tau>)) \<rfloor>\<rfloor>)"
 unfolding OclAllInstances_at_post_def
 by(rule OclAllInstances_generic\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_exec)
 
 lemma OclAllInstances_at_pre\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_exec: "OclAny .allInstances@pre() =
-             (\<lambda>\<tau>.  Abs_Set_0  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (fst \<tau>)) \<rfloor>\<rfloor>) "
+             (\<lambda>\<tau>.  Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e  \<lfloor>\<lfloor> Some ` OclAny ` ran (heap (fst \<tau>)) \<rfloor>\<rfloor>) "
 unfolding OclAllInstances_at_pre_def
 by(rule OclAllInstances_generic\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_exec)
 
-subsubsection{* OclIsTypeOf *}
+subsection{* OclIsTypeOf *}
 
 lemma OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y1:
 assumes [simp]: "\<And>x. pre_post (x, x) = x"
-shows "\<exists>\<tau>. (\<tau> \<Turnstile>     ((OclAllInstances_generic pre_post OclAny)->forAll(X|X .oclIsTypeOf(OclAny))))"
+shows "\<exists>\<tau>. (\<tau> \<Turnstile>     ((OclAllInstances_generic pre_post OclAny)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
  apply(rule_tac x = \<tau>\<^sub>0 in exI, simp add: \<tau>\<^sub>0_def OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: assms OclForall_def refl if_True
+ apply(simp only: assms UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
 by(simp add: OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
 
 lemma OclAny_allInstances_at_post_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y1:
-"\<exists>\<tau>. (\<tau> \<Turnstile>     (OclAny .allInstances()->forAll(X|X .oclIsTypeOf(OclAny))))"
+"\<exists>\<tau>. (\<tau> \<Turnstile>     (OclAny .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
 unfolding OclAllInstances_at_post_def
 by(rule OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y1, simp)
 
 lemma OclAny_allInstances_at_pre_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y1:
-"\<exists>\<tau>. (\<tau> \<Turnstile>     (OclAny .allInstances@pre()->forAll(X|X .oclIsTypeOf(OclAny))))"
+"\<exists>\<tau>. (\<tau> \<Turnstile>     (OclAny .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
 unfolding OclAllInstances_at_pre_def
 by(rule OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y1, simp)
 
 lemma OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y2:
 assumes [simp]: "\<And>x. pre_post (x, x) = x"
-shows "\<exists>\<tau>. (\<tau> \<Turnstile> not ((OclAllInstances_generic pre_post OclAny)->forAll(X|X .oclIsTypeOf(OclAny))))"
+shows "\<exists>\<tau>. (\<tau> \<Turnstile> not ((OclAllInstances_generic pre_post OclAny)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
 proof - fix oid a let ?t0 = "\<lparr>heap = empty(oid \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>a\<rfloor>)),
-                              assocs\<^sub>2 = empty, assocs\<^sub>3 = empty\<rparr>" show ?thesis
+                              assocs = empty\<rparr>" show ?thesis
  apply(rule_tac x = "(?t0, ?t0)" in exI, simp add: OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: OclForall_def refl if_True
+ apply(simp only: UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA>_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
  by(simp add: OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny OclNot_def OclAny_def)
 qed
 
 lemma OclAny_allInstances_at_post_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y2:
-"\<exists>\<tau>. (\<tau> \<Turnstile> not (OclAny .allInstances()->forAll(X|X .oclIsTypeOf(OclAny))))"
+"\<exists>\<tau>. (\<tau> \<Turnstile> not (OclAny .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
 unfolding OclAllInstances_at_post_def
 by(rule OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y2, simp)
 
 lemma OclAny_allInstances_at_pre_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y2:
-"\<exists>\<tau>. (\<tau> \<Turnstile> not (OclAny .allInstances@pre()->forAll(X|X .oclIsTypeOf(OclAny))))"
+"\<exists>\<tau>. (\<tau> \<Turnstile> not (OclAny .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(OclAny))))"
 unfolding OclAllInstances_at_pre_def
 by(rule OclAny_allInstances_generic_oclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y2, simp)
 
 lemma Person_allInstances_generic_oclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll(X|X .oclIsTypeOf(Person)))"
+"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(Person)))"
  apply(simp add: OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: OclForall_def refl if_True
+ apply(simp only: UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
 by(simp add: OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
 lemma Person_allInstances_at_post_oclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> (Person .allInstances()->forAll(X|X .oclIsTypeOf(Person)))"
+"\<tau> \<Turnstile> (Person .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(Person)))"
 unfolding OclAllInstances_at_post_def
 by(rule Person_allInstances_generic_oclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n)
 
 lemma Person_allInstances_at_pre_oclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll(X|X .oclIsTypeOf(Person)))"
+"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsTypeOf(Person)))"
 unfolding OclAllInstances_at_pre_def
 by(rule Person_allInstances_generic_oclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n)
 
-subsubsection{* OclIsKindOf *}
+subsection{* OclIsKindOf *}
 lemma OclAny_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post OclAny)->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post OclAny)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
  apply(simp add: OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: OclForall_def refl if_True
+ apply(simp only: UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
 by(simp add: OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_OclAny)
 
 lemma OclAny_allInstances_at_post_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> (OclAny .allInstances()->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> (OclAny .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
 unfolding OclAllInstances_at_post_def
 by(rule OclAny_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y)
 
 lemma OclAny_allInstances_at_pre_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> (OclAny .allInstances@pre()->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> (OclAny .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
 unfolding OclAllInstances_at_pre_def
 by(rule OclAny_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y)
 
 lemma Person_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
  apply(simp add: OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: OclForall_def refl if_True
+ apply(simp only: UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
 by(simp add: OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
 
 lemma Person_allInstances_at_post_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> (Person .allInstances()->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> (Person .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
 unfolding OclAllInstances_at_post_def
 by(rule Person_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y)
 
 lemma Person_allInstances_at_pre_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y:
-"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll(X|X .oclIsKindOf(OclAny)))"
+"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(OclAny)))"
 unfolding OclAllInstances_at_pre_def
 by(rule Person_allInstances_generic_oclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y)
 
 lemma Person_allInstances_generic_oclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll(X|X .oclIsKindOf(Person)))"
+"\<tau> \<Turnstile> ((OclAllInstances_generic pre_post Person)->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(Person)))"
  apply(simp add: OclValid_def del: OclAllInstances_generic_def)
- apply(simp only: OclForall_def refl if_True
+ apply(simp only: UML_Set.OclForall_def refl if_True
                   OclAllInstances_generic_defined[simplified OclValid_def])
  apply(simp only: OclAllInstances_generic_def)
- apply(subst (1 2 3) Abs_Set_0_inverse, simp add: bot_option_def)
+ apply(subst (1 2 3) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def)
 by(simp add: OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person)
 
 lemma Person_allInstances_at_post_oclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> (Person .allInstances()->forAll(X|X .oclIsKindOf(Person)))"
+"\<tau> \<Turnstile> (Person .allInstances()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(Person)))"
 unfolding OclAllInstances_at_post_def
 by(rule Person_allInstances_generic_oclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n)
 
 lemma Person_allInstances_at_pre_oclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n:
-"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll(X|X .oclIsKindOf(Person)))"
+"\<tau> \<Turnstile> (Person .allInstances@pre()->forAll\<^sub>S\<^sub>e\<^sub>t(X|X .oclIsKindOf(Person)))"
 unfolding OclAllInstances_at_pre_def
 by(rule Person_allInstances_generic_oclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n)
 
-subsection{* The Accessors (any, boss, salary) *}
-text{*\label{sec:edm-accessors}*}
+section{* The Accessors (any, boss, salary) *}
+text{*\label{sec:eam-accessors}*}
 text{* Should be generated entirely from a class-diagram. *}
 
 
-subsubsection{* Definition *}
+subsection{* Definition (of the association Employee-Boss) *}
+
+text{* We start with a oid for the association; this oid can be used
+in presence of association classes to represent the association inside an object,
+pretty much similar to the \inlineisar+Design_UML+, where we stored
+an \verb+oid+ inside the class as ``pointer.'' *}
+
+definition oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> ::"oid" where "oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> = 10"
+
+text{* From there on, we can already define an empty state which must contain
+for $\mathit{oid}_{Person}\mathcal{BOSS}$ the empty relation (encoded as association list, since there are
+associations with a Sequence-like structure).*}
+
 
 definition eval_extract :: "('\<AA>,('a::object) option option) val
                             \<Rightarrow> (oid \<Rightarrow> ('\<AA>,'c::null) val)
@@ -735,16 +761,44 @@ where "eval_extract X f = (\<lambda> \<tau>. case X \<tau> of
                                     \<bottom> \<Rightarrow> invalid \<tau>   (* exception propagation *)
                                | \<lfloor>  \<bottom> \<rfloor> \<Rightarrow> invalid \<tau> (* dereferencing null pointer *)
                                | \<lfloor>\<lfloor> obj \<rfloor>\<rfloor> \<Rightarrow> f (oid_of obj) \<tau>)"
-(* TODO: rephrasing as if-then-else and shifting to OCL_state. *)
 
+definition "choose\<^sub>2_1 = fst"
+definition "choose\<^sub>2_2 = snd"
+
+definition "List_flatten = (\<lambda>l. (foldl ((\<lambda>acc. (\<lambda>l. (foldl ((\<lambda>acc. (\<lambda>l. (Cons (l) (acc))))) (acc) ((rev (l))))))) (Nil) ((rev (l)))))"
+definition "deref_assocs\<^sub>2" :: "('\<AA> state \<times> '\<AA> state \<Rightarrow> '\<AA> state)
+                              \<Rightarrow> (oid list list \<Rightarrow> oid list \<times> oid list)
+                              \<Rightarrow> oid
+                              \<Rightarrow> (oid list \<Rightarrow> ('\<AA>,'f)val)
+                              \<Rightarrow> oid
+                              \<Rightarrow> ('\<AA>, 'f::null)val"
+where      "deref_assocs\<^sub>2 pre_post to_from assoc_oid f oid =
+                 (\<lambda>\<tau>. case (assocs (pre_post \<tau>)) assoc_oid of
+                      \<lfloor> S \<rfloor> \<Rightarrow> f (List_flatten (map (choose\<^sub>2_2 \<circ> to_from)
+                                     (filter (\<lambda> p. List.member (choose\<^sub>2_1 (to_from p)) oid) S)))
+                                 \<tau>
+                     | _    \<Rightarrow> invalid \<tau>)"
+
+
+text{* The @{text pre_post}-parameter is configured with @{text fst} or
+@{text snd}, the @{text to_from}-parameter either with the identity @{term id} or
+the following combinator @{text switch}: *}
+definition "switch\<^sub>2_1 = (\<lambda>[x,y]\<Rightarrow> (x,y))"
+definition "switch\<^sub>2_2 = (\<lambda>[x,y]\<Rightarrow> (y,x))"
+definition "switch\<^sub>3_1 = (\<lambda>[x,y,z]\<Rightarrow> (x,y))"
+definition "switch\<^sub>3_2 = (\<lambda>[x,y,z]\<Rightarrow> (x,z))"
+definition "switch\<^sub>3_3 = (\<lambda>[x,y,z]\<Rightarrow> (y,x))"
+definition "switch\<^sub>3_4 = (\<lambda>[x,y,z]\<Rightarrow> (y,z))"
+definition "switch\<^sub>3_5 = (\<lambda>[x,y,z]\<Rightarrow> (z,x))"
+definition "switch\<^sub>3_6 = (\<lambda>[x,y,z]\<Rightarrow> (z,y))"
 
 definition deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "(\<AA> state \<times> \<AA> state \<Rightarrow> \<AA> state)
                              \<Rightarrow> (type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n \<Rightarrow> (\<AA>, 'c::null)val)
                              \<Rightarrow> oid
                              \<Rightarrow> (\<AA>, 'c::null)val"
 where "deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n fst_snd f oid = (\<lambda>\<tau>. case (heap (fst_snd \<tau>)) oid of
-                       \<lfloor> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n obj \<rfloor> \<Rightarrow> f obj \<tau>
-                     | _       \<Rightarrow> invalid \<tau>)"
+                                              \<lfloor> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n obj \<rfloor> \<Rightarrow> f obj \<tau>
+                                            | _              \<Rightarrow> invalid \<tau>)"
 
 
 
@@ -764,15 +818,16 @@ definition "select\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y> f
                    | (mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y _ \<lfloor>any\<rfloor>) \<Rightarrow> f (\<lambda>x _. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>) any)"
 
 
-definition "select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> f = (\<lambda> X. case X of
-                     (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ _ \<bottom>) \<Rightarrow> null  (* object contains null pointer *)
-                   | (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ _ \<lfloor>boss\<rfloor>) \<Rightarrow> f (\<lambda>x _. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>) boss)"
+definition "select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> f = select_object mtSet UML_Set.OclIncluding UML_Set.OclANY (f (\<lambda>x _. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>))"
 
 
 definition "select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y> f = (\<lambda> X. case X of
-                     (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ \<bottom> _) \<Rightarrow> null
-                   | (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ \<lfloor>salary\<rfloor> _) \<Rightarrow> f (\<lambda>x _. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>) salary)"
+                     (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ \<bottom>) \<Rightarrow> null
+                   | (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n _ \<lfloor>salary\<rfloor>) \<Rightarrow> f (\<lambda>x _. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>) salary)"
 
+
+definition "deref_assocs\<^sub>2\<B>\<O>\<S>\<S> fst_snd f = (\<lambda> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid _ \<Rightarrow>
+              deref_assocs\<^sub>2 fst_snd switch\<^sub>2_1 oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> f oid)"
 
 definition "in_pre_state = fst"
 definition "in_post_state = snd"
@@ -788,8 +843,9 @@ definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y> :: "O
 definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> :: "Person \<Rightarrow> Person"  ("(1(_).boss)" 50)
   where "(X).boss = eval_extract X
                       (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state
-                        (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
-                          (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state)))"
+                        (deref_assocs\<^sub>2\<B>\<O>\<S>\<S> in_post_state
+                          (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
+                            (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state))))"
 
 definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y> :: "Person \<Rightarrow> Integer"  ("(1(_).salary)" 50)
   where "(X).salary = eval_extract X
@@ -806,8 +862,9 @@ definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pr
 definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre:: "Person \<Rightarrow> Person"  ("(1(_).boss@pre)" 50)
   where "(X).boss@pre = eval_extract X
                           (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state
-                            (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
-                              (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state)))"
+                            (deref_assocs\<^sub>2\<B>\<O>\<S>\<S> in_pre_state
+                              (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
+                                (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state))))"
 
 definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre:: "Person \<Rightarrow> Integer"  ("(1(_).salary@pre)" 50)
   where "(X).salary@pre = eval_extract X
@@ -815,7 +872,7 @@ definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<
                               (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>
                                 reconst_basetype))"
 
-lemmas [simp] =
+lemmas dot_accessor =
   dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_def
   dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_def
   dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_def
@@ -823,17 +880,17 @@ lemmas [simp] =
   dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre_def
   dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre_def
 
-subsubsection{* Context Passing *}
+subsection{* Context Passing *}
 
 lemmas [simp] = eval_extract_def
 
-lemma cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>: "((X).any) \<tau> = ((\<lambda>_. X \<tau>).any) \<tau>" by simp
-lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>: "((X).boss) \<tau> = ((\<lambda>_. X \<tau>).boss) \<tau>" by simp
-lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>: "((X).salary) \<tau> = ((\<lambda>_. X \<tau>).salary) \<tau>" by simp
+lemma cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>: "((X).any) \<tau> = ((\<lambda>_. X \<tau>).any) \<tau>" by (simp add: dot_accessor)
+lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>: "((X).boss) \<tau> = ((\<lambda>_. X \<tau>).boss) \<tau>" by (simp add: dot_accessor)
+lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>: "((X).salary) \<tau> = ((\<lambda>_. X \<tau>).salary) \<tau>" by (simp add: dot_accessor)
 
-lemma cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre: "((X).any@pre) \<tau> = ((\<lambda>_. X \<tau>).any@pre) \<tau>" by simp
-lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre: "((X).boss@pre) \<tau> = ((\<lambda>_. X \<tau>).boss@pre) \<tau>" by simp
-lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre: "((X).salary@pre) \<tau> = ((\<lambda>_. X \<tau>).salary@pre) \<tau>" by simp
+lemma cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre: "((X).any@pre) \<tau> = ((\<lambda>_. X \<tau>).any@pre) \<tau>" by (simp add: dot_accessor)
+lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre: "((X).boss@pre) \<tau> = ((\<lambda>_. X \<tau>).boss@pre) \<tau>" by (simp add: dot_accessor)
+lemma cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre: "((X).salary@pre) \<tau> = ((\<lambda>_. X \<tau>).salary@pre) \<tau>" by (simp add: dot_accessor)
 
 lemmas cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_I [simp, intro!]=
        cp_dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>[THEN allI[THEN allI],
@@ -856,49 +913,71 @@ lemmas cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R
        cp_dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre[THEN allI[THEN allI],
                           of "\<lambda> X _. X" "\<lambda> _ \<tau>. \<tau>", THEN cpI1]
 
-subsubsection{* Execution with Invalid or Null as Argument *}
+subsection{* Execution with Invalid or Null as Argument *}
 
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_nullstrict [simp]: "(null).any = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre_nullstrict [simp] : "(null).any@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_strict [simp] : "(invalid).any = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre_strict [simp] : "(invalid).any@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 
 
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_nullstrict [simp]: "(null).boss = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre_nullstrict [simp] : "(null).boss@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_strict [simp] : "(invalid).boss = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre_strict [simp] : "(invalid).boss@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 
 
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_nullstrict [simp]: "(null).salary = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre_nullstrict [simp] : "(null).salary@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_strict [simp] : "(invalid).salary = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre_strict [simp] : "(invalid).salary@pre = invalid"
-by(rule ext, simp add: null_fun_def null_option_def bot_option_def null_def invalid_def)
+by(rule ext, simp add: dot_accessor null_fun_def null_option_def bot_option_def null_def invalid_def)
 
+subsection{* Representation in States *}
 
-subsection{* A Little Infra-structure on Example States *}
+lemma dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_def_mono:"\<tau> \<Turnstile> \<delta>(X .boss) \<Longrightarrow> \<tau> \<Turnstile> \<delta>(X)"
+  apply(case_tac "\<tau> \<Turnstile> (X \<triangleq> invalid)", insert StrongEq_L_subst2[where P = "(\<lambda>x. (\<delta> (x .boss)))" and \<tau> = "\<tau>" and x = "X" and y = "invalid"], simp add: foundation16')
+  apply(case_tac "\<tau> \<Turnstile> (X \<triangleq> null)", insert StrongEq_L_subst2[where P = "(\<lambda>x. (\<delta> (x .boss)))" and \<tau> = "\<tau>" and x = "X" and y = "null"], simp add: foundation16')
+by(simp add: defined_split)
+
+lemma repr_boss:  
+assumes A : "\<tau> \<Turnstile> \<delta>(x .boss)"
+shows      "is_represented_in_state in_post_state (x .boss) Person \<tau>"
+         apply(insert A[simplified foundation16]
+                      A[THEN dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_def_mono, simplified foundation16])
+         unfolding is_represented_in_state_def
+                   dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_def eval_extract_def select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_def in_post_state_def
+         oops
+
+lemma repr_bossX : 
+assumes A: "\<tau> \<Turnstile> \<delta>(x .boss)"
+shows "\<tau> \<Turnstile> ((Person .allInstances()) ->includes\<^sub>S\<^sub>e\<^sub>t(x .boss))"
+oops
+
+section{* A Little Infra-structure on Example States *}
 
 text{*
-The example we are defining in this section comes from the figure~\ref{fig:edm1_system-states}.
+The example we are defining in this section comes from the figure~\ref{fig:eam1_system-states}.
 \begin{figure}
 \includegraphics[width=\textwidth]{figures/pre-post.pdf}
 \caption{(a) pre-state $\sigma_1$ and
   (b) post-state $\sigma_1'$.}
-\label{fig:edm1_system-states}
+\label{fig:eam1_system-states}
 \end{figure}
 *}
+
+text_raw{* \isatagafp*}
 
 definition OclInt1000 ("\<one>\<zero>\<zero>\<zero>") where "OclInt1000 = (\<lambda> _ . \<lfloor>\<lfloor>1000\<rfloor>\<rfloor>)"
 definition OclInt1200 ("\<one>\<two>\<zero>\<zero>") where "OclInt1200 = (\<lambda> _ . \<lfloor>\<lfloor>1200\<rfloor>\<rfloor>)"
@@ -919,28 +998,29 @@ definition "oid6 \<equiv> 6"
 definition "oid7 \<equiv> 7"
 definition "oid8 \<equiv> 8"
 
-definition "person1 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid0 \<lfloor>1300\<rfloor> \<lfloor>oid1\<rfloor>"
-definition "person2 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid1 \<lfloor>1800\<rfloor> \<lfloor>oid1\<rfloor>"
-definition "person3 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid2 None None"
-definition "person4 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid3 \<lfloor>2900\<rfloor> None"
-definition "person5 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid4 \<lfloor>3500\<rfloor> None"
-definition "person6 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid5 \<lfloor>2500\<rfloor> \<lfloor>oid6\<rfloor>"
-definition "person7 \<equiv> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid6 \<lfloor>(\<lfloor>3200\<rfloor>, \<lfloor>oid6\<rfloor>)\<rfloor>"
+definition "person1 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid0 \<lfloor>1300\<rfloor>"
+definition "person2 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid1 \<lfloor>1800\<rfloor>"
+definition "person3 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid2 None"
+definition "person4 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid3 \<lfloor>2900\<rfloor>"
+definition "person5 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid4 \<lfloor>3500\<rfloor>"
+definition "person6 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid5 \<lfloor>2500\<rfloor>"
+definition "person7 \<equiv> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid6 \<lfloor>\<lfloor>3200\<rfloor>\<rfloor>"
 definition "person8 \<equiv> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid7 None"
-definition "person9 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid8 \<lfloor>0\<rfloor> None"
+definition "person9 \<equiv> mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid8 \<lfloor>0\<rfloor>"
+
+text_raw{* \endisatagafp*}
 
 definition
-      "\<sigma>\<^sub>1  \<equiv> \<lparr> heap = empty(oid0 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid0 \<lfloor>1000\<rfloor> \<lfloor>oid1\<rfloor>))
-                           (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid1 \<lfloor>1200\<rfloor>  None))
+      "\<sigma>\<^sub>1  \<equiv> \<lparr> heap = empty(oid0 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid0 \<lfloor>1000\<rfloor>))
+                           (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid1 \<lfloor>1200\<rfloor>))
                           (*oid2*)
-                           (oid3 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid3 \<lfloor>2600\<rfloor> \<lfloor>oid4\<rfloor>))
+                           (oid3 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid3 \<lfloor>2600\<rfloor>))
                            (oid4 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person5)
-                           (oid5 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid5 \<lfloor>2300\<rfloor> \<lfloor>oid3\<rfloor>))
+                           (oid5 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid5 \<lfloor>2300\<rfloor>))
                           (*oid6*)
                           (*oid7*)
                            (oid8 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person9),
-               assocs\<^sub>2 = empty,
-               assocs\<^sub>3 = empty \<rparr>"
+               assocs = empty(oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> \<mapsto> [[[oid0],[oid1]],[[oid3],[oid4]],[[oid5],[oid3]]]) \<rparr>"
 
 definition
       "\<sigma>\<^sub>1' \<equiv> \<lparr> heap = empty(oid0 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person1)
@@ -952,10 +1032,9 @@ definition
                            (oid6 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person7)
                            (oid7 \<mapsto> in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y person8)
                            (oid8 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person9),
-               assocs\<^sub>2 = empty,
-               assocs\<^sub>3 = empty \<rparr>"
+               assocs = empty(oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> \<mapsto> [[[oid0],[oid1]],[[oid1],[oid1]],[[oid5],[oid6]],[[oid6],[oid6]]]) \<rparr>"
 
-definition "\<sigma>\<^sub>0 \<equiv> \<lparr> heap = empty, assocs\<^sub>2 = empty, assocs\<^sub>3 = empty \<rparr>"
+definition "\<sigma>\<^sub>0 \<equiv> \<lparr> heap = empty, assocs = empty \<rparr>"
 
 
 lemma basic_\<tau>_wff: "WFF(\<sigma>\<^sub>1,\<sigma>\<^sub>1')"
@@ -970,6 +1049,8 @@ by(auto simp: \<sigma>\<^sub>1_def)
 
 lemma [simp,code_unfold]: "dom (heap \<sigma>\<^sub>1') = {oid0,oid1,oid2,oid3,(*,oid4*)oid5,oid6,oid7,oid8}"
 by(auto simp: \<sigma>\<^sub>1'_def)
+
+text_raw{* \isatagafp *}
 
 definition "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 :: Person \<equiv> \<lambda> _ .\<lfloor>\<lfloor> person1 \<rfloor>\<rfloor>"
 definition "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 :: Person \<equiv> \<lambda> _ .\<lfloor>\<lfloor> person2 \<rfloor>\<rfloor>"
@@ -999,24 +1080,24 @@ lemmas [simp,code_unfold] =
  OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person
  OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_OclAny
  OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_Person
+text_raw{* \endisatagafp *}
 
-
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary    <> \<one>\<zero>\<zero>\<zero>)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary    \<doteq> \<one>\<three>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary@pre     \<doteq> \<one>\<zero>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary@pre     <> \<one>\<three>\<zero>\<zero>)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss   <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .salary   \<doteq> \<one>\<eight>\<zero>\<zero>)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .boss  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .boss  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary  \<doteq> \<one>\<eight>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary@pre  \<doteq> \<one>\<two>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary@pre  <> \<one>\<eight>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss@pre  \<doteq> null)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss@pre .boss@pre))"
-
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary    <> \<one>\<zero>\<zero>\<zero>)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary    \<doteq> \<one>\<three>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary@pre     \<doteq> \<one>\<zero>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .salary@pre     <> \<one>\<three>\<zero>\<zero>)"
+(*Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss   <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .salary   \<doteq> \<one>\<eight>\<zero>\<zero>)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .boss  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss .boss  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary  \<doteq> \<one>\<eight>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary@pre  \<doteq> \<one>\<two>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .salary@pre  <> \<one>\<eight>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss@pre  \<doteq> null)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .boss@pre .boss@pre .boss@pre))"
+*)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsMaintained())"
 by(simp add: OclValid_def OclIsMaintained_def
              \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
@@ -1026,104 +1107,91 @@ by(simp add: OclValid_def OclIsMaintained_def
 
 lemma "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>    ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny) .oclAsType(Person)) \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1)"
 by(rule up_down_cast_Person_OclAny_Person', simp add: X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1_def)
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsTypeOf(Person))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>  not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsTypeOf(OclAny))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsKindOf(Person))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsKindOf(OclAny))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>  not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny) .oclIsTypeOf(OclAny))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsTypeOf(Person))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>  not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsTypeOf(OclAny))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsKindOf(Person))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclIsKindOf(OclAny))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>  not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny) .oclIsTypeOf(OclAny))"
 
 
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .salary       \<doteq> \<one>\<eight>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .salary@pre   \<doteq> \<one>\<two>\<zero>\<zero>)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss      \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss .salary@pre      \<doteq> \<one>\<two>\<zero>\<zero>)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss .boss@pre      \<doteq> null)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  \<doteq> null)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  <> (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre .boss))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre .salary@pre))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .salary       \<doteq> \<one>\<eight>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .salary@pre   \<doteq> \<one>\<two>\<zero>\<zero>)"
+(*Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss      \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss .salary@pre      \<doteq> \<one>\<two>\<zero>\<zero>)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss .boss@pre      \<doteq> null)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  \<doteq> null)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre  <> (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre .boss))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .boss@pre .salary@pre))"
+*)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclIsMaintained())"
-by(simp add: OclValid_def OclIsMaintained_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def person2_def
+by(simp add: OclValid_def OclIsMaintained_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def person2_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def
              oid_of_option_def oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def)
 
-
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .salary       \<doteq> null)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .salary@pre))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss       \<doteq> null)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss .salary))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss@pre))"
-lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclIsNew())"
-by(simp add: OclValid_def OclIsNew_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def person3_def
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .salary       \<doteq> null)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .salary@pre))"
+(*Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss       \<doteq> null)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss .salary))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .boss@pre))"
+*)lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclIsNew())"
+by(simp add: OclValid_def OclIsNew_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def person3_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid8_def
              oid_of_option_def oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def)
 
 
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre   \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre .salary))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre .salary@pre   \<doteq> \<three>\<five>\<zero>\<zero>)"
+(*Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre   \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre .salary))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .boss@pre .salary@pre   \<doteq> \<three>\<five>\<zero>\<zero>)"
+*)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .oclIsMaintained())"
-by(simp add: OclValid_def OclIsMaintained_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def person4_def
+by(simp add: OclValid_def OclIsMaintained_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def person4_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def
              oid_of_option_def oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def)
 
-
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .salary))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .salary@pre   \<doteq> \<three>\<five>\<zero>\<zero>)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .boss))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .salary))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .salary@pre   \<doteq> \<three>\<five>\<zero>\<zero>)"
+(*Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .boss))"
+*)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5 .oclIsDeleted())"
-by(simp add: OclNot_def OclValid_def OclIsDeleted_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5_def person5_def
+by(simp add: OclNot_def OclValid_def OclIsDeleted_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5_def person5_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid7_def oid8_def
              oid_of_option_def oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def)
 
-
-(* (* access to an oclany object not yet supported *) value "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss .salary)   \<doteq> \<three>\<two>\<zero>\<zero> )"*)
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss .salary@pre))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre   \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4)"
-value "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .salary   \<doteq> \<two>\<nine>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .salary@pre   \<doteq> \<two>\<six>\<zero>\<zero>)"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .boss@pre  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5)"
+(* (* access to an oclany object not yet supported *) Assert "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss .salary)   \<doteq> \<three>\<two>\<zero>\<zero> )"*)
+(*Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e     .   (s\<^sub>p\<^sub>r\<^sub>e,\<sigma>\<^sub>1') \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss .salary@pre))"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre   \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4)"
+Assert "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .salary   \<doteq> \<two>\<nine>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .salary@pre   \<doteq> \<two>\<six>\<zero>\<zero>)"
+Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss@pre .boss@pre  \<doteq> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5)"
+*)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclIsMaintained())"
-by(simp add: OclValid_def OclIsMaintained_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6_def person6_def
+by(simp add: OclValid_def OclIsMaintained_def \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6_def person6_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def
              oid_of_option_def oid_of_type\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_def)
 
-
-(* (* access to an oclany object not yet supported *) value "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)   \<doteq>  (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss)))" *)
-(* (* access to an oclany object not yet supported *) value "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss)   \<doteq> (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)) )" *)
-(* (* access to an oclany object not yet supported *) value "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss .salary)   \<doteq> \<three>\<two>\<zero>\<zero> )" *)
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     \<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person))"
-value "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.    (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss@pre))"
+(* (* access to an oclany object not yet supported *) Assert "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)   \<doteq>  (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .boss)))" *)
+(* (* access to an oclany object not yet supported *) Assert "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss)   \<doteq> (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)) )" *)
+(* (* access to an oclany object not yet supported *) Assert "  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss .salary)   \<doteq> \<three>\<two>\<zero>\<zero> )" *)
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     \<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person))"
+(*Assert "\<And>    s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.    (\<sigma>\<^sub>1,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .boss@pre))"
+*)
 lemma "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>     ((X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person) .oclAsType(OclAny)
                                                                    .oclAsType(Person))
                                       \<doteq> (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclAsType(Person)))"
 by(rule up_down_cast_Person_OclAny_Person', simp add: X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7_def OclValid_def valid_def person7_def)
 lemma "               (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile>       (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7 .oclIsNew())"
-by(simp add: OclValid_def OclIsNew_def
-             \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def
-             X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7_def person7_def
+by(simp add: OclValid_def OclIsNew_def  \<sigma>\<^sub>1_def \<sigma>\<^sub>1'_def  X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7_def person7_def
              oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid8_def
              oid_of_option_def oid_of_type\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_def)
 
-
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7)"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(Person)))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsTypeOf(OclAny))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>   not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsTypeOf(Person))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>   not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsKindOf(Person))"
-value "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsKindOf(OclAny))"
-
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8  <> X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7)"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile> not(\<upsilon>(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclAsType(Person)))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsTypeOf(OclAny))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>   not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsTypeOf(Person))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>   not(X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsKindOf(Person))"
+Assert "\<And>s\<^sub>p\<^sub>r\<^sub>e s\<^sub>p\<^sub>o\<^sub>s\<^sub>t.   (s\<^sub>p\<^sub>r\<^sub>e,s\<^sub>p\<^sub>o\<^sub>s\<^sub>t) \<Turnstile>      (X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8 .oclIsKindOf(OclAny))"
 
 lemma \<sigma>_modifiedonly: "(\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny)
                       , X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclAsType(OclAny)
@@ -1160,21 +1228,22 @@ lemma "(\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (((X\<^sub>P\<^sub>e\<^
 proof -
 
  have including4 : "\<And>a b c d \<tau>.
-        Set{\<lambda>\<tau>. \<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<tau> = Abs_Set_0 \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<rfloor>\<rfloor>"
+        Set{\<lambda>\<tau>. \<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lambda>\<tau>. \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<tau> = Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<rfloor>\<rfloor>"
   apply(subst abs_rep_simp'[symmetric], simp)
- by(simp add: OclIncluding_rep_set mtSet_rep_set)
+  apply(simp add: OclIncluding_rep_set mtSet_rep_set)
+  by(rule arg_cong[of _ _ "\<lambda>x. (Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e(\<lfloor>\<lfloor> x \<rfloor>\<rfloor>))"], auto)
 
  have excluding1: "\<And>S a b c d e \<tau>.
-                   (\<lambda>_. Abs_Set_0 \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<rfloor>\<rfloor>)->excluding(\<lambda>\<tau>. \<lfloor>\<lfloor>e\<rfloor>\<rfloor>) \<tau> =
-                   Abs_Set_0 \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} - {\<lfloor>\<lfloor>e\<rfloor>\<rfloor>} \<rfloor>\<rfloor>"
-  apply(simp add: OclExcluding_def)
+                   (\<lambda>_. Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} \<rfloor>\<rfloor>)->excluding\<^sub>S\<^sub>e\<^sub>t(\<lambda>\<tau>. \<lfloor>\<lfloor>e\<rfloor>\<rfloor>) \<tau> =
+                   Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> {\<lfloor>\<lfloor>a\<rfloor>\<rfloor>, \<lfloor>\<lfloor>b\<rfloor>\<rfloor>, \<lfloor>\<lfloor>c\<rfloor>\<rfloor>, \<lfloor>\<lfloor>d\<rfloor>\<rfloor>} - {\<lfloor>\<lfloor>e\<rfloor>\<rfloor>} \<rfloor>\<rfloor>"
+  apply(simp add: UML_Set.OclExcluding_def)
   apply(simp add: defined_def OclValid_def false_def true_def
-                  bot_fun_def bot_Set_0_def null_fun_def null_Set_0_def)
+                  bot_fun_def bot_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_fun_def null_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
   apply(rule conjI)
-   apply(rule impI, subst (asm) Abs_Set_0_inject) apply( simp add: bot_option_def)+
+   apply(rule impI, subst (asm) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject) apply( simp add: bot_option_def)+
   apply(rule conjI)
-   apply(rule impI, subst (asm) Abs_Set_0_inject) apply( simp add: bot_option_def null_option_def)+
-  apply(subst Abs_Set_0_inverse, simp add: bot_option_def, simp)
+   apply(rule impI, subst (asm) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject) apply( simp add: bot_option_def null_option_def)+
+  apply(subst Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp add: bot_option_def, simp)
  done
 
  show ?thesis
@@ -1194,7 +1263,7 @@ proof -
                     person1_def person2_def person3_def person4_def
                     person5_def person6_def person7_def person8_def person9_def
                     OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_Person)
-   apply(subst cp_OclIsModifiedOnly, subst cp_OclExcluding,
+   apply(subst cp_OclIsModifiedOnly, subst UML_Set.OclExcluding.cp0,
      subst (asm) cp_OclIsModifiedOnly, simp add: including4 excluding1)
 
   apply(simp only: X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3_def X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4_def
@@ -1218,8 +1287,7 @@ lemma perm_\<sigma>\<^sub>1' : "\<sigma>\<^sub>1' = \<lparr> heap = empty
                            (oid2 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person3)
                            (oid1 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person2)
                            (oid0 \<mapsto> in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n person1)
-                       , assocs\<^sub>2 = assocs\<^sub>2 \<sigma>\<^sub>1'
-                       , assocs\<^sub>3 = assocs\<^sub>3 \<sigma>\<^sub>1' \<rparr>"
+                       , assocs = assocs \<sigma>\<^sub>1' \<rparr>"
 proof -
  note P = fun_upd_twist
  show ?thesis
@@ -1260,7 +1328,7 @@ by(simp_all add: OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n_\<AA>
 lemma "\<And>\<sigma>\<^sub>1.
  (\<sigma>\<^sub>1,\<sigma>\<^sub>1') \<Turnstile> (OclAny .allInstances() \<doteq> Set{ X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1 .oclAsType(OclAny), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2 .oclAsType(OclAny),
                                            X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3 .oclAsType(OclAny), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n4 .oclAsType(OclAny)
-                                           (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5*), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny), 
+                                           (*, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n5*), X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n6 .oclAsType(OclAny),
                                            X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n7, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n8, X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n9 .oclAsType(OclAny) })"
  apply(subst perm_\<sigma>\<^sub>1')
  apply(simp only: oid0_def oid1_def oid2_def oid3_def oid4_def oid5_def oid6_def oid7_def oid8_def
