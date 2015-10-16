@@ -531,9 +531,8 @@ proof (rule lipschitzI)
         by (rule continuous_on_subset) (simp add: t_bounds)
       have z_cont: "continuous_on {t0..t} (\<lambda>t. z t)" using z
         by (auto intro:continuous_on_subset)
-      have "continuous_on {t0..t1} (\<lambda>t. f (t, z t))" using z
-        continuous strip interval z_defined
-        by (auto intro!: continuous_Sigma intro: continuous_on_subset)
+      have "continuous_on {t0..t1} (\<lambda>t. f (t, z t))" 
+        by (metis (no_types) UNIV_I continuous continuous_Sigma continuous_on_subset interval subsetI z z_defined)
       hence fz_cont[intro, simp]:
         "continuous_on {t0..t} (\<lambda>t. f (t, z t))"
         by (rule continuous_on_subset) (simp add: t_bounds)
