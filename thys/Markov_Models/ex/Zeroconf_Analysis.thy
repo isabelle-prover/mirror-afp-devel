@@ -91,7 +91,7 @@ proof -
   then show ?thesis by simp
 qed
 
-lemma to_error: assumes "n \<le> N" shows "(probe n, error) \<in> (Sigma UNIV E)\<^sup>*"
+lemma to_error: assumes "n \<le> N" shows "(probe n, error) \<in> acc"
   using `n \<le> N`
 proof (induction rule: inc_induct)
   case (step n') with p show ?case
@@ -122,7 +122,7 @@ proof (rule unique_les)
   fix s assume s: "s \<in> states - {ok, error}"
   then show "?E s = (\<integral>t. ?E t \<partial>\<tau> s) + 0"
     using p q by (auto simp add: integral_map_pmf intro: p_eq)
-  show "\<exists>t\<in>{ok, error}. (s, t) \<in> (Sigma UNIV E)\<^sup>*"
+  show "\<exists>t\<in>{ok, error}. (s, t) \<in> acc"
     using s q to_error by auto
   from s show "P_err s = integral\<^sup>L (measure_pmf (\<tau> s)) P_err + 0"
     unfolding P_err_def[abs_def] by (subst prob_T) (auto simp: ev_Stream simp del: UNIV_bool)
@@ -140,12 +140,12 @@ subsection {* An allocation run terminates almost surely *}
 
 lemma states_closed:
   assumes "s \<in> states"
-  assumes "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
+  assumes "(s, t) \<in> acc_on (- {error, ok})"
   shows "t \<in> states"
   using assms(2,1) p q by induction (auto split: split_if_asm)
 
 lemma finite_reached:
-  assumes s: "s \<in> states" shows "finite ((SIGMA s:UNIV. E s - {error, ok})\<^sup>* `` {s})"
+  assumes s: "s \<in> states" shows "finite (acc_on (- {error, ok}) `` {s})"
   using states_closed[OF s]
   by (rule_tac finite_subset[of _ states]) auto
 
@@ -153,8 +153,8 @@ lemma AE_reaches_error_or_ok:
   assumes s: "s \<in> states"
   shows "AE \<omega> in T s. ev (HLD {error, ok}) \<omega>"
 proof (rule AE_T_ev_HLD)
-  { fix t assume t: "(s, t) \<in> (SIGMA s:UNIV. E s - {error, ok})\<^sup>*"
-    with states_closed[OF s t] to_error p q show "\<exists>t'\<in>{error, ok}. (t, t') \<in> (Sigma UNIV E)\<^sup>*"
+  { fix t assume t: "(s, t) \<in> acc_on (- {error, ok})"
+    with states_closed[OF s t] to_error p q show "\<exists>t'\<in>{error, ok}. (t, t') \<in> acc"
       by auto }
 qed (rule finite_reached[OF s])
 
@@ -173,11 +173,11 @@ lemma R_finite:
   shows "R s \<noteq> \<infinity>"
   unfolding R_def
 proof (rule nn_integral_reward_until_finite)
-  { fix t assume "(s, t) \<in> (Sigma (- {error, ok}) E)\<^sup>*" from this s p q have "t \<in> states"
+  { fix t assume "(s, t) \<in> acc" from this s p q have "t \<in> states"
       by induction (auto split: split_if_asm) } 
-  then have "(Sigma (- {error, ok}) E)\<^sup>* `` {s} \<subseteq> states"
+  then have "acc `` {s} \<subseteq> states"
     by auto
-  then show "finite ((Sigma (- {error, ok}) E)\<^sup>* `` {s})"
+  then show "finite (acc `` {s})"
     by (auto dest: finite_subset)
 qed (auto simp: AE_reaches_error_or_ok[OF s])
 

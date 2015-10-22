@@ -776,25 +776,25 @@ proof -
 qed
 
 definition communicating :: "('s \<times> 's) set" where
-  "communicating = accessible \<inter> accessible\<inverse>"
+  "communicating = acc \<inter> acc\<inverse>"
 
 definition essential_class :: "'s set \<Rightarrow> bool" where
-  "essential_class C \<longleftrightarrow> C \<in> UNIV // communicating \<and> accessible `` C \<subseteq> C"
+  "essential_class C \<longleftrightarrow> C \<in> UNIV // communicating \<and> acc `` C \<subseteq> C"
 
-lemma accessibleI_U:
-  assumes "0 < U x y" shows "(x, y) \<in> accessible"
+lemma accI_U:
+  assumes "0 < U x y" shows "(x, y) \<in> acc"
 proof (rule ccontr)
-  assume *: "(x, y) \<notin> accessible"
+  assume *: "(x, y) \<notin> acc"
 
-  { fix \<omega> assume "ev (HLD {y}) \<omega>" "alw (HLD (accessible `` {x})) \<omega>" from this * have False
+  { fix \<omega> assume "ev (HLD {y}) \<omega>" "alw (HLD (acc `` {x})) \<omega>" from this * have False
       by induction (auto simp: HLD_iff) }
   with AE_T_reachable[of x] have "U x y = 0"
     unfolding U_def by (intro T.prob_eq_0_AE) auto
   with `0 < U x y` show False by auto
 qed
 
-lemma accessibleD_pos:
-  assumes "(x, y) \<in> accessible"
+lemma accD_pos:
+  assumes "(x, y) \<in> acc"
   shows "\<exists>n. 0 < p x y n"
 using assms proof induction
   case base with T.prob_space[of x] show ?case
@@ -814,7 +814,7 @@ next
   finally show ?case ..
 qed
 
-lemma accessibleI_pos: "0 < p x y n \<Longrightarrow> (x, y) \<in> accessible"
+lemma accI_pos: "0 < p x y n \<Longrightarrow> (x, y) \<in> acc"
 proof (induct n arbitrary: x)
   case (Suc n)
   then have less: "0 < (\<integral>x'. p x' y n \<partial>K x)"
@@ -837,7 +837,7 @@ lemma recurrent_iffI_communicating:
   shows "recurrent x \<longleftrightarrow> recurrent y"
 proof -
   from assms obtain n m where "0 < p x y n" "0 < p y x m"
-    by (force simp: communicating_def dest: accessibleD_pos)
+    by (force simp: communicating_def dest: accD_pos)
   moreover
   { fix x y n m assume "0 < p x y n" "0 < p y x m" "G y y = \<infinity>"
     then have "\<infinity> = ereal (p x y n * p y x m) * G y y"
@@ -867,11 +867,11 @@ proof -
     using recurrent_iff_G_infinite by blast
 qed
 
-lemma recurrent_accessible:
-  assumes "recurrent x" "(x, y) \<in> accessible"
+lemma recurrent_acc:
+  assumes "recurrent x" "(x, y) \<in> acc"
   shows "U y x = 1" "H y x = 1" "recurrent y" "(x, y) \<in> communicating"
 proof -
-  { fix w y assume step: "(x, w) \<in> accessible" "y \<in> K w" "U w x = 1" "H w x = 1" "recurrent w" "x \<noteq> y"
+  { fix w y assume step: "(x, w) \<in> acc" "y \<in> K w" "U w x = 1" "H w x = 1" "recurrent w" "x \<noteq> y"
     have "measure (K w) UNIV = U w x"
       using step measure_pmf.prob_space[of "K w"] by simp
     also have "\<dots> = (\<integral>v. indicator {x} v + U v x * indicator (- {x}) v \<partial>K w)"
@@ -906,8 +906,8 @@ proof -
       by (simp add: set_pmf_iff)
     then have "U y x = 1" "H y x = 1"
       using H_eq(3)[of y x] H_eq(1)[of x] by (simp_all add: `recurrent x`)
-    then have "(y, x) \<in> accessible"
-      by (intro accessibleI_U) auto
+    then have "(y, x) \<in> acc"
+      by (intro accI_U) auto
     with step have "(x, y) \<in> communicating"
       by (auto simp add: communicating_def intro: rtrancl_trans)
     with `recurrent x` have "recurrent y"
@@ -915,7 +915,7 @@ proof -
     note this `U y x = 1` `H y x = 1` `(x, y) \<in> communicating` }
   note enabled = this
 
-  from `(x, y) \<in> accessible`
+  from `(x, y) \<in> acc`
   show "U y x = 1" "H y x = 1" "recurrent y" "(x, y) \<in> communicating"
   proof induction
     case base then show "U x x = 1" "H x x = 1" "recurrent x" "(x, x) \<in> communicating"
@@ -935,16 +935,16 @@ lemma equiv_communicating: "equiv UNIV communicating"
 
 lemma recurrent_class:
   assumes "recurrent x"
-  shows "accessible `` {x} = communicating `` {x}"
-  using recurrent_accessible(4)[OF `recurrent x`] by (auto simp: communicating_def)
+  shows "acc `` {x} = communicating `` {x}"
+  using recurrent_acc(4)[OF `recurrent x`] by (auto simp: communicating_def)
 
 lemma irreduccible_recurrent_class:
-  assumes "recurrent x" shows "accessible `` {x} \<in> UNIV // communicating"
+  assumes "recurrent x" shows "acc `` {x} \<in> UNIV // communicating"
   unfolding recurrent_class[OF `recurrent x`] by (rule quotientI) simp
 
 lemma essential_classI:
   assumes C: "C \<in> UNIV // communicating"
-  assumes eq: "\<And>x y. x \<in> C \<Longrightarrow> (x, y) \<in> accessible \<Longrightarrow> y \<in> C"
+  assumes eq: "\<And>x y. x \<in> C \<Longrightarrow> (x, y) \<in> acc \<Longrightarrow> y \<in> C"
   shows "essential_class C"
   by (auto simp: essential_class_def intro: C) (metis eq)
 
@@ -957,7 +957,7 @@ lemma essential_recurrent_class:
   done
 
 lemma essential_classD2:
-  "essential_class C \<Longrightarrow> x \<in> C \<Longrightarrow> (x, y) \<in> accessible \<Longrightarrow> y \<in> C"
+  "essential_class C \<Longrightarrow> x \<in> C \<Longrightarrow> (x, y) \<in> acc \<Longrightarrow> y \<in> C"
   unfolding essential_class_def by auto
 
 lemma essential_classD3:
@@ -965,8 +965,8 @@ lemma essential_classD3:
   unfolding essential_class_def
   by (auto elim!: quotientE simp: communicating_def)
 
-lemma AE_accessible:
-  shows "AE \<omega> in T x. \<forall>m. (x, (x ## \<omega>) !! m) \<in> accessible"
+lemma AE_acc:
+  shows "AE \<omega> in T x. \<forall>m. (x, (x ## \<omega>) !! m) \<in> acc"
   using AE_T_reachable
   by eventually_elim (auto simp: alw_HLD_iff_streams streams_iff_snth Stream_snth split: nat.splits)
 
@@ -977,7 +977,7 @@ proof -
   have "AE \<omega> in T x. \<exists>y\<in>C. alw (ev (HLD {y})) \<omega>"
     using AE_T_reachable
   proof eventually_elim
-    fix \<omega> assume "alw (HLD (accessible `` {x})) \<omega>"
+    fix \<omega> assume "alw (HLD (acc `` {x})) \<omega>"
     then have "alw (HLD C) \<omega>"
       by (rule alw_mono) (auto simp: HLD_iff intro: assms essential_classD2)
     then show "\<exists>y\<in>C. alw (ev (HLD {y})) \<omega>"
@@ -994,7 +994,7 @@ proof -
   finally have "\<exists>y\<in>C. recurrent y"
     by (rule_tac ccontr) (simp add: H_eq(2))
   then guess y ..
-  from essential_classD3[OF C(1) x this(1)] recurrent_accessible(3)[OF this(2)]
+  from essential_classD3[OF C(1) x this(1)] recurrent_acc(3)[OF this(2)]
   show "recurrent x"
     by (simp add: communicating_def)
 qed
@@ -1009,7 +1009,7 @@ lemma irreducibleD2:
 
 lemma essential_class_iff_recurrent:
   "finite C \<Longrightarrow> C \<in> UNIV // communicating \<Longrightarrow> essential_class C \<longleftrightarrow> (\<forall>x\<in>C. recurrent x)"
-  by (metis finite_essential_class_imp_recurrent irreducibleD2 recurrent_accessible(4) essential_classI)
+  by (metis finite_essential_class_imp_recurrent irreducibleD2 recurrent_acc(4) essential_classI)
 
 definition "gf_U' x y z = (\<Sum>n. u x y n * Suc n * z ^ n)"
 
@@ -1223,7 +1223,7 @@ qed
 
 lemma gf_G_pos:
   fixes z :: real
-  assumes z: "0 < z" "z < 1" and *: "(x, y) \<in> accessible"
+  assumes z: "0 < z" "z < 1" and *: "(x, y) \<in> acc"
   shows "0 < gf_G x y z"
   unfolding gf_G_def
 proof (subst suminf_pos_iff)
@@ -1238,7 +1238,7 @@ proof (subst suminf_pos_iff)
       by (intro antisym allI) (simp_all add: not_less)
     with z have "\<And>n. p x y n = 0"
       by simp
-    with *[THEN accessibleD_pos] show False
+    with *[THEN accD_pos] show False
       by simp
   qed
 qed
@@ -1259,7 +1259,7 @@ proof -
     by (cases "?E y") auto
 
   from x obtain n m where "0 < p x y n" "0 < p y x m"
-    by (auto dest!: accessibleD_pos simp: communicating_def)
+    by (auto dest!: accD_pos simp: communicating_def)
 
   let ?L = "at_left (1::real)"
   have le: "eventually (\<lambda>z. p x y n * p y x m * z^(n + m) \<le> (1 - gf_U y y z) / (1 - gf_U x x z)) ?L"
@@ -1415,10 +1415,10 @@ proof -
       with `A n \<subseteq> C` have "y \<in> C" by auto
       with `x \<in> C` have "(x, y) \<in> communicating"
         by (rule essential_classD3[OF C])
-      with `y\<in>C` have "recurrent y" "(y, x) \<in> accessible"
+      with `y\<in>C` have "recurrent y" "(y, x) \<in> acc"
         using pos[THEN bspec, of y] by (auto simp add: pos_recurrent_def communicating_def)
       then have "U x y = 1"
-        by (rule recurrent_accessible)
+        by (rule recurrent_acc)
       with F_le_1[of x y] U_le_F[of x y] have "F x y = 1" by simp
       then show "F x y * real (1 / ?E y) = real (1 / ?E y)"
         by simp
@@ -1815,7 +1815,7 @@ lemma Gcd_period_set_invariant:
 proof -
   { fix x y n assume c: "(x, y) \<in> communicating" "x \<noteq> y" and n: "n \<in> period_set x"
     from c obtain l k where "0 < p x y l" "0 < p y x k"
-      by (auto simp: communicating_def dest!: accessibleD_pos)
+      by (auto simp: communicating_def dest!: accD_pos)
     moreover with `x \<noteq> y` have "l \<noteq> 0 \<and> k \<noteq> 0"
       by (intro notI conjI) (auto simp: p_0)
     ultimately have pos: "0 < l" "0 < k" and l: "0 < p x y l" and k: "0 < p y x k"
@@ -1874,7 +1874,7 @@ next
   with `x \<in> C` obtain y where "y \<in> C" "x \<noteq> y"
     by blast
   with irreducibleD[OF irr, of x y] C `x \<in> C` have c: "(x, y) \<in> communicating" by auto
-  with accessibleD_pos[of x y] accessibleD_pos[of y x]
+  with accD_pos[of x y] accD_pos[of y x]
   obtain k l where pos: "0 < p x y k" "0 < p y x l"
     by (auto simp: communicating_def)
   with `x \<noteq> y` have "l \<noteq> 0"
@@ -2010,11 +2010,11 @@ lemma communicatingD2:
   "C \<in> UNIV // communicating \<Longrightarrow> (a, b) \<in> communicating \<Longrightarrow> b \<in> C \<Longrightarrow> a \<in> C"
   by (auto elim!: quotientE) (auto simp add: communicating_def)
 
-lemma accessible_iff: "(x, y) \<in> accessible \<longleftrightarrow> (\<exists>n. 0 < p x y n)"
-  by (blast intro: accessibleD_pos accessibleI_pos)
+lemma acc_iff: "(x, y) \<in> acc \<longleftrightarrow> (\<exists>n. 0 < p x y n)"
+  by (blast intro: accD_pos accI_pos)
 
 lemma communicating_iff: "(x, y) \<in> communicating \<longleftrightarrow> (\<exists>n. 0 < p x y n) \<and> (\<exists>n. 0 < p y x n)"
-  by (auto simp add: accessible_iff communicating_def)
+  by (auto simp add: acc_iff communicating_def)
 
 end
 
@@ -2027,9 +2027,9 @@ lemma p_eq_p1_p2:
   by (subst prod_eq_prob_T)
      (auto intro!: arg_cong2[where f=measure] split: nat.splits simp: Stream_snth)
 
-lemma P_accessibleD:
-  assumes "((x1, x2), (y1, y2)) \<in> accessible"shows "(x1, y1) \<in> K1.accessible" "(x2, y2) \<in> K2.accessible"
-  using assms by (auto simp: accessible_iff K1.accessible_iff K2.accessible_iff p_eq_p1_p2
+lemma P_accD:
+  assumes "((x1, x2), (y1, y2)) \<in> acc"shows "(x1, y1) \<in> K1.acc" "(x2, y2) \<in> K2.acc"
+  using assms by (auto simp: acc_iff K1.acc_iff K2.acc_iff p_eq_p1_p2
                              zero_less_mult_iff not_le[of 0, symmetric] K1.p_nonneg K2.p_nonneg
                        cong: conj_cong)
 
@@ -2048,9 +2048,9 @@ proof safe
        by eventually_elim  (simp add: p_eq_p1_p2 x) }
 
   { fix x1 x2 y1 y2
-    assume acc: "(x1, y1) \<in> K1.accessible" "(x2, y2) \<in> K2.accessible" "x1 \<in> C1" "y1 \<in> C1" "x2 \<in> C2" "y2 \<in> C2"
+    assume acc: "(x1, y1) \<in> K1.acc" "(x2, y2) \<in> K2.acc" "x1 \<in> C1" "y1 \<in> C1" "x2 \<in> C2" "y2 \<in> C2"
     then obtain k l where "0 < K1.p x1 y1 l" "0 < K2.p x2 y2 k"
-      by (auto dest!: K1.accessibleD_pos K2.accessibleD_pos)
+      by (auto dest!: K1.accD_pos K2.accD_pos)
     with acc ev(1)[of y1] ev(2)[of y2]
     have "eventually (\<lambda>m. 0 < K1.p x1 y1 l * K1.p y1 y1 m \<and> 0 < K2.p x2 y2 k * K2.p y2 y2 m) sequentially"
       by (auto elim: eventually_elim2)
@@ -2069,15 +2069,15 @@ proof safe
       by (auto simp: eventually_sequentially)
     with acc have "0 < p (x1, x2) (y1, y2) N"
       by (auto simp add: p_eq_p1_p2)
-    with acc have "((x1, x2), (y1, y2)) \<in> accessible"
-      by (auto intro!: accessibleI_pos) }
+    with acc have "((x1, x2), (y1, y2)) \<in> acc"
+      by (auto intro!: accI_pos) }
   note 1 = this
 
-  { fix x1 x2 y1 y2 assume acc:"((x1, x2), (y1, y2)) \<in> accessible"
-    moreover from acc obtain k where "0 < p (x1, x2) (y1, y2) k" by (auto dest!: accessibleD_pos)
-    ultimately have "(x1, y1) \<in> K1.accessible \<and> (x2, y2) \<in> K2.accessible"
+  { fix x1 x2 y1 y2 assume acc:"((x1, x2), (y1, y2)) \<in> acc"
+    moreover from acc obtain k where "0 < p (x1, x2) (y1, y2) k" by (auto dest!: accD_pos)
+    ultimately have "(x1, y1) \<in> K1.acc \<and> (x2, y2) \<in> K2.acc"
       by (subst (asm) p_eq_p1_p2)
-         (auto intro!: K1.accessibleI_pos K2.accessibleI_pos
+         (auto intro!: K1.accI_pos K2.accI_pos
                simp: zero_less_mult_iff K1.p_nonneg K2.p_nonneg not_le[of 0, symmetric]) }
   note 2 = this
 
@@ -2162,8 +2162,8 @@ proof -
 
   from not_empty_irreducible[OF C_comm] obtain c0 where c0: "c0 \<in> C" by auto
 
-  have K2_accessible: "\<And>x y. (Some x, y) \<in> K2.accessible \<longleftrightarrow> (\<exists>z. y = Some z \<and> (x, z) \<in> accessible)"
-    apply (auto simp: K2.accessible_iff accessible_iff K_p_eq)
+  have K2_acc: "\<And>x y. (Some x, y) \<in> K2.acc \<longleftrightarrow> (\<exists>z. y = Some z \<and> (x, z) \<in> acc)"
+    apply (auto simp: K2.acc_iff acc_iff K_p_eq)
     apply (case_tac y)
     apply (auto simp: K_p_eq K_S_None)
     done
@@ -2185,7 +2185,7 @@ proof -
              intro!: exI[of _ "Some c0"])
   then have "K2.essential_class (Some ` C)"
     by (rule K2.essential_classI)
-       (auto simp: K2_accessible essential_classD2[OF `essential_class C`])
+       (auto simp: K2_acc essential_classD2[OF `essential_class C`])
 
   have "K2.aperiodic (Some ` C)"
     unfolding K2.aperiodic_eventually_recurrent
@@ -2202,11 +2202,11 @@ proof -
     show "C \<times> Some ` C \<in> UNIV // KN.communicating"
       using aperiodic by (simp add: KN.aperiodic_def)
   next
-    fix x y assume "x \<in> C \<times> Some ` C" "(x, y) \<in> KN.accessible"
-    with KN.P_accessibleD[of "fst x" "snd x" "fst y" "snd y"]
+    fix x y assume "x \<in> C \<times> Some ` C" "(x, y) \<in> KN.acc"
+    with KN.P_accD[of "fst x" "snd x" "fst y" "snd y"]
     show "y \<in> C \<times> Some ` C"
       by (cases x y rule: prod.exhaust[case_product prod.exhaust])
-         (auto simp: K2_accessible essential_classD2[OF `essential_class C`])
+         (auto simp: K2_acc essential_classD2[OF `essential_class C`])
   qed
 
   { fix n and x y :: 's
@@ -2369,10 +2369,10 @@ proof -
       using aperiodic by (simp add: KN.aperiodic_def)
     then have "((c0, Some c0), t) \<in> KN.communicating"
       by (rule KN.irreducibleD) (simp_all add: t_eq c0 `b \<in> C` `a \<in> C`)
-    then have "((c0, Some c0), t) \<in> KN.accessible"
+    then have "((c0, Some c0), t) \<in> KN.acc"
       by (simp add: KN.communicating_def)
     then have "KN.U t (c0, Some c0) = 1"
-      by (rule KN.recurrent_accessible(1)[OF recurrent_c0])
+      by (rule KN.recurrent_acc(1)[OF recurrent_c0])
     then show "AE \<omega> in KN.T t. ev (HLD {(c0, Some c0)}) (t ## \<omega>)"
       unfolding KN.U_def by (subst (asm) KN.T.prob_Collect_eq_1) (auto simp add: ev_Stream)
   qed

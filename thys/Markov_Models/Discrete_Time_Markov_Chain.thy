@@ -328,13 +328,16 @@ locale MC_syntax =
   fixes K :: "'s \<Rightarrow> 's pmf"
 begin
 
-abbreviation accessible :: "('s \<times> 's) set" where
-  "accessible \<equiv> (SIGMA s:UNIV. K s)\<^sup>*"
+abbreviation acc :: "('s \<times> 's) set" where
+  "acc \<equiv> (SIGMA s:UNIV. K s)\<^sup>*"
 
-lemma countable_reachable: "countable ((SIGMA s:UNIV. set_pmf (K s))\<^sup>* `` {s})"
+abbreviation acc_on :: "'s set \<Rightarrow> ('s \<times> 's) set" where
+  "acc_on S \<equiv> (SIGMA s:UNIV. K s \<inter> S)\<^sup>*"
+
+lemma countable_reachable: "countable (acc `` {s})"
   by (auto intro!: countable_rtrancl countable_set_pmf simp: Sigma_Image)
 
-lemma countable_accessible: "countable X \<Longrightarrow> countable (accessible `` X)"
+lemma countable_acc: "countable X \<Longrightarrow> countable (acc `` X)"
   apply (rule countable_Image)
   apply (rule countable_reachable)
   apply assumption
@@ -435,7 +438,7 @@ proof -
 
   def n \<equiv> "0::nat"
   def g \<equiv> "\<lambda>_::('s \<Rightarrow> 's) stream. s"
-  then have "g \<in> measurable D (count_space ((SIGMA s:UNIV. K s)\<^sup>* `` {s}))"
+  then have "g \<in> measurable D (count_space (acc `` {s}))"
     by auto
   then have "(\<lambda>x. walk (g x) (sdrop n x)) \<in> measurable D S"
   proof (coinduction arbitrary: g n rule: measurable_stream_coinduct)
@@ -587,14 +590,14 @@ lemma AE_T_iff:
 
 lemma AE_T_alw:
   assumes [measurable]: "Measurable.pred S P"
-  assumes P: "\<And>s. (x, s) \<in> accessible \<Longrightarrow> AE \<omega> in T s. P \<omega>"
+  assumes P: "\<And>s. (x, s) \<in> acc \<Longrightarrow> AE \<omega> in T s. P \<omega>"
   shows "AE \<omega> in T x. alw P \<omega>"
 proof -
   def F \<equiv> "\<lambda>p x. P x \<and> p (stl x)"
   have [measurable]: "\<And>p. Measurable.pred S p \<Longrightarrow> Measurable.pred S (F p)"
     by (auto simp: F_def)
   have "almost_everywhere (T s) ((F ^^ i) top)"
-    if "(x, s) \<in> accessible" for i s
+    if "(x, s) \<in> acc" for i s
     using that
   proof (induction i arbitrary: s)
     case (Suc i) then show ?case
@@ -703,14 +706,11 @@ proof -
   have [measurable]: "Measurable.pred S N"
     unfolding N_def by measurable
 
-  def c \<equiv> "emeasure (K t) {t'}"
-  then have "0 < c" "c \<le> 1"
-    using `t' \<in> K t` by (auto simp add: emeasure_nonneg less_le emeasure_pmf_single_eq_zero_iff measure_pmf.measure_le_1)
-
-  let ?R = "\<lambda>x. 1 \<sqinter> x * (1 - c)"
+  let ?c = "pmf (K t) t'"
+  let ?R = "\<lambda>x. 1 \<sqinter> x * (1 - ereal ?c)"
   have "mono ?R"
     by (intro monoI ereal_mult_right_mono inf_mono)
-       (auto simp: mono_def one_ereal_def c_def measure_pmf.emeasure_eq_measure field_simps)
+       (auto simp: mono_def field_simps one_ereal_def pmf_le_1)
   have "\<And>s. ?M N s \<le> gfp ?R"
   proof (induction rule: gfp_ordinal_induct[OF \<open>mono ?R\<close>])
     fix x s assume x: "\<And>s. ?M N s \<le> x"
@@ -721,20 +721,20 @@ proof -
         by (induct rule: ev_induct_strong) (auto simp: N_def intro: suntil.intros dest: N_stl) }
     then have "?M N s \<le> ?M ?until s"
       by (intro emeasure_mono_AE) auto
-    also have "\<dots> \<le> ?M (ev ?t) s * ?M (not ?t' aand nxt N) t"
+    also have "\<dots> = ?M (ev ?t) s * ?M (not ?t' aand nxt N) t"
       by (simp_all add: emeasure_suntil_HLD del: nxt.simps space_T)
     also have "\<dots> \<le> ?M (ev ?t) s * (\<integral>\<^sup>+s'. 1 \<sqinter> x * indicator (UNIV - {t'}) s' \<partial>K t)"
       by (auto intro!: ereal_mult_left_mono nn_integral_nonneg nn_integral_mono T.measure_le_1 emeasure_mono
                split: split_indicator simp add: x emeasure_Collect_T[of _ t] simp del: space_T)
     also have "\<dots> \<le> 1 * (\<integral>\<^sup>+s'. 1 \<sqinter> x * indicator (UNIV - {t'}) s' \<partial>K t)"
       by (intro ereal_mult_right_mono nn_integral_nonneg T.measure_le_1)
-    finally show "?M N s \<le> 1 \<sqinter> x * (1 - c)"
+    finally show "?M N s \<le> 1 \<sqinter> x * (1 - ereal ?c)"
       using order_trans[OF emeasure_nonneg x]
-      by (subst (asm) nn_integral_cmult_indicator) (auto simp: emeasure_Diff c_def)
+      by (subst (asm) nn_integral_cmult_indicator) (auto simp: emeasure_Diff emeasure_pmf_single)
   qed (auto intro: Inf_greatest)
   also have "gfp ?R \<le> 0"
-    using gfp_lemma2[OF \<open>mono ?R\<close>] `0 < c`
-    by (cases "gfp ?R" c rule: ereal2_cases)
+    using gfp_lemma2[OF \<open>mono ?R\<close>] assms[THEN pmf_positive]
+    by (cases "gfp ?R" rule: ereal_cases)
        (auto simp: one_ereal_def min_def field_simps mult_le_0_iff split: split_if_asm)
   finally have "\<And>s. AE \<omega> in T s. \<not> N \<omega>"
     by (subst AE_iff_measurable[OF _ refl]) (auto intro: antisym simp: le_fun_def)
@@ -757,10 +757,10 @@ qed
 
 lemma enabled_imp_trancl:
   assumes "alw (HLD B) \<omega>" "enabled s \<omega>"
-  shows "alw (HLD ((SIGMA s:UNIV. K s \<inter> B)\<^sup>* `` {s})) \<omega>"
+  shows "alw (HLD (acc_on B `` {s})) \<omega>"
 proof -
   def t \<equiv> s
-  then have "(s, t) \<in> (SIGMA s:UNIV. set_pmf (K s) \<inter> B)\<^sup>*"
+  then have "(s, t) \<in> acc_on B"
     by auto
   moreover note `alw (HLD B) \<omega>`
   moreover note `enabled s \<omega>`[unfolded `t == s`[symmetric]]
@@ -775,30 +775,29 @@ proof -
   qed
 qed
 
-lemma AE_T_reachable: "AE \<omega> in T s. alw (HLD ((SIGMA s:UNIV. K s)\<^sup>* `` {s})) \<omega>"
+lemma AE_T_reachable: "AE \<omega> in T s. alw (HLD (acc `` {s})) \<omega>"
   using AE_T_enabled
 proof eventually_elim
   fix \<omega> assume "enabled s \<omega>"
   from enabled_imp_trancl[of UNIV, OF _ this]
-  show "alw (HLD ((SIGMA s:UNIV. K s)\<^sup>* `` {s})) \<omega>"
+  show "alw (HLD (acc `` {s})) \<omega>"
     by (auto simp: HLD_iff[abs_def] all_imp_alw)
 qed
 
 lemma AE_T_all_fair: "AE \<omega> in T s. \<forall>(t,t')\<in>SIGMA t:UNIV. K t. fair t t' \<omega>"
 proof -
-  let ?R = "SIGMA t:UNIV. K t" let ?Rn = "SIGMA s:(?R\<^sup>* `` {s}). K s"
+  let ?Rn = "SIGMA s:(acc `` {s}). K s"
   have "AE \<omega> in T s. \<forall>(t,t')\<in>?Rn. fair t t' \<omega>"
   proof (subst AE_ball_countable)
     show "countable ?Rn"
-      by (intro countable_SIGMA countable_rtrancl[OF countable_Image])
-         (auto simp: Image_def countable_set_pmf)
+      by (intro countable_SIGMA countable_rtrancl[OF countable_Image]) (auto simp: Image_def)
   qed (auto intro!: AE_T_fair)
   then show ?thesis
     using AE_T_reachable
   proof (eventually_elim, safe)
-    fix \<omega> t t' assume "\<forall>(t,t')\<in>?Rn. fair t t' \<omega>" "t' \<in> K t" and alw: "alw (HLD (?R\<^sup>* `` {s})) \<omega>"
+    fix \<omega> t t' assume "\<forall>(t,t')\<in>?Rn. fair t t' \<omega>" "t' \<in> K t" and alw: "alw (HLD (acc `` {s})) \<omega>"
     moreover
-    { assume "t \<notin> ?R\<^sup>* `` {s}"
+    { assume "t \<notin> acc `` {s}"
       then have "alw (not (HLD {t})) \<omega>"
         by (intro alw_mono[OF alw]) (auto simp: HLD_iff)
       then have "not (alw (ev (HLD {t}))) \<omega>"
@@ -819,9 +818,8 @@ proof -
 qed
 
 lemma AE_T_ev_HLD:
-  assumes exiting: "\<And>t. (s, t) \<in> (SIGMA s:UNIV. set_pmf (K s) - B)\<^sup>* \<Longrightarrow>
-    \<exists>t'\<in>B. (t, t') \<in> (SIGMA s:UNIV. K s)\<^sup>*"
-  assumes fin: "finite ((SIGMA s:UNIV. set_pmf (K s) - B)\<^sup>* `` {s})"
+  assumes exiting: "\<And>t. (s, t) \<in> acc_on (-B) \<Longrightarrow> \<exists>t'\<in>B. (t, t') \<in> acc"
+  assumes fin: "finite (acc_on (-B) `` {s})"
   shows "AE \<omega> in T s. ev (HLD B) \<omega>"
   using AE_T_all_fair AE_T_enabled
 proof eventually_elim
@@ -833,12 +831,12 @@ proof eventually_elim
     then have "alw (HLD (- B)) \<omega>"
       by (simp add: not_ev_iff HLD_iff[abs_def])
     from enabled_imp_trancl[OF this `enabled s \<omega>`]
-    have "alw (HLD ((SIGMA x:UNIV. set_pmf (K x) - B)\<^sup>* `` {s})) \<omega>"
+    have "alw (HLD (acc_on (-B) `` {s})) \<omega>"
       by (simp add: Diff_eq)
     from pigeonhole_stream[OF this fin]
-    obtain t where "(s, t) \<in> (SIGMA s:UNIV. set_pmf (K s) - B)\<^sup>*" "alw (ev (HLD {t})) \<omega>"
+    obtain t where "(s, t) \<in> acc_on (-B)" "alw (ev (HLD {t})) \<omega>"
       by auto
-    from exiting[OF this(1)] obtain t' where "(t, t') \<in> (SIGMA x:UNIV. set_pmf (K x))\<^sup>*" "t' \<in> B"
+    from exiting[OF this(1)] obtain t' where "(t, t') \<in> acc" "t' \<in> B"
       by auto
     from this(1) have "alw (ev (HLD {t'})) \<omega>"
     proof induction
@@ -874,11 +872,11 @@ qed
 
 lemma nn_integral_sfirst_finite':
   assumes "s \<notin> H"
-  assumes [simp]: "finite ((SIGMA x:- H. set_pmf (K x) - H)\<^sup>* `` {s})" (is "finite (?R `` {s})")
+  assumes [simp]: "finite (acc_on (-H) `` {s})"
   assumes until: "AE \<omega> in T s. ev (HLD H) \<omega>"
   shows "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) \<omega> \<partial>T s) \<noteq> \<infinity>"
 proof -
-  have R_ne[simp]: "?R `` {s} \<noteq> {}"
+  have R_ne[simp]: "acc_on (-H) `` {s} \<noteq> {}"
     by auto
   have [measurable]: "H \<in> sets (count_space UNIV)"
     by simp
@@ -887,24 +885,27 @@ proof -
   have Pf_mono: "\<And>N n t. N \<le> n \<Longrightarrow> ?Pf n t \<le> ?Pf N t"
     by (auto intro!: T.finite_measure_mono simp del: enat_ord_code(1) simp: enat_ord_code(1)[symmetric])
 
-  have "\<forall>\<^sub>F n in sequentially. \<forall>t\<in>?R``{s}. ?Pf n t < 1"
+  have not_H: "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> t \<notin> H"
+    using `s \<notin> H` by (auto elim: rtrancl.cases)
+
+  have "\<forall>\<^sub>F n in sequentially. \<forall>t\<in>acc_on (-H)``{s}. ?Pf n t < 1"
   proof (safe intro!: eventually_ball_finite)
-    fix t assume "(s, t) \<in> ?R"
+    fix t assume "(s, t) \<in> acc_on (-H)"
     then have "AE \<omega> in T t. sfirst (HLD H) (t ## \<omega>) < \<infinity>"
       unfolding sfirst_finite
     proof induction
       case (step t u) with step.IH show ?case
-        by (subst (asm) AE_T_iff) (auto simp: ev_Stream)
+        by (subst (asm) AE_T_iff) (auto simp: ev_Stream not_H)
     qed (simp add: ev_Stream eventually_frequently_simps until)
     from AE_T_max_sfirst[OF _ this, of 1]
     obtain N where "?Pf N t < 1" by auto
     with Pf_mono[of N] show "\<forall>\<^sub>F n in sequentially. ?Pf n t < 1"
       by (auto simp: eventually_sequentially intro: le_less_trans)
   qed simp
-  then obtain n where "\<And>t. (s, t) \<in> ?R \<Longrightarrow> ?Pf n t < 1"
+  then obtain n where "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> ?Pf n t < 1"
     by (auto simp: eventually_sequentially)
-  moreover def d \<equiv> "Max (?Pf n ` ?R `` {s})"
-  ultimately have d: "0 \<le> d" "d < 1" "\<And>t. (s, t) \<in> ?R \<Longrightarrow> ?Pf (Suc n) t \<le> d"
+  moreover def d \<equiv> "Max (?Pf n ` acc_on (-H) `` {s})"
+  ultimately have d: "0 \<le> d" "d < 1" "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> ?Pf (Suc n) t \<le> d"
     using Pf_mono[of n "Suc n"] by (auto simp: Max_ge_iff measure_nonneg)
 
   let ?F = "\<lambda>F \<omega>. if shd \<omega> \<in> H then 0 else 0 \<squnion> F (stl \<omega>) + 1 :: ereal"
@@ -920,9 +921,6 @@ proof -
     by (intro order_continuous_intros) auto
   then have "mono ?I"
     by (rule sup_continuous_mono)
-
-  have not_H: "\<And>t. (s, t) \<in> ?R \<Longrightarrow> t \<notin> H"
-    using `s \<notin> H` by (auto elim: rtrancl.cases)
 
   def p \<equiv> "Suc n / (1 - d)"
   have p: "p = Suc n + d * p"
@@ -944,7 +942,7 @@ proof -
     unfolding lfp_funpow[OF \<open>mono ?I\<close>]
     by (subst nn_integral_T_lfp)
        (auto simp: nn_integral_add nn_integral_max_0 max_absorb2 nn_integral_nonneg intro!: order_continuous_intros)
-  also have "lfp (?I^^Suc n) t \<le> p" if "(s, t) \<in> ?R" for t
+  also have "lfp (?I^^Suc n) t \<le> p" if "(s, t) \<in> acc_on (-H)" for t
     using that
   proof (induction arbitrary: t rule: lfp_ordinal_induct[of "?I^^Suc n"])
     case (step S)
@@ -958,7 +956,7 @@ proof -
       case (Suc i)
       then have "t \<notin> H"
         by (auto simp: not_H)
-      from Suc.prems have "\<And>t'. t' \<in> K t \<Longrightarrow> t' \<notin> H \<Longrightarrow> (s, t') \<in> ?R"
+      from Suc.prems have "\<And>t'. t' \<in> K t \<Longrightarrow> t' \<notin> H \<Longrightarrow> (s, t') \<in> acc_on (-H)"
         by (rule rtrancl_into_rtrancl) (insert Suc.prems, auto dest: not_H)
       then have "(?I ^^ Suc i) S t \<le> ?I (\<lambda>t. ereal i + ereal (?Pf i t) * p) t"
         by (auto simp: AE_measure_pmf_iff simp del: sfirst_eSuc space_T
@@ -983,7 +981,7 @@ proof -
 qed
 
 lemma nn_integral_sfirst_finite:
-  assumes [simp]: "finite ((SIGMA x:- H. set_pmf (K x) - H)\<^sup>* `` {s})" (is "finite (?R `` {s})")
+  assumes [simp]: "finite (acc_on (-H) `` {s})"
   assumes until: "AE \<omega> in T s. ev (HLD H) \<omega>"
   shows "(\<integral>\<^sup>+ \<omega>. sfirst (HLD H) (s ## \<omega>) \<partial>T s) \<noteq> \<infinity>"
 proof cases
@@ -1236,9 +1234,9 @@ lemma rT_eq_bind: "rT x = do { y <- measure_pmf (K x) ; \<omega> <- rT y ; retur
   apply (simp add: space_stream_space)
   done
 
-lemma snth_rT: "(\<lambda>x. x !! n) \<in> measurable (rT x) (count_space (accessible `` {x}))"
+lemma snth_rT: "(\<lambda>x. x !! n) \<in> measurable (rT x) (count_space (acc `` {x}))"
 proof -
-  have "\<And>\<omega>. enabled x \<omega> \<Longrightarrow> (x, \<omega> !! n) \<in> accessible"
+  have "\<And>\<omega>. enabled x \<omega> \<Longrightarrow> (x, \<omega> !! n) \<in> acc"
   proof (induction n arbitrary: x)
     case (Suc n) from Suc.prems Suc.IH[of "shd \<omega>" "stl \<omega>"] show ?case
       by (auto simp: enabled.simps[of x \<omega>] intro: rtrancl_trans)
@@ -1272,7 +1270,7 @@ proof (intro ext stream_space_eq_sstart)
   fix x
   show "prob_space (T x)" "prob_space (M x)" by unfold_locales
   show "sets (M x) = sets S" "sets (T x) = sets S" by auto
-  def \<Omega> \<equiv> "accessible `` {x}"
+  def \<Omega> \<equiv> "acc `` {x}"
 
   have [simp]: "\<And>x. space (M x) = space S"
     using sets_M by (rule sets_eq_imp_space_eq)
@@ -1289,14 +1287,14 @@ proof (intro ext stream_space_eq_sstart)
   note sstart_in_S = this [measurable] 
 
   show "countable \<Omega>"
-    by (auto intro: countable_accessible simp: \<Omega>_def)
+    by (auto intro: countable_acc simp: \<Omega>_def)
   have x[simp]: "x \<in> \<Omega>"
     by (auto simp: \<Omega>_def)
 
   note streams_sets[measurable]
 
   { fix n y assume "y \<in> \<Omega>"
-    then have "(x, y) \<in> accessible" by (simp add: \<Omega>_def)
+    then have "(x, y) \<in> acc" by (simp add: \<Omega>_def)
     then have "AE \<omega> in T y. \<omega> \<in> streams \<Omega>"
     proof induction
       case (step y z) then show ?case
@@ -1336,7 +1334,7 @@ proof (intro ext stream_space_eq_sstart)
   from `x \<in> \<Omega>` show "emeasure (T x) (sstart \<Omega> xs) = emeasure (M x) (sstart \<Omega> xs)"
   proof (induction xs arbitrary: x)
     case Nil with AE_M[of x] AE_T[of x] show ?case
-      by (cases "streams (accessible `` {x}) \<in> sets S")
+      by (cases "streams (acc `` {x}) \<in> sets S")
          (simp_all add: T.emeasure_eq_1_AE M.emeasure_eq_1_AE emeasure_notin_sets)
   next
     case (Cons a xs)
@@ -1480,9 +1478,9 @@ lemma reward_until_simps[simp]:
   unfolding reward_until_unfold[of X s \<omega>] by simp_all
 
 lemma nn_integral_reward_until_finite:
-  assumes [simp]: "finite ((SIGMA x:- H. K x)\<^sup>* `` {s})" (is "finite (?R `` {s})")
-  assumes \<rho>: "\<And>t. (s, t) \<in> (SIGMA x:- H. set_pmf (K x) - H)\<^sup>* \<Longrightarrow> \<rho> t < \<infinity>"
-  assumes \<iota>: "\<And>t t'. (s, t) \<in> (SIGMA x:- H. set_pmf (K x) - H)\<^sup>* \<Longrightarrow> t' \<in> K t \<Longrightarrow> \<iota> t t' < \<infinity>"
+  assumes [simp]: "finite (acc `` {s})" (is "finite (?R `` {s})")
+  assumes \<rho>: "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> \<rho> t < \<infinity>"
+  assumes \<iota>: "\<And>t t'. (s, t) \<in> acc_on (-H) \<Longrightarrow> t' \<in> K t \<Longrightarrow> \<iota> t t' < \<infinity>"
   assumes ev: "AE \<omega> in T s. ev (HLD H) \<omega>"
   shows "(\<integral>\<^sup>+ \<omega>. reward_until H s \<omega> \<partial>T s) \<noteq> \<infinity>"
 proof cases
@@ -1490,7 +1488,7 @@ proof cases
     by simp
 next
   assume "s \<notin>  H"
-  let ?L = "(SIGMA x:- H. set_pmf (K x) - H)\<^sup>*"
+  let ?L = "acc_on (-H)"
   def M \<equiv> "Max ((\<lambda>(s, t). \<rho> s + \<iota> s t) ` (SIGMA t:?L``{s}. K t))"
   have "?L \<subseteq> ?R"
     by (intro rtrancl_mono) auto
@@ -1572,7 +1570,7 @@ proof (rule measurable_stream_space2)
   also have "\<dots> \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) (count_space UNIV)"
     apply (rule measurable_compose_countable'[OF _ measurable_compose[OF measurable_fst K1.snth_rT, of n]])
     apply (rule measurable_compose_countable'[OF _ measurable_compose[OF measurable_snd K2.snth_rT, of n]])
-    apply (auto intro!: K1.countable_accessible K2.countable_accessible)
+    apply (auto intro!: K1.countable_acc K2.countable_acc)
     done
   finally show "(\<lambda>x. (case x of (\<omega>1, \<omega>2) \<Rightarrow> szip \<omega>1 \<omega>2) !! n) \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) (count_space UNIV)"
     .

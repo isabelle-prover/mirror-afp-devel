@@ -341,25 +341,25 @@ proof -
     { assume "s \<in> \<Phi> - \<Psi>"
       have "AE \<omega> in T s. ev (HLD (\<Psi> \<union> ?P0)) \<omega>"
       proof (rule AE_T_ev_HLD)
-        fix t assume s_t: "(s, t) \<in> (SIGMA s:UNIV. E s - (\<Psi> \<union> ?P0))\<^sup>*"
+        fix t assume s_t: "(s, t) \<in> acc_on (- (\<Psi> \<union> ?P0))"
         from `s \<in> S` s_t have "t \<in> S"
           by (rule E_rtrancl_closed) auto
 
-        show "\<exists>t'\<in>\<Psi> \<union> ?P0. (t, t') \<in> (Sigma UNIV E)\<^sup>*"
+        show "\<exists>t'\<in>\<Psi> \<union> ?P0. (t, t') \<in> acc"
         proof cases
           assume "t \<in> ?P0" then show ?thesis by auto
         next
           assume "t \<notin> ?P0"
           with `t\<in>S` obtain s where t_s: "(t, s) \<in> (SIGMA x:\<Phi>. E x)\<^sup>*" and "s \<in> \<Psi>"
             unfolding P0 by auto
-          from t_s have "(t, s) \<in> (SIGMA x:UNIV. E x)\<^sup>*"
+          from t_s have "(t, s) \<in> acc"
             by (rule set_rev_mp) (intro rtrancl_mono Sigma_mono, auto)
           with `s \<in> \<Psi>` show ?thesis by auto
         qed
       next
-        have "(SIGMA s:UNIV. E s - (\<Psi> \<union> Prob0 \<Phi> \<Psi>))\<^sup>* `` {s} \<subseteq> S"
+        have "acc_on (- (\<Psi> \<union> ?P0)) `` {s} \<subseteq> S"
           using `s \<in> S` by (auto intro: E_rtrancl_closed)
-        then show "finite ((SIGMA s:UNIV. E s - (\<Psi> \<union> Prob0 \<Phi> \<Psi>))\<^sup>* `` {s})"
+        then show "finite (acc_on (- (\<Psi> \<union> ?P0)) `` {s})"
           using finite_S by (auto dest: finite_subset)
       qed
       then have "AE \<omega> in T s. (HLD \<Phi> suntil HLD \<Psi>) \<omega>"
@@ -526,9 +526,9 @@ proof -
     assume "s \<notin> svalid F"
     show ?thesis
     proof (rule nn_integral_reward_until_finite)
-      have "(Sigma (- svalid F) E)\<^sup>* `` {s} \<subseteq> S"
-        using E_rtrancl_closed[of s _ "- svalid F" E] `s \<in> S` by auto 
-      then show "finite ((Sigma (- svalid F) E)\<^sup>* `` {s})"
+      have "acc `` {s} \<subseteq> S"
+        using E_rtrancl_closed[of s _ _ E] `s \<in> S` by auto 
+      then show "finite (acc `` {s})"
         using finite_S by (auto dest: finite_subset)
       show "AE \<omega> in T s. (ev (HLD (svalid F))) \<omega>"
         using until by (auto simp add: suntil_Stream `s \<notin> svalid F` intro: ev_suntil)
@@ -560,9 +560,9 @@ proof
           by (auto intro!: integrable_measure_pmf_finite dest: finite_subset)
         obtain t where "(t \<in> \<Psi> \<and> (s, t) \<in> (Sigma \<Phi> E)\<^sup>*) \<or> s \<in> N"
           using `s \<in> S - N` in_S(4) unfolding Prob0_iff_reachable[OF in_S(1,2)] by auto
-        moreover have "(Sigma \<Phi> E)\<^sup>* \<subseteq> (Sigma UNIV E)\<^sup>*"
+        moreover have "(Sigma \<Phi> E)\<^sup>* \<subseteq> acc"
           by (intro rtrancl_mono Sigma_mono) auto
-        ultimately show "\<exists>t\<in>N. (s, t) \<in> (Sigma UNIV E)\<^sup>*"
+        ultimately show "\<exists>t\<in>N. (s, t) \<in> acc"
           using `\<Psi> \<subseteq> N` by auto
         show "l1 s = integral\<^sup>L (K s) l1 + c s"
           using E_closed l1 `s \<in> S - N`
