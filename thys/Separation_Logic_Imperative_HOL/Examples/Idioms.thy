@@ -202,7 +202,7 @@ text_raw{*\label{thy:ex:idioms}*}
         function arbitrarily deep *}
       apply (subst os_sum'.simps)
       txt {* @{text "sep_auto"} accepts all the section parameters that 
-        @{text "auto"} does, eg. @{text "intro: "} *}
+        @{text "auto"} does, eg. @{text "intro:"} *}
       apply (sep_auto intro: os.quit_iteration)
       done
   next
@@ -210,7 +210,7 @@ text_raw{*\label{thy:ex:idioms}*}
     show ?case
       apply (subst os_sum'.simps)
       txt {* Additionally, @{text "sep_auto"} accepts some more section 
-        parameters. The most common one, @{text "heap: "}, declares rules 
+        parameters. The most common one, @{text "heap:"}, declares rules 
         to be used with frame inference. See Section~\ref{sec:auto:overview}
         for a complete overview.*}
       apply (sep_auto heap: Cons.hyps)

@@ -1,5 +1,4 @@
 (*  Title:      Notation for hotel key card system
-
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -24,7 +23,7 @@ a few basic data types with their primitive operations.
 \item[Types] The type of truth values is called @{typ bool}.  The
 space of total functions is denoted by @{text"\<Rightarrow>"}. Type variables
 start with a quote, as in @{typ"'a"}, @{typ"'b"} etc. The notation
-$t$@{text" :: "}$\tau$ means that term $t$ has type $\tau$.
+$t$~@{text"::"}~$\tau$ means that term $t$ has type $\tau$.
 
 \item[Functions] can be updated at @{text x} with new value @{text y},
 written @{term"f(x:=y)"}.  The range of a function is @{term"range f"},

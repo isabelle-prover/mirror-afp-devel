@@ -225,7 +225,7 @@ form:
 
 \null
 
-@{text "t_count y (t_ins x xt) = "}
+@{text "t_count y (t_ins x xt) ="}
 @{text "(if y = x then Suc else id) (t_count y xt)"}
 *}
 

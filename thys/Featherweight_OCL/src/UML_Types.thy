@@ -113,9 +113,9 @@ text{*
   of a bot and a null element. The construction proceeds by
   abstracting the null (defined by @{text "\<lfloor> \<bottom> \<rfloor>"} on
   @{text "'a option option"}) to a @{text null} element, which may
-  have an arbitrary semantic structure, and an undefinedness element @{text "\<bottom> "}
+  have an arbitrary semantic structure, and an undefinedness element @{text "\<bottom>"}
   to an abstract undefinedness element @{text "bot"} (also written
-  @{text "\<bottom> "} whenever no confusion arises). As a consequence, it is necessary
+  @{text "\<bottom>"} whenever no confusion arises). As a consequence, it is necessary
   to redefine the notions of invalid, defined, valuation etc.
   on top of this interface. *}
 

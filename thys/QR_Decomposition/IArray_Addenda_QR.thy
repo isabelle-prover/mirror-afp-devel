@@ -24,10 +24,10 @@ sum two vectors:
 
 While the following is the one we will present in this development:
 
-@{text " plus_iarray A B = 
+@{text [display] "plus_iarray A B =
   (let length_A = (IArray.length A);
   length_B= (IArray.length B);
-  n=max length_A length_B ; 
+  n=max length_A length_B ;
   A'= IArray.of_fun (\<lambda>a. if a < length_A then A!!a else 0) n;
   B'=IArray.of_fun (\<lambda>a. if a < length_B then B!!a else 0) n
   in IArray.of_fun (\<lambda>a. A' !! a + B' !! a) n)"}
