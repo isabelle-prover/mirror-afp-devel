@@ -104,9 +104,9 @@ definition "Restrict ord i = (case ord of FO \<Rightarrow> FBase (Fo i) | SO \<R
 declare [[goals_limit = 50]]
 
 
-permanent_interpretation WS1S_Alt: Word_Formula SUC LESS assigns nvars Extend CONS SNOC Length
-  extend size_atom zero eval downshift upshift finsert cut len restrict Restrict
-  lformula0 FV0 find0 wf0 decr0 satisfies0 nullable0 lderiv0 rderiv0 undefined enc \<sigma> ZERO
+permanent_interpretation WS1S_Alt: Formula SUC LESS assigns nvars Extend CONS SNOC Length
+  extend size_atom zero \<sigma> eval downshift upshift finsert cut len restrict Restrict
+  lformula0 FV0 find0 wf0 decr0 satisfies0 nullable0 lderiv0 rderiv0 undefined
   defining norm = "Formula_Operations.norm find0 decr0"
   and nFOr = "Formula_Operations.nFOr :: formula \<Rightarrow> _"
   and nFAnd = "Formula_Operations.nFAnd :: formula \<Rightarrow> _"
@@ -317,7 +317,7 @@ next
     unfolding restrict_def Restrict_def
     by (cases k) (auto simp: Formula_Operations.satisfies_gen.simps)
 qed (auto simp: Extend_commute_unsafe downshift_def upshift_def fimage_iff Suc_le_eq len_def
-  dec_def eval_def cut_def len_downshift_helper
+  dec_def eval_def cut_def len_downshift_helper CONS_inj dest!: CONS_surj
   dest: fMax_ge fMax_ffilter_less fMax_boundedD fsubset_fsingletonD
   split: order.splits if_splits)
 
