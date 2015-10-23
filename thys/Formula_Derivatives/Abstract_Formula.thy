@@ -240,6 +240,7 @@ locale Formula_Operations =
   and extend :: "'k \<Rightarrow> bool \<Rightarrow> 'x \<Rightarrow> 'x"
   and size :: "'x \<Rightarrow> 'n"
   and zero :: "'n \<Rightarrow> 'x"
+  and alphabet :: "'n \<Rightarrow> 'x list"
 
   (* Valuations *)
   and eval :: "'v \<Rightarrow> nat \<Rightarrow> bool"
@@ -539,11 +540,16 @@ locale Formula = Formula_Operations
   and Extend_SNOC_cut: "#\<^sub>V \<AA> = size x \<Longrightarrow> len P \<le> Length (SNOC x \<AA>) \<Longrightarrow>
     Extend k 0 (SNOC x \<AA>) P =
     SNOC (extend k (if eval P (Length \<AA>) then True else False) x) (Extend k 0 \<AA> (cut (Length \<AA>) P))"
-
+  and CONS_inj: "size x = #\<^sub>V \<AA> \<Longrightarrow> size y = #\<^sub>V \<AA> \<Longrightarrow> #\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow>
+    CONS x \<AA> = CONS y \<BB> \<longleftrightarrow> (x = y \<and> \<AA> = \<BB>)"
+  and CONS_surj: "Length \<AA> \<noteq> 0 \<Longrightarrow> #\<^sub>V \<AA> = idx \<Longrightarrow>
+    \<exists>x \<BB>. \<AA> = CONS x \<BB> \<and> #\<^sub>V \<BB> = idx \<and> size x = idx"
 
   (* Alphabet elements *)
   and size_zero: "size (zero idx) = idx"
   and size_extend: "size (extend k b x) = SUC k (size x)"
+  and distinct_alphabet: "distinct (alphabet idx)"
+  and alphabet_size: "x \<in> set (alphabet idx) \<longleftrightarrow> size x = idx"
 
   (* Valuations *)
   and downshift_upshift: "downshift (upshift P) = P"
@@ -583,20 +589,6 @@ locale Formula = Formula_Operations
   and lformula_Restrict: "lformula (Restrict k i)"
   and finite_lderiv0: "lformula0 a \<Longrightarrow> finite {fold lderiv xs (FBase a) | xs. True}"
   and finite_rderiv0: "finite {fold rderiv xs (FBase a) | xs. True}"
-
-locale Word_Formula = Formula
-  where TYPEVARS = TYPEVARS
-  for TYPEVARS :: "'a :: linorder \<times> 'i \<times> 'k :: {linorder, enum} \<times> 'n \<times> 'x \<times> 'v" +
-  fixes enc :: "'i \<Rightarrow> 'x list"
-  and alphabet :: "'n \<Rightarrow> 'x list"
-  and ZERO :: 'n
-
-  assumes enc_inj: "#\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow> enc \<AA> = enc \<BB> \<longleftrightarrow> \<AA> = \<BB>"
-  and distinct_alphabet: "distinct (alphabet idx)"
-  and length_enc: "length (enc \<AA>) = Length \<AA>"
-  and enc_CONS: "#\<^sub>V \<AA> = size x \<Longrightarrow> enc (CONS x \<AA>) = x # enc \<AA>"
-  and in_set_encD: "x \<in> set (enc \<AA>) \<Longrightarrow> size x = #\<^sub>V \<AA>"
-  and alphabet_size: "x \<in> set (alphabet idx) \<longleftrightarrow> size x = idx"
 
 context Formula
 begin
@@ -1156,103 +1148,6 @@ lemma sat\<^sub>b_RESTRICT: "sat\<^sub>b \<AA> \<phi> \<longleftrightarrow> \<AA
   unfolding sat\<^sub>b_def RESTRICT_def using sat_vars_RESTRICT_VARS[of Enum.enum "FV \<phi>" _ \<AA> \<phi>, symmetric]
   by (auto simp: finite_FV enum_UNIV)
 
-end
-
-context Word_Formula
-begin
-
-lemma enc_Nil: "Length \<AA> = 0 \<Longrightarrow> enc \<AA> = []"
-  by (metis length_0_conv length_enc)
-
-definition "decode idx = the_inv_into {\<BB>. #\<^sub>V \<BB> = idx} enc"
-
-lemma inj_on_enc: "inj_on enc {\<BB>. #\<^sub>V \<BB> = idx}"
-  unfolding inj_on_def by (auto simp: enc_inj)
-
-lemma surj_enc: "\<forall>x\<in>set xs. size x = idx \<Longrightarrow> xs \<in> enc ` {\<BB>. #\<^sub>V \<BB> = idx}"
-proof (induct xs)
-  case Nil then show ?case using ex_Length_0[of idx]
-    by (auto dest: enc_Nil[symmetric])
-next
-  case (Cons x xs) then show ?case
-    by (auto simp: image_iff enc_CONS nvars_CONS intro: exI[of _ "CONS x \<AA>" for \<AA>])
-qed
-
-lemma enc_decode: "\<forall>x \<in> set xs. size x = idx \<Longrightarrow> enc (decode idx xs) = xs"
-  unfolding decode_def by (rule f_the_inv_into_f[OF inj_on_enc surj_enc])
-
-definition "TL \<AA> = decode (#\<^sub>V \<AA>) (tl (enc \<AA>))"
-
-lemma enc_TL: "enc (TL \<AA>) = tl (enc \<AA>)"
-  unfolding TL_def by (subst enc_decode) (auto dest!: in_set_encD in_set_tlD)
-
-lemma nvars_TL: "#\<^sub>V (TL \<AA>) = #\<^sub>V \<AA>"
-  unfolding TL_def decode_def
-  using the_inv_into_into[OF inj_on_enc surj_enc subset_refl, of "tl (enc \<AA>)"]
-  by (auto dest!: in_set_encD in_set_tlD)
-
-definition "lang idx \<phi> = {enc \<AA> | \<AA>. \<AA> \<Turnstile> \<phi> \<and> #\<^sub>V \<AA> = idx}"
-definition "lang\<^sub>b idx \<phi> = {enc \<AA> | \<AA>. \<AA> \<Turnstile>\<^sub>b \<phi> \<and> #\<^sub>V \<AA> = idx}"
-
-lemma lang_eq_iff: "lang idx \<phi> = lang idx \<psi> \<longleftrightarrow> (\<forall>\<AA>. #\<^sub>V \<AA> = idx \<longrightarrow> \<AA> \<Turnstile> \<phi> \<longleftrightarrow> \<AA> \<Turnstile> \<psi>)"
-  unfolding lang_def set_eq_iff by auto (metis enc_inj)+
-
-lemma lang\<^sub>b_eq_iff: "lang\<^sub>b idx \<phi> = lang\<^sub>b idx \<psi> \<longleftrightarrow> (\<forall>\<AA>. #\<^sub>V \<AA> = idx \<longrightarrow> \<AA> \<Turnstile>\<^sub>b \<phi> \<longleftrightarrow> \<AA> \<Turnstile>\<^sub>b \<psi>)"
-  unfolding lang\<^sub>b_def set_eq_iff by auto (metis enc_inj)+
-
-lemma final_iff_Nil: "wf idx \<phi> \<and> lformula \<phi> \<Longrightarrow> final idx \<phi> \<longleftrightarrow> ([] \<in> lang idx \<phi>)"
-  using ex_Length_0[of idx] Length_0_inj
-   enc_Nil[symmetric] enc_inj final_satisfies[of idx \<phi>]
-  unfolding lang_def by clarsimp metis
-
-lemma nullable_iff_Nil: "wf idx \<phi> \<and> lformula \<phi> \<Longrightarrow> nullable \<phi> \<longleftrightarrow> ([] \<in> lang\<^sub>b idx \<phi>)"
-  using ex_Length_0[of idx] Length_0_inj
-   enc_Nil[symmetric] enc_inj nullable_satisfies_bounded
-  unfolding lang\<^sub>b_def by clarsimp metis
-
-lemma lQuot_enc:
-  assumes "\<And>\<AA>. P \<AA> \<Longrightarrow> #\<^sub>V \<AA> = size a"
-  shows "{w. a # w \<in> {enc \<AA> | \<AA>. P \<AA>}} = {enc \<AA> | \<AA>. P (CONS a \<AA>)}"
-proof safe
-  fix w and \<AA> :: "'i" assume "a # w = enc \<AA>" "P \<AA>"
-  with assms have "CONS a (TL \<AA>) = \<AA>" "enc \<AA> = a # w"
-    by (auto simp: enc_inj[symmetric] enc_CONS enc_TL nvars_CONS nvars_TL dest: sym)
-  with \<open>P \<AA>\<close> show "\<exists>\<AA>. w = enc \<AA> \<and> P (CONS a \<AA>)" by (auto simp: enc_TL intro!: exI[of _ "TL \<AA>"])
-next
-  fix \<AA> :: "'i" assume "P (CONS a \<AA>)"
-  with assms[of "CONS a \<AA>"] show "\<exists>\<AA>'. a # enc \<AA> = enc \<AA>' \<and> P \<AA>'"
-     by (auto simp: enc_CONS nvars_CONS intro: exI[of _ "CONS a \<AA>"])
-qed
-
-lemma lang_lderiv:
-  "\<lbrakk>wf idx \<phi>; idx = size x; lformula \<phi>\<rbrakk> \<Longrightarrow> lang idx (lderiv x \<phi>) = {w. x # w \<in> lang idx \<phi>}"
-  unfolding lang_def by (subst lQuot_enc) (auto simp: satisfies_lderiv nvars_CONS)
-
-lemma lang\<^sub>b_lderiv:
-  "\<lbrakk>wf idx \<phi>; idx = size x; lformula \<phi>\<rbrakk> \<Longrightarrow> lang\<^sub>b idx (lderiv x \<phi>) = {w. x # w \<in> lang\<^sub>b idx \<phi>}"
-  unfolding lang\<^sub>b_def by (subst lQuot_enc) (auto simp: satisfies_bounded_lderiv nvars_CONS)
-
-lemma lang_norm: "lformula \<phi> \<Longrightarrow> lang idx (norm \<phi>) = lang idx \<phi>"
-  unfolding lang_eq_iff by (simp add: satisfies_norm)
-
-lemma lang\<^sub>b_norm: "lang\<^sub>b idx (norm \<phi>) = lang\<^sub>b idx \<phi>"
-  unfolding lang\<^sub>b_eq_iff by (simp add: satisfies_bounded_norm)
-
-lemma lang_size: "\<lbrakk>w \<in> lang idx \<phi>; x \<in> set w\<rbrakk> \<Longrightarrow> size x = idx"
-  unfolding lang_def by (auto elim: in_set_encD)
-
-lemma lang\<^sub>b_size: "\<lbrakk>w \<in> lang\<^sub>b idx \<phi>; x \<in> set w\<rbrakk> \<Longrightarrow> size x = idx"
-  unfolding lang\<^sub>b_def by (auto elim: in_set_encD)
-
-definition "language idx \<phi> = {enc \<AA> | \<AA>. sat \<AA> \<phi> \<and> #\<^sub>V \<AA> = idx}"
-definition "language\<^sub>b idx \<phi> = {enc \<AA> | \<AA>. sat\<^sub>b \<AA> \<phi> \<and> #\<^sub>V \<AA> = idx}"
-
-lemma language_lang_RESTRICT: "language idx \<phi> = lang idx (RESTRICT \<phi>)"
-  unfolding language_def lang_def by (auto simp: sat_RESTRICT)
-
-lemma language\<^sub>b_lang\<^sub>b_RESTRICT: "language\<^sub>b idx \<phi> = lang\<^sub>b idx (RESTRICT \<phi>)"
-  unfolding language\<^sub>b_def lang\<^sub>b_def by (auto simp: sat\<^sub>b_RESTRICT)
-
 lemma wf_RESTR: "wf idx \<phi> \<Longrightarrow> wf idx (RESTR \<phi>)"
   by (induct \<phi> arbitrary: idx) (auto simp: wf_Restrict LESS_SUC LEQ_0)
 
@@ -1292,34 +1187,80 @@ qed (simp add: lformula_RESTR)
 lemma lformula_RESTRICT: "lformula \<phi> \<Longrightarrow> lformula (RESTRICT \<phi>)"
   unfolding RESTRICT_def by (rule lformula_RESTRICT_VARS)
 
+lemma ex_fold_CONS: "\<exists>xs \<BB>. \<AA> = fold CONS xs \<BB> \<and> Length \<BB> = 0 \<and> Length \<AA> = length xs \<and>
+   #\<^sub>V \<BB> = #\<^sub>V \<AA> \<and> (\<forall>x \<in> set xs. size x = #\<^sub>V \<AA>)"
+proof (induct "Length \<AA>" arbitrary: \<AA>)
+  case (Suc m)
+  from Suc(2) CONS_surj obtain a \<BB> where "\<AA> = CONS a \<BB>" "#\<^sub>V \<BB> = #\<^sub>V \<AA>" "size a = #\<^sub>V \<AA>" by force
+  moreover with Suc(2) have "Length \<BB> = m" by (simp add: Length_CONS)
+  with Suc(1)[of \<BB>] obtain xs \<CC> where "\<BB> = fold CONS xs \<CC>" "Length \<CC> = 0" "Length \<BB> = length xs"
+    "#\<^sub>V \<CC> = #\<^sub>V \<BB>" "\<forall>x \<in> set xs. size x = #\<^sub>V \<BB>" by blast
+  ultimately show ?case by (intro exI[of _ "xs @ [a]"] exI[of _ \<CC>]) (auto simp: Length_CONS)
+qed simp
+
+primcorec L where
+  "L idx I = Lang (\<exists>\<AA>. Length \<AA> = 0 \<and> #\<^sub>V \<AA> = idx \<and> \<AA> \<in> I)
+    (\<lambda>a. if size a = idx then L idx {\<BB>. CONS a \<BB> \<in> I} else Zero)"
+
+lemma L_empty: "L idx {} = Zero"
+  by coinduction auto
+
+lemma L_alt: "L idx I =
+    to_language {xs. \<exists>\<AA> \<in> I. \<exists>\<BB>. \<AA> = fold CONS (rev xs) \<BB> \<and> Length \<BB> = 0 \<and>
+      #\<^sub>V \<BB> = idx \<and> (\<forall>x \<in> set xs. size x = idx)}"
+  by (coinduction arbitrary: I)
+    (auto 0 4 simp: L_empty intro: exI[of _ "{}"] arg_cong[of _ _ to_language])
+
+definition "lang idx \<phi> = L idx {\<AA>. \<AA> \<Turnstile> \<phi> \<and> #\<^sub>V \<AA> = idx}"
+definition "lang\<^sub>b idx \<phi> = L idx {\<AA>. \<AA> \<Turnstile>\<^sub>b \<phi> \<and> #\<^sub>V \<AA> = idx}"
+definition "language idx \<phi> = L idx {\<AA>. sat \<AA> \<phi> \<and> #\<^sub>V \<AA> = idx}"
+definition "language\<^sub>b idx \<phi> = L idx {\<AA>. sat\<^sub>b \<AA> \<phi> \<and> #\<^sub>V \<AA> = idx}"
+
+lemma "lformula \<phi> \<Longrightarrow> lang n (norm \<phi>) = lang n \<phi>"
+  unfolding lang_def using satisfies_norm by auto
+
+lemma in_language_Zero[simp]: "\<not> in_language Zero w"
+  by (induct w) auto
+
+lemma in_language_L_size: "in_language (L idx I) w \<Longrightarrow> x \<in> set w \<Longrightarrow> size x = idx"
+  by (induct w arbitrary: x I) (auto split: if_splits)
+
 end
 
-sublocale Word_Formula <
+sublocale Formula <
   bounded!: DA "alphabet idx" "\<lambda>\<phi>. norm (RESTRICT \<phi>)" "\<lambda>a \<phi>. norm (lderiv a \<phi>)" "nullable"
-     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "\<lambda>\<phi>. to_language (lang\<^sub>b idx \<phi>)"
-     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "\<lambda>\<phi>. to_language (language\<^sub>b idx \<phi>)" for idx
+     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "lang\<^sub>b idx"
+     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "language\<^sub>b idx" for idx
+  using ex_Length_0[of idx]
   by unfold_locales
-    (auto simp: nullable_iff_Nil lang\<^sub>b_norm lang\<^sub>b_lderiv wf_norm wf_lderiv
-      lformula_norm lformula_lderiv alphabet_size lang\<^sub>b_size
-      language\<^sub>b_lang\<^sub>b_RESTRICT wf_RESTRICT lformula_RESTRICT distinct_alphabet)
+    (auto simp: lformula_norm lformula_lderiv distinct_alphabet alphabet_size wf_norm wf_lderiv
+    lang\<^sub>b_def language\<^sub>b_def nullable_satisfies_bounded wf_RESTRICT lformula_RESTRICT sat\<^sub>b_RESTRICT
+    satisfies_bounded_norm in_language_L_size satisfies_bounded_lderiv nvars_CONS
+    dest: Length_0_inj intro: arg_cong[of _ _ "L (size _)"])
 
-sublocale Word_Formula <
+sublocale Formula <
   unbounded: DA "alphabet idx" "\<lambda>\<phi>. norm (RESTRICT \<phi>)" "\<lambda>a \<phi>. norm (lderiv a \<phi>)" "final idx"
-     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "\<lambda>\<phi>. to_language (lang idx \<phi>)"
-     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "\<lambda>\<phi>. to_language (language idx \<phi>)" for idx
+     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "lang idx"
+     "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "language idx" for idx
+  using ex_Length_0[of idx]
   by unfold_locales
-    (auto simp: final_iff_Nil lang_norm lang_lderiv wf_norm wf_lderiv
-      lformula_norm lformula_lderiv alphabet_size lang_size
-      language_lang_RESTRICT wf_RESTRICT lformula_RESTRICT distinct_alphabet)
+    (auto simp: lformula_norm lformula_lderiv distinct_alphabet alphabet_size wf_norm wf_lderiv
+    lang_def language_def final_satisfies wf_RESTRICT lformula_RESTRICT sat_RESTRICT
+    satisfies_norm in_language_L_size satisfies_lderiv nvars_CONS
+    dest: Length_0_inj intro: arg_cong[of _ _ "L (size _)"])
 
-lemma (in Word_Formula) check_eqv_soundness:
+lemma (in Formula) check_eqv_soundness:
   "\<lbrakk>#\<^sub>V \<AA> = idx; check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> sat \<AA> \<phi> \<longleftrightarrow> sat \<AA> \<psi>"
-  by (drule soundness[unfolded rel_language_eq], drule injD[OF bij_is_inj[OF to_language_bij]])
-    (force simp: language_def set_eq_iff enc_inj)
+  using ex_fold_CONS[of \<AA>]
+  by (auto simp: language_def L_alt set_eq_iff
+    dest!: soundness[unfolded rel_language_eq] injD[OF bij_is_inj[OF to_language_bij]])
+    (metis Length_0_inj rev_rev_ident set_rev)+
 
-lemma (in Word_Formula) bounded_check_eqv_soundness:
+lemma (in Formula) bounded_check_eqv_soundness:
   "\<lbrakk>#\<^sub>V \<AA> = idx; bounded.check_eqv idx \<phi> \<psi>\<rbrakk> \<Longrightarrow> sat\<^sub>b \<AA> \<phi> \<longleftrightarrow> sat\<^sub>b \<AA> \<psi>"
-  by (drule bounded.soundness[unfolded rel_language_eq], drule injD[OF bij_is_inj[OF to_language_bij]])
-    (force simp: language\<^sub>b_def set_eq_iff enc_inj)
+  using ex_fold_CONS[of \<AA>]
+  by (auto simp: language\<^sub>b_def L_alt set_eq_iff
+    dest!: bounded.soundness[unfolded rel_language_eq] injD[OF bij_is_inj[OF to_language_bij]])
+    (metis Length_0_inj rev_rev_ident set_rev)+
 
 end

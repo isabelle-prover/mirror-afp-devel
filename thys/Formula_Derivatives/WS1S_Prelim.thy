@@ -33,7 +33,6 @@ typedef idx = "UNIV :: (nat \<times> nat) set" by (rule UNIV_witness)
 
 setup_lifting type_definition_idx
 
-lift_definition ZERO :: "idx" is "(0, 0)" .
 lift_definition SUC :: "order \<Rightarrow> idx \<Rightarrow> idx" is
   "\<lambda>ord (m, n). case ord of FO \<Rightarrow> (Suc m, n) | SO \<Rightarrow> (m, Suc n)" .
 lift_definition LESS :: "order \<Rightarrow> nat \<Rightarrow> idx \<Rightarrow> bool" is
@@ -113,16 +112,7 @@ lift_definition SNOC :: "(bool list \<times> bool list) \<Rightarrow> interp \<R
    (Suc n, map_index (snoc n bs1) I1, map_index (snoc n bs2) I2)"
   by (auto simp: Let_def)
 
-abbreviation "enc_atom_bool I n \<equiv> map (\<lambda>P. n |\<in>| P) I"
-
-abbreviation "enc_atom I1 I2 n \<equiv> (enc_atom_bool I1 n, enc_atom_bool I2 n)"
-
 type_synonym atom = "bool list \<times> bool list"
-
-lift_definition enc :: "interp \<Rightarrow> atom list"
-  is "\<lambda>(n, I1, I2). let m = MSB (I1 @ I2) in
-    map (enc_atom I1 I2) [0 ..< m] @
-    replicate (n - m) (replicate (length I1) False, replicate (length I2) False)" .
 
 lift_definition zero :: "idx \<Rightarrow> atom"
   is "\<lambda>(m, n). (replicate m False, replicate n False)" .
@@ -258,21 +248,6 @@ lemma MSB_eq_SucD: "MSB Is = Suc x \<Longrightarrow> \<exists>P\<in>set Is. x |\
   using Max_in[of "\<Union>x\<in>set Is. fset x"]
   unfolding MSB_def by (force simp: fmember_def split: if_splits)
 
-lemma last_enc_atom_MSB:
-  fixes I1 I2
-  defines "xs \<equiv> map (enc_atom I1 I2) [0..<MSB (I1 @ I2)]"
-  assumes "m = length I1" "n = length I2" "xs \<noteq> []"
-  shows "last xs \<noteq> (replicate m False, replicate n False)"
-proof (rule ccontr, unfold not_not)
-  assume "last xs = (replicate m False, replicate n False)"
-  moreover from `xs \<noteq> []` obtain i where i: "MSB (I1 @ I2) = Suc i"
-    unfolding xs_def by (auto simp: gr0_conv_Suc)
-  ultimately have "enc_atom I1 I2 i = (replicate m False, replicate n False)"
-    unfolding xs_def by auto
-  with i show False
-   by (auto simp: list_eq_iff_nth_eq max_def in_set_conv_nth dest!: MSB_eq_SucD split: if_splits)
-qed
-
 lemma append_replicate_inj:
   assumes "xs \<noteq> [] \<Longrightarrow> last xs \<noteq> x" and "ys \<noteq> [] \<Longrightarrow> last ys \<noteq> x"
   shows "xs @ replicate m x = ys @ replicate n x \<longleftrightarrow> (xs = ys \<and> m = n)"
@@ -293,29 +268,8 @@ proof safe
   with * show "xs = ys" by auto
 qed
 
-lemma enc_inj[simp]: "#\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow> enc \<AA> = enc \<BB> \<Longrightarrow> \<AA> = \<BB>"
-  using MSB_greater
-  by transfer (elim exE conjE, hypsubst, unfold prod.case prod.inject Let_def, elim conjE, simp only:,
-    subst (asm) append_replicate_inj,
-    erule (2) last_enc_atom_MSB[OF sym sym], erule last_enc_atom_MSB[OF refl refl],
-    auto simp: list_eq_iff_nth_eq, (metis less_max_iff_disj)+)
-
-lemma length_enc[simp]: "length (enc \<AA>) = Length \<AA>"
-  by transfer (auto simp: Let_def)
-
-lemma in_set_encD[simp]:
-  "x \<in> set (enc \<AA>) \<Longrightarrow> #\<^sub>V \<AA> = size_atom x"
-  by transfer (auto simp: Let_def split: if_splits)
-
 lemma fin_lift[simp]: "m |\<in>| lift bs i (I ! i) \<longleftrightarrow> (case m of 0 \<Rightarrow> bs ! i | Suc m \<Rightarrow> m |\<in>| I ! i)"
   unfolding lift_def upshift_def by (auto split: nat.splits)
-
-lemma enc_CONS[simp]:
-  assumes "#\<^sub>V \<AA> = size_atom x"
-  shows "enc (CONS x \<AA>) = x # enc \<AA>"
-  using assms by transfer (fastforce simp add: Let_def nth_append nth_Cons
-    simp del: upt_conv_Nil diff_is_0_eq' atLeastLessThan_empty
-    split: prod.splits nat.splits intro!: nth_equalityI) -- \<open>slow\<close>
 
 lemma ex_Length_0[simp]:
   "\<exists>\<AA>. Length \<AA> = 0 \<and> #\<^sub>V \<AA> = idx"
@@ -404,6 +358,31 @@ proof -
   ultimately show "xa = 0" by blast
 qed
 
+lemma CONS_inj[simp]: "size_atom x = #\<^sub>V \<AA> \<Longrightarrow> size_atom y = #\<^sub>V \<AA> \<Longrightarrow> #\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow>
+  CONS x \<AA> = CONS y \<BB> \<longleftrightarrow> (x = y \<and> \<AA> = \<BB>)"
+  by transfer (auto simp: list_eq_iff_nth_eq lift_def upshift_def split: if_splits; blast)
+
+lemma Suc_minus1: "Suc (x - Suc 0) = (if x = 0 then Suc 0 else x)"
+  by auto
+
+lemma fset_eq_empty_iff: "(fset X = {}) = (X = {||})"
+  by (metis bot_fset.rep_eq fset_inverse)
+
+lemma fset_le_singleton_iff: "(fset X \<subseteq> {x}) = (X = {||} \<or> X = {|x|})"
+  by (metis finsert.rep_eq fset_eq_empty_iff fset_inject order_refl singleton_insert_inj_eq subset_singletonD)
+
+lemma MSB_decreases:
+  "MSB I \<le> Suc m \<Longrightarrow> MSB (map (\<lambda>X. (\<lambda>I1. I1 - Suc 0) |`| (X |-| {|0|})) I) \<le> m"
+  unfolding MSB_def
+  by (auto simp add: not_le less_Suc_eq_le fset_eq_empty_iff fset_le_singleton_iff
+    split: if_splits dest!: iffD1[OF Max_le_iff, rotated -1] iffD1[OF Max_ge_iff, rotated -1]; force)
+
+lemma CONS_surj[dest]: "Length \<AA> > 0 \<Longrightarrow>
+  \<exists>x \<BB>. \<AA> = CONS x \<BB> \<and> #\<^sub>V \<BB> = #\<^sub>V \<AA> \<and> size_atom x = #\<^sub>V \<AA>"
+  by transfer (auto simp: gr0_conv_Suc list_eq_iff_nth_eq lift_def upshift_def split: if_splits
+    intro!: exI[of _ "map (\<lambda>X. 0 |\<in>| X) _"] exI[of _ "map (\<lambda>X. (\<lambda>x. x - Suc 0) |`| (X |-| {|0|})) _"],
+    auto simp: MSB_decreases upshift_def Suc_minus1 fimage_iff intro: rev_fBexI split: if_splits)
+ 
 (*<*)
 end
 (*>*)

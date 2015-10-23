@@ -114,9 +114,6 @@ lift_definition SNOC :: "atom \<Rightarrow> interp \<Rightarrow> interp" is
   "\<lambda>bs (n, I). (Suc n, map_index (\<lambda>i m. m + (if bs ! i then 2 ^ n else 0)) I)"
   by (auto simp: all_set_conv_all_nth len_le_iff)
 
-lift_definition enc :: "interp \<Rightarrow> atom list" is
-  "\<lambda>(n, I). map (\<lambda>i. map (\<lambda>n. test_bit n i) I) [0 ..< n]" .
-
 definition extend :: "unit \<Rightarrow> bool \<Rightarrow> atom \<Rightarrow> atom" where
   "extend _ b bs \<equiv> b # bs"
 
@@ -227,6 +224,26 @@ lemma Extend_SNOC[Presb_simps]: "\<lbrakk>#\<^sub>V \<AA> = length x; len P \<le
    apply (metis mod_less mod_mult2_eq One_nat_def add.commute mult.commute mult.left_neutral power_Suc2)
   apply (metis (no_types) mod_less mod_mult2_eq One_nat_def mod_div_equality2 mod_div_trivial mod_mod_trivial mult.commute parity_cases)
   done
+
+lemma odd_neq_even:
+  "Suc (2 * x) = 2 * y \<longleftrightarrow> False"
+  "2 * y = Suc (2 * x) \<longleftrightarrow> False"
+  by presburger+
+
+lemma CONS_inj[Presb_simps]: "size x = #\<^sub>V \<AA> \<Longrightarrow> size y = #\<^sub>V \<AA> \<Longrightarrow> #\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow>
+  CONS x \<AA> = CONS y \<BB> \<longleftrightarrow> (x = y \<and> \<AA> = \<BB>)"
+  by transfer (auto simp: list_eq_iff_nth_eq odd_neq_even split: if_splits)
+
+lemma mod_2_Suc_iff:
+  "x mod 2 = Suc 0 \<longleftrightarrow> x = Suc (2 * (x div 2))"
+  by presburger+
+
+lemma CONS_surj[Presb_simps]: "Length \<AA> \<noteq> 0 \<Longrightarrow>
+  \<exists>x \<BB>. \<AA> = CONS x \<BB> \<and> #\<^sub>V \<BB> = #\<^sub>V \<AA> \<and> size x = #\<^sub>V \<AA>"
+  by transfer
+    (auto simp: gr0_conv_Suc list_eq_iff_nth_eq len_le_iff split: if_splits
+    intro!: exI[of _ "map (\<lambda>n. n mod 2 \<noteq> 0) _"] exI[of _ "map (\<lambda>n. n div 2) _"];
+    auto simp: mod_2_Suc_iff)
 
 lemma [Presb_simps]: 
   "length (extend k b x) = Suc (length x)"
@@ -399,109 +416,6 @@ lemma FV0_less[Presb_simps]: "wf0 idx a \<Longrightarrow> v \<in> FV0 k a \<Long
 
 lemma finite_FV0[Presb_simps]: "finite (FV0 k a)"
   by (induct a) (auto simp: FV0_def)
-
-fun enc_nat :: "nat \<Rightarrow> atom" where
-  "enc_nat 0 = []"
-| "enc_nat n = (n mod 2 \<noteq> 0) # enc_nat (n div 2)"
-
-lemma enc_nat_alt: "enc_nat n = map (\<lambda>i. test_bit n i) [0 ..< len n]"
-  by (induct n rule: enc_nat.induct)
-    (force simp: test_bit_def nth_Cons' div_mult2_eq
-     Suc_pred[of "len (Suc m)" for m, OF iffD1[OF neq0_conv], unfolded len_eq0_iff, simplified]
-     intro!: nth_equalityI split: if_splits dest: gr0_implies_Suc)+
-
-fun dec_nat' :: "nat \<Rightarrow> atom \<Rightarrow> nat" where
-  "dec_nat' i [] = 0"
-| "dec_nat' i (True # xs) = 2 ^ i + dec_nat' (Suc i) xs"
-| "dec_nat' i (False # xs) = dec_nat' (Suc i) xs"
-
-lemma dec_nat'_alt:
-  "dec_nat' i xs = listsum (map_index' i (\<lambda>i b. if b then 2 ^ i else 0) xs)" (is "?P i xs")
-  (* apply (induct xs arbitrary: i rule: dec_nat'.induct) *) (*strange behaviour*)
-  by (induct rule: dec_nat'.induct[of "?P"]) simp_all
-
-abbreviation "dec_nat \<equiv> dec_nat' 0"
-
-lemma dec_nat'_enc_nat: "dec_nat' i (enc_nat n) = n * 2 ^ i"
-proof (induct n arbitrary: i rule: enc_nat.induct)
-  fix n i
-  assume IH: "\<And>i. dec_nat' i (enc_nat (Suc n div 2)) = Suc n div 2 * 2 ^ i"
-  show "dec_nat' i (enc_nat (Suc n)) = Suc n * 2 ^ i"
-  proof (cases "Suc n mod 2 = 0")
-    case False
-    then obtain q where q: "n = 2 * q" by (cases n rule: parity_cases) (auto simp: mod_Suc)
-    show ?thesis by (simp add: False IH) (simp add: q)
-  next
-    case True
-    then obtain q where q: "n = 2 * q + 1" using mod_div_equality2[of 2 n, symmetric]
-      by (cases n rule: parity_cases) (auto simp: mod_Suc)
-    show ?thesis by (simp add: True IH) (simp add: q)
-  qed
-qed simp
-
-lemma length_enc_nat[simp]: "length (enc_nat n) = len n"
-  by (induct n rule: enc_nat.induct)
-    (auto simp: len_eq0_iff[of "Suc n" for n, simplified] intro!: Suc_pred)
-
-lemma test_bit_alt: "test_bit m n = (let xs = enc_nat m in if n < length xs then xs ! n else False)"
-  by (induct m arbitrary: n rule: enc_nat.induct)
-    (auto simp: test_bit_def Let_def nth_Cons' len_eq0_iff[of "Suc n" for n, simplified]
-      gr0_conv_Suc div_mult2_eq)
-
-lemma dec_nat'_replicate_False[simp]: "dec_nat' i (replicate n False) = 0"
-  by (induct n arbitrary: i) auto
-
-lemma dec_nat'_pad: "dec_nat' i (xs @ replicate n False) = dec_nat' i xs" (is "?P i xs")
-  by (induct rule: dec_nat'.induct[of ?P]) auto
-
-lemma test_bit_ge_len: "i \<ge> len x \<Longrightarrow> test_bit x i = False"
-proof (induct x rule: len.induct[case_names 0 1 Suc_Suc])
-  case (Suc_Suc v) then show ?case
-    by (cases i) (auto simp: test_bit_def Suc_le_eq len_le_iff less_Suc_eq_le)
-qed (auto simp: test_bit_def Suc0_div_pow2_eq)
-
-lemma enc_inj[Presb_simps]: "#\<^sub>V \<AA> = #\<^sub>V \<BB> \<Longrightarrow> (enc \<AA> = enc \<BB>) = (\<AA> = \<BB>)"
-proof (transfer, safe intro!: nth_equalityI)
-  fix ns ns' :: "nat list" and i n n' :: nat
-  assume *: "length ns = length ns'" "\<forall>x\<in>set ns. len x \<le> n" "\<forall>x\<in>set ns'. len x \<le> n'" "i < length ns"
-    "map (\<lambda>i. map (\<lambda>n. test_bit n i) ns) [0..<n] = map (\<lambda>i. map (\<lambda>n. test_bit n i) ns') [0..<n']"
-  then obtain k k' where k: "n = len (ns ! i) + k" "n' = len (ns' ! i) + k'"
-    by (metis le_add_diff_inverse nth_mem)
-  have "ns ! i = dec_nat (enc_nat (ns ! i))" unfolding dec_nat'_enc_nat by simp
-  also have "\<dots> = dec_nat (map (test_bit (ns ! i)) [0 ..< len (ns ! i)])"
-    unfolding enc_nat_alt ..
-  also have "\<dots> = dec_nat (map (test_bit (ns ! i)) ([0 ..< len (ns ! i)] @ [len (ns ! i) ..< n]))"
-    unfolding map_append by (subst map_cong[OF refl test_bit_ge_len])
-      (auto simp add: dec_nat'_pad map_replicate_const)
-  also have "\<dots> = dec_nat (map (test_bit (ns ! i)) ([0 ..< n]))"
-    unfolding k upt_add_eq_append[OF le0] ..
-  also have "\<dots> = dec_nat (map (test_bit (ns' ! i)) [0 ..< n'])" using * 
-    unfolding list_eq_iff_nth_eq by (auto intro: arg_cong[of _ _ dec_nat])
-  also have "\<dots> = dec_nat (map (test_bit (ns' ! i)) ([0 ..< len (ns' ! i)] @ [len (ns' ! i) ..< n']))"
-    unfolding k upt_add_eq_append[OF le0] ..
-  also have "\<dots> = dec_nat (map (test_bit (ns' ! i)) [0 ..< len (ns' ! i)])"
-    unfolding map_append by (subst map_cong[OF refl test_bit_ge_len])
-      (auto simp add: dec_nat'_pad map_replicate_const)
-  also have "\<dots> = dec_nat (enc_nat (ns' ! i))" unfolding enc_nat_alt ..
-  also have "\<dots> = ns' ! i" unfolding dec_nat'_enc_nat by simp
-  finally show "ns ! i = ns' ! i" .
-qed (simp only: list_eq_iff_nth_eq length_map length_upt diff_zero)
-
-lemma length_enc[Presb_simps]: "length (enc \<AA>) = Length \<AA>"
-  by transfer auto
-
-lemma test_bit_shift:
-  "test_bit (2 * n) m = (\<exists>m'. m = Suc m' \<and> test_bit n m')"
-  "test_bit (Suc (2 * n)) (Suc m) = test_bit n m"
-  "test_bit (Suc (2 * n)) 0"
-  unfolding test_bit_def by (cases m) (auto simp: div_mult2_eq)
-
-lemma enc_CONS[Presb_simps]: "#\<^sub>V \<AA> = length x \<Longrightarrow> enc (CONS x \<AA>) = x # enc \<AA>"
-  by transfer (auto intro!: nth_equalityI split: if_splits
-    simp: nth_append nth_Cons' gr0_conv_Suc less_Suc_eq test_bit_shift)
-
-lemma in_set_encD[Presb_simps]: "x \<in> set (enc \<AA>) \<Longrightarrow> length x = #\<^sub>V \<AA>"
-  by transfer auto
 
 lemma finite_lderiv0[Presb_simps]:
   assumes "lformula0 a"
@@ -688,15 +602,15 @@ qed
 
 declare [[goals_limit = 100]]
 
-permanent_interpretation Presb: Word_Formula
+permanent_interpretation Presb: Formula
   where SUC = SUC and LESS = "\<lambda>_. op <" and Length = Length
   and assigns = assigns and nvars = nvars and Extend = Extend and CONS = CONS and SNOC = SNOC
-  and extend = extend and size = size_atom and zero = zero and eval = test_bit
+  and extend = extend and size = size_atom and zero = zero and alphabet = \<sigma> and eval = test_bit
   and downshift = downshift and upshift = upshift and add = set_bit and cut = cut_bits and len = len
   and restrict = "\<lambda>_ _. True" and Restrict = "\<lambda>_ _. FBool True" and lformula0 = lformula0
   and FV0 = FV0 and find0 = find0 and wf0 = wf0 and decr0 = decr0 and satisfies0 = satisfies0
   and nullable0 = nullable0 and lderiv0 = lderiv0 and rderiv0 = rderiv0
-  and TYPEVARS = undefined and enc = enc and alphabet = \<sigma>
+  and TYPEVARS = undefined
   defining norm = "Formula_Operations.norm find0 decr0"
   and nFOr = "Formula_Operations.nFOr :: formula \<Rightarrow> _"
   and nFAnd = "Formula_Operations.nFAnd :: formula \<Rightarrow> _"

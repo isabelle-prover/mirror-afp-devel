@@ -19,30 +19,28 @@ permanent_interpretation WS1S_Presb: DAs
   "(\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi>))"
   "(WS1S.final idx)"
   "(\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)"
-  "\<lambda>\<phi>. to_language (Word_Formula.lang WS1S_Prelim.nvars
-     WS1S_Prelim.Extend WS1S_Prelim.Length
-     WS1S_Formula.satisfies0 WS1S_Prelim.enc idx \<phi>)"
+  "\<lambda>\<phi>. Formula.lang WS1S_Prelim.nvars
+     WS1S_Prelim.Extend WS1S_Prelim.CONS WS1S_Prelim.Length WS1S_Prelim.size_atom
+     WS1S_Formula.satisfies0 idx \<phi>"
   "(\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)"
-  "\<lambda>\<phi>. to_language (Word_Formula.language WS1S_Prelim.assigns
-     WS1S_Prelim.nvars WS1S_Prelim.Extend
-     WS1S_Prelim.Length restrict WS1S_Formula.FV0
-     WS1S_Formula.satisfies0 WS1S_Prelim.enc idx \<phi>)"
+  "\<lambda>\<phi>. Formula.language WS1S_Prelim.assigns
+     WS1S_Prelim.nvars WS1S_Prelim.Extend WS1S_Prelim.CONS
+     WS1S_Prelim.Length WS1S_Prelim.size_atom restrict WS1S_Formula.FV0
+     WS1S_Formula.satisfies0 idx \<phi>"
   "(Presburger_Formula.\<sigma> n)"
   "(\<lambda>\<phi>. Presburger_Formula.norm (Presburger_Formula.RESTRICT \<phi>))"
   "(\<lambda>a \<phi>. Presburger_Formula.norm (Presburger_Formula.deriv Presburger_Formula.lderiv0 a \<phi>))"
   "(Presburger_Formula.final n)"
   "(\<lambda>\<phi>. presb_wf n \<phi> \<and> presb_lformula \<phi>)"
-  "(\<lambda>\<phi>. to_language
-          (Word_Formula.lang Presburger_Formula.nvars
-            Presburger_Formula.Extend Presburger_Formula.Length
-            op \<Turnstile>0 Presburger_Formula.enc n \<phi>))"
+  "(\<lambda>\<phi>. Formula.lang Presburger_Formula.nvars
+            Presburger_Formula.Extend Presburger_Formula.CONS Presburger_Formula.Length
+            Presburger_Formula.size_atom op \<Turnstile>0 n \<phi>)"
   "(\<lambda>\<phi>. presb_wf n \<phi> \<and> presb_lformula \<phi>)"
-  "(\<lambda>\<phi>. to_language
-          (Word_Formula.language Presburger_Formula.assigns
-            Presburger_Formula.nvars Presburger_Formula.Extend
-            Presburger_Formula.Length (\<lambda>_ _. True)
-            Presburger_Formula.FV0 op \<Turnstile>0 Presburger_Formula.enc
-            n \<phi>))"
+  "(\<lambda>\<phi>. Formula.language Presburger_Formula.assigns
+            Presburger_Formula.nvars Presburger_Formula.Extend Presburger_Formula.CONS
+            Presburger_Formula.Length Presburger_Formula.size_atom (\<lambda>_ _. True)
+            Presburger_Formula.FV0 op \<Turnstile>0
+            n \<phi>)"
   "letter_eq idx n"
   defining check_eqv = "\<lambda>idx n. DAs.check_eqv
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
