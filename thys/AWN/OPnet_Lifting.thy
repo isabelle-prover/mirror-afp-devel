@@ -383,7 +383,7 @@ lemma lift_opnet_sync_action:
       and act1: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, _). castmsg (I \<sigma>) a)"
       and act2: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
-                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>i d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
+                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
       and act3: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, \<sigma>'). (a = \<tau> \<or> (\<exists>d. a = i:deliver(d)) \<longrightarrow> U (\<sigma> i) (\<sigma>' i)))"
   shows "opnet onp p \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U (net_tree_ips p) \<rightarrow>)
@@ -560,7 +560,7 @@ theorem subnet_oreachable:
       and node1: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, _). castmsg (I \<sigma>) a)"
       and node2: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
-                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>i d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
+                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
       and node3: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, \<sigma>'). (a = \<tau> \<or> (\<exists>d. a = i:deliver(d)) \<longrightarrow> U (\<sigma> i) (\<sigma>' i)))"
 
@@ -822,7 +822,7 @@ corollary pnet_lift:
       and node1: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, _). castmsg (I \<sigma>) a)"
       and node2: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
-                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>i d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
+                      globala (\<lambda>(\<sigma>, a, \<sigma>'). (a \<noteq> \<tau> \<and> (\<forall>d. a \<noteq> i:deliver(d)) \<longrightarrow> S (\<sigma> i) (\<sigma>' i)))"
       and node3: "\<And>i R. \<langle>i : onp i : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg I \<sigma>, other U {i} \<rightarrow>)
                       globala (\<lambda>(\<sigma>, a, \<sigma>'). (a = \<tau> \<or> (\<exists>d. a = i:deliver(d)) \<longrightarrow> U (\<sigma> i) (\<sigma>' i)))"
 
