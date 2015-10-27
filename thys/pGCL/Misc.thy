@@ -124,7 +124,7 @@ proof(rule antisym)
   from ne bS show "Sup {x + c |x. x \<in> S} \<le> Sup S + c"
     by(auto intro!:cSup_least add_right_mono cSup_upper bdd_aboveI)
 
-  have "Sup S \<le> Sup {x + c |x. x \<in> S} - c"                   
+  have "Sup S \<le> Sup {x + c |x. x \<in> S} - c"
   proof(intro cSup_least ne)
     fix x assume xin: "x \<in> S"
     from bS have "\<And>x. x\<in>S \<Longrightarrow> x + c \<le> b + c" by(auto intro:add_right_mono)
@@ -215,7 +215,7 @@ proof -
   also {
     have "linear uminus" by(auto intro:linearI)
     hence "uminus ` closure ?T \<subseteq> closure (uminus ` ?T)"
-      by(rule closure_linear_image)
+      by(rule closure_linear_image_subset)
   }
   also {
     have "uminus ` ?T \<subseteq> S" by(auto)

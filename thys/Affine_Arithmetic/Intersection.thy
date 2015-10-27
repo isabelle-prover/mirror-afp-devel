@@ -2023,7 +2023,7 @@ fun intersect_segment_xline
   else intersect_segment_xline' prec ((c, d), (a, b)) x)"
 
 lemma closed_segment_commute: "closed_segment a b = closed_segment b a"
-  by (meson convex_contains_segment convex_segment dual_order.antisym ends_in_segment)
+  by (meson convex_contains_segment convex_closed_segment dual_order.antisym ends_in_segment)
 
 lemma intersect_segment_xline:
   assumes "intersect_segment_xline prec (p0, p1) x = Some (m, M)"
