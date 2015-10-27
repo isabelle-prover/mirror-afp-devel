@@ -18,42 +18,42 @@ datatype msg =
 
 instantiation msg :: msg
 begin
-definition newpkt_def [simp]: "newpkt \<equiv> \<lambda>(d,dip). Newpkt d dip"
-definition eq_newpkt_def: "eq_newpkt m \<equiv> case m of Newpkt d dip  \<Rightarrow> True | _ \<Rightarrow> False" 
+definition newpkt_def [simp]: "newpkt \<equiv> \<lambda>(d,did). Newpkt d did"
+definition eq_newpkt_def: "eq_newpkt m \<equiv> case m of Newpkt d did  \<Rightarrow> True | _ \<Rightarrow> False" 
 
 instance by intro_classes (simp add: eq_newpkt_def)
 end
 
 definition pkt :: "nat \<times> nat \<Rightarrow> msg"
-where "pkt \<equiv> \<lambda>(no, sip). Pkt no sip"
+where "pkt \<equiv> \<lambda>(no, sid). Pkt no sid"
 
 lemma pkt_simp [simp]:
-  "pkt(no, sip) = Pkt no sip"
+  "pkt(no, sid) = Pkt no sid"
   unfolding pkt_def by simp
 
-lemma not_eq_newpkt_pkt [simp]: "\<not>eq_newpkt (Pkt no sip)"
+lemma not_eq_newpkt_pkt [simp]: "\<not>eq_newpkt (Pkt no sid)"
   unfolding eq_newpkt_def by simp
 
 subsection "Protocol model"
 
 record state =
-  ip    :: "nat"
+  id    :: "nat"
   no    :: "nat"
-  nhip  :: "nat"
+  nhid  :: "nat"
   (* all locals *)
   msg    :: "msg"
   num    :: "nat"
-  sip    :: "nat"
+  sid    :: "nat"
 
 abbreviation toy_init :: "ip \<Rightarrow> state"
 where "toy_init i \<equiv> \<lparr>
-         ip = i,
+         id = i,
          no = 0,
-         nhip = i,
+         nhid = i,
 
          msg    = (SOME x. True),
          num    = (SOME x. True),
-         sip    = (SOME x. True)
+         sid    = (SOME x. True)
        \<rparr>"
 
 lemma some_neq_not_eq [simp]: "\<not>((SOME x :: nat. x \<noteq> i) = i)"
@@ -63,36 +63,36 @@ definition clear_locals :: "state \<Rightarrow> state"
 where "clear_locals \<xi> = \<xi> \<lparr>
     msg    := (SOME x. True),
     num    := (SOME x. True),
-    sip    := (SOME x. True)
+    sid    := (SOME x. True)
   \<rparr>"
 
 lemma clear_locals_but_not_globals [simp]:
-  "ip (clear_locals \<xi>) = ip \<xi>"
+  "id (clear_locals \<xi>) = id \<xi>"
   "no (clear_locals \<xi>) = no \<xi>"
-  "nhip (clear_locals \<xi>) = nhip \<xi>"
+  "nhid (clear_locals \<xi>) = nhid \<xi>"
   unfolding clear_locals_def by auto
 
 definition is_newpkt
 where "is_newpkt \<xi> \<equiv> case msg \<xi> of
-                       Newpkt data dip \<Rightarrow> { \<xi>\<lparr>num := data\<rparr> }
+                       Newpkt data did \<Rightarrow> { \<xi>\<lparr>num := data\<rparr> }
                      | _ \<Rightarrow> {}"
 
 definition is_pkt
 where "is_pkt \<xi> \<equiv> case msg \<xi> of
-                    Pkt num' sip' \<Rightarrow> { \<xi>\<lparr> num := num', sip := sip' \<rparr> }
+                    Pkt num' sid' \<Rightarrow> { \<xi>\<lparr> num := num', sid := sid' \<rparr> }
                   | _ \<Rightarrow> {}"
 
 lemmas is_msg_defs =
   is_pkt_def is_newpkt_def
 
-lemma is_msg_inv_ip [simp]:
-  "\<xi>' \<in> is_pkt \<xi>    \<Longrightarrow> ip \<xi>' = ip \<xi>"
-  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> ip \<xi>' = ip \<xi>"
+lemma is_msg_inv_id [simp]:
+  "\<xi>' \<in> is_pkt \<xi>    \<Longrightarrow> id \<xi>' = id \<xi>"
+  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> id \<xi>' = id \<xi>"
   unfolding is_msg_defs
   by (cases "msg \<xi>", clarsimp+)+
 
-lemma is_msg_inv_sip [simp]:
-  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> sip \<xi>' = sip \<xi>"
+lemma is_msg_inv_sid [simp]:
+  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> sid \<xi>' = sid \<xi>"
   unfolding is_msg_defs
   by (cases "msg \<xi>", clarsimp+)+
 
@@ -102,9 +102,9 @@ lemma is_msg_inv_no [simp]:
   unfolding is_msg_defs
   by (cases "msg \<xi>", clarsimp+)+
 
-lemma is_msg_inv_nhip [simp]:
-  "\<xi>' \<in> is_pkt \<xi>    \<Longrightarrow> nhip \<xi>' = nhip \<xi>"
-  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> nhip \<xi>' = nhip \<xi>"
+lemma is_msg_inv_nhid [simp]:
+  "\<xi>' \<in> is_pkt \<xi>    \<Longrightarrow> nhid \<xi>' = nhid \<xi>"
+  "\<xi>' \<in> is_newpkt \<xi> \<Longrightarrow> nhid \<xi>' = nhid \<xi>"
   unfolding is_msg_defs
   by (cases "msg \<xi>", clarsimp+)+
 
@@ -136,19 +136,19 @@ fun \<Gamma>\<^sub>T\<^sub>O\<^sub>Y :: "(state, msg, pseqp, pseqp label) seqp_e
 where
   "\<Gamma>\<^sub>T\<^sub>O\<^sub>Y PToy = labelled PToy (
      receive(\<lambda>msg' \<xi>. \<xi> \<lparr> msg := msg' \<rparr>).
-     \<lbrakk>\<xi>. \<xi> \<lparr>nhip := ip \<xi>\<rparr>\<rbrakk>
+     \<lbrakk>\<xi>. \<xi> \<lparr>nhid := id \<xi>\<rparr>\<rbrakk>
      (   \<langle>is_newpkt\<rangle> 
          (
              \<lbrakk>\<xi>. \<xi> \<lparr>no := max (no \<xi>) (num \<xi>)\<rparr>\<rbrakk>
-             broadcast(\<lambda>\<xi>. pkt(no \<xi>, ip \<xi>)). Toy()
+             broadcast(\<lambda>\<xi>. pkt(no \<xi>, id \<xi>)). Toy()
          )
        \<oplus> \<langle>is_pkt\<rangle>
        (
-            \<langle>\<xi>. num \<xi> \<ge> no \<xi>\<rangle>
+            \<langle>\<xi>. num \<xi> > no \<xi>\<rangle>
                \<lbrakk>\<xi>. \<xi> \<lparr>no := num \<xi>\<rparr>\<rbrakk>
-               \<lbrakk>\<xi>. \<xi> \<lparr>nhip := sip \<xi>\<rparr>\<rbrakk>
-               broadcast(\<lambda>\<xi>. pkt(no \<xi>, ip \<xi>)). Toy()
-         \<oplus> \<langle>\<xi>. num \<xi> < no \<xi>\<rangle>
+               \<lbrakk>\<xi>. \<xi> \<lparr>nhid := sid \<xi>\<rparr>\<rbrakk>
+               broadcast(\<lambda>\<xi>. pkt(no \<xi>, id \<xi>)). Toy()
+         \<oplus> \<langle>\<xi>. num \<xi> \<le> no \<xi>\<rangle>
                Toy()
        )
      ))"
@@ -265,120 +265,117 @@ definition msg_sender :: "msg \<Rightarrow> ip"
 where "msg_sender m \<equiv> case m of Pkt _ ipc \<Rightarrow> ipc"
 
 lemma msg_sender_simps [simp]:
-  "\<And>d dip sip. msg_sender (Pkt d sip) = sip"
+  "\<And>d did sid. msg_sender (Pkt d sid) = sid"
   unfolding msg_sender_def by simp_all
 
 abbreviation not_Pkt :: "msg \<Rightarrow> bool"
 where "not_Pkt m \<equiv> case m of Pkt _ _ \<Rightarrow> False | _ \<Rightarrow> True"
 
-definition nos_increase :: "state \<Rightarrow> state \<Rightarrow> bool"
-where "nos_increase \<xi> \<xi>' \<equiv> (no \<xi> \<le> no \<xi>')"
+definition nos_inc :: "state \<Rightarrow> state \<Rightarrow> bool"
+where "nos_inc \<xi> \<xi>' \<equiv> (no \<xi> \<le> no \<xi>')"
 
-definition msg_num_ok :: "(ip \<Rightarrow> state) \<Rightarrow> msg \<Rightarrow> bool"
-where "msg_num_ok \<sigma> m \<equiv> case m of Pkt num' sip' \<Rightarrow> num' \<le> no (\<sigma> sip') | _ \<Rightarrow> True"
+definition msg_ok :: "(ip \<Rightarrow> state) \<Rightarrow> msg \<Rightarrow> bool"
+where "msg_ok \<sigma> m \<equiv> case m of Pkt num' sid' \<Rightarrow> num' \<le> no (\<sigma> sid') | _ \<Rightarrow> True"
 
-lemma msg_num_okI [intro]:
-  assumes "\<And>num' sip'. m = Pkt num' sip' \<Longrightarrow> num' \<le> no (\<sigma> sip')"
-    shows "msg_num_ok \<sigma> m"
-  using assms unfolding msg_num_ok_def
+lemma msg_okI [intro]:
+  assumes "\<And>num' sid'. m = Pkt num' sid' \<Longrightarrow> num' \<le> no (\<sigma> sid')"
+    shows "msg_ok \<sigma> m"
+  using assms unfolding msg_ok_def
   by (auto split: msg.split)
 
-lemma msg_num_ok_Pkt [simp]:
-  "msg_num_ok \<sigma> (Pkt data src) = (data \<le> no (\<sigma> src))"
-  unfolding msg_num_ok_def by simp
+lemma msg_ok_Pkt [simp]:
+  "msg_ok \<sigma> (Pkt data src) = (data \<le> no (\<sigma> src))"
+  unfolding msg_ok_def by simp
 
-lemma msg_num_ok_pkt [simp]:
-  "msg_num_ok \<sigma> (pkt(data, src)) = (data \<le> no (\<sigma> src))"
-  unfolding msg_num_ok_def by simp
+lemma msg_ok_pkt [simp]:
+  "msg_ok \<sigma> (pkt(data, src)) = (data \<le> no (\<sigma> src))"
+  unfolding msg_ok_def by simp
 
-lemma msg_num_ok_Newpkt [simp]:
-  "msg_num_ok \<sigma> (Newpkt data dst)"
-  unfolding msg_num_ok_def by simp
+lemma msg_ok_Newpkt [simp]:
+  "msg_ok \<sigma> (Newpkt data dst)"
+  unfolding msg_ok_def by simp
 
-lemma msg_num_ok_newpkt [simp]:
-  "msg_num_ok \<sigma> (newpkt(data, dst))"
-  unfolding msg_num_ok_def by simp
+lemma msg_ok_newpkt [simp]:
+  "msg_ok \<sigma> (newpkt(data, dst))"
+  unfolding msg_ok_def by simp
 
 subsection "Sequential Invariants"
 
 lemma seq_no_leq_num:
-  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:7..PToy-:9} \<longrightarrow> no \<xi> \<le> num \<xi>)"
+  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:7..PToy-:8} \<longrightarrow> no \<xi> \<le> num \<xi>)"
   by inv_cterms
 
-lemma seq_nos_increases:
-  "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), _, (\<xi>', _)). nos_increase \<xi> \<xi>')"
-  unfolding nos_increase_def
-  proof -
-    show "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), _, (\<xi>', _)). no \<xi> \<le> no \<xi>')"
-      by (inv_cterms inv add: onl_invariant_sterms [OF toy_wf seq_no_leq_num])
-  qed
+lemma seq_nos_incs:
+  "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), _, (\<xi>', _)). nos_inc \<xi> \<xi>')"
+  unfolding nos_inc_def
+  by (inv_cterms inv add: onl_invariant_sterms [OF toy_wf seq_no_leq_num])
 
-lemma seq_nos_increases':
-  "ptoy i \<TTurnstile>\<^sub>A (\<lambda>((\<xi>, _), _, (\<xi>', _)). nos_increase \<xi> \<xi>')"
-  by (rule step_invariant_weakenE [OF seq_nos_increases]) (auto dest!: onllD)
+lemma seq_nos_incs':
+  "ptoy i \<TTurnstile>\<^sub>A (\<lambda>((\<xi>, _), _, (\<xi>', _)). nos_inc \<xi> \<xi>')"
+  by (rule step_invariant_weakenE [OF seq_nos_incs]) (auto dest!: onllD)
 
 lemma sender_ip_valid:
-  "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), a, _). anycast (\<lambda>m. msg_sender m = ip \<xi>) a)"
+  "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), a, _). anycast (\<lambda>m. msg_sender m = id \<xi>) a)"
   by inv_cterms
 
-lemma ip_constant:
-  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, _). ip \<xi> = i)"
+lemma id_constant:
+  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, _). id \<xi> = i)"
   by inv_cterms (simp add: \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def)
 
-lemma nhip_eq_ip:
-  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:2..PToy-:8} \<longrightarrow> nhip \<xi> = ip \<xi>)"
+lemma nhid_eq_id:
+  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:2..PToy-:8} \<longrightarrow> nhid \<xi> = id \<xi>)"
   by inv_cterms
 
-lemma seq_msg_num_ok:
+lemma seq_msg_ok:
   "ptoy i \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<xi>, _), a, _).
-                anycast (\<lambda>m. case m of Pkt num' sip' \<Rightarrow> num' = no \<xi> \<and> sip' = i | _ \<Rightarrow> True) a)"
-  by (inv_cterms inv add: onl_invariant_sterms [OF toy_wf ip_constant])
+                anycast (\<lambda>m. case m of Pkt num' sid' \<Rightarrow> num' = no \<xi> \<and> sid' = i | _ \<Rightarrow> True) a)"
+  by (inv_cterms inv add: onl_invariant_sterms [OF toy_wf id_constant])
 
-lemma nhip_eq_i:
-  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:2..PToy-:8} \<longrightarrow> nhip \<xi> = i)"
+lemma nhid_eq_i:
+  "ptoy i \<TTurnstile> onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<xi>, l). l\<in>{PToy-:2..PToy-:8} \<longrightarrow> nhid \<xi> = i)"
   proof (rule invariant_arbitraryI, clarify intro!: onlI impI)
     fix \<xi> p l n
     assume "(\<xi>, p) \<in> reachable (ptoy i) TT"
        and "l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p"
        and "l \<in> {PToy-:2..PToy-:8}"
-    from this(1-3) have "nhip \<xi> = ip \<xi>"
-      by - (drule invariantD [OF nhip_eq_ip], auto)
-    moreover with \<open>(\<xi>, p) \<in> reachable (ptoy i) TT\<close> and \<open>l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p\<close> have "ip \<xi> = i"
-      by (auto dest: invariantD [OF ip_constant])
-    ultimately show "nhip \<xi> = i"
+    from this(1-3) have "nhid \<xi> = id \<xi>"
+      by - (drule invariantD [OF nhid_eq_id], auto)
+    moreover with \<open>(\<xi>, p) \<in> reachable (ptoy i) TT\<close> and \<open>l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p\<close> have "id \<xi> = i"
+      by (auto dest: invariantD [OF id_constant])
+    ultimately show "nhid \<xi> = i"
       by simp
   qed
 
 subsection "Global Invariants"
 
-lemma nos_increaseD [dest]:
-  assumes "nos_increase \<xi> \<xi>'"
+lemma nos_incD [dest]:
+  assumes "nos_inc \<xi> \<xi>'"
     shows "no \<xi> \<le> no \<xi>'"
-  using assms unfolding nos_increase_def .
+  using assms unfolding nos_inc_def .
 
-lemma nos_increase_simp [simp]:
-  "nos_increase \<xi> \<xi>' = (no \<xi> \<le> no \<xi>')"
-  using assms unfolding nos_increase_def ..
+lemma nos_inc_simp [simp]:
+  "nos_inc \<xi> \<xi>' = (no \<xi> \<le> no \<xi>')"
+  using assms unfolding nos_inc_def ..
 
-lemmas oseq_nos_increases =
-  open_seq_step_invariant [OF seq_nos_increases initiali_toy otoy_trans toy_trans,
+lemmas oseq_nos_incs =
+  open_seq_step_invariant [OF seq_nos_incs initiali_toy otoy_trans toy_trans,
                            simplified seqll_onll_swap]
 
 lemmas oseq_no_leq_num =
   open_seq_invariant [OF seq_no_leq_num initiali_toy otoy_trans toy_trans,
                       simplified seql_onl_swap]
 
-lemma all_nos_increase:
-  shows "optoy i \<Turnstile>\<^sub>A (otherwith nos_increase {i} S,
-                      other nos_increase {i} \<rightarrow>)
-                       onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<sigma>, _), a, (\<sigma>', _)). (\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)))"
+lemma all_nos_inc:
+  shows "optoy i \<Turnstile>\<^sub>A (otherwith nos_inc {i} S,
+                      other nos_inc {i} \<rightarrow>)
+                       onll \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>((\<sigma>, _), a, (\<sigma>', _)). (\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)))"
   proof -
-    have *: "\<And>\<sigma> \<sigma>' a. \<lbrakk> otherwith nos_increase {i} S \<sigma> \<sigma>' a; no (\<sigma> i) \<le> no (\<sigma>' i) \<rbrakk>
+    have *: "\<And>\<sigma> \<sigma>' a. \<lbrakk> otherwith nos_inc {i} S \<sigma> \<sigma>' a; no (\<sigma> i) \<le> no (\<sigma>' i) \<rbrakk>
                        \<Longrightarrow> \<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)"
       by (auto dest!: otherwith_syncD)
     show ?thesis
       by (inv_cterms
-            inv add: oseq_step_invariant_sterms [OF oseq_nos_increases [THEN oinvariant_step_anyact]
+            inv add: oseq_step_invariant_sterms [OF oseq_nos_incs [THEN oinvariant_step_anyact]
                                                                                    toy_wf otoy_trans]
             simp add: seqllsimp) (auto elim!: *)
   qed
@@ -413,128 +410,128 @@ lemma oreceived_msg_inv:
     qed
   qed
 
-lemma msg_num_ok_other_nos_increase [elim]:
-  assumes "msg_num_ok \<sigma> m"
-      and "other nos_increase {i} \<sigma> \<sigma>'"
-    shows "msg_num_ok \<sigma>' m"
+lemma msg_ok_other_nos_inc [elim]:
+  assumes "msg_ok \<sigma> m"
+      and "other nos_inc {i} \<sigma> \<sigma>'"
+    shows "msg_ok \<sigma>' m"
   proof (cases m)
-    fix num sip
-    assume "m = Pkt num sip"
-    with \<open>msg_num_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sip)" by simp
-    also from \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
-      by (rule otherE) (metis eq_iff nos_increaseD)
-    finally have "num \<le> no (\<sigma>' sip)" .
-    with \<open>m = Pkt num sip\<close> show ?thesis
+    fix num sid
+    assume "m = Pkt num sid"
+    with \<open>msg_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sid)" by simp
+    also from \<open>other nos_inc {i} \<sigma> \<sigma>'\<close> have "no (\<sigma> sid) \<le> no (\<sigma>' sid)"
+      by (rule otherE) (metis eq_iff nos_incD)
+    finally have "num \<le> no (\<sigma>' sid)" .
+    with \<open>m = Pkt num sid\<close> show ?thesis
       by simp
   qed simp
 
-lemma msg_num_ok_no_leq_no [simp, elim]:
-  assumes "msg_num_ok \<sigma> m"
+lemma msg_ok_no_leq_no [simp, elim]:
+  assumes "msg_ok \<sigma> m"
       and "\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)"
-    shows "msg_num_ok \<sigma>' m"
+    shows "msg_ok \<sigma>' m"
   using assms(1) proof (cases m)
-    fix num sip
-    assume "m = Pkt num sip"
-    with \<open>msg_num_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sip)" by simp
-    also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> sip) \<le> no (\<sigma>' sip)"
+    fix num sid
+    assume "m = Pkt num sid"
+    with \<open>msg_ok \<sigma> m\<close> have "num \<le> no (\<sigma> sid)" by simp
+    also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> sid) \<le> no (\<sigma>' sid)"
       by simp
-    finally have "num \<le> no (\<sigma>' sip)" .
-    with \<open>m = Pkt num sip\<close> show ?thesis
+    finally have "num \<le> no (\<sigma>' sid)" .
+    with \<open>m = Pkt num sid\<close> show ?thesis
       by simp
   qed (simp add: assms(1))
 
-lemma oreceived_msg_num_ok:
-  "optoy i \<Turnstile> (otherwith nos_increase {i} (orecvmsg msg_num_ok),
-               other nos_increase {i} \<rightarrow>)
-              onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l\<in>{PToy-:1..} \<longrightarrow> msg_num_ok \<sigma> (msg (\<sigma> i)))"
+lemma oreceived_msg_ok:
+  "optoy i \<Turnstile> (otherwith nos_inc {i} (orecvmsg msg_ok),
+               other nos_inc {i} \<rightarrow>)
+              onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l\<in>{PToy-:1..} \<longrightarrow> msg_ok \<sigma> (msg (\<sigma> i)))"
   (is "_ \<Turnstile> (?S, ?U \<rightarrow>) _")
-  proof (inv_cterms inv add: oseq_step_invariant_sterms [OF all_nos_increase toy_wf otoy_trans],
+  proof (inv_cterms inv add: oseq_step_invariant_sterms [OF all_nos_inc toy_wf otoy_trans],
          intro impI, elim impE)
     fix \<sigma> \<sigma>'
-    assume "msg_num_ok \<sigma> (msg (\<sigma> i))"
-       and "other nos_increase {i} \<sigma> \<sigma>'"
+    assume "msg_ok \<sigma> (msg (\<sigma> i))"
+       and "other nos_inc {i} \<sigma> \<sigma>'"
     moreover from this(2) have "msg (\<sigma>' i) = msg (\<sigma> i)"
       by (clarsimp elim!: otherE)
-    ultimately show "msg_num_ok \<sigma>' (msg (\<sigma>' i))"
+    ultimately show "msg_ok \<sigma>' (msg (\<sigma>' i))"
       by (auto)
   next
     fix p l \<sigma> a q l' \<sigma>' pp p' m
     assume a1: "(\<sigma>', p') \<in> oreachable (optoy i) ?S ?U"
        and a2: "PToy-:1 \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p'"
        and a3: "\<sigma>' i = \<sigma> i\<lparr>msg := m\<rparr>"
-    have inv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>) onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l \<in> {PToy-:1} \<longrightarrow> msg_num_ok \<sigma> (msg (\<sigma> i)))"
+    have inv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>) onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l \<in> {PToy-:1} \<longrightarrow> msg_ok \<sigma> (msg (\<sigma> i)))"
     proof (rule oreceived_msg_inv)
       fix \<sigma> \<sigma>' m
-      assume "msg_num_ok \<sigma> m"
-         and "other nos_increase {i} \<sigma> \<sigma>'"
-      thus "msg_num_ok \<sigma>' m" ..
+      assume "msg_ok \<sigma> m"
+         and "other nos_inc {i} \<sigma> \<sigma>'"
+      thus "msg_ok \<sigma>' m" ..
     next
       fix \<sigma> m
-      assume "msg_num_ok \<sigma> m"
-      thus "msg_num_ok (\<sigma>(i := \<sigma> i\<lparr>msg := m\<rparr>)) m"
+      assume "msg_ok \<sigma> m"
+      thus "msg_ok (\<sigma>(i := \<sigma> i\<lparr>msg := m\<rparr>)) m"
         by (cases m) auto
     qed
-    from a1 a2 a3 show "msg_num_ok \<sigma>' m"
+    from a1 a2 a3 show "msg_ok \<sigma>' m"
       by (clarsimp dest!: oinvariantD [OF inv] onlD)
   qed simp
 
 lemma is_pkt_handler_num_leq_no:
-  shows "optoy i \<Turnstile> (otherwith nos_increase {i} (orecvmsg msg_num_ok),
-                      other nos_increase {i} \<rightarrow>)
-                    onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l\<in>{PToy-:6..PToy-:10} \<longrightarrow> num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i))))"
+  shows "optoy i \<Turnstile> (otherwith nos_inc {i} (orecvmsg msg_ok),
+                      other nos_inc {i} \<rightarrow>)
+                    onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l\<in>{PToy-:6..PToy-:10} \<longrightarrow> num (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i))))"
   proof -
     { fix \<sigma> \<sigma>'
       assume "\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)"
-         and "num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
-      have "num (\<sigma> i) \<le> no (\<sigma>' (sip (\<sigma> i)))"
+         and "num (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i)))"
+      have "num (\<sigma> i) \<le> no (\<sigma>' (sid (\<sigma> i)))"
       proof -
-        note \<open>num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))\<close>
-        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))"
+        note \<open>num (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i)))\<close>
+        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sid (\<sigma> i))) \<le> no (\<sigma>' (sid (\<sigma> i)))"
           by auto
         finally show ?thesis .
       qed
     } note solve_step = this
     show ?thesis
-    proof (inv_cterms inv add: oseq_step_invariant_sterms [OF all_nos_increase toy_wf otoy_trans]
-                               onl_oinvariant_sterms [OF toy_wf oreceived_msg_num_ok]
+    proof (inv_cterms inv add: oseq_step_invariant_sterms [OF all_nos_inc toy_wf otoy_trans]
+                               onl_oinvariant_sterms [OF toy_wf oreceived_msg_ok]
                         solve: solve_step, intro impI, elim impE)
       fix \<sigma> \<sigma>'
-      assume *: "num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
-         and "other nos_increase {i} \<sigma> \<sigma>'"
+      assume *: "num (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i)))"
+         and "other nos_inc {i} \<sigma> \<sigma>'"
       from this(2) obtain "\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i"
-                      and "\<forall>j. j \<notin> {i} \<longrightarrow> nos_increase (\<sigma> j) (\<sigma>' j)" ..
-      show "num (\<sigma>' i) \<le> no (\<sigma>' (sip (\<sigma>' i)))"      
-      proof (cases "sip (\<sigma> i) = i")
-        assume "sip (\<sigma> i) = i"
+                      and "\<forall>j. j \<notin> {i} \<longrightarrow> nos_inc (\<sigma> j) (\<sigma>' j)" ..
+      show "num (\<sigma>' i) \<le> no (\<sigma>' (sid (\<sigma>' i)))"      
+      proof (cases "sid (\<sigma> i) = i")
+        assume "sid (\<sigma> i) = i"
         with * \<open>\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i\<close>
         show ?thesis by simp
       next
-        assume "sip (\<sigma> i) \<noteq> i"
-        with \<open>\<forall>j. j \<notin> {i} \<longrightarrow> nos_increase (\<sigma> j) (\<sigma>' j)\<close>
-          have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))" by simp
+        assume "sid (\<sigma> i) \<noteq> i"
+        with \<open>\<forall>j. j \<notin> {i} \<longrightarrow> nos_inc (\<sigma> j) (\<sigma>' j)\<close>
+          have "no (\<sigma> (sid (\<sigma> i))) \<le> no (\<sigma>' (sid (\<sigma> i)))" by simp
         with * \<open>\<forall>i\<in>{i}. \<sigma>' i = \<sigma> i\<close>
         show ?thesis by simp
       qed
     next
       fix p l \<sigma> a q l' \<sigma>' pp p'
-      assume "msg_num_ok \<sigma> (msg (\<sigma> i))"
+      assume "msg_ok \<sigma> (msg (\<sigma> i))"
          and "\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)"
          and "\<sigma>' i \<in> is_pkt (\<sigma> i)"
-      show "num (\<sigma>' i) \<le> no (\<sigma>' (sip (\<sigma>' i)))"
+      show "num (\<sigma>' i) \<le> no (\<sigma>' (sid (\<sigma>' i)))"
       proof (cases "msg (\<sigma> i)")
-        fix num' sip'
-        assume "msg (\<sigma> i) = Pkt num' sip'"
+        fix num' sid'
+        assume "msg (\<sigma> i) = Pkt num' sid'"
         with \<open>\<sigma>' i \<in> is_pkt (\<sigma> i)\<close> obtain "num (\<sigma>' i) = num'"
-                                      and "sip (\<sigma>' i) = sip'"
+                                      and "sid (\<sigma>' i) = sid'"
           unfolding is_pkt_def by auto
-        with \<open>msg (\<sigma> i) = Pkt num' sip'\<close> and \<open>msg_num_ok \<sigma> (msg (\<sigma> i))\<close>
-          have "num (\<sigma>' i) \<le> no (\<sigma> (sip (\<sigma>' i)))"
+        with \<open>msg (\<sigma> i) = Pkt num' sid'\<close> and \<open>msg_ok \<sigma> (msg (\<sigma> i))\<close>
+          have "num (\<sigma>' i) \<le> no (\<sigma> (sid (\<sigma>' i)))"
             by simp
-        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sip (\<sigma>' i))) \<le> no (\<sigma>' (sip (\<sigma>' i)))" ..
+        also from \<open>\<forall>j. no (\<sigma> j) \<le> no (\<sigma>' j)\<close> have "no (\<sigma> (sid (\<sigma>' i))) \<le> no (\<sigma>' (sid (\<sigma>' i)))" ..
         finally show ?thesis .
       next
-        fix num' sip'
-        assume "msg (\<sigma> i) = Newpkt num' sip'"
+        fix num' sid'
+        assume "msg (\<sigma> i) = Newpkt num' sid'"
         with \<open>\<sigma>' i \<in> is_pkt (\<sigma> i)\<close> have False
           unfolding is_pkt_def by simp
         thus ?thesis ..
@@ -542,84 +539,84 @@ lemma is_pkt_handler_num_leq_no:
     qed
   qed
 
-lemmas oseq_ip_constant =
-  open_seq_invariant [OF ip_constant initiali_toy otoy_trans toy_trans,
+lemmas oseq_id_constant =
+  open_seq_invariant [OF id_constant initiali_toy otoy_trans toy_trans,
                       simplified seql_onl_swap]
 
-lemmas oseq_nhip_eq_i =
-  open_seq_invariant [OF nhip_eq_i initiali_toy otoy_trans toy_trans,
+lemmas oseq_nhid_eq_i =
+  open_seq_invariant [OF nhid_eq_i initiali_toy otoy_trans toy_trans,
                       simplified seql_onl_swap]
   
-lemmas oseq_nhip_eq_ip =
-  open_seq_invariant [OF nhip_eq_ip initiali_toy otoy_trans toy_trans,
+lemmas oseq_nhid_eq_id =
+  open_seq_invariant [OF nhid_eq_id initiali_toy otoy_trans toy_trans,
                       simplified seql_onl_swap]
 
 lemma oseq_bigger_than_next:
-  shows "optoy i \<Turnstile> (otherwith nos_increase {i} (orecvmsg msg_num_ok),
-                      other nos_increase {i} \<rightarrow>) global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+  shows "optoy i \<Turnstile> (otherwith nos_inc {i} (orecvmsg msg_ok),
+                      other nos_inc {i} \<rightarrow>) global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
     (is "_ \<Turnstile> (?S, ?U \<rightarrow>) ?P")
   proof -
-    have nhipinv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>)
+    have nhidinv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>)
                               onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). l\<in>{PToy-:2..PToy-:8}
-                                                    \<longrightarrow> nhip (\<sigma> i) = ip (\<sigma> i))"
-      by (rule oinvariant_weakenE [OF oseq_nhip_eq_ip]) (auto simp: seqlsimp)
-    have ipinv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>) onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). ip (\<sigma> i) = i)"
-      by (rule oinvariant_weakenE [OF oseq_ip_constant]) (auto simp: seqlsimp)
+                                                    \<longrightarrow> nhid (\<sigma> i) = id (\<sigma> i))"
+      by (rule oinvariant_weakenE [OF oseq_nhid_eq_id]) (auto simp: seqlsimp)
+    have idinv: "optoy i \<Turnstile> (?S, ?U \<rightarrow>) onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). id (\<sigma> i) = i)"
+      by (rule oinvariant_weakenE [OF oseq_id_constant]) (auto simp: seqlsimp)
     { fix \<sigma> \<sigma>' a
-      assume "no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))"
-         and "\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)"
+      assume "no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i)))"
+         and "\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)"
       note this(1)
-      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> (nhip (\<sigma> i))) \<le> no (\<sigma>' (nhip (\<sigma> i)))"
+      also from \<open>\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> (nhid (\<sigma> i))) \<le> no (\<sigma>' (nhid (\<sigma> i)))"
         by auto
-      finally have "no (\<sigma> i) \<le> no (\<sigma>' (nhip (\<sigma> i)))" ..
+      finally have "no (\<sigma> i) \<le> no (\<sigma>' (nhid (\<sigma> i)))" ..
     } note * = this
-    have "optoy i \<Turnstile> (otherwith nos_increase {i} (orecvmsg msg_num_ok),
-                      other nos_increase {i} \<rightarrow>)
-                     onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+    have "optoy i \<Turnstile> (otherwith nos_inc {i} (orecvmsg msg_ok),
+                      other nos_inc {i} \<rightarrow>)
+                     onl \<Gamma>\<^sub>T\<^sub>O\<^sub>Y (\<lambda>(\<sigma>, l). no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
     proof (inv_cterms
              inv add: onl_oinvariant_sterms [OF toy_wf oseq_no_leq_num [THEN oinvariant_anyact]]
-                      oseq_step_invariant_sterms [OF all_nos_increase toy_wf otoy_trans]
+                      oseq_step_invariant_sterms [OF all_nos_inc toy_wf otoy_trans]
                       onl_oinvariant_sterms [OF toy_wf is_pkt_handler_num_leq_no]
-                      onl_oinvariant_sterms [OF toy_wf nhipinv]
-                      onl_oinvariant_sterms [OF toy_wf ipinv]
+                      onl_oinvariant_sterms [OF toy_wf nhidinv]
+                      onl_oinvariant_sterms [OF toy_wf idinv]
              simp add: seqlsimp seqllsimp
-             simp del: nos_increase_simp
+             simp del: nos_inc_simp
                 solve: *)
       fix \<sigma> p l
       assume "(\<sigma>, p) \<in> \<sigma>\<^sub>O\<^sub>T\<^sub>O\<^sub>Y"
-      thus "no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))"
+      thus "no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i)))"
         by (simp add: \<sigma>\<^sub>O\<^sub>T\<^sub>O\<^sub>Y_def)
     next
       fix \<sigma> \<sigma>' p l
       assume or: "(\<sigma>, p) \<in> oreachable (optoy i) ?S ?U"
          and "l \<in> labels \<Gamma>\<^sub>T\<^sub>O\<^sub>Y p"
-         and "no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))"
-         and "other nos_increase {i} \<sigma> \<sigma>'"
-      show "no (\<sigma>' i) \<le> no (\<sigma>' (nhip (\<sigma>' i)))"
-      proof (cases "nhip (\<sigma>' i) = i")
-        assume "nhip (\<sigma>' i) = i"
-        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))\<close> show ?thesis
+         and "no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i)))"
+         and "other nos_inc {i} \<sigma> \<sigma>'"
+      show "no (\<sigma>' i) \<le> no (\<sigma>' (nhid (\<sigma>' i)))"
+      proof (cases "nhid (\<sigma>' i) = i")
+        assume "nhid (\<sigma>' i) = i"
+        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i)))\<close> show ?thesis
           by simp
       next
-        assume "nhip (\<sigma>' i) \<noteq> i"
-        moreover from \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> [THEN other_localD] have "\<sigma>' i = \<sigma> i"
+        assume "nhid (\<sigma>' i) \<noteq> i"
+        moreover from \<open>other nos_inc {i} \<sigma> \<sigma>'\<close> [THEN other_localD] have "\<sigma>' i = \<sigma> i"
           by simp
-        ultimately have "no (\<sigma> (nhip (\<sigma> i))) \<le> no (\<sigma>' (nhip (\<sigma>' i)))"
-          using \<open>other nos_increase {i} \<sigma> \<sigma>'\<close> and \<open>\<sigma>' i = \<sigma> i\<close> by (auto)
-        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i)))\<close> and \<open>\<sigma>' i = \<sigma> i\<close> show ?thesis
+        ultimately have "no (\<sigma> (nhid (\<sigma> i))) \<le> no (\<sigma>' (nhid (\<sigma>' i)))"
+          using \<open>other nos_inc {i} \<sigma> \<sigma>'\<close> and \<open>\<sigma>' i = \<sigma> i\<close> by (auto)
+        with \<open>no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i)))\<close> and \<open>\<sigma>' i = \<sigma> i\<close> show ?thesis
           by simp
       qed
     next
       fix p l \<sigma> a q l' \<sigma>' pp p'
       assume "no (\<sigma> i) \<le> num (\<sigma> i)"
-         and "num (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
-         and "\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)"
-      from this(1-2) have "no (\<sigma> i) \<le> no (\<sigma> (sip (\<sigma> i)))"
+         and "num (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i)))"
+         and "\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)"
+      from this(1-2) have "no (\<sigma> i) \<le> no (\<sigma> (sid (\<sigma> i)))"
         by (rule le_trans)
-      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close>
-        have "no (\<sigma> (sip (\<sigma> i))) \<le> no (\<sigma>' (sip (\<sigma> i)))"
+      also from \<open>\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)\<close>
+        have "no (\<sigma> (sid (\<sigma> i))) \<le> no (\<sigma>' (sid (\<sigma> i)))"
           by auto
-      finally show "no (\<sigma> i) \<le> no (\<sigma>' (sip (\<sigma> i)))" ..
+      finally show "no (\<sigma> i) \<le> no (\<sigma>' (sid (\<sigma> i)))" ..
     qed
     thus ?thesis
       by (rule oinvariant_weakenE)
@@ -633,110 +630,110 @@ lemma anycast_weakenE [elim]:
   using assms unfolding anycast_def
   by (auto split: seq_action.split)
 
-lemma oseq_msg_num_ok:
-  "optoy i \<Turnstile>\<^sub>A (act TT, other U {i} \<rightarrow>) globala (\<lambda>(\<sigma>, a, _). anycast (msg_num_ok \<sigma>) a)"
+lemma oseq_msg_ok:
+  "optoy i \<Turnstile>\<^sub>A (act TT, other U {i} \<rightarrow>) globala (\<lambda>(\<sigma>, a, _). anycast (msg_ok \<sigma>) a)"
   by (rule ostep_invariant_weakenE [OF open_seq_step_invariant
-            [OF seq_msg_num_ok initiali_toy otoy_trans toy_trans, simplified seql_onl_swap]])
-     (auto simp: seqllsimp dest!: onllD elim!: anycast_weakenE intro!: msg_num_okI)
+            [OF seq_msg_ok initiali_toy otoy_trans toy_trans, simplified seql_onl_swap]])
+     (auto simp: seqllsimp dest!: onllD elim!: anycast_weakenE intro!: msg_okI)
 
 subsection "Lifting"
 
 lemma opar_bigger_than_next:
-  shows "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile> (otherwith nos_increase {i} (orecvmsg msg_num_ok),
-                      other nos_increase {i} \<rightarrow>) global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+  shows "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile> (otherwith nos_inc {i} (orecvmsg msg_ok),
+                      other nos_inc {i} \<rightarrow>) global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
   proof (rule lift_into_qmsg [OF oseq_bigger_than_next])
     fix \<sigma> \<sigma>' m
-    assume "\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)"
-       and "msg_num_ok \<sigma> m"
-    from this(2) show "msg_num_ok \<sigma>' m"
-    proof (cases m, simp only: msg_num_ok_Pkt)
-      fix num' sip'
-      assume "num' \<le> no (\<sigma> sip')"
-      also from \<open>\<forall>j. nos_increase (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> sip') \<le> no (\<sigma>' sip')"
+    assume "\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)"
+       and "msg_ok \<sigma> m"
+    from this(2) show "msg_ok \<sigma>' m"
+    proof (cases m, simp only: msg_ok_Pkt)
+      fix num' sid'
+      assume "num' \<le> no (\<sigma> sid')"
+      also from \<open>\<forall>j. nos_inc (\<sigma> j) (\<sigma>' j)\<close> have "no (\<sigma> sid') \<le> no (\<sigma>' sid')"
         by simp
-      finally show "num' \<le> no (\<sigma>' sip')" .
+      finally show "num' \<le> no (\<sigma>' sid')" .
     qed simp
   next
-    show "optoy i \<Turnstile>\<^sub>A (otherwith nos_increase {i} (orecvmsg msg_num_ok), other nos_increase {i} \<rightarrow>)
-                      globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_increase (\<sigma> i) (\<sigma>' i))"
+    show "optoy i \<Turnstile>\<^sub>A (otherwith nos_inc {i} (orecvmsg msg_ok), other nos_inc {i} \<rightarrow>)
+                      globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_inc (\<sigma> i) (\<sigma>' i))"
       by (rule ostep_invariant_weakenE [OF open_seq_step_invariant
-                                         [OF seq_nos_increases initiali_toy otoy_trans toy_trans]])
+                                         [OF seq_nos_incs initiali_toy otoy_trans toy_trans]])
          (auto simp: seqllsimp dest!: onllD)
   qed simp
 
 lemma onode_bigger_than_next:
   "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o
-     \<Turnstile> (otherwith nos_increase {i} (oarrivemsg msg_num_ok), other nos_increase {i} \<rightarrow>)
-        global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+     \<Turnstile> (otherwith nos_inc {i} (oarrivemsg msg_ok), other nos_inc {i} \<rightarrow>)
+        global (\<lambda>\<sigma>. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
   by (rule node_lift [OF opar_bigger_than_next])
 
-lemma node_local_nos_increase:
+lemma node_local_nos_inc:
   "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg (\<lambda>_ _. True) \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                                     globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_increase (\<sigma> i) (\<sigma>' i))"
+                                     globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_inc (\<sigma> i) (\<sigma>' i))"
   proof (rule node_lift_step_statelessassm)
     have "optoy i \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg (\<lambda>_ _. True) \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                      globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_increase (\<sigma> i) (\<sigma>' i))"
-      by (rule ostep_invariant_weakenE [OF oseq_nos_increases])
+                      globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_inc (\<sigma> i) (\<sigma>' i))"
+      by (rule ostep_invariant_weakenE [OF oseq_nos_incs])
          (auto simp: seqllsimp dest!: onllD)
     thus "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg (\<lambda>_ _. True) \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                                globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_increase (\<sigma> i) (\<sigma>' i))"
+                                globala (\<lambda>(\<sigma>, _, \<sigma>'). nos_inc (\<sigma> i) (\<sigma>' i))"
       by (rule lift_step_into_qmsg_statelessassm) auto
   qed simp
 
 lemma opnet_bigger_than_next:
   "opnet (\<lambda>i. optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) n
-     \<Turnstile> (otherwith nos_increase (net_tree_ips n) (oarrivemsg msg_num_ok),
-         other nos_increase (net_tree_ips n) \<rightarrow>)
-        global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+     \<Turnstile> (otherwith nos_inc (net_tree_ips n) (oarrivemsg msg_ok),
+         other nos_inc (net_tree_ips n) \<rightarrow>)
+        global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
   proof (rule pnet_lift [OF onode_bigger_than_next])
     fix i R\<^sub>i
-    have "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_num_ok \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                                            globala (\<lambda>(\<sigma>, a, _). castmsg (msg_num_ok \<sigma>) a)"
+    have "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_ok \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
+                                            globala (\<lambda>(\<sigma>, a, _). castmsg (msg_ok \<sigma>) a)"
     proof (rule node_lift_anycast_statelessassm)
       have "optoy i \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg (\<lambda>_ _. True) \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                        globala (\<lambda>(\<sigma>, a, _). anycast (msg_num_ok \<sigma>) a)"
-        by (rule ostep_invariant_weakenE [OF oseq_msg_num_ok]) auto
+                        globala (\<lambda>(\<sigma>, a, _). anycast (msg_ok \<sigma>) a)"
+        by (rule ostep_invariant_weakenE [OF oseq_msg_ok]) auto
       hence "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg (\<lambda>_ _. True) \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                                   globala (\<lambda>(\<sigma>, a, _). anycast (msg_num_ok \<sigma>) a)"
+                                   globala (\<lambda>(\<sigma>, a, _). anycast (msg_ok \<sigma>) a)"
         by (rule lift_step_into_qmsg_statelessassm) auto
-      thus "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg msg_num_ok \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
-                                  globala (\<lambda>(\<sigma>, a, _). anycast (msg_num_ok \<sigma>) a)"
+      thus "optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. orecvmsg msg_ok \<sigma>, other (\<lambda>_ _. True) {i} \<rightarrow>)
+                                  globala (\<lambda>(\<sigma>, a, _). anycast (msg_ok \<sigma>) a)"
         by (rule ostep_invariant_weakenE) auto
     qed
-    thus "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_num_ok \<sigma>, other nos_increase {i} \<rightarrow>)
-                                            globala (\<lambda>(\<sigma>, a, _). castmsg (msg_num_ok \<sigma>) a)"
+    thus "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_ok \<sigma>, other nos_inc {i} \<rightarrow>)
+                                            globala (\<lambda>(\<sigma>, a, _). castmsg (msg_ok \<sigma>) a)"
       by (rule ostep_invariant_weakenE) auto
   next
     fix i R\<^sub>i
-    show "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_num_ok \<sigma>,
-                                            other nos_increase {i} \<rightarrow>)
-             globala (\<lambda>(\<sigma>, a, \<sigma>'). a \<noteq> \<tau> \<and> (\<forall>i d. a \<noteq> i:deliver(d)) \<longrightarrow> nos_increase (\<sigma> i) (\<sigma>' i))"
-      by (rule ostep_invariant_weakenE [OF node_local_nos_increase]) auto
+    show "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_ok \<sigma>,
+                                            other nos_inc {i} \<rightarrow>)
+             globala (\<lambda>(\<sigma>, a, \<sigma>'). a \<noteq> \<tau> \<and> (\<forall>d. a \<noteq> i:deliver(d)) \<longrightarrow> nos_inc (\<sigma> i) (\<sigma>' i))"
+      by (rule ostep_invariant_weakenE [OF node_local_nos_inc]) auto
   next
     fix i R
-    show "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_num_ok \<sigma>,
-                                           other nos_increase {i} \<rightarrow>)
-             globala (\<lambda>(\<sigma>, a, \<sigma>'). a = \<tau> \<or> (\<exists>d. a = i:deliver(d)) \<longrightarrow> nos_increase (\<sigma> i) (\<sigma>' i))"
-      by (rule ostep_invariant_weakenE [OF node_local_nos_increase]) auto
+    show "\<langle>i : optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A (\<lambda>\<sigma> _. oarrivemsg msg_ok \<sigma>,
+                                           other nos_inc {i} \<rightarrow>)
+             globala (\<lambda>(\<sigma>, a, \<sigma>'). a = \<tau> \<or> (\<exists>d. a = i:deliver(d)) \<longrightarrow> nos_inc (\<sigma> i) (\<sigma>' i))"
+      by (rule ostep_invariant_weakenE [OF node_local_nos_inc]) auto
   qed simp_all
 
 lemma ocnet_bigger_than_next:
   "oclosed (opnet (\<lambda>i. optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) n)
-     \<Turnstile> (\<lambda>_ _ _. True, other nos_increase (net_tree_ips n) \<rightarrow>)
-        global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+     \<Turnstile> (\<lambda>_ _ _. True, other nos_inc (net_tree_ips n) \<rightarrow>)
+        global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
   proof (rule inclosed_closed)
     show "opnet (\<lambda>i. optoy i \<langle>\<langle>\<^bsub>i\<^esub> qmsg) n
-            \<Turnstile> (otherwith op = (net_tree_ips n) inoclosed, other nos_increase (net_tree_ips n) \<rightarrow>)
-               global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+            \<Turnstile> (otherwith op = (net_tree_ips n) inoclosed, other nos_inc (net_tree_ips n) \<rightarrow>)
+               global (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
     proof (rule oinvariant_weakenE [OF opnet_bigger_than_next])
       fix s s':: "nat \<Rightarrow> state" and a :: "msg node_action"
       assume "otherwith op = (net_tree_ips n) inoclosed s s' a"
-      thus "otherwith nos_increase (net_tree_ips n) (oarrivemsg msg_num_ok) s s' a"
+      thus "otherwith nos_inc (net_tree_ips n) (oarrivemsg msg_ok) s s' a"
       proof (rule otherwithE, intro otherwithI)
         assume "inoclosed s a"
            and "\<forall>j. j \<notin> net_tree_ips n \<longrightarrow> s j = s' j"
            and "otherwith (op=) (net_tree_ips n) inoclosed s s' a"
-        thus "oarrivemsg msg_num_ok s a"
+        thus "oarrivemsg msg_ok s a"
           by (cases a) auto
       qed auto
     qed simp
@@ -755,14 +752,14 @@ lemma not_in_net_ips_fst_init_missing [simp]:
   using assms unfolding initmissing_def by simp
 
 lemma fst_initmissing_netgmap_pair_fst [simp]:
-  "fst (initmissing (netgmap (\<lambda>(p, q). (fst (id p), snd (id p), q)) s))
+  "fst (initmissing (netgmap (\<lambda>(p, q). (fst (Fun.id p), snd (Fun.id p), q)) s))
                                                = fst (initmissing (netgmap fst s))"
   unfolding initmissing_def by auto
 
-interpretation toy_openproc: openproc ptoy optoy id
+interpretation toy_openproc: openproc ptoy optoy Fun.id
   where "toy_openproc.initmissing = initmissing"
   proof -
-    show "openproc ptoy optoy id"
+    show "openproc ptoy optoy Fun.id"
     proof unfold_locales
       fix i :: ip
       have "{(\<sigma>, \<zeta>). (\<sigma> i, \<zeta>) \<in> \<sigma>\<^sub>T\<^sub>O\<^sub>Y i \<and> (\<forall>j. j \<noteq> i \<longrightarrow> \<sigma> j \<in> fst ` \<sigma>\<^sub>T\<^sub>O\<^sub>Y j)} \<subseteq> \<sigma>\<^sub>O\<^sub>T\<^sub>O\<^sub>Y"
@@ -773,16 +770,16 @@ interpretation toy_openproc: openproc ptoy optoy id
             by (rule set_eqI) auto
         qed
       thus "{ (\<sigma>, \<zeta>) |\<sigma> \<zeta> s. s \<in> init (ptoy i)
-                             \<and> (\<sigma> i, \<zeta>) = id s
-                             \<and> (\<forall>j. j\<noteq>i \<longrightarrow> \<sigma> j \<in> (fst o id) ` init (ptoy j)) } \<subseteq> init (optoy i)"
+                             \<and> (\<sigma> i, \<zeta>) = Fun.id s
+                             \<and> (\<forall>j. j\<noteq>i \<longrightarrow> \<sigma> j \<in> (fst o Fun.id) ` init (ptoy j)) } \<subseteq> init (optoy i)"
         by simp
     next
       show "\<forall>j. init (ptoy j) \<noteq> {}"
         unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def by simp
     next
       fix i s a s' \<sigma> \<sigma>'
-      assume "\<sigma> i = fst (id s)"
-         and "\<sigma>' i = fst (id s')"
+      assume "\<sigma> i = fst (Fun.id s)"
+         and "\<sigma>' i = fst (Fun.id s')"
          and "(s, a, s') \<in> trans (ptoy i)"
       then obtain q q' where "s = (\<sigma> i, q)"
                          and "s' = (\<sigma>' i, q')"
@@ -792,20 +789,20 @@ interpretation toy_openproc: openproc ptoy optoy id
         by simp (rule open_seqp_action [OF toy_wf])
 
       with \<open>s = (\<sigma> i, q)\<close> and \<open>s' = (\<sigma>' i, q')\<close>
-        show "((\<sigma>, snd (id s)), a, (\<sigma>', snd (id s'))) \<in> trans (optoy i)"
+        show "((\<sigma>, snd (Fun.id s)), a, (\<sigma>', snd (Fun.id s'))) \<in> trans (optoy i)"
           by simp
     qed
-    then interpret op: openproc ptoy optoy id .
-    have [simp]: "\<And>i. (SOME x. x \<in> (fst o id) ` init (ptoy i)) = toy_init i"
+    then interpret op: openproc ptoy optoy Fun.id .
+    have [simp]: "\<And>i. (SOME x. x \<in> (fst o Fun.id) ` init (ptoy i)) = toy_init i"
       unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def by simp
-    hence "\<And>i. openproc.initmissing ptoy id i = initmissing i"
+    hence "\<And>i. openproc.initmissing ptoy Fun.id i = initmissing i"
       unfolding op.initmissing_def op.someinit_def initmissing_def
       by (auto split: option.split)
-    thus "openproc.initmissing ptoy id = initmissing" ..
+    thus "openproc.initmissing ptoy Fun.id = initmissing" ..
   qed
 
 lemma fst_initmissing_netgmap_default_toy_init_netlift:
-  "fst (initmissing (netgmap fst s)) = default toy_init (netlift fst s)"
+  "fst (initmissing (netgmap sr s)) = default toy_init (netlift sr s)"
   unfolding initmissing_def default_def
   by (simp add: fst_netgmap_netlift del: One_nat_def)
 
@@ -814,22 +811,22 @@ definition
 where
   "netglobal P \<equiv> (\<lambda>s. P (default toy_init (netlift fst s)))"
 
-interpretation toy_openproc_par_qmsg: openproc_parq ptoy optoy id qmsg
+interpretation toy_openproc_par_qmsg: openproc_parq ptoy optoy Fun.id qmsg
   where "toy_openproc_par_qmsg.netglobal = netglobal"
     and "toy_openproc_par_qmsg.initmissing = initmissing"
   proof -
-    show "openproc_parq ptoy optoy id qmsg"
+    show "openproc_parq ptoy optoy Fun.id qmsg"
       by (unfold_locales) simp
-    then interpret opq: openproc_parq ptoy optoy id qmsg .
+    then interpret opq: openproc_parq ptoy optoy Fun.id qmsg .
 
-    have im: "\<And>\<sigma>. openproc.initmissing (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (id p), snd (id p), q)) \<sigma>
+    have im: "\<And>\<sigma>. openproc.initmissing (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (Fun.id p), snd (Fun.id p), q)) \<sigma>
                                                                                     = initmissing \<sigma>"
       unfolding opq.initmissing_def opq.someinit_def initmissing_def
       unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_def by (clarsimp cong: option.case_cong)
-    thus "openproc.initmissing (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (id p), snd (id p), q)) = initmissing"
+    thus "openproc.initmissing (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (Fun.id p), snd (Fun.id p), q)) = initmissing"
       by (rule ext)
 
-    have "\<And>P \<sigma>. openproc.netglobal (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (id p), snd (id p), q)) P \<sigma>
+    have "\<And>P \<sigma>. openproc.netglobal (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (Fun.id p), snd (Fun.id p), q)) P \<sigma>
                                                                                 = netglobal P \<sigma>"
       unfolding opq.netglobal_def netglobal_def opq.initmissing_def initmissing_def opq.someinit_def
       unfolding \<sigma>\<^sub>T\<^sub>O\<^sub>Y_def \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_def
@@ -837,7 +834,7 @@ interpretation toy_openproc_par_qmsg: openproc_parq ptoy optoy id qmsg
                    simp del: One_nat_def
                    simp add: fst_initmissing_netgmap_default_toy_init_netlift
                                                   [symmetric, unfolded initmissing_def])
-    thus "openproc.netglobal (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (id p), snd (id p), q)) = netglobal"
+    thus "openproc.netglobal (\<lambda>i. ptoy i \<langle>\<langle> qmsg) (\<lambda>(p, q). (fst (Fun.id p), snd (Fun.id p), q)) = netglobal"
       by auto
   qed
 
@@ -845,12 +842,12 @@ subsection "Final result"
 
 lemma bigger_than_next:
   assumes "wf_net_tree n"
-  shows "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+  shows "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n) \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
         (is "_ \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i. ?inv \<sigma> i)")
   proof -
     from \<open>wf_net_tree n\<close>
       have proto: "closed (pnet (\<lambda>i. ptoy i \<langle>\<langle> qmsg) n)
-                      \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhip (\<sigma> i))))"
+                      \<TTurnstile> netglobal (\<lambda>\<sigma>. \<forall>i\<in>net_tree_ips n. no (\<sigma> i) \<le> no (\<sigma> (nhid (\<sigma> i))))"
         by (rule toy_openproc_par_qmsg.close_opnet [OF _ ocnet_bigger_than_next])
     show ?thesis
     unfolding invariant_def opnet_sos.opnet_tau1

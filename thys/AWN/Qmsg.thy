@@ -15,7 +15,9 @@ fun \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G :: "(('m::msg) list, 'm, unit, unit
 where
   "\<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G () = labelled () (receive(\<lambda>msg msgs. msgs @ [msg]). call(())
            \<oplus> \<langle>msgs. msgs \<noteq> []\<rangle>
-               (send(\<lambda>msgs. hd msgs). \<lbrakk>msgs. tl msgs\<rbrakk> call(())
+               (send(\<lambda>msgs. hd msgs).
+                 (\<lbrakk>msgs. tl msgs\<rbrakk> call(())
+                  \<oplus> receive(\<lambda>msg msgs. tl msgs @ [msg]). call(()))
               \<oplus> receive(\<lambda>msg msgs. msgs @ [msg]). call(())))"
 
 definition \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G :: "(('m::msg) list \<times> ('m list, 'm, unit, unit label) seqp) set"

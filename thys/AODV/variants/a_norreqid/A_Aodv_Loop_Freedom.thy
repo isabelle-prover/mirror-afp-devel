@@ -203,7 +203,7 @@ lemma opnet_nhop_quality_increases:
     show "\<langle>i : opaodv i \<langle>\<langle>\<^bsub>i\<^esub> qmsg : R\<rangle>\<^sub>o \<Turnstile>\<^sub>A
             (\<lambda>\<sigma> _. oarrivemsg (\<lambda>\<sigma> m. msg_fresh \<sigma> m \<and> msg_zhops m) \<sigma>,
              other quality_increases {i} \<rightarrow>) globala (\<lambda>(\<sigma>, a, \<sigma>').
-               a \<noteq> \<tau> \<and> (\<forall>i d. a \<noteq> i:deliver(d)) \<longrightarrow> \<sigma> i = \<sigma>' i)"
+               a \<noteq> \<tau> \<and> (\<forall>d. a \<noteq> i:deliver(d)) \<longrightarrow> \<sigma> i = \<sigma>' i)"
       by (rule ostep_invariant_weakenE [OF node_silent_change_only]) auto
   next
     fix i R

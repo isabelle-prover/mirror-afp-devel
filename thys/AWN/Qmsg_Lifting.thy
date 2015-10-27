@@ -60,12 +60,15 @@ lemma qmsg_send_from_queue:
   qed
 
 lemma qmsg_queue_contents:
-  "qmsg \<TTurnstile>\<^sub>A (\<lambda>((msgs, q), a, (msgs', q')). case a of receive m \<Rightarrow> msgs' = msgs @ [m]
-                                                   | _ \<Rightarrow> set msgs' \<subseteq> set msgs)"
+  "qmsg \<TTurnstile>\<^sub>A (\<lambda>((msgs, q), a, (msgs', q')). case a of
+                                             receive m \<Rightarrow> set msgs' \<subseteq> set (msgs @ [m])
+                                           | _ \<Rightarrow> set msgs' \<subseteq> set msgs)"
   proof -
-    have "qmsg \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G (\<lambda>((msgs, q), a, (msgs', q')). case a of receive m \<Rightarrow> msgs' = msgs @ [m]
-                                                                   | _ \<Rightarrow> set msgs' \<subseteq> set msgs)"
-      by (inv_cterms) (clarsimp elim!: in_set_tl)
+    have "qmsg \<TTurnstile>\<^sub>A onll \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G (\<lambda>((msgs, q), a, (msgs', q')).
+                                     case a of
+                                       receive m \<Rightarrow> set msgs' \<subseteq> set (msgs @ [m])
+                                     | _ \<Rightarrow> set msgs' \<subseteq> set msgs)"
+      by (inv_cterms) (clarsimp simp add: in_set_tl)+
     thus ?thesis
       by (rule step_invariant_weakenE) (auto dest!: onllD)
   qed
@@ -224,7 +227,7 @@ lemma par_qmsg_oreachable:
       proof
         fix m
         assume "m \<in> set ms'"
-        moreover have "case a of receive m \<Rightarrow> ms' = ms @ [m] | _ \<Rightarrow> set ms' \<subseteq> set ms"
+        moreover have "case a of receive m \<Rightarrow> set ms' \<subseteq> set (ms @ [m]) | _ \<Rightarrow> set ms' \<subseteq> set ms"
           proof -
             from qr have "(ms, q) \<in> reachable qmsg TT" ..
             thus ?thesis using tqtr
