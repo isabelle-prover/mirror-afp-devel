@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Verified-Prover" (AFP) = "HOL-Library" +
+session "Verified-Prover" (AFP) = HOL +
   options [timeout = 600]
   theories
     Prover

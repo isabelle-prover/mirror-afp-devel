@@ -1,7 +1,9 @@
-
 theory Prover
-imports Main "~~/src/HOL/Library/Infinite_Set"
+imports Main
 begin
+
+abbreviation infinite :: "'a set \<Rightarrow> bool"
+  where "infinite S \<equiv> \<not> finite S"
 
 subsection "Formulas"
 
@@ -90,11 +92,11 @@ lemma maxvar: "\<forall>v \<in> set vs. v \<le> maxvar vs"
 
 definition
   newvar :: "var list => var" where
-  "newvar vs = Suc (maxvar vs)"
+  "newvar vs = (if vs = [] then 0 else Suc (maxvar vs))"
   -- "note that for newvar to be constructive, need an operation to get a different var from a given set"
 
 lemma newvar: "newvar vs \<notin> (set vs)"
-  using maxvar by (force simp: newvar_def)
+  using length_pos_if_in_set maxvar newvar_def by force
 
 (*lemmas newvar_sfv = newvar[of "sfv s"]*)
 
@@ -190,7 +192,7 @@ lemma deriv_deriv_child(*derivSuc*)[rule_format]: "\<forall>x y. (Suc n,x) \<in>
   apply(induct n)
    apply(rule, rule) apply(rule) apply(frule_tac deriv_downwards) apply(simp)
    apply(simp) apply(rule step) apply(simp) apply(simp)
-  apply(blast dest!: deriv_downwards elim: deriv.cases intro: deriv.intros) -- "blast needs some help with the reasoning, hence derivSucE"
+  apply(blast dest!: deriv_downwards elim: deriv.cases) -- "blast needs some help with the reasoning, hence derivSucE"
   done
 
 (*
@@ -247,7 +249,7 @@ locale loc1 =
   assumes f: "f = failing_path (deriv s)"
 
 lemma (in loc1) f0: "infinite (deriv s) ==> f 0 \<in> (deriv s) & fst (f 0) = 0 & infinite (deriv (snd (f 0))) & ~ is_axiom (s_of_ns (snd (f 0)))"
-  apply(simp add: f) apply(rule someI_ex) apply(rule_tac x="(0,s)" in exI) apply(force simp add: deriv0 deriv_is_axiom) done
+  apply(simp add: f) apply(rule someI_ex) apply(rule_tac x="(0,s)" in exI) apply(force simp add: deriv_is_axiom) done
 
 lemma infinite_union: "finite Y ==> infinite (Union (f ` Y)) ==> \<exists>y. y \<in> Y & infinite (f y)"
   apply(rule ccontr) apply(simp) done
@@ -1089,7 +1091,7 @@ lemma completeness: "infinite (deriv (ns_of_s s)) ==> ~ Svalid s"
 subsection "Sound and Complete"
 
 lemma "Svalid s = finite (deriv (ns_of_s s))"
-  by(force intro: soundness completeness[swapped])
+  using soundness completeness by blast
 
 
 subsection "Algorithm"
@@ -1245,5 +1247,91 @@ lemma search: "finite (deriv [(0,my_f)])"
   apply(simp add: my_f_def finite_deriv_prove prove_def)
   apply(simp only: prove'_Nil prove'_Cons ss)
   done
+
+abbreviation Sprove :: "form list \<Rightarrow> bool" where "Sprove \<equiv> prove o ns_of_s"
+
+abbreviation check :: "form \<Rightarrow> bool" where "check formula \<equiv> Sprove [formula]"
+
+abbreviation valid :: "form \<Rightarrow> bool" where "valid formula \<equiv> Svalid [formula]"
+
+theorem "check = valid" using soundness completeness finite_deriv_prove by auto
+
+ML \<open>
+
+fun max x y = if x > y then x else y;
+
+fun flatten [] = []
+  | flatten (a::list) = a @ (flatten list);
+
+type pred = int;
+
+type var = int;
+
+datatype form = 
+    PAtom of pred * (var list)
+  | NAtom of pred * (var list)
+  | FConj of form * form
+  | FDisj of form * form
+  | FAll  of form
+  | FEx   of form;
+
+fun preSuc [] = []
+  | preSuc (a::list) = if a = 0 then preSuc list else (a-1)::(preSuc list);
+
+fun fv (PAtom (_,vs)) = vs
+  | fv (NAtom (_,vs)) = vs
+  | fv (FConj (f,g)) = (fv f) @ (fv g)
+  | fv (FDisj (f,g)) = (fv f) @ (fv g)
+  | fv (FAll f) = preSuc (fv f)
+  | fv (FEx f)  = preSuc (fv f);
+
+fun subst r (PAtom (p,vs)) = PAtom (p,map r vs)
+  | subst r (NAtom (p,vs)) = NAtom (p,map r vs)
+  | subst r (FConj (f,g)) = FConj (subst r f,subst r g)
+  | subst r (FDisj (f,g)) = FDisj (subst r f,subst r g)
+  | subst r (FAll f) = FAll (subst (fn 0 => 0 | v => (r (v-1))+1) f)
+  | subst r (FEx f)  = FEx  (subst (fn 0 => 0 | v => (r (v-1))+1) f);
+
+fun finst body w = subst (fn 0 => w | v => v-1) body;
+
+fun s_of_ns ns = map (fn (_,y) => y) ns;
+
+fun ns_of_s s = map (fn y => (0,y)) s;
+
+fun sfv s = flatten (map fv s);
+
+fun maxvar [] = 0
+  | maxvar (a::list) = max a (maxvar list);
+
+fun newvar vs = if vs = [] then 0 else (maxvar vs)+1;
+
+fun test [] _ = false
+  | test ((_,y)::list) z = if y = z then true else test list z;
+
+fun subs [] = [[]]
+  | subs (x::xs) = let val (n,f') = x in case f' of
+      PAtom (p,vs) => if test xs (NAtom (p,vs)) then [] else [xs @ [(0,PAtom (p,vs))]]
+    | NAtom (p,vs) => if test xs (PAtom (p,vs)) then [] else [xs @ [(0,NAtom (p,vs))]]
+    | FConj (f,g) => [xs @ [(0,f)],xs @ [(0,g)]]
+    | FDisj (f,g) => [xs @ [(0,f),(0,g)]]
+    | FAll f => [xs @ [(0,finst f (newvar (sfv (s_of_ns (x::xs)))))]]
+    | FEx f  => [xs @ [(0,finst f n),(n+1,f')]]
+  end;
+
+fun step s = flatten (map subs s);
+
+fun prove' s = if s = [] then true else prove' (step s);
+
+fun prove s = prove' [s];
+
+fun check f = (prove o ns_of_s) [f];
+
+val my_f = FDisj (
+  (FAll (FConj ((NAtom (0,[0])), (NAtom (1,[0])))),
+  (FDisj ((FEx ((PAtom (1,[0])))), (FEx (PAtom (0,[0])))))));
+
+check my_f;
+
+\<close>
 
 end
