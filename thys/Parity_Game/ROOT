@@ -1,0 +1,10 @@
+chapter AFP
+
+session Parity_Game (AFP) = Coinductive +
+  options [timeout = 600]
+  theories
+    PositionalDeterminacy
+    AttractorInductive
+  document_files
+    "root.tex"
+    "root.bib"
