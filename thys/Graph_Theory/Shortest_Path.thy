@@ -66,7 +66,7 @@ next
       using 2 by simp
   qed
   also have "\<dots> = real (Suc n) * awalk_cost c p"
-    by (simp add: algebra_simps real_of_nat_Suc)
+    by (simp add: algebra_simps)
   finally show ?case .
 qed
 
