@@ -14,6 +14,7 @@ record ('a,'b,'aa,'bb) digraph_isomorphism =
 
 definition (in pre_digraph) digraph_isomorphism :: "('a,'b,'aa,'bb) digraph_isomorphism \<Rightarrow> bool" where 
   "digraph_isomorphism hom \<equiv>
+    wf_digraph G \<and>
     inj_on (iso_verts hom) (verts G) \<and>
     inj_on (iso_arcs hom) (arcs G) \<and>
     (\<forall>a \<in> arcs G. 
@@ -60,33 +61,6 @@ lemmas iso_inv_simps[simp] =
    iso_arcs_inv_iso iso_arcs_iso_inv
    verts_app_inv_iso arcs_app_inv_iso
    iso_tail_inv_iso iso_head_inv_iso
-
-lemma (in wf_digraph) digraph_isomorphism_invI:
-  assumes "digraph_isomorphism hom" shows "pre_digraph.digraph_isomorphism (app_iso hom G) (inv_iso hom)"
-proof (unfold pre_digraph.digraph_isomorphism_def, safe)
-  show "inj_on (iso_verts (inv_iso hom)) (verts (app_iso hom G))"
-      "inj_on (iso_arcs (inv_iso hom)) (arcs (app_iso hom G))"
-    using assms unfolding pre_digraph.digraph_isomorphism_def inv_iso_def
-    by (auto intro: inj_on_the_inv_into)
-next
-  fix a assume "a \<in> arcs (app_iso hom G)"
-  then obtain b where B: "a = iso_arcs hom b" "b \<in> arcs G"
-    by auto
-
-  with assms have [simp]:
-      "iso_tail hom (iso_arcs hom b) = iso_verts hom (tail G b)"
-      "iso_head hom (iso_arcs hom b) = iso_verts hom (head G b)"
-      "inj_on (iso_arcs hom) (arcs G)"
-      "inj_on (iso_verts hom) (verts G)"
-    by (auto simp: digraph_isomorphism_def)
-
-  from B show "iso_verts (inv_iso hom) (tail (app_iso hom G) a)
-      = iso_tail (inv_iso hom) (iso_arcs (inv_iso hom) a)"
-    by (auto simp: inv_iso_def the_inv_into_f_f)
-  from B show "iso_verts (inv_iso hom) (head (app_iso hom G) a)
-      = iso_head (inv_iso hom) (iso_arcs (inv_iso hom) a)"
-    by (auto simp: inv_iso_def the_inv_into_f_f)
-qed
 
 lemma app_iso_inv[simp]:
   assumes "digraph_isomorphism hom"
@@ -135,6 +109,36 @@ proof -
 qed
 
 context wf_digraph begin
+
+lemma digraph_isomorphism_invI:
+  assumes "digraph_isomorphism hom" shows "pre_digraph.digraph_isomorphism (app_iso hom G) (inv_iso hom)"
+proof (unfold pre_digraph.digraph_isomorphism_def, safe)
+  show "inj_on (iso_verts (inv_iso hom)) (verts (app_iso hom G))"
+      "inj_on (iso_arcs (inv_iso hom)) (arcs (app_iso hom G))"
+    using assms unfolding pre_digraph.digraph_isomorphism_def inv_iso_def
+    by (auto intro: inj_on_the_inv_into)
+next
+  show "wf_digraph (app_iso hom G)" using assms ..
+next
+  fix a assume "a \<in> arcs (app_iso hom G)"
+  then obtain b where B: "a = iso_arcs hom b" "b \<in> arcs G"
+    by auto
+
+  with assms have [simp]:
+      "iso_tail hom (iso_arcs hom b) = iso_verts hom (tail G b)"
+      "iso_head hom (iso_arcs hom b) = iso_verts hom (head G b)"
+      "inj_on (iso_arcs hom) (arcs G)"
+      "inj_on (iso_verts hom) (verts G)"
+    by (auto simp: digraph_isomorphism_def)
+
+  from B show "iso_verts (inv_iso hom) (tail (app_iso hom G) a)
+      = iso_tail (inv_iso hom) (iso_arcs (inv_iso hom) a)"
+    by (auto simp: inv_iso_def the_inv_into_f_f)
+  from B show "iso_verts (inv_iso hom) (head (app_iso hom G) a)
+      = iso_head (inv_iso hom) (iso_arcs (inv_iso hom) a)"
+    by (auto simp: inv_iso_def the_inv_into_f_f)
+qed
+
 
 lemma awalk_app_isoI:
   assumes "awalk u p v" and hom: "digraph_isomorphism hom"

@@ -51,7 +51,7 @@ lemma converse_rtrancl_on_into_rtrancl_on:
   apply (rule rtrancl_on_refl)
   by fact+
 
-theorem rtrancl_on_converseI:
+lemma rtrancl_on_converseI:
   assumes "(y, x) \<in> rtrancl_on F r" shows "(x, y) \<in> rtrancl_on F (r\<inverse>)"
   using assms
 proof induct
@@ -72,6 +72,12 @@ lemma converse_rtrancl_on_induct[consumes 1, case_names base step, induct set: r
   shows "P a"
   using rtrancl_on_converseI[OF major] cases
   by induct (auto intro: rtrancl_on_converseD)
+
+lemma converse_rtrancl_on_cases:
+  assumes "(a, b) \<in> rtrancl_on F r"
+  obtains (base) "a = b" "b \<in> F"
+    | (step) c where "(a,c) \<in> r" "(c,b) \<in> rtrancl_on F r"
+  using assms by induct auto
 
 lemma rtrancl_on_sym:
   assumes "sym r" shows "sym (rtrancl_on F r)"
@@ -107,6 +113,7 @@ lemma rtrancl_on_sub_rtrancl:
   "rtrancl_on F r \<subseteq> r^*"
   using rtrancl_on_rtranclI
   by auto
+
 
 
 end

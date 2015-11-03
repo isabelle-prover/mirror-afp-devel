@@ -243,7 +243,7 @@ using assms by (auto simp: awalk_verts_conv)
 lemma awalk_verts_arc2:
   assumes "awalk u p v" "e \<in> set p"
   shows "head G e \<in> set (awalk_verts u p)"
-using assms by (simp add: set_awalk_verts) 
+using assms by (simp add: set_awalk_verts)
 
 lemma awalk_induct_raw[case_names Base Cons(*, induct pred: awalk*)]:
   assumes "awalk u p v"
@@ -292,7 +292,7 @@ using assms by (auto simp: awalk_def)
 
 lemma apath_ends:
  assumes "apath u p v" and "apath u' p v'"
-  shows "(p \<noteq> [] \<and> u \<noteq> v \<and> u = u' \<and> v = v') \<or> (p = [] \<and> u = v \<and> u' = v')" 
+  shows "(p \<noteq> [] \<and> u \<noteq> v \<and> u = u' \<and> v = v') \<or> (p = [] \<and> u = v \<and> u' = v')"
 using assms unfolding apath_def by (metis assms(2) apath_nonempty_ends  awalk_ends)
 
 lemma awalk_append_iff[simp]:
@@ -435,7 +435,7 @@ proof -
     using q_def and assms by (auto simp: awalk_verts_take_conv)
   moreover have "awalk_verts u q = xs @ [awlast u q]"
     using assms q_def by (auto simp: awalk_verts_take_conv)
-  moreover then have "awalk_verts y r = y # ys" 
+  moreover then have "awalk_verts y r = y # ys"
     unfolding q_def r_def using assms by (auto simp: awalk_verts_drop_conv not_less)
   ultimately show ?thesis by (intro that) auto
 qed
@@ -493,7 +493,7 @@ lemma apath_decomp_disjoint:
   assumes "p = q @ r"
   assumes "x \<in> set (awalk_verts u q)" "x \<in> set (tl (awalk_verts (awlast u q) r))"
   shows False
-using assms by (auto simp: apath_def awalk_verts_append) 
+using assms by (auto simp: apath_def awalk_verts_append)
 
 
 
@@ -761,7 +761,7 @@ proof (relation "measure length")
     and **:"qrs = awalk_cyc_decomp p" "(q, rs) = qrs" "(r, s) = rs"
   then obtain u v where *: "awalk u p v" "\<not>distinct (awalk_verts u p)"
     by (cases p) auto
-  then have "awalk_cyc_decomp p = (q,r,s)" using ** by simp 
+  then have "awalk_cyc_decomp p = (q,r,s)" using ** by simp
   then have "is_awalk_cyc_decomp p (q,r,s)"
     apply (rule awalk_cyc_decompE[OF _ *])
     using X[of "awlast u q"  "awlast (awlast u q) r"] *(1)
@@ -819,8 +819,27 @@ proof (induct rule: awalk_to_apath_induct)
     by (auto simp: awalk_to_apath.simps)
   then show ?case using path by (auto simp: apath_def)
 next
-  case (decomp p q r s) 
+  case (decomp p q r s)
   then show ?case using step_awalk_to_apath[of _ p _ q r s] by simp
+qed
+
+lemma (in wf_digraph) awalk_to_apath_subset:
+  assumes "awalk u p v"
+  shows "set (awalk_to_apath p) \<subseteq> set p"
+using assms
+proof (induct rule: awalk_to_apath_induct)
+  case (path p)
+  then have "awalk_to_apath p = p"
+    by (auto simp: awalk_to_apath.simps)
+  then show ?case by simp
+next
+  case (decomp p q r s)
+  have *: "\<not>(\<exists>u. distinct (awalk_verts u p)) \<and> (\<exists>u v. awalk u p v)"
+    using decomp by (cases p) auto
+  have "set (awalk_to_apath (q @ s)) \<subseteq> set p"
+    using decomp by (auto elim!: awalk_cyc_decompE)
+  then
+  show ?case by (subst awalk_to_apath.simps) (simp only: * simp_thms if_True decomp Let_def prod.simps)
 qed
 
 lemma reachable_apath:

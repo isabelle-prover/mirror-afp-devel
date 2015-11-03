@@ -5,6 +5,7 @@
 theory Pair_Digraph
 imports
   Digraph
+  Bidirected_Digraph
   Arc_Walk
 begin
 
@@ -82,11 +83,17 @@ locale pair_fin_digraph = pair_wf_digraph +
   assumes pair_finite_verts: "finite (pverts G)"
     and pair_finite_arcs: "finite (parcs G)"
 
-locale pair_pseudo_graph = pair_fin_digraph  +
+locale pair_sym_digraph = pair_wf_digraph +
   assumes pair_sym_arcs: "symmetric G"
 
-locale pair_digraph = pair_fin_digraph  +
+locale pair_loopfree_digraph = pair_wf_digraph  +
   assumes pair_no_loops: "e \<in> parcs G \<Longrightarrow> fst e \<noteq> snd e"
+
+locale pair_bidirected_digraph = pair_sym_digraph + pair_loopfree_digraph
+
+locale pair_pseudo_graph = pair_fin_digraph + pair_sym_digraph
+
+locale pair_digraph = pair_fin_digraph  + pair_loopfree_digraph
 
 locale pair_graph = pair_digraph + pair_pseudo_graph
 
@@ -111,19 +118,33 @@ sublocale pair_fin_digraph \<subseteq> fin_digraph "with_proj G"
     and "pre_digraph.cas G = pcas"
   using pair_finite_verts pair_finite_arcs by unfold_locales auto
 
-sublocale pair_pseudo_graph \<subseteq> pseudo_graph "with_proj G"
+sublocale pair_sym_digraph \<subseteq> sym_digraph "with_proj G"
   where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   using pair_sym_arcs by unfold_locales auto
 
+sublocale pair_pseudo_graph \<subseteq> pseudo_graph "with_proj G"
+  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+    and "arcs_ends G = parcs G"
+    and "pre_digraph.awalk_verts G = pawalk_verts"
+    and "pre_digraph.cas G = pcas"
+  by unfold_locales auto
+
+sublocale pair_loopfree_digraph \<subseteq> loopfree_digraph "with_proj G"
+  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+    and "arcs_ends G = parcs G"
+    and "pre_digraph.awalk_verts G = pawalk_verts"
+    and "pre_digraph.cas G = pcas"
+  using pair_no_loops by unfold_locales auto
+
 sublocale pair_digraph \<subseteq> digraph "with_proj G"
   where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
-  using pair_no_loops by unfold_locales (auto simp: arc_to_ends_def)
+  by unfold_locales (auto simp: arc_to_ends_def)
 
 sublocale pair_graph \<subseteq> graph "with_proj G"
   where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
@@ -131,6 +152,8 @@ sublocale pair_graph \<subseteq> graph "with_proj G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   by unfold_locales auto
+
+sublocale pair_graph \<subseteq> pair_bidirected_digraph by unfold_locales
 
 lemma wf_digraph_wp_iff: "wf_digraph (with_proj G) = pair_wf_digraph G" (is "?L \<longleftrightarrow> ?R")
 proof
@@ -141,19 +164,21 @@ next
   show ?L by unfold_locales
 qed
 
-lemma (in pair_fin_digraph) pair_fin_digraph[intro!]: "pair_fin_digraph G" ..
+lemma (in pair_fin_digraph) pair_fin_digraph[intro!]: "pair_fin_digraph G" by default
 
 context pair_digraph begin
 
-lemma pair_digraph[intro!]: "pair_digraph G" ..
+lemma pair_wf_digraph[intro!]: "pair_wf_digraph G" by intro_locales
 
-lemma no_loops':
+lemma pair_digraph[intro!]: "pair_digraph G" by default
+
+lemma (in pair_loopfree_digraph) no_loops':
   "(u,v) \<in> parcs G \<Longrightarrow> u \<noteq> v"
   by (auto dest: no_loops)
 
 end
 
-lemma (in pair_fin_digraph) apath_succ_decomp:
+lemma (in pair_wf_digraph) apath_succ_decomp:
   assumes "apath u p v"
   assumes "(x,y) \<in> set p"
   assumes "y \<noteq> v"
@@ -173,17 +198,30 @@ proof -
 qed
 
 
-context pair_pseudo_graph begin
-
-lemma pair_pseudo_graph[intro]: "pair_pseudo_graph G" ..
-
-lemma arcs_symmetric:
+lemma (in pair_sym_digraph) arcs_symmetric:
   "(a,b) \<in> parcs G \<Longrightarrow> (b,a) \<in> parcs G"
   using sym_arcs by (auto simp: symmetric_def elim: symE)
 
-end
+lemma (in pair_pseudo_graph) pair_pseudo_graph[intro]: "pair_pseudo_graph G" by default
 
-lemma (in pair_graph) pair_graph[intro]: "pair_graph G" ..
+lemma (in pair_graph) pair_graph[intro]: "pair_graph G" by unfold_locales
+lemma (in pair_graph) pair_graphD_graph: "graph G" by unfold_locales
+
+lemma pair_graphI_graph:
+  assumes "graph (with_proj G)" shows "pair_graph G"
+proof -
+  interpret G: graph "with_proj G" by fact
+  show ?thesis
+    using G.wellformed G.finite_arcs G.finite_verts G.no_loops
+    by unfold_locales auto
+qed
+
+lemma pair_loopfreeI_loopfree:
+  assumes "loopfree_digraph (with_proj G)" shows "pair_loopfree_digraph G"
+proof -
+  interpret loopfree_digraph "with_proj G" by fact
+  show ?thesis using wellformed no_loops by unfold_locales auto
+qed
 
 
 
@@ -209,7 +247,7 @@ lemma rev_path_empty[simp]:
 lemma rev_path_eq: "rev_path p = rev_path q \<longleftrightarrow> p = q"
   by (metis rev_path_rev_path)
 
-lemma (in pair_pseudo_graph)
+lemma (in pair_sym_digraph)
   assumes "awalk u p v"
   shows awalk_verts_rev_path: "awalk_verts v (rev_path p) = rev (awalk_verts u p)"
     and awalk_rev_path': "awalk v (rev_path p) u"
@@ -246,30 +284,24 @@ next
     by simp
 qed
 
-lemma (in pair_pseudo_graph) awalk_rev_path[simp]:
+lemma (in pair_sym_digraph) awalk_rev_path[simp]:
   "awalk v (rev_path p) u = awalk u p v" (is "?L = ?R")
 by (metis awalk_rev_path' rev_path_rev_path)
 
-lemma (in pair_pseudo_graph) apath_rev_path[simp]:
+lemma (in pair_sym_digraph) apath_rev_path[simp]:
   "apath v (rev_path p) u = apath u p v"
 by (auto simp: awalk_verts_rev_path apath_def)
 
 
-subsection {* Subdivisions *}
+subsection {* Subdividing Edges *}
 
-text {* subdivide an arc in araph *}
+text {* subdivide an edge (=two associated arcs) in graph *}
 fun subdivide :: "'a pair_pre_digraph \<Rightarrow> 'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> 'a pair_pre_digraph" where
   "subdivide G (u,v) w = \<lparr>
     pverts = pverts G \<union> {w},
     parcs = (parcs G - {(u,v),(v,u)}) \<union> {(u,w), (w,u), (w, v), (v, w)}\<rparr>"
 
 declare subdivide.simps[simp del]
-
-inductive subdivision :: "'a pair_pre_digraph \<Rightarrow> 'a pair_pre_digraph \<Rightarrow> bool"
-  for G where
-    base: "subdivision G G"
-  | divide: "\<And>e w H. \<lbrakk>e \<in> parcs H; w \<notin> pverts H; subdivision G H\<rbrakk>
-      \<Longrightarrow> subdivision G (subdivide H e w)"
 
 text {* subdivide an arc in a path *}
 fun sd_path :: "'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) awalk \<Rightarrow> ('a \<times> 'a) awalk" where
@@ -323,7 +355,7 @@ lemma sd_path_induct[case_names empty pass sd sdrev]:
       "\<And>es. P e es \<Longrightarrow> P e (e # es)"
       "\<And>es. fst e \<noteq> snd e \<Longrightarrow> P e es \<Longrightarrow> P e ((snd e, fst e) # es)"
   shows "P e es"
-  by (induct es) (rule A, metis B prod.collapse)
+  by (induct es) (rule A, metis B pair_collapse)
 
 lemma co_path_induct[case_names empty single co corev pass]:
   fixes e :: "'a \<times> 'a"
@@ -360,23 +392,57 @@ lemma sd_path_id:
   shows "sd_path (x,y) w p = p"
 using assms by (induct p) auto
 
-lemma (in pair_pseudo_graph) pair_pseudo_graph_subdivide:
+lemma (in pair_wf_digraph) pair_wf_digraph_subdivide:
   assumes props: "e \<in> parcs G" "w \<notin> pverts G"
-  shows "pair_pseudo_graph (subdivide G e w)" (is "pair_pseudo_graph ?sG")
+  shows "pair_wf_digraph (subdivide G e w)" (is "pair_wf_digraph ?sG")
 proof
   obtain u v where [simp]: "e = (u,v)" by (cases e) auto
-  {
-    show "finite (pverts ?sG)" "finite (parcs ?sG)" by auto
+  fix e' assume "e' \<in> parcs ?sG"
+  then show "fst e' \<in> pverts ?sG" "snd e' \<in> pverts ?sG"
+    using props by (auto dest: wellformed)
+qed
+
+lemma (in pair_sym_digraph) pair_sym_digraph_subdivide:
+  assumes props: "e \<in> parcs G" "w \<notin> pverts G"
+  shows "pair_sym_digraph (subdivide G e w)" (is "pair_sym_digraph ?sG")
+proof -
+  interpret sdG: pair_wf_digraph "subdivide G e w" using assms by (rule pair_wf_digraph_subdivide)
+  obtain u v where [simp]: "e = (u,v)" by (cases e) auto
+  show ?thesis
+  proof
     have "\<And>a b. (a, b) \<in> parcs (subdivide G e w) \<Longrightarrow> (b, a) \<in> parcs (subdivide G e w)"
       unfolding `e = _` arcs_subdivide
       by (elim UnE, rule UnI1, rule_tac [2] UnI2) (blast intro: arcs_symmetric)+
     then show "symmetric ?sG"
       unfolding symmetric_def with_proj_simps by (rule symI)
-  next
-    fix e' assume "e' \<in> parcs ?sG"
-    then show "fst e' \<in> pverts ?sG" "snd e' \<in> pverts ?sG"
-      using props by (auto dest: wellformed)
-  }
+  qed
+qed
+
+lemma (in pair_loopfree_digraph) pair_loopfree_digraph_subdivide:
+  assumes props: "e \<in> parcs G" "w \<notin> pverts G"
+  shows "pair_loopfree_digraph (subdivide G e w)" (is "pair_loopfree_digraph ?sG")
+proof -
+  interpret sdG: pair_wf_digraph "subdivide G e w" using assms by (rule pair_wf_digraph_subdivide)
+  from assms show ?thesis
+    by unfold_locales (cases e, auto dest: wellformed no_loops)
+qed
+
+lemma (in pair_bidirected_digraph) pair_bidirected_digraph_subdivide:
+  assumes props: "e \<in> parcs G" "w \<notin> pverts G"
+  shows "pair_bidirected_digraph (subdivide G e w)" (is "pair_bidirected_digraph ?sG")
+proof -
+  interpret sdG: pair_sym_digraph "subdivide G e w" using assms by (rule pair_sym_digraph_subdivide)
+  interpret sdG: pair_loopfree_digraph "subdivide G e w" using assms by (rule pair_loopfree_digraph_subdivide)
+  show ?thesis by unfold_locales
+qed
+
+lemma (in pair_pseudo_graph) pair_pseudo_graph_subdivide:
+  assumes props: "e \<in> parcs G" "w \<notin> pverts G"
+  shows "pair_pseudo_graph (subdivide G e w)" (is "pair_pseudo_graph ?sG")
+proof -
+  interpret sdG: pair_sym_digraph "subdivide G e w" using assms by (rule pair_sym_digraph_subdivide)
+  obtain u v where [simp]: "e = (u,v)" by (cases e) auto
+  show ?thesis by unfold_locales (cases e, auto)
 qed
 
 lemma (in pair_graph) pair_graph_subdivide:
@@ -385,22 +451,17 @@ lemma (in pair_graph) pair_graph_subdivide:
 proof -
   interpret PPG: pair_pseudo_graph "subdivide G e w"
     using assms by (rule pair_pseudo_graph_subdivide)
-  from assms show ?thesis
-    by unfold_locales (cases e, auto dest: wellformed no_loops)
+  interpret PPG: pair_loopfree_digraph "subdivide G e w"
+    using assms by (rule pair_loopfree_digraph_subdivide)
+  from assms show ?thesis by unfold_locales
 qed
-
-lemma (in pair_graph) pair_graph_subdivision:
-  assumes "subdivision G H"
-  shows "pair_graph H"
-using assms
-by (induct rule: subdivision.induct) (blast intro: pair_graph.pair_graph_subdivide divide)+
 
 lemma arcs_subdivideD:
   assumes "x \<in> parcs (subdivide G e w)" "fst x \<noteq> w" "snd x \<noteq> w"
   shows "x \<in> parcs G"
 using assms by (cases e) auto
 
-context pair_pseudo_graph begin
+context pair_sym_digraph begin
 
 lemma
   assumes path: "apath u p v"
@@ -411,8 +472,8 @@ lemma
 proof -
   obtain x y where e_conv: "e = (x,y)" by (cases e) auto
   def sG \<equiv> "subdivide G e w"
-  interpret S: pair_pseudo_graph sG
-    unfolding sG_def using elems by (rule pair_pseudo_graph_subdivide)
+  interpret S: pair_sym_digraph sG
+    unfolding sG_def using elems by (rule pair_sym_digraph_subdivide)
 
   have ev_sG: "S.awalk_verts = awalk_verts"
     by (auto simp: fun_eq_iff pre_digraph.awalk_verts_conv)
@@ -451,7 +512,7 @@ proof -
         by (simp add: sd_path_id)
 
       from A ab have [simp]: "x \<noteq> y"
-        by (simp add: apath_Cons_iff) (metis awalkI_apath awalk_verts_non_Nil awhd_of_awalk hd_in_set NOMATCH_def)
+        by (simp add: apath_Cons_iff) (metis awalkI_apath awalk_verts_non_Nil awhd_of_awalk hd_in_set)
  
       from A have "S.apath b (sd_path (x,y) w es) v" "u = a" "u \<noteq> w"
         using ab hyps elems by (auto simp: apath_Cons_iff wellformed')
@@ -486,8 +547,8 @@ lemma
     and set_awalk_verts_co_path: "set (awalk_verts u (co_path e w p)) = set (awalk_verts u p) - {w}" (is ?thesis_set)
 proof -
   obtain x y where e_conv: "e = (x,y)" by (cases e) auto
-  interpret S: pair_pseudo_graph "subdivide G e w"
-    using elems(1,2) by (rule pair_pseudo_graph_subdivide)
+  interpret S: pair_sym_digraph "subdivide G e w"
+    using elems(1,2) by (rule pair_sym_digraph_subdivide)
 
   have e_w: "fst e \<noteq> w" "snd e \<noteq> w" using elems by auto
 
@@ -562,5 +623,41 @@ qed
 
 end
 
+
+
+subsection \<open>Bidirected Graphs\<close>
+
+definition (in -) swap_in :: "('a \<times> 'a) set \<Rightarrow> 'a \<times> 'a \<Rightarrow> 'a \<times> 'a" where
+  "swap_in S x = (if x \<in> S then prod.swap x else x)"
+
+lemma bidirected_digraph_rev_conv_pair:
+  assumes "bidirected_digraph (with_proj G) rev_G"
+  shows "rev_G = swap_in (parcs G)"
+proof -
+  interpret bidirected_digraph G rev_G by fact
+  have "\<And>a b. (a, b) \<in> parcs G \<Longrightarrow> rev_G (a, b) = (b, a)"
+    using tail_arev[simplified with_proj_simps] head_arev[simplified with_proj_simps]
+    by (metis fst_conv prod.collapse snd_conv)
+  then show ?thesis by (auto simp: swap_in_def fun_eq_iff arev_eq)
+qed
+
+lemma (in pair_bidirected_digraph) bidirected_digraph:
+  "bidirected_digraph (with_proj G) (swap_in (parcs G))"
+  using no_loops' arcs_symmetric
+  by unfold_locales (auto simp: swap_in_def)
+
+lemma pair_bidirected_digraphI_bidirected_digraph:
+  assumes "bidirected_digraph (with_proj G) (swap_in (parcs G))"
+  shows "pair_bidirected_digraph G"
+proof -
+  interpret bidirected_digraph "with_proj G" "swap_in (parcs G)" by fact
+  {
+    fix a assume "a \<in> parcs G" then have "fst a \<noteq> snd a"
+      using arev_neq[of a] bidirected_digraph_rev_conv_pair[OF assms(1)]
+      by (cases a) (auto simp: swap_in_def)
+  }
+  then show ?thesis
+    using tail_in_verts head_in_verts by unfold_locales auto
+qed
 
 end

@@ -209,6 +209,9 @@ lemma arcs_ends_mono:
 lemma (in wf_digraph) subgraph_refl: "subgraph G G"
   by (auto simp: subgraph_def compatible_def) unfold_locales
 
+lemma (in wf_digraph) induced_subgraph_refl: "induced_subgraph G G"
+  by (rule induced_subgraphI) (auto simp: subgraph_refl)
+
 
 
 
@@ -387,6 +390,12 @@ proof -
     by (auto simp: pre_digraph.cycle_def compatible_awalk_verts intro: subgraph_awalk_imp_awalk)
 qed
 
+lemma (in wf_digraph) subgraph_del_vert: "subgraph (del_vert u) G"
+  by (auto simp: subgraph_def compatible_def del_vert_simps wf_digraph_del_vert) intro_locales
+
+lemma (in wf_digraph) subgraph_del_arc: "subgraph (del_arc a) G"
+  by (auto simp: subgraph_def compatible_def del_vert_simps wf_digraph_del_vert) intro_locales
+
 
 
 subsection {* Induced subgraphs *}
@@ -454,6 +463,9 @@ by (intro subgraphI induced_subgraphI)
 lemma (in wf_digraph) wellformed_induce_subgraph[intro]:
   "wf_digraph (G \<restriction> vs)"
   by unfold_locales auto
+
+lemma compatible_induce_subgraph: "compatible (G \<restriction> S) G"
+  by (auto simp: compatible_def)
 
 lemma induced_graph_imp_symmetric:
   assumes "symmetric G"

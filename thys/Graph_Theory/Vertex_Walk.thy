@@ -3,7 +3,7 @@
 *)
 
 theory Vertex_Walk
-imports Digraph
+imports Arc_Walk
 begin
 
 section {* Walks Based on Vertices *}
@@ -734,5 +734,18 @@ next
     then show "vwalk (rev (x # xs)) G" by auto
   qed
 qed
+
+lemma vwalk_singleton[simp]: "vwalk [u] G = (u \<in> verts G)"
+  by auto
+
+lemma (in wf_digraph) vwalk_Cons_Cons[simp]:
+  "vwalk (u # v # ws) G = ((u,v) \<in> arcs_ends G \<and> vwalk (v # ws) G)"
+  by (force elim: vwalk_consE intro: vwalk_consI)
+
+lemma (in wf_digraph) awalk_imp_vwalk:
+  assumes "awalk u p v" shows "vwalk (awalk_verts u p) G"
+  using assms
+  by (induct p arbitrary: u rule: vwalk_arcs.induct)
+     (force simp: awalk_simps dest: in_arcs_imp_in_arcs_ends)+
 
 end

@@ -29,6 +29,8 @@ locale wf_digraph = pre_digraph +
   assumes head_in_verts[simp]: "e \<in> arcs G \<Longrightarrow> head G e \<in> verts G"
 begin
 
+lemma wf_digraph: "wf_digraph G" by intro_locales
+
 lemmas wellformed = tail_in_verts head_in_verts
 
 end
@@ -95,6 +97,8 @@ definition (in wf_digraph) arc :: "'b \<Rightarrow> 'a \<times> 'a \<Rightarrow>
 lemma (in fin_digraph) fin_digraph: "fin_digraph G"
   by unfold_locales
 
+lemma (in nomulti_digraph) nomulti_digraph: "nomulti_digraph G" by unfold_locales
+
 lemma arcs_ends_conv: "arcs_ends G = (\<lambda>e. (tail G e, head G e)) ` arcs G"
   by (auto simp: arc_to_ends_def arcs_ends_def)
 
@@ -105,6 +109,10 @@ lemma arcs_ends_symmetric:
   assumes "symmetric G"
   shows "(u,v) \<in> arcs_ends G \<Longrightarrow> (v,u) \<in> arcs_ends G"
   using assms unfolding symmetric_def sym_def by auto
+
+lemma (in nomulti_digraph) inj_on_arc_to_ends:
+  "inj_on (arc_to_ends G) (arcs G)"
+  by (rule inj_onI) (rule no_multi_arcs)
 
 
 
@@ -151,6 +159,9 @@ lemma adj_in_verts:
   assumes "u \<rightarrow>\<^bsub>G\<^esub> v" shows "u \<in> verts G" "v \<in> verts G"
   using assms unfolding arcs_ends_conv by auto
 
+lemma dominatesI: assumes "arc_to_ends G a = (u,v)" "a \<in> arcs G" shows "u \<rightarrow>\<^bsub>G\<^esub> v"
+  using assms by (auto simp: arcs_ends_def intro: rev_image_eqI)
+
 lemma reachable_refl [intro!, Pure.intro!, simp]: "v \<in> verts G \<Longrightarrow> v \<rightarrow>\<^sup>* v"
   unfolding reachable_def by auto
 
@@ -182,6 +193,12 @@ lemma converse_reachable_induct[consumes 1, case_names base step, induct pred: r
        "\<And>x y. \<lbrakk>x \<rightarrow>\<^bsub>G\<^esub> y; y \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v; P y\<rbrakk> \<Longrightarrow> P x"
   shows "P u"
   using assms unfolding reachable_def by (rule converse_rtrancl_on_induct) auto
+
+lemma (in pre_digraph) converse_reachable_cases:
+  assumes "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
+  obtains (base) "u = v" "u \<in> verts G"
+    | (step) w where "u \<rightarrow>\<^bsub>G\<^esub> w" "w \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
+  using assms unfolding reachable_def by (cases rule: converse_rtrancl_on_cases) auto
 
 lemma reachable_in_verts:
   assumes "u \<rightarrow>\<^sup>* v" shows "u \<in> verts G" "v \<in> verts G"
@@ -225,8 +242,19 @@ lemma reachable_conv:
   apply auto
   done
 
+lemma reachable_conv':
+  assumes "u \<in> verts G"
+  shows "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (u,v) \<in> (arcs_ends G)\<^sup>*" (is "?L = ?R")
+proof
+  assume "?R" then show "?L" using assms  by induct auto
+qed (auto simp: reachable_conv)
+
 
 end
+
+lemma (in sym_digraph) symmetric_reachable':
+  assumes "v \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w" shows "w \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
+  using sym_arcs assms by (rule symmetric_reachable)
 
 
 
@@ -292,8 +320,13 @@ definition add_arc :: "'b \<Rightarrow>  ('a,'b) pre_digraph" where
 definition  del_arc :: "'b \<Rightarrow> ('a,'b) pre_digraph" where
   "del_arc a = \<lparr> verts = verts G, arcs = arcs G - {a}, tail = tail G, head = head G \<rparr>"
 
+definition add_vert :: "'a \<Rightarrow>  ('a,'b) pre_digraph" where
+  "add_vert v = \<lparr> verts = insert v (verts G), arcs = arcs G, tail = tail G, head = head G \<rparr>"
 
-lemma (in pre_digraph)
+definition del_vert :: "'a \<Rightarrow>  ('a,'b) pre_digraph" where
+  "del_vert v = \<lparr> verts = verts G - {v}, arcs = {a \<in> arcs G. tail G a \<noteq> v \<and> head G a \<noteq> v}, tail = tail G, head = head G \<rparr>"
+
+lemma
   verts_add_arc: "\<lbrakk> tail G a \<in> verts G; head G a \<in> verts G \<rbrakk> \<Longrightarrow> verts (add_arc a) = verts G"  and
   verts_add_arc_conv: "verts (add_arc a) = verts G \<union> {tail G a, head G a}" and
   arcs_add_arc: "arcs (add_arc a) = insert a (arcs G)" and
@@ -303,7 +336,7 @@ lemma (in pre_digraph)
 
 lemmas add_arc_simps[simp] = verts_add_arc arcs_add_arc tail_add_arc head_add_arc
 
-lemma (in pre_digraph)
+lemma
   verts_del_arc: "verts (del_arc a) = verts G"  and
   arcs_del_arc: "arcs (del_arc a) = arcs G - {a}" and
   tail_del_arc: "tail (del_arc a) = tail G" and
@@ -312,11 +345,24 @@ lemma (in pre_digraph)
 
 lemmas del_arc_simps[simp] = verts_del_arc arcs_del_arc tail_del_arc head_del_arc
 
-lemma (in wf_digraph)  wf_digraph_add_arc[intro]:
-  "wf_digraph (add_arc a)" by unfold_locales (auto simp: verts_add_arc_conv)
+lemma
+    verts_add_vert: "verts (pre_digraph.add_vert G u) = insert u (verts G)" and
+    arcs_add_vert: "arcs (pre_digraph.add_vert G u) = arcs G" and
+    tail_add_vert: "tail (pre_digraph.add_vert G u) = tail G" and
+    head_add_vert: "head (pre_digraph.add_vert G u) = head G"
+  by (auto simp: pre_digraph.add_vert_def)
 
-lemma (in wf_digraph) wf_digraph_del_arc[intro]:
-  "wf_digraph (del_arc a)" by unfold_locales (auto simp: verts_add_arc_conv)
+lemmas add_vert_simps = verts_add_vert arcs_add_vert tail_add_vert head_add_vert
+
+lemma
+    verts_del_vert: "verts (pre_digraph.del_vert G u) = verts G - {u}" and
+    arcs_del_vert: "arcs (pre_digraph.del_vert G u) = {a \<in> arcs G. tail G a \<noteq> u \<and> head G a \<noteq> u}" and
+    tail_del_vert: "tail (pre_digraph.del_vert G u) = tail G" and
+    head_del_vert: "head (pre_digraph.del_vert G u) = head G" and
+    ends_del_vert: "arc_to_ends (pre_digraph.del_vert G u) = arc_to_ends G"
+  by (auto simp: pre_digraph.del_vert_def arc_to_ends_def)
+
+lemmas del_vert_simps = verts_del_vert arcs_del_vert tail_del_vert head_del_vert
 
 lemma add_add_arc_collapse[simp]: "pre_digraph.add_arc (add_arc a) a = add_arc a"
   by (auto simp: pre_digraph.add_arc_def)
@@ -337,6 +383,9 @@ lemma add_arc_commute: "pre_digraph.add_arc (add_arc b) a = pre_digraph.add_arc 
 lemma del_arc_commute: "pre_digraph.del_arc (del_arc b) a = pre_digraph.del_arc (del_arc a) b"
   by (auto simp: pre_digraph.del_arc_def)
 
+lemma del_arc_in: "a \<notin> arcs G \<Longrightarrow> del_arc a = G"
+  by (rule pre_digraph.equality) (auto simp: add_arc_def)
+
 lemma in_arcs_add_arc_iff:
   "in_arcs (add_arc a) u = (if head G a = u then insert a (in_arcs G u) else in_arcs G u)"
   by auto
@@ -353,7 +402,34 @@ lemma out_arcs_del_arc_iff:
   "out_arcs (del_arc a) u = (if tail G a = u then out_arcs G u - {a} else out_arcs G u)"
   by auto
 
+lemma (in wf_digraph) add_arc_in: "a \<in> arcs G \<Longrightarrow> add_arc a = G"
+  by (rule pre_digraph.equality) (auto simp: add_arc_def)
+
 end
+
+
+
+context wf_digraph begin
+
+lemma wf_digraph_add_arc[intro]:
+  "wf_digraph (add_arc a)" by unfold_locales (auto simp: verts_add_arc_conv)
+
+lemma wf_digraph_del_arc[intro]:
+  "wf_digraph (del_arc a)" by unfold_locales (auto simp: verts_add_arc_conv)
+
+lemma wf_digraph_del_vert: "wf_digraph (del_vert u)"
+  by default (auto simp: del_vert_simps)
+
+lemma wf_digraph_add_vert: "wf_digraph (add_vert u)"
+  by default (auto simp: add_vert_simps)
+
+lemma del_vert_add_vert:
+  assumes "u \<notin> verts G"
+  shows "pre_digraph.del_vert (add_vert u) u = G"
+  using assms by (intro pre_digraph.equality) (auto simp: pre_digraph.del_vert_def add_vert_def)
+
+end
+
 
 context fin_digraph begin
 
@@ -388,6 +464,12 @@ proof -
   with finite_out_arcs show ?thesis
     unfolding out_degree_def by (auto simp: out_arcs_del_arc_iff intro: arg_cong[where f=card])
 qed
+
+lemma fin_digraph_del_vert: "fin_digraph (del_vert u)"
+  by default (auto simp: del_vert_simps)
+
+lemma fin_digraph_del_arc: "fin_digraph (del_arc a)"
+  by default (auto simp: del_vert_simps)
 
 end
 

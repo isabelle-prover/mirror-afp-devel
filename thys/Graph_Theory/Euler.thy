@@ -606,7 +606,7 @@ proof -
   have [simp]: "iso_verts iso_f = id" "iso_head iso_f = snd o snd" "iso_tail iso_f = fst"
     unfolding iso_f_def by auto
   have di_iso_f: "digraph_isomorphism iso_f" unfolding digraph_isomorphism_def iso_f_def
-    by (auto intro: inj_onI dest: inj_onD[OF i])
+    by (auto intro: inj_onI wf_digraph dest: inj_onD[OF i])
 
   let ?iso_g = "inv_iso iso_f"
   have [simp]: "\<And>u. u \<in> verts G \<Longrightarrow> iso_verts ?iso_g u = u"

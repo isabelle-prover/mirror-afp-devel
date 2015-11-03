@@ -5,6 +5,7 @@
 theory Graph_Theory
 imports
   Digraph
+  Bidirected_Digraph
   Arc_Walk
 
   Digraph_Component
@@ -12,6 +13,7 @@ imports
   Digraph_Isomorphism
   Pair_Digraph
   Vertex_Walk
+  Subdivision
 
   Euler
   Kuratowski
