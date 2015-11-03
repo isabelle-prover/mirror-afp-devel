@@ -208,10 +208,10 @@ proof-
     text {*
       As a last option we choose an arbitrary successor but avoid entering @{term W1}.
       In particular, this defines the strategy on the set @{term K}. *}
-    def choose \<equiv> "\<lambda>v. SOME w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)"
+    def succ \<equiv> "\<lambda>v. SOME w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)"
 
     text {* Compose the three pieces. *}
-    def \<sigma> \<equiv> "override_on (override_on choose \<sigma>2 V') \<sigma>1 (attractor p K - K)"
+    def \<sigma> \<equiv> "override_on (override_on succ \<sigma>2 V') \<sigma>1 (attractor p K - K)"
 
     have "attractor p K \<inter> W1 = {}" proof (rule ccontr)
       assume "attractor p K \<inter> W1 \<noteq> {}"
@@ -229,14 +229,14 @@ proof-
     text {* On specific sets, @{term \<sigma>} behaves like one of the three pieces. *}
     have \<sigma>_\<sigma>1: "\<And>v. v \<in> attractor p K - K \<Longrightarrow> \<sigma> v = \<sigma>1 v" unfolding \<sigma>_def by simp
     have \<sigma>_\<sigma>2: "\<And>v. v \<in> V' \<Longrightarrow> \<sigma> v = \<sigma>2 v" unfolding \<sigma>_def V'_def by auto
-    have \<sigma>_K: "\<And>v. v \<in> K \<union> W1 \<Longrightarrow> \<sigma> v = choose v" proof-
+    have \<sigma>_K: "\<And>v. v \<in> K \<union> W1 \<Longrightarrow> \<sigma> v = succ v" proof-
       fix v assume "v \<in> K \<union> W1"
       moreover hence "v \<notin> V'" unfolding V'_def U_def using attractor_set_base by auto
-      ultimately show "\<sigma> v = choose v" unfolding \<sigma>_def U_def using `attractor p K \<inter> W1 = {}`
+      ultimately show "\<sigma> v = succ v" unfolding \<sigma>_def U_def using `attractor p K \<inter> W1 = {}`
         by (metis (mono_tags, lifting) Diff_iff IntI UnE override_on_def override_on_emptyset)
     qed
 
-    text {* Show that @{term choose} succeeds in avoiding entering @{term W1}. *}
+    text {* Show that @{term succ} succeeds in avoiding entering @{term W1}. *}
     { fix v assume v: "v \<in> VV p"
       hence "\<not>deadend v" using no_deadends by blast
       have "\<exists>w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)" proof (cases)
@@ -253,9 +253,9 @@ proof-
           thus False using `v \<notin> W1` by blast
         qed
       qed
-      hence "v\<rightarrow>choose v" "v \<in> W1 \<or> choose v \<notin> W1" unfolding choose_def
+      hence "v\<rightarrow>succ v" "v \<in> W1 \<or> succ v \<notin> W1" unfolding succ_def
         using someI_ex[of "\<lambda>w. v\<rightarrow>w \<and> (v \<in> W1 \<or> w \<notin> W1)"] by blast+
-    } note choose_works = this
+    } note succ_works = this
 
     have "strategy p \<sigma>" proof
       fix v assume v: "v \<in> VV p" "\<not>deadend v"
@@ -268,7 +268,7 @@ proof-
         ultimately have "v \<rightarrow>\<^bsub>G'\<^esub> \<sigma>2 v" using \<sigma>2(1) G'.strategy_def[of p \<sigma>2] by blast
         with `v \<in> V'` show "v\<rightarrow>\<sigma> v" using `E\<^bsub>G'\<^esub> \<subseteq> E` \<sigma>_\<sigma>2 by (metis subsetCE)
       qed
-      moreover have "v \<in> K \<union> W1 \<Longrightarrow> v\<rightarrow>\<sigma> v" using choose_works(1) v \<sigma>_K by auto
+      moreover have "v \<in> K \<union> W1 \<Longrightarrow> v\<rightarrow>\<sigma> v" using succ_works(1) v \<sigma>_K by auto
       moreover have "v \<in> V" using `v \<in> VV p` by blast
       ultimately show "v\<rightarrow>\<sigma> v" using V_decomp by blast
     qed
@@ -293,7 +293,7 @@ proof-
           hence "\<sigma> v \<in> W1"
             using `strategy p \<sigma>` `\<not>deadend v` `v \<in> VV p`
             unfolding strategy_def by blast
-          hence "v \<notin> K" using choose_works(2)[OF `v \<in> VV p`] `v \<in> V - W1` \<sigma>_K by auto
+          hence "v \<notin> K" using succ_works(2)[OF `v \<in> VV p`] `v \<in> V - W1` \<sigma>_K by auto
           moreover have "v \<notin> attractor p K - K" proof
             assume "v \<in> attractor p K - K"
             hence "\<sigma> v \<in> attractor p K"
