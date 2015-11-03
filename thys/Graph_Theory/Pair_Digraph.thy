@@ -355,7 +355,7 @@ lemma sd_path_induct[case_names empty pass sd sdrev]:
       "\<And>es. P e es \<Longrightarrow> P e (e # es)"
       "\<And>es. fst e \<noteq> snd e \<Longrightarrow> P e es \<Longrightarrow> P e ((snd e, fst e) # es)"
   shows "P e es"
-  by (induct es) (rule A, metis B pair_collapse)
+  by (induct es) (rule A, metis B prod.collapse)
 
 lemma co_path_induct[case_names empty single co corev pass]:
   fixes e :: "'a \<times> 'a"

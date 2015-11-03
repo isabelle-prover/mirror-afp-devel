@@ -6,7 +6,7 @@ begin
 
 section \<open>Bidirected Graphs\<close>
 
-locale bidirected_digraph = wf_digraph G for G
+locale bidirected_digraph = wf_digraph G for G +
   fixes arev :: "'b \<Rightarrow> 'b"
   assumes arev_dom: "\<And>a. a \<in> arcs G \<longleftrightarrow> arev a \<noteq> a"
   assumes arev_arev_raw: "\<And>a. a \<in> arcs G \<Longrightarrow> arev (arev a) = a"

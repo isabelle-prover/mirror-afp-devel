@@ -418,10 +418,10 @@ lemma wf_digraph_del_arc[intro]:
   "wf_digraph (del_arc a)" by unfold_locales (auto simp: verts_add_arc_conv)
 
 lemma wf_digraph_del_vert: "wf_digraph (del_vert u)"
-  by default (auto simp: del_vert_simps)
+  by standard (auto simp: del_vert_simps)
 
 lemma wf_digraph_add_vert: "wf_digraph (add_vert u)"
-  by default (auto simp: add_vert_simps)
+  by standard (auto simp: add_vert_simps)
 
 lemma del_vert_add_vert:
   assumes "u \<notin> verts G"
@@ -466,10 +466,10 @@ proof -
 qed
 
 lemma fin_digraph_del_vert: "fin_digraph (del_vert u)"
-  by default (auto simp: del_vert_simps)
+  by standard (auto simp: del_vert_simps)
 
 lemma fin_digraph_del_arc: "fin_digraph (del_arc a)"
-  by default (auto simp: del_vert_simps)
+  by standard (auto simp: del_vert_simps)
 
 end
 

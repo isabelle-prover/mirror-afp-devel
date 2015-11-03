@@ -684,7 +684,7 @@ lemma (in fin_digraph) apaths_finite:
   shows "finite {p. apath u p v}"
 proof -
   have "{p. apath u p v} \<subseteq> (fst o snd) ` {(u,p,v). apath u p v}"
-    by (force intro: image_eqI)
+    by force
   with apaths_finite_triple show ?thesis  by (rule finite_surj)
 qed
 
