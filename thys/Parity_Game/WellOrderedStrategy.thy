@@ -40,6 +40,8 @@ abbreviation "Strategies \<equiv> {\<sigma>. \<exists>v \<in> S. \<sigma> \<in> 
 definition minimal_good_strategy where
   "minimal_good_strategy v \<sigma> \<equiv> \<sigma> \<in> good v \<and> (\<forall>\<sigma>'. (\<sigma>', \<sigma>) \<in> r - Id \<longrightarrow> \<sigma>' \<notin> good v)"
 
+no_notation binomial (infixl "choose" 65)
+
 text {* Among the good strategies on @{term v}, choose the minimum. *}
 definition choose where
   "choose v \<equiv> THE \<sigma>. minimal_good_strategy v \<sigma>"
