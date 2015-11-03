@@ -25,8 +25,7 @@ definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"     (infixl "<:" 50)
 
 instantiation hf :: zero
 begin
-  definition
-    Zero_hf_def: "0 = HF {}"
+  definition Zero_hf_def: "0 = HF {}"
   instance ..
 end
 
@@ -268,11 +267,10 @@ lemma HCollect_hempty [simp]: "HCollect P 0 = 0"
 subsection{*Union operators*}
 
 instantiation hf :: sup
-  begin
-  definition sup_hf :: "hf \<Rightarrow> hf \<Rightarrow> hf"
-    where "sup_hf a b = (THE z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> a | u \<^bold>\<in> b)"
+begin
+  definition "sup a b = (THE z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> a | u \<^bold>\<in> b)"
   instance ..
-  end
+end
 
 abbreviation hunion :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl "\<squnion>" 65) where
   "hunion \<equiv> sup"
@@ -307,12 +305,8 @@ subsection{*Definition 1.8, Intersections*}
 
 instantiation hf :: inf
 begin
-
-definition inf_hf :: "hf \<Rightarrow> hf \<Rightarrow> hf"
-  where "inf_hf a b = \<lbrace>x \<^bold>\<in> a. x \<^bold>\<in> b\<rbrace>"
-
-instance ..
-
+  definition "inf a b = \<lbrace>x \<^bold>\<in> a. x \<^bold>\<in> b\<rbrace>"
+  instance ..
 end
 
 abbreviation hinter :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl "\<sqinter>" 70) where
@@ -336,10 +330,10 @@ lemma HInter_hinsert [simp]: "A\<noteq>0 \<Longrightarrow> \<Sqinter>(A \<triang
 subsection{*Set Difference*}
 
 instantiation hf :: minus
-  begin
-  definition minus_hf where "minus A B = \<lbrace>x \<^bold>\<in> A. \<not> x \<^bold>\<in> B\<rbrace>"
-  instance proof qed
-  end
+begin
+  definition "A - B = \<lbrace>x \<^bold>\<in> A. \<not> x \<^bold>\<in> B\<rbrace>"
+  instance ..
+end
 
 lemma hdiff_iff [iff]: "hmem u (x - y) \<longleftrightarrow> u \<^bold>\<in> x & \<not> u \<^bold>\<in> y"
   by (auto simp: minus_hf_def)
@@ -453,13 +447,13 @@ section{*Subset relation and the Lattice Properties*}
 
 text{*Definition 1.10 (Subset relation).*}
 instantiation hf :: order
-  begin
+begin
   definition less_eq_hf where "A \<le> B \<longleftrightarrow> (\<forall>x. x \<^bold>\<in> A \<longrightarrow> x \<^bold>\<in> B)"
 
-  definition less_hf    where "A < B \<longleftrightarrow> A \<le> B & A \<noteq> (B::hf)"
+  definition less_hf    where "A < B \<longleftrightarrow> A \<le> B \<and> A \<noteq> (B::hf)"
 
-  instance proof qed (auto simp: less_eq_hf_def less_hf_def)
-  end
+  instance by standard (auto simp: less_eq_hf_def less_hf_def)
+end
 
 subsection{*Rules for subsets*}
 
@@ -493,15 +487,15 @@ lemma hf_equalityE:
 subsection{*Lattice properties*}
 
 instantiation hf :: distrib_lattice
-  begin
-  instance proof qed (auto simp: less_eq_hf_def less_hf_def inf_hf_def)
-  end
+begin
+  instance by standard (auto simp: less_eq_hf_def less_hf_def inf_hf_def)
+end
 
 instantiation hf :: bounded_lattice_bot
-  begin
-  definition bot_hf where "bot_hf = (0::hf)"
-  instance proof qed (auto simp: less_eq_hf_def bot_hf_def)
-  end
+begin
+  definition "bot = (0::hf)"
+  instance by standard (auto simp: less_eq_hf_def bot_hf_def)
+end
 
 lemma hinter_hempty_left [simp]: "0 \<sqinter> A = 0"
   by (metis bot_hf_def inf_bot_left)
@@ -956,9 +950,8 @@ lemma HSigma_empty1 [simp]: "HSigma 0 B = 0"
 
 instantiation hf :: times
 begin
-definition times_hf where
-  "times A B = HSigma A (\<lambda>x. B)"
-instance proof qed
+  definition "A * B = HSigma A (\<lambda>x. B)"
+  instance ..
 end
 
 lemma times_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> A * B \<longleftrightarrow> a \<^bold>\<in> A & b \<^bold>\<in> B"
@@ -993,25 +986,21 @@ lemma times_empty_iff: "A*B=0 \<longleftrightarrow> A=0 | B=(0::hf)"
 
 instantiation hf :: mult_zero
 begin
-instance proof qed auto
+  instance by standard auto
 end
 
 section {*Disjoint Sum*}
 
 instantiation hf :: zero_neq_one
 begin
-
-definition
-  One_hf_def: "1 = \<lbrace>0\<rbrace>"
-instance proof
-  qed (auto simp: One_hf_def)
+  definition One_hf_def: "1 = \<lbrace>0\<rbrace>"
+  instance by standard (auto simp: One_hf_def)
 end
 
 instantiation hf :: plus
 begin
-definition plus_hf where
-  "plus A B = (\<lbrace>0\<rbrace> * A) \<squnion> (\<lbrace>1\<rbrace> * B)"
-instance proof qed
+  definition "A + B = (\<lbrace>0\<rbrace> * A) \<squnion> (\<lbrace>1\<rbrace> * B)"
+  instance ..
 end
 
 definition Inl :: "hf=>hf" where
