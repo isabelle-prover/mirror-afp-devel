@@ -571,7 +571,7 @@ lemma Max_torder_in_Domain:
   shows "Max_torder r B \<in> A"
 proof -
   interpret Max_torder!: semilattice_set "max_torder r"
-  where
+  rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+
   show ?thesis using B
@@ -583,7 +583,7 @@ lemma Max_torder_in_set:
   shows "Max_torder r B \<in> B"
 proof -
   interpret Max_torder!: semilattice_set "max_torder r"
-  where
+  rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+
   show ?thesis using B
@@ -595,7 +595,7 @@ lemma Max_torder_above_iff:
   shows "r x (Max_torder r B) \<longleftrightarrow> (\<exists>a\<in>B. r x a)"
 proof -
   interpret Max_torder!: semilattice_set "max_torder r"
-  where
+  rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+
   from B show ?thesis

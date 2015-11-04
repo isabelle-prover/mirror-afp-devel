@@ -251,7 +251,7 @@ lemma onet_nhop_quality_increases:
 subsection \<open>Transfer into the standard model\<close>
 
 interpretation aodv_openproc: openproc paodv opaodv id
-  where "aodv_openproc.initmissing = initmissing"
+  rewrites "aodv_openproc.initmissing = initmissing"
   proof -
     show "openproc paodv opaodv id"
     proof unfold_locales
@@ -296,7 +296,7 @@ interpretation aodv_openproc: openproc paodv opaodv id
   qed
 
 interpretation aodv_openproc_par_qmsg: openproc_parq paodv opaodv id qmsg
-  where "aodv_openproc_par_qmsg.netglobal = netglobal"
+  rewrites "aodv_openproc_par_qmsg.netglobal = netglobal"
     and "aodv_openproc_par_qmsg.initmissing = initmissing"
   proof -
     show "openproc_parq paodv opaodv id qmsg"

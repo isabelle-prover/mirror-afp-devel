@@ -757,7 +757,7 @@ lemma fst_initmissing_netgmap_pair_fst [simp]:
   unfolding initmissing_def by auto
 
 interpretation toy_openproc: openproc ptoy optoy Fun.id
-  where "toy_openproc.initmissing = initmissing"
+  rewrites "toy_openproc.initmissing = initmissing"
   proof -
     show "openproc ptoy optoy Fun.id"
     proof unfold_locales
@@ -812,7 +812,7 @@ where
   "netglobal P \<equiv> (\<lambda>s. P (default toy_init (netlift fst s)))"
 
 interpretation toy_openproc_par_qmsg: openproc_parq ptoy optoy Fun.id qmsg
-  where "toy_openproc_par_qmsg.netglobal = netglobal"
+  rewrites "toy_openproc_par_qmsg.netglobal = netglobal"
     and "toy_openproc_par_qmsg.initmissing = initmissing"
   proof -
     show "openproc_parq ptoy optoy Fun.id qmsg"

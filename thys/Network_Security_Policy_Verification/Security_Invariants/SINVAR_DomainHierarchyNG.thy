@@ -586,7 +586,7 @@ interpretation DomainHierarchyNG: SecurityInvariant_ACS
 where default_node_properties = default_node_properties
 and sinvar = sinvar
 and verify_globals = verify_globals
-where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = DomainHierarchyNG_offending_set"
+rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = DomainHierarchyNG_offending_set"
   apply unfold_locales
     apply(rule ballI)
     apply(drule SecurityInvariant_withOffendingFlows.ENF_fsts_refl_instance[OF DomainHierarchyNG_ENF_refl unassigned_default_candidate], simp_all)[1]
