@@ -8,7 +8,7 @@ text{* In a structure, a full type is one that contains all elements of univ (th
 
 definition (in Tstruct) "full \<sigma> \<equiv> \<forall> d. intT \<sigma> d"
 
-locale FullStruct = F : Struct +
+locale FullStruct = F? : Struct +
 assumes full: "full \<sigma>"
 begin
 lemma full2[simp]: "intT \<sigma> d"
@@ -19,20 +19,20 @@ apply(intro ext) by auto
 end
 
 locale FullModel =
-F : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP +
-F : FullStruct wtFsym wtPsym arOf resOf parOf intT intF intP
+F? : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP +
+F? : FullStruct wtFsym wtPsym arOf resOf parOf intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and intT and intF and intP
 
 text{* An infinite structure is one with all carriers infinite: *}
 
-locale InfStruct = I : Struct +
+locale InfStruct = I? : Struct +
 assumes inf: "infinite {a. intT \<sigma> a}"
 
 locale InfModel =
-I : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP +
-I : InfStruct wtFsym wtPsym arOf resOf parOf intT intF intP
+I? : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP +
+I? : InfStruct wtFsym wtPsym arOf resOf parOf intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and intT and intF and intP
@@ -49,7 +49,7 @@ end
 
 text{* Problem that deduces some infiniteness constraints: *}
 
-locale ProblemIk = Ik : Problem wtFsym wtPsym arOf resOf parOf \<Phi>
+locale ProblemIk = Ik? : Problem wtFsym wtPsym arOf resOf parOf \<Phi>
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi>
@@ -61,8 +61,8 @@ assumes infTp:
 "\<And> \<sigma> intT intF intP (a::univ). \<lbrakk>infTp \<sigma>; MModel intT intF intP\<rbrakk> \<Longrightarrow> infinite {a. intT \<sigma> a}"
 
 locale ModelIk =
-Ik : ProblemIk wtFsym wtPsym arOf resOf parOf \<Phi> infTp +
-Ik : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
+Ik? : ProblemIk wtFsym wtPsym arOf resOf parOf \<Phi> infTp +
+Ik? : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and infTp and intT and intF and intP
@@ -126,7 +126,7 @@ unfolding MI_pred_def intFI_def intPI_def intTI_def .
 
 end (* context MonotProblem *)
 
-locale MonotModel = M : MonotProblem + M : Model
+locale MonotModel = M? : MonotProblem + M? : Model
 
 context MonotModel begin
 

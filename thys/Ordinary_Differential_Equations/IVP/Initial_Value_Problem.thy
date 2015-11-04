@@ -226,8 +226,8 @@ subsubsection{* Connecting solutions *}
 text{*\label{sec:combining-solutions}*}
 
 locale connected_solutions =
-  i1: ivp_on_interval i1 t1 + i2: ivp_on_interval i2 t2 + i: ivp_on_interval i t2
-  + i1: has_solution i1 + i2: has_solution i2
+  i1?: ivp_on_interval i1 t1 + i2?: ivp_on_interval i2 t2 + i?: ivp_on_interval i t2
+  + i1?: has_solution i1 + i2?: has_solution i2
   for i::"('a::ordered_euclidean_space) ivp" and i1::"'a ivp"
   and i2::"'a ivp" and t1 and t2 +
   fixes y
@@ -303,7 +303,7 @@ sublocale connected_solutions \<subseteq> has_solution using is_solution_connect
   by unfold_locales auto
 
 locale connected_unique_solutions =
-  i1: unique_solution i1 + i2: unique_solution i2 +
+  i1?: unique_solution i1 + i2?: unique_solution i2 +
   connected_solutions i i1 i2 t1 t2 "i1.solution"
   for i::"('a::ordered_euclidean_space) ivp" and i1::"'a ivp"
   and i2::"'a ivp" and t1 and t2
@@ -1057,10 +1057,10 @@ lemma (in unique_on_rectangle) unique_on_rectangle_subset:
   by unfold_locales  --{*slow*}
      (fastforce simp: Times_subset_cancel2 order.trans[OF assms] simp del: real_of_nat_Suc)+
 
-locale unique_on_rectangle_superset = subset: unique_on_rectangle + fixes X'' assumes superset: "X' \<subseteq> X''"
+locale unique_on_rectangle_superset = subset?: unique_on_rectangle + fixes X'' assumes superset: "X' \<subseteq> X''"
 begin
 
-sublocale superset_domain: has_solution "i\<lparr>ivp_X:=X''\<rparr>"
+sublocale superset_domain?: has_solution "i\<lparr>ivp_X:=X''\<rparr>"
   using iv_defined lipschitz_on_domain superset
   by unfold_locales (auto intro!: exI[where x=solution] is_solution_on_superset_domain)
 
@@ -1089,8 +1089,8 @@ qed
 end
 
 locale unique_of_superset =
-  sub: has_solution +
-  super: unique_solution "i\<lparr>ivp_X:=X'\<rparr>" for X' +
+  sub?: has_solution +
+  super?: unique_solution "i\<lparr>ivp_X:=X'\<rparr>" for X' +
   assumes subset: "sub.X \<subseteq> X'"
 begin
 

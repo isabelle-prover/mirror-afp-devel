@@ -39,7 +39,7 @@ end
 
 sublocale
   set_mod_maps <
-  set_by_maps: set_modulo qle empty insert_mod set_of I M
+  set_by_maps?: set_modulo qle empty insert_mod set_of I M
 proof (standard, goal_cases)
   case 1 show ?case by(simp add:set_of_def map_empty)
 next

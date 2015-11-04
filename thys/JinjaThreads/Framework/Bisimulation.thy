@@ -245,8 +245,8 @@ subsection {* Delay bisimulation *}
 
 locale delay_bisimulation_base =
   bisimulation_base +
-  trsys1: \<tau>trsys trsys1 \<tau>move1 +
-  trsys2: \<tau>trsys trsys2 \<tau>move2 
+  trsys1?: \<tau>trsys trsys1 \<tau>move1 +
+  trsys2?: \<tau>trsys trsys2 \<tau>move2 
   for \<tau>move1 \<tau>move2 +
   constrains trsys1 :: "('s1, 'tl1) trsys"
   and trsys2 :: "('s2, 'tl2) trsys"

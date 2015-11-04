@@ -26,7 +26,7 @@ lemma measurable_\<iota>'[measurable (raw)]:
 lemma measurable_\<rho>[measurable]: "\<rho> \<in> borel_measurable (count_space UNIV)"
   by simp
 
-sublocale R: MC_with_rewards K \<iota> \<rho>
+sublocale R?: MC_with_rewards K \<iota> \<rho>
   by standard (auto intro: \<iota>_nonneg \<rho>_nonneg)
 
 lemma single_l:

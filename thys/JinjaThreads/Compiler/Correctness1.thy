@@ -66,8 +66,8 @@ qed
 subsection {* Correctness proof *}
 
 locale J0_J1_heap_base =
-  J: J_heap_base +
-  J1: J1_heap_base + 
+  J?: J_heap_base +
+  J1?: J1_heap_base + 
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and empty_heap :: "'heap"

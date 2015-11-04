@@ -14,8 +14,8 @@ begin
 section {* The Jordan-H\"older Theorem *}
 
 locale jordan_hoelder = group
-  + comp\<HH>: composition_series G \<HH>
-  + comp\<GG>: composition_series G \<GG> for \<HH> and \<GG>
+  + comp\<HH>?: composition_series G \<HH>
+  + comp\<GG>?: composition_series G \<GG> for \<HH> and \<GG>
   + assumes finite:"finite (carrier G)"
 
 text {* Before we finally start the actual proof of the theorem, one last lemma: Cancelling

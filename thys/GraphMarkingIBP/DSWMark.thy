@@ -32,7 +32,7 @@ locale classical = node +
       "label0 x = (if atom0 x then (some::Index) else none)"
   end
 
-sublocale classical \<subseteq> dsw: pointer "nil" "root" "none::Index" "link0" "label0"
+sublocale classical \<subseteq> dsw?: pointer "nil" "root" "none::Index" "link0" "label0"
 proof qed auto
 
 context classical

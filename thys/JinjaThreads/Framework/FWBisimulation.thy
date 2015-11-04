@@ -1655,10 +1655,10 @@ locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>
   and ex_final1_conv_ex_final2:
    "(\<exists>x1. final1 x1) \<longleftrightarrow> (\<exists>x2. final2 x2)"
 
-sublocale FWbisimulation < bisim: bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
+sublocale FWbisimulation < bisim?: bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
 by(rule bisimulation_locale)
 
-sublocale FWbisimulation < bisim_diverge:
+sublocale FWbisimulation < bisim_diverge?:
   FWdelay_bisimulation_diverge final1 r1 final2 r2 convert_RA bisim "\<lambda>x1 x2. True" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"
 proof -
   interpret biw: bisimulation_into_delay "r1 t" "r2 t" "bisim t" "ta_bisim bisim" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"

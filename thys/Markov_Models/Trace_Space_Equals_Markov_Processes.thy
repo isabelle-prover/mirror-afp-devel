@@ -18,7 +18,7 @@ text {*
   has the same probabilities.
 *}
 
-locale Time_Homogeneous_Discrete_Markov_Process = M: prob_space +
+locale Time_Homogeneous_Discrete_Markov_Process = M?: prob_space +
   fixes S :: "'s set" and X :: "nat \<Rightarrow> 'a \<Rightarrow> 's"
   assumes X [measurable]: "\<And>t. X t \<in> measurable M (count_space UNIV)"
   assumes S: "countable S" "\<And>n. AE x in M. X n x \<in> S"

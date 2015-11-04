@@ -5050,10 +5050,10 @@ qed
 
 end
 
-sublocale J1_JVM_conf_read < heap_conf: J1_JVM_heap_conf
+sublocale J1_JVM_conf_read < heap_conf?: J1_JVM_heap_conf
 by(unfold_locales)
 
-sublocale J1_JVM_conf_read < heap: J1_heap
+sublocale J1_JVM_conf_read < heap?: J1_heap
 apply(rule J1_heap.intro)
 apply(subst compP_heap[symmetric, where f="\<lambda>_ _ _ _. compMb2", folded compP2_def])
 apply(unfold_locales)

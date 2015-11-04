@@ -18,7 +18,7 @@ text{* Extension of the partitioned infinitely augmented problem
 for dealing with guards: *}
 
 locale ProblemIkTpartG =
-Ik : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw
+Ik? : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw
 for wtFsym :: "'fsym \<Rightarrow> bool"
 and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
@@ -32,8 +32,8 @@ assumes
 and protCl_fsym: "\<And> f. protCl (resPf f) \<Longrightarrow> list_all protCl (arOf f)"
 
 locale ModelIkTpartG =
-Ik : ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw protCl +
-Ik : ModelIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw intT intF intP
+Ik? : ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw protCl +
+Ik? : ModelIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool"
 and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
@@ -100,7 +100,7 @@ qed
 
 end (* context ProblemIkTpartG *)
 
-sublocale ProblemIkTpartG < GE : Signature
+sublocale ProblemIkTpartG < GE? : Signature
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 apply standard
@@ -293,7 +293,7 @@ fun GE_intP where
 
 end (* context ModelIkTpartG *)
 
-sublocale ModelIkTpartG < GE : Struct
+sublocale ModelIkTpartG < GE? : Struct
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym and
 arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and intF = GE_intF and intP = GE_intP
@@ -353,7 +353,7 @@ end (* context ModelIkTpartG *)
 (* Soundness theorem in sublocale form: Given a problem (with indicated
 type partition) and a model for it, we obtain a model of the tag-extended (GE)
 problem: *)
-sublocale ModelIkTpartG < GE : Model
+sublocale ModelIkTpartG < GE? : Model
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym and
 arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB and intF = GE_intF and intP = GE_intP
@@ -364,12 +364,12 @@ subsection{* Completeness  *}
 
 (* Problem with type partition and model of its guard-encoding translation: *)
 locale ProblemIkTpartG_GEModel =
-Ik : ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw protCl +
-GE : Model "ProblemIkTpartG.GE_wtFsym wtFsym resOf protCl"
-           "ProblemIkTpartG.GE_wtPsym wtPsym prot protFw"
-           "ProblemIkTpartG.GE_arOf arOf" "ProblemIkTpartG.GE_resOf resOf"
-           "ProblemIkTpartG.GE_parOf parOf"
-           gPB eintT eintF eintP
+Ik? : ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw protCl +
+GE? : Model "ProblemIkTpartG.GE_wtFsym wtFsym resOf protCl"
+            "ProblemIkTpartG.GE_wtPsym wtPsym prot protFw"
+            "ProblemIkTpartG.GE_arOf arOf" "ProblemIkTpartG.GE_resOf resOf"
+            "ProblemIkTpartG.GE_parOf parOf"
+            gPB eintT eintF eintP
 for wtFsym :: "'fsym \<Rightarrow> bool"
 and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
@@ -540,7 +540,7 @@ apply standard using NE_intT_forget wt_intF by auto
 
 end (* context ProblemIkTpartG_GEModel *)
 
-sublocale ProblemIkTpartG_GEModel < Ik : Struct
+sublocale ProblemIkTpartG_GEModel < Ik? : Struct
 where intT = intT and intF = intF and intP = intP
 using Struct .
 
@@ -624,7 +624,7 @@ end (* context ProblemIkTpartG_GEModel *)
 type partition) and a model for its guard-translated problem,
 we obtain a model of the original problem: *)
 
-sublocale ProblemIkTpartG_GEModel < Ik : Model
+sublocale ProblemIkTpartG_GEModel < Ik? : Model
 where intT = intT and intF = intF and intP = intP
 using G_completeness .
 
@@ -633,7 +633,7 @@ subsection{* The result of the guard translation is an infiniteness-augmented pr
 
 (* An observation similar to the corresponding one for tags applies here.  *)
 
-sublocale ProblemIkTpartG < GE : Problem
+sublocale ProblemIkTpartG < GE? : Problem
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB
@@ -641,7 +641,7 @@ apply standard
 apply auto
 done
 
-sublocale ProblemIkTpartG < GE : ProblemIk
+sublocale ProblemIkTpartG < GE? : ProblemIk
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB
@@ -679,7 +679,7 @@ by(cases p, auto)
 definition "grdOf c l x = grdLit x"
 end
 
-sublocale ProblemIkTpartG < GE: ProblemIkPol
+sublocale ProblemIkTpartG < GE?: ProblemIkPol
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB and pol = pol and grdOf = grdOf ..
@@ -786,7 +786,7 @@ qed
 end (* context ProblemIkTpartG *)
 
 
-sublocale ProblemIkTpartG < GE: ProblemIkPolMcalc2C
+sublocale ProblemIkTpartG < GE?: ProblemIkPolMcalc2C
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB and pol = pol and grdOf = grdOf
@@ -808,7 +808,7 @@ end (* context ProblemIkTpartG *)
 
 (* Also in sublocale form: *)
 
-sublocale ProblemIkTpartG < GE: MonotProblem
+sublocale ProblemIkTpartG < GE?: MonotProblem
 where wtFsym = GE_wtFsym and wtPsym = GE_wtPsym
 and arOf = GE_arOf and resOf = GE_resOf and parOf = GE_parOf
 and \<Phi> = gPB
