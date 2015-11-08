@@ -478,7 +478,9 @@ proof -
 
   have "f' (79 - (loop__1__j'' + 1)) crb'' crc'' crd'' =
     f_spark' (79 - (loop__1__j'' + 1)) crb'' crc'' crd''"
-    using returns by simp
+    using returns(3-4)
+    by simp
+
   note returns = returns this
 
   note step_from_hyp[OF step_hyp
@@ -561,7 +563,7 @@ proof -
       x'')"
     unfolding from_to_id by simp
   show ?thesis
-    unfolding round_def
+    unfolding RMD.round_def
     unfolding steps_to_steps'
     unfolding step_hyp[symmetric]
     by (simp add: uint_word_ariths(1) rdmods

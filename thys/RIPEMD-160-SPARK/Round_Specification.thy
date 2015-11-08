@@ -63,6 +63,6 @@ abbreviation steps' :: "[chain_pair', int, block'] => chain_pair'" where
     (nat i))"
 
 abbreviation round' :: " [ chain' , block' ] => chain' " where
-  "round' c b == to_chain (round (%n. word_of_int (b (int n))) (from_chain c))"
+  "round' c b == to_chain (RMD.round (%n. word_of_int (b (int n))) (from_chain c))"
 
 end
