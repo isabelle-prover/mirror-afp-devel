@@ -289,15 +289,14 @@ next
     have "vpath (vwalk_to_vpath xs) G"
       apply (rule not_in_set)
       apply (rule vwalkI_append_r[where p="[x]"])
-      using Cons and not_in_set
-      by auto
+       using Cons not_in_set by auto
     then have "vwalk (x # vwalk_to_vpath xs) G"
       apply (auto intro!: vwalk_consI simp add: vwalk_to_vpath_hd)
-      using not_in_set
-      apply -
-      apply (erule vwalk_consE)
-      using Cons
-      apply (auto intro: `x \<in> verts G`)
+       using not_in_set
+       apply -
+       apply (erule vwalk_consE)
+        using Cons
+        apply (auto intro: `x \<in> verts G`)
       done
     then have "vpath (x # vwalk_to_vpath xs) G"
       apply (rule vpathI)

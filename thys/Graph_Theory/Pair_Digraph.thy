@@ -329,10 +329,11 @@ lemma co_path_simps[simp]:
     \<Longrightarrow> co_path e w (e1 # e2 # es) = (snd e, fst e) # co_path e w es"
   "\<lbrakk>e1 \<noteq> (fst e, w) \<or> e2 \<noteq> (w, snd e); e1 \<noteq> (snd e, w) \<or> e2 \<noteq> (w, fst e)\<rbrakk>
     \<Longrightarrow> co_path e w (e1 # e2 # es) = e1 # co_path e w (e2 # es)"
-  apply (cases es)
-  apply (case_tac [!] e)
-  apply (case_tac [!] "fst e = snd e")
-  apply auto
+  apply (cases es; auto)
+  apply (cases e; auto)
+  apply (cases e; auto)
+  apply (cases e; cases "fst e = snd e"; auto)
+  apply (cases e; cases "fst e = snd e"; auto)
   done
 
 lemma co_path_nonempty[simp]: "co_path e w p = [] \<longleftrightarrow> p = []"

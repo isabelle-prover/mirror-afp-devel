@@ -159,8 +159,8 @@ proof -
 
   with `e \<notin> set es` show ?thesis
     apply (cases "w = tail G e")
-    apply (case_tac [!] "w = head G e")
-    apply (auto simp: arc_set_balance_def)
+     apply (case_tac [!] "w = head G e")
+       apply (auto simp: arc_set_balance_def)
     done
 qed
 
@@ -525,8 +525,8 @@ proof -
     then show "in_degree ?H w = out_degree ?H w"
       using deg deg_in deg_out e_notin
       apply (cases "w = u")
-      apply (case_tac [!] "w = v")
-      by (auto simp: in_degree_add_arc_iff out_degree_add_arc_iff)
+       apply (case_tac [!] "w = v")
+         by (auto simp: in_degree_add_arc_iff out_degree_add_arc_iff)
   qed
 
   then obtain w p where Het: "H.euler_trail ?e w p w" by blast

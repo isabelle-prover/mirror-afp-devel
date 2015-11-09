@@ -239,7 +239,7 @@ lemma reachable_conv:
   "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (u,v) \<in> (arcs_ends G)^* \<inter> (verts G \<times> verts G)"
   apply (auto intro: reachable_in_verts)
   apply (induct rule: rtrancl_induct)
-  apply auto
+   apply auto
   done
 
 lemma reachable_conv':

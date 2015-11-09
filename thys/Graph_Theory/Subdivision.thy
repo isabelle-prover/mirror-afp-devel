@@ -351,10 +351,9 @@ begin
         (u, v, w) (e, (u,w), (v,w))"
       unfolding subdivision_step_def
       unfolding prod.simps with_proj_simps
-      apply (intro conjI; fact?)
-      apply (simp_all add: * )
-      using divide uvw apply (auto simp add: swap_in_def \<open>e = _\<close> compatibleI_with_proj)
-      done
+      using divide uvw
+      by (intro conjI H.bidirected_digraph I.bidirected_digraph *)
+         (auto simp add: swap_in_def \<open>e = _\<close> compatibleI_with_proj)
     ultimately
     show ?case by (auto intro: subdivision.divide)
   qed

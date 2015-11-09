@@ -553,19 +553,14 @@ proof -
       then have "perm_restrict f (S - A) y = y" by (simp add: perm_restrict_simps)
       then show ?thesis ..
     qed
-  }
+  } note X = this
 
   { fix x y assume "perm_restrict f (S - A) x = perm_restrict f (S - A) y"
     with assms have "x = y"
       by (auto simp: perm_restrict_def permutes_def split: if_splits intro: cyclic_on_f_in)
-  } note X = this
+  } note Y = this
 
-  show ?thesis
-    apply (auto simp: permutes_def)
-    apply (auto simp: perm_restrict_simps)
-    apply fact+
-    apply (rule X, simp)
-    done
+  show ?thesis by (auto simp: permutes_def perm_restrict_simps X intro: Y)
 qed
 
 lemma orbit_eqI:
@@ -616,9 +611,8 @@ proof (induction arbitrary: f rule: finite_psubset_induct)
       using C by auto
 
     show ?thesis
-      apply (intro conjI Un_ins Disj_ins exI[where x="insert (orbit f s) C"])
-      apply (auto simp: cyclic_orbit in_C_cyclic)[]
-      done
+      by (intro conjI Un_ins Disj_ins exI[where x="insert (orbit f s) C"])
+        (auto simp: cyclic_orbit in_C_cyclic)
   qed
 qed
 
@@ -955,14 +949,27 @@ lemma segment_overlapping:
   assumes "x \<in> orbit f a" "x \<in> orbit f b" "bij f"
   shows "segment f a x \<subseteq> segment f b x \<or> segment f b x \<subseteq> segment f a x"
   using assms(1,2)
-proof induct
+proof induction
   case base then show ?case by (simp add: segment1_empty)
 next
   case (step x)
   from \<open>bij f\<close> have "inj f" by (simp add: bij_is_inj)
-  from step show ?case
-    apply (auto)
-    by (smt inv_end_in_segment[of "f x" for x, OF _ _ \<open>bij f\<close>] in_mono inv_f_f[OF \<open>inj f\<close>] orbit_eqI(2) segment.base segment1_empty segmentD_orbit segment_step_2D segment_subset)
+  have *: "\<And>f x y. y \<in> segment f x (f x) \<Longrightarrow> False" by (simp add: segment1_empty)
+  { fix y z
+    assume A: "y \<in> segment f b (f x)" "y \<notin> segment f a (f x)" "z \<in> segment f a (f x)"
+    from \<open>x \<in> orbit f a\<close> \<open>f x \<in> orbit f b\<close> \<open>y \<in> segment f b (f x)\<close>
+    have "x \<in> orbit f b"
+      by (metis * inv_end_in_segment[OF _ _ \<open>bij f\<close>] inv_f_eq[OF \<open>inj f\<close>] segmentD_orbit)
+    moreover
+    with \<open>x \<in> orbit f a\<close> step.IH
+    have "segment f a (f x) \<subseteq> segment f b (f x) \<or> segment f b (f x) \<subseteq> segment f a (f x)"
+      apply auto
+       apply (metis * inv_end_in_segment[OF _ _ \<open>bij f\<close>] inv_f_eq[OF \<open>inj f\<close>] segment_step_2D segment_subset step.prems subsetCE)
+      by (metis (no_types, lifting) `inj f` * inv_end_in_segment[OF _ _ \<open>bij f\<close>] inv_f_eq orbit_eqI(2) segment_step_2D segment_subset subsetCE)
+    ultimately
+    have "segment f a (f x) \<subseteq> segment f b (f x)" using A by auto
+  } note C = this
+  then show ?case by auto
 qed
 
 lemma segment_disj:

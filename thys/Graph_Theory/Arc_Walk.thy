@@ -649,6 +649,22 @@ proof -
   then show ?thesis ..
 qed
 
+lemma awalk_verts_reachable_from:
+  assumes "awalk u p v" "w \<in> set (awalk_verts u p)" shows "u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w"
+proof  -
+  obtain s where "awalk u s w" using awalk_decomp[OF assms] by blast
+  then show ?thesis by (metis reachable_awalk)
+qed
+
+lemma awalk_verts_reachable_to:
+  assumes "awalk u p v" "w \<in> set (awalk_verts u p)" shows "w \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"
+proof  -
+  obtain s where "awalk w s v" using awalk_decomp[OF assms] by blast
+  then show ?thesis by (metis reachable_awalk)
+qed
+
+
+
 
 
 subsection {* Paths *}
@@ -845,6 +861,17 @@ qed
 lemma reachable_apath:
   "u \<rightarrow>\<^sup>* v \<longleftrightarrow> (\<exists>p. apath u p v)"
   by (auto intro: awalkI_apath apath_awalk_to_apath simp: reachable_awalk)
+
+lemma no_loops_in_apath:
+  assumes "apath u p v" "a \<in> set p" shows "tail G a \<noteq> head G a"
+proof -
+  from \<open>a \<in> set p\<close> obtain p1 p2 where "p = p1 @ a # p2" by (auto simp: in_set_conv_decomp)
+  with \<open>apath u p v\<close> have "apath (tail G a) ([a] @ p2) (v)"
+    by (auto simp: apath_append_iff apath_Cons_iff apath_Nil_iff)
+  then have "apath (tail G a) [a] (head G a)" by - (drule apath_append_iff[THEN iffD1], simp)
+  then show ?thesis by (auto simp:  apath_Cons_iff)
+qed
+
 
 end
 
