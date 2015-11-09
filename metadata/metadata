@@ -2097,7 +2097,7 @@ topic = Logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
-abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (\<alpha>)<i>formula</i> represent propositional formulas with uninterpreted variables from type \<alpha>, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
+abstract = abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (α)<i>formula</i> represent propositional formulas with uninterpreted variables from type α, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
 
 [Sort_Encodings]
 title = Sound and Complete Sort Encodings for First-Order Logic
