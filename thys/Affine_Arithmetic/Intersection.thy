@@ -866,7 +866,7 @@ lemma in_set_inl_lex: "x \<in> set (inl xs) \<Longrightarrow> lex x 0"
   by (auto simp: inl_def list_of_pdevs_def dest!: in_set_independent_pdevs_invariant_nlex
     split: split_if_asm)
 
-interpretation ccw0!: linorder_list "ccw 0" "set (inl (snd X))"
+interpretation ccw0: linorder_list "ccw 0" "set (inl (snd X))"
 proof unfold_locales
   fix a b c
   show "a \<noteq> b \<Longrightarrow> ccw 0 a b \<or> ccw 0 b a"

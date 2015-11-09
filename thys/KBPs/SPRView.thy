@@ -63,7 +63,7 @@ where
   "spr_jviewIncr \<equiv> \<lambda>a obs' tobs. tobs \<leadsto> obs'"
 
 sublocale Environment
-        < SPR!: IncrEnvironment jkbp envInit envAction envTrans envVal
+        < SPR: IncrEnvironment jkbp envInit envAction envTrans envVal
                 spr_jview envObs spr_jviewInit spr_jviewIncr
 (*<*)
 proof

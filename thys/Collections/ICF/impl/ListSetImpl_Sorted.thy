@@ -218,7 +218,7 @@ definition lss_basic_ops :: "('x::linorder,'x lss) oset_basic_ops"
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lss_basic!: StdBasicOSet lss_basic_ops
+interpretation lss_basic: StdBasicOSet lss_basic_ops
   apply (rule StdBasicOSet.intro)
   apply (rule StdBasicSet.intro)
   apply (simp_all add: icf_rec_unf)
@@ -238,8 +238,8 @@ definition [icf_rec_def]: "lss_ops \<equiv> lss_basic.dflt_oops \<lparr>
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lss!: StdOSetDefs lss_ops .
-interpretation lss!: StdOSet lss_ops
+interpretation lss: StdOSetDefs lss_ops .
+interpretation lss: StdOSet lss_ops
 proof -
   interpret aux: StdOSet lss_basic.dflt_oops
     by (rule lss_basic.dflt_oops_impl)

@@ -632,7 +632,7 @@ lemma (in at_least_two_elements) min_inv_lr:
   done
 
 (*>*)
-sublocale at_least_two_elements < F!: DomSolP ValD_copy_rec ValK_copy_rec lr
+sublocale at_least_two_elements < F: DomSolP ValD_copy_rec ValK_copy_rec lr
   apply standard
          apply (rule mono_lr)
         apply (rule fix_ValD_copy_rec_ID)

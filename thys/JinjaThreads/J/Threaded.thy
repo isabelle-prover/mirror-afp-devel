@@ -65,7 +65,7 @@ by(unfold_locales)(auto dest: red_new_thread_heap)
 
 end
 
-sublocale J_heap_base < red_mthr!: multithreaded
+sublocale J_heap_base < red_mthr: multithreaded
   "final_expr"
   "mred P"
   convert_RA
@@ -136,7 +136,7 @@ by(unfold_locales)(fastforce dest: red_hext_incr red_NewThread_Thread_Object eli
 
 end
 
-sublocale J_heap < red_tconf!: lifting_wf final_expr "mred P" convert_RA "\<lambda>t ex h. P,h \<turnstile> t \<surd>t"
+sublocale J_heap < red_tconf: lifting_wf final_expr "mred P" convert_RA "\<lambda>t ex h. P,h \<turnstile> t \<surd>t"
 by(rule lifting_wf_tconf)
 
 section {* Towards agreement between the framework semantics' lock state and the locks stored in the expressions *}

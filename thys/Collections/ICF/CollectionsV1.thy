@@ -11,7 +11,7 @@ begin
     TODO: Dirty hack to workaround a problem that occurs with sublocale here:
       When declaring
         
-  sublocale poly_map_iteratei < v1_iteratei!: map_iteratei \<alpha> invar iteratei
+  sublocale poly_map_iteratei < v1_iteratei: map_iteratei \<alpha> invar iteratei
     by (rule v1_iteratei_impl)
 
       Any further 
@@ -237,9 +237,9 @@ qed
   (* Commented out, as it causes strange errors of the kind:
     Type variable "?'a" has two distinct sorts
 
-  sublocale poly_set_iteratei < v1_iteratei!: set_iteratei \<alpha> invar iteratei
+  sublocale poly_set_iteratei < v1_iteratei: set_iteratei \<alpha> invar iteratei
     by (rule v1_iteratei_impl)
-  sublocale poly_set_iterateoi < v1_iteratei!: set_iterateoi \<alpha> invar iterateoi
+  sublocale poly_set_iterateoi < v1_iteratei: set_iterateoi \<alpha> invar iterateoi
     by (rule v1_iterateoi_impl)
   sublocale poly_set_rev_iterateoi 
     < v1_iteratei!: set_reverse_iterateoi \<alpha> invar rev_iterateoi
@@ -446,9 +446,9 @@ qed
     v1_reverse_iterateoi_impl[locale_witness_add]
 
   (*
-  sublocale poly_map_iteratei < v1_iteratei!: map_iteratei \<alpha> invar iteratei
+  sublocale poly_map_iteratei < v1_iteratei: map_iteratei \<alpha> invar iteratei
     by (rule v1_iteratei_impl)
-  sublocale poly_map_iterateoi < v1_iteratei!: map_iterateoi \<alpha> invar iterateoi
+  sublocale poly_map_iterateoi < v1_iteratei: map_iterateoi \<alpha> invar iterateoi
     by (rule v1_iterateoi_impl)
   sublocale poly_map_rev_iterateoi 
     < v1_iteratei!: map_reverse_iterateoi \<alpha> invar rev_iterateoi

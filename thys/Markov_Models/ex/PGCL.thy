@@ -63,7 +63,7 @@ lemma step_finite: "finite (step x)"
 lemma step_non_empty: "step x \<noteq> {}"
   by (induction x rule: step.induct) simp_all
 
-interpretation step!: Markov_Decision_Process step
+interpretation step: Markov_Decision_Process step
   proof qed (rule step_non_empty)
 
 definition rF :: "('s \<Rightarrow> ereal) \<Rightarrow> (('s pgcl \<times> 's) stream \<Rightarrow> ereal) \<Rightarrow> ('s pgcl \<times> 's) stream \<Rightarrow> ereal" where

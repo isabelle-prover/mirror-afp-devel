@@ -168,7 +168,7 @@ text{**}
 end (* context FiniteSingleAgentEnvironment *)
 
 sublocale FiniteSingleAgentEnvironment
-        < SPRsingle!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+        < SPRsingle: SimIncrEnvironment jkbp envInit envAction envTrans envVal
                                        spr_jview envObs spr_jviewInit spr_jviewIncr
                                        spr_sim spr_simRels spr_simVal
 (*<*)
@@ -1009,7 +1009,7 @@ The above is sufficient to instantiate the @{term "Algorithm"} locale.
 *}
 
 sublocale FiniteSingleAgentEnvironment
-        < SPRsingle!: Algorithm
+        < SPRsingle: Algorithm
             jkbp envInit envAction envTrans envVal
             spr_jview envObs spr_jviewInit spr_jviewIncr
             spr_sim spr_simRels spr_simVal

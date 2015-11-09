@@ -570,7 +570,7 @@ lemma Max_torder_in_Domain:
   assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "Max_torder r B \<in> A"
 proof -
-  interpret Max_torder!: semilattice_set "max_torder r"
+  interpret Max_torder: semilattice_set "max_torder r"
   rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+
@@ -582,7 +582,7 @@ lemma Max_torder_in_set:
   assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "Max_torder r B \<in> B"
 proof -
-  interpret Max_torder!: semilattice_set "max_torder r"
+  interpret Max_torder: semilattice_set "max_torder r"
   rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+
@@ -594,7 +594,7 @@ lemma Max_torder_above_iff:
   assumes B: "finite B" "B \<noteq> {}" "B \<subseteq> A"
   shows "r x (Max_torder r B) \<longleftrightarrow> (\<exists>a\<in>B. r x a)"
 proof -
-  interpret Max_torder!: semilattice_set "max_torder r"
+  interpret Max_torder: semilattice_set "max_torder r"
   rewrites
     "semilattice_set.F (max_torder r) = Max_torder r"
     by (fact semilattice_set Max_torder_def [symmetric])+

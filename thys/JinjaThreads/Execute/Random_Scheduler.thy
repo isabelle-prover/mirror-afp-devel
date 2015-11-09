@@ -82,9 +82,9 @@ locale random_scheduler =
     is_\<alpha> is_invar is_memb is_ins is_delete
     thr'_\<alpha> thr'_invar thr'_empty thr'_ins_dj
   +
-  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate +
-  thr'!: set_to_list thr'_\<alpha> thr'_invar thr'_to_list 
+  ws: map_delete ws_\<alpha> ws_invar ws_delete +
+  ws: map_iteratei ws_\<alpha> ws_invar ws_iterate +
+  thr': set_to_list thr'_\<alpha> thr'_invar thr'_to_list 
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"

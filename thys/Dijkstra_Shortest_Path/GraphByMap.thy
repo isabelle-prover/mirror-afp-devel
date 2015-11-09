@@ -25,9 +25,9 @@ lemma option_bind_alt:
   by (auto split: option.split)
 
 locale GraphByMapDefs = 
-  m1!: StdMapDefs m1_ops +
-  m2!: StdMapDefs m2_ops +
-  s3!: StdSetDefs s3_ops
+  m1: StdMapDefs m1_ops +
+  m2: StdMapDefs m2_ops +
+  s3: StdSetDefs s3_ops
   for m1_ops::"('V,'m2,'m1,_) map_ops_scheme"
   and m2_ops::"('V,'s3,'m2,_) map_ops_scheme"
   and s3_ops::"('W,'s3,_) set_ops_scheme"
@@ -187,10 +187,10 @@ begin
 end
 
 locale GraphByMap = GraphByMapDefs m1_ops m2_ops s3_ops m1_mvif +
-  m1!: StdMap m1_ops +
-  m2!: StdMap m2_ops +
-  s3!: StdSet s3_ops +
-  m1!: map_value_image_filter m1.\<alpha> m1.invar m1.\<alpha> m1.invar m1_mvif
+  m1: StdMap m1_ops +
+  m2: StdMap m2_ops +
+  s3: StdSet s3_ops +
+  m1: map_value_image_filter m1.\<alpha> m1.invar m1.\<alpha> m1.invar m1_mvif
   for m1_ops::"('V,'m2,'m1,_) map_ops_scheme"
   and m2_ops::"('V,'s3,'m2,_) map_ops_scheme"
   and s3_ops::"('W,'s3,_) set_ops_scheme"
@@ -212,7 +212,7 @@ sublocale GraphByMap < graph gbm_\<alpha> gbm_invar
 proof
   fix g
   assume INV: "gbm_invar g"
-  then interpret vg!: valid_graph "(gbm_\<alpha> g)" by (simp add: gbm_invar_def)
+  then interpret vg: valid_graph "(gbm_\<alpha> g)" by (simp add: gbm_invar_def)
   
   from vg.E_valid
   show "fst ` edges (gbm_\<alpha> g) \<subseteq> nodes (gbm_\<alpha> g)" and

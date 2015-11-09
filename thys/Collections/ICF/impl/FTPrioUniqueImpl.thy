@@ -15,13 +15,13 @@ subsection "Definitions"
 type_synonym ('a,'b) aluprioi = "(unit, ('a, 'b) LP) FingerTree"
 
 setup Locale_Code.open_block
-interpretation aluprio_ga!: aluprio ft_ops by unfold_locales
+interpretation aluprio_ga: aluprio ft_ops by unfold_locales
 setup Locale_Code.close_block
 
 definition [icf_rec_def]: "aluprioi_ops \<equiv> aluprio_ga.aluprio_ops"
 
 setup Locale_Code.open_block
-interpretation aluprioi!: StdUprio aluprioi_ops
+interpretation aluprioi: StdUprio aluprioi_ops
   unfolding aluprioi_ops_def
   by (rule aluprio_ga.aluprio_ops_impl)
 setup Locale_Code.close_block

@@ -523,7 +523,7 @@ proof-
   note facts = hs'_real e_pos length_hs' length_as length_bs k_not_0 a_ge_0 p_props x0'_ge_1
                f2'_nonneg f_rec[OF gt_x1'D] x0' x0'_int x0'_x1' gc2(1) decomp
   from b_bounds x0'_le_x1' x0'_ge_gx1 gx0_le_gx1 x0'_ge_x1
-    interpret abr!: akra_bazzi_nat_to_real as bs hs' k x\<^sub>0' x\<^sub>1' hb e p f2' g'
+    interpret abr: akra_bazzi_nat_to_real as bs hs' k x\<^sub>0' x\<^sub>1' hb e p f2' g'
     by (unfold_locales) (auto simp: facts simp del: f2'.simps intro!: f2'.simps(2))
   
   have f'_nat: "\<And>x::nat. abr.f' (real x) = f2' x"
@@ -756,7 +756,7 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
   note facts = hs'_real e_pos length_hs' length_as length_bs k_not_0 a_ge_0 p_props x0'_ge_1
                f'_nonneg f_rec[OF gt_x1'D] x0' x0'_int x0'_x1' gc1(1) decomp
   from b_bounds x0'_le_x1' x0'_ge_gx0 x0'_ge_x1 
-  interpret abr!: akra_bazzi_nat_to_real as bs hs' k x\<^sub>0' x\<^sub>1' hb e p f' g'
+  interpret abr: akra_bazzi_nat_to_real as bs hs' k x\<^sub>0' x\<^sub>1' hb e p f' g'
     by (unfold_locales) (auto simp add: facts simp del: f'.simps intro!: f'.simps(2))
   
   have f'_nat: "\<And>x::nat. abr.f' (real x) = f' x"

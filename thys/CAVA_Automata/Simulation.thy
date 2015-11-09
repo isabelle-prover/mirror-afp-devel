@@ -61,8 +61,8 @@ begin
 
   subsection {* Simulation *}
   locale simulation =
-    a!: graph A +
-    b!: graph B
+    a: graph A +
+    b: graph B
     for R :: "('a \<times> 'b) set"
     and A :: "('a, _) graph_rec_scheme"
     and B :: "('b, _) graph_rec_scheme"
@@ -177,8 +177,8 @@ begin
   lemma (in graph) simulation_refl[simp]: "simulation Id G G" by unfold_locales auto
 
   locale lsimulation = 
-    a!: sa A +
-    b!: sa B +
+    a: sa A +
+    b: sa B +
     simulation R A B
     for R :: "('a \<times> 'b) set"
     and A :: "('a, 'l, _) sa_rec_scheme"
@@ -223,10 +223,10 @@ begin
   subsection {* Bisimulation *}
 
   locale bisimulation = 
-    a!: graph A +
-    b!: graph B +
-    s1!: simulation "R" A B +
-    s2!: simulation "R\<inverse>" B A
+    a: graph A +
+    b: graph B +
+    s1: simulation "R" A B +
+    s2: simulation "R\<inverse>" B A
     for R :: "('a \<times> 'b) set"
     and A :: "('a, _) graph_rec_scheme"
     and B :: "('b, _) graph_rec_scheme"
@@ -321,10 +321,10 @@ begin
   lemma (in graph) bisimulation_refl[simp]: "bisimulation Id G G" by unfold_locales auto
 
   locale lbisimulation = 
-    a!: sa A +
-    b!: sa B +
-    s1!: lsimulation "R" A B +
-    s2!: lsimulation "R\<inverse>" B A +
+    a: sa A +
+    b: sa B +
+    s1: lsimulation "R" A B +
+    s2: lsimulation "R\<inverse>" B A +
     bisimulation R A B
     for R :: "('a \<times> 'b) set"
     and A :: "('a, 'l, _) sa_rec_scheme"

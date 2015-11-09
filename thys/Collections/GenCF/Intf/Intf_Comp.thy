@@ -547,8 +547,8 @@ lemma map_ord_linear[intro?]:
   assumes B: "linorder cmpv" 
   shows "linorder (cmp_map cmpk cmpv)"
 proof -
-  interpret lk!: linorder_on UNIV cmpk by fact
-  interpret lv!: linorder_on UNIV cmpv by fact
+  interpret lk: linorder_on UNIV cmpk by fact
+  interpret lv: linorder_on UNIV cmpv by fact
   
   show ?thesis
     unfolding cmp_map_def

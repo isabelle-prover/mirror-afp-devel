@@ -123,7 +123,7 @@ definition lsnd_basic_ops :: "('x,'x lsnd) set_basic_ops"
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lsnd_basic!: StdBasicSet lsnd_basic_ops
+interpretation lsnd_basic: StdBasicSet lsnd_basic_ops
   apply (rule StdBasicSet.intro)
   apply (simp_all add: icf_rec_unf)
   apply (rule lsnd_empty_impl lsnd_memb_impl lsnd_ins_impl lsnd_ins_dj_impl
@@ -141,8 +141,8 @@ definition [icf_rec_def]: "lsnd_ops \<equiv> lsnd_basic.dflt_ops \<lparr>
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lsnd!: StdSetDefs lsnd_ops .
-interpretation lsnd!: StdSet lsnd_ops
+interpretation lsnd: StdSetDefs lsnd_ops .
+interpretation lsnd: StdSet lsnd_ops
 proof -
   interpret aux: StdSet lsnd_basic.dflt_ops
     by (rule lsnd_basic.dflt_ops_impl)
@@ -157,7 +157,7 @@ proof -
     )
     done
 qed
-interpretation lsnd!: StdSet_no_invar lsnd_ops
+interpretation lsnd: StdSet_no_invar lsnd_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

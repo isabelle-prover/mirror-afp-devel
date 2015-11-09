@@ -78,7 +78,7 @@ lemma small_antisym:
 end
 
 locale landau_function_family_pair = 
-  G!: landau_function_family G + H!: landau_function_family H for G H +
+  G: landau_function_family G + H: landau_function_family H for G H +
   fixes g 
   assumes gs_dominate: "g1 \<in> G \<Longrightarrow> g2 \<in> G \<Longrightarrow> h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> g1 \<in> o(g2) \<Longrightarrow>
      (\<lambda>x. g1 x * h1 x) \<in> o(\<lambda>x. g2 x * h2 x)"
@@ -86,7 +86,7 @@ locale landau_function_family_pair =
   assumes g_dominates: "h \<in> H \<Longrightarrow> h \<in> o(g)"
 begin
 
-sublocale GH!: landau_function_family "G * H"
+sublocale GH: landau_function_family "G * H"
 proof (unfold_locales; elim set_times_elim; hypsubst)
   fix g h assume "g \<in> G" "h \<in> H"
   from G.pos[OF this(1)] H.pos[OF this(2)] show "eventually (\<lambda>x. (g*h) x > 0) at_top"
@@ -190,8 +190,8 @@ lemma landau_function_family_pair_trans:
   assumes "landau_function_family_pair G H g"
   shows   "landau_function_family_pair F (G*H) f"
 proof-
-  interpret FG!: landau_function_family_pair F G f by fact
-  interpret GH!: landau_function_family_pair G H g by fact
+  interpret FG: landau_function_family_pair F G f by fact
+  interpret GH: landau_function_family_pair G H g by fact
   show ?thesis
   proof (unfold_locales; (elim set_times_elim)?; (clarify)?;
          (unfold func_times mult.assoc[symmetric])?)
@@ -224,8 +224,8 @@ lemma landau_function_family_pair_trans_powr:
   assumes "\<And>p. (\<lambda>x. g x powr p) \<in> o(f)"
   shows   "landau_function_family_pair (powr_closure f) (powr_closure g * H) (\<lambda>x. f x powr 1)"
 proof (rule landau_function_family_pair_trans[OF _ assms(1)])
-  interpret GH!: landau_function_family_pair "powr_closure g" H "\<lambda>x. g x powr 1" by fact
-  interpret F!: landau_function_family "powr_closure f" 
+  interpret GH: landau_function_family_pair "powr_closure g" H "\<lambda>x. g x powr 1" by fact
+  interpret F: landau_function_family "powr_closure f" 
     by (rule landau_function_family_powr_closure) fact+
   show "landau_function_family_pair (powr_closure f) (powr_closure g) (\<lambda>x. f x powr 1)"
   proof (unfold_locales; (elim powr_closureE; hypsubst)?)
@@ -791,7 +791,7 @@ proof (standard, goal_cases)
   qed simp
 qed (auto simp: eval_primfun'_at_top)
 
-interpretation groupsort_primfun!: groupsort fst merge_primfun eval_primfuns
+interpretation groupsort_primfun: groupsort fst merge_primfun eval_primfuns
 proof (standard, goal_cases)
   case (1 x y)
   thus ?case by (induction x y rule: merge_primfun.induct) simp_all

@@ -828,7 +828,7 @@ class C3l_algebra = conway_dioid +
 class C3r_algebra = conway_dioid + 
   assumes C3r:  "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^sup>\<star> \<le> y"
 
-sublocale C1r_algebra \<subseteq> dual!: C1l_algebra
+sublocale C1r_algebra \<subseteq> dual: C1l_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
 proof
   fix x y z :: 'a
@@ -860,7 +860,7 @@ proof
     by (metis C1r opp_mult_def)
 qed
 
-sublocale C2r_algebra \<subseteq> dual!: C2l_algebra
+sublocale C2r_algebra \<subseteq> dual: C2l_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
 proof
   fix x y z :: 'a
@@ -890,7 +890,7 @@ proof
     by (metis C2r opp_mult_def)
 qed
 
-sublocale C3r_algebra \<subseteq> dual!: C3l_algebra
+sublocale C3r_algebra \<subseteq> dual: C3l_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
 proof 
   fix x y z :: 'a
@@ -1053,7 +1053,7 @@ class K1_algebra = K1l_algebra + K1r_algebra
 
 class K2_algebra = K2l_algebra + K2r_algebra
 
-sublocale K1r_algebra \<subseteq> dual!:K1l_algebra
+sublocale K1r_algebra \<subseteq> dual: K1l_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
 proof
   fix x y z :: 'a
@@ -1112,7 +1112,7 @@ sublocale K1_algebra \<subseteq> C0_algebra
 
 sublocale C0_algebra \<subseteq> K1l_algebra ..
 
-sublocale K2r_algebra \<subseteq> dual!: K2l_algebra
+sublocale K2r_algebra \<subseteq> dual: K2l_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star"
 proof 
   fix x y z :: 'a
@@ -1188,7 +1188,7 @@ class Sl_algebra = salomaa_base +
 
 class S_algebra = Sl_algebra + Sr_algebra
 
-sublocale Sl_algebra \<subseteq> dual!: Sr_algebra
+sublocale Sl_algebra \<subseteq> dual: Sr_algebra
   "op +" "op \<odot>" "1" "0" "op \<le>" "op <" "star" "ewp"
 proof
   fix x y z :: 'a

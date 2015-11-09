@@ -7,44 +7,44 @@ lemma hm_map_impl: "imp_map is_hashmap"
   apply unfold_locales
   apply (rule is_hashmap_prec)
   done
-interpretation hm!: imp_map is_hashmap by (rule hm_map_impl)
+interpretation hm: imp_map is_hashmap by (rule hm_map_impl)
 
 lemma hm_empty_impl: "imp_map_empty is_hashmap hm_new"
   apply unfold_locales
   apply (sep_auto heap: hm_new_rule)
   done
-interpretation hm!: imp_map_empty is_hashmap hm_new by (rule hm_empty_impl)
+interpretation hm: imp_map_empty is_hashmap hm_new by (rule hm_empty_impl)
 
 lemma hm_lookup_impl: "imp_map_lookup is_hashmap hm_lookup"
   apply unfold_locales
   apply (sep_auto heap: hm_lookup_rule)
   done
-interpretation hm!: imp_map_lookup is_hashmap hm_lookup by (rule hm_lookup_impl)
+interpretation hm: imp_map_lookup is_hashmap hm_lookup by (rule hm_lookup_impl)
 
 lemma hm_update_impl: "imp_map_update is_hashmap hm_update"
   apply unfold_locales
   apply (sep_auto heap: hm_update_rule)
   done
-interpretation hm!: imp_map_update is_hashmap hm_update by (rule hm_update_impl)
+interpretation hm: imp_map_update is_hashmap hm_update by (rule hm_update_impl)
 
 lemma hm_delete_impl: "imp_map_delete is_hashmap hm_delete"
   apply unfold_locales
   apply (sep_auto heap: hm_delete_rule)
   done
-interpretation hm!: imp_map_delete is_hashmap hm_delete by (rule hm_delete_impl)
+interpretation hm: imp_map_delete is_hashmap hm_delete by (rule hm_delete_impl)
 
 lemma hm_is_empty_impl: "imp_map_is_empty is_hashmap hm_isEmpty"
   apply unfold_locales
   apply (sep_auto heap: hm_isEmpty_rule)
   done
-interpretation hm!: imp_map_is_empty is_hashmap hm_isEmpty
+interpretation hm: imp_map_is_empty is_hashmap hm_isEmpty
   by (rule hm_is_empty_impl)
 
 lemma hm_size_impl: "imp_map_size is_hashmap hm_size"
   apply unfold_locales
   apply (sep_auto heap: hm_size_rule)
   done
-interpretation hm!: imp_map_size is_hashmap hm_size by (rule hm_size_impl)
+interpretation hm: imp_map_size is_hashmap hm_size by (rule hm_size_impl)
 
 lemma hm_iterate_impl: 
   "imp_map_iterate is_hashmap hm_is_it hm_it_init hm_it_has_next hm_it_next"
@@ -56,7 +56,7 @@ lemma hm_iterate_impl:
   apply (frame_inference)
   apply solve_entails
   done
-interpretation hm!: 
+interpretation hm: 
   imp_map_iterate is_hashmap hm_is_it hm_it_init hm_it_has_next hm_it_next
   by (rule hm_iterate_impl)
 

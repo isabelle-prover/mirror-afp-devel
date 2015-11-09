@@ -711,9 +711,9 @@ lemma vimage_Int_space_C[simp]:
   "f -` {x} \<inter> space hC = {\<omega>\<in>space S. f \<omega> = x}"
   by (auto simp: hC_def)
 
-sublocale hC!: information_space hC 2
+sublocale hC: information_space hC 2
 proof -
-  interpret hC!: prob_space hC
+  interpret hC: prob_space hC
     unfolding hC_def
     using emeasure_hit_C_not_0
     by (intro prob_space_uniform_measure) auto

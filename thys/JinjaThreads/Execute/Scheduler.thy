@@ -360,7 +360,7 @@ lemma pick_wakeup_spec_via_sel:
   assumes sel: "map_sel' ws_\<alpha> ws_invar ws_sel"
   shows "pick_wakeup_spec (pick_wakeup_via_sel (\<lambda>s P. ws_sel s (\<lambda>(k,v). P k v))) \<sigma>_invar ws_\<alpha> ws_invar"
 proof -
-  interpret ws!: map_sel' ws_\<alpha> ws_invar ws_sel by(rule sel)
+  interpret ws: map_sel' ws_\<alpha> ws_invar ws_sel by(rule sel)
   show ?thesis
     by(unfold_locales)(auto simp add: pick_wakeup_via_sel_def ran_def dest: ws.sel'_noneD ws.sel'_SomeD)
 qed
@@ -423,15 +423,15 @@ locale scheduler_aux =
     ws_\<alpha> ws_invar ws_lookup
     is_\<alpha> is_invar is_memb is_ins is_delete
   +
-  thr!: finite_map thr_\<alpha> thr_invar +
-  thr!: map_lookup thr_\<alpha> thr_invar thr_lookup +
-  thr!: map_update thr_\<alpha> thr_invar thr_update +
-  ws!: map ws_\<alpha> ws_invar +
-  ws!: map_lookup ws_\<alpha> ws_invar ws_lookup +
-  "is"!: set is_\<alpha> is_invar +
-  "is"!: set_memb is_\<alpha> is_invar is_memb +
-  "is"!: set_ins is_\<alpha> is_invar is_ins +
-  "is"!: set_delete is_\<alpha> is_invar is_delete
+  thr: finite_map thr_\<alpha> thr_invar +
+  thr: map_lookup thr_\<alpha> thr_invar thr_lookup +
+  thr: map_update thr_\<alpha> thr_invar thr_update +
+  ws: map ws_\<alpha> ws_invar +
+  ws: map_lookup ws_\<alpha> ws_invar ws_lookup +
+  "is": set is_\<alpha> is_invar +
+  "is": set_memb is_\<alpha> is_invar is_memb +
+  "is": set_ins is_\<alpha> is_invar is_ins +
+  "is": set_delete is_\<alpha> is_invar is_delete
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -544,9 +544,9 @@ locale scheduler =
     ws_\<alpha> ws_invar
     is_\<alpha> is_invar
   +
-  ws!: map_update ws_\<alpha> ws_invar ws_update +
-  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate 
+  ws: map_update ws_\<alpha> ws_invar ws_update +
+  ws: map_delete ws_\<alpha> ws_invar ws_delete +
+  ws: map_iteratei ws_\<alpha> ws_invar ws_iterate 
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -833,12 +833,12 @@ locale scheduler_ext_aux =
     ws_\<alpha> ws_invar ws_lookup
     is_\<alpha> is_invar is_memb is_ins is_delete
   +
-  thr!: map_iteratei thr_\<alpha> thr_invar thr_iterate +
-  ws!: map_update ws_\<alpha> ws_invar ws_update +
-  ws!: map_sel' ws_\<alpha> ws_invar ws_sel +
-  thr'!: finite_set thr'_\<alpha> thr'_invar +
-  thr'!: set_empty thr'_\<alpha> thr'_invar thr'_empty +
-  thr'!: set_ins_dj thr'_\<alpha> thr'_invar thr'_ins_dj  
+  thr: map_iteratei thr_\<alpha> thr_invar thr_iterate +
+  ws: map_update ws_\<alpha> ws_invar ws_update +
+  ws: map_sel' ws_\<alpha> ws_invar ws_sel +
+  thr': finite_set thr'_\<alpha> thr'_invar +
+  thr': set_empty thr'_\<alpha> thr'_invar thr'_empty +
+  thr': set_ins_dj thr'_\<alpha> thr'_invar thr'_ins_dj  
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
@@ -941,8 +941,8 @@ locale scheduler_ext =
     is_\<alpha> is_invar
     invariant
   +
-  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate
+  ws: map_delete ws_\<alpha> ws_invar ws_delete +
+  ws: map_iteratei ws_\<alpha> ws_invar ws_iterate
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"

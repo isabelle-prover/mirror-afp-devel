@@ -611,7 +611,7 @@ qed
 end (* context FiniteBroadcastEnvironment *)
 
 sublocale FiniteBroadcastEnvironment
-        < SPR!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+        < SPR: SimIncrEnvironment jkbp envInit envAction envTrans envVal
                                        spr_jview envObs spr_jviewInit spr_jviewIncr
                                        spr_sim spr_simRels spr_simVal
 (*<*)

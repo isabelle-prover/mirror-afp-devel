@@ -241,7 +241,7 @@ qed
 
 end
 
-sublocale J_allocated_heap < red_mthr!: allocated_multithreaded 
+sublocale J_allocated_heap < red_mthr: allocated_multithreaded 
   addr2thread_id thread_id2addr 
   spurious_wakeups
   empty_heap allocate typeof_addr heap_read heap_write allocated 
@@ -366,7 +366,7 @@ done
 lemma J_conf_read_heap_read_typed:
   "J_conf_read addr2thread_id thread_id2addr empty_heap allocate typeof_addr (heap_read_typed P) heap_write hconf P"
 proof -
-  interpret conf!: heap_conf_read
+  interpret conf: heap_conf_read
     addr2thread_id thread_id2addr 
     spurious_wakeups
     empty_heap allocate typeof_addr "heap_read_typed P" heap_write hconf 
@@ -423,7 +423,7 @@ qed(auto intro: J_heap_base.red_reds.intros intro!: heap_read_typedI dest: vs_co
 
 end
 
-sublocale J_heap_base < red_mthr!: 
+sublocale J_heap_base < red_mthr: 
   if_multithreaded
     final_expr
     "mred P"
@@ -978,7 +978,7 @@ lemma J_ex_sc_exec:
   shows "\<exists>E ws. E \<in> J_\<E> P C M vs status \<and> P \<turnstile> (E, ws) \<surd> \<and> sequentially_consistent P (E, ws)"
   (is "\<exists>E ws. _ \<in> ?\<E> \<and> _")
 proof -
-  interpret jmm!: executions_sc_hb ?\<E> P using assms by -(rule executions_sc)
+  interpret jmm: executions_sc_hb ?\<E> P using assms by -(rule executions_sc)
 
   let ?start_state = "init_fin_lift_state status (J_start_state P C M vs)"
   let ?start_mrw = "mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs))"

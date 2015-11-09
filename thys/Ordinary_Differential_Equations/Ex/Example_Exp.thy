@@ -18,7 +18,7 @@ approximate_affine exp_d "(\<lambda>(a::real, b::real) (h\<^sub>1::real, h\<^sub
 abbreviation "exp_ivp \<equiv> \<lambda>optns args. uncurry_options exp_affine optns (hd args) (tl args)"
 abbreviation "exp_d_ivp \<equiv> \<lambda>optns args. uncurry_options exp_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
-interpretation exp_ivp!: aform_approximate_ivp
+interpretation exp_ivp: aform_approximate_ivp
   exp_ivp
   exp_d_ivp
   "\<lambda>(y\<^sub>1, y\<^sub>2). (y\<^sub>1, y\<^sub>2)"

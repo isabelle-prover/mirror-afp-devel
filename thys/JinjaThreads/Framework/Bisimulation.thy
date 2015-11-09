@@ -13,7 +13,7 @@ type_synonym ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 subsection {* Strong bisimulation *}
 
-locale bisimulation_base = r1!: trsys trsys1 + r2!: trsys trsys2
+locale bisimulation_base = r1: trsys trsys1 + r2: trsys trsys2
   for trsys1 :: "('s1, 'tl1) trsys" ("_/ -1-_\<rightarrow>/ _" [50,0,50] 60)
   and trsys2 :: "('s2, 'tl2) trsys" ("_/ -2-_\<rightarrow>/ _" [50,0,50] 60) +
   fixes bisim :: "('s1, 's2) bisim" ("_/ \<approx> _" [50, 50] 60)
@@ -1165,11 +1165,11 @@ lemma delay_bisimulation_diverge_compose:
   and wbisim23: "delay_bisimulation_diverge trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3"
   shows "delay_bisimulation_diverge trsys1 trsys3 (bisim12 \<circ>\<^sub>B bisim23) (tlsim12 \<circ>\<^sub>B tlsim23) \<tau>move1 \<tau>move3"
 proof -
-  interpret trsys1!: \<tau>trsys trsys1 \<tau>move1 .
-  interpret trsys2!: \<tau>trsys trsys2 \<tau>move2 .
-  interpret trsys3!: \<tau>trsys trsys3 \<tau>move3 .
-  interpret wb12!: delay_bisimulation_diverge trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2 by(auto intro: wbisim12)
-  interpret wb23!: delay_bisimulation_diverge trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 by(auto intro: wbisim23)
+  interpret trsys1: \<tau>trsys trsys1 \<tau>move1 .
+  interpret trsys2: \<tau>trsys trsys2 \<tau>move2 .
+  interpret trsys3: \<tau>trsys trsys3 \<tau>move3 .
+  interpret wb12: delay_bisimulation_diverge trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2 by(auto intro: wbisim12)
+  interpret wb23: delay_bisimulation_diverge trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 by(auto intro: wbisim23)
   show ?thesis
   proof
     fix s1 s3 s1'
@@ -1245,12 +1245,12 @@ lemma delay_bisimulation_diverge_final_compose:
   and wbisim23: "delay_bisimulation_diverge_final trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 final2 final3"
   shows "delay_bisimulation_diverge_final trsys1 trsys3 (bisim12 \<circ>\<^sub>B bisim23) (tlsim12 \<circ>\<^sub>B tlsim23) \<tau>move1 \<tau>move3 final1 final3"
 proof -
-  interpret trsys1!: \<tau>trsys trsys1 \<tau>move1 .
-  interpret trsys2!: \<tau>trsys trsys2 \<tau>move2 .
-  interpret trsys3!: \<tau>trsys trsys3 \<tau>move3 .
-  interpret wb12!: delay_bisimulation_diverge_final trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2 final1 final2
+  interpret trsys1: \<tau>trsys trsys1 \<tau>move1 .
+  interpret trsys2: \<tau>trsys trsys2 \<tau>move2 .
+  interpret trsys3: \<tau>trsys trsys3 \<tau>move3 .
+  interpret wb12: delay_bisimulation_diverge_final trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2 final1 final2
     by(auto intro: wbisim12)
-  interpret wb23!: delay_bisimulation_diverge_final trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 final2 final3
+  interpret wb23: delay_bisimulation_diverge_final trsys2 trsys3 bisim23 tlsim23 \<tau>move2 \<tau>move3 final2 final3
     by(auto intro: wbisim23)
   interpret delay_bisimulation_diverge trsys1 trsys3 "bisim12 \<circ>\<^sub>B bisim23" "tlsim12 \<circ>\<^sub>B tlsim23" \<tau>move1 \<tau>move3
     by(rule delay_bisimulation_diverge_compose)(unfold_locales)

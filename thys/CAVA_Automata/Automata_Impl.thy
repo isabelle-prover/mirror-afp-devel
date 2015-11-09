@@ -982,7 +982,7 @@ lemma [autoref_rules]:
         \<rightarrow> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs) )$G$S ) 
   \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs)"
 proof -
-  from assms interpret igba!: igba G + sa!: sa S by simp_all
+  from assms interpret igba: igba G + sa: sa S by simp_all
   have A: "igba_sys_prod_precond G S" by unfold_locales
 
   show ?thesis

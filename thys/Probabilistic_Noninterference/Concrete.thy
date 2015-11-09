@@ -80,7 +80,7 @@ fun cval where
 definition indis :: "(state * state) set"where 
 "indis \<equiv> {(s,t). ALL x. sec x = Lo \<longrightarrow> s x = t x}"
 
-interpretation Example_PL!: PL_Indis aval tval cval indis
+interpretation Example_PL: PL_Indis aval tval cval indis
 proof
   fix ch :: choice and  s show "0 \<le> cval ch s \<and> cval ch s \<le> 1"
     by (cases ch) auto

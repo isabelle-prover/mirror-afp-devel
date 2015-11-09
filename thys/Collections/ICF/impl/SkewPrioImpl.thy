@@ -82,7 +82,7 @@ lemma skew_delete_impl:
 done 
 
 setup Locale_Code.open_block
-interpretation skew!: StdPrio skew_ops
+interpretation skew: StdPrio skew_ops
   apply (rule StdPrio.intro)
   apply (simp_all add: icf_rec_unf)
   apply (rule 
@@ -94,7 +94,7 @@ interpretation skew!: StdPrio skew_ops
     skew_delete_impl
   )+
   done
-interpretation skew!: StdPrio_no_invar skew_ops
+interpretation skew: StdPrio_no_invar skew_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

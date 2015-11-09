@@ -18,7 +18,7 @@ text_raw {*\label{thy:SetGA}*}
 subsection {* Generic Set Algorithms *}
 
 locale g_set_xx_defs_loc = 
-  s1!: StdSetDefs ops1 + s2!: StdSetDefs ops2
+  s1: StdSetDefs ops1 + s2: StdSetDefs ops2
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x,'s2,'more2) set_ops_scheme"
 begin
@@ -44,7 +44,7 @@ begin
 end
 
 locale g_set_xx_loc = g_set_xx_defs_loc ops1 ops2 +
-  s1!: StdSet ops1 + s2!: StdSet ops2
+  s1: StdSet ops1 + s2: StdSet ops2
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x,'s2,'more2) set_ops_scheme"
 begin
@@ -202,15 +202,15 @@ sublocale g_set_xx_loc <
 
 
 
-(*sublocale StdBasicSetDefs < g_set_xx!: g_set_xx_defs_loc ops ops .
-sublocale StdBasicSet < g_set_xx!: g_set_xx_loc ops ops
+(*sublocale StdBasicSetDefs < g_set_xx: g_set_xx_defs_loc ops ops .
+sublocale StdBasicSet < g_set_xx: g_set_xx_loc ops ops
   by unfold_locales
 *)
 
 locale g_set_xxx_defs_loc =
-  s1!: StdSetDefs ops1 +
-  s2!: StdSetDefs ops2 +
-  s3!: StdSetDefs ops3
+  s1: StdSetDefs ops1 +
+  s2: StdSetDefs ops2 +
+  s3: StdSetDefs ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x,'s2,'more2) set_ops_scheme"
   and ops3 :: "('x,'s3,'more3) set_ops_scheme"
@@ -221,9 +221,9 @@ begin
 end
 
 locale g_set_xxx_loc = g_set_xxx_defs_loc ops1 ops2 ops3 +
-  s1!: StdSet ops1 +
-  s2!: StdSet ops2 +
-  s3!: StdSet ops3
+  s1: StdSet ops1 +
+  s2: StdSet ops2 +
+  s3: StdSet ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x,'s2,'more2) set_ops_scheme"
   and ops3 :: "('x,'s3,'more3) set_ops_scheme"
@@ -251,13 +251,13 @@ sublocale g_set_xxx_loc
   by (rule g_inter_impl)
 
 
-(*sublocale StdBasicSetDefs < g_set_xxx!: g_set_xxx_defs_loc ops ops ops .
-sublocale StdBasicSet < g_set_xxx!: g_set_xxx_loc ops ops ops
+(*sublocale StdBasicSetDefs < g_set_xxx: g_set_xxx_defs_loc ops ops ops .
+sublocale StdBasicSet < g_set_xxx: g_set_xxx_loc ops ops ops
   by unfold_locales
 *)
 
 locale g_set_xy_defs_loc = 
-  s1!: StdSet ops1 + s2!: StdSet ops2
+  s1: StdSet ops1 + s2: StdSet ops2
   for ops1 :: "('x1,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x2,'s2,'more2) set_ops_scheme"
 begin
@@ -280,7 +280,7 @@ begin
 end
 
 locale g_set_xy_loc = g_set_xy_defs_loc ops1 ops2 +
-  s1!: StdSet ops1 + s2!: StdSet ops2
+  s1: StdSet ops1 + s2: StdSet ops2
   for ops1 :: "('x1,'s1,'more1) set_ops_scheme"
   and ops2 :: "('x2,'s2,'more2) set_ops_scheme"
 begin
@@ -384,7 +384,7 @@ sublocale g_set_xy_loc < set_inj_image s1.\<alpha> s1.invar s2.\<alpha> s2.invar
   g_inj_image by (rule g_inj_image_impl)
 
 locale g_set_xyy_defs_loc = 
-  s0!: StdSetDefs ops0 + 
+  s0: StdSetDefs ops0 + 
   g_set_xx_defs_loc ops1 ops2
   for ops0 :: "('x0,'s0,'more0) set_ops_scheme"
   and ops1 :: "('x,'s1,'more1) set_ops_scheme"
@@ -397,7 +397,7 @@ begin
 end
 
 locale g_set_xyy_loc = g_set_xyy_defs_loc ops0 ops1 ops2 +
-  s0!: StdSet ops0 + 
+  s0: StdSet ops0 + 
   g_set_xx_loc ops1 ops2
   for ops0 :: "('x0,'s0,'more0) set_ops_scheme"
   and ops1 :: "('x,'s1,'more1) set_ops_scheme"
@@ -897,7 +897,7 @@ begin
 
   lemma dflt_oops_impl: "StdOSet dflt_oops"
   proof -
-    interpret aux!: StdSet dflt_ops by (rule dflt_ops_impl)
+    interpret aux: StdSet dflt_ops by (rule dflt_ops_impl)
 
     show ?thesis
       apply (rule StdOSet_intro)
@@ -921,9 +921,9 @@ text {*
 subsubsection "Image and Filter of Cartesian Product"
 
 locale image_filter_cp_defs_loc =
-  s1!: StdSetDefs ops1 +
-  s2!: StdSetDefs ops2 +
-  s3!: StdSetDefs ops3
+  s1: StdSetDefs ops1 +
+  s2: StdSetDefs ops2 +
+  s3: StdSetDefs ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('y,'s2,'more2) set_ops_scheme"
   and ops3 :: "('z,'s3,'more3) set_ops_scheme"
@@ -954,9 +954,9 @@ begin
 end
 
 locale image_filter_cp_loc = image_filter_cp_defs_loc ops1 ops2 ops3 +
-  s1!: StdSet ops1 +
-  s2!: StdSet ops2 +
-  s3!: StdSet ops3
+  s1: StdSet ops1 +
+  s2: StdSet ops2 +
+  s3: StdSet ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('y,'s2,'more2) set_ops_scheme"
   and ops3 :: "('z,'s3,'more3) set_ops_scheme"
@@ -1002,9 +1002,9 @@ begin
 end
 
 locale inj_image_filter_cp_defs_loc =
-  s1!: StdSetDefs ops1 +
-  s2!: StdSetDefs ops2 +
-  s3!: StdSetDefs ops3
+  s1: StdSetDefs ops1 +
+  s2: StdSetDefs ops2 +
+  s3: StdSetDefs ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('y,'s2,'more2) set_ops_scheme"
   and ops3 :: "('z,'s3,'more3) set_ops_scheme"
@@ -1035,9 +1035,9 @@ begin
 end
 
 locale inj_image_filter_cp_loc = inj_image_filter_cp_defs_loc ops1 ops2 ops3 +
-  s1!: StdSet ops1 +
-  s2!: StdSet ops2 +
-  s3!: StdSet ops3
+  s1: StdSet ops1 +
+  s2: StdSet ops2 +
+  s3: StdSet ops3
   for ops1 :: "('x,'s1,'more1) set_ops_scheme"
   and ops2 :: "('y,'s2,'more2) set_ops_scheme"
   and ops3 :: "('z,'s3,'more3) set_ops_scheme"

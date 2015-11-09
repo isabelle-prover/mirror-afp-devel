@@ -74,8 +74,8 @@ definition "iASSUME return \<Phi> \<equiv> if \<Phi> then return () else bot"
     To remove them, use the next locale.
     *}
   locale transfer_generic_Assert = 
-    c!: generic_Assert cbind creturn cASSERT cASSUME +
-    a!: generic_Assert abind areturn aASSERT aASSUME +
+    c: generic_Assert cbind creturn cASSERT cASSUME +
+    a: generic_Assert abind areturn aASSERT aASSUME +
     ordered_transfer \<alpha>
     for cbind :: "('muc::complete_lattice) 
       \<Rightarrow> (unit\<Rightarrow>'mac) \<Rightarrow> ('mac::complete_lattice)" 
@@ -102,7 +102,7 @@ definition "iASSUME return \<Phi> \<equiv> if \<Phi> then return () else bot"
 
 
   locale transfer_generic_Assert_remove = 
-    a!: generic_Assert abind areturn aASSERT aASSUME +
+    a: generic_Assert abind areturn aASSERT aASSUME +
     transfer \<alpha>
     for abind :: "('mua::complete_lattice) 
       \<Rightarrow> (unit\<Rightarrow>'maa) \<Rightarrow> ('maa::complete_lattice)"

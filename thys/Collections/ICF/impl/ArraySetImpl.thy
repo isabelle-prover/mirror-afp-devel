@@ -18,16 +18,16 @@ subsection "Definitions"
 type_synonym ias = "(unit) iam"
 
 setup Locale_Code.open_block
-interpretation ias_sbm!: OSetByOMap iam_basic_ops by unfold_locales
+interpretation ias_sbm: OSetByOMap iam_basic_ops by unfold_locales
 setup Locale_Code.close_block
 definition ias_ops :: "(nat,ias) oset_ops"
   where [icf_rec_def]:
   "ias_ops \<equiv> ias_sbm.obasic.dflt_oops"
 
 setup Locale_Code.open_block
-interpretation ias!: StdOSet ias_ops
+interpretation ias: StdOSet ias_ops
   unfolding ias_ops_def by (rule ias_sbm.obasic.dflt_oops_impl)
-interpretation ias!: StdSet_no_invar ias_ops
+interpretation ias: StdSet_no_invar ias_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 

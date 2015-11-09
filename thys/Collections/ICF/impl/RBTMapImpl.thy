@@ -44,7 +44,7 @@ definition rm_basic_ops :: "('k::linorder,'v,('k,'v) rm) omap_basic_ops"
 \<rparr>"
 
 setup Locale_Code.open_block
-interpretation rm_basic!: StdBasicOMap rm_basic_ops
+interpretation rm_basic: StdBasicOMap rm_basic_ops
   apply unfold_locales
   apply (simp_all add: rm_basic_ops_def)
   apply (rule map_iterator_linord_is_it)
@@ -60,7 +60,7 @@ setup Locale_Code.close_block
 
 definition [icf_rec_def]: "rm_ops \<equiv> rm_basic.dflt_oops\<lparr>map_op_add := RBT.union\<rparr>"
 setup Locale_Code.open_block
-interpretation rm!: StdOMap rm_ops 
+interpretation rm: StdOMap rm_ops 
 proof -
   interpret aux1: StdOMap rm_basic.dflt_oops
     unfolding rm_ops_def
@@ -76,7 +76,7 @@ proof -
     done
 qed
 
-interpretation rm!: StdMap_no_invar rm_ops 
+interpretation rm: StdMap_no_invar rm_ops 
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

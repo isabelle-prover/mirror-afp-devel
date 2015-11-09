@@ -606,7 +606,7 @@ lemma gcd_euclI:
     \<Longrightarrow> normalisation_factor k = (if k = 0 then 0 else 1) \<Longrightarrow> k = gcd_eucl x y"
   by (intro normed_associated_imp_eq) (auto simp: associated_def intro: gcd_eucl_greatest)
 
-sublocale gcd!: abel_semigroup gcd_eucl
+sublocale gcd: abel_semigroup gcd_eucl
 proof
   fix x y z 
   show "gcd_eucl (gcd_eucl x y) z = gcd_eucl x (gcd_eucl y z)"
@@ -1218,7 +1218,7 @@ lemma lcm_euclI:
     normalisation_factor k = (if k = 0 then 0 else 1)\<rbrakk> \<Longrightarrow> k = lcm_eucl x y"
   by (intro normed_associated_imp_eq) (auto simp: associated_def intro: lcm_eucl_least)
 
-sublocale lcm!: abel_semigroup lcm_eucl
+sublocale lcm: abel_semigroup lcm_eucl
 proof
   fix x y z
   show "lcm_eucl (lcm_eucl x y) z = lcm_eucl x (lcm_eucl y z)"

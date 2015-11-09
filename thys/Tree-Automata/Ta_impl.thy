@@ -56,26 +56,26 @@ end
 
 subsubsection {* Ad-Hoc instantiations of generic Algorithms *}
 setup Locale_Code.open_block
-interpretation hll_idx!: build_index_loc hm_ops ls_ops ls_ops by unfold_locales
-interpretation ll_set_xy!: g_set_xy_loc ls_ops ls_ops 
+interpretation hll_idx: build_index_loc hm_ops ls_ops ls_ops by unfold_locales
+interpretation ll_set_xy: g_set_xy_loc ls_ops ls_ops 
   by unfold_locales
 
-interpretation lh_set_xx!: g_set_xx_loc ls_ops hs_ops
+interpretation lh_set_xx: g_set_xx_loc ls_ops hs_ops
   by unfold_locales
 interpretation lll_iflt_cp: inj_image_filter_cp_loc ls_ops ls_ops ls_ops
   by unfold_locales
 interpretation hhh_cart: cart_loc hs_ops hs_ops hs_ops by unfold_locales
-interpretation hh_set_xy!: g_set_xy_loc hs_ops hs_ops 
+interpretation hh_set_xy: g_set_xy_loc hs_ops hs_ops 
   by unfold_locales
 
-interpretation llh_set_xyy!: g_set_xyy_loc ls_ops ls_ops hs_ops
+interpretation llh_set_xyy: g_set_xyy_loc ls_ops ls_ops hs_ops
   by unfold_locales
 
-interpretation hh_map_to_nat!: map_to_nat_loc hs_ops hm_ops by unfold_locales
-interpretation hh_set_xy!: g_set_xy_loc hs_ops hs_ops by unfold_locales
-interpretation lh_set_xy!: g_set_xy_loc ls_ops hs_ops by unfold_locales
-interpretation hh_set_xx!: g_set_xx_loc hs_ops hs_ops by unfold_locales
-interpretation hs_to_fifo!: set_to_list_loc hs_ops fifo_ops by unfold_locales
+interpretation hh_map_to_nat: map_to_nat_loc hs_ops hm_ops by unfold_locales
+interpretation hh_set_xy: g_set_xy_loc hs_ops hs_ops by unfold_locales
+interpretation lh_set_xy: g_set_xy_loc ls_ops hs_ops by unfold_locales
+interpretation hh_set_xx: g_set_xx_loc hs_ops hs_ops by unfold_locales
+interpretation hs_to_fifo: set_to_list_loc hs_ops fifo_ops by unfold_locales
 
 setup Locale_Code.close_block
 

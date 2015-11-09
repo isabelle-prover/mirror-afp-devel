@@ -5077,7 +5077,7 @@ definition
     \<lparr>carrier = Pow A,
       rel = {(X, Y). X \<in> Pow A \<and> Y \<in> Pow A \<and> X \<subseteq> Y}\<rparr>"
 
-interpretation order_Pow!: Order "po A"
+interpretation order_Pow: Order "po A"
   apply (unfold Order_Pow_def)
   apply (rule Order.intro)
 apply (rule subsetI)

@@ -394,7 +394,7 @@ locale heap_multithreaded_base =
     spurious_wakeups
     empty_heap allocate typeof_addr heap_read heap_write 
   +
-  mthr!: multithreaded_base final r convert_RA
+  mthr: multithreaded_base final r convert_RA
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
   and spurious_wakeups :: bool
@@ -407,7 +407,7 @@ locale heap_multithreaded_base =
   and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
   and convert_RA :: "'addr released_locks \<Rightarrow> ('addr, 'thread_id) obs_event list"
 
-sublocale heap_multithreaded_base < mthr!: if_multithreaded_base final r convert_RA
+sublocale heap_multithreaded_base < mthr: if_multithreaded_base final r convert_RA
 .
 
 context heap_multithreaded_base begin
@@ -436,7 +436,7 @@ locale heap_multithreaded =
     empty_heap allocate typeof_addr heap_read heap_write 
     P 
   + 
-  mthr!: multithreaded final r convert_RA
+  mthr: multithreaded final r convert_RA
 
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
@@ -451,10 +451,10 @@ locale heap_multithreaded =
   and convert_RA :: "'addr released_locks \<Rightarrow> ('addr, 'thread_id) obs_event list" 
   and P :: "'md prog"
 
-sublocale heap_multithreaded < mthr!: if_multithreaded final r convert_RA
+sublocale heap_multithreaded < mthr: if_multithreaded final r convert_RA
 by(unfold_locales)
 
-sublocale heap_multithreaded < "if"!: jmm_multithreaded
+sublocale heap_multithreaded < "if": jmm_multithreaded
   mthr.init_fin_final mthr.init_fin "map NormalAction \<circ> convert_RA" P
 .
 
@@ -726,7 +726,7 @@ locale allocated_multithreaded =
     allocated
     P 
   + 
-  mthr!: multithreaded final r convert_RA
+  mthr: multithreaded final r convert_RA
 
   for addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id"
   and thread_id2addr :: "'thread_id \<Rightarrow> 'addr"
@@ -1192,7 +1192,7 @@ locale if_known_addrs_base =
   and r :: "('addr, 't, 'x, 'heap, 'addr, 'obs) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80)
   and convert_RA :: "'addr released_locks \<Rightarrow> 'obs list"
 
-sublocale if_known_addrs_base < "if"!: known_addrs_base known_addrs_if .
+sublocale if_known_addrs_base < "if": known_addrs_base known_addrs_if .
 
 locale known_addrs =
   allocated_multithreaded (* Check why all the heap operations are necessary in this locale! *)
@@ -2101,7 +2101,7 @@ next
     and read: "r \<in> read_actions E" "adal \<in> action_loc P E r"
     and sc: "\<And>a. \<lbrakk>a < r; a \<in> read_actions E\<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
 
-  interpret jmm!: executions_sc_hb ?\<E> P
+  interpret jmm: executions_sc_hb ?\<E> P
     using wf wfx_start ka by(rule executions_sc_hb)
 
   from E wf_exec sc
@@ -2126,7 +2126,7 @@ lemma drf:
   and ka: "known_addrs start_tid (f (fst (method P C M)) M (fst (snd (method P C M))) (fst (snd (snd (method P C M)))) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
   shows "drf (\<E>_start f P C M vs status) P" (is "drf ?\<E> _")
 proof -
-  interpret jmm!: executions_sc_hb "?\<E>" P
+  interpret jmm: executions_sc_hb "?\<E>" P
     using wf wfx_start ka by(rule executions_sc_hb)
 
   let ?n = "length ?start_heap_obs"
@@ -2377,10 +2377,10 @@ lemma sc_legal:
   shows "sc_legal (\<E>_start f P C M vs status) P"
   (is "sc_legal ?\<E> P")
 proof -
-  interpret jmm!: executions_sc_hb ?\<E> P
+  interpret jmm: executions_sc_hb ?\<E> P
     using wf wfx_start ka by(rule executions_sc_hb)
 
-  interpret jmm!: executions_aux ?\<E> P
+  interpret jmm: executions_aux ?\<E> P
     using wf wfx_start ka by(rule executions_aux)
 
   show ?thesis

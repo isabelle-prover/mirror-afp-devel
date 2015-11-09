@@ -50,8 +50,8 @@ using assms by(case_tac [!] s) auto
 
 end
 
-sublocale state_refine_base < \<alpha>!: final_thread final .
-sublocale state_refine_base < \<alpha>!:
+sublocale state_refine_base < \<alpha>: final_thread final .
+sublocale state_refine_base < \<alpha>:
   multithreaded_base
     final
     "\<lambda>t xm ta x'm'. Predicate.eval (r t xm) (ta, x'm')"

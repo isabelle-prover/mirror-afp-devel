@@ -20,7 +20,7 @@ class right_inf = inf + times + right_imp +
 class right_complemented_monoid = right_residuated_pordered_monoid + right_inf +
   assumes left_divisibility: "(a \<le> b) = (\<exists> c . a = b * c)"
 
-sublocale right_complemented_monoid < dual!: left_complemented_monoid "\<lambda> a b . b * a" "op \<sqinter>" "op r\<rightarrow>" 1 "op \<le>" "op <"
+sublocale right_complemented_monoid < dual: left_complemented_monoid "\<lambda> a b . b * a" "op \<sqinter>" "op r\<rightarrow>" 1 "op \<le>" "op <"
   apply unfold_locales
   apply (simp_all add: inf_r_def mult.assoc mult_left_mono)
   apply (simp add: right_residual)
@@ -62,7 +62,7 @@ class right_complemented_monoid_algebra = right_complemented_monoid_nole_algebra
 begin
 end
 
-sublocale right_complemented_monoid_algebra < dual_algebra!: left_complemented_monoid_algebra "\<lambda> a b . b * a" inf "op r\<rightarrow>" "op \<le>" "op <" 1
+sublocale right_complemented_monoid_algebra < dual_algebra: left_complemented_monoid_algebra "\<lambda> a b . b * a" inf "op r\<rightarrow>" "op \<le>" "op <" 1
   apply (unfold_locales, simp_all)
   by (rule inf_r_def, rule right_impl_times, rule right_impl_ded, rule right_lesseq)
 
@@ -81,7 +81,7 @@ lemma (in right_complemented_monoid) right_complemented_monoid: "class.right_com
   by (unfold_locales, simp_all add: less_le_not_le rcm_A rcm_B rcm_C rcm_D)
 
 (*
-sublocale right_complemented_monoid < rcm!: right_complemented_monoid_algebra "op \<le>" "op <" 1 "op *" inf "op r\<rightarrow>"
+sublocale right_complemented_monoid < rcm: right_complemented_monoid_algebra "op \<le>" "op <" 1 "op *" inf "op r\<rightarrow>"
   by (unfold_locales, simp_all add: less_le_not_le rcm_A rcm_B rcm_C rcm_D)
 *)
 

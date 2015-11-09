@@ -30,7 +30,7 @@ definition [icf_rec_def]: "tm_basic_ops \<equiv> \<lparr>
 
 
 setup Locale_Code.open_block
-interpretation tm_basic!: StdBasicMap tm_basic_ops
+interpretation tm_basic: StdBasicMap tm_basic_ops
   apply unfold_locales
   apply (simp_all add: icf_rec_unf Trie2.finite_dom_lookup Trie2.iteratei_correct)
   done
@@ -39,10 +39,10 @@ setup Locale_Code.close_block
 definition [icf_rec_def]: "tm_ops \<equiv> tm_basic.dflt_ops"
 
 setup Locale_Code.open_block
-interpretation tm!: StdMap tm_ops 
+interpretation tm: StdMap tm_ops 
   unfolding tm_ops_def
   by (rule tm_basic.dflt_ops_impl)
-interpretation tm!: StdMap_no_invar tm_ops 
+interpretation tm: StdMap_no_invar tm_ops 
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
