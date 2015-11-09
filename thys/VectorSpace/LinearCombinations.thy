@@ -386,7 +386,7 @@ lemma module_hom_smult: "\<lbrakk>f\<in> module_hom R M N; r\<in>carrier R; m\<i
 by (unfold module_hom_def, auto)
 
 locale mod_hom = 
-  M: module R M + N: module R N
+  M?: module R M + N?: module R N
     for R and M and N +
   fixes f
   assumes f_hom: "f \<in> module_hom R M N"

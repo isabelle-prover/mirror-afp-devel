@@ -333,7 +333,7 @@ record ('Q,'L) ba_rec = "'Q b_graph_rec" +
   ba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
 
 locale ba =
-  bg: b_graph G 
+  bg?: b_graph G 
   for G :: "('Q,'L,'more) ba_rec_scheme"
   +
   assumes L_ss: "ba_L G q l \<Longrightarrow> q \<in> V"
@@ -472,7 +472,7 @@ record ('Q,'L) igba_rec = "'Q igb_graph_rec" +
   igba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
 
 locale igba =
-  igbg: igb_graph G
+  igbg?: igb_graph G
   for G :: "('Q,'L,'more) igba_rec_scheme"
   +
   assumes L_ss: "igba_L G q l \<Longrightarrow> q \<in> V"
@@ -1257,7 +1257,7 @@ record ('Q,'L) sa_rec = "'Q graph_rec" +
   sa_L :: "'Q \<Rightarrow> 'L"
 
 locale sa =
-  g: graph G
+  g?: graph G
   for G :: "('Q, 'L, 'more) sa_rec_scheme"
 begin
 

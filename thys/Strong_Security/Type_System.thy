@@ -7,7 +7,7 @@ imports Language_Composition
 begin
 
 locale Type_System = 
-  SSP : Strongly_Secure_Programs "E" "BMap" "DA" 
+  SSP? : Strongly_Secure_Programs "E" "BMap" "DA" 
   for E :: "('exp, 'id, 'val) Evalfunction"
   and BMap :: "'val \<Rightarrow> bool"
   and DA :: "('id, 'd::order) DomainAssignment"

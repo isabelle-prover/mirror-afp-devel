@@ -112,7 +112,7 @@ subsubsection {*ENF*}
    
 
   interpretation BLPbasic: SecurityInvariant_IFS sinvar verify_globals default_node_properties
-  where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
+  rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
     unfolding receiver_violation_def
     unfolding default_node_properties_def
     apply(unfold_locales)

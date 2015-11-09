@@ -8,7 +8,7 @@ theory Yoneda
 imports NatTrans SetCat
 begin
 
-definition "YFtorNT' C f \<equiv> \<lparr>NTDom = Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f] , NTCod = Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f] ,
+definition "YFtorNT' C f \<equiv> \<lparr>NTDom = Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f] , NTCod = Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f] ,
                        NatTransMap = \<lambda> B . Hom\<^bsub>C\<^esub>[B,f]\<rparr>"
 
 definition "YFtorNT C f \<equiv> MakeNT (YFtorNT' C f)"
@@ -57,8 +57,8 @@ proof(auto simp only: NatTransP_def)
     show "(YFtorNT' C f) $$ X maps\<^bsub>NTCatCod (YFtorNT' C f)\<^esub> (NTDom (YFtorNT' C f) @@ X) to (NTCod (YFtorNT' C f) @@ X)"
     proof-
       have Obj: "X \<in> Obj C" using a by (simp add: NTCatDom_def YFtorNT'_def HomFtorContraDom OppositeCategory_def)
-      have H1: "(Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]) @@ X = Hom\<^bsub>C \<^esub>X dom\<^bsub>C\<^esub> f " using assms Obj by(simp add: HomFtorOpObj Category.Cdom)
-      have H2: "(Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f]) @@ X = Hom\<^bsub>C \<^esub>X cod\<^bsub>C\<^esub> f " using assms Obj by(simp add: HomFtorOpObj Category.Ccod)
+      have H1: "(Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]) @@ X = Hom\<^bsub>C \<^esub>X dom\<^bsub>C\<^esub> f " using assms Obj by(simp add: HomFtorOpObj Category.Cdom)
+      have H2: "(Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f]) @@ X = Hom\<^bsub>C \<^esub>X cod\<^bsub>C\<^esub> f " using assms Obj by(simp add: HomFtorOpObj Category.Ccod)
       have "Hom\<^bsub>C\<^esub>[X,f] maps\<^bsub>SET\<^esub> (Hom\<^bsub>C \<^esub>X dom\<^bsub>C\<^esub> f) to (Hom\<^bsub>C \<^esub>X cod\<^bsub>C\<^esub> f)" using assms Obj by (simp add: HomFtorMapsTo)
       thus ?thesis using H1 H2 by(simp add: YFtorNT'_def NTCatCod_def NTCatDom_def HomFtorContraCod)
     qed
@@ -71,12 +71,12 @@ proof(auto simp only: NatTransP_def)
       have M1: "g maps\<^bsub>Op C\<^esub> X to Y" using a by (auto simp add: NTCatDom_def YFtorNT'_def HomFtorContraDom)
       have D1: "dom\<^bsub>C\<^esub> g = Y" and C1: "cod\<^bsub>C\<^esub> g = X" using M1 by (auto simp add: OppositeCategory_def)
       have morf: "f \<in> Mor C" and morg: "g \<in> Mor C" using assms M1 by (auto simp add: OppositeCategory_def)
-      have H1: "(HomC\<^bsub>C\<^esub>[g,dom\<^bsub>C\<^esub> f]) = (Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]) ## g" 
-        and H2: "(HomC\<^bsub>C\<^esub>[g,cod\<^bsub>C\<^esub> f]) = (Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f]) ## g" using M1 
+      have H1: "(HomC\<^bsub>C\<^esub>[g,dom\<^bsub>C\<^esub> f]) = (Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]) ## g" 
+        and H2: "(HomC\<^bsub>C\<^esub>[g,cod\<^bsub>C\<^esub> f]) = (Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f]) ## g" using M1 
         by (auto simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
       have "(HomC\<^bsub>C\<^esub>[g,dom\<^bsub>C\<^esub> f]) ;;\<^bsub>SET\<^esub> (Hom\<^bsub>C\<^esub>[dom\<^bsub>C\<^esub> g,f]) = (Hom\<^bsub>C\<^esub>[cod\<^bsub>C\<^esub> g,f]) ;;\<^bsub>SET\<^esub> (HomC\<^bsub>C\<^esub>[g,cod\<^bsub>C\<^esub> f])" using assms morf morg
         by (simp add: HomCHom)
-      hence "((Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]) ## g) ;;\<^bsub>SET\<^esub> (Hom\<^bsub>C\<^esub>[Y,f]) = (Hom\<^bsub>C\<^esub>[X,f]) ;;\<^bsub>SET\<^esub> ((Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f]) ## g)"
+      hence "((Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]) ## g) ;;\<^bsub>SET\<^esub> (Hom\<^bsub>C\<^esub>[Y,f]) = (Hom\<^bsub>C\<^esub>[X,f]) ;;\<^bsub>SET\<^esub> ((Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f]) ## g)"
         using H1 H2 D1 C1 by simp
       thus ?thesis by (simp add: YFtorNT'_def NTCatCod_def HomFtorContraCod)
     qed
@@ -100,12 +100,12 @@ qed
 
 lemma YFtorNtMapsTo:
   assumes "LSCategory C" and "f \<in> Mor C"
-  shows "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]) to (Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f])"
+  shows "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]) to (Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f])"
 proof(rule MapsToI)
   have "f \<in> Mor C"  using assms by auto
   thus 1: "YFtorNT C f \<in> mor\<^bsub>CatExp (Op C) SET\<^esub>" using assms by (simp add: YFtorNTMor)
-  show "dom\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]" using 1 by(simp add:CatExpDom YFtorNT_defs)
-  show "cod\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f]" using 1 by(simp add:CatExpCod YFtorNT_defs)
+  show "dom\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]" using 1 by(simp add:CatExpDom YFtorNT_defs)
+  show "cod\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f]" using 1 by(simp add:CatExpCod YFtorNT_defs)
 qed
 
 lemma YFtorNTCompDef:
@@ -113,13 +113,13 @@ lemma YFtorNTCompDef:
   shows "YFtorNT C f \<approx>>\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g"
 proof(rule CompDefinedI)
   have "f \<in> Mor C" and "g \<in> Mor C" using assms by auto
-  hence 1: "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]) to (Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f])"
-    and 2: "YFtorNT C g maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> g]) to (Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> g])"
+  hence 1: "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]) to (Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f])"
+    and 2: "YFtorNT C g maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> g]) to (Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> g])"
     using assms by (simp add: YFtorNtMapsTo)+
   thus "YFtorNT C f \<in> mor\<^bsub>CatExp (Op C) SET\<^esub>"
     and "YFtorNT C g \<in> mor\<^bsub>CatExp (Op C) SET\<^esub>" by auto
-  have "cod\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = (Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> f])" using 1 by auto
-  moreover have "dom\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g = (Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> g])" using 2 by auto
+  have "cod\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = (Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> f])" using 1 by auto
+  moreover have "dom\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g = (Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> g])" using 2 by auto
   moreover have "cod\<^bsub>C\<^esub> f = dom\<^bsub>C\<^esub> g" using assms by auto
   ultimately show "cod\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C f = dom\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g" by simp
 qed
@@ -129,49 +129,49 @@ by(simp add: YFtor'_def OpCatCat SETCategory CatExpCat)
 
 lemma YFtor'Obj1:
   assumes "X \<in> Obj (CatDom (YFtor' C))" and "LSCategory C"
-  shows "(YFtor' C) ## (Id (CatDom (YFtor' C)) X) = Id (CatCod (YFtor' C)) (Hom\<^bsub>C \<^esub>[\<emdash>,X])"
+  shows "(YFtor' C) ## (Id (CatDom (YFtor' C)) X) = Id (CatCod (YFtor' C)) (Hom\<^bsub>C \<^esub>[\<midarrow>,X])"
 proof(simp add: YFtor'_def, rule NatTransExt)
   have Obj: "X \<in> Obj C" using assms by (simp add: YFtor'_def)
-  have HomObj: "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) \<in> Obj (CatExp (Op C) SET)" using assms Obj by(simp add: CatExp_defs HomFtorContraFtor)
-  hence Id: "Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]) \<in> Mor (CatExp (Op C) SET)" using assms 
+  have HomObj: "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) \<in> Obj (CatExp (Op C) SET)" using assms Obj by(simp add: CatExp_defs HomFtorContraFtor)
+  hence Id: "Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) \<in> Mor (CatExp (Op C) SET)" using assms 
     by (simp add: PreSheafCat Category.CatIdInMor)
   have CAT: "Category(CatExp (Op C) SET)" using assms by (simp add: PreSheafCat)
-  have HomObj: "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) \<in> Obj (CatExp (Op C) SET)" using assms Obj 
+  have HomObj: "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) \<in> Obj (CatExp (Op C) SET)" using assms Obj 
     by(simp add: CatExp_defs HomFtorContraFtor)
   show "NatTrans (YFtorNT C (Id C X))"
   proof(rule YFtorNTNatTrans)
     show "LSCategory C" using assms(2) .
     show "Id C X \<in> Mor C" using assms Obj by (simp add: Category.CatIdInMor)
   qed
-  show "NatTrans(Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" using Id by (simp add: CatExp_defs)
-  show "NTDom (YFtorNT C (Id C X)) = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))"
+  show "NatTrans(Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" using Id by (simp add: CatExp_defs)
+  show "NTDom (YFtorNT C (Id C X)) = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))"
   proof(simp add: YFtorNT_defs)
-    have "Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> (Id C X)] = Hom\<^bsub>C\<^esub>[\<emdash>,X]" using assms Obj by (simp add: Category.CatIdDomCod)
-    also have "... = dom\<^bsub>CatExp (Op C) SET\<^esub>  (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" using CAT HomObj
+    have "Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> (Id C X)] = Hom\<^bsub>C\<^esub>[\<midarrow>,X]" using assms Obj by (simp add: Category.CatIdDomCod)
+    also have "... = dom\<^bsub>CatExp (Op C) SET\<^esub>  (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" using CAT HomObj
       by (simp add: Category.CatIdDomCod)
-    also have "... = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" using Id by (simp add: CatExpDom)
-    finally show "Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> (Id C X)] = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" .
+    also have "... = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" using Id by (simp add: CatExpDom)
+    finally show "Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> (Id C X)] = NTDom (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" .
   qed
-  show "NTCod (YFtorNT C (Id C X)) = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))"
+  show "NTCod (YFtorNT C (Id C X)) = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))"
   proof(simp add: YFtorNT_defs)
-    have "Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> (Id C X)] = Hom\<^bsub>C\<^esub>[\<emdash>,X]" using assms Obj by (simp add: Category.CatIdDomCod)
-    also have "... = cod\<^bsub>CatExp (Op C) SET\<^esub>  (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" using CAT HomObj
+    have "Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> (Id C X)] = Hom\<^bsub>C\<^esub>[\<midarrow>,X]" using assms Obj by (simp add: Category.CatIdDomCod)
+    also have "... = cod\<^bsub>CatExp (Op C) SET\<^esub>  (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" using CAT HomObj
       by (simp add: Category.CatIdDomCod)
-    also have "... = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" using Id by (simp add: CatExpCod)
-    finally show "Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> (Id C X)] = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X]))" .
+    also have "... = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" using Id by (simp add: CatExpCod)
+    finally show "Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> (Id C X)] = NTCod (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X]))" .
   qed
   {
     fix Y assume a: "Y \<in> Obj (NTCatDom (YFtorNT C (Id C X)))"
-    show "(YFtorNT C (Id C X)) $$ Y = (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X])) $$ Y"
+    show "(YFtorNT C (Id C X)) $$ Y = (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X])) $$ Y"
     proof-
-      have CD: "CatDom (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = Op C" by (simp add: HomFtorContraDom)
-      have CC: "CatCod (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = SET" by (simp add: HomFtorContraCod)
+      have CD: "CatDom (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = Op C" by (simp add: HomFtorContraDom)
+      have CC: "CatCod (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = SET" by (simp add: HomFtorContraCod)
       have ObjY: "Y \<in> Obj C" and ObjYOp: "Y \<in> Obj (Op C)" using a by(simp add: YFtorNTCatDom OppositeCategory_def)+
       have "(YFtorNT C (Id C X)) $$ Y = (Hom\<^bsub>C\<^esub>[Y,(Id C X)])" using a by (simp add: YFtorNTApp1)
       also have "... = id\<^bsub>SET\<^esub> (Hom\<^bsub>C \<^esub>Y X)" using Obj ObjY assms by (simp add: HomFtorId)
-      also have "... = id\<^bsub>SET\<^esub> ((Hom\<^bsub>C\<^esub>[\<emdash>,X]) @@ Y)" using Obj ObjY assms by (simp add: HomFtorOpObj )
-      also have "... = (IdNatTrans (Hom\<^bsub>C\<^esub>[\<emdash>,X])) $$ Y" using CD CC ObjYOp by (simp add: IdNatTrans_map)
-      also have "... = (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<emdash>,X])) $$ Y" using HomObj by (simp add: CatExpId)
+      also have "... = id\<^bsub>SET\<^esub> ((Hom\<^bsub>C\<^esub>[\<midarrow>,X]) @@ Y)" using Obj ObjY assms by (simp add: HomFtorOpObj )
+      also have "... = (IdNatTrans (Hom\<^bsub>C\<^esub>[\<midarrow>,X])) $$ Y" using CD CC ObjYOp by (simp add: IdNatTrans_map)
+      also have "... = (Id (CatExp (Op C) SET) (Hom\<^bsub>C\<^esub>[\<midarrow>,X])) $$ Y" using HomObj by (simp add: CatExpId)
       finally show ?thesis .
     qed
   }
@@ -195,8 +195,8 @@ proof(auto simp only: PreFunctor_def)
       show "NTDom (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = NTDom (YFtorNT C f ;;\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g)"
       proof-
         have 1: "YFtorNT C f \<in> mor\<^bsub>CatExp (Op C) SET\<^esub>" using CD2 by auto
-        have "NTDom (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> g)]" by (simp add: YFtorNT_defs)
-        also have "... = Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f]" using CD assms by (simp add: Category.MapsToMorDomCod)
+        have "NTDom (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> g)]" by (simp add: YFtorNT_defs)
+        also have "... = Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f]" using CD assms by (simp add: Category.MapsToMorDomCod)
         also have "... = NTDom (YFtorNT C f)" by (simp add: YFtorNT_defs)
         also have "... = dom\<^bsub>CatExp (Op C) SET\<^esub> (YFtorNT C f)" using 1 by (simp add: CatExpDom)
         also have "... = dom\<^bsub>CatExp (Op C) SET\<^esub> (YFtorNT C f ;;\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g)" using CD2 CAT
@@ -206,8 +206,8 @@ proof(auto simp only: PreFunctor_def)
       show "NTCod (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = NTCod (YFtorNT C f ;;\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g)"
       proof-
         have 1: "YFtorNT C g \<in> mor\<^bsub>CatExp (Op C) SET\<^esub>" using CD2 by auto
-        have "NTCod (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> g)]" by (simp add: YFtorNT_defs)
-        also have "... = Hom\<^bsub>C\<^esub>[\<emdash>,cod\<^bsub>C\<^esub> g]" using CD assms by (simp add: Category.MapsToMorDomCod)
+        have "NTCod (YFtorNT C (f ;;\<^bsub>C\<^esub> g)) = Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> g)]" by (simp add: YFtorNT_defs)
+        also have "... = Hom\<^bsub>C\<^esub>[\<midarrow>,cod\<^bsub>C\<^esub> g]" using CD assms by (simp add: Category.MapsToMorDomCod)
         also have "... = NTCod (YFtorNT C g)" by (simp add: YFtorNT_defs)
         also have "... = cod\<^bsub>CatExp (Op C) SET\<^esub> (YFtorNT C g)" using 1 by (simp add: CatExpCod)
         also have "... = cod\<^bsub>CatExp (Op C) SET\<^esub> (YFtorNT C f ;;\<^bsub>CatExp (Op C) SET\<^esub> YFtorNT C g)" using CD2 CAT
@@ -232,10 +232,10 @@ proof(auto simp only: PreFunctor_def)
   {
     fix X assume a: "X \<in> Obj (CatDom (YFtor' C))"
     show "\<exists> Y \<in> Obj (CatCod (YFtor' C)) . YFtor' C ## (Id (CatDom (YFtor' C)) X) = Id (CatCod (YFtor' C)) Y"
-    proof(rule_tac x="Hom\<^bsub>C \<^esub>[\<emdash>,X]" in Set.rev_bexI)
+    proof(rule_tac x="Hom\<^bsub>C \<^esub>[\<midarrow>,X]" in Set.rev_bexI)
       have "X \<in> Obj C" using a by(simp add: YFtor'_def)
-      thus "Hom\<^bsub>C \<^esub>[\<emdash>,X] \<in> Obj (CatCod (YFtor' C))" using assms by(simp add: YFtor'_def CatExp_defs HomFtorContraFtor)
-      show "(YFtor' C) ## (Id (CatDom (YFtor' C)) X) = Id (CatCod (YFtor' C)) (Hom\<^bsub>C \<^esub>[\<emdash>,X])" using a assms
+      thus "Hom\<^bsub>C \<^esub>[\<midarrow>,X] \<in> Obj (CatCod (YFtor' C))" using assms by(simp add: YFtor'_def CatExp_defs HomFtorContraFtor)
+      show "(YFtor' C) ## (Id (CatDom (YFtor' C)) X) = Id (CatCod (YFtor' C)) (Hom\<^bsub>C \<^esub>[\<midarrow>,X])" using a assms
         by (simp add: YFtor'Obj1)
     qed
   }
@@ -246,10 +246,10 @@ qed
 lemma YFtor'Obj:
   assumes "X \<in> Obj (CatDom (YFtor' C))"
   and     "LSCategory C" 
-  shows   "(YFtor' C) @@ X = Hom\<^bsub>C \<^esub>[\<emdash>,X]"
+  shows   "(YFtor' C) @@ X = Hom\<^bsub>C \<^esub>[\<midarrow>,X]"
 proof(rule PreFunctor.FmToFo, simp_all add: assms YFtor'Obj1 YFtorPreFtor)
   have "X \<in> Obj C" using assms by(simp add: YFtor'_def)
-  thus "Hom\<^bsub>C \<^esub>[\<emdash>,X] \<in> Obj (CatCod (YFtor' C))" using assms by(simp add: YFtor'_def CatExp_defs HomFtorContraFtor)
+  thus "Hom\<^bsub>C \<^esub>[\<midarrow>,X] \<in> Obj (CatCod (YFtor' C))" using assms by(simp add: YFtor'_def CatExp_defs HomFtorContraFtor)
 qed
 
 lemma YFtorFtor':
@@ -268,10 +268,10 @@ proof(auto simp only: FunctorM_def)
         hence Obj1: "X \<in> Obj (CatDom (YFtor' C))" and
               Obj2: "Y \<in> Obj (CatDom (YFtor' C))" using aa assms by (simp add: Category.MapsToObj)+
         have "(YFtor' C ## f) = YFtorNT C f" by (simp add: YFtor'_def)
-        moreover have "YFtor' C @@ X = Hom\<^bsub>C \<^esub>[\<emdash>,X]" 
-          and "YFtor' C @@ Y = Hom\<^bsub>C \<^esub>[\<emdash>,Y]" using Obj1 Obj2 assms by (simp add: YFtor'Obj)+
+        moreover have "YFtor' C @@ X = Hom\<^bsub>C \<^esub>[\<midarrow>,X]" 
+          and "YFtor' C @@ Y = Hom\<^bsub>C \<^esub>[\<midarrow>,Y]" using Obj1 Obj2 assms by (simp add: YFtor'Obj)+
         moreover have "CatCod (YFtor' C) = CatExp (Op C) SET" by (simp add: YFtor'_def)
-        moreover have "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C \<^esub>[\<emdash>,X]) to (Hom\<^bsub>C \<^esub>[\<emdash>,Y])" 
+        moreover have "YFtorNT C f maps\<^bsub>CatExp (Op C) SET\<^esub> (Hom\<^bsub>C \<^esub>[\<midarrow>,X]) to (Hom\<^bsub>C \<^esub>[\<midarrow>,Y])" 
           using assms Mor1 by (auto simp add: YFtorNtMapsTo)
         ultimately show ?thesis by simp 
       qed
@@ -288,10 +288,10 @@ qed
 
 lemma YFtorObj: 
   assumes "LSCategory C" and "X \<in> Obj C"
-  shows "(YFtor C) @@ X = Hom\<^bsub>C \<^esub>[\<emdash>,X]"
+  shows "(YFtor C) @@ X = Hom\<^bsub>C \<^esub>[\<midarrow>,X]"
 proof-
   have "CatDom (YFtor' C) = C" by (simp add: YFtor'_def)
-  moreover hence "(YFtor' C) @@ X = Hom\<^bsub>C \<^esub>[\<emdash>,X]" using assms by(simp add: YFtor'Obj)
+  moreover hence "(YFtor' C) @@ X = Hom\<^bsub>C \<^esub>[\<midarrow>,X]" using assms by(simp add: YFtor'Obj)
   moreover have "PreFunctor (YFtor' C)" using assms by (simp add: YFtorPreFtor)
   ultimately show ?thesis using assms by (simp add: MakeFtorObj YFtor_def)
 qed
@@ -300,7 +300,7 @@ lemma YFtorObj2:
   assumes "LSCategory C" and "X \<in> Obj C" and "Y \<in> Obj C"
   shows "((YFtor C) @@ Y) @@ X = Hom\<^bsub>C \<^esub>X Y"
 proof-
-  have "Hom\<^bsub>C \<^esub>X Y = ((Hom\<^bsub>C\<^esub>[\<emdash>,Y]) @@ X)" using assms by (simp add: HomFtorOpObj)
+  have "Hom\<^bsub>C \<^esub>X Y = ((Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) @@ X)" using assms by (simp add: HomFtorOpObj)
   also have "... = ((YFtor C @@ Y) @@ X)" using assms by (simp add: YFtorObj)
   finally show ?thesis by simp
 qed
@@ -328,7 +328,7 @@ lemma YMapInvApp:
   shows "(YMapInv C X F x) $$ B = ZFfun (Hom\<^bsub>C\<^esub> B X) (F @@ B) (\<lambda> f . (F ## (z2m\<^bsub>C\<^esub> f)) |@| x)"
 proof-
   have "NTCatDom (MakeNT (YMapInv' C X F x)) = CatDom (NTDom (YMapInv' C X F x))" by (simp add: MakeNT_def NTCatDom_def)
-  also have "... = CatDom (Hom\<^bsub>C\<^esub>[\<emdash>,X])" using assms by (simp add: YFtorObj YMapInv'_def)
+  also have "... = CatDom (Hom\<^bsub>C\<^esub>[\<midarrow>,X])" using assms by (simp add: YFtorObj YMapInv'_def)
   also have "... = Op C" using assms HomFtorContraFtor[of C X] by auto
   finally have "NTCatDom (MakeNT (YMapInv' C X F x)) = Op C" .
   hence 1: "B \<in> Obj (NTCatDom (MakeNT (YMapInv' C X F x)))" using assms by (simp add: OppositeCategory_def)
@@ -342,8 +342,8 @@ lemma YMapImage:
   and "NT \<eta> : (YFtor C @@ X) \<Longrightarrow> F"
   shows "(YMap C X \<eta>) |\<in>| (F @@ X)"
 proof(simp only: YMap_def)
-  have "(YFtor C @@ X) = (Hom\<^bsub>C\<^esub>[\<emdash>,X])" using assms by (auto simp add: YFtorObj)
-  moreover have "Ftor (Hom\<^bsub>C\<^esub>[\<emdash>,X]) : (Op C) \<longrightarrow> SET" using assms by (simp add: HomFtorContraFtor)
+  have "(YFtor C @@ X) = (Hom\<^bsub>C\<^esub>[\<midarrow>,X])" using assms by (auto simp add: YFtorObj)
+  moreover have "Ftor (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) : (Op C) \<longrightarrow> SET" using assms by (simp add: HomFtorContraFtor)
   ultimately have "CatDom (YFtor C @@ X) = Op C" by auto
   hence Obj: "X \<in> Obj (CatDom (YFtor C @@ X))" using assms by (simp add: OppositeCategory_def)
   moreover have "CatCod F  = SET" using assms by auto
@@ -362,7 +362,7 @@ lemma YMapInvNatTransP:
   assumes "LSCategory C" and "Ftor F : (Op C) \<longrightarrow> SET" and xobj: "X \<in> Obj C" and xinF: "x |\<in>| (F @@ X)"
   shows "NatTransP (YMapInv' C X F x)"
 proof(auto simp only: NatTransP_def, simp_all add: YMapInv'_def NTCatCod_def NTCatDom_def)
-  have yf: "(YFtor C @@ X) = Hom\<^bsub>C\<^esub>[\<emdash>,X]" using assms by (simp add: YFtorObj)
+  have yf: "(YFtor C @@ X) = Hom\<^bsub>C\<^esub>[\<midarrow>,X]" using assms by (simp add: YFtorObj)
   hence hf: "Ftor (YFtor C @@ X) : (Op C) \<longrightarrow> SET" using assms by (simp add: HomFtorContraFtor)
   thus "Functor (YFtor C @@ X)" by auto
   show ftf: "Functor F" using assms by auto
@@ -403,7 +403,7 @@ proof(auto simp only: NatTransP_def, simp_all add: YMapInv'_def NTCatCod_def NTC
     have fmapsa: "f maps\<^bsub>Op C\<^esub> Z to Y" using fmaps dy by simp
     hence fmapsb: "f maps\<^bsub>C\<^esub> Y to Z" by (rule MapsToOpOp)
     hence fmor: "f \<in> Mor C" and fdom: "dom\<^bsub>C\<^esub> f = Y" and fcod: "cod\<^bsub>C\<^esub> f = Z" by (auto simp add: OppositeCategory_def)
-    hence hc: "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) ## f = (HomC\<^bsub>C\<^esub>[f,X])" using assms by (simp add: HomContraMor)
+    hence hc: "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) ## f = (HomC\<^bsub>C\<^esub>[f,X])" using assms by (simp add: HomContraMor)
     have yobj: "Y \<in> Obj C" and zobj: "Z \<in> Obj C" using fmapsb assms by (simp add: Category.MapsToObj)+
     have Ffmaps: "(F ## f) maps\<^bsub>SET\<^esub> (F @@ Z) to (F @@ Y)" using assms fmapsa by (simp add: FunctorMapsTo)
     have Fzmaps: "\<And> h A B . \<lbrakk>h |\<in>| (Hom\<^bsub>C\<^esub> A B) ; A \<in> Obj C ; B \<in> Obj C\<rbrakk> \<Longrightarrow> 
@@ -536,8 +536,8 @@ proof(rule NatTransExt)
   {
     fix Y assume Yobja: "Y \<in> Obj (NTCatDom (YMapInv C X F (YMap C X \<eta>)))"
     have CCF: "CatCod F = SET" using assms by auto
-    have "Ftor (Hom\<^bsub>C\<^esub>[\<emdash>,X]) : (Op C) \<longrightarrow> SET" using LSCat XObj by (simp add: HomFtorContraFtor)
-    hence CDH: "CatDom (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = Op C" by auto
+    have "Ftor (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) : (Op C) \<longrightarrow> SET" using LSCat XObj by (simp add: HomFtorContraFtor)
+    hence CDH: "CatDom (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = Op C" by auto
     hence CDYF: "CatDom (YFtor C @@ X) = Op C" using XObj LSCat by (auto simp add: YFtorObj)
     hence "NTCatDom (YMapInv C X F (YMap C X \<eta>)) = Op C" using LSCat XObj NTDYI CDH  by (simp add: NTCatDom_def)
     hence YObjOp: "Y \<in> Obj (Op C)" using Yobja by simp
@@ -585,15 +585,15 @@ proof(rule NatTransExt)
         qed
         also have "... = ((HomC\<^bsub>C\<^esub>[z2m\<^bsub>C \<^esub>f,X]) ;;\<^bsub>SET\<^esub> (\<eta> $$ Y)) |@| (m2z\<^bsub>C \<^esub>(Id C X))" 
         proof-
-          have "NTDom \<eta> = (Hom\<^bsub>C\<^esub>[\<emdash>,X])" using NTDeta assms by (simp add: YFtorObj)
+          have "NTDom \<eta> = (Hom\<^bsub>C\<^esub>[\<midarrow>,X])" using NTDeta assms by (simp add: YFtorObj)
           moreover hence "NTCatDom \<eta> = Op C" by (simp add: NTCatDom_def HomFtorContraDom)
           moreover have "NTCatCod \<eta> = SET" using assms by (auto simp add: NTCatCod_def)
           moreover have "NatTrans \<eta>" and "NTCod \<eta> = F" using assms by auto
           moreover have "(z2m\<^bsub>C \<^esub>f) maps\<^bsub>Op C \<^esub>X to Y" 
             using fMapsTo MapsToOp[where ?f = "(z2m\<^bsub>C \<^esub>f)" and ?X = Y and ?Y = X and ?C = C] by simp
-          ultimately have "(\<eta> $$ X) ;;\<^bsub>SET\<^esub> (F ## (z2m\<^bsub>C \<^esub>f)) = ((Hom\<^bsub>C\<^esub>[\<emdash>,X]) ## (z2m\<^bsub>C \<^esub>f)) ;;\<^bsub>SET\<^esub> (\<eta> $$ Y)"
+          ultimately have "(\<eta> $$ X) ;;\<^bsub>SET\<^esub> (F ## (z2m\<^bsub>C \<^esub>f)) = ((Hom\<^bsub>C\<^esub>[\<midarrow>,X]) ## (z2m\<^bsub>C \<^esub>f)) ;;\<^bsub>SET\<^esub> (\<eta> $$ Y)"
             using NatTransP.NatTrans[of \<eta> "(z2m\<^bsub>C \<^esub>f)" X Y] by simp
-          moreover have "((Hom\<^bsub>C\<^esub>[\<emdash>,X]) ## (z2m\<^bsub>C \<^esub>f)) = (HomC\<^bsub>C\<^esub>[(z2m\<^bsub>C \<^esub>f),X])" using assms fMor by (simp add: HomContraMor)
+          moreover have "((Hom\<^bsub>C\<^esub>[\<midarrow>,X]) ## (z2m\<^bsub>C \<^esub>f)) = (HomC\<^bsub>C\<^esub>[(z2m\<^bsub>C \<^esub>f),X])" using assms fMor by (simp add: HomContraMor)
           ultimately show ?thesis by simp
         qed
         also have "... = (\<eta> $$ Y) |@| ((HomC\<^bsub>C\<^esub>[z2m\<^bsub>C \<^esub>f,X]) |@| (m2z\<^bsub>C \<^esub>(Id C X)))" 
@@ -647,13 +647,13 @@ qed
 
 lemma YFtorNT_YMapInv:
   assumes "LSCategory C" and "f maps\<^bsub>C\<^esub> X to Y"
-  shows "YFtorNT C f = YMapInv C X (Hom\<^bsub>C\<^esub>[\<emdash>,Y]) (m2z\<^bsub>C\<^esub> f)"
+  shows "YFtorNT C f = YMapInv C X (Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) (m2z\<^bsub>C\<^esub> f)"
 proof(simp only: YFtorNT_def YMapInv_def, rule NatTransExt')
   have Cf: "cod\<^bsub>C\<^esub> f = Y" and Df: "dom\<^bsub>C\<^esub> f = X" using assms by auto
-  thus "NTCod (YFtorNT' C f) = NTCod (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<emdash>,Y]) (m2z\<^bsub>C\<^esub>f))"
+  thus "NTCod (YFtorNT' C f) = NTCod (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) (m2z\<^bsub>C\<^esub>f))"
     by(simp add: YFtorNT'_def YMapInv'_def )
-  have "Hom\<^bsub>C\<^esub>[\<emdash>,dom\<^bsub>C\<^esub> f] = YFtor C @@ X" using Df assms by (simp add: YFtorObj Category.MapsToObj)
-  thus "NTDom (YFtorNT' C f) = NTDom (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<emdash>,Y]) (m2z\<^bsub>C\<^esub>f))"
+  have "Hom\<^bsub>C\<^esub>[\<midarrow>,dom\<^bsub>C\<^esub> f] = YFtor C @@ X" using Df assms by (simp add: YFtorObj Category.MapsToObj)
+  thus "NTDom (YFtorNT' C f) = NTDom (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) (m2z\<^bsub>C\<^esub>f))"
     by(simp add: YFtorNT'_def YMapInv'_def )
   {
     fix Z assume ObjZ1: "Z \<in> Obj (NTCatDom (YFtorNT' C f))"
@@ -662,12 +662,12 @@ proof(simp only: YFtorNT_def YMapInv_def, rule NatTransExt')
     moreover 
     {
       fix x assume x: "x |\<in>| (Hom\<^bsub>C\<^esub> Z X)"
-      have "m2z\<^bsub>C \<^esub>((z2m\<^bsub>C \<^esub>x) ;;\<^bsub>C\<^esub> f) = ((Hom\<^bsub>C\<^esub>[\<emdash>,Y]) ## (z2m\<^bsub>C \<^esub>x)) |@| (m2z\<^bsub>C\<^esub>f)"
+      have "m2z\<^bsub>C \<^esub>((z2m\<^bsub>C \<^esub>x) ;;\<^bsub>C\<^esub> f) = ((Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) ## (z2m\<^bsub>C \<^esub>x)) |@| (m2z\<^bsub>C\<^esub>f)"
       proof-
         have morf: "f \<in> Mor C" using assms by auto
         have mapsx: "(z2m\<^bsub>C \<^esub>x) maps\<^bsub>C\<^esub> Z to X" using x assms(1) ObjZ2 ObjX by (simp add: LSCategory.z2mm2z)
         hence morx: "(z2m\<^bsub>C \<^esub>x) \<in> Mor C" by auto
-        hence "(Hom\<^bsub>C\<^esub>[\<emdash>,Y]) ## (z2m\<^bsub>C \<^esub>x) = (HomC\<^bsub>C\<^esub>[(z2m\<^bsub>C \<^esub>x),Y])" using assms by (simp add: HomContraMor)
+        hence "(Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) ## (z2m\<^bsub>C \<^esub>x) = (HomC\<^bsub>C\<^esub>[(z2m\<^bsub>C \<^esub>x),Y])" using assms by (simp add: HomContraMor)
         moreover have "(HomC\<^bsub>C\<^esub>[(z2m\<^bsub>C \<^esub>x),Y]) |@| (m2z\<^bsub>C \<^esub>f) = m2z\<^bsub>C \<^esub>((z2m\<^bsub>C \<^esub>x) ;;\<^bsub>C\<^esub> (z2m\<^bsub>C \<^esub>(m2z\<^bsub>C \<^esub>f)))"
         proof (rule HomContraAt)
           have "cod\<^bsub>C\<^esub> (z2m\<^bsub>C \<^esub>x) = X" using mapsx by auto
@@ -677,7 +677,7 @@ proof(simp only: YFtorNT_def YMapInv_def, rule NatTransExt')
         ultimately show ?thesis by simp
       qed
     }
-    ultimately show "(YFtorNT' C f) $$ Z = (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<emdash>,Y]) (m2z\<^bsub>C\<^esub>f)) $$ Z" using Cf Df assms
+    ultimately show "(YFtorNT' C f) $$ Z = (YMapInv' C X (Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) (m2z\<^bsub>C\<^esub>f)) $$ Z" using Cf Df assms
       apply(simp add: YFtorNT'_def YMapInv'_def HomFtorMap_def HomFtorOpObj)
       apply(rule ZFfun_ext, rule allI, rule impI, simp)
       done
@@ -690,7 +690,7 @@ lemma YMapYoneda:
 proof-
   have "f \<in> Mor C" using assms by auto
   moreover have "Y \<in> Obj C" using assms by (simp add: Category.MapsToObj)
-  moreover have "YFtorNT C f = YMapInv C X (Hom\<^bsub>C\<^esub>[\<emdash>,Y]) (m2z\<^bsub>C\<^esub> f)" using assms by (simp add: YFtorNT_YMapInv)
+  moreover have "YFtorNT C f = YMapInv C X (Hom\<^bsub>C\<^esub>[\<midarrow>,Y]) (m2z\<^bsub>C\<^esub> f)" using assms by (simp add: YFtorNT_YMapInv)
   ultimately show ?thesis using assms by (simp add: YFtorMor YFtorObj)
 qed
 
@@ -734,11 +734,11 @@ lemma YonedaEmbedding:
   shows "A = B"
 proof-
   have AObjOp: "A \<in> Obj (Op C)" and BObjOp: "B \<in> Obj (Op C)" using assms by (simp add: OppositeCategory_def)+
-  hence FtorA: "Ftor (Hom\<^bsub>C\<^esub>[\<emdash>,A]) : (Op C) \<longrightarrow> SET" and FtorB: "Ftor (Hom\<^bsub>C\<^esub>[\<emdash>,B]) : (Op C) \<longrightarrow> SET" 
+  hence FtorA: "Ftor (Hom\<^bsub>C\<^esub>[\<midarrow>,A]) : (Op C) \<longrightarrow> SET" and FtorB: "Ftor (Hom\<^bsub>C\<^esub>[\<midarrow>,B]) : (Op C) \<longrightarrow> SET" 
     using assms by (simp add: HomFtorContraFtor)+
-  have "Hom\<^bsub>C\<^esub>[\<emdash>,A] = Hom\<^bsub>C\<^esub>[\<emdash>,B]" using assms by (simp add: YFtorObj)
-  hence "(Hom\<^bsub>C\<^esub>[\<emdash>,A]) ## (Id (Op C) A) = (Hom\<^bsub>C\<^esub>[\<emdash>,B]) ## (Id (Op C) A)" by simp
-  hence "Id SET ((Hom\<^bsub>C\<^esub>[\<emdash>,A]) @@ A) = Id SET ((Hom\<^bsub>C\<^esub>[\<emdash>,B]) @@ A)" 
+  have "Hom\<^bsub>C\<^esub>[\<midarrow>,A] = Hom\<^bsub>C\<^esub>[\<midarrow>,B]" using assms by (simp add: YFtorObj)
+  hence "(Hom\<^bsub>C\<^esub>[\<midarrow>,A]) ## (Id (Op C) A) = (Hom\<^bsub>C\<^esub>[\<midarrow>,B]) ## (Id (Op C) A)" by simp
+  hence "Id SET ((Hom\<^bsub>C\<^esub>[\<midarrow>,A]) @@ A) = Id SET ((Hom\<^bsub>C\<^esub>[\<midarrow>,B]) @@ A)" 
     using AObjOp BObjOp FtorA FtorB by (simp add: FunctorId)
   hence "Id SET (Hom\<^bsub>C \<^esub>A A) = Id SET (Hom\<^bsub>C \<^esub>A B)" using assms by (simp add: HomFtorOpObj)
   hence "Hom\<^bsub>C \<^esub>A A = Hom\<^bsub>C \<^esub>A B" using SETCategory by (simp add: Category.IdInj SETobj[of "Hom\<^bsub>C \<^esub>A A"] SETobj[of "Hom\<^bsub>C \<^esub>A B"])

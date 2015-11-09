@@ -2118,7 +2118,7 @@ class proto_quantale = complete_lattice + proto_monoid +
 
 begin
 
-sublocale pd: proto_dioid "1\<^sub>\<sigma>" "op \<cdot>" sup "op \<le>" "op <" "Sup {}"
+sublocale pd?: proto_dioid "1\<^sub>\<sigma>" "op \<cdot>" sup "op \<le>" "op <" "Sup {}"
 proof
   show "\<And>x y. (x \<le> y) = (sup x y = y)"
     by (simp add: local.le_iff_sup)

@@ -26,7 +26,7 @@ interpretation sc!:
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
-  where "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+  rewrites "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
   and "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
 apply(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
 done

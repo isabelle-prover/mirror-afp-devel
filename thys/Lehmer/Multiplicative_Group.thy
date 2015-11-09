@@ -757,7 +757,7 @@ proof -
   note mult_of_simps[simp]
   have finite': "finite (carrier (mult_of R))" using finite by (rule finite_mult_of)
 
-  interpret G:group "mult_of R" where "op (^)\<^bsub>mult_of R\<^esub> = (op (^) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
+  interpret G:group "mult_of R" rewrites "op (^)\<^bsub>mult_of R\<^esub> = (op (^) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
     by (rule field_mult_group) simp_all
 
   from exists
@@ -820,7 +820,7 @@ proof -
   note mult_of_simps[simp]
   have finite': "finite (carrier (mult_of R))" using finite by (rule finite_mult_of)
 
-  interpret G: group "mult_of R" where
+  interpret G: group "mult_of R" rewrites
       "op (^)\<^bsub>mult_of R\<^esub> = (op (^) :: _ \<Rightarrow> nat \<Rightarrow> _)" and "\<one>\<^bsub>mult_of R\<^esub> = \<one>"
     by (rule field_mult_group) (simp_all add: fun_eq_iff nat_pow_def)
 

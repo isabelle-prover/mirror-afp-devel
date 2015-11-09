@@ -99,7 +99,7 @@ definition ssf_ssort where
 
 interpretation SSRemoveMax: 
   RemoveMax "[]" "\<lambda> l. l = []" id mset remove_max "\<lambda> _. True" 
-  where
+  rewrites
  "RemoveMax.ssort' (\<lambda> l. l = []) remove_max = ssf_ssort'" and
  "RemoveMax.ssort (\<lambda> l. l = []) id remove_max = ssf_ssort"
 using remove_max_max

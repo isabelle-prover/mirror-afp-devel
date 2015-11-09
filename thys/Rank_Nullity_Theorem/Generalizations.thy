@@ -41,7 +41,7 @@ interpretation vec: vector_space "op *s :: 'a::field => 'a^'b => 'a^'b"
 
 (******************* Generalized parts of the file Real_Vector_Space.thy *******************)
 
-locale linear = B: vector_space scaleB + C: vector_space scaleC
+locale linear = B?: vector_space scaleB + C?: vector_space scaleC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) +
   fixes f :: "('b=>'c)"
@@ -1280,7 +1280,7 @@ end
 
 
 (*This is a new locale to make easier some proofs.*)
-locale two_vector_spaces_over_same_field = B: vector_space scaleB + C: vector_space scaleC
+locale two_vector_spaces_over_same_field = B?: vector_space scaleB + C?: vector_space scaleC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
   
@@ -1472,8 +1472,8 @@ qed
 end
 
 (*This is a new locale, similar to the previous one, to make easier some proofs.*)
-locale two_finite_dimensional_vector_spaces_over_same_field = B: finite_dimensional_vector_space scaleB BasisB + 
-  C: finite_dimensional_vector_space scaleC BasisC
+locale two_finite_dimensional_vector_spaces_over_same_field = B?: finite_dimensional_vector_space scaleB BasisB + 
+  C?: finite_dimensional_vector_space scaleC BasisC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
   and BasisB :: "('b set)"
@@ -1482,7 +1482,7 @@ locale two_finite_dimensional_vector_spaces_over_same_field = B: finite_dimensio
 context two_finite_dimensional_vector_spaces_over_same_field
 begin
 
-sublocale two_vector_spaces: two_vector_spaces_over_same_field by unfold_locales
+sublocale two_vector_spaces?: two_vector_spaces_over_same_field by unfold_locales
 
 lemma linear_independent_extend:
   assumes iB: "B.independent B"
@@ -1556,9 +1556,9 @@ end
 (*A new locale to make easier some proofs.*)
 
 locale linear_between_finite_dimensional_vector_spaces =
-  l: linear scaleB scaleC f +
-  B: finite_dimensional_vector_space scaleB BasisB + 
-  C: finite_dimensional_vector_space scaleC BasisC
+  l?: linear scaleB scaleC f +
+  B?: finite_dimensional_vector_space scaleB BasisB + 
+  C?: finite_dimensional_vector_space scaleC BasisC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) 
   and BasisB :: "('b set)"
@@ -1597,7 +1597,7 @@ proof -
     using h(1)  l_hg.linear_eq_stdbasis[OF B.linear_id th] by blast
 qed
 
-sublocale two_finite_dimensional_vector_spaces: two_finite_dimensional_vector_spaces_over_same_field 
+sublocale two_finite_dimensional_vector_spaces?: two_finite_dimensional_vector_spaces_over_same_field 
 by unfold_locales
 
 lemma linear_surjective_right_inverse:
@@ -2460,9 +2460,9 @@ qed
   library.*)
 
 locale linear_first_finite_dimensional_vector_space =
-  l: linear scaleB scaleC f +
-  B: finite_dimensional_vector_space scaleB BasisB + 
-  C: vector_space scaleC 
+  l?: linear scaleB scaleC f +
+  B?: finite_dimensional_vector_space scaleB BasisB + 
+  C?: vector_space scaleC 
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) 
   and BasisB :: "('b set)"
@@ -2470,7 +2470,7 @@ locale linear_first_finite_dimensional_vector_space =
 
 context linear_between_finite_dimensional_vector_spaces
 begin
-  sublocale lblf: linear_first_finite_dimensional_vector_space by unfold_locales
+  sublocale lblf?: linear_first_finite_dimensional_vector_space by unfold_locales
 end
   
 lemma vec_dim_card: "vec.dim (UNIV::('a::{field}^'n) set) = CARD ('n)"

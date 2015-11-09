@@ -702,13 +702,13 @@ lemma llist_partial_function_definitions:
 by(unfold_locales)(auto dest: lprefix_antisym intro: lprefix_trans chain_lprefix_lSup chain_lSup_lprefix)
 
 interpretation llist!: partial_function_definitions "op \<sqsubseteq>" lSup
-  where "lSup {} \<equiv> LNil"
+  rewrites "lSup {} \<equiv> LNil"
 by(rule llist_partial_function_definitions)(simp)
 
 abbreviation "mono_llist \<equiv> monotone (fun_ord op \<sqsubseteq>) op \<sqsubseteq>"
 
 interpretation llist_lift!: partial_function_definitions "fun_ord lprefix" "fun_lub lSup"
-  where "fun_lub lSup {} \<equiv> \<lambda>_. LNil"
+  rewrites "fun_lub lSup {} \<equiv> \<lambda>_. LNil"
 by(rule llist_partial_function_definitions[THEN partial_function_lift])(simp)
 
 abbreviation "mono_llist_lift \<equiv> monotone (fun_ord (fun_ord lprefix)) (fun_ord lprefix)"

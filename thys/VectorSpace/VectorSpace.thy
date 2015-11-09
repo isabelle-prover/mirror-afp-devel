@@ -14,7 +14,7 @@ subsection {* Basic definitions and facts carried over from modules*}
 text {*A @{text "vectorspace"} is a module where the ring is a field. 
 Note that we switch notation from $(R, M)$ to $(K, V)$.*}
 locale vectorspace = 
-  module: module K V + field: field K  
+  module?: module K V + field?: field K  
   for K and V
 
 (*
@@ -71,8 +71,8 @@ qed
 text {*A @{text "linear_map"} is a module homomorphism between 2 vectorspaces
 over the same field.*}
 locale linear_map = 
-  V: vectorspace K V + W: vectorspace K W
-  + mod_hom: mod_hom K V W T
+  V?: vectorspace K V + W?: vectorspace K W
+  + mod_hom?: mod_hom K V W T
     for K and V and W and T
 
 context linear_map

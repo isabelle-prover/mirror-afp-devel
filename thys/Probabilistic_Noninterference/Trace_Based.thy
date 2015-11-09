@@ -197,7 +197,7 @@ qed
 definition trans :: "('test, 'atom, 'choice) cmd \<times> 'state \<Rightarrow> (('test, 'atom, 'choice) cmd \<times> 'state) pmf" where
   "trans cf = map_pmf (\<lambda>i. if proper (fst cf) then cont_eff cf i else cf) (wt_pmf cf)"
 
-sublocale T: MC_syntax trans .
+sublocale T?: MC_syntax trans .
 
 abbreviation "G cf \<equiv> set_pmf (trans cf)"
 

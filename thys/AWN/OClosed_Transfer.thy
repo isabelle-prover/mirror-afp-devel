@@ -1695,7 +1695,7 @@ lemma close_opnet:
 end
 
 locale openproc_parq =
-  op: openproc np onp sr for np :: "ip \<Rightarrow> ('s, ('m::msg) seq_action) automaton" and onp sr
+  op?: openproc np onp sr for np :: "ip \<Rightarrow> ('s, ('m::msg) seq_action) automaton" and onp sr
   + fixes qp :: "('t, 'm seq_action) automaton"
     assumes init_qp_notempty: "init qp \<noteq> {}"
 

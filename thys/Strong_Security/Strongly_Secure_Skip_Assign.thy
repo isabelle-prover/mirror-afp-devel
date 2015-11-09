@@ -7,8 +7,8 @@ imports MWLf Parallel_Composition
 begin
 
 locale Strongly_Secure_Programs =
-L : MWLf_semantics "E" "BMap" 
-+ SS: Strong_Security "MWLfSteps_det" "DA"
+L? : MWLf_semantics "E" "BMap" 
++ SS?: Strong_Security "MWLfSteps_det" "DA"
 for E :: "('exp, 'id, 'val) Evalfunction"
 and BMap :: "'val \<Rightarrow> bool"
 and DA :: "('id, 'd::order) DomainAssignment"

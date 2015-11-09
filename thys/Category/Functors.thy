@@ -25,7 +25,7 @@ abbreviation
   am_syn  ("_ \<^bsub>\<a>\<^esub>" [81]) where
   "F\<^bsub>\<a>\<^esub> \<equiv> am F"
 
-locale two_cats = AA: category AA + BB: category BB
+locale two_cats = AA?: category AA + BB?: category BB
     for AA :: "('o1,'a1,'m1)category_scheme" (structure)
     and BB :: "('o2,'a2,'m2)category_scheme" (structure) + 
   fixes preserves_dom  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"

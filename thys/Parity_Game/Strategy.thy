@@ -54,7 +54,7 @@ text {*
   Similary, define a locale for valid maximal paths that conform to given strategies for both
   players.
 *}
-locale vmc2_path = comp: vmc_path G P v0 "p**" \<sigma>' + vmc_path G P v0 p \<sigma>
+locale vmc2_path = comp?: vmc_path G P v0 "p**" \<sigma>' + vmc_path G P v0 p \<sigma>
   for G P v0 p \<sigma> \<sigma>'
 lemma (in vmc2_path) vmc2_path [simp]: "vmc2_path G P v0 p \<sigma> \<sigma>'" by unfold_locales
 

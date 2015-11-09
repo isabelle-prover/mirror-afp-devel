@@ -1239,7 +1239,7 @@ sublocale Formula <
     dest: Length_0_inj intro: arg_cong[of _ _ "L (size _)"])
 
 sublocale Formula <
-  unbounded: DA "alphabet idx" "\<lambda>\<phi>. norm (RESTRICT \<phi>)" "\<lambda>a \<phi>. norm (lderiv a \<phi>)" "final idx"
+  unbounded?: DA "alphabet idx" "\<lambda>\<phi>. norm (RESTRICT \<phi>)" "\<lambda>a \<phi>. norm (lderiv a \<phi>)" "final idx"
      "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "lang idx"
      "\<lambda>\<phi>. wf idx \<phi> \<and> lformula \<phi>" "language idx" for idx
   using ex_Length_0[of idx]
