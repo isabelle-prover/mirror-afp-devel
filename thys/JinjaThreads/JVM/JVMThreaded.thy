@@ -72,7 +72,7 @@ done
 
 end
 
-sublocale JVM_heap_base < exec_mthr!: 
+sublocale JVM_heap_base < exec_mthr: 
   multithreaded
     JVM_final
     "mexec P"
@@ -123,7 +123,7 @@ done
 
 end
 
-sublocale JVM_heap_base < execd_mthr!:
+sublocale JVM_heap_base < execd_mthr:
   multithreaded
     JVM_final
     "mexecd P"
@@ -212,7 +212,7 @@ by(unfold_locales)(auto intro: exec_preserve_tconf dest: exec_New_Thread_exists_
 
 end
 
-sublocale JVM_heap < execd_tconf!: lifting_wf JVM_final "mexecd P" convert_RA "\<lambda>t x m. P,m \<turnstile> t \<surd>t"
+sublocale JVM_heap < execd_tconf: lifting_wf JVM_final "mexecd P" convert_RA "\<lambda>t x m. P,m \<turnstile> t \<surd>t"
 by(rule lifting_wf_thread_conf)
 
 context JVM_heap begin

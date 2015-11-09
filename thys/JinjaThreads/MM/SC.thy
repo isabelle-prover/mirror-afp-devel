@@ -120,7 +120,7 @@ inductive_cases sc_heap_write_cases [elim!]:
 
 consts sc_spurious_wakeups :: bool
 
-interpretation sc!: 
+interpretation sc: 
   heap_base
     "addr2thread_id"
     "thread_id2addr"
@@ -187,7 +187,7 @@ next
     by(cases al)(auto intro!: sc.hextI simp add: sc_typeof_addr_def)
 qed simp
 
-interpretation sc!: 
+interpretation sc: 
   heap 
     "addr2thread_id"
     "thread_id2addr"
@@ -222,7 +222,7 @@ where
 definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
 
-interpretation sc!: heap_conf_base  
+interpretation sc: heap_conf_base  
   "addr2thread_id"
   "thread_id2addr"
   "sc_spurious_wakeups"
@@ -335,7 +335,7 @@ next
     by(cases al)(fastforce elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def intro: sc_hconf_upd_obj sc_oconf_fupd sc_hconfD sc_hconf_upd_arr sc_oconf_fupd_arr sc_oconf_fupd_arr_fields)+
 qed
 
-interpretation sc!: heap_conf
+interpretation sc: heap_conf
   "addr2thread_id"
   "thread_id2addr"
   "sc_spurious_wakeups"
@@ -402,7 +402,7 @@ next
     by(cases arrobj)(fastforce intro: sc_heap_write.intros elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def dest: has_field_decl_above)+
 qed
 
-interpretation sc!: heap_progress
+interpretation sc: heap_progress
   "addr2thread_id"
   "thread_id2addr"
   "sc_spurious_wakeups"
@@ -427,7 +427,7 @@ proof
     by(auto elim!: sc_heap_read.cases sc.addr_loc_type.cases simp add: sc_typeof_addr_def)(fastforce dest!: sc_hconfD simp add: sc_fconf_def)+
 qed
 
-interpretation sc!: heap_conf_read
+interpretation sc: heap_conf_read
   "addr2thread_id"
   "thread_id2addr"
   "sc_spurious_wakeups"

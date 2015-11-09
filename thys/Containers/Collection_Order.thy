@@ -301,7 +301,7 @@ proof
     where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
     and B: "ID CCOMPARE('b) = Some c_b" "finite (UNIV :: 'b set)"
     by(fastforce simp add: ccompare_prod_def ID_Some ID_None finite_prod split: option.split_asm)
-  interpret a!: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A)
+  interpret a: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A)
   note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] 
     ccompare_prod_def lt_of_comp_prod ID_Some
   show "class.proper_interval cless (cproper_interval :: ('a \<times> 'b) proper_interval)" using A B
@@ -375,7 +375,7 @@ proof
   then obtain c_a
     where A: "ID CCOMPARE('a) = Some c_a" "finite (UNIV :: 'a set)"
     by(auto simp add: ccompare_set_def ID_def Finite_Set.finite_set)
-  interpret a!: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A) 
+  interpret a: linorder "le_of_comp c_a" "lt_of_comp c_a" by(rule ID_ccompare)(rule A) 
   note [simp] = proper_interval.proper_interval_simps[OF cproper_interval] ccompare_set_def 
     ID_Some lt_of_comp_of_ords
   show "class.proper_interval cless (cproper_interval :: 'a set proper_interval)" using A

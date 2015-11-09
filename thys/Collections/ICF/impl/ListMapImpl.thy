@@ -33,8 +33,8 @@ definition [icf_rec_def]: "lm_basic_ops \<equiv> \<lparr>
 \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lm_basic!: StdBasicMapDefs lm_basic_ops .
-interpretation lm_basic!: StdBasicMap lm_basic_ops
+interpretation lm_basic: StdBasicMapDefs lm_basic_ops .
+interpretation lm_basic: StdBasicMap lm_basic_ops
   apply unfold_locales
   apply (simp_all add: icf_rec_unf 
     Assoc_List.lookup_empty' Assoc_List.iteratei_correct)
@@ -43,11 +43,11 @@ setup Locale_Code.close_block
 
 definition [icf_rec_def]: "lm_ops \<equiv> lm_basic.dflt_ops"
 setup Locale_Code.open_block
-interpretation lm!: StdMapDefs lm_ops .
-interpretation lm!: StdMap lm_ops 
+interpretation lm: StdMapDefs lm_ops .
+interpretation lm: StdMap lm_ops 
   unfolding lm_ops_def
   by (rule lm_basic.dflt_ops_impl)
-interpretation lm!: StdMap_no_invar lm_ops 
+interpretation lm: StdMap_no_invar lm_ops 
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

@@ -233,9 +233,9 @@ qed
 subsection {* Refinement *}
 
 locale dijkstraC =
-  g!: StdGraph g_ops + 
-  mr!: StdMap mr_ops +
-  qw!: StdUprio qw_ops 
+  g: StdGraph g_ops + 
+  mr: StdMap mr_ops +
+  qw: StdUprio qw_ops 
   for g_ops :: "('V,'W::weight,'G,'moreg) graph_ops_scheme"
   and mr_ops :: "('V, (('V,'W) path \<times> 'W), 'mr,'more_mr) map_ops_scheme"
   and qw_ops :: "('V ,'W infty,'qw,'more_qw) uprio_ops_scheme" 
@@ -367,7 +367,7 @@ theorem (in dijkstraC) cdijkstra_correct:
       (Dijkstra.\<alpha>r (mr.\<alpha> (cdijkstra g v0)))" (is ?G1)
   and "Dijkstra.res_invarm (mr.\<alpha> (cdijkstra g v0))" (is ?G2)
 proof -
-  interpret hlgv!: valid_graph "g.\<alpha> g" using g.valid INV .
+  interpret hlgv: valid_graph "g.\<alpha> g" using g.valid INV .
 
   interpret dc: dijkstraC_fixg g_ops mr_ops qw_ops "g.\<alpha> g" v0
     apply unfold_locales 
@@ -383,7 +383,7 @@ text {*
   red-black-tree based result map, and finger-tree based priority queue.
 *}
 setup Locale_Code.open_block
-interpretation hrf!: dijkstraC hlg_ops rm_ops aluprioi_ops
+interpretation hrf: dijkstraC hlg_ops rm_ops aluprioi_ops
   by unfold_locales
 setup Locale_Code.close_block
 

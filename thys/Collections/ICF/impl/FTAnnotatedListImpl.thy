@@ -172,7 +172,7 @@ definition [icf_rec_def]: "ft_ops = \<lparr>
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation ft!: StdAL ft_ops
+interpretation ft: StdAL ft_ops
   apply (rule StdAL.intro)
   apply (simp_all add: icf_rec_unf)
   apply (rule 
@@ -192,7 +192,7 @@ interpretation ft!: StdAL ft_ops
     ft_splits_impl
   )+
   done
-interpretation ft!: StdAL_no_invar ft_ops
+interpretation ft: StdAL_no_invar ft_ops
   by (unfold_locales) (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

@@ -57,8 +57,8 @@ begin
 
   lemma (in bisimulation) stutter_extend: "bisimulation R (stutter_extend A) (stutter_extend B)"
   proof -
-    interpret ea!: graph "stutter_extend A" by (rule a.stutter_extend_graph)
-    interpret eb!: graph "stutter_extend B" by (rule b.stutter_extend_graph)
+    interpret ea: graph "stutter_extend A" by (rule a.stutter_extend_graph)
+    interpret eb: graph "stutter_extend B" by (rule b.stutter_extend_graph)
     show ?thesis
     proof
       fix a b
@@ -99,7 +99,7 @@ begin
 
   lemma (in lbisimulation) lstutter_extend: "lbisimulation R (stutter_extend A) (stutter_extend B)"
   proof -
-    interpret se!: bisimulation R "stutter_extend A" "stutter_extend B" by (rule stutter_extend)
+    interpret se: bisimulation R "stutter_extend A" "stutter_extend B" by (rule stutter_extend)
     show ?thesis by (unfold_locales, auto simp: s1.labeling_consistent)
   qed
 

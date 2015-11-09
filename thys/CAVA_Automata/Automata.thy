@@ -111,7 +111,7 @@ begin
     unfolding gb_rename_ecnv_def fr_rename_ext_def
     by simp
 
-  sublocale G'!: gb_graph G' 
+  sublocale G': gb_graph G' 
     apply unfold_locales
     apply (simp_all add: G'_fields G'_gb_fields)
     using F_ss 
@@ -197,7 +197,7 @@ begin
     unfolding gb_rename_ecnv_def gba_rename_ecnv_def fr_rename_ext_def fi_def
     by simp
 
-  sublocale G'!: gba G'
+  sublocale G': gba G'
     apply unfold_locales
     apply (auto simp add: G'_gba_fields G'_fields split: split_if_asm)
     done
@@ -302,7 +302,7 @@ begin
         \<dots> = m \<rparr>"
   abbreviation "to_gbg \<equiv> to_gbg_ext ()"
 
-  sublocale gbg!: gb_graph "to_gbg_ext m"
+  sublocale gbg: gb_graph "to_gbg_ext m"
     apply unfold_locales 
     using V0_ss E_ss F_ss
     apply (auto simp: to_gbg_ext_def split: split_if_asm)
@@ -346,7 +346,7 @@ begin
   abbreviation "to_gba_ext m \<equiv> to_gbg_ext \<lparr> gba_L = L, \<dots>=m \<rparr>"
   abbreviation "to_gba \<equiv> to_gba_ext ()"
 
-  sublocale gba!: gba "to_gba_ext m" 
+  sublocale gba: gba "to_gba_ext m" 
     apply unfold_locales
     unfolding to_gbg_ext_def
     using L_ss apply auto []
@@ -401,7 +401,7 @@ begin
   definition "to_gbg_ext m 
     \<equiv> \<lparr> g_V = V, g_E = E, g_V0 = V0, gbg_F = F, \<dots>=m \<rparr>"
 
-  sublocale gbg!: gb_graph "to_gbg_ext m" 
+  sublocale gbg: gb_graph "to_gbg_ext m" 
     apply unfold_locales
     using V0_ss E_ss acc_ss
     apply (auto simp: to_gbg_ext_def F_def accn_def)
@@ -484,7 +484,7 @@ begin
 
   abbreviation "to_gba_ext m \<equiv> to_gbg_ext \<lparr> gba_L = igba_L G, \<dots>=m \<rparr>"
 
-  sublocale gba!: gba "to_gba_ext m" 
+  sublocale gba: gba "to_gba_ext m" 
     apply unfold_locales
     unfolding to_gbg_ext_def
     using L_ss
@@ -674,7 +674,7 @@ proof -
       igbg_acc = acc,
       \<dots> = ecnv G\<rparr>"
 
-    interpret G'!: igb_graph ?G'
+    interpret G': igb_graph ?G'
       apply unfold_locales
       using V0_ss E_ss 
       apply (auto simp add: aux2 aux3 BOUND)
@@ -724,9 +724,9 @@ proof -
     and LOC: "igb_graph G'"
     and FIELDS: "g_V G' = V" "g_E G' = E" "g_V0 G' = V0"
   
-  from LOC interpret igb!: igb_graph G' .
+  from LOC interpret igb: igb_graph G' .
 
-  interpret igb!: igba G'
+  interpret igb: igba G'
     apply unfold_locales
     using MORE FIELDS L_ss
     unfolding ti_Lcnv_def
@@ -807,7 +807,7 @@ begin
 
   qed
 
-  sublocale degen!: b_graph "degeneralize_ext m" using degen_invar .
+  sublocale degen: b_graph "degeneralize_ext m" using degen_invar .
 
   lemma degen_finite_reachable:
     assumes [simp, intro]: "finite (E\<^sup>* `` V0)"
@@ -1280,7 +1280,7 @@ text {*
   runs of the GBG correspond to words accepted by the GBA and the system.
 *}
 
-locale igba_sys_prod_precond = igba!: igba G + sa!: sa S for
+locale igba_sys_prod_precond = igba: igba G + sa: sa S for
   G :: "('q,'l,'moreG) igba_rec_scheme"
   and S :: "('s,'l,'moreS) sa_rec_scheme"
 begin
@@ -1309,7 +1309,7 @@ begin
     apply (fastforce simp: prod_def split: split_if_asm) []
     done
   
-  sublocale prod!: igb_graph prod using prod_invar .
+  sublocale prod: igb_graph prod using prod_invar .
 
   lemma prod_finite_reachable:
     assumes "finite (igba.E\<^sup>* `` igba.V0)" "finite (sa.E\<^sup>* `` sa.V0)"

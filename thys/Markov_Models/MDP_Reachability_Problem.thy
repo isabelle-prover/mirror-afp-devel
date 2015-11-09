@@ -1213,7 +1213,7 @@ proof -
   then have sch: "\<And>s. s \<in> S \<Longrightarrow> sc s \<in> K s" and sc_Pi: "sc \<in> Pi S K"
     by (auto simp: PiE_iff)
 
-  interpret sc!: MC_syntax sc .
+  interpret sc: MC_syntax sc .
 
   def N \<equiv> "{s\<in>S. p s = 0} \<union> S2"
   { fix s assume "s \<in> S" "s \<notin> N"

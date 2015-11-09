@@ -537,9 +537,9 @@ proof (intro measure_eqI)
     apply (auto simp: M_def space_dens_ctxt_measure)
     done
 
-  interpret dc_True!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal True)"
+  interpret dc_True: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal True)"
     using density_context_if_dens[of _ \<delta>f True] densf unfolding if_dens_def by (simp add: stock_measure.simps)
-  interpret dc_False!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal False)"
+  interpret dc_False: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * \<delta>f \<sigma> (BoolVal False)"
     using density_context_if_dens[of _ \<delta>f False] densf unfolding if_dens_def by (simp add: stock_measure.simps)
 
   have "emeasure (M \<guillemotright>= (\<lambda>x. f x \<guillemotright>= (\<lambda>b. if P b then g x else h x))) X = 
@@ -629,8 +629,8 @@ proof (intro measure_eqI)
   fix X assume "X \<in> sets ?lhs"
   hence X[measurable]: "X \<in> sets R" by (simp only: sets_lhs)
 
-  interpret dc_True!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P \<sigma> then 1 else 0)" by fact
-  interpret dc_False!: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P' \<sigma> then 1 else 0)" by fact
+  interpret dc_True: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P \<sigma> then 1 else 0)" by fact
+  interpret dc_False: density_context V V' \<Gamma> "\<lambda>\<sigma>. \<delta> \<sigma> * (if P' \<sigma> then 1 else 0)" by fact
 
   have "emeasure (M \<guillemotright>= (\<lambda>x. if P x then g x else h x)) X = 
           \<integral>\<^sup>+x. (if P x then emeasure (g x) X else emeasure (h x) X) \<partial>M" using X
@@ -795,7 +795,7 @@ next
                                  state_measure_def space_PiM dest!: PiE_mem)
     finally show "subprob_space (?M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Var x)))" by simp
   
-    from hd_var interpret dcm!: subprob_space "dens_ctxt_measure \<Y> \<rho>" 
+    from hd_var interpret dcm: subprob_space "dens_ctxt_measure \<Y> \<rho>" 
       by (intro subprob_space_dens \<rho>)
     let ?M1 = "dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Var x))"
     let ?M2 = "density (stock_measure t) (\<lambda>v. marg_dens \<Y> x \<rho> v)"
@@ -819,7 +819,7 @@ next
   let ?\<Y>' = "(shift_var_set V, Suc`V', ?\<Gamma>', ?\<delta>')"
   from hd_let.prems have t1: "\<Gamma> \<turnstile> e1 : ?t" and t2: "?\<Gamma>' \<turnstile> e2 : t"
       by (auto simp: expr_type_Some_iff[symmetric] split: option.split_asm)
-  interpret dc!: density_context V V' \<Gamma> \<delta> by fact
+  interpret dc: density_context V V' \<Gamma> \<delta> by fact
 
   show ?case unfolding has_parametrized_subprob_density_def
   proof (intro ballI conjI)
@@ -1102,7 +1102,7 @@ next
 
 next
   case (hd_if_det b V V' \<Gamma> \<delta> e1 g1 e2 g2 t)
-  interpret dc!: density_context V V' \<Gamma> \<delta> by fact
+  interpret dc: density_context V V' \<Gamma> \<delta> by fact
   from hd_if_det.prems `randomfree b`
   have tb[measurable (raw)]: "\<Gamma> \<turnstile> b : BOOL" and [measurable (raw)]: "randomfree b"
     and t1[measurable (raw)]: "\<Gamma> \<turnstile> e1 : t"

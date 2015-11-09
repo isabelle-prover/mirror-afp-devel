@@ -18,7 +18,7 @@ approximate_affine e3_d "\<lambda>(x, y) (h, j). (0::real, 2 * (j * y) + 2 * (h 
 abbreviation "e3_ivp \<equiv> \<lambda>optns args. uncurry_options e3 optns (hd args) (tl args)"
 abbreviation "e3_d_ivp \<equiv> \<lambda>optns args. uncurry_options e3_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
-interpretation e3!: aform_approximate_ivp
+interpretation e3: aform_approximate_ivp
   e3_ivp
   e3_d_ivp
   "\<lambda>(t, x). (1::real, x*x + t*t::real)"

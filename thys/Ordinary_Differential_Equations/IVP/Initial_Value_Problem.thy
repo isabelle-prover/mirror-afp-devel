@@ -1032,7 +1032,7 @@ text {* For the numerical approximation, it is necessary that f is
 lipschitz-continuous outside the actual domain - therefore D'. *}
 
 locale unique_on_rectangle =
-  solution_in_rectangle + global_lipschitz!: global_lipschitz T X' f L for L X' +
+  solution_in_rectangle + global_lipschitz: global_lipschitz T X' f L for L X' +
   assumes lipschitz_on_domain: "X \<subseteq> X'"
 begin
 

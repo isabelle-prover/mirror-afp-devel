@@ -449,7 +449,7 @@ qed
 
 end
 
-sublocale JVM_heap_base < execd_mthr!: 
+sublocale JVM_heap_base < execd_mthr: 
   \<tau>multithreaded_wf 
     JVM_final
     "mexecd P"

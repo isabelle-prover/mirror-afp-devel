@@ -339,7 +339,7 @@ lemma [refine_mono]:
 
 definition "dASSERT \<equiv> iASSERT dRETURN"
 definition "dASSUME \<equiv> iASSUME dRETURN"
-interpretation dres_assert!: generic_Assert dbind dRETURN dASSERT dASSUME
+interpretation dres_assert: generic_Assert dbind dRETURN dASSERT dASSUME
   apply unfold_locales
   by (auto simp: dASSERT_def dASSUME_def)
 
@@ -348,7 +348,7 @@ definition "dWHILEI \<equiv> iWHILEI dbind dRETURN"
 definition "dWHILET \<equiv> iWHILET dbind dRETURN"
 definition "dWHILE \<equiv> iWHILE dbind dRETURN"
 
-interpretation dres_while!: generic_WHILE dbind dRETURN
+interpretation dres_while: generic_WHILE dbind dRETURN
   dWHILEIT dWHILEI dWHILET dWHILE
   apply unfold_locales
   apply (auto simp: dWHILEIT_def dWHILEI_def dWHILET_def dWHILE_def) 

@@ -194,7 +194,7 @@ end
 
 subsubsection{* Locale instantiations *}
 
-interpretation Robot!:
+interpretation Robot:
   Environment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs"
   apply unfold_locales
   apply (auto simp: kbp_def)
@@ -203,7 +203,7 @@ interpretation Robot!:
 
 subsubsection{* The Clock view implementation *}
 
-interpretation Robot_Clock!:
+interpretation Robot_Clock:
   FiniteLinorderEnvironment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs" "fromList [Robot]"
   apply unfold_locales
   apply (simp add: Agent_univ)
@@ -227,7 +227,7 @@ lemma (in FiniteLinorderEnvironment)
 
 subsubsection{* The SPR view implementation *}
 
-interpretation Robot_SPR!:
+interpretation Robot_SPR:
   FiniteSingleAgentEnvironment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs" "Robot"
   apply unfold_locales
   apply (case_tac a, simp)

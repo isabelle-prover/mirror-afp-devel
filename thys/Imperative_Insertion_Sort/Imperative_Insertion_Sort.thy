@@ -93,7 +93,7 @@ lemma success_shiftr_p:
   "Ref.get h i < Array.length h a \<Longrightarrow> success (shiftr_p a key i) h"
   by (auto simp: success_def shiftr_p_def execute_simps)
 
-interpretation ro_shiftr_p!: ro_cond "shiftr_p a key i" for a key i
+interpretation ro_shiftr_p: ro_cond "shiftr_p a key i" for a key i
   by (unfold_locales)
      (auto simp: shiftr_p_def success_def execute_simps execute_bind_case split: option.split, metis effectI effect_nthE)
 

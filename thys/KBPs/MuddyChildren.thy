@@ -301,14 +301,14 @@ where
 
 subsubsection{* Locale instantiations *}
 
-interpretation MC!: Environment jkbp envInit envAction envTrans envVal envObs
+interpretation MC: Environment jkbp envInit envAction envTrans envVal envObs
   apply unfold_locales
   apply (auto simp: jkbp_def)
   done
 
 subsubsection{* The Clock view implementation *}
 
-interpretation MC_Clock!:
+interpretation MC_Clock:
   FiniteLinorderEnvironment jkbp envInit envAction envTrans envVal envObs agents
   apply unfold_locales
   apply (simp add: Agent_univ agents_def)
@@ -330,7 +330,7 @@ lemma (in FiniteLinorderEnvironment)
 
 subsubsection{* The SPR view implementation *}
 
-interpretation MC_SPR!:
+interpretation MC_SPR:
   FiniteDetBroadcastEnvironment jkbp envInit envAction envTrans envVal envObs agents envObsC
   apply unfold_locales
   prefer 3

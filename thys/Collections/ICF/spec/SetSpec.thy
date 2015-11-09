@@ -302,7 +302,7 @@ end
 subsection "More Set Operations"
 
 subsubsection "Copy"
-locale set_copy = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
+locale set_copy = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -314,7 +314,7 @@ locale set_copy = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
 subsubsection "Union"
 
 
-locale set_union = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2 + s3!: set \<alpha>3 invar3
+locale set_union = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: set \<alpha>3 invar3
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   and \<alpha>3 :: "'s3 \<Rightarrow> 'a set" and invar3
@@ -326,7 +326,7 @@ locale set_union = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2 + s3!: 
 
 
 locale set_union_dj = 
-  s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2 + s3!: set \<alpha>3 invar3
+  s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: set \<alpha>3 invar3
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   and \<alpha>3 :: "'s3 \<Rightarrow> 'a set" and invar3
@@ -336,7 +336,7 @@ locale set_union_dj =
     "\<lbrakk>invar1 s1; invar2 s2; \<alpha>1 s1 \<inter> \<alpha>2 s2 = {}\<rbrakk> \<Longrightarrow> \<alpha>3 (union_dj s1 s2) = \<alpha>1 s1 \<union> \<alpha>2 s2"
     "\<lbrakk>invar1 s1; invar2 s2; \<alpha>1 s1 \<inter> \<alpha>2 s2 = {}\<rbrakk> \<Longrightarrow> invar3 (union_dj s1 s2)"
 
-locale set_union_list = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
+locale set_union_list = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -347,7 +347,7 @@ locale set_union_list = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
 
 subsubsection "Difference"
 
-locale set_diff = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2 
+locale set_diff = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -358,7 +358,7 @@ locale set_diff = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
 
 subsubsection "Intersection"
 
-locale set_inter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: set \<alpha>3 invar3
+locale set_inter = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: set \<alpha>3 invar3
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   and \<alpha>3 :: "'s3 \<Rightarrow> 'a set" and invar3
@@ -370,7 +370,7 @@ locale set_inter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: se
 
 subsubsection "Subset"
 
-locale set_subset = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_subset = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -380,7 +380,7 @@ locale set_subset = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
 
 subsubsection "Equal"
 
-locale set_equal = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_equal = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -391,7 +391,7 @@ locale set_equal = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
 
 subsubsection "Image and Filter"
 
-locale set_image_filter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_image_filter = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'b set" and invar2
   +
@@ -412,7 +412,7 @@ begin
 
 end
 
-locale set_inj_image_filter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_inj_image_filter = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'b set" and invar2
   +
@@ -423,7 +423,7 @@ locale set_inj_image_filter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 inva
 
 subsubsection "Image"
 
-locale set_image = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_image = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'b set" and invar2
   +
@@ -433,7 +433,7 @@ locale set_image = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
     "invar1 s \<Longrightarrow> invar2 (image f s)"
 
 
-locale set_inj_image = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_inj_image = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'b set" and invar2
   +
@@ -445,7 +445,7 @@ locale set_inj_image = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
 
 subsubsection "Filter"
 
-locale set_filter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
+locale set_filter = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -458,7 +458,7 @@ locale set_filter = s1!: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
 subsubsection "Union of Set of Sets"
 
 locale set_Union_image = 
-  s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2 + s3!: set \<alpha>3 invar3
+  s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2 + s3: set \<alpha>3 invar3
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'b set" and invar2
   and \<alpha>3 :: "'s3 \<Rightarrow> 'b set" and invar3
@@ -472,7 +472,7 @@ locale set_Union_image =
 
 subsubsection "Disjointness Check"
 
-locale set_disjoint = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
+locale set_disjoint = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +
@@ -482,7 +482,7 @@ locale set_disjoint = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
 
 subsubsection "Disjointness Check With Witness"
 
-locale set_disjoint_witness = s1!: set \<alpha>1 invar1 + s2!: set \<alpha>2 invar2
+locale set_disjoint_witness = s1: set \<alpha>1 invar1 + s2: set \<alpha>2 invar2
   for \<alpha>1 :: "'s1 \<Rightarrow> 'a set" and invar1
   and \<alpha>2 :: "'s2 \<Rightarrow> 'a set" and invar2
   +

@@ -73,7 +73,7 @@ locale if_multithreaded_base = multithreaded_base +
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
 
-sublocale if_multithreaded_base < "if"!: multithreaded_base
+sublocale if_multithreaded_base < "if": multithreaded_base
   "init_fin_final"
   "init_fin"
   "map NormalAction \<circ> convert_RA"
@@ -84,7 +84,7 @@ locale if_multithreaded = if_multithreaded_base + multithreaded +
   and r :: "('l,'t,'x,'m,'w,'o) semantics" 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
 
-sublocale if_multithreaded < "if"!: multithreaded
+sublocale if_multithreaded < "if": multithreaded
   "init_fin_final"
   "init_fin"
   "map NormalAction \<circ> convert_RA"
@@ -182,7 +182,7 @@ locale if_\<tau>multithreaded = if_multithreaded_base + \<tau>multithreaded +
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and \<tau>move :: "('l,'t,'x,'m,'w,'o) \<tau>moves"
 
-sublocale if_\<tau>multithreaded < "if"!: \<tau>multithreaded
+sublocale if_\<tau>multithreaded < "if": \<tau>multithreaded
   "init_fin_final"
   "init_fin"
   "map NormalAction \<circ> convert_RA"
@@ -205,7 +205,7 @@ context \<tau>multithreaded_wf begin
 lemma \<tau>multithreaded_wf_init_fin:
   "\<tau>multithreaded_wf init_fin_final init_fin init_fin_\<tau>move"
 proof -
-  interpret "if"!: multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
+  interpret "if": multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
     by(rule multithreaded_init_fin)
   show ?thesis
   proof(unfold_locales)
@@ -221,7 +221,7 @@ qed
 
 end
 
-sublocale if_\<tau>multithreaded_wf < "if"!: \<tau>multithreaded_wf
+sublocale if_\<tau>multithreaded_wf < "if": \<tau>multithreaded_wf
   "init_fin_final"
   "init_fin"
   "map NormalAction \<circ> convert_RA"
@@ -237,7 +237,7 @@ context lifting_inv begin
 lemma lifting_inv_init_fin_lift_inv:
   "lifting_inv init_fin_final init_fin (init_fin_lift_inv P)"
 proof -
-  interpret "if"!: multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
+  interpret "if": multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
     by(rule multithreaded_init_fin)
   show ?thesis
     by(unfold_locales)(fastforce elim!: init_fin.cases dest: invariant_red invariant_NewThread invariant_other)+
@@ -253,7 +253,7 @@ locale if_lifting_inv =
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and P :: "'i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
 
-sublocale if_lifting_inv < "if"!: lifting_inv
+sublocale if_lifting_inv < "if": lifting_inv
   init_fin_final
   init_fin
   "map NormalAction \<circ> convert_RA"
@@ -268,7 +268,7 @@ context lifting_wf begin
 lemma lifting_wf_init_fin_lift:
   "lifting_wf init_fin_final init_fin (init_fin_lift P)"
 proof -
-  interpret "if"!: multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
+  interpret "if": multithreaded init_fin_final init_fin "map NormalAction \<circ> convert_RA"
     by(rule multithreaded_init_fin)
   show ?thesis
     by(unfold_locales)(fastforce elim!: init_fin.cases dest: dest: preserves_red preserves_other preserves_NewThread)+
@@ -284,7 +284,7 @@ locale if_lifting_wf =
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and P :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
 
-sublocale if_lifting_wf < "if"!: lifting_wf 
+sublocale if_lifting_wf < "if": lifting_wf 
   init_fin_final
   init_fin
   "map NormalAction \<circ> convert_RA"

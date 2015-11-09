@@ -142,7 +142,7 @@ qed
 lemma stream_from_llist: "type_definition llist_of_stream stream_of_llist {xs. \<not> lfinite xs}"
 by(unfold_locales) simp_all
 
-interpretation stream!: type_definition llist_of_stream stream_of_llist "{xs. \<not> lfinite xs}"
+interpretation stream: type_definition llist_of_stream stream_of_llist "{xs. \<not> lfinite xs}"
 by(fact stream_from_llist)
 
 declare stream.exhaust[cases type: stream]

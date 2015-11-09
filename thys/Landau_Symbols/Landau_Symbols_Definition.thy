@@ -360,10 +360,10 @@ locale landau_pair =
   and     l_def: "l g = {f. \<forall>c>0. eventually (\<lambda>x. R \<bar>f x\<bar> (c * \<bar>g x\<bar>)) at_top}"
   and     R:     "R = op \<le> \<or> R = op \<ge>"
 
-interpretation landau_o!: landau_pair bigo smallo "op \<le>"
+interpretation landau_o: landau_pair bigo smallo "op \<le>"
   by unfold_locales (auto simp: bigo_def smallo_def intro!: ext)
 
-interpretation landau_omega!: landau_pair bigomega smallomega "op \<ge>"
+interpretation landau_omega: landau_pair bigomega smallomega "op \<ge>"
   by unfold_locales (auto simp: bigomega_def smallomega_def intro!: ext)
 
 
@@ -614,7 +614,7 @@ lemma small_mult: "f1 \<in> l(g1) \<Longrightarrow> f2 \<in> l(g2) \<Longrightar
 lemmas mult = big_mult small_big_mult big_small_mult small_mult
 
 
-sublocale big!: landau_symbol L
+sublocale big: landau_symbol L
 proof
   have L: "L = bigo \<or> L = bigomega"
     apply (rule R_E)
@@ -678,7 +678,7 @@ proof
   }
 qed (auto simp: L_def)
 
-sublocale small!: landau_symbol l
+sublocale small: landau_symbol l
 proof
   {
     fix c :: 'b and f :: "'a \<Rightarrow> 'b" assume "c \<noteq> 0"
@@ -832,7 +832,7 @@ lemmas landau_flip =
   bigomega_iff_bigo smallomega_iff_smallo bigtheta_sym
 
 
-interpretation landau_theta!: landau_symbol bigtheta
+interpretation landau_theta: landau_symbol bigtheta
 proof
   fix f g :: "'a \<Rightarrow> 'b"
   assume "f \<in> o(g)"

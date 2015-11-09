@@ -267,7 +267,7 @@ proof (refine_rcg SPEC_refine refine_vcg)
   assume fr: "finite ((g_E G)\<^sup>* `` g_V0 G)"
 
   have [simp]: "b_graph degeneralize" by (simp add: degen_invar)
-  (*then interpret bg!: b_graph degeneralize .*)
+  (*then interpret bg: b_graph degeneralize .*)
 
   show "ndfs_find_ce G
     \<le>
@@ -484,8 +484,8 @@ lemma dflt_inter_autoref[autoref_rules]:
       \<rightarrow> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs) \<times>\<^sub>r (Rq \<times>\<^sub>r Rs \<rightarrow> Rs))$S$G
   ) \<in> igbg_impl_rel_ext unit_rel (Rq \<times>\<^sub>r Rs) \<times>\<^sub>r (Rq \<times>\<^sub>r Rs \<rightarrow> Rs)"
 proof -
-  from assms interpret igba!: igba G by simp
-  from assms interpret sa!: sa S by simp
+  from assms interpret igba: igba G by simp
+  from assms interpret sa: sa S by simp
   from assms interpret cava_inter_impl_loc S G Gi Si Rq Rs Rl eqq
     by unfold_locales simp_all
 
@@ -529,7 +529,7 @@ proof -
     "(Gi, G) \<in> igbav_impl_rel_ext unit_rel Rq (\<langle>Rprop\<rangle>fun_set_rel)"
 
   assume "sa S" and "igba G"
-  then interpret sa!: sa S + igba!: igba G .
+  then interpret sa: sa S + igba: igba G .
   interpret cava_inter_impl_loc S G Gi Si Rq Rs "\<langle>Rprop\<rangle>fun_set_rel" eqq
     apply unfold_locales
     using EQ R by simp_all
@@ -546,7 +546,7 @@ text {* In this section, we instantiate the parametrized model checker
   with the actual implementations. *}
 
 setup Locale_Code.open_block
-interpretation cava_sys_agn!: impl_model_checker 
+interpretation cava_sys_agn: impl_model_checker 
   "sa_impl_rel_ext unit_rel Id (\<langle>Id\<rangle>fun_set_rel)" 
   "igbav_impl_rel_ext unit_rel Id (\<langle>Id\<rangle>fun_set_rel)"
   "igbg_impl_rel_ext unit_rel (Id \<times>\<^sub>r Id)"
@@ -657,7 +657,7 @@ proof -
     done
 qed
 
-interpretation bpc_to_sa!: sa "bpc_to_sa bpc"
+interpretation bpc_to_sa: sa "bpc_to_sa bpc"
   using bpc_to_sa_invar .
 
 lemma bpc_to_sa_run_conv[simp]: 
@@ -785,7 +785,7 @@ proof -
     apply (fact setUp_gState_inv[OF ast])
     done
 
-  interpret promela_to_sa!: sa "promela_to_sa ?promg"
+  interpret promela_to_sa: sa "promela_to_sa ?promg"
     using promela_to_sa_invar .
 
   have promela_to_sa_run_conv[simp]: 

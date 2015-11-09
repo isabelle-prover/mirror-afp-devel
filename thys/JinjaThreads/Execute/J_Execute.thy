@@ -10,7 +10,7 @@ imports
   "../J/Threaded"
 begin
 
-interpretation sc!: 
+interpretation sc: 
   J_heap_base
     "addr2thread_id"
     "thread_id2addr"
@@ -58,7 +58,7 @@ by simp
 
 subsection {* Round-robin scheduler *}
 
-interpretation J_rr!: 
+interpretation J_rr: 
   sc_round_robin_base
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
@@ -75,13 +75,13 @@ definition exec_J_rr ::
 where
   "exec_J_rr n0 P C M vs = J_rr.exec P n0 (sc_rr_J_start_state n0 P) (sc_J_start_state_refine P C M vs)"
 
-interpretation J_rr!:
+interpretation J_rr:
   sc_round_robin 
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
 by(unfold_locales)
 
-interpretation J_rr!: 
+interpretation J_rr: 
   sc_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA
     "J_rr.round_robin P n0" Jinja_output "pick_wakeup_via_sel (\<lambda>s P. rm_sel s (\<lambda>(k,v). P k v))" J_rr.round_robin_invar
@@ -96,7 +96,7 @@ done
 
 subsection {* Random scheduler *}
 
-interpretation J_rnd!: 
+interpretation J_rnd: 
   sc_random_scheduler_base
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
@@ -113,13 +113,13 @@ definition exec_J_rnd ::
 where
   "exec_J_rnd seed P C M vs = J_rnd.exec P (sc_rnd_J_start_state seed) (sc_J_start_state_refine P C M vs)"
 
-interpretation J_rnd!:
+interpretation J_rnd:
   sc_random_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
 by(unfold_locales)
 
-interpretation J_rnd!:
+interpretation J_rnd:
   sc_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA
     "J_rnd.random_scheduler P" Jinja_output "pick_wakeup_via_sel (\<lambda>s P. rm_sel s (\<lambda>(k,v). P k v))" "\<lambda>_ _. True"

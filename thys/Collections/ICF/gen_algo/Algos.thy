@@ -27,8 +27,8 @@ lemma inatseg_simps[simp]:
 text "Compute an injective map from objects into an initial 
     segment of the natural numbers"
 locale map_to_nat_loc = 
-  s!: StdSet s_ops +
-  m!: StdMap m_ops
+  s: StdSet s_ops +
+  m: StdMap m_ops
   for s_ops :: "('x,'s,'more1) set_ops_scheme"
   and m_ops :: "('x,nat,'m,'more2) map_ops_scheme"
 begin
@@ -94,8 +94,8 @@ subsection "Map from Set"
 text "Build a map using a set of keys and a function to compute the values."
 
 locale it_dom_fun_to_map_loc =
-  s!: StdSet s_ops
-+ m!: StdMap m_ops 
+  s: StdSet s_ops
++ m: StdMap m_ops 
   for s_ops :: "('k,'s,'more1) set_ops_scheme"
   and m_ops :: "('k,'v,'m,'more2) map_ops_scheme"
 begin
@@ -137,8 +137,8 @@ end
 
 
 locale set_to_list_defs_loc =
-  s!: StdSetDefs s_ops
-+ l!: StdListDefs l_ops
+  s: StdSetDefs s_ops
++ l: StdListDefs l_ops
   for s_ops :: "('x,'s,'more1) set_ops_scheme"
   and l_ops :: "('x,'l,'more2) list_ops_scheme"
 begin
@@ -147,8 +147,8 @@ begin
 end
 
 locale set_to_list_loc = set_to_list_defs_loc s_ops l_ops
-+ s!: StdSet s_ops
-+ l!: StdList l_ops
++ s: StdSet s_ops
++ l: StdList l_ops
   for s_ops :: "('x,'s,'more1) set_ops_scheme"
   and l_ops :: "('x,'l,'more2) list_ops_scheme"
 begin

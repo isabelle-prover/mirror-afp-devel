@@ -250,7 +250,7 @@ lemma diag_1_eq: "diag x = 1 \<longleftrightarrow> x = 1"
 instance sq_matrix :: ("ring_1", finite) ring_1
   by standard simp_all
 
-interpretation sq_matrix!: vector_space smult_sq_matrix
+interpretation sq_matrix: vector_space smult_sq_matrix
   by standard (transfer, simp add: vec_eq_iff field_simps)+
 
 instantiation sq_matrix :: (real_vector, finite) real_vector

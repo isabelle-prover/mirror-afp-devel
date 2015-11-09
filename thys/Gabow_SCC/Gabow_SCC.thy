@@ -268,7 +268,7 @@ begin
   proof -
     from OINV interpret cscc_outer_invar_loc G it l D0 
       unfolding cscc_outer_invar_def by simp
-    from INV interpret inv!: cscc_invar_loc G v0 D0 l' "[]" D' pE 
+    from INV interpret inv: cscc_invar_loc G v0 D0 l' "[]" D' pE 
       unfolding cscc_invar_def by simp
     
     show ?thesis 

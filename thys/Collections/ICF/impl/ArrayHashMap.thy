@@ -106,7 +106,7 @@ definition [icf_rec_def]: "ahm_basic_ops \<equiv> \<lparr>
 \<rparr>"
 
 setup Locale_Code.open_block
-interpretation ahm_basic!: StdBasicMap ahm_basic_ops
+interpretation ahm_basic: StdBasicMap ahm_basic_ops
   apply unfold_locales
   apply (simp_all add: icf_rec_unf)
   done
@@ -115,10 +115,10 @@ setup Locale_Code.close_block
 definition [icf_rec_def]: "ahm_ops \<equiv> ahm_basic.dflt_ops"
 
 setup Locale_Code.open_block
-interpretation ahm!: StdMap ahm_ops 
+interpretation ahm: StdMap ahm_ops 
   unfolding ahm_ops_def
   by (rule ahm_basic.dflt_ops_impl)
-interpretation ahm!: StdMap_no_invar ahm_ops 
+interpretation ahm: StdMap_no_invar ahm_ops 
   apply unfold_locales
   unfolding icf_rec_unf ..
 setup Locale_Code.close_block

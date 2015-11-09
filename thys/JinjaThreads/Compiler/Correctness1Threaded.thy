@@ -565,7 +565,7 @@ qed
 
 end
 
-sublocale J1_heap_base < Red1_mthr!:
+sublocale J1_heap_base < Red1_mthr:
   if_\<tau>multithreaded_wf
     final_expr1
     "mred1g uf P"

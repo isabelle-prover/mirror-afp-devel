@@ -150,14 +150,14 @@ lemma arb_actI[simp]: "arb_act s \<in> K s"
 lemma cfg_on_not_empty[intro, simp]: "cfg_on s \<noteq> {}"
   by (auto intro: memoryless_on_cfg_onI arb_actI)
 
-sublocale MC!: MC_syntax K_cfg .
+sublocale MC: MC_syntax K_cfg .
 
 abbreviation St :: "'s stream measure" where
   "St \<equiv> stream_space (count_space UNIV)"
 
 definition "T cfg = distr (MC.T cfg) St (smap state)"
 
-sublocale T!: prob_space "T cfg" for cfg
+sublocale T: prob_space "T cfg" for cfg
   by (simp add: T_def MC.T.prob_space_distr)
 
 lemma space_T[simp]: "space (T cfg) = space St"

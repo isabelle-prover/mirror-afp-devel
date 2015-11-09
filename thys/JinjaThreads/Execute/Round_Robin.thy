@@ -531,16 +531,16 @@ locale round_robin =
     ws_\<alpha> ws_invar ws_lookup
     is_\<alpha> is_invar is_memb is_ins is_delete
   +
-  ws!: map_update ws_\<alpha> ws_invar ws_update +
-  ws!: map_delete ws_\<alpha> ws_invar ws_delete +
-  ws!: map_iteratei ws_\<alpha> ws_invar ws_iterate +
-  ws!: map_sel' ws_\<alpha> ws_invar ws_sel +
-  queue!: list queue_\<alpha> queue_invar +
-  queue!: list_empty queue_\<alpha> queue_invar queue_empty +
-  queue!: list_isEmpty queue_\<alpha> queue_invar queue_isEmpty +
-  queue!: list_enqueue queue_\<alpha> queue_invar queue_enqueue +
-  queue!: list_dequeue queue_\<alpha> queue_invar queue_dequeue +
-  queue!: list_push queue_\<alpha> queue_invar queue_push
+  ws: map_update ws_\<alpha> ws_invar ws_update +
+  ws: map_delete ws_\<alpha> ws_invar ws_delete +
+  ws: map_iteratei ws_\<alpha> ws_invar ws_iterate +
+  ws: map_sel' ws_\<alpha> ws_invar ws_sel +
+  queue: list queue_\<alpha> queue_invar +
+  queue: list_empty queue_\<alpha> queue_invar queue_empty +
+  queue: list_isEmpty queue_\<alpha> queue_invar queue_isEmpty +
+  queue: list_enqueue queue_\<alpha> queue_invar queue_enqueue +
+  queue: list_dequeue queue_\<alpha> queue_invar queue_dequeue +
+  queue: list_push queue_\<alpha> queue_invar queue_push
   for final :: "'x \<Rightarrow> bool"
   and r :: "'t \<Rightarrow> ('x \<times> 'm) \<Rightarrow> (('l,'t,'x,'m,'w,'o) thread_action \<times> 'x \<times> 'm) Predicate.pred"
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"

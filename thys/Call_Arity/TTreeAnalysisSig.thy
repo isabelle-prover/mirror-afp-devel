@@ -5,7 +5,7 @@ begin
 locale TTreeAnalysis =
  fixes Texp :: "exp \<Rightarrow> Arity \<rightarrow> var ttree"
 begin
-  sublocale Texp!: ExpAnalysis Texp.
+  sublocale Texp: ExpAnalysis Texp.
   abbreviation "FBinds == Texp.AnalBinds"
 end
 

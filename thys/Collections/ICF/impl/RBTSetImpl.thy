@@ -29,19 +29,19 @@ type_synonym
   'a rs = "('a::linorder,unit) rm"
 
 setup Locale_Code.open_block
-interpretation rs_sbm!: OSetByOMap rm_basic_ops by unfold_locales
+interpretation rs_sbm: OSetByOMap rm_basic_ops by unfold_locales
 setup Locale_Code.close_block
 
 definition rs_ops :: "('x::linorder,'x rs) oset_ops"
   where [icf_rec_def]: "rs_ops \<equiv> rs_sbm.obasic.dflt_oops"
 
 setup Locale_Code.open_block
-interpretation rs!: StdOSetDefs rs_ops .
-interpretation rs!: StdOSet rs_ops
+interpretation rs: StdOSetDefs rs_ops .
+interpretation rs: StdOSet rs_ops
   unfolding rs_ops_def
   by (rule rs_sbm.obasic.dflt_oops_impl)
 
-interpretation rs!: StdSet_no_invar rs_ops
+interpretation rs: StdSet_no_invar rs_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 

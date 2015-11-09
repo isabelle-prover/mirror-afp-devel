@@ -109,7 +109,7 @@ lemma pmf_K2:
 
 end
 
-sublocale K!: MC_syntax K .
+sublocale K: MC_syntax K .
 
 lemma bind_I_K_eq_M: "K.T' I = distr M K.S (\<lambda>\<omega>. to_stream (\<lambda>n. X n \<omega>))" (is "_ = ?D")
 proof (rule stream_space_eq_sstart)

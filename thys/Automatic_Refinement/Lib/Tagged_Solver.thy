@@ -275,7 +275,7 @@ begin
 end
 
 definition "TAG x == True"
-interpretation tag!: foo TAG 1
+interpretation tag: foo TAG 1
   apply unfold_locales
   unfolding TAG_def by simp
 
@@ -284,11 +284,11 @@ ML_val {*
   *}
 
 definition "TAG' x == True"
-interpretation tag'!: foo TAG' 2
+interpretation tag': foo TAG' 2
   apply unfold_locales
   unfolding TAG'_def by simp
 
-interpretation tag2!: foo TAG 3
+interpretation tag2: foo TAG 3
   by unfold_locales
 
 ML_val {*

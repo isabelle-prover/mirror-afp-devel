@@ -397,7 +397,7 @@ using assms proof (cases x)
   case (Some x') with assms show ?thesis by (cases y) (simp_all add: eq_commute)
 qed simp
 
-interpretation least!: semilattice least proof
+interpretation least: semilattice least proof
 qed (auto simp add: least_def split: option.split)
 
 definition min :: "('a::linorder, 'b) binqueue \<Rightarrow> 'a option" where
