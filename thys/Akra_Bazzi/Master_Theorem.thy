@@ -202,17 +202,15 @@ lemmas growths = powr_growth1 powr_growth2 powr_ln_powr_growth1 powr_ln_powr_gro
 
 
 private lemma master_integrable:
-  "\<exists>a::real. \<forall>b\<ge>a. interval_lebesgue_integrable lborel (ereal a) (ereal b)
-            (\<lambda>u. u powr r * ln u powr s / u powr t)"
-  "\<exists>a::real. \<forall>b\<ge>a. interval_lebesgue_integrable lborel (ereal a) (ereal b)
-            (\<lambda>u. u powr r / u powr s)"
-  by (rule exI[of _ 2], force intro!: interval_integrable_continuous_on continuous_intros)+
+  "\<exists>a::real. \<forall>b\<ge>a. (\<lambda>u. u powr r * ln u powr s / u powr t) integrable_on {a..b}"
+  "\<exists>a::real. \<forall>b\<ge>a. (\<lambda>u. u powr r / u powr s) integrable_on {a..b}"
+  by (rule exI[of _ 2], force intro!: integrable_continuous_real continuous_intros)+
 
 private lemma master_integral:
   fixes a p p' :: real
   assumes p: "p \<noteq> p'" and a: "a > 0"
   obtains c d where "c \<noteq> 0" "p > p' \<longrightarrow> d \<noteq> 0"
-    "(\<lambda>x::nat. x powr p * (1 + (LBINT u=a..x. u powr p' / u powr (p+1)))) \<in> 
+    "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)))) \<in> 
              \<Theta>(\<lambda>x::nat. d * x powr p + c * x powr p')"
 proof-
   def e \<equiv> "a powr (p' - p)"
@@ -225,13 +223,14 @@ proof-
     using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x assume x: "x \<ge> a"
-    hence "(LBINT u=a..x. u powr p' / u powr (p+1)) = (LBINT u=a..x. u powr (p' - (p + 1)))"
-      by (intro interval_lebesgue_integral_cong) (simp_all add: powr_divide2)
+    hence "integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)) = 
+               integral {a..x} (\<lambda>u. u powr (p' - (p + 1)))"
+      by (intro integral_cong) (simp_all add: powr_divide2)
     also have "... = inverse (p' - p) * (x powr (p' - p) - a powr (p' - p))"
-      using p x0_less_x1 a x by (simp add: interval_integral_powr)
+      using p x0_less_x1 a x by (simp add: integral_powr)
     also have "x powr p * (1 + ...) = d * x powr p + c * x powr p'"
       using p unfolding c_def d_def by (simp add: algebra_simps powr_divide2[symmetric] e_def)
-    finally show "x powr p * (1 + (LBINT u=a..x. u powr p' / u powr (p+1))) =
+    finally show "x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1))) =
                       d * x powr p + c * x powr p'" .
   qed
 qed
@@ -240,7 +239,7 @@ private lemma master_integral':
   fixes a p p' :: real
   assumes p': "p' \<noteq> 0" and a: "a > 1"
   obtains c d :: real where "p' < 0 \<longrightarrow> c \<noteq> 0" "d \<noteq> 0"
-    "(\<lambda>x::nat. x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr (p' - 1)/ u powr (p+1)))) \<in>
+    "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr (p'-1) / u powr (p+1)))) \<in>
        \<Theta>(\<lambda>x::nat. c * x powr p + d * x powr p * ln x powr p')"
 proof-
   def e \<equiv> "ln a powr p'"
@@ -252,14 +251,14 @@ proof-
     using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x :: real assume x: "x \<ge> a"
-    have "(LBINT u=a..x. u powr p * ln u powr (p' - 1) / u powr (p + 1)) = 
-          (LBINT u=a..x. ln u powr (p' - 1) / u)" using x a x0_less_x1
-      by (intro interval_lebesgue_integral_cong) (simp_all add: powr_add)
+    have "integral {a..x} (\<lambda>u. u powr p * ln u powr (p' - 1) / u powr (p + 1)) = 
+          integral {a..x} (\<lambda>u. ln u powr (p' - 1) / u)" using x a x0_less_x1
+      by (intro integral_cong) (simp_all add: powr_add)
     also have "... = inverse p' * (ln x powr p' - ln a powr p')"
-      using p' x0_less_x1 a(1) x by (simp add: interval_integral_ln_powr_over_x)
+      using p' x0_less_x1 a(1) x by (simp add: integral_ln_powr_over_x)
     also have "x powr p * (1 + ...) = c * x powr p + d * x powr p * ln x powr p'"
       using p' by (simp add: algebra_simps c_def d_def e_def)
-    finally show "x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr (p' - 1) / u powr (p+1))) =
+    finally show "x powr p * (1+integral {a..x} (\<lambda>u. u powr p * ln u powr (p'-1) / u powr (p+1))) =
                   c * x powr p + d * x powr p * ln x powr p'" .
   qed
 qed
@@ -267,22 +266,22 @@ qed
 private lemma master_integral'':
   fixes a p p' :: real
   assumes a: "a > 1"
-  shows "(\<lambda>x::nat. x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr - 1 / u powr (p + 1)))) \<in>
+  shows "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr - 1/u powr (p+1)))) \<in>
            \<Theta>(\<lambda>x::nat. x powr p * ln (ln x))"
 proof (rule landau_real_nat_transfer)
-  have "(\<lambda>x::real. x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr - 1 / u powr (p + 1)))) \<in>
+  have "(\<lambda>x::real. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr - 1/u powr (p+1)))) \<in>
           \<Theta>(\<lambda>x::real. (1 - ln (ln a)) * x powr p + x powr p * ln (ln x))" (is "?f \<in> _")
     apply (rule bigthetaI_cong) using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x assume x: "x \<ge> a"
-    have "(LBINT u=a..x. u powr p * ln u powr -1 / u powr (p + 1)) = 
-          (LBINT u=a..x. inverse (u * ln u))" using x a x0_less_x1
-      by (intro interval_lebesgue_integral_cong) (simp_all add: powr_add powr_minus field_simps)
+    have "integral {a..x} (\<lambda>u. u powr p * ln u powr -1 / u powr (p + 1)) = 
+          integral {a..x} (\<lambda>u. inverse (u * ln u))" using x a x0_less_x1
+      by (intro integral_cong) (simp_all add: powr_add powr_minus field_simps)
     also have "... = ln (ln x) - ln (ln a)"
-      using x0_less_x1 a(1) x by (subst interval_integral_one_over_x_ln_x) simp_all
+      using x0_less_x1 a(1) x by (subst integral_one_over_x_ln_x) simp_all
     also have "x powr p * (1 + ...) = (1 - ln (ln a)) * x powr p + x powr p * ln (ln x)"
       by (simp add: algebra_simps)
-    finally show "x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr - 1 / u powr (p + 1))) =
+    finally show "x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr - 1 / u powr (p+1))) =
                     (1 - ln (ln a)) * x powr p + x powr p * ln (ln x)" .
   qed
   also have "(\<lambda>x. (1 - ln (ln a)) * x powr p + x powr p * ln (ln x)) \<in>
@@ -358,7 +357,7 @@ proof-
   note a(2)
   also from a(1) p' have A: "p' + 1 \<noteq> 0" by simp_all
   obtain c d :: real where cd: "c \<noteq> 0" "d \<noteq> 0" and
-    "(\<lambda>x::nat. x powr p * (1 + (LBINT u=a..x. u powr p * ln u powr p'/ u powr (p+1)))) \<in>
+    "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr p'/ u powr (p+1)))) \<in>
        \<Theta>(\<lambda>x::nat. c * x powr p + d * x powr p * ln x powr (p' + 1))"
     by (rule master_integral'[OF A a(1), of p]) (insert p', simp)
   note this(3)

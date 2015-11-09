@@ -12,7 +12,7 @@ imports
   "../Landau_Symbols/Landau_Symbols"
   Akra_Bazzi_Library
   Akra_Bazzi_Asymptotics
-  "~~/src/HOL/Library/Probability/Interval_Integral"
+  "~~/src/HOL/Multivariate_Analysis/Integration"
 begin
 
 declare setsum.cong[fundef_cong]
@@ -483,11 +483,16 @@ locale akra_bazzi_real = akra_bazzi_real_recursion +
   and     f_base:       "x \<ge> x\<^sub>0 \<Longrightarrow> x \<le> x\<^sub>1 \<Longrightarrow> f x \<ge> 0"
   and     f_rec:        "x > x\<^sub>1 \<Longrightarrow> f x = g x + (\<Sum>i<k. as!i * f (bs!i * x + (hs!i) x))"
   and     g_nonneg:     "x \<ge> x\<^sub>0 \<Longrightarrow> g x \<ge> 0"
-  and     C_bound:      "b \<in> set bs \<Longrightarrow> x \<ge> x\<^sub>1 \<Longrightarrow> C*x \<le> b*x - hb*x/ln x powr (1+e)"   
+  and     C_bound:      "b \<in> set bs \<Longrightarrow> x \<ge> x\<^sub>1 \<Longrightarrow> C*x \<le> b*x - hb*x/ln x powr (1+e)"
+  and     g_integrable: "x \<ge> x\<^sub>0 \<Longrightarrow> (\<lambda>u. g u / u powr (p + 1)) integrable_on {x\<^sub>0..x}"
 begin
 
+lemma akra_bazzi_integrable:
+  "a \<ge> x\<^sub>0 \<Longrightarrow> a \<le> b \<Longrightarrow> (\<lambda>x. g x / x powr (p + 1)) integrable_on {a..b}"
+  using g_integrable[of b] by (rule integrable_subinterval_real) auto
+
 definition g_approx :: "nat \<Rightarrow> real \<Rightarrow> real" where
-  "g_approx i x = x powr p * (LBINT u=(bs!i * x + (hs!i) x)..x. g u / u powr (p + 1))"
+  "g_approx i x = x powr p * integral {bs!i * x + (hs!i) x..x} (\<lambda>u. g u / u powr (p + 1))"
 
 lemma f_nonneg: "x \<ge> x\<^sub>0 \<Longrightarrow> f x \<ge> 0"
 proof (induction x rule: akra_bazzi_induct)
@@ -508,18 +513,15 @@ qed
 
 
 definition f_approx :: "real \<Rightarrow> real" where
-  "f_approx x = x powr p * (1 + (LBINT u=ereal x\<^sub>0..ereal x. g u / u powr (p + 1)))"
+  "f_approx x = x powr p * (1 + integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1)))"
 
 lemma f_approx_aux:
   assumes "x \<ge> x\<^sub>0"
-  shows   "1 + (LBINT u=ereal x\<^sub>0..ereal x. g u / u powr (p + 1)) \<ge> 1"
+  shows   "1 + integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1)) \<ge> 1"
 proof-
-  have "(LBINT u=ereal x\<^sub>0..ereal x. g u / u powr (p + 1)) = 
-          (LBINT u:{x\<^sub>0<..<x}. g u / u powr (p + 1))"
-    by (subst interval_lebesgue_integral_le_eq) (simp_all add: assms)
-  also from g_nonneg x0_pos have "... \<ge> 0"
-    by (intro integral_nonneg_AE AE_I2) (simp_all add: indicator_def powr_def field_simps)
-  finally show "1 + (LBINT u=ereal x\<^sub>0..ereal x. g u / u powr (p + 1)) \<ge> 1" by simp
+  from assms have "integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1)) \<ge> 0"
+    by (intro integral_nonneg ballI g_nonneg divide_nonneg_nonneg g_integrable) simp_all
+  thus ?thesis by simp
 qed
 
 lemma f_approx_pos: "x \<ge> x\<^sub>0 \<Longrightarrow> f_approx x > 0"
@@ -728,14 +730,7 @@ locale akra_bazzi_real_lower = akra_bazzi_real +
   and     g_growth2: "\<forall>x\<ge>x\<^sub>1. \<forall>u\<in>{C*x..x}. c2 * g x \<ge> g u"
   and     c2_pos:    "c2 > 0"
   and     g_bounded: "x \<ge> x\<^sub>0 \<Longrightarrow> x \<le> x\<^sub>1 \<Longrightarrow> g x \<le> gb2"
-  and     g_integrable: "x \<ge> x\<^sub>0 \<Longrightarrow> 
-                             interval_lebesgue_integrable lborel x\<^sub>0 x (\<lambda>x. g x / x powr (p + 1))"
 begin
-
-lemma akra_bazzi_integrable:
-  "a \<ge> x\<^sub>0 \<Longrightarrow> a \<le> b \<Longrightarrow> 
-       interval_lebesgue_integrable lborel (ereal a) (ereal b) (\<lambda>x. g x / x powr (p + 1))"
-  using g_integrable[of b] by (rule interval_lebesgue_integrable_subset, insert assms) simp_all
 
 lemma gb2_nonneg: "gb2 \<ge> 0" using g_bounded[of x\<^sub>0] x0_le_x1 x0_pos g_nonneg[of x\<^sub>0] by simp
 
@@ -793,21 +788,20 @@ proof-
     have [simp]: "bs ! i > 0" by (intro b_pos nth_mem) (simp add: i length_bs)
     from x0_le_x1 x i have [simp]: "?x' > 0" by (intro step_pos) simp_all
 
-    from x0_hb_bound7[OF x i] x'_le_x 
-      have "interval_lebesgue_integrable lborel ?x' x (\<lambda>x. g x / x powr (p + 1))"
-      by (intro akra_bazzi_integrable) simp_all
-    moreover {
-      fix u assume u: "u > ?x'" "u < x"
+
+    {
+      fix u assume u: "u \<ge> ?x'" "u \<le> x"
       have "?m \<le> u powr (p + 1)" using x u by (intro powr_lower_bound mult_pos_pos) simp_all
       moreover from c2 and u have "g u \<le> c2 * g x" by simp
       ultimately have "g u * ?m \<le> c2 * g x * u powr (p + 1)" using c2 x x1_pos x0_le_x1
         by (intro mult_mono mult_nonneg_nonneg g_nonneg) auto
     }
-    ultimately have "(LBINT u=?x'..x. g u / u powr (p + 1)) \<le> (LBINT u=?x'..x. c2 * g x / ?m)"
-      using x_pos step_pos[OF i x]
-      by (intro interval_lebesgue_integral_mono x'_le_x) (simp_all add: field_simps)
+    hence "integral {?x'..x} (\<lambda>u. g u / u powr (p+1)) \<le> integral {?x'..x} (\<lambda>u. c2 * g x / ?m)"
+      using x_pos step_pos[OF i x] x0_hb_bound7[OF x i] 
+      by (intro integral_le x'_le_x akra_bazzi_integrable ballI)
+         (simp_all add: field_simps integrable_const_real)
       
-    also have "... = (x - ?x') * (c2 * g x / ?m)" by simp
+    also from x'_le_x have "... = (x - ?x') * (c2 * g x / ?m)" by (subst integral_const_real) simp
     also from c2 x_pos x x0_le_x1 have "c2 * g x \<ge> 0"
       by (intro mult_nonneg_nonneg g_nonneg) simp_all 
     with x i x0_le_x1 have "(x - ?x') * (c2 * g x / ?m) \<le> x * (c2 * g x / ?m)" 
@@ -839,12 +833,12 @@ proof-
   let ?m2 = "max (x\<^sub>0 powr (-(p+1))) (x\<^sub>1 powr (-(p+1)))"
   let ?m3 = "gb2 * ?m2"
   let ?m4 = "1 + (x\<^sub>1 - x\<^sub>0) * ?m3"
-  let ?int = "\<lambda>x. LBINT u=ereal x\<^sub>0..ereal x. g u / u powr (p + 1)"
+  let ?int = "\<lambda>x. integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1))"
   {
     fix x assume x: "x \<ge> x\<^sub>0" "x \<le> x\<^sub>1"
     with x0_pos have "x powr p \<le> ?m1" "?m1 \<ge> 0" by (intro powr_upper_bound) (simp_all add: max_def)
     moreover {
-      fix u assume u: "u \<in> {x\<^sub>0<..<x}"
+      fix u assume u: "u \<in> {x\<^sub>0..x}"
       have "g u / u powr (p + 1) = g u * u powr (-(p+1))"
         by (subst powr_minus) (simp add: field_simps)
       also from u x x0_pos have "u powr (-(p+1)) \<le> ?m2"
@@ -856,16 +850,15 @@ proof-
       finally have "g u / u powr (p + 1) \<le> ?m3" .
     } note A = this
     {
-      from A x have "?int x \<le> LBINT u=ereal x\<^sub>0..ereal x. ?m3"
-        by (intro interval_lebesgue_integral_mono akra_bazzi_integrable) simp_all
-      also have "... \<le> (x - x\<^sub>0) * ?m3" by (simp add: field_simps)
+      from A x have "?int x \<le> integral {x\<^sub>0..x} (\<lambda>_. ?m3)"
+        by (intro integral_le akra_bazzi_integrable integrable_const_real) simp_all
+      also from x have "... \<le> (x - x\<^sub>0) * ?m3" by (subst integral_const_real) simp
       also from x gb2_nonneg have "... \<le> (x\<^sub>1 - x\<^sub>0) * ?m3"
         by (intro mult_right_mono mult_nonneg_nonneg) (simp_all add: max_def)
       finally have "1 + ?int x \<le> ?m4" by simp
     }
-    moreover from x g_nonneg x0_pos have "?int x \<ge> LBINT u=ereal x\<^sub>0..ereal x. 0"
-      by (intro interval_lebesgue_integral_mono akra_bazzi_integrable)
-         (simp_all add: powr_def field_simps)
+    moreover from x g_nonneg x0_pos have "?int x \<ge> 0"
+      by (intro integral_nonneg akra_bazzi_integrable) (simp_all add: powr_def field_simps)
     hence "1 + ?int x \<ge> 0" by simp
     ultimately have "f_approx x \<le> ?m1 * ?m4" 
       unfolding f_approx_def by (intro mult_mono)
@@ -923,9 +916,9 @@ proof-
   next
     case (rec x)
     let ?a = "\<lambda>i. as!i" and ?b = "\<lambda>i. bs!i" and ?h = "\<lambda>i. hs!i"
-    let ?int = "LBINT u=x\<^sub>0..x. g u / u powr (p+1)"
-    let ?int1 = "\<lambda>i. LBINT u=x\<^sub>0..?b i*x+?h i x. g u / u powr (p+1)"
-    let ?int2 = "\<lambda>i. LBINT u=?b i*x+?h i x..x. g u / u powr (p+1)"
+    let ?int = "integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p+1))"
+    let ?int1 = "\<lambda>i. integral {x\<^sub>0..?b i*x+?h i x} (\<lambda>u. g u / u powr (p+1))"
+    let ?int2 = "\<lambda>i. integral {?b i*x+?h i x..x} (\<lambda>u. g u / u powr (p+1))"
     let ?l = "ln x powr (-e/2)" and ?l' = "\<lambda>i. ln (?b i*x + ?h i x) powr (-e/2)"
     
     from rec and x0_le_x1 have x: "x \<ge> x\<^sub>0" by simp
@@ -961,7 +954,7 @@ proof-
       also from rec.hyps i have "x\<^sub>0 < bs ! i * x + (hs ! i) x" by (intro x0_hb_bound7) simp_all
       hence "?int - ?int2 i = ?int1 i"
         apply (subst diff_eq_eq, subst eq_commute)
-        apply (intro interval_lebesgue_integral_split akra_bazzi_integrable)
+        apply (intro integral_combine akra_bazzi_integrable)
         apply (insert rec.hyps step_le_x[OF i, of x], simp_all)
         done
       also have "?A * (1 + ?int1 i) = (c5*?a i*(1 + ?int1 i)) * ((?b i*x) powr p * (1 + ?l))"
@@ -984,7 +977,7 @@ proof-
 qed
 
 lemma akra_bazzi_bigomega: 
-  "f \<in> \<Omega>(\<lambda>x. x powr p *(1 + (LBINT u=x\<^sub>0..x. g u / u powr (p + 1))))"
+  "f \<in> \<Omega>(\<lambda>x. x powr p * (1 + integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1))))"
 apply (fold f_approx_def, rule akra_bazzi_lower, erule landau_omega.bigI)
 apply (subst eventually_at_top_linorder, rule exI[of _ x\<^sub>0])
 apply (simp add: f_nonneg f_approx_nonneg)
@@ -998,14 +991,7 @@ locale akra_bazzi_real_upper = akra_bazzi_real +
   assumes f_base1:   "x \<ge> x\<^sub>0 \<Longrightarrow> x \<le> x\<^sub>1 \<Longrightarrow> f x \<le> fb1"
   and     g_growth1: "\<forall>x\<ge>x\<^sub>1. \<forall>u\<in>{C*x..x}. c1 * g x \<le> g u"
   and     c1_pos:    "c1 > 0"
-  and     g_integrable: "x \<ge> x\<^sub>0 \<Longrightarrow> 
-                             interval_lebesgue_integrable lborel x\<^sub>0 x (\<lambda>x. g x / x powr (p + 1))"
 begin
-
-lemma akra_bazzi_integrable:
-  "a \<ge> x\<^sub>0 \<Longrightarrow> a \<le> b \<Longrightarrow> 
-       interval_lebesgue_integrable lborel (ereal a) (ereal b) (\<lambda>x. g x / x powr (p + 1))"
-  using g_integrable[of b] by (rule interval_lebesgue_integrable_subset, insert assms) simp_all
 
 lemma g_growth1':
   assumes "x \<ge> x\<^sub>1" "i < k" "u \<in> {bs!i*x+(hs!i) x..x}"
@@ -1066,23 +1052,6 @@ proof-
     from x x0_le_x1 i have x'_pos: "?x' > 0" by (intro step_pos) simp_all
     have m_pos: "?m > 0" unfolding max_def using x_pos step_pos[OF i x] by auto
 
-    from x0_hb_bound7[OF x i] x'_le_x 
-      have "interval_lebesgue_integrable lborel ?x' x (\<lambda>x. g x / x powr (p + 1))"
-      by (intro akra_bazzi_integrable) simp_all
-    moreover {
-      fix u assume u: "u \<ge> ?x'" "u \<le> x"
-      have "u powr (p + 1) \<le> ?m" using x u x'_pos by (intro powr_upper_bound mult_pos_pos) simp_all
-      moreover from x'_pos u have "u \<ge> 0" by simp
-      moreover from c1 and u have "c1 * g x \<le> g u" by simp
-      ultimately have "c1 * g x * u powr (p + 1) \<le> g u * ?m" using c1 x u x0_hb_bound7[OF x i]
-        by (intro mult_mono g_nonneg) auto
-      with m_pos u step_pos[OF i x] 
-        have "c1 * g x / ?m \<le> g u / u powr (p + 1)" by (simp add: field_simps)
-    }
-    ultimately have inequality:
-      "(LBINT u=?x'..x. c1 * g x / ?m) \<le> (LBINT u=?x'..x. g u / u powr (p + 1))"
-      by (intro interval_lebesgue_integral_mono x'_le_x) (simp_all add: field_simps)
-      
     from x i g_nonneg x0_le_x1 have "c3 * (g x / x powr p) \<le> (c1*b'/m') * (g x / x powr p)"
       unfolding m'_def b'_def by (intro mult_right_mono c3) (simp_all add: field_simps)
     also from x_pos have "... = (x * b') * (c1 * g x / (x powr (p + 1) * m'))"
@@ -1091,7 +1060,6 @@ proof-
       have "... \<le> (x - ?x') * (c1 * g x / (x powr (p + 1) * m'))"
       unfolding b'_def m'_def by (intro x0_hb_bound6 mult_right_mono mult_nonneg_nonneg 
                                         divide_nonneg_nonneg g_nonneg) simp_all
-    
     also have "x powr (p + 1) * m' = 
                  max (x powr (p + 1) * (bs ! i + (hs ! i) x / x) powr (p + 1)) (x powr (p + 1) * 1)"
       unfolding m'_def using x_pos by (subst max.commute, intro max_mult_left) simp
@@ -1101,8 +1069,21 @@ proof-
       using x x1_pos step_pos[OF i x] x_pos i x0_le_x1 x_pos
       by (subst powr_mult[symmetric]) (simp add: field_simps, simp, simp add: algebra_simps)
     also have "x powr (p + 1) * 1 = x powr (p + 1)" by simp
-    also have "(x - ?x') * (c1 * g x / ?m) = LBINT u=?x'..x. c1 * g x / ?m" by simp
-    also note inequality
+    also have "(x - ?x') * (c1 * g x / ?m) = integral {?x'..x} (\<lambda>_. c1 * g x / ?m)"
+      using x'_le_x by (subst integral_const_real) simp_all
+    also {
+      fix u assume u: "u \<ge> ?x'" "u \<le> x"
+      have "u powr (p + 1) \<le> ?m" using x u x'_pos by (intro powr_upper_bound mult_pos_pos) simp_all
+      moreover from x'_pos u have "u \<ge> 0" by simp
+      moreover from c1 and u have "c1 * g x \<le> g u" by simp
+      ultimately have "c1 * g x * u powr (p + 1) \<le> g u * ?m" using c1 x u x0_hb_bound7[OF x i]
+        by (intro mult_mono g_nonneg) auto
+      with m_pos u step_pos[OF i x] 
+        have "c1 * g x / ?m \<le> g u / u powr (p + 1)" by (simp add: field_simps)
+    }
+    hence "integral {?x'..x} (\<lambda>_. c1 * g x / ?m) \<le> integral {?x'..x} (\<lambda>u. g u / u powr (p + 1))"
+      using x0_hb_bound7[OF x i] x'_le_x
+      by (intro integral_le ballI akra_bazzi_integrable integrable_const_real) simp_all
     finally have "c3 * g x \<le> g_approx i x" using x_pos 
       unfolding g_approx_def by (simp add: field_simps)
   }
@@ -1160,9 +1141,9 @@ proof-
   next
     case (rec x)
     let ?a = "\<lambda>i. as!i" and ?b = "\<lambda>i. bs!i" and ?h = "\<lambda>i. hs!i"
-    let ?int = "LBINT u=x\<^sub>0..x. g u / u powr (p+1)"
-    let ?int1 = "\<lambda>i. LBINT u=x\<^sub>0..?b i*x+?h i x. g u / u powr (p+1)"
-    let ?int2 = "\<lambda>i. LBINT u=?b i*x+?h i x..x. g u / u powr (p+1)"
+    let ?int = "integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p+1))"
+    let ?int1 = "\<lambda>i. integral {x\<^sub>0..?b i*x+?h i x} (\<lambda>u. g u / u powr (p+1))"
+    let ?int2 = "\<lambda>i. integral {?b i*x+?h i x..x} (\<lambda>u. g u / u powr (p+1))"
     let ?l = "ln x powr (-e/2)" and ?l' = "\<lambda>i. ln (?b i*x + ?h i x) powr (-e/2)"
     
     from rec and x0_le_x1 have x: "x \<ge> x\<^sub>0" by simp
@@ -1192,7 +1173,7 @@ proof-
       also from rec.hyps i have "x\<^sub>0 < bs ! i * x + (hs ! i) x" by (intro x0_hb_bound7) simp_all
       hence "?int1 i = ?int - ?int2 i"
         apply (subst eq_diff_eq)
-        apply (intro interval_lebesgue_integral_split akra_bazzi_integrable)
+        apply (intro integral_combine akra_bazzi_integrable)
         apply (insert rec.hyps step_le_x[OF i, of x], simp_all)
         done
       also from rec.hyps i have "c3 * g x \<le> g_approx i x" by (intro c3) simp_all
@@ -1231,7 +1212,7 @@ proof-
 qed
 
 lemma akra_bazzi_bigo: 
-  "f \<in> O(\<lambda>x. x powr p *(1 + (LBINT u=x\<^sub>0..x. g u / u powr (p + 1))))"
+  "f \<in> O(\<lambda>x. x powr p *(1 + integral {x\<^sub>0..x} (\<lambda>u. g u / u powr (p + 1))))"
 apply (fold f_approx_def, rule akra_bazzi_upper, erule landau_o.bigI)
 apply (subst eventually_at_top_linorder, rule exI[of _ x\<^sub>0])
 apply (simp add: f_nonneg f_approx_nonneg)
