@@ -64,9 +64,9 @@ locale subdiv_step =
   fixes G rev_G H rev_H u v w uv uw vw
   assumes subdiv_step: "subdivision_step G rev_G H rev_H (u, v, w) (uv, uw, vw)"
 
-sublocale subdiv_step \<subseteq> G!: bidirected_digraph G rev_G
+sublocale subdiv_step \<subseteq> G: bidirected_digraph G rev_G
   using subdiv_step unfolding subdivision_step_def by simp
-sublocale subdiv_step \<subseteq> H!: bidirected_digraph H rev_H
+sublocale subdiv_step \<subseteq> H: bidirected_digraph H rev_H
   using subdiv_step unfolding subdivision_step_def by simp
 
 context subdiv_step begin
@@ -351,10 +351,9 @@ begin
         (u, v, w) (e, (u,w), (v,w))"
       unfolding subdivision_step_def
       unfolding prod.simps with_proj_simps
-      apply (intro conjI; fact?)
-      apply (simp_all add: * )
-      using divide uvw apply (auto simp add: swap_in_def \<open>e = _\<close> compatibleI_with_proj)
-      done
+      using divide uvw
+      by (intro conjI H.bidirected_digraph I.bidirected_digraph *)
+         (auto simp add: swap_in_def \<open>e = _\<close> compatibleI_with_proj)
     ultimately
     show ?case by (auto intro: subdivision.divide)
   qed
@@ -383,7 +382,7 @@ begin
     ultimately
     have pd_sd: "pair_sd G I'" by (auto intro: divide.hyps)
 
-    interpret sd!: subdiv_step I' "swap_in (parcs I')" H "swap_in (parcs H)" u v w uv uw vw
+    interpret sd: subdiv_step I' "swap_in (parcs I')" H "swap_in (parcs H)" u v w uv uw vw
       using \<open>subdivision_step _ _ _ _ _ _\<close> unfolding \<open>I = _\<close> \<open>rev_I = _\<close> by unfold_locales
 
     have ends: "uv = (u,v)" "uw = (u,w)" "vw = (v,w)"

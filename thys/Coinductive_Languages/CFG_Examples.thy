@@ -15,7 +15,7 @@ abbreviation "\<aa> \<equiv> Inl True"
 abbreviation "\<bb> \<equiv> Inl False"
 abbreviation "S \<equiv> Inr ()"
 
-interpretation palindromes!: cfg "()" "\<lambda>_. [[], [\<aa>], [\<bb>], [\<aa>, S, \<aa>], [\<bb>, S, \<bb>]]"
+interpretation palindromes: cfg "()" "\<lambda>_. [[], [\<aa>], [\<bb>], [\<aa>, S, \<aa>], [\<bb>, S, \<bb>]]"
   by unfold_locales auto
 
 lemma "in_language palindromes.lang []" by normalization
@@ -28,7 +28,7 @@ lemma "\<not> in_language palindromes.lang [True, False, True, False]" by normal
 lemma "in_language palindromes.lang [True, False, True, True, False, True]" by normalization
 lemma "\<not> in_language palindromes.lang [True, False, True, False, False, True]" by normalization
 
-interpretation Dyck!: cfg "()" "\<lambda>_. [[], [\<aa>, S, \<bb>, S]]"
+interpretation Dyck: cfg "()" "\<lambda>_. [[], [\<aa>, S, \<bb>, S]]"
   by unfold_locales auto
 lemma "in_language Dyck.lang []" by normalization
 lemma "\<not> in_language Dyck.lang [True]" by normalization
@@ -40,7 +40,7 @@ lemma "in_language Dyck.lang [True, False, True, False, True, True, False, False
 lemma "\<not> in_language Dyck.lang [True, False, True, True, False]" by normalization
 lemma "\<not> in_language Dyck.lang [True, True, False, False, False, True]" by normalization
 
-interpretation abSSa!: cfg "()" "\<lambda>_. [[], [\<aa>, \<bb>, S, S, \<aa>]]"
+interpretation abSSa: cfg "()" "\<lambda>_. [[], [\<aa>, \<bb>, S, S, \<aa>]]"
   by unfold_locales auto
 lemma "in_language abSSa.lang []" by normalization
 lemma "\<not> in_language abSSa.lang [True]" by normalization

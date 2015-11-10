@@ -179,7 +179,7 @@ proof -
   finally show ?thesis .
 qed
 
-sublocale g: global_lipschitz _ _ _ B'
+sublocale g?: global_lipschitz _ _ _ B'
 proof
   show "0 \<le> B'" using f'_bound_nonneg .
   fix t assume "t \<in> T"
@@ -312,7 +312,7 @@ locale max_step1 = grid +
   fixes t1 L B r
   assumes max_step: "\<And>j. t j \<le> t1 \<Longrightarrow> max_stepsize j \<le> \<bar>r\<bar> * L / B / (exp (L * (t1 - t 0) + 1) - 1)"
 
-sublocale max_step1 < max_step: max_step t t1 1 L B r
+sublocale max_step1 < max_step?: max_step t t1 1 L B r
 using max_step by unfold_locales simp_all
 
 locale euler_convergent =
@@ -326,7 +326,7 @@ sublocale euler_convergent \<subseteq>
 locale euler_on_strip =
   ivp_on_interval i t1 + continuous T X f +
   derivative_norm_bounded T UNIV f B f' B' +
-  grid: grid_from t t0 +
+  grid?: grid_from t t0 +
   max_step1 t t1 B' euler_C r
   for i::"'a::ordered_euclidean_space ivp" and t t1 r B f' B' +
   assumes strip: "X = UNIV"
@@ -334,7 +334,7 @@ locale euler_on_strip =
 sublocale euler_on_strip \<subseteq> unique_on_strip i t1 B'
   using lipschitz by unfold_locales (simp_all add: strip)
 
-sublocale euler_on_strip \<subseteq> convergent: euler_convergent i t t1 UNIV B f' B' r
+sublocale euler_on_strip \<subseteq> convergent?: euler_convergent i t t1 UNIV B f' B' r
   using lipschitz strip grid_min
   by unfold_locales simp_all
 
@@ -380,7 +380,7 @@ locale euler_on_rectangle =
   for i::"'a::ordered_euclidean_space ivp" and t t1 b r B f' B'
 
 sublocale euler_on_rectangle \<subseteq>
-  convergent: euler_convergent i t t1 "{x0 - (b + \<bar>r\<bar>) *\<^sub>R One..x0 + (b + \<bar>r\<bar>) *\<^sub>R One}" f' B B'
+  convergent?: euler_convergent i t t1 "{x0 - (b + \<bar>r\<bar>) *\<^sub>R One..x0 + (b + \<bar>r\<bar>) *\<^sub>R One}" f' B B'
 proof unfold_locales
 qed (rule grid_min)
 
@@ -412,8 +412,8 @@ text{*\label{sec:rk-euler-stable}*}
 
 locale euler_rounded_on_rectangle =
   ivp_rectangle_bounded_derivative i t1' b r B f' B' +
-  grid: grid_from t t0' +
-  max_step_r_2: max_step1 t t2' B' euler_C "r/2"
+  grid?: grid_from t t0' +
+  max_step_r_2?: max_step1 t t2' B' euler_C "r/2"
   for i::"'a::executable_euclidean_space ivp" and t :: "nat \<Rightarrow> real" and t0' t1' t2'::real and x0' :: 'a
   and b r B f' B' +
   fixes g::"(real\<times>'a)\<Rightarrow>'a" and e::int
@@ -434,10 +434,10 @@ lemma t0_le: "t 0 \<le> t1'"
 
 end
 
-sublocale euler_rounded_on_rectangle \<subseteq> grid': grid_from t t0'
+sublocale euler_rounded_on_rectangle \<subseteq> grid'?: grid_from t t0'
   using grid t0_float grid_min by unfold_locales auto
 
-sublocale euler_rounded_on_rectangle \<subseteq> max_step_r: max_step1 t t2' B' euler_C r
+sublocale euler_rounded_on_rectangle \<subseteq> max_step_r?: max_step1 t t2' B' euler_C r
 proof unfold_locales
   fix j
   assume "(t j) \<le> t2'"
@@ -471,11 +471,11 @@ proof -
   qed
 qed
 
-sublocale euler_rounded_on_rectangle \<subseteq> max_step_r1: max_step1 t t1' B' euler_C r
+sublocale euler_rounded_on_rectangle \<subseteq> max_step_r1?: max_step1 t t1' B' euler_C r
   by (rule max_step1_mono[of t, OF t0_le ordered_bounds f'_bound_nonneg euler_C_nonneg])
     unfold_locales
 
-sublocale euler_rounded_on_rectangle \<subseteq> c: euler_on_rectangle i t t1' b r B f' B'
+sublocale euler_rounded_on_rectangle \<subseteq> c?: euler_on_rectangle i t t1' b r B f' B'
   using t0_float grid_min by unfold_locales simp
 
 sublocale euler_rounded_on_rectangle \<subseteq>
@@ -488,7 +488,7 @@ sublocale euler_rounded_on_rectangle \<subseteq> max_step1 t t1' B' euler_C "r /
     unfold_locales
 
 sublocale euler_rounded_on_rectangle \<subseteq>
-  one_step:
+  one_step?:
   rounded_one_step t t1' solution "euler_increment f" 1 euler_C r B' "euler_increment' e g" x0'
 proof
   fix h j x assume "t j \<le> t1'"

@@ -229,7 +229,7 @@ qed
 
 end
 
-interpretation ZC!: Zeroconf_Analysis 2 "16 / 65024 :: real" "0.01" "0.002" "3600"
+interpretation ZC: Zeroconf_Analysis 2 "16 / 65024 :: real" "0.01" "0.002" "3600"
   by standard auto
 
 lemma "ZC.P_err start \<le> 1 / 10^12"

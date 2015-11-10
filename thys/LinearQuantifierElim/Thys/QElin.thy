@@ -110,7 +110,7 @@ lemma I_subst\<^sub>0: "depends\<^sub>R a \<Longrightarrow> c \<noteq> 0 \<Longr
 apply(cases a)
 by (auto simp add: depends\<^sub>R_def iprod_left_diff_distrib algebra_simps diff_divide_distrib split:list.splits)
 
-interpretation R\<^sub>e!:
+interpretation R\<^sub>e:
   ATOM_EQ neg\<^sub>R "(\<lambda>a. True)" I\<^sub>R depends\<^sub>R decr\<^sub>R
           "(\<lambda>Eq _ (c#_) \<Rightarrow> c \<noteq> 0 | _ \<Rightarrow> False)"
           "(\<lambda>Eq r cs \<Rightarrow> r=0 \<and> (\<forall>c\<in> set cs. c=0) | _ \<Rightarrow> False)" subst\<^sub>0

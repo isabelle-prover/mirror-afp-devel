@@ -157,7 +157,7 @@ apply(drule_tac k'="Suc a" in rm.max_Some(2)[OF rm.invar])
 apply(auto simp add: rel_of_def)
 done
 
-interpretation sc!: 
+interpretation sc: 
   heap_base
     "addr2thread_id"
     "thread_id2addr"
@@ -225,7 +225,7 @@ next
     by(cases al)(auto intro!: sc.hextI simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct)
 qed simp
 
-interpretation sc!: 
+interpretation sc: 
   heap 
     "addr2thread_id"
     "thread_id2addr"
@@ -267,7 +267,7 @@ where
 definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. rm_\<alpha> h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
 
-interpretation sc!: 
+interpretation sc: 
   heap_conf_base  
     "addr2thread_id"
     "thread_id2addr"
@@ -425,7 +425,7 @@ next
     by(cases al)(fastforce elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def intro: sc_hconf_upd_obj sc_oconf_fupd sc_hconfD sc_hconf_upd_arr sc_oconf_fupd_arr sc_oconf_fupd_arr_fields)+
 qed
 
-interpretation sc!: 
+interpretation sc: 
   heap_conf
     "addr2thread_id"
     "thread_id2addr"
@@ -495,7 +495,7 @@ next
     by(cases arrobj)(fastforce intro: sc_heap_write.intros elim!: sc.addr_loc_type.cases simp add: sc_typeof_addr_def dest: has_field_decl_above)+
 qed
 
-interpretation sc!: 
+interpretation sc: 
   heap_progress
     "addr2thread_id"
     "thread_id2addr"
@@ -523,7 +523,7 @@ proof
     done
 qed
 
-interpretation sc!: 
+interpretation sc: 
   heap_conf_read
     "addr2thread_id"
     "thread_id2addr"

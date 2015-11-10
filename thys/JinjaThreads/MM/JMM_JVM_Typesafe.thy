@@ -11,13 +11,13 @@ imports
 begin
 
 locale JVM_allocated_heap_conf' = 
-  h!: JVM_heap_conf 
+  h: JVM_heap_conf 
     addr2thread_id thread_id2addr
     spurious_wakeups
     empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write hconf
     P
   +
-  h!: JVM_allocated_heap 
+  h: JVM_allocated_heap 
     addr2thread_id thread_id2addr
     spurious_wakeups
     empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write
@@ -41,7 +41,7 @@ locale JVM_allocated_heap_conf' =
   and allocated :: "'heap \<Rightarrow> 'addr set"
   and P :: "'addr jvm_prog"
 
-sublocale JVM_allocated_heap_conf' < h!: JVM_allocated_heap_conf
+sublocale JVM_allocated_heap_conf' < h: JVM_allocated_heap_conf
   addr2thread_id thread_id2addr
   spurious_wakeups
   empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write hconf allocated

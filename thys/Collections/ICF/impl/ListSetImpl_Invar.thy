@@ -38,7 +38,7 @@ definition lsi_basic_ops :: "('a,'a lsi) set_basic_ops" where
     \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lsi_basic!: StdBasicSet lsi_basic_ops
+interpretation lsi_basic: StdBasicSet lsi_basic_ops
   apply unfold_locales
   unfolding lsi_basic_ops_def lsi_ins_def[abs_def]
   apply (auto simp: List.member_def set_dlist_remove1' 
@@ -52,9 +52,9 @@ definition [icf_rec_def]: "lsi_ops \<equiv> lsi_basic.dflt_ops \<lparr>
 \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lsi!: StdSet lsi_ops
+interpretation lsi: StdSet lsi_ops
 proof -
-  interpret aux!: StdSet lsi_basic.dflt_ops by (rule lsi_basic.dflt_ops_impl)
+  interpret aux: StdSet lsi_basic.dflt_ops by (rule lsi_basic.dflt_ops_impl)
 
   show "StdSet lsi_ops"
     unfolding lsi_ops_def

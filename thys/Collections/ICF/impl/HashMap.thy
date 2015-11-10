@@ -143,7 +143,7 @@ definition [icf_rec_def]: "hm_basic_ops \<equiv> \<lparr>
 
 
 setup Locale_Code.open_block
-interpretation hm_basic!: StdBasicMap hm_basic_ops
+interpretation hm_basic: StdBasicMap hm_basic_ops
   apply unfold_locales
   apply (simp_all add: icf_rec_unf hm_aux_correct hm_iteratei_impl)
   done
@@ -152,11 +152,11 @@ setup Locale_Code.close_block
 definition [icf_rec_def]: "hm_ops \<equiv> hm_basic.dflt_ops"
 
 setup Locale_Code.open_block
-interpretation hm!: StdMapDefs hm_ops .
-interpretation hm!: StdMap hm_ops 
+interpretation hm: StdMapDefs hm_ops .
+interpretation hm: StdMap hm_ops 
   unfolding hm_ops_def
   by (rule hm_basic.dflt_ops_impl)
-interpretation hm!: StdMap_no_invar hm_ops 
+interpretation hm: StdMap_no_invar hm_ops 
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

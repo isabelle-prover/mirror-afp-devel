@@ -175,8 +175,8 @@ lemma WHILE_mono_prover_rule[refine_mono]:
 end
 
 locale transfer_WHILE = 
-  c!: generic_WHILE cbind creturn cWHILEIT cWHILEI cWHILET cWHILE + 
-  a!: generic_WHILE abind areturn aWHILEIT aWHILEI aWHILET aWHILE +
+  c: generic_WHILE cbind creturn cWHILEIT cWHILEI cWHILET cWHILE + 
+  a: generic_WHILE abind areturn aWHILEIT aWHILEI aWHILET aWHILE +
   dist_transfer \<alpha>
   for cbind and creturn::"'a \<Rightarrow> 'mc::complete_lattice" 
   and cWHILEIT cWHILEI cWHILET cWHILE

@@ -98,7 +98,7 @@ lemma lemma_4_3_ii_b: "a \<squnion>2 b = (b r\<rightarrow> a) l\<rightarrow> a"
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice1!:pseudo_hoop_lattice_b "op \<squnion>1" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale wajsberg_pseudo_hoop_algebra < lattice1:pseudo_hoop_lattice_b "op \<squnion>1" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
   apply unfold_locales
   apply (simp add: lemma_4_3_i_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
@@ -112,7 +112,7 @@ begin
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice2!:pseudo_hoop_lattice_b "op \<squnion>2" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
+sublocale wajsberg_pseudo_hoop_algebra < lattice2:pseudo_hoop_lattice_b "op \<squnion>2" "op *" "op \<sqinter>" "op l\<rightarrow>" "op \<le>" "op <" 1 "op r\<rightarrow>"
   apply unfold_locales
   apply (simp add: lemma_4_3_ii_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
@@ -139,7 +139,7 @@ lemma [simp]: "0 r\<rightarrow> a = 1"
   by (simp add: order_r [THEN sym])
 end
 
-sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg!: pseudo_wajsberg_algebra "1"  "op l\<rightarrow>"  "op r\<rightarrow>"  "op \<le>" "op <" "0" "negl" "negr"
+sublocale bounded_wajsberg_pseudo_hoop_algebra < wajsberg: pseudo_wajsberg_algebra "1"  "op l\<rightarrow>"  "op r\<rightarrow>"  "op \<le>" "op <" "0" "negl" "negr"
   apply unfold_locales
   apply simp_all
   apply (simp add:  lemma_4_3_i_a [THEN sym])
@@ -377,7 +377,7 @@ lemma lemma_4_5: "a \<squnion>1 b = a \<squnion>2 b"
   by (simp_all add: lemma_4_5_a lemma_4_5_b)
 end
 
-sublocale basic_pseudo_hoop_algebra <  basic_lattice!:lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>1"
+sublocale basic_pseudo_hoop_algebra <  basic_lattice:lattice "op \<sqinter>" "op \<le>" "op <" "op \<squnion>1"
   apply unfold_locales
   by (simp_all add: lemma_4_5_a)
 
@@ -550,7 +550,7 @@ end
 
 context pseudo_bl_algebra begin end
 
-sublocale bounded_basic_pseudo_hoop_algebra < basic!:pseudo_bl_algebra 1 "op *" "0"  "op \<sqinter>" "op \<squnion>1" "op l\<rightarrow>" "op r\<rightarrow>" "op \<le>" "op <"
+sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "op *" "0"  "op \<sqinter>" "op \<squnion>1" "op l\<rightarrow>" "op r\<rightarrow>" "op \<le>" "op <"
   apply unfold_locales 
   apply (rule zero_smallest) 
   apply (rule left_residual) 
@@ -561,7 +561,7 @@ sublocale bounded_basic_pseudo_hoop_algebra < basic!:pseudo_bl_algebra 1 "op *" 
   apply (simp add: lemma_4_5) 
   by (rule lemma_4_5_ii)
 
-sublocale pseudo_bl_algebra < bounded_lattice!: bounded_lattice "inf" "op \<le>" "op <" "sup" "0" "1"
+sublocale pseudo_bl_algebra < bounded_lattice: bounded_lattice "inf" "op \<le>" "op <" "sup" "0" "1"
   by (rule bounded_lattice)
 
 context pseudo_bl_algebra

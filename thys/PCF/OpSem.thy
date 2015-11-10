@@ -1037,7 +1037,7 @@ lemma min_inv_ca_lr:
 (*>*)
 text{**}
 
-interpretation ca!: DomSolSyn ValD_copy_rec ca_lr
+interpretation ca: DomSolSyn ValD_copy_rec ca_lr
   apply standard
      apply (rule ValD_copy_ID)
     apply simp

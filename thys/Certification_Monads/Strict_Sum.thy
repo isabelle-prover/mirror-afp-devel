@@ -21,7 +21,7 @@ abbreviation sum_bot_ord :: "'e +\<^sub>\<bottom> 'a \<Rightarrow> 'e +\<^sub>\<
 where
   "sum_bot_ord \<equiv> flat_ord Bottom"
 
-interpretation sum_bot!:
+interpretation sum_bot:
   partial_function_definitions sum_bot_ord "flat_lub Bottom"
   by (rule flat_interpretation)
 

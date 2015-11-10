@@ -46,51 +46,7 @@ of examples that illustrate how to use the different
 bits and pieces to verify programs. 
 *}
 
-subsection {* Installation *}
 
-text {*
-To use the verification environment with ProofGeneral you have to install
-the provided keywords file first. Copy \texttt{isar-keywords-simpl.el}
-to \texttt{\~/.isabelle/etc}. Invoke Isabelle with \texttt{isabelle emacs -k simpl} to
-select the keywords file.
-To start proving Hoare triples import the theory @{term "Vcg"}. 
-To avoid rebuilding all the background theory you can precompile a proper heap image by
-invoking the following command in the \texttt{simpl} directory:
-\begin{verbatim}
-  isabelle usedir -b HOL simpl
-\end{verbatim}
-
-Then startup Isabelle with \texttt{isabelle emacs -l simpl -k simpl} or \texttt{isabelle emacs -L simpl} to
-select the heap-image and the keywords file, or start Isabelle as explained above and
-select the \texttt{simpl} logic in the ProofGeneral menu \texttt{Isabelle -> Logics}.
-
-
-For your convenience you might want to add some Xemacs shortcuts (in \texttt{init.el}) like:
-
-\begin{itemize}
-\item Superscripts: 
-      \begin{verbatim}
- (global-set-key [(meta ^)] (lambda () (interactive) 
-   (progn 
-     (insert-string "\\\<^bsup>\\\<^esup>")
-     (backward-char 8))))
-    \end{verbatim}
-\item Double braces for assertions
-            \begin{verbatim}
- (global-set-key [(meta \7)] 
-    (lambda () (interactive) (insert-string "\\\\<lbrace>")))
- (global-set-key [(meta \0)] 
-    (lambda () (interactive) (insert-string "\\\\<rbrace>")))
-                \end{verbatim}
-\item  If you do not have the acute symbol ` on your keybord:
-     \begin{verbatim}
- (global-set-key [(meta \`)] 
-     (lambda () (interactive) (insert-string "\\\\<acute>")))
-     \end{verbatim}
-\end{itemize}
-
-Have fun!
-*}
 subsection {* Basics *}
 
 text {*

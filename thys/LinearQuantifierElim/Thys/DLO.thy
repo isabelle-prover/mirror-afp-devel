@@ -70,7 +70,7 @@ hide_const nnf qelim lift_dnf_qe lift_nnf_qe
 
 lemmas DLO_code_lemmas = nnf_def qelim_def lift_dnf_qe_def lift_nnf_qe_def
 
-interpretation DLO!:
+interpretation DLO:
   ATOM neg\<^sub>d\<^sub>l\<^sub>o "(\<lambda>a. True)" I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
 apply(unfold_locales)
 apply(case_tac a)

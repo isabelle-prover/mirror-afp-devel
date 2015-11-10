@@ -9,8 +9,8 @@ section {* Auxiliary lemmas *}
 theory Akra_Bazzi_Library
 imports 
   Complex_Main
+  "~~/src/HOL/Multivariate_Analysis/Integration"
   "../Landau_Symbols/Landau_Library"
-  "~~/src/HOL/Probability/Interval_Integral"
 begin
 
 declare DERIV_powr[THEN DERIV_chain2, derivative_intros]
@@ -150,26 +150,33 @@ proof (rule lhospital_at_top_at_top)
     by (subst (asm) tendsto_cong) simp_all
 qed
 
-lemma interval_integral_powr:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> (LBINT x=ereal a..ereal b. x powr y) = 
+
+lemma integrable_const_real: "(\<lambda>x :: real. c) integrable_on {a..b}"
+  using integrable_const[of c a b] by simp
+
+lemma fundamental_theorem_of_calculus_real:
+  "a \<le> b \<Longrightarrow> \<forall>x\<in>{a..b}. (f has_real_derivative f' x) (at x within {a..b}) \<Longrightarrow>
+      (f' has_integral (f b - f a)) {a..b}"
+  by (intro fundamental_theorem_of_calculus ballI)
+     (simp_all add: has_field_derivative_iff_has_vector_derivative[symmetric])
+
+lemma integral_powr:
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) = 
      inverse (y + 1) * (b powr (y + 1) - a powr (y + 1))"
-by (subst right_diff_distrib, intro interval_integral_FTC_finite)
-   (auto simp: has_field_derivative_iff_has_vector_derivative[symmetric] 
-         intro!: derivative_eq_intros continuous_intros)
+  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros)
 
-lemma interval_integral_ln_powr_over_x:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> (LBINT x=ereal a..ereal b. ln x powr y / x) = 
+lemma integral_ln_powr_over_x:
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. ln x powr y / x :: real) = 
      inverse (y + 1) * (ln b powr (y + 1) - ln a powr (y + 1))"
-by (subst right_diff_distrib, intro interval_integral_FTC_finite)
-   (force simp: has_field_derivative_iff_has_vector_derivative[symmetric] 
-          intro!: derivative_eq_intros continuous_intros)+
+  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros)     
 
-lemma interval_integral_one_over_x_ln_x:
-  "a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> (LBINT x=ereal a..ereal b. inverse (x * ln x)) = ln (ln b) - ln (ln a)"
-by (intro interval_integral_FTC_finite)
-   (force simp: has_field_derivative_iff_has_vector_derivative[symmetric] field_simps 
-          intro!: derivative_eq_intros continuous_intros)+
-   
+lemma integral_one_over_x_ln_x:
+  "a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. inverse (x * ln x) :: real) = ln (ln b) - ln (ln a)"
+  by (intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros simp: field_simps)
+
 lemma one_plus_x_approx:
   assumes x: "(x::real) > 0"
   obtains t where "t > 0" "t < x" "(1 + x) powr p = 
@@ -378,67 +385,6 @@ next
     by (rule mult_nonneg_nonneg, rule divide_nonneg_pos, rule mult_nonneg_nonneg)
        (simp_all add: x_times_x_minus_1_nonneg assms)
   with t(3) show ?thesis by simp
-qed
-
-
-lemma interval_lebesgue_integral_mono:
-  fixes f g :: "real \<Rightarrow> real"
-  assumes "a \<le> b"
-  assumes "\<And>x. a < x \<Longrightarrow> x < b \<Longrightarrow> f x \<le> g x"
-  assumes "interval_lebesgue_integrable lborel a b f"
-  assumes "interval_lebesgue_integrable lborel a b g"
-  shows   "(LBINT x=ereal a..ereal b. f x) \<le> (LBINT x=ereal a..ereal b. g x)"
-apply (subst (1 2) interval_lebesgue_integral_le_eq)
-apply (simp add: assms)
-apply (rule integral_mono)
-using assms unfolding interval_lebesgue_integrable_def apply simp_all[2]
-apply (simp add: indicator_def assms)
-done
-
-
-lemma interval_lebesgue_integral_split:
-  assumes "a \<le> b" "b \<le> c"
-  assumes "interval_lebesgue_integrable lborel a c f"
-  shows   "(LBINT u=a..b. f u) + (LBINT u=b..c. f u) = (LBINT u=a..c. f u)"
-proof-
-  let ?A = "einterval a c - {x. ereal x = b}"
-  from assms have int: "set_integrable lborel (einterval a c) f"
-    unfolding interval_lebesgue_integrable_def by simp  
-  from assms(1,2) have "einterval a b \<inter> einterval b c = {}"
-    by (auto simp: einterval_def)
-  from assms(1,2) have A: "einterval a b \<union> einterval b c = ?A"
-    by (auto simp: einterval_def not_less)
-  have "(LBINT u=a..b. f u) + (LBINT u=b..c. f u) = 
-        (LBINT u:einterval a b. f u) + (LBINT u:einterval b c. f u)"
-    by (simp_all add: assms interval_lebesgue_integral_le_eq)
-  also have "... = (LBINT u:?A. f u)"
-    apply (subst set_integral_Un[symmetric], fact)
-    apply (rule set_integrable_subset[OF int], insert assms(1,2), auto simp: einterval_def) []
-    apply (rule set_integrable_subset[OF int], insert assms(1,2), auto simp: einterval_def) []
-    apply (simp add: A)
-    done
-  also have "AE x in lborel. indicator (einterval a c - {x. ereal x = b}) x *\<^sub>R f x =
-                             indicator (einterval a c) x *\<^sub>R f x"
-    by (intro AE_I[of _ _ "{real b}"]) (auto simp: einterval_def indicator_def)
-  hence "(LBINT u:?A. f u) = (LBINT u:einterval a c. f u)"
-    by (intro integral_cong_AE borel_measurable_integrable)
-       ((rule set_integrable_subset[OF int], insert assms(1,2), auto simp: einterval_def) [])+
-  also from assms have "... = (LBINT u=a..c. f u)"
-    by (subst interval_lebesgue_integral_le_eq) simp_all
-  finally show ?thesis .
-qed
-
-lemma interval_lebesgue_integrable_subset:
-  assumes "interval_lebesgue_integrable M a b f"
-  assumes "a \<le> a'" "a' \<le> b'" "b' \<le> b" "einterval a' b' \<in> sets M" 
-  shows   "interval_lebesgue_integrable M a' b' f"
-proof-
-  from assms have "set_integrable M (einterval a b) f"
-    unfolding interval_lebesgue_integrable_def by (simp split: split_if_asm)
-  moreover note `einterval a' b' \<in> sets M`
-  moreover from assms have "einterval a' b' \<subseteq> einterval a b" by (auto simp: einterval_def)
-  ultimately have "set_integrable M (einterval a' b') f" by (rule set_integrable_subset)
-  with assms show ?thesis unfolding interval_lebesgue_integrable_def by simp
 qed
 
 end

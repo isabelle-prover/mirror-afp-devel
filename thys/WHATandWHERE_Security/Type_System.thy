@@ -7,7 +7,7 @@ imports Language_Composition
 begin
 
 locale Type_System =
-  WWP: WHATWHERE_Secure_Programs "E" "BMap" "DA" "lH"
+  WWP?: WHATWHERE_Secure_Programs "E" "BMap" "DA" "lH"
   for E :: "('exp, 'id, 'val) Evalfunction"
   and BMap :: "'val \<Rightarrow> bool"
   and DA :: "('id, 'd::order) DomainAssignment"

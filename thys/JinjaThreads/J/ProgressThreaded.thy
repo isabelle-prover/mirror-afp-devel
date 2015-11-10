@@ -506,7 +506,7 @@ lemma redT_progress_deadlock:
   shows "\<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
 proof -
   let ?wf_state = "red_mthr.wset_Suspend_ok P ({s. sync_es_ok (thr s) (shr s) \<and> lock_ok (locks s) (thr s)} \<inter> {s. \<exists>Es. sconf_type_ts_ok Es (thr s) (shr s)} \<inter> {s. def_ass_ts_ok (thr s) (shr s)})"
-  interpret red_mthr!: progress
+  interpret red_mthr: progress
     final_expr "mred P" convert_RA ?wf_state
     using wf by(rule wf_progress)
   from wf_start obtain Ts T pns body D 

@@ -109,7 +109,7 @@ fun aval where
 definition indis :: "(state * state) set"where 
 "indis \<equiv> {(s,t). ALL x. sec x = Lo \<longrightarrow> s x = t x}"
 
-interpretation Example_PL!: PL_Indis tval aval indis
+interpretation Example_PL: PL_Indis tval aval indis
 proof
   show "equiv UNIV indis"
     unfolding refl_on_def sym_def trans_def equiv_def indis_def by auto

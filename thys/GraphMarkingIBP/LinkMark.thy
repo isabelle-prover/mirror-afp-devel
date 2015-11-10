@@ -34,7 +34,7 @@ begin
   definition "next =  {(a, b) . (\<exists> i . link0 i a = b) \<and> a \<noteq> nil \<and> b \<noteq> nil \<and> label0 a = none}"
 end
 
-sublocale pointer \<subseteq> link: graph "nil" "root" "next"
+sublocale pointer \<subseteq> link?: graph "nil" "root" "next"
   apply unfold_locales
   apply (unfold next_def)
   by auto

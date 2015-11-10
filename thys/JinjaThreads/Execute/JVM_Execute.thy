@@ -15,7 +15,7 @@ where "sc_heap_read_cset h ad al \<equiv> set_of_pred (sc_heap_read_i_i_i_o h ad
 abbreviation sc_heap_write_cset :: "heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> heap set"
 where "sc_heap_write_cset h ad al v \<equiv> set_of_pred (sc_heap_write_i_i_i_i_o h ad al v)"
 
-interpretation sc!: 
+interpretation sc: 
   JVM_heap_execute
     "addr2thread_id"
     "thread_id2addr"
@@ -26,12 +26,12 @@ interpretation sc!:
     "sc_heap_read_cset"
     "sc_heap_write_cset"
   for P
-  where "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
+  rewrites "\<And>h ad al v. v \<in> sc_heap_read_cset h ad al \<equiv> sc_heap_read h ad al v"
   and "\<And>h ad al v h'. h' \<in> sc_heap_write_cset h ad al v \<equiv> sc_heap_write h ad al v h'"
 apply(simp_all add: eval_sc_heap_read_i_i_i_o eval_sc_heap_write_i_i_i_i_o)
 done
 
-interpretation sc_execute!: 
+interpretation sc_execute: 
   JVM_conf_read
     "addr2thread_id"
     "thread_id2addr"
@@ -76,7 +76,7 @@ by(simp add: sc_execute.correct_jvm_state_def)
 
 subsection {* Round-robin scheduler *}
 
-interpretation JVM_rr!: 
+interpretation JVM_rr: 
   sc_round_robin_base
     JVM_final "sc_mexec P" convert_RA Jinja_output
   for P
@@ -93,7 +93,7 @@ definition exec_JVM_rr ::
 where
   "exec_JVM_rr n0 P C M vs = JVM_rr.exec P n0 (sc_rr_JVM_start_state n0 P) (sc_jvm_start_state_refine P C M vs)"
 
-interpretation JVM_rr!:
+interpretation JVM_rr:
   sc_round_robin 
     JVM_final "sc_mexec P" convert_RA Jinja_output
   for P
@@ -115,7 +115,7 @@ done
 
 subsection {* Random scheduler *}
 
-interpretation JVM_rnd!: 
+interpretation JVM_rnd: 
   sc_random_scheduler_base
     JVM_final "sc_mexec P" convert_RA Jinja_output
   for P
@@ -131,7 +131,7 @@ definition exec_JVM_rnd ::
    (thread_id, addr wait_set_status) rm \<times> thread_id rs) tllist"
 where "exec_JVM_rnd seed P C M vs = JVM_rnd.exec P (sc_rnd_JVM_start_state seed) (sc_jvm_start_state_refine P C M vs)"
 
-interpretation JVM_rnd!:
+interpretation JVM_rnd:
   sc_random_scheduler
     JVM_final "sc_mexec P" convert_RA Jinja_output
   for P

@@ -78,7 +78,7 @@ interpretation Sink: SecurityInvariant_IFS
 where default_node_properties = default_node_properties
 and sinvar = sinvar
 and verify_globals = verify_globals
-where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Sink_offending_set"
+rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Sink_offending_set"
   unfolding default_node_properties_def
   apply unfold_locales
     apply(rule ballI)

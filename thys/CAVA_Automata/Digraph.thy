@@ -196,7 +196,7 @@ begin
       using E_ss by (auto simp: G'_fields) []
   qed
 
-  sublocale G'!: graph G' using G'_invar .
+  sublocale G': graph G' using G'_invar .
 
   lemma G'_finite_reachable:
     assumes "finite ((g_E G)\<^sup>* `` g_V0 G)"

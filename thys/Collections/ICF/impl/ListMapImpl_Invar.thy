@@ -39,8 +39,8 @@ definition lmi_basic_ops :: "('k,'v,('k,'v) lmi) map_basic_ops"
 
 
 setup Locale_Code.open_block
-interpretation lmi_basic!: StdBasicMapDefs lmi_basic_ops .
-interpretation lmi_basic!: StdBasicMap lmi_basic_ops 
+interpretation lmi_basic: StdBasicMapDefs lmi_basic_ops .
+interpretation lmi_basic: StdBasicMap lmi_basic_ops 
   unfolding lmi_basic_ops_def
   apply unfold_locales
   apply (simp_all 
@@ -61,10 +61,10 @@ definition [icf_rec_def]: "lmi_ops \<equiv> lmi_basic.dflt_ops \<lparr>
 \<rparr>"
 
 setup Locale_Code.open_block
-interpretation lmi!: StdMapDefs lmi_ops .
-interpretation lmi!: StdMap lmi_ops 
+interpretation lmi: StdMapDefs lmi_ops .
+interpretation lmi: StdMap lmi_ops 
 proof -
-  interpret aux!: StdMap lmi_basic.dflt_ops by (rule lmi_basic.dflt_ops_impl)
+  interpret aux: StdMap lmi_basic.dflt_ops by (rule lmi_basic.dflt_ops_impl)
 
   have [simp]: "map_add_dj lmi_\<alpha> lmi_invar revg"
     apply (unfold_locales)

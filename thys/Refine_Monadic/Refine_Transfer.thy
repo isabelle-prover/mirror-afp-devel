@@ -79,7 +79,7 @@ lemma nres_correctD:
   done
 
 subsubsection {* Transfer Theorems Setup*}
-interpretation dres!: dist_transfer nres_of 
+interpretation dres: dist_transfer nres_of 
   apply unfold_locales
   apply (simp add: nres_transfer)
   done
@@ -100,12 +100,12 @@ lemma det_bind[refine_transfer]:
   apply (auto simp: pw_le_iff refine_pw_simps)
   done
 
-interpretation det_assert!: transfer_generic_Assert_remove 
+interpretation det_assert: transfer_generic_Assert_remove 
   bind RETURN ASSERT ASSUME
   nres_of
   by unfold_locales
 
-interpretation det_while!: transfer_WHILE
+interpretation det_while: transfer_WHILE
   dbind dRETURN dWHILEIT dWHILEI dWHILET dWHILE 
   bind RETURN WHILEIT WHILEI WHILET WHILE nres_of
   apply unfold_locales
@@ -113,7 +113,7 @@ interpretation det_while!: transfer_WHILE
   done
 
 (*
-interpretation det_foreach!: 
+interpretation det_foreach: 
   transfer_FOREACH nres_of dRETURN dbind "case_dres True True"
   apply unfold_locales
   apply (blast intro: det_bind)
@@ -147,7 +147,7 @@ lemma det_rec_nat[refine_transfer]:
 
 subsection {* Transfer to Plain Function *}
 
-interpretation plain!: transfer RETURN .
+interpretation plain: transfer RETURN .
 
 lemma plain_RETURN[refine_transfer]: "RETURN a \<le> RETURN a" by simp
 lemma plain_bind[refine_transfer]: 
@@ -157,13 +157,13 @@ lemma plain_bind[refine_transfer]:
   apply simp
   done
 
-interpretation plain_assert!: transfer_generic_Assert_remove 
+interpretation plain_assert: transfer_generic_Assert_remove 
   bind RETURN ASSERT ASSUME
   RETURN
   by unfold_locales
 
 (*
-interpretation plain!: transfer_FOREACH RETURN "(\<lambda>x. x)" Let "(\<lambda>x. x)"
+interpretation plain: transfer_FOREACH RETURN "(\<lambda>x. x)" Let "(\<lambda>x. x)"
   apply (unfold_locales)
   apply (erule plain_bind, assumption)
   apply simp

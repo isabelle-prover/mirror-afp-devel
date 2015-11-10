@@ -883,7 +883,7 @@ qed
 
 end
 
-sublocale J_heap_base < red_red0!:
+sublocale J_heap_base < red_red0:
   FWdelay_bisimulation_base 
     final_expr
     "mred P"

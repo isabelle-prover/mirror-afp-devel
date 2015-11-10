@@ -41,9 +41,9 @@ fun I\<^sub>Z :: "atom \<Rightarrow> int list \<Rightarrow> bool" where
 definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0)"
 (* FIXME !!! (incl: display should hide params)*)
 
-interpretation Z!:
+interpretation Z:
   ATOM neg\<^sub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^sub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^sub>Z
-  where "ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^sub>0"
+  rewrites "ATOM.atoms\<^sub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^sub>0"
 proof goal_cases
   case 1
   thus ?case

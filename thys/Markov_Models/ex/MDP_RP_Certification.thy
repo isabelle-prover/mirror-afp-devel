@@ -229,7 +229,7 @@ next
     by (subst nn_integral_count_space'[of "{0}"]) auto
 qed
 
-interpretation MDP!: Reachability_Problem K S S1 S2 
+interpretation MDP: Reachability_Problem K S S1 S2 
 proof
   show "S1 \<inter> S2 = {}" "S1 \<subseteq> S" "S2 \<subseteq> S"
     using valid_mdp_rpD(1)[OF rp] by auto

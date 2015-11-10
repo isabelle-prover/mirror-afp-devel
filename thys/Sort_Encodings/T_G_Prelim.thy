@@ -9,7 +9,7 @@ O stands for the original---this copy shall be used
 as ``the original problem: *)
 
 locale ProblemIkTpart =
-Ik : ProblemIk wtFsym wtPsym arOf resOf parOf \<Phi> infTp
+Ik? : ProblemIk wtFsym wtPsym arOf resOf parOf \<Phi> infTp
 for wtFsym :: "'fsym \<Rightarrow> bool"
 and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
@@ -38,8 +38,8 @@ end (* context ProblemIkTpart *)
 
 (* Problem with type partition and model: *)
 locale ModelIkTpart =
-Ik : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw +
-Ik : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
+Ik? : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw +
+Ik? : Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool"
 and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"

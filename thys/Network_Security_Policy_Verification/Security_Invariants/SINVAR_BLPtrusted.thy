@@ -110,7 +110,7 @@ interpretation BLPtrusted: SecurityInvariant_IFS
   where default_node_properties = default_node_properties
   and sinvar = sinvar
   and verify_globals = verify_globals
-  where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
+  rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = BLP_offending_set"
     apply unfold_locales
       apply(rule ballI)
       apply (rule_tac f=f in SecurityInvariant_withOffendingFlows.ENF_snds_refl_instance[OF BLP_ENF_refl zero_default_candidate])

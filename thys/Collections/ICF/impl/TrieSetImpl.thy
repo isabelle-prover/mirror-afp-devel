@@ -21,7 +21,7 @@ type_synonym
   'a ts = "('a, unit) trie"
 
 setup Locale_Code.open_block
-interpretation ts_sbm!: SetByMap tm_basic_ops by unfold_locales
+interpretation ts_sbm: SetByMap tm_basic_ops by unfold_locales
 setup Locale_Code.close_block
 
 definition ts_ops :: "('a list,'a ts) set_ops"
@@ -29,9 +29,9 @@ definition ts_ops :: "('a list,'a ts) set_ops"
   "ts_ops \<equiv> ts_sbm.basic.dflt_ops"
 
 setup Locale_Code.open_block
-interpretation ts!: StdSet ts_ops
+interpretation ts: StdSet ts_ops
   unfolding ts_ops_def by (rule ts_sbm.basic.dflt_ops_impl)
-interpretation ts!: StdSet_no_invar ts_ops
+interpretation ts: StdSet_no_invar ts_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 

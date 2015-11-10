@@ -477,7 +477,7 @@ lemma in_measurable_T2[measurable (raw)]: "f \<in> measurable M S \<Longrightarr
 lemma AE_T_enabled: "AE \<omega> in T s. enabled s \<omega>"
   unfolding T_def by (simp add: AE_distr_iff enabled_walk)
 
-sublocale T!: prob_space "T s" for s
+sublocale T: prob_space "T s" for s
 proof -
   interpret P: product_prob_space K UNIV ..
   interpret prob_space "stream_space (\<Pi>\<^sub>M s\<in>UNIV. K s)"
@@ -1552,7 +1552,7 @@ qed
 end
 
 locale MC_pair =
-  K1!: MC_syntax K1 + K2!: MC_syntax K2 for K1 K2
+  K1: MC_syntax K1 + K2: MC_syntax K2 for K1 K2
 begin
 
 definition "Kp \<equiv> \<lambda>(a, b). pair_pmf (K1 a) (K2 b)"

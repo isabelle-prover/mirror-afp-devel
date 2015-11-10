@@ -77,7 +77,7 @@ definition [code del]:
 
 interpretation set_mod_trie:
   set_mod_maps "Trie None []" update_trie lookup_tries invar_trie "op \<simeq>" iso_test pre_iso_test hash
-where "set_modulo.worklist_tree_coll (Trie None []) insert_mod_trie = worklist_tree_coll_trie"
+rewrites "set_modulo.worklist_tree_coll (Trie None []) insert_mod_trie = worklist_tree_coll_trie"
 and "set_modulo.worklist_tree_coll_aux insert_mod_trie = worklist_tree_coll_aux_trie"
 and "set_mod_maps.insert_mod update_trie lookup_tries iso_test hash = insert_mod_trie"
 and "set_modulo.insert_mod2 insert_mod_trie = insert_mod2_trie"

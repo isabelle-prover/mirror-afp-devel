@@ -4,7 +4,7 @@ imports
   "../J/Threaded"
 begin
 
-sublocale J_heap_base < red_mthr!: 
+sublocale J_heap_base < red_mthr: 
   heap_multithreaded_base 
     addr2thread_id thread_id2addr
     spurious_wakeups

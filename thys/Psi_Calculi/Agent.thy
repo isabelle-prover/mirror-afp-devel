@@ -671,9 +671,9 @@ proof -
 qed
 
 locale substPsi =
-  substTerm: substType substTerm +
-  substAssert: substType substAssert +
-  substCond: substType substCond
+  substTerm?: substType substTerm +
+  substAssert?: substType substAssert +
+  substCond?: substType substCond
 
   for substTerm :: "('a::fs_name) \<Rightarrow> name list \<Rightarrow> 'a::fs_name list \<Rightarrow> 'a"
   and substAssert :: "('b::fs_name) \<Rightarrow> name list \<Rightarrow> 'a::fs_name list \<Rightarrow> 'b"

@@ -398,14 +398,14 @@ definition
 
 definition 
   HomFtor' :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 
-      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[_,\<emdash>]" [65] 65) where
+      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[_,\<midarrow>]" [65] 65) where
   "HomFtor' C X \<equiv> \<lparr>
         CatDom = C, 
         CatCod = SET ,
         MapM   = \<lambda> g . Hom\<^bsub>C\<^esub>[X,g]
   \<rparr>"
 
-definition HomFtor ("Hom\<index>[_,\<emdash>]" [65] 65) where "HomFtor C X \<equiv> MakeFtor (HomFtor' C X)"
+definition HomFtor ("Hom\<index>[_,\<midarrow>]" [65] 65) where "HomFtor C X \<equiv> MakeFtor (HomFtor' C X)"
 
 lemma [simp]: "LSCategory C \<Longrightarrow> Category C"
   by (simp add: LSCategory_def)
@@ -639,8 +639,8 @@ qed
 
 lemma HomFtorObj':
   assumes a: "LSCategory C"
-  and     b: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<emdash>])"  and c: "X \<in> obj\<^bsub>C\<^esub>" and d: "Y \<in> obj\<^bsub>C\<^esub>"
-  shows   "(HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y = Hom\<^bsub>C \<^esub>X Y" 
+  and     b: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<midarrow>])"  and c: "X \<in> obj\<^bsub>C\<^esub>" and d: "Y \<in> obj\<^bsub>C\<^esub>"
+  shows   "(HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y = Hom\<^bsub>C \<^esub>X Y" 
 proof-
   let ?F = "(HomFtor' C X)"
   have "?F ## (id\<^bsub>CatDom ?F\<^esub> Y) = Hom\<^bsub>C\<^esub>[X,id\<^bsub>C\<^esub> Y]" by (simp add: HomFtor'_def)
@@ -655,9 +655,9 @@ qed
 lemma HomFtorFtor': 
   assumes a: "LSCategory C"
   and     b: "X \<in> obj\<^bsub>C\<^esub>"
-  shows   "FunctorM (HomP\<^bsub>C\<^esub>[X,\<emdash>])"
+  shows   "FunctorM (HomP\<^bsub>C\<^esub>[X,\<midarrow>])"
 proof(intro_locales)
-  show PF: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<emdash>])"
+  show PF: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<midarrow>])"
   proof(auto simp add: HomFtor'_def PreFunctor_def SETCategory a HomFtorDist b)
     {
       fix Z assume aa: "Z \<in> obj\<^bsub>C\<^esub>" 
@@ -670,39 +670,39 @@ proof(intro_locales)
   qed
   {
     fix f Z Y assume aa: "f maps\<^bsub>C \<^esub>Z to Y" 
-    have "(HomP\<^bsub>C\<^esub>[X,\<emdash>]) ## f maps\<^bsub>SET\<^esub> ((HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Z) to ((HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y)" 
+    have "(HomP\<^bsub>C\<^esub>[X,\<midarrow>]) ## f maps\<^bsub>SET\<^esub> ((HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Z) to ((HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y)" 
     proof-
       have bb: "Z \<in> obj\<^bsub>C\<^esub>" and cc: "Y \<in> obj\<^bsub>C\<^esub>" using aa a by (simp add: Category.MapsToObj)+
       have dd: "dom\<^bsub>C\<^esub> f = Z" and ee: "cod\<^bsub>C\<^esub> f = Y" and ff: "f \<in> mor\<^bsub>C\<^esub>" using aa by auto
-      have "(HomP\<^bsub>C\<^esub>[X,\<emdash>]) ## f = Hom\<^bsub>C\<^esub>[X,f]" by (simp add: HomFtor'_def)
-      moreover have "(HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Z = Hom\<^bsub>C \<^esub>X Z" 
-        and "(HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y = Hom\<^bsub>C \<^esub>X Y" using assms bb cc PF by (simp add: HomFtorObj')+
+      have "(HomP\<^bsub>C\<^esub>[X,\<midarrow>]) ## f = Hom\<^bsub>C\<^esub>[X,f]" by (simp add: HomFtor'_def)
+      moreover have "(HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Z = Hom\<^bsub>C \<^esub>X Z" 
+        and "(HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y = Hom\<^bsub>C \<^esub>X Y" using assms bb cc PF by (simp add: HomFtorObj')+
       moreover have "Hom\<^bsub>C\<^esub>[X,f] maps\<^bsub>SET\<^esub> (Hom\<^bsub>C \<^esub>X (dom\<^bsub>C\<^esub> f)) to (Hom\<^bsub>C \<^esub>X (cod\<^bsub>C\<^esub> f))" 
         using assms ff by (simp add: HomFtorMapsTo)
       ultimately show ?thesis using dd ee by simp
     qed
   }
-  thus "FunctorM_axioms (HomP\<^bsub>C\<^esub>[X,\<emdash>])" using PF by (auto simp add: FunctorM_axioms_def HomFtor'_def)
+  thus "FunctorM_axioms (HomP\<^bsub>C\<^esub>[X,\<midarrow>])" using PF by (auto simp add: FunctorM_axioms_def HomFtor'_def)
 qed
 
 lemma HomFtorFtor: 
   assumes a: "LSCategory C"
   and     b: "X \<in> obj\<^bsub>C\<^esub>"
-  shows   "Functor (Hom\<^bsub>C\<^esub>[X,\<emdash>])"
+  shows   "Functor (Hom\<^bsub>C\<^esub>[X,\<midarrow>])"
 proof-
-  have "FunctorM (HomP\<^bsub>C\<^esub>[X,\<emdash>])" using assms by (rule HomFtorFtor')
+  have "FunctorM (HomP\<^bsub>C\<^esub>[X,\<midarrow>])" using assms by (rule HomFtorFtor')
   thus ?thesis by (simp add: HomFtor_def MakeFtor)
 qed 
 
 lemma HomFtorObj:
   assumes "LSCategory C"
   and     "X \<in> obj\<^bsub>C\<^esub>" and "Y \<in> obj\<^bsub>C\<^esub>"
-  shows   "(Hom\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y = Hom\<^bsub>C \<^esub>X Y"
+  shows   "(Hom\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y = Hom\<^bsub>C \<^esub>X Y"
 proof-
-  have "FunctorM (HomP\<^bsub>C\<^esub>[X,\<emdash>])" using assms by (simp add: HomFtorFtor')
-  hence 1: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<emdash>])" by (simp add: FunctorM_def)
-  moreover have "CatDom (HomP\<^bsub>C\<^esub>[X,\<emdash>]) = C" by (simp add: HomFtor'_def)
-  ultimately have "(Hom\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y = (HomP\<^bsub>C\<^esub>[X,\<emdash>]) @@ Y" using assms by (simp add: MakeFtorObj HomFtor_def)
+  have "FunctorM (HomP\<^bsub>C\<^esub>[X,\<midarrow>])" using assms by (simp add: HomFtorFtor')
+  hence 1: "PreFunctor (HomP\<^bsub>C\<^esub>[X,\<midarrow>])" by (simp add: FunctorM_def)
+  moreover have "CatDom (HomP\<^bsub>C\<^esub>[X,\<midarrow>]) = C" by (simp add: HomFtor'_def)
+  ultimately have "(Hom\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y = (HomP\<^bsub>C\<^esub>[X,\<midarrow>]) @@ Y" using assms by (simp add: MakeFtorObj HomFtor_def)
   thus ?thesis using assms 1 by (simp add: HomFtorObj')
 qed
 
@@ -712,14 +712,14 @@ definition
 
 definition 
   HomFtorContra' :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 
-      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[\<emdash>,_]" [65] 65) where
+      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[\<midarrow>,_]" [65] 65) where
   "HomFtorContra' C X \<equiv> \<lparr>
         CatDom = (Op C), 
         CatCod = SET ,
         MapM   = \<lambda> g . HomC\<^bsub>C\<^esub>[g,X]
   \<rparr>"
 
-definition HomFtorContra ("Hom\<index>[\<emdash>,_]" [65] 65) where "HomFtorContra C X \<equiv> MakeFtor(HomFtorContra' C X)"
+definition HomFtorContra ("Hom\<index>[\<midarrow>,_]" [65] 65) where "HomFtorContra C X \<equiv> MakeFtor(HomFtorContra' C X)"
 
 lemma HomContraAt: "x |\<in>| (Hom\<^bsub>C \<^esub>(cod\<^bsub>C\<^esub> f) X) \<Longrightarrow> (HomC\<^bsub>C\<^esub>[f,X]) |@| x = m2z\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> (z2m\<^bsub>C\<^esub> x))"
   by (simp add: HomFtorMapContra_def ZFfunApp)
@@ -744,18 +744,18 @@ by (simp add: HOMCollection_def mapsTo_Op mor2ZF_Op)
 lemma Hom_Op: "Hom\<^bsub>Op C\<^esub> X Y = Hom\<^bsub>C\<^esub> Y X"
 by (simp add: HomSet_def HOMCollection_Op)
 
-lemma HomFtorContra': "HomP\<^bsub>C\<^esub>[\<emdash>,X] = HomP\<^bsub>Op C\<^esub>[X,\<emdash>]"
+lemma HomFtorContra': "HomP\<^bsub>C\<^esub>[\<midarrow>,X] = HomP\<^bsub>Op C\<^esub>[X,\<midarrow>]"
 apply (simp add:  HomFtorContra'_def 
                       HomFtor'_def HomFtorMapContra_def HomFtorMap_def mor2ZF_Op ZF2mor_Op Hom_Op)
 by (simp add: OppositeCategory_def)
 
-lemma HomFtorContra: "Hom\<^bsub>C\<^esub>[\<emdash>,X] = Hom\<^bsub>Op C\<^esub>[X,\<emdash>]"
+lemma HomFtorContra: "Hom\<^bsub>C\<^esub>[\<midarrow>,X] = Hom\<^bsub>Op C\<^esub>[X,\<midarrow>]"
 by (auto simp add: HomFtorContra' HomFtorContra_def HomFtor_def)
 
-lemma HomFtorContraDom: "CatDom (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = Op C"
+lemma HomFtorContraDom: "CatDom (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = Op C"
 by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
 
-lemma HomFtorContraCod: "CatCod (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = SET"
+lemma HomFtorContraCod: "CatCod (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = SET"
 by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
 
 lemma LSCategory_Op: assumes "LSCategory C" shows "LSCategory (Op C)"
@@ -769,26 +769,26 @@ qed
 lemma HomFtorContraFtor:
   assumes "LSCategory C"
   and     "X \<in> obj\<^bsub>C\<^esub>"
-  shows   "Ftor (Hom\<^bsub>C\<^esub>[\<emdash>,X]) : (Op C) \<longrightarrow> SET"
+  shows   "Ftor (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) : (Op C) \<longrightarrow> SET"
 proof(auto simp only: functor_abbrev_def)
-  show "Functor (Hom\<^bsub>C\<^esub>[\<emdash>,X])"
+  show "Functor (Hom\<^bsub>C\<^esub>[\<midarrow>,X])"
   proof-
-    have "Hom\<^bsub>C\<^esub>[\<emdash>,X] = Hom\<^bsub>Op C\<^esub>[X,\<emdash>]" by (simp add: HomFtorContra)
+    have "Hom\<^bsub>C\<^esub>[\<midarrow>,X] = Hom\<^bsub>Op C\<^esub>[X,\<midarrow>]" by (simp add: HomFtorContra)
     moreover have "LSCategory (Op C)" using assms by (simp add: LSCategory_Op)
     moreover have "X \<in> obj\<^bsub>Op C\<^esub>" using assms by (simp add: OppositeCategory_def)
     ultimately show ?thesis using assms by (simp add: HomFtorFtor)
   qed
-  show "CatDom (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = Op C" by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
-  show "CatCod (Hom\<^bsub>C\<^esub>[\<emdash>,X]) = SET" by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
+  show "CatDom (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = Op C" by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
+  show "CatCod (Hom\<^bsub>C\<^esub>[\<midarrow>,X]) = SET" by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def)
 qed
 
 lemma HomFtorOpObj:
   assumes "LSCategory C"
   and     "X \<in> obj\<^bsub>C\<^esub>" and "Y \<in> obj\<^bsub>C\<^esub>"
-  shows   "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) @@ Y = Hom\<^bsub>C \<^esub>Y X"
+  shows   "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) @@ Y = Hom\<^bsub>C \<^esub>Y X"
 proof-
   have 1: "X \<in> Obj (Op C)" and 2: "Y \<in> Obj (Op C)" using assms by (simp add: OppositeCategory_def)+
-  have "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) @@ Y = (Hom\<^bsub>Op C\<^esub>[X,\<emdash>]) @@ Y" by (simp add: HomFtorContra)
+  have "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) @@ Y = (Hom\<^bsub>Op C\<^esub>[X,\<midarrow>]) @@ Y" by (simp add: HomFtorContra)
   also have "... = (Hom\<^bsub>Op C \<^esub>X Y)" using assms(1) 1 2 by (simp add: LSCategory_Op HomFtorObj)
   also have "... = (Hom\<^bsub>C \<^esub>Y X)" by (simp add: Hom_Op)
   finally show ?thesis .
@@ -836,7 +836,7 @@ qed
 
 lemma HomContraMor:
   assumes "LSCategory C" and "f \<in> Mor C" 
-  shows "(Hom\<^bsub>C\<^esub>[\<emdash>,X]) ## f = HomC\<^bsub>C\<^esub>[f,X]"
+  shows "(Hom\<^bsub>C\<^esub>[\<midarrow>,X]) ## f = HomC\<^bsub>C\<^esub>[f,X]"
 by(simp add: HomFtorContra_def HomFtorContra'_def MakeFtor_def assms OppositeCategory_def) 
 
 

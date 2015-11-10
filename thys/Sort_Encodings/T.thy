@@ -47,7 +47,7 @@ qed
 
 end (* context ProblemIkTpart *)
 
-sublocale ProblemIkTpart < TE : Signature
+sublocale ProblemIkTpart < TE? : Signature
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 apply standard
 using countable_tp countable_TE_wtFsym countable_wtPsym by auto
@@ -186,7 +186,7 @@ fun TE_intF where
 
 end (* context ModelIkTpart *)
 
-sublocale ModelIkTpart < TE : Struct
+sublocale ModelIkTpart < TE? : Struct
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf and intF = TE_intF
 proof
   fix ef al assume "TE_wtFsym ef" and "list_all2 intT (TE_arOf ef) al"
@@ -244,7 +244,7 @@ end (* context ModelIkTpart *)
 (* Soundness theorem in sublocale form: Given a problem (with indicated
 type partition) and a model for it, we obtain a model of the tag-extended (TE)
 problem: *)
-sublocale ModelIkTpart < TE : Model
+sublocale ModelIkTpart < TE? : Model
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB and intF = TE_intF
 apply standard using wtPB_tPB soundness by auto
@@ -269,8 +269,8 @@ by (cases "a \<in> f ` B", auto)
 (* Problem with type partition and model of its tag-encoding translation: *)
 
 locale ProblemIkTpart_TEModel =
-Ik : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw +
-TE : Model "ProblemIkTpart.TE_wtFsym wtFsym resOf" wtPsym
+Ik? : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw +
+TE? : Model "ProblemIkTpart.TE_wtFsym wtFsym resOf" wtPsym
            "ProblemIkTpart.TE_arOf arOf" "ProblemIkTpart.TE_resOf resOf" parOf
            tPB eintT eintF eintP
 for wtFsym :: "'fsym \<Rightarrow> bool"
@@ -450,7 +450,7 @@ apply standard using NE_intT_forget wt_intF by auto
 
 end (* context ProblemIkTpart_TEModel *)
 
-sublocale ProblemIkTpart_TEModel < Ik : Struct
+sublocale ProblemIkTpart_TEModel < Ik? : Struct
 where intT = intT and intF = intF and intP = intP
 using Struct .
 
@@ -628,7 +628,7 @@ end (* context ProblemIkTpart_TEModel *)
 type partition) and a model for its tag-translated problem,
 we obtain a model of the original problem: *)
 
-sublocale ProblemIkTpart_TEModel < O : Model
+sublocale ProblemIkTpart_TEModel < O? : Model
 where intT = intT and intF = intF and intP = intP
 using T_completeness .
 
@@ -640,12 +640,12 @@ the translation is well-defined between infiniteness-augmented problems,
 is only proved at this late stage since it requires completeness.
 This is an interesting dependency, not spotted in the paper. *)
 
-sublocale ProblemIkTpart < TE : Problem
+sublocale ProblemIkTpart < TE? : Problem
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
 apply standard by auto
 
-sublocale ProblemIkTpart < TE : ProblemIk
+sublocale ProblemIkTpart < TE? : ProblemIk
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
 proof
@@ -710,7 +710,7 @@ lemma mcalc_Wax: "c \<in> Wax \<Longrightarrow> TE.mcalc \<sigma> c" using nvC_W
 
 end (* context ProblemIkTpart *)
 
-sublocale ProblemIkTpart < TE: ProblemIkMcalc
+sublocale ProblemIkTpart < TE?: ProblemIkMcalc
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf
 and \<Phi> = tPB
 proof
@@ -732,7 +732,7 @@ theorem T_monotonic:
 end (* context ProblemIkTpart *)
 
 
-sublocale ProblemIkTpart < TE: MonotProblem
+sublocale ProblemIkTpart < TE?: MonotProblem
 where wtFsym = TE_wtFsym and arOf = TE_arOf and resOf = TE_resOf and \<Phi> = tPB
 using T_monotonic .
 

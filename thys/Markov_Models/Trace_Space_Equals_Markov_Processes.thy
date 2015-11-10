@@ -18,7 +18,7 @@ text {*
   has the same probabilities.
 *}
 
-locale Time_Homogeneous_Discrete_Markov_Process = M: prob_space +
+locale Time_Homogeneous_Discrete_Markov_Process = M?: prob_space +
   fixes S :: "'s set" and X :: "nat \<Rightarrow> 'a \<Rightarrow> 's"
   assumes X [measurable]: "\<And>t. X t \<in> measurable M (count_space UNIV)"
   assumes S: "countable S" "\<And>n. AE x in M. X n x \<in> S"
@@ -109,7 +109,7 @@ lemma pmf_K2:
 
 end
 
-sublocale K!: MC_syntax K .
+sublocale K: MC_syntax K .
 
 lemma bind_I_K_eq_M: "K.T' I = distr M K.S (\<lambda>\<omega>. to_stream (\<lambda>n. X n \<omega>))" (is "_ = ?D")
 proof (rule stream_space_eq_sstart)

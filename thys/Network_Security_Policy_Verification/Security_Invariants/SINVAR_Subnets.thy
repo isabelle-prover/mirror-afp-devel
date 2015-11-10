@@ -97,7 +97,7 @@ interpretation Subnets: SecurityInvariant_ACS
 where default_node_properties = SINVAR_Subnets.default_node_properties
 and sinvar = SINVAR_Subnets.sinvar
 and verify_globals = verify_globals
-where "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Subnets_offending_set"
+rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Subnets_offending_set"
   unfolding SINVAR_Subnets.default_node_properties_def
   apply unfold_locales
     apply(rule ballI)

@@ -63,8 +63,8 @@ lemma ta_bisim_flip [flip_simps]:
 by(auto simp add: fun_eq_iff flip_simps ta_bisim_def)
 
 locale FWbisimulation_base =
-  r1!: multithreaded_base final1 r1 convert_RA +
-  r2!: multithreaded_base final2 r2 convert_RA 
+  r1: multithreaded_base final1 r1 convert_RA +
+  r2: multithreaded_base final2 r2 convert_RA 
   for final1 :: "'x1 \<Rightarrow> bool"
   and r1 :: "('l,'t,'x1,'m1,'w,'o) semantics" ("_ \<turnstile> _ -1-_\<rightarrow> _" [50, 0, 0, 50] 80)
   and final2 :: "'x2 \<Rightarrow> bool"
@@ -323,8 +323,8 @@ done
 end
 
 locale FWbisimulation_base_aux = FWbisimulation_base +
-  r1!: multithreaded final1 r1 convert_RA +
-  r2!: multithreaded final2 r2 convert_RA +
+  r1: multithreaded final1 r1 convert_RA +
+  r2: multithreaded final2 r2 convert_RA +
   constrains final1 :: "'x1 \<Rightarrow> bool"
   and r1 :: "('l,'t,'x1,'m1,'w, 'o) semantics"
   and final2 :: "'x2 \<Rightarrow> bool"
@@ -344,7 +344,7 @@ lemma FWbisimulation_base_aux_flip_simps [flip_simps]:
   "FWbisimulation_base_aux final2 r2 final1 r1 = FWbisimulation_base_aux final1 r1 final2 r2"
 by(blast intro: FWbisimulation_base_aux.FWbisimulation_base_aux_flip)
 
-sublocale FWbisimulation_base_aux < mthr!:
+sublocale FWbisimulation_base_aux < mthr:
   bisimulation_final_base 
     r1.redT
     r2.redT
@@ -360,8 +360,8 @@ subsection {* Lifting for delay bisimulations *}
 
 locale FWdelay_bisimulation_base =
   FWbisimulation_base _ _ _ r2 convert_RA bisim bisim_wait +
-  r1!: \<tau>multithreaded final1 r1 convert_RA \<tau>move1 +
-  r2!: \<tau>multithreaded final2 r2 convert_RA \<tau>move2 
+  r1: \<tau>multithreaded final1 r1 convert_RA \<tau>move1 +
+  r2: \<tau>multithreaded final2 r2 convert_RA \<tau>move2 
   for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" ("_ \<turnstile> _ -2-_\<rightarrow> _" [50,0,0,50] 80)
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" ("_ \<turnstile> _/ \<approx> _" [50, 50, 50] 60)
@@ -554,8 +554,8 @@ end
 
 locale FWdelay_bisimulation_lift_aux =
   FWdelay_bisimulation_base _ _ _ _ _ _ _ \<tau>move1 \<tau>move2 +
-  r1!: \<tau>multithreaded_wf final1 r1 convert_RA \<tau>move1 +
-  r2!: \<tau>multithreaded_wf final2 r2 convert_RA \<tau>move2 
+  r1: \<tau>multithreaded_wf final1 r1 convert_RA \<tau>move1 +
+  r2: \<tau>multithreaded_wf final2 r2 convert_RA \<tau>move2 
   for \<tau>move1 :: "('l,'t,'x1,'m1,'w,'o) \<tau>moves"
   and \<tau>move2 :: "('l,'t,'x2,'m2,'w,'o) \<tau>moves"
 begin
@@ -712,7 +712,7 @@ qed
 
 end
 
-sublocale FWdelay_bisimulation_lift < mthr!: \<tau>inv r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2
+sublocale FWdelay_bisimulation_lift < mthr: \<tau>inv r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2
 by(rule \<tau>inv_lift)
 
 locale FWdelay_bisimulation_final_base =
@@ -1618,11 +1618,11 @@ done
 
 end
 
-sublocale FWdelay_bisimulation_diverge < mthr!: delay_bisimulation_diverge r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2
+sublocale FWdelay_bisimulation_diverge < mthr: delay_bisimulation_diverge r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2
 by(rule mbisim_delay_bisimulation)
 
 sublocale FWdelay_bisimulation_diverge <
-  mthr!: delay_bisimulation_final_base r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2 r1.mfinal r2.mfinal
+  mthr: delay_bisimulation_final_base r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2 r1.mfinal r2.mfinal
 by(rule mdelay_bisimulation_final_base)
 
 context FWdelay_bisimulation_diverge begin
@@ -1634,14 +1634,14 @@ by(unfold_locales)
 end
 
 sublocale FWdelay_bisimulation_diverge <
-  mthr!: delay_bisimulation_diverge_final r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2 r1.mfinal r2.mfinal
+  mthr: delay_bisimulation_diverge_final r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2 r1.mfinal r2.mfinal
 by(rule mthr_delay_bisimulation_diverge_final)
 
 subsection {* Strong bisimulation as corollary *}
 
 locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>x1 x2. True" +
-  r1!: multithreaded final1 r1 convert_RA +
-  r2!: multithreaded final2 r2 convert_RA
+  r1: multithreaded final1 r1 convert_RA +
+  r2: multithreaded final2 r2 convert_RA
   for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" ("_ \<turnstile> _ -2-_\<rightarrow> _" [50,0,0,50] 80)
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" ("_ \<turnstile> _/ \<approx> _" [50, 50, 50] 60) +
@@ -1655,10 +1655,10 @@ locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>
   and ex_final1_conv_ex_final2:
    "(\<exists>x1. final1 x1) \<longleftrightarrow> (\<exists>x2. final2 x2)"
 
-sublocale FWbisimulation < bisim: bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
+sublocale FWbisimulation < bisim?: bisimulation "r1 t" "r2 t" "bisim t" "ta_bisim bisim" for t
 by(rule bisimulation_locale)
 
-sublocale FWbisimulation < bisim_diverge:
+sublocale FWbisimulation < bisim_diverge?:
   FWdelay_bisimulation_diverge final1 r1 final2 r2 convert_RA bisim "\<lambda>x1 x2. True" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"
 proof -
   interpret biw: bisimulation_into_delay "r1 t" "r2 t" "bisim t" "ta_bisim bisim" "\<lambda>s ta s'. False" "\<lambda>s ta s'. False"
@@ -1750,10 +1750,10 @@ done
 
 end
 
-sublocale FWbisimulation < mthr!: bisimulation r1.redT r2.redT mbisim mta_bisim
+sublocale FWbisimulation < mthr: bisimulation r1.redT r2.redT mbisim mta_bisim
 by(rule mbisim_bisimulation)
 
-sublocale FWbisimulation < mthr!: bisimulation_final r1.redT r2.redT mbisim mta_bisim r1.mfinal r2.mfinal
+sublocale FWbisimulation < mthr: bisimulation_final r1.redT r2.redT mbisim mta_bisim r1.mfinal r2.mfinal
 by(unfold_locales)(rule mbisim_mfinal)
 
 end

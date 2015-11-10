@@ -4,7 +4,7 @@ imports
   "../JVM/JVMThreaded"
 begin
 
-sublocale JVM_heap_base < execd_mthr!: 
+sublocale JVM_heap_base < execd_mthr: 
   heap_multithreaded_base 
     addr2thread_id thread_id2addr
     spurious_wakeups

@@ -22,7 +22,7 @@ type_synonym
   'a hs = "('a::hashable,unit) hm"
 
 setup Locale_Code.open_block
-interpretation hs_sbm!: SetByMap hm_basic_ops by unfold_locales
+interpretation hs_sbm: SetByMap hm_basic_ops by unfold_locales
 setup Locale_Code.close_block
 
 definition hs_ops :: "('a::hashable,'a hs) set_ops"
@@ -30,9 +30,9 @@ definition hs_ops :: "('a::hashable,'a hs) set_ops"
   "hs_ops \<equiv> hs_sbm.basic.dflt_ops"
 
 setup Locale_Code.open_block
-interpretation hs!: StdSet hs_ops
+interpretation hs: StdSet hs_ops
   unfolding hs_ops_def by (rule hs_sbm.basic.dflt_ops_impl)
-interpretation hs!: StdSet_no_invar hs_ops
+interpretation hs: StdSet_no_invar hs_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 

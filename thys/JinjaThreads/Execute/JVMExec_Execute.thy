@@ -20,7 +20,7 @@ locale JVM_heap_execute = heap_execute +
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap set"
 
-sublocale JVM_heap_execute < execute!: JVM_heap_base
+sublocale JVM_heap_execute < execute: JVM_heap_base
   addr2thread_id thread_id2addr 
   spurious_wakeups
   empty_heap allocate typeof_addr

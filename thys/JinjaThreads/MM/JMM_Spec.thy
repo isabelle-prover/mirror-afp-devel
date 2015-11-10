@@ -1035,7 +1035,7 @@ locale sc_legal =
                  (r \<in> actions E \<longrightarrow> r \<in> actions E')"
 
 locale jmm_consistent =
-  drf: drf \<E> P +
+  drf?: drf \<E> P +
   sc_legal \<E> P
   for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog"

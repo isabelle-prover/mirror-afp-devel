@@ -17,14 +17,14 @@ yields error:
 
 
 (* Temporary solution: Isomorphic copy of the MFOL hierarchy: *)
-locale M_Signature = M : Sig.Signature
-locale M_Problem = M : M.Problem
-locale M_MonotModel = M : MonotModel wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
+locale M_Signature = M? : Sig.Signature
+locale M_Problem = M? : M.Problem
+locale M_MonotModel = M? : MonotModel wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and intT and intF and intP and \<Phi>
-locale M_FullStruct = M : FullStruct
-locale M_FullModel = M : FullModel
+locale M_FullStruct = M? : FullStruct
+locale M_FullModel = M? : FullModel
 
 sublocale M_FullStruct < M_Signature ..
 sublocale M_Problem < M_Signature ..
@@ -77,13 +77,13 @@ subsection{* Completeness *}
 text{* The next puts together an M$\_$signature with a structure for its U.flattened signature: *}
 
 locale UM_Struct =
-M : M_Signature wtFsym wtPsym arOf resOf parOf +
-U : CU.Struct wtFsym wtPsym "length o arOf" "length o parOf" D intF intP
+M? : M_Signature wtFsym wtPsym arOf resOf parOf +
+U? : CU.Struct wtFsym wtPsym "length o arOf" "length o parOf" D intF intP
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and D and intF and intP
 
-sublocale UM_Struct < M : M.Struct where intT = "\<lambda> \<sigma>. D"
+sublocale UM_Struct < M? : M.Struct where intT = "\<lambda> \<sigma>. D"
   apply standard
   apply(rule NE_D)
   unfolding list_all2_list_all apply(rule intF) by auto
@@ -141,7 +141,7 @@ using M_U_completeness .
 
 subsection{* Soundness for monotonic problems *}
 
-sublocale M_FullStruct < U : CU.Struct
+sublocale M_FullStruct < U? : CU.Struct
 where arOf = "length o arOf" and parOf = "length o parOf" and D = "intT any"
 apply standard
   apply(rule NE_intT)

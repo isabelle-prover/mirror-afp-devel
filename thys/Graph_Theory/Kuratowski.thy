@@ -678,17 +678,6 @@ lemma rev_path_choose_iapath:
   using assms direct_arc_chooses[of u v]
   by (auto simp: choose_iapath_def direct_arc_swapped)
 
-(*XXX move*)
-lemma no_loops_in_apath:
-  assumes "apath u p v" "a \<in> set p" shows "fst a \<noteq> snd a"
-proof -
-  from \<open>a \<in> set p\<close> obtain p1 p2 where "p = p1 @ a # p2" by (auto simp: in_set_conv_decomp)
-  with \<open>apath u p v\<close> have "apath (fst a) ([a] @ p2) (v)"
-    by (auto simp: gen_iapath_def apath_append_iff apath_Cons_iff apath_Nil_iff)
-  then have "apath (fst a) [a] (snd a)" by - (drule apath_append_iff[THEN iffD1], simp)
-  then show ?thesis by (auto simp:  apath_Cons_iff)
-qed
-
 lemma no_loops_in_iapath: "gen_iapath V u p v \<Longrightarrow> a \<in> set p \<Longrightarrow> fst a \<noteq> snd a"
   by (auto simp: gen_iapath_def no_loops_in_apath)
 
@@ -1018,7 +1007,7 @@ next
   then show ?case using divide by simp
 qed
 
-(*XXX generalize? *)
+(* could be generalized *)
 lemma verts3_K33:
   assumes "K\<^bsub>3,3\<^esub> (with_proj G)"
   shows "verts3 G = verts G"
@@ -1040,7 +1029,7 @@ proof -
   then show ?thesis by (auto simp: verts3_def)
 qed
 
-(*XXX generalize?*)
+(* could be generalized *)
 lemma verts3_K5:
   assumes "K\<^bsub>5\<^esub> (with_proj G)"
   shows "verts3 G = verts G"

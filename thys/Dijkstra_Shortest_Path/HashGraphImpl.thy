@@ -13,9 +13,9 @@ type_synonym ('V,'E) hlg =
   "('V,('V,'E ls) HashMap.hashmap) HashMap.hashmap"
 
 setup Locale_Code.open_block
-interpretation hh_mvif!: g_value_image_filter_loc hm_ops hm_ops 
+interpretation hh_mvif: g_value_image_filter_loc hm_ops hm_ops 
   by unfold_locales
-interpretation hlg_gbm!: GraphByMap hm_ops hm_ops ls_ops 
+interpretation hlg_gbm: GraphByMap hm_ops hm_ops ls_ops 
   "hh_mvif.g_value_image_filter"
   by unfold_locales
 setup Locale_Code.close_block
@@ -23,7 +23,7 @@ setup Locale_Code.close_block
 definition [icf_rec_def]: "hlg_ops \<equiv> hlg_gbm.gbm_ops"
 
 setup Locale_Code.open_block
-interpretation hlg!: StdGraph hlg_ops
+interpretation hlg: StdGraph hlg_ops
   unfolding hlg_ops_def
   by (rule hlg_gbm.gbm_ops_impl)
 setup Locale_Code.close_block

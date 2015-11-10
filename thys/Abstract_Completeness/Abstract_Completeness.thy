@@ -410,7 +410,7 @@ end (* context RuleSystem_Code *)
 (*>*)
 
 setup Locale_Code.open_block
-interpretation i!: RuleSystem_Code eff' rules for eff' and rules .
+interpretation i: RuleSystem_Code eff' rules for eff' and rules .
 declare [[lc_delete "RuleSystem_Defs.mkTree (effG ?eff')"]]
 declare [[lc_delete RuleSystem_Defs.trim]]
 declare [[lc_delete RuleSystem_Defs.enabled]]

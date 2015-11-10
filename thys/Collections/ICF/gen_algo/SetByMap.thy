@@ -37,7 +37,7 @@ proof -
 qed
 
 locale SetByMapDefs =
-  map!: StdBasicMapDefs ops
+  map: StdBasicMapDefs ops
   for ops :: "('x,unit,'s,'more) map_basic_ops_scheme"
 begin
   definition "\<alpha> s \<equiv> dom (map.\<alpha> s)"
@@ -92,7 +92,7 @@ setup {*
 (*lemmas [code_unfold] = SetByMapDefs.list_it_def[abs_def]*)
 
 locale SetByMap = SetByMapDefs ops +
-  map!: StdBasicMap ops
+  map: StdBasicMap ops
   for ops :: "('x,unit,'s,'more) map_basic_ops_scheme"
 begin
   lemma empty_impl: "set_empty \<alpha> invar empty"
@@ -149,7 +149,7 @@ end
 
 
 locale OSetByOMapDefs = SetByMapDefs ops +
-  map!: StdBasicOMapDefs ops
+  map: StdBasicOMapDefs ops
   for ops :: "('x::linorder,unit,'s,'more) omap_basic_ops_scheme"
 begin
   definition ordered_list_it :: "'s \<Rightarrow> ('x,'x list) set_iterator" 
@@ -184,7 +184,7 @@ setup {*
   OSetByOMapDefs.rev_list_it_def[abs_def]*)
 
 locale OSetByOMap = OSetByOMapDefs ops +
-  SetByMap ops + map!: StdBasicOMap ops
+  SetByMap ops + map: StdBasicOMap ops
   for ops :: "('x::linorder,unit,'s,'more) omap_basic_ops_scheme"
 begin
   lemma ordered_list_it_impl: "poly_set_iterateoi \<alpha> invar ordered_list_it"
@@ -235,7 +235,7 @@ begin
 
   lemma dflt_basic_oops_impl: "StdBasicOSet dflt_basic_oops"
   proof -
-    interpret aux!: StdBasicSet dflt_basic_ops by (rule dflt_basic_ops_impl)
+    interpret aux: StdBasicSet dflt_basic_ops by (rule dflt_basic_ops_impl)
 
     show ?thesis
       apply (rule StdBasicOSet.intro)

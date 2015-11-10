@@ -143,8 +143,8 @@ where "less_prod' \<equiv> less_prod leq_a less_a less_b"
 lemma linorder_prod:
   "class.linorder op \<sqsubseteq> op \<sqsubset>"
 proof -
-  interpret a!: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
-  interpret b!: linorder "op \<sqsubseteq>\<^sub>b" "op \<sqsubset>\<^sub>b" by(fact lin_b)
+  interpret a: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
+  interpret b: linorder "op \<sqsubseteq>\<^sub>b" "op \<sqsubset>\<^sub>b" by(fact lin_b)
   show ?thesis by unfold_locales auto
 qed
 

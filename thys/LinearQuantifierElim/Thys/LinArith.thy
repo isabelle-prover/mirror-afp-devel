@@ -47,8 +47,8 @@ fun I\<^sub>R :: "atom \<Rightarrow> real list \<Rightarrow> bool" where
 definition "atoms\<^sub>0 = ATOM.atoms\<^sub>0 depends\<^sub>R"
 (* FIXME !!! (incl: display should hide params)*)
 
-interpretation R!: ATOM neg\<^sub>R "(\<lambda>a. True)" I\<^sub>R depends\<^sub>R decr\<^sub>R
-  where "ATOM.atoms\<^sub>0 depends\<^sub>R = atoms\<^sub>0"
+interpretation R: ATOM neg\<^sub>R "(\<lambda>a. True)" I\<^sub>R depends\<^sub>R decr\<^sub>R
+  rewrites "ATOM.atoms\<^sub>0 depends\<^sub>R = atoms\<^sub>0"
 proof goal_cases
   case 1
   thus ?case

@@ -1598,7 +1598,7 @@ lemma create_gba_from_nodes__invar: "gba (create_gba_from_nodes \<phi> qs)"
     simp: create_gba_from_nodes_def)
   done
 
-sublocale gba!: gba "create_gba_from_nodes \<phi> qs"
+sublocale gba: gba "create_gba_from_nodes \<phi> qs"
   by (rule create_gba_from_nodes__invar)
 
 lemma create_gba_from_nodes__fin: "finite (g_V (create_gba_from_nodes \<phi> qs))"

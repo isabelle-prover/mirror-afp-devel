@@ -536,7 +536,7 @@ locale.
 *}
 
 sublocale AlgorithmForAgent
-        < KBPAlg!: DFS k_succs k_isNode k_invariant k_ins k_memb k_empt simAbs
+        < KBPAlg: DFS k_succs k_isNode k_invariant k_ins k_memb k_empt simAbs
 
 (*<*)
   apply (unfold_locales)
@@ -823,7 +823,7 @@ our lemmas in the @{term "AlgorithmForAgent"} to the @{term
 *}
 
 sublocale Algorithm
-        < KBP!: AlgorithmForAgent
+        < KBP: AlgorithmForAgent
             jkbp envInit envAction envTrans envVal jview envObs
             jviewInit jviewIncr simf simRels simVal simAbs simObs
             simInit simTrans simAction aOps tOps a for a

@@ -114,7 +114,7 @@ lemmas DLOe_code_lemmas = DLO_code_lemmas lift_dnfeq_qe_def lift_eq_qe_def
 hide_const lift_dnfeq_qe lift_eq_qe
 (*>*)
 
-interpretation DLO\<^sub>e!:
+interpretation DLO\<^sub>e:
   ATOM_EQ neg\<^sub>d\<^sub>l\<^sub>o "(\<lambda>a. True)" I\<^sub>d\<^sub>l\<^sub>o depends\<^sub>d\<^sub>l\<^sub>o decr\<^sub>d\<^sub>l\<^sub>o
           "(\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)"
           "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^sub>0

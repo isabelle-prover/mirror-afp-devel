@@ -912,7 +912,7 @@ qed(simp add: split_beta)
 
 end
 
-sublocale J_heap_base < red_mthr!: 
+sublocale J_heap_base < red_mthr: 
   \<tau>multithreaded_wf 
     final_expr
     "mred P"
@@ -921,7 +921,7 @@ sublocale J_heap_base < red_mthr!:
   for P
 by(rule red_\<tau>mthr_wf)
 
-sublocale J_heap_base < red0_mthr!:
+sublocale J_heap_base < red0_mthr:
   \<tau>multithreaded_wf 
     final_expr0
     "mred0 P"

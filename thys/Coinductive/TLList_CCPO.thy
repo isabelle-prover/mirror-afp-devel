@@ -212,7 +212,7 @@ by unfold_locales(auto simp add: mk_less_def intro: tllist_ord_antisym tllist_or
 lemma tllist_ord_partial_function_definitions: "partial_function_definitions tllist_ord tSup"
 by unfold_locales(auto simp add: mk_less_def intro: tllist_ord_antisym tllist_ord_trans chain_tllist_ord_tSup chain_tSup_tllist_ord)
 
-interpretation tllist!: partial_function_definitions "tllist_ord" "tSup"
+interpretation tllist: partial_function_definitions "tllist_ord" "tSup"
 by(rule tllist_ord_partial_function_definitions)
 
 lemma admissible_mcont_is_TNil [THEN admissible_subst, cont_intro, simp]:
@@ -332,7 +332,7 @@ lemma mcont_lprefix_case_aux:
   shows "mcont tSup tllist_ord lub ord (\<lambda>xs. case xs of TNil b \<Rightarrow> bot b | TCons x xs' \<Rightarrow> f x xs' xs)"
   (is "mcont _ _ _ _ ?f")
 proof(rule mcontI)
-  interpret b!: ccpo lub ord "mk_less ord" by(rule ccpo)
+  interpret b: ccpo lub ord "mk_less ord" by(rule ccpo)
 
   show "cont tSup tllist_ord lub ord ?f"
   proof(rule contI)
@@ -459,7 +459,7 @@ end
 lifting_update tllist.lifting
 lifting_forget tllist.lifting
 
-interpretation tllist!: partial_function_definitions "tllist_ord b" "tSup b" for b
+interpretation tllist: partial_function_definitions "tllist_ord b" "tSup b" for b
 by(rule tllist_ord_partial_function_definitions)
 
 lemma tllist_case_mono [partial_function_mono, cont_intro]: 

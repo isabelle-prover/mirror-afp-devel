@@ -159,8 +159,8 @@ proof -
 
   with `e \<notin> set es` show ?thesis
     apply (cases "w = tail G e")
-    apply (case_tac [!] "w = head G e")
-    apply (auto simp: arc_set_balance_def)
+     apply (case_tac [!] "w = head G e")
+       apply (auto simp: arc_set_balance_def)
     done
 qed
 
@@ -502,7 +502,7 @@ proof -
   have [intro]: "\<And>a. compatible (add_arc a) G" by (simp add: compatible_def)
 
   interpret H: fin_digraph "add_arc a" for a
-    where "tail (add_arc a) = tail G" and "head (add_arc a) = head G"
+    rewrites "tail (add_arc a) = tail G" and "head (add_arc a) = head G"
       and "pre_digraph.cas (add_arc a) = cas"
       and "pre_digraph.awalk_verts (add_arc a) = awalk_verts"
       by unfold_locales (auto dest: wellformed intro: compatible_cas compatible_awalk_verts
@@ -525,8 +525,8 @@ proof -
     then show "in_degree ?H w = out_degree ?H w"
       using deg deg_in deg_out e_notin
       apply (cases "w = u")
-      apply (case_tac [!] "w = v")
-      by (auto simp: in_degree_add_arc_iff out_degree_add_arc_iff)
+       apply (case_tac [!] "w = v")
+         by (auto simp: in_degree_add_arc_iff out_degree_add_arc_iff)
   qed
 
   then obtain w p where Het: "H.euler_trail ?e w p w" by blast

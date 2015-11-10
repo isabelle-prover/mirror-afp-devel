@@ -98,56 +98,56 @@ locale pair_digraph = pair_fin_digraph  + pair_loopfree_digraph
 locale pair_graph = pair_digraph + pair_pseudo_graph
 
 sublocale pair_pre_digraph \<subseteq> pre_digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   by unfold_locales auto
 
 sublocale pair_wf_digraph \<subseteq> wf_digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   by unfold_locales (auto simp: arc_fst_in_verts arc_snd_in_verts)
 
 sublocale pair_fin_digraph \<subseteq> fin_digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   using pair_finite_verts pair_finite_arcs by unfold_locales auto
 
 sublocale pair_sym_digraph \<subseteq> sym_digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   using pair_sym_arcs by unfold_locales auto
 
 sublocale pair_pseudo_graph \<subseteq> pseudo_graph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   by unfold_locales auto
 
 sublocale pair_loopfree_digraph \<subseteq> loopfree_digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   using pair_no_loops by unfold_locales auto
 
 sublocale pair_digraph \<subseteq> digraph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
   by unfold_locales (auto simp: arc_to_ends_def)
 
 sublocale pair_graph \<subseteq> graph "with_proj G"
-  where "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
+  rewrites "verts G = pverts G" and "arcs G = parcs G" and "tail G = fst" and "head G = snd"
     and "arcs_ends G = parcs G"
     and "pre_digraph.awalk_verts G = pawalk_verts"
     and "pre_digraph.cas G = pcas"
@@ -329,10 +329,11 @@ lemma co_path_simps[simp]:
     \<Longrightarrow> co_path e w (e1 # e2 # es) = (snd e, fst e) # co_path e w es"
   "\<lbrakk>e1 \<noteq> (fst e, w) \<or> e2 \<noteq> (w, snd e); e1 \<noteq> (snd e, w) \<or> e2 \<noteq> (w, fst e)\<rbrakk>
     \<Longrightarrow> co_path e w (e1 # e2 # es) = e1 # co_path e w (e2 # es)"
-  apply (cases es)
-  apply (case_tac [!] e)
-  apply (case_tac [!] "fst e = snd e")
-  apply auto
+  apply (cases es; auto)
+  apply (cases e; auto)
+  apply (cases e; auto)
+  apply (cases e; cases "fst e = snd e"; auto)
+  apply (cases e; cases "fst e = snd e"; auto)
   done
 
 lemma co_path_nonempty[simp]: "co_path e w p = [] \<longleftrightarrow> p = []"

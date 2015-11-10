@@ -378,7 +378,7 @@ lemma setsum_0_all:
 
 subsection{*Vecs as inner product spaces*}
 
-locale vec_real_inner = F: inner_product_space "(op * :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
+locale vec_real_inner = F?: inner_product_space "(op * :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
  for inner_field :: "'a\<Rightarrow>'a\<Rightarrow>'a::{field,cnj,real_of_extended}" 
  + fixes inner :: "'a^'n \<Rightarrow> 'a^'n \<Rightarrow>'a" 
  assumes inner_vec_def: "inner x y = setsum (\<lambda>i. inner_field (x$i) (y$i)) UNIV"
@@ -421,7 +421,7 @@ qed
 lemma inner_0_0[simp]: "inner 0 0 = 0"
   unfolding inner_vec_def by auto
 
-sublocale v: inner_product_space "(op *s :: 'a \<Rightarrow> 'a^'n \<Rightarrow> 'a^'n)" "inner"
+sublocale v?: inner_product_space "(op *s :: 'a \<Rightarrow> 'a^'n \<Rightarrow> 'a^'n)" "inner"
 proof (unfold_locales, auto simp add: real_scalar_mult2)
   fix x y z::"'a^'n" and r
   show "inner x y = cnj (inner y x)" using i1[of x y] by simp
@@ -438,8 +438,8 @@ end
 subsection{*Matrices and inner product*}
 
 locale matrix = 
-    COLS: vec_real_inner "\<lambda>x y. x * cnj y" inner_cols
-  + ROWS: vec_real_inner "\<lambda>x y. x * cnj y" inner_rows
+    COLS?: vec_real_inner "\<lambda>x y. x * cnj y" inner_cols
+  + ROWS?: vec_real_inner "\<lambda>x y. x * cnj y" inner_rows
  for inner_cols :: "'a^'cols::{finite, wellorder} \<Rightarrow> 'a^'cols::{finite, wellorder} \<Rightarrow> 'a::{field, cnj, real_of_extended}" 
  and inner_rows :: "'a^'rows::{finite, wellorder} \<Rightarrow> 'a^'rows::{finite, wellorder} \<Rightarrow> 'a" 
 begin

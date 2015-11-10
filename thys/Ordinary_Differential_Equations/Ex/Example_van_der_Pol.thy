@@ -23,7 +23,7 @@ approximate_affine vanderpol_d "\<lambda>(x::real, y) (dx, dy). (dy,
 abbreviation "vanderpol_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol optns (hd args) (tl args)"
 abbreviation "vanderpol_d_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
-interpretation vanderpol!: aform_approximate_ivp
+interpretation vanderpol: aform_approximate_ivp
   vanderpol_ivp vanderpol_d_ivp
   "\<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
   "\<lambda>(x::real, y) (dx, dy).

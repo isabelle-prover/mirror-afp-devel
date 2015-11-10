@@ -5,25 +5,27 @@ begin
 section \<open>Transitive closure algorithm\<close>
 
 text \<open>
-  The Roy-Floyd-Warshall algorithm takes a finite relation as input and produces
-  its transitive closure as output. It iterates over all elements of the field
-  of the relation and maintains a cumulative approximation of the result: step
-  @{text 0} starts with the original relation, and step @{text "Suc n"} connects
-  all paths over the intermediate element @{text n}. The final approximation
-  coincides with the full transitive closure.
+  The Roy-Floyd-Warshall algorithm takes a finite relation as input and
+  produces its transitive closure as output. It iterates over all elements of
+  the field of the relation and maintains a cumulative approximation of the
+  result: step \<open>0\<close> starts with the original relation, and step \<open>Suc n\<close>
+  connects all paths over the intermediate element \<open>n\<close>. The final
+  approximation coincides with the full transitive closure.
 
   This algorithm is often named after ``Floyd'', ``Warshall'', or
   ``Floyd-Warshall'', but the earliest known description is due to B. Roy
   @{cite "Roy:1959"}.
 
-  \medskip Subsequently we use a direct mathematical model of the relation,
-  bypassing matrices and arrays that are usually seen in the literature. This is
-  more efficient for sparse relations: only the adjacency for immediate
+  \<^medskip>
+  Subsequently we use a direct mathematical model of the relation, bypassing
+  matrices and arrays that are usually seen in the literature. This is more
+  efficient for sparse relations: only the adjacency for immediate
   predecessors and successors needs to be maintained, not the square of all
   possible combinations. Moreover we do not have to worry about mutable data
-  structures in a multi-threaded environment. See also the graph implementation
-  in the Isabelle sources @{file "$ISABELLE_HOME/src/Pure/General/graph.ML"} and
-  @{file "$ISABELLE_HOME/src/Pure/General/graph.scala"}.
+  structures in a multi-threaded environment. See also the graph
+  implementation in the Isabelle sources @{file
+  "$ISABELLE_HOME/src/Pure/General/graph.ML"} and @{file
+  "$ISABELLE_HOME/src/Pure/General/graph.scala"}.
 \<close>
 
 type_synonym relation = "(nat \<times> nat) set"
@@ -49,8 +51,8 @@ lemma
   by (simp add: preds_def succs_def)
 
 text \<open>
-  The main function requires an upper bound for the iteration, which
-  is left unspecified here (via Hilbert's choice).
+  The main function requires an upper bound for the iteration, which is left
+  unspecified here (via Hilbert's choice).
 \<close>
 
 definition is_bound :: "relation \<Rightarrow> nat \<Rightarrow> bool"
@@ -98,9 +100,9 @@ lemma steps_rel: "(x, y) \<in> rel \<Longrightarrow> (x, y) \<in> steps rel n"
 subsection \<open>Bounded closure\<close>
 
 text \<open>
-  The bounded closure connects all transitive paths over elements below a given
-  bound. For an upper bound of the relation, this coincides with the full
-  transitive closure.
+  The bounded closure connects all transitive paths over elements below a
+  given bound. For an upper bound of the relation, this coincides with the
+  full transitive closure.
 \<close>
 
 inductive_set Clos :: "relation \<Rightarrow> nat \<Rightarrow> relation"
@@ -218,7 +220,7 @@ section \<open>Alternative formulation\<close>
 
 text \<open>
   The core of the algorithm may be expressed more declaratively as follows,
-  using an inductive definition to imitate a logic-program.  This is equivalent
+  using an inductive definition to imitate a logic-program. This is equivalent
   to the function specification @{term steps} from above.
 \<close>
 

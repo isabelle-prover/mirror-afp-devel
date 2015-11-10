@@ -3016,7 +3016,7 @@ lemma (in scalar_mult) R_scalar_mult : "R_scalar_mult UNIV"
 
 lemma (in R_scalar_mult) Ring1 : "Ring1 R" ..
 
-locale RModule = R_scalars: R_scalar_mult R smult + VecGroup: Group M
+locale RModule = R_scalars?: R_scalar_mult R smult + VecGroup?: Group M
   for R     :: "'r::ring_1 set"
   and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
   and M     :: "'m set"
@@ -4274,9 +4274,9 @@ subsection {* Module homomorphisms *}
 
 subsubsection {* Locales *}
 
-locale RModuleHom = Domain: RModule R smult M
-+ Codomain: scalar_mult smult'
-+ GroupHom: GroupHom M T
+locale RModuleHom = Domain?: RModule R smult M
++ Codomain?: scalar_mult smult'
++ GroupHom?: GroupHom M T
   for R      :: "'r::ring_1 set"
   and smult  :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
   and M      :: "'m set"
@@ -6112,8 +6112,8 @@ end (* context aezfun_scalar_mult *)
 
 subsection {* Locale and basic facts *}
 
-locale FGModule = ActingGroup: Group G
-+ FGMod: RModule ActingGroup.group_ring smult V
+locale FGModule = ActingGroup?: Group G
++ FGMod?: RModule ActingGroup.group_ring smult V
   for G     :: "'g::group_add set"
   and smult :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
   and V     :: "'v set"
@@ -6362,8 +6362,8 @@ subsection {* Homomorphisms of modules over a group ring *}
 
 subsubsection {* Locales *}
 
-locale FGModuleHom = ActingGroup: Group G
-+ RModHom: RModuleHom ActingGroup.group_ring smult V smult' T
+locale FGModuleHom = ActingGroup?: Group G
++ RModHom?: RModuleHom ActingGroup.group_ring smult V smult' T
   for G      :: "'g::group_add set"
   and smult  :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
   and V      :: "'v set"
@@ -7221,9 +7221,9 @@ text {*
   group ring for @{term H} under the right regular scalar multiplication @{term rrsmult}.
 *}
 
-locale InducedFHModule = Supgroup: Group H
-+ BaseFGMod    : FGModule G smult V
-+ induced_smult: aezfun_scalar_mult rrsmult
+locale InducedFHModule = Supgroup?: Group H
++ BaseFGMod?    : FGModule G smult V
++ induced_smult?: aezfun_scalar_mult rrsmult
   for   H       :: "'g::group_add set"
   and   G       :: "'g set"
   and   FG      :: "('f::field, 'g) aezfun set"
@@ -8528,9 +8528,9 @@ subsection {* Induced representations *}
 
 subsubsection {* Locale and basic facts *}
 
-locale InducedFinGroupRepresentation = Supgroup: Group H
-+ BaseRep: FinGroupRepresentation G smult V
-+ induced_smult: aezfun_scalar_mult rrsmult
+locale InducedFinGroupRepresentation = Supgroup?: Group H
++ BaseRep?: FinGroupRepresentation G smult V
++ induced_smult?: aezfun_scalar_mult rrsmult
   for   H       :: "'g::group_add set"
   and   G       :: "'g set"
   and   smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)
@@ -8909,8 +8909,8 @@ text {* There are a number of defined objects and lemmas concerning those object
         theorem of Frobenius reciprocity, so we create a locale to contain it all. *}
 
 locale FrobeniusReciprocity
-= GRep: InducedFinGroupRepresentation H G smult V rrsmult
-+ HRep: FinGroupRepresentation H smult' W
+= GRep?: InducedFinGroupRepresentation H G smult V rrsmult
++ HRep?: FinGroupRepresentation H smult' W
   for H       :: "'g::group_add set"
   and G       :: "'g set"
   and smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)

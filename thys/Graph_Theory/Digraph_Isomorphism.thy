@@ -34,6 +34,9 @@ definition app_iso
   "app_iso hom G \<equiv> \<lparr> verts = iso_verts hom ` verts G, arcs = iso_arcs hom ` arcs G,
     tail = iso_tail hom, head = iso_head hom \<rparr>"
 
+definition digraph_iso :: "('a,'b) pre_digraph \<Rightarrow> ('c,'d) pre_digraph \<Rightarrow> bool"  where
+  "digraph_iso G H \<equiv> \<exists>f. pre_digraph.digraph_isomorphism G f \<and> H = app_iso f G"
+
 lemma verts_app_iso: "verts (app_iso hom G) = iso_verts hom ` verts G"
   and arcs_app_iso: "arcs (app_iso hom G) = iso_arcs hom `arcs G"
   and tail_app_iso: "tail (app_iso hom G) = iso_tail hom"
@@ -82,6 +85,14 @@ lemma
   shows iso_verts_tail: "iso_tail hom (iso_arcs hom e) = iso_verts hom (tail G e)"
     and iso_verts_head: "iso_head hom (iso_arcs hom e) = iso_verts hom (head G e)"
   using assms unfolding digraph_isomorphism_def by auto
+
+lemma digraph_isomorphism_inj_on_arcs:
+  "digraph_isomorphism hom \<Longrightarrow> inj_on (iso_arcs hom) (arcs G)"
+  by (auto simp: digraph_isomorphism_def)
+
+lemma digraph_isomorphism_inj_on_verts:
+  "digraph_isomorphism hom \<Longrightarrow> inj_on (iso_verts hom) (verts G)"
+  by (auto simp: digraph_isomorphism_def)
 
 end
 
@@ -259,6 +270,47 @@ proof -
   then show ?thesis by (auto simp: H.reachable_awalk)
 qed
 
+lemma awalk_app_iso_eq:
+  assumes hom: "digraph_isomorphism hom"
+  assumes "u \<in> iso_verts hom ` verts G" "v \<in> iso_verts hom ` verts G" "set p \<subseteq> iso_arcs hom ` arcs G"
+  shows "pre_digraph.awalk (app_iso hom G) u p v
+    \<longleftrightarrow> awalk (iso_verts (inv_iso hom) u) (map (iso_arcs (inv_iso hom)) p) (iso_verts (inv_iso hom) v)"
+proof -
+  interpret H: wf_digraph "app_iso hom G" using hom ..
+  from assms show ?thesis
+    by (induct p arbitrary: u)
+       (auto simp: awalk_simps H.awalk_simps iso_verts_head iso_verts_tail)
+qed
+
+lemma reachable_app_iso_eq:
+  assumes hom: "digraph_isomorphism hom"
+  assumes "u \<in> iso_verts hom ` verts G" "v \<in> iso_verts hom ` verts G"
+  shows "u \<rightarrow>\<^sup>*\<^bsub>app_iso hom G\<^esub> v \<longleftrightarrow> iso_verts (inv_iso hom) u \<rightarrow>\<^sup>* iso_verts (inv_iso hom) v" (is "?L \<longleftrightarrow> ?R")
+proof -
+  interpret H: wf_digraph "app_iso hom G" using hom ..
+
+  show ?thesis
+  proof
+    assume ?L
+    then obtain p where "H.awalk u p v" by (auto simp: H.reachable_awalk)
+    moreover
+    then have "set p \<subseteq> iso_arcs hom ` arcs G" by (simp add: H.awalk_def)
+    ultimately
+    show ?R using assms by (auto simp: awalk_app_iso_eq reachable_awalk)
+  next
+    assume ?R
+    then obtain p0 where "awalk (iso_verts (inv_iso hom) u) p0 (iso_verts (inv_iso hom) v)"
+      by (auto simp: reachable_awalk)
+    moreover
+    then have "set p0 \<subseteq> arcs G" by (simp add: awalk_def)
+    def p \<equiv> "map (iso_arcs hom) p0"
+    have "set p \<subseteq> iso_arcs hom ` arcs G" "p0 = map (iso_arcs (inv_iso hom)) p"
+      using \<open>set p0 \<subseteq> _\<close> hom by (auto simp: p_def map_idI subsetD)
+    ultimately
+    show ?L using assms by (auto simp: awalk_app_iso_eq[symmetric] H.reachable_awalk)
+  qed
+qed
+
 lemma connectedI_app_iso:
   assumes c: "connected G" and hom: "digraph_isomorphism hom"
   shows "connected (app_iso hom G)"
@@ -280,6 +332,230 @@ qed
 
 end
 
+lemma digraph_iso_swap:
+  assumes "wf_digraph G" "digraph_iso G H" shows "digraph_iso H G"
+proof -
+  from assms obtain f where "pre_digraph.digraph_isomorphism G f" "H = app_iso f G"
+    unfolding digraph_iso_def by auto
+  then have "pre_digraph.digraph_isomorphism H (pre_digraph.inv_iso G f)" "app_iso (pre_digraph.inv_iso G f) H = G"
+    using assms by (simp_all add: wf_digraph.digraph_isomorphism_invI pre_digraph.app_iso_inv)
+  then show ?thesis unfolding digraph_iso_def by auto
+qed
 
+definition
+  o_iso :: "('c,'d,'e,'f) digraph_isomorphism \<Rightarrow> ('a,'b,'c,'d) digraph_isomorphism \<Rightarrow> ('a,'b,'e,'f) digraph_isomorphism"
+where
+  "o_iso hom2 hom1 = \<lparr>
+    iso_verts = iso_verts hom2 o iso_verts hom1,
+    iso_arcs = iso_arcs hom2 o iso_arcs hom1,
+    iso_head = iso_head hom2,
+    iso_tail = iso_tail hom2
+    \<rparr>"
+
+lemma digraph_iso_trans[trans]:
+  assumes "digraph_iso G H" "digraph_iso H I" shows "digraph_iso G I"
+proof -
+  from assms obtain hom1 where "pre_digraph.digraph_isomorphism G hom1" "H = app_iso hom1 G"
+    by (auto simp: digraph_iso_def)
+  moreover
+  from assms obtain hom2 where "pre_digraph.digraph_isomorphism H hom2" "I = app_iso hom2 H"
+    by (auto simp: digraph_iso_def)
+  ultimately
+  have "pre_digraph.digraph_isomorphism G (o_iso hom2 hom1)" "I = app_iso (o_iso hom2 hom1) G"
+    apply (auto simp: o_iso_def app_iso_def pre_digraph.digraph_isomorphism_def)
+    apply (rule comp_inj_on)
+    apply auto
+    apply (rule comp_inj_on)
+    apply auto
+    done
+  then show ?thesis by (auto simp: digraph_iso_def)
+qed
+
+lemma (in pre_digraph) digraph_isomorphism_subgraphI:
+  assumes "digraph_isomorphism hom"
+  assumes "subgraph H G"
+  shows "pre_digraph.digraph_isomorphism H hom"
+  using assms by (auto simp: pre_digraph.digraph_isomorphism_def subgraph_def compatible_def intro: subset_inj_on)
+
+(* XXX move *)
+lemma (in wf_digraph) verts_app_inv_iso_subgraph:
+  assumes hom: "digraph_isomorphism hom" and "V \<subseteq> verts G"
+  shows "iso_verts (inv_iso hom) ` iso_verts hom ` V = V"
+proof -
+  have "\<And>x. x \<in> V \<Longrightarrow> iso_verts (inv_iso hom) (iso_verts hom x) = x"
+    using assms by auto
+  then show ?thesis by (auto simp: image_image cong: image_cong)
+qed
+
+(* XXX move *)
+lemma (in wf_digraph) arcs_app_inv_iso_subgraph:
+  assumes hom: "digraph_isomorphism hom" and "A \<subseteq> arcs G"
+  shows "iso_arcs (inv_iso hom) ` iso_arcs hom ` A = A"
+proof -
+  have "\<And>x. x \<in> A \<Longrightarrow> iso_arcs (inv_iso hom) (iso_arcs hom x) = x"
+    using assms by auto
+  then show ?thesis by (auto simp: image_image cong: image_cong)
+qed
+
+(* XXX move *)
+lemma (in pre_digraph) app_iso_inv_subgraph[simp]:
+  assumes "digraph_isomorphism hom" "subgraph H G"
+  shows "app_iso (inv_iso hom) (app_iso hom H) = H"
+proof -
+  from assms interpret wf_digraph G by auto
+  have "\<And>u. u \<in> verts H \<Longrightarrow> u \<in> verts G" "\<And>a. a \<in> arcs H \<Longrightarrow> a \<in> arcs G"
+    using assms by auto
+  with assms show ?thesis
+    by (intro pre_digraph.equality) (auto simp: verts_app_inv_iso_subgraph
+      arcs_app_inv_iso_subgraph compatible_def)
+qed
+
+lemma (in wf_digraph) app_iso_iso_inv_subgraph[simp]:
+  assumes "digraph_isomorphism hom"
+  assumes subg: "subgraph H (app_iso hom G)"
+  shows "app_iso hom (app_iso (inv_iso hom) H) = H"
+proof -
+  have "\<And>u. u \<in> verts H \<Longrightarrow> u \<in> iso_verts hom ` verts G" "\<And>a. a \<in> arcs H \<Longrightarrow> a \<in> iso_arcs hom ` arcs G"
+    using assms by (auto simp: subgraph_def)
+  with assms show ?thesis
+    by (intro pre_digraph.equality) (auto simp: compatible_def image_image cong: image_cong)
+qed
+
+lemma (in pre_digraph) subgraph_app_isoI':
+  assumes hom: "digraph_isomorphism hom"
+  assumes subg: "subgraph H H'" "subgraph H' G"
+  shows "subgraph (app_iso hom H) (app_iso hom H')"
+proof -
+  have "subgraph H G" using subg by (rule subgraph_trans)
+  then have "pre_digraph.digraph_isomorphism H hom" "pre_digraph.digraph_isomorphism H' hom"
+    using assms by (auto intro: digraph_isomorphism_subgraphI)
+  then show ?thesis
+    using assms by (auto simp: subgraph_def wf_digraph.wf_digraphI_app_iso compatible_def
+      intro: digraph_isomorphism_subgraphI)
+qed
+
+lemma (in pre_digraph) subgraph_app_isoI:
+  assumes "digraph_isomorphism hom"
+  assumes "subgraph H G"
+  shows "subgraph (app_iso hom H) (app_iso hom G)"
+  using assms by (auto intro: subgraph_app_isoI' wf_digraph.subgraph_refl)
+
+lemma (in pre_digraph) app_iso_eq_conv:
+  assumes "digraph_isomorphism hom"
+  assumes "subgraph H1 G" "subgraph H2 G"
+  shows "app_iso hom H1 = app_iso hom H2 \<longleftrightarrow> H1 = H2" (is "?L \<longleftrightarrow> ?R")
+proof
+  assume ?L
+  then have "app_iso (inv_iso hom) (app_iso hom H1) = app_iso (inv_iso hom) (app_iso hom H2)"
+    by simp
+  with assms show ?R by auto
+qed simp
+
+lemma in_arcs_app_iso_cases:
+  assumes "a \<in> arcs (app_iso hom G)"
+  obtains a0 where "a = iso_arcs hom a0" "a0 \<in> arcs G"
+  using assms by auto
+
+lemma in_verts_app_iso_cases:
+  assumes "v \<in> verts (app_iso hom G)"
+  obtains v0 where "v = iso_verts hom v0" "v0 \<in> verts G"
+  using assms by auto
+
+lemma (in wf_digraph) max_subgraph_iso:
+  assumes hom: "digraph_isomorphism hom"
+  assumes subg: "subgraph H (app_iso hom G)"
+  shows "pre_digraph.max_subgraph (app_iso hom G) P H
+    \<longleftrightarrow> max_subgraph (P o app_iso hom) (app_iso (inv_iso hom) H)"
+proof -
+  have hom_inv: "pre_digraph.digraph_isomorphism (app_iso hom G) (inv_iso hom)"
+    using hom by (rule digraph_isomorphism_invI)
+  interpret aG: wf_digraph "app_iso hom G" using hom ..
+
+  have *: "subgraph (app_iso (inv_iso hom) H) G"
+    using hom pre_digraph.subgraph_app_isoI'[OF hom_inv subg aG.subgraph_refl] by simp
+  def H0 \<equiv> "app_iso (inv_iso hom) H"
+  then have H0: "H = app_iso hom H0" "subgraph H0 G" 
+    using hom subg \<open>subgraph _ G\<close> by (auto simp: )
+    
+  show ?thesis (is "?L \<longleftrightarrow> ?R")
+  proof
+    assume ?L then show ?R using assms H0
+      by (auto simp: max_subgraph_def aG.max_subgraph_def pre_digraph.subgraph_app_isoI'
+        subgraph_refl pre_digraph.app_iso_eq_conv)
+  next
+    assume ?R
+    then show ?L
+      using assms hom_inv pre_digraph.subgraph_app_isoI[OF hom_inv]
+      apply (auto simp: max_subgraph_def aG.max_subgraph_def)
+      apply (erule allE[of _ "app_iso (inv_iso hom) H'" for H'])
+      apply (auto simp: pre_digraph.subgraph_app_isoI' pre_digraph.app_iso_eq_conv)
+      done
+  qed
+qed
+
+lemma (in pre_digraph) max_subgraph_cong:
+  assumes "H = H'" "\<And>H''. subgraph H' H'' \<Longrightarrow> subgraph H'' G \<Longrightarrow> P H'' = P' H''"
+  shows "max_subgraph P H = max_subgraph P' H'"
+  using assms by (auto simp: max_subgraph_def intro: wf_digraph.subgraph_refl)
+
+lemma (in pre_digraph) inj_on_app_iso:
+  assumes hom: "digraph_isomorphism hom"
+  assumes "S \<subseteq> {H. subgraph H G}"
+  shows "inj_on (app_iso hom) S"
+  using assms by (intro inj_onI) (subst (asm) app_iso_eq_conv, auto)
+
+
+
+subsection \<open>Graph Invariants\<close>
+
+context
+  fixes G hom assumes hom: "pre_digraph.digraph_isomorphism G hom"
+begin
+
+  interpretation wf_digraph G using hom by (auto simp: pre_digraph.digraph_isomorphism_def)
+
+  lemma card_verts_iso[simp]: "card (iso_verts hom ` verts G) = card (verts G)"
+    using hom by (intro card_image digraph_isomorphism_inj_on_verts)
+
+  lemma card_arcs_iso[simp]: "card (iso_arcs hom ` arcs G) = card (arcs G)"
+    using hom by (intro card_image digraph_isomorphism_inj_on_arcs)
+
+  lemma strongly_connected_iso[simp]: "strongly_connected (app_iso hom G) \<longleftrightarrow> strongly_connected G"
+    using hom by (auto simp: strongly_connected_def reachable_app_iso_eq)
+
+  lemma subgraph_strongly_connected_iso:
+    assumes "subgraph H G"
+    shows "strongly_connected (app_iso hom H) \<longleftrightarrow> strongly_connected H"
+  proof -
+    interpret H: wf_digraph H using \<open>subgraph H G\<close> ..
+    have "H.digraph_isomorphism hom" using hom assms by (rule digraph_isomorphism_subgraphI)
+    then show ?thesis
+      using assms by (auto simp: strongly_connected_def H.reachable_app_iso_eq)
+  qed
+
+  lemma sccs_iso[simp]: "pre_digraph.sccs (app_iso hom G) = app_iso hom ` sccs" (is "?L = ?R")
+  proof (intro set_eqI iffI)
+    fix x assume "x \<in> ?L"
+    then have "subgraph x (app_iso hom G)"
+      by (auto simp: pre_digraph.sccs_def)
+    then show "x \<in> ?R"
+      using \<open>x \<in> ?L\<close> hom by (auto simp: pre_digraph.sccs_altdef2 max_subgraph_iso
+        subgraph_strongly_connected_iso cong: max_subgraph_cong  intro: rev_image_eqI)
+  next
+    fix x assume "x \<in> ?R"
+    then obtain x0 where "x0 \<in> sccs" "x = app_iso hom x0" by auto
+    then show "x \<in> ?L"
+      using hom by (auto simp: pre_digraph.sccs_altdef2 max_subgraph_iso subgraph_app_isoI
+        subgraphI_max_subgraph subgraph_strongly_connected_iso cong: max_subgraph_cong)
+  qed
+
+  lemma card_sccs_iso[simp]: "card (app_iso hom ` sccs) = card sccs"
+    apply (rule card_image)
+    using hom
+    apply (rule inj_on_app_iso)
+    apply auto
+    done
+
+end
 
 end

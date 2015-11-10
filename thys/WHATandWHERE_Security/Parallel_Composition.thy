@@ -7,8 +7,8 @@ imports Up_To_Technique MWLs
 begin
 
 locale WHATWHERE_Secure_Programs =
-L : MWLs_semantics "E" "BMap"
-+ WWs : WHATWHERE "MWLsSteps_det" "E" "pp" "DA" "lH"
+L? : MWLs_semantics "E" "BMap"
++ WWs? : WHATWHERE "MWLsSteps_det" "E" "pp" "DA" "lH"
 for E :: "('exp, 'id, 'val) Evalfunction"
 and BMap :: "'val \<Rightarrow> bool"
 and DA :: "('id, 'd::order) DomainAssignment"

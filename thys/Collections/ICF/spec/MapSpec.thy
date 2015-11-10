@@ -527,7 +527,7 @@ definition transforms_to_unique_keys ::
 type_synonym ('k1,'v1,'m1,'k2,'v2,'m2) map_image_filter  
   = "('k1 \<times> 'v1 \<Rightarrow> ('k2 \<times> 'v2) option) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
 
-locale map_image_filter = m1!: map \<alpha>1 invar1 + m2!: map \<alpha>2 invar2
+locale map_image_filter = m1: map \<alpha>1 invar1 + m2: map \<alpha>2 invar2
   for \<alpha>1 :: "'m1 \<Rightarrow> 'u1 \<rightharpoonup> 'v1" and invar1
   and \<alpha>2 :: "'m2 \<Rightarrow> 'u2 \<rightharpoonup> 'v2" and invar2
   +
@@ -571,7 +571,7 @@ text {* Most of the time the mapping function is only applied to values. Then,
 type_synonym ('k,'v1,'m1,'k2,'v2,'m2) map_value_image_filter  
   = "('k \<Rightarrow> 'v1 \<Rightarrow> 'v2 option) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
 
-locale map_value_image_filter = m1!: map \<alpha>1 invar1 + m2!: map \<alpha>2 invar2
+locale map_value_image_filter = m1: map \<alpha>1 invar1 + m2: map \<alpha>2 invar2
   for \<alpha>1 :: "'m1 \<Rightarrow> 'u \<rightharpoonup> 'v1" and invar1
   and \<alpha>2 :: "'m2 \<Rightarrow> 'u \<rightharpoonup> 'v2" and invar2
   +
@@ -612,7 +612,7 @@ begin
 end
 
 type_synonym ('k,'v,'m1,'m2) map_restrict = "('k \<times> 'v \<Rightarrow> bool) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
-locale map_restrict = m1!: map \<alpha>1 invar1 + m2!: map \<alpha>2 invar2 
+locale map_restrict = m1: map \<alpha>1 invar1 + m2: map \<alpha>2 invar2 
   for \<alpha>1 :: "'m1 \<Rightarrow> 'u \<rightharpoonup> 'v" and invar1
   and \<alpha>2 :: "'m2 \<Rightarrow> 'u \<rightharpoonup> 'v" and invar2
   +

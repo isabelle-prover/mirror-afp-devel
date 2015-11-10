@@ -1058,7 +1058,7 @@ lemma funcset_vimage_diff:
   "f : A \<rightarrow> B \<Longrightarrow> A - f-`(B - C) = A \<inter> f-`C"
   by (auto intro: funcset_mem)
 
-locale func = S: carrier S + T: carrier T
+locale func = S?: carrier S + T?: carrier T
   for f and S (structure) and T (structure) and fimage +
   assumes func [iff]: "f : carrier\<^bsub>S\<^esub> \<rightarrow> carrier\<^bsub>T\<^esub>"
   defines "fimage \<equiv> fimg T f"

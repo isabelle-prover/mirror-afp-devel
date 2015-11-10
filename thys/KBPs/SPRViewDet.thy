@@ -505,7 +505,7 @@ lemma spr_sim: "sim SPR.MC spr_simMC spr_sim"
 end (* context FiniteDetBroadcastEnvironment *)
 
 sublocale FiniteDetBroadcastEnvironment
-        < SPRdet!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+        < SPRdet: SimIncrEnvironment jkbp envInit envAction envTrans envVal
                                      spr_jview envObs spr_jviewInit spr_jviewIncr
                                      spr_sim spr_simRels spr_simVal
 (*<*)
@@ -2128,7 +2128,7 @@ This suffices to placate the @{term "Algorithm"} locale.
 *}
 
 sublocale FiniteDetBroadcastEnvironment
-        < SPRdet!: Algorithm
+        < SPRdet: Algorithm
             jkbp envInit envAction envTrans envVal
             spr_jview envObs spr_jviewInit spr_jviewIncr
             spr_sim spr_simRels spr_simVal
