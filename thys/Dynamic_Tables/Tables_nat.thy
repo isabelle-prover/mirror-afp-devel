@@ -43,7 +43,7 @@ fun invar :: "nat * nat \<Rightarrow> bool" where
 "invar(n,l) = (l \<ge> l0 \<and> (\<lfloor>l/c\<rfloor> \<ge> l0 \<longrightarrow> f1*l \<le> n) \<and> n \<le> f2*l)"
 
 lemma invar_init: "invar (0,l0)"
-by (auto simp: le_floor_eq field_simps)
+by (auto simp: le_floor_iff field_simps)
 
 lemma invar_pres: assumes "invar s" shows "invar(nxt f s)"
 proof -
@@ -104,7 +104,7 @@ proof -
           hence l': "l0 \<le> l/c" by linarith
           have "f1 * \<lfloor>l/c\<rfloor> \<le> f1*(l/c)" by(simp del: times_divide_eq_right)
           hence f1: "f1*\<lfloor>l/c\<rfloor> \<le> n-1" using l' f1_l0[OF l'] assms `n \<noteq> 0`
-            by(simp add: le_floor_eq)
+            by(simp add: le_floor_iff)
           have "n-1 \<le> f2 * \<lfloor>l/c\<rfloor>"
           proof -
             have "n-1 < f1*l" using 0 `n \<noteq> 0` by linarith
@@ -178,7 +178,7 @@ next
   case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
   case 4 show ?case
-    by(auto simp: field_simps mult_le_0_iff le_floor_iff real_eq_of_nat)
+    by(auto simp: field_simps mult_le_0_iff le_floor_iff)
 next
   case (5 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
@@ -369,7 +369,7 @@ next
   case (3 s) thus ?case by(cases s)(simp split: if_splits)
 next
   case 4 show ?case
-    by(auto simp: field_simps mult_le_0_iff le_floor_iff real_eq_of_nat)
+    by(auto simp: field_simps mult_le_0_iff le_floor_iff)
 next
   case (5 s f)
   obtain n l where [simp]: "s = (n,l)" by fastforce
@@ -531,7 +531,7 @@ lemma f2f2'': "(f2 - f2'')*l0 \<ge> 1"
 proof -
   have "(f2 - f2'')*(l0-1) \<ge> 1"
     using l0_gr1 l0_f2f2' f2'_less_f2
-    by(simp add: f2''_def algebra_simps del: real_of_nat_diff) (simp add: field_simps)
+    by(simp add: f2''_def algebra_simps del: of_nat_diff) (simp add: field_simps)
   thus ?thesis using f2''_less_f2 by (simp add: algebra_simps)
 qed
 

@@ -700,7 +700,7 @@ next
   assume "t1 \<noteq> t0" with interval iv_defined have interval: "T = {t0..t1}" "t0 < t1"
     by auto
   obtain n::nat and b where b: "b = (t1 - t0) / (Suc n)" and bL: "L * b < 1"
-    by (rule, rule) (auto intro: order_le_less_trans real_nat_ceiling_ge simp del: real_of_nat_Suc)
+    by (rule, rule) (auto intro: order_le_less_trans real_nat_ceiling_ge simp del: of_nat_Suc)
   then interpret i': ivp_on_interval i "t0 + (Suc n) * b"
     using interval by unfold_locales simp_all
   from b have "b > 0" using interval iv_defined
@@ -731,7 +731,7 @@ next
     proof -
       have "snb + - (nb) = b * real (Suc (Suc n)) + - (b * real (Suc n))"
         by (simp add: ac_simps snb_def nb_def)
-      thus ?thesis by (simp add: field_simps real_of_nat_Suc)
+      thus ?thesis by (simp add: field_simps of_nat_Suc)
     qed
     def i1 \<equiv> "i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
     def T1 \<equiv> "t0 + nb"
@@ -800,7 +800,7 @@ next
   qed
   show "unique_solution i"
     using i'.solution i'.unique_solution interval(1)[symmetric] i'.interval[symmetric]
-    by unfold_locales (auto simp del: real_of_nat_Suc)
+    by unfold_locales (auto simp del: of_nat_Suc)
 qed
 
 subsection {* Picard-Lindeloef for @{term "X=(\<lambda>_. UNIV)"} *}
@@ -1055,7 +1055,7 @@ lemma (in unique_on_rectangle) unique_on_rectangle_subset:
     continuous_on_subset[OF continuous, of "{t0..t1'} \<times> X"]
     norm_f t1_bounded global_lipschitz.lipschitz lipschitz_on_domain
   by unfold_locales  --{*slow*}
-     (fastforce simp: Times_subset_cancel2 order.trans[OF assms] simp del: real_of_nat_Suc)+
+     (fastforce simp: Times_subset_cancel2 order.trans[OF assms] simp del: of_nat_Suc)+
 
 locale unique_on_rectangle_superset = subset: unique_on_rectangle + fixes X'' assumes superset: "X' \<subseteq> X''"
 begin

@@ -1035,7 +1035,7 @@ proof -
     using z
     apply (auto intro!: exI[of _ 1]
                 simp: abs_mult u_nonneg power_abs Suc_le_eq gr0_conv_Suc field_simps le_divide_eq u_le_1
-                simp del: real_of_nat_Suc)
+                simp del: of_nat_Suc)
     done
 qed
 
@@ -1075,7 +1075,7 @@ lemma gf_U'_tendsto_integral_t:
   assumes x: "recurrent x"
   shows "((\<lambda>z. ereal (gf_U' x x z)) ---> (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x)) (at_left 1)"
   unfolding integral_t_eq_suminf[OF x] gf_U'_def
-  by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: real_of_nat_Suc)
+  by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: of_nat_Suc)
 
 subsection {* Stationary distribution *}
 

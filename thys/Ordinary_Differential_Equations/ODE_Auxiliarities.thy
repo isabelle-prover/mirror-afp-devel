@@ -583,7 +583,7 @@ lemma trunc_err_eq_zero_iff:
   done
 
 lemma mantissa_Float_0[simp]: "mantissa (Float 0 e) = 0"
-  by (metis float_of_real float_zero mantissa_eq_zero_iff zero_float_def)
+  by (metis real_of_float_inverse float_zero mantissa_eq_zero_iff zero_float_def)
 
 
 subsection {* Lists *}

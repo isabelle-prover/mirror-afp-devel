@@ -253,7 +253,7 @@ proof-
   { fix s0 qs assume "s0 \<in> S0"
     hence "?compt s0 qs b c" using 1 by auto
     hence "?compt s0 qs b c'"
-      using mult_right_mono[OF assms(2) real_of_nat_ge_zero[of "T_opt s0 qs"]]
+      using mult_right_mono[OF assms(2) of_nat_0_le_iff[of "T_opt s0 qs"]]
       by arith }
   thus ?thesis using `b\<ge>0` by(auto simp add: compet_def)
 qed
@@ -271,7 +271,7 @@ proof -
       using 1 by(auto simp add: T_opt_def)
     have "Inf ?T \<le> T_off aoff s0 qs"
       using assms(3) by (intro cInf_lower) auto
-    from mult_left_mono[OF real_of_nat_le_iff[THEN iffD2, OF this] assms(2)]
+    from mult_left_mono[OF of_nat_le_iff[THEN iffD2, OF this] assms(2)]
     have "T_on A [] s0 qs \<le> c * T_off aoff s0 qs + b" using 2 by arith
   }
   thus ?thesis using `b\<ge>0` by(auto simp: compet_def)
@@ -600,7 +600,7 @@ next
   also have "\<dots> < real(T_A n)" using 0 by linarith
   also have "\<dots> \<le> (2 - 1 / size init) * T_A n" using assms(1) T_A_nneg[of n]
     by(auto simp add: mult_le_cancel_right1 field_simps neq_Nil_conv
-        simp del: real_of_int_setsum)
+        simp del: of_int_setsum)
   finally show ?thesis by linarith
 qed
 
@@ -661,7 +661,7 @@ using T_mtf_eq_lem by(simp add: T_mtf_def atLeast0LessThan)
 
 corollary MTF_competitive2: "init \<noteq> [] \<Longrightarrow> \<forall>i<length qs. qs!i \<in> set init \<Longrightarrow>
   T_on MTF [] init qs \<le> (2 - 1/(size init)) * T init qs acts"
-by (metis T_mtf_competitive T_A_eq T_mtf_eq real_of_int_of_nat_eq)
+by (metis T_mtf_competitive T_A_eq T_mtf_eq of_int_of_nat_eq)
 
 end
 
@@ -951,7 +951,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
       have 0: "2*real(?on n) \<ge> 0" by simp
-      have 1: "0 < real ((l + 1) * (n + 1))" by (simp del: real_of_nat_Suc)
+      have 1: "0 < real ((l + 1) * (n + 1))" by (simp del: of_nat_Suc)
       have "?off n \<ge> length(?cruel n)"
         by(rule T_ge_len) (simp add: adv_def)
       hence "?off n > n" by simp
@@ -961,7 +961,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
       have "?off n + ?a \<le> (l+1)*(n+1) div 2"
         using T_adv[OF assms(1) `l\<noteq>0`, of n] by(simp)
       hence "2*(?off n + ?a) \<le> (l+1)*(n+1)" by simp
-      hence "real(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: real_of_int_le_iff)
+      hence "real(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
       from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
     qed
     also have "\<dots> = ?on n / (?off n + ?a)"

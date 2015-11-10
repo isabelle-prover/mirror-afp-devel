@@ -86,7 +86,7 @@ lemma trans_inv':
 "(\<Sum> l\<in>{..<np'}. fiX (\<lambda> y. f y + x) p l) = 
         (\<Sum> l\<in>{..<np'}. fiX f p l) + real np' * x"
 apply (induct_tac np')
-apply (auto simp add: cfni_def  fiX_def real_of_nat_Suc 
+apply (auto simp add: cfni_def  fiX_def of_nat_Suc 
        distrib_right lessThan_Suc)
 done
 
@@ -143,7 +143,7 @@ next
     by auto
   also 
   have "... = real (Suc (card  F)) * b"
-    by (simp add: distrib_right  real_of_nat_Suc)
+    by (simp add: distrib_right  of_nat_Suc)
   also 
   from   finit xnotinF have "...= real (card (insert x F)) * b"
     by simp
@@ -522,7 +522,7 @@ case 0 thus ?case by simp
 next
 case (Suc n)
 thus ?case
-  by (auto simp: real_of_nat_Suc distrib_left lessThan_Suc) 
+  by (auto simp: of_nat_Suc distrib_left lessThan_Suc) 
 qed
 
 text {* Next, some lemmas about bounds that are used in the proof of Accuracy Preservation *}

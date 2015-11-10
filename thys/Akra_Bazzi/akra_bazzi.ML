@@ -173,7 +173,7 @@ fun akra_bazzi_relation_tac ctxt =
   | _ => K no_tac
 
 val measure_postproc_simps = 
-  @{thms arith_simps real_of_nat_zero real_of_nat_one real_of_nat_numeral
+  @{thms arith_simps real_of_nat_zero real_of_nat_one of_nat_numeral
          Suc_numeral real_of_nat_Suc}
 
 (* prove that the measure decreases in a recursive call by showing that the recursive call is
@@ -420,7 +420,7 @@ fun eval_numeral_tac ctxt =
       all_tac)
   
 fun unfold_simps ctxt = 
-  rewrite_tac ctxt @{thms eval_akra_bazzi_le_list_ex eval_length real_of_nat_numeral 
+  rewrite_tac ctxt @{thms eval_akra_bazzi_le_list_ex eval_length of_nat_numeral 
            real_of_nat_zero real_of_nat_1 numeral_One}
 
 

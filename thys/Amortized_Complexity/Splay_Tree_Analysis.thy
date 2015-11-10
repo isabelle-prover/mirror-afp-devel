@@ -14,7 +14,7 @@ definition A :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
 lemma A_simps[simp]: "A a (Node l a r) = 1"
  "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> (Node lr b r) - \<phi> (Node ll a lr) + 1"
  "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
-by(auto simp add: A_def algebra_simps real_of_nat_Suc)
+by(auto simp add: A_def algebra_simps of_nat_Suc)
 
 text{* The following lemma is an attempt to prove a generic lemma that covers
 both zig-zig cases. However, the lemma is not as nice as one would like.
@@ -37,13 +37,13 @@ proof -
   def [simp]: B' == "Node lb2 b A'"
   have "t_splay x lb + \<Phi> t' - \<Phi> t = t_splay x lb + \<Phi> lb1 + \<Phi> lb2 - \<Phi> lb + \<phi> B' + \<phi> A' - \<phi> B"
     using prems
-    by(auto simp: A_def size_if_splay algebra_simps in_set_tree_if real_of_nat_Suc split: tree.split)
+    by(auto simp: A_def size_if_splay algebra_simps in_set_tree_if of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 2 * \<phi> lb + \<phi> B' + \<phi> A' - \<phi> B - 3 * \<phi> X + 1"
     using IH prems(2) by(auto simp: algebra_simps)
   also have "\<dots> \<le> \<phi> lb + \<phi> B' + \<phi> A' - 3 * \<phi> X + 1" by(simp)
   also have "\<dots> \<le> \<phi> B' + 2 * \<phi> t - 3 * \<phi> X "
     using prems ld_ld_1_less[of "size1 lb" "size1 A'"]
-    by(simp add: size_if_splay real_of_nat_Suc)
+    by(simp add: size_if_splay of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> t - 3 * \<phi> X"
     using prems by(simp add: size_if_splay)
   finally show ?thesis by simp
@@ -74,7 +74,7 @@ next
   with 3 show ?case using
     log_le_cancel_iff[of 2 "size1(Node rb a ra)" "size1 ?A"]
     log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
-    by (auto simp: real_of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
+    by (auto simp: of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
 next
   case (9 a b la lb rb)
   let ?A = "\<langle>la, a, \<langle>lb, b, rb\<rangle>\<rangle>"
@@ -82,7 +82,7 @@ next
   with 9 show ?case using
     log_le_cancel_iff[of 2 "size1(Node la a lb)" "size1 ?A"]
     log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
-    by (auto simp: real_of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
+    by (auto simp: of_nat_Suc algebra_simps simp del:log_le_cancel_iff)
 next
   case (6 x a b lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
@@ -94,7 +94,7 @@ next
   let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "6.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+    by(auto simp: A_def size_if_splay algebra_simps of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 6 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -102,7 +102,7 @@ next
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp ld_ld_1_less[of "size1 ?R" "size1 ?A'"]
-    by(simp add: size_if_splay real_of_nat_Suc)
+    by(simp add: size_if_splay of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
   finally show ?case by simp
@@ -118,7 +118,7 @@ next
   let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "8.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+    by(auto simp: A_def size_if_splay algebra_simps of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 8 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -126,7 +126,7 @@ next
   also have "\<dots> \<le> \<phi> rb + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> rb + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
-    by(simp add: size_if_splay real_of_nat_Suc)
+    by(simp add: size_if_splay of_nat_Suc)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
 next
@@ -141,7 +141,7 @@ next
   let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "11.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+    by(auto simp: A_def size_if_splay algebra_simps of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 11 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -149,7 +149,7 @@ next
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?R + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
-    by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
+    by(simp add: size_if_splay of_nat_Suc algebra_simps)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
 next
@@ -160,11 +160,11 @@ next
   obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   from zig_zig[of rb x ru lu lx rx _ b lb a la] 14 sp 0
-  show ?case by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc)
+  show ?case by(auto simp: A_def size_if_splay algebra_simps of_nat_Suc)
 (* The explicit version:
   have "A x ?A = A x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
     using "14.prems" 1 sp
-    by(auto simp: A_def size_if_splay algebra_simps real_of_nat_Suc split: tree.split)
+    by(auto simp: A_def size_if_splay algebra_simps of_nat_Suc split: tree.split)
   also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
     using 14 0 by(auto simp: algebra_simps)
   also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
@@ -172,7 +172,7 @@ next
   also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
   also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp ld_ld_1_less[of "size1 ?R" "size1 ?A'"]
-    by(simp add: size_if_splay real_of_nat_Suc algebra_simps)
+    by(simp add: size_if_splay of_nat_Suc algebra_simps)
   also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
   finally show ?case by simp
@@ -221,7 +221,7 @@ next
       using one_le_log_cancel_iff[of 2 "1 + size1 rl"]
         one_le_log_cancel_iff[of 2 "1 + size1 l + size1 rl"]
         log_le_cancel_iff[of 2 "size1 l + size1 rl" "1 + size1 l + size1 rl"]
-     by (auto simp: real_of_nat_Suc Am_def field_simps
+     by (auto simp: of_nat_Suc Am_def field_simps
            simp del: log_le_cancel_iff one_le_log_cancel_iff)
   next
     assume "rr \<noteq> Leaf"
@@ -232,13 +232,13 @@ next
     let ?C = "Node rl c rr"  let ?B = "Node l b ?C"
     let ?B' = "Node l b rl"  let ?C' = "Node ?B' c l'"
     have "Am ?B = Am rr + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1" using "3.prems" sp 1
-      by(auto simp add: Am_def real_of_nat_Suc)
+      by(auto simp add: Am_def of_nat_Suc)
     also have "\<dots> \<le> 3 * (\<phi> rr - 1) + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 2"
       using 3 `rr \<noteq> Leaf` by auto
     also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 1" by simp
     also have "\<dots> \<le> \<phi> rr + \<phi> ?B' + \<phi> ?C' - 1" by simp
     also have "\<dots> \<le> 2 * \<phi> ?B + \<phi> ?C' - 2"
-      using ld_ld_1_less[of "size1 ?B'" "size1 rr"] by(simp add: real_of_nat_Suc)
+      using ld_ld_1_less[of "size1 ?B'" "size1 rr"] by(simp add: of_nat_Suc)
     also have "\<dots> \<le> 3 * \<phi> ?B - 2" using 1 by simp
     finally show ?case by simp
   qed
@@ -309,42 +309,42 @@ next
         assume "e=a"
         have nneg: "log 2 (1 + real (size s)) \<ge> 0" by simp
         thus ?thesis using `s \<noteq> Leaf` opt `e=a`
-          apply(simp add: algebra_simps real_of_nat_Suc) using nneg by arith
+          apply(simp add: algebra_simps of_nat_Suc) using nneg by arith
       next
         let ?L = "log 2 (real(size1 l) + 1)"
         assume "e<a" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?L + ?LR"
-          using  `s \<noteq> Leaf` `e<a` by(simp add: real_of_nat_Suc)
+          using  `s \<noteq> Leaf` `e<a` by(simp add: of_nat_Suc)
         also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
-          using opt size_splay[of a s,symmetric] by(simp add: real_of_nat_Suc)
+          using opt size_splay[of a s,symmetric] by(simp add: of_nat_Suc)
         also have "?L \<le> log 2 ?slr" by(simp)
         also have "?LR \<le> log 2 ?slr + 1"
         proof -
-          have "?LR \<le> log 2 (2 * ?slr)" by (simp add: real_of_nat_Suc)
+          have "?LR \<le> log 2 (2 * ?slr)" by (simp add: of_nat_Suc)
           also have "\<dots> \<le> log 2 ?slr + 1"
             by (simp add: log_mult del:distrib_left_numeral)
           finally show ?thesis .
         qed
         finally show ?thesis using size_splay[of a s,symmetric]
-          by (simp add: real_of_nat_Suc)
+          by (simp add: of_nat_Suc)
       next
         let ?R = "log 2 (2 + real(size r))"
         assume "a<e" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?R + ?LR"
-          using  `s \<noteq> Leaf` `a<e` by(simp add: real_of_nat_Suc)
+          using  `s \<noteq> Leaf` `a<e` by(simp add: of_nat_Suc)
         also have "?t + ?Plr - ?Ps \<le> 2 * log 2 ?slr + 1"
           using opt size_splay[of a s,symmetric]
-          by(simp add: real_of_nat_Suc)
+          by(simp add: of_nat_Suc)
         also have "?R \<le> log 2 ?slr" by(simp)
         also have "?LR \<le> log 2 ?slr + 1"
         proof -
-          have "?LR \<le> log 2 (2 * ?slr)" by (simp add: real_of_nat_Suc)
+          have "?LR \<le> log 2 (2 * ?slr)" by (simp add: of_nat_Suc)
           also have "\<dots> \<le> log 2 ?slr + 1"
             by (simp add: log_mult del:distrib_left_numeral)
           finally show ?thesis .
         qed
         finally show ?thesis using size_splay[of a s,symmetric]
-           by (simp add: real_of_nat_Suc)
+           by (simp add: of_nat_Suc)
       qed
     qed
   next
@@ -367,7 +367,7 @@ next
       show ?thesis
       proof (cases "e=a")
         case False thus ?thesis
-          using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
+          using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps of_nat_Suc)
           using `?lslr \<ge> 0` by arith
       next
         case [simp]: True
@@ -376,7 +376,7 @@ next
           case Leaf
           have 1: "log 2 (2 + real (size r)) \<ge> 0" by(simp)
           show ?thesis
-            using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
+            using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps of_nat_Suc)
             using 1 `?lslr \<ge> 0` by arith
         next
           case (Node ll y lr)
@@ -392,11 +392,11 @@ next
             using size_splay_max[of l] Node by simp
           have 2: "log 2 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
           have 3: "log 2 (size1 l' + size1 r) \<le> log 2 (size1 l' + size1 r') + log 2 ?slr"
-            apply(simp add: real_of_nat_Suc) using 1 2 by arith
+            apply(simp add: of_nat_Suc) using 1 2 by arith
           have 4: "log 2 (2 + (real(size ll) + real(size lr))) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
-            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps real_of_nat_Suc)
+            apply(simp add: Splay_Tree.delete_def t_delete_def field_simps of_nat_Suc)
             using 4 `\<Phi> r' \<ge> 0` by arith
         qed
       qed

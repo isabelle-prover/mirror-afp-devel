@@ -8,7 +8,7 @@ fun \<Psi> :: "bool \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<R
 "\<Psi> b i d x\<^sub>1 x\<^sub>2 n = (if n \<ge> x\<^sub>2 then i*(n - x\<^sub>2) else
   if n \<le> x\<^sub>1 \<and> b then d*(x\<^sub>1 - n) else 0)"
 
-declare real_of_nat_Suc[simp] real_of_nat_diff[simp]
+declare of_nat_Suc[simp] of_nat_diff[simp]
 
 text{* An automatic proof: *}
 lemma Psi_diff_Ins:

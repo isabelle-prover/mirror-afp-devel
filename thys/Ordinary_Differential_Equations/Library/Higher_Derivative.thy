@@ -531,7 +531,7 @@ lemma cube_in_cball:
 proof -
   have "(\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> (\<Sum>(i::'a)\<in>Basis. (r / sqrt(DIM('a)))\<^sup>2)"
     using assms by (intro setsum_mono) (auto intro: sqrt_le_rsquare)
-  moreover have "... \<le> r\<^sup>2" by (simp add: power_divide real_eq_of_nat)
+  moreover have "... \<le> r\<^sup>2" by (simp add: power_divide)
   ultimately show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> r"
     using `r > 0` by (auto intro!: real_le_lsqrt setsum_nonneg)
 qed

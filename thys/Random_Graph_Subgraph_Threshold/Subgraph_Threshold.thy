@@ -92,7 +92,7 @@ next
     let ?I = "{(v, e). v \<subseteq> {1..n} \<and> card v = ?v \<and> e \<subseteq> all_edges v \<and> card e = ?e}"
     let ?Y = "\<lambda>es. \<Sum>H\<^sub>0' \<in> ?I. ?X H\<^sub>0' es"
 
-    --{* Now we prove an upper bound for the probability that a random graph contains a copy of 
+    --{* Now we prove an upper bound for the probability that a random graph contains a copy of
          @{term H}. Observe that in that case, $Y$ takes a value greater or equal than $1$. *}
 
     have "prob_in_class p {G. H \<sqsubseteq> G} n = probGn p n (\<lambda>es. H \<sqsubseteq> ?graph_of es)"
@@ -136,7 +136,7 @@ next
         qed simp
       qed simp
 
-    --{* Applying Markov's inequality leaves us with estimating the expectation of $Y$, which is 
+    --{* Applying Markov's inequality leaves us with estimating the expectation of $Y$, which is
          the sum of the individual $X$. *}
     also have "\<dots> \<le> ES.expectation ?Y / 1"
       by (rule prob_space.markov_inequality) (auto simp: ES.prob_space_P setsum_nonneg)
@@ -176,7 +176,7 @@ next
 
     --{* Since we have a sum of constant summands, we can rewrite it as a product. *}
     also have "\<dots> = card ?I * p n ^ ?e"
-      unfolding real_of_nat_def by (rule setsum_constant)
+      by (rule setsum_constant)
 
     --{* We have to count the number of possible pairs $(v, e)$. From the definition of the index
          set, note that we first choose $|V(H_0)|$ elements out of a set of @{term n} vertices and
@@ -211,7 +211,7 @@ next
         have "n choose ?v \<le> n ^ ?v"
           by (rule binomial_le_pow) (rule n)
         thus "real (n choose ?v) \<le> real (n ^ ?v)"
-          by (metis real_of_nat_le_iff)
+          by (metis of_nat_le_iff)
       next
         show "0 \<le> ?r" using p by simp
       qed
@@ -360,7 +360,7 @@ next
       .
 
     --{* We proceed by reducing the claim of the 1-statement that the probability tends to $1$ to
-         showing that the expectation that the sum of all indicators of the respective events $A$ 
+         showing that the expectation that the sum of all indicators of the respective events $A$
          tends to $0$. (The actual reduction is done at the end of the proof, we merely collect
          the facts here.) *}
     have compl_prob: "1 - prob {es \<in> space P. \<not> H \<sqsubseteq> edge_ugraph es} = prob_in_class p {G. H \<sqsubseteq> G} n"
@@ -392,12 +392,11 @@ next
     hence compl_upper: "?compl \<le> 1 / \<mu> + \<Delta>\<^sub>d / \<mu>^2"
       by (rule order_trans) (fact prob_\<mu>_\<Delta>\<^sub>d)
 
-    --{* Lower bound for the expectation. We use $\left(\frac n k\right)^k$ as lower bound for 
+    --{* Lower bound for the expectation. We use $\left(\frac n k\right)^k$ as lower bound for
          $\binom n k$. *}
     have "1 / ?v ^ ?v * (real n ^ ?v * p n ^ ?e) = (n / ?v) ^ ?v * p n ^ ?e"
       by (simp add: power_divide)
     also have "\<dots> \<le> (n choose ?v) * p n ^ ?e"
-      unfolding real_of_nat_def
       proof (rule mult_right_mono, rule binomial_ge_n_over_k_pow_k)
         show "?v \<le> n"
           using n .
@@ -405,7 +404,7 @@ next
           using p by simp
       qed
     also have "\<dots> = (\<Sum>S \<in> ?I. p n ^ ?e)"
-      unfolding real_of_nat_def by (simp add: n_subsets)
+      by (simp add: n_subsets)
     also have "\<dots> = (\<Sum>S \<in> ?I. prob (?A S))"
       by (simp add: prob_A)
     also have "\<dots> = \<mu>"
@@ -530,7 +529,7 @@ next
         also have "\<dots> = p n powr (2 * ?e - ?cST)"
           using p_nz by (simp add: powr_realpow)
         also have "\<dots> = p n powr (real (2 * ?e) - real ?cST)"
-          using isomorphic_cards[OF S(4)] S(6) by (metis real_of_nat_diff card_mono finite_graph_def inf_le1 mult_le_mono mult_numeral_1 numeral_1_eq_1 one_le_numeral)
+          using isomorphic_cards[OF S(4)] S(6) by (metis of_nat_diff card_mono finite_graph_def inf_le1 mult_le_mono mult_numeral_1 numeral_1_eq_1 one_le_numeral)
 
         --{* Since the intersection graph is also an isomorphic subgraph of @{term H}, we know that
              its density has to be less than or equal to the maximum density of @{term H}. The proof
@@ -579,7 +578,7 @@ next
     also have "\<dots> = (\<Sum>k = 1..?v. \<Sum>(S, T) \<in> (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}). p n powr (2 * ?e - max_density H * k))"
       by (rule setsum.cong, rule refl, rule setsum.Sigma) auto
     also have "\<dots> = (\<Sum>k = 1..?v. card (SIGMA S : ?I. {T \<in> ?I. card (S \<inter> T) = k}) * p n powr (2 * ?e - max_density H * k))"
-      unfolding real_of_nat_def by (rule setsum.cong) auto
+      by (rule setsum.cong) auto
 
     --{* Here, we compute the cardinality of the index sets and use the same upper bounds for
          the binomial coefficients as for the 0-statement. *}

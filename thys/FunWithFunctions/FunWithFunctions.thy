@@ -130,12 +130,12 @@ proof -
       case (Suc n)
       have "real(Suc(Suc n))*r + real(Suc n) =
             r + (real(Suc n)*r + real n) + 1" (is "?a = ?b")
-        by(simp add:real_of_nat_Suc field_simps)
+        by(simp add:of_nat_Suc field_simps)
       hence "f ?a = f ?b"
         by presburger
       also have "\<dots> = f r + f(real(Suc n)*r + real n)" by(rule f_add)
       also have "\<dots> = f r + real(Suc n) * f r" by(simp only:Suc)
-      finally show ?case by(simp add:real_of_nat_Suc field_simps)
+      finally show ?case by(simp add:of_nat_Suc field_simps)
     qed }
   note 1 = this
   { fix n::nat and r assume "n\<noteq>0"
@@ -151,7 +151,7 @@ proof -
   have "real(n)*f(real i/real n) = f(real i + real(n - 1))"
     using `n\<noteq>0` by(simp add:f_mult[symmetric])
   also have "\<dots> = f(real(i + int n - 1))" using `n\<noteq>0`[simplified]
-    by (metis One_nat_def Suc_leI int_1 add_diff_eq real_of_int_add real_of_int_of_nat_eq zdiff_int)
+    by (metis One_nat_def Suc_leI int_1 add_diff_eq of_int_add of_int_of_nat_eq zdiff_int)
   also have "\<dots> = real(i + int n - 1) + 1" by(rule f_int)
   also have "\<dots> = real i + real n" by arith
   finally show ?thesis using `n\<noteq>0` unfolding r by (simp add:field_simps)

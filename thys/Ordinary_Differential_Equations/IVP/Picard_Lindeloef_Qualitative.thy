@@ -25,7 +25,7 @@ proof -
   qed
   moreover
   have "... \<le> r\<^sup>2"
-    using assms by (simp add: power_divide real_eq_of_nat)
+    using assms by (simp add: power_divide)
   ultimately
   show "sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (y \<bullet> i))\<^sup>2) \<le> r"
     using assms by (auto intro!: real_le_lsqrt setsum_nonneg)
@@ -130,7 +130,7 @@ proof -
   def j \<equiv> "(i\<lparr>ivp_T := {t0..min (t0 + a') t_max}, ivp_X := {x0 - ?C a..x0 + ?C a}\<rparr>)"
   have "ivp_T j \<times> ivp_X j \<subseteq>R" using a' by (auto simp add: j_def R_def)
   with `R \<subseteq> T\<times>X` have "ivp_T j \<times> ivp_X j \<subseteq> T\<times>X" by simp
-  with continuous have "continuous_on (ivp_T j \<times> ivp_X j) f" 
+  with continuous have "continuous_on (ivp_T j \<times> ivp_X j) f"
     by (rule continuous_on_subset)
   moreover
   {
@@ -311,7 +311,7 @@ proof -
     from ya have "iya.is_solution (fst ya)" by (simp add: PHI)
     from ya equal have "y t0 = fst ya t0" by (auto simp: PHI)
     thus "y j.t0 = j.x0"
-      using iv_defined iya.iv_defined 
+      using iv_defined iya.iv_defined
       using iya.is_solutionD(1)[OF `iya.is_solution (fst ya)`]
       by (auto simp: j_def)
   next

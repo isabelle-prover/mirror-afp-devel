@@ -90,10 +90,10 @@ proof -
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
   also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr real (- e))\<^sup>2))"
     apply (intro real_sqrt_le_mono setsum_mono power_mono)
-    apply (auto simp: dist_real_def eucl_down_def simp del: real_of_int_minus)
+    apply (auto simp: dist_real_def eucl_down_def simp del: of_int_minus)
     by (simp add: abs_round_down_le)
   finally show ?thesis
-    by (simp add: real_sqrt_mult real_of_nat_def)
+    by (simp add: real_sqrt_mult)
 qed
 
 lemma eucl_down: "eucl_down e (x::'a::executable_euclidean_space) \<le> x"

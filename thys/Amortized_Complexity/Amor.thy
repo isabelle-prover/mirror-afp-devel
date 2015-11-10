@@ -150,13 +150,13 @@ next
     show ?thesis
     proof cases
       assume "l=0" thus ?thesis using goal2 ac
-        by (simp add: real_of_nat_Suc b_def field_simps)
+        by (simp add: of_nat_Suc b_def field_simps)
     next
       assume "l\<noteq>0"
       show ?thesis
       proof cases
         assume "n<l"
-        thus ?thesis using goal2 by(simp add: real_of_nat_Suc algebra_simps)
+        thus ?thesis using goal2 by(simp add: of_nat_Suc algebra_simps)
       next
         assume "\<not> n<l"
         hence [simp]: "n=l" using goal2 `l\<noteq>0` by simp
@@ -175,7 +175,7 @@ next
           have "real l + 1 = real(int(l)) + 1" by simp
           also have "... \<le> ceiling(c * real l)" using `l \<noteq> 0`
             by(simp only: int_less_real_le[symmetric] less_ceiling_iff)
-              (simp add: real_of_nat_def[symmetric] mult_less_cancel_right1)
+              (simp add:[symmetric] mult_less_cancel_right1)
           finally show ?thesis .
         qed
         from `l\<noteq>0` 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
@@ -199,13 +199,13 @@ next
       show ?thesis
       proof cases
         assume "n<l"
-        thus ?thesis using goal5 ac by(simp add: real_of_nat_Suc algebra_simps b_def)
+        thus ?thesis using goal5 ac by(simp add: of_nat_Suc algebra_simps b_def)
       next
         assume "\<not> n<l"
         hence [simp]: "n=l" using goal5 by simp
         have "t\<^sub>i\<^sub>n\<^sub>s s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using `l\<noteq>0`
-          by(simp add: real_of_nat_Suc algebra_simps less_trans[of "-1::real" 0])
+          by(simp add: of_nat_Suc algebra_simps less_trans[of "-1::real" 0])
         also have "- b * ceiling(c*l) \<le> - b * (c*l)" by simp
         also have "l + a + 1 + - b*(c*l) + b*l = a + 1 + l*(1 - b*(c - 1))"
           by (simp add: algebra_simps)
@@ -315,7 +315,7 @@ next
   case goal5 thus ?case
     apply(cases s)
     apply(cases f)
-    by (auto simp:  real_of_nat_Suc split: prod.splits)
+    by (auto simp:  of_nat_Suc split: prod.splits)
 qed
 
 
@@ -346,7 +346,7 @@ next
   case goal4 show ?case by(simp)
 next
   case goal5 thus ?case apply(cases s) apply(cases f)
-    by (auto simp: field_simps real_of_nat_Suc)
+    by (auto simp: field_simps of_nat_Suc)
 qed
 
 end

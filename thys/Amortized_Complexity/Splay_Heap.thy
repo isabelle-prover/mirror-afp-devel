@@ -227,7 +227,7 @@ proof(induction t rule: t_dm.induct)
       finally show ?thesis .
     qed
     have 2: "log 2 (real (size1 lr) + 1) \<ge> 0" by simp
-    thus ?case apply(simp add: real_of_nat_Suc) using 1 2 by linarith
+    thus ?case apply(simp add: of_nat_Suc) using 1 2 by linarith
   next
     assume ll[simp]: "\<not> ll = Leaf"
     let ?l' = "del_min ll"
@@ -243,7 +243,7 @@ proof(induction t rule: t_dm.induct)
     also have "\<dots> = 2 + 2 * \<phi> ll + \<phi> ?t' + \<phi> ?s' - \<phi> ?t - \<phi> ?s" by(simp)
     also have "\<dots> \<le> 2 + \<phi> ll + \<phi> ?s'" using 0 1 by linarith
     also have "\<dots> < 2 * \<phi> ?t + 1" using 2 ld_ld_1_less[of "size1 ll" "size1 ?s'"]
-      by (simp add: size1_def real_of_nat_Suc)
+      by (simp add: size1_def of_nat_Suc)
     finally show ?case by simp
   qed
 qed auto
@@ -260,8 +260,8 @@ proof -
     using assms(3) by (simp add: t_def size1_def)
   from ld_ld_1_less[of "size1 s + size1 u" "size1 r"] 
   have "1 + \<phi> r + log 2 (size1 s + size1 u) \<le> 2 * log 2 (size1 s + size1 u + size1 r)"
-    by(simp add: size1_def real_of_nat_Suc)
-  thus ?thesis using assms 1 2 by (simp add: real_of_nat_Suc algebra_simps)
+    by(simp add: size1_def of_nat_Suc)
+  thus ?thesis using assms 1 2 by (simp add: of_nat_Suc algebra_simps)
 qed
 
 lemma zig_zag:
@@ -275,8 +275,8 @@ proof -
   have 2: "\<phi> r \<le> \<phi> t" by (simp add: t_def size1_def)
   from ld_ld_less2[of "size1 s + size1 r1'" "size1 u + size1 r2'"] 
   have "1 + log 2 (size1 s + size1 r1') + log 2 (size1 u + size1 r2') \<le> 2 * \<phi> t"
-    by(simp add: assms(4) size1_def real_of_nat_Suc t_def ac_simps)
-  thus ?thesis using assms 1 2 by (simp add: real_of_nat_Suc algebra_simps)
+    by(simp add: assms(4) size1_def of_nat_Suc t_def ac_simps)
+  thus ?thesis using assms 1 2 by (simp add: of_nat_Suc algebra_simps)
 qed
 
 lemma amor_partition: "bst_eq t \<Longrightarrow> partition p t = (l',r')
@@ -304,7 +304,7 @@ next
           using size_partition[OF 0(1)] by (simp add: size1_def)
         with 0 `a \<le> p` `b \<le> p` "2.prems"(1) "2.IH"(1)[OF _ Node , of rrl r']
           zig_zig[where s=l and u=rl and r=rr and r1'=rrl and r2'=r' and p=p, of a b]
-        show ?thesis by (simp add: real_of_nat_Suc algebra_simps)
+        show ?thesis by (simp add: of_nat_Suc algebra_simps)
       next
         assume "\<not> b \<le> p"
         with `a \<le> p` "2.prems" obtain rll rlr 
@@ -313,7 +313,7 @@ next
         from 0 `a \<le> p` `\<not> b \<le> p` "2.prems"(1) "2.IH"(2)[OF _ Node, of rll rlr]
           size_partition[OF 0(1)]
           zig_zag[where s=l and u=rr and r=rl and r1'=rll and r2'=rlr and p=p, of a b]
-        show ?thesis by (simp add: real_of_nat_Suc algebra_simps)
+        show ?thesis by (simp add: of_nat_Suc algebra_simps)
       qed
     qed
   next
@@ -333,7 +333,7 @@ next
         from 0 `\<not> a \<le> p` `b \<le> p` "2.prems"(1) "2.IH"(3)[OF _ Node, of lrl lrr]
           size_partition[OF 0(1)]
           zig_zag[where s=r and u=ll and r=lr and r1'=lrr and r2'=lrl and p=p, of a b]
-        show ?thesis by (auto simp: real_of_nat_Suc algebra_simps)
+        show ?thesis by (auto simp: of_nat_Suc algebra_simps)
       next
         assume "\<not> b \<le> p"
         with `\<not> a \<le> p` "2.prems" obtain llr
@@ -343,7 +343,7 @@ next
           using size_partition[OF 0(1)] by (simp add: size1_def)
         with 0 `\<not> a \<le> p` `\<not> b \<le> p` "2.prems"(1) "2.IH"(4)[OF _ Node, of l' llr]
           zig_zig[where s=r and u=lr and r=ll and r1'=llr and r2'=l' and p=p, of a b]
-        show ?thesis by (auto simp: real_of_nat_Suc algebra_simps)
+        show ?thesis by (auto simp: of_nat_Suc algebra_simps)
       qed
     qed
   qed
@@ -381,7 +381,7 @@ next
     { fix l r assume 1: "partition x s = (l,r)"
       have "log 2 (1 + size s) < log 2 (2 + size s)" by simp
       with 1 amor_partition[OF goal5 1] size_partition[OF 1] Insert have ?thesis
-        by(simp add: t_in_def insert_def real_of_nat_Suc algebra_simps size1_def
+        by(simp add: t_in_def insert_def of_nat_Suc algebra_simps size1_def
              del: log_less_cancel_iff) }
     thus ?thesis using Insert by(simp add: insert_def split: prod.split)
   qed

@@ -44,7 +44,7 @@ proof
     by (auto intro!: \<phi>_zero simp: field_simps)
 next
   have "real (i + 1) / 2^(l + 1) \<le> 1"
-    using i by (subst divide_le_eq_1_pos) (auto simp del: real_of_int_add power_Suc)
+    using i by (subst divide_le_eq_1_pos) (auto simp del: of_int_add power_Suc)
   also assume "1 < x"
   finally show ?thesis
     by (auto intro!: \<phi>_zero simp: field_simps)
@@ -145,8 +145,8 @@ proof -
     by simp
 
   from `?right \<or> ?left` `l \<le> l'` have empty_support: "?sup l i \<inter> ?sup l' i' = {}"
-    by (auto simp add: min_def max_def divide_simps l' power_add * real_of_int_mult[symmetric]
-                simp del: real_of_int_diff real_of_int_add real_of_int_mult real_of_int_power)
+    by (auto simp add: min_def max_def divide_simps l' power_add * of_int_mult[symmetric]
+                simp del: of_int_diff of_int_add of_int_mult of_int_power)
        (simp_all add: field_simps)
   then have "\<And>x. \<phi> (l', i') x * \<phi> (l, i) x = 0"
     unfolding \<phi>_zero_iff mult_eq_0_iff by blast
@@ -198,14 +198,14 @@ proof (subst l2_\<phi>I_DERIV)
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
     have "?i * 2^(l' - l) \<le> ?in'"
       using i'_bot[THEN zless_imp_add1_zle]
-      by (auto simp add: real_of_int_le_iff[symmetric])
+      by (auto simp add: of_int_le_iff[symmetric])
     hence "?i / ?l \<le> ?in' / ?l'"
       using level_diff by (auto simp: field_simps)
     hence "?i / ?l \<le> x" using x by auto
     moreover
     have "?ip' \<le> real i * 2^(l' - l)"
       using i'_top[THEN zless_imp_add1_zle]
-      by (auto simp add: real_of_int_le_iff[symmetric])
+      by (auto simp add: of_int_le_iff[symmetric])
     hence ip'_le_i: "?ip' / ?l' \<le> real i / ?l"
       using level_diff by (auto simp: field_simps)
     hence "x \<le> real i / ?l" using x by auto
@@ -247,14 +247,14 @@ proof (subst l2_\<phi>I_DERIV)
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
     have "real i * 2^(l' - l) \<le> ?in'"
       using i'_bot[THEN zless_imp_add1_zle]
-      by (auto simp add: real_of_int_le_iff[symmetric])
+      by (auto simp add: of_int_le_iff[symmetric])
     hence "real i / ?l \<le> ?in' / ?l'"
       using level_diff by (auto simp: field_simps)
     hence "real i / ?l \<le> x" using x by auto
     moreover
     have "?ip' \<le> ?i * 2^(l' - l)"
       using i'_top[THEN zless_imp_add1_zle]
-      by (auto simp add: real_of_int_le_iff[symmetric])
+      by (auto simp add: of_int_le_iff[symmetric])
     hence ip'_le_i: "?ip' / ?l' \<le> ?i / ?l"
       using level_diff by (auto simp: field_simps)
     hence "x \<le> ?i / ?l" using x by auto

@@ -30,7 +30,7 @@ next
   case goal4 show ?case by(simp)
 next
   case goal5 thus ?case apply(cases s) apply(cases f)
-    by (auto simp: field_simps real_of_nat_Suc)
+    by (auto simp: field_simps of_nat_Suc)
 qed
 
 locale Table =
@@ -95,7 +95,7 @@ assumes "l \<ge> 1/f2 * (m/(m-1))" "n \<le> f2' * l"
 shows "n+1 \<le> f2*l"
 proof -
   have "f2' * l + 1 \<le> f2*l" using assms(1)
-    by(simp add: field_simps real_of_nat_diff)
+    by(simp add: field_simps of_nat_diff)
   with assms(2) show ?thesis by arith
 qed
 
@@ -104,7 +104,7 @@ assumes "l \<ge> 1/f2 * (m/(m-1))" "n+1 > f2 * l"
 shows "n > f2'*l"
 proof -
   have "f2' * l + 1 \<le> f2*l" using assms(1)
-    by(simp add: field_simps real_of_nat_diff)
+    by(simp add: field_simps of_nat_diff)
   with assms(2) show ?thesis by arith
 qed
 
@@ -150,7 +150,7 @@ next
         qed
         have "l \<ge> 1/f2 * (m/(m-1))" using l0f2m `l \<ge> l0` by linarith
         hence "f2*l + 1 \<le> f2 * (m*l)"
-          by(simp add: field_simps real_of_nat_Suc real_of_nat_diff)
+          by(simp add: field_simps of_nat_Suc of_nat_diff)
         hence "n+1 \<le> f2 * (m*l)" using `n \<le> f2*l` by linarith
         with 0 1 2 `l \<noteq> 0` show ?thesis by simp
       qed
@@ -179,12 +179,12 @@ next
         proof -
           have "l \<ge> l0 * m" using k l by simp
           hence "l/m \<ge> l0"
-            by(simp add: field_simps) (metis real_of_nat_le_iff real_of_nat_mult)
+            by(simp add: field_simps) (metis of_nat_le_iff of_nat_mult)
           hence 3: "1 / (f1 * (m - 1)) \<le> l/m" using l0f1m by linarith
           have "f1 * (l div m) = f1 * l / m"
             by(simp add: real_of_nat_div[OF `m dvd l`])
           also have "\<dots> \<le> f1*l - 1"
-            using 3 by(simp add: field_simps real_of_nat_diff)
+            using 3 by(simp add: field_simps of_nat_diff)
           finally show ?thesis using `f1*l \<le> n` by linarith
         qed
         have "n - 1 \<le> f2 * (l div m)"
@@ -217,7 +217,7 @@ next
       show ?thesis
       proof cases
         assume "n+1 \<le> f2*l" thus ?thesis
-          apply (auto simp add: algebra_simps real_of_nat_Suc not_le)
+          apply (auto simp add: algebra_simps of_nat_Suc not_le)
           apply(rule add_mono)
           apply(drule mult_left_mono[OF less_imp_le ad0])
           apply simp
@@ -232,7 +232,7 @@ next
         from Ins_no_oflow2[OF this `real n + 1 > f2*l`]
         have "n > f2'*l" .
         thus ?thesis using ai
-apply(simp add: algebra_simps real_of_nat_Suc real_of_nat_diff)
+apply(simp add: algebra_simps of_nat_Suc of_nat_diff)
 apply(simp add: field_simps)
 apply(drule mult_left_mono[of _ _ "f2 * real l"])
 apply simp
@@ -246,8 +246,8 @@ using 0 by linarith
     proof cases
       assume "n \<le> 1" with goal5 ad0 show ?thesis
         apply(auto simp: field_simps not_le split: if_splits)
-        apply (metis ad0 ai0 add.commute add_increasing2 mult_left_mono mult_nonneg_nonneg real_of_nat_ge_zero)
-        by (metis (no_types) distrib_left dual_order.order_iff_strict le_add_same_cancel2 mult_left_mono[OF _ ad0] order_trans real_of_nat_ge_zero)
+        apply (metis ad0 ai0 add.commute add_increasing2 mult_left_mono mult_nonneg_nonneg of_nat_0_le_iff)
+        by (metis (no_types) distrib_left dual_order.order_iff_strict le_add_same_cancel2 mult_left_mono[OF _ ad0] order_trans of_nat_0_le_iff)
     next
       assume [arith]: "\<not> n \<le> 1"
       hence "l \<ge> l0" and "f1*l \<le> n" using goal5 by (auto split: if_splits)
@@ -259,17 +259,17 @@ using 0 by linarith
         proof cases
           assume "real n - 1 \<ge> f1*l"
           thus ?thesis using `n < f2'*l`
-            by(simp add: algebra_simps real_of_nat_diff)
+            by(simp add: algebra_simps of_nat_diff)
         next
           assume 0[arith]: "\<not> real n - 1 \<ge> f1*l"
           hence 1: "real n - 1 < f2/(m*m)*l"
-            using mult_right_mono[OF f1f2mm real_of_nat_ge_zero[of l]] by simp
+            using mult_right_mono[OF f1f2mm of_nat_0_le_iff[of l]] by simp
           have "l \<noteq> l0" using goal5 apply auto using 0 l0f1 by auto
           hence "m dvd l" using goal5 by (auto split: if_splits)
           show ?thesis (is "?l \<le> ?r")
           proof -
             have "?l = n + ad + - ad*(f2'*l*((m-1)/m))" using 1 `n < f2'*l`
-              by(simp add: field_simps real_of_nat_diff real_of_nat_div[OF `m dvd l`])
+              by(simp add: field_simps of_nat_diff real_of_nat_div[OF `m dvd l`])
             also have "\<dots> < 1 + ad + f1*l + - (ad*(f2'*l*((m-1)/m)))" by linarith
             also have "- (ad*(f2'*l*((m-1)/m))) \<le> - ((1/(m-1))*(f2'*l*((m-1)/m)))"
               by(rule le_imp_neg_le[OF mult_right_mono[OF ad]]) simp
@@ -281,21 +281,21 @@ using 0 by linarith
       next
         assume 0[arith]: "\<not> n < f2'*l"
         have "1/(f1*(m - 1)) \<ge> 1/(f2/m - f1)"
-          using f1f2m f1f2mm by(simp add: field_simps real_of_nat_diff)
+          using f1f2m f1f2mm by(simp add: field_simps of_nat_diff)
         hence "l \<ge> 1/(f2' - f1)" using `l \<ge> l0` l0f1m by simp
         from Del_no_uflow[OF this leI[OF `\<not> n < f2'*l`]]
         have [arith]: "real n - 1 \<ge> f1*l" .
         show ?thesis
         proof cases
           assume "real n - 1 \<ge> f2'*l"
-          thus ?thesis by(simp add: algebra_simps real_of_nat_diff)
+          thus ?thesis by(simp add: algebra_simps of_nat_diff)
         next
           assume 1: "\<not> real n - 1 \<ge> f2'*l"
           have 2: "f2'*l - (n-1) \<le> 1" by linarith
           show ?thesis (is "?l \<le> ?r")
           proof -
             have "?l = 1 + ad*(f2'*l - (n-1)) + - (ai*(n - f2'*l))" using 1 2
-              by(simp add: real_of_nat_diff)
+              by(simp add: of_nat_diff)
             also have "- (ai*(n - f2'*l)) \<le> 0" using ai0 0 by(simp)
             also have "ad*(f2'*l - (n-1)) \<le> ad"
               by(rule mult_left_le[OF 2 ad0])
@@ -343,7 +343,7 @@ proof
   case goal2 show ?case by(simp add: f1_def field_simps)
   case goal3 show ?case using l0f1 by(simp add: f1_def field_simps)
   case goal4 show ?case
-    apply (simp add: ad_def ai_def real_of_nat_diff divide_le_cancel)
+    apply (simp add: ad_def ai_def of_nat_diff divide_le_cancel)
     using mult_left_mono[OF l0f1, of m, simplified]
     by (metis diff_0_right diff_mono zero_le_one)
   case goal5 show ?case by(simp add: ai_def)

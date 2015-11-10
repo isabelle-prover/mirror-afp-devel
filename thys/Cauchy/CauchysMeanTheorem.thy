@@ -110,11 +110,11 @@ next
       moreover with calculation Cons have "\<Sum>:ys < m*real (length ys)" by simp
       hence "\<Sum>:ys + y < m*real(length ys) + y" by simp
       with ylm have "\<Sum>:(y#ys) < m*(real(length ys) + 1)" by(simp add:field_simps)
-      with real_of_nat_Suc have "\<Sum>:(y#ys) < m*(real(length ys + 1))"
+      with of_nat_Suc have "\<Sum>:(y#ys) < m*(real(length ys + 1))"
         apply -
         apply (drule meta_spec [of _ "length ys"])
         apply (subst(asm) eq_sym_conv)
-        by (simp del: real_of_nat_Suc)
+        by (simp del: of_nat_Suc)
       hence "\<Sum>:(y#ys) < m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
@@ -147,11 +147,11 @@ next
       moreover with calculation Cons have "\<Sum>:ys > m*real (length ys)" by simp
       hence "\<Sum>:ys + y > m*real(length ys) + y" by simp
       with ylm have "\<Sum>:(y#ys) > m*(real(length ys) + 1)" by(simp add:field_simps)
-      with real_of_nat_Suc have "\<Sum>:(y#ys) > m*(real(length ys + 1))"
+      with of_nat_Suc have "\<Sum>:(y#ys) > m*(real(length ys + 1))"
         apply -
         apply (drule meta_spec [of _ "length ys"])
         apply (subst(asm) eq_sym_conv)
-        by (simp del: real_of_nat_Suc)
+        by (simp del: of_nat_Suc)
       hence "\<Sum>:(y#ys) > m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
@@ -389,7 +389,7 @@ proof
   hence lnez: "len \<noteq> 0" by simp
   from lgt0 have l1nez: "len + 1 \<noteq> 0" by simp
   from ld have mean: "mean xs = \<Sum>:xs / len" unfolding mean_def by simp
-  with ld real_of_nat_add real_of_one mean_def
+  with ld of_nat_add of_int_1 mean_def
   have "mean ((mean xs)#xs) = (\<Sum>:xs/len + \<Sum>:xs) / (1+len)"
     by simp
   also from list_sum_distrib_aux have
@@ -598,7 +598,7 @@ proof (rule ccontr)
       by (simp add:field_simps)
   also have
     "\<dots> = (?m * (real (length xs)))"
-      apply (subst real_of_nat_add [symmetric])
+      apply (subst of_nat_add [symmetric])
       by (simp add: listsum_length_split [symmetric])
   also have
     "\<dots> = \<Sum>:xs"
@@ -635,7 +635,7 @@ proof (rule ccontr) -- "reductio ad absurdum"
       by (simp add:field_simps)
   also have
     "\<dots> = (?m * (real (length xs)))"
-      apply (subst real_of_nat_add [symmetric])
+      apply (subst of_nat_add [symmetric])
       by (simp add: listsum_length_split [symmetric])
   also have
     "\<dots> = \<Sum>:xs"

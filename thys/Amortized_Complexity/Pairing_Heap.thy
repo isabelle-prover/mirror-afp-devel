@@ -133,7 +133,7 @@ next
     proof -
       have "2 + \<dots> \<le> 2*log 2 (?t1 + ?t2)"
         using ld_sum_inequality [of "?t1" "?t2"] by simp
-      also have "\<dots> \<le> 0" by (simp add: field_simps del: real_of_nat_Suc)
+      also have "\<dots> \<le> 0" by (simp add: field_simps del: of_nat_Suc)
       finally show ?thesis by linarith
     qed 
     finally have "log 2 (1 + size lx + size ly) + log 2 (size ?ry) + 2

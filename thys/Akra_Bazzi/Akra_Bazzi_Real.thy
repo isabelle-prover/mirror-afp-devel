@@ -712,7 +712,7 @@ lemma f'_base: "x \<ge> x\<^sub>0 \<Longrightarrow> x \<le> x\<^sub>1 \<Longrigh
   apply (subst f'.simps(1), assumption)
   apply (rule f_base)
   apply (rule order.trans[of _ "real (nat \<lfloor>x\<^sub>0\<rfloor>)"], simp add: x0_int)
-  apply (subst real_of_nat_le_iff, intro nat_mono floor_mono, assumption)
+  apply (subst of_nat_le_iff, intro nat_mono floor_mono, assumption)
   using x0_pos apply linarith
   done
 

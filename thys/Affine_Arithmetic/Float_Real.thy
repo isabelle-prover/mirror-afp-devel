@@ -29,11 +29,11 @@ by (induct n) simp_all
 
 lemma real_of_float_of_nat_eq: "real (of_nat n :: float) = real n"
   using Floatreal_of_nat_eq
-  by (simp add: real_of_nat_def)
+  by simp
 
 lemma real_of_float_of_int_eq: "real (float_of_int z) = of_int z"
   by (cases z rule: int_diff_cases)
-    (simp_all add: of_rat_diff real_of_nat_def real_of_float_of_nat_eq)
+    (simp_all add: of_rat_diff real_of_float_of_nat_eq)
 
 text {* Operations *}
 
@@ -79,7 +79,7 @@ lemmas [code del] =
 
 lemma real_equal_code [code]:
   "HOL.equal (Floatreal x) (Floatreal y) \<longleftrightarrow> HOL.equal x y"
-  by (metis (poly_guards_query) Floatreal_real equal float_of_real)
+  by (metis (poly_guards_query) Floatreal_real equal real_of_float_inverse)
 
 abbreviation FloatR::"int\<Rightarrow>int\<Rightarrow>real" where
   "FloatR a b \<equiv> Floatreal (Float a b)"
