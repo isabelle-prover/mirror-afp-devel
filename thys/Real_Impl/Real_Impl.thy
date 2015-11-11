@@ -272,7 +272,7 @@ proof (transfer, unfold Let_def, clarsimp)
   with p pab have abpos: "a * b \<ge> 0"
     by (metis of_int_0_le_iff of_int_le_0_iff zero_le_divide_iff zero_le_mult_iff)
   have rab: "of_nat (nat (a * b)) = real_of_int a * real_of_int b" using abpos
-      by (metis of_int_mult of_nat_nat)
+    by simp
   let ?lhs = "sqrt (of_int a / of_int b)"
   let ?rhs = "(case case quotient_of p of
                (a, b) \<Rightarrow> (case sqrt_int \<bar>a * b\<bar> of [] \<Rightarrow> (0, inverse (of_int b), nat \<bar>a * b\<bar>)
@@ -399,7 +399,7 @@ proof (transfer, unfold Let_def, clarsimp)
   def z1n2 \<equiv> "z1 * n2"
   def z2n1 \<equiv> "z2 * n1"
   def n12 \<equiv> "n1 * n2"
-  def r_add \<equiv> "of_int (z2n1) * sqrt (real (int b))"
+  def r_add \<equiv> "of_int (z2n1) * sqrt (real_of_int (int b))"
   from n1 n2 have n120: "n12 > 0" unfolding n12_def by simp
   have "floor (of_rat p + of_rat q * sqrt (real_of_nat b)) = floor ((of_int z1n2 + r_add) / of_int n12)"
     unfolding r_add_def n12_def z1n2_def z2n1_def
