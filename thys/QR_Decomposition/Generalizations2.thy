@@ -75,54 +75,35 @@ end
 
 subsection{*Real\_of\_extended class*}
 
-instantiation real :: real_of
+class real_of_extended = real_vector + cnj +
+ fixes real_of :: "'a \<Rightarrow> real"
+ assumes real_add:"real_of ((a::'a) + b) = real_of a + real_of b"
+  and real_uminus: "real_of (-a) = - real_of a"
+  and real_scalar_mult: "real_of (c *\<^sub>R a) = c * (real_of a)"
+  and real_a_cnj_ge_0: "real_of (a*cnj a)\<ge>0"
 begin
 
-definition "(real_real :: real\<Rightarrow>real) = id"
-
-instance
-by (intro_classes)
-end
-
-
-instantiation complex :: real_of
-begin
-
-definition "(real_complex :: complex\<Rightarrow>real) = Re"
-
-instance
-by (intro_classes)
-
-end
-
-class real_of_extended = real_vector + real_of + cnj +
- assumes real_add:"real ((a::'a) + b) = real a + real b"
-  and real_uminus: "real (-a) = - real a"
-  and real_scalar_mult: "real(c *\<^sub>R a) = c * (real a)"
-  and real_a_cnj_ge_0: "real (a*cnj a)\<ge>0"
-begin
-
-lemma real_minus: "real (a - b) = real a - real b"
+lemma real_minus: "real_of (a - b) = real_of a - real_of b"
 proof -
-  have "real (a - b) = real (a + - b)" by simp
-  also have "... = real a + real (- b)" unfolding real_add ..
-  also have "... = real a + - real b" unfolding real_uminus ..
-  also have "... = real a - real b" by simp
+  have "real_of (a - b) = real_of (a + - b)" by simp
+  also have "... = real_of a + real_of (- b)" unfolding real_add ..
+  also have "... = real_of a + - real_of b" unfolding real_uminus ..
+  also have "... = real_of a - real_of b" by simp
   finally show ?thesis .
 qed
 
-lemma real_0[simp]: "real 0 = 0"
+lemma real_0[simp]: "real_of 0 = 0"
 proof -
-    have "real 0 = real (0+0)" by auto
-    also have "... = real 0 + real 0" unfolding real_add ..
-    also have "... = 2*(real 0)" by auto
-    finally have "real 0 = 2* real 0" .
+    have "real_of 0 = real_of (0+0)" by auto
+    also have "... = real_of 0 + real_of 0" unfolding real_add ..
+    also have "... = 2*(real_of 0)" by auto
+    finally have "real_of 0 = 2* real_of 0" .
     thus ?thesis by (auto simp add: two_not_one)
 qed
 
 
 lemma real_setsum:
-  "real (setsum (\<lambda>i. f i) A) = setsum (\<lambda>i. real (f i)) A"
+  "real_of (setsum (\<lambda>i. f i) A) = setsum (\<lambda>i. real_of (f i)) A"
 proof (cases "finite A")
   case False thus ?thesis by auto
 next
@@ -133,11 +114,23 @@ qed
 
 end
 
-instance real :: real_of_extended
-  by (intro_classes, auto simp add: real_real_def cnj_real_def)
+instantiation real :: real_of_extended
+begin
 
-instance complex :: real_of_extended
-  by (intro_classes, auto simp add: real_complex_def cnj_complex_def)
+definition real_of_real :: "real \<Rightarrow> real" where "real_of_real = id"
+
+instance
+  by (intro_classes, auto simp add: real_of_real_def cnj_real_def)
+end
+
+instantiation complex :: real_of_extended
+begin
+
+definition real_of_complex :: "complex \<Rightarrow> real" where "real_of_complex = Re"
+
+instance
+  by (intro_classes, auto simp add: real_of_complex_def cnj_complex_def)
+end
 
 subsection{*Generalizing HMA*}
 
@@ -151,23 +144,23 @@ locale inner_product_space = vector_space scale
   assumes inner_commute: "inner x y = cnj (inner y x)"
   and inner_add_left: "inner (x+y) z = inner x z + inner y z"
   and inner_scaleR_left [simp]:"inner (scale r x) y = r * inner x y"
-  and inner_ge_zero [simp]:"0 \<le> real (inner x x)"
+  and inner_ge_zero [simp]:"0 \<le> real_of (inner x x)"
   and inner_eq_zero_iff [simp]: "inner x x = 0 \<longleftrightarrow> x=0"
   (*Properties related to real and inner that must be assumed.*)
-  and real_scalar_mult2: "real (inner x x) *\<^sub>R A = inner x x * A"
-  and inner_gt_zero_iff: "0 < real (inner x x) \<longleftrightarrow> x \<noteq> 0" 
+  and real_scalar_mult2: "real_of (inner x x) *\<^sub>R A = inner x x * A"
+  and inner_gt_zero_iff: "0 < real_of (inner x x) \<longleftrightarrow> x \<noteq> 0" 
 
 
 interpretation RV_inner: inner_product_space scaleR inner
-by (unfold_locales, auto simp add: cnj_real_def inner_add_left real_real_def, rule inner_commute)
+by (unfold_locales, auto simp add: cnj_real_def inner_add_left real_of_real_def, rule inner_commute)
 
 interpretation RR_inner: inner_product_space scaleR "op *"
-by (unfold_locales, auto simp add: cnj_real_def distrib_right real_real_def) 
+by (unfold_locales, auto simp add: cnj_real_def distrib_right real_of_real_def) 
    (metis not_real_square_gt_zero)
 
 interpretation CC_inner: inner_product_space "(op *::complex\<Rightarrow>complex\<Rightarrow>complex)" "\<lambda>x y. x*cnj y"
   apply (unfold_locales) 
-  apply (auto simp add: real_complex_def cnj_complex_def distrib_left distrib_right complex_mult_cnj complex_neq_0 cmod_power2 complex_norm_square)
+  apply (auto simp add: real_of_complex_def cnj_complex_def distrib_left distrib_right complex_mult_cnj complex_neq_0 cmod_power2 complex_norm_square)
   apply (metis Re_complex_of_real complex_neq_0 less_numeral_extra(3) of_real_add of_real_power zero_complex.simps(1))
   by (simp add: distrib_left mult.commute scaleR_conv_of_real)
   
@@ -239,7 +232,7 @@ lemmas inner_distrib = inner_left_distrib inner_right_distrib
 
 
 lemma aux_Cauchy:
-shows "0 \<le> real (inner x x + (cnj a) * (inner x y) + a * ((cnj (inner x y)) + (cnj a) * (inner y y)))"
+shows "0 \<le> real_of (inner x x + (cnj a) * (inner x y) + a * ((cnj (inner x y)) + (cnj a) * (inner y y)))"
 proof -
   have "(inner (x+scale a y) (x+scale a y)) = (inner (x+scale a y) x) + (inner (x+scale a y) (scale a y))" 
     unfolding inner_add_right ..
@@ -253,11 +246,11 @@ proof -
   finally show ?thesis by (metis inner_ge_zero)
 qed
 
-lemma real_inner_inner: "real (inner x x * inner y y) = real (inner x x) * real (inner y y)"
+lemma real_inner_inner: "real_of (inner x x * inner y y) = real_of (inner x x) * real_of (inner y y)"
   by (metis real_scalar_mult real_scalar_mult2) 
 
 lemma Cauchy_Schwarz_ineq:
-  "real (cnj (inner x y) * inner x y) \<le> real (inner x x) * real (inner y y)"
+  "real_of (cnj (inner x y) * inner x y) \<le> real_of (inner x x) * real_of (inner y y)"
 proof -
   def cnj_a\<equiv>"- cnj (inner x y)/ (inner y y)"
   def a \<equiv> "cnj (cnj_a)"
@@ -265,24 +258,24 @@ proof -
     unfolding a_def by (simp)
   have rw_0: "(cnj (inner x y)) + (cnj a) * (inner y y) = 0"
     unfolding cnj_rw cnj_a_def by auto
-  have "0 \<le> real (inner x x + (cnj a) * (inner x y) + a * ((cnj (inner x y)) + (cnj a) * (inner y y)))"
+  have "0 \<le> real_of (inner x x + (cnj a) * (inner x y) + a * ((cnj (inner x y)) + (cnj a) * (inner y y)))"
     using aux_Cauchy by auto
-  also have "... = real (inner x x + (cnj a) * (inner x y))" unfolding rw_0 by auto
-  also have "... = real (inner x x - cnj (inner x y) * inner x y / inner y y)" 
+  also have "... = real_of (inner x x + (cnj a) * (inner x y))" unfolding rw_0 by auto
+  also have "... = real_of (inner x x - cnj (inner x y) * inner x y / inner y y)" 
   unfolding cnj_rw cnj_a_def by auto
-  finally have " 0 \<le> real (inner x x - cnj (inner x y) * inner x y / inner y y) " .
-  hence "0 \<le> real (inner y y)  * real (inner x x - cnj (inner x y) * inner x y / inner y y)" by auto
-  also have "... = real (real(inner y y)*\<^sub>R(inner x x - cnj (inner x y) * inner x y / inner y y))"
+  finally have " 0 \<le> real_of (inner x x - cnj (inner x y) * inner x y / inner y y) " .
+  hence "0 \<le> real_of (inner y y)  * real_of (inner x x - cnj (inner x y) * inner x y / inner y y)" by auto
+  also have "... = real_of (real_of (inner y y)*\<^sub>R(inner x x - cnj (inner x y) * inner x y / inner y y))"
     unfolding real_scalar_mult ..
-  also have "... = real ((inner y y) * (inner x x - cnj (inner x y) * inner x y / inner y y))"
+  also have "... = real_of ((inner y y) * (inner x x - cnj (inner x y) * inner x y / inner y y))"
     unfolding real_scalar_mult2 ..
-  also have "... = real ((inner x x - cnj (inner x y) * inner x y / inner y y)*(inner y y))" 
+  also have "... = real_of ((inner x x - cnj (inner x y) * inner x y / inner y y)*(inner y y))" 
     by (simp add: mult.commute)
-  also have "... = real (((inner x x)*(inner y y) - cnj (inner x y) * inner x y))"
+  also have "... = real_of (((inner x x)*(inner y y) - cnj (inner x y) * inner x y))"
   by (simp add: left_diff_distrib)
-  also have "... = real ((inner x x)*(inner y y)) - real (cnj (inner x y) * inner x y)"
+  also have "... = real_of ((inner x x)*(inner y y)) - real_of (cnj (inner x y) * inner x y)"
     unfolding real_minus ..
-  finally have "real (cnj (inner x y) * inner x y) \<le> real ((inner x x)*(inner y y))" by auto 
+  finally have "real_of (cnj (inner x y) * inner x y) \<le> real_of ((inner x x)*(inner y y))" by auto 
   thus ?thesis unfolding real_inner_inner .
 qed
 end
@@ -292,24 +285,24 @@ hide_const (open) norm
 context inner_product_space
 begin
 
-definition "norm x = (sqrt (real (inner x x)))"
+definition "norm x = (sqrt (real_of (inner x x)))"
 
 lemmas norm_eq_sqrt_inner = norm_def
 
-lemma inner_cnj_ge_zero[simp]: "real ((inner x y) * cnj (inner x y)) \<ge> 0"
+lemma inner_cnj_ge_zero[simp]: "real_of ((inner x y) * cnj (inner x y)) \<ge> 0"
   using real_a_cnj_ge_0 by auto
 
-lemma power2_norm_eq_inner: "(norm x)\<^sup>2 = real (inner x x)"
+lemma power2_norm_eq_inner: "(norm x)\<^sup>2 = real_of (inner x x)"
   by (simp add: norm_def)
 
 lemma Cauchy_Schwarz_ineq2:
-  "sqrt (real (cnj (inner x y) * inner x y)) \<le> norm x * norm y"
+  "sqrt (real_of (cnj (inner x y) * inner x y)) \<le> norm x * norm y"
 proof (rule power2_le_imp_le)
-  have eq: "0 \<le> real (cnj (inner x y) * inner x y)" 
+  have eq: "0 \<le> real_of (cnj (inner x y) * inner x y)" 
     by (simp add: mult.commute)
-  have "real (cnj (inner x y) * inner x y) \<le> real (inner x x) * real (inner y y)"
+  have "real_of (cnj (inner x y) * inner x y) \<le> real_of (inner x x) * real_of (inner y y)"
     using Cauchy_Schwarz_ineq .
-  thus "(sqrt (real (cnj (inner x y) * inner x y)))\<^sup>2 \<le> (norm x * norm y)\<^sup>2" 
+  thus "(sqrt (real_of (cnj (inner x y) * inner x y)))\<^sup>2 \<le> (norm x * norm y)\<^sup>2" 
   unfolding power_mult_distrib
   unfolding power2_norm_eq_inner unfolding real_sqrt_pow2[OF eq] .
   show "0 \<le> norm x * norm y"
@@ -384,10 +377,10 @@ locale vec_real_inner = F?: inner_product_space "(op * :: 'a\<Rightarrow>'a\<Rig
  assumes inner_vec_def: "inner x y = setsum (\<lambda>i. inner_field (x$i) (y$i)) UNIV"
 begin
 
-lemma inner_ge_zero [simp]: "0 \<le> real (inner x x)"
+lemma inner_ge_zero [simp]: "0 \<le> real_of (inner x x)"
   by (auto simp add: inner_vec_def real_setsum setsum_nonneg)
 
-lemma real_scalar_mult2: "real (inner x x) *\<^sub>R A = inner x x * A"
+lemma real_scalar_mult2: "real_of (inner x x) *\<^sub>R A = inner x x * A"
 by (auto simp add: inner_vec_def) 
   (metis (mono_tags, lifting) Cartesian_Euclidean_Space.setsum_cong_aux 
   real_scalar_mult2 real_setsum scaleR_left.setsum scale_setsum_left)
@@ -406,12 +399,12 @@ lemma i4: assumes "inner x x = 0"
 shows "x = 0"
 proof (unfold vec_eq_iff, clarify, simp)
   fix a
-  have "0 = real (\<Sum>i\<in>UNIV. inner_field (x $ i) (x $ i))"
+  have "0 = real_of (\<Sum>i\<in>UNIV. inner_field (x $ i) (x $ i))"
     using assms by (simp add: inner_vec_def) 
-  also have "... = (\<Sum>i\<in>UNIV. real (inner_field (x $ i) (x $ i)))" 
+  also have "... = (\<Sum>i\<in>UNIV. real_of (inner_field (x $ i) (x $ i)))" 
     using real_setsum by auto
-  finally have "0 = (\<Sum>i\<in>UNIV. real (inner_field (x $ i) (x $ i)))" .  
-  hence "real (inner_field (x $ a) (x $ a)) = 0"
+  finally have "0 = (\<Sum>i\<in>UNIV. real_of (inner_field (x $ i) (x $ i)))" .  
+  hence "real_of (inner_field (x $ a) (x $ a)) = 0"
     using setsum_0_all F.inner_ge_zero 
     by (metis (no_types, lifting) finite iso_tuple_UNIV_I)
   thus "x $ a = 0" 
@@ -429,7 +422,7 @@ proof (unfold_locales, auto simp add: real_scalar_mult2)
   show "inner (r *s x) y = r * inner x y" using i3 by blast
   show i: "inner x x = 0 \<Longrightarrow> x = 0" using i4 by blast
   assume "x \<noteq> 0"
-  thus "0 < real (inner x x)" by (metis i `x \<noteq> 0` inner_0_0 local.inner_ge_zero 
+  thus "0 < real_of (inner x x)" by (metis i `x \<noteq> 0` inner_0_0 local.inner_ge_zero 
     local.real_scalar_mult2 mult.commute mult_1_left order.not_eq_order_implies_strict real_0)
 qed
 end
@@ -599,7 +592,7 @@ text{*We can get the explicit results for complex and real matrices*}
 
 interpretation real_matrix: matrix "\<lambda>x y::real^'cols::{finite,wellorder}. 
   setsum (\<lambda>i. (x$i) * (y$i)) UNIV" "\<lambda>x y. setsum (\<lambda>i. (x$i) * (y$i)) UNIV"
-  apply (unfold_locales, auto simp add: cnj_real_def real_real_def distrib_right)
+  apply (unfold_locales, auto simp add: cnj_real_def real_of_real_def distrib_right)
   using not_real_square_gt_zero by blast
 
 interpretation complex_matrix: matrix "\<lambda>x y::complex^'cols::{finite,wellorder}. 
