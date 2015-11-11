@@ -12,6 +12,20 @@ lemma directed_towards_mono:
   assumes "s \<in> directed_towards A F" "F \<subseteq> G" shows "s \<in> directed_towards A G"
   using assms by induct (auto intro: directed_towards.intros)
 
+lemma directed_eq_rtrancl: "x \<in> directed_towards A r \<longleftrightarrow> (\<exists>a\<in>A. (x, a) \<in> r\<^sup>*)"
+proof
+  assume "x \<in> directed_towards A r" then show "\<exists>a\<in>A. (x, a) \<in> r\<^sup>*"
+    by induction (auto intro: converse_rtrancl_into_rtrancl)
+next
+  assume "\<exists>a\<in>A. (x, a) \<in> r\<^sup>*"
+  then obtain a where "(x, a) \<in> r\<^sup>*" "a \<in> A" by auto
+  then show "x \<in> directed_towards A r"
+    by (induction rule: converse_rtrancl_induct)
+       (auto intro: directed_towards.start directed_towards.step)
+qed
+
+lemma directed_eq_rtrancl_Image: "directed_towards A r = (r\<^sup>*)\<inverse> `` A"
+  unfolding set_eq_iff directed_eq_rtrancl Image_iff by simp
 
 locale Reachability_Problem = Finite_Markov_Decision_Process K S for K :: "'s \<Rightarrow> 's pmf set" and S +
   fixes S1 S2 :: "'s set"
@@ -297,7 +311,7 @@ lemma valid_cfg_action_in_K: "cfg \<in> valid_cfg \<Longrightarrow> action cfg \
   by (auto dest!: valid_cfgD)
 
 lemma K_cfg_E: "cfg \<in> valid_cfg \<Longrightarrow> cfg' \<in> K_cfg cfg \<Longrightarrow> (state cfg, state cfg') \<in> E"
-  by (auto simp: E_def K_cfg_def set_map_pmf valid_cfg_action_in_K)
+  by (auto simp: E_def K_cfg_def valid_cfg_action_in_K)
 
 lemma S\<^sub>r_directed_towards_S2:
   assumes s: "s \<in> S\<^sub>r"
@@ -511,7 +525,17 @@ proof -
       with S\<^sub>r_S1 have s\<^sub>0: "s\<^sub>0 \<in> S\<^sub>r - X" and [simp]: "s\<^sub>0 \<in> S" and "s\<^sub>0 \<in> S1"
         by (auto simp: S\<^sub>r_def dest: maximalD1)
 
-      { fix t assume t: "t \<in> S2 \<union> X" "t \<in> ?E s\<^sub>0" and "?v s\<^sub>0 \<le> ?v t"
+      from `proper ct` `s\<^sub>0 \<in> S` s\<^sub>0 have "?v s\<^sub>0 \<noteq> 0"
+        by (auto simp add: proper_def)
+      then have "0 < ?v s\<^sub>0"
+        using v_nonneg[of "?C s\<^sub>0"] by simp
+
+      { fix t assume "t \<in> S\<^sub>e \<union> S2 \<union> X" "t \<in> ?E s\<^sub>0" and "?v s\<^sub>0 \<le> ?v t"
+        moreover have "t \<in> S\<^sub>e \<Longrightarrow> ?v t = 0"
+          by (simp add: p_eq_0_imp S\<^sub>e_def ct_Pi)
+        ultimately have t: "t \<in> S2 \<union> X" "t \<in> ?E s\<^sub>0"
+          using `0 < ?v s\<^sub>0` by (auto simp: S\<^sub>e_def)
+
         have "maximal ?v (?E s\<^sub>0 \<inter> (S2 \<union> X)) \<noteq> {}"
           using finite_E t by (intro maximal_ne) auto
         moreover
@@ -538,12 +562,10 @@ proof -
         moreover note not_M[OF s\<^sub>0]
         ultimately have False
           by (blast dest: maximalD1) }
-      then have less_s\<^sub>0: "\<And>t. t \<in> S2 \<union> X \<Longrightarrow> t \<in> ?E s\<^sub>0 \<Longrightarrow> ?v t < ?v s\<^sub>0"
+      then have less_s\<^sub>0: "\<And>t. t \<in> S\<^sub>e \<union> S2 \<union> X \<Longrightarrow> t \<in> ?E s\<^sub>0 \<Longrightarrow> ?v t < ?v s\<^sub>0"
         by (auto simp add: not_le[symmetric])
 
       let ?K = "ct s\<^sub>0"
-      from `proper ct` `s\<^sub>0 \<in> S` s\<^sub>0 have "?v s\<^sub>0 \<noteq> 0"
-        by (auto simp add: proper_def)
 
       have "?v s\<^sub>0 = (\<integral>\<^sup>+ x. ?v x \<partial>?K)"
         using v_S1[of "?C s\<^sub>0"] `s\<^sub>0 \<in> S1` `s\<^sub>0 \<in> S` by (simp add: ct_Pi)
@@ -557,21 +579,14 @@ proof -
           by auto
         have "?v t < ?v s\<^sub>0"
         proof cases
-          assume "t \<in> S2 \<union> X" then show ?thesis
+          assume "t \<in> S\<^sub>e \<union> S2 \<union> X" then show ?thesis
             using less_s\<^sub>0[of t] t by simp
         next
-          assume "t \<notin> S2 \<union> X"
-          show ?thesis
-          proof cases
-            assume "t \<in> S\<^sub>e" with `?v s\<^sub>0 \<noteq> 0` v_S\<^sub>e[of "?C t"] S\<^sub>e v_nonneg[of "?C s\<^sub>0"] show ?thesis
-              by (auto simp: subset_eq ct_Pi)
-          next
-            assume "t \<notin> S\<^sub>e"
-            with t(1) `t \<notin> S2 \<union> X` ct_closed[of s\<^sub>0 t] have "t \<in> S\<^sub>r - X"
-              unfolding S\<^sub>r_def by (auto simp: E_def)
-            with t(2) show ?thesis
-              using `s\<^sub>0 \<in> ?S\<^sub>m` by (auto simp: maximal_def not_le intro: less_le_trans)
-          qed
+          assume "t \<notin> S\<^sub>e \<union> S2 \<union> X"
+          with t(1) ct_closed[of s\<^sub>0 t] have "t \<in> S\<^sub>r - X"
+            unfolding S\<^sub>r_def by (auto simp: E_def)
+          with t(2) show ?thesis
+            using `s\<^sub>0 \<in> ?S\<^sub>m` by (auto simp: maximal_def not_le intro: less_le_trans)
         qed
         then show "\<not> (AE x in ?K. ?v s\<^sub>0 \<le> ?v x)"
           using t by (auto simp: not_le AE_measure_pmf_iff E_def cong del: AE_cong intro!: exI[of _ "t"])
@@ -581,28 +596,14 @@ proof -
           fix t assume t: "t \<in> ?E s\<^sub>0"
           show "?v t \<le> ?v s\<^sub>0"
           proof cases
-            assume "t \<in> S2 \<union> X" then show ?thesis
+            assume "t \<in> S\<^sub>e \<union> S2 \<union> X" then show ?thesis
               using less_s\<^sub>0[of t] t by simp
           next
-            assume "t \<notin> S2 \<union> X"
-            show ?thesis
-            proof cases
-              assume "t \<in> S\<^sub>e"
-              then have "?v t = 0"
-                by (simp add: p_eq_0_imp S\<^sub>e_def ct_Pi)
-              with `?v s\<^sub>0 \<noteq> 0` show ?thesis
-                by (auto simp: v_nonneg ct_Pi)
-            next
-              assume "t \<notin> S\<^sub>e" with t `s\<^sub>0 \<in> ?S\<^sub>m` `t \<notin> S2 \<union> X` `s\<^sub>0 \<in> S` show ?thesis
-                by (elim maximalD2) (auto simp: S\<^sub>r_def intro!: ct_closed[of _ t])
-            qed
+            assume "t \<notin> S\<^sub>e \<union> S2 \<union> X" with t `s\<^sub>0 \<in> ?S\<^sub>m` `s\<^sub>0 \<in> S` show ?thesis
+              by (elim maximalD2) (auto simp: S\<^sub>r_def intro!: ct_closed[of _ t])
           qed
         qed
-      next
-        show "AE x in measure_pmf (ct s\<^sub>0). 0 \<le> v (?C x)"
-          using ct_Pi K_closed[of s\<^sub>0] `s\<^sub>0 \<in> S`
-          by (auto simp add: AE_measure_pmf_iff subset_eq Pi_iff intro!: v_nonneg[OF valid_C])
-      qed auto
+      qed (insert ct_closed[of s\<^sub>0], auto simp: AE_measure_pmf_iff intro!: v_nonneg[OF valid_C])
       also have "\<dots> = ?v s\<^sub>0"
         using `s\<^sub>0 \<in> S` measure_pmf.emeasure_space_1[of "ct s\<^sub>0"] by (simp add: v_nonneg[OF valid_C])
       finally show False
@@ -666,8 +667,7 @@ lemma F_v_memoryless:
   obtains ct where "ct \<in> Pi\<^sub>E S K" "v\<circ>simple ct = F_sup (v\<circ>simple ct)"
 proof atomize_elim
   def R \<equiv> "{(ct(s := D), ct) | ct s D.
-    ct \<in> Pi\<^sub>E S K \<and> proper ct \<and>
-    s \<in> S\<^sub>r \<and> D \<in> K s \<and> v (simple ct s) < (\<integral>\<^sup>+t. v (simple ct t) \<partial>D) }"
+    ct \<in> Pi\<^sub>E S K \<and> proper ct \<and> s \<in> S\<^sub>r \<and> D \<in> K s \<and> v (simple ct s) < (\<integral>\<^sup>+t. v (simple ct t) \<partial>D) }"
 
   { fix ct ct' assume ct_ct': "(ct', ct) \<in> R"
     let ?v = "\<lambda>s. v (simple ct s)" and ?v' = "\<lambda>s. v (simple ct' s)"
@@ -1394,4 +1394,3 @@ qed
 end
 
 end
-

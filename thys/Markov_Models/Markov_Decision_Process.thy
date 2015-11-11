@@ -177,6 +177,30 @@ lemma nn_integral_T:
   shows "(\<integral>\<^sup>+X. f X \<partial>T cfg) = (\<integral>\<^sup>+cfg'. (\<integral>\<^sup>+x. f (state cfg' ## x) \<partial>T cfg') \<partial>K_cfg cfg)"
   by (simp add: T_def MC.nn_integral_T[of _ cfg] nn_integral_distr)
 
+lemma T_eq:
+  "T cfg = (measure_pmf (K_cfg cfg) \<guillemotright>= (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>)))"
+proof (rule measure_eqI)
+  fix A assume "A \<in> sets (T cfg)"
+  then show "emeasure (T cfg) A =
+    emeasure (measure_pmf (K_cfg cfg) \<guillemotright>= (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>))) A"
+    by (subst emeasure_bind[where N=St])
+       (auto simp: space_subprob_algebra nn_integral_distr nn_integral_indicator[symmetric] nn_integral_T[of _ cfg]
+             simp del: nn_integral_indicator intro!: prob_space_imp_subprob_space T.prob_space_distr)
+qed simp
+
+lemma T_memoryless_on: "T (memoryless_on ct s) = MC_syntax.T ct s"
+proof -
+  interpret ct: MC_syntax ct .
+  have "T \<circ> (memoryless_on ct) = MC_syntax.T ct"
+  proof (rule ct.T_bisim[symmetric])
+    fix s show "(T \<circ> memoryless_on ct) s =
+        measure_pmf (ct s) \<guillemotright>= (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St (op ## s))"
+      by (simp add: T_eq[of "memoryless_on ct s"] K_cfg_def map_pmf_rep_eq bind_distr[where K=St]
+                    space_subprob_algebra T.prob_space_distr prob_space_imp_subprob_space)
+  qed (simp_all, intro_locales)
+  then show ?thesis by (simp add: fun_eq_iff)
+qed
+
 lemma nn_integral_T_lfp:
   assumes [measurable]: "case_prod g \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M borel)"
   assumes cont_g: "\<And>s. sup_continuous (g s)"
@@ -707,7 +731,7 @@ lemma
   by (auto simp: valid_cfg_def intro!: bexI[of _ s] intro: action_closed)
 
 lemma valid_K_cfg[intro]: "cfg \<in> valid_cfg \<Longrightarrow> cfg' \<in> K_cfg cfg \<Longrightarrow> cfg' \<in> valid_cfg"
-  by (auto simp add: K_cfg_def set_map_pmf valid_cfg_cont)
+  by (auto simp add: K_cfg_def valid_cfg_cont)
 
 definition "simple ct = memoryless_on (\<lambda>s. if s \<in> S then ct s else arb_act s)"
 

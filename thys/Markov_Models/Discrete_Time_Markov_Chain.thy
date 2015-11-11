@@ -39,11 +39,8 @@ proof -
   { fix x assume "x \<in> space M"
     have "(\<lambda>i::nat. if i < f x then 1 else 0) sums ereal_of_enat (f x)"
       using sums_If_finite[of "\<lambda>r. r < f x" "\<lambda>_. 1 :: ereal"]
-      apply (cases "f x")
-      apply (simp add: one_ereal_def) []
-      apply (simp add: sums_def tendsto_PInfty_eq_at_top
-                       filterlim_real_sequentially one_ereal_def)
-      done
+      by (cases "f x")
+         (simp_all add: sums_def tendsto_PInfty_eq_at_top filterlim_real_sequentially one_ereal_def)
     also have "(\<lambda>i. (if i < f x then 1 else 0)) = (\<lambda>i. indicator (F i) x)"
       using `x \<in> space M` by (simp add: one_ereal_def F_def fun_eq_iff)
     finally have "ereal_of_enat (f x) = (\<Sum>i. indicator (F i) x)"
@@ -963,7 +960,7 @@ proof -
                  intro!: nn_integral_mono_AE add_mono max.mono Suc)
       also have "\<dots> \<le> (\<integral>\<^sup>+ t. ereal (Suc i) + ereal \<P>(\<omega> in T t. enat i < sfirst (HLD H) (t ## \<omega>)) * p \<partial>K t)"
         by (intro nn_integral_mono)
-           (auto simp: max_def measure_nonneg `0 \<le> p` of_nat_Suc one_ereal_def[symmetric] plus_ereal.simps[symmetric] field_simps
+           (auto simp: max_def measure_nonneg `0 \<le> p` one_ereal_def[symmetric] plus_ereal.simps[symmetric] field_simps
                  simp del: ereal_plus_1 plus_ereal.simps)
       also have "\<dots> \<le> Suc i + ereal (?Pf (Suc i) t) * p"
         unfolding T.emeasure_eq_measure[symmetric]

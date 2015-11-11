@@ -10,7 +10,7 @@ lemma (in MC_with_rewards) reward_until_SCons[simp]:
   "reward_until X s (t ## \<omega>) = (if s \<in> X then 0 else \<rho> s + \<iota> s t + reward_until X t \<omega>)"
   by simp
 
-lemmas [simp] = set_map_pmf set_pmf_bernoulli UNIV_bool set_return_pmf
+lemmas [simp] = set_pmf_bernoulli UNIV_bool
 
 lemma integral_map_pmf:
   fixes f :: "'a \<Rightarrow> 'b::{banach, second_countable_topology}"

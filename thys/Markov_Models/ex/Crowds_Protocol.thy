@@ -144,8 +144,7 @@ lemma C_le_J[simp]: "card C < card J"
 
 lemma p_H: "0 < p_H" "p_H < 1"
   using J_not_empty C_smaller C_non_empty
-  by (simp_all add: p_H_def card_Diff_subset card_mono of_nat_diff
-                    field_simps zero_less_divide_iff card_gt_0_iff)
+  by (simp_all add: p_H_def card_Diff_subset card_mono field_simps zero_less_divide_iff card_gt_0_iff)
 
 lemma p_H_p_f_pos: "0 < p_H * p_f"
   using p_f p_H by (simp add: zero_less_mult_iff)
@@ -178,8 +177,7 @@ proof (rule pmf_embed_pmf)
   show "(\<integral>\<^sup>+ x. ereal (next_prob s x) \<partial>count_space UNIV) = 1"
     using p_f J_not_empty
     by (subst nn_integral_count_space'[where A="Init`H \<union> Mix`J \<union> {End}"])
-       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint
-                   p_i_distr p_j_def
+       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint p_i_distr p_j_def
              split: state.split)
 qed
 
@@ -600,8 +598,7 @@ proof -
       show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ereal (p_f * p_f * (1 - p_H) * p_j * card L)"
         apply (simp add: emeasure_HLD emeasure_HLD_nxt del: nxt.simps space_T)
         apply (subst nn_integral_measure_pmf_support[of "Mix`L"])
-        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex
-                              rH_compl p_j_def)
+        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex H_compl p_j_def)
         done
     next
       fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ereal (p_H * p_f)"
@@ -813,8 +810,7 @@ proof -
     by (simp del: C_le_J)
   then have "1 \<le> h"
     using C_smaller
-    by (simp add: h_def card_Diff_subset of_nat_diff card_mono field_simps
-             del: C_le_J)
+    by (simp add: h_def card_Diff_subset card_mono field_simps del: C_le_J)
 
   have log_le_0: "?f * log 2 (p_H * p_f) \<le> ?f * log 2 1"
     using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f `1 \<le> h`
@@ -822,7 +818,7 @@ proof -
 
   have "(h - 1) * p_j < 1"
     using `1 \<le> h` C_smaller
-    by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset of_nat_diff card_mono)
+    by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset card_mono)
   then have 1: "(h - 1) * p_j * p_f < 1 * 1"
     using p_f by (intro mult_strict_mono) auto
 
