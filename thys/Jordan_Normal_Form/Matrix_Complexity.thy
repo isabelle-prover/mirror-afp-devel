@@ -179,7 +179,7 @@ proof -
         by (rule mult_nonneg_nonneg, insert x N, auto)
       thus "ceiling (x * ?N) \<ge> 0" by auto
     qed 
-    also have "(nat (int (n * nat N))) = n * nat N" by simp
+    also have "(nat (int (n * nat N))) = n * nat N" by (simp add: nat_mult_distrib)
     also have "n * nat N = ?nat (of_nat n)" using N by (metis id ceiling_of_int nat_int)
     finally
     show "?nat (x + of_nat n) = ?nat x + ?nat (of_nat n)" .
@@ -385,9 +385,9 @@ proof -
     let ?cck = "of_int \<lceil>c\<rceil> * of_nat k ^ d :: real"
     from bnd[OF `k > 0`] have "mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C)) \<le> ?ck" by auto
     also have "mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C)) = 
-      real ?sum" 
+      real_of ?sum" 
       using Ak AkC A B C by (simp add: mat_real_conv)
-    finally have "real ?sum \<le> ?ck" .
+    finally have "real_of ?sum \<le> ?ck" .
     from real_le[OF this] have le: "?sum \<le> of_int \<lceil>?ck\<rceil>" by auto
     have "?ck \<le> ?cck"
       by (rule mult_right_mono, auto, linarith)
