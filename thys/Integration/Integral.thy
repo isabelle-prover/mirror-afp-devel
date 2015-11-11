@@ -1689,7 +1689,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           also from ftn have "f t * (2::real)^n < real n * (2::real)^n"
             by simp
           finally have ni: "i < n * 2 ^ n"
-            by (simp add: of_nat_less_iff[THEN sym])
+            by (simp add: of_nat_less_iff[symmetric, where 'a=real])
           
           with tA have un: "u n t = real i / (2::real)^n"
             using disj by simp
@@ -1751,7 +1751,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           { fix i assume "i \<in> {..<(n*2^n)}-{0}"
             hence "Suc i \<le> n*2^n" by simp
             hence mult: "real (Suc i) \<le> real n * (2::real)^n"
-              by (simp add: of_nat_le_iff[THEN sym])
+              by (simp add: of_nat_le_iff[symmetric, where 'a=real])
             have "0 < (2::real)^n"
               by simp
             with mult have "real (Suc i) / (2::real)^n \<le> real n" 
@@ -1821,7 +1821,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           note 1 
           also assume "N \<le> n"
           also have "real n < (2::real)^n"
-            by (rule two_realpow_gt)
+            by (rule of_nat_less_two_power)
           finally
           have "y < 2 ^ n"
             by simp
