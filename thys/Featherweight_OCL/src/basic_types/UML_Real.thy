@@ -149,7 +149,7 @@ where "x div\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (\<
                        else invalid \<tau> "
 (* TODO: special locale setup.*)
 
-definition "mod_float a b = a - real (floor (a / b)) * b"
+definition "mod_float a b = a - real_of_int (floor (a / b)) * b"
 definition OclModulus\<^sub>R\<^sub>e\<^sub>a\<^sub>l ::"('\<AA>)Real \<Rightarrow> ('\<AA>)Real \<Rightarrow> ('\<AA>)Real" (infix "mod\<^sub>r\<^sub>e\<^sub>a\<^sub>l" 45)
 where "x mod\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then if y \<tau> \<noteq> OclReal0 \<tau> then \<lfloor>\<lfloor>mod_float \<lceil>\<lceil>x \<tau>\<rceil>\<rceil> \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor> else invalid \<tau> 
