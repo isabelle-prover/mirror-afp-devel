@@ -220,14 +220,14 @@ proof(induction t rule: t_dm.induct)
   proof cases
     assume [simp]: "ll = Leaf"
     have 1: "log 2 (real (size1 lr) + real (size1 r))
-        \<le> 3 * log 2 (real (size1 lr) + real (size1 r) + 1)" (is "?l \<le> 3 * ?r")
+        \<le> 3 * log 2 (1 + (real (size1 lr) + real (size1 r)))" (is "?l \<le> 3 * ?r")
     proof -
       have "?l \<le> ?r" by(simp add: size1_def)
       also have "\<dots> \<le> 3 * ?r" by(simp)
       finally show ?thesis .
     qed
-    have 2: "log 2 (real (size1 lr) + 1) \<ge> 0" by simp
-    thus ?case apply(simp add: of_nat_Suc) using 1 2 by linarith
+    have 2: "log 2 (1 + real (size1 lr)) \<ge> 0" by simp
+    thus ?case apply simp using 1 2 by linarith
   next
     assume ll[simp]: "\<not> ll = Leaf"
     let ?l' = "del_min ll"

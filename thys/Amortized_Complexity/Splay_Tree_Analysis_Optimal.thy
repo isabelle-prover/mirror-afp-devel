@@ -45,7 +45,7 @@ definition A :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> real" where
 lemma A_simps[simp]: "A a (Node l a r) = 1"
  "a<b \<Longrightarrow> A a (Node (Node ll a lr) b r) = \<phi> lr r - \<phi> lr ll + 1"
  "b<a \<Longrightarrow> A a (Node l b (Node rl a rr)) = \<phi> rl l - \<phi> rr rl + 1"
-by(auto simp add: A_def \<phi>_def algebra_simps of_nat_Suc)
+by(auto simp add: A_def \<phi>_def algebra_simps)
 
 
 lemma A_ub: "\<lbrakk> bst t; Node la a ra : subtrees t \<rbrakk>
@@ -71,12 +71,12 @@ next
 thm "3.prems"
   have "b \<notin> set_tree ra" using "3.prems"(1) by auto
   thus ?case using "3.prems"(1,2) nl2[of "size1 lb" "size1 rb" "size1 ra"]
-    by (auto simp: of_nat_Suc \<phi>_def log_divide algebra_simps)
+    by (auto simp: \<phi>_def log_divide algebra_simps)
 next
   case (9 a b la lb rb)
   have "b \<notin> set_tree la" using "9.prems"(1) by auto
   thus ?case using "9.prems"(1,2) nl2[of "size1 rb" "size1 lb" "size1 la"]
-    by (auto simp add: of_nat_Suc \<phi>_def log_divide algebra_simps)
+    by (auto simp add: \<phi>_def log_divide algebra_simps)
 next
   case (6 x a b lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
@@ -93,7 +93,7 @@ next
       by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
   qed
   thus ?case using 6 0 1 sp
-    by(auto simp: A_def \<phi>_def size_if_splay algebra_simps of_nat_Suc log_divide)
+    by(auto simp: A_def \<phi>_def size_if_splay algebra_simps log_divide)
 next
   case (8 x a b rb lb ra)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra" using "8.prems"(1) by(auto)
@@ -109,7 +109,7 @@ next
        by(simp add: powr_add mult.commute[of \<beta>] powr_powr[symmetric])
   qed
   thus ?case using 8 0 1 sp
-    by(auto simp add: A_def size_if_splay of_nat_Suc \<phi>_def log_divide algebra_simps)
+    by(auto simp add: A_def size_if_splay \<phi>_def log_divide algebra_simps)
 next
   case (11 a x b lb la rb)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la" using "11.prems"(1) by (auto)
@@ -126,7 +126,7 @@ next
         (simp add: algebra_simps)
   qed
   thus ?case using 11 0 1 sp
-    by(auto simp add: A_def size_if_splay of_nat_Suc \<phi>_def log_divide algebra_simps)
+    by(auto simp add: A_def size_if_splay \<phi>_def log_divide algebra_simps)
 next
   case (14 a x b rb la lb)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la" using "14.prems"(1) by(auto)
@@ -142,7 +142,7 @@ next
        by(simp add: powr_add add_ac mult.commute[of \<beta>] powr_powr[symmetric])
   qed
   thus ?case using 14 0 1 sp
-    by(auto simp add: A_def size_if_splay of_nat_Suc \<phi>_def log_divide algebra_simps)
+    by(auto simp add: A_def size_if_splay \<phi>_def log_divide algebra_simps)
 qed
 
 lemma A_ub2: assumes "bst t" "a : set_tree t"
@@ -176,7 +176,7 @@ lemma Am_simp3': "\<lbrakk> c<b; bst rr; rr \<noteq> Leaf\<rbrakk> \<Longrightar
   Am (Node l c (Node rl b rr)) =
   (case splay_max rr of Node rrl _ rrr \<Rightarrow>
    Am rr + \<phi> rrl (Node l c rl) + \<phi> l rl - \<phi> rl rr - \<phi> rrl rrr + 1)"
-by(auto simp: Am_def \<phi>_def size_if_splay_max algebra_simps of_nat_Suc neq_Leaf_iff split: tree.split)
+by(auto simp: Am_def \<phi>_def size_if_splay_max algebra_simps neq_Leaf_iff split: tree.split)
 
 lemma Am_ub: "\<lbrakk> bst t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> Am t \<le> log \<alpha> ((size1 t)/2) + 1"
 proof(induction t rule: splay_max.induct)
@@ -190,7 +190,7 @@ next
     assume "rr = Leaf"
     thus ?thesis
       using nl2[of 1 "size1 rl" "size1 l"] log_le_cancel_iff[of \<alpha> 2 "2 + real(size rl)"]
-      by(auto simp: of_nat_Suc Am_def \<phi>_def log_divide field_simps
+      by(auto simp: Am_def \<phi>_def log_divide field_simps
            simp del: log_le_cancel_iff)
   next
     assume "rr \<noteq> Leaf"
@@ -207,7 +207,7 @@ next
         by(simp add: powr_add add.commute add.left_commute mult.commute[of \<beta>] powr_powr[symmetric])
     qed
     thus ?case using 3 sp 1 `rr \<noteq> Leaf`
-      by(auto simp add: Am_simp3' of_nat_Suc \<phi>_def log_divide algebra_simps)
+      by(auto simp add: Am_simp3' \<phi>_def log_divide algebra_simps)
   qed
 qed
 
@@ -313,7 +313,7 @@ proof -
   finally show ?thesis .
 qed
 
-declare log_base_root[simp] of_nat_Suc[simp]
+declare log_base_root[simp]
 
 lemma A34_ub: assumes "bst t"
 shows "S34.A a t \<le> (3/2) * log 2 (size1 t) + 1"
@@ -437,7 +437,7 @@ next
       let ?t = "real(t_splay a s)"
       let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> s"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
-      let ?lslr = "log 2 (2 + (real (size ls) + real (size rs)))"
+      let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
       have "?lslr \<ge> 0" by simp
       have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
         using S34.A_ub3[OF goal5, simplified S34.A_def, of a]
@@ -473,7 +473,7 @@ next
           have 2: "log 4 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
           have 3: "S34.\<phi> l' r \<le> S34.\<phi> l' r' + S34.\<phi> l r"
             apply(simp add: S34.\<phi>_def) using 1 2 by arith
-          have 4: "log 2 (2 + (real(size ll) + real(size lr))) \<le> ?lslr"
+          have 4: "log 2 (real(size ll) + (real(size lr) + 2)) \<le> ?lslr"
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
             apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)

@@ -961,7 +961,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
         using T_adv[OF assms(1) `l\<noteq>0`, of n]
         by (simp only: o_apply of_nat_add of_nat_le_iff)
       hence "2*(?off n + ?a) \<le> (l+1)*(n+1)"
-        by simp
+        by (simp add: zdiv_int)
       hence "of_int(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
       from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
     qed
