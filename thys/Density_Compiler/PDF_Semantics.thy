@@ -586,7 +586,7 @@ fun op_sem :: "pdf_operator \<Rightarrow> val \<Rightarrow> val" where
                         INTEG \<Rightarrow> (\<lambda> BoolVal b \<Rightarrow> IntVal (bool_to_int b)
                                   | RealVal r \<Rightarrow> IntVal (floor r))
                       | REAL \<Rightarrow>  (\<lambda> BoolVal b \<Rightarrow> RealVal (bool_to_real b)
-                                  | IntVal i \<Rightarrow> RealVal (real i)))"
+                                  | IntVal i \<Rightarrow> RealVal (real_of_int i)))"
 | "op_sem Inverse = lift_RealVal inverse"
 | "op_sem Fact = lift_IntVal (\<lambda>i::int. fact (nat i))"
 | "op_sem Sqrt = lift_RealVal safe_sqrt"
