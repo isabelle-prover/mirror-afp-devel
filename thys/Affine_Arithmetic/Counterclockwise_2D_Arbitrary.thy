@@ -381,7 +381,7 @@ proof -
         by (auto simp: less_eq_real_def det3_def' algebra_simps)
     qed
     ultimately have ?th1 ?th2 ?th3 by blast+
-  } ultimately show ?th1 ?th2 ?th3 by blast+
+  } ultimately show ?th1 ?th2 ?th3 by force+
 qed
 
 lemma ccw'_subst_psi_disj:

@@ -9,7 +9,7 @@ approximate_affine rotate45' "\<lambda>(x, y).
    FloatR 435 (- 9) * x +    FloatR 1 (- 1) * y)"
 
 definition X'::"(real*real) aform"
-  where "X' = aform_of_ivl (Floatreal 2, Floatreal 1) (Floatreal 3, Floatreal 5)"
+  where "X' = aform_of_ivl (real_of_float 2, real_of_float 1) (real_of_float 3, real_of_float 5)"
 
 fun rotate_aform where
   "rotate_aform x i = (((the o (\<lambda>x. rotate45' 30 (FloatR 1 (- 3)) x []))^^i) x)"

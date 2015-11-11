@@ -1471,7 +1471,7 @@ lemma length_eq_NilI: "length [] = length []"
 
 subsection {* Definition of Approximating Function using Affine Arithmetic *}
 
-lemma interpret_Floatreal: "interpret_realarith (realarith.Num (Floatreal f)) vs = (Floatreal f)"
+lemma interpret_Floatreal: "interpret_realarith (realarith.Num (real_of_float f)) vs = (real_of_float f)"
   by simp
 lemmas reify_euclarith_eqs =
 
@@ -1479,8 +1479,8 @@ lemmas reify_euclarith_eqs =
   interpret_realarith.simps(1-5)
   interpret_Floatreal
 
-lemma floatify_thms: "1 \<equiv> Floatreal 1" "0 \<equiv> Floatreal 0"
-  "numeral k \<equiv> Floatreal (numeral k)" "neg_numeral k \<equiv> Floatreal (neg_numeral k)"
+lemma floatify_thms: "1 \<equiv> real_of_float 1" "0 \<equiv> real_of_float 0"
+  "numeral k \<equiv> real_of_float (numeral k)" "neg_numeral k \<equiv> real_of_float (neg_numeral k)"
   by simp_all
 
 primrec max_Var_realarith where

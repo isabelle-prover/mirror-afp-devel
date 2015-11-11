@@ -576,7 +576,7 @@ qed
 corollary T_mtf_competitive: assumes "init \<noteq> []" and "\<forall>i<n. qs!i \<in> set init"
 shows "T_mtf n \<le> (2 - 1/(size init)) * T_A n"
 proof cases
-  assume 0: "real(T_A n) \<le> n * (size init)"
+  assume 0: "real_of_int(T_A n) \<le> n * (size init)"
   have "T_mtf n \<le> 2 * T_A n - n"
   proof -
     have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by(rule Sleator_Tarjan)
@@ -585,22 +585,21 @@ proof cases
     also have "\<dots> \<le> 2 * T_A n" by (simp add: setsum_right_distrib T_A_def t_A_def)
     finally show ?thesis by simp
   qed
-  hence "real(T_mtf n) \<le> 2 * real(T_A n) - n" by linarith
-  also have "\<dots> = 2 * real(T_A n) - (n * size init) / size init"
+  hence "real_of_int(T_mtf n) \<le> 2 * of_int(T_A n) - n" by simp
+  also have "\<dots> = 2 * of_int(T_A n) - (n * size init) / size init"
     using assms(1) by simp
-  also have "\<dots> \<le> 2 * real(T_A n) - T_A n / size init"
-    by(rule diff_left_mono[OF  divide_right_mono[OF 0]]) simp
+  also have "\<dots> \<le> 2 * real_of_int(T_A n) - T_A n / size init"
+    by(rule diff_left_mono[OF divide_right_mono[OF 0]]) simp
   also have "\<dots> = (2 - 1 / size init) * T_A n" by algebra
   finally show ?thesis .
 next
-  assume 0: "\<not> real(T_A n) \<le> n * (size init)"
+  assume 0: "\<not> real_of_int(T_A n) \<le> n * (size init)"
   have "2 - 1 / size init \<ge> 1" using assms(1)
     by (auto simp add: field_simps neq_Nil_conv)
-  have "real (T_mtf n) \<le> n * size init" using T_mtf_ub[OF assms(2)] by linarith
-  also have "\<dots> < real(T_A n)" using 0 by linarith
+  have "real_of_int (T_mtf n) \<le> n * size init" using T_mtf_ub[OF assms(2)] by linarith
+  also have "\<dots> < of_int(T_A n)" using 0 by simp
   also have "\<dots> \<le> (2 - 1 / size init) * T_A n" using assms(1) T_A_nneg[of n]
-    by(auto simp add: mult_le_cancel_right1 field_simps neq_Nil_conv
-        simp del: of_int_setsum)
+    by(auto simp add: mult_le_cancel_right1 field_simps neq_Nil_conv)
   finally show ?thesis by linarith
 qed
 
@@ -672,7 +671,7 @@ proof-
   { fix acts :: "'a action list" assume len: "length acts = length qs"
     interpret MTF_Off acts qs init proof qed (auto simp: assms(2) len)
     from MTF_competitive2[OF assms(1) 1] assms(1)
-    have "T_on MTF [] init qs / (2 - 1 / (length init)) \<le> real(T init qs acts)"
+    have "T_on MTF [] init qs / (2 - 1 / (length init)) \<le> of_int(T init qs acts)"
       by(simp add: field_simps length_greater_0_conv[symmetric]
         del: length_greater_0_conv) }
   hence "T_on MTF [] init qs / (2 - 1/(size init)) \<le> T_opt init qs"
@@ -956,12 +955,14 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
         by(rule T_ge_len) (simp add: adv_def)
       hence "?off n > n" by simp
       hence "?off n + ?a > 0" using `n \<ge> l^2 + l + 1` by linarith
-      hence 2: "real(2*(?off n + ?a)) > 0"
-        by(simp only: real_of_int_gt_zero_cancel_iff zero_less_mult_iff zero_less_numeral simp_thms)
+      hence 2: "real_of_int(2*(?off n + ?a)) > 0"
+        by(simp only: of_int_0_less_iff zero_less_mult_iff zero_less_numeral simp_thms)
       have "?off n + ?a \<le> (l+1)*(n+1) div 2"
-        using T_adv[OF assms(1) `l\<noteq>0`, of n] by(simp)
-      hence "2*(?off n + ?a) \<le> (l+1)*(n+1)" by simp
-      hence "real(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
+        using T_adv[OF assms(1) `l\<noteq>0`, of n]
+        by (simp only: o_apply of_nat_add of_nat_le_iff)
+      hence "2*(?off n + ?a) \<le> (l+1)*(n+1)"
+        by simp
+      hence "of_int(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
       from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
     qed
     also have "\<dots> = ?on n / (?off n + ?a)"

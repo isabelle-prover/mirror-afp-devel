@@ -2,11 +2,6 @@ theory Table
 imports Amor
 begin
 
-lemma lem: "m \<ge> 1 \<Longrightarrow> floor(ceiling(m*l)/m) = l"
-apply(rule floor_eq2)
-apply (auto simp add: field_simps)
-by linarith
-
 fun nxt3\<^sub>t\<^sub>b :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
 "nxt3\<^sub>t\<^sub>b Ins (n,l) = (n+1, if l=0 then 2 else if 10*(n+1)\<le>9*l then l else 3*l)" |
 "nxt3\<^sub>t\<^sub>b Del (n,l) = (n-1, if n=1 then 0 else if 10*(n-1)<l then l div 3 else l)"

@@ -351,10 +351,6 @@ lemma concat_length_le:
   shows "length (concat (map f xs)) \<le> (\<Sum>x\<leftarrow>xs. g x)" using assms
   by (induction xs) force+
 
-(* XXX move *)
-lemma powr_realpow_numeral: "0 < x \<Longrightarrow> x powr (numeral n :: real) = x^(numeral n)"
-  unfolding of_nat_numeral[symmetric] by (rule powr_realpow)
-
 lemma prime_gt_3_impl_p_minus_one_not_prime:
   fixes p::nat
   assumes "prime p" "p>3"

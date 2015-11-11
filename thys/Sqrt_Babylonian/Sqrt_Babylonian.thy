@@ -133,7 +133,7 @@ lemma sqrt_int_floor_pos_code[code]: "sqrt_int_floor_pos x = fst (sqrt_int_main 
   by (simp add: root_int_floor_pos_def)
 
 lemma sqrt_int_floor_pos: assumes x: "x \<ge> 0" 
-  shows "sqrt_int_floor_pos x = \<lfloor> sqrt (real x) \<rfloor>"
+  shows "sqrt_int_floor_pos x = \<lfloor> sqrt (of_int x) \<rfloor>"
   using root_int_floor_pos[OF x, of 2] by (simp add: sqrt_def)
 
 definition [simp]: "sqrt_int_ceiling_pos x = root_int_ceiling_pos 2 x"
@@ -142,7 +142,7 @@ lemma sqrt_int_ceiling_pos_code[code]: "sqrt_int_ceiling_pos x = (case sqrt_int_
   by (simp add: root_int_ceiling_pos_def)
 
 lemma sqrt_int_ceiling_pos: assumes x: "x \<ge> 0" 
-  shows "sqrt_int_ceiling_pos x = \<lceil> sqrt (real x) \<rceil>"
+  shows "sqrt_int_ceiling_pos x = \<lceil> sqrt (of_int x) \<rceil>"
   using root_int_ceiling_pos[OF x, of 2] by (simp add: sqrt_def)
 
 definition "sqrt_int_floor x = root_int_floor 2 x"
@@ -150,7 +150,7 @@ definition "sqrt_int_floor x = root_int_floor 2 x"
 lemma sqrt_int_floor_code[code]: "sqrt_int_floor x = (if x \<ge> 0 then sqrt_int_floor_pos x else - sqrt_int_ceiling_pos (- x))"
   unfolding sqrt_int_floor_def root_int_floor_def by simp
 
-lemma sqrt_int_floor[simp]: "sqrt_int_floor x = \<lfloor> sqrt (real x) \<rfloor>"
+lemma sqrt_int_floor[simp]: "sqrt_int_floor x = \<lfloor> sqrt (of_int x) \<rfloor>"
   by (simp add: sqrt_int_floor_def sqrt_def)
 
 definition "sqrt_int_ceiling x = root_int_ceiling 2 x"
@@ -158,7 +158,7 @@ definition "sqrt_int_ceiling x = root_int_ceiling 2 x"
 lemma sqrt_int_ceiling_code[code]: "sqrt_int_ceiling x = (if x \<ge> 0 then sqrt_int_ceiling_pos x else - sqrt_int_floor_pos (- x))"
   unfolding sqrt_int_ceiling_def root_int_ceiling_def by simp
 
-lemma sqrt_int_ceiling[simp]: "sqrt_int_ceiling x = \<lceil> sqrt (real x) \<rceil>"
+lemma sqrt_int_ceiling[simp]: "sqrt_int_ceiling x = \<lceil> sqrt (of_int x) \<rceil>"
   by (simp add: sqrt_int_ceiling_def sqrt_def)
 
 subsection {* Square roots for the naturals *}

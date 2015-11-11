@@ -11,7 +11,7 @@ lemma compute_bitlen[code]: "bitlen a = (if a > 0 then log2 a + 1 else 0)"
 lemma compute_real_of_float[code]:
   "real_of_float (Float m e) = (if e \<ge> 0 then m * 2 ^ nat e else m / power_int 2 (-e))"
   unfolding power_int_def[symmetric, of 2 e]
-  by (simp add: Float.compute_real_of_float power_int_def)
+  using compute_real_of_float power_int_def by auto
 
 lemma compute_float_down[code]:
   "float_down p (Float m e) =

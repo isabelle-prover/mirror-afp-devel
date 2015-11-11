@@ -32,7 +32,7 @@ lemma v_eq: "cfg \<in> valid_cfg \<Longrightarrow>
 lemma v_nonneg: "cfg \<in> valid_cfg \<Longrightarrow> 0 \<le> v cfg"
   by (auto simp add: v_def emeasure_nonneg)
 
-lemma real_v: "cfg \<in> valid_cfg \<Longrightarrow> real (v cfg) = \<P>(\<omega> in T cfg. (HLD S1 suntil HLD S2) (state cfg ## \<omega>))"
+lemma real_v: "cfg \<in> valid_cfg \<Longrightarrow> real_of_ereal (v cfg) = \<P>(\<omega> in T cfg. (HLD S1 suntil HLD S2) (state cfg ## \<omega>))"
   by (auto simp add: v_def T.emeasure_eq_measure)
 
 lemma v_le_1: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> 1"
@@ -78,16 +78,16 @@ proof -
 qed
 
 lemma real_v_integrable:
-  "integrable (action cfg) (\<lambda>s. real (v (cont cfg s)))"
-  by (rule measure_pmf.integrable_const_bound[where B="max 1 (real \<bar>undefined::ereal\<bar>)"])
+  "integrable (action cfg) (\<lambda>s. real_of_ereal (v (cont cfg s)))"
+  by (rule measure_pmf.integrable_const_bound[where B="max 1 (real_of_ereal \<bar>undefined::ereal\<bar>)"])
      (auto simp add: v_def emeasure_nonneg measure_def[symmetric] le_max_iff_disj)
 
 lemma real_v_integral_eq:
   assumes cfg[simp]: "cfg \<in> valid_cfg"
-  shows "real (\<integral>\<^sup>+ s. v (cont cfg s) \<partial>action cfg) = \<integral> s. real (v (cont cfg s)) \<partial>action cfg"
+  shows "real_of_ereal (\<integral>\<^sup>+ s. v (cont cfg s) \<partial>action cfg) = \<integral> s. real_of_ereal (v (cont cfg s)) \<partial>action cfg"
  by (subst integral_eq_nn_integral)
     (auto simp: AE_measure_pmf_iff measure_nonneg v_eq T.emeasure_eq_measure valid_cfg_cont
-          intro!: arg_cong[where f=real] nn_integral_cong_AE)
+          intro!: arg_cong[where f=real_of_ereal] nn_integral_cong_AE)
 
 lemma v_eq_0_coinduct[consumes 3, case_names valid nS2 cont]:
   assumes *: "P cfg"
@@ -803,7 +803,7 @@ proof atomize_elim
       then have "t' \<in> S"
         by (metis v_nS simple_valid_cfg_iff ct' ct order.irrefl)
 
-      def \<Delta> \<equiv> "\<lambda>t. real (?v t) - real (?v' t)"
+      def \<Delta> \<equiv> "\<lambda>t. real_of_ereal (?v t) - real_of_ereal (?v' t)"
       with * `t' \<in> S` v_nonneg[of "simple ct' t'"] have "0 < \<Delta> t'"
         by (cases "?v t'" "?v' t'" rule: ereal2_cases) (auto simp add: ct' ct)
 
@@ -864,7 +864,7 @@ proof atomize_elim
           qed
           also have "\<dots> = \<Delta> t"
             using measure_pmf.prob_space[of "ct' t"] by simp
-          also have "\<Delta> t \<le> (\<integral>s. real (?v s) \<partial>ct' t) - (\<integral>s. real (?v' s) \<partial>ct' t)"
+          also have "\<Delta> t \<le> (\<integral>s. real_of_ereal (?v s) \<partial>ct' t) - (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
           proof -
             have "?v t \<le> (\<integral>\<^sup>+s. ?v s \<partial>ct' t)"
             proof cases
@@ -873,22 +873,22 @@ proof atomize_elim
               assume "t \<noteq> s" with S1 `t\<in>S1` ct ct' show ?thesis
                 by (subst v_S1) auto
             qed
-            also have "\<dots> = ereal (\<integral>s. real (?v s) \<partial>ct' t)"
+            also have "\<dots> = ereal (\<integral>s. real_of_ereal (?v s) \<partial>ct' t)"
               using ct ct' `t\<in>S`
               by (intro measure_pmf.ereal_integral_real[symmetric, where B=1])
                  (auto simp: AE_measure_pmf_iff one_ereal_def[symmetric]
                        intro!: v_nonneg v_le_1 simple_valid_cfg intro: Pi_closed)
-            finally have "real (?v t) \<le> (\<integral>s. real (?v s) \<partial>ct' t)"
+            finally have "real_of_ereal (?v t) \<le> (\<integral>s. real_of_ereal (?v s) \<partial>ct' t)"
               using ct `t\<in>S` by (simp add: v_def T.emeasure_eq_measure)
             moreover
             { have "?v' t = (\<integral>\<^sup>+s. ?v' s \<partial>ct' t)"
                 using ct ct' `t \<in> S1` S1 by (subst v_S1) auto
-              also have "\<dots> = ereal (\<integral>s. real (?v' s) \<partial>ct' t)"
+              also have "\<dots> = ereal (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
                 using ct' `t\<in>S`
                 by (intro measure_pmf.ereal_integral_real[symmetric, where B=1])
                    (auto simp: AE_measure_pmf_iff one_ereal_def[symmetric]
                          intro!: v_nonneg v_le_1 simple_valid_cfg intro: Pi_closed)
-              finally have "real (?v' t) = (\<integral>s. real (?v' s) \<partial>ct' t)"
+              finally have "real_of_ereal (?v' t) = (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
                 using ct' `t\<in>S` by (simp add: v_def T.emeasure_eq_measure) }
             ultimately show ?thesis
               using `t \<in> S` by (simp add: \<Delta>_def ereal_minus_mono)
@@ -1193,10 +1193,10 @@ proof (intro antisym lfp_lowerbound le_funI)
 qed (simp add: F_inf_n)
 
 
-lemma real_n: "s \<in> S \<Longrightarrow> ereal (real (n s)) = n s"
+lemma real_n: "s \<in> S \<Longrightarrow> ereal (real_of_ereal (n s)) = n s"
   by (cases "n s") simp_all
 
-lemma real_p: "s \<in> S \<Longrightarrow> ereal (real (p s)) = p s"
+lemma real_p: "s \<in> S \<Longrightarrow> ereal (real_of_ereal (p s)) = p s"
   by (cases "p s") simp_all
 
 lemma p_ub:
@@ -1205,9 +1205,9 @@ lemma p_ub:
   assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> (\<Sum>t\<in>S. pmf D t * x t) \<le> x s"
   assumes solution_0: "\<And>s. s \<in> S \<Longrightarrow> p s = 0 \<Longrightarrow> x s = 0"
   assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "real (p s) \<le> x s" (is "?y s \<le> _")
+  shows "real_of_ereal (p s) \<le> x s" (is "?y s \<le> _")
 proof -
-  let ?p = "\<lambda>s. real (p s)"
+  let ?p = "\<lambda>s. real_of_ereal (p s)"
   from p_v_memoryless obtain sc where "sc \<in> Pi\<^sub>E S K" and p_eq: "p = v \<circ> simple sc"
     by auto
   then have sch: "\<And>s. s \<in> S \<Longrightarrow> sc s \<in> K s" and sc_Pi: "sc \<in> Pi S K"
@@ -1291,7 +1291,7 @@ lemma n_lb:
   assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> x s \<le> (\<Sum>t\<in>S. pmf D t * x t)"
   assumes solution_n0: "\<And>s. s \<in> S \<Longrightarrow> n s = 0 \<Longrightarrow> x s = 0"
   assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "x s \<le> real (n s)" (is "_ \<le> ?y s")
+  shows "x s \<le> real_of_ereal (n s)" (is "_ \<le> ?y s")
 proof -
   let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+x. n x \<partial>D"
   { fix s assume "s \<in> S1"
@@ -1321,7 +1321,7 @@ proof -
       by (auto simp add: N_def) }
   note N = this
 
-  let ?n = "\<lambda>s. real (n s)"
+  let ?n = "\<lambda>s. real_of_ereal (n s)"
   show ?thesis
   proof cases
     assume "s \<in> S - N"
@@ -1346,7 +1346,7 @@ proof -
         apply simp_all
         apply (subst integral_eq_nn_integral)
         apply (auto simp: Pi_closed[OF sc_Pi] AE_measure_pmf_iff 
-                    intro!: n_nonneg real_of_ereal_pos arg_cong[where f=real] nn_integral_cong_AE real_n)
+                    intro!: n_nonneg real_of_ereal_pos arg_cong[where f=real_of_ereal] nn_integral_cong_AE real_n)
         done
       then show "(\<integral> t. ?n t \<partial>sc s) + 0 \<le> ?n s"
         by simp

@@ -436,7 +436,7 @@ proof -
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2)) powr ?nr n"
         using expr_bound A by (auto simp: powr_mono2)
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2))"
-        using nr_bounds ep_bound by (auto simp: powr_le_one_le)
+        using nr_bounds ep_bound A by (auto simp: powr_le_one_le)
       finally show "?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)" .
     qed
   qed
@@ -589,8 +589,8 @@ proof -
       also have "\<dots> = (\<Sum>i\<in>{3..k}. of_nat (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"
-        using A fact_div_fact_le_pow
-        by (auto intro: setsum_mono)
+        apply (rule setsum_mono)
+        by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans real_mult_le_cancel_iff1 zero_less_power)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
         using `1 \<le> n` `0 < \<epsilon>` A
         by (intro setsum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr

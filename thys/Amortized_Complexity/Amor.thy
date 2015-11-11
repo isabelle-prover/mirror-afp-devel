@@ -172,10 +172,10 @@ next
         qed
         have 2: "real l + 1 \<le> ceiling(c * real l)"
         proof-
-          have "real l + 1 = real(int(l)) + 1" by simp
+          have "real l + 1 = of_int(int(l)) + 1" by simp
           also have "... \<le> ceiling(c * real l)" using `l \<noteq> 0`
             by(simp only: int_less_real_le[symmetric] less_ceiling_iff)
-              (simp add:[symmetric] mult_less_cancel_right1)
+              (simp add: mult_less_cancel_right1)
           finally show ?thesis .
         qed
         from `l\<noteq>0` 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
@@ -206,7 +206,7 @@ next
         have "t\<^sub>i\<^sub>n\<^sub>s s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using `l\<noteq>0`
           by(simp add: of_nat_Suc algebra_simps less_trans[of "-1::real" 0])
-        also have "- b * ceiling(c*l) \<le> - b * (c*l)" by simp
+        also have "- b * ceiling(c*l) \<le> - b * (c*l)" by (simp add: ceiling_correct)
         also have "l + a + 1 + - b*(c*l) + b*l = a + 1 + l*(1 - b*(c - 1))"
           by (simp add: algebra_simps)
         also have "b*(c - 1) = 1" by(simp add: b_def)

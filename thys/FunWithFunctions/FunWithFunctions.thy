@@ -106,54 +106,55 @@ assumes 0: "f 0 = 1" and f_add: "\<And>x y. f(x+y+1) = f x + f y"
 
 assumes "r : \<rat>" shows "f(r) = r + 1"
 proof -
-  { fix i :: int have "f(real i) = real i + 1"
+  { fix i have "f(of_int i) = of_int i + 1"
     proof (induct i rule: int_induct [where k=0])
       case base show ?case using 0 by simp
     next
       case (step1 i)
-      have "f(real(i+1)) = f(real i + 0 + 1)" by simp
-      also have "\<dots> = f(real i) + f 0" by(rule f_add)
-      also have "\<dots> = real(i+1) + 1" using step1 0 by simp
+      have "f(of_int (i+1)) = f(of_int i + 0 + 1)" by simp
+      also have "\<dots> = f(of_int i) + f 0" by(rule f_add)
+      also have "\<dots> = of_int (i+1) + 1" using step1 0 by simp
       finally show ?case .
     next
       case (step2 i)
-      have "f(real i) = f(real(i - 1) + 0 + 1)" by simp
-      also have "\<dots> = f(real(i - 1)) + f 0" by(rule f_add)
-      also have "\<dots> = f(real(i - 1)) + 1 " using 0 by simp
+      have "f(of_int i) = f(of_int (i - 1) + 0 + 1)" by simp
+      also have "\<dots> = f(of_int (i - 1)) + f 0" by(rule f_add)
+      also have "\<dots> = f(of_int (i - 1)) + 1 " using 0 by simp
       finally show ?case using step2 by simp
     qed }
   note f_int = this
-  { fix n r have "f(real(Suc n)*r + real n) = real(Suc n) * f r"
+  { fix n r have "f(of_int (Suc n)*r + of_int n) = of_int (Suc n) * f r"
     proof(induct n)
       case 0 show ?case by simp
     next
       case (Suc n)
-      have "real(Suc(Suc n))*r + real(Suc n) =
-            r + (real(Suc n)*r + real n) + 1" (is "?a = ?b")
-        by(simp add:of_nat_Suc field_simps)
+      have "of_int (Suc(Suc n))*r + of_int (Suc n) =
+            r + (of_int (Suc n)*r + of_int n) + 1" (is "?a = ?b")
+        by(simp add: field_simps)
       hence "f ?a = f ?b"
         by presburger
-      also have "\<dots> = f r + f(real(Suc n)*r + real n)" by(rule f_add)
-      also have "\<dots> = f r + real(Suc n) * f r" by(simp only:Suc)
-      finally show ?case by(simp add:of_nat_Suc field_simps)
+      also have "\<dots> = f r + f(of_int (Suc n)*r + of_int n)" by(rule f_add)
+      also have "\<dots> = f r + of_int (Suc n) * f r" by(simp only:Suc)
+      finally show ?case by(simp add: field_simps)
     qed }
   note 1 = this
   { fix n::nat and r assume "n\<noteq>0"
-    have "f(real(n)*r + real(n - 1)) = real(n) * f r"
+    have "f(of_int (n)*r + of_int (n - 1)) = of_int (n) * f r"
     proof(cases n)
       case 0 thus ?thesis using `n\<noteq>0` by simp
     next
       case Suc thus ?thesis using `n\<noteq>0` using "1" by auto
     qed }
   note f_mult = this
-  from `r:\<rat>` obtain i::int and n::nat where r: "r = real i/real n" and "n\<noteq>0"
+  from `r:\<rat>` obtain i::int and n::nat where r: "r = of_int i/of_int n" and "n\<noteq>0"
     by(fastforce simp:Rats_eq_int_div_nat)
-  have "real(n)*f(real i/real n) = f(real i + real(n - 1))"
-    using `n\<noteq>0` by(simp add:f_mult[symmetric])
-  also have "\<dots> = f(real(i + int n - 1))" using `n\<noteq>0`[simplified]
-    by (metis One_nat_def Suc_leI int_1 add_diff_eq of_int_add of_int_of_nat_eq zdiff_int)
-  also have "\<dots> = real(i + int n - 1) + 1" by(rule f_int)
-  also have "\<dots> = real i + real n" by arith
+  have "of_int (n) * f(of_int i / of_int n) = f(of_int i + of_int (n - 1))"
+    using `n\<noteq>0`
+    by (metis (no_types, hide_lams) f_mult mult.commute nonzero_divide_eq_eq of_int_of_nat_eq of_nat_0_eq_iff) 
+  also have "\<dots> = f(of_int (i + int n - 1))" using `n\<noteq>0`[simplified]
+    by (metis One_nat_def Suc_leI int_1 add_diff_eq of_int_add zdiff_int)
+  also have "\<dots> = of_int (i + int n - 1) + 1" by(rule f_int)
+  also have "\<dots> = of_int i + of_int n" by arith
   finally show ?thesis using `n\<noteq>0` unfolding r by (simp add:field_simps)
 qed
 

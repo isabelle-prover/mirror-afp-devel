@@ -10,7 +10,7 @@ lemma continuous_on_max[continuous_intros]:
   by (auto simp: continuous_on_def intro: tendsto_max)
 
 definition \<phi> :: "(nat \<times> int) \<Rightarrow> real \<Rightarrow> real" where
-  "\<phi> \<equiv> (\<lambda>(l,i) x. max 0 (1 - \<bar> x * 2^(l + 1) - real i \<bar>))"
+  "\<phi> \<equiv> (\<lambda>(l,i) x. max 0 (1 - \<bar> x * 2^(l + 1) - real_of_int i \<bar>))"
 
 definition \<Phi> :: "(nat \<times> int) list \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> real" where
   "\<Phi> p x = (\<Prod>d<length p. \<phi> (p ! d) (x d))"
@@ -28,22 +28,22 @@ lemma \<phi>_nonneg: "0 \<le> \<phi> p x"
   by (simp add: \<phi>_def split: prod.split)
 
 lemma \<phi>_zero_iff:
-  "\<phi> (l,i) x = 0 \<longleftrightarrow> x \<notin> {real (i - 1) / 2^(l + 1) <..< real (i + 1) / 2^(l + 1)}"
+  "\<phi> (l,i) x = 0 \<longleftrightarrow> x \<notin> {real_of_int (i - 1) / 2^(l + 1) <..< real_of_int (i + 1) / 2^(l + 1)}"
   by (auto simp: \<phi>_def field_simps split: split_max)
 
-lemma \<phi>_zero: "x \<notin> {real (i - 1) / 2^(l + 1) <..< real (i + 1) / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 0"
+lemma \<phi>_zero: "x \<notin> {real_of_int (i - 1) / 2^(l + 1) <..< real_of_int (i + 1) / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 0"
   unfolding \<phi>_zero_iff by simp
 
 lemma \<phi>_eq_0: assumes x: "x < 0 \<or> 1 < x" and i: "0 < i" "i < 2^Suc l" shows "\<phi> (l, i) x = 0"
   using x
 proof
   assume "x < 0"
-  also have "0 \<le> real (i - 1) / 2^(l + 1)"
+  also have "0 \<le> real_of_int (i - 1) / 2^(l + 1)"
     using i by (auto simp: field_simps)
   finally show ?thesis
     by (auto intro!: \<phi>_zero simp: field_simps)
 next
-  have "real (i + 1) / 2^(l + 1) \<le> 1"
+  have "real_of_int (i + 1) / 2^(l + 1) \<le> 1"
     using i by (subst divide_le_eq_1_pos) (auto simp del: of_int_add power_Suc)
   also assume "1 < x"
   finally show ?thesis
@@ -71,14 +71,14 @@ proof (rule setprod_zero)
 qed simp
 
 lemma \<phi>_left_support':
-  "x \<in> {real (i - 1) / 2^(l + 1) .. real i / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 1 + x * 2^(l + 1) - real i"
+  "x \<in> {real_of_int (i - 1) / 2^(l + 1) .. real_of_int i / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 1 + x * 2^(l + 1) - real_of_int i"
   by (auto simp: \<phi>_def field_simps split: split_max)
 
-lemma \<phi>_left_support: "x \<in> {-1 .. 0::real} \<Longrightarrow> \<phi> (l,i) ((x + real i) / 2^(l + 1)) = 1 + x"
+lemma \<phi>_left_support: "x \<in> {-1 .. 0::real} \<Longrightarrow> \<phi> (l,i) ((x + real_of_int i) / 2^(l + 1)) = 1 + x"
   by (auto simp: \<phi>_def field_simps split: split_max)
 
 lemma \<phi>_right_support':
-  "x \<in> {real i / 2^(l + 1) .. real (i + 1) / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 1 - x * 2^(l + 1) + real i"
+  "x \<in> {real_of_int i / 2^(l + 1) .. real_of_int (i + 1) / 2^(l + 1)} \<Longrightarrow> \<phi> (l,i) x = 1 - x * 2^(l + 1) + real_of_int i"
   by (auto simp: \<phi>_def field_simps split: split_max)
 
 lemma \<phi>_right_support: 
@@ -88,7 +88,7 @@ lemma \<phi>_right_support:
 lemma integrable_\<phi>: "integrable lborel (\<phi> p)"
 proof (induct p)
   case (Pair l i)
-  have "integrable lborel (\<lambda>x. indicator {real (i - 1) / 2^(l + 1) .. real (i + 1) / 2^(l + 1)} x *\<^sub>R \<phi> (l, i) x)"
+  have "integrable lborel (\<lambda>x. indicator {real_of_int (i - 1) / 2^(l + 1) .. real_of_int (i + 1) / 2^(l + 1)} x *\<^sub>R \<phi> (l, i) x)"
     unfolding \<phi>_def by (intro borel_integrable_compact) (auto intro!: continuous_intros)
   then show ?case
     by (rule integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
@@ -98,16 +98,16 @@ lemma integrable_\<phi>2: "integrable lborel (\<lambda>x. \<phi> p x * \<phi> q 
 proof (cases p q rule: prod.exhaust[case_product prod.exhaust])
   case (Pair_Pair l i l' i')
   have "integrable lborel
-      (\<lambda>x. indicator {real (i - 1) / 2^(l + 1) .. real (i + 1) / 2^(l + 1)} x *\<^sub>R (\<phi> (l, i) x * \<phi> (l', i') x))"
+      (\<lambda>x. indicator {real_of_int (i - 1) / 2^(l + 1) .. real_of_int (i + 1) / 2^(l + 1)} x *\<^sub>R (\<phi> (l, i) x * \<phi> (l', i') x))"
     unfolding \<phi>_def by (intro borel_integrable_compact) (auto intro!: continuous_intros)
   then show ?thesis unfolding Pair_Pair
     by (rule integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
 qed
 
 lemma l2_\<phi>I_DERIV:
-  assumes n: "\<And> x. x \<in> { (real i' - 1) / 2^(l' + 1) .. real i' / 2^(l' + 1) } \<Longrightarrow>
+  assumes n: "\<And> x. x \<in> { (real_of_int i' - 1) / 2^(l' + 1) .. real_of_int i' / 2^(l' + 1) } \<Longrightarrow>
     DERIV \<Phi>_n x :> (\<phi> (l', i') x * \<phi> (l, i) x)" (is "\<And> x. x \<in> {?a..?b} \<Longrightarrow> DERIV _ _ :> ?P x")
-    and p: "\<And> x. x \<in> { real i' / 2^(l' + 1) .. (real i' + 1) / 2^(l' + 1) } \<Longrightarrow>
+    and p: "\<And> x. x \<in> { real_of_int i' / 2^(l' + 1) .. (real_of_int i' + 1) / 2^(l' + 1) } \<Longrightarrow>
     DERIV \<Phi>_p x :> (\<phi> (l', i') x * \<phi> (l, i) x)" (is "\<And> x. x \<in> {?b..?c} \<Longrightarrow> _")
   shows "l2_\<phi> (l', i') (l, i) = (\<Phi>_n ?b - \<Phi>_n ?a) + (\<Phi>_p ?c - \<Phi>_p ?b)"
 proof -
@@ -135,11 +135,11 @@ lemma l2_when_disjoint:
   assumes "(i + 1) * 2^d < i' \<or> i' < (i - 1) * 2^d" (is "?right \<or> ?left")
   shows "l2_\<phi> (l', i') (l, i) = 0"
 proof -
-  let ?sup = "\<lambda>l i. {real (i - 1) / 2^(l + 1) <..< real (i + 1) / 2^(l + 1)}"
+  let ?sup = "\<lambda>l i. {real_of_int (i - 1) / 2^(l + 1) <..< real_of_int (i + 1) / 2^(l + 1)}"
 
   have l': "l' = l + d"
     using assms by simp
-  have *: "\<And>i l. 2 ^ l = real (2 ^ l::int)"
+  have *: "\<And>i l. 2 ^ l = real_of_int (2 ^ l::int)"
     by simp
   have [arith]: "0 < (2^d::int)"
     by simp
@@ -160,17 +160,17 @@ lemma l2_commutative: "l2_\<phi> p q = l2_\<phi> q p"
 lemma l2_when_same: "l2_\<phi> (l, i) (l, i) = 1/3 / 2^l"
 proof (subst l2_\<phi>I_DERIV)
   let ?l = "(2 :: real)^(l + 1)"
-  let ?in = "real i - 1"
-  let ?ip = "real i + 1"
+  let ?in = "real_of_int i - 1"
+  let ?ip = "real_of_int i + 1"
   let ?\<phi> = "\<phi> (l,i)"
   let ?\<phi>2 = "\<lambda>x. ?\<phi> x * ?\<phi> x"
 
-  { fix x assume "x \<in> {?in / ?l .. real i / ?l}"
+  { fix x assume "x \<in> {?in / ?l .. real_of_int i / ?l}"
     hence \<phi>_eq: "?\<phi> x = ?l * x  - ?in" using \<phi>_left_support' by auto
     show "DERIV (\<lambda>x. x^3 / 3 * ?l^2 + x * ?in^2 - x^2/2 * 2 * ?l * ?in) x :> ?\<phi>2 x"
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square field_simps \<phi>_eq) }
 
-  { fix x assume "x \<in> {real i / ?l .. ?ip / ?l}"
+  { fix x assume "x \<in> {real_of_int i / ?l .. ?ip / ?l}"
     hence \<phi>_eq: "?\<phi> x = ?ip - ?l * x" using \<phi>_right_support' by auto
     show "DERIV (\<lambda>x. x^3 / 3 * ?l^2 + x * ?ip^2 - x^2/2 * 2 * ?l * ?ip) x :> ?\<phi>2 x"
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square field_simps \<phi>_eq) }
@@ -180,13 +180,13 @@ lemma l2_when_left_child:
   assumes "l < l'"
   and i'_bot: "i' > (i - 1) * 2^(l' - l)"
   and i'_top: "i' < i * 2^(l' - l)"
-  shows "l2_\<phi> (l', i') (l, i) = (1 + real i' / 2^(l' - l) - real i) / 2^(l' + 1)"
+  shows "l2_\<phi> (l', i') (l, i) = (1 + real_of_int i' / 2^(l' - l) - real_of_int i) / 2^(l' + 1)"
 proof (subst l2_\<phi>I_DERIV)
   let ?l' = "(2 :: real)^(l' + 1)"
-  let ?in' = "real i' - 1"
-  let ?ip' = "real i' + 1"
+  let ?in' = "real_of_int i' - 1"
+  let ?ip' = "real_of_int i' + 1"
   let ?l = "(2 :: real)^(l + 1)"
-  let ?i = "real i - 1"
+  let ?i = "real_of_int i - 1"
   let ?\<phi>' = "\<phi> (l',i')"
   let ?\<phi> = "\<phi> (l, i)"
   let "?\<phi>2 x" = "?\<phi>' x * ?\<phi> x"
@@ -197,28 +197,26 @@ proof (subst l2_\<phi>I_DERIV)
 
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
     have "?i * 2^(l' - l) \<le> ?in'"
-      using i'_bot[THEN zless_imp_add1_zle]
-      by (auto simp add: of_int_le_iff[symmetric])
+      using i'_bot int_less_real_le by auto
     hence "?i / ?l \<le> ?in' / ?l'"
       using level_diff by (auto simp: field_simps)
     hence "?i / ?l \<le> x" using x by auto
     moreover
-    have "?ip' \<le> real i * 2^(l' - l)"
-      using i'_top[THEN zless_imp_add1_zle]
-      by (auto simp add: of_int_le_iff[symmetric])
-    hence ip'_le_i: "?ip' / ?l' \<le> real i / ?l"
+    have "?ip' \<le> real_of_int i * 2^(l' - l)"
+      using i'_top int_less_real_le by auto
+    hence ip'_le_i: "?ip' / ?l' \<le> real_of_int i / ?l"
       using level_diff by (auto simp: field_simps)
-    hence "x \<le> real i / ?l" using x by auto
+    hence "x \<le> real_of_int i / ?l" using x by auto
     ultimately have "?\<phi> x = ?l * x  - ?i" using \<phi>_left_support' by auto
   } note \<phi>_eq = this
 
-  { fix x assume x: "x \<in> {?in' / ?l' .. real i' / ?l'}"
+  { fix x assume x: "x \<in> {?in' / ?l' .. real_of_int i' / ?l'}"
     hence \<phi>'_eq: "?\<phi>' x = ?l' * x  - ?in'" using \<phi>_left_support' by auto
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (auto simp add: field_simps)
     show "DERIV \<Phi>_n x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_n_def
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square algebra_simps) }
 
-  { fix x assume x: "x \<in> {real i' / ?l' .. ?ip' / ?l'}"
+  { fix x assume x: "x \<in> {real_of_int i' / ?l' .. ?ip' / ?l'}"
     hence \<phi>'_eq: "?\<phi>' x = ?ip' - ?l' * x" using \<phi>_right_support' by auto
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (simp add: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
@@ -229,13 +227,13 @@ lemma l2_when_right_child:
   assumes "l < l'"
   and i'_bot: "i' > i * 2^(l' - l)"
   and i'_top: "i' < (i + 1) * 2^(l' - l)"
-  shows "l2_\<phi> (l', i') (l, i) = (1 - real i' / 2^(l' - l) + real i) / 2^(l' + 1)"
+  shows "l2_\<phi> (l', i') (l, i) = (1 - real_of_int i' / 2^(l' - l) + real_of_int i) / 2^(l' + 1)"
 proof (subst l2_\<phi>I_DERIV)
   let ?l' = "(2 :: real)^(l' + 1)"
-  let ?in' = "real i' - 1"
-  let ?ip' = "real i' + 1"
+  let ?in' = "real_of_int i' - 1"
+  let ?ip' = "real_of_int i' + 1"
   let ?l = "(2 :: real)^(l + 1)"
-  let ?i = "real i + 1"
+  let ?i = "real_of_int i + 1"
   let ?\<phi>' = "\<phi> (l',i')"
   let ?\<phi> = "\<phi> (l, i)"
   let "?\<phi>2 x" = "?\<phi>' x * ?\<phi> x"
@@ -245,30 +243,28 @@ proof (subst l2_\<phi>I_DERIV)
   have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] `l < l'` by auto
 
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
-    have "real i * 2^(l' - l) \<le> ?in'"
-      using i'_bot[THEN zless_imp_add1_zle]
-      by (auto simp add: of_int_le_iff[symmetric])
-    hence "real i / ?l \<le> ?in' / ?l'"
+    have "real_of_int i * 2^(l' - l) \<le> ?in'"
+      using i'_bot int_less_real_le by auto
+    hence "real_of_int i / ?l \<le> ?in' / ?l'"
       using level_diff by (auto simp: field_simps)
-    hence "real i / ?l \<le> x" using x by auto
+    hence "real_of_int i / ?l \<le> x" using x by auto
     moreover
     have "?ip' \<le> ?i * 2^(l' - l)"
-      using i'_top[THEN zless_imp_add1_zle]
-      by (auto simp add: of_int_le_iff[symmetric])
+      using i'_top int_less_real_le by auto
     hence ip'_le_i: "?ip' / ?l' \<le> ?i / ?l"
       using level_diff by (auto simp: field_simps)
     hence "x \<le> ?i / ?l" using x by auto
     ultimately have "?\<phi> x = ?i - ?l * x" using \<phi>_right_support' by auto
   } note \<phi>_eq = this
 
-  { fix x assume x: "x \<in> {?in' / ?l' .. real i' / ?l'}"
+  { fix x assume x: "x \<in> {?in' / ?l' .. real_of_int i' / ?l'}"
     hence \<phi>'_eq: "?\<phi>' x = ?l' * x  - ?in'" using \<phi>_left_support' by auto
 
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (simp add: field_simps)
     show "DERIV \<Phi>_n x :> ?\<phi>2 x" unfolding \<Phi>_n_def \<phi>_eq[OF x'] \<phi>'_eq
       by (auto intro!: derivative_eq_intros simp add: simp add: power2_eq_square algebra_simps) }
 
-  { fix x assume x: "x \<in> {real i' / ?l' .. ?ip' / ?l'}"
+  { fix x assume x: "x \<in> {real_of_int i' / ?l' .. ?ip' / ?l'}"
     hence \<phi>'_eq: "?\<phi>' x = ?ip' - ?l' * x" using \<phi>_right_support' by auto
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (auto simp: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
@@ -280,7 +276,7 @@ lemma level_shift: "lc > l \<Longrightarrow> (x :: real) / 2 ^ (lc - Suc l) = x 
 
 lemma l2_child: assumes "d < length b"
   and p_grid: "p \<in> grid (child b dir d) ds" (is "p \<in> grid ?child ds")
-  shows "l2_\<phi> (p ! d) (b ! d) = (1 - real (sgn dir) * (real (ix p d) / 2^(lv p d - lv b d) - real (ix b d))) /
+  shows "l2_\<phi> (p ! d) (b ! d) = (1 - real_of_int (sgn dir) * (real_of_int (ix p d) / 2^(lv p d - lv b d) - real_of_int (ix b d))) /
                                  2^(lv p d + 1)"
 proof -
   have "lv ?child d \<le> lv p d" using `d < length b` and p_grid
@@ -320,7 +316,7 @@ proof -
       using range_left and range_right by auto
     with `?l_b < ?l_p`
     have "l2_\<phi> (?l_p, ?i_p) (?l_b, ?i_b) =
-          (1 + real ?i_p / 2^(?l_p - ?l_b) - real ?i_b) / 2^(?l_p + 1)"
+          (1 + real_of_int ?i_p / 2^(?l_p - ?l_b) - real_of_int ?i_b) / 2^(?l_p + 1)"
       by (rule l2_when_left_child)
     thus ?thesis using left by (auto simp add: ix_def lv_def)
   next
@@ -333,7 +329,7 @@ proof -
       using range_left and range_right by auto
     with `?l_b < ?l_p`
     have "l2_\<phi> (?l_p, ?i_p) (?l_b, ?i_b) =
-          (1 - real ?i_p / 2^(?l_p - ?l_b) + real ?i_b) / 2^(?l_p + 1)"
+          (1 - real_of_int ?i_p / 2^(?l_p - ?l_b) + real_of_int ?i_b) / 2^(?l_p + 1)"
       by (rule l2_when_right_child)
     thus ?thesis using right by (auto simp add: ix_def lv_def)
   qed
@@ -378,7 +374,7 @@ proof -
   hence "lv p d < lv pc d" using grid_child_level and `d < length pd` and pd_is_child by auto
 
   moreover
-  have "real (sgn dir) * real (sgn dir) = 1" by (cases dir, auto)
+  have "real_of_int (sgn dir) * real_of_int (sgn dir) = 1" by (cases dir, auto)
 
   ultimately show ?thesis
     unfolding l2_child[OF `d < length pd` pc_in_grid]
@@ -400,7 +396,7 @@ proof -
 
   moreover
   from ps_intro have "ps = p[d := (lv p d, ix p d - sgn dir)]" by (rule child_neighbour)
-  hence "lv ps d = lv p d" and "real (ix ps d) = real (ix p d) - real (sgn dir)"
+  hence "lv ps d = lv p d" and "real_of_int (ix ps d) = real_of_int (ix p d) - real_of_int (sgn dir)"
     using lv_def and ix_def and `length p = length ps` and `d < length p` by auto
 
   moreover
@@ -412,7 +408,7 @@ proof -
   hence "lv p' d > lv p_p d" using grid_child_level and `d < length p_p` by auto
 
   moreover
-  have "real (sgn dir) * real (sgn dir) = 1" by (cases dir, auto)
+  have "real_of_int (sgn dir) * real_of_int (sgn dir) = 1" by (cases dir, auto)
 
   ultimately show ?thesis
     unfolding l2_child[OF `d < length p` p'_grid] l2_child[OF `d < length ps` *]

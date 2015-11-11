@@ -1092,9 +1092,8 @@ proof -
       (auto simp: pdevs_val_setsum if_distrib pdevs_apply_pdevs_of_list
         degree_pdevs_of_list_scaleR intro!: setsum.cong )
   also
-  from pdevs_val_selsort_ccw2[of "inl (snd X)" ?e "{0 .. 2}"]
   obtain e'' where "\<dots> = pdevs_val e'' (pdevs_of_list (inl (snd X)))" "e'' \<in> UNIV \<rightarrow> {0..2}"
-    by auto
+    by (auto intro: pdevs_val_selsort_ccw2[of "inl (snd X)" ?e "{0 .. 2}"])
   note this(1)
   also note inl_def
   also

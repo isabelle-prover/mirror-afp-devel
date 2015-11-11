@@ -105,11 +105,11 @@ next
       from True[folded 1(2)] have low: "x \<le> int b ^ s" by auto
       from 1(3) have up: "s = 0 \<or> s \<noteq> 0 \<and> int b ^ (s - 1) < x" by auto
       from True have id: "int (log_ceil_main b x p s) = s" unfolding id by simp
-      from low have "real x \<le> real b ^ s"
+      from low have "of_int x \<le> real b ^ s"
         by (metis of_int_le_iff of_int_of_nat_eq of_int_power)
       hence "log b x \<le> log b (real b ^ s)"
         using log_le_cancel_iff[of b x "real b ^ s"] b x 1(4)
-        by (metis less_eq_real_def not_le real_of_int_gt_zero_cancel_iff of_nat_1 of_nat_0_le_iff of_nat_less_iff zero_le_power)
+        by (metis less_eq_real_def not_le of_int_0_less_iff of_nat_1 of_nat_0_le_iff of_nat_less_iff zero_le_power)
       also have "\<dots> = s" using b by simp
       also have "\<dots> = real_of_int (int s)"
         by (metis of_int_of_nat_eq)
@@ -128,12 +128,12 @@ next
           also have "\<dots> = ss"
             by (metis add_diff_cancel of_int_of_nat_eq of_nat_1 of_nat_add)
           finally have id: "real_of_int (int s) - 1 = ss" .
-          have "0 < real (int b ^ ss)" "0 < real x" using b 1(4) by auto
-          note log_mono = log_less_cancel_iff[OF b1(2) this]
+          have "0 < real_of_int (int b ^ ss)" "0 < real_of_int x" using b 1(4)  by auto
+          note log_mono = log_less_cancel_iff[OF b1(2) this]thm log_mono
           from * have up: "int b ^ ss < x" unfolding ss_def by auto
-          hence "real (int b ^ ss) < x" by fast
-          from this[folded log_mono] have "log b (real (int b ^ ss)) < log b x" .
-          also have "real (int b ^ ss) = real b ^ ss" by simp
+          hence "real_of_int (int b ^ ss) < real_of_int x" by blast
+          from this[folded log_mono] have "log b (of_int (int b ^ ss)) < log b x" by simp
+          also have "of_int (int b ^ ss) = real b ^ ss" by simp
           also have "log b (real b ^ ss) = ss" using b by simp
           finally show ?thesis unfolding id .
         qed
@@ -180,10 +180,10 @@ next
   hence l2pos: "l2x \<ge> 0" by (auto simp: l2x_def)
   have "log 2 x / p \<le> l2x / p" using x p unfolding l2x_def
     by (metis divide_right_mono le_of_int_ceiling of_nat_0_le_iff)
-  also have "\<dots> \<le> \<lceil>l2x / (p :: real)\<rceil>" by simp
+  also have "\<dots> \<le> \<lceil>l2x / (p :: real)\<rceil>" by (simp add: ceiling_correct) 
   also have "l2x / real p = l2x / real_of_rat (of_nat p)"
     by (metis of_rat_of_nat_eq)
-  also have "real l2x = real_of_rat (of_int l2x)"
+  also have "of_int l2x = real_of_rat (of_int l2x)"
     by (metis of_rat_of_int_eq)
   also have "real_of_rat (of_int l2x) / real_of_rat (of_nat p) = real_of_rat (rat_of_int l2x / of_nat p)"
     by (metis of_rat_divide)
@@ -194,17 +194,17 @@ next
   from powr_mono[OF le, of 2, folded r]
   have "root p x \<le> 2 powr pow" by auto
   also have "\<dots> = 2 ^ pow" by (rule powr_realpow, auto)
-  also have "\<dots> = real ((2 :: int) ^ pow)" by simp
+  also have "\<dots> = of_int ((2 :: int) ^ pow)" by simp
   also have "pow = (nat \<lceil>of_int (log_ceil 2 x) / rat_of_nat p\<rceil>)"
     unfolding pow_def l2x_def using x by simp
-  also have "real ((2 :: int) ^ \<dots> ) = start_value x p" unfolding start_value_def  by simp
+  also have "real_of_int ((2 :: int) ^ \<dots> ) = start_value x p" unfolding start_value_def  by simp
   finally have less: "root p x \<le> start_value x p" .
   have "0 \<le> root p x" using p x by auto
   also have "\<dots> \<le> start_value x p" by (rule less)
   finally have start: "0 \<le> start_value x p" by simp
-  from power_mono[OF less, of p] have "root p (real x) ^ p \<le> real (start_value x p) ^ p" using p x by auto
+  from power_mono[OF less, of p] have "root p (of_int x) ^ p \<le> of_int (start_value x p) ^ p" using p x by auto
   also have "\<dots> = start_value x p ^ p" by simp
-  also have "root p (real x) ^ p = x" using p x by force
+  also have "root p (of_int x) ^ p = x" using p x by force
   finally have "x \<le> (start_value x p) ^ p" by presburger
   with start show ?thesis by auto
 qed
@@ -513,7 +513,7 @@ proof (induct y n rule: root_newton_int_main.induct)
         from order.strict_trans2[OF ineq1 ineq2]
         have "?n < of_int ((x + 1) ^ p)" unfolding x
           by (metis of_int_1 of_int_add of_int_power)
-        thus "n < (x + 1) ^ p " by simp
+        thus "n < (x + 1) ^ p" by blast
       qed
     qed
   next
@@ -713,7 +713,7 @@ lemma root_int_floor_pos_upper: assumes p0: "p \<noteq> 0" and x: "x \<ge> 0"
   by (cases "root_int_main p x", auto)
 
 lemma root_int_floor_pos: assumes x: "x \<ge> 0"
-  shows "root_int_floor_pos p x = floor (root p (real x))"
+  shows "root_int_floor_pos p x = floor (root p (of_int x))"
 proof (cases "p = 0")
   case True
   thus ?thesis by (simp add: root_int_floor_pos_def)
@@ -721,14 +721,14 @@ next
   case False
   hence p: "p > 0" by auto
   let ?s1 = "real_of_int (root_int_floor_pos p x)"
-  let ?s2 = "root p (real x)"
+  let ?s2 = "root p (of_int x)"
   from x have s1: "?s1 \<ge> 0"
     by (metis of_int_0_le_iff root_int_floor_pos_pos)
   from x have s2: "?s2 \<ge> 0"
-    by (metis real_of_int_ge_zero_cancel_iff real_root_pos_pos_le)
+    by (metis of_int_0_le_iff real_root_pos_pos_le)
   from s1 have s11: "?s1 + 1 \<ge> 0" by auto
-  have id: "?s2 ^ p = real x" using x
-    by (metis p real_of_int_ge_zero_cancel_iff real_root_pow_pos2)
+  have id: "?s2 ^ p = of_int x" using x
+    by (metis p of_int_0_le_iff real_root_pow_pos2)
   show ?thesis
   proof (rule floor_unique[symmetric])
     show "?s1 \<le> ?s2"
@@ -745,7 +745,7 @@ next
 qed
 
 lemma root_int_ceiling_pos: assumes x: "x \<ge> 0"
-  shows "root_int_ceiling_pos p x = ceiling (root p (real x))"
+  shows "root_int_ceiling_pos p x = ceiling (root p (of_int x))"
 proof (cases "p = 0")
   case True
   thus ?thesis by (simp add: root_int_ceiling_pos_def)
@@ -757,7 +757,7 @@ next
   note rm = rm(1-2) rm(3-5)[OF p]
   from rm(1) have y: "y \<ge> 0" by simp
   let ?s = "root_int_ceiling_pos p x"
-  let ?sx = "root p (real x)"
+  let ?sx = "root p (of_int x)"
   note d = root_int_ceiling_pos_def
   show ?thesis
   proof (cases b)
@@ -765,7 +765,7 @@ next
     hence id: "?s = y" unfolding s d using p by auto
     from rm(2) True have xy: "x = y ^ p" by auto
     show ?thesis unfolding id unfolding xy using y
-      by (metis ceiling_real_of_int p of_int_le_iff of_int_power real_of_int_zero_cancel real_root_power_cancel)
+      by (simp add: p real_root_power_cancel)
   next
     case False
     hence id: "?s = root_int_floor_pos p x + 1" unfolding d root_int_floor_pos_def
@@ -774,10 +774,10 @@ next
       by (cases "x = 0", auto)
     show ?thesis unfolding id root_int_floor_pos[OF x]
     proof (rule ceiling_unique[symmetric])
-      show "?sx \<le> real_of_int (\<lfloor>root p (real x)\<rfloor> + 1)"
+      show "?sx \<le> real_of_int (\<lfloor>root p (of_int x)\<rfloor> + 1)"
         by (metis of_int_add real_of_int_floor_add_one_ge of_int_1)
-      let ?l = "real_of_int (\<lfloor>root p (real x)\<rfloor> + 1) - 1"
-      let ?m = "real_of_int \<lfloor>root p (real x)\<rfloor>"
+      let ?l = "real_of_int (\<lfloor>root p (of_int x)\<rfloor> + 1) - 1"
+      let ?m = "real_of_int \<lfloor>root p (of_int x)\<rfloor>"
       have "?l = ?m" by simp
       also have "\<dots> < ?sx"
       proof -
@@ -785,12 +785,12 @@ next
         have neq: "?m \<noteq> ?sx"
         proof
           assume "?m = ?sx"
-          hence "?m ^ p = ?sx ^ p" by simp
-          also have "\<dots> = real x" using x False
+          hence "?m ^ p = ?sx ^ p" by auto
+          also have "\<dots> = of_int x" using x False
             by (metis p real_root_ge_0_iff real_root_pow_pos2 root_int_floor_pos root_int_floor_pos_pos zero_le_floor zero_less_Suc)
-          finally have xs: "x = \<lfloor>root p (real x)\<rfloor> ^ p"
+          finally have xs: "x = \<lfloor>root p (of_int x)\<rfloor> ^ p"
             by (metis floor_power floor_of_int)
-          hence "\<lfloor>root p (real x)\<rfloor> \<in> set (root_int p x)" using p by simp
+          hence "\<lfloor>root p (of_int x)\<rfloor> \<in> set (root_int p x)" using p by simp
           hence "root_int p x \<noteq> []" by force
           with s False `p \<noteq> 0` x x0 show False unfolding root_int_def
             by (cases p, auto)
@@ -806,7 +806,7 @@ qed
 definition "root_int_floor p x = (if x \<ge> 0 then root_int_floor_pos p x else - root_int_ceiling_pos p (- x))"
 definition "root_int_ceiling p x = (if x \<ge> 0 then root_int_ceiling_pos p x else - root_int_floor_pos p (- x))"
 
-lemma root_int_floor[simp]: "root_int_floor p x = floor (root p (real x))"
+lemma root_int_floor[simp]: "root_int_floor p x = floor (root p (of_int x))"
 proof -
   note d = root_int_floor_def
   show ?thesis
@@ -821,7 +821,7 @@ proof -
   qed
 qed
 
-lemma root_int_ceiling[simp]: "root_int_ceiling p x = ceiling (root p (real x))"
+lemma root_int_ceiling[simp]: "root_int_ceiling p x = ceiling (root p (of_int x))"
 proof -
   note d = root_int_ceiling_def
   show ?thesis
@@ -935,15 +935,15 @@ lemma root_rat_reform: assumes q: "quotient_of x = (a,b)"
 proof (cases "p = 0")
   case False
   from quotient_of_denom_pos[OF q] have b: "0 < b" by auto
-  hence b: "0 < real b" by auto
+  hence b: "0 < real_of_int b" by auto
   from quotient_of_div[OF q] have x: "root p (real_of_rat x) = root p (a / b)"
     by (metis of_rat_divide of_rat_of_int_eq)
-  also have "a / b = a * real b ^ (p - 1) / real b ^ p" using b False
+  also have "a / b = a * real_of_int b ^ (p - 1) / of_int b ^ p" using b False
     by (cases p, auto simp: field_simps)
-  also have "root p \<dots> = root p (a * real b ^ (p - 1)) / root p (real b ^ p)" by (rule real_root_divide)
-  also have "root p (real b ^ p) = of_int b" using False b
+  also have "root p \<dots> = root p (a * real_of_int b ^ (p - 1)) / root p (of_int b ^ p)" by (rule real_root_divide)
+  also have "root p (of_int b ^ p) = of_int b" using False b
     by (metis neq0_conv real_root_pow_pos real_root_power)
-  also have "a * real b ^ (p - 1) = of_int (a * b ^ (p - 1))"
+  also have "a * real_of_int b ^ (p - 1) = of_int (a * b ^ (p - 1))"
     by (metis of_int_mult of_int_power)
   finally show ?thesis .
 qed auto

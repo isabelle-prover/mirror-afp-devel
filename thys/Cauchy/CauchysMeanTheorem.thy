@@ -110,11 +110,8 @@ next
       moreover with calculation Cons have "\<Sum>:ys < m*real (length ys)" by simp
       hence "\<Sum>:ys + y < m*real(length ys) + y" by simp
       with ylm have "\<Sum>:(y#ys) < m*(real(length ys) + 1)" by(simp add:field_simps)
-      with of_nat_Suc have "\<Sum>:(y#ys) < m*(real(length ys + 1))"
-        apply -
-        apply (drule meta_spec [of _ "length ys"])
-        apply (subst(asm) eq_sym_conv)
-        by (simp del: of_nat_Suc)
+      then have "\<Sum>:(y#ys) < m*(real(length ys + 1))"
+        by (simp add: algebra_simps)
       hence "\<Sum>:(y#ys) < m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
@@ -147,11 +144,8 @@ next
       moreover with calculation Cons have "\<Sum>:ys > m*real (length ys)" by simp
       hence "\<Sum>:ys + y > m*real(length ys) + y" by simp
       with ylm have "\<Sum>:(y#ys) > m*(real(length ys) + 1)" by(simp add:field_simps)
-      with of_nat_Suc have "\<Sum>:(y#ys) > m*(real(length ys + 1))"
-        apply -
-        apply (drule meta_spec [of _ "length ys"])
-        apply (subst(asm) eq_sym_conv)
-        by (simp del: of_nat_Suc)
+      then have "\<Sum>:(y#ys) > m*(real(length ys + 1))"
+        by (simp add: algebra_simps)
       hence "\<Sum>:(y#ys) > m*(real (length(y#ys)))" by simp
       thus ?thesis .
     next
