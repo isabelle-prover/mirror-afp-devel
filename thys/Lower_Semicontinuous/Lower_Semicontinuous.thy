@@ -1526,7 +1526,7 @@ proof-
   hence "(x,z):A & (x,z):Epigraph UNIV f" unfolding A_def Epigraph_def by auto
   hence "A Int (Epigraph UNIV f) ~= {}" unfolding A_def Epigraph_def using assms by auto
   moreover have "open A" proof(cases a)
-    case real hence "A = {y. inner (0::'a, 1) y < real a}" using A_def by auto
+    case real hence "A = {y. inner (0::'a, 1) y < real_of_ereal a}" using A_def by auto
       thus ?thesis using open_halfspace_lt by auto
     next case PInf thus ?thesis using A_def by auto
     next case MInf thus ?thesis using A_def by auto
