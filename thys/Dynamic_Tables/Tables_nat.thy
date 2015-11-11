@@ -2,6 +2,8 @@ theory Tables_nat
 imports Tables_real
 begin
 
+declare le_of_int_ceiling[simp] (* MOVE *)
+
 (* Final version with l :: nat in fully localized form, no duplication *)
 
 locale TableInv = Table0 f1 f2 f1' f2' e c for f1 f2 f1' f2' e c :: real +
@@ -79,7 +81,7 @@ proof -
         also note `l0 \<le> l`
         finally show ?thesis by simp (simp add: algebra_simps)
       qed
-      also have "f2*e*l \<le> f2*\<lceil>e*l\<rceil>" by (simp)
+      also have "f2*e*l \<le> f2*\<lceil>e*l\<rceil>" by simp
       finally have f2: "n+1 \<le> f2*\<lceil>e*l\<rceil>" .
       have "l < e*l" using `l0 \<le> l` by simp
       hence "l0 \<le> e*l" using `l0\<le>l` by linarith
@@ -198,7 +200,7 @@ next
         by (simp add: field_simps)
       hence "n \<ge> f2'*l" by(simp add: algebra_simps)
       hence Phi: "\<Phi> s = ai * (n - f2'*l)" by simp
-      have [simp]: "real (nat \<lceil>e*l\<rceil>) = real \<lceil>e*l\<rceil>"
+      have [simp]: "real (nat \<lceil>e*l\<rceil>) = real_of_int \<lceil>e*l\<rceil>"
         by (simp add: order.order_iff_strict)
       have "?A \<le> n - ai*(f2 - f2')*l + ai + 1 + f1'*ad" (is "_ \<le> ?R")
       proof cases
@@ -207,7 +209,7 @@ next
         proof cases
           assume "n+1 \<le> f1'*\<lceil>e*l\<rceil>"
           hence "?A \<le> n+1 + ad*(f1'*\<lceil>e*l\<rceil>-(n+1)) - ai*(n - f2'*l)"
-            using Phi f2' by (simp)
+            using Phi f2' by (simp add: )
           also have "f1'*\<lceil>e*l\<rceil> - (n+1) \<le> f1'"
           proof -
             have "f1'*\<lceil>e*l\<rceil> \<le> f1'*(e*l + 1)" by(simp)
@@ -389,7 +391,7 @@ next
         by (simp add: algebra_simps)
       hence "n \<ge> f2''*l" by(simp add: algebra_simps)
       hence Phi: "\<Phi> s = ai * (n - f2''*l)" by simp
-      have [simp]: "real (nat \<lceil>e*l\<rceil>) = real \<lceil>e*l\<rceil>"
+      have [simp]: "real (nat \<lceil>e*l\<rceil>) = real_of_int \<lceil>e*l\<rceil>"
         by (simp add: order.order_iff_strict)
       have "?L \<le> n - ai*(f2 - f2'')*l + ai + 1" (is "_ \<le> ?R")
       proof cases
