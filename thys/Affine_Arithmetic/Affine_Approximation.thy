@@ -1480,7 +1480,7 @@ lemmas reify_euclarith_eqs =
   interpret_Floatreal
 
 lemma floatify_thms: "1 \<equiv> real_of_float 1" "0 \<equiv> real_of_float 0"
-  "numeral k \<equiv> real_of_float (numeral k)" "neg_numeral k \<equiv> real_of_float (neg_numeral k)"
+  "numeral k \<equiv> real_of_float (numeral k)"
   by simp_all
 
 primrec max_Var_realarith where
