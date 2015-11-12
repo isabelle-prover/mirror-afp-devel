@@ -44,9 +44,16 @@ lemma rtrancl_on_trans:
   by induct (auto intro: rtrancl_on_into_rtrancl_on)
 
 lemma converse_rtrancl_on_into_rtrancl_on:
-  assumes "(a,b) \<in> r" "(b, c) \<in> rtrancl_on F r" "a \<in> F" "b \<in> F"
+  assumes "(a,b) \<in> r" "(b, c) \<in> rtrancl_on F r" "a \<in> F"
   shows "(a, c) \<in> rtrancl_on F r"
-  using assms by (blast intro: rtrancl_on_trans rtrancl_on_into_rtrancl_on)
+proof -
+  have "b \<in> F" using \<open>(b,c) \<in> _\<close> by (rule in_rtrancl_on_in_F)
+  show ?thesis
+    apply (rule rtrancl_on_trans)
+    apply (rule rtrancl_on_into_rtrancl_on)
+    apply (rule rtrancl_on_refl)
+    by fact+
+qed
 
 lemma rtrancl_on_converseI:
   assumes "(y, x) \<in> rtrancl_on F r" shows "(x, y) \<in> rtrancl_on F (r\<inverse>)"
