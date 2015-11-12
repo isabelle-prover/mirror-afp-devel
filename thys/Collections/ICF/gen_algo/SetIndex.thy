@@ -52,8 +52,8 @@ text {*
 *}
 
 locale index_loc = 
-  m!: StdMap m_ops +
-  s!: StdSet s_ops
+  m: StdMap m_ops +
+  s: StdSet s_ops
   for m_ops :: "('i,'s,'m,'more1) map_ops_scheme"
   and s_ops :: "('x,'s,'more2) set_ops_scheme"
 begin
@@ -118,7 +118,7 @@ begin
 end
 
 locale build_index_loc = index_loc m_ops s_ops +
-  t!: StdSet t_ops
+  t: StdSet t_ops
   for m_ops :: "('i,'s,'m,'more1) map_ops_scheme"
   and s_ops :: "('x,'s,'more3) set_ops_scheme"
   and t_ops :: "('x,'t,'more2) set_ops_scheme"

@@ -22,7 +22,7 @@ locale heap_execute = addr_base +
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val set" 
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap set"
 
-sublocale heap_execute < execute!: heap_base
+sublocale heap_execute < execute: heap_base
   addr2thread_id thread_id2addr 
   spurious_wakeups
   empty_heap allocate typeof_addr

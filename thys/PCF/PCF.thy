@@ -805,7 +805,7 @@ lemma min_inv_POR_lf:
   apply force
   done
 
-interpretation POR!: DomSolV ValD_copy_rec POR_lf
+interpretation POR: DomSolV ValD_copy_rec POR_lf
   apply standard
     apply (rule ValD_copy_ID)
    apply (rule mono_POR_lf)
@@ -1187,7 +1187,7 @@ lemma min_inv_PE_lf:
   apply force
   done
 
-interpretation PE!: DomSolV ValD_copy_rec PE_lf
+interpretation PE: DomSolV ValD_copy_rec PE_lf
   apply standard
     apply (rule ValD_copy_ID)
    apply (rule mono_PE_lf)

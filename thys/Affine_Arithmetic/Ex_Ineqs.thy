@@ -29,7 +29,7 @@ approximate_affine schwefel "\<lambda>(x1, x2, x3).
 
 lemma
   "prove_pos 80 20 (FloatR  1 (-1)) (FloatR 1 1) schwefel (aform_of_ivl (-10,-10,-10) (10,10,10))"
-  by eval
+  by eval --"slow: 100s"
 
 approximate_affine delta6 "\<lambda>(x1, x2, x3, x4, x5, x6).
   (x1 * x4 * (-x1 + x2 + x3 + -x4 + x5 + x6) +

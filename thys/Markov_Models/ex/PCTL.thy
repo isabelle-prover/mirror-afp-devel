@@ -666,9 +666,8 @@ lemma existence_of_ExpFuture:
   assumes N_def: "N \<equiv> Prob0 S (svalid F)" (is "_ \<equiv> Prob0 S ?F")
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes s: "s \<in> S" "s \<notin> S - (Y - ?F)"
-  shows "real (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)
-    - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'))"
+  shows "real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
+    (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'))"
 proof -
   let ?R = "reward (Future F)"
 
@@ -680,10 +679,10 @@ proof -
   from s have "s \<notin> ?F" by auto
 
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'"
-  have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ereal (\<tau> s s' * real (?E s')))"
+  have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ereal (\<tau> s s' * real_of_ereal (?E s')))"
   proof (rule setsum.cong)
     fix s' assume "s' \<in> S"
-    show "\<tau> s s' * ?E s' = ereal (\<tau> s s' * real (?E s'))"
+    show "\<tau> s s' * ?E s' = ereal (\<tau> s s' * real_of_ereal (?E s'))"
     proof cases
       assume "\<tau> s s' \<noteq> 0"
       with `s \<in> S` `s' \<in> S` have "s' \<in> E s" by (simp add: set_pmf_iff)
@@ -723,8 +722,8 @@ lemma uniqueness_of_ExpFuture:
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes const_def: "const \<equiv> \<lambda>s. if s \<in> Y \<and> s \<notin> svalid F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
   assumes sol: "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
-  shows "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
-    (is "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)")
+  shows "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
+    (is "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)")
 proof (rule unique)
   show "S \<subseteq> S" "?F \<subseteq> S" using svalid_subset_S by auto
   show "S - (Y - ?F) \<subseteq> S" "Prob0 S ?F \<subseteq> S - (Y - ?F)" "?F \<subseteq> S - (Y - ?F)"
@@ -733,8 +732,8 @@ proof (rule unique)
        (auto simp add: Prob0_iff dest!: T.AE_contr)
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
-  then show "real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real(\<integral>\<^sup>+\<omega>. ?R (s' ## \<omega>) \<partial>T s'))"
+  then show "real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
+    (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s' ## \<omega>) \<partial>T s'))"
     by (rule existence_of_ExpFuture[OF N_def Y_def])
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
@@ -752,7 +751,7 @@ next
   fix s assume s: "s \<in> S - (Y - ?F)"
   with sol[of s] have "l s = 0"
     by (cases "s \<in> ?F") (simp_all add: const_def LES_def single_l)
-  also have "0 = real (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
+  also have "0 = real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
   proof cases
     assume "s \<in> ?F" then show ?thesis
       by (simp add: HLD_iff ev_Stream)
@@ -762,7 +761,7 @@ next
     with infinite_reward[of s F] show ?thesis
       by (simp add: Y_def N_def del: reward.simps)
   qed
-  finally show "l s = real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)" .
+  finally show "l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)" .
 qed
 
 lemma inrealrel_ereal[simp]: "inrealrel r (ereal x) (ereal y) \<longleftrightarrow> inrealrel r x y"
@@ -864,7 +863,7 @@ next
     unfolding ExpFuture_def N_def Y_def const_def by auto
 
   let ?R = "reward (Future F)"
-  have l_eq: "\<forall>s\<in>S. l s = real(\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)"
+  have l_eq: "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)"
   proof (rule uniqueness_of_ExpFuture[OF N_def Y_def const_def])
     fix s assume "s \<in> S"
     show "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
@@ -950,10 +949,10 @@ next
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future \<Phi>) (s' ## \<omega>) \<partial>T s'"
   have "\<exists>l. gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ExpFuture[OF N_def Y_def const_def]])
-    show "\<forall>s\<in>S. (\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real (?E s')) = const s"
+    show "\<forall>s\<in>S. (\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real_of_ereal (?E s')) = const s"
     proof
       fix s assume "s \<in> S"
-      show "(\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real (?E s')) = const s"
+      show "(\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real_of_ereal (?E s')) = const s"
       proof cases
         assume s: "s \<in> S - (Y - svalid \<Phi>)"
         show ?thesis
@@ -969,10 +968,10 @@ next
       next
         assume s: "s \<notin> S - (Y - svalid \<Phi>)"
 
-        have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * real (?E s')) =
-          (\<Sum>s'\<in>S. \<tau> s s' * real (?E s') - (if s' = s then 1 else 0) * real (?E s'))"
+        have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * real_of_ereal (?E s')) =
+          (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (?E s') - (if s' = s then 1 else 0) * real_of_ereal (?E s'))"
           by (auto intro!: setsum.cong simp: field_simps)
-        also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * real (?E s')) - real (?E s)"
+        also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (?E s')) - real_of_ereal (?E s)"
           using `s \<in> S` by (simp add: setsum_subtractf single_l)
         finally show ?thesis
           using s `s \<in> S` existence_of_ExpFuture[OF N_def Y_def `s \<in> S` s]

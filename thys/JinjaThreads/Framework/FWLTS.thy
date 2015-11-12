@@ -12,7 +12,7 @@ imports
 begin
 
 sublocale multithreaded_base < trsys "r t" for t .
-sublocale multithreaded_base < mthr!: trsys redT .
+sublocale multithreaded_base < mthr: trsys redT .
 
 -- "Move to FWSemantics?"
 definition redT_upd_\<epsilon> :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w) state"
@@ -74,7 +74,7 @@ where
 
 end
 
-sublocale \<tau>multithreaded < mthr!: \<tau>trsys redT m\<tau>move .
+sublocale \<tau>multithreaded < mthr: \<tau>trsys redT m\<tau>move .
 
 context \<tau>multithreaded begin
 

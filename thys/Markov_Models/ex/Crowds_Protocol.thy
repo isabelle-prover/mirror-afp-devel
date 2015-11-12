@@ -19,7 +19,7 @@ proof (subst emeasure_suntil_disj)
   have *[simp]: "0 \<le> p" "0 \<le> r"
     using p(1)[OF \<open>s \<in> X\<close>, symmetric] r(1)[OF \<open>s \<in> X\<close>, symmetric]
     by (simp_all add: T.emeasure_eq_measure measure_pmf.emeasure_eq_measure measure_nonneg)
-  with `p < 1` have fp_nn: "0 \<le> ereal (r / (1 - p))" 
+  with `p < 1` have fp_nn: "0 \<le> ereal (r / (1 - p))"
     by (simp add: divide_simps del: *)
 
   have "mono ?F" "mono ?f"
@@ -40,7 +40,7 @@ proof (subst emeasure_suntil_disj)
     also have "?F (\<lambda>s. max 0 x) \<le> ?F (lfp ?F)"
       using lfp_F_nn step
       by (intro le_funI ereal_add_mono order_refl nn_integral_mono) (auto simp: split: split_indicator)
-    finally show ?case  
+    finally show ?case
       by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: le_fun_def)
   qed (auto intro!: Sup_least)
   also have 2: "lfp ?F s \<le> r / (1 - p)"
@@ -64,7 +64,7 @@ proof (subst emeasure_suntil_disj)
   with 1 2 show "lfp ?F s = ereal (r / (1 - p))"
     by auto
 qed fact+
-  
+
 subsection {* Definition of the Crowds-Protocol *}
 
 datatype 'a state = Start | Init 'a | Mix 'a | End
@@ -84,7 +84,7 @@ lemma Init_cut_Mix[simp]:
   "Init ` H \<inter> Mix ` J = {}"
   by auto
 
-abbreviation "Jondo B \<equiv> Init`B \<union> Mix`B" 
+abbreviation "Jondo B \<equiv> Init`B \<union> Mix`B"
 
 locale Crowds_Protocol =
   fixes J :: "'a set" and C :: "'a set" and p_f :: real and p_i :: "'a \<Rightarrow> real"
@@ -144,8 +144,7 @@ lemma C_le_J[simp]: "card C < card J"
 
 lemma p_H: "0 < p_H" "p_H < 1"
   using J_not_empty C_smaller C_non_empty
-  by (simp_all add: p_H_def card_Diff_subset card_mono real_of_nat_diff
-                    field_simps zero_less_divide_iff card_gt_0_iff)
+  by (simp_all add: p_H_def card_Diff_subset card_mono field_simps zero_less_divide_iff card_gt_0_iff)
 
 lemma p_H_p_f_pos: "0 < p_H * p_f"
   using p_f p_H by (simp add: zero_less_mult_iff)
@@ -162,7 +161,7 @@ lemma p_j_pos: "0 < p_j"
 
 lemma H_compl: "1 - p_H = real (card C) / real (card J)"
   using C_non_empty J_not_empty C_smaller
-  by (simp add: p_H_def card_Diff_subset card_mono real_of_nat_diff divide_eq_eq field_simps)
+  by (simp add: p_H_def card_Diff_subset card_mono of_nat_diff divide_eq_eq field_simps)
 
 lemma H_compl2: "1 - p_H = card C * p_j"
   unfolding H_compl p_j_def by simp
@@ -178,8 +177,7 @@ proof (rule pmf_embed_pmf)
   show "(\<integral>\<^sup>+ x. ereal (next_prob s x) \<partial>count_space UNIV) = 1"
     using p_f J_not_empty
     by (subst nn_integral_count_space'[where A="Init`H \<union> Mix`J \<union> {End}"])
-       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint
-                   p_i_distr p_j_def real_of_nat_def[symmetric]
+       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint p_i_distr p_j_def
              split: state.split)
 qed
 
@@ -328,13 +326,13 @@ proof -
       also have "\<dots> = ereal (1 - p_f) * emeasure (N s) (Mix`L)"
         using p_f by (intro nn_integral_cmult_indicator) auto
       also have "\<dots> = ereal ((1 - p_f) * card L * p_j * p_f)"
-        using s assms by (subst emeasure_measure_pmf_finite) (auto simp: setsum.reindex subset_eq real_of_nat_def)
+        using s assms by (subst emeasure_measure_pmf_finite) (auto simp: setsum.reindex subset_eq)
       finally show "?P s ?E = p_f * p_j * (1 - p_f) * card L"
         by simp
     next
       show "\<And>t. AE \<omega> in T  t. \<not> (?E \<sqinter> (?J \<sqinter> nxt (?J suntil ?E))) \<omega>"
         by (intro AE_I2) (auto simp: HLD_iff elim: suntil.cases)
-    qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def real_of_nat_def)
+    qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def)
     then have "?P (Init j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f) / p_f"
       by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s])
     then have "?P (Init j) (?J suntil ?E) = p_j * card L"
@@ -477,7 +475,7 @@ proof -
       proof
         assume "ev ?M \<omega>"
         from this \<omega> s show "(HLD ?J suntil ?M) \<omega>"
-        proof (induct arbitrary: s rule: ev_induct_strong) 
+        proof (induct arbitrary: s rule: ev_induct_strong)
           case (step \<omega>) then show ?case
             by (auto simp: HLD_iff enabled.simps[of _ \<omega>] suntil.simps[of _ _ \<omega>] E_End E_Init E_Mix
                            enabled_End ev_sconst)
@@ -501,10 +499,9 @@ proof -
         fix s assume s: "s \<in> Mix ` H"
         from s C_smaller show "?P s ?M = ereal ((1 - p_H) * p_f)"
           by (subst emeasure_HLD)
-             (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl
-                             real_of_nat_def[symmetric])
+             (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl)
         from s show "emeasure (N s) (Mix`H) = p_H * p_f"
-          by (auto simp: emeasure_measure_pmf_finite setsum.reindex real_of_nat_def[symmetric] H_eq2)
+          by (auto simp: emeasure_measure_pmf_finite setsum.reindex H_eq2)
       qed (insert j, auto simp: HLD_iff p_H_p_f_less_1)
       finally have "?P (Init j) (ev ?M) = (1 - p_H) / (1 - p_H * p_f)"
         using p_f by (subst emeasure_Init_eq_Mix) (auto simp: ev_Stream AE_End ev_sconst HLD_iff) }
@@ -576,7 +573,7 @@ proof -
     apply (subst emeasure_HLD_nxt emeasure_HLD, simp)+
     apply (subst nn_integral_indicator_finite)
     apply (auto simp: emeasure_measure_pmf_finite setsum.reindex next_prob_def setsum.If_cases
-                      real_of_nat_def[symmetric] Int_absorb2 H_compl2
+                      Int_absorb2 H_compl2
                 intro!: setsum.cong setsum_nonneg)
     done
   also have "?P Start (Init`I \<cdot> ?U) = (\<Sum>i\<in>I. ?P (Init i) ?U * p_i i)"
@@ -601,12 +598,11 @@ proof -
       show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ereal (p_f * p_f * (1 - p_H) * p_j * card L)"
         apply (simp add: emeasure_HLD emeasure_HLD_nxt del: nxt.simps space_T)
         apply (subst nn_integral_measure_pmf_support[of "Mix`L"])
-        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex
-                              real_of_nat_def[symmetric] H_compl p_j_def)
+        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex H_compl p_j_def)
         done
     next
       fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ereal (p_H * p_f)"
-        by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2 real_of_nat_def[symmetric])
+        by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2)
     next
       show "AE \<omega> in T t. \<not> ((Mix ` L \<cdot> ?L) \<sqinter> (HLD (Mix ` H) \<sqinter> nxt ?U)) \<omega>" for t
         using L
@@ -711,9 +707,9 @@ lemma vimage_Int_space_C[simp]:
   "f -` {x} \<inter> space hC = {\<omega>\<in>space S. f \<omega> = x}"
   by (auto simp: hC_def)
 
-sublocale hC!: information_space hC 2
+sublocale hC: information_space hC 2
 proof -
-  interpret hC!: prob_space hC
+  interpret hC: prob_space hC
     unfolding hC_def
     using emeasure_hit_C_not_0
     by (intro prob_space_uniform_measure) auto
@@ -814,8 +810,7 @@ proof -
     by (simp del: C_le_J)
   then have "1 \<le> h"
     using C_smaller
-    by (simp add: h_def card_Diff_subset real_of_nat_diff card_mono field_simps
-             del: C_le_J)
+    by (simp add: h_def card_Diff_subset card_mono field_simps del: C_le_J)
 
   have log_le_0: "?f * log 2 (p_H * p_f) \<le> ?f * log 2 1"
     using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f `1 \<le> h`
@@ -823,7 +818,7 @@ proof -
 
   have "(h - 1) * p_j < 1"
     using `1 \<le> h` C_smaller
-    by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset real_of_nat_diff card_mono)
+    by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset card_mono)
   then have 1: "(h - 1) * p_j * p_f < 1 * 1"
     using p_f by (intro mult_strict_mono) auto
 
@@ -887,7 +882,7 @@ proof -
   let ?inner = "\<lambda>i. \<Sum>l\<in>H. ?il i l * log 2 (?il i l / (?i i * ?l l))"
   { fix i assume i: "i \<in> H"
     with h_pos have card_idx: "real_of_nat (card (H - {i})) = p_H / p_j - 1"
-      by (auto simp add: p_j_def p_H_def real_eq_of_nat[symmetric] h_def)
+      by (auto simp add: p_j_def p_H_def h_def)
 
     have neq0: "p_j \<noteq> 0" "p_H \<noteq> 0"
       unfolding p_j_def p_H_def
@@ -911,7 +906,7 @@ proof -
       using neq0 p_f by (simp add: card_idx field_simps `p_H = h * p_j`)
     finally have "?inner i = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h" . }
   then have "(\<Sum>i\<in>H. ?inner i) = ?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
-    using h_pos by (simp add: h_def[symmetric] real_eq_of_nat[symmetric])
+    using h_pos by (simp add: h_def[symmetric])
   also have "\<dots> = ?f * log 2 (p_H * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
     by (simp add: `h = p_H / p_j`)
   also have "\<dots> \<le> (1 - ?f) * log 2 ((1 - ?f) * h)"

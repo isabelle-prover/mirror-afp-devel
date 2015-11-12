@@ -141,7 +141,7 @@ lemma sorted_alist_product:
   and ys: "linorder.sorted op \<sqsubseteq>\<^sub>b (map fst ys)"
   shows "linorder.sorted op \<sqsubseteq> (map fst (alist_product f xs ys))"
 proof -
-  interpret a!: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
+  interpret a: linorder "op \<sqsubseteq>\<^sub>a" "op \<sqsubset>\<^sub>a" by(fact lin_a)
 
   note [simp] = 
     linorder.sorted.Nil[OF linorder_prod] linorder.sorted_Cons[OF linorder_prod]

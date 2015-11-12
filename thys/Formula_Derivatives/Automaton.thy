@@ -187,8 +187,8 @@ lemma match_correct:
 end
 
 locale DAs =
-  M!: DA alphabet1 init1 delta1 accept1 wellformed1 Language1 wf1 Lang1 +
-  N!: DA alphabet2 init2 delta2 accept2 wellformed2 Language2 wf2 Lang2
+  M: DA alphabet1 init1 delta1 accept1 wellformed1 Language1 wf1 Lang1 +
+  N: DA alphabet2 init2 delta2 accept2 wellformed2 Language2 wf2 Lang2
   for alphabet1 :: "'a1 list" and init1 :: "'t1 \<Rightarrow> 's1" and delta1 accept1 wellformed1 Language1 wf1 Lang1
   and alphabet2 :: "'a2 list" and init2 :: "'t2 \<Rightarrow> 's2" and delta2 accept2 wellformed2 Language2 wf2 Lang2 +
   fixes letter_eq :: "'a1 \<Rightarrow> 'a2 \<Rightarrow> bool"
@@ -280,8 +280,8 @@ qed
 end
 
 locale DFAs =
-  M!: DFA alphabet1 init1 delta1 accept1 wellformed1 Language1 wf1 Lang1 +
-  N!: DFA alphabet2 init2 delta2 accept2 wellformed2 Language2 wf2 Lang2
+  M: DFA alphabet1 init1 delta1 accept1 wellformed1 Language1 wf1 Lang1 +
+  N: DFA alphabet2 init2 delta2 accept2 wellformed2 Language2 wf2 Lang2
   for alphabet1 :: "'a1 list" and init1 :: "'t1 \<Rightarrow> 's1" and delta1 accept1 wellformed1 Language1 wf1 Lang1
   and alphabet2 :: "'a2 list" and init2 :: "'t2 \<Rightarrow> 's2" and delta2 accept2 wellformed2 Language2 wf2 Lang2 +
   fixes letter_eq :: "'a1 \<Rightarrow> 'a2 \<Rightarrow> bool"

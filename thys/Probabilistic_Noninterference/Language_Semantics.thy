@@ -21,14 +21,6 @@ shows "I - {i} Un {i} = I" and "{i} Un (I - {i}) = I"
 apply(metis Un_commute assms insert_Diff_single insert_absorb insert_is_Un)
 by (metis assms insert_Diff_single insert_absorb insert_is_Un)
 
-lemma zero_one_minus[simp]:
-"(0::real) \<le> 1 - a \<longleftrightarrow> a \<le> 1" by auto
-
-lemma times_le_1[simp]:
-assumes "0 \<le> (a :: real)" and "0 \<le> b" and "a \<le> 1" and "b \<le> 1"
-shows "a * b \<le> 1"
-using assms mult_mono [of a 1 b 1] by simp
-
 lemma less_plus_cases[case_names Left Right]:
 assumes
 *: "(i::nat) < n1 \<Longrightarrow> phi" and
@@ -564,10 +556,10 @@ lemma [simp]: "(n::nat) < N \<Longrightarrow> 0 \<le> 1 / N" by auto
 
 lemma [simp]: "(n::nat) < N \<Longrightarrow> 1 / N \<le> 1" by auto
 
-lemma [simp]: "(n::nat) < N \<Longrightarrow> 0 \<le> 1 - 1 / N" by auto
+lemma [simp]: "(n::nat) < N \<Longrightarrow> 0 \<le> 1 - 1 / N" by (simp add: divide_simps)
 
 lemma setsum_equal: "0 < (N::nat) \<Longrightarrow> setsum (\<lambda> n. 1/N) {..< N} = 1"
-unfolding setsum_constant by (auto simp: real_eq_of_nat)
+unfolding setsum_constant by auto
 
 fun proper where
   "proper Done \<longleftrightarrow> True"
@@ -709,7 +701,7 @@ proof-
   have "?L \<le> setsum (\<lambda> n::nat. 1/?N) {..< ?N}"
   unfolding WtFT_def apply(rule setsum_mono2) using assms by auto
   also have "... \<le> 1" using assms
-  by (metis divide_zero le_cases neq0_conv not_one_le_zero real_of_nat_zero setsum_not_0 setsum_equal)
+  by (metis divide_zero le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
   finally show ?thesis .
 qed
 
@@ -734,7 +726,7 @@ shows "1 / length cl \<le> 1 - WtFT cl"
 proof-
   have "0 < length cl" using assms by auto
   thus ?thesis unfolding WtFT_def apply(intro setsum_1[of "{..< length cl}"])
-  using assms by (auto simp: real_eq_of_nat)
+  using assms by auto
 qed
 
 (* The branching of a command: *)
@@ -1196,7 +1188,7 @@ shows "0 \<le> wt c s i"
 using assms proof (induct c arbitrary: i s rule: proper_induct)
   case (Ch ch c1 c2)
   thus ?case
-  using properCh by (cases i) auto
+  using properCh  by (cases i) (auto simp: algebra_simps)
 next
   case (Par cl ii)
   have "properL cl" and "ii < brnL cl (length cl)" using Par by auto
@@ -1232,7 +1224,7 @@ next
   hence "properL cl" and "ii < brnL cl (length cl)" by auto
   thus ?case
   apply (cases rule: brnL_cases) apply simp
-  using Par apply (auto simp: real_eq_of_nat)
+  using Par apply auto
   by (metis add_increasing2 diff_is_0_eq gr0_conv_Suc less_imp_diff_less less_or_eq_imp_le nth_mem of_nat_0_le_iff of_nat_Suc)
 next
   case (ParT cl ii)
@@ -1253,11 +1245,10 @@ next
         have "0 \<le> ?L1" and "0 \<le> ?L2" using ParT Local by auto
         moreover have "?L2 \<le> 1" using ParT Local by auto
         ultimately have "?L1 * ?L2 \<le> ?L1" by (metis mult_right_le_one_le)
-        also have "?L1 \<le> 1 - ?R" using ParT Local cln apply  (auto simp: real_eq_of_nat)
-        by (metis (full_types) real_of_nat_def notFinished_WtFT)
+        also have "?L1 \<le> 1 - ?R" using ParT Local cln by auto
         finally have "?L1 * ?L2 \<le> 1 - ?R" .
         thus ?thesis using Local ParT cln sch
-          by (auto simp: real_eq_of_nat pos_divide_le_eq mult.commute)
+          by (auto simp: pos_divide_le_eq mult.commute)
       qed (insert sch ParT Local, auto)
     qed
   qed
@@ -1479,7 +1470,7 @@ using assms proof(induct c arbitrary: s rule: proper_induct)
   [of _ "{..< length cl}" "%n. {brnL cl n ..<+ brn (cl!n)}" _ ?w])
   proof-
     have "1 = setsum (\<lambda> n. 1 / (length cl)) {..< length cl}"
-    using Par by (simp add: real_eq_of_nat)
+    using Par by simp
     also have "... = setsum ?w {..< length cl}" using Par by simp
     finally show "1 = setsum ?w {..< length cl}" .
   next

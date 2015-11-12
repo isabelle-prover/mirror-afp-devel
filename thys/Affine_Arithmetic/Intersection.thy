@@ -866,7 +866,7 @@ lemma in_set_inl_lex: "x \<in> set (inl xs) \<Longrightarrow> lex x 0"
   by (auto simp: inl_def list_of_pdevs_def dest!: in_set_independent_pdevs_invariant_nlex
     split: split_if_asm)
 
-interpretation ccw0!: linorder_list "ccw 0" "set (inl (snd X))"
+interpretation ccw0: linorder_list "ccw 0" "set (inl (snd X))"
 proof unfold_locales
   fix a b c
   show "a \<noteq> b \<Longrightarrow> ccw 0 a b \<or> ccw 0 b a"
@@ -1092,9 +1092,8 @@ proof -
       (auto simp: pdevs_val_setsum if_distrib pdevs_apply_pdevs_of_list
         degree_pdevs_of_list_scaleR intro!: setsum.cong )
   also
-  from pdevs_val_selsort_ccw2[of "inl (snd X)" ?e "{0 .. 2}"]
   obtain e'' where "\<dots> = pdevs_val e'' (pdevs_of_list (inl (snd X)))" "e'' \<in> UNIV \<rightarrow> {0..2}"
-    by auto
+    by (auto intro: pdevs_val_selsort_ccw2[of "inl (snd X)" ?e "{0 .. 2}"])
   note this(1)
   also note inl_def
   also
@@ -1880,7 +1879,7 @@ subsection {* Continuous Generalization *}
 lemma LIMSEQ_minus_fract_mult:
   "(\<lambda>n. r * (1 - 1 / real (Suc (Suc n)))) ----> r"
   by (rule tendsto_eq_rhs[OF tendsto_mult[where a=r and b = 1]])
-    (auto simp: inverse_eq_divide[symmetric] simp del: real_of_nat_Suc
+    (auto simp: inverse_eq_divide[symmetric] simp del: of_nat_Suc
       intro: filterlim_compose[OF LIMSEQ_inverse_real_of_nat filterlim_Suc] tendsto_eq_intros)
 
 lemma det3_nonneg_segments_of_aform:

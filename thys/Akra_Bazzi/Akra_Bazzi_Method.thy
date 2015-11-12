@@ -264,7 +264,7 @@ lemma numeral_assoc_simps:
   "(a - numeral b) - numeral c = a - numeral (b + c)" by simp_all
 
 lemmas CLAMP_aux =
-  arith_simps numeral_assoc_simps real_of_nat_power real_of_nat_mult real_of_nat_numeral
+  arith_simps numeral_assoc_simps of_nat_power of_nat_mult of_nat_numeral
   one_add_one one_to_numeral
 
 lemmas CLAMP_postproc = numeral_One

@@ -1188,7 +1188,7 @@ abbreviation lift_to_cfg_wf_prog :: "(jvm_method \<Rightarrow> 'a) \<Rightarrow>
 lemma valid_edge_CFG_def: "valid_edge\<^bsub>CFG\<^esub> P = valid_edge (fst\<^bsub>CFG\<^esub> P, fst (snd\<^bsub>CFG\<^esub> P), snd (snd\<^bsub>CFG\<^esub> P))"
   by (cases P) (clarsimp simp: Abs_cfg_wf_prog_inverse)
 
-interpretation JVMCFG_Postdomination!:
+interpretation JVMCFG_Postdomination:
   Postdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> P"
   "(ClassMain (fst\<^bsub>CFG\<^esub> P), MethodMain (fst\<^bsub>CFG\<^esub> P), None, Enter)"
   "(\<lambda>(C, M, pc, type). (C, M))" "get_return_edges (fst\<^bsub>CFG\<^esub> P)"

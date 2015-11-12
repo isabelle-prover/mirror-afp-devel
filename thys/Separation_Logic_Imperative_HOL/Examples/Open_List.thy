@@ -18,7 +18,7 @@ lemma os_imp_list_impl: "imp_list os_list"
   apply unfold_locales
   apply (rule os_prec)
   done
-interpretation os!: imp_list os_list by (rule os_imp_list_impl)
+interpretation os: imp_list os_list by (rule os_imp_list_impl)
 
 subsection {* Operations *}
 subsubsection {* Allocate Empty List *}
@@ -35,7 +35,7 @@ lemma os_empty_impl: "imp_list_empty os_list os_empty"
   apply unfold_locales
   apply (sep_auto heap add: os_empty_rule)
   done
-interpretation os!: imp_list_empty os_list os_empty by (rule os_empty_impl)
+interpretation os: imp_list_empty os_list os_empty by (rule os_empty_impl)
   
 subsubsection {* Emptiness check *}
 text {* A linked list is empty, iff it is the null pointer. *}
@@ -53,7 +53,7 @@ lemma os_is_empty_impl: "imp_list_is_empty os_list os_is_empty"
   apply unfold_locales
   apply (sep_auto heap add: os_is_empty_rule)
   done
-interpretation os!: imp_list_is_empty os_list os_is_empty
+interpretation os: imp_list_is_empty os_list os_is_empty
   by (rule os_is_empty_impl)
 
 subsubsection {* Prepend *}
@@ -75,7 +75,7 @@ lemma os_prepend_impl: "imp_list_prepend os_list os_prepend"
   apply unfold_locales
   apply (sep_auto heap add: os_prepend_rule)
   done
-interpretation os!: imp_list_prepend os_list os_prepend 
+interpretation os: imp_list_prepend os_list os_prepend 
   by (rule os_prepend_impl)
 
 subsubsection{* Pop *}
@@ -103,7 +103,7 @@ lemma os_pop_impl: "imp_list_pop os_list os_pop"
   apply unfold_locales
   apply (sep_auto heap add: os_pop_rule)
   done
-interpretation os!: imp_list_pop os_list os_pop by (rule os_pop_impl)
+interpretation os: imp_list_pop os_list os_pop by (rule os_pop_impl)
 
 subsubsection {* Reverse *}
 
@@ -159,7 +159,7 @@ lemma os_reverse_impl: "imp_list_reverse os_list os_reverse"
   apply unfold_locales
   apply (sep_auto heap add: os_reverse_rule)
   done
-interpretation os!: imp_list_reverse os_list os_reverse
+interpretation os: imp_list_reverse os_list os_reverse
   by (rule os_reverse_impl)
 
 subsubsection {* Remove *}
@@ -257,7 +257,7 @@ lemma os_iterate_impl:
     apply frame_inference
     apply solve_entails
   done
-interpretation os!: 
+interpretation os: 
   imp_list_iterate os_list os_is_it os_it_init os_it_has_next os_it_next
   by (rule os_iterate_impl)
 

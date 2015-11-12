@@ -1035,7 +1035,7 @@ proof -
     using z
     apply (auto intro!: exI[of _ 1]
                 simp: abs_mult u_nonneg power_abs Suc_le_eq gr0_conv_Suc field_simps le_divide_eq u_le_1
-                simp del: real_of_nat_Suc)
+                simp del: of_nat_Suc)
     done
 qed
 
@@ -1075,7 +1075,7 @@ lemma gf_U'_tendsto_integral_t:
   assumes x: "recurrent x"
   shows "((\<lambda>z. ereal (gf_U' x x z)) ---> (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x)) (at_left 1)"
   unfolding integral_t_eq_suminf[OF x] gf_U'_def
-  by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: real_of_nat_Suc)
+  by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: of_nat_Suc)
 
 subsection {* Stationary distribution *}
 
@@ -1196,7 +1196,7 @@ lemma F_le_1: "F x y \<le> 1" by (simp add: F_def)
 
 lemma inverse_gf_U'_tendsto:
   assumes "recurrent y"
-  shows "((\<lambda>x. - 1 / - gf_U' y y x) ---> real (1 / \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y)) (at_left (1::real))"
+  shows "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y)) (at_left (1::real))"
 proof cases
   let ?E = "\<lambda>y. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T y"
   assume inf: "?E y = \<infinity>"
@@ -1212,7 +1212,7 @@ next
   assume fin: "?E y \<noteq> \<infinity>"
   then obtain r where r: "?E y = ereal r"
     by (cases "?E y") auto
-  then have eq: "real (1 / ?E y) = - 1 / - r" and "1 \<le> r"
+  then have eq: "real_of_ereal (1 / ?E y) = - 1 / - r" and "1 \<le> r"
     using one_le_integral_t[OF `recurrent y`] by (auto simp add: one_ereal_def)
   have gf_U': "(gf_U' y y ---> r) (at_left (1::real))"
     using gf_U'_tendsto_integral_t[OF `recurrent y`] r
@@ -1250,7 +1250,7 @@ proof -
   let ?E = "\<lambda>x. \<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>T x"
   from y x have recurrent: "recurrent y" "recurrent x" and fin: "?E y \<noteq> \<infinity>"
     by (auto simp: pos_recurrent_def recurrent_iffI_communicating nn_integral_nonneg nn_integral_add)
-  have pos: "0 < real (1 / ?E y)"
+  have pos: "0 < real_of_ereal (1 / ?E y)"
     using one_le_integral_t[OF `recurrent y`] fin
     by (subst zero_less_real_of_ereal)
        (auto simp add: divide_ereal_def ereal_0_gt_inverse nn_integral_nonneg)
@@ -1382,7 +1382,7 @@ proof -
       by (simp add: essential_class_def not_empty_irreducible)
     then obtain x where "x \<in> C" by auto
 
-    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) ---> (\<Sum>y\<in>A n. F x y * real (1 / ?E y))) ?L"
+    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) ---> (\<Sum>y\<in>A n. F x y * real_of_ereal (1 / ?E y))) ?L"
     proof (intro tendsto_intros gf_F, rule lhopital_left)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C"
@@ -1406,10 +1406,10 @@ proof -
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
       show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros)
-      show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real (1 / ?E y)) ?L"
+      show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / ?E y)) ?L"
         using `recurrent y` by (rule inverse_gf_U'_tendsto)
     qed
-    also have "(\<Sum>y\<in>A n. F x y * real (1 / ?E y)) = (\<Sum>y\<in>A n. real (1 / ?E y))"
+    also have "(\<Sum>y\<in>A n. F x y * real_of_ereal (1 / ?E y)) = (\<Sum>y\<in>A n. real_of_ereal (1 / ?E y))"
     proof (intro setsum.cong refl)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C" by auto
@@ -1420,10 +1420,10 @@ proof -
       then have "U x y = 1"
         by (rule recurrent_acc)
       with F_le_1[of x y] U_le_F[of x y] have "F x y = 1" by simp
-      then show "F x y * real (1 / ?E y) = real (1 / ?E y)"
+      then show "F x y * real_of_ereal (1 / ?E y) = real_of_ereal (1 / ?E y)"
         by simp
     qed
-    finally have le: "(\<Sum>y\<in>A n. real (1 / ?E y)) \<le> 1"
+    finally have le: "(\<Sum>y\<in>A n. real_of_ereal (1 / ?E y)) \<le> 1"
     proof (rule tendsto_le[OF trivial_limit_at_left_real tendsto_const], intro eventually_at_left_1)
       fix z :: real assume z: "0 < z" "z < 1"
       with `x \<in> C` have "norm z < 1"
@@ -1477,7 +1477,7 @@ proof -
       apply (subst emeasure_point_measure_finite2)
       apply (auto simp: ereal_inverse_nonneg_iff nn_integral_nonneg divide_ereal_def)
       done
-    also have "\<dots> = ereal (\<Sum>y\<in>A n. real (1 / ?E y))"
+    also have "\<dots> = ereal (\<Sum>y\<in>A n. real_of_ereal (1 / ?E y))"
       apply (subst setsum_ereal[symmetric])
     proof (intro setsum.cong refl)
       fix y assume "y \<in> A n"
@@ -1485,7 +1485,7 @@ proof -
         by auto
       with one_le_integral_t[of y] obtain r where "?E y = ereal r" "1 \<le> ?E y"
         by (cases "?E y") (auto simp: pos_recurrent_def nn_integral_add)
-      then show "inverse (?E y) = ereal (real (1 / ?E y))"
+      then show "inverse (?E y) = ereal (real_of_ereal (1 / ?E y))"
         by (simp add: one_ereal_def inverse_eq_divide)
     qed
     also have "\<dots> \<le> 1"
@@ -1658,7 +1658,7 @@ proof -
   { fix y assume "y \<in> C"
     then have "U y y = 1" "recurrent y"
       using `y \<in> C \<Longrightarrow> U y y = 1` all_recurrent by auto
-    have "measure N {y} \<le> real (1 / ?E y)"
+    have "measure N {y} \<le> real_of_ereal (1 / ?E y)"
     proof (rule field_le_epsilon)
       fix e :: real assume "0 < e"
       from eps[OF `0 < e`] `y \<in> C` obtain A where
@@ -1667,7 +1667,7 @@ proof -
         by auto
       let ?L = "at_left (1::real)"
       have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) --->
-          real (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
+          real_of_ereal (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
       proof (intro tendsto_add tendsto_const tendsto_mult int_gf_F,
              rule lhopital_left[where f'="\<lambda>x. - 1" and g'="\<lambda>z. - gf_U' y y z"])
         show "(op - 1 ---> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) ---> 0) ?L"
@@ -1675,7 +1675,7 @@ proof -
         show "y \<in> C" "finite A" "A \<subseteq> C" by fact+
         show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
           using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
-        show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real (1 / ?E y)) ?L"
+        show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / ?E y)) ?L"
           using `recurrent y` by (rule inverse_gf_U'_tendsto)
         have "eventually (\<lambda>x. 0 < gf_U' y y x) ?L"
           by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: `U y y = 1`)
@@ -1686,16 +1686,16 @@ proof -
         show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
           by (auto intro!: eventually_at_left_1 derivative_eq_intros)
       qed
-      then have "measure N {y} \<le> real (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N) + e"
+      then have "measure N {y} \<le> real_of_ereal (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N) + e"
         by (rule tendsto_le[OF trivial_limit_at_left_real _ tendsto_const]) (intro eventually_at_left_1 le)
-      then have "measure N {y} - e \<le> real (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N)"
+      then have "measure N {y} - e \<le> real_of_ereal (1 / ?E y) * (\<integral>x. F x y * indicator A x \<partial>N)"
         by simp
-      also have "\<dots> \<le> real (1 / ?E y)"
+      also have "\<dots> \<le> real_of_ereal (1 / ?E y)"
         using A
         by (intro mult_left_le real_of_ereal_pos zero_le_divide_ereal nn_integral_nonneg
                   measure_pmf.integral_le_const measure_pmf.integrable_const_bound[where B=1])
            (auto simp: F_nonneg mult_le_one F_le_1)
-      finally show "measure N {y} \<le> real (1 / ?E y) + e"
+      finally show "measure N {y} \<le> real_of_ereal (1 / ?E y) + e"
         by simp
     qed }
   note measure_y_le = this
@@ -1707,7 +1707,7 @@ proof -
     { fix y assume "y \<in> C"
       with x have "\<not> pos_recurrent y"
         using C by (auto simp: essential_class_def pos_recurrent_iffI_communicating[symmetric] elim!: quotientE)
-      with all_recurrent `y \<in> C` have "real (1 / ?E y) = 0"
+      with all_recurrent `y \<in> C` have "real_of_ereal (1 / ?E y) = 0"
         by (simp add: pos_recurrent_def nn_integral_add)
       with measure_y_le[OF `y \<in> C`] have "measure N {y} = 0"
         by (auto intro!: antisym simp: measure_nonneg pos_recurrent_def) }
@@ -1732,7 +1732,7 @@ proof -
           by (cases "?E y") (auto simp: pos_recurrent_def nn_integral_add)
 
         from measure_y_le[OF `y \<in> C`]
-        have "emeasure N {y} \<le> ereal (real (1 / ?E y))"
+        have "emeasure N {y} \<le> ereal (real_of_ereal (1 / ?E y))"
           by (simp add: measure_pmf.emeasure_eq_measure)
         also have "\<dots> = emeasure (stat C) {y}"
           unfolding stat_def using `y \<in> C` r

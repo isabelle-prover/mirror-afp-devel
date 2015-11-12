@@ -35,7 +35,7 @@ definition ls_basic_ops :: "('a,'a ls) set_basic_ops" where
     \<rparr>"
 
 setup Locale_Code.open_block
-interpretation ls_basic!: StdBasicSet ls_basic_ops
+interpretation ls_basic: StdBasicSet ls_basic_ops
   apply unfold_locales
   unfolding ls_basic_ops_def ls_\<alpha>_def[abs_def]
   apply (auto simp: dlist_member_empty Dlist.member_def List.member_def
@@ -50,8 +50,8 @@ definition [icf_rec_def]: "ls_ops \<equiv> ls_basic.dflt_ops\<lparr>
   \<rparr>"
 
 setup Locale_Code.open_block
-interpretation ls!: StdSetDefs ls_ops .
-interpretation ls!: StdSet ls_ops
+interpretation ls: StdSetDefs ls_ops .
+interpretation ls: StdSet ls_ops
 proof -
   interpret aux: StdSet ls_basic.dflt_ops
     by (rule ls_basic.dflt_ops_impl)
@@ -66,7 +66,7 @@ proof -
     done
 qed
 
-interpretation ls!: StdSet_no_invar ls_ops
+interpretation ls: StdSet_no_invar ls_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 

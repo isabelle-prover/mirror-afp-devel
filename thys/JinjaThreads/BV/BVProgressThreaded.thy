@@ -818,7 +818,7 @@ lemma exec_wf_progress:
   shows "progress JVM_final (mexec P) convert_RA (exec_mthr.wset_Suspend_ok P (correct_jvm_state \<Phi>))"
   (is "progress _ _ _ ?wf_state")
 proof -
-  interpret progress!: progress JVM_final "mexecd P" convert_RA ?wf_state
+  interpret progress: progress JVM_final "mexecd P" convert_RA ?wf_state
     using assms unfolding wset_Suspend_ok_mexecd_mexec[OF wf] by(rule execd_wf_progress)
   show ?thesis
   proof(unfold_locales)

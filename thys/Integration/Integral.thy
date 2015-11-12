@@ -1689,7 +1689,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           also from ftn have "f t * (2::real)^n < real n * (2::real)^n"
             by simp
           finally have ni: "i < n * 2 ^ n"
-            by (simp add: real_of_nat_less_iff[THEN sym])
+            by (simp add: of_nat_less_iff[symmetric, where 'a=real])
           
           with tA have un: "u n t = real i / (2::real)^n"
             using disj by simp
@@ -1698,7 +1698,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             by simp
           
           from un have "real (i+1) / (2::real)^n = (real i + real (1::nat))/(2::real)^n"
-            by (simp only: real_of_nat_add)
+            by (simp only: of_nat_add)
           with un ai2 have fless: "f t < u n t + 1/(2::real)^n"
             by (simp add: add_divide_distrib)
           
@@ -1721,7 +1721,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             have "(2::real) \<noteq> 0"
               by simp
             hence "real (2*(Suc i)) / ((2::real)^(Suc n)) = real (Suc i) / (2::real)^n"
-              by (metis mult_divide_mult_cancel_left_if power_Suc real_of_nat_mult real_of_nat_numeral)
+              by (metis mult_divide_mult_cancel_left_if power_Suc of_nat_mult of_nat_numeral)
             with ai2 have "f t < real (2*(Suc i)) / (2::real)^(n+1)"
              by simp 
             with False have tA2: "t \<in> A (n+1) (2*i+1)"    
@@ -1732,7 +1732,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
             with tA2 have "u (Suc n) t = real (2*i+1) / (2 * (2::real)^n)"
               using disj by simp
             also have "\<dots> = (real (2*i) + real (1::nat))/ (2 * (2::real)^n)"
-              by (simp only: real_of_nat_add)
+              by (simp only: of_nat_add)
             also have "\<dots> = real i / (2::real)^n + real (1::nat) / (2 * (2::real)^n)"
               by (simp add: add_divide_distrib)
             finally show ?thesis using un
@@ -1751,7 +1751,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           { fix i assume "i \<in> {..<(n*2^n)}-{0}"
             hence "Suc i \<le> n*2^n" by simp
             hence mult: "real (Suc i) \<le> real n * (2::real)^n"
-              by (simp add: real_of_nat_le_iff[THEN sym])
+              by (simp add: of_nat_le_iff[symmetric, where 'a=real])
             have "0 < (2::real)^n"
               by simp
             with mult have "real (Suc i) / (2::real)^n \<le> real n" 
@@ -1821,7 +1821,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
           note 1 
           also assume "N \<le> n"
           also have "real n < (2::real)^n"
-            by (rule two_realpow_gt)
+            by (rule of_nat_less_two_power)
           finally
           have "y < 2 ^ n"
             by simp

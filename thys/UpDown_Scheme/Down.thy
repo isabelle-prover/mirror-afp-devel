@@ -12,7 +12,7 @@ lemma sparsegrid'_parents:
 lemma down'_\<beta>: "\<lbrakk> d < length b ; l + level b = lm ; b \<in> sparsegrid' dm ; p \<in> sparsegrid' dm \<rbrakk> \<Longrightarrow>
   down' d l b fl fr \<alpha> p = (if p \<in> lgrid b {d} lm
   then
-    (fl + (fr - fl) / 2 * (real (ix p d) / 2^(lv p d - lv b d) - real (ix b d) + 1)) / 2 ^ (lv p d + 1) +
+    (fl + (fr - fl) / 2 * (real_of_int (ix p d) / 2^(lv p d - lv b d) - real_of_int (ix b d) + 1)) / 2 ^ (lv p d + 1) +
     (\<Sum> p' \<in> parents d b p. (\<alpha> p') * l2_\<phi> (p ! d) (p' ! d))
   else \<alpha> p)"
 proof (induct l arbitrary: b \<alpha> fl fr p)
@@ -47,8 +47,8 @@ proof (induct l arbitrary: b \<alpha> fl fr p)
       by auto
   next
     case True hence "level p < lm" and "p \<in> grid b {d}" unfolding lgrid_def by auto
-    let ?lb = "lv b d"   and ?ib = "real (ix b d)"
-    let ?lp   = "lv p d"  and ?ip   = "real (ix p d)"
+    let ?lb = "lv b d"   and ?ib = "real_of_int (ix b d)"
+    let ?lp   = "lv p d"  and ?ip   = "real_of_int (ix p d)"
     show ?thesis
     proof (cases "\<exists> dir. p \<in> grid (child b dir d){d}")
       case True

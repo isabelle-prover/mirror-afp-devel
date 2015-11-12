@@ -24,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 section {* Executable algorithms for $p$-th roots *}
 
 theory NthRoot_Impl
-imports 
+imports
   Sqrt_Babylonian_Auxiliary
   "../Cauchy/CauchysMeanTheorem"
 begin
@@ -33,7 +33,7 @@ text {*
 We implemented algorithms to decide $\sqrt[p]{n} \in \rats$ and to compute $\lfloor \sqrt[p]{n} \rfloor$.
 To this end, we use a variant of Newton iteration which works with integer division instead of floating
 point or rational division. To get suitable starting values for the Newton iteration, we also implemented
-a function to approximate logarithms. 
+a function to approximate logarithms.
 *}
 
 subsection {* Logarithm *}
@@ -43,15 +43,15 @@ text {* For computing the $p$-th root of a number $n$, we must choose a starting
   Of course, this requires an algorithm to compute logarithms.
   Here, we just multiply with the base, until we exceed the argument. *}
 
-text {* We use a partial efficient algorithm, which does not terminate on 
+text {* We use a partial efficient algorithm, which does not terminate on
   corner-cases, like $b = 0$ or $p = 1$, and invoke it properly afterwards.
   Then there is a second algorithm which terminates on these corner-cases by additional
   guards and on which we can perform induction.
-*} 
-partial_function (tailrec) log_ceil_impl :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where 
+*}
+partial_function (tailrec) log_ceil_impl :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where
   [code]: "log_ceil_impl b x prod sum = (if prod \<ge> x then sum else log_ceil_impl b x (prod * b) (sum + 1))"
 
-definition log_ceil :: "nat \<Rightarrow> int \<Rightarrow> nat" where 
+definition log_ceil :: "nat \<Rightarrow> int \<Rightarrow> nat" where
   "log_ceil b x \<equiv> if b > 1 \<and> x \<ge> 0 then log_ceil_impl b x 1 0 else 0"
 
 context
@@ -85,7 +85,7 @@ proof (cases "b = 1")
 next
   case False
   with b have b: "b > 1" unfolding b by auto
-  def p \<equiv> "1 :: int" 
+  def p \<equiv> "1 :: int"
   def s \<equiv> "0 :: nat"
   have "int b ^ s = p" unfolding p_def s_def using x by force
   have inv: "s = 0 \<or> int b ^ (s - 1) < x" unfolding s_def by auto
@@ -95,26 +95,26 @@ next
   proof (induct x p s rule: log_ceil_main.induct[OF b])
     case (1 x p s)
     from 1(4) have x: "x \<ge> 0" by auto
-    from 1(2) b have p: "p > 0" by auto    
+    from 1(2) b have p: "p > 0" by auto
     hence id: "log_ceil_main b x p s = (if x \<le> p then s else log_ceil_main b x (p * int b) (s + 1))"
       unfolding log_ceil_main.simps[OF b, of x p s] by auto
-    show ?case 
+    show ?case
     proof (cases "x \<le> p")
       case True
       have b0: "b > (0 :: real)" and b1: "b \<noteq> (1 :: real)" "b > (1 :: real)" using b by auto
       from True[folded 1(2)] have low: "x \<le> int b ^ s" by auto
       from 1(3) have up: "s = 0 \<or> s \<noteq> 0 \<and> int b ^ (s - 1) < x" by auto
       from True have id: "int (log_ceil_main b x p s) = s" unfolding id by simp
-      from low have "real x \<le> real b ^ s"
-        by (metis real_of_int_le_iff real_of_int_of_nat_eq real_of_int_power)
-      hence "log b x \<le> log b (real b ^ s)" 
+      from low have "of_int x \<le> real b ^ s"
+        by (metis of_int_le_iff of_int_of_nat_eq of_int_power)
+      hence "log b x \<le> log b (real b ^ s)"
         using log_le_cancel_iff[of b x "real b ^ s"] b x 1(4)
-        by (metis less_eq_real_def not_le real_of_int_gt_zero_cancel_iff real_of_nat_1 real_of_nat_ge_zero real_of_nat_less_iff zero_le_power)
+        by (metis less_eq_real_def not_le of_int_0_less_iff of_nat_1 of_nat_0_le_iff of_nat_less_iff zero_le_power)
       also have "\<dots> = s" using b by simp
       also have "\<dots> = real_of_int (int s)"
-        by (metis real_eq_of_int real_of_int_def real_of_int_of_nat_eq)
+        by (metis of_int_of_nat_eq)
       finally have low: "log b x \<le> of_int (int s)" .
-      show ?thesis unfolding id 
+      show ?thesis unfolding id
       proof (rule sym, rule ceiling_unique[OF _ low])
         from up show "real_of_int (int s) - 1 < log b x"
         proof
@@ -125,15 +125,15 @@ next
           def ss \<equiv> "s - 1"
           assume *: "s \<noteq> 0 \<and> int b ^ (s - 1) < x"
           hence "real_of_int (int s) - 1 = of_int (int (ss + 1)) - 1" unfolding ss_def by auto
-          also have "\<dots> = ss" 
-            by (metis add_diff_cancel of_int_of_nat_eq of_nat_1 real_of_nat_add real_of_nat_def)
+          also have "\<dots> = ss"
+            by (metis add_diff_cancel of_int_of_nat_eq of_nat_1 of_nat_add)
           finally have id: "real_of_int (int s) - 1 = ss" .
-          have "0 < real (int b ^ ss)" "0 < real x" using b 1(4) by auto
-          note log_mono = log_less_cancel_iff[OF b1(2) this]
+          have "0 < real_of_int (int b ^ ss)" "0 < real_of_int x" using b 1(4)  by auto
+          note log_mono = log_less_cancel_iff[OF b1(2) this]thm log_mono
           from * have up: "int b ^ ss < x" unfolding ss_def by auto
-          hence "real (int b ^ ss) < x" by fast  
-          from this[folded log_mono] have "log b (real (int b ^ ss)) < log b x" .
-          also have "real (int b ^ ss) = real b ^ ss" by simp
+          hence "real_of_int (int b ^ ss) < real_of_int x" by blast
+          from this[folded log_mono] have "log b (of_int (int b ^ ss)) < log b x" by simp
+          also have "of_int (int b ^ ss) = real b ^ ss" by simp
           also have "log b (real b ^ ss) = ss" using b by simp
           finally show ?thesis unfolding id .
         qed
@@ -148,17 +148,17 @@ next
     qed
   qed
   finally show ?thesis .
-qed  
+qed
 
 subsection {* Computing the $p$-th root of an integer number *}
 
-text {* Using the logarithm, we can define an executable version of the 
-  intended  starting value. Its main property is the inequality 
+text {* Using the logarithm, we can define an executable version of the
+  intended  starting value. Its main property is the inequality
   @{term "(start_value x p) ^ p \<ge> x"}, i.e., the start value is larger
   than the p-th root. This property is essential, since our algorithm will abort
   as soon as we fall below the p-th root. *}
 
-definition start_value :: "int \<Rightarrow> nat \<Rightarrow> int" where 
+definition start_value :: "int \<Rightarrow> nat \<Rightarrow> int" where
   "start_value n p = 2 ^ (nat \<lceil>of_int (log_ceil 2 n) / rat_of_nat p\<rceil>)"
 
 lemma start_value_main: assumes x: "x \<ge> 0" and p: "p > 0"
@@ -179,12 +179,12 @@ next
   have lp: "log 2 x \<ge> 0" using x by auto
   hence l2pos: "l2x \<ge> 0" by (auto simp: l2x_def)
   have "log 2 x / p \<le> l2x / p" using x p unfolding l2x_def
-    by (metis divide_right_mono real_of_int_ceiling_ge real_of_nat_ge_zero)
-  also have "\<dots> \<le> \<lceil>l2x / (p :: real)\<rceil>" by simp
+    by (metis divide_right_mono le_of_int_ceiling of_nat_0_le_iff)
+  also have "\<dots> \<le> \<lceil>l2x / (p :: real)\<rceil>" by (simp add: ceiling_correct) 
   also have "l2x / real p = l2x / real_of_rat (of_nat p)"
-    by (metis of_rat_of_nat_eq real_eq_of_nat real_of_nat_def)
-  also have "real l2x = real_of_rat (of_int l2x)"
-    by (metis of_rat_of_int_eq real_eq_of_int real_of_int_def)
+    by (metis of_rat_of_nat_eq)
+  also have "of_int l2x = real_of_rat (of_int l2x)"
+    by (metis of_rat_of_int_eq)
   also have "real_of_rat (of_int l2x) / real_of_rat (of_nat p) = real_of_rat (rat_of_int l2x / of_nat p)"
     by (metis of_rat_divide)
   also have "\<lceil>real_of_rat (rat_of_int l2x / rat_of_nat p)\<rceil> = \<lceil>rat_of_int l2x / of_nat p\<rceil>"
@@ -194,22 +194,22 @@ next
   from powr_mono[OF le, of 2, folded r]
   have "root p x \<le> 2 powr pow" by auto
   also have "\<dots> = 2 ^ pow" by (rule powr_realpow, auto)
-  also have "\<dots> = real ((2 :: int) ^ pow)" by simp
-  also have "pow = (nat \<lceil>of_int (log_ceil 2 x) / rat_of_nat p\<rceil>)" 
+  also have "\<dots> = of_int ((2 :: int) ^ pow)" by simp
+  also have "pow = (nat \<lceil>of_int (log_ceil 2 x) / rat_of_nat p\<rceil>)"
     unfolding pow_def l2x_def using x by simp
-  also have "real ((2 :: int) ^ \<dots> ) = start_value x p" unfolding start_value_def  by simp
+  also have "real_of_int ((2 :: int) ^ \<dots> ) = start_value x p" unfolding start_value_def  by simp
   finally have less: "root p x \<le> start_value x p" .
   have "0 \<le> root p x" using p x by auto
   also have "\<dots> \<le> start_value x p" by (rule less)
   finally have start: "0 \<le> start_value x p" by simp
-  from power_mono[OF less, of p] have "root p (real x) ^ p \<le> real (start_value x p) ^ p" using p x by auto
+  from power_mono[OF less, of p] have "root p (of_int x) ^ p \<le> of_int (start_value x p) ^ p" using p x by auto
   also have "\<dots> = start_value x p ^ p" by simp
-  also have "root p (real x) ^ p = x" using p x by force
+  also have "root p (of_int x) ^ p = x" using p x by force
   finally have "x \<le> (start_value x p) ^ p" by presburger
   with start show ?thesis by auto
 qed
 
-lemma start_value: assumes x: "x \<ge> 0" and p: "p > 0" shows "x \<le> (start_value x p) ^ p" "start_value x p \<ge> 0" 
+lemma start_value: assumes x: "x \<ge> 0" and p: "p > 0" shows "x \<le> (start_value x p) ^ p" "start_value x p \<ge> 0"
   using start_value_main[OF x p] by auto
 
 text {* We now define the Newton iteration to compute the $p$-th root. We are working on the integers,
@@ -219,10 +219,10 @@ text {* We now define the Newton iteration to compute the $p$-th root. We are wo
 
 locale fixed_root =
   fixes p pm :: nat
-  assumes p: "p = Suc pm" 
+  assumes p: "p = Suc pm"
 begin
 
-function root_newton_int_main :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where 
+function root_newton_int_main :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   "root_newton_int_main x n = (if (x < 0 \<or> n < 0) then (0,False) else (if x ^ p \<le> n then (x, x ^ p = n)
     else root_newton_int_main ((n div (x ^ pm) + x * int pm) div (int p)) n))"
     by pat_completeness auto
@@ -230,35 +230,35 @@ end
 
 text {* For the executable algorithm we omit the guard and use a let-construction *}
 
-partial_function (tailrec) root_int_main' :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<times> bool" where 
+partial_function (tailrec) root_int_main' :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   [code]: "root_int_main' pm ipm ip x n = (let xpm = x^pm; xp = xpm * x in if xp \<le> n then (x, xp = n)
     else root_int_main' pm ipm ip ((n div xpm + x * ipm) div ip) n)"
 
-text {* In the following algorithm, we  
-  start the iteration. 
+text {* In the following algorithm, we
+  start the iteration.
   It will compute @{term "\<lfloor>root p n\<rfloor>"} and a boolean to indicate whether the root is exact. *}
 
 definition root_int_main :: "nat \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   "root_int_main p n \<equiv> if p = 0 then (1,n = 1) else
      let pm = p - 1
        in root_int_main' pm (int pm) (int p) (start_value n p) n"
-  
-text {* Once we have proven soundness of @{const fixed_root.root_newton_int_main} and equivalence 
+
+text {* Once we have proven soundness of @{const fixed_root.root_newton_int_main} and equivalence
   to @{const root_int_main}, it
   is easy to assemble the following algorithm which computes all roots for arbitrary integers. *}
 
-definition root_int :: "nat \<Rightarrow> int \<Rightarrow> int list" where 
-  "root_int p x \<equiv> if p = 0 then [] else 
+definition root_int :: "nat \<Rightarrow> int \<Rightarrow> int list" where
+  "root_int p x \<equiv> if p = 0 then [] else
     if x = 0 then [0] else
       let e = even p; s = sgn x; x' = abs x
       in if x < 0 \<and> e then [] else case root_int_main p x' of (y,True) \<Rightarrow> if e then [y,-y] else [s * y] | _ \<Rightarrow> []"
 
 text {* We start with proving termination of @{const fixed_root.root_newton_int_main}. *}
-    
+
 context fixed_root
 begin
 lemma iteration_mono_eq: assumes xn: "x ^ p = (n :: int)"
-  shows "(n div x ^ pm + x * int pm) div int p = x" 
+  shows "(n div x ^ pm + x * int pm) div int p = x"
 proof -
   have [simp]: "\<And> n. (x + x * n) = x * (1 + n)" by (auto simp: field_simps)
   show ?thesis unfolding xn[symmetric] p by simp
@@ -269,7 +269,7 @@ lemma p0: "p \<noteq> 0" unfolding p by auto
 text {* The following property is the essential property for
   proving termination of @{const "root_newton_int_main"}.
 *}
-lemma iteration_mono_less: assumes x: "x \<ge> 0" 
+lemma iteration_mono_less: assumes x: "x \<ge> 0"
   and n: "n \<ge> 0"
   and xn: "x ^ p > (n :: int)"
   shows "(n div x ^ pm + x * int pm) div int p < x"
@@ -303,11 +303,11 @@ proof -
     from ge[unfolded this]
     have le: "x^p \<le> n - n mod x^pm" .
     have ge: "n mod x^pm \<ge> 0" using n x transfer_nat_int_function_closures by auto
-    from le ge 
+    from le ge
     have "n \<ge> x^p" by auto
     with xn have False by auto
   }
-  with le show ?thesis unfolding p by fastforce 
+  with le show ?thesis unfolding p by fastforce
 qed
 
 lemma iteration_mono_lesseq: assumes x: "x \<ge> 0" and n: "n \<ge> 0" and xn: "x ^ p \<ge> (n :: int)"
@@ -321,7 +321,7 @@ next
   from iteration_mono_less[OF x n this]
   show ?thesis by simp
 qed
-  
+
 termination (* of root_newton_int_main *)
 proof -
   let ?mm = "\<lambda> x  n :: int. nat x"
@@ -338,19 +338,19 @@ proof -
     from iteration_mono_less[OF x_n x] x0
     show "(((n div x ^ pm + x * int pm) div int p, n), x, n) \<in> ?m" by auto
   qed auto
-qed 
+qed
 
 text {* We next prove that @{const root_int_main'} is a correct implementation of @{const root_newton_int_main}.
 We additionally prove that the result is always positive, a lower bound, and that the returned boolean indicates
-whether the result has a root or not. We prove all these results in one go, so that we can share the 
-inductive proof.  
+whether the result has a root or not. We prove all these results in one go, so that we can share the
+inductive proof.
  *}
 
 abbreviation root_main' where "root_main' \<equiv> root_int_main' pm (int pm) (int p)"
 
 lemmas root_main'_simps = root_int_main'.simps[of pm "int pm" "int p"]
 
-lemma root_main'_newton_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> 
+lemma root_main'_newton_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow>
   root_main' x n = root_newton_int_main x n \<and> (root_main' x n = (y,b) \<longrightarrow> y \<ge> 0 \<and> y^p \<le> n \<and> b = (y^p = n))"
 proof (induct x n rule: root_newton_int_main.induct)
   case (1 x n)
@@ -374,7 +374,7 @@ qed
 lemma root_main': "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = root_newton_int_main x n"
   using root_main'_newton_pos by blast
 
-lemma root_main'_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y \<ge> 0" 
+lemma root_main'_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y \<ge> 0"
   using root_main'_newton_pos by blast
 
 lemma root_main'_sound: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> b = (y ^ p = n)"
@@ -384,10 +384,10 @@ text {* In order to prove completeness of the algorithms, we provide sharp upper
   for @{const root_main'}. For the upper bounds, we use Cauchy's mean theorem where we added
   the non-strict variant to Porter's formalization of this theorem. *}
 
-lemma root_main'_lower: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y ^ p \<le> n" 
+lemma root_main'_lower: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y ^ p \<le> n"
   using root_main'_newton_pos by blast
 
-lemma root_newton_int_main_upper: 
+lemma root_newton_int_main_upper:
   shows "y ^ p \<ge> n \<Longrightarrow> y \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_newton_int_main y n = (x,b) \<Longrightarrow> n < (x + 1) ^ p"
 proof (induct y n rule: root_newton_int_main.induct)
   case (1 y n)
@@ -408,7 +408,7 @@ proof (induct y n rule: root_newton_int_main.induct)
     show ?thesis
     proof (cases "n \<le> y' ^ p")
       case True
-      show ?thesis 
+      show ?thesis
         by (rule IH[OF False True rt])
     next
       case False
@@ -420,7 +420,7 @@ proof (induct y n rule: root_newton_int_main.induct)
         assume pm: "pm = 0"
         have y': "y' = n" unfolding y'_def p pm by simp
         with yyn' have False unfolding p pm by auto
-      } 
+      }
       hence pm0: "pm > 0" by auto
       show ?thesis
       proof (cases "n = 0")
@@ -451,9 +451,9 @@ proof (induct y n rule: root_newton_int_main.induct)
         proof (rule CauchysMeanTheorem_Less[OF pos het_gt_0I])
           show "NY \<in> set ?ls" by simp
           from pm0 show "?y \<in> set ?ls" by simp
-          have "NY < ?y" 
+          have "NY < ?y"
           proof -
-            from yyn have less: "?n < ?y ^ Suc pm" unfolding p 
+            from yyn have less: "?n < ?y ^ Suc pm" unfolding p
               by (metis of_int_less_iff of_int_power)
             have "NY < ?y ^ Suc pm / ?y ^ pm" unfolding NY_def
               by (rule divide_strict_right_mono[OF less], insert y0, auto)
@@ -461,9 +461,9 @@ proof (induct y n rule: root_newton_int_main.induct)
           qed
           thus "NY \<noteq> ?y" by blast
         qed
-        also have "\<dots> = (NY + Y) / real p" 
+        also have "\<dots> = (NY + Y) / real p"
           by (simp add: mean_def sum p)
-        finally have *: "root p ?n < (NY + Y) / real p" .  
+        finally have *: "root p ?n < (NY + Y) / real p" .
         have "?n = (root p ?n)^p" using n0
           by (metis neq0_conv p0 real_root_pow_pos)
         also have "\<dots> < ((NY + Y) / real p)^p"
@@ -473,10 +473,10 @@ proof (induct y n rule: root_newton_int_main.induct)
           def s \<equiv> "n div y ^ pm + y * int pm"
           def S \<equiv> "NY + Y"
           have Y0: "Y \<ge> 0" using y0 unfolding Y_def
-            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff zero_zle_int)          
+            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff zero_zle_int)
           have S0: "S > 0" using NY0 Y0 unfolding S_def by auto
           from p have p0: "p > 0" by auto
-          have "?n / ?y ^ pm  < of_int (floor (?n / ?y^pm)) + 1" 
+          have "?n / ?y ^ pm  < of_int (floor (?n / ?y^pm)) + 1"
             by (rule divide_less_floor1)
           also have "floor (?n / ?y ^ pm) = n div y^pm"
             unfolding div_is_floor_divide_real by (metis of_int_power)
@@ -486,7 +486,7 @@ proof (induct y n rule: root_newton_int_main.induct)
             have f1: "\<forall>x\<^sub>0. rat_of_int \<lfloor>rat_of_nat x\<^sub>0\<rfloor> = rat_of_nat x\<^sub>0"
               using of_int_of_nat_eq by simp
             have f2: "\<forall>x\<^sub>0. real_of_int \<lfloor>rat_of_nat x\<^sub>0\<rfloor> = real x\<^sub>0"
-              using of_int_of_nat_eq real_eq_of_nat by auto
+              using of_int_of_nat_eq by auto
             have f3: "\<forall>x\<^sub>0 x\<^sub>1. \<lfloor>rat_of_int x\<^sub>0 / rat_of_int x\<^sub>1\<rfloor> = \<lfloor>real_of_int x\<^sub>0 / real_of_int x\<^sub>1\<rfloor>"
               using div_is_floor_divide_rat div_is_floor_divide_real by simp
             have f4: "0 < \<lfloor>rat_of_nat p\<rfloor>"
@@ -502,7 +502,7 @@ proof (induct y n rule: root_newton_int_main.induct)
           hence "S / real p \<le> of_int(s div p) + 1" .
           note this[unfolded S_def s_def]
         }
-        hence ge: "of_int y' + 1 \<ge> (NY + Y) / p" unfolding y'_def 
+        hence ge: "of_int y' + 1 \<ge> (NY + Y) / p" unfolding y'_def
           by simp
         have pos1: "(NY + Y) / p \<ge> 0" unfolding Y_def NY_def
           by (intro divide_nonneg_pos add_nonneg_nonneg mult_nonneg_nonneg,
@@ -510,22 +510,22 @@ proof (induct y n rule: root_newton_int_main.induct)
         have pos2: "of_int y' + (1 :: rat) \<ge> 0" using y'0 by auto
         have ineq2: "(of_int y' + 1) ^ p \<ge> ((NY + Y) / p) ^ p"
           by (rule power_mono[OF ge pos1])
-        from order.strict_trans2[OF ineq1 ineq2] 
-        have "?n < of_int ((x + 1) ^ p)" unfolding x 
-          by (metis of_int_1 of_int_add of_int_power) 
-        thus "n < (x + 1) ^ p " by simp
+        from order.strict_trans2[OF ineq1 ineq2]
+        have "?n < of_int ((x + 1) ^ p)" unfolding x
+          by (metis of_int_1 of_int_add of_int_power)
+        thus "n < (x + 1) ^ p" by blast
       qed
     qed
   next
     case True
     with rt have x: "x = y" by simp
     with 1(2) True have n: "n = y ^ p" by auto
-    show ?thesis unfolding n x using y0 unfolding p 
+    show ?thesis unfolding n x using y0 unfolding p
       by (metis add_le_less_mono add_less_cancel_left lessI less_add_one monoid_add_class.add.right_neutral ordered_cancel_comm_monoid_diff_class.le_iff_add power_strict_mono)
   qed
 qed
 
-lemma root_main'_upper: 
+lemma root_main'_upper:
   "x ^ p \<ge> n \<Longrightarrow> x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> n < (y + 1) ^ p"
   using root_newton_int_main_upper[of n x y b] root_main'[of x n] by auto
 end
@@ -534,7 +534,7 @@ text {* Now we can prove all the nice properties of @{const root_int_main}. *}
 
 lemma root_int_main_all: assumes n: "n \<ge> 0"
   and rm: "root_int_main p n = (y,b)"
-  shows "y \<ge> 0 \<and> b = (y ^ p = n) \<and> (p > 0 \<longrightarrow> y ^ p \<le> n \<and> n < (y + 1)^p) 
+  shows "y \<ge> 0 \<and> b = (y ^ p = n) \<and> (p > 0 \<longrightarrow> y ^ p \<le> n \<and> n < (y + 1)^p)
     \<and> (p > 0 \<longrightarrow> x \<ge> 0 \<longrightarrow> x ^ p = n \<longrightarrow> y = x \<and> b)"
 proof (cases "p = 0")
   case True
@@ -568,7 +568,7 @@ qed
 
 lemma root_int_main: assumes n: "n \<ge> 0"
   and rm: "root_int_main p n = (y,b)"
-  shows "y \<ge> 0" "b = (y ^ p = n)" "p > 0 \<Longrightarrow> y ^ p \<le> n" "p > 0 \<Longrightarrow> n < (y + 1)^p" 
+  shows "y \<ge> 0" "b = (y ^ p = n)" "p > 0 \<Longrightarrow> y ^ p \<le> n" "p > 0 \<Longrightarrow> n < (y + 1)^p"
     "p > 0 \<Longrightarrow> x \<ge> 0 \<Longrightarrow> x ^ p = n \<Longrightarrow> y = x \<and> b"
   using root_int_main_all[OF n rm, of x] by blast+
 
@@ -582,7 +582,7 @@ next
   case False
   hence p: "(p = 0) = False" and p0: "p > 0" by auto
   note d = root_int_def p if_False Let_def
-  show ?thesis 
+  show ?thesis
   proof (cases "x = 0")
     case True
     thus ?thesis unfolding d using p0 by auto
@@ -592,7 +592,7 @@ next
     show ?thesis
     proof (cases "x < 0 \<and> even p")
       case True
-      hence left: "set (root_int p x) = {}" unfolding d by auto      
+      hence left: "set (root_int p x) = {}" unfolding d by auto
       {
         fix y
         assume x: "y ^ p = x"
@@ -606,7 +606,7 @@ next
       obtain y b where rt: "root_int_main p \<bar>x\<bar> = (y,b)" by force
       have "abs x \<ge> 0" by auto
       note rm = root_int_main[OF this rt]
-      have "?thesis = 
+      have "?thesis =
         (set (case root_int_main p \<bar>x\<bar> of (y, True) \<Rightarrow> if even p then [y, - y] else [sgn x * y] | (y, False) \<Rightarrow> []) =
         {y. y ^ p = x})" unfolding d cond by blast
       also have "(case root_int_main p \<bar>x\<bar> of (y, True) \<Rightarrow> if even p then [y, - y] else [sgn x * y] | (y, False) \<Rightarrow> [])
@@ -616,7 +616,7 @@ next
       proof -
         {
           fix z
-          assume idx: "z ^ p = x"          
+          assume idx: "z ^ p = x"
           hence eq: "(abs z) ^ p = abs x" by (metis power_abs)
           from idx x p0 have z: "z \<noteq> 0" unfolding p by auto
           have "(y, b) = (\<bar>z\<bar>, True)"
@@ -634,7 +634,7 @@ next
           from rm(1) have y: "y \<ge> 0" .
           from False have "odd p \<or> even p \<and> x \<ge> 0" by auto
           hence "z \<in> ?rhs"
-          proof 
+          proof
             assume odd: "odd p"
             with z have "z = sgn x * y" by auto
             hence "z ^ p = (sgn x * y) ^ p" by auto
@@ -698,22 +698,22 @@ definition "root_int_ceiling_pos p x = (if p = 0 then 0 else (case root_int_main
 
 lemma root_int_floor_pos_lower: assumes p0: "p \<noteq> 0" and x: "x \<ge> 0"
   shows "root_int_floor_pos p x ^ p \<le> x"
-  using root_int_main(3)[OF x, of p] p0 unfolding root_int_floor_pos_def 
+  using root_int_main(3)[OF x, of p] p0 unfolding root_int_floor_pos_def
   by (cases "root_int_main p x", auto)
 
 lemma root_int_floor_pos_pos: assumes x: "x \<ge> 0"
   shows "root_int_floor_pos p x \<ge> 0"
   using root_int_main(1)[OF x, of p]
-  unfolding root_int_floor_pos_def 
+  unfolding root_int_floor_pos_def
   by (cases "root_int_main p x", auto)
 
 lemma root_int_floor_pos_upper: assumes p0: "p \<noteq> 0" and x: "x \<ge> 0"
   shows "(root_int_floor_pos p x + 1) ^ p > x"
-  using root_int_main(4)[OF x, of p] p0 unfolding root_int_floor_pos_def 
+  using root_int_main(4)[OF x, of p] p0 unfolding root_int_floor_pos_def
   by (cases "root_int_main p x", auto)
 
-lemma root_int_floor_pos: assumes x: "x \<ge> 0" 
-  shows "root_int_floor_pos p x = floor (root p (real x))"
+lemma root_int_floor_pos: assumes x: "x \<ge> 0"
+  shows "root_int_floor_pos p x = floor (root p (of_int x))"
 proof (cases "p = 0")
   case True
   thus ?thesis by (simp add: root_int_floor_pos_def)
@@ -721,31 +721,31 @@ next
   case False
   hence p: "p > 0" by auto
   let ?s1 = "real_of_int (root_int_floor_pos p x)"
-  let ?s2 = "root p (real x)"
+  let ?s2 = "root p (of_int x)"
   from x have s1: "?s1 \<ge> 0"
     by (metis of_int_0_le_iff root_int_floor_pos_pos)
   from x have s2: "?s2 \<ge> 0"
-    by (metis real_of_int_ge_zero_cancel_iff real_root_pos_pos_le)
+    by (metis of_int_0_le_iff real_root_pos_pos_le)
   from s1 have s11: "?s1 + 1 \<ge> 0" by auto
-  have id: "?s2 ^ p = real x" using x
-    by (metis p real_of_int_ge_zero_cancel_iff real_root_pow_pos2)
+  have id: "?s2 ^ p = of_int x" using x
+    by (metis p of_int_0_le_iff real_root_pow_pos2)
   show ?thesis
   proof (rule floor_unique[symmetric])
     show "?s1 \<le> ?s2"
       unfolding compare_pow_le_iff[OF p s1 s2, symmetric]
       unfolding id
       using root_int_floor_pos_lower[OF False x]
-      by (metis of_int_le_iff of_int_power real_eq_of_int)
+      by (metis of_int_le_iff of_int_power)
     show "?s2 < ?s1 + 1"
       unfolding compare_pow_less_iff[OF p s2 s11, symmetric]
       unfolding id
       using root_int_floor_pos_upper[OF False x]
-      by (metis real_of_int_add real_of_int_def real_of_int_less_iff real_of_int_power real_of_one)
+      by (metis of_int_add of_int_less_iff of_int_power of_int_1)
   qed
 qed
 
 lemma root_int_ceiling_pos: assumes x: "x \<ge> 0"
-  shows "root_int_ceiling_pos p x = ceiling (root p (real x))"
+  shows "root_int_ceiling_pos p x = ceiling (root p (of_int x))"
 proof (cases "p = 0")
   case True
   thus ?thesis by (simp add: root_int_ceiling_pos_def)
@@ -757,42 +757,42 @@ next
   note rm = rm(1-2) rm(3-5)[OF p]
   from rm(1) have y: "y \<ge> 0" by simp
   let ?s = "root_int_ceiling_pos p x"
-  let ?sx = "root p (real x)"
+  let ?sx = "root p (of_int x)"
   note d = root_int_ceiling_pos_def
   show ?thesis
   proof (cases b)
     case True
     hence id: "?s = y" unfolding s d using p by auto
     from rm(2) True have xy: "x = y ^ p" by auto
-    show ?thesis unfolding id unfolding xy using y 
-      by (metis ceiling_real_of_int p real_of_int_le_iff real_of_int_power real_of_int_zero_cancel real_root_power_cancel) 
+    show ?thesis unfolding id unfolding xy using y
+      by (simp add: p real_root_power_cancel)
   next
-    case False    
-    hence id: "?s = root_int_floor_pos p x + 1" unfolding d root_int_floor_pos_def 
+    case False
+    hence id: "?s = root_int_floor_pos p x + 1" unfolding d root_int_floor_pos_def
       using s p by simp
     from False have x0: "x \<noteq> 0" using rm(5)[of 0] using s unfolding root_int_main_def Let_def using p
       by (cases "x = 0", auto)
     show ?thesis unfolding id root_int_floor_pos[OF x]
     proof (rule ceiling_unique[symmetric])
-      show "?sx \<le> real_of_int (\<lfloor>root p (real x)\<rfloor> + 1)"
-        by (metis real_of_int_add real_of_int_def real_of_int_floor_add_one_ge real_of_one)
-      let ?l = "real_of_int (\<lfloor>root p (real x)\<rfloor> + 1) - 1"
-      let ?m = "real_of_int \<lfloor>root p (real x)\<rfloor>"
+      show "?sx \<le> real_of_int (\<lfloor>root p (of_int x)\<rfloor> + 1)"
+        by (metis of_int_add real_of_int_floor_add_one_ge of_int_1)
+      let ?l = "real_of_int (\<lfloor>root p (of_int x)\<rfloor> + 1) - 1"
+      let ?m = "real_of_int \<lfloor>root p (of_int x)\<rfloor>"
       have "?l = ?m" by simp
-      also have "\<dots> < ?sx" 
+      also have "\<dots> < ?sx"
       proof -
         have le: "?m \<le> ?sx" by (rule of_int_floor_le)
         have neq: "?m \<noteq> ?sx"
         proof
           assume "?m = ?sx"
-          hence "?m ^ p = ?sx ^ p" by simp
-          also have "\<dots> = real x" using x False 
+          hence "?m ^ p = ?sx ^ p" by auto
+          also have "\<dots> = of_int x" using x False
             by (metis p real_root_ge_0_iff real_root_pow_pos2 root_int_floor_pos root_int_floor_pos_pos zero_le_floor zero_less_Suc)
-          finally have xs: "x = \<lfloor>root p (real x)\<rfloor> ^ p" 
-            by (metis floor_power floor_real_of_int real_of_int_def)
-          hence "\<lfloor>root p (real x)\<rfloor> \<in> set (root_int p x)" using p by simp
+          finally have xs: "x = \<lfloor>root p (of_int x)\<rfloor> ^ p"
+            by (metis floor_power floor_of_int)
+          hence "\<lfloor>root p (of_int x)\<rfloor> \<in> set (root_int p x)" using p by simp
           hence "root_int p x \<noteq> []" by force
-          with s False `p \<noteq> 0` x x0 show False unfolding root_int_def 
+          with s False `p \<noteq> 0` x x0 show False unfolding root_int_def
             by (cases p, auto)
         qed
         from le neq show ?thesis by arith
@@ -806,39 +806,39 @@ qed
 definition "root_int_floor p x = (if x \<ge> 0 then root_int_floor_pos p x else - root_int_ceiling_pos p (- x))"
 definition "root_int_ceiling p x = (if x \<ge> 0 then root_int_ceiling_pos p x else - root_int_floor_pos p (- x))"
 
-lemma root_int_floor[simp]: "root_int_floor p x = floor (root p (real x))"
+lemma root_int_floor[simp]: "root_int_floor p x = floor (root p (of_int x))"
 proof -
   note d = root_int_floor_def
-  show ?thesis 
+  show ?thesis
   proof (cases "x \<ge> 0")
     case True
     with root_int_floor_pos[OF True, of p] show ?thesis unfolding d by simp
   next
     case False
     hence "- x \<ge> 0" by auto
-    from False root_int_ceiling_pos[OF this] show ?thesis unfolding d 
+    from False root_int_ceiling_pos[OF this] show ?thesis unfolding d
       by (simp add: real_root_minus ceiling_minus)
   qed
 qed
 
-lemma root_int_ceiling[simp]: "root_int_ceiling p x = ceiling (root p (real x))"
+lemma root_int_ceiling[simp]: "root_int_ceiling p x = ceiling (root p (of_int x))"
 proof -
   note d = root_int_ceiling_def
-  show ?thesis 
+  show ?thesis
   proof (cases "x \<ge> 0")
     case True
     with root_int_ceiling_pos[OF True] show ?thesis unfolding d by simp
   next
     case False
     hence "- x \<ge> 0" by auto
-    from False root_int_floor_pos[OF this, of p] show ?thesis unfolding d 
+    from False root_int_floor_pos[OF this, of p] show ?thesis unfolding d
       by (simp add: real_root_minus floor_minus)
   qed
 qed
 
 subsection {* Downgrading algorithms to the naturals *}
 
-definition root_nat_floor :: "nat \<Rightarrow> nat \<Rightarrow> int" where 
+definition root_nat_floor :: "nat \<Rightarrow> nat \<Rightarrow> int" where
   "root_nat_floor p x = root_int_floor_pos p (int x)"
 
 definition root_nat_ceiling :: "nat \<Rightarrow> nat \<Rightarrow> int" where
@@ -851,11 +851,11 @@ lemma root_nat_floor [simp]: "root_nat_floor p x = floor (root p (real x))"
   unfolding root_nat_floor_def using root_int_floor_pos[of "int x" p]
   by auto
 
-lemma root_nat_floor_lower: assumes p0: "p \<noteq> 0" 
+lemma root_nat_floor_lower: assumes p0: "p \<noteq> 0"
   shows "root_nat_floor p x ^ p \<le> x"
   using root_int_floor_pos_lower[OF p0, of x] unfolding root_nat_floor_def by auto
 
-lemma root_nat_floor_upper: assumes p0: "p \<noteq> 0" 
+lemma root_nat_floor_upper: assumes p0: "p \<noteq> 0"
   shows "(root_nat_floor p x + 1) ^ p > x"
   using root_int_floor_pos_upper[OF p0, of x] unfolding root_nat_floor_def by auto
 
@@ -886,13 +886,13 @@ proof -
       by (metis of_nat_power)
     hence "set (root_int p (int x)) \<noteq> {}" using root_int[of p "int x"] p0
       by (metis (mono_tags) One_nat_def `y ^ p = x` empty_Collect_eq nat_power_eq_Suc_0_iff)
-    then obtain yi ys where ri: "root_int p (int x) = yi # ys" 
+    then obtain yi ys where ri: "root_int p (int x) = yi # ys"
       by (cases "root_int p (int x)", auto)
     from root_int_pos[OF _ this] have yip: "yi \<ge> 0" by auto
     from root_int[of p "int x", unfolded ri] p0 have yi: "yi ^ p = int x" by auto
     with y have "int y ^ p = yi ^ p" by auto
     from arg_cong[OF this, of nat] have id: "y ^ p = nat yi ^ p"
-      by (metis `y ^ p = x` nat_int nat_power_eq yi yip)    
+      by (metis `y ^ p = x` nat_int nat_power_eq yi yip)
     {
       assume p: "p \<noteq> 0"
       hence p0: "p > 0" by auto
@@ -919,14 +919,14 @@ subsection {* Upgrading algorithms to the rationals *}
 text {* The main observation to lift everything from the integers to the rationals is the fact, that one
   can reformulate $\frac{a}{b}^{1/p}$ as $\frac{(ab^{p-1})^{1/p}}b$. *}
 
-definition root_rat_floor :: "nat \<Rightarrow> rat \<Rightarrow> int" where 
+definition root_rat_floor :: "nat \<Rightarrow> rat \<Rightarrow> int" where
   "root_rat_floor p x \<equiv> case quotient_of x of (a,b) \<Rightarrow> root_int_floor p (a * b^(p - 1)) div b"
 
 definition root_rat_ceiling :: "nat \<Rightarrow> rat \<Rightarrow> int" where
   "root_rat_ceiling p x \<equiv> - (root_rat_floor p (-x))"
 
 definition root_rat :: "nat \<Rightarrow> rat \<Rightarrow> rat list" where
-  "root_rat p x \<equiv> case quotient_of x of (a,b) \<Rightarrow> concat 
+  "root_rat p x \<equiv> case quotient_of x of (a,b) \<Rightarrow> concat
   (map (\<lambda> rb. map (\<lambda> ra. of_int ra / rat_of_int rb) (root_int p a)) (take 1 (root_int p b)))"
 
 
@@ -935,16 +935,16 @@ lemma root_rat_reform: assumes q: "quotient_of x = (a,b)"
 proof (cases "p = 0")
   case False
   from quotient_of_denom_pos[OF q] have b: "0 < b" by auto
-  hence b: "0 < real b" by auto
+  hence b: "0 < real_of_int b" by auto
   from quotient_of_div[OF q] have x: "root p (real_of_rat x) = root p (a / b)"
-    by (metis of_rat_divide of_rat_of_int_eq real_of_int_def)
-  also have "a / b = a * real b ^ (p - 1) / real b ^ p" using b False
+    by (metis of_rat_divide of_rat_of_int_eq)
+  also have "a / b = a * real_of_int b ^ (p - 1) / of_int b ^ p" using b False
     by (cases p, auto simp: field_simps)
-  also have "root p \<dots> = root p (a * real b ^ (p - 1)) / root p (real b ^ p)" by (rule real_root_divide)
-  also have "root p (real b ^ p) = of_int b" using False b 
-    by (metis neq0_conv real_root_pow_pos real_root_power real_eq_of_int)
-  also have "a * real b ^ (p - 1) = of_int (a * b ^ (p - 1))"
-    by (metis real_of_int_def real_of_int_mult real_of_int_power)
+  also have "root p \<dots> = root p (a * real_of_int b ^ (p - 1)) / root p (of_int b ^ p)" by (rule real_root_divide)
+  also have "root p (of_int b ^ p) = of_int b" using False b
+    by (metis neq0_conv real_root_pow_pos real_root_power)
+  also have "a * real_of_int b ^ (p - 1) = of_int (a * b ^ (p - 1))"
+    by (metis of_int_mult of_int_power)
   finally show ?thesis .
 qed auto
 
@@ -952,18 +952,17 @@ lemma root_rat_floor [simp]: "root_rat_floor p x = floor (root p (of_rat x))"
 proof -
   obtain a b where q: "quotient_of x = (a,b)" by force
   from quotient_of_denom_pos[OF q] have b: "b > 0" .
-  show ?thesis 
+  show ?thesis
     unfolding root_rat_floor_def q split root_int_floor
-    unfolding root_rat_reform[OF q]
-    unfolding floor_div_pos_int[OF b] real_eq_of_int ..
+    unfolding root_rat_reform[OF q] floor_div_pos_int[OF b] ..
 qed
 
 lemma root_rat_ceiling [simp]: "root_rat_ceiling p x = ceiling (root p (of_rat x))"
-  unfolding 
-    root_rat_ceiling_def 
-    ceiling_def 
-    real_root_minus 
-    root_rat_floor 
+  unfolding
+    root_rat_ceiling_def
+    ceiling_def
+    real_root_minus
+    root_rat_floor
     of_rat_minus
     ..
 
@@ -997,17 +996,17 @@ proof (cases "p = 0")
     obtain z n where quo: "quotient_of q = (z,n)" by force
     note qzn = quotient_of_div[OF quo]
     have n: "n > 0" using quotient_of_denom_pos[OF quo] .
-    from eq[unfolded qzn] have "rat_of_int b * of_int z^p / of_int n^p = of_int a" 
+    from eq[unfolded qzn] have "rat_of_int b * of_int z^p / of_int n^p = of_int a"
       unfolding power_divide by simp
     from arg_cong[OF this, of "\<lambda> x. x * of_int n^p"] n have "rat_of_int b * of_int z^p = of_int a * of_int n ^ p"
-      by auto      
+      by auto
     also have "rat_of_int b * of_int z^p = rat_of_int (b * z^p)" unfolding of_int_mult of_int_power ..
     also have "of_int a * rat_of_int n ^ p = of_int (a * n ^ p)" unfolding of_int_mult of_int_power ..
     finally have id: "a * n ^ p = b * z ^ p" by linarith
     from quotient_of_coprime[OF quo] have cop: "coprime (z ^ p) (n ^ p)"
        by (metis gcd.commute coprime_exp_int)
     from coprime_crossproduct_int[OF quotient_of_coprime[OF q] this] arg_cong[OF id, of abs]
-    have "\<bar>n ^ p\<bar> = \<bar>b\<bar>" 
+    have "\<bar>n ^ p\<bar> = \<bar>b\<bar>"
       by (simp add: field_simps abs_mult)
     with n b have bnp: "b = n ^ p" by auto
     hence rn: "n \<in> set (root_int p b)" using p by auto
@@ -1026,7 +1025,7 @@ next
   case True
   with p have x: "x \<noteq> 1" by auto
   obtain a b where q: "quotient_of x = (a,b)" by force
-  show ?thesis unfolding True root_rat_def q split root_int_def using x 
+  show ?thesis unfolding True root_rat_def q split root_int_def using x
     by auto
 qed
 

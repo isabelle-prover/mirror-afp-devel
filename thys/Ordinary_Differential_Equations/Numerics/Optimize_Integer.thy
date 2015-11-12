@@ -13,7 +13,7 @@ lemma [code_post]: "int_of_integer (- 1) = - 1"
 text {* shallowly embed log and power *}
 
 definition log2::"int \<Rightarrow> int"
-  where "log2 a = floor (log 2 (real a))"
+  where "log2 a = floor (log 2 (of_int a))"
 
 context includes integer.lifting begin
 

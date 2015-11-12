@@ -47,7 +47,7 @@ lemma hs_set_impl: "imp_set is_hashset"
   unfolding is_hashset_def
   apply (subst map_of_set_eq'[symmetric])
   by (metis preciseD[OF is_hashmap_prec])
-interpretation hs!: imp_set is_hashset by (rule hs_set_impl)
+interpretation hs: imp_set is_hashset by (rule hs_set_impl)
 
 definition hs_new :: "'a::{heap,hashable} hashset Heap" 
   where "hs_new = hm_new"
@@ -56,7 +56,7 @@ lemma hs_new_impl: "imp_set_empty is_hashset hs_new"
   apply unfold_locales
   apply (sep_auto heap: hm_new_rule simp: is_hashset_def hs_new_def)
   done
-interpretation hs!: imp_set_empty is_hashset hs_new by (rule hs_new_impl)
+interpretation hs: imp_set_empty is_hashset hs_new by (rule hs_new_impl)
 
 definition hs_memb:: "'a::{heap,hashable} \<Rightarrow> 'a hashset \<Rightarrow> bool Heap" 
   where "hs_memb x s \<equiv> do { 
@@ -71,7 +71,7 @@ lemma hs_memb_impl: "imp_set_memb is_hashset hs_memb"
     heap: hm_lookup_rule 
     simp: is_hashset_def split: option.split)
   done
-interpretation hs!: imp_set_memb is_hashset hs_memb by (rule hs_memb_impl)
+interpretation hs: imp_set_memb is_hashset hs_memb by (rule hs_memb_impl)
 
 definition hs_ins:: "'a::{heap,hashable} \<Rightarrow> 'a hashset \<Rightarrow> 'a hashset Heap"
   where "hs_ins x ht \<equiv> hm_update x () ht"
@@ -80,7 +80,7 @@ lemma hs_ins_impl: "imp_set_ins is_hashset hs_ins"
   apply unfold_locales
   apply (sep_auto heap: hm_update_rule simp: hs_ins_def is_hashset_def)
   done
-interpretation hs!: imp_set_ins is_hashset hs_ins by (rule hs_ins_impl)
+interpretation hs: imp_set_ins is_hashset hs_ins by (rule hs_ins_impl)
 
 definition hs_delete
   :: "'a::{heap,hashable} \<Rightarrow> 'a hashset \<Rightarrow> 'a hashset Heap"
@@ -90,7 +90,7 @@ lemma hs_delete_impl: "imp_set_delete is_hashset hs_delete"
   apply unfold_locales
   apply (sep_auto heap: hm_delete_rule simp: is_hashset_def hs_delete_def)
   done
-interpretation hs!: imp_set_delete is_hashset hs_delete
+interpretation hs: imp_set_delete is_hashset hs_delete
   by (rule hs_delete_impl)
 
 definition "hs_isEmpty == hm_isEmpty"
@@ -99,7 +99,7 @@ lemma hs_is_empty_impl: "imp_set_is_empty is_hashset hs_isEmpty"
   apply unfold_locales
   apply (sep_auto heap: hm_isEmpty_rule simp: is_hashset_def hs_isEmpty_def)
   done
-interpretation hs!: imp_set_is_empty is_hashset hs_isEmpty
+interpretation hs: imp_set_is_empty is_hashset hs_isEmpty
   by (rule hs_is_empty_impl)
 
 definition "hs_size == hm_size"
@@ -108,7 +108,7 @@ lemma hs_size_impl: "imp_set_size is_hashset hs_size"
   apply unfold_locales
   apply (sep_auto heap: hm_size_rule simp: is_hashset_def hs_size_def)
   done
-interpretation hs!: imp_set_size is_hashset hs_size by (rule hs_size_impl)
+interpretation hs: imp_set_size is_hashset hs_size by (rule hs_size_impl)
 
 type_synonym ('a) hs_it = "('a,unit) hm_it"
 
@@ -139,7 +139,7 @@ lemma hs_iterate_impl: "imp_set_iterate
   apply sep_auto
   apply (sep_auto eintros: hm.quit_iteration)
   done
-interpretation hs!: imp_set_iterate 
+interpretation hs: imp_set_iterate 
   is_hashset hs_is_it hs_it_init hs_it_has_next hs_it_next
   by (rule hs_iterate_impl)
 

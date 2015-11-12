@@ -17,7 +17,7 @@ approximate_affine e1_d "\<lambda>(a::real, b::real) (c::real, d::real). (0::rea
 abbreviation "e1_ivp \<equiv> \<lambda>optns args. uncurry_options e1 optns (hd args) (tl args)"
 abbreviation "e1_d_ivp \<equiv> \<lambda>optns args. uncurry_options e1_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
-interpretation e1!: aform_approximate_ivp
+interpretation e1: aform_approximate_ivp
   e1_ivp e1_d_ivp
   "\<lambda>(t::real, y::real). (1::real, y*y + - t)"
   "\<lambda>(a::real, b::real) (c::real, d::real). (0::real, 2 * (b * d) + - c)"

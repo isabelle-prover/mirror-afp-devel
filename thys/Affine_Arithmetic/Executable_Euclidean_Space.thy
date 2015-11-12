@@ -84,16 +84,16 @@ lemma eucl_truncate_down_Basis[simp]:
 
 lemma eucl_truncate_down_correct:
   "dist (x::'a::executable_euclidean_space) (eucl_down e x) \<in>
-    {0..sqrt (DIM('a)) * 2 powr real (- e)}"
+    {0..sqrt (DIM('a)) * 2 powr of_int (- e)}"
 proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
-  also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr real (- e))\<^sup>2))"
+  also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr of_int (- e))\<^sup>2))"
     apply (intro real_sqrt_le_mono setsum_mono power_mono)
-    apply (auto simp: dist_real_def eucl_down_def simp del: real_of_int_minus)
+    apply (auto simp: dist_real_def eucl_down_def simp del: of_int_minus)
     by (simp add: abs_round_down_le)
   finally show ?thesis
-    by (simp add: real_sqrt_mult real_of_nat_def)
+    by (simp add: real_sqrt_mult)
 qed
 
 lemma eucl_down: "eucl_down e (x::'a::executable_euclidean_space) \<le> x"

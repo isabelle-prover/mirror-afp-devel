@@ -78,7 +78,7 @@ abbreviation szo :: "'a heap \<Rightarrow> nat" where
 lemma \<phi>_ge0: "\<phi> hs \<ge> 0"
 by (induction hs rule: szs.induct) auto
 
-declare algebra_simps[simp] real_of_nat_Suc[simp]
+declare algebra_simps[simp] of_nat_Suc[simp]
 
 lemma szs_Cons[simp]: "szs(h # hs) = sz h + szs hs"
 by(cases h) simp

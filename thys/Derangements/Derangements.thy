@@ -399,7 +399,7 @@ proof (induct n rule: count_derangements.induct)
   have "real (count_derangements (Suc (Suc n))) = (n + 1) * (count_derangements (n + 1) + count_derangements n)"
     unfolding count_derangements.simps by simp
   also have "... = real (n + 1) * (real (count_derangements (n + 1)) + real (count_derangements n))"
-    by (simp only: real_of_nat_mult real_of_nat_add)
+    by (simp only: of_nat_mult of_nat_add)
   also have "... = (n + 1) * (?f (n + 1) + ?f n)"
     unfolding 3(2) 3(1)[unfolded Suc_eq_plus1] ..
   also have "(n + 1) * (?f (n + 1) + ?f n) = ?f (n + 2)"
@@ -415,7 +415,7 @@ proof (induct n rule: count_derangements.induct)
     qed
     from this have f_eq': "\<And> n. (n + 1) * f n = f (n + 1) + (- 1) ^ n" by auto
     from f_eq'[of n] have "(n + 1) * (f (n + 1) + f n) = ((n + 1) * f (n + 1)) + f (n + 1) + (- 1) ^ n"
-      by (simp only: distrib_left real_of_nat_add real_of_nat_1)
+      by (simp only: distrib_left of_nat_add of_nat_1)
     also have "... = (n + 2) * f (n + 1) + (- 1) ^ (n + 2)"
       by (simp del: One_nat_def add_2_eq_Suc' add: algebra_simps) simp
     also from f_eq[of "n + 1"] have "... = f (n + 2)" by simp

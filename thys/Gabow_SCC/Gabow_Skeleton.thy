@@ -1193,7 +1193,7 @@ begin
     shows "outer_invar (it-{v0}) D'"
   proof -
     from OINV interpret outer_invar_loc G it D0 unfolding outer_invar_def .
-    from INV interpret inv!: invar_loc G v0 D0 "[]" D' pE 
+    from INV interpret inv: invar_loc G v0 D0 "[]" D' pE 
       unfolding invar_def by simp
     
     from fin_D_is_reachable[OF INV] have [simp]: "v0\<in>D'" by auto

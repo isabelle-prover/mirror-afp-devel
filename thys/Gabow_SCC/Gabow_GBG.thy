@@ -713,7 +713,7 @@ begin
     from OINV interpret outer_invar_loc G it D0 
       unfolding fgl_outer_invar_def outer_invar_def by simp
 
-    from INV interpret inv!: fgl_invar_loc G v0 D0 None "[]" D' pE 
+    from INV interpret inv: fgl_invar_loc G v0 D0 None "[]" D' pE 
       unfolding fgl_invar_def by simp
 
     from inv.pE_fin have [simp]: "pE = {}" by simp

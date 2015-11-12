@@ -23,7 +23,7 @@ structure Heap_Independent_Rules = Named_Thms
 setup {* Heap_Independent_Rules.setup *}
 
 locale heap_base' = 
-  h!: heap_base 
+  h: heap_base 
     addr2thread_id thread_id2addr
     spurious_wakeups
     empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write
@@ -122,7 +122,7 @@ end
 
 
 locale heap' =
-  h!: heap
+  h: heap
     addr2thread_id thread_id2addr
     spurious_wakeups
     empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write
@@ -197,7 +197,7 @@ lemma lprefix_lappend2I: "lprefix xs ys \<Longrightarrow> lprefix xs (lappend ys
 by(auto simp add: lappend_assoc lprefix_conv_lappend)
 
 locale known_addrs_typing' =
-  h!: known_addrs_typing
+  h: known_addrs_typing
     addr2thread_id thread_id2addr
     spurious_wakeups
     empty_heap allocate "\<lambda>_. typeof_addr" heap_read heap_write 

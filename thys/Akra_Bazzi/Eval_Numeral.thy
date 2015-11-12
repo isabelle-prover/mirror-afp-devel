@@ -32,23 +32,23 @@ lemmas power_numeral_simps = power_0 uminus_pow_Numeral1 power_minus_Bit0 power_
 lemma Fract_normalize: "Fract (fst (Rat.normalize (x,y))) (snd (Rat.normalize (x,y))) = Fract x y"
   by (rule quotient_of_inject) (simp add: quotient_of_Fract Rat_normalize_idempotent)
 
-lemma Frct_add: "Frct (a, numeral b) + Frct (c, numeral d) = 
+lemma Frct_add: "Frct (a, numeral b) + Frct (c, numeral d) =
                    Frct (Rat.normalize (a * numeral d + c * numeral b, numeral (b*d)))"
   by (auto simp: rat_number_collapse Fract_normalize)
 
 
 lemma Frct_uminus: "-(Frct (a,b)) = Frct (-a,b)" by simp
 
-lemma Frct_diff: "Frct (a, numeral b) - Frct (c, numeral d) = 
+lemma Frct_diff: "Frct (a, numeral b) - Frct (c, numeral d) =
                     Frct (Rat.normalize (a * numeral d - c * numeral b, numeral (b*d)))"
   by (auto simp: rat_number_collapse Fract_normalize)
 
-lemma Frct_mult: "Frct (a, numeral b) * Frct (c, numeral d) = Frct (a*c, numeral (b*d))" 
+lemma Frct_mult: "Frct (a, numeral b) * Frct (c, numeral d) = Frct (a*c, numeral (b*d))"
   by simp
 
 lemma Frct_inverse: "inverse (Frct (a, b)) = Frct (b, a)" by simp
 
-lemma Frct_divide: "Frct (a, numeral b) / Frct (c, numeral d) = Frct (a*numeral d, numeral b * c)" 
+lemma Frct_divide: "Frct (a, numeral b) / Frct (c, numeral d) = Frct (a*numeral d, numeral b * c)"
   by simp
 
 lemma Frct_pow: "Frct (a, numeral b) ^ c = Frct (a ^ c, numeral b ^ c)"
@@ -68,12 +68,12 @@ done
 
 lemma real_power_code: "(Ratreal x) ^ y = Ratreal (x ^ y)" by (simp add: of_rat_power)
 
-lemmas real_arith_code = 
-  real_plus_code real_minus_code real_times_code real_uminus_code real_inverse_code 
+lemmas real_arith_code =
+  real_plus_code real_minus_code real_times_code real_uminus_code real_inverse_code
   real_divide_code real_power_code real_less_code real_less_eq_code real_equals_code
 
 lemmas rat_arith_code =
-  Frct_add Frct_uminus Frct_diff Frct_mult Frct_inverse Frct_divide Frct_pow 
+  Frct_add Frct_uminus Frct_diff Frct_mult Frct_inverse Frct_divide Frct_pow
   Frct_less Frct_le Frct_equals
 
 
@@ -85,18 +85,18 @@ lemma gcd_1_int': "gcd 1 x = (1::int)"
 lemma gcd_numeral_red: "gcd (numeral x::int) (numeral y) = gcd (numeral y) (numeral x mod numeral y)"
   by (fact gcd_red_int)
 
-lemma divmod_one: 
+lemma divmod_one:
   "divmod (Num.One) (Num.One) = (Numeral1, 0)"
   "divmod (Num.One) (Num.Bit0 x) = (0, Numeral1)"
   "divmod (Num.One) (Num.Bit1 x) = (0, Numeral1)"
   "divmod x (Num.One) = (numeral x, 0)"
   unfolding divmod_def by simp_all
 
-lemmas divmod_numeral_simps = 
+lemmas divmod_numeral_simps =
   div_0 div_by_0 mod_0 mod_by_0
   semiring_numeral_div_class.fst_divmod [symmetric]
   semiring_numeral_div_class.snd_divmod [symmetric]
-  divmod_cancel 
+  divmod_cancel
   divmod_steps [simplified rel_simps if_True] divmod_trivial
   rel_simps
 
@@ -110,13 +110,13 @@ lemma rat_powr:
   "x > 0 \<Longrightarrow> x powr Ratreal (Frct (-numeral a, Numeral1)) = inverse (x ^ numeral a)"
   by (simp_all add: rat_number_collapse powr_numeral powr_minus)
 
-lemmas eval_numeral_simps = 
-  real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps Num.rel_simps 
+lemmas eval_numeral_simps =
+  real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps
   Rat.normalize_def fst_conv snd_conv gcd_0_int gcd_0_left_int gcd_1_int gcd_1_int'
   gcd_neg1_int gcd_neg2_int gcd_numeral_red zmod_numeral_Bit0 zmod_numeral_Bit1 power_numeral_simps
   divmod_numeral_simps one_to_numeral Groups.Let_0 Num.Let_numeral Suc_to_numeral power_numeral
   greaterThanLessThan_iff atLeastAtMost_iff atLeastLessThan_iff greaterThanAtMost_iff rat_powr
-  Num.pow.simps Num.sqr.simps Product_Type.split real_numeral real_of_nat_numeral
+  Num.pow.simps Num.sqr.simps Product_Type.split of_int_numeral of_int_neg_numeral of_nat_numeral
 
 ML {*
 signature EVAL_NUMERAL =

@@ -14,7 +14,7 @@ definition psi::"point \<Rightarrow> point \<Rightarrow> point \<Rightarrow> boo
 definition ccw::"point \<Rightarrow> point \<Rightarrow> point \<Rightarrow> bool" where
   "ccw p q r \<longleftrightarrow> ccw' p q r \<or> (det3 p q r = 0 \<and> (psi p q r \<or> psi q r p \<or> psi r p q))"
 
-interpretation ccw!: linorder_list0 "ccw x" for x .
+interpretation ccw: linorder_list0 "ccw x" for x .
 
 lemma ccw'_imp_ccw: "ccw' a b c \<Longrightarrow> ccw a b c"
   by (simp add: ccw_def)
@@ -381,7 +381,7 @@ proof -
         by (auto simp: less_eq_real_def det3_def' algebra_simps)
     qed
     ultimately have ?th1 ?th2 ?th3 by blast+
-  } ultimately show ?th1 ?th2 ?th3 by blast+
+  } ultimately show ?th1 ?th2 ?th3 by force+
 qed
 
 lemma ccw'_subst_psi_disj:
@@ -650,7 +650,7 @@ proof -
     by (auto simp: less_eq_real_def ccw'_def)
 qed
 
-interpretation ccw!: ccw_system ccw
+interpretation ccw: ccw_system ccw
   apply unfold_locales
   apply (metis ccw_transitive_contr nondegenerate)
   done
@@ -904,7 +904,7 @@ proof -
   } ultimately show ?thesis by blast
 qed
 
-interpretation ccw!: ccw_convex ccw S "\<lambda>a b. lex b a" for S
+interpretation ccw: ccw_convex ccw S "\<lambda>a b. lex b a" for S
   by unfold_locales (rule ccw_convex)
 
 lemma ccw_sorted_scaleR: "ccw.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw.sortedP 0 (map (op *\<^sub>R r) xs)"

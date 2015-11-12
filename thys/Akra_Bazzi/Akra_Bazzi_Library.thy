@@ -123,7 +123,7 @@ proof (cases "x = 0")
   note t = this
   with assms have "t > -0.5" "t < 0.5" by (auto split: split_if_asm)
   moreover from t(2) have "(1 + x) powr p = 1 + p * x + p * (p - 1) * (1 + t) powr (p - 2) / 2 * x ^ 2"
-    by (simp add: numeral_2_eq_2 real_of_nat_Suc)
+    by (simp add: numeral_2_eq_2 of_nat_Suc)
   ultimately show ?thesis by (rule that)
 next
   assume "x = 0"

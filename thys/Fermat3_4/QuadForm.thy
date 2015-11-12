@@ -435,7 +435,7 @@ proof (rule ccontr, auto)
       and "int p dvd P*int(prod(p#ps))" and "is_qfN (P*int(prod(p#ps))) N" 
       by auto
     ultimately obtain S where S: "P*int(prod(p#ps)) = S*(int p) \<and> is_qfN S N"
-      by (auto dest: qfN_div_prime_general simp del: dvd_mult)
+      using qfN_div_prime_general by blast
     hence "(int p)*(P* int(prod ps) - S) = 0" by (auto simp add: int_mult)
     with p S have "is_qfN (P*int(prod ps)) N" by (auto simp add: zprime_def)
     moreover from IH have "primel ps" by (simp add: primel_def)
@@ -1270,11 +1270,11 @@ next
     thus wpx: "?w = ?p * ?X" by (auto simp only: zmult_int)
     with ass show "?p \<in> zOdd" by (auto dest: odd_mult_odd_prop)
     from wpx have "?w = ?X*?p" by simp
-    with ass show "?X \<in> zOdd" by (auto dest: odd_mult_odd_prop)
+    with ass show "?X \<in> zOdd" by (metis odd_mult_odd_prop)
   qed
   have "is_qfN ?p 3"
   proof -
-    from ass have "a^2+3*b^2 = (?p*?X)^3" by (simp add: zmult_int)
+    from ass have "a^2+3*b^2 = (?p*?X)^3" by simp 
     hence "?p dvd a^2+3*b^2" by (simp add: eval_nat_numeral field_simps)
     moreover from ass have "zprime ?p" and "zgcd a b=1" by simp_all
     moreover from pw have "?p \<in> zOdd" by simp
@@ -1287,7 +1287,7 @@ next
     assume "\<alpha> = 0" with alphabeta have "3 dvd ?p" by auto
     with pw have w3: "3 dvd ?w" by (simp only: dvd_mult2)
     then obtain v where "?w = 3*v" by (auto simp add: dvd_def)
-    with ass have vab: "27*v^3 = a^2 + 3*b^2" by (simp add: power_mult_distrib)
+    with ass have vab: "27*v^3 = a^2 + 3*b^2" by simp
     hence "a^2 = 3*(9*v^3 - b^2)" by auto
     hence "3 dvd a^2" by (unfold dvd_def, blast)
     moreover have "zprime 3" by (rule zprime_3)

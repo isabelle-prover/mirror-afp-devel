@@ -154,10 +154,10 @@ where
 
 end
 
-sublocale J_JVM_conf_read < red_mthr!: if_\<tau>multithreaded_wf final_expr "mred P" convert_RA "\<tau>MOVE P"
+sublocale J_JVM_conf_read < red_mthr: if_\<tau>multithreaded_wf final_expr "mred P" convert_RA "\<tau>MOVE P"
 by(unfold_locales)
 
-sublocale J_JVM_conf_read < execd_mthr!: 
+sublocale J_JVM_conf_read < execd_mthr: 
   if_\<tau>multithreaded_wf
     JVM_final
     "mexecd (compP2 (compP1 P))"
@@ -222,7 +222,7 @@ proof -
   from wf wf_start have bisim: "if_bisimJ2JVM s cs"
     unfolding s comps by(rule if_bisimJ2JVM_start)
 
-  interpret divfin!: delay_bisimulation_diverge_final 
+  interpret divfin: delay_bisimulation_diverge_final 
     "red_mthr.mthr.if.redT P" 
     "execd_mthr.mthr.if.redT (J2JVM P)"
     "if_bisimJ2JVM"

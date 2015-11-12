@@ -58,7 +58,7 @@ lemma cs_imp_list_impl: "imp_list cs_list"
   apply unfold_locales
   apply (rule cs_prec)
   done
-interpretation cs!: imp_list cs_list by (rule cs_imp_list_impl)
+interpretation cs: imp_list cs_list by (rule cs_imp_list_impl)
 
 subsection {* Operations *}
 subsubsection {* Allocate Empty List *}
@@ -71,7 +71,7 @@ lemma cs_empty_rule: "<emp> cs_empty <cs_list []>"
 
 lemma cs_empty_impl: "imp_list_empty cs_list cs_empty" 
   by unfold_locales (sep_auto heap: cs_empty_rule)
-interpretation cs!: imp_list_empty cs_list cs_empty by (rule cs_empty_impl)
+interpretation cs: imp_list_empty cs_list cs_empty by (rule cs_empty_impl)
 
 subsubsection {* Prepend Element *}
 fun cs_prepend :: "'a \<Rightarrow> 'a::heap cs_list \<Rightarrow> 'a cs_list Heap" where
@@ -100,7 +100,7 @@ lemma cs_prepend_rule:
 
 lemma cs_prepend_impl: "imp_list_prepend cs_list cs_prepend"
   by unfold_locales (sep_auto heap: cs_prepend_rule)
-interpretation cs!: imp_list_prepend cs_list cs_prepend 
+interpretation cs: imp_list_prepend cs_list cs_prepend 
   by (rule cs_prepend_impl)
 
 subsubsection {* Append Element *}
@@ -134,7 +134,7 @@ lemma cs_append_rule:
 
 lemma cs_append_impl: "imp_list_append cs_list cs_append"
   by unfold_locales (sep_auto heap: cs_append_rule)
-interpretation cs!: imp_list_append cs_list cs_append
+interpretation cs: imp_list_append cs_list cs_append
   by (rule cs_append_impl)
 
 subsubsection {* Pop First Element *}
@@ -179,7 +179,7 @@ lemma cs_pop_impl: "imp_list_pop cs_list cs_pop"
   apply unfold_locales 
   apply (sep_auto heap: cs_pop_rule elim!: list_not_emptyE)
   done
-interpretation cs!: imp_list_pop cs_list cs_pop by (rule cs_pop_impl)
+interpretation cs: imp_list_pop cs_list cs_pop by (rule cs_pop_impl)
 
 subsubsection {* Rotate *}
 fun cs_rotate :: "'a::heap cs_list \<Rightarrow> 'a cs_list Heap" where
@@ -214,7 +214,7 @@ lemma cs_rotate_impl: "imp_list_rotate cs_list cs_rotate"
   apply unfold_locales 
   apply (sep_auto heap: cs_rotate_rule)
   done
-interpretation cs!: imp_list_rotate cs_list cs_rotate by (rule cs_rotate_impl)
+interpretation cs: imp_list_rotate cs_list cs_rotate by (rule cs_rotate_impl)
 
 subsection {* Test *}
 definition "test \<equiv> do {

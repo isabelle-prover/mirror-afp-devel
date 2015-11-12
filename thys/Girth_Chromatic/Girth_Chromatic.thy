@@ -324,7 +324,7 @@ proof -
   then have "prob ?L \<le> (\<Sum>vs \<in> ?k_sets. prob {es \<in> space P. vs \<in> independent_sets (edge_ugraph es)})"
     by (auto intro!: finite_measure_subadditive_finite simp: space_eq sets_eq)
   also have "\<dots> = (n choose k)*((1 - p) ^ (k choose 2))"
-    by (simp add: prob_k_indep real_eq_of_nat S_verts_def n_subsets)
+    by (simp add: prob_k_indep S_verts_def n_subsets)
   finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
 qed
 
@@ -359,17 +359,17 @@ proof -
 
     have r: "real (?nr n - Suc 0) = real (?nr n) - Suc 0" using A by auto
 
+    have [simp]: "n>0" using A by linarith
     have "probGn p n (\<lambda>es. ?nr n \<le> \<alpha> (edge_space.edge_ugraph n es))
         \<le> (n choose ?nr n) * (1 - p n)^(?nr n choose 2)"
       using A by (auto intro: pG.random_prob_independent)
     also have "\<dots> \<le> n powr ?nr n * (1 - p n) powr (?nr n choose 2)"
-      using A
-      by (simp add: powr_realpow power_real_of_nat binomial_le_pow del: real_of_nat_power)
+      using A  by (simp add: powr_realpow power_real_of_nat binomial_le_pow  del: of_nat_power)
     also have "\<dots> = n powr ?nr n * (1 - p n) powr (?nr n * (?nr n - 1) / 2)"
       by (cases "even (?nr n - 1)")
         (auto simp add: n_choose_2_nat real_of_nat_div)
     also have "\<dots> = n powr ?nr n * ((1 - p n) powr ((?nr n - 1) / 2)) powr ?nr n"
-      by (auto simp add: powr_powr r ac_simps) 
+      by (auto simp add: powr_powr r ac_simps)
     also have "\<dots> \<le> (n * exp (- p n * (?nr n - 1) / 2)) powr ?nr n"
     proof -
       have "(1 - p n) powr ((?nr n - 1) / 2) \<le> exp (- p n) powr ((?nr n - 1) / 2)"
@@ -394,8 +394,8 @@ proof -
     proof -
       have "0 < ln n" using "n_bound" by auto
       then have "(3 / 2) * ln n \<le> ((6 * k * ln n) / n) * (?nr n / 2)"
-        using r_bound real_of_int_ceiling_ge[of "n/2*k"]
-        by (simp add: r_def field_simps del: real_of_int_ceiling_ge)
+        using r_bound le_of_int_ceiling[of "n/2*k"]
+        by (simp add: r_def field_simps del: le_of_int_ceiling)
       also have "\<dots> \<le> p n * (?nr n / 2)"
         using n_bound p_bound r_bound r_pos[of n] by (auto simp: field_simps)
       finally show ?thesis using r_bound by (auto simp: field_simps)
@@ -436,7 +436,7 @@ proof -
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2)) powr ?nr n"
         using expr_bound A by (auto simp: powr_mono2)
       also have "\<dots> \<le> ((exp 1 / n) powr (1 / 2))"
-        using nr_bounds ep_bound by (auto simp: powr_le_one_le)
+        using nr_bounds ep_bound A by (auto simp: powr_le_one_le)
       finally show "?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)" .
     qed
   qed
@@ -470,7 +470,7 @@ proof -
       unfolding C_def XC_def by (auto simp: finite_edges space_eq intro!: finite_ucycles)
 
     have "(\<Sum>x\<in>space P. card (XG x) * prob {x}) = (\<Sum>x\<in>space P. (\<Sum>c \<in> XG x. prob {x}))"
-      by (simp add: real_eq_of_nat)
+      by simp
     also have "\<dots> = (\<Sum>x\<in>space P. (\<Sum>c \<in> C k. if c \<in> XG x then prob {x} else 0))"
       using fin_C by (simp add: setsum.If_cases) (simp add: XG_Int_C)
     also have "\<dots> = (\<Sum>c \<in> C k. (\<Sum> x \<in> space P \<inter> XC c. prob {x}))"
@@ -516,7 +516,7 @@ proof -
     ultimately have "card (C k) = fact n div fact (n - k)"
       using `k < n`
       by (simp add: card_image[OF inj_last_Cons] card_lists_distinct_length_eq fact_div_fact)
-    then show ?thesis by (simp add: real_eq_of_nat)
+    then show ?thesis by simp
   qed
   finally show ?thesis by simp
 qed
@@ -589,13 +589,13 @@ proof -
       also have "\<dots> = (\<Sum>i\<in>{3..k}. of_nat (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"
-        using A fact_div_fact_le_pow
-        by (auto intro: setsum_mono simp: real_of_nat_def)
+        apply (rule setsum_mono)
+        by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans real_mult_le_cancel_iff1 zero_less_power)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
         using `1 \<le> n` `0 < \<epsilon>` A
         by (intro setsum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr
           powr_realpow[symmetric] powr_mult[symmetric] powr_add[symmetric])
-      finally show ?thesis by (simp add: real_eq_of_nat)
+      finally show ?thesis by simp
     qed
 
     have "pG.prob {es \<in> space pG.P. n/2 \<le> short_count (?ug n es)} \<le> mean_short_count / (n/2)"
@@ -636,7 +636,7 @@ proof -
         by  (subst powr_minus) (simp add: divide_inverse p_def)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * ((n powr - 1) / (n powr (\<epsilon> - 1))) \<le> n powr (\<epsilon> - 1) / (n powr (\<epsilon> - 1))"
         using `1 \<le> n` by (auto simp: field_simps)
-      also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" 
+      also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
         by (simp add: powr_divide2)
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
     qed
@@ -720,7 +720,7 @@ proof -
 
   have "enat l \<le> ereal k" using `l \<le> k` by auto
   also have "\<dots> < (n/2) / \<alpha> G" using G_props `3 \<le> k`
-    by (cases "\<alpha> G") (auto simp: real_of_nat_def[symmetric] field_simps)
+    by (cases "\<alpha> G") (auto simp: field_simps)
   also have "\<dots> \<le> (n/2) / \<alpha> H" using \<alpha>_HG `0 < \<alpha> H`
     by (auto simp: ereal_of_enat_pushout intro!: ereal_divide_left_mono)
   also have "\<dots> \<le> card (uverts H) / \<alpha> H" using card_H `0 < \<alpha> H`

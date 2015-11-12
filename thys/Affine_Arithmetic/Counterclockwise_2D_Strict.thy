@@ -281,7 +281,7 @@ definition "ccw' p q r \<longleftrightarrow> 0 < det3 p q r"
 interpretation ccw': ccw_vector_space ccw'
   by unfold_locales (auto simp: ccw'_def det3_def' algebra_simps)
 
-interpretation ccw'!: linorder_list0 "ccw' x" for x .
+interpretation ccw': linorder_list0 "ccw' x" for x .
 
 lemma ccw'_contra: "ccw' t r q \<Longrightarrow> ccw' t q r = False"
   by (auto simp: ccw'_def det3_def' algebra_simps)

@@ -540,7 +540,7 @@ lemma delta_wf_state[simp]: "\<lbrakk>a \<in> set (\<sigma> n); wf_state s\<rbra
 sublocale rexp_DA \<sigma> wf_atom project lookup init delta final wf_state post L
   by unfold_locales auto
 
-sublocale rexp_DA_sim_no_post!: rexp_DA_no_post \<sigma> wf_atom project lookup init delta final wf_state L
+sublocale rexp_DA_sim_no_post: rexp_DA_no_post \<sigma> wf_atom project lookup init delta final wf_state L
   by unfold_locales auto
 
 end

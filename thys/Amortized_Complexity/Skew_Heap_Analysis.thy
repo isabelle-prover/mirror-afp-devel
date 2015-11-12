@@ -31,7 +31,7 @@ corollary Glog: "G h \<le> log 2 (size1 h)"
 proof -
   have "G h = log 2 (2 ^ G h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ G h) \<le> log 2 (size h + 1)"
-    by(simp del: G.simps real_of_nat_Suc) (metis Gexp Suc_eq_plus1)
+    by(simp del: G.simps of_nat_Suc) (metis Gexp Suc_eq_plus1)
   finally show ?thesis by(simp add: size1_def)
 qed
 
@@ -42,7 +42,7 @@ corollary Dlog: "D h \<le> log 2 (size1 h)"
 proof -
   have "D h = log 2 (2 ^ D h)" by (simp add: log_nat_power)
   also have "log 2 (2 ^ D h) \<le> log 2 (size h + 1)"
-    by(simp del: D.simps real_of_nat_Suc) (metis Dexp Suc_eq_plus1)
+    by(simp del: D.simps of_nat_Suc) (metis Dexp Suc_eq_plus1)
   finally show ?thesis by(simp add: size1_def)
 qed
 
@@ -107,7 +107,7 @@ proof -
   also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_def)
   also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
     by(rule plus_log_le_2log_plus) (auto simp: size1_def)
-  finally show ?thesis by(simp add: real_of_nat_Suc)
+  finally show ?thesis by(simp add: of_nat_Suc)
 qed
 
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
@@ -150,7 +150,7 @@ next
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
       from Del_min Node show ?thesis using a_meld_ub[of t1 t2]
-        by (simp add: real_of_nat_Suc size1_def)
+        by (simp add: of_nat_Suc size1_def)
     qed
   qed
 qed

@@ -678,7 +678,7 @@ lemma (in ccpo) mcont_if_bot:
   and bot: "\<And>x. \<not> x \<le> bound \<Longrightarrow> bot \<sqsubseteq> f x"
   shows "mcont Sup op \<le> lub op \<sqsubseteq> (\<lambda>x. if x \<le> bound then bot else f x)" (is "mcont _ _ _ _ ?g")
 proof(intro mcontI contI)
-  interpret c!: ccpo lub "op \<sqsubseteq>" lt by(fact ccpo)
+  interpret c: ccpo lub "op \<sqsubseteq>" lt by(fact ccpo)
   show "monotone op \<le> op \<sqsubseteq> ?g" by(rule monotone_if_bot)(simp_all add: mono bot)
 
   fix Y
@@ -1053,8 +1053,8 @@ lemma preorder_rel_prodI [cont_intro, simp]:
   and "class.preorder ordb (mk_less ordb)"
   shows "class.preorder (rel_prod orda ordb) (mk_less (rel_prod orda ordb))"
 proof -
-  interpret a!: preorder orda "mk_less orda" by fact
-  interpret b!: preorder ordb "mk_less ordb" by fact
+  interpret a: preorder orda "mk_less orda" by fact
+  interpret b: preorder ordb "mk_less ordb" by fact
   show ?thesis by(unfold_locales)(auto simp add: mk_less_def intro: a.order_trans b.order_trans)
 qed
 
@@ -1064,8 +1064,8 @@ lemma order_rel_prodI:
   shows "class.order (rel_prod orda ordb) (mk_less (rel_prod orda ordb))"
   (is "class.order ?ord ?ord'")
 proof(intro class.order.intro class.order_axioms.intro)
-  interpret a!: order orda "mk_less orda" by(fact a)
-  interpret b!: order ordb "mk_less ordb" by(fact b)
+  interpret a: order orda "mk_less orda" by(fact a)
+  interpret b: order ordb "mk_less ordb" by(fact b)
   show "class.preorder ?ord ?ord'" by(rule preorder_rel_prodI) unfold_locales
 
   fix x y
@@ -1081,9 +1081,9 @@ lemma monotone_rel_prodI:
   and c: "class.preorder ordc (mk_less ordc)"
   shows "monotone (rel_prod orda ordb) ordc f"
 proof -
-  interpret a!: preorder orda "mk_less orda" by(rule a)
-  interpret b!: preorder ordb "mk_less ordb" by(rule b)
-  interpret c!: preorder ordc "mk_less ordc" by(rule c)
+  interpret a: preorder orda "mk_less orda" by(rule a)
+  interpret b: preorder ordb "mk_less ordb" by(rule b)
+  interpret c: preorder ordc "mk_less ordc" by(rule c)
   show ?thesis using mono2 mono1
     by(auto 7 2 simp add: monotone_def intro: c.order_trans)
 qed
@@ -1242,8 +1242,8 @@ lemma cont_prodI:
   and "class.preorder ordb (mk_less ordb)"
   shows "cont (prod_lub luba lubb) (rel_prod orda ordb) Sup op \<le> f"
 proof(rule contI)
-  interpret a!: preorder orda "mk_less orda" by fact 
-  interpret b!: preorder ordb "mk_less ordb" by fact
+  interpret a: preorder orda "mk_less orda" by fact 
+  interpret b: preorder ordb "mk_less ordb" by fact
   
   fix Y
   assume chain: "Complete_Partial_Order.chain (rel_prod orda ordb) Y"
@@ -1419,13 +1419,13 @@ by(best intro: ccpo.mcont2mcont'[OF complete_lattice_ccpo] mcont_inf1 mcont_inf2
 
 end
 
-interpretation lfp!: partial_function_definitions "op \<le> :: _ :: complete_lattice \<Rightarrow> _" Sup
+interpretation lfp: partial_function_definitions "op \<le> :: _ :: complete_lattice \<Rightarrow> _" Sup
 by(rule complete_lattice_partial_function_definitions)
 
 declaration {* Partial_Function.init "lfp" @{term lfp.fixp_fun} @{term lfp.mono_body}
   @{thm lfp.fixp_rule_uc} @{thm lfp.fixp_induct_uc} NONE *}
 
-interpretation gfp!: partial_function_definitions "op \<ge> :: _ :: complete_lattice \<Rightarrow> _" Inf
+interpretation gfp: partial_function_definitions "op \<ge> :: _ :: complete_lattice \<Rightarrow> _" Inf
 by(rule complete_lattice_partial_function_definitions_dual)
 
 declaration {* Partial_Function.init "gfp" @{term gfp.fixp_fun} @{term gfp.mono_body}
@@ -1577,8 +1577,8 @@ context
   and b: "class.ccpo lubb ordb (mk_less ordb)"
 begin
 
-interpretation a!: ccpo luba orda "mk_less orda" by(rule a)
-interpretation b!: ccpo lubb ordb "mk_less ordb" by(rule b)
+interpretation a: ccpo luba orda "mk_less orda" by(rule a)
+interpretation b: ccpo lubb ordb "mk_less ordb" by(rule b)
 
 lemma ccpo_rel_prodI:
   "class.ccpo (prod_lub luba lubb) (rel_prod orda ordb) (mk_less (rel_prod orda ordb))"
@@ -1587,7 +1587,7 @@ proof(intro class.ccpo.intro class.ccpo_axioms.intro)
   show "class.order ?ord ?ord'" by(rule order_rel_prodI) intro_locales
 qed(auto 4 4 simp add: prod_lub_def intro: a.ccpo_Sup_upper b.ccpo_Sup_upper a.ccpo_Sup_least b.ccpo_Sup_least rev_image_eqI dest: chain_rel_prodD1 chain_rel_prodD2 simp del: a.Sup_image_eq b.Sup_image_eq)
 
-interpretation ab!: ccpo "prod_lub luba lubb" "rel_prod orda ordb" "mk_less (rel_prod orda ordb)"
+interpretation ab: ccpo "prod_lub luba lubb" "rel_prod orda ordb" "mk_less (rel_prod orda ordb)"
 by(rule ccpo_rel_prodI)
 
 lemma monotone_map_prod [simp]:

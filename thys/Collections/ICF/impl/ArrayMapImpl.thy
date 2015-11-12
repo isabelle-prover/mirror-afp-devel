@@ -193,7 +193,7 @@ begin
   lemma iam_iteratei_impl: 
     "poly_map_iteratei iam_\<alpha> iam_invar iam_rev_iterateoi"
   proof -
-    interpret aux!: poly_map_rev_iterateoi iam_\<alpha> iam_invar iam_rev_iterateoi 
+    interpret aux: poly_map_rev_iterateoi iam_\<alpha> iam_invar iam_rev_iterateoi 
       by (rule iam_rev_iterateoi_impl) 
 
     show ?thesis
@@ -283,7 +283,7 @@ begin
     \<rparr>"
 
   setup Locale_Code.open_block
-  interpretation iam_basic!: StdBasicOMap iam_basic_ops
+  interpretation iam_basic: StdBasicOMap iam_basic_ops
     apply (rule StdBasicOMap.intro)
     apply (rule StdBasicMap.intro)
     apply (simp_all add: icf_rec_unf)
@@ -296,10 +296,10 @@ begin
   definition [icf_rec_def]: "iam_ops \<equiv> iam_basic.dflt_oops"
 
   setup Locale_Code.open_block
-  interpretation iam!: StdOMap iam_ops
+  interpretation iam: StdOMap iam_ops
     unfolding iam_ops_def
     by (rule iam_basic.dflt_oops_impl)
-  interpretation iam!: StdMap_no_invar iam_ops
+  interpretation iam: StdMap_no_invar iam_ops
     by unfold_locales (simp add: icf_rec_unf)
   setup Locale_Code.close_block
   setup {* ICF_Tools.revert_abbrevs "iam"*}

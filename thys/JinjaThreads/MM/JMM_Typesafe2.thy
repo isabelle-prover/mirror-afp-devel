@@ -10,7 +10,7 @@ imports
   JMM_Common
 begin
 
-interpretation jmm!: heap'
+interpretation jmm: heap'
   addr2thread_id thread_id2addr
   jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr' P" jmm_heap_read jmm_heap_write
@@ -34,14 +34,14 @@ by (metis jmm_typeof_addr'_conv_jmm_typeof_addr heap_base'.conf_conv_conf)
 lemma jmm_heap'': "heap'' addr2thread_id thread_id2addr jmm_allocate (jmm_typeof_addr' P) jmm_heap_write P"
 by(unfold_locales)(auto simp add: jmm_typeof_addr'_def jmm_allocate_def split: split_if_asm)
 
-interpretation jmm!: heap''
+interpretation jmm: heap''
   addr2thread_id thread_id2addr
   jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr' P" jmm_heap_read jmm_heap_write
   for P
 by(rule jmm_heap'')
 
-interpretation jmm'!: heap''
+interpretation jmm': heap''
   addr2thread_id thread_id2addr
   jmm_spurious_wakeups
   jmm_empty jmm_allocate "jmm_typeof_addr' P" "jmm_heap_read_typed P" jmm_heap_write

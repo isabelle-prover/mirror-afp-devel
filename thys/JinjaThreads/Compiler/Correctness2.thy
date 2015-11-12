@@ -22,12 +22,12 @@ end
 
 declare compP_has_method [simp]
 
-sublocale J1_JVM_heap_conf_base < Red1_exec!: 
+sublocale J1_JVM_heap_conf_base < Red1_exec: 
   delay_bisimulation_base "mred1 P t" "mexec (compP2 P) t" "wbisim1 t" "ta_bisim wbisim1" "\<tau>MOVE1 P" "\<tau>MOVE2 (compP2 P)" 
   for t
 .
 
-sublocale J1_JVM_heap_conf_base < Red1_execd!: delay_bisimulation_base
+sublocale J1_JVM_heap_conf_base < Red1_execd: delay_bisimulation_base
   "mred1 P t"
   "mexecd (compP2 P) t"
   "wbisim1 t"
@@ -226,7 +226,7 @@ where
   \<lambda>((e1, xs1), exs1) (xcp, frs). call1 e1 \<noteq> None \<and> 
      (case frs of Nil \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of P C M ! pc = Invoke M' n)"
 
-sublocale J1_JVM_heap_conf_base < Red1_execd!:
+sublocale J1_JVM_heap_conf_base < Red1_execd:
   FWbisimulation_base 
     final_expr1
     "mred1 P"
@@ -237,7 +237,7 @@ sublocale J1_JVM_heap_conf_base < Red1_execd!:
     "bisim_wait1JVM (compP2 P)" 
 .
 
-sublocale JVM_heap_base < execd_mthr!:
+sublocale JVM_heap_base < execd_mthr:
   \<tau>multithreaded
     JVM_final
     "mexecd P"
@@ -246,7 +246,7 @@ sublocale JVM_heap_base < execd_mthr!:
   for P
 by(unfold_locales)
 
-sublocale J1_JVM_heap_conf_base < Red1_execd!:
+sublocale J1_JVM_heap_conf_base < Red1_execd:
   FWdelay_bisimulation_base 
     final_expr1
     "mred1 P"
@@ -465,7 +465,7 @@ qed
 
 end
 
-sublocale J1_JVM_heap_conf_base < Red1_mexecd!:
+sublocale J1_JVM_heap_conf_base < Red1_mexecd:
   FWbisimulation_base
     final_expr1
     "mred1 P"

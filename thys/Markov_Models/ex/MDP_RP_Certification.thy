@@ -14,7 +14,7 @@ lemma p_ub':
   assumes 2: "\<And>s. s \<in> S1 \<Longrightarrow> x s \<noteq> 0 \<Longrightarrow> (\<exists>t\<in>S2. (s, t) \<in> (SIGMA s:S1. \<Union>D\<in>K s. set_pmf D)\<^sup>*)"
   assumes 3: "\<And>s. s \<in> S - S1 - S2 \<Longrightarrow> x s = 0"
   assumes 4: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "real (p s) \<le> x s"
+  shows "real_of_ereal (p s) \<le> x s"
 proof (rule p_ub[OF 1 _ 4])
   fix s assume "s \<in> S" "p s = 0" with 2[of s] p_pos[of s] p_nonneg[of s] p_S2[of s] 3[of s] show "x s = 0" 
     by (metis zero_neq_one not_less DiffI)
@@ -27,7 +27,7 @@ lemma n_lb':
   assumes 2: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> x s \<noteq> 0 \<Longrightarrow> \<exists>t\<in>D. ((t, s) \<in> R \<and> t \<in> S1 \<and> x t \<noteq> 0) \<or> t \<in> S2"
   assumes 3: "\<And>s. s \<in> S - S1 - S2 \<Longrightarrow> x s = 0"
   assumes 4: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "x s \<le> real (n s)"
+  shows "x s \<le> real_of_ereal (n s)"
 proof (rule n_lb[OF 1 _ 4])
   fix s assume *: "s \<in> S" "n s = 0"
   show "x s = 0"
@@ -229,7 +229,7 @@ next
     by (subst nn_integral_count_space'[of "{0}"]) auto
 qed
 
-interpretation MDP!: Reachability_Problem K S S1 S2 
+interpretation MDP: Reachability_Problem K S S1 S2 
 proof
   show "S1 \<inter> S2 = {}" "S1 \<subseteq> S" "S2 \<subseteq> S"
     using valid_mdp_rpD(1)[OF rp] by auto
@@ -245,8 +245,8 @@ proof
     by transfer (auto simp: lookup_eq_map_of split: option.splits dest!: map_of_SomeD)
 qed
 
-definition "P_max s = real (MDP.p s)"
-definition "P_min s = real (MDP.n s)"
+definition "P_max s = real_of_ereal (MDP.p s)"
+definition "P_min s = real_of_ereal (MDP.n s)"
 
 lemma
   assumes "i < state_count mdp"
@@ -258,7 +258,7 @@ proof -
   note pos = this(1)[unfolded valid_pos_cert_def] and neg = this(2)[unfolded valid_neg_cert_def]
 
   let ?x = "\<lambda>s. real_of_rat (solution (pos_cert c) !! s)"
-  have "real (MDP.p i) \<le> ?x i"
+  have "real_of_ereal (MDP.p i) \<le> ?x i"
   proof (rule MDP.p_ub')
     show "i \<in> S" using assms by simp
   next
@@ -316,7 +316,7 @@ proof -
     by (simp add: P_max_def)
 
   let ?x = "\<lambda>s. real_of_rat (solution (neg_cert c) !! s)"
-  have "?x i \<le> real (MDP.n i)"
+  have "?x i \<le> real_of_ereal (MDP.n i)"
   proof (rule MDP.n_lb')
     show "i \<in> S" using assms by simp
   next

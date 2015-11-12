@@ -26,7 +26,7 @@ approximate_affine oil_d "\<lambda>(y::real, z) (dy, dz). (dz, 2 * dz * z  + 6 *
 abbreviation "oil_ivp \<equiv> \<lambda>optns args. uncurry_options oil optns (hd args) (tl args)"
 abbreviation "oil_d_ivp \<equiv> \<lambda>optns args. uncurry_options oil_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
-interpretation oil!: aform_approximate_ivp
+interpretation oil: aform_approximate_ivp
   oil_ivp oil_d_ivp
   "\<lambda>(y::real, z::real). (z, z*z + -3 * inverse (inverse 1000 + y*y))"
   "\<lambda>(y::real, z) (dy, dz).

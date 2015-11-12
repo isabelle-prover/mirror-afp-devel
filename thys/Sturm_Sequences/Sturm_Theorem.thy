@@ -801,7 +801,7 @@ text {*
 
 (*<*)
 lemma degree_mod_less': "degree q \<noteq> 0 \<Longrightarrow> degree (p mod q) < degree q"
-  using assms degree_mod_less by force
+  by (metis degree_0 degree_mod_less not_gr0)
 (*>*)
 
 function sturm_aux where

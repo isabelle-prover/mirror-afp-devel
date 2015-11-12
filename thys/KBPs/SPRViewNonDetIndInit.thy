@@ -381,7 +381,7 @@ qed
 end (* context FiniteBroadcastEnvironment *)
 
 sublocale FiniteBroadcastEnvironmentIndependentInit
-        < SPRii!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+        < SPRii: SimIncrEnvironment jkbp envInit envAction envTrans envVal
                                        spr_jview envObs spr_jviewInit spr_jviewIncr
                                        spr_ii_sim spr_ii_simRels spr_ii_simVal
 (*<*)

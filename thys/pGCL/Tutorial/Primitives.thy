@@ -152,7 +152,7 @@ text {* The expected value of a roll of a six-sided die is @{term "7/2"}: *}
 
 lemma
   "(\<lambda>s. 7/2) = wp (bind v at (\<lambda>s. Puniform {1..6} v) in red := (\<lambda>_. v)) red"
-  by(simp add:wp_eval supp_Puniform setsum_head_Suc Puniform_in real_eq_of_nat)
+  by(simp add:wp_eval supp_Puniform setsum_head_Suc Puniform_in)
 
 text {* The expectations of independent variables add: *}
 
@@ -160,6 +160,6 @@ lemma
   "(\<lambda>s. 7) = wp ((bind v at (\<lambda>s. Puniform {1..6} v) in red := (\<lambda>s. v)) ;;
                  (bind v at (\<lambda>s. Puniform {1..6} v) in blue := (\<lambda>s. v)))
                 (\<lambda>s. red s + blue s)"
-  by(simp add:wp_eval supp_Puniform setsum_head_Suc Puniform_in real_eq_of_nat)
+  by(simp add:wp_eval supp_Puniform setsum_head_Suc Puniform_in)
 
 end

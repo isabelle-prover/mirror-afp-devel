@@ -39,11 +39,8 @@ proof -
   { fix x assume "x \<in> space M"
     have "(\<lambda>i::nat. if i < f x then 1 else 0) sums ereal_of_enat (f x)"
       using sums_If_finite[of "\<lambda>r. r < f x" "\<lambda>_. 1 :: ereal"]
-      apply (cases "f x")
-      apply (simp add: one_ereal_def real_of_nat_def[symmetric]) []
-      apply (simp add: sums_def tendsto_PInfty_eq_at_top real_of_nat_def[symmetric]
-                       filterlim_real_sequentially one_ereal_def)
-      done
+      by (cases "f x")
+         (simp_all add: sums_def tendsto_PInfty_eq_at_top filterlim_real_sequentially one_ereal_def)
     also have "(\<lambda>i. (if i < f x then 1 else 0)) = (\<lambda>i. indicator (F i) x)"
       using `x \<in> space M` by (simp add: one_ereal_def F_def fun_eq_iff)
     finally have "ereal_of_enat (f x) = (\<Sum>i. indicator (F i) x)"
@@ -57,7 +54,7 @@ proof -
 qed
 
 lemma ereal_of_enat_inj[simp]:
-  "ereal_of_enat i = ereal_of_enat j \<longleftrightarrow> i = j" 
+  "ereal_of_enat i = ereal_of_enat j \<longleftrightarrow> i = j"
   by (cases i j rule: enat.exhaust[case_product enat.exhaust]) auto
 
 lemma inf_continuous_suntil_disj[order_continuous_intros]:
@@ -69,7 +66,7 @@ proof (safe intro!: ext)
   fix M \<omega> i assume "(P suntil Q (\<Sqinter>i. M i)) \<omega>" "decseq M" then show "(P suntil Q (M i)) \<omega>"
     unfolding inf_continuousD[OF Q `decseq M`] by induction (auto intro: suntil.intros)
 next
-  fix M \<omega> assume *: "(\<Sqinter>i. P suntil Q (M i)) \<omega>" "decseq M" 
+  fix M \<omega> assume *: "(\<Sqinter>i. P suntil Q (M i)) \<omega>" "decseq M"
   then have "(P suntil Q (M 0)) \<omega>"
     by auto
   from this * show "(P suntil Q (\<Sqinter>i. M i)) \<omega>"
@@ -128,12 +125,12 @@ next
     by (simp add: not_alw_iff not_ev_iff scount_eq_card)
 qed
 
-lemma measurable_scount[measurable]: 
+lemma measurable_scount[measurable]:
   assumes [measurable]: "Measurable.pred (stream_space M) P"
   shows "scount P \<in> measurable (stream_space M) (count_space UNIV)"
   unfolding scount_eq[abs_def] by measurable
 
-lemma measurable_sfirst[measurable]: 
+lemma measurable_sfirst[measurable]:
   assumes "Measurable.pred (stream_space M) P"
   shows "sfirst P \<in> measurable (stream_space M) (count_space UNIV)"
   apply (coinduction rule: measurable_enat_coinduct)
@@ -203,7 +200,7 @@ proof (induct rule: finite_ne_induct)
       by auto
   qed
 qed simp
-  
+
 end
 
 lemma mono_les:
@@ -390,7 +387,7 @@ lemma force_enabled_in_set_pmf[simp, intro]: "shd (force_enabled x \<omega>) \<i
 
 lemma enabled_force_enabled: "enabled x (force_enabled x \<omega>)"
   by (coinduction arbitrary: x \<omega>) (auto simp: some_in_eq set_pmf_not_empty)
-  
+
 lemma force_enabled: "enabled x \<omega> \<Longrightarrow> force_enabled x \<omega> = \<omega>"
   by (coinduction arbitrary: x \<omega>) (auto elim: enabled.cases)
 
@@ -417,8 +414,8 @@ lemma sets_D: "sets D = sets (stream_space (\<Pi>\<^sub>M s\<in>UNIV. count_spac
 
 lemma space_D: "space D = space (stream_space (\<Pi>\<^sub>M s\<in>UNIV. count_space UNIV))"
   using sets_eq_imp_space_eq[OF sets_D] .
-  
-lemma measurable_D_D: "measurable D D = 
+
+lemma measurable_D_D: "measurable D D =
     measurable (stream_space (\<Pi>\<^sub>M s\<in>UNIV. count_space UNIV)) (stream_space (\<Pi>\<^sub>M s\<in>UNIV. count_space UNIV))"
   by (simp add: measurable_def space_D sets_D)
 
@@ -477,7 +474,7 @@ lemma in_measurable_T2[measurable (raw)]: "f \<in> measurable M S \<Longrightarr
 lemma AE_T_enabled: "AE \<omega> in T s. enabled s \<omega>"
   unfolding T_def by (simp add: AE_distr_iff enabled_walk)
 
-sublocale T!: prob_space "T s" for s
+sublocale T: prob_space "T s" for s
 proof -
   interpret P: product_prob_space K UNIV ..
   interpret prob_space "stream_space (\<Pi>\<^sub>M s\<in>UNIV. K s)"
@@ -531,7 +528,7 @@ lemma nn_integral_T_gfp:
 proof (rule nn_integral_gfp)
   show "\<And>s. sets (T s) = sets S" "\<And>F. F \<in> borel_measurable S \<Longrightarrow> l F \<in> borel_measurable S"
     by (auto simp: l_def)
-  show "\<And>s. emeasure (T s) (space (T s)) \<noteq> 0" 
+  show "\<And>s. emeasure (T s) (space (T s)) \<noteq> 0"
    by (rewrite T.emeasure_space_1) simp
   { fix s F
     have "integral\<^sup>N (T s) (l F) \<le> (\<integral>\<^sup>+x. b \<partial>T s)"
@@ -614,7 +611,7 @@ proof -
   then show ?thesis
     by (simp add: alw_def F_def)
 qed
-  
+
 lemma emeasure_suntil_disj:
   assumes [measurable]: "Measurable.pred S P"
   assumes *: "\<And>t. AE \<omega> in T t. \<not> (P \<sqinter> (HLD X \<sqinter> nxt (HLD X suntil P))) \<omega>"
@@ -624,13 +621,13 @@ lemma emeasure_suntil_disj:
 proof (rule emeasure_lfp[where s=s])
   fix F t assume [measurable]: "Measurable.pred (T s) F" and
     F: "F \<le> lfp (\<lambda>a b. P b \<or> HLD X b \<and> a (stl b))"
-  have "emeasure (T t) {\<omega> \<in> space (T s). P \<omega> \<or> HLD X \<omega> \<and> F (stl \<omega>)} = 
+  have "emeasure (T t) {\<omega> \<in> space (T s). P \<omega> \<or> HLD X \<omega> \<and> F (stl \<omega>)} =
     emeasure (T t) {\<omega> \<in> space (T t). P \<omega>} + emeasure (T t) {\<omega>\<in>space (T t). HLD X \<omega> \<and> F (stl \<omega>)}"
   proof (rule emeasure_add_AE)
     show "AE x in T t. \<not> (x \<in> {\<omega> \<in> space (T t). P \<omega>} \<and> x \<in> {\<omega> \<in> space (T t). HLD X \<omega> \<and> F (stl \<omega>)})"
       using * by eventually_elim (insert F, auto simp: suntil_lfp[symmetric])
   qed auto
-  also have "emeasure (T t) {\<omega>\<in>space (T t). HLD X \<omega> \<and> F (stl \<omega>)} = 
+  also have "emeasure (T t) {\<omega>\<in>space (T t). HLD X \<omega> \<and> F (stl \<omega>)} =
     (\<integral>\<^sup>+t. emeasure (T t) {\<omega> \<in> space (T s). F \<omega>} * indicator X t \<partial>K t)"
     by (subst emeasure_Collect_T) (auto intro!: nn_integral_cong split: split_indicator)
   finally show "emeasure (T t) {\<omega> \<in> space (T s). P \<omega> \<or> HLD X \<omega> \<and> F (stl \<omega>)} =
@@ -675,10 +672,10 @@ proof -
   also have "lfp (?F (HLD {t})) s = emeasure (T s) {x\<in>space (T s). (HLD (-{t}) suntil HLD {t}) x}"
     by (rule emeasure_suntil_disj[symmetric]) (auto simp: HLD_iff)
   finally show ?thesis
-    by (simp add: HLD_iff[abs_def] ev_eq_suntil) 
+    by (simp add: HLD_iff[abs_def] ev_eq_suntil)
 qed
 
-lemma AE_suntil: 
+lemma AE_suntil:
   assumes [measurable]: "Measurable.pred S P"
   shows "(AE x in T s. (not (HLD {t}) suntil (HLD {t} aand nxt P)) x) \<longleftrightarrow>
    (AE x in T s. ev (HLD {t}) x) \<and> (AE x in T t. P x)"
@@ -963,7 +960,7 @@ proof -
                  intro!: nn_integral_mono_AE add_mono max.mono Suc)
       also have "\<dots> \<le> (\<integral>\<^sup>+ t. ereal (Suc i) + ereal \<P>(\<omega> in T t. enat i < sfirst (HLD H) (t ## \<omega>)) * p \<partial>K t)"
         by (intro nn_integral_mono)
-           (auto simp: max_def measure_nonneg `0 \<le> p` real_of_nat_Suc one_ereal_def[symmetric] plus_ereal.simps[symmetric] field_simps
+           (auto simp: max_def measure_nonneg `0 \<le> p` one_ereal_def[symmetric] plus_ereal.simps[symmetric] field_simps
                  simp del: ereal_plus_1 plus_ereal.simps)
       also have "\<dots> \<le> Suc i + ereal (?Pf (Suc i) t) * p"
         unfolding T.emeasure_eq_measure[symmetric]
@@ -1182,7 +1179,7 @@ proof -
   then show ?thesis
     by simp
 qed
-   
+
 lemma space_rT_in_S: "space (rT x) \<in> sets S"
   by (simp add: rT_def space_restrict_space)
 
@@ -1193,7 +1190,7 @@ lemma prob_space_rT: "prob_space (rT x)"
   unfolding rT_def by (auto intro!: prob_space_restrict_space T.emeasure_eq_1_AE AE_T_enabled)
 
 lemma measurable_force_enabled2[measurable]: "force_enabled x \<in> measurable S (rT x)"
-  unfolding rT_def 
+  unfolding rT_def
   by (rule measurable_restrict_space2)
      (auto intro: measurable_force_enabled enabled_force_enabled)
 
@@ -1284,7 +1281,7 @@ proof (intro ext stream_space_eq_sstart)
         unfolding in_sstart by measurable
       finally show ?case .
     qed (auto intro!: streams_sets) }
-  note sstart_in_S = this [measurable] 
+  note sstart_in_S = this [measurable]
 
   show "countable \<Omega>"
     by (auto intro: countable_acc simp: \<Omega>_def)
@@ -1373,7 +1370,7 @@ proof -
       unfolding suntil_def
       by (subst sup_continuous_lfp)
          (auto simp add: sup_continuous_def) }
-  moreover 
+  moreover
   { fix n from `P s` have "AE \<omega> in T s. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>)"
     proof (induction n arbitrary: s)
       case (Suc n) then show ?case
@@ -1391,7 +1388,7 @@ qed
 lemma AE_not_suntil_coinduct_strong [consumes 1, case_names \<psi> \<phi>]:
   assumes "P s"
   assumes P_\<psi>: "\<And>s. P s \<Longrightarrow> s \<notin> \<psi>"
-  assumes P_\<phi>: "\<And>s t. P s \<Longrightarrow> s \<in> \<phi> \<Longrightarrow> t \<in> K s \<Longrightarrow> P t \<or> 
+  assumes P_\<phi>: "\<And>s t. P s \<Longrightarrow> s \<in> \<phi> \<Longrightarrow> t \<in> K s \<Longrightarrow> P t \<or>
     (AE \<omega> in T t. not (HLD \<phi> suntil HLD \<psi>) (t ## \<omega>))"
   shows "AE \<omega> in T s. not (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>)" (is "?nuntil s")
 proof -
@@ -1424,7 +1421,7 @@ lemma measurable_reward_until[measurable (raw)]:
   shows "(\<lambda>x. reward_until X (f x) (g x)) \<in> borel_measurable M"
 proof -
   let ?F = "\<lambda>F (s, \<omega>). if s \<in> X then 0 else \<rho> s + \<iota> s (shd \<omega>) + (0 \<squnion> (F (shd \<omega>, stl \<omega>)))"
-  { fix s \<omega> 
+  { fix s \<omega>
     have "reward_until X s \<omega> = lfp ?F (s, \<omega>)"
       unfolding reward_until_def lfp_pair[symmetric] .. }
   note * = this
@@ -1552,14 +1549,14 @@ qed
 end
 
 locale MC_pair =
-  K1!: MC_syntax K1 + K2!: MC_syntax K2 for K1 K2
+  K1: MC_syntax K1 + K2: MC_syntax K2 for K1 K2
 begin
 
 definition "Kp \<equiv> \<lambda>(a, b). pair_pmf (K1 a) (K2 b)"
 
 sublocale MC_syntax Kp .
 
-definition 
+definition
   "szip\<^sub>E a b \<equiv> \<lambda>(\<omega>1, \<omega>2). szip (K1.force_enabled a \<omega>1) (K2.force_enabled b \<omega>2)"
 
 lemma szip_rT[measurable]: "(\<lambda>(\<omega>1, \<omega>2). szip \<omega>1 \<omega>2) \<in> measurable (K1.rT x1 \<Otimes>\<^sub>M K2.rT x2) S"
@@ -1618,7 +1615,7 @@ proof (rule T_bisim)
     done
 qed
 
-lemma nn_integral_pT: 
+lemma nn_integral_pT:
   fixes f assumes [measurable]: "f \<in> borel_measurable S"
   shows "(\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T (x, y)) = (\<integral>\<^sup>+\<omega>1. \<integral>\<^sup>+\<omega>2. f (szip\<^sub>E x y (\<omega>1, \<omega>2)) \<partial>K2.T y \<partial>K1.T x)"
   by (subst (1 3) nn_integral_max_0[symmetric])

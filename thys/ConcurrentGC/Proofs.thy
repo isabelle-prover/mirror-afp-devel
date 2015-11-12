@@ -322,7 +322,7 @@ conditions.
 
 *}
 
-interpretation gc_system_interpretation!: gc_system undefined .
+interpretation gc_system_interpretation: gc_system undefined .
 
 subsection{* A concrete system state *}
 

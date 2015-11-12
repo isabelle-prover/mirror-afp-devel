@@ -10,7 +10,7 @@ text {*
 
 subsection {* Nondeterministic Result Monad *}
 
-interpretation nrec!:
+interpretation nrec:
   partial_function_definitions "op \<le>" "Sup::'a nres set \<Rightarrow> 'a nres"
   by unfold_locales (auto simp add: Sup_upper Sup_least)
 
@@ -87,7 +87,7 @@ lemma bind_mono_pfun[partial_function_mono]:
 
 subsection {* Deterministic Result Monad *}
 
-interpretation drec!:
+interpretation drec:
   partial_function_definitions "op \<le>" "Sup::'a dres set \<Rightarrow> 'a dres"
   by unfold_locales (auto simp add: Sup_upper Sup_least)
 

@@ -97,7 +97,7 @@ respect to an arbitrary environment.
 *}
 
 sublocale Environment
-        < Clock!: IncrEnvironment jkbp envInit envAction envTrans envVal
+        < Clock: IncrEnvironment jkbp envInit envAction envTrans envVal
                         clock_jview envObs clock_jviewInit clock_jviewIncr
 (*<*)
   apply (unfold_locales)
@@ -213,7 +213,7 @@ provide it an @{term "Environment"} and a simulation.
 *}
 
 sublocale Environment
-        < Clock!: SimIncrEnvironment jkbp envInit envAction envTrans envVal
+        < Clock: SimIncrEnvironment jkbp envInit envAction envTrans envVal
                   clock_jview envObs clock_jviewInit clock_jviewIncr
                   clock_sim clock_simRels clock_simVal
 (*<*)
@@ -1473,7 +1473,7 @@ Finally we assemble the algorithm and discharge the proof obligations.
 *}
 
 sublocale FiniteLinorderEnvironment
-        < Clock!: Algorithm
+        < Clock: Algorithm
             jkbp envInit envAction envTrans envVal
             clock_jview envObs clock_jviewInit clock_jviewIncr
             clock_sim clock_simRels clock_simVal

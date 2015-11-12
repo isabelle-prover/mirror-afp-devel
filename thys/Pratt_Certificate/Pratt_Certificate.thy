@@ -107,7 +107,7 @@ proof (induction c arbitrary: p a x t)
     obtain q z where "x=q*z" "Prime q \<in> set ys \<and> Triple p a z \<in> set ys"
                and cong:"[a^((p - 1) div q) \<noteq> 1] (mod p)" using Cons.prems x_y by auto
     then have factors_IH:"(\<forall> r \<in> prime_factors z . [a^((p - 1) div r) \<noteq> 1] (mod p))" "prime q" "z>0"
-      using Cons.IH Cons.prems `x>0` `y=Triple p a x` 
+      using Cons.IH Cons.prems `x>0` `y=Triple p a x`
       by force+
     then have "prime_factors x = prime_factors z \<union> {q}"  using `x =q*z` `x>0`
       by (simp add:prime_factors_product_nat prime_factors_prime)
@@ -169,7 +169,7 @@ lemma size_pratt_le:
  fixes d::real
  assumes "\<forall> x \<in> set c. size_pratt x \<le> d"
  shows "size_cert c \<le> length c * (1 + d)" using assms
- by (induction c) (simp_all add: real_of_nat_def algebra_simps)
+ by (induction c) (simp_all add: algebra_simps)
 
 fun build_fpc :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> pratt list" where
   "build_fpc p a r [] = [Triple p a r]" |
@@ -351,10 +351,6 @@ lemma concat_length_le:
   shows "length (concat (map f xs)) \<le> (\<Sum>x\<leftarrow>xs. g x)" using assms
   by (induction xs) force+
 
-(* XXX move *)
-lemma powr_realpow_numeral: "0 < x \<Longrightarrow> x powr (numeral n :: real) = x^(numeral n)"
-  unfolding real_of_nat_numeral[symmetric] by (rule powr_realpow)
-
 lemma prime_gt_3_impl_p_minus_one_not_prime:
   fixes p::nat
   assumes "prime p" "p>3"
@@ -468,7 +464,7 @@ proof (induction p rule: less_induct)
             \<le> ((\<Sum>q\<leftarrow>(map real qs). 6*log 2 q - 4) + ?k + 2)"
             by (simp add: o_def length_fpc)
       also have "\<dots> = (6*(\<Sum>q\<leftarrow>(map real qs). log 2 q) + (-4 * real ?k) + ?k + 2)"
-        by (simp add: o_def listsum_subtractf listsum_triv real_of_nat_def listsum_const_mult)
+        by (simp add: o_def listsum_subtractf listsum_triv listsum_const_mult)
       also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using `?k\<ge>2` prod_qs_eq listsum_log[of 2 qs] qs_ge_2
         by force
       also have "\<dots> \<le> 6*log 2 p - 4" using log_le_cancel_iff[of 2 "p - 1" p] `p>3` by force
