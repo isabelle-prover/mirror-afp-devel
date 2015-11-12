@@ -38,7 +38,7 @@ definition "e1_optns = default_optns
       result_fun := ivls_result 23 4,
       printing_fun := (\<lambda>_ _ _. ())\<rparr>"
 
-definition "e1test = (\<lambda>_::unit. euler_series_result e1_ivp e1_d_ivp e1_optns 0 (aform_of_point (Floatreal 0, FloatR 23 (- 5))) (2 ^ 7))"
+definition "e1test = (\<lambda>_::unit. euler_series_result e1_ivp e1_d_ivp e1_optns 0 (aform_of_point (real_of_float 0, FloatR 23 (- 5))) (2 ^ 7))"
 
 lemma e1test_result: "e1test () =
   Some (FloatR 128 (- 5),
