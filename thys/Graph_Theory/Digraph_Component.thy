@@ -766,7 +766,7 @@ context wf_digraph begin
 
   lemma sccs_verts_disjoint:
     assumes "S \<in> sccs_verts" "T \<in> sccs_verts" "S \<noteq> T" shows "S \<inter> T = {}"
-    using assms unfolding in_sccs_verts_conv_reachable by blast
+    using assms unfolding in_sccs_verts_conv_reachable by safe meson+
 
   lemma strongly_connected_spanning_imp_strongly_connected:
     assumes "spanning H G"
