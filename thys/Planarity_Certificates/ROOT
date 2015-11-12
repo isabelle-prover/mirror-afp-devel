@@ -1,0 +1,20 @@
+chapter AFP
+
+session "Planarity_Certificates" (AFP) = "Simpl" +
+  options [timeout = 3600]
+  theories [document = false]
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Permutations"
+    "~~/src/HOL/Library/Rewrite"
+    "~~/src/HOL/Library/Simps_Case_Conv"
+    "../Case_Labeling/Case_Labeling"
+    "../Graph_Theory/Graph_Theory"
+    "../List-Index/List_Index"
+    "../Transitive-Closure/Transitive_Closure_Impl"
+    "l4v/lib/OptionMonadWP"
+  theories
+    Planarity_Certificates
+  document_files
+    "root.tex"
+    "root.bib"

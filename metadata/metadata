@@ -2556,6 +2556,20 @@ abstract = This development provides a formalization of directed graphs, support
  <p>
  This formalization is used to prove characterizations of Euler Trails, Shortest Paths and Kuratowski subgraphs.
 
+[Planarity_Certificates]
+title = Planarity Certificates
+author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
+date = 2015-11-11
+topic = Mathematics/Graph Theory
+depends-on = Simpl, Case_Labeling, Graph_Theory, List-Index, Transitive-Closure
+abstract =
+ This development provides a formalization of planarity based on
+ combinatorial maps and proves that Kuratowski's theorem implies
+ combinatorial planarity.
+ Moreover, it contains verified implementations of programs checking
+ certificates for planarity (i.e., a combinatorial map) or non-planarity
+ (i.e., a Kuratowski subgraph).
+
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
 author = Christine Rizkallah <http://www.mpi-inf.mpg.de/homepage/crizkall/>
