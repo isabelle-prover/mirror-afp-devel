@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Graph_Theory" (AFP) = "HOL" +
-  options [timeout = 3600]
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/Extended_Real"
