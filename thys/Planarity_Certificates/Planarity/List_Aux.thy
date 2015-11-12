@@ -3,23 +3,7 @@ imports
   "../../List-Index/List_Index"
 begin
 
-section \<open>Auxilliary List Lemmas\<close>
-
-subsection \<open>List Indices\<close>
-
-lemma index_map_inj_on:
-  assumes "inj_on f S" "y \<in> S" "set xs \<subseteq> S" shows "index (map f xs) (f y) = index xs y"
-  using assms by (induct xs) (auto simp: inj_on_eq_iff)
-
-lemma index_map_inj: "inj f \<Longrightarrow> index (map f xs) (f y) = index xs y"
-    by (simp add: index_map_inj_on[where S=UNIV])
-
-lemma index_rev:
-  assumes "distinct xs" "x \<in> set xs"
-  shows "index (rev xs) x = length xs - index xs x - 1"
-  using assms by (induct xs) (auto simp: index_append)
-
-subsection \<open>Others\<close>
+section \<open>Auxiliary List Lemmas\<close>
 
 lemma nth_rotate_conv_nth1_conv_nth:
   assumes "m < length xs"

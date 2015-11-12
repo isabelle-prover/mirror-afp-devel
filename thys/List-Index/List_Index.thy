@@ -138,6 +138,10 @@ by (induct xs) auto
 lemma nth_last_index[simp]: "x \<in> set xs \<Longrightarrow> xs ! last_index xs x = x"
 by(simp add:last_index_def index_size_conv Let_def rev_nth[symmetric])
 
+lemma index_rev: "\<lbrakk> distinct xs; x \<in> set xs \<rbrakk> \<Longrightarrow>
+  index (rev xs) x = length xs - index xs x - 1"
+by (induct xs) (auto simp: index_append)
+
 lemma index_nth_id:
   "\<lbrakk> distinct xs;  n < length xs \<rbrakk> \<Longrightarrow> index xs (xs ! n) = n"
 by (metis in_set_conv_nth index_less_size_conv nth_eq_iff_index_eq nth_index)
@@ -235,6 +239,13 @@ by (auto simp: image_def) (metis index_nth_id nth_mem)
 
 lemma index_image: "distinct xs \<Longrightarrow> set xs = X \<Longrightarrow> index xs ` X = {0..<size xs}"
 by (simp add: bij_betw_imageE bij_betw_index)
+
+lemma index_map_inj_on:
+  "\<lbrakk> inj_on f S; y \<in> S; set xs \<subseteq> S \<rbrakk> \<Longrightarrow> index (map f xs) (f y) = index xs y"
+by (induct xs) (auto simp: inj_on_eq_iff)
+
+lemma index_map_inj: "inj f \<Longrightarrow> index (map f xs) (f y) = index xs y"
+by (simp add: index_map_inj_on[where S=UNIV])
 
 subsection {* Map with index *}
 
