@@ -8,23 +8,9 @@ session Ordinary_Differential_Equations (AFP) = "HOL-Multivariate_Analysis" +
     "~~/src/HOL/Library/Quotient_Set"
     "~~/src/HOL/Library/While_Combinator"
     "../Affine_Arithmetic/Affine_Arithmetic"
-  theories
-    "~~/src/HOL/Library/Float"
-  theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
   theories
-    "ODE_Auxiliarities"
-    "Numerics/Print"
-    "IVP/Initial_Value_Problem"
-    "IVP/Picard_Lindeloef_Qualitative"
-    "Numerics/One_Step_Method"
-    "Numerics/Runge_Kutta"
-    "Numerics/Euler_Affine"
-    "Ex/Examples"
-    "Library/MVT_Ex"
-  theories [document = false]
-    "Library/Higher_Derivative"
-    "Library/Multivariate_Taylor"
+    "Ordinary_Differential_Equations"
   document_files
     "root.bib"
     "root.tex"
