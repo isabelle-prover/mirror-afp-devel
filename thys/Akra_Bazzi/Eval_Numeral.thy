@@ -111,7 +111,7 @@ lemma rat_powr:
   by (simp_all add: rat_number_collapse powr_numeral powr_minus)
 
 lemmas eval_numeral_simps =
-  real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps Num.rel_simps
+  real_numeral_to_Ratreal real_arith_code rat_arith_code Num.arith_simps
   Rat.normalize_def fst_conv snd_conv gcd_0_int gcd_0_left_int gcd_1_int gcd_1_int'
   gcd_neg1_int gcd_neg2_int gcd_numeral_red zmod_numeral_Bit0 zmod_numeral_Bit1 power_numeral_simps
   divmod_numeral_simps one_to_numeral Groups.Let_0 Num.Let_numeral Suc_to_numeral power_numeral

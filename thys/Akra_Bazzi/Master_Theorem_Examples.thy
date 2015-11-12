@@ -30,7 +30,6 @@ lemma merge_sort_nonneg[simp]: "(\<And>n. t n \<ge> 0) \<Longrightarrow> merge_s
 lemma "t \<in> \<Theta>(\<lambda>n. real n) \<Longrightarrow> (\<And>n. t n \<ge> 0) \<Longrightarrow> merge_sort_cost t \<in> \<Theta>(\<lambda>n. real n * ln (real n))"
   by (master_theorem 2.3) simp_all
 
-
 subsection {* Karatsuba multiplication *}
 
 function karatsuba_cost :: "nat \<Rightarrow> real" where

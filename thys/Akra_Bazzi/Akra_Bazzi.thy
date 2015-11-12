@@ -608,7 +608,7 @@ proof-
   def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
-  moreover have "a' \<ge> a + 1" by (auto simp: max_def a'_def)
+  moreover have "a' \<ge> a + 1" unfolding a'_def by linarith
   moreover from this and a have "a' \<ge> A" by simp
   ultimately show ?thesis by (intro that[of a']) auto
 qed
@@ -809,7 +809,7 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
     finally have "gc1 * c6 * \<bar>f_approx (real x)\<bar> \<ge> \<bar>f x\<bar>" using gc1 by (simp add: algebra_simps)
   }
   hence "eventually (\<lambda>x. \<bar>f x\<bar> \<le> gc1 * c6 * \<bar>f_approx (real x)\<bar>) at_top"
-    by (force simp: eventually_at_top_linorder)
+    using eventually_ge_at_top[of "nat \<lceil>x\<^sub>0'\<rceil>"] by (auto elim!: eventually_elim1)
   hence "f \<in> O(\<lambda>x. f_approx (real x))" using gc1(1) f_nonneg' f_approx_nonneg
     by (intro landau_o.bigI[of "gc1 * c6"] eventually_conj 
         mult_pos_pos c6 eventually_nat_real) (auto simp: eventually_at_top_linorder)
@@ -826,7 +826,7 @@ proof-
   def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
-  moreover have "a' \<ge> a + 1" by (auto simp: max_def a'_def)
+  moreover have "a' \<ge> a + 1" unfolding a'_def by linarith
   moreover from this and a have "a' > A" by simp
   ultimately show ?thesis by (intro that[of a']) auto
 qed
@@ -885,14 +885,14 @@ proof (rule akra_bazzi_termI[OF zero_less_one])
   finally show "nat \<lfloor>b * real x + c\<rfloor> < x" using assms step_ge_x0 
     by (subst nat_less_iff) (simp_all add: floor_less_iff algebra_simps)
   
-  from step_ge_x0 have "real \<lfloor>c + b * real x\<rfloor> = real (nat \<lfloor>c + b * real x\<rfloor>)" by linarith
+  from step_ge_x0 have "real_of_int \<lfloor>c + b * real x\<rfloor> = real_of_int (nat \<lfloor>c + b * real x\<rfloor>)" by linarith
   thus "(b * real x) + (\<lfloor>b * real x + c\<rfloor> - (b * real x)) = 
-          real (nat \<lfloor>b * real x + c\<rfloor>)" using assms by (simp add: algebra_simps)
+          real (nat \<lfloor>b * real x + c\<rfloor>)" by linarith
 next
-  have "(\<lambda>x::nat. real \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
+  have "(\<lambda>x::nat. real_of_int \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
     by (intro landau_o.big_mono always_eventually allI) linarith
   also have "(\<lambda>_::nat. \<bar>c\<bar> + 1) \<in> O(\<lambda>x. real x / ln (real x) powr (1 + 1))" by force
-  finally show "(\<lambda>x::nat. real \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> 
+  finally show "(\<lambda>x::nat. real_of_int \<lfloor>b * real x + c\<rfloor> - b * real x) \<in> 
                     O(\<lambda>x. real x / ln (real x) powr (1+1))" .
 qed
 
@@ -950,8 +950,8 @@ proof (rule akra_bazzi_termI[OF zero_less_one])
   also from assms have "real x\<^sub>0 \<le> b * real x\<^sub>1 + c" by simp
   also from assms x have "b * real x\<^sub>1 \<le> b * real x" by (intro mult_left_mono) simp_all
   hence "b * real x\<^sub>1 + c \<le> b * real x + c" by simp
-  also have "b * real x + c \<le> real \<lceil>b * real x + c\<rceil>" by simp
-  finally have bx_nonneg: "real \<lceil>b * real x + c\<rceil> \<ge> 0" .
+  also have "b * real x + c \<le> real_of_int \<lceil>b * real x + c\<rceil>" by linarith
+  finally have bx_nonneg: "real_of_int \<lceil>b * real x + c\<rceil> \<ge> 0" .
   
   have "c + 1 \<le> (1 - b) * x\<^sub>1" by fact
   also have "(1 - b) * x\<^sub>1 \<le> (1 - b) * x" using assms x by (intro mult_left_mono) simp_all
@@ -959,17 +959,17 @@ proof (rule akra_bazzi_termI[OF zero_less_one])
   with bx_nonneg show "nat \<lceil>b * real x + c\<rceil> < x" by (subst nat_less_iff) (simp_all add: ceiling_less_iff)
   
   have "real x\<^sub>0 \<le> b * real x\<^sub>1 + c" by fact
-  also have "... \<le> \<lceil>...\<rceil>" by simp
+  also have "... \<le> real_of_int \<lceil>...\<rceil>" by linarith
   also have "x\<^sub>1 \<le> x" by fact
   finally show "x\<^sub>0 \<le> nat \<lceil>b * real x + c\<rceil>" using assms by (force simp: ceiling_mono)
   
   show "b * real x + (\<lceil>b * real x + c\<rceil> - b * real x) = real (nat \<lceil>b * real x + c\<rceil>)"
     using assms bx_nonneg by simp
 next
-  have "(\<lambda>x::nat. real \<lceil>b * real x + c\<rceil> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
+  have "(\<lambda>x::nat. real_of_int \<lceil>b * real x + c\<rceil> - b * real x) \<in> O(\<lambda>_. \<bar>c\<bar> + 1)"
     by (intro landau_o.big_mono always_eventually allI) linarith
   also have "(\<lambda>_::nat. \<bar>c\<bar> + 1) \<in> O(\<lambda>x. real x / ln (real x) powr (1 + 1))" by force
-  finally show "(\<lambda>x::nat. real \<lceil>b * real x + c\<rceil> - b * real x) \<in> 
+  finally show "(\<lambda>x::nat. real_of_int \<lceil>b * real x + c\<rceil> - b * real x) \<in> 
                     O(\<lambda>x. real x / ln (real x) powr (1+1))" .
 qed
 
@@ -983,7 +983,7 @@ proof-
   proof
     fix x :: nat 
     from assms have "0 \<le> b * real x" by simp
-    also have "b * real x \<le> \<lceil>b * real x\<rceil>" by simp
+    also have "b * real x \<le> real_of_int \<lceil>b * real x\<rceil>" by linarith
     finally have bx_nonneg: "\<lceil>b * real x\<rceil> \<ge> 0" by simp
 
     have "\<lceil>b * real x + real c\<rceil> = \<lceil>b * real x\<rceil> + int c" by linarith
@@ -1009,7 +1009,7 @@ proof-
   proof
     fix x :: nat 
     from assms have "0 \<le> b * real x" by simp
-    also have "b * real x \<le> \<lceil>b * real x\<rceil>" by simp
+    also have "b * real x \<le> real_of_int \<lceil>b * real x\<rceil>" by linarith
     finally have bx_nonneg: "\<lceil>b * real x\<rceil> \<ge> 0" by simp
 
     have "\<lceil>b * real x - real c\<rceil> = \<lceil>b * real x\<rceil> - int c" by linarith
