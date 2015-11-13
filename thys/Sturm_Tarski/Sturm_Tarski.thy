@@ -1095,7 +1095,7 @@ next
 next
   case (3 x1 x2 xs)
   moreover have "x1*x2<0 \<longleftrightarrow> sgn x1 * sgn x2 < 0"
-    by (unfold mult_less_0_iff sgn_less_0_iff zero_less_sgn_iff,simp)
+    by (unfold mult_less_0_iff sgn_less sgn_greater,simp)
   moreover have "x2=0 \<longleftrightarrow> sgn x2 =0" by (rule sgn_zero_iff[symmetric])
   ultimately show ?case by auto
 qed

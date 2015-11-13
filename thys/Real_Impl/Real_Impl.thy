@@ -300,7 +300,7 @@ proof (transfer, unfold Let_def, clarsimp)
     from b have b: "real_of_int b > 0" by auto
     from Cons sqrt_int[of "abs (a * b)"] have "s * s = abs (a * b)" by auto
     with sqrt_int_pos[OF Cons] have "sqrt (real_of_int (abs (a * b))) = of_int s"
-      by (metis abs_of_nonneg of_int_mult real_of_int_abs real_sqrt_abs2)
+      by (metis abs_of_nonneg of_int_mult of_int_abs real_sqrt_abs2)
     with abpos have "of_int s = sqrt (real_of_int (a * b))" by auto
     thus ?thesis unfolding ab split using Cons b
       by (auto simp: of_rat_divide field_simps real_sqrt_divide real_sqrt_mult)

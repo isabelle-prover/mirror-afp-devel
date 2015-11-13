@@ -454,13 +454,13 @@ proof -
   from relprime have absrelprime: "gcd ?a1 ?b1 = 1" by (auto simp only: zgcd_def)
   have "\<bar>a*b\<bar> = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: abs_mult)
   with abcn have "\<bar>c\<bar>^n = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: power_abs)
-  hence "int(?c1^n) = int(?a1*?b1)" by (simp only: int_nat_abs_eq_abs int_mult int_power)
+  hence "int(?c1^n) = int(?a1*?b1)" by (simp only: int_nat_abs_eq_abs int_mult of_nat_power)
   hence "?a1*?b1 = ?c1^n" by (simp only: int_int_eq)
   with absrelprime and n have "\<exists> k. ?a1 = k^n" by (simp only: nat_relprime_power_divisors)
   then obtain k::nat where alpha: "?a1 = k^n" by auto
   moreover have "int ?a1 = \<bar>a\<bar>" by (simp add: int_nat_eq)
   ultimately have "\<bar>a\<bar> = int(k^n)" by simp
-  hence "\<bar>a\<bar> = int(k)^n" by (simp only: int_power)
+  hence "\<bar>a\<bar> = int(k)^n" by (simp only: of_nat_power)
   thus ?thesis by auto
 qed
 

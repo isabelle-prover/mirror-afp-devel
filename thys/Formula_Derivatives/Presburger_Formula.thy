@@ -528,7 +528,7 @@ lemma Length_eq0_eval_tm_eq0[simp]: "Length \<AA> = 0 \<Longrightarrow> eval_tm 
   by transfer (auto simp: len_eq0_iff scalar_product_eq0)
 
 lemma less_pow2: "x < 2 ^ a \<Longrightarrow> int x < 2 ^ a"
-  by (metis of_nat_less_iff of_nat_numeral zpower_int)
+  by (metis of_nat_less_iff of_nat_numeral of_nat_power [symmetric])
 
 lemma scalar_product_upper_bound: "\<forall>x\<in>set b. len x \<le> a \<Longrightarrow>
   scalar_product b is \<le> (2 ^ a - 1) * listsum [i. i \<leftarrow> is, i > 0]"

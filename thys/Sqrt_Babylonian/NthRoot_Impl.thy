@@ -131,7 +131,7 @@ next
           have "0 < real_of_int (int b ^ ss)" "0 < real_of_int x" using b 1(4)  by auto
           note log_mono = log_less_cancel_iff[OF b1(2) this]thm log_mono
           from * have up: "int b ^ ss < x" unfolding ss_def by auto
-          hence "real_of_int (int b ^ ss) < real_of_int x" by blast
+          hence "real_of_int (int b ^ ss) < real_of_int x" using of_int_less_iff by blast
           from this[folded log_mono] have "log b (of_int (int b ^ ss)) < log b x" by simp
           also have "of_int (int b ^ ss) = real b ^ ss" by simp
           also have "log b (real b ^ ss) = ss" using b by simp
@@ -395,7 +395,7 @@ proof (induct y n rule: root_newton_int_main.induct)
   from 1(4) have n0: "n \<ge> 0" .
   def y' \<equiv> "(n div (y ^ pm) + y * int pm) div (int p)"
   from y0 n0 have y'0: "y' \<ge> 0" unfolding y'_def
-    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases zero_zle_int zmult_int zpower_int)
+    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases zero_zle_int zmult_int of_nat_power [symmetric])
   let ?rt = "root_newton_int_main"
   from 1(5) have rt: "?rt y n = (x,b)" by auto
   from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" "(y < 0 \<or> n < 0) = False" by auto
@@ -513,7 +513,7 @@ proof (induct y n rule: root_newton_int_main.induct)
         from order.strict_trans2[OF ineq1 ineq2]
         have "?n < of_int ((x + 1) ^ p)" unfolding x
           by (metis of_int_1 of_int_add of_int_power)
-        thus "n < (x + 1) ^ p" by blast
+        thus "n < (x + 1) ^ p" using of_int_less_iff by blast
       qed
     qed
   next

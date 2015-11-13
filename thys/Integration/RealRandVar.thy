@@ -608,7 +608,7 @@ lemma assumes f: "f \<in> rv M"
         with `\<not> a < 0` have "0<a" by (simp add: order_less_le)
         then have "\<exists> sqra. 0<sqra \<and> sqra\<^sup>2 = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
         then have "\<And>w. \<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
-          by (auto simp only: pow2_le_abs abs_le_interval_iff)
+          by (force simp only: pow2_le_abs abs_le_iff)
         then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
         moreover have "\<dots> \<in> ?M" 
         proof - 

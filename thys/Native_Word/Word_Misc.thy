@@ -239,7 +239,8 @@ proof -
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ len_of TYPE('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    by(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def)(simp only: int_numeral[symmetric] zdiv_int[symmetric] word_of_nat[symmetric] zdiff_int zmult_int unat_of_nat mod_less)
+    apply(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
+by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int zmult_int)
 
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
   
@@ -254,7 +255,7 @@ proof -
   have r: "x - ?q * y = of_nat (n - ?q' * m)" 
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)" 
     using n m unfolding q
-    by(simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat zmult_int word_of_nat[symmetric] zdiff_int word_le_nat_alt)
+    by(simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] zdiff_int word_le_nat_alt del: of_nat_mult)
   thus ?thesis using n m div_half_nat[OF `m \<noteq> 0`, of n] unfolding q
     by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: split_if split: split_if_asm)
 qed
@@ -310,7 +311,7 @@ next
   note y = this
   obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
   hence "int n div 2 + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)"
-    by(cases "len_of TYPE('a)")(simp_all, simp only: int_numeral[symmetric] zdiv_int[symmetric] zpower_int)
+    by(cases "len_of TYPE('a)")(simp_all, simp only: int_numeral[symmetric] zdiv_int[symmetric] of_nat_power [symmetric])
   with y n have "sint (x >> 1) = uint (x >> 1)"
     by(simp add: sint_uint sbintrunc_mod2p shiftr_div_2n)(simp add: int_mod_eq' uint_nat unat_of_nat)
   moreover have "uint y + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)" using y

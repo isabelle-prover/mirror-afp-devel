@@ -389,8 +389,7 @@ proof -
       using Ak AkC A B C by (simp add: mat_real_conv)
     finally have "real_of ?sum \<le> ?ck" .
     from real_le[OF this] have le: "?sum \<le> of_int \<lceil>?ck\<rceil>" by auto
-    have "?ck \<le> ?cck"
-      by (rule mult_right_mono, auto, linarith)
+    have "?ck \<le> ?cck" by (simp add: times_left_mono)
     hence "\<lceil>?ck\<rceil> \<le> \<lceil>?cck\<rceil>" by linarith
     hence "of_int \<lceil>?ck\<rceil> \<le> ((of_int \<lceil>?cck\<rceil>) :: 'a)" 
       unfolding of_int_le_iff .

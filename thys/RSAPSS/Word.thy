@@ -29,7 +29,7 @@ declare zero_le_power [intro]
   and zero_less_power [intro]
 
 lemma int_nat_two_exp: "2 ^ k = int (2 ^ k)"
-  by (simp add: zpower_int [symmetric])
+  by simp
 
 
 subsection {* Bits *}
@@ -902,7 +902,7 @@ proof (rule bit_list_cases [of w],simp_all)
   fix bs
   from bv_to_nat_upper_range
   show "int (bv_to_nat bs) < 2 ^ length bs"
-    by (simp add: int_nat_two_exp)
+    using less_imp_of_nat_less by fastforce
 next
   fix bs
   have "-1 - int (bv_to_nat (bv_not bs)) \<le> 0" by simp
@@ -920,7 +920,8 @@ next
   fix bs
   from bv_to_nat_upper_range [of "bv_not bs"]
   show "- (2 ^ length bs) \<le> -1 - int (bv_to_nat (bv_not bs))"
-    by (simp add: int_nat_two_exp)
+    apply (simp add: algebra_simps) 
+    by (metis of_nat_power add.commute not_less of_nat_numeral zle_add1_eq_le of_nat_le_iff)
 qed
 
 lemma int_bv_int [simp]: "int_to_bv (bv_to_int w) = norm_signed w"
@@ -941,15 +942,11 @@ next
   assume [simp]: "w = \<one>#xs"
   show ?thesis
     apply (simp del: int_to_bv_lt0)
-    apply (rule bit_list_induct [of _ xs])
-    apply simp
-    apply (subst int_to_bv_lt0)
-    apply (subgoal_tac "- int (bv_to_nat (bv_not (\<zero> # bs))) + -1 < 0 + 0")
-    apply simp
-    apply (rule add_le_less_mono)
-    apply simp
-    apply simp
-    apply (simp del: bv_to_nat1 bv_to_nat_helper)
+    apply (rule bit_list_induct [of _ xs], simp)
+     apply (subst int_to_bv_lt0)
+      apply linarith
+     apply simp
+     apply (metis add.commute bitnot_zero bv_not_Cons bv_not_bv_not int_nat_two_exp length_bv_not nat_helper2 nat_int norm_signed10 of_nat_add)
     apply simp
     done
 qed
@@ -1083,7 +1080,7 @@ proof -
       qed
       with bv_to_nat_lower_limit [of w']
       show "2 ^ (length (norm_unsigned w') - Suc 0) \<le> int (bv_to_nat w')"
-        by (simp add: int_nat_two_exp)
+        using One_nat_def int_nat_two_exp by presburger
     qed
   next
     fix w'
@@ -1161,12 +1158,7 @@ proof -
         fix w''
         assume w'eq: "w' = \<zero> # w''"
         show ?thesis
-          apply (simp add: weq w'eq)
-          apply (subgoal_tac "- int (bv_to_nat (bv_not w'')) + -1 < 0 + 0")
-          apply (simp add: int_nat_two_exp)
-          apply (rule add_le_less_mono)
-          apply simp_all
-          done
+          by (simp add: weq w'eq)
       next
         fix w''
         assume w'eq: "w' = \<one> # w''"
@@ -1454,8 +1446,7 @@ proof -
       apply (rule length_int_to_bv_upper_limit_lem1)
       apply (rule p)
       apply (simp add: bv_to_int_utos)
-      using bv_to_nat_upper_range [of w]
-      apply (simp add: int_nat_two_exp)
+      using bv_to_nat_upper_range [of w] int_nat_two_exp apply presburger
       done
   qed
 qed
@@ -1837,9 +1828,8 @@ proof -
         apply (rule p)
       proof simp
         have "?Q < 2 ^ length w1 * 2 ^ (length w2 - 1)"
-          apply (rule mult_strict_mono)
-          apply (simp add: bv_to_int_utos int_nat_two_exp)
-          apply (rule bv_to_nat_upper_range)
+          apply (rule mult_strict_mono) 
+          apply (simp add: bv_to_int_utos bv_to_nat_upper_range int_nat_two_exp del: of_nat_power)
           apply (rule bv_to_int_upper_range)
           apply (rule zero_less_power,simp)
           using biw2
@@ -1901,7 +1891,7 @@ proof -
             apply simp
             apply (simp add: bv_to_int_utos)
             using bv_to_nat_upper_range [of w1]
-            apply (simp add: int_nat_two_exp)
+            apply (simp add: int_nat_two_exp del: of_nat_power)
             apply (rule zero_le_power,simp)
             using bi1
             apply simp

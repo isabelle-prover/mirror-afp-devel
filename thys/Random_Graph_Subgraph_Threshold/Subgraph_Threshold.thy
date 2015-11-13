@@ -606,10 +606,9 @@ next
           by (simp add: power_add)
         also have "\<dots> = ?v ^ k * n ^ (2 * ?v - k)" (is "_ = ?rhs")
           using k by (simp add: mult_2)
-        finally have "?lhs \<le> ?rhs"
-          .
+        finally have "?lhs \<le> ?rhs" .
         hence "real ?lhs \<le> real ?rhs"
-          by blast
+          using of_nat_le_iff by blast
         moreover have "0 \<le> ?p"
           by simp
         ultimately have "?lhs * ?p \<le> ?rhs * ?p"
