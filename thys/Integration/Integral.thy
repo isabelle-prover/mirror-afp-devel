@@ -653,7 +653,7 @@ lemma sfis_char:
   from ms mA have Rms: "\<forall>i\<in>K. R i \<in> measurable_sets M" 
     by (simp add: K_def R_def measure_space_def sigma_algebra_def)
   have nn: "nonnegative x" by (simp add: nonnegative_def x_def)
-  have un: "(\<Union>i\<in>K. R i) = UNIV" by (simp add: R_def K_def) fast
+  have un: "(\<Union>i\<in>K. R i) = UNIV" by (simp add: R_def K_def)
   have fin: "finite K" by (simp add: K_def)
   have dis: "\<forall>j1\<in>K. \<forall>j2\<in>K. j1 \<noteq> j2 \<longrightarrow> (R j1) \<inter> (R j2) = {}" by (auto simp add: R_def K_def)
   { fix t
