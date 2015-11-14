@@ -6,7 +6,6 @@ section {* Framework Instantiations using Marked Regular Expressions *}
 theory Position_Autos
 imports
   Automaton
-  "~~/src/Tools/Permanent_Interpretation"
 begin
 (*>*)
 
@@ -147,7 +146,7 @@ lemma final_read_Lm: "final(read a r) \<longleftrightarrow> [a] \<in> Lm r"
 by (induction r) (auto simp: nullable_iff concI_if_Nil2 singleton_in_conc split: if_splits)
 
 permanent_interpretation before: rexp_DFA init_b delta_b final_b L_b
-  defining before_closure = "rexp_DA.closure delta_b (final_b ::  (bool \<times> 'a) rexp \<times> bool \<Rightarrow> bool)"
+  defines before_closure = "rexp_DA.closure delta_b (final_b ::  (bool \<times> 'a) rexp \<times> bool \<Rightarrow> bool)"
     and check_eqv_b = "rexp_DA.check_eqv init_b delta_b (final_b ::  (bool \<times> 'a) rexp \<times> bool \<Rightarrow> bool)"
     and reachable_b = "rexp_DA.reachable (init_b :: 'a rexp \<Rightarrow> (bool \<times> 'a) rexp \<times> bool) delta_b"
     and automaton_b = "rexp_DA.automaton (init_b :: 'a rexp \<Rightarrow> (bool \<times> 'a) rexp \<times> bool) delta_b"
@@ -202,7 +201,7 @@ lemma tl_eq_Cons_iff[simp]: "tl ys = x # xs \<longleftrightarrow> (\<exists>y. y
 by (cases ys) auto
 
 permanent_interpretation after: rexp_DFA init_a delta_a final_a L_a
-  defining after_closure = "rexp_DA.closure delta_a (final_a ::  bool \<times> (bool \<times> 'a) rexp \<Rightarrow> bool)"
+  defines after_closure = "rexp_DA.closure delta_a (final_a ::  bool \<times> (bool \<times> 'a) rexp \<Rightarrow> bool)"
     and check_eqv_a = "rexp_DA.check_eqv init_a delta_a (final_a ::  bool \<times> (bool \<times> 'a) rexp \<Rightarrow> bool)"
     and reachable_a = "rexp_DA.reachable (init_a :: 'a rexp \<Rightarrow> bool \<times> (bool \<times> 'a) rexp) delta_a"
     and automaton_a = "rexp_DA.automaton (init_a :: 'a rexp \<Rightarrow> bool \<times> (bool \<times> 'a) rexp) delta_a"

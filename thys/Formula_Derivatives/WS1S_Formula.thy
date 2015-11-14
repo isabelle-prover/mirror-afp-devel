@@ -5,7 +5,6 @@ theory WS1S_Formula
 imports
   Abstract_Formula
   WS1S_Prelim
-  "~~/src/Tools/Permanent_Interpretation"
 begin
 (*>*)
 
@@ -410,7 +409,7 @@ declare [[goals_limit = 50]]
 permanent_interpretation WS1S: Formula SUC LESS assigns nvars Extend CONS SNOC Length
   extend size_atom zero \<sigma> eval downshift upshift finsert cut len restrict Restrict
   lformula0 FV0 find0 wf0 decr0 satisfies0 nullable0 lderiv0 rderiv0 undefined
-  defining norm = "Formula_Operations.norm find0 decr0"
+  defines norm = "Formula_Operations.norm find0 decr0"
   and nFOr = "Formula_Operations.nFOr :: formula \<Rightarrow> _"
   and nFAnd = "Formula_Operations.nFAnd :: formula \<Rightarrow> _"
   and nFNot = "Formula_Operations.nFNot find0 decr0 :: formula \<Rightarrow> _"

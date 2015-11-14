@@ -155,7 +155,7 @@ instance by intro_classes (transfer, auto simp: eq_mrexp2_eq)
 end
 
 permanent_interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
-  defining after2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
+  defines after2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
     and check_eqv_a2 = "rexp_DA.check_eqv init_okm delta_okm (nullable_okm :: 'a ok_mrexp2 \<Rightarrow> bool)"
     and reachable_a2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"
     and automaton_a2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp2) delta_okm"

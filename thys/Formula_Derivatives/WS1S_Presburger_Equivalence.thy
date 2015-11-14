@@ -42,7 +42,7 @@ permanent_interpretation WS1S_Presb: DAs
             Presburger_Formula.FV0 op \<Turnstile>0
             n \<phi>)"
   "letter_eq idx n"
-  defining check_eqv = "\<lambda>idx n. DAs.check_eqv
+  defines check_eqv = "\<lambda>idx n. DAs.check_eqv
     (\<sigma> idx) (\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)
     (\<lambda>a \<phi>. norm (deriv (lderiv0 :: _ \<Rightarrow> _ \<Rightarrow> formula) (a :: atom) \<phi>))
     (final idx) (\<lambda>\<phi> :: formula. ws1s_wf idx \<phi> \<and> ws1s_lformula \<phi>)

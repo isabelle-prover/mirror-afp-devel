@@ -4,7 +4,6 @@ section \<open>Concrete Atomic Presburger Formulas\<close>
 theory Presburger_Formula
 imports
   Abstract_Formula
-  "~~/src/Tools/Permanent_Interpretation"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Code_Target_Int"
   "../List-Index/List_Index"
@@ -611,7 +610,7 @@ permanent_interpretation Presb: Formula
   and FV0 = FV0 and find0 = find0 and wf0 = wf0 and decr0 = decr0 and satisfies0 = satisfies0
   and nullable0 = nullable0 and lderiv0 = lderiv0 and rderiv0 = rderiv0
   and TYPEVARS = undefined
-  defining norm = "Formula_Operations.norm find0 decr0"
+  defines norm = "Formula_Operations.norm find0 decr0"
   and nFOr = "Formula_Operations.nFOr :: formula \<Rightarrow> _"
   and nFAnd = "Formula_Operations.nFAnd :: formula \<Rightarrow> _"
   and nFNot = "Formula_Operations.nFNot find0 decr0 :: formula \<Rightarrow> _"

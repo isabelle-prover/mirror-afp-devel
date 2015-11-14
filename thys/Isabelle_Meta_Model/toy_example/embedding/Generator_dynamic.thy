@@ -504,7 +504,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     end)
 | Theory_interpretation (Interpretation (n, loc_n, loc_param, o_by)) => in_local
    (fn lthy => lthy
-    |> Expression.interpretation_cmd ( [ ( (To_string0 loc_n, Position.none)
+    |> Interpretation.interpretation_cmd ( [ ( (To_string0 loc_n, Position.none)
                                          , ( (To_string0 n, true)
                                            , if loc_param = [] then
                                                Expression.Named []

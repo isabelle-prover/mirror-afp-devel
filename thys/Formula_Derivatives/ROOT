@@ -4,7 +4,6 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
   theories [document = false]
     While_Default
     FSet_More
-    "~~/src/Tools/Permanent_Interpretation"
     "~~/src/HOL/Library/Code_Target_Nat"
     "~~/src/HOL/Library/Code_Target_Int"
     "~~/src/HOL/Library/Code_Char"

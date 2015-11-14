@@ -202,7 +202,7 @@ instance by intro_classes (transfer, auto simp: eq_mrexp3_eq)
 end
 
 permanent_interpretation before2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
-  defining before2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
+  defines before2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
     and check_eqv_b2 = "rexp_DA.check_eqv init_okm delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
     and reachable_b2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"
     and automaton_b2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"

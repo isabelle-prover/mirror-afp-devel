@@ -8,7 +8,6 @@ imports
   Automaton
   "../Regular-Sets/NDerivative"
   Deriv_PDeriv
-  "~~/src/Tools/Permanent_Interpretation"
 begin
 (*>*)
 
@@ -18,7 +17,7 @@ lemma ACI_norm_derivs_alt: "\<guillemotleft>derivs w r\<guillemotright> = fold (
   by (induct w arbitrary: r) (auto simp: ACI_norm_deriv)
 
 permanent_interpretation brzozowski: rexp_DFA "\<lambda>r. \<guillemotleft>r\<guillemotright>" "\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>" nullable lang
-  defining brzozowski_closure = "rexp_DA.closure (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
+  defines brzozowski_closure = "rexp_DA.closure (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
     and check_eqv_brz = "rexp_DA.check_eqv (\<lambda>r. \<guillemotleft>r\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
     and reachable_brz = "rexp_DA.reachable (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
     and automaton_brz = "rexp_DA.automaton (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
@@ -77,7 +76,7 @@ lemma [transfer_rule]: "rel_fun (rel_set (pcr_ACI_rexp op=)) op = (finite o imag
   done
 
 permanent_interpretation brzozowski_quotient: rexp_DFA ACI_class ACI_deriv ACI_nullable ACI_lang
-  defining brzozowski_quotient_closure = "rexp_DA.closure ACI_deriv (ACI_nullable :: 'a ACI_rexp \<Rightarrow> bool)"
+  defines brzozowski_quotient_closure = "rexp_DA.closure ACI_deriv (ACI_nullable :: 'a ACI_rexp \<Rightarrow> bool)"
     and check_eqv_brzq = "rexp_DA.check_eqv ACI_class ACI_deriv (ACI_nullable :: 'a ACI_rexp \<Rightarrow> bool)"
     and reachable_brzq = "rexp_DA.reachable (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
     and automaton_brzq = "rexp_DA.automaton (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
@@ -97,7 +96,7 @@ qed
 subsection {* Brzozowski Derivatives Modulo ACI++ (Only Soundness) *}
 
 permanent_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable lang
-  defining nderiv_closure = "rexp_DA.closure nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
+  defines nderiv_closure = "rexp_DA.closure nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
     and check_eqv_n = "rexp_DA.check_eqv (\<lambda>x. norm x) nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
     and reachable_n = "rexp_DA.reachable (\<lambda>r :: 'a rexp. norm r) nderiv"
     and automaton_n = "rexp_DA.automaton (\<lambda>r :: 'a rexp. norm r) nderiv"
@@ -114,7 +113,7 @@ qed
 subsection {* Partial Derivatives *}
 
 permanent_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. EX p:P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
-  defining pderiv_closure = "rexp_DA.closure pderiv_set (\<lambda>P :: 'a rexp set. EX p:P. nullable p)"
+  defines pderiv_closure = "rexp_DA.closure pderiv_set (\<lambda>P :: 'a rexp set. EX p:P. nullable p)"
     and check_eqv_p = "rexp_DA.check_eqv (\<lambda>r :: 'a rexp. {r}) pderiv_set (\<lambda>P. EX p:P. nullable p)"
     and reachable_p = "rexp_DA.reachable (\<lambda>r :: 'a rexp. {r}) pderiv_set"
     and automaton_p = "rexp_DA.automaton (\<lambda>r :: 'a rexp. {r}) pderiv_set"
@@ -135,7 +134,7 @@ next
 qed
 
 permanent_interpretation pnderiv: rexp_DFA "\<lambda>r. r" pnderiv nullable lang
-  defining pnderiv_closure = "rexp_DA.closure pnderiv (nullable :: 'a rexp \<Rightarrow> bool)"
+  defines pnderiv_closure = "rexp_DA.closure pnderiv (nullable :: 'a rexp \<Rightarrow> bool)"
     and check_eqv_pn = "rexp_DA.check_eqv (\<lambda>r :: 'a rexp. r) pnderiv nullable"
     and reachable_pn = "rexp_DA.reachable (\<lambda>r :: 'a rexp. r) pnderiv"
     and automaton_pn = "rexp_DA.automaton (\<lambda>r :: 'a rexp. r) pnderiv"

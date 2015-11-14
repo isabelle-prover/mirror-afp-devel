@@ -10,13 +10,12 @@ imports
   Init_Normalization
   M2L_Normalization
   Pi_Regular_Exp_Dual
-  "~~/src/Tools/Permanent_Interpretation"
 begin
 (*>*)
 
 permanent_interpretation embed "set o \<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>"
   for \<Sigma> :: "'a :: linorder list"
-  defining
+  defines
       \<DD> = "embed.lderiv lookup (\<epsilon> \<Sigma>)"
   and Co\<DD> = "embed.lderiv_dual lookup (\<epsilon> \<Sigma>)"
   by unfold_locales (auto simp: \<sigma>_def \<pi>_def \<epsilon>_def set_n_lists)
@@ -29,7 +28,7 @@ proof (rule notI)
 qed
 
 permanent_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} list"
-  defining
+  defines
       pre_wf_formula = \<Phi>.pre_wf_formula
   and wf_formula = \<Phi>.wf_formula
   and rexp_of = \<Phi>.rexp_of
@@ -54,7 +53,7 @@ setup {* Sign.map_naming (Name_Space.mandatory_path "slow") *}
 permanent_interpretation D: rexp_DFA "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. \<guillemotleft>pnorm (inorm x)\<guillemotright>"
   "\<lambda>a r. \<guillemotleft>\<DD> \<Sigma> a r\<guillemotright>" final "alphabet.wf (wf_atom \<Sigma>) n" pnorm "lang \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat
-  defining
+  defines
       test = "rexp_DA.test (final :: 'a atom rexp \<Rightarrow> bool)"
   and step = "rexp_DA.step (\<sigma> \<Sigma>) (\<lambda>a r. \<guillemotleft>\<DD> \<Sigma> a r\<guillemotright>) pnorm n"
   and closure = "rexp_DA.closure (\<sigma> \<Sigma>) (\<lambda>a r. \<guillemotleft>\<DD> \<Sigma> a r\<guillemotright>) final pnorm n"
@@ -99,7 +98,7 @@ setup {* Sign.map_naming (Name_Space.mandatory_path "fast") *}
 permanent_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. pnorm (inorm x)"
   "\<lambda>a r. pnorm (\<DD> \<Sigma> a r)" final "alphabet.wf (wf_atom \<Sigma>) n" "lang \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat
-  defining
+  defines
       test = "rexp_DA.test (final :: 'a atom rexp \<Rightarrow> bool)"
   and step = "rexp_DA.step (\<sigma> \<Sigma>) (\<lambda>a r. pnorm (\<DD> \<Sigma> a r)) id n"
   and closure = "rexp_DA.closure (\<sigma> \<Sigma>) (\<lambda>a r. pnorm (\<DD> \<Sigma> a r)) final id n"
@@ -137,7 +136,7 @@ permanent_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma
   "\<lambda>x. pnorm_dual (rexp_dual_of (inorm x))" "\<lambda>a r. pnorm_dual (Co\<DD> \<Sigma> a r)" final_dual
   "alphabet.wf_dual (wf_atom \<Sigma>) n" "lang_dual \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat
-  defining
+  defines
       test = "rexp_DA.test (final_dual :: 'a atom rexp_dual \<Rightarrow> bool)"
   and step = "rexp_DA.step (\<sigma> \<Sigma>) (\<lambda>a r. pnorm_dual (Co\<DD> \<Sigma> a r)) id n"
   and closure = "rexp_DA.closure (\<sigma> \<Sigma>) (\<lambda>a r. pnorm_dual (Co\<DD> \<Sigma> a r)) final_dual id n"

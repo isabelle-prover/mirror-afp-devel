@@ -6,7 +6,6 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "../Regular-Sets/Derivatives"
     "../Regular-Sets/Regular_Exp"
     "../Regular-Sets/NDerivative"
-    "~~/src/Tools/Permanent_Interpretation"
   theories
     Regex_Equivalence
   document_files
