@@ -65,8 +65,14 @@ by(simp add: jmm_typeof_addr'_conv_jmm_typeof_addr)
 definition jmm_heap_read :: "JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 where "jmm_heap_read h a ad v = True"
 
+context
+  notes [[inductive_defs]]
+begin
+
 inductive jmm_heap_write :: "JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> JMM_heap \<Rightarrow> bool"
 where "jmm_heap_write h a ad v h"
+
+end
 
 definition jmm_hconf :: "JMM_heap \<Rightarrow> bool"
 where "jmm_hconf h \<longleftrightarrow> True"

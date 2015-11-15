@@ -340,8 +340,14 @@ lemma countable_acc: "countable X \<Longrightarrow> countable (acc `` X)"
   apply assumption
   done
 
+context
+  notes [[inductive_defs]]
+begin
+
 coinductive enabled where
   "enabled (shd \<omega>) (stl \<omega>) \<Longrightarrow> shd \<omega> \<in> K s \<Longrightarrow> enabled s \<omega>"
+
+end
 
 lemma alw_enabled: "enabled (shd \<omega>) (stl \<omega>) \<Longrightarrow> alw (\<lambda>\<omega>. enabled (shd \<omega>) (stl \<omega>)) \<omega>"
   by (coinduction arbitrary: \<omega> rule: alw_coinduct) (auto elim: enabled.cases)
