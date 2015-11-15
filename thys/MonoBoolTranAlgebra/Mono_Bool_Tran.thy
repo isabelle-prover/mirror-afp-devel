@@ -459,6 +459,7 @@ lemma assert_cont:
   apply (subst inf_sup_distrib)
   apply simp
   apply (rule_tac y = "inf (- xa) xa" in order_trans)
+  supply [[simproc del: boolean_algebra_cancel_inf]]
   apply (simp del: compl_inf_bot)
   apply (rule_tac y = "x (- xa)" in order_trans)
   apply simp
