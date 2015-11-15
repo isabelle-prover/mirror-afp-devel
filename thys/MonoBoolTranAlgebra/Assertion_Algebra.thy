@@ -191,7 +191,7 @@ next
   apply (simp add: Inf_Assertion_def uminus_Assertion_def)
   apply (simp add: neg_assert_def assert_Sup dual_Sup Inf_comp inf_commute inf_Inf comp_def INF_def SUP_def
     del: Inf_image_eq Sup_image_eq)
-  apply (rule_tac f = Inf in fun_eq)
+  apply (rule_tac f = Inf in arg_cong)
   apply safe
   apply simp
   apply (subst inf_commute)
@@ -220,11 +220,11 @@ lemma assert_Inf_ne: "A \<noteq> {} \<Longrightarrow> {\<cdot>Inf A} = Inf (asse
   
 lemma assert_Sup_range: "{\<cdot>Sup (range p)} = Sup (range (assert o p))"
   apply (subst assert_Sup)
-  by (rule_tac f = "Sup" in fun_eq, auto)
+  by (rule_tac f = "Sup" in arg_cong, auto)
 
 lemma assert_Sup_less: "{\<cdot> Sup_less p w } = Sup_less (assert o p) w"
   apply (simp add: Sup_less_def)
   apply (subst assert_Sup)
-  by (rule_tac f = "Sup" in fun_eq, auto)
+  by (rule_tac f = "Sup" in arg_cong, auto)
 
 end
