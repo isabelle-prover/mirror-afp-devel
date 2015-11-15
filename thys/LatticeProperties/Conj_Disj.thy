@@ -23,6 +23,11 @@ begin
 definition
   "conjunctive = {x . (\<forall> y z . times_abc x (inf_b y z) = inf_c (times_abc x y) (times_abc x z))}"
 
+lemma conjunctiveI:
+  assumes "(\<And>b c. times_abc a (inf_b b c) = inf_c (times_abc a b) (times_abc a c))"
+  shows "a \<in> conjunctive"
+  using assms by (simp add: conjunctive_def)
+
 lemma conjunctiveD: "x \<in> conjunctive \<Longrightarrow> times_abc x (inf_b y z) = inf_c (times_abc x y) (times_abc x z)"
   by (simp add: conjunctive_def)
 
@@ -53,6 +58,11 @@ begin
 definition
   "disjunctive = {x . (\<forall> y z . times_abc x (sup_b y z) = sup_c (times_abc x y) (times_abc x z))}"
 
+lemma disjunctiveI:
+  assumes "(\<And>b c. times_abc a (sup_b b c) = sup_c (times_abc a b) (times_abc a c))"
+  shows "a \<in> disjunctive"
+  using assms by (simp add: disjunctive_def)
+
 lemma disjunctiveD: "x \<in> disjunctive \<Longrightarrow> times_abc x (sup_b y z) = sup_c (times_abc x y) (times_abc x z)"
   by (simp add: disjunctive_def)
 
@@ -82,6 +92,17 @@ begin
 
 definition
   "Conjunctive = {x . (\<forall> X . times_abc x (Inf_b X) = Inf_c ((times_abc x) ` X) )}"
+
+lemma ConjunctiveI:
+  assumes "\<And>A. times_abc a (Inf_b A) = Inf_c ((times_abc a) ` A)"
+  shows "a \<in> Conjunctive"
+  using assms by (simp add: Conjunctive_def)
+
+lemma ConjunctiveD:
+  assumes "a \<in> Conjunctive"
+  shows "times_abc a (Inf_b A) = Inf_c ((times_abc a) ` A)"
+  using assms by (simp add: Conjunctive_def)
+
 end
 
 interpretation Apply: Conjunctive Inf Inf "\<lambda> f . f"
@@ -91,30 +112,39 @@ interpretation Comp: Conjunctive "Inf::(('a::complete_lattice \<Rightarrow> 'a) 
   "Inf::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
   done
 
-lemma fun_eq: "x = y \<Longrightarrow> f x = f y"
-  by simp
-
 lemma "Apply.Conjunctive = Comp.Conjunctive"
-  apply (simp add: Apply.Conjunctive_def Comp.Conjunctive_def)
-  apply safe
-  apply (simp add: fun_eq_iff  Inf_fun_def comp_def image_def)
-  apply (simp only: INF_def)
-  apply safe
-  apply (rule_tac f = Inf in fun_eq)
-  apply auto
-  apply (drule_tac x = "{x . \<exists> y \<in> X . x = (\<lambda> u . y)}" in spec)
-  apply (simp add: fun_eq_iff  Inf_fun_def comp_def image_def)
-  apply (drule_tac x = "bot" in spec)
-  apply (subgoal_tac "{y::'a. \<exists>f . (\<exists>y \<in> X. \<forall>x::'a . f x = y) \<and> y = f bot} = X \<and> 
-      {y::'a. \<exists>f. (\<exists>xa. (\<exists>y \<in> X. \<forall>x::'a. xa x = y) \<and> 
-      (\<forall>xb::'a. f xb = x (xa xb))) \<and> y = f bot} = {y::'a. \<exists>xa::'a\<in>X. y = x xa}")
-  apply (simp add: INF_def image_def, safe)
-  apply simp_all
-  apply auto
-  apply (metis (full_types) Collect_const UNIV_I mem_Collect_eq)
-  apply (rule_tac x = "\<lambda> u . x xaa" in exI)
-  by auto
-
+proof
+  show "Apply.Conjunctive \<subseteq> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+  proof
+    fix f
+    assume "f \<in> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+    then have *: "f (Inf A) = (INF a:A. f a)" for A
+      by (auto dest!: Apply.ConjunctiveD)
+    show "f \<in> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+    proof (rule Comp.ConjunctiveI)
+      fix G :: "('a \<Rightarrow> 'a) set"
+      from * have "f (Inf ((\<lambda>f. f a) ` G)) = (INF b:(\<lambda>f. f a) ` G. f b)"
+        for a :: 'a .
+      then show "f \<circ> Inf G = Inf (comp f ` G)"
+        by (simp add: fun_eq_iff)
+    qed
+  qed
+  show "Comp.Conjunctive \<subseteq> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+  proof
+    fix f
+    assume "f \<in> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+    then have *: "f \<circ> Inf G = (INF g:G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
+      by (auto dest!: Comp.ConjunctiveD)
+    show "f \<in> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
+    proof (rule Apply.ConjunctiveI)
+      fix A :: "'a set"
+      from * have "f \<circ> Inf ((\<lambda>a (b::'a). a) ` A) = (INF g:(\<lambda>a b. a) ` A. f \<circ> g)" .
+      then show "f (Inf A) = Inf (f ` A)"
+        by (simp add: fun_eq_iff)
+    qed
+  qed
+qed  
+        
 locale Disjunctive =
   fixes Sup_b :: "'b set \<Rightarrow> 'b"
   and Sup_c :: "'c set \<Rightarrow> 'c"
@@ -123,6 +153,11 @@ begin
 
 definition
   "Disjunctive = {x . (\<forall> X . times_abc x (Sup_b X) = Sup_c ((times_abc x) ` X) )}"
+
+lemma DisjunctiveI:
+  assumes "\<And>A. times_abc a (Sup_b A) = Sup_c ((times_abc a) ` A)"
+  shows "a \<in> Disjunctive"
+  using assms by (simp add: Disjunctive_def)
 
 lemma DisjunctiveD: "x \<in> Disjunctive \<Longrightarrow> times_abc x (Sup_b X) = Sup_c ((times_abc x) ` X)"
   by (simp add: Disjunctive_def)
@@ -136,24 +171,38 @@ interpretation Comp: Disjunctive "Sup::(('a::complete_lattice \<Rightarrow> 'a) 
   "Sup::(('a::complete_lattice \<Rightarrow> 'a) set) \<Rightarrow> ('a \<Rightarrow> 'a)" "(op o)"
   done
 
-lemma apply_comp_Disjunctive: "Apply.Disjunctive = Comp.Disjunctive"
-  apply (simp add: Apply.Disjunctive_def Comp.Disjunctive_def)
-  apply safe
-  apply (simp add: fun_eq_iff  Sup_fun_def comp_def image_def)
-  apply (simp only: SUP_def)
-  apply safe
-  apply (rule_tac f = Sup in fun_eq)
-  apply auto
-  apply (drule_tac x = "{x . \<exists> y \<in> X . x = (\<lambda> u . y)}" in spec)
-  apply (simp add: fun_eq_iff  Sup_fun_def comp_def image_def)
-  apply (drule_tac x = "bot" in spec)
-  apply (subgoal_tac "{y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>y\<in>X. \<forall>x. f x = y) \<and> y = f bot} = X 
-    \<and> {y. \<exists>f::'a \<Rightarrow> 'a. (\<exists>xa. (\<exists>y\<in>X. \<forall>x. xa x = y) \<and> (\<forall>xb. f xb = x (xa xb))) \<and> y = f bot} = {y. \<exists>xa\<in>X. y = x xa}")
-  apply (simp add: SUP_def image_def, safe)
-  apply auto
-  apply (metis (full_types) Collect_const UNIV_I mem_Collect_eq)
-  apply (rule_tac x = "\<lambda> u . x xaa" in exI)
-  by auto
+lemma "Apply.Disjunctive = Comp.Disjunctive"
+proof
+  show "Apply.Disjunctive \<subseteq> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+  proof
+    fix f
+    assume "f \<in> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+    then have *: "f (Sup A) = (SUP a:A. f a)" for A
+      by (auto dest!: Apply.DisjunctiveD)
+    show "f \<in> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+    proof (rule Comp.DisjunctiveI)
+      fix G :: "('a \<Rightarrow> 'a) set"
+      from * have "f (Sup ((\<lambda>f. f a) ` G)) = (SUP b:(\<lambda>f. f a) ` G. f b)"
+        for a :: 'a .
+      then show "f \<circ> Sup G = Sup (comp f ` G)"
+        by (simp add: fun_eq_iff)
+    qed
+  qed
+  show "Comp.Disjunctive \<subseteq> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+  proof
+    fix f
+    assume "f \<in> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+    then have *: "f \<circ> Sup G = (SUP g:G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
+      by (auto dest!: Comp.DisjunctiveD)
+    show "f \<in> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
+    proof (rule Apply.DisjunctiveI)
+      fix A :: "'a set"
+      from * have "f \<circ> Sup ((\<lambda>a (b::'a). a) ` A) = (SUP g:(\<lambda>a b. a) ` A. f \<circ> g)" .
+      then show "f (Sup A) = Sup (f ` A)"
+        by (simp add: fun_eq_iff)
+    qed
+  qed
+qed  
 
 lemma [simp]: "(F::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in> Apply.Conjunctive \<Longrightarrow> F \<in> Apply.conjunctive"
   apply (simp add: Apply.Conjunctive_def Apply.conjunctive_def)
