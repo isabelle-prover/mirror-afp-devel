@@ -11,11 +11,17 @@ begin
 
 text{* Abstractions for thread ids *}
 
+context
+  notes [[inductive_defs]]
+begin
+
 inductive free_thread_id :: "('l,'t,'x) thread_info \<Rightarrow> 't \<Rightarrow> bool"
 for ts :: "('l,'t,'x) thread_info" and t :: 't
 where "ts t = None \<Longrightarrow> free_thread_id ts t"
 
 declare free_thread_id.cases [elim]
+
+end
 
 lemma free_thread_id_iff: "free_thread_id ts t = (ts t = None)"
 by(auto elim: free_thread_id.cases intro: free_thread_id.intros)

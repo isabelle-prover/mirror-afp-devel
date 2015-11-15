@@ -32,8 +32,14 @@ where "jmm_typeof_addr h = h"
 definition jmm_heap_read :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
 where "jmm_heap_read h a ad v = True"
 
+context
+  notes [[inductive_defs]]
+begin
+
 inductive jmm_heap_write :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool"
 where "jmm_heap_write h a ad v h"
+
+end
 
 definition jmm_hconf :: "'m prog \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool" ("_ \<turnstile>jmm _ \<surd>" [51,51] 50)
 where "P \<turnstile>jmm h \<surd> \<longleftrightarrow> ty_of_htype ` ran h \<subseteq> {T. is_type P T}"

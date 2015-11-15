@@ -127,12 +127,18 @@ datatype ty
   | Class cname   -- "class type"
   | Array ty      ("_\<lfloor>\<rceil>" 95) -- "array type"
 
+context
+  notes [[inductive_defs]]
+begin
+
 inductive is_refT :: "ty \<Rightarrow> bool" where
   "is_refT NT"
 | "is_refT (Class C)"
 | "is_refT (A\<lfloor>\<rceil>)"
 
 declare is_refT.intros[iff]
+
+end
 
 lemmas refTE [consumes 1, case_names NT Class Array] = is_refT.cases
 

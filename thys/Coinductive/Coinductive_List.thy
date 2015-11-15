@@ -228,7 +228,7 @@ lemma lset_eq_lsetp [nitpick_unfold]:
 by(auto intro: lset_into_lsetp dest: lsetp_into_lset)
 
 hide_const (open) lsetp
-hide_fact (open) lsetp.intros lsetp_def lsetp.cases lsetp.induct lset_into_lsetp lset_eq_lsetp
+hide_fact (open) lsetp.intros lsetp.cases lsetp.induct lset_into_lsetp lset_eq_lsetp
 
 text {* code setup for @{term lset} *}
 

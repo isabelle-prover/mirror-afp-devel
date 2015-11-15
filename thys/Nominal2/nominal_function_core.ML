@@ -602,6 +602,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
   let 
     val ({intrs = intrs_gen, elims = [elim_gen], preds = [ Rdef ], induct, raw_induct, ...}, lthy) =
       lthy
+      |> Config.put Inductive.inductive_defs true
       |> Proof_Context.concealed
       |> Inductive.add_inductive_i
           {quiet_mode = true,
@@ -616,6 +617,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
           (map (fn t => (Attrib.empty_binding, t)) intrs) (* intro rules *)
           [] (* no special monos *)
       ||> Proof_Context.restore_naming lthy
+      ||> Config.put Inductive.inductive_defs (Config.get lthy Inductive.inductive_defs)
 
     val cert = Thm.cterm_of lthy
     fun requantify orig_intro thm =

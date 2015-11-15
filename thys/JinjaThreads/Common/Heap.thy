@@ -58,6 +58,10 @@ definition hext :: "'heap \<Rightarrow> 'heap \<Rightarrow> bool" ("_ \<unlhd> _
 where
   "h \<unlhd> h' \<equiv> typeof_addr h \<subseteq>\<^sub>m typeof_addr h'"
 
+context
+  notes [[inductive_defs]]
+begin
+
 inductive addr_loc_type :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool"
   ("_,_ \<turnstile> _@_ : _" [50, 50, 50, 50, 50] 51)
 for P :: "'m prog" and h :: 'heap and a :: 'addr
@@ -69,6 +73,8 @@ where
 | addr_loc_type_cell:
   "\<lbrakk> typeof_addr h a = \<lfloor>Array_type T n'\<rfloor>; n < n' \<rbrakk>
   \<Longrightarrow> P,h \<turnstile> a@ACell n : T"
+
+end
 
 definition typeof_addr_loc :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty"
 where "typeof_addr_loc P h a al = (THE T. P,h \<turnstile> a@al : T)"
