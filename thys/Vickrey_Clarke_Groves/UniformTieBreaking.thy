@@ -982,7 +982,8 @@ proof -
   then have 
   "aa \<noteq> a \<longrightarrow> setsum (tiebids a N G) aa < real (setsum (tiebids a N G) a)" 
         using 1 4 assms by auto
-  thus ?thesis using 2 4 5 by force
+  thus ?thesis using 2 4 5
+    unfolding of_nat_less_iff by force
 qed 
 
 (* If for an arbitrary allocation a we compute tiebids for it then the corresponding revenue is strictly maximal. *)
