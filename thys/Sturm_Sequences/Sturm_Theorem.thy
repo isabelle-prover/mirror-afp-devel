@@ -596,7 +596,7 @@ proof-
               (is "?roots=_") by auto
           hence card_roots: "card ?roots = (0::int)" by (subst no_roots, simp)
           show ?thesis
-          proof (simp only: card_roots eq_iff_diff_eq_0[symmetric] int_int_eq, 
+          proof (simp only: card_roots eq_iff_diff_eq_0[symmetric] of_nat_eq_iff, 
                  cases "poly p a = 0")
             case False
               with no_roots show "sign_changes ps a = sign_changes ps b"

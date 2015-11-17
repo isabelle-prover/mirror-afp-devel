@@ -529,7 +529,7 @@ next
         also have "\<dots> = p n powr (2 * ?e - ?cST)"
           using p_nz by (simp add: powr_realpow)
         also have "\<dots> = p n powr (real (2 * ?e) - real ?cST)"
-          using isomorphic_cards[OF S(4)] S(6) by (metis of_nat_diff card_mono finite_graph_def inf_le1 mult_le_mono mult_numeral_1 numeral_1_eq_1 one_le_numeral)
+          using isomorphic_cards[OF S(4)] S(6) by (metis of_nat_diff card_mono finite_graph_def inf_le1 mult_le_mono mult_numeral_1 numeral_One one_le_numeral)
 
         --{* Since the intersection graph is also an isomorphic subgraph of @{term H}, we know that
              its density has to be less than or equal to the maximum density of @{term H}. The proof

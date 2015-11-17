@@ -10,7 +10,7 @@ theory Word_Misc imports
 begin
 
 text {*
-  The separate code target @{text SML_word} collects setups for the 
+  The separate code target @{text SML_word} collects setups for the
   code generator that PolyML does not provide.
 *}
 
@@ -178,9 +178,9 @@ lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<a
   using not_less apply fastforce
   apply (metis One_nat_def Suc_1 div_eq_0_iff lessI neq0_conv td_gal_lt)
   done
-  
-lemma word_div_lt_eq_0: 
-  fixes x :: "'a :: len word" 
+
+lemma word_div_lt_eq_0:
+  fixes x :: "'a :: len word"
   shows "x < y \<Longrightarrow> x div y = 0"
 by(simp only: word_div_def zero_word_def uint_nat zdiv_int[symmetric] transfer_int_nat_numerals(1) word_less_def div_less)
 
@@ -196,8 +196,8 @@ next
   with Suc show ?case by(simp add: unat_word_ariths bintrunc_mod2p int_mod_eq')
 qed
 
-lemma div_half_nat: 
-  fixes x y :: nat 
+lemma div_half_nat:
+  fixes x y :: nat
   assumes "y \<noteq> 0"
   shows "(x div y, x mod y) = (let q = 2 * (x div 2 div y); r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
@@ -205,9 +205,9 @@ proof -
   have q: "?q = x div y - x div y mod 2"
     by(metis div_mult2_eq mult.commute mult_div_cancel)
   let ?r = "x - ?q * y"
-  have r: "?r = x mod y + x div y mod 2 * y" 
+  have r: "?r = x mod y + x div y mod 2 * y"
     by(simp add: q diff_mult_distrib div_mod_equality')(metis diff_diff_cancel mod_less_eq_dividend mod_mult2_eq add.commute mult.commute)
-  
+
   show ?thesis
   proof(cases "y \<le> x - ?q * y")
     case True
@@ -223,13 +223,13 @@ proof -
     hence "x div y mod 2 = 0" unfolding r
       by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial mult.commute)
     hence "x div y = ?q" unfolding q by simp
-    moreover hence "x mod y = ?r" by (metis mod_div_equality') 
+    moreover hence "x mod y = ?r" by (metis mod_div_equality')
     ultimately show ?thesis using False by(simp add: Let_def)
   qed
 qed
 
 lemma div_half_word:
-  fixes x y :: "'a :: len word" 
+  fixes x y :: "'a :: len word"
   assumes "y \<noteq> 0"
   shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
@@ -240,10 +240,10 @@ proof -
   have "n div 2 div m < 2 ^ len_of TYPE('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
     apply(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
-by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int zmult_int)
+by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int of_nat_mult)
 
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
-  
+
   from n have "2 * (n div 2 div m) < 2 ^ len_of TYPE('a)"
     by(metis mult.commute div_mult2_eq mult_div_cancel less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
   moreover
@@ -252,8 +252,8 @@ by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int zmult_
   moreover have "2 * (n div 2 div m) * m \<le> n"
     by(metis div_mult2_eq div_mult_le mult.assoc mult.commute)
   ultimately
-  have r: "x - ?q * y = of_nat (n - ?q' * m)" 
-    and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)" 
+  have r: "x - ?q * y = of_nat (n - ?q' * m)"
+    and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)"
     using n m unfolding q
     by(simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] zdiff_int word_le_nat_alt del: of_nat_mult)
   thus ?thesis using n m div_half_nat[OF `m \<noteq> 0`, of n] unfolding q
@@ -268,16 +268,16 @@ apply(rule word_unat.Abs_inject)
 apply(simp add: unats_def Suc_0_lt_2p_len_of)
 done
 
-text {* 
+text {*
   This algorithm implements unsigned division in terms of signed division.
   Taken from Hacker's Delight.
 *}
 
-lemma divmod_via_sdivmod: 
-  fixes x y :: "'a :: len word" 
+lemma divmod_via_sdivmod:
+  fixes x y :: "'a :: len word"
   assumes "y \<noteq> 0"
   shows
-  "(x div y, x mod y) = 
+  "(x div y, x mod y) =
   (if 1 << (len_of TYPE('a) - 1) \<le> y then if x < y then (0, x) else (1, x - y)
    else let q = ((x >> 1) sdiv y) << 1;
             r = x - q * y
@@ -329,7 +329,7 @@ lemma word_of_int_via_signed:
   and overflow_def:"overflow = 1 << (len_of TYPE('a) - 1)"
   and least_def: "least = - overflow"
   shows
-  "(word_of_int i :: 'a :: len word) = 
+  "(word_of_int i :: 'a :: len word) =
    (let i' = i AND mask
     in if i' !! index then
          if i' - shift < least \<or> overflow \<le> i' - shift then arbitrary1 i' else word_of_int (i' - shift)
@@ -396,7 +396,7 @@ section {* Quickcheck conversion functions *}
 
 notation scomp (infixl "\<circ>\<rightarrow>" 60)
 
-definition qc_random_cnv :: 
+definition qc_random_cnv ::
   "(natural \<Rightarrow> 'a::term_of) \<Rightarrow> natural \<Rightarrow> Random.seed
     \<Rightarrow> ('a \<times> (unit \<Rightarrow> Code_Evaluation.term)) \<times> Random.seed"
   where "qc_random_cnv a_of_natural i = Random.range (i + 1) \<circ>\<rightarrow> (\<lambda>k. Pair (
@@ -415,7 +415,7 @@ definition qc_full_exhaustive_cnv ::
   "(natural \<Rightarrow> ('a::term_of)) \<Rightarrow> ('a \<times> (unit \<Rightarrow> term) \<Rightarrow> (bool \<times> term list) option)
   \<Rightarrow> natural \<Rightarrow> (bool \<times> term list) option"
 where
-  "qc_full_exhaustive_cnv a_of_natural f d = Quickcheck_Exhaustive.full_exhaustive 
+  "qc_full_exhaustive_cnv a_of_natural f d = Quickcheck_Exhaustive.full_exhaustive
   (%(x, xt). f (a_of_natural x, %_. Code_Evaluation.term_of (a_of_natural x))) d"
 
 declare [[quickcheck_narrowing_ghc_options = "-XTypeSynonymInstances"]]
@@ -433,7 +433,7 @@ begin
 
 function narrowing_samples :: "integer \<Rightarrow> 'a list"
 where
-  "narrowing_samples i = 
+  "narrowing_samples i =
    (if i > 0 then let (a, a') = a_of_integer i in narrowing_samples (i - 1) @ [a, a'] else [zero])"
 by pat_completeness auto
 termination including integer.lifting
@@ -448,7 +448,7 @@ definition partial_term_of_sample :: "integer \<Rightarrow> 'a"
 where
   "partial_term_of_sample i =
   (if i < 0 then undefined
-   else if i = 0 then zero 
+   else if i = 0 then zero
    else if i mod 2 = 0 then snd (a_of_integer (i div 2))
    else fst (a_of_integer (i div 2 + 1)))"
 

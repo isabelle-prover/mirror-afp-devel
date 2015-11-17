@@ -6,8 +6,8 @@
 section {* The quadratic form $x^2 + Ny^2$ *}
 
 theory QuadForm
-imports 
-  "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity" 
+imports
+  "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity"
   IntNatAux
 begin
 
@@ -25,7 +25,7 @@ definition
 
 lemma abs_eq_impl_unitfactor: "\<bar>a::int\<bar> = \<bar>b\<bar> \<Longrightarrow> \<exists> u. a = u*b \<and> \<bar>u\<bar>=1"
 proof -
-  assume "\<bar>a\<bar> = \<bar>b\<bar>" 
+  assume "\<bar>a\<bar> = \<bar>b\<bar>"
   hence "a = 1*b \<or> a = (-1)*b" by arith
   then obtain u where "a = u*b \<and> (u=1 \<or> u=-1)" by blast
   thus ?thesis by auto
@@ -43,8 +43,8 @@ proof (auto simp add: zprime_def)
   ultimately show "m = 1" by auto
 qed
 
-(*lemma zgcd_not_1_impl_common_primedivisor: 
-  "zgcd a b \<noteq> 1 \<Longrightarrow> \<exists> p. zprime p \<and> p dvd a \<and> p dvd b" 
+(*lemma zgcd_not_1_impl_common_primedivisor:
+  "zgcd a b \<noteq> 1 \<Longrightarrow> \<exists> p. zprime p \<and> p dvd a \<and> p dvd b"
   by (auto simp add: zgcd1_iff_no_common_primedivisor)
 
 *)
@@ -52,7 +52,7 @@ subsection {* Basic facts if $N \ge 1$ *}
 
 lemma qfN_pos: "\<lbrakk> N \<ge> 1; is_qfN A N \<rbrakk> \<Longrightarrow> A \<ge> 0"
 proof -
-  assume N: "N \<ge> 1" and "is_qfN A N" 
+  assume N: "N \<ge> 1" and "is_qfN A N"
   then obtain a b where ab: "A = a^2 + N*b^2" by (auto simp add: is_qfN_def)
   have "N*b^2 \<ge> 0"
   proof (cases)
@@ -70,7 +70,7 @@ qed
 
 lemma qfN_zero: "\<lbrakk> (N::int) \<ge> 1; a^2 + N*b^2 = 0 \<rbrakk> \<Longrightarrow> (a = 0 \<and> b = 0)"
 proof -
-  assume N: "N \<ge> 1" and abN: "a^2 + N*b^2 = 0" 
+  assume N: "N \<ge> 1" and abN: "a^2 + N*b^2 = 0"
   show ?thesis
   proof (rule ccontr, auto)
     assume "a \<noteq> 0" hence "a^2 > 0" by (simp add: zero_less_power2)
@@ -98,40 +98,40 @@ qed
 
 subsection {* Multiplication and division *}
 
-lemma qfN_mult1: "((a::int)^2 + N*b^2)*(c^2 + N*d^2) 
+lemma qfN_mult1: "((a::int)^2 + N*b^2)*(c^2 + N*d^2)
   = (a*c+N*b*d)^2 + N*(a*d-b*c)^2"
   by (simp add: eval_nat_numeral field_simps)
 
-lemma qfN_mult2: "((a::int)^2 + N*b^2)*(c^2 + N*d^2) 
+lemma qfN_mult2: "((a::int)^2 + N*b^2)*(c^2 + N*d^2)
   = (a*c-N*b*d)^2 + N*(a*d+b*c)^2"
   by (simp add: eval_nat_numeral field_simps)
 
-corollary is_qfN_mult: "is_qfN A N \<Longrightarrow> is_qfN B N \<Longrightarrow> is_qfN (A*B) N" 
+corollary is_qfN_mult: "is_qfN A N \<Longrightarrow> is_qfN B N \<Longrightarrow> is_qfN (A*B) N"
   by (unfold is_qfN_def, auto, auto simp only: qfN_mult1)
 
 corollary is_qfN_power: "(n::nat) > 0 \<Longrightarrow> is_qfN A N \<Longrightarrow> is_qfN (A^n) N"
   by (induct n, auto, case_tac "n=0", auto simp add: is_qfN_mult)
 
-lemma qfN_div_prime: 
+lemma qfN_div_prime:
   assumes ass: "zprime (p^2+N*q^2) \<and> (p^2+N*q^2) dvd (a^2+N*b^2)"
-  shows "\<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2) 
+  shows "\<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2)
                 \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v - e*q*u \<and> \<bar>e\<bar>=1)"
 proof -
   let ?P = "p^2+N*q^2"
   let ?A = "a^2+N*b^2"
   from ass obtain U where U: "?A = ?P*U" by (auto simp only: dvd_def)
   have "\<exists> e. ?P dvd b*p + e*a*q \<and> \<bar>e\<bar> = 1"
-  proof - 
+  proof -
     have "?P dvd (b*p + a*q)*(b*p - a*q)"
     proof -
-      have "(b*p + a*q)*(b*p - a*q)= b^2*?P - q^2*?A"  
+      have "(b*p + a*q)*(b*p - a*q)= b^2*?P - q^2*?A"
         by (simp add: eval_nat_numeral field_simps)
       also from U have "\<dots> = (b^2 - q^2*U)*?P" by (simp add: field_simps)
       finally show ?thesis by simp
     qed
-    with ass have "?P dvd (b*p + a*q) \<or> ?P dvd (b*p - a*q)" 
+    with ass have "?P dvd (b*p + a*q) \<or> ?P dvd (b*p - a*q)"
       by (simp only: zprime_zdvd_zmult_general)
-    moreover 
+    moreover
     { assume "?P dvd b*p + a*q"
       hence "?P dvd b*p + 1*a*q \<and> \<bar>1\<bar> = (1::int)" by simp }
     moreover
@@ -139,30 +139,30 @@ proof -
       hence "?P dvd b*p + (-1)*a*q \<and> \<bar>-1\<bar> = (1::int)" by simp }
     ultimately show ?thesis by blast
   qed
-  then obtain v e where v: "b*p + e*a*q = ?P*v" and e: "\<bar>e\<bar> = 1" 
+  then obtain v e where v: "b*p + e*a*q = ?P*v" and e: "\<bar>e\<bar> = 1"
     by (auto simp only: dvd_def)
   have "?P dvd a*p - e*N*b*q"
   proof (cases)
     assume e1: "e = 1"
     from U have "U * ?P^2 = ?A * ?P" by (simp add: power2_eq_square)
-    also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
+    also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2"
       by (simp only: qfN_mult2 add.commute mult_1_left)
-    also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2" 
+    also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2"
       by (simp only: power_mult_distrib ac_simps)
-    finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)" 
+    finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)"
       by (simp add: ac_simps left_diff_distrib)
     hence "?P^2 dvd (a*p - e*N*b*q)^2" by (rule dvdI)
     thus ?thesis by (simp only: zpower_zdvd_mono)
   next
     assume "\<not> e=1" with e have e1: "e=-1" by auto
     from U have "U * ?P^2 = ?A * ?P" by (simp add: power2_eq_square)
-    also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*( -(b*p+e*a*q))^2" 
+    also with e1 have "\<dots> = (a*p-e*N*b*q)^2 + N*( -(b*p+e*a*q))^2"
       by (simp add: qfN_mult1)
-    also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
+    also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2"
       by (simp only: power2_minus)
-    also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2" 
+    also with v have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*?P^2"
       by (simp only: power_mult_distrib ac_simps)
-    finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)" 
+    finally have "(a*p-e*N*b*q)^2 = ?P^2*(U-N*v^2)"
       by (simp add: ac_simps left_diff_distrib)
     hence "?P^2 dvd (a*p-e*N*b*q)^2" by (rule dvdI)
     thus ?thesis by (simp only: zpower_zdvd_mono)
@@ -171,11 +171,11 @@ proof -
   from e have e2_1: "e*e = 1" by auto
   have a: "a = p*u + e*N*q*v"
   proof -
-    have "(p*u + e*N*q*v)*?P = p*(?P*u) + (e*N*q)*(?P*v)" 
+    have "(p*u + e*N*q*v)*?P = p*(?P*u) + (e*N*q)*(?P*v)"
       by (simp only: distrib_right ac_simps)
-    also with v u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
+    also with v u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)"
       by simp
-    also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
+    also have "\<dots> = a*(p^2 + e*e*N*q^2)"
       by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 have "\<dots> = a*?P" by simp
     finally have "(a-(p*u+e*N*q*v))*?P = 0" by auto
@@ -184,19 +184,19 @@ proof -
   qed
   moreover have b: "b = p*v-e*q*u"
   proof -
-    have "(p*v-e*q*u)*?P = p*(?P*v) - (e*q)*(?P*u)" 
+    have "(p*v-e*q*u)*?P = p*(?P*v) - (e*q)*(?P*u)"
       by (simp only: left_diff_distrib ac_simps)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
-    also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
+    also have "\<dots> = b*(p^2 + e*e*N*q^2)"
       by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 have "\<dots> = b * ?P" by simp
     finally have "(b-(p*v-e*q*u))*?P = 0" by auto
     moreover from ass have "?P \<noteq> 0" by (unfold zprime_def, auto)
     ultimately show ?thesis by simp
   qed
-  moreover have "?A = (u^2 + N*v^2)*?P" 
+  moreover have "?A = (u^2 + N*v^2)*?P"
   proof (cases)
-    assume "e=1" 
+    assume "e=1"
     with a and b show ?thesis by (simp add: qfN_mult1 mult_1_left ac_simps)
   next
     assume "\<not> e=1" with e have "e=-1" by simp
@@ -205,44 +205,44 @@ proof -
   moreover from e have "\<bar>e\<bar> = 1" .
   ultimately show ?thesis by blast
 qed
-    
-corollary qfN_div_prime_weak: 
-  "\<lbrakk> zprime (p^2+N*q^2); (p^2+N*q^2) dvd (a^2+N*b^2) \<rbrakk> 
-  \<Longrightarrow> \<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2)" 
-  apply (subgoal_tac "\<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2) 
+
+corollary qfN_div_prime_weak:
+  "\<lbrakk> zprime (p^2+N*q^2); (p^2+N*q^2) dvd (a^2+N*b^2) \<rbrakk>
+  \<Longrightarrow> \<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2)"
+  apply (subgoal_tac "\<exists> u v. a^2+N*b^2 = (u^2+N*v^2)*(p^2+N*q^2)
     \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v - e*q*u \<and> \<bar>e\<bar>=1)", blast)
   apply (rule qfN_div_prime, auto)
 done
 
-corollary qfN_div_prime_general: "\<lbrakk> zprime P; P dvd A; is_qfN A N; is_qfN P N \<rbrakk> 
+corollary qfN_div_prime_general: "\<lbrakk> zprime P; P dvd A; is_qfN A N; is_qfN P N \<rbrakk>
   \<Longrightarrow> \<exists> Q. A = Q*P \<and> is_qfN Q N"
   apply (subgoal_tac "\<exists> u v. A = (u^2+N*v^2)*P")
   apply (unfold is_qfN_def, auto)
   apply (simp only: qfN_div_prime_weak)
 done
 
-lemma qfN_power_div_prime: 
-  assumes ass: "zprime P \<and> P \<in> zOdd \<and> P dvd A \<and> P^n = p^2+N*q^2 
+lemma qfN_power_div_prime:
+  assumes ass: "zprime P \<and> P \<in> zOdd \<and> P dvd A \<and> P^n = p^2+N*q^2
   \<and> A^n = a^2+N*b^2 \<and> zgcd a b=1 \<and> zgcd p (N*q) = 1 \<and> n>0"
-  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> zgcd u v=1 
-                \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar> = 1)" 
+  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> zgcd u v=1
+                \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar> = 1)"
 proof -
   from ass have "P dvd A \<and> n>0" by simp
   hence "P^n dvd A^n" by (simp add: zpower_zdvd_mono)
   then obtain U where U: "A^n = U*P^n" by (auto simp only: dvd_def ac_simps)
   have "\<exists> e. P^n dvd b*p + e*a*q \<and> \<bar>e\<bar> = 1"
-  proof - 
+  proof -
     have Pn_dvd_prod: "P^n dvd (b*p + a*q)*(b*p - a*q)"
     proof -
       have "(b*p + a*q)*(b*p - a*q) = (b*p)^2 - (a*q)^2" by (rule zspecial_product)
-      also have "\<dots> = b^2 * p^2 + b^2*N*q^2 - b^2*N*q^2 - a^2*q^2" 
+      also have "\<dots> = b^2 * p^2 + b^2*N*q^2 - b^2*N*q^2 - a^2*q^2"
         by (simp add: power_mult_distrib)
-      also with ass have "\<dots> = b^2*P^n - q^2*A^n" 
+      also with ass have "\<dots> = b^2*P^n - q^2*A^n"
         by (simp only: ac_simps distrib_right distrib_left)
       also with U have "\<dots> = (b^2-q^2*U)*P^n" by (simp only: left_diff_distrib)
       finally show ?thesis by (simp add: ac_simps)
     qed
-    have "P^n dvd (b*p + a*q) \<or> P^n dvd (b*p - a*q)" 
+    have "P^n dvd (b*p + a*q) \<or> P^n dvd (b*p - a*q)"
     proof -
       have PdvdPn: "P dvd P^n"
       proof -
@@ -253,16 +253,16 @@ proof -
       qed
       have "\<not> P dvd b*p+a*q \<or>  \<not> P dvd b*p-a*q"
       proof (rule ccontr, simp)
-        assume "P dvd b*p+a*q \<and> P dvd b*p-a*q" 
-        hence "P dvd (b*p+a*q)+(b*p-a*q) \<and> P dvd (b*p+a*q)-(b*p-a*q)" 
+        assume "P dvd b*p+a*q \<and> P dvd b*p-a*q"
+        hence "P dvd (b*p+a*q)+(b*p-a*q) \<and> P dvd (b*p+a*q)-(b*p-a*q)"
           by (simp only: dvd_add, simp only: dvd_diff)
         hence "P dvd 2*(b*p) \<and> P dvd 2*(a*q)" by (simp only: mult_2, auto)
-        with ass have "(P dvd 2 \<or> P dvd b*p) \<and> (P dvd 2 \<or> P dvd a*q)" 
+        with ass have "(P dvd 2 \<or> P dvd b*p) \<and> (P dvd 2 \<or> P dvd a*q)"
           by (simp add: zprime_zdvd_zmult_general)
         hence "P dvd 2 \<or> (P dvd b*p \<and> P dvd a*q)" by auto
         moreover have "\<not> P dvd 2"
         proof (rule ccontr, simp)
-          assume pdvd2: "P dvd 2" 
+          assume pdvd2: "P dvd 2"
           have "P \<le> 2"
           proof (rule ccontr)
             assume "\<not> P \<le> 2" hence Pl2: "P > 2" by simp
@@ -275,7 +275,7 @@ proof -
           ultimately show False by (simp add: odd_iff_not_even)
         qed
         ultimately have "P dvd b*p \<and> P dvd a*q" by auto
-        with ass have "(P dvd b \<or> P dvd p) \<and> (P dvd a \<or> P dvd q)" 
+        with ass have "(P dvd b \<or> P dvd p) \<and> (P dvd a \<or> P dvd q)"
           by (auto simp only: zprime_zdvd_zmult_general)
         moreover have "\<not> P dvd p \<and> \<not> P dvd q"
         proof (auto dest: ccontr)
@@ -304,15 +304,15 @@ proof -
       qed
       moreover
       { assume "\<not> P dvd b*p+a*q"
-        with Pn_dvd_prod and ass have "P^n dvd b*p-a*q" 
+        with Pn_dvd_prod and ass have "P^n dvd b*p-a*q"
           by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_left, simp) }
       moreover
       { assume "\<not> P dvd b*p-a*q"
-        with Pn_dvd_prod and ass have "P^n dvd b*p+a*q" 
+        with Pn_dvd_prod and ass have "P^n dvd b*p+a*q"
           by (rule_tac a="b*p+a*q" in zprime_power_zdvd_cancel_right, simp) }
       ultimately show ?thesis by auto
     qed
-    moreover 
+    moreover
     { assume "P^n dvd b*p + a*q"
       hence "P^n dvd b*p + 1*a*q \<and> \<bar>1\<bar> = (1::int)" by simp }
     moreover
@@ -320,15 +320,15 @@ proof -
       hence "P^n dvd b*p + (-1)*a*q \<and> \<bar>-1\<bar> = (1::int)" by simp }
     ultimately show ?thesis by blast
   qed
-  then obtain v e where v: "b*p + e*a*q = P^n*v" and e: "\<bar>e\<bar> = 1" 
+  then obtain v e where v: "b*p + e*a*q = P^n*v" and e: "\<bar>e\<bar> = 1"
     by (auto simp only: dvd_def)
   have "P^n dvd a*p - e*N*b*q"
   proof (cases)
     assume e1: "e = 1"
     from U have "(P^n)^2*U = A^n*P^n" by (simp add: power2_eq_square ac_simps)
-    also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
+    also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2"
       by (simp only: qfN_mult2 add.commute mult_1_left)
-    also with v have "\<dots> = (a*p-e*N*b*q)^2 + (P^n)^2*(N*v^2)" 
+    also with v have "\<dots> = (a*p-e*N*b*q)^2 + (P^n)^2*(N*v^2)"
       by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = (P^n)^2*U - (P^n)^2*N*v^2" by simp
     also have "\<dots> = (P^n)^2 * (U - N*v^2)" by (simp only: right_diff_distrib)
@@ -337,11 +337,11 @@ proof -
   next
     assume "\<not> e=1" with e have e1: "e=-1" by auto
     from U have "(P^n)^2 * U = A^n * P^n" by (simp add: power2_eq_square)
-    also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*( -(b*p+e*a*q))^2" 
+    also with e1 ass have "\<dots> = (a*p-e*N*b*q)^2 + N*( -(b*p+e*a*q))^2"
       by (simp add: qfN_mult1)
-    also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2" 
+    also have "\<dots> = (a*p-e*N*b*q)^2 + N*(b*p+e*a*q)^2"
       by (simp only: power2_minus)
-    also with v and ass have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*(P^n)^2" 
+    also with v and ass have "\<dots> = (a*p-e*N*b*q)^2 + N*v^2*(P^n)^2"
       by (simp only: power_mult_distrib ac_simps)
     finally have "(a*p-e*N*b*q)^2 = (P^n)^2*U-(P^n)^2*N*v^2" by simp
     also have "\<dots> = (P^n)^2 * (U - N*v^2)" by (simp only: right_diff_distrib)
@@ -352,40 +352,40 @@ proof -
   from e have e2_1: "e*e = 1" by auto
   have a: "a = p*u + e*N*q*v"
   proof -
-    from ass have "(p*u + e*N*q*v)*P^n = p*(P^n*u) + (e*N*q)*(P^n*v)" 
+    from ass have "(p*u + e*N*q*v)*P^n = p*(P^n*u) + (e*N*q)*(P^n*v)"
       by (simp only: distrib_right ac_simps)
-    also with v and u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)" 
+    also with v and u have "\<dots> = p*(a*p - e*N*b*q) + (e*N*q)*(b*p + e*a*q)"
       by simp
-    also have "\<dots> = a*(p^2 + e*e*N*q^2)" 
+    also have "\<dots> = a*(p^2 + e*e*N*q^2)"
       by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 and ass have "\<dots> = a*P^n" by simp
     finally have "(a-(p*u+e*N*q*v))*P^n = 0" by auto
-    moreover from ass have "P^n \<noteq> 0" 
+    moreover from ass have "P^n \<noteq> 0"
       by (unfold zprime_def, auto simp add: power_eq_0_iff)
     ultimately show ?thesis by auto
   qed
   moreover have b: "b = p*v-e*q*u"
   proof -
-    from ass have "(p*v-e*q*u)*P^n = p*(P^n*v) - (e*q)*(P^n*u)" 
+    from ass have "(p*v-e*q*u)*P^n = p*(P^n*v) - (e*q)*(P^n*u)"
       by (simp only: left_diff_distrib ac_simps)
     also with v u have "\<dots> = p*(b*p+e*a*q) - e*q*(a*p-e*N*b*q)" by simp
-    also have "\<dots> = b*(p^2 + e*e*N*q^2)" 
+    also have "\<dots> = b*(p^2 + e*e*N*q^2)"
       by (simp add: power2_eq_square distrib_left ac_simps right_diff_distrib)
     also with e2_1 and ass have "\<dots> = b * P^n" by simp
     finally have "(b-(p*v-e*q*u))*P^n = 0" by auto
-    moreover from ass have "P^n \<noteq> 0" 
+    moreover from ass have "P^n \<noteq> 0"
       by (unfold zprime_def, auto simp add: power_eq_0_iff)
     ultimately show ?thesis by auto
   qed
-  moreover have "A^n = (u^2 + N*v^2)*P^n" 
+  moreover have "A^n = (u^2 + N*v^2)*P^n"
   proof (cases)
-    assume "e=1" 
+    assume "e=1"
     with a and b and ass show ?thesis by (simp add: qfN_mult1 mult_1_left ac_simps)
   next
     assume "\<not> e=1" with e have "e=-1" by simp
     with a and b and ass show ?thesis by (simp add: qfN_mult2 mult_1_left ac_simps)
   qed
-  moreover have "zgcd u v=1" 
+  moreover have "zgcd u v=1"
   proof -
     let ?g = "zgcd u v"
     have "?g dvd u \<and> ?g dvd v" by auto
@@ -396,12 +396,12 @@ proof -
     moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
     ultimately show ?thesis by auto
   qed
-  moreover from e and ass have 
+  moreover from e and ass have
     "\<bar>e\<bar> = 1 \<and> A^n = a^2+N*b^2 \<and> P^n = p^2+N*q^2" by simp
   ultimately show ?thesis by auto
 qed
 
-lemma qfN_primedivisor_not: 
+lemma qfN_primedivisor_not:
   assumes ass: "zprime P \<and> Q > 0 \<and> is_qfN (P*Q) N \<and> \<not> is_qfN P N"
   shows "\<exists> R. (zprime R \<and> R dvd Q \<and> \<not> is_qfN R N)"
 proof (rule ccontr, auto)
@@ -409,30 +409,30 @@ proof (rule ccontr, auto)
   have "\<exists> ps. primel ps \<and> int (prod ps) = Q"
   proof -
     from ass have "Q=1 \<or> nat(Q) > Suc 0" by auto
-    moreover 
+    moreover
     { assume "Q=1" hence "primel [] \<and> int (prod []) = Q" by (simp add: primel_def)
       hence ?thesis by auto }
     moreover
-    { assume "nat(Q) > Suc 0" 
+    { assume "nat(Q) > Suc 0"
       then have "\<exists> ps. primel ps \<and> prod ps = nat(Q)" by (simp only: factor_exists)
       with ass have ?thesis by auto }
-    ultimately show ?thesis by blast  
+    ultimately show ?thesis by blast
   qed
   then obtain ps where ps: "primel ps \<and> int(prod ps) = Q" by auto
-  have ps_lemma: "(primel ps \<and> is_qfN (P*int(prod ps)) N 
-    \<and> (\<forall>R. (zprime R \<and> R dvd int(prod ps)) \<longrightarrow> is_qfN R N)) \<Longrightarrow> False" 
+  have ps_lemma: "(primel ps \<and> is_qfN (P*int(prod ps)) N
+    \<and> (\<forall>R. (zprime R \<and> R dvd int(prod ps)) \<longrightarrow> is_qfN R N)) \<Longrightarrow> False"
     (is "?B ps \<Longrightarrow> False")
   proof (induct ps)
     case Nil hence "is_qfN P N" by simp
     with ass show False by simp
   next
-    case (Cons p ps) 
-    hence ass3: "?B ps \<Longrightarrow> False" 
+    case (Cons p ps)
+    hence ass3: "?B ps \<Longrightarrow> False"
       and IH: "?B (p#ps)" by simp_all
-    hence p: "zprime (int p)" and "int p dvd int(prod(p#ps))" 
+    hence p: "zprime (int p)" and "int p dvd int(prod(p#ps))"
       by (auto simp add: primel_def prime_impl_zprime_int int_mult)
-    moreover with IH have pqfN: "is_qfN (int p) N" 
-      and "int p dvd P*int(prod(p#ps))" and "is_qfN (P*int(prod(p#ps))) N" 
+    moreover with IH have pqfN: "is_qfN (int p) N"
+      and "int p dvd P*int(prod(p#ps))" and "is_qfN (P*int(prod(p#ps))) N"
       by auto
     ultimately obtain S where S: "P*int(prod(p#ps)) = S*(int p) \<and> is_qfN S N"
       using qfN_div_prime_general by blast
@@ -447,7 +447,7 @@ proof (rule ccontr, auto)
   with ps ass2 ass show False by auto
 qed
 
-lemma qfN_oddprime_cube: 
+lemma qfN_oddprime_cube:
   "\<lbrakk> zprime (p^2+N*q^2); (p^2+N*q^2) \<in> zOdd; p \<noteq> 0; N \<ge> 1 \<rbrakk>
   \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> zgcd a (N*b)=1"
 proof -
@@ -459,13 +459,13 @@ proof -
   have abP: "?P^3 = ?a^2 + N*?b^2" by (simp add: eval_nat_numeral field_simps)
   have "zgcd ?b ?a \<noteq>  1 \<Longrightarrow> ?P dvd p"
   proof -
-    let ?h = "zgcd ?b ?a" 
+    let ?h = "zgcd ?b ?a"
     assume h1: "?h \<noteq> 1"
     have "?h \<ge> 0" by (rule zgcd_geq_zero)
     hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
-    { assume "?h = 0" hence "nat\<bar>?b\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
+    { assume "?h = 0" hence "nat\<bar>?b\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0"
         by (unfold zgcd_def, auto simp add: gcd_zero)
       hence "?a = 0 \<and> ?b = 0" by arith
       with abP have "?P^3 = 0" by auto
@@ -475,7 +475,7 @@ proof -
     { assume "?h > 1" hence "\<exists> g. zprime g \<and> g dvd ?h" by (rule zprime_factor_exists)
       then obtain g where g: "zprime g \<and> g dvd ?h" by blast
       hence "g dvd ?b \<and> g dvd ?a" by (simp add: zgcd_greatest_iff)
-      with g have g1: "g dvd q \<or> g dvd 3*p^2-N*q^2" 
+      with g have g1: "g dvd q \<or> g dvd 3*p^2-N*q^2"
         and g2: "g dvd p \<or> g dvd p^2 - 3*N*q^2"
         by (auto simp add: zprime_zdvd_zmult_general)
       from g have gpos: "g \<ge> 0" by (auto simp only: zprime_def)
@@ -491,7 +491,7 @@ proof -
         next
           assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
           moreover from gNq have "g dvd 4*(N*q^2)" by (rule dvd_mult)
-          ultimately have "g dvd p^2 - 3*(N*q^2) + 4*(N*q^2)" 
+          ultimately have "g dvd p^2 - 3*(N*q^2) + 4*(N*q^2)"
             by (simp only: ac_simps dvd_add)
           moreover have "p^2 - 3*(N*q^2)+4*(N*q^2) = p^2 + N*q^2" by arith
           ultimately show ?thesis by simp
@@ -507,15 +507,15 @@ proof -
           ultimately show ?thesis by simp
         next
           assume "\<not> g dvd p" with g2 have "g dvd p^2 - 3*N*q^2" by auto
-          with gpq have "g dvd 3*p^2-N*q^2 - (p^2 - 3*N*q^2)" 
+          with gpq have "g dvd 3*p^2-N*q^2 - (p^2 - 3*N*q^2)"
             by (simp only: dvd_diff)
           moreover have "3*p^2-N*q^2 - (p^2 - 3*N*q^2) = 2*?P" by auto
           ultimately have "g dvd 2*?P" by simp
           with g have "g dvd 2 \<or> g dvd ?P" by (simp only: zprime_zdvd_zmult)
-          moreover have "\<not> g dvd 2" 
+          moreover have "\<not> g dvd 2"
           proof (rule ccontr, simp)
-            assume gdvd2: "g dvd 2" 
-            have "g \<le> 2" 
+            assume gdvd2: "g dvd 2"
+            have "g \<le> 2"
             proof (rule ccontr)
               assume "\<not> g \<le> 2" hence "g > 2" by simp
               moreover have "(0::int) < 2" by auto
@@ -531,35 +531,35 @@ proof -
             hence "?P^3 \<in> zEven" by (auto simp add: dvd_def zEven_def)
             moreover have "?P^3 \<in> zOdd"
             proof -
-              from Podd have "?P*?P^2 \<in> zOdd" 
+              from Podd have "?P*?P^2 \<in> zOdd"
                 by (simp only: odd_times_odd power2_eq_square)
               thus ?thesis by (simp only: cube_square)
             qed
             ultimately show False by (auto simp only: odd_iff_not_even)
           qed
           ultimately show ?thesis by simp
-        qed 
-      qed 
+        qed
+      qed
       with P gpos have "g = 1 \<or> g = ?P" by (auto simp only: zprime_def)
       with g have "g = ?P" by (simp add: zprime_def)
       with g have Pab: "?P dvd ?a \<and> ?P dvd ?b" by (auto simp add: zgcd_greatest_iff)
       have ?thesis
       proof -
-        from Pab P have "?P dvd p \<or> ?P dvd p^2- 3*N*q^2" 
+        from Pab P have "?P dvd p \<or> ?P dvd p^2- 3*N*q^2"
           by (auto simp add: zprime_zdvd_zmult_general)
-        moreover 
+        moreover
         { assume "?P dvd p^2 - 3*N*q^2"
           moreover have "?P dvd 3*(p^2 + N*q^2)"
             by (auto simp only: dvd_refl dvd_mult)
-          ultimately have "?P dvd p^2- 3*N*q^2 + 3*(p^2+N*q^2)" 
+          ultimately have "?P dvd p^2- 3*N*q^2 + 3*(p^2+N*q^2)"
             by (simp only: dvd_add)
           hence "?P dvd 4*p^2" by auto
-          with P have "?P dvd 4 \<or> ?P dvd p^2" 
+          with P have "?P dvd 4 \<or> ?P dvd p^2"
             by (simp only: zprime_zdvd_zmult_general)
           moreover have "\<not> ?P dvd 4"
           proof (rule ccontr, simp)
             assume Pdvd4: "?P dvd 4"
-            have "?P \<le> 4" 
+            have "?P \<le> 4"
             proof (rule ccontr)
               assume "\<not> ?P \<le> 4" hence "?P > 4" by simp
               moreover have "(0::int) < 4" by auto
@@ -569,7 +569,7 @@ proof -
             moreover from P have "?P \<ge> 2" by (auto simp add: zprime_def)
             moreover have "?P \<noteq> 2 \<and> ?P \<noteq> 4"
             proof (rule ccontr, simp)
-              assume "?P = 2 \<or> ?P = 4" hence "?P \<in> zEven" 
+              assume "?P = 2 \<or> ?P = 4" hence "?P \<in> zEven"
                 by (auto simp add: zEven_def)
               with Podd show False by (simp add: odd_iff_not_even)
             qed
@@ -585,13 +585,13 @@ proof -
   qed
   moreover have "zgcd N ?a \<noteq> 1 \<Longrightarrow> ?P dvd p"
   proof -
-    let ?h = "zgcd N ?a" 
+    let ?h = "zgcd N ?a"
     assume h1: "?h \<noteq> 1"
     have "?h \<ge> 0" by (rule zgcd_geq_zero)
     hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
-    { assume "?h = 0" hence "nat\<bar>N\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
+    { assume "?h = 0" hence "nat\<bar>N\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0"
         by (unfold zgcd_def, auto simp add: gcd_zero)
       hence "N = 0" by arith
       with N1 have False by auto
@@ -600,9 +600,9 @@ proof -
     { assume "?h > 1" hence "\<exists> g. zprime g \<and> g dvd ?h" by (rule zprime_factor_exists)
       then obtain g where g: "zprime g \<and> g dvd ?h" by blast
       hence gN: "g dvd N" and "g dvd ?a" by (auto simp add: zgcd_greatest_iff)
-      hence "g dvd p*p^2 - N*(3*p*q^2)" 
+      hence "g dvd p*p^2 - N*(3*p*q^2)"
         by (auto simp only: right_diff_distrib ac_simps)
-      with gN have "g dvd p*p^2 - N*(3*p*q^2) + N*(3*p*q^2)" 
+      with gN have "g dvd p*p^2 - N*(3*p*q^2) + N*(3*p*q^2)"
         by (simp only: dvd_add dvd_mult2)
       hence "g dvd p*p^2" by simp
       with g have "g dvd p \<or> g dvd p*p"
@@ -626,7 +626,7 @@ proof -
       ultimately have "\<not> ?P^2 dvd p^2" by (simp add: zdvd_not_zless)
       with Pdvdp show False by (simp add: zpower_zdvd_mono)
     qed
-    moreover with P have "?P*1 < ?P*?P" 
+    moreover with P have "?P*1 < ?P*?P"
       by (unfold zprime_def, auto simp only: zmult_zless_mono2)
     ultimately have "p^2 > ?P" by (auto simp add: power2_eq_square)
     hence neg: "N*q^2 < 0" by auto
@@ -642,10 +642,10 @@ proof -
   with abP show ?thesis by (auto simp only: zgcd_commute)
 qed
 
-subsection {* Uniqueness ($N>1$)*}  
+subsection {* Uniqueness ($N>1$)*}
 
-lemma qfN_prime_unique: 
-  "\<lbrakk> zprime (a^2+N*b^2); N > 1; a^2+N*b^2 = c^2+N*d^2 \<rbrakk> 
+lemma qfN_prime_unique:
+  "\<lbrakk> zprime (a^2+N*b^2); N > 1; a^2+N*b^2 = c^2+N*d^2 \<rbrakk>
   \<Longrightarrow> (\<bar>a\<bar> = \<bar>c\<bar> \<and> \<bar>b\<bar> = \<bar>d\<bar>)"
 proof -
   let ?P = "a^2+N*b^2"
@@ -656,24 +656,24 @@ proof -
       by (simp add: eval_nat_numeral field_simps)
     with abcdN show ?thesis by (simp add: field_simps)
   qed
-  have "?P dvd a*d+b*c \<or> ?P dvd a*d-b*c" 
+  have "?P dvd a*d+b*c \<or> ?P dvd a*d-b*c"
   proof -
     from mult have "?P dvd (a*d+b*c)*(a*d-b*c)" by simp
     with P show ?thesis by (simp add: zprime_zdvd_zmult_general)
   qed
-  moreover 
-  { assume "?P dvd a*d+b*c" 
+  moreover
+  { assume "?P dvd a*d+b*c"
     then obtain Q where Q: "a*d+b*c = ?P*Q" by (auto simp add: dvd_def)
-    from abcdN have "?P^2 = (a^2 + N*b^2) * (c^2 + N*d^2)" 
+    from abcdN have "?P^2 = (a^2 + N*b^2) * (c^2 + N*d^2)"
       by (simp add: power2_eq_square)
     also have "\<dots> = (a*c-N*b*d)^2 + N*(a*d+b*c)^2" by (rule qfN_mult2)
-    also with Q have "\<dots> = (a*c-N*b*d)^2 + N*Q^2*?P^2" 
+    also with Q have "\<dots> = (a*c-N*b*d)^2 + N*Q^2*?P^2"
       by (simp add: ac_simps power_mult_distrib)
     also have "\<dots> \<ge> N*Q^2*?P^2" by (simp add: zero_le_power2)
     finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: ac_simps)
     have "b^2 = d^2"
     proof (rule ccontr)
-      assume "b^2 \<noteq> d^2" 
+      assume "b^2 \<noteq> d^2"
       with P mult Q have "Q \<noteq> 0" by (unfold zprime_def, auto)
       hence "Q^2 > 0" by (simp add: zero_less_power2)
       moreover with N have "Q^2*N > Q^2*1" by (simp only: zmult_zless_mono2)
@@ -683,18 +683,18 @@ proof -
       with pos show False by simp
     qed }
   moreover
-  { assume "?P dvd a*d-b*c" 
+  { assume "?P dvd a*d-b*c"
     then obtain Q where Q: "a*d-b*c = ?P*Q" by (auto simp add: dvd_def)
-    from abcdN have "?P^2 = (a^2 + N*b^2) * (c^2 + N*d^2)" 
+    from abcdN have "?P^2 = (a^2 + N*b^2) * (c^2 + N*d^2)"
       by (simp add: power2_eq_square)
     also have "\<dots> = (a*c+N*b*d)^2 + N*(a*d-b*c)^2" by (rule qfN_mult1)
-    also with Q have "\<dots> = (a*c+N*b*d)^2 + N*Q^2*?P^2" 
+    also with Q have "\<dots> = (a*c+N*b*d)^2 + N*Q^2*?P^2"
       by (simp add: ac_simps power_mult_distrib)
     also have "\<dots> \<ge> N*Q^2*?P^2" by (simp add: zero_le_power2)
     finally have pos: "?P^2 \<ge> ?P^2*(Q^2*N)" by (simp add: ac_simps)
     have "b^2 = d^2"
     proof (rule ccontr)
-      assume "b^2 \<noteq> d^2" 
+      assume "b^2 \<noteq> d^2"
       with P mult Q have "Q \<noteq> 0" by (unfold zprime_def, auto)
       hence "Q^2 > 0" by (simp add: zero_less_power2)
       moreover with N have "Q^2*N > Q^2*1" by (simp only: zmult_zless_mono2)
@@ -708,8 +708,8 @@ proof -
   ultimately show ?thesis by (auto simp only: power2_eq_iff_abs_eq)
 qed
 
-lemma qfN_square_prime: 
-  assumes ass: 
+lemma qfN_square_prime:
+  assumes ass:
   "zprime (p^2+N*q^2) \<and> N>1 \<and> (p^2+N*q^2)^2 = r^2+N*s^2 \<and> zgcd r s=1"
   shows "\<bar>r\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>s\<bar> = \<bar>2*p*q\<bar>"
 proof -
@@ -718,16 +718,16 @@ proof -
   from ass have P1: "?P > 1" by (simp add: zprime_def)
   from ass have APP: "?A = ?P*?P" by (simp only: power2_eq_square)
   with ass have "zprime ?P \<and> ?P dvd ?A" by (simp add: dvdI)
-  then obtain u v e where uve: 
-    "?A = (u^2+N*v^2)*?P \<and> r = p*u+e*N*q*v \<and> s = p*v - e*q*u \<and> \<bar>e\<bar>=1" 
+  then obtain u v e where uve:
+    "?A = (u^2+N*v^2)*?P \<and> r = p*u+e*N*q*v \<and> s = p*v - e*q*u \<and> \<bar>e\<bar>=1"
     by (frule_tac p="p" in qfN_div_prime, auto)
   with APP P1 ass have "zprime (u^2+N*v^2) \<and> N>1 \<and> u^2 + N*v^2 = ?P"
     by auto
   hence "\<bar>u\<bar> = \<bar>p\<bar> \<and> \<bar>v\<bar> = \<bar>q\<bar>" by (auto dest: qfN_prime_unique)
-  then obtain f g where f: "u = f*p \<and> \<bar>f\<bar> = 1" and g: "v = g*q \<and> \<bar>g\<bar> = 1" 
+  then obtain f g where f: "u = f*p \<and> \<bar>f\<bar> = 1" and g: "v = g*q \<and> \<bar>g\<bar> = 1"
     by (blast dest: abs_eq_impl_unitfactor)
   with uve have "r = f*p*p + (e*g)*N*q*q \<and> s = g*p*q - (e*f)*p*q" by simp
-  hence rs: "r = f*p^2 + (e*g)*N*q^2 \<and> s = (g - e*f)*p*q" 
+  hence rs: "r = f*p^2 + (e*g)*N*q^2 \<and> s = (g - e*f)*p*q"
     by (auto simp only: power2_eq_square left_diff_distrib)
   moreover have "s \<noteq> 0"
   proof (rule ccontr, simp)
@@ -736,7 +736,7 @@ proof -
     with ass have "\<bar>r\<bar> = 1" by simp
     hence "r^2 = 1" by (auto simp add: abs_power2_distrib)
     with s0 have "?A = 1" by simp
-    moreover have "?P^2 > 1" 
+    moreover have "?P^2 > 1"
     proof -
       from P1 have "1 < ?P \<and> (0::int) \<le>  1 \<and> (0::nat) < 2" by auto
       hence "?P^2 > 1^2" by (simp only: power_strict_mono)
@@ -748,7 +748,7 @@ proof -
   ultimately have "g \<noteq> e*f" by auto
   moreover from f g uve have "\<bar>g\<bar> = \<bar>e*f\<bar>" by auto
   ultimately have "g = -(e*f)" by arith
-  with rs uve have "r = f*(p^2 - N*q^2) \<and> s = (-e*f)*2*p*q" 
+  with rs uve have "r = f*(p^2 - N*q^2) \<and> s = (-e*f)*2*p*q"
     by (auto simp add: power2_eq_square right_diff_distrib)
   hence "\<bar>r\<bar> = \<bar>f\<bar> * \<bar>p^2-N*q^2\<bar>
     \<and> \<bar>s\<bar> = \<bar>e\<bar>*\<bar>f\<bar>*\<bar>2*p*q\<bar>"
@@ -756,8 +756,8 @@ proof -
   with uve f g show ?thesis by (auto simp only: mult_1_left)
 qed
 
-lemma qfN_cube_prime: 
-  assumes ass: "zprime (p^2 + N*q^2) \<and> N > 1 
+lemma qfN_cube_prime:
+  assumes ass: "zprime (p^2 + N*q^2) \<and> N > 1
   \<and> (p^2 + N*q^2)^3 = a^2 + N*b^2 \<and> zgcd a b=1"
   shows "\<bar>a\<bar> = \<bar>p^3- 3*N*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q-N*q^3\<bar>"
 proof -
@@ -766,8 +766,8 @@ proof -
   from ass have P1: "?P > 1" by (simp add: zprime_def)
   with ass have APP: "?A = ?P*?P^2" by (auto simp only: cube_square)
   with ass have "zprime ?P \<and> ?P dvd ?A" by (simp add: dvdI)
-  then obtain u v e where uve: 
-    "?A = (u^2+N*v^2)*?P \<and> a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar>=1" 
+  then obtain u v e where uve:
+    "?A = (u^2+N*v^2)*?P \<and> a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar>=1"
     by (frule_tac p="p" in qfN_div_prime, auto)
   have "zgcd u v=1"
   proof -
@@ -779,15 +779,15 @@ proof -
     moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
     ultimately show ?thesis by auto
   qed
-  with P1 uve APP ass have "zprime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2 
+  with P1 uve APP ass have "zprime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2
     \<and> zgcd u v=1" by (auto simp add: ac_simps)
   hence "\<bar>u\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>v\<bar> = \<bar>2*p*q\<bar>" by (rule qfN_square_prime)
-  then obtain f g where f: "u = f*(p^2-N*q^2) \<and> \<bar>f\<bar> = 1" 
+  then obtain f g where f: "u = f*(p^2-N*q^2) \<and> \<bar>f\<bar> = 1"
     and g: "v = g*(2*p*q) \<and> \<bar>g\<bar> = 1" by (blast dest: abs_eq_impl_unitfactor)
-  with uve have "a = p*f*(p^2-N*q^2) + e*N*q*g*2*p*q 
+  with uve have "a = p*f*(p^2-N*q^2) + e*N*q*g*2*p*q
     \<and> b = p*g*2*p*q -e*q*f*(p^2-N*q^2)" by auto
-  hence ab: "a = f*p*p^2 + -f*N*p*q^2 + 2*e*g*N*p*q^2 
-    \<and> b = 2*g*p^2*q - e*f*p^2*q + e*f*N*q*q^2" 
+  hence ab: "a = f*p*p^2 + -f*N*p*q^2 + 2*e*g*N*p*q^2
+    \<and> b = 2*g*p^2*q - e*f*p^2*q + e*f*N*q*q^2"
     by (auto simp add: ac_simps right_diff_distrib power2_eq_square)
   from f have f2: "f^2 = 1" by (auto simp add: abs_power2_distrib)
   from g have g2: "g^2 = 1" by (auto simp add: abs_power2_distrib)
@@ -806,9 +806,9 @@ proof -
   qed
   moreover from f g uve have "\<bar>e\<bar> = \<bar>f*g\<bar>" by auto
   ultimately have "e = -(f*g)" by arith
-  with ab f g have "a = f*p*p^2 - 3*f*N*p*q^2 \<and> b = 3*g*p^2*q - g*N*q*q^2" 
+  with ab f g have "a = f*p*p^2 - 3*f*N*p*q^2 \<and> b = 3*g*p^2*q - g*N*q*q^2"
     by (auto simp add: power2_eq_square)
-  hence "a = f*(p^3 - 3*N*p*q^2) \<and> b = g*( 3*p^2*q - N*q^3 )" 
+  hence "a = f*(p^3 - 3*N*p*q^2) \<and> b = g*( 3*p^2*q - N*q^3 )"
     by (auto simp only: right_diff_distrib ac_simps cube_square)
   with f g show ?thesis by (auto simp add: mult_1_left abs_mult)
 qed
@@ -821,17 +821,17 @@ proof -
   assume even: "?A \<in> zEven"
   have "(a \<in> zOdd \<and> b \<in> zOdd) \<or> (a \<in> zEven \<and> b \<in> zEven)"
   proof (rule ccontr, auto dest: not_odd_impl_even)
-    assume "a \<notin> zOdd" and "b \<notin> zEven" 
+    assume "a \<notin> zOdd" and "b \<notin> zEven"
     hence "a \<in> zEven \<and> b \<in> zOdd" by (auto simp only: odd_iff_not_even)
-    hence "a^2 \<in> zEven \<and> b^2 \<in> zOdd" 
+    hence "a^2 \<in> zEven \<and> b^2 \<in> zOdd"
       by (auto simp only: power2_eq_square odd_times_odd even_times_either)
     moreover have "3 \<in> zOdd" by (unfold zOdd_def, auto)
     ultimately have "?A \<in> zOdd" by (auto simp add: odd_times_odd even_plus_odd)
     with even show False by (simp add: odd_iff_not_even)
   next
-    assume "a \<notin> zEven" and "b \<notin> zOdd" 
+    assume "a \<notin> zEven" and "b \<notin> zOdd"
     hence "a \<in> zOdd \<and> b \<in> zEven" by (auto simp only: odd_iff_not_even)
-    hence "a^2 \<in> zOdd \<and> b^2 \<in> zEven" 
+    hence "a^2 \<in> zOdd \<and> b^2 \<in> zEven"
       by (auto simp only: power2_eq_square odd_times_odd even_times_either)
     moreover hence "b^2*3 \<in> zEven" by (simp only: even_times_either)
     ultimately have "b^2*3+a^2 \<in> zOdd" by (auto simp add: even_plus_odd)
@@ -841,12 +841,12 @@ proof -
   moreover
   { assume "a \<in> zEven \<and> b \<in> zEven"
     then obtain c d where abcd: "a = 2*c \<and> b = 2*d" by (unfold zEven_def, auto)
-    hence "?A = 4*(c^2 + 3*d^2)" by (simp add: power_mult_distrib) 
+    hence "?A = 4*(c^2 + 3*d^2)" by (simp add: power_mult_distrib)
     moreover have "is_qfN (c^2+3*d^2) 3" by (unfold is_qfN_def, auto)
     ultimately have ?thesis by blast }
   moreover
   { assume "a \<in> zOdd \<and> b \<in> zOdd"
-    then obtain c d where abcd: "a = 2*c+1 \<and> b = 2*d+1" 
+    then obtain c d where abcd: "a = 2*c+1 \<and> b = 2*d+1"
       by (unfold zOdd_def, auto)
     have "c-d \<in> zOdd \<or> c-d \<in> zEven" by (rule_tac x="c-d" in even_odd_disj)
     moreover
@@ -854,14 +854,14 @@ proof -
       then obtain e where "c-d = 2*e" by (auto simp add: zEven_def)
       with abcd have e1: "a-b = 4*e" by arith
       hence e2: "a+3*b = 4*(e+b)" by auto
-      have "4*?A = (a+3*b)^2 + 3*(a-b)^2" 
+      have "4*?A = (a+3*b)^2 + 3*(a-b)^2"
         by (simp add: eval_nat_numeral field_simps)
       also with e1 e2 have "\<dots> = (4*(e+b))^2+3*(4*e)^2" by (simp(no_asm_simp))
       finally have "?A = 4*((e+b)^2 + 3*e^2)" by (simp add: eval_nat_numeral field_simps)
       moreover have "is_qfN ((e+b)^2 + 3*e^2) 3" by (unfold is_qfN_def, auto)
       ultimately have ?thesis by blast }
     moreover
-    { assume "c-d \<in> zOdd" 
+    { assume "c-d \<in> zOdd"
       then obtain e where "c-d = 2*e+1" by (auto simp add: zOdd_def)
       with abcd have e1: "a+b = 4*(e+d+1)" by auto
       hence e2: "a- 3*b = 4*(e+d-b+1)" by auto
@@ -871,41 +871,41 @@ proof -
         by (simp (no_asm_simp))
       finally have "?A = 4*((e+d-b+1)^2+3*(e+d+1)^2)"
         by (simp add: eval_nat_numeral field_simps)
-      moreover have "is_qfN ((e+d-b+1)^2 + 3*(e+d+1)^2) 3" 
+      moreover have "is_qfN ((e+d-b+1)^2 + 3*(e+d+1)^2) 3"
         by (unfold is_qfN_def, auto)
       ultimately have ?thesis by blast }
     ultimately have ?thesis by auto }
   ultimately show ?thesis by auto
 qed
 
-lemma qf3_even_general: "\<lbrakk> is_qfN A 3; A \<in> zEven \<rbrakk> 
+lemma qf3_even_general: "\<lbrakk> is_qfN A 3; A \<in> zEven \<rbrakk>
   \<Longrightarrow> \<exists> B. A = 4*B \<and> is_qfN B 3"
 proof -
   assume "A \<in> zEven" and "is_qfN A 3"
-  then obtain a b where "A = a^2 + 3*b^2" 
+  then obtain a b where "A = a^2 + 3*b^2"
     and "a^2 + 3*b^2 \<in> zEven" by (unfold is_qfN_def, auto)
   thus ?thesis by (auto simp add: qf3_even)
 qed
 
-lemma qf3_oddprimedivisor_not: 
+lemma qf3_oddprimedivisor_not:
   assumes ass: "zprime P \<and> P \<in> zOdd \<and> Q>0 \<and> is_qfN (P*Q) 3 \<and> \<not> is_qfN P 3"
   shows "\<exists> R. zprime R \<and> R \<in> zOdd \<and> R dvd Q \<and> \<not> is_qfN R 3"
 proof (rule ccontr, simp)
-  assume ass2: "\<forall> R. R dvd Q \<longrightarrow> R \<in> zOdd \<longrightarrow> zprime R \<longrightarrow> is_qfN R 3" 
+  assume ass2: "\<forall> R. R dvd Q \<longrightarrow> R \<in> zOdd \<longrightarrow> zprime R \<longrightarrow> is_qfN R 3"
   (is "?A Q")
   obtain n::nat where "n = nat Q" by auto
   with ass have n: "Q = int n" by auto
   have "(n > 0 \<and> is_qfN (P*int n) 3 \<and> ?A(int n)) \<Longrightarrow> False" (is "?B n \<Longrightarrow> False")
   proof (induct n rule: less_induct)
-    case (less n) 
-    hence IH: "!!m. m<n \<and> ?B m \<Longrightarrow> False" 
+    case (less n)
+    hence IH: "!!m. m<n \<and> ?B m \<Longrightarrow> False"
       and Bn: "?B n" by auto
     show False
     proof (cases)
-      assume odd: "(int n) \<in> zOdd" 
+      assume odd: "(int n) \<in> zOdd"
       from Bn ass have "zprime P \<and> int n > 0 \<and> is_qfN (P*int n) 3 \<and> \<not> is_qfN P 3"
         by simp
-      hence "\<exists> R. zprime R \<and> R dvd int n \<and> \<not> is_qfN R 3" 
+      hence "\<exists> R. zprime R \<and> R dvd int n \<and> \<not> is_qfN R 3"
         by (rule qfN_primedivisor_not)
       then obtain R where R: "zprime R \<and> R dvd int n \<and> \<not> is_qfN R 3" by auto
       moreover with odd have "R \<in> zOdd"
@@ -916,7 +916,7 @@ proof (rule ccontr, simp)
       moreover from Bn have "?A (int n)" by simp
       ultimately show False by auto
     next
-      assume "\<not> (int n) \<in> zOdd" 
+      assume "\<not> (int n) \<in> zOdd"
       hence even: "int n \<in> zEven" by (rule not_odd_impl_even)
       hence "(int n)*P \<in> zEven" by (rule even_times_either)
       with Bn have  "P*int n \<in> zEven \<and> is_qfN (P*int n) 3" by (simp add: ac_simps)
@@ -925,19 +925,19 @@ proof (rule ccontr, simp)
       hence "2^2 dvd (int n)*P" by (simp add: ac_simps)
       moreover have "\<not> 2 dvd P"
       proof (rule ccontr, simp)
-        assume "2 dvd P" 
+        assume "2 dvd P"
         with ass have "P \<in> zOdd \<and> P \<in> zEven" by (simp add: dvd_def zEven_def)
         thus False by (simp only: even_odd_conj)
       qed
       moreover have "zprime 2" by (rule zprime_2)
-      ultimately have "2^2 dvd int n" 
+      ultimately have "2^2 dvd int n"
         by (rule_tac p="2" in zprime_power_zdvd_cancel_right)
       then obtain im::int where "int n = 4*im" by (auto simp add: dvd_def)
       moreover obtain m::nat where "m = nat im" by auto
       ultimately have m: "n = 4*m" by arith
       with B have "is_qfN (P*int m) 3" by (auto simp add: int_mult)
       moreover from m Bn have "m > 0" by auto
-      moreover from m Bn have "?A (int m)" 
+      moreover from m Bn have "?A (int m)"
         by (auto simp add: int_mult)
       ultimately have Bm: "?B m" by simp
       from Bn m have "m < n" by arith
@@ -947,8 +947,8 @@ proof (rule ccontr, simp)
   with ass ass2 n show False by auto
 qed
 
-lemma qf3_oddprimedivisor: 
-  "\<lbrakk> zprime P; P \<in> zOdd; zgcd a b=1; P dvd (a^2+3*b^2) \<rbrakk> 
+lemma qf3_oddprimedivisor:
+  "\<lbrakk> zprime P; P \<in> zOdd; zgcd a b=1; P dvd (a^2+3*b^2) \<rbrakk>
   \<Longrightarrow> is_qfN P 3"
 proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P. nat\<bar>P\<bar>"])
   case (0 x)
@@ -956,7 +956,7 @@ proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P.
   ultimately show ?case by (simp add: zprime_def)
 next
   case (smaller x)
-  then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd a b=1 
+  then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd a b=1
     \<and> x dvd (a^2+3*b^2) \<and> \<not> is_qfN x 3" by auto
   then obtain M where M: "a^2+3*b^2 = x*M" by (auto simp add: dvd_def)
   let ?A = "a^2 + 3*b^2"
@@ -972,7 +972,7 @@ next
     have hlp: "(3::int) \<ge> 1" by simp
     have "?C \<ge> 0" by simp
     hence "?C = 0 \<or> ?C > 0" by arith
-    moreover 
+    moreover
     { assume "?C = 0"
       with hlp have "c=0 \<and> d=0" by (rule qfN_zero)
       with cm dn have "a = m*x \<and> b = n*x" by simp
@@ -985,25 +985,25 @@ next
   proof
     have "?C = \<bar>c\<bar>^2 + 3*\<bar>d\<bar>^2" by (simp only: power2_abs)
     also with cm dn have "\<dots> = (a-m*x)^2 + 3*(b-n*x)^2" by simp
-    also have "\<dots> = 
-      a^2 - 2*a*(m*x) + (m*x)^2 + 3*(b^2 - 2*b*(n*x) + (n*x)^2)" 
+    also have "\<dots> =
+      a^2 - 2*a*(m*x) + (m*x)^2 + 3*(b^2 - 2*b*(n*x) + (n*x)^2)"
       by (simp only: zdiff_power2)
-    also with abx M have "\<dots> = 
-      x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)" 
+    also with abx M have "\<dots> =
+      x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)"
       by (simp only: power_mult_distrib distrib_left ac_simps, auto)
-    finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))" 
+    finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))"
       by (simp add: power2_eq_square distrib_left right_diff_distrib)
   qed
   then obtain y where y: "?C = x*y" by (auto simp add: dvd_def)
-  have yx: "y < x" 
+  have yx: "y < x"
   proof (rule ccontr)
     assume "\<not> y < x" hence xy: "x-y \<le> 0" by simp
     have hlp: "2*\<bar>c\<bar> \<ge> 0 \<and> 2*\<bar>d\<bar> \<ge> 0 \<and> (3::nat) > 0" by simp
     from y have "4*x*y = 2^2*c^2 + 3*2^2*d^2" by simp
-    hence "4*x*y = (2*\<bar>c\<bar>)^2 + 3*(2*\<bar>d\<bar>)^2" 
+    hence "4*x*y = (2*\<bar>c\<bar>)^2 + 3*(2*\<bar>d\<bar>)^2"
       by (auto simp add: power2_abs power_mult_distrib)
-    with cm dn hlp have "4*x*y < x^2 + 3*(2*\<bar>d\<bar>)^2" 
-      and "(3::int) > 0 \<and> (2*\<bar>d\<bar>)^2 < x^2" 
+    with cm dn hlp have "4*x*y < x^2 + 3*(2*\<bar>d\<bar>)^2"
+      and "(3::int) > 0 \<and> (2*\<bar>d\<bar>)^2 < x^2"
             using power_strict_mono [of "2*\<bar>b\<bar>" x 2 for b]
       by auto
     hence "x*4*y < x^2 + 3*x^2" by (auto)
@@ -1019,9 +1019,9 @@ next
       with contr show False by auto
     qed
   qed
-  have y0: "y > 0" 
+  have y0: "y > 0"
   proof (rule ccontr)
-    assume "\<not> y > 0" 
+    assume "\<not> y > 0"
     hence "y \<le> 0" by simp
     moreover have "y \<noteq> 0"
     proof (rule ccontr)
@@ -1033,12 +1033,12 @@ next
     with C0 y show False by simp
   qed
   let ?g = "zgcd c d"
-  have "c \<noteq> 0 \<or> d \<noteq> 0" 
+  have "c \<noteq> 0 \<or> d \<noteq> 0"
   proof (rule ccontr)
     assume "\<not> (c\<noteq>0 \<or> d\<noteq>0)" hence "c=0 \<and> d=0" by simp
     with C0 show False by simp
   qed
-  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd e f = 1" 
+  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd e f = 1"
     by (frule_tac a="c" in make_zrelprime, auto)
   have g2nonzero: "?g^2 \<noteq> 0"
   proof (rule ccontr, simp)
@@ -1085,7 +1085,7 @@ next
     moreover
     { assume "w=0" with w y0 have False by auto }
     moreover
-    { assume wneg: "w<0" 
+    { assume wneg: "w<0"
       have "?g^2 \<ge> 0" by (rule zero_le_power2)
       with g2nonzero have "?g^2 > 0" by arith
       with wneg have "?g^2*w < ?g^2*0" by (simp only: zmult_zless_mono2)
@@ -1097,7 +1097,7 @@ next
     assume "\<not> w \<le> y"
     hence wy: "w > y" by simp
     have "?g^2 = 1 \<or> ?g^2 > 1"
-    proof - 
+    proof -
       have "?g^2 \<ge> 0" by (rule zero_le_power2)
       hence "?g^2 =0 \<or> ?g^2 > 0" by auto
       with g2nonzero show ?thesis by arith
@@ -1105,13 +1105,13 @@ next
     moreover
     { assume "?g^2 =1" with w wy have False by simp }
     moreover
-    { assume g1: "?g^2 >1" 
+    { assume g1: "?g^2 >1"
       with `w>0` have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
       with w have "w < y" by (simp add: mult_1_left ac_simps)
       with wy have False by auto }
     ultimately show False by blast
   qed
-  from Ewx E3 abx `w>0` have 
+  from Ewx E3 abx `w>0` have
     "zprime x \<and> x \<in> zOdd \<and> w > 0 \<and> is_qfN (x*w) 3 \<and> \<not> is_qfN x 3" by simp
   then obtain z where z: "zprime z \<and> z \<in> zOdd \<and> z dvd w \<and> \<not> is_qfN z 3"
     by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
@@ -1133,9 +1133,9 @@ next
   qed
   ultimately show ?case by auto
 qed
-  
-lemma qf3_cube_prime_impl_cube_form: 
-  assumes ab_relprime: "zgcd a b = 1" and abP: "P^3 = a^2 + 3*b^2" 
+
+lemma qf3_cube_prime_impl_cube_form:
+  assumes ab_relprime: "zgcd a b = 1" and abP: "P^3 = a^2 + 3*b^2"
   and P: "zprime P \<and> P \<in> zOdd"
   shows "is_cube_form a b"
 proof -
@@ -1143,9 +1143,9 @@ proof -
   have PvdP3: "P dvd P^3" by (simp add: eval_nat_numeral)
   with abP ab_relprime P have qfP: "is_qfN P 3" by (simp only: qf3_oddprimedivisor)
   then obtain p q where pq: "P = p^2 + 3*q^2" by (auto simp only: is_qfN_def)
-  with P abP ab_relprime have "zprime (p^2 + 3*q^2) \<and> (3::int) > 1 
+  with P abP ab_relprime have "zprime (p^2 + 3*q^2) \<and> (3::int) > 1
     \<and> (p^2+3*q^2)^3 = a^2+3*b^2 \<and> zgcd a b=1" by auto
-  hence ab: "\<bar>a\<bar> = \<bar>p^3 - 3*3*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q - 3*q^3\<bar>" 
+  hence ab: "\<bar>a\<bar> = \<bar>p^3 - 3*3*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q - 3*q^3\<bar>"
     by (rule qfN_cube_prime)
   hence a: "a = p^3 - 9*p*q^2 \<or> a = -(p^3) + 9*p*q^2" by arith
   from ab have b: "b = 3*p^2*q - 3*q^3 \<or> b = -(3*p^2*q) + 3*q^3" by arith
@@ -1158,7 +1158,7 @@ proof -
       assume b1: "b = 3*p^2*q - 3*q^3"
       with a1 show ?thesis by (unfold is_cube_form_def, auto)
     next
-      assume "\<not> b = 3*p^2*q - 3*q^3" 
+      assume "\<not> b = 3*p^2*q - 3*q^3"
       with b have "b = - 3*p^2*q + 3*q^3" by simp
       with s have "b = 3*p^2*s - 3*s^3" by (simp add: power3_minus)
       moreover from a1 s have "a = p^3 - 9*p*s^2" by (simp add: power2_minus)
@@ -1176,21 +1176,21 @@ proof -
     next
       assume "\<not> b = 3*p^2*q - 3*q^3"
       with b have "b = - 3*p^2*q + 3*q^3" by simp
-      with r s have "b = 3*r^2*s - 3*s^3" 
+      with r s have "b = 3*r^2*s - 3*s^3"
         by (simp add: power2_minus power3_minus)
       moreover from ar s have "a = r^3 - 9*r*s^2" by (simp add: power2_minus)
       ultimately show ?thesis by (unfold is_cube_form_def, auto)
     qed
   qed
 qed
- 
-lemma cube_form_mult: "\<lbrakk> is_cube_form a b; is_cube_form c d; \<bar>e\<bar> = 1 \<rbrakk> 
+
+lemma cube_form_mult: "\<lbrakk> is_cube_form a b; is_cube_form c d; \<bar>e\<bar> = 1 \<rbrakk>
   \<Longrightarrow> is_cube_form (a*c+e*3*b*d) (a*d-e*b*c)"
 proof -
   assume ab: "is_cube_form a b" and c_d: "is_cube_form c d" and e: "\<bar>e\<bar> = 1"
-  from ab obtain p q where pq: "a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3" 
+  from ab obtain p q where pq: "a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3"
     by (auto simp only: is_cube_form_def)
-  from c_d obtain r s where rs: "c = r^3 - 9*r*s^2 \<and> d = 3*r^2*s - 3*s^3" 
+  from c_d obtain r s where rs: "c = r^3 - 9*r*s^2 \<and> d = 3*r^2*s - 3*s^3"
     by (auto simp only: is_cube_form_def)
   let ?t = "p*r + e*3*q*s"
   let ?u = "p*s - e*r*q"
@@ -1207,38 +1207,38 @@ proof -
   hence e3: "e*1 = e^3" by (simp only: cube_square)
   have "a*c+e*3*b*d = ?t^3 - 9*?t*?u^2"
   proof -
-    have "?t^3 - 9*?t*?u^2 = p^3*r^3 + e*9*p^2*q*r^2*s + e^2*27*p*q^2*r*s^2 
+    have "?t^3 - 9*?t*?u^2 = p^3*r^3 + e*9*p^2*q*r^2*s + e^2*27*p*q^2*r*s^2
       + e^3*27*q^3*s^3 - 9*p*p^2*r*s^2 + e*18*p^2*q*r^2*s - e^2*9*p*q^2*(r*r^2)
-      - e*27*p^2*q*(s*s^2) + e^2*54*p*q^2*r*s^2 - e*e^2*27*(q*q^2)*r^2*s" 
+      - e*27*p^2*q*(s*s^2) + e^2*54*p*q^2*r*s^2 - e*e^2*27*(q*q^2)*r^2*s"
       by (simp add: eval_nat_numeral field_simps)
-    also with e2 e3 have "\<dots> = 
-      p^3*r^3 + e*27*p^2*q*r^2*s + 81*p*q^2*r*s^2 + e*27*q^3*s^3 
-      - 9*p^3*r*s^2 - 9*p*q^2*r^3 - e*27*p^2*q*s^3 - e*27*q^3*r^2*s" 
+    also with e2 e3 have "\<dots> =
+      p^3*r^3 + e*27*p^2*q*r^2*s + 81*p*q^2*r*s^2 + e*27*q^3*s^3
+      - 9*p^3*r*s^2 - 9*p*q^2*r^3 - e*27*p^2*q*s^3 - e*27*q^3*r^2*s"
       by (simp add: cube_square mult_1_left)
-    also with pq rs have "\<dots> = a*c + e*3*b*d" 
+    also with pq rs have "\<dots> = a*c + e*3*b*d"
       by (simp only: left_diff_distrib right_diff_distrib ac_simps)
     finally show ?thesis by auto
   qed
   moreover have "a*d-e*b*c = 3*?t^2*?u - 3*?u^3"
   proof -
-    have "3*?t^2*?u - 3*?u^3 = 
-      3*(p*p^2)*r^2*s - e*3*p^2*q*(r*r^2) + e*18*p^2*q*r*s^2 
-      - e^2*18*p*q^2*r^2*s + e^2*27*p*q^2*(s*s^2) - e*e^2*27*(q*q^2)*r*s^2 
-      - 3*p^3*s^3 + e*9*p^2*q*r*s^2 - e^2*9*p*q^2*r^2*s + e^3*3*r^3*q^3" 
+    have "3*?t^2*?u - 3*?u^3 =
+      3*(p*p^2)*r^2*s - e*3*p^2*q*(r*r^2) + e*18*p^2*q*r*s^2
+      - e^2*18*p*q^2*r^2*s + e^2*27*p*q^2*(s*s^2) - e*e^2*27*(q*q^2)*r*s^2
+      - 3*p^3*s^3 + e*9*p^2*q*r*s^2 - e^2*9*p*q^2*r^2*s + e^3*3*r^3*q^3"
       by (simp add: eval_nat_numeral field_simps)
     also with e2 e3 have "\<dots> = 3*p^3*r^2*s - e*3*p^2*q*r^3 + e*18*p^2*q*r*s^2
-      - 18*p*q^2*r^2*s + 27*p*q^2*s^3 - e*27*q^3*r*s^2 - 3*p^3*s^3 
-      + e*9*p^2*q*r*s^2 - 9*p*q^2*r^2*s + e*3*r^3*q^3" 
+      - 18*p*q^2*r^2*s + 27*p*q^2*s^3 - e*27*q^3*r*s^2 - 3*p^3*s^3
+      + e*9*p^2*q*r*s^2 - 9*p*q^2*r^2*s + e*3*r^3*q^3"
       by (simp add: cube_square mult_1_left)
-    also with pq rs have "\<dots> = a*d-e*b*c" 
+    also with pq rs have "\<dots> = a*d-e*b*c"
       by (simp only: left_diff_distrib right_diff_distrib ac_simps)
     finally show ?thesis by auto
   qed
   ultimately show ?thesis by (auto simp only: is_cube_form_def)
 qed
 
-lemma qf3_cube_primelist_impl_cube_form: "\<lbrakk> primel ps; int (prod ps) \<in> zOdd \<rbrakk> \<Longrightarrow> 
-  (!! a b. zgcd a b=1 \<Longrightarrow> a^2 + 3*b^2 = (int(prod ps))^3 \<Longrightarrow> is_cube_form a b)" 
+lemma qf3_cube_primelist_impl_cube_form: "\<lbrakk> primel ps; int (prod ps) \<in> zOdd \<rbrakk> \<Longrightarrow>
+  (!! a b. zgcd a b=1 \<Longrightarrow> a^2 + 3*b^2 = (int(prod ps))^3 \<Longrightarrow> is_cube_form a b)"
 proof (induct ps)
   case Nil hence ab1: "a^2 + 3*b^2 = 1" by simp
   have b0: "b=0"
@@ -1255,10 +1255,10 @@ proof (induct ps)
   with a1 and b0 have "a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3" by auto
   thus "is_cube_form a b" by (auto simp only: is_cube_form_def)
 next
-  case (Cons p ps) hence ass: "zgcd a b=1 \<and> int(prod (p#ps)) \<in> zOdd 
-    \<and> a^2+3*b^2 = int(prod (p#ps))^3 \<and> primel ps \<and> zprime (int p)" 
-    and IH: "!! u v. zgcd u v=1 \<and> u^2+3*v^2 = int(prod ps)^3 
-    \<and> int(prod ps) \<in> zOdd \<Longrightarrow> is_cube_form u v" 
+  case (Cons p ps) hence ass: "zgcd a b=1 \<and> int(prod (p#ps)) \<in> zOdd
+    \<and> a^2+3*b^2 = int(prod (p#ps))^3 \<and> primel ps \<and> zprime (int p)"
+    and IH: "!! u v. zgcd u v=1 \<and> u^2+3*v^2 = int(prod ps)^3
+    \<and> int(prod ps) \<in> zOdd \<Longrightarrow> is_cube_form u v"
     by (auto simp add: primel_def prime_impl_zprime_int)
   let ?w = "int (prod (p#ps))"
   let ?X = "int (prod ps)"
@@ -1267,20 +1267,20 @@ next
   have pw: "?w = ?p * ?X \<and> ?p \<in> zOdd \<and> ?X \<in> zOdd"
   proof (safe)
     have "prod (p#ps) = p * prod ps" by simp
-    thus wpx: "?w = ?p * ?X" by (auto simp only: zmult_int)
+    thus wpx: "?w = ?p * ?X" by (auto simp only: of_nat_mult [symmetric])
     with ass show "?p \<in> zOdd" by (auto dest: odd_mult_odd_prop)
     from wpx have "?w = ?X*?p" by simp
     with ass show "?X \<in> zOdd" by (metis odd_mult_odd_prop)
   qed
   have "is_qfN ?p 3"
   proof -
-    from ass have "a^2+3*b^2 = (?p*?X)^3" by simp 
+    from ass have "a^2+3*b^2 = (?p*?X)^3" by simp
     hence "?p dvd a^2+3*b^2" by (simp add: eval_nat_numeral field_simps)
     moreover from ass have "zprime ?p" and "zgcd a b=1" by simp_all
     moreover from pw have "?p \<in> zOdd" by simp
     ultimately show ?thesis by (simp only: qf3_oddprimedivisor)
   qed
-  then obtain \<alpha> \<beta> where alphabeta: "?p = \<alpha>^2 + 3*\<beta>^2" 
+  then obtain \<alpha> \<beta> where alphabeta: "?p = \<alpha>^2 + 3*\<beta>^2"
     by (auto simp add: is_qfN_def)
   have "\<alpha> \<noteq> 0"
   proof (rule ccontr, simp)
@@ -1301,13 +1301,13 @@ next
     with a3 have "3 dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass show False by simp
   qed
-  moreover from alphabeta pw ass have 
-    "zprime (\<alpha>^2 + 3*\<beta>^2) \<and> \<alpha>^2+3*\<beta>^2 \<in> zOdd \<and> (3::int) \<ge> 1" by auto 
-  ultimately obtain c d where cdp: 
-    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> zgcd c (3*d)=1" 
+  moreover from alphabeta pw ass have
+    "zprime (\<alpha>^2 + 3*\<beta>^2) \<and> \<alpha>^2+3*\<beta>^2 \<in> zOdd \<and> (3::int) \<ge> 1" by auto
+  ultimately obtain c d where cdp:
+    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> zgcd c (3*d)=1"
     by (blast dest: qfN_oddprime_cube)
   with ass pw alphabeta have "\<exists> u v. a^2+3*b^2 = (u^2 + 3*v^2)*(c^2+3*d^2)
-    \<and> zgcd u v=1 \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)" 
+    \<and> zgcd u v=1 \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)"
     by (rule_tac A="?w" and n="3" in qfN_power_div_prime, auto)
   then obtain u v e where uve: "a^2+3*b^2 = (u^2+3*v^2)*(c^2+3*d^2)
     \<and> zgcd u v=1 \<and> a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1" by blast
@@ -1327,22 +1327,22 @@ next
   qed
   moreover have "is_cube_form c d"
   proof -
-    have "zgcd c d = 1" 
+    have "zgcd c d = 1"
     proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
       fix h::int assume "h dvd c" and "h dvd d" and h: "zprime h"
       hence "h dvd c*u + d*(e*3*v) \<and> h dvd c*v-d*(e*u)" by simp
       with uve have "h dvd a \<and> h dvd b" by (auto simp only: ac_simps)
       with ass h show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
     qed
-    with pw cdp ass alphabeta show ?thesis 
+    with pw cdp ass alphabeta show ?thesis
       by (rule_tac P="?p" in qf3_cube_prime_impl_cube_form, auto)
   qed
   ultimately show "is_cube_form a b" by (simp only: cube_form_mult)
 qed
 
-lemma qf3_cube_impl_cube_form: 
+lemma qf3_cube_impl_cube_form:
   assumes ass: "zgcd a b=1 \<and> a^2 + 3*b^2 = w^3 \<and> w \<in> zOdd"
-  shows "is_cube_form a b" 
+  shows "is_cube_form a b"
 proof -
   have "\<exists> ps. primel ps \<and> int (prod ps) = w"
   proof -
@@ -1361,7 +1361,7 @@ proof -
         hence "w^3 < 0" by (simp add: neg_one_odd_power)
         with w3pos show False by auto
       qed
-      moreover have "w \<noteq> 0" 
+      moreover have "w \<noteq> 0"
       proof (rule ccontr)
         assume "\<not>w\<noteq>0" with ass have "0 \<in> zOdd" by simp
         moreover have "0 \<in> zEven" by (simp add: zEven_def)
@@ -1370,12 +1370,12 @@ proof -
       ultimately show ?thesis by (auto)
     qed
     hence "w=1 \<or> Suc 0 < nat w" by auto
-    moreover 
-    { assume "w=1" 
+    moreover
+    { assume "w=1"
       hence "primel [] \<and> int (prod []) = w" by (auto simp add: primel_def)
       hence ?thesis by (simp only: exI) }
     moreover
-    { assume "Suc 0 < nat w" 
+    { assume "Suc 0 < nat w"
       hence "\<exists> l. primel l \<and> prod l = nat w" by (rule factor_exists)
       then obtain ps where ps: "primel ps \<and> prod ps = nat w" by auto
       with wpos have ?thesis by auto }
@@ -1389,7 +1389,7 @@ subsection {* Existence ($N=3$) *}
 text {* This part contains the proof that all prime numbers $\equiv 1 \bmod 6$ can be written as $x^2 + 3y^2$. *}
 
 text {* First show $(\frac{a}{p})(\frac{b}{p}) = (\frac{ab}{p})$, where $p$ is an odd prime. *}
-lemma Legendre_zmult: "\<lbrakk> p > 2; zprime p \<rbrakk> 
+lemma Legendre_zmult: "\<lbrakk> p > 2; zprime p \<rbrakk>
   \<Longrightarrow> (Legendre (a*b) p) = (Legendre a p)*(Legendre b p)"
 proof -
   assume p2: "p > 2" and prp: "zprime p"
@@ -1411,11 +1411,11 @@ proof -
   proof (rule ccontr)
     assume "k \<noteq> 0" hence "\<bar>k\<bar> = 1 \<or> \<bar>k\<bar> > 1" by arith
     moreover
-    { assume "\<bar>k\<bar>= 1" 
+    { assume "\<bar>k\<bar>= 1"
       with p2 have "\<bar>k\<bar>*p > 2" by auto }
     moreover
-    { assume k1: "\<bar>k\<bar> > 1" 
-      with p2 have "\<bar>k\<bar>*2 < \<bar>k\<bar>*p" 
+    { assume k1: "\<bar>k\<bar> > 1"
+      with p2 have "\<bar>k\<bar>*2 < \<bar>k\<bar>*p"
         by (simp only: zmult_zless_mono2)
       with k1 have "\<bar>k\<bar>*p > 2" by arith }
    ultimately have "\<bar>k\<bar>*p > 2" by auto
@@ -1423,9 +1423,9 @@ proof -
    ultimately have "\<bar>k*p\<bar> > 2" by (auto simp only: abs_mult)
    moreover from k have "?Labp - ?Lap*?Lbp = k*p" by auto
    ultimately have "\<bar>?Labp - ?Lap*?Lbp\<bar> > 2" by auto
-   moreover have "?Labp = 1 \<or> ?Labp = 0 \<or> ?Labp = -1" 
+   moreover have "?Labp = 1 \<or> ?Labp = 0 \<or> ?Labp = -1"
      by (simp add: Legendre_def)
-   moreover have "?Lap*?Lbp = 1 \<or> ?Lap*?Lbp = 0 \<or> ?Lap*?Lbp = -1" 
+   moreover have "?Lap*?Lbp = 1 \<or> ?Lap*?Lbp = 0 \<or> ?Lap*?Lbp = -1"
      by (auto simp add: Legendre_def)
    ultimately show False by auto
  qed
@@ -1447,21 +1447,21 @@ proof -
     assume "\<not> m \<ge> 1" hence "m \<le> 0" by simp
     with p show False by (auto simp add: zprime_def)
   qed
-  hence pn3: "?p \<noteq> 3" and p2: "?p > 2" by auto 
+  hence pn3: "?p \<noteq> 3" and p2: "?p > 2" by auto
   with p have "?L = (Legendre (-1) ?p) * (Legendre 3 ?p)"
     by (frule_tac a="-1" and b="3" in Legendre_zmult, auto)
   moreover have "[Legendre (-1) ?p = (-1)^nat m] (mod ?p)"
   proof -
     from p p2 have "[?L1 = (-1)^(nat(((?p) - 1) div 2))] (mod ?p)"
       by (simp only: Euler_Criterion)
-    moreover have "nat ((?p - 1) div 2) = 3* nat m" 
+    moreover have "nat ((?p - 1) div 2) = 3* nat m"
     proof -
       have "(?p - 1) div 2 = 3*m" by auto
       hence "nat((?p - 1) div 2) = nat (3*m)" by simp
       moreover have "(3::int) \<ge> 0" by simp
       ultimately show ?thesis by (simp add: nat_mult_distrib)
     qed
-    moreover with neg1cube have "(-1::int)^(3*nat m) = (-1)^nat m" 
+    moreover with neg1cube have "(-1::int)^(3*nat m) = (-1)^nat m"
       by (simp only: power_mult)
     ultimately show ?thesis by auto
   qed
@@ -1502,7 +1502,7 @@ proof -
   moreover have "?L = -1 \<or> ?L = 0 \<or> ?L = 1" by (simp add: Legendre_def)
   ultimately have "?p dvd 2 \<or> ?p dvd 1 \<or> ?L = 1" by auto
   moreover
-  { assume "?p dvd 2 \<or> ?p dvd 1" 
+  { assume "?p dvd 2 \<or> ?p dvd 1"
     with p2 have False by (auto simp add: zdvd_not_zless) }
   ultimately show ?thesis by auto
 qed
