@@ -205,7 +205,7 @@ val To_sbinding = To_binding o To_string0
 
 fun semi__method_simp g f = Method.Basic (fn ctxt => SIMPLE_METHOD (g (asm_full_simp_tac (f ctxt))))
 val semi__method_simp_one = semi__method_simp (fn f => f 1)
-val semi__method_simp_all = semi__method_simp (CHANGED_PROP o PARALLEL_GOALS o ALLGOALS)
+val semi__method_simp_all = semi__method_simp (CHANGED_PROP o PARALLEL_ALLGOALS)
 
 datatype semi__thm' = Thms_single' of thm
                     | Thms_mult' of thm list
