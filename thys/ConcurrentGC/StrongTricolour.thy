@@ -507,8 +507,8 @@ apply (clarsimp simp: sys_read_def fold_writes_def)
   apply blast
  apply blast
 
-apply (erule option_bind_invE)
 apply (fold fold_writes_def)
+apply clarsimp
 apply (drule (1) fold_writes_points_to)
 apply (erule disjE)
  apply (fastforce elim!: converse_rtranclp_into_rtranclp[rotated] split: obj_at_splits intro!: ranI)

@@ -298,7 +298,6 @@ apply (subgoal_tac "\<forall>r. valid_ref r s \<longleftrightarrow> valid_ref r 
     apply (drule_tac x=x in spec)
     apply (clarsimp simp: set_eq_iff ran_def)
     apply (case_tac "sys_heap s x", simp_all)[1]
-     apply (metis elem_set option.distinct(1) option.simps(9))
     apply (metis (hide_lams, no_types) elem_set not_Some_eq option.inject map_option_eq_Some)
    apply (clarsimp split: obj_at_splits)
    apply (rule conjI)
@@ -379,12 +378,10 @@ apply (subgoal_tac "\<forall>p. WL p s = WL p s'")
   apply ( (drule_tac x=x in spec)+ )[1]
   apply (case_tac "sys_heap s x", simp_all)
    apply (case_tac "sys_heap s' x", auto)[1]
-  apply (case_tac "sys_heap s' x", auto)[1]
  apply (clarsimp split: obj_at_splits)
  apply (rename_tac x)
  apply (drule_tac x=x in spec)
  apply (case_tac "sys_heap s x", simp_all)
- apply (case_tac "sys_heap s' x", simp_all)
  apply (case_tac "sys_heap s' x", simp_all)
 apply (simp add: WL_def)
 done
@@ -828,7 +825,7 @@ lemma (in sys) mut_store_ins_mark_object_invL[intro]:
      sys
    \<lbrace> mut_store_ins.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def)
-  apply (fastforce simp: do_write_action_def o_def
+  apply (fastforce simp: do_write_action_def
             split: mem_write_action.splits obj_at_splits)+   (* slow *)
 done
 
