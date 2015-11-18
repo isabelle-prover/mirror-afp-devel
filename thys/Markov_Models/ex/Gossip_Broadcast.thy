@@ -38,8 +38,6 @@ next
     using insert by (simp add: setsum_left_distrib)
 qed
 
-interpretation pmf_as_function .
-
 subsection {* Definition of the Gossip-Broadcast *}
 
 datatype state = listening | sending | sleeping
@@ -54,6 +52,8 @@ locale gossip_broadcast =
   assumes size: "0 < size"
   assumes p: "0 < p" "p < 1"
 begin
+
+interpretation pmf_as_function .
 
 definition states :: "sys_state set" where
   "states = ({..< size} \<times> {..< size}) \<rightarrow>\<^sub>E {listening, sending, sleeping}"

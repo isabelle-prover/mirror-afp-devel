@@ -8,15 +8,11 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "~~/src/HOL/Library/Rewrite"
     "~~/src/HOL/Library/Monad_Syntax"
     "~~/src/HOL/Library/Linear_Temporal_Logic_on_Streams"
+    "~~/src/HOL/Library/IArray"
+    "~~/src/HOL/Library/Code_Target_Numeral"
     "../Coinductive/Coinductive"
   theories
     "Markov_Models"
-    "ex/PCTL"
-    "ex/Zeroconf_Analysis"
-    "ex/Gossip_Broadcast"
-    "ex/Crowds_Protocol"
-    "ex/MDP_RP_Certification"
-    "ex/PGCL"
   document_files
     "root.bib"
     "root.tex"
