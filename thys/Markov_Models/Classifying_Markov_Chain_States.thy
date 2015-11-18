@@ -5,6 +5,18 @@ imports
   Discrete_Time_Markov_Chain
 begin
 
+lemma Gcd_eq_one: "1 \<in> A \<Longrightarrow> Gcd A = (1::nat)"
+  by (auto intro!: gcd_lcm_complete_lattice_nat.Inf_eqI)
+
+lemma ereal_one_divide_invese: "0 \<le> x \<Longrightarrow> 1 / inverse x = (x::ereal)"
+  by (cases x) (auto simp: divide_ereal_def)
+
+lemma one_divide_ereal: "x \<noteq> 0 \<Longrightarrow> 1 / ereal x = ereal (1 / x)"
+  by (simp add: divide_ereal_def divide_inverse)
+
+lemma pmf_positive_iff: "0 < pmf p x \<longleftrightarrow> x \<in> set_pmf p"
+  unfolding less_le by (simp add: pmf_nonneg set_pmf_iff)
+
 lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
   by (metis int_cases)
 
@@ -2430,5 +2442,22 @@ proof -
 qed
 
 end
+
+
+lemma (in MC_syntax) essential_classI2:
+  assumes "X \<noteq> {}"
+  assumes accI: "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> (x, y) \<in> acc"
+  assumes ED: "\<And>x y. x \<in> X \<Longrightarrow> y \<in> set_pmf (K x) \<Longrightarrow> y \<in> X"
+  shows "essential_class X"
+proof (rule essential_classI)
+  { fix x y assume "(x, y) \<in> acc" "x \<in> X"
+    then show "y \<in> X"
+      by induct (auto dest: ED)}
+  note accD = this
+
+  from `X \<noteq> {}` obtain x where "x \<in> X" by auto
+  from `x \<in> X` show "X \<in> UNIV // communicating"
+    by (auto simp add: quotient_def Image_def communicating_def accI dest: accD intro!: exI[of _ x])
+qed
 
 end
