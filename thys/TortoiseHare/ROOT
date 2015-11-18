@@ -1,0 +1,13 @@
+chapter AFP
+
+session "TortoiseHare" (AFP) = "HOL" +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+  theories
+    Basis
+    TortoiseHare
+    Brent
+  document_files
+    "root.tex"
+    "root.bib"
