@@ -48,7 +48,7 @@ cases:
 definition K :: "nat \<Rightarrow> nat pmf" where
   "K x = map_pmf (\<lambda>True \<Rightarrow> x + 1 | False \<Rightarrow> x - 1) (bernoulli_pmf (1/3))"
 
-text {* For the special case when @{term "x = (0::real)"} we have @{term "x - 1 = (0::real)"} and hence
+text {* For the special case when @{term "x = (0::nat)"} we have @{term "x - 1 = (0::nat)"} and hence
 @{term "tau 0 0 = 2 / 3"}. *}
 
 text {* We pack this transition function into a discrete Markov kernel. *}
@@ -115,9 +115,6 @@ proof (rule pmf_eqI)
     apply (auto split: split_indicator_asm nat.splits simp: minus_nat.diff_Suc)
     done
 qed
-
-lemma exclusive_N: "measure N (UNIV - UNIV) = 0"
-  by simp
 
 subsection {* Limit behavior and recurrence times *}
 
