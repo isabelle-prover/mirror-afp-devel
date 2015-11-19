@@ -142,15 +142,15 @@ lemma C_is_pos_recurrent: "x \<in> {C1, C2, C3} \<Longrightarrow> A.pos_recurren
 
 lemma C_recurrence_time: 
   assumes x: "x \<in> {C1, C2, C3}"
-  shows "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>A.T x) = 1 / pmf n x"
+  shows "A.U' x x = 1 / pmf n x"
 proof -
   from A.stationary_distributionD(2)[OF A_essential _ stationary_distribution_N _]
   have "A.stat {C1, C2, C3} = n" by simp
   with x have "1 / pmf n x = 1 / emeasure (A.stat {C1, C2, C3}) {x}"
     by (simp add: emeasure_pmf_single one_ereal_def pmf_eq_0_set_pmf)
-  also have "\<dots> = (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {x}) \<omega>) \<partial>A.T x)"
+  also have "\<dots> = A.U' x x"
     unfolding A.stat_def using x
-    by (subst emeasure_point_measure_finite) (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I)
+    by (subst emeasure_point_measure_finite) (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I A.U'_def)
   finally show ?thesis ..
 qed
 

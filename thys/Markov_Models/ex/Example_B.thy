@@ -133,16 +133,16 @@ qed
 lemma pos_recurrent: "B.pos_recurrent i"
   using B.stationary_distributionD(1)[OF B_essential _ stationary_distribution_N _] by auto
 
-lemma recurrence_time: "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {i}) \<omega>) \<partial>B.T i) = 2^Suc i"
+lemma recurrence_time: "B.U' i i = 2^Suc i"
 proof -
   have "B.stat UNIV = N"
     using B.stationary_distributionD(2)[OF B_essential _ stationary_distribution_N _] by simp
   then have "2^Suc i = 1 / emeasure (B.stat UNIV) {i}"
     by (simp add: one_divide_ereal field_simps emeasure_pmf_single pmf_eq_0_set_pmf)
-  also have "\<dots> = (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {i}) \<omega>) \<partial>B.T i)"
+  also have "\<dots> = B.U' i i"
     unfolding B.stat_def
     by (subst emeasure_point_measure_finite2)
-       (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I)
+       (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I B.U'_def)
   finally show ?thesis
     by simp
 qed
