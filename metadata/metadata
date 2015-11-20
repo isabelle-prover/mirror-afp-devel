@@ -2662,6 +2662,17 @@ abstract =
   as a closed formula. This theorem is the 88th theorem in a list of the
   ``<a href="http://www.cs.ru.nl/~freek/100/">Top 100 Mathematical Theorems</a>''.
 
+[Euler_Partition]
+title = Euler's Partition Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+date = 2015-11-19
+topic = Mathematics/Combinatorics
+abstract =
+  Euler's Partition Theorem states that the number of partitions with only
+  distinct parts is equal to the number of partitions with only odd parts.
+  The combinatorial proof follows John Harrison's HOL Light formalization.
+  This theorem is the 45th theorem of the Top 100 Theorems list.
+
 [Discrete_Summation]
 title = Discrete Summation
 author = Florian Haftmann <http://isabelle.in.tum.de/~haftmann>
