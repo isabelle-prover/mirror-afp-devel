@@ -22,6 +22,8 @@
   %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
   %\<currency>
 
+\usepackage{url}
+
 % this should be the last package used
 \usepackage{pdfsetup}
 
@@ -39,6 +41,11 @@
 \author{Lukas Bulwahn}
 \maketitle
 
+\begin{abstract}
+The Derangements Formula describes the number of fixpoint-free permutations
+as closed-form formula. This theorem is the 88th theorem of the Top 100
+Theorems list.
+\end{abstract}
 \tableofcontents
 
 % sane default for proof documents
@@ -48,8 +55,11 @@
 \input{session}
 
 % optional bibliography
-%\bibliographystyle{abbrv}
-%\bibliography{root}
+\nocite{Harrison,wikipedia:derangement,wikipedia:fixpunktfreie-permutation,wikipedia:rencontres-numbers}
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
 
 \end{document}
 

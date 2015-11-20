@@ -9,3 +9,4 @@ session Derangements (AFP) = HOL +
     Derangements
   document_files
     "root.tex"
+    "root.bib"
