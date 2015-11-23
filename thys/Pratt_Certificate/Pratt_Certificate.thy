@@ -383,7 +383,7 @@ proof (induction p rule: less_induct)
     have "length ?cert \<le> 6*log 2 p - 4
           \<longleftrightarrow> 2 powr 9 \<le> 2 powr (log 2 p * 6)" by auto
     also have "\<dots> \<longleftrightarrow> True"
-      by (simp add: powr_powr[symmetric] powr_realpow_numeral)
+      by (simp add: powr_powr[symmetric] powr_numeral)
     finally have ?case
       by (intro exI[where x="?cert"]) (simp add: cong_nat_def)
   }
