@@ -16,5 +16,6 @@ session "QR_Decomposition" (AFP) = "HOL-Multivariate_Analysis" +
     Examples_QR_IArrays_Float
     Examples_QR_IArrays_Symbolic
     Generalizations2
+    QR_Efficient
   document_files
     "root.tex"
