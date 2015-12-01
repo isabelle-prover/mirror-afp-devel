@@ -312,7 +312,7 @@ proof -
     moreover from finite_G PSize have "P \<in> conjP.fixed_points" using P_fixed_point_of_P_conj by auto
     ultimately have "conjP.fixed_points = {P}" by fastforce
     hence one:"card conjP.fixed_points = 1" by (auto simp: card_Suc_eq)
-    with prime_p have "card conjP.fixed_points < p" unfolding prime_nat_def by auto
+    with prime_p have "card conjP.fixed_points < p" unfolding prime_def by auto
     with one show ?thesis using mod_pos_pos_trivial by auto
   qed
   finally show ?thesis.

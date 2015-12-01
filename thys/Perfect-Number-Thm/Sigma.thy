@@ -41,7 +41,7 @@ lemma sigma1[simp]: "sigma(1) = 1"
 by (simp add: sigma_def)
 
 lemma prime_divisors: "prime (p::nat) <-> divisors p = {1,p} & p>1"
-by (auto simp add: divisors_def prime_nat_def)
+by (auto simp add: divisors_def prime_def)
 
 lemma prime_imp_sigma: "prime (p::nat) ==> sigma(p) = p+1"
 proof -
@@ -142,7 +142,7 @@ theorem sigma_primepower:
 proof -
   assume "prime p"
   hence "sigma(p^(e::nat)) = (\<Sum>i=0 .. e . p^i)"
-    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers prime_nat_def)
+    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers prime_def)
   thus "(p - 1)*sigma(p^e)=p^(e+1) - 1" by (simp only: simplify_sum_of_powers)
 qed
 
@@ -200,7 +200,7 @@ proof -
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)
   also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
-    by (auto simp add: prodsums_eq_sumprods prime_nat_def)
+    by (auto simp add: prodsums_eq_sumprods prime_def)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
     by(rule seteq_imp_setsumeq,rule rewrite_for_sigma_semimultiplicative[OF p])
   finally have "?l = \<Sum>{c. c dvd (p^n*m)}" by (subst div_decomp_comp[OF cop2])

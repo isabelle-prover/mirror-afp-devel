@@ -1385,7 +1385,7 @@ proof (rule ccontr)
     by (metis Suc_eq_plus1 Suc_numeral add_One_commute eq_iff le_diff_conv numeral_le_iff  
       one_le_numeral one_plus_BitM prime_factor_nat semiring_norm(69) semiring_norm(71))
   hence p_minus_1:"p-(1::nat)+1=p" 
-    by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq prime_nat_def)
+    by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq prime_def)
   hence *: "\<And>l::nat. card (C (l+1)) mod p=1"
     using `\<And>l::nat. card (C (l+1)) mod (k-(1::nat))=1` mod_mod_cancel[OF `p dvd (k-(1::nat))`]
       `prime p`
@@ -1482,7 +1482,7 @@ proof (rule ccontr)
                 hence "rotate1 x=x" by auto
                 have "hd x=hd (tl x)" using `prime p` `length x=p` 
                   proof -
-                    have "length x\<ge>2" using `prime p` `length x=p` by auto
+                    have "length x\<ge>2" using `prime p` `length x=p` using prime_ge_2_nat by blast 
                     hence "length (tl x)\<ge>1" by force
                     hence "x\<noteq>[]" and "tl x\<noteq>[]" by auto+
                     hence "x=(hd x)#(hd (tl x))#(tl (tl x))" using hd_Cons_tl by auto
@@ -1493,7 +1493,7 @@ proof (rule ccontr)
                 moreover have "hd x\<noteq>hd (tl x)"
                   proof -
                     have "adj_path (hd x) (tl x)" using `x \<in> C (p-(1::nat))` C by auto
-                    moreover have "length x\<ge>2" using `prime p` `length x=p` by auto
+                    moreover have "length x\<ge>2" using `prime p` `length x=p` using prime_ge_2_nat by blast
                     hence "length (tl x)\<ge>1" by force
                     hence "tl x\<noteq>[]" by force
                     ultimately have "adjacent (hd x) (hd (tl x))" 
@@ -1527,7 +1527,7 @@ proof (rule ccontr)
             proof 
               fix x assume "x \<in> C (p - 1)"
               hence "rotate 0 x \<in> C (p - 1)" using closure by auto
-              moreover have "0<p" using `prime p` by auto
+              moreover have "0<p" using `prime p` by (auto intro: prime_gt_0_nat)
               ultimately have "(x,rotate 0 x)\<in> r" using `x\<in>C (p - 1 )` r by auto
               moreover have "rotate 0 x=x" by auto
               ultimately show "(x,x)\<in>r" by auto

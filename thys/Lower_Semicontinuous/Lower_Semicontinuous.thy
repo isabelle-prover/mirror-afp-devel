@@ -1380,7 +1380,7 @@ moreover
       by (simp add: convex_UNIV add.commute)
     moreover have "f y < \<infinity>" using m_def y_def unfolding domain_def by auto
     moreover have *: "0 < 1 - ereal v" using v01
-      by (metis diff_less_iff(1) ereal_less(2) ereal_minus(1) one_ereal_def)
+      by (metis diff_gt_0_iff_gt ereal_less(2) ereal_minus(1) one_ereal_def)
     moreover hence "(1-ereal v) * f u = -\<infinity>" using u_def by auto
     ultimately have "f x = -\<infinity>" using v01 by simp
   } hence ?thesis by auto

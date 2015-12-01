@@ -23,7 +23,7 @@ lemma productdivides: "\<lbrakk>x mod a = (0::nat); x mod b = 0; prime a; prime 
   apply (drule prime_dvd_mult_nat [of b])
   apply (erule disjE)
   apply auto
-  apply (simp add: prime_nat_def)
+  apply (simp add: prime_def)
   apply auto
   done
 

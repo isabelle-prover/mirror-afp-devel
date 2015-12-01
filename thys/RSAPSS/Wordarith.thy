@@ -243,7 +243,7 @@ proof -
 qed
 
 lemma primerew: fixes p::nat shows  "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~ prime p"
-  by (auto simp add: prime_nat_def)
+  by (auto simp add: prime_def)
 
 
 lemma two_dvd_exp: "0<x \<Longrightarrow> (2::nat) dvd 2^x"
@@ -291,8 +291,8 @@ lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow
 lemma prime_equal: fixes p::nat shows "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
 proof -
   assume a: "prime p" and b: "prime q" and c: "2^x=p*q"
-  from a have d: "1 < p" by (simp add: prime_nat_def)
-  moreover from b have e: "1<q" by (simp add: prime_nat_def)
+  from a have d: "1 < p" by (simp add: prime_def)
+  moreover from b have e: "1<q" by (simp add: prime_def)
   show "p=q"
   proof (cases "p=2")
     assume p: "p=2" then have "2 dvd q" using c and exp_prod1[of q x] and e by simp

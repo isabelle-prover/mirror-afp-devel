@@ -42,7 +42,7 @@ proof (rule ccontr)
     by (metis prime_factors_prime_nat prime_ge_2_nat)
   hence j1: "j \<noteq> 1" by auto
   from i have "j dvd i" by auto
-  with j1 ji p[unfolded prime_nat_def] show False by auto
+  with j1 ji p[unfolded prime_def] show False by auto
 qed
 
 end

@@ -32,7 +32,7 @@ proof (rule ccontr)
   hence "EX q. prime q & q dvd p & q dvd (m div (p^(exponent p m)))"
     by (metis dvd.dual_order.refl p prime_imp_coprime_nat)
   hence "EX q. q = p & q dvd (m div (p^(exponent p m)))"
-    by (metis one_not_prime_nat p prime_nat_def)
+    by (metis one_not_prime_nat p prime_def)
   hence  "EX q. p dvd (m div (p^(exponent p m)))" by auto
   hence "p dvd (m div (p^(exponent p m)))" by auto
   with p m show "False" by (auto simp add: exp_is_max_div)

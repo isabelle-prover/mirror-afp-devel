@@ -156,8 +156,8 @@ proof -
   proof -
     have "0 <= (length (nat_to_bv (p * q))) - Suc 0" 
     proof -
-      from p have p2: "1<p" by (simp add: prime_nat_def)
-      moreover from q have "1<q" by (simp add: prime_nat_def)
+      from p have p2: "1<p" by (simp add: prime_def)
+      moreover from q have "1<q" by (simp add: prime_def)
       ultimately have "p<p*q" by simp
       then have "1<p*q" using p2 by arith
       then show ?thesis using len_nat_to_bv_pos by simp
@@ -332,8 +332,8 @@ proof -
   moreover have "  roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8 - (8 - (length (nat_to_bv (p * q)) - Suc 0) mod 8) = (length (nat_to_bv (p*q))-Suc 0)" using x and emBits_roundup_cancel2 by simp
   moreover have "0<length (nat_to_bv (p*q))" 
   proof -
-    from p have s: "1<p" by (simp add: prime_nat_def)
-    moreover from q have "1<q" by (simp add: prime_nat_def)
+    from p have s: "1<p" by (simp add: prime_def)
+    moreover from q have "1<q" by (simp add: prime_def)
     ultimately have "p<p*q" by simp 
     then have "1<p*q" using s by arith
     then show ?thesis using len_nat_to_bv_pos by simp
@@ -515,8 +515,8 @@ proof -
       proof -
         have "0<p*q"
         proof -
-          have "0<p" using a by (simp add: prime_nat_def)
-          moreover have "0<q" using b by (simp add: prime_nat_def)
+          have "0<p" using a by (simp add: prime_def)
+          moreover have "0<q" using b by (simp add: prime_def)
           ultimately show ?thesis by simp
         qed
         moreover have "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q" 

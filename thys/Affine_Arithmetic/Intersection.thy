@@ -1901,7 +1901,7 @@ proof safe
     fix n
     have "f n \<in> UNIV \<rightarrow> {-1 <..< 1}"
       using assms
-      by (auto simp: f_def Pi_iff diff_less_iff intro!: less_one_multI minus_one_less_multI)
+      by (auto simp: f_def Pi_iff intro!: less_one_multI minus_one_less_multI)
     from list_allD[OF segments_of_aform_strict[OF this assms(2)] seg]
     show "aform_val (f n) X \<in> (\<lambda>x. x \<bullet> normal_of_segment ((a, b), c, d)) -`
         {..support_of_segment ((a, b), c, d)}"

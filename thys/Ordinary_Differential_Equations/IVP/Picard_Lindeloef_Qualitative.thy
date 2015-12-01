@@ -511,8 +511,7 @@ proof safe
     have "x_max \<le> x1" using max by simp
     hence "?m \<le> x1" using max x1 t1 by simp
     hence "dist x1 ?m = x1 - ?m"
-      using x1 max
-      by (auto intro!: abs_of_nonneg simp add: dist_real_def diff_le_iff(1))
+      using x1 max by (auto intro!: abs_of_nonneg simp add: dist_real_def)
     ultimately
     show False using max x1 t1 by simp
   qed

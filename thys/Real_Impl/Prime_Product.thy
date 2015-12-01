@@ -154,7 +154,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         def n' \<equiv> "n div i"
         from mod True have n: "n = n' * i" by (auto simp: n'_def dvd_eq_mod_eq_0)
         have prime: "prime i" 
-          unfolding prime_nat_def
+          unfolding prime_def
         proof (intro conjI allI impI)
           fix m
           assume m: "m dvd i"
