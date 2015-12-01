@@ -60,6 +60,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
 <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
@@ -349,6 +350,7 @@
 <a href="entries/Markov_Models.shtml">Markov_Models</a> &nbsp;
 <a href="entries/Density_Compiler.shtml">Density_Compiler</a> &nbsp;
 <a href="entries/Random_Graph_Subgraph_Threshold.shtml">Random_Graph_Subgraph_Threshold</a> &nbsp;
+<a href="entries/Ergodic_Theory.shtml">Ergodic_Theory</a> &nbsp;
 </div>
 
 <h3>Number Theory</h3>

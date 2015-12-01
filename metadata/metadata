@@ -162,7 +162,7 @@ abstract =
 title = The Tortoise and Hare Algorithm
 author = Peter Gammie <http://peteg.org/>
 date = 2015-11-18
-topic = Algorithms
+topic = Computer Science/Algorithms
 abstract = We formalize the Tortoise and Hare cycle-finding algorithm ascribed to Floyd by Knuth, and an improved version due to Brent.
 
 [UPF]
@@ -2433,7 +2433,7 @@ date = 2014-05-28
 topic = Computer Science/System Description Languages
 abstract =
  We present an executable formalization of the language Promela, the
- description language for models of the model checker SPIN. This
+ description lasebastien.gouezel@univ-rennes1.frnguage for models of the model checker SPIN. This
  formalization is part of the work for a completely verified model
  checker (CAVA), but also serves as a useful (and executable!)
  description of the semantics of the language itself, something that is
@@ -3236,3 +3236,12 @@ abstract =
   We present a formalization of parity games (a two-player game on
   directed graphs) and a proof of their positional determinacy in
   Isabelle/HOL.  This proof works for both finite and infinite games.
+
+[Ergodic_Theory]
+title = Ergodic Theory
+author = Sebastien Gouezel <mailto:sebastien.gouezel@univ-rennes1.fr>
+date = 2015-12-01
+topic = Mathematics/Probability Theory
+abstract =
+  Abstract: Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
+
