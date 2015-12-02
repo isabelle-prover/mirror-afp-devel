@@ -171,7 +171,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         from False have "(i dvd n div i) = False" by auto
         note simp = simp[unfolded this if_False]
         note IH = IH(2)[OF False _ _ refl]
-        from prime have "i > 0" by auto
+        from prime have "i > 0" by (simp add: prime_gt_0_nat)
         note mult = multiplicity_product_nat[OF prems(9) this]
         note mult_i = multiplicity_prime_nat[OF prime] multiplicity_prime[OF prime]
         show ?thesis
@@ -263,7 +263,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
             by (metis n0 prime_factors_altdef2_nat)
           then obtain k where n: "n = m * k" ..
           from mp have pm: "prime m" by auto
-          hence m2: "m \<ge> 2" and m0: "m > 0" by auto
+          hence m2: "m \<ge> 2" and m0: "m > 0" by (auto simp: prime_def)
           from prems(6)[OF m2] md have mi: "m \<ge> i" by force
           {
             assume "multiplicity m n \<noteq> 1"

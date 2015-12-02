@@ -124,7 +124,7 @@ proof -
   moreover
   { assume pi1: "pi < x" and pi2: "x < 2 * pi"
     then have "0 < x - pi" and "x - pi < pi" by arith+
-    then have "sin (x - pi) \<noteq> 0" by (auto dest: sin_gt_zero)
+    then have "sin (x - pi) \<noteq> 0" using sin_gt_zero by fastforce
     with pi1 pi2 have "sin x \<noteq> 0" by simp }
   ultimately show ?thesis using 0 pi by arith
 qed

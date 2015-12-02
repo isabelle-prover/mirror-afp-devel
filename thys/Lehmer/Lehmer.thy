@@ -232,7 +232,8 @@ theorem converse_lehmer:
                     \<and> a > 0 \<and> a < p"
     using converse_lehmer_weak[OF prime_p] by blast
   { fix q assume q:"q \<in> prime_factors (p - 1)"
-    hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2` by (auto simp add: dvd_nat_bounds prime_factors_dvd_nat)
+    hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2` 
+      by (auto simp add: dvd_nat_bounds prime_factors_dvd_nat prime_factors_gt_0_nat)
     hence "(p - 1) div q \<ge> 1" using div_le_mono[of "q" "p - 1" q] div_self[of q] by simp
     have "q \<ge> 2" using q by (simp add: prime_factors_prime_nat prime_ge_2_nat)
     hence "(p - 1) div q < p - 1" using `p \<ge> 2` by simp
