@@ -17,11 +17,11 @@ lemma ACI_norm_derivs_alt: "\<guillemotleft>derivs w r\<guillemotright> = fold (
   by (induct w arbitrary: r) (auto simp: ACI_norm_deriv)
 
 permanent_interpretation brzozowski: rexp_DFA "\<lambda>r. \<guillemotleft>r\<guillemotright>" "\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>" nullable lang
-  defines brzozowski_closure = "rexp_DA.closure (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
-    and check_eqv_brz = "rexp_DA.check_eqv (\<lambda>r. \<guillemotleft>r\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
-    and reachable_brz = "rexp_DA.reachable (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
-    and automaton_brz = "rexp_DA.automaton (\<lambda>r. \<guillemotleft>r :: 'a rexp\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>)"
-    and match_brz = "rexp_DA.match (\<lambda>r. \<guillemotleft>r\<guillemotright>) (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) (nullable :: 'a rexp \<Rightarrow> bool)"
+  defines brzozowski_closure = brzozowski.closure
+    and check_eqv_brz = brzozowski.check_eqv
+    and reachable_brz = brzozowski.reachable
+    and automaton_brz = brzozowski.automaton
+    and match_brz = brzozowski.match
 proof (unfold_locales, goal_cases)
   case 1 show ?case by (rule lang_ACI_norm)
 next
@@ -31,6 +31,7 @@ next
 next
   case 4 show ?case by (simp only: ACI_norm_derivs_alt[symmetric] finite_derivs)
 qed
+
 
 subsection {* Brzozowski Derivatives Modulo ACI Operating on the Quotient Type *}
 
@@ -76,11 +77,11 @@ lemma [transfer_rule]: "rel_fun (rel_set (pcr_ACI_rexp op=)) op = (finite o imag
   done
 
 permanent_interpretation brzozowski_quotient: rexp_DFA ACI_class ACI_deriv ACI_nullable ACI_lang
-  defines brzozowski_quotient_closure = "rexp_DA.closure ACI_deriv (ACI_nullable :: 'a ACI_rexp \<Rightarrow> bool)"
-    and check_eqv_brzq = "rexp_DA.check_eqv ACI_class ACI_deriv (ACI_nullable :: 'a ACI_rexp \<Rightarrow> bool)"
-    and reachable_brzq = "rexp_DA.reachable (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
-    and automaton_brzq = "rexp_DA.automaton (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv"
-    and match_brzq = "rexp_DA.match (ACI_class :: 'a rexp \<Rightarrow> 'a ACI_rexp) ACI_deriv ACI_nullable"
+  defines brzozowski_quotient_closure = brzozowski_quotient.closure
+    and check_eqv_brzq = brzozowski_quotient.check_eqv
+    and reachable_brzq = brzozowski_quotient.reachable
+    and automaton_brzq = brzozowski_quotient.automaton
+    and match_brzq = brzozowski_quotient.match
 proof (unfold_locales, goal_cases)
   case 1 show ?case by transfer (rule refl)
 next
@@ -96,11 +97,11 @@ qed
 subsection {* Brzozowski Derivatives Modulo ACI++ (Only Soundness) *}
 
 permanent_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable lang
-  defines nderiv_closure = "rexp_DA.closure nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
-    and check_eqv_n = "rexp_DA.check_eqv (\<lambda>x. norm x) nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
-    and reachable_n = "rexp_DA.reachable (\<lambda>r :: 'a rexp. norm r) nderiv"
-    and automaton_n = "rexp_DA.automaton (\<lambda>r :: 'a rexp. norm r) nderiv"
-    and match_n = "rexp_DA.match (\<lambda>r. norm r) nderiv (nullable :: 'a rexp \<Rightarrow> bool)"
+  defines nderiv_closure = nderiv.closure
+    and check_eqv_n = nderiv.check_eqv
+    and reachable_n = nderiv.reachable
+    and automaton_n = nderiv.automaton
+    and match_n = nderiv.match
 proof (unfold_locales, goal_cases)
   case 1 show ?case by simp
 next
@@ -113,11 +114,11 @@ qed
 subsection {* Partial Derivatives *}
 
 permanent_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. EX p:P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
-  defines pderiv_closure = "rexp_DA.closure pderiv_set (\<lambda>P :: 'a rexp set. EX p:P. nullable p)"
-    and check_eqv_p = "rexp_DA.check_eqv (\<lambda>r :: 'a rexp. {r}) pderiv_set (\<lambda>P. EX p:P. nullable p)"
-    and reachable_p = "rexp_DA.reachable (\<lambda>r :: 'a rexp. {r}) pderiv_set"
-    and automaton_p = "rexp_DA.automaton (\<lambda>r :: 'a rexp. {r}) pderiv_set"
-    and match_p = "rexp_DA.match (\<lambda>r :: 'a rexp. {r}) pderiv_set (\<lambda>P. EX p:P. nullable p)"
+  defines pderiv_closure = pderiv.closure
+    and check_eqv_p = pderiv.check_eqv
+    and reachable_p = pderiv.reachable
+    and automaton_p = pderiv.automaton
+    and match_p = pderiv.match
 proof (unfold_locales, goal_cases)
   case 1 show ?case by simp
 next
@@ -134,11 +135,11 @@ next
 qed
 
 permanent_interpretation pnderiv: rexp_DFA "\<lambda>r. r" pnderiv nullable lang
-  defines pnderiv_closure = "rexp_DA.closure pnderiv (nullable :: 'a rexp \<Rightarrow> bool)"
-    and check_eqv_pn = "rexp_DA.check_eqv (\<lambda>r :: 'a rexp. r) pnderiv nullable"
-    and reachable_pn = "rexp_DA.reachable (\<lambda>r :: 'a rexp. r) pnderiv"
-    and automaton_pn = "rexp_DA.automaton (\<lambda>r :: 'a rexp. r) pnderiv"
-    and match_pn = "rexp_DA.match (\<lambda>r :: 'a rexp. r) pnderiv nullable"
+  defines pnderiv_closure = pnderiv.closure
+    and check_eqv_pn = pnderiv.check_eqv
+    and reachable_pn = pnderiv.reachable
+    and automaton_pn = pnderiv.automaton
+    and match_pn = pnderiv.match
 proof (unfold_locales, goal_cases)
   case 1 show ?case by simp
 next

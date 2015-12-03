@@ -43,7 +43,7 @@ permanent_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} li
   and ENC = \<Phi>.ENC
   and dec_interp = \<Phi>.stream_dec
   and any = \<Phi>.any
-  rewrites "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a list)) (case_prod Singleton) = \<QQ> Enum.enum"
+  rewrites "embed2.samequot_exec lookup (\<epsilon> (Enum.enum :: 'a :: {enum, linorder} list)) (case_prod Singleton) = \<QQ> Enum.enum"
   by unfold_locales (auto simp: \<sigma>_def \<pi>_def \<QQ>_def)
 
 lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of_norm = trans[OF sym[OF \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_norm] \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of]

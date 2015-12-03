@@ -202,11 +202,11 @@ instance by intro_classes (transfer, auto simp: eq_mrexp3_eq)
 end
 
 permanent_interpretation before2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
-  defines before2_closure = "rexp_DA.closure delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
-    and check_eqv_b2 = "rexp_DA.check_eqv init_okm delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
-    and reachable_b2 = "rexp_DA.reachable (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"
-    and automaton_b2 = "rexp_DA.automaton (init_okm :: 'a rexp \<Rightarrow> 'a ok_mrexp3) delta_okm"
-    and match_b2 = "rexp_DA.match init_okm delta_okm (nullable_okm :: 'a ok_mrexp3 \<Rightarrow> bool)"
+  defines before2_closure = before2.closure
+    and check_eqv_b2 = before2.check_eqv
+    and reachable_b2 = before2.reachable
+    and automaton_b2 = before2.automaton
+    and match_b2 = before2.match
 proof (standard, goal_cases)
   case (1 r) show "lang_okm (init_okm r) = lang r"
     by transfer (auto simp: split_beta init_a_def nonfinal_empty_mrexp Lm_follow Lm_empty
