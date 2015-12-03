@@ -113,7 +113,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   moreover {
     from uP have "0 \<le> 1 - P s" by(auto simp:sign_simps)
     with nQ and bQ and hg have "0 \<le> ... * wp g Q s"
-      by(auto intro:mult_nonneg_nonneg)
+      by (metis healthy_nnegD2 mult_nonneg_nonneg nneg_def)
   }
   ultimately show "0 \<le> P s * wp f Q s + (1 - P s) * wp g Q s"
     by(auto intro:mult_nonneg_nonneg)

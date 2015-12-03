@@ -76,7 +76,7 @@ proof (rule,rule ccontr)
       hence "poly p z1<0" and "poly p z2>0" and "z1\<noteq>z2" using z1(3) z2(3) by auto
       hence "(\<exists>z>z1. z < z2 \<and> poly p z = 0) \<or> (\<exists>z>z2. z < z1 \<and> poly p z = 0)"
         using poly_IVT_neg poly_IVT_pos by (subst (asm) linorder_class.neq_iff,auto)
-      thus ?thesis using z1(1,2) z2(1,2) by (metis less_eq_real_def order.strict_trans2)
+      thus ?thesis using z1(1,2) z2(1,2) by (meson dual_order.strict_trans not_le) 
     qed
   thus False using `?Q` by auto
 next

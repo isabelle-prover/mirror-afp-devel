@@ -73,7 +73,7 @@ proof -
       moreover
       { assume ass: "p dvd x-y"
         have "x = y"
-        proof (rule ccontr, case_tac "x-y \<ge> 0", auto)
+        proof (rule ccontr, case_tac "x-y \<ge> 0")
           assume "x-y \<ge> 0" and "x \<noteq> y" hence "x-y > 0" by auto
           with ass have "\<not> x-y < p" by (auto simp add: zdvd_not_zless)
           with xn y0 n p0 show "False" by auto
@@ -109,7 +109,7 @@ proof -
       moreover
       { assume ass: "p dvd x-y"
         have "x = y"
-        proof (rule ccontr, case_tac "x-y \<ge> 0", auto)
+        proof (rule ccontr, case_tac "x-y \<ge> 0")
           assume "x-y \<ge> 0" and "x \<noteq> y" hence "x-y > 0" by auto
           with ass have "\<not> x-y < p" by (auto simp add: zdvd_not_zless)
           with xn y0 n p0 show "False" by auto

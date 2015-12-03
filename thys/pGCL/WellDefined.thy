@@ -331,7 +331,7 @@ proof(rule sub_distrib_pconjI, unfold wp_eval, rule le_funI)
   fix Q::"'s \<Rightarrow> real" and R::"'s \<Rightarrow> real" and s::'s
   assume uQ: "unitary Q" and uR: "unitary R"
 
-  have nnA: "0 \<le> P s" and nnB: "0 \<le> 1 - P s"
+  have nnA: "0 \<le> P s" and nnB: "P s \<le> 1"
     using uP by(auto simp:sign_simps)
   note nn = nnA nnB
 
@@ -360,7 +360,7 @@ proof(rule sub_distrib_pconjI, unfold wp_eval, rule le_funI)
     from sdp_a sdp_b uQ uR
     have "P s * (wlp a Q && wp a R) s \<le> P s * wp a (Q && R) s"
      and "(1 - P s) * (wlp b Q && wp b R) s \<le> (1 - P s) * wp b (Q && R) s"
-      by(auto intro:le_funD sub_distrib_pconjD nn mult_left_mono)
+       by (simp_all add: entailsD mult_left_mono nn sub_distrib_pconjD)
     hence "P s *       ((wlp a Q && wp a R) s) +
            (1 - P s) * ((wlp b Q && wp b R) s) \<le>
            P s * wp a (Q && R) s + (1 - P s) * wp b (Q && R) s"

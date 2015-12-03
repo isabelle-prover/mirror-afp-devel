@@ -78,8 +78,8 @@ lemma prime_factors_one[simp]: shows "prime_factors (Suc 0) = {}"
 
 lemma prime_factors_prime: fixes p :: nat assumes "prime p" shows "prime_factors p = {p}"
 proof
-  have "0 < p" using assms by auto
-  then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add:prime_factors_altdef2_nat)
+  have "0 < p" using assms by (simp add: prime_gt_0_nat) 
+  then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add: prime_factors_altdef2_nat)
   { fix q assume "q \<in> prime_factors p"
     then have "q dvd p" "prime q" using `0<p` by (auto simp add:prime_factors_altdef2_nat)
     with assms have "q=p" by (auto simp: prime_def)
@@ -389,9 +389,8 @@ proof (induction p rule: less_induct)
   }
   moreover
   { assume "p > 3"
-
-    have "\<forall>q \<in> prime_factors (p - 1) . q < p" using `prime p`
-      by (fastforce elim: p_in_prime_factorsE)
+    have qlp: "\<forall>q \<in> prime_factors (p - 1) . q < p" using `prime p`
+      by (metis One_nat_def Suc_pred le_imp_less_Suc lessI less_trans p_in_prime_factorsE prime_gt_1_nat zero_less_diff)
     hence factor_certs:"\<forall>q \<in> prime_factors (p - 1) . (\<exists>c . ((Prime q \<in> set c) \<and> (valid_cert c)
                                                       \<and> length c \<le> 6*log 2 q - 4) \<and> (\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 q))"
       by (auto intro: less.IH)
@@ -421,7 +420,7 @@ proof (induction p rule: less_induct)
       fix c assume "c \<in> set (map f qs)"
       then obtain q where "c = f q" and "q \<in> set qs" by auto
       hence *:"\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 q" using f qs_eq by blast
-      have "q < p" "q > 0" using `\<forall>q \<in> prime_factors (p - 1) . q < p` `q \<in> set qs` qs_eq by fast+
+      have "q < p" "q > 0" using qlp `q \<in> set qs` qs_eq prime_factors_gt_0_nat by auto
       show "\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 p"
       proof
         fix x assume "x \<in> set c"
@@ -475,7 +474,7 @@ proof (induction p rule: less_induct)
                                "(\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 p)" by blast
     hence "Prime p \<in> set (Prime p # c)" "valid_cert (Prime p # c)"
          "(\<forall> x \<in> set (Prime p # c). size_pratt x \<le> 3 * log 2 p)"
-    using a `prime p` by auto
+    using a `prime p` by (auto simp: Primes.prime_gt_Suc_0_nat)
     hence ?case using c by blast
   }
   moreover have "p\<ge>2" using less by (simp add: prime_ge_2_nat)

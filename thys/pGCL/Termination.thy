@@ -207,7 +207,7 @@ lemma termination_0_1:
   fixes body :: "'s prog"
   assumes wb: "well_def body"
       -- "The loop terminates in one step with nonzero probability"
-      and onestep: "\<lambda>s. p \<tturnstile> wp body \<guillemotleft>\<N> G\<guillemotright>"
+      and onestep: "(\<lambda>s. p) \<tturnstile> wp body \<guillemotleft>\<N> G\<guillemotright>"
       and nzp:     "0 < p"
       -- "The body is maximal i.e.~it terminates absolutely."
       and mb:      "maximal (wp body)"
@@ -222,7 +222,7 @@ proof -
   hence swp: "sound (wp do G \<longrightarrow> body od (\<lambda>s. 1))" by(blast)
 
   txt {* @{term p} is no greater than $1$, by feasibility. *}
-  from onestep have "\<And>s. p \<le> wp body \<guillemotleft>\<N> G\<guillemotright> s" by(auto)
+  from onestep have onestep': "\<And>s. p \<le> wp body \<guillemotleft>\<N> G\<guillemotright> s" by(auto)
   also {
     from hb have "unitary (wp body \<guillemotleft>\<N> G\<guillemotright>)" by(auto)
     hence "\<And>s. wp body \<guillemotleft>\<N> G\<guillemotright> s \<le> 1" by(auto)
@@ -247,9 +247,9 @@ proof -
     hence "p * (1-k) + k \<le> \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * (p * (1-k) + k)"
       by(cases "G s", simp_all)
     txt {* By the one-step termination assumption: *}
-    also from onestep nz1k
+    also from onestep' nz1k
     have "... \<le> \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * (wp body \<guillemotleft>\<N> G\<guillemotright> s * (1-k) + k)"
-      by(auto intro:add_left_mono add_right_mono mult_left_mono mult_right_mono)
+      by (simp add: mult_right_mono ordered_comm_semiring_class.comm_mult_left_mono)
     txt {* By scaling: *}
     also from nz1k
     have "... =  \<guillemotleft>\<N> G\<guillemotright> s + \<guillemotleft>G\<guillemotright> s * (wp body (\<lambda>s. \<guillemotleft>\<N> G\<guillemotright> s * (1-k)) s + k)"

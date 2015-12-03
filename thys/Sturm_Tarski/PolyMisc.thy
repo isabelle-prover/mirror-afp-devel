@@ -176,7 +176,7 @@ lemma poly_power_n_odd:
   shows "poly ([:-a,1:]^n) x>0 \<longleftrightarrow> (x>a)" using assms 
 proof -
   have "poly ([:-a,1:]^n) x\<ge>0 = (poly [:- a, 1:] x \<ge>0)" 
-    unfolding poly_power using zero_le_odd_power[OF `odd n`] by auto
+    unfolding poly_power using zero_le_odd_power[OF `odd n`] by blast 
   also have "(poly [:- a, 1:] x \<ge>0) = (x\<ge>a)" by fastforce
   finally have "poly ([:-a,1:]^n) x\<ge>0 = (x\<ge>a)" .
   moreover have "poly ([:-a,1:]^n) x=0 = (x=a)" by(rule poly_power_n_eq, metis assms even_zero)    
