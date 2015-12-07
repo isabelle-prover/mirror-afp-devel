@@ -24,36 +24,41 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">E</font>rgodic
-<font class="first">T</font>heory
+<h1><font class="first">E</font>uler's
+<font class="first">P</font>artition
+<font class="first">T</font>heorem
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Ergodic Theory</td></tr>
+        <td class="data" width="80%">Euler's Partition Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Sebastien Gouezel (sebastien /dot/ gouezel /at/ univ-rennes1 /dot/ fr)</td></tr>
+        <td class="data">Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-12-01</td></tr>
+        <td class="data">2015-11-19</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
+
+Euler's Partition Theorem states that the number of partitions with only
+distinct parts is equal to the number of partitions with only odd parts.
+The combinatorial proof follows John Harrison's HOL Light formalization.
+This theorem is the 45th theorem of the Top 100 Theorems list.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Ergodic_Theory-AFP,
-  author  = {Sebastien Gouezel},
-  title   = {Ergodic Theory},
+			<pre>@article{Euler_Partition-AFP,
+  author  = {Lukas Bulwahn},
+  title   = {Euler's Partition Theorem},
   journal = {Archive of Formal Proofs},
-  month   = dec,
+  month   = nov,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Ergodic_Theory.shtml},
+  note    = {\url{http://afp.sf.net/entries/Euler_Partition.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -73,7 +78,7 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
 
 <p></p>
 
-<!--#set var="name" value="Ergodic_Theory" -->
+<!--#set var="name" value="Euler_Partition" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

@@ -24,36 +24,37 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">E</font>rgodic
-<font class="first">T</font>heory
+<h1><font class="first">L</font>atin
+<font class="first">S</font>quare
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Ergodic Theory</td></tr>
+        <td class="data" width="80%">Latin Square</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Sebastien Gouezel (sebastien /dot/ gouezel /at/ univ-rennes1 /dot/ fr)</td></tr>
+        <td class="data">Alexander Bentkamp (bentkamp /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-12-01</td></tr>
+        <td class="data">2015-12-02</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
+
+A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Ergodic_Theory-AFP,
-  author  = {Sebastien Gouezel},
-  title   = {Ergodic Theory},
+			<pre>@article{Latin_Square-AFP,
+  author  = {Alexander Bentkamp},
+  title   = {Latin Square},
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Ergodic_Theory.shtml},
+  note    = {\url{http://afp.sf.net/entries/Latin_Square.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -61,6 +62,10 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Marriage.shtml">Marriage</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -73,7 +78,7 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
 
 <p></p>
 
-<!--#set var="name" value="Ergodic_Theory" -->
+<!--#set var="name" value="Latin_Square" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

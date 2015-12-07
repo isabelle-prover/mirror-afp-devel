@@ -2692,6 +2692,17 @@ abstract =
   as a closed formula. This theorem is the 88th theorem in a list of the
   ``<a href="http://www.cs.ru.nl/~freek/100/">Top 100 Mathematical Theorems</a>''.
 
+[Euler_Partition]
+title = Euler's Partition Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+date = 2015-11-19
+topic = Mathematics/Combinatorics
+abstract =
+  Euler's Partition Theorem states that the number of partitions with only
+  distinct parts is equal to the number of partitions with only odd parts.
+  The combinatorial proof follows John Harrison's HOL Light formalization.
+  This theorem is the 45th theorem of the Top 100 Theorems list.
+
 [Discrete_Summation]
 title = Discrete Summation
 author = Florian Haftmann <http://isabelle.in.tum.de/~haftmann>
@@ -3242,6 +3253,13 @@ title = Ergodic Theory
 author = Sebastien Gouezel <mailto:sebastien.gouezel@univ-rennes1.fr>
 date = 2015-12-01
 topic = Mathematics/Probability Theory
-abstract =
-  Abstract: Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
+abstract = Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
 
+[Latin_Square]
+title = Latin Square
+author = Alexander Bentkamp <mailto:bentkamp@gmail.com>
+date = 2015-12-02
+topic = Mathematics/Combinatorics
+depends-on = Marriage
+abstract =
+  A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.

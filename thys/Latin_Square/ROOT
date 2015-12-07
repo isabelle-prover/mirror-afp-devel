@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Latin_Square" (AFP) = Marriage +
+  options [timeout = 600]
+
+  theories
+    Latin_Square
+
+  document_files
+    "root.bib"
+    "root.tex"
