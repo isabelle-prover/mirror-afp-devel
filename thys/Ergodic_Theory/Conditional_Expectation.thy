@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -357,7 +357,7 @@ proof (rule nn_cond_exp_charact)
   have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(3)])
   show "AE x in M. 0 \<le> f x * g x" using assms(1) assms(2) by auto
   show "AE x in M. 0 \<le> f x * nn_cond_exp M F g x"
-    by (metis (mono_tags, lifting) assms(1) ereal_0_le_mult eventually_mono nn_cond_exp_nonneg)
+    by (metis (mono_tags, lifting) assms(1) ereal_0_le_mult eventually_mono' nn_cond_exp_nonneg)
   show "(\<lambda>x. f x * g x) \<in> borel_measurable M" by measurable
 
   fix A assume "A \<in> sets F"

@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -715,7 +715,7 @@ next
     obtain f::real where "f > 0" "ereal f < e" using `0 < e` ereal_dense2 ereal_less(2) by blast
     have "eventually (\<lambda>n. emeasure M (K (Suc k) n) < ereal f) sequentially" using `f>0` main by simp
     thus "eventually (\<lambda>n. emeasure M (K (Suc k) n) < e) sequentially" using `ereal f < e`
-      by (meson eventually_mono le_less_trans less_imp_le)
+      by (simp add: eventually_mono')
   qed
   moreover have "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M (K (Suc k) n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)
@@ -885,7 +885,7 @@ proof -
     obtain f::real where "f > 0" "ereal f < e" using `0 < e` ereal_dense2 ereal_less(2) by blast
     have "eventually (\<lambda>n. emeasure M (Bad A n) < ereal f) sequentially" using `f>0` main by simp
     thus "eventually (\<lambda>n. emeasure M  (Bad A n) < e) sequentially" using `ereal f < e`
-      by (meson eventually_mono le_less_trans less_imp_le)
+      by (simp add: eventually_mono')
   qed
   moreover have  "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M  (Bad A n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)
@@ -1395,7 +1395,7 @@ proof -
 
   have "(T^^0)--`W = W" by (auto simp add: assms vimage_restr_def)
   moreover have "DW 0 = (return_time_function A)-` {0} \<inter> (T^^0)--`W"
-    unfolding DW_def induced_map_def vimage_restr_def return_time_function_def 
+    unfolding DW_def induced_map_def vimage_restr_def return_time_function_def
     apply (auto simp add: return_time0[of A]) using sets.sets_into_space[OF W_meas] by auto
   ultimately have "DW 0 = (return_time_function A)-` {0} \<inter> W" by simp
   hence "DW 0 = W - recurrent_subset A" using return_time0 by blast
@@ -1558,8 +1558,8 @@ proof -
 
   have "W = WA \<union> WB" "WA \<inter> WB = {}" using WA_def WB_def by auto
   have *: "emeasure M W = emeasure M WA + emeasure M WB"
-    by (subst `W = WA \<union> WB`, rule plus_emeasure[symmetric], auto simp add: `WA \<inter> WB = {}`) 
-  
+    by (subst `W = WA \<union> WB`, rule plus_emeasure[symmetric], auto simp add: `WA \<inter> WB = {}`)
+
   have W_AUB: "(induced_map A)--`W = (induced_map A)--`WA \<union> (induced_map A)--`WB"
     using `W = WA \<union> WB` by auto
   have W_AIB: "(induced_map A)--`WA \<inter> (induced_map A)--`WB = {}"
@@ -1832,7 +1832,7 @@ proof -
   ultimately have "\<And>y. induced_function A f y = induced_function A f y * indicator (\<Union>n. D n) y" by simp
   then have "(\<integral>\<^sup>+y. induced_function A f y \<partial>M) = (\<integral>\<^sup>+y \<in> (\<Union>n. D n). induced_function A f y \<partial>M)" by simp
   also have "... = (\<Sum>n. (\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M))"
-    apply (rule nn_integral_disjoint_family) 
+    apply (rule nn_integral_disjoint_family)
     unfolding induced_function_def by (auto simp add: pos0 setsum_nonneg `disjoint_family D`)
   finally have a: "(\<integral>\<^sup>+y. induced_function A f y \<partial>M) = (\<Sum>n. (\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M))"
     by simp
@@ -2223,7 +2223,7 @@ proof -
       unfolding induced_function_def birkhoff_sum_def phiA_def by simp
     also have "... = A.birkhoff_sum (induced_function A f) n x + (induced_function A f) ((TA^^n) x)" using Suc.IH R_def phiA_def by auto
     also have "... = A.birkhoff_sum  (induced_function A f) (n+1) x"
-      using A.birkhoff_sum_cocycle[where ?n= n and ?m=1 and ?f="induced_function A f" and ?x=x, symmetric] 
+      using A.birkhoff_sum_cocycle[where ?n= n and ?m=1 and ?f="induced_function A f" and ?x=x, symmetric]
       A.birkhoff_sum_1(2)[where ?f = "induced_function A f" and ?x = "(TA^^n) x"]
       unfolding TA_def by auto
     finally show ?case unfolding R_def phiA_def by simp

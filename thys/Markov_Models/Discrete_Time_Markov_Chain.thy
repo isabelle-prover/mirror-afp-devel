@@ -755,7 +755,7 @@ proof -
   then have "\<forall>\<omega>. alw (not N) \<omega> \<longrightarrow> fair t t' \<omega>"
     by (auto simp: fair_def)
   ultimately show ?thesis
-    by (rule eventually_rev_mono)
+    by (simp add: eventually_mono')
 qed
 
 lemma enabled_imp_trancl:

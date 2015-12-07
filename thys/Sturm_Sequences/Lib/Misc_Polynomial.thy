@@ -519,7 +519,7 @@ lemma poly_limit_aux:
 proof (subst filterlim_cong, rule refl, rule refl)
   show "eventually (\<lambda>x. poly p x / x^n = (\<Sum>i\<le>n. coeff p i / x^(n-i)))
             at_infinity"
-  proof (rule eventually_mono, clarify)
+  proof (rule eventually_mono')
     show "eventually (\<lambda>x::real. x \<noteq> 0) at_infinity"
         by (simp add: eventually_at_infinity, rule exI[of _ 1], auto)
     fix x :: real assume [simp]: "x \<noteq> 0"

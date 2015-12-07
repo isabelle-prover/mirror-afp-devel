@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -852,7 +852,7 @@ proof -
   moreover have "open {-\<infinity><..<(\<infinity>::ereal)}" by simp
   ultimately have "eventually (\<lambda>n. u n \<in> {-\<infinity><..<(\<infinity>::ereal)}) F" using assms tendsto_def by blast
   moreover have "\<And>x. x \<in>  {-\<infinity><..<(\<infinity>::ereal)} \<Longrightarrow> x = ereal(real_of_ereal x)" using ereal_real by auto
-  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono)
+  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono')
 qed
 
 lemma tendsto_mult_real_ereal:
@@ -1165,11 +1165,11 @@ proof -
   moreover have "\<And>x. x = ereal(real_of_ereal(x)) \<Longrightarrow> x + (-x) = 0"
     by (metis plus_ereal.simps(1) right_minus uminus_ereal.simps(1) zero_ereal_def)
   ultimately have "eventually (\<lambda>n. u n + (-u n) = 0) sequentially"
-    by (metis (mono_tags, lifting) eventually_mono)
+    by (metis (mono_tags, lifting) eventually_mono')
   moreover have "\<And>n. u n + (-u n) = 0 \<Longrightarrow> u n + v n + (-u n) = v n"
     by (metis add.commute add.left_commute add.left_neutral)
   ultimately have "eventually (\<lambda>n. u n + v n + (-u n) = v n) sequentially"
-    using eventually_mono by force
+    using eventually_mono' by force
   then have "limsup v = limsup (\<lambda>n.  u n + v n + (-u n))" using Limsup_eq by force
   then have "limsup v \<le> limsup (\<lambda>n. u n + v n) -a" using a `limsup (\<lambda>n. -u n) = -a` by (simp add: minus_ereal_def)
   then have "limsup (\<lambda>n. u n + v n) \<ge> a + limsup v" using assms(2) by (metis add.commute ereal_le_minus)
@@ -1198,11 +1198,11 @@ proof -
   moreover have "\<And>x. x = ereal(real_of_ereal(x)) \<Longrightarrow> x + (-x) = 0"
     by (metis plus_ereal.simps(1) right_minus uminus_ereal.simps(1) zero_ereal_def)
   ultimately have "eventually (\<lambda>n. u n + (-u n) = 0) sequentially"
-    by (metis (mono_tags, lifting) eventually_mono)
+    by (metis (mono_tags, lifting) eventually_mono')
   moreover have "\<And>n. u n + (-u n) = 0 \<Longrightarrow> u n + v n + (-u n) = v n"
     by (metis add.commute add.left_commute add.left_neutral)
   ultimately have "eventually (\<lambda>n. u n + v n + (-u n) = v n) sequentially"
-    using eventually_mono by force
+    using eventually_mono' by force
   then have "liminf v = liminf (\<lambda>n.  u n + v n + (-u n))" using Liminf_eq by force
   then have "liminf v \<ge> liminf (\<lambda>n. u n + v n) -a" using a `liminf (\<lambda>n. -u n) = -a` by (simp add: minus_ereal_def)
   then have "liminf (\<lambda>n. u n + v n) \<le> a + liminf v" using assms(2) by (metis add.commute ereal_minus_le)
@@ -1287,7 +1287,7 @@ proof -
   hence "\<And>m n. m > n \<Longrightarrow> A m \<subseteq> A n"
     by (metis add.commute le_add_diff_inverse nat_less_le)
   thus ?thesis
-    by (auto simp add: disjoint_family_on_def) 
+    by (auto simp add: disjoint_family_on_def)
        (metis insert_absorb insert_subset le_SucE le_antisym not_leE)
 qed
 
@@ -1404,7 +1404,7 @@ proof -
           using eventually_False_sequentially eventually_elim1 by blast
         moreover have "eventually (\<lambda>n. u n \<in> A i) sequentially" using H by simp
         ultimately show "\<forall>\<^sub>F n in sequentially. u n \<in> S"
-          by (meson eventually_mono subset_iff)
+          by (simp add: eventually_mono' subset_eq)
       qed
     qed
   }

@@ -531,7 +531,7 @@ proof (rule lipschitzI)
         by (rule continuous_on_subset) (simp add: t_bounds)
       have z_cont: "continuous_on {t0..t} (\<lambda>t. z t)" using z
         by (auto intro:continuous_on_subset)
-      have "continuous_on {t0..t1} (\<lambda>t. f (t, z t))" 
+      have "continuous_on {t0..t1} (\<lambda>t. f (t, z t))"
         by (metis (no_types) UNIV_I continuous continuous_Sigma continuous_on_subset interval subsetI z z_defined)
       hence fz_cont[intro, simp]:
         "continuous_on {t0..t} (\<lambda>t. f (t, z t))"
@@ -540,7 +540,7 @@ proof (rule lipschitzI)
       have "norm (P_inner y t - P_inner z t) =
         norm (integral {t0..t} (\<lambda>t. f (t, y t) - f (t, z t)))"
         using y
-        by (auto simp add: integral_sub P_inner_def)
+        by (auto simp add: integral_diff P_inner_def)
       also have "... \<le> integral {t0..t} (\<lambda>t. norm (f (t, y t) - f (t, z t)))"
         by (auto intro!: integral_norm_bound_integral continuous_intros)
       also have "... \<le> integral {t0..t} (\<lambda>t. L * norm (y t - z t))"
