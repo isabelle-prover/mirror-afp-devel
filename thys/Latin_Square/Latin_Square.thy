@@ -37,7 +37,7 @@ begin
   definition "enum_ex_latin_type (P:: latin_type \<Rightarrow> bool) = (\<exists>x. P x)"
 
 instance
-  apply default
+  apply standard
      apply (auto simp add: enum_latin_type_def enum_all_latin_type_def enum_ex_latin_type_def)
    apply (case_tac x,auto)
 by (metis latin_type.exhaust)
@@ -272,7 +272,7 @@ proof -
 
     have "{(i, x). i \<in> insert i0 I \<and> x \<in> A i} = {(i, x). i \<in> I \<and> x \<in> A i} \<union> {(i, x). i=i0 \<and> x\<in>A i0}" by auto
     moreover have "{(i, x). i \<in> I \<and> x \<in> A i} \<inter> {(i, x). i=i0 \<and> x\<in>A i0} = {}" using insert by auto
-    moreover have "finite {(i, x). i \<in> I \<and> x \<in> A i}" using insert by (metis (no_types, lifting) card_infinite neq0_conv card_S card_eq_0_iff empty_iff mult_is_0 not_finite_existsD splitE)
+    moreover have "finite {(i, x). i \<in> I \<and> x \<in> A i}" using insert rev_finite_subset[of "I \<times> UNION I A" "{(i, x). i \<in> I \<and> x \<in> A i}"] by auto
     moreover have "finite {(i, x). i=i0 \<and> x\<in>A i0}" using insert card_B card_infinite neq0_conv by blast
     ultimately have "card {(i, x). i \<in> insert i0 I \<and> x \<in> A i} = card {(i, x). i \<in> I \<and> x \<in> A i} + card {(i, x). i=i0 \<and> x\<in>A i0}" by (simp add: card_Un_disjoint)
     with card_S card_B have "card {(i, x). i \<in> insert i0 I \<and> x \<in> A i} = (card I + 1) * k" by auto
