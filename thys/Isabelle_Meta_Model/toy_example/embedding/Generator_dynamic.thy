@@ -326,7 +326,7 @@ end
 
 fun proof_show_gen f (thes, thes_when) st = st
   |> Proof.proof_results
-       (SOME ( Method.Source (Token.src ("-", Position.none) [])
+       (SOME ( Method.Source [Token.make_string ("-", Position.none)]
              , (Position.none, Position.none)))
   |> Seq.the_result ""
   |> f
@@ -362,7 +362,7 @@ val semi__command_proof = let open META_overload
        proof_show (Proof.let_bind_cmd [([of_semi__term e1], of_semi__term e2)])
    | META.Command_have (n, b, e, e_pr) => proof_show (fn st => st
        |> Proof.have_cmd true NONE (K I) [] []
-                         [( (To_sbinding n, if b then [Token.src ("simp", Position.none) []] else [])
+                         [( (To_sbinding n, if b then [[Token.make_string ("simp", Position.none)]] else [])
                           , [(of_semi__term e, [])])]
                          true
        |> snd
@@ -438,14 +438,14 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
-      [((To_sbinding s, List.map (fn s => Attrib.check_src lthy (Token.src (s, Position.none) []))
+      [((To_sbinding s, List.map (fn s => Attrib.check_src lthy [Token.make_string (s, Position.none)])
                           (if simp then ["simp", "code_unfold"] else [])),
         List.map (fn x => ([semi__thm_attribute_single lthy x], [])) l)]
       []
       false) lthy)
 | Theory_lemmas (Lemmas_simp_thms (s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
-      [((To_sbinding s, List.map (fn s => Attrib.check_src lthy (Token.src (s, Position.none) []))
+      [((To_sbinding s, List.map (fn s => Attrib.check_src lthy [Token.make_string (s, Position.none)])
                           ["simp", "code_unfold"]),
         List.map (fn x => (Proof_Context.get_thms lthy (To_string0 x), [])) l)]
       []
@@ -466,7 +466,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
              []
              (List.map (fn (n, (b, e)) =>
                          Element.Assumes [( ( To_sbinding n
-                                            , if b then [Token.src ("simp", Position.none) []] else [])
+                                            , if b then [[Token.make_string ("simp", Position.none)]] else [])
                                           , [(of_semi__term e, [])])])
                        l_spec)
              (Element.Shows [((@{binding ""}, []),[(of_semi__term concl, [])])])
