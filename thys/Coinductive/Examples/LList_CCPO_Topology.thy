@@ -288,7 +288,7 @@ lemma tendsto_Lim_at':
   assumes mono: "\<And>x y. x \<le> y \<Longrightarrow> lfinite x \<Longrightarrow> lfinite y \<Longrightarrow> f' x \<le> f' y"
   shows "(f ---> f l) (at' l)"
   unfolding f[abs_def]
-  apply (subst filterlim_cong[OF refl refl eventually_elim1[OF eventually_lfinite Lim_at'_lfinite]])
+  apply (subst filterlim_cong[OF refl refl eventually_mono[OF eventually_lfinite Lim_at'_lfinite]])
   apply assumption
   apply (rule tendsto_LimI[OF tendsto_Sup_at'[OF mono]])
   apply assumption+
@@ -698,7 +698,7 @@ qed
 
 lemma tendsto_elistsum: "(elistsum ---> elistsum xs) (at' xs)"
   apply (rule filterlim_cong[where g="listsum \<circ> list_of", THEN iffD2, OF refl refl])
-  apply (rule eventually_elim1[OF eventually_lfinite])
+  apply (rule eventually_mono[OF eventually_lfinite])
   apply simp
   unfolding elistsum_def
   apply (rule tendsto_LimI)

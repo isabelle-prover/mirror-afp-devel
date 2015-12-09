@@ -315,16 +315,15 @@ lemma (in quasi_sturm_seq) split_sign_changes_correct_nbh:
   defines "sign_changes' \<equiv> \<lambda>x\<^sub>0 ps x.
                \<Sum>ps'\<leftarrow>split_sign_changes ps x\<^sub>0. sign_changes ps' x"
   shows "eventually (\<lambda>x. sign_changes' x\<^sub>0 ps x = sign_changes ps x) (at x\<^sub>0)"
-proof (rule eventually_mono, goal_cases)
-  case 1
-  let ?ps_nz = "{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}"
-  show "eventually (\<lambda>x. \<forall>p\<in>?ps_nz. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
+proof (rule eventually_mono)
+  show "eventually (\<lambda>x. \<forall>p\<in>{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
       by (rule eventually_ball_finite, auto intro: poly_neighbourhood_same_sign)
-
-  show "\<forall>x. (\<forall>p\<in>{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}. sgn (poly p x) = sgn (poly p x\<^sub>0)) \<longrightarrow>
+next
+  fix x
+  show "(\<forall>p\<in>{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}. sgn (poly p x) = sgn (poly p x\<^sub>0)) \<Longrightarrow>
         sign_changes' x\<^sub>0 ps x = sign_changes ps x"
-  proof (clarify)
-    fix x assume nbh: "\<forall>p\<in>?ps_nz. sgn (poly p x) = sgn (poly p x\<^sub>0)"
+  proof -
+    fix x assume nbh: "\<forall>p\<in>{p \<in> set ps. poly p x\<^sub>0 \<noteq> 0}. sgn (poly p x) = sgn (poly p x\<^sub>0)"
     thus "sign_changes' x\<^sub>0 ps x = sign_changes ps x" using assms(1)
     proof (induction x\<^sub>0 rule: split_sign_changes_induct)
     case (3 p q r ps x\<^sub>0)
@@ -382,7 +381,7 @@ next
         have sgn_q: "\<And>x. sgn (poly q x) = sgn (poly q x\<^sub>0)" by simp
     ultimately have A:  "eventually (\<lambda>x. \<forall>p\<in>set[p,q]. sgn (poly p x) =
                            sgn (poly p x\<^sub>0)) (at x\<^sub>0)" by simp
-    thus ?case by (force intro: eventually_mono'[OF A]
+    thus ?case by (force intro: eventually_mono[OF A]
                                 sign_changes_cong')
 next
   case (3 p q r ps'' x\<^sub>0)
@@ -413,7 +412,7 @@ next
                   by (intro eventually_conj poly_neighbourhood_same_sign,
                       simp_all add: r_not_0)
             show ?thesis
-            proof (rule eventually_mono'[OF A], clarify,
+            proof (rule eventually_mono[OF A], clarify,
                    subst ps'_props, subst sign_changes_sturm_triple)
               fix x assume A: "sgn (poly p x) = sgn (poly p x\<^sub>0)"
                        and B: "sgn (poly r x) = sgn (poly r x\<^sub>0)"
@@ -451,7 +450,7 @@ next
             hence [simp]: "\<forall>p\<in>set ps'. poly p x\<^sub>0 \<noteq> 0"
                 using q_not_0 p_not_0 by simp
             show ?thesis
-            proof (rule eventually_mono')
+            proof (rule eventually_mono)
               fix x assume "\<forall>p\<in>set ps'. sgn (poly p x) = sgn (poly p x\<^sub>0)"
               thus "sign_changes ps' x = sign_changes ps' x\<^sub>0"
                   by (rule sign_changes_cong')
@@ -478,10 +477,10 @@ proof-
     hence "eventually (\<lambda>x. ?f pss x = ?f pss x\<^sub>0) (at x\<^sub>0)"
     proof (induction pss)
       case (Cons ps' pss)
-        have "\<forall>x. ?f pss x = ?f pss x\<^sub>0 \<and> sign_changes ps' x = sign_changes ps' x\<^sub>0
-                      \<longrightarrow> ?f (ps'#pss) x = ?f (ps'#pss) x\<^sub>0" by simp
-        note A = eventually_mono[OF this eventually_conj]
-        show ?case by (rule A, simp_all add: Cons)
+      then show ?case
+        apply (rule eventually_mono[OF eventually_conj])
+        apply (auto simp add: Cons.prems)
+        done
     qed simp
   }
   note A = this[of ?pss]
@@ -490,7 +489,7 @@ proof-
   note C = split_sign_changes_correct_nbh[OF assms]
   note D = split_sign_changes_correct[OF assms]
   note E = eventually_conj[OF B C]
-  show ?thesis by (rule eventually_mono'[OF E], auto simp: D)
+  show ?thesis by (rule eventually_mono[OF E], auto simp: D)
 qed
 
 (*<*)
@@ -533,7 +532,7 @@ proof-
                    sign_changes (q#ps') x = sign_changes (q#ps') x\<^sub>0) (at x\<^sub>0)"
            by (simp only: `ps!1 = q`, intro eventually_conj)
   show ?thesis
-  proof (rule eventually_mono'[OF A], clarify, goal_cases)
+  proof (rule eventually_mono[OF A], clarify, goal_cases)
     case prems: (1 x)
     from zero_less_mult_pos have zero_less_mult_pos':
         "\<And>a b. \<lbrakk>(0::real) < a*b; 0 < b\<rbrakk> \<Longrightarrow> 0 < a"
@@ -611,7 +610,7 @@ proof-
                   done
               have "eventually (\<lambda>x. x > a \<longrightarrow>
                         sign_changes ps x = sign_changes ps a) (at a)"
-                  apply (rule eventually_mono' [OF p_zero[OF `poly p a = 0` `p \<noteq> 0`]])
+                  apply (rule eventually_mono [OF p_zero[OF `poly p a = 0` `p \<noteq> 0`]])
                   apply force
                   done
               then obtain \<delta> where \<delta>_props:
@@ -1356,7 +1355,7 @@ proof
 
   show "eventually (\<lambda>x. sgn (poly (p div d * sturm_squarefree' p ! 1) x) =
                         (if x\<^sub>0 < x then 1 else -1)) (at x\<^sub>0)"
-  proof (rule eventually_mono'[OF ev], goal_cases)
+  proof (rule eventually_mono[OF ev], goal_cases)
       have [intro]:
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a < 0 \<Longrightarrow> a / (b * b) < 0"
           "\<And>a (b::real). b \<noteq> 0 \<Longrightarrow> a > 0 \<Longrightarrow> a / (b * b) > 0"

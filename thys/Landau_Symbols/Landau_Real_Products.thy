@@ -56,7 +56,7 @@ lemma div: "h1 \<in> H \<Longrightarrow> h2 \<in> H \<Longrightarrow> (\<lambda>
   by (subst divide_inverse) (intro mult inverse)
 
 lemma nonzero: "h \<in> H \<Longrightarrow> eventually (\<lambda>x. h x \<noteq> 0) at_top"
-  by (drule pos) (auto elim: eventually_elim1)
+  by (drule pos) (auto elim: eventually_mono)
 
 lemma landau_cases:
   assumes "h1 \<in> H" "h2 \<in> H"
@@ -234,7 +234,7 @@ proof (rule landau_function_family_pair_trans[OF _ assms(1)])
     fix p ::real
     note assms(3)[of p]
     also from assms(2) have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top) 
-    hence "f \<in> \<Theta>(\<lambda>x. f x powr 1)" by (auto intro!: bigthetaI_cong elim!: eventually_elim1)
+    hence "f \<in> \<Theta>(\<lambda>x. f x powr 1)" by (auto intro!: bigthetaI_cong elim!: eventually_mono)
     finally show "(\<lambda>x. g x powr p) \<in> o(\<lambda>x. f x powr 1)" .
   next
     fix p p1 p2 p3 :: real
@@ -263,7 +263,7 @@ proof (rule landau_function_family_pair_trans[OF _ assms(1)])
       by (simp add: powr_divide2[symmetric] landau_o.small.divide_eq1 
                     landau_o.small.divide_eq2 mult.commute)
     also have "?P \<longleftrightarrow> (\<lambda>x. f x powr p * g x powr p2) \<in> o(\<lambda>x. f x powr p1 * g x powr p3)"
-      using f_pos by (intro landau_o.small.cong_ex) (auto elim!: eventually_elim1)
+      using f_pos by (intro landau_o.small.cong_ex) (auto elim!: eventually_mono)
     finally show "(\<lambda>x. f x powr p * g x powr p2) \<in> o(\<lambda>x. f x powr p1 * g x powr p3)" .
   qed
 qed
@@ -281,7 +281,7 @@ proof
   fix p :: real
   from assms(3) have "(\<lambda>x. h x powr p) \<in> o(g)" unfolding dominates_def by simp
   also from assms(1) have "g \<in> \<Theta>(\<lambda>x. g x powr 1)"
-    by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
   also from assms(2) have "(\<lambda>x. g x powr 1) \<in> o(f)" unfolding dominates_def by simp
   finally show "(\<lambda>x. h x powr p) \<in> o(f)" .
 qed
@@ -322,7 +322,7 @@ next
     by (intro landau_function_family_powr_closure) simp_all
   from 2 have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (force simp: filterlim_at_top)
   hence "o(\<lambda>x. f x powr 1) = o(\<lambda>x. f x)" 
-    by (intro landau_o.small.cong) (auto elim!: eventually_elim1)
+    by (intro landau_o.small.cong) (auto elim!: eventually_mono)
   with 2 have "landau_function_family_pair (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
     by unfold_locales (auto intro: powr_closureI)
   thus ?case by (simp add: one_fun_def)
@@ -627,7 +627,7 @@ qed
 lemma eventually_nonneg_bigtheta_pow_realpow: 
   "\<Theta>(\<lambda>x. eval_primfun f x ^ e) = \<Theta>(\<lambda>x. eval_primfun f x powr real e)"
   using eval_primfun_pos[of f]
-  by (auto intro!: landau_theta.cong elim!: eventually_elim1 simp: powr_realpow)
+  by (auto intro!: landau_theta.cong elim!: eventually_mono simp: powr_realpow)
 
 lemma BIGTHETA_CONST_fold: 
   "BIGTHETA_CONST (c::real) (BIGTHETA_CONST d A) = BIGTHETA_CONST (c*d) A"

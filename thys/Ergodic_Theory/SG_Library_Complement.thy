@@ -746,7 +746,7 @@ proof -
       by (auto simp add: ge eventually_conj_iff)
     moreover have "\<And>x. ((f x > ereal (M-C)) \<and> (g x > ereal C)) \<Longrightarrow> (f x + g x > ereal M)"
       using ereal_add_strict_mono2 by fastforce
-    ultimately have "eventually (\<lambda>x. f x + g x > ereal M) F" using eventually_elim1 by force
+    ultimately have "eventually (\<lambda>x. f x + g x > ereal M) F" using eventually_mono by force
   }
   thus ?thesis by (simp add: tendsto_PInfty)
 qed
@@ -783,7 +783,7 @@ proof -
       by (auto simp add: ge eventually_conj_iff)
     moreover have  "\<And>x. ((f x < ereal (M-C)) \<and> (g x < ereal C)) \<Longrightarrow> (f x + g x < ereal M)"
       using ereal_add_strict_mono2 by fastforce
-    ultimately have "eventually (\<lambda>x. f x + g x < ereal M) F" using eventually_elim1 by force
+    ultimately have "eventually (\<lambda>x. f x + g x < ereal M) F" using eventually_mono by force
   }
   thus ?thesis by (simp add: tendsto_MInfty)
 qed
@@ -852,7 +852,7 @@ proof -
   moreover have "open {-\<infinity><..<(\<infinity>::ereal)}" by simp
   ultimately have "eventually (\<lambda>n. u n \<in> {-\<infinity><..<(\<infinity>::ereal)}) F" using assms tendsto_def by blast
   moreover have "\<And>x. x \<in>  {-\<infinity><..<(\<infinity>::ereal)} \<Longrightarrow> x = ereal(real_of_ereal x)" using ereal_real by auto
-  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono')
+  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono)
 qed
 
 lemma tendsto_mult_real_ereal:
@@ -901,7 +901,7 @@ proof -
     have "eventually (\<lambda>x. g x > M/a) F" using assms(3) by (simp add: tendsto_PInfty)
     hence "eventually (\<lambda>x. (f x > a) \<and> (g x > M/a)) F"
       using * by (auto simp add: eventually_conj_iff)
-    then have "eventually (\<lambda>x. f x * g x > K) F" using eventually_elim1 Imp by force
+    then have "eventually (\<lambda>x. f x * g x > K) F" using eventually_mono Imp by force
   }
   thus ?thesis by (auto simp add: tendsto_PInfty)
 qed
@@ -1003,7 +1003,7 @@ proof -
   then have "C = ereal(real_of_ereal C)" using ereal_real by force
   have "eventually (\<lambda>n. u n < C) sequentially" using C(1) unfolding Limsup_def
     apply (auto simp add: INF_less_iff)
-    using SUP_lessD eventually_elim1 by fastforce
+    using SUP_lessD eventually_mono by fastforce
   then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> u n < C" using eventually_sequentially by auto
   def D \<equiv> "max (real_of_ereal C) (Max {u n |n. n \<le> N})"
   have "\<And>n. u n \<le> D"
@@ -1165,11 +1165,11 @@ proof -
   moreover have "\<And>x. x = ereal(real_of_ereal(x)) \<Longrightarrow> x + (-x) = 0"
     by (metis plus_ereal.simps(1) right_minus uminus_ereal.simps(1) zero_ereal_def)
   ultimately have "eventually (\<lambda>n. u n + (-u n) = 0) sequentially"
-    by (metis (mono_tags, lifting) eventually_mono')
+    by (metis (mono_tags, lifting) eventually_mono)
   moreover have "\<And>n. u n + (-u n) = 0 \<Longrightarrow> u n + v n + (-u n) = v n"
     by (metis add.commute add.left_commute add.left_neutral)
   ultimately have "eventually (\<lambda>n. u n + v n + (-u n) = v n) sequentially"
-    using eventually_mono' by force
+    using eventually_mono by force
   then have "limsup v = limsup (\<lambda>n.  u n + v n + (-u n))" using Limsup_eq by force
   then have "limsup v \<le> limsup (\<lambda>n. u n + v n) -a" using a `limsup (\<lambda>n. -u n) = -a` by (simp add: minus_ereal_def)
   then have "limsup (\<lambda>n. u n + v n) \<ge> a + limsup v" using assms(2) by (metis add.commute ereal_le_minus)
@@ -1198,11 +1198,11 @@ proof -
   moreover have "\<And>x. x = ereal(real_of_ereal(x)) \<Longrightarrow> x + (-x) = 0"
     by (metis plus_ereal.simps(1) right_minus uminus_ereal.simps(1) zero_ereal_def)
   ultimately have "eventually (\<lambda>n. u n + (-u n) = 0) sequentially"
-    by (metis (mono_tags, lifting) eventually_mono')
+    by (metis (mono_tags, lifting) eventually_mono)
   moreover have "\<And>n. u n + (-u n) = 0 \<Longrightarrow> u n + v n + (-u n) = v n"
     by (metis add.commute add.left_commute add.left_neutral)
   ultimately have "eventually (\<lambda>n. u n + v n + (-u n) = v n) sequentially"
-    using eventually_mono' by force
+    using eventually_mono by force
   then have "liminf v = liminf (\<lambda>n.  u n + v n + (-u n))" using Liminf_eq by force
   then have "liminf v \<ge> liminf (\<lambda>n. u n + v n) -a" using a `liminf (\<lambda>n. -u n) = -a` by (simp add: minus_ereal_def)
   then have "liminf (\<lambda>n. u n + v n) \<le> a + liminf v" using assms(2) by (metis add.commute ereal_minus_le)
@@ -1401,10 +1401,10 @@ proof -
       proof (rule topological_tendstoI)
         fix S assume "open S" "c \<in> S"
         with A(3)[OF this] obtain i where "A i \<subseteq> S"
-          using eventually_False_sequentially eventually_elim1 by blast
+          using eventually_False_sequentially eventually_mono by blast
         moreover have "eventually (\<lambda>n. u n \<in> A i) sequentially" using H by simp
         ultimately show "\<forall>\<^sub>F n in sequentially. u n \<in> S"
-          by (simp add: eventually_mono' subset_eq)
+          by (simp add: eventually_mono subset_eq)
       qed
     qed
   }

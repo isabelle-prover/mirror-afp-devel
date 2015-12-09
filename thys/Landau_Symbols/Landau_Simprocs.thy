@@ -57,11 +57,11 @@ subsection {* Simproc setup *}
 
 lemma landau_gt_1_cong: 
   "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> L(f) = L(g)"
-  using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_elim1 landau_symbol.cong)
+  using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_mono landau_symbol.cong)
 
 lemma landau_gt_1_in_cong: 
   "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f x = g x) \<Longrightarrow> f \<in> L(h) \<longleftrightarrow> g \<in> L(h)"
-  using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_elim1 landau_symbol.in_cong)
+  using eventually_gt_at_top[of "1::real"] by (auto elim!: eventually_mono landau_symbol.in_cong)
 
 lemma landau_prop_equalsI:
   "landau_symbol L \<Longrightarrow> (\<And>x::real. x > 1 \<Longrightarrow> f1 x = f2 x) \<Longrightarrow> (\<And>x. x > 1 \<Longrightarrow> g1 x = g2 x) \<Longrightarrow> 

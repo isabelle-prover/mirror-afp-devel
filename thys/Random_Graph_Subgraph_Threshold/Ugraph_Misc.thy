@@ -190,7 +190,7 @@ begin
   lemma LIMSEQ_cong:
     assumes "f ----> x" "\<forall>\<^sup>\<infinity>n. f n = g n"
     shows "g ----> x"
-  by (rule real_tendsto_sandwich[where f = f and h = f, OF eventually_elim1[OF assms(2)] eventually_elim1[OF assms(2)]]) (auto simp: assms(1))
+  by (rule real_tendsto_sandwich[where f = f and h = f, OF eventually_mono[OF assms(2)] eventually_mono[OF assms(2)]]) (auto simp: assms(1))
   print_statement Lim_transform_eventually
 
 

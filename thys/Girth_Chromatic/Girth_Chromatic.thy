@@ -416,7 +416,7 @@ proof -
     show "(\<lambda>n. 0) ----> 0"
         "(\<lambda>n. (exp 1 / n) powr (1 / 2)) ----> 0"
         "\<forall>\<^sup>\<infinity> n. 0 \<le> ?prob_fun_raw n"
-      using p_prob by (auto intro: measure_nonneg LIMSEQ_inv_powr elim: eventually_elim1)
+      using p_prob by (auto intro: measure_nonneg LIMSEQ_inv_powr elim: eventually_mono)
   next
     from nr_bounds ev_expr_bound ev_prob_fun_raw_le
     show "\<forall>\<^sup>\<infinity> n. ?prob_fun_raw n \<le> (exp 1 / n) powr (1 / 2)"
@@ -663,7 +663,7 @@ proof -
         have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) ----> 0"
           using `0 < \<epsilon>` by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
         then show ?thesis
-          using `0 < \<epsilon>` by (auto elim: eventually_elim1 simp: dist_real_def dest!: tendstoD[where e=1])
+          using `0 < \<epsilon>` by (auto elim: eventually_mono simp: dist_real_def dest!: tendstoD[where e=1])
       qed
       finally (eventually_le_le) show ?thesis .
     qed

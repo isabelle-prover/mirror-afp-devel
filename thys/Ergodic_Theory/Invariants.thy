@@ -1477,7 +1477,7 @@ proof -
   have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) ----> real_cond_exp M Invariants f x"
     using birkhoff_theorem_AE_nonergodic assms(2) by auto
   then have b: "AE x in MA. (\<lambda>n. birkhoff_sum f n x / n) ----> real_cond_exp M Invariants f x"
-    unfolding MA_def by (metis (mono_tags, lifting) AE_restrict_space_iff assms(1) eventually_mono' sets.Int_space_eq2)
+    unfolding MA_def by (metis (mono_tags, lifting) AE_restrict_space_iff assms(1) eventually_mono sets.Int_space_eq2)
 
   def phiA \<equiv> "\<lambda>x. return_time_function A x"
   have "integrable M phiA" unfolding phiA_def using return_time_integrable by auto

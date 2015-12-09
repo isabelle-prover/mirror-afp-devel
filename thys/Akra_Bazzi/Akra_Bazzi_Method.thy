@@ -218,15 +218,15 @@ begin
 
 private lemma CLAMP_: "landau_symbol L \<Longrightarrow> L(f::nat \<Rightarrow> real) \<equiv> L(\<lambda>x. CLAMP f x)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP_def[abs_def]
-  by (intro landau_symbol.cong eq_reflection) (auto elim!: eventually_elim1)
+  by (intro landau_symbol.cong eq_reflection) (auto elim!: eventually_mono)
 
 private lemma UNCLAMP'_: "landau_symbol L \<Longrightarrow> L(CLAMP' (MASTER_BOUND a b c)) \<equiv> L(MASTER_BOUND a b c)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
-  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_elim1) 
+  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
 
 private lemma UNCLAMP_: "landau_symbol L \<Longrightarrow> L(CLAMP f) \<equiv> L(f)"
   using eventually_ge_at_top[of "3::nat"] unfolding CLAMP'_def[abs_def] CLAMP_def[abs_def]
-  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_elim1) 
+  by (auto intro!: landau_symbol.cong eq_reflection elim!: eventually_mono) 
 
 lemmas CLAMP = landau_symbols[THEN CLAMP_]
 lemmas UNCLAMP' = landau_symbols[THEN UNCLAMP'_]
@@ -279,7 +279,7 @@ proof-
   have "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"] 
     by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_elim1 dest!: ln_1_imp_less_3)
+       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
   from landau_o.big.cong_bigtheta[OF this] master1_bigo[OF assms] show ?thesis by simp
 qed
 
@@ -291,10 +291,10 @@ proof-
   have A: "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"] 
     by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_elim1 dest!: ln_1_imp_less_3)
+       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
   have B: "O(MASTER_BOUND'' p') = O(\<lambda>x::nat. real x powr p')"
     using eventually_ge_at_top[of "2::nat"]
-    by (intro landau_o.big.cong) (auto elim!: eventually_elim1 simp: MASTER_BOUND''_def)
+    by (intro landau_o.big.cong) (auto elim!: eventually_mono simp: MASTER_BOUND''_def)
   from landau_theta.cong_bigtheta[OF A] B assms(1) master1[OF _ assms(2-)] show ?thesis by simp
 qed
 
@@ -305,7 +305,7 @@ proof-
   have A: "MASTER_BOUND p 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p)" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"] 
     by (intro landau_real_nat_transfer, intro bigthetaI_cong)
-       (auto elim!: eventually_elim1 dest!: ln_1_imp_less_3)
+       (auto elim!: eventually_mono dest!: ln_1_imp_less_3)
   have B: "\<Theta>(MASTER_BOUND' p p') = \<Theta>(\<lambda>x::nat. real x powr p * ln (real x) powr p')"
     by (subst CLAMP, (subst MASTER_BOUND_postproc MASTER_BOUND_UNCLAMP)+, simp only: UNCLAMP)
   from landau_theta.cong_bigtheta[OF A] B assms(1) master2_1[OF _ assms(2-)] show ?thesis by simp
@@ -318,7 +318,7 @@ proof-
   have A: "MASTER_BOUND p 0 1 \<in> \<Theta>(\<lambda>x::nat. x powr p * ln (ln x))" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"]
     apply (intro landau_real_nat_transfer, intro bigthetaI_cong)
-    apply (elim eventually_elim1, subst powr_one[OF ln_ln_nonneg])
+    apply (elim eventually_mono, subst powr_one[OF ln_ln_nonneg])
     apply simp_all
     done
   have B: "\<Theta>(MASTER_BOUND' p (-1)) = \<Theta>(\<lambda>x::nat. real x powr p / ln (real x))"
@@ -333,7 +333,7 @@ proof-
   have A: "MASTER_BOUND p p' 0 \<in> \<Theta>(\<lambda>x::nat. x powr p * ln x powr p')" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"]
     apply (intro landau_real_nat_transfer, intro bigthetaI_cong)
-    apply (elim eventually_elim1, auto dest: ln_1_imp_less_3)
+    apply (elim eventually_mono, auto dest: ln_1_imp_less_3)
     done
   have B: "\<Theta>(MASTER_BOUND' p (p' - 1)) = \<Theta>(\<lambda>x::nat. real x powr p * ln x powr (p' - 1))"
     by (subst CLAMP, (subst MASTER_BOUND_postproc MASTER_BOUND_UNCLAMP)+, simp only: UNCLAMP)
@@ -347,7 +347,7 @@ proof-
   have A: "MASTER_BOUND p' 0 0 \<in> \<Theta>(\<lambda>x::nat. x powr p')" unfolding MASTER_BOUND_def[abs_def]
     using eventually_ge_at_top[of "3::real"]
     apply (intro landau_real_nat_transfer, intro bigthetaI_cong)
-    apply (elim eventually_elim1, auto dest: ln_1_imp_less_3)
+    apply (elim eventually_mono, auto dest: ln_1_imp_less_3)
     done
   have B: "\<Theta>(MASTER_BOUND'' p') = \<Theta>(\<lambda>x::nat. real x powr p')"
     by (subst CLAMP, (subst MASTER_BOUND_postproc)+, simp only: UNCLAMP)

@@ -15,7 +15,7 @@ proof (rule connected_local_const)
     fix x assume "x \<in> {a..b}"
     with assms(2)[rule_format, of x]
     show "eventually (\<lambda>b. f x = f b) (at x within {a..b})"
-      by (auto simp: eventually_at_filter elim: eventually_elim1)
+      by (auto simp: eventually_at_filter elim: eventually_mono)
   qed
 qed
 
@@ -394,12 +394,14 @@ qed
 lemma poly_neighbourhood_same_sign:
   assumes "poly p (x\<^sub>0 :: real) \<noteq> 0"
   shows "eventually (\<lambda>x. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)"
-proof (rule eventually_mono)
+proof -
   have cont: "isCont (\<lambda>x. sgn (poly p x)) x\<^sub>0"
       by (rule isCont_sgn, rule poly_isCont, rule assms)
-  thus "eventually (\<lambda>x. \<bar>sgn (poly p x) - sgn (poly p x\<^sub>0)\<bar> < 1) (at x\<^sub>0)"
+  then have "eventually (\<lambda>x. \<bar>sgn (poly p x) - sgn (poly p x\<^sub>0)\<bar> < 1) (at x\<^sub>0)"
       by (auto simp: isCont_def tendsto_iff dist_real_def)
-qed (auto simp add: sgn_real_def)
+  then show ?thesis
+    by (rule eventually_mono) (simp add: sgn_real_def split: split_if_asm)
+qed
 
 lemma poly_lhopital:
   assumes "poly p (x::real) = 0" "poly q x = 0" "q \<noteq> 0"
@@ -519,7 +521,7 @@ lemma poly_limit_aux:
 proof (subst filterlim_cong, rule refl, rule refl)
   show "eventually (\<lambda>x. poly p x / x^n = (\<Sum>i\<le>n. coeff p i / x^(n-i)))
             at_infinity"
-  proof (rule eventually_mono')
+  proof (rule eventually_mono)
     show "eventually (\<lambda>x::real. x \<noteq> 0) at_infinity"
         by (simp add: eventually_at_infinity, rule exI[of _ 1], auto)
     fix x :: real assume [simp]: "x \<noteq> 0"

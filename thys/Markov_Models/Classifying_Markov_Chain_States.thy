@@ -1547,14 +1547,14 @@ proof -
       also have "\<dots> \<le> (\<integral>x. p x y n * indicator A x + indicator (C - A) x \<partial>N)"
         using ae_C `A \<subseteq> C`
         by (intro integral_mono_AE)
-           (auto elim!: eventually_elim1
+           (auto elim!: eventually_mono
                  intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                    integrable_add
                  split: split_indicator simp: integrable_p)
       also have "\<dots> = (\<integral>x. p x y n * indicator A x \<partial>N) + measure N (C - A)"
         using ae_C `A \<subseteq> C`
         apply (subst integral_add)
-        apply (auto elim!: eventually_elim1
+        apply (auto elim!: eventually_mono
                     intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                     split: split_indicator simp: integrable_p)
         done
@@ -1753,7 +1753,7 @@ proof -
       next
         assume "y \<notin> C"
         with ae_C have "emeasure N {y} = 0"
-          by (subst AE_iff_measurable[symmetric, where P="\<lambda>x. x \<noteq> y"]) (auto elim!: eventually_elim1)
+          by (subst AE_iff_measurable[symmetric, where P="\<lambda>x. x \<noteq> y"]) (auto elim!: eventually_mono)
         moreover have "emeasure (stat C) {y} = 0"
           using emeasure_stat_not_C[OF `y \<notin> C`] .
         ultimately show ?thesis by simp
@@ -2201,7 +2201,7 @@ proof -
   proof safe
     fix x assume "x \<in> C" then show "eventually (\<lambda>m. 0 < K2.p (Some x) (Some x) m) sequentially"
       using `aperiodic C` unfolding aperiodic_eventually_recurrent
-      by (auto elim!: eventually_elim1 simp: K_p_eq)
+      by (auto elim!: eventually_mono simp: K_p_eq)
   qed fact
   then have aperiodic: "KN.aperiodic (C \<times> Some ` C)"
     by (rule KN.aperiodicI_pair[OF `aperiodic C`])

@@ -64,7 +64,7 @@ lemma eventually_nonzero_ln [eventually_nonzero_simps]:
 lemma eventually_nonzero_ln_const [eventually_nonzero_simps]:
   "b > 0 \<Longrightarrow> eventually_nonzero (\<lambda>x. ln (b * x :: real))"
   unfolding eventually_nonzero_def using eventually_gt_at_top[of "max 1 (inverse b)"]
-  by (auto elim!: eventually_elim1 simp: field_simps)
+  by (auto elim!: eventually_mono simp: field_simps)
 
 lemma eventually_nonzero_ln_const' [eventually_nonzero_simps]:
   "b > 0 \<Longrightarrow> eventually_nonzero (\<lambda>x. ln (x * b :: real))"
@@ -259,7 +259,7 @@ lemma divide_right_iff:
 proof
   assume "(\<lambda>x. f x / h x) \<in> L(\<lambda>x. g x / h x)"
   from mult_right[OF this, of h] assms show "f \<in> L(g)"
-    by (subst (asm) cong_ex[of _ f _ g]) (auto elim!: eventually_elim1)
+    by (subst (asm) cong_ex[of _ f _ g]) (auto elim!: eventually_mono)
 qed (simp add: divide_right assms)
 
 lemma divide_left:
@@ -296,7 +296,7 @@ lemma divide_eq1:
   shows   "f \<in> L(\<lambda>x. g x / h x) \<longleftrightarrow> (\<lambda>x. f x * h x) \<in> L(g)"
 proof-
   have "f \<in> L(\<lambda>x. g x / h x) \<longleftrightarrow> (\<lambda>x. f x * h x / h x) \<in> L(\<lambda>x. g x / h x)"
-    using assms by (intro in_cong) (auto elim: eventually_elim1)
+    using assms by (intro in_cong) (auto elim: eventually_mono)
   thus ?thesis by (simp only: divide_right_iff assms)
 qed
 
@@ -305,7 +305,7 @@ lemma divide_eq2:
   shows   "(\<lambda>x. f x / h x) \<in> L(\<lambda>x. g x) \<longleftrightarrow> f \<in> L(\<lambda>x. g x * h x)"
 proof-
   have "L(\<lambda>x. g x) = L(\<lambda>x. g x * h x / h x)"
-    using assms by (intro cong) (auto elim: eventually_elim1)
+    using assms by (intro cong) (auto elim: eventually_mono)
   thus ?thesis by (simp only: divide_right_iff assms)
 qed
 
@@ -876,7 +876,7 @@ proof (rule landau_o.bigI)
   note assms
   moreover have "\<And>x. c * \<bar>g x\<bar> \<le> max 1 c * \<bar>g x\<bar>" by (simp add: mult_right_mono)
   ultimately show "eventually (\<lambda>x. \<bar>f x\<bar> \<le> max 1 c * \<bar>g x\<bar>) at_top"
-    by (auto elim!: eventually_elim1 dest: order.trans)
+    by (auto elim!: eventually_mono dest: order.trans)
 qed
 
 declare landau_o.smallI landau_omega.bigI landau_omega.smallI [intro]
@@ -981,7 +981,7 @@ lemma eventually_nonzero_bigtheta':
   unfolding eventually_nonzero_def by (rule eventually_nonzero_bigtheta)
 
 lemma bigthetaI_cong: "eventually (\<lambda>x. f x = g x) at_top \<Longrightarrow> f \<in> \<Theta>(g)"
-  by (intro bigthetaI'[of 1 1]) (auto elim!: eventually_elim1)
+  by (intro bigthetaI'[of 1 1]) (auto elim!: eventually_mono)
 
 lemma bigtheta_mult_eq:
   fixes f g :: "('a :: order) \<Rightarrow> ('b :: linordered_field)"
@@ -1277,7 +1277,7 @@ proof-
   from assms(1) guess c by (elim landau_o.bigE landau_omega.bigE IntE)
   note c = this
   from c(2) assms(2) have "eventually (\<lambda>x. \<bar>f x\<bar> powr p \<le> (c * \<bar>g x\<bar>) powr p) at_top"
-    by (auto elim!: eventually_elim1 intro!: powr_mono2_ex)
+    by (auto elim!: eventually_mono intro!: powr_mono2_ex)
   thus "(\<lambda>x. \<bar>f x\<bar> powr p) \<in> O(\<lambda>x. \<bar>g x\<bar> powr p)" using c(1)
     by (intro bigoI[of _ "c powr p"]) (simp_all add: powr_mult)
 qed
@@ -1399,7 +1399,7 @@ lemma landau_symbol_if_eq [simp]:
   assumes "landau_symbol L"
   shows   "L(\<lambda>x::'a::linordered_semidom. if x = a then f x else g x) = L(g)"
 apply (rule landau_symbol.cong[OF assms])
-using eventually_ge_at_top[of "a + 1"] less_add_one[of a] apply (auto elim!: eventually_elim1)
+using eventually_ge_at_top[of "a + 1"] less_add_one[of a] apply (auto elim!: eventually_mono)
 done
 
 lemmas landau_symbols_if_eq [simp] = landau_symbols[THEN landau_symbol_if_eq]
@@ -1451,12 +1451,12 @@ proof (rule lhospital_at_top_at_top)
   show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
     using eventually_gt_at_top[of "0::real"] by eventually_elim (insert assms, simp)
   show "eventually (\<lambda>x::real. (ln has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_elim1) simp
+    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_mono) simp
   show "eventually (\<lambda>x. ((\<lambda>x. x powr a) has_real_derivative a * x powr (a - 1)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_elim1) simp
+    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_mono) simp
   have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
     using eventually_gt_at_top[of "0::real"] 
-    by (elim eventually_elim1) (simp add: field_simps powr_divide2[symmetric] powr_minus)
+    by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
   moreover from assms have "((\<lambda>x. inverse a * x powr -a) ---> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
   ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) ---> 0) at_top"
@@ -1469,11 +1469,11 @@ lemma tendsto_ln_powr_over_powr:
 proof-
   have "eventually (\<lambda>x. ln x powr a / x powr b = (ln x / x powr (b/a)) powr a) at_top"
     using assms eventually_gt_at_top[of "1::real"]
-    by (elim eventually_elim1) (simp add: powr_divide powr_powr)
+    by (elim eventually_mono) (simp add: powr_divide powr_powr)
   moreover have "eventually (\<lambda>x. 0 < ln x / x powr (b / a)) at_top"
-    using eventually_gt_at_top[of "1::real"] by (elim eventually_elim1) simp
+    using eventually_gt_at_top[of "1::real"] by (elim eventually_mono) simp
   with assms have "((\<lambda>x. (ln x / x powr (b/a)) powr a) ---> 0) at_top"
-    by (intro tendsto_zero_powrI tendsto_ln_over_powr) (simp_all add: eventually_elim1)
+    by (intro tendsto_zero_powrI tendsto_ln_over_powr) (simp_all add: eventually_mono)
   ultimately show ?thesis by (subst tendsto_cong) simp_all
 qed
 
@@ -1505,10 +1505,10 @@ proof (rule lhospital_at_top_at_top)
               filterlim_ident assms(2))
   show "eventually (\<lambda>x. ((\<lambda>x. ln (a*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse a"] assms
-    by (auto elim!: eventually_elim1 intro!: derivative_eq_intros simp: field_simps)
+    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
   show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse c"] assms
-    by (auto elim!: eventually_elim1 intro!: derivative_eq_intros simp: field_simps)
+    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
   show "((\<lambda>x::real. inverse x / inverse x) ---> 1) at_top"
     by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
 qed (simp_all add: eventually_not_equal)
@@ -1519,7 +1519,7 @@ lemma tendsto_ln_powr_over_ln_powr:
 proof-
   have "eventually (\<lambda>x. ln (a*x) powr d / ln (c*x) powr d = (ln (a*x) / ln (c*x)) powr d) at_top"
     using assms eventually_gt_at_top[of "max (inverse a) (inverse c)"]
-    by (auto elim!: eventually_elim1 simp: powr_divide field_simps)
+    by (auto elim!: eventually_mono simp: powr_divide field_simps)
   moreover have "((\<lambda>x. (ln (a*x) / ln (c*x)) powr d) ---> 1) at_top" using assms
     by (intro tendsto_eq_rhs[OF tendsto_powr[OF tendsto_ln_over_ln tendsto_const]]) simp_all
   ultimately show ?thesis by (subst tendsto_cong)
@@ -1565,13 +1565,13 @@ proof
   assume A: "(\<lambda>x. f1 x * f2 x) \<in> L (\<lambda>x. g1 x * g2 x)"
   from assms have "eventually (\<lambda>x. f1 x \<noteq> 0) at_top" by simp
   hence "f2 \<in> \<Theta>(\<lambda>x. f1 x * f2 x / f1 x)"
-    by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
   also from A assms have "(\<lambda>x. f1 x * f2 x / f1 x) \<in> L(\<lambda>x. g1 x * g2 x / f1 x)" 
     by (intro divide_right) simp_all
   also from assms have "(\<lambda>x. g1 x * g2 x / f1 x) \<in> \<Theta>(\<lambda>x. g1 x * g2 x / g1 x)"
     by (intro landau_theta.mult landau_theta.divide) (simp_all add: bigtheta_sym)
   also from assms have "(\<lambda>x. g1 x * g2 x / g1 x) \<in> \<Theta>(g2)"
-    by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
   finally show "f2 \<in> L(g2)" .
 next
   assume "f2 \<in> L(g2)"
@@ -1751,10 +1751,10 @@ proof (cases "y = 0")
       unfolding bigtheta_powr_def by force
     note this(3)
     also have "(\<lambda>x. g x powr 0) \<in> \<Theta>(\<lambda>x. \<bar>g x\<bar> powr 0)" using assms unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
     also from g(1) have "(\<lambda>x. \<bar>g x\<bar> powr 0) \<in> \<Theta>(\<lambda>x. \<bar>f x\<bar> powr 0)" by (rule bigtheta_powr)
     also from g(2) have "(\<lambda>x. f x powr 0) \<in> \<Theta>(\<lambda>x. \<bar>f x\<bar> powr 0)" unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
     finally show "h \<in> \<Theta>(\<lambda>x. f x powr y)" by simp
   next
     fix h assume "h \<in> \<Theta>(\<lambda>x. f x powr y)"
@@ -1771,7 +1771,7 @@ next
     from bigtheta_powr[OF h, of "inverse y"] y
       have "?h' \<in> \<Theta>(\<lambda>x. f x powr 1)" by (simp add: powr_powr)
     also have "(\<lambda>x. f x powr 1) \<in> \<Theta>(f)" using assms unfolding eventually_nonneg_def 
-      by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
     finally have "?h' \<in> \<Theta>(f)" .
     with y have "\<exists>g\<in>\<Theta>(f). eventually_nonneg g \<and> (\<forall>x. \<bar>h x\<bar> = g x powr y)"
       by (intro bexI[of _ ?h']) (simp_all add: powr_powr eventually_nonneg_def)
@@ -1781,10 +1781,10 @@ next
     with y obtain g where A: "g \<in> \<Theta>(f)" "\<And>x. \<bar>h x\<bar> = g x powr y" "eventually_nonneg g"
       unfolding bigtheta_powr_def by force
     from this(3) have "(\<lambda>x. g x powr y) \<in> \<Theta>(\<lambda>x. \<bar>g x\<bar> powr y)" unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
     also from A(1) have "(\<lambda>x. \<bar>g x\<bar> powr y) \<in> \<Theta>(\<lambda>x. \<bar>f x\<bar> powr y)" by (rule bigtheta_powr)
     also have "(\<lambda>x. \<bar>f x\<bar> powr y) \<in> \<Theta>(\<lambda>x. f x powr y)" using assms unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_elim1)
+      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
     finally have "(\<lambda>x. \<bar>h x\<bar>) \<in> \<Theta>(\<lambda>x. f x powr y)" by (subst A(2))
     thus "(\<lambda>x. h x) \<in> \<Theta>(\<lambda>x. f x powr y)" by simp
   qed

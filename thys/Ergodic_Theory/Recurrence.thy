@@ -715,7 +715,7 @@ next
     obtain f::real where "f > 0" "ereal f < e" using `0 < e` ereal_dense2 ereal_less(2) by blast
     have "eventually (\<lambda>n. emeasure M (K (Suc k) n) < ereal f) sequentially" using `f>0` main by simp
     thus "eventually (\<lambda>n. emeasure M (K (Suc k) n) < e) sequentially" using `ereal f < e`
-      by (simp add: eventually_mono')
+      by (simp add: eventually_mono)
   qed
   moreover have "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M (K (Suc k) n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)
@@ -885,7 +885,7 @@ proof -
     obtain f::real where "f > 0" "ereal f < e" using `0 < e` ereal_dense2 ereal_less(2) by blast
     have "eventually (\<lambda>n. emeasure M (Bad A n) < ereal f) sequentially" using `f>0` main by simp
     thus "eventually (\<lambda>n. emeasure M  (Bad A n) < e) sequentially" using `ereal f < e`
-      by (simp add: eventually_mono')
+      by (simp add: eventually_mono)
   qed
   moreover have  "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M  (Bad A n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)

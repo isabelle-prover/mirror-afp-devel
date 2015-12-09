@@ -809,7 +809,7 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
     finally have "gc1 * c6 * \<bar>f_approx (real x)\<bar> \<ge> \<bar>f x\<bar>" using gc1 by (simp add: algebra_simps)
   }
   hence "eventually (\<lambda>x. \<bar>f x\<bar> \<le> gc1 * c6 * \<bar>f_approx (real x)\<bar>) at_top"
-    using eventually_ge_at_top[of "nat \<lceil>x\<^sub>0'\<rceil>"] by (auto elim!: eventually_elim1)
+    using eventually_ge_at_top[of "nat \<lceil>x\<^sub>0'\<rceil>"] by (auto elim!: eventually_mono)
   hence "f \<in> O(\<lambda>x. f_approx (real x))" using gc1(1) f_nonneg' f_approx_nonneg
     by (intro landau_o.bigI[of "gc1 * c6"] eventually_conj 
         mult_pos_pos c6 eventually_nat_real) (auto simp: eventually_at_top_linorder)

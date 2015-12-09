@@ -81,10 +81,10 @@ proof (rule lhospital_at_top_at_top)
               filterlim_ident assms(2))
   show "eventually (\<lambda>x. ((\<lambda>x. ln (a*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse a"] assms
-    by (auto elim!: eventually_elim1 intro!: derivative_eq_intros simp: field_simps)
+    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
   show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse c"] assms
-    by (auto elim!: eventually_elim1 intro!: derivative_eq_intros simp: field_simps)
+    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
   show "((\<lambda>x::real. inverse x / inverse x) ---> 1) at_top"
     by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
 qed (simp_all add: eventually_not_equal)
@@ -138,12 +138,12 @@ proof (rule lhospital_at_top_at_top)
   show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
     using eventually_gt_at_top[of "0::real"] by eventually_elim (insert assms, simp)
   show "eventually (\<lambda>x::real. (ln has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_elim1) simp
+    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_mono) simp
   show "eventually (\<lambda>x. ((\<lambda>x. x powr a) has_real_derivative a * x powr (a - 1)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_elim1) simp
+    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_mono) simp
   have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
     using eventually_gt_at_top[of "0::real"] 
-    by (elim eventually_elim1) (simp add: field_simps powr_divide2[symmetric] powr_minus)
+    by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
   moreover from assms have "((\<lambda>x. inverse a * x powr -a) ---> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
   ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) ---> 0) at_top"

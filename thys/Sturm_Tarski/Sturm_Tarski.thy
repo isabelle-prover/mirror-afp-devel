@@ -302,7 +302,7 @@ proof -
     by (metis (erased, hide_lams) le_less minus_zero neg_less_iff_less poly_minus)
   moreover have "sign_r_pos p x \<Longrightarrow> \<not> sign_r_pos (-p) x" unfolding sign_r_pos_def
     using eventually_neg[OF trivial_limit_at_right_real, of "\<lambda>x. poly p x > 0" x] poly_minus
-    by (metis (lifting) eventually_mono' less_asym neg_less_0_iff_less)
+    by (metis (lifting) eventually_mono less_asym neg_less_0_iff_less)
   ultimately show ?thesis by auto
 qed
 
@@ -348,7 +348,7 @@ proof -
         unfolding sign_r_pos_def using eventually_conj_iff[of _ _ "at_right x"] by auto
       hence "sign_r_pos (p*q) x"
         unfolding sign_r_pos_def poly_mult
-        by (metis (lifting, mono_tags) eventually_mono' mult_pos_pos)
+        by (metis (lifting, mono_tags) eventually_mono mult_pos_pos)
       ultimately show ?thesis by auto
     qed
   moreover have "(\<forall>z. x < z \<and> z < ub \<longrightarrow> 0 > poly p z) \<Longrightarrow> (\<forall>z. x < z \<and> z < ub' \<longrightarrow> 0 < poly q z)
@@ -361,7 +361,7 @@ proof -
         unfolding sign_r_pos_def using eventually_conj_iff[of _ _ "at_right x"] by auto
       hence "sign_r_pos (- p*q) x"
         unfolding sign_r_pos_def poly_mult
-        by (metis (lifting, mono_tags) eventually_mono' mult_pos_pos)
+        by (metis (lifting, mono_tags) eventually_mono mult_pos_pos)
       ultimately show ?thesis
         using sign_r_pos_minus `p\<noteq>0` `q\<noteq>0` by (metis minus_mult_left no_zero_divisors)
     qed
@@ -375,7 +375,7 @@ proof -
         unfolding sign_r_pos_def using eventually_conj_iff[of _ _ "at_right x"] by auto
       hence "sign_r_pos ( p * (- q)) x"
         unfolding sign_r_pos_def poly_mult
-        by (metis (lifting, mono_tags) eventually_mono' mult_pos_pos)
+        by (metis (lifting, mono_tags) eventually_mono mult_pos_pos)
       ultimately show ?thesis
         using sign_r_pos_minus `p\<noteq>0` `q\<noteq>0`
         by (metis minus_mult_right no_zero_divisors)
@@ -390,7 +390,7 @@ proof -
         unfolding sign_r_pos_def using eventually_conj_iff[of _ _ "at_right x"] by auto
       hence "sign_r_pos (p * q) x"
         unfolding sign_r_pos_def poly_mult poly_minus
-        apply (elim eventually_elim1[of _ "at_right x"])
+        apply (elim eventually_mono[of _ "at_right x"])
         by (auto intro:mult_neg_neg)
       ultimately show ?thesis
         using sign_r_pos_minus `p\<noteq>0` `q\<noteq>0` by metis

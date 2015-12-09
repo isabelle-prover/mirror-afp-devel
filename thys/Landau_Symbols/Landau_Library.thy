@@ -39,7 +39,7 @@ lemma filterlim_cong':
   assumes "filterlim f F G"
   assumes "eventually (\<lambda>x. f x = g x) G"
   shows   "filterlim g F G"
-  using assms by (subst filterlim_cong[OF refl refl, of _ f]) (auto elim: eventually_elim1)
+  using assms by (subst filterlim_cong[OF refl refl, of _ f]) (auto elim: eventually_mono)
 
 lemma tendsto_cong:
   assumes "eventually (\<lambda>x. f x = g x) F"
