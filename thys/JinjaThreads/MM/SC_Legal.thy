@@ -304,7 +304,7 @@ proof -
         case False
         hence "r' \<ge> n" by simp
         hence "enat (Suc n) \<le> llength E" using False r'
-          by(auto split: split_if_asm dest!: read_actions_actions elim!: actionsE) (metis Suc_ile_eq enat_ord_code(2) not_leE order_less_le_trans)
+          by(auto split: split_if_asm dest!: read_actions_actions elim!: actionsE) (metis Suc_ile_eq enat_ord_code(2) not_le_imp_less order_less_le_trans)
         hence ?hb using P[of "Suc n"] r' `r' \<ge> n` by simp
         thus ?thesis ..
       qed }

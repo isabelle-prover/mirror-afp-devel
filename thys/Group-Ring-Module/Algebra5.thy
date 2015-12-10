@@ -1305,7 +1305,7 @@ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B
     thin_tac "A_to_prodag R {j. j\<le>(Suc n)} S B u = restrict f {j. j\<le>(Suc n)}")
   apply (simp add:A_to_prodag_def) 
   apply simp
-  apply (frule_tac y = i and x = "Suc n" in not_leE, 
+  apply (frule_tac y = i and x = "Suc n" in not_le_imp_less, 
          frule_tac m = "Suc n" and n = i in Suc_leI,
          frule_tac m = i and n = "Suc (Suc n)" in Nat.le_antisym, assumption+,
          simp)
@@ -1739,7 +1739,7 @@ apply (case_tac "n \<le> 1")
  apply (subst transpos_ij_1[of 0 "Suc 0"], simp+)
  apply (subst transpos_ij_2[of 0 "Suc 0"], simp+)
  apply (rule ag_pOp_commute, simp+)
- apply (frule not_leE[of n "Suc 0"])
+ apply (frule not_le_imp_less[of n "Suc 0"])
 apply (frule_tac Suc_leI [of "Suc 0" "n"],
        thin_tac "\<not> n \<le> Suc 0")
  apply (cut_tac nsum_suc[of A f "n - Suc 0"], simp)

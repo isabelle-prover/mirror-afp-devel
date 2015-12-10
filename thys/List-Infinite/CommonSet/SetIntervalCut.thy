@@ -981,7 +981,7 @@ where
 
 lemma mirror_elem_inj_on: "finite I \<Longrightarrow> inj_on (\<lambda>x. mirror_elem x I) I"
 unfolding mirror_elem_def
-by (metis Max_le_imp_subset_atMost nat_mirror_inj_on not_add_less2 not_leE subset_inj_on)
+by (metis Max_le_imp_subset_atMost nat_mirror_inj_on not_add_less2 not_le_imp_less subset_inj_on)
 
 lemma mirror_elem_add: "
   finite I \<Longrightarrow> mirror_elem (n + k) I = mirror_elem n I - k"

@@ -1641,7 +1641,7 @@ qed
 
 lemma map_upd_eq:
   "\<lbrakk>i<length l \<Longrightarrow> f (l!i) = f x\<rbrakk> \<Longrightarrow> map f (l[i:=x]) = map f l"
-  by (metis list_update_beyond list_update_id map_update not_leE)
+  by (metis list_update_beyond list_update_id map_update not_le_imp_less)
 
 
 

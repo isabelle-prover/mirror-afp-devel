@@ -1495,7 +1495,7 @@ qed
 lemma first_less: "rank_invar (t # bq) \<Longrightarrow> \<forall>t' \<in> set bq. rank t < rank t'" 
   apply(induct bq arbitrary: t) 
   apply (simp)
-  apply (metis List.set_simps(2) insert_iff not_leE 
+  apply (metis List.set_simps(2) insert_iff not_le_imp_less 
     not_less_iff_gr_or_eq order_less_le_trans rank_invar.simps(3) 
     rank_invar_cons_down)
   done

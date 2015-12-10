@@ -182,7 +182,7 @@ proof (rule reduced_row_echelon_form_upt_k_intro)
     have least_eq_k: "(LEAST n. A $ i $ n \<noteq> 0) = from_nat k"
     proof (rule Least_equality)
       show "A $ i $ from_nat k \<noteq> 0" using not_zero_i_suc zero_i unfolding is_zero_row_upt_k_def by (metis from_nat_to_nat_id less_SucE)
-      show "\<And>y. A $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" by (metis is_zero_row_upt_k_def not_leE to_nat_le zero_i)
+      show "\<And>y. A $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" by (metis is_zero_row_upt_k_def not_le_imp_less to_nat_le zero_i)
     qed
     have i_less: "i<i+1"
     proof (rule Suc_le', rule ccontr)
@@ -363,7 +363,7 @@ moreover have "(LEAST n. A $ j $ n \<noteq> 0) < (LEAST n. A $ i $ n \<noteq> 0)
      have "(LEAST n. A $ j $ n \<noteq> 0) \<le> s" using Ajs_not_zero Least_le by fast
      also have "... = from_nat (to_nat s)" unfolding from_nat_to_nat_id ..
      also have "... < from_nat k" by (rule from_nat_mono[OF s_less_k k_less_ncols[unfolded ncols_def]])
-     also have "... \<le> x" using k_less_x leD not_leE to_nat_le by fast
+     also have "... \<le> x" using k_less_x leD not_le_imp_less to_nat_le by fast
      finally show "(LEAST n. A $ j $ n \<noteq> 0) < x" .
   qed
 ultimately show False by fastforce

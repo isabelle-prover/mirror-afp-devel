@@ -3997,7 +3997,7 @@ apply (rule allI, rule impI, erule conjE,
          rule allI, rule impI, 
          case_tac "j \<le> n", simp)
   apply simp
-  apply (drule_tac y = j and x = n in not_leE,
+  apply (drule_tac y = j and x = n in not_le_imp_less,
          drule_tac m = n and n = j in Suc_leI)
   apply (frule_tac m = j and n = "Suc n" in le_antisym, assumption, simp,
          thin_tac "\<forall>f. pol_coeff S (n, f) \<and> (\<forall>j\<le>n. f j \<in> S \<diamondsuit>\<^sub>p t) \<longrightarrow>

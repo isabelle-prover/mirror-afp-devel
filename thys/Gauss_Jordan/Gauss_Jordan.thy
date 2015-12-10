@@ -711,7 +711,7 @@ proof -
       by (metis (lifting, mono_tags) Aij_not_0 j_le_k less_trans linorder_cases not_less_Least to_nat_mono)
     have least_le_j: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) \<le> j"
       using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ greatest_plus_one_not_zero j_le_k] using A_ma_k_not_zero greatest_less_ma
-      using Aij_not_0 False dual_linorder.not_leE not_less_Least by (metis (mono_tags))
+      using Aij_not_0 False dual_linorder.not_le_imp_less not_less_Least by (metis (mono_tags))
     have Least_eq: "(LEAST ka. Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ ka \<noteq> 0) 
       = (LEAST ka. A $ i $ ka \<noteq> 0)"
     proof (rule Least_equality)
@@ -723,7 +723,7 @@ proof -
       proof (cases "to_nat y < k")
         case False 
         thus ?thesis
-          using least_le_k less_trans not_leE to_nat_from_nat to_nat_le by metis
+          using least_le_k less_trans not_le_imp_less to_nat_from_nat to_nat_le by metis
       next
         case True
         have "A $ i $ y \<noteq> 0" using Gauss_Jordan_y using Gauss_Jordan_in_ij_preserves_previous_elements[OF rref not_zero_m _ greatest_plus_one_not_zero True]
@@ -1198,7 +1198,7 @@ proof -
       fix y assume Gauss_Jordan_y:"Gauss_Jordan_in_ij A ((GREATEST' n. \<not> is_zero_row_upt_k n k A) + 1) (from_nat k) $ i $ y \<noteq> 0"
       show "(LEAST ka. A $ i $ ka \<noteq> 0) \<le> y"
       proof (cases "to_nat y < k")
-        case False show ?thesis by (metis (mono_tags) False least_le_k less_trans not_leE to_nat_from_nat to_nat_le)
+        case False show ?thesis by (metis (mono_tags) False least_le_k less_trans not_le_imp_less to_nat_from_nat to_nat_le)
       next
         case True
         have "A $ i $ y \<noteq> 0"
@@ -2354,7 +2354,7 @@ proof (rule bij_betw_same_card[of "\<lambda>i. to_nat i"], unfold bij_betw_def, 
     fix x
     assume x: "x \<le> to_nat (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
     hence "from_nat x \<le> (GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A))"
-    by (metis (full_types) leD not_leE to_nat_le)
+    by (metis (full_types) leD not_le_imp_less to_nat_le)
     moreover have "x < CARD('c)" using x bij_to_nat[where ?'a='b] unfolding bij_betw_def  by (metis less_le_trans not_le to_nat_less_card)
     ultimately show "\<exists>xa\<le>GREATEST' a. \<not> is_zero_row a (Gauss_Jordan A). x = to_nat xa" using to_nat_from_nat_id by fastforce
     qed

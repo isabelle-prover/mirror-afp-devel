@@ -692,7 +692,7 @@ apply (case_tac "n \<le> t")
 apply (rule_tac t=n and s="iMin (I \<down>> t)" in subst)
  apply (rule iMin_equality)
   apply (simp add: cut_greater_mem_iff)
- apply (metis cut_greater_mem_iff iprev_min_step2 not_leE order_le_less_trans)
+ apply (metis cut_greater_mem_iff iprev_min_step2 not_le_imp_less order_le_less_trans)
 thm iprev_iMin
 apply (rule iprev_iMin)
 done

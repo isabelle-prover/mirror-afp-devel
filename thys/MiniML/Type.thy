@@ -524,7 +524,7 @@ apply (safe)
 (* <== *)
 apply (unfold free_tv_subst cod_def dom_def) 
 apply safe
-apply (metis not_leE)+
+apply (metis not_le_imp_less)+
 done
 
 lemma new_tv_list: "new_tv n x = (!y:set x. new_tv n y)"

@@ -52,7 +52,7 @@ proof(induct \<phi>)
     then show ?thesis using Atom
       unfolding nolb_def
       by (clarsimp simp: nth.simps Ball_def split:split_if_asm nat.splits)
-         (metis not_leE order_antisym order_less_trans)+
+         (metis not_le_imp_less order_antisym order_less_trans)+
   next
     case (Eq i j) thus ?thesis using Atom
       apply(clarsimp simp:EQ_def nolb_def nth_Cons')

@@ -295,13 +295,13 @@ show "A $ i $ j = 0"
       have Least_eq: "(LEAST n. A $ i $ n \<noteq> 0) = from_nat k"
         proof (rule Least_equality)
            show "A $ i $ from_nat k \<noteq> 0" using False by simp
-           show "\<And>y. A $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" by (metis (full_types) is_zero_row_upt_k_def not_leE to_nat_le zero_i_k)
+           show "\<And>y. A $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" by (metis (full_types) is_zero_row_upt_k_def not_le_imp_less to_nat_le zero_i_k)
         qed
       have i_not_k: "i \<noteq> from_nat k" by (metis less_irrefl from_nat_to_nat_id j_eq_k j_less_i)
       show ?thesis using rref_upt_condition4_explicit[OF rref_suc not_zero_i_suc_k i_not_k] unfolding Least_eq 
       using rref_upt_condition1_explicit[OF rref_suc]
       using Suc.hyps unfolding upper_triangular_upt_k_def 
-      by (metis (mono_tags) leD dual_linorder.not_leE is_zero_row_upt_k_def is_zero_row_upt_k_suc j_eq_k j_less_i not_zero_i_suc_k to_nat_from_nat to_nat_mono')  
+      by (metis (mono_tags) leD dual_linorder.not_le_imp_less is_zero_row_upt_k_def is_zero_row_upt_k_suc j_eq_k j_less_i not_zero_i_suc_k to_nat_from_nat to_nat_mono')  
 qed
 qed
 qed

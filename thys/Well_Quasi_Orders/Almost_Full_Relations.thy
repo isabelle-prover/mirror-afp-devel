@@ -637,7 +637,7 @@ proof
   proof (rule ccontr)
     assume "\<not> ?thesis"
     then have bad: "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by (auto simp: good_def)
-    then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_leE)
+    then have *: "\<And>i j. P (f i) (f j) \<Longrightarrow> i \<ge> j" by (metis not_le_imp_less)
   
     def [simp]: D \<equiv> "\<lambda>x y. \<exists>i. x = f (Suc i) \<and> y = f i"
     def P' \<equiv> "restrict_to P A"

@@ -1288,7 +1288,7 @@ proof -
     by (metis add.commute le_add_diff_inverse nat_less_le)
   thus ?thesis
     by (auto simp add: disjoint_family_on_def)
-       (metis insert_absorb insert_subset le_SucE le_antisym not_leE)
+       (metis insert_absorb insert_subset le_SucE le_antisym not_le_imp_less)
 qed
 
 text {* the next few lemmas give useful measurability statements*}

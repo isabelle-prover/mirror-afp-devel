@@ -193,7 +193,7 @@ proof (rule echelon_form_upt_k_intro)
       also have "... = from_nat (to_nat s)" unfolding from_nat_to_nat_id ..
       also have "... < from_nat k"
         by (rule from_nat_mono[OF s_less_k k_less_ncols[unfolded ncols_def]])
-      also have "... \<le> x" using k_less_x leD not_leE to_nat_le by fast
+      also have "... \<le> x" using k_less_x leD not_le_imp_less to_nat_le by fast
       finally show "(LEAST n. A $ j $ n \<noteq> 0) < x" .
     qed
     ultimately show False by fastforce
@@ -264,13 +264,13 @@ next
           proof (rule Least_equality)
             show "A $ i $ from_nat k \<noteq> 0" using Aij_not_zero j_eq_k2 by simp
             show "\<And>y. A $ i $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" 
-              by (metis (full_types) is_zero_row_upt_k_def not_leE to_nat_le zero_i_k)
+              by (metis (full_types) is_zero_row_upt_k_def not_le_imp_less to_nat_le zero_i_k)
           qed
           moreover have Least_eq2: "(LEAST n. A $ j $ n \<noteq> 0) = from_nat k"
           proof (rule Least_equality)
             show "A $ j $ from_nat k \<noteq> 0" using Ajj_not_zero j_eq_k2 by simp
             show "\<And>y. A $ j $ y \<noteq> 0 \<Longrightarrow> from_nat k \<le> y" 
-              by (metis (full_types) is_zero_row_upt_k_def not_leE to_nat_le zero_j_k)
+              by (metis (full_types) is_zero_row_upt_k_def not_le_imp_less to_nat_le zero_j_k)
           qed
           ultimately show False 
             using echelon_form_upt_k_condition2[OF rref_suc j_less_i not_zero_j not_zero_i]

@@ -57,7 +57,7 @@ proof(induct f)
     then show ?thesis using Atom
       unfolding nolub_def
       by (clarsimp simp: nth.simps Ball_def split:split_if_asm nat.splits)
-         (metis not_leE order_antisym order_less_trans)+
+         (metis not_le_imp_less order_antisym order_less_trans)+
   next
     case [simp]: (Eq i j)
     show ?thesis

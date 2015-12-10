@@ -443,7 +443,7 @@ proof -
 qed
 
 lemma length_subset_card: "\<lbrakk>finite X; distinct (x # xs); set (x # xs) \<subseteq> X\<rbrakk> \<Longrightarrow> length xs < card X"
-  by (metis card_mono distinct_card impossible_Cons not_leE order_trans)
+  by (metis card_mono distinct_card impossible_Cons not_le_imp_less order_trans)
 
 lemma samequot_termination:
   assumes "while_option fst (rderiv_and_add as) (True, [\<guillemotleft>r\<guillemotright>]) = None" (is "?cl = None")
