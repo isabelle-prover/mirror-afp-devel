@@ -1019,6 +1019,7 @@ apply vcg_ni
   apply (erule greyI)
  apply (clarsimp split: obj_at_splits)
 apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
+apply vcg_ni+
 done
 
 lemma (in mut_m) gc_mark_mark_object_invL[intro]:

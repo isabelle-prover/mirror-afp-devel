@@ -256,14 +256,14 @@ by vcg_jackhammer
 lemma (in mut_m') handshake_invL[intro]:
   "\<lbrace> handshake_invL \<rbrace> mutator m'"
 apply vcg_nihe
-apply vcg_ni
+apply vcg_ni+
 done
 
 lemma (in gc) mut_handshake_invL[intro]:
   notes mut_m.handshake_invL_def[inv]
   shows "\<lbrace> handshake_invL and mut_m.handshake_invL m \<rbrace> gc \<lbrace> mut_m.handshake_invL m \<rbrace>"
 apply vcg_nihe
-apply vcg_ni
+apply vcg_ni+
 done
 
 lemma (in sys) mut_handshake_invL[intro]:
@@ -275,7 +275,7 @@ lemma (in mut_m) gc_handshake_invL[intro]:
   notes gc.handshake_invL_def[inv]
   shows "\<lbrace> handshake_invL and gc.handshake_invL \<rbrace> mutator m \<lbrace> gc.handshake_invL \<rbrace>"
 apply vcg_nihe
-apply vcg_ni
+apply vcg_ni+
 done
 
 lemma (in mut_m) handshake_phase_inv[intro]:

@@ -1932,9 +1932,9 @@ apply vcg_nihe
 apply(tactic {*
 let val ctxt = @{context} in
 
-  TRY o vcg_clarsimp_tac ctxt
-THEN'
-  PARALLEL_GOALS o (
+  TRY (HEADGOAL (vcg_clarsimp_tac ctxt))
+THEN
+  PARALLEL_ALLGOALS (
                vcg_sem_tac ctxt
          THEN' (SELECT_GOAL (Local_Defs.unfold_tac ctxt (Inv.get ctxt)))
          THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms conjI})) (* expose the location predicates, do not split the consequents *)
@@ -1946,11 +1946,9 @@ THEN'
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o assume_tac ctxt))
   THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" []))
-  THEN_ALL_NEW clarsimp_tac ctxt
+  THEN_ALL_NEW clarsimp_tac ctxt)
 
-)
-
-end 1
+end
 *})
 
 (* hs_noop_done *)
