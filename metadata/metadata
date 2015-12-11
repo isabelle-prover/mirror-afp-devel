@@ -1070,6 +1070,9 @@ abstract =
   In the same spirit we show that the move-to-front algorithm for the list
   update problem is 2-competitive and that this is optimal for deterministic
   online algorithms for this problem.
+extra-history =
+  Change history:
+  [2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
 
 [Dynamic_Tables]
 title = Parameterized Dynamic Tables
