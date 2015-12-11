@@ -66,7 +66,7 @@ definition t_delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" wh
 lemma ex_in_set_tree: "t \<noteq> Leaf \<Longrightarrow> bst t \<Longrightarrow>
   \<exists>a' \<in> set_tree t. splay a' t = splay a t \<and> t_splay a' t = t_splay a t"
 proof(induction a t rule: splay.induct)
-  case (6 a c b ll)
+  case (6 a b c ll)
   hence "splay a ll \<noteq> Leaf" by simp
   then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
     by (metis tree.exhaust)

@@ -35,26 +35,26 @@ subsection "Function @{text splay}"
 function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay a Leaf = Leaf" |
 "splay a (Node l a r) = Node l a r" |
-"a<b \<Longrightarrow> splay a (Node (Node ll a lr) b r) = Node ll a (Node lr b r)" |
+"a<b \<Longrightarrow> splay a (Node (Node la a ra) b rb) = Node la a (Node ra b rb)" |
 "a<b \<Longrightarrow> splay a (Node Leaf b r) = Node Leaf b r" |
-"a<c \<Longrightarrow> a<b \<Longrightarrow> splay a (Node (Node Leaf b lr) c r) = Node Leaf b (Node lr c r)" |
-"a<c \<Longrightarrow> a<b \<Longrightarrow> ll \<noteq> Leaf \<Longrightarrow>
- splay a (Node (Node ll b lr) c r) =
- (case splay a ll of Node lll u llr \<Rightarrow> Node lll u (Node llr b (Node lr c r)))" |
-"a<c \<Longrightarrow> b<a \<Longrightarrow> splay a (Node (Node ll b Leaf) c r) = Node ll b (Node Leaf c r)" |
-"a<c \<Longrightarrow> b<a \<Longrightarrow> lr \<noteq> Leaf \<Longrightarrow>
- splay a (Node (Node ll b lr) c r) =
- (case splay a lr of Node lrl u lrr \<Rightarrow> Node (Node ll b lrl) u (Node lrr c r))" |
-"b<a \<Longrightarrow> splay a (Node l b (Node rl a rr)) = Node (Node l b rl) a rr" |
-"b<a \<Longrightarrow> splay a (Node l b Leaf) = Node l b Leaf" |
-"c<a \<Longrightarrow> a<b \<Longrightarrow>  rl \<noteq> Leaf \<Longrightarrow>
- splay a (Node l c (Node rl b rr)) =
- (case splay a rl of Node rll u rlr \<Rightarrow> Node (Node l c rll) u (Node rlr b rr))" |
-"c<a \<Longrightarrow> a<b \<Longrightarrow> splay a (Node l c (Node Leaf b rr)) = Node (Node l c Leaf) b rr" |
-"c<a \<Longrightarrow> b<a \<Longrightarrow> splay a (Node l c (Node rl b Leaf)) = Node (Node l c rl) b Leaf" |
-"c<a \<Longrightarrow> b<a \<Longrightarrow>  rr \<noteq> Leaf \<Longrightarrow>
- splay a (Node l c (Node rl b rr)) =
- (case splay a rr of Node rrl u rrr \<Rightarrow> Node (Node (Node l c rl) b rrl) u rrr)"
+"x<a \<Longrightarrow> x<b \<Longrightarrow> splay x (Node (Node Leaf a ra) b rb) = Node Leaf a (Node ra b rb)" |
+"x<a \<Longrightarrow> x<b \<Longrightarrow> la \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node la a lr) b rb) =
+ (case splay x la of Node lc c rc \<Rightarrow> Node lc c (Node rc a (Node lr b rb)))" |
+"x<b \<Longrightarrow> a<x \<Longrightarrow> splay x (Node (Node la a Leaf) b rb) = Node la a (Node Leaf b rb)" |
+"x<b \<Longrightarrow> a<x \<Longrightarrow> ra \<noteq> Leaf \<Longrightarrow>
+ splay x (Node (Node la a ra) b rb) =
+ (case splay x ra of Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb))" |
+"b<a \<Longrightarrow> splay a (Node lb b (Node la a ra)) = Node (Node lb b la) a ra" |
+"a<x \<Longrightarrow> splay x (Node l a Leaf) = Node l a Leaf" |
+"a<x \<Longrightarrow> x<b \<Longrightarrow> lb \<noteq> Leaf \<Longrightarrow>
+ splay x (Node la a (Node lb b rb)) =
+ (case splay x lb of Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb))" |
+"a<x \<Longrightarrow> x<b \<Longrightarrow> splay x (Node la a (Node Leaf b rb)) = Node (Node la a Leaf) b rb" |
+"a<x \<Longrightarrow> b<x \<Longrightarrow> splay x (Node la a (Node lb b Leaf)) = Node (Node la a lb) b Leaf" |
+"a<x \<Longrightarrow> b<x \<Longrightarrow> rb \<noteq> Leaf \<Longrightarrow>
+ splay x (Node la a (Node lb b rb)) =
+ (case splay x rb of Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)"
 apply(atomize_elim)
 apply(auto)
 (* 1 subgoal *)
@@ -66,32 +66,32 @@ done
 termination splay
 by lexicographic_order
 
-lemma splay_code: "splay a (Node cl c cr) =
-  (if a=c
-   then Node cl c cr
-   else if a < c
-        then case cl of
-          Leaf \<Rightarrow> Node cl c cr |
-          Node bl b br \<Rightarrow>
-            (if a=b then Node bl a (Node br c cr)
-             else if a < b
-                  then if bl = Leaf then Node bl b (Node br c cr)
-                       else case splay a bl of
-                         Node al a' ar \<Rightarrow> Node al a' (Node ar b (Node br c cr))
-                  else if br = Leaf then Node bl b (Node br c cr)
-                       else case splay a br of
-                         Node al a' ar \<Rightarrow> Node (Node bl b al) a' (Node ar c cr))
-        else case cr of
-          Leaf \<Rightarrow> Node cl c cr |
-          Node bl b br \<Rightarrow>
-            (if a=b then Node (Node cl c bl) a br
-             else if a < b
-                  then if bl = Leaf then Node (Node cl c bl) b br
-                       else case splay a bl of
-                         Node al a' ar \<Rightarrow> Node (Node cl c al) a' (Node ar b br)
-                  else if br=Leaf then Node (Node cl c bl) b br
-                       else case splay a br of
-                         Node al a' ar \<Rightarrow> Node (Node (Node cl c bl) b al) a' ar))"
+lemma splay_code: "splay x (Node la a ra) =
+  (if x=a
+   then Node la a ra
+   else if x < a
+        then case la of
+          Leaf \<Rightarrow> Node la a ra |
+          Node lb b rb \<Rightarrow>
+            (if x=b then Node lb x (Node rb a ra)
+             else if x < b
+                  then if lb = Leaf then Node lb b (Node rb a ra)
+                       else case splay x lb of
+                         Node lc c rc \<Rightarrow> Node lc c (Node rc b (Node rb a ra))
+                  else if rb = Leaf then Node lb b (Node rb a ra)
+                       else case splay x rb of
+                         Node lc c rc \<Rightarrow> Node (Node lb b lc) c (Node rc a ra))
+        else case ra of
+          Leaf \<Rightarrow> Node la a ra |
+          Node lb b rb \<Rightarrow>
+            (if x=b then Node (Node la a lb) x rb
+             else if x < b
+                  then if lb = Leaf then Node (Node la a lb) b rb
+                       else case splay x lb of
+                         Node lc c rc \<Rightarrow> Node (Node la a lc) c (Node rc b rb)
+                  else if rb=Leaf then Node (Node la a lb) b rb
+                       else case splay x rb of
+                         Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc))"
 by(auto split: tree.split)
 
 lemma splay_Leaf_iff[simp]: "(splay a t = Leaf) = (t = Leaf)"
@@ -195,10 +195,10 @@ context
 begin
 
 qualified fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"insert a t =  (if t = Leaf then Node Leaf a Leaf
-  else case splay a t of
-    Node l a' r \<Rightarrow> if a=a' then Node l a r
-      else if a<a' then Node l a (Node Leaf a' r) else Node (Node l a' Leaf) a r)"
+"insert x t =  (if t = Leaf then Node Leaf x Leaf
+  else case splay x t of
+    Node l a r \<Rightarrow> if x=a then Node l a r
+      else if x<a then Node l x (Node Leaf a r) else Node (Node l a Leaf) x r)"
 
 end
 
@@ -219,11 +219,11 @@ subsection "Function @{text splay_max}"
 
 fun splay_max :: "'a::linorder tree \<Rightarrow> 'a tree" where
 "splay_max Leaf = Leaf" |
-"splay_max (Node l b Leaf) = Node l b Leaf" |
-"splay_max (Node l b (Node rl c rr)) =
-  (if rr = Leaf then Node (Node l b rl) c Leaf
-   else case splay_max rr of
-     Node rrl m rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) m rrr)"
+"splay_max (Node la a Leaf) = Node la a Leaf" |
+"splay_max (Node la a (Node lb b rb)) =
+  (if rb = Leaf then Node (Node la a lb) b Leaf
+   else case splay_max rb of
+     Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)"
 
 lemma splay_max_Leaf_iff[simp]: "(splay_max t = Leaf) = (t = Leaf)"
 apply(induction t rule: splay_max.induct)
@@ -232,12 +232,12 @@ done
 
 lemma splay_max_code: "splay_max t = (case t of
   Leaf \<Rightarrow> t |
-  Node l b r \<Rightarrow> (case r of
+  Node la a ra \<Rightarrow> (case ra of
     Leaf \<Rightarrow> t |
-    Node rl c rr \<Rightarrow>
-      (if rr=Leaf then Node (Node l b rl) c rr
-       else case splay_max rr of
-              Node rrl u rrr \<Rightarrow> Node (Node (Node l b rl) c rrl) u rrr)))"
+    Node lb b rb \<Rightarrow>
+      (if rb=Leaf then Node (Node la a lb) b rb
+       else case splay_max rb of
+              Node lc c rc \<Rightarrow> Node (Node (Node la a lb) b lc) c rc)))"
 by(auto simp: neq_Leaf_iff split: tree.split)
 
 lemma size_splay_max: "size(splay_max t) = size t"
@@ -304,11 +304,11 @@ context
 begin
 
 qualified definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"delete a t = (if t=Leaf then Leaf
-  else case splay a t of Node l a' r \<Rightarrow>
-    if a=a'
+"delete x t = (if t=Leaf then Leaf
+  else case splay x t of Node l a r \<Rightarrow>
+    if x=a
     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
-    else Node l a' r)"
+    else Node l a r)"
 
 lemma set_delete: assumes "bst t"
 shows "set_tree (delete a t) = set_tree t - {a}"

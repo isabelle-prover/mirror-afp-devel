@@ -78,7 +78,7 @@ next
   thus ?case using "9.prems"(1,2) nl2[of "size1 rb" "size1 lb" "size1 la"]
     by (auto simp add: \<phi>_def log_divide algebra_simps)
 next
-  case (6 x a b lb rb ra)
+  case (6 x b a lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
   hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
   then obtain lu u ru where sp: "splay x lb = Node lu u ru"

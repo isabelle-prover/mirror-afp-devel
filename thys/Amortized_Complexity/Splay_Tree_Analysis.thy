@@ -84,7 +84,7 @@ next
     log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
     by (auto simp: algebra_simps simp del:log_le_cancel_iff)
 next
-  case (6 x a b lb rb ra)
+  case (6 x b a lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
   hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
   obtain lu u ru where sp: "splay x lb = Node lu u ru"
