@@ -306,7 +306,7 @@ next
         from q(1) obtain p' where p': "insert a p' \<in> q" "p' \<in> P" by auto
         from q p p' a have eq: "p = p'" by clarify (metis insert_Diff insert_ident insert_iff)
         from q p a have "q - {insert a p} = P - {p}" "q - {insert a p} = Q - {p}"
-          by (clarify; metis (no_types, lifting) Diff_iff Diff_insert_absorb insert_iff)+
+          by (clarify; metis (no_types, hide_lams) Diff_iff Diff_insert_absorb insert_iff)+
         from this p p' eq have "P = Q" by auto
         from this neq show "False" by blast
       qed
