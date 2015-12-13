@@ -1,3 +1,20 @@
+[Card_Partitions]
+title = Cardinality of Set Partitions
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+date = 2015-12-12
+topic = Mathematics/Combinatorics
+depends-on = Discrete_Summation
+abstract =
+  The theory's main theorem states that the cardinality of set partitions of
+  size k on a carrier set of size n is expressed by Stirling numbers of the
+  second kind. In Isabelle, Stirling numbers of the second kind are defined
+  in the AFP entry `Discrete Summation` through their well-known recurrence
+  relation. The main theorem relates them to the alternative definition as
+  cardinality of set partitions. The proof follows the simple and short
+  explanation in Richard P. Stanley's `Enumerative Combinatorics: Volume 1`
+  and Wikipedia, and unravels the full details and implicit reasoning steps
+  of these explanations.
+  
 [Multirelations]
 title = Binary Multirelations
 author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
