@@ -57,6 +57,12 @@ update problem is 2-competitive and that this is optimal for deterministic
 online algorithms for this problem.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Amortized_Complexity-AFP,
