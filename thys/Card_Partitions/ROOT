@@ -1,0 +1,9 @@
+chapter AFP
+
+session Card_Partitions (AFP) = Discrete_Summation +
+  options [timeout=600]
+  theories
+    Card_Partitions
+  document_files
+    "root.bib"
+    "root.tex"
