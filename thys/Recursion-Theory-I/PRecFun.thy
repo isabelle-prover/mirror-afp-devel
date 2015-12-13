@@ -455,7 +455,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   handle BadArgument => no_tac)
 
 fun prec_tac ctxt facts i =
-  Method.insert_tac facts i THEN
+  Method.insert_tac ctxt facts i THEN
   REPEAT (resolve_tac ctxt [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
     assume_tac ctxt i ORELSE if_comp_tac ctxt i)
 *}

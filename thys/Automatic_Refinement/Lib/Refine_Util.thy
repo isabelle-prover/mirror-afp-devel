@@ -389,11 +389,11 @@ ML {*
       (fn (((quant, (asm, occL)), insts), thms) => fn ctxt => METHOD 
         (fn facts =>
           if null insts then 
-            quant (Method.insert_tac facts THEN' tac ctxt asm occL thms)
+            quant (Method.insert_tac ctxt facts THEN' tac ctxt asm occL thms)
           else
             (case thms of
               [thm] => quant (
-                Method.insert_tac facts THEN' inst_tac ctxt asm occL insts thm)
+                Method.insert_tac ctxt facts THEN' inst_tac ctxt asm occL insts thm)
             | _ => error "Cannot have instantiations with multiple rules")));
 
   in

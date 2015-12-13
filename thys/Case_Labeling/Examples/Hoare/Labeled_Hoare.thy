@@ -70,14 +70,14 @@ method_setup casified_vcg = \<open>
   Scan.lift (Casify.casify_options casify_defs) >>
     (fn opt => fn ctxt => Util.SIMPLE_METHOD_CASES (
       HEADGOAL (Labeled_Hoare.hoare_tac ctxt (K all_tac))
-      THEN_CASES Casify.casify_tac opt ctxt))
+      THEN_CONTEXT Casify.casify_tac opt))
 \<close>
 
 method_setup casified_vcg_simp = \<open>
   Scan.lift (Casify.casify_options casify_defs) >>
     (fn opt => fn ctxt => Util.SIMPLE_METHOD_CASES (
       HEADGOAL (Labeled_Hoare.hoare_tac ctxt (asm_full_simp_tac ctxt))
-      THEN_CASES Casify.casify_tac opt ctxt))
+      THEN_CONTEXT Casify.casify_tac opt))
 \<close>
 
 end

@@ -1,6 +1,6 @@
 (*  Title:       Deriving class instances for datatypes
     Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and René Thiemann 
+    Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
 *)
 signature GENERATOR_AUX =
@@ -9,52 +9,52 @@ sig
 
   (* put a string in sub-script *)
   val sub : string -> string
-  
+
   (* put a type-name in sub-script *)
   val subT : string -> typ -> string
-  
+
   (* [a,..,n] -> _{a_.._n} *)
   val ints_to_subscript : int list -> string
-  
+
   (* drop last element of a non-empty list *)
   val drop_last : 'a list -> 'a list
-  
+
   (* rename old types to new types in term, typ-lists (fst and snd components) are assumed to be distinct *)
   val rename_types : (typ * typ) list -> term -> term
-  
+
   (* \<lambda> x1 ... xn.t *)
   val lambdas : term list -> term -> term
-  
-  (* thm[OF _(NONE) foo (SOME foo) ...] *)
-  val OF_option : thm -> thm option list -> thm 
 
-  (* aim: treat a possible empty conjunction and handle each subcase 
+  (* thm[OF _(NONE) foo (SOME foo) ...] *)
+  val OF_option : thm -> thm option list -> thm
+
+  (* aim: treat a possible empty conjunction and handle each subcase
      by a specific tactic (indexed from 0 onwards) *)
   val conjI_tac : thm list ->
     Proof.context -> 'a list -> (Proof.context -> int -> tactic) -> tactic
-  
+
   (* check whether a given type is of a given sort *)
   val is_class_instance : theory -> string -> sort -> bool
 
-  val mk_case_tac : 
+  val mk_case_tac :
     Proof.context ->
     term option list list ->
     thm ->
     (int -> Proof.context * thm list * (string * cterm) list -> tactic) ->
     tactic
-        
+
   (*type-inference after replacing all schematic type-variables by dummyT*)
   val infer_type : Proof.context -> term -> term
-  
+
   (* like old prove_multi, but in non-blocking future-verion *)
   val prove_multi_future : Proof.context -> string list -> term list -> term list ->
     ({prems: thm list, context: Proof.context} -> tactic) -> thm list
-  
+
   (* determines all mutual recursive types of a given BNF-least-fixpoint-type *)
   val mutual_recursive_types : string -> Proof.context -> string list * typ list
-  
+
   (* a fold over types, differentiating mutual recursive types and other type-constructors *)
-  val recursor : 
+  val recursor :
     (string -> 'info) * (* accessing the information of a datatype *)
     ('info -> bool list) * (* which arguments are used of a datatype *)
     string list -> (* information on used arguments and recursive types *)
@@ -64,18 +64,18 @@ sig
     (typ -> 'a) -> (* how to treat recursive case *)
     ((typ * 'a option) list * 'info -> 'a) -> (* how to treat non-rec.-case; NONE result for unused types, if all = false *)
     typ -> 'a
-  
+
   (* split global list of induction hypotheses according to list of argument types *)
   val split_IHs : (string -> 'info) * ('info -> bool list) * string list -> typ list -> thm list -> thm list list
-  
+
   (* a standard tactic to solve proof obligation with recursion on types:
-     variables and rec.-cases are handled via IHs and preconditions, 
+     variables and rec.-cases are handled via IHs and preconditions,
      for non-rec.-type constructors  a partial soundness thm has to be generated from the info *)
   val std_recursor_tac : (string -> 'info) * ('info -> bool list) * string list ->
     typ list ->
     ('info -> thm) ->
     thm list -> typ -> thm list -> Proof.context -> tactic
-  
+
   (* delivers a full type from a type name by instantiating the type-variables of that
    type with different variables of a given sort, also returns the chosen variables
    as second component *)
@@ -85,15 +85,13 @@ sig
   val typ_and_vs_of_used_typname : string -> bool list -> string list -> typ * (string * string list) list
 
   val freeify_tvars : typ -> typ
-  
+
   val restore_with_morphism : local_theory -> morphism * local_theory
-  
+
   val add_used_tycos : Proof.context -> string -> string list -> string list
-  
+
   val type_parameters : typ -> Proof.context -> (string * sort) list * typ list
-  
-  val strip_cases : (thm -> ('b * thm) Seq.seq) -> tactic
-  
+
   val define_overloaded : (string * term) -> local_theory -> thm * local_theory
 
   val define_overloaded_generic : (Attrib.binding * term) -> local_theory -> thm * local_theory
@@ -139,10 +137,10 @@ fun alist_to_string al = map fst al |> commas |> enclose "(" ")"
 
 fun typ_and_vs_of_used_typname typ_name used_pos sort =
   let
-    val sorts = map (fn b => if b then sort else @{sort type}) used_pos 
+    val sorts = map (fn b => if b then sort else @{sort type}) used_pos
     val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
     val ty = Type (typ_name,map TFree ty_vars)
-  in 
+  in
     (ty,ty_vars)
   end
 
@@ -163,7 +161,7 @@ fun mk_id T =
 
 local
   fun create_gen mk_comp dfun mk_p x early_abort up mfun pfun tycos read T lthy =
-    let 
+    let
       fun create x (T as (Type (tyco, Ts))) =
             if early_abort T then mk_id dummyT
             else if member (op =) tycos tyco then mk_p (tyco, T) x
@@ -205,10 +203,10 @@ fun subT name T = name ^ sub
         TVar (xi, _) => Term.string_of_vname xi
       | TFree (x, _) => x
       | Type (tyco, _) => tyco)
-  
+
 val ints_to_subscript = sub o foldr1 (fn (x, y) => x ^ "_" ^ y) o map string_of_int
 
-fun ind_case_to_idxs cTys= 
+fun ind_case_to_idxs cTys=
   let
     fun number n (i, j) ((_ :: xs) :: ys) = (n, (i, j)) :: number (n+1) (i, j+1) (xs :: ys)
       | number n (i, _) ([] :: ys) = number n (i+1, 0) ys
@@ -220,10 +218,10 @@ are not (indirect) phantom types.*)
 fun add_used_tfrees ctxt =
       let
         val thy = Proof_Context.theory_of ctxt
-    
+
         fun err_schematic T =
               error ("illegal schematic type variable " ^ quote (Syntax.string_of_typ ctxt T))
-        
+
         fun add _ (T as TVar _) = err_schematic T
           | add _ (TFree (x, _)) = insert (op =) x
           | add skip (Type (tyco, Ts)) =
@@ -256,7 +254,7 @@ fun restore_with_morphism lthy_old =
 fun infer_type ctxt =
       map_types (map_type_tvar (K dummyT))
       #> singleton (Type_Infer_Context.infer_types ctxt)
-  
+
 val lambdas = fold_rev lambda
 
 fun mk_def T c rhs = Logic.mk_equals (Const (c, T), rhs)
@@ -270,7 +268,7 @@ fun typ_and_vs_of_typname thy typ_name sort =
     val ty_vars = Name.invent_names (Name.make_context [typ_name]) "a" sorts
     val ty = Type (typ_name,map TFree ty_vars)
   in (ty,ty_vars) end
-  
+
 
 (* code copied from HOL/SPARK/TOOLS *)
 fun define_overloaded_generic (binding,eq) lthy =
@@ -287,22 +285,20 @@ end
 fun define_overloaded (name,eq) = define_overloaded_generic ((Binding.name name, @{attributes [code]}),eq)
 
 
-fun strip_cases ctac = ctac #> Seq.map snd
-
 fun mk_case_tac ctxt insts thm sub_case_tac =
-      (DETERM o strip_cases o Induct.cases_tac ctxt false insts (SOME thm) []
-      THEN_ALL_NEW (fn i =>
-        Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...} =>
-          sub_case_tac (i-1) (ctxt, hyps, params)) ctxt i))
-      1
+  (DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
+  THEN_ALL_NEW (fn i =>
+    Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...} =>
+      sub_case_tac (i-1) (ctxt, hyps, params)) ctxt i))
+  1
 
 val freeify_tvars = map_type_tvar (TFree o apfst fst)
 
 fun mutual_recursive_types tyco lthy =
       (case BNF_FP_Def_Sugar.fp_sugar_of lthy tyco of
         SOME sugar =>
-          if Sign.arity_number (Proof_Context.theory_of lthy) tyco - 
-            BNF_Def.live_of_bnf (#fp_bnf sugar) > 0 
+          if Sign.arity_number (Proof_Context.theory_of lthy) tyco -
+            BNF_Def.live_of_bnf (#fp_bnf sugar) > 0
           then error "only datatypes without dead type parameters are supported"
           else if #fp sugar = BNF_Util.Least_FP then
             sugar |> #fp_res |> #Ts |> `(map (fst o dest_Type))
@@ -338,10 +334,10 @@ fun recursor rec_info all free tvar r typ (T as Type (tyco,Ts)) =
   | recursor _ _ _ tvar _ _ (T as TVar _) = tvar T
 
 (* use the recursor to compute the number of IHs, in order to split them *)
-fun num_IHs rec_info = recursor rec_info true (K 0) (K 0) (K 1) 
+fun num_IHs rec_info = recursor rec_info true (K 0) (K 0) (K 1)
       (fn (xs, _) => sum_list (map (the o snd) xs))
 
-fun split_IHs rec_info (ty :: tys : typ list) (IHs : thm list) : thm list list = 
+fun split_IHs rec_info (ty :: tys : typ list) (IHs : thm list) : thm list list =
       let
         val n = num_IHs rec_info ty
         val _ = if n > length IHs then error "split IH error: too few" else ()
@@ -354,9 +350,9 @@ fun split_IHs rec_info (ty :: tys : typ list) (IHs : thm list) : thm list list =
 fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info false
       (* TFrees via pre_condition and blast *)
       (fn T => fn IH => fn ctxt =>
-          if null IH then              
-            (resolve_tac ctxt [nth assms (find_index (equal T) used_tfrees)] THEN_ALL_NEW blast_tac ctxt) 1               
-          else error "error 1 in distributing IHs in recursor_tac") 
+          if null IH then
+            (resolve_tac ctxt [nth assms (find_index (equal T) used_tfrees)] THEN_ALL_NEW blast_tac ctxt) 1
+          else error "error 1 in distributing IHs in recursor_tac")
       (* TVars may not occur *)
       (fn ty => error ("error in recursor_tac for " ^ @{make_string} ty))
       (* recursive case via IH and blast *)
@@ -365,7 +361,7 @@ fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info
           (resolve_tac ctxt [hd IHs] THEN_ALL_NEW blast_tac ctxt) 1
         else error "error 2 in distributing IHs in recursor_tac"))
       (* non-rec.-case distributed IHs and invokes partial soundness thm *)
-      (fn (tys_tactics, info) => fn IH => fn ctxt => 
+      (fn (tys_tactics, info) => fn IH => fn ctxt =>
         let
           val IHs = split_IHs rec_info (map fst tys_tactics) IH
           val tactics = tys_tactics ~~ IHs |> map_filter (fn ((_, tac_opt), IH) =>
@@ -375,7 +371,7 @@ fun std_recursor_tac rec_info used_tfrees info_to_pthm assms = recursor rec_info
           HEADGOAL (
             resolve_tac ctxt [pthm]
             THEN_ALL_NEW (fn k => Subgoal.SUBPROOF (fn {prems, context = ctxt', ...} =>
-              Method.insert_tac prems 1
+              Method.insert_tac ctxt' prems 1
               THEN (nth tactics (k - 1) ctxt')) ctxt k))
         end)
 

@@ -5,10 +5,10 @@ sig
 
   val hyp_subst_tac: Proof.context -> int -> tactic
   val SPLIT_subst_tac: Proof.context -> int -> tactic
-  val extract_cases_tac: Proof.context-> cases_tactic
+  val extract_cases_tac: context_tactic
   val prepare_labels_tac: Proof.context -> int -> tactic
   val split_bind_all_tac: {right_only: bool, simp_all_cases: bool} -> Proof.context -> int -> tactic
-  val casify_tac: options -> Proof.context -> cases_tactic
+  val casify_tac: options -> context_tactic
   val casify_options: options -> options parser
   val casify_method_setup: options -> (Proof.context -> Method.method) context_parser
 end
@@ -255,9 +255,9 @@ fun prepare_labels_tac ctxt =
     CONVERSION (norm_labels_conv ctxt)
   end
 
-fun extract_cases_tac ctxt st =
+fun extract_cases_tac (ctxt, st) =
   let val tac = unfold_tac ctxt @{thms LABEL_simps}
-  in CASES (mk_cases' ctxt st) tac st end
+  in CONTEXT_CASES (mk_cases' ctxt st) tac (ctxt, st) end
 
 
 (* Splits the nth ALL into its components and simplifies any case_prod over this variable*)
@@ -341,7 +341,7 @@ end
 
 datatype options = Options of { simp_all_cases: bool, split_right_only: bool, protect_subgoals: bool}
 
-fun casify_tac (Options { simp_all_cases, split_right_only, protect_subgoals }) ctxt =
+fun casify_tac (Options { simp_all_cases, split_right_only, protect_subgoals }) (ctxt, st) =
   let
     fun inst_disambig ct = Thm.instantiate ([], [((("n", 0), @{typ nat}), ct)]) @{thm DISAMBIG_I}
     fun disambig_tac i =
@@ -355,7 +355,7 @@ fun casify_tac (Options { simp_all_cases, split_right_only, protect_subgoals }) 
         disambig_tac i
         ] i
       ))
-  in prep_tac THEN_CASES extract_cases_tac ctxt end
+  in (ctxt, st) |> (prep_tac THEN_CONTEXT extract_cases_tac) end
 
 local
 
@@ -392,7 +392,8 @@ fun casify_options def = Scan.repeat (scan_alt options)
 
 end
 
-fun casify_method_setup def = Scan.lift (casify_options def) >>
-  (fn opt => fn ctxt => Util.SIMPLE_METHOD_CASES (casify_tac opt ctxt))
+fun casify_method_setup def =
+  Scan.lift (casify_options def) >>
+    (fn opt => fn _ => Util.SIMPLE_METHOD_CASES (casify_tac opt))
 
 end

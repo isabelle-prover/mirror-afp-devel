@@ -1,11 +1,11 @@
-infix 1 THEN_CASES
+infix 1 THEN_CONTEXT
 infix 1 THEN_ALL_NEW_FWD
 
 signature BASIC_UTIL =
 sig
   val INTERVAL_FWD: (int -> tactic) -> int -> int -> tactic
   val REPEAT_ALL_NEW_FWD: (int -> tactic) -> int -> tactic
-  val THEN_CASES: tactic * cases_tactic -> cases_tactic;
+  val THEN_CONTEXT: tactic * context_tactic -> context_tactic;
   val THEN_ALL_NEW_FWD: (int -> tactic) * (int -> tactic) -> int -> tactic
 end
 
@@ -26,14 +26,15 @@ sig
   val dest_pair: term -> term * term
   val dest_tuple: term -> term list
 
-  val SIMPLE_METHOD_CASES: cases_tactic -> Method.method
+  val SIMPLE_METHOD_CASES: context_tactic -> Method.method
 
 end
 
 structure Util : UTIL =
  struct
 
-fun (tac THEN_CASES ctac) st = Seq.maps ctac (tac st);
+fun (tac1 THEN_CONTEXT tac2) : context_tactic =
+  fn (ctxt, st) => st |> tac1 |> Seq.maps (pair ctxt #> tac2);
 
 fun appair f g (x, y) = (f x, g y)
 
@@ -66,7 +67,8 @@ fun dest_tuple (Const (@{const_name Pair}, _) $ t1 $ t2) =
 
 
 fun SIMPLE_METHOD_CASES tac =
-  METHOD_CASES (fn facts => ALLGOALS (Method.insert_tac facts) THEN_CASES tac)
+  CONTEXT_METHOD (fn facts => fn (ctxt, st) =>
+    (ctxt, st) |> (ALLGOALS (Method.insert_tac ctxt facts) THEN_CONTEXT tac));
 
 (* Apply tactic to subgoals in interval, in a forward manner, skipping over
   emerging subgoals *)

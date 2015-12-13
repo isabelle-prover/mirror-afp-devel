@@ -65,5 +65,5 @@ fun pr_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   handle BadArgument => no_tac)
 
 fun prec0_tac ctxt facts i =
-  Method.insert_tac facts i THEN
+  Method.insert_tac ctxt facts i THEN
   REPEAT (assume_tac ctxt i ORELSE pr_comp_tac ctxt i)

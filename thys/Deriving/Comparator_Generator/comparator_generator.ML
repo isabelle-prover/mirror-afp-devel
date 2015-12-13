@@ -1,6 +1,6 @@
 (*  Title:       Deriving class instances for datatypes
     Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and René Thiemann 
+    Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
 *)
 signature COMPARATOR_GENERATOR =
@@ -10,13 +10,13 @@ sig
    {map : term,                    (* take % x. x, if there is no map *)
     pcomp : term,                  (* partial comparator *)
     comp : term,                   (* full comparator *)
-    comp_def : thm option,         (* definition of comparator, important for nesting *) 
+    comp_def : thm option,         (* definition of comparator, important for nesting *)
     map_comp : thm option,         (* compositionality of map, important for nesting *)
     partial_comp_thms : thm list,  (* first eq, then sym, finally trans *)
     comp_thm : thm,               (* comparator acomp \<Longrightarrow> \<dots> \<Longrightarrow> comparator (full_comp acomp \<dots>) *)
     used_positions : bool list}
 
-  (* registers @{term comparator_of :: "some_type :: linorder comparator"} 
+  (* registers @{term comparator_of :: "some_type :: linorder comparator"}
      where some_type must just be a type without type-arguments *)
   val register_comparator_of : string -> local_theory -> local_theory
 
@@ -29,7 +29,7 @@ sig
   val register_foreign_partial_and_full_comparator :
     string -> (* long type name *)
     term -> (* map function, should be \<lambda>x. x, if there is no map *)
-    term -> (* partial comparator of type ('a => order, 'b)ty => ('a,'b)ty => order, 
+    term -> (* partial comparator of type ('a => order, 'b)ty => ('a,'b)ty => order,
       where 'a is used, 'b is unused *)
     term -> (* (full) comparator of type ('a \<Rightarrow> 'a \<Rightarrow> order) \<Rightarrow> ('a,'b)ty \<Rightarrow> ('a,'b)ty \<Rightarrow> order,
       where 'a is used, 'b is unused *)
@@ -44,15 +44,15 @@ sig
 
   datatype comparator_type = Linorder | BNF
 
-  val generate_comparators_from_bnf_fp : 
+  val generate_comparators_from_bnf_fp :
     string ->                 (* name of type *)
-    local_theory -> 
+    local_theory ->
     ((term * thm list) list * (* partial comparators + simp-rules *)
     (term * thm) list) *      (* non-partial comparator + def_rule *)
     local_theory
 
-  val generate_comparator : 
-    comparator_type -> 
+  val generate_comparator :
+    comparator_type ->
     string -> (* name of type *)
     local_theory -> local_theory
 
@@ -60,7 +60,7 @@ sig
 
   (* ensures that the info will be available on later requests *)
   val ensure_info : comparator_type -> string -> local_theory -> local_theory
-    
+
 end
 
 structure Comparator_Generator : COMPARATOR_GENERATOR =
@@ -120,7 +120,7 @@ val EQ = 0
 val SYM = 1
 val TRANS = 2
 
-fun register_foreign_partial_and_full_comparator tyco m p c c_def m_comp eq_thm sym_thm 
+fun register_foreign_partial_and_full_comparator tyco m p c c_def m_comp eq_thm sym_thm
   trans_thm c_thm =
   declare_info tyco m p c c_def m_comp [eq_thm, sym_thm, trans_thm] c_thm
 
@@ -135,21 +135,21 @@ val mk_comp = mk_infer_const @{const_name comparator}
 fun default_comp T = absdummy T (absdummy T @{term Eq}) (*%_ _. Eq*)
 
 fun register_foreign_comparator T comp comp_thm lthy =
-  let 
+  let
     val tyco = (case T of Type (tyco, []) => tyco | _ => error "expected type constant")
     val eq = @{thm comp_to_peq_comp} OF [comp_thm]
     val sym = @{thm comp_to_psym_comp} OF [comp_thm]
     val trans = @{thm comp_to_ptrans_comp} OF [comp_thm]
   in
-    register_foreign_partial_and_full_comparator 
+    register_foreign_partial_and_full_comparator
       tyco (HOLogic.id_const T) comp comp NONE NONE eq sym trans comp_thm [] lthy
   end
 
-fun register_comparator_of tyco lthy = 
-  let 
+fun register_comparator_of tyco lthy =
+  let
     val T = Type (tyco, [])
     val comp = Const (@{const_name comparator_of}, compT T)
-    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)] 
+    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)]
       [] @{thm comparator_of}
   in register_foreign_comparator T comp comp_thm lthy end
 
@@ -178,23 +178,23 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     val compNs =
       (*TODO: clashes in presence of same type names in different theories*)
-      map (Long_Name.base_name) tycos 
+      map (Long_Name.base_name) tycos
       |> map (fn s => "comparator_" ^ s)
-    
-    fun gen_vars prefix = map (fn (i, pty) => Free (prefix ^ ints_to_subscript [i], pty)) 
+
+    fun gen_vars prefix = map (fn (i, pty) => Free (prefix ^ ints_to_subscript [i], pty))
       (t_ixs ~~ Ts)
 
     (* primrec definitions of partial comparators *)
 
     fun mk_pcomp (tyco, T) = ("partial_comparator_" ^ Long_Name.base_name tyco, pcompT T)
 
-    fun constr_terms lthy =  
-      Bnf_Access.constr_terms lthy 
+    fun constr_terms lthy =
+      Bnf_Access.constr_terms lthy
       #> map (apsnd (map freeify_tvars o fst o strip_type) o dest_Const)
 
     fun generate_pcomp_eqs lthy (tyco, T) =
       let
-        val constrs = constr_terms lthy tyco 
+        val constrs = constr_terms lthy tyco
 
         fun comp_arg T x y =
           let
@@ -372,29 +372,30 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     val rec_info = (the_info lthy, #used_positions, tycos)
     val split_IHs = split_IHs rec_info
-    
+
     val unknown_value = false (* effect of choosing false / true not yet visible *)
 
-    fun induct_tac ctxt f = ((DETERM o strip_cases o Induction.induction_tac ctxt false 
+    fun induct_tac ctxt f =
+      ((DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induction.induction_tac false
       (map (fn x => [SOME (NONE, (x, unknown_value))]) x_vars) [] [] (SOME induct_thms) [])
       THEN_ALL_NEW (fn i =>
         Subgoal.SUBPROOF (fn {context = ctxt, prems = prems, params = iparams, ...} =>
           f (i - 1) ctxt prems iparams) ctxt i)) 1
 
-    fun recursor_tac kind = std_recursor_tac rec_info used_tfrees 
+    fun recursor_tac kind = std_recursor_tac rec_info used_tfrees
       (fn info => nth (#partial_comp_thms info) kind)
-    
+
     fun instantiate_IHs IHs pre_conds = map (fn IH =>
       OF_option IH (replicate (Thm.nprems_of IH - length pre_conds) NONE @ map SOME pre_conds)) IHs
 
-    fun get_v_i vs k = nth vs k |> snd |> SOME 
+    fun get_v_i vs k = nth vs k |> snd |> SOME
 
     (* partial eq-theorem *)
     val _ = debug_out "Partial equality"
     val eq_thms' = mk_eq_sym_trans_thm' mk_peq_comp
 
-    fun eq_solve_tac i ctxt IH_prems xs = 
-      let 
+    fun eq_solve_tac i ctxt IH_prems xs =
+      let
         val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
@@ -407,7 +408,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
       in
         (* after induction *)
         resolve_tac ctxt @{thms peq_compI} 1
-        THEN Subgoal.FOCUS (fn focus => 
+        THEN Subgoal.FOCUS (fn focus =>
           let
             val y = #params focus |> hd
             val yt = y |> snd |> Thm.term_of
@@ -425,11 +426,11 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                 THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
                   resolve_tac ctxt @{thms peq_compD} 1
                   THEN recursor_tac EQ pre_cond (nth xs_tys k) (nth IHs k) ctxt')
-              else 
+              else
                 (* different constructors *)
-                unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms order.simps}) 
+                unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms order.simps})
           in
-            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac 
+            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac
           end
         ) ctxt 1
       end
@@ -442,8 +443,8 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val _ = debug_out "Partial symmetry"
     val sym_thms' = mk_eq_sym_trans_thm' mk_psym_comp
 
-    fun sym_solve_tac i ctxt IH_prems xs = 
-      let 
+    fun sym_solve_tac i ctxt IH_prems xs =
+      let
         val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
@@ -455,7 +456,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         (* after induction *)
         resolve_tac ctxt @{thms psym_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
-          let 
+          let
             val y = #params focus |> hd
             val yt = y |> snd |> Thm.term_of
             val ctxt = #context focus
@@ -463,7 +464,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
             val IH = instantiate_IHs IH pre_cond
             val xs_tys = map (fastype_of o Thm.term_of o snd) xs
             val IHs = split_IHs xs_tys IH
-            
+
             fun sub_case_tac j' (ctxt, y_simp, ys) =
               if j = j' then
                 unfold_tac ctxt (y_simp @ comp_simps)
@@ -473,7 +474,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                   resolve_tac ctxt' [infer_instantiate' ctxt'
                     [NONE, get_v_i xs k, get_v_i ys k] @{thm psym_compD}] 1
                   THEN recursor_tac SYM pre_cond (nth xs_tys k) (nth IHs k) ctxt')
-              else 
+              else
                 (* different constructors *)
                 unfold_tac ctxt (y_simp @ comp_simps @ @{thms invert_order.simps})
           in
@@ -485,14 +486,14 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val sym_thms' = prove_multi_future lthy free_names [] sym_thms' (fn {context = ctxt, ...} =>
       induct_tac ctxt sym_solve_tac)
     val _ = debug_out (@{make_string} sym_thms')
-          
+
     (* partial transitivity-theorem *)
     val _ = debug_out "Partial transitivity"
 
     val trans_thms' = mk_eq_sym_trans_thm' mk_ptrans_comp
-    
-    fun trans_solve_tac i ctxt IH_prems xs = 
-      let 
+
+    fun trans_solve_tac i ctxt IH_prems xs =
+      let
         val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
@@ -504,7 +505,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         (* after induction *)
         resolve_tac ctxt @{thms ptrans_compI} 1
         THEN Subgoal.FOCUS (fn focus =>
-          let 
+          let
             val y = nth (#params focus) 0
             val z = nth (#params focus) 1
             val yt = y |> snd |> Thm.term_of
@@ -514,7 +515,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
             val IH = instantiate_IHs IH pre_cond
             val xs_tys = map (fastype_of o Thm.term_of o snd) xs
             val IHs = split_IHs xs_tys IH
-            
+
             fun sub_case_tac j' (ctxt, y_simp, ys) =
               let
                 fun sub_case_tac' j'' (ctxt, z_simp, zs) =
@@ -526,15 +527,15 @@ fun generate_comparators_from_bnf_fp tyco lthy =
                           resolve_tac ctxt' [infer_instantiate' ctxt'
                             [NONE, get_v_i xs k, get_v_i ys k, get_v_i zs k] @{thm ptrans_compD}] 1
                           THEN recursor_tac TRANS pre_cond (nth xs_tys k) (nth IHs k) ctxt')
-                      else 
+                      else
                         (* different constructors *)
-                        unfold_tac ctxt 
+                        unfold_tac ctxt
                           (y_simp @ z_simp @ comp_simps @ @{thms trans_order_different})
               in
                 mk_case_tac ctxt [[SOME zt]] case_thm sub_case_tac'
               end
           in
-            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac 
+            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac
           end
         ) ctxt 1
       end
@@ -544,14 +545,14 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val _ = debug_out (@{make_string} trans_thms')
 
     (* total theorems *)
-    fun mk_eq_sym_trans_thm mk_eq_sym_trans compI2 compE2 thms' =  
+    fun mk_eq_sym_trans_thm mk_eq_sym_trans compI2 compE2 thms' =
       let
         val conds = map (fn c => mk_eq_sym_trans lthy c |> HOLogic.mk_Trueprop) arg_comps
-        val thms = map (fn i => 
-           mk_eq_sym_trans lthy (nth full_comps i) 
+        val thms = map (fn i =>
+           mk_eq_sym_trans lthy (nth full_comps i)
            |> HOLogic.mk_Trueprop
            |> (fn concl => Logic.list_implies (conds,concl)))
-           t_ixs 
+           t_ixs
         val thms = prove_multi_future lthy free_names [] thms (fn {context = ctxt, ...} =>
           ALLGOALS Goal.conjunction_tac
           THEN Method.intros_tac ctxt (@{thm conjI} :: compI2 :: thms') []
@@ -560,28 +561,28 @@ fun generate_comparators_from_bnf_fp tyco lthy =
 
     val eq_thms = mk_eq_sym_trans_thm mk_eq_comp @{thm eq_compI2} @{thm eq_compD2} eq_thms'
     val sym_thms = mk_eq_sym_trans_thm mk_sym_comp @{thm sym_compI2} @{thm sym_compD2} sym_thms'
-    val trans_thms = mk_eq_sym_trans_thm mk_trans_comp @{thm trans_compI2} @{thm trans_compD2} 
+    val trans_thms = mk_eq_sym_trans_thm mk_trans_comp @{thm trans_compI2} @{thm trans_compD2}
       trans_thms'
-    
+
     val _ = debug_out "full comparator thms"
     fun mk_comp_thm (i, ((e, s), t)) =
       let
         val conds = map (fn c => mk_comp lthy c |> HOLogic.mk_Trueprop) arg_comps
-        fun from_comp thm i = thm OF replicate (Thm.prems_of thm |> length) 
+        fun from_comp thm i = thm OF replicate (Thm.prems_of thm |> length)
           (nth @{thms comparator_imp_eq_sym_trans} i)
         val nearly_thm = @{thm eq_sym_trans_imp_comparator} OF
           [from_comp e EQ, from_comp s SYM, from_comp t TRANS]
 
-        val thm =  
-           mk_comp lthy (nth full_comps i) 
+        val thm =
+           mk_comp lthy (nth full_comps i)
            |> HOLogic.mk_Trueprop
            |> (fn concl => Logic.list_implies (conds, concl))
       in
-        Goal.prove_future lthy free_names [] thm 
+        Goal.prove_future lthy free_names [] thm
           (K (resolve_tac lthy [nearly_thm] 1 THEN ALLGOALS (assume_tac lthy)))
       end
     val comp_thms = map_index mk_comp_thm (eq_thms ~~ sym_thms ~~ trans_thms)
-    
+
     val (_, lthy) = fold_map (fn (thm, cname) =>
       Local_Theory.note ((Binding.name cname, []), [thm])) (comp_thms ~~ compNs) lthy
 
@@ -594,21 +595,21 @@ fun generate_comparators_from_bnf_fp tyco lthy =
   in
     ((pcomps ~~ pcomp_simps, comps ~~ comp_defs), lthy)
     ||> fold (fn (((((((tyco, map), pcomp), comp), comp_def), map_comp), pcomp_thms), comp_thm) =>
-          declare_info tyco map pcomp comp (SOME comp_def) (SOME map_comp) 
+          declare_info tyco map pcomp comp (SOME comp_def) (SOME map_comp)
             pcomp_thms comp_thm used_positions)
          (tycos ~~ maps ~~ pcomps ~~ comps ~~ comp_defs ~~ map_comp_thms ~~ pcomp_thms ~~ comp_thms)
   end
 
 fun generate_comparator gen_type tyco lthy =
-  let 
+  let
     val _ = is_some (get_info lthy tyco)
       andalso error ("type " ^ quote tyco ^ " does already have a comparator")
   in
-    case gen_type of 
+    case gen_type of
       BNF => generate_comparators_from_bnf_fp tyco lthy |> snd
     | Linorder => register_comparator_of tyco lthy
   end
-  
+
 fun ensure_info gen_type tyco lthy =
   (case get_info lthy tyco of
     SOME _ => lthy
@@ -622,9 +623,9 @@ fun generate_comparator_cmd tyco param = Named_Target.theory_map (
 
 val _ =
   Theory.setup
-    (Derive_Manager.register_derive 
-      "comparator" 
-      "generate comparators for given types, options: (linorder) or ()" 
+    (Derive_Manager.register_derive
+      "comparator"
+      "generate comparators for given types, options: (linorder) or ()"
       generate_comparator_cmd)
 
 end
