@@ -325,7 +325,7 @@ fun global_terminal_proof o_by = let open META in case o_by of
 end
 
 fun proof_show_gen f (thes, thes_when) st = st
-  |> Proof.proof_results
+  |> Proof.proof
        (SOME ( Method.Source [Token.make_string ("-", Position.none)]
              , (Position.none, Position.none)))
   |> Seq.the_result ""
@@ -341,14 +341,14 @@ fun proof_show_gen f (thes, thes_when) st = st
   |> snd
 
 val semi__command_state = let open META_overload in
-  fn META.Command_apply_end l => (fn st => st |> Proof.apply_end_results (then_tactic l)
+  fn META.Command_apply_end l => (fn st => st |> Proof.apply_end (then_tactic l)
                                               |> Seq.the_result "")
 end
 
 val semi__command_proof = let open META_overload
                         val thesis = "?thesis"
                         fun proof_show f = proof_show_gen f (thesis, []) in
-  fn META.Command_apply l => (fn st => st |> Proof.apply_results (then_tactic l)
+  fn META.Command_apply l => (fn st => st |> Proof.apply (then_tactic l)
                                           |> Seq.the_result "")
    | META.Command_using l => (fn st =>
        let val ctxt = Proof.context_of st in

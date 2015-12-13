@@ -86,7 +86,7 @@ sig
 (* my_simp_set should be HOL_ss + the other simplification stuff for orders like simprocs, ... *)
   val my_simp_set : simpset
 
-  val mk_solve_with_tac : thm list -> tactic -> tactic
+  val mk_solve_with_tac : Proof.context -> thm list -> tactic -> tactic
 
   val define_overloaded : (string * term) -> local_theory -> thm * local_theory
 
@@ -104,7 +104,6 @@ val printing = false
 fun my_print_tac ctxt = if printing then print_tac ctxt else (fn _ => Seq.single)
 
 fun split_last xs = (take (length xs - 1) xs, List.last xs)
-fun strip_cases ctac = ctac #> Seq.map snd
 
 (* FIXME: reconsolidate with similar functions in the Isabelle repository and move to HOLogic *)
 fun HOLogic_list_implies (prems,r) = fold_rev (fn r => fn p => HOLogic.mk_imp (r,p)) prems r
@@ -159,7 +158,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
           val ind_thm_inst = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) insts) ind_thm
           val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
         in
-          (DETERM o strip_cases o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) [])
+          (DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.induct_tac false [] [] [] (SOME [ind_thm']) [])
           THEN_ALL_NEW
           (fn i => Subgoal.SUBPROOF
             (fn {context = ctxt, prems = prems, params = iparams, ...} =>
@@ -262,14 +261,14 @@ fun mk_case_tac (ctxt : Proof.context)
   (thm : thm)
   (sub_case_tac : Proof.context * int * thm list * (string * cterm) list -> tactic) =
     (
-      DETERM o strip_cases o Induct.cases_tac ctxt false insts (SOME thm) []
+      DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
       THEN_ALL_NEW (fn i => Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...}
         => sub_case_tac (ctxt, i-1, hyps, params)) ctxt i)
     )
     1
 
-fun mk_solve_with_tac (thms : thm list) (solver_tac : tactic) =
-  SOLVE (Method.insert_tac thms 1 THEN solver_tac)
+fun mk_solve_with_tac ctxt thms solver_tac =
+  SOLVE (Method.insert_tac ctxt thms 1 THEN solver_tac)
 
 fun simps_of_info info = #case_rewrites info @ #rec_rewrites info @ #inject info @ #distinct info
 
@@ -306,7 +305,7 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype
               |> Context_Position.set_visible false
               |> put_simpset my_simp_set)
               addsimps (simps_of_info info @ simps_of_info linfo)
-          in mk_solve_with_tac thms (force_tac simp_ctxt 1) end
+          in mk_solve_with_tac ctxt thms (force_tac simp_ctxt 1) end
         fun case_tac ctxt = mk_case_tac ctxt [[SOME y]] (#exhaust linfo)
         fun sub_case_tac (ctxt,k,prems,iparams_y) =
           let
@@ -327,17 +326,15 @@ fun mk_binary_thm mk_prop_trm mk_bin_idx bin_const_name thy (info : Old_Datatype
     val prop_thm = prop_thm_of_tac ind_case_tac
   in prop_thm end
 
-fun mk_case_tac (ctxt : Proof.context)
+fun mk_case_tac ctxt
   (insts : term option list list)
   (thm : thm)
   (sub_case_tac : Proof.context * int * thm list * (string * cterm) list -> tactic) =
     (
-      DETERM o strip_cases o Induct.cases_tac ctxt false insts (SOME thm) []
+      DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
       THEN_ALL_NEW (fn i => Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...}
         => sub_case_tac (ctxt, i-1, hyps, params)) ctxt i)
     )
     1
-
-
 
 end

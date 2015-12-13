@@ -1,6 +1,6 @@
 (*  Title:       Deriving class instances for datatypes
     Author:      Christian Sternagel and René Thiemann  <christian.sternagel|rene.thiemann@uibk.ac.at>
-    Maintainer:  Christian Sternagel and René Thiemann 
+    Maintainer:  Christian Sternagel and René Thiemann
     License:     LGPL
 *)
 signature EQUALITY_GENERATOR =
@@ -10,13 +10,13 @@ sig
    {map : term,                    (* take % x. x, if there is no map *)
     pequality : term,                  (* partial equality *)
     equality : term,                   (* full equality *)
-    equality_def : thm option,         (* definition of equality, important for nesting *) 
+    equality_def : thm option,         (* definition of equality, important for nesting *)
     map_comp : thm option,         (* compositionality of map, important for nesting *)
     partial_equality_thm : thm,       (* partial version of equality thm *)
     equality_thm : thm,               (* equality acomp \<Longrightarrow> \<dots> \<Longrightarrow> equality (full_comp acomp \<dots>) *)
     used_positions : bool list}
 
-  (* registers @{term equality_of :: "some_type :: linorder equality"} 
+  (* registers @{term equality_of :: "some_type :: linorder equality"}
      where some_type must just be a type without type-arguments *)
   val register_equality_of : string -> local_theory -> local_theory
 
@@ -31,7 +31,7 @@ sig
   val register_foreign_partial_and_full_equality :
     string -> (* long type name *)
     term -> (* map function, should be \<lambda>x. x, if there is no map *)
-    term -> (* partial equality of type ('a => order, 'b)ty => ('a,'b)ty => order, 
+    term -> (* partial equality of type ('a => order, 'b)ty => ('a,'b)ty => order,
       where 'a is used, 'b is unused *)
     term -> (* (full) equality of type ('a \<Rightarrow> 'a \<Rightarrow> order) \<Rightarrow> ('a,'b)ty \<Rightarrow> ('a,'b)ty \<Rightarrow> order,
       where 'a is used, 'b is unused *)
@@ -44,15 +44,15 @@ sig
 
   datatype equality_type = EQ | BNF
 
-  val generate_equalitys_from_bnf_fp : 
+  val generate_equalitys_from_bnf_fp :
     string ->                 (* name of type *)
-    local_theory -> 
+    local_theory ->
     ((term * thm list) list * (* partial equalitys + simp-rules *)
     (term * thm) list) *      (* non-partial equality + def_rule *)
     local_theory
 
-  val generate_equality : 
-    equality_type -> 
+  val generate_equality :
+    equality_type ->
     string -> (* name of type *)
     local_theory -> local_theory
 
@@ -60,7 +60,7 @@ sig
 
   (* ensures that the info will be available on later requests *)
   val ensure_info : equality_type -> string -> local_theory -> local_theory
-    
+
 end
 
 structure Equality_Generator : EQUALITY_GENERATOR =
@@ -125,19 +125,19 @@ val mk_pequality = mk_infer_const @{const_name pequality}
 fun default_comp T = absdummy T (absdummy T @{term True}) (*%_ _. True*)
 
 fun register_foreign_equality T comp comp_thm lthy =
-  let 
+  let
     val tyco = (case T of Type (tyco, []) => tyco | _ => error "expected type constant with no arguments")
     val eq = @{thm equalityD2} OF [comp_thm]
   in
-    register_foreign_partial_and_full_equality 
+    register_foreign_partial_and_full_equality
       tyco (HOLogic.id_const T) comp comp NONE NONE eq comp_thm [] lthy
   end
 
-fun register_equality_of tyco lthy = 
-  let 
+fun register_equality_of tyco lthy =
+  let
     val (T,_) = typ_and_vs_of_typname (Proof_Context.theory_of lthy) tyco @{sort type}
     val comp = HOLogic.eq_const T
-    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)] 
+    val comp_thm = Thm.instantiate' [SOME (Thm.ctyp_of lthy T)]
       [] @{thm eq_equality}
   in register_foreign_equality T comp comp_thm lthy end
 
@@ -167,23 +167,23 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
 
     val compNs =
       (*TODO: clashes in presence of same type names in different theories*)
-      map (Long_Name.base_name) tycos 
+      map (Long_Name.base_name) tycos
       |> map (fn s => "equality_" ^ s)
-    
-    fun gen_vars prefix = map (fn (i, pty) => Free (prefix ^ ints_to_subscript [i], pty)) 
+
+    fun gen_vars prefix = map (fn (i, pty) => Free (prefix ^ ints_to_subscript [i], pty))
       (t_ixs ~~ Ts)
 
     (* primrec definitions of partial equalitys *)
 
     fun mk_pcomp (tyco, T) = ("partial_equality_" ^ Long_Name.base_name tyco, pcompT T)
 
-    fun constr_terms lthy =  
-      Bnf_Access.constr_terms lthy 
+    fun constr_terms lthy =
+      Bnf_Access.constr_terms lthy
       #> map (apsnd (map freeify_tvars o fst o strip_type) o dest_Const)
 
     fun generate_pcomp_eqs lthy (tyco, T) =
       let
-        val constrs = constr_terms lthy tyco 
+        val constrs = constr_terms lthy tyco
 
         fun comp_arg T x y =
           let
@@ -362,18 +362,19 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
 
     val rec_info = (the_info lthy, #used_positions, tycos)
     val split_IHs = split_IHs rec_info
-    
+
     val unknown_value = false (* effect of choosing false / true not yet visible *)
 
-    fun induct_tac ctxt f = ((DETERM o strip_cases o Induction.induction_tac ctxt false 
+    fun induct_tac ctxt f =
+      ((DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induction.induction_tac false
       (map (fn x => [SOME (NONE, (x, unknown_value))]) x_vars) [] [] (SOME induct_thms) [])
       THEN_ALL_NEW (fn i =>
         Subgoal.SUBPROOF (fn {context = ctxt, prems = prems, params = iparams, ...} =>
           f (i - 1) ctxt prems iparams) ctxt i)) 1
 
-    val recursor_tac = std_recursor_tac rec_info used_tfrees 
+    val recursor_tac = std_recursor_tac rec_info used_tfrees
       (fn info => #partial_equality_thm info)
-    
+
     fun instantiate_IHs IHs pre_conds = map (fn IH =>
       OF_option IH (replicate (Thm.nprems_of IH - length pre_conds) NONE @ map SOME pre_conds)) IHs
 
@@ -382,8 +383,8 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
     val _ = debug_out "Partial equality"
     val eq_thms' = mk_eq_thm' mk_pequality
 
-    fun eq_solve_tac i ctxt IH_prems xs = 
-      let 
+    fun eq_solve_tac i ctxt IH_prems xs =
+      let
         val (i, j) = ind_case_to_idxs cTys i
         val k = length IH_prems - length arg_comps
         val pre_conds = drop k IH_prems
@@ -396,7 +397,7 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
       in
         (* after induction *)
         resolve_tac ctxt @{thms pequalityI} 1
-        THEN Subgoal.FOCUS (fn focus => 
+        THEN Subgoal.FOCUS (fn focus =>
           let
             val y = #params focus |> hd
             val yt = y |> snd |> Thm.term_of
@@ -414,11 +415,11 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
                 THEN conjI_tac @{thms conj_weak_cong} ctxt xs (fn ctxt' => fn k =>
                   resolve_tac ctxt @{thms pequalityD} 1
                   THEN recursor_tac pre_cond (nth xs_tys k) (nth IHs k) ctxt')
-              else 
+              else
                 (* different constructors *)
-                unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms bool.simps}) 
+                unfold_tac ctxt (y_simp @ distinct_thms @ comp_simps @ @{thms bool.simps})
           in
-            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac 
+            mk_case_tac ctxt [[SOME yt]] case_thm sub_case_tac
           end
         ) ctxt 1
       end
@@ -428,14 +429,14 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
     val _ = debug_out (@{make_string} eq_thms')
 
     (* total theorems *)
-    fun mk_eq_sym_trans_thm mk_eq_sym_trans compI2 compE2 thms' =  
+    fun mk_eq_sym_trans_thm mk_eq_sym_trans compI2 compE2 thms' =
       let
         val conds = map (fn c => mk_eq_sym_trans lthy c |> HOLogic.mk_Trueprop) arg_comps
-        val thms = map (fn i => 
-           mk_eq_sym_trans lthy (nth full_comps i) 
+        val thms = map (fn i =>
+           mk_eq_sym_trans lthy (nth full_comps i)
            |> HOLogic.mk_Trueprop
            |> (fn concl => Logic.list_implies (conds,concl)))
-           t_ixs 
+           t_ixs
         val thms = prove_multi_future lthy free_names [] thms (fn {context = ctxt, ...} =>
           ALLGOALS Goal.conjunction_tac
           THEN Method.intros_tac ctxt (@{thm conjI} :: compI2 :: thms') []
@@ -444,23 +445,23 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
 
     val eq_thms = mk_eq_sym_trans_thm mk_equality @{thm equalityI2} @{thm equalityD2} eq_thms'
 
-    
+
     val _ = debug_out "full equality thms"
     fun mk_comp_thm (i, e) =
       let
         val conds = map (fn c => mk_equality lthy c |> HOLogic.mk_Trueprop) arg_comps
         val nearly_thm = e
 
-        val thm =  
-           mk_equality lthy (nth full_comps i) 
+        val thm =
+           mk_equality lthy (nth full_comps i)
            |> HOLogic.mk_Trueprop
            |> (fn concl => Logic.list_implies (conds, concl))
       in
-        Goal.prove_future lthy free_names [] thm 
+        Goal.prove_future lthy free_names [] thm
           (K (resolve_tac lthy [nearly_thm] 1 THEN ALLGOALS (assume_tac lthy)))
       end
     val comp_thms = map_index mk_comp_thm eq_thms
-    
+
     val (_, lthy) = fold_map (fn (thm, cname) =>
       Local_Theory.note ((Binding.name cname, []), [thm])) (comp_thms ~~ compNs) lthy
 
@@ -472,21 +473,21 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
   in
     ((pcomps ~~ pcomp_simps, comps ~~ comp_defs), lthy)
     ||> fold (fn (((((((tyco, map), pcomp), comp), comp_def), map_comp) , peq_thm), comp_thm) =>
-          declare_info tyco map pcomp comp (SOME comp_def) (SOME map_comp) 
+          declare_info tyco map pcomp comp (SOME comp_def) (SOME map_comp)
             peq_thm comp_thm used_positions)
          (tycos ~~ maps ~~ pcomps ~~ comps ~~ comp_defs ~~ map_comp_thms ~~ eq_thms' ~~ comp_thms)
   end
 
 fun generate_equality gen_type tyco lthy =
-  let 
+  let
     val _ = is_some (get_info lthy tyco)
       andalso error ("type " ^ quote tyco ^ " does already have a equality")
   in
-    case gen_type of 
+    case gen_type of
       BNF => generate_equalitys_from_bnf_fp tyco lthy |> snd
     | EQ => register_equality_of tyco lthy
   end
-  
+
 fun ensure_info gen_type tyco lthy =
   (case get_info lthy tyco of
     SOME _ => lthy
