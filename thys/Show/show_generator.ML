@@ -305,8 +305,8 @@ fun generate_showsp tyco lthy =
           OF_option IH (replicate (Thm.nprems_of IH - length assms) NONE @ map SOME assms)) IHs
         val show_law_simps = Named_Theorems.get ctxt @{named_theorems "show_law_simps"}
         fun induct_tac ctxt f =
-          (DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induction.induction_tac false
-          (map (fn x => [SOME (NONE, (x, false))]) xs) [] [] (SOME induct_thms) [])
+          (DETERM o Induction.induction_tac ctxt false
+            (map (fn x => [SOME (NONE, (x, false))]) xs) [] [] (SOME induct_thms) [])
           THEN_ALL_NEW (fn st =>
             Subgoal.SUBPROOF (fn {context = ctxt, prems, params, ...} =>
               f ctxt (st - 1) prems params) ctxt st)
