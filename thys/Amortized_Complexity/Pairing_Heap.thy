@@ -33,18 +33,16 @@ fun len :: "'a tree \<Rightarrow> nat" where
 
 fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "pass\<^sub>2 Leaf = Leaf"
-| "pass\<^sub>2 (Node lx x rx) = link(Node lx x (pass\<^sub>2 rx))"
+| "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
 
-fun deleteMin :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "deleteMin Leaf = Leaf"
-| "deleteMin (Node lx _ Leaf) = pass\<^sub>2 (pass\<^sub>1 lx)"
-| "deleteMin (Node _ _ (Node _ _ _)) = Leaf"
+fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+  "del_min Leaf = Leaf"
+| "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
 
 fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "merge Leaf h = h"
 | "merge h Leaf = h"
 | "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
-| "merge _ _ = undefined"
 
 fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
   "insert x = merge (Node Leaf x Leaf)"
@@ -57,7 +55,7 @@ fun ld\<^sub>0 :: "nat \<Rightarrow> real" where
 
 fun \<Phi> :: "'a tree \<Rightarrow> real" where
   "\<Phi> Leaf = 0"
-| "\<Phi> (Node lx _ rx) = \<Phi> lx + \<Phi> rx + ld\<^sub>0 (1 + size lx + size rx)"
+| "\<Phi> (Node l x r) = \<Phi> l + \<Phi> r + ld\<^sub>0 (1 + size l + size r)"
 
 lemma link_size[simp]: "size (link h) = size h" 
   by (cases h rule: link.cases) simp_all
@@ -170,13 +168,13 @@ proof (induction h rule: pass\<^sub>2.induct)
   qed simp
 qed simp
 
-lemma \<Delta>\<Phi>_deleteMin:  "\<Phi> (deleteMin (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
+lemma \<Delta>\<Phi>_del_min:  "\<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
   \<le> 3*ld\<^sub>0(size lx) - len lx + 2"
 proof -
   let ?h = "Node lx x Leaf"
   let ?\<Delta>\<Phi>\<^sub>1 = "\<Phi> lx - \<Phi> ?h" 
   let ?\<Delta>\<Phi>\<^sub>2 = "\<Phi>(pass\<^sub>2(pass\<^sub>1 lx)) - \<Phi> lx"
-  let ?\<Delta>\<Phi> = "\<Phi> (deleteMin ?h) - \<Phi> ?h"
+  let ?\<Delta>\<Phi> = "\<Phi> (del_min ?h) - \<Phi> ?h"
   have "\<Phi>(pass\<^sub>2(pass\<^sub>1 lx)) - \<Phi> (pass\<^sub>1 lx) \<le> ld\<^sub>0 (size lx)" 
     using \<Delta>\<Phi>_pass2 [of "pass\<^sub>1 lx"] by simp
   moreover have "\<Phi> (pass\<^sub>1 lx) - \<Phi> lx \<le>  2*\<dots> - len lx + 2" 
@@ -191,7 +189,7 @@ lemma merge_isRoot: "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> isR
 lemma insert_isRoot: "isRoot h \<Longrightarrow> isRoot (insert x h)"
   by (simp split: tree.splits)
 
-lemma deleteMin_isRoot: assumes "isRoot h" shows "isRoot (deleteMin h)"
+lemma del_min_isRoot: assumes "isRoot h" shows "isRoot (del_min h)"
 proof (cases h)
   case [simp]: (Node lx x rx)
   have "rx = Leaf" using assms by simp
@@ -210,7 +208,7 @@ lemma pass\<^sub>1_len: "len (pass\<^sub>1 h) \<le> len h"
   by (induct h rule: pass\<^sub>1.induct) simp_all
 
 fun nxt :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "nxt Del_min h = deleteMin h"
+  "nxt Del_min h = del_min h"
 | "nxt (Insert x) h = insert x h"
 
 fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a tree \<Rightarrow> real" where
@@ -240,7 +238,7 @@ and \<Phi> = "\<Phi>"
 and U = "U"
 proof
   case goal2 thus ?case 
-    using insert_isRoot deleteMin_isRoot by (cases f) simp_all  
+    using insert_isRoot del_min_isRoot by (cases f) simp_all  
   case goal3 show ?case by (induct s) simp_all 
   case goal5 show ?case 
   proof (cases f)
@@ -255,8 +253,8 @@ proof
       have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> 2 + len lx"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
       hence  "t f s \<le> 1 + \<dots>" by simp
-      moreover have  "\<Phi> (deleteMin s) - \<Phi> s \<le> 3*ld\<^sub>0(size lx) - len lx + 2"
-        using  \<Delta>\<Phi>_deleteMin[of "lx" "x"] goal5 by simp
+      moreover have  "\<Phi> (del_min s) - \<Phi> s \<le> 3*ld\<^sub>0(size lx) - len lx + 2"
+        using  \<Delta>\<Phi>_del_min[of "lx" "x"] goal5 by simp
       moreover have "ld\<^sub>0(size lx) \<le> ld\<^sub>0 (size s + 1)" by simp
       ultimately show ?thesis by simp
     qed simp
