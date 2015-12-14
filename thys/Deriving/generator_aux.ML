@@ -286,7 +286,7 @@ fun define_overloaded (name,eq) = define_overloaded_generic ((Binding.name name,
 
 
 fun mk_case_tac ctxt insts thm sub_case_tac =
-  (DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
+  (DETERM o Induct.cases_tac ctxt false insts (SOME thm) []
   THEN_ALL_NEW (fn i =>
     Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...} =>
       sub_case_tac (i-1) (ctxt, hyps, params)) ctxt i))

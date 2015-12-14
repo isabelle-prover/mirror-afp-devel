@@ -158,7 +158,7 @@ fun inductive_thm thy (imp_list : (term list * term list) list) ind_thm sort ind
           val ind_thm_inst = infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt) insts) ind_thm
           val ind_thm' = rulify_only_asm (Proof_Context.init_global thy) ind_thm_inst
         in
-          (DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.induct_tac false [] [] [] (SOME [ind_thm']) [])
+          (DETERM o Induct.induct_tac ctxt false [] [] [] (SOME [ind_thm']) [])
           THEN_ALL_NEW
           (fn i => Subgoal.SUBPROOF
             (fn {context = ctxt, prems = prems, params = iparams, ...} =>
@@ -261,7 +261,7 @@ fun mk_case_tac (ctxt : Proof.context)
   (thm : thm)
   (sub_case_tac : Proof.context * int * thm list * (string * cterm) list -> tactic) =
     (
-      DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
+      DETERM o Induct.cases_tac ctxt false insts (SOME thm) []
       THEN_ALL_NEW (fn i => Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...}
         => sub_case_tac (ctxt, i-1, hyps, params)) ctxt i)
     )
@@ -331,7 +331,7 @@ fun mk_case_tac ctxt
   (thm : thm)
   (sub_case_tac : Proof.context * int * thm list * (string * cterm) list -> tactic) =
     (
-      DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induct.cases_tac false insts (SOME thm) []
+      DETERM o Induct.cases_tac ctxt false insts (SOME thm) []
       THEN_ALL_NEW (fn i => Subgoal.SUBPROOF (fn {context = ctxt, prems = hyps, params = params, ...}
         => sub_case_tac (ctxt, i-1, hyps, params)) ctxt i)
     )

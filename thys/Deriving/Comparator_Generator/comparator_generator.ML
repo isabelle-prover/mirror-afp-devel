@@ -376,8 +376,8 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val unknown_value = false (* effect of choosing false / true not yet visible *)
 
     fun induct_tac ctxt f =
-      ((DETERM o Method.NO_CONTEXT_TACTIC ctxt o Induction.induction_tac false
-      (map (fn x => [SOME (NONE, (x, unknown_value))]) x_vars) [] [] (SOME induct_thms) [])
+      ((DETERM o Induction.induction_tac ctxt false
+        (map (fn x => [SOME (NONE, (x, unknown_value))]) x_vars) [] [] (SOME induct_thms) [])
       THEN_ALL_NEW (fn i =>
         Subgoal.SUBPROOF (fn {context = ctxt, prems = prems, params = iparams, ...} =>
           f (i - 1) ctxt prems iparams) ctxt i)) 1
