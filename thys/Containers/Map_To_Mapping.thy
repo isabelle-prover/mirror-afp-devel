@@ -141,23 +141,23 @@ end
 structure Containers: CONTAINERS =
 struct
 
-fun identify ctxt thm =
+fun identify context thm =
   let
-    val ctxt' = Context.proof_of ctxt
+    val ctxt' = Context.proof_of context
     val ss = put_simpset HOL_basic_ss ctxt'
     val ctxt1 = ss addsimps Containers_Pre.get ctxt' addsimprocs [map_apply_simproc]
     val ctxt2 = ss addsimps Containers_Post.get ctxt'
 
     (* Hack to recover Transfer.transferred function from attribute *)
-    fun transfer_transferred ctxt thm = Transfer.transferred_attribute [] (ctxt, thm) |> snd |> the
+    fun transfer_transferred thm = Transfer.transferred_attribute [] (context, thm) |> snd |> the
   in
     thm
     |> full_simplify ctxt1
-    |> transfer_transferred ctxt
+    |> transfer_transferred
     |> full_simplify ctxt2
   end
 
-val identify_attribute = Thm.rule_attribute identify
+val identify_attribute = Thm.rule_attribute [] identify
 
 end
 *}

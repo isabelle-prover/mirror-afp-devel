@@ -39,7 +39,7 @@ ML {*
 *}
 
 attribute_setup mk_record_simp = 
-  {* Scan.succeed (Thm.rule_attribute (mk_record_simp)) *}
+  {* Scan.succeed (Thm.rule_attribute [] (mk_record_simp)) *}
   "Make simplification rule for record definition"
 
 end

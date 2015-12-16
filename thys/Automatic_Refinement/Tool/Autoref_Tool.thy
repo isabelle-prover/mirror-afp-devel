@@ -95,7 +95,7 @@ setup {*
     | _ => raise THM("Expected autoref rule",~1,[thm])
 
     val higher_order_rl_attr = 
-      Thm.rule_attribute (higher_order_rl_of o Context.proof_of)
+      Thm.rule_attribute [] (higher_order_rl_of o Context.proof_of)
   in
     Attrib.setup @{binding autoref_higher_order_rule} 
       (Scan.succeed higher_order_rl_attr) "Autoref: Convert rule to higher-order form"

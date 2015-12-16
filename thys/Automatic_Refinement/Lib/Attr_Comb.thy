@@ -93,12 +93,12 @@ ML {*
 
   
     fun RS_attr thm = 
-      Thm.rule_attribute (fn _ => fn thm' => (
+      Thm.rule_attribute [thm] (fn _ => fn thm' => (
         thm' RS thm handle (exc as THM _) => 
           raise ATTR_EXC ("RS_attr: " ^ @{make_string} exc)))
 
     fun RSm_attr thm = 
-      Thm.rule_attribute (fn context => fn thm' => (
+      Thm.rule_attribute [thm] (fn context => fn thm' => (
         RSm (Context.proof_of context) thm' thm handle (exc as THM _) => 
           raise ATTR_EXC ("RSm_attr: " ^ @{make_string} exc)))
 

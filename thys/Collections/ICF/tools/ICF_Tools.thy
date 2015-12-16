@@ -301,7 +301,7 @@ ML {*
 *}
 
 attribute_setup rem_dup_prems = {*
-  Scan.succeed (Thm.rule_attribute (ICF_Tools.rem_dup_prems o Context.proof_of))
+  Scan.succeed (Thm.rule_attribute [] (ICF_Tools.rem_dup_prems o Context.proof_of))
 *} "Remove duplicate premises"
 
 method_setup dup_subgoals = {*

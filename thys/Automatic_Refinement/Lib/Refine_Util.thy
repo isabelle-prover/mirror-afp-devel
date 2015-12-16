@@ -653,7 +653,7 @@ ML {*
 *}
 
 attribute_setup zero_var_indexes = {*
-  Scan.succeed (Thm.rule_attribute (K Drule.zero_var_indexes))
+  Scan.succeed (Thm.rule_attribute [] (K Drule.zero_var_indexes))
 *} "Set variable indexes to zero, renaming to avoid clashes"
 
 end

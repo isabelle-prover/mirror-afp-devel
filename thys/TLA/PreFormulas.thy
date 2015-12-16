@@ -196,12 +196,12 @@ fun unl_rewr ctxt thm =
      end;
 *}
 attribute_setup unlifted = {*
-  Scan.succeed (Thm.rule_attribute (unl_rewr o Context.proof_of))
+  Scan.succeed (Thm.rule_attribute [] (unl_rewr o Context.proof_of))
 *} "unlift intensional formulas"
 
 attribute_setup unlift_rule = {*
   Scan.succeed
-    (Thm.rule_attribute
+    (Thm.rule_attribute []
       (Context.proof_of #> (fn ctxt => Object_Logic.rulify ctxt o unl_rewr ctxt)))
 *} "unlift and rulify intensional formulas"
 
@@ -225,7 +225,7 @@ attribute_setup simp_unl = {*
       (K (NONE, NONE))  (* note only adding -- removing is ignored *)
 *} "add thm unlifted from rewrites from intensional formulas or preformulas"
 
-attribute_setup int_rewrite = {* Scan.succeed (Thm.rule_attribute (fn _ => int_rewr)) *}
+attribute_setup int_rewrite = {* Scan.succeed (Thm.rule_attribute [] (fn _ => int_rewr)) *}
   "produce rewrites from intensional formulas or preformulas"
 
 end

@@ -282,7 +282,7 @@ begin
             @{mpat "Trueprop ((_,_)\<in>_\<rightarrow>_)"} => fo_rule (thm RS @{thm fun_relD})
           | _ => thm 
           
-      val param_fo_attr = Scan.succeed (Thm.rule_attribute (K fo_rule))
+      val param_fo_attr = Scan.succeed (Thm.rule_attribute [] (K fo_rule))
 
       val setup = I
         #> Attrib.setup @{binding param} 
@@ -334,7 +334,7 @@ begin
         (put_simpset HOL_basic_ss ctxt addsimps @{thms relAPP_def})))
   
   
-    val to_relAPP_attr = Thm.rule_attribute (fn context => let
+    val to_relAPP_attr = Thm.rule_attribute [] (fn context => let
       val ctxt = Context.proof_of context
     in
       Conv.fconv_rule (Conv.arg1_conv (to_relAPP_conv ctxt))
