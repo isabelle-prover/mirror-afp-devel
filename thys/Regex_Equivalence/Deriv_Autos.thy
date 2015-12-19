@@ -16,7 +16,7 @@ subsection {* Brzozowski Derivatives Modulo ACI *}
 lemma ACI_norm_derivs_alt: "\<guillemotleft>derivs w r\<guillemotright> = fold (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) w \<guillemotleft>r\<guillemotright>"
   by (induct w arbitrary: r) (auto simp: ACI_norm_deriv)
 
-permanent_interpretation brzozowski: rexp_DFA "\<lambda>r. \<guillemotleft>r\<guillemotright>" "\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>" nullable lang
+global_interpretation brzozowski: rexp_DFA "\<lambda>r. \<guillemotleft>r\<guillemotright>" "\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>" nullable lang
   defines brzozowski_closure = brzozowski.closure
     and check_eqv_brz = brzozowski.check_eqv
     and reachable_brz = brzozowski.reachable
@@ -76,7 +76,7 @@ lemma [transfer_rule]: "rel_fun (rel_set (pcr_ACI_rexp op=)) op = (finite o imag
   apply blast
   done
 
-permanent_interpretation brzozowski_quotient: rexp_DFA ACI_class ACI_deriv ACI_nullable ACI_lang
+global_interpretation brzozowski_quotient: rexp_DFA ACI_class ACI_deriv ACI_nullable ACI_lang
   defines brzozowski_quotient_closure = brzozowski_quotient.closure
     and check_eqv_brzq = brzozowski_quotient.check_eqv
     and reachable_brzq = brzozowski_quotient.reachable
@@ -96,7 +96,7 @@ qed
 
 subsection {* Brzozowski Derivatives Modulo ACI++ (Only Soundness) *}
 
-permanent_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable lang
+global_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable lang
   defines nderiv_closure = nderiv.closure
     and check_eqv_n = nderiv.check_eqv
     and reachable_n = nderiv.reachable
@@ -113,7 +113,7 @@ qed
 
 subsection {* Partial Derivatives *}
 
-permanent_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. EX p:P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
+global_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. EX p:P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
   defines pderiv_closure = pderiv.closure
     and check_eqv_p = pderiv.check_eqv
     and reachable_p = pderiv.reachable
@@ -134,7 +134,7 @@ next
   then show ?case by (rule finite_subset) (auto simp only: finite_pderivs_lang)
 qed
 
-permanent_interpretation pnderiv: rexp_DFA "\<lambda>r. r" pnderiv nullable lang
+global_interpretation pnderiv: rexp_DFA "\<lambda>r. r" pnderiv nullable lang
   defines pnderiv_closure = pnderiv.closure
     and check_eqv_pn = pnderiv.check_eqv
     and reachable_pn = pnderiv.reachable

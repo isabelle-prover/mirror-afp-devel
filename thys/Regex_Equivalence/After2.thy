@@ -154,7 +154,7 @@ instance by intro_classes (transfer, auto simp: eq_mrexp2_eq)
 
 end
 
-permanent_interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
+global_interpretation after2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
   defines after2_closure = after2.closure
     and check_eqv_a2 = after2.check_eqv
     and reachable_a2 = after2.reachable

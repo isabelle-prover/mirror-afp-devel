@@ -601,7 +601,7 @@ qed
 
 declare [[goals_limit = 100]]
 
-permanent_interpretation Presb: Formula
+global_interpretation Presb: Formula
   where SUC = SUC and LESS = "\<lambda>_. op <" and Length = Length
   and assigns = assigns and nvars = nvars and Extend = Extend and CONS = CONS and SNOC = SNOC
   and extend = extend and size = size_atom and zero = zero and alphabet = \<sigma> and eval = test_bit

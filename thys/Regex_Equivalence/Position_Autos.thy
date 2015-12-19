@@ -145,7 +145,7 @@ by (induction r) auto
 lemma final_read_Lm: "final(read a r) \<longleftrightarrow> [a] \<in> Lm r"
 by (induction r) (auto simp: nullable_iff concI_if_Nil2 singleton_in_conc split: if_splits)
 
-permanent_interpretation before: rexp_DFA init_b delta_b final_b L_b
+global_interpretation before: rexp_DFA init_b delta_b final_b L_b
   defines before_closure = before.closure
     and check_eqv_b = before.check_eqv
     and reachable_b = before.reachable
@@ -200,7 +200,7 @@ by (cases ys) auto
 lemma tl_eq_Cons_iff[simp]: "tl ys = x # xs \<longleftrightarrow> (\<exists>y. ys = y # x # xs)"
 by (cases ys) auto
 
-permanent_interpretation after: rexp_DFA init_a delta_a final_a L_a
+global_interpretation after: rexp_DFA init_a delta_a final_a L_a
   defines after_closure = after.closure
     and check_eqv_a = after.check_eqv
     and reachable_a = after.reachable

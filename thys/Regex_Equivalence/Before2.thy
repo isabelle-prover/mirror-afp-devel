@@ -201,7 +201,7 @@ instance by intro_classes (transfer, auto simp: eq_mrexp3_eq)
 
 end
 
-permanent_interpretation before2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
+global_interpretation before2: rexp_DFA init_okm delta_okm nullable_okm lang_okm
   defines before2_closure = before2.closure
     and check_eqv_b2 = before2.check_eqv
     and reachable_b2 = before2.reachable

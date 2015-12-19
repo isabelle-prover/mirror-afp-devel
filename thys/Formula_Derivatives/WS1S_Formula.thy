@@ -406,7 +406,7 @@ definition "Restrict ord i = (case ord of FO \<Rightarrow> FBase (Fo i) | SO \<R
 declare [[goals_limit = 50]]
 
 
-permanent_interpretation WS1S: Formula SUC LESS assigns nvars Extend CONS SNOC Length
+global_interpretation WS1S: Formula SUC LESS assigns nvars Extend CONS SNOC Length
   extend size_atom zero \<sigma> eval downshift upshift finsert cut len restrict Restrict
   lformula0 FV0 find0 wf0 decr0 satisfies0 nullable0 lderiv0 rderiv0 undefined
   defines norm = "Formula_Operations.norm find0 decr0"

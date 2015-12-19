@@ -13,7 +13,7 @@ imports
 begin
 (*>*)
 
-permanent_interpretation embed2 "set o \<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "case_prod Singleton"
+global_interpretation embed2 "set o \<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<epsilon> \<Sigma>" "case_prod Singleton"
   for \<Sigma> :: "'a :: linorder list"
   defines
       \<DD> = "embed.lderiv lookup (\<epsilon> \<Sigma>)"
@@ -30,7 +30,7 @@ proof (rule notI)
   thus False unfolding UNIV_enum[symmetric] by simp
 qed
 
-permanent_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} list"
+global_interpretation \<Phi>: formula "Enum.enum :: 'a :: {enum, linorder} list"
   defines
       pre_wf_formula = \<Phi>.pre_wf_formula
   and wf_formula = \<Phi>.wf_formula
@@ -52,7 +52,7 @@ lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm = trans[OF sym[OF \<P
 
 setup {* Sign.map_naming (Name_Space.mandatory_path "slow") *}
 
-permanent_interpretation D: rexp_DFA "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. \<guillemotleft>pnorm (inorm x)\<guillemotright>"
+global_interpretation D: rexp_DFA "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. \<guillemotleft>pnorm (inorm x)\<guillemotright>"
   "\<lambda>a r. \<guillemotleft>\<DD> \<Sigma> a r\<guillemotright>" final "alphabet.wf (wf_atom \<Sigma>) n" pnorm "lang \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat
   defines
@@ -97,7 +97,7 @@ setup {* Sign.map_naming Name_Space.parent_path *}
 
 setup {* Sign.map_naming (Name_Space.mandatory_path "fast") *}
 
-permanent_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. pnorm (inorm x)"
+global_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. pnorm (inorm x)"
   "\<lambda>a r. pnorm (\<DD> \<Sigma> a r)" final "alphabet.wf (wf_atom \<Sigma>) n" "lang \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat
   defines
@@ -134,7 +134,7 @@ setup {* Sign.map_naming Name_Space.parent_path *}
 
 setup {* Sign.map_naming (Name_Space.mandatory_path "dual") *}
 
-permanent_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup
+global_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup
   "\<lambda>x. pnorm_dual (rexp_dual_of (inorm x))" "\<lambda>a r. pnorm_dual (Co\<DD> \<Sigma> a r)" final_dual
   "alphabet.wf_dual (wf_atom \<Sigma>) n" "lang_dual \<Sigma> n" n
   for \<Sigma> :: "'a :: linorder list" and n :: nat

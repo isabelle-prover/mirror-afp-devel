@@ -13,7 +13,7 @@ lemma letter_eq[dest]:
   "letter_eq idx n a b \<Longrightarrow> (a \<in> set (WS1S_Prelim.\<sigma> idx)) = (b \<in> set (Presburger_Formula.\<sigma> n))"
   by transfer (force simp: Presburger_Formula.\<sigma>_def set_n_lists image_iff)
 
-permanent_interpretation WS1S_Presb: DAs
+global_interpretation WS1S_Presb: DAs
   "WS1S_Prelim.\<sigma> idx"
   "(\<lambda>\<phi>. norm (RESTRICT \<phi>) :: (ws1s, order) aformula)"
   "(\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi>))"
