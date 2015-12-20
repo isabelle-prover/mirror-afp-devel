@@ -115,7 +115,7 @@ local
           Pretty.str ("mk_term type error: Argument for ?" ^ name ^ " does not match type"),
           Pretty.brk 1, Syntax.pretty_typ ctxt T
         ]
-      |> Pretty.str_of |> ML_Syntax.print_string
+      |> Pretty.unformatted_string_of |> ML_Syntax.print_string
   
       fun pr_fastype name = case env of
         SOME env => "fastype_of1 (" ^ env ^ ", " ^ name ^ ")"
