@@ -34,7 +34,7 @@
         <td class="data" width="80%">Applicative Lifting</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc.html">Andreas Lochbihler</a></td></tr>
+        <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc.html">Andreas Lochbihler</a> and Joshua Schneider</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2015-12-22</td></tr>
@@ -55,7 +55,7 @@ We declare several types from the Isabelle library as applicative functors and i
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Applicative_Lifting-AFP,
-  author  = {Andreas Lochbihler},
+  author  = {Andreas Lochbihler and Joshua Schneider},
   title   = {Applicative Lifting},
   journal = {Archive of Formal Proofs},
   month   = dec,

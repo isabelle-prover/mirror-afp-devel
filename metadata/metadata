@@ -3226,7 +3226,7 @@ abstract =
 
 [Applicative_Lifting]
 title = Applicative Lifting
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html> and Joshua Schneider
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, Joshua Schneider
 date = 2015-12-22
 topic = Computer Science/Functional Programming
 abstract = Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
@@ -3240,7 +3240,7 @@ abstract = Applicative functors augment computations with effects by lifting fun
 
 [Stern_Brocot]
 title = The Stern-Brocot Tree
-author = Peter Gammie <http://peteg.org/> and Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Peter Gammie <http://peteg.org/>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2015-12-22
 topic = Mathematics/Number Theory
 abstract = The Stern-Brocot tree contains all rational numbers exactly once and in their lowest terms.  We formalise the Stern-Brocot tree as a coinductive tree using recursive and iterative specifications, which we have proven equivalent, and show that it indeed contains all the numbers as stated.  Following Hinze, we prove that the Stern-Brocot tree can be linearised looplessly into Stern's diatonic sequence (also known as Dijkstra's fusc function) and that it is a permutation of the Bird tree.
