@@ -14,7 +14,7 @@ abstract =
   explanation in Richard P. Stanley's `Enumerative Combinatorics: Volume 1`
   and Wikipedia, and unravels the full details and implicit reasoning steps
   of these explanations.
-  
+
 [Multirelations]
 title = Binary Multirelations
 author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
@@ -3224,3 +3224,27 @@ depends-on = Marriage
 abstract =
   A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.
 
+[Applicative_Lifting]
+title = Applicative Lifting
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html> and Joshua Schneider
+date = 2015-12-22
+topic = Computer Science/Functional Programming
+abstract = Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
+  </p><p>
+  This entry provides a package for registering applicative functors and two proof methods for lifting of equations over applicative functors. The first method normalises applicative expressions according to the laws of applicative functors. This way, equations whose two sides contain the same list of variables can be lifted to every applicative functor.
+  </p><p>
+  To lift larger classes of equations, the second method exploits a number of additional properties (e.g., commutativity of effects) provided the properties have been declared for the concrete applicative functor at hand upon registration.
+  </p><p>
+  We declare several types from the Isabelle library as applicative functors and illustrate the use of the methods with two examples: the lifting of the arithmetic type class hierarchy to streams and the verification of a relabelling function on binary trees. We also formalise and verify the normalisation algorithm used by the first proof method.
+  </p>
+
+[Stern_Brocot]
+title = The Stern-Brocot Tree
+author = Peter Gammie <http://peteg.org/> and Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+date = 2015-12-22
+topic = Mathematics/Number Theory
+abstract = The Stern-Brocot tree contains all rational numbers exactly once and in their lowest terms.  We formalise the Stern-Brocot tree as a coinductive tree using recursive and iterative specifications, which we have proven equivalent, and show that it indeed contains all the numbers as stated.  Following Hinze, we prove that the Stern-Brocot tree can be linearised looplessly into Stern's diatonic sequence (also known as Dijkstra's fusc function) and that it is a permutation of the Bird tree.
+  </p><p>
+  The reasoning stays at an abstract level by appealing to the uniqueness of solutions of guarded recursive equations and lifting algebraic laws point-wise to trees and streams using applicative functors.
+  </p>
+depends-on = Applicative_Lifting
