@@ -1363,12 +1363,11 @@ fun q_L B_ sigma delta q_0 =
     else bot_set);
 
 fun sublists [] = [[]]
-  | sublists (x :: xs) =
-    let
-      val xss = sublists xs;
-    in
-      map (fn a => x :: a) xss @ xss
-    end;
+  | sublists (x :: xs) = let
+                           val xss = sublists xs;
+                         in
+                           map (fn a => x :: a) xss @ xss
+                         end;
 
 fun lookup A_ (Mapping xs) = map_of A_ xs;
 
@@ -1966,13 +1965,11 @@ fun merge_filt A_ delta q_0 f i (r, (nu, uu)) =
     r;
 
 fun fail_filt B_ sigma delta q_0 f (r, (nu, uu)) =
-  list_ex
-    (fn q =>
-      let
-        val qa = delta q nu;
-      in
-        not (f qa) andalso sink B_ sigma delta q_0 qa
-      end)
+  list_ex (fn q => let
+                     val qa = delta q nu;
+                   in
+                     not (f qa) andalso sink B_ sigma delta q_0 qa
+                   end)
     r;
 
 fun acc_fin_C A_ delta_M q_0_M sigma pi chi ((uu, m), (nu, uv)) =
