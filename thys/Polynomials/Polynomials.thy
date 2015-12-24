@@ -25,7 +25,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 section {* Polynomials *}
 
-theory Polynomial
+theory Polynomials
 imports 
   "../Abstract-Rewriting/SN_Orders"
   "../Matrix/Utility" 
