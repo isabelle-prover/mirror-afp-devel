@@ -476,7 +476,7 @@ proof -
       by (subst setsum.commute[symmetric])
         (simp only: scaleR_setsum_right[symmetric] euclidean_representation)
     also have "\<dots> = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)"
-      by (subst Derivative.linear_componentwise[OF has_derivative_linear[OF f'], OF line_in[OF t]])
+      by (subst Linear_Algebra.linear_componentwise[OF has_derivative_linear[OF f'], OF line_in[OF t]])
         (simp add: scaleR_setsum_left)
     finally
     show "(\<Sum>i\<in>Basis. (y \<bullet> i) *\<^sub>R f' (x + t *\<^sub>R y) i) = (\<Sum>i\<in>Basis. (f' (x + t *\<^sub>R y) y \<bullet> i) *\<^sub>R i)" .
