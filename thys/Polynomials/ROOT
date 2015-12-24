@@ -6,7 +6,7 @@ session Polynomials (AFP) = "Abstract-Rewriting" +
     "../Abstract-Rewriting/SN_Orders"
     "../Abstract-Rewriting/SN_Order_Carrier"
   theories
-    Polynomial
+    Polynomials
     NZM
   document_files
     "root.bib"
