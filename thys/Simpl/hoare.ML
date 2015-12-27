@@ -132,11 +132,16 @@ fun mk_Un T (A, B) = Const (@{const_name Lattices.sup}, T --> T --> T) $ A $ B;
 fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ dest_Un t2
   | dest_Un t = [t]
 
-fun UN_const (dT as (Type (@{type_name set}, [dT']))) rT = 
-      Const (@{const_name Complete_Lattices.SUPREMUM}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
-  | UN_const _ _ = raise Match;
+fun mk_UN' dT rT t = 
+  let
+    val dTs = HOLogic.mk_setT dT;
+  in
+    Const (@{const_name Complete_Lattices.SUPREMUM},
+      dTs --> (dT --> rT) --> rT) $
+      Const (@{const_name Orderings.top}, dTs) $ t
+  end;
 
-fun mk_UN (x, T, P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x, T) P;
+fun mk_UN ((x, T), P) = mk_UN' T (fastype_of P) (absfree (x, T) P);
 
 fun dest_UN (Const (@{const_name Complete_Lattices.SUPREMUM}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
       let val (vars, body) = dest_UN t
@@ -1417,7 +1422,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
 
     val split_UN_prop =
       let val P = Free (singleton (Name.variant_list names) "P", pT --> HOLogic.mk_setT zeta);
-          fun UN vs t = Library.foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
+          fun UN vs t = Library.foldr mk_UN (vs, t)
       in (UN [x] (P $ Free x)) === (UN vars (P $ xp))
       end;
 
@@ -1499,7 +1504,7 @@ fun gen_call_rec_rule ctxt specs_name n rule =
                  mk_var i "Q" (zT --> assT)$Bound 0,
                  mk_var i "A" (zT --> assT)$Bound 0];
          val single = HOLogic.mk_set quadT [quadruple];
-     in UN_const (HOLogic.mk_setT zT) quadT_set $ Abs("Z", zT, single) end;
+     in mk_UN' zT quadT_set (Abs ("Z", zT, single)) end;
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
