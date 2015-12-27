@@ -342,10 +342,7 @@ lemma Spec_wf_conv:
   "(\<lambda>(P, q, Q, A). (P \<inter> {s. ((s, q), \<tau>, p) \<in> r}, q, Q, A)) `
                 (\<Union>p\<in>Procs. \<Union>Z. {(P p Z, p, Q p Z, A p Z)}) = 
         (\<Union>q\<in>Procs. \<Union>Z. {(P q Z \<inter> {s. ((s, q), \<tau>, p) \<in> r}, q, Q q Z, A q Z)})"
-apply (rule)
-apply  fastforce
-apply (fastforce simp add: image_def)
-done
+  by (auto intro!: image_eqI)
 
 lemma CallRec': 
   "\<lbrakk>p\<in>Procs; Procs \<subseteq> dom \<Gamma>;
