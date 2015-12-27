@@ -154,179 +154,95 @@ datatype hoareMode = Partial | Total
 fun get_rule p t Partial = p
   | get_rule p t Total   = t
 
-val GuardPartial = @{thm HoarePartial.Guard};
-val GuardTotal = @{thm HoareTotal.Guard};
-val Guard = get_rule GuardPartial GuardTotal;
+val Guard = get_rule @{thm HoarePartial.Guard} @{thm HoareTotal.Guard};
 
-val GuardStripPartial = @{thm HoarePartial.GuardStrip};
-val GuardStripTotal = @{thm HoareTotal.GuardStrip};
-val GuardStrip = get_rule GuardStripPartial GuardStripTotal;
+val GuardStrip = get_rule @{thm HoarePartial.GuardStrip} @{thm HoareTotal.GuardStrip};
 
-val GuaranteeAsGuardPartial = @{thm HoarePartial.GuaranteeAsGuard};
-val GuaranteeAsGuardTotal = @{thm HoareTotal.GuaranteeAsGuard};
-val GuaranteeAsGuard = get_rule GuaranteeAsGuardPartial GuaranteeAsGuardTotal;
+val GuaranteeAsGuard = get_rule @{thm HoarePartial.GuaranteeAsGuard} @{thm HoareTotal.GuaranteeAsGuard};
 
-val GuaranteePartial = @{thm HoarePartial.Guarantee};
-val GuaranteeTotal = @{thm HoareTotal.Guarantee};
-val Guarantee = get_rule GuaranteePartial GuaranteeTotal;
+val Guarantee = get_rule @{thm HoarePartial.Guarantee} @{thm HoareTotal.Guarantee};
 
-val GuaranteeStripPartial = @{thm HoarePartial.GuaranteeStrip};
-val GuaranteeStripTotal = @{thm HoareTotal.GuaranteeStrip};
-val GuaranteeStrip = get_rule GuaranteeStripPartial GuaranteeStripTotal;
+val GuaranteeStrip = get_rule @{thm HoarePartial.GuaranteeStrip} @{thm HoareTotal.GuaranteeStrip};
 
-val GuardsNilPartial = @{thm HoarePartial.GuardsNil};
-val GuardsNilTotal = @{thm HoareTotal.GuardsNil};
-val GuardsNil = get_rule GuardsNilPartial GuardsNilTotal;
+val GuardsNil = get_rule @{thm HoarePartial.GuardsNil} @{thm HoareTotal.GuardsNil};
 
-val GuardsConsPartial = @{thm HoarePartial.GuardsCons};
-val GuardsConsTotal = @{thm HoareTotal.GuardsCons};
-val GuardsCons = get_rule GuardsConsPartial GuardsConsTotal;
+val GuardsCons = get_rule @{thm HoarePartial.GuardsCons} @{thm HoareTotal.GuardsCons};
 
-val GuardsConsGuaranteeStripPartial = @{thm HoarePartial.GuardsConsGuaranteeStrip};
-val GuardsConsGuaranteeStripTotal = @{thm HoareTotal.GuardsConsGuaranteeStrip};
 val GuardsConsGuaranteeStrip =
-      get_rule GuardsConsGuaranteeStripPartial GuardsConsGuaranteeStripTotal;
+      get_rule @{thm HoarePartial.GuardsConsGuaranteeStrip} @{thm HoareTotal.GuardsConsGuaranteeStrip};
 
-val SkipPartial = @{thm HoarePartial.Skip};
-val SkipTotal = @{thm HoareTotal.Skip};
-val Skip = get_rule SkipPartial SkipTotal;
+val Skip = get_rule @{thm HoarePartial.Skip} @{thm HoareTotal.Skip};
 
-val BasicPartial = @{thm HoarePartial.Basic};
-val BasicTotal = @{thm HoareTotal.Basic};
-val Basic = get_rule BasicPartial BasicTotal;
+val Basic = get_rule @{thm HoarePartial.Basic} @{thm HoareTotal.Basic};
 
-val BasicCondPartial = @{thm HoarePartial.BasicCond};
-val BasicCondTotal = @{thm HoareTotal.BasicCond};
-val BasicCond = get_rule BasicCondPartial BasicCondTotal;
+val BasicCond = get_rule @{thm HoarePartial.BasicCond} @{thm HoareTotal.BasicCond};
 
-val SpecPartial = @{thm HoarePartial.Spec};
-val SpecTotal = @{thm HoareTotal.Spec};
-val Spec = get_rule SpecPartial SpecTotal;
+val Spec = get_rule @{thm HoarePartial.Spec} @{thm HoareTotal.Spec};
 
-val SpecPartialIf = @{thm HoarePartial.SpecIf};
-val SpecTotalIf = @{thm HoareTotal.SpecIf};
-val SpecIf = get_rule SpecPartialIf SpecTotalIf;
+val SpecIf = get_rule @{thm HoarePartial.SpecIf} @{thm HoareTotal.SpecIf};
 
-val ThrowPartial = @{thm HoarePartial.Throw};
-val ThrowTotal = @{thm HoareTotal.Throw};
-val Throw = get_rule ThrowPartial ThrowTotal;
+val Throw = get_rule @{thm HoarePartial.Throw} @{thm HoareTotal.Throw};
 
-val RaisePartial = @{thm HoarePartial.raise};
-val RaiseTotal = @{thm HoareTotal.raise};
-val Raise = get_rule RaisePartial RaiseTotal;
+val Raise = get_rule @{thm HoarePartial.raise} @{thm HoareTotal.raise};
 
-val CatchPartial = @{thm HoarePartial.Catch};
-val CatchTotal = @{thm HoareTotal.Catch};
-val Catch = get_rule CatchPartial CatchTotal;
+val Catch = get_rule @{thm HoarePartial.Catch} @{thm HoareTotal.Catch};
 
-val CondCatchPartial = @{thm HoarePartial.condCatch};
-val CondCatchTotal = @{thm HoareTotal.condCatch};
-val CondCatch = get_rule CondCatchPartial CondCatchTotal;
+val CondCatch = get_rule @{thm HoarePartial.condCatch} @{thm HoareTotal.condCatch};
 
-val CatchSwapPartial = @{thm HoarePartial.CatchSwap};
-val CatchSwapTotal = @{thm HoareTotal.CatchSwap};
-val CatchSwap = get_rule CatchSwapPartial CatchSwapTotal;
+val CatchSwap = get_rule @{thm HoarePartial.CatchSwap} @{thm HoareTotal.CatchSwap};
 
-val CondCatchSwapPartial = @{thm HoarePartial.condCatchSwap};
-val CondCatchSwapTotal = @{thm HoareTotal.condCatchSwap};
-val CondCatchSwap = get_rule CondCatchSwapPartial CondCatchSwapTotal;
+val CondCatchSwap = get_rule @{thm HoarePartial.condCatchSwap} @{thm HoareTotal.condCatchSwap};
 
-val SeqPartial = @{thm HoarePartial.Seq};
-val SeqTotal = @{thm HoareTotal.Seq};
-val Seq = get_rule SeqPartial SeqTotal;
+val Seq = get_rule @{thm HoarePartial.Seq} @{thm HoareTotal.Seq};
 
-val SeqSwapPartial = @{thm HoarePartial.SeqSwap};
-val SeqSwapTotal = @{thm HoareTotal.SeqSwap};
-val SeqSwap = get_rule SeqSwapPartial SeqSwapTotal;
+val SeqSwap = get_rule @{thm HoarePartial.SeqSwap} @{thm HoareTotal.SeqSwap};
 
-val BSeqPartial = @{thm HoarePartial.BSeq};
-val BSeqTotal = @{thm HoareTotal.BSeq};
-val BSeq = get_rule BSeqPartial BSeqTotal;
+val BSeq = get_rule @{thm HoarePartial.BSeq} @{thm HoareTotal.BSeq};
 
-val CondPartial = @{thm HoarePartial.Cond};
-val CondTotal = @{thm HoareTotal.Cond};
-val Cond = get_rule CondPartial CondTotal;
+val Cond = get_rule @{thm HoarePartial.Cond} @{thm HoareTotal.Cond};
 
 val CondInv'Partial = @{thm HoarePartial.CondInv'};
 val CondInv'Total = @{thm HoareTotal.CondInv'};
 val CondInv' = get_rule CondInv'Partial CondInv'Total;
 
-val SwitchNilPartial = @{thm HoarePartial.switchNil};
-val SwitchNilTotal = @{thm HoareTotal.switchNil};
-val SwitchNil = get_rule SwitchNilPartial SwitchNilTotal;
+val SwitchNil = get_rule @{thm HoarePartial.switchNil} @{thm HoareTotal.switchNil};
 
-val SwitchConsPartial = @{thm HoarePartial.switchCons};
-val SwitchConsTotal = @{thm HoareTotal.switchCons};
-val SwitchCons = get_rule SwitchConsPartial SwitchConsTotal;
+val SwitchCons = get_rule @{thm HoarePartial.switchCons} @{thm HoareTotal.switchCons};
 
-val CondSwapPartial = @{thm HoarePartial.CondSwap};
-val CondSwapTotal = @{thm HoareTotal.CondSwap};
-val CondSwap = get_rule CondSwapPartial CondSwapTotal;
+val CondSwap = get_rule @{thm HoarePartial.CondSwap} @{thm HoareTotal.CondSwap};
 
-val WhilePartial = @{thm HoarePartial.While};
-val WhileTotal = @{thm HoareTotal.While};
-val While = get_rule WhilePartial WhileTotal;
+val While = get_rule @{thm HoarePartial.While} @{thm HoareTotal.While};
 
-val WhileAnnoGPartial = @{thm HoarePartial.WhileAnnoG};
-val WhileAnnoGTotal = @{thm HoareTotal.WhileAnnoG};
-val WhileAnnoG = get_rule WhileAnnoGPartial WhileAnnoGTotal;
+val WhileAnnoG = get_rule @{thm HoarePartial.WhileAnnoG} @{thm HoareTotal.WhileAnnoG};
 
-val WhileAnnoFixPartial = @{thm HoarePartial.WhileAnnoFix'};
-val WhileAnnoFixTotal = @{thm HoareTotal.WhileAnnoFix'};
-val WhileAnnoFix = get_rule WhileAnnoFixPartial WhileAnnoFixTotal;
+val WhileAnnoFix = get_rule @{thm HoarePartial.WhileAnnoFix'} @{thm HoareTotal.WhileAnnoFix'};
 
-val WhileAnnoGFixPartial = @{thm HoarePartial.WhileAnnoGFix};
-val WhileAnnoGFixTotal = @{thm HoareTotal.WhileAnnoGFix};
-val WhileAnnoGFix = get_rule WhileAnnoGFixPartial WhileAnnoGFixTotal;
+val WhileAnnoGFix = get_rule @{thm HoarePartial.WhileAnnoGFix} @{thm HoareTotal.WhileAnnoGFix};
 
-val BindPartial = @{thm HoarePartial.Bind};
-val BindTotal = @{thm HoareTotal.Bind};
-val BindR = get_rule BindPartial BindTotal;
+val BindR = get_rule @{thm HoarePartial.Bind} @{thm HoareTotal.Bind};
 
-val BlockPartial = @{thm HoarePartial.Block};
-val BlockTotal = @{thm HoareTotal.Block};
-val Block = get_rule BlockPartial BlockTotal;
+val Block = get_rule @{thm HoarePartial.Block} @{thm HoareTotal.Block};
 
-val BlockSwapPartial = @{thm HoarePartial.BlockSwap};
-val BlockSwapTotal = @{thm HoareTotal.BlockSwap};
-val BlockSwap = get_rule BlockSwapPartial BlockSwapTotal;
+val BlockSwap = get_rule @{thm HoarePartial.BlockSwap} @{thm HoareTotal.BlockSwap};
 
-val ProcPartial = @{thm HoarePartial.ProcSpec};
-val ProcTotal = @{thm HoareTotal.ProcSpec};
-val Proc = get_rule ProcPartial ProcTotal;
+val Proc = get_rule @{thm HoarePartial.ProcSpec} @{thm HoareTotal.ProcSpec};
 
-val ProcNoAbrPartial = @{thm HoarePartial.ProcSpecNoAbrupt};
-val ProcNoAbrTotal = @{thm HoareTotal.ProcSpecNoAbrupt};
-val ProcNoAbr = get_rule ProcNoAbrPartial ProcNoAbrTotal;
+val ProcNoAbr = get_rule @{thm HoarePartial.ProcSpecNoAbrupt} @{thm HoareTotal.ProcSpecNoAbrupt};
 
-val ProcBodyPartial = @{thm HoarePartial.ProcBody};
-val ProcBodyTotal = @{thm HoareTotal.ProcBody};
-val ProcBody = get_rule ProcBodyPartial ProcBodyTotal;
+val ProcBody = get_rule @{thm HoarePartial.ProcBody} @{thm HoareTotal.ProcBody};
 
-val CallBodyPartial = @{thm HoarePartial.CallBody};
-val CallBodyTotal = @{thm HoareTotal.CallBody};
-val CallBody = get_rule CallBodyPartial CallBodyTotal;
+val CallBody = get_rule @{thm HoarePartial.CallBody} @{thm HoareTotal.CallBody};
 
-val FCallPartial = @{thm HoarePartial.FCall};
-val FCallTotal = @{thm HoareTotal.FCall};
-val FCall = get_rule FCallPartial FCallTotal;
+val FCall = get_rule @{thm HoarePartial.FCall} @{thm HoareTotal.FCall};
 
-val ProcRecPartialSpecs = @{thm HoarePartial.ProcRecSpecs};
-val ProcRecTotalSpecs = @{thm HoareTotal.ProcRecSpecs};
-val ProcRecSpecs = get_rule ProcRecPartialSpecs ProcRecTotalSpecs;
+val ProcRecSpecs = get_rule @{thm HoarePartial.ProcRecSpecs} @{thm HoareTotal.ProcRecSpecs};
 
-val ProcModifyReturnSameFaultsPartial = @{thm HoarePartial.ProcModifyReturnSameFaults};
-val ProcModifyReturnSameFaultsTotal = @{thm HoareTotal.ProcModifyReturnSameFaults};
 val ProcModifyReturnSameFaults =
-      get_rule ProcModifyReturnSameFaultsPartial ProcModifyReturnSameFaultsTotal;
+      get_rule @{thm HoarePartial.ProcModifyReturnSameFaults} @{thm HoareTotal.ProcModifyReturnSameFaults};
 
-val ProcModifyReturnPartial = @{thm HoarePartial.ProcModifyReturn};
-val ProcModifyReturnTotal = @{thm HoareTotal.ProcModifyReturn};
-val ProcModifyReturn = get_rule ProcModifyReturnPartial ProcModifyReturnTotal;
+val ProcModifyReturn = get_rule @{thm HoarePartial.ProcModifyReturn} @{thm HoareTotal.ProcModifyReturn};
 
-val ProcModifyReturnNoAbrPartial = @{thm HoarePartial.ProcModifyReturnNoAbr};
-val ProcModifyReturnNoAbrTotal = @{thm HoareTotal.ProcModifyReturnNoAbr};
-val ProcModifyReturnNoAbr = get_rule ProcModifyReturnNoAbrPartial ProcModifyReturnNoAbrTotal;
+val ProcModifyReturnNoAbr = get_rule @{thm HoarePartial.ProcModifyReturnNoAbr} @{thm HoareTotal.ProcModifyReturnNoAbr};
 
 val ProcModifyReturnNoAbrSameFaultsPartial =
       @{thm HoarePartial.ProcModifyReturnNoAbrSameFaults};
@@ -335,25 +251,15 @@ val ProcModifyReturnNoAbrSameFaultsTotal =
 val ProcModifyReturnNoAbrSameFaults =
       get_rule ProcModifyReturnNoAbrSameFaultsPartial ProcModifyReturnNoAbrSameFaultsTotal;
 
-val TrivPostPartial = @{thm HoarePartial.TrivPost};
-val TrivPostTotal = @{thm HoareTotal.TrivPost};
-val TrivPost = get_rule TrivPostPartial TrivPostTotal;
+val TrivPost = get_rule @{thm HoarePartial.TrivPost} @{thm HoareTotal.TrivPost};
 
-val TrivPostNoAbrPartial = @{thm HoarePartial.TrivPostNoAbr};
-val TrivPostNoAbrTotal = @{thm HoareTotal.TrivPostNoAbr};
-val TrivPostNoAbr = get_rule TrivPostNoAbrPartial TrivPostNoAbrTotal;
+val TrivPostNoAbr = get_rule @{thm HoarePartial.TrivPostNoAbr} @{thm HoareTotal.TrivPostNoAbr};
 
-val DynProcProcParPartial = @{thm HoarePartial.DynProcProcPar};
-val DynProcProcParTotal = @{thm HoareTotal.DynProcProcPar};
-val DynProcProcPar = get_rule DynProcProcParPartial DynProcProcParTotal;
+val DynProcProcPar = get_rule @{thm HoarePartial.DynProcProcPar} @{thm HoareTotal.DynProcProcPar};
 
-val DynProcProcParNoAbrPartial = @{thm HoarePartial.DynProcProcParNoAbrupt};
-val DynProcProcParNoAbrTotal = @{thm HoareTotal.DynProcProcParNoAbrupt};
-val DynProcProcParNoAbr = get_rule DynProcProcParNoAbrPartial DynProcProcParNoAbrTotal;
+val DynProcProcParNoAbr = get_rule @{thm HoarePartial.DynProcProcParNoAbrupt} @{thm HoareTotal.DynProcProcParNoAbrupt};
 
-val ProcProcParModifyReturnPartial = @{thm HoarePartial.ProcProcParModifyReturn};
-val ProcProcParModifyReturnTotal = @{thm HoareTotal.ProcProcParModifyReturn};
-val ProcProcParModifyReturn = get_rule ProcProcParModifyReturnPartial ProcProcParModifyReturnTotal;
+val ProcProcParModifyReturn = get_rule @{thm HoarePartial.ProcProcParModifyReturn} @{thm HoareTotal.ProcProcParModifyReturn};
 
 val ProcProcParModifyReturnSameFaultsPartial =
       @{thm HoarePartial.ProcProcParModifyReturnSameFaults};
@@ -363,10 +269,8 @@ val ProcProcParModifyReturnSameFaults =
       get_rule ProcProcParModifyReturnSameFaultsPartial
                ProcProcParModifyReturnSameFaultsTotal;
 
-val ProcProcParModifyReturnNoAbrPartial = @{thm HoarePartial.ProcProcParModifyReturnNoAbr};
-val ProcProcParModifyReturnNoAbrTotal = @{thm HoareTotal.ProcProcParModifyReturnNoAbr};
 val ProcProcParModifyReturnNoAbr =
-      get_rule ProcProcParModifyReturnNoAbrPartial ProcProcParModifyReturnNoAbrTotal;
+      get_rule @{thm HoarePartial.ProcProcParModifyReturnNoAbr} @{thm HoareTotal.ProcProcParModifyReturnNoAbr};
 
 val ProcProcParModifyReturnNoAbrSameFaultsPartial =
       @{thm HoarePartial.ProcProcParModifyReturnNoAbrSameFaults};
@@ -376,116 +280,38 @@ val ProcProcParModifyReturnNoAbrSameFaults =
       get_rule ProcProcParModifyReturnNoAbrSameFaultsPartial
                ProcProcParModifyReturnNoAbrSameFaultsTotal;
 
-val DynComPartial = @{thm HoarePartial.DynComConseq};
-val DynComTotal = @{thm HoareTotal.DynComConseq};
-val DynCom = get_rule DynComPartial DynComTotal;
+val DynCom = get_rule @{thm HoarePartial.DynComConseq} @{thm HoareTotal.DynComConseq};
 
-val AugmentContextPartial = @{thm HoarePartial.augment_context'};
-val AugmentContextTotal = @{thm HoareTotal.augment_context'};
-val AugmentContext = get_rule AugmentContextPartial AugmentContextTotal;
+val AugmentContext = get_rule @{thm HoarePartial.augment_context'} @{thm HoareTotal.augment_context'};
 
-val AugmentEmptyFaultsPartial = @{thm HoarePartial.augment_emptyFaults};
-val AugmentEmptyFaultsTotal = @{thm HoareTotal.augment_emptyFaults};
-val AugmentEmptyFaults = get_rule AugmentEmptyFaultsPartial AugmentEmptyFaultsTotal;
+val AugmentEmptyFaults = get_rule @{thm HoarePartial.augment_emptyFaults} @{thm HoareTotal.augment_emptyFaults};
 
-val AsmUNPartial = @{thm HoarePartial.AsmUN};
-val AsmUNTotal = @{thm HoareTotal.AsmUN};
-val AsmUN = get_rule AsmUNPartial AsmUNTotal;
+val AsmUN = get_rule @{thm HoarePartial.AsmUN} @{thm HoareTotal.AsmUN};
 
-val SpecAnnoPartial = @{thm HoarePartial.SpecAnno'};
-val SpecAnnoTotal = @{thm HoareTotal.SpecAnno'};
-val SpecAnno = get_rule SpecAnnoPartial SpecAnnoTotal;
+val SpecAnno = get_rule @{thm HoarePartial.SpecAnno'} @{thm HoareTotal.SpecAnno'};
 
-val SpecAnnoNoAbruptPartial = @{thm HoarePartial.SpecAnnoNoAbrupt};
-val SpecAnnoNoAbruptTotal = @{thm HoareTotal.SpecAnnoNoAbrupt};
-val SpecAnnoNoAbrupt = get_rule SpecAnnoNoAbruptPartial SpecAnnoNoAbruptTotal;
+val SpecAnnoNoAbrupt = get_rule @{thm HoarePartial.SpecAnnoNoAbrupt} @{thm HoareTotal.SpecAnnoNoAbrupt};
 
-val LemAnnoPartial = @{thm HoarePartial.LemAnno};
-val LemAnnoTotal = @{thm HoareTotal.LemAnno};
-val LemAnno = get_rule LemAnnoPartial LemAnnoTotal;
+val LemAnno = get_rule @{thm HoarePartial.LemAnno} @{thm HoareTotal.LemAnno};
 
-val LemAnnoNoAbruptPartial = @{thm HoarePartial.LemAnnoNoAbrupt};
-val LemAnnoNoAbruptTotal = @{thm HoareTotal.LemAnnoNoAbrupt};
-val LemAnnoNoAbrupt = get_rule LemAnnoNoAbruptPartial LemAnnoNoAbruptTotal;
+val LemAnnoNoAbrupt = get_rule @{thm HoarePartial.LemAnnoNoAbrupt} @{thm HoareTotal.LemAnnoNoAbrupt};
 
-val ReannotateWhileNoGuard = @{thm HoarePartial.reannotateWhileNoGuard};
 
-val TotalToPartial = @{thm HoareTotal.hoaret_to_hoarep'};
 
-val Compl_Collect = @{thm Hoare.Compl_Collect};
-val CollectInt_iff = @{thm Hoare.CollectInt_iff};
-val Collect_False = @{thm Hoare.Collect_False};
-val triv_All_eq = @{thm Hoare.triv_All_eq};
-val triv_Ex_eq = @{thm Hoare.triv_Ex_eq};
-val mex_def = @{thm Hoare.mex_def};
-val meq_def = @{thm Hoare.meq_def};
-val wf_measure = @{thm Wellfounded.wf_measure};
-val wf_same_fst = @{thm Wfrec.wf_same_fst};
-val wf_inv_image = @{thm Wellfounded.wf_inv_image};
-val wf_lex_prod = @{thm Wellfounded.wf_lex_prod};
-val wf_measure_lex_prod = @{thm Hoare.wf_measure_lex_prod};
-val in_measure_iff = @{thm Hoare.in_measure_iff};
-val in_lex_iff = @{thm Hoare.in_lex_iff};
-val in_mlex_iff = @{thm Hoare.in_mlex_iff};
-val in_inv_image_iff = @{thm Hoare.in_inv_image_iff};
-val subset_unI1 = @{thm Hoare.subset_unI1};
-val subset_unI2 = @{thm Hoare.subset_unI2};
-val Un_empty_left = @{thm Un_empty_left};
-val Un_empty_right = @{thm Un_empty_right};
-val in_insert_hd = @{thm in_insert_hd};
-val singleton_conv2 = @{thm Set.singleton_conv2};
-val singleton_conv_sym = singleton_conv2 RS sym;
-val empty_iff = @{thm Set.empty_iff};
-val Int_empty_right = @{thm Set.Int_empty_right};
-val Int_empty_left = @{thm Set.Int_empty_left};
-val Un_iff = @{thm Set.Un_iff};
-val Int_iff = @{thm Set.Int_iff};
-val empty_subsetI = @{thm Set.empty_subsetI};
-val singleton_iff = @{thm Set.singleton_iff};
-val Un_upper1 = @{thm Set.Un_upper1};
-val Un_upper2 = @{thm Set.Un_upper2};
+val singleton_conv_sym = @{thm Set.singleton_conv2} RS sym;
 
-val whileAnnoG_def = @{thm Language.whileAnnoG_def};
-val whileAnno_def = @{thm Language.whileAnno_def};
-val while_def = @{thm Language.while_def};
-val specAnno_def = @{thm Language.specAnno_def};
-val whileAnnoGFix_def = @{thm Language.whileAnnoGFix_def};
-val whileAnnoFix_def = @{thm Language.whileAnnoFix_def};
-val lem_def = @{thm Language.lem_def};
-val anno_defs = [whileAnno_def,whileAnnoG_def,specAnno_def,
-                 whileAnnoGFix_def,whileAnnoFix_def,lem_def];
-val split_paired_UN = @{thm Hoare.split_paired_UN};
-val unit_meta = @{thm Hoare.unit_meta};
-val unit_object = @{thm Hoare.unit_object};
-val unit_ex = @{thm Hoare.unit_ex};
-val unit_UN = @{thm Hoare.unit_UN};
-val subset_singleton_insert1 = @{thm Hoare.subset_singleton_insert1};
-val subset_singleton_insert2 = @{thm Hoare.subset_singleton_insert2};
-val conjE_simp = @{thm Hoare.conjE_simp};
-val conj_assoc = @{thm HOL.conj_assoc};
-val lookup_Some_in_dom = @{thm Hoare.lookup_Some_in_dom};
+val anno_defs = [@{thm Language.whileAnno_def},@{thm Language.whileAnnoG_def},@{thm Language.specAnno_def},
+                 @{thm Language.whileAnnoGFix_def},@{thm Language.whileAnnoFix_def},@{thm Language.lem_def}];
 val strip_simps =
   @{thm Language.strip_simp} :: @{thm Option.option.map(2)} :: @{thms Language.strip_guards_simps};
 val normalize_simps =
- [while_def, @{thm Language.bseq_def}, @{thm List.append_Nil}, @{thm List.append_Cons}] @
+ [@{thm Language.while_def}, @{thm Language.bseq_def}, @{thm List.append_Nil}, @{thm List.append_Cons}] @
   @{thms List.list.cases} @
   @{thms Language.flatten_simps} @
   @{thms Language.sequence.simps} @
   @{thms Language.normalize_simps} @
   @{thms Language.guards.simps} @
   [@{thm fst_conv}, @{thm snd_conv}];
-val option_sel = @{thms option.sel};
-val dom_strip = @{thm dom_strip};
-val Ex_True = @{thm Ex_True};
-val Ex_False = @{thm Ex_False};
-val upd_globals_def = @{thm StateSpace.upd_globals_def};
-val all_imp_to_ex = @{thm Hoare.all_imp_to_ex};
-val all_imp_eq_triv = @{thms Hoare.all_imp_eq_triv};
-val in_Specs_simp = @{thm Hoare.in_Specs_simp};
-val in_set_Un_simp = @{thm Hoare.in_set_Un_simp};
-val split_all_conj = @{thm split_all_conj};
-val image_Un = @{thm image_Un};
-val image_Un_single_simp = @{thm image_Un_single_simp};
 val K_rec_convs = [];
 val K_fun_convs = [@{thm StateFun.K_statefun_apply}, @{thm StateFun.K_statefun_comp}];
 val K_convs = K_rec_convs @ K_fun_convs;
@@ -1606,7 +1432,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
     val split_meta   = prove_simp [@{thm split_paired_all}] split_meta_prop;
     val split_object = prove_simp [@{thm split_paired_All}] split_object_prop;
     val split_ex     = prove_simp [@{thm split_paired_Ex}] split_ex_prop;
-    val split_UN     = prove_simp [split_paired_UN] split_UN_prop;
+    val split_UN     = prove_simp [@{thm Hoare.split_paired_UN}] split_UN_prop;
   in [split_meta,split_object,split_ex,split_UN]
   end
  | mk_split_thms _ _ = raise Match;
@@ -1644,7 +1470,7 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
         fun tvar n = (n, Sign.defaultS thy);
         val uT = Thm.ctyp_of ctxt HOLogic.unitT;
         val rules' = map (fn (z,r) => (Drule.instantiate_normalize ([(tvar z,uT)],[]) r)) tvar_rules;
-        val splits = [unit_meta,unit_object,unit_ex,unit_UN];
+        val splits = [@{thm Hoare.unit_meta},@{thm Hoare.unit_object},@{thm Hoare.unit_ex},@{thm Hoare.unit_UN}];
         val rules'' = map (full_simplify (put_simpset HOL_basic_ss ctxt addsimps splits)) rules';
       in rules'' end
 
@@ -1679,8 +1505,8 @@ fun gen_call_rec_rule ctxt specs_name n rule =
      val rule' =
        Thm.instantiate' [] [SOME (Thm.cterm_of ctxt Specs)] rule
        |> full_simplify (put_simpset (simpset_of @{theory_context Main}) ctxt
-              addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
-                        image_Un,image_Un_single_simp] )
+              addsimps [@{thm Hoare.conjE_simp},@{thm Hoare.in_Specs_simp},@{thm Hoare.in_set_Un_simp},@{thm split_all_conj},
+                        @{thm image_Un},@{thm image_Un_single_simp}] )
        |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
@@ -1693,8 +1519,8 @@ fun gen_proc_rec ctxt mode n =
 (* simplifications on "Collect" sets, like {s. P s} Int {s. Q s} = {s. P s & Q s} *)
 fun merge_assertion_simp_tac ctxt thms =
      simp_tac (put_simpset HOL_basic_ss ctxt
-                   addsimps ([CollectInt_iff,conj_assoc,Compl_Collect,singleton_conv_sym,
-                   Int_empty_right,Int_empty_left,Un_empty_right,Un_empty_left]@thms)) ;
+                   addsimps ([@{thm Hoare.CollectInt_iff},@{thm HOL.conj_assoc},@{thm Hoare.Compl_Collect},singleton_conv_sym,
+                   @{thm Set.Int_empty_right},@{thm Set.Int_empty_left},@{thm Un_empty_right},@{thm Un_empty_left}]@thms)) ;
 
 (* The following probably shouldn't live here, but refactoring
    so that Hoare could depend on recursive_records does not look feasible.
@@ -1732,9 +1558,9 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
      val fold_simps = get_foldcong_ss (Proof_Context.theory_of ctxt)
  in
    EVERY [simp_tac
-            (put_simpset HOL_basic_ss ctxt addsimps ([mem_Collect_eq,Un_iff,Int_iff,
-                                     empty_subsetI, empty_iff, UNIV_I,
-                                     Collect_False]@thms@K_convs@vcg_simps)
+            (put_simpset HOL_basic_ss ctxt addsimps ([mem_Collect_eq,@{thm Set.Un_iff},@{thm Set.Int_iff},
+                                     @{thm Set.empty_subsetI}, @{thm Set.empty_iff}, UNIV_I,
+                                     @{thm Hoare.Collect_False}]@thms@K_convs@vcg_simps)
                           addsimprocs (state_simprocs state_kind)
                           |> fold Simplifier.add_cong K_congs)  i
            THEN_MAYBE
@@ -1761,8 +1587,8 @@ fun assertion_string_eq_simp_tac ctxt state_kind thms i =
 
 fun before_set2pred_simp_tac ctxt =
   (simp_tac (put_simpset HOL_basic_ss ctxt addsimps [singleton_conv_sym,
-                                    CollectInt_iff,
-                                    Compl_Collect]));
+                                    @{thm Hoare.CollectInt_iff},
+                                    @{thm Hoare.Compl_Collect}]));
 
 (*****************************************************************************)
 (** set2pred transforms sets inclusion into predicates implication,         **)
@@ -1809,8 +1635,8 @@ fun BasicSimpTac ctxt state_kind set2pred thms tac i =
 (*
  EVERY [(trace_tac ctxt "BasicSimpTac -- START --"),
          simp_tac
-          (HOL_basic_ss addsimps [mem_Collect_eq,CollectInt_iff,
-                                  empty_subsetI, empty_iff, UNIV_I]
+          (HOL_basic_ss addsimps [mem_Collect_eq,@{thm Hoare.CollectInt_iff},
+                                  @{thm Set.empty_subsetI}, @{thm Set.empty_iff}, UNIV_I]
                         addsimprocs [state_simproc sk]) i
          THEN_MAYBE
          simp_tac (HOL_basic_ss  addsimprocs [state_upd_simproc sk]) i
@@ -1836,7 +1662,7 @@ fun post_conforms_tac ctxt state_kind i =
            THEN_ALL_NEW
           (fn i => (REPEAT (resolve_tac ctxt [allI,impI] i))
                     THEN (full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps
-                             [mem_Collect_eq,singleton_iff,empty_iff,UNIV_I]
+                             [mem_Collect_eq,@{thm Set.singleton_iff},@{thm Set.empty_iff},UNIV_I]
                              addsimprocs (state_simprocs state_kind)) i))) i];
 
 
@@ -1891,11 +1717,11 @@ local
 
 val conseq1_ss_base =
   simpset_of (put_simpset HOL_basic_ss @{context}
-    addsimps ([mem_Collect_eq,singleton_iff,Int_iff,
-              empty_iff,UNIV_I,
-              conj_assoc, @{thm disj_assoc}] @ all_imp_eq_triv
+    addsimps ([mem_Collect_eq,@{thm Set.singleton_iff},@{thm Set.Int_iff},
+              @{thm Set.empty_iff},UNIV_I,
+              @{thm HOL.conj_assoc}, @{thm disj_assoc}] @ @{thms Hoare.all_imp_eq_triv}
               @K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-    delsimps [all_imp_to_ex]
+    delsimps [@{thm Hoare.all_imp_to_ex}]
     |> fold Simplifier.add_cong K_congs)
 val conseq1_ss_record =
   simpset_of (put_simpset conseq1_ss_base @{context} addsimprocs (state_simprocs Record));
@@ -1906,8 +1732,8 @@ fun conseq1_ss Record   = conseq1_ss_record
 
 val conseq2_ss_base =
   simpset_of (put_simpset HOL_basic_ss @{context}
-    addsimps (all_imp_eq_triv @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
-    delsimps [all_imp_to_ex]
+    addsimps (@{thms Hoare.all_imp_eq_triv} @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
+    delsimps [@{thm Hoare.all_imp_to_ex}]
     |> Simplifier.add_cong @{thm imp_cong});
 
 val conseq2_ss_record =
@@ -1986,10 +1812,10 @@ fun gen_context_thms ctxt mode params G T F =
             EVERY[trace_tac ctxt "extracting specifications from hoare context",
                   resolve_tac ctxt [asmUN'] 1,
                   DEPTH_SOLVE_1 (resolve_tac ctxt [subset_refl,refl] 1 ORELSE
-                    ((resolve_tac ctxt [subset_unI1] 1 APPEND resolve_tac ctxt [subset_unI2] 1)
+                    ((resolve_tac ctxt [@{thm Hoare.subset_unI1}] 1 APPEND resolve_tac ctxt [@{thm Hoare.subset_unI2}] 1)
                      ORELSE
-                     (resolve_tac ctxt [subset_singleton_insert1] 1
-                      APPEND resolve_tac ctxt [subset_singleton_insert2] 1)))
+                     (resolve_tac ctxt [@{thm Hoare.subset_singleton_insert1}] 1
+                      APPEND resolve_tac ctxt [@{thm Hoare.subset_singleton_insert2}] 1)))
                   ORELSE error_tac ("vcg: cannot extract specifications from context")
                  ])
       end;
@@ -2081,7 +1907,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
          in
            EVERY [resolve_tac ctxt [augment_rule] i,
                   resolve_tac ctxt [spec'] (i+1),
-                  TRY (resolve_tac ctxt [subset_refl, empty_subsetI, Un_upper1, Un_upper2] i)]
+                  TRY (resolve_tac ctxt [subset_refl, @{thm Set.empty_subsetI}, @{thm Set.Un_upper1}, @{thm Set.Un_upper2}] i)]
          end;
 
     fun check_spec name P thm =
@@ -2104,7 +1930,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
     fun solve_spec augment_rule _ augment_emptyFaults mode _ (SOME spec_mode) (SOME spec) i=
         if mode=Partial andalso spec_mode=Total
-        then resolve_tac ctxt [TotalToPartial] i THEN spec_tac augment_rule augment_emptyFaults mode spec i
+        then resolve_tac ctxt [@{thm HoareTotal.hoaret_to_hoarep'}] i THEN spec_tac augment_rule augment_emptyFaults mode spec i
         else if mode=spec_mode then spec_tac augment_rule augment_emptyFaults mode spec i
               else error("vcg: cannot use a partial correctness specification of "
                           ^ pname' ^ " for a total correctness proof")
@@ -2112,10 +1938,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
          EVERY[trace_tac ctxt "inferring specification from hoare context1",
                resolve_tac ctxt [asmUN_rule] i,
                DEPTH_SOLVE_1 (resolve_tac ctxt [subset_refl,refl] i ORELSE
-                ((resolve_tac ctxt [subset_unI1] i APPEND resolve_tac ctxt [subset_unI2] i)
+                ((resolve_tac ctxt [@{thm Hoare.subset_unI1}] i APPEND resolve_tac ctxt [@{thm Hoare.subset_unI2}] i)
                  ORELSE
-                 (resolve_tac ctxt [subset_singleton_insert1] i
-                  APPEND resolve_tac ctxt [subset_singleton_insert2] i)))
+                 (resolve_tac ctxt [@{thm Hoare.subset_singleton_insert1}] i
+                  APPEND resolve_tac ctxt [@{thm Hoare.subset_singleton_insert2}] i)))
                ORELSE error_tac ("vcg: cannot infer specification of "
                                    ^ pname' ^ " from context")
                (* if tactic for DEPTH_SOLVE_1 would create new subgoals,
@@ -2207,7 +2033,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  resolve_tac ctxt [allI] (i+1),
                  cont_tac (i+1),
                  trace_tac ctxt "call_tac -- basic_tac -- simplify",
-                 conseq_simp_tac ctxt state_kind [upd_globals_def] i,
+                 conseq_simp_tac ctxt state_kind [@{thm StateSpace.upd_globals_def}] i,
                  trace_tac ctxt "call_tac -- basic_tac -- STOP --"]
         end;
 
@@ -2346,13 +2172,13 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
           val ModRet' = infer_instantiate ctxt [(#1 (dest_Var return'_var), cret)] ModRet;
           val modifies_thm_partial = if modif_spec_mode = Total
-                                     then TotalToPartial OF [modifies_thm] else modifies_thm;
+                                     then @{thm HoareTotal.hoaret_to_hoarep'} OF [modifies_thm] else modifies_thm;
 
           fun solve_modifies_tac i =
                 (clarsimp_tac ((ctxt
                   |> put_claset (claset_of @{theory_context Set})
                   |> put_simpset (simpset_of @{theory_context Set}))
-                  addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
+                  addsimps ([@{thm Hoare.mex_def},@{thm Hoare.meq_def},@{thm StateSpace.upd_globals_def}]@K_convs)
                   addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
                   |> fold Simplifier.add_cong K_congs) i)
                 THEN_MAYBE
@@ -2376,7 +2202,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                   if cmode = Parameter
                   then EVERY [resolve_tac ctxt [subset_refl] (cnt - 8),
                               simp_tac (put_simpset HOL_basic_ss ctxt
-                                addsimps (CollectInt_iff :: @{thms simp_thms})) 1]
+                                addsimps (@{thm Hoare.CollectInt_iff} :: @{thms simp_thms})) 1]
                   else all_tac]
         end) ()
       |> (fn SOME res => res
@@ -2428,7 +2254,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                        cont_tac (i+2),
                        resolve_tac ctxt [allI] (i+1),in_assertion_simp_tac ctxt state_kind [bdy] (i+1),
                        cont_tac (i+1),
-                       in_assertion_simp_tac ctxt state_kind [upd_globals_def] i]
+                       in_assertion_simp_tac ctxt state_kind [@{thm StateSpace.upd_globals_def}] i]
               else EVERY [trace_tac ctxt "inline_bdy_tac no args",
                           resolve_tac ctxt [ProcBody mode] i,
                           resolve_tac ctxt [impl] (i+2),
@@ -2462,7 +2288,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
   handle TERM _ => K no_tac;
 
 fun solve_in_Faults_tac ctxt i =
-    resolve_tac ctxt [UNIV_I, in_insert_hd] i
+    resolve_tac ctxt [UNIV_I, @{thm in_insert_hd}] i
     ORELSE
     SELECT_GOAL (SOLVE (simp_tac (put_simpset (simpset_of @{theory_context Set}) ctxt) 1)) i;
 
@@ -2501,15 +2327,15 @@ end;
 
 fun wf_tac ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt
-    addsimps [wf_measure,wf_lex_prod,wf_same_fst, wf_measure_lex_prod,wf_inv_image]);
+    addsimps [@{thm Wellfounded.wf_measure},@{thm Wellfounded.wf_lex_prod},@{thm Wfrec.wf_same_fst}, @{thm Hoare.wf_measure_lex_prod},@{thm Wellfounded.wf_inv_image}]);
 
 fun in_rel_simp ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt
-    addsimps [in_measure_iff,in_lex_iff,in_mlex_iff,in_inv_image_iff, @{thm split_conv}]);
+    addsimps [@{thm Hoare.in_measure_iff},@{thm Hoare.in_lex_iff},@{thm Hoare.in_mlex_iff},@{thm Hoare.in_inv_image_iff}, @{thm split_conv}]);
 
 fun while_annotate_tac ctxt inv i st =
   let
-    val annotateWhile = Thm.lift_rule (Thm.cprem_of st i) ReannotateWhileNoGuard;
+    val annotateWhile = Thm.lift_rule (Thm.cprem_of st i) @{thm HoarePartial.reannotateWhileNoGuard};
     val lifted_inv = fold_rev Term.abs (Logic.strip_params (Logic.get_goal (Thm.prop_of st) i)) inv;
     val invVar = (#1 o strip_comb o #3 o dest_whileAnno o #2 o dest_hoare)
                   (List.last (Thm.prems_of annotateWhile));
@@ -2606,7 +2432,7 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
                   |(xs::_) => adapt_aux_var ctxt false (map fst xs) (map get_aux_tvar rules));
   in EVERY [resolve_tac ctxt rules' i,
             tac,
-            simp_tac (put_simpset HOL_basic_ss ctxt addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
+            simp_tac (put_simpset HOL_basic_ss ctxt addsimps ([@{thm split_conv}, refl, @{thm Hoare.triv_All_eq}]@anno_defs)
                       addsimprocs [@{simproc case_prod_beta}]) (i+2),
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) (i+1),
             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm split_conv}]) i,
@@ -3218,7 +3044,7 @@ fun generalise Record = GeneraliseRecord.GENERALISE
 fun record_vanish_tac ctxt state_kind state_space i =
   if Config.get ctxt record_vanish then
     let
-        val rem_useless_vars_simps = [Drule.triv_forall_equality,triv_All_eq,triv_Ex_eq];
+        val rem_useless_vars_simps = [Drule.triv_forall_equality,@{thm Hoare.triv_All_eq},@{thm Hoare.triv_Ex_eq}];
         val rem_useless_vars_simpset = empty_simpset ctxt addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const (@{const_name All},_)$_)) =
               is_none (try dest_hoare_raw (strip_qnt_body @{const_name All} t))
@@ -3295,7 +3121,7 @@ fun solve_modifies_tac ctxt state_kind state_space i st =
         |> the_default 0
       else 0
       | is_split_state t = 0;
-    val simp_ctxt = put_simpset HOL_ss ctxt addsimps (Ex_True::Ex_False::Record.get_extinjects thy);
+    val simp_ctxt = put_simpset HOL_ss ctxt addsimps (@{thm Ex_True} :: @{thm Ex_False} :: Record.get_extinjects thy);
       fun try_solve Record i = (*(SOLVE*)
           (((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac ctxt [conjI, impI, allI]) k)))
             THEN_ALL_NEW
@@ -3315,7 +3141,7 @@ fun solve_modifies_tac ctxt state_kind state_space i st =
      clarsimp_tac ((ctxt
         |> put_claset (claset_of @{theory_context HOL})
         |> put_simpset (simpset_of @{theory_context Set}))
-        addsimps ([mex_def,meq_def]@K_convs)
+        addsimps ([@{thm Hoare.mex_def},@{thm Hoare.meq_def}]@K_convs)
         addsimprocs (state_upd_simproc Record::(state_simprocs Record))
         |> fold Simplifier.add_cong K_congs) i)
     THEN_MAYBE
@@ -3334,7 +3160,7 @@ fun proc_lookup_simp_tac ctxt i st =
                               [suffix bodyP pname,
                                suffix (body_def_sfx^"_def") pname,
                                suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
-    in simp_tac (put_simpset HOL_basic_ss ctxt addsimps thms@strip_simps@option_sel) i st end) ()
+    in simp_tac (put_simpset HOL_basic_ss ctxt addsimps thms @ strip_simps @ @{thms option.sel}) i st end) ()
   |> the_default (Seq.single st);
 
 fun proc_lookup_in_dom_simp_tac ctxt i st =
@@ -3347,7 +3173,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
                                  [suffix bodyP pname]);
     in
       simp_tac (put_simpset HOL_basic_ss ctxt
-        addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end) ()
+        addsimps (@{thm Hoare.lookup_Some_in_dom} :: @{thm dom_strip} :: thms)) i st end) ()
   |> the_default (Seq.single st);
 
 
@@ -3409,7 +3235,7 @@ fun HoareCallRuleTac state_kind state_space ctxt thms i st =
                 proc_lookup_in_dom_simp_tac ctxt i
                 ]
         else in_rel_simp ctxt i THEN
-             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [Un_empty_left,Un_empty_right]) i THEN
+             simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm Un_empty_left},@{thm Un_empty_right}]) i THEN
              proc_lookup_simp_tac ctxt i
 
     fun basic_tac i = (((resolve_tac ctxt thms')
