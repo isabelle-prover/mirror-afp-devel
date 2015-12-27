@@ -1,5 +1,5 @@
 
-(* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen *)
+(* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen with a contribution by Lukas Bulwahn *)
 
 section {* Falling factorials *}
 
@@ -18,7 +18,7 @@ lemma ffact_0 [simp]:
 
 lemma ffact_fact:
   "ffact n (of_nat n) = of_nat (fact n)"
-  by (induct n) (simp_all add: algebra_simps of_nat_mult)
+  by (induct n) (simp_all add: algebra_simps)
 
 lemma ffact_Suc:
   "ffact (Suc n) a = (a - of_nat n) * ffact n a"
@@ -62,22 +62,22 @@ next
 qed
 
 
-text {* Conversion of natural potences into falling factorials *}
+text {* Conversion of natural potences into falling factorials and back *}
 
 lemma monomial_ffact:
   "a ^ n = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)"
-proof (rule sym, induct n)
+proof (induct n)
   case 0 then show ?case by simp
 next
-  case (Suc n) 
-  then have "a ^ Suc n = a * (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)" 
+  case (Suc n)
+  then have "a ^ Suc n = a * (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)"
     by simp
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * (a * ffact k a))"
     by (simp add: setsum_right_distrib algebra_simps)
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact (Suc k) a) +
-    (\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a))" 
+    (\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a))"
     by (simp add: setsum.distrib algebra_simps mult_ffact)
-  also have "\<dots> = (\<Sum>k = 0.. Suc n. of_nat (Stirling n k) * ffact (Suc k) a) + 
+  also have "\<dots> = (\<Sum>k = 0.. Suc n. of_nat (Stirling n k) * ffact (Suc k) a) +
     (\<Sum>k = 0..Suc n. of_nat ((Suc k) * (Stirling n (Suc k))) * (ffact (Suc k) a))"
   proof -
     have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
@@ -88,8 +88,8 @@ next
       by (simp only: image_Suc_atLeastAtMost setsum_shift_bounds_cl_Suc_ivl)
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat ((Suc k) * Stirling n (Suc k)) * ffact (Suc k) a)"
       by (simp only: of_nat_mult algebra_simps)
-    finally have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) = 
-      (\<Sum>k = 0..Suc n. of_nat (Suc k * Stirling n (Suc k)) * ffact (Suc k) a)" 
+    finally have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
+      (\<Sum>k = 0..Suc n. of_nat (Suc k * Stirling n (Suc k)) * ffact (Suc k) a)"
       by simp
     then show ?thesis by simp
   qed
@@ -102,5 +102,38 @@ next
   finally show ?case by simp
 qed
 
-end
+lemma ffact_monomial:
+  "ffact n a = (\<Sum>k = 0..n. (- 1) ^ (n - k) * of_nat (stirling n k) * a ^ k)"
+proof (induct n)
+  case 0 show ?case by simp
+next
+  case (Suc n)
+  then have "ffact (Suc n) a = (a - of_nat n) * (\<Sum>k = 0..n. (- 1) ^ (n - k) * of_nat (stirling n k) * a ^ k)"
+    by (simp add: ffact_Suc del: ffact.simps)
+  also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (n - k) * of_nat (stirling n k) * a ^ (Suc k)) +
+    (\<Sum>k = 0..n. (- 1) * (- 1) ^ (n - k) * of_nat (n * (stirling n k)) * a ^ k)"
+    by (simp only: diff_conv_add_uminus distrib_right) (simp add: setsum_right_distrib field_simps)
+  also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (stirling n k) * a ^ Suc k) +
+  (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
+  proof -
+    have "(\<Sum>k = 0..n. (- 1) * (- 1) ^ (n - k) * of_nat (n * stirling n k) * a ^ k) =
+      (\<Sum>k = 0..n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
+      by (simp add: Suc_diff_le)
+    also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
+      by (simp add: setsum_head_Suc) (cases n; simp)
+    also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
+      by (simp only: setsum_shift_bounds_cl_Suc_ivl)
+    finally show ?thesis by simp
+  qed
+  also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k) + stirling n k) * a ^ Suc k)"
+    by (simp add: setsum.distrib algebra_simps)
+  also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (stirling (Suc n) (Suc k)) * a ^ Suc k)"
+    by (simp only: stirling.simps)
+  also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
+    by (simp only: setsum_shift_bounds_cl_Suc_ivl)
+  also have "\<dots> = (\<Sum>k = 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
+    by (simp add: setsum_head_Suc)
+  finally show ?case .
+qed
 
+end
