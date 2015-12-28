@@ -34,7 +34,7 @@ lemma point_eqI [intro?]:
   by (induct M, induct N) simp
 
 lemma point_eq_iff: 
-  "M = N <-> abscissa M = abscissa N \<and> ordinate M = ordinate N"
+  "M = N \<longleftrightarrow> abscissa M = abscissa N \<and> ordinate M = ordinate N"
   by (induct M, induct N) simp
 
 subsection {* Subtraction *}
@@ -60,7 +60,7 @@ definition point_diff_def:
   "A - (B::point) = A + - B"
 
 lemma Point_eq_0 [simp]: 
-  "Point xA yA = 0 <-> (xA = 0 \<and> yA = 0)"
+  "Point xA yA = 0 \<longleftrightarrow> (xA = 0 \<and> yA = 0)"
   by (simp add: point_zero_def)
 
 lemma point_abscissa_zero [simp]: 
@@ -123,7 +123,7 @@ definition point_dist_def:
   "dist A B =  sqrt ((abscissa (A - B))^2 + (ordinate (A - B))^2)"
 
 definition open_point_def:
-  "open (S :: point set) <-> (\<forall> A \<in> S. \<exists> epsilon > 0. \<forall> B. dist B A < epsilon --> B \<in> S)"
+  "open (S :: point set) \<longleftrightarrow> (\<forall> A \<in> S. \<exists> epsilon > 0. \<forall> B. dist B A < epsilon --> B \<in> S)"
 
 lemma point_dist [simp]:
   "dist (Point xA yA) (Point xB yB) =  sqrt ((xA - xB)^2 + (yA - yB)^2)"
@@ -158,7 +158,7 @@ proof
     thus ?thesis
       by (simp add: point_dist_def)
   qed
-  show "open S <-> (\<forall> A \<in> S. \<exists> epsilon > 0. \<forall> B. dist B A < epsilon --> B \<in> S)"
+  show "open S \<longleftrightarrow> (\<forall> A \<in> S. \<exists> epsilon > 0. \<forall> B. dist B A < epsilon --> B \<in> S)"
     by (rule open_point_def)
 qed
 end

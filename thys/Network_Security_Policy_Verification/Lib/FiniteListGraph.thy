@@ -339,7 +339,7 @@ section{*Correctness lemmata*}
   lemma backlinks_distinct: "distinct E \<Longrightarrow> distinct (backlinks E)"
   by (induction E) (auto simp: backlinks_alt)
 
-  lemma backlinks_subset: "set (backlinks X) \<subseteq> set (backlinks Y) <-> set X \<subseteq> set Y"
+  lemma backlinks_subset: "set (backlinks X) \<subseteq> set (backlinks Y) \<longleftrightarrow> set X \<subseteq> set Y"
   by (auto simp: backlinks_set)
 
   lemma backlinks_correct: "FiniteGraph.backflows (set E) = set (backlinks E)"

@@ -170,7 +170,7 @@ text{* @{term valid_stateful_policy} implies @{term wf_graph} *}
 
 
 (*we use the second way of writing it in the paper*)
-lemma "(\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ). F \<subseteq> backflows (filternew_flows_state \<T>)) <->
+lemma "(\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ). F \<subseteq> backflows (filternew_flows_state \<T>)) \<longleftrightarrow>
     \<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ) \<subseteq> (backflows (flows_state \<T>)) - (flows_fix \<T>)"
     by(simp add: filternew_flows_state_alt backflows_minus_backflows, blast)
 

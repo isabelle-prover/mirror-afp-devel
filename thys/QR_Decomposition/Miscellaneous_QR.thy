@@ -263,7 +263,7 @@ lemma norm_mult_vec:
 
 lemma norm_equivalence: 
   fixes A::"real^'n^'m"
-  shows "((transpose A) *v (A *v x) = 0) <-> (A *v x = 0)" 
+  shows "((transpose A) *v (A *v x) = 0) \<longleftrightarrow> (A *v x = 0)" 
 proof (auto)
   show "transpose A *v 0 = 0" unfolding matrix_vector_zero ..
 next

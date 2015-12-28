@@ -291,7 +291,7 @@ lemma span_empty[simp]: "span {} = {0}"
 lemma  independent_empty[intro]: "independent {}"
   by (simp add: dependent_def)
 
-lemma dependent_single[simp]: "dependent {x} <-> x = 0"
+lemma dependent_single[simp]: "dependent {x} \<longleftrightarrow> x = 0"
   unfolding dependent_def by auto
 
 lemma  independent_mono: "independent A ==> B \<subseteq> A ==> independent B"
@@ -427,7 +427,7 @@ lemma span_sub: "x \<in> span S ==> y \<in> span S ==> x - y \<in> span S"
 lemma span_setsum: "finite A ==> \<forall>x \<in> A. f x \<in> span S ==> setsum f A \<in> span S"
   by (rule subspace_setsum, rule subspace_span)
 
-lemma span_add_eq: "x \<in> span S ==> x + y \<in> span S <-> y \<in> span S"
+lemma span_add_eq: "x \<in> span S ==> x + y \<in> span S \<longleftrightarrow> y \<in> span S"
   apply (auto simp only: span_add span_sub)
   apply (subgoal_tac "(x + y) - x \<in> span S")
   apply simp

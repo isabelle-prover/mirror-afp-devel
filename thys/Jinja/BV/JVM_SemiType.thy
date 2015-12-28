@@ -72,7 +72,7 @@ notation (xsymbols)
 subsection "Unfolding"
 
 lemma JVM_states_unfold: 
-  "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) <*>
+  "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) \<times>
                                  list mxl (err(types P))))"
 (*<*)
   apply (unfold states_def sl_def Opt.esl_def Err.sl_def

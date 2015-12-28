@@ -6,7 +6,7 @@ begin
 
 class transitive = ord +
   assumes order_trans1: "x < y \<Longrightarrow> y < z \<Longrightarrow> x < z"
-  and less_eq_def: "x \<le> y <-> x = y \<or> x < y"
+  and less_eq_def: "x \<le> y \<longleftrightarrow> x = y \<or> x < y"
 begin
 
 lemma eq_less_eq [simp]:
@@ -37,10 +37,10 @@ instantiation prod:: (ord, ord) ord
 begin
 
 definition
-  less_pair_def: "a < b <->  fst a  < fst b \<or> (fst a = fst b \<and> snd a < snd b)"
+  less_pair_def: "a < b \<longleftrightarrow>  fst a  < fst b \<or> (fst a = fst b \<and> snd a < snd b)"
 
 definition
-  less_eq_pair_def: "(a::('a::ord * 'b::ord)) <= b <-> a = b \<or> a < b"
+  less_eq_pair_def: "(a::('a::ord * 'b::ord)) <= b \<longleftrightarrow> a = b \<or> a < b"
 instance proof qed
 end
 
@@ -60,7 +60,7 @@ instance proof
     done
 next
   fix x y :: "'a * 'b"
-  show  "x \<le> y <-> x = y \<or> x < y"
+  show  "x \<le> y \<longleftrightarrow> x = y \<or> x < y"
     by (simp add: less_eq_pair_def)
 qed
 end
@@ -107,7 +107,7 @@ instance proof
   fix x y z::nat
   assume "x < y" and "y < z" then show "x < z" by simp
   next
-  fix x y::nat show "(x \<le> y) <-> (x = y \<or> x < y)"
+  fix x y::nat show "(x \<le> y) \<longleftrightarrow> (x = y \<or> x < y)"
     apply (unfold le_less)
     by safe
   qed

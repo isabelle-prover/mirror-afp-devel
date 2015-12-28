@@ -99,7 +99,7 @@ text {*
 *}
 definition
   select :: "'a set \<Rightarrow> ('s,'a) nondet_monad" where
-  "select A \<equiv> \<lambda>s. (A <*> {s}, False)"
+  "select A \<equiv> \<lambda>s. (A \<times> {s}, False)"
 
 definition
   alternative :: "('s,'a) nondet_monad \<Rightarrow> ('s,'a) nondet_monad \<Rightarrow> 

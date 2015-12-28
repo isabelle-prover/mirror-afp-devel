@@ -46,7 +46,7 @@ lemma single_bind [simp, code_unfold]:
 declare Set.empty_bind [code_unfold]
 
 lemma member_single [simp]:
-  "x \<in> single a <-> x = a"
+  "x \<in> single a \<longleftrightarrow> x = a"
 by (simp add: single_def)
 
 lemma single_sup_simps [simp, code_unfold]:

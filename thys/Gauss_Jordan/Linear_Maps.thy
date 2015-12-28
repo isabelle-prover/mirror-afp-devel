@@ -347,7 +347,7 @@ lemma basis_expansion_cart_basis':"setsum (\<lambda>i. x$i *s cart_basis' $ i) U
   unfolding cart_basis'_def using basis_expansion by auto
 
 lemma basis_expansion_unique:
-  "setsum (\<lambda>i. f i *s axis (i::'n::finite) 1) UNIV = (x::('a::comm_ring_1) ^'n) <-> (\<forall>i. f i = x$i)"
+  "setsum (\<lambda>i. f i *s axis (i::'n::finite) 1) UNIV = (x::('a::comm_ring_1) ^'n) \<longleftrightarrow> (\<forall>i. f i = x$i)"
 proof (auto simp add: basis_expansion)
   fix i::"'n" 
   have univ_rw: "UNIV = (UNIV - {i}) \<union> {i}" by fastforce
@@ -358,11 +358,11 @@ proof (auto simp add: basis_expansion)
 qed
 
 
-lemma basis_expansion_cart_basis'_unique: "setsum (\<lambda>i. f (cart_basis' $ i) *s cart_basis' $ i) UNIV = x <-> (\<forall>i. f (cart_basis' $ i) = x$i)"
+lemma basis_expansion_cart_basis'_unique: "setsum (\<lambda>i. f (cart_basis' $ i) *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f (cart_basis' $ i) = x$i)"
   using basis_expansion_unique unfolding cart_basis'_def
   by (simp add: vec_eq_iff if_distrib cong del: if_weak_cong)
 
-lemma basis_expansion_cart_basis'_unique': "setsum (\<lambda>i. f i *s cart_basis' $ i) UNIV = x <-> (\<forall>i. f i = x$i)"
+lemma basis_expansion_cart_basis'_unique': "setsum (\<lambda>i. f i *s cart_basis' $ i) UNIV = x \<longleftrightarrow> (\<forall>i. f i = x$i)"
   using basis_expansion_unique unfolding cart_basis'_def
   by (simp add: vec_eq_iff if_distrib cong del: if_weak_cong)
 

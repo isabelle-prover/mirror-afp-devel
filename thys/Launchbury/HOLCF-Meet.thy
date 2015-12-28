@@ -12,7 +12,7 @@ subsubsection {* Towards meets: Lower bounds *}
 context po
 begin
 definition is_lb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">|" 55) where
-  "S >| x <-> (\<forall>y\<in>S. x \<sqsubseteq> y)"
+  "S >| x \<longleftrightarrow> (\<forall>y\<in>S. x \<sqsubseteq> y)"
 
 lemma is_lbI: "(!!x. x \<in> S ==> l \<sqsubseteq> x) ==> S >| l"
   by (simp add: is_lb_def)
@@ -32,7 +32,7 @@ lemma is_lb_downward: "[|S >| l; y \<sqsubseteq> l|] ==> S >| y"
 subsubsection {* Greatest lower bounds *}
 
 definition is_glb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">>|" 55) where
-  "S >>| x <-> S >| x \<and> (\<forall>u. S >| u --> u \<sqsubseteq> x)"
+  "S >>| x \<longleftrightarrow> S >| x \<and> (\<forall>u. S >| u --> u \<sqsubseteq> x)"
 
 definition glb :: "'a set \<Rightarrow> 'a" ("\<Sqinter>_" [60]60) where
   "glb S = (THE x. S >>| x)" 
@@ -48,7 +48,7 @@ lemma is_glbD2: "[|S >>| x; S >| u|] ==> u \<sqsubseteq> x"
 lemma (in po) is_glbI: "[|S >| x; !!u. S >| u ==> u \<sqsubseteq> x|] ==> S >>| x"
   unfolding is_glb_def by fast
 
-lemma is_glb_above_iff: "S >>| x ==> u \<sqsubseteq> x <-> S >| u"
+lemma is_glb_above_iff: "S >>| x ==> u \<sqsubseteq> x \<longleftrightarrow> S >| u"
   unfolding is_glb_def is_lb_def by (metis below_trans)
 
 text {* glbs are unique *}

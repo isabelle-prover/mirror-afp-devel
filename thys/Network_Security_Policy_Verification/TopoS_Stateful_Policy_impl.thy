@@ -96,7 +96,7 @@ subsection{*Algorithms*}
             TopoS_Composition_Theory.all_security_requirements_fulfilled (TopoS_Composition_Theory.get_IFS (get_spec M)) (list_graph_to_graph G)"
             by(simp add: get_impl_zip_simp get_spec_zip_simp)
 
-        have case_impl_spec: "?caseDistinction <-> TopoS_Composition_Theory.all_security_requirements_fulfilled (TopoS_Composition_Theory.get_IFS (get_spec M)) (stateful_policy_to_network_graph \<lparr> hosts = set (nodesL G), flows_fix = set (edgesL G), flows_state = set (e#accu) \<rparr>)"
+        have case_impl_spec: "?caseDistinction \<longleftrightarrow> TopoS_Composition_Theory.all_security_requirements_fulfilled (TopoS_Composition_Theory.get_IFS (get_spec M)) (stateful_policy_to_network_graph \<lparr> hosts = set (nodesL G), flows_fix = set (edgesL G), flows_state = set (e#accu) \<rparr>)"
           apply(subst all_security_requirements_fulfilled_eq_rule[OF validLG])
           by(simp add: stateful_list_policy_to_list_graph_complies)
 
@@ -165,7 +165,7 @@ subsection{*Algorithms*}
         -- "@{thm Cons.IH[OF Cons.prems(1) Cons.prems(2)]}"
         let ?caseDistinction = "e \<notin> set (backlinks (edgesL G)) \<and> (\<forall>F \<in> set (implc_get_offending_flows (get_ACS (get_impl M)) (stateful_list_policy_to_list_graph \<lparr> hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = (e#accu) \<rparr>)). set F \<subseteq> set (backlinks (e#accu)))"
         
-        have backlinks_simp: "(e \<notin> set (backlinks (edgesL G))) <-> (e \<notin> backflows (set (edgesL G)))"
+        have backlinks_simp: "(e \<notin> set (backlinks (edgesL G))) \<longleftrightarrow> (e \<notin> backflows (set (edgesL G)))"
           by(simp add: backlinks_correct)
 
         have "\<And> G X. (\<forall>F\<in>set (implc_get_offending_flows (TopoS_Composition_Theory_impl.get_ACS (get_impl M)) G). set F \<subseteq> X) =
@@ -193,7 +193,7 @@ subsection{*Algorithms*}
           by(simp add: backlinks_set backflows_def)
         
         -- "@{thm implc_get_offending_flows_simp_rule[OF validLG]}"
-        have case_impl_spec: "?caseDistinction <-> (
+        have case_impl_spec: "?caseDistinction \<longleftrightarrow> (
           e \<notin> backflows (set (edgesL G)) \<and> (\<forall>F \<in> get_offending_flows (TopoS_Composition_Theory.get_ACS (get_spec M)) (stateful_policy_to_network_graph \<lparr> hosts = set (nodesL G), flows_fix = set (edgesL G), flows_state = set (e#accu) \<rparr>). F \<subseteq> (backflows (set (e#accu)))))" 
           apply(simp add: backlinks_simp)
           apply(simp add: implc_get_offending_flows_simp_rule[OF validLG])

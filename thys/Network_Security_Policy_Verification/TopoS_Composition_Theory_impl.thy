@@ -266,7 +266,7 @@ subsection{*All security requirements fulfilled*}
   lemma all_security_requirements_fulfilled_complies:
     "\<lbrakk> \<forall> (m_impl, m_spec) \<in> set M. SecurityInvariant_complies_formal_def m_impl m_spec; 
        wf_list_graph (G::('v::vertex) list_graph) \<rbrakk> \<Longrightarrow>
-    all_security_requirements_fulfilled (get_impl M) G <-> TopoS_Composition_Theory.all_security_requirements_fulfilled (get_spec M) (list_graph_to_graph G)"
+    all_security_requirements_fulfilled (get_impl M) G \<longleftrightarrow> TopoS_Composition_Theory.all_security_requirements_fulfilled (get_spec M) (list_graph_to_graph G)"
     apply(simp add: all_security_requirements_fulfilled_def TopoS_Composition_Theory.all_security_requirements_fulfilled_def)
     apply(simp add: get_impl_def get_spec_def)
     using SecurityInvariant_complies_formal_def_def by fastforce

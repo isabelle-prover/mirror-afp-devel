@@ -830,7 +830,7 @@ text {*$\beta$ is a basis iff for all $v\in V$, there exists a unique $(a_v)_{v\
 $\sum_{v\in S} a_v v=v$.*}
 lemma (in vectorspace) basis_criterion:
   assumes A_fin: "finite A" and AinC: "A\<subseteq>carrier V"
-  shows "basis A <-> (\<forall>v. v\<in> carrier V \<longrightarrow>(\<exists>! a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v))"
+  shows "basis A \<longleftrightarrow> (\<forall>v. v\<in> carrier V \<longrightarrow>(\<exists>! a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v))"
 proof -
   have 1: "\<not>(\<forall>v.  v\<in> carrier V \<longrightarrow>(\<exists>! a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v)) \<Longrightarrow> \<not>basis A"
   proof - 

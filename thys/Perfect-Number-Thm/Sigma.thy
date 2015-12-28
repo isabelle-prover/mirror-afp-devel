@@ -40,7 +40,7 @@ by (simp add: sigma_def)
 lemma sigma1[simp]: "sigma(1) = 1"
 by (simp add: sigma_def)
 
-lemma prime_divisors: "prime (p::nat) <-> divisors p = {1,p} & p>1"
+lemma prime_divisors: "prime (p::nat) \<longleftrightarrow> divisors p = {1,p} & p>1"
 by (auto simp add: divisors_def prime_def)
 
 lemma prime_imp_sigma: "prime (p::nat) ==> sigma(p) = p+1"

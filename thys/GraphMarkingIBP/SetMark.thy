@@ -46,7 +46,7 @@ proof
     by auto
 next
   fix x y :: I
-  show  "x \<le> y <-> x = y \<or> x < y"
+  show  "x \<le> y \<longleftrightarrow> x = y \<or> x < y"
     by (simp add: less_eq_I_def)
 next
   fix P fix a::I

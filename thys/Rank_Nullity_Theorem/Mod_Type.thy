@@ -218,7 +218,7 @@ lemma strict_mono_to_nat: "strict_mono to_nat"
   using strict_mono_Rep
   unfolding strict_mono_def to_nat_def using Rep_ge_0 by (metis comp_apply nat_less_eq_zless)
 
-lemma to_nat_eq [simp]: "to_nat x = to_nat y <-> x = y"
+lemma to_nat_eq [simp]: "to_nat x = to_nat y \<longleftrightarrow> x = y"
   using injD [OF bij_betw_imp_inj_on[OF bij_to_nat]] by blast
 
 lemma mod_type_forall_eq [simp]: "(\<forall>j::'a. (to_nat j)<CARD('a) \<longrightarrow> P j) = (\<forall>a. P a)"

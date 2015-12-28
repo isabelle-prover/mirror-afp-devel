@@ -556,7 +556,7 @@ next
       fix x b
       have th0: "!!(a::'a^'m::{mod_type}) b c. a - (b - c) = c + (a - b)"
         by (simp add: field_simps)
-      have "x - b *\<^sub>R  (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x))  *\<^sub>R  x)) \<in> real_vector.span C <-> x - b  *\<^sub>R  a \<in> real_vector.span C"
+      have "x - b *\<^sub>R  (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x))  *\<^sub>R  x)) \<in> real_vector.span C \<longleftrightarrow> x - b  *\<^sub>R  a \<in> real_vector.span C"
         apply (simp only: scaleR_right_diff_distrib th0)
         apply (rule real_vector.span_add_eq)
         apply (rule real_vector.span_mul)

@@ -126,15 +126,15 @@ unfolding lsc_at_def using assms by auto
 lemma lsc_at_PInfty:
 fixes f :: "'a::metric_space => ereal"
 assumes "f x0 = \<infinity>"
-shows "lsc_at x0 f <-> continuous (at x0) f"
+shows "lsc_at x0 f \<longleftrightarrow> continuous (at x0) f"
 unfolding lsc_at_open continuous_at_open using assms by auto
 
 
 lemma lsc_at_real:
 fixes f :: "'a::metric_space => ereal"
 assumes "\<bar>f x0\<bar> \<noteq> \<infinity>"
-shows "lsc_at x0 f <-> (!e. e>0 --> (EX T. open T & x0 : T & (!y : T. f y > f x0 - e)))"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (!e. e>0 --> (EX T. open T & x0 : T & (!y : T. f y > f x0 - e)))"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 obtain m where m_def: "f x0 = ereal m" using assms by (cases "f x0") auto
 { assume lsc: "lsc_at x0 f"
@@ -168,8 +168,8 @@ qed
 
 lemma lsc_at_ereal:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (ALL C<f(x0). EX T. open T & x0 : T & (!y : T. f y > C))"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (ALL C<f(x0). EX T. open T & x0 : T & (!y : T. f y > C))"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "f x0 = -\<infinity>" hence ?thesis using lsc_at_MInfty by auto }
 moreover
@@ -216,8 +216,8 @@ qed
 
 lemma lst_at_ball:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (ALL C<f(x0). EX d>0. ALL y : (ball x0 d). C<f(y))"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (ALL C<f(x0). EX d>0. ALL y : (ball x0 d). C<f(y))"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume lsc: "lsc_at x0 f"
   { fix C :: ereal assume "C<f x0"
@@ -241,10 +241,10 @@ qed
 
 lemma lst_at_delta:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (ALL C<f(x0). EX d>0. !y. dist x0 y < d --> C < f y)"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (ALL C<f(x0). EX d>0. !y. dist x0 y < d --> C < f y)"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
-  have "?rhs <-> (ALL C<f(x0). EX d>0. ALL y : (ball x0 d). C < f y)" unfolding ball_def by auto
+  have "?rhs \<longleftrightarrow> (ALL C<f(x0). EX d>0. ALL y : (ball x0 d). C < f y)" unfolding ball_def by auto
   thus ?thesis using lst_at_ball[of x0 f] by auto
 qed
 
@@ -259,7 +259,7 @@ lemma lsc_liminf_at:
 
 lemma lsc_liminf_at_eq:
   fixes f :: "'a::metric_space => ereal"
-  shows "lsc_at x0 f <-> (f x0 = min (f x0) (Liminf (at x0) f))"
+  shows "lsc_at x0 f \<longleftrightarrow> (f x0 = min (f x0) (Liminf (at x0) f))"
 by (metis inf_ereal_def le_iff_inf lsc_liminf_at)
 
 
@@ -287,8 +287,8 @@ qed auto
 
 lemma lsc_liminf:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (!x. x ----> x0 --> f x0 <= liminf (f o x))"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (!x. x ----> x0 --> f x0 <= liminf (f o x))"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
   { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
@@ -300,8 +300,8 @@ qed
 
 lemma lsc_sequentially:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (ALL x c. x ----> x0 & (ALL n. f(x n)<=c) --> f(x0)<=c)"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (ALL x c. x ----> x0 & (ALL n. f(x n)<=c) --> f(x0)<=c)"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
   { fix x l assume "x ----> x0" "(f o x) ----> l"
@@ -346,8 +346,8 @@ qed
 
 lemma lsc_sequentially_gen:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f <-> (ALL x c c0. x ----> x0 & c ----> c0 & (ALL n. f(x n)<=c n) --> f(x0)<=c0)"
-(is "?lhs <-> ?rhs")
+shows "lsc_at x0 f \<longleftrightarrow> (ALL x c c0. x ----> x0 & c ----> c0 & (ALL n. f(x n)<=c n) --> f(x0)<=c0)"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
   { fix x c0 assume a: "x ----> x0 & (ALL n. f (x n) <= c0)"
@@ -376,7 +376,7 @@ using lsc_sequentially_gen[of x0 f] assms by auto
 
 lemma lsc_uminus:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 (%x. -f x) <-> usc_at x0 f"
+shows "lsc_at x0 (%x. -f x) \<longleftrightarrow> usc_at x0 f"
 proof-
 { assume lsc: "lsc_at x0 (%x. -f x)"
   { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
@@ -401,16 +401,16 @@ qed
 
 lemma usc_limsup:
 fixes f :: "'a::metric_space => ereal"
-shows "usc_at x0 f <-> (!x. x ----> x0 --> f x0 >= limsup (f o x))"
-(is "?lhs <-> ?rhs")
+shows "usc_at x0 f \<longleftrightarrow> (!x. x ----> x0 --> f x0 >= limsup (f o x))"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
-have "usc_at x0 f <-> (ALL x. x ----> x0 --> - f x0 <= liminf ((%x. - f x) o x))"
+have "usc_at x0 f \<longleftrightarrow> (ALL x. x ----> x0 --> - f x0 <= liminf ((%x. - f x) o x))"
   using lsc_uminus[of x0 f] lsc_liminf[of x0 "(%x. - f x)"] by auto
 moreover
 { fix x assume "x ----> x0"
-  have "(-f x0 <= -limsup (f o x)) <-> (-f x0 <= liminf ((%x. - f x) o x))"
+  have "(-f x0 <= -limsup (f o x)) \<longleftrightarrow> (-f x0 <= liminf ((%x. - f x) o x))"
      using ereal_Liminf_uminus[of _ "f o x"] unfolding o_def by auto
-  hence "(f x0 >= limsup (f o x)) <-> (-f x0 <= liminf ((%x. - f x) o x))"
+  hence "(f x0 >= limsup (f o x)) \<longleftrightarrow> (-f x0 <= liminf ((%x. - f x) o x))"
      by auto
 } ultimately show ?thesis by auto
 qed
@@ -426,18 +426,18 @@ using assms usc_limsup[of x0 f] by auto
 
 lemma usc_limsup_at:
   fixes f :: "'a::metric_space => ereal"
-  shows "usc_at x0 f <-> f x0 >= Limsup (at x0) f"
+  shows "usc_at x0 f \<longleftrightarrow> f x0 >= Limsup (at x0) f"
 proof-
-  have "usc_at x0 f <-> lsc_at x0 (%x. -(f x))" by (metis lsc_uminus)
-  also have "... <-> -(f x0) <= Liminf (at x0) (%x. -(f x))" by (metis lsc_liminf_at)
-  also have "... <-> -(f x0) <= -(Limsup (at x0) f)" by (metis ereal_Liminf_uminus)
+  have "usc_at x0 f \<longleftrightarrow> lsc_at x0 (%x. -(f x))" by (metis lsc_uminus)
+  also have "... \<longleftrightarrow> -(f x0) <= Liminf (at x0) (%x. -(f x))" by (metis lsc_liminf_at)
+  also have "... \<longleftrightarrow> -(f x0) <= -(Limsup (at x0) f)" by (metis ereal_Liminf_uminus)
   finally show ?thesis by auto
 qed
 
 
 lemma continuous_iff_lsc_usc:
 fixes f :: "'a::metric_space => ereal"
-shows "continuous (at x0) f <-> (lsc_at x0 f) & (usc_at x0 f)"
+shows "continuous (at x0) f \<longleftrightarrow> (lsc_at x0 f) & (usc_at x0 f)"
 proof-
 { assume a: "continuous (at x0) f"
   { fix x assume "x ----> x0"
@@ -472,28 +472,28 @@ qed
 
 
 lemma continuous_isCont:
-  "continuous (at x0) f <-> isCont f x0"
+  "continuous (at x0) f \<longleftrightarrow> isCont f x0"
 by (metis continuous_at isCont_def)
 
 
 lemma isCont_iff_lsc_usc:
   fixes f :: "'a::metric_space => ereal"
-  shows "isCont f x0 <-> (lsc_at x0 f) & (usc_at x0 f)"
+  shows "isCont f x0 \<longleftrightarrow> (lsc_at x0 f) & (usc_at x0 f)"
 by (metis continuous_iff_lsc_usc continuous_isCont)
 
 
 definition
   lsc :: "('a::topological_space => 'b::order_topology) => bool" where
-  "lsc f <-> (!x. lsc_at x f)"
+  "lsc f \<longleftrightarrow> (!x. lsc_at x f)"
 
 definition
   usc :: "('a::topological_space => 'b::order_topology) => bool" where
-  "usc f <-> (!x. usc_at x f)"
+  "usc f \<longleftrightarrow> (!x. usc_at x f)"
 
 
 lemma continuous_UNIV_iff_lsc_usc:
   fixes f :: "'a::metric_space => ereal"
-  shows "(ALL x. continuous (at x) f) <-> (lsc f) & (usc f)"
+  shows "(ALL x. continuous (at x) f) \<longleftrightarrow> (lsc f) & (usc f)"
 by (metis continuous_iff_lsc_usc lsc_def usc_def)
 
 
@@ -503,13 +503,13 @@ subsection {* Epigraphs *}
 definition "Epigraph S (f::_ => ereal) = {xy. fst xy : S & f (fst xy) <= ereal(snd xy)}"
 
 
-lemma mem_Epigraph: "(x, y) : Epigraph S f <-> x : S & f x <= ereal y" unfolding Epigraph_def by auto
+lemma mem_Epigraph: "(x, y) : Epigraph S f \<longleftrightarrow> x : S & f x <= ereal y" unfolding Epigraph_def by auto
 
 
 lemma ereal_closed_levels:
 fixes f :: "'a::metric_space => ereal"
-shows "(ALL y. closed {x. f(x)<=y}) <-> (ALL r. closed {x. f(x)<=ereal r})"
-(is "?lhs <-> ?rhs")
+shows "(ALL y. closed {x. f(x)<=y}) \<longleftrightarrow> (ALL r. closed {x. f(x)<=ereal r})"
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
   { fix y :: ereal
@@ -528,7 +528,7 @@ qed
 
 lemma lsc_iff:
 fixes f :: "'a::metric_space => ereal"
-shows "(lsc f <-> (ALL y. closed {x. f(x)<=y})) & (lsc f <-> closed (Epigraph UNIV f))"
+shows "(lsc f \<longleftrightarrow> (ALL y. closed {x. f(x)<=y})) & (lsc f \<longleftrightarrow> closed (Epigraph UNIV f))"
 proof-
 { assume "lsc f"
   { fix z z0 assume a: "ALL n. z n : (Epigraph UNIV f) & z ----> z0"
@@ -641,9 +641,9 @@ proof-
   hence "EX a. {z. (x, z) : S} = {z. a <= ereal z}" apply (subst mono_closed_ereal) using mono by auto
 } from this obtain g where g_def: "ALL x. {z. (x, z) : S} = {z. g x <= ereal z}" by metis
 { fix s
-  have "s:S <-> (fst s, snd s) : S" by auto
-  also have "... <-> g(fst s) <= ereal (snd s)" using g_def[rule_format, of "fst s"] by blast
-  finally have "s:S <-> g(fst s) <= ereal (snd s)" by auto
+  have "s:S \<longleftrightarrow> (fst s, snd s) : S" by auto
+  also have "... \<longleftrightarrow> g(fst s) <= ereal (snd s)" using g_def[rule_format, of "fst s"] by blast
+  finally have "s:S \<longleftrightarrow> g(fst s) <= ereal (snd s)" by auto
 }
 hence "(Epigraph UNIV g) = S" unfolding Epigraph_def by auto
 from this show ?thesis by auto
@@ -675,10 +675,10 @@ lemma epigraph_invertible:
   shows "f=g"
 proof-
 { fix x
-  { fix C have "f x <= ereal C <-> (x,C) : Epigraph UNIV f" unfolding Epigraph_def by auto
-    also have "... <-> (x,C) : Epigraph UNIV g" using assms by auto
-    also have "... <-> g x <= ereal C" unfolding Epigraph_def by auto
-    finally have "f x <= ereal C <-> g x <= ereal C" by auto
+  { fix C have "f x <= ereal C \<longleftrightarrow> (x,C) : Epigraph UNIV f" unfolding Epigraph_def by auto
+    also have "... \<longleftrightarrow> (x,C) : Epigraph UNIV g" using assms by auto
+    also have "... \<longleftrightarrow> g x <= ereal C" unfolding Epigraph_def by auto
+    finally have "f x <= ereal C \<longleftrightarrow> g x <= ereal C" by auto
   } hence "g x = f x" using ereal_le_real[of "g x" "f x"] ereal_le_real[of "f x" "g x"] by auto
 } from this show ?thesis by (simp add: ext)
 qed
@@ -701,7 +701,7 @@ qed
 
 
 lemma lsc_hull_expl:
-  "(g = lsc_hull f) <-> (Epigraph UNIV g = closure(Epigraph UNIV f))"
+  "(g = lsc_hull f) \<longleftrightarrow> (Epigraph UNIV g = closure(Epigraph UNIV f))"
 proof-
 { assume "Epigraph UNIV g = closure(Epigraph UNIV f)"
   hence "lsc_hull f = g" unfolding lsc_hull_def apply (subst some1_equality[of _ g])
@@ -717,7 +717,7 @@ lemma lsc_lsc_hull: "lsc (lsc_hull f)"
 
 lemma epigraph_subset_iff:
   fixes f g :: "'a::metric_space => ereal"
-  shows "Epigraph UNIV f <= Epigraph UNIV g <-> (ALL x. g x <= f x)"
+  shows "Epigraph UNIV f <= Epigraph UNIV g \<longleftrightarrow> (ALL x. g x <= f x)"
 proof-
 { assume epi: "Epigraph UNIV f <= Epigraph UNIV g"
   { fix x
@@ -758,9 +758,9 @@ qed
 
 lemma lsc_hull_iff_greatest:
 fixes f g :: "'a::metric_space => ereal"
-shows "(g = lsc_hull f) <->
+shows "(g = lsc_hull f) \<longleftrightarrow>
   lsc g & (ALL x. g x <= f x) & (ALL h. lsc h & (ALL x. h x <= f x) --> (ALL x. h x <= g x))"
-(is "?lhs <-> ?rhs")
+(is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?lhs" hence "?rhs" using lsc_lsc_hull lsc_hull_le lsc_hull_greatest by metis }
 moreover
@@ -787,7 +787,7 @@ qed
 
 
 lemma lsc_hull_lsc:
-  "lsc f <-> (f = lsc_hull f)"
+  "lsc f \<longleftrightarrow> (f = lsc_hull f)"
 using lsc_hull_iff_greatest[of f f] by auto
 
 
@@ -887,7 +887,7 @@ subsection {* Convex Functions *}
 
 definition
   convex_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "convex_on s f <->
+  "convex_on s f \<longleftrightarrow>
   (ALL x:s. ALL y:s. ALL u>=0. ALL v>=0. u + v = 1
   --> f (u *\<^sub>R x + v *\<^sub>R y) <= ereal u * f x + ereal v * f y)"
 
@@ -904,7 +904,7 @@ lemma convex_on_ereal_subset: "convex_on t f ==> s <= t ==> convex_on s f"
   unfolding convex_on_def by auto
 
 
-lemma convex_on_ereal_univ: "convex_on UNIV f <-> (ALL S. convex_on S f)"
+lemma convex_on_ereal_univ: "convex_on UNIV f \<longleftrightarrow> (ALL S. convex_on S f)"
   using convex_on_ereal_subset by auto
 
 lemma ereal_pos_setsum_right_distrib:
@@ -1121,9 +1121,9 @@ qed
 
 lemma convex_on_ereal_iff:
   assumes "convex s"
-  shows "convex_on s f <-> (ALL k u x. (ALL i:{1..k::nat}. 0 <= u i & x i : s) & setsum u {1..k} = 1 -->
+  shows "convex_on s f \<longleftrightarrow> (ALL k u x. (ALL i:{1..k::nat}. 0 <= u i & x i : s) & setsum u {1..k} = 1 -->
    f (setsum (%i. u i *\<^sub>R x i) {1..k} ) <= setsum (%i. (ereal (u i)) * f(x i)) {1..k} )"
-  (is "?rhs <-> ?lhs")
+  (is "?rhs \<longleftrightarrow> ?lhs")
 proof-
 { assume "?rhs"
   { fix k u x
@@ -1158,7 +1158,7 @@ qed
 
 lemma convex_Epigraph:
   assumes "convex S"
-  shows "convex(Epigraph S f) <-> convex_on S f"
+  shows "convex(Epigraph S f) \<longleftrightarrow> convex_on S f"
 proof-
 { assume rhs: "convex(Epigraph S f)"
   { fix x y assume xy: "x:S" "y:S"
@@ -1230,15 +1230,15 @@ unfolding convex_Epigraph by auto
 
 definition
   concave_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "concave_on S f <-> convex_on S (%x. - f x)"
+  "concave_on S f \<longleftrightarrow> convex_on S (%x. - f x)"
 
 definition
   finite_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "finite_on S f <-> (ALL x:S. (f x ~= \<infinity> & f x ~= -\<infinity>))"
+  "finite_on S f \<longleftrightarrow> (ALL x:S. (f x ~= \<infinity> & f x ~= -\<infinity>))"
 
 definition
   affine_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "affine_on S f <-> (convex_on S f & concave_on S f & finite_on S f)"
+  "affine_on S f \<longleftrightarrow> (convex_on S f & concave_on S f & finite_on S f)"
 
 definition
   "domain (f::_ => ereal) = {x. f x < \<infinity>}"
@@ -1267,7 +1267,7 @@ qed
 
 
 lemma convex_on_domain:
-  "convex_on (domain f) f <-> convex_on UNIV f"
+  "convex_on (domain f) f \<longleftrightarrow> convex_on UNIV f"
 proof-
 { assume lhs: "convex_on (domain f) f"
   { fix x y
@@ -1287,7 +1287,7 @@ qed
 
 
 lemma convex_on_domain2:
-  "convex_on (domain f) f <-> (ALL S. convex_on S f)"
+  "convex_on (domain f) f \<longleftrightarrow> (ALL S. convex_on S f)"
 by (metis convex_on_domain convex_on_ereal_univ)
 
 
@@ -1305,7 +1305,7 @@ qed
 lemma infinite_convex_domain_iff:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "ALL x. (f x = \<infinity> | f x = -\<infinity>)"
-  shows "convex_on UNIV f <-> convex (domain f)"
+  shows "convex_on UNIV f \<longleftrightarrow> convex (domain f)"
 proof-
 { assume dom: "convex (domain f)"
   { fix x y assume "x:domain f" "y:domain f" moreover
@@ -1339,20 +1339,20 @@ qed
 
 definition
   proper_on :: "'a::real_vector set => ('a => ereal) => bool" where
-  "proper_on S f <-> ((ALL x:S. f x ~= -\<infinity>) & (EX x:S. f x ~= \<infinity>))"
+  "proper_on S f \<longleftrightarrow> ((ALL x:S. f x ~= -\<infinity>) & (EX x:S. f x ~= \<infinity>))"
 
 definition
   proper :: "('a::real_vector => ereal) => bool" where
-  "proper f <-> proper_on UNIV f"
+  "proper f \<longleftrightarrow> proper_on UNIV f"
 
 
 lemma proper_iff:
-  "proper f <-> ((ALL x. f x ~= -\<infinity>) & (EX x. f x ~= \<infinity>))"
+  "proper f \<longleftrightarrow> ((ALL x. f x ~= -\<infinity>) & (EX x. f x ~= \<infinity>))"
 unfolding proper_def proper_on_def by auto
 
 
 lemma improper_iff:
-  "~(proper f) <-> ((EX x. f x = -\<infinity>) | (ALL x. f x = \<infinity>))"
+  "~(proper f) \<longleftrightarrow> ((EX x. f x = -\<infinity>) | (ALL x. f x = \<infinity>))"
 using proper_iff by auto
 
 lemma ereal_MInf_plus[simp]: "-\<infinity> + x = (if x = \<infinity> then \<infinity> else -\<infinity>::ereal)"
@@ -1451,7 +1451,7 @@ proof-
       by (metis (full_types) UNIV_I lsc_at_open lsc_def open_UNIV)
     with * have "ALL x. (lsc_hull f) x = \<infinity>" by (metis lsc_hull_lsc)
   }
-  hence "(ALL x. f x = \<infinity>) <-> (ALL x. (lsc_hull f) x = \<infinity>)"
+  hence "(ALL x. f x = \<infinity>) \<longleftrightarrow> (ALL x. (lsc_hull f) x = \<infinity>)"
     by (metis ereal_infty_less_eq(1) lsc_hull_le)
   moreover have "(EX x. f x = -\<infinity>) --> (EX x. (lsc_hull f) x = -\<infinity>)"
     by (metis ereal_infty_less_eq2(2) lsc_hull_le)
@@ -1493,7 +1493,7 @@ by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_univ2
 lemma rel_interior_Epigraph:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "convex_on UNIV f"
-  shows "(x,z) : rel_interior (Epigraph UNIV f) <->
+  shows "(x,z) : rel_interior (Epigraph UNIV f) \<longleftrightarrow>
     (x : rel_interior (domain f) & f x < ereal z)"
 apply (subst rel_interior_projection[of _ "(%y. {z. (y, z) : Epigraph UNIV f})"])
 apply (metis assms convex_EpigraphI convex_UNIV convex_on_ereal_univ)
@@ -1507,7 +1507,7 @@ lemma rel_interior_EpigraphI:
     {(x,z) |x z. x : rel_interior (domain f) & f x < ereal z}"
 proof-
 { fix x z
-  have "(x,z):rel_interior (Epigraph UNIV f) <-> (x : rel_interior (domain f) & f x < ereal z)"
+  have "(x,z):rel_interior (Epigraph UNIV f) \<longleftrightarrow> (x : rel_interior (domain f) & f x < ereal z)"
      using rel_interior_Epigraph[of f x z] assms by auto
 } thus ?thesis by auto
 qed
@@ -1543,7 +1543,7 @@ qed
 lemma rel_interior_eq_between:
   fixes S T :: "('m::euclidean_space) set"
   assumes "convex S" "convex T"
-  shows "(rel_interior S = rel_interior T) <-> (rel_interior S <= T & T <= closure S)"
+  shows "(rel_interior S = rel_interior T) \<longleftrightarrow> (rel_interior S <= T & T <= closure S)"
 by (metis assms closure_eq_between convex_closure_rel_interior convex_rel_interior_closure)
 
 
@@ -1669,14 +1669,14 @@ have cEpi: "convex (Epigraph UNIV f)" by (metis assms convex_EpigraphI convex_UN
   moreover have "rel_interior (Epigraph UNIV f) Int M ~= {}" using r_def M_def by auto
   ultimately have *: "closure (Epigraph UNIV f) Int M = closure (Epigraph UNIV f Int M)"
     using convex_affine_closure_inter[of "Epigraph UNIV f" M] cEpi by auto
-  have "Epigraph UNIV f Int M = {x} <*> {m. f x <= ereal m}"
+  have "Epigraph UNIV f Int M = {x} \<times> {m. f x <= ereal m}"
     unfolding Epigraph_def M_def by auto
-  moreover have "closed({x} <*> {m. f x<= ereal m})" apply (subst closed_Times)
+  moreover have "closed({x} \<times> {m. f x<= ereal m})" apply (subst closed_Times)
     using closed_ereal_semiline by auto
-  ultimately have "{x} <*> {m. f x <= ereal m} = closure (Epigraph UNIV f) Int M"
+  ultimately have "{x} \<times> {m. f x <= ereal m} = closure (Epigraph UNIV f) Int M"
     by (metis "*" Int_commute closure_closed)
   also have "...=Epigraph UNIV (lsc_hull f) Int M" by (metis Int_commute epigraph_lsc_hull)
-  also have "...={x} <*> {m. ((lsc_hull f) x) <= ereal m}"
+  also have "...={x} \<times> {m. ((lsc_hull f) x) <= ereal m}"
     unfolding Epigraph_def M_def by auto
   finally have "{m. f x <= ereal m} = {m. lsc_hull f x <= ereal m}" by auto
   hence "f x = (lsc_hull f) x" using ereal_semiline_unique by auto
