@@ -38,24 +38,24 @@ subsection {* Lower and upper semicontinuity *}
 
 definition
   lsc_at :: "'a \<Rightarrow> ('a::topological_space \<Rightarrow> 'b::order_topology) \<Rightarrow> bool" where
-  "lsc_at x0 f \<longleftrightarrow> (\<forall>X l. X ----> x0 \<and> (f \<circ> X) ----> l \<longrightarrow> f x0 \<le> l)"
+  "lsc_at x0 f \<longleftrightarrow> (\<forall>X l. X \<longlonglongrightarrow> x0 \<and> (f \<circ> X) \<longlonglongrightarrow> l \<longrightarrow> f x0 \<le> l)"
 
 definition
   usc_at :: "'a \<Rightarrow> ('a::topological_space \<Rightarrow> 'b::order_topology) \<Rightarrow> bool" where
-  "usc_at x0 f \<longleftrightarrow> (\<forall>X l. X ----> x0 \<and> (f \<circ> X) ----> l \<longrightarrow> l \<le> f x0)"
+  "usc_at x0 f \<longleftrightarrow> (\<forall>X l. X \<longlonglongrightarrow> x0 \<and> (f \<circ> X) \<longlonglongrightarrow> l \<longrightarrow> l \<le> f x0)"
 
 lemma lsc_at_mem:
 assumes "lsc_at x0 f"
-assumes "x ----> x0"
-assumes "(f o x) ----> A"
+assumes "x \<longlonglongrightarrow> x0"
+assumes "(f o x) \<longlonglongrightarrow> A"
 shows "f x0 <= A"
 using assms lsc_at_def[of x0 f] by blast
 
 
 lemma usc_at_mem:
 assumes "usc_at x0 f"
-assumes "x ----> x0"
-assumes "(f o x) ----> A"
+assumes "x \<longlonglongrightarrow> x0"
+assumes "(f o x) \<longlonglongrightarrow> A"
 shows "f x0 >= A"
 using assms usc_at_def[of x0 f] by blast
 
@@ -69,10 +69,10 @@ proof-
   from this obtain S where S_def:
      "open S & f x0 : S & (ALL T. (open T & x0 : T) --> (EX x':T. f x' <= f x0 & f x' ~: S))" by metis
   def X == "{x'. f x' <= f x0 & f x' ~: S}" hence "x0 islimpt X" unfolding islimpt_def using S_def by auto
-  from this obtain x where x_def: "(ALL n. x n : X) & x ----> x0"
+  from this obtain x where x_def: "(ALL n. x n : X) & x \<longlonglongrightarrow> x0"
      using islimpt_sequential[of x0 X] by auto
-  hence not: "~(f o x) ----> (f x0)" unfolding tendsto_explicit using X_def S_def by auto
-  from compact_complete_linorder[of "f o x"] obtain l r where r_def: "subseq r & ((f o x) o r) ----> l" by auto
+  hence not: "~(f o x) \<longlonglongrightarrow> (f x0)" unfolding tendsto_explicit using X_def S_def by auto
+  from compact_complete_linorder[of "f o x"] obtain l r where r_def: "subseq r & ((f o x) o r) \<longlonglongrightarrow> l" by auto
   { assume "l : S" hence "EX N. ALL n>=N. f(x(r n)) : S"
        using r_def tendsto_explicit[of "f o x o r" l] S_def by auto
     hence False using x_def X_def by auto
@@ -82,14 +82,14 @@ proof-
   { assume "f x0 <= l" hence "f x0 = l" using l_prop by auto
     hence False using l_prop S_def by auto
   }
-  hence "EX x l. x ----> x0 & (f o x) ----> l & ~(f x0 <= l)"
+  hence "EX x l. x \<longlonglongrightarrow> x0 & (f o x) \<longlonglongrightarrow> l & ~(f x0 <= l)"
      apply(rule_tac x="x o r" in exI) apply(rule_tac x=l in exI)
      using r_def x_def by (auto simp add: o_assoc lim_subseq)
   hence "~?lhs" unfolding lsc_at_def by blast
 }
 moreover
 { assume "?rhs"
- { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
+ { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f o x) \<longlonglongrightarrow> A"
    { assume "A ~= f x0"
      from this obtain S V where SV_def: "open S & open V & f x0 : S & A : V & S Int V = {}"
         using hausdorff[of "f x0" A] by auto
@@ -266,7 +266,7 @@ by (metis inf_ereal_def le_iff_inf lsc_liminf_at)
 lemma lsc_imp_liminf:
 fixes f :: "'a::metric_space => ereal"
 assumes "lsc_at x0 f"
-assumes "x ----> x0"
+assumes "x \<longlonglongrightarrow> x0"
 shows "f x0 <= liminf (f o x)"
 proof (cases "f x0")
   case PInf then show ?thesis using assms lsc_at_PInfty[of f x0] lim_imp_Liminf[of _ "f \<circ> x"]
@@ -287,11 +287,11 @@ qed auto
 
 lemma lsc_liminf:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (!x. x ----> x0 --> f x0 <= liminf (f o x))"
+shows "lsc_at x0 f \<longleftrightarrow> (!x. x \<longlonglongrightarrow> x0 --> f x0 <= liminf (f o x))"
 (is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
-  { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
+  { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f o x) \<longlonglongrightarrow> A"
     hence "f x0 <= A" using `?rhs` lim_imp_Liminf[of sequentially] by auto
   } hence "?lhs" unfolding lsc_at_def by blast
 } from this show ?thesis using lsc_imp_liminf by auto
@@ -300,19 +300,19 @@ qed
 
 lemma lsc_sequentially:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (ALL x c. x ----> x0 & (ALL n. f(x n)<=c) --> f(x0)<=c)"
+shows "lsc_at x0 f \<longleftrightarrow> (ALL x c. x \<longlonglongrightarrow> x0 & (ALL n. f(x n)<=c) --> f(x0)<=c)"
 (is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
-  { fix x l assume "x ----> x0" "(f o x) ----> l"
+  { fix x l assume "x \<longlonglongrightarrow> x0" "(f o x) \<longlonglongrightarrow> l"
     { assume "l = \<infinity>" hence "f x0 <= l" by auto }
     moreover
     { assume "l = -\<infinity>"
       { fix B :: real obtain N where N_def: "ALL n>=N. f(x n) <= ereal B"
-           using Lim_MInfty[of "f o x"] `(f o x) ----> l` `l = -\<infinity>` by auto
+           using Lim_MInfty[of "f o x"] `(f o x) \<longlonglongrightarrow> l` `l = -\<infinity>` by auto
         def g == "(%n. if n>=N then x n else x N)"
-        hence "g ----> x0"
-          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x ----> x0`])
+        hence "g \<longlonglongrightarrow> x0"
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
              (auto simp: eventually_sequentially)
         moreover have "ALL n. f(g n) <= ereal B" using g_def N_def by auto
         ultimately have "f x0 <= ereal B" using `?rhs` by auto
@@ -323,10 +323,10 @@ proof-
       { fix e assume e_def: "(e :: ereal)>0"
         from this obtain N where N_def: "ALL n>=N. f(x n) : {l - e <..< l + e}"
            apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
-           using fin e_def ereal_between `(f o x) ----> l` by auto
+           using fin e_def ereal_between `(f o x) \<longlonglongrightarrow> l` by auto
         def g == "(%n. if n>=N then x n else x N)"
-        hence "g ----> x0"
-          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x ----> x0`])
+        hence "g \<longlonglongrightarrow> x0"
+          by (intro filterlim_cong[THEN iffD1, OF refl refl _ `x \<longlonglongrightarrow> x0`])
              (auto simp: eventually_sequentially)
         moreover have "ALL n. f(g n) <= l + e" using g_def N_def by auto
         ultimately have "f x0 <= l + e" using `?rhs` by auto
@@ -336,7 +336,7 @@ proof-
 }
 moreover
 { assume lsc: "lsc_at x0 f"
-  { fix x c assume xc_def: "x ----> x0 & (ALL n. f(x n)<=c)"
+  { fix x c assume xc_def: "x \<longlonglongrightarrow> x0 & (ALL n. f(x n)<=c)"
     hence "liminf (f o x) <= c" using Limsup_bounded[of sequentially "f o x" c] Liminf_le_Limsup[of sequentially "f o x"] by auto
     hence "f x0 <= c" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
   } hence "?rhs" by auto
@@ -346,18 +346,18 @@ qed
 
 lemma lsc_sequentially_gen:
 fixes f :: "'a::metric_space => ereal"
-shows "lsc_at x0 f \<longleftrightarrow> (ALL x c c0. x ----> x0 & c ----> c0 & (ALL n. f(x n)<=c n) --> f(x0)<=c0)"
+shows "lsc_at x0 f \<longleftrightarrow> (ALL x c c0. x \<longlonglongrightarrow> x0 & c \<longlonglongrightarrow> c0 & (ALL n. f(x n)<=c n) --> f(x0)<=c0)"
 (is "?lhs \<longleftrightarrow> ?rhs")
 proof-
 { assume "?rhs"
-  { fix x c0 assume a: "x ----> x0 & (ALL n. f (x n) <= c0)"
-    def c == "(%n::nat. c0)" hence "c ----> c0" by auto
+  { fix x c0 assume a: "x \<longlonglongrightarrow> x0 & (ALL n. f (x n) <= c0)"
+    def c == "(%n::nat. c0)" hence "c \<longlonglongrightarrow> c0" by auto
     hence "f(x0)<=c0" using `?rhs`[rule_format, of x c c0] using a c_def by auto
   } hence "?lhs" using lsc_sequentially[of x0 f] by auto
 }
 moreover
 { assume lsc: "lsc_at x0 f"
-  { fix x c c0 assume xc_def: "x ----> x0 & c ----> c0 & (ALL n. f(x n)<=c n)"
+  { fix x c c0 assume xc_def: "x \<longlonglongrightarrow> x0 & c \<longlonglongrightarrow> c0 & (ALL n. f(x n)<=c n)"
     hence "liminf (f o x) <= c0" using Liminf_mono[of "f o x" c sequentially] lim_imp_Liminf[of sequentially] by auto
     hence "f x0 <= c0" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
   } hence "?rhs" by auto
@@ -368,7 +368,7 @@ qed
 lemma lsc_sequentially_mem:
 fixes f :: "'a::metric_space => ereal"
 assumes "lsc_at x0 f"
-assumes "x ----> x0" "c ----> c0"
+assumes "x \<longlonglongrightarrow> x0" "c \<longlonglongrightarrow> c0"
 assumes "ALL n. f(x n)<=c n"
 shows "f(x0)<=c0"
 using lsc_sequentially_gen[of x0 f] assms by auto
@@ -379,19 +379,19 @@ fixes f :: "'a::metric_space => ereal"
 shows "lsc_at x0 (%x. -f x) \<longleftrightarrow> usc_at x0 f"
 proof-
 { assume lsc: "lsc_at x0 (%x. -f x)"
-  { fix x A assume x_def: "x ----> x0" "(f o x) ----> A"
-    hence "(%i. - f (x i)) ----> -A" using tendsto_uminus_ereal[of "f o x" A] by auto
-    hence "((%x. - f x) o x) ----> -A" unfolding o_def by auto
+  { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "(f o x) \<longlonglongrightarrow> A"
+    hence "(%i. - f (x i)) \<longlonglongrightarrow> -A" using tendsto_uminus_ereal[of "f o x" A] by auto
+    hence "((%x. - f x) o x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence " - f x0 <= - A" apply (subst lsc_at_mem[of x0 "(%x. -f x)" x]) using lsc x_def by auto
     hence "f x0 >= A" by auto
   } hence "usc_at x0 f" unfolding usc_at_def by auto
 }
 moreover
 { assume usc: "usc_at x0 f"
-  { fix x A assume x_def: "x ----> x0" "((%x. - f x) o x) ----> A"
-    hence "(%i. - f (x i)) ----> A" unfolding o_def by auto
-    hence "(%i. f (x i)) ----> - A" using tendsto_uminus_ereal[of "(%i. - f (x i))" A] by auto
-    hence "(f o x) ----> -A" unfolding o_def by auto
+  { fix x A assume x_def: "x \<longlonglongrightarrow> x0" "((%x. - f x) o x) \<longlonglongrightarrow> A"
+    hence "(%i. - f (x i)) \<longlonglongrightarrow> A" unfolding o_def by auto
+    hence "(%i. f (x i)) \<longlonglongrightarrow> - A" using tendsto_uminus_ereal[of "(%i. - f (x i))" A] by auto
+    hence "(f o x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence "f x0 >= - A" apply (subst usc_at_mem[of x0 "f" x]) using usc x_def by auto
     hence "-f x0 <= A" unfolding ereal_uminus_le_reorder by auto
   } hence "lsc_at x0 (%x. -f x)" unfolding lsc_at_def by auto
@@ -401,13 +401,13 @@ qed
 
 lemma usc_limsup:
 fixes f :: "'a::metric_space => ereal"
-shows "usc_at x0 f \<longleftrightarrow> (!x. x ----> x0 --> f x0 >= limsup (f o x))"
+shows "usc_at x0 f \<longleftrightarrow> (!x. x \<longlonglongrightarrow> x0 --> f x0 >= limsup (f o x))"
 (is "?lhs \<longleftrightarrow> ?rhs")
 proof-
-have "usc_at x0 f \<longleftrightarrow> (ALL x. x ----> x0 --> - f x0 <= liminf ((%x. - f x) o x))"
+have "usc_at x0 f \<longleftrightarrow> (ALL x. x \<longlonglongrightarrow> x0 --> - f x0 <= liminf ((%x. - f x) o x))"
   using lsc_uminus[of x0 f] lsc_liminf[of x0 "(%x. - f x)"] by auto
 moreover
-{ fix x assume "x ----> x0"
+{ fix x assume "x \<longlonglongrightarrow> x0"
   have "(-f x0 <= -limsup (f o x)) \<longleftrightarrow> (-f x0 <= liminf ((%x. - f x) o x))"
      using ereal_Liminf_uminus[of _ "f o x"] unfolding o_def by auto
   hence "(f x0 >= limsup (f o x)) \<longleftrightarrow> (-f x0 <= liminf ((%x. - f x) o x))"
@@ -419,7 +419,7 @@ qed
 lemma usc_imp_limsup:
   fixes f :: "'a::metric_space => ereal"
   assumes "usc_at x0 f"
-  assumes "x ----> x0"
+  assumes "x \<longlonglongrightarrow> x0"
   shows "f x0 >= limsup (f o x)"
 using assms usc_limsup[of x0 f] by auto
 
@@ -440,20 +440,20 @@ fixes f :: "'a::metric_space => ereal"
 shows "continuous (at x0) f \<longleftrightarrow> (lsc_at x0 f) & (usc_at x0 f)"
 proof-
 { assume a: "continuous (at x0) f"
-  { fix x assume "x ----> x0"
-    hence "(f o x) ----> f x0" using a continuous_imp_tendsto[of x0 f x] by auto
+  { fix x assume "x \<longlonglongrightarrow> x0"
+    hence "(f o x) \<longlonglongrightarrow> f x0" using a continuous_imp_tendsto[of x0 f x] by auto
     hence "liminf (f o x) = f x0 & limsup (f o x) = f x0"
        using lim_imp_Liminf[of sequentially] lim_imp_Limsup[of sequentially] by auto
   } hence "lsc_at x0 f & usc_at x0 f" unfolding lsc_liminf usc_limsup by auto
 }
 moreover
 { assume a: "(lsc_at x0 f) & (usc_at x0 f)"
-  { fix x assume "x ----> x0"
+  { fix x assume "x \<longlonglongrightarrow> x0"
     hence "limsup (f o x) <= f x0" using a unfolding usc_limsup by auto
-    moreover have "... <= liminf (f o x)" using a `x ----> x0` unfolding lsc_liminf by auto
+    moreover have "... <= liminf (f o x)" using a `x \<longlonglongrightarrow> x0` unfolding lsc_liminf by auto
     ultimately have "limsup (f o x) = f x0 & liminf (f o x) = f x0"
        using Liminf_le_Limsup[of sequentially "f o x"] by auto
-    hence "(f o x) ----> f x0" using Liminf_eq_Limsup[of sequentially] by auto
+    hence "(f o x) \<longlonglongrightarrow> f x0" using Liminf_eq_Limsup[of sequentially] by auto
   } hence "continuous (at x0) f"
     using continuous_at_sequentially[of x0 f] by auto
 } ultimately show ?thesis by blast
@@ -464,7 +464,7 @@ lemma continuous_lsc_compose:
   assumes "lsc_at (g x0) f" "continuous (at x0) g"
   shows "lsc_at x0 (f o g)"
 proof-
-{ fix x L assume "x ----> x0" "(f o g o x) ----> L"
+{ fix x L assume "x \<longlonglongrightarrow> x0" "(f o g o x) \<longlonglongrightarrow> L"
   hence "f(g x0) <= L" apply (subst lsc_at_mem[of "g x0" f "g o x" L])
      using assms continuous_imp_tendsto[of x0 g x] unfolding o_def by auto
 } from this show ?thesis unfolding lsc_at_def by auto
@@ -531,16 +531,16 @@ fixes f :: "'a::metric_space => ereal"
 shows "(lsc f \<longleftrightarrow> (ALL y. closed {x. f(x)<=y})) & (lsc f \<longleftrightarrow> closed (Epigraph UNIV f))"
 proof-
 { assume "lsc f"
-  { fix z z0 assume a: "ALL n. z n : (Epigraph UNIV f) & z ----> z0"
+  { fix z z0 assume a: "ALL n. z n : (Epigraph UNIV f) & z \<longlonglongrightarrow> z0"
     { fix n have "z n : (Epigraph UNIV f)" using a by auto
       hence "f (fst (z n)) <= ereal(snd (z n))" using a unfolding Epigraph_def by auto
       hence "EX xn cn. z n = (xn, cn) & f(xn)<=ereal cn"
          apply (rule_tac x="fst (z n)" in exI) apply (rule_tac x="snd (z n)" in exI) by auto
     } from this obtain x c where xc_def: "ALL n. z n = (x n, c n) & f(x n)<=ereal (c n)" by metis
-    from this a have "EX x0 c0. z0 = (x0, c0) & x ----> x0 & c ----> c0"
+    from this a have "EX x0 c0. z0 = (x0, c0) & x \<longlonglongrightarrow> x0 & c \<longlonglongrightarrow> c0"
        apply (rule_tac x="fst z0" in exI) apply (rule_tac x="snd z0" in exI)
        using tendsto_fst[of z z0] tendsto_snd[of z z0] by auto
-    from this obtain x0 c0 where xc0_def: "z0 = (x0, c0) & x ----> x0 & c ----> c0" by auto
+    from this obtain x0 c0 where xc0_def: "z0 = (x0, c0) & x \<longlonglongrightarrow> x0 & c \<longlonglongrightarrow> c0" by auto
     hence "f(x0)<=ereal c0" apply (subst lsc_sequentially_mem[of x0 f x "ereal o c" "ereal c0"])
        using `lsc f` xc_def unfolding lsc_def unfolding o_def by auto
     hence "z0 : (Epigraph UNIV f)" unfolding Epigraph_def using xc0_def by auto
@@ -548,10 +548,10 @@ proof-
 }
 moreover
 { assume "closed (Epigraph UNIV f)"
-     hence *: "ALL x l. (ALL n. f (fst (x n)) <= ereal(snd (x n))) & x ----> l -->
+     hence *: "ALL x l. (ALL n. f (fst (x n)) <= ereal(snd (x n))) & x \<longlonglongrightarrow> l -->
      f (fst l) <= ereal(snd l)" unfolding Epigraph_def closed_sequential_limits by auto
   { fix r :: real
-    { fix z z0 assume a: "ALL n. f(z n)<=ereal r & z ----> z0"
+    { fix z z0 assume a: "ALL n. f(z n)<=ereal r & z \<longlonglongrightarrow> z0"
       hence "f(z0)<=ereal r" using *[rule_format, of "(%n. (z n,r))" "(z0,r)"]
          tendsto_Pair[of z z0] by auto
     } hence "closed {x. f(x)<=ereal r}" by (simp add: closed_sequential_limits)
@@ -560,16 +560,16 @@ moreover
 moreover
 { assume a: "ALL y. closed {x. f(x)<= y}"
   { fix x0
-    { fix x l assume "x ----> x0" "(f o x) ----> l"
+    { fix x l assume "x \<longlonglongrightarrow> x0" "(f o x) \<longlonglongrightarrow> l"
       { assume "l = \<infinity>" hence "f x0 <= l" by auto }
       moreover
       { assume mi: "l = -\<infinity>"
         { fix B :: real
           obtain N where N_def: "ALL n>=N. f(x n)<=ereal B"
-             using mi `(f o x) ----> l` Lim_MInfty[of "f o x"] by auto
+             using mi `(f o x) \<longlonglongrightarrow> l` Lim_MInfty[of "f o x"] by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "ALL n>=N1. dist (x n) x0 < d"
-               using `x ----> x0` unfolding lim_sequentially by auto
+               using `x \<longlonglongrightarrow> x0` unfolding lim_sequentially by auto
             hence "EX y. dist y x0 < d & y : {x. f(x)<=ereal B}"
               apply (rule_tac x="x (max N N1)" in exI) using N_def by auto
           }
@@ -582,11 +582,11 @@ moreover
         { fix e assume e_def: "(e :: ereal)>0"
           from this obtain N where N_def: "ALL n>=N. f(x n) : {l - e <..< l + e}"
              apply (subst tendsto_obtains_N[of "f o x" l "{l - e <..< l + e}"])
-             using fin e_def ereal_between `(f o x) ----> l` by auto
+             using fin e_def ereal_between `(f o x) \<longlonglongrightarrow> l` by auto
           hence *: "ALL n>=N. x n : {x. f(x)<=l+e}" using N_def by auto
           { fix d assume "(d::real)>0"
             from this obtain N1 where N1_def: "ALL n>=N1. dist (x n) x0 < d"
-               using `x ----> x0` unfolding lim_sequentially by auto
+               using `x \<longlonglongrightarrow> x0` unfolding lim_sequentially by auto
             hence "EX y. dist y x0 < d & y : {x. f(x)<=l+e}"
               apply (rule_tac x="x (max N N1)" in exI) using * by auto
           }

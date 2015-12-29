@@ -28,13 +28,13 @@ for a graph property iff
 
 definition is_threshold :: "ugraph_class \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" where
 "is_threshold c t \<equiv> ugraph_property c \<and> (\<forall>p. nonzero_prob_fun p \<longrightarrow>
-  (p \<lless> t \<longrightarrow> prob_in_class p c ----> 0) \<and>
-  (t \<lless> p \<longrightarrow> prob_in_class p c ----> 1))"
+  (p \<lless> t \<longrightarrow> prob_in_class p c \<longlonglongrightarrow> 0) \<and>
+  (t \<lless> p \<longrightarrow> prob_in_class p c \<longlonglongrightarrow> 1))"
 
 lemma is_thresholdI[intro]:
   assumes "ugraph_property c"
-  assumes "\<And>p. \<lbrakk> nonzero_prob_fun p; p \<lless> t \<rbrakk> \<Longrightarrow> prob_in_class p c ----> 0"
-  assumes "\<And>p. \<lbrakk> nonzero_prob_fun p; t \<lless> p \<rbrakk> \<Longrightarrow> prob_in_class p c ----> 1"
+  assumes "\<And>p. \<lbrakk> nonzero_prob_fun p; p \<lless> t \<rbrakk> \<Longrightarrow> prob_in_class p c \<longlonglongrightarrow> 0"
+  assumes "\<And>p. \<lbrakk> nonzero_prob_fun p; t \<lless> p \<rbrakk> \<Longrightarrow> prob_in_class p c \<longlonglongrightarrow> 1"
   shows "is_threshold c t"
 using assms unfolding is_threshold_def by blast
 

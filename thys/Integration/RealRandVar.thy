@@ -232,7 +232,7 @@ proof
     }
     also
     { fix w
-      have "(\<lambda>n. inverse (real (Suc n))) ----> 0" 
+      have "(\<lambda>n. inverse (real (Suc n))) \<longlonglongrightarrow> 0" 
         by (rule LIMSEQ_inverse_real_of_nat)
 
       also assume "f w < a"
@@ -281,7 +281,7 @@ lemma assumes sigma: "sigma_algebra A" and ge: "\<forall>a. {w. a \<le> f w} \<i
     }
     also
     { fix w
-      have "(\<lambda>n. inverse (real (Suc n))) ----> 0" by (rule LIMSEQ_inverse_real_of_nat)
+      have "(\<lambda>n. inverse (real (Suc n))) \<longlonglongrightarrow> 0" by (rule LIMSEQ_inverse_real_of_nat)
       
       also assume "a < f w"
       hence "0 < f w - a" by simp
@@ -698,7 +698,7 @@ proof -
                                      
       also 
       { assume "\<And>i. u i w \<le> a"
-        also from up have "(\<lambda>n. u n w) ----> f w" 
+        also from up have "(\<lambda>n. u n w) \<longlonglongrightarrow> f w" 
           by (simp only: real_mon_conv)
         ultimately have "f w \<le> a" 
           by (simp add: LIMSEQ_le_const2)

@@ -25,16 +25,16 @@ lemma power_series_tendsto_at_left:
   shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) ---> (\<Sum>n. ereal (f n))) (at_left (1::real))"
 proof (intro tendsto_at_left_sequentially)
   show "0 < (1::real)" by simp
-  fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S ----> 1" "incseq S"
+  fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S \<longlonglongrightarrow> 1" "incseq S"
   then have S_nonneg: "\<And>i. 0 \<le> S i" by (auto intro: less_imp_le)
 
-  have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) ----> (\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV)"
+  have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) \<longlonglongrightarrow> (\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV)"
   proof (rule nn_integral_LIMSEQ)
     show "incseq (\<lambda>i n. ereal (f n * S i^n))"
       using S by (auto intro!: mult_mono power_mono nonneg simp: incseq_def le_fun_def less_imp_le)
-    fix n have "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n * 1^n)"
+    fix n have "(\<lambda>i. ereal (f n * S i^n)) \<longlonglongrightarrow> ereal (f n * 1^n)"
       by (intro tendsto_intros lim_ereal[THEN iffD2] S)
-    then show "(\<lambda>i. ereal (f n * S i^n)) ----> ereal (f n)"
+    then show "(\<lambda>i. ereal (f n * S i^n)) \<longlonglongrightarrow> ereal (f n)"
       by simp
   qed (auto simp: S_nonneg intro!: mult_nonneg_nonneg nonneg)
   also have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) = (\<lambda>i. \<Sum>n. f n * S i^n)"
@@ -43,7 +43,7 @@ proof (intro tendsto_at_left_sequentially)
               zero_le_power suminf_ereal_finite summable S)+
   also have "(\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV) = (\<Sum>n. ereal (f n))"
     by (simp add: nn_integral_count_space_nat nonneg)
-  finally show "(\<lambda>n. ereal (\<Sum>na. f na * S n ^ na)) ----> (\<Sum>n. ereal (f n))" .
+  finally show "(\<lambda>n. ereal (\<Sum>na. f na * S n ^ na)) \<longlonglongrightarrow> (\<Sum>n. ereal (f n))" .
 qed
 
 lemma eventually_at_left_1: "(\<And>z::real. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> P z) \<Longrightarrow> eventually P (at_left 1)"
@@ -697,7 +697,7 @@ proof -
   note H'_eq = this
 
   { fix x y
-    have "?H' x y ----> measure (T x) (\<Inter>i. H' y i)"
+    have "?H' x y \<longlonglongrightarrow> measure (T x) (\<Inter>i. H' y i)"
       apply (rule T.finite_Lim_measure_decseq)
       apply safe
       apply simp
@@ -706,21 +706,21 @@ proof -
       done
     also have "(\<Inter>i. H' y i) = {\<omega>\<in>space (T x). alw (ev (HLD {y})) \<omega>}"
       by (auto simp: H'_def scount_infinite_iff[symmetric]) (metis Suc_ile_eq enat.exhaust neq_iff)
-    finally have "?H' x y ----> H x y"
+    finally have "?H' x y \<longlonglongrightarrow> H x y"
       unfolding H_def . }
   note H'_lim = this
 
   from H'_lim[of s s, THEN LIMSEQ_Suc]
-  have "(\<lambda>n. U s s ^ Suc n) ----> H s s"
+  have "(\<lambda>n. U s s ^ Suc n) \<longlonglongrightarrow> H s s"
     by (simp add: H'_eq)
-  then have lim_H: "(\<lambda>n. U s s ^ n) ----> H s s"
+  then have lim_H: "(\<lambda>n. U s s ^ n) \<longlonglongrightarrow> H s s"
     by (rule LIMSEQ_imp_Suc)
 
-  have "U s s < 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) ----> 0"
+  have "U s s < 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) \<longlonglongrightarrow> 0"
     by (rule LIMSEQ_realpow_zero) (simp_all add: U_def measure_nonneg)
   with lim_H have "U s s < 1 \<Longrightarrow> H s s = 0"
     by (blast intro: LIMSEQ_unique)
-  moreover have "U s s = 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) ----> 1"
+  moreover have "U s s = 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) \<longlonglongrightarrow> 1"
     by (simp add: tendsto_const)
   with lim_H have "U s s = 1 \<Longrightarrow> H s s = 1"
     by (blast intro: LIMSEQ_unique)
@@ -729,9 +729,9 @@ proof -
     by (metis one_neq_zero)+
 
   from H'_lim[of s t, THEN LIMSEQ_Suc] H'_Suc[of s]
-  have "(\<lambda>n. U s t * ?H' t t n) ----> H s t"
+  have "(\<lambda>n. U s t * ?H' t t n) \<longlonglongrightarrow> H s t"
     by simp
-  moreover have "(\<lambda>n. U s t * ?H' t t n) ----> U s t * H t t"
+  moreover have "(\<lambda>n. U s t * ?H' t t n) \<longlonglongrightarrow> U s t * H t t"
     by (intro tendsto_intros H'_lim)
   ultimately show "H s t = U s t * H t t"
     by (blast intro: LIMSEQ_unique)
@@ -1035,9 +1035,9 @@ lemma summable_gf_U':
 proof -
   have "summable (\<lambda>n. n * \<bar>z\<bar> ^ n)"
   proof (rule root_test_convergence)
-    have "(\<lambda>n. root n n * \<bar>z\<bar>) ----> 1 * \<bar>z\<bar>"
+    have "(\<lambda>n. root n n * \<bar>z\<bar>) \<longlonglongrightarrow> 1 * \<bar>z\<bar>"
       by (intro tendsto_intros LIMSEQ_root)
-    then show "(\<lambda>n. root n (norm (n * \<bar>z\<bar> ^ n))) ----> \<bar>z\<bar>"
+    then show "(\<lambda>n. root n (norm (n * \<bar>z\<bar> ^ n))) \<longlonglongrightarrow> \<bar>z\<bar>"
       by (rule filterlim_cong[THEN iffD1, rotated 3])
          (auto intro!: exI[of _ 1]
                simp add: abs_mult u_nonneg real_root_mult power_abs eventually_sequentially real_root_power)
@@ -1298,7 +1298,7 @@ lemma stat_subprob:
 proof -
   let ?L = "at_left (1::real)"
   from finite_sequence_to_countable_set[OF `countable C`] guess A . note A = this
-  then have "(\<lambda>n. emeasure (stat C) (A n)) ----> emeasure (stat C) (\<Union>i. A i)"
+  then have "(\<lambda>n. emeasure (stat C) (A n)) \<longlonglongrightarrow> emeasure (stat C) (\<Union>i. A i)"
     by (intro Lim_emeasure_incseq) (auto simp: incseq_Suc_iff)
   then have "emeasure (stat C) (\<Union>i. A i) \<le> 1"
   proof (rule LIMSEQ_le[OF _ tendsto_const], intro exI allI impI)
@@ -1532,7 +1532,7 @@ proof -
     proof (rule ccontr)
       assume contr: "\<not> (\<exists>A \<subseteq> C. finite A \<and> 1 - e < measure N A)"
       from finite_sequence_to_countable_set[OF `countable C`] guess F . note F = this
-      then have *: "(\<lambda>n. measure N (F n)) ----> measure N (\<Union>i. F i)"
+      then have *: "(\<lambda>n. measure N (F n)) \<longlonglongrightarrow> measure N (\<Union>i. F i)"
         by (intro measure_pmf.finite_Lim_measure_incseq) (auto simp: incseq_Suc_iff)
       with F contr have "measure N (\<Union>i. F i) \<le> 1 - e"
         by (intro LIMSEQ_le[OF * tendsto_const]) (auto simp: not_less)
@@ -2132,8 +2132,8 @@ begin
 lemma stationary_distribution_imp_limit:
   assumes C: "aperiodic C" "essential_class C" "countable C" and N: "stationary_distribution N" "N \<subseteq> C"
   assumes [simp]: "y \<in> C"
-  shows "(\<lambda>n. \<integral>x. \<bar>p y x n - pmf N x\<bar> \<partial>count_space C) ----> 0"
-    (is "?L ----> 0")
+  shows "(\<lambda>n. \<integral>x. \<bar>p y x n - pmf N x\<bar> \<partial>count_space C) \<longlonglongrightarrow> 0"
+    (is "?L \<longlonglongrightarrow> 0")
 proof -
   from `essential_class C` have C_comm: "C \<in> UNIV // communicating"
     by (simp add: essential_class_def)
@@ -2388,14 +2388,14 @@ proof -
   finally have "\<P>(\<omega> in KN.T (y, None). alw (not (HLD D)) \<omega>) = 0"
     by (intro antisym measure_nonneg)
 
-  have "(\<lambda>n. \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) ---->
+  have "(\<lambda>n. \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) \<longlonglongrightarrow>
     measure (KN.T (y, None)) (\<Inter>n. {\<omega>\<in>space (KN.T (y, None)). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)})"
     by (rule KN.T.finite_Lim_measure_decseq) (auto simp: decseq_def)
   also have "(\<Inter>n. {\<omega>\<in>space (KN.T (y, None)). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)}) =
     {\<omega>\<in>space (KN.T (y, None)). alw (not (HLD D)) \<omega>}"
     by (auto simp: not_ev_iff[symmetric] ev_iff_ev_at)
   also have "\<P>(\<omega> in KN.T (y, None). alw (not (HLD D)) \<omega>) = 0" by fact
-  finally have *: "(\<lambda>n. 2 * \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) ----> 0"
+  finally have *: "(\<lambda>n. 2 * \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) \<longlonglongrightarrow> 0"
     by (intro tendsto_eq_intros) auto
 
   show ?thesis
@@ -2410,12 +2410,12 @@ lemma stationary_distribution_imp_p_limit:
   assumes "aperiodic C" "essential_class C" and [simp]: "countable C"
   assumes N: "stationary_distribution N" "N \<subseteq> C"
   assumes [simp]: "x \<in> C" "y \<in> C"
-  shows "p x y ----> pmf N y"
+  shows "p x y \<longlonglongrightarrow> pmf N y"
 proof -
   def D \<equiv> "\<lambda>y n. \<bar>p x y n - pmf N y\<bar>"
 
   from stationary_distribution_imp_limit[OF assms(1,2,3,4,5,6)]
-  have INT: "(\<lambda>n. \<integral>y. D y n \<partial>count_space C) ----> 0"
+  have INT: "(\<lambda>n. \<integral>y. D y n \<partial>count_space C) \<longlonglongrightarrow> 0"
     unfolding D_def .
 
   { fix n
@@ -2430,7 +2430,7 @@ proof -
 
   have D_nonneg: "\<And>n. 0 \<le> D y n" by (simp add: D_def)
 
-  have "D y ----> 0"
+  have "D y \<longlonglongrightarrow> 0"
     by (rule tendsto_sandwich[OF _ _ tendsto_const INT])
        (auto simp: eventually_sequentially * D_nonneg)
   then show ?thesis

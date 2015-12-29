@@ -1028,17 +1028,17 @@ proof cases
       moreover
       from Bun have "(\<lambda>n. A j \<inter> B n)\<up>(A j)" 
         by (auto simp add: set_mon_conv)
-      ultimately have "(\<lambda>n. measure M (A j \<inter> B n)) ----> measure M (A j)" 
+      ultimately have "(\<lambda>n. measure M (A j \<inter> B n)) \<longlonglongrightarrow> measure M (A j)" 
         by (rule measure_mon_conv)
       
-      hence "(\<lambda>n. a j * measure M (A j \<inter> B n)) ----> a j * measure M (A j)" 
+      hence "(\<lambda>n. a j * measure M (A j \<inter> B n)) \<longlonglongrightarrow> a j * measure M (A j)" 
         by (simp add: tendsto_const tendsto_mult)
     }
     hence "(\<lambda>n. \<Sum>j\<in>S. a j * measure M (A j \<inter> B n)) 
-      ----> (\<Sum>j\<in>S. a j * measure M (A j))" 
+      \<longlonglongrightarrow> (\<Sum>j\<in>S. a j * measure M (A j))" 
       by (rule tendsto_setsum)
     hence "(\<lambda>n. z* (\<Sum>j\<in>S. a j * measure M (A j \<inter> B n)))
-      ----> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
+      \<longlonglongrightarrow> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
       by (simp add: tendsto_const tendsto_mult)
     
     with 1 xy base have "z*r \<le> y" 
@@ -1371,15 +1371,15 @@ proof -
       } 
       hence "\<exists>N. \<forall>m. N \<le> m \<longrightarrow> u m n t \<le> mu u m t"
         by blast
-      also from uf have "(\<lambda>m. u m n t) ----> f n t" 
+      also from uf have "(\<lambda>m. u m n t) \<longlonglongrightarrow> f n t" 
         by (simp add: realfun_mon_conv_iff real_mon_conv)
       moreover 
-      from conv have "(\<lambda>n. mu u n t) ----> l"
+      from conv have "(\<lambda>n. mu u n t) \<longlonglongrightarrow> l"
         by (simp add: real_mon_conv)
       ultimately have "f n t \<le> l" 
         by (simp add: LIMSEQ_le)
     } 
-    also from fh have "(\<lambda>n. f n t) ----> h t" 
+    also from fh have "(\<lambda>n. f n t) \<longlonglongrightarrow> h t" 
       by (simp add: realfun_mon_conv_iff real_mon_conv)
     ultimately have "h t \<le> l" 
       by (simp add: LIMSEQ_le_const2)
@@ -1475,7 +1475,7 @@ proof cases
       hence "nonnegative (u n)" by (rule sfis_nn)
       hence "0 \<le> u n t" by (simp add: nonnegative_def)
     }
-    also from base have "(\<lambda>n. u n t)---->f t" by (simp add: realfun_mon_conv_iff real_mon_conv)
+    also from base have "(\<lambda>n. u n t)\<longlonglongrightarrow>f t" by (simp add: realfun_mon_conv_iff real_mon_conv)
     ultimately have "0 \<le> f t" by (simp add: LIMSEQ_le_const)
   } thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)(*>*)
@@ -1805,9 +1805,9 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       with uSuc obtain c where n0mc: "(\<lambda>n. u (n+n0) t)\<up>c" and cle: "c \<le> f t"
         by fast
 
-      from n0mc have "(\<lambda>n. u (n+n0) t) ----> c"
+      from n0mc have "(\<lambda>n. u (n+n0) t) \<longlonglongrightarrow> c"
         by (simp add: real_mon_conv)
-      hence lim: "(\<lambda>n. u n t) ----> c"
+      hence lim: "(\<lambda>n. u n t) \<longlonglongrightarrow> c"
         by (subst limseq_shift_iff[THEN sym])
 
       have "\<forall>y. \<exists>N. \<forall>n. N \<le> n \<longrightarrow> y < (2::real)^n"
@@ -1829,13 +1829,13 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
         thus "\<exists>N. \<forall>n. N \<le> n \<longrightarrow> y < (2::real)^n"
           by blast
       qed
-      hence "(\<lambda>n. inverse ((2::real)^n)) ----> 0"
+      hence "(\<lambda>n. inverse ((2::real)^n)) \<longlonglongrightarrow> 0"
         by (rule LIMSEQ_inverse_zero)
-      with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) ----> c+0"
+      with lim have "(\<lambda>n. u n t + inverse ((2::real)^n)) \<longlonglongrightarrow> c+0"
         by (rule tendsto_add)
-      hence "(\<lambda>n. u n t + 1/(2::real)^n) ----> c"
+      hence "(\<lambda>n. u n t + 1/(2::real)^n) \<longlonglongrightarrow> c"
         by (simp add: divide_inverse)
-      hence "(\<lambda>n. u (n+n0) t + 1/(2::real)^(n+n0)) ----> c"
+      hence "(\<lambda>n. u (n+n0) t + 1/(2::real)^(n+n0)) \<longlonglongrightarrow> c"
         by (subst limseq_shift_iff)
       also from pro fless have "\<And>n. f t \<le> u (n+n0) t + 1 / 2 ^ (n+n0)"
         by (simp add: order_le_less)
@@ -1844,7 +1844,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       with cle have "c = f t" 
         by simp
 
-      with lim have "(\<lambda>n. u n t) ----> f t"
+      with lim have "(\<lambda>n. u n t) \<longlonglongrightarrow> f t"
         by simp
 
       with uSuc have "(\<lambda>n. u n t)\<up> f t"

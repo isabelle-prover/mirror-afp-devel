@@ -1877,7 +1877,7 @@ qed
 subsection {* Continuous Generalization *}
 
 lemma LIMSEQ_minus_fract_mult:
-  "(\<lambda>n. r * (1 - 1 / real (Suc (Suc n)))) ----> r"
+  "(\<lambda>n. r * (1 - 1 / real (Suc (Suc n)))) \<longlonglongrightarrow> r"
   by (rule tendsto_eq_rhs[OF tendsto_mult[where a=r and b = 1]])
     (auto simp: inverse_eq_divide[symmetric] simp del: of_nat_Suc
       intro: filterlim_compose[OF LIMSEQ_inverse_real_of_nat filterlim_Suc] tendsto_eq_intros)
@@ -1909,10 +1909,10 @@ proof safe
         det3_def' field_simps inner_prod_def ccw'_def)
   qed
   moreover
-  have "\<And>i. (\<lambda>n. f n i) ----> e i"
+  have "\<And>i. (\<lambda>n. f n i) \<longlonglongrightarrow> e i"
     unfolding f_def
     by (rule LIMSEQ_minus_fract_mult)
-  hence "(\<lambda>n. aform_val (f n) X) ----> aform_val e X"
+  hence "(\<lambda>n. aform_val (f n) X) \<longlonglongrightarrow> aform_val e X"
     by (auto simp: aform_val_def pdevs_val_setsum intro!: tendsto_intros)
   ultimately have "aform_val e X \<in> ?cl"
     by (rule closed_sequentially)

@@ -335,8 +335,8 @@ lemma almost_never_le_\<alpha>:
   assumes p_prob: "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1"
   assumes [arith]: "k > 0"
   assumes N_prop: "\<forall>\<^sup>\<infinity> n. (6 * k * ln n)/n \<le> p n"
-  shows "(\<lambda>n. probGn p n (\<lambda>es. 1/2*n/k \<le> \<alpha> (edge_space.edge_ugraph n es))) ----> 0"
-    (is "(\<lambda>n. ?prob_fun n) ----> 0")
+  shows "(\<lambda>n. probGn p n (\<lambda>es. 1/2*n/k \<le> \<alpha> (edge_space.edge_ugraph n es))) \<longlonglongrightarrow> 0"
+    (is "(\<lambda>n. ?prob_fun n) \<longlonglongrightarrow> 0")
 proof -
   let "?prob_fun_raw n" = "probGn p n (\<lambda>es. nat(ceiling (1/2*n/k)) \<le> \<alpha> (edge_space.edge_ugraph n es))"
 
@@ -413,8 +413,8 @@ proof -
 
   show ?thesis
   proof (unfold ceil_bound, rule real_tendsto_sandwich)
-    show "(\<lambda>n. 0) ----> 0"
-        "(\<lambda>n. (exp 1 / n) powr (1 / 2)) ----> 0"
+    show "(\<lambda>n. 0) \<longlonglongrightarrow> 0"
+        "(\<lambda>n. (exp 1 / n) powr (1 / 2)) \<longlonglongrightarrow> 0"
         "\<forall>\<^sup>\<infinity> n. 0 \<le> ?prob_fun_raw n"
       using p_prob by (auto intro: measure_nonneg LIMSEQ_inv_powr elim: eventually_mono)
   next
@@ -617,7 +617,7 @@ proof -
   proof -
     have "\<epsilon> * k - 1 < 0"
       using \<epsilon>_props `3 \<le> k` by (auto simp: field_simps)
-    then have "(\<lambda>n. 2 * (k - 2) * n powr (\<epsilon> * k - 1)) ----> 0" (is "?bound ----> 0")
+    then have "(\<lambda>n. 2 * (k - 2) * n powr (\<epsilon> * k - 1)) \<longlonglongrightarrow> 0" (is "?bound \<longlonglongrightarrow> 0")
       by (intro tendsto_mult_right_zero LIMSEQ_neg_powr)
     then have "\<forall>\<^sup>\<infinity> n. dist (?bound n) 0  < 1 / 2"
       by (rule tendstoD) simp
@@ -625,7 +625,7 @@ proof -
       by (rule eventually_elim2) (auto simp: dist_real_def pf_short_count_def)
   qed
 
-  have lim_\<alpha>: "pf_\<alpha> ----> 0"
+  have lim_\<alpha>: "pf_\<alpha> \<longlonglongrightarrow> 0"
   proof -
     have "0 < k" using `3 \<le> k` by simp
 
@@ -660,7 +660,7 @@ proof -
         by (intro eventually_sequentiallyI[of 1]) auto
       also have "\<forall>\<^sup>\<infinity> n. 12*k/\<epsilon> * n powr (-\<epsilon>/2) \<le> 1"
       proof -
-        have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) ----> 0"
+        have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) \<longlonglongrightarrow> 0"
           using `0 < \<epsilon>` by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
         then show ?thesis
           using `0 < \<epsilon>` by (auto elim: eventually_mono simp: dist_real_def dest!: tendstoD[where e=1])

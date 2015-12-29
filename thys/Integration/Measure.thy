@@ -248,7 +248,7 @@ text {* Joe Hurd calls the following the Monotone Convergence Theorem,
 theorem measure_mon_conv: 
   assumes ms: "measure_space M" and 
   Ams: "\<And>n. A n \<in> measurable_sets M" and AB: "A\<up>B" 
-  shows "(\<lambda>n. measure M (A n)) ----> measure M B"
+  shows "(\<lambda>n. measure M (A n)) \<longlonglongrightarrow> measure M B"
 proof -
   
   from AB have up: "\<And>n. A n \<subseteq> A (Suc n)" 
@@ -288,14 +288,14 @@ proof -
     by (rule sums_summable)
 
   hence "(\<lambda>n. \<Sum>i<n. measure M (mkdisjoint A i))
-    ----> (\<Sum>i. measure M (mkdisjoint A i))"
+    \<longlonglongrightarrow> (\<Sum>i. measure M (mkdisjoint A i))"
     by (rule summable_LIMSEQ)
                                          
-  hence "(\<lambda>n. \<Sum>i<Suc n. measure M (mkdisjoint A i)) ----> (\<Sum>i. measure M (mkdisjoint A i))"
+  hence "(\<lambda>n. \<Sum>i<Suc n. measure M (mkdisjoint A i)) \<longlonglongrightarrow> (\<Sum>i. measure M (mkdisjoint A i))"
     by (rule LIMSEQ_Suc)
   
   ultimately have "(\<lambda>n. \<Sum>i<Suc n. measure M (mkdisjoint A i))
-    ----> (measure M (\<Union>i. mkdisjoint A i))" by simp
+    \<longlonglongrightarrow> (measure M (\<Union>i. mkdisjoint A i))" by simp
     
   also 
   { fix n 
@@ -361,7 +361,7 @@ proof -
   }
   
   ultimately have 
-    "(\<lambda>n. measure M (A n)) ----> (measure M (\<Union>i. mkdisjoint A i))" 
+    "(\<lambda>n. measure M (A n)) \<longlonglongrightarrow> (measure M (\<Union>i. mkdisjoint A i))" 
     by simp
   
   with AB show ?thesis 

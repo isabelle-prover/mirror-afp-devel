@@ -226,9 +226,9 @@ qed
 
 lemma tendsto_min:
   fixes x y::real
-  assumes ta: "a ----> x"
-      and tb: "b ----> y"
-  shows "(\<lambda>i. min (a i) (b i)) ----> min x y"
+  assumes ta: "a \<longlonglongrightarrow> x"
+      and tb: "b \<longlonglongrightarrow> y"
+  shows "(\<lambda>i. min (a i) (b i)) \<longlonglongrightarrow> min x y"
 proof(rule LIMSEQ_I, simp)
   fix e::real assume pe: "0 < e"
 

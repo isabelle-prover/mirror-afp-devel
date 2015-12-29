@@ -243,7 +243,7 @@ subsection {*Kac formula*}
 lemma  (in ergodic_conservative_mpt) local_time_unbounded:
   assumes [measurable]: "A \<in> sets M" "B \<in> sets M"
      and  "emeasure M A < \<infinity>" "emeasure M B > 0"
-   shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) ----> 0"
+   shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) \<longlonglongrightarrow> 0"
 proof (rule local_time_unbounded3)
   have "A - (\<Union>i. (T ^^ i) --` B) \<in> sets M" by auto
   moreover have "A - (\<Union>i. (T ^^ i) --` B) \<subseteq> space M - (\<Union>i. (T ^^ i) --` B)" using sets.sets_into_space[OF assms(1)] by blast
@@ -306,9 +306,9 @@ averages of the functions.*}
 theorem (in ergodic_pmpt) birkhoff_theorem_AE:
   fixes f::"'a \<Rightarrow> real"
   assumes "integrable M f"
-   shows "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) ----> (\<integral> x. f x \<partial>M)"
+   shows "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> (\<integral> x. f x \<partial>M)"
 proof -
-  have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) ----> real_cond_exp M Invariants f x"
+  have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
     using birkhoff_theorem_AE_nonergodic[OF assms] by simp
   moreover have "AE x in M. real_cond_exp M Invariants f x = (\<integral> x. f x \<partial>M)"
      using Invariants_cond_exp_is_integral[OF assms] by auto
@@ -318,7 +318,7 @@ qed
 theorem (in ergodic_pmpt) birkhoff_theorem_L1:
   fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f"
-   shows "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M) ----> 0"
+   shows "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M) \<longlonglongrightarrow> 0"
 proof -
   {
     fix n::nat
@@ -331,7 +331,7 @@ proof -
                = (\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M)"
       apply (rule nn_integral_cong_AE ) using * by auto
   }
-  moreover have "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) ----> 0"
+  moreover have "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<longlonglongrightarrow> 0"
     using  birkhoff_theorem_L1_nonergodic[OF assms] by auto
   ultimately show ?thesis by simp
 qed
@@ -362,15 +362,15 @@ qed
 
 lemma (in ergodic_pmpt) birkhoff_positive_average:
       fixes f::"'a \<Rightarrow> real"
-  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. birkhoff_sum f n x) ----> \<infinity>"
+  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity>"
   shows "(\<integral> x. f x \<partial>M) > 0"
 proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) > 0)"
   then have *: "(\<integral> x. f x \<partial>M) \<le> 0" by simp
 
-  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) ----> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
+  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
     using assms(2) birkhoff_sum_small_asymp_neg[OF assms(1)] by auto
-  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) ----> \<infinity>" "infinite  {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
+  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity>" "infinite  {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
     using AE_False eventually_elim2 by blast
   {
     fix n assume "birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n * (\<integral>x. f x \<partial>M)}"
@@ -393,15 +393,15 @@ qed
 
 lemma (in ergodic_pmpt) birkhoff_negative_average:
       fixes f::"'a \<Rightarrow> real"
-  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. birkhoff_sum f n x) ----> -\<infinity>"
+  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity>"
   shows "(\<integral> x. f x \<partial>M) < 0"
 proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) < 0)"
   then have *: "(\<integral> x. f x \<partial>M) \<ge> 0" by simp
 
-  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) ----> -\<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
+  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
     using assms(2) birkhoff_sum_small_asymp_pos[OF assms(1)] by auto
-  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) ----> -\<infinity>" "infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
+  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity>" "infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
     using AE_False eventually_elim2 by blast
   {
     fix n assume "birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n * (\<integral>x. f x \<partial>M) + 1}"
@@ -424,15 +424,15 @@ qed
 
 lemma (in ergodic_pmpt) birkhoff_nonzero_average:
       fixes f::"'a \<Rightarrow> real"
-  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. abs(birkhoff_sum f n x)) ----> \<infinity>"
+  assumes [measurable]: "integrable M f" and "AE x in M. (\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity>"
   shows "(\<integral> x. f x \<partial>M) \<noteq> 0"
 proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) \<noteq> 0)"
   then have *: "(\<integral> x. f x \<partial>M) = 0" by simp
 
-  have "AE x in M.  (\<lambda>n. abs(birkhoff_sum f n x)) ----> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
+  have "AE x in M.  (\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
     using assms(2) birkhoff_sum_small_asymp_pos[OF assms(1)] * by auto
-  then obtain x where x: "(\<lambda>n. abs(birkhoff_sum f n x)) ----> \<infinity>" "infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
+  then obtain x where x: "(\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity>" "infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
     using AE_False eventually_elim2 by blast
 
   have "1 < (\<infinity>::ereal)" by auto

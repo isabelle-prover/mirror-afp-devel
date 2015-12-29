@@ -41,9 +41,9 @@ consts
   mon_conv:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a::ord \<Rightarrow> bool" ("_\<up>_" [60,61] 60) 
 
 defs (overloaded)
-  real_mon_conv: "x\<up>(y::real) \<equiv> (\<forall>n. x n \<le> x (Suc n)) \<and> x ----> y"
+  real_mon_conv: "x\<up>(y::real) \<equiv> (\<forall>n. x n \<le> x (Suc n)) \<and> x \<longlonglongrightarrow> y"
   realfun_mon_conv: 
-  "u\<up>(f::'a \<Rightarrow> real) \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and>  (\<forall>w. (\<lambda>n. u n w) ----> f w)"
+  "u\<up>(f::'a \<Rightarrow> real) \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and>  (\<forall>w. (\<lambda>n. u n w) \<longlonglongrightarrow> f w)"
   set_mon_conv: "A\<up>(B::'a set) \<equiv> (\<forall>n. A n \<le> A (Suc n)) \<and> B = (\<Union>n. A n)"
 
 theorem realfun_mon_conv_iff: "(u\<up>f) = (\<forall>w. (\<lambda>n. u n w)\<up>((f w)::real))"
@@ -75,14 +75,14 @@ next
 qed(*>*)
 
 
-lemma limseq_shift_iff: "(\<lambda>m. x (m+i)) ----> y = x ----> y"
+lemma limseq_shift_iff: "(\<lambda>m. x (m+i)) \<longlonglongrightarrow> y = x \<longlonglongrightarrow> y"
 (*<*)proof (induct i)
   case 0 show ?case by simp
 next 
   case (Suc n)
-  also have "(\<lambda>m. x (m + n)) ----> y = (\<lambda>m. x (Suc m + n)) ----> y"
+  also have "(\<lambda>m. x (m + n)) \<longlonglongrightarrow> y = (\<lambda>m. x (Suc m + n)) \<longlonglongrightarrow> y"
     by (rule LIMSEQ_Suc_iff[THEN sym])  
-  also have "\<dots> = (\<lambda>m. x (m + Suc n)) ----> y"
+  also have "\<dots> = (\<lambda>m. x (m + Suc n)) \<longlonglongrightarrow> y"
     by simp
   finally show ?case .
 qed(*>*)
@@ -91,7 +91,7 @@ qed(*>*)
 theorem assumes mon_conv: "x\<up>(y::real)"
   shows real_mon_conv_le: "x i \<le> y"
 proof -
-  from mon_conv have "(\<lambda>m. x (m+i)) ----> y" 
+  from mon_conv have "(\<lambda>m. x (m+i)) \<longlonglongrightarrow> y" 
     by (simp add: real_mon_conv limseq_shift_iff)
   also from mon_conv have "\<forall>m\<ge>0. x i \<le> x (m+i)" by (simp add: mon_conv_mon)
   ultimately show ?thesis by (rule LIMSEQ_le_const[OF _ exI[where x=0]])
@@ -142,7 +142,7 @@ theorem real_mon_conv_times:
 (*<*)proof -
   from assms have "\<And>n. z*x n \<le> z*x (Suc n)"
     by (simp add: real_mon_conv mult_left_mono)
-  also from xy have "(\<lambda>m. z*x m)---->(z*y)"
+  also from xy have "(\<lambda>m. z*x m)\<longlonglongrightarrow>(z*y)"
     by (simp add: real_mon_conv tendsto_const tendsto_mult)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
@@ -168,7 +168,7 @@ theorem real_mon_conv_add:
     hence "x n + a n \<le> x (Suc n) + a (Suc n)"
       by simp
   }
-  also from assms have "(\<lambda>m. x m + a m)---->(y + b)" by (simp add: real_mon_conv tendsto_add)
+  also from assms have "(\<lambda>m. x m + a m)\<longlonglongrightarrow>(y + b)" by (simp add: real_mon_conv tendsto_add)
   ultimately show ?thesis by (simp add: real_mon_conv)
 qed(*>*)
 
@@ -188,7 +188,7 @@ theorem real_mon_conv_bound:
   shows "\<exists>l. c\<up>l \<and> l\<le>x"
 proof -
   from incseq_convergent[of c x] mon bound
-  obtain l where "c ----> l" "\<forall>i. c i \<le> l"
+  obtain l where "c \<longlonglongrightarrow> l" "\<forall>i. c i \<le> l"
     by (auto simp: incseq_Suc_iff)
   moreover -- {*This is like $\isacommand{also}$ but lacks the transitivity step.*}
   with bound have "l \<le> x"

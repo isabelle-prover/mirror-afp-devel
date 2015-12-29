@@ -527,7 +527,7 @@ qed
 lemma (in conservative_mpt) local_time_unbounded1:
   assumes A_meas [measurable]: "A \<in> sets M"
     and      fin: "emeasure M A < \<infinity>"
-  shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time A n x < k}) ----> 0"
+  shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time A n x < k}) \<longlonglongrightarrow> 0"
 proof (induction k)
   case 0
   have "\<And>n. {x \<in> (T^^n)--`A. local_time A n x < 0} = {}" by simp
@@ -561,7 +561,7 @@ next
     finally have "(\<Sum>n. emeasure M (return_partition A (n+1))) =  emeasure M A" by simp
     moreover have "summable (\<lambda>n. emeasure M (return_partition A (n+1)))"
       by (simp add: emeasure_nonneg summable_ereal_pos)
-    ultimately have "(\<lambda>N. (\<Sum>n<N. emeasure M (return_partition A (n+1)))) ----> emeasure M A"
+    ultimately have "(\<lambda>N. (\<Sum>n<N. emeasure M (return_partition A (n+1)))) \<longlonglongrightarrow> emeasure M A"
       using summable_LIMSEQ by force
     moreover have "emeasure M A - e2 < emeasure M A" using fin `e2>0` by (simp add: emeasure_nonneg ereal_between(1))
     ultimately have " eventually (\<lambda>N. (\<Sum>n<N. emeasure M (return_partition A (n+1))) > emeasure M A - e2) sequentially"
@@ -683,9 +683,9 @@ next
       ultimately show "emeasure M (K (Suc k) n) \<le> e2 + (\<Sum>i<N. emeasure M (K k (n-i-1)))" by simp
     qed
 
-    have "(\<lambda>n. emeasure M (K k n)) ----> 0" using Suc.IH K_def by simp
-    hence "\<And>i. (\<lambda>n. emeasure M (K k (n-i-1))) ----> 0" using seq_offset_neg by auto
-    hence "(\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))) ----> 0"
+    have "(\<lambda>n. emeasure M (K k n)) \<longlonglongrightarrow> 0" using Suc.IH K_def by simp
+    hence "\<And>i. (\<lambda>n. emeasure M (K k (n-i-1))) \<longlonglongrightarrow> 0" using seq_offset_neg by auto
+    hence "(\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))) \<longlonglongrightarrow> 0"
       using tendsto_setsum_ereal [where ?S = "{..<N}" and ?a = "\<lambda>_. 0"] by fastforce
     hence "eventually (\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2) sequentially"
       using `e2 > 0` by (simp add: order_tendsto_iff)
@@ -719,7 +719,7 @@ next
   qed
   moreover have "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M (K (Suc k) n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)
-  ultimately have "(\<lambda>n. emeasure M (K (Suc k) n)) ----> 0" by (simp add: order_tendsto_iff)
+  ultimately have "(\<lambda>n. emeasure M (K (Suc k) n)) \<longlonglongrightarrow> 0" by (simp add: order_tendsto_iff)
   thus ?case using K_def by simp
 qed
 
@@ -727,7 +727,7 @@ lemma  (in conservative_mpt) local_time_unbounded2:
   assumes A_meas [measurable]: "A \<in> sets M"
      and  fin: "emeasure M A < \<infinity>"
      and  incl: "A \<subseteq> (T^^i)--`B"
-   shows  "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) ----> 0"
+   shows  "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) \<longlonglongrightarrow> 0"
 proof -
   {
     fix n::nat
@@ -787,7 +787,7 @@ lemma  (in conservative_mpt) local_time_unbounded3:
      and  B_meas: "B \<in> sets M"
      and  fin: "emeasure M A < \<infinity>"
      and  incl: "A - (\<Union>i. (T^^i)--`B) \<in> null_sets M"
-   shows  "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) ----> 0"
+   shows  "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) \<longlonglongrightarrow> 0"
 proof -
   def R \<equiv> "A - (\<Union>i. (T^^i)--`B)"
   have R_meas: "R \<in> sets M"
@@ -804,8 +804,8 @@ proof -
   moreover have "incseq K" unfolding K_def incseq_def by fastforce
   moreover have K_meas: "\<And> N. K N \<in> sets M" unfolding K_def
     using A2_meas B_meas T_vrestr_meas(2)[OF B_meas] by measurable
-  ultimately have "(\<lambda>N. emeasure M (K N)) ----> emeasure M A2" using Lim_emeasure_incseq by auto
-  hence conv: "(\<lambda>N. emeasure M (K N)) ----> emeasure M A" using meq by simp
+  ultimately have "(\<lambda>N. emeasure M (K N)) \<longlonglongrightarrow> emeasure M A2" using Lim_emeasure_incseq by auto
+  hence conv: "(\<lambda>N. emeasure M (K N)) \<longlonglongrightarrow> emeasure M A" using meq by simp
 
   def Bad \<equiv> "\<lambda>U n. {x \<in> (T^^n)--`U. local_time B n x < k}"
   def Bad0 \<equiv> "\<lambda>n. {x \<in> space M. local_time B n x < k}"
@@ -840,9 +840,9 @@ proof -
     hence L_fin: "\<And>i. emeasure M (L i) < \<infinity>"
       using emeasure_mono[where ?b = A2] A2_meas A2_fin by (metis ereal_infty_less(1) ereal_infty_less_eq(1))
     have "\<And>i. L i \<subseteq> (T^^i)--`B" using L_def by auto
-    hence a: "\<And>i. (\<lambda>n. emeasure M (Bad (L i) n)) ----> 0" unfolding Bad_def
+    hence a: "\<And>i. (\<lambda>n. emeasure M (Bad (L i) n)) \<longlonglongrightarrow> 0" unfolding Bad_def
       using local_time_unbounded2[OF L_meas, OF L_fin] by blast
-    have "(\<lambda>n. (\<Sum>i<N. emeasure M (Bad (L i) n))) ----> 0" using tendsto_setsum_ereal[OF a] by auto
+    have "(\<lambda>n. (\<Sum>i<N. emeasure M (Bad (L i) n))) \<longlonglongrightarrow> 0" using tendsto_setsum_ereal[OF a] by auto
     hence "eventually (\<lambda>n.  (\<Sum>i<N. emeasure M (Bad (L i) n)) < e2) sequentially"
       using `ereal e2 > 0` order_tendsto_iff by metis
     then obtain N2 where *: "\<And>n. n > N2 \<Longrightarrow> (\<Sum>i<N. emeasure M (Bad (L i) n)) < e2"
@@ -889,7 +889,7 @@ proof -
   qed
   moreover have  "\<And>e. e < (0::ereal) \<Longrightarrow> eventually (\<lambda>n. emeasure M  (Bad A n) > e) sequentially"
     by (rule eventuallyI, metis emeasure_nonneg less_le_trans)
-  ultimately have "(\<lambda>n. emeasure M (Bad A n)) ----> 0" by (simp add: order_tendsto_iff)
+  ultimately have "(\<lambda>n. emeasure M (Bad A n)) \<longlonglongrightarrow> 0" by (simp add: order_tendsto_iff)
   thus ?thesis using Bad_def by simp
 qed
 
@@ -1409,7 +1409,7 @@ proof -
     apply (rule suminf_emeasure[symmetric]) using disj_DW2 by auto
   finally have m: "emeasure M ((induced_map A)--`W) = (\<Sum>n. emeasure M (DW (n+1)))" by simp
   moreover have "summable (\<lambda>n. emeasure M (DW (n+1)))" by (simp add: emeasure_nonneg summable_ereal_pos)
-  ultimately have lim: "(\<lambda>N. (\<Sum> n\<in>{..<N}. emeasure M (DW (n+1)))) ----> emeasure M ((induced_map A)--`W)"
+  ultimately have lim: "(\<lambda>N. (\<Sum> n\<in>{..<N}. emeasure M (DW (n+1)))) \<longlonglongrightarrow> emeasure M ((induced_map A)--`W)"
     by (simp add: summable_LIMSEQ)
 
   have BW_meas [measurable]: "\<And>n. BW n \<in> sets M" unfolding BW_def by simp
@@ -1471,7 +1471,7 @@ proof -
       using fin by (simp add: ereal_eq_minus_iff)
   qed
 
-  have "(\<lambda>N. emeasure M (BW N)) ----> 0"
+  have "(\<lambda>N. emeasure M (BW N)) \<longlonglongrightarrow> 0"
   proof -
     def C \<equiv> "\<lambda>N. {x \<in> (T^^N)--`W. local_time A N x < 1}"
     have "\<And>N. BW N \<subseteq> C N"
@@ -1486,19 +1486,19 @@ proof -
       using emeasure_mono by blast
     have b: "\<And>N. emeasure M (BW N) \<ge> 0" by auto
     have i: "W \<subseteq> (T^^0)--`A" using incl vimage_restr_def A_meas by auto
-    have "(\<lambda>N. emeasure M (C N)) ----> 0" unfolding C_def
+    have "(\<lambda>N. emeasure M (C N)) \<longlonglongrightarrow> 0" unfolding C_def
       by (rule local_time_unbounded2[OF W_meas, OF fin, OF i, of 1])
-    thus "(\<lambda>N. emeasure M (BW N)) ----> 0"
+    thus "(\<lambda>N. emeasure M (BW N)) \<longlonglongrightarrow> 0"
       using tendsto_sandwich[of "\<lambda>_. 0", of "\<lambda>N.  emeasure M (BW N)", of sequentially, of "\<lambda>N. emeasure M (C N)", of 0]
         a b by auto
   qed
-  hence b: "(\<lambda>N. - emeasure M (BW N)) ----> 0"
+  hence b: "(\<lambda>N. - emeasure M (BW N)) \<longlonglongrightarrow> 0"
     using tendsto_uminus_ereal by fastforce
-  have c: "(\<lambda>N. emeasure M W) ----> emeasure M W" by simp
+  have c: "(\<lambda>N. emeasure M W) \<longlonglongrightarrow> emeasure M W" by simp
   have "abs(0::ereal) \<noteq> \<infinity>" by simp
-  have "(\<lambda>N. emeasure M W - emeasure M (BW N)) ----> emeasure M W"
+  have "(\<lambda>N. emeasure M W - emeasure M (BW N)) \<longlonglongrightarrow> emeasure M W"
     using tendsto_add_ereal_general1[OF `abs(0::ereal) \<noteq> \<infinity>`, OF c, OF b] minus_ereal_def by simp
-  hence "(\<lambda>N. (\<Sum> n\<in>{..<N}. emeasure M (DW (n+1)))) ---->  emeasure M W" using A by simp
+  hence "(\<lambda>N. (\<Sum> n\<in>{..<N}. emeasure M (DW (n+1)))) \<longlonglongrightarrow>  emeasure M W" using A by simp
   thus ?thesis using lim LIMSEQ_unique by simp
 qed
 
@@ -1905,7 +1905,7 @@ proof -
     qed
   qed
 
-  have a: "\<And>n. (\<lambda>k. (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M)) ----> 0"
+  have a: "\<And>n. (\<lambda>k. (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M)) \<longlonglongrightarrow> 0"
   proof -
     fix n::nat
     def W \<equiv> "{x \<in> space M. f x > 0} \<inter> (T^^n)--`A"
@@ -1963,31 +1963,31 @@ proof -
     qed
 
     have b: "\<And>k. (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M) \<ge> 0" using nn_integral_nonneg by blast
-    have "(\<lambda>k. emeasure M (V k)) ----> 0" unfolding V_def
+    have "(\<lambda>k. emeasure M (V k)) \<longlonglongrightarrow> 0" unfolding V_def
       using local_time_unbounded2[OF W_meas, OF W_fin, OF W_incl, of 1] by auto
-    hence "(\<lambda>k. C * emeasure M (V k)) ----> 0"
+    hence "(\<lambda>k. C * emeasure M (V k)) \<longlonglongrightarrow> 0"
       by (metis mult_zero_right tendsto_const times_ereal.simps(1) zero_ereal_def tendsto_mult_real_ereal[of "\<lambda>_. C"])
-    thus "(\<lambda>k.  (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M)) ----> 0"
+    thus "(\<lambda>k.  (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M)) \<longlonglongrightarrow> 0"
       using tendsto_sandwich[of "\<lambda>_. 0", of "\<lambda>k. (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M)", of sequentially,
             of "\<lambda>k. C * emeasure M (V k)", of 0] a b by simp
   qed
-  have b: "\<And>n. (\<lambda>k. (\<Sum>i<k.(\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M))) ---->  (\<Sum>i. d (i+1) (n+i))"
+  have b: "\<And>n. (\<lambda>k. (\<Sum>i<k.(\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M))) \<longlonglongrightarrow>  (\<Sum>i. d (i+1) (n+i))"
   proof -
     fix n
     def e \<equiv> "\<lambda>i. d (i+1) (n+i)"
     have "\<And>i. e i \<ge> 0" using dpos e_def by simp
-    hence "(\<lambda>k. (\<Sum>i<k. e i)) ----> (\<Sum>i. e i)"
+    hence "(\<lambda>k. (\<Sum>i<k. e i)) \<longlonglongrightarrow> (\<Sum>i. e i)"
       by (metis summable_LIMSEQ summable_ereal_pos)
-    thus "(\<lambda>k. (\<Sum>i<k.(\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M))) ---->  (\<Sum>i. d (i+1) (n+i))"
+    thus "(\<lambda>k. (\<Sum>i<k.(\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M))) \<longlonglongrightarrow>  (\<Sum>i. d (i+1) (n+i))"
       using e_def d_def by simp
   qed
   have c: "\<bar>0::ereal\<bar> \<noteq> \<infinity>" by simp
 
   have "\<And>n. (\<lambda>k. (\<Sum>i<k. (\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M)) + (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M))
-               ----> (\<Sum>i. d (i+1) (n+i))"
+               \<longlonglongrightarrow> (\<Sum>i. d (i+1) (n+i))"
     using tendsto_add_ereal_general1[OF c, OF b, OF a] add.right_neutral by simp
   moreover have "\<And>n. (\<lambda>k. (\<Sum>i<k. (\<integral>\<^sup>+x \<in> D(n+i). f((T^^(i+1))x) \<partial>M)) + (\<integral>\<^sup>+x \<in> B(n+k). f((T^^k)x) \<partial>M))
-               ---->  (\<integral>\<^sup>+x \<in> B n. f x \<partial>M)" using * by simp
+               \<longlonglongrightarrow>  (\<integral>\<^sup>+x \<in> B n. f x \<partial>M)" using * by simp
   ultimately have "\<And>n. (\<integral>\<^sup>+x \<in> B n. f x \<partial>M) = (\<Sum>i. d (i+1) (n+i))" using LIMSEQ_unique by blast
   hence "(\<Sum>n. (\<integral>\<^sup>+x \<in> B (n+1). f x \<partial>M)) = (\<Sum>n. (\<Sum>i. d (i+1) (n+1+i)))" by simp
   hence "(\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M) = (\<Sum>n. d 0 n) + (\<Sum>n. (\<Sum>i. d (i+1) (n+1+i)))"
@@ -2041,12 +2041,12 @@ proof -
     def G \<equiv> "\<lambda>(n::nat). min (f x) n"
     have "incseq G" using G_def by (auto simp add: incseq_def min_le_iff_disj)
     moreover have "(SUP n. G n) = f x" unfolding G_def using SUP_truncation_ereal[of "f x"] by simp
-    ultimately have l: "G ----> f x" using LIMSEQ_SUP by fastforce
+    ultimately have l: "G \<longlonglongrightarrow> f x" using LIMSEQ_SUP by fastforce
     obtain N where "x \<in> Y N" using Y_full `x \<in> space M` by auto
     hence "\<And>n. n > N \<Longrightarrow> x \<in> Y n" using Y_inc incseq_def less_imp_le by (metis subsetCE)
     hence "\<And>n. n > N \<Longrightarrow> F n x = G n" unfolding F_def G_def by auto
     hence "eventually (\<lambda>n. F n x = G n) sequentially" using eventually_at_top_dense by auto
-    hence "(\<lambda>n. F n x) ----> f x" using l using filterlim_cong by fastforce
+    hence "(\<lambda>n. F n x) \<longlonglongrightarrow> f x" using l using filterlim_cong by fastforce
     thus "(SUP n. F n x) = f x" using inc_Fx LIMSEQ_SUP LIMSEQ_unique by metis
   qed
   hence "\<And>x. x \<in> space M \<Longrightarrow> (SUP n. F n x * indicator (\<Union>n. (T^^n)--`A) x ) = f x * indicator (\<Union>n. (T^^n)--`A) x"

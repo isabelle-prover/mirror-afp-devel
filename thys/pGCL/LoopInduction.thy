@@ -592,7 +592,7 @@ corollary loop_iterates:
   assumes hb: "healthy (wp body)"
       and cb: "bd_cts (wp body)"
       and sP: "sound P"
-  shows "(\<lambda>i. iterates body G i P s) ----> wp (do G \<longrightarrow> body od) P s"
+  shows "(\<lambda>i. iterates body G i P s) \<longlonglongrightarrow> wp (do G \<longrightarrow> body od) P s"
 proof -
   let ?X = "{f s |f. f \<in> {t P |t. t \<in> range (iterates body G)}}"
   have closure_Sup: "Sup ?X \<in> closure ?X"
@@ -604,7 +604,7 @@ proof -
     thus "iterates body G i P s \<le> bound_of P" by(auto)    
   qed
 
-  have "(\<lambda>i. iterates body G i P s) ----> Sup {f s |f. f \<in> {t P |t. t \<in> range (iterates body G)}}"
+  have "(\<lambda>i. iterates body G i P s) \<longlonglongrightarrow> Sup {f s |f. f \<in> {t P |t. t \<in> range (iterates body G)}}"
   proof(rule LIMSEQ_I)
     fix r::real assume posr: "0 < r"
     with closure_Sup obtain y where yin: "y \<in> ?X" and ey: "dist y (Sup ?X) < r"

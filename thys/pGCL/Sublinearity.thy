@@ -406,13 +406,13 @@ proof
   fix P Q::"'s expect" and s::'s
   assume sP: "sound P" and sQ: "sound Q"
 
-  from hwp cb sP have "(\<lambda>i. iterates body G i P s) ----> wp do G \<longrightarrow> body od P s"
+  from hwp cb sP have "(\<lambda>i. iterates body G i P s) \<longlonglongrightarrow> wp do G \<longrightarrow> body od P s"
     by(rule loop_iterates)
   moreover
-  from hwp cb sQ have "(\<lambda>i. iterates body G i Q s) ----> wp do G \<longrightarrow> body od Q s"
+  from hwp cb sQ have "(\<lambda>i. iterates body G i Q s) \<longlonglongrightarrow> wp do G \<longrightarrow> body od Q s"
     by(rule loop_iterates)
   ultimately
-  have "(\<lambda>i. iterates body G i P s + iterates body G i Q s) ---->
+  have "(\<lambda>i. iterates body G i P s + iterates body G i Q s) \<longlonglongrightarrow>
         wp do G \<longrightarrow> body od P s + wp do G \<longrightarrow> body od Q s"
     by(rule tendsto_add)
   moreover {
@@ -423,7 +423,7 @@ proof
   }
   moreover {
     from sP sQ have "sound (\<lambda>s. P s + Q s)" by(blast intro:sound_intros)
-    with hwp cb have "(\<lambda>i. iterates body G i (\<lambda>s. P s + Q s) s) ---->
+    with hwp cb have "(\<lambda>i. iterates body G i (\<lambda>s. P s + Q s) s) \<longlonglongrightarrow>
                            wp do G \<longrightarrow> body od (\<lambda>s. P s + Q s) s"
       by(blast intro:loop_iterates)
   }

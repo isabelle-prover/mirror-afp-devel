@@ -64,13 +64,13 @@ next
     finally have "p n / n powr (-(1 / max_density H)) = \<dots>"
       .
   }
-  ultimately have "(\<lambda>n. p n * n powr (?v / ?e)) ----> 0"
+  ultimately have "(\<lambda>n. p n * n powr (?v / ?e)) \<longlonglongrightarrow> 0"
     unfolding subgraph_threshold_def by simp
   moreover have "\<And>n. 1 \<le> n \<Longrightarrow> 0 < p n * n powr (?v / ?e)"
     by (auto simp: p_nz)
-  ultimately have "(\<lambda>n. (p n * n powr (?v / ?e)) powr ?e) ----> 0"
+  ultimately have "(\<lambda>n. (p n * n powr (?v / ?e)) powr ?e) \<longlonglongrightarrow> 0"
     using card(2) p by (force intro: tendsto_zero_powrI)
-  hence limit: "(\<lambda>n. p n powr ?e * n powr ?v) ----> 0"
+  hence limit: "(\<lambda>n. p n powr ?e * n powr ?v) \<longlonglongrightarrow> 0"
     by (rule LIMSEQ_cong[OF _ eventually_sequentiallyI[where c = 1]])
        (auto simp: p card p_nz powr_powr powr_mult)
 
@@ -226,7 +226,7 @@ next
 
   --{* The final upper bound is a multiple of the expression which we have proven to tend to $0$
        in the beginning. *}
-  thus "prob_in_class p {G. H \<sqsubseteq> G} ----> 0"
+  thus "prob_in_class p {G. H \<sqsubseteq> G} \<longlonglongrightarrow> 0"
     by (rule LIMSEQ_le_zero[OF tendsto_mult_right_zero[OF limit] eventually_sequentiallyI[OF measure_nonneg] eventually_sequentiallyI])
 next
   fix p :: "nat \<Rightarrow> real"
@@ -628,9 +628,9 @@ next
 
   --{* Recall our central inequality. We now prove that both summands tend to $0$. This is mainly
        an exercise in bookkeeping and real arithmetics as no intelligent ideas are involved. *}
-  have "(\<lambda>n. 1 / prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n)) ----> 0"
+  have "(\<lambda>n. 1 / prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n)) \<longlonglongrightarrow> 0"
     proof (rule LIMSEQ_le_zero)
-      have "(\<lambda>n. 1 / (real n ^ ?v * p n ^ ?e)) ----> 0"
+      have "(\<lambda>n. 1 / (real n ^ ?v * p n ^ ?e)) \<longlonglongrightarrow> 0"
         proof (rule LIMSEQ_le_zero[OF _ eventually_sequentiallyI eventually_sequentiallyI])
           fix n
           show "0 \<le> 1 / (real n ^ ?v * p n ^ ?e)"
@@ -661,13 +661,13 @@ next
             unfolding subgraph_threshold_def ..
           finally show "1 / (real n ^ ?v * p n ^ ?e) \<le> (subgraph_threshold H n / p n) powr ?e" .
         next
-          show "(\<lambda>n. (subgraph_threshold H n / p n) powr real (card (uedges H))) ----> 0"
+          show "(\<lambda>n. (subgraph_threshold H n / p n) powr real (card (uedges H))) \<longlonglongrightarrow> 0"
             using p_threshold p_nz v_e_nz
               by (auto simp: subgraph_threshold_def divide_nonneg_pos intro!: tendsto_zero_powrI)
         qed
-      hence "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) ----> real (?v ^ ?v) * 0"
+      hence "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) \<longlonglongrightarrow> real (?v ^ ?v) * 0"
         by (rule LIMSEQ_const_mult)
-      thus "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) ----> 0"
+      thus "(\<lambda>n. ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))) \<longlonglongrightarrow> 0"
         by simp
     next
       show "\<forall>\<^sup>\<infinity>n. 0 \<le> 1 / prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n)"
@@ -692,10 +692,10 @@ next
 
         have "(\<lambda>n. ?num n k) \<lless> ?den'"
           proof (rule less_fun_const_quot)
-            have "(\<lambda>n. (subgraph_threshold H n / p n) powr (max_density H * k)) ----> 0"
+            have "(\<lambda>n. (subgraph_threshold H n / p n) powr (max_density H * k)) \<longlonglongrightarrow> 0"
               using p_threshold mult_pos_pos[OF max_density_gr_zero[OF finite nonempty wellformed]] p_nz k
                by (auto simp: subgraph_threshold_def divide_nonneg_pos intro!: tendsto_zero_powrI)
-            thus "(\<lambda>n. (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)) / (real n ^ (2 * ?v) * p n ^ (2 * ?e))) ----> 0"
+            thus "(\<lambda>n. (real n ^ (2 * ?v - k) * p n powr (2 * ?e - max_density H * k)) / (real n ^ (2 * ?v) * p n ^ (2 * ?e))) \<longlonglongrightarrow> 0"
               proof (rule LIMSEQ_cong[OF _ eventually_sequentiallyI])
                 fix n :: nat
                 assume n: "1 \<le> n"
@@ -736,9 +736,9 @@ next
         hence "(\<lambda>n. ?num n k) \<lless> ?den"
           by (rule subst[OF den'])
       }
-      hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) ----> (\<Sum>k = 1..?v. 0)"
+      hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) \<longlonglongrightarrow> (\<Sum>k = 1..?v. 0)"
         by (rule tendsto_setsum)
-      hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) ----> 0"
+      hence "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) \<longlonglongrightarrow> 0"
         by simp
       moreover have "(\<lambda>n. \<Sum>k = 1..?v. ?num n k / ?den n) = (\<lambda>n. (\<Sum>k = 1..?v. ?num n k) / ?den n)"
         by (simp add: setsum_left_div_distrib)
@@ -763,11 +763,11 @@ next
   ultimately have "(\<lambda>n.
       1 / prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n) +
       prob_space_with_indicators.\<Delta>\<^sub>d (MGn p n) (?I n) (?A n) / (prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n))^2
-    ) ----> 0"
+    ) \<longlonglongrightarrow> 0"
     by (subst add_0_left[where a = 0, symmetric]) (rule tendsto_add)
 
   --{* By now, we can actually perform the reduction mentioned above. *}
-  hence "(\<lambda>n. probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)) ----> 0"
+  hence "(\<lambda>n. probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)) \<longlonglongrightarrow> 0"
     proof (rule LIMSEQ_le_zero)
       show "\<forall>\<^sup>\<infinity>n. 0 \<le> probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)"
         by (rule eventually_sequentiallyI) (rule measure_nonneg)
@@ -778,9 +778,9 @@ next
           prob_space_with_indicators.\<Delta>\<^sub>d (MGn p n) (?I n) (?A n) / (prob_space_with_indicators.\<mu> (MGn p n) (?I n) (?A n))^2"
         by (rule eventually_sequentiallyI[OF facts(4)])
     qed
-  hence "(\<lambda>n. 1 - probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)) ----> 1"
+  hence "(\<lambda>n. 1 - probGn p n (\<lambda>es. \<not> H \<sqsubseteq> edge_space.edge_ugraph n es)) \<longlonglongrightarrow> 1"
     using tendsto_diff[OF tendsto_const] by fastforce
-  thus "prob_in_class p {G. H \<sqsubseteq> G} ----> 1"
+  thus "prob_in_class p {G. H \<sqsubseteq> G} \<longlonglongrightarrow> 1"
     by (rule LIMSEQ_cong[OF _ eventually_sequentiallyI[OF facts(3)]])
 qed
 

@@ -121,9 +121,9 @@ lemma exclusive_N: "measure N (UNIV - UNIV) = 0"
 
 subsection {* Limit behavior and recurrence times *}
 
-lemma limit: "(B.p i j) ----> (1/2)^Suc j"
+lemma limit: "(B.p i j) \<longlonglongrightarrow> (1/2)^Suc j"
 proof -
-  have "B.p i j ----> pmf N j"
+  have "B.p i j \<longlonglongrightarrow> pmf N j"
     by (rule B.stationary_distribution_imp_p_limit[OF B_aperiodic B_essential _ stationary_distribution_N])
        auto
   then show ?thesis

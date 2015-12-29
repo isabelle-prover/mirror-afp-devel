@@ -134,7 +134,7 @@ proof(rule bd_ctsI, rule antisym)
         by(simp add:Sup_exp_def o_def)
     }
     also {
-      have "(\<lambda>i. wp a (M i) s) ----> Sup (range (\<lambda>i. wp a (M i) s))"
+      have "(\<lambda>i. wp a (M i) s) \<longlonglongrightarrow> Sup (range (\<lambda>i. wp a (M i) s))"
       proof(rule increasing_LIMSEQ)
         fix n
         from mono_transD[OF healthy_monoD, OF ha] sM chain
@@ -158,7 +158,7 @@ proof(rule bd_ctsI, rule antisym)
         thus "\<exists>i. Sup (range (\<lambda>i. wp a (M i) s)) \<le> wp a (M i) s + e" by(auto)
       qed
       moreover
-      have "(\<lambda>i. wp b (M i) s) ----> Sup (range (\<lambda>i. wp b (M i) s))"
+      have "(\<lambda>i. wp b (M i) s) \<longlonglongrightarrow> Sup (range (\<lambda>i. wp b (M i) s))"
       proof(rule increasing_LIMSEQ)
         fix n
         from mono_transD[OF healthy_monoD, OF hb] sM chain
@@ -181,7 +181,7 @@ proof(rule bd_ctsI, rule antisym)
           by(simp add:dist_real_def)
         thus "\<exists>i. Sup (range (\<lambda>i. wp b (M i) s)) \<le> wp b (M i) s + e" by(auto)
       qed
-      ultimately have "(\<lambda>i. min (wp a (M i) s) (wp b (M i) s)) ---->
+      ultimately have "(\<lambda>i. min (wp a (M i) s) (wp b (M i) s)) \<longlonglongrightarrow>
                        min (Sup (range (\<lambda>i. wp a (M i) s))) (Sup (range (\<lambda>i. wp b (M i) s)))"
         by(rule tendsto_min)
       moreover have "bdd_above (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s)))"
@@ -326,7 +326,7 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
     also have "... = c" by(simp)
     finally have baM: "\<And>i. p s * wp a (M i) s \<le> c" .
 
-    have lima: "(\<lambda>i. p s * wp a (M i) s) ----> Sup (range (\<lambda>i. p s * wp a (M i) s))"
+    have lima: "(\<lambda>i. p s * wp a (M i) s) \<longlonglongrightarrow> Sup (range (\<lambda>i. p s * wp a (M i) s))"
     proof(rule increasing_LIMSEQ)
       fix n
       from sM chain healthy_monoD[OF ha] have "wp a (M n) \<tturnstile> wp a (M (Suc n))"
@@ -366,7 +366,7 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
     also have "1 * c = c" by(simp)
     finally have bbM: "\<And>i. (1 - p s) * wp b (M i) s \<le> c" .
 
-    have limb: "(\<lambda>i. (1 - p s) * wp b (M i) s) ----> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
+    have limb: "(\<lambda>i. (1 - p s) * wp b (M i) s) \<longlonglongrightarrow> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
     proof(rule increasing_LIMSEQ)
       fix n
       from sM chain healthy_monoD[OF hb] have "wp b (M n) \<tturnstile> wp b (M (Suc n))"
@@ -397,7 +397,7 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       thus "\<exists>i. Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s)) \<le> (1 - p s) * wp b (M i) s + e" by(auto)
     qed
 
-    from lima limb have "(\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s) ---->
+    from lima limb have "(\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s) \<longlonglongrightarrow>
       Sup (range (\<lambda>i. p s * wp a (M i) s)) + Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
       by(rule tendsto_add)
     moreover from add_mono[OF baM bbM]

@@ -104,7 +104,7 @@ locate it *}
 
 lemma tends_to_real_e:
   fixes u::"nat \<Rightarrow> real"
-  assumes "u ----> l"
+  assumes "u \<longlonglongrightarrow> l"
           "e>0"
   shows "\<exists>N. \<forall>n>N. abs(u n -l ) < e"
 proof-
@@ -237,7 +237,7 @@ text {*The next statements come from the same statements for true subsequences*}
 
 lemma eventually_weak_subseq:
    fixes u::"nat \<Rightarrow> nat"
-   assumes "(\<lambda>n. real(u n)) ----> \<infinity>" "eventually P sequentially"
+   assumes "(\<lambda>n. real(u n)) \<longlonglongrightarrow> \<infinity>" "eventually P sequentially"
   shows  "eventually (\<lambda>n. P (u n)) sequentially"
 proof -
   obtain N where *: "\<forall>n\<ge>N. P n" using assms(2) unfolding eventually_sequentially by auto
@@ -249,14 +249,14 @@ qed
 
 lemma filterlim_weak_subseq:
    fixes u::"nat \<Rightarrow> nat"
-   assumes "(\<lambda>n. real(u n)) ----> \<infinity>"
+   assumes "(\<lambda>n. real(u n)) \<longlonglongrightarrow> \<infinity>"
    shows  "LIM n sequentially. u n:> at_top"
 unfolding filterlim_iff by (metis assms eventually_weak_subseq)
 
 lemma limit_along_weak_subseq:
   fixes u::"nat \<Rightarrow> nat" and v::"nat \<Rightarrow> _"
-  assumes "(\<lambda>n. real(u n)) ----> \<infinity>" "v ----> l"
-  shows "(\<lambda> n. v(u n)) ----> l"
+  assumes "(\<lambda>n. real(u n)) \<longlonglongrightarrow> \<infinity>" "v \<longlonglongrightarrow> l"
+  shows "(\<lambda> n. v(u n)) \<longlonglongrightarrow> l"
 using filterlim_compose[of v, OF _ filterlim_weak_subseq] assms by auto
 
 
@@ -433,7 +433,7 @@ about limsups to statements about limits.*}
 
 lemma limsup_subseq_lim:
   fixes u::"nat \<Rightarrow>  'a :: {complete_linorder, linorder_topology}"
-  shows "\<exists>r. subseq r \<and> (u o r) ----> limsup u"
+  shows "\<exists>r. subseq r \<and> (u o r) \<longlonglongrightarrow> limsup u"
 proof (cases)
   assume "\<forall>n. \<exists>p>n. \<forall>m\<ge>p. u m \<le> u p"
   then have "\<exists>r. \<forall>n. (\<forall>m\<ge>r n. u m \<le> u (r n)) \<and> r n < r (Suc n)"
@@ -442,12 +442,12 @@ proof (cases)
     by (auto simp: subseq_Suc_iff)
   def umax \<equiv> "\<lambda>n. (SUP m:{n..}. u m)"
   have "decseq umax" unfolding umax_def by (simp add: SUP_subset_mono antimono_def)
-  then have "umax ----> limsup u" unfolding umax_def by (metis LIMSEQ_INF limsup_INF_SUP)
-  then have *: "(umax o r) ----> limsup u" by (simp add: LIMSEQ_subseq_LIMSEQ `subseq r`)
+  then have "umax \<longlonglongrightarrow> limsup u" unfolding umax_def by (metis LIMSEQ_INF limsup_INF_SUP)
+  then have *: "(umax o r) \<longlonglongrightarrow> limsup u" by (simp add: LIMSEQ_subseq_LIMSEQ `subseq r`)
   have "\<And>n. umax(r n) = u(r n)" unfolding umax_def using mono
     by (metis SUP_le_iff antisym atLeast_def mem_Collect_eq order_refl)
   then have "umax o r = u o r" unfolding o_def by simp
-  then have "(u o r) ----> limsup u" using * by simp
+  then have "(u o r) \<longlonglongrightarrow> limsup u" using * by simp
   then show ?thesis using `subseq r` by blast
 next
   assume "\<not> (\<forall>n. \<exists>p>n. (\<forall>m\<ge>p. u m \<le> u p))"
@@ -504,7 +504,7 @@ next
   then obtain r where r: "\<forall>n. N < r n \<and> r n < r (Suc n) \<and> (\<forall>i\<in> {N<..r (Suc n)}. u i \<le> u (r (Suc n)))" by auto
   have "subseq r" using r by (auto simp: subseq_Suc_iff)
   have "incseq (u o r)" unfolding o_def using r by (simp add: incseq_SucI order.strict_implies_order)
-  then have "(u o r) ----> (SUP n. (u o r) n)" using LIMSEQ_SUP by blast
+  then have "(u o r) \<longlonglongrightarrow> (SUP n. (u o r) n)" using LIMSEQ_SUP by blast
   then have "limsup (u o r) = (SUP n. (u o r) n)" by (simp add: lim_imp_Limsup)
   moreover have "limsup (u o r) \<le> limsup u" using `subseq r` by (simp add: limsup_subseq_mono)
   ultimately have "(SUP n. (u o r) n) \<le> limsup u" by simp
@@ -520,13 +520,13 @@ next
   then have "limsup u \<le> (SUP n. (u o r) n)" unfolding Limsup_def
     by (metis (mono_tags, lifting) INF_lower2 atLeast_Suc_greaterThan atLeast_def eventually_ge_at_top mem_Collect_eq)
   then have "limsup u = (SUP n. (u o r) n)" using `(SUP n. (u o r) n) \<le> limsup u` by simp
-  then have "(u o r) ----> limsup u" using `(u o r) ----> (SUP n. (u o r) n)` by simp
+  then have "(u o r) \<longlonglongrightarrow> limsup u" using `(u o r) \<longlonglongrightarrow> (SUP n. (u o r) n)` by simp
   then show ?thesis using  `subseq r` by auto
 qed
 
 lemma liminf_subseq_lim:
   fixes u::"nat \<Rightarrow>  'a :: {complete_linorder, linorder_topology}"
-  shows "\<exists>r. subseq r \<and> (u o r) ----> liminf u"
+  shows "\<exists>r. subseq r \<and> (u o r) \<longlonglongrightarrow> liminf u"
 proof (cases)
   assume "\<forall>n. \<exists>p>n. \<forall>m\<ge>p. u m \<ge> u p"
   then have "\<exists>r. \<forall>n. (\<forall>m\<ge>r n. u m \<ge> u (r n)) \<and> r n < r (Suc n)"
@@ -535,12 +535,12 @@ proof (cases)
     by (auto simp: subseq_Suc_iff)
   def umin \<equiv> "\<lambda>n. (INF m:{n..}. u m)"
   have "incseq umin" unfolding umin_def by (simp add: INF_superset_mono incseq_def)
-  then have "umin ----> liminf u" unfolding umin_def by (metis LIMSEQ_SUP liminf_SUP_INF)
-  then have *: "(umin o r) ----> liminf u" by (simp add: LIMSEQ_subseq_LIMSEQ `subseq r`)
+  then have "umin \<longlonglongrightarrow> liminf u" unfolding umin_def by (metis LIMSEQ_SUP liminf_SUP_INF)
+  then have *: "(umin o r) \<longlonglongrightarrow> liminf u" by (simp add: LIMSEQ_subseq_LIMSEQ `subseq r`)
   have "\<And>n. umin(r n) = u(r n)" unfolding umin_def using mono
     by (metis le_INF_iff antisym atLeast_def mem_Collect_eq order_refl)
   then have "umin o r = u o r" unfolding o_def by simp
-  then have "(u o r) ----> liminf u" using * by simp
+  then have "(u o r) \<longlonglongrightarrow> liminf u" using * by simp
   then show ?thesis using `subseq r` by blast
 next
   assume "\<not> (\<forall>n. \<exists>p>n. (\<forall>m\<ge>p. u m \<ge> u p))"
@@ -597,7 +597,7 @@ next
   then obtain r where r: "\<forall>n. N < r n \<and> r n < r (Suc n) \<and> (\<forall>i\<in> {N<..r (Suc n)}. u i \<ge> u (r (Suc n)))" by auto
   have "subseq r" using r by (auto simp: subseq_Suc_iff)
   have "decseq (u o r)" unfolding o_def using r by (simp add: decseq_SucI order.strict_implies_order)
-  then have "(u o r) ----> (INF n. (u o r) n)" using LIMSEQ_INF by blast
+  then have "(u o r) \<longlonglongrightarrow> (INF n. (u o r) n)" using LIMSEQ_INF by blast
   then have "liminf (u o r) = (INF n. (u o r) n)" by (simp add: lim_imp_Liminf)
   moreover have "liminf (u o r) \<ge> liminf u" using `subseq r` by (simp add: liminf_subseq_mono)
   ultimately have "(INF n. (u o r) n) \<ge> liminf u" by simp
@@ -613,7 +613,7 @@ next
   then have "liminf u \<ge> (INF n. (u o r) n)" unfolding Liminf_def
     by (metis (mono_tags, lifting) SUP_upper2 atLeast_Suc_greaterThan atLeast_def eventually_ge_at_top mem_Collect_eq)
   then have "liminf u = (INF n. (u o r) n)" using `(INF n. (u o r) n) \<ge> liminf u` by simp
-  then have "(u o r) ----> liminf u" using `(u o r) ----> (INF n. (u o r) n)` by simp
+  then have "(u o r) \<longlonglongrightarrow> liminf u" using `(u o r) \<longlonglongrightarrow> (INF n. (u o r) n)` by simp
   then show ?thesis using  `subseq r` by auto
 qed
 
@@ -980,7 +980,7 @@ next
 qed
 
 lemma id_nat_ereal_tendsto_PInf:
-  "(\<lambda> n::nat. real n) ----> \<infinity>"
+  "(\<lambda> n::nat. real n) \<longlonglongrightarrow> \<infinity>"
 by (simp add: filterlim_real_sequentially tendsto_PInfty_eq_at_top)
 
 text {* the next one is copied from \verb+tendsto_setsum+. *}
@@ -1070,15 +1070,15 @@ next
   then have "limsup u < \<infinity>" "limsup v < \<infinity>" by auto
 
   def w \<equiv> "\<lambda>n. u n + v n"
-  obtain r where r: "subseq r" "(w o r) ----> limsup w" using limsup_subseq_lim by auto
-  obtain s where s: "subseq s" "(u o r o s) ----> limsup (u o r)" using limsup_subseq_lim by auto
-  obtain t where t: "subseq t" "(v o r o s o t) ----> limsup (v o r o s)" using limsup_subseq_lim by auto
+  obtain r where r: "subseq r" "(w o r) \<longlonglongrightarrow> limsup w" using limsup_subseq_lim by auto
+  obtain s where s: "subseq s" "(u o r o s) \<longlonglongrightarrow> limsup (u o r)" using limsup_subseq_lim by auto
+  obtain t where t: "subseq t" "(v o r o s o t) \<longlonglongrightarrow> limsup (v o r o s)" using limsup_subseq_lim by auto
 
   def a \<equiv> "r o s o t"
   have "subseq a" using r s t by (simp add: a_def subseq_o)
-  have l:"(w o a) ----> limsup w"
-         "(u o a) ----> limsup (u o r)"
-         "(v o a) ----> limsup (v o r o s)"
+  have l:"(w o a) \<longlonglongrightarrow> limsup w"
+         "(u o a) \<longlonglongrightarrow> limsup (u o r)"
+         "(v o a) \<longlonglongrightarrow> limsup (v o r o s)"
   apply (metis (no_types, lifting) r(2) s(1) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) s(2) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) t(2) a_def comp_assoc)
@@ -1089,10 +1089,10 @@ next
   have "limsup (v o r o s) \<le> limsup v" by (simp add: comp_assoc limsup_subseq_mono r(1) s(1) subseq_o)
   then have b: "limsup (v o r o s)  \<noteq> \<infinity>" using `limsup v < \<infinity>` by auto
 
-  have "(\<lambda>n. (u o a) n + (v o a) n) ----> limsup (u o r) + limsup (v o r o s)"
+  have "(\<lambda>n. (u o a) n + (v o a) n) \<longlonglongrightarrow> limsup (u o r) + limsup (v o r o s)"
     using l tendsto_add_ereal_general a b by fastforce
   moreover have "(\<lambda>n. (u o a) n + (v o a) n) = (w o a)" unfolding w_def by auto
-  ultimately have "(w o a) ---->  limsup (u o r) + limsup (v o r o s)" by simp
+  ultimately have "(w o a) \<longlonglongrightarrow>  limsup (u o r) + limsup (v o r o s)" by simp
   then have "limsup w =  limsup (u o r) + limsup (v o r o s)" using l(1) using LIMSEQ_unique by blast
   then have "limsup w \<le> limsup u + limsup v"
     using `limsup (u o r) \<le> limsup u` `limsup (v o r o s) \<le> limsup v` ereal_add_mono by simp
@@ -1116,15 +1116,15 @@ next
   then have "liminf u > -\<infinity>" "liminf v > -\<infinity>" by auto
 
   def w \<equiv> "\<lambda>n. u n + v n"
-  obtain r where r: "subseq r" "(w o r) ----> liminf w" using liminf_subseq_lim by auto
-  obtain s where s: "subseq s" "(u o r o s) ----> liminf (u o r)" using liminf_subseq_lim by auto
-  obtain t where t: "subseq t" "(v o r o s o t) ----> liminf (v o r o s)" using liminf_subseq_lim by auto
+  obtain r where r: "subseq r" "(w o r) \<longlonglongrightarrow> liminf w" using liminf_subseq_lim by auto
+  obtain s where s: "subseq s" "(u o r o s) \<longlonglongrightarrow> liminf (u o r)" using liminf_subseq_lim by auto
+  obtain t where t: "subseq t" "(v o r o s o t) \<longlonglongrightarrow> liminf (v o r o s)" using liminf_subseq_lim by auto
 
   def a \<equiv> "r o s o t"
   have "subseq a" using r s t by (simp add: a_def subseq_o)
-  have l:"(w o a) ----> liminf w"
-         "(u o a) ----> liminf (u o r)"
-         "(v o a) ----> liminf (v o r o s)"
+  have l:"(w o a) \<longlonglongrightarrow> liminf w"
+         "(u o a) \<longlonglongrightarrow> liminf (u o r)"
+         "(v o a) \<longlonglongrightarrow> liminf (v o r o s)"
   apply (metis (no_types, lifting) r(2) s(1) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) s(2) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) t(2) a_def comp_assoc)
@@ -1135,10 +1135,10 @@ next
   have "liminf (v o r o s) \<ge> liminf v" by (simp add: comp_assoc liminf_subseq_mono r(1) s(1) subseq_o)
   then have b: "liminf (v o r o s)  \<noteq> -\<infinity>" using `liminf v > -\<infinity>` by auto
 
-  have "(\<lambda>n. (u o a) n + (v o a) n) ----> liminf (u o r) + liminf (v o r o s)"
+  have "(\<lambda>n. (u o a) n + (v o a) n) \<longlonglongrightarrow> liminf (u o r) + liminf (v o r o s)"
     using l tendsto_add_ereal_general a b by fastforce
   moreover have "(\<lambda>n. (u o a) n + (v o a) n) = (w o a)" unfolding w_def by auto
-  ultimately have "(w o a) ---->  liminf (u o r) + liminf (v o r o s)" by simp
+  ultimately have "(w o a) \<longlonglongrightarrow>  liminf (u o r) + liminf (v o r o s)" by simp
   then have "liminf w =  liminf (u o r) + liminf (v o r o s)" using l(1) using LIMSEQ_unique by blast
   then have "liminf w \<ge> liminf u + liminf v"
     using `liminf (u o r) \<ge> liminf u` `liminf (v o r o s) \<ge> liminf v` ereal_add_mono by simp
@@ -1147,11 +1147,11 @@ qed
 
 lemma ereal_limsup_lim_add:
   fixes u v::"nat \<Rightarrow> ereal"
-  assumes "u ----> a" "abs(a) \<noteq> \<infinity>"
+  assumes "u \<longlonglongrightarrow> a" "abs(a) \<noteq> \<infinity>"
   shows "limsup (\<lambda>n. u n + v n) = a + limsup v"
 proof -
   have "limsup u = a" using assms(1) using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
-  have "(\<lambda>n. -u n) ----> -a" using assms(1) by auto
+  have "(\<lambda>n. -u n) \<longlonglongrightarrow> -a" using assms(1) by auto
   then have "limsup (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
 
   have "limsup (\<lambda>n. u n + v n) \<le> limsup u + limsup v"
@@ -1178,12 +1178,12 @@ qed
 
 lemma ereal_liminf_lim_add:
   fixes u v::"nat \<Rightarrow> ereal"
-  assumes "u ----> a" "abs(a) \<noteq> \<infinity>"
+  assumes "u \<longlonglongrightarrow> a" "abs(a) \<noteq> \<infinity>"
   shows "liminf (\<lambda>n. u n + v n) = a + liminf v"
 proof -
   have "liminf u = a" using assms(1) using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
   then have *: "abs(liminf u) \<noteq> \<infinity>" using assms(2) by auto
-  have "(\<lambda>n. -u n) ----> -a" using assms(1) by auto
+  have "(\<lambda>n. -u n) \<longlonglongrightarrow> -a" using assms(1) by auto
   then have "liminf (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
   then have **: "abs(liminf  (\<lambda>n. -u n)) \<noteq> \<infinity>" using assms(2) by auto
 
@@ -1220,15 +1220,15 @@ next
   then have "limsup v < \<infinity>" "liminf u < \<infinity>" by auto
 
   def w \<equiv> "\<lambda>n. u n + v n"
-  obtain r where r: "subseq r" "(u o r) ----> liminf u" using liminf_subseq_lim by auto
-  obtain s where s: "subseq s" "(w o r o s) ----> liminf (w o r)" using liminf_subseq_lim by auto
-  obtain t where t: "subseq t" "(v o r o s o t) ----> limsup (v o r o s)" using limsup_subseq_lim by auto
+  obtain r where r: "subseq r" "(u o r) \<longlonglongrightarrow> liminf u" using liminf_subseq_lim by auto
+  obtain s where s: "subseq s" "(w o r o s) \<longlonglongrightarrow> liminf (w o r)" using liminf_subseq_lim by auto
+  obtain t where t: "subseq t" "(v o r o s o t) \<longlonglongrightarrow> limsup (v o r o s)" using limsup_subseq_lim by auto
 
   def a \<equiv> "r o s o t"
   have "subseq a" using r s t by (simp add: a_def subseq_o)
-  have l:"(u o a) ----> liminf u"
-         "(w o a) ----> liminf (w o r)"
-         "(v o a) ----> limsup (v o r o s)"
+  have l:"(u o a) \<longlonglongrightarrow> liminf u"
+         "(w o a) \<longlonglongrightarrow> liminf (w o r)"
+         "(v o a) \<longlonglongrightarrow> limsup (v o r o s)"
   apply (metis (no_types, lifting) r(2) s(1) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) s(2) t(1) LIMSEQ_subseq_LIMSEQ a_def comp_assoc)
   apply (metis (no_types, lifting) t(2) a_def comp_assoc)
@@ -1238,10 +1238,10 @@ next
   have "limsup (v o r o s) \<le> limsup v" by (simp add: comp_assoc limsup_subseq_mono r(1) s(1) subseq_o)
   then have b: "limsup (v o r o s)  < \<infinity>" using `limsup v < \<infinity>` by auto
 
-  have "(\<lambda>n. (u o a) n + (v o a) n) ----> liminf u + limsup (v o r o s)"
+  have "(\<lambda>n. (u o a) n + (v o a) n) \<longlonglongrightarrow> liminf u + limsup (v o r o s)"
    apply (rule tendsto_add_ereal_general) using b  `liminf u < \<infinity>` l(1) l(3) by force+
   moreover have "(\<lambda>n. (u o a) n + (v o a) n) = (w o a)" unfolding w_def by auto
-  ultimately have "(w o a) ---->  liminf u + limsup (v o r o s)" by simp
+  ultimately have "(w o a) \<longlonglongrightarrow>  liminf u + limsup (v o r o s)" by simp
   then have "liminf (w o r) =  liminf u + limsup (v o r o s)" using l(2) using LIMSEQ_unique by blast
   then have "liminf w \<le> liminf u + limsup v"
     using `liminf (w o r) \<ge> liminf w` `limsup (v o r o s) \<le> limsup v`
@@ -1373,7 +1373,7 @@ qed
 lemma measurable_limit [measurable]:
   fixes f::"nat \<Rightarrow> 'a \<Rightarrow> 'b::first_countable_topology"
   assumes [measurable]: "\<And>n::nat. f n \<in> borel_measurable M"
-  shows "Measurable.pred M (\<lambda>x. (\<lambda>n. f n x) ----> c)"
+  shows "Measurable.pred M (\<lambda>x. (\<lambda>n. f n x) \<longlonglongrightarrow> c)"
 proof -
   obtain A :: "nat \<Rightarrow> 'b set" where A:
     "\<And>i. open (A i)"
@@ -1386,18 +1386,18 @@ proof -
 
   {
     fix u::"nat \<Rightarrow> 'b"
-    have "(u ----> c) \<longleftrightarrow> (\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
+    have "(u \<longlonglongrightarrow> c) \<longleftrightarrow> (\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
     proof
-      assume "u ----> c"
+      assume "u \<longlonglongrightarrow> c"
       {
         fix i
-        have "eventually (\<lambda>n. u n \<in> A i) sequentially" using A(1)[of i] A(2)[of i] `u ----> c`
+        have "eventually (\<lambda>n. u n \<in> A i) sequentially" using A(1)[of i] A(2)[of i] `u \<longlonglongrightarrow> c`
           by (simp add: topological_tendstoD)
       }
       then show "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)" by auto
     next
       assume H: "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
-      show "(u ----> c)"
+      show "(u \<longlonglongrightarrow> c)"
       proof (rule topological_tendstoI)
         fix S assume "open S" "c \<in> S"
         with A(3)[OF this] obtain i where "A i \<subseteq> S"
@@ -1408,11 +1408,11 @@ proof -
       qed
     qed
   }
-  then have "{x. (\<lambda>n. f n x) ----> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i))"
+  then have "{x. (\<lambda>n. f n x) \<longlonglongrightarrow> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i))"
     by (auto simp add: atLeast_def eventually_at_top_linorder)
-  then have "{x \<in> space M. (\<lambda>n. f n x) ----> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i) \<inter> space M)"
+  then have "{x \<in> space M. (\<lambda>n. f n x) \<longlonglongrightarrow> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i) \<inter> space M)"
     by auto
-  then have "{x \<in> space M. (\<lambda>n. f n x) ----> c} \<in> sets M" using mes by simp
+  then have "{x \<in> space M. (\<lambda>n. f n x) \<longlonglongrightarrow> c} \<in> sets M" using mes by simp
   then show ?thesis by auto
 qed
 
@@ -1535,9 +1535,9 @@ proof -
 
   have "W = (\<Union>i. B i)" using B_def `(\<Union>i. A i) = space M` W_meas by auto
   moreover have "incseq B" using B_def `incseq A` by (simp add: incseq_def subset_eq)
-  ultimately have "(\<lambda>i. emeasure M (B i)) ----> emeasure M W" using W_meas B_meas
+  ultimately have "(\<lambda>i. emeasure M (B i)) \<longlonglongrightarrow> emeasure M W" using W_meas B_meas
     by (simp add: B_meas Lim_emeasure_incseq image_subset_iff)
-  then have "(\<lambda>i. emeasure M (B i)) ----> \<infinity>" using W_inf by simp
+  then have "(\<lambda>i. emeasure M (B i)) \<longlonglongrightarrow> \<infinity>" using W_inf by simp
   moreover have "C < \<infinity>" by auto
   ultimately obtain i where d: "emeasure M (B i) > C" by (meson Lim_bounded_PInfty not_le)
   have "B i \<in> sets M" "B i \<subseteq> W" "emeasure M (B i) < \<infinity>" "emeasure M (B i) > C" using B_meas b c d by auto
@@ -1601,9 +1601,9 @@ proof -
     fix x assume "x \<in> space M - B"
     then have "\<And>n::nat. x \<in> space M - A  (1/(real (n+1)))" unfolding B_def by simp
     then have i: "\<And>n::nat. F x \<le> G x +  (1/(real (n+1)))" using A by simp
-    have "(\<lambda>n. (1/(real (n+1)))) ----> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
-    then have *: "(\<lambda>n. ereal(1/(real (n+1)))) ----> 0" by (simp add: zero_ereal_def)
-    have "(\<lambda>n. G x + ereal(1/(real (n+1)))) ----> G x + 0"
+    have "(\<lambda>n. (1/(real (n+1)))) \<longlonglongrightarrow> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
+    then have *: "(\<lambda>n. ereal(1/(real (n+1)))) \<longlonglongrightarrow> 0" by (simp add: zero_ereal_def)
+    have "(\<lambda>n. G x + ereal(1/(real (n+1)))) \<longlonglongrightarrow> G x + 0"
       apply (rule tendsto_add_ereal_general1[where ?y= 0 and ?x = "G x" and ?g = "(\<lambda>n. ereal(1/(real (n+1))))"]) using * by auto
     then have "F x \<le> G x" using i LIMSEQ_le_const by fastforce
   }
@@ -1644,8 +1644,8 @@ proof -
     fix x assume "x \<in> space M - B"
     then have "\<And>n::nat. x \<in> space M - A  (1/(real (n+1)))" unfolding B_def by simp
     then have i: "\<And>n::nat. F x \<le> G x +  (1/(real (n+1)))" using A by simp
-    have *: "(\<lambda>n. (1/(real (n+1)))) ----> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
-    have "(\<lambda>n. G x + 1/(real (n+1))) ----> G x + 0"
+    have *: "(\<lambda>n. (1/(real (n+1)))) \<longlonglongrightarrow> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
+    have "(\<lambda>n. G x + 1/(real (n+1))) \<longlonglongrightarrow> G x + 0"
       apply (rule tendsto_add[where ?b= 0 and ?a = "G x" and ?g = "(\<lambda>n. 1/(real (n+1)))"]) using * by auto
     then have "F x \<le> G x" using i LIMSEQ_le_const by fastforce
   }
@@ -2091,9 +2091,9 @@ all the time positivity or integrability (thankfully, measurability is handled m
 
 lemma AE_and_int_bound_implies_L1_conv:
    assumes "\<And> n. integrable M (F n)" "integrable M f"
-           "AE x in M. (\<lambda>n. F n x) ----> f x"
+           "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
            "limsup (\<lambda>n. \<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
-    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) ----> 0"
+    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
 proof -
   have [measurable]: "\<And>n. (\<lambda>x. norm(F n x)) \<in> borel_measurable M"
                      "(\<lambda>x. norm(f x)) \<in> borel_measurable M"
@@ -2107,15 +2107,15 @@ proof -
   then have fin2: "abs(2 * (\<integral>\<^sup>+ x. norm(f x) \<partial>M)) \<noteq> \<infinity>" by auto
 
   {
-    fix x assume *: "(\<lambda>n. F n x) ----> f x"
-    then have "(\<lambda>n. norm(F n x)) ----> norm(f x)" using tendsto_norm by blast
-    moreover have "(\<lambda>n. norm(F n x - f x)) ----> 0"  using * Lim_null tendsto_norm_zero_iff by fastforce
-    ultimately have a: "(\<lambda>n. norm(F n x) - norm(F n x - f x)) ----> norm(f x)" using tendsto_diff by fastforce
-    have "(\<lambda>n. norm(f x) + (norm(F n x) - norm(F n x - f x))) ----> norm(f x) + norm(f x)"
+    fix x assume *: "(\<lambda>n. F n x) \<longlonglongrightarrow> f x"
+    then have "(\<lambda>n. norm(F n x)) \<longlonglongrightarrow> norm(f x)" using tendsto_norm by blast
+    moreover have "(\<lambda>n. norm(F n x - f x)) \<longlonglongrightarrow> 0"  using * Lim_null tendsto_norm_zero_iff by fastforce
+    ultimately have a: "(\<lambda>n. norm(F n x) - norm(F n x - f x)) \<longlonglongrightarrow> norm(f x)" using tendsto_diff by fastforce
+    have "(\<lambda>n. norm(f x) + (norm(F n x) - norm(F n x - f x))) \<longlonglongrightarrow> norm(f x) + norm(f x)"
       by (rule tendsto_add) (auto simp add: a)
     moreover have "\<And>n. G n x =  norm(f x) + (norm(F n x) - norm(F n x - f x))" unfolding G_def by simp
-    ultimately have "(\<lambda>n. G n x) ---->  2 * norm(f x)" by simp
-    then have "(\<lambda>n. ereal(G n x)) ----> 2 * ereal(norm(f x))" by simp
+    ultimately have "(\<lambda>n. G n x) \<longlonglongrightarrow>  2 * norm(f x)" by simp
+    then have "(\<lambda>n. ereal(G n x)) \<longlonglongrightarrow> 2 * ereal(norm(f x))" by simp
     then have "liminf (\<lambda>n. ereal(G n x)) = 2 * ereal(norm(f x))"
       using sequentially_bot tendsto_iff_Liminf_eq_Limsup by blast
   }
@@ -2194,9 +2194,9 @@ qed
 lemma AE_and_int_bound_implies_L1_conv2:
   fixes F::"nat \<Rightarrow> 'a \<Rightarrow> 'b::{banach, second_countable_topology}"
    assumes "\<And> n::nat. F n \<in> borel_measurable M" "integrable M f"
-           "AE x in M. (\<lambda>n. F n x) ----> f x"
+           "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
            "\<And>n. (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
-    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) ----> 0"
+    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
 proof (rule AE_and_int_bound_implies_L1_conv)
   fix n::nat
   have " (\<integral>\<^sup>+ x. norm(f x) \<partial>M) < \<infinity>" using assms(2) by (metis has_bochner_integral_implies_finite_norm integrable.cases)

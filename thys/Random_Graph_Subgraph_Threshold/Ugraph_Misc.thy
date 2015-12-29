@@ -178,35 +178,35 @@ lemma image_comp_cong: "(\<And>a. a \<in> A \<Longrightarrow> f a = f (g a)) \<L
 by (auto simp: image_iff)
 
 abbreviation less_fun :: "(nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" (infix "\<lless>" 50) where
-"f \<lless> g \<equiv> (\<lambda>n. f n / g n) ----> 0"
+"f \<lless> g \<equiv> (\<lambda>n. f n / g n) \<longlonglongrightarrow> 0"
 
 context
   fixes f :: "nat \<Rightarrow> real"
 begin
 
-  lemma LIMSEQ_power_zero: "f ----> 0 \<Longrightarrow> 0 < n  \<Longrightarrow> (\<lambda>x. f x ^ n :: real) ----> 0"
+  lemma LIMSEQ_power_zero: "f \<longlonglongrightarrow> 0 \<Longrightarrow> 0 < n  \<Longrightarrow> (\<lambda>x. f x ^ n :: real) \<longlonglongrightarrow> 0"
   by (metis less_not_refl3 power_eq_0_iff tendsto_power)
 
   lemma LIMSEQ_cong:
-    assumes "f ----> x" "\<forall>\<^sup>\<infinity>n. f n = g n"
-    shows "g ----> x"
+    assumes "f \<longlonglongrightarrow> x" "\<forall>\<^sup>\<infinity>n. f n = g n"
+    shows "g \<longlonglongrightarrow> x"
   by (rule real_tendsto_sandwich[where f = f and h = f, OF eventually_mono[OF assms(2)] eventually_mono[OF assms(2)]]) (auto simp: assms(1))
   print_statement Lim_transform_eventually
 
 
   lemma LIMSEQ_le_zero:
-    assumes "g ----> 0" "\<forall>\<^sup>\<infinity>n. 0 \<le> f n" "\<forall>\<^sup>\<infinity>n. f n \<le> g n"
-    shows "f ----> 0"
+    assumes "g \<longlonglongrightarrow> 0" "\<forall>\<^sup>\<infinity>n. 0 \<le> f n" "\<forall>\<^sup>\<infinity>n. f n \<le> g n"
+    shows "f \<longlonglongrightarrow> 0"
   by (rule real_tendsto_sandwich[OF assms(2) assms(3) tendsto_const assms(1)])
 
   lemma LIMSEQ_const_mult:
-    assumes "f ----> a"
-    shows "(\<lambda>x. c * f x) ----> c * a"
+    assumes "f \<longlonglongrightarrow> a"
+    shows "(\<lambda>x. c * f x) \<longlonglongrightarrow> c * a"
   by (rule tendsto_mult[OF tendsto_const[where k = c] assms])
 
   lemma LIMSEQ_const_div:
-    assumes "f ----> a" "c \<noteq> 0"
-    shows "(\<lambda>x. f x / c) ----> a / c"
+    assumes "f \<longlonglongrightarrow> a" "c \<noteq> 0"
+    shows "(\<lambda>x. f x / c) \<longlonglongrightarrow> a / c"
   using LIMSEQ_const_mult[where c = "1/c"] assms by simp
 
 end
@@ -244,9 +244,9 @@ lemma less_fun_const_quot:
   assumes "f \<lless> g" "c \<noteq> 0"
   shows "(\<lambda>n. b * f n) \<lless> (\<lambda>n. c * g n)"
 proof -
-  have "(\<lambda>n. (b * (f n / g n)) / c) ----> (b * 0) / c"
+  have "(\<lambda>n. (b * (f n / g n)) / c) \<longlonglongrightarrow> (b * 0) / c"
     using assms by (rule LIMSEQ_const_div[OF LIMSEQ_const_mult])
-  hence "(\<lambda>n. (b * (f n / g n)) / c) ----> 0"
+  hence "(\<lambda>n. (b * (f n / g n)) / c) \<longlonglongrightarrow> 0"
     by simp
   with eventually_sequentiallyI show ?thesis
     by (rule Lim_transform_eventually) simp

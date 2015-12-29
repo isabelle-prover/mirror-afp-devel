@@ -858,7 +858,7 @@ lemma AE_T_max_sfirst:
   assumes AE: "AE \<omega> in T c. sfirst X (c ## \<omega>) < \<infinity>" and "0 < e"
   shows "\<exists>N::nat. \<P>(\<omega> in T c. N < sfirst X (c ## \<omega>)) < e" (is "\<exists>N. ?P N < e")
 proof -
-  have "?P ----> measure (T c) (\<Inter>N::nat. {bT \<in> space (T c). N < sfirst X (c ## bT)})"
+  have "?P \<longlonglongrightarrow> measure (T c) (\<Inter>N::nat. {bT \<in> space (T c). N < sfirst X (c ## bT)})"
     using dual_order.strict_trans enat_ord_simps(2)
     by (intro T.finite_Lim_measure_decseq) (force simp: decseq_Suc_iff simp del: enat_ord_simps)+
   also have "measure (T c) (\<Inter>N::nat. {bT \<in> space (T c). N < sfirst X (c ## bT)}) =

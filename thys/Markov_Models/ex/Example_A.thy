@@ -133,7 +133,7 @@ end
 
 lemma n_is_limit:
   assumes x: "x \<in> {C1, C2, C3}" and y: "y \<in> {C1, C2, C3}"
-  shows "(A.p x y) ----> pmf n y"
+  shows "(A.p x y) \<longlonglongrightarrow> pmf n y"
   using A.stationary_distribution_imp_p_limit[OF A_aperiodic A_essential _ stationary_distribution_N _ x y]
   by simp
 
