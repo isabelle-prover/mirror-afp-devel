@@ -2,10 +2,10 @@
   File:   Akra_Bazzi_Real.thy
   Author: Manuel Eberl <eberlm@in.tum.de>
 
-  The continuous version of the Akra–Bazzi theorem for functions on the reals.
+  The continuous version of the Akra-Bazzi theorem for functions on the reals.
 *)
 
-section {* The continuous Akra--Bazzi theorem *}
+section {* The continuous Akra-Bazzi theorem *}
 theory Akra_Bazzi_Real
 imports 
   Complex_Main

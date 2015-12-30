@@ -2,7 +2,7 @@
   File:   Master_Theorem.thy
   Author: Manuel Eberl <eberlm@in.tum.de>
 
-  The Master theorem in a generalised form as derived from the Akra–Bazzi theorem.
+  The Master theorem in a generalised form as derived from the Akra-Bazzi theorem.
 *)
 section {* The Master theorem *}
 theory Master_Theorem

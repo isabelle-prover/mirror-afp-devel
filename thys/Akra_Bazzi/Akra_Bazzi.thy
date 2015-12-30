@@ -2,10 +2,10 @@
   File:   Akra_Bazzi.thy
   Author: Manuel Eberl <eberlm@in.tum.de>
 
-  The Akra–Bazzi theorem for functions on the naturals.
+  The Akra-Bazzi theorem for functions on the naturals.
 *)
 
-section {* The discrete Akra--Bazzi theorem *}
+section {* The discrete Akra-Bazzi theorem *}
 theory Akra_Bazzi
 imports
   Complex_Main
