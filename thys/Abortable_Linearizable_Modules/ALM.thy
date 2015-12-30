@@ -158,7 +158,7 @@ definition composeALMs :: "nat \<Rightarrow> nat \<Rightarrow> (ALM_action, comp
   -- {*the composition of two ALMs*}
   where
   "composeALMs \<equiv> \<lambda> id1 id2 . 
-     hide (ALM_ioa 0 id1 || ALM_ioa id1 id2)
+     hide (ALM_ioa 0 id1 \<parallel> ALM_ioa id1 id2)
           {act . EX c tr r . act = Switch c id1 tr r}"
 
 end

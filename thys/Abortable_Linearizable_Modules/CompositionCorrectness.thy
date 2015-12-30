@@ -30,7 +30,7 @@ definition  in_trans_cases_fun :: "nat => nat => (ALM_state * ALM_state) => (ALM
 
 lemma  composeALMsE:
   -- {*A rule for decomposing proofs*}
-  assumes "id1 ~= 0" and "id1 < id2" and in_trans_comp:"s -(a::ALM_action)--composeALMs id1 id2-> t"
+  assumes "id1 ~= 0" and "id1 < id2" and in_trans_comp:"s \<midarrow>(a::ALM_action)\<midarrow>composeALMs id1 id2\<rightarrow> t"
   shows decomp: "in_trans_cases_fun id1 id2 s t"
 proof -
   from in_trans_comp and `id1 ~= 0` and `id1 < id2`
@@ -61,8 +61,8 @@ proof -
   ultimately show ?thesis unfolding in_trans_cases_fun_def apply simp by(metis linorder_not_less)
 qed
 
-lemma  my_rule:"[|id1 \<noteq> 0; id1 < id2; s -a--composeALMs id1 id2-> t; [|in_trans_cases_fun id1 id2 s t|] ==> P|]  ==> P"  by (auto intro: composeALMsE[where s="s" and t="t" and a="a"])
-lemma  my_rule2:"[|0 < id1; id1 < id2; s -a--composeALMs id1 id2-> t; [|in_trans_cases_fun id1 id2 s t|] ==> P|]  ==> P"  by (auto intro: composeALMsE[where s="s" and t="t" and a="a"])
+lemma  my_rule:"[|id1 \<noteq> 0; id1 < id2; s \<midarrow>a\<midarrow>composeALMs id1 id2\<rightarrow> t; [|in_trans_cases_fun id1 id2 s t|] ==> P|]  ==> P"  by (auto intro: composeALMsE[where s="s" and t="t" and a="a"])
+lemma  my_rule2:"[|0 < id1; id1 < id2; s \<midarrow>a\<midarrow>composeALMs id1 id2\<rightarrow> t; [|in_trans_cases_fun id1 id2 s t|] ==> P|]  ==> P"  by (auto intro: composeALMsE[where s="s" and t="t" and a="a"])
 
 subsection {*Invariants of a single ALM instance*}
 
@@ -207,7 +207,7 @@ proof  (rule invariantI, auto)
   thus "P2 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P2_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P2 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P2 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   from `0 < id1` and `id1 < id2` and in_trans_comp show "P2 (s1', s2')" 
   proof (rule my_rule2) 
     assume "in_trans_cases_fun id1 id2 (s1, s2) (s1', s2')"
@@ -222,7 +222,7 @@ proof  (rule invariantI, auto)
   thus "P5 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P5_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P5 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P5 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   from `0 < id1` and `id1 < id2` and in_trans_comp show "P5 (s1', s2')" 
   proof (rule my_rule2) 
     assume "in_trans_cases_fun id1 id2 (s1, s2) (s1', s2')"
@@ -238,7 +238,7 @@ proof  (rule invariantI, rule_tac [2] impI)
 next
   fix s t a
   assume "P6 s"
-  assume "id1 \<noteq> 0" and "id1 < id2" and "s -a--composeALMs id1 id2-> t"
+  assume "id1 \<noteq> 0" and "id1 < id2" and "s \<midarrow>a\<midarrow>composeALMs id1 id2\<rightarrow> t"
   thus "P6 t" 
   proof (rule my_rule)
     assume "in_trans_cases_fun id1 id2 s t"
@@ -253,7 +253,7 @@ proof  (rule invariantI, auto)
   thus "P9 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P9_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P9 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P9 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P6 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -273,7 +273,7 @@ proof  (rule invariantI, auto)
   thus "P10 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P10_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P10 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P10 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   from `0 < id1` and `id1 < id2` and in_trans_comp show "P10 (s1', s2')" 
   proof (rule my_rule2) 
     assume "in_trans_cases_fun id1 id2 (s1, s2) (s1', s2')"
@@ -288,7 +288,7 @@ proof  (rule invariantI, auto)
   thus "P3 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P3_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P3 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P3 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P10 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -308,7 +308,7 @@ proof  (rule invariantI, auto)
   thus "P7 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P7_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P7 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P7 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P6 (s1, s2)" and "P10 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -375,7 +375,7 @@ proof  (rule invariantI, auto)
   thus "P4 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P4_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P4 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P4 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P6 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -395,7 +395,7 @@ proof  (rule invariantI, auto)
   thus "P8 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P8_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P8 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P8 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P6 (s1, s2)" and "P10 (s1, s2)" and "P5 (s1, s2)" and "P4 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -564,7 +564,7 @@ proof (rule invariantI, auto)
   thus "P1a (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P1a_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P1a (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P1a (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P5 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -584,7 +584,7 @@ proof (rule invariantI, auto)
   thus "P1b (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P1b_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P1b (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P1b (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P1a (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -623,7 +623,7 @@ proof (rule invariantI, auto)
   thus "P14 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P14_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P14 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P14 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P6 (s1, s2)" and "P13 (s1, s2)" and "P10 (s1, s2)" and "P2 (s1, s2)" and "P4 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -691,7 +691,7 @@ proof (rule invariantI, auto)
   thus "P15 (s1, s2)" by (simp add: starts_of_def composeALMs_def hide_def ALM_ioa_def par_def ALM_start_def P15_def)
 next
   fix s1 s2 s1' s2' act
-  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P15 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+  assume "reachable (composeALMs id1 id2) (s1, s2)" and "P15 (s1, s2)" and "0 < id1" and "id1 < id2" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
   have "P13 (s1, s2)" and "P1b (s1, s2)" and "P6 (s1, s2)" and "P1a (s1, s2)" and "P5 (s1, s2)" and "P10 (s1, s2)"
   proof -
     from in_trans_comp and `reachable (composeALMs id1 id2) (s1, s2)` have "reachable (composeALMs id1 id2) (s1', s2')" by (auto intro: reachable.reachable_n)
@@ -831,7 +831,7 @@ proof -
       next
           -- {*Then we show the main property of a refinement mapping*}
         fix s1 s2 s1' s2' act
-        assume reachable:"reachable (composeALMs id1 id2) (s1, s2)" and in_trans_comp:"(s1, s2) -act--composeALMs id1 id2-> (s1', s2')"
+        assume reachable:"reachable (composeALMs id1 id2) (s1, s2)" and in_trans_comp:"(s1, s2) \<midarrow>act\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
         txt  {*We make the invariants available for later use*}
         have "P6 (s1, s2)" and "P6 (s1', s2')" and "P9 (s1, s2)" and "P7 (s1, s2)" and "P10 (s1, s2)" and "P4 (s1, s2)" and "P5 (s1, s2)" and "P13 (s1, s2)" and "P1a (s1, s2)" and "P14 (s1, s2)" and "P14 (s1', s2')" and "P15 (s1, s2)" and "P2 (s1, s2)" and "P3 (s1, s2)"
         proof  -
@@ -851,7 +851,7 @@ proof -
              apply auto 
           proof -
             fix c r
-            assume in_invoke:"(s1, s2) -Invoke c r--composeALMs id1 id2-> (s1', s2')"
+            assume in_invoke:"(s1, s2) \<midarrow>Invoke c r\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*If the current action is Invoke*}
             show "EX ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) & Finite ex & laststate (?t, ex) = ?t' & mk_trace (ALM_ioa 0 id2)$ex = [Invoke c r!]"
             proof  -
@@ -920,7 +920,7 @@ proof -
             qed
           next
             fix c r h
-            assume in_switch:"(s1, s2) -Switch c 0 h r--composeALMs id1 id2-> (s1', s2')"
+            assume in_switch:"(s1, s2) \<midarrow>Switch c 0 h r\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*If we get a switch 0 input (nothing happens)*}
             show "EX ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) & Finite ex & laststate (?t, ex) = ?t' & mk_trace (ALM_ioa 0 id2)$ex = [Switch c 0 h r!]"
             proof  -
@@ -940,7 +940,7 @@ proof -
             qed
           next
             fix c h r
-            assume in_switch:"(s1, s2) -Switch c id2 h r--composeALMs id1 id2-> (s1', s2')"
+            assume in_switch:"(s1, s2) \<midarrow>Switch c id2 h r\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*The case when the system switches to a third, new, instance*}
             show "EX ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) &
               Finite ex & laststate (?t, ex) = ?t' & mk_trace (ALM_ioa 0 id2)$ex = [Switch c id2 h r!]"
@@ -1033,7 +1033,7 @@ proof -
             qed
           next
             fix c h id'
-            assume in_commit:"(s1, s2) \<midarrow>Commit c id' h\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')" and "id' <  id2"
+            assume in_commit:"(s1, s2) \<midarrow>Commit c id' h\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')" and "id' <  id2"
               -- {*Case when the composition commits a request*}
             show "\<exists>ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) \<and> Finite ex \<and> laststate (?t, ex) = ?t' \<and> mk_trace (ALM_ioa 0 id2)\<cdot>ex = [Commit c id' h!]"
             proof  -
@@ -1102,7 +1102,7 @@ proof -
           with in_trans_comp and `id1 < id2` and `id1 \<noteq> 0` have "act : {act . act = Abort 0 | act = Abort id1 | (EX c r h . act = Linearize 0 h | act = Linearize id1 h | act = Switch c id1 h r | act = Initialize 0 h | act = Initialize id1 h)}" by  (auto simp add: composeALMs_def hide_def hide_asig_def ALM_ioa_def ALM_asig_def externals_def asig_inputs_def asig_outputs_def asig_internals_def asig_of_def trans_of_def par_def actions_def)
           with in_trans_comp show "\<exists>ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) \<and> Finite ex \<and> laststate (?t, ex) = ?t' \<and> mk_trace (ALM_ioa 0 id2)\<cdot>ex = nil" 
           proof  auto 
-            assume in_abort:"(s1, s2) \<midarrow>Abort 0\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_abort:"(s1, s2) \<midarrow>Abort 0\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*The case where the first Abastract aborts*}
             moreover  with `id1 \<noteq> 0` and `id1 < id2` and `P6 (s1, s2)` and `P2 (s1, s2)` have "\<forall> c . phase s1 c \<noteq> Aborted" and "hist s2 = []" and "\<forall> c . phase s2 c = Sleep" apply (simp_all add: composeALMs_def trans_of_def hide_def  par_def actions_def asig_outputs_def asig_inputs_def asig_internals_def asig_of_def ALM_ioa_def ALM_asig_def) apply(auto simp add:fun_eq_iff ALM_trans_def ref_mapping_def P6_def P2_def) done
             moreover  note `id1 \<noteq> 0`
@@ -1117,7 +1117,7 @@ proof -
               ultimately show "\<exists>ex. is_exec_frag (ALM_ioa 0 id2) (?t, ex) \<and> Finite ex \<and> laststate (?t, ex) = ?t \<and> mk_trace (ALM_ioa 0 id2)\<cdot>ex = nil" by (auto intro: exI[where x="?ex"])
             qed
           next
-            assume in_abort:"(s1, s2) \<midarrow>Abort id1\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_abort:"(s1, s2) \<midarrow>Abort id1\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*The case where the second ALM aborts*}
             show ?thesis
             proof  -
@@ -1136,7 +1136,7 @@ proof -
             qed
           next
             fix h
-            assume in_lin:"(s1, s2) \<midarrow>Linearize 0 h\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_lin:"(s1, s2) \<midarrow>Linearize 0 h\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*If the composition executes Linearize 0*}
             show ?thesis
             proof  -
@@ -1184,7 +1184,7 @@ proof -
             qed
           next
             fix h
-            assume in_lin:"(s1, s2) \<midarrow>Linearize id1 h\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_lin:"(s1, s2) \<midarrow>Linearize id1 h\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*If the composition executes Linearize id1*}
             let ?ex = "[(Linearize id1 h, ?t')!]"
             have "Finite ?ex" by auto
@@ -1226,7 +1226,7 @@ proof -
             ultimately show ?thesis by  (auto intro: exI[where x="?ex"])
           next
             fix c r h
-            assume in_switch:"(s1, s2) \<midarrow>Switch c id1 h r\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_switch:"(s1, s2) \<midarrow>Switch c id1 h r\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
               -- {*If the composition switches internally*}
             show ?thesis
             proof -
@@ -1252,12 +1252,12 @@ proof -
             qed
           next
             fix h
-            assume in_initialize:"(s1, s2) \<midarrow>Initialize 0 h\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_initialize:"(s1, s2) \<midarrow>Initialize 0 h\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
             hence False  using `P10 (s1, s2)` apply (simp_all add: composeALMs_def trans_of_def hide_def  par_def actions_def asig_outputs_def asig_inputs_def asig_internals_def asig_of_def ALM_ioa_def ALM_asig_def) apply(auto simp add:ALM_trans_def P10_def) done 
             thus ?thesis by  auto
           next
             fix h
-            assume in_initialize:"(s1, s2) \<midarrow>Initialize id1 h\<midarrow>composeALMs id1 id2\<longrightarrow> (s1', s2')"
+            assume in_initialize:"(s1, s2) \<midarrow>Initialize id1 h\<midarrow>composeALMs id1 id2\<rightarrow> (s1', s2')"
             -- {*If the second ALM of the composition initializes*}
             let ?ex = "[(Linearize id1 h, ?t')!]"
             have "Finite ?ex" by auto
