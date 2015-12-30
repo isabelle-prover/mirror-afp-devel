@@ -1791,7 +1791,7 @@ lemma lsc_hull_of_convex_aux:
 proof-
   have nontr: "~trivial_limit (at 1 within {0..< 1::real})"
     apply (subst trivial_limit_within) using real_interval_limpt by auto
-  have "((%m. ereal ((1-m)*a+m*b)) ---> (1 - 1) * a + 1 * b) (at 1 within {0..<1})"
+  have "((%m. ereal ((1-m)*a+m*b)) \<longlongrightarrow> (1 - 1) * a + 1 * b) (at 1 within {0..<1})"
     unfolding lim_ereal by (intro tendsto_intros)
   from lim_imp_Limsup[OF nontr this] show ?thesis by simp
 qed
@@ -1801,11 +1801,11 @@ lemma lsc_hull_of_convex:
   fixes f :: "'a::euclidean_space => ereal"
   assumes "convex_on UNIV f"
   assumes "x : rel_interior (domain f)"
-  shows "((%m. f((1-m)*\<^sub>R x + m *\<^sub>R y)) ---> (lsc_hull f) y) (at 1 within {0..<1})"
+  shows "((%m. f((1-m)*\<^sub>R x + m *\<^sub>R y)) \<longlongrightarrow> (lsc_hull f) y) (at 1 within {0..<1})"
 proof-
 let "?g m" = "f((1-m)*\<^sub>R x + m *\<^sub>R y)"
 { assume "y=x" hence "?g = (%m. f y)" by (simp add: algebra_simps)
-  hence "(?g ---> f y) (at 1 within {0..<1})" by (simp add: tendsto_const)
+  hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by (simp add: tendsto_const)
   moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
   ultimately have ?thesis by auto
 }

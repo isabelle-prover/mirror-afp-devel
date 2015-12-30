@@ -47,14 +47,14 @@ proof (subst continuous_on_open_vimage, (intro open_greaterThan allI impI)+)
 qed
 
 lemma tendsto_add_ereal: 
-  "0 \<le> x \<Longrightarrow> 0 \<le> y \<Longrightarrow> (f ---> y) F \<Longrightarrow> ((\<lambda>z. x + f z :: ereal) ---> x + y) F"
+  "0 \<le> x \<Longrightarrow> 0 \<le> y \<Longrightarrow> (f \<longlongrightarrow> y) F \<Longrightarrow> ((\<lambda>z. x + f z :: ereal) \<longlongrightarrow> x + y) F"
   apply (rule tendsto_compose[where f=f])
   using continuous_add_ereal[where t=x]
   unfolding continuous_on_def
   apply (auto simp add: at_within_open[where S="{- \<infinity> <..}"])
   done
 
-lemma tendsto_LimI: "(f ---> y) F \<Longrightarrow> (f ---> Lim F f) F"
+lemma tendsto_LimI: "(f \<longlongrightarrow> y) F \<Longrightarrow> (f \<longlongrightarrow> Lim F f) F"
   by (metis tendsto_Lim tendsto_bot)
 
 subsection {* The filter @{text at'} *}
@@ -63,16 +63,16 @@ abbreviation (in ccpo) "compact_element \<equiv> Complete_Partial_Order2.compact
 
 lemma tendsto_unique_eventually:
   fixes x x' :: "'a :: t2_space"
-  shows "F \<noteq> bot \<Longrightarrow> eventually (\<lambda>x. f x = g x) F \<Longrightarrow> (f ---> x) F \<Longrightarrow> (g ---> x') F \<Longrightarrow> x = x'"
+  shows "F \<noteq> bot \<Longrightarrow> eventually (\<lambda>x. f x = g x) F \<Longrightarrow> (f \<longlongrightarrow> x) F \<Longrightarrow> (g \<longlongrightarrow> x') F \<Longrightarrow> x = x'"
   by (metis tendsto_unique filterlim_cong)
 
 lemma (in ccpo) ccpo_Sup_upper2: "chain C \<Longrightarrow> x \<in> C \<Longrightarrow> y \<le> x \<Longrightarrow> y \<le> Sup C"
   by (blast intro: ccpo_Sup_upper order_trans)
 
-lemma tendsto_open_vimage: "(\<And>B. open B \<Longrightarrow> open (f -` B)) \<Longrightarrow> f -- l --> f l"
+lemma tendsto_open_vimage: "(\<And>B. open B \<Longrightarrow> open (f -` B)) \<Longrightarrow> f \<midarrow>l\<rightarrow> f l"
   using continuous_on_open_vimage[of UNIV f] continuous_on_def[of UNIV f] by simp
 
-lemma open_vimageI: "(\<And>x. f -- x --> f x) \<Longrightarrow> open A \<Longrightarrow> open (f -` A)"
+lemma open_vimageI: "(\<And>x. f \<midarrow>x\<rightarrow> f x) \<Longrightarrow> open A \<Longrightarrow> open (f -` A)"
   using continuous_on_open_vimage[of UNIV f] continuous_on_def[of UNIV f] by simp
 
 lemma principal_bot: "principal x = bot \<longleftrightarrow> x = {}"
@@ -83,10 +83,10 @@ definition "at' x = (if open {x} then principal {x} else at x)"
 lemma at'_bot: "at' x \<noteq> bot"
   by (simp add: at'_def at_eq_bot_iff principal_bot)
 
-lemma tendsto_id_at'[simp, intro]: "((\<lambda>x. x) ---> x) (at' x)"
+lemma tendsto_id_at'[simp, intro]: "((\<lambda>x. x) \<longlongrightarrow> x) (at' x)"
   by (simp add: at'_def topological_tendstoI eventually_principal tendsto_ident_at)
 
-lemma cont_at': "(f ---> f x) (at' x) \<longleftrightarrow> f -- x --> f x"
+lemma cont_at': "(f \<longlongrightarrow> f x) (at' x) \<longleftrightarrow> f \<midarrow>x\<rightarrow> f x"
   using at_eq_bot_iff[of x] by (auto split: split_if_asm intro!: topological_tendstoI simp: eventually_principal at'_def)
 
 subsection {* The type class @{text ccpo_topology} *}
@@ -196,7 +196,7 @@ end
 lemma tendsto_le_ccpo:
   fixes f g :: "'a \<Rightarrow> 'b::ccpo_topology"
   assumes F: "\<not> trivial_limit F"
-  assumes x: "(f ---> x) F" and y: "(g ---> y) F"
+  assumes x: "(f \<longlongrightarrow> x) F" and y: "(g \<longlongrightarrow> y) F"
   assumes ev: "eventually (\<lambda>x. g x \<le> f x) F"
   shows "y \<le> x"
 proof (rule ccontr)
@@ -229,12 +229,12 @@ qed
 
 lemma tendsto_ccpoI:
   fixes f :: "'a::ccpo_topology \<Rightarrow> 'b::ccpo_topology"
-  shows "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> chain (f ` C) \<and> f (Sup C) = Sup (f`C)) \<Longrightarrow> f -- x --> f x"
+  shows "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> chain (f ` C) \<and> f (Sup C) = Sup (f`C)) \<Longrightarrow> f \<midarrow>x\<rightarrow> f x"
   by (intro tendsto_open_vimage) (auto simp: open_ccpo simp del: Sup_image_eq)
 
 lemma tendsto_mcont: 
   assumes mcont: "mcont Sup op \<le> Sup op \<le> (f :: 'a :: ccpo_topology \<Rightarrow> 'b :: ccpo_topology)"
-  shows "f -- l --> f l"
+  shows "f \<midarrow>l\<rightarrow> f l"
 proof (intro tendsto_ccpoI conjI)
   fix C :: "'a set" assume C: "chain C" "C \<noteq> {}"
   show "chain (f`C)"

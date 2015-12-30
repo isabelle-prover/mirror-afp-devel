@@ -405,12 +405,12 @@ qed
 
 lemma poly_lhopital:
   assumes "poly p (x::real) = 0" "poly q x = 0" "q \<noteq> 0"
-  assumes "(\<lambda>x. poly (pderiv p) x / poly (pderiv q) x) -- x --> y"
-  shows "(\<lambda>x. poly p x / poly q x) -- x --> y"
+  assumes "(\<lambda>x. poly (pderiv p) x / poly (pderiv q) x) \<midarrow>x\<rightarrow> y"
+  shows "(\<lambda>x. poly p x / poly q x) \<midarrow>x\<rightarrow> y"
 using assms
 proof (rule_tac lhopital)
   have "isCont (poly p) x" "isCont (poly q) x" by simp_all
-  with assms(1,2) show "poly p -- x --> 0" "poly q -- x --> 0"
+  with assms(1,2) show "poly p \<midarrow>x\<rightarrow> 0" "poly q \<midarrow>x\<rightarrow> 0"
        by (simp_all add: isCont_def)
   from `q \<noteq> 0` and `poly q x = 0` have "pderiv q \<noteq> 0"
       by (auto dest: pderiv_iszero)
@@ -517,7 +517,7 @@ qed
 lemma poly_limit_aux:
   fixes p :: "real poly"
   defines "n \<equiv> degree p"
-  shows "((\<lambda>x. poly p x / x ^ n) ---> coeff p n) at_infinity"
+  shows "((\<lambda>x. poly p x / x ^ n) \<longlongrightarrow> coeff p n) at_infinity"
 proof (subst filterlim_cong, rule refl, rule refl)
   show "eventually (\<lambda>x. poly p x / x^n = (\<Sum>i\<le>n. coeff p i / x^(n-i)))
             at_infinity"
@@ -530,11 +530,11 @@ proof (subst filterlim_cong, rule refl, rule refl)
   qed
 
   let ?a = "\<lambda>i. if i = n then coeff p n else 0"
-  have "\<forall>i\<in>{..n}. ((\<lambda>x. coeff p i / x ^ (n - i)) ---> ?a i) at_infinity"
+  have "\<forall>i\<in>{..n}. ((\<lambda>x. coeff p i / x ^ (n - i)) \<longlongrightarrow> ?a i) at_infinity"
   proof
     fix i assume "i \<in> {..n}"
     hence "i \<le> n" by simp
-    show "((\<lambda>x. coeff p i / x ^ (n - i)) ---> ?a i) at_infinity"
+    show "((\<lambda>x. coeff p i / x ^ (n - i)) \<longlongrightarrow> ?a i) at_infinity"
     proof (cases "i = n")
       case True
         thus ?thesis by (intro tendstoI, subst eventually_at_infinity,
@@ -543,20 +543,20 @@ proof (subst filterlim_cong, rule refl, rule refl)
       case False
         hence "n - i > 0" using `i \<le> n` by simp
         from tendsto_inverse_0 and divide_real_def[of 1]
-            have "((\<lambda>x. 1 / x :: real) ---> 0) at_infinity" by simp
+            have "((\<lambda>x. 1 / x :: real) \<longlongrightarrow> 0) at_infinity" by simp
         from tendsto_power[OF this, of "n - i"]
-            have "((\<lambda>x::real. 1 / x ^ (n - i)) ---> 0) at_infinity"
+            have "((\<lambda>x::real. 1 / x ^ (n - i)) \<longlongrightarrow> 0) at_infinity"
                 using `n - i > 0` by (simp add: power_0_left power_one_over)
         from tendsto_mult_right_zero[OF this, of "coeff p i"]
-            have "((\<lambda>x. coeff p i / x ^ (n - i)) ---> 0) at_infinity"
+            have "((\<lambda>x. coeff p i / x ^ (n - i)) \<longlongrightarrow> 0) at_infinity"
                 by (simp add: field_simps)
         thus ?thesis using False by simp
     qed
   qed
-  hence "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) ---> (\<Sum>i\<le>n. ?a i)) at_infinity"
+  hence "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) \<longlongrightarrow> (\<Sum>i\<le>n. ?a i)) at_infinity"
       by (force intro: tendsto_setsum)
   also have "(\<Sum>i\<le>n. ?a i) = coeff p n" by (subst setsum.delta, simp_all)
-  finally show "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) ---> coeff p n) at_infinity" .
+  finally show "((\<lambda>x. \<Sum>i\<le>n. coeff p i / x^(n-i)) \<longlongrightarrow> coeff p n) at_infinity" .
 qed
 
 
@@ -569,7 +569,7 @@ proof-
   let ?n = "degree p"
   def f \<equiv> "\<lambda>x::real. poly p x / x^?n" and g \<equiv> "\<lambda>x::real. x ^ ?n"
 
-  from poly_limit_aux have "(f ---> coeff p (degree p)) at_top"
+  from poly_limit_aux have "(f \<longlongrightarrow> coeff p (degree p)) at_top"
       using tendsto_mono at_top_le_at_infinity unfolding f_def by blast
   moreover from assms
       have "LIM x at_top. g x :> at_top"
@@ -638,7 +638,7 @@ proof-
   let ?n = "degree p"
   def f \<equiv> "\<lambda>x::real. poly p x / x ^ ?n" and g \<equiv> "\<lambda>x::real. x ^ ?n"
 
-  from poly_limit_aux have "(f ---> coeff p (degree p)) at_bot"
+  from poly_limit_aux have "(f \<longlongrightarrow> coeff p (degree p)) at_bot"
       using tendsto_mono at_bot_le_at_infinity by (force simp: f_def)
   moreover from assms
       have "LIM x at_bot. g x :> (if even (degree p) then at_top else at_bot)"

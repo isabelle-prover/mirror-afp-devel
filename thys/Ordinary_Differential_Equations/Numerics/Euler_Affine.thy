@@ -107,7 +107,7 @@ lemma set_of_apprs_rotate3:
 
 end
 
-lemma tendsto_singleton[tendsto_intros]: "(f ---> f x) (at x within {x})"
+lemma tendsto_singleton[tendsto_intros]: "(f \<longlongrightarrow> f x) (at x within {x})"
   by (auto simp: tendsto_def eventually_at_filter)
 
 lemma continuous_on_singleton[continuous_intros]: "continuous_on {x} f"

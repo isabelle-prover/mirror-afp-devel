@@ -720,8 +720,8 @@ It is much more convenient in many situations, see for instance the proof of
 lemma tendsto_add_ereal_PInf:
   fixes y :: ereal
   assumes y: "y \<noteq> -\<infinity>"
-  assumes f: "(f ---> \<infinity>) F" and g: "(g ---> y) F"
-  shows "((\<lambda>x. f x + g x) ---> \<infinity>) F"
+  assumes f: "(f \<longlongrightarrow> \<infinity>) F" and g: "(g \<longlongrightarrow> y) F"
+  shows "((\<lambda>x. f x + g x) \<longlongrightarrow> \<infinity>) F"
 proof -
   have "\<exists>C. eventually (\<lambda>x. g x > ereal C) F"
   proof (cases y)
@@ -758,8 +758,8 @@ so it is more efficient to copy the previous proof.*}
 lemma tendsto_add_ereal_MInf:
   fixes y :: ereal
   assumes y: "y \<noteq> \<infinity>"
-  assumes f: "(f ---> -\<infinity>) F" and g: "(g ---> y) F"
-  shows "((\<lambda>x. f x + g x) ---> -\<infinity>) F"
+  assumes f: "(f \<longlongrightarrow> -\<infinity>) F" and g: "(g \<longlongrightarrow> y) F"
+  shows "((\<lambda>x. f x + g x) \<longlongrightarrow> -\<infinity>) F"
 proof -
   have "\<exists>C. eventually (\<lambda>x. g x < ereal C) F"
   proof (cases y)
@@ -791,8 +791,8 @@ qed
 lemma tendsto_add_ereal_general1:
   fixes x y :: ereal
   assumes y: "\<bar>y\<bar> \<noteq> \<infinity>"
-  assumes f: "(f ---> x) F" and g: "(g ---> y) F"
-  shows "((\<lambda>x. f x + g x) ---> x + y) F"
+  assumes f: "(f \<longlongrightarrow> x) F" and g: "(g \<longlongrightarrow> y) F"
+  shows "((\<lambda>x. f x + g x) \<longlongrightarrow> x + y) F"
 proof (cases x)
   case (real r)
   have a: "\<bar>x\<bar> \<noteq> \<infinity>" by (simp add: real)
@@ -809,10 +809,10 @@ qed
 lemma tendsto_add_ereal_general2:
   fixes x y :: ereal
   assumes x: "\<bar>x\<bar> \<noteq> \<infinity>"
-      and f: "(f ---> x) F" and g: "(g ---> y) F"
-  shows "((\<lambda>x. f x + g x) ---> x + y) F"
+      and f: "(f \<longlongrightarrow> x) F" and g: "(g \<longlongrightarrow> y) F"
+  shows "((\<lambda>x. f x + g x) \<longlongrightarrow> x + y) F"
 proof -
-  have "((\<lambda>x. g x + f x) ---> x + y) F"
+  have "((\<lambda>x. g x + f x) \<longlongrightarrow> x + y) F"
     using tendsto_add_ereal_general1[OF x, OF g, OF f] add.commute[of "y", of "x"] by simp
   moreover have "\<And>x. g x + f x = f x + g x" using add.commute by auto
   ultimately show ?thesis by simp
@@ -824,8 +824,8 @@ the pairs $(-\infty, \infty)$ and $(\infty, -\infty)$. *}
 lemma tendsto_add_ereal_general:
   fixes x y :: ereal
   assumes "\<not>((x=\<infinity> \<and> y=-\<infinity>) \<or> (x=-\<infinity> \<and> y=\<infinity>))"
-      and f: "(f ---> x) F" and g: "(g ---> y) F"
-  shows "((\<lambda>x. f x + g x) ---> x + y) F"
+      and f: "(f \<longlongrightarrow> x) F" and g: "(g \<longlongrightarrow> y) F"
+  shows "((\<lambda>x. f x + g x) \<longlongrightarrow> x + y) F"
 proof (cases x)
   case (real r)
   show ?thesis
@@ -845,7 +845,7 @@ ereal times ereal, except at $(\infty, 0)$ and $(-\infty, 0)$ and $(0, \infty)$ 
 starting with specific situations.*}
 
 lemma real_lim_then_eventually_real:
-  assumes "(u ---> ereal l) F"
+  assumes "(u \<longlongrightarrow> ereal l) F"
   shows "eventually (\<lambda>n. u n = ereal(real_of_ereal(u n))) F"
 proof -
   have "ereal l \<in> {-\<infinity><..<(\<infinity>::ereal)}" by simp
@@ -856,15 +856,15 @@ proof -
 qed
 
 lemma tendsto_mult_real_ereal:
-  assumes "(u ---> ereal l) F" "(v ---> ereal m) F"
-  shows "((\<lambda>n. u n * v n) ---> ereal l * ereal m) F"
+  assumes "(u \<longlongrightarrow> ereal l) F" "(v \<longlongrightarrow> ereal m) F"
+  shows "((\<lambda>n. u n * v n) \<longlongrightarrow> ereal l * ereal m) F"
 proof -
   have ureal: "eventually (\<lambda>n. u n = ereal(real_of_ereal(u n))) F" by (rule real_lim_then_eventually_real[OF assms(1)])
-  then have "((\<lambda>n. ereal(real_of_ereal(u n))) ---> ereal l)  F" using assms by auto
-  then have limu: "((\<lambda>n. real_of_ereal(u n)) ---> l) F" by auto
+  then have "((\<lambda>n. ereal(real_of_ereal(u n))) \<longlongrightarrow> ereal l)  F" using assms by auto
+  then have limu: "((\<lambda>n. real_of_ereal(u n)) \<longlongrightarrow> l) F" by auto
   have vreal: "eventually (\<lambda>n. v n = ereal(real_of_ereal(v n))) F" by (rule real_lim_then_eventually_real[OF assms(2)])
-  then have "((\<lambda>n. ereal(real_of_ereal(v n))) ---> ereal m)  F" using assms by auto
-  then have limv: "((\<lambda>n. real_of_ereal(v n)) ---> m) F" by auto
+  then have "((\<lambda>n. ereal(real_of_ereal(v n))) \<longlongrightarrow> ereal m)  F" using assms by auto
+  then have limv: "((\<lambda>n. real_of_ereal(v n)) \<longlongrightarrow> m) F" by auto
 
   {
      fix n assume "u n = ereal(real_of_ereal(u n))" "v n = ereal(real_of_ereal(v n))"
@@ -873,15 +873,15 @@ proof -
   then have *: "eventually (\<lambda>n. ereal(real_of_ereal(u n) * real_of_ereal(v n)) = u n * v n) F"
     using eventually_elim2[OF ureal vreal] by auto
 
-  have "((\<lambda>n. real_of_ereal(u n) * real_of_ereal(v n)) ---> l * m) F" using tendsto_mult[OF limu limv] by auto
-  then have "((\<lambda>n. ereal(real_of_ereal(u n)) * real_of_ereal(v n)) ---> ereal(l * m)) F" by auto
+  have "((\<lambda>n. real_of_ereal(u n) * real_of_ereal(v n)) \<longlongrightarrow> l * m) F" using tendsto_mult[OF limu limv] by auto
+  then have "((\<lambda>n. ereal(real_of_ereal(u n)) * real_of_ereal(v n)) \<longlongrightarrow> ereal(l * m)) F" by auto
   then show ?thesis using * filterlim_cong by fastforce
 qed
 
 lemma tendsto_mult_ereal_PInf:
   fixes f g::"_ \<Rightarrow> ereal"
-  assumes "(f ---> l) F" "l>0" "(g ---> \<infinity>) F"
-  shows "((\<lambda>x. f x * g x) ---> \<infinity>) F"
+  assumes "(f \<longlongrightarrow> l) F" "l>0" "(g \<longlongrightarrow> \<infinity>) F"
+  shows "((\<lambda>x. f x * g x) \<longlongrightarrow> \<infinity>) F"
 proof -
   obtain a::real where "0 < ereal a" "a < l" using assms(2) using ereal_dense2 by blast
   have *: "eventually (\<lambda>x. f x > a) F" using `a < l` assms(1) by (simp add: order_tendsto_iff)
@@ -908,8 +908,8 @@ qed
 
 lemma tendsto_mult_ereal_pos:
   fixes f g::"_ \<Rightarrow> ereal"
-  assumes "(f ---> l) F" "(g ---> m) F" "l>0" "m>0"
-  shows "((\<lambda>x. f x * g x) ---> l * m) F"
+  assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "l>0" "m>0"
+  shows "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
 proof (cases)
   assume *: "l = \<infinity> \<or> m = \<infinity>"
   then show ?thesis
@@ -919,7 +919,7 @@ proof (cases)
   next
     assume "\<not>(m = \<infinity>)"
     then have "l = \<infinity>" using * by simp
-    then have "((\<lambda>x. g x * f x) ---> l * m) F" using tendsto_mult_ereal_PInf assms by auto
+    then have "((\<lambda>x. g x * f x) \<longlongrightarrow> l * m) F" using tendsto_mult_ereal_PInf assms by auto
     moreover have "\<And>x. g x * f x = f x * g x" using mult.commute by auto
     ultimately show ?thesis by simp
   qed
@@ -947,8 +947,8 @@ apply (cases l) using assms by (auto simp add: one_ereal_def sgn_if)
 
 lemma tendsto_ereal_mult:
   fixes f g::"_ \<Rightarrow> ereal"
-  assumes "(f ---> l) F" "(g ---> m) F" "\<not>((l=0 \<and> abs(m) = \<infinity>) \<or> (m=0 \<and> abs(l) = \<infinity>))"
-  shows  "((\<lambda>x. f x * g x) ---> l * m) F"
+  assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "\<not>((l=0 \<and> abs(m) = \<infinity>) \<or> (m=0 \<and> abs(l) = \<infinity>))"
+  shows  "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
 proof (cases)
   assume "l=0 \<or> m=0"
   then have "abs(l) \<noteq> \<infinity>" "abs(m) \<noteq> \<infinity>" using assms(3) by auto
@@ -964,13 +964,13 @@ next
   then have "abs(l) > 0" "abs(m) > 0"
     by (metis abs_ereal_ge0 abs_ereal_less0 abs_ereal_pos ereal_uminus_uminus ereal_uminus_zero less_le not_less)+
   then have "sgn(l) * l > 0" "sgn(m) * m > 0" using ereal_sgn_abs by auto
-  moreover have "((\<lambda>x. sgn(l) * f x) ---> (sgn(l) * l)) F"
+  moreover have "((\<lambda>x. sgn(l) * f x) \<longlongrightarrow> (sgn(l) * l)) F"
     by (rule tendsto_cmult_ereal, auto simp add: sgn_finite assms(1))
-  moreover have "((\<lambda>x. sgn(m) * g x) ---> (sgn(m) * m)) F"
+  moreover have "((\<lambda>x. sgn(m) * g x) \<longlongrightarrow> (sgn(m) * m)) F"
     by (rule tendsto_cmult_ereal, auto simp add: sgn_finite assms(2))
-  ultimately have *: "((\<lambda>x. (sgn(l) * f x) * (sgn(m) * g x)) ---> (sgn(l) * l) * (sgn(m) * m)) F"
+  ultimately have *: "((\<lambda>x. (sgn(l) * f x) * (sgn(m) * g x)) \<longlongrightarrow> (sgn(l) * l) * (sgn(m) * m)) F"
     using tendsto_mult_ereal_pos by force
-  have "((\<lambda>x. (sgn(l) * sgn(m)) * ((sgn(l) * f x) * (sgn(m) * g x))) --->  (sgn(l) * sgn(m)) * ((sgn(l) * l) * (sgn(m) * m))) F"
+  have "((\<lambda>x. (sgn(l) * sgn(m)) * ((sgn(l) * f x) * (sgn(m) * g x))) \<longlongrightarrow>  (sgn(l) * sgn(m)) * ((sgn(l) * l) * (sgn(m) * m))) F"
     by (rule tendsto_cmult_ereal, auto simp add: sgn_finite2 *)
   moreover have "\<And>x. (sgn(l) * sgn(m)) * ((sgn(l) * f x) * (sgn(m) * g x)) = f x * g x"
     by (metis mult.left_neutral sgn_squared_ereal[OF `l \<noteq> 0`] sgn_squared_ereal[OF `m \<noteq> 0`] mult.assoc mult.commute)
@@ -986,9 +986,9 @@ by (simp add: filterlim_real_sequentially tendsto_PInfty_eq_at_top)
 text {* the next one is copied from \verb+tendsto_setsum+. *}
 lemma tendsto_setsum_ereal:
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> ereal"
-  assumes "\<And>i. i \<in> S \<Longrightarrow> (f i ---> a i) F"
+  assumes "\<And>i. i \<in> S \<Longrightarrow> (f i \<longlongrightarrow> a i) F"
           "\<And>i. abs(a i) \<noteq> \<infinity>"
-  shows "((\<lambda>x. \<Sum>i\<in>S. f i x) ---> (\<Sum>i\<in>S. a i)) F"
+  shows "((\<lambda>x. \<Sum>i\<in>S. f i x) \<longlongrightarrow> (\<Sum>i\<in>S. a i)) F"
 proof (cases "finite S")
   assume "finite S" thus ?thesis using assms
     by (induct, simp, simp add: tendsto_add_ereal_general2 assms)

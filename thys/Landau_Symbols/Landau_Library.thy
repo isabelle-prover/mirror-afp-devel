@@ -43,7 +43,7 @@ lemma filterlim_cong':
 
 lemma tendsto_cong:
   assumes "eventually (\<lambda>x. f x = g x) F"
-  shows   "(f ---> (x::real)) F \<longleftrightarrow> (g ---> x) F"
+  shows   "(f \<longlongrightarrow> (x::real)) F \<longleftrightarrow> (g \<longlongrightarrow> x) F"
   by (subst (1 2) tendsto_iff, subst eventually_subst'[OF assms]) (rule refl)
 
 lemma eventually_ln_at_top: "eventually (\<lambda>x. P (ln x :: real)) at_top = eventually P at_top"
@@ -202,25 +202,25 @@ qed
 
 lemma powr_at_top_neg: 
   assumes "(a::real) > 0" "a < 1"
-  shows   "((\<lambda>x. a powr x) ---> 0) at_top"
+  shows   "((\<lambda>x. a powr x) \<longlongrightarrow> 0) at_top"
 proof-
   from assms have "LIM x at_top. ln (inverse a) * x :> at_top"
     by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const])
        (simp_all add: filterlim_ident field_simps)
   with assms have "LIM x at_top. ln a * x :> at_bot"
     by (subst filterlim_uminus_at_bot) (simp add: ln_inverse)
-  hence "((\<lambda>x. exp (x * ln a)) ---> 0) at_top"
+  hence "((\<lambda>x. exp (x * ln a)) \<longlongrightarrow> 0) at_top"
     by (intro filterlim_compose[OF exp_at_bot]) (simp_all add: mult.commute)
   with assms show ?thesis unfolding powr_def by simp
 qed
 
 lemma powr_at_bot:
   assumes "(a::real) > 1"
-  shows   "((\<lambda>x. a powr x) ---> 0) at_bot"
+  shows   "((\<lambda>x. a powr x) \<longlongrightarrow> 0) at_bot"
 proof-
   from assms have "filterlim (\<lambda>x. ln a * x) at_bot at_bot"
     by (intro filterlim_tendsto_pos_mult_at_bot[OF tendsto_const _ filterlim_ident]) auto
-  hence "((\<lambda>x. exp (x * ln a)) ---> 0) at_bot"
+  hence "((\<lambda>x. exp (x * ln a)) \<longlongrightarrow> 0) at_bot"
     by (intro filterlim_compose[OF exp_at_bot]) (simp add: algebra_simps)
   thus ?thesis using assms unfolding powr_def by simp
 qed

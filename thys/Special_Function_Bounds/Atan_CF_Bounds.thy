@@ -34,12 +34,12 @@ lemma arctan_upper_11:
   assumes "x < 0"
     shows "arctan(x) < arctan_upper_11 x"
 proof -
-  have "((\<lambda>x. arctan_upper_11 x - arctan x) ---> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
+  have "((\<lambda>x. arctan_upper_11 x - arctan x) \<longlongrightarrow> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
     unfolding arctan_upper_11_def
     apply (intro tendsto_intros tendsto_arctan_at_bot, auto simp: ext [OF divide_inverse])
     apply (metis tendsto_inverse_0 at_bot_le_at_infinity tendsto_mono)
     done
-  then have *: "((\<lambda>x. arctan_upper_11 x - arctan x) ---> 0) at_bot"
+  then have *: "((\<lambda>x. arctan_upper_11 x - arctan x) \<longlongrightarrow> 0) at_bot"
     by simp
   have "0 < arctan_upper_11 x - arctan x"
     apply (rule DERIV_pos_imp_increasing_at_bot [OF _ *])
@@ -109,7 +109,7 @@ using power2_less_0 [of x]
 apply arith
 done
 
-lemma lim14: "((\<lambda>x::real. 3 * x / (1 + 3 * x\<^sup>2)) ---> 0) at_infinity"
+lemma lim14: "((\<lambda>x::real. 3 * x / (1 + 3 * x\<^sup>2)) \<longlongrightarrow> 0) at_infinity"
   apply (rule tendsto_0_le [where f = inverse and K=1])
   apply (metis tendsto_inverse_0)
   apply (simp add: eventually_at_infinity)
@@ -123,12 +123,12 @@ lemma arctan_upper_14:
   assumes "x > 0"
     shows "arctan(x) < arctan_upper_14 x"
 proof -
-  have "((\<lambda>x. arctan_upper_14 x - arctan x) ---> pi / 2 - 0 - pi / 2) at_top"
+  have "((\<lambda>x. arctan_upper_14 x - arctan x) \<longlongrightarrow> pi / 2 - 0 - pi / 2) at_top"
     unfolding arctan_upper_14_def
     apply (intro tendsto_intros tendsto_arctan_at_top)
     apply (auto simp: tendsto_mono [OF at_top_le_at_infinity lim14])
     done
-  then have *: "((\<lambda>x. arctan_upper_14 x - arctan x) ---> 0) at_top"
+  then have *: "((\<lambda>x. arctan_upper_14 x - arctan x) \<longlongrightarrow> 0) at_top"
     by simp
   have "0 < arctan_upper_14 x - arctan x"
     apply (rule DERIV_neg_imp_decreasing_at_top [OF _ *])
@@ -204,18 +204,18 @@ proof -
     by (sos "((R<1 + ((R<1 * ((R<7/8 * [19/7*x^2 + 1]^2) + ((R<4 * [x]^2) + (R<10/7 * [x^2]^2)))) + ((A<=0 * R<1) * (R<1/8 * [1]^2)))))")
   then have **: "\<And>x::real. \<not> (15 + 70 * x\<^sup>2 + 63 * x ^ 4) < 0"
     by (simp add: not_less)
-  have "((\<lambda>x::real. (64 + 735 * x\<^sup>2 + 945 * x ^ 4) / (15 * x * (15 + 70 * x\<^sup>2 + 63 * x ^ 4))) ---> 0) at_bot"
+  have "((\<lambda>x::real. (64 + 735 * x\<^sup>2 + 945 * x ^ 4) / (15 * x * (15 + 70 * x\<^sup>2 + 63 * x ^ 4))) \<longlongrightarrow> 0) at_bot"
     apply (rule tendsto_0_le [where f = inverse and K=2])
     apply (metis at_bot_le_at_infinity tendsto_inverse_0 tendsto_mono)
     apply (simp add: eventually_at_bot_linorder)
     apply (rule_tac x="-1" in exI)
     apply (auto simp: divide_simps abs_if zero_less_mult_iff **)
     done
-  then have "((\<lambda>x. arctan_upper_31 x - arctan x) ---> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
+  then have "((\<lambda>x. arctan_upper_31 x - arctan x) \<longlongrightarrow> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
     unfolding arctan_upper_31_def
     apply (intro tendsto_intros tendsto_arctan_at_bot, auto)
     done
-  then have *: "((\<lambda>x. arctan_upper_31 x - arctan x) ---> 0) at_bot"
+  then have *: "((\<lambda>x. arctan_upper_31 x - arctan x) \<longlongrightarrow> 0) at_bot"
     by simp
   have "0 < arctan_upper_31 x - arctan x"
     apply (rule DERIV_pos_imp_increasing_at_bot [OF _ *])
@@ -289,7 +289,7 @@ lemma arctan_upper_34:
   assumes "x > 0"
     shows "arctan(x) < arctan_upper_34 x"
 proof -
-  have "((\<lambda>x. arctan_upper_34 x - arctan x) ---> pi / 2 - 0 - pi / 2) at_top"
+  have "((\<lambda>x. arctan_upper_34 x - arctan x) \<longlongrightarrow> pi / 2 - 0 - pi / 2) at_top"
     unfolding arctan_upper_34_def
     apply (intro tendsto_intros tendsto_arctan_at_top, auto)
     apply (rule tendsto_0_le [where f = inverse and K=1])
@@ -298,7 +298,7 @@ proof -
     apply (rule_tac x=1 in exI)
     apply (auto simp: divide_simps power_eq_if add_pos_pos algebra_simps)
     done
-  then have *: "((\<lambda>x. arctan_upper_34 x - arctan x) ---> 0) at_top"
+  then have *: "((\<lambda>x. arctan_upper_34 x - arctan x) \<longlongrightarrow> 0) at_top"
     by simp
   have "0 < arctan_upper_34 x - arctan x"
     apply (rule DERIV_neg_imp_decreasing_at_top [OF _ *])
@@ -377,18 +377,18 @@ proof -
   then have **: "\<And>x::real. x < 0 \<Longrightarrow> \<not> (35 + 315 * x\<^sup>2 + 693 * x ^ 4 + 429 * x ^ 6) < 0"
     by (simp add: not_less)
   have "((\<lambda>x::real. (256 + 5943 * x\<^sup>2 + 19250 * x ^ 4 + 15015 * x ^ 6) /
-           (35 * x * (35 + 315 * x\<^sup>2 + 693 * x ^ 4 + 429 * x ^ 6))) ---> 0) at_bot"
+           (35 * x * (35 + 315 * x\<^sup>2 + 693 * x ^ 4 + 429 * x ^ 6))) \<longlongrightarrow> 0) at_bot"
     apply (rule tendsto_0_le [where f = inverse and K=2])
     apply (metis at_bot_le_at_infinity tendsto_inverse_0 tendsto_mono)
     apply (simp add: eventually_at_bot_linorder)
     apply (rule_tac x="-1" in exI)
     apply (auto simp: ** abs_if divide_simps zero_less_mult_iff)
     done
-  then have "((\<lambda>x. arctan_upper_41 x - arctan x) ---> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
+  then have "((\<lambda>x. arctan_upper_41 x - arctan x) \<longlongrightarrow> - (pi / 2) - 0 - (- (pi / 2))) at_bot"
     unfolding arctan_upper_41_def
     apply (intro tendsto_intros tendsto_arctan_at_bot, auto)
     done
-  then have *: "((\<lambda>x. arctan_upper_41 x - arctan x) ---> 0) at_bot"
+  then have *: "((\<lambda>x. arctan_upper_41 x - arctan x) \<longlongrightarrow> 0) at_bot"
     by simp
   have "0 < arctan_upper_41 x - arctan x"
     apply (rule DERIV_pos_imp_increasing_at_bot [OF _ *])
@@ -467,7 +467,7 @@ lemma arctan_upper_44:
   assumes "x > 0"
     shows "arctan(x) < arctan_upper_44 x"
 proof -
-  have "((\<lambda>x. arctan_upper_44 x - arctan x) ---> pi / 2 - 0 - pi / 2) at_top"
+  have "((\<lambda>x. arctan_upper_44 x - arctan x) \<longlongrightarrow> pi / 2 - 0 - pi / 2) at_top"
     unfolding arctan_upper_44_def
     apply (intro tendsto_intros tendsto_arctan_at_top, auto)
     apply (rule tendsto_0_le [where f = inverse and K=1])
@@ -476,7 +476,7 @@ proof -
     apply (rule_tac x=1 in exI)
     apply (auto simp: zero_le_mult_iff divide_simps not_le[symmetric] power_eq_if algebra_simps)
     done
-  then have *: "((\<lambda>x. arctan_upper_44 x - arctan x) ---> 0) at_top"
+  then have *: "((\<lambda>x. arctan_upper_44 x - arctan x) \<longlongrightarrow> 0) at_top"
     by simp
   have "0 < arctan_upper_44 x - arctan x"
     apply (rule DERIV_neg_imp_decreasing_at_top [OF _ *])

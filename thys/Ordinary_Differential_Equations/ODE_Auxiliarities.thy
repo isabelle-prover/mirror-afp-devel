@@ -200,8 +200,8 @@ lemma has_derivative_If_in_closed:
 proof (safe intro!: tendstoI)
   fix e::real assume "0 < e"
   let ?D = "\<lambda>x f f' y. (1 / norm (y - x)) *\<^sub>R (f y - (f x + f' (y - x)))"
-  have f': "x \<in> s \<Longrightarrow> ((?D x f (f' x)) ---> 0) (at x within s)"
-    and g': "x \<in> t \<Longrightarrow> ((?D x g (g' x)) ---> 0) (at x within t)"
+  have f': "x \<in> s \<Longrightarrow> ((?D x f (f' x)) \<longlongrightarrow> 0) (at x within s)"
+    and g': "x \<in> t \<Longrightarrow> ((?D x g (g' x)) \<longlongrightarrow> 0) (at x within t)"
     using f' g' by (auto simp: has_vector_derivative_def has_derivative_within)
   let ?thesis = "eventually (\<lambda>y. dist (?D x ?if ?if' y) 0 < e) (at x within s \<union> t)"
   {

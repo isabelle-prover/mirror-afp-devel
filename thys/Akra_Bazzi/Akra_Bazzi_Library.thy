@@ -74,7 +74,7 @@ qed
 
 lemma tendsto_ln_over_ln:
   assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) ---> 1) at_top"
+  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) \<longlongrightarrow> 1) at_top"
 proof (rule lhospital_at_top_at_top)
   show "LIM x at_top. ln (c*x) :> at_top"
     by (intro filterlim_compose[OF ln_at_top] filterlim_tendsto_pos_mult_at_top[OF tendsto_const] 
@@ -85,7 +85,7 @@ proof (rule lhospital_at_top_at_top)
   show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse c"] assms
     by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "((\<lambda>x::real. inverse x / inverse x) ---> 1) at_top"
+  show "((\<lambda>x::real. inverse x / inverse x) \<longlongrightarrow> 1) at_top"
     by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
 qed (simp_all add: eventually_not_equal)
 
@@ -132,7 +132,7 @@ qed
 
 lemma tendsto_ln_over_powr: 
   assumes "(a::real) > 0"
-  shows   "((\<lambda>x. ln x / x powr a) ---> 0) at_top"
+  shows   "((\<lambda>x. ln x / x powr a) \<longlongrightarrow> 0) at_top"
 proof (rule lhospital_at_top_at_top)
   from assms show "LIM x at_top. x powr a :> at_top" by (rule powr_at_top)
   show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
@@ -144,9 +144,9 @@ proof (rule lhospital_at_top_at_top)
   have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
     using eventually_gt_at_top[of "0::real"] 
     by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
-  moreover from assms have "((\<lambda>x. inverse a * x powr -a) ---> 0) at_top"
+  moreover from assms have "((\<lambda>x. inverse a * x powr -a) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
-  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) ---> 0) at_top"
+  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) \<longlongrightarrow> 0) at_top"
     by (subst (asm) tendsto_cong) simp_all
 qed
 

@@ -22,7 +22,7 @@ lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\
 
 lemma power_series_tendsto_at_left:
   assumes nonneg: "\<And>i. 0 \<le> f i" and summable: "\<And>z. 0 \<le> z \<Longrightarrow> z < 1 \<Longrightarrow> summable (\<lambda>n. f n * z^n)"
-  shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) ---> (\<Sum>n. ereal (f n))) (at_left (1::real))"
+  shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) \<longlongrightarrow> (\<Sum>n. ereal (f n))) (at_left (1::real))"
 proof (intro tendsto_at_left_sequentially)
   show "0 < (1::real)" by simp
   fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S \<longlonglongrightarrow> 1" "incseq S"
@@ -416,7 +416,7 @@ proof (rule summable_comparison_test)
     by (simp add: p_nonneg mult_nonneg_nonneg norm_power)
 qed (simp add: z summable_geometric)
 
-lemma lim_gf_G: "((\<lambda>z. ereal (gf_G x y z)) ---> G x y) (at_left (1::real))"
+lemma lim_gf_G: "((\<lambda>z. ereal (gf_G x y z)) \<longlongrightarrow> G x y) (at_left (1::real))"
   unfolding gf_G_def G_eq_suminf real_scaleR_def
   by (intro power_series_tendsto_at_left p_nonneg p_le_1 summable_power_series)
 
@@ -605,17 +605,17 @@ proof -
     done
 qed
 
-lemma gf_U: "(gf_U x y ---> U x y) (at_left 1)"
+lemma gf_U: "(gf_U x y \<longlongrightarrow> U x y) (at_left 1)"
 proof -
-  have "((\<lambda>z. ereal (\<Sum>n. u x y n * z ^ n)) ---> (\<Sum>n. ereal (u x y n))) (at_left 1)"
+  have "((\<lambda>z. ereal (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ereal (u x y n))) (at_left 1)"
     using u_le_1 u_nonneg by (intro power_series_tendsto_at_left summable_power_series)
   also have "(\<Sum>n. ereal (u x y n)) = ereal (suminf (u x y))"
     by (intro u_nonneg suminf_ereal suminf_ereal_finite sums_summable[OF u_sums_U])
   also have "suminf (u x y) = U x y"
     using u_sums_U by (rule sums_unique[symmetric])
-  finally have "((\<lambda>z. z * (\<Sum>n. u x y n * z ^ n)) ---> 1 * U x y) (at_left 1)"
+  finally have "((\<lambda>z. z * (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> 1 * U x y) (at_left 1)"
     by (intro tendsto_intros) simp
-  then have "((\<lambda>z. \<Sum>n. u x y n * z ^ Suc n) ---> 1 * U x y) (at_left 1)"
+  then have "((\<lambda>z. \<Sum>n. u x y n * z ^ Suc n) \<longlongrightarrow> 1 * U x y) (at_left 1)"
     apply (rule filterlim_cong[OF refl refl, THEN iffD1, rotated])
     apply (rule eventually_at_left_1)
     apply (subst suminf_mult[symmetric])
@@ -626,9 +626,9 @@ proof -
     by (simp add: gf_U_def[abs_def] U_def)
 qed
 
-lemma gf_F: "(gf_F x y ---> F x y) (at_left 1)"
+lemma gf_F: "(gf_F x y \<longlongrightarrow> F x y) (at_left 1)"
 proof -
-  have "((\<lambda>z. ereal (\<Sum>n. f x y n * z ^ n)) ---> (\<Sum>n. ereal (f x y n))) (at_left 1)"
+  have "((\<lambda>z. ereal (\<Sum>n. f x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ereal (f x y n))) (at_left 1)"
     using f_le_1 f_nonneg by (intro power_series_tendsto_at_left summable_power_series)
   also have "(\<Sum>n. ereal (f x y n)) = ereal (suminf (f x y))"
     by (intro f_nonneg suminf_ereal suminf_ereal_finite sums_summable[OF f_sums_F])
@@ -739,9 +739,9 @@ qed
 
 lemma recurrent_iff_G_infinite: "recurrent x \<longleftrightarrow> G x x = \<infinity>"
 proof -
-  have "((\<lambda>z. ereal (gf_G x x z)) ---> G x x) (at_left 1)"
+  have "((\<lambda>z. ereal (gf_G x x z)) \<longlongrightarrow> G x x) (at_left 1)"
     by (rule lim_gf_G)
-  then have G: "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) ---> G x x) (at_left (1::real))"
+  then have G: "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) \<longlongrightarrow> G x x) (at_left (1::real))"
     apply (rule filterlim_cong[OF refl refl, THEN iffD1, rotated])
     apply (rule eventually_at_left_1)
     apply (subst gf_G_eq_gf_U)
@@ -767,11 +767,11 @@ proof -
   note strict = this
 
   { assume "U x x = 1"
-    moreover have "((\<lambda>xa. 1 - gf_U x x xa :: real) ---> 1 - U x x) (at_left 1)"
+    moreover have "((\<lambda>xa. 1 - gf_U x x xa :: real) \<longlongrightarrow> 1 - U x x) (at_left 1)"
       by (intro tendsto_intros gf_U)
     moreover have "eventually (\<lambda>z. gf_U x x z < 1) (at_left (1::real))"
       by (auto intro!: eventually_at_left_1 strict simp: `U x x = 1` gf_U_eq_U)
-    ultimately have "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) ---> \<infinity>) (at_left 1)"
+    ultimately have "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) \<longlongrightarrow> \<infinity>) (at_left 1)"
       unfolding tendsto_PInfty_eq_at_top
       by (intro LIM_at_top_divide[where a=1] tendsto_const zero_less_one)
          (auto simp: field_simps)
@@ -779,7 +779,7 @@ proof -
       by (rule tendsto_unique[rotated]) simp }
   moreover
   { assume "U x x < 1"
-    then have "((\<lambda>xa. ereal (1 / (1 - gf_U x x xa))) ---> 1 / (1 - U x x)) (at_left 1)"
+    then have "((\<lambda>xa. ereal (1 / (1 - gf_U x x xa))) \<longlongrightarrow> 1 / (1 - U x x)) (at_left 1)"
       by (intro tendsto_intros gf_U lim_ereal[THEN iffD2]) simp
     from tendsto_unique[OF _ G this] have "G x x \<noteq> \<infinity>"
       by simp }
@@ -1090,7 +1090,7 @@ qed
 
 lemma gf_U'_tendsto_U':
   assumes x: "recurrent x" "(x, y) \<in> acc"
-  shows "((\<lambda>z. ereal (gf_U' x y z)) ---> U' x y) (at_left 1)"
+  shows "((\<lambda>z. ereal (gf_U' x y z)) \<longlongrightarrow> U' x y) (at_left 1)"
   unfolding U'_eq_suminf[OF x] gf_U'_def
   by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: of_nat_Suc)
 
@@ -1123,7 +1123,7 @@ qed
 
 lemma inverse_gf_U'_tendsto:
   assumes "recurrent y"
-  shows "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / U' y y)) (at_left (1::real))"
+  shows "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) (at_left (1::real))"
 proof cases
   assume inf: "U' y y = \<infinity>"
   with gf_U'_tendsto_U'[of y y] `recurrent y`
@@ -1139,7 +1139,7 @@ next
     by (cases "U' y y") (auto simp: U'_def)
   then have eq: "real_of_ereal (1 / U' y y) = - 1 / - r" and "1 \<le> r"
     using one_le_integral_t[OF `recurrent y`] by (auto simp add: one_ereal_def)
-  have gf_U': "(gf_U' y y ---> r) (at_left (1::real))"
+  have gf_U': "(gf_U' y y \<longlongrightarrow> r) (at_left (1::real))"
     using gf_U'_tendsto_U'[OF `recurrent y`, of y] r by simp
   show ?thesis
     using `1 \<le> r` unfolding eq by (intro tendsto_intros gf_U') simp
@@ -1227,11 +1227,11 @@ proof -
   have "U' x x \<noteq> \<infinity>"
   proof
     assume "U' x x = \<infinity>"
-    have "((\<lambda>z. (1 - gf_U y y z) / (1 - gf_U x x z)) ---> 0) ?L"
+    have "((\<lambda>z. (1 - gf_U y y z) / (1 - gf_U x x z)) \<longlongrightarrow> 0) ?L"
     proof (rule lhopital_left)
-      show "((\<lambda>z. 1 - gf_U y y z) ---> 0) ?L"
+      show "((\<lambda>z. 1 - gf_U y y z) \<longlongrightarrow> 0) ?L"
         using gf_U[of y] recurrent_iff_U_eq_1[of y] `recurrent y` by (auto intro!: tendsto_eq_intros)
-      show "((\<lambda>z. 1 - gf_U x x z) ---> 0) ?L"
+      show "((\<lambda>z. 1 - gf_U x x z) \<longlongrightarrow> 0) ?L"
         using gf_U[of x] recurrent_iff_U_eq_1[of x] `recurrent x` by (auto intro!: tendsto_eq_intros)
       show "eventually (\<lambda>z. 1 - gf_U x x z \<noteq> 0) ?L"
         by (auto intro!: eventually_at_left_1 simp: gf_G_eq_gf_U(2) convergence_G_less_1)
@@ -1243,23 +1243,23 @@ proof -
       show "eventually (\<lambda>z. DERIV (\<lambda>xa. 1 - gf_U y y xa) z :> - gf_U' y y z) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
 
-      have "(gf_U' y y ---> U' y y) ?L"
+      have "(gf_U' y y \<longlongrightarrow> U' y y) ?L"
         using `recurrent y` by (rule gf_U'_tendsto_U') simp
-      then have *: "(gf_U' y y ---> r) ?L"
+      then have *: "(gf_U' y y \<longlongrightarrow> r) ?L"
         by (simp add: r del: ereal_of_enat_eSuc)
       moreover
-      have "(gf_U' x x ---> U' x x) ?L"
+      have "(gf_U' x x \<longlongrightarrow> U' x x) ?L"
         using `recurrent x` by (rule gf_U'_tendsto_U') simp
       then have "LIM z ?L. - gf_U' x x z :> at_bot"
         by (simp add: tendsto_PInfty_eq_at_top `U' x x = \<infinity>` filterlim_uminus_at_top
                  del: ereal_of_enat_eSuc)
       then have "LIM z ?L. - gf_U' x x z :> at_infinity"
         by (rule filterlim_mono) (auto simp: at_bot_le_at_infinity)
-      ultimately show "((\<lambda>z. - gf_U' y y z / - gf_U' x x z) ---> 0) ?L"
+      ultimately show "((\<lambda>z. - gf_U' y y z / - gf_U' x x z) \<longlongrightarrow> 0) ?L"
         by (intro tendsto_divide_0[where c="- r"] tendsto_intros)
     qed
     moreover
-    have "((\<lambda>z. p x y n * p y x m * z^(n + m)) ---> p x y n * p y x m) ?L"
+    have "((\<lambda>z. p x y n * p y x m * z^(n + m)) \<longlongrightarrow> p x y n * p y x m) ?L"
       by (auto intro!: tendsto_eq_intros)
     ultimately have "p x y n * p y x m \<le> 0"
       using le by (rule tendsto_le[OF trivial_limit_at_left_real])
@@ -1310,19 +1310,19 @@ proof -
       by (simp add: essential_class_def not_empty_irreducible)
     then obtain x where "x \<in> C" by auto
 
-    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) ---> (\<Sum>y\<in>A n. F x y * real_of_ereal (1 / U' y y))) ?L"
+    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) \<longlongrightarrow> (\<Sum>y\<in>A n. F x y * real_of_ereal (1 / U' y y))) ?L"
     proof (intro tendsto_intros gf_F, rule lhopital_left)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C"
         by auto
-      show "(op - 1 ---> 0) ?L"
+      show "(op - 1 \<longlongrightarrow> 0) ?L"
         by (intro tendsto_eq_intros) simp_all
       have "recurrent y"
         using pos[THEN bspec, OF `y\<in>C`] by (simp add: pos_recurrent_def)
       then have "U y y = 1"
         by (simp add: recurrent_iff_U_eq_1)
 
-      show "((\<lambda>x. 1 - gf_U y y x) ---> 0) ?L"
+      show "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
         using gf_U[of y y] `U y y = 1` by (intro tendsto_eq_intros) auto
       show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
         using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
@@ -1334,7 +1334,7 @@ proof -
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
       show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros)
-      show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / U' y y)) ?L"
+      show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) ?L"
         using `recurrent y` by (rule inverse_gf_U'_tendsto)
     qed
     also have "(\<Sum>y\<in>A n. F x y * real_of_ereal (1 / U' y y)) = (\<Sum>y\<in>A n. real_of_ereal (1 / U' y y))"
@@ -1625,7 +1625,7 @@ proof -
   note eps = this
 
   { fix y A assume "y \<in> C" "finite A" "A \<subseteq> C"
-    then have "((\<lambda>z. \<integral>x. gf_F x y z * indicator A x \<partial>N) ---> \<integral>x. F x y * indicator A x \<partial>N) (at_left 1)"
+    then have "((\<lambda>z. \<integral>x. gf_F x y z * indicator A x \<partial>N) \<longlongrightarrow> \<integral>x. F x y * indicator A x \<partial>N) (at_left 1)"
       by (subst (1 2) integral_measure_pmf[of A]) (auto intro!: tendsto_intros gf_F simp: indicator_eq_0_iff) }
   note int_gf_F = this
 
@@ -1646,10 +1646,10 @@ proof -
           A: "finite A" "A \<subseteq> C" and
           le: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e"
           by auto
-        have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) --->
+        have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow>
           (1 - 1) / (1 - U y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) (at_left (1::real))"
           using A `U y y < 1` `y \<in> C` by (intro tendsto_intros gf_U int_gf_F) auto
-        then have 1: "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) ---> e) (at_left (1::real))"
+        then have 1: "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow> e) (at_left (1::real))"
           by simp
         with le show "measure N {y} \<le> e"
           by (intro tendsto_le[OF trivial_limit_at_left_real _ tendsto_const])
@@ -1676,16 +1676,16 @@ proof -
         le: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e"
         by auto
       let ?L = "at_left (1::real)"
-      have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) --->
+      have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow>
           real_of_ereal (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
       proof (intro tendsto_add tendsto_const tendsto_mult int_gf_F,
              rule lhopital_left[where f'="\<lambda>x. - 1" and g'="\<lambda>z. - gf_U' y y z"])
-        show "(op - 1 ---> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) ---> 0) ?L"
+        show "(op - 1 \<longlongrightarrow> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
           using gf_U[of y y] by (auto intro!: tendsto_eq_intros simp: `U y y = 1`)
         show "y \<in> C" "finite A" "A \<subseteq> C" by fact+
         show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
           using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
-        show "((\<lambda>x. - 1 / - gf_U' y y x) ---> real_of_ereal (1 / U' y y)) ?L"
+        show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) ?L"
           using `recurrent y` by (rule inverse_gf_U'_tendsto)
         have "eventually (\<lambda>x. 0 < gf_U' y y x) ?L"
           by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: `U y y = 1`)

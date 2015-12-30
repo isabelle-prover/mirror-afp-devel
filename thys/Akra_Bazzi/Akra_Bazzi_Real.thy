@@ -20,7 +20,7 @@ declare setsum.cong[fundef_cong]
 lemma strict_mono_imp_ex1_real:
   fixes f :: "real \<Rightarrow> real"
   assumes lim_neg_inf: "LIM x at_bot. f x :> at_top"
-  assumes lim_inf: "(f ---> z) at_top"
+  assumes lim_inf: "(f \<longlongrightarrow> z) at_top"
   assumes mono: "\<And>a b. a < b \<Longrightarrow> f b < f a"
   assumes cont: "\<And>x. isCont f x"
   assumes y_greater_z: "z < y"
@@ -134,7 +134,7 @@ proof (rule strict_mono_imp_ex1_real)
   ultimately show "LIM p at_bot. \<Sum>i<k. as ! i * bs ! i powr p :> at_top"
     by (rule filterlim_at_top_mono[OF _ always_eventually])
 next
-  from b_bounds show "((\<lambda>x. \<Sum>i<k. as ! i * bs ! i powr x) ---> (\<Sum>i<k. 0)) at_top"
+  from b_bounds show "((\<lambda>x. \<Sum>i<k. as ! i * bs ! i powr x) \<longlongrightarrow> (\<Sum>i<k. 0)) at_top"
     by (intro tendsto_setsum tendsto_mult_right_zero powr_at_top_neg) simp_all
 next
   fix x

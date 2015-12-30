@@ -162,7 +162,7 @@ private lemma ev11:
                      1 - g x > 0) at_top"
 proof-
   let ?y = "\<lambda>x. hb * inverse b * ln x powr (-(1 + e))"
-  from bep have "(?y ---> 0) at_top"
+  from bep have "(?y \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   from tendstoD[OF this, of "1/2"] have ev: "eventually (\<lambda>x. \<bar>?y x\<bar> < 0.5) at_top"
     by (simp add: dist_real_def)
@@ -171,7 +171,7 @@ proof-
       "\<And>x. ?y x > 0 \<Longrightarrow> ?y x < 0.5 \<Longrightarrow> (1 - ?y x) powr p \<ge> 1 - k * ?y x"
     by (rule one_minus_x_lower_bound'[of p]) blast
   def g \<equiv> "\<lambda>x. (k * hb * inverse b) * ln x powr (-(1+e))"
-  from bep have "(g ---> 0) at_top" unfolding g_def
+  from bep have "(g \<longlongrightarrow> 0) at_top" unfolding g_def
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   hence ev_g: "eventually (\<lambda>x. \<bar>g x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -197,7 +197,7 @@ private lemma ev11':
                      1 + g x > 0) at_top"
 proof-
   let ?y = "\<lambda>x. hb * inverse b * ln x powr (-(1 + e))"
-  from bep have "(?y ---> 0) at_top"
+  from bep have "(?y \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   from tendstoD[OF this, of 1] have ev: "eventually (\<lambda>x. \<bar>?y x\<bar> < 1) at_top"
     by (simp add: dist_real_def)
@@ -208,7 +208,7 @@ proof-
   obtain k where k: "\<And>x. ?y x > 0 \<Longrightarrow> ?y x < 1 \<Longrightarrow> (1 + ?y x) powr p \<ge> 1 + k * ?y x"
     by (rule one_plus_x_lower_bound'[of p]) blast
   def g \<equiv> "\<lambda>x. (k * hb * inverse b) * ln x powr (-(1+e))"
-  from bep have "(g ---> 0) at_top" unfolding g_def
+  from bep have "(g \<longlongrightarrow> 0) at_top" unfolding g_def
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   hence ev_g: "eventually (\<lambda>x. \<bar>g x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -233,7 +233,7 @@ private lemma ev12:
                      1 + g x > 0) at_top"
 proof-
   let ?y = "\<lambda>x. hb * inverse b * ln x powr (-(1 + e))"
-  from bep have "(?y ---> 0) at_top"
+  from bep have "(?y \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   hence ev: "eventually (\<lambda>x. \<bar>?y x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (simp add: dist_real_def)
@@ -242,7 +242,7 @@ proof-
       "\<And>x. ?y x > 0 \<Longrightarrow> ?y x < 1 \<Longrightarrow> (1 + ?y x) powr p \<le> 1 + k * ?y x"
     by (rule one_plus_x_upper_bound[of p]) blast
   def g \<equiv> "\<lambda>x. (k * hb * inverse b) * ln x powr (-(1+e))"
-  from bep have "(g ---> 0) at_top" unfolding g_def
+  from bep have "(g \<longlongrightarrow> 0) at_top" unfolding g_def
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   hence ev_g: "eventually (\<lambda>x. \<bar>g x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -269,7 +269,7 @@ private lemma ev12':
                      1 + g x > 0) at_top"
 proof-
   let ?y = "\<lambda>x. hb * inverse b * ln x powr (-(1 + e))"
-  from bep have "(?y ---> 0) at_top"
+  from bep have "(?y \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   from tendstoD[OF this, of "0.5"] have ev: "eventually (\<lambda>x. \<bar>?y x\<bar> < 0.5) at_top"
     by (simp add: dist_real_def)
@@ -277,7 +277,7 @@ proof-
   obtain k where k: "\<And>x. ?y x > 0 \<Longrightarrow> ?y x < 0.5 \<Longrightarrow> (1 - ?y x) powr p \<le> 1 + k * ?y x"
     by (rule one_minus_x_upper_bound'[of p]) blast
   def g \<equiv> "\<lambda>x. (k * hb * inverse b) * ln x powr (-(1+e))"
-  from bep have "(g ---> 0) at_top" unfolding g_def
+  from bep have "(g \<longlongrightarrow> 0) at_top" unfolding g_def
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp
   hence ev_g: "eventually (\<lambda>x. \<bar>g x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -308,20 +308,20 @@ proof-
   def g \<equiv> "\<lambda>x. e/2 * f x * ln (b * x) powr (-e/2)"
   def g' \<equiv> "\<lambda>x. hb * e / (2 * b) * ln (b * x) powr - (2 + 3/2 * e)"
 
-  have lim_g': "(g' ---> 0) at_top" unfolding g'_def using bep
+  have lim_g': "(g' \<longlongrightarrow> 0) at_top" unfolding g'_def using bep
     by (intro tendsto_mult_right_zero tendsto_neg_powr 
               filterlim_compose[OF ln_at_top] filterlim_ident
               filterlim_tendsto_pos_mult_at_top[OF tendsto_const]) simp
   hence ev_g': "eventually (\<lambda>x. \<bar>g' x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (simp add: dist_real_def bep)
     
-  from bep lim_g' have "((\<lambda>x. ln (b*x) powr (-e/2) - g' x) ---> 0 - 0) at_top"
+  from bep lim_g' have "((\<lambda>x. ln (b*x) powr (-e/2) - g' x) \<longlongrightarrow> 0 - 0) at_top"
     by (intro tendsto_intros tendsto_neg_powr filterlim_ident filterlim_compose[OF 
               ln_at_top filterlim_tendsto_pos_mult_at_top[OF tendsto_const]]) simp_all
   hence ev_lg: "eventually (\<lambda>x. \<bar>ln (b*x) powr (-e/2) - g' x\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
     
-  have limf: "(f ---> 0) at_top" unfolding f_def using bep
+  have limf: "(f \<longlongrightarrow> 0) at_top" unfolding f_def using bep
     apply (intro tendsto_divide_0[OF _ filterlim_at_top_imp_at_infinity])
     apply (rule tendsto_ln[OF tendsto_add[OF tendsto_const tendsto_mult_right_zero]])
     apply (rule tendsto_neg_powr[OF _ ln_at_top], simp, simp)
@@ -505,7 +505,7 @@ proof-
   hence "LIM x at_top. b * x + hb * x / ln x powr (1 + e) :> at_top"
      apply (rule filterlim_at_top_mono) using eventually_gt_at_top[of 0] apply eventually_elim
      apply (insert bep, simp) done
-  with bep have "(?g ---> 1 - 0) at_top"
+  with bep have "(?g \<longlongrightarrow> 1 - 0) at_top"
     by (intro tendsto_intros tendsto_neg_powr filterlim_compose[OF ln_at_top]) simp_all
   hence ev_g: "eventually (\<lambda>x. \<bar>?g x - 1\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -550,7 +550,7 @@ proof-
   hence "LIM x at_top. b * x + hb * x / ln x powr (1 + e) :> at_top"
      apply (rule filterlim_at_top_mono) using eventually_gt_at_top[of 0] apply eventually_elim
      apply (insert bep, simp) done
-  with bep have "(?g ---> 1 - 0) at_top"
+  with bep have "(?g \<longlongrightarrow> 1 - 0) at_top"
     by (intro tendsto_intros tendsto_neg_powr filterlim_compose[OF ln_at_top]) simp_all
   hence ev_g: "eventually (\<lambda>x. \<bar>?g x - 1\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (auto simp: dist_real_def)
@@ -583,7 +583,7 @@ qed
 lemma asymptotics3: "eventually (\<lambda>x. (1 + (ln x powr (-e/2))) / 2 \<le> 1) at_top"
   (is "eventually (\<lambda>x. ?f x \<le> 1) _")
 proof (rule eventually_mp[OF always_eventually], clarify)
-  from bep have "(?f ---> 1/2) at_top"
+  from bep have "(?f \<longlongrightarrow> 1/2) at_top"
     by (force intro: tendsto_eq_intros tendsto_neg_powr ln_at_top)
   hence "\<And>e. e>0 \<Longrightarrow> eventually (\<lambda>x. \<bar>?f x - 0.5\<bar> < e) at_top"
     by (subst (asm) tendsto_iff) (simp add: dist_real_def)
@@ -596,7 +596,7 @@ qed
 lemma asymptotics4: "eventually (\<lambda>x. (1 - (ln x powr (-e/2))) * 2 \<ge> 1) at_top"
   (is "eventually (\<lambda>x. ?f x \<ge> 1) _")
 proof (rule eventually_mp[OF always_eventually], clarify)
-  from bep have "(?f ---> 2) at_top"
+  from bep have "(?f \<longlongrightarrow> 2) at_top"
     by (force intro: tendsto_eq_intros tendsto_neg_powr ln_at_top)
   hence "\<And>e. e>0 \<Longrightarrow> eventually (\<lambda>x. \<bar>?f x - 2\<bar> < e) at_top"
     by (subst (asm) tendsto_iff) (simp add: dist_real_def)
@@ -608,14 +608,14 @@ qed
     
 lemma asymptotics5: "eventually (\<lambda>x. ln (b*x - hb*x*ln x powr -(1+e)) powr (-e/2) < 1) at_top"
 proof-
-  from bep have "((\<lambda>x. b - hb * ln x powr -(1+e)) ---> b - 0) at_top"
+  from bep have "((\<lambda>x. b - hb * ln x powr -(1+e)) \<longlongrightarrow> b - 0) at_top"
     by (intro tendsto_intros tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp_all
   hence "LIM x at_top. (b - hb * ln x powr -(1+e)) * x :> at_top"
     by (rule filterlim_tendsto_pos_mult_at_top[OF _ _ filterlim_ident], insert bep) simp_all
   also have "(\<lambda>x. (b - hb * ln x powr -(1+e)) * x) = (\<lambda>x. b*x - hb*x*ln x powr -(1+e))"
     by (intro ext) (simp add: algebra_simps)
   finally have "filterlim ... at_top at_top" .
-  with bep have "((\<lambda>x. ln (b*x - hb*x*ln x powr -(1+e)) powr -(e/2)) ---> 0) at_top"
+  with bep have "((\<lambda>x. ln (b*x - hb*x*ln x powr -(1+e)) powr -(e/2)) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_neg_powr filterlim_compose[OF ln_at_top]) simp_all
   hence "eventually (\<lambda>x. \<bar>ln (b*x - hb*x*ln x powr -(1+e)) powr (-e/2)\<bar> < 1) at_top"
     by (subst (asm) tendsto_iff) (simp add: dist_real_def)

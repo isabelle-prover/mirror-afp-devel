@@ -1052,7 +1052,7 @@ subsection {* Landau symbols and limits *}
 
 lemma bigoI_tendsto_abs:
   fixes f g :: "_ \<Rightarrow> real"
-  assumes "((\<lambda>x. \<bar>f x / g x\<bar>) ---> c) at_top"
+  assumes "((\<lambda>x. \<bar>f x / g x\<bar>) \<longlongrightarrow> c) at_top"
   assumes "eventually (\<lambda>x. g x \<noteq> 0) at_top"
   shows   "f \<in> O(g)"
 proof (rule bigoI)
@@ -1074,7 +1074,7 @@ qed
 
 lemma bigoI_tendsto:
   fixes f g :: "_ \<Rightarrow> real"
-  assumes "((\<lambda>x. f x / g x) ---> c) at_top"
+  assumes "((\<lambda>x. f x / g x) \<longlongrightarrow> c) at_top"
   assumes "eventually (\<lambda>x. g x \<noteq> 0) at_top"
   shows   "f \<in> O(g)"
 using assms by (intro bigoI_tendsto_abs[of _ _ "\<bar>c\<bar>"] tendsto_rabs)
@@ -1083,7 +1083,7 @@ using assms by (intro bigoI_tendsto_abs[of _ _ "\<bar>c\<bar>"] tendsto_rabs)
 lemma bigomegaI_tendsto_abs:
   fixes f :: "('a::linorder) \<Rightarrow> real"
   assumes c_not_0:  "(c::real) \<noteq> 0"
-  assumes lim:      "((\<lambda>x. \<bar>f x / g x\<bar>) ---> c) at_top"
+  assumes lim:      "((\<lambda>x. \<bar>f x / g x\<bar>) \<longlongrightarrow> c) at_top"
   shows   "f \<in> \<Omega>(g)"
 proof (rule landau_omega.bigI)
   from lim have "c \<ge> 0"
@@ -1105,7 +1105,7 @@ qed
 lemma bigomegaI_tendsto:
   fixes f :: "('a::linorder) \<Rightarrow> real"
   assumes c_not_0:  "(c::real) \<noteq> 0"
-  assumes lim:      "((\<lambda>x. f x / g x) ---> c) at_top"
+  assumes lim:      "((\<lambda>x. f x / g x) \<longlongrightarrow> c) at_top"
   shows   "f \<in> \<Omega>(g)"
 using assms by (intro bigomegaI_tendsto_abs[of "\<bar>c\<bar>"] tendsto_rabs) simp_all
 
@@ -1149,7 +1149,7 @@ qed
 
 lemma smalloI_tendsto:
   fixes f g :: "_ \<Rightarrow> real"
-  assumes lim: "((\<lambda>x. f x / g x) ---> 0) at_top"
+  assumes lim: "((\<lambda>x. f x / g x) \<longlongrightarrow> 0) at_top"
   assumes "eventually (\<lambda>x. g x \<noteq> 0) at_top"
   shows   "f \<in> o(g)"
 proof (rule landau_o.smallI)
@@ -1162,7 +1162,7 @@ qed
 
 lemma smalloD_tendsto:
   assumes "f \<in> o(g)"
-  shows   "((\<lambda>x. f x / g x :: real) ---> 0) at_top"
+  shows   "((\<lambda>x. f x / g x :: real) \<longlongrightarrow> 0) at_top"
 unfolding tendsto_iff
 proof clarify
   fix e :: real assume e: "e > 0"
@@ -1180,7 +1180,7 @@ qed
 lemma bigthetaI_tendsto_abs:
   fixes f g :: "('a::linorder) \<Rightarrow> real"
   assumes c_not_0: "(c::real) \<noteq> 0"
-  assumes lim:     "((\<lambda>x. \<bar>f x / g x\<bar>) ---> c) at_top"
+  assumes lim:     "((\<lambda>x. \<bar>f x / g x\<bar>) \<longlongrightarrow> c) at_top"
   shows   "f \<in> \<Theta>(g)"
 proof (rule bigthetaI)
   from c_not_0 have "\<bar>c\<bar> > 0" by simp
@@ -1195,59 +1195,59 @@ qed
 lemma bigthetaI_tendsto:
   fixes f g :: "('a::linorder) \<Rightarrow> real"
   assumes c_not_0: "(c::real) \<noteq> 0"
-  assumes lim:     "((\<lambda>x. f x / g x) ---> c) at_top"
+  assumes lim:     "((\<lambda>x. f x / g x) \<longlongrightarrow> c) at_top"
   shows   "f \<in> \<Theta>(g)"
   using assms by (intro bigthetaI_tendsto_abs[of "\<bar>c\<bar>"] tendsto_rabs) simp_all
 
 lemma tendsto_add_smallo:
   fixes f1 f2 :: "('a::order) \<Rightarrow> real"
-  assumes "(f1 ---> a) at_top"
+  assumes "(f1 \<longlongrightarrow> a) at_top"
   assumes "f2 \<in> o(f1)"
-  shows   "((\<lambda>x. f1 x + f2 x) ---> a) at_top"
+  shows   "((\<lambda>x. f1 x + f2 x) \<longlongrightarrow> a) at_top"
 proof (subst filterlim_cong[OF refl refl])
   from landau_o.smallD[OF assms(2) zero_less_one] 
     have "eventually (\<lambda>x. \<bar>f2 x\<bar> \<le> \<bar>f1 x\<bar>) at_top" by simp
   thus "eventually (\<lambda>x. f1 x + f2 x = f1 x * (1 + f2 x / f1 x)) at_top"
     by eventually_elim (auto simp: field_simps)
 next
-  from assms(1) show "((\<lambda>x. f1 x * (1 + f2 x / f1 x)) ---> a) at_top"
+  from assms(1) show "((\<lambda>x. f1 x * (1 + f2 x / f1 x)) \<longlongrightarrow> a) at_top"
     by (force intro: tendsto_eq_intros smalloD_tendsto[OF assms(2)])
 qed
 
 lemma tendsto_diff_smallo:
   fixes f1 f2 :: "('a::order) \<Rightarrow> real"
-  shows "(f1 ---> a) at_top \<Longrightarrow> f2 \<in> o(f1) \<Longrightarrow> ((\<lambda>x. f1 x - f2 x) ---> a) at_top"
+  shows "(f1 \<longlongrightarrow> a) at_top \<Longrightarrow> f2 \<in> o(f1) \<Longrightarrow> ((\<lambda>x. f1 x - f2 x) \<longlongrightarrow> a) at_top"
   using tendsto_add_smallo[of f1 a "\<lambda>x. -f2 x"] by simp
 
 lemma tendsto_add_smallo_iff:
   fixes f1 f2 :: "('a::order) \<Rightarrow> real"
   assumes "f2 \<in> o(f1)"
-  shows   "(f1 ---> a) at_top \<longleftrightarrow> ((\<lambda>x. f1 x + f2 x) ---> a) at_top"
+  shows   "(f1 \<longlongrightarrow> a) at_top \<longleftrightarrow> ((\<lambda>x. f1 x + f2 x) \<longlongrightarrow> a) at_top"
 proof
-  assume "((\<lambda>x. f1 x + f2 x) ---> a) at_top"
-  hence "((\<lambda>x. f1 x + f2 x - f2 x) ---> a) at_top"
+  assume "((\<lambda>x. f1 x + f2 x) \<longlongrightarrow> a) at_top"
+  hence "((\<lambda>x. f1 x + f2 x - f2 x) \<longlongrightarrow> a) at_top"
     by (rule tendsto_diff_smallo) (simp add: landau_o.small.plus_absorb2 assms)
-  thus "(f1 ---> a) at_top" by simp
+  thus "(f1 \<longlongrightarrow> a) at_top" by simp
 qed (rule tendsto_add_smallo[OF _ assms])
 
 lemma tendsto_diff_smallo_iff:
   fixes f1 f2 :: "('a::order) \<Rightarrow> real"
-  shows "f2 \<in> o(f1) \<Longrightarrow> (f1 ---> a) at_top \<longleftrightarrow> ((\<lambda>x. f1 x - f2 x) ---> a) at_top"
+  shows "f2 \<in> o(f1) \<Longrightarrow> (f1 \<longlongrightarrow> a) at_top \<longleftrightarrow> ((\<lambda>x. f1 x - f2 x) \<longlongrightarrow> a) at_top"
   using tendsto_add_smallo_iff[of "\<lambda>x. -f2 x" f1 a] by simp
 
 lemma tendsto_divide_smallo:
   fixes f1 f2 g1 g2 :: "('a::order) \<Rightarrow> real"
-  assumes "((\<lambda>x. f1 x / g1 x) ---> a) at_top"
+  assumes "((\<lambda>x. f1 x / g1 x) \<longlongrightarrow> a) at_top"
   assumes "f2 \<in> o(f1)" "g2 \<in> o(g1)"
   assumes "eventually (\<lambda>x. g1 x \<noteq> 0) at_top"
-  shows   "((\<lambda>x. (f1 x + f2 x) / (g1 x + g2 x)) ---> a) at_top" (is "(?f ---> _) _")
+  shows   "((\<lambda>x. (f1 x + f2 x) / (g1 x + g2 x)) \<longlongrightarrow> a) at_top" (is "(?f \<longlongrightarrow> _) _")
 proof (subst tendsto_cong)
   let ?f' = "\<lambda>x. (f1 x / g1 x) * (1 + f2 x / f1 x) / (1 + g2 x / g1 x)"
 
-  have "(?f' ---> a * (1 + 0) / (1 + 0)) at_top"
+  have "(?f' \<longlongrightarrow> a * (1 + 0) / (1 + 0)) at_top"
   by (rule tendsto_mult tendsto_divide tendsto_add assms tendsto_const 
         smalloD_tendsto[OF assms(2)] smalloD_tendsto[OF assms(3)])+ simp_all
-  thus "(?f' ---> a) at_top" by simp
+  thus "(?f' \<longlongrightarrow> a) at_top" by simp
 
   have "(1/2::real) > 0" by simp
   from landau_o.smallD[OF assms(2) this] landau_o.smallD[OF assms(3) this]
@@ -1445,7 +1445,7 @@ qed
 
 lemma tendsto_ln_over_powr: 
   assumes "(a::real) > 0"
-  shows   "((\<lambda>x. ln x / x powr a) ---> 0) at_top"
+  shows   "((\<lambda>x. ln x / x powr a) \<longlongrightarrow> 0) at_top"
 proof (rule lhospital_at_top_at_top)
   from assms show "LIM x at_top. x powr a :> at_top" by (rule powr_at_top)
   show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
@@ -1457,29 +1457,29 @@ proof (rule lhospital_at_top_at_top)
   have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
     using eventually_gt_at_top[of "0::real"] 
     by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
-  moreover from assms have "((\<lambda>x. inverse a * x powr -a) ---> 0) at_top"
+  moreover from assms have "((\<lambda>x. inverse a * x powr -a) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
-  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) ---> 0) at_top"
+  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) \<longlongrightarrow> 0) at_top"
     by (subst (asm) tendsto_cong) simp_all
 qed
 
 lemma tendsto_ln_powr_over_powr: 
   assumes "(a::real) > 0" "b > 0"
-  shows   "((\<lambda>x. ln x powr a / x powr b) ---> 0) at_top"
+  shows   "((\<lambda>x. ln x powr a / x powr b) \<longlongrightarrow> 0) at_top"
 proof-
   have "eventually (\<lambda>x. ln x powr a / x powr b = (ln x / x powr (b/a)) powr a) at_top"
     using assms eventually_gt_at_top[of "1::real"]
     by (elim eventually_mono) (simp add: powr_divide powr_powr)
   moreover have "eventually (\<lambda>x. 0 < ln x / x powr (b / a)) at_top"
     using eventually_gt_at_top[of "1::real"] by (elim eventually_mono) simp
-  with assms have "((\<lambda>x. (ln x / x powr (b/a)) powr a) ---> 0) at_top"
+  with assms have "((\<lambda>x. (ln x / x powr (b/a)) powr a) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_zero_powrI tendsto_ln_over_powr) (simp_all add: eventually_mono)
   ultimately show ?thesis by (subst tendsto_cong) simp_all
 qed
 
 lemma tendsto_ln_powr_over_powr': 
   assumes "b > 0"
-  shows   "((\<lambda>x::real. ln x powr a / x powr b) ---> 0) at_top"
+  shows   "((\<lambda>x::real. ln x powr a / x powr b) \<longlongrightarrow> 0) at_top"
 proof (cases "a \<le> 0")
   assume a: "a \<le> 0"
   show ?thesis
@@ -1498,7 +1498,7 @@ qed (intro tendsto_ln_powr_over_powr, simp_all add: assms)
 
 lemma tendsto_ln_over_ln:
   assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) ---> 1) at_top"
+  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) \<longlongrightarrow> 1) at_top"
 proof (rule lhospital_at_top_at_top)
   show "LIM x at_top. ln (c*x) :> at_top"
     by (intro filterlim_compose[OF ln_at_top] filterlim_tendsto_pos_mult_at_top[OF tendsto_const] 
@@ -1509,28 +1509,28 @@ proof (rule lhospital_at_top_at_top)
   show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
     using eventually_gt_at_top[of "inverse c"] assms
     by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "((\<lambda>x::real. inverse x / inverse x) ---> 1) at_top"
+  show "((\<lambda>x::real. inverse x / inverse x) \<longlongrightarrow> 1) at_top"
     by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
 qed (simp_all add: eventually_not_equal)
 
 lemma tendsto_ln_powr_over_ln_powr:
   assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) powr d / ln (c*x) powr d) ---> 1) at_top"
+  shows   "((\<lambda>x. ln (a*x) powr d / ln (c*x) powr d) \<longlongrightarrow> 1) at_top"
 proof-
   have "eventually (\<lambda>x. ln (a*x) powr d / ln (c*x) powr d = (ln (a*x) / ln (c*x)) powr d) at_top"
     using assms eventually_gt_at_top[of "max (inverse a) (inverse c)"]
     by (auto elim!: eventually_mono simp: powr_divide field_simps)
-  moreover have "((\<lambda>x. (ln (a*x) / ln (c*x)) powr d) ---> 1) at_top" using assms
+  moreover have "((\<lambda>x. (ln (a*x) / ln (c*x)) powr d) \<longlongrightarrow> 1) at_top" using assms
     by (intro tendsto_eq_rhs[OF tendsto_powr[OF tendsto_ln_over_ln tendsto_const]]) simp_all
   ultimately show ?thesis by (subst tendsto_cong)
 qed
 
 lemma tendsto_ln_powr_over_ln_powr': 
-  "c > 0 \<Longrightarrow> ((\<lambda>x::real. ln x powr d / ln (c*x) powr d) ---> 1) at_top"
+  "c > 0 \<Longrightarrow> ((\<lambda>x::real. ln x powr d / ln (c*x) powr d) \<longlongrightarrow> 1) at_top"
   using tendsto_ln_powr_over_ln_powr[of 1 c d] by simp
 
 lemma tendsto_ln_powr_over_ln_powr'': 
-  "a > 0 \<Longrightarrow> ((\<lambda>x::real. ln (a*x) powr d / ln x powr d) ---> 1) at_top"
+  "a > 0 \<Longrightarrow> ((\<lambda>x::real. ln (a*x) powr d / ln x powr d) \<longlongrightarrow> 1) at_top"
   using tendsto_ln_powr_over_ln_powr[of _ 1] by simp
 
 lemma bigtheta_const_ln_powr [simp]: "a > 0 \<Longrightarrow> (\<lambda>x::real. ln (a*x) powr d) \<in> \<Theta>(\<lambda>x. ln x powr d)"

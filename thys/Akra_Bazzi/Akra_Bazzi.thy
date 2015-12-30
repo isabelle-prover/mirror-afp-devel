@@ -272,7 +272,7 @@ lemma C_bound:
   assumes "\<And>b. b \<in> set bs \<Longrightarrow> C < b" "hb > 0"
   shows   "eventually (\<lambda>x::real. \<forall>b\<in>set bs. C*x \<le> b*x - hb*x/ln x powr (1+e)) at_top"
 proof-
-  from e_pos have "((\<lambda>x. hb * ln x powr -(1+e)) ---> 0) at_top"
+  from e_pos have "((\<lambda>x. hb * ln x powr -(1+e)) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp_all
   with assms have "\<forall>b\<in>set bs. eventually (\<lambda>x. \<bar>hb * ln x powr -(1+e)\<bar> < b - C) at_top"
     by (force simp: tendsto_iff dist_real_def)
@@ -341,7 +341,7 @@ proof-
   def mb \<equiv> "Min (set bs)/2"
   from b_bounds bs_nonempty have mb_pos: "mb > 0" unfolding mb_def by simp
   from h_bound guess hb . note hb = this
-  from e_pos have "((\<lambda>x. hb * ln x powr -(1 + e)) ---> 0) at_top"
+  from e_pos have "((\<lambda>x. hb * ln x powr -(1 + e)) \<longlongrightarrow> 0) at_top"
     by (intro tendsto_mult_right_zero tendsto_neg_powr ln_at_top) simp_all
   moreover note mb_pos
   ultimately have "eventually (\<lambda>x. hb * ln x powr -(1 + e) < mb) at_top" using hb(1)

@@ -29,7 +29,7 @@ proof (rule ccontr)
   thus False using `F\<noteq>bot` eventually_False by auto
 qed
 
-lemma poly_tendsto[simp]:"(poly p ---> poly p x) (at (x::real))"
+lemma poly_tendsto[simp]:"(poly p \<longlongrightarrow> poly p x) (at (x::real))"
   using isCont_def[where f="poly p"] by auto
 
 lemma not_eq_pos_or_neg_iff_1:

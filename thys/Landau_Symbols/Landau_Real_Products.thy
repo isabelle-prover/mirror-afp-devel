@@ -442,7 +442,7 @@ lemma fun_chain_at_top_at_top:
 
 lemma const_smallo_ln_chain: "(\<lambda>_. 1) \<in> o((ln::real\<Rightarrow>real)^^n)"
 proof (intro smalloI_tendsto)
-  show "((\<lambda>x::real. 1 / (ln^^n) x) ---> 0) at_top"
+  show "((\<lambda>x::real. 1 / (ln^^n) x) \<longlongrightarrow> 0) at_top"
     by (rule tendsto_divide_0 tendsto_const filterlim_at_top_imp_at_infinity 
              fun_chain_at_top_at_top ln_at_top)+
 next
@@ -455,11 +455,11 @@ lemma ln_fun_in_smallo_fun:
   assumes "filterlim f at_top at_top"
   shows   "(\<lambda>x. ln (f x) powr p :: real) \<in> o(f)"
 proof (rule smalloI_tendsto)
-  have "((\<lambda>x. ln x powr p / x powr 1) ---> 0) at_top" by (rule tendsto_ln_powr_over_powr') simp
+  have "((\<lambda>x. ln x powr p / x powr 1) \<longlongrightarrow> 0) at_top" by (rule tendsto_ln_powr_over_powr') simp
   moreover have "eventually (\<lambda>x. ln x powr p / x powr 1 = ln x powr p / x) at_top"
     using eventually_gt_at_top[of "0::real"] by eventually_elim simp
-  ultimately have "((\<lambda>x. ln x powr p / x) ---> 0) at_top" by (subst (asm) tendsto_cong)
-  from this assms show "((\<lambda>x. ln (f x) powr p / f x) ---> 0) at_top"
+  ultimately have "((\<lambda>x. ln x powr p / x) \<longlongrightarrow> 0) at_top" by (subst (asm) tendsto_cong)
+  from this assms show "((\<lambda>x. ln (f x) powr p / f x) \<longlongrightarrow> 0) at_top"
     by (rule filterlim_compose)
   from assms have "eventually (\<lambda>x. f x \<ge> 1) at_top" by (simp add: filterlim_at_top)
   thus "eventually (\<lambda>x. f x \<noteq> 0) at_top" by eventually_elim simp

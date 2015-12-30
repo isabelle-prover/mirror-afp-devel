@@ -128,8 +128,8 @@ end
 
 lemma continuous_imp_tendsto_compose:
   assumes "continuous (at x0) f"
-    and "(g ---> x0) F"
-  shows "((\<lambda>x. f (g x)) ---> (f x0)) F"
+    and "(g \<longlongrightarrow> x0) F"
+  shows "((\<lambda>x. f (g x)) \<longlongrightarrow> (f x0)) F"
   using tendsto_compose assms
   by (auto simp: continuous_at)
 
