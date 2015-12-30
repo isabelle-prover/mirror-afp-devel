@@ -2,7 +2,6 @@
     License: BSD
 *)
 
-
 theory Conditional_Expectation
 imports Complex_Main  "~~/src/HOL/Probability/Radon_Nikodym" "~~/src/HOL/Probability/Probability_Measure"
         SG_Library_Complement
@@ -1011,7 +1010,4 @@ qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
 
 end
 
-
-
 end
-

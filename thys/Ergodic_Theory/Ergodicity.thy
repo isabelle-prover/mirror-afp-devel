@@ -4,7 +4,6 @@
 
 theory Ergodicity
 imports Invariants
-
 begin
 
 section {*Ergodicity*}
@@ -445,6 +444,4 @@ proof (rule ccontr)
   then show "False" using x(2) by simp
 qed
 
-
 end
-

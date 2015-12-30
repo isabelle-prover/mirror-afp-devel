@@ -4,7 +4,6 @@
 
 theory Measure_Preserving_Transformations
 imports SG_Library_Complement
-
 begin
 
 section{*Measure preserving or quasi-preserving maps*}
@@ -735,8 +734,5 @@ proof -
   also have "... = n * (\<integral>\<^sup>+x. f x \<partial>M)" by (simp add: setsum_constant_ereal mult.commute)
   finally show "(\<integral>\<^sup>+x. birkhoff_sum f n x \<partial>M) =  n * (\<integral>\<^sup>+x. f x \<partial>M)" by simp
 qed
-
-
-
 
 end

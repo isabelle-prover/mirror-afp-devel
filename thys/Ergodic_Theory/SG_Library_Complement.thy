@@ -5,7 +5,6 @@
 theory SG_Library_Complement
 imports Complex_Main Topological_Spaces  "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
  "~~/src/HOL/Probability/Probability_Measure" "~~/src/HOL/Probability/Set_Integral"
-
 begin
 
 section {*SG Libary complements*}
@@ -2205,4 +2204,3 @@ proof (rule AE_and_int_bound_implies_L1_conv)
 qed (auto simp add: assms Limsup_bounded)
 
 end
-

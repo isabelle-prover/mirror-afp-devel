@@ -4,7 +4,6 @@
 
 theory Recurrence
 imports Measure_Preserving_Transformations
-
 begin
 
 section{*Conservativity, recurrence*}

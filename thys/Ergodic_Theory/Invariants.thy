@@ -4,7 +4,6 @@
 
 theory Invariants
 imports Recurrence Conditional_Expectation
-
 begin
 
 section{*The invariant sigma-algebra, Birkhoff theorem*}
@@ -1552,8 +1551,6 @@ proof -
     by auto
 qed
 
-
 end
-
 
 end
