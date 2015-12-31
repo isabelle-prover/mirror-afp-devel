@@ -4,7 +4,7 @@ session Abortable_Linearizable_Modules (AFP) = HOLCF +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Sublist"
-    "~~/src/HOL/HOLCF/IOA/meta_theory/IOA"
+    "~~/src/HOL/HOLCF/IOA/IOA"
   theories
     CompositionCorrectness
   document_files

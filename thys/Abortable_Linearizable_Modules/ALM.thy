@@ -2,7 +2,7 @@
 
 section {* The ALM Automata specification*}
 theory ALM
-imports "~~/src/HOL/HOLCF/IOA/meta_theory/IOA" LCP
+imports "~~/src/HOL/HOLCF/IOA/IOA" LCP
 begin
 
 typedecl client
