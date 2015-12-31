@@ -11,7 +11,7 @@ begin
 section {* Examples *}
 
 (*<*)
-text{* Test: B(n) = (One + a + aa + · · · + a^n-1 ) (a^n)^* = a^* (see Asperti) *}
+text{* Test: \<open>B(n) = (One + a + aa + \<cdots> + a\<^sup>n\<^sup>-\<^sup>1) (a\<^sup>n)\<^sup>* = a\<^sup>*\<close> (see Asperti) *}
 (*>*)
 
 fun pow where
