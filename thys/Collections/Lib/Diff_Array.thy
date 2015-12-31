@@ -1,5 +1,5 @@
 section {* Arrays with in-place updates *}
-theory Diff_Array imports 
+theory Diff_Array imports
   Assoc_List
   "../../Automatic_Refinement/Parametricity/Parametricity"
   "~~/src/HOL/Library/Code_Target_Numeral"
@@ -45,9 +45,9 @@ text {* The following operations are total versions of
   They can be efficiently implemented in the target language by catching
   exceptions.
   *}
-definition "array_get_oo x a i \<equiv> 
+definition "array_get_oo x a i \<equiv>
   if i<array_length a then array_get a i else x"
-definition "array_set_oo f a i v \<equiv> 
+definition "array_set_oo f a i v \<equiv>
   if i<array_length a then array_set a i v else f ()"
 
 primrec list_of_array :: "'a array \<Rightarrow> 'a list"
@@ -96,7 +96,7 @@ lemma array_get_array_set_other:
   "n \<noteq> n' \<Longrightarrow> array_get (array_set A n a) n' = array_get A n'"
 by(cases A) simp
 
-lemma list_of_array_grow [simp]: 
+lemma list_of_array_grow [simp]:
   "list_of_array (array_grow a inc x) = list_of_array a @ replicate inc x"
 by (cases a) (simp)
 
@@ -104,7 +104,7 @@ lemma array_grow_length [simp]:
   "array_length (array_grow a inc x) = array_length a + inc"
 by (cases a)(simp add: array_of_list_def)
 
-lemma array_grow_get [simp]: 
+lemma array_grow_get [simp]:
   "i < array_length a \<Longrightarrow> array_get (array_grow a inc x) i = array_get a i"
   "\<lbrakk> i \<ge> array_length a;  i < array_length a + inc\<rbrakk> \<Longrightarrow> array_get (array_grow a inc x) i = x"
 by (cases a, simp add: nth_append)+
@@ -132,7 +132,7 @@ lemma distinct_assoc_list_of_array:
   "distinct (map fst (assoc_list_of_array a))"
 by(cases a)(auto)
 
-lemma array_length_array_map [simp]: 
+lemma array_length_array_map [simp]:
   "array_length (array_map f a) = array_length a"
 by(simp add: array_map_def array_of_list_def)
 
@@ -187,7 +187,7 @@ lemma list_of_array_code [code]:
 by(cases a)(simp add: array_foldr_foldr foldr_Cons)
 
 lemma array_foldr_cong [fundef_cong]:
-  "\<lbrakk> a = a'; b = b'; 
+  "\<lbrakk> a = a'; b = b';
     \<And>i b. i < array_length a \<Longrightarrow> f i (array_get a i) b = g i (array_get a i) b \<rbrakk>
   \<Longrightarrow> array_foldr f a b = array_foldr g a' b'"
 by(cases a)(auto simp add: array_foldr_def set_zip intro!: foldr_cong)
@@ -255,7 +255,7 @@ lemma prod_foldl_conv:
 by(induct xs arbitrary: a b) simp_all
 
 lemma prod_array_foldl_conv:
-  "(array_foldl f b a, array_foldl g c a) = array_foldl (\<lambda>h (b, c) v. (f h b v, g h c v)) (b, c) a" 
+  "(array_foldl f b a, array_foldl g c a) = array_foldl (\<lambda>h (b, c) v. (f h b v, g h c v)) (b, c) a"
 by(cases a)(simp add: array_foldl_def foldl_map prod_foldl_conv split_def)
 
 lemma array_foldl_array_foldr_comm:
@@ -275,7 +275,7 @@ proof(cases a)
     case Nil thus ?case by simp
   next
     case (snoc x xs)
-    have "foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length (xs @ [x])] (xs @ [x])) = 
+    have "foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length (xs @ [x])] (xs @ [x])) =
           array_set (foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length xs] xs))
                     (length xs) (f (length xs) x)" by simp
     also from `length (xs @ [x]) \<le> length a` have "length xs \<le> length a" by simp
@@ -303,7 +303,7 @@ lemma array_foldl_new_array:
   "array_foldl f b (new_array a n) = foldl (\<lambda>b (k, v). f k b v) b (zip [0..<n] (replicate n a))"
   by(simp add: new_array_def array_foldl_def)
 
-lemma array_list_of_set[simp]: 
+lemma array_list_of_set[simp]:
   "list_of_array (array_set a i x) = list_of_array a [i := x]"
   by (cases a) simp
 
@@ -319,10 +319,10 @@ lemma rec_array_is_case[simp]: "rec_array = case_array"
   done
 
 definition array_rel_def_internal:
-  "array_rel R \<equiv> 
+  "array_rel R \<equiv>
     {(Array xs, Array ys)|xs ys. (xs,ys) \<in> \<langle>R\<rangle>list_rel}"
 
-lemma array_rel_def: 
+lemma array_rel_def:
   "\<langle>R\<rangle>array_rel \<equiv> {(Array xs, Array ys)|xs ys. (xs,ys) \<in> \<langle>R\<rangle>list_rel}"
   unfolding array_rel_def_internal relAPP_def .
 
@@ -330,10 +330,10 @@ lemma array_relD:
   "(Array l, Array l') \<in> \<langle>R\<rangle>array_rel \<Longrightarrow> (l,l') \<in> \<langle>R\<rangle>list_rel"
   by (simp add: array_rel_def)
 
-lemma array_rel_alt: 
-  "\<langle>R\<rangle>array_rel = 
-  { (Array l, l) | l. True } 
-  O \<langle>R\<rangle>list_rel 
+lemma array_rel_alt:
+  "\<langle>R\<rangle>array_rel =
+  { (Array l, l) | l. True }
+  O \<langle>R\<rangle>list_rel
   O {(l,Array l) | l. True}"
   by (auto simp: array_rel_def)
 
@@ -365,7 +365,7 @@ lemma param_case_array[param]:
 
 lemma param_case_array1':
   assumes "(a,a')\<in>\<langle>Ra\<rangle>array_rel"
-  assumes "\<And>l l'. \<lbrakk> a=Array l; a'=Array l'; (l,l')\<in>\<langle>Ra\<rangle>list_rel \<rbrakk> 
+  assumes "\<And>l l'. \<lbrakk> a=Array l; a'=Array l'; (l,l')\<in>\<langle>Ra\<rangle>list_rel \<rbrakk>
     \<Longrightarrow> (f l,f' l') \<in> Rb"
   shows "(case_array f a,case_array f' a') \<in> Rb"
   using assms
@@ -375,7 +375,7 @@ lemma param_case_array1':
   by (rule refl)+
 
 lemmas param_case_array2' = param_case_array1'[folded rec_array_is_case]
-  
+
 lemmas param_case_array' = param_case_array1' param_case_array2'
 
 lemma param_array_length[param]:
@@ -424,21 +424,21 @@ lemma param_array_shrink[param]:
 proof-
   obtain l l' where [simp]: "a = Array l" "a' = Array l'"
       by (cases a, cases a', simp_all)
-  from AR have LR: "(l,l') \<in> \<langle>R\<rangle>list_rel" 
+  from AR have LR: "(l,l') \<in> \<langle>R\<rangle>list_rel"
     by (auto dest: array_relD)
-  with assms show ?thesis by (auto intro: 
+  with assms show ?thesis by (auto intro:
       param_Array[param_fo] param_take[param_fo]
       dest: array_rel_imp_same_length
     )
 qed
 
 lemma param_assoc_list_of_array[param]:
-  "(assoc_list_of_array, assoc_list_of_array) \<in> 
+  "(assoc_list_of_array, assoc_list_of_array) \<in>
        \<langle>R\<rangle> array_rel \<rightarrow> \<langle>\<langle>nat_rel,R\<rangle>prod_rel\<rangle>list_rel"
   unfolding assoc_list_of_array_def[abs_def] by parametricity
 
 lemma param_array_map[param]:
-  "(array_map, array_map) \<in> 
+  "(array_map, array_map) \<in>
        (nat_rel \<rightarrow> Ra \<rightarrow> Rb) \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> \<langle>Rb\<rangle>array_rel"
   unfolding array_map_def[abs_def] by parametricity
 
@@ -462,9 +462,9 @@ definition [code del]: "array_get' a == array_get a o nat_of_integer"
 definition [code del]: "array_set' a == array_set a o nat_of_integer"
 definition [code del]: "array_grow' a == array_grow a o nat_of_integer"
 definition [code del]: "array_shrink' a == array_shrink a o nat_of_integer"
-definition [code del]: 
+definition [code del]:
   "array_get_oo' x a == array_get_oo x a o nat_of_integer"
-definition [code del]: 
+definition [code del]:
   "array_set_oo' f a == array_set_oo f a o nat_of_integer"
 
 
@@ -477,11 +477,11 @@ lemma [code]:
   "array_shrink a == array_shrink' a o integer_of_nat"
   "array_get_oo x a == array_get_oo' x a o integer_of_nat"
   "array_set_oo f a == array_set_oo' f a o integer_of_nat"
-  by (simp_all 
+  by (simp_all
     add: o_def
-    add: new_array'_def array_length'_def array_get'_def array_set'_def 
+    add: new_array'_def array_length'_def array_get'_def array_set'_def
       array_grow'_def array_shrink'_def array_get_oo'_def array_set_oo'_def)
-  
+
 text {* Fallbacks *}
 lemmas [code] = array_get_oo'_def[unfolded array_get_oo_def[abs_def]]
 lemmas [code] = array_set_oo'_def[unfolded array_set_oo_def[abs_def]]
@@ -545,13 +545,13 @@ code_printing constant new_array' \<rightharpoonup> (Haskell) "Array.new'_array"
 code_printing constant array_length' \<rightharpoonup> (Haskell) "Array.array'_length"
 code_printing constant array_get' \<rightharpoonup> (Haskell) "Array.array'_get"
 code_printing constant array_set' \<rightharpoonup> (Haskell) "Array.array'_set"
-code_printing constant array_of_list \<rightharpoonup> (Haskell) "Array.array'_of'_list" 
+code_printing constant array_of_list \<rightharpoonup> (Haskell) "Array.array'_of'_list"
 code_printing constant array_grow' \<rightharpoonup> (Haskell) "Array.array'_grow"
 code_printing constant array_shrink' \<rightharpoonup> (Haskell) "Array.array'_shrink"
 
 subsubsection {* Code Generator Setup For SML *}
 
-text {* 
+text {*
   We have the choice between single-threaded arrays, that raise an exception if an old version is accessed,
   and truly functional arrays, that update the array in place, but store undo-information to restore
   old versions.
@@ -585,11 +585,11 @@ fun update (aref,idx,v) =
 fun length (Unsynchronized.ref Invalid) = raise AccessedOldVersion |
     length (Unsynchronized.ref (Value a)) = Array.length a
 
-fun grow (aref, i, x) = case aref of 
+fun grow (aref, i, x) = case aref of
   (Unsynchronized.ref Invalid) => raise AccessedOldVersion |
   (Unsynchronized.ref (Value a)) => (
     let val len=Array.length a;
-        val na = Array.array (len+i,x) 
+        val na = Array.array (len+i,x)
     in
       aref := Invalid;
       Array.copy {src=a, dst=na, di=0};
@@ -600,7 +600,7 @@ fun grow (aref, i, x) = case aref of
 fun shrink (aref, sz) = case aref of
   (Unsynchronized.ref Invalid) => raise AccessedOldVersion |
   (Unsynchronized.ref (Value a)) => (
-    if sz > Array.length a then 
+    if sz > Array.length a then
       raise Size
     else (
       aref:=Invalid;
@@ -686,10 +686,10 @@ structure FArray = struct
         end
       ;
 
-  fun grow (aref, inc, x) = case aref of 
+  fun grow (aref, inc, x) = case aref of
     (Unsynchronized.ref (Value a)) => (
       let val len=Array.length a;
-          val na = Array.array (len+inc,x) 
+          val na = Array.array (len+inc,x)
       in
         Array.copy {src=a, dst=na, di=0};
         Unsynchronized.ref (Value na)
@@ -701,7 +701,7 @@ structure FArray = struct
 
   fun shrink (aref, sz) = case aref of
     (Unsynchronized.ref (Value a)) => (
-      if sz > Array.length a then 
+      if sz > Array.length a then
         raise Size
       else (
         Unsynchronized.ref (Value (Array.tabulate (sz,fn i => Array.sub (a,i))))
@@ -728,10 +728,10 @@ fun array_grow (a:'a ArrayType) (i:int) (x:'a) = grow (a, i, x);
 
 fun array_shrink (a:'a ArrayType) (sz:int) = shrink (a,sz);
 
-fun array_get_oo (d:'a) (a:'a ArrayType) (i:int) = 
+fun array_get_oo (d:'a) (a:'a ArrayType) (i:int) =
   sub (a,i) handle Subscript => d
 
-fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:int) (e:'a) = 
+fun array_set_oo (d:(unit->'a ArrayType)) (a:'a ArrayType) (i:int) (e:'a) =
   update (a, i, e) handle Subscript => d ()
 
 end;
@@ -762,248 +762,248 @@ code_printing code_module "DiffArray" \<rightharpoonup>
   (Scala) {*
 object DiffArray {
 
-	import scala.collection.mutable.ArraySeq
-	
-	protected abstract sealed class DiffArray_D[A]
-	final case class Current[A] (a:ArraySeq[A]) extends DiffArray_D[A]
-	final case class Upd[A] (i:Int, v:A, n:DiffArray_D[A]) extends DiffArray_D[A]
-	
-	object DiffArray_Realizer {
-		def realize[A](a:DiffArray_D[A]) : ArraySeq[A] = a match {
-		  case Current(a) => ArraySeq.empty ++ a
-		  case Upd(j,v,n) => {val a = realize(n); a.update(j, v); a}
-		}
-	}
-	
-	class T[A] (var d:DiffArray_D[A]) {
-		
-		def realize () = { val a=DiffArray_Realizer.realize(d); d = Current(a); a }
-		override def toString() = realize().toSeq.toString
-		
-		override def equals(obj:Any) = 
-			if (obj.isInstanceOf[T[A]])	obj.asInstanceOf[T[A]].realize().equals(realize())
-			else false
-		
-	}
-  
-  
-	def array_of_list[A](l : List[A]) : T[A] = new T(Current(ArraySeq.empty ++ l))
+  import scala.collection.mutable.ArraySeq
+
+  protected abstract sealed class DiffArray_D[A]
+  final case class Current[A] (a:ArraySeq[A]) extends DiffArray_D[A]
+  final case class Upd[A] (i:Int, v:A, n:DiffArray_D[A]) extends DiffArray_D[A]
+
+  object DiffArray_Realizer {
+    def realize[A](a:DiffArray_D[A]) : ArraySeq[A] = a match {
+      case Current(a) => ArraySeq.empty ++ a
+      case Upd(j,v,n) => {val a = realize(n); a.update(j, v); a}
+    }
+  }
+
+  class T[A] (var d:DiffArray_D[A]) {
+
+    def realize () = { val a=DiffArray_Realizer.realize(d); d = Current(a); a }
+    override def toString() = realize().toSeq.toString
+
+    override def equals(obj:Any) =
+      if (obj.isInstanceOf[T[A]]) obj.asInstanceOf[T[A]].realize().equals(realize())
+      else false
+
+  }
+
+
+  def array_of_list[A](l : List[A]) : T[A] = new T(Current(ArraySeq.empty ++ l))
     def new_array[A](v:A, sz : BigInt) = new T[A](Current[A](ArraySeq.fill[A](sz.intValue)(v)))
-  
+
     private def length[A](a:DiffArray_D[A]) : BigInt = a match {
-	  case Current(a) => a.length
-	  case Upd(_,_,n) => length(n)
-	}
-    
-	def length[A](a : T[A]) : BigInt = length(a.d)
-	
-	private def sub[A](a:DiffArray_D[A], i:Int) : A = a match {
-	  case Current(a) => a (i)
-	  case Upd(j,v,n) => if (i==j) v else sub(n,i)
-	}
-	
-	def get[A](a:T[A], i:BigInt) : A = sub(a.d,i.intValue)
-  
-	private def realize[A](a:DiffArray_D[A]) = DiffArray_Realizer.realize[A](a)
-	
-	def set[A](a:T[A], i:BigInt,v:A) : T[A] = a.d match {
-	  case Current(ad) => { 
-	    val ii = i.intValue; 
-	    a.d = Upd(ii,ad(ii),a.d); 
-	    //ad.update(ii,v);
-	    ad(ii)=v
-	    new T[A](Current(ad)) 
-	  }
-	  case Upd(_,_,_) => set(new T[A](Current(realize(a.d))), i.intValue,v)
-	}
-	  
-	def grow[A](a:T[A], sz:BigInt, v:A) : T[A] = a.d match {
-	  case Current(ad) => {
-	    val adt = ArraySeq.fill[A](sz.intValue)(v)
-	    System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
-	    new T[A](Current[A](adt))
-	  }
-	  case Upd (_,_,_) =>  {
-	    val adt = ArraySeq.fill[A](sz.intValue)(v)
-	    val ad = realize(a.d)
-	    System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
-	    new T[A](Current[A](adt))
-	  }
-	}
-	
-	def shrink[A](a:T[A], sz:BigInt) : T[A] =
-		if (sz==0) { 
-			array_of_list(Nil)
-		} else {
-			a.d match {
-				case Current(ad) => {
-				    val v=ad(0);
-				    val szz=sz.intValue
-					val adt = ArraySeq.fill[A](szz)(v);
-					System.arraycopy(ad.array, 0, adt.array, 0, szz);
-					new T[A](Current[A](adt))
-				}
-				case Upd (_,_,_) =>  {
-					val ad = realize(a.d);
-				    val szz=sz.intValue
-				    val v=ad(0);
-					val adt = ArraySeq.fill[A](szz)(v);
-					System.arraycopy(ad.array, 0, adt.array, 0, szz);
-					new T[A](Current[A](adt))
-				}
-			}	  
-		}
-	
-	def get_oo[A](d: => A, a:T[A], i:BigInt):A = try get(a,i) catch {
-	  case _:scala.IndexOutOfBoundsException => d
-	}
-	
-	def set_oo[A](d: Unit => T[A], a:T[A], i:BigInt, v:A) : T[A] = try set(a,i,v) catch {
-	  case _:scala.IndexOutOfBoundsException => d ()
-	}
-	
+    case Current(a) => a.length
+    case Upd(_,_,n) => length(n)
+  }
+
+  def length[A](a : T[A]) : BigInt = length(a.d)
+
+  private def sub[A](a:DiffArray_D[A], i:Int) : A = a match {
+    case Current(a) => a (i)
+    case Upd(j,v,n) => if (i==j) v else sub(n,i)
+  }
+
+  def get[A](a:T[A], i:BigInt) : A = sub(a.d,i.intValue)
+
+  private def realize[A](a:DiffArray_D[A]) = DiffArray_Realizer.realize[A](a)
+
+  def set[A](a:T[A], i:BigInt,v:A) : T[A] = a.d match {
+    case Current(ad) => {
+      val ii = i.intValue;
+      a.d = Upd(ii,ad(ii),a.d);
+      //ad.update(ii,v);
+      ad(ii)=v
+      new T[A](Current(ad))
+    }
+    case Upd(_,_,_) => set(new T[A](Current(realize(a.d))), i.intValue,v)
+  }
+
+  def grow[A](a:T[A], sz:BigInt, v:A) : T[A] = a.d match {
+    case Current(ad) => {
+      val adt = ArraySeq.fill[A](sz.intValue)(v)
+      System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
+      new T[A](Current[A](adt))
+    }
+    case Upd (_,_,_) =>  {
+      val adt = ArraySeq.fill[A](sz.intValue)(v)
+      val ad = realize(a.d)
+      System.arraycopy(ad.array, 0, adt.array, 0, ad.length);
+      new T[A](Current[A](adt))
+    }
+  }
+
+  def shrink[A](a:T[A], sz:BigInt) : T[A] =
+    if (sz==0) {
+      array_of_list(Nil)
+    } else {
+      a.d match {
+        case Current(ad) => {
+            val v=ad(0);
+            val szz=sz.intValue
+          val adt = ArraySeq.fill[A](szz)(v);
+          System.arraycopy(ad.array, 0, adt.array, 0, szz);
+          new T[A](Current[A](adt))
+        }
+        case Upd (_,_,_) =>  {
+          val ad = realize(a.d);
+            val szz=sz.intValue
+            val v=ad(0);
+          val adt = ArraySeq.fill[A](szz)(v);
+          System.arraycopy(ad.array, 0, adt.array, 0, szz);
+          new T[A](Current[A](adt))
+        }
+      }
+    }
+
+  def get_oo[A](d: => A, a:T[A], i:BigInt):A = try get(a,i) catch {
+    case _:scala.IndexOutOfBoundsException => d
+  }
+
+  def set_oo[A](d: Unit => T[A], a:T[A], i:BigInt, v:A) : T[A] = try set(a,i,v) catch {
+    case _:scala.IndexOutOfBoundsException => d ()
+  }
+
 }
 
 /*
 object Test {
-  
-  
-  
-	def assert (b : Boolean) : Unit = if (b) () else throw new java.lang.AssertionError("Assertion Failed")
-	  
-	def eql[A] (a:DiffArray.T[A], b:List[A]) = assert (a.realize.corresponds(b)((x,y) => x.equals(y)))
-	  
 
-	def tests1(): Unit = {
-		val a = DiffArray.array_of_list(1::2::3::4::Nil)
-		  eql(a,1::2::3::4::Nil)
-		
-		// Simple update 
-		val b = DiffArray.set(a,2,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  
-		// Another update
-		val c = DiffArray.set(b,3,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::9::Nil)
-		
-		// Update of old version (forces realize)
-		val d = DiffArray.set(b,2,8)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::9::Nil)
-		  eql(d,1::2::8::4::Nil)
-	  
-  	}
 
-	def tests2(): Unit = {
-		val a = DiffArray.array_of_list(1::2::3::4::Nil)
-		  eql(a,1::2::3::4::Nil)
-		  
-		// Simple update 
-		val b = DiffArray.set(a,2,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		
-		// Grow of current version
-		val c = DiffArray.grow(b,6,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::4::9::9::Nil)
 
-		// Grow of old version
-		val d = DiffArray.grow(a,6,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::4::9::9::Nil)
-		  eql(d,1::2::3::4::9::9::Nil)
-		  
-	}
+  def assert (b : Boolean) : Unit = if (b) () else throw new java.lang.AssertionError("Assertion Failed")
 
-	def tests3(): Unit = {
-		val a = DiffArray.array_of_list(1::2::3::4::Nil)
-		  eql(a,1::2::3::4::Nil)
-		  
-		// Simple update 
-		val b = DiffArray.set(a,2,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		
-		// Shrink of current version
-		val c = DiffArray.shrink(b,3)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::Nil)
+  def eql[A] (a:DiffArray.T[A], b:List[A]) = assert (a.realize.corresponds(b)((x,y) => x.equals(y)))
 
-		// Shrink of old version
-		val d = DiffArray.shrink(a,3)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::9::Nil)
-		  eql(d,1::2::3::Nil)
-	  
-	}
-	
-	def tests4(): Unit = {
-		val a = DiffArray.array_of_list(1::2::3::4::Nil)
-		  eql(a,1::2::3::4::Nil)
-		  
-		// Update _oo (succeeds) 
-		val b = DiffArray.set_oo((_) => a,a,2,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
 
-		// Update _oo (current version,fails) 
-		val c = DiffArray.set_oo((_) => a,b,5,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::3::4::Nil)
-		  
-		// Update _oo (old version,fails) 
-		val d = DiffArray.set_oo((_) => b,a,5,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
-		  eql(c,1::2::3::4::Nil)
-		  eql(d,1::2::9::4::Nil)
-		  
-	}
-	
-	def tests5(): Unit = {
-		val a = DiffArray.array_of_list(1::2::3::4::Nil)
-		  eql(a,1::2::3::4::Nil)
-		  
-		// Update  
-		val b = DiffArray.set(a,2,9)
-		  eql(a,1::2::3::4::Nil)
-		  eql(b,1::2::9::4::Nil)
+  def tests1(): Unit = {
+    val a = DiffArray.array_of_list(1::2::3::4::Nil)
+      eql(a,1::2::3::4::Nil)
 
-		// Get_oo (current version, succeeds)
-	    assert (DiffArray.get_oo(0,b,2)==9)
-		// Get_oo (current version, fails)
-	    assert (DiffArray.get_oo(0,b,5)==0)
-		// Get_oo (old version, succeeds)
-	    assert (DiffArray.get_oo(0,a,2)==3)
-		// Get_oo (old version, fails)
-	    assert (DiffArray.get_oo(0,a,5)==0)
-		  
-	}
+    // Simple update
+    val b = DiffArray.set(a,2,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
 
-	
-	
-	
-	def main(args: Array[String]): Unit = {
-		tests1 ()
-		tests2 ()
-		tests3 ()
-		tests4 ()
-		tests5 ()
+    // Another update
+    val c = DiffArray.set(b,3,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::9::Nil)
 
-		
-		Console.println("Tests passed")
-	}
-  
+    // Update of old version (forces realize)
+    val d = DiffArray.set(b,2,8)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::9::Nil)
+      eql(d,1::2::8::4::Nil)
+
+    }
+
+  def tests2(): Unit = {
+    val a = DiffArray.array_of_list(1::2::3::4::Nil)
+      eql(a,1::2::3::4::Nil)
+
+    // Simple update
+    val b = DiffArray.set(a,2,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+
+    // Grow of current version
+    val c = DiffArray.grow(b,6,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::4::9::9::Nil)
+
+    // Grow of old version
+    val d = DiffArray.grow(a,6,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::4::9::9::Nil)
+      eql(d,1::2::3::4::9::9::Nil)
+
+  }
+
+  def tests3(): Unit = {
+    val a = DiffArray.array_of_list(1::2::3::4::Nil)
+      eql(a,1::2::3::4::Nil)
+
+    // Simple update
+    val b = DiffArray.set(a,2,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+
+    // Shrink of current version
+    val c = DiffArray.shrink(b,3)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::Nil)
+
+    // Shrink of old version
+    val d = DiffArray.shrink(a,3)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::9::Nil)
+      eql(d,1::2::3::Nil)
+
+  }
+
+  def tests4(): Unit = {
+    val a = DiffArray.array_of_list(1::2::3::4::Nil)
+      eql(a,1::2::3::4::Nil)
+
+    // Update _oo (succeeds)
+    val b = DiffArray.set_oo((_) => a,a,2,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+
+    // Update _oo (current version,fails)
+    val c = DiffArray.set_oo((_) => a,b,5,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::3::4::Nil)
+
+    // Update _oo (old version,fails)
+    val d = DiffArray.set_oo((_) => b,a,5,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+      eql(c,1::2::3::4::Nil)
+      eql(d,1::2::9::4::Nil)
+
+  }
+
+  def tests5(): Unit = {
+    val a = DiffArray.array_of_list(1::2::3::4::Nil)
+      eql(a,1::2::3::4::Nil)
+
+    // Update
+    val b = DiffArray.set(a,2,9)
+      eql(a,1::2::3::4::Nil)
+      eql(b,1::2::9::4::Nil)
+
+    // Get_oo (current version, succeeds)
+      assert (DiffArray.get_oo(0,b,2)==9)
+    // Get_oo (current version, fails)
+      assert (DiffArray.get_oo(0,b,5)==0)
+    // Get_oo (old version, succeeds)
+      assert (DiffArray.get_oo(0,a,2)==3)
+    // Get_oo (old version, fails)
+      assert (DiffArray.get_oo(0,a,5)==0)
+
+  }
+
+
+
+
+  def main(args: Array[String]): Unit = {
+    tests1 ()
+    tests2 ()
+    tests3 ()
+    tests4 ()
+    tests5 ()
+
+
+    Console.println("Tests passed")
+  }
+
 }*/
 
 *}
