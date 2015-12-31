@@ -374,14 +374,11 @@ by (auto simp: mono_def less_eq_action ref_def relation_of_Ndet)
 subsection {* External choice *}
 
 definition
-Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "[+]" 18)
-where "P [+] Q \<equiv> action_of(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
+Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "\<box>" 18)
+where "P \<box> Q \<equiv> action_of(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
                                              (((relation_of P)\<^sup>t\<^sub>f \<and> ((relation_of Q)\<^sup>t\<^sub>f))
                                                 \<triangleleft> \<lambda>(A, A'). tr A = tr A' \<and> wait A' \<triangleright>
                                               ((relation_of P)\<^sup>t\<^sub>f \<or> ((relation_of Q)\<^sup>t\<^sub>f)))))"
-
-notation(xsymbol)
-  Det (infixl "\<box>" 18)
 
 lemma Det_is_action: 
 "(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
@@ -405,7 +402,7 @@ apply (rule action_of_inverse)
 apply (rule Det_is_action)
 done
 
-lemma mono_Det: "mono (op [+] P)"
+lemma mono_Det: "mono (op \<box> P)"
 by (auto simp: mono_def less_eq_action ref_def relation_of_Det design_defs rp_defs fun_eq_iff 
             split: cond_splits dest: relation_of_spec_f_f[simplified] 
                                      relation_of_spec_t_f[simplified])
