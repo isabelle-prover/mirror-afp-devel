@@ -1066,13 +1066,13 @@ proof (rule measure_eqI)
     done
 qed (simp add: sets_T')
 
-lemma T_eq_bind: "T s = (measure_pmf (K s) \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t)))"
+lemma T_eq_bind: "T s = (measure_pmf (K s) \<bind> (\<lambda>t. distr (T t) S (op ## t)))"
   by (subst T_eq_T') (simp add: T'_def)
 
 declare T_subprob[measurable]
 
 lemma T_split:
-  "T s = (T s \<guillemotright>= (\<lambda>\<omega>. distr (T ((s ## \<omega>) !! n)) S (\<lambda>\<omega>'. stake n \<omega> @- \<omega>')))"
+  "T s = (T s \<bind> (\<lambda>\<omega>. distr (T ((s ## \<omega>) !! n)) S (\<lambda>\<omega>'. stake n \<omega> @- \<omega>')))"
 proof (induction n arbitrary: s)
   case 0 then show ?case
     apply (simp add: distr_cong[OF refl sets_T[symmetric, of s] refl])
@@ -1084,17 +1084,17 @@ next
   let ?K = "measure_pmf (K s)" and ?m = "\<lambda>n \<omega> \<omega>'. stake n \<omega> @- \<omega>'"
   note sets_stream_space_cong[simp, measurable_cong]
 
-  have "T s = (?K \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t)))"
+  have "T s = (?K \<bind> (\<lambda>t. distr (T t) S (op ## t)))"
     by (rule T_eq_bind)
-  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. distr (T t \<guillemotright>= (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>))) S (op ## t)))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t \<bind> (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>))) S (op ## t)))"
     unfolding Suc[symmetric] ..
-  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. T t \<guillemotright>= (\<lambda>\<omega>. distr (distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>)) S (op ## t))))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. T t \<bind> (\<lambda>\<omega>. distr (distr (T ((t ## \<omega>) !! n)) S (?m n \<omega>)) S (op ## t))))"
     by (simp add: distr_bind[where K=S, OF measurable_distr2[where M=S]] space_stream_space)
-  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. T t \<guillemotright>= (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m (Suc n) (t ## \<omega>)))))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. T t \<bind> (\<lambda>\<omega>. distr (T ((t ## \<omega>) !! n)) S (?m (Suc n) (t ## \<omega>)))))"
     by (simp add: distr_distr space_stream_space comp_def)
-  also have "\<dots> = (?K \<guillemotright>= (\<lambda>t. distr (T t) S (op ## t) \<guillemotright>= (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>))))"
+  also have "\<dots> = (?K \<bind> (\<lambda>t. distr (T t) S (op ## t) \<bind> (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>))))"
     by (simp add: space_stream_space bind_distr[OF _ measurable_distr2[where M=S]] del: stake.simps)
-  also have "\<dots> = (T s \<guillemotright>= (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>)))"
+  also have "\<dots> = (T s \<bind> (\<lambda>\<omega>. distr (T (\<omega> !! n)) S (?m (Suc n) \<omega>)))"
     unfolding T_eq_bind[of s]
     by (subst bind_assoc[OF measurable_distr2[where M=S] measurable_distr2[where M=S], OF _ T_subprob])
        (simp_all add: space_stream_space del: stake.simps)
@@ -1203,13 +1203,13 @@ lemma measurable_force_enabled2[measurable]: "force_enabled x \<in> measurable S
 lemma space_rT_not_empty[simp]: "space (rT x) \<noteq> {}"
   by (simp add: rT_def space_restrict_space Ex_enabled)
 
-lemma T_eq_bind': "T x = do { y <- measure_pmf (K x) ; \<omega> <- T y ; return S (y ## \<omega>) }"
+lemma T_eq_bind': "T x = do { y \<leftarrow> measure_pmf (K x) ; \<omega> \<leftarrow> T y ; return S (y ## \<omega>) }"
   apply (subst T_eq_bind)
   apply (subst bind_return_distr[symmetric])
   apply (simp_all add: space_stream_space comp_def)
   done
 
-lemma rT_eq_bind: "rT x = do { y <- measure_pmf (K x) ; \<omega> <- rT y ; return (rT x) (y ## \<omega>) }"
+lemma rT_eq_bind: "rT x = do { y \<leftarrow> measure_pmf (K x) ; \<omega> \<leftarrow> rT y ; return (rT x) (y ## \<omega>) }"
   unfolding rT_def
   apply (subst T_eq_bind)
   apply (subst restrict_space_bind[where K=S])
@@ -1258,7 +1258,7 @@ qed
 lemma T_bisim:
   assumes "\<And>x. prob_space (M x)"
   assumes sets_M [simp, measurable_cong]: "\<And>x. sets (M x) = sets S"
-  assumes M_eq: "\<And>x. M x = (measure_pmf (K x) \<guillemotright>= (\<lambda>s. distr (M s) S (op ## s)))"
+  assumes M_eq: "\<And>x. M x = (measure_pmf (K x) \<bind> (\<lambda>s. distr (M s) S (op ## s)))"
   shows "T = M"
 proof (intro ext stream_space_eq_sstart)
   interpret M: prob_space "M x" for x by fact
@@ -1606,7 +1606,7 @@ proof (rule T_bisim)
 
   obtain a b where x_eq: "x = (a, b)"
     by (cases x) auto
-  show "?B x = (measure_pmf (Kp x) \<guillemotright>= (\<lambda>s. distr (?B s) S (op ## s)))"
+  show "?B x = (measure_pmf (Kp x) \<bind> (\<lambda>s. distr (?B s) S (op ## s)))"
     unfolding x_eq
     apply (subst K1.T_eq_bind')
     apply (subst K2.T_eq_bind')

@@ -30,7 +30,7 @@ lemma isOK_check_catch [simp]:
 
 definition check_return :: "'a check \<Rightarrow> 'b \<Rightarrow> 'a + 'b"
 where
-  "check_return chk res = (chk \<guillemotright> return res)"
+  "check_return chk res = (chk \<then> return res)"
 
 lemma check_return [simp]:
   "check_return chk res = return res' \<longleftrightarrow> isOK chk \<and> res' = res"
@@ -73,10 +73,10 @@ definition
   check_allm_gen_index ::
     "('a \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> ('a \<Rightarrow> nat \<Rightarrow> 'e check) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> 'e check"
 where
-  "check_allm_gen_index g f n xs = snd (foldl (\<lambda>(i, m) x. (g x i, m \<guillemotright> f x i)) (n, succeed) xs)"
+  "check_allm_gen_index g f n xs = snd (foldl (\<lambda>(i, m) x. (g x i, m \<then> f x i)) (n, succeed) xs)"
 
 lemma foldl_error:
-  "snd (foldl (\<lambda>(i, m) x . (g x i, m \<guillemotright> f x i)) (n, error e) xs) = error e"
+  "snd (foldl (\<lambda>(i, m) x . (g x i, m \<then> f x i)) (n, error e) xs) = error e"
   by (induct xs arbitrary: n) auto
 
 lemma isOK_check_allm_gen_index [simp]:
@@ -106,8 +106,8 @@ lemma check_allm_gen_index [fundef_cong]:
   shows "check_allm_gen_index g f n xs = check_allm_gen_index g' f' n xs"
 proof -
   { fix n m
-    have "foldl (\<lambda>(i, m) x. (g x i, m \<guillemotright> f x i)) (n, m) xs =
-      foldl (\<lambda>(i, m) x. (g' x i, m \<guillemotright> f' x i)) (n, m) xs"
+    have "foldl (\<lambda>(i, m) x. (g x i, m \<then> f x i)) (n, m) xs =
+      foldl (\<lambda>(i, m) x. (g' x i, m \<then> f' x i)) (n, m) xs"
       using assms by (induct xs arbitrary: n m) auto }
   then show ?thesis unfolding check_allm_gen_index_def by simp
 qed
@@ -122,7 +122,7 @@ lemma isOK_check_subseteq [simp]:
 
 definition check_same_set :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a check"
 where
-  "check_same_set xs ys = (check_subseteq xs ys \<guillemotright> check_subseteq ys xs)"
+  "check_same_set xs ys = (check_subseteq xs ys \<then> check_subseteq ys xs)"
 
 lemma isOK_check_same_set [simp]:
   "isOK (check_same_set xs ys) \<longleftrightarrow> set xs = set ys"
@@ -147,7 +147,7 @@ lemma isOK_check_all_combinations [simp]:
 fun check_pairwise :: "('a \<Rightarrow> 'a \<Rightarrow> 'b check) \<Rightarrow> 'a list \<Rightarrow> 'b check"
 where
   "check_pairwise c [] = succeed" |
-  "check_pairwise c (x # xs) = (check_allm (c x) xs \<guillemotright> check_pairwise c xs)"
+  "check_pairwise c (x # xs) = (check_allm (c x) xs \<then> check_pairwise c xs)"
 
 lemma pairwise_aux:
   "(\<forall>j<length (x # xs). \<forall>i<j. P ((x # xs) ! i) ((x # xs) ! j))

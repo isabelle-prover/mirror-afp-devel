@@ -98,7 +98,7 @@ proof (intro cdens_ctxt_invarI)
   have dc: "density_context {} (set vs \<union> set vs') \<Gamma> (\<lambda>_. 1)"
     by (rule density_context_empty)
   hence dens: "has_parametrized_subprob_density (state_measure (set vs \<union> set vs') \<Gamma>)
-                (\<lambda>\<rho>. dens_ctxt_measure ({}, set vs \<union> set vs', \<Gamma>, \<lambda>_. 1) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e))
+                (\<lambda>\<rho>. dens_ctxt_measure ({}, set vs \<union> set vs', \<Gamma>, \<lambda>_. 1) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e))
                 (stock_measure t') (\<lambda>\<sigma> x. ereal (eval_cexpr f \<sigma> x))"
     using hd free_vars by (intro expr_has_density_sound_aux[OF _ t dc])
       (auto simp: shift_var_set_def dens_ctxt_\<alpha>_def simp: extract_real_def one_ereal_def)
@@ -153,7 +153,7 @@ proof (intro cdens_ctxt_invarI nonneg_cexpr_Mult nonneg_cexpr_subst_val)
   note invar' = cdens_ctxt_invarD[OF invar] and wf' = is_density_exprD[OF wf]
   show "\<Gamma> \<turnstile>\<^sub>c \<delta> *\<^sub>c cexpr_subst_val f (BoolVal v) : REAL" using invar' wf'
     by (intro cet_op[where t = "PRODUCT REAL REAL"] cet_pair cexpr_typing_subst_val) simp_all
-  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ({}, set vs \<union> set vs', \<Gamma>, \<lambda>_. 1) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> b)"
+  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ({}, set vs \<union> set vs', \<Gamma>, \<lambda>_. 1) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> b)"
   have dens': "has_parametrized_subprob_density (state_measure (set vs \<union> set vs') \<Gamma>) ?M 
                  (stock_measure BOOL) (\<lambda>\<sigma> v. ereal (eval_cexpr f \<sigma> v))"
     using density_context_\<alpha>[OF invar] t vars dens unfolding dens_ctxt_\<alpha>_def
@@ -396,7 +396,7 @@ next
        wf: "is_density_expr (vs, vs', \<Gamma>, \<delta>) t f" using edc_rand t1 t2 by auto
   from wf have tf: "case_nat t \<Gamma> \<turnstile>\<^sub>c f : REAL" and varsf: "free_vars f \<subseteq> shift_var_set (set vs')"
     unfolding is_density_expr_def by simp_all
-  let ?M = "(\<lambda>\<rho>. dens_ctxt_measure (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e))"
+  let ?M = "(\<lambda>\<rho>. dens_ctxt_measure (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e))"
   have dens': "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M (stock_measure t)
                    (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))" using dens t1 edc_rand.prems
     by (simp_all add: dens_ctxt_\<alpha>_def expr_has_density_sound_aux density_context_\<alpha>)
@@ -429,7 +429,7 @@ next
     by (intro nonneg_dist_dens_cexpr cet_var') (auto simp: t2 t_def shift_var_set_def)
 
   let ?f = "\<lambda>\<rho> x. \<integral>\<^sup>+y. ereal (eval_cexpr f \<rho> y) * dist_dens dst y x\<partial>stock_measure t"
-  let ?M = "(\<lambda>\<rho>. dens_ctxt_measure (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e)))"
+  let ?M = "(\<lambda>\<rho>. dens_ctxt_measure (dens_ctxt_\<alpha> (vs,vs',\<Gamma>,\<delta>)) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e)))"
   have dens': "dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>) \<turnstile>\<^sub>d Random dst e \<Rightarrow> ?f" using dens
     by (simp only: dens_ctxt_\<alpha>_def prod.case t_def hd_rand[unfolded apply_dist_to_dens_def])
   hence dens'': "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M (stock_measure t') ?f"
@@ -749,7 +749,7 @@ next
   hence vars: "free_vars ?expr \<subseteq> shift_var_set (set vs')" by (auto split: nat.split_asm)
 
   let ?\<Y> = "(set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>)))"
-  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)"
+  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)"
   have "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M 
           (stock_measure t) (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))" using dens edc_op_discr
     by (intro expr_has_density_sound_aux density_context_\<alpha>) (auto simp: dens_ctxt_\<alpha>_def)
@@ -761,7 +761,7 @@ next
                                        nonneg_cexpr_map_vars nonneg_indicator)
                                 (auto dest: nonneg_cexprD simp: extract_real_def bool_to_real_def)
 
-  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e))"
+  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e))"
   let ?f = "\<lambda>\<rho> x y. (if op_sem oper y = x then 1 else 0) * ereal (eval_cexpr f \<rho> y)"
   have "?\<Y> \<turnstile>\<^sub>d oper $$ e \<Rightarrow> (\<lambda>\<rho> x. \<integral>\<^sup>+y. ?f \<rho> x y \<partial>stock_measure t)" using dens t edc_op_discr.hyps
     by (subst the_t1[symmetric], intro hd_op_discr) 
@@ -813,7 +813,7 @@ next
   have dens: "dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>) \<turnstile>\<^sub>d e \<Rightarrow> (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))" and
          wf: "is_density_expr (vs, vs', \<Gamma>, \<delta>) (PRODUCT t t') f" using edc_fst by auto
   let ?M = "\<lambda>\<rho>. dens_ctxt_measure (set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<rho>
-                    \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)"
+                    \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)"
   have dens': "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M 
                    (stock_measure (PRODUCT t t')) (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))"
     using dens edc_fst.prems edc_fst.hyps
@@ -828,7 +828,7 @@ next
   have vars: "free_vars ?expr \<subseteq> shift_var_set (shift_var_set (set vs'))" using free_vars_cexpr_comp wf' 
     by (intro subset_shift_var_set) (force simp: shift_var_set_def)
   let ?M = "\<lambda>\<rho>. dens_ctxt_measure (set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<rho>
-                    \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Fst $$ e))"
+                    \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Fst $$ e))"
   have A: "\<And>x y \<rho>. ((case_nat x (case_nat y \<rho>))(0 := <|y, x|>)) \<circ> ?shift = case_nat <|y, x|> \<rho>"
     by (intro ext) (simp split: nat.split add: o_def)
   have dens': "(set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<turnstile>\<^sub>d Fst $$ e \<Rightarrow>
@@ -869,7 +869,7 @@ next
   have dens: "dens_ctxt_\<alpha> (vs, vs', \<Gamma>, \<delta>) \<turnstile>\<^sub>d e \<Rightarrow> (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))" and
          wf: "is_density_expr (vs, vs', \<Gamma>, \<delta>) (PRODUCT t t') f" using edc_snd by auto
   let ?M = "\<lambda>\<rho>. dens_ctxt_measure (set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<rho>
-                    \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)"
+                    \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)"
   have dens': "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M 
                    (stock_measure (PRODUCT t t')) (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))"
     using dens edc_snd.prems edc_snd.hyps
@@ -884,7 +884,7 @@ next
   have vars: "free_vars ?expr \<subseteq> shift_var_set (shift_var_set (set vs'))" using free_vars_cexpr_comp wf' 
     by (intro subset_shift_var_set) (force simp: shift_var_set_def)
   let ?M = "\<lambda>\<rho>. dens_ctxt_measure (set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<rho>
-                    \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Snd $$ e))"
+                    \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Snd $$ e))"
   have A: "\<And>x y \<rho>. ((case_nat y (case_nat x \<rho>))(0 := <|y, x|>)) \<circ> ?shift = case_nat <|y, x|> \<rho>"
     by (intro ext) (simp split: nat.split add: o_def)
   have dens': "(set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>))) \<turnstile>\<^sub>d Snd $$ e \<Rightarrow>
@@ -1027,7 +1027,7 @@ next
     using edc_add by simp_all
   note wf' = is_density_exprD[OF wf]
   let ?\<Y> = "(set vs, set vs', \<Gamma>, \<lambda>\<rho>. ereal (extract_real (cexpr_sem \<rho> \<delta>)))"
-  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)"
+  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)"
   have "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) ?M 
           (stock_measure (PRODUCT t t)) (\<lambda>\<rho> x. ereal (eval_cexpr f \<rho> x))" using dens edc_add
     by (intro expr_has_density_sound_aux density_context_\<alpha>) (auto simp: dens_ctxt_\<alpha>_def)
@@ -1049,7 +1049,7 @@ next
     by (intro order.trans[OF free_vars_cexpr_comp]) (auto split: nat.split simp: shift_var_set_def)
   hence vars: "free_vars ?expr \<subseteq> shift_var_set (set vs')" by auto
   
-  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (Add $$ e))"
+  let ?M = "\<lambda>\<rho>. dens_ctxt_measure ?\<Y> \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Add $$ e))"
   let ?f = "\<lambda>\<rho> x y. eval_cexpr f \<rho> <|y, op_sem Add <|x, op_sem Minus y|>|>"
   have "?\<Y> \<turnstile>\<^sub>d Add $$ e \<Rightarrow> (\<lambda>\<rho> x. \<integral>\<^sup>+y. ?f \<rho> x y \<partial>stock_measure (val_type x))" using dens
     by (intro hd_add) (simp add: dens_ctxt_\<alpha>_def)

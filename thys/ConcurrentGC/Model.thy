@@ -625,7 +625,7 @@ definition
 where
   "do_read_action ract \<equiv> \<lambda>s.
      case ract of
-       mr_Ref r f \<Rightarrow> mv_Ref (heap s r \<guillemotright>= (\<lambda>obj. obj_fields obj f))
+       mr_Ref r f \<Rightarrow> mv_Ref (heap s r \<bind> (\<lambda>obj. obj_fields obj f))
      | mr_Mark r  \<Rightarrow> mv_Mark (map_option obj_mark (heap s r))
      | mr_Phase   \<Rightarrow> mv_Phase (phase s)
      | mr_fM      \<Rightarrow> mv_Mark (Some (fM s))

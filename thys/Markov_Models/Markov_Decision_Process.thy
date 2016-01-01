@@ -178,11 +178,11 @@ lemma nn_integral_T:
   by (simp add: T_def MC.nn_integral_T[of _ cfg] nn_integral_distr)
 
 lemma T_eq:
-  "T cfg = (measure_pmf (K_cfg cfg) \<guillemotright>= (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>)))"
+  "T cfg = (measure_pmf (K_cfg cfg) \<bind> (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>)))"
 proof (rule measure_eqI)
   fix A assume "A \<in> sets (T cfg)"
   then show "emeasure (T cfg) A =
-    emeasure (measure_pmf (K_cfg cfg) \<guillemotright>= (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>))) A"
+    emeasure (measure_pmf (K_cfg cfg) \<bind> (\<lambda>cfg'. distr (T cfg') St (\<lambda>\<omega>. state cfg' ## \<omega>))) A"
     by (subst emeasure_bind[where N=St])
        (auto simp: space_subprob_algebra nn_integral_distr nn_integral_indicator[symmetric] nn_integral_T[of _ cfg]
              simp del: nn_integral_indicator intro!: prob_space_imp_subprob_space T.prob_space_distr)
@@ -194,7 +194,7 @@ proof -
   have "T \<circ> (memoryless_on ct) = MC_syntax.T ct"
   proof (rule ct.T_bisim[symmetric])
     fix s show "(T \<circ> memoryless_on ct) s =
-        measure_pmf (ct s) \<guillemotright>= (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St (op ## s))"
+        measure_pmf (ct s) \<bind> (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St (op ## s))"
       by (simp add: T_eq[of "memoryless_on ct s"] K_cfg_def map_pmf_rep_eq bind_distr[where K=St]
                     space_subprob_algebra T.prob_space_distr prob_space_imp_subprob_space)
   qed (simp_all, intro_locales)

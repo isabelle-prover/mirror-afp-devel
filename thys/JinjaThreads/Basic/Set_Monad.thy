@@ -36,11 +36,11 @@ lemma undefined_code [code_unfold]:
   by (simp add: Undefined_def)
 
 lemma bind_single [simp, code_unfold]:
-  "A \<guillemotright>= single = A"
+  "A \<bind> single = A"
   by (simp add: bind_def single_def)
 
 lemma single_bind [simp, code_unfold]:
-  "single a \<guillemotright>= B = B a"
+  "single a \<bind> B = B a"
   by (simp add: bind_def single_def)
 
 declare Set.empty_bind [code_unfold]

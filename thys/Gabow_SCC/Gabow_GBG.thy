@@ -1772,7 +1772,7 @@ begin
       (s,(a,p,D,pE))\<in>gGS_rel;
       p \<noteq> []; pE \<inter> last p \<times> UNIV = {}
       \<rbrakk> \<Longrightarrow>
-      gpop_impl s \<guillemotright>= (\<lambda>s. RETURN (None, s))
+      gpop_impl s \<bind> (\<lambda>s. RETURN (None, s))
         \<le> SPEC (\<lambda>c. (c, None, gpop (a,p,D,pE)) \<in> Id \<times>\<^sub>r gGS_rel)"
       apply (drule (2) gpop_impl_refine)
       apply (fastforce simp add: pw_le_iff refine_pw_simps)

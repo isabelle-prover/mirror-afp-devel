@@ -27,20 +27,20 @@ abbreviation (input) "run \<equiv> projr"
 subsection \<open>Monad Laws\<close>
 
 lemma return_bind [simp]:
-  "(return x \<guillemotright>= f) = f x"
+  "(return x \<bind> f) = f x"
   by (simp add: bind_def)
 
 lemma bind_return [simp]:
-  "(m \<guillemotright>= return) = m"
+  "(m \<bind> return) = m"
   by (cases m) (simp_all add: bind_def)
 
 lemma error_bind [simp]:
-  "(error e \<guillemotright>= f) = error e"
+  "(error e \<bind> f) = error e"
   by (simp add: bind_def)
 
 lemma bind_assoc [simp]:
   fixes m :: "'a + 'b"
-  shows "((m \<guillemotright>= f) \<guillemotright>= g) = (m \<guillemotright>= (\<lambda>x. f x \<guillemotright>= g))"
+  shows "((m \<bind> f) \<bind> g) = (m \<bind> (\<lambda>x. f x \<bind> g))"
   by (cases m) (simp_all add: bind_def)
 
 lemma bind_cong [fundef_cong]:
@@ -48,7 +48,7 @@ lemma bind_cong [fundef_cong]:
     and f1 f2 :: "'a \<Rightarrow> 'e + 'b"
   assumes "m1 = m2"
     and "\<And>y. m2 = Inr y \<Longrightarrow> f1 y = f2 y"
-  shows "(m1 \<guillemotright>= f1) = (m2 \<guillemotright>= f2)"
+  shows "(m1 \<bind> f1) = (m2 \<bind> f2)"
   using assms by (cases "m1") (auto simp: bind_def)
 
 definition catch_error :: "'e + 'a \<Rightarrow> ('e \<Rightarrow> 'f + 'a) \<Rightarrow> 'f + 'a"
@@ -100,7 +100,7 @@ lemma isOK_error [simp]:
   by blast
 
 lemma isOK_bind [simp]:
-  "isOK (m \<guillemotright>= f) \<longleftrightarrow> isOK m \<and> isOK (f (run m))"
+  "isOK (m \<bind> f) \<longleftrightarrow> isOK m \<and> isOK (f (run m))"
   by (cases m) simp_all
 
 lemma isOK_update_error [simp]:
@@ -120,7 +120,7 @@ lemma isOK_Let [simp]:
   by (simp add: Let_def)
 
 lemma run_bind [simp]:
-  "isOK m \<Longrightarrow> run (m \<guillemotright>= f) = run (f (run m))"
+  "isOK m \<Longrightarrow> run (m \<bind> f) = run (f (run m))"
   by auto
 
 lemma run_catch [simp]:
@@ -179,7 +179,7 @@ text \<open>
 fun forallM :: "('a \<Rightarrow> 'e + unit) \<Rightarrow> 'a list \<Rightarrow> ('a * 'e) + unit"
 where
   "forallM f [] = return ()" |
-  "forallM f (x # xs) = f x <+? Pair x \<guillemotright> forallM f xs"
+  "forallM f (x # xs) = f x <+? Pair x \<then> forallM f xs"
 
 lemma isOK_forallM [simp]:
   "isOK (forallM f xs) \<longleftrightarrow> (\<forall>x \<in> set xs. isOK (f x))"
@@ -275,12 +275,12 @@ lemma mapM_cong [fundef_cong]:
   unfolding assms(1) using assms(2) by (induct ys) auto
 
 lemma bindE [elim]:
-  assumes "(p \<guillemotright>= f) = return x"
+  assumes "(p \<bind> f) = return x"
   obtains y where "p = return y" and "f y = return x"
   using assms by (cases p) simp_all
 
 lemma then_return_eq [simp]:
-  "(p \<guillemotright> q) = return f \<longleftrightarrow> isOK p \<and> q = return f"
+  "(p \<then> q) = return f \<longleftrightarrow> isOK p \<and> q = return f"
   by (cases p) simp_all
 
 end

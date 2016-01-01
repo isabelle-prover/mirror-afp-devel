@@ -297,7 +297,7 @@ lemma do_write_action_prj_simps[simp]:
 by (auto simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
 
 lemma valid_null_ref_eq_imp:
-  "eq_imp (\<lambda>(_::unit) s. r \<guillemotright>= (Option.map_option \<langle>True\<rangle> \<circ> sys_heap s))
+  "eq_imp (\<lambda>(_::unit) s. r \<bind> (Option.map_option \<langle>True\<rangle> \<circ> sys_heap s))
           (valid_null_ref r)"
 by (simp add: eq_imp_def obj_at_def valid_null_ref_def split: option.splits)
 
@@ -334,7 +334,7 @@ lemma obj_at_field_on_heap_no_pending_writes:
   "\<lbrakk> sys_read (mutator m) (mr_Ref r f) (s sys) = mv_Ref opt_r'; \<forall>opt_r'. mw_Mutate r f opt_r' \<notin> set (sys_mem_write_buffers (mutator m) s); valid_ref r s \<rbrakk>
      \<Longrightarrow> obj_at_field_on_heap (\<lambda>r. opt_r' = Some r) r f s"
 apply (clarsimp simp: sys_read_def fold_writes_def)
-apply (rule fold_invariant[where P="\<lambda>fr. obj_at_field_on_heap (\<lambda>r'. heap (fr (s sys)) r \<guillemotright>= (\<lambda>obj. obj_fields obj f) = Some r') r f s"
+apply (rule fold_invariant[where P="\<lambda>fr. obj_at_field_on_heap (\<lambda>r'. heap (fr (s sys)) r \<bind> (\<lambda>obj. obj_fields obj f) = Some r') r f s"
                              and Q="\<lambda>w. w \<in> set (sys_mem_write_buffers (mutator m) s)"])
   apply auto[1]
  apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits obj_at_splits)
@@ -352,12 +352,12 @@ lemma obj_at_field_on_heap_weakenE[elim]:
 by (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
 
 lemma Set_bind_insert[simp]:
-  "insert a A \<guillemotright>= B = B a \<union> (A \<guillemotright>= B)"
+  "insert a A \<bind> B = B a \<union> (A \<bind> B)"
 by (auto simp: Set.bind_def)
 
 lemma option_bind_invE[elim]:
-  "\<lbrakk> f \<guillemotright>= g = None; \<And>a. \<lbrakk> f = Some a; g a = None \<rbrakk> \<Longrightarrow> Q; f = None \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
-  "\<lbrakk> f \<guillemotright>= g = Some x; \<And>a. \<lbrakk> f = Some a; g a = Some x \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
+  "\<lbrakk> f \<bind> g = None; \<And>a. \<lbrakk> f = Some a; g a = None \<rbrakk> \<Longrightarrow> Q; f = None \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
+  "\<lbrakk> f \<bind> g = Some x; \<And>a. \<lbrakk> f = Some a; g a = Some x \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
 by (case_tac [!] f) simp_all
 
 (*>*)

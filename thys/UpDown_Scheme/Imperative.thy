@@ -56,7 +56,7 @@ proof -
 qed
 
 definition copy_array :: "'a::heap array \<Rightarrow> ('a::heap array) Heap" where
-  "copy_array a = Array.freeze a \<guillemotright>= Array.of_list"
+  "copy_array a = Array.freeze a \<bind> Array.of_list"
 
 theorem copy_array [sep_heap_rules]:
   "< a \<mapsto>\<^sub>a xs > copy_array a < \<lambda>r. a \<mapsto>\<^sub>a xs * r \<mapsto>\<^sub>a xs >"
@@ -64,7 +64,7 @@ theorem copy_array [sep_heap_rules]:
   by sep_auto
 
 definition sum_array :: "rat array \<Rightarrow> rat array \<Rightarrow> unit Heap" where
-  "sum_array a b = zipWithA (op +) a b \<guillemotright> return ()"
+  "sum_array a b = zipWithA (op +) a b \<then> return ()"
 
 theorem sum_array [sep_heap_rules]:
   fixes xs ys :: "rat list"
@@ -162,7 +162,7 @@ qed
 
 definition liftI :: "(nat \<Rightarrow> nat \<Rightarrow> grid_point \<Rightarrow> impgrid \<Rightarrow> unit Heap) \<Rightarrow> nat \<Rightarrow> impgrid \<Rightarrow> unit Heap" where
   "liftI f d a = 
-    foldr (\<lambda> p n. n \<guillemotright> f d (lm - level p) p a) (gridgen (start dm) ({ 0 ..< dm } - { d }) lm) (return ())"
+    foldr (\<lambda> p n. n \<then> f d (lm - level p) p a) (gridgen (start dm) ({ 0 ..< dm } - { d }) lm) (return ())"
 
 theorem liftI [sep_heap_rules]:
   assumes "d < dm"
@@ -173,7 +173,7 @@ proof -
   let ?ds = "{0..<dm} - {d}" and ?g = "gridI a"
   { fix ps assume "set ps \<subseteq> set (gridgen (start dm) ?ds lm)" and "distinct ps"
     then have "< ?g v >
-        foldr (\<lambda>p n. (n :: unit Heap) \<guillemotright> f d (lm - level p) p a) ps (return ())
+        foldr (\<lambda>p n. (n :: unit Heap) \<then> f d (lm - level p) p a) ps (return ())
       <\<lambda>r. ?g (foldr (\<lambda>p \<alpha>. f' d (lm - level p) p \<alpha>) ps v) >"
       by (induct ps arbitrary: v) (sep_auto simp: gridgen_lgrid_eq)+ }
   from this[OF subset_refl gridgen_distinct]
@@ -181,7 +181,7 @@ proof -
     by (simp add: liftI_def Grid.lift_def)
 qed
 
-definition upI where "upI = liftI (\<lambda>d l p a. upI' d l p a \<guillemotright> return ())"
+definition upI where "upI = liftI (\<lambda>d l p a. upI' d l p a \<then> return ())"
 
 theorem upI [sep_heap_rules]:
   assumes [simp]: "d < dm"

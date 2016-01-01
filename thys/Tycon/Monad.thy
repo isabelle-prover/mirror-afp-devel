@@ -52,8 +52,8 @@ definition return :: "'a \<rightarrow> 'a\<cdot>'m::monad"
 definition bind :: "'a\<cdot>'m::monad \<rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<rightarrow> 'b\<cdot>'m"
   where "bind = coerce\<cdot>(bindU :: udom\<cdot>'m \<rightarrow> _)"
 
-abbreviation bind_syn :: "'a\<cdot>'m::monad \<Rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<Rightarrow> 'b\<cdot>'m" (infixl "\<guillemotright>=" 55)
-  where "m \<guillemotright>= f \<equiv> bind\<cdot>m\<cdot>f"
+abbreviation bind_syn :: "'a\<cdot>'m::monad \<Rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<Rightarrow> 'b\<cdot>'m" (infixl "\<bind>" 55)
+  where "m \<bind> f \<equiv> bind\<cdot>m\<cdot>f"
 
 subsection {* Naturality of bind and return *}
 
@@ -77,17 +77,17 @@ subsection {* Polymorphic versions of class assumptions *}
 
 lemma monad_fmap:
   fixes xs :: "'a\<cdot>'m::monad" and f :: "'a \<rightarrow> 'b"
-  shows "fmap\<cdot>f\<cdot>xs = xs \<guillemotright>= (\<Lambda> x. return\<cdot>(f\<cdot>x))"
+  shows "fmap\<cdot>f\<cdot>xs = xs \<bind> (\<Lambda> x. return\<cdot>(f\<cdot>x))"
 unfolding bind_def return_def fmap_def
 by (simp add: coerce_simp fmapU_eq_bindU bindU_returnU)
 
-lemma monad_left_unit [simp]: "(return\<cdot>x \<guillemotright>= f) = (f\<cdot>x)"
+lemma monad_left_unit [simp]: "(return\<cdot>x \<bind> f) = (f\<cdot>x)"
 unfolding bind_def return_def
 by (simp add: coerce_simp bindU_returnU)
 
 lemma bind_bind:
   fixes m :: "'a\<cdot>'m::monad"
-  shows "((m \<guillemotright>= f) \<guillemotright>= g) = (m \<guillemotright>= (\<Lambda> x. f\<cdot>x \<guillemotright>= g))"
+  shows "((m \<bind> f) \<bind> g) = (m \<bind> (\<Lambda> x. f\<cdot>x \<bind> g))"
 unfolding bind_def
 by (simp add: coerce_simp bindU_bindU)
 
@@ -96,7 +96,7 @@ subsection {* Derived rules *}
 text {* The following properties can be derived using only the
 abstract monad laws. *}
 
-lemma monad_right_unit [simp]: "(m \<guillemotright>= return) = m"
+lemma monad_right_unit [simp]: "(m \<bind> return) = m"
  apply (subgoal_tac "fmap\<cdot>ID\<cdot>m = m")
   apply (simp only: monad_fmap)
   apply (simp add: eta_cfun)
@@ -116,16 +116,16 @@ text {* Bind is strict in its first argument, if its second argument
 is a strict function. *}
 
 lemma bind_strict:
-  assumes "k\<cdot>\<bottom> = \<bottom>" shows "\<bottom> \<guillemotright>= k = \<bottom>"
+  assumes "k\<cdot>\<bottom> = \<bottom>" shows "\<bottom> \<bind> k = \<bottom>"
 proof -
-  have "\<bottom> \<guillemotright>= k \<sqsubseteq> return\<cdot>\<bottom> \<guillemotright>= k"
+  have "\<bottom> \<bind> k \<sqsubseteq> return\<cdot>\<bottom> \<bind> k"
     by (intro monofun_cfun below_refl minimal)
-  thus "\<bottom> \<guillemotright>= k = \<bottom>"
+  thus "\<bottom> \<bind> k = \<bottom>"
     by (simp add: assms)
 qed
 
 lemma congruent_bind:
-  "(\<forall>m. m \<guillemotright>= k1 = m \<guillemotright>= k2) = (k1 = k2)"
+  "(\<forall>m. m \<bind> k1 = m \<bind> k2) = (k1 = k2)"
  apply (safe, rule cfun_eqI)
  apply (drule_tac x="return\<cdot>x" in spec, simp)
 done
@@ -133,7 +133,7 @@ done
 subsection {* Laws for join *}
 
 definition join :: "('a\<cdot>'m)\<cdot>'m \<rightarrow> 'a\<cdot>'m::monad"
-  where "join \<equiv> \<Lambda> m. m \<guillemotright>= (\<Lambda> x. x)"
+  where "join \<equiv> \<Lambda> m. m \<bind> (\<Lambda> x. x)"
 
 lemma join_fmap_fmap: "join\<cdot>(fmap\<cdot>(fmap\<cdot>f)\<cdot>xss) = fmap\<cdot>f\<cdot>(join\<cdot>xss)"
 by (simp add: join_def monad_fmap bind_bind)
@@ -147,18 +147,18 @@ by (simp add: join_def monad_fmap eta_cfun bind_bind)
 lemma join_fmap_join: "join\<cdot>(fmap\<cdot>join\<cdot>xsss) = join\<cdot>(join\<cdot>xsss)"
 by (simp add: join_def monad_fmap bind_bind)
 
-lemma bind_def2: "m \<guillemotright>= k = join\<cdot>(fmap\<cdot>k\<cdot>m)"
+lemma bind_def2: "m \<bind> k = join\<cdot>(fmap\<cdot>k\<cdot>m)"
 by (simp add: join_def monad_fmap eta_cfun bind_bind)
 
 subsection {* Equivalence of monad laws and fmap/join laws *}
 
-lemma "(return\<cdot>x \<guillemotright>= f) = (f\<cdot>x)"
+lemma "(return\<cdot>x \<bind> f) = (f\<cdot>x)"
 by (simp only: bind_def2 fmap_return join_return)
 
-lemma "(m \<guillemotright>= return) = m"
+lemma "(m \<bind> return) = m"
 by (simp only: bind_def2 join_fmap_return)
 
-lemma "((m \<guillemotright>= f) \<guillemotright>= g) = (m \<guillemotright>= (\<Lambda> x. f\<cdot>x \<guillemotright>= g))"
+lemma "((m \<bind> f) \<bind> g) = (m \<bind> (\<Lambda> x. f\<cdot>x \<bind> g))"
  apply (simp only: bind_def2)
  apply (subgoal_tac "join\<cdot>(fmap\<cdot>g\<cdot>(join\<cdot>(fmap\<cdot>f\<cdot>m))) =
     join\<cdot>(fmap\<cdot>join\<cdot>(fmap\<cdot>(fmap\<cdot>g)\<cdot>(fmap\<cdot>f\<cdot>m)))")
@@ -177,12 +177,12 @@ by (simp add: coerce_functor fmap_return)
 
 lemma coerce_bind [coerce_simp]:
   fixes m :: "'a\<cdot>'m::monad" and k :: "'a \<rightarrow> 'b\<cdot>'m"
-  shows "COERCE('b\<cdot>'m,'c\<cdot>'m)\<cdot>(m \<guillemotright>= k) = m \<guillemotright>= (\<Lambda> x. COERCE('b\<cdot>'m,'c\<cdot>'m)\<cdot>(k\<cdot>x))"
+  shows "COERCE('b\<cdot>'m,'c\<cdot>'m)\<cdot>(m \<bind> k) = m \<bind> (\<Lambda> x. COERCE('b\<cdot>'m,'c\<cdot>'m)\<cdot>(k\<cdot>x))"
 by (simp add: coerce_functor fmap_bind)
 
 lemma bind_coerce [coerce_simp]:
   fixes m :: "'a\<cdot>'m::monad" and k :: "'b \<rightarrow> 'c\<cdot>'m"
-  shows "COERCE('a\<cdot>'m,'b\<cdot>'m)\<cdot>m \<guillemotright>= k = m \<guillemotright>= (\<Lambda> x. k\<cdot>(COERCE('a,'b)\<cdot>x))"
+  shows "COERCE('a\<cdot>'m,'b\<cdot>'m)\<cdot>m \<bind> k = m \<bind> (\<Lambda> x. k\<cdot>(COERCE('a,'b)\<cdot>x))"
 by (simp add: coerce_functor bind_fmap)
 
 end

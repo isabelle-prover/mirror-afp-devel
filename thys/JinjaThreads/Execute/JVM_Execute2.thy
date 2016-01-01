@@ -76,7 +76,7 @@ fun sc_mexec ::
   \<Rightarrow> ((addr, thread_id, heap) jvm_thread_action' \<times> addr jvm_thread_state' \<times> heap) Predicate.pred"
 where 
   "sc_mexec P t ((xcp, frs), h) =
-   sc.exec_1 (TYPE(addr jvm_method)) P P t (xcp, h, frs) \<guillemotright>= (\<lambda>(ta, xcp, h, frs). Predicate.single (ta, (xcp, frs), h))"
+   sc.exec_1 (TYPE(addr jvm_method)) P P t (xcp, h, frs) \<bind> (\<lambda>(ta, xcp, h, frs). Predicate.single (ta, (xcp, frs), h))"
 
 abbreviation sc_jvm_start_state_refine :: 
   "addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> 

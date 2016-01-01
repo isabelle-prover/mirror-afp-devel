@@ -37,7 +37,7 @@ where
     addr2thread_id thread_id2addr sc_spurious_wakeups
     sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read_i_i_i_o sc_heap_write_i_i_i_i_o
     (extTA2J P) P t e (h, xs)
-  \<guillemotright>= (\<lambda>(ta, e, h, xs). Predicate.single (ta, (e, xs), h))"
+  \<bind> (\<lambda>(ta, e, h, xs). Predicate.single (ta, (e, xs), h))"
 
 abbreviation sc_J_start_state_refine :: 
   "addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> 

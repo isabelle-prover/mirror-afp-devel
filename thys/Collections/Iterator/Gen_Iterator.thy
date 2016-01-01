@@ -305,7 +305,7 @@ lemma map_to_list_by_tsl[autoref_rules]:
 
 (*lemma dres_it_FOREACH_it_simp[iterator_simps]: 
   "dres_it_FOREACH (\<lambda>s. dRETURN (i s)) s c f \<sigma> 
-    = foldli (i s) (case_dres False False c) (\<lambda>x s. s \<guillemotright>= f x) (dRETURN \<sigma>)"
+    = foldli (i s) (case_dres False False c) (\<lambda>x s. s \<bind> f x) (dRETURN \<sigma>)"
   unfolding dres_it_FOREACH_def
   by simp
 *)
@@ -321,15 +321,15 @@ lemma proper_it_mono_dres_pair:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>k v x. f k v x \<le> f' k v x"
   shows "
-    it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>
-    \<le> it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>" (is "?a \<le> ?b")
+    it' s (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f k v) \<sigma>
+    \<le> it' s (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f' k v) \<sigma>" (is "?a \<le> ?b")
 proof -
   from proper_itE[OF PR[THEN proper_it'D]] obtain l where 
     A_FMT: 
-      "?a = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>" 
+      "?a = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f k v) \<sigma>" 
         (is "_ = ?a'")
     and B_FMT: 
-      "?b = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>" 
+      "?b = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f' k v) \<sigma>" 
         (is "_ = ?b'")
     by metis
   
@@ -338,13 +338,13 @@ proof -
 
   note A_FMT
   also have 
-    "?a' = foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f kv) \<sigma>"
+    "?a' = foldli l (case_dres False False c) (\<lambda>kv s. s \<bind> case_prod f kv) \<sigma>"
     apply (fo_rule fun_cong)
     apply (fo_rule arg_cong)
     by auto
   also note foldli_mono_dres[OF A']
   also have 
-    "foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f' kv) \<sigma> = ?b'"
+    "foldli l (case_dres False False c) (\<lambda>kv s. s \<bind> case_prod f' kv) \<sigma> = ?b'"
     apply (fo_rule fun_cong)
     apply (fo_rule arg_cong)
     by auto
@@ -356,16 +356,16 @@ lemma proper_it_mono_dres_pair_flat:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>k v x. flat_ge (f k v x) (f' k v x)"
   shows "
-    flat_ge (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>)
-      (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>)" 
+    flat_ge (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f k v) \<sigma>)
+      (it' s (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f' k v) \<sigma>)" 
       (is "flat_ge ?a ?b")
 proof -
   from proper_itE[OF PR[THEN proper_it'D]] obtain l where 
     A_FMT: 
-      "?a = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f k v) \<sigma>" 
+      "?a = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f k v) \<sigma>" 
         (is "_ = ?a'")
     and B_FMT: 
-      "?b = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<guillemotright>= f' k v) \<sigma>" 
+      "?b = foldli l (case_dres False False c) (\<lambda>(k,v) s. s \<bind> f' k v) \<sigma>" 
         (is "_ = ?b'")
     by metis
   
@@ -374,13 +374,13 @@ proof -
 
   note A_FMT
   also have 
-    "?a' = foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f kv) \<sigma>"
+    "?a' = foldli l (case_dres False False c) (\<lambda>kv s. s \<bind> case_prod f kv) \<sigma>"
     apply (fo_rule fun_cong)
     apply (fo_rule arg_cong)
     by auto
   also note foldli_mono_dres_flat[OF A']
   also have 
-    "foldli l (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= case_prod f' kv) \<sigma> = ?b'"
+    "foldli l (case_dres False False c) (\<lambda>kv s. s \<bind> case_prod f' kv) \<sigma> = ?b'"
     apply (fo_rule fun_cong)
     apply (fo_rule arg_cong)
     by auto
@@ -393,8 +393,8 @@ lemma proper_it_mono_dres:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>kv x. f kv x \<le> f' kv x"
   shows "
-    it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>
-    \<le> it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>"
+    it' s (case_dres False False c) (\<lambda>kv s. s \<bind> f kv) \<sigma>
+    \<le> it' s (case_dres False False c) (\<lambda>kv s. s \<bind> f' kv) \<sigma>"
   apply (rule proper_itE[OF PR[THEN proper_it'D[where s=s]]])
   apply (erule_tac t="it' s" in ssubst)
   apply (rule foldli_mono_dres[OF A])
@@ -404,8 +404,8 @@ lemma proper_it_mono_dres_flat:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>kv x. flat_ge (f kv x) (f' kv x)"
   shows "
-    flat_ge (it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>)
-      (it' s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>)"
+    flat_ge (it' s (case_dres False False c) (\<lambda>kv s. s \<bind> f kv) \<sigma>)
+      (it' s (case_dres False False c) (\<lambda>kv s. s \<bind> f' kv) \<sigma>)"
   apply (rule proper_itE[OF PR[THEN proper_it'D[where s=s]]])
   apply (erule_tac t="it' s" in ssubst)
   apply (rule foldli_mono_dres_flat[OF A])
@@ -423,9 +423,9 @@ lemma proper_it_mono_dres_dom:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>kv x. f kv x \<le> f' kv x"
   shows "
-    (map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>
+    (map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<bind> f kv) \<sigma>
     \<le> 
-    (map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>"
+    (map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<bind> f' kv) \<sigma>"
   
   apply (rule proper_it_mono_dres)
   apply (rule icf_proper_iteratorI)
@@ -435,8 +435,8 @@ lemma proper_it_mono_dres_dom_flat:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>kv x. flat_ge (f kv x) (f' kv x)"
   shows "flat_ge 
-    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f kv) \<sigma>)
-    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<guillemotright>= f' kv) \<sigma>)"
+    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<bind> f kv) \<sigma>)
+    ((map_iterator_dom o it') s (case_dres False False c) (\<lambda>kv s. s \<bind> f' kv) \<sigma>)"
   apply (rule proper_it_mono_dres_flat)
   apply (rule icf_proper_iteratorI)
   by fact+

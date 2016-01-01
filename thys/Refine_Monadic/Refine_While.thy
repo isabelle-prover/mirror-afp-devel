@@ -450,32 +450,32 @@ subsubsection \<open>Tail Recursion\<close>
 context begin
   private lemma tailrec_transform_aux1:
     assumes "RETURN s \<le> m"
-    shows "REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s)) s \<le> lfp (\<lambda>x. sup m (x\<guillemotright>=a)) \<guillemotright>= b"
-    (is "REC ?F s \<le> lfp ?f \<guillemotright>= b")
+    shows "REC (\<lambda>D s. sup (a s \<bind> D) (b s)) s \<le> lfp (\<lambda>x. sup m (x\<bind>a)) \<bind> b"
+    (is "REC ?F s \<le> lfp ?f \<bind> b")
   proof (rule REC_rule[where pre = "\<lambda>s. RETURN s \<le> lfp ?f"], refine_mono)
-    show "RETURN s \<le> lfp (\<lambda>x. sup m (x \<guillemotright>= a))"
+    show "RETURN s \<le> lfp (\<lambda>x. sup m (x \<bind> a))"
       apply (subst lfp_unfold, tagged_solver)
       using assms apply (simp add: le_supI1)
       done
   next
     fix f x
     assume IH: "\<And>x. RETURN x \<le> lfp ?f \<Longrightarrow>
-                  f x \<le> lfp ?f \<guillemotright>= b"
+                  f x \<le> lfp ?f \<bind> b"
     and PRE: "RETURN x \<le> lfp ?f"
   
-    show " sup (a x \<guillemotright>= f) (b x) \<le> lfp ?f \<guillemotright>= b"
+    show " sup (a x \<bind> f) (b x) \<le> lfp ?f \<bind> b"
     proof (rule sup_least)  
-      show "b x \<le> lfp ?f \<guillemotright>= b"
+      show "b x \<le> lfp ?f \<bind> b"
       using PRE
         by (simp add: pw_le_iff refine_pw_simps) blast
     next
-      from PRE have "a x \<le> lfp ?f \<guillemotright>= a"
+      from PRE have "a x \<le> lfp ?f \<bind> a"
         by (simp add: pw_le_iff refine_pw_simps) blast
       also have "\<dots> \<le> lfp ?f"
         apply (subst (2) lfp_unfold, tagged_solver)
         apply (simp add: le_supI2)
         done
-      finally show "a x \<guillemotright>= f \<le> lfp ?f \<guillemotright>= b"
+      finally show "a x \<bind> f \<le> lfp ?f \<bind> b"
         using IH
         by (simp add: pw_le_iff refine_pw_simps) blast
     qed
@@ -483,7 +483,7 @@ context begin
   
   private corollary tailrec_transform1: 
     fixes m :: "'a nres"
-    shows "m\<guillemotright>=REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s)) \<le> lfp (\<lambda>x. sup m (x\<guillemotright>=a)) \<guillemotright>= b"
+    shows "m\<bind>REC (\<lambda>D s. sup (a s \<bind> D) (b s)) \<le> lfp (\<lambda>x. sup m (x\<bind>a)) \<bind> b"
     apply (cases "nofail m")
     apply (erule bind_le_nofailI)
     apply (erule tailrec_transform_aux1)
@@ -493,15 +493,15 @@ context begin
             
   private lemma tailrec_transform_aux2:
     fixes m :: "'a nres"
-    shows "lfp (\<lambda>x. sup m (x\<guillemotright>=a)) 
-      \<le> m \<guillemotright>= REC (\<lambda>D s. sup (a s \<guillemotright>= D) (RETURN s))"
-    (is "lfp ?f \<le> m \<guillemotright>= REC ?F")
+    shows "lfp (\<lambda>x. sup m (x\<bind>a)) 
+      \<le> m \<bind> REC (\<lambda>D s. sup (a s \<bind> D) (RETURN s))"
+    (is "lfp ?f \<le> m \<bind> REC ?F")
     apply (subst gen_kleene_lfp)
     apply (simp add: cont_def pw_eq_iff refine_pw_simps, blast)
     apply (rule SUP_least, simp)
   proof -
     fix i
-    show "((\<lambda>x. x \<guillemotright>= a) ^^ i) m \<le> m \<guillemotright>= REC (\<lambda>D s. sup (a s \<guillemotright>= D) (RETURN s))"
+    show "((\<lambda>x. x \<bind> a) ^^ i) m \<le> m \<bind> REC (\<lambda>D s. sup (a s \<bind> D) (RETURN s))"
       apply (induction i arbitrary: m)
       apply simp
       apply (subst REC_unfold, refine_mono)
@@ -519,8 +519,8 @@ context begin
   qed
   
   
-  private lemma tailrec_transform_aux3: "REC (\<lambda>D s. sup (a s \<guillemotright>= D) (RETURN s)) s \<guillemotright>= b 
-    \<le> REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s)) s"
+  private lemma tailrec_transform_aux3: "REC (\<lambda>D s. sup (a s \<bind> D) (RETURN s)) s \<bind> b 
+    \<le> REC (\<lambda>D s. sup (a s \<bind> D) (b s)) s"
     apply (subst bind_le_shift)
     apply (rule REC_rule, refine_mono)
     apply (rule TrueI)
@@ -535,28 +535,28 @@ context begin
     done
   
   private lemma tailrec_transform2:
-    "lfp (\<lambda>x. sup m (bind x a)) \<guillemotright>= b \<le> m \<guillemotright>= REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s))"
+    "lfp (\<lambda>x. sup m (bind x a)) \<bind> b \<le> m \<bind> REC (\<lambda>D s. sup (a s \<bind> D) (b s))"
   proof -
     from bind_mono(1)[OF tailrec_transform_aux2 order_refl]
-    have "lfp (\<lambda>x. sup m (bind x a)) \<guillemotright>= b 
-      \<le> m \<guillemotright>= (\<lambda>x. REC (\<lambda>D s. sup (a s \<guillemotright>= D) (RETURN s)) x \<guillemotright>= b)"
+    have "lfp (\<lambda>x. sup m (bind x a)) \<bind> b 
+      \<le> m \<bind> (\<lambda>x. REC (\<lambda>D s. sup (a s \<bind> D) (RETURN s)) x \<bind> b)"
       by simp
     also from bind_mono(1)[OF order_refl tailrec_transform_aux3]
-    have "\<dots> \<le> m \<guillemotright>= REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s))" .
+    have "\<dots> \<le> m \<bind> REC (\<lambda>D s. sup (a s \<bind> D) (b s))" .
     finally show ?thesis .
   qed  
   
   definition "tailrec_body a b \<equiv> (\<lambda>D s. sup (bind (a s) D) (b s))"
   
   theorem tailrec_transform: 
-    "m \<guillemotright>= REC (\<lambda>D s. sup (a s \<guillemotright>= D) (b s)) = lfp (\<lambda>x. sup m (bind x a)) \<guillemotright>= b"
+    "m \<bind> REC (\<lambda>D s. sup (a s \<bind> D) (b s)) = lfp (\<lambda>x. sup m (bind x a)) \<bind> b"
     apply (rule antisym)
     apply (rule tailrec_transform1)  
     apply (rule tailrec_transform2)  
     done
   
   theorem tailrec_transform': 
-    "m \<guillemotright>= REC (tailrec_body a b) = lfp (\<lambda>x. sup m (bind x a)) \<guillemotright>= b"
+    "m \<bind> REC (tailrec_body a b) = lfp (\<lambda>x. sup m (bind x a)) \<bind> b"
     unfolding tailrec_body_def
     by (rule tailrec_transform)
   
@@ -599,7 +599,7 @@ context begin
        f s
      }))"
     
-  lemma WHILEI_lfp_conv: "m \<guillemotright>= WHILEI I c f = 
+  lemma WHILEI_lfp_conv: "m \<bind> WHILEI I c f = 
     do { 
       s \<leftarrow> lfp (WHILEI_lfp_body I m c f); 
       ASSERT (I s); 
@@ -647,7 +647,7 @@ lemma msii_is_invar:
   apply (simp only: refine_pw_simps pw_le_iff) apply blast
   done
 
-lemma WHILE_msii_conv: "m \<guillemotright>= WHILEI I c f 
+lemma WHILE_msii_conv: "m \<bind> WHILEI I c f 
   = filter_ASSUME (Not o c) (filter_ASSERT I (msii I m c f))"
   unfolding WHILEI_lfp_conv filter_ASSERT_def filter_ASSUME_def msii_def
   by simp
@@ -655,8 +655,8 @@ lemma WHILE_msii_conv: "m \<guillemotright>= WHILEI I c f
 lemma msii_induct: 
   assumes I0: "m0 \<le> P"
   assumes IS: "\<And>m. \<lbrakk>m \<le> msii I m0 c f; m \<le> P;
-    filter_ASSUME c (filter_ASSERT I m) \<guillemotright>= f \<le> msii I m0 c f
-      \<rbrakk> \<Longrightarrow> filter_ASSUME c (filter_ASSERT I m) \<guillemotright>= f \<le> P"
+    filter_ASSUME c (filter_ASSERT I m) \<bind> f \<le> msii I m0 c f
+      \<rbrakk> \<Longrightarrow> filter_ASSUME c (filter_ASSERT I m) \<bind> f \<le> P"
   shows "msii I m0 c f \<le> P"
   unfolding msii_def WHILEI_lfp_body_def
   apply (rule lfp_gen_induct, tagged_solver)
@@ -716,7 +716,7 @@ text {* Reachable states in a while loop, ignoring failing states *}
   lemma rwof_WHILE_rule:
     assumes I0: "m0 \<le> SPEC I"
     assumes S: "\<And>s. \<lbrakk> rwof m0 cond step s; I s; cond s \<rbrakk> \<Longrightarrow> step s \<le> SPEC I"
-    shows "m0 \<guillemotright>= WHILE cond step \<le> SPEC (\<lambda>s. rwof m0 cond step s \<and> \<not>cond s \<and> I s)"
+    shows "m0 \<bind> WHILE cond step \<le> SPEC (\<lambda>s. rwof m0 cond step s \<and> \<not>cond s \<and> I s)"
   proof -
     from I0 obtain M0 where [simp]: "m0 = RES M0" and "M0 \<subseteq> Collect I"
       by (cases m0) auto
@@ -781,7 +781,7 @@ subsubsection {* Bounded while-loop *}
   lemma WHILE_rule_gen_le:
     assumes I0: "m0 \<le> I"
     assumes ISTEP: "\<And>s. \<lbrakk>RETURN s \<le> I; b s\<rbrakk> \<Longrightarrow> f s \<le> I"
-    shows "m0 \<guillemotright>= WHILE b f \<le> filter_nb b I"
+    shows "m0 \<bind> WHILE b f \<le> filter_nb b I"
       apply (unfold WHILE_def WHILEI_def)
       apply (refine_rcg order_trans[OF I0] refine_vcg pw_bind_leI)
       using I0 apply (simp add: pw_le_iff refine_pw_simps)
@@ -862,15 +862,15 @@ subsubsection {* Bounded while-loop *}
     apply (auto cong: if_cong simp: bounded_WHILE_shift)
     done
 
-  lemma mWHILE_unfold: "m \<guillemotright>= WHILE cond step = do {
+  lemma mWHILE_unfold: "m \<bind> WHILE cond step = do {
       x \<leftarrow> m;
-      if cond x then step x \<guillemotright>= WHILE cond step
+      if cond x then step x \<bind> WHILE cond step
       else RETURN x
     }"
     by (subst WHILE_unfold[abs_def]) (rule refl)
 
   lemma WHILE_bounded_aux1: 
-    "filter_nb cond (bounded_WHILE n cond step m) \<le> m \<guillemotright>= WHILE cond step"
+    "filter_nb cond (bounded_WHILE n cond step m) \<le> m \<bind> WHILE cond step"
     unfolding bounded_WHILE'_eq[symmetric]
     apply (induct n arbitrary: m)
     apply simp
@@ -883,7 +883,7 @@ subsubsection {* Bounded while-loop *}
     done
 
   lemma WHILE_bounded_aux2:
-    "m \<guillemotright>= WHILE cond step 
+    "m \<bind> WHILE cond step 
       \<le> filter_nb cond (Sup {bounded_WHILE n cond step m | n. True})"
     apply (rule WHILE_rule_gen_le)
     apply (metis (mono_tags, lifting) Sup_upper bounded_WHILE.simps(1) 
@@ -902,7 +902,7 @@ subsubsection {* Bounded while-loop *}
 
    
   lemma WHILE_bounded: 
-    "m \<guillemotright>= WHILE cond step 
+    "m \<bind> WHILE cond step 
     = filter_nb cond (Sup {bounded_WHILE n cond step m | n. True})"
     apply (rule antisym)
     apply (rule WHILE_bounded_aux2)
@@ -1003,7 +1003,7 @@ subsubsection {* Bounded while-loop *}
     assumes RW: "rwof m0 cond step s" 
     and C: "cond s" 
     and S: "step s = FAIL"
-    shows "m0 \<guillemotright>= WHILE cond step = FAIL"
+    shows "m0 \<bind> WHILE cond step = FAIL"
   proof -
     from rwof_in_bounded_WHILE[OF RW] obtain n where 
       "RETURN s \<le> bounded_WHILE n cond step m0" ..
@@ -1020,7 +1020,7 @@ subsubsection {* Bounded while-loop *}
     by (auto simp add: pw_eq_iff)
     
   corollary WHILE_nofail_imp_rwof_nofail:
-    assumes "nofail (m0 \<guillemotright>= WHILE cond step)"
+    assumes "nofail (m0 \<bind> WHILE cond step)"
     assumes RW: "rwof m0 cond step s" 
     assumes C: "cond s"
     shows "nofail (step s)"
@@ -1034,36 +1034,36 @@ subsubsection {* Bounded while-loop *}
     by (rule WHILEI_weaken) simp
 
   corollary WHILEI_nofail_imp_rwof_nofail:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILEI I cond step)"
+    assumes NF: "nofail (m0 \<bind> WHILEI I cond step)"
     assumes RW: "rwof m0 cond step s" 
     assumes C: "cond s"
     shows "nofail (step s)"
   proof -
-    from NF have "nofail (m0 \<guillemotright>= WHILE cond step)"
+    from NF have "nofail (m0 \<bind> WHILE cond step)"
       using WHILE_le_WHILEI 
       by (fastforce simp: pw_le_iff refine_pw_simps)
     from WHILE_nofail_imp_rwof_nofail[OF this RW C] show ?thesis .
   qed
 
   corollary WHILET_nofail_imp_rwof_nofail:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILET cond step)"
+    assumes NF: "nofail (m0 \<bind> WHILET cond step)"
     assumes RW: "rwof m0 cond step s" 
     assumes C: "cond s"
     shows "nofail (step s)"
   proof -
-    from NF have "nofail (m0 \<guillemotright>= WHILE cond step)"
+    from NF have "nofail (m0 \<bind> WHILE cond step)"
       using WHILEI_le_WHILEIT unfolding WHILE_def WHILET_def 
       by (fastforce simp: pw_le_iff refine_pw_simps)
     from WHILE_nofail_imp_rwof_nofail[OF this RW C] show ?thesis .
   qed
 
   corollary WHILEIT_nofail_imp_rwof_nofail:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILEIT I cond step)"
+    assumes NF: "nofail (m0 \<bind> WHILEIT I cond step)"
     assumes RW: "rwof m0 cond step s" 
     assumes C: "cond s"
     shows "nofail (step s)"
   proof -
-    from NF have "nofail (m0 \<guillemotright>= WHILE cond step)"
+    from NF have "nofail (m0 \<bind> WHILE cond step)"
       using WHILE_le_WHILEI WHILEI_le_WHILEIT unfolding WHILE_def
       by (fastforce simp: pw_le_iff refine_pw_simps)
     from WHILE_nofail_imp_rwof_nofail[OF this RW C] show ?thesis .
@@ -1076,8 +1076,8 @@ subsubsection {* Bounded while-loop *}
 
 subsubsection {* WHILE-loops in the nofail-case *}
   lemma nofail_WHILE_eq_rwof: 
-    assumes NF: "nofail (m0 \<guillemotright>= WHILE cond step)"
-    shows "m0 \<guillemotright>= WHILE cond step = SPEC (\<lambda>s. rwof m0 cond step s \<and> \<not>cond s)"
+    assumes NF: "nofail (m0 \<bind> WHILE cond step)"
+    shows "m0 \<bind> WHILE cond step = SPEC (\<lambda>s. rwof m0 cond step s \<and> \<not>cond s)"
   proof -
     from NF WHILE_bounded[of m0 cond step] have NF': 
       "nofail (Sup {filter_nb cond m |m. \<exists>n. m = bounded_WHILE n cond step m0})"
@@ -1105,16 +1105,16 @@ subsubsection {* WHILE-loops in the nofail-case *}
   qed
 
   lemma WHILE_refine_rwof:
-    assumes "nofail (m \<guillemotright>= WHILE c f) \<Longrightarrow> mi \<le> SPEC (\<lambda>s. rwof m c f s \<and> \<not>c s)"
-    shows "mi \<le> m \<guillemotright>= WHILE c f"
-    apply (cases "nofail (m \<guillemotright>= WHILE c f)")
+    assumes "nofail (m \<bind> WHILE c f) \<Longrightarrow> mi \<le> SPEC (\<lambda>s. rwof m c f s \<and> \<not>c s)"
+    shows "mi \<le> m \<bind> WHILE c f"
+    apply (cases "nofail (m \<bind> WHILE c f)")
     apply (subst nofail_WHILE_eq_rwof, simp, fact)
     apply (simp add: pw_le_iff)
     done
 
 
   lemma pw_rwof_init:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILE cond step)"
+    assumes NF: "nofail (m0 \<bind> WHILE cond step)"
     shows "inres m0 s \<Longrightarrow> rwof m0 cond step s" and "nofail m0"
     apply -
     using NF apply (cases m0, simp)
@@ -1125,7 +1125,7 @@ subsubsection {* WHILE-loops in the nofail-case *}
     done
 
   lemma rwof_init:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILE cond step)" 
+    assumes NF: "nofail (m0 \<bind> WHILE cond step)" 
     shows "m0 \<le> SPEC (rwof m0 cond step)"
     using pw_rwof_init[OF NF]
     by (simp add: pw_le_iff refine_pw_simps)
@@ -1148,7 +1148,7 @@ subsubsection {* WHILE-loops in the nofail-case *}
     by (simp add: pw_le_iff refine_pw_simps)
 
   lemma pw_rwof_step:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILE cond step)"
+    assumes NF: "nofail (m0 \<bind> WHILE cond step)"
     assumes R: "rwof m0 cond step s"
     assumes C: "cond s"
     shows "inres (step s) s' \<Longrightarrow> rwof m0 cond step s'"
@@ -1157,7 +1157,7 @@ subsubsection {* WHILE-loops in the nofail-case *}
     by simp_all
 
   lemma rwof_step: 
-    "\<lbrakk> nofail (m0 \<guillemotright>= WHILE cond step); rwof m0 cond step s; cond s \<rbrakk>
+    "\<lbrakk> nofail (m0 \<bind> WHILE cond step); rwof m0 cond step s; cond s \<rbrakk>
     \<Longrightarrow> step s \<le> SPEC (rwof m0 cond step)"
     using pw_rwof_step[of m0 cond step s]
     by (simp add: pw_le_iff refine_pw_simps)
@@ -1176,7 +1176,7 @@ subsubsection {* WHILE-loops in the nofail-case *}
 
 
   lemma (in -) rwof_step_refine:
-    assumes NF: "nofail (m0 \<guillemotright>= WHILE cond step)"  
+    assumes NF: "nofail (m0 \<bind> WHILE cond step)"  
     assumes A: "rwof m0 cond step' s"
     assumes FR: "\<And>s. \<lbrakk> rwof m0 cond step s; cond s \<rbrakk> \<Longrightarrow> step' s \<le>\<^sub>n step s"
     shows "rwof m0 cond step s"
@@ -1190,11 +1190,11 @@ subsubsection {* WHILE-loops in the nofail-case *}
     done
 
 subsubsection {* Adding Invariants *}
-  lemma WHILE_eq_I_rwof: "m \<guillemotright>= WHILE c f = m \<guillemotright>= WHILEI (rwof m c f) c f"
+  lemma WHILE_eq_I_rwof: "m \<bind> WHILE c f = m \<bind> WHILEI (rwof m c f) c f"
   proof (rule antisym)
-    have "m \<guillemotright>= WHILEI (rwof m c f) c f
+    have "m \<bind> WHILEI (rwof m c f) c f
       \<le> \<Down>{(s,s) | s. rwof m c f s} 
-        (m \<guillemotright>= WHILE c f)"
+        (m \<bind> WHILE c f)"
       unfolding WHILE_def
       apply (rule bind_refine)
       apply (rule intro_prgR[where R="{(s,s) | s. rwof m c f s}"])
@@ -1204,10 +1204,10 @@ subsubsection {* Adding Invariants *}
       apply (rule WHILEI_refine)
       apply (auto simp: pw_le_iff refine_pw_simps pw_rwof_step')
       done
-    thus "m \<guillemotright>= WHILEI (rwof m c f) c f \<le> m \<guillemotright>= WHILE c f"
+    thus "m \<bind> WHILEI (rwof m c f) c f \<le> m \<bind> WHILE c f"
       by (simp add: pw_le_iff refine_pw_simps)
   next
-    show "m \<guillemotright>= WHILE c f \<le> m \<guillemotright>= WHILEI (rwof m c f) c f"
+    show "m \<bind> WHILE c f \<le> m \<bind> WHILEI (rwof m c f) c f"
       unfolding WHILE_def 
       apply (rule bind_mono)
       apply (rule order_refl)
@@ -1215,11 +1215,11 @@ subsubsection {* Adding Invariants *}
       ..
   qed
 
-  lemma WHILET_eq_I_rwof: "m \<guillemotright>= WHILET c f = m \<guillemotright>= WHILEIT (rwof m c f) c f"
+  lemma WHILET_eq_I_rwof: "m \<bind> WHILET c f = m \<bind> WHILEIT (rwof m c f) c f"
   proof (rule antisym)
-    have "m \<guillemotright>= WHILEIT (rwof m c f) c f
+    have "m \<bind> WHILEIT (rwof m c f) c f
       \<le> \<Down>{(s,s) | s. rwof m c f s} 
-        (m \<guillemotright>= WHILET c f)"
+        (m \<bind> WHILET c f)"
       unfolding WHILET_def
       apply (rule bind_refine)
       apply (rule intro_prgR[where R="{(s,s) | s. rwof m c f s}"])
@@ -1229,10 +1229,10 @@ subsubsection {* Adding Invariants *}
       apply (rule WHILEIT_refine)
       apply (auto simp: pw_le_iff refine_pw_simps pw_rwof_step')
       done
-    thus "m \<guillemotright>= WHILEIT (rwof m c f) c f \<le> m \<guillemotright>= WHILET c f"
+    thus "m \<bind> WHILEIT (rwof m c f) c f \<le> m \<bind> WHILET c f"
       by (simp add: pw_le_iff refine_pw_simps)
   next
-    show "m \<guillemotright>= WHILET c f \<le> m \<guillemotright>= WHILEIT (rwof m c f) c f"
+    show "m \<bind> WHILET c f \<le> m \<bind> WHILEIT (rwof m c f) c f"
       unfolding WHILET_def 
       apply (rule bind_mono)
       apply (rule order_refl)
@@ -1244,7 +1244,7 @@ subsubsection {* Adding Invariants *}
 subsubsection {* Refinement *}
 lemma rwof_refine:
   assumes RW: "rwof m c f s"
-  assumes NF: "nofail (m' \<guillemotright>= WHILE c' f')"
+  assumes NF: "nofail (m' \<bind> WHILE c' f')"
   assumes M: "m \<le>\<^sub>n \<Down>R m'"
   assumes C: "\<And>s s'. \<lbrakk>(s,s')\<in>R; rwof m c f s; rwof m' c' f' s'\<rbrakk> \<Longrightarrow> c s = c' s'"
   assumes S: "\<And>s s'. \<lbrakk>(s,s')\<in>R; rwof m c f s; rwof m' c' f' s'; c s; c' s'\<rbrakk> \<Longrightarrow> f s \<le>\<^sub>n \<Down>R (f' s')"
@@ -1288,7 +1288,7 @@ lemma rwof_reachable:
   done
   
 theorem nofail_WHILEIT_wf_rel: 
-  assumes NF: "nofail (init \<guillemotright>= WHILEIT I cond step)"
+  assumes NF: "nofail (init \<bind> WHILEIT I cond step)"
   shows "wf ((rwof_rel init cond step)\<inverse>)"
 proof (rule ccontr)
   assume "\<not>wf ((rwof_rel init cond step)\<inverse>)"
@@ -1317,7 +1317,7 @@ proof (rule ccontr)
   from P have SIR: "\<And>i. inres (step (f i)) (f (Suc i))"
     unfolding ipath_def rwof_rel_def by auto
 
-  def F \<equiv> "(WHILEI_body op \<guillemotright>= RETURN I cond step)"
+  def F \<equiv> "(WHILEI_body op \<bind> RETURN I cond step)"
 
   {
     assume M: "trimono F"

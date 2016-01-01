@@ -10,14 +10,14 @@ text_raw {* \label{chapter:linear:order:set} *}
 
 section {* Auxiliary definitions *}
 
-lemma insert_bind_set: "insert a A \<guillemotright>= f = f a \<union> (A \<guillemotright>= f)"
+lemma insert_bind_set: "insert a A \<bind> f = f a \<union> (A \<bind> f)"
 by(auto simp add: Set.bind_def)
 
 lemma set_bind_iff:
   "set (List.bind xs f) = Set.bind (set xs) (set \<circ> f)"
 by(induct xs)(simp_all add: insert_bind_set)
 
-lemma set_bind_conv_fold: "set xs \<guillemotright>= f = fold (op \<union> \<circ> f) xs {}"
+lemma set_bind_conv_fold: "set xs \<bind> f = fold (op \<union> \<circ> f) xs {}"
 by(induct xs rule: rev_induct)(simp_all add: insert_bind_set)
 
 lemma card_gt_1D:

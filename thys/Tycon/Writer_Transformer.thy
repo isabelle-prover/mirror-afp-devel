@@ -165,7 +165,7 @@ unfolding tellWT_def by simp
 
 lemma runWriterT_fmapWT [simp]:
   "runWriterT\<cdot>(fmapWT\<cdot>f\<cdot>m) =
-    runWriterT\<cdot>m \<guillemotright>= (\<Lambda> (Writer\<cdot>w\<cdot>x). return\<cdot>(Writer\<cdot>w\<cdot>(f\<cdot>x)))"
+    runWriterT\<cdot>m \<bind> (\<Lambda> (Writer\<cdot>w\<cdot>x). return\<cdot>(Writer\<cdot>w\<cdot>(f\<cdot>x)))"
 by (simp add: fmapWT_def bindWT_def mempty_right)
 
 subsection {* Laws *}
@@ -337,7 +337,7 @@ functions. \medskip *}
 
 lemma writerT_left_unit_invar_lemma:
   assumes "invar m"
-  shows "runWriterT\<cdot>m \<guillemotright>= (\<Lambda> (Writer\<cdot>w\<cdot>x). return\<cdot>(Writer\<cdot>w\<cdot>x)) = runWriterT\<cdot>m"
+  shows "runWriterT\<cdot>m \<bind> (\<Lambda> (Writer\<cdot>w\<cdot>x). return\<cdot>(Writer\<cdot>w\<cdot>x)) = runWriterT\<cdot>m"
 using assms proof (induct m set: invar)
   case invar_bottom thus ?case
     by (simp add: bind_strict)

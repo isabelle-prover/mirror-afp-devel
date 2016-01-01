@@ -49,11 +49,11 @@ declare
 declare not_Cons_self [no_atp] 
 
 lemma Option_bind_eq_None_conv:
-  "x \<guillemotright>= y = None \<longleftrightarrow> x = None \<or> (\<exists>x'. x = Some x' \<and> y x' = None)"
+  "x \<bind> y = None \<longleftrightarrow> x = None \<or> (\<exists>x'. x = Some x' \<and> y x' = None)"
 by(cases x) simp_all
 
 lemma Option_bind_eq_Some_conv:
-  "x \<guillemotright>= y = Some z \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> y x' = Some z)"
+  "x \<bind> y = Some z \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> y x' = Some z)"
 by(cases x) simp_all
 
 lemma map_upds_xchg_snd:
@@ -350,7 +350,7 @@ using assms
 by(simp add: Predicate.is_empty_def bot_pred_def bot_apply Set.empty_def)
 
 lemma eval_bind_conv:
-  "Predicate.eval (P \<guillemotright>= R) y = (\<exists>x. Predicate.eval P x \<and> Predicate.eval (R x) y)"
+  "Predicate.eval (P \<bind> R) y = (\<exists>x. Predicate.eval P x \<and> Predicate.eval (R x) y)"
 by(blast elim: bindE intro: bindI)
 
 lemma eval_single_conv: "Predicate.eval (Predicate.single a) b \<longleftrightarrow> a = b"

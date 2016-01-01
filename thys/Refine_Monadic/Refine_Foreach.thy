@@ -1044,7 +1044,7 @@ lemma nfoldli_transfer_dres[refine_transfer]:
   fixes l :: "'a list" and c:: "'b \<Rightarrow> bool"
   assumes FR: "\<And>x s. nres_of (f x s) \<le> f' x s"
   shows "nres_of 
-    (foldli l (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN s)) 
+    (foldli l (case_dres False False c) (\<lambda>x s. s\<bind>f x) (dRETURN s)) 
     \<le> (nfoldli l c f' s)"
 proof (induct l arbitrary: s)
   case Nil thus ?case by auto
@@ -1083,7 +1083,7 @@ text {* We relate our fold-function to the while-loop that we used in
 lemma nfoldli_while: "nfoldli l c f \<sigma>
           \<le>
          (WHILE\<^sub>T\<^bsup>I\<^esup>
-           (FOREACH_cond c) (FOREACH_body f) (l, \<sigma>) \<guillemotright>=
+           (FOREACH_cond c) (FOREACH_body f) (l, \<sigma>) \<bind>
           (\<lambda>(_, \<sigma>). RETURN \<sigma>))"
 proof (induct l arbitrary: \<sigma>)
   case Nil thus ?case by (subst WHILEIT_unfold) (auto simp: FOREACH_cond_def)
@@ -1254,7 +1254,7 @@ lemma foldli_mono_dres_flat[refine_mono]:
 lemma dres_foldli_ne_bot[refine_transfer]:
   assumes 1: "\<sigma> \<noteq> dSUCCEED"
   assumes 2: "\<And>x \<sigma>. f x \<sigma> \<noteq> dSUCCEED"
-  shows "foldli l c (\<lambda>x s. s \<guillemotright>= f x) \<sigma> \<noteq> dSUCCEED"
+  shows "foldli l c (\<lambda>x s. s \<bind> f x) \<sigma> \<noteq> dSUCCEED"
   using 1 apply (induct l arbitrary: \<sigma>)
   apply simp
   apply (simp split: dres.split, intro allI impI)
@@ -1406,7 +1406,7 @@ lemma LIST_FOREACH'_transfer_nres[refine_transfer]:
   shows "nres_of (
     do {
       xs\<leftarrow>tsl; 
-      foldli xs (case_dres False False c) (\<lambda>x s. s\<guillemotright>=f x) (dRETURN \<sigma>)
+      foldli xs (case_dres False False c) (\<lambda>x s. s\<bind>f x) (dRETURN \<sigma>)
     }) \<le> LIST_FOREACH' tsl' c f' \<sigma>"
   unfolding LIST_FOREACH'_def
   using assms

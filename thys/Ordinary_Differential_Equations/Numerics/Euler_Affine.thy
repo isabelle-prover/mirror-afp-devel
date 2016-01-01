@@ -12,8 +12,8 @@ lemma inf_le_sup_same1: "inf a (b::'a::ordered_euclidean_space) \<le> sup a d"
   by (metis inf.coboundedI1 sup.cobounded1)
 
 lemma fixes a::"'a option"
-  shows split_option_bind: "P (a \<guillemotright>= f) \<longleftrightarrow> ((a = None \<longrightarrow> P None) \<and> (\<forall>x. a = Some x \<longrightarrow> P (f x)))"
-  and split_option_bind_asm:  "P (a \<guillemotright>= f) \<longleftrightarrow> (\<not> (a = None \<and> \<not> P None \<or> (\<exists>x. a = Some x \<and> \<not> P (f x))))"
+  shows split_option_bind: "P (a \<bind> f) \<longleftrightarrow> ((a = None \<longrightarrow> P None) \<and> (\<forall>x. a = Some x \<longrightarrow> P (f x)))"
+  and split_option_bind_asm:  "P (a \<bind> f) \<longleftrightarrow> (\<not> (a = None \<and> \<not> P None \<or> (\<exists>x. a = Some x \<and> \<not> P (f x))))"
   unfolding atomize_conj
   by (cases a) (auto split: option.split)
 

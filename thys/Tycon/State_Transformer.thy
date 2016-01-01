@@ -76,15 +76,15 @@ definition returnU_stateT_def:
   "returnU = (\<Lambda> x. StateT\<cdot>(\<Lambda> s. return\<cdot>(x, s)))"
 
 definition bindU_stateT_def:
-  "bindU = (\<Lambda> m k. StateT\<cdot>(\<Lambda> s. runStateT\<cdot>m\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')))"
+  "bindU = (\<Lambda> m k. StateT\<cdot>(\<Lambda> s. runStateT\<cdot>m\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')))"
 
 lemma bindU_stateT_StateT [simp]:
   "bindU\<cdot>(StateT\<cdot>f)\<cdot>k =
-    StateT\<cdot>(\<Lambda> s. f\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s'))"
+    StateT\<cdot>(\<Lambda> s. f\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s'))"
 unfolding bindU_stateT_def by simp
 
 lemma runStateT_bindU [simp]:
-  "runStateT\<cdot>(bindU\<cdot>m\<cdot>k)\<cdot>s = runStateT\<cdot>m\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')"
+  "runStateT\<cdot>(bindU\<cdot>m\<cdot>k)\<cdot>s = runStateT\<cdot>m\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')"
 unfolding bindU_stateT_def by simp
 
 instance proof
@@ -193,7 +193,7 @@ unfolding return_def [where 'm="('m, 's) stateT"] returnU_stateT_def
 by (simp add: coerce_simp)
 
 lemma bind_stateT_def:
-  "bind = (\<Lambda> m k. StateT\<cdot>(\<Lambda> s. runStateT\<cdot>m\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')))"
+  "bind = (\<Lambda> m k. StateT\<cdot>(\<Lambda> s. runStateT\<cdot>m\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')))"
 apply (subst bind_def, subst bindU_stateT_def)
 apply (simp add: coerce_simp)
 apply (simp add: coerce_idem domain_defl_simps monofun_cfun)
@@ -205,11 +205,11 @@ with monotonicity rules for DEFL."
 
 lemma bind_stateT_simps [simp]:
   "bind\<cdot>(StateT\<cdot>m :: 'a\<cdot>('m::monad,'s) stateT)\<cdot>k =
-    StateT\<cdot>(\<Lambda> s. m\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s'))"
+    StateT\<cdot>(\<Lambda> s. m\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s'))"
 unfolding bind_stateT_def by simp
 
 lemma runStateT_bind [simp]:
-  "runStateT\<cdot>(m \<guillemotright>= k)\<cdot>s = runStateT\<cdot>m\<cdot>s \<guillemotright>= (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')"
+  "runStateT\<cdot>(m \<bind> k)\<cdot>s = runStateT\<cdot>m\<cdot>s \<bind> (\<Lambda> (x, s'). runStateT\<cdot>(k\<cdot>x)\<cdot>s')"
 unfolding bind_stateT_def by simp
 
 end

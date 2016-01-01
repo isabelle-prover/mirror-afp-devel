@@ -77,7 +77,7 @@ definition "insert_elt a = (\<lambda>j. do {
 definition "sort_upto a = (\<lambda>l. for [1 ..< l] (insert_elt a))"
 
 lemma insertion_sort_alt_def:
-  "insertion_sort a = (Array.len a \<guillemotright>= sort_upto a)"
+  "insertion_sort a = (Array.len a \<bind> sort_upto a)"
   by (simp add: insertion_sort_def sort_upto_def shiftr_def shiftr_p_def shiftr_f_def insert_elt_def)
 
 

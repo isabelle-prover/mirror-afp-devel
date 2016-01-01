@@ -49,7 +49,7 @@ where
 
 fun bool :: "tag \<Rightarrow> bool xmlt"
 where
-  "bool tag node = Xmlt.text tag node \<guillemotright>= bool_of_string"
+  "bool tag node = Xmlt.text tag node \<bind> bool_of_string"
 hide_const (open) bool
 
 definition fail :: "tag \<Rightarrow> 'a xmlt"
@@ -90,7 +90,7 @@ where
       XML name atts cs \<Rightarrow>
       (if name = tag \<and> atts = [] then
         (case list1element cs of 
-          Some (cs1) \<Rightarrow> p1 cs1 \<guillemotright>= return \<circ> f
+          Some (cs1) \<Rightarrow> p1 cs1 \<bind> return \<circ> f
         | None \<Rightarrow> Xmlt.fail tag xml)
       else Xmlt.fail tag xml)
     | _ \<Rightarrow> Xmlt.fail tag xml)"
@@ -391,7 +391,7 @@ lemma xml3to4elements_mono [partial_function_mono]:
 fun many :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
 where
   "many tag p f (XML name atts cs) =
-    (if name = tag \<and> atts = [] then (Xmlt.map p cs \<guillemotright>= (return \<circ> f))
+    (if name = tag \<and> atts = [] then (Xmlt.map p cs \<bind> (return \<circ> f))
     else Xmlt.fail tag (XML name atts cs))" |
   "many tag p f xml = Xmlt.fail tag xml"
 hide_const (open) many
@@ -649,7 +649,7 @@ lemma choice_mono_3 [partial_function_mono]:
 
 fun change :: "'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
 where
-  "change p f x = p x \<guillemotright>= return \<circ> f"
+  "change p f x = p x \<bind> return \<circ> f"
 hide_const (open) change
 
 lemma change_mono [partial_function_mono]:
@@ -675,20 +675,20 @@ where
 fun int_of_string_aux :: "int \<Rightarrow> string \<Rightarrow> string +\<^sub>\<bottom> int"
 where
   "int_of_string_aux n [] = return n" |
-  "int_of_string_aux n (d # s) = (int_of_digit d \<guillemotright>= (\<lambda>m. int_of_string_aux (10 * n + m) s))"
+  "int_of_string_aux n (d # s) = (int_of_digit d \<bind> (\<lambda>m. int_of_string_aux (10 * n + m) s))"
 
 definition int_of_string :: "string \<Rightarrow> string +\<^sub>\<bottom> int"
 where
   "int_of_string s =
     (if s = [] then error ''cannot convert empty string into number'' 
-    else if take 1 s = ''-'' then int_of_string_aux 0 (tl s) \<guillemotright>= (\<lambda> i. return (0 - i))
+    else if take 1 s = ''-'' then int_of_string_aux 0 (tl s) \<bind> (\<lambda> i. return (0 - i))
     else int_of_string_aux 0 s)"
 
 hide_const int_of_string_aux
 
 fun int :: "tag \<Rightarrow> int xmlt"
 where
-  "int tag x = (Xmlt.text tag x \<guillemotright>= int_of_string)"
+  "int tag x = (Xmlt.text tag x \<bind> int_of_string)"
 hide_const (open) int
 
 fun nat :: "tag \<Rightarrow> nat xmlt"

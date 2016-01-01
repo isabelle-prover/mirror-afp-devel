@@ -139,7 +139,7 @@ text{* points to, reaches, reachable mut, reachable grey *}
 
 lemma reaches_fields:
   assumes "(x reaches y) s'"
-  assumes "\<forall>r. (Option.set_option (sys_heap s' r) \<guillemotright>= ran \<circ> obj_fields) = (Option.set_option (sys_heap s r) \<guillemotright>= ran \<circ> obj_fields)"
+  assumes "\<forall>r. (Option.set_option (sys_heap s' r) \<bind> ran \<circ> obj_fields) = (Option.set_option (sys_heap s r) \<bind> ran \<circ> obj_fields)"
   shows "(x reaches y) s"
 using assms
 proof induct
@@ -151,14 +151,14 @@ proof induct
 qed simp
 
 lemma reaches_eq_imp:
-  "eq_imp (\<lambda>r s. Option.set_option (sys_heap s r) \<guillemotright>= ran \<circ> obj_fields)
+  "eq_imp (\<lambda>r s. Option.set_option (sys_heap s r) \<bind> ran \<circ> obj_fields)
           (x reaches y)"
 by (auto simp: eq_imp_def elim: reaches_fields)
 
 lemmas reaches_fun_upd[simp] = eq_imp_fun_upd[OF reaches_eq_imp, simplified eq_imp_simps, rule_format]
 
 lemma (in mut_m) reachable_eq_imp:
-  "eq_imp (\<lambda>r'. mut_roots \<otimes> mut_ghost_honorary_root \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<guillemotright>= ran \<circ> obj_fields) \<otimes> tso_pending_mutate (mutator m))
+  "eq_imp (\<lambda>r'. mut_roots \<otimes> mut_ghost_honorary_root \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields) \<otimes> tso_pending_mutate (mutator m))
           (reachable r)"
 apply (clarsimp simp: eq_imp_def reachable_def tso_write_refs_def ex_disj_distrib)
 apply (rename_tac s s')
@@ -223,7 +223,7 @@ lemma (in mut_m) mut_reachableE[consumes 1, case_names mut_root tso_write_refs]:
 by (auto simp: reachable_def)
 
 lemma grey_reachable_eq_imp:
-  "eq_imp (\<lambda>r'. (\<lambda>s. \<Union>p. WL p s) \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<guillemotright>= ran \<circ> obj_fields))
+  "eq_imp (\<lambda>r'. (\<lambda>s. \<Union>p. WL p s) \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields))
           (grey_reachable r)"
 by (auto simp: eq_imp_def grey_reachable_def grey_def set_eq_iff reaches_fields)
 
@@ -285,7 +285,7 @@ lemma valid_refs_inv_eq_imp:
 apply (clarsimp simp: eq_imp_def valid_refs_inv_def grey_reachable_def all_conj_distrib)
 apply (rename_tac s s')
 apply (subgoal_tac "\<forall>r. valid_ref r s \<longleftrightarrow> valid_ref r s'")
- apply (subgoal_tac "\<forall>x. Option.set_option (sys_heap s x) \<guillemotright>= ran \<circ> obj_fields = Option.set_option (sys_heap s' x) \<guillemotright>= ran \<circ> obj_fields")
+ apply (subgoal_tac "\<forall>x. Option.set_option (sys_heap s x) \<bind> ran \<circ> obj_fields = Option.set_option (sys_heap s' x) \<bind> ran \<circ> obj_fields")
   apply (subst eq_impD[OF mut_m.reachable_eq_imp])
    defer
    apply (subst eq_impD[OF grey_eq_imp])

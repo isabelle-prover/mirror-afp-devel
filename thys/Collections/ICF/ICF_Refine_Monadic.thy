@@ -165,7 +165,7 @@ lemma transfer_FOREACH_plain[refine_transfer]:
   by (rule transfer_FOREACHc_plain)
 
 abbreviation "dres_it iterate c (fi::'a \<Rightarrow> 'b \<Rightarrow> 'b dres) \<sigma> \<equiv> 
-  iterate (case_dres False False c) (\<lambda>x s. s\<guillemotright>=fi x) (dRETURN \<sigma>)"
+  iterate (case_dres False False c) (\<lambda>x s. s\<bind>fi x) (dRETURN \<sigma>)"
 
 lemma transfer_FOREACHoci_nres[refine_transfer]:
   assumes A: "set_iterator_genord iterate s ordR"
@@ -335,7 +335,7 @@ proof -
   {
     fix l and s :: "'a dres"
     assume "s\<noteq>dSUCCEED" 
-    hence "foldli l c (\<lambda>x s. s\<guillemotright>=f x) s \<noteq> dSUCCEED"
+    hence "foldli l c (\<lambda>x s. s\<bind>f x) s \<noteq> dSUCCEED"
       apply (induct l arbitrary: s)
       using A
       apply simp_all

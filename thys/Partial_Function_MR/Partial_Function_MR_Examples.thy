@@ -48,35 +48,35 @@ partial_function_mr (option)
   "b_eval bexp = (case bexp of
      BConst b \<Rightarrow> Some b
    | Less a1 a2 \<Rightarrow> do {
-        x1 <- a_eval a1;
-        x2 <- a_eval a2;
+        x1 \<leftarrow> a_eval a1;
+        x2 \<leftarrow> a_eval a2;
         Some (x1 < x2)
      }
    | Eq a1 a2 \<Rightarrow> do {
-        x1 <- a_eval a1;
-        x2 <- a_eval a2;
+        x1 \<leftarrow> a_eval a1;
+        x2 \<leftarrow> a_eval a2;
         Some (x1 = x2)
      }
    | And be1 be2 \<Rightarrow> do {
-        b1 <- b_eval be1;
-        b2 <- b_eval be2;
+        b1 \<leftarrow> b_eval be1;
+        b2 \<leftarrow> b_eval be2;
         Some (b1 \<and> b2)
      }
   )"
 | "a_eval aexp = (case aexp of
      AConst x \<Rightarrow> Some x
    | Plus a1 a2 \<Rightarrow> do {
-        x1 <- a_eval a1;
-        x2 <- a_eval a2;
+        x1 \<leftarrow> a_eval a1;
+        x2 \<leftarrow> a_eval a2;
         Some (x1 + x2)
      }
    | Div a1 a2 \<Rightarrow> do {
-        x1 <- a_eval a1;
-        x2 <- a_eval a2;
+        x1 \<leftarrow> a_eval a1;
+        x2 \<leftarrow> a_eval a2;
         if (x2 = 0) then None else Some (x1 / x2)
      }
    | IfThenElse bexp a1 a2 \<Rightarrow> do {
-        b <- b_eval bexp;
+        b \<leftarrow> b_eval bexp;
         (if b then a_eval a1 else a_eval a2)
      }
    | Mu b f a \<Rightarrow> do {
@@ -84,8 +84,8 @@ partial_function_mr (option)
      }
   )"
 | "mu_eval b f a n = do {
-      x <- a_eval a;
-      check <- b_eval (b x); 
+      x \<leftarrow> a_eval a;
+      check \<leftarrow> b_eval (b x); 
       (if check then Some (of_nat n) else 
        mu_eval b f (f x) (Suc n))
    }"

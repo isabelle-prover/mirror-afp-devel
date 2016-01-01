@@ -71,10 +71,10 @@ done
 
 lemma tso_writes_inv_sys_read_GC[simp]:
   assumes "tso_writes_inv s"
-  shows "sys_read gc (mr_Ref r f) (s sys) = mv_Ref (sys_heap s r \<guillemotright>= (\<lambda>obj. obj_fields obj f))" (is "?lhs = mv_Ref ?rhs")
+  shows "sys_read gc (mr_Ref r f) (s sys) = mv_Ref (sys_heap s r \<bind> (\<lambda>obj. obj_fields obj f))" (is "?lhs = mv_Ref ?rhs")
 using assms
 apply (simp add: sys_read_def fold_writes_def)
-apply (rule fold_invariant[where P="\<lambda>fr. heap (fr (s sys)) r \<guillemotright>= (\<lambda>obj. obj_fields obj f) = ?rhs"
+apply (rule fold_invariant[where P="\<lambda>fr. heap (fr (s sys)) r \<bind> (\<lambda>obj. obj_fields obj f) = ?rhs"
                              and Q="\<lambda>w. \<forall>r f r'. w \<noteq> mw_Mutate r f r'"])
   apply (force simp: tso_writes_inv_def)
  apply (auto simp: do_write_action_def Option.map_option_case

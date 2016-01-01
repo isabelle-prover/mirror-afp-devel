@@ -73,7 +73,7 @@ lemma bind_cong [fundef_cong]:
   assumes "m1 ts2 = m2 ts2"
     and "\<And> y ts. m2 ts2 = Inr (y, ts) \<Longrightarrow> f1 y ts = f2 y ts"
     and "ts1 = ts2"
-  shows "((m1 \<guillemotright>= f1) ts1) = ((m2 \<guillemotright>= f2) ts2)"
+  shows "((m1 \<bind> f1) ts1) = ((m2 \<bind> f2) ts2)"
   using assms unfolding bind_def by (cases "m1 ts1") auto
 
 definition update_tokens :: "('t list \<Rightarrow> 't list) \<Rightarrow> ('t, 't list) gen_parser"
@@ -86,7 +86,7 @@ where
 
 definition set_tokens :: "'t list \<Rightarrow> ('t, unit) gen_parser"
 where
-  [code_unfold]: "set_tokens ts = update_tokens (\<lambda>_. ts) \<guillemotright> return ()"
+  [code_unfold]: "set_tokens ts = update_tokens (\<lambda>_. ts) \<then> return ()"
 
 definition err_expecting :: "string \<Rightarrow> ('t::show, 'a) gen_parser"
 where
@@ -155,10 +155,10 @@ lemma is_cparser_length:
 
 lemma is_parser_bind [intro, simp]:
   assumes p: "is_parser p" and q: "\<And> x. is_parser (q x)" 
-  shows "is_parser (p \<guillemotright>= q)"
+  shows "is_parser (p \<bind> q)"
 proof
   fix s r x
-  assume "(p \<guillemotright>= q) s = Inr (x, r)"
+  assume "(p \<bind> q) s = Inr (x, r)"
   then obtain y t
     where P: "p s = Inr (y, t)" and Q: "q y t = Inr (x, r)"
     unfolding bind_def by (cases "p s") auto
@@ -329,7 +329,7 @@ lemma is_parser_manyof [intro]:
 
 definition spaces :: "unit parser"
 where
-  [code_unfold]: "spaces = manyof wspace \<guillemotright> return ()"
+  [code_unfold]: "spaces = manyof wspace \<then> return ()"
 
 lemma is_parser_return [intro]:
   "is_parser (return x)"

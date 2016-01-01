@@ -115,7 +115,7 @@ subsubsection {* Elimination Rules for Basic Combinators *}
 named_theorems run_elims "elemination rules for run"
 
 lemma runE[run_elims]:
-  assumes "run (f \<guillemotright>= g) \<sigma> \<sigma>'' r"
+  assumes "run (f \<bind> g) \<sigma> \<sigma>'' r"
   obtains \<sigma>' r' where 
     "run f \<sigma> \<sigma>' r'"
     "run (g r') \<sigma>' \<sigma>'' r"
@@ -127,7 +127,7 @@ apply (simp add: run.simps bind_def)
 by (auto simp add: bind_def run.simps)
 
 lemma runE'[run_elims]:
-  assumes "run (f >> g) \<sigma> \<sigma>'' res"
+  assumes "run (f \<then> g) \<sigma> \<sigma>'' res"
   obtains \<sigma>t rt where 
     "run f \<sigma> \<sigma>t rt"
     "run g \<sigma>t \<sigma>'' res"

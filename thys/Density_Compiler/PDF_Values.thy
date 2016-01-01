@@ -397,16 +397,16 @@ lemma measurable_return_val[simp]:
   
 lemma bind_return_val:
   assumes "space M \<noteq> {}" "f \<in> measurable M (stock_measure t')"
-  shows "M \<guillemotright>= (\<lambda>x. return_val (f x)) = distr M (stock_measure t') f"
+  shows "M \<bind> (\<lambda>x. return_val (f x)) = distr M (stock_measure t') f"
   using assms
   by (subst bind_return_distr[symmetric])
      (auto simp: return_val_def intro!: bind_cong dest: measurable_stock_measure_val_type)
 
 lemma bind_return_val':
   assumes "val_type x = t" "f \<in> measurable (stock_measure t) (stock_measure t')"
-  shows "return_val x \<guillemotright>= (\<lambda>x. return_val (f x)) = return_val (f x)"
+  shows "return_val x \<bind> (\<lambda>x. return_val (f x)) = return_val (f x)"
 proof-
-  have "return_val x \<guillemotright>= (\<lambda>x. return_val (f x)) = return (stock_measure t') (f x)"
+  have "return_val x \<bind> (\<lambda>x. return_val (f x)) = return (stock_measure t') (f x)"
     apply (subst bind_return_val, unfold return_val_def, simp)
     apply (insert assms, simp cong: measurable_cong_sets) []
     apply (subst distr_return, simp_all add: assms type_universe_def 
@@ -422,24 +422,24 @@ qed
 
 lemma bind_return_val'':
   assumes "f \<in> measurable (stock_measure (val_type x)) (subprob_algebra M)"
-  shows "return_val x \<guillemotright>= f = f x"
+  shows "return_val x \<bind> f = f x"
 unfolding return_val_def by (subst bind_return[OF assms]) simp_all
 
 lemma bind_assoc_return_val:
   assumes sets_M: "sets M = sets (stock_measure t)"
   assumes Mf: "f \<in> measurable (stock_measure t) (stock_measure t')"
   assumes Mg: "g \<in> measurable (stock_measure t') (stock_measure t'')"
-  shows "(M \<guillemotright>= (\<lambda>x. return_val (f x))) \<guillemotright>= (\<lambda>x. return_val (g x)) =
-             M \<guillemotright>= (\<lambda>x. return_val (g (f x)))"
+  shows "(M \<bind> (\<lambda>x. return_val (f x))) \<bind> (\<lambda>x. return_val (g x)) =
+             M \<bind> (\<lambda>x. return_val (g (f x)))"
 proof-
-  have "(M \<guillemotright>= (\<lambda>x. return_val (f x))) \<guillemotright>= (\<lambda>x. return_val (g x)) = 
-           M \<guillemotright>= (\<lambda>x. return_val (f x) \<guillemotright>= (\<lambda>x. return_val (g x)))"
+  have "(M \<bind> (\<lambda>x. return_val (f x))) \<bind> (\<lambda>x. return_val (g x)) = 
+           M \<bind> (\<lambda>x. return_val (f x) \<bind> (\<lambda>x. return_val (g x)))"
     apply (subst bind_assoc)
     apply (rule measurable_compose[OF _ measurable_return_val])
     apply (subst measurable_cong_sets[OF sets_M refl], rule Mf)
     apply (rule measurable_compose[OF Mg measurable_return_val], rule refl)
     done
-  also have "... = M \<guillemotright>= (\<lambda>x. return_val (g (f x)))"
+  also have "... = M \<bind> (\<lambda>x. return_val (g (f x)))"
     apply (intro bind_cong ballI)
     apply (subst (asm) sets_eq_imp_space_eq[OF sets_M])
     apply (drule measurable_space[OF Mf])
@@ -452,9 +452,9 @@ qed
 lemma bind_return_val_distr:
   assumes sets_M: "sets M = sets (stock_measure t)"
   assumes Mf: "f \<in> measurable (stock_measure t) (stock_measure t')"
-  shows "M \<guillemotright>= return_val \<circ> f = distr M (stock_measure t') f"
+  shows "M \<bind> return_val \<circ> f = distr M (stock_measure t') f"
 proof-
-  have "M \<guillemotright>= return_val \<circ> f = M \<guillemotright>= return (stock_measure t') \<circ> f"
+  have "M \<bind> return_val \<circ> f = M \<bind> return (stock_measure t') \<circ> f"
     apply (intro bind_cong ballI)
     apply (subst (asm) sets_eq_imp_space_eq[OF sets_M])
     apply (drule measurable_space[OF Mf])

@@ -1082,7 +1082,7 @@ where
             if actions_ok s t ta then Predicate.single (ta, x', m') else bot
           }
         in
-          if Predicate.holds (reds \<guillemotright>= (\<lambda>_. Predicate.single ())) then
+          if Predicate.holds (reds \<bind> (\<lambda>_. Predicate.single ())) then
             let
               (ta, x', m') = the2 reds
             in 
@@ -1105,7 +1105,7 @@ lemma deterministic_THE2:
   and red: "Predicate.eval (r t (x, shr s)) (ta, x', m')"
   and aok: "\<alpha>.actions_ok (state_\<alpha> s) t ta"
   and I: "state_\<alpha> s \<in> I"
-  shows "Predicate.the (r t (x, shr s) \<guillemotright>= (\<lambda>(ta, x', m'). if \<alpha>.actions_ok (state_\<alpha> s) t ta then Predicate.single (ta, x', m') else bot)) = (ta, x', m')"
+  shows "Predicate.the (r t (x, shr s) \<bind> (\<lambda>(ta, x', m'). if \<alpha>.actions_ok (state_\<alpha> s) t ta then Predicate.single (ta, x', m') else bot)) = (ta, x', m')"
 proof -
   show ?thesis unfolding the_def
     apply(rule the_equality)

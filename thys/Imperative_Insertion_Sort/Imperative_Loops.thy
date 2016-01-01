@@ -19,7 +19,7 @@ partial_function (heap) while :: "bool Heap \<Rightarrow> 'b Heap \<Rightarrow> 
 where
   [code]: "while p f = do {
     b \<leftarrow> p;
-    if b then f \<guillemotright> while p f
+    if b then f \<then> while p f
     else return ()
   }"
 
@@ -40,7 +40,7 @@ lemma cond_cases [execute_simps]:
   using read_only [of h] by (auto simp: cond_def success_def)
 
 lemma execute_while_unfolds [execute_simps]:
-  "success p h \<Longrightarrow> cond p h \<Longrightarrow> execute (while p f) h = execute (f \<guillemotright> while p f) h"
+  "success p h \<Longrightarrow> cond p h \<Longrightarrow> execute (while p f) h = execute (f \<then> while p f) h"
   "success p h \<Longrightarrow> \<not> cond p h \<Longrightarrow> execute (while p f) h = execute (return ()) h"
   by (auto simp: while.simps execute_simps)
 
@@ -83,7 +83,7 @@ proof (induction p f h h' u rule: while.raw_induct)
   case (1 w p f h h' u)
   obtain b
     where "effect p h h b"
-    and *: "effect (if b then f \<guillemotright> w p f else return ()) h h' u"
+    and *: "effect (if b then f \<then> w p f else return ()) h h' u"
     using "1.hyps" and \<open>ro_cond p\<close>
     by (auto elim!: effect_elims intro: effect_intros) (metis effectE ro_cond.read_only)
   then have cond: "success p h" "cond p h = b" by (auto simp: cond_def elim!: effect_elims effectE)
@@ -152,7 +152,7 @@ subsection \<open>For Loops\<close>
 fun "for" :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b Heap) \<Rightarrow> unit Heap"
 where
   "for [] f = return ()" |
-  "for (x # xs) f = f x \<guillemotright> for xs f"
+  "for (x # xs) f = f x \<then> for xs f"
 
 text \<open>A rule for proving partial correctness of for loops.\<close>
 lemma effect_for_induct [consumes 2, case_names base step]:

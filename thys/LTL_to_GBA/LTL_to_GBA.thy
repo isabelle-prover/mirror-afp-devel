@@ -53,7 +53,7 @@ lemma [autoref_rules]:
 abbreviation "stat_set_data_nres ns ni na \<equiv> RETURN (stat_set_data ns ni na)"
 
 lemma discard_stat_refine[refine]:
-  "m1\<le>m2 \<Longrightarrow> stat_set_data_nres ns ni na \<guillemotright> m1 \<le> m2" by simp_all
+  "m1\<le>m2 \<Longrightarrow> stat_set_data_nres ns ni na \<then> m1 \<le> m2" by simp_all
 
 
 subsection \<open>Preliminaries\<close>

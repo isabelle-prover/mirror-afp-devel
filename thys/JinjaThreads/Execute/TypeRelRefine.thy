@@ -381,7 +381,7 @@ by(auto intro: Fields'_i_i_oI elim: Fields'_i_i_oE intro!: ext)
 
 lemma fields'_code [code]:
   "fields' P C = 
-  (let FDTs = Fields'_i_i_o P C in if Predicate.holds (FDTs \<guillemotright>= (\<lambda>_. Predicate.single ())) then Predicate.the FDTs else [])"
+  (let FDTs = Fields'_i_i_o P C in if Predicate.holds (FDTs \<bind> (\<lambda>_. Predicate.single ())) then Predicate.the FDTs else [])"
 by(auto simp add: fields'_def holds_eq Fields'_i_i_o_def intro: Fields'_i_i_oI Predicate.the_eqI[THEN sym])
 
 lemma The_Fields [simp]:
@@ -469,7 +469,7 @@ where "methods' P C = (if \<exists>Mm. Methods' P C Mm then THE Mm. Methods' P C
 lemma methods'_code [code]:
   "methods' P C =
   (let Mm = Methods'_i_i_o P C
-   in if Predicate.holds (Mm \<guillemotright>= (\<lambda>_. Predicate.single ())) then Predicate.the Mm else [])"
+   in if Predicate.holds (Mm \<bind> (\<lambda>_. Predicate.single ())) then Predicate.the Mm else [])"
 unfolding methods'_def
 by(auto simp add: holds_eq Methods'_i_i_o_def Predicate.the_def)
 

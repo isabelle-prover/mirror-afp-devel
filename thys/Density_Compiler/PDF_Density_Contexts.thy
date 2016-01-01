@@ -830,7 +830,7 @@ lemma dens_ctxt_measure_insert:
                            (case_nat undefined \<rho>)"
          (is "bind ?N (\<lambda>_. bind _ (\<lambda>_. return ?R _)) = dens_ctxt_measure (?V,?V',?\<Gamma>',?\<delta>') _")
 proof (intro measure_eqI)
-  let ?lhs = "?N \<guillemotright>= (\<lambda>\<sigma> . M \<sigma> \<guillemotright>= (\<lambda>y. return ?R (case_nat y \<sigma>)))"
+  let ?lhs = "?N \<bind> (\<lambda>\<sigma> . M \<sigma> \<bind> (\<lambda>y. return ?R (case_nat y \<sigma>)))"
   let ?rhs = "dens_ctxt_measure (?V,?V',?\<Gamma>',?\<delta>') (case_nat undefined \<rho>)"
 
   have meas_f': "\<And>M g h. g \<in> measurable M (state_measure (V\<union>V') \<Gamma>) \<Longrightarrow>
@@ -872,12 +872,12 @@ proof (intro measure_eqI)
 
   fix X assume "X \<in> sets ?lhs"
   hence X: "X \<in> sets ?rhs" by (simp add: sets_eq)
-  hence "emeasure ?lhs X = \<integral>\<^sup>+\<sigma>. emeasure (M \<sigma> \<guillemotright>= (\<lambda>y. return ?R (case_nat y \<sigma>))) X \<partial>?N"
+  hence "emeasure ?lhs X = \<integral>\<^sup>+\<sigma>. emeasure (M \<sigma> \<bind> (\<lambda>y. return ?R (case_nat y \<sigma>))) X \<partial>?N"
     by (intro emeasure_bind measurable_bind[OF meas_M'])
        (simp, rule measurable_compose[OF _ return_measurable],
         simp_all add: dens_ctxt_measure_def state_measure'_def)
   also from X have "... = 
-    \<integral>\<^sup>+ x. \<delta> (merge V V' (x, \<rho>)) * emeasure (M (merge V V' (x, \<rho>)) \<guillemotright>=
+    \<integral>\<^sup>+ x. \<delta> (merge V V' (x, \<rho>)) * emeasure (M (merge V V' (x, \<rho>)) \<bind>
              (\<lambda>y. return ?R (case_nat y (merge V V' (x, \<rho>))))) X \<partial>state_measure V \<Gamma>"
     apply (subst nn_integral_dens_ctxt_measure[OF \<rho>])
     apply (rule measurable_emeasure_kernel[OF measurable_bind[OF meas_M]])
@@ -1017,7 +1017,7 @@ qed auto
 
 lemma dens_ctxt_measure_bind_const:
   assumes "\<rho> \<in> space (state_measure V' \<Gamma>)" "subprob_space N"
-  shows "dens_ctxt_measure \<Y> \<rho> \<guillemotright>= (\<lambda>_. N) = density N (\<lambda>_. branch_prob \<Y> \<rho>)" (is "?M1 = ?M2")
+  shows "dens_ctxt_measure \<Y> \<rho> \<bind> (\<lambda>_. N) = density N (\<lambda>_. branch_prob \<Y> \<rho>)" (is "?M1 = ?M2")
 proof (rule measure_eqI)
   have [simp]: "sets ?M1 = sets N" by (auto simp: space_subprob_algebra assms)
   thus "sets ?M1 = sets ?M2" by simp
@@ -1058,8 +1058,8 @@ qed
 lemma expr_sem_op_eq_distr:
   assumes "\<Gamma> \<turnstile> oper $$ e : t'" "free_vars e \<subseteq> V \<union> V'" "\<rho> \<in> space (state_measure V' \<Gamma>)"
   defines "M \<equiv> dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>"
-  shows "M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e)) = 
-             distr (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
+  shows "M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e)) = 
+             distr (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
 proof-
   from assms(1) obtain t where t1: "\<Gamma> \<turnstile> e : t" and t2: "op_type oper t = Some t'" by auto
   let ?N = "stock_measure t" and ?R = "subprob_algebra (stock_measure t')"
@@ -1081,20 +1081,20 @@ proof-
   have M_ret: "(\<lambda>x. return_val (op_sem oper x)) \<in> measurable (stock_measure t) ?R"
     by (subst M_cong, intro measurable_compose[OF measurable_op_sem[OF t2]] return_measurable)
 
-  from M_e have [simp]: "sets (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) = sets (stock_measure t)"
+  from M_e have [simp]: "sets (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) = sets (stock_measure t)"
     by (intro sets_bind) (auto simp: M_def space_subprob_algebra dest!: measurable_space)
   from measurable_cong_sets[OF this refl]
-    have M_op: "op_sem oper \<in> measurable (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t')"
+    have M_op: "op_sem oper \<in> measurable (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t')"
     by (auto intro!: measurable_op_sem t2)
-  have [simp]: "space (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) = space (stock_measure t)"
+  have [simp]: "space (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) = space (stock_measure t)"
     by (rule sets_eq_imp_space_eq) simp
 
-  from M_e and M_ret have "M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e)) = 
-                              (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<guillemotright>= (\<lambda>x. return_val (op_sem oper x))"
+  from M_e and M_ret have "M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ e)) = 
+                              (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<bind> (\<lambda>x. return_val (op_sem oper x))"
     unfolding M_def by (subst expr_sem.simps, intro bind_assoc[symmetric]) simp_all
-  also have "... = (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<guillemotright>= (\<lambda>x. return (stock_measure t') (op_sem oper x))"
+  also have "... = (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<bind> (\<lambda>x. return (stock_measure t') (op_sem oper x))"
     by (intro bind_cong ballI) (simp add: return_op_sem)
-  also have "... = distr (M \<guillemotright>= (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
+  also have "... = distr (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
     by (subst bind_return_distr[symmetric]) (simp_all add: o_def M_op)
   finally show ?thesis .
 qed

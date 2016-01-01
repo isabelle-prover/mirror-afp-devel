@@ -142,12 +142,12 @@ text {*
 
 lemma maybe_counterexample1:
   "\<lbrakk>a = Just\<cdot>x; b = \<bottom>; k\<cdot>x = Nothing\<rbrakk>
-    \<Longrightarrow> fplus\<cdot>a\<cdot>b \<guillemotright>= k \<noteq> fplus\<cdot>(a \<guillemotright>= k)\<cdot>(b \<guillemotright>= k)"
+    \<Longrightarrow> fplus\<cdot>a\<cdot>b \<bind> k \<noteq> fplus\<cdot>(a \<bind> k)\<cdot>(b \<bind> k)"
 by simp
 
 lemma maybe_counterexample2:
   "\<lbrakk>a = Just\<cdot>x; b = Just\<cdot>y; k\<cdot>x = Nothing; k\<cdot>y = Just\<cdot>z\<rbrakk>
-    \<Longrightarrow> fplus\<cdot>a\<cdot>b \<guillemotright>= k \<noteq> fplus\<cdot>(a \<guillemotright>= k)\<cdot>(b \<guillemotright>= k)"
+    \<Longrightarrow> fplus\<cdot>a\<cdot>b \<bind> k \<noteq> fplus\<cdot>(a \<bind> k)\<cdot>(b \<bind> k)"
 by simp
 
 end

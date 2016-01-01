@@ -229,9 +229,9 @@ subsection {* Density in the Giry monad *}
 lemma emeasure_bind_density:
   assumes "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "f \<in> measurable M (subprob_algebra N)" "X \<in> sets N"
-  shows "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
+  shows "emeasure (M \<bind> f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
 proof-
-  from assms have "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. emeasure (f x) X \<partial>M"
+  from assms have "emeasure (M \<bind> f) X = \<integral>\<^sup>+x. emeasure (f x) X \<partial>M"
     by (intro emeasure_bind)
   also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M" using assms
     by (intro nn_integral_cong) (simp add: has_density_emeasure sets_kernel)
@@ -243,15 +243,15 @@ lemma bind_density:
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
-  shows "(M \<guillemotright>= f) = density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
+  shows "(M \<bind> f) = density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (rule measure_eqI)
   interpret sfN: sigma_finite_measure N by fact
   interpret sfNM: pair_sigma_finite N M unfolding pair_sigma_finite_def using assms by simp
-  show eq: "sets (M \<guillemotright>= f) = sets (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M))"
+  show eq: "sets (M \<bind> f) = sets (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M))"
     using sets_bind[OF sets_kernel[OF assms(6)] assms(3)] by auto
-  fix X assume "X \<in> sets (M \<guillemotright>= f)"
+  fix X assume "X \<in> sets (M \<bind> f)"
   with eq have "X \<in> sets N" by auto
-  with assms have "emeasure (M \<guillemotright>= f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
+  with assms have "emeasure (M \<bind> f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
     by (intro emeasure_bind_density) simp_all
   also from `X \<in> sets N` have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. g x y * indicator X y \<partial>M \<partial>N"
     by (intro sfNM.Fubini', subst measurable_split_conv, intro borel_measurable_ereal_times,
@@ -268,7 +268,7 @@ proof (rule measure_eqI)
     by (intro nn_integral_cong nn_integral_multc)  simp_all
   also from `X \<in> sets N` and assms have "... = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X"
     by (subst emeasure_density) (simp_all add: sfN.borel_measurable_nn_integral)
-  finally show "emeasure (M \<guillemotright>= f) X = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X" .
+  finally show "emeasure (M \<bind> f) X = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X" .
 qed
 
 
@@ -277,12 +277,12 @@ lemma bind_has_density:
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
-  shows "has_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
+  shows "has_density (M \<bind> f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof
   interpret sigma_finite_measure M by fact
   show "(\<lambda>y. \<integral>\<^sup>+ x. g x y \<partial>M) \<in> borel_measurable N" using assms
     by (intro borel_measurable_nn_integral, subst measurable_pair_swap_iff) simp
-  show "M \<guillemotright>= f = density N (\<lambda>y. \<integral>\<^sup>+ x. g x y \<partial>M)"
+  show "M \<bind> f = density N (\<lambda>y. \<integral>\<^sup>+ x. g x y \<partial>M)"
     by (intro bind_density) (simp_all add: assms)
   from `space M \<noteq> {}` obtain x where "x \<in> space M" by blast
   with assms have "has_density (f x) N (g x)" by simp
@@ -296,13 +296,13 @@ lemma bind_has_density':
       and dens_f: "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) R (\<delta>f x)" 
       and M\<delta>f: "case_prod \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)"
       and Mf: "f \<in> measurable N (subprob_algebra R)"
-  shows "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
+  shows "has_density (M \<bind> f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof-
   from dens_M have M_M: "measurable M = measurable N"
     by (intro ext measurable_cong_sets) (auto dest: has_densityD)
   from dens_M have M_MR: "measurable (M \<Otimes>\<^sub>M R) = measurable (N \<Otimes>\<^sub>M R)"
     by (intro ext measurable_cong_sets sets_pair_measure_cong) (auto dest: has_densityD)
-  have "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>f x y \<partial>M)"
+  have "has_density (M \<bind> f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>f x y \<partial>M)"
     by (rule bind_has_density) (auto simp: assms M_MR M_M)
   moreover {
     fix y assume A: "y \<in> space R"
@@ -315,7 +315,7 @@ proof-
       by (subst nn_integral_density) (auto dest: has_densityD simp: M_\<delta>f')
     finally have "(\<integral>\<^sup>+x. \<delta>f x y \<partial>M) = \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N" .
   }
-  ultimately show "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
+  ultimately show "has_density (M \<bind> f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
     by (rule has_density_equal_on_space) (simp_all add: nn_integral_nonneg)
 qed
 
@@ -324,24 +324,24 @@ lemma bind_has_subprob_density:
           "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)" 
           "case_prod g \<in> borel_measurable (M \<Otimes>\<^sub>M N)"
           "f \<in> measurable M (subprob_algebra N)"
-  shows "has_subprob_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
+  shows "has_subprob_density (M \<bind> f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
 proof (unfold has_subprob_density_def, intro conjI)
-  from assms show "has_density (M \<guillemotright>= f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
+  from assms show "has_density (M \<bind> f) N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)"
     by (intro bind_has_density) (auto simp: subprob_space_imp_sigma_finite)
-  from assms show "subprob_space (M \<guillemotright>= f)" by (intro subprob_space_bind)
+  from assms show "subprob_space (M \<bind> f)" by (intro subprob_space_bind)
 qed
 
 lemma bind_has_subprob_density':
   assumes "has_subprob_density M N \<delta>M" "space R \<noteq> {}" "sigma_finite_measure R"
           "\<And>x. x \<in> space M \<Longrightarrow> has_subprob_density (f x) R (\<delta>f x)" 
           "case_prod \<delta>f \<in> borel_measurable (N \<Otimes>\<^sub>M R)" "f \<in> measurable N (subprob_algebra R)"
-  shows "has_subprob_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
+  shows "has_subprob_density (M \<bind> f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
 proof (unfold has_subprob_density_def, intro conjI)
   from assms(1) have "space M \<noteq> {}" by (intro subprob_space.subprob_not_empty has_subprob_densityD)
-  with assms show "has_density (M \<guillemotright>= f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
+  with assms show "has_density (M \<bind> f) R (\<lambda>y. \<integral>\<^sup>+x. \<delta>M x * \<delta>f x y \<partial>N)"
     by (intro bind_has_density' has_densityI) 
        (auto simp: subprob_space_imp_sigma_finite dest: has_subprob_densityD)
-  from assms show "subprob_space (M \<guillemotright>= f)" 
+  from assms show "subprob_space (M \<bind> f)" 
     by (intro subprob_space_bind) (auto dest: has_subprob_densityD)
 qed
 

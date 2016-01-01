@@ -46,7 +46,7 @@ begin
     "\<Phi> m \<Longrightarrow> RETURN m \<le>\<^sub>n SPEC \<Phi>" by (simp add: pw_leof_iff)
   
   lemma leof_bind_rule[refine_vcg]: 
-    "\<lbrakk> m \<le>\<^sub>n SPEC (\<lambda>x. f x \<le>\<^sub>n SPEC \<Phi>) \<rbrakk> \<Longrightarrow> m\<guillemotright>=f \<le>\<^sub>n SPEC \<Phi>" 
+    "\<lbrakk> m \<le>\<^sub>n SPEC (\<lambda>x. f x \<le>\<^sub>n SPEC \<Phi>) \<rbrakk> \<Longrightarrow> m\<bind>f \<le>\<^sub>n SPEC \<Phi>" 
     by (auto simp add: pw_leof_iff refine_pw_simps)
   
   lemma RETURN_leof_RES_iff[simp]: "RETURN x \<le>\<^sub>n RES Y \<longleftrightarrow> x\<in>Y"

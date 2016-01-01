@@ -44,9 +44,9 @@ abbreviation "stat_start_nres \<equiv> RETURN (stat_start ())"
 abbreviation "stat_stop_nres \<equiv> RETURN (stat_stop ())"
 
 lemma discard_stat_refine[refine]:
-  "m1\<le>m2 \<Longrightarrow> stat_newnode_nres \<guillemotright> m1 \<le> m2"
-  "m1\<le>m2 \<Longrightarrow> stat_start_nres \<guillemotright> m1 \<le> m2"
-  "m1\<le>m2 \<Longrightarrow> stat_stop_nres \<guillemotright> m1 \<le> m2"
+  "m1\<le>m2 \<Longrightarrow> stat_newnode_nres \<then> m1 \<le> m2"
+  "m1\<le>m2 \<Longrightarrow> stat_start_nres \<then> m1 \<le> m2"
+  "m1\<le>m2 \<Longrightarrow> stat_stop_nres \<then> m1 \<le> m2"
   by simp_all
 
 section {* Abstract Algorithm *}

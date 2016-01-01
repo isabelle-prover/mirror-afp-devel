@@ -866,10 +866,10 @@ abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
   "postfix xs ys \<equiv> suffixeq ys xs"
 
 notation (xsymbols) 
-  postfix ("(_/ \<guillemotright>= _)" [51, 50] 50)
+  postfix ("(_/ \<bind> _)" [51, 50] 50)
 
 lemma postfix_conv_eq_length_drop: 
-  "ST' \<guillemotright>= ST \<longleftrightarrow> length ST \<le> length ST' \<and> drop (length ST' - length ST) ST' = ST"
+  "ST' \<bind> ST \<longleftrightarrow> length ST \<le> length ST' \<and> drop (length ST' - length ST) ST' = ST"
 apply(auto)
 apply (metis append_eq_conv_conj append_take_drop_id diff_is_0_eq drop_0 linorder_not_less nat_le_linear suffixeq_take)
 apply (metis append_take_drop_id length_drop suffixeq_take same_append_eq size_list_def)
@@ -882,12 +882,12 @@ context TC0 begin
 declare after_def[simp] pair_eq_ty\<^sub>i'_conv[simp] 
 
 lemma
-  assumes "ST0 \<guillemotright>= ST'"
+  assumes "ST0 \<bind> ST'"
   shows compT_ST_prefix: 
-  "\<lfloor>(ST,LT)\<rfloor> \<in> set(compT E A ST0 e) \<Longrightarrow> ST \<guillemotright>= ST'"
+  "\<lfloor>(ST,LT)\<rfloor> \<in> set(compT E A ST0 e) \<Longrightarrow> ST \<bind> ST'"
 
   and compTs_ST_prefix:
-  "\<lfloor>(ST,LT)\<rfloor> \<in> set(compTs E A ST0 es) \<Longrightarrow> ST \<guillemotright>= ST'"
+  "\<lfloor>(ST,LT)\<rfloor> \<in> set(compTs E A ST0 es) \<Longrightarrow> ST \<bind> ST'"
 using assms
 by(induct E A ST0 e and E A ST0 es rule: compT_compTs_induct) auto
 
@@ -959,7 +959,7 @@ proof(induct E A ST e and E A ST es arbitrary: T and Ts rule: compT_compTs_induc
       by (fastforce simp add: ty\<^sub>i'_def hyperset_defs intro!: ty\<^sub>l_antimono)
     moreover { fix \<tau>
       assume \<tau>: "\<tau> \<in> set (compT E A ST e\<^sub>1)"
-      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<guillemotright>= ST" by(auto intro: compT_ST_prefix[OF suffixeq_refl])
+      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<bind> ST" by(auto intro: compT_ST_prefix[OF suffixeq_refl])
       with \<tau> have "?Q \<tau>" unfolding postfix_conv_eq_length_drop using `\<B> (try e\<^sub>1 catch(C i) e\<^sub>2) (length E)`
         by(fastforce dest!: compT_LT_prefix simp add: ty\<^sub>i'_def) }
     ultimately

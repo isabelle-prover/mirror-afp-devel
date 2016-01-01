@@ -891,7 +891,7 @@ lemma RECT_eq_REC_old:
   apply (rule I0)
   apply (rule order_trans[OF _ IS])
   apply (subgoal_tac "(\<lambda>x'. if I x' \<and> (x', x) \<in> V then f x' else FAIL) = 
-    (\<lambda>x'. ASSERT (I x' \<and> (x', x) \<in> V) \<guillemotright>= (\<lambda>_. f x'))")
+    (\<lambda>x'. ASSERT (I x' \<and> (x', x) \<in> V) \<bind> (\<lambda>_. f x'))")
   apply simp
   apply (rule ext)
   apply (rule pw_eqI)
@@ -1016,15 +1016,15 @@ text {* Special cases for refinement of binding to @{text "RES"}
 lemma bind_refine_RES:
   "\<lbrakk>RES X \<le> \<Down> R' M';
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> RES X \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (M' \<guillemotright>= (\<lambda>x'. f' x'))"
+  \<Longrightarrow> RES X \<bind> (\<lambda>x. f x) \<le> \<Down> R (M' \<bind> (\<lambda>x'. f' x'))"
 
   "\<lbrakk>M \<le> \<Down> R' (RES X');
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x' \<in> X' \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> M \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (RES X' \<guillemotright>= (\<lambda>x'. f' x'))"
+  \<Longrightarrow> M \<bind> (\<lambda>x. f x) \<le> \<Down> R (RES X' \<bind> (\<lambda>x'. f' x'))"
 
   "\<lbrakk>RES X \<le> \<Down> R' (RES X');
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X; x' \<in> X'\<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
-  \<Longrightarrow> RES X \<guillemotright>= (\<lambda>x. f x) \<le> \<Down> R (RES X' \<guillemotright>= (\<lambda>x'. f' x'))"
+  \<Longrightarrow> RES X \<bind> (\<lambda>x. f x) \<le> \<Down> R (RES X' \<bind> (\<lambda>x'. f' x'))"
   by (auto intro!: bind_refine')
 
 declare bind_refine_RES(1,2)[refine]
@@ -1203,7 +1203,7 @@ lemma bind2let_refine[refine2]:
 lemma bind_Let_refine2[refine2]: "\<lbrakk> 
     m' \<le>\<Down>R' (RETURN x);
     \<And>x'. \<lbrakk>inres m' x'; (x',x)\<in>R'\<rbrakk> \<Longrightarrow> f' x' \<le> \<Down>R (f x) 
-  \<rbrakk> \<Longrightarrow> m'\<guillemotright>=(\<lambda>x'. f' x') \<le> \<Down>R (Let x (\<lambda>x. f x))"
+  \<rbrakk> \<Longrightarrow> m'\<bind>(\<lambda>x'. f' x') \<le> \<Down>R (Let x (\<lambda>x. f x))"
   apply (simp add: pw_le_iff refine_pw_simps)
   apply blast
   done
@@ -1317,31 +1317,31 @@ lemma lhs_step_bind:
 
 lemma rhs_step_bind:
   assumes "m \<le> \<Down>R m'" "inres m x" "\<And>x'. (x,x')\<in>R \<Longrightarrow> lhs \<le>\<Down>S (f' x')"
-  shows "lhs \<le> \<Down>S (m' \<guillemotright>= f')"
+  shows "lhs \<le> \<Down>S (m' \<bind> f')"
   using assms
   by (simp add: pw_le_iff refine_pw_simps) blast
 
 lemma rhs_step_bind_RES:
   assumes "x'\<in>X'"
   assumes "m \<le> \<Down>R (f' x')"
-  shows "m \<le> \<Down>R (RES X' \<guillemotright>= f')"
+  shows "m \<le> \<Down>R (RES X' \<bind> f')"
   using assms by (simp add: pw_le_iff refine_pw_simps) blast
 
 lemma rhs_step_bind_SPEC:
   assumes "\<Phi> x'"
   assumes "m \<le> \<Down>R (f' x')"
-  shows "m \<le> \<Down>R (SPEC \<Phi> \<guillemotright>= f')"
+  shows "m \<le> \<Down>R (SPEC \<Phi> \<bind> f')"
   using assms by (simp add: pw_le_iff refine_pw_simps) blast
 
 lemma RES_bind_choose:
   assumes "x\<in>X"
   assumes "m \<le> f x"
-  shows "m \<le> RES X \<guillemotright>= f"
+  shows "m \<le> RES X \<bind> f"
   using assms by (auto simp: pw_le_iff refine_pw_simps)
 
 lemma pw_RES_bind_choose: 
-  "nofail (RES X \<guillemotright>= f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
-  "inres (RES X \<guillemotright>= f) y \<longleftrightarrow> (\<exists>x\<in>X. inres (f x) y)"
+  "nofail (RES X \<bind> f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
+  "inres (RES X \<bind> f) y \<longleftrightarrow> (\<exists>x\<in>X. inres (f x) y)"
   by (auto simp: refine_pw_simps)
 
 
@@ -1581,7 +1581,7 @@ lemma bind_RES_RETURN2_eq: "bind (RES X) (\<lambda>(x,y). RETURN (f x y)) =
 lemma le_SPEC_bindI: 
   assumes "\<Phi> x"
   assumes "m \<le> f x"
-  shows "m \<le> SPEC \<Phi> \<guillemotright>= f"
+  shows "m \<le> SPEC \<Phi> \<bind> f"
   using assms by (auto simp add: pw_le_iff refine_pw_simps)
 
 lemma bind_assert_refine: 
@@ -1648,7 +1648,7 @@ lemma weaken_SPEC:
 lemma bind_le_nofailI:
   assumes "nofail m"
   assumes "\<And>x. RETURN x \<le> m \<Longrightarrow> f x \<le> m'"
-  shows "m\<guillemotright>=f \<le> m'"
+  shows "m\<bind>f \<le> m'"
   using assms 
   by (simp add: refine_pw_simps pw_le_iff) blast
 
@@ -1661,7 +1661,7 @@ lemma bind_le_shift:
 text {* The following rules are useful for massaging programs before the 
   refinement takes place *}
 lemma let_to_bind_conv: 
-  "Let x f = RETURN x\<guillemotright>=f"
+  "Let x f = RETURN x\<bind>f"
   by simp
 
 lemmas bind_to_let_conv = let_to_bind_conv[symmetric]

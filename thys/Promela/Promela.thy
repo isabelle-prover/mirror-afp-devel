@@ -2336,7 +2336,7 @@ where
              *)
              let g = reset\<^sub>I g in
              nfoldli E (\<lambda>_. True) (\<lambda>(e,p) G.
-                 applyEdge prog e p g \<guillemotright>= (\<lambda> g'.
+                 applyEdge prog e p g \<bind> (\<lambda> g'.
                  if handshake g' \<noteq> 0 \<or> isAtomic e then do {
                     G\<^sub>R \<leftarrow> D g';
                     if ls.isEmpty G\<^sub>R \<and> handshake g' = 0 then
@@ -2347,7 +2347,7 @@ where
                        RETURN (ls.union G\<^sub>R G)
                  } else RETURN (ls.ins (f g') G))) (ls.empty())
          }) g
-         \<guillemotright>= (\<lambda>G. if ls.isEmpty G then RETURN (ls.sng (f g)) else RETURN G)
+         \<bind> (\<lambda>G. if ls.isEmpty G then RETURN (ls.sng (f g)) else RETURN G)
 )"
 
 lemma gState_progress_rel_intros:
@@ -2545,7 +2545,7 @@ definition replay :: "program \<Rightarrow> gState \<Rightarrow> gState \<Righta
        else
           let g = reset\<^sub>I g in
           nfoldli E (\<lambda>E. E = []) (\<lambda>(e,p) _.
-             applyEdge prog e p g \<guillemotright>= (\<lambda>g'.
+             applyEdge prog e p g \<bind> (\<lambda>g'.
                if handshake g' \<noteq> 0 \<or> isAtomic e then do {
                  E\<^sub>R \<leftarrow> D g';
                  if E\<^sub>R = [] then

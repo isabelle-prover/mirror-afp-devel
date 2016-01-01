@@ -1034,19 +1034,19 @@ next
   hence B: "val_type (expr_sem_rf \<sigma> e2) = t2" "expr_sem_rf \<sigma> e2 \<in> type_universe t2" 
       by (auto simp add: return_val_def)
 
-  have "expr_sem \<sigma> (<e1, e2>) = expr_sem \<sigma> e1 \<guillemotright>= 
-            (\<lambda>v. expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>)))" by simp
+  have "expr_sem \<sigma> (<e1, e2>) = expr_sem \<sigma> e1 \<bind> 
+            (\<lambda>v. expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)))" by simp
   also have "expr_sem \<sigma> e1 = return (stock_measure t1) (expr_sem_rf \<sigma> e1)"
     using e1 by (simp add: et_pair.prems return_val_def A)
-  also have "... \<guillemotright>= (\<lambda>v. expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>))) =
-          ... \<guillemotright>= (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>))"
+  also have "... \<bind> (\<lambda>v. expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>))) =
+          ... \<bind> (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>))"
   proof (intro bind_cong ballI)
     fix v assume "v \<in> space (return (stock_measure t1) (expr_sem_rf \<sigma> e1))"
     hence v: "val_type v = t1" "v \<in> type_universe t1" by (simp_all add:)
-    have "expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>)) = 
-              return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<guillemotright>= (\<lambda>w. return_val (<|v,w|>))"
+    have "expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)) = 
+              return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind> (\<lambda>w. return_val (<|v,w|>))"
       using e2 by (simp add: et_pair.prems return_val_def B)
-    also have "... = return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<guillemotright>= 
+    also have "... = return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind> 
                          (\<lambda>w. return (stock_measure (PRODUCT t1 t2)) (<|v,w|>))"
     proof (intro bind_cong ballI)
       fix w assume "w \<in> space (return (stock_measure t2) (expr_sem_rf \<sigma> e2))"
@@ -1057,11 +1057,11 @@ next
     also have "... = return_val (<|v, expr_sem_rf \<sigma> e2|>)"
       using v B
       by (subst bind_return[where N="PRODUCT t1 t2"]) (auto simp: return_val_def)
-    finally show "expr_sem \<sigma> e2 \<guillemotright>= (\<lambda>w. return_val (<|v,w|>)) = return_val (<|v, expr_sem_rf \<sigma> e2|>)" .
+    finally show "expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)) = return_val (<|v, expr_sem_rf \<sigma> e2|>)" .
   qed
   also have "(\<lambda>v. <|v, expr_sem_rf \<sigma> e2|>) \<in> measurable (stock_measure t1) (stock_measure (PRODUCT t1 t2))"
     using B by (auto intro!: injI)
-  hence "return (stock_measure t1) (expr_sem_rf \<sigma> e1) \<guillemotright>= (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>)) = 
+  hence "return (stock_measure t1) (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>)) = 
              return_val (<|expr_sem_rf \<sigma> e1, expr_sem_rf \<sigma> e2|>)"
     by (subst bind_return, rule measurable_compose[OF _ measurable_return_val])
        (auto simp: A)
@@ -1092,7 +1092,7 @@ next
     by (auto simp add: return_val_def)
   from et_op.prems e
     have "expr_sem \<sigma> (Operator oper e) = 
-                 return_val (expr_sem_rf \<sigma> e) \<guillemotright>= (\<lambda>v. return_val (op_sem oper v))" by simp
+                 return_val (expr_sem_rf \<sigma> e) \<bind> (\<lambda>v. return_val (op_sem oper v))" by simp
   also have "... = return_val (op_sem oper (expr_sem_rf \<sigma> e))"
     by (subst return_val_def, rule bind_return,
         rule measurable_compose[OF measurable_op_sem measurable_return_val])
@@ -1114,16 +1114,16 @@ next
     by (intro et_let.IH(2)[of "shift_var_set V"]) (auto simp del: fun_upd_apply)
 
   from et_let.prems have "expr_sem \<sigma> (LetVar e1 e2) = 
-                              return_val (expr_sem_rf \<sigma> e1) \<guillemotright>= (\<lambda>v. expr_sem (case_nat v \<sigma>) e2)" 
+                              return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. expr_sem (case_nat v \<sigma>) e2)" 
     by (simp add: e1)
   also from et_let.prems 
-    have "... = return_val (expr_sem_rf \<sigma> e1) \<guillemotright>= (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2))"
+    have "... = return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2))"
     by (intro bind_cong ballI, subst e2) (auto simp: S)
   also from et_let have Me2[measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable ?N (stock_measure t2)"
     using subset_shift_var_set by (intro measurable_expr_sem_rf) auto
   have "(\<lambda>(\<sigma>,y). case_nat y \<sigma>) \<circ> (\<lambda>y. (\<sigma>, y)) \<in> measurable (stock_measure t1) ?N"
     using `\<sigma> \<in> space ?M` by simp
-  have  "return_val (expr_sem_rf \<sigma> e1) \<guillemotright>= (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2)) = 
+  have  "return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2)) = 
               return_val (expr_sem_rf ?\<sigma>' e2)" using `\<sigma> \<in> space ?M`
   by (subst return_val_def, intro bind_return, subst A)
      (rule measurable_compose[OF _ measurable_return_val[of t2]], simp_all)
@@ -1285,7 +1285,7 @@ lemma Let_det_eq_subst:
 proof-
   from assms(1) obtain t' where t1: "\<Gamma> \<turnstile> f : t'" and t2: "\<Gamma>(x := t') \<turnstile> e : t" by auto
   with assms have "expr_sem \<sigma> (LET x = f IN e) = 
-                       return_val (expr_sem_rf f \<sigma>) \<guillemotright>= (\<lambda>v. expr_sem (\<sigma>(x := v)) e)" (is "_ = ?M")
+                       return_val (expr_sem_rf f \<sigma>) \<bind> (\<lambda>v. expr_sem (\<sigma>(x := v)) e)" (is "_ = ?M")
     by (auto simp: expr_sem_rf_sound)
   also have "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<circ> (\<lambda>(\<sigma>,v). \<sigma>(x := v)) \<circ> (\<lambda>v. (\<sigma>,v)) \<in> 
                  measurable (stock_measure ((\<Gamma>(x := t')) x)) (subprob_algebra (stock_measure t))"
