@@ -59,6 +59,11 @@ lemma chain_on_imp_subset:
   "chain_on P C A \<Longrightarrow> C \<subseteq> A"
 by (simp add: chain_on_def)
 
+lemma subchain_on:
+  assumes "C \<subseteq> D" and "chain_on P D A"
+  shows "chain_on P C A"
+using assms by (auto simp: chain_on_def)
+
 lemma chain_on_Union:
   assumes "C \<in> chains {C. chain_on P C A}" (is "C \<in> chains ?A")
   shows "chain_on P (\<Union>C) A"
@@ -89,6 +94,10 @@ subsection \<open>Open Properties\<close>
 definition "open_on P Q A \<longleftrightarrow>
     (\<forall>C. chain_on P C A \<and> C \<noteq> {} \<and> (\<exists>x\<in>A. glb P C x \<and> Q x) \<longrightarrow> (\<exists>y\<in>C. Q y))"
 
+lemma open_onI [Pure.intro]:
+  "(\<And>C. chain_on P C A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb P C x \<and> Q x \<Longrightarrow> \<exists>y\<in>C. Q y) \<Longrightarrow> open_on P Q A"
+by (auto simp: open_on_def)
+
 lemma open_on_glb:
   "\<lbrakk>chain_on P C A; C \<noteq> {}; open_on P Q A; \<forall>x\<in>C. \<not> Q x; x \<in> A; glb P C x\<rbrakk> \<Longrightarrow> \<not> Q x"
 by (auto simp: open_on_def)
@@ -117,6 +126,11 @@ text \<open>
   chain on \<open>A\<close> has a greatest lower bound in \<open>A\<close>.
 \<close>
 definition "dc_on P A \<longleftrightarrow> (\<forall>C. chain_on P C A \<and> C \<noteq> {} \<longrightarrow> (\<exists>x\<in>A. glb P C x))"
+
+lemma dc_onI [Pure.intro]:
+  assumes "\<And>C. chain_on P C A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> \<exists>x\<in>A. glb P C x"
+  shows "dc_on P A"
+using assms by (auto simp: dc_on_def)
 
 
 subsection \<open>The Open Induction Schema\<close>
