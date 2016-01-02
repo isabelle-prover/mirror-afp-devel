@@ -5,14 +5,19 @@ session Well_Quasi_Orders (AFP) = "HOL-Library" +
   theories [document = false]
     "../Abstract-Rewriting/Seq"
     "../Regular-Sets/Regexp_Method"
+    "../Open_Induction/Open_Induction"
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Ramsey"
     "~~/src/HOL/Library/Multiset"
   theories
     "~~/src/HOL/Library/Sublist"
+    Infinite_Sequences
     Restricted_Predicates
+    Minimal_Elements
     Minimal_Bad_Sequences
     Least_Enum
+    Almost_Full
+    Higman_OI
     Almost_Full_Relations
     Well_Quasi_Orders
     Kruskal
