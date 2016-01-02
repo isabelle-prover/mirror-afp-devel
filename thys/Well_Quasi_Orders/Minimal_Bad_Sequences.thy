@@ -7,49 +7,8 @@
 section \<open>Constructing Minimal Bad Sequences\<close>
 
 theory Minimal_Bad_Sequences
-imports Restricted_Predicates
+imports Almost_Full
 begin
-
-text \<open>
-  An infinite sequence is \emph{good} whenever there are indices @{term "i < j"} such that
-  @{term "P (f i) (f j)"}.
-\<close>
-definition good :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
-  "good P f \<longleftrightarrow> (\<exists>i j. i < j \<and> P (f i) (f j))"
-
-text \<open>
-  A sequence that is not good is called \emph{bad}.
-\<close>
-abbreviation "bad P f \<equiv> \<not> good P f"
-
-lemma goodI:
-  "\<lbrakk>i < j; P (f i) (f j)\<rbrakk> \<Longrightarrow> good P f"
-  by (auto simp: good_def)
-
-lemma goodE [elim]:
-  "good P f \<Longrightarrow> (\<And>i j. \<lbrakk>i < j; P (f i) (f j)\<rbrakk> \<Longrightarrow> Q) \<Longrightarrow> Q"
-  by (auto simp: good_def)
-
-lemma badE [elim]:
-  "bad P f \<Longrightarrow> ((\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)) \<Longrightarrow> Q) \<Longrightarrow> Q"
-  by (auto simp: good_def)
-
-text \<open>
-  The @{term i}-th "column" of a set @{term B} of infinite sequences.
-\<close>
-definition "ith B i = {f i | f. f \<in> B}"
-
-lemma ithI [intro]:
-  "f \<in> B \<Longrightarrow> f i = x \<Longrightarrow> x \<in> ith B i"
-  by (auto simp: ith_def)
-
-lemma ithE [elim]:
-  "\<lbrakk>x \<in> ith B i; \<And>f. \<lbrakk>f \<in> B; f i = x\<rbrakk> \<Longrightarrow> Q\<rbrakk> \<Longrightarrow> Q"
-  by (auto simp: ith_def)
-
-lemma ith_conv:
-  "x \<in> ith B i \<longleftrightarrow> (\<exists>f \<in> B. x = f i)"
-  by auto
 
 text \<open>
   A locale capturing the construction of minimal bad sequences over values from @{term "A"}. Where
@@ -155,35 +114,6 @@ lemma min_elt_minimal:
 end
 
 end
-
-text \<open>
-  The restriction of a set @{term "B"} of sequences to sequences that are equal to a given sequence
-  @{term f} up to position @{term i}.
-\<close>
-definition eq_upto :: "(nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a) set"
-where
-  "eq_upto B f i = {g \<in> B. \<forall>j < i. f j = g j}"
-
-lemma eq_uptoI [intro]:
-  "\<lbrakk>g \<in> B; \<And>j. j < i \<Longrightarrow> f j = g j\<rbrakk> \<Longrightarrow> g \<in> eq_upto B f i"
-  by (auto simp: eq_upto_def)
-
-lemma eq_uptoE [elim]:
-  "\<lbrakk>g \<in> eq_upto B f i; \<lbrakk>g \<in> B; \<And>j. j < i \<Longrightarrow> f j = g j\<rbrakk> \<Longrightarrow> Q\<rbrakk> \<Longrightarrow> Q"
-  by (auto simp: eq_upto_def)
-
-lemma eq_upto_Suc:
-  "\<lbrakk>g \<in> eq_upto B f i; g i = f i\<rbrakk> \<Longrightarrow> g \<in> eq_upto B f (Suc i)"
-  by (auto simp: eq_upto_def less_Suc_eq)
-
-lemma eq_upto_0 [simp]:
-  "eq_upto B f 0 = B"
-  by (auto simp: eq_upto_def)
-
-lemma eq_upto_cong [fundef_cong]:
-  assumes "\<And>j. j < i \<Longrightarrow> f j = g j" and "B = C"
-  shows "eq_upto B f i = eq_upto C g i"
-  using assms by (auto simp: eq_upto_def)
 
 context mbs
 begin
@@ -300,4 +230,3 @@ end
 end
 
 end
-
