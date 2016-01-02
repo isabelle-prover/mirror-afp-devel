@@ -1,6 +1,6 @@
 (*  Title:      Open Induction
     Author:     Mizuhito Ogawa
-                Christian Sternagel <c-sterna@jaist.ac.jp>
+                Christian Sternagel <c.sternagel@gmail.com>
     Maintainer: Christian Sternagel
     License:    LGPL
 *)
@@ -8,9 +8,7 @@
 section \<open>Open Induction\<close>
 
 theory Open_Induction
-imports
-  Main
-  "../Well_Quasi_Orders/Restricted_Predicates"
+imports "../Well_Quasi_Orders/Restricted_Predicates"
 begin
 
 
