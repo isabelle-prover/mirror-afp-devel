@@ -11,15 +11,6 @@ imports Restricted_Predicates
 begin
 
 text \<open>
-  The set of all infinite sequences over elements from @{term A}.
-\<close>
-definition "SEQ A = {f::nat \<Rightarrow> 'a. \<forall>i. f i \<in> A}"
-
-lemma SEQ_iff [iff]:
-  "f \<in> SEQ A \<longleftrightarrow> (\<forall>i. f i \<in> A)"
-  by (auto simp: SEQ_def)
-
-text \<open>
   An infinite sequence is \emph{good} whenever there are indices @{term "i < j"} such that
   @{term "P (f i) (f j)"}.
 \<close>
@@ -42,6 +33,23 @@ lemma goodE [elim]:
 lemma badE [elim]:
   "bad P f \<Longrightarrow> ((\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)) \<Longrightarrow> Q) \<Longrightarrow> Q"
   by (auto simp: good_def)
+
+text \<open>
+  The @{term i}-th "column" of a set @{term B} of infinite sequences.
+\<close>
+definition "ith B i = {f i | f. f \<in> B}"
+
+lemma ithI [intro]:
+  "f \<in> B \<Longrightarrow> f i = x \<Longrightarrow> x \<in> ith B i"
+  by (auto simp: ith_def)
+
+lemma ithE [elim]:
+  "\<lbrakk>x \<in> ith B i; \<And>f. \<lbrakk>f \<in> B; f i = x\<rbrakk> \<Longrightarrow> Q\<rbrakk> \<Longrightarrow> Q"
+  by (auto simp: ith_def)
+
+lemma ith_conv:
+  "x \<in> ith B i \<longleftrightarrow> (\<exists>f \<in> B. x = f i)"
+  by auto
 
 text \<open>
   A locale capturing the construction of minimal bad sequences over values from @{term "A"}. Where
@@ -120,23 +128,6 @@ lemma gseqE:
     and "\<And>i. \<lbrakk>\<forall>i. f i \<in> A; \<forall>i. g i \<in> A; size (g i) < size (f i); \<forall>j < i. f j = g j\<rbrakk> \<Longrightarrow> Q"
   shows "Q"
   using assms by (auto simp: gseq_iff)
-
-text \<open>
-  The @{term i}-th "column" of a set @{term B} of infinite sequences.
-\<close>
-definition "ith B i = {f i | f. f \<in> B}"
-
-lemma ithI [intro]:
-  "f \<in> B \<Longrightarrow> f i = x \<Longrightarrow> x \<in> ith B i"
-  by (auto simp: ith_def)
-
-lemma ithE [elim]:
-  "\<lbrakk>x \<in> ith B i; \<And>f. \<lbrakk>f \<in> B; f i = x\<rbrakk> \<Longrightarrow> Q\<rbrakk> \<Longrightarrow> Q"
-  by (auto simp: ith_def)
-
-lemma ith_conv:
-  "x \<in> ith B i \<longleftrightarrow> (\<exists>f \<in> B. x = f i)"
-  by auto
 
 context
   fixes B :: "'a set"

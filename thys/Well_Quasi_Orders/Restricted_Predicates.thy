@@ -663,5 +663,14 @@ lemma reflp_on_restrict_to_rtranclp:
   unfolding restrict_to_rtranclp [OF assms(2-)]
   unfolding reflp_on_reflclp_simp [OF assms(1, 3-)] ..
 
+text \<open>
+  The set of all infinite sequences over elements from @{term A}.
+\<close>
+definition "SEQ A = {f::nat \<Rightarrow> 'a. \<forall>i. f i \<in> A}"
+
+lemma SEQ_iff [iff]:
+  "f \<in> SEQ A \<longleftrightarrow> (\<forall>i. f i \<in> A)"
+  by (auto simp: SEQ_def)
+
 end
 
