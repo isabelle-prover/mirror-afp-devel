@@ -7,7 +7,9 @@
 section \<open>Constructing Minimal Bad Sequences\<close>
 
 theory Minimal_Bad_Sequences
-imports Almost_Full
+imports
+  Almost_Full
+  Minimal_Elements
 begin
 
 text \<open>
@@ -88,35 +90,12 @@ lemma gseqE:
   shows "Q"
   using assms by (auto simp: gseq_iff)
 
-context
-  fixes B :: "'a set"
-  assumes subset_A: "B \<subseteq> A" and ne: "B \<noteq> {}"
-begin
-
-text \<open>
-  A minimal element (w.r.t.~@{term size}) from a set.
-\<close>
-definition "min_elt = (SOME x. x \<in> B \<and> (\<forall>y \<in> A. size y < size x \<longrightarrow> y \<notin> B))"
-
-lemma min_elt_ex:
-  "\<exists>x. x \<in> B \<and> (\<forall>y \<in> A. size y < size x \<longrightarrow> y \<notin> B)"
-  using subset_A and ne using minimal [of _ "\<lambda>x. x \<in> B"] by auto
-
-lemma min_elt_mem:
-  "min_elt \<in> B"
-  using someI_ex [OF min_elt_ex] by (auto simp: min_elt_def)
-
-lemma min_elt_minimal:
-  assumes "y \<in> A" and "size y < size min_elt"
-  shows "y \<notin> B"
-  using someI_ex [OF min_elt_ex] and assms by (auto simp: min_elt_def)
-
-end
-
-end
-
-context mbs
-begin
+interpretation min_elt_size?: minimal_element "measure_on size UNIV" A
+rewrites "measure_on size UNIV \<equiv> \<lambda>x y. size x < size y"
+apply (unfold_locales)
+apply (auto simp: transp_on_def simp del: wfp_on_UNIV intro: wfp_on_subset)
+apply (auto simp: measure_on_def inv_image_betw_def)
+done
 
 context
   fixes P :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -125,10 +104,7 @@ begin
 text \<open>
   A lower bound to all sequences in a set of sequences @{term B}.
 \<close>
-fun lb :: "nat \<Rightarrow> 'a" where
-  lb: "lb i = min_elt (ith (eq_upto (BAD P) lb i) i)"
-
-declare lb.simps [simp del]
+abbreviation "lb \<equiv> minlex (BAD P)"
 
 lemma eq_upto_BAD_mem:
   assumes "f \<in> eq_upto (BAD P) g i"
@@ -149,19 +125,7 @@ text \<open>
 \<close>
 lemma eq_upto_BAD_non_empty:
   "eq_upto (BAD P) lb i \<noteq> {}"
-proof (induct i)
-  case 0
-  show ?case using BAD_ex by auto
-next
-  let ?A = "\<lambda>i. ith (eq_upto (BAD P) lb i) i"
-  case (Suc i)
-  then have "?A i \<noteq> {}" by auto
-  moreover have "eq_upto (BAD P) lb i \<subseteq> eq_upto (BAD P) lb 0" by auto
-  ultimately have "?A i \<subseteq> A" and "?A i \<noteq> {}" by (auto simp: ith_def)
-  from min_elt_mem [OF this, folded lb] obtain f
-    where "f \<in> eq_upto (BAD P) lb (Suc i)" by (auto dest: eq_upto_Suc)
-  then show ?case by blast
-qed
+using eq_upto_minlex_non_empty [of "BAD P"] and BAD_ex by auto
 
 lemma non_empty_ith:
   shows "ith (eq_upto (BAD P) lb i) i \<subseteq> A"
@@ -169,8 +133,8 @@ lemma non_empty_ith:
   using eq_upto_BAD_non_empty [of i] by auto
 
 lemmas
-  lb_minimal = min_elt_minimal [OF non_empty_ith, folded lb] and
-  lb_mem = min_elt_mem [OF non_empty_ith, folded lb]
+  lb_minimal = min_elt_minimal [OF non_empty_ith, folded minlex] and
+  lb_mem = min_elt_mem [OF non_empty_ith, folded minlex]
 
 text \<open>
   @{term "lb"} is a infinite bad sequence.
