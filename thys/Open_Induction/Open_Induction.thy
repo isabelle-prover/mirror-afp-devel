@@ -20,12 +20,20 @@ text \<open>
 \<close>
 definition "lb P B x \<longleftrightarrow> (\<forall>y\<in>B. P\<^sup>=\<^sup>= x y)"
 
+lemma lbI [Pure.intro]:
+  "(\<And>y. y \<in> B \<Longrightarrow> P\<^sup>=\<^sup>= x y) \<Longrightarrow> lb P B x"
+by (auto simp: lb_def)
+
 text \<open>
   A set \<open>B\<close> has the \emph{greatest lower bound} \<open>x\<close> (w.r.t.\ \<open>P\<close>)
   iff \<open>x\<close> is a lower bound \emph{and} less than or equal to every
   other lower bound of \<open>B\<close>.
 \<close>
 definition "glb P B x \<longleftrightarrow> lb P B x \<and> (\<forall>y. lb P B y \<longrightarrow> P\<^sup>=\<^sup>= y x)"
+
+lemma glbI [Pure.intro]:
+  "lb P B x \<Longrightarrow> (\<And>y. lb P B y \<Longrightarrow> P\<^sup>=\<^sup>= y x) \<Longrightarrow> glb P B x"
+by (auto simp: glb_def)
 
 text \<open>Antisymmetric relations have unique glbs.\<close>
 lemma glb_unique:
