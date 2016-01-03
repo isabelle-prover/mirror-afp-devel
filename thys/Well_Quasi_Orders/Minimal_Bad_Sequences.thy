@@ -104,7 +104,7 @@ begin
 text \<open>
   A lower bound to all sequences in a set of sequences @{term B}.
 \<close>
-abbreviation "lb \<equiv> minlex (BAD P)"
+abbreviation "lb \<equiv> lexmin (BAD P)"
 
 lemma eq_upto_BAD_mem:
   assumes "f \<in> eq_upto (BAD P) g i"
@@ -125,7 +125,7 @@ text \<open>
 \<close>
 lemma eq_upto_BAD_non_empty:
   "eq_upto (BAD P) lb i \<noteq> {}"
-using eq_upto_minlex_non_empty [of "BAD P"] and BAD_ex by auto
+using eq_upto_lexmin_non_empty [of "BAD P"] and BAD_ex by auto
 
 lemma non_empty_ith:
   shows "ith (eq_upto (BAD P) lb i) i \<subseteq> A"
@@ -133,8 +133,8 @@ lemma non_empty_ith:
   using eq_upto_BAD_non_empty [of i] by auto
 
 lemmas
-  lb_minimal = min_elt_minimal [OF non_empty_ith, folded minlex] and
-  lb_mem = min_elt_mem [OF non_empty_ith, folded minlex]
+  lb_minimal = min_elt_minimal [OF non_empty_ith, folded lexmin] and
+  lb_mem = min_elt_mem [OF non_empty_ith, folded lexmin]
 
 text \<open>
   @{term "lb"} is a infinite bad sequence.

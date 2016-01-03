@@ -55,53 +55,53 @@ lemma min_elt_minimal:
 using someI_ex [OF min_elt_ex [OF *]] and assms by (auto simp: min_elt_def)
 
 text \<open>A lexicographically minimal sequence w.r.t.\ a given set of sequences \<open>C\<close>\<close>
-fun minlex
+fun lexmin
 where
-  minlex: "minlex C i = min_elt (ith (eq_upto C (minlex C) i) i)"
-declare minlex [simp del]
+  lexmin: "lexmin C i = min_elt (ith (eq_upto C (lexmin C) i) i)"
+declare lexmin [simp del]
 
-lemma eq_upto_minlex_non_empty:
+lemma eq_upto_lexmin_non_empty:
   assumes "C \<subseteq> SEQ A" and "C \<noteq> {}"
-  shows "eq_upto C (minlex C) i \<noteq> {}"
+  shows "eq_upto C (lexmin C) i \<noteq> {}"
 proof (induct i)
   case 0
   show ?case using assms by auto
 next
-  let ?A = "\<lambda>i. ith (eq_upto C (minlex C) i) i"
+  let ?A = "\<lambda>i. ith (eq_upto C (lexmin C) i) i"
   case (Suc i)
   then have "?A i \<noteq> {}" by force
-  moreover have "eq_upto C (minlex C) i \<subseteq> eq_upto C (minlex C) 0" by auto
+  moreover have "eq_upto C (lexmin C) i \<subseteq> eq_upto C (lexmin C) 0" by auto
   ultimately have "?A i \<subseteq> A" and "?A i \<noteq> {}" using assms by (auto simp: ith_def)
-  from min_elt_mem [OF this, folded minlex]
-    obtain f where "f \<in> eq_upto C (minlex C) (Suc i)" by (auto dest: eq_upto_Suc)
+  from min_elt_mem [OF this, folded lexmin]
+    obtain f where "f \<in> eq_upto C (lexmin C) (Suc i)" by (auto dest: eq_upto_Suc)
   then show ?case by blast
 qed
 
-lemma minlex_SEQ_mem:
+lemma lexmin_SEQ_mem:
   assumes "C \<subseteq> SEQ A" and "C \<noteq> {}"
-  shows "minlex C \<in> SEQ A"
+  shows "lexmin C \<in> SEQ A"
 proof -
   { fix i
-    let ?X = "ith (eq_upto C (minlex C) i) i"
+    let ?X = "ith (eq_upto C (lexmin C) i) i"
     have "?X \<subseteq> A" using assms by (auto simp: ith_def)
-    moreover have "?X \<noteq> {}" using eq_upto_minlex_non_empty [OF assms] by auto
-    ultimately have "minlex C i \<in> A" using min_elt_mem [of ?X] by (subst minlex) blast }
+    moreover have "?X \<noteq> {}" using eq_upto_lexmin_non_empty [OF assms] by auto
+    ultimately have "lexmin C i \<in> A" using min_elt_mem [of ?X] by (subst lexmin) blast }
   then show ?thesis by auto
 qed
 
 lemma non_empty_ith:
   assumes "C \<subseteq> SEQ A" and "C \<noteq> {}"
-  shows "ith (eq_upto C (minlex C) i) i \<subseteq> A"
-  and "ith (eq_upto C (minlex C) i) i \<noteq> {}"
-using eq_upto_minlex_non_empty [OF assms, of i] and assms by (auto simp: ith_def)
+  shows "ith (eq_upto C (lexmin C) i) i \<subseteq> A"
+  and "ith (eq_upto C (lexmin C) i) i \<noteq> {}"
+using eq_upto_lexmin_non_empty [OF assms, of i] and assms by (auto simp: ith_def)
 
-lemma minlex_minimal:
-  "C \<subseteq> SEQ A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> y \<in> A \<Longrightarrow> P y (minlex C i) \<Longrightarrow> y \<notin> ith (eq_upto C (minlex C) i) i"
-using min_elt_minimal [OF non_empty_ith, folded minlex] .
+lemma lexmin_minimal:
+  "C \<subseteq> SEQ A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> y \<in> A \<Longrightarrow> P y (lexmin C i) \<Longrightarrow> y \<notin> ith (eq_upto C (lexmin C) i) i"
+using min_elt_minimal [OF non_empty_ith, folded lexmin] .
 
-lemma minlex_mem:
-  "C \<subseteq> SEQ A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> minlex C i \<in> ith (eq_upto C (minlex C) i) i"
-using min_elt_mem [OF non_empty_ith, folded minlex] .
+lemma lexmin_mem:
+  "C \<subseteq> SEQ A \<Longrightarrow> C \<noteq> {} \<Longrightarrow> lexmin C i \<in> ith (eq_upto C (lexmin C) i) i"
+using min_elt_mem [OF non_empty_ith, folded lexmin] .
 
 end
 
