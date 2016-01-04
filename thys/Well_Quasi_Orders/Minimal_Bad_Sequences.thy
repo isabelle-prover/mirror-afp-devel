@@ -93,7 +93,7 @@ lemma gseqE:
 interpretation min_elt_size?: minimal_element "measure_on size UNIV" A
 rewrites "measure_on size UNIV \<equiv> \<lambda>x y. size x < size y"
 apply (unfold_locales)
-apply (auto simp: transp_on_def simp del: wfp_on_UNIV intro: wfp_on_subset)
+apply (auto simp: po_on_def irreflp_on_def transp_on_def simp del: wfp_on_UNIV intro: wfp_on_subset)
 apply (auto simp: measure_on_def inv_image_betw_def)
 done
 
