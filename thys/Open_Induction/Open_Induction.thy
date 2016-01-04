@@ -41,53 +41,10 @@ lemma glb_unique:
 by (auto simp: glb_def antisymp_on_def)
 
 text \<open>
-  A subset \<open>C\<close> of \<open>A\<close> is a \emph{chain} on \<open>A\<close> (w.r.t.\ \<open>P\<close>)
-  iff for all pairs of elements of \<open>C\<close>, one is less than or equal
-  to the other one.
-\<close>
-definition chain_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool"
-where
-  "chain_on P C A \<longleftrightarrow> C \<subseteq> A \<and> (\<forall>x\<in>C. \<forall>y\<in>C. P\<^sup>=\<^sup>= x y \<or> P\<^sup>=\<^sup>= y x)"
-
-text \<open>
   A chain \<open>M\<close> on \<open>A\<close> (w.r.t.\ \<open>P\<close>) is a \emph{maximal chain} iff
   there is no chain on \<open>A\<close> that is a superset of \<open>M\<close>.
 \<close>
 definition "max_chain_on P M A \<longleftrightarrow> chain_on P M A \<and> (\<forall>C. chain_on P C A \<and> M \<subseteq> C \<longrightarrow> M = C)"
-
-lemma chain_onI [Pure.intro!]:
-  "C \<subseteq> A \<Longrightarrow> (\<And>x y. \<lbrakk>x \<in> C; y \<in> C\<rbrakk> \<Longrightarrow> P x y \<or> P y x \<or> x = y) \<Longrightarrow> chain_on P C A"
-unfolding chain_on_def by blast
-
-lemma chain_on_subset:
-  "A \<subseteq> B \<Longrightarrow> chain_on P C A \<Longrightarrow> chain_on P C B"
-by (force simp: chain_on_def)
-
-lemma chain_on_imp_subset:
-  "chain_on P C A \<Longrightarrow> C \<subseteq> A"
-by (simp add: chain_on_def)
-
-lemma subchain_on:
-  assumes "C \<subseteq> D" and "chain_on P D A"
-  shows "chain_on P C A"
-using assms by (auto simp: chain_on_def)
-
-lemma chain_on_Union:
-  assumes "C \<in> chains {C. chain_on P C A}" (is "C \<in> chains ?A")
-  shows "chain_on P (\<Union>C) A"
-proof
-  have "C \<subseteq> ?A" and *: "\<And>x y. x \<in> C \<Longrightarrow> y \<in> C \<Longrightarrow> x \<subseteq> y \<or> y \<subseteq> x"
-    using assms by (auto simp: chains_def chain_subset_def)
-  then show "\<Union>C \<subseteq> A" unfolding chain_on_def by blast
-  fix x y assume "x \<in> \<Union>C" and "y \<in> \<Union>C"
-  then obtain X Y
-    where "X \<in> C" and "Y \<in> C" and "x \<in> X" and "y \<in> Y" by auto
-  with \<open>C \<subseteq> ?A\<close> have "X \<subseteq> A" and "Y \<subseteq> A"
-    and "chain_on P X A" and "chain_on P Y A" unfolding chain_on_def by auto
-  with \<open>x \<in> X\<close> and \<open>y \<in> Y\<close> show "P x y \<or> P y x \<or> x = y"
-    using * [OF \<open>X \<in> C\<close> \<open>Y \<in> C\<close>]
-    unfolding chain_on_def by blast
-qed
 
 lemma chain_on_glb:
   assumes "qo_on P A"

@@ -10,6 +10,49 @@ theory Restricted_Predicates
 imports Main
 begin
 
+text \<open>
+  A subset \<open>C\<close> of \<open>A\<close> is a \emph{chain} on \<open>A\<close> (w.r.t.\ \<open>P\<close>)
+  iff for all pairs of elements of \<open>C\<close>, one is less than or equal
+  to the other one.
+\<close>
+definition chain_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool"
+where
+  "chain_on P C A \<longleftrightarrow> C \<subseteq> A \<and> (\<forall>x\<in>C. \<forall>y\<in>C. P\<^sup>=\<^sup>= x y \<or> P\<^sup>=\<^sup>= y x)"
+
+lemma chain_onI [Pure.intro!]:
+  "C \<subseteq> A \<Longrightarrow> (\<And>x y. \<lbrakk>x \<in> C; y \<in> C\<rbrakk> \<Longrightarrow> x = y \<or> P x y \<or> P y x) \<Longrightarrow> chain_on P C A"
+unfolding chain_on_def by blast
+
+lemma chain_on_subset:
+  "A \<subseteq> B \<Longrightarrow> chain_on P C A \<Longrightarrow> chain_on P C B"
+by (force simp: chain_on_def)
+
+lemma chain_on_imp_subset:
+  "chain_on P C A \<Longrightarrow> C \<subseteq> A"
+by (simp add: chain_on_def)
+
+lemma subchain_on:
+  assumes "C \<subseteq> D" and "chain_on P D A"
+  shows "chain_on P C A"
+using assms by (auto simp: chain_on_def)
+
+lemma chain_on_Union:
+  assumes "C \<in> chains {C. chain_on P C A}" (is "C \<in> chains ?A")
+  shows "chain_on P (\<Union>C) A"
+proof
+  have "C \<subseteq> ?A" and *: "\<And>x y. x \<in> C \<Longrightarrow> y \<in> C \<Longrightarrow> x \<subseteq> y \<or> y \<subseteq> x"
+    using assms by (auto simp: chains_def chain_subset_def)
+  then show "\<Union>C \<subseteq> A" unfolding chain_on_def by blast
+  fix x y assume "x \<in> \<Union>C" and "y \<in> \<Union>C"
+  then obtain X Y
+    where "X \<in> C" and "Y \<in> C" and "x \<in> X" and "y \<in> Y" by auto
+  with \<open>C \<subseteq> ?A\<close> have "X \<subseteq> A" and "Y \<subseteq> A"
+    and "chain_on P X A" and "chain_on P Y A" unfolding chain_on_def by auto
+  with \<open>x \<in> X\<close> and \<open>y \<in> Y\<close> show "x = y \<or> P x y \<or> P y x"
+    using * [OF \<open>X \<in> C\<close> \<open>Y \<in> C\<close>]
+    unfolding chain_on_def by blast
+qed
+
 definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
   "restrict_to P A = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)"
 
@@ -23,8 +66,6 @@ definition total_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
   "total_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
 
 abbreviation "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
-
-abbreviation "chain_on P f A \<equiv> \<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))"
 
 abbreviation "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
 
@@ -421,8 +462,8 @@ lemma po_on_map:
   using assms and transp_on_map and irreflp_on_map
   unfolding po_on_def by auto
 
-lemma chain_on_transp_on_less:
-  assumes "chain_on P f A" and "transp_on P A" and "i < j"
+lemma chain_transp_on_less:
+  assumes "\<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))" and "transp_on P A" and "i < j"
   shows "P (f i) (f j)"
 using \<open>i < j\<close>
 proof (induct j)
@@ -664,4 +705,3 @@ lemma reflp_on_restrict_to_rtranclp:
   unfolding reflp_on_reflclp_simp [OF assms(1, 3-)] ..
 
 end
-
