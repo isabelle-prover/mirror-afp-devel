@@ -64,4 +64,23 @@ lemma eq_upto_cong [fundef_cong]:
   shows "eq_upto B f i = eq_upto C g i"
 using assms by (auto simp: eq_upto_def)
 
+
+subsection \<open>Lexicographic Order on Infinite Sequences\<close>
+
+definition "LEX P f g \<longleftrightarrow> (\<exists>i::nat. P (f i) (g i) \<and> (\<forall>j<i. f j = g j))"
+abbreviation "LEXEQ P \<equiv> (LEX P)\<^sup>=\<^sup>="
+
+lemma LEX_imp_not_LEX:
+  assumes "LEX P f g"
+    and [dest]: "\<And>x y z. P x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
+    and [simp]: "\<And>x. \<not> P x x"
+  shows "\<not> LEX P g f"
+proof -
+  { fix i j :: nat
+    assume "P (f i) (g i)" and "\<forall>k<i. f k = g k"
+      and "P (g j) (f j)" and "\<forall>k<j. g k = f k"
+    then have False by (cases "i < j") (auto simp: not_less dest!: le_imp_less_or_eq) }
+  then show "\<not> LEX P g f" using \<open>LEX P f g\<close> unfolding LEX_def by blast
+qed
+
 end
