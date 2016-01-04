@@ -296,7 +296,7 @@ proof
       where g: "\<And>i j. i < j \<Longrightarrow> g i < g j"
       and **: "\<forall>i. f (g i) \<in> A \<and> P (f (g i)) (f (g (Suc i)))"
       using * by auto
-    from chain_on_transp_on_less [OF ** \<open>transp_on P A\<close>]
+    from chain_transp_on_less [OF ** \<open>transp_on P A\<close>]
       have **: "\<And>i j. i < j \<Longrightarrow> P (f (g i)) (f (g j))" .
     let ?g = "\<lambda>i. h (f (g i))"
     from * and subset have B: "\<And>i. ?g i \<in> B" by auto
@@ -315,4 +315,3 @@ lemma wqo_on_UNIV_nat:
   using almost_full_on_UNIV_nat by simp
 
 end
-

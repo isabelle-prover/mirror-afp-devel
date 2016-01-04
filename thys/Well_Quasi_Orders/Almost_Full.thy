@@ -307,8 +307,8 @@ proof -
   show "wfp_on (strict P) A"
   proof (unfold wfp_on_def, rule notI)
     assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict P (f (Suc i)) (f i)"
-    then obtain f where *: "chain_on ((strict P)\<inverse>\<inverse>) f A" by blast
-    from chain_on_transp_on_less [OF this]
+    then obtain f where *: "\<forall>i. f i \<in> A \<and> ((strict P)\<inverse>\<inverse>) (f i) (f (Suc i))" by blast
+    from chain_transp_on_less [OF this]
       and transp_on_strict [THEN transp_on_converse, OF trans]
       have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
     with af show False
@@ -329,8 +329,8 @@ proof (rule ccontr)
   assume "\<not> wfp_on (strict Q) A"
   then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
     and "\<forall>i. strict Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
-  then have "chain_on ((strict Q)\<inverse>\<inverse>) f A" by auto
-  from chain_on_transp_on_less [OF this *]
+  then have "\<forall>i. f i \<in> A \<and> ((strict Q)\<inverse>\<inverse>) (f i) (f (Suc i))" by auto
+  from chain_transp_on_less [OF this *]
     have *: "\<And>i j. i < j \<Longrightarrow> \<not> P (f i) (f j)"
     using subrel and A by blast
   show False
