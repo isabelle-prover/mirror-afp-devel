@@ -378,7 +378,7 @@ proof -
   have "?r x / ?r y = ?r x' / ?r y'" unfolding id using z y y' by (auto simp: field_simps) 
   from assms[unfolded this] have quot: "quotient_of (?r x' / ?r y') = (a, b)" by auto
   from quotient_of_coprime[OF quot] have cop': "coprime a b" .
-  hence cop: "coprime b a" (* TODO: inform Jasmin on nitpick try *) by (simp add: gcd_int.commute)
+  hence cop: "coprime b a" by (simp add: gcd_int.commute)
   from quotient_of_denom_pos[OF quot] have b: "b > 0" "b \<noteq> 0" by auto
   from quotient_of_div[OF quot] quotient_of_denom_pos[OF quot] y'
   have "?r x' * ?r b = ?r a * ?r y'" by (auto simp: field_simps)
