@@ -57,10 +57,11 @@ context minimal_element
 begin
 
 lemma lb_LEX_lexmin:
-  assumes chain: "chain_on (LEX P) C (SEQ A)"
-    and *: "C \<subseteq> SEQ A" "C \<noteq> {}"
+  assumes chain: "chain_on (LEX P) C (SEQ A)" and "C \<noteq> {}"
   shows "lb (LEX P) C (lexmin C)"
 proof -
+  have "C \<subseteq> SEQ A" using chain by (auto simp: chain_on_def)
+  note * = this \<open>C \<noteq> {}\<close>
   { fix f assume "f \<in> C" and "f \<noteq> lexmin C"
     then have neq: "\<exists>i. f i \<noteq> lexmin C i" by auto
     def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
@@ -84,8 +85,7 @@ proof -
 qed
 
 lemma glb_LEX_lexmin:
-  assumes "chain_on (LEX P) C (SEQ A)"
-    and *: "C \<subseteq> SEQ A" "C \<noteq> {}"
+  assumes "chain_on (LEX P) C (SEQ A)" and "C \<noteq> {}"
   shows "glb (LEX P) C (lexmin C)"
 proof -
   have "C \<subseteq> SEQ A" using assms(1) by (auto simp: chain_on_def)
@@ -98,7 +98,7 @@ proof -
     from LeastI_ex [OF neq, folded i_def]
       and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
     have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
-    from eq_upto_lexmin_non_empty [OF *] obtain h
+    from eq_upto_lexmin_non_empty [OF \<open>C \<subseteq> SEQ A\<close> \<open>C \<noteq> {}\<close>] obtain h
       where "h \<in> eq_upto C (lexmin C) (Suc i)" and "h \<in> C" by (auto simp: eq_upto_def)
     then have hi: "h i = lexmin C i" and eq': "\<forall>j<i. h i = lexmin C i" by (auto)
     with lb and \<open>h \<in> C\<close> have "LEXEQ P f h" by (auto simp: lb_def)
@@ -116,7 +116,7 @@ proof
   then have chain: "chain_on (LEX P) C (SEQ A)" by (auto simp: chain_on_def)
   then have "C \<subseteq> SEQ A" by (auto simp: chain_on_def)
   then have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> by (intro lexmin_SEQ_mem)
-  have "glb (LEX P) C (lexmin C)" by (rule glb_LEX_lexmin [OF chain \<open>C \<subseteq> SEQ A\<close> \<open>C \<noteq> {}\<close>])
+  have "glb (LEX P) C (lexmin C)" by (rule glb_LEX_lexmin [OF chain \<open>C \<noteq> {}\<close>])
   then have "glb (LEXEQ P) C (lexmin C)" by (auto simp: glb_def lb_def)
   with \<open>lexmin C \<in> SEQ A\<close> show "\<exists>f \<in> SEQ A. glb (LEXEQ P) C f" by blast
 qed
@@ -131,9 +131,8 @@ proof
     and good: "good Q g" by blast
   then have glb: "glb (LEX P) C g" by (auto simp: glb_def lb_def)
   from chain have "chain_on (LEX P) C (SEQ A)" and C: "C \<subseteq> SEQ A" by (auto simp: chain_on_def)
-  note * = glb_LEX_lexmin [OF this \<open>C \<noteq> {}\<close>]
-  have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close>
-    using \<open>C \<subseteq> SEQ A\<close> by (intro lexmin_SEQ_mem)
+  note * = glb_LEX_lexmin [OF this(1) \<open>C \<noteq> {}\<close>]
+  have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> using C by (intro lexmin_SEQ_mem)
   from glb_unique [OF _ g this glb *] and antisymp_on_LEX [OF po_on_imp_irreflp_on [OF po] antisym]
     have [simp]: "lexmin C = g" by auto
   from good obtain i j :: nat where "i < j" and "Q (g i) (g j)" by (auto simp: good_def)
