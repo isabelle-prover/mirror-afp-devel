@@ -1,3 +1,19 @@
+[Triangle]
+title = Basic Geometric Properties of Triangles
+author = Manuel Eberl <http://in.tum.de/~eberlm>
+date = 2015-12-28
+topic = Mathematics/Geometry
+abstract =
+  This entry contains a definition of angles between vectors and between three
+  points. Building on this, we prove basic geometric properties of triangles, such
+  as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
+  the sum of the angles of a triangle is π, and the congruence theorems for
+  triangles.
+
+  The definitions and proofs were developed following those by John Harrison in
+  HOL Light. However, due to Isabelle's type class system, all definitions and
+  theorems in the Isabelle formalisation hold for all real inner product spaces.
+
 [Prime_Harmonic_Series]
 title = The Divergence of the Prime Harmonic Series
 author = Manuel Eberl <http://in.tum.de/~eberlm>
