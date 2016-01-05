@@ -1,3 +1,20 @@
+[Descartes_Sign_Rule]
+title = Descartes' Rule of Signs
+author = Manuel Eberl <http://in.tum.de/~eberlm>
+date = 2015-12-28
+topic = Mathematics/Analysis
+depends-on = Sturm_Tarski
+abstract =
+  Descartes' Rule of Signs relates the number of positive real roots of a
+  polynomial with the number of sign changes in its coefficient sequence.
+
+  Our proof follows the simple inductive proof given by Rob Arthan, which was also
+  used by John Harrison in his HOL Light formalisation. We proved most of the
+  lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,
+  rationals, reals); the main result, however, requires the intermediate value
+  theorem and was therefore only proven for real polynomials.
+
+
 [Card_Partitions]
 title = Cardinality of Set Partitions
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
