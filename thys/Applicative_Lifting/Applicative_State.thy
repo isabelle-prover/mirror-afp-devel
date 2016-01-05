@@ -20,6 +20,6 @@ for
   pure: pure_state
   ap: "ap_state :: ('a \<Rightarrow> 'b, 's) state \<Rightarrow> ('a, 's) state \<Rightarrow> ('b, 's) state"
 unfolding ap_state_def
-by (auto split: split_split)
+by (auto split: prod.split)
 
 end

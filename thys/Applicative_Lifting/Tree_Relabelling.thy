@@ -356,11 +356,11 @@ where "disjoint xs ys \<equiv> set xs \<inter> set ys = {}"
 
 definition dlabels :: "'x tree \<Rightarrow> 'x list option"
 where "dlabels = fold_tree (\<lambda>x. pure [x])
-     (\<lambda>l r. pure (split append) \<diamond> (assert (split disjoint) (pure Pair \<diamond> l \<diamond> r)))"
+     (\<lambda>l r. pure (case_prod append) \<diamond> (assert (case_prod disjoint) (pure Pair \<diamond> l \<diamond> r)))"
 
 lemma dlabels_simps [simp]:
   "dlabels (Leaf x) = pure [x]"
-  "dlabels (Node l r) = pure (split append) \<diamond> (assert (split disjoint) (pure Pair \<diamond> dlabels l \<diamond> dlabels r))"
+  "dlabels (Node l r) = pure (case_prod append) \<diamond> (assert (case_prod disjoint) (pure Pair \<diamond> dlabels l \<diamond> dlabels r))"
 by(simp_all add: dlabels_def)
 
 lemma correctness_applicative:
@@ -372,7 +372,7 @@ proof(induction t)
     by applicative_nf simp
 next
   case (Node l r)
-  let ?cat = "split append" and ?disj = "split disjoint"
+  let ?cat = "case_prod append" and ?disj = "case_prod disjoint"
   have "pure_state dlabels \<diamond> label_tree (Node l r) =
      pure (\<lambda>l r. pure ?cat \<diamond> (assert ?disj (pure Pair \<diamond> l \<diamond> r))) \<diamond>
        (pure dlabels \<diamond> label_tree l) \<diamond> (pure dlabels \<diamond> label_tree r)"
