@@ -1,0 +1,124 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">D</font>escartes'
+<font class="first">R</font>ule
+of
+<font class="first">S</font>igns
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Descartes' Rule of Signs</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://in.tum.de/~eberlm">Manuel Eberl</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2015-12-28</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+Descartes' Rule of Signs relates the number of positive real roots of a
+polynomial with the number of sign changes in its coefficient sequence.
+Our proof follows the simple inductive proof given by Rob Arthan, which was also
+used by John Harrison in his HOL Light formalisation. We proved most of the
+lemmas for arbitrary linearly-ordered integrity domains (e.g. integers,
+rationals, reals); the main result, however, requires the intermediate value
+theorem and was therefore only proven for real polynomials.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Descartes_Sign_Rule-AFP,
+  author  = {Manuel Eberl},
+  title   = {Descartes' Rule of Signs},
+  journal = {Archive of Formal Proofs},
+  month   = dec,
+  year    = 2015,
+  note    = {\url{http://afp.sf.net/entries/Descartes_Sign_Rule.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Sturm_Tarski.shtml">Sturm_Tarski</a></td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!--#set var="afp-version" value="-AFPVERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Descartes_Sign_Rule" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

@@ -8,6 +8,8 @@ Abortable_Linearizable_Modules
 Abstract_Completeness
 Abstract-Hoare-Logics
 Abstract-Rewriting
+Algebraic_Numbers
+Applicative_Lifting
 ArrowImpossibilityGS
 AutoFocus-Stream
 Automatic_Refinement
@@ -55,6 +57,7 @@ Density_Compiler
 Depth-First-Search
 Derangements
 Deriving
+Descartes_Sign_Rule
 Dijkstra_Shortest_Path
 Discrete_Summation
 DiskPaxos
@@ -126,6 +129,7 @@ Lazy-Lists-II
 Lehmer
 LightweightJava
 LinearQuantifierElim
+Liouville_Numbers
 List-Index
 List-Infinite
 List_Interleaving
@@ -170,6 +174,7 @@ Pop_Refinement
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Prime_Harmonic_Series
 Priority_Queue_Braun
 Probabilistic_Noninterference
 Probabilistic_System_Zoo
@@ -216,6 +221,7 @@ Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
 Statecharts
+Stern_Brocot
 Stream_Fusion_Code
 Stream-Fusion
 Strong_Security
@@ -231,6 +237,7 @@ TortoiseHare
 Transitive-Closure
 Transitive-Closure-II
 Tree-Automata
+Triangle
 Trie
 Tycon
 UpDown_Scheme

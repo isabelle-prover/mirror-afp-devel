@@ -1,0 +1,12 @@
+chapter AFP
+
+session Stern_Brocot (AFP) = Applicative_Lifting +
+  options [timeout = 600]
+  theories [document=false]
+    "../Applicative/Applicative_Stream"
+    "~~/src/HOL/Library/Sublist"
+  theories
+    Bird_Tree
+  document_files
+    "root.tex"
+    "root.bib"

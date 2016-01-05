@@ -1,0 +1,55 @@
+chapter AFP
+
+session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
+  description {* Algebraic Numbers *}
+  options [timeout = 600]
+  theories
+    "Missing_Multiset"
+    "Missing_List"
+    "Show_Poly"
+    "Set_Impl_Fix"
+    "Compare_Rat"
+    "Compare_Real"
+    "Compare_Complex"
+    "Improved_Code_Equations"
+    "Precomputation"
+    "Is_Rat_To_Rat"
+    "Ring_Hom_Poly"
+    "Order_Polynomial"
+  theories
+    "Explicit_Roots"
+  theories
+    "Rational_Root_Test"
+  theories
+    "Kronecker_Factorization"
+  theories
+    "Square_Free_Factorization"
+  theories
+    "Berlekamp_Hensel_Factorization"
+  theories
+    "Rational_Factorization"
+  theories
+    "Real_Factorization"
+  theories
+    "Show_Complex"
+    "Show_Real_Precise"
+    "Show_Real_Approx"
+  theories
+    "Algebraic_Number_Tests"
+  document_files
+    "root.bib"
+    "root.tex"
+
+
+session Algebraic_Numbers_Matrix (AFP) = "JNF-AFP-Lib" +
+  description {* Theories from other AFP-entries and Extended Theories for Matrices *}
+  options [timeout = 600, document = false]
+  theories
+    "Determinant_Impl"
+    "Matrix_IArray_Impl"
+    "Char_Poly"
+    "Show_Matrix"
+    "../Sturm_Sequences/Sturm_Theorem"
+    "../Partial_Function_MR/Partial_Function_MR"
+    "../Sqrt_Babylonian/Sqrt_Babylonian"
+    "~~/src/HOL/Library/RBT_Mapping"

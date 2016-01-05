@@ -137,6 +137,7 @@
 <a href="entries/XML.shtml">XML</a> &nbsp;
 <a href="entries/Tail_Recursive_Functions.shtml">Tail_Recursive_Functions</a> &nbsp;
 <a href="entries/Stream_Fusion_Code.shtml">Stream_Fusion_Code</a> &nbsp;
+<a href="entries/Applicative_Lifting.shtml">Applicative_Lifting</a> &nbsp;
 </div>
 
 <h3>Games</h3>
@@ -324,11 +325,14 @@
 <a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 <a href="entries/Rep_Fin_Groups.shtml">Rep_Fin_Groups</a> &nbsp;
 <a href="entries/Jordan_Normal_Form.shtml">Jordan_Normal_Form</a> &nbsp;
+<a href="entries/Algebraic_Numbers.shtml">Algebraic_Numbers</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
 
 <div class="list">
+<a href="entries/Liouville_Numbers.shtml">Liouville_Numbers</a> &nbsp;
+<a href="entries/Descartes_Sign_Rule.shtml">Descartes_Sign_Rule</a> &nbsp;
 <a href="entries/Real_Impl.shtml">Real_Impl</a> &nbsp;
 <a href="entries/Lower_Semicontinuous.shtml">Lower_Semicontinuous</a> &nbsp;
 <a href="entries/Affine_Arithmetic.shtml">Affine_Arithmetic</a> &nbsp;
@@ -356,11 +360,13 @@
 <h3>Number Theory</h3>
 
 <div class="list">
+<a href="entries/Prime_Harmonic_Series.shtml">Prime_Harmonic_Series</a> &nbsp;
 <a href="entries/Fermat3_4.shtml">Fermat3_4</a> &nbsp;
 <a href="entries/Perfect-Number-Thm.shtml">Perfect-Number-Thm</a> &nbsp;
 <a href="entries/SumSquares.shtml">SumSquares</a> &nbsp;
 <a href="entries/Lehmer.shtml">Lehmer</a> &nbsp;
 <a href="entries/Pratt_Certificate.shtml">Pratt_Certificate</a> &nbsp;
+<a href="entries/Stern_Brocot.shtml">Stern_Brocot</a> &nbsp;
 </div>
 
 <h3>Economics</h3>
@@ -374,6 +380,7 @@
 <h3>Geometry</h3>
 
 <div class="list">
+<a href="entries/Triangle.shtml">Triangle</a> &nbsp;
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Tarskis_Geometry.shtml">Tarskis_Geometry</a> &nbsp;
 <a href="entries/General-Triangle.shtml">General-Triangle</a> &nbsp;

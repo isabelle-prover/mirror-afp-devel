@@ -1,0 +1,8 @@
+chapter AFP
+
+session Triangle (AFP) = "HOL-Multivariate_Analysis" +
+  options [timeout=600, document=pdf]
+  theories
+    Triangle
+  document_files
+    "root.tex"
