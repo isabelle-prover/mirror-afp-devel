@@ -3243,7 +3243,7 @@ abstract =
 
 [Applicative_Lifting]
 title = Applicative Lifting
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, Joshua Schneider
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc.html>, Joshua Schneider <>
 date = 2015-12-22
 topic = Computer Science/Functional Programming
 abstract = Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
