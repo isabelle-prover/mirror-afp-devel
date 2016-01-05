@@ -1,4 +1,4 @@
-(*  Author: Tobias Nipkow, Alex Krauss  *)
+(*  Author: Tobias Nipkow, Alex Krauss, Christian Urban  *)
 
 section "Regular sets"
 
@@ -258,31 +258,28 @@ lemma Deriv_empty[simp]:   "Deriv a {} = {}"
   and Deriv_UN[simp]:      "Deriv a (UN x:I. S x) = (UN x:I. Deriv a (S x))"
 by (auto simp: Deriv_def)
 
-lemma Der_conc [simp]: "Deriv c (A @@ B) = (Deriv c A) @@ B \<union> (if [] \<in> A then Deriv c B else {})"
+lemma Der_conc [simp]: 
+  shows "Deriv c (A @@ B) = (Deriv c A) @@ B \<union> (if [] \<in> A then Deriv c B else {})"
 unfolding Deriv_def conc_def
 by (auto simp add: Cons_eq_append_conv)
 
-lemma Deriv_star [simp]: "Deriv c (star A) = (Deriv c A) @@ star A"
+lemma Deriv_star [simp]: 
+  shows "Deriv c (star A) = (Deriv c A) @@ star A"
 proof -
-  have incl: "[] \<in> A \<Longrightarrow> Deriv c (star A) \<subseteq> (Deriv c A) @@ star A"
-    unfolding Deriv_def conc_def 
-    apply(auto simp add: Cons_eq_append_conv)
-    apply(drule star_decom)
-    apply(auto simp add: Cons_eq_append_conv)
-    done
-
-  have "Deriv c (star A) = Deriv c (A @@ star A \<union> {[]})"
-    by (simp only: star_unfold_left[symmetric])
+  have "Deriv c (star A) = Deriv c ({[]} \<union> A @@ star A)"
+    by (metis star_unfold_left sup.commute)
   also have "... = Deriv c (A @@ star A)"
-    by (simp only: Deriv_union) (simp)
-  also have "... =  (Deriv c A) @@ (star A) \<union> (if [] \<in> A then Deriv c (star A) else {})"
+    unfolding Deriv_union by (simp)
+  also have "... = (Deriv c A) @@ (star A) \<union> (if [] \<in> A then Deriv c (star A) else {})"
     by simp
-   also have "... =  (Deriv c A) @@ star A"
-    using incl by auto
-  finally show "Deriv c (star A) = (Deriv c A) @@ star A" . 
+  also have "... =  (Deriv c A) @@ star A"
+    unfolding conc_def Deriv_def
+    using star_decom by (force simp add: Cons_eq_append_conv)
+  finally show "Deriv c (star A) = (Deriv c A) @@ star A" .
 qed
 
-lemma Deriv_diff[simp]: "Deriv c (A - B) = Deriv c A - Deriv c B"
+lemma Deriv_diff[simp]:   
+  shows "Deriv c (A - B) = Deriv c A - Deriv c B"
 by(auto simp add: Deriv_def)
 
 lemma Deriv_lists[simp]: "c : S \<Longrightarrow> Deriv c (lists S) = lists S"
