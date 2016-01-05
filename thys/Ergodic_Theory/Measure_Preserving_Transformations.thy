@@ -514,6 +514,25 @@ lemma T_composition_borel [measurable]:
    shows "(\<lambda>x. f(T x)) \<in> borel_measurable M" "(\<lambda>x. f((T^^k) x)) \<in> borel_measurable M"
 using T_meas Tn_meas assms measurable_compose by auto
 
+lemma T_AE_iterates:
+  assumes "AE x in M. P x"
+  shows "AE x in M. \<forall>n. P ((T^^n) x)"
+proof -
+  obtain N where N: "\<And>x. x \<in> space M - N \<Longrightarrow> P x"  "N \<in> null_sets M" using AE_E3[OF assms]  by blast
+  def A \<equiv> "\<Union>n. (T^^n)--`N"
+  have "(T^^n)--`N \<in> null_sets M" for n using T_quasi_preserves_null2(2)[OF N(2)].
+  then have "A \<in> null_sets M" unfolding A_def by auto
+  moreover have "\<And>x. x \<in> space M - A \<Longrightarrow> \<forall>n. P ((T^^n) x)"
+  proof 
+    fix x n
+    assume "x \<in> space M - A"
+    then have "x \<in> (space M - (T^^n)--`N)" unfolding A_def by auto
+    then have "(T^^n) x \<in> space M - N" by (auto simp add: N(2) T_spaceM_stable(2) null_setsD2 vrestr_of_set)
+    then show "P((T^^n) x)" using N(1) by auto
+  qed
+  ultimately show ?thesis unfolding eventually_ae_filter by blast
+qed
+
 lemma qmpt_power:
   "qmpt M (T^^n)"
 proof

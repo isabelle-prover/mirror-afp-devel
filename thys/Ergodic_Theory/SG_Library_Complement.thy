@@ -259,6 +259,18 @@ lemma limit_along_weak_subseq:
 using filterlim_compose[of v, OF _ filterlim_weak_subseq] assms by auto
 
 
+subsection {*Limits*}
+
+text {* The next lemma deserves to exist by itself, as it is so common and useful. Note that it is 
+not a direct consequence of \verb+tendsto_inverse+, contrary to what might think at first...*}
+
+lemma tendsto_inverse_real [tendsto_intros]:
+  fixes u::"_ \<Rightarrow> real"
+  assumes "(u \<longlongrightarrow> l) F" "l \<noteq> 0"
+  shows "((\<lambda>x. 1/ u x) \<longlongrightarrow> 1/l) F"
+by (rule tendsto_divide[OF _ assms, where ?f = "\<lambda>_. 1" and ?a = 1], auto)
+  
+
 subsection {*Topology-Euclidean-Space*}
 
 lemma countable_separating_set_linorder1:
@@ -710,6 +722,20 @@ proof (rule SUP_eqI)
   qed
 qed
 
+lemma real_lim_then_eventually_real:
+  assumes "(u \<longlongrightarrow> ereal l) F"
+  shows "eventually (\<lambda>n. u n = ereal(real_of_ereal(u n))) F"
+proof -
+  have "ereal l \<in> {-\<infinity><..<(\<infinity>::ereal)}" by simp
+  moreover have "open {-\<infinity><..<(\<infinity>::ereal)}" by simp
+  ultimately have "eventually (\<lambda>n. u n \<in> {-\<infinity><..<(\<infinity>::ereal)}) F" using assms tendsto_def by blast
+  moreover have "\<And>x. x \<in>  {-\<infinity><..<(\<infinity>::ereal)} \<Longrightarrow> x = ereal(real_of_ereal x)" using ereal_real by auto
+  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono)
+qed
+
+
+subsubsection {*Continuity of addition*}
+
 text {*The next few lemmas remove an unnecessary assumption in \verb+tendsto_add_ereal+, culminating
 in \verb+tendsto_add_ereal_general+ which essentially says that the addition
 is continuous on ereal times ereal, except at $(-\infty, \infty)$ and $(\infty, -\infty)$.
@@ -839,20 +865,11 @@ next
   then show ?thesis using tendsto_add_ereal_MInf MInf f g by (metis ereal_MInfty_eq_plus)
 qed
 
+subsubsection {*Continuity of multiplication*}
+
 text {* In the same way as for addition, we prove that the multiplication is continuous on
 ereal times ereal, except at $(\infty, 0)$ and $(-\infty, 0)$ and $(0, \infty)$ and $(0, -\infty)$,
 starting with specific situations.*}
-
-lemma real_lim_then_eventually_real:
-  assumes "(u \<longlongrightarrow> ereal l) F"
-  shows "eventually (\<lambda>n. u n = ereal(real_of_ereal(u n))) F"
-proof -
-  have "ereal l \<in> {-\<infinity><..<(\<infinity>::ereal)}" by simp
-  moreover have "open {-\<infinity><..<(\<infinity>::ereal)}" by simp
-  ultimately have "eventually (\<lambda>n. u n \<in> {-\<infinity><..<(\<infinity>::ereal)}) F" using assms tendsto_def by blast
-  moreover have "\<And>x. x \<in>  {-\<infinity><..<(\<infinity>::ereal)} \<Longrightarrow> x = ereal(real_of_ereal x)" using ereal_real by auto
-  ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono)
-qed
 
 lemma tendsto_mult_real_ereal:
   assumes "(u \<longlongrightarrow> ereal l) F" "(v \<longlongrightarrow> ereal m) F"
@@ -944,7 +961,7 @@ lemma sgn_squared_ereal:
   shows "sgn(l) * sgn(l) = 1"
 apply (cases l) using assms by (auto simp add: one_ereal_def sgn_if)
 
-lemma tendsto_ereal_mult:
+lemma tendsto_mult_ereal:
   fixes f g::"_ \<Rightarrow> ereal"
   assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "\<not>((l=0 \<and> abs(m) = \<infinity>) \<or> (m=0 \<and> abs(l) = \<infinity>))"
   shows  "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
@@ -978,6 +995,105 @@ next
   ultimately show ?thesis by auto
 qed
 
+
+subsubsection {*Continuity of division*}
+
+lemma tendsto_inverse_ereal_PInf:
+  fixes u::"_ \<Rightarrow> ereal"
+  assumes "(u \<longlongrightarrow> \<infinity>) F"
+  shows "((\<lambda>x. 1/ u x) \<longlongrightarrow> 0) F"
+proof -
+  {
+    fix e::real assume "e>0"
+    have "1/e < \<infinity>" by auto
+    then have "eventually (\<lambda>n. u n > 1/e) F" using assms(1) by (simp add: tendsto_PInfty)
+    moreover 
+    {
+      fix z::ereal assume "z>1/e"
+      then have "z>0" using `e>0` using less_le_trans not_le by fastforce 
+      then have "1/z \<ge> 0" by auto
+      moreover have "1/z < e" using `e>0`  `z>1/e`
+        apply (cases z) apply auto
+        by (metis (mono_tags, hide_lams) less_ereal.simps(2) less_ereal.simps(4) divide_less_eq ereal_divide_less_pos ereal_less(4) 
+            ereal_less_eq(4) less_le_trans mult_eq_0_iff not_le not_one_less_zero times_ereal.simps(1)) 
+      ultimately have "1/z \<ge> 0" "1/z < e" by auto
+    }
+    ultimately have "eventually (\<lambda>n. 1/u n<e) F" "eventually (\<lambda>n. 1/u n\<ge>0) F" by (auto simp add: eventually_mono)
+  } note * = this
+  show ?thesis
+  proof (subst order_tendsto_iff, auto)
+    fix a::ereal assume "a<0"
+    then show "eventually (\<lambda>n. 1/u n > a) F" using *(2) eventually_mono less_le_trans linordered_field_no_ub by fastforce
+  next
+    fix a::ereal assume "a>0"
+    then obtain e::real where "e>0" "a>e" using ereal_dense2 ereal_less(2) by blast
+    then have "eventually (\<lambda>n. 1/u n < e) F" using *(1) by auto
+    then show "eventually (\<lambda>n. 1/u n < a) F" using `a>e` by (metis (mono_tags, lifting) eventually_mono less_trans)
+  qed
+qed
+
+lemma tendsto_inverse_ereal:
+  fixes u::"_ \<Rightarrow> ereal"
+  assumes "(u \<longlongrightarrow> l) F" "l \<noteq> 0"
+  shows "((\<lambda>x. 1/ u x) \<longlongrightarrow> 1/l) F"
+proof (cases l)
+  case (real r)
+  then have "r \<noteq> 0" using assms(2) by auto
+  then have "1/l = ereal(1/r)" using real by (simp add: one_ereal_def) 
+  def v \<equiv> "\<lambda>n. real_of_ereal(u n)" 
+  have ureal: "eventually (\<lambda>n. u n = ereal(v n)) F" unfolding v_def using real_lim_then_eventually_real assms(1) real by auto
+  then have "((\<lambda>n. ereal(v n)) \<longlongrightarrow> ereal r)  F" using assms real v_def by auto
+  then have *: "((\<lambda>n. v n) \<longlongrightarrow> r) F" by auto
+  then have "((\<lambda>n. 1/v n) \<longlongrightarrow> 1/r) F" using \<open>r \<noteq> 0\<close> tendsto_inverse_real by auto
+  then have lim: "((\<lambda>n. ereal(1/v n)) \<longlongrightarrow> 1/l) F" using \<open>1/l = ereal(1/r)\<close> by auto
+
+  have "r \<in> -{0}" "open (-{(0::real)})" using \<open>r \<noteq> 0\<close> by auto
+  then have "eventually (\<lambda>n. v n \<in> -{0}) F" using * using topological_tendstoD by blast 
+  then have "eventually (\<lambda>n. v n \<noteq> 0) F" by auto
+  moreover
+  {
+    fix n assume H: "v n \<noteq> 0" "u n = ereal(v n)"
+    then have "ereal(1/v n) = 1/ereal(v n)" by (simp add: one_ereal_def) 
+    then have "ereal(1/v n) = 1/u n" using H(2) by simp
+  }
+  ultimately have "eventually (\<lambda>n. ereal(1/v n) = 1/u n) F" using ureal eventually_elim2 by force     
+  with Lim_transform_eventually[OF this lim] show ?thesis by simp
+next
+  case (PInf)
+  then have "1/l = 0" by auto
+  then show ?thesis using tendsto_inverse_ereal_PInf assms PInf by auto  
+next
+  case (MInf)
+  then have "1/l = 0" by auto
+  have "1/z = -1/ -z" if "z < 0" for z::ereal 
+    apply (cases z) using divide_ereal_def \<open> z < 0 \<close> by auto
+  moreover have "eventually (\<lambda>n. u n < 0) F" by (metis (no_types) MInf assms(1) tendsto_MInfty zero_ereal_def)
+  ultimately have *: "eventually (\<lambda>n.  -1/-u n =  1/u n) F" by (simp add: eventually_mono) 
+
+  def v \<equiv> "\<lambda>n. - u n"
+  have "(v \<longlongrightarrow> \<infinity>) F" unfolding v_def using MInf assms(1) tendsto_uminus_ereal by fastforce
+  then have "((\<lambda>n. 1/v n) \<longlongrightarrow> 0) F" using  tendsto_inverse_ereal_PInf by auto  
+  then have "((\<lambda>n. -1/v n) \<longlongrightarrow> 0) F" using tendsto_uminus_ereal by fastforce
+  then show ?thesis unfolding v_def using Lim_transform_eventually[OF *] \<open> 1/l = 0 \<close> by auto
+qed
+
+lemma tendsto_divide_ereal:
+  fixes f g::"_ \<Rightarrow> ereal"
+  assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "m \<noteq> 0" "\<not>(abs(l) = \<infinity> \<and> abs(m) = \<infinity>)"
+  shows  "((\<lambda>x. f x / g x) \<longlongrightarrow> l / m) F"
+proof -
+  def h \<equiv> "\<lambda>x. 1/ g x"
+  have *: "(h \<longlongrightarrow> 1/m) F" unfolding h_def using assms(2) assms(3) tendsto_inverse_ereal by auto
+  have "((\<lambda>x. f x * h x) \<longlongrightarrow> l * (1/m)) F" 
+    apply (rule tendsto_mult_ereal[OF assms(1) *]) using assms(3) assms(4) by (auto simp add: divide_ereal_def)
+  moreover have "f x * h x = f x / g x" for x unfolding h_def by (simp add: divide_ereal_def)
+  moreover have "l * (1/m) = l/m" by (simp add: divide_ereal_def)
+  ultimately show ?thesis unfolding h_def using Lim_transform_eventually by auto
+qed
+
+
+subsubsection {*Further limits*}
+
 lemma id_nat_ereal_tendsto_PInf:
   "(\<lambda> n::nat. real n) \<longlonglongrightarrow> \<infinity>"
 by (simp add: filterlim_real_sequentially tendsto_PInfty_eq_at_top)
@@ -992,6 +1108,8 @@ proof (cases "finite S")
   assume "finite S" thus ?thesis using assms
     by (induct, simp, simp add: tendsto_add_ereal_general2 assms)
 qed(simp)
+
+subsubsection {*Limsups and liminfs*}
 
 lemma limsup_finite_then_bounded:
   fixes u::"nat \<Rightarrow> real"
@@ -1248,9 +1366,71 @@ next
   then show ?thesis unfolding w_def by simp
 qed
 
+lemma ereal_limsup_lim_mult:
+  fixes u v::"nat \<Rightarrow> ereal"
+  assumes "u \<longlonglongrightarrow> a" "a>0" "a \<noteq> \<infinity>"
+  shows "limsup (\<lambda>n. u n * v n) = a * limsup v"
+proof -
+  def w \<equiv> "\<lambda>n. u n * v n"
+  obtain r where r: "subseq r" "(v o r) \<longlonglongrightarrow> limsup v" using limsup_subseq_lim by auto
+  have "(u o r) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ r by auto
+  with tendsto_mult_ereal[OF this r(2)] have "(\<lambda>n. (u o r) n * (v o r) n) \<longlonglongrightarrow> a * limsup v" using assms(2) assms(3) by auto
+  moreover have "\<And>n. (w o r) n = (u o r) n * (v o r) n" unfolding w_def by auto
+  ultimately have "(w o r) \<longlonglongrightarrow> a * limsup v" unfolding w_def by presburger
+  then have "limsup (w o r) = a * limsup v" by (simp add: tendsto_iff_Liminf_eq_Limsup) 
+  then have I: "limsup w \<ge> a * limsup v" by (metis limsup_subseq_mono r(1))
 
+  obtain s where s: "subseq s" "(w o s) \<longlonglongrightarrow> limsup w" using limsup_subseq_lim by auto
+  have *: "(u o s) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ s by auto
+  have "eventually (\<lambda>n. (u o s) n > 0) sequentially" using assms(2) * order_tendsto_iff by blast
+  moreover have "eventually (\<lambda>n. (u o s) n < \<infinity>) sequentially" using assms(3) * order_tendsto_iff by blast
+  moreover
+  {
+     fix n assume "(u o s) n > 0" "(u o s) n < \<infinity>"
+     then have "(w o s) n / (u o s) n = (v o s) n" unfolding w_def by (auto simp add: ereal_divide_eq)
+  }
+  ultimately have "eventually (\<lambda>n. (w o s) n / (u o s) n = (v o s) n) sequentially" using eventually_elim2 by force
+  moreover have "(\<lambda>n. (w o s) n / (u o s) n) \<longlonglongrightarrow> (limsup w) / a" 
+    apply (rule tendsto_divide_ereal[OF s(2) *]) using assms(2) assms(3) by auto
+  ultimately have "(v o s) \<longlonglongrightarrow> (limsup w) / a" using Lim_transform_eventually by fastforce
+  then have "limsup (v o s) =  (limsup w) / a" by (simp add: tendsto_iff_Liminf_eq_Limsup) 
+  then have "limsup v \<ge> (limsup w) / a" by (metis limsup_subseq_mono s(1))
+  then have "a * limsup v \<ge> limsup w" using assms(2) assms(3) by (simp add: ereal_divide_le_pos) 
+  then show ?thesis using I unfolding w_def by auto
+qed
 
+lemma ereal_liminf_lim_mult:
+  fixes u v::"nat \<Rightarrow> ereal"
+  assumes "u \<longlonglongrightarrow> a" "a>0" "a \<noteq> \<infinity>"
+  shows "liminf (\<lambda>n. u n * v n) = a * liminf v"
+proof -
+  def w \<equiv> "\<lambda>n. u n * v n"
+  obtain r where r: "subseq r" "(v o r) \<longlonglongrightarrow> liminf v" using liminf_subseq_lim by auto
+  have "(u o r) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ r by auto
+  with tendsto_mult_ereal[OF this r(2)] have "(\<lambda>n. (u o r) n * (v o r) n) \<longlonglongrightarrow> a * liminf v" using assms(2) assms(3) by auto
+  moreover have "\<And>n. (w o r) n = (u o r) n * (v o r) n" unfolding w_def by auto
+  ultimately have "(w o r) \<longlonglongrightarrow> a * liminf v" unfolding w_def by presburger
+  then have "liminf (w o r) = a * liminf v" by (simp add: tendsto_iff_Liminf_eq_Limsup) 
+  then have I: "liminf w \<le> a * liminf v" by (metis liminf_subseq_mono r(1))
 
+  obtain s where s: "subseq s" "(w o s) \<longlonglongrightarrow> liminf w" using liminf_subseq_lim by auto
+  have *: "(u o s) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ s by auto
+  have "eventually (\<lambda>n. (u o s) n > 0) sequentially" using assms(2) * order_tendsto_iff by blast
+  moreover have "eventually (\<lambda>n. (u o s) n < \<infinity>) sequentially" using assms(3) * order_tendsto_iff by blast
+  moreover
+  {
+     fix n assume "(u o s) n > 0" "(u o s) n < \<infinity>"
+     then have "(w o s) n / (u o s) n = (v o s) n" unfolding w_def by (auto simp add: ereal_divide_eq)
+  }
+  ultimately have "eventually (\<lambda>n. (w o s) n / (u o s) n = (v o s) n) sequentially" using eventually_elim2 by force
+  moreover have "(\<lambda>n. (w o s) n / (u o s) n) \<longlonglongrightarrow> (liminf w) / a" 
+    apply (rule tendsto_divide_ereal[OF s(2) *]) using assms(2) assms(3) by auto
+  ultimately have "(v o s) \<longlonglongrightarrow> (liminf w) / a" using Lim_transform_eventually by fastforce
+  then have "liminf (v o s) =  (liminf w) / a" by (simp add: tendsto_iff_Liminf_eq_Limsup) 
+  then have "liminf v \<le> (liminf w) / a" by (metis liminf_subseq_mono s(1))
+  then have "a * liminf v \<le> liminf w" using assms(2) assms(3) by (simp add: ereal_le_divide_pos)  
+  then show ?thesis using I unfolding w_def by auto
+qed
 
 
 subsection {*sigma-algebra.thy*}
@@ -2078,7 +2258,8 @@ qed (simp add: assms)
 
 text {* The next lemma shows that $L^1$ convergence of a sequence of functions follows from almost
 everywhere convergence and the weaker condition of the convergence of the integrated norms (or even
-just the nontrivial inequality about them). Useful in a lot of contexts!
+just the nontrivial inequality about them). Useful in a lot of contexts! This statement (or its 
+variations) are known as Scheffe lemma.
 
 Informal quick textbook proof:
 Let $G_n(x) = \norm{f x} + \norm{F_n x} - \norm{(f-F_n)(x)}$. Then $\int \liminf G_n \leq
@@ -2088,7 +2269,7 @@ hence $\limsup \int \norm{f-F_n} \leq 0$. QED
 The formalization is more painful as one should jump back and forth between reals and ereals and justify
 all the time positivity or integrability (thankfully, measurability is handled more or less automatically).*}
 
-lemma AE_and_int_bound_implies_L1_conv:
+lemma Scheffe_lemma1:
    assumes "\<And> n. integrable M (F n)" "integrable M f"
            "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
            "limsup (\<lambda>n. \<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
@@ -2190,13 +2371,13 @@ proof -
   then show ?thesis using tendsto_iff_Liminf_eq_Limsup trivial_limit_sequentially by blast
 qed
 
-lemma AE_and_int_bound_implies_L1_conv2:
+lemma Scheffe_lemma2:
   fixes F::"nat \<Rightarrow> 'a \<Rightarrow> 'b::{banach, second_countable_topology}"
    assumes "\<And> n::nat. F n \<in> borel_measurable M" "integrable M f"
            "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
            "\<And>n. (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
     shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
-proof (rule AE_and_int_bound_implies_L1_conv)
+proof (rule Scheffe_lemma1)
   fix n::nat
   have " (\<integral>\<^sup>+ x. norm(f x) \<partial>M) < \<infinity>" using assms(2) by (metis has_bochner_integral_implies_finite_norm integrable.cases)
   then have " (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) < \<infinity>" using assms(4)[of n] by auto
