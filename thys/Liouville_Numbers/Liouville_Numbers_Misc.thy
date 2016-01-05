@@ -9,7 +9,6 @@ subsection \<open>Preliminary lemmas\<close>
 theory Liouville_Numbers_Misc
 imports
   Complex_Main
-  "$AFP/Algebraic_Numbers/Algebraic_Numbers"
   "~~/src/HOL/Library/Poly_Deriv"
 begin
 
@@ -50,7 +49,7 @@ lemma Rats_eq_int_div_int': "(\<rat> :: real set) = {of_int p / of_int q |p q. q
 proof safe
   fix x :: real assume "x \<in> \<rat>"
   then obtain p q where pq: "x = of_int p / of_int q" "q \<noteq> 0" 
-    by (subst (asm) Rats_eq_int_div_int) (auto simp: real_of_int_def)
+    by (subst (asm) Rats_eq_int_div_int) auto
   show "\<exists>p q. x = real_of_int p / real_of_int q \<and> 0 < q"
   proof (cases "q > 0")
     case False
@@ -63,38 +62,6 @@ lemma Rats_cases':
   obtains p q where "q > 0" "x = of_int p / of_int q"
   using assms by (subst (asm) Rats_eq_int_div_int') auto
 
-lemma rpoly_smult: "rpoly (Polynomial.smult s p) x = s * rpoly p x"
-  unfolding eval_poly_def by auto
-
-lemma continuous_on_poly [continuous_intros]: 
-  fixes p :: "'a :: {real_normed_field} poly"
-  assumes "continuous_on A f"
-  shows   "continuous_on A (\<lambda>x. poly p (f x))"
-proof -
-  have "continuous_on A (\<lambda>x. (\<Sum>i\<le>degree p. (f x) ^ i * coeff p i))" 
-    by (intro continuous_intros assms)
-  also have "\<dots> = (\<lambda>x. poly p (f x))" by (intro ext) (simp add: poly_as_setsum)
-  finally show ?thesis .
-qed
-
-text \<open>
-  The following variant of the Mean Value Theorem for polynomials does not require us
-  to know which of the two boundaries is lower.
-\<close>
-lemma poly_MVT':
-  assumes "{min a b..max a b} \<subseteq> A"
-  shows   "\<exists>x\<in>A. poly p b - poly p a = (b - a) * poly (pderiv p) (x::real)"
-proof (cases a b rule: linorder_cases)
-  case less
-  from poly_MVT[OF less, of p] guess x by (elim exE conjE)
-  thus ?thesis by (intro bexI[of _ x]) (auto intro!: subsetD[OF assms])
-
-next
-  case greater
-  from poly_MVT[OF greater, of p] guess x by (elim exE conjE)
-  thus ?thesis by (intro bexI[of _ x]) (auto simp: algebra_simps intro!: subsetD[OF assms])
-qed (insert assms, auto)
-
 
 text \<open>
   Algebraic numbers can be defined in two equivalent ways: all real numbers that are 
@@ -104,16 +71,53 @@ text \<open>
   The equivalence is obvious since any rational polynomial can be multiplied with the 
   LCM of its coefficients, yielding an integer polynomial with the same roots.
 \<close>
-lemma algebraicE:
-  assumes "algebraic (x :: real)"
-  obtains p where "\<And>n. coeff p n \<in> \<int>" "p \<noteq> 0" "poly p x = 0"
-proof -
-  from assms obtain p where p: "p \<noteq> 0" "rpoly p x = 0"
-    unfolding algebraic_def by auto
-  def cs \<equiv> "map quotient_of (coeffs p)"
-  def d \<equiv> "Lcm (set (map snd cs))"
-  def p' \<equiv> "real_of_rat_poly (smult (of_int d) p)"
+subsection \<open>Algebraic numbers\<close>
 
+definition algebraic :: "'a :: field_char_0 \<Rightarrow> bool" where
+  "algebraic x \<longleftrightarrow> (\<exists>p. (\<forall>i. coeff p i \<in> \<int>) \<and> p \<noteq> 0 \<and> poly p x = 0)"
+
+lemma algebraicI:
+  assumes "\<And>i. coeff p i \<in> \<int>" "p \<noteq> 0" "poly p x = 0"
+  shows   "algebraic x"
+  using assms unfolding algebraic_def by blast
+  
+lemma algebraicE:
+  assumes "algebraic x"
+  obtains p where "\<And>i. coeff p i \<in> \<int>" "p \<noteq> 0" "poly p x = 0"
+  using assms unfolding algebraic_def by blast
+
+lemma quotient_of_denom_pos': "snd (quotient_of x) > 0"
+  using quotient_of_denom_pos[OF surjective_pairing] .
+  
+lemma of_int_div_in_Ints: 
+  "b dvd a \<Longrightarrow> of_int a div of_int b \<in> (\<int> :: 'a :: ring_div set)"
+proof (cases "of_int b = (0 :: 'a)")
+  assume "b dvd a" "of_int b \<noteq> (0::'a)"
+  then obtain c where "a = b * c" by (elim dvdE)
+  with \<open>of_int b \<noteq> (0::'a)\<close> show ?thesis by simp
+qed auto
+
+lemma of_int_divide_in_Ints: 
+  "b dvd a \<Longrightarrow> of_int a / of_int b \<in> (\<int> :: 'a :: field set)"
+proof (cases "of_int b = (0 :: 'a)")
+  assume "b dvd a" "of_int b \<noteq> (0::'a)"
+  then obtain c where "a = b * c" by (elim dvdE)
+  with \<open>of_int b \<noteq> (0::'a)\<close> show ?thesis by simp
+qed auto
+
+lemma algebraic_altdef:
+  fixes p :: "'a :: field_char_0 poly"
+  shows "algebraic x \<longleftrightarrow> (\<exists>p. (\<forall>i. coeff p i \<in> \<rat>) \<and> p \<noteq> 0 \<and> poly p x = 0)"
+proof safe
+  fix p assume rat: "\<forall>i. coeff p i \<in> \<rat>" and root: "poly p x = 0" and nz: "p \<noteq> 0"
+  def cs \<equiv> "coeffs p"
+  from rat have "\<forall>c\<in>range (coeff p). \<exists>c'. c = of_rat c'" unfolding Rats_def by blast
+  then obtain f where f: "\<And>i. coeff p i = of_rat (f (coeff p i))" 
+    by (subst (asm) bchoice_iff) blast
+  def cs' \<equiv> "map (quotient_of \<circ> f) (coeffs p)"
+  def d \<equiv> "Lcm (set (map snd cs'))"
+  def p' \<equiv> "smult (of_int d) p"
+  
   have "\<forall>n. coeff p' n \<in> \<int>"
   proof
     fix n :: nat
@@ -121,28 +125,39 @@ proof -
     proof (cases "n \<le> degree p")
       case True
       def c \<equiv> "coeff p n"
-      def a \<equiv> "fst (quotient_of c)" and b \<equiv> "snd (quotient_of c)"
-      have b_pos: "b > 0" unfolding b_def using quotient_of_nonzero by simp
-      have "coeff p' n = of_rat (of_int d * c)" by (simp add: p'_def c_def)
-      also have "c = of_int a / of_int b" unfolding a_def b_def by (simp add: quotient_of_div)
-      also have "of_int d * \<dots> = of_int a * (of_int d / of_int b)" by simp
-      also from True p have "b dvd d" unfolding b_def d_def c_def cs_def
-        by (intro dvd_Lcm_int) (auto simp: o_def coeffs_def simp del: upt_Suc)
-      with b_pos have "rat_of_int d / of_int b \<in> \<int>" 
-        by (auto elim!: dvdE simp: algebra_simps)
-      from Ints_mult[OF _ this] have "of_int a * (rat_of_int d / of_int b) \<in> \<int>" by simp
-      hence "real_of_rat (of_int a * (rat_of_int d / of_int b)) \<in> \<int>"
-        by (elim Ints_cases) simp
-      finally show "coeff p' n \<in> \<int>" .
+      def a \<equiv> "fst (quotient_of (f (coeff p n)))" and b \<equiv> "snd (quotient_of (f (coeff p n)))"
+      have b_pos: "b > 0" unfolding b_def using quotient_of_denom_pos' by simp
+      have "coeff p' n = of_int d * coeff p n" by (simp add: p'_def)
+      also have "coeff p n = of_rat (of_int a / of_int b)" unfolding a_def b_def
+        by (subst quotient_of_div [of "f (coeff p n)", symmetric])
+           (simp_all add: f [symmetric])
+      also have "of_int d * \<dots> = of_rat (of_int (a*d) / of_int b)"
+        by (simp add: of_rat_mult of_rat_divide)
+      also from nz True have "b \<in> snd ` set cs'" unfolding cs'_def
+        by (force simp: o_def b_def coeffs_def simp del: upt_Suc)
+      hence "b dvd (a * d)" unfolding d_def by simp
+      hence "of_int (a * d) / of_int b \<in> (\<int> :: rat set)"
+        by (rule of_int_divide_in_Ints)
+      hence "of_rat (of_int (a * d) / of_int b) \<in> \<int>" by (elim Ints_cases) auto
+      finally show ?thesis .
     qed (auto simp: p'_def not_le coeff_eq_0)
   qed
-  moreover have "set (map snd cs) \<subseteq> {0<..}"
-    unfolding cs_def using quotient_of_nonzero by (auto simp: coeffs_def simp del: upt_Suc) 
-  hence "d \<noteq> 0" unfolding d_def by (induction cs) simp_all
-  with p have "p' \<noteq> 0" by (simp add: p'_def)
-  moreover from p have "poly p' x = 0" by (simp add: p'_def poly_real_of_rat_poly)
-  ultimately show ?thesis using that[of p'] by blast
+  
+  moreover have "set (map snd cs') \<subseteq> {0<..}"
+    unfolding cs'_def using quotient_of_denom_pos' by (auto simp: coeffs_def simp del: upt_Suc) 
+  hence "d \<noteq> 0" unfolding d_def by (induction cs') simp_all
+  with nz have "p' \<noteq> 0" by (simp add: p'_def)
+  moreover from root have "poly p' x = 0" by (simp add: p'_def)
+  ultimately show "algebraic x" unfolding algebraic_def by blast
+next
+
+  assume "algebraic x"
+  then obtain p where p: "\<And>i. coeff p i \<in> \<int>" "poly p x = 0" "p \<noteq> 0" 
+    by (force simp: algebraic_def)
+  moreover have "coeff p i \<in> \<int> \<Longrightarrow> coeff p i \<in> \<rat>" for i by (elim Ints_cases) simp
+  ultimately show  "(\<exists>p. (\<forall>i. coeff p i \<in> \<rat>) \<and> p \<noteq> 0 \<and> poly p x = 0)" by auto
 qed
+
 
 text \<open>
   The following inequality gives a lower bound for the absolute value of an 
@@ -153,11 +168,11 @@ lemma int_poly_rat_no_root_ge:
   assumes "\<And>n. coeff p n \<in> \<int>"
   assumes "b > 0" "poly p (a / b) \<noteq> 0"
   defines "n \<equiv> degree p"
-  shows   "abs (poly p (a / b)) \<ge> 1 / real b ^ n"
+  shows   "abs (poly p (a / b)) \<ge> 1 / of_int b ^ n"
 proof -
-  let ?S = "(\<Sum>i\<le>n. coeff p i * real a ^ i * (real b ^ (n - i)))"
-  from \<open>b > 0\<close> have eq: "?S = real b ^ n * poly p (a / b)"
-    by (simp add: poly_as_setsum power_divide mult_ac n_def setsum_right_distrib power_diff)
+  let ?S = "(\<Sum>i\<le>n. coeff p i * of_int a ^ i * (of_int b ^ (n - i)))"
+  from \<open>b > 0\<close> have eq: "?S = of_int b ^ n * poly p (a / b)"
+    by (simp add: poly_altdef power_divide mult_ac n_def setsum_right_distrib power_diff)
   have "?S \<in> \<int>" by (intro Ints_setsum Ints_mult assms Ints_power) simp_all
   moreover from assms have "?S \<noteq> 0" by (subst eq) auto
   ultimately have "abs ?S \<ge> 1" by (elim Ints_cases) simp

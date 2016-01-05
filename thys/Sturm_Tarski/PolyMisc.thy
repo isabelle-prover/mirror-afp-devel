@@ -7,11 +7,6 @@ theory PolyMisc imports
   "~~/src/HOL/Library/Poly_Deriv"
 begin
 
-section{*lead coefficient*}
-
-definition lead_coeff:: "'a::zero poly \<Rightarrow> 'a" where
-  "lead_coeff p= coeff p (degree p)"
-
 section{*Misc*}
 
 lemma smult_cancel:
@@ -122,48 +117,6 @@ next
   thus ?thesis unfolding dvd_def by auto
 qed
 
-lemma order_smult:
-  assumes "c\<noteq>0" 
-  shows "order x (smult c p) = order x p " 
-proof -
-  have " \<forall>n. let p=[:- x, 1:] ^ Suc n in lead_coeff p=1"
-    unfolding lead_coeff_def by (metis coeff_linear_power degree_linear_power)
-  hence "\<forall>n. [:- x, 1:] ^ Suc n dvd smult c p \<longleftrightarrow>  [:- x, 1:] ^ Suc n dvd p" 
-    using dvd_monic[OF _ _ `c\<noteq>0`] by (metis dvd_smult)
-  thus ?thesis unfolding order_def by auto
-qed
-
-lemma order_1_eq_0 [simp]:"order x 1=0" by (metis order_root poly_1 zero_neq_one)
-
-lemma order_power_n_n: "order a ([:-a,1:]^n)=n" 
-proof (induct n) (*might be proved more concisely using nat_less_induct*)
-  case 0
-  thus ?case by (metis order_root poly_1 power_0 zero_neq_one)
-next 
-  case (Suc n)
-  have "order a ([:- a, 1:] ^ Suc n)=order a ([:- a, 1:] ^ n) + order a [:-a,1:]" 
-    by (metis (no_types, hide_lams) One_nat_def add_Suc_right monoid_add_class.add.right_neutral 
-      one_neq_zero order_mult pCons_eq_0_iff power_add power_eq_0_iff power_one_right)
-  moreover have "order a [:-a,1:]=1" unfolding order_def
-    proof (rule Least_equality,rule ccontr)
-      assume  "\<not> \<not> [:- a, 1:] ^ Suc 1 dvd [:- a, 1:]"
-      hence "[:- a, 1:] ^ Suc 1 dvd [:- a, 1:]" by simp
-      hence "degree ([:- a, 1:] ^ Suc 1) \<le> degree ([:- a, 1:] )" 
-        by (rule dvd_imp_degree_le,auto) 
-      thus False by auto
-    next
-      fix y assume asm:"\<not> [:- a, 1:] ^ Suc y dvd [:- a, 1:]"
-      show "1 \<le> y" 
-        proof (rule ccontr)
-          assume "\<not> 1 \<le> y"
-          hence "y=0" by auto
-          hence "[:- a, 1:] ^ Suc y dvd [:- a, 1:]" by auto
-          thus False using asm by auto
-        qed
-    qed
-  ultimately show ?case using Suc by auto
-qed
-
 lemma poly_power_n_eq:
   fixes x::"'a :: idom"
   assumes "n\<noteq>0"
@@ -182,12 +135,6 @@ proof -
   moreover have "poly ([:-a,1:]^n) x=0 = (x=a)" by(rule poly_power_n_eq, metis assms even_zero)    
   ultimately show ?thesis by linarith
 qed
-
-lemma poly_IVT:
-  fixes p::"real poly"
-  assumes "a<b" and "poly p a * poly p b < 0"
-  shows "\<exists>x>a. x < b \<and> poly p x = 0"
-by (metis assms(1) assms(2) less_not_sym mult_less_0_iff poly_IVT_neg poly_IVT_pos)
 
 lemma div_gcd_coprime_poly:
   fixes p q::"'a::field poly"
@@ -232,134 +179,6 @@ proof -
 qed
 
 
-section{*Lemmas about pcompose*}
-
-lemma degree_mult_eq_0:
-  fixes p q:: "'a :: idom poly"
-  shows "degree (p*q) = 0 \<longleftrightarrow> p=0 \<or> q=0 \<or> (p\<noteq>0 \<and> q\<noteq>0 \<and> degree p =0 \<and> degree q =0)"
-by (auto simp add:degree_mult_eq)
-
-lemma pcompose_const[simp]:"pcompose [:a:] q = [:a:]" by (subst pcompose_pCons,simp) 
-
-lemma pcompose_0':"pcompose p 0=[:coeff p 0:]"
-  apply (induct p)
-  apply (auto simp add:pcompose_pCons)
-done
-
-lemma degree_pcompose:
-  fixes p q:: "'a::idom poly"
-  shows "degree(pcompose p q) = degree p * degree q"
-proof (induct p)
-  case 0
-  thus ?case by auto
-next
-  case (pCons a p)
-  have "degree (q * pcompose p q) = 0 \<Longrightarrow> ?case" 
-    proof (cases "p=0")
-      case True
-      thus ?thesis by auto
-    next
-      case False assume "degree (q * pcompose p q) = 0"
-      hence "degree q=0 \<or> pcompose p q=0" by (auto simp add:degree_mult_eq_0)
-      moreover have "\<lbrakk>pcompose p q=0;degree q\<noteq>0\<rbrakk> \<Longrightarrow> False" using pCons.hyps(2) `p\<noteq>0` 
-        proof -
-          assume "pcompose p q=0" "degree q\<noteq>0"
-          hence "degree p=0" using pCons.hyps(2) by auto
-          then obtain a1 where "p=[:a1:]"
-            by (metis degree_pCons_eq_if old.nat.distinct(2) pCons_cases)
-          thus False using `pcompose p q=0` `p\<noteq>0` by auto
-        qed
-      ultimately have "degree (pCons a p) * degree q=0" by auto
-      moreover have "degree (pcompose (pCons a p) q) = 0" 
-        proof -
-          have" 0 = max (degree [:a:]) (degree (q*pcompose p q))"
-            using `degree (q * pcompose p q) = 0` by simp
-          also have "... \<ge> degree ([:a:] + q * pcompose p q)"
-            by (rule degree_add_le_max)
-          finally show ?thesis by (auto simp add:pcompose_pCons)
-        qed
-      ultimately show ?thesis by simp
-    qed
-  moreover have "degree (q * pcompose p q)>0 \<Longrightarrow> ?case" 
-    proof -
-      assume asm:"0 < degree (q * pcompose p q)"
-      hence "p\<noteq>0" "q\<noteq>0" "pcompose p q\<noteq>0" by auto
-      have "degree (pcompose (pCons a p) q) = degree ( q * pcompose p q)"
-        unfolding pcompose_pCons
-        using degree_add_eq_right[of "[:a:]" ] asm by auto       
-      thus ?thesis 
-        using pCons.hyps(2) degree_mult_eq[OF `q\<noteq>0` `pcompose p q\<noteq>0`] by auto
-    qed
-  ultimately show ?case by blast
-qed
-
-lemma pcompose_eq_0:
-  fixes p q:: "'a::idom poly"
-  assumes "pcompose p q=0" "degree q>0" 
-  shows "p=0"
-proof -
-  have "degree p=0" using assms degree_pcompose[of p q] by auto
-  then obtain a where "p=[:a:]" 
-    by (metis degree_pCons_eq_if gr0_conv_Suc neq0_conv pCons_cases)
-  hence "a=0" using assms(1) by auto
-  thus ?thesis using `p=[:a:]` by simp
-qed
-
-
-lemma lead_coeff_pCons[simp]:
-    "p\<noteq>0 \<Longrightarrow>lead_coeff (pCons a p) = lead_coeff p"
-    "p=0 \<Longrightarrow> lead_coeff (pCons a p) = a"
-unfolding lead_coeff_def by auto
-
-lemma lead_coeff_0[simp]:"lead_coeff 0 =0" 
-  unfolding lead_coeff_def by auto
-
-lemma lead_coeff_mult:
-   fixes p q::"'a ::idom poly"
-   shows "lead_coeff (p * q) = lead_coeff p * lead_coeff q"
-by (unfold lead_coeff_def,cases "p=0 \<or> q=0",auto simp add:coeff_mult_degree_sum degree_mult_eq)
-
-lemma lead_coeff_add_le:
-  assumes "degree p < degree q"
-  shows "lead_coeff (p+q) = lead_coeff q" 
-using assms unfolding lead_coeff_def
-by (metis coeff_add coeff_eq_0 monoid_add_class.add.left_neutral degree_add_eq_right)
-
-lemma lead_coeff_minus:
-  "lead_coeff (-p) = - lead_coeff p"
-by (metis coeff_minus degree_minus lead_coeff_def)
-
-
-lemma lead_coeff_comp:
-  fixes p q:: "'a::idom poly"
-  assumes "degree q > 0" 
-  shows "lead_coeff (pcompose p q) = lead_coeff p * lead_coeff q ^ (degree p)"
-proof (induct p)
-  case 0
-  thus ?case unfolding lead_coeff_def by auto
-next
-  case (pCons a p)
-  have "degree ( q * pcompose p q) = 0 \<Longrightarrow> ?case"
-    proof -
-      assume "degree ( q * pcompose p q) = 0"
-      hence "pcompose p q = 0" by (metis assms degree_0 degree_mult_eq_0 neq0_conv)
-      hence "p=0" using pcompose_eq_0[OF _ `degree q > 0`] by simp
-      thus ?thesis by auto
-    qed
-  moreover have "degree ( q * pcompose p q) > 0 \<Longrightarrow> ?case" 
-    proof -
-      assume "degree ( q * pcompose p q) > 0"
-      hence "lead_coeff (pcompose (pCons a p) q) =lead_coeff ( q * pcompose p q)"
-        by (auto simp add:pcompose_pCons lead_coeff_add_le)
-      also have "... = lead_coeff q * (lead_coeff p * lead_coeff q ^ degree p)"
-        using pCons.hyps(2) lead_coeff_mult[of q "pcompose p q"] by simp
-      also have "... = lead_coeff p * lead_coeff q ^ (degree p + 1)"
-        by auto
-      finally show ?thesis by auto
-    qed
-  ultimately show ?case by blast
-qed 
-
 section{*Bound of polynomials*}
 
 definition sgn_pos_inf :: "('a::real_normed_vector) poly \<Rightarrow> 'a" where 
@@ -375,38 +194,6 @@ proof -
     unfolding sgn_pos_inf_def by (subst lead_coeff_comp,unfold lead_coeff_def,auto)
   thus ?thesis unfolding sgn_neg_inf_def 
     by (metis mult.right_neutral mult_minus1_right neg_one_even_power neg_one_odd_power sgn_minus)
-qed
-
-lemma poly_pinfty_gt_lc:
-  fixes p:: "real poly"
-  assumes  "lead_coeff p > 0" 
-  shows "\<exists> n. \<forall> x \<ge> n. poly p x \<ge> lead_coeff p" using assms
-proof (induct p)
-  case 0
-  thus ?case by auto
-next
-  case (pCons a p)
-  have "\<lbrakk>a\<noteq>0;p=0\<rbrakk> \<Longrightarrow> ?case" by auto
-  moreover have "p\<noteq>0 \<Longrightarrow> ?case"
-    proof -
-      assume "p\<noteq>0"
-      then obtain n1 where gte_lcoeff:"\<forall>x\<ge>n1. lead_coeff p \<le> poly p x" using that pCons by auto
-      have gt_0:"lead_coeff p >0" using pCons(3) `p\<noteq>0` by auto
-      def n\<equiv>"max n1 (1+ \<bar>a\<bar>/(lead_coeff p))"
-      show ?thesis 
-        proof (rule_tac x=n in exI,rule,rule) 
-          fix x assume "n \<le> x"
-          hence "lead_coeff p \<le> poly p x" 
-            using gte_lcoeff unfolding n_def by auto
-          hence " \<bar>a\<bar>/(lead_coeff p) \<ge> \<bar>a\<bar>/(poly p x)" and "poly p x>0" using gt_0
-            by (intro frac_le,auto)
-          hence "x\<ge>1+ \<bar>a\<bar>/(poly p x)" using `n\<le>x`[unfolded n_def] by auto
-          thus "lead_coeff (pCons a p) \<le> poly (pCons a p) x"
-            using `lead_coeff p \<le> poly p x` `poly p x>0` `p\<noteq>0`
-            by (auto simp add:field_simps)
-        qed
-    qed
-  ultimately show ?case by fastforce
 qed
 
 lemma poly_sgn_eventually_at_top:

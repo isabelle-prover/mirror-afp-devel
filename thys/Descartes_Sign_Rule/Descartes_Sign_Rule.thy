@@ -9,10 +9,8 @@ section \<open>Sign changes and Descartes' Rule of Signs\<close>
 
 theory Descartes_Sign_Rule
 imports 
-  Main
-  Real
-   "~~/src/HOL/Library/Polynomial"
-  Descartes_Poly_Lemma_Bucket
+  Complex_Main
+  "~~/src/HOL/Library/Poly_Deriv"
 begin
 
 lemma op_plus_0: "(op + (0 :: 'a :: monoid_add)) = id"
@@ -22,10 +20,64 @@ lemma filter_dropWhile:
   "filter (\<lambda>x. \<not>P x) (dropWhile P xs) = filter (\<lambda>x. \<not>P x) xs"
   by (induction xs) simp_all
 
-(* TODO Move *)
-lemma remdups_adj_replicate:
-  "remdups_adj (replicate n x) = (if n = 0 then [] else [x])"
-  by (induction n) (auto simp: remdups_adj_Cons)
+
+subsection \<open>Polynomials\<close> 
+
+text\<open>
+  A real polynomial whose leading and constant coefficients have opposite
+  non-zero signs must have a positive root.
+\<close>
+lemma pos_root_exI:
+  assumes "poly p 0 * lead_coeff p < (0 :: real)"
+  obtains x where "x > 0" "poly p x = 0"
+proof -
+  {
+    fix p :: "real poly" assume p: "poly p 0 < 0"
+    assume "lead_coeff p > 0"
+    also from poly_pinfty_gt_lc[OF \<open>lead_coeff p > 0\<close>] obtain x0 
+      where "\<And>x. x \<ge> x0 \<Longrightarrow> poly p x \<ge> lead_coeff p" by auto
+    hence "poly p (max x0 1) \<ge> lead_coeff p" by auto
+    finally have "poly p (max x0 1) > 0" .
+    with p have "\<exists>x. x > 0 \<and> x < max x0 1 \<and> poly p x = 0"
+      by (intro poly_IVT mult_neg_pos) auto
+    hence "\<exists>x>0. poly p x = 0"  by auto
+  } note P = this
+
+  show ?thesis
+  proof (cases "lead_coeff p > 0")
+    case True
+    with assms have "poly p 0 < 0" 
+      by (auto simp: mult_less_0_iff)
+    from P[OF this True] that show ?thesis 
+      by blast
+  next
+    case False
+    from False assms have "poly (-p) 0 < 0" 
+      by (auto simp: mult_less_0_iff)
+    moreover from assms have "p \<noteq> 0"
+      by auto
+    with False have "lead_coeff (-p) > 0" 
+      by (cases rule: linorder_cases[of "lead_coeff p" 0]) 
+         (simp_all add: lead_coeff_def)
+    ultimately show ?thesis using that P[of "-p"] by auto
+  qed
+qed
+
+text \<open>
+  Substitute $X$ with $aX$ in a polynomial $p(X)$. This turns all the $X - a$ factors in $p$
+  into factors of the form $X - 1$.
+\<close>
+definition reduce_root where
+  "reduce_root a p = pcompose p [:0, a:]"
+
+lemma reduce_root_pCons: 
+  "reduce_root a (pCons c p) = pCons c (smult a (reduce_root a p))"
+  by (simp add: reduce_root_def pcompose_pCons)
+
+lemma reduce_root_nonzero [simp]: 
+  "a \<noteq> 0 \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> reduce_root a p \<noteq> (0 :: 'a :: idom poly)"
+  unfolding reduce_root_def using pcompose_eq_0[of p "[:0, a:]"] 
+  by auto
 
 
 subsection \<open>Signs\<close>

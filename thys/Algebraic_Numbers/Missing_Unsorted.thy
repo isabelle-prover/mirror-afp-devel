@@ -48,7 +48,7 @@ proof (rule ccontr)
   then obtain n where lt: "cc / bbb < of_nat n" by auto
   from not have "\<not> b ^ n \<le> c" by auto
   hence bnc: "b ^ n > c" by simp
-  have "bb ^ n = inverse (b ^ n)" unfolding bb_def by (rule sym, rule power_inverse)
+  have "bb ^ n = inverse (b ^ n)" unfolding bb_def by (simp add: field_simps)
   also have "\<dots> < cc" unfolding cc_def
     by (rule less_imp_inverse_less[OF bnc c])
   also have "\<dots> < bbb * of_nat n" using lt bbb by (metis mult.commute pos_divide_less_eq)
@@ -209,7 +209,7 @@ lemma setprod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) 
   by (induct n, auto simp: set_upt_Suc)
 
 
-text \<open>For determinant computation, we require the @{const div}-operation.
+text \<open>For determinant computation, we require the @{const "op div"}-operation.
 In order to also support rational and real numbers, we therefore provide the
 following class which has both @{const div} and @{const divide}.\<close>
 
@@ -220,7 +220,7 @@ class ring_div_gcd_field = field + div + gcd +
 begin
 
 subclass ring_div
-  by (unfold_locales, auto simp: div mod field_simps)
+  by unfold_locales (simp_all add: field_simps mod)
 
 subclass ring_gcd
   by (unfold_locales, auto simp: div mod gcd dvd_def field_simps intro: exI[of _ "inverse _"])

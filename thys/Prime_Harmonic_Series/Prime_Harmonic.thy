@@ -9,12 +9,9 @@
 section {* The Prime Harmonic Series *}
 theory Prime_Harmonic
 imports 
-  Main
-  Transcendental
-  "~~/src/HOL/Number_Theory/UniqueFactorization" 
-  "~~/src/HOL/Number_Theory/Eratosthenes"
+  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Number_Theory/Number_Theory"
   Prime_Harmonic_Misc
-  Harmonic_Numbers
   Squarefree_Nat
 begin
 
@@ -63,9 +60,9 @@ proof -
     by (intro setsum_mono divide_left_mono mult_pos_pos)
        (linarith, simp_all add: field_simps less_1_mult)
   also have "\<dots> = (\<Sum>k=Suc 1..n. 1 / (real k - 1/2) - 1 / (real (Suc k) - 1/2))"
-    by (intro setsum.cong refl) (simp_all add: field_simps power2_eq_square real_of_nat_def)
+    by (intro setsum.cong refl) (simp_all add: field_simps power2_eq_square)
   also from n have "\<dots> = 2 / 3 - 1 / (1 / 2 + real n)"
-    by (subst setsum_telescope') (simp_all add: real_of_nat_def)
+    by (subst setsum_telescope') simp_all
   also have "1 + \<dots> \<le> 5/3" by simp
   finally show ?thesis by - simp
 qed
@@ -127,7 +124,7 @@ proof -
   -- \<open>We now show the main result by rearranging the sum over all primes to a product over all
       all squarefree parts times a sum over all square parts, and then applying some simple-minded
       approximation\<close>
-  have "harm n = (\<Sum>n=1..n. 1 / real n)" by (simp add: harm_def field_simps real_of_nat_def)
+  have "harm n = (\<Sum>n=1..n. 1 / real n)" by (simp add: harm_def field_simps)
   also from surj have "\<dots> \<le> (\<Sum>n\<in>f ` (Pow (P n)\<times>{1..n}). 1 / real n)"
     by (intro setsum_mono2 finite_imageI finite_cartesian_product) simp_all
   also from inj have "\<dots> = (\<Sum>x\<in>Pow (P n)\<times>{1..n}. 1 / real (f x))"
@@ -233,11 +230,11 @@ proof
       also have "?f n + ln (5/3) \<ge> 0" by (intro add_nonneg_nonneg listsum_nonneg) simp_all
       hence "?f n + ln (5/3) = norm (?f n + ln (5/3))" by simp
       finally show "norm (ln (ln (n + 1))) \<le> norm (?f n + ln (5/3))"
-        by (simp add: add_ac real_of_nat_def)
+        by (simp add: add_ac)
     qed
   qed fact
   then obtain k where k: "k > 0" "\<And>n. norm (ln (ln (real (n::nat) + 1))) \<le> k" 
-    by (auto elim!: BseqE simp: add_ac real_of_nat_def)
+    by (auto elim!: BseqE simp: add_ac)
 
   def N \<equiv> "nat \<lceil>exp (exp k)\<rceil>"
   have N_pos: "N > 0" unfolding N_def by simp
