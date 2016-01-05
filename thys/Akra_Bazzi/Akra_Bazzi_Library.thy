@@ -2,7 +2,7 @@
   File:   Akra_Bazzi_Library.thy
   Author: Manuel Eberl <eberlm@in.tum.de>
 
-  Lemma bucket for the Akra-Bazzi theorem.
+  Lemma bucket for the Akra–Bazzi theorem.
 *)
 
 section {* Auxiliary lemmas *}
@@ -10,7 +10,7 @@ theory Akra_Bazzi_Library
 imports 
   Complex_Main
   "~~/src/HOL/Multivariate_Analysis/Integration"
-  "../Landau_Symbols/Landau_Library"
+  "../Landau_Symbols/Landau_Symbols"
 begin
 
 declare DERIV_powr[THEN DERIV_chain2, derivative_intros]
@@ -71,36 +71,47 @@ proof-
   thus ?thesis using eventually_at_top_linorder by blast
 qed
 
+lemma tendsto_0_smallo_1: "f \<in> o(\<lambda>x. 1 :: real) \<Longrightarrow> (f \<longlongrightarrow> 0) at_top"
+  by (drule smalloD_tendsto) simp
 
-lemma tendsto_ln_over_ln:
-  assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) \<longlongrightarrow> 1) at_top"
-proof (rule lhospital_at_top_at_top)
-  show "LIM x at_top. ln (c*x) :> at_top"
-    by (intro filterlim_compose[OF ln_at_top] filterlim_tendsto_pos_mult_at_top[OF tendsto_const] 
-              filterlim_ident assms(2))
-  show "eventually (\<lambda>x. ((\<lambda>x. ln (a*x)) has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "inverse a"] assms
-    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "inverse c"] assms
-    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "((\<lambda>x::real. inverse x / inverse x) \<longlongrightarrow> 1) at_top"
-    by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
-qed (simp_all add: eventually_not_equal)
+lemma smallo_1_tendsto_0: "(f \<longlongrightarrow> 0) at_top \<Longrightarrow> f \<in> o(\<lambda>x. 1 :: real)"
+  by (rule smalloI_tendsto) simp_all
 
+lemma filterlim_at_top_smallomega_1: 
+  "f \<in> \<omega>(\<lambda>x. 1 :: real) \<Longrightarrow> eventually (\<lambda>x. f x > 0) at_top \<Longrightarrow> filterlim f at_top at_top"
+  apply (drule smallomegaD_filterlim_at_top, simp)
+  apply (subst filterlim_cong[OF refl refl, of _ "\<lambda>x. abs (f x)"])
+  apply (auto elim!: eventually_mono)
+  done
 
-lemma taylor_up2:
-  assumes "\<forall>t. c \<le> t \<and> t \<le> b \<longrightarrow> (f has_real_derivative f' t) (at t)"
-  assumes "\<forall>t. c \<le> t \<and> t \<le> b \<longrightarrow> (f' has_real_derivative f'' t) (at t)"
-  assumes  "c < b"
-  shows    "\<exists>t. t > c \<and> t < b \<and> f b = f c + f' c * (b - c) + f'' t * (b - c)^2 / 2"
-  using taylor_up[of 2 "op! [f,f',f'']" f c b c] assms
-  by (force simp: eval_nat_numeral less_Suc_eq)
+lemma smallo_imp_abs_less:
+  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x > (0::'a::linordered_field)) at_top"
+  shows   "eventually (\<lambda>x. \<bar>f x\<bar> < g x) at_top"
+proof -
+  have "1/2 > (0::'a)" by simp
+  from landau_o.smallD[OF assms(1) this] assms(2) show ?thesis
+    by eventually_elim auto
+qed
 
-lemma one_plus_x_approx_ex:
-  assumes x: "(x::real) \<ge> -0.5" "x \<le> 0.5"
-  obtains t where "t > -0.5" "t < 0.5" "(1 + x) powr p = 
+lemma smallo_imp_less: 
+  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x > 0) at_top"
+  shows   "eventually (\<lambda>x. f x < g x) at_top"
+  using smallo_imp_abs_less[OF assms] by eventually_elim simp
+
+lemma smallo_imp_le: 
+  assumes "f \<in> o(g)" "eventually (\<lambda>x. g x \<ge> 0) at_top"
+  shows   "eventually (\<lambda>x. f x \<le> g x) at_top"
+  using landau_o.smallD[OF assms(1) zero_less_one] assms(2) by eventually_elim simp
+
+(* TODO MOVE *)
+lemma filterlim_at_right: 
+  "filterlim f (at_right a) F \<longleftrightarrow> eventually (\<lambda>x. f x > a) F \<and> filterlim f (nhds a) F"
+  by (subst filterlim_at) (auto elim!: eventually_mono)
+(* END TODO *)
+
+lemma one_plus_x_powr_approx_ex:
+  assumes x: "abs (x::real) \<le> 1/2"
+  obtains t where "abs t < 1/2" "(1 + x) powr p = 
     1 + p * x + p * (p - 1) * (1 + t) powr (p - 2) / 2 * x ^ 2"
 proof (cases "x = 0")
   assume x': "x \<noteq> 0"
@@ -121,7 +132,7 @@ proof (cases "x = 0")
     using assms x' by (intro taylor[OF _ _ A]) simp_all
   then guess t by (elim exE conjE)
   note t = this
-  with assms have "t > -0.5" "t < 0.5" by (auto split: split_if_asm)
+  with assms have "abs t < 1/2" by (auto split: split_if_asm)
   moreover from t(2) have "(1 + x) powr p = 1 + p * x + p * (p - 1) * (1 + t) powr (p - 2) / 2 * x ^ 2"
     by (simp add: numeral_2_eq_2 of_nat_Suc)
   ultimately show ?thesis by (rule that)
@@ -130,29 +141,58 @@ next
   with that[of 0] show ?thesis by simp
 qed
 
-lemma tendsto_ln_over_powr: 
-  assumes "(a::real) > 0"
-  shows   "((\<lambda>x. ln x / x powr a) \<longlongrightarrow> 0) at_top"
-proof (rule lhospital_at_top_at_top)
-  from assms show "LIM x at_top. x powr a :> at_top" by (rule powr_at_top)
-  show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
-    using eventually_gt_at_top[of "0::real"] by eventually_elim (insert assms, simp)
-  show "eventually (\<lambda>x::real. (ln has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_mono) simp
-  show "eventually (\<lambda>x. ((\<lambda>x. x powr a) has_real_derivative a * x powr (a - 1)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_mono) simp
-  have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
-    using eventually_gt_at_top[of "0::real"] 
-    by (elim eventually_mono) (simp add: field_simps powr_divide2[symmetric] powr_minus)
-  moreover from assms have "((\<lambda>x. inverse a * x powr -a) \<longlongrightarrow> 0) at_top"
-    by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
-  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) \<longlongrightarrow> 0) at_top"
-    by (subst (asm) tendsto_cong) simp_all
+lemma one_plus_x_powr_taylor2:
+  obtains k where "\<And>x. abs (x::real) \<le> 1/2 \<Longrightarrow> abs ((1 + x) powr p - 1 - p*x) \<le> k*x^2"
+proof-
+  def k \<equiv> "\<bar>p*(p - 1)\<bar> * max ((1/2) powr (p - 2)) ((3/2) powr (p - 2)) / 2"
+  show ?thesis
+  proof (rule that[of k])
+    fix x :: real assume "abs x \<le> 1/2"
+    from one_plus_x_powr_approx_ex[OF this, of p] guess t . note t = this
+    from t have "abs ((1 + x) powr p - 1 - p*x) = \<bar>p*(p - 1)\<bar> * (1 + t) powr (p - 2)/2 * x\<^sup>2"
+      by (simp add: abs_mult)
+    also from t(1) have "(1 + t) powr (p - 2) \<le> max ((1/2) powr (p - 2)) ((3/2) powr (p - 2))"
+      by (intro powr_upper_bound) simp_all
+    finally show "abs ((1 + x) powr p - 1 - p*x) \<le> k*x^2" 
+      by (simp add: mult_left_mono mult_right_mono k_def)
+  qed
 qed
 
+lemma one_plus_x_powr_taylor2_bigo:
+  assumes lim: "(f \<longlongrightarrow> 0) at_top"
+  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1 - p * f x) \<in> O(\<lambda>x. f x ^ 2)"
+proof -
+  from one_plus_x_powr_taylor2[of p] guess k .
+  moreover from tendstoD[OF lim, of "1/2"] 
+    have "eventually (\<lambda>x. abs (f x) < 1/2) at_top" by (simp add: dist_real_def)
+  ultimately have "eventually (\<lambda>x. abs ((1 + f x) powr p - 1 - p * f x) \<le> k * abs (f x ^ 2)) at_top"
+    by (auto elim!: eventually_mono)
+  thus ?thesis by (rule bigoI)
+qed
 
-lemma integrable_const_real: "(\<lambda>x :: real. c) integrable_on {a..b}"
-  using integrable_const[of c a b] by simp
+lemma one_plus_x_powr_taylor1_bigo:
+  assumes lim: "(f \<longlongrightarrow> 0) at_top"
+  shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1) \<in> O(\<lambda>x. f x)"
+proof -
+  from assms have "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O(\<lambda>x. (f x)\<^sup>2)"
+    by (rule one_plus_x_powr_taylor2_bigo)
+  also from assms have "f \<in> O(\<lambda>_. 1)" by (intro bigoI_tendsto) simp_all
+  from landau_o.big.mult[of f f, OF _ this] have "(\<lambda>x. (f x)^2) \<in> O(\<lambda>x. f x)"
+    by (simp add: power2_eq_square)
+  finally have A: "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O(f)" .
+  have B: "(\<lambda>x. p * f x) \<in> O(f)" by simp
+  from sum_in_bigo(1)[OF A B] show ?thesis by simp
+qed
+
+lemma x_times_x_minus_1_nonneg: "x \<le> 0 \<or> x \<ge> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<ge> 0"
+proof (elim disjE)
+  assume x: "x \<le> 0"
+  also have "0 \<le> x^2" by simp
+  finally show "x * (x - 1) \<ge> 0" by (simp add: power2_eq_square algebra_simps)
+qed simp
+
+lemma x_times_x_minus_1_nonpos: "x \<ge> 0 \<Longrightarrow> x \<le> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<le> 0"
+  by (intro mult_nonneg_nonpos) simp_all
 
 lemma fundamental_theorem_of_calculus_real:
   "a \<le> b \<Longrightarrow> \<forall>x\<in>{a..b}. (f has_real_derivative f' x) (at x within {a..b}) \<Longrightarrow>
@@ -177,214 +217,7 @@ lemma integral_one_over_x_ln_x:
   by (intro integral_unique fundamental_theorem_of_calculus_real)
      (auto intro!: derivative_eq_intros simp: field_simps)
 
-lemma one_plus_x_approx:
-  assumes x: "(x::real) > 0"
-  obtains t where "t > 0" "t < x" "(1 + x) powr p = 
-    1 + p * x + p * (p - 1) * (1 + t) powr (p - 2) / 2 * x ^ 2"
-  using taylor_up2[of 0 x "\<lambda>x. (1+x) powr p" "\<lambda>x. p*(1+x) powr (p - 1)"]
-proof-
-  let ?f = "\<lambda>x. (1 + x) powr p"
-  let ?f' = "\<lambda>x. p * (1 + x) powr (p - 1)"
-  let ?f'' = "\<lambda>x. p * (p - 1) * (1 + x) powr (p - 2)"
-  have "\<forall>t. t \<ge> 0 \<and> t \<le> x \<longrightarrow> (?f has_real_derivative ?f' t) (at t)"
-       "\<forall>t. t \<ge> 0 \<and> t \<le> x \<longrightarrow> (?f' has_real_derivative ?f'' t) (at t)"
-    by (force intro!: derivative_eq_intros)+
-  from taylor_up2[OF this x] that show ?thesis by force
-qed
-
-lemma one_plus_x_approx':
-  assumes x: "(x::real) > 0" "x < 1"
-  obtains t where "t > 0" "t < x" "(1 + x) powr p = 1 + p * (1 + t) powr (p - 1) * x"
-proof-
-  let ?f = "\<lambda>x. (1 + x) powr p"
-  let ?f' = "\<lambda>x. p * (1 + x) powr (p - 1)"
-  let ?fs = "op! [?f, ?f']"
-  from x have "\<forall>m t. m < 1 \<and> t \<ge> 0 \<and> t \<le> x \<longrightarrow> (?fs m has_real_derivative ?fs (Suc m) t) (at t)"
-    by (force intro: derivative_eq_intros simp: field_simps)
-  from taylor_up[OF _ _ this, where f = ?f and c = 0] x that show ?thesis 
-    by (auto simp: numeral_2_eq_2 field_simps)
-qed
-
-lemma one_plus_x_upper_bound:
-  obtains k where "k \<ge> 0" "\<And>x. (x::real) > 0 \<Longrightarrow> x < 1 \<Longrightarrow> (1 + x) powr p \<le> 1 + k * x"
-proof-
-  {
-    fix x :: real assume x: "x > 0" "x < 1"
-    let ?k = "\<bar>p\<bar> * max 1 (2 powr (p - 1))"
-    from x have "x > 0" "x < 1" by simp_all
-    from one_plus_x_approx'[OF this, of p] guess t .
-    note t = this
-      
-    have "p*(1 + t) powr (p-1) \<le> \<bar>p * (1+t) powr (p-1)\<bar>" by simp
-    also have "... \<le> \<bar>p\<bar> * (1 + t) powr (p - 1)"
-      by (subst abs_mult, subst (2) abs_of_nonneg) simp_all
-    also from x t have A: "(1 + t) powr (p - 1) \<le> max (1 powr (p - 1)) (2 powr (p - 1))" 
-      by (intro powr_upper_bound) simp_all 
-    hence "\<bar>p\<bar> * (1 + t) powr (p - 1) \<le> ?k" 
-      by (intro divide_right_mono mult_left_mono) simp_all
-    finally have "p*(1+t) powr (p-1) * x \<le> ?k * x" using x
-      by (intro mult_right_mono) (simp_all add: algebra_simps)
-    hence "1 + p*(1+t) powr (p-1) * x \<le> 1 + ?k * x" by simp
-    hence "(1 + x) powr p \<le> 1 + ?k*x" by (subst t) simp_all
-  }
-  note A = that[OF _ this]
-  show ?thesis by (intro A mult_nonneg_nonneg) simp_all
-qed
-
-
-lemma one_minus_x_approx:
-  assumes x: "(x::real) > 0" "x < 1"
-  obtains t where "t > 0" "t < x" "(1 - x) powr p = 1 - p * x + p * (p - 1) * (1 - t) powr (p - 2) / 2 * x ^ 2"
-proof-
-  let ?f = "\<lambda>x. (1 - x) powr p"
-  let ?f' = "\<lambda>x. -p * (1 - x) powr (p - 1)"
-  let ?f'' = "\<lambda>x. p * (p - 1) * (1 - x) powr (p - 2)"
-  let ?fs = "op! [?f, ?f', ?f'']"
-  
-  have "\<forall>m t. m < 2 \<and> t \<ge> 0 \<and> t \<le> x \<longrightarrow> (?fs m has_real_derivative ?fs (Suc m) t) (at t)"
-  proof (clarify)
-    fix m :: nat and t :: real assume m: "m < 2" and t: "t \<ge> 0" "t \<le> x"
-    with x show "(?fs m has_real_derivative ?fs (Suc m) t) (at t)"
-      by (cases m) (force intro: derivative_eq_intros simp: algebra_simps)+
-  qed
-  from taylor_up[OF _ _ this, where f = ?f and c = 0] x that show ?thesis 
-    by (auto simp: numeral_2_eq_2 field_simps)
-qed
-
-lemma one_minus_x_lower_bound:
-  obtains k where "k \<ge> 0" "\<And>x. (x::real) > 0 \<Longrightarrow> x < 0.5 \<Longrightarrow> (1 - x) powr p \<le> 1 - p*x + k*x^2"
-proof-
-  {
-    fix x :: real assume x: "x > 0" "x < 0.5"
-    let ?k = "\<bar>p*(p-1)\<bar> * max (0.5 powr (p - 2)) 1 / 2"
-    from x have "x > 0" "x < 1" by simp_all
-    from one_minus_x_approx[OF this, of p] guess t .
-    note t = this
-    have "max (0.5 powr (p - 2)) 1 = max (0.5 powr (p - 2)) (1 powr (p - 2))" by simp
-    also from x t have "(1 - t) powr (p - 2) \<le> max (0.5 powr (p - 2)) (1 powr (p - 2))" 
-      by (intro powr_upper_bound) simp_all
-    hence "-\<bar>p*(p-1)\<bar> * max (0.5 powr (p - 2)) (1 powr (p - 2)) / 2 \<le> 
-           -\<bar>p*(p-1)\<bar> * (1 - t) powr (p - 2) / 2"
-      by (intro divide_right_mono mult_left_mono_neg) simp_all
-    also have "... = -\<bar>p * (p - 1) * (1 - t) powr (p - 2)\<bar> / 2" 
-      by (subst abs_mult, subst (3) abs_of_nonneg) simp_all
-    also have "... \<le> -p * (p - 1) * (1 - t) powr (p - 2) / 2" by simp
-    finally have "?k * x^2 \<ge> p * (p - 1) * (1 - t) powr (p - 2) / 2 * x^2" using x
-      by (intro mult_right_mono) (simp_all add: algebra_simps)
-    hence "1 - p * x + ?k * x^2 \<ge> 1 - p * x + p * (p - 1) * (1 - t) powr (p - 2) / 2 * x^2" by simp
-    hence "1 - p * x + ?k * x^2 \<ge> (1 - x) powr p" by (subst t) (simp_all)
-  }
-  note A = that[OF _ this]
-  show ?thesis by (intro A mult_nonneg_nonneg) simp_all
-qed
-
-lemma one_minus_x_approx':
-  assumes x: "(x::real) > 0" "x < 1"
-  obtains t where "t > 0" "t < x" "(1 - x) powr p = 1 - p * (1 - t) powr (p - 1) * x"
-proof-
-  let ?f = "\<lambda>x. (1 - x) powr p"
-  let ?f' = "\<lambda>x. -p * (1 - x) powr (p - 1)"
-  let ?fs = "op! [?f, ?f']"
-  from x have "\<forall>m t. m < 1 \<and> t \<ge> 0 \<and> t \<le> x \<longrightarrow> (?fs m has_real_derivative ?fs (Suc m) t) (at t)"
-    by (force intro: derivative_eq_intros simp: field_simps)
-  from taylor_up[OF _ _ this, where f = ?f and c = 0] x that show ?thesis 
-    by (auto simp: numeral_2_eq_2 field_simps)
-qed
-
-
-lemma one_minus_x_lower_bound':
-  obtains k where "k \<ge> 0" "\<And>x. (x::real) > 0 \<Longrightarrow> x < 0.5 \<Longrightarrow> (1 - x) powr p \<ge> 1 - k * x"
-proof-
-  {
-    fix x :: real assume x: "x > 0" "x < 0.5"
-    let ?k = "\<bar>p\<bar> * max (0.5 powr (p - 1)) 1"
-    from x have "x > 0" "x < 1" by simp_all
-    from one_minus_x_approx'[OF this, of p] guess t .
-    note t = this
-    have "max (0.5 powr (p - 1)) 1 = max (0.5 powr (p - 1)) (1 powr (p - 1))" by simp
-    also from x t have "(1 - t) powr (p - 1) \<le> max (0.5 powr (p - 1)) (1 powr (p - 1))" 
-      by (intro powr_upper_bound) simp_all
-    hence "-\<bar>p\<bar> * max (0.5 powr (p - 1)) (1 powr (p - 1)) \<le> -\<bar>p\<bar> * (1 - t) powr (p - 1)"
-      by (intro mult_left_mono_neg) simp_all
-    also have "... = -\<bar>p * (1 - t) powr (p - 1)\<bar>" 
-      by (subst abs_mult, subst (3) abs_of_nonneg) simp_all
-    also have "... \<le> -p * (1 - t) powr (p - 1)" by simp
-    finally have "-?k * x \<le> -p * (1 - t) powr (p - 1) * x" using x
-      by (intro mult_right_mono) (simp_all add: algebra_simps)
-    hence "1 - ?k * x \<le> 1 - p * (1 - t) powr (p - 1) * x" by simp
-    also from t have "... = (1 - x) powr p" by simp
-    finally have "(1 - x) powr p \<ge> 1 - \<bar>p\<bar> * max ((5 / 10) powr (p - 1)) 1 * x" .
-  }
-  note A = that[OF _ this]
-  show ?thesis by (intro A mult_nonneg_nonneg) simp_all
-qed
-
-lemma one_plus_x_lower_bound':
-  obtains k where "\<And>x. (x::real) > 0 \<Longrightarrow> x < 1 \<Longrightarrow> (1 + x) powr p \<ge> 1 + k * x"
-proof-
-  {
-    fix x :: real assume x: "x > 0" "x < 1"
-    let ?k = "min p 0 * max 1 (2 powr (p - 1))"
-    from one_plus_x_approx'[OF x, of p] guess t . note t = this
-    from t x have "(1 + t) powr (p - 1) \<le> max (1 powr (p - 1)) (2 powr (p - 1))"
-      by (intro powr_upper_bound) simp_all
-    hence "p * (1 + t) powr (p - 1) \<ge> ?k" 
-      by (cases "p \<le> 0") (simp_all add: min_def mult_left_mono_neg)
-    hence "?k * x \<le> p * (1 + t) powr (p - 1) * x" using x
-      by (intro mult_right_mono) simp_all
-    with t(3) have "1 + ?k * x \<le> (1 + x) powr p" by simp
-  }
-  from this and that show ?thesis by blast
-qed
-
-lemma one_minus_x_upper_bound':
-  obtains k where "\<And>x. (x::real) > 0 \<Longrightarrow> x < 0.5 \<Longrightarrow> (1 - x) powr p \<le> 1 + k * x"
-proof-
-  {
-    fix x :: real assume x: "x > 0" "x < 0.5"
-    let ?k = "-(if p \<ge> 0 then 0 else p) * max (0.5 powr (p - 1)) 1"
-    from x have "x < 1" by simp
-    from one_minus_x_approx'[OF x(1) this, of p] guess t . note t = this
-
-    from t x have "(1 - t) powr (p - 1) \<le> max (0.5 powr (p - 1)) (1 powr (p - 1))"
-      by (intro powr_upper_bound) simp_all
-    hence "-p * (1 - t) powr (p - 1) \<le> ?k" by (cases "p \<ge> 0") simp_all
-    hence "-p * (1 - t) powr (p - 1) * x \<le> ?k * x" by (rule mult_right_mono) (insert x, simp_all)
-    with t(3) have "1 + ?k * x \<ge> (1 - x) powr p" by simp
-  }
-  from this and that show ?thesis by blast
-qed
-
-lemma x_times_x_minus_1_nonneg: "x \<le> 0 \<or> x \<ge> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<ge> 0"
-proof (elim disjE)
-  assume x: "x \<le> 0"
-  also have "0 \<le> x^2" by simp
-  finally show "x * (x - 1) \<ge> 0" by (simp add: power2_eq_square algebra_simps)
-qed simp
-
-lemma x_times_x_minus_1_nonpos: "x \<ge> 0 \<Longrightarrow> x \<le> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<le> 0"
-  by (intro mult_nonneg_nonpos) simp_all
-
-lemma one_plus_powr_ge:
-  assumes "p \<le> 0 \<or> p \<ge> 1" "(x::real) > -0.5"
-  shows   "(1 + x) powr p \<ge> 1 + p * x"
-proof (cases "x > 0")
-  assume "x > 0"
-  from one_plus_x_approx[OF this, of p] guess t .
-  note t = this
-  have "(p*(p - 1)) * (1+t) powr (p - 2) / 2 * x^2 \<ge> 0"
-    by (rule mult_nonneg_nonneg, rule divide_nonneg_pos, rule mult_nonneg_nonneg)
-       (simp_all add: x_times_x_minus_1_nonneg assms)
-  with t(3) show ?thesis by simp
-next
-  assume "\<not>(x > 0)"
-  with assms have "x \<ge> -0.5" "x \<le> 0.5" by simp_all
-  from one_plus_x_approx_ex[OF this, of p] guess t .
-  note t = this
-  have "(p*(p - 1)) * (1+t) powr (p - 2) / 2 * x^2 \<ge> 0"
-    by (rule mult_nonneg_nonneg, rule divide_nonneg_pos, rule mult_nonneg_nonneg)
-       (simp_all add: x_times_x_minus_1_nonneg assms)
-  with t(3) show ?thesis by simp
-qed
+lemma integrable_const_real: "(\<lambda>x :: real. c) integrable_on {a..b}"
+  using integrable_const[of c a b] by simp
 
 end
