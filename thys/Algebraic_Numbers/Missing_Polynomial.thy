@@ -11,7 +11,7 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
-  "../Cayley_Hamilton/Polynomial_extension"
+(* "$AFP/Cayley_Hamilton/Polynomial_extension" FIXME *)
   "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
 begin
 

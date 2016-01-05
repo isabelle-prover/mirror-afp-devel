@@ -8,7 +8,7 @@ subsection \<open>Connecting Polynomials with Homomorphism Locales\<close>
 theory Ring_Hom_Poly
 imports 
   Ring_Hom
-  "$AFP/Cayley_Hamilton/Polynomial_extension"
+(* "$AFP/Cayley_Hamilton/Polynomial_extension" FIXME *)
   Missing_Polynomial
 begin
 
