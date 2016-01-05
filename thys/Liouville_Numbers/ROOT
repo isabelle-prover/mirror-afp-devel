@@ -1,7 +1,9 @@
 chapter AFP
 
-session Liouville_Numbers (AFP) = "Algebraic_Numbers" +
-  options [timeout=600, document=pdf]
+session Liouville_Numbers (AFP) = HOL +
+  options [timeout=600]
+  theories [document=false]
+    "~~/src/HOL/Library/Poly_Deriv"
   theories
     Liouville_Numbers
   document_files

@@ -1,9 +1,10 @@
 chapter AFP
 
-session Descartes_Sign_Rule (AFP) = Sturm_Tarski +
-  options [timeout=600, document=pdf]
+session Descartes_Sign_Rule (AFP) = HOL +
+  options [timeout=600]
+  theories [document=false]
+    "~~/src/HOL/Library/Poly_Deriv"
   theories
-    Descartes_Poly_Lemma_Bucket
     Descartes_Sign_Rule
   document_files
     "root.tex"
