@@ -1,0 +1,9 @@
+chapter AFP
+
+session Liouville_Numbers (AFP) = "Algebraic_Numbers" +
+  options [timeout=600, document=pdf]
+  theories
+    Liouville_Numbers
+  document_files
+    "root.tex"
+    "root.bib"
