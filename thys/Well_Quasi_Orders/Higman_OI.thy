@@ -122,8 +122,7 @@ proof
 qed
 
 lemma open_on_good:
-  assumes antisym: "antisymp_on P A"
-  shows "open_on (LEXEQ P) (good Q) (SEQ A)"
+  "open_on (LEXEQ P) (good Q) (SEQ A)"
 proof
   fix C assume chain: "chain_on (LEXEQ P) C (SEQ A)" and ne: "C \<noteq> {}"
     and "\<exists>g \<in> SEQ A. glb (LEXEQ P) C g \<and> good Q g"
@@ -133,7 +132,8 @@ proof
   from chain have "chain_on (LEX P) C (SEQ A)" and C: "C \<subseteq> SEQ A" by (auto simp: chain_on_def)
   note * = glb_LEX_lexmin [OF this(1) \<open>C \<noteq> {}\<close>]
   have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> using C by (intro lexmin_SEQ_mem)
-  from glb_unique [OF _ g this glb *] and antisymp_on_LEX [OF po_on_imp_irreflp_on [OF po] antisym]
+  from glb_unique [OF _ g this glb *]
+    and antisymp_on_LEX [OF po_on_imp_irreflp_on [OF po] po_on_imp_antisymp_on [OF po]]
     have [simp]: "lexmin C = g" by auto
   from good obtain i j :: nat where "i < j" and "Q (g i) (g j)" by (auto simp: good_def)
   moreover from eq_upto_lexmin_non_empty [OF C ne, of "Suc j"]
@@ -151,8 +151,7 @@ proof
   interpret minimal_element suffix "lists A"
     by (unfold_locales) (intro po_on_suffix wfp_on_suffix)+
   fix f presume "f \<in> SEQ (lists A)"
-  with qo_on_LEXEQ [OF po_on_imp_transp_on [OF po_on_suffix]] dc_on_LEXEQ
-    and open_on_good [OF antisymp_on_suffix]
+  with qo_on_LEXEQ [OF po_on_imp_transp_on [OF po_on_suffix]] and dc_on_LEXEQ and open_on_good
     show "good (list_emb P) f"
   proof (induct rule: open_induct_on)
     case (less f)
