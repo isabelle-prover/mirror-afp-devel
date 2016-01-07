@@ -7,7 +7,7 @@ sig
   val master_theorem_tac : string option -> bool -> thm option -> term option -> term option -> 
     term option -> Proof.context -> int -> tactic
 
-  val akra_bazzi_function_tac : bool -> Proof.context -> int -> tactic
+  val master_theorem_function_tac : bool -> Proof.context -> int -> tactic
   val akra_bazzi_term_tac : Proof.context -> int -> tactic
   val akra_bazzi_setsum_tac : Proof.context -> int -> tactic
 
@@ -37,29 +37,29 @@ val term_preps = @{thms akra_bazzi_termination_simps}
 fun get_term_intros ctxt = Named_Theorems.get ctxt @{named_theorems "akra_bazzi_term_intros"}
 
 val master_intros = 
-  @{thms akra_bazzi_function.master1_automation 
-      akra_bazzi_function.master1_bigo_automation akra_bazzi_function.master1_automation'
-      akra_bazzi_function.master1_bigo_automation' akra_bazzi_function.master2_1_automation 
-      akra_bazzi_function.master2_1_automation' akra_bazzi_function.master2_2_automation
-      akra_bazzi_function.master2_2_automation' akra_bazzi_function.master2_3_automation
-      akra_bazzi_function.master2_3_automation' akra_bazzi_function.master3_automation 
-      akra_bazzi_function.master3_automation'}
+  @{thms master_theorem_function.master1_automation 
+      master_theorem_function.master1_bigo_automation master_theorem_function.master1_automation'
+      master_theorem_function.master1_bigo_automation' master_theorem_function.master2_1_automation 
+      master_theorem_function.master2_1_automation' master_theorem_function.master2_2_automation
+      master_theorem_function.master2_2_automation' master_theorem_function.master2_3_automation
+      master_theorem_function.master2_3_automation' master_theorem_function.master3_automation 
+      master_theorem_function.master3_automation'}
 
 fun get_intros NONE b = if not b then master_intros else 
-  @{thms akra_bazzi_function.master1_automation akra_bazzi_function.master1_bigo_automation
-         akra_bazzi_function.master1_automation' akra_bazzi_function.master2_1_automation 
-      akra_bazzi_function.master2_1_automation'}
-|   get_intros (SOME "1") _ = @{thms akra_bazzi_function.master1_automation 
-      akra_bazzi_function.master1_bigo_automation akra_bazzi_function.master1_automation'
-      akra_bazzi_function.master1_bigo_automation'}
-|   get_intros (SOME "2.1") _ = @{thms akra_bazzi_function.master2_1_automation 
-      akra_bazzi_function.master2_1_automation'}
-|   get_intros (SOME "2.2") _ = @{thms akra_bazzi_function.master2_2_automation
-      akra_bazzi_function.master2_2_automation'}
-|   get_intros (SOME "2.3") _ = @{thms akra_bazzi_function.master2_3_automation
-      akra_bazzi_function.master2_3_automation'}
-|   get_intros (SOME "3") _ = @{thms akra_bazzi_function.master3_automation 
-      akra_bazzi_function.master3_automation'}
+  @{thms master_theorem_function.master1_automation master_theorem_function.master1_bigo_automation
+         master_theorem_function.master1_automation' master_theorem_function.master2_1_automation 
+      master_theorem_function.master2_1_automation'}
+|   get_intros (SOME "1") _ = @{thms master_theorem_function.master1_automation 
+      master_theorem_function.master1_bigo_automation master_theorem_function.master1_automation'
+      master_theorem_function.master1_bigo_automation'}
+|   get_intros (SOME "2.1") _ = @{thms master_theorem_function.master2_1_automation 
+      master_theorem_function.master2_1_automation'}
+|   get_intros (SOME "2.2") _ = @{thms master_theorem_function.master2_2_automation
+      master_theorem_function.master2_2_automation'}
+|   get_intros (SOME "2.3") _ = @{thms master_theorem_function.master2_3_automation
+      master_theorem_function.master2_3_automation'}
+|   get_intros (SOME "3") _ = @{thms master_theorem_function.master3_automation 
+      master_theorem_function.master3_automation'}
 |   get_intros _ _ = error "invalid Master theorem case"
 
 val allowed_consts =
@@ -426,8 +426,8 @@ fun unfold_simps ctxt =
 
 (* Applying the locale intro rule *)
 
-fun akra_bazzi_function_tac simp ctxt = 
-  resolve_tac ctxt @{thms akra_bazzi_functionI}
+fun master_theorem_function_tac simp ctxt = 
+  resolve_tac ctxt @{thms master_theorem_functionI}
   THEN_ALL_NEW ((fn i => TRY (REPEAT_ALL_NEW (match_tac ctxt @{thms ball_set_intros}) i))
     THEN_ALL_NEW ((fn i => TRY (akra_bazzi_terms_tac ctxt i))
       THEN_ALL_NEW (fn i =>
@@ -479,7 +479,7 @@ fun master_theorem_tac' caseno simp f eq funvar x0 x1 p' ctxt =
     (
       preprocess_tac ctxt
       THEN' akra_bazzi_instantiate_tac ctxt f eq x0 x1 funvar p' (get_intros caseno (p' <> NONE))
-      THEN' DETERM o akra_bazzi_function_tac simp ctxt)
+      THEN' DETERM o master_theorem_function_tac simp ctxt)
     THEN_ALL_NEW intros_tac ctxt @{thms ball_set_intros akra_bazzi_p_rel_intros}
   THEN_ALL_NEW (DETERM o (
         unfold_simps ctxt

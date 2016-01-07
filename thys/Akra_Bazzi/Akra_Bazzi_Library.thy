@@ -9,7 +9,6 @@ section {* Auxiliary lemmas *}
 theory Akra_Bazzi_Library
 imports 
   Complex_Main
-  "~~/src/HOL/Multivariate_Analysis/Integration"
   "../Landau_Symbols/Landau_Symbols"
 begin
 
@@ -193,31 +192,5 @@ qed simp
 
 lemma x_times_x_minus_1_nonpos: "x \<ge> 0 \<Longrightarrow> x \<le> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<le> 0"
   by (intro mult_nonneg_nonpos) simp_all
-
-lemma fundamental_theorem_of_calculus_real:
-  "a \<le> b \<Longrightarrow> \<forall>x\<in>{a..b}. (f has_real_derivative f' x) (at x within {a..b}) \<Longrightarrow>
-      (f' has_integral (f b - f a)) {a..b}"
-  by (intro fundamental_theorem_of_calculus ballI)
-     (simp_all add: has_field_derivative_iff_has_vector_derivative[symmetric])
-
-lemma integral_powr:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) = 
-     inverse (y + 1) * (b powr (y + 1) - a powr (y + 1))"
-  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
-     (auto intro!: derivative_eq_intros)
-
-lemma integral_ln_powr_over_x:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. ln x powr y / x :: real) = 
-     inverse (y + 1) * (ln b powr (y + 1) - ln a powr (y + 1))"
-  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
-     (auto intro!: derivative_eq_intros)     
-
-lemma integral_one_over_x_ln_x:
-  "a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. inverse (x * ln x) :: real) = ln (ln b) - ln (ln a)"
-  by (intro integral_unique fundamental_theorem_of_calculus_real)
-     (auto intro!: derivative_eq_intros simp: field_simps)
-
-lemma integrable_const_real: "(\<lambda>x :: real. c) integrable_on {a..b}"
-  using integrable_const[of c a b] by simp
 
 end

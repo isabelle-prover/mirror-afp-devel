@@ -176,6 +176,8 @@ qed
 end
 
 locale akra_bazzi_function = akra_bazzi_recursion +
+  fixes integrable integral 
+  assumes integral: "akra_bazzi_integral integrable integral"
   fixes g :: "nat \<Rightarrow> real"
   assumes f_nonneg_base: "x \<ge> x\<^sub>0 \<Longrightarrow> x < x\<^sub>1 \<Longrightarrow> f x \<ge> 0"
   and     f_rec:         "x \<ge> x\<^sub>1 \<Longrightarrow> f x = g x + (\<Sum>i<k. as!i * f ((ts!i) x))"
@@ -299,7 +301,7 @@ locale akra_bazzi_lower = akra_bazzi_function +
   assumes f_pos:      "eventually (\<lambda>x. f x > 0) at_top"
   and     g_growth2:  "\<exists>C c2. c2 > 0 \<and> C < Min (set bs) \<and> 
                            eventually (\<lambda>x. \<forall>u\<in>{C*x..x}. g' u \<le> c2 * g' x) at_top"
-  and     g'_integrable:  "\<exists>a. \<forall>b\<ge>a. (\<lambda>u. g' u / u powr (p + 1)) integrable_on {a..b}"
+  and     g'_integrable:  "\<exists>a. \<forall>b\<ge>a. integrable (\<lambda>u. g' u / u powr (p + 1)) a b"
   and     g'_bounded:  "eventually (\<lambda>a::real. (\<forall>b>a. \<exists>c. \<forall>x\<in>{a..b}. g' x \<le> c)) at_top"
   and     g_bigomega: "g \<in> \<Omega>(\<lambda>x. g' (real x))"
   and     g'_nonneg:  "eventually (\<lambda>x. g' x \<ge> 0) at_top"
@@ -444,7 +446,7 @@ qed
 
 lemma bigomega_f_aux: 
   obtains a where "a \<ge> A" "\<forall>a'\<ge>a. a' \<in> \<nat> \<longrightarrow> 
-    f \<in> \<Omega>(\<lambda>x. x powr p *(1 + integral {a'..x} (\<lambda>u. g' u / u powr (p + 1))))"
+    f \<in> \<Omega>(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) a' x))"
 proof-
   from g'_integrable guess a0 by (elim exE) note a0 = this
   from h_bound guess hb . note hb = this
@@ -547,15 +549,16 @@ proof-
       finally show ?case .
     qed simp
   qed
-
-  interpret akra_bazzi_real_lower as bs hs' k x\<^sub>0' x\<^sub>1' hb e p abr.f' g' C fb2 gb2 c2
-  proof (unfold_locales)
+  interpret akra_bazzi_integral integrable integral by (rule integral) 
+  interpret akra_bazzi_real_lower as bs hs' k x\<^sub>0' x\<^sub>1' hb e p 
+      integrable integral abr.f' g' C fb2 gb2 c2
+  proof unfold_locales
     fix x assume "x \<ge> x\<^sub>0'" "x \<le> x\<^sub>1'"
     thus "abr.f' x \<ge> 0" by (intro abr.f'_base) simp_all
   next
     fix x assume x:"x \<ge> x\<^sub>0'"
-    show "(\<lambda>x. g' x / x powr (p + 1)) integrable_on {x\<^sub>0'..x}"
-      by (rule integrable_subinterval_real[of _ a0 x]) (insert a0 x0'_ge_a0 x, auto)
+    show "integrable (\<lambda>x. g' x / x powr (p + 1)) x\<^sub>0' x"
+      by (rule integrable_subinterval[of _ a0 x]) (insert a0 x0'_ge_a0 x, auto)
   next
     fix x assume x: "x \<ge> x\<^sub>0'" "x \<le> x\<^sub>1'"
     have "x\<^sub>0' = real (nat \<lfloor>x\<^sub>0'\<rfloor>)" by (simp add: x0'_int)
@@ -578,7 +581,7 @@ proof-
     fix x assume x: "x\<^sub>0' \<le> x" "x \<le> x\<^sub>1'"
     with x0'(4) x0'_lt_x1' have "\<exists>c. \<forall>x\<in>{x\<^sub>0'..x\<^sub>1'}. g' x \<le> c" by force
     from someI_ex[OF this] x show "g' x \<le> gb2" unfolding gb2_def by simp
-  qed (insert g_nonneg x0'(2) C x0'_le_x1' x0'_ge_x1, simp_all add: facts)
+  qed (insert g_nonneg integral x0'(2) C x0'_le_x1' x0'_ge_x1, simp_all add: facts)
   
   from akra_bazzi_lower guess c5 . note c5 = this
   have "eventually (\<lambda>x. \<bar>f x\<bar> \<ge> gc2 * c5 * \<bar>f_approx (real x)\<bar>) at_top"
@@ -602,7 +605,7 @@ proof-
 qed
 
 lemma bigomega_f: 
-  obtains a where "a \<ge> A" "f \<in> \<Omega>(\<lambda>x. x powr p *(1 + integral {a..x} (\<lambda>u. g' u / u powr (p+1))))"
+  obtains a where "a \<ge> A" "f \<in> \<Omega>(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p+1)) a x))"
 proof-
   from bigomega_f_aux[of A] guess a . note a = this
   def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
@@ -619,7 +622,7 @@ end
 
 locale akra_bazzi_upper = akra_bazzi_function +
   fixes   g' :: "real \<Rightarrow> real"
-  assumes g'_integrable:  "\<exists>a. \<forall>b\<ge>a. (\<lambda>u. g' u / u powr (p + 1)) integrable_on {a..b}"
+  assumes g'_integrable:  "\<exists>a. \<forall>b\<ge>a. integrable (\<lambda>u. g' u / u powr (p + 1)) a b"
   and     g_growth1: "\<exists>C c1. c1 > 0 \<and> C < Min (set bs) \<and> 
                           eventually (\<lambda>x. \<forall>u\<in>{C*x..x}. g' u \<ge> c1 * g' x) at_top"
   and     g_bigo:    "g \<in> O(g')"
@@ -681,7 +684,7 @@ qed
 
 lemma bigo_f_aux:
   obtains a where "a \<ge> A" "\<forall>a'\<ge>a. a' \<in> \<nat> \<longrightarrow> 
-    f \<in> O(\<lambda>x. x powr p *(1 + integral {a'..x} (\<lambda>u. g' u / u powr (p + 1))))"
+    f \<in> O(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) a' x))"
 proof-
   from g'_integrable guess a0 by (elim exE) note a0 = this
   from h_bound guess hb . note hb = this
@@ -778,14 +781,15 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
     qed simp
   qed
   
-  interpret akra_bazzi_real_upper as bs hs' k x\<^sub>0' x\<^sub>1' hb e p abr.f' g' C fb1 c1
+  interpret akra_bazzi_integral integrable integral by (rule integral)
+  interpret akra_bazzi_real_upper as bs hs' k x\<^sub>0' x\<^sub>1' hb e p integrable integral abr.f' g' C fb1 c1
   proof (unfold_locales)
     fix x assume "x \<ge> x\<^sub>0'" "x \<le> x\<^sub>1'"
     thus "abr.f' x \<ge> 0" by (intro abr.f'_base) simp_all
   next
     fix x assume x:"x \<ge> x\<^sub>0'"
-    show "(\<lambda>x. g' x / x powr (p + 1)) integrable_on {x\<^sub>0'..x}"
-      by (rule integrable_subinterval_real[of _ a0 x]) (insert a0 x0'_ge_a0 x, auto)
+    show "integrable (\<lambda>x. g' x / x powr (p + 1)) x\<^sub>0' x"
+      by (rule integrable_subinterval[of _ a0 x]) (insert a0 x0'_ge_a0 x, auto)
   next
     fix x assume x: "x \<ge> x\<^sub>0'" "x \<le> x\<^sub>1'"
     have "x\<^sub>0' = real (nat \<lfloor>x\<^sub>0'\<rfloor>)" by (simp add: x0'_int)
@@ -820,7 +824,7 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
 qed
 
 lemma bigo_f: 
-  obtains a where "a > A" "f \<in> O(\<lambda>x. x powr p *(1 + integral {a..x} (\<lambda>u. g' u / u powr (p + 1))))"
+  obtains a where "a > A" "f \<in> O(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) a x))"
 proof-
   from bigo_f_aux[of A] guess a . note a = this
   def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
@@ -837,7 +841,7 @@ locale akra_bazzi = akra_bazzi_function +
   fixes   g' :: "real \<Rightarrow> real"
   assumes f_pos:         "eventually (\<lambda>x. f x > 0) at_top"
   and     g'_nonneg:     "eventually (\<lambda>x. g' x \<ge> 0) at_top"
-  assumes g'_integrable:  "\<exists>a. \<forall>b\<ge>a. (\<lambda>u. g' u / u powr (p + 1)) integrable_on {a..b}"
+  assumes g'_integrable:  "\<exists>a. \<forall>b\<ge>a. integrable (\<lambda>u. g' u / u powr (p + 1)) a b"
   and     g_growth1:  "\<exists>C c1. c1 > 0 \<and> C < Min (set bs) \<and> 
                            eventually (\<lambda>x. \<forall>u\<in>{C*x..x}. g' u \<ge> c1 * g' x) at_top"
   and     g_growth2:  "\<exists>C c2. c2 > 0 \<and> C < Min (set bs) \<and> 
@@ -852,14 +856,14 @@ sublocale akra_bazzi_upper using g_growth1 bigthetaD1[OF g_bigtheta]
   g'_nonneg g'_integrable by unfold_locales
 
 lemma bigtheta_f: 
-  obtains a where "a > A" "f \<in> \<Theta>(\<lambda>x. x powr p *(1 + integral {a..x} (\<lambda>u. g' u / u powr (p + 1))))"
+  obtains a where "a > A" "f \<in> \<Theta>(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) a x))"
 proof-
   from bigo_f_aux[of A] guess a . note a = this
   moreover from bigomega_f_aux[of A] guess b . note b = this
   let ?a = "real (max (max (nat \<lceil>a\<rceil>) (nat \<lceil>b\<rceil>)) 0) + 1"
   have "?a \<in> \<nat>" by (auto simp: max_def)
   moreover have "?a \<ge> a" "?a \<ge> b" by linarith+
-  ultimately have "f \<in> \<Theta>(\<lambda>x. x powr p *(1 + integral {?a..x} (\<lambda>u. g' u / u powr (p + 1))))" 
+  ultimately have "f \<in> \<Theta>(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) ?a x))" 
     using a b by (intro bigthetaI) blast+
   moreover from a b have "?a > A" by linarith
   ultimately show ?thesis by (intro that[of ?a]) simp_all
