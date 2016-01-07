@@ -113,22 +113,22 @@ proof -
     then obtain g h where *: "g \<in> eq_upto C f i" "h \<in> eq_upto C f i"
       and [simp]: "x = g i" "y = h i" and eq: "\<forall>j<i. g j = f j \<and> h j = f j"
       by (auto simp: ith_def eq_upto_def)
-    with assms and \<open>y \<noteq> x\<close> have "LEX P g h \<or> LEX P h g" by (auto simp: chain_on_def)
-    moreover
-    { assume "LEX P g h"
+    with assms and \<open>y \<noteq> x\<close> consider "LEX P g h" | "LEX P h g" by (force simp: chain_on_def)
+    then have "P y x"
+    proof (cases)
+      assume "LEX P g h"
       with eq and \<open>y \<noteq> x\<close> have "P x y" using assms and *
         by (auto simp: LEX_def)
            (metis SEQ_iff chain_on_imp_subset linorder_neqE_nat minimal subsetCE)
-      with \<open>\<not> P x y\<close> have "P y x" .. }
-    moreover
-    { assume "LEX P h g"
-      with eq and \<open>y \<noteq> x\<close> have "P y x" using assms and *
+      with \<open>\<not> P x y\<close> show "P y x" ..
+    next
+      assume "LEX P h g"
+      with eq and \<open>y \<noteq> x\<close> show "P y x" using assms and *
         by (auto simp: LEX_def)
-           (metis SEQ_iff chain_on_imp_subset linorder_neqE_nat minimal subsetCE) }
-    ultimately have "P y x" by (auto simp: chain_on_def LEX_def) }
+           (metis SEQ_iff chain_on_imp_subset linorder_neqE_nat minimal subsetCE)
+    qed }
   then show ?thesis using assms by (auto simp: chain_on_def) blast
 qed
-
 
 end
 
