@@ -1127,7 +1127,7 @@ lemmas non_pivot_base_def = non_pivot_base_gen_def
 lemmas find_base_vectors_def = find_base_vectors_gen_def
 
 text \<open>The soundness of @{const find_base_vectors} is proven in theory Matrix-Kern,
-  where it is shown that find_base_vectors is a basis of the kern of $A$.\<close>
+  where it is shown that @{const find_base_vectors} is a basis of the kern of $A$.\<close>
 
 definition find_base_vector :: "'a :: comm_ring_1 mat \<Rightarrow> 'a vec" where
   "find_base_vector A \<equiv> 

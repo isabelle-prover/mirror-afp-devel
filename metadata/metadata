@@ -3317,6 +3317,9 @@ abstract =
   </p><p>
   All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
   </p>
+extra-history =
+ Change history: [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms
+
 
 [LTL_to_DRA]
 title = Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata
