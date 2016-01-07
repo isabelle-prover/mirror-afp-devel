@@ -9,7 +9,6 @@
 theory Liouville_Numbers
 imports 
   Complex_Main
-  "$AFP/Algebraic_Numbers/Algebraic_Numbers"
   "~~/src/HOL/Library/Poly_Deriv"
   Liouville_Numbers_Misc
 begin
@@ -51,7 +50,7 @@ locale liouville =
   fixes x :: real and p q :: "nat \<Rightarrow> int"
   assumes approx_int_pos: "abs (x - p n / q n) > 0" 
       and denom_gt_1:     "q n > 1"
-      and approx_int:     "abs (x - p n / q n) < 1 / real (q n) ^ n"
+      and approx_int:     "abs (x - p n / q n) < 1 / of_int (q n) ^ n"
 
 text \<open>
   First, we show that any Liouville number is irrational.
@@ -59,38 +58,38 @@ text \<open>
 lemma (in liouville) irrational: "x \<notin> \<rat>"
 proof
   assume "x \<in> \<rat>"
-  then obtain c d :: int where d: "x = real c / real d" "d > 0" 
-    by (elim Rats_cases') (simp add: real_of_int_def)
+  then obtain c d :: int where d: "x = of_int c / of_int d" "d > 0" 
+    by (elim Rats_cases') simp
   def n \<equiv> "Suc (nat \<lceil>log 2 d\<rceil>)"
   note q_gt_1 = denom_gt_1[of n]
 
   have neq: "c * q n \<noteq> d * p n"
   proof
     assume "c * q n = d * p n"
-    hence "real (c * q n) = real (d * p n)" by (simp only: )
+    hence "of_int (c * q n) = of_int (d * p n)" by (simp only: )
     with approx_int_pos[of n] d q_gt_1 show False by (auto simp: field_simps)
   qed
   hence abs_pos: "0 < abs (c * q n - d * p n)" by simp
 
-  from q_gt_1 d have "real d = 2 powr log 2 d" by (subst powr_log_cancel) simp_all
-  also from d have "log 2 (real d) \<ge> log 2 1" by (subst log_le_cancel_iff) simp_all
-  hence "2 powr log 2 d \<le> 2 powr real (nat \<lceil>log 2 d\<rceil>)" 
-    by (intro powr_mono, subst real_nat_eq_real)  simp_all
-  also have "\<dots> = real (2 ^ nat \<lceil>log 2 d\<rceil> :: int)" 
+  from q_gt_1 d have "of_int d = 2 powr log 2 d" by (subst powr_log_cancel) simp_all
+  also from d have "log 2 (of_int d) \<ge> log 2 1" by (subst log_le_cancel_iff) simp_all
+  hence "2 powr log 2 d \<le> 2 powr of_nat (nat \<lceil>log 2 d\<rceil>)" 
+    by (intro powr_mono) simp_all
+  also have "\<dots> = of_int (2 ^ nat \<lceil>log 2 d\<rceil>)"
     by (subst powr_realpow) simp_all
-  finally have "d \<le> 2 ^ nat \<lceil>log 2 (real d)\<rceil>" 
-    unfolding real_of_int_def by (subst (asm) of_int_le_iff)
-  also have "\<dots> * q n \<le> q n ^ Suc (nat \<lceil>log 2 (real d)\<rceil>)" 
+  finally have "d \<le> 2 ^ nat \<lceil>log 2 (of_int d)\<rceil>" 
+    by (subst (asm) of_int_le_iff)
+  also have "\<dots> * q n \<le> q n ^ Suc (nat \<lceil>log 2 (of_int d)\<rceil>)" 
     by (subst power_Suc, subst mult.commute, intro mult_left_mono power_mono, 
         insert q_gt_1) simp_all
   also from q_gt_1 have "\<dots> = q n ^ n" by (simp add: n_def)
-  finally have "1 / real (q n ^ n) \<le> 1 / real (d * q n)" using q_gt_1 d unfolding real_of_int_def
+  finally have "1 / of_int (q n ^ n) \<le> 1 / real_of_int (d * q n)" using q_gt_1 d
     by (intro divide_left_mono Rings.mult_pos_pos of_int_pos, subst of_int_le_iff) simp_all
-  also have "\<dots> \<le> real (abs (c * q n - d * p n)) / real (d * q n)" using q_gt_1 d abs_pos
-    unfolding real_of_int_def by (intro divide_right_mono of_int_nonneg) simp_all
+  also have "\<dots> \<le> of_int (abs (c * q n - d * p n)) / real_of_int (d * q n)" using q_gt_1 d abs_pos
+    by (intro divide_right_mono) (linarith, simp)
   also have "\<dots> = abs (x - of_int (p n) / of_int (q n))" using q_gt_1 d(2) 
-    by (simp_all add: divide_simps d(1) real_of_int_def [symmetric] mult_ac)
-  finally show False using approx_int[of n] by (simp add: of_int_power)
+    by (simp_all add: divide_simps d(1) mult_ac)
+  finally show False using approx_int[of n] by simp
 qed
 
 
@@ -102,7 +101,7 @@ lemma liouville_irrational_algebraic:
   fixes x :: real
   assumes irrationsl: "x \<notin> \<rat>" and "algebraic x"
   obtains c :: real and n :: nat
-    where "c > 0" and "\<And>(p::int) (q::int). q > 0 \<Longrightarrow> abs (x - p / q) > c / real q ^ n"
+    where "c > 0" and "\<And>(p::int) (q::int). q > 0 \<Longrightarrow> abs (x - p / q) > c / of_int q ^ n"
 proof -
   from \<open>algebraic x\<close> guess p by (elim algebraicE) note p = this
   def n \<equiv> "degree p"
@@ -160,12 +159,12 @@ proof -
 
 
   -- \<open>Finally: no rational number can approximate @{term x} ``well enough''.\<close>
-  have "\<forall>(a::int) (b :: int). b > 0 \<longrightarrow> \<bar>x - real a / real b\<bar> > A / real b ^ n"
+  have "\<forall>(a::int) (b :: int). b > 0 \<longrightarrow> \<bar>x - of_int a / of_int b\<bar> > A / of_int b ^ n"
   proof (intro allI impI, rule ccontr)
     fix a b :: int
-    assume b: "b > 0" and "\<not>(A / real b ^ n < \<bar>x - real a / real b\<bar>)"
-    hence ab: "abs (x - real a / real b) \<le> A / real b ^ n" by simp
-    also from A_pos b have "A / real b ^ n \<le> A / 1"
+    assume b: "b > 0" and "\<not>(A / of_int b ^ n < \<bar>x - of_int a / of_int b\<bar>)"
+    hence ab: "abs (x - of_int a / of_int b) \<le> A / of_int b ^ n" by simp
+    also from A_pos b have "A / of_int b ^ n \<le> A / 1"
       by (intro divide_left_mono) simp_all
     finally have ab': "abs (x - a / b) \<le> A" by simp
     also have "\<dots> \<le> 1" using A_less by simp
@@ -174,7 +173,7 @@ proof -
     have no_root: "poly p (a / b) \<noteq> 0" 
     proof
       assume "poly p (a / b) = 0"
-      moreover from \<open>x \<notin> \<rat>\<close> have "x \<noteq> a / b" by (auto simp: real_of_int_def)
+      moreover from \<open>x \<notin> \<rat>\<close> have "x \<noteq> a / b" by auto
       ultimately have "A < abs (a / b - x)" using A_less(3) by simp
       with ab' show False by simp
     qed
@@ -186,11 +185,11 @@ proof -
 
     from x0(2) no_root have deriv_pos: "poly (pderiv p) x0 \<noteq> 0" by auto
 
-    from b p no_root have p_ab: "abs (poly p (a / b)) \<ge> 1 / real b ^ n"
+    from b p no_root have p_ab: "abs (poly p (a / b)) \<ge> 1 / of_int b ^ n"
       unfolding n_def by (intro int_poly_rat_no_root_ge)
 
     note ab
-    also from A_less b have "A / real b ^ n < (1/M) / real b ^ n"
+    also from A_less b have "A / of_int b ^ n < (1/M) / of_int b ^ n"
       by (intro divide_strict_right_mono) simp_all
     also have "\<dots> = (1 / b ^ n) / M" by simp
     also from M_pos ab p_ab have "\<dots> \<le> abs (poly p (a / b)) / M"
@@ -220,18 +219,18 @@ proof
   def r \<equiv> "nat \<lceil>log 2 (1 / c)\<rceil>"
   def m \<equiv> "n + r"
   from cn(1) have "(1/c) = 2 powr log 2 (1/c)" by (subst powr_log_cancel) simp_all
-  also have "log 2 (1/c) \<le> real (nat \<lceil>log 2 (1/c)\<rceil>)" by linarith
+  also have "log 2 (1/c) \<le> of_nat (nat \<lceil>log 2 (1/c)\<rceil>)" by linarith
   hence "2 powr log 2 (1/c) \<le> 2 powr \<dots>" by (intro powr_mono) simp_all
   also have "\<dots> = 2 ^ r" unfolding r_def by (simp add: powr_realpow)
   finally have "1 / (2^r) \<le> c" using cn(1) by (simp add: field_simps)
 
-  have "abs (x - p m / q m) < 1 / real (q m) ^ m" by (rule approx_int)
-  also have "\<dots> = (1 / real (q m) ^ r) * (1 / real (q m) ^ n)"
+  have "abs (x - p m / q m) < 1 / of_int (q m) ^ m" by (rule approx_int)
+  also have "\<dots> = (1 / of_int (q m) ^ r) * (1 / real_of_int (q m) ^ n)"
     by (simp add: m_def power_add)
-  also from denom_gt_1[of m] have "1 / real (q m) ^ r \<le> 1 / 2 ^ r"
+  also from denom_gt_1[of m] have "1 / real_of_int (q m) ^ r \<le> 1 / 2 ^ r"
     by (intro divide_left_mono power_mono) simp_all
   also have "\<dots> \<le> c" by fact
-  finally have "abs (x - p m / q m) < c / real (q m) ^ n"
+  finally have "abs (x - p m / q m) < c / of_int (q m) ^ n"
     using denom_gt_1[of m] by - (simp_all add: divide_right_mono)
   with cn(2)[of "q m" "p m"] denom_gt_1[of m] show False by simp
 qed
@@ -243,33 +242,33 @@ text \<open>
   We now define the standard construction for Liouville numbers.
 \<close>
 definition standard_liouville :: "(nat \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> real" where
-  "standard_liouville p q = (\<Sum>k. p k / real q ^ fact (Suc k))"
+  "standard_liouville p q = (\<Sum>k. p k / of_int q ^ fact (Suc k))"
 
 lemma standard_liouville_summable:
   fixes p :: "nat \<Rightarrow> int" and q :: int
   assumes "q > 1" "range p \<subseteq> {0..<q}"
-  shows   "summable (\<lambda>k. p k / real q ^ fact (Suc k))"
+  shows   "summable (\<lambda>k. p k / of_int q ^ fact (Suc k))"
 proof (rule summable_comparison_test')
   from assms(1) show "summable (\<lambda>n. (1 / q) ^ n)"
     by (intro summable_geometric) simp_all
 next
   fix n :: nat
   from assms have "p n \<in> {0..<q}" by blast
-  with assms(1) have "norm (p n / real q ^ fact (Suc n)) \<le> 
-                        q / real q ^ (fact (Suc n))" by (auto simp: field_simps)
-  also from assms(1) have "\<dots> = 1 / real q ^ (fact (Suc n) - 1)" 
+  with assms(1) have "norm (p n / of_int q ^ fact (Suc n)) \<le> 
+                        q / of_int q ^ (fact (Suc n))" by (auto simp: field_simps)
+  also from assms(1) have "\<dots> = 1 / of_int q ^ (fact (Suc n) - 1)" 
     by (subst power_diff) (auto simp del: fact_Suc)
   also have "Suc n \<le> fact (Suc n)" by (rule fact_ge_self)
-  with assms(1) have "1 / real q ^ (fact (Suc n) - 1) \<le> 1 / real q ^ n"
+  with assms(1) have "1 / real_of_int q ^ (fact (Suc n) - 1) \<le> 1 / of_int q ^ n"
     by (intro divide_left_mono power_increasing)
        (auto simp del: fact_Suc simp add: algebra_simps)
-  finally show "norm (p n / real q ^ fact (Suc n)) \<le> (1 / q) ^ n"
+  finally show "norm (p n / of_int q ^ fact (Suc n)) \<le> (1 / q) ^ n"
     by (simp add: power_divide)
 qed
 
 lemma standard_liouville_sums:
   assumes "q > 1" "range p \<subseteq> {0..<q}"
-  shows   "(\<lambda>k. p k / real q ^ fact (Suc k)) sums standard_liouville p q"
+  shows   "(\<lambda>k. p k / of_int q ^ fact (Suc k)) sums standard_liouville p q"
   using standard_liouville_summable[OF assms] unfolding standard_liouville_def 
   by (simp add: summable_sums)
 
@@ -290,12 +289,12 @@ proof
   finally show "b n > 1" .
 
   note summable = standard_liouville_summable[OF assms(1,2)]
-  let ?S = "\<Sum>k. p (k + n + 1) / real q ^ (fact (Suc (k + n + 1)))"
-  let ?C = "(q - 1) / real q ^ (fact (n+2))"
+  let ?S = "\<Sum>k. p (k + n + 1) / of_int q ^ (fact (Suc (k + n + 1)))"
+  let ?C = "(q - 1) / of_int q ^ (fact (n+2))"
 
-  have "a n / b n = (\<Sum>k\<le>n. p k * (real q ^ (fact (n+1) - fact (k+1)) / real q ^ (fact (n+1))))"
-    by (simp add: a_def b_def setsum_divide_distrib of_int_setsum of_int_power)
-  also have "\<dots> = (\<Sum>k\<le>n. p k / real q ^ (fact (Suc k)))"
+  have "a n / b n = (\<Sum>k\<le>n. p k * (of_int q ^ (fact (n+1) - fact (k+1)) / of_int q ^ (fact (n+1))))"
+    by (simp add: a_def b_def setsum_divide_distrib of_int_setsum)
+  also have "\<dots> = (\<Sum>k\<le>n. p k / of_int q ^ (fact (Suc k)))"
     by (intro setsum.cong refl, subst inverse_divide [symmetric], subst power_diff [symmetric])
        (insert assms(1), simp_all add: divide_simps fact_mono_nat del: fact_Suc)
   also have "standard_liouville p q - \<dots> = ?S" unfolding standard_liouville_def
@@ -312,32 +311,32 @@ proof
   next
     fix k :: nat
     from assms have "p (k + n + 1) \<le> q - 1" by force
-    with \<open>q > 1\<close> have "p (k + n + 1) / real q ^ fact (Suc (k + n + 1)) \<le> 
-                         (q - 1) / real q ^ (fact (Suc (k + n + 1)))"
+    with \<open>q > 1\<close> have "p (k + n + 1) / of_int q ^ fact (Suc (k + n + 1)) \<le> 
+                         (q - 1) / of_int q ^ (fact (Suc (k + n + 1)))"
       by (intro divide_right_mono) (simp_all del: fact_Suc)
-    also from \<open>q > 1\<close> have "\<dots> \<le> (q - 1) / real q ^ (fact (n+2) + k)"
+    also from \<open>q > 1\<close> have "\<dots> \<le> (q - 1) / of_int q ^ (fact (n+2) + k)"
       using fact_ineq[of "n+2" k]
       by (intro divide_left_mono power_increasing) (simp_all add: add_ac)
     also have "\<dots> = ?C * (1 / q) ^ k" 
       by (simp add: field_simps power_add del: fact_Suc)
-    finally show "p (k + n + 1) / real q ^ fact (Suc (k + n + 1)) \<le> \<dots>" .
+    finally show "p (k + n + 1) / of_int q ^ fact (Suc (k + n + 1)) \<le> \<dots>" .
   qed
   also from assms have "\<dots> = ?C * (\<Sum>k. (1 / q) ^ k)"
     by (intro suminf_mult summable_geometric) simp_all
   also from assms have "(\<Sum>k. (1 / q) ^ k) = 1 / (1 - 1 / q)"
     by (intro suminf_geometric) simp_all
-  also from assms(1) have "?C * \<dots> = real q ^ 1 / real q ^ fact (n + 2)" 
+  also from assms(1) have "?C * \<dots> = of_int q ^ 1 / of_int q ^ fact (n + 2)" 
     by (simp add: field_simps)
-  also from assms(1) have "\<dots> \<le> real q ^ fact (n + 1) / real q ^ fact (n + 2)"
+  also from assms(1) have "\<dots> \<le> of_int q ^ fact (n + 1) / of_int q ^ fact (n + 2)"
     by (intro divide_right_mono power_increasing) (simp_all add: field_simps del: fact_Suc)
-  also from assms(1) have "\<dots> = 1 / (real q ^ (fact (n + 2) - fact (n + 1)))" 
+  also from assms(1) have "\<dots> = 1 / (of_int q ^ (fact (n + 2) - fact (n + 1)))" 
     by (subst power_diff) simp_all
   also have "fact (n + 2) - fact (n + 1) = (n + 1) * fact (n + 1)" by (simp add: algebra_simps)
-  also from assms(1) have "1 / (real q ^ \<dots>) < 1 / (real q ^ (fact (n + 1) * n))"
+  also from assms(1) have "1 / (of_int q ^ \<dots>) < 1 / (real_of_int q ^ (fact (n + 1) * n))"
     by (intro divide_strict_left_mono power_increasing mult_right_mono) simp_all
-  also have "\<dots> = 1 / real (b n) ^ n" 
-    by (simp add: power_mult b_def power_divide of_int_power del: fact_Suc)
-  finally show "\<bar>standard_liouville p q - a n / b n\<bar> < 1 / real (b n) ^ n" .
+  also have "\<dots> = 1 / of_int (b n) ^ n" 
+    by (simp add: power_mult b_def power_divide del: fact_Suc)
+  finally show "\<bar>standard_liouville p q - a n / b n\<bar> < 1 / of_int (b n) ^ n" .
 
   from assms(3) obtain k where k: "k \<ge> n + 1" "p k \<noteq> 0" 
     by (auto simp: frequently_def eventually_at_top_linorder)

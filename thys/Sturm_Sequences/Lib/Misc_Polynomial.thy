@@ -31,24 +31,6 @@ lemma degree_power_eq:
   "(p::('a::idom) poly) \<noteq> 0 \<Longrightarrow> degree (p^n) = n * degree p"
   by (induction n, simp_all add: degree_mult_eq)
 
-lemma poly_altdef: "poly p (x::real) = (\<Sum>i\<le>degree p. coeff p i * x ^ i)"
-proof (induction p rule: pCons_induct)
-  case (pCons a p)
-    show ?case
-    proof (cases "p = 0")
-      case False
-      let ?p' = "pCons a p"
-      note poly_pCons[of a p x]
-      also note pCons.IH
-      also have "a + x * (\<Sum>i\<le>degree p. coeff p i * x ^ i) =
-                 coeff ?p' 0 * x^0 + (\<Sum>i\<le>degree p. coeff ?p' (Suc i) * x^Suc i)"
-          by (simp add: field_simps setsum_right_distrib coeff_pCons)
-      also note setsum_atMost_Suc_shift[symmetric]
-      also note degree_pCons_eq[OF `p \<noteq> 0`, of a, symmetric]
-      finally show ?thesis .
-   qed simp
-qed simp
-
 lemma pderiv_div:
   assumes [simp]: "q dvd p" "q \<noteq> 0"
   shows "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)"

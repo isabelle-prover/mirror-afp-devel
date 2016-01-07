@@ -873,7 +873,7 @@ lemma birkhoff_lemma_L1:
   assumes "\<And>x. f x \<ge> 0" and
    [measurable]: "integrable M f"
    shows "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<longlonglongrightarrow> 0"
-proof (rule AE_and_int_bound_implies_L1_conv2)
+proof (rule Scheffe_lemma2)
   show i: "integrable M (real_cond_exp M Invariants f)" using assms by (simp add: real_cond_exp_int(1))
   show "AE x in M. (\<lambda>n. birkhoff_sum f n x / real n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
     using  birkhoff_theorem_AE_nonergodic assms by simp

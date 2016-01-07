@@ -242,7 +242,7 @@ lemma congruent_triangleI_aas:
   assumes "\<not>collinear {a1,b1,c1}"
   shows   "congruent_triangle a1 b1 c1 a2 b2 c2"
 proof (rule congruent_triangleI_sas)
-  from \<open>\<not>collinear {a1,b1,c1}\<close> have neq: "a1 \<noteq> b1" by (auto simp: collinear_2)
+  from \<open>\<not>collinear {a1,b1,c1}\<close> have neq: "a1 \<noteq> b1" by auto
   with assms(3) have neq': "a2 \<noteq> b2" by auto
   have A: "angle c1 a1 b1 = angle c2 a2 b2" using neq neq' assms
     using angle_sum_triangle[of a1 b1 c1] angle_sum_triangle[of a2 b2 c2]
@@ -251,7 +251,7 @@ proof (rule congruent_triangleI_sas)
     by (intro not_collinear_angle) (simp_all add: insert_commute)
   from sine_law_triangle[of c1 a1 b1] sine_law_triangle[of c2 a2 b2] assms A B
     show "dist b1 c1 = dist b2 c2"
-    by (auto simp: angle_commute dist_commute sin_angle_zero_iff collinear_2)
+    by (auto simp: angle_commute dist_commute sin_angle_zero_iff)
 qed fact+
 
 lemmas congruent_triangle_aas = congruent_triangleD[OF congruent_triangleI_aas]
@@ -263,7 +263,7 @@ lemma congruent_triangleI_asa:
   assumes "\<not>collinear {a1, b1, c1}"
   shows   "congruent_triangle a1 b1 c1 a2 b2 c2"
 proof (rule congruent_triangleI_aas)
-  from assms have neq: "a1 \<noteq> b1" "a2 \<noteq> b2" by (auto simp: collinear_2)
+  from assms have neq: "a1 \<noteq> b1" "a2 \<noteq> b2" by auto
   show "angle b1 c1 a1 = angle b2 c2 a2"
     by (rule similar_triangle_aa) (insert assms neq, simp_all add: angle_commute)
 qed fact+

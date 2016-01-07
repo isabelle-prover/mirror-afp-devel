@@ -114,7 +114,7 @@ lemma cos_minus1_imp_pi:
   shows   "x = pi"
 proof -
   have "cos (x - pi) = 1" by (simp add: assms)
-  then obtain n :: int where n: "real n = (x / pi - 1) / 2" 
+  then obtain n :: int where n: "of_int n = (x / pi - 1) / 2" 
     by (subst (asm) cos_one_2pi_int) (auto simp: field_simps)
   also from assms have "\<dots> \<in> {-1<..<1}" by (auto simp: field_simps)
   finally have "n = 0" by simp
@@ -145,7 +145,7 @@ lemma cos_angle_eqD: "cos (angle a b c) = cos (angle d e f) \<Longrightarrow> an
 lemma sin_vangle_zero_iff: "sin (vangle u v) = 0 \<longleftrightarrow> vangle u v \<in> {0, pi}"
 proof
   assume "sin (vangle u v) = 0"
-  then obtain n :: int where n: "real n = vangle u v / pi"
+  then obtain n :: int where n: "of_int n = vangle u v / pi"
     by (subst (asm) sin_zero_iff_int2) auto
   also have "\<dots> \<in> {0..1}" using vangle_bounds by (auto simp: field_simps)
   finally have "n \<in> {0,1}" by auto

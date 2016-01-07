@@ -481,9 +481,11 @@ fun applicative_cmd name pure ap flags lthy =
         |> register_afun af
         |> note_afun_thms af
       end;
-  in Proof.theorem NONE after_qed (map (fn t => [(t, [])]) props) lthy
+  in
+    Proof.theorem NONE after_qed (map (fn t => [(t, [])]) props) lthy
     |> Proof.refine (Method.primitive_text (Library.K I))
-    |> Seq.hd end;
+    |> Seq.the_result ""
+  end;
 
 fun print_afuns ctxt =
   let
@@ -500,7 +502,7 @@ fun print_afuns ctxt =
         Pretty.block [Pretty.str "ap:", Pretty.brk 1, Pretty.quote (Syntax.pretty_term ctxt ap)],
         Pretty.block ([Pretty.str "combinators:", Pretty.brk 1] @
           Pretty.commas (map Pretty.str combinators))]) end;
-    val afuns = sort_wrt #1 (Name_Space.fold_table cons (get_afuns (Context.Proof ctxt)) []);
+    val afuns = sort_by #1 (Name_Space.fold_table cons (get_afuns (Context.Proof ctxt)) []);
   in Pretty.writeln (Pretty.big_list "Registered applicative functors:" (map pretty_afun afuns)) end;
 
 
@@ -539,8 +541,8 @@ fun term_to_vname (Const (x, _)) = Long_Name.base_name x
   | term_to_vname _ = "x";
 
 fun afuns_of_eq precise ctxt t =
-  let val (lhs, rhs) = Variable.focus t ctxt
-    |> #2 o #1
+  let val (lhs, rhs) = Variable.focus NONE t ctxt
+    |> #1 |> #2
     |> Logic.strip_imp_concl
     |> Envir.beta_eta_contract
     |> HOLogic.dest_Trueprop
@@ -768,7 +770,7 @@ fun eliminate ctxt af tt (v, v_tm) =
       let
         val ct = Thm.cterm_of ctxt tm;
         val T = Term.fastype_of tm |> dest_type ctxt af |> #1 |> Thm.ctyp_of ctxt;
-        val thm = Drule.instantiate' [SOME T] [SOME ct]
+        val thm = Thm.instantiate' [SOME T] [SOME ct]
           (Conv.rewr_conv (#K_intro rules |> the) (term_of_apterm ctxt af tt |> Thm.cterm_of ctxt))
       in (Ap (extract_comb 2 thm, tt), thm) end;
     fun unreachable _ = raise ASSERT "eliminate: assertion failed";
@@ -914,10 +916,9 @@ fun forward_lift_rule ctxt af thm =
   in thm'' end;
 
 fun forward_lift_attrib name =
-  let fun rule context thm =
-    let val af = afun_of_generic context (intern context name)
-    in forward_lift_rule (Context.proof_of context) af thm end;
-  in Thm.rule_attribute rule end;
+  Thm.rule_attribute [] (fn context => fn thm =>
+    let val af = afun_of_generic context (intern context name)  (* FIXME !?!? *)
+    in forward_lift_rule (Context.proof_of context) af thm end);
 
 
 (* High-level tactics *)
