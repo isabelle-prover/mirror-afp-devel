@@ -7,9 +7,8 @@
 section {* Auxiliary lemmas *}
 theory Prime_Harmonic_Misc
 imports
-  Main
-  Transcendental
-  "~~/src/HOL/Number_Theory/UniqueFactorization" 
+  Complex_Main
+  "~~/src/HOL/Number_Theory/Number_Theory" 
 begin
 
 lemma listsum_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> listsum xs \<ge> (0 :: 'a :: ordered_ab_group_add)"

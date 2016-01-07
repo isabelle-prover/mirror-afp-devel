@@ -7,14 +7,60 @@
 section {* The Master theorem *}
 theory Master_Theorem
 imports
-  Complex_Main
+  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
   "../Landau_Symbols/Landau_Symbols"
   Akra_Bazzi_Library
   Akra_Bazzi
 begin
 
-context akra_bazzi_function
+lemma fundamental_theorem_of_calculus_real:
+  "a \<le> b \<Longrightarrow> \<forall>x\<in>{a..b}. (f has_real_derivative f' x) (at x within {a..b}) \<Longrightarrow>
+      (f' has_integral (f b - f a)) {a..b}"
+  by (intro fundamental_theorem_of_calculus ballI)
+     (simp_all add: has_field_derivative_iff_has_vector_derivative[symmetric])
+
+lemma integral_powr:
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) = 
+     inverse (y + 1) * (b powr (y + 1) - a powr (y + 1))"
+  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros)
+
+lemma integral_ln_powr_over_x:
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. ln x powr y / x :: real) = 
+     inverse (y + 1) * (ln b powr (y + 1) - ln a powr (y + 1))"
+  by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros)     
+
+lemma integral_one_over_x_ln_x:
+  "a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. inverse (x * ln x) :: real) = ln (ln b) - ln (ln a)"
+  by (intro integral_unique fundamental_theorem_of_calculus_real)
+     (auto intro!: derivative_eq_intros simp: field_simps)
+
+lemma akra_bazzi_integral_kurzweil_henstock:
+  "akra_bazzi_integral (\<lambda>f a b. f integrable_on {a..b}) (\<lambda>f a b. integral {a..b} f)"
+apply unfold_locales
+apply (rule integrable_const_ivl)
+apply simp
+apply (erule integrable_subinterval_real, simp)
+apply (blast intro!: integral_le)
+apply (rule integral_combine, simp_all) []
+done
+
+
+locale master_theorem_function = akra_bazzi_recursion +
+  fixes g :: "nat \<Rightarrow> real"
+  assumes f_nonneg_base: "x \<ge> x\<^sub>0 \<Longrightarrow> x < x\<^sub>1 \<Longrightarrow> f x \<ge> 0"
+  and     f_rec:         "x \<ge> x\<^sub>1 \<Longrightarrow> f x = g x + (\<Sum>i<k. as!i * f ((ts!i) x))"
+  and     g_nonneg:      "x \<ge> x\<^sub>1 \<Longrightarrow> g x \<ge> 0"
+  and     ex_pos_a:      "\<exists>a\<in>set as. a > 0"
 begin
+
+interpretation akra_bazzi_integral "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f"
+  by (rule akra_bazzi_integral_kurzweil_henstock)
+
+sublocale akra_bazzi_function x\<^sub>0 x\<^sub>1 k as bs ts f "\<lambda>f a b. f integrable_on {a..b}" 
+            "\<lambda>f a b. integral {a..b} f" g
+  using f_nonneg_base f_rec g_nonneg ex_pos_a by unfold_locales
 
 context
 begin
@@ -296,7 +342,8 @@ lemma master1_bigo:
   assumes less_p': "(\<Sum>i<k. as!i * bs!i powr p') > 1"
   shows "f \<in> O(\<lambda>x. real x powr p)"
 proof-
-  interpret akra_bazzi_upper x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>x. x powr p'"
+  interpret akra_bazzi_upper x\<^sub>0 x\<^sub>1 k as bs ts f 
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p'"
     using assms growths g_bigo master_integrable by unfold_locales (assumption | simp)+  
   from less_p' have less_p: "p' < p" by (rule p_greaterI)
   from bigo_f[of "0"] guess a . note a = this
@@ -316,7 +363,8 @@ lemma master1:
   assumes f_pos:  "eventually (\<lambda>x. f x > 0) at_top"
   shows "f \<in> \<Theta>(\<lambda>x. real x powr p)"
 proof (rule bigthetaI)
-  interpret akra_bazzi_lower x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>_. 0"
+  interpret akra_bazzi_lower x\<^sub>0 x\<^sub>1 k as bs ts f 
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>_. 0"
     using assms(1,3) bs_lower_bound by unfold_locales (auto intro: always_eventually)
   from bigomega_f show "f \<in> \<Omega>(\<lambda>x. real x powr p)" by force
 qed (fact master1_bigo[OF g_bigo less_p'])
@@ -330,7 +378,8 @@ proof-
     using eventually_gt_at_top[of "1::real"] by eventually_elim simp
   hence "eventually (\<lambda>x. f x > 0) at_top"
     by (rule f_pos[OF bigthetaD2[OF g_bigtheta] eventually_nat_real])
-  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>x. x powr p * ln x powr (p' - 1)"
+  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p * ln x powr (p' - 1)"
     using assms growths bounds master_integrable by unfold_locales (assumption | simp)+
   from bigtheta_f[of "1"] guess a . note a = this
   note a(2)
@@ -351,7 +400,8 @@ proof-
     using eventually_gt_at_top[of "1::real"] by eventually_elim simp
   hence "eventually (\<lambda>x. f x > 0) at_top"
     by (rule f_pos[OF bigthetaD2[OF g_bigtheta] eventually_nat_real])
-  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>x. x powr p * ln x powr p'"
+  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p * ln x powr p'"
     using assms growths bounds master_integrable by unfold_locales (assumption | simp)+
   from bigtheta_f[of "1"] guess a . note a = this
   note a(2)
@@ -376,7 +426,8 @@ proof-
     by (rule f_pos[OF bigthetaD2[OF g_bigtheta] eventually_nat_real])
   moreover from g_bigtheta have g_bigtheta': "g \<in> \<Theta>(\<lambda>x. real x powr p * ln (real x) powr -1)"
     by (rule landau_theta.trans, intro landau_real_nat_transfer) simp
-  ultimately interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>x. x powr p * ln x powr -1"
+  ultimately interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p * ln x powr -1"
     using assms growths bounds master_integrable by unfold_locales (assumption | simp)+  
   from bigtheta_f[of 1] guess a . note a = this
   note a(2)
@@ -393,7 +444,8 @@ proof-
     using eventually_gt_at_top[of "1::real"] by eventually_elim simp
   hence "eventually (\<lambda>x. f x > 0) at_top"
     by (rule f_pos[OF bigthetaD2[OF g_bigtheta] eventually_nat_real])
-  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f g "\<lambda>x. x powr p'"
+  then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
+    "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p'"
     using assms growths bounds master_integrable by unfold_locales (assumption | simp)+  
   from p'_greater' have p'_greater: "p' > p" by (rule p_lessI)
   from bigtheta_f[of 0] guess a . note a = this

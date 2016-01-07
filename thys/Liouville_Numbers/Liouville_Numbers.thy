@@ -135,11 +135,11 @@ proof -
     finally show "M > 0" .
   qed
 
-  {
-    fix t assume "t \<in> {x-1..x+1}"
-    from this and bdd have "?f t \<le> M"
+  have M_sup: "?f t \<le> M" if "t \<in> {x-1..x+1}" for t
+  proof -
+    from that and bdd show "?f t \<le> M"
       unfolding M_def by (rule cSUP_upper)
-  } note M_sup = this
+  qed
 
 
   -- \<open>Properties of @{term A}:\<close>
