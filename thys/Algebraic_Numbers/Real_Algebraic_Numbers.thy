@@ -25,9 +25,9 @@ theory Real_Algebraic_Numbers
 imports 
   Algebraic_Numbers
   Sturm_Rat
-  "$AFP/Abstract-Rewriting/SN_Order_Carrier"
-  Compare_Rat
-  Compare_Real
+  "../Abstract-Rewriting/SN_Order_Carrier"
+  "../Deriving/Comparator_Genrator/Compare_Rat"
+  "../Deriving/Comparator_Genrator/Compare_Real"
   Improved_Code_Equations
 begin
 
