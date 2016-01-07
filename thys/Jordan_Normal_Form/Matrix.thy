@@ -19,6 +19,7 @@ theory Matrix
 imports
   Missing_Ring
   "~~/src/HOL/Algebra/Module"
+  Ring_Hom
 begin
 
 subsection\<open>Vectors\<close>
@@ -60,18 +61,16 @@ lemma vec_eqI[intro]: "(\<And> i. i < dim\<^sub>v w \<Longrightarrow> v $ i = w 
   \<Longrightarrow> v = w"
   by (transfer, auto simp: mk_vec_def)
 
-lemma vec_elemsD[simp]: "v \<in> vec_carrier n \<Longrightarrow> dim\<^sub>v v = n"
+lemma vec_elems: "v \<in> vec_carrier n \<longleftrightarrow> dim\<^sub>v v = n"
   unfolding vec_carrier_def by auto
 
-lemma vec_elemsI: "dim\<^sub>v v = n \<Longrightarrow> v \<in> vec_carrier n"
-  unfolding vec_carrier_def by auto
+lemma vec_elemsD[simp]: "v \<in> vec_carrier n \<Longrightarrow> dim\<^sub>v v = n" using vec_elems by auto
+
+lemma vec_elemsI: "dim\<^sub>v v = n \<Longrightarrow> v \<in> vec_carrier n" using vec_elems by auto
 
 definition
   vec_add :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: plus vec" (infixl "\<oplus>\<^sub>v" 65)
   where "v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2 \<equiv> vec (dim\<^sub>v v\<^sub>2) (\<lambda> i. v\<^sub>1 $ i + v\<^sub>2 $ i)"
-
-lemma vec_add_index: "i < dim\<^sub>v v\<^sub>2 \<Longrightarrow> (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) $ i = v\<^sub>1 $ i + v\<^sub>2 $ i"
-unfolding vec_add_def by auto
 
 definition
   vec_zero :: "nat \<Rightarrow> 'a :: zero vec" ("\<zero>\<^sub>v")
@@ -82,6 +81,8 @@ lemma vec_zero_carrier[simp]: "\<zero>\<^sub>v n \<in> carrier\<^sub>v n"
 
 lemma vec_zero_index[simp]: "i < n \<Longrightarrow> \<zero>\<^sub>v n $ i = 0" "dim\<^sub>v (\<zero>\<^sub>v n) = n"
   unfolding vec_zero_def by auto
+
+lemma vec_of_dim_0[simp]: "dim\<^sub>v v = 0 \<longleftrightarrow> v = \<zero>\<^sub>v 0" by auto
 
 definition
   vec_unit :: "nat \<Rightarrow> nat \<Rightarrow> ('a :: zero_neq_one) vec" ("unit\<^sub>v")
@@ -141,7 +142,7 @@ fun vec_units_last:: "nat \<Rightarrow> nat \<Rightarrow> 'a :: zero_neq_one vec
     |   "vec_units_last n (Suc i) = unit\<^sub>v n (n - Suc i) # vec_units_last n i"
 
 lemma vec_units_last_carrier: "set (vec_units_last n i) \<subseteq> carrier\<^sub>v n"
-by (induct i;auto)
+  by (induct i;auto)
 
 lemma vec_units_last[code]: "vec_units n = vec_units_last n n"
 proof -
@@ -181,15 +182,16 @@ lemma vec_units_first_distinct:
   "i \<le> j \<Longrightarrow> j < n \<Longrightarrow> unit\<^sub>v n j \<notin> set (vec_units_first n i)"
   by (induction i arbitrary:j, auto)
 
+definition map_vec ("map\<^sub>v") where "map_vec f v \<equiv> vec (dim\<^sub>v v) (\<lambda>i. f (v $ i))"
+
 definition vec_uminus :: "'a :: uminus vec \<Rightarrow> 'a vec" ("\<ominus>\<^sub>v _" [81] 80) where
   "\<ominus>\<^sub>v v \<equiv> vec (dim\<^sub>v v) (\<lambda> i. - (v $ i))"
 
 definition vec_scalar_mult :: "'a :: times \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl "\<odot>\<^sub>v" 70)
   where "a \<odot>\<^sub>v v \<equiv> vec (dim\<^sub>v v) (\<lambda> i. a * v $ i)"
 
-definition 
-  scalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: semiring_0" (infix "\<bullet>" 70)
-  where "v\<^sub>1 \<bullet> v\<^sub>2 = (\<Sum> i \<in> {0 ..< dim\<^sub>v v\<^sub>2}. v\<^sub>1 $ i * v\<^sub>2 $ i)"
+definition scalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: semiring_0" (infix "\<bullet>" 70)
+  where "v \<bullet> w \<equiv> \<Sum> i \<in> {0 ..< dim\<^sub>v w}. v $ i * w $ i"
 
 definition vec_monoid :: "'a itself \<Rightarrow> nat \<Rightarrow> ('a :: monoid_add vec) monoid" 
   ("monoid\<^sub>v") where
@@ -198,25 +200,15 @@ definition vec_monoid :: "'a itself \<Rightarrow> nat \<Rightarrow> ('a :: monoi
     mult = op \<oplus>\<^sub>v, 
     one = \<zero>\<^sub>v n\<rparr>"
 
-definition finsum_vec :: "'a :: monoid_add itself \<Rightarrow> nat \<Rightarrow> ('c \<Rightarrow> 'a vec) \<Rightarrow> 'c set \<Rightarrow> 'a vec" where
-  "finsum_vec ty n = finprod (vec_monoid ty n)"
-
-lemma vec_index_zero[simp]: "dim\<^sub>v (\<zero>\<^sub>v n) = n"
-  unfolding vec_zero_def by auto
-
-lemma vec_index_add[simp]: 
-  "i < dim\<^sub>v v\<^sub>2 \<Longrightarrow> (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) $ i = v\<^sub>1 $ i + v\<^sub>2 $ i" "dim\<^sub>v (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) = dim\<^sub>v v\<^sub>2"
-  unfolding vec_add_def by auto
-
-lemma vec_index_uminus[simp]: 
-  "i < dim\<^sub>v v \<Longrightarrow> (\<ominus>\<^sub>v v) $ i = - (v $ i)" 
-  "dim\<^sub>v (\<ominus>\<^sub>v v) = dim\<^sub>v v" 
-  unfolding vec_uminus_def by auto
-
-
-lemma vec_index_scalar_mult[simp]: 
-  "i < dim\<^sub>v v \<Longrightarrow> (a \<odot>\<^sub>v v) $ i = a * v $ i" "dim\<^sub>v (a \<odot>\<^sub>v v) = dim\<^sub>v v"
-  unfolding vec_scalar_mult_def by auto
+definition vec_module ::
+  "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> ('a,'a vec) module" ("module\<^sub>v") where
+  "module\<^sub>v ty n \<equiv> \<lparr>
+    carrier = carrier\<^sub>v n,
+    mult = undefined,
+    one = undefined,
+    zero = \<zero>\<^sub>v n,
+    add = op \<oplus>\<^sub>v,
+    smult = op \<odot>\<^sub>v\<rparr>"
 
 lemma vec_monoid_simps: 
   "mult (monoid\<^sub>v ty n) = op \<oplus>\<^sub>v" 
@@ -224,12 +216,39 @@ lemma vec_monoid_simps:
   "one (monoid\<^sub>v ty n) = \<zero>\<^sub>v n"
   unfolding vec_monoid_def by auto
 
+lemma vec_module_simps:
+  "add (module\<^sub>v ty n) = op \<oplus>\<^sub>v" 
+  "zero (module\<^sub>v ty n) = \<zero>\<^sub>v n" 
+  "carrier (module\<^sub>v ty n) = carrier\<^sub>v n" 
+  "smult (module\<^sub>v ty n) = op \<odot>\<^sub>v"
+  unfolding vec_module_def by auto
+
+definition finsum_vec :: "'a :: monoid_add itself \<Rightarrow> nat \<Rightarrow> ('c \<Rightarrow> 'a vec) \<Rightarrow> 'c set \<Rightarrow> 'a vec" where
+  "finsum_vec ty n = finprod (vec_monoid ty n)"
+
+lemma vec_index_add[simp]: 
+  "i < dim\<^sub>v v\<^sub>2 \<Longrightarrow> (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) $ i = v\<^sub>1 $ i + v\<^sub>2 $ i" "dim\<^sub>v (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) = dim\<^sub>v v\<^sub>2"
+  unfolding vec_add_def by auto
+
+lemma vec_index_map[simp]:
+  "i < dim\<^sub>v v \<Longrightarrow> map\<^sub>v f v $ i = f (v $ i)"
+  "dim\<^sub>v (map\<^sub>v f v) = dim\<^sub>v v"
+  unfolding map_vec_def by auto
+
+lemma map_vec_carrier[simp]: "map\<^sub>v h v \<in> carrier\<^sub>v n = (v \<in> carrier\<^sub>v n)" 
+  unfolding map_vec_def vec_carrier_def by auto
+
+lemma vec_index_uminus[simp]: 
+  "i < dim\<^sub>v v \<Longrightarrow> (\<ominus>\<^sub>v v) $ i = - (v $ i)" 
+  "dim\<^sub>v (\<ominus>\<^sub>v v) = dim\<^sub>v v" 
+  unfolding vec_uminus_def by auto
+
+lemma vec_index_scalar_mult[simp]: 
+  "i < dim\<^sub>v v \<Longrightarrow> (a \<odot>\<^sub>v v) $ i = a * v $ i" "dim\<^sub>v (a \<odot>\<^sub>v v) = dim\<^sub>v v"
+  unfolding vec_scalar_mult_def by auto
+
 lemma vec_add_closed[simp]: 
   "v\<^sub>1 \<in> carrier\<^sub>v n \<Longrightarrow> v\<^sub>2 \<in> carrier\<^sub>v n \<Longrightarrow> v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2 \<in> carrier\<^sub>v n"
-  unfolding vec_carrier_def by auto
-
-lemma vec_uminus_closed[simp]: 
-  "(\<ominus>\<^sub>v v \<in> carrier\<^sub>v n) = (v \<in> carrier\<^sub>v n)"
   unfolding vec_carrier_def by auto
 
 lemma vec_add_comm[ac_simps]: 
@@ -241,9 +260,16 @@ lemma vec_add_assoc[simp]:
   \<Longrightarrow> (v\<^sub>1 \<oplus>\<^sub>v v\<^sub>2) \<oplus>\<^sub>v v\<^sub>3 = v\<^sub>1 \<oplus>\<^sub>v (v\<^sub>2 \<oplus>\<^sub>v v\<^sub>3)"
   by (intro vec_eqI, auto simp: ac_simps)
 
+lemma vec_monoid: "comm_monoid (monoid\<^sub>v TYPE ('a :: comm_monoid_add) n)"
+  by (unfold_locales, auto simp: vec_monoid_def ac_simps)
+
 lemma vec_left_zero[simp]: 
   "(v :: 'a :: monoid_add vec) \<in> carrier\<^sub>v n  \<Longrightarrow> \<zero>\<^sub>v n \<oplus>\<^sub>v v = v"
   by (intro vec_eqI, auto)
+
+lemma vec_uminus_closed[simp]: 
+  "(\<ominus>\<^sub>v v \<in> carrier\<^sub>v n) = (v \<in> carrier\<^sub>v n)"
+  unfolding vec_carrier_def by auto
 
 lemma vec_uminus_r_inv[simp]: 
   "(v :: 'a :: group_add vec) \<in> carrier\<^sub>v n \<Longrightarrow> (v \<oplus>\<^sub>v \<ominus>\<^sub>v v) = \<zero>\<^sub>v n"
@@ -253,15 +279,12 @@ lemma vec_uminus_l_inv[simp]:
   "(v :: 'a :: group_add vec) \<in> carrier\<^sub>v n \<Longrightarrow> (\<ominus>\<^sub>v v \<oplus>\<^sub>v v) = \<zero>\<^sub>v n"
   by (intro vec_eqI, auto)
 
-lemma vec_inv_exists: 
+lemma vec_add_inv_exists: 
   "(v :: 'a :: group_add vec) \<in> carrier\<^sub>v n \<Longrightarrow> \<exists> w \<in> carrier\<^sub>v n. w \<oplus>\<^sub>v v = \<zero>\<^sub>v n \<and> v \<oplus>\<^sub>v w = \<zero>\<^sub>v n"
   by (intro bexI[of _ "\<ominus>\<^sub>v v"], auto)
 
-lemma vec_monoid: "comm_monoid (monoid\<^sub>v TYPE ('a :: comm_monoid_add) n)"
-  by (unfold_locales, auto simp: vec_monoid_def ac_simps)
-
 lemma vec_group: "comm_group (monoid\<^sub>v TYPE ('a :: ab_group_add) n)"
-  by (unfold_locales, insert vec_inv_exists, auto simp: vec_monoid_def ac_simps Units_def)
+  by (unfold_locales, insert vec_add_inv_exists, auto simp: vec_monoid_def ac_simps Units_def)
 
 lemmas finsum_vec_insert = 
   comm_monoid.finprod_insert[OF vec_monoid, folded finsum_vec_def, unfolded vec_monoid_simps]
@@ -272,8 +295,7 @@ lemmas finsum_vec_closed =
 lemmas finsum_vec_empty = 
   comm_monoid.finprod_empty[OF vec_monoid, folded finsum_vec_def, unfolded vec_monoid_simps]
 
-lemma vec_scalar_mult_closed[simp]: 
-  "(a \<odot>\<^sub>v v \<in> carrier\<^sub>v n) = (v \<in> carrier\<^sub>v n)"
+lemma vec_scalar_mult_closed[simp]: "(a \<odot>\<^sub>v v \<in> carrier\<^sub>v n) = (v \<in> carrier\<^sub>v n)"
   unfolding vec_carrier_def by auto
  
 lemma scalar_prod_left_zero[simp]: "v \<in> carrier\<^sub>v n \<Longrightarrow> \<zero>\<^sub>v n \<bullet> v = 0"
@@ -338,10 +360,6 @@ lemma scalar_prod_comm: assumes "(v\<^sub>1 :: 'a :: comm_semiring_0 vec) \<in> 
   shows "v\<^sub>1 \<bullet> v\<^sub>2 = v\<^sub>2 \<bullet> v\<^sub>1"
   unfolding scalar_prod_def
   by (rule setsum.cong, insert assms, auto simp: ac_simps)
-
-lemma vec_add_inv_exists:
-  "(v :: 'a :: group_add vec) \<in> carrier\<^sub>v n \<Longrightarrow> \<exists> w \<in> carrier\<^sub>v n. v \<oplus>\<^sub>v w = \<zero>\<^sub>v n \<and> v \<oplus>\<^sub>v w = \<zero>\<^sub>v n"
-  by (intro bexI[of _ "\<ominus>\<^sub>v v"], auto)
 
 lemma vec_smult_l_distr:
   "((a::'a::ring) + b) \<odot>\<^sub>v v = a \<odot>\<^sub>v v \<oplus>\<^sub>v b \<odot>\<^sub>v v"
@@ -472,6 +490,10 @@ lemma mat_eqI[intro]: "(\<And> i j . i < dim\<^sub>r B \<Longrightarrow> j < dim
   \<Longrightarrow> A = B"
   by (transfer, auto intro!: mk_mat_cong, auto simp: mk_mat_def) 
 
+lemma mat_carrierI[intro]:
+  assumes "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" shows  "A \<in> mat_carrier nr nc"
+  using assms unfolding mat_carrier_def by auto
+
 lemma mat_carrierD[dest,simp]: assumes "A \<in> mat_carrier nr nc"
   shows "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" using assms
   unfolding mat_carrier_def by auto
@@ -482,8 +504,9 @@ definition row :: "'a mat \<Rightarrow> nat \<Rightarrow> 'a vec" where
 definition rows :: "'a mat \<Rightarrow> 'a vec list" where
   "rows A = map (row A) [0..<dim\<^sub>r A]"
 
-lemma row_dim[simp]:
-  "row A i \<in> carrier\<^sub>v (dim\<^sub>c A)" unfolding row_def by auto
+lemma row_dim[simp]: "row A i \<in> carrier\<^sub>v (dim\<^sub>c A)" unfolding row_def by auto
+
+lemma rows_dim[simp]: "set (rows A) \<subseteq> carrier\<^sub>v (dim\<^sub>c A)" unfolding rows_def by auto
 
 lemma rows_length[simp]: "length (rows A) = dim\<^sub>r A" unfolding rows_def by auto
 
@@ -492,7 +515,14 @@ lemma rows_nth[simp]: "i < dim\<^sub>r A \<Longrightarrow> rows A ! i = row A i"
 
 lemma mat_row_row[simp]: "i < nr \<Longrightarrow> dim\<^sub>v (f i) = nc \<Longrightarrow> row (mat\<^sub>r nr nc f) i = f i"
   by (rule vec_eqI, auto simp: row_def)  
-  
+
+definition "mat_of a \<equiv> mat 1 1 (\<lambda>_. a)"
+
+lemma dim_mat_of[simp]:
+  "dim\<^sub>r (mat_of a) = 1" "dim\<^sub>c (mat_of a) = 1" unfolding mat_of_def by auto
+
+lemma mat_of_index[simp]: "mat_of a $$ (0,0) = a" unfolding mat_of_def by simp
+
 definition mat_of_row :: "'a vec \<Rightarrow> 'a mat"
   where "mat_of_row v = mat (dim\<^sub>v v) 1 (\<lambda>(i,j). v $ i)"
 
@@ -514,10 +544,9 @@ lemma mat_of_rows_row[simp]:
   unfolding mat_of_rows_def row_def using n i by auto
 
 lemma rows_mat_of_rows[simp]:
-  assumes "\<forall>i < length vs. vs ! i \<in> carrier\<^sub>v n"
-  shows "rows (mat_of_rows n vs) = vs"
-  unfolding rows_def 
-  by (rule nth_equalityI,insert assms, auto)
+  assumes "set vs \<subseteq> carrier\<^sub>v n" shows "rows (mat_of_rows n vs) = vs"
+  unfolding rows_def apply (rule nth_equalityI)
+  using assms unfolding subset_code(1) by auto
 
 lemma mat_of_rows_rows[simp]:
   "mat_of_rows (dim\<^sub>c A) (rows A) = A"
@@ -538,6 +567,10 @@ definition mat_of_cols_list :: "nat \<Rightarrow> 'a list list \<Rightarrow> 'a 
 
 lemma col_dim[simp]: "col A i \<in> carrier\<^sub>v (dim\<^sub>r A)" unfolding col_def by auto
 
+lemma dim_col[simp]: "dim\<^sub>v (col A i) = dim\<^sub>r A" by auto
+
+lemma cols_dim[simp]: "set (cols A) \<subseteq> carrier\<^sub>v (dim\<^sub>r A)" unfolding cols_def by auto
+
 lemma cols_length[simp]: "length (cols A) = dim\<^sub>c A" unfolding cols_def by auto
 
 lemma cols_nth[simp]: "i < dim\<^sub>c A \<Longrightarrow> cols A ! i = col A i"
@@ -555,10 +588,9 @@ lemma mat_of_cols_col[simp]:
   unfolding mat_of_cols_def col_def using j n by auto
 
 lemma cols_mat_of_cols[simp]:
-  assumes "\<forall>j < length vs. vs ! j \<in> carrier\<^sub>v n"
-  shows "cols (mat_of_cols n vs) = vs"
+  assumes "set vs \<subseteq> carrier\<^sub>v n" shows "cols (mat_of_cols n vs) = vs"
   unfolding cols_def apply(rule nth_equalityI)
-  using assms by auto
+  using assms unfolding subset_code(1) by auto
 
 lemma mat_of_cols_cols[simp]:
   "mat_of_cols (dim\<^sub>r A) (cols A) = A"
@@ -586,8 +618,11 @@ definition mat_transpose :: "'a mat \<Rightarrow> 'a mat" ("transpose\<^sub>m") 
 definition mat_one :: "nat \<Rightarrow> 'a :: {zero,one} mat" ("\<one>\<^sub>m") where
   "\<one>\<^sub>m n \<equiv> mat n n (\<lambda> (i,j). if i = j then 1 else 0)" 
 
-definition mat_uminus :: "'a :: uminus mat \<Rightarrow> 'a mat" ("\<ominus>\<^sub>m") where
+definition mat_uminus :: "'a :: uminus mat \<Rightarrow> 'a mat" ("\<ominus>\<^sub>m _" [81] 80) where
   "\<ominus>\<^sub>m A \<equiv> mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> ij. - (A $$ ij))"
+
+abbreviation mat_minus :: "'a :: {plus,uminus} mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl "\<ominus>\<^sub>m" 65) where
+  "A \<ominus>\<^sub>m B \<equiv> A \<oplus>\<^sub>m \<ominus>\<^sub>m B"
 
 definition mat_mult_vec :: "'a :: semiring_0 mat \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl "\<otimes>\<^sub>m\<^sub>v" 70)
   where "A \<otimes>\<^sub>m\<^sub>v v \<equiv> vec (dim\<^sub>r A) (\<lambda> i. row A i \<bullet> v)"
@@ -683,9 +718,10 @@ lemma mat_index_mat_mult_mat[simp]:
   "dim\<^sub>r (A \<otimes>\<^sub>m B) = dim\<^sub>r A" "dim\<^sub>c (A \<otimes>\<^sub>m B) = dim\<^sub>c B"
   by (auto simp: mat_mult_mat_def)
 
-lemma mat_index_mat_mult_vec[simp]: 
-  "i < dim\<^sub>r A \<Longrightarrow> (A \<otimes>\<^sub>m\<^sub>v v) $ i = row A i \<bullet> v"
-  "dim\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v) = dim\<^sub>r A" 
+lemma dim_mat_mult_vec[simp]: "dim\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v) = dim\<^sub>r A"
+  by (auto simp: mat_mult_vec_def)
+
+lemma index_mat_mult_vec[simp]: "i < dim\<^sub>r A \<Longrightarrow> (A \<otimes>\<^sub>m\<^sub>v v) $ i = row A i \<bullet> v"
   by (auto simp: mat_mult_vec_def)
 
 lemma row_index[simp]:
@@ -693,9 +729,7 @@ lemma row_index[simp]:
   "dim\<^sub>v (row A i) = dim\<^sub>c A"
   by (auto simp: row_def)
 
-lemma col_index[simp]:
-  "j < dim\<^sub>c A \<Longrightarrow> i < dim\<^sub>r A \<Longrightarrow> col A j $ i = A $$ (i,j)"
-  "dim\<^sub>v (col A j) = dim\<^sub>r A"
+lemma col_index[simp]: "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> col A j $ i = A $$ (i,j)"
   by (auto simp: col_def)
 
 lemma upper_triangular_one[simp]: "upper_triangular (\<one>\<^sub>m n)"
@@ -733,14 +767,22 @@ lemma mat_scalar_prod_closed[simp]:
   unfolding mat_carrier_def by auto
 
 lemma mat_add_closed[simp]: 
-  "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> A \<oplus>\<^sub>m B \<in> carrier\<^sub>m nr nc"
+  "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> A \<oplus>\<^sub>m B \<in> carrier\<^sub>m nr nc"
   unfolding mat_carrier_def by force
 
 lemma mat_one_closed[simp]: "\<one>\<^sub>m n \<in> carrier\<^sub>m n n"
   unfolding mat_carrier_def by auto
 
-lemma mat_uminus_closed[simp]: 
+lemma mat_uminus_closed: 
+  "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> (\<ominus>\<^sub>m A \<in> carrier\<^sub>m nr nc)"
+  unfolding mat_carrier_def by auto
+
+lemma mat_uminus_carrier_iff[simp]: 
   "(\<ominus>\<^sub>m A \<in> carrier\<^sub>m nr nc) = (A \<in> carrier\<^sub>m nr nc)"
+  unfolding mat_carrier_def by auto
+
+lemma mat_minus_closed: 
+  "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> (A \<ominus>\<^sub>m B \<in> carrier\<^sub>m nr nc)"
   unfolding mat_carrier_def by auto
 
 lemma mat_transpose_closed[simp]: "(transpose\<^sub>m A \<in> carrier\<^sub>m nc nr) = (A \<in> carrier\<^sub>m nr nc)"
@@ -766,8 +808,8 @@ lemma mat_add_comm[ac_simps]:
   by (intro mat_eqI, auto simp: ac_simps)
 
 
-lemma mat_uminus_r_inv[simp]: 
-  "(A :: 'a :: group_add mat) \<in> carrier\<^sub>m nr nc \<Longrightarrow> (A \<oplus>\<^sub>m \<ominus>\<^sub>m A) = \<zero>\<^sub>m nr nc"
+lemma mat_minus_r_inv[simp]: 
+  "(A :: 'a :: group_add mat) \<in> carrier\<^sub>m nr nc \<Longrightarrow> (A \<ominus>\<^sub>m A) = \<zero>\<^sub>m nr nc"
   by (intro mat_eqI, auto)
 
 lemma mat_uminus_l_inv[simp]: 
@@ -782,6 +824,12 @@ lemma mat_add_assoc[simp]:
   "(A :: 'a :: monoid_add mat) \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> C \<in> carrier\<^sub>m nr nc 
   \<Longrightarrow> (A \<oplus>\<^sub>m B) \<oplus>\<^sub>m C = A \<oplus>\<^sub>m (B \<oplus>\<^sub>m C)"
   by (intro mat_eqI, auto simp: ac_simps)
+
+lemma mat_uminus_mat_add: fixes A :: "'a :: group_add mat" 
+  assumes "A \<in> carrier\<^sub>m nr nc"
+  and "B \<in> carrier\<^sub>m nr nc"
+  shows "\<ominus>\<^sub>m (A \<oplus>\<^sub>m B) = \<ominus>\<^sub>m B \<oplus>\<^sub>m \<ominus>\<^sub>m A"
+  by (intro mat_eqI, insert assms, auto simp: minus_add)
 
 lemma transpose_transpose[simp]: 
   "transpose\<^sub>m (transpose\<^sub>m A) = A"
@@ -823,6 +871,7 @@ lemma transpose_uminus: "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> transpo
 lemma row_mat_add[simp]: 
   "A \<in> carrier\<^sub>m nr nc \<Longrightarrow> B \<in> carrier\<^sub>m nr nc \<Longrightarrow> i < nr
   \<Longrightarrow> row (A \<oplus>\<^sub>m B) i = row A i \<oplus>\<^sub>v row B i"
+  "i < dim\<^sub>r A \<Longrightarrow> dim\<^sub>r B = dim\<^sub>r A \<Longrightarrow> dim\<^sub>c B = dim\<^sub>c A \<Longrightarrow> row (A \<oplus>\<^sub>m B) i = row A i \<oplus>\<^sub>v row B i"
   by (rule vec_eqI, auto)
 
 lemma col_mat_add[simp]: 
@@ -983,12 +1032,31 @@ lemma row_uminus[simp]: assumes i: "i < dim\<^sub>r A"
   shows "row (\<ominus>\<^sub>m A) i = \<ominus>\<^sub>v (row A i)" 
   by (rule vec_eqI, insert i, auto)
 
-lemma scalar_prod_uminus[simp]: assumes dim: "dim\<^sub>v v = dim\<^sub>v (w :: 'a :: comm_ring_1 vec)"
+lemma scalar_prod_uminus_left[simp]: assumes dim: "dim\<^sub>v v = dim\<^sub>v (w :: 'a :: ring vec)"
   shows "\<ominus>\<^sub>v v \<bullet> w = - (v \<bullet> w)"
   unfolding scalar_prod_def dim[symmetric]
   by (subst setsum_negf[symmetric], rule setsum.cong, auto)
 
-lemma negate_mat_vec_mult[simp]: assumes v: "dim\<^sub>v v = dim\<^sub>c (A :: 'a :: comm_ring_1 mat)"
+lemma col_uminus[simp]: assumes i: "i < dim\<^sub>c A"
+  shows "col (\<ominus>\<^sub>m A) i = \<ominus>\<^sub>v (col A i)" 
+  by (rule vec_eqI, insert i, auto)
+
+lemma scalar_prod_uminus_right[simp]: assumes dim: "dim\<^sub>v v = dim\<^sub>v (w :: 'a :: ring vec)"
+  shows "v \<bullet> \<ominus>\<^sub>v w = - (v \<bullet> w)"
+  unfolding scalar_prod_def dim
+  by (subst setsum_negf[symmetric], rule setsum.cong, auto)
+
+context fixes A B :: "'a :: ring mat" 
+  assumes dim: "dim\<^sub>c A = dim\<^sub>r B"
+begin
+lemma mat_uminus_mult_left[simp]: "(\<ominus>\<^sub>m A \<otimes>\<^sub>m B) = \<ominus>\<^sub>m (A \<otimes>\<^sub>m B)"
+  by (intro mat_eqI, insert dim, auto)
+
+lemma mat_uminus_mult_right[simp]: "(A \<otimes>\<^sub>m \<ominus>\<^sub>m B) = \<ominus>\<^sub>m (A \<otimes>\<^sub>m B)"
+  by (intro mat_eqI, insert dim, auto)
+end
+
+lemma negate_mat_vec_mult[simp]: assumes v: "dim\<^sub>v v = dim\<^sub>c (A :: 'a :: ring mat)"
   shows "\<ominus>\<^sub>m A \<otimes>\<^sub>m\<^sub>v v = \<ominus>\<^sub>v (A \<otimes>\<^sub>m\<^sub>v v)" 
   using v by (intro vec_eqI, auto)
 
@@ -1011,6 +1079,10 @@ qed auto
 lemma mat_map_closed[simp]: 
   "(map\<^sub>m f A \<in> carrier\<^sub>m nr nc) = (A \<in> carrier\<^sub>m nr nc)"
   unfolding mat_carrier_def by auto
+
+lemma col_mat_map[simp]:
+  assumes "j < dim\<^sub>c A" shows "col (map\<^sub>m f A) j = map\<^sub>v f (col A j)"
+  unfolding mat_map_def map_vec_def using assms by auto
 
 lemma scalar_vec_one[simp]: "1 \<odot>\<^sub>v (v :: 'a :: semiring_1 vec) = v"
   by (rule vec_eqI, auto)
@@ -1056,56 +1128,6 @@ lemma mat_similarI: assumes "{A,B,P,Q} \<subseteq> carrier\<^sub>m n n" "P \<oti
   shows "mat_similar A B" unfolding mat_similar_def 
   by (rule exI[of _ P], rule exI[of _ Q], unfold mat_similar_wit_def Let_def, insert assms, auto)
 
-lemma mat_similar_refl: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "mat_similar A A"
-  by (rule mat_similarI[of _ _ "\<one>\<^sub>m n" "\<one>\<^sub>m n" n], insert A, auto)
-
-lemma mat_similar_trans: assumes AB: "mat_similar A B"
-  and BC: "mat_similar B C"
-  shows "mat_similar A C"
-proof -
-  from mat_similarD[OF AB] obtain P Q n where
-    AB: "{A, B, P, Q} \<subseteq> carrier\<^sub>m n n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" by auto
-  from mat_similarD[OF BC] obtain P' Q' n' where
-    BC: "{B, C, P', Q'} \<subseteq> carrier\<^sub>m n' n'" "P' \<otimes>\<^sub>m Q' = \<one>\<^sub>m n'" "Q' \<otimes>\<^sub>m P' = \<one>\<^sub>m n'" "B = P' \<otimes>\<^sub>m C \<otimes>\<^sub>m Q'" by auto
-  from AB BC have "n' = n" unfolding mat_carrier_def by auto
-  note BC = BC[unfolded this]
-  let ?c = "\<lambda> A. A \<in> carrier\<^sub>m n n"
-  let ?P = "P \<otimes>\<^sub>m P'"
-  let ?Q = "Q' \<otimes>\<^sub>m Q"
-  from AB BC have carr: "?c A" "?c B" "?c C" "?c P" "?c P'" "?c Q" "?c Q'" 
-    and Carr: "{A, C, ?P, ?Q} \<subseteq> carrier\<^sub>m n n" by auto
-  note [simp] = mat_mult_assoc[of _ n n _ n _ n]
-  have id: "A = ?P \<otimes>\<^sub>m C \<otimes>\<^sub>m ?Q" unfolding AB(4)[unfolded BC(4)] using carr 
-    by simp
-  have "?P \<otimes>\<^sub>m ?Q = P \<otimes>\<^sub>m (P' \<otimes>\<^sub>m Q') \<otimes>\<^sub>m Q" using carr by simp
-  also have "\<dots> = \<one>\<^sub>m n" unfolding BC using carr AB by simp
-  finally have PQ: "?P \<otimes>\<^sub>m ?Q = \<one>\<^sub>m n" .
-  have "?Q \<otimes>\<^sub>m ?P = Q' \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m P'" using carr by simp
-  also have "\<dots> = \<one>\<^sub>m n" unfolding AB using carr BC by simp
-  finally have QP: "?Q \<otimes>\<^sub>m ?P = \<one>\<^sub>m n" .
-  show ?thesis    
-    by (rule mat_similarI[OF Carr PQ QP id])
-qed
-
-lemma mat_similar_sym: assumes AB: "mat_similar A B"
-  shows "mat_similar B A"
-proof -
-  from mat_similarD[OF AB] obtain P Q n where
-    AB: "{A, B, P, Q} \<subseteq> carrier\<^sub>m n n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" and A: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" by auto
-  hence *: "{B, A, Q, P} \<subseteq> carrier\<^sub>m n n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" by auto
-  let ?c = "\<lambda> A. A \<in> carrier\<^sub>m n n"
-  from * have Carr: "?c B" "?c P" "?c Q" by auto
-  note [simp] = mat_mult_assoc[of _ n n _ n _ n]
-  show ?thesis
-  proof (rule mat_similarI[OF *])
-    have "Q \<otimes>\<^sub>m A \<otimes>\<^sub>m P = (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m B \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P)"
-      using Carr unfolding A by simp
-    also have "\<dots> = B" using Carr unfolding AB by simp
-    finally show "B = Q \<otimes>\<^sub>m A \<otimes>\<^sub>m P" by simp
-  qed
-qed
-
 fun mat_pow :: "'a :: semiring_1 mat \<Rightarrow> nat \<Rightarrow> 'a mat" (infixr "^\<^sub>m" 75) where
   "A ^\<^sub>m 0 = \<one>\<^sub>m (dim\<^sub>r A)"
 | "A ^\<^sub>m (Suc k) = A ^\<^sub>m k \<otimes>\<^sub>m A"
@@ -1122,29 +1144,6 @@ lemma mat_pow_dim_square[simp]:
 
 lemma mat_pow_closed[simp]: "A \<in> carrier\<^sub>m n n \<Longrightarrow> A ^\<^sub>m k \<in> carrier\<^sub>m n n" 
   unfolding mat_carrier_def by auto
-
-lemma mat_similar_wit_pow: assumes "mat_similar_wit A B P Q" shows
-  "A ^\<^sub>m k = P \<otimes>\<^sub>m B ^\<^sub>m k \<otimes>\<^sub>m Q"
-proof -
-  def n \<equiv> "dim\<^sub>r A"
-  from assms have carr: "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "P \<in> carrier\<^sub>m n n" "Q \<in> carrier\<^sub>m n n"
-    and PQ: "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" 
-    and A: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" unfolding mat_similar_wit_def n_def[symmetric] Let_def by auto
-  show ?thesis unfolding A
-  proof (induct k)
-    case 0
-    thus ?case using carr by (simp add: PQ)
-  next
-    case (Suc k)
-    def Bk \<equiv> "B ^\<^sub>m k"
-    have Bk: "Bk \<in> carrier\<^sub>m n n" unfolding Bk_def using carr by simp
-    have "(P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q) ^\<^sub>m Suc k = (P \<otimes>\<^sub>m Bk \<otimes>\<^sub>m Q) \<otimes>\<^sub>m (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q)" by (simp add: Suc Bk_def)
-    also have "\<dots> = P \<otimes>\<^sub>m (Bk \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m B) \<otimes>\<^sub>m Q"
-      using carr Bk by (simp add: mat_mult_assoc[of _ n n _ n _ n])
-    also have "Bk \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) = Bk" unfolding PQ using Bk by simp
-    finally show ?case unfolding Bk_def by simp
-  qed
-qed
 
 definition mat_diag :: "'a mat \<Rightarrow> 'a list" where
   "mat_diag A = map (\<lambda> i. A $$ (i,i)) [0 ..< dim\<^sub>r A]"
@@ -1192,6 +1191,42 @@ proof -
     by (subst setsum.distrib[symmetric], rule setsum.cong, insert A B, auto)
 qed
 
+subsection \<open>Update Operators\<close>
+
+definition vec_update :: "'a vec \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a vec" ("_ |\<^sub>v _ \<mapsto> _" [60,61,62] 60)
+  where "v |\<^sub>v i \<mapsto> a = vec (dim\<^sub>v v) (\<lambda>i'. if i' = i then a else v $ i')"
+
+definition mat_update :: "'a mat \<Rightarrow> nat \<times> nat \<Rightarrow> 'a \<Rightarrow> 'a mat" ("_ |\<^sub>m _ \<mapsto> _" [60,61,62] 60)
+  where "A |\<^sub>m ij \<mapsto> a = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda>ij'. if ij' = ij then a else A $$ ij')"
+
+term "\<zero>\<^sub>v 6 |\<^sub>v 1 \<mapsto> 2 |\<^sub>v 2 \<mapsto> 3"
+
+term "\<zero>\<^sub>m 6 4 |\<^sub>m (1,3) \<mapsto> 2 |\<^sub>m (2,1) \<mapsto> 3"
+
+lemma vec_dim_update[simp]:
+  "dim\<^sub>v (v |\<^sub>v i \<mapsto> a) = dim\<^sub>v v" unfolding vec_update_def by simp
+
+lemma vec_index_updated[simp]:
+  assumes "i < dim\<^sub>v v" shows "(v |\<^sub>v i \<mapsto> a) $ i = a"
+  unfolding vec_update_def using assms by simp
+
+lemma vec_index_update_others[simp]:
+  assumes "i' \<noteq> i" shows "(v |\<^sub>v i \<mapsto> a) $ i' = v $ i'"
+  unfolding vec_update_def
+  using assms apply transfer unfolding mk_vec_def by auto
+
+lemma mat_dim_update[simp]:
+  "dim\<^sub>r (A |\<^sub>m ij \<mapsto> a) = dim\<^sub>r A"
+  "dim\<^sub>c (A |\<^sub>m ij \<mapsto> a) = dim\<^sub>c A" unfolding mat_update_def by simp+
+
+lemma mat_index_updated[simp]:
+  assumes "i < dim\<^sub>r A" "j < dim\<^sub>c A" shows "(A |\<^sub>m (i,j) \<mapsto> a) $$ (i,j) = a"
+  unfolding mat_update_def using assms by simp
+
+lemma mat_index_update_others[simp]:
+  assumes i': "i' < dim\<^sub>r A" and j': "j' < dim\<^sub>c A" and neq: "(i',j') \<noteq> ij"
+  shows "(A |\<^sub>m ij \<mapsto> a) $$ (i',j') = A $$ (i',j')"
+  unfolding mat_update_def using assms by auto
 
 subsection \<open>Block Vectors and Matrices\<close>
 
@@ -1226,6 +1261,19 @@ proof -
   finally show ?thesis by (simp, insert assms, auto simp: scalar_prod_def)
 qed
 
+definition "vec_first v n \<equiv> vec n (\<lambda>i. v $ i)"
+definition "vec_last v n \<equiv> vec n (\<lambda>i. v $ (dim\<^sub>v v - n + i))"
+
+lemma dim_vec_first[simp]: "dim\<^sub>v (vec_first v n) = n" unfolding vec_first_def by auto
+lemma dim_vec_last[simp]: "dim\<^sub>v (vec_last v n) = n" unfolding vec_last_def by auto
+
+lemma vec_first_carrier[simp]: "vec_first v n \<in> carrier\<^sub>v n" by (rule vec_elemsI, auto)
+lemma vec_last_carrier[simp]: "vec_last v n \<in> carrier\<^sub>v n" by (rule vec_elemsI, auto)
+
+lemma vec_first_last_append[simp]:
+  assumes "v \<in> carrier\<^sub>v (n+m)" shows "vec_first v n @\<^sub>v vec_last v m = v"
+  apply(rule) unfolding vec_first_def vec_last_def using assms by auto
+
 (* A B
    C D *)
 definition four_block_mat :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
@@ -1250,6 +1298,9 @@ lemma four_block_mat_carrier[simp]:
   "A \<in> carrier\<^sub>m nr1 nc1 \<Longrightarrow> D \<in> carrier\<^sub>m nr2 nc2 \<Longrightarrow>
   four_block_mat A B C D \<in> carrier\<^sub>m (nr1 + nr2) (nc1 + nc2)"
   unfolding mat_carrier_def by auto
+
+lemma four_block_mat_cong: "A1 = B1 \<Longrightarrow> A2 = B2 \<Longrightarrow> A3 = B3 \<Longrightarrow> A4 = B4 \<Longrightarrow>
+  four_block_mat A1 A2 A3 A4 = four_block_mat B1 B2 B3 B4" by auto
 
 lemma four_block_one_mat[simp]: 
   "four_block_mat (\<one>\<^sub>m n1) (\<zero>\<^sub>m n1 n2) (\<zero>\<^sub>m n2 n1) (\<one>\<^sub>m n2) = \<one>\<^sub>m (n1 + n2)"
@@ -1415,8 +1466,28 @@ proof -
   qed
 qed
 
+definition split_block :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a mat \<times> 'a mat \<times> 'a mat \<times> 'a mat)"
+  where "split_block A sr sc = (let 
+    nr = dim\<^sub>r A; nc = dim\<^sub>c A;
+    nr2 = nr - sr; nc2 = nc - sc;
+    A1 = mat sr sc (\<lambda> ij. A $$ ij);
+    A2 = mat sr nc2 (\<lambda> (i,j). A $$ (i,j+sc));
+    A3 = mat nr2 sc (\<lambda> (i,j). A $$ (i+sr,j));
+    A4 = mat nr2 nc2 (\<lambda> (i,j). A $$ (i+sr,j+sc))
+  in (A1,A2,A3,A4))"
+
+lemma split_block: assumes res: "split_block A sr1 sc1 = (A1,A2,A3,A4)"
+  and dims: "dim\<^sub>r A = sr1 + sr2" "dim\<^sub>c A = sc1 + sc2"
+  shows "A1 \<in> carrier\<^sub>m sr1 sc1" "A2 \<in> carrier\<^sub>m sr1 sc2"
+    "A3 \<in> carrier\<^sub>m sr2 sc1" "A4 \<in> carrier\<^sub>m sr2 sc2"
+    "A = four_block_mat A1 A2 A3 A4"
+  using res unfolding split_block_def Let_def 
+  by (auto simp: dims)
+
+text \<open>Using @{const four_block_mat} we define block-diagonal matrices.\<close>
+
 fun diag_block_mat :: "'a :: zero mat list \<Rightarrow> 'a mat" where
-  "diag_block_mat [] = mat 0 0 (\<lambda> _. 0)"
+  "diag_block_mat [] = \<zero>\<^sub>m 0 0"
 | "diag_block_mat (A # As) = (let 
      B = diag_block_mat As
      in four_block_mat A (\<zero>\<^sub>m (dim\<^sub>r A) (dim\<^sub>c B)) (\<zero>\<^sub>m (dim\<^sub>r B) (dim\<^sub>c A)) B)"
@@ -1668,6 +1739,481 @@ lemma orthogonalI[intro]:
   "(\<And>i j. i < length vs \<Longrightarrow> j < length vs \<Longrightarrow> (nth vs i \<bullet> nth vs j = 0) = (i \<noteq> j)) \<Longrightarrow>
    orthogonal vs"
   unfolding orthogonal_def by auto
+
+
+(* THIS LINE SEPARATES AFP-ENTRY FROM NEWER DEVELOPMENTS *)
+
+lemma four_block_mat_transpose: assumes *: "A \<in> carrier\<^sub>m nr1 nc1" "B \<in> carrier\<^sub>m nr1 nc2"
+  "C \<in> carrier\<^sub>m nr2 nc1" "D \<in> carrier\<^sub>m nr2 nc2"
+  shows "mat_transpose (four_block_mat A B C D) = 
+    four_block_mat (mat_transpose A) (mat_transpose C) (mat_transpose B) (mat_transpose D)"
+  by (rule mat_eqI, insert *, auto)
+
+lemma zero_mat_transpose[simp]: "mat_transpose (\<zero>\<^sub>m n m) = (\<zero>\<^sub>m m n)"
+  by (rule mat_eqI, auto)
+
+lemma col_mat_mult2[simp]:
+  assumes A: "A : carrier\<^sub>m nr n"
+      and B: "B : carrier\<^sub>m n nc"
+      and j: "j < nc"
+  shows "col (A \<otimes>\<^sub>m B) j = A \<otimes>\<^sub>m\<^sub>v col B j"
+proof
+  have AB: "A \<otimes>\<^sub>m B : carrier\<^sub>m nr nc" using A B by auto
+  fix i assume i: "i < dim\<^sub>v (A \<otimes>\<^sub>m\<^sub>v col B j)"
+  show "col (A \<otimes>\<^sub>m B) j $ i = (A \<otimes>\<^sub>m\<^sub>v col B j) $ i"
+    using A B AB j i by simp
+qed auto
+
+lemma upper_triangular_four_block: assumes AD: "A \<in> carrier\<^sub>m n n" "D \<in> carrier\<^sub>m m m"
+  and ut: "upper_triangular A" "upper_triangular D"
+  shows "upper_triangular (four_block_mat A B (\<zero>\<^sub>m m n) D)"
+proof -
+  let ?C = "four_block_mat A B (\<zero>\<^sub>m m n) D"
+  from AD have dim: "dim\<^sub>r ?C = n + m" "dim\<^sub>c ?C = n + m" "dim\<^sub>r A = n" by auto
+  show ?thesis
+  proof (rule upper_triangularI, unfold dim)
+    fix i j
+    assume *: "j < i" "i < n + m"
+    show "?C $$ (i,j) = 0"
+    proof (cases "i < n")
+      case True
+      with upper_triangularD[OF ut(1) *(1)] * AD show ?thesis by auto
+    next
+      case False note i = this
+      show ?thesis by (cases "j < n", insert upper_triangularD[OF ut(2)] * i AD, auto)
+    qed
+  qed
+qed
+
+lemma four_block_mat_pow: assumes A: "A \<in> carrier\<^sub>m n n"
+  and B: "B \<in> carrier\<^sub>m m m"
+  shows "(four_block_mat A (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) B) ^\<^sub>m k = 
+    four_block_mat (A ^\<^sub>m k) (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) (B ^\<^sub>m k)"
+proof (induct k)
+  case (Suc k)
+  let ?FB = "\<lambda> A B. four_block_mat A (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) B"
+  let ?A = "?FB A B"
+  let ?B = "?FB (A ^\<^sub>m k) (B ^\<^sub>m k)" 
+  from A B have Ak: "A ^\<^sub>m k \<in> carrier\<^sub>m n n" and Bk: "B ^\<^sub>m k \<in> carrier\<^sub>m m m" by auto
+  have "?A ^\<^sub>m Suc k = ?A ^\<^sub>m k \<otimes>\<^sub>m ?A" by simp
+  also have "?A ^\<^sub>m k = ?B " by (rule Suc)
+  also have "?B \<otimes>\<^sub>m ?A = ?FB (A ^\<^sub>m Suc k) (B ^\<^sub>m Suc k)"
+    by (subst four_block_mat_mult[OF Ak _ _ Bk A _ _ B], insert A B, auto)
+  finally show ?case .
+qed (insert A B, auto)
+
+lemma vec_uminus_sprod:
+  assumes [simp]: "v : carrier\<^sub>v n" "w : carrier\<^sub>v n"
+  shows "- ((v::'a::field vec) \<bullet> w) = (\<ominus>\<^sub>v v) \<bullet> w"
+  unfolding scalar_prod_def vec_uminus_def
+  apply (subst setsum_negf[symmetric])
+proof (rule setsum.cong[OF refl])
+  fix i assume i: "i : {0 ..<dim\<^sub>v w}"
+  have [simp]: "dim\<^sub>v v = n" "dim\<^sub>v w = n" by auto
+  show "- (v $ i * w $ i) = vec (dim\<^sub>v v) (\<lambda>i. - v $ i) $ i * w $ i"
+    unfolding minus_mult_left using i by auto
+qed
+
+
+lemma vec_append_eq:
+  assumes [simp]: "v : carrier\<^sub>v n" "v' : carrier\<^sub>v n"
+  shows [simp]: "v @\<^sub>v w = v' @\<^sub>v w' \<longleftrightarrow> v = v' \<and> w = w'" (is "?L \<longleftrightarrow> ?R")
+proof
+  have [simp]: "dim\<^sub>v v = n" "dim\<^sub>v v' = n" by auto
+  { assume L: ?L
+    have vv': "v = v'"
+    proof
+      fix i assume i: "i < dim\<^sub>v v'"
+      have "(v @\<^sub>v w) $ i = (v' @\<^sub>v w') $ i" using L by auto
+      thus "v $ i = v' $ i" using i by auto
+    qed auto 
+    moreover have "w = w'"
+    proof
+      show "dim\<^sub>v w = dim\<^sub>v w'" using vv' L
+        by (metis add_diff_cancel_left' vec_append_index(2))
+      moreover fix i assume i: "i < dim\<^sub>v w'"
+      have "(v @\<^sub>v w) $ (n + i) = (v' @\<^sub>v w') $ (n + i)" using L by auto
+      ultimately show "w $ i = w' $ i" using i by simp
+    qed
+    ultimately show ?R by simp
+  }
+qed auto
+
+lemma vec_append_add:
+  assumes [simp]: "v : carrier\<^sub>v n" "v' : carrier\<^sub>v n"
+      and [simp]: "w : carrier\<^sub>v m" "w' : carrier\<^sub>v m"
+  shows "(v @\<^sub>v w) \<oplus>\<^sub>v (v' @\<^sub>v w') = (v \<oplus>\<^sub>v v') @\<^sub>v (w \<oplus>\<^sub>v w')" (is "?L = ?R")
+proof
+  have [simp]: "dim\<^sub>v v = n" "dim\<^sub>v v' = n" by auto
+  have [simp]: "dim\<^sub>v w = m" "dim\<^sub>v w' = m" by auto
+  fix i assume i: "i < dim\<^sub>v ?R"
+  thus "?L $ i = ?R $ i" by (cases "i < n",auto)
+qed auto
+
+
+lemma mat_mult_vec_split:
+  assumes A: "A : carrier\<^sub>m n n"
+      and D: "D : carrier\<^sub>m m m"
+      and a: "a : carrier\<^sub>v n"
+      and d: "d : carrier\<^sub>v m"
+  shows "four_block_mat A (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) D \<otimes>\<^sub>m\<^sub>v (a @\<^sub>v d) = A \<otimes>\<^sub>m\<^sub>v a @\<^sub>v D \<otimes>\<^sub>m\<^sub>v d"
+    (is "?A00D \<otimes>\<^sub>m\<^sub>v _ = ?r")
+proof
+  have A00D: "?A00D : carrier\<^sub>m (n+m) (n+m)" using four_block_mat_carrier[OF A D].
+  fix i assume i: "i < dim\<^sub>v ?r"
+  show "(?A00D \<otimes>\<^sub>m\<^sub>v (a @\<^sub>v d)) $ i = ?r $ i" (is "?li = _")
+  proof (cases "i < n")
+    case True
+      have "?li = (row A i @\<^sub>v \<zero>\<^sub>v m) \<bullet> (a @\<^sub>v d)"
+        using A row_four_block_mat[OF A _ _ D] True by simp
+      also have "... = row A i \<bullet> a + \<zero>\<^sub>v m \<bullet> d"
+        apply (rule scalar_prod_append) using A D a d True by auto
+      also have "... = row A i \<bullet> a" using d by simp
+      finally show ?thesis using A True by auto
+    next case False
+      let ?i = "i - n"
+      have "?li = (\<zero>\<^sub>v n @\<^sub>v row D ?i) \<bullet> (a @\<^sub>v d)"
+        using i row_four_block_mat[OF A _ _ D] False A D by simp
+      also have "... = \<zero>\<^sub>v n \<bullet> a + row D ?i \<bullet> d"
+        apply (rule scalar_prod_append) using A D a d False by auto
+      also have "... = row D ?i \<bullet> d" using a by simp
+      finally show ?thesis using A D False i by auto
+  qed
+qed auto
+
+lemma mat_similar_witI: assumes "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" 
+  "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "P \<in> carrier\<^sub>m n n" "Q \<in> carrier\<^sub>m n n" 
+  shows "mat_similar_wit A B P Q" using assms unfolding mat_similar_wit_def Let_def by auto
+
+lemma mat_similar_witD: assumes "n = dim\<^sub>r A" "mat_similar_wit A B P Q"
+  shows "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" 
+  "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "P \<in> carrier\<^sub>m n n" "Q \<in> carrier\<^sub>m n n" 
+  using assms(2) unfolding mat_similar_wit_def Let_def assms(1)[symmetric] by auto
+
+lemma mat_similar_witD2: assumes "A \<in> carrier\<^sub>m n m" "mat_similar_wit A B P Q"
+  shows "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" 
+  "A \<in> carrier\<^sub>m n n" "B \<in> carrier\<^sub>m n n" "P \<in> carrier\<^sub>m n n" "Q \<in> carrier\<^sub>m n n" 
+  using mat_similar_witD[OF _ assms(2), of n] assms(1)[unfolded mat_carrier_def] by auto
+
+lemma mat_similar_wit_sym: assumes sim: "mat_similar_wit A B P Q"
+  shows "mat_similar_wit B A Q P"
+proof -
+  from mat_similar_witD[OF refl sim] obtain n where 
+    AB: "{A, B, P, Q} \<subseteq> carrier\<^sub>m n n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" and A: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" by blast
+  hence *: "{B, A, Q, P} \<subseteq> carrier\<^sub>m n n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" by auto
+  let ?c = "\<lambda> A. A \<in> carrier\<^sub>m n n"
+  from * have Carr: "?c B" "?c P" "?c Q" by auto
+  note [simp] = mat_mult_assoc[of _ n n _ n _ n]
+  show ?thesis
+  proof (rule mat_similar_witI[of _ _ n])
+    have "Q \<otimes>\<^sub>m A \<otimes>\<^sub>m P = (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m B \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P)"
+      using Carr unfolding A by simp
+    also have "\<dots> = B" using Carr unfolding AB by simp
+    finally show "B = Q \<otimes>\<^sub>m A \<otimes>\<^sub>m P" by simp
+  qed (insert * AB, auto)
+qed
+
+lemma mat_similar_wit_refl: assumes A: "A \<in> carrier\<^sub>m n n"
+  shows "mat_similar_wit A A (\<one>\<^sub>m n) (\<one>\<^sub>m n)"
+  by (rule mat_similar_witI[OF _ _ _ A], insert A, auto)
+
+lemma mat_similar_wit_trans: assumes AB: "mat_similar_wit A B P Q"
+  and BC: "mat_similar_wit B C P' Q'"
+  shows "mat_similar_wit A C (P \<otimes>\<^sub>m P') (Q' \<otimes>\<^sub>m Q)"
+proof -
+  from mat_similar_witD[OF refl AB] obtain n where
+    AB: "{A, B, P, Q} \<subseteq> carrier\<^sub>m n n" "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n" "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q" by blast
+  hence B: "B \<in> carrier\<^sub>m n n" by auto
+  from mat_similar_witD2[OF B BC] have
+    BC: "{C, P', Q'} \<subseteq> carrier\<^sub>m n n" "P' \<otimes>\<^sub>m Q' = \<one>\<^sub>m n" "Q' \<otimes>\<^sub>m P' = \<one>\<^sub>m n" "B = P' \<otimes>\<^sub>m C \<otimes>\<^sub>m Q'" by auto
+  let ?c = "\<lambda> A. A \<in> carrier\<^sub>m n n"
+  let ?P = "P \<otimes>\<^sub>m P'"
+  let ?Q = "Q' \<otimes>\<^sub>m Q"
+  from AB BC have carr: "?c A" "?c B" "?c C" "?c P" "?c P'" "?c Q" "?c Q'" 
+    and Carr: "{A, C, ?P, ?Q} \<subseteq> carrier\<^sub>m n n" by auto
+  note [simp] = mat_mult_assoc[of _ n n _ n _ n]
+  have id: "A = ?P \<otimes>\<^sub>m C \<otimes>\<^sub>m ?Q" unfolding AB(4)[unfolded BC(4)] using carr 
+    by simp
+  have "?P \<otimes>\<^sub>m ?Q = P \<otimes>\<^sub>m (P' \<otimes>\<^sub>m Q') \<otimes>\<^sub>m Q" using carr by simp
+  also have "\<dots> = \<one>\<^sub>m n" unfolding BC using carr AB by simp
+  finally have PQ: "?P \<otimes>\<^sub>m ?Q = \<one>\<^sub>m n" .
+  have "?Q \<otimes>\<^sub>m ?P = Q' \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m P'" using carr by simp
+  also have "\<dots> = \<one>\<^sub>m n" unfolding AB using carr BC by simp
+  finally have QP: "?Q \<otimes>\<^sub>m ?P = \<one>\<^sub>m n" .
+  show ?thesis
+    by (rule mat_similar_witI[OF PQ QP id], insert Carr, auto)
+qed
+
+lemma mat_similar_refl: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar A A"
+  using mat_similar_wit_refl unfolding mat_similar_def by blast
+
+lemma mat_similar_trans: "mat_similar A B \<Longrightarrow> mat_similar B C \<Longrightarrow> mat_similar A C"
+  using mat_similar_wit_trans unfolding mat_similar_def by blast
+
+lemma mat_similar_sym: "mat_similar A B \<Longrightarrow> mat_similar B A"
+  using mat_similar_wit_sym unfolding mat_similar_def by blast
+
+lemma mat_similar_wit_four_block: assumes 
+      1: "mat_similar_wit A1 B1 P1 Q1"
+  and 2: "mat_similar_wit A2 B2 P2 Q2"
+  and URA: "URA = (P1 \<otimes>\<^sub>m UR \<otimes>\<^sub>m Q2)"
+  and LLA: "LLA = (P2 \<otimes>\<^sub>m LL \<otimes>\<^sub>m Q1)"
+  and A1: "A1 \<in> carrier\<^sub>m n n"
+  and A2: "A2 \<in> carrier\<^sub>m m m"
+  and LL: "LL \<in> carrier\<^sub>m m n"
+  and UR: "UR \<in> carrier\<^sub>m n m"
+  shows "mat_similar_wit (four_block_mat A1 URA LLA A2) (four_block_mat B1 UR LL B2)
+    (four_block_mat P1 (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) P2) (four_block_mat Q1 (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) Q2)"
+  (is "mat_similar_wit ?A ?B ?P ?Q")
+proof -
+  let ?n = "n + m"
+  let ?O1 = "\<one>\<^sub>m n"   let ?O2 = "\<one>\<^sub>m m"   let ?O = "\<one>\<^sub>m ?n"
+  from mat_similar_witD2[OF A1 1] have 11: "P1 \<otimes>\<^sub>m Q1 = ?O1" "Q1 \<otimes>\<^sub>m P1 = ?O1" 
+    and P1: "P1 \<in> carrier\<^sub>m n n" and Q1: "Q1 \<in> carrier\<^sub>m n n" 
+    and B1: "B1 \<in> carrier\<^sub>m n n" and 1: "A1 = P1 \<otimes>\<^sub>m B1 \<otimes>\<^sub>m Q1" by auto
+  from mat_similar_witD2[OF A2 2] have 21: "P2 \<otimes>\<^sub>m Q2 = ?O2" "Q2 \<otimes>\<^sub>m P2 = ?O2" 
+    and P2: "P2 \<in> carrier\<^sub>m m m" and Q2: "Q2 \<in> carrier\<^sub>m m m" 
+    and B2: "B2 \<in> carrier\<^sub>m m m" and 2: "A2 = P2 \<otimes>\<^sub>m B2 \<otimes>\<^sub>m Q2" by auto
+  have PQ1: "?P \<otimes>\<^sub>m ?Q = ?O"
+    by (subst four_block_mat_mult[OF P1 _ _ P2 Q1 _ _ Q2], unfold 11 21, insert P1 P2 Q1 Q2,
+      auto intro!: mat_eqI)
+  have QP1: "?Q \<otimes>\<^sub>m ?P = ?O"
+    by (subst four_block_mat_mult[OF Q1 _ _ Q2 P1 _ _ P2], unfold 11 21, insert P1 P2 Q1 Q2,
+      auto intro!: mat_eqI)
+  let ?PB = "?P \<otimes>\<^sub>m ?B"
+  have P: "?P \<in> carrier\<^sub>m ?n ?n" using P1 P2 by auto
+  have Q: "?Q \<in> carrier\<^sub>m ?n ?n" using Q1 Q2 by auto
+  have B: "?B \<in> carrier\<^sub>m ?n ?n" using B1 UR LL B2 by auto
+  have PB: "?PB \<in> carrier\<^sub>m ?n ?n" using P B by auto
+  have PB1: "P1 \<otimes>\<^sub>m B1 \<in> carrier\<^sub>m n n" using P1 B1 by auto
+  have PB2: "P2 \<otimes>\<^sub>m B2 \<in> carrier\<^sub>m m m" using P2 B2 by auto
+  have P1UR: "P1 \<otimes>\<^sub>m UR \<in> carrier\<^sub>m n m" using P1 UR by auto
+  have P2LL: "P2 \<otimes>\<^sub>m LL \<in> carrier\<^sub>m m n" using P2 LL by auto
+  have id: "?PB = four_block_mat (P1 \<otimes>\<^sub>m B1) (P1 \<otimes>\<^sub>m UR) (P2 \<otimes>\<^sub>m LL) (P2 \<otimes>\<^sub>m B2)"
+    by (subst four_block_mat_mult[OF P1 _ _ P2 B1 UR LL B2], insert P1 P2 B1 B2 LL UR, auto)
+  have id: "?PB \<otimes>\<^sub>m ?Q = four_block_mat (P1 \<otimes>\<^sub>m B1 \<otimes>\<^sub>m Q1) (P1 \<otimes>\<^sub>m UR \<otimes>\<^sub>m Q2) 
+    (P2 \<otimes>\<^sub>m LL \<otimes>\<^sub>m Q1) (P2 \<otimes>\<^sub>m B2 \<otimes>\<^sub>m Q2)" unfolding id
+    by (subst four_block_mat_mult[OF PB1 P1UR P2LL PB2 Q1 _ _ Q2], 
+    insert P1 P2 B1 B2 Q1 Q2 UR LL, auto)
+  have id: "?A = ?P \<otimes>\<^sub>m ?B \<otimes>\<^sub>m ?Q" unfolding id 1 2 URA LLA ..
+  show ?thesis
+    by (rule mat_similar_witI[OF PQ1 QP1 id], insert A1 A2 B1 B2 Q1 Q2 P1 P2, auto)
+qed
+
+
+lemma mat_similar_four_block_0_ex: assumes 
+      1: "mat_similar A1 B1"
+  and 2: "mat_similar A2 B2"
+  and A0: "A0 \<in> carrier\<^sub>m n m"
+  and A1: "A1 \<in> carrier\<^sub>m n n"
+  and A2: "A2 \<in> carrier\<^sub>m m m"
+  shows "\<exists> B0. B0 \<in> carrier\<^sub>m n m \<and> mat_similar (four_block_mat A1 A0 (\<zero>\<^sub>m m n) A2) 
+    (four_block_mat B1 B0 (\<zero>\<^sub>m m n) B2)"
+proof -
+  from 1[unfolded mat_similar_def] obtain P1 Q1 where 1: "mat_similar_wit A1 B1 P1 Q1" by auto
+  note w1 = mat_similar_witD2[OF A1 1]
+  from 2[unfolded mat_similar_def] obtain P2 Q2 where 2: "mat_similar_wit A2 B2 P2 Q2" by auto
+  note w2 = mat_similar_witD2[OF A2 2]
+  from w1 w2 have C: "B1 \<in> carrier\<^sub>m n n" "B2 \<in> carrier\<^sub>m m m" by auto
+  from w1 w2 have id: "\<zero>\<^sub>m m n = Q2 \<otimes>\<^sub>m \<zero>\<^sub>m m n \<otimes>\<^sub>m P1" by simp
+  let ?wit = "Q1 \<otimes>\<^sub>m A0 \<otimes>\<^sub>m P2"
+  from w1 w2 A0 have wit: "?wit \<in> carrier\<^sub>m n m" by auto
+  from mat_similar_wit_sym[OF mat_similar_wit_four_block[OF mat_similar_wit_sym[OF 1] mat_similar_wit_sym[OF 2] 
+    refl id C mat_zero_closed A0]]
+  have "mat_similar (four_block_mat A1 A0 (\<zero>\<^sub>m m n) A2) (four_block_mat B1 (Q1 \<otimes>\<^sub>m A0 \<otimes>\<^sub>m P2) (\<zero>\<^sub>m m n) B2)"
+    unfolding mat_similar_def by auto
+  thus ?thesis using wit by auto
+qed
+
+lemma mat_similar_four_block_0_0: assumes 
+      1: "mat_similar A1 B1"
+  and 2: "mat_similar A2 B2"
+  and A1: "A1 \<in> carrier\<^sub>m n n"
+  and A2: "A2 \<in> carrier\<^sub>m m m"
+  shows "mat_similar (four_block_mat A1 (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) A2) 
+    (four_block_mat B1 (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) B2)"
+proof -
+  from 1[unfolded mat_similar_def] obtain P1 Q1 where 1: "mat_similar_wit A1 B1 P1 Q1" by auto
+  note w1 = mat_similar_witD2[OF A1 1]
+  from 2[unfolded mat_similar_def] obtain P2 Q2 where 2: "mat_similar_wit A2 B2 P2 Q2" by auto
+  note w2 = mat_similar_witD2[OF A2 2]
+  from w1 w2 have C: "B1 \<in> carrier\<^sub>m n n" "B2 \<in> carrier\<^sub>m m m" by auto
+  from w1 w2 have id: "\<zero>\<^sub>m m n = Q2 \<otimes>\<^sub>m \<zero>\<^sub>m m n \<otimes>\<^sub>m P1" by simp
+  from w1 w2 have id2: "\<zero>\<^sub>m n m = Q1 \<otimes>\<^sub>m \<zero>\<^sub>m n m \<otimes>\<^sub>m P2" by simp
+  from mat_similar_wit_sym[OF mat_similar_wit_four_block[OF mat_similar_wit_sym[OF 1] mat_similar_wit_sym[OF 2] 
+    id2 id C mat_zero_closed mat_zero_closed]]
+  show ?thesis unfolding mat_similar_def by blast
+qed
+
+lemma mat_similar_diag_block_mat: assumes "\<And> A B. (A,B) \<in> set Ms \<Longrightarrow> mat_similar A B"
+  shows "mat_similar (diag_block_mat (map fst Ms)) (diag_block_mat (map snd Ms))"
+  using assms
+proof (induct Ms)
+  case Nil
+  show ?case by (auto intro!: mat_similar_refl[of _ 0])
+next
+  case (Cons AB Ms)
+  obtain A B where AB: "AB = (A,B)" by force
+  from Cons(2)[of A B] have simAB: "mat_similar A B" unfolding AB by auto
+  from mat_similarD[OF this] obtain n where A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n" by auto
+  hence [simp]: "dim\<^sub>r A = n" "dim\<^sub>c A = n" "dim\<^sub>r B = n" "dim\<^sub>c B = n" by auto
+  let ?C = "diag_block_mat (map fst Ms)" let ?D = "diag_block_mat (map snd Ms)"
+  from Cons(1)[OF Cons(2)] have simRec: "mat_similar ?C ?D" by auto
+  from mat_similarD[OF this] obtain m where C: "?C \<in> carrier\<^sub>m m m" and D: "?D \<in> carrier\<^sub>m m m" by auto
+  hence [simp]: "dim\<^sub>r ?C = m" "dim\<^sub>c ?C = m" "dim\<^sub>r ?D = m" "dim\<^sub>c ?D = m" by auto
+  have "mat_similar (diag_block_mat (map fst (AB # Ms))) (diag_block_mat (map snd (AB # Ms)))
+    = mat_similar (four_block_mat A (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) ?C) (four_block_mat B (\<zero>\<^sub>m n m) (\<zero>\<^sub>m m n) ?D)" 
+    unfolding AB by (simp add: Let_def)
+  also have "\<dots>"
+    by (rule mat_similar_four_block_0_0[OF simAB simRec A C])
+  finally show ?case .
+qed
+
+lemma mat_similar_wit_pow: assumes wit: "mat_similar_wit A B P Q"
+  shows "mat_similar_wit (A ^\<^sub>m k) (B ^\<^sub>m k) P Q"
+proof -
+  def n \<equiv> "dim\<^sub>r A"
+  let ?C = "carrier\<^sub>m n n"
+  from mat_similar_witD[OF refl wit, folded n_def] have
+    A: "A \<in> ?C" and B: "B \<in> ?C" and P: "P \<in> ?C" and Q: "Q \<in> ?C"
+    and PQ: "P \<otimes>\<^sub>m Q = \<one>\<^sub>m n" and QP: "Q \<otimes>\<^sub>m P = \<one>\<^sub>m n"
+    and AB: "A = P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q"
+    by auto
+  from A B have *: "(A ^\<^sub>m k) \<in> carrier\<^sub>m n n" "B ^\<^sub>m k \<in> carrier\<^sub>m n n" by auto
+  note carr = A B P Q
+  have id: "A ^\<^sub>m k = P \<otimes>\<^sub>m B ^\<^sub>m k \<otimes>\<^sub>m Q" unfolding AB
+  proof (induct k)
+    case 0
+    thus ?case using carr by (simp add: PQ)
+  next
+    case (Suc k)
+    def Bk \<equiv> "B ^\<^sub>m k"
+    have Bk: "Bk \<in> carrier\<^sub>m n n" unfolding Bk_def using carr by simp
+    have "(P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q) ^\<^sub>m Suc k = (P \<otimes>\<^sub>m Bk \<otimes>\<^sub>m Q) \<otimes>\<^sub>m (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q)" by (simp add: Suc Bk_def)
+    also have "\<dots> = P \<otimes>\<^sub>m (Bk \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) \<otimes>\<^sub>m B) \<otimes>\<^sub>m Q"
+      using carr Bk by (simp add: mat_mult_assoc[of _ n n _ n _ n])
+    also have "Bk \<otimes>\<^sub>m (Q \<otimes>\<^sub>m P) = Bk" unfolding QP using Bk by simp
+    finally show ?case unfolding Bk_def by simp
+  qed
+  show ?thesis
+    by (rule mat_similar_witI[OF PQ QP id * P Q])
+qed  
+
+lemma mat_similar_wit_pow_id: "mat_similar_wit A B P Q \<Longrightarrow> A ^\<^sub>m k = P \<otimes>\<^sub>m B ^\<^sub>m k \<otimes>\<^sub>m Q"
+  using mat_similar_wit_pow[of A B P Q k] unfolding mat_similar_wit_def Let_def by blast
+
+subsection\<open>Homomorphism properties\<close>
+
+context semiring_hom
+begin
+abbreviation mat_hom :: "'a mat \<Rightarrow> 'b mat" ("mat\<^sub>h")
+  where "mat\<^sub>h \<equiv> map\<^sub>m hom"
+
+abbreviation vec_hom :: "'a vec \<Rightarrow> 'b vec" ("vec\<^sub>h")
+  where "vec\<^sub>h \<equiv> map\<^sub>v hom"
+
+lemma vec_hom_zero: "vec\<^sub>h (\<zero>\<^sub>v n) = \<zero>\<^sub>v n"
+  by (rule vec_eqI, auto)
+
+lemma mat_hom_one: "mat\<^sub>h (\<one>\<^sub>m n) = \<one>\<^sub>m n"
+  by (rule mat_eqI, auto)
+
+lemma mat_hom_mult: assumes A: "A \<in> carrier\<^sub>m nr n" and B: "B \<in> carrier\<^sub>m n nc"
+  shows "mat\<^sub>h (A \<otimes>\<^sub>m B) = mat\<^sub>h A \<otimes>\<^sub>m mat\<^sub>h B"
+proof -
+  let ?L = "mat\<^sub>h (A \<otimes>\<^sub>m B)"
+  let ?R = "mat\<^sub>h A \<otimes>\<^sub>m mat\<^sub>h B"
+  let ?A = "mat\<^sub>h A" 
+  let ?B = "mat\<^sub>h B" 
+  from A B have id: 
+    "dim\<^sub>r ?L = nr" "dim\<^sub>r ?R = nr" 
+    "dim\<^sub>c ?L = nc" "dim\<^sub>c ?R = nc"  by auto
+  show ?thesis
+  proof (rule mat_eqI, unfold id)
+    fix i j
+    assume *: "i < nr" "j < nc"
+    def I \<equiv> "{0 ..< n}"
+    have id: "{0 ..< dim\<^sub>v (col ?B j)} = I" "{0 ..< dim\<^sub>v (col B j)} = I" 
+      unfolding I_def using * B by auto
+    have finite: "finite I" unfolding I_def by auto
+    have I: "I \<subseteq> {0 ..< n}" unfolding I_def by auto
+    have "?L $$ (i,j) = hom (row A i \<bullet> col B j)" using A B * by auto
+    also have "\<dots> = row ?A i \<bullet> col ?B j" unfolding scalar_prod_def id using finite I
+    proof (induct I)
+      case (insert k I)
+      show ?case unfolding setsum.insert[OF insert(1-2)] hom_add hom_mult
+        using insert(3-) * A B by auto
+    qed simp
+    also have "\<dots> = ?R $$ (i,j)" using A B * by auto
+    finally
+    show "?L $$ (i, j) = ?R $$ (i, j)" .
+  qed auto
+qed
+
+lemma mat_vec_mult_hom: assumes A: "A \<in> carrier\<^sub>m nr n" and v: "v \<in> carrier\<^sub>v n"
+  shows "vec\<^sub>h (A \<otimes>\<^sub>m\<^sub>v v) = mat\<^sub>h A \<otimes>\<^sub>m\<^sub>v vec\<^sub>h v"
+proof -
+  let ?L = "vec\<^sub>h (A \<otimes>\<^sub>m\<^sub>v v)"
+  let ?R = "mat\<^sub>h A \<otimes>\<^sub>m\<^sub>v vec\<^sub>h v"
+  let ?A = "mat\<^sub>h A" 
+  let ?v = "vec\<^sub>h v" 
+  from A v have id: 
+    "dim\<^sub>v ?L = nr" "dim\<^sub>v ?R = nr" 
+    by auto
+  show ?thesis
+  proof (rule vec_eqI, unfold id)
+    fix i 
+    assume *: "i < nr" 
+    def I \<equiv> "{0 ..< n}"
+    have id: "{0 ..< dim\<^sub>v v} = I" "{0 ..< dim\<^sub>v (vec\<^sub>h v)} = I" 
+      unfolding I_def using * v  by auto
+    have finite: "finite I" unfolding I_def by auto
+    have I: "I \<subseteq> {0 ..< n}" unfolding I_def by auto
+    have "?L $ i = hom (row A i \<bullet> v)" using A v * by auto
+    also have "\<dots> = row ?A i \<bullet> ?v" unfolding scalar_prod_def id using finite I
+    proof (induct I)
+      case (insert k I)
+      show ?case unfolding setsum.insert[OF insert(1-2)] hom_add hom_mult
+        using insert(3-) * A v by auto
+    qed simp
+    also have "\<dots> = ?R $ i" using A v * by auto
+    finally
+    show "?L $ i = ?R $ i" .
+  qed auto
+qed
+end
+
+lemma vec_eq_iff: "(x = y) = (dim\<^sub>v x = dim\<^sub>v y \<and> (\<forall> i < dim\<^sub>v y. x $ i = y $ i))" (is "?l = ?r")
+proof
+  assume ?r
+  show ?l
+    by (rule vec_eqI, insert `?r`, auto)
+qed simp
+
+lemma mat_eq_iff: "(x = y) = (dim\<^sub>r x = dim\<^sub>r y \<and> dim\<^sub>c x = dim\<^sub>c y \<and> 
+  (\<forall> i j. i < dim\<^sub>r y \<longrightarrow> j < dim\<^sub>c y \<longrightarrow> x $$ (i,j) = y $$ (i,j)))" (is "?l = ?r")
+proof
+  assume ?r
+  show ?l
+    by (rule mat_eqI, insert `?r`, auto)
+qed simp
+
+lemma (in inj_semiring_hom) vec_hom_zero_iff[simp]: "(vec\<^sub>h x = \<zero>\<^sub>v n) = (x = \<zero>\<^sub>v n)"
+proof -
+  {
+    fix i
+    assume i: "i < n" "dim\<^sub>v x = n"
+    hence "vec\<^sub>h x $ i = 0 \<longleftrightarrow> x $ i = 0"
+      using vec_index_map(1)[of i x] by simp
+  } note main = this
+  show ?thesis unfolding vec_eq_iff by (simp, insert main, auto)
+qed  
+
+lemma (in inj_semiring_hom) mat_hom_inj: "mat\<^sub>h A = mat\<^sub>h B \<Longrightarrow> A = B"
+  unfolding mat_eq_iff by (auto simp: hom_inj)
+
+lemma (in inj_semiring_hom) vec_hom_inj: "vec\<^sub>h v = vec\<^sub>h w \<Longrightarrow> v = w"
+  unfolding vec_eq_iff by (auto simp: hom_inj)
 
 
 end
