@@ -7,9 +7,8 @@ subsection \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 
-  Ring_Hom
-(* "$AFP/Cayley_Hamilton/Polynomial_extension" FIXME *)
-  Missing_Polynomial
+  "../Jordan_Normal_Form/Ring_Hom"
+  "../Jordan_Normal_Form/Missing_Polynomial"
 begin
 
 text{* @{term poly} as a homomorphism *}
