@@ -1,10 +1,12 @@
+(*
+    Author:      René Thiemann
+    License:     LGPL
+*)
 subsection \<open>Compare Instance for Real Numbers\<close>
-
-text \<open>TODO: This theory belongs into Derive-AFP entry.\<close>
 
 theory Compare_Real
 imports
-  "$AFP/Derive/Compare_Generator"
+  Compare_Generator
   Real
 begin
   
