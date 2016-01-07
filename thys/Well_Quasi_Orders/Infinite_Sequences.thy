@@ -83,4 +83,15 @@ proof -
   then show "\<not> LEX P g f" using \<open>LEX P f g\<close> unfolding LEX_def by blast
 qed
 
+lemma LEX_cases:
+  assumes "LEX P f g"
+  obtains (eq) "f = g" | (neq) k where "\<forall>i<k. f i = g i" and "P (f k) (g k)"
+using assms by (auto simp: LEX_def)
+
+lemma LEX_imp_less:
+  assumes "\<forall>x\<in>A. \<not> P x x" and "f \<in> SEQ A" and "g \<in> SEQ A"
+    and "LEX P f g" and "\<forall>i<k. f i = g i" and "f k \<noteq> g k"
+  shows "P (f k) (g k)"
+using assms by (auto elim!: LEX_cases) (metis linorder_neqE_nat)
+
 end
