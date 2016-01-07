@@ -284,7 +284,7 @@ proof
   qed simp
 qed
 
-context notes [[function_defs]]
+context notes [[function_internals]]
 begin
 
 function parse_nodes :: "xml list parser"
