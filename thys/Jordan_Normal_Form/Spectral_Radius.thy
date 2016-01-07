@@ -1,13 +1,16 @@
+(*  
+    Author:      René Thiemann 
+                 Akihisa Yamada
+    License:     BSD
+*)
 section \<open>Spectral Radius Theory\<close>
 
 text \<open>The following results show that the spectral radius characterize polynomial growth
-  of matrix powers. However, for the polynomial bounds 
-  they are restricted to upper-triangular matrices since only for those we have proven
-  the existence of JNFs.\<close>
+  of matrix powers.\<close>
 
 theory Spectral_Radius
 imports
-  Jordan_Normal_Form_Triangular
+  Jordan_Normal_Form_Existence
 begin
 
 definition "spectrum A = Collect (eigenvalue A)"
@@ -132,22 +135,64 @@ proof -
 qed
 
 
-text \<open>If spectral radius is at most 1 for an upper_triangular matrix, then we have polynomial growth.\<close>
+text \<open>If spectral radius is at most 1 for a complex matrix, then we have polynomial growth.\<close>
 
-lemma spectral_radius_jnf_norm_bound_le_1_upper_triangular: assumes A: "A \<in> carrier\<^sub>m n n"
-  and upper_t: "upper_triangular (A :: complex mat)"
+lemma spectral_radius_jnf_norm_bound_le_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n n"
   and sr_1: "spectral_radius A \<le> 1"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (n - 1))"
   by (rule spectral_radius_jnf_norm_bound_le_1[OF A sr_1],
-    insert triangular_to_jnf_vector[OF A upper_t], blast)
+    insert char_poly_factorized[OF A] jordan_nf_exists[OF A], blast)
 
-text \<open>If spectral radius is less than 1 for an upper_triangular matrix, then we have a constant bound.\<close>
+text \<open>If spectral radius is less than 1 for a complex matrix, then we have a constant bound.\<close>
 
-lemma spectral_radius_jnf_norm_bound_less_1_upper_triangular: assumes A: "A \<in> carrier\<^sub>m n n"
-  and upper_t: "upper_triangular (A :: complex mat)"
+lemma spectral_radius_jnf_norm_bound_less_1_upper_triangular: assumes A: "(A :: complex mat) \<in> carrier\<^sub>m n n"
   and sr_1: "spectral_radius A < 1"
   shows "\<exists> c. \<forall> k. norm_bound (A ^\<^sub>m k) c"
   by (rule spectral_radius_jnf_norm_bound_less_1[OF A sr_1],
-    insert triangular_to_jnf_vector[OF A upper_t], blast)
+    insert char_poly_factorized[OF A] jordan_nf_exists[OF A], blast)
+
+text \<open>And we can also get a quantative approximation via the multiplicity of the eigenvalues.\<close>
+
+lemma spectral_radius_poly_bound: fixes A :: "complex mat"
+  assumes A: "A \<in> carrier\<^sub>m n n" 
+  and sr_1: "spectral_radius A \<le> 1"
+  and eq_1: "\<And> ev k. poly (char_poly A) ev = 0 \<Longrightarrow> norm ev = 1 \<Longrightarrow> Polynomial.order ev (char_poly A) \<le> d"
+  shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (d - 1))"
+proof -
+  {
+    fix ev
+    assume "poly (char_poly A) ev = 0"
+    with eigenvalue_root_char_poly[OF A] have ev: "eigenvalue A ev" by simp
+    hence "norm ev \<in> norm ` spectrum A" unfolding spectrum_def by auto
+    from spectral_radius_mem_max(2)[OF A eigenvalue_imp_nonzero_dim[OF A ev] this] sr_1    
+    have "norm ev \<le> 1" by auto
+  } note le_1 = this
+  let ?p = "char_poly A"
+  from char_poly_factorized[OF A] obtain as where cA: "char_poly A = (\<Prod>a\<leftarrow>as. [:- a, 1:])" 
+    and lenn: "length as = n" by auto 
+  from degree_monic_char_poly[OF A] have deg: "degree (char_poly A) = n" by auto
+  show ?thesis
+  proof (rule factored_char_poly_norm_bound[OF A cA jordan_nf_exists[OF A]], rule cA) 
+    fix ev
+    assume "ev \<in> set as"
+    hence root: "poly (char_poly A) ev = 0" unfolding cA by (rule linear_poly_root)
+    from le_1[OF root] show "norm ev \<le> 1" .
+    let ?k = "length (filter (op = ev) as)"
+    have len: "length (filter (op = (- ev)) (map uminus as)) = length (filter (op = ev) as)"
+      by (induct as, auto)
+    have prod: "(\<Prod>a\<leftarrow>map uminus as. [:a, 1:]) = (\<Prod>a\<leftarrow>as. [:- a, 1:])"
+      by (induct as, auto)
+    have dvd: "[:- ev, 1:] ^ ?k dvd char_poly A" unfolding cA using 
+      poly_linear_exp_linear_factors_rev[of "- ev" "map uminus as"] 
+      unfolding len prod .
+    from `ev \<in> set as` deg lenn
+    have "degree (char_poly A) \<noteq> 0" by (cases as, auto)
+    hence "char_poly A \<noteq> 0" by auto
+    from order_max[OF dvd this] have k: "?k \<le> Polynomial.order ev (char_poly A)" .
+    assume "norm ev = 1"
+    from eq_1[OF root this] k
+    show "?k \<le> d" by simp
+  qed
+qed
 
 end

@@ -11,17 +11,15 @@ text \<open>This theory contains definitions related to prime fields, i.e.,
 
 theory Prime_Field
 imports 
-  "$AFP/Show/Show_Instances"
+  "../Show/Show_Instances"
+  Divmod_Nat
 begin
-
-declare divmod_nat_div_mod[termination_simp]
 
 fun fast_power :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "\<And> mult one. fast_power mult one x n = (if n = 0 then one else
-    let (d,r) = divmod_nat n 2;
+    let (d,r) = divmod_nat n 2; 
        rec = fast_power mult one (mult x x) d in 
     if r = 1 then mult x rec else rec)"
-
 
 record 'a ffield = 
   plus    :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "+f\<index>" 65)

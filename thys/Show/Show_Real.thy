@@ -1,18 +1,17 @@
 (*  
     Author:      René Thiemann 
-                 Akihisa Yamada
-    License:     BSD
+    License:     LGPL
 *)
 section \<open>Show for Real Numbers -- Interface\<close>
 
 text \<open>We just demand that there is some function from reals to string and register this
-  as show-function. Implementations are available in one of the theories \textit{Show-Real-Precise}
-  and \textit{Show-Real-Approx}.\<close>
+  as show-function. Implementations are available in one of the theories \textit{Show-Real-Impl}
+  and \textit{../Algebraic-Numbers/Show-Real-...}.\<close>
 
 theory Show_Real
 imports 
   Real
-  "$AFP/Show/Show"
+  Show
 begin
 
 consts show_real :: "real \<Rightarrow> string"

@@ -12,11 +12,10 @@ text\<open>This theory provides a definition of a unique factorization domain (U
 theory Unique_Factorization_Domain
 imports
   "~~/src/HOL/Number_Theory/Primes"
-  Ring_Hom
+  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Jordan_Normal_Form/Missing_Fraction_Field"
   Ring_Hom_Poly
-  Missing_Unsorted
   Divisibility
-  Missing_Fraction_Field
 begin
 
 lemma dvd_field: "((x :: 'a :: field) dvd y) = (x = 0 \<longrightarrow> y = 0)"

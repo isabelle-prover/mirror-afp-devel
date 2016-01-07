@@ -11,8 +11,8 @@ text \<open>We define which properties a carrier of matrices must exhibit, so th
 theory Complexity_Carrier
 imports
   "../Abstract-Rewriting/SN_Order_Carrier"
+  Ring_Hom_Matrix
   Derivation_Bound
-  Matrix_Conversions
   Real
 begin
 
@@ -43,9 +43,6 @@ proof (rule exI[of _ "bound 1"], intro allI)
   fix n
   show "bound (of_nat n) \<le> bound 1 * n"
   proof (induct n)
-    case 0
-    show ?case by simp
-  next
     case (Suc n)
     have "bound (of_nat (Suc n)) = bound (1 + of_nat n)" by simp
     also have "... \<le> bound 1 + bound (of_nat n)"
@@ -53,25 +50,20 @@ proof (rule exI[of _ "bound 1"], intro allI)
     also have "... \<le> bound 1 + bound 1 * n"
       using Suc by auto
     finally show ?case by auto
-  qed
+  qed simp
 qed
 
 lemma bound_of_nat_times: "bound (of_nat n * v) \<le> n * bound v"
 proof (induct n)
-  case 0 show ?case by simp
-next
   case (Suc n)
   have "bound (of_nat (Suc n) * v) = bound (v + of_nat n * v)" by (simp add: field_simps)
   also have "\<dots> \<le> bound v + bound (of_nat n * v)" by (rule bound_plus)
   also have "\<dots> \<le> bound v + n * bound v" using Suc by auto
   finally show ?case by simp 
-qed
+qed simp
 
 lemma bound_mult_of_nat: "bound (a * of_nat n) \<le> bound a * bound (of_nat n)"
 proof (induct n)
-  case 0
-  show ?case by simp
-next
   case (Suc n)
   have "bound (a * of_nat (Suc n)) = bound (a + a * of_nat n)" by (simp add: field_simps)
   also have "... \<le> bound a + bound (a * of_nat n)"
@@ -85,13 +77,10 @@ next
       unfolding bound_plus_of_nat[OF one_ge_zero] by simp
   qed
   finally show ?case by simp
-qed
+qed simp
 
 lemma bound_pow_of_nat: "bound (a * of_nat n ^ deg) \<le> bound a * of_nat n ^ deg" 
 proof (induct deg)
-  case 0
-  show ?case by simp
-next
   case (Suc deg)
   have "bound (a * of_nat n ^ Suc deg) =  bound (of_nat n * (a * of_nat n ^ deg))"
     by (simp add: field_simps)
@@ -100,7 +89,7 @@ next
   also have "\<dots> \<le> n * (bound a * of_nat n ^ deg)"
     using Suc by auto
   finally show ?case by (simp add: field_simps)
-qed
+qed simp
 end
 
 end

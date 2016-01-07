@@ -31,24 +31,24 @@ lemma pos_root_exI:
   assumes "poly p 0 * lead_coeff p < (0 :: real)"
   obtains x where "x > 0" "poly p x = 0"
 proof -
-  {
-    fix p :: "real poly" assume p: "poly p 0 < 0"
-    assume "lead_coeff p > 0"
+  have P: "\<exists>x>0. poly p x = (0::real)" if "lead_coeff p > 0" "poly p 0 < 0" for p
+  proof -
+    note that(1)
     also from poly_pinfty_gt_lc[OF \<open>lead_coeff p > 0\<close>] obtain x0 
       where "\<And>x. x \<ge> x0 \<Longrightarrow> poly p x \<ge> lead_coeff p" by auto
     hence "poly p (max x0 1) \<ge> lead_coeff p" by auto
     finally have "poly p (max x0 1) > 0" .
-    with p have "\<exists>x. x > 0 \<and> x < max x0 1 \<and> poly p x = 0"
+    with that have "\<exists>x. x > 0 \<and> x < max x0 1 \<and> poly p x = 0"
       by (intro poly_IVT mult_neg_pos) auto
-    hence "\<exists>x>0. poly p x = 0"  by auto
-  } note P = this
+    thus "\<exists>x>0. poly p x = 0"  by auto
+  qed
 
   show ?thesis
   proof (cases "lead_coeff p > 0")
     case True
     with assms have "poly p 0 < 0" 
       by (auto simp: mult_less_0_iff)
-    from P[OF this True] that show ?thesis 
+    from P[OF True this] that show ?thesis 
       by blast
   next
     case False
@@ -346,9 +346,7 @@ private lemma arthan_aux1:
                   (v (psums (x # y # xs)) - v (psums ((x + y) # xs))))"
 using assms(1-3)
 proof (induction rule: arthan_wlog)
-  {
-    fix xs have "v (map uminus xs) = v xs" by (simp add: v_def sign_changes_uminus)
-  } note uminus_v = this
+  have uminus_v: "v (map uminus xs) = v xs" for xs by (simp add: v_def sign_changes_uminus)
 
   case (lift x y xs)
   note lift(2)
@@ -381,18 +379,20 @@ next
     by (subst append_take_drop_id [of p, symmetric], 
         subst Cons_nth_drop_Suc) simp_all
 
-  {
-    fix xs' :: "'a list"
+  have v_decompose: "v (xs' @ xs) = v (xs' @ [xs ! p]) + v (xs ! p # xs2)" for xs'
+  proof -
     have "xs' @ xs = (xs' @ xs1) @ xs ! p # xs2" by (subst xs_decompose) simp
     also have "v \<dots> = v (xs' @ [xs ! p]) + v (xs ! p # xs2)" unfolding v_def
       by (subst sign_changes_decompose[OF p_nz], 
           subst (1 2 3 4) sign_changes_filter [symmetric]) (simp_all add: xs1_def)
-    finally have "v (xs' @ xs) = v (xs' @ [xs ! p]) + v (xs ! p # xs2)" .
-  } note v_decompose = this
+    finally show ?thesis .
+  qed
 
   have psums_decompose: "psums xs = replicate p 0 @ psums (xs!p # xs2)" 
     by (subst xs_decompose) (simp add: xs1_def psums_replicate_0_append)
-  {
+  have v_psums_decompose: "sign_changes (xs' @ psums xs) = sign_changes (xs' @ [xs!p]) + 
+         sign_changes (xs!p # map (op+ (xs!p)) (psums xs2))" for xs'
+  proof -
     fix xs' :: "'a list"
     have "sign_changes (xs' @ psums xs) = 
             sign_changes (xs' @ xs ! p # map (op + (xs!p)) (psums xs2))"
@@ -401,8 +401,8 @@ next
     also have "\<dots> = sign_changes (xs' @ [xs!p]) + 
                       sign_changes (xs!p # map (op+ (xs!p)) (psums xs2))"
       by (subst sign_changes_decompose[OF p_nz]) simp_all
-    finally have "sign_changes (xs' @ psums xs) = \<dots>" .
-  } note v_psums_decompose = this
+    finally show "sign_changes (xs' @ psums xs) = \<dots>" .
+  qed
 
   show ?case
   proof (cases "x > 0")

@@ -3,13 +3,19 @@
                  Akihisa Yamada
     License:     BSD
 *)
-section \<open>Computing Jordan Normal Forms from Upper-Triangular Matrices\<close>
+section \<open>Computing Jordan Normal Forms\<close>
 
-theory Jordan_Normal_Form_Triangular
+theory Jordan_Normal_Form_Existence
 imports 
   Jordan_Normal_Form
   Column_Operations
+  Schur_Decomposition
 begin
+
+text\<open>We prove existence of Jordan normal forms by means of first applying Schur's algorithm
+ to convert a matrix into upper-triangular form, and then applying the following algorithm 
+ to convert a upper-triangular matrix into a Jordan normal form. It only consists of 
+ basic row- and column-operations.\<close>
 
 subsection \<open>Pseudo Code Algorithm\<close>
 
@@ -74,25 +80,21 @@ function swap_cols_rows_block :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<R
   by pat_completeness auto
 termination by (relation "measure (\<lambda> (i,j,A). j - i)") auto
 
-fun identify_block_main :: "'a :: one \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat" where
-  "identify_block_main ev A 0 = 0"
-| "identify_block_main ev A (Suc i) = (if A $$ (i,i) = ev \<and> A $$ (i,Suc i) = 1 then
-    identify_block_main ev A i else (Suc i))"
+fun identify_block :: "'a :: one mat \<Rightarrow> nat \<Rightarrow> nat" where
+  "identify_block A 0 = 0"
+| "identify_block A (Suc i) = (if A $$ (i,Suc i) = 1 then
+    identify_block A i else (Suc i))"
 
-definition identify_block :: "'a :: one mat \<Rightarrow> nat \<Rightarrow> 'a \<times> nat" where
-  "identify_block A i = (let ev = A $$ (i,i) in (ev, identify_block_main ev A i))"
-
-function identify_blocks_main :: "'a :: ring_1 \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat) list \<Rightarrow> (nat \<times> nat) list" where
-  "identify_blocks_main ev A 0 list = list"
-| "identify_blocks_main ev A (Suc i_end) list = (
-    let (ev', i_begin) = identify_block A i_end
-    in (if ev' = ev then  
-      identify_blocks_main ev A i_begin ((i_begin, i_end) # list)
-    else list))"
+function identify_blocks_main :: "'a :: ring_1 mat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat) list \<Rightarrow> (nat \<times> nat) list" where
+  "identify_blocks_main A 0 list = list"
+| "identify_blocks_main A (Suc i_end) list = (
+    let i_begin = identify_block A i_end
+    in identify_blocks_main A i_begin ((i_begin, i_end) # list)
+    )"
   by pat_completeness auto
 
 definition identify_blocks :: "'a :: ring_1 mat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat)list" where
-  "identify_blocks A i = identify_blocks_main (A $$ (i,i)) A i []"
+  "identify_blocks A i = identify_blocks_main A i []"
 
 fun find_largest_block :: "nat \<times> nat \<Rightarrow> (nat \<times> nat)list \<Rightarrow> nat \<times> nat" where
   "find_largest_block block [] = block"
@@ -100,6 +102,17 @@ fun find_largest_block :: "nat \<times> nat \<Rightarrow> (nat \<times> nat)list
     (if i_end - i_start \<ge> m_end - m_start then
       find_largest_block (i_start,i_end) blocks else
       find_largest_block (m_start,m_end) blocks)"
+
+fun lookup_other_ev :: "'a \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> nat option" where
+  "lookup_other_ev ev 0 A = None"
+| "lookup_other_ev ev (Suc i) A = (if A $$ (i,i) \<noteq> ev then Some i else lookup_other_ev ev i A)"
+
+partial_function (tailrec) partition_ev_blocks :: "'a mat \<Rightarrow> 'a mat list \<Rightarrow> 'a mat list" where
+  [code]: "partition_ev_blocks A bs = (let n = dim\<^sub>r A in
+    if n = 0 then bs
+    else (case lookup_other_ev (A $$ (n-1, n-1)) (n-1) A of 
+      None \<Rightarrow> A # bs 
+    | Some i \<Rightarrow> case split_block A (Suc i) (Suc i) of (UL,_,_,LR) \<Rightarrow> partition_ev_blocks UL (LR # bs)))"
 
 context 
   fixes n :: nat
@@ -134,7 +147,7 @@ fun step_3_a :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat
   "step_3_a 0 j A = A"
 | "step_3_a (Suc i) j A = (let 
     aij = A $$ (i,j);
-    B = (if A $$ (i,i) = A $$ (j,j) \<and> A $$ (i,i+1) = 1 \<and> aij \<noteq> 0 
+    B = (if A $$ (i,i+1) = 1 \<and> aij \<noteq> 0 
     then add_col_sub_row (- aij) (Suc i) j A else A)
     in step_3_a i j B)"
 
@@ -181,28 +194,24 @@ definition step_2 :: "'a :: field mat \<Rightarrow> 'a mat" where
 definition step_3 :: "'a :: field mat \<Rightarrow> 'a mat" where
   "step_3 A = step_3_main (dim\<^sub>r A) 1 A"
 
-definition triangular_to_jnf :: "'a :: field mat \<Rightarrow> 'a mat" where
-  "triangular_to_jnf = step_3 o step_2 o step_1"  
-
 declare swap_cols_rows_block.simps[simp del]
 declare step_1_main.simps[simp del]
 declare step_2_main.simps[simp del]
 declare step_3_main.simps[simp del]
 
-subsection \<open>Algorithm to extract JNF vector from matrix in JNF\<close>
-
 function jnf_vector_main :: "nat \<Rightarrow> 'a :: one mat \<Rightarrow> (nat \<times> 'a) list" where
   "jnf_vector_main 0 A = []"
 | "jnf_vector_main (Suc i_end) A = (let 
-    (ev,i_start) = identify_block A i_end 
-    in jnf_vector_main i_start A @ [(Suc i_end - i_start, ev)])"
+    i_start = identify_block A i_end 
+    in jnf_vector_main i_start A @ [(Suc i_end - i_start, A $$ (i_start,i_start))])"
   by pat_completeness auto
 
 definition jnf_vector :: "'a :: one mat \<Rightarrow> (nat \<times> 'a) list" where
   "jnf_vector A = jnf_vector_main (dim\<^sub>r A) A"
 
 definition triangular_to_jnf_vector :: "'a :: field mat \<Rightarrow> (nat \<times> 'a) list" where
-  "triangular_to_jnf_vector A = (jnf_vector (triangular_to_jnf A))" 
+  "triangular_to_jnf_vector A \<equiv> let B = step_2 (step_1 A)
+    in concat (map (jnf_vector o step_3) (partition_ev_blocks B []))"
 
 subsection \<open>Preservation of Dimensions\<close>
 
@@ -293,9 +302,7 @@ lemma triangular_to_jnf_steps_dims[simp]:
   "dim\<^sub>c (step_2 A) = dim\<^sub>c A"
   "dim\<^sub>r (step_3 A) = dim\<^sub>r A"
   "dim\<^sub>c (step_3 A) = dim\<^sub>c A"
-  "dim\<^sub>r (triangular_to_jnf A) = dim\<^sub>r A"
-  "dim\<^sub>c (triangular_to_jnf A) = dim\<^sub>c A"
-  unfolding step_1_def step_2_def step_3_def triangular_to_jnf_def o_def by auto
+  unfolding step_1_def step_2_def step_3_def o_def by auto
 
 subsection \<open>Properties of Auxiliary Algorithms\<close>
 
@@ -379,24 +386,24 @@ context
   and A :: "'a mat"
 begin
 
-lemma identify_block_main: assumes "identify_block_main ev A j = i"
-  shows "i \<le> j \<and> (i = 0 \<or> A $$ (i - 1, i - 1) \<noteq> ev \<or> A $$ (i - 1, i) \<noteq> 1) \<and> (\<forall> k. i \<le> k \<longrightarrow> k < j \<longrightarrow> A $$ (k,k) = ev \<and> A $$ (k, Suc k) = 1)"
+lemma identify_block_main: assumes "identify_block A j = i"
+  shows "i \<le> j \<and> (i = 0 \<or> A $$ (i - 1, i) \<noteq> 1) \<and> (\<forall> k. i \<le> k \<longrightarrow> k < j \<longrightarrow> A $$ (k, Suc k) = 1)"
     (is "?P j")
   using assms
 proof (induct j)
   case (Suc j)
   show ?case
-  proof (cases "A $$ (j,j) = ev \<and> A $$ (j, Suc j) = 1")
+  proof (cases "A $$ (j, Suc j) = 1")
     case False
     with Suc(2) show ?thesis by auto
   next
     case True
-    with Suc(2) have "identify_block_main ev A j = i" by simp
+    with Suc(2) have "identify_block A j = i" by simp
     note IH = Suc(1)[OF this] 
     {
       fix k
       assume "k \<ge> i" and "k < Suc j"      
-      hence "A $$ (k, k) = ev \<and> A $$ (k, Suc k) = 1"
+      hence "A $$ (k, Suc k) = 1"
       proof (cases "k < j")
         case True
         with IH `k \<ge> i` show ?thesis by auto
@@ -411,69 +418,55 @@ proof (induct j)
 qed simp
 
 
-lemma identify_block_main_le: "identify_block_main ev A i \<le> i"
+lemma identify_block_le: "identify_block A i \<le> i"
   using identify_block_main[OF refl] by blast
 end
 
 
-lemma identify_block: assumes "identify_block A j = (ev,i)"
+lemma identify_block: assumes "identify_block A j = i"
   shows "i \<le> j"
-  "ev = A $$ (j,j)"
-  "A $$ (i,i) = A $$ (j,j)"
-  "i = 0 \<or> A $$ (i - 1, i - 1) \<noteq> A $$ (j,j) \<or> A $$ (i - 1, i) \<noteq> 1"
+  "i = 0 \<or> A $$ (i - 1, i) \<noteq> 1"
   "i \<le> k \<Longrightarrow> k < j \<Longrightarrow> A $$ (k, Suc k) = 1"
-  "i \<le> k \<Longrightarrow> k \<le> j \<Longrightarrow> A $$ (k,k) = A $$ (j,j)"
 proof -
   let ?ev = "A $$ (j,j)"
-  from assms[unfolded identify_block_def Let_def] have main: "identify_block_main ?ev A j = i"
-    and "ev = ?ev" by auto
-  show "ev = ?ev" by fact
-  note main = identify_block_main[OF main]
+  note main = identify_block_main[OF assms]
   from main show "i \<le> j" by blast
-  from main show "i = 0 \<or> A $$ (i - 1, i - 1) \<noteq> ?ev \<or> A $$ (i - 1, i) \<noteq> 1" by blast
-  from main have "i < j \<Longrightarrow> A $$ (i,i) = ?ev" by auto
-  thus "A $$ (i,i) = ?ev" using `i \<le> j` by (cases "i = j", auto)
+  from main show "i = 0 \<or> A $$ (i - 1, i) \<noteq> 1" by blast
   assume "i \<le> k"
-  with main have main: "k < j \<Longrightarrow> A $$ (k, k) = ?ev \<and> A $$ (k, Suc k) = 1" by blast
+  with main have main: "k < j \<Longrightarrow> A $$ (k, Suc k) = 1" by blast
   thus "k < j \<Longrightarrow> A $$ (k, Suc k) = 1" by blast
-  from main show "k \<le> j \<Longrightarrow> A $$ (k,k) = ?ev" by (cases "k = j", auto)
 qed
     
-lemmas identify_block_le = identify_block(1)
+lemmas identify_block_le' = identify_block(1)
 
-lemma identify_block_le_rev: "(ev,j) = identify_block A i \<Longrightarrow> j \<le> i"
-  using identify_block_le[of A i ev j] by auto
+lemma identify_block_le_rev: "j = identify_block A i \<Longrightarrow> j \<le> i"
+  using identify_block_le'[of A i j] by auto
   
-termination identify_blocks_main by (relation "measure (\<lambda> (_,_,i,list). i)", auto dest: identify_block_le_rev)
-termination jnf_vector_main by (relation "measure (\<lambda> (i,A). i)", auto dest: identify_block_le_rev)
+termination identify_blocks_main by (relation "measure (\<lambda> (_,i,list). i)", 
+  auto simp: identify_block_le le_imp_less_Suc)
 
-lemma identify_blocks_main: assumes "(i_start,i_end) \<in> set (identify_blocks_main ev A i list)" 
+termination jnf_vector_main by (relation "measure (\<lambda> (i,A). i)", 
+  auto simp: identify_block_le le_imp_less_Suc)
+
+lemma identify_blocks_main: assumes "(i_start,i_end) \<in> set (identify_blocks_main A i list)" 
   and "\<And> i_s i_e. (i_s, i_e) \<in> set list \<Longrightarrow> i_s \<le> i_e \<and> i_e < k"
   and "i \<le> k"
   shows "i_start \<le> i_end \<and> i_end < k" using assms
-proof (induct ev A i list rule: identify_blocks_main.induct)
-  case (2 ev A i_e list)
-  obtain ev' i_b where id: "identify_block A i_e = (ev', i_b)" by force
-  note IH = 2(1)[OF id[symmetric] refl]
-  let ?res = "identify_blocks_main ev A (Suc i_e) list"  
-  let ?rec = "identify_blocks_main ev A i_b ((i_b, i_e) # list)"
-  show ?case
-  proof (cases "ev' = ev")
-    case False
-    hence res: "?res = list" using id by simp
-    from 2 show ?thesis unfolding res by auto
-  next
-    case True
-    hence res: "?res = ?rec" using id by simp
-    from 2(2)[unfolded res] have "(i_start, i_end) \<in> set ?rec" .
-    note IH = IH[OF True this]
-    from 2(3-) have iek: "i_e < k" by simp
-    from identify_block_le[OF id] have ibe: "i_b \<le> i_e" .
-    from ibe iek have "i_b \<le> k" by simp
-    note IH = IH[OF _ this]
-    show ?thesis
-      by (rule IH, insert ibe iek 2(3-), auto)
-  qed
+proof (induct A i list rule: identify_blocks_main.induct)
+  case (2 A i_e list)
+  obtain i_b where id: "identify_block A i_e = i_b" by force
+  note IH = 2(1)[OF id[symmetric]]
+  let ?res = "identify_blocks_main A (Suc i_e) list"  
+  let ?rec = "identify_blocks_main A i_b ((i_b, i_e) # list)"
+  have res: "?res = ?rec" using id by simp
+  from 2(2)[unfolded res] have "(i_start, i_end) \<in> set ?rec" .
+  note IH = IH[OF this]
+  from 2(3-) have iek: "i_e < k" by simp
+  from identify_block_le'[OF id] have ibe: "i_b \<le> i_e" .
+  from ibe iek have "i_b \<le> k" by simp
+  note IH = IH[OF _ this]
+  show ?thesis
+    by (rule IH, insert ibe iek 2(3-), auto)
 qed simp
 
 lemma identify_blocks: assumes "(i_start,i_end) \<in> set (identify_blocks B k)" 
@@ -590,7 +583,7 @@ proof (induct i j A rule: step_3_a.induct)
 next
   case (2 i j A)
   from 2(2-) have A: "A \<in> carrier\<^sub>m n n" and ij: "Suc i < j" and j: "j < n" by auto
-  let ?B = "if A $$ (i,i) = A $$ (j,j) \<and> A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0 
+  let ?B = "if A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0 
     then add_col_sub_row (- A $$ (i, j)) (Suc i) j A else A"
   obtain B where B: "B = ?B" by auto
   from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by simp
@@ -744,25 +737,14 @@ proof (induct k A taking: n rule: step_3_main.induct)
   qed
 qed
 
-private lemma step_1_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_1 A) A"
+lemma step_1_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_1 A) A"
   unfolding step_1_def by (rule step_1_main_similar, auto)
 
-private lemma step_2_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_2 A) A"
+lemma step_2_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_2 A) A"
   unfolding step_2_def by (rule step_2_main_similar, auto)
 
-private lemma step_3_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_3 A) A"
+lemma step_3_similar: "A \<in> carrier\<^sub>m n n \<Longrightarrow> mat_similar (step_3 A) A"
   unfolding step_3_def by (rule step_3_main_similar, auto)
-
-lemma triangular_to_jnf_similar: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "mat_similar (triangular_to_jnf A) A"
-  unfolding triangular_to_jnf_def o_def
-proof (rule mat_similar_trans[OF step_3_similar 
-  mat_similar_trans[OF step_2_similar
-  mat_similar_trans[OF step_1_similar[OF A]
-  mat_similar_refl[OF A]]]])
-  show "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by simp
-  show "step_2 (step_1 A) \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by simp
-qed
 
 end
 
@@ -774,18 +756,18 @@ context
 begin
 
 (* upper triangular, ensured by precondition and then maintained *)
-private definition uppert :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
+definition uppert :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
   "uppert A i j \<equiv> j < i \<longrightarrow> A $$ (i,j) = 0" 
 
 (* zeros at places where EVs differ, ensured by step 1 and then maintained *)
-private definition diff_ev :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
+definition diff_ev :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
   "diff_ev A i j \<equiv> i < j \<longrightarrow> A $$ (i,i) \<noteq> A $$ (j,j) \<longrightarrow> A $$ (i,j) = 0"
 
 (* same EVs are grouped together, ensured by step 2 and then maintained *)
-private definition ev_blocks_part :: "nat \<Rightarrow> 'a mat \<Rightarrow> bool" where
+definition ev_blocks_part :: "nat \<Rightarrow> 'a mat \<Rightarrow> bool" where
   "ev_blocks_part m A \<equiv> \<forall> i j k. i < j \<longrightarrow> j < k \<longrightarrow> k < m \<longrightarrow> A $$ (k,k) = A $$ (i,i) \<longrightarrow> A $$ (j,j) = A $$ (i,i)"
 
-private definition ev_blocks :: "'a mat \<Rightarrow> bool" where
+definition ev_blocks :: "'a mat \<Rightarrow> bool" where
   "ev_blocks \<equiv> ev_blocks_part n"
 
 text \<open>In step 3, there is a separation at which iteration we are.
@@ -818,7 +800,7 @@ private definition lower_one :: "nat \<Rightarrow> 'a mat \<Rightarrow> nat \<Ri
     (A $$ (i,j) = 0 \<or> i = j \<or> (A $$ (i,j) = 1 \<and> j = Suc i \<and> A $$ (i,i) = A $$ (j,j))))"
 
 (* the desired property: we have a jordan block matrix *)
-qualified definition jb :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
+definition jb :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
   "jb A i j \<equiv> (Suc i = j \<longrightarrow> A $$ (i,j) \<in> {0,1}) 
   \<and> (i \<noteq> j \<longrightarrow> (Suc i \<noteq> j \<or> A $$ (i,i) \<noteq> A $$ (j,j)) \<longrightarrow> A $$ (i,j) = 0)"
 
@@ -827,7 +809,7 @@ text \<open>The following properties are useful to easily ensure the above invar
   that the blocks identified in step 3b are the same as one would identify for
   the matrices in the upcoming steps 3c and 3d.\<close>
  
-private definition same_diag :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
+definition same_diag :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
   "same_diag A B \<equiv> \<forall> i < n. A $$ (i,i) = B $$ (i,i)"
 
 private definition same_upto :: "nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
@@ -835,7 +817,7 @@ private definition same_upto :: "nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \
 
 text \<open>Definitions stating where the properties hold\<close>
 
-private definition inv_all :: "('a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool" where
+definition inv_all :: "('a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool" where
   "inv_all p A \<equiv> \<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> p A i j"
 
 private definition inv_part :: "('a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
@@ -855,12 +837,28 @@ private definition inv_from_bot :: "('a mat \<Rightarrow> nat \<Rightarrow> bool
 
 text \<open>Auxiliary Lemmas on Handling, Comparing, and Accessing Invariants\<close>
 
-private lemma jb_imp_uppert: "jb A i j \<Longrightarrow> uppert A i j"
+lemma jb_imp_uppert: "jb A i j \<Longrightarrow> uppert A i j"
   unfolding jb_def uppert_def by auto
 
 private lemma ev_blocks_partD:
   "ev_blocks_part m A \<Longrightarrow> i < j \<Longrightarrow> j < k \<Longrightarrow> k < m \<Longrightarrow> A $$ (k,k) = A $$ (i,i) \<Longrightarrow> A $$ (j,j) = A $$ (i,i)"
   unfolding ev_blocks_part_def by auto
+
+private lemma ev_blocks_part_leD:
+  assumes "ev_blocks_part m A"
+  "i \<le> j" "j \<le> k" "k < m" "A $$ (k,k) = A $$ (i,i)" 
+  shows "A $$ (j,j) = A $$ (i,i)"
+proof -  
+  show ?thesis
+  proof (cases "i = j \<or> j = k")
+    case False
+    with assms(2-3) have "i < j" "j < k" by auto
+    from ev_blocks_partD[OF assms(1) this assms(4-)] show ?thesis .
+  next
+    case True
+    thus ?thesis using assms(5) by auto
+  qed
+qed
 
 private lemma ev_blocks_partI:
   assumes "\<And> i j k. i < j \<Longrightarrow> j < k \<Longrightarrow> k < m \<Longrightarrow> A $$ (k,k) = A $$ (i,i) \<Longrightarrow> A $$ (j,j) = A $$ (i,i)"
@@ -872,20 +870,8 @@ private lemma ev_blocksD:
   unfolding ev_blocks_def by (rule ev_blocks_partD)
 
 private lemma ev_blocks_leD:
-  assumes "ev_blocks A"
-  "i \<le> j" "j \<le> k" "k < n" "A $$ (k,k) = A $$ (i,i)" 
-  shows "A $$ (j,j) = A $$ (i,i)"
-proof -  
-  show ?thesis
-  proof (cases "i = j \<or> j = k")
-    case False
-    with assms(2-3) have "i < j" "j < k" by auto
-    from ev_blocksD[OF assms(1) this assms(4-)] show ?thesis .
-  next
-    case True
-    thus ?thesis using assms(5) by auto
-  qed
-qed
+  "ev_blocks A \<Longrightarrow> i \<le> j \<Longrightarrow> j \<le> k \<Longrightarrow> k < n \<Longrightarrow> A $$ (k,k) = A $$ (i,i) \<Longrightarrow> A $$ (j,j) = A $$ (i,i)"
+  unfolding ev_blocks_def by (rule ev_blocks_part_leD)
 
 lemma inv_allD: "inv_all p A \<Longrightarrow> i < n \<Longrightarrow> j < n \<Longrightarrow> p A i j"
   unfolding inv_all_def by auto
@@ -1001,7 +987,7 @@ private lemma same_upto_trans: "same_upto j A B \<Longrightarrow> same_upto j B 
 private lemma same_upto_inv_upto_jb: "same_upto j A B \<Longrightarrow> inv_upto jb A j \<Longrightarrow> inv_upto jb B j"
   unfolding inv_upto_def same_upto_def jb_def by auto
 
-private lemma jb_imp_diff_ev: "jb A i j \<Longrightarrow> diff_ev A i j"
+lemma jb_imp_diff_ev: "jb A i j \<Longrightarrow> diff_ev A i j"
   unfolding jb_def diff_ev_def by auto
 
 private lemma ev_blocks_diag: 
@@ -1047,141 +1033,124 @@ private lemma lower_one_diff_uppert:
   "i < n \<Longrightarrow> lower_one k B i k \<Longrightarrow> diff_ev B i k \<and> uppert B i k"
    unfolding lower_one_def diff_ev_def uppert_def by auto
 
+definition ev_block :: "nat \<Rightarrow> 'a mat \<Rightarrow> bool" where 
+  "\<And> n. ev_block n A = (\<forall> i j. i < n \<longrightarrow> j < n \<longrightarrow> A $$ (i,i) = A $$ (j,j))"
 
-subsection \<open>Alternative Characterization of @{const identify_blocks} in Presence of @{const ev_blocks}\<close>
+lemma ev_blockD: "\<And> n. ev_block n A \<Longrightarrow> i < n \<Longrightarrow> j < n \<Longrightarrow> A $$ (i,i) = A $$ (j,j)"
+  unfolding ev_block_def mat_carrier_def by blast
 
-private lemma identify_blocks_main_iff: assumes *: "ev_blocks A" "k \<le> k'" "A $$ (k',k') = ev" 
-  "k' \<noteq> k \<longrightarrow> k > 0 \<longrightarrow> A $$ (k - 1, k - 1) = ev \<longrightarrow> A $$ (k - 1, k) \<noteq> 1" and "k' < n"
-  shows "set (identify_blocks_main ev A k list) = 
-  set list \<union> {(i,j) | i j. A $$ (i,i) = ev \<and> A $$ (j,j) = ev \<and> i \<le> j \<and> j < k \<and> (\<forall> l. i \<le> l \<longrightarrow> l < j \<longrightarrow> A $$ (l, Suc l) = 1)
-  \<and> (Suc j \<noteq> k' \<longrightarrow> A $$ (j, Suc j) \<noteq> 1) \<and> (i > 0 \<longrightarrow> A $$ (i - 1, i - 1) \<noteq> ev \<or> A $$ (i - 1, i) \<noteq> 1)}" (is "_ = _ \<union> ?ss ev A k")
+lemma same_diag_ev_block: "same_diag A B \<Longrightarrow> ev_block n A \<Longrightarrow> ev_block n B"
+  unfolding ev_block_def mat_carrier_def same_diag_def by metis
+
+
+subsection \<open>Alternative Characterization of @{const identify_blocks} in Presence of @{const ev_block}\<close>
+
+private lemma identify_blocks_main_iff: assumes *: "k \<le> k'" 
+  "k' \<noteq> k \<longrightarrow> k > 0 \<longrightarrow> A $$ (k - 1, k) \<noteq> 1" and "k' < n"
+  shows "set (identify_blocks_main A k list) = 
+  set list \<union> {(i,j) | i j. i \<le> j \<and> j < k \<and> (\<forall> l. i \<le> l \<longrightarrow> l < j \<longrightarrow> A $$ (l, Suc l) = 1)
+  \<and> (Suc j \<noteq> k' \<longrightarrow> A $$ (j, Suc j) \<noteq> 1) \<and> (i > 0 \<longrightarrow> A $$ (i - 1, i) \<noteq> 1)}" (is "_ = _ \<union> ?ss A k")
   using *
-proof (induct ev A k list rule: identify_blocks_main.induct)
+proof (induct A k list rule: identify_blocks_main.induct)
   case 1
   show ?case unfolding identify_blocks_main.simps by auto
 next
-  case (2 ev A i_e list)
-  let ?s = "?ss ev A"
-  obtain ev' i_b where id: "identify_block A i_e = (ev', i_b)" by force
-  note IH = 2(1)[OF id[symmetric] refl _ 2(2)]
-  note blocks = ev_blocks_leD[OF 2(2) _ _ `k' < n`, unfolded 2(4)]
-  let ?res = "identify_blocks_main ev A (Suc i_e) list"  
-  let ?rec = "identify_blocks_main ev A i_b ((i_b, i_e) # list)"
+  case (2 A i_e list)
+  let ?s = "?ss A"
+  obtain i_b where id: "identify_block A i_e = i_b" by force
+  note IH = 2(1)[OF id[symmetric]]
+  let ?res = "identify_blocks_main A (Suc i_e) list"  
+  let ?rec = "identify_blocks_main A i_b ((i_b, i_e) # list)"
   note idb = identify_block[OF id]
-  have Aie: "A $$ (i_e, i_e) = ev'" using idb by blast
-  show ?case
-  proof (cases "ev' = ev")
-    case False
-    hence res: "?res = list" using id by simp
-    have "?s (Suc i_e) = {}"
-    proof (rule ccontr)
-      assume "\<not> ?thesis"
-      then obtain j where "j < Suc i_e" and ev: "A $$ (j,j) = ev" by auto
-      with 2 have "j \<le> i_e" "i_e \<le> k'" by auto
-      from blocks[OF this] ev have "ev = A $$ (i_e,i_e)" by auto
-      thus False using Aie False by simp
-    qed    
-    thus ?thesis unfolding res by auto
-  next
-    case True
-    hence res: "?res = ?rec" using id by simp
-    from True idb have Aie: "A $$ (i_e, i_e) = ev" by blast
-    from True idb have Aib: "A $$ (i_b, i_b) = ev" by blast
-    note IH = IH[OF True]
-    from 2(3-) have iek: "i_e < k'" by simp
-    from identify_block_le[OF id] have ibe: "i_b \<le> i_e" .
-    from ibe iek have "i_b \<le> k'" by simp
-    have "k' \<noteq> i_b \<longrightarrow> 0 < i_b \<longrightarrow> A $$ (i_b - 1, i_b - 1) = ev \<longrightarrow> A $$ (i_b - 1, i_b) \<noteq> 1" 
-      using idb(4) Aie by auto
-    note IH = IH[OF `i_b \<le> k'` `A $$ (k',k') = ev` this]
-    have cong: "\<And> a b c d. insert a c = d \<Longrightarrow> set (a # b) \<union> c = set b \<union> d" by auto
-    show ?thesis unfolding res IH
-    proof (rule cong)
-      from ibe have "?s i_b \<subseteq> ?s (Suc i_e)" by auto
-      moreover 
-      have inter: "\<And>l. i_b \<le> l \<Longrightarrow> l < i_e \<Longrightarrow> A $$ (l, Suc l) = 1" using idb by blast
-      have last: "Suc i_e \<noteq> k' \<Longrightarrow> A $$ (i_e, Suc i_e) \<noteq> 1" using 2(5) Aie by auto
-      have "(i_b, i_e) \<in> ?s (Suc i_e)" using ibe idb(4) Aie
-        by (auto simp: Aie Aib inter last)
-      ultimately have "insert (i_b, i_e) (?s i_b) \<subseteq> ?s (Suc i_e)" by auto
-      moreover  
-      {
-        fix i j
-        assume ij: "(i,j) \<in> ?s (Suc i_e)"
-        hence "(i,j) \<in> insert (i_b, i_e) (?s i_b)"
-        proof (cases "j < i_b")
-          case True
-          with ij show ?thesis by blast
-        next
-          case False
-          with ij have "i_b \<le> j" "j \<le> i_e" "A $$ (i,i) = ev" by auto
-          {
-            assume j: "j < i_e"
-            from idb(5)[OF `i_b \<le> j` this] have 1: "A $$ (j, Suc j) = 1" .
-            from j `Suc i_e \<le> k'` have "Suc j \<noteq> k'" by auto
-            with ij 1 have False by auto
-          }
-          with `j \<le> i_e` have j: "j = i_e" by (cases "j = i_e", auto)
-          {
-            assume i: "i < i_b \<or> i > i_b"
-            hence False
-            proof
-              assume "i < i_b"
-              hence "i_b > 0" by auto
-              with idb(4) Aie have *: "A $$ (i_b - 1, i_b - 1) \<noteq> ev \<or> A $$ (i_b - 1, i_b) \<noteq> 1" by auto
-              from `i < i_b` `i_b \<le> i_e` `i_e < k'` have "i \<le> i_b - 1" "i_b - 1 \<le> k'" by auto
-              from blocks[OF this] * `A $$ (i,i) = ev` have *: "A $$ (i_b - 1, i_b) \<noteq> 1" by auto
-              from `i < i_b` `i_b \<le> i_e` j have **: "i \<le> i_b - 1" "i_b - 1 < j" "Suc (i_b - 1) = i_b" by auto
-              from ij have "\<And> l. l\<ge>i \<Longrightarrow> l < j \<Longrightarrow> A $$ (l, Suc l) = 1" by auto
-              from this[OF **(1-2)] **(3) * show False by auto
-            next
-              assume "i > i_b"
-              with ij j have "A $$ (i - 1, i - 1) \<noteq> ev \<or> A $$ (i - 1, i) \<noteq> 1" and 
-                *: "i - 1 \<ge> i_b" "i - 1 \<le> i_e" "i - 1 < i_e" "Suc (i - 1) = i" by auto
-              with idb(6)[OF this(2-3)] Aie have "A $$ (i - 1, i) \<noteq> 1" by auto
-              with idb(5)[OF `i - 1 \<ge> i_b` `i - 1 < i_e`] * 
-              show False by auto
-            qed
-          }
-          hence i: "i = i_b" by arith
-          show ?thesis unfolding i j by simp
-        qed
-      }
-      hence "?s (Suc i_e) \<subseteq> insert (i_b, i_e) (?s i_b)" by blast
-      ultimately 
-      show "insert (i_b, i_e) (?s i_b) = ?s (Suc i_e)" by blast
-    qed
+  hence res: "?res = ?rec" using id by simp
+  from 2(2-) have iek: "i_e < k'" by simp
+  from identify_block_le'[OF id] have ibe: "i_b \<le> i_e" .
+  from ibe iek have "i_b \<le> k'" by simp
+  have "k' \<noteq> i_b \<longrightarrow> 0 < i_b  \<longrightarrow> A $$ (i_b - 1, i_b) \<noteq> 1" 
+    using idb(2) by auto
+  note IH = IH[OF `i_b \<le> k'` this]
+  have cong: "\<And> a b c d. insert a c = d \<Longrightarrow> set (a # b) \<union> c = set b \<union> d" by auto
+  show ?case unfolding res IH
+  proof (rule cong)
+    from ibe have "?s i_b \<subseteq> ?s (Suc i_e)" by auto
+    moreover 
+    have inter: "\<And>l. i_b \<le> l \<Longrightarrow> l < i_e \<Longrightarrow> A $$ (l, Suc l) = 1" using idb by blast
+    have last: "Suc i_e \<noteq> k' \<Longrightarrow> A $$ (i_e, Suc i_e) \<noteq> 1" using 2(3) by auto
+    have "(i_b, i_e) \<in> ?s (Suc i_e)" using ibe idb(2) inter last by blast
+    ultimately have "insert (i_b, i_e) (?s i_b) \<subseteq> ?s (Suc i_e)" by auto
+    moreover  
+    {
+      fix i j
+      assume ij: "(i,j) \<in> ?s (Suc i_e)"
+      hence "(i,j) \<in> insert (i_b, i_e) (?s i_b)"
+      proof (cases "j < i_b")
+        case True
+        with ij show ?thesis by blast
+      next
+        case False
+        with ij have "i_b \<le> j" "j \<le> i_e" by auto
+        {
+          assume j: "j < i_e"
+          from idb(3)[OF `i_b \<le> j` this] have 1: "A $$ (j, Suc j) = 1" .
+          from j `Suc i_e \<le> k'` have "Suc j \<noteq> k'" by auto
+          with ij 1 have False by auto
+        }
+        with `j \<le> i_e` have j: "j = i_e" by (cases "j = i_e", auto)
+        {
+          assume i: "i < i_b \<or> i > i_b"
+          hence False
+          proof
+            assume "i < i_b"
+            hence "i_b > 0" by auto
+            with idb(2) have *: "A $$ (i_b - 1, i_b) \<noteq> 1" by auto
+            from `i < i_b` `i_b \<le> i_e` `i_e < k'` have "i \<le> i_b - 1" "i_b - 1 \<le> k'" by auto
+            from `i < i_b` `i_b \<le> i_e` j have **: "i \<le> i_b - 1" "i_b - 1 < j" "Suc (i_b - 1) = i_b" by auto
+            from ij have "\<And> l. l\<ge>i \<Longrightarrow> l < j \<Longrightarrow> A $$ (l, Suc l) = 1" by auto
+            from this[OF **(1-2)] **(3) * show False by auto
+          next
+            assume "i > i_b"
+            with ij j have "A $$ (i - 1, i) \<noteq> 1" and 
+              *: "i - 1 \<ge> i_b" "i - 1 \<le> i_e" "i - 1 < i_e" "Suc (i - 1) = i" by auto
+            with idb(3)[OF *(1,3)] show False by auto
+          qed
+        }
+        hence i: "i = i_b" by arith
+        show ?thesis unfolding i j by simp
+      qed
+    }
+    hence "?s (Suc i_e) \<subseteq> insert (i_b, i_e) (?s i_b)" by blast
+    ultimately 
+    show "insert (i_b, i_e) (?s i_b) = ?s (Suc i_e)" by blast
   qed
 qed
   
 
-private lemma identify_blocks_iff: assumes "ev_blocks A" "k < n"
+private lemma identify_blocks_iff: assumes "k < n"
   shows "set (identify_blocks A k) = 
-  {(i,j) | i j. A $$ (i,i) = A $$ (k,k) \<and> A $$ (j,j) = A $$ (k,k) \<and> i \<le> j \<and> j < k \<and> (\<forall> l. i \<le> l \<longrightarrow> l < j \<longrightarrow> A $$ (l, Suc l) = 1)
-  \<and> (Suc j \<noteq> k \<longrightarrow> A $$ (j, Suc j) \<noteq> 1) \<and> (i > 0 \<longrightarrow> A $$ (i - 1, i - 1) \<noteq> A $$ (k,k) \<or> A $$ (i - 1, i) \<noteq> 1)}" 
-  unfolding identify_blocks_def using identify_blocks_main_iff[OF assms(1) le_refl refl _ `k < n`] by auto
+  {(i,j) | i j. i \<le> j \<and> j < k \<and> (\<forall> l. i \<le> l \<longrightarrow> l < j \<longrightarrow> A $$ (l, Suc l) = 1)
+  \<and> (Suc j \<noteq> k \<longrightarrow> A $$ (j, Suc j) \<noteq> 1) \<and> (i > 0 \<longrightarrow> A $$ (i - 1, i) \<noteq> 1)}" 
+  unfolding identify_blocks_def using identify_blocks_main_iff[OF le_refl _ `k < n`] by auto
 
-private lemma identify_blocksD: assumes "ev_blocks A" "k < n" and "(i,j) \<in> set (identify_blocks A k)"
-  shows "A $$ (i,i) = A $$ (k,k)" "A $$ (j,j) = A $$ (k,k)" "i \<le> j" "j < k" 
+private lemma identify_blocksD: assumes "k < n" and "(i,j) \<in> set (identify_blocks A k)"
+  shows "i \<le> j" "j < k" 
   "\<And> l. i \<le> l \<Longrightarrow> l < j \<Longrightarrow> A $$ (l, Suc l) = 1"
   "Suc j \<noteq> k \<Longrightarrow> A $$ (j, Suc j) \<noteq> 1"
   "i > 0 \<Longrightarrow> A $$ (i - 1, i - 1) \<noteq> A $$ (k,k) \<or> A $$ (i - 1, i) \<noteq> 1" 
-  using assms unfolding identify_blocks_iff[OF assms(1-2)] by auto
+  using assms unfolding identify_blocks_iff[OF assms(1)] by auto
 
-private lemma identify_blocksI: assumes inv: "ev_blocks A" "k < n" and *: "A $$ (i,i) = A $$ (k,k)" "A $$ (j,j) = A $$ (k,k)"
+private lemma identify_blocksI: assumes inv: "k < n"
   "i \<le> j" "j < k" "\<And> l. i \<le> l \<Longrightarrow> l < j \<Longrightarrow> A $$ (l, Suc l) = 1"
-  "Suc j \<noteq> k \<Longrightarrow> A $$ (j, Suc j) \<noteq> 1" "i > 0 \<Longrightarrow> A $$ (i - 1, i - 1) \<noteq> A $$ (k,k) \<or> A $$ (i - 1, i) \<noteq> 1"
+  "Suc j \<noteq> k \<Longrightarrow> A $$ (j, Suc j) \<noteq> 1" "i > 0 \<Longrightarrow> A $$ (i - 1, i) \<noteq> 1"
   shows "(i,j) \<in> set (identify_blocks A k)"
-  unfolding identify_blocks_iff[OF inv] using assms by blast
+  unfolding identify_blocks_iff[OF inv(1)] using inv by blast
 
 private lemma identify_blocks_rev: assumes "A $$ (i, Suc i) = 0 \<and> Suc i < k \<or> Suc i = k"
-  and ev: "A $$ (i, i) = A $$ (k, k)"
-  and inv: "ev_blocks A" "k < n"
-  shows "(snd (identify_block A i), i) \<in> set (identify_blocks A k)"
+  and inv: "k < n"
+  shows "(identify_block A i, i) \<in> set (identify_blocks A k)"
 proof -
-  obtain ev j where id: "identify_block A i = (ev,j)" by force
+  obtain j where id: "identify_block A i = j" by force
   note idb = identify_block[OF this]
-  show ?thesis unfolding id snd_conv
+  show ?thesis unfolding id 
     by (rule identify_blocksI[OF inv], insert idb assms, auto)
 qed
 
@@ -1642,90 +1611,64 @@ private lemma add_col_sub_row_same_upto: assumes "i < j" "j < n" "A \<in> carrie
   shows "same_upto j A (add_col_sub_row v i j A)"
   by (intro same_uptoI, subst add_col_sub_row_index, insert assms, auto simp: uppert_def inv_upto_def)
 
-private lemma add_col_sub_row_inv_from: assumes *: "inv_from uppert A j"
-  "inv_from diff_ev A j" and diag: "same_diag A (add_col_sub_row v i j A)"
+private lemma add_col_sub_row_inv_from_uppert: assumes *: "inv_from uppert A j"
   and **: "A \<in> carrier\<^sub>m n n" "i < n" "i < j" "j < n" 
-  and ev: "A $$ (i,i) = A $$ (j,j)"
-  shows 
-  "inv_from uppert (add_col_sub_row v i j A) j"
-  "inv_from diff_ev (add_col_sub_row v i j A) j"
+  shows "inv_from uppert (add_col_sub_row v i j A) j"
 proof -
   note * = * **
   let ?A = "add_col_sub_row v i j A"
-  let ?I = "\<lambda> A i j. uppert A i j \<and> diff_ev A i j"
-  have "inv_from ?I ?A j" unfolding inv_from_def
+  show "inv_from uppert ?A j" unfolding inv_from_def
   proof (intro allI impI)
     fix i' j'
     assume **: "i' < n" "j' < n" "j < j'"
-    with diag have id: "(?A $$ (i',i') = ?A $$ (j',j')) = (A $$ (i',i') = A $$ (j',j'))"
-      unfolding same_diag_def by auto
     from * ** have "i' < dim\<^sub>r A" "i' < dim\<^sub>c A" "j' < dim\<^sub>r A" "j' < dim\<^sub>c A" "j < dim\<^sub>r A" by auto
     note id2 = add_col_sub_row_index[OF this]
-    show "?I ?A i' j'" unfolding uppert_def diff_ev_def id
+    show "uppert ?A i' j'" unfolding uppert_def
     proof (intro conjI impI)
       assume "j' < i'"
       with inv_fromD[OF `inv_from uppert A j`, unfolded uppert_def, of i' j'] * ** 
       show "?A $$ (i',j') = 0" unfolding id2 using * ** `j' < i'` by simp
-    next
-      assume ***: "i' < j'" "A $$ (i', i') \<noteq> A $$ (j', j')"
-      note diff_ev = inv_fromD[OF `inv_from diff_ev A j`, unfolded diff_ev_def]
-      from diff_ev[of i' j'] *** * **
-      have 0: "A $$ (i',j') = 0" by auto
-      {
-        assume "i = i'"
-        with *** ev have "A $$ (j,j) \<noteq> A $$ (j',j')" by simp
-        with diff_ev[of j j'] ** * have "A $$ (j,j') = 0" by simp
-      }
-      thus "?A $$ (i',j') = 0" unfolding id2 0 using * ** by auto
     qed
   qed
-  thus 
-  "inv_from uppert (add_col_sub_row v i j A) j"
-  "inv_from diff_ev (add_col_sub_row v i j A) j"
-    unfolding inv_from_def by blast+
 qed
-  
+
 private lemma step_3_a_inv: "A \<in> carrier\<^sub>m n n 
   \<Longrightarrow> i < j \<Longrightarrow> j < n 
   \<Longrightarrow> inv_upto jb A j 
   \<Longrightarrow> inv_from uppert A j 
-  \<Longrightarrow> inv_from diff_ev A j
-  \<Longrightarrow> inv_at diff_ev A j
   \<Longrightarrow> inv_from_bot (\<lambda> A i. one_zero A i j) A i 
-  \<Longrightarrow> ev_blocks A
-  \<Longrightarrow> inv_from uppert (step_3_a i j A) j \<and> inv_from diff_ev (step_3_a i j A) j
+  \<Longrightarrow> ev_block n A
+  \<Longrightarrow> inv_from uppert (step_3_a i j A) j 
     \<and> inv_upto jb (step_3_a i j A) j 
-    \<and> inv_at one_zero (step_3_a i j A) j \<and> ev_blocks (step_3_a i j A)"
+    \<and> inv_at one_zero (step_3_a i j A) j \<and> same_diag A (step_3_a i j A)"
 proof (induct i j A rule: step_3_a.induct)
   case (1 j A)
   thus ?case by (simp add: inv_from_bot_def inv_at_def)
 next
   case (2 i j A)
   from 2(2-) have A: "A \<in> carrier\<^sub>m n n" and ij: "Suc i < j" "i < j" and j: "j < n" by auto
-  let ?cond = "A $$ (i,i) = A $$ (j,j) \<and> A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0"
+  let ?cond = "A $$ (i, i + 1) = 1 \<and> A $$ (i, j) \<noteq> 0"
   let ?B = "add_col_sub_row (- A $$ (i, j)) (Suc i) j A"
   obtain B where B: "B = (if ?cond then ?B else A)" by auto
   from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by simp
   note IH = 2(1)[OF refl B Bn ij(2) j]
   have id: "step_3_a (Suc i) j A = step_3_a i j B" unfolding B by (simp add: Let_def)
   from ij j have *: "Suc i < n" "j < n" "Suc i \<noteq> j" by auto
-  from 2(2-) have inv: "inv_upto jb A j" "inv_from uppert A j" "inv_from diff_ev A j"
-    "inv_from_bot (\<lambda>A i. one_zero A i j) A (Suc i)" "ev_blocks A" "inv_at diff_ev A j" by auto
+  from 2(2-) have inv: "inv_upto jb A j" "inv_from uppert A j" "ev_block n A"
+    "inv_from_bot (\<lambda>A i. one_zero A i j) A (Suc i)"  by auto
+  note evbA = ev_blockD[OF inv(3)]
   show ?case
   proof (cases ?cond)
     case False
     hence B: "B = A" unfolding B by auto
     have inv2: "inv_from_bot (\<lambda>A i. one_zero A i j) A i"
       by (rule inv_from_bot_step[OF _ inv(4)],
-      insert False ij inv_atD[OF inv(6), of i] *, auto simp: one_zero_def diff_ev_def)
+      insert False ij evbA[of i j] *, auto simp: one_zero_def)
     show ?thesis unfolding id B
       by (rule IH[unfolded B], insert inv inv2, auto)
   next
     case True
     hence B: "B = ?B" unfolding B by auto
-    from True have ev1: "A $$ (j,j) = A $$ (i,i)" by auto
-    with ev_blocksD[OF inv(5) _ _ _ this, of "Suc i"]
-    have ev: "A $$ (Suc i, Suc i) = A $$ (j,j)" using * ij by auto
     let ?C = "step_3_a i j B"
     from inv_uptoD[OF inv(1) j *(1) ij(1), unfolded jb_def] ij 
     have Aji: "A $$ (j, Suc i) = 0" by auto
@@ -1733,51 +1676,44 @@ next
       by (intro allI impI, insert ij j A Aji B, auto)
     have upto: "same_upto j A B" unfolding B
       by (rule add_col_sub_row_same_upto[OF `Suc i < j` `j < n` A inv_upto_mono[OF jb_imp_uppert inv(1)]])
-    from add_col_sub_row_inv_from[OF inv(2-3) diag[unfolded B] A `Suc i < n` `Suc i < j` `j < n` ev, folded B]
-    have from_j: "inv_from uppert B j" "inv_from diff_ev B j" by blast+
-    show ?thesis unfolding id 
-    proof (rule IH[OF same_upto_inv_upto_jb[OF upto inv(1)]
-      from_j _ _ 
-      same_diag_ev_blocks[OF diag inv(5)]])
-      {
-        fix k
-        assume "k < n"
-        with A * have k: "k < dim\<^sub>r A" "k < dim\<^sub>c A" "j < dim\<^sub>r A" "j < dim\<^sub>c A" "j < dim\<^sub>r A" by auto
-        note id = B add_col_sub_row_index[OF k]
-        have "B $$ (k,j) = (if k = i then 0 else A $$ (k,j))" unfolding id
-          using inv_uptoD[OF inv(1), of k "Suc i", unfolded jb_def]
-          by (insert * Aji True ij `k < n`, auto simp: ev)
-      } note id = this
-      show "inv_at diff_ev B j" 
-      proof (intro inv_atI, unfold diff_ev_def, intro impI)
-        fix k 
-        assume **: "k < n" "k < j" "B $$ (k,k) \<noteq> B $$ (j,j)"
-        with diag * have "A $$ (k,k) \<noteq> A $$ (j,j)" by (auto simp: same_diag_def)
-        with inv_atD[OF inv(6) `k < n`, unfolded diff_ev_def] ** have Akj: "A $$ (k,j) = 0" by auto
-        show "B $$ (k,j) = 0" unfolding id[OF `k < n`] Akj by simp
-      qed
-      show "inv_from_bot (\<lambda>A i. one_zero A i j) B i" unfolding inv_from_bot_def
-      proof (intro allI impI)
-        fix k
-        assume "i \<le> k" "k < n"
-        thus "one_zero B k j" using inv(4)[unfolded inv_from_bot_def]
-          upto[unfolded same_upto_def] inv_atD[OF `inv_at diff_ev B j` `k < n`, unfolded diff_ev_def]
-          unfolding one_zero_def id[OF `k < n`] by auto
-      qed
+    from add_col_sub_row_inv_from_uppert[OF inv(2) A `Suc i < n` `Suc i < j` `j < n`]
+    have from_j: "inv_from uppert B j" unfolding B by blast
+    have ev: "A $$ (Suc i, Suc i) = A $$ (j,j)" using evbA[of "Suc i" j] ij j by auto
+    have evb_B: "ev_block n B"
+      by (rule same_diag_ev_block[OF diag inv(3)])
+    note evbB = ev_blockD[OF evb_B]
+    {
+      fix k
+      assume "k < n"
+      with A * have k: "k < dim\<^sub>r A" "k < dim\<^sub>c A" "j < dim\<^sub>r A" "j < dim\<^sub>c A" "j < dim\<^sub>r A" by auto
+      note id = B add_col_sub_row_index[OF k]
+      have "B $$ (k,j) = (if k = i then 0 else A $$ (k,j))" unfolding id
+        using inv_uptoD[OF inv(1), of k "Suc i", unfolded jb_def]
+        by (insert * Aji True ij `k < n`, auto simp: ev)
+    } note id2 = this
+    have "inv_from_bot (\<lambda>A i. one_zero A i j) B i" unfolding inv_from_bot_def
+    proof (intro allI impI)
+      fix k
+      assume "i \<le> k" "k < n"
+      thus "one_zero B k j" using inv(4)[unfolded inv_from_bot_def]
+        upto[unfolded same_upto_def] evbB[OF `k < n` `j < n`]  
+        unfolding one_zero_def id2[OF `k < n`] by auto
     qed
+    from IH[OF same_upto_inv_upto_jb[OF upto inv(1)] from_j this evb_B]
+      same_diag_trans[OF diag]
+    show ?thesis unfolding id by blast
   qed
 qed
 
-private lemma identify_block_main_cong: assumes sd: "same_diag A B" and su: "same_upto k A B" and kn: "k < n"
-  shows "i < k \<Longrightarrow> identify_block_main ev A i = identify_block_main ev B i"
+private lemma identify_block_cong: assumes su: "same_upto k A B" and kn: "k < n"
+  shows "i < k \<Longrightarrow> identify_block A i = identify_block B i"
 proof (induct i)
   case (Suc i)
   hence "i < k" by auto
   note IH = Suc(1)[OF this]
-  let ?c = "\<lambda> A. A $$ (i,i) = ev \<and> A $$ (i,Suc i) = 1"
+  let ?c = "\<lambda> A. A $$ (i,Suc i) = 1"
   from same_uptoD[OF su, of i "Suc i"] kn Suc(2) have 1: "A $$ (i, Suc i) = B $$ (i, Suc i)" by auto
-  from sd kn Suc(2) have 2: "A $$ (i,i) = B $$ (i,i)" by (auto simp: same_diag_def)
-  from 1 2 have id: "?c A = ?c B" by simp
+  from 1 have id: "?c A = ?c B" by simp
   show ?case
   proof (cases "?c A")
     case True
@@ -1788,44 +1724,28 @@ proof (induct i)
   qed
 qed simp
 
-private lemma identify_block_cong: assumes sd: "same_diag A B" and "same_upto k A B"
-    "k < n" "l < k" 
-  shows "identify_block A l = identify_block B l"
-  unfolding identify_block_def Let_def
-    identify_block_main_cong[OF assms]
-  using assms(1,3,4) by (auto simp: same_diag_def)
-
-private lemma identify_blocks_main_cong: assumes "ev2 = ev" and sd: "same_diag A B"
-  shows "k < n \<Longrightarrow> same_upto k A B \<Longrightarrow> identify_blocks_main ev A k xs = identify_blocks_main ev2 B k xs"
-  unfolding assms
+private lemma identify_blocks_main_cong: 
+  "k < n \<Longrightarrow> same_upto k A B \<Longrightarrow> identify_blocks_main A k xs = identify_blocks_main B k xs"
 proof (induct k arbitrary: xs rule: less_induct)
   case (less k list)
   show ?case
   proof (cases "k = 0")
     case False
     then obtain i_e where k: "k = Suc i_e" by (cases k, auto)
-    obtain ev' i_b where idA: "identify_block A i_e = (ev', i_b)" by force
-    from identify_block_le[OF idA] have ibe: "i_b \<le> i_e" .
-    have idB: "identify_block B i_e = (ev', i_b)" unfolding idA[symmetric]
-      by (rule sym, rule identify_block_cong[OF sd], insert k less(2-3), auto)
-    let ?I = "identify_blocks_main ev"
+    obtain i_b where idA: "identify_block A i_e = i_b" by force
+    from identify_block_le'[OF idA] have ibe: "i_b \<le> i_e" .
+    have idB: "identify_block B i_e = i_b" unfolding idA[symmetric]
+      by (rule sym, rule identify_block_cong, insert k less(2-3), auto)
+    let ?I = "identify_blocks_main"
     let ?resA = "?I A (Suc i_e) list"  
     let ?recA = "?I A i_b ((i_b, i_e) # list)"
     let ?resB = "?I B (Suc i_e) list"  
     let ?recB = "?I B i_b ((i_b, i_e) # list)"
-    show ?thesis
-    proof (cases "ev' = ev")
-      case False
-      hence res: "?resA = ?resB" using idA idB by simp
-      thus ?thesis unfolding k by simp
-    next
-      case True
-      hence res: "?resA = ?recA" "?resB = ?recB" using idA idB by auto
-      from k ibe have ibk: "i_b < k" by simp
-      with less(3) have "same_upto i_b A B" unfolding same_upto_def by auto
-      from less(1)[OF ibk _ this] ibk `k < n` have "?recA = ?recB" by auto
-      thus ?thesis unfolding k res by simp
-    qed
+    have res: "?resA = ?recA" "?resB = ?recB" using idA idB by auto
+    from k ibe have ibk: "i_b < k" by simp
+    with less(3) have "same_upto i_b A B" unfolding same_upto_def by auto
+    from less(1)[OF ibk _ this] ibk `k < n` have "?recA = ?recB" by auto
+    thus ?thesis unfolding k res by simp
   qed simp
 qed
 
@@ -1833,6 +1753,22 @@ private lemma identify_blocks_cong:
   "k < n \<Longrightarrow> same_diag A B \<Longrightarrow> same_upto k A B \<Longrightarrow> identify_blocks A k = identify_blocks B k"
   unfolding identify_blocks_def
   by (intro identify_blocks_main_cong, auto simp: same_diag_def)
+
+private lemma inv_from_upto_at_all_ev_block: 
+  assumes jb: "inv_upto jb A k" and ut: "inv_from uppert A k" and at: "inv_at p A k" and evb: "ev_block n A"
+  and p: "\<And> i. i < n \<Longrightarrow> p A i k \<Longrightarrow> uppert A i k"
+  and k: "k < n"
+  shows "inv_all uppert A"
+proof (rule inv_from_upto_at_all[OF jb _ ut at])
+  from ev_blockD[OF evb] 
+  show "inv_from diff_ev A k" unfolding inv_from_def diff_ev_def by blast
+  fix i
+  assume "i < n" "p A i k"
+  with ev_blockD[OF evb k, of i] p[OF this] k
+  show "diff_ev A i k \<and> uppert A i k"
+    unfolding diff_ev_def by auto
+qed
+
 
 text \<open>For step 3c, during the inner loop, the invariants are NOT preserved. 
   However, at the end of the inner loop, the invariants are again preserved.
@@ -1842,9 +1778,8 @@ text \<open>For step 3c, during the inner loop, the invariants are NOT preserved
 private lemma step_3_c_inner_result: assumes inv:
   "inv_upto jb A k"
   "inv_from uppert A k"
-  "inv_from diff_ev A k"
   "inv_at one_zero A k"
-  "ev_blocks A"
+  "ev_block n A"
   and k: "k < n"
   and A: "A \<in> carrier\<^sub>m n n"
   and lbl: "(lb,l) \<in> set (identify_blocks A k)"
@@ -1916,14 +1851,14 @@ proof -
           else if i \<noteq> ii \<and> j = ll then B $$ (i, j) + quot * B $$ (i, ii) 
           else B $$ (i, j))" unfolding B_def
           by (rule add_col_sub_row_index(1), insert i j ll, auto)
-
-        from inv_from_upto_at_all[OF inv(1,3,2,4)] have invA: "inv_all diff_ev A" "inv_all uppert A"
-          unfolding one_zero_def diff_ev_def uppert_def by auto
-        note ut = inv_all_uppertD[OF invA(2)]
-        note de = inv_all_diff_evD[OF invA(1)]
+        from inv_from_upto_at_all_ev_block[OF inv(1-4) _ `k < n`] 
+        have invA: "inv_all uppert A"
+          unfolding one_zero_def uppert_def by auto
+        note ut = inv_all_uppertD[OF invA]
         note jb = inv_uptoD[OF inv(1), unfolded jb_def]
-        note oz = inv_atD[OF inv(4), unfolded one_zero_def]
-        note iblock = identify_blocksD[OF inv(5) `k < n`]
+        note oz = inv_atD[OF inv(3), unfolded one_zero_def]
+        note evb = ev_blockD[OF inv(4)]
+        note iblock = identify_blocksD[OF `k < n`]
         note ibe = iblock[OF ib_block]
         let ?ev = "\<lambda> i. A $$ (i,i)"
 
@@ -1931,7 +1866,7 @@ proof -
           fix i ib ie
           assume "(ib,ie) \<in> set (identify_blocks A k)" and i: "ib \<le> i" "i < ie"
           note ibe = iblock[OF this(1)]
-          from ibe(5)[OF i] have id: "A $$ (i, Suc i) = 1" by auto
+          from ibe(3)[OF i] have id: "A $$ (i, Suc i) = 1" by auto
           from i ibe `k < n` have "i < n" "Suc i < k" by auto
           with oz[OF this(1)] id
           have "A $$ (i,k) = 0" by auto
@@ -1951,7 +1886,7 @@ proof -
             from jb[OF i `ii < n` `ii < k`] 0 `i \<noteq> ii` 
             have *: "Suc i = ii" "A $$ (i,ii) = 1" "?ev i = ?ev ii" by auto
             with index `i < i_begin` have "ii = i_begin" by auto
-            with ibe(1,7) * have False by auto
+            with evb[OF `i < n` `k < n`] ibe(5) * have False by auto
           }
           hence Aii: "A $$ (i,ii) = 0" by auto
           {
@@ -1979,7 +1914,7 @@ proof -
           proof (rule ccontr)
             assume "\<not> ie < jb"
             hence "ie \<ge> jb" by auto
-            from j(5)[OF this lt] Aie show False by auto
+            from j(3)[OF this lt] Aie show False by auto
           qed
         } note block_bounds = this
         {
@@ -2141,7 +2076,7 @@ proof -
                   and *: "diff \<noteq> 0" "i = ii - 1" "j = ll" "ii \<noteq> 0" "i \<noteq> ii" by auto
                 hence D: "?D $$ (i,j) = quot" unfolding D using jk index by auto
                 from * index eqs False jk have i: "ii = Suc i" "i < i_end" by auto
-                from iblock(5)[OF ib_block `i_begin \<le> i` `i < i_end`] 
+                from iblock(3)[OF ib_block `i_begin \<le> i` `i < i_end`] 
                 have Ai: "A $$ (i, ii) = 1" unfolding i .
                 have "ii < k" "i \<noteq> i_end - iter" using index * ** eqs by auto
                 hence Bi: "B $$ (i,ii) = 1" unfolding BB[OF `i < n` `ii < n`] Ai by auto
@@ -2214,7 +2149,7 @@ proof -
                     hence B': "B $$ (ll, j) = A $$ (ll, j)" 
                       unfolding BB[OF `ll < n` `j < n`] using jk by auto
                     have "?C $$ (i,j) = quot - quot * A $$ (ll, Suc ll)" unfolding C B using * B' by auto
-                    with iblock(5)[OF lbl `lb \<le> ll` `ll < l`] have C: "?C $$ (i,j) = 0" by simp
+                    with iblock(3)[OF lbl `lb \<le> ll` `ll < l`] have C: "?C $$ (i,j) = 0" by simp
                     {
                       assume "A $$ (ii, Suc ll) \<noteq> 0"
                       with jb[OF `ii < n` `Suc ll < n` `Suc ll < k`] `ii \<noteq> ll`
@@ -2227,14 +2162,10 @@ proof -
                   next
                     case False
                     hence B: "B $$ (i,j) = ?Aij" unfolding B by auto
-                    from iblock(1-2)[OF ib_block] ev_blocks_leD[OF inv(5), of i_begin _ i_end] ib `k < n`
-                    have ev_i: "\<And> i. i_begin \<le> i \<Longrightarrow> i \<le> i_end \<Longrightarrow> ?ev i = ?ev k" by auto
-                    from iblock(1-2)[OF lbl] ev_blocks_leD[OF inv(5), of lb _ l] lb `k < n`
-                    have ev_l: "\<And> i. lb \<le> i \<Longrightarrow> i \<le> l \<Longrightarrow> ?ev i = ?ev k" by auto
                     from eqs index have "lb \<le> ll" "ll \<le> l" by auto
                     note index = index this ll_i
-                    from ev_l[of ll] index have evl: "?ev ll = ?ev k" by auto
-                    from ev_i[of i] index have evi: "?ev i = ?ev k" by auto
+                    from evb[of ll k] index have evl: "?ev ll = ?ev k" by auto
+                    from evb[of i k] index have evi: "?ev i = ?ev k" by auto
                     from not have not: "i \<noteq> ii - 1 \<or> j \<noteq> ll \<or> iter = ?idiff" by auto
                     from False have not2: "i \<noteq> ii \<or> j \<noteq> Suc ll \<or> iter = 0" by auto
                     show ?thesis
@@ -2308,23 +2239,22 @@ private lemma step_3_c_inv: "A \<in> carrier\<^sub>m n n
   \<Longrightarrow> (lb,l) \<in> set (identify_blocks A k)
   \<Longrightarrow> inv_upto jb A k
   \<Longrightarrow> inv_from uppert A k
-  \<Longrightarrow> inv_from diff_ev A k
   \<Longrightarrow> inv_at one_zero A k
-  \<Longrightarrow> ev_blocks A
+  \<Longrightarrow> ev_block n A
   \<Longrightarrow> set bs \<subseteq> set (identify_blocks A k)
   \<Longrightarrow> (\<And> be. be \<notin> snd ` set bs \<Longrightarrow> be \<notin> {l,k} \<Longrightarrow> be < n \<Longrightarrow> A $$ (be,k) = 0)
   \<Longrightarrow> (\<And> bb be. (bb,be) \<in> set bs \<Longrightarrow> be - bb \<le> l - lb) (* largest block *)
   \<Longrightarrow> x = A $$ (l,k)
   \<Longrightarrow> x \<noteq> 0
-  \<Longrightarrow> inv_all uppert (step_3_c x l k bs A) \<and> inv_all diff_ev (step_3_c x l k bs A)
+  \<Longrightarrow> inv_all uppert (step_3_c x l k bs A)
     \<and> same_diag A (step_3_c x l k bs A) 
     \<and> same_upto k A (step_3_c x l k bs A)
     \<and> inv_at (single_non_zero l k x) (step_3_c x l k bs A) k"
 proof (induct bs arbitrary: A) 
   case (Nil A)
-  note inv = Nil(4-8)
-  from inv_from_upto_at_all[OF inv(1,3,2,4)] 
-  have "inv_all diff_ev A" and "inv_all uppert A" unfolding one_zero_def diff_ev_def uppert_def by auto
+  note inv = Nil(4-7)
+  from inv_from_upto_at_all_ev_block[OF inv(1-4) _ `k < n`]
+  have "inv_all uppert A" unfolding one_zero_def diff_ev_def uppert_def by auto
   moreover 
   have "inv_at (single_non_zero l k x) A k" unfolding single_non_zero_def inv_at_def
     by (intro allI impI conjI, insert Nil, auto)
@@ -2337,9 +2267,9 @@ next
   note A = Cons(2)
   note kn = Cons(3)
   note lbl = Cons(4)
-  note inv = Cons(5-9)
-  note blocks = Cons(10-12)
-  note x = Cons(13-14)
+  note inv = Cons(5-8)
+  note blocks = Cons(9-11)
+  note x = Cons(12-13)
   from identify_blocks[OF lbl] kn have lk: "l < k" and ln: "l < n" and "lb \<le> l" by auto
   def B \<equiv> "step_3_c_inner_loop (A $$ (i_end,k) / x) l i_end (Suc i_end - i_begin) A"
   show ?case 
@@ -2362,7 +2292,7 @@ next
     have Bn: "B \<in> carrier\<^sub>m n n" unfolding B by auto
     have sdAB: "same_diag A B" unfolding B same_diag_def using ibe by auto
     have suAB: "same_upto k A B" using A kn unfolding B same_upto_def by auto
-    have inv_ev: "ev_blocks B" using same_diag_ev_blocks[OF sdAB inv(5)] .
+    have inv_ev: "ev_block n B" using same_diag_ev_block[OF sdAB inv(4)] .
     have inv_jb: "inv_upto jb B k" using same_upto_inv_upto_jb[OF suAB inv(1)] .
     have ib: "identify_blocks A k = identify_blocks B k" using identify_blocks_cong[OF kn sdAB suAB] .
     have inv_ut: "inv_from uppert B k" using inv(2) ibe unfolding B inv_from_def uppert_def by auto
@@ -2374,78 +2304,50 @@ next
         by (cases "be = i_end", auto)
     } note blocksB = this
     have bs: "set bs \<subseteq> set (identify_blocks A k)" using blocks(1) by auto
-    have inv_oz: "inv_at one_zero B k" using inv(4) ibe kn unfolding B inv_at_def one_zero_def by auto
-    have inv_diff: "inv_from diff_ev B k"
-    proof (intro inv_fromI)
-      fix i j      
-      assume *: "i < n" "j < n" "k < j"
-      have diff: "diff_ev A i j" using inv_fromD[OF inv(3) *] .
-      show "diff_ev B i j" unfolding diff_ev_def
-      proof (intro impI)
-        assume "i < j" "B $$ (i,i) \<noteq> B $$ (j,j)"
-        with sdAB * have diff_ev: "A $$ (i,i) \<noteq> A $$ (j,j)" unfolding same_diag_def by auto
-        with diff `i < j` have Aij: "A $$ (i,j) = 0" unfolding diff_ev_def by auto
-        let ?i = "l + i - i_end"
-        {
-          assume "B $$ (i,j) \<noteq> 0"
-          hence **: "i_begin \<le> i" "i \<le> i_end" "A $$ (?i, j) \<noteq> 0" 
-            using ibe * Aij unfolding B by (auto split: if_splits)
-          note ev = ev_blocks_leD[OF inv(5)]
-          note ib = identify_blocks_iff[OF inv(5) kn]
-          let ?ev = "A $$ (k,k)"
-          from lbl[unfolded ib] have evl: "A $$ (lb,lb) = ?ev" "A $$ (l,l) = ?ev" by auto
-          from ib_block[unfolded ib] have ev_i: "A $$ (i_begin,i_begin) = ?ev" "A $$ (i_end,i_end) = ?ev" by auto
-          from large `lb \<le> l` ** ln have "lb \<le> ?i" "?i \<le> l" "?i < n" by auto
-          from ev[OF this(1-2) ln] evl have Ai: "A $$ (?i,?i) = ?ev" by auto
-          from ev[OF **(1-2)] ibe kn ev_i have A_i: "A $$ (i,i) = ?ev" by auto
-          with diff_ev Ai have Aj: "A $$ (j,j) \<noteq> A $$ (?i,?i)" by auto
-          from inv_fromD[OF inv(3) `?i < n` `j < n` `k < j`] have "diff_ev A ?i j" .
-          from this[unfolded diff_ev_def] Aj `k < j` `?i \<le> l` `l < k` have "A $$ (?i,j) = 0" by auto
-          with ** have False by auto
-        }
-        thus "B $$ (i,j) = 0" by auto
-      qed
-    qed
+    have inv_oz: "inv_at one_zero B k" using inv(3) ibe kn unfolding B inv_at_def one_zero_def by auto
     show ?thesis unfolding id 
-      using IH[OF Bn kn, folded ib, OF lbl inv_jb inv_ut inv_diff inv_oz inv_ev bs blocksB blocks(3) xB x(2)]
+      using IH[OF Bn kn, folded ib, OF lbl inv_jb inv_ut inv_oz inv_ev bs blocksB blocks(3) xB x(2)]
       using same_diag_trans[OF sdAB] same_upto_trans[OF suAB]
       by auto
   qed
 qed
 
-private lemma step_3_main_inv: "A \<in> carrier\<^sub>m n n 
+lemma step_3_main_inv: "A \<in> carrier\<^sub>m n n 
   \<Longrightarrow> k > 0
   \<Longrightarrow> inv_all uppert A 
-  \<Longrightarrow> inv_all diff_ev A 
-  \<Longrightarrow> ev_blocks A 
+  \<Longrightarrow> ev_block n A 
   \<Longrightarrow> inv_upto jb A k
-  \<Longrightarrow> inv_all jb (step_3_main n k A)"
+  \<Longrightarrow> inv_all jb (step_3_main n k A) \<and> same_diag A (step_3_main n k A)"
 proof (induct k A taking: n rule: step_3_main.induct)
   case (1 k A)
   from 1(2-) have A: "A \<in> carrier\<^sub>m n n" and k: "k > 0" and
-    inv: "inv_all uppert A" "inv_all diff_ev A" "ev_blocks A" "inv_upto jb A k" by auto
+    inv: "inv_all uppert A" "ev_block n A" "inv_upto jb A k" by auto
   note [simp] = step_3_main.simps[of n k A]
   show ?case
   proof (cases "k \<ge> n")
     case True
-    thus ?thesis using inv_uptoD[OF inv(4)]
-      by (intro inv_allI, auto)
+    thus ?thesis using inv_uptoD[OF inv(3)] 
+      by (intro conjI inv_allI, auto)
   next
     case False
     hence kn: "k < n" by simp
     obtain B where B: "B = step_3_a (k - 1) k A" by auto
     note IH = 1(1)[OF False B]
     from A have Bn: "B \<in> carrier\<^sub>m n n" unfolding B mat_carrier_def by simp
-    from k have "k - 1 < k" by simp    
-    have "inv_from_bot (\<lambda>A i. one_zero A i k) A (k - 1)"
-      using inv_all_uppertD[OF inv(1), of k] inv_all_diff_evD[OF inv(2), OF _ `k < n`]
+    from k have "k - 1 < k" by simp   
+    {
+      fix i
+      assume "i < k"
+      with ev_blockD[OF inv(2) _ `k < n`, of i] `k < n` have "A $$ (i,i) = A $$ (k,k)" by auto
+    }
+    hence "inv_from_bot (\<lambda>A i. one_zero A i k) A (k - 1)"
+      using inv_all_uppertD[OF inv(1), of k] 
       unfolding inv_from_bot_def one_zero_def by auto
-    from step_3_a_inv[OF A `k - 1 < k` `k < n` 
-      inv(4) inv_all_imp_inv_from[OF inv(1)]
-      inv_all_imp_inv_from[OF inv(2)] inv_all_imp_inv_at[OF inv(2) `k < n`] this inv(3)] 
-    have inv: "inv_from uppert B k" "inv_from diff_ev B k"  
-      "ev_blocks B" "inv_upto jb B k" 
-      "inv_at one_zero B k" unfolding B by auto
+    from step_3_a_inv[OF A `k - 1 < k` `k < n` inv(3) inv_all_imp_inv_from[OF inv(1)]
+      this inv(2)] same_diag_ev_block[OF  _ inv(2)]
+    have inv: "inv_from uppert B k" "ev_block n B" "inv_upto jb B k" 
+      "inv_at one_zero B k" and sd: "same_diag A B" unfolding B by auto
+    note evb = ev_blockD[OF inv(2)]
     obtain all_blocks where ab: "all_blocks = identify_blocks B k" by simp
     obtain blocks where blocks: "blocks = filter (\<lambda> block. B $$ (snd block, k) \<noteq> 0) all_blocks" by simp
     obtain F where F: "F = (if blocks = [] then B
@@ -2455,8 +2357,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
     note IH = IH[OF ab blocks F]
     have Fn: "F \<in> carrier\<^sub>m n n" unfolding F Let_def mat_carrier_def using Bn 
       by (simp split: prod.splits)
-    have inv: "inv_all uppert F \<and> inv_all diff_ev F \<and> ev_blocks F 
-      \<and> inv_upto jb F (Suc k)" 
+    have inv: "inv_all uppert F \<and> same_diag A F \<and> inv_upto jb F (Suc k)" 
     proof (cases "blocks = []")
       case True
       hence F: "F = B" unfolding F by simp
@@ -2468,21 +2369,21 @@ proof (induct k A taking: n rule: step_3_main.induct)
         show "lower_one k B i k" 
         proof (cases "B $$ (i,k) = 0")
           case False note nz = this
-          note oz = inv_atD[OF inv(5) i, unfolded one_zero_def]
+          note oz = inv_atD[OF inv(4) i, unfolded one_zero_def]
           from nz oz have "i \<le> k" by auto
           show ?thesis 
           proof (cases "i = k")
             case False
             with `i \<le> k` have "i < k" by auto
             with nz oz have ev: "B $$ (i,i) = B $$ (k,k)" unfolding diff_ev_def by auto
-            have "(snd (identify_block B i), i) \<in> set all_blocks" unfolding ab
-            proof (rule identify_blocks_rev[OF _ ev inv(3) `k < n`]) 
+            have "(identify_block B i, i) \<in> set all_blocks" unfolding ab
+            proof (rule identify_blocks_rev[OF _ `k < n`]) 
               show "B $$ (i, Suc i) = 0 \<and> Suc i < k \<or> Suc i = k"
               proof (cases "Suc i = k")
                 case False
                 with `i < k` `k < n` have "Suc i < k" "Suc i < n" by simp_all
                 with nz oz have "B $$ (i, Suc i) \<noteq> 1" by simp
-                with inv_uptoD[OF inv(4) `i < n` `Suc i < n` `Suc i < k`, unfolded jb_def]
+                with inv_uptoD[OF inv(3) `i < n` `Suc i < n` `Suc i < k`, unfolded jb_def]
                 have "B $$ (i, Suc i) = 0" by simp
                 thus ?thesis using `Suc i < k` by simp
               qed simp
@@ -2493,13 +2394,15 @@ proof (induct k A taking: n rule: step_3_main.induct)
         qed auto
       qed
       have inv_jb: "inv_upto jb B (Suc k)"
-      proof (rule inv_upto_Suc[OF inv(4)])
+      proof (rule inv_upto_Suc[OF inv(3)])
         fix i
         assume "i < n"
         from inv_atD[OF lo `i < n`, unfolded lower_one_def]
         show "jb B i k" unfolding jb_def by auto
       qed
-      with inv inv_from_upto_at_all[OF inv(4) inv(2) inv(1) lo lower_one_diff_uppert] 
+      from inv_from_upto_at_all_ev_block[OF inv(3,1) lo inv(2) _ `k < n`] lower_one_diff_uppert
+      have "inv_all uppert B" by auto
+      with inv inv_jb sd
       show ?thesis unfolding F by simp
     next
       case False
@@ -2521,8 +2424,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
       from block_bound[OF lb]
       have lk: "l < k" and lblock: "(l_start, l) \<in> set (identify_blocks B k)" by auto
       from lk `k < n` have ln: "l < n" by simp
-      from lblock[unfolded identify_blocks_iff[OF inv(3) `k < n`]] 
-      have Bll: "B $$ (l,l) = B $$ (k,k)" by simp
+      from evb[OF `l < n` `k < n`]
+      have Bll: "B $$ (l,l) = B $$ (k,k)" .
       from False have F: "F = E" unfolding E D C x F l Let_def by simp
       from Bn have Cn: "C \<in> carrier\<^sub>m n n" unfolding C mat_carrier_def by simp
       {
@@ -2531,30 +2434,31 @@ proof (induct k A taking: n rule: step_3_main.induct)
         have "B $$ (be, k) = 0"
         proof (rule ccontr)
           assume nz: "\<not> ?thesis"
-          note oz = inv_atD[OF inv(5) be, unfolded one_zero_def]
-          from belk oz be nz have "be < k" and bek: "B $$ (be,be) = B $$ (k,k)" by auto
-          obtain ev bb where ib: "identify_block B be = (ev,bb)" by force
+          note oz = inv_atD[OF inv(4) be, unfolded one_zero_def]
+          from belk oz be nz have "be < k" by auto
+          obtain bb where ib: "identify_block B be = bb" by force
           note ib_inv = identify_block[OF ib]
           have "B $$ (be, Suc be) = 0 \<and> Suc be < k \<or> Suc be = k"
           proof (cases "Suc be = k")
             case False
             with `be < k` have sbek: "Suc be < k" by auto
-            from inv_uptoD[OF inv(4) `be < n` _ sbek] sbek kn have "jb B be (Suc be)" by auto
+            from inv_uptoD[OF inv(3) `be < n` _ sbek] sbek kn have "jb B be (Suc be)" by auto
             from this[unfolded jb_def] have 01: "B $$ (be, Suc be) \<in> {0,1}" by auto
             from 01 oz sbek nz have "B $$ (be, Suc be) = 0" by auto
             with sbek show ?thesis by auto
           qed auto
-          from identify_blocks_rev[OF this bek inv(3) kn] 
+          from identify_blocks_rev[OF this kn] 
              nz nmem show False unfolding ab blocks by force 
         qed
       }
-      note inv3 = step_3_c_inv[OF Bn `k < n` lblock inv(4,1,2,5,3) _ this llarge x x0, of blocks, folded C,
+      note inv3 = step_3_c_inv[OF Bn `k < n` lblock inv(3,1,4,2) _ this llarge x x0, of blocks, folded C,
         unfolded ab blocks]
       from inv3 have sdC: "same_diag B C" and suC: "same_upto k B C" by auto
+      note sd = same_diag_trans[OF sd sdC]
       from Bll sdC ln `k < n` 
       have Cll: "C $$ (l,l) = C $$ (k,k)" unfolding same_diag_def by auto
-      from same_diag_ev_blocks[OF sdC inv(3)] same_upto_inv_upto_jb[OF suC inv(4)] inv3 
-      have inv: "inv_all uppert C" "inv_all diff_ev C" "ev_blocks C"
+      from same_diag_ev_block[OF sdC inv(2)] same_upto_inv_upto_jb[OF suC inv(3)] inv3 
+      have inv: "inv_all uppert C" "ev_block n C"
         "inv_upto jb C k" "inv_at (single_non_zero l k x) C k" by auto
       from x0 have "inverse x \<noteq> 0" by simp
       from Cn have Dn: "D \<in> carrier\<^sub>m n n" unfolding D mat_carrier_def by simp
@@ -2567,7 +2471,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
         have "D $$ (i,j) = (if i = l \<and> j = k then 1 else if i = k \<and> j \<noteq> k then x * ?c else ?c)"
           unfolding D
         proof (subst mult_col_div_row_index[OF dC `inverse x \<noteq> 0`], unfold inverse_inverse_eq)
-          note at = inv_atD[OF inv(5) `i < n`, unfolded single_non_zero_def]
+          note at = inv_atD[OF inv(4) `i < n`, unfolded single_non_zero_def]
           show "(if i = k \<and> j \<noteq> i then x * ?c 
             else if j = k \<and> j \<noteq> i then ?x * ?c else ?c) =
             (if i = l \<and> j = k then 1 else if i = k \<and> j \<noteq> k then x * ?c else ?c)" (is "?l = ?r")
@@ -2602,12 +2506,11 @@ proof (induct k A taking: n rule: step_3_main.induct)
       have sD[simp]: "\<And> i. i < n \<Longrightarrow> D $$ (i,i) = C $$ (i,i)" using lk by (auto simp: D)
       from `C $$ (l,l) = C $$ (k,k)` `l < n` `k < n`
       have Dll: "D $$ (l,l) = D $$ (k,k)" by simp      
-      have sd: "same_diag C D" unfolding same_diag_def by simp
-      from same_diag_ev_blocks[OF this inv(3)] have invD: "ev_blocks D" .
-      note inv = inv_uptoD[OF inv(4), unfolded jb_def] inv_all_uppertD[OF inv(1)] inv_all_diff_evD[OF inv(2)]
-        inv_atD[OF inv(5), unfolded single_non_zero_def]
-      have "inv_all diff_ev D"
-        by (intro inv_allI, insert inv(3), auto simp: diff_ev_def D Cll)
+      have sdD: "same_diag C D" unfolding same_diag_def by simp
+      note sd = same_diag_trans[OF sd sdD]
+      from same_diag_ev_block[OF sdD inv(2)] have invD: "ev_block n D" .
+      note inv = inv_uptoD[OF inv(3), unfolded jb_def] inv_all_uppertD[OF inv(1)] 
+        inv_atD[OF inv(4), unfolded single_non_zero_def]
       moreover have "inv_all uppert D"
         by (intro inv_allI, insert inv(2) lk, auto simp: uppert_def D)
       moreover have suD: "same_upto k C D" 
@@ -2624,14 +2527,14 @@ proof (induct k A taking: n rule: step_3_main.induct)
       moreover 
       let ?single_one = "single_one l k"
       have "inv_at ?single_one D k" 
-        by (intro inv_atI, insert inv(4) D[OF _ `k < n`] ln, auto simp: single_one_def)
+        by (intro inv_atI, insert inv(3) D[OF _ `k < n`] ln, auto simp: single_one_def)
       ultimately
-      have inv: "inv_all uppert D" "inv_all diff_ev D" "ev_blocks D"
+      have inv: "inv_all uppert D" "ev_block n D"
         "inv_upto jb D k" "inv_at ?single_one D k" using invD by blast+
-      note inv = inv_uptoD[OF inv(4), unfolded jb_def] 
-        inv_all_uppertD[OF inv(1)] inv_all_diff_ev_uppertD[OF inv(2) inv(1)]
-        inv_atD[OF inv(5), unfolded single_one_def]
-        ev_blocks_leD[OF inv(3)]
+      note inv = inv_uptoD[OF inv(3), unfolded jb_def] 
+        inv_all_uppertD[OF inv(1)] 
+        inv_atD[OF inv(4), unfolded single_one_def] 
+        ev_blockD[OF inv(2)]
       from suC suD have suD: "same_upto k B D" unfolding same_upto_def by auto
       let ?I = "\<lambda> j. if j = Suc l then k else if Suc l < j \<and> j \<le> k then j - 1 else j"
       let ?I' = "\<lambda> j. if j = Suc l then k else j - 1"
@@ -2648,55 +2551,12 @@ proof (induct k A taking: n rule: step_3_main.induct)
         fix i
         assume i: "i < n"
         from `l < k` have "l \<le> Suc l" "Suc l \<le> k" by auto
-        from inv(5)[OF this `k < n`] Dll 
-          inv(5)[of l i k, OF _ _ `k < n`] inv(5)[of l "i - 1" k, OF _ _ `k < n`]
-        have "E $$ (i,i) = D $$ (i,i)" unfolding E[OF i i] using lk by auto
+        have "E $$ (i,i) = D $$ (i,i)" unfolding E[OF i i]
+          by (rule inv(4), insert i `k < n`, auto) 
       } note Ed = this
-      {
-        fix i
-        assume "l \<le> i" "i \<le> k"
-        from inv(5)[OF this `k < n`] Dll have "D $$ (i,i) = D $$ (k,k)" by auto
-      } note Dik = this
       from Ed have ed: "same_diag D E" unfolding same_diag_def by auto
-      have "ev_blocks E" using same_diag_ev_blocks[OF ed `ev_blocks D`] by auto
-      moreover 
-      {
-        fix i j
-        assume i: "i < n" and j: "j < n" and neg: "D $$ (i,i) \<noteq> D $$ (j,j)" 
-        from inv(3)[OF i j neg] have Dij: "D $$ (i,j) = 0" .
-        have "E $$ (i,j) = 0"
-        proof (cases "E $$ (i,j) = D $$ (i,j)")
-          case True
-          with Dij show ?thesis by simp
-        next
-          case False
-          from this[unfolded E[OF i j]] 
-          have "(i = Suc l \<or> Suc l < i \<and> i \<le> k) \<or> (j = Suc l \<or> Suc l < j \<and> j \<le> k)"
-            by (auto split: if_splits)
-          thus ?thesis
-          proof
-            assume *: "i = Suc l \<or> Suc l < i \<and> i \<le> k"
-            with Dik[of i] lk have "D $$ (i,i) = D $$ (k,k)" by auto
-            with neg have neg: "D $$ (j,j) \<noteq> D $$ (k,k)" by simp
-            with Dik[of j] lk have "\<not> l \<le> j \<or> \<not> j \<le> k" by auto
-            with lk * have E: "E $$ (i,j) = D $$ (?I' i, j)" unfolding E[OF i j] by auto
-            from * lk `k < n` have "l \<le> ?I' i" "?I' i \<le> k" "?I' i < n" by auto
-            from Dik[OF this(1-2)] neg have neg: "D $$ (?I' i, ?I' i) \<noteq> D $$ (j,j)" by auto
-            from inv(3)[OF `?I' i < n` `j < n` neg] show ?thesis unfolding E .
-          next
-            assume *: "j = Suc l \<or> Suc l < j \<and> j \<le> k"
-            with Dik[of j] lk have "D $$ (j,j) = D $$ (k,k)" by auto
-            with neg have neg: "D $$ (i,i) \<noteq> D $$ (k,k)" by simp
-            with Dik[of i] lk have "\<not> l \<le> i \<or> \<not> i \<le> k" by auto
-            with lk * have E: "E $$ (i,j) = D $$ (i, ?I' j)" unfolding E[OF i j] by auto
-            from * lk `k < n` have "l \<le> ?I' j" "?I' j \<le> k" "?I' j < n" by auto
-            from Dik[OF this(1-2)] neg have neg: "D $$ (i,i) \<noteq> D $$ (?I' j, ?I' j)" by auto
-            from inv(3)[OF `i < n` `?I' j < n` neg] show ?thesis unfolding E .
-          qed
-        qed
-      } note diff_ev = this
-      have Eed: "inv_all diff_ev E"
-        by (intro inv_allI, unfold diff_ev_def, intro impI, rule diff_ev, auto simp: Ed)
+      note sd = same_diag_trans[OF sd ed]
+      have "ev_block n E" using same_diag_ev_block[OF ed `ev_block n D`] by auto
       moreover have Eut: "inv_all uppert E" 
       proof (intro inv_allI, unfold uppert_def, intro impI)
         fix i j 
@@ -2714,7 +2574,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
           with ji ij have il: "i > Suc l" "i \<le> k" by (auto split: if_splits)
           from jl il have Eij: "E $$ (i,j) = D $$ (i-1,k)" unfolding E[OF i j] by simp
           have "i - 1 < n" "i - 1 \<notin> {k, l}" using i il by auto
-          with inv(4)[of "i-1"] have D: "D $$ (i-1,k) = 0" by auto
+          with inv(3)[of "i-1"] have D: "D $$ (i-1,k) = 0" by auto
           show ?thesis unfolding Eij D by simp
         qed
       qed
@@ -2732,9 +2592,10 @@ proof (induct k A taking: n rule: step_3_main.induct)
           case True
           thus ?thesis unfolding jb_def by auto
         next
-          case False note enz = this
-          note inv2 = diff_ev[OF i j] inv_all_uppertD[OF Eut _ i, of j]
-          from False inv2 have "\<not> j < i" and same_ev: "D $$ (i,i) = D $$ (j,j)" by auto
+          case False note enz = this 
+          from inv(4)[OF i j] have same_ev: "D $$ (i,i) = D $$ (j,j)" .
+          note inv2 = inv_all_uppertD[OF Eut _ i, of j]
+          from False inv2 have "\<not> j < i" by auto
           with False have ji: "j > i" by auto
           have "E $$ (i,j) \<in> {0,1} \<and> (j \<noteq> Suc i \<longrightarrow> E $$ (i,j) = 0)"
           proof (cases "j \<le> l")
@@ -2750,7 +2611,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
               case True note jl = this
               with ji lk have il: "i \<le> l" "i \<noteq> k" by auto
               have id: "E $$ (i,j) = D $$ (i,k)" unfolding E[OF i j] using jl il by auto
-              from inv(4)[OF i] jl il
+              from inv(3)[OF i] jl il
               show ?thesis unfolding id by (cases "i = l", auto)
             next
               case False
@@ -2771,7 +2632,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
                   with id have id: "E $$ (i,j) = D $$ (l,Suc l)" by auto
                   from * jl jk have neq: "Suc l \<noteq> k" by auto
                   from lblock[unfolded idb] have "(l_start, l) \<in> set (identify_blocks D k)" .
-                  from this[unfolded identify_blocks_iff[OF `ev_blocks D` kn]] neq
+                  from this[unfolded identify_blocks_iff[OF kn]] neq
                   have "D $$ (l, Suc l) \<noteq> 1" by auto
                   with jb[OF i] il jl ji * have "D $$ (l, Suc l) = 0" by auto
                   thus ?thesis unfolding id by simp
@@ -2795,29 +2656,27 @@ proof (induct k A taking: n rule: step_3_main.induct)
           thus "jb E i j" unfolding jb_def Ed[OF i] Ed[OF j] same_ev by auto
         qed
       qed
-      ultimately show ?thesis unfolding F by simp
+      ultimately show ?thesis using sd unfolding F by simp
     qed
-    hence inv: "inv_all uppert F" "inv_all diff_ev F" "ev_blocks F"
-      "inv_upto jb F (Suc k)" by auto
+    hence inv: "inv_all uppert F" "ev_block n F" "inv_upto jb F (Suc k)" 
+      and sd: "same_diag A F" using same_diag_ev_block[OF _ `ev_block n A`] by auto
     have "0 < Suc k" by simp
-    note IH = IH[OF Fn this]
+    note IH = IH[OF Fn this inv(1-3)]
     have id: "step_3_main n k A = step_3_main n (Suc k) F" using kn 
       by (simp add: F Let_def blocks ab B)
-    show ?thesis unfolding id
-      by (rule IH, insert inv, auto)
+    from same_diag_trans[OF sd] IH
+    show ?thesis unfolding id by auto
   qed
 qed
 
-text \<open>The desired result: @{const triangular_to_jnf} results in a JNF\<close>
-
-lemma triangular_to_jnf_inv: 
+lemma step_1_2_inv: 
   assumes A: "A \<in> carrier\<^sub>m n n"
   and upper_t: "upper_triangular A"
-  shows "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb (triangular_to_jnf A) i j"
+  and Bid: "B = step_2 (step_1 A)"
+  shows "inv_all uppert B" "inv_all diff_ev B" "ev_blocks B" 
 proof -
   from A have d: "dim\<^sub>r A = n" by simp
   let ?B = "step_2 (step_1 A)"
-  let ?C = "step_3 ?B"
   from upper_triangularD[OF upper_t] have inv: "inv_all uppert A"
     unfolding inv_all_def uppert_def using A by auto
   from upper_t have inv2: "inv_part diff_ev A 0 0"
@@ -2832,26 +2691,173 @@ proof -
     by (rule step_1_main_inv[OF _ A inv inv2], simp)
   hence "inv_all uppert (step_1 A)" and "inv_all diff_ev (step_1 A)" by auto
   from step_2_main_inv[OF A1 this inv3]
-  have inv: "inv_all uppert ?B" "inv_all diff_ev ?B" "ev_blocks ?B" 
-    unfolding step_2_def d d1 by auto
-  have inv4: "inv_upto jb (step_2 (step_1 A)) 1"
-  proof (rule inv_uptoI)
-    fix i j
-    assume "i < n" "j < n" and "j < 1"
-    hence j: "j = 0" and jn: "0 < n" by auto
-    show "jb ?B i j" unfolding jb_def j using inv_all_uppertD[OF inv(1) _ `i < n`, of 0]
-      by auto
-  qed
-  from step_3_main_inv[OF B _ inv inv4]
-  have "inv_all jb (triangular_to_jnf A)" unfolding triangular_to_jnf_def o_def step_3_def d2 by simp
-  thus "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb (triangular_to_jnf A) i j" unfolding inv_all_def by auto
+  show "inv_all uppert B" "inv_all diff_ev B" "ev_blocks B" 
+    unfolding step_2_def d d1 Bid by auto
 qed
 
-subsection \<open>A Combination with JNF Represented as Vectors\<close>
+definition inv_all' :: "('a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> 'a mat \<Rightarrow> bool" where
+  "inv_all' p A \<equiv> \<forall> i j. i < dim\<^sub>r A \<longrightarrow> j < dim\<^sub>r A \<longrightarrow> p A i j"
+
+private lemma lookup_other_ev_None: assumes "lookup_other_ev ev k A = None"
+  and "i < k"
+  shows "A $$ (i,i) = ev"
+  using assms by (induct ev k A rule: lookup_other_ev.induct, auto split: if_splits)
+  (insert less_antisym, blast) 
+
+private lemma lookup_other_ev_Some: assumes "lookup_other_ev ev k A = Some i"
+  shows "i < k \<and> A $$ (i,i) \<noteq> ev \<and> (\<forall> j. i < j \<and> j < k \<longrightarrow> A $$ (j,j) = ev)"
+  using assms by (induct ev k A rule: lookup_other_ev.induct, auto split: if_splits)
+  (insert less_SucE, blast)
+
+
+lemma partition_jb: assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m n n"
+  and inv: "inv_all uppert A" "inv_all diff_ev A" "ev_blocks A"
+  and part: "partition_ev_blocks A [] = bs"
+  shows "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B"
+proof -
+  have diag: "diag_block_mat [A] = A" using A by auto
+  {
+    fix cs 
+    assume *: "\<And> C. C \<in> set cs \<Longrightarrow> dim\<^sub>r C = dim\<^sub>c C \<and> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C" "partition_ev_blocks A cs = bs"
+    from inv have inv: "inv_all' uppert A" "inv_all' diff_ev A" "ev_blocks_part n A"
+      unfolding inv_all_def inv_all'_def ev_blocks_def using A by auto
+    hence "diag_block_mat (A # cs) = diag_block_mat bs \<and> (\<forall> B \<in> set bs. inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B)"
+      using A *
+    proof (induct n arbitrary: A cs bs rule: less_induct) 
+      case (less n A cs bs)
+      from less(5) have A: "A \<in> carrier\<^sub>m n n" by auto
+      hence dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
+      let ?dim = "listsum (map dim\<^sub>c cs)"
+      let ?C = "diag_block_mat cs"
+      def C \<equiv> ?C
+      from less(6) have cs: "\<And> C. C \<in> set cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" by auto
+      hence dimcs[simp]: "listsum (map dim\<^sub>r cs) = ?dim" by (induct cs, auto)
+      from diag_block_mat_dim[of cs, unfolded dimcs] obtain nc where C: "?C \<in> carrier\<^sub>m nc nc" unfolding mat_carrier_def by auto
+      hence dimC: "dim\<^sub>r C = nc" "dim\<^sub>c C = nc" unfolding C_def by auto
+      note bs = less(7)[unfolded partition_ev_blocks.simps[of A cs] Let_def dim, symmetric]
+      show ?case
+      proof (cases "n = 0")
+        case True
+        hence bs: "bs = cs" unfolding bs by simp
+        thus ?thesis using cs A by (auto simp: Let_def True)
+      next
+        case False
+        let ?n1 = "n - 1"
+        let ?look = "lookup_other_ev (A $$ (?n1, ?n1)) ?n1 A"
+        show ?thesis
+        proof (cases ?look)
+          case None
+          from False None have bs: "bs = A # cs" unfolding bs by auto
+          have ut: "inv_all' uppert A" using less(2) by auto
+          from lookup_other_ev_None[OF None] have "\<And> i. i < n \<Longrightarrow> A $$ (i,i) = A $$ (?n1, ?n1)"
+            by (case_tac "i = ?n1", auto)
+          hence evb: "ev_block n A" unfolding ev_block_def dim by metis
+          from cs A ut evb show ?thesis unfolding bs by auto
+        next
+          case (Some i)
+          let ?si = "Suc i"
+          from lookup_other_ev_Some[OF Some] have i: "i < ?n1" and neq: "A $$ (i,i) \<noteq> A $$ (?n1, ?n1)" 
+            and between: "\<And>j. i < j \<Longrightarrow> j < ?n1 \<Longrightarrow> A $$ (j,j) = A $$ (?n1, ?n1)" by auto
+          def m \<equiv> "n - ?si"
+          from i False have si: "?si < n" by auto
+          from False i have nsi: "n = ?si + m" unfolding m_def by auto
+          obtain UL UR LL LR where split: "split_block A ?si ?si = (UL, UR, LL, LR)" by (rule prod_cases4)
+          from split_block[OF split dim[unfolded nsi]] 
+          have carr: "UL \<in> carrier\<^sub>m ?si ?si" "UR \<in> carrier\<^sub>m ?si m" "LL \<in> carrier\<^sub>m m ?si" "LR \<in> carrier\<^sub>m m m"
+            and Ablock: "A = four_block_mat UL UR LL LR" by auto          
+          hence dimLR: "dim\<^sub>r LR = m" "dim\<^sub>c LR = m" and dimUL: "dim\<^sub>c UL = ?si" "dim\<^sub>r UL = ?si" by auto
+          from less(3)[unfolded inv_all'_def diff_ev_def] dim
+          have diff: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> i < j \<Longrightarrow> A $$ (i, i) \<noteq> A $$ (j, j) \<Longrightarrow> A $$ (i, j) = 0" by auto
+          from less(2)[unfolded inv_all'_def uppert_def] dim
+          have ut: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> j < i \<Longrightarrow> A $$ (i, j) = 0" by auto
+          let ?UR = "\<zero>\<^sub>m ?si m"
+          have UR: "UR = ?UR"
+          proof (rule mat_eqI)
+            fix ia j
+            assume ij: "ia < dim\<^sub>r (\<zero>\<^sub>m (Suc i) m)" "j < dim\<^sub>c (\<zero>\<^sub>m (Suc i) m)"
+            let ?j = "?si + j"
+            have "UL $$ (ia,ia) = A $$ (ia,ia)" using ij carr unfolding Ablock by auto
+            also have "\<dots> \<noteq> A $$ (?j, ?j)" 
+            proof
+              assume eq: "A $$ (ia,ia) = A $$ (?j, ?j)"
+              from ij have rel: "ia \<le> i" "i \<le> ?j" "?j < n" using nsi i by auto
+              from ev_blocks_part_leD[OF less(4) this eq[symmetric]] eq 
+              have eq: "A $$ (i,i) = A $$ (?j,?j)" by auto
+              also have "\<dots> = A $$ (?n1, ?n1)" using between[of ?j] rel by (cases "?j = ?n1", auto)
+              finally show False using neq by auto
+            qed
+            also have "A $$ (?si + j, ?si + j) = LR $$ (j,j)" using ij carr unfolding Ablock by auto
+            finally show "UR $$ (ia, j) = \<zero>\<^sub>m (Suc i) m $$ (ia, j)"            
+              using diff[of ia "?si + j", unfolded Ablock] ij nsi carr by auto
+          qed (insert carr, auto)
+          let ?LL = "\<zero>\<^sub>m m ?si"
+          have LL: "LL = ?LL"
+          proof (rule mat_eqI)
+            fix ia j
+            show "ia < dim\<^sub>r (\<zero>\<^sub>m m (Suc i)) \<Longrightarrow> j < dim\<^sub>c (\<zero>\<^sub>m m (Suc i)) \<Longrightarrow> LL $$ (ia, j) = \<zero>\<^sub>m m (Suc i) $$ (ia, j)"
+              using ut[of "?si + ia" j, unfolded Ablock] nsi carr by auto
+          qed (insert carr, auto)
+          have utUL: "inv_all' uppert UL"unfolding inv_all'_def uppert_def
+          proof (intro allI impI)
+            fix i j
+            show "i < dim\<^sub>r UL \<Longrightarrow> j < dim\<^sub>r UL \<Longrightarrow> j < i \<Longrightarrow> UL $$ (i, j) = 0"
+              using ut[of i j, unfolded Ablock] using nsi carr by auto
+          qed
+          have diffUL: "inv_all' diff_ev UL"unfolding inv_all'_def diff_ev_def
+          proof (intro allI impI)
+            fix i j
+            show "i < dim\<^sub>r UL \<Longrightarrow> j < dim\<^sub>r UL \<Longrightarrow> i < j \<Longrightarrow> UL $$ (i, i) \<noteq> UL $$ (j, j) \<Longrightarrow> UL $$ (i, j) = 0"
+              using diff[of i j, unfolded Ablock] using nsi carr by auto
+          qed
+          have evbUL: "ev_blocks_part ?si UL"unfolding ev_blocks_part_def
+          proof (intro allI impI)
+            fix ia j k
+            show "ia < j \<Longrightarrow> j < k \<Longrightarrow> k < Suc i \<Longrightarrow> UL $$ (k, k) = UL $$ (ia, ia) \<Longrightarrow> UL $$ (j, j) = UL $$ (ia, ia)"
+              using less(4)[unfolded Ablock ev_blocks_part_def, rule_format, of ia j k] using nsi carr by auto
+          qed
+          have utLR: "inv_all' uppert LR" unfolding inv_all'_def uppert_def
+          proof (intro allI impI)
+            fix i j
+            show "i < dim\<^sub>r LR \<Longrightarrow> j < dim\<^sub>r LR \<Longrightarrow> j < i \<Longrightarrow> LR $$ (i, j) = 0"
+              using ut[of "?si + i" "?si + j", unfolded Ablock] nsi carr by auto
+          qed
+          have evbLR: "ev_block (dim\<^sub>r LR) LR" unfolding ev_block_def
+          proof (intro allI impI)
+            fix i j
+            show "i < dim\<^sub>r LR \<Longrightarrow> j < dim\<^sub>r LR \<Longrightarrow> LR $$ (i, i) = LR $$ (j, j)"
+              using between[of "?si + i"] between[of "?si + j"] carr nsi
+              unfolding Ablock by auto (metis One_nat_def Suc_lessI diff_Suc_1)
+          qed
+          from False Some split have bs: "partition_ev_blocks UL (LR # cs) = bs" unfolding bs by auto
+          have IH: "diag_block_mat (UL # LR # cs) = diag_block_mat bs \<and> (\<forall>B\<in>set bs. inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B)"
+            by (rule less(1)[OF si utUL diffUL evbUL carr(1) _ bs], insert dimLR evbLR utLR cs, auto)
+          have "diag_block_mat (A # cs) = diag_block_mat (UL # LR # cs)" 
+            unfolding diag_block_mat.simps dim C_def[symmetric] dimC dimLR dimUL Let_def
+              four_block_mat_index(2-3) Ablock UR LL
+            using four_block_mat_assoc[of UL LR C] dimC carr by simp
+          with IH show ?thesis by auto
+        qed
+      qed
+    qed
+  }
+  from this[of Nil, OF _ part] show "A = diag_block_mat bs" "\<And> B. B \<in> set bs \<Longrightarrow> inv_all' uppert B \<and> ev_block (dim\<^sub>c B) B \<and> dim\<^sub>r B = dim\<^sub>c B"
+    unfolding diag by fastforce+
+qed
+
+lemma uppert_to_jb: assumes ut: "inv_all uppert A" and "A \<in> carrier\<^sub>m n n"
+shows "inv_upto jb A 1"
+proof (rule inv_uptoI)
+  fix i j
+  assume "i < n" "j < n" and "j < 1"
+  hence j: "j = 0" and jn: "0 < n" by auto
+  show "jb A i j" unfolding jb_def j using inv_all_uppertD[OF ut _ `i < n`, of 0]
+    by auto
+qed
 
 lemma jnf_vector: assumes A: "A \<in> carrier\<^sub>m n n"
   and jb: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb A i j"
-  shows "jordan_matrix (jnf_vector A) = (A :: 'a :: field mat)"
+  and evb: "ev_block n A"
+  shows "jordan_matrix (jnf_vector A) = (A :: 'a mat)"
 proof -
   from A have "dim\<^sub>r A = n" by simp
   hence id: "jnf_vector A = jnf_vector_main n A" unfolding jnf_vector_def by auto
@@ -2867,14 +2873,15 @@ proof -
       show ?case
       proof (cases sk)
         case (Suc k)
-        obtain ev b where ib: "identify_block A k = (ev,b)" by force
-        hence id: "jnf_vector_main sk A = jnf_vector_main b A @ [(Suc k - b, ev)]" unfolding Suc by simp
+        obtain b where ib: "identify_block A k = b" by force
+        let ?ev = "A $$ (b,b)"
+        from ib have id: "jnf_vector_main sk A = jnf_vector_main b A @ [(Suc k - b, ?ev)]" unfolding Suc by simp
         let ?c = "Suc k - b"
         def B \<equiv> "?B b"
-        def C \<equiv> "jordan_block ?c ev"
+        def C \<equiv> "jordan_block ?c ?ev"
         have C: "C \<in> carrier\<^sub>m ?c ?c" unfolding C_def by auto
         let ?FB = "\<lambda> Bb Cc. four_block_mat Bb (\<zero>\<^sub>m (dim\<^sub>r Bb) (dim\<^sub>c Cc)) (\<zero>\<^sub>m (dim\<^sub>r Cc) (dim\<^sub>c Bb)) Cc"
-        from identify_block_le[OF ib] have bk: "b \<le> k" .
+        from identify_block_le'[OF ib] have bk: "b \<le> k" .
         with Suc less(2) have "b < sk" "b \<le> n" by auto
         note IH = less(1)[OF this, folded B_def]
         have B: "B \<in> carrier\<^sub>m b b" using IH by simp
@@ -2919,7 +2926,7 @@ proof -
                   assume "A $$ (i,j) \<noteq> 0"
                   with jb[unfolded jb_def] *
                   have ji: "j = b" "i = b - 1" "b > 0" and no_border: "A $$ (i, i) = A $$ (j, j)" "A $$ (i,j) = 1" by auto
-                  from no_border[unfolded ji] ib(3-4) `b > 0` show False by auto                
+                  from no_border[unfolded ji] ib(2) `b > 0` show False by auto                
                 qed
                 thus ?thesis unfolding id by simp
               qed
@@ -2928,14 +2935,16 @@ proof -
               with not_ul have *: "\<not> i < b" "\<not> j < b" by auto
               hence id: "?FB B C $$ (i,j) = C $$ (i - b, j - b)" unfolding id by auto
               from * i j have ijc: "i - b < ?c" "j - b < ?c" unfolding sk by auto
-              have id: "?FB B C $$ (i,j) = (if i - b = j - b then ev else if Suc (i - b) = j - b then 1 else 0)"
+              have id: "?FB B C $$ (i,j) = (if i - b = j - b then ?ev else if Suc (i - b) = j - b then 1 else 0)"
                 unfolding id unfolding C_def jordan_block_index(1)[OF ijc] ..
               show ?thesis 
               proof (cases "i - b = j - b")
                 case True
-                hence id: "?FB B C $$ (i,j) = ev" unfolding id by simp
+                hence id: "?FB B C $$ (i,j) = ?ev" unfolding id by simp
                 from True * have ij: "j = i" by auto
-                from ib(6)[of i] True * i j Suc have "A $$ (i,j) = ev" unfolding ib(2) ij by auto
+                have i_n: "i < n" using i `sk \<le> n` by auto 
+                have b_n: "b < n" using `b < sk` `sk \<le> n` by auto
+                from ib(3)[of i] True * i j Suc ev_blockD[OF evb i_n b_n] have "A $$ (i,j) = ?ev" unfolding ij by auto
                 with id show ?thesis by simp
               next
                 case False note neq = this
@@ -2944,7 +2953,7 @@ proof -
                   case True
                   hence id: "?FB B C $$ (i,j) = 1" unfolding id by simp
                   from True * have ij: "j = Suc i" by auto
-                  from ib(5)[of i] True * i j Suc have "A $$ (i,j) = 1" unfolding ij by auto
+                  from ib(3)[of i] True * i j Suc have "A $$ (i,j) = 1" unfolding ij by auto
                   with id show ?thesis by simp
                 next
                   case False
@@ -2964,55 +2973,133 @@ proof -
   show ?thesis unfolding id jordan_matrix_def by auto
 qed
 
-lemma triangular_to_jnf_vector: assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m n n"
-  and ut: "upper_triangular A"
-  shows "jordan_nf A (triangular_to_jnf_vector A)"
-proof -
-  let ?B = "triangular_to_jnf A"
-  let ?n_as = "jnf_vector ?B"  
-  have id: "triangular_to_jnf_vector A = ?n_as" unfolding triangular_to_jnf_vector_def by auto
-  show ?thesis unfolding id jordan_nf_def
-  proof (rule mat_similar_sym, subst jnf_vector[OF _ triangular_to_jnf_inv[OF A ut]])
-    show "mat_similar ?B A" by (rule triangular_to_jnf_similar[OF A])
-    show "triangular_to_jnf A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
-  qed
-qed
 end
 
-(* main theorems *)
-thm 
-  triangular_to_jnf_similar
-  triangular_to_jnf_inv
-  triangular_to_jnf_vector
-  jnf_vector
 
-export_code triangular_to_jnf_vector checking
+lemma triangular_to_jnf_vector: 
+  assumes A: "A \<in> carrier\<^sub>m n n"
+  and upper_t: "upper_triangular A"
+  shows "jordan_nf A (triangular_to_jnf_vector A)"
+proof -
+  from A have d: "dim\<^sub>r A = n" by simp
+  let ?B = "step_2 (step_1 A)"
+  let ?J = "triangular_to_jnf_vector A"
+  have A1: "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by simp
+  from mat_similar_trans[OF step_2_similar step_1_similar, OF A1 A]
+  have sim: "mat_similar ?B A" .
+  have A1: "step_1 A \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
+  from A1 have d1: "dim\<^sub>r (step_1 A) = n" unfolding mat_carrier_def by simp
+  have B: "?B \<in> carrier\<^sub>m n n" using A unfolding mat_carrier_def by auto
+  from B have d2: "dim\<^sub>r ?B = n" unfolding mat_carrier_def by simp
+  def Cs \<equiv> "partition_ev_blocks ?B []"
+  from step_1_2_inv[OF A upper_t refl]
+  have inv: "inv_all n uppert ?B" "inv_all n diff_ev ?B" "ev_blocks n ?B" by auto
+  from partition_jb[OF B inv, of Cs] have BC: "?B = diag_block_mat Cs"
+    and Cs: "\<And> C. C \<in> set Cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" unfolding Cs_def by auto
+  def D \<equiv> "map step_3 Cs"
+  let ?D = "diag_block_mat D"
+  let ?CD = "map (\<lambda> C. (C, (jnf_vector o step_3) C)) Cs"
+  {
+    fix C D
+    assume mem: "(C,D) \<in> set ?CD"
+    hence DC: "D = jnf_vector (step_3 C)" and C: "C \<in> set Cs" by auto
+    let ?D = "step_3 C"
+    def n \<equiv> "dim\<^sub>c C"
+    from Cs[OF C] have C: "inv_all n uppert C" "ev_block n C" "C \<in> carrier\<^sub>m n n" 
+      unfolding inv_all'_def inv_all_def n_def mat_carrier_def by auto
+    from step_3_similar[OF C(3)] have sim: "mat_similar C ?D" by (rule mat_similar_sym)
+    from mat_similarD[OF sim] C have D: "?D \<in> carrier\<^sub>m n n" unfolding mat_carrier_def by auto
+    from C(3) have dimC: "dim\<^sub>r C = n" by auto
+    from step_3_main_inv[OF C(3) _ C(1,2) uppert_to_jb[OF C(1) C(3)]]
+    have "inv_all n jb (step_3 C)" and sd: "same_diag n C (step_3 C)" unfolding step_3_def dimC by auto
+    hence jbD: "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> jb ?D i j" unfolding inv_all_def DC by auto
+    from same_diag_ev_block[OF sd C(2)] have "ev_block n (step_3 C)" by auto
+    from jnf_vector[OF D jbD this] have "jordan_matrix D = ?D" unfolding DC .
+    with sim have "jordan_nf C D" unfolding jordan_nf_def by simp
+  } note jnf_blocks = this
+  have id: "map fst ?CD = Cs" by (induct Cs, auto)
+  have id2: "map snd ?CD = map (jnf_vector o step_3) Cs" by (induct Cs, auto)
+  have J: "?J = concat (map (jnf_vector \<circ> step_3) Cs)" unfolding 
+    triangular_to_jnf_vector_def Let_def Cs_def ..
+  from jordan_nf_diag_block_mat[of ?CD, OF jnf_blocks, unfolded id id2]
+  have "jordan_nf (diag_block_mat Cs) ?J" unfolding J .
+  hence "mat_similar (diag_block_mat Cs) (jordan_matrix ?J)" 
+    unfolding jordan_nf_def .
+  from mat_similar_trans[OF mat_similar_sym[OF this] sim[unfolded BC]]
+  show ?thesis unfolding jordan_nf_def 
+    by (rule mat_similar_sym)
+qed
 
 (* hide auxiliary definitions and functions *)
 hide_const 
   lookup_ev
   find_largest_block
   swap_cols_rows_block
-  identify_block_main
   identify_block
   identify_blocks_main
   identify_blocks
-  step_1_main 
-  step_1 
-  step_2_main
-  step_2 
-  step_3_a
-  step_3_c
-  step_3_c_inner_loop
-  step_3 
+  inv_all inv_all' same_diag
+  jb uppert diff_ev ev_blocks ev_block
+  step_1_main step_1 
+  step_2_main step_2 
+  step_3_a step_3_c step_3_c_inner_loop step_3 
   jnf_vector_main
+
+
+subsection \<open>Combination with Schur-decomposition\<close>
+
+definition jordan_nf_via_factored_charpoly :: "'a :: conjugatable_ordered_field mat \<Rightarrow> 'a list \<Rightarrow> (nat \<times> 'a)list"
+  where "jordan_nf_via_factored_charpoly A es = 
+    triangular_to_jnf_vector (schur_upper_triangular A es)"
+
+lemma jordan_nf_via_factored_charpoly: assumes A: "A \<in> carrier\<^sub>m n n"
+  and linear: "char_poly A = (\<Prod> a \<leftarrow> es. [:- a, 1:])"
+  shows "jordan_nf A (jordan_nf_via_factored_charpoly A es)"
+proof -
+  let ?B = "schur_upper_triangular A es"
+  let ?J = "jordan_nf_via_factored_charpoly A es"
+  from schur_upper_triangular[OF A linear]
+  have B: "?B \<in> carrier\<^sub>m n n" "upper_triangular ?B" and AB: "mat_similar A ?B" by auto
+  from triangular_to_jnf_vector[OF B] have "jordan_nf ?B ?J" 
+    unfolding jordan_nf_via_factored_charpoly_def .
+  with mat_similar_trans[OF AB] show "jordan_nf A ?J" unfolding jordan_nf_def by blast
+qed
+
+
+lemma jordan_nf_exists: assumes A: "A \<in> carrier\<^sub>m n n"
+  and linear: "char_poly A = (\<Prod> (a :: 'a :: conjugatable_ordered_field) \<leftarrow> as. [:- a, 1:])"
+  shows "\<exists>n_as. jordan_nf A n_as"
+  using jordan_nf_via_factored_charpoly[OF A linear] by blast
+
+lemma jordan_nf_iff_linear_factorization: fixes A :: "'a :: conjugatable_ordered_field mat"
+  assumes A: "A \<in> carrier\<^sub>m n n" 
+  shows "(\<exists> n_as. jordan_nf A n_as) = (\<exists> as. char_poly A = (\<Prod> a \<leftarrow> as. [:- a, 1:]))"
+    (is "?l = ?r")
+proof
+  assume ?r
+  thus ?l using jordan_nf_exists[OF A] by auto
+next
+  assume ?l
+  then obtain n_as where jnf: "jordan_nf A n_as" by auto
+  show ?r unfolding jordan_nf_char_poly[OF jnf] expand_powers[of "\<lambda> a. [: -a, 1:]" n_as] by blast
+qed
+
+
 
 subsection \<open>Application for Complexity\<close>
 
-text \<open>If we have an upper triangular matrix $A$ where the entries on the diagonal
-  do not exceed 1, then the growth rate of $A^k$ can be restricted by ${\cal O}(k^{N-1})$
-  where $N$ is the maximal multiplicity of an Eigenvalue with norm 1.\<close>
-lemma counting_ones_complexity: (* approximation, but does not involve JNF computation *)
+text \<open>We can estimate the complexity via the multiplicity of the eigenvalues with norm 1.\<close>
+lemma factored_char_poly_norm_bound_cof: assumes A: "A \<in> carrier\<^sub>m n n"
+  and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: {conjugatable_ordered_field, real_normed_field}) \<leftarrow> as. [:- a, 1:])"
+  and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
+  and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> N"
+  shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
+  by (rule factored_char_poly_norm_bound[OF A linear_factors jordan_nf_exists[OF A linear_factors] le_1 le_N])
+
+
+text \<open>If we have an upper triangular matrix, then EVs are exactly the entries on the diagonal.
+  So then we don't need to explicitly compute the characteristic polynomial.\<close>
+lemma counting_ones_complexity: 
   fixes A :: "'a :: real_normed_field mat"
   assumes A: "A \<in> carrier\<^sub>m n n"
   and upper_t: "upper_triangular A"
@@ -3029,8 +3116,9 @@ text \<open>If we have an upper triangular matrix $A$ then we can compute a JNF-
   If this vector does not contain entries $(n,ev)$ with $ev$ being larger 1,
   then the growth rate of $A^k$ can be restricted by ${\cal O}(k^{N-1})$ 
   where $N$ is the maximal value for $n$, where $(n,|ev| = 1)$ occurs in the vector, i.e.,
-  the size of the largest Jordan Block with Eigenvalue of norm 1.\<close>
-lemma compute_jnf_complexity: (* exact, requires JNF computation *)
+  the size of the largest Jordan Block with Eigenvalue of norm 1.
+  This method gives a precise complexity bound.\<close>
+lemma compute_jnf_complexity: 
   assumes A: "A \<in> carrier\<^sub>m n n"
   and upper_t: "upper_triangular (A :: 'a :: real_normed_field mat)"
   and le_1: "\<And> n a. (n,a) \<in> set (triangular_to_jnf_vector A) \<Longrightarrow> norm a \<le> 1"

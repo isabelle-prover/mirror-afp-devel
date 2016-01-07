@@ -6,7 +6,6 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
   theories
     "Missing_Multiset"
     "Missing_List"
-    "Show_Poly"
     "Set_Impl_Fix"
     "Compare_Rat"
     "Compare_Real"
@@ -31,10 +30,6 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
   theories
     "Real_Factorization"
   theories
-    "Show_Complex"
-    "Show_Real_Precise"
-    "Show_Real_Approx"
-  theories
     "Algebraic_Number_Tests"
   document_files
     "root.bib"
@@ -45,10 +40,10 @@ session Algebraic_Numbers_Matrix (AFP) = "JNF-AFP-Lib" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
   options [timeout = 600, document = false]
   theories
-    "Determinant_Impl"
-    "Matrix_IArray_Impl"
-    "Char_Poly"
-    "Show_Matrix"
+    "../Jordan_Normal_Form/Determinant_Impl"
+    "../Jordan_Normal_Form/Matrix_IArray_Impl"
+    "../Jordan_Normal_Form/Char_Poly"
+    "../Jordan_Normal_Form/Show_Matrix"
     "../Sturm_Sequences/Sturm_Theorem"
     "../Partial_Function_MR/Partial_Function_MR"
     "../Sqrt_Babylonian/Sqrt_Babylonian"

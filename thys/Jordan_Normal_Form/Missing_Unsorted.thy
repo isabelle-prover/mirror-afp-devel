@@ -10,9 +10,7 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Unsorted
 imports
-  Archimedean_Field
-  Real 
-  Rat
+  Complex
 begin
 
 lemma bernoulli_inequality: assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
@@ -201,16 +199,20 @@ end
 lemma listprod_replicate[simp]: "listprod (replicate n a) = a ^ n"
   by (induct n, auto)
 
+lemma listprod_power: fixes xs :: "'a :: comm_monoid_mult list"
+  shows "listprod xs ^ n = (\<Prod>x\<leftarrow>xs. x ^ n)"
+  by (induct xs, auto simp: power_mult_distrib)
+
 lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}" by auto
 
 lemma setprod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) ^ n"
   by (induct n, auto simp: set_upt_Suc)
 
+
 text \<open>For determinant computation, we require the @{class ring_div}-class.
 In order to also support rational and real numbers, we therefore provide the
 following class which defines @{const mod} for fields and will be a subclass
 of @{class ring_div}.\<close>
-
 
 class ring_div_field = field + div +
   assumes mod: "(x :: 'a) mod y = (if y = 0 then x else 0)"
@@ -234,5 +236,215 @@ definition "mod_real (x :: real) (y :: real) = (if y = 0 then x else 0)"
 instance
   by (intro_classes, auto simp: mod_real_def)
 end
+
+instantiation complex :: ring_div_field
+begin
+definition "mod_complex (x :: complex) (y :: complex) = (if y = 0 then x else 0)"
+instance
+  by (intro_classes, auto simp: mod_complex_def)
+end
+
+
+(* GCD and LCM part *)
+
+lemma dvd_abs_mult_left_int[simp]: "(abs (a :: int) * y dvd x) = (a * y dvd x)"
+  by (simp add: GCD.dvd_int_iff nat_abs_mult_distrib)
+
+lemma gcd_abs_mult_right_int[simp]: "gcd x (\<bar>a\<bar> * (y :: int)) = gcd x (a * y)" 
+  by (simp add: gcd_int_def nat_abs_mult_distrib)
+
+lemma lcm_abs_mult_right_int[simp]: "lcm x (\<bar>a\<bar> * (y :: int)) = lcm x (a * y)" 
+  by (simp add: lcm_int_def nat_abs_mult_distrib)
+
+lemma gcd_abs_mult_left_int[simp]: "gcd x (a * (abs y :: int)) = gcd x (a * y)" 
+  by (simp add: gcd_int_def nat_abs_mult_distrib)
+
+lemma lcm_abs_mult_left_int[simp]: "lcm x (a * (abs y :: int)) = lcm x (a * y)" 
+  by (simp add: lcm_int_def nat_abs_mult_distrib)
+
+
+definition list_gcd :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
+  "list_gcd xs \<equiv> foldr gcd xs 0"
+
+definition list_lcm :: "'a :: semiring_gcd list \<Rightarrow> 'a" where
+  "list_lcm xs \<equiv> foldr lcm xs 1"
+
+
+lemma list_gcd_simps: "list_gcd [] = 0" "list_gcd (x # xs) = gcd x (list_gcd xs)"
+  by (auto simp: list_gcd_def)
+
+lemma list_gcd: "x \<in> set xs \<Longrightarrow> list_gcd xs dvd x" 
+proof (induct xs)
+  case (Cons y ys)
+  show ?case
+  proof (cases "x = y")
+    case False
+    with Cons have "list_gcd ys dvd x" by auto
+    thus ?thesis unfolding list_gcd_simps using dvd_trans by blast
+  next
+    case True
+    thus ?thesis unfolding list_gcd_simps using dvd_trans by blast
+  qed
+qed simp
+
+lemma list_gcd_greatest: "(\<And> x. x \<in> set xs \<Longrightarrow> y dvd x) \<Longrightarrow> y dvd (list_gcd xs)"
+proof (induct xs)
+  case (Cons x xs)
+  from Cons have "y dvd x" "y dvd (list_gcd xs)" by auto
+  thus ?case unfolding list_gcd_simps by (rule gcd_greatest)
+qed (simp add: list_gcd_simps)
+
+lemma list_gcd_mult_int[simp]: fixes xs :: "int list"
+  shows "list_gcd (map (op * a) xs) = \<bar>a\<bar> * list_gcd xs"
+  by (induct xs, auto simp: list_gcd_simps gcd_mult_distrib_int)
+
+lemma list_lcm_simps: "list_lcm [] = 1" "list_lcm (x # xs) = lcm x (list_lcm xs)"
+  by (auto simp: list_lcm_def)
+
+lemma list_lcm: "x \<in> set xs \<Longrightarrow> x dvd list_lcm xs" 
+proof (induct xs)
+  case (Cons y ys)
+  have res: "list_lcm (y # ys) = lcm y (list_lcm ys)" unfolding list_lcm_def by simp
+  show ?case
+  proof (cases "x = y")
+    case False
+    with Cons have "x dvd list_lcm ys" by auto
+    thus ?thesis unfolding list_lcm_simps by (rule dvd_lcmI2)
+  qed (simp add: list_lcm_simps)
+qed simp
+
+lemma list_lcm_least: "(\<And> x. x \<in> set xs \<Longrightarrow> x dvd y) \<Longrightarrow> list_lcm xs dvd y"
+proof (induct xs)
+  case (Cons x xs)
+  from Cons have "x dvd y" "list_lcm xs dvd y" by auto
+  thus ?case unfolding list_lcm_simps by (rule lcm_least)
+qed (simp add: list_lcm_simps)
+
+lemma lcm_mult_distrib_nat: "(k :: nat) * lcm m n = lcm (k * m) (k * n)"
+  unfolding lcm_nat_def gcd_mult_distrib_nat[symmetric]
+  by (simp add: Divides.div_mult2_eq div_mult_swap mult.left_commute)
+
+lemma lcm_mult_distrib_int: "abs (k::int) * lcm m n = lcm (k * m) (k * n)"
+  unfolding lcm_int_def nat_mult_distrib[OF abs_ge_zero] abs_mult
+  unfolding lcm_mult_distrib_nat[symmetric] by simp
+
+lemma list_lcm_mult_int[simp]:
+  "list_lcm (map (op * (a :: int)) xs) = (if xs = [] then 1 else \<bar>a\<bar> * list_lcm xs)"
+  by (induct xs, auto simp: list_lcm_simps lcm_mult_distrib_int abs_mult)
+
+lemma list_lcm_pos: "list_lcm xs \<ge> (0 :: int)" "0 \<notin> set xs \<Longrightarrow> list_lcm xs \<noteq> 0"
+  "0 \<notin> set xs \<Longrightarrow> list_lcm xs > 0" 
+proof -
+  show ge: "list_lcm xs \<ge> 0"
+    by (induct xs, auto simp: list_lcm_simps)
+  assume "0 \<notin> set xs"
+  thus neq: "list_lcm xs \<noteq> 0"
+    by (induct xs, auto simp: list_lcm_simps)
+  from ge neq show "list_lcm xs > 0" by auto
+qed
+
+
+lemma quotient_of_nonzero: "snd (quotient_of r) > 0" "snd (quotient_of r) \<noteq> 0"
+  using quotient_of_denom_pos[of r] by (cases "quotient_of r", auto)+
+
+lemma quotient_of_int_div: assumes q: "quotient_of (of_int x / of_int y) = (a, b)"
+  and y: "y \<noteq> 0" 
+  shows "\<exists> z. z \<noteq> 0 \<and> x = a * z \<and> y = b * z"
+proof -
+  let ?r = "rat_of_int"
+  def z \<equiv> "gcd x y"
+  def x' \<equiv> "x div z"
+  def y' \<equiv> "y div z"
+  have id: "x = z * x'" "y = z * y'" unfolding x'_def y'_def z_def by auto
+  from y have y': "y' \<noteq> 0" unfolding id by auto
+  have z: "z \<noteq> 0" unfolding z_def using y by auto
+  have cop: "coprime x' y'" unfolding x'_def y'_def z_def 
+    using div_gcd_coprime_int y by blast
+  have "?r x / ?r y = ?r x' / ?r y'" unfolding id using z y y' by (auto simp: field_simps) 
+  from assms[unfolded this] have quot: "quotient_of (?r x' / ?r y') = (a, b)" by auto
+  from quotient_of_coprime[OF quot] have cop': "coprime a b" .
+  hence cop: "coprime b a" by (simp add: gcd.commute)
+  from quotient_of_denom_pos[OF quot] have b: "b > 0" "b \<noteq> 0" by auto
+  from quotient_of_div[OF quot] quotient_of_denom_pos[OF quot] y'
+  have "?r x' * ?r b = ?r a * ?r y'" by (auto simp: field_simps)
+  hence id': "x' * b = a * y'" unfolding of_int_mult[symmetric] by linarith
+  from id'[symmetric] have "b dvd y' * a" unfolding mult.commute[of y'] by auto
+  with cop y' have "b dvd y'" by (metis coprime_dvd_mult_int)
+  then obtain z' where ybz: "y' = b * z'" unfolding dvd_def by auto
+  from id[unfolded y' this] have y: "y = b * (z * z')" by auto
+  with `y \<noteq> 0` have zz: "z * z' \<noteq> 0" by auto
+  from quotient_of_div[OF q] `y \<noteq> 0` `b \<noteq> 0` 
+  have "?r x * ?r b = ?r y * ?r a" by (auto simp: field_simps)
+  hence id': "x * b = y * a" unfolding of_int_mult[symmetric] by linarith
+  from this[unfolded y] b have x: "x = a * (z * z')" by auto
+  show ?thesis unfolding x y using zz by blast
+qed
+
+lemma listprod_zero_iff: "(listprod (xs :: 'a :: idom list) = 0) = (0 \<in> set xs)"
+  by (induct xs, auto)
+
+fun max_list_non_empty :: "('a :: linorder) list \<Rightarrow> 'a" where
+  "max_list_non_empty [x] = x"
+| "max_list_non_empty (x # xs) = max x (max_list_non_empty xs)"
+
+lemma max_list_non_empty: "x \<in> set xs \<Longrightarrow> x \<le> max_list_non_empty xs"
+proof (induct xs)
+  case (Cons y ys) note oCons = this
+  show ?case 
+  proof (cases ys)
+    case (Cons z zs)
+    hence id: "max_list_non_empty (y # ys) = max y (max_list_non_empty ys)" by simp
+    from oCons show ?thesis unfolding id by (auto simp: max.coboundedI2)
+  qed (insert oCons, auto)
+qed simp
+
+lemma cnj_reals[simp]: "(cnj c \<in> \<real>) = (c \<in> \<real>)"
+  using Reals_cnj_iff by fastforce
+
+lemma sgn_real_mono: "x \<le> y \<Longrightarrow> sgn x \<le> sgn (y :: real)"
+  unfolding sgn_real_def
+  by (auto split: if_splits)
+
+lemma sgn_minus_rat: "sgn (- (x :: rat)) = - sgn x"
+  by (simp add: sgn_rat_def)
+
+lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
+  unfolding sgn_real_def sgn_rat_def by auto
+
+lemma inverse_sgn[simp]: "sgn (inverse a) = (sgn a :: real)"
+  by (simp add: sgn_real_def)
+
+lemma inverse_sgn_rat[simp]: "sgn (inverse a) = (sgn a :: rat)"
+  by (simp add: sgn_rat_def)
+
+lemma inverse_le_iff_sgn: assumes sgn: "sgn x = sgn y"
+  shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
+proof (cases "x = 0")
+  case True
+  with sgn have "sgn y = 0" by simp
+  hence "y = 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0"; auto)
+  thus ?thesis using True by simp
+next
+  case False note x = this
+  show ?thesis
+  proof (cases "x < 0")
+    case True
+    with x sgn have "sgn y = -1" by simp
+    hence "y < 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
+    show ?thesis
+      by (rule inverse_le_iff_le_neg[OF True `y < 0`])
+  next
+    case False
+    with x have x: "x > 0" by auto
+    with sgn have "sgn y = 1" by auto
+    hence "y > 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
+    show ?thesis
+      by (rule inverse_le_iff_le[OF x `y > 0`])
+  qed
+qed
+
+lemma inverse_le_sgn: assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
+  shows "inverse y \<le> inverse x"
+  using xy inverse_le_iff_sgn[OF sgn] by auto
 
 end

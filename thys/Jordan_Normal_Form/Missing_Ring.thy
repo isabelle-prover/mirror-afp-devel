@@ -157,4 +157,142 @@ lemma (in semiring) Units_one_side_I:
   "a \<in> carrier R \<Longrightarrow> p \<in> Units R \<Longrightarrow> a \<otimes> p = \<one> \<Longrightarrow> a \<in> Units R"
   by (metis Units_closed Units_inv_Units Units_l_inv inv_unique)+
 
+context ordered_cancel_semiring begin
+subclass ordered_cancel_ab_semigroup_add ..
+end
+
+text {* partially ordered variant *}
+class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
+  assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
+  assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
+begin
+
+subclass semiring_0_cancel ..
+
+subclass ordered_semiring
+proof
+  fix a b c :: 'a
+  assume A: "a \<le> b" "0 \<le> c"
+  from A show "c * a \<le> c * b"
+    unfolding le_less
+    using mult_strict_left_mono by (cases "c = 0") auto
+  from A show "a * c \<le> b * c"
+    unfolding le_less
+    using mult_strict_right_mono by (cases "c = 0") auto
+qed
+
+lemma mult_pos_pos[simp]: "0 < a \<Longrightarrow> 0 < b \<Longrightarrow> 0 < a * b"
+using mult_strict_left_mono [of 0 b a] by simp
+
+lemma mult_pos_neg: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> a * b < 0"
+using mult_strict_left_mono [of b 0 a] by simp
+
+lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
+using mult_strict_right_mono [of a 0 b] by simp
+
+text {* Legacy - use @{text mult_neg_pos} *}
+lemma mult_pos_neg2: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> b * a < 0" 
+by (drule mult_strict_right_mono [of b 0], auto)
+
+text{*Strict monotonicity in both arguments*}
+lemma mult_strict_mono:
+  assumes "a < b" and "c < d" and "0 < b" and "0 \<le> c"
+  shows "a * c < b * d"
+  using assms apply (cases "c=0")
+  apply (simp)
+  apply (erule mult_strict_right_mono [THEN less_trans])
+  apply (force simp add: le_less)
+  apply (erule mult_strict_left_mono, assumption)
+  done
+
+text{*This weaker variant has more natural premises*}
+lemma mult_strict_mono':
+  assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
+  shows "a * c < b * d"
+by (rule mult_strict_mono) (insert assms, auto)
+
+lemma mult_less_le_imp_less:
+  assumes "a < b" and "c \<le> d" and "0 \<le> a" and "0 < c"
+  shows "a * c < b * d"
+  using assms apply (subgoal_tac "a * c < b * c")
+  apply (erule less_le_trans)
+  apply (erule mult_left_mono)
+  apply simp
+  apply (erule mult_strict_right_mono)
+  apply assumption
+  done
+
+lemma mult_le_less_imp_less:
+  assumes "a \<le> b" and "c < d" and "0 < a" and "0 \<le> c"
+  shows "a * c < b * d"
+  using assms apply (subgoal_tac "a * c \<le> b * c")
+  apply (erule le_less_trans)
+  apply (erule mult_strict_left_mono)
+  apply simp
+  apply (erule mult_right_mono)
+  apply simp
+  done
+
+end
+
+class ordered_idom = idom + ordered_semiring_strict +
+  assumes zero_less_one [simp]: "0 < 1" begin
+
+subclass semiring_1 ..
+subclass comm_ring_1 ..
+subclass ordered_ring ..
+subclass ordered_comm_semiring by(unfold_locales, fact mult_left_mono)
+subclass ordered_ab_semigroup_add ..
+
+lemma of_nat_ge_0[simp]: "of_nat x \<ge> 0"
+proof (induct x)
+  case 0 thus ?case by auto
+  next case (Suc x)
+    hence "0 \<le> of_nat x" by auto
+    also have "of_nat x < of_nat (Suc x)" by auto
+    finally show ?case by auto
+qed
+
+lemma of_nat_eq_0[simp]: "of_nat x = 0 \<longleftrightarrow> x = 0"
+proof(induct x,simp)
+  case (Suc x)
+    have "of_nat (Suc x) > 0" apply(rule le_less_trans[of _ "of_nat x"]) by auto
+    thus ?case by auto
+qed
+
+lemma inj_of_nat: "inj (of_nat :: nat \<Rightarrow> 'a)"
+proof(rule injI)
+  fix x y show "of_nat x = of_nat y \<Longrightarrow> x = y"
+  proof (induct x arbitrary: y)
+    case 0 thus ?case
+      proof (induct y)
+        case 0 thus ?case by auto
+        next case (Suc y)
+          hence "of_nat (Suc y) = 0" by auto
+          hence "Suc y = 0" unfolding of_nat_eq_0 by auto
+          hence False by auto
+          thus ?case by auto
+      qed
+    next case (Suc x)
+      thus ?case
+      proof (induct y)
+        case 0
+          hence "of_nat (Suc x) = 0" by auto
+          hence "Suc x = 0" unfolding of_nat_eq_0 by auto
+          hence False by auto
+          thus ?case by auto
+        next case (Suc y) thus ?case by auto
+      qed
+  qed
+qed
+
+subclass ring_char_0 by(unfold_locales, fact inj_of_nat)
+
+end
+
+(*
+instance linordered_idom \<subseteq> ordered_semiring_strict by (intro_classes,auto)
+instance linordered_idom \<subseteq> ordered_idom by (intro_classes, auto)
+*)
+
 end

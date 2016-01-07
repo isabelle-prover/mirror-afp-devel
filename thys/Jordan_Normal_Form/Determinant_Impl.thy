@@ -9,14 +9,68 @@ text \<open>We compute determinants on arbitrary rings by applying elementary ro
   to bring a matrix on upper-triangular form. Then the determinant can be determined
   by multiplying all entries on the diagonal. Moreover the final result has to be divided
   by a factor which is determined by the row-operations that we performed. To this end,
-  we require a division operation on the element type.\<close>
+  we require a division operation on the element type.
+
+  The algorithm is parametric in a selection function for the pivot-element, e.g., for 
+  matrices over polynomials it turned out that selecting a polynomial of minimal degree
+  is beneficial.\<close>
 
 theory Determinant_Impl
 imports
   Determinant
+  Missing_Unsorted
 begin
 
+type_synonym 'a det_selection_fun = "(nat \<times> 'a)list \<Rightarrow> nat"
+
+definition det_selection_fun :: "'a det_selection_fun \<Rightarrow> bool" where 
+  "det_selection_fun f = (\<forall> xs. xs \<noteq> [] \<longrightarrow> f xs \<in> fst ` set xs)"
+
+
+lemma det_selection_funD: "det_selection_fun f \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> f xs \<in> fst ` set xs"
+  unfolding det_selection_fun_def by auto
+
+definition fst_sel_fun :: "'a det_selection_fun" where
+  "fst_sel_fun x = fst (hd x)" 
+
+lemma fst_sel_fun[simp]: "det_selection_fun fst_sel_fun"
+  unfolding det_selection_fun_def fst_sel_fun_def by auto
+
 context
+  fixes measure :: "'a \<Rightarrow> nat" 
+begin
+private fun select_min_main where 
+  "select_min_main m i ((j,p) # xs) = (let n = measure p in if n < m then select_min_main n j xs
+    else select_min_main m i xs)"
+| "select_min_main m i [] = i"
+
+definition select_min :: "(nat \<times> 'a) list \<Rightarrow> nat" where
+  "select_min xs = (case xs of ((i,p) # ys) \<Rightarrow> (select_min_main (measure p) i ys))"
+
+lemma select_min[simp]: "det_selection_fun select_min"
+  unfolding det_selection_fun_def 
+proof (intro allI impI)
+  fix xs :: "(nat \<times> 'a)list"
+  assume "xs \<noteq> []"
+  then obtain i p ys where xs: "xs = ((i,p) # ys)" by (cases xs, auto)
+  then obtain m where id: "select_min xs = select_min_main m i ys" unfolding select_min_def by auto
+  have "i \<in> fst ` set xs" "set ys \<subseteq> set xs" unfolding xs by auto
+  thus "select_min xs \<in> fst ` set xs" unfolding id
+  proof (induct ys arbitrary: m i )
+    case (Cons jp ys m i)
+    obtain j p where jp: "jp = (j,p)" by force
+    obtain k n where res: "select_min_main m i (jp # ys) = select_min_main n k ys" 
+      and k: "k \<in> fst ` set xs"
+      using Cons(2-) unfolding jp by (cases "measure p < m"; force simp: Let_def)
+    from Cons(1)[OF k, of n] Cons(3) 
+    show ?case unfolding res by auto
+  qed simp
+qed
+end
+
+
+context
+  fixes sel_fun :: "'a ::{ring_div,ring_gcd} det_selection_fun"
 begin
 
 subsection {* Properties of triangular matrices *}
@@ -25,7 +79,7 @@ text {*
   Each column of a triangular matrix should satisfy the following property.
 *}
 
-definition triangular_column::"nat \<Rightarrow> 'a::zero mat \<Rightarrow> bool"
+definition triangular_column::"nat \<Rightarrow> 'a mat \<Rightarrow> bool"
   where "triangular_column j A \<equiv> \<forall>i. j < i \<longrightarrow> i < dim\<^sub>r A \<longrightarrow> A $$ (i,j) = 0"
 
 lemma triangular_columnD [dest]:
@@ -41,7 +95,7 @@ text {*
   triangularity.
 *}
 
-definition triangular_to:: "nat \<Rightarrow> 'a::zero mat \<Rightarrow> bool"
+definition triangular_to:: "nat \<Rightarrow> 'a mat \<Rightarrow> bool"
   where "triangular_to k A == \<forall>j. j<k \<longrightarrow> triangular_column j A"
 
 lemma triangular_to_triangular: "upper_triangular A = triangular_to (dim\<^sub>r A) A"
@@ -79,46 +133,52 @@ lemma triangle_trans: "triangular_to k A \<Longrightarrow> k > k' \<Longrightarr
 
 subsection {* Algorithms for Triangulization *}
 
-private definition mute :: "nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
-  where
-  "mute k l rA = (fst rA * snd rA $$ (l,l), addrow (-(snd rA $$ (k,l))) k l (multrow k (snd rA $$ (l,l)) (snd rA)))"
 
-lemma mute_code[code]: "mute k l (r,A) \<equiv>
-  let q = A $$ (l,l) in (r * q, addrow (-(A $$ (k,l))) k l (multrow k q A))"
-  unfolding mute_def Let_def by auto
+
+private fun mute :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat" where
+  "mute A_ll k l (r,A) = (let p = A $$ (k,l) in if p = 0 then (r,A) else 
+    let g = gcd A_ll p; q' = A_ll div g; p' = p div g  
+     in (r * q', addrow (-p') k l (multrow k q' A)))"
 
 lemma mute_preserves_dimensions:
-  assumes "mute k l (r,A) = (r',A')"
+  assumes "mute q k l (r,A) = (r',A')"
   shows [simp]: "dim\<^sub>r A' = dim\<^sub>r A" and [simp]: "dim\<^sub>c A' = dim\<^sub>c A"
-using assms unfolding mute_def by auto
+using assms by (auto simp: Let_def split: if_splits)
 
 text {*
   Algorithm @{term "mute k l"} makes $k$-th row $l$-th column element to 0.
 *}
 
 lemma mute_makes_0 :
- "mute k l (r,A) = (r',A') \<Longrightarrow>
-  l < dim\<^sub>r A \<Longrightarrow>
-  l < dim\<^sub>c A \<Longrightarrow>
-  k < dim\<^sub>r A \<Longrightarrow>
-  k \<noteq> l \<Longrightarrow>
-  A' $$ (k,l) = 0"
-  unfolding mute_def mat_addrow_def by auto
+ assumes "mute (A $$ (l,l)) k l (r,A) = (r',A')"
+ "l < dim\<^sub>r A"
+ "l < dim\<^sub>c A"
+ "k < dim\<^sub>r A"
+ "k \<noteq> l"
+ shows "A' $$ (k,l) = 0"
+proof -
+  def a \<equiv> "A $$ (l, l)"
+  def b \<equiv> "A $$ (k, l)"
+  have "a div gcd a b * b = b div gcd a b * a"
+    by (simp add: div_mult_swap mult.commute)
+  with assms show ?thesis
+  unfolding mat_addrow_def by (auto simp: Let_def a_def b_def split: if_splits)
+qed
 
 text {* It will not touch unexpected rows. *}
 lemma mute_preserves:
-  "mute k l (r,A) = (r',A') \<Longrightarrow>
+  "mute q k l (r,A) = (r',A') \<Longrightarrow>
    i < dim\<^sub>r A \<Longrightarrow>
    j < dim\<^sub>c A \<Longrightarrow>
    l < dim\<^sub>r A \<Longrightarrow>
    k < dim\<^sub>r A \<Longrightarrow>
    i \<noteq> k \<Longrightarrow>
    A' $$ (i,j) = A $$ (i,j)"
-unfolding mute_def by auto
+   by (auto simp: Let_def split: if_splits)
 
 text {* It preserves $0$s in the touched row. *}
 lemma mute_preserves_0:
-  "mute k l (r,A) = (r',A') \<Longrightarrow>
+  "mute q k l (r,A) = (r',A') \<Longrightarrow>
    i < dim\<^sub>r A \<Longrightarrow>
    j < dim\<^sub>c A \<Longrightarrow>
    l < dim\<^sub>r A \<Longrightarrow>
@@ -126,11 +186,11 @@ lemma mute_preserves_0:
    A $$ (i,j) = 0 \<Longrightarrow>
    A $$ (l,j) = 0 \<Longrightarrow>
    A' $$ (i,j) = 0"
-  unfolding mute_def by auto
+   by (auto simp: Let_def split: if_splits)
 
 text {* Hence, it will respect partially triangular matrix. *}
 lemma mute_preserves_triangle:
- assumes rA' : "mute k l (r,A) = (r',A')"
+ assumes rA' : "mute q k l (r,A) = (r',A')"
  and triA: "triangular_to l A"
  and lk: "l < k"
  and kr: "k < dim\<^sub>r A"
@@ -151,40 +211,40 @@ qed
 
 text {* Recursive application of @{const mute} *}
 
-private fun sub1 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
-where "sub1 0 l rA = rA"
-  | "sub1 (Suc k) l rA = mute (l + Suc k) l (sub1 k l rA)"
+private fun sub1 :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
+where "sub1 q 0 l rA = rA"
+  | "sub1 q (Suc k) l rA = mute q (l + Suc k) l (sub1 q k l rA)"
 
 lemma sub1_preserves_dimensions[simp]:
-  "sub1 k l (r,A) = (r',A') \<Longrightarrow> dim\<^sub>r A' = dim\<^sub>r A"
-  "sub1 k l (r,A) = (r',A') \<Longrightarrow> dim\<^sub>c A' = dim\<^sub>c A"
+  "sub1 q k l (r,A) = (r',A') \<Longrightarrow> dim\<^sub>r A' = dim\<^sub>r A"
+  "sub1 q k l (r,A) = (r',A') \<Longrightarrow> dim\<^sub>c A' = dim\<^sub>c A"
 proof (induction k arbitrary: r' A')
   case (Suc k)
-    moreover obtain r' A' where rA': "sub1 k l (r, A) = (r', A')" by force
-    moreover fix r'' A'' assume "sub1 (Suc k) l (r, A) = (r'', A'')" 
+    moreover obtain r' A' where rA': "sub1 q k l (r, A) = (r', A')" by force
+    moreover fix r'' A'' assume "sub1 q (Suc k) l (r, A) = (r'', A'')" 
     ultimately show "dim\<^sub>r A'' = dim\<^sub>r A" "dim\<^sub>c A'' = dim\<^sub>c A" by auto
 qed auto
 
 lemma sub1_closed [simp]:
-  "sub1 k l (r,A) = (r',A') \<Longrightarrow> A \<in> carrier\<^sub>m m n \<Longrightarrow> A' \<in> carrier\<^sub>m m n"
+  "sub1 q k l (r,A) = (r',A') \<Longrightarrow> A \<in> carrier\<^sub>m m n \<Longrightarrow> A' \<in> carrier\<^sub>m m n"
   unfolding mat_carrier_def by auto
 
 lemma sub1_preserves_diagnal:
-  assumes "sub1 k l (r,A) = (r',A')"
+  assumes "sub1 q k l (r,A) = (r',A')"
   and "l < dim\<^sub>c A"
   and "k + l < dim\<^sub>r A"
   shows "A' $$ (l,l) = A $$ (l,l)"
 using assms
 proof -
-  show "k + l < dim\<^sub>r A \<Longrightarrow> sub1 k l (r,A) = (r',A') \<Longrightarrow>
+  show "k + l < dim\<^sub>r A \<Longrightarrow> sub1 q k l (r,A) = (r',A') \<Longrightarrow>
     A' $$ (l,l) = A $$ (l,l)"
   proof (induction k arbitrary: r' A')
     case (Suc k)
-      obtain r'' A'' where rA''[simp]: "sub1 k l (r,A) = (r'',A'')" by force
+      obtain r'' A'' where rA''[simp]: "sub1 q k l (r,A) = (r'',A'')" by force
       have [simp]:"dim\<^sub>r A'' = dim\<^sub>r A" and [simp]:"dim\<^sub>c A'' = dim\<^sub>c A"
         using snd_conv sub1_preserves_dimensions[OF rA''] by auto
       have "A'' $$ (l,l) = A $$ (l,l)" using assms Suc by auto
-      have rA': "mute (l + Suc k) l (r'', A'') = (r',A')"
+      have rA': "mute q (l + Suc k) l (r'', A'') = (r',A')"
         using Suc by auto
       show ?case using subst mute_preserves[OF rA'] Suc assms by auto
   qed auto
@@ -192,7 +252,7 @@ qed
 
 text {* Triangularity is respected by @{const sub1}. *}
 lemma sub1_preserves_triangle:
-  assumes "sub1 k l (r,A) = (r',A')"
+  assumes "sub1 q k l (r,A) = (r',A')"
   and tri: "triangular_to l A"
   and lr: "l < dim\<^sub>r A"
   and lc: "l < dim\<^sub>c A"
@@ -200,23 +260,23 @@ lemma sub1_preserves_triangle:
   shows "triangular_to l A'"
 using assms
 proof -
-  show "sub1 k l (r,A) = (r',A') \<Longrightarrow> l + k < dim\<^sub>r A \<Longrightarrow>
+  show "sub1 q k l (r,A) = (r',A') \<Longrightarrow> l + k < dim\<^sub>r A \<Longrightarrow>
     triangular_to l A'"
   proof (induction k arbitrary: r' A')
   case (Suc k)
-    then have "sub1 (Suc k) l (r,A) = (r',A')" by auto
+    then have "sub1 q (Suc k) l (r,A) = (r',A')" by auto
     moreover obtain r'' A''
-      where rA'': "sub1 k l (r, A) = (r'',A'')" by force
+      where rA'': "sub1 q k l (r, A) = (r'',A'')" by force
     ultimately
-      have rA': "mute (Suc (l + k)) l (r'',A'') = (r',A')" by auto
+      have rA': "mute q (Suc (l + k)) l (r'',A'') = (r',A')" by auto
     have "triangular_to l A''" using rA'' Suc by auto
     thus ?case
       using Suc assms mute_preserves_triangle[OF rA'] rA'' by auto
   qed (insert assms,auto)
-qed 
+qed
 
 lemma sub1_makes_0s:
-  assumes "sub1 k l (r,A) = (r',A')"
+  assumes "sub1 (A $$ (l,l)) k l (r,A) = (r',A')"
   and lr: "l < dim\<^sub>r A"
   and lc: "l < dim\<^sub>c A"
   and li: "l < i"
@@ -225,15 +285,16 @@ lemma sub1_makes_0s:
   shows "A' $$ (i,l) = 0"
 using assms
 proof -
-  show "sub1 k l (r,A) = (r',A') \<Longrightarrow> i \<le> k + l \<Longrightarrow> k + l < dim\<^sub>r A \<Longrightarrow>
+  show "sub1 (A $$ (l,l)) k l (r,A) = (r',A') \<Longrightarrow> i \<le> k + l \<Longrightarrow> k + l < dim\<^sub>r A \<Longrightarrow>
     A' $$ (i,l) = 0"
   using lr lc li
   proof (induction k arbitrary: r' A')
   case (Suc k)
-    obtain r' A' where rA': "sub1 k l (r, A) = (r',A')" by force
+    obtain r' A' where rA': "sub1 (A $$ (l,l)) k l (r, A) = (r',A')" by force
     fix r'' A''
-    assume "sub1 (Suc k) l (r, A) = (r'',A'')"
-    then have rA'': "mute (Suc (l + k)) l (r', A') = (r'', A'')"
+    from sub1_preserves_diagnal[OF rA'] have AA': "A $$ (l, l) = A' $$ (l, l)" using Suc(2-) by auto
+    assume "sub1 (A $$ (l,l)) (Suc k) l (r, A) = (r'',A'')"
+    then have rA'': "mute (A $$ (l,l)) (Suc (l + k)) l (r', A') = (r'', A'')"
       using rA' by simp
     have ir: "i < dim\<^sub>r A" using Suc by auto
     have il: "i \<noteq> l" using li by auto
@@ -245,7 +306,7 @@ proof -
       case True {
         have l: "Suc (l + k) \<noteq> l" by auto
         show ?thesis
-          using mute_makes_0[OF rA'' lr' lc' Slkr' l] ir il rA'
+          using mute_makes_0[OF rA''[unfolded AA'] lr' lc' Slkr' l] ir il rA'
           by (simp add:True)
       } next
       case False {
@@ -261,7 +322,7 @@ proof -
 qed
 
 lemma sub1_triangulizes_column:
-  assumes rA': "sub1 (dim\<^sub>r A - Suc l) l (r,A) = (r',A')"
+  assumes rA': "sub1 (A $$ (l,l)) (dim\<^sub>r A - Suc l) l (r,A) = (r',A')"
   and tri:"triangular_to l A"
   and r: "dim\<^sub>r A > 0"
   and lr: "l < dim\<^sub>r A"
@@ -284,7 +345,7 @@ text {*
   The algorithm @{const sub1} increases the number of columns that form triangle.
 *}
 lemma sub1_grows_triangle:
-  assumes rA': "sub1 (dim\<^sub>r A - Suc l) l (r,A) = (r',A')"
+  assumes rA': "sub1 (A $$ (l,l)) (dim\<^sub>r A - Suc l) l (r,A) = (r',A')"
   and r: "dim\<^sub>r A > 0"
   and tri:"triangular_to l A"
   and lr: "l < dim\<^sub>r A"
@@ -300,84 +361,20 @@ qed
 
 subsection {* Finding Non-Zero Elements *}
 
-private fun find_non0_sub :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a::zero mat \<Rightarrow> nat option"
-where "find_non0_sub d 0 l A = None"
- | " find_non0_sub d (Suc k) l A =
-     (if A $$ (d - Suc k,l) \<noteq> 0
-      then Some (d - Suc k)
-      else find_non0_sub d k l A)"
+private definition find_non0 :: "nat \<Rightarrow> 'a mat \<Rightarrow> nat option" where
+  "find_non0 l A = (let is = [Suc l ..< dim\<^sub>r A];
+    Ais = filter (\<lambda> (i,Ail). Ail \<noteq> 0) (map (\<lambda> i. (i, A $$ (i,l))) is)
+    in case Ais of [] \<Rightarrow> None | _ \<Rightarrow> Some (sel_fun Ais))"
 
-private definition find_non0 :: "nat \<Rightarrow> 'a::zero mat \<Rightarrow> nat option"
-where "find_non0 l A = find_non0_sub (dim\<^sub>r A) (dim\<^sub>r A - Suc l) l A"
-
-lemma finds_non0_sub :
-  "find_non0_sub d k l A = Some i \<Longrightarrow> A $$ (i,l) \<noteq> 0"
-proof (induction k arbitrary: i)
-  case (Suc k)
-    show "A $$ (i,l) \<noteq> 0"
-    proof (cases "A $$ (d - Suc k,l) \<noteq> 0")
-      case True
-        then have "find_non0_sub d (Suc k) l A = Some (d-Suc k)" by auto
-        hence "i = d - Suc k" using Suc by auto
-        thus ?thesis using True by auto
-        next
-      case False
-        then show ?thesis using Suc by auto
-    qed
-qed auto
-
-lemma finds_non0:
-  "find_non0 l A = Some m \<Longrightarrow> A $$ (m,l) \<noteq> 0"
-  unfolding find_non0_def by (subst finds_non0_sub, auto)
-
-lemma find_non0_sub_ordered:
-  shows "find_non0_sub d k l A = Some m \<Longrightarrow> l + k < d \<Longrightarrow> l < m \<and> m < d"
-proof (induction k arbitrary: m)
-  case (Suc k) then show ?case
-    using assms by (cases "A $$ (d - Suc k, l) \<noteq> 0", auto)
-qed auto
-
-lemma find_non0_ordered:
-  "find_non0 l A = Some m \<Longrightarrow> l < dim\<^sub>r A \<Longrightarrow> l < m \<and> m < dim\<^sub>r A"
-  unfolding find_non0_def
+lemma find_non0: assumes sel_fun: "det_selection_fun sel_fun"
+  and res: "find_non0 l A = Some m"
+  shows "A $$ (m,l) \<noteq> 0" "l < m" "m < dim\<^sub>r A"
 proof -
-  assume m: "find_non0_sub (dim\<^sub>r A) (dim\<^sub>r A - Suc l) l A = Some m"
-  assume "l < dim\<^sub>r A"
-  then show ?thesis using find_non0_sub_ordered[OF m] by auto
-qed
-
-lemma finds_all0_sub:
-  assumes "find_non0_sub d k l A = None"
-  and "d - Suc k < i"
-  and id: "i < d"
-  shows "A $$ (i,l) = 0"
-  using assms
-proof -
-  show "find_non0_sub d k l A = None \<Longrightarrow> d - Suc k < i \<Longrightarrow> A $$ (i,l) = 0"
-  proof (induction k)
-    case 0 then show ?thesis using id by simp next
-    case (Suc k) {
-      let ?ret = "find_non0_sub d (Suc k) l A"
-      have none: "?ret = None" using Suc by auto
-      have now0: "A $$ (d - Suc k,l) = 0"
-      proof (rule ccontr)
-        assume "A $$ (d - Suc k,l) \<noteq> 0"
-        then have "?ret = Some (d - Suc k)" by simp
-        thus False using none by auto
-      qed
-      show "A $$ (i,l) = 0"
-      proof (cases "i = d - Suc k")
-        case True
-          then show ?thesis using now0 by auto
-          next
-        case False
-          then have "?ret = find_non0_sub d k l A" using now0 by simp
-          hence "find_non0_sub d k l A = None" using Suc by auto
-          moreover have "d - Suc k < i" using id Suc False by auto
-          ultimately show ?thesis using Suc by auto
-      qed
-    }
-  qed
+  let ?xs = "filter (\<lambda> (i,Ail). Ail \<noteq> 0) (map (\<lambda> i. (i, A $$ (i,l))) [Suc l..<dim\<^sub>r A])"
+  from res[unfolded find_non0_def Let_def]
+  have xs: "?xs \<noteq> []" and m: "m = sel_fun ?xs"
+    by (cases ?xs, auto)+
+  from det_selection_funD[OF sel_fun xs, folded m] show "A $$ (m, l) \<noteq> 0" "l < m" "m < dim\<^sub>r A" by auto
 qed
 
 text {*
@@ -385,10 +382,18 @@ text {*
   then $A$ is already triangular to $l$-th column.
 *}
 
-lemma finds_all0:
+lemma find_non0_all0:
   "find_non0 l A = None \<Longrightarrow> triangular_column l A"
-  unfolding find_non0_def
-  by (intro triangular_columnI, elim finds_all0_sub, auto)
+proof (intro triangular_columnI) 
+  fix i
+  let ?xs = "filter (\<lambda> (i,Ail). Ail \<noteq> 0) (map (\<lambda> i. (i, A $$ (i,l))) [Suc l..<dim\<^sub>r A])"
+  assume none: "find_non0 l A = None" and li: "l < i" "i < dim\<^sub>r A"
+  from none have xs: "?xs = []"
+    unfolding find_non0_def Let_def by (cases ?xs, auto)
+  from li have "(i, A $$ (i,l)) \<in> set (map (\<lambda> i. (i, A $$ (i,l))) [Suc l..<dim\<^sub>r A])" by auto
+  with xs show "A $$ (i,l) = 0"
+    by (metis (mono_tags) xs case_prodI filter_empty_conv)
+qed
 
 subsection {* Determinant Preserving Growth of Triangle *}
 
@@ -398,23 +403,26 @@ text {*
   operation:
 *}
 
-private fun sub2 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
+private fun sub2 :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
   where "sub2 d l (r,A) = (
     case find_non0 l A of None \<Rightarrow> (r,A)
-    | Some m \<Rightarrow> sub1 (d - Suc l) l (-r, swaprows m l A))"
+    | Some m \<Rightarrow> let A' = swaprows m l A in sub1 (A' $$ (l,l)) (d - Suc l) l (-r, A'))"
 
 lemma sub2_preserves_dimensions[simp]:
   assumes rA': "sub2 d l (r,A) = (r',A')"
   shows "dim\<^sub>r A' = dim\<^sub>r A \<and> dim\<^sub>c A' = dim\<^sub>c A"
 proof (cases "find_non0 l A")
   case None then show ?thesis using rA' by auto next
-  case (Some m) then show ?thesis using rA' by (cases "m = l", auto)
+  case (Some m) then show ?thesis using rA' by (cases "m = l", auto simp: Let_def)
 qed
 
 lemma sub2_closed [simp]:
   "sub2 d l (r,A) = (r',A') \<Longrightarrow> A \<in> carrier\<^sub>m m n \<Longrightarrow> A' \<in> carrier\<^sub>m m n"
   unfolding mat_carrier_def by auto
 
+context 
+  assumes sel_fun: "det_selection_fun sel_fun"
+begin
 
 lemma sub2_preserves_triangle:
   assumes rA': "sub2 d l (r,A) = (r',A')"
@@ -430,7 +438,7 @@ proof -
     case None then show ?thesis using rA' tri by simp next
     case (Some m) {
       have lm : "l < m" and mr : "m < dim\<^sub>r A"
-        using find_non0_ordered[OF Some lr] by auto
+        using find_non0[OF sel_fun Some] by auto
       let ?A1 = "swaprows m l A"
   
       have tri'': "triangular_to l ?A1"
@@ -464,9 +472,9 @@ proof -
         qed
       qed
   
-      let ?rA3 = "sub1 (d - Suc l) l (-r,?A1)"
+      let ?rA3 = "sub1 (?A1 $$ (l,l)) (d - Suc l) l (-r,?A1)"
       have [simp]: "dim\<^sub>r ?A1 = dim\<^sub>r A \<and> dim\<^sub>c ?A1 = dim\<^sub>c A" by auto
-      have rA'2: "?rA3 = (r',A')" using rA' Some by simp
+      have rA'2: "?rA3 = (r',A')" using rA' Some by (simp add: Let_def)
       have "l + (d - Suc l) < dim\<^sub>r A" using ld dr by auto
       thus ?thesis
         using sub1_preserves_triangle[OF rA'2 tri''] lr lc rA' by auto
@@ -489,12 +497,12 @@ proof (rule triangle_growth)
     proof (cases "find_non0 l A")
       case None {
         then have "A' = A" using rA' by simp
-        moreover have "triangular_column l A"  using finds_all0[OF None].
+        moreover have "triangular_column l A"  using find_non0_all0[OF None].
         ultimately show ?thesis by auto
       } next
       case (Some m) {
         have lm: "l < m" and mr: "m < dim\<^sub>r A"
-          using find_non0_ordered[OF Some lr] by auto
+          using find_non0[OF sel_fun Some] by auto
         let ?A = "swaprows m l A"
         have tri2: "triangular_to l ?A"
           proof
@@ -525,13 +533,14 @@ proof (rule triangle_growth)
                 qed
             qed
           qed
-        have rA'2: "sub1 (dim\<^sub>r ?A - Suc l) l (-r, ?A) = (r',A')"
-          using lm Some rA' by simp
+        have rA'2: "sub1 (?A $$ (l,l)) (dim\<^sub>r ?A - Suc l) l (-r, ?A) = (r',A')"
+          using lm Some rA' by (simp add: Let_def)
         show ?thesis
           using sub1_triangulizes_column[OF rA'2 tri2] r0 lr lc by auto
       }
     qed
 qed
+end
 
 subsection {* Recursive Triangulization of Columns *}
 
@@ -539,7 +548,7 @@ text {*
   Now we recursively apply @{const sub2} to make the entire matrix to be triangular.
 *}
 
-private fun sub3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::comm_ring_1 \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
+private fun sub3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::{ring_div,ring_gcd} \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
   where "sub3 d 0 rA = rA"
   | "sub3 d (Suc l) rA = sub2 d l (sub3 d l rA)"
 
@@ -559,7 +568,8 @@ lemma sub3_closed[simp]:
   unfolding mat_carrier_def by auto
 
 lemma sub3_makes_triangle:
-  assumes "sub3 (dim\<^sub>r A) l (r,A) = (r',A')"
+  assumes sel_fun: "det_selection_fun sel_fun"
+  and "sub3 (dim\<^sub>r A) l (r,A) = (r',A')"
   and "l \<le> dim\<^sub>r A"
   and "l \<le> dim\<^sub>c A"
   shows "triangular_to l A'"
@@ -581,13 +591,13 @@ proof -
       then have rA': "sub2 (dim\<^sub>r A'') l (r'',A'') = (r',A')"
         using rA'' by auto
       show "triangular_to (Suc l) A'"
-        using sub2_grows_triangle[OF rA'] lr lc rA'' IH by auto
+        using sub2_grows_triangle[OF sel_fun rA'] lr lc rA'' IH by auto
   qed auto
 qed
 
 subsection {* Triangulization *}
 
-definition triangulize :: "'a::comm_ring_1 mat \<Rightarrow> 'a \<times> 'a mat"
+definition triangulize :: "'a::{ring_div,ring_gcd} mat \<Rightarrow> 'a \<times> 'a mat"
 where "triangulize A = sub3 (dim\<^sub>r A) (dim\<^sub>r A) (1,A)"
 
 lemma triangulize_preserves_dimensions[simp]:
@@ -599,6 +609,9 @@ lemma triangulize_closed[simp]:
   "triangulize A = (r',A') \<Longrightarrow> A \<in> carrier\<^sub>m m n \<Longrightarrow> A' \<in> carrier\<^sub>m m n"
   unfolding mat_carrier_def by auto
 
+context
+  assumes sel_fun: "det_selection_fun sel_fun"
+begin
 
 theorem triangulized:
   assumes "A \<in> carrier\<^sub>m n n"
@@ -612,7 +625,7 @@ proof (cases "0<n")
     using assms by auto
     thus ?thesis
       unfolding triangular_to_triangular
-      using sub3_makes_triangle[OF rA'] True by auto
+      using sub3_makes_triangle[OF sel_fun rA'] True by auto
     next
   case False
     then have nr':"dim\<^sub>r A' = 0" using assms by auto
@@ -624,37 +637,40 @@ subsection{* Divisor will not be 0 *}
 text {*
   Here we show that each sub-algorithm will not make $r$
   of the input/output pair $(r,A)$ to 0.
-  The algorithm @{term "sub1 k l (r,A)"} requires $A_{l,l} \neq 0$.
+  The algorithm @{term "sub1 A_ll k l (r,A)"} requires $A_{l,l} \neq 0$.
 *}
 
 lemma sub1_divisor [simp]:
-  assumes rA': "sub1 k l (r, (A ::'a :: ring_div mat)) = (r',A')"
+  assumes rA': "sub1 q k l (r, A) = (r',A')"
   and r0: "r \<noteq> 0"
-  and All: "A $$ (l,l) \<noteq> 0"
+  and All: "q \<noteq> 0"
   and "k + l < dim\<^sub>r A "
   and lc: "l < dim\<^sub>c A"
   shows "r' \<noteq> 0"
 using assms
 proof -
-  show "sub1 k l (r,A) = (r',A') \<Longrightarrow> k + l < dim\<^sub>r A \<Longrightarrow> r' \<noteq> 0"
+  show "sub1 q k l (r,A) = (r',A') \<Longrightarrow> k + l < dim\<^sub>r A \<Longrightarrow> r' \<noteq> 0"
   proof (induction k arbitrary: r' A')
     case (Suc k)
-      obtain r'' A'' where rA'': "sub1 k l (r, A) = (r'', A'')" by force
+      obtain r'' A'' where rA'': "sub1 q k l (r, A) = (r'', A'')" by force
       then have IH: "r'' \<noteq> 0" using Suc by auto
-      have "A'' $$ (l,l) \<noteq> 0"
+      def fact \<equiv> "if A'' $$ (Suc (l+k),l) = 0 then 1 else q div gcd q (A'' $$ (Suc (l + k), l))"
+      have All: "q \<noteq> 0"
         using sub1_preserves_diagnal[OF rA'' lc] All Suc by auto
-      moreover assume "sub1 (Suc k) l (r,A) = (r',A')"
-        then have "mute (Suc (l + k)) l (r'',A'') = (r',A')"
+      moreover have "fact \<noteq> 0" unfolding fact_def using All
+        by (auto split: if_splits, metis dvd_div_mult_self gcd_dvd1 mult_zero_left)
+      moreover assume "sub1 q (Suc k) l (r,A) = (r',A')"
+        then have "mute q (Suc (l + k)) l (r'',A'') = (r',A')"
           using rA'' by auto
-        hence "r'' * A'' $$ (l, l) = r'"
-          unfolding mute_code Let_def using IH by auto
+        hence "r'' * fact = r'"
+          unfolding mute.simps fact_def Let_def using IH by (auto split: if_splits)
       ultimately show "r' \<noteq> 0" using IH by auto
   qed (insert r0, simp)
 qed
 
 text {* The algorithm @{term "sub2"} will not require such a condition. *}
 lemma sub2_divisor [simp]:
-  assumes rA': "sub2 k l (r, (A ::'a :: ring_div mat)) = (r',A')"
+  assumes rA': "sub2 k l (r, (A ::'a :: {ring_div,ring_gcd} mat)) = (r',A')"
   and lk: "l < k"
   and kr: "k \<le> dim\<^sub>r A"
   and lc: "l < dim\<^sub>c A"
@@ -663,17 +679,17 @@ lemma sub2_divisor [simp]:
 using assms
 proof (cases "find_non0 l A") {
   case (Some m)
-    then have Aml0: "A $$ (m,l) \<noteq> 0" using finds_non0 by auto
-    have md: "m < dim\<^sub>r A" using find_non0_ordered[OF Some] lk kr by auto
+    then have Aml0: "A $$ (m,l) \<noteq> 0" using find_non0[OF sel_fun] by auto
+    have md: "m < dim\<^sub>r A" using find_non0[OF sel_fun Some] lk kr by auto
     let ?A'' = "swaprows m l A"
-    have rA'2: "sub1 (k - Suc l) l (-r, ?A'') = (r',A')"
-      using rA' Some by simp
+    have rA'2: "sub1 (?A'' $$ (l,l)) (k - Suc l) l (-r, ?A'') = (r',A')"
+      using rA' Some by (simp add: Let_def)
     have All0: "?A'' $$ (l,l) \<noteq> 0" using Aml0 md lk kr lc by auto
     show ?thesis using sub1_divisor[OF rA'2 _ All0] r0 lk kr lc by simp
 } qed auto
 
 lemma sub3_divisor [simp]:
-  assumes "sub3 d l (r,(A ::'a :: ring_div mat)) = (r'',A'')"
+  assumes "sub3 d l (r,(A ::'a mat)) = (r'',A'')"
   and "l \<le> d"
   and "d \<le> dim\<^sub>r A"
   and "l \<le> dim\<^sub>c A"
@@ -700,7 +716,7 @@ proof -
 qed
 
 theorem triangulize_divisor:
-  assumes A: "(A :: 'a :: ring_div mat) \<in> carrier\<^sub>m d d"
+  assumes A: "(A :: 'a  mat) \<in> carrier\<^sub>m d d"
   shows "triangulize A = (r',A') \<Longrightarrow> r' \<noteq> 0"
 unfolding triangulize_def
 proof -
@@ -717,42 +733,47 @@ text {*
 
 lemma mute_det:
   assumes "A \<in> carrier\<^sub>m n n"
-  and rA': "mute k l (r,A) = (r',A')"
+  and rA': "mute q k l (r,A) = (r',A')"
   and "k < n"
   and "l < n"
   and "k \<noteq> l"
   shows "r * det A' = r' * det A"
-proof -
-  let ?All = "A $$ (l,l)"
-  let ?Akl = "- A $$ (k,l)"
+proof (cases "A $$ (k,l) = 0")
+  case True
+  thus ?thesis using assms by auto
+next
+  case False
+  def gc \<equiv> "gcd q (A $$ (k, l))"
+  let ?All = "q div gc"
+  let ?Akl = "- (A $$ (k,l) div gc)"
   let ?B = "multrow k ?All A"
   let ?C = "addrow ?Akl k l ?B"
-  have "r * det A' = r * det ?C"  using assms unfolding mute_def by auto
+  have "r * det A' = r * det ?C"  using assms by (simp add: Let_def gc_def False)
   also have "det ?C = det ?B" using assms by (auto simp: det_addrow)
   also have "\<dots> = ?All * det A" using assms det_multrow by auto
   also have "r * \<dots> = (r * ?All) * det A" by simp
-  also have r: "r * ?All = r'" using assms unfolding mute_def by auto
+  also have r: "r * ?All = r'" using assms by (simp add: Let_def gc_def False)
   finally show ?thesis.
 qed
 
 lemma sub1_det:
-  assumes A: "(A :: 'a :: ring_div mat) \<in> carrier\<^sub>m n n"
-  and "sub1 k l (r,A) = (r'',A'')"
+  assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m n n"
+  and "sub1 q k l (r,A) = (r'',A'')"
   and r0: "r \<noteq> 0"
-  and All0: "A $$ (l,l) \<noteq> 0"
+  and All0: "q \<noteq> 0"
   and "l + k < n"
   shows "r * det A'' = r'' * det A"
   using assms
 proof -
-  show "sub1 k l (r,A) = (r'',A'') \<Longrightarrow> l + k < n \<Longrightarrow> r * det A'' = r'' * det A"
+  show "sub1 q k l (r,A) = (r'',A'') \<Longrightarrow> l + k < n \<Longrightarrow> r * det A'' = r'' * det A"
   proof (induction k arbitrary:A'' r'')
   case (Suc k)
-    let ?rA' = "sub1 k l (r,A)"
+    let ?rA' = "sub1 q k l (r,A)"
     obtain r' A' where rA':"?rA' = (r',A')" by force
     have A':"A' \<in> carrier\<^sub>m n n" using sub1_closed[OF rA'] A by auto
     have IH: "r * det A' = r' * det A" using Suc assms rA' by auto
-    assume "sub1 (Suc k) l (r,A) = (r'',A'')"
-    then have rA'':"mute (Suc (l+k)) l (r',A') = (r'',A'')" using rA' by auto
+    assume "sub1 q (Suc k) l (r,A) = (r'',A'')"
+    then have rA'':"mute q (Suc (l+k)) l (r',A') = (r'',A'')" using rA' by auto
     hence lem: "r' * det A'' = r'' * det A'"
       using assms Suc A' mute_det[OF A' rA''] by auto
     hence "r * r' * det A'' = r * r'' * det A'" by auto
@@ -765,7 +786,7 @@ proof -
 qed
 
 lemma sub2_det:
-  assumes A: "(A :: 'a :: ring_div mat) \<in> carrier\<^sub>m d d"
+  assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m d d"
   and rA': "sub2 d l (r,A) = (r',A')"
   and r0: "r \<noteq> 0"
   and ld: "l < d"
@@ -774,14 +795,14 @@ proof (cases "find_non0 l A")
   case None then show ?thesis using assms by auto next
   case (Some m) {
     then have lm: "l < m" and md: "m < d"
-      using A find_non0_ordered[OF Some] ld by auto
+      using A find_non0[OF sel_fun Some] ld by auto
     hence "m \<noteq> l" by auto
     let ?A'' = "swaprows m l A"
-    have rA'2: "sub1 (d - Suc l) l (-r, ?A'') = (r',A')"
-      using rA' Some by simp
+    have rA'2: "sub1 (?A'' $$ (l,l)) (d - Suc l) l (-r, ?A'') = (r',A')"
+      using rA' Some by (simp add: Let_def)
     have A'': "?A'' \<in> carrier\<^sub>m d d" using A by auto
     hence A''ll0: "?A'' $$ (l,l) \<noteq> 0"
-      using finds_non0[OF Some] ld by auto
+      using find_non0[OF sel_fun Some] ld by auto
     hence "-r * det A' = r' * det ?A''"
       using sub1_det[OF A'' rA'2] ld A r0 by auto
     also have "r * ... = -r * r' * det A"
@@ -792,7 +813,7 @@ proof (cases "find_non0 l A")
 qed
 
 lemma sub3_det:
-  assumes A:"(A :: 'a :: ring_div mat) \<in> carrier\<^sub>m d d"
+  assumes A:"(A :: 'a mat) \<in> carrier\<^sub>m d d"
   and "sub3 d l (r,A) = (r'',A'')"
   and r0: "r \<noteq> 0"
   and "l \<le> d"
@@ -819,7 +840,7 @@ proof -
 qed
 
 theorem triangulize_det:
-  assumes A: "(A :: 'a :: ring_div mat) \<in> carrier\<^sub>m d d"
+  assumes A: "(A :: 'a  mat) \<in> carrier\<^sub>m d d"
   and rA': "triangulize A = (r',A')"
   shows "det A * r' = det A'"
 proof -
@@ -836,24 +857,26 @@ proof -
       then show ?thesis using sub3_det[OF A rA'2] assms by auto
   qed
 qed
+end
 
 subsection {* Determinant Computation *}
 
-fun det_code :: "'a :: ring_div mat \<Rightarrow> 'a" where
+definition det_code :: "'a mat \<Rightarrow> 'a" where
   "det_code A = (if dim\<^sub>r A = dim\<^sub>c A then
      case triangulize A of (m,A') \<Rightarrow>
        listprod (mat_diag A') div m
    else 0)"
 
-
-lemma det_code[code]: "det A = det_code A"
+lemma det_code[simp]: assumes sel_fun: "det_selection_fun sel_fun"
+  shows "det_code A = det A"
+  using det_code_def[simp]
 proof (cases "dim\<^sub>r A = dim\<^sub>c A")
   case True
   then have A: "A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>r A)" unfolding mat_carrier_def by auto
   obtain r' A' where rA': "triangulize A = (r',A')" by force
-  from triangulize_divisor[OF A] rA' have r'0: "r' \<noteq> 0" by auto
-  from triangulize_det[OF A rA'] have det': "det A * r' = det A'" by auto
-  from triangulized[OF A, unfolded rA'] have tri': "upper_triangular A'" by simp
+  from triangulize_divisor[OF sel_fun A] rA' have r'0: "r' \<noteq> 0" by auto
+  from triangulize_det[OF sel_fun A rA'] have det': "det A * r' = det A'" by auto
+  from triangulized[OF sel_fun A, unfolded rA'] have tri': "upper_triangular A'" by simp
   have A': "A' \<in> carrier\<^sub>m (dim\<^sub>r A') (dim\<^sub>r A')"
     using triangulize_closed[OF rA' A] by auto
   from tri' have tr: "triangular_to (dim\<^sub>r A') A'" by auto
@@ -862,8 +885,16 @@ proof (cases "dim\<^sub>r A = dim\<^sub>c A")
     unfolding det_upper_triangular[OF tri' A'] ..
   also have "\<dots> = det A * r'" by (simp add: det')
   also have "\<dots> div r' = det A" using r'0 by auto
-  finally show ?thesis ..
+  finally show ?thesis .
 qed (simp add: det_def)
+
 end
+
+text \<open>Now we can select an arbitrary selection function. This will be important for computing
+  resultants over polynomials, where usually a polynomial with small degree is preferable.
+
+  The default however is to use the first element.\<close>
+
+lemma det_code_fst_sel_fun[code]: "det A = det_code fst_sel_fun A" by simp
 
 end

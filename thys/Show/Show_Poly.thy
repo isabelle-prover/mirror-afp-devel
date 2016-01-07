@@ -1,16 +1,14 @@
 (*  
     Author:      René Thiemann 
-                 Akihisa Yamada
-    License:     BSD
+    License:     LPGL
 *)
 subsection \<open>Displaying Polynomials\<close>
 
-text \<open>We define a method which converts polynomials to strings and registers it in the Show class.
-  TODO: this theory logically belongs into Show-AFP-entry.\<close>
+text \<open>We define a method which converts polynomials to strings and registers it in the Show class.\<close>
 
 theory Show_Poly
 imports 
-  "$AFP/Show/Show_Instances"
+  Show_Instances
   "~~/src/HOL/Library/Polynomial"
 begin
 
@@ -46,7 +44,7 @@ lemma show_law_poly [show_law_simps]:
   "shows_prec p (a :: 'a poly) (r @ s) = shows_prec p a r @ s"
   by (simp add: shows_prec_poly_def showsp_poly_def show_law_simps)
 
-instance by (default) (auto simp: shows_list_poly_def show_law_simps)
+instance by standard (auto simp: shows_list_poly_def show_law_simps)
 
 end
 

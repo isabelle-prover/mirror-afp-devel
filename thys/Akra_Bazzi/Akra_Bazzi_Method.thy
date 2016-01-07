@@ -46,7 +46,7 @@ lemma akra_bazzi_termsI:
   "(\<And>i. i < length bs \<Longrightarrow> akra_bazzi_term x\<^sub>0 x\<^sub>1 (bs!i) (ts!i)) \<Longrightarrow> akra_bazzi_terms x\<^sub>0 x\<^sub>1 bs ts"
   unfolding akra_bazzi_terms_def by blast
 
-lemma akra_bazzi_functionI:
+lemma master_theorem_functionI:
   assumes "\<forall>x\<in>{x\<^sub>0..<x\<^sub>1}. f x \<ge> 0"
   assumes "\<forall>x\<ge>x\<^sub>1. f x = g x + (\<Sum>i<k. as ! i * f ((ts ! i) x))"
   assumes "\<forall>x\<ge>x\<^sub>1. g x \<ge> 0"
@@ -58,7 +58,7 @@ lemma akra_bazzi_functionI:
   assumes "length bs = k"
   assumes "length ts = k"
   assumes "akra_bazzi_terms x\<^sub>0 x\<^sub>1 bs ts"
-  shows "akra_bazzi_function x\<^sub>0 x\<^sub>1 k as bs ts f g"
+  shows "master_theorem_function x\<^sub>0 x\<^sub>1 k as bs ts f g"
 using assms unfolding akra_bazzi_terms_def by unfold_locales (auto simp: list_ex_iff)
 
 lemma akra_bazzi_term_measure:
@@ -269,7 +269,7 @@ lemmas CLAMP_aux =
 
 lemmas CLAMP_postproc = numeral_One
 
-context akra_bazzi_function
+context master_theorem_function
 begin
 
 lemma master1_bigo_automation:

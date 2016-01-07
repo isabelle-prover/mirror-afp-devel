@@ -5,9 +5,9 @@
 *)
 section \<open>Jordan Normal Form\<close>
 
-text \<open>This theory defines Jordan normal forms (JNFs) in a sparse representation, i.e., as block-diagonal
-  matrices. We also provide a closed formula for powers of JNFs, which allows to estimate the growth rates
-  of JNFs.\<close>
+text \<open>This theory defines Jordan normal forms (JNFs) in a sparse representation, i.e., 
+  as block-diagonal matrices. We also provide a closed formula for powers of JNFs, 
+  which allows to estimate the growth rates of JNFs.\<close>
 
 theory Jordan_Normal_Form
 imports 
@@ -30,7 +30,7 @@ lemma jordan_block_carrier[simp]: "jordan_block n k \<in> carrier\<^sub>m n n"
   unfolding mat_carrier_def by auto
 
 lemma jordan_block_char_poly: "char_poly (jordan_block n a) = [: -a, 1:]^n"
-  unfolding char_poly_def by (subst det_upper_triangular[of _ n], auto simp: listprod_diag_setprod)
+  unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: listprod_diag_setprod)
 
 lemma jordan_block_pow_carrier[simp]:
   "jordan_block n a ^\<^sub>m r \<in> carrier\<^sub>m n n" by auto
@@ -163,7 +163,7 @@ next
 qed
 
 definition jordan_matrix :: "(nat \<times> 'a :: {zero,one})list \<Rightarrow> 'a mat" where
-  "jordan_matrix n_as \<equiv> diag_block_mat (map (\<lambda> (n,a). jordan_block n a) n_as)"
+  "jordan_matrix n_as = diag_block_mat (map (\<lambda> (n,a). jordan_block n a) n_as)"
 
 lemma jordan_matrix_dim[simp]: 
   "dim\<^sub>r (jordan_matrix n_as) = listsum (map fst n_as)"
@@ -218,7 +218,7 @@ proof -
   also have "listprod ... = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
     by (induct n_as, auto)
   finally
-  show ?thesis unfolding char_poly_def
+  show ?thesis unfolding char_poly_defs
     by (subst det_upper_triangular[of _ ?n], auto simp: jordan_matrix_upper_triangular)
 qed
 
@@ -240,7 +240,7 @@ proof -
   show thesis
   proof (rule obt)
     show "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m jordan_matrix n_as ^\<^sub>m k \<otimes>\<^sub>m Q"
-      by (rule mat_similar_wit_pow[OF simw])
+      by (rule mat_similar_wit_pow_id[OF simw])
     show "char_poly A = (\<Prod>(na, a)\<leftarrow>n_as. [:- a, 1:] ^ na)"
       unfolding char_poly_similar[OF sim] jordan_matrix_char_poly ..    
   qed (insert simw[unfolded mat_similar_wit_def Let_def dim], auto)
@@ -608,7 +608,7 @@ proof -
   from jnf[unfolded jordan_nf_def]
   have sim: "mat_similar A ?J" .
   then obtain P Q where sim_wit: "mat_similar_wit A ?J P Q" unfolding mat_similar_def by auto
-  from mat_similar_wit_pow[OF this] have pow: "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m ?J ^\<^sub>m k \<otimes>\<^sub>m Q" .
+  from mat_similar_wit_pow_id[OF this] have pow: "\<And> k. A ^\<^sub>m k = P \<otimes>\<^sub>m ?J ^\<^sub>m k \<otimes>\<^sub>m Q" .
   from sim_wit[unfolded mat_similar_wit_def Let_def] A 
   have J: "?J \<in> carrier\<^sub>m n n" and P: "P \<in> carrier\<^sub>m n n" and Q: "Q \<in> carrier\<^sub>m n n"
     unfolding mat_carrier_def by force+
@@ -632,21 +632,88 @@ proof -
   show ?thesis 
     by (intro exI allI, rule main)
 qed
+end
 
-text \<open>We did not yet prove the following statement on the 
-  existence of JNFs yet, 
-  which remains as future work. However, the result is already 
-  available for upper triangular matrices, where there is an algorithm
-  that actually computes the JNF, cf. theory Jordan-Normal-Form-Triangular.\<close>
+context 
+  fixes f_ty :: "'a :: field itself"
+begin
+lemma char_matrix_jordan_block: "char_matrix (jordan_block n a) b = (jordan_block n (a - b))"
+  unfolding char_matrix_def jordan_block_def by auto
 
-theorem jordan_nf: assumes A: "A \<in> carrier\<^sub>m n n"
-  and linear_factors: "char_poly A = (\<Prod> a \<leftarrow> as. [:- a, 1:])"
-  shows "\<exists> n_as. jordan_nf A n_as"
-oops (* currently missing *)
-  
+lemma diag_jordan_block_pow: "mat_diag (jordan_block n (a :: 'a) ^\<^sub>m k) = replicate n (a ^ k)"
+  unfolding mat_diag_def jordan_block_pow
+  by (intro nth_equalityI, auto)
+
+lemma jordan_block_zero_pow: "(jordan_block n (0 :: 'a)) ^\<^sub>m k = 
+  (mat n n (\<lambda> (i,j). if j \<ge> i \<and> j - i = k then 1 else 0))"
+proof -
+  {
+    fix i j
+    assume  *: "j - i \<noteq> k"
+    have "of_nat (k choose (j - i)) * 0 ^ (k + i - j) = (0 :: 'a)"
+    proof (cases "k + i - j > 0")
+      case True thus ?thesis by (cases "k + i - j", auto)
+    next
+      case False
+      with * have "j - i > k" by auto
+      thus ?thesis by (simp add: binomial_eq_0)
+    qed
+  }
+  thus ?thesis unfolding jordan_block_pow by (intro mat_eqI, auto)
+qed
+end
+
+lemma jordan_matrix_concat_diag_block_mat: "jordan_matrix (concat jbs) = diag_block_mat (map jordan_matrix jbs)"
+  unfolding jordan_matrix_def[abs_def]
+  by (induct jbs, auto simp: diag_block_mat_append Let_def)
+
+lemma jordan_nf_diag_block_mat: assumes Ms: "\<And> A jbs. (A,jbs) \<in> set Ms \<Longrightarrow> jordan_nf A jbs"
+  shows "jordan_nf (diag_block_mat (map fst Ms)) (concat (map snd Ms))"
+proof -
+  let ?Ms = "map (\<lambda> (A, jbs). (A, jordan_matrix jbs)) Ms"
+  have id: "map fst ?Ms = map fst Ms" by auto
+  have id2: "map snd ?Ms = map jordan_matrix (map snd Ms)" by auto
+  {
+    fix A B
+    assume "(A,B) \<in> set ?Ms"
+    then obtain jbs where mem: "(A,jbs) \<in> set Ms" and B: "B = jordan_matrix jbs" by auto
+    from Ms[OF mem] have "mat_similar A B" unfolding B jordan_nf_def .
+  }
+  from mat_similar_diag_block_mat[of ?Ms, OF this, unfolded id id2]
+  show ?thesis
+    unfolding jordan_nf_def jordan_matrix_concat_diag_block_mat by auto
+qed  
+
+
+lemma jordan_nf_char_poly: assumes "jordan_nf A n_as"
+  shows "char_poly A = (\<Prod> (n,a) \<leftarrow> n_as. [:- a, 1:] ^ n)"
+  unfolding jordan_matrix_char_poly[symmetric]
+  by (rule char_poly_similar, insert assms[unfolded jordan_nf_def])
+
+lemma jordan_nf_block_size_order_bound: assumes jnf: "jordan_nf A n_as"
+  and mem: "(n,a) \<in> set n_as"
+  shows "n \<le> order a (char_poly A)"
+proof -
+  from jnf[unfolded jordan_nf_def]
+  have "mat_similar A (jordan_matrix n_as)" .
+  from mat_similarD[OF this] obtain m where "A \<in> carrier\<^sub>m m m" by auto
+  from degree_monic_char_poly[OF this] have A: "char_poly A \<noteq> 0" by auto
+  from mem obtain as bs where nas: "n_as = as @ (n,a) # bs" 
+    by (meson split_list)
+  from jordan_nf_char_poly[OF jnf] 
+  have cA: "char_poly A = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)" .
+  also have "\<dots> = [: -a, 1:] ^ n * (\<Prod>(n, a)\<leftarrow> as @ bs. [:- a, 1:] ^ n)" unfolding nas by auto
+  also have "[: -a,1 :] ^ n dvd \<dots>" unfolding dvd_def by blast
+  finally have "[: -a,1 :] ^ n dvd char_poly A" by auto
+  from order_max[OF this A] show ?thesis .
+qed
+
+
+subsection \<open>Application for Complexity\<close>
+
 lemma factored_char_poly_norm_bound: assumes A: "A \<in> carrier\<^sub>m n n"
-  and linear_factors: "char_poly A = (\<Prod> (a :: 'a) \<leftarrow> as. [:- a, 1:])"
-  and jnf_exists: "\<exists> n_as. jordan_nf A n_as" (* TODO: delete, once jordan_nf theorem is available *)
+  and linear_factors: "char_poly A = (\<Prod> (a :: 'a :: real_normed_field) \<leftarrow> as. [:- a, 1:])"
+  and jnf_exists: "\<exists> n_as. jordan_nf A n_as" 
   and le_1: "\<And> a. a \<in> set as \<Longrightarrow> norm a \<le> 1"
   and le_N: "\<And> a. a \<in> set as \<Longrightarrow> norm a = 1 \<Longrightarrow> length (filter (op = a) as) \<le> N"
   shows "\<exists> c1 c2. \<forall> k. norm_bound (A ^\<^sub>m k) (c1 + c2 * of_nat k ^ (N - 1))"
@@ -692,6 +759,5 @@ proof -
     }
   qed
 qed
-end
 
 end
