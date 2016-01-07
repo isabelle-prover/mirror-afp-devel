@@ -16,7 +16,7 @@ imports
   Matrix_Comparison
   Complexity_Carrier
   "../Matrix/Utility"
-  Matrix_Show
+  Show_Matrix
   Arctic_Show
 begin
 

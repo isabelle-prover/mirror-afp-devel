@@ -12,7 +12,7 @@ theory Matrix_Impl
 imports 
   Matrix_IArray_Impl
   Determinant_Impl
-  Matrix_Show
+  Show_Matrix
   Jordan_Normal_Form_Triangular
   "../Show/Show_Instances"
 begin
