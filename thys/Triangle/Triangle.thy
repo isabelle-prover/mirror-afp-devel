@@ -209,12 +209,13 @@ lemma congruent_triangleI_sss:
   assumes "dist a1 c1 = dist a2 c2"
   shows   "congruent_triangle a1 b1 c1 a2 b2 c2"
 proof -
-  {
-    fix a1 b1 c1 :: 'a and a2 b2 c2 :: 'b
-    assume "dist a1 b1 = dist a2 b2" "dist b1 c1 = dist b2 c2" "dist a1 c1 = dist a2 c2"
-    with cosine_law_triangle''[of a1 b1 c1] cosine_law_triangle''[of a2 b2 c2] 
-      have "angle a1 b1 c1 = angle a2 b2 c2" by (intro cos_angle_eqD) (simp add: dist_commute)
-  } note A = this
+  have A: "angle a1 b1 c1 = angle a2 b2 c2" 
+    if "dist a1 b1 = dist a2 b2" "dist b1 c1 = dist b2 c2" "dist a1 c1 = dist a2 c2"
+    for a1 b1 c1 :: 'a and a2 b2 c2 :: 'b
+  proof -
+    from that cosine_law_triangle''[of a1 b1 c1] cosine_law_triangle''[of a2 b2 c2] 
+      show ?thesis by (intro cos_angle_eqD) (simp add: dist_commute)
+  qed
   from assms show ?thesis by unfold_locales (auto intro!: A simp: dist_commute)
 qed
 

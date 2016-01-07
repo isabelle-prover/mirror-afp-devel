@@ -9,7 +9,7 @@ section {* Squarefree decomposition of natural numbers *}
 theory Squarefree_Nat
 imports
   Main
-  "~~/src/HOL/Number_Theory/UniqueFactorization"
+  "~~/src/HOL/Number_Theory/Number_Theory"
   Prime_Harmonic_Misc
 begin
 
@@ -128,8 +128,10 @@ proof -
   hence "s2 > 0" by simp
   note pos = \<open>\<Prod>A1 > 0\<close> \<open>\<Prod>A2 > 0\<close> \<open>s1 > 0\<close> \<open>s2 > 0\<close>
 
-  {
-    fix p :: nat assume p: "prime p"
+  have eq': "multiplicity p s1 = multiplicity p s2" 
+            "multiplicity p (\<Prod>A1) = multiplicity p (\<Prod>A2)" 
+    if   p: "prime p" for p
+  proof -
     def m \<equiv> "multiplicity p"
     from decomp have "m (\<Prod>A1 * s1^2) = m (\<Prod>A2 * s2^2)" unfolding A1_def s1_def
       by (simp add: A1_def s1_def squarefree_decompose)
@@ -137,10 +139,9 @@ proof -
       by (simp add: m_def multiplicity_product_nat multiplicity_power_nat)
     moreover from fin subset have "m (\<Prod>A1) \<le> 1" "m (\<Prod>A2) \<le> 1" unfolding m_def
       by ((subst multiplicity_prod_prime_powers_nat', auto)[])+
-    ultimately have "m s1 = m s2" by linarith
-    with eq have "m (\<Prod>A1) = m (\<Prod>A2)" by simp
-    note \<open>m s1 = m s2\<close> and this
-  } note eq' = this
+    ultimately show "m s1 = m s2" by linarith
+    with eq show "m (\<Prod>A1) = m (\<Prod>A2)" by simp
+  qed
   
   show "s2 = square_part n"
     by (rule multiplicity_eq_nat) (insert pos eq'(1), auto simp: s1_def)
