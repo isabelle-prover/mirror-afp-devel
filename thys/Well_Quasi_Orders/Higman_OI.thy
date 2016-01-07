@@ -24,10 +24,6 @@ lemma po_on_suffix:
   "po_on suffix A"
 by (force simp: suffix_def po_on_def transp_on_def irreflp_on_def)
 
-lemma antisymp_on_suffix:
-  "antisymp_on suffix A"
-by (auto simp: antisymp_on_def suffix_def)
-
 
 subsection \<open>Lexicographic Order on Infinite Sequences\<close>
 
