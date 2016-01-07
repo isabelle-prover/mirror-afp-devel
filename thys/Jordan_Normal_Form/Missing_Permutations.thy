@@ -17,7 +17,7 @@ begin
 definition signof :: "(nat \<Rightarrow> nat) \<Rightarrow> 'a :: ring_1" where
   "signof p = (if sign p = 1 then 1 else - 1)"
 
-lemma signof_id: "signof id = 1" "signof (\<lambda> x. x) = 1"
+lemma signof_id[simp]: "signof id = 1" "signof (\<lambda> x. x) = 1"
   unfolding signof_def sign_id id_def[symmetric] by auto
 
 lemma signof_inv: "finite S \<Longrightarrow> p permutes S \<Longrightarrow> signof (Hilbert_Choice.inv p) = signof p"
@@ -164,7 +164,29 @@ next
     by metis
 qed
 
-(* required from HMA_Connect *)
+lemma finite_bounded_functions':
+  assumes fS: "finite S"
+  shows "finite T \<Longrightarrow> finite {f. (\<forall>i \<in> T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = j)}"
+proof (induct T rule: finite_induct)
+  case empty
+  have th: "{f. \<forall>i. f i = j} = {(\<lambda> x. j)}"
+    by auto
+  show ?case
+    by (auto simp add: th)
+next
+  case (insert a T)
+  let ?f = "\<lambda>(y,g) i. if i = a then y else g i"
+  let ?S = "?f ` (S \<times> {f. (\<forall>i\<in>T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = j)})"
+  have "?S = {f. (\<forall>i\<in> insert a T. f i \<in> S) \<and> (\<forall>i. i \<notin> insert a T \<longrightarrow> f i = j)}"
+    apply (auto simp add: image_iff)
+    apply (rule_tac x="x a" in bexI)
+    apply (rule_tac x = "\<lambda>i. if i = a then j else x i" in exI)
+    apply (insert insert, auto)
+    done
+  with finite_imageI[OF finite_cartesian_product[OF fS insert.hyps(3)], of ?f]
+  show ?case
+    by metis
+qed
 
 context
   fixes A :: "'a set" 
@@ -268,7 +290,7 @@ proof
 qed
 end
 
-lemma  permutes_bij: assumes ab: "\<And> a. a \<in> A \<Longrightarrow> a_to_b a \<in> B"
+lemma  permutes_bij': assumes ab: "\<And> a. a \<in> A \<Longrightarrow> a_to_b a \<in> B"
     and ba: "\<And> b. b \<in> B \<Longrightarrow> b_to_a b \<in> A"
     and ab_ba: "\<And> a. a \<in> A \<Longrightarrow> b_to_a (a_to_b a) = a"
     and ba_ab: "\<And> b. b \<in> B \<Longrightarrow> a_to_b (b_to_a b) = b"
@@ -337,5 +359,105 @@ proof (intro conjI allI impI, rule f)
   qed
 qed
 
+
+lemma permutes_pair_eq:
+  assumes p: "p permutes S"
+  shows "{ (p s, s) | s. s \<in> S } = { (s, Hilbert_Choice.inv p s) | s. s \<in> S }"
+    (is "?L = ?R")
+proof
+  show "?L \<subseteq> ?R"
+  proof
+    fix x assume "x \<in> ?L"
+    then obtain s where x: "x = (p s, s)" and s: "s \<in> S" by auto
+    note x
+    also have "(p s, s) = (p s, Hilbert_Choice.inv p (p s))"
+      using permutes_inj[OF p] inv_f_f by auto
+    also have "... \<in> ?R" using s permutes_in_image[OF p] by auto
+    finally show "x \<in> ?R".
+  qed
+  show "?R \<subseteq> ?L"
+  proof
+    fix x assume "x \<in> ?R"
+    then obtain s
+      where x: "x = (s, Hilbert_Choice.inv p s)" (is "_ = (s, ?ips)")
+        and s: "s \<in> S" by auto
+    note x
+    also have "(s, ?ips) = (p ?ips, ?ips)"
+      using inv_f_f[OF permutes_inj[OF permutes_inv[OF p]]]
+      using inv_inv_eq[OF permutes_bij[OF p]] by auto
+    also have "... \<in> ?L"
+      using s permutes_in_image[OF permutes_inv[OF p]] by auto
+    finally show "x \<in> ?L".
+  qed
+qed
+
+lemma inj_on_finite[simp]:
+  assumes inj: "inj_on f A" shows "finite (f ` A) = finite A"
+proof
+  assume fin: "finite (f ` A)"
+  show "finite A"
+  proof (cases "card (f ` A) = 0")
+    case True thus ?thesis using fin by auto
+    next case False 
+      hence "card A > 0" unfolding card_image[OF inj] by auto
+      thus ?thesis using card_infinite by force
+  qed
+qed auto
+
+lemma permutes_setprod:
+  assumes p: "p permutes S"
+  shows "(\<Prod>s\<in>S. f (p s) s) = (\<Prod>s\<in>S. f s (Hilbert_Choice.inv p s))"
+    (is "?l = ?r")
+proof -
+  let ?f = "\<lambda>(x,y). f x y"
+  let ?ps = "\<lambda>s. (p s, s)"
+  let ?ips = "\<lambda>s. (s, Hilbert_Choice.inv p s)"
+  have inj1: "inj_on ?ps S" by (rule inj_onI;auto)
+  have inj2: "inj_on ?ips S" by (rule inj_onI;auto)
+  have "?l = setprod ?f (?ps ` S)"
+    using setprod.reindex[OF inj1, of ?f] by simp
+  also have "?ps ` S = {(p s, s) |s. s \<in> S}" by auto
+  also have "... = {(s, Hilbert_Choice.inv p s) | s. s \<in> S}"
+    unfolding permutes_pair_eq[OF p] by simp
+  also have "... = ?ips ` S" by auto
+  also have "setprod ?f ... = ?r"
+    using setprod.reindex[OF inj2, of ?f] by simp
+  finally show ?thesis.
+qed
+
+lemma permutes_setsum:
+  assumes p: "p permutes S"
+  shows "(\<Sum>s\<in>S. f (p s) s) = (\<Sum>s\<in>S. f s (Hilbert_Choice.inv p s))"
+    (is "?l = ?r")
+proof -
+  let ?f = "\<lambda>(x,y). f x y"
+  let ?ps = "\<lambda>s. (p s, s)"
+  let ?ips = "\<lambda>s. (s, Hilbert_Choice.inv p s)"
+  have inj1: "inj_on ?ps S" by (rule inj_onI;auto)
+  have inj2: "inj_on ?ips S" by (rule inj_onI;auto)
+  have "?l = setsum ?f (?ps ` S)"
+    using setsum.reindex[OF inj1, of ?f] by simp
+  also have "?ps ` S = {(p s, s) |s. s \<in> S}" by auto
+  also have "... = {(s, Hilbert_Choice.inv p s) | s. s \<in> S}"
+    unfolding permutes_pair_eq[OF p] by simp
+  also have "... = ?ips ` S" by auto
+  also have "setsum ?f ... = ?r"
+    using setsum.reindex[OF inj2, of ?f] by simp
+  finally show ?thesis.
+qed
+
+lemma inv_inj_on_permutes: "inj_on Hilbert_Choice.inv { p. p permutes S }"
+proof (intro inj_onI, unfold mem_Collect_eq)
+  let ?i = "Hilbert_Choice.inv"
+  fix p q
+  assume p: "p permutes S" and q: "q permutes S" and eq: "?i p = ?i q"
+  have "?i (?i p) = ?i (?i q)" using eq by simp
+  thus "p = q"
+    using inv_inv_eq[OF permutes_bij] p q by metis
+qed
+
+lemma permutes_others:
+  assumes p: "p permutes S" and x: "x \<notin> S" shows "p x = x"
+  using p unfolding permutes_def using x by simp
 
 end
