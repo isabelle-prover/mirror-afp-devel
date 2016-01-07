@@ -2215,5 +2215,27 @@ lemma (in inj_semiring_hom) mat_hom_inj: "mat\<^sub>h A = mat\<^sub>h B \<Longri
 lemma (in inj_semiring_hom) vec_hom_inj: "vec\<^sub>h v = vec\<^sub>h w \<Longrightarrow> v = w"
   unfolding vec_eq_iff by (auto simp: hom_inj)
 
+lemma (in semiring_hom) mat_hom_pow: assumes A: "A \<in> carrier\<^sub>m n n"
+  shows "mat\<^sub>h (A ^\<^sub>m k) = (mat\<^sub>h A) ^\<^sub>m k"
+proof (induct k)
+  case (Suc k)
+  thus ?case using mat_hom_mult[OF mat_pow_closed[OF A, of k] A] by simp
+qed (simp add: mat_hom_one)
+
+lemma (in semiring_hom) hom_mat_sum: "hom (mat_sum A) = mat_sum (mat\<^sub>h A)"
+proof -
+  obtain B where id: "?thesis = (hom (setsum (op $$ A) B) = setsum (op $$ (mat\<^sub>h A)) B)"
+    and B: "B \<subseteq> {0..<dim\<^sub>r A} \<times> {0..<dim\<^sub>c A}"
+  unfolding mat_sum_def by auto
+  from B have "finite B" 
+    using finite_subset by blast
+  thus ?thesis unfolding id using B
+  proof (induct B)
+    case (insert x F)
+    show ?case unfolding setsum.insert[OF insert(1-2)] hom_add 
+      using insert(3-) by auto
+  qed simp
+qed
+
 
 end

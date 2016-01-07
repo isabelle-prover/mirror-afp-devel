@@ -10,6 +10,7 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
   theories
     Matrix_Impl
     Matrix_Complexity
+    Jordan_Normal_Form_Existence
   document_files
     "root.bib"
     "root.tex"

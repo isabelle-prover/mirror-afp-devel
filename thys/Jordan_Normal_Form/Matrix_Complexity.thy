@@ -5,19 +5,13 @@
 *)
 section \<open>Application: Complexity of Matrix Orderings\<close>
 
-text \<open>In this theory we provide executable tests which guarantee polynomial
-  growth of powers of matrices, and moreover a degree of the polynomial is returned.
-
-  We further provide various carriers which can be used for matrix interpretations.\<close>
+text \<open>In this theory we provide various carriers which can be used for matrix interpretations.\<close>
 
 theory Matrix_Complexity 
 imports
-  Jordan_Normal_Form_Triangular
   Matrix_Comparison
   Complexity_Carrier
-  "../Matrix/Utility"
-  Show_Matrix
-  Arctic_Show
+  Show_Arctic
 begin
 
 subsection \<open>Locales for Carriers of Matrix Interpretations and Polynomial Orders\<close>
@@ -179,7 +173,7 @@ proof -
         by (rule mult_nonneg_nonneg, insert x N, auto)
       thus "ceiling (x * ?N) \<ge> 0" by auto
     qed 
-    also have "(nat (int (n * nat N))) = n * nat N" by (simp add: nat_mult_distrib)
+    also have "(nat (int (n * nat N))) = n * nat N" by presburger
     also have "n * nat N = ?nat (of_nat n)" using N by (metis id ceiling_of_int nat_int)
     finally
     show "?nat (x + of_nat n) = ?nat x + ?nat (of_nat n)" .
@@ -262,145 +256,5 @@ proof -
   show ?thesis
     by (unfold_locales, intro conjI exI, rule SN, auto)
 qed
-
-
-subsection \<open>Estimations of Matrix Powers\<close>
-
-text \<open>We connect the strict ordering @{const mat_gt} with @{const norm_bound} 
-  where the latter can be approximated via @{thm [source] compute_jnf_complexity} and 
-  @{thm [source] counting_ones_complexity}. Since @{thm [source] compute_jnf_complexity} provides sharper bounds,
-  we only use this one.\<close>
-
-definition mat_estimate_complexity :: "nat \<Rightarrow> 'a :: large_real_ordered_semiring_1 mat \<Rightarrow> nat option" where
-  "mat_estimate_complexity n A = (let B = mat\<^sub>\<real> A in (if A \<in> carrier\<^sub>m n n \<and> upper_triangular A
-     then let jnf = triangular_to_jnf_vector B
-       in if (\<forall> na \<in> set jnf. norm (snd na) \<le> 1) then Some (max_list (map fst (filter (\<lambda> na. norm (snd na) = 1) jnf)) - 1) else None
-     else None))"
-
-lemma mat_estimate_complexity_norm_bound: assumes *: "mat_estimate_complexity n A = Some d"
-  shows "\<exists> c1 c2. \<forall> k. norm_bound (mat\<^sub>\<real> A ^\<^sub>m k) (c1 + c2 * of_nat k ^ d)"
-proof -
-  let ?B = "mat\<^sub>\<real> A"
-  let ?jnf = "triangular_to_jnf_vector ?B"
-  note * = *[unfolded mat_estimate_complexity_def Let_def]
-  from * have B: "?B \<in> carrier\<^sub>m n n" and ut: "upper_triangular ?B" 
-    and 1: "\<And> n a. (n,a) \<in> set ?jnf \<Longrightarrow> norm a \<le> 1"
-    and d: "d = max_list (map fst (filter (\<lambda> na. norm (snd na) = 1) ?jnf)) - 1" 
-    by (auto split: if_splits simp: Let_def real_zero upper_triangular_def)
-  show ?thesis unfolding d
-    by (rule compute_jnf_complexity[OF B ut 1 max_list], force+)
-qed
-
-context
-  fixes A B C :: "'a :: large_real_ordered_semiring_1 mat" and n d :: nat
-  assumes *: "mat_estimate_complexity n A = Some d"
-  and A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n n" and C: "C \<in> carrier\<^sub>m n n"
-begin
-
-lemma mat_estimate_complexity_norm_bound_prod: 
-  "\<exists> c. \<forall> k. k > 0 \<longrightarrow> norm_bound (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C)) (c * of_nat k ^ d)"
-proof -
-  let ?R = "mat\<^sub>\<real>"
-  let ?A = "?R A"
-  let ?B = "?R B"
-  let ?C = "?R C"
-  from mat_estimate_complexity_norm_bound[OF *]
-  obtain c1 c2 where bnd: "\<And> k. norm_bound (?A ^\<^sub>m k) (c1 + c2 * of_nat k ^ d)" by auto
-  def c \<equiv> "(max c1 0) + (max c2 0)"
-  from norm_bound_max[of ?B] obtain nb where nb: "norm_bound ?B nb" by auto
-  from norm_bound_max[of ?C] obtain nc where nc: "norm_bound ?C nc" by auto
-  let ?n = "of_nat n :: real"
-  def b \<equiv> "nb * nc * ?n * ?n * c"
-  {
-    fix k
-    assume "k > (0 :: nat)"
-    let ?k = "of_nat k :: real"
-    from bnd[of k] have "norm_bound (?A ^\<^sub>m k) (c1 + c2 * ?k ^ d)" .
-    have "c1 \<le> (max c1 0) * 1 ^ d" by auto
-    also have "\<dots> \<le> (max c1 0) * ?k ^ d"
-      by (rule mult_left_mono, insert `k > 0`, auto)
-    also have "\<dots> + c2 * ?k ^ d \<le> c * ?k ^ d"
-      unfolding c_def by (auto simp: field_simps intro: mult_right_mono)
-    finally have "c1 + c2 * of_nat k ^ d \<le> c * of_nat k ^ d" by auto
-    with bnd[of k] have "norm_bound (?A ^\<^sub>m k) (c * of_nat k ^ d)"
-      unfolding norm_bound_def by force
-    from norm_bound_mult[OF mat_pow_closed _ this nc]
-    have "norm_bound (?A ^\<^sub>m k \<otimes>\<^sub>m ?C) (c * ?k ^ d * nc * ?n)" using A C by auto
-    from norm_bound_mult[OF _ mat_mult_mat_closed[OF mat_pow_closed] nb this]
-    have "norm_bound (?B \<otimes>\<^sub>m (?A ^\<^sub>m k \<otimes>\<^sub>m ?C)) (b * ?k ^ d)" unfolding b_def using A B C
-      by (auto simp: ac_simps)
-  } note bnd = this
-  thus ?thesis by auto
-qed
-
-text \<open>This is the main result for real valued matrices.\<close>
-
-lemma mat_estimate_complexity_norm_mat_sum_prod: 
-  "\<exists> c. \<forall> k. k > 0 \<longrightarrow> norm (mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C))) \<le> (c * of_nat k ^ d)"
-proof -
-  let ?R = "mat\<^sub>\<real>"
-  let ?A = "?R A"
-  let ?B = "?R B"
-  let ?C = "?R C"
-  from mat_estimate_complexity_norm_bound_prod obtain c
-  where bnd: "\<And> k. k > 0 \<Longrightarrow> norm_bound (?B \<otimes>\<^sub>m (?A ^\<^sub>m k \<otimes>\<^sub>m ?C)) (c * of_nat k ^ d)" by auto
-  let ?n = "of_nat n :: real"
-  def b \<equiv> "?n * ?n * c" 
-  {
-    fix k
-    let ?nn = "{0 ..< n}"
-    let ?g = "\<lambda> i. c * of_nat k ^ d"
-    assume "k > (0 :: nat)"    
-    from bnd[OF this] have bnd: "norm_bound (?B \<otimes>\<^sub>m (?A ^\<^sub>m k \<otimes>\<^sub>m ?C)) (c * of_nat k ^ d)" .
-    have "norm (mat_sum (?B \<otimes>\<^sub>m (?A ^\<^sub>m k \<otimes>\<^sub>m ?C))) \<le> setsum ?g (?nn \<times> ?nn)"
-      unfolding mat_sum_def
-      by (rule order_trans[OF setsum_norm_le[of _ _ ?g]],
-      insert bnd A B C, auto simp: norm_bound_def)
-    also have "\<dots> = b * of_nat k ^ d" unfolding b_def setsum_constant
-      by (simp add: ac_simps of_nat_mult)
-    finally have "norm (mat_sum (?B \<otimes>\<^sub>m (?A ^\<^sub>m k \<otimes>\<^sub>m ?C))) \<le> b * of_nat k ^ d" by auto
-  }
-  thus ?thesis by auto
-qed
-
-text \<open>And via conversion, it also holds for matrices over the intended semiring.\<close>
-
-lemma mat_estimate_complexity_mat_sum_prod: 
-  "\<exists> c. \<forall> k. k > 0 \<longrightarrow> mat_sum (B \<otimes>\<^sub>m (A ^\<^sub>m k \<otimes>\<^sub>m C)) \<le> (c * of_nat k ^ d)"
-proof -  
-  from mat_estimate_complexity_norm_mat_sum_prod obtain c where 
-    bnd: "\<And> k. k > 0 \<Longrightarrow> norm (mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C))) \<le> (c * of_nat k ^ d)"
-    by auto
-  note mat_real_conv = 
-    real_embedding.hom_mat_sum 
-    real_embedding.mat_hom_pow [of _ n]
-    real_embedding.mat_hom_mult[of _ n n]
-  {
-    fix k
-    assume "k > (0 :: nat)"
-    let ?sum = "mat_sum (B \<otimes>\<^sub>m (A ^\<^sub>m k \<otimes>\<^sub>m C))"
-    have Ak: "A ^\<^sub>m k \<in> carrier\<^sub>m n n" using A by simp
-    have AkC: "A ^\<^sub>m k \<otimes>\<^sub>m C \<in> carrier\<^sub>m n n" using Ak C by simp
-    let ?ck = "c * of_nat k ^ d"
-    let ?cck = "of_int \<lceil>c\<rceil> * of_nat k ^ d :: real"
-    from bnd[OF `k > 0`] have "mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C)) \<le> ?ck" by auto
-    also have "mat_sum (mat\<^sub>\<real> B \<otimes>\<^sub>m (mat\<^sub>\<real> A ^\<^sub>m k \<otimes>\<^sub>m mat\<^sub>\<real> C)) = 
-      real_of ?sum" 
-      using Ak AkC A B C by (simp add: mat_real_conv)
-    finally have "real_of ?sum \<le> ?ck" .
-    from real_le[OF this] have le: "?sum \<le> of_int \<lceil>?ck\<rceil>" by auto
-    have "?ck \<le> ?cck" by (simp add: times_left_mono)
-    hence "\<lceil>?ck\<rceil> \<le> \<lceil>?cck\<rceil>" by linarith
-    hence "of_int \<lceil>?ck\<rceil> \<le> ((of_int \<lceil>?cck\<rceil>) :: 'a)" 
-      unfolding of_int_le_iff .
-    with le have le: "?sum \<le> of_int \<lceil>?cck\<rceil>" by linarith
-    also have "\<dots> = of_int \<lceil>c\<rceil> * of_nat k ^ d"
-      by (metis (no_types, hide_lams) ceiling_of_int of_int_mult of_int_of_nat_eq of_nat_power)
-    finally have "?sum \<le> of_int \<lceil>c\<rceil> * of_nat k ^ d" .
-  }
-  thus ?thesis by auto
-qed
-end
-
 
 end

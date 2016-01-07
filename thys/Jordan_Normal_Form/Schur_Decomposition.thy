@@ -22,7 +22,7 @@ theory Schur_Decomposition
 imports 
   Gram_Schmidt 
   Missing_Polynomial
-  "$AFP/Algebraic_Numbers/Char_Poly"
+  Char_Poly
 begin
 
 definition vec_inv :: "'a::conjugatable_field vec \<Rightarrow> 'a vec"
