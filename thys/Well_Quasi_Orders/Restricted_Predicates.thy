@@ -276,10 +276,8 @@ qed
 
 lemma po_on_imp_antisymp_on:
   assumes "po_on P A"
-  shows "antisymp_on (P\<^sup>=\<^sup>=) A"
-  using transp_on_irreflp_on_imp_antisymp_on [of P A]
-    and assms
-  unfolding po_on_def by blast
+  shows "antisymp_on P A"
+using transp_on_irreflp_on_imp_antisymp_on [of P A] and assms by (auto simp: po_on_def)
 
 lemma strict_reflclp [simp]:
   assumes "x \<in> A" and "y \<in> A"
