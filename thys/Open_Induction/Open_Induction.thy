@@ -44,8 +44,10 @@ begin
 
 lemma chain_glb:
   assumes "transp_on (op \<sqsubset>) A"
-  shows "chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> glb (op \<sqsubset>) C x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> chain ({y} \<union> C)"
-using assms [unfolded transp_on_def] unfolding chain_def glb_def lb_def by blast
+  shows "chain C \<Longrightarrow> glb (op \<sqsubset>) C x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> chain ({y} \<union> C)"
+using assms [unfolded transp_on_def]
+unfolding chain_def glb_def lb_def
+by (cases "C = {}") blast+
 
 
 subsection \<open>Open Properties\<close>
@@ -116,43 +118,36 @@ lemma open_induct_on [consumes 4, case_names less]:
   shows "Q x"
 proof (rule ccontr)
   assume "\<not> Q x"
-  let ?A = "{x\<in>A. \<not> Q x}"
-  have "?A \<subseteq> A" by blast
-  interpret A?: pred_on ?A P .
-  from Hausdorff obtain M
-    where chain: "chain M"
-    and max: "\<And>C. chain C \<Longrightarrow> M \<subseteq> C \<Longrightarrow> M = C" by (auto simp: maxchain_def)
-  then have "M \<subseteq> ?A" by (auto simp: chain_def)
+  let ?B = "{x\<in>A. \<not> Q x}"
+  have "?B \<subseteq> A" by blast
+  interpret B: pred_on ?B P .
+  from B.Hausdorff obtain M
+    where chain: "B.chain M"
+    and max: "\<And>C. B.chain C \<Longrightarrow> M \<subseteq> C \<Longrightarrow> M = C" by (auto simp: B.maxchain_def)
+  then have "M \<subseteq> ?B" by (auto simp: B.chain_def)
   show False
   proof (cases "M = {}")
     assume "M = {}"
-    moreover have "chain {x}" using \<open>x \<in> A\<close> and \<open>\<not> Q x\<close> by (simp add: chain_def)
+    moreover have "B.chain {x}" using \<open>x \<in> A\<close> and \<open>\<not> Q x\<close> by (simp add: B.chain_def)
     ultimately show False using max by blast
   next
-    interpret pred_on A P .
+    interpret A: pred_on A P .
     assume "M \<noteq> {}"
-    have "chain M" using chain by (auto simp: chain_def A.chain_def)
+    have "A.chain M" using chain by (auto simp: A.chain_def B.chain_def)
     moreover with \<open>dc_on P A\<close> and \<open>M \<noteq> {}\<close> obtain m
-      where "m \<in> A" and "glb P M m" by (auto simp: downward_complete_def)
-    ultimately have "\<not> Q m" and "m \<in> ?A"
-      using open_glb [OF _ \<open>M \<noteq> {}\<close> \<open>open_on P Q A\<close> _ _ \<open>glb P M m\<close>]
-      and \<open>M \<subseteq> ?A\<close> by auto
+      where "m \<in> A" and "glb P M m" by (auto simp: A.downward_complete_def)
+    ultimately have "\<not> Q m" and "m \<in> ?B"
+      using A.open_glb [OF _ \<open>M \<noteq> {}\<close> \<open>open_on P Q A\<close> _ _ \<open>glb P M m\<close>]
+      and \<open>M \<subseteq> ?B\<close> by auto
     from ind [OF \<open>m \<in> A\<close>] and \<open>\<not> Q m\<close> obtain y
       where "y \<in> A" and "strict P y m" and "\<not> Q y" by blast
-    then have "P y m" and "y \<in> ?A" by simp+
-    from transp_on_subset [OF \<open>?A \<subseteq> A\<close> qo_on_imp_transp_on [OF qo]]
-      have "transp_on P ?A" .
-    from A.chain_glb [OF this chain \<open>M \<noteq> {}\<close> \<open>glb P M m\<close> \<open>m \<in> ?A\<close> \<open>y \<in> ?A\<close> \<open>P y m\<close>]
-      have "A.chain ({y} \<union> M)" .
-    show False
-    proof (cases "y \<in> M")
-      assume "y \<in> M"
-      with \<open>glb P M m\<close> and \<open>strict P y m\<close>
-        show False by (auto simp: glb_def lb_def)
-    next
-      assume "y \<notin> M"
-      with max [OF \<open>A.chain ({y} \<union> M)\<close>] show False by blast
-    qed
+    then have "P y m" and "y \<in> ?B" by simp+
+    from transp_on_subset [OF \<open>?B \<subseteq> A\<close> qo_on_imp_transp_on [OF qo]]
+      have "transp_on P ?B" .
+    from B.chain_glb [OF this chain \<open>glb P M m\<close> \<open>m \<in> ?B\<close> \<open>y \<in> ?B\<close> \<open>P y m\<close>]
+      have "B.chain ({y} \<union> M)" .
+    then show False
+      using \<open>glb P M m\<close> and \<open>strict P y m\<close> by (cases "y \<in> M") (auto dest: max simp: glb_def lb_def)
   qed
 qed
 
