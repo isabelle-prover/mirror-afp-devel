@@ -5,8 +5,8 @@
 *)
 section \<open>Characteristic Polynomial\<close>
 
-text \<open>We define Eigenvalues, Eigenvectors, and the characteristic polynomial. We further prove
-  that the Eigenvalues are exactly the roots of the characteristic polynomial.
+text \<open>We define eigenvalues, eigenvectors, and the characteristic polynomial. We further prove
+  that the eigenvalues are exactly the roots of the characteristic polynomial.
   Finally, we apply the fundamental theorem of algebra to show that the characteristic polynomial
   of a complex matrix can always be represented as product of linear factors $x - a$.\<close>
  
@@ -15,7 +15,6 @@ imports
   Determinant
   Missing_Polynomial
   Complex_Main
-  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
 begin
 
 definition eigenvector :: "'a :: comm_ring_1 mat \<Rightarrow> 'a vec \<Rightarrow> 'a \<Rightarrow> bool" where
@@ -55,48 +54,109 @@ qed
 
 definition eigenvalue :: "'a :: comm_ring_1 mat \<Rightarrow> 'a \<Rightarrow> bool" where
   "eigenvalue A k = (\<exists> v. eigenvector A v k)"
-  
-lemma eigenvalue_det: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n" shows
-  "eigenvalue A k = (det (k \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m \<ominus>\<^sub>m A) = 0)"
+
+
+definition char_matrix :: "'a :: field mat \<Rightarrow> 'a \<Rightarrow> 'a mat" where
+  "char_matrix A e = A \<oplus>\<^sub>m ((-e) \<odot>\<^sub>m (\<one>\<^sub>m (dim\<^sub>r A)))"
+
+lemma char_matrix_closed[simp]: "A \<in> carrier\<^sub>m n n \<Longrightarrow> char_matrix A e \<in> carrier\<^sub>m n n"
+  unfolding char_matrix_def by auto
+
+lemma eigenvector_char_matrix: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n" 
+  shows "eigenvector A v e = (v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> char_matrix A e \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)"
 proof -
-  let ?R = "ring\<^sub>m TYPE('a) n ()"
-  let ?G = "monoid\<^sub>v TYPE ('a) n"
-  let ?U = "Units ?R"
-  let ?M = "A \<oplus>\<^sub>m (- k) \<odot>\<^sub>m \<one>\<^sub>m n"
-  let ?M' = "k \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m \<ominus>\<^sub>m A"  
-  from A have dim: "dim\<^sub>r A = n" by auto
-  interpret m: ring ?R by (rule mat_ring)
-  interpret v: comm_group ?G by (rule vec_group)
-  from A have M: "?M \<in> carrier\<^sub>m n n" "?M' \<in> carrier\<^sub>m n n" by auto
-  have id: "?M' = \<ominus>\<^sub>m ?M"
-    by (rule mat_eqI, insert M A, auto)
+  from A have dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
   {
-    fix v :: "'a vec"
-    {
-      assume v: "v \<in> carrier\<^sub>v n"     
-      have "(?M \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n) = (?M \<otimes>\<^sub>m\<^sub>v v \<oplus>\<^sub>v (k \<odot>\<^sub>v v) = \<zero>\<^sub>v n \<oplus>\<^sub>v (k \<odot>\<^sub>v v))"
-        by (subst v.r_cancel[unfolded vec_monoid_simps],
-        insert v A M, auto intro!: mat_mult_vec_closed)
-      also have "\<zero>\<^sub>v n \<oplus>\<^sub>v (k \<odot>\<^sub>v v) = k \<odot>\<^sub>v v" using v by auto
-      also have "\<dots> = (k \<odot>\<^sub>m \<one>\<^sub>m n) \<otimes>\<^sub>m\<^sub>v v" using v
-        by (auto simp: scalar_scalar_prod_assoc[of _ n])
-      also have "?M \<otimes>\<^sub>m\<^sub>v v \<oplus>\<^sub>v k \<odot>\<^sub>m \<one>\<^sub>m n \<otimes>\<^sub>m\<^sub>v v = (?M \<oplus>\<^sub>m k \<odot>\<^sub>m \<one>\<^sub>m n) \<otimes>\<^sub>m\<^sub>v v"
-        by (rule sym, rule mat_mult_vec_left_distrib[of _ n n], insert M A v, auto)
-      also have "(k \<odot>\<^sub>m \<one>\<^sub>m n) \<otimes>\<^sub>m\<^sub>v v = k \<odot>\<^sub>v v" using v
-        by (auto simp: scalar_scalar_prod_assoc[of _ n])
-      also have "?M \<oplus>\<^sub>m k \<odot>\<^sub>m \<one>\<^sub>m n = A"
-        by (rule mat_eqI, insert A, auto)
-      finally have "(?M \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n) = (A \<otimes>\<^sub>m\<^sub>v v = k \<odot>\<^sub>v v)" .
-    }
-    hence "(v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> ?M \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n) = eigenvector A v k"
-      unfolding eigenvector_def dim by auto
-  } note main = this
-  show ?thesis unfolding id det_0_negate[OF M(1)] det_0_iff_vec_prod_zero[OF M(1)]
-    eigenvalue_def using main by auto
+    assume v: "v \<in> carrier\<^sub>v n"
+    hence dimv: "dim\<^sub>v v = n" by auto
+    have "(A \<otimes>\<^sub>m\<^sub>v v = e \<odot>\<^sub>v v) = (A \<otimes>\<^sub>m\<^sub>v v \<oplus>\<^sub>v (-e) \<odot>\<^sub>v v = \<zero>\<^sub>v n)" (is "?id1 = ?id2")
+    proof
+      assume ?id1
+      from arg_cong[OF this, of "\<lambda> w. w \<oplus>\<^sub>v (-e) \<odot>\<^sub>v v"]
+      show ?id2 using A v by auto
+    next
+      assume ?id2
+      have "A \<otimes>\<^sub>m\<^sub>v v \<oplus>\<^sub>v - e \<odot>\<^sub>v v \<oplus>\<^sub>v e \<odot>\<^sub>v v = A \<otimes>\<^sub>m\<^sub>v v" using A v by auto
+      from arg_cong[OF `?id2`, of "\<lambda> w. w \<oplus>\<^sub>v e \<odot>\<^sub>v v", unfolded this]
+      show ?id1 using A v by simp
+    qed
+    also have "(A \<otimes>\<^sub>m\<^sub>v v \<oplus>\<^sub>v (-e) \<odot>\<^sub>v v) = char_matrix A e \<otimes>\<^sub>m\<^sub>v v" unfolding char_matrix_def
+      by (rule vec_eqI, insert v A dim, auto simp: scalar_prod_left_distrib[of _ n])
+    finally have "(A \<otimes>\<^sub>m\<^sub>v v = e \<odot>\<^sub>v v) = (char_matrix A e \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)" .
+  }
+  thus ?thesis unfolding eigenvector_def dim by blast
 qed
 
+lemma eigenvalue_char_matrix: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n" 
+  shows "eigenvalue A e = (\<exists> v. v \<in> carrier\<^sub>v n \<and> v \<noteq> \<zero>\<^sub>v n \<and> char_matrix A e \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n)"
+  unfolding eigenvalue_def eigenvector_char_matrix[OF A] .. 
+
+definition find_eigenvector :: "'a::field mat \<Rightarrow> 'a \<Rightarrow> 'a vec" where
+  "find_eigenvector A e = 
+    find_base_vector (fst (gauss_jordan (char_matrix A e) (\<zero>\<^sub>m (dim\<^sub>r A) 0)))"
+
+lemma find_eigenvector: assumes A: "A \<in> carrier\<^sub>m n n"
+  and ev: "eigenvalue A e"
+  shows "eigenvector A (find_eigenvector A e) e"
+proof -
+  def B \<equiv> "char_matrix A e"
+  from ev[unfolded eigenvalue_char_matrix[OF A]]  obtain v where
+    v: "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" and Bv: "B \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" unfolding B_def by auto
+  have B: "B \<in> carrier\<^sub>m n n" using A unfolding B_def by simp
+  let ?z = "\<zero>\<^sub>m (dim\<^sub>r A) 0"
+  obtain C D where gauss: "gauss_jordan B ?z = (C,D)" by force
+  def w \<equiv> "find_base_vector C"
+  have res: "find_eigenvector A e = w" unfolding w_def find_eigenvector_def Let_def gauss B_def[symmetric]
+    by simp
+  have "?z \<in> carrier\<^sub>m n 0" using A by auto
+  note gauss_0 = gauss_jordan[OF B this gauss] 
+  hence C: "C \<in> carrier\<^sub>m n n" by auto
+  from gauss_0(1)[OF v(1)] Bv have Cv: "C \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
+  {
+    assume C: "C = \<one>\<^sub>m n"
+    have False using id Cv v unfolding C by auto
+  }
+  hence C1: "C \<noteq> \<one>\<^sub>m n" by auto
+  from find_base_vector_not_1[OF gauss_jordan_row_echelon[OF B gauss] C C1]
+  have w: "w \<in> carrier\<^sub>v n" "w \<noteq> \<zero>\<^sub>v n" and id: "C \<otimes>\<^sub>m\<^sub>v w = \<zero>\<^sub>v n" unfolding w_def by auto
+  from gauss_0(1)[OF w(1)] id have Bw: "B \<otimes>\<^sub>m\<^sub>v w = \<zero>\<^sub>v n" by simp
+  from w Bw have "eigenvector A w e" 
+    unfolding eigenvector_char_matrix[OF A] B_def by auto
+  thus ?thesis unfolding res .
+qed
+
+lemma eigenvalue_imp_nonzero_dim: assumes "A \<in> carrier\<^sub>m n n"
+  and "eigenvalue A ev"
+  shows "n > 0"
+proof (cases n)
+  case 0
+  from assms obtain v where "eigenvector A v ev" unfolding eigenvalue_def by auto
+  from this[unfolded eigenvector_def] assms 0 
+  have "v \<in> carrier\<^sub>v 0" "v \<noteq> \<zero>\<^sub>v 0" by auto
+  hence False by auto
+  thus ?thesis by auto
+qed simp
+  
+lemma eigenvalue_det: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n" shows
+  "eigenvalue A e = (det (char_matrix A e) = 0)"
+proof -
+  from A have cA: "char_matrix A e \<in> carrier\<^sub>m n n" by auto
+  show ?thesis
+    unfolding eigenvalue_char_matrix[OF A]
+    unfolding id det_0_negate[OF cA] det_0_iff_vec_prod_zero[OF cA]
+      eigenvalue_def by auto
+qed
+
+definition char_poly_matrix :: "'a :: comm_ring_1 mat \<Rightarrow> 'a poly mat" where
+  "char_poly_matrix A = (([:0,1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A)) \<oplus>\<^sub>m map\<^sub>m (\<lambda> a. [: - a :]) A)"    
+
+lemma char_poly_matrix_closed[simp]: "A \<in> carrier\<^sub>m n n \<Longrightarrow> char_poly_matrix A \<in> carrier\<^sub>m n n"
+  unfolding char_poly_matrix_def by auto    
+
 definition char_poly :: "'a :: comm_ring_1 mat \<Rightarrow> 'a poly" where
-  "char_poly A = (det (([:0,1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A)) \<oplus>\<^sub>m map\<^sub>m (\<lambda> a. [: - a :]) A))"    
+  "char_poly A = (det (char_poly_matrix A))"    
+
+lemmas char_poly_defs = char_poly_def char_poly_matrix_def
 
 lemma poly_det_cong: assumes A: "A \<in> carrier\<^sub>m n n"
   and B: "B \<in> carrier\<^sub>m n n"
@@ -116,37 +176,33 @@ proof -
   qed
 qed
 
+lemma char_poly_matrix: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
+  shows "poly (char_poly A) k = det (\<ominus>\<^sub>m (char_matrix A k))"  unfolding char_poly_def
+  by (rule poly_det_cong[of _ n], insert A, auto simp: char_poly_matrix_def char_matrix_def)
+
 lemma eigenvalue_root_char_poly: assumes A: "(A :: 'a :: field mat) \<in> carrier\<^sub>m n n"
   shows "eigenvalue A k \<longleftrightarrow> poly (char_poly A) k = 0" 
-proof -
-  from A have dim: "dim\<^sub>r A = n" by auto
-  let ?B = "[:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A"
-  let ?A = "k \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m \<ominus>\<^sub>m A"
-  have AA: "?A \<in> carrier\<^sub>m n n" using A by auto
-  have BB: "?B \<in> carrier\<^sub>m n n" using A by auto
-  have id: "poly (det ?B) k = det (k \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m \<ominus>\<^sub>m A)" 
-    by (rule poly_det_cong[OF AA BB], insert A, auto)
-  show ?thesis unfolding eigenvalue_det[OF A] char_poly_def dim id ..
-qed
+  unfolding eigenvalue_det[OF A] char_poly_matrix[OF A] 
+  by (subst det_0_negate[of _ n], insert A, auto)
 
-lemma char_poly_upper_triangular: assumes A: "(A :: 'a :: comm_ring_1 mat) \<in> carrier\<^sub>m n n"
+context
+  fixes A :: "'a :: comm_ring_1 mat" and n :: nat
+  assumes A: "A \<in> carrier\<^sub>m n n"
   and ut: "upper_triangular A"
-  shows "char_poly A = (\<Prod> a \<leftarrow> mat_diag A. [:- a, 1:])"
+begin
+lemma char_poly_matrix_upper_triangular: "upper_triangular (char_poly_matrix A)"
+  using A ut unfolding upper_triangular_def char_poly_matrix_def by auto 
+
+lemma char_poly_upper_triangular: 
+  "char_poly A = (\<Prod> a \<leftarrow> mat_diag A. [:- a, 1:])"
 proof -
-  let ?M = "([:0,1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A)) \<oplus>\<^sub>m map\<^sub>m (\<lambda> a. [: - a :]) A"
-  {
-    fix i j
-    assume *: "j < i" "i < n"
-    from upper_triangularD[OF ut `j < i`] this A have 0: "A $$ (i,j) = 0" by auto
-    from * 0 have "?M $$ (i,j) = 0" using A by auto
-  }
-  hence "upper_triangular ?M" by (rule, insert A, auto)
-  from det_upper_triangular [OF this, folded char_poly_def, of n] A
-  have "char_poly A = listprod (mat_diag ?M)" by auto
-  also have "\<dots> = (\<Prod> a \<leftarrow> mat_diag A. [:- a, 1:])"
-    by (rule arg_cong[where f = listprod], unfold list_eq_iff_nth_eq, insert A, auto simp: mat_diag_def)
-  finally show ?thesis .
+  from A have cA: "char_poly_matrix A \<in> carrier\<^sub>m n n" by simp
+  show ?thesis
+    unfolding char_poly_def det_upper_triangular [OF char_poly_matrix_upper_triangular cA]
+    by (rule arg_cong[where f = listprod], unfold list_eq_iff_nth_eq, insert cA A, auto simp: mat_diag_def
+      char_poly_matrix_def)
 qed
+end
 
 lemma map_poly_mult: assumes A: "A \<in> carrier\<^sub>m nr n"
   and B: "B \<in> carrier\<^sub>m n nc"
@@ -202,7 +258,8 @@ proof -
   from A B have dim: "dim\<^sub>r A = n" "dim\<^sub>r B = n" by auto
   have cong: "\<And> x y z. x = y \<Longrightarrow> x * z = y * z" by auto
   have id: "?m = (\<lambda> a :: 'a. [: a :] * [: -1 :])" by (intro ext, auto)
-  have "char_poly A = det (?XI \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q))" unfolding char_poly_def dim 
+  have "char_poly A = det (?XI \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) (P \<otimes>\<^sub>m B \<otimes>\<^sub>m Q))" unfolding 
+    char_poly_defs dim 
     by (simp add: AB)
   also have "?XI = ?P \<otimes>\<^sub>m ?XI \<otimes>\<^sub>m ?Q" (is "_ = ?left")
   proof -
@@ -228,7 +285,7 @@ proof -
   also have "det (?P \<otimes>\<^sub>m (?XI \<oplus>\<^sub>m ?B) \<otimes>\<^sub>m ?Q) = det ?P * det (?XI \<oplus>\<^sub>m ?B) * det ?Q"
     by (rule trans[OF det_mult[of _ n] cong[OF det_mult]], insert P Q B, auto)
   also have "\<dots> = (det ?P * det ?Q) * det (?XI \<oplus>\<^sub>m ?B)" by (simp add: ac_simps)
-  also have "det (?XI \<oplus>\<^sub>m ?B) = char_poly B" unfolding char_poly_def dim by simp
+  also have "det (?XI \<oplus>\<^sub>m ?B) = char_poly B" unfolding char_poly_defs dim by simp
   also have "det ?P * det ?Q = det (?P \<otimes>\<^sub>m ?Q)"
     by (rule det_mult[symmetric], insert P Q, auto)
   also have "?P \<otimes>\<^sub>m ?Q = ?I" unfolding PQ[symmetric]
@@ -249,7 +306,7 @@ proof -
   from A have A': "[:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A) \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A \<in> carrier\<^sub>m n n" by auto
   from A have dA: "dim\<^sub>r A = n" by simp
   show ?thesis
-    unfolding char_poly_def det_def'[OF A']
+    unfolding char_poly_defs det_def'[OF A']
   proof (rule degree_lcoeff_setsum[of _ id], auto simp: finite_permutations signof_id permutes_id dA)
     have both: "degree (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) = n \<and>
       coeff (\<Prod>i = 0..<n. ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m n \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A) $$ (i, i)) n = 1"
@@ -267,34 +324,6 @@ proof -
   qed
 qed
 
-lemma fundamental_theorem_algebra_factorized: fixes p :: "complex poly"
-  shows "\<exists> as. [:coeff p (degree p):] * (\<Prod> a \<leftarrow> as. [:- a, 1:]) = p"
-proof -
-  def n \<equiv> "degree p"
-  have "degree p = n" unfolding n_def by simp
-  thus ?thesis
-  proof (induct n arbitrary: p)
-    case (0 p)
-    hence "\<exists> c. p = [: c :]" by (cases p, auto split: if_splits)
-    thus ?case by (intro exI[of _ Nil], auto)
-  next
-    case (Suc n p)
-    have dp: "degree p = Suc n" by fact
-    hence "\<not> constant (poly p)" by (simp add: constant_degree)
-    from fundamental_theorem_of_algebra[OF this] obtain c where rt: "poly p c = 0" by auto
-    hence "[:-c,1 :] dvd p" by (simp add: dvd_iff_poly_eq_0)
-    then obtain q where p: "p = q * [: -c,1 :]" by (metis dvd_def mult.commute)
-    from `degree p = Suc n` have dq: "degree q = n" using p
-      by (metis One_nat_def Suc_eq_plus1 `\<not> constant (poly p)` add_right_cancel constant_degree 
-        degree_0 degree_1 degree_mult_eq degree_pCons_eq mult_eq_0_iff one_neq_zero one_poly_def)
-    from Suc(1)[OF this] obtain as where q: "[:coeff q (degree q):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = q" by auto
-    have dc: "degree p = degree q + degree [: -c, 1 :]" unfolding dq dp by simp
-    have cq: "coeff q (degree q) = coeff p (degree p)" unfolding dc unfolding p coeff_mult_degree_sum unfolding dq by simp
-    show ?case using p[unfolded q[unfolded cq, symmetric]] 
-      by (intro exI[of _ "c # as"], auto simp: ac_simps)
-  qed
-qed
-
 lemma char_poly_factorized: fixes A :: "complex mat"
   assumes A: "A \<in> carrier\<^sub>m n n"
   shows "\<exists> as. char_poly A = (\<Prod> a \<leftarrow> as. [:- a, 1:]) \<and> length as = n"
@@ -308,5 +337,34 @@ proof -
   with degree_linear_factors[of uminus as, folded cA] have "length as = n" by auto
   with cA show ?thesis by blast
 qed
+
+lemma char_poly_four_block_zeros_col: assumes A1: "A1 \<in> carrier\<^sub>m 1 1"
+  and A2: "A2 \<in> carrier\<^sub>m 1 n" and A3: "A3 \<in> carrier\<^sub>m n n"
+  shows "char_poly (four_block_mat A1 A2 (\<zero>\<^sub>m n 1) A3) = char_poly A1 * char_poly A3" 
+    (is "char_poly ?A = ?cp1 * ?cp3")
+proof -
+  let ?cm = "\<lambda> A. [:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A) \<oplus>\<^sub>m
+         map\<^sub>m (\<lambda>a. [:- a:]) A"
+  let ?B2 = "map\<^sub>m (\<lambda>a. [:- a:]) A2"
+  have "char_poly ?A = det (?cm ?A)"
+    unfolding char_poly_defs using A1 A3 by simp
+  also have "?cm ?A = four_block_mat (?cm A1) ?B2 (\<zero>\<^sub>m n 1) (?cm A3)"
+    by (rule mat_eqI, insert A1 A2 A3, auto simp: one_poly_def)
+  also have "det \<dots> = det (?cm A1) * det (?cm A3)"
+    by (rule det_four_block_mat_lower_left_zero_col[OF _ _ refl], insert A1 A2 A3, auto)
+  also have "\<dots> = ?cp1 * ?cp3" unfolding char_poly_defs ..
+  finally show ?thesis .
+qed
+
+lemma char_poly_mat_transpose[simp]: assumes A: "A \<in> carrier\<^sub>m n n"
+  shows "char_poly (mat_transpose A) = char_poly A"
+proof -
+  let ?A = "[:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (dim\<^sub>r A) \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) A"
+  have A': "?A \<in> carrier\<^sub>m n n" using A by auto
+  show ?thesis unfolding char_poly_defs
+    by (subst det_transpose[symmetric, OF A'], rule arg_cong[of _ _ det],
+    insert A, auto)
+qed
+
     
 end
