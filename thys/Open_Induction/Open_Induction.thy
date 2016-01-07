@@ -110,13 +110,14 @@ by (auto simp: dc_on_def chain_on_reflclp glb_reflclp)
 subsection \<open>The Open Induction Schema\<close>
 
 lemma open_induct_on [consumes 4, case_names less]:
-  assumes po: "qo_on P A" and "dc_on P A" and "open_on P Q A"
+  assumes qo: "qo_on P A" and "dc_on P A" and "open_on P Q A"
     and "x \<in> A"
     and ind: "\<And>x. \<lbrakk>x \<in> A; \<And>y. \<lbrakk>y \<in> A; strict P y x\<rbrakk> \<Longrightarrow> Q y\<rbrakk> \<Longrightarrow> Q x"
   shows "Q x"
 proof (rule ccontr)
   assume "\<not> Q x"
   let ?A = "{x\<in>A. \<not> Q x}"
+  have "?A \<subseteq> A" by blast
   interpret A?: pred_on ?A P .
   from Hausdorff obtain M
     where chain: "chain M"
@@ -125,14 +126,12 @@ proof (rule ccontr)
   show False
   proof (cases "M = {}")
     assume "M = {}"
-    moreover have "chain {x}"
-      using refl and \<open>x \<in> A\<close> and \<open>\<not> Q x\<close> by (simp add: chain_def)
+    moreover have "chain {x}" using \<open>x \<in> A\<close> and \<open>\<not> Q x\<close> by (simp add: chain_def)
     ultimately show False using max by blast
   next
     interpret pred_on A P .
     assume "M \<noteq> {}"
-    have "?A \<subseteq> A" by blast
-    with chain have "chain M" by (auto simp: chain_def A.chain_def)
+    have "chain M" using chain by (auto simp: chain_def A.chain_def)
     moreover with \<open>dc_on P A\<close> and \<open>M \<noteq> {}\<close> obtain m
       where "m \<in> A" and "glb P M m" by (auto simp: downward_complete_def)
     ultimately have "\<not> Q m" and "m \<in> ?A"
@@ -141,7 +140,7 @@ proof (rule ccontr)
     from ind [OF \<open>m \<in> A\<close>] and \<open>\<not> Q m\<close> obtain y
       where "y \<in> A" and "strict P y m" and "\<not> Q y" by blast
     then have "P y m" and "y \<in> ?A" by simp+
-    from transp_on_subset [OF \<open>?A \<subseteq> A\<close> qo_on_imp_transp_on [OF po]]
+    from transp_on_subset [OF \<open>?A \<subseteq> A\<close> qo_on_imp_transp_on [OF qo]]
       have "transp_on P ?A" .
     from A.chain_glb [OF this chain \<open>M \<noteq> {}\<close> \<open>glb P M m\<close> \<open>m \<in> ?A\<close> \<open>y \<in> ?A\<close> \<open>P y m\<close>]
       have "A.chain ({y} \<union> M)" .
