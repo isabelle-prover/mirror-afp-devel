@@ -139,7 +139,7 @@ proof -
   interpret mh: map_poly_ring_hom hom by unfold_locales
   have cong: "\<And> x y x' y'. x = x' \<Longrightarrow> y = y' \<Longrightarrow> resultant x y = resultant x' y'" by auto
   show ?thesis unfolding poly_add_def
-    by (subst mh.resultant_map_poly(1), force simp: deg, force simp: deg, 
+    by (subst mh.rh.resultant_map_poly(1), force simp: deg, force simp: deg, 
       rule cong[OF mh.map_poly_x_minus_y[symmetric] poly_lift_hom])
 qed
 
@@ -597,8 +597,8 @@ proof -
   interpret mmh: map_poly_ring_hom "map_poly hom" by unfold_locales
   show ?thesis
     unfolding poly_x_div_y_def 
-    unfolding mmh.hom_setsum degree_map_poly
-    unfolding coeff_map_poly_hom monom_hom mh.monom_hom by simp
+    unfolding mmh.rh.hom_setsum degree_map_poly
+    unfolding coeff_map_poly_hom monom_hom mh.rh.monom_hom by simp
 qed
 
 lemma (in inj_field_hom) poly_mult'_hom: 
@@ -609,7 +609,7 @@ proof -
   have cong: "\<And> x y x' y'. x = x' \<Longrightarrow> y = y' \<Longrightarrow> resultant x y = resultant x' y'" by auto
   note deg = degree_map_poly_map_poly[OF zero]
   show ?thesis unfolding poly_mult'_def
-    by (subst mh.resultant_map_poly, force simp: deg, force simp: deg, 
+    by (subst mh.rh.resultant_map_poly, force simp: deg, force simp: deg, 
       rule cong[OF poly_x_div_y_hom poly_lift_hom])
 qed
 
