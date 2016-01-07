@@ -26,6 +26,7 @@ session "JNF-HOL-Lib" in "~~/src/HOL/Library" = "HOL-Algebra" +
     Code_Target_Numeral
     DAList
     DAList_Multiset
+    Fraction_Field
     Fundamental_Theorem_Algebra
     Infinite_Set
     Lattice_Syntax
@@ -58,4 +59,4 @@ session "JNF-AFP-Lib" = "JNF-HOL-Lib" +
     "../Abstract-Rewriting/SN_Order_Carrier"
     "../Abstract-Rewriting/Relative_Rewriting"
     "../Show/Show_Instances"
-
+    "../VectorSpace/VectorSpace"
