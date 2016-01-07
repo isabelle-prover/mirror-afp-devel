@@ -4,6 +4,9 @@ session Show (AFP) = Deriving +
   options [timeout = 600]
   theories
     Show_Instances
+    Show_Poly
+    Show_Complex
+    Show_Real_Impl
   document_files
     "root.bib"
     "root.tex"

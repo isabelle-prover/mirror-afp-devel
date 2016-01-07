@@ -27,6 +27,7 @@ imports
   Prime_Product
   Real_Impl
   "../Show/Show_Instances"
+  "../Show/Show_Real"
 begin
 
 text {* We implement the real numbers again using triples, but now we require an additional
@@ -330,11 +331,10 @@ lift_definition ma_show_real :: "mini_alg \<Rightarrow> string" is
 
 lift_definition mau_show_real :: "mini_alg_unique \<Rightarrow> string" is ma_show_real .
 
-definition show_real :: "real \<Rightarrow> string" where
-  "show_real x = (if (\<exists> y. x = real_of_u y) then mau_show_real (THE y. x = real_of_u y) else [])"
+defs show_real: "show_real x \<equiv> (if (\<exists> y. x = real_of_u y) then mau_show_real (THE y. x = real_of_u y) else [])"
 
 lemma mau_show_real: "show_real (real_of_u x) = mau_show_real x"
-  unfolding show_real_def by simp
+  unfolding show_real by simp
 
 lemmas mau_code_eqns = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
   mau_show_real comparison_impl
@@ -353,7 +353,7 @@ value "\<lfloor>101.1 * (sqrt 18 + 6 * sqrt 0.5)\<rfloor>"
 value "\<lfloor>324 * sqrt 7 + 0.001\<rfloor>"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) = 324 * sqrt 7 + 0.001"
 value "101.1 * (sqrt 18 + 6 * sqrt 0.5) > 324 * sqrt 7 + 0.001"
-value "show_real (101.1 * (sqrt 18 + 6 * sqrt 0.5))"
+value "show (101.1 * (sqrt 18 + 6 * sqrt 0.5))"
 value "(sqrt 0.1 \<in> \<rat>, sqrt (- 0.09) \<in> \<rat>)"
 
 end
