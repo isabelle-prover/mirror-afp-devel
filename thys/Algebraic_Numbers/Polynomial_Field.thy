@@ -11,7 +11,7 @@ text \<open>The theory contains copies of algorithms for univariate polynomials 
 theory Polynomial_Field
 imports 
   Prime_Field
-  Show_Poly
+  "../Show/Show_Poly"
   "$AFP/Partial_Function_MR/Partial_Function_MR"
 begin
 

@@ -18,8 +18,7 @@ text \<open>We formalized Gauss Lemma, that the content of a product of two poly
 
 theory Gauss_Lemma
 imports 
-  Missing_Polynomial
-  Missing_Unsorted
+  "../Jordan_Normal_Form/Missing_Unsorted"
   "~~/src/Number_Theory/Primes"
   Ring_Hom_Poly
 begin
@@ -66,7 +65,7 @@ proof -
     obtain p q where quot: "quotient_of x = (p,q)" by force
     from x have "(p,q) \<in> set nds" unfolding nds_def using quot by force
     hence "q \<in> set (map snd nds)" by force
-    from list_lcm_int[OF this] have q: "q dvd dd" unfolding dd .
+    from list_lcm[OF this] have q: "q dvd dd" unfolding dd .
     show "rat_of_int (case quotient_of x of (n, x) \<Rightarrow> n * dd div x) / rat_of_int dd = x"
       unfolding quot split unfolding quotient_of_div[OF quot]  
     proof -
@@ -427,7 +426,7 @@ proof -
     have id: "n * c = n' * d" by auto 
     from quotient_of_coprime[OF irs'] have "coprime n d" .
     with dc id show False
-      by (metis coprime_dvd_mult_iff_int dc dvd_triv_right gcd_int.commute mult.commute)
+      by (metis coprime_dvd_mult_iff_int dc dvd_triv_right gcd.commute mult.commute)
   qed
   then obtain irs where irs: "?irs = ?r irs" unfolding Ints_def by blast        
   from ri.map_poly_inj[OF id[unfolded irs ri.map_poly_smult[symmetric]]]

@@ -11,9 +11,9 @@ polynomial.\<close>
 
 theory Order_Polynomial
 imports 
-  Missing_Unsorted
+  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Jordan_Normal_Form/Missing_Polynomial"
   "~~/src/HOL/Library/Poly_Deriv"
-  Missing_Polynomial
 begin
 
 lemma order_linear[simp]: "order a [:- a, 1:] = Suc 0" unfolding order_def

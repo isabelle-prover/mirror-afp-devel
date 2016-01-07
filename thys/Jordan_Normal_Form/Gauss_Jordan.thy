@@ -6,19 +6,25 @@
 section \<open>Gauss-Jordan Algorithm\<close>
 
 text \<open>We define the elementary row operations and use them to implement the
-  Gauss-Jordan algorithm to transform matrices into row-Echelon-form. 
+  Gauss-Jordan algorithm to transform matrices into row-echelon-form. 
   This algorithm is used to implement the inverse of a matrix and to derive
-  certain results on determinants.\<close> 
+  certain results on determinants, as well as determine a basis of the kernel
+  of a matrix.\<close> 
 
-theory Row_Operations
+theory Gauss_Jordan
 imports Matrix
 begin
 
 subsection \<open>Row Operations\<close>
 
-definition mat_multrow :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multrow") where
-  "multrow k a A = mat (dim\<^sub>r A) (dim\<^sub>c A) 
-     (\<lambda> (i,j). if k = i then a * A $$ (i,j) else A $$ (i,j))"
+definition mat_multrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
+  "mat_multrow_gen mul k a A = mat (dim\<^sub>r A) (dim\<^sub>c A) 
+     (\<lambda> (i,j). if k = i then mul a (A $$ (i,j)) else A $$ (i,j))"
+
+abbreviation mat_multrow :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multrow") where
+  "multrow \<equiv> mat_multrow_gen (op *)"
+
+lemmas mat_multrow_def = mat_multrow_gen_def
 
 definition multrow_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat" where
   "multrow_mat n k a = mat n n 
@@ -32,19 +38,24 @@ definition swaprows_mat :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow
   "swaprows_mat n k l = mat n n
     (\<lambda> (i,j). if k = i \<and> l = j \<or> k = j \<and> l = i \<or> i = j \<and> i \<noteq> k \<and> i \<noteq> l then 1 else 0)"
 
-definition mat_addrow :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("addrow") where
-  "addrow a k l A = mat (dim\<^sub>r A) (dim\<^sub>c A) 
-    (\<lambda> (i,j). if k = i then a * A $$ (l,j) + A $$ (i,j) else A $$ (i,j))"
+definition mat_addrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
+  "mat_addrow_gen ad mul a k l A = mat (dim\<^sub>r A) (dim\<^sub>c A) 
+    (\<lambda> (i,j). if k = i then ad (mul a (A $$ (l,j))) (A $$ (i,j)) else A $$ (i,j))"
+
+abbreviation mat_addrow :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("addrow") where
+  "addrow \<equiv> mat_addrow_gen (op +) (op *)"
+
+lemmas mat_addrow_def = mat_addrow_gen_def
 
 definition addrow_mat :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
   "addrow_mat n a k l = mat n n (\<lambda> (i,j). 
     (if k = i \<and> l = j then op + a else id) (if i = j then 1 else 0))"
 
 lemma mat_index_multrow[simp]: 
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> multrow k a A $$ (i,j) = (if k = i then a * A $$ (i,j) else A $$ (i,j))"
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> multrow i a A $$ (i,j) = a * A $$ (i,j)"
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> k \<noteq> i \<Longrightarrow> multrow k a A $$ (i,j) = A $$ (i,j)"
-  "dim\<^sub>r (multrow k a A) = dim\<^sub>r A" "dim\<^sub>c (multrow k a A) = dim\<^sub>c A"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> mat_multrow_gen mul k a A $$ (i,j) = (if k = i then mul a (A $$ (i,j)) else A $$ (i,j))"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> mat_multrow_gen mul i a A $$ (i,j) = mul a (A $$ (i,j))"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> k \<noteq> i \<Longrightarrow> mat_multrow_gen mul k a A $$ (i,j) = A $$ (i,j)"
+  "dim\<^sub>r (mat_multrow_gen mul k a A) = dim\<^sub>r A" "dim\<^sub>c (mat_multrow_gen mul k a A) = dim\<^sub>c A"
   unfolding mat_multrow_def by auto
 
 lemma mat_index_multrow_mat[simp]:
@@ -66,11 +77,11 @@ lemma mat_index_swaprows_mat[simp]:
   unfolding swaprows_mat_def by auto
 
 lemma mat_index_addrow[simp]: 
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> addrow a k l A $$ (i,j) = (if k = i then 
-    a * A $$ (l,j) + A $$ (i,j) else A $$ (i,j))"
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> addrow a i l A $$ (i,j) = a * A $$(l,j) + A$$(i,j)"
-  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> k \<noteq> i \<Longrightarrow> addrow a k l A $$ (i,j) = A $$(i,j)"
-  "dim\<^sub>r (addrow a k l A) = dim\<^sub>r A" "dim\<^sub>c (addrow a k l A) = dim\<^sub>c A"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> mat_addrow_gen ad mul a k l A $$ (i,j) = (if k = i then 
+    ad (mul a (A $$ (l,j))) (A $$ (i,j)) else A $$ (i,j))"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> mat_addrow_gen ad mul a i l A $$ (i,j) = ad (mul a (A $$ (l,j))) (A $$ (i,j))"
+  "i < dim\<^sub>r A \<Longrightarrow> j < dim\<^sub>c A \<Longrightarrow> k \<noteq> i \<Longrightarrow> mat_addrow_gen ad mul a k l A $$ (i,j) = A $$(i,j)"
+  "dim\<^sub>r (mat_addrow_gen ad mul a k l A) = dim\<^sub>r A" "dim\<^sub>c (mat_addrow_gen ad mul a k l A) = dim\<^sub>c A"
   unfolding mat_addrow_def by auto
 
 lemma mat_index_addrow_mat[simp]:
@@ -79,7 +90,7 @@ lemma mat_index_addrow_mat[simp]:
   "dim\<^sub>r (addrow_mat n a k l) = n" "dim\<^sub>c (addrow_mat n a k l) = n"
   unfolding addrow_mat_def by auto
 
-lemma multrow_closed[simp]: "(multrow k a A \<in> carrier\<^sub>m n nc) = (A \<in> carrier\<^sub>m n nc)"
+lemma multrow_closed[simp]: "(mat_multrow_gen mul k a A \<in> carrier\<^sub>m n nc) = (A \<in> carrier\<^sub>m n nc)"
   unfolding mat_carrier_def by fastforce
 
 lemma multrow_mat_closed[simp]: "multrow_mat n k a \<in> carrier\<^sub>m n n"
@@ -94,7 +105,7 @@ lemma swaprows_mat_closed[simp]: "swaprows_mat n k l \<in> carrier\<^sub>m n n"
 lemma swaprows_closed[simp]: "(swaprows k l A \<in> carrier\<^sub>m n nc) = (A \<in> carrier\<^sub>m n nc)"
   unfolding mat_carrier_def by fastforce
 
-lemma addrow_closed[simp]: "(addrow a k l A \<in> carrier\<^sub>m n nc) = (A \<in> carrier\<^sub>m n nc)"
+lemma addrow_closed[simp]: "(mat_addrow_gen ad mul a k l A \<in> carrier\<^sub>m n nc) = (A \<in> carrier\<^sub>m n nc)"
   unfolding mat_carrier_def by fastforce
 
 lemma row_multrow:  "k \<noteq> i \<Longrightarrow> i < n \<Longrightarrow> row (multrow_mat n k a) i = unit\<^sub>v n i"
@@ -204,20 +215,29 @@ qed
 
 subsection \<open>Gauss-Jordan Elimination\<close>
 
-fun eliminate_entries where
-  "eliminate_entries A B i j [] = B"
-| "eliminate_entries A B i j (i' # is) = (let ai'j = A $$ (i',j) in if ai'j = 0 
-    then eliminate_entries A B i j is
-    else eliminate_entries A (addrow (- ai'j) i' i B) i j is)"
+context
+  fixes add :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  and times :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  and uminus :: "'a \<Rightarrow> 'a"
+  and zero :: "'a"
+begin
+fun eliminate_entries_gen where
+  "eliminate_entries_gen A B i j [] = B"
+| "eliminate_entries_gen A B i j (i' # is) = (let ai'j = A $$ (i',j) in if ai'j = zero 
+    then eliminate_entries_gen A B i j is
+    else eliminate_entries_gen A (mat_addrow_gen add times (uminus ai'j) i' i B) i j is)"
 
-lemma dimc_eliminate_entries[simp]: "dim\<^sub>c (eliminate_entries A B i j as) = dim\<^sub>c B"
+lemma dimc_eliminate_entries[simp]: "dim\<^sub>c (eliminate_entries_gen A B i j as) = dim\<^sub>c B"
   by (induct as arbitrary: A B, auto simp: Let_def)
 
-lemma dimr_eliminate_entries[simp]: "dim\<^sub>r (eliminate_entries A B i j as) = dim\<^sub>r B"
+lemma dimr_eliminate_entries[simp]: "dim\<^sub>r (eliminate_entries_gen A B i j as) = dim\<^sub>r B"
   by (induct as arbitrary: A B, auto simp: Let_def)
 
-lemma carrier_eliminate_entries: "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries A B i j as \<in> carrier\<^sub>m nr nc"
+lemma carrier_eliminate_entries: "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_gen A B i j as \<in> carrier\<^sub>m nr nc"
   unfolding mat_carrier_def by simp
+end
+
+abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op +) (op *) uminus (0 :: 'a :: ring_1)"
 
 lemma Unit_prod_eliminate_entries: "i < nr \<Longrightarrow> (\<And> i'. i' \<in> set is \<Longrightarrow> i' < nr \<and> i' \<noteq> i)
   \<Longrightarrow> \<exists> P \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) nr b) . \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> eliminate_entries A B i j is = P \<otimes>\<^sub>m B" 
@@ -923,121 +943,288 @@ proof (induct j)
   from p(3)[OF lt] IH p(1)[OF lt(2)] show ?case by auto
 qed simp
 
-definition non_pivot_base :: "'a :: comm_ring_1 mat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> 'a vec" where
-  "non_pivot_base A qj p \<equiv> let nr = dim\<^sub>r A; nc = dim\<^sub>c A; 
-     r = (LEAST i. i < nr \<and> p i = nc \<or> i = nr) in vec nc (\<lambda> i. 
-     if i = qj then 1 else if i \<in> p ` {0 ..< r} then - A $$ (the_inv_into {0 ..< r} p i,qj) else 0)"
+context
+  fixes zero :: 'a
+  and A :: "'a mat"
+  and nr nc :: nat
+begin
+function pivot_positions_main_gen :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat) list" where
+  "pivot_positions_main_gen i j = (
+     if i < nr then
+       if j < nc then 
+         if A $$ (i,j) = zero then 
+           pivot_positions_main_gen i (Suc j)
+         else (i,j) # pivot_positions_main_gen (Suc i) (Suc j)
+       else []
+     else [])" by pat_completeness auto
 
-lemma non_pivot_base: assumes A: "A \<in> carrier\<^sub>m nr nc"
-  and pivot: "pivot_fun A p nc"
-  and qj: "qj < nc" "qj \<notin> p ` {0 ..< nr}" 
-  shows "non_pivot_base A qj p \<in> carrier\<^sub>v nc"
-    "non_pivot_base A qj p $ qj = 1"
-    "A \<otimes>\<^sub>m\<^sub>v non_pivot_base A qj p = \<zero>\<^sub>v nr"
+termination by (relation "measures [(\<lambda> (i,j). Suc nr - i), (\<lambda> (i,j). Suc nc - j)]", auto)
+
+declare pivot_positions_main_gen.simps[simp del]
+end
+
+context
+  fixes A :: "'a :: semiring_1 mat"
+  and nr nc :: nat
+begin
+
+abbreviation "pivot_positions_main \<equiv> pivot_positions_main_gen (0 :: 'a) A nr nc"
+
+lemma pivot_positions_main: assumes A: "A \<in> carrier\<^sub>m nr nc"
+  and pivot: "pivot_fun A f nc"
+  shows "j \<le> f i \<or> i \<ge> nr \<Longrightarrow> 
+    set (pivot_positions_main i j) = {(i', f i') | i'. i \<le> i' \<and> i' < nr} - UNIV \<times> {nc}
+    \<and> distinct (map snd (pivot_positions_main i j))
+    \<and> distinct (map fst (pivot_positions_main i j))"
+proof (induct i j rule: pivot_positions_main_gen.induct[of nr nc A 0])
+  case (1 i j)
+  let ?a = "A $$ (i,j)"
+  let ?pivot = "\<lambda> i j. pivot_positions_main i j"
+  let ?set = "\<lambda> i. {(i',f i') | i'. i \<le> i' \<and> i' < nr}"
+  let ?s = "?set i"
+  let ?set = "\<lambda> i. {(i',f i') | i'. i \<le> i' \<and> i' < nr}"
+  let ?s = "?set i"
+  let ?p = "?pivot i j"
+  from A have dA: "dim\<^sub>r A = nr" by simp
+  note [simp] = pivot_positions_main_gen.simps[of 0 A nr nc i j]
+  show ?case
+  proof (cases "i < nr")
+    case True note i = this
+    note IH = 1(1-2)[OF True]
+    have jfi: "j \<le> f i" using 1(3) i by auto
+    note pivotB = pivot_bound[OF dA pivot]
+    note pivot' = pivot_funD[OF dA pivot]
+    note pivot = pivot'[OF True]
+    have id1: "[i ..< nr] = i # [Suc i ..< nr]" using i by (rule upt_conv_Cons)
+    show ?thesis
+    proof (cases "j < nc")
+      case True note j = this
+      note IH = IH(1-2)[OF True]
+      show ?thesis
+      proof (cases "?a = 0")
+        case True note a = this
+        from i j a have p: "?p = ?pivot i (Suc j)" by simp
+        {
+          assume "f i = j"
+          with pivot(4) j have "?a = 1" by simp
+          with a have False by simp
+        }
+        with jfi have "Suc j \<le> f i \<or> i \<ge> nr" by fastforce
+        note IH = IH(1)[OF True this]
+        thus ?thesis unfolding p .
+      next
+        case False note a = this
+        from i j a have p: "?p = (i,j) # ?pivot (Suc i) (Suc j)" by simp
+        from pivot(2)[of j] jfi a have jfi: "j = f i" by force
+        from pivotB[of i "Suc 0"] jfi have "Suc j \<le> f (Suc i) \<or> nr \<le> Suc i" 
+          using Suc_le_eq j leI by auto
+        note IH = IH(2)[OF False this]
+        {
+          fix i'
+          assume *: "f i = f i'" "Suc i \<le> i'" "i' < nr" 
+          hence "i + (i' - i) = i'" by auto
+          from pivotB[of i "i' - i", unfolded this] * jfi j have False by auto
+        } note distinct = this
+        have id2: "?s = insert (i,j) (?set (Suc i))" using i jfi not_less_eq_eq
+          by fastforce
+        show ?thesis using IH j jfi i unfolding p id1 id2 by (auto intro: distinct)
+      qed
+    next
+      case False note j = this
+      from pivot(1) j jfi have *: "f i = nc" "nc = j" by auto
+      from i j have p: "?p = []" by simp
+      from pivotB[of i "Suc 0"] * have "j \<le> f (Suc i) \<or> nr \<le> Suc i" by auto
+      {
+        fix i'
+        assume **: "i \<le> i'" "i' < nr" 
+        hence "i + (i' - i) = i'" by auto
+        from pivotB[of i "i' - i", unfolded this] ** * have "nc \<le> f i'" by auto
+        with pivot'(1)[OF `i' < nr`] have "f i' = nc" by auto
+      }
+      thus ?thesis using IH unfolding p id1 by auto
+    qed
+  qed auto
+qed
+end
+
+lemma pivot_fun_zero_row_iff: assumes pivot: "pivot_fun (A :: 'a :: semiring_1 mat) f nc"
+  and A: "A \<in> carrier\<^sub>m nr nc"
+  and i: "i < nr"
+  shows "f i = nc \<longleftrightarrow> row A i = \<zero>\<^sub>v nc"
+proof -
+  from A have dim: "dim\<^sub>r A = nr" by auto
+  note pivot = pivot_funD[OF dim pivot i]
+  {
+    assume "f i = nc"
+    from pivot(2)[unfolded this]
+    have "row A i = \<zero>\<^sub>v nc"
+      by (intro vec_eqI, insert A, auto simp: row_def)
+  }
+  moreover
+  {
+    assume row: "row A i = \<zero>\<^sub>v nc"
+    assume "f i \<noteq> nc"
+    with pivot(1) have "f i < nc" by auto
+    with pivot(4)[OF this] i A arg_cong[OF row, of "\<lambda> v. v $ f i"] have False by auto
+  }
+  ultimately show ?thesis by auto
+qed
+
+definition pivot_positions_gen :: "'a \<Rightarrow> 'a mat \<Rightarrow> (nat \<times> nat) list" where
+  "pivot_positions_gen zer A \<equiv> pivot_positions_main_gen zer A (dim\<^sub>r A) (dim\<^sub>c A) 0 0"
+
+abbreviation pivot_positions :: "'a :: semiring_1 mat \<Rightarrow> (nat \<times> nat) list" where
+  "pivot_positions \<equiv> pivot_positions_gen 0"
+
+lemmas pivot_positions_def = pivot_positions_gen_def
+
+lemma pivot_positions: assumes A: "A \<in> carrier\<^sub>m nr nc"
+  and pivot: "pivot_fun A f nc"
+  shows 
+    "set (pivot_positions A) = {(i, f i) | i. i < nr \<and> f i \<noteq> nc}"
+    "distinct (map fst (pivot_positions A))"
+    "distinct (map snd (pivot_positions A))"
+    "length (pivot_positions A) = card { i. i < nr \<and> row A i \<noteq> \<zero>\<^sub>v nc}"
+proof -
+  from A have dim: "dim\<^sub>r A = nr" by auto
+  let ?pp = "pivot_positions A"
+  show id: "set ?pp = {(i, f i) | i. i < nr \<and> f i \<noteq> nc}"
+    and dist: "distinct (map fst ?pp)"
+    and "distinct (map snd ?pp)"  
+  using pivot_positions_main[OF A pivot, of 0 0] A
+  unfolding pivot_positions_def by auto
+  have "length ?pp = length (map fst ?pp)" by simp
+  also have "\<dots> = card (fst ` set ?pp)" using distinct_card[OF dist] by simp
+  also have "fst ` set ?pp = { i. i < nr \<and> f i \<noteq> nc}" unfolding id by force
+  also have "\<dots> = { i. i < nr \<and> row A i \<noteq> \<zero>\<^sub>v nc}"
+    using pivot_fun_zero_row_iff[OF pivot A] by auto
+  finally show "length ?pp = card {i. i < nr \<and> row A i \<noteq> \<zero>\<^sub>v nc}" .
+qed
+
+context 
+  fixes uminus :: "'a \<Rightarrow> 'a"
+  and zero :: 'a
+  and one :: 'a
+begin
+definition non_pivot_base_gen :: "'a mat \<Rightarrow> (nat \<times> nat)list \<Rightarrow> nat \<Rightarrow> 'a vec" where
+  "non_pivot_base_gen A pivots \<equiv> let nr = dim\<^sub>r A; nc = dim\<^sub>c A; 
+     invers = map_of (map prod.swap pivots)
+     in (\<lambda> qj. vec nc (\<lambda> i. 
+     if i = qj then one else (case invers i of Some j => uminus (A $$ (j,qj)) | None \<Rightarrow> zero)))"
+
+definition find_base_vectors_gen :: "'a mat \<Rightarrow> 'a vec list" where
+  "find_base_vectors_gen A \<equiv> 
+    let 
+      pp = pivot_positions_gen zero A;     
+      cands = filter (\<lambda> j. j \<notin> set (map snd pp)) [0 ..< dim\<^sub>c A]
+    in map (non_pivot_base_gen A pp) cands"
+end
+
+abbreviation "non_pivot_base \<equiv> non_pivot_base_gen uminus 0 (1 :: 'a :: comm_ring_1)"
+abbreviation "find_base_vectors \<equiv> find_base_vectors_gen uminus 0 (1 :: 'a :: comm_ring_1)"
+
+lemmas non_pivot_base_def = non_pivot_base_gen_def
+lemmas find_base_vectors_def = find_base_vectors_gen_def
+
+text \<open>The soundness of @{const find_base_vectors} is proven in theory Matrix-Kern,
+  where it is shown that @{const find_base_vectors} is a basis of the kern of $A$.\<close>
+
+definition find_base_vector :: "'a :: comm_ring_1 mat \<Rightarrow> 'a vec" where
+  "find_base_vector A \<equiv> 
+    let 
+      pp = pivot_positions A;     
+      cands = filter (\<lambda> j. j \<notin> set (map snd pp)) [0 ..< dim\<^sub>c A]
+    in non_pivot_base A pp (hd cands)"
+
+context
+  fixes A :: "'a :: field mat" and nr nc :: nat and p :: "nat \<Rightarrow> nat"
+  assumes ref: "row_echelon_form A"
+  and A: "A \<in> carrier\<^sub>m nr nc"
+begin
+
+lemma non_pivot_base:
+  defines pp: "pp \<equiv> pivot_positions A"
+  assumes qj: "qj < nc" "qj \<notin> snd ` set pp" 
+  shows "non_pivot_base A pp qj \<in> carrier\<^sub>v nc"
+    "non_pivot_base A pp qj $ qj = 1"
+    "A \<otimes>\<^sub>m\<^sub>v non_pivot_base A pp qj = \<zero>\<^sub>v nr"
+    "\<And> qj'. qj' < nc \<Longrightarrow> qj' \<notin> snd ` set pp \<Longrightarrow> qj \<noteq> qj' \<Longrightarrow> non_pivot_base A pp qj $ qj' = 0"
 proof -
   from A have dim: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" by auto
+  from ref[unfolded row_echelon_form_def] obtain p 
+  where pivot: "pivot_fun A p nc" using dim by auto
   note pivot' = pivot_funD[OF dim(1) pivot]
+  note pp = pivot_positions[OF A pivot, folded pp]
   let ?p = "\<lambda> i. i < nr \<and> p i = nc \<or> i = nr"
-  let ?L = "LEAST i. ?p i"
-  def L \<equiv> ?L
-  have "?p nr" by simp
-  note least = LeastI[of ?p, OF this, folded L_def]
-  hence Lnr: "L \<le> nr" by auto
-  let ?r = "{0..<L}"
-  {
-    fix i
-    assume i: "i < L"
-    with Lnr not_less_Least[OF this[unfolded L_def]] 
-    have i: "i < nr" and neq: "p i \<noteq> nc" by auto
-    with pivot'(1)[OF i] have "p i < nc" by auto
-  } note L_p = this
-  def I \<equiv> "the_inv_into ?r p"
-  note d = non_pivot_base_def[of A qj p, unfolded Let_def dim, folded L_def I_def]
-  have inj: "inj_on p {0..<L}" unfolding inj_on_def
-  proof auto
-    fix i i'
-    assume i: "i < L" and i': "i' < L" and id: "p i = p i'"
-    {
-      assume "i \<noteq> i'"
-      hence "i < i' \<or> i' < i" by arith
-      with i i' id obtain i i' where lt: "i < i'"
-        and i: "i < L" and i': "i' < L" and id: "p i = p i'" 
-        by (cases "i < i'", auto)
-      from i' Lnr have i'nr: "i' < nr" by auto
-      from L_p[OF i] have pi: "p i < nc" by auto
-      def i'' \<equiv> "i' - i"
-      from lt have i'': "i'' > 0" and id2: "i' = i + i''" unfolding i''_def by auto
-      from pivot_bound[OF dim(1) pivot, of i i'', folded id2 id, OF i'nr]
-        pi i'' have False by auto
-    }
-    thus "i = i'" by auto
-  qed
-  {
-    fix i
-    assume i: "i < nr" and iL: "L \<le> i"
-    hence "L < nr" by auto
-    with least have pL : "p L = nc" by auto
-    from iL have id: "i = L + (i - L)" by auto
-    from pivot_bound[OF dim(1) pivot, of L "i - L", folded id, unfolded pL, OF i]
-    have "p i \<ge> nc" by auto
-    with pivot'(1)[OF i] 
-    have "p i = nc" by simp
-  } note L_nc = this
-  from the_inv_into_f_f[OF inj, folded I_def] 
-  have I: "\<And> i. i \<in> ?r \<Longrightarrow> I (p i) = i" by auto
-  let ?v = "non_pivot_base A qj p"
+  let ?spp = "map prod.swap pp"
+  let ?map = "map_of ?spp"
+  def I \<equiv> "\<lambda> i. case map_of (map prod.swap pp) i of Some j \<Rightarrow> - A $$ (j,qj) | None \<Rightarrow> 0"
+  have d: "non_pivot_base A pp qj = vec nc (\<lambda> i. if i = qj then 1 else I i)"
+    unfolding non_pivot_base_def Let_def dim I_def ..
+  from pp have dist: "distinct (map fst ?spp)" 
+    unfolding map_map o_def prod.swap_def by auto
+  let ?r = "set (map snd pp)"
+  have r: "?r = p ` {0 ..< nr} - {nc}" unfolding set_map pp by force
+  let ?l = "set (map fst pp)"
+  from qj have qj': "qj \<notin> p ` {0 ..< nr}" using r by auto
+  let ?v = "non_pivot_base A pp qj"
   let ?P = "p ` {0 ..< nr}"
   have dimv: "dim\<^sub>v ?v = nc" unfolding d by simp
   thus "?v \<in> carrier\<^sub>v nc" unfolding vec_carrier_def by auto
   show vqj: "?v $ qj = 1" unfolding d using qj by auto
+  { 
+    fix qj'
+    assume *: "qj' < nc" "qj \<noteq> qj'" "qj' \<notin> snd ` set pp"
+    hence "?map qj' = None" unfolding map_of_eq_None_iff by force
+    hence "I qj' = 0" unfolding I_def by simp
+    with * show "non_pivot_base A pp qj $ qj' = 0" 
+      unfolding d by simp
+  }    
   {
     fix i
-    assume i: "i < nr"    
+    assume i: "i < nr"
+    let ?I = "{j. ?map j = Some i}"
     have "row A i \<bullet> ?v = 0" 
     proof -
       have id: "({0..<nc} \<inter> ?P) \<union> ({0..<nc} - ?P) = {0..<nc}" by auto
       let ?e = "\<lambda> j. row A i $ j * ?v $ j"
-      let ?e' = "\<lambda> j. (if i = I j then - A $$ (i, qj) else 0)"
+      let ?e' = "\<lambda> j. (if ?map j = Some i then - A $$ (i, qj) else 0)"
       {
         fix j
         assume j: "j < nc" "j \<in> ?P"
         then obtain ii where ii: "ii < nr" and jpi: "j = p ii" and pii: "p ii < nc" by auto
-        with L_nc[OF ii] have iir: "ii \<in> ?r" by force
-        let ?ii = "I j"
-        from I[OF iir, folded jpi] 
-        have ii_id: "ii = ?ii" by auto
-        from j qj have jqj: "j \<noteq> qj" by auto
-        have jr: "j \<in> p ` ?r" using iir unfolding jpi by auto
+        hence mem: "(ii,j) \<in> set pp" and "(j,ii) \<in> set ?spp" by (auto simp: pp)        
+        from map_of_is_SomeI[OF dist this(2)] 
+        have map: "?map j = Some ii" by auto
+        from mem j qj have jqj: "j \<noteq> qj" by force
         note p = pivot'(4-5)[OF ii pii]
         def start \<equiv> "?e j"
         have "start = A $$ (i,j) * ?v $ j" using j i A by (auto simp: start_def)
         also have "A $$ (i,j) = A $$ (i, p ii)" unfolding jpi ..
         also have "\<dots> = (if i = ii then 1 else 0)" using p(1) p(2)[OF i] by auto
         also have "\<dots> * ?v $ j = (if i = ii then ?v $ j else 0)" by simp
-        also have "?v $ j = - A $$ (I j, qj)" unfolding d 
-          using j jqj jr A by auto
-        also have "I j = ii" unfolding ii_id ..
-        also have "(if i = ii then - A $$ (ii, qj) else 0) 
-          = (if i = ii then - A $$ (i, qj) else 0)" by auto
-        also have "ii = ?ii" unfolding ii_id ..
+        also have "?v $ j = I j" unfolding d 
+          using j jqj A by auto
+        also have "I j = - A $$ (ii, qj)" unfolding I_def map by simp
         finally have "?e j = ?e' j" 
-          unfolding start_def .
+          unfolding start_def map by auto
       } note piv = this
-      let ?I = "{j. I j = i}"
       have "row A i \<bullet> ?v = (\<Sum> j = 0..<nc. ?e j)" unfolding row_def scalar_prod_def dimv ..
       also have "\<dots> = setsum ?e ({0..<nc} \<inter> ?P) + setsum ?e ({0..<nc} - ?P)"
         by (subst setsum.union_disjoint[symmetric], auto simp: id)
       also have "setsum ?e ({0..<nc} - ?P) = ?e qj + setsum ?e ({0 ..<nc} - ?P - {qj})"
-        by (rule setsum.remove, insert qj, auto)
+        by (rule setsum.remove, insert qj qj', auto)
       also have "?e qj = row A i $ qj" unfolding vqj by simp
       also have "row A i $ qj = A $$ (i, qj)" using i A qj by auto
       also have "setsum ?e ({0 ..<nc} - ?P - {qj}) = 0"
       proof (rule setsum.neutral, intro ballI)
         fix j
         assume "j \<in> {0 ..<nc} - ?P - {qj}"
-        hence j: "j < nc" "j \<notin> ?P" "j \<noteq> qj" by auto
-        have "?v $ j = 0" unfolding d using j Lnr by auto
-        thus "row A i $ j * ?v $ j = 0" by simp
+        hence j: "j < nc" "j \<notin> ?P" "j \<noteq> qj" "j \<notin> ?r" unfolding r by auto
+        hence id: "map_of ?spp j = None" unfolding map_of_eq_None_iff by force
+        have "?v $ j = I j" unfolding d using j by simp
+        also have "\<dots> = 0" unfolding I_def id by simp 
+        finally show "row A i $ j * ?v $ j = 0" by simp
       qed
       also have "A $$ (i, qj) + 0 = A $$ (i, qj)" by simp
       also have "setsum ?e ({0..<nc} \<inter> ?P) = setsum ?e' ({0..<nc} \<inter> ?P)"
@@ -1053,33 +1240,28 @@ proof -
         by (rule setsum.cong, auto)
       also have "\<dots> + 0 = \<dots>" by simp
       also have "setsum (\<lambda> _. - A $$ (i, qj)) ({0..<nc} \<inter> ?I \<inter> ?P) + A $$ (i, qj) = 0" 
-      proof (cases "i \<in> ?r")
+      proof (cases "i \<in> ?l")
         case False
-        hence "i \<ge> L" by auto
-        from L_nc[OF i this]
-        have "p i = nc" .
+        with pp(1) i have "p i = nc" by force
         from pivot'(2)[OF i, unfolded this, OF qj(1)] have z: "A $$ (i, qj) = 0" .
         show ?thesis 
           by (subst setsum.neutral, auto simp: z)
       next
         case True
-        with L_p have pic: "p i < nc" by auto
-        from I[OF True] have Ii: "I (p i) = i" by auto
-        have id: "{0..<nc} \<inter> {j. I j = i} \<inter> p ` {0..<nr} = {p i}" (is "?l = ?r")
-        proof -
-          have "?r \<subseteq> ?l" using pic Ii i by auto
-          moreover
-          {
-            fix j
-            assume "j \<in> ?l"
-            then obtain ii where j: "j < nc" "I j = i" and ii: "ii < nr" and pii: "p ii = j" by auto
-            have "ii \<in> {0 ..< L}" using L_nc[OF ii] j(1)[folded pii] by force
-            from j(2)[folded pii] I[OF this] have "ii = i" by simp
-            hence "j = p i" using pii by simp
-          }
-          ultimately show ?thesis by blast
-        qed
-        show ?thesis unfolding id by simp
+        then obtain j where mem: "(i,j) \<in> set pp" and id: "(j,i) \<in> set ?spp" by auto
+        from map_of_is_SomeI[OF dist this(2)] have map: "?map j = Some i" .
+        from pivot'(1)[OF i] have pi: "p i \<le> nc" .
+        with mem[unfolded pp] have j: "j = p i" "j < nc" by auto
+        {
+          fix j'
+          assume "j' \<in> ?I"
+          hence "?map j' = Some i" by auto
+          from map_of_SomeD[OF this] have "(i, j') \<in> set pp" by auto
+          with mem pp(2) have "j' = j" using map_of_is_SomeI by fastforce
+        }
+        with map have II: "?I = {j}" by blast
+        have II: "{0..<nc} \<inter> ?I \<inter> ?P = {j}" unfolding II using mem[unfolded pp] i j by auto
+        show ?thesis unfolding II by simp
       qed
       finally show "row A i \<bullet> ?v = 0" .
     qed
@@ -1087,7 +1269,33 @@ proof -
   show "A \<otimes>\<^sub>m\<^sub>v ?v = \<zero>\<^sub>v nr"  
     by (rule vec_eqI, auto simp: dim main)
 qed
-  
+
+lemma find_base_vector: assumes "snd ` set (pivot_positions A) \<noteq> {0 ..< nc}"
+  shows 
+    "find_base_vector A \<in> carrier\<^sub>v nc"
+    "find_base_vector A \<noteq> \<zero>\<^sub>v nc"
+    "A \<otimes>\<^sub>m\<^sub>v find_base_vector A = \<zero>\<^sub>v nr"
+proof -
+  def cands \<equiv> "filter (\<lambda> j. j \<notin> snd ` set (pivot_positions A)) [0 ..< nc]"
+  from A have dim: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc" by auto
+  from ref[unfolded row_echelon_form_def] obtain p 
+  where pivot: "pivot_fun A p nc" using dim by auto
+  note piv = pivot_funD[OF dim(1) pivot]
+  have "set cands \<noteq> {}" using assms piv unfolding cands_def  pivot_positions[OF A pivot]
+    by (auto simp: le_neq_implies_less)
+  then obtain c cs where cands: "cands = c # cs" by (cases cands, auto)
+  hence res: "find_base_vector A = non_pivot_base A (pivot_positions A) c"
+    unfolding find_base_vector_def Let_def cands_def dim by auto
+  from cands have "c \<in> set cands" by auto
+  hence c: "c < nc" "c \<notin> snd ` set (pivot_positions A)"
+    unfolding cands_def by auto
+  from non_pivot_base[OF this, folded res] c show
+    "find_base_vector A \<in> carrier\<^sub>v nc"
+    "find_base_vector A \<noteq> \<zero>\<^sub>v nc"
+    "A \<otimes>\<^sub>m\<^sub>v find_base_vector A = \<zero>\<^sub>v nr"
+  by auto
+qed
+end
 
 lemma row_echelon_form_imp_1_or_0_row: assumes A: "A \<in> carrier\<^sub>m n n"
   and row: "row_echelon_form A"
@@ -1125,6 +1333,120 @@ proof -
       by (rule disjI1, rule mat_eqI, subst id, insert A, auto)
   qed
 qed
+
+context
+  fixes A :: "'a :: field mat" and n :: nat and p :: "nat \<Rightarrow> nat"
+  assumes ref: "row_echelon_form A"
+  and A: "A \<in> carrier\<^sub>m n n"
+  and 1: "A \<noteq> \<one>\<^sub>m n"
+begin
+
+lemma find_base_vector_not_1_pivot_positions: "snd ` set (pivot_positions A) \<noteq> {0 ..< n}"
+proof 
+  let ?pp = "pivot_positions A"
+  assume id: "snd ` set ?pp = {0 ..< n}"
+  from A have dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
+  let ?n = "n - 1"
+  from row_echelon_form_imp_1_or_0_row[OF A ref] 1
+  have *: "0 < n" and row: "row A ?n = \<zero>\<^sub>v n" by auto
+  from ref[unfolded row_echelon_form_def] obtain p 
+    where pivot: "pivot_fun A p n" using dim by auto
+  note pp = pivot_positions[OF A pivot]
+  note piv = pivot_funD[OF dim(1) pivot]
+  from * have n: "?n < n" by auto
+  {
+    
+    assume "p ?n < n"
+    with piv(4)[OF n this] row n A have False
+      by (metis dim row_index(1) vec_zero_index(1) zero_neq_one)
+  }
+  with piv(1)[OF n] have pn: "p ?n = n" by fastforce
+  hence "?n \<notin> fst ` set ?pp" unfolding pp by auto
+  hence "fst ` set ?pp \<subseteq> {0 ..< n} - {?n}" unfolding pp by force
+  also have "\<dots> \<subseteq> {0 ..< n - 1}" by auto
+  finally have "card (fst ` set ?pp) \<le> card {0 ..< n - 1}" using card_mono by blast
+  also have "\<dots> = n - 1" by auto
+  also have "card (fst ` set ?pp) = card (snd ` set ?pp)"
+    unfolding set_map[symmetric] distinct_card[OF pp(2)] distinct_card[OF pp(3)] by simp
+  also have "\<dots> = n" unfolding id by simp
+  finally show False using n by simp
+qed
+  
+lemma find_base_vector_not_1: 
+    "find_base_vector A \<in> carrier\<^sub>v n"
+    "find_base_vector A \<noteq> \<zero>\<^sub>v n"
+    "A \<otimes>\<^sub>m\<^sub>v find_base_vector A = \<zero>\<^sub>v n"
+  using find_base_vector[OF ref A find_base_vector_not_1_pivot_positions] .
+end
+
+lemma gauss_jordan: assumes A: "A \<in> carrier\<^sub>m nr nc"
+  and B: "B \<in> carrier\<^sub>m nr nc2"
+  and gauss: "gauss_jordan A B = (C,D)"
+  shows "x \<in> carrier\<^sub>v nc \<Longrightarrow> (A \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr) = (C \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr)" (is "_ \<Longrightarrow> ?l = ?r")
+    "w \<in> carrier\<^sub>v nc \<Longrightarrow> X \<in> carrier\<^sub>m nc nc2  \<Longrightarrow> (A \<otimes>\<^sub>m X = B) = (C \<otimes>\<^sub>m X = D)" (is "_ \<Longrightarrow> _ \<Longrightarrow> ?l2 = ?r2")
+    "C \<in> carrier\<^sub>m nr nc"
+    "D \<in> carrier\<^sub>m nr nc2"
+proof -
+  from gauss_jordan_transform[OF A B gauss, unfolded mat_ring_def Units_def, simplified]
+  obtain P Q where P: "P \<in> carrier\<^sub>m nr nr" and Q: "Q \<in> carrier\<^sub>m nr nr"
+    and inv: "Q \<otimes>\<^sub>m P = \<one>\<^sub>m nr" 
+    and CPA: "C = P \<otimes>\<^sub>m A" 
+    and DPB: "D = P \<otimes>\<^sub>m B" by auto
+  from CPA P A show C: "C \<in> carrier\<^sub>m nr nc" by auto
+  from DPB P B show D: "D \<in> carrier\<^sub>m nr nc2" by auto
+  have "A = \<one>\<^sub>m nr \<otimes>\<^sub>m A" using A by simp
+  also have "\<dots> = Q \<otimes>\<^sub>m C" unfolding inv[symmetric] CPA using Q P A by simp
+  finally have AQC: "A = Q \<otimes>\<^sub>m C" .
+  have "B = \<one>\<^sub>m nr \<otimes>\<^sub>m B" using B by simp
+  also have "\<dots> = Q \<otimes>\<^sub>m D" unfolding inv[symmetric] DPB using Q P B by simp
+  finally have BQD: "B = Q \<otimes>\<^sub>m D" .
+  {
+    assume x: "x \<in> carrier\<^sub>v nc"
+    {
+      assume ?l
+      from arg_cong[OF this, of "\<lambda> v. P \<otimes>\<^sub>m\<^sub>v v"] P A x have ?r unfolding CPA by auto
+    }
+    moreover
+    {
+      assume ?r
+      from arg_cong[OF this, of "\<lambda> v. Q \<otimes>\<^sub>m\<^sub>v v"] Q C x have ?l unfolding AQC by auto
+    }
+    ultimately show "?l = ?r" by auto
+  }
+  {
+    assume X: "X \<in> carrier\<^sub>m nc nc2"
+    {
+      assume ?l2
+      from arg_cong[OF this, of "\<lambda> X. P \<otimes>\<^sub>m X"] P A X have ?r2 unfolding CPA DPB by simp
+    }
+    moreover
+    {
+      assume ?r2
+      from arg_cong[OF this, of "\<lambda> X. Q \<otimes>\<^sub>m X"] Q C X have ?l2 unfolding AQC BQD by simp
+    }
+    ultimately show "?l2 = ?r2" by auto
+  }
+qed
+
+definition gauss_jordan_single :: "'a :: field mat \<Rightarrow> 'a mat" where
+  "gauss_jordan_single A = fst (gauss_jordan A (\<zero>\<^sub>m (dim\<^sub>r A) 0))"
+
+lemma gauss_jordan_single: assumes A: "A \<in> carrier\<^sub>m nr nc"
+  and gauss: "gauss_jordan_single A = C"
+  shows "x \<in> carrier\<^sub>v nc \<Longrightarrow> (A \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr) = (C \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr)" 
+    "C \<in> carrier\<^sub>m nr nc"
+    "row_echelon_form C"
+    "\<exists> P Q. C = P \<otimes>\<^sub>m A \<and> P \<in> carrier\<^sub>m nr nr \<and> Q \<in> carrier\<^sub>m nr nr \<and> P \<otimes>\<^sub>m Q = \<one>\<^sub>m nr \<and> Q \<otimes>\<^sub>m P = \<one>\<^sub>m nr" (is "?ex")
+proof -
+  from A gauss[unfolded gauss_jordan_single_def] obtain D where gauss: "gauss_jordan A (\<zero>\<^sub>m nr 0) = (C,D)"
+    by (cases "gauss_jordan A (\<zero>\<^sub>m nr 0)", auto)
+  from gauss_jordan[OF A mat_zero_closed gauss] gauss_jordan_row_echelon[OF A gauss]
+    gauss_jordan_transform[OF A mat_zero_closed gauss, of "()"]
+  show "x \<in> carrier\<^sub>v nc \<Longrightarrow> (A \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr) = (C \<otimes>\<^sub>m\<^sub>v x = \<zero>\<^sub>v nr)" 
+    "C \<in> carrier\<^sub>m nr nc" "row_echelon_form C" ?ex unfolding Units_def mat_ring_def by auto
+qed
+
+
 
 lemma gauss_jordan_inverse_one_direction: 
   assumes A: "A \<in> carrier\<^sub>m n n" and B: "B \<in> carrier\<^sub>m n nc"

@@ -7,7 +7,7 @@ section \<open>Converting Arctic Numbers to Strings\<close>
 
 text \<open>We just instantiate arctic numbers in the show-class.\<close>
 
-theory Arctic_Show
+theory Show_Arctic
 imports 
   "../Abstract-Rewriting/SN_Order_Carrier"
   "../Show/Show_Instances"

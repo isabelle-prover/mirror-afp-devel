@@ -1,13 +1,12 @@
 (*  
     Author:      René Thiemann 
-                 Akihisa Yamada
-    License:     BSD
+    License:     LGPL
 *)
 section \<open>Show for Complex Numbers\<close>
 
-text \<open>We print complex numbers as real and imaginary parts. Note that by transitivily, this theory
+text \<open>We print complex numbers as real and imaginary parts. Note that by transitivity, this theory
   demands that an implementations for \textit{show-real} is available, e.g., by using 
-  one of the theories \textit{Show-Real-Precise} or \textit{Show-Real-Approx}.\<close>
+  one of the theories \textit{Show-Real-Impl} or \textit{../Algebraic-Numbers/Show-Real-...}.\<close>
 theory Show_Complex
 imports 
   Complex

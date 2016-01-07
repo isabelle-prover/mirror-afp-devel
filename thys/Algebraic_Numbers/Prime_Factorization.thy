@@ -14,6 +14,7 @@ imports
   "~~/src/Number_Theory/UniqueFactorization"
   Missing_List
   Missing_Multiset
+  Divmod_Nat
 begin
 
 subsection \<open>Definitions\<close>
@@ -89,8 +90,7 @@ lemma remove_prime_factor: assumes res: "remove_prime_factor i n ps = (m,qs)"
 proof (induct n arbitrary: ps rule: less_induct)
   case (less n ps)
   obtain n' mo where dm: "divmod_nat n i = (n',mo)" by force
-  hence n': "n' = n div i" and mo: "mo = n mod i" 
-    by (auto simp: div_nat_def mod_nat_def)
+  hence n': "n' = n div i" and mo: "mo = n mod i" by auto
   from less(2)[unfolded remove_prime_factor.simps[of i n] dm]
   have res: "(if mo = 0 then remove_prime_factor i n' (i # ps) else (n, ps)) = (m, qs)" by auto
   from less(3) have n: "n \<noteq> 0" by auto
@@ -335,7 +335,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
           p: "prime p" "p dvd j" "p dvd n" by auto
         have pj: "p \<le> j"
           by (rule dvd_imp_le[OF p(2)], insert j, auto)
-        have p2: "2 \<le> p" using p(1) by auto
+        have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
         with `sorted is` have "i' \<le> p" unfolding Cons by (cases, auto)
@@ -441,8 +441,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
   next
     case (Cons i' iis)
     obtain n' m where dm: "divmod_nat n i' = (n',m)" by force
-    hence n': "n' = n div i'" and m: "m = n mod i'" 
-      by (auto simp: div_nat_def mod_nat_def)
+    hence n': "n' = n div i'" and m: "m = n mod i'" by auto
     have m: "(m = 0) = (i' dvd n)" unfolding m by auto
     from Cons res[unfolded simps] dm m n'
     have res: "res = (
@@ -466,7 +465,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
           p: "prime p" "p dvd j" "p dvd n" by auto
         have pj: "p \<le> j"
           by (rule dvd_imp_le[OF p(2)], insert j, auto)
-        have p2: "2 \<le> p" using p(1) by auto
+        have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
         with `sorted is` have "i' \<le> p" unfolding Cons by (cases, auto)
@@ -547,7 +546,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
         have lrs: "listprod rs \<noteq> 0" using n' `n' \<noteq> 0` by (cases "listprod rs = 0", auto)
         with `i' \<ge> 2` have "listprod rs * i' \<ge> 2" by (cases "listprod rs", auto)
         hence nn'': "n > n''" unfolding id n' using n2 by simp
-        have "i' \<noteq> n" unfolding id n' using pi False by auto
+        have "i' \<noteq> n" unfolding id n' using pi False by fastforce
         with `i' \<le> n` i' have "n > i" by auto
         with nn'' i i' have less: "n - i > n'' - Suc i'" by simp
         {
@@ -631,7 +630,7 @@ lemma msetprod_multiset_prime_factorization_nat[simp]:
   using multiset_prime_factorization by auto
 
 lemma multiset_prime_factorization_code[code]: 
-  "multiset_prime_factorization n = multiset_of (prime_factorization_nat n)"
+  "multiset_prime_factorization n = mset (prime_factorization_nat n)"
 proof -  
   note pf = prime_factorization_nat[of n]
   show ?thesis
@@ -643,11 +642,11 @@ proof -
     note pf = pf(1) pf(2)[OF False]
     show ?thesis
     proof (rule multiset_prime_factorization_unique)
-      show "\<forall>p\<in>set_of (multiset_prime_factorization n). prime p"
+      show "\<forall>p\<in>set_mset (multiset_prime_factorization n). prime p"
         using prime_factors_nat_def by blast
-      show "\<forall>p\<in>set_of (multiset_of (prime_factorization_nat n)). prime p" using pf(1) by auto
+      show "\<forall>p\<in>set_mset (mset (prime_factorization_nat n)). prime p" using pf(1) by auto
       let ?l = "\<Prod>i\<in>#multiset_prime_factorization n. i"
-      let ?r = "\<Prod>i\<in>#multiset_of (prime_factorization_nat n). i"
+      let ?r = "\<Prod>i\<in>#mset (prime_factorization_nat n). i"
       have "?l = n" using False using multiset_prime_factorization by auto
       moreover have "?r = n" by (rule trans[OF _ pf(2)], auto)
       ultimately show "?l = ?r" by auto
@@ -677,10 +676,10 @@ proof -
   let ?mf = "\<lambda> (n :: nat). multiset_prime_factorization n"
   have "?dn = listprod ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
     using n by auto
-  also have "\<dots> = msetprod ` multiset_of ` set (sublists (prime_factorization_nat n))"
+  also have "\<dots> = msetprod ` mset ` set (sublists (prime_factorization_nat n))"
     by force
-  also have "multiset_of ` set (sublists (prime_factorization_nat n))
-    = { ps. ps \<subseteq># multiset_of (prime_factorization_nat n)}" 
+  also have "mset ` set (sublists (prime_factorization_nat n))
+    = { ps. ps \<subseteq># mset (prime_factorization_nat n)}" 
     unfolding multiset_of_sublists by simp
   also have "\<dots> = { ps. ps \<subseteq># ?mf n}"
     unfolding multiset_prime_factorization_code[symmetric] by auto
@@ -692,8 +691,7 @@ proof -
       from this[unfolded dvd] have x: "x \<noteq> 0"  
         and "\<And> p. multiplicity p x \<le> multiplicity p n" by auto
       from this[unfolded multiplicity_nat_def]
-      have sub: "?mf x \<subseteq># ?mf n" 
-        unfolding less_eq_multiset.rep_eq by auto
+      have sub: "?mf x \<subseteq># ?mf n" by (metis mset_less_eqI)
       have "msetprod (?mf x) = x" using x
         by (simp add: multiset_prime_factorization prime_factorization_nat)
       hence "x \<in> ?l" using sub by force
@@ -705,24 +703,24 @@ proof -
       then obtain ps where x: "x = msetprod ps" and sub: "ps \<subseteq># ?mf n" by auto
       {
         fix p
-        assume "p \<in> set_of ps"
-        from set_mp[OF set_of_mono[OF sub] this] have "p \<in> set_of (?mf n)" 
-          unfolding set_of_def by auto
+        assume "p \<in> set_mset ps"
+        from set_mp[OF set_mset_mono[OF sub] this] have "p \<in> set_mset (?mf n)" 
+          unfolding set_mset_def by auto
         hence "prime p" using prime_factors_nat_def by blast
       } note primes = this
-      hence "0 \<notin> set_of ps" by fastforce
+      hence "0 \<notin> set_mset ps" by fastforce
       hence x0: "x \<noteq> 0" unfolding x by (simp add: msetprod_zero)
       have ps: "?mf x = ps"
       proof (rule multiset_prime_factorization_unique)
-        show "\<forall>p\<in>set_of (?mf x). prime p"
+        show "\<forall>p\<in>set_mset (?mf x). prime p"
           using prime_factors_nat_def by blast
-        show "\<forall>p\<in>set_of ps. prime p" using primes by auto
-        hence ps: "\<And> p. p \<in> set_of ps \<Longrightarrow> p \<noteq> 0" by auto
+        show "\<forall>p\<in>set_mset ps. prime p" using primes by auto
+        hence ps: "\<And> p. p \<in> set_mset ps \<Longrightarrow> p \<noteq> 0" by (meson \<open>0 \<notin> set_mset ps\<close>)
         show "(\<Prod>i\<in># ?mf x. i) = (\<Prod>i\<in># ps. i)" using x0 unfolding x 
           by (simp add: msetprod_multiset_prime_factorization_nat[OF ps])
       qed
-      have "x dvd n" unfolding dvd multiplicity_nat_def less_eq_multiset.rep_eq[symmetric] ps
-        using x0 sub by blast
+      have "x dvd n" unfolding dvd multiplicity_nat_def ps
+        using x0 sub by (simp add: subseteq_mset_def)
     }
     ultimately show ?thesis by blast
   qed

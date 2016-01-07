@@ -6,7 +6,7 @@ text \<open>This theory contains precomputation functions, which take another fu
 
 theory Precomputation
 imports 
-  "$AFP/Containers/RBT_Set2"
+  "../Containers/RBT_Set2"
   "~~/src/HOL/Library/RBT_Mapping"
 begin
   
