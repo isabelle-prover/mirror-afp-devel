@@ -52,57 +52,58 @@ by (auto simp: qo_on_def reflp_on_def transp_on_def [of "LEXEQ P"] dest: LEX_tra
 context minimal_element
 begin
 
-lemma lb_LEX_lexmin:
-  assumes chain: "chain_on (LEX P) C (SEQ A)" and "C \<noteq> {}"
-  shows "lb (LEX P) C (lexmin C)"
-proof -
-  have "C \<subseteq> SEQ A" using chain by (auto simp: chain_on_def)
-  note * = this \<open>C \<noteq> {}\<close>
-  { fix f assume "f \<in> C" and "f \<noteq> lexmin C"
-    then have neq: "\<exists>i. f i \<noteq> lexmin C i" by auto
-    def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
-    from LeastI_ex [OF neq, folded i_def]
-      and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
-      have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
-    then have "f \<in> eq_upto C (lexmin C) i" using \<open>f \<in> C\<close> by auto
-    then have fi: "f i \<in> ith (eq_upto C (lexmin C) i) i" (is "f i \<in> ?A") by blast
-    moreover have "f i \<in> A" using \<open>f \<in> C\<close> and \<open>C \<subseteq> SEQ A\<close> by auto
-    ultimately have not_P: "\<not> P (f i) (lexmin C i)"
-      using lexmin_minimal [OF *, of "f i" i] by blast
-    have "chain_on (LEX P) (eq_upto C (lexmin C) i) (SEQ A)"
-      by (rule subchain_on [OF _ chain]) auto
-    then have "chain_on P ?A A"
-      by (simp add: LEX_chain_on_eq_upto_imp_ith_chain_on)
-    moreover from lexmin_mem [OF *] have "lexmin C i \<in> ?A" by auto
-    ultimately have "P (lexmin C i) (f i)"
-      using fi and not_P and neq by (force simp: chain_on_def)
-    with eq have "LEX P (lexmin C) f" by (auto simp: LEX_def) }
-  then show ?thesis by (auto simp: lb_def)
-qed
-
 lemma glb_LEX_lexmin:
   assumes "chain_on (LEX P) C (SEQ A)" and "C \<noteq> {}"
   shows "glb (LEX P) C (lexmin C)"
-proof -
-  have "C \<subseteq> SEQ A" using assms(1) by (auto simp: chain_on_def)
+proof
+  have "C \<subseteq> SEQ A" using assms by (auto simp: chain_on_def)
   then have "lexmin C \<in> SEQ A" using \<open>C \<noteq> {}\<close> by (intro lexmin_SEQ_mem)
-  have "lb (LEX P) C (lexmin C)" by (rule lb_LEX_lexmin [OF assms])
-  moreover
-  { fix f assume lb: "lb (LEX P) C f" and "f \<noteq> lexmin C"
-    then have neq: "\<exists>i. f i \<noteq> lexmin C i" by auto
+  note * = \<open>C \<subseteq> SEQ A\<close> \<open>C \<noteq> {}\<close>
+  note lex = LEX_imp_less [folded irreflp_on_def, OF po [THEN po_on_imp_irreflp_on]]
+  -- \<open>\<open>lexmin C\<close> is a lower bound\<close>
+  show "lb (LEX P) C (lexmin C)"
+  proof
+    fix f assume "f \<in> C"
+    then show "LEXEQ P (lexmin C) f"
+    proof (cases "f = lexmin C")
+      def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
+      case False
+      then have neq: "\<exists>i. f i \<noteq> lexmin C i" by blast
+      from LeastI_ex [OF this, folded i_def]
+        and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
+        have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
+      then have "f \<in> eq_upto C (lexmin C) i"
+        and "f i \<in> ith (eq_upto C (lexmin C) i) i" using \<open>f \<in> C\<close> by force+
+      moreover then have "\<not> P (f i) (lexmin C i)"
+        using lexmin_minimal [OF *, of "f i" i] and \<open>f \<in> C\<close> and \<open>C \<subseteq> SEQ A\<close> by blast
+      moreover obtain g where "g \<in> eq_upto C (lexmin C) (Suc i)"
+        using eq_upto_lexmin_non_empty [OF *] by blast
+      ultimately have "P (lexmin C i) (f i)"
+        using neq and \<open>C \<subseteq> SEQ A\<close> and assms(1) and lex [of g f i] and lex [of f g i]
+        by (auto simp: eq_upto_def chain_on_def)
+      with eq show ?thesis by (auto simp: LEX_def)
+    qed simp
+  qed
+
+  -- \<open>\<open>lexmin C\<close> is greater than or equal to any other lower bound\<close>
+  fix f assume lb: "lb (LEX P) C f"
+  then show "LEXEQ P f (lexmin C)"
+  proof (cases "f = lexmin C")
     def i \<equiv> "LEAST i. f i \<noteq> lexmin C i"
-    from LeastI_ex [OF neq, folded i_def]
+    case False
+    then have neq: "\<exists>i. f i \<noteq> lexmin C i" by blast
+    from LeastI_ex [OF this, folded i_def]
       and not_less_Least [where P = "\<lambda>i. f i \<noteq> lexmin C i", folded i_def]
-    have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
-    from eq_upto_lexmin_non_empty [OF \<open>C \<subseteq> SEQ A\<close> \<open>C \<noteq> {}\<close>] obtain h
-      where "h \<in> eq_upto C (lexmin C) (Suc i)" and "h \<in> C" by (auto simp: eq_upto_def)
-    then have hi: "h i = lexmin C i" and eq': "\<forall>j<i. h i = lexmin C i" by (auto)
-    with lb and \<open>h \<in> C\<close> have "LEXEQ P f h" by (auto simp: lb_def)
-    with \<open>f \<noteq> lexmin C\<close> and eq and eq' and hi and neq
-      have "P (f i) (lexmin C i)" apply (auto simp: LEX_def)
-      by (metis SEQ_iff \<open>h \<in> eq_upto C (lexmin C) (Suc i)\<close> \<open>lexmin C \<in> SEQ A\<close> eq_uptoE less_Suc_eq linorder_neqE_nat minimal neq)
-    with eq have "LEXEQ P f (lexmin C)" by (auto simp: LEX_def) }
-  ultimately show ?thesis by (auto simp: glb_def)
+      have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
+    obtain h where "h \<in> eq_upto C (lexmin C) (Suc i)" and "h \<in> C"
+      using eq_upto_lexmin_non_empty [OF *] by (auto simp: eq_upto_def)
+    then have hi: "h i = lexmin C i" "\<And>j. j < i \<Longrightarrow> h j = lexmin C j" by auto
+    moreover with lb and \<open>h \<in> C\<close> have "LEX P f h" using neq by (auto simp: lb_def)
+    ultimately have "P (f i) (h i)"
+      using neq and eq and \<open>lexmin C \<in> SEQ A\<close>
+      by (auto elim!: LEX_cases) (metis linorder_neqE_nat minimal)
+    with eq show ?thesis by (auto simp: LEX_def hi)
+  qed simp
 qed
 
 lemma dc_on_LEXEQ:
