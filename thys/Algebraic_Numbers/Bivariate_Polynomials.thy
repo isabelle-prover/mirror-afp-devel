@@ -260,7 +260,7 @@ proof -
   have "?l = (\<Sum>j\<le>degree p. monom [:coeff p j:] j)"
     unfolding poly_y_x_def by (simp add: monom_0)
   also have "... = poly_lift (\<Sum>x\<le>degree p. monom (coeff p x) x)"
-    unfolding rhp.hom_setsum unfolding poly_lift_def by simp
+    unfolding rhp.irh.hom_setsum unfolding poly_lift_def by simp
   also have "... = poly_lift p" unfolding poly_as_sum_of_monoms..
   finally show ?thesis.
 qed

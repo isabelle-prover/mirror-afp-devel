@@ -9,11 +9,11 @@ imports
   Missing_List
   Ring_Hom_Poly
   Prime_Factorization
-  Missing_Unsorted
+  "../Jordan_Normal_Form/Missing_Unsorted"
   Precomputation
   Lagrange_Interpolation
   Gauss_Lemma
-  "$AFP/Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+  "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
 begin
 
 subsection \<open>Definitions\<close>

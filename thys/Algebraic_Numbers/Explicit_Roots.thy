@@ -18,7 +18,7 @@ text \<open>We provide algorithms which use the explicit formulas to
 theory Explicit_Roots
 imports   
   Missing_Polynomial
-  "$AFP/Sqrt_Babylonian/Sqrt_Babylonian"
+  "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
 hide_const (open) CauchysMeanTheorem.listprod

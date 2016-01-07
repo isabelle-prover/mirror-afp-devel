@@ -831,7 +831,7 @@ proof (intro allI impI)
       from fr rp have fp: "f dvd p" by (rule comm_monoid_mult_class.dvd_trans)
       from fr rq have fq: "f dvd q" by (rule comm_monoid_mult_class.dvd_trans)
       from irreducible_prime[OF fC irr] have pf: "Divisibility.prime M f" .
-      from primeE[OF pf] have f1: "\<not> f dvd 1" unfolding units_idom_nz[OF f] by auto
+      from primeE[OF pf] have f1: "\<not> f dvd 1" unfolding units_idom_nz[OF f] by metis
       have "f dvd 1"
       proof (rule no_prime_divisor[OF fp fq])
         fix s t

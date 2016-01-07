@@ -11,9 +11,9 @@ text \<open>We define some code equations for complex numbers, provide a compara
 theory Compare_Complex
 imports 
   Complex
-  Set_Impl_Fix
-  Missing_Unsorted
-  Compare_Real
+  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Deriving/Comparator_Generator/Compare_Real"
+  "../Containers/Set_Impl"
 begin
 
 lemma in_reals_code[code_unfold]: "((x :: complex) \<in> \<real>) = (Im x = 0)" 
@@ -67,5 +67,5 @@ derive (eq) ceq complex real
 derive (compare) ccompare complex
 derive (compare) ccompare real
 derive (dlist) set_impl complex real
-
+ 
 end
