@@ -24,8 +24,6 @@ imports
   Gauss_Lemma
 begin
 
-hide_const (open) CauchysMeanTheorem.listprod
-hide_const (open) CauchysMeanTheorem.listsum
 hide_const (open) Module.smult
 hide_const (open) Divisibility.prime
 

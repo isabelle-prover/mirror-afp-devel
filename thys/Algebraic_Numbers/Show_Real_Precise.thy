@@ -12,7 +12,7 @@ text \<open>We implement the show-function for real (algebraic) numbers by print
 theory Show_Real_Precise
 imports
   Show_Real_Alg
-  "$AFP/Show/Show_Instances"
+  "../Show/Show_Instances"
 begin
 
 fun info_radt :: "real_alg_dt \<Rightarrow> rat poly \<times> nat" where

@@ -230,36 +230,36 @@ lemma sgn_rai: "real_of_rat (sgn_rai x) = sgn (real_of_rai x)"
   by (transfer, case_tac "x", insert of_rat_rai_main rai_condD, auto)
 
 lemma sgn_rai_inj: "real_of_rai x = real_of_rai y \<Longrightarrow> sgn_rai x = sgn_rai y"
-proof (transfer)
-  case (goal1 x y)
+proof (transfer, goal_cases)
+  case (1 x y)
   show ?case
   proof (cases x)
     case None note x = this
     show ?thesis
     proof (cases y)
       case None note y = this
-      show ?thesis using goal1 x y by auto
+      show ?thesis using 1 x y by auto
     next
       case (Some y) note y = this
-      show ?thesis using rai_condD goal1 x y by (cases y, auto)
+      show ?thesis using rai_condD 1 x y by (cases y, auto)
     qed
   next
     case (Some x) note x = this
     show ?thesis
     proof (cases y)
       case None note y = this
-      show ?thesis using rai_condD goal1 x y by (cases x, auto)
+      show ?thesis using rai_condD 1 x y by (cases x, auto)
     next
       case (Some y) note y = this
       obtain un1 ri1 p1 l1 r1 where xt: "x = (un1,ri1,p1,l1,r1)" by (cases x, auto)
       obtain un2 ri2 p2 l2 r2 where yt: "y = (un2,ri2,p2,l2,r2)" by (cases y, auto)
-      from goal1 have "rai_cond (Some x)" unfolding x by auto
+      from 1 have "rai_cond (Some x)" unfolding x by auto
       from rai_condD(6)[OF this[unfolded xt]] xt
       have s1: "real_of_rat (sgn r1) = sgn (rai_real (Some x))" by simp
-      from goal1 have "rai_cond (Some y)" unfolding y by auto
+      from 1 have "rai_cond (Some y)" unfolding y by auto
       from rai_condD(6)[OF this[unfolded yt]] yt
       have s2: "real_of_rat (sgn r2) = sgn (rai_real (Some y))" by simp
-      from s1 s2[symmetric] goal1(3)[unfolded x y] have "sgn r1 = sgn r2" by simp
+      from s1 s2[symmetric] 1(3)[unfolded x y] have "sgn r1 = sgn r2" by simp
       thus ?thesis using x y xt yt by auto
     qed
   qed
@@ -2613,34 +2613,36 @@ proof -
     hence id: "l = l1 * l2" "r = (l1 + d1) * (l2 + d2)" "l' = l1' * l2'" "r' = r1' * r2'" 
       "r1 = l1 + d1" "r2 = l2 + d2" and id': "?m1 = ?M1" "?m2 = ?M2"
       unfolding d1_def d2_def by (auto simp: field_simps)
+    def l1d1 \<equiv> "l1 + d1"
     from le have ge0: "d1 \<ge> 0" "d2 \<ge> 0" "l1 \<ge> 0" "l2 \<ge> 0" unfolding d1_def d2_def by auto
-    have "r' - l' \<le> 3 / 4 * (r - l)" 
+    have "4 * (r' - l') \<le> 3 * (r - l)" 
     proof (cases "l1' = l1 \<and> r1' = ?M1 \<and> l2' = l2 \<and> r2' = ?M2")
       case True
       hence id2: "l1' = l1" "r1' = ?M1" "l2' = l2" "r2' = ?M2" by auto
-      show ?thesis unfolding id id2 using ge0 by (simp add: field_simps)
+      show ?thesis unfolding id id2 unfolding ring_distribs using ge0 by simp 
     next
       case False note 1 = this
       show ?thesis
       proof (cases "l1' = l1 \<and> r1' = ?M1 \<and> l2' = ?M2 \<and> r2' = r2")
         case True
         hence id2: "l1' = l1" "r1' = ?M1" "l2' = ?M2" "r2' = r2" by auto
-        show ?thesis unfolding id id2 using ge0 by (simp add: field_simps)
+        show ?thesis unfolding id id2 unfolding ring_distribs using ge0 by simp
       next
         case False note 2 = this
         show ?thesis
         proof (cases "l1' = ?M1 \<and> r1' = r1 \<and> l2' = l2 \<and> r2' = ?M2")
           case True
           hence id2: "l1' = ?M1" "r1' = r1" "l2' = l2" "r2' = ?M2" by auto
-          show ?thesis unfolding id id2 using ge0 by (simp add: field_simps)
+        show ?thesis unfolding id id2 unfolding ring_distribs using ge0 by simp
         next
           case False note 3 = this
           from 1 2 3 mem have id2: "l1' = ?M1" "r1' = r1" "l2' = ?M2" "r2' = r2"
             unfolding id' by auto
-          show ?thesis unfolding id id2 using ge0 by (simp add: field_simps)
+        show ?thesis unfolding id id2 unfolding ring_distribs using ge0 by simp
         qed
       qed
     qed
+    hence "r' - l' \<le> 3 / 4 * (r - l)" by simp
   } note decr = this
   have I_mono: "\<And> l l' :: rat. l > 0 \<Longrightarrow> l \<le> l' \<Longrightarrow> l' > 0" by auto
   note z = z[unfolded xt yt, simplified, unfolded Let_def tb split]

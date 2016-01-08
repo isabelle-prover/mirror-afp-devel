@@ -16,7 +16,6 @@ text \<open>We provide conversion functions between polynomials over the real an
 theory Complex_Roots_Real_Poly
 imports 
   Order_Polynomial
-(* "$AFP/Cayley_Hamilton/Polynomial_extension" FIXME *)
   Ring_Hom_Poly
   Explicit_Roots
 begin
