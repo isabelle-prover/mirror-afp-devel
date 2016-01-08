@@ -11,8 +11,7 @@ text \<open>This theory contains copies of algorithms for Gauss Jordan Eliminati
 theory Gauss_Jordan_Field
 imports 
   Prime_Field
-  Matrix
-  Gauss_Jordan
+  "../Jordan_Normal_Form/Gauss_Jordan"
 begin
 
 context 

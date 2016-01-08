@@ -25,9 +25,9 @@ theory Real_Algebraic_Numbers
 imports 
   Algebraic_Numbers
   Sturm_Rat
-  "$AFP/Abstract-Rewriting/SN_Order_Carrier"
-  Compare_Rat
-  Compare_Real
+  "../Abstract-Rewriting/SN_Order_Carrier"
+  "../Deriving/Comparator_Generator/Compare_Rat"
+  "../Deriving/Comparator_Generator/Compare_Real"
   Improved_Code_Equations
 begin
 
@@ -1920,7 +1920,7 @@ proof -
   finally show "sgn ?r = 1" unfolding sgn_rat_def by auto
   have "root n x \<le> root n (of_rat r)"
     unfolding real_root_le_iff[OF n] by (rule xr)
-  also have "\<dots> \<le> of_rat ?r" unfolding d by simp linarith
+  also have "\<dots> \<le> of_rat ?r" unfolding d by simp
   finally show "root n x \<le> of_rat ?r" .
 qed
 
@@ -1952,7 +1952,7 @@ proof -
     from floor_mono[OF this] have "1 \<le> ?l"
       using one_le_floor unfolding ll by fastforce
     hence sgn: "sgn ?l = 1" by simp
-    have "of_rat ?l \<le> root n (of_rat l)" unfolding ll by simp linarith
+    have "of_rat ?l \<le> root n (of_rat l)" unfolding ll by simp
     also have "\<dots> \<le> root n x" using lx unfolding real_root_le_iff[OF n] .
     finally have "of_rat ?l \<le> root n x" .
     with sgn show ?thesis by auto
@@ -2181,7 +2181,7 @@ proof -
           OF _ I' bnd'' rc1(2) rc2(2) rc1(1) rc2(1) res]
         have *: "root_cond (p, l, r) z \<and> unique_root (p, l, r) \<and> ?bnd l1' r1' l2' r2'"
           by (rule IH, insert lr'' decr, auto simp: delta_gt_def, 
-            unfold of_rat_diff[symmetric] zero_le_of_rat_iff, auto)
+            unfold of_rat_diff[symmetric] zero_le_of_rat_iff of_rat_less_eq, auto)
         hence "?bnd l1' r1' l2' r2'" by auto
         hence "?bnd l1 r1 l2 r2" using 
           order.trans[OF bnd1(1)] order.trans[OF _ bnd1(3)]
@@ -3195,12 +3195,6 @@ quotient_type real_alg = real_alg_dtc / "\<lambda> x y. real_of_radtc x = real_o
 
 (* real_of *)
 lift_definition real_of :: "real_alg \<Rightarrow> real" is real_of_radtc .
-
-instantiation real_alg :: real_of
-begin
-definition "real_real_alg = real_of" 
-instance ..
-end
 
 lemma real_of_inj: "(real_of x = real_of y) = (x = y)"
   by (transfer, simp)

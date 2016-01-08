@@ -17,7 +17,7 @@ theory Berlekamp_Hensel_Factorization
 imports 
   Gauss_Jordan_Field
   Polynomial_Field
-  "$AFP/Sqrt_Babylonian/Sqrt_Babylonian"
+  "../Sqrt_Babylonian/Sqrt_Babylonian"
   Square_Free_Factorization
   Prime_Factorization
   Is_Rat_To_Rat

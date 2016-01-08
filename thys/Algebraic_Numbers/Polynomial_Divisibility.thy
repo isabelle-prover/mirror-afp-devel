@@ -35,7 +35,7 @@ private lemma factor_id: "((x = 0 \<longleftrightarrow> y = 0) \<and> x dvd y)
 
 
 interpretation poly_cancel: comm_monoid_cancel poly_monoid
-  where factorid: "(factor :: 'a poly \<Rightarrow> 'a poly \<Rightarrow> bool) = (\<lambda> x y. ((x = 0 \<longleftrightarrow> y = 0) \<and> x dvd y))" 
+  rewrites factorid: "(factor :: 'a poly \<Rightarrow> 'a poly \<Rightarrow> bool) = (\<lambda> x y. ((x = 0 \<longleftrightarrow> y = 0) \<and> x dvd y))" 
   unfolding factor_id[symmetric]
   by (rule comm_monoid_cancel_idom, intro ext, subst factor_idom, auto)
 
@@ -158,13 +158,14 @@ proof (cases "p = 0")
   show ?thesis
   proof (cases "r = 0")
     case True
-    thus ?thesis using p assms by (cases "q = 0", auto simp: dvd_smult gcd_poly.simps)
+    thus ?thesis using p assms 
+      by (cases "q = 0", auto simp: dvd_smult gcd_poly.simps normalize_poly_def)
   next
     case False note r = this
     show ?thesis
     proof (cases "q = 0")
       case True
-      thus ?thesis using p r assms by (auto simp: dvd_smult gcd_poly.simps)
+      thus ?thesis using p r assms by (auto simp: dvd_smult gcd_poly.simps normalize_poly_def)
     next
       case False note q = this
       from q r have gcd: "gcd q r \<noteq> 0" by auto
@@ -207,10 +208,10 @@ proof (cases "p = 0")
       note div = divides_as_fmsubset[unfolded mk_monoid_simps]
       note fac = Polynomial_Divisibility.factorid_carrier
       from div[OF Kk Pq k pq KC PQ] dvd(1)
-      have le1: "?f K \<le> ?f PQ" using fac[OF k pq] using [[simp_trace]] by simp
+      have le1: "?f K \<le># ?f PQ" using fac[OF k pq] using [[simp_trace]] by simp
       from div[OF Kk Pr k pr KC PR] dvd(2)
-      have le2: "?f K \<le> ?f PR" using fac[OF k pr] by simp
-      from le1 le2 have "?f K \<le> ?f PQ #\<inter> ?f PR" by simp
+      have le2: "?f K \<le># ?f PR" using fac[OF k pr] by simp
+      from le1 le2 have "?f K \<le># ?f PQ #\<inter> ?f PR" by simp
       also have "\<dots> =  ?f P + ?f G + (?f S #\<inter> ?f T)"
         unfolding fPQ fPG fQ fPR fR unfolding multiset_eq_iff
         by (auto simp: ac_simps)
@@ -249,7 +250,7 @@ proof (cases "p = 0")
         have "degree a1 = 0" by (simp add: degree_mult_eq)
         with deg_a1 show False by simp
       qed
-      finally have "?f K \<le> ?f PG" unfolding fPG by simp 
+      finally have "?f K \<le># ?f PG" unfolding fPG by simp 
       with div[OF Kk Pg k pg KC PG] fac[OF k pg]
       have "k dvd p * g" by simp
       thus "k dvd p * gcd q r" unfolding g_def by auto

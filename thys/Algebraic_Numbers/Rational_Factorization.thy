@@ -340,7 +340,7 @@ function factorize_rat_poly_main :: "rat \<Rightarrow> rat poly list \<Rightarro
     | Some q \<Rightarrow> factorize_rat_poly_main c irr (q # p div q # ps)))"
   by pat_completeness auto
 
-definition "factorize_rat_poly_main_wf_rel = inv_image (mult1 {(x, y). x < y}) (\<lambda>(c, irr, ps). multiset_of (map degree ps))"
+definition "factorize_rat_poly_main_wf_rel = inv_image (mult1 {(x, y). x < y}) (\<lambda>(c, irr, ps). mset (map degree ps))"
 
 lemma wf_factorize_rat_poly_main_wf_rel: "wf factorize_rat_poly_main_wf_rel"
   unfolding factorize_rat_poly_main_wf_rel_def using wf_mult1[OF wf_less] by auto

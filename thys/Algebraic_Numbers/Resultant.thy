@@ -14,10 +14,10 @@ text \<open>This theory defines the Sylvester matrix and the resultant and conta
 
 theory Resultant
 imports
-  Matrix_IArray_Impl 
-  Determinant_Impl
+  "../Jordan_Normal_Form/Matrix_IArray_Impl"
+  "../Jordan_Normal_Form/Determinant_Impl"
+  "../Jordan_Normal_Form/Column_Operations"
   Rational_Factorization
-  Column_Operations
   Unique_Factorization_Poly
   Bivariate_Polynomials
   Algebraic_Numbers_Prelim
@@ -312,6 +312,13 @@ proof
   show "?v = 0" apply (subst r) by auto
 qed
 
+(* TODO: move, copied from no longer existing Cayley-Hamilton/Polynomial_extension *)
+lemma degree_setsum_smaller:
+  assumes "n > 0" "finite A"
+  shows "(\<And> x. x \<in>A \<Longrightarrow> degree (f x) < n) \<Longrightarrow> degree (\<Sum>x\<in>A. f x) < n"
+  using `finite A`
+  by(induct rule: finite_induct)
+    (simp_all add: degree_add_less assms)
 
 lemma degree_poly_of_vec_less:
   fixes v :: "'a :: comm_monoid_add vec"
@@ -319,9 +326,8 @@ lemma degree_poly_of_vec_less:
   shows "degree (poly_of_vec v) < dim\<^sub>v v"
   unfolding poly_of_vec_def Let_def
   apply(rule degree_setsum_smaller)
-    using dim apply simp
-    apply simp
-  apply(rule ballI)
+    using dim apply force
+    apply force
   unfolding lessThan_iff
   by (metis degree_0 degree_monom_eq dim monom_eq_0_iff)
 
@@ -1156,9 +1162,8 @@ proof (intro exI conjI)
   show "degree p' < n"
     unfolding p'_def
     apply(rule degree_setsum_smaller)
-    using degq[folded n_def] apply simp
-    apply simp
-  proof
+    using degq[folded n_def] apply force+
+  proof -
     fix i assume i: "i \<in> {..<n}"
     show "degree (monom 1 (n - Suc i) * c i) < n"
       apply (rule order.strict_trans1)
@@ -1170,9 +1175,8 @@ proof (intro exI conjI)
   show "degree q' < m"
     unfolding q'_def
     apply (rule degree_setsum_smaller)
-    using degp[folded m_def] apply simp
-    apply simp
-  proof
+    using degp[folded m_def] apply force+
+  proof -
     fix i assume i: "i \<in> {..<m}"
     show "degree (monom 1 (m-Suc i) * c (n+i)) < m"
     apply (rule order.strict_trans1)

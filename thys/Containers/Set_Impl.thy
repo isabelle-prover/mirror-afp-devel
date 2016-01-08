@@ -524,7 +524,7 @@ lemma set_fold1_code [code]:
   and dxs :: "'b :: {ceq, lattice} set_dlist" shows
   set_fold1_Complement[set_complement_code]:
   "set_fold1 f (Complement A) = Code.abort (STR ''set_fold1: Complement'') (\<lambda>_. set_fold1 f (Complement A))"
-  and "set_fold1 f (Collect P) = Code.abort (STR ''set_fold1: Collect'') (\<lambda>_. set_fold1 f (Collect P))"
+  and "set_fold1 f (Collect_set P) = Code.abort (STR ''set_fold1: Collect_set'') (\<lambda>_. set_fold1 f (Collect_set P))"
   and "set_fold1 f (Set_Monad (x # xs)) = fold (semilattice_set_apply f) xs x" (is "?Set_Monad")
   and
   "set_fold1 f' (DList_set dxs) =

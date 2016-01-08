@@ -365,7 +365,7 @@ proof -
   from n have id: "Suc (n - 1) = n" by auto
   show ?thesis
   proof (rule alg_poly_nth_root[OF _ alg])
-    show "root n x ^ n = x" using real_root_pos[OF pos, of "n - 1"] id pos by auto 
+    show "root n x ^ n = x" using id pos by auto  
   qed
 qed
 

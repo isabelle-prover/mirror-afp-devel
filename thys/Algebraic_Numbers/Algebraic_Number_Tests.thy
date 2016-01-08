@@ -10,14 +10,14 @@ text \<open>We provide a sequence of examples which demonstrate what can be done
 
 theory Algebraic_Number_Tests
 imports
-  Real_Factorization
-  Matrix_IArray_Impl
-  Char_Poly
-  Show_Real_Precise
-  Show_Complex
+  "../Jordan_Normal_Form/Matrix_IArray_Impl"
+  "../Jordan_Normal_Form/Char_Poly"
+  "../Show/Show_Complex"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Code_Target_Nat"
   "~~/src/HOL/Library/Code_Target_Int"
+  Real_Factorization
+  Show_Real_Precise
 begin
 
 subsection \<open>Stand-Alone Examples\<close>

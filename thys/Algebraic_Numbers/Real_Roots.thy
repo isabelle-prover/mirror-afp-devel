@@ -164,7 +164,7 @@ proof -
     def delta \<equiv> "rpoly_root_delta p"
     note delta = rpoly_root_delta[OF p, folded delta_def]
     def rel' \<equiv> "({(x, y). 0 \<le> y \<and> delta_gt delta x y})^-1"
-    def mm \<equiv> "\<lambda>bnds. multiset_of (map (\<lambda> (l,r). ?r r - ?r l) bnds)"
+    def mm \<equiv> "\<lambda>bnds. mset (map (\<lambda> (l,r). ?r r - ?r l) bnds)"
     def rel \<equiv> "inv_image (mult1 rel') mm"
     have wf: "wf rel" unfolding rel_def rel'_def
       by (rule wf_inv_image[OF wf_mult1[OF SN_imp_wf[OF delta_gt_SN[OF delta(1)]]]])
@@ -202,7 +202,7 @@ proof -
               unfolding mm_def in_multiset_in_set by auto
             from lt[OF lr']
             show "(d, ?r r - ?r l) \<in> rel'"  unfolding d rel'_def 
-              by (auto simp: of_rat_less_eq, unfold of_rat_diff[symmetric] zero_le_of_rat_iff, auto)
+              by (auto simp: of_rat_less_eq)
           qed
           hence "(lr' @ lrs, lrss) \<in> rel" unfolding rel_def by auto
         } note rel = this
