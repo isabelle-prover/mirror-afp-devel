@@ -89,9 +89,9 @@ lemma LEX_cases:
 using assms by (auto simp: LEX_def)
 
 lemma LEX_imp_less:
-  assumes "\<forall>x\<in>A. \<not> P x x" and "f \<in> SEQ A" and "g \<in> SEQ A"
+  assumes "\<forall>x\<in>A. \<not> P x x" and "f \<in> SEQ A \<or> g \<in> SEQ A"
     and "LEX P f g" and "\<forall>i<k. f i = g i" and "f k \<noteq> g k"
   shows "P (f k) (g k)"
-using assms by (auto elim!: LEX_cases) (metis linorder_neqE_nat)
+using assms by (auto elim!: LEX_cases) (metis linorder_neqE_nat)+
 
 end
