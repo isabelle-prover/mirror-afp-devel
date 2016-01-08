@@ -10,6 +10,7 @@ text \<open>This theory contains improved code equations for certain algorithms.
 theory Improved_Code_Equations
 imports 
   "~~/src/HOL/Library/Polynomial"
+  Binomial
   Code_Numeral 
 begin
 
@@ -115,4 +116,10 @@ lemma pdivmod_fold_coeffs_code[code]: "pdivmod p q = (if q = 0 then (0, p)
    ) p (0, 0))"
    unfolding pdivmod_fold_coeffs by (simp add: Let_def divide_inverse)
  
+subsubsection \<open>@{const binomial}\<close>
+
+lemma binomial_code[code]: 
+  "n choose k = (if k \<le> n then fact n div (fact k * fact (n - k)) else 0)"
+  using binomial_eq_0[of n k] binomial_altdef_nat[of k n] by simp
+
 end
