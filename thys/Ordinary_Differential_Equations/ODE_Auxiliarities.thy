@@ -152,7 +152,7 @@ lemmas
 lemma differentiable_transform_within_weak:
   assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
   shows "g differentiable at x within s"
-  using assms by (intro differentiable_transform_within[OF zero_less_one, where g=g]) auto
+  using assms by (intro differentiable_transform_within[OF _ zero_less_one, where g=g]) auto
 
 lemma differentiable_compose_at:
   "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow> (\<lambda>x. g (f x)) differentiable (at x)"
@@ -187,7 +187,7 @@ lemma has_derivative_transform:
   assumes "x \<in> s" "\<And>x. x \<in> s \<Longrightarrow> g x = f x"
   assumes "(f has_derivative f') (at x within s)"
   shows "(g has_derivative f') (at x within s)"
-  using assms by (intro has_derivative_transform_within[OF zero_less_one, where g=g]) auto
+  using assms by (intro has_derivative_transform_within[OF _ zero_less_one, where g=g]) auto
 
 lemma has_derivative_If_in_closed:
   assumes f':"\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)"
