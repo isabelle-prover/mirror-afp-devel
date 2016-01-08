@@ -16,7 +16,7 @@ begin
 
 subsubsection \<open>@{const divmod_integer}.\<close>
 
-text \<open>We improve @{thm divmod_integer_code} by deleting @{const sgn}-expressions}.\<close>
+text \<open>We improve @{thm divmod_integer_code} by deleting @{const sgn}-expressions.\<close>
 
 (* led to an improvement of 25 % on factorization example *)
 lemma divmod_integer_code': "divmod_integer k l =
