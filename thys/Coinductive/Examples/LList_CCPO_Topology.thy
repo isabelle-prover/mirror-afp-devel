@@ -527,7 +527,7 @@ lemma lsorted_lup: "lsorted (lup (a::'a::linorder) l)"
   by (rule tendsto_closed[OF closed_lsorted', OF isCont_lup])
      (auto intro!: sorted_up simp: lprefix_conv_lappend)
 
-context notes [[function_defs]]
+context notes [[function_internals]]
 begin
 
 partial_function (llist) lup' :: "'a :: ord \<Rightarrow> 'a llist \<Rightarrow> 'a llist" where

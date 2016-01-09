@@ -128,7 +128,7 @@ datatype ty
   | Array ty      ("_\<lfloor>\<rceil>" 95) -- "array type"
 
 context
-  notes [[inductive_defs]]
+  notes [[inductive_internals]]
 begin
 
 inductive is_refT :: "ty \<Rightarrow> bool" where

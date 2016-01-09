@@ -33,7 +33,7 @@ definition jmm_heap_read :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> ad
 where "jmm_heap_read h a ad v = True"
 
 context
-  notes [[inductive_defs]]
+  notes [[inductive_internals]]
 begin
 
 inductive jmm_heap_write :: "'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool"

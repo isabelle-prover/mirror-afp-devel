@@ -1012,7 +1012,7 @@ where
 definition ldropn :: "nat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where "ldropn n xs = (ltl ^^ n) xs"
 
-context notes [[function_defs]]
+context notes [[function_internals]]
 begin
 
 partial_function (llist) ldrop :: "enat \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
@@ -1028,7 +1028,7 @@ where
 | "ltl (ltakeWhile P xs) = ltakeWhile P (ltl xs)"
 
 context fixes P :: "'a \<Rightarrow> bool"
-  notes [[function_defs]]
+  notes [[function_internals]]
 begin
 
 partial_function (llist) ldropWhile :: "'a llist \<Rightarrow> 'a llist"
@@ -1085,7 +1085,7 @@ where
 | llexord_LCons_less: "r x y \<Longrightarrow> llexord r (LCons x xs) (LCons y ys)"
 | llexord_LNil [simp, intro!]: "llexord r LNil ys"
 
-context notes [[function_defs]]
+context notes [[function_internals]]
 begin
 
 partial_function (llist) lconcat :: "'a llist llist \<Rightarrow> 'a llist"

@@ -9,8 +9,9 @@ theory Cotree imports
   "~~/src/Tools/Adhoc_Overloading"
 begin
 
-context notes [[bnf_note_all]] begin
-codatatype 'a tree = Node (root: 'a) (left: "'a tree") (right: "'a tree")
+context notes [[bnf_internals]]
+begin
+  codatatype 'a tree = Node (root: 'a) (left: "'a tree") (right: "'a tree")
 end
 
 lemma rel_treeD:
