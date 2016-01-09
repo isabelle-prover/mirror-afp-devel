@@ -158,23 +158,23 @@ by fixrec_simp
 lemma zipRT_strict2 [simp]: "zipRT\<cdot>f\<cdot>r\<cdot>\<bottom> = \<bottom>"
 by (fixrec_simp, cases r, simp_all)
 
-abbreviation apR (infixl "\<diamond>" 70)
-  where "a \<diamond> b \<equiv> zipRT\<cdot>ID\<cdot>a\<cdot>b"
+abbreviation apR (infixl "\<diamondop>" 70)
+  where "a \<diamondop> b \<equiv> zipRT\<cdot>ID\<cdot>a\<cdot>b"
 
 text {* Proofs that @{text zipRT} satisfies the applicative functor laws: *}
 
-lemma zipRT_homomorphism: "Done\<cdot>f \<diamond> Done\<cdot>x = Done\<cdot>(f\<cdot>x)"
+lemma zipRT_homomorphism: "Done\<cdot>f \<diamondop> Done\<cdot>x = Done\<cdot>(f\<cdot>x)"
   by simp
 
-lemma zipRT_identity: "Done\<cdot>ID \<diamond> r = r"
+lemma zipRT_identity: "Done\<cdot>ID \<diamondop> r = r"
   by (induct r rule: resT_induct, simp_all add: fmap_fmap eta_cfun)
 
-lemma zipRT_interchange: "r \<diamond> Done\<cdot>x = Done\<cdot>(\<Lambda> f. f\<cdot>x) \<diamond> r"
+lemma zipRT_interchange: "r \<diamondop> Done\<cdot>x = Done\<cdot>(\<Lambda> f. f\<cdot>x) \<diamondop> r"
   by (induct r rule: resT_induct, simp_all add: fmap_fmap)
 
 text {* The associativity rule is the hard one! *}
 
-lemma zipRT_associativity: "Done\<cdot>cfcomp \<diamond> r1 \<diamond> r2 \<diamond> r3 = r1 \<diamond> (r2 \<diamond> r3)"
+lemma zipRT_associativity: "Done\<cdot>cfcomp \<diamondop> r1 \<diamondop> r2 \<diamondop> r3 = r1 \<diamondop> (r2 \<diamondop> r3)"
 proof (induct r1 arbitrary: r2 r3 rule: resT_induct)
   case (Done x1) thus ?case
   proof (induct r2 arbitrary: r3 rule: resT_induct)

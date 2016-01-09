@@ -58,19 +58,19 @@ locale labelling =
 begin
 
 definition label_tree :: "'a tree \<Rightarrow> ('x tree, 's) state"
-where "label_tree = fold_tree (\<lambda>_ :: 'a. pure Leaf \<diamond> fresh) (\<lambda>l r. pure Node \<diamond> l \<diamond> r)"
+where "label_tree = fold_tree (\<lambda>_ :: 'a. pure Leaf \<diamondop> fresh) (\<lambda>l r. pure Node \<diamondop> l \<diamondop> r)"
 
 lemma label_tree_simps [simp]:
-  "label_tree (Leaf x) = pure Leaf \<diamond> fresh"
-  "label_tree (Node l r) = pure Node \<diamond> label_tree l \<diamond> label_tree r"
+  "label_tree (Leaf x) = pure Leaf \<diamondop> fresh"
+  "label_tree (Node l r) = pure Node \<diamondop> label_tree l \<diamondop> label_tree r"
 by(simp_all add: label_tree_def)
 
 primrec label_list :: "'a list \<Rightarrow> ('x list, 's) state"
 where
     "label_list [] = pure []"
-  | "label_list (x # xs) = pure (op #) \<diamond> fresh \<diamond> label_list xs"
+  | "label_list (x # xs) = pure (op #) \<diamondop> fresh \<diamondop> label_list xs"
 
-lemma label_append: "label_list (a @ b) = pure (op @) \<diamond> label_list a \<diamond> label_list b"
+lemma label_append: "label_list (a @ b) = pure (op @) \<diamondop> label_list a \<diamondop> label_list b"
   -- \<open>The proof lifts the defining equations of @{const append} to the state monad.\<close>
 proof (induction a)
   case Nil
@@ -84,7 +84,7 @@ next
     by applicative_nf simp
 qed
 
-lemma label_tree_list: "pure labels \<diamond> label_tree t = label_list (labels t)"
+lemma label_tree_list: "pure labels \<diamondop> label_tree t = label_list (labels t)"
 proof (induction t)
   case Leaf show ?case unfolding label_tree_simps labels_simps label_list.simps
     by applicative_nf simp
@@ -154,17 +154,17 @@ unfolding pure_state_rev_rev_def ap_state_rev_rev_def by(transfer, applicative_n
 
 
 context begin interpretation applicative_syntax .
-lemma ap_state_rev_B: "B f \<diamond> B x = B (pure_state (\<lambda>x f. f x) \<diamond> x \<diamond> f)"
+lemma ap_state_rev_B: "B f \<diamondop> B x = B (pure_state (\<lambda>x f. f x) \<diamondop> x \<diamondop> f)"
 unfolding ap_state_rev_def by(fact ap_dual.abs_eq)
 
-lemma ap_state_rev_pure_B: "pure f \<diamond> B x = B (pure_state f \<diamond> x)"
+lemma ap_state_rev_pure_B: "pure f \<diamondop> B x = B (pure_state f \<diamondop> x)"
 unfolding ap_state_rev_def pure_state_rev_def
 by transfer(applicative_nf, rule refl)
 
-lemma ap_state_rev_rev_B: "B f \<diamond> B x = B (pure_state_rev (\<lambda>x f. f x) \<diamond> x \<diamond> f)"
+lemma ap_state_rev_rev_B: "B f \<diamondop> B x = B (pure_state_rev (\<lambda>x f. f x) \<diamondop> x \<diamondop> f)"
 unfolding ap_state_rev_rev_def by(fact ap_dual.abs_eq)
 
-lemma ap_state_rev_rev_pure_B: "pure f \<diamond> B x = B (pure_state_rev f \<diamond> x)"
+lemma ap_state_rev_rev_pure_B: "pure f \<diamondop> B x = B (pure_state_rev f \<diamondop> x)"
 unfolding ap_state_rev_rev_def pure_state_rev_rev_def
 by transfer(applicative_nf, rule refl)
 end
@@ -185,7 +185,7 @@ by(simp add: bind_state_def fun_eq_iff)
 lemma ap_conv_bind_state: "ap_state f x = bind_state f (\<lambda>f. bind_state x (Pair \<circ> f))"
 by(simp add: ap_state_def bind_state_def Let_def split_def o_def fun_eq_iff)
 
-lemma ap_pure_bind_state: "pure x \<diamond> bind_state y f = bind_state y (op \<diamond> (pure x) \<circ> f)"
+lemma ap_pure_bind_state: "pure x \<diamondop> bind_state y f = bind_state y (op \<diamondop> (pure x) \<circ> f)"
 by(simp add: ap_conv_bind_state bind_state_return1 bind_state_assoc o_def)
 
 definition kleisli_state :: "('b \<Rightarrow> ('c, 's) state) \<Rightarrow> ('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a \<Rightarrow> ('c, 's) state" (infixl "\<bullet>" 55)
@@ -196,34 +196,34 @@ where "fetch s = (shd s, stl s)"
 
 primrec traverse :: "('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state"
 where
-  "traverse f (Leaf x) = pure Leaf \<diamond> f x"
-| "traverse f (Node l r) = pure Node \<diamond> traverse f l \<diamond> traverse f r"
+  "traverse f (Leaf x) = pure Leaf \<diamondop> f x"
+| "traverse f (Node l r) = pure Node \<diamondop> traverse f l \<diamondop> traverse f r"
 
 text \<open>As we cannot abstract over the applicative functor in definitions, we define
   traversal on the transformed applicative function once again.\<close>
 
 primrec traverse_rev :: "('a \<Rightarrow> ('b, 's) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev"
 where
-  "traverse_rev f (Leaf x) = pure Leaf \<diamond> f x"
-| "traverse_rev f (Node l r) = pure Node \<diamond> traverse_rev f l \<diamond> traverse_rev f r"
+  "traverse_rev f (Leaf x) = pure Leaf \<diamondop> f x"
+| "traverse_rev f (Node l r) = pure Node \<diamondop> traverse_rev f l \<diamondop> traverse_rev f r"
 
 definition recurse :: "('a \<Rightarrow> ('b, 's) state) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state"
 where "recurse f = un_B \<circ> traverse_rev (B \<circ> f)"
 
-lemma recurse_Leaf: "recurse f (Leaf x) = pure Leaf \<diamond> f x"
+lemma recurse_Leaf: "recurse f (Leaf x) = pure Leaf \<diamondop> f x"
 unfolding recurse_def traverse_rev.simps o_def ap_state_rev_pure_B
 by(simp add: B_inverse)
 
 lemma recurse_Node:
-  "recurse f (Node l r) = pure (\<lambda>r l. Node l r) \<diamond> recurse f r \<diamond> recurse f l"
+  "recurse f (Node l r) = pure (\<lambda>r l. Node l r) \<diamondop> recurse f r \<diamondop> recurse f l"
 proof -
-  have "recurse f (Node l r) = un_B (pure Node \<diamond> traverse_rev (B \<circ> f) l \<diamond> traverse_rev (B \<circ> f) r)"
+  have "recurse f (Node l r) = un_B (pure Node \<diamondop> traverse_rev (B \<circ> f) l \<diamondop> traverse_rev (B \<circ> f) r)"
     by(simp add: recurse_def)
-  also have "\<dots> = un_B (B (pure Node) \<diamond> B (recurse f l) \<diamond> B (recurse f r))"
+  also have "\<dots> = un_B (B (pure Node) \<diamondop> B (recurse f l) \<diamondop> B (recurse f r))"
     by(simp add: un_B_inverse recurse_def pure_state_rev_def pure_dual_def)
-  also have "\<dots> = pure (\<lambda>x f. f x) \<diamond> recurse f r \<diamond> (pure (\<lambda>x f. f x) \<diamond> recurse f l \<diamond> pure Node)"
+  also have "\<dots> = pure (\<lambda>x f. f x) \<diamondop> recurse f r \<diamondop> (pure (\<lambda>x f. f x) \<diamondop> recurse f l \<diamondop> pure Node)"
     by(simp add: ap_state_rev_B B_inverse)
-  also have "\<dots> = pure (\<lambda>r l. Node l r) \<diamond> recurse f r \<diamond> recurse f l"
+  also have "\<dots> = pure (\<lambda>r l. Node l r) \<diamondop> recurse f r \<diamondop> recurse f l"
     -- \<open>This step expands to 13 steps in \cite{backwards}\<close>
     by(applicative_nf) simp
   finally show ?thesis .
@@ -244,20 +244,20 @@ unfolding pure_state_rev_def by transfer simp
 lemma BB_pure: "pure x = B (B (pure x))"
 unfolding pure_state_rev_rev_def B_pure[symmetric] by transfer(rule refl)
 
-lemma BB_ap: "B (B f) \<diamond> B (B x) = B (B (f \<diamond> x))"
+lemma BB_ap: "B (B f) \<diamondop> B (B x) = B (B (f \<diamondop> x))"
 proof -
-  have "B (B f) \<diamond> B (B x) = B (B (pure (\<lambda>x f. f x) \<diamond> f \<diamond> (pure (\<lambda>x f. f x) \<diamond> x \<diamond> pure (\<lambda>x f. f x))))"
+  have "B (B f) \<diamondop> B (B x) = B (B (pure (\<lambda>x f. f x) \<diamondop> f \<diamondop> (pure (\<lambda>x f. f x) \<diamondop> x \<diamondop> pure (\<lambda>x f. f x))))"
     (is "_ = B (B ?exp)")
     unfolding ap_state_rev_rev_B B_pure ap_state_rev_B ..
-  also have "?exp = f \<diamond> x" -- \<open>This step takes 15 steps in \cite{backwards}.\<close>
+  also have "?exp = f \<diamondop> x" -- \<open>This step takes 15 steps in \cite{backwards}.\<close>
     by(applicative_nf)(rule refl)
   finally show ?thesis .
 qed
 
 primrec traverse_rev_rev :: "('a \<Rightarrow> ('b, 's) state_rev_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev_rev"
 where
-  "traverse_rev_rev f (Leaf x) = pure Leaf \<diamond> f x"
-| "traverse_rev_rev f (Node l r) = pure Node \<diamond> traverse_rev_rev f l \<diamond> traverse_rev_rev f r"
+  "traverse_rev_rev f (Leaf x) = pure Leaf \<diamondop> f x"
+| "traverse_rev_rev f (Node l r) = pure Node \<diamondop> traverse_rev_rev f l \<diamondop> traverse_rev_rev f r"
 
 definition recurse_rev :: "('a \<Rightarrow> ('b, 's) state_rev) \<Rightarrow> 'a tree \<Rightarrow> ('b tree, 's) state_rev"
 where "recurse_rev f = un_B \<circ> traverse_rev_rev (B \<circ> f)"
@@ -305,7 +305,7 @@ definition strip :: "'a \<times> 'b \<Rightarrow> ('a, 'b stream) state"
 where "strip = (\<lambda>(a, b) s. (a, SCons b s))"
 
 definition adorn :: "'a \<Rightarrow> ('a \<times> 'b, 'b stream) state"
-where "adorn a = pure (Pair a) \<diamond> fetch"
+where "adorn a = pure (Pair a) \<diamondop> fetch"
 
 abbreviation label :: "'a tree \<Rightarrow> (('a \<times> 'b) tree, 'b stream) state"
 where "label \<equiv> traverse adorn"
@@ -327,16 +327,16 @@ text \<open>Repeating an effect\<close>
 primrec repeatM :: "nat \<Rightarrow> ('x, 's) state \<Rightarrow> ('x list, 's) state"
 where
   "repeatM 0 f = pure_state []"
-| "repeatM (Suc n) f = pure op # \<diamond> f \<diamond> repeatM n f"
+| "repeatM (Suc n) f = pure op # \<diamondop> f \<diamondop> repeatM n f"
 
-lemma repeatM_plus: "repeatM (n + m) f = pure append \<diamond> repeatM n f \<diamond> repeatM m f"
+lemma repeatM_plus: "repeatM (n + m) f = pure append \<diamondop> repeatM n f \<diamondop> repeatM m f"
 by(induction n)(simp; applicative_nf; simp)+
 
 abbreviation (input) fail :: "'a option" where "fail \<equiv> None"
 
 
 definition lift_state :: "('a, 's) state \<Rightarrow> ('a option, 's) state"
-where [applicative_unfold]: "lift_state x = pure pure \<diamond> x"
+where [applicative_unfold]: "lift_state x = pure pure \<diamondop> x"
 
 definition lift_option :: "'a option \<Rightarrow> ('a option, 's) state"
 where [applicative_unfold]: "lift_option x = pure x"
@@ -356,16 +356,16 @@ where "disjoint xs ys \<equiv> set xs \<inter> set ys = {}"
 
 definition dlabels :: "'x tree \<Rightarrow> 'x list option"
 where "dlabels = fold_tree (\<lambda>x. pure [x])
-     (\<lambda>l r. pure (case_prod append) \<diamond> (assert (case_prod disjoint) (pure Pair \<diamond> l \<diamond> r)))"
+     (\<lambda>l r. pure (case_prod append) \<diamondop> (assert (case_prod disjoint) (pure Pair \<diamondop> l \<diamondop> r)))"
 
 lemma dlabels_simps [simp]:
   "dlabels (Leaf x) = pure [x]"
-  "dlabels (Node l r) = pure (case_prod append) \<diamond> (assert (case_prod disjoint) (pure Pair \<diamond> dlabels l \<diamond> dlabels r))"
+  "dlabels (Node l r) = pure (case_prod append) \<diamondop> (assert (case_prod disjoint) (pure Pair \<diamondop> dlabels l \<diamondop> dlabels r))"
 by(simp_all add: dlabels_def)
 
 lemma correctness_applicative:
-  assumes distinct: "\<And>n. pure (assert distinct) \<diamond> symbols n = symbols n"
-  shows "pure_state dlabels \<diamond> label_tree t = symbols (leaves t)"
+  assumes distinct: "\<And>n. pure (assert distinct) \<diamondop> symbols n = symbols n"
+  shows "pure_state dlabels \<diamondop> label_tree t = symbols (leaves t)"
 proof(induction t)
   case Leaf
   show ?case unfolding label_tree_simps leaves_simps One_nat_def repeatM.simps
@@ -373,14 +373,14 @@ proof(induction t)
 next
   case (Node l r)
   let ?cat = "case_prod append" and ?disj = "case_prod disjoint"
-  have "pure_state dlabels \<diamond> label_tree (Node l r) =
-     pure (\<lambda>l r. pure ?cat \<diamond> (assert ?disj (pure Pair \<diamond> l \<diamond> r))) \<diamond>
-       (pure dlabels \<diamond> label_tree l) \<diamond> (pure dlabels \<diamond> label_tree r)"
+  have "pure_state dlabels \<diamondop> label_tree (Node l r) =
+     pure (\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))) \<diamondop>
+       (pure dlabels \<diamondop> label_tree l) \<diamondop> (pure dlabels \<diamondop> label_tree r)"
     unfolding label_tree_simps by applicative_nf simp
-  also have "\<dots> = pure (\<lambda>l r. pure ?cat \<diamond> (assert ?disj (pure Pair \<diamond> l \<diamond> r))) \<diamond>
-    (pure (assert distinct) \<diamond> symbols (leaves l)) \<diamond> (pure (assert distinct) \<diamond> symbols (leaves r))"
+  also have "\<dots> = pure (\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))) \<diamondop>
+    (pure (assert distinct) \<diamondop> symbols (leaves l)) \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves r))"
     unfolding Node.IH distinct ..
-  also have "\<dots> = pure (assert distinct) \<diamond> symbols (leaves (Node l r))"
+  also have "\<dots> = pure (assert distinct) \<diamondop> symbols (leaves (Node l r))"
     unfolding leaves_simps repeatM_plus by applicative_nf simp
   also have "\<dots> = symbols (leaves (Node l r))" by(rule distinct)
   finally show ?case .

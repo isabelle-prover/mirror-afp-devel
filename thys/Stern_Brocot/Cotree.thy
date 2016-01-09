@@ -112,41 +112,41 @@ adhoc_overloading Applicative.ap ap_tree
 interpretation applicative_syntax .
 
 lemma ap_tree_pure_Node [simp]:
-  "pure f \<diamond> Node x l r = Node (f x) (pure f \<diamond> l) (pure f \<diamond> r)"
+  "pure f \<diamondop> Node x l r = Node (f x) (pure f \<diamondop> l) (pure f \<diamondop> r)"
 by(rule tree.expand) auto
 
 lemma ap_tree_Node_Node [simp]:
-  "Node f fl fr \<diamond> Node x l r = Node (f x) (fl \<diamond> l) (fr \<diamond> r)"
+  "Node f fl fr \<diamondop> Node x l r = Node (f x) (fl \<diamondop> l) (fr \<diamondop> r)"
 by(rule tree.expand) auto
 
 text {* Applicative functor laws *}
 
 lemma map_tree_ap_tree_pure_tree:
-  "pure f \<diamond> u = map_tree f u"
+  "pure f \<diamondop> u = map_tree f u"
 by(coinduction arbitrary: u) auto
 
-lemma ap_tree_identity: "pure id \<diamond> t = t"
+lemma ap_tree_identity: "pure id \<diamondop> t = t"
 by(simp add: map_tree_ap_tree_pure_tree tree.map_id)
 
 lemma ap_tree_composition:
-  "pure (op \<circ>) \<diamond> r1 \<diamond> r2 \<diamond> r3 = r1 \<diamond> (r2 \<diamond> r3)"
+  "pure (op \<circ>) \<diamondop> r1 \<diamondop> r2 \<diamondop> r3 = r1 \<diamondop> (r2 \<diamondop> r3)"
 by(coinduction arbitrary: r1 r2 r3) auto
 
 lemma ap_tree_homomorphism:
-  "pure f \<diamond> pure x = pure (f x)"
+  "pure f \<diamondop> pure x = pure (f x)"
 by(simp add: map_tree_ap_tree_pure_tree)
 
 lemma ap_tree_interchange:
-  "t \<diamond> pure x = pure (\<lambda>f. f x) \<diamond> t"
+  "t \<diamondop> pure x = pure (\<lambda>f. f x) \<diamondop> t"
 by(coinduction arbitrary: t) auto
 
-lemma ap_tree_K_tree: "pure (\<lambda>x y. x) \<diamond> u \<diamond> v = u"
+lemma ap_tree_K_tree: "pure (\<lambda>x y. x) \<diamondop> u \<diamondop> v = u"
 by(coinduction arbitrary: u v)(auto)
 
-lemma ap_tree_C_tree: "pure (\<lambda>f x y. f y x) \<diamond> u \<diamond> v \<diamond> w = u \<diamond> w \<diamond> v"
+lemma ap_tree_C_tree: "pure (\<lambda>f x y. f y x) \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> w \<diamondop> v"
 by(coinduction arbitrary: u v w)(auto)
 
-lemma ap_tree_W_tree: "pure (\<lambda>f x. f x x) \<diamond> f \<diamond> x = f \<diamond> x \<diamond> x"
+lemma ap_tree_W_tree: "pure (\<lambda>f x. f x x) \<diamondop> f \<diamondop> x = f \<diamondop> x \<diamondop> x"
 by(coinduction arbitrary: f x)(auto)
 
 applicative tree (C, K, W) for
@@ -157,7 +157,7 @@ by(rule ap_tree_identity[unfolded id_def] ap_tree_composition[unfolded o_def[abs
 declare map_tree_ap_tree_pure_tree[symmetric, applicative_unfold]
 
 lemma ap_tree_strong_extensional:
-  "(\<And>x. f \<diamond> pure x = g \<diamond> pure x) \<Longrightarrow> f = g"
+  "(\<And>x. f \<diamondop> pure x = g \<diamondop> pure x) \<Longrightarrow> f = g"
 proof(coinduction arbitrary: f g)
   case (Eq_tree f g)[rule_format]
   have "root f = root g"
@@ -168,17 +168,17 @@ proof(coinduction arbitrary: f g)
   qed
   moreover {
     fix x
-    have "left f \<diamond> pure x = left g \<diamond> pure x"
+    have "left f \<diamondop> pure x = left g \<diamondop> pure x"
       using Eq_tree[of x] by(subst (asm) (1 2) ap_tree.ctr) simp
   } moreover {
     fix x
-    have "right f \<diamond> pure x = right g \<diamond> pure x"
+    have "right f \<diamondop> pure x = right g \<diamondop> pure x"
       using Eq_tree[of x] by(subst (asm) (1 2) ap_tree.ctr) simp
   } ultimately show ?case by simp
 qed
 
 lemma ap_tree_extensional:
-  "(\<And>x. f \<diamond> x = g \<diamond> x) \<Longrightarrow> f = g"
+  "(\<And>x. f \<diamondop> x = g \<diamondop> x) \<Longrightarrow> f = g"
 by(rule ap_tree_strong_extensional) simp
 
 subsection {* Standard tree combinators *}
@@ -266,7 +266,7 @@ lemma traverse_tree_pure_tree [simp]:
 by (induct path arbitrary: x) (simp_all split: dir.splits)
 
 lemma traverse_tree_ap [simp]:
-  "traverse_tree path (f \<diamond> x) = traverse_tree path f \<diamond> traverse_tree path x"
+  "traverse_tree path (f \<diamondop> x) = traverse_tree path f \<diamondop> traverse_tree path x"
 by (induct path arbitrary: f x) (simp_all split: dir.splits)
 
 
@@ -321,7 +321,7 @@ by(rule tree.expand) simp
 lemma mirror_pure: "mirror (pure x) = pure x"
 by(coinduction rule: tree.coinduct) simp
 
-lemma mirror_ap_tree: "mirror (f \<diamond> x) = mirror f \<diamond> mirror x"
+lemma mirror_ap_tree: "mirror (f \<diamondop> x) = mirror f \<diamondop> mirror x"
 by(coinduction arbitrary: f x) auto
 
 end

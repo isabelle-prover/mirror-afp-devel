@@ -15,23 +15,23 @@ definition bird :: "fraction tree"
 where "bird = tree_recurse (recip o succ) (succ o recip) (1, 1)"
 
 lemma bird_unfold:
-  "bird = Node (1, 1) (pure recip \<diamond> (pure succ \<diamond> bird)) (pure succ \<diamond> (pure recip \<diamond> bird))"
+  "bird = Node (1, 1) (pure recip \<diamondop> (pure succ \<diamondop> bird)) (pure succ \<diamondop> (pure recip \<diamondop> bird))"
 by(auto simp add: bird_def map_tree_ap_tree_pure_tree intro: tree.expand)
 
 lemma bird_simps [simp]:
   "root bird = (1, 1)"
-  "left bird = pure recip \<diamond> (pure succ \<diamond> bird)"
-  "right bird = pure succ \<diamond> (pure recip \<diamond> bird)"
+  "left bird = pure recip \<diamondop> (pure succ \<diamondop> bird)"
+  "right bird = pure succ \<diamondop> (pure recip \<diamondop> bird)"
 by(subst bird_unfold, simp)+
 
-lemma mirror_bird: "mirror bird = pure recip \<diamond> bird" (is "?lhs = ?rhs")
+lemma mirror_bird: "mirror bird = pure recip \<diamondop> bird" (is "?lhs = ?rhs")
 proof -
-  let ?R = "\<lambda>t. Node (1, 1) (pure succ \<diamond> (pure recip \<diamond> t)) (pure recip \<diamond> (pure succ \<diamond> t))"
+  let ?R = "\<lambda>t. Node (1, 1) (pure succ \<diamondop> (pure recip \<diamondop> t)) (pure recip \<diamondop> (pure succ \<diamondop> t))"
   have "mirror bird = ?R (mirror bird)"
     by(rule tree.expand)(simp add: mirror_ap_tree mirror_pure)
   note tree_recurse_unique[OF this[unfolded map_tree_ap_tree_pure_tree tree.map_comp]]
   moreover
-  def t \<equiv> "pure recip \<diamond> bird"
+  def t \<equiv> "pure recip \<diamondop> bird"
   have "t = ?R t"
     apply(rule tree.expand; simp add: t_def)
     apply(applicative_lifting; simp add: split_beta)
@@ -67,7 +67,7 @@ lemma even_odd_mirror_pure [simp]: fixes even shows
 by(coinduction arbitrary: even) auto
 
 lemma even_odd_mirror_ap_tree [simp]: fixes even shows
-  "even_odd_mirror even (f \<diamond> x) = even_odd_mirror even f \<diamond> even_odd_mirror even x"
+  "even_odd_mirror even (f \<diamondop> x) = even_odd_mirror even f \<diamondop> even_odd_mirror even x"
 by(coinduction arbitrary: even f x) auto
 
 lemma [simp]:
@@ -76,8 +76,8 @@ lemma [simp]:
 by(simp_all add: even_mirror_def odd_mirror_def)
 
 lemma [simp]:
-  shows even_mirror_ap_tree: "even_mirror (f \<diamond> x) = even_mirror f \<diamond> even_mirror x"
-  and odd_mirror_ap_tree: "odd_mirror (f \<diamond> x) = odd_mirror f \<diamond> odd_mirror x"
+  shows even_mirror_ap_tree: "even_mirror (f \<diamondop> x) = even_mirror f \<diamondop> even_mirror x"
+  and odd_mirror_ap_tree: "odd_mirror (f \<diamondop> x) = odd_mirror f \<diamondop> odd_mirror x"
 by(simp_all add: even_mirror_def odd_mirror_def)
 
 fun even_mirror_path :: "path \<Rightarrow> path"
@@ -155,12 +155,12 @@ qed
 
 theorem bird_rationals:
   assumes "m > 0" "n > 0"
-  shows "root (traverse_tree (odd_mirror_path (mk_path m n)) (pure rat_of \<diamond> bird)) = Fract (int m) (int n)"
+  shows "root (traverse_tree (odd_mirror_path (mk_path m n)) (pure rat_of \<diamondop> bird)) = Fract (int m) (int n)"
 using stern_brocot_rationals[OF assms]
 by (simp add: odd_mirror_bird_stern_brocot[symmetric])
 
 theorem bird_rationals_not_repeated:
-  "root (traverse_tree path (pure rat_of \<diamond> bird)) = root (traverse_tree path' (pure rat_of \<diamond> bird))
+  "root (traverse_tree path (pure rat_of \<diamondop> bird)) = root (traverse_tree path' (pure rat_of \<diamondop> bird))
   \<Longrightarrow> path = path'"
 using stern_brocot_rationals_not_repeated[where path="odd_mirror_path path" and path'="odd_mirror_path path'"]
 by (simp add: odd_mirror_bird_stern_brocot[symmetric])

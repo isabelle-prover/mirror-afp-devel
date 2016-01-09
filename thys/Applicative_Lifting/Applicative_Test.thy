@@ -15,31 +15,31 @@ subsection {* Normal form conversion *}
 
 notepad
 begin
-  have "\<forall>x. x = af_pure (\<lambda>x. x) \<diamond> x" by applicative_nf rule
+  have "\<forall>x. x = af_pure (\<lambda>x. x) \<diamondop> x" by applicative_nf rule
   have "\<forall>x. af_pure x = af_pure x" by applicative_nf rule
-  have "\<forall>f x. af_pure f \<diamond> x = af_pure f \<diamond> x" by applicative_nf rule
-  have "\<forall>f x y. af_pure f \<diamond> x \<diamond> y = af_pure f \<diamond> x \<diamond> y" by applicative_nf rule
-  have "\<forall>g f x. af_pure g \<diamond> (f \<diamond> x) = af_pure (\<lambda>f x. g (f x)) \<diamond> f \<diamond> x" by applicative_nf rule
-  have "\<forall>f x y. f \<diamond> x \<diamond> y = af_pure (\<lambda>f x y. f x y) \<diamond> f \<diamond> x \<diamond> y" by applicative_nf rule
-  have "\<forall>g f x. g \<diamond> (f \<diamond> x) = af_pure (\<lambda>g f x. g (f x)) \<diamond> g \<diamond> f \<diamond> x" by applicative_nf rule
-  have "\<forall>f x. f \<diamond> af_pure x = af_pure (\<lambda>f. f x) \<diamond> f" by applicative_nf rule
-  have "\<forall>x y. af_pure x \<diamond> af_pure y = af_pure (x y)" by applicative_nf rule
-  have "\<forall>f x y. f \<diamond> x \<diamond> af_pure y = af_pure (\<lambda>f x. f x y) \<diamond> f \<diamond> x" by applicative_nf rule
-  have "\<forall>f x y. af_pure f \<diamond> x \<diamond> af_pure y = af_pure (\<lambda>x. f x y) \<diamond> x" by applicative_nf rule
-  have "\<forall>f x y z. af_pure f \<diamond> x \<diamond> af_pure y \<diamond> z = af_pure (\<lambda>x z. f x y z) \<diamond> x \<diamond> z" by applicative_nf rule
-  have "\<forall>f x g y. af_pure f \<diamond> x \<diamond> (af_pure g \<diamond> y) = af_pure (\<lambda>x y. f x (g y)) \<diamond> x \<diamond> y" by applicative_nf rule
-  have "\<forall>f g x y. f \<diamond> (g \<diamond> x) \<diamond> y = af_pure (\<lambda>f g x y. f (g x) y) \<diamond> f \<diamond> g \<diamond> x \<diamond> y" by applicative_nf rule
-  have "\<forall>f g x y z. f \<diamond> (g \<diamond> x \<diamond> y) \<diamond> z = af_pure (\<lambda>f g x y z. f (g x y) z) \<diamond> f \<diamond> g \<diamond> x \<diamond> y \<diamond> z" by applicative_nf rule
-  have "\<forall>f g x y z. f \<diamond> (g \<diamond> (x \<diamond> af_pure y)) \<diamond> z = af_pure (\<lambda>f g x z. f (g (x y)) z) \<diamond> f \<diamond> g \<diamond> x \<diamond> z" by applicative_nf rule
-  have "\<forall>f g x. f \<diamond> (g \<diamond> x \<diamond> x) = af_pure (\<lambda>f g x x'. f (g x x')) \<diamond> f \<diamond> g \<diamond> x \<diamond> x" by applicative_nf rule
-  have "\<forall>f x y. f x \<diamond> y = af_pure (\<lambda>f x. f x) \<diamond> f x \<diamond> y" by applicative_nf rule
+  have "\<forall>f x. af_pure f \<diamondop> x = af_pure f \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x y. af_pure f \<diamondop> x \<diamondop> y = af_pure f \<diamondop> x \<diamondop> y" by applicative_nf rule
+  have "\<forall>g f x. af_pure g \<diamondop> (f \<diamondop> x) = af_pure (\<lambda>f x. g (f x)) \<diamondop> f \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x y. f \<diamondop> x \<diamondop> y = af_pure (\<lambda>f x y. f x y) \<diamondop> f \<diamondop> x \<diamondop> y" by applicative_nf rule
+  have "\<forall>g f x. g \<diamondop> (f \<diamondop> x) = af_pure (\<lambda>g f x. g (f x)) \<diamondop> g \<diamondop> f \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x. f \<diamondop> af_pure x = af_pure (\<lambda>f. f x) \<diamondop> f" by applicative_nf rule
+  have "\<forall>x y. af_pure x \<diamondop> af_pure y = af_pure (x y)" by applicative_nf rule
+  have "\<forall>f x y. f \<diamondop> x \<diamondop> af_pure y = af_pure (\<lambda>f x. f x y) \<diamondop> f \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x y. af_pure f \<diamondop> x \<diamondop> af_pure y = af_pure (\<lambda>x. f x y) \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x y z. af_pure f \<diamondop> x \<diamondop> af_pure y \<diamondop> z = af_pure (\<lambda>x z. f x y z) \<diamondop> x \<diamondop> z" by applicative_nf rule
+  have "\<forall>f x g y. af_pure f \<diamondop> x \<diamondop> (af_pure g \<diamondop> y) = af_pure (\<lambda>x y. f x (g y)) \<diamondop> x \<diamondop> y" by applicative_nf rule
+  have "\<forall>f g x y. f \<diamondop> (g \<diamondop> x) \<diamondop> y = af_pure (\<lambda>f g x y. f (g x) y) \<diamondop> f \<diamondop> g \<diamondop> x \<diamondop> y" by applicative_nf rule
+  have "\<forall>f g x y z. f \<diamondop> (g \<diamondop> x \<diamondop> y) \<diamondop> z = af_pure (\<lambda>f g x y z. f (g x y) z) \<diamondop> f \<diamondop> g \<diamondop> x \<diamondop> y \<diamondop> z" by applicative_nf rule
+  have "\<forall>f g x y z. f \<diamondop> (g \<diamondop> (x \<diamondop> af_pure y)) \<diamondop> z = af_pure (\<lambda>f g x z. f (g (x y)) z) \<diamondop> f \<diamondop> g \<diamondop> x \<diamondop> z" by applicative_nf rule
+  have "\<forall>f g x. f \<diamondop> (g \<diamondop> x \<diamondop> x) = af_pure (\<lambda>f g x x'. f (g x x')) \<diamondop> f \<diamondop> g \<diamondop> x \<diamondop> x" by applicative_nf rule
+  have "\<forall>f x y. f x \<diamondop> y = af_pure (\<lambda>f x. f x) \<diamondop> f x \<diamondop> y" by applicative_nf rule
 next
   fix f :: "('a \<Rightarrow> 'b) af" and g :: "('b \<Rightarrow> 'c) af" and x
-  have "g \<diamond> (f \<diamond> x) = af_pure (\<lambda>g f x. g (f x)) \<diamond> g \<diamond> f \<diamond> x" by applicative_nf rule
+  have "g \<diamondop> (f \<diamondop> x) = af_pure (\<lambda>g f x. g (f x)) \<diamondop> g \<diamondop> f \<diamondop> x" by applicative_nf rule
 end
 (* TODO automatic test for names of new variables *)
 
-lemma "\<And>f x::'a af. f \<diamond> x = x"
+lemma "\<And>f x::'a af. f \<diamondop> x = x"
 apply applicative_nf
 oops
 
@@ -47,7 +47,7 @@ subsection {* Sets *}
 
 instantiation set :: (plus) plus
 begin
-  definition set_plus_def[applicative_unfold]: "(X::('a::plus)set) + Y = {plus} \<diamond> X \<diamond> Y"
+  definition set_plus_def[applicative_unfold]: "(X::('a::plus)set) + Y = {plus} \<diamondop> X \<diamondop> Y"
   instance ..
 end
 
@@ -72,7 +72,7 @@ end
 
 subsection {* Sum type (a.k.a. either) *}
 
-lemma "Inl plus \<diamond> (x :: nat + 'e list) \<diamond> x = Inl (\<lambda>x. 2 * x) \<diamond> x"
+lemma "Inl plus \<diamondop> (x :: nat + 'e list) \<diamondop> x = Inl (\<lambda>x. 2 * x) \<diamondop> x"
 by applicative_lifting simp
 
 
@@ -107,7 +107,7 @@ proof (induction xs)
     case could be proved directly if "lift_streams ([] @ ys) = lift_streams ys" is solved
     in head_cong_tac (invoke simplifier?) -- but only with applicative_nf
   *)
-  have "lift_streams ys = sconst append \<diamond> lift_streams [] \<diamond> lift_streams ys"
+  have "lift_streams ys = sconst append \<diamondop> lift_streams [] \<diamondop> lift_streams ys"
     by applicative_lifting simp
   thus ?case by applicative_unfold
 next

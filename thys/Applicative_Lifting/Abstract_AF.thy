@@ -20,16 +20,16 @@ adhoc_overloading Applicative.ap af_ap
 
 context begin interpretation applicative_syntax .
 
-lemma af_identity: "af_pure id \<diamond> x = x"
+lemma af_identity: "af_pure id \<diamondop> x = x"
 by transfer simp
 
-lemma af_homomorphism: "af_pure f \<diamond> af_pure x = af_pure (f x)"
+lemma af_homomorphism: "af_pure f \<diamondop> af_pure x = af_pure (f x)"
 by(fact af_ap.abs_eq)
 
-lemma af_composition: "af_pure comp \<diamond> g \<diamond> f \<diamond> x = g \<diamond> (f \<diamond> x)"
+lemma af_composition: "af_pure comp \<diamondop> g \<diamondop> f \<diamondop> x = g \<diamondop> (f \<diamondop> x)"
 by transfer simp
 
-lemma af_interchange: "f \<diamond> af_pure x = af_pure (\<lambda>g. g x) \<diamond> f"
+lemma af_interchange: "f \<diamondop> af_pure x = af_pure (\<lambda>g. g x) \<diamondop> f"
 by transfer simp
 
 end
